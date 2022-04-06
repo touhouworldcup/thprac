@@ -9,26 +9,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "thprac_multi", "thprac_mult
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
-		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{62722FC1-7704-4C37-AA77-982FE7C58945}.Debug|x64.ActiveCfg = Debug|x64
-		{62722FC1-7704-4C37-AA77-982FE7C58945}.Debug|x64.Build.0 = Debug|x64
 		{62722FC1-7704-4C37-AA77-982FE7C58945}.Debug|x86.ActiveCfg = Debug|Win32
 		{62722FC1-7704-4C37-AA77-982FE7C58945}.Debug|x86.Build.0 = Debug|Win32
-		{62722FC1-7704-4C37-AA77-982FE7C58945}.Release|x64.ActiveCfg = Release|x64
-		{62722FC1-7704-4C37-AA77-982FE7C58945}.Release|x64.Build.0 = Release|x64
 		{62722FC1-7704-4C37-AA77-982FE7C58945}.Release|x86.ActiveCfg = Release|Win32
 		{62722FC1-7704-4C37-AA77-982FE7C58945}.Release|x86.Build.0 = Release|Win32
-		{F5A4C151-C150-452F-95FD-9A2B3323DA1A}.Debug|x64.ActiveCfg = Debug|x64
-		{F5A4C151-C150-452F-95FD-9A2B3323DA1A}.Debug|x64.Build.0 = Debug|x64
 		{F5A4C151-C150-452F-95FD-9A2B3323DA1A}.Debug|x86.ActiveCfg = Debug|Win32
 		{F5A4C151-C150-452F-95FD-9A2B3323DA1A}.Debug|x86.Build.0 = Debug|Win32
-		{F5A4C151-C150-452F-95FD-9A2B3323DA1A}.Release|x64.ActiveCfg = Release|x64
-		{F5A4C151-C150-452F-95FD-9A2B3323DA1A}.Release|x64.Build.0 = Release|x64
 		{F5A4C151-C150-452F-95FD-9A2B3323DA1A}.Release|x86.ActiveCfg = Release|Win32
 		{F5A4C151-C150-452F-95FD-9A2B3323DA1A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
