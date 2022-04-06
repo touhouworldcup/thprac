@@ -1,0 +1,577 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{ef849942-3bcb-4624-98f3-a1db12a2a733}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DLL">
+      <UniqueIdentifier>{ba69db79-acf5-45f0-8c7f-5048d893b3ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdParties">
+      <UniqueIdentifier>{37dd7e07-ee55-47db-b7fc-c0af4637b56f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdParties\ImGui">
+      <UniqueIdentifier>{8ff51cf4-6d55-4d77-bbdc-2509b2e6cfbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdParties\MinHook">
+      <UniqueIdentifier>{7578d527-6afa-4ddd-941f-7b862a0b4ef6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdParties\MetroHash">
+      <UniqueIdentifier>{e7ddfcbb-ad50-4bb5-a7c9-732ec57b8ac4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="THPrac Utils">
+      <UniqueIdentifier>{eee2709d-6efa-4114-bd41-b3f13b574911}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="THPrac Gui">
+      <UniqueIdentifier>{35bb4f50-fb7f-4dd7-8cde-3024fa6999fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="THPrac Hook">
+      <UniqueIdentifier>{1b24d170-e6a5-4e40-9c66-e259734bd814}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="THPrac Games">
+      <UniqueIdentifier>{4b6df0ca-a900-42f7-acc7-0d426c23cb66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="THPrac Launcher">
+      <UniqueIdentifier>{bd74869f-32b5-4bd3-960f-3bcff4aa1638}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="THPrac Data Anly">
+      <UniqueIdentifier>{f3231692-550f-4c12-bb63-67d7e5fc13b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdParties\LZMA">
+      <UniqueIdentifier>{3b22df3a-9c7d-4a33-810a-a903dd69008d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdParties\SQLite">
+      <UniqueIdentifier>{60195f6f-1322-4303-8a52-3783688e322e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdParties\xxHash">
+      <UniqueIdentifier>{71279f06-bf79-4969-b624-067536af3f82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="THPrac Database">
+      <UniqueIdentifier>{e295f024-9c55-4521-a44b-1a6bff8efb55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="THPrac Marketeer">
+      <UniqueIdentifier>{ee235b1b-930d-40dd-91a4-4702d755ac26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdParties\distorm">
+      <UniqueIdentifier>{653ef50e-68b6-4a06-8e84-3ddf50867dfe}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_utils.h">
+      <Filter>THPrac Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_hook.h">
+      <Filter>THPrac Hook</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_games.h">
+      <Filter>THPrac Games</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\dll_hack.h">
+      <Filter>DLL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_init.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_load_exe.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\ImGui\imconfig.h">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\ImGui\imgui.h">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\ImGui\imgui_freetype.h">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\ImGui\imgui_internal.h">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\ImGui\imgui_user.h">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\ImGui\imstb_rectpack.h">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\ImGui\imstb_textedit.h">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\ImGui\imstb_truetype.h">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\MinHook\src\buffer.h">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\MinHook\src\trampoline.h">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\MinHook\src\hde\hde32.h">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\MinHook\src\hde\hde64.h">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\MinHook\src\hde\pstdint.h">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\MinHook\src\hde\table32.h">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\MinHook\src\hde\table64.h">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\MinHook\include\MinHook.h">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\MetroHash\metrohash128.h">
+      <Filter>3rdParties\MetroHash</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\MetroHash\platform.h">
+      <Filter>3rdParties\MetroHash</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_gui_input.h">
+      <Filter>THPrac Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_gui_locale.h">
+      <Filter>THPrac Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_gui_impl_dx9.h">
+      <Filter>THPrac Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_gui_impl_win32.h">
+      <Filter>THPrac Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_locale_def.h">
+      <Filter>THPrac Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_gui_impl_dx8.h">
+      <Filter>THPrac Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_gui_components.h">
+      <Filter>THPrac Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_main.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_launcher_games.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_launcher_games_def.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_launcher_main.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_launcher_wnd.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\utils\utils.h">
+      <Filter>THPrac Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_launcher_cfg.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_launcher_utils.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_launcher_links.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_launcher_tools.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_version.h">
+      <Filter>THPrac Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_licence.h">
+      <Filter>THPrac Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\MinHook\src\disassembler.h">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_log.h">
+      <Filter>THPrac Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_game_data.h">
+      <Filter>THPrac Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\ImGui\implot.h">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\ImGui\implot_internal.h">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_data_anly.h">
+      <Filter>THPrac Data Anly</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\lzma\7zTypes.h">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\lzma\Compiler.h">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\lzma\CpuArch.h">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\lzma\LzFind.h">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\lzma\LzFindMt.h">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\lzma\LzHash.h">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\lzma\LzmaDec.h">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\lzma\LzmaEnc.h">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\lzma\Precomp.h">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\lzma\Threads.h">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\sqlite\sqlite3.h">
+      <Filter>3rdParties\SQLite</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\sqlite\sqlite3ext.h">
+      <Filter>3rdParties\SQLite</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\xxHash\xxh3.h">
+      <Filter>3rdParties\xxHash</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\xxHash\xxhash.h">
+      <Filter>3rdParties\xxHash</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_replay_db.h">
+      <Filter>THPrac Database</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_db_helper.h">
+      <Filter>THPrac Database</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_config_db.h">
+      <Filter>THPrac Database</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_marketeer.h">
+      <Filter>THPrac Marketeer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\LRMP.h">
+      <Filter>THPrac Marketeer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_launcher_mkt.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\distorm\src\config.h">
+      <Filter>3rdParties\distorm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\distorm\src\decoder.h">
+      <Filter>3rdParties\distorm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\distorm\src\instructions.h">
+      <Filter>3rdParties\distorm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\distorm\src\insts.h">
+      <Filter>3rdParties\distorm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\distorm\src\operands.h">
+      <Filter>3rdParties\distorm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\distorm\src\prefix.h">
+      <Filter>3rdParties\distorm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\distorm\src\textdefs.h">
+      <Filter>3rdParties\distorm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\distorm\src\wstring.h">
+      <Filter>3rdParties\distorm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\distorm\src\x86defs.h">
+      <Filter>3rdParties\distorm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_ssl.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\thprac\thprac_utils.cpp">
+      <Filter>THPrac Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_hook.cpp">
+      <Filter>THPrac Hook</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th06.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th07.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th08.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th11.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\dllmain.cpp">
+      <Filter>DLL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_init.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_load_exe.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\ImGui\imgui.cpp">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\ImGui\imgui_demo.cpp">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\ImGui\imgui_draw.cpp">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\ImGui\imgui_freetype.cpp">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\ImGui\imgui_widgets.cpp">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\MinHook\src\buffer.c">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\MinHook\src\hook.c">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\MinHook\src\trampoline.c">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\MinHook\src\hde\hde32.c">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\MinHook\src\hde\hde64.c">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\MetroHash\metrohash128.cpp">
+      <Filter>3rdParties\MetroHash</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th10.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th12.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th13.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th14.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th15.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th16.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th128.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_gui_input.cpp">
+      <Filter>THPrac Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_gui_locale.cpp">
+      <Filter>THPrac Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_gui_impl_dx9.cpp">
+      <Filter>THPrac Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_gui_impl_win32.cpp">
+      <Filter>THPrac Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_gui_impl_dx8.cpp">
+      <Filter>THPrac Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_gui_components.cpp">
+      <Filter>THPrac Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th095.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th125.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th143.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th165.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th17.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th09.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_alcostg.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_launcher_games.cpp">
+      <Filter>THPrac Launcher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_launcher_main.cpp">
+      <Filter>THPrac Launcher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_launcher_wnd.cpp">
+      <Filter>THPrac Launcher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_launcher_cfg.cpp">
+      <Filter>THPrac Launcher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_launcher_links.cpp">
+      <Filter>THPrac Launcher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_launcher_tools.cpp">
+      <Filter>THPrac Launcher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_licence.cpp">
+      <Filter>THPrac Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\MinHook\src\trampoline_new.c">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\MinHook\src\disassembler.c">
+      <Filter>3rdParties\MinHook</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_log.cpp">
+      <Filter>THPrac Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\ImGui\imgui_tables.cpp">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th18.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_version.cpp">
+      <Filter>THPrac Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\ImGui\implot.cpp">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\ImGui\implot_demo.cpp">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\ImGui\implot_items.cpp">
+      <Filter>3rdParties\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_data_anly.cpp">
+      <Filter>THPrac Data Anly</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\lzma\CpuArch.c">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\lzma\LzFind.c">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\lzma\LzFindMt.c">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\lzma\LzFindOpt.c">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\lzma\LzmaDec.c">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\lzma\LzmaEnc.c">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\lzma\Threads.c">
+      <Filter>3rdParties\LZMA</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\sqlite\shell.c">
+      <Filter>3rdParties\SQLite</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\sqlite\sqlite3.c">
+      <Filter>3rdParties\SQLite</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\xxHash\xxhash.c">
+      <Filter>3rdParties\xxHash</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_replay_db.cpp">
+      <Filter>THPrac Database</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_config_db.cpp">
+      <Filter>THPrac Database</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_marketeer.cpp">
+      <Filter>THPrac Marketeer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_launcher_mkt.cpp">
+      <Filter>THPrac Launcher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\distorm\src\decoder.c">
+      <Filter>3rdParties\distorm</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\distorm\src\distorm.c">
+      <Filter>3rdParties\distorm</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\distorm\src\instructions.c">
+      <Filter>3rdParties\distorm</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\distorm\src\insts.c">
+      <Filter>3rdParties\distorm</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\distorm\src\mnemonics.c">
+      <Filter>3rdParties\distorm</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\distorm\src\operands.c">
+      <Filter>3rdParties\distorm</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\distorm\src\prefix.c">
+      <Filter>3rdParties\distorm</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\distorm\src\textdefs.c">
+      <Filter>3rdParties\distorm</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_ssl.cpp">
+      <Filter>THPrac Launcher</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\3rdParties\ImGui\imgui_user.inl">
+      <Filter>3rdParties\ImGui</Filter>
+    </None>
+    <None Include="src\thprac\thprac_games_def.json">
+      <Filter>THPrac Utils</Filter>
+    </None>
+    <None Include="resource.hm">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="thprac.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

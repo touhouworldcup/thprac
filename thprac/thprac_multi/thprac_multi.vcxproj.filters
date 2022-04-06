@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Localization Json">
+      <UniqueIdentifier>{4fad14bd-5c48-4972-b688-9faaae0cd3d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Localization Json\rapidjson">
+      <UniqueIdentifier>{6a3df112-6d44-4266-b94b-432d21c9cf16}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Localization Json\loc_json.cpp">
+      <Filter>Localization Json</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Localization Json\json.hpp">
+      <Filter>Localization Json</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\loc_json.h">
+      <Filter>Localization Json</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\allocators.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\cursorstreamwrapper.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\document.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\encodedstream.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\encodings.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\filereadstream.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\filewritestream.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\fwd.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\istreamwrapper.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\memorybuffer.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\memorystream.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\ostreamwrapper.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\pointer.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\prettywriter.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\rapidjson.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\reader.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\schema.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\stream.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\stringbuffer.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\writer.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\error\en.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\error\error.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\internal\biginteger.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\internal\diyfp.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\internal\dtoa.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\internal\ieee754.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\internal\itoa.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\internal\meta.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\internal\pow10.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\internal\regex.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\internal\stack.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\internal\strfunc.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\internal\strtod.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\internal\swap.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\msinttypes\inttypes.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Localization Json\rapidjson\msinttypes\stdint.h">
+      <Filter>Localization Json\rapidjson</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

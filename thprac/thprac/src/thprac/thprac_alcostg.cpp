@@ -1,0 +1,1182 @@
+#include "thprac_utils.h"
+
+namespace THPrac {
+namespace Alcostg {
+    using std::pair;
+    struct THPracParam {
+        int32_t mode;
+        int32_t stage;
+        int32_t section;
+        int32_t progress;
+        int32_t time;
+        int16_t beer;
+        int16_t beer_max;
+        int64_t score;
+
+        void Reset()
+        {
+            memset(this, 0, sizeof(THPracParam));
+        }
+        bool ReadJson(std::string& json)
+        {
+            ParseJson();
+
+            ForceJsonValue(game, "alcostg");
+            GetJsonValue(mode);
+            GetJsonValue(stage);
+            GetJsonValue(section);
+            GetJsonValue(progress);
+            GetJsonValue(time);
+            GetJsonValue(beer);
+            GetJsonValue(beer_max);
+            GetJsonValue(score);
+
+            return true;
+        }
+        std::string GetJson()
+        {
+            CreateJson();
+
+            AddJsonValueEx(version, GetVersionStr(), jalloc);
+            AddJsonValueEx(game, "alcostg", jalloc);
+            AddJsonValue(mode);
+            AddJsonValue(stage);
+            if (section)
+                AddJsonValue(section);
+            if (progress)
+                AddJsonValue(progress);
+
+            AddJsonValue(time);
+            AddJsonValue(beer);
+            AddJsonValue(beer_max);
+            AddJsonValue(score);
+
+            ReturnJson();
+        }
+    };
+    THPracParam thPracParam {};
+    bool thLock { false };
+    bool thHardLock { false };
+    bool thRestart { false };
+
+    // Beer and bad code.
+    bool alcostg_beer_engaged = false;
+    unsigned int alcostg_beer_cd = 0;
+    int16_t alcostg_beer_to_add = 0;
+    __declspec(noinline) void AlcostgAddBeer(int16_t beer)
+    {
+        __asm
+        {
+				mov eax, 0x48e580;
+				mov cx, beer;
+				push ebx;
+				mov ebx, 0x413ef0;
+				call ebx;
+				pop ebx;
+        }
+    }
+    EHOOK_G1(alcostg_add_beer, (void*)0x4264fc)
+    {
+        if (thPracParam.mode == 1 && alcostg_beer_engaged) {
+            if (++alcostg_beer_cd == 20) {
+                AlcostgAddBeer(thPracParam.beer * 100);
+                alcostg_beer_engaged = false;
+                alcostg_add_beer::GetHook().Disable();
+            }
+        }
+    }
+    class AlcostgBeer {
+    public:
+        static __declspec(noinline) void Set(int16_t beer)
+        {
+            alcostg_beer_engaged = true;
+            alcostg_beer_to_add = beer;
+            alcostg_beer_cd = 0;
+            alcostg_add_beer::GetHook().Enable();
+        }
+        static __declspec(noinline) void Reset()
+        {
+            alcostg_beer_engaged = false;
+            alcostg_beer_to_add = 0;
+            alcostg_beer_cd = 0;
+            alcostg_add_beer::GetHook().Disable();
+        }
+    };
+
+    class THGuiPrac : public Gui::GameGuiWnd {
+        THGuiPrac() noexcept
+        {
+            //*mMode = 1;
+            *mBeer = 30;
+            *mBeerMax = 30;
+            mTime.SetCurrentStep(30);
+
+            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+            SetFade(0.8f, 0.1f);
+            SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
+            SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
+            OnLocaleChange();
+        }
+        SINGLETON(THGuiPrac);
+    public:
+
+        int GetStage()
+        {
+            return *mStage;
+        }
+
+        int mState = 0;
+        __declspec(noinline) int State()
+        {
+            uint32_t menu_id;
+
+            switch (mState) {
+            case 0:
+                menu_id = GetMemContent(0x4741ac, 0x28);
+                if (menu_id != 0)
+                    return 1;
+                SetFade(0.8f, 0.1f);
+                Open();
+                thPracParam.Reset();
+                mState = 1;
+                break;
+            case 1:
+                if (IsOpen()) {
+                    if (Gui::InGameInputGet('Z')) {
+                        SetFade(0.8f, 0.1f);
+                        Close();
+
+                        // Fill Param
+                        thPracParam.mode = *mMode;
+                        thPracParam.stage = *mStage;
+                        if (*mWarp == 1)
+                            thPracParam.progress = *mProgress;
+                        else
+                            thPracParam.section = XSEC(*mCatagory, *mStage, *mWarp, *mSection);
+                        thPracParam.time = *mTime;
+                        thPracParam.beer = *mBeer;
+                        thPracParam.beer_max = *mBeerMax;
+                        thPracParam.score = *mScore;
+
+                        // Reset Frame Counter
+                        //*(int32_t*)(*((int32_t*)0x4db6a4) + 0x2b8) = 0;
+
+                        mState = 0;
+
+                        return 1;
+                    } else if (Gui::InGameInputGet('X')) {
+                        mState = 2;
+                    }
+                }
+                break;
+            case 2:
+                SetFade(0.8f, 0.1f);
+                Close();
+                if (IsClosed())
+                    mState = 0;
+            default:
+                break;
+            }
+
+            return 0;
+        }
+
+    protected:
+        virtual void OnPreUpdate() override
+        {
+        }
+        virtual void OnLocaleChange() override
+        {
+            SetTitle(XSTR(TH_MENU));
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                if (*mMode) {
+                    SetPos(120.f, 170.f);
+                    SetSize(400.f, 265.f);
+                } else {
+                    SetPos(170.f, 175.f);
+                    SetSize(300.f, 80.f);
+                }
+                SetItemWidth(-65.0f);
+                break;
+            case Gui::LOCALE_EN_US:
+                if (*mMode) {
+                    SetPos(120.f, 170.f);
+                    SetSize(400.f, 265.f);
+                } else {
+                    SetPos(170.f, 175.f);
+                    SetSize(300.f, 80.f);
+                }
+                SetItemWidth(-80.0f);
+                break;
+            case Gui::LOCALE_JA_JP:
+                if (*mMode) {
+                    SetPos(120.f, 170.f);
+                    SetSize(400.f, 265.f);
+                } else {
+                    SetPos(170.f, 175.f);
+                    SetSize(300.f, 80.f);
+                }
+                SetItemWidth(-76.0f);
+                break;
+            default:
+                break;
+            }
+        }
+        virtual void OnContentUpdate() override
+        {
+            ImGui::Text(XSTR(TH_MENU));
+            ImGui::Separator();
+
+            PracticeMenu();
+        }
+        th_glossary_t* SpellPhase()
+        {
+            return nullptr;
+        }
+        void PracticeMenu()
+        {
+            mMode();
+            if (mModePrv) {
+                char temp[256];
+                if (mStage()) {
+                    *mSection = 0;
+                    switch (*mStage) {
+                    case 0:
+                        mTime.SetBound(0, 210);
+                        mTimeBase = 17;
+                        mProgress.SetBound(1, 19);
+                        break;
+                    case 1:
+                        mTime.SetBound(0, 150);
+                        mTimeBase = 21;
+                        mProgress.SetBound(1, 11);
+                        break;
+                    case 2:
+                        mTime.SetBound(0, 270);
+                        mTimeBase = 0;
+                        mProgress.SetBound(1, 11);
+                        break;
+                    }
+                    *mTime = 0;
+                    *mProgress = 1;
+                }
+                if (mWarp(TH_WARP, *mCatagory ? TH_WARP_CBT : TH_WARP_CBA)) {
+                    *mSection = *mPhase = 0;
+                    *mProgress = 1;
+                }
+                if (*mWarp) {
+                    if (*mWarp == 1) {
+                        if (*mStage == 2 && *mProgress == 6)
+                            sprintf_s(temp, XSTR(ALCOSTG_ORDER_MBOSS), *mProgress);
+                        else
+                            sprintf_s(temp, XSTR(ALCOSTG_ORDER), *mProgress);
+                        mProgress(temp);
+                    } else {
+                        if (mSection(*mCatagory ? TH_WARP_CBT[*mWarp] : TH_WARP_CBA[*mWarp],
+                                *mCatagory ? XCBT(*mStage, *mWarp - 1) : XCBA(*mStage, *mWarp - 1),
+                                XSSS(mDiffculty)))
+                            *mPhase = 0;
+                        mPhase(TH_PHASE, SpellPhase());
+                    }
+                }
+
+                sprintf_s(temp, "%02d:%02d", *mTime / 60 + mTimeBase, *mTime % 60);
+                mTime(temp);
+                sprintf_s(temp, "%03.1fL", ((float)(*mBeer) / 10.0f));
+                mBeer(temp);
+                sprintf_s(temp, "%03.1fL", ((float)(*mBeerMax) / 10.0f));
+                auto prevBeerMax = *mBeerMax;
+                if (mBeerMax(temp)) {
+                    mBeer.SetBound(0, *mBeerMax);
+                    if (prevBeerMax == *mBeer)
+                        *mBeer = *mBeerMax;
+                }
+                mScore();
+                mScore.RoundDown(10);
+            }
+#if 0
+				//SetTitle(XSTR(TH_MENU));
+				//SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+				//ImVec2 renderSize = ImGui::GetIO().DisplaySize;
+				//ImGui::Text("Pos: %f, %f", ImGui::GetWindowPos().x / (float)renderSize.x, ImGui::GetWindowPos().y / (float)renderSize.y);
+				//ImGui::Text("Size: %f, %f", ImGui::GetWindowSize().x / (float)renderSize.x, ImGui::GetWindowSize().y / (float)renderSize.y);
+				// Size X & Item Width: ºÚÌå, Arial, MS UI Gothic
+				// Size Y & Pos: Î¢ÈíÑÅºÚ, Segoe UI, Yu Gothic UI
+				static float testItemWidth{ -35.0f };
+				static ImVec2 testWndPos{ -1.0f, -1.0f };
+				static ImVec2 testWndSize{ -1.0f, -1.0f };
+				if (testWndPos.x == -1.0f) testWndPos = ImGui::GetWindowPos();
+				if (testWndSize.x == -1.0f) testWndSize = ImGui::GetWindowSize();
+				ImGui::DragFloat2("_SIZE", (float*)&testWndSize);
+				if (ImGui::IsItemDeactivatedAfterEdit())
+					SetSize(testWndSize.x, testWndSize.y);
+				else if (!ImGui::IsItemActive())
+					testWndSize = ImGui::GetWindowSize();
+				ImGui::DragFloat2("_POS", (float*)&testWndPos);
+				if (ImGui::IsItemDeactivatedAfterEdit())
+					SetPos(testWndPos.x, testWndPos.y);
+				else if (!ImGui::IsItemActive())
+					testWndPos = ImGui::GetWindowPos();
+				ImGui::SliderFloat("IW", &testItemWidth, -150.0f, 0.0f);
+				if (ImGui::IsItemDeactivatedAfterEdit())
+					SetItemWidth(testItemWidth);
+#endif
+
+            mNavFocus();
+            if (mModePrv != *mMode) {
+                OnLocaleChange();
+                mModePrv = *mMode;
+            }
+        }
+
+        int mModePrv = 0;
+        unsigned int mTimeBase = 17;
+        Gui::GuiCombo mMode { TH_MODE, ALCOSTG_MODE_SELECT };
+
+    protected:
+        Gui::GuiCombo mStage { TH_STAGE, ALCOSTG_STAGE_SELECT };
+        Gui::GuiCombo mWarp { TH_WARP, TH_WARP_CBT };
+        Gui::GuiCombo mSection { TH_MODE };
+        Gui::GuiCombo mPhase { TH_PHASE };
+        Gui::GuiHotKey mCatagory { "Catagory", "Tab", VK_TAB };
+
+        Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 99999990, 10, 10000000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mTime { ALCOSTG_TIME, 0, 210, 1, 60, 30 }; // 1 for 2 sec
+        Gui::GuiSlider<int, ImGuiDataType_S32> mBeer { ALCOSTG_BEER, 0, 30, 1, 10 }; // 3000
+        Gui::GuiSlider<int, ImGuiDataType_S32> mBeerMax { ALCOSTG_BEER_MAX, 0, 30, 1, 10 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mProgress { ALCOSTG_PROGRESS, 1, 19, 1, 1 };
+
+        Gui::GuiNavFocus mNavFocus { TH_MODE, TH_STAGE, TH_WARP, ALCOSTG_PROGRESS,
+            TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE,
+            TH_SCORE, ALCOSTG_TIME, ALCOSTG_BEER, ALCOSTG_BEER_MAX };
+
+        int mDiffculty = 0;
+    };
+    class THGuiRep : public Gui::GameGuiWnd {
+        THGuiRep() noexcept
+        {
+        }
+        SINGLETON(THGuiRep);
+    public:
+
+        void CheckReplay()
+        {
+            uint32_t index = GetMemContent(0x4741ac, 0x5650);
+            char* repName = (char*)GetMemAddr(0x4741ac, index * 4 + 0x5658, 0x104);
+            std::string repDir("replay/");
+            repDir.append(repName);
+
+            std::string param;
+            if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
+                mParamStatus = true;
+            else
+                mRepParam.Reset();
+        }
+
+        bool mRepStatus = false;
+        void State(int state)
+        {
+            switch (state) {
+            case 1:
+                mRepStatus = false;
+                mParamStatus = false;
+                thPracParam.Reset();
+                AlcostgBeer::Reset();
+                thLock = false;
+                thHardLock = false;
+                thRestart = false;
+                break;
+            case 2:
+                CheckReplay();
+                break;
+            case 3:
+                mRepStatus = true;
+                if (mParamStatus)
+                    memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
+                break;
+            default:
+                break;
+            }
+        }
+
+    protected:
+        bool mParamStatus = false;
+        THPracParam mRepParam;
+    };
+    class THOverlay : public Gui::GameGuiWnd {
+        THOverlay() noexcept
+        {
+            SetTitle("Mod Menu");
+            SetFade(0.5f, 0.5f);
+            SetPos(10.0f, 10.0f);
+            SetSize(0.0f, 0.0f);
+            SetWndFlag(
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+        }
+        SINGLETON(THOverlay);
+    public:
+
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            float x_offset_1 = 0.0f;
+            float x_offset_2 = 0.0f;
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                x_offset_1 = 0.1f;
+                x_offset_2 = 0.14f;
+                break;
+            case Gui::LOCALE_EN_US:
+                x_offset_1 = 0.1f;
+                x_offset_2 = 0.14f;
+                break;
+            case Gui::LOCALE_JA_JP:
+                x_offset_1 = 0.1f;
+                x_offset_2 = 0.14f;
+                break;
+            default:
+                break;
+            }
+
+            mMenu.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mMuteki.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mFreeMiss.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mFreeBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mLockTimeBar.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mLockTimeBoss.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
+        }
+        virtual void OnContentUpdate() override
+        {
+            mMuteki();
+            mFreeMiss();
+            mFreeBomb();
+            mAutoBomb();
+            mLockTimeBar();
+            mLockTimeBoss();
+            mElBgm();
+        }
+        virtual void OnPreUpdate() override
+        {
+            if (mMenu(false) && !ImGui::IsAnyItemActive()) {
+                if (*mMenu) {
+                    Open();
+                } else {
+                    Close();
+                    //*((int32_t*)0x6c6eb0) = 2;
+                }
+            }
+            //if (*((int32_t*)0x6c6ea4) == 2)
+            //	SetPos(500.0f, 300.0f);
+            //else
+            //	SetPos(10.0f, 10.0f);
+        }
+
+        Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
+            (void*)0x426eb5, "\x01", 1, (void*)0x425cfa, "\xeb", 1,
+            (void*)0x426f19, "\x83\xc4\x08\x90\x90", 5 };
+        Gui::GuiHotKey mFreeMiss { ALCOSTG_FREE_MISS, "F2", VK_F2,
+            (void*)0x42722c, "\x83\xc4\x04\x90\x90", 5,
+            (void*)0x426c2b, "\xeb\x60", 2 };
+        Gui::GuiHotKey mFreeBomb { ALCOSTG_FREE_BOMB, "F3", VK_F3,
+            (void*)0x427310, "\xc3", 1 };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F4", VK_F4,
+            (void*)0x425dee, "\xc6", 1 };
+        Gui::GuiHotKey mLockTimeBar { ALCOSTG_LOCK_TIME_BAR, "F5", VK_F5,
+            (void*)0x419510, "\xc3", 1 };
+        Gui::GuiHotKey mLockTimeBoss { ALCOSTG_LOCK_TIME_BOSS, "F6", VK_F6,
+            (void*)0x4094b9, "\xeb", 1, (void*)0x40ed74, "\x90", 1 };
+
+    public:
+        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
+    };
+
+    class THAdvOptWnd : public Gui::GameGuiWnd {
+        // Option Related Functions
+    private:
+        void FpsInit()
+        {
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_alcostg.dll");
+            if (mOptCtx.vpatch_base) {
+                uint64_t hash[2];
+                CalcFileHash("vpatch_alcostg.dll", hash);
+                if (hash[0] != 6266639508503889982ll || hash[1] != 5871049704103251000ll)
+                    mOptCtx.fps_status = -1;
+                else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {
+                    mOptCtx.fps_status = 2;
+                    mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x18ad4);
+                }
+            } else
+                mOptCtx.fps_status = 0;
+        }
+        void FpsSet()
+        {
+            if (mOptCtx.fps_status == 1) {
+                mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
+            } else if (mOptCtx.fps_status == 2) {
+                *(int32_t*)(mOptCtx.vpatch_base + 0x18ad4) = mOptCtx.fps;
+            }
+        }
+        void GameplayInit()
+        {
+        }
+        void GameplaySet()
+        {
+        }
+
+    public:
+        THAdvOptWnd() noexcept
+        {
+            SetWndFlag(ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
+            SetFade(0.8f, 0.8f);
+            SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
+            SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
+            OnLocaleChange();
+
+            FpsInit();
+            GameplayInit();
+        }
+
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            SetTitle(XSTR(TH_SPELL_PRAC));
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                SetSizeRel(1.0f, 1.0f);
+                SetPosRel(0.0f, 0.0f);
+                SetItemWidthRel(-0.075f);
+                SetAutoSpacing(true);
+                break;
+            case Gui::LOCALE_EN_US:
+                SetSizeRel(1.0f, 1.0f);
+                SetPosRel(0.0f, 0.0f);
+                SetItemWidthRel(-0.075f);
+                SetAutoSpacing(true);
+                break;
+            case Gui::LOCALE_JA_JP:
+                SetSizeRel(1.0f, 1.0f);
+                SetPosRel(0.0f, 0.0f);
+                SetItemWidthRel(-0.075f);
+                SetAutoSpacing(true);
+                break;
+            default:
+                break;
+            }
+        }
+        virtual void OnContentUpdate() override
+        {
+            ImGui::Text(XSTR(TH_ADV_OPT));
+            ImGui::Separator();
+            ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
+
+            if (BeginOptGroup<TH_GAME_SPEED>()) {
+                if (GameFPSOpt(mOptCtx))
+                    FpsSet();
+                EndOptGroup();
+            }
+
+            AboutOpt();
+            ImGui::EndChild();
+            ImGui::SetWindowFocus();
+        }
+
+        adv_opt_ctx mOptCtx;
+    };
+    bool UpdateAdvOptWindow()
+    {
+        static THAdvOptWnd* advOptWnd = nullptr;
+        if (!advOptWnd)
+            advOptWnd = new THAdvOptWnd();
+        if (Gui::KeyboardInputUpdate(VK_F12) == 1) {
+            if (advOptWnd->IsOpen())
+                advOptWnd->Close();
+            else
+                advOptWnd->Open();
+        }
+        advOptWnd->Update();
+
+        return advOptWnd->IsOpen();
+    }
+
+    void AlcostgSt3Std()
+    {
+        VFile std;
+        std.SetFile((void*)GetMemContent(0x474048, 0x10), 0x9999);
+
+        std << pair(0x0618, 0);
+        std << pair(0x0624, 0);
+        std << pair(0x0640, 0);
+        std << pair(0x065c, 0);
+        std << pair(0x0670, 0);
+        std << pair(0x068c, 0);
+        std << pair(0x069c, 0);
+        std << pair(0x06b0, 0);
+        std << pair(0x06bc, 0);
+        std << pair(0x06d0, 0);
+        std << pair(0x06e4, 128);
+        std << pair(0x06f0, 0);
+    }
+    void ECLJump(ECLHelper& ecl, unsigned int start, unsigned int dest, int at_frame, int ecl_time = 0)
+    {
+        ecl.SetPos(start);
+        ecl << ecl_time << 0x0018000C << 0x02ff0000 << 0x00000000 << dest - start << at_frame;
+    }
+    void ECLTimeFix(ECLHelper& ecl, size_t pos, int32_t delta_time, unsigned int ins_count = 0xFFFFFFFF)
+    {
+        ecl.SetPos(pos);
+        int32_t ecl_time;
+        int16_t ecl_ins;
+        int16_t ecl_length;
+        size_t p = pos;
+        for (unsigned int i = 0; i < ins_count; i++) {
+            ecl >> ecl_time;
+            ecl >> ecl_ins;
+            ecl >> ecl_length;
+            if (ecl_time == 0x484c4345)
+                break;
+            if ((ecl_time + delta_time) >= 0)
+                ecl_time += delta_time;
+            ecl.SetPos(p);
+            ecl << ecl_time;
+            p += ecl_length;
+            ecl.SetPos(p);
+        }
+    }
+    __declspec(noinline) void AlcostgSt1Mid(ECLHelper& ecl)
+    {
+        size_t jmp1 = 0;
+        size_t jmp2 = 0;
+        size_t jmp3 = 0;
+
+        ECLJump(ecl, 0x4910, 0x49ac, 90);
+        switch (thPracParam.progress) {
+        case 1:
+            break;
+        case 2:
+            jmp1 = 0x4a1c;
+            break;
+        case 3:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4a8c;
+            break;
+        case 4:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4ad4;
+            break;
+        case 5:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4b1c;
+            break;
+        case 6:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4b64;
+            break;
+        case 7:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4bac;
+            break;
+        case 8:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4bf4;
+            break;
+        case 9:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4c3c;
+            break;
+        case 10:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4c84;
+            break;
+        case 11:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4ccc;
+            break;
+        case 12:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4d14;
+            break;
+        case 13:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4d5c;
+            break;
+        case 14:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4d5c;
+            jmp3 = 0x4dcc;
+            break;
+        case 15:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4d5c;
+            jmp3 = 0x4e14;
+            break;
+        case 16:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4d5c;
+            jmp3 = 0x4e5c;
+            break;
+        case 17:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4d5c;
+            jmp3 = 0x4ea4;
+            break;
+        case 18:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4d5c;
+            jmp3 = 0x4eec;
+            break;
+        case 19:
+            jmp1 = 0x4a1c;
+            jmp2 = 0x4d5c;
+            jmp3 = 0x4f34;
+            break;
+        default:
+            break;
+        }
+
+        if (jmp1)
+            ECLJump(ecl, 0x49d4, jmp1, 90);
+        if (jmp2)
+            ECLJump(ecl, 0x4a44, jmp2, 90);
+        if (jmp3)
+            ECLJump(ecl, 0x4d84, jmp3, 90);
+    }
+    __declspec(noinline) void AlcostgSt2Mid(ECLHelper& ecl)
+    {
+        size_t jmp1 = 0;
+
+        ECLJump(ecl, 0x7240, 0x72dc, 90);
+        switch (thPracParam.progress) {
+        case 1:
+            break;
+        case 2:
+            jmp1 = 0x7324;
+            break;
+        case 3:
+            jmp1 = 0x736c;
+            break;
+        case 4:
+            jmp1 = 0x73b4;
+            break;
+        case 5:
+            jmp1 = 0x73fc;
+            break;
+        case 6:
+            jmp1 = 0x7444;
+            break;
+        case 7:
+            jmp1 = 0x748c;
+            break;
+        case 8:
+            jmp1 = 0x74d4;
+            break;
+        case 9:
+            jmp1 = 0x751c;
+            break;
+        case 10:
+            jmp1 = 0x7578;
+            break;
+        case 11:
+            jmp1 = 0x75c0;
+            break;
+        default:
+            break;
+        }
+
+        if (jmp1)
+            ECLJump(ecl, 0x72dc, jmp1, 90);
+    }
+    __declspec(noinline) void AlcostgSt3Mid(ECLHelper& ecl)
+    {
+        size_t jmp1 = 0;
+
+        ECLJump(ecl, 0x7ca0, 0x7d4c, 120);
+        switch (thPracParam.progress) {
+        case 1:
+            break;
+        case 2:
+            jmp1 = 0x7da8;
+            break;
+        case 3:
+            jmp1 = 0x7e04;
+            break;
+        case 4:
+            jmp1 = 0x7e60;
+            break;
+        case 5:
+            jmp1 = 0x7ea8;
+            break;
+        case 6:
+            jmp1 = 0x7f04;
+            break;
+        case 7:
+            jmp1 = 0x7f60;
+            break;
+        case 8:
+            jmp1 = 0x7fa8;
+            break;
+        case 9:
+            jmp1 = 0x7ff0;
+            break;
+        case 10:
+            jmp1 = 0x804c;
+            break;
+        case 11:
+            jmp1 = 0x8094;
+            break;
+        default:
+            break;
+        }
+
+        if (jmp1)
+            ECLJump(ecl, 0x7d4c, jmp1, 120);
+    }
+    __declspec(noinline) void THPatch(ECLHelper& ecl, th_sections_t section)
+    {
+        if (thPracParam.progress) {
+            switch (thPracParam.stage) {
+            case 0:
+                AlcostgSt1Mid(ecl);
+                break;
+            case 1:
+                AlcostgSt2Mid(ecl);
+                break;
+            case 2:
+                AlcostgSt3Mid(ecl);
+                break;
+            default:
+                break;
+            }
+        } else {
+            auto st1_boss = [&]() {
+                ECLJump(ecl, 0xa094, 0xa0d8, 60);
+                ecl << pair(0x5cc, 60) << pair(0x5b8, 120);
+                ECLTimeFix(ecl, 0x604, -180);
+            };
+            auto st2_boss = [&]() {
+                ECLJump(ecl, 0xcb84, 0xcbb4, 60);
+                ECLJump(ecl, 0x5d4, 0x5f4, 0);
+                ECLJump(ecl, 0x61c, 0x65c, 80);
+                ECLTimeFix(ecl, 0x6c0, -30);
+                ecl << pair(0x684, 60) << pair(0x5d0, 120);
+            };
+            auto st3_boss = [&]() {
+                ECLJump(ecl, 0xe9a4, 0xe9d4, 60);
+                ecl.SetPos(0x6a4);
+                ecl << 0 << 0x00200119 << 0x04ff0000 << 0 << 60 << 4 << 0.0f << 162.25f; // 0x4d726c
+                ECLJump(ecl, ecl.GetPos(), 0x810, 560);
+                ecl << pair(0x664, 60) << pair(0x894, 620) << pair(0x898, (int16_t)0);
+                AlcostgSt3Std();
+            };
+
+            switch (section) {
+            case THPrac::Alcostg::ALCOSTG_ST1_BOSS1:
+                st1_boss();
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST1_BOSS2:
+                st1_boss();
+                ecl << pair(0x5ec, 2000);
+                ECLTimeFix(ecl, 0x78c, -60, 4);
+                ecl << pair(0x77c, (int16_t)0);
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST1_BOSS3:
+                st1_boss();
+                ECLJump(ecl, 0x6e0, 0x78c, 60);
+                ECLJump(ecl, 0x7e4, 0x178c, 0);
+                ECLJump(ecl, 0x1908, 0x19ec, 60);
+                ecl << pair(0x180c, 60);
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST1_BOSS4:
+                THPatch(ecl, ALCOSTG_ST1_BOSS3);
+                ecl << pair(0x17b0, 2700);
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST2_BOSS1:
+                st2_boss();
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST2_BOSS2:
+                st2_boss();
+                ecl << pair(0x604, 3000);
+                ECLTimeFix(ecl, 0x828, -60, 4);
+                ecl << pair(0x818, (int16_t)0);
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST2_BOSS3:
+                st2_boss();
+                ECLJump(ecl, 0x77c, 0x828, 60);
+                ECLJump(ecl, 0x880, 0x200c, 0);
+                ECLJump(ecl, 0x21a4, 0x2288, 60);
+                ecl << pair(0x20bc, 60);
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST2_BOSS4:
+                THPatch(ecl, ALCOSTG_ST2_BOSS3);
+                ecl << pair(0x2030, 5700);
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST2_BOSS5:
+                THPatch(ecl, ALCOSTG_ST2_BOSS3);
+                ecl << pair(0x205c, 0x33);
+                ecl << pair(0x2030, 3000) << pair(0x2048, 3000);
+                ECLJump(ecl, 0x5170, 0x51a4, 60);
+                ecl << pair(0x51f8, 60);
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST3_BOSS1:
+                st3_boss();
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST3_BOSS2:
+                st3_boss();
+                ecl << pair(0x678, 3500);
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST3_BOSS3:
+                st3_boss();
+                ECLJump(ecl, 0x998, 0x11c8, 0);
+                ECLJump(ecl, 0x1380, 0x1468, 120);
+                ecl << pair(0x1248, 0) << pair(0x135c, (int16_t)0);
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST3_BOSS4:
+                THPatch(ecl, ALCOSTG_ST3_BOSS3);
+                ecl << pair(0x11ec, 2000);
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST3_BOSS5:
+                st3_boss();
+                ECLJump(ecl, 0x998, 0x1d24, 0);
+                ECLJump(ecl, 0x1f30, 0x2000, 80);
+                ecl << pair(0x1da4, 40) << pair(0x1f0c, (int16_t)0);
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST3_BOSS6:
+                THPatch(ecl, ALCOSTG_ST3_BOSS5);
+                ecl << pair(0x1d48, 5000);
+                ecl << pair(0x204c, 0) << pair(0x2060, 0);
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST3_BOSS7:
+                st3_boss();
+                ECLJump(ecl, 0x998, 0x24f8, 0);
+                ECLJump(ecl, 0x2714, 0x27e4, 80);
+                ecl << pair(0x2588, 40) << pair(0x26f0, (int16_t)0);
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST3_BOSS8:
+                THPatch(ecl, ALCOSTG_ST3_BOSS7);
+                ecl << pair(0x251c, 3600);
+                ecl << pair(0x2854, 0) << pair(0x2868, 0);
+                break;
+            case THPrac::Alcostg::ALCOSTG_ST3_BOSS9:
+                THPatch(ecl, ALCOSTG_ST3_BOSS7);
+                ecl << pair(0x2548, 0x35);
+                ecl << pair(0x251c, 3600);
+                ecl << pair(0x2854, 0) << pair(0x2868, 0);
+                ECLJump(ecl, 0x54e0, 0x5500, 140);
+                ecl << pair(0x53fc, 60) << pair(0x5404, (int16_t)0) << pair(0x5480, (int16_t)0);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+    __declspec(noinline) void THGuiUpdate()
+    {
+        GameGuiBegin(IMPL_WIN32_DX9);
+
+        // Gui components update
+        THGuiPrac::singleton().Update();
+        //thGuiRep->Update();
+        THOverlay::singleton().Update();
+
+        GameGuiEnd(IMPL_WIN32_DX9, UpdateAdvOptWindow() | THGuiPrac::singleton().IsOpen());
+    }
+    int THBGMTest()
+    {
+        if (thLock)
+            return 0;
+        if (!thPracParam.mode)
+            return 0;
+        return th_sections_bgm[thPracParam.section];
+    }
+    void THSaveReplay(char* repName)
+    {
+        ReplaySaveParam(repName, thPracParam.GetJson());
+    }
+
+    HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(alcostg_on_restart, (void*)0x4187a8)
+    {
+        thRestart = true;
+        thLock = thHardLock;
+    }
+    EHOOK_DY(alcostg_everlasting_bgm, (void*)0x43a580)
+    {
+        int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
+        int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
+        int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
+        int32_t call_addr = ((int32_t*)pCtx->Esp)[3];
+
+        bool el_switch;
+        bool is_practice;
+        bool result;
+
+        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode && thPracParam.section;
+        if (thLock)
+            el_switch = false;
+
+        //is_practice = (*((int32_t*)0x48e610) & 0x1);
+        is_practice = false;
+        if (thRestart) {
+            is_practice = true;
+            thRestart = false;
+        }
+
+        if (retn_addr == 0x42093f && call_addr == 0x412bf6) {
+            thLock = true;
+            result = ElBgmTest<0x420802, 0x418b7d, 0x422b44, 0x422bc1, 0x418e91>(
+                el_switch, is_practice, 0x420802, 2, 2, call_addr);
+        } else {
+            result = ElBgmTest<0x420802, 0x418b7d, 0x422b44, 0x422bc1, 0x418e91>(
+                el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, call_addr);
+        }
+
+        if (result) {
+            pCtx->Eip = 0x43a5e5;
+        } 
+    }
+    EHOOK_DY(alcostg_param_reset, (void*)0x42c96b)
+    {
+        thPracParam.Reset();
+        AlcostgBeer::Reset();
+        thLock = false;
+        thHardLock = false;
+        thRestart = false;
+    }
+    EHOOK_DY(alcostg_prac_menu_1, (void*)0x42cb0c)
+    {
+        if (THGuiPrac::singleton().State()) {
+        } else {
+            pCtx->Eip = 0x42cc50;
+        }
+    }
+    EHOOK_DY(alcostg_prac_menu_2, (void*)0x42ca20)
+    {
+        if (THGuiPrac::singleton().mState) {
+            pCtx->Eip = 0x42cb0c;
+        }
+    }
+    EHOOK_DY(alcostg_prac_menu_enter, (void*)0x42cbbd)
+    {
+        if (thPracParam.mode == 1) {
+            pCtx->Edx = thPracParam.stage + 1;
+        }
+    }
+    EHOOK_DY(alcostg_patch_main, (void*)0x4186ff)
+    {
+        AlcostgBeer::Reset();
+        if (!thLock && thPracParam.mode == 1) {
+            if (thPracParam.stage == 0) {
+                *(int32_t*)(0x48e5d0) = *(int32_t*)(0x48e5d4) = (thPracParam.time * 30);
+                *(float*)(0x48e5d8) = (float)(thPracParam.time * 30);
+            } else if (thPracParam.stage == 1) {
+                *(int32_t*)(0x48e5d0) = *(int32_t*)(0x48e5d4) = (thPracParam.time * 60);
+                *(float*)(0x48e5d8) = (float)(thPracParam.time * 60);
+            } else if (thPracParam.stage == 2) {
+                *(int32_t*)(0x48e5d0) = *(int32_t*)(0x48e5d4) = (thPracParam.time * 46);
+                *(float*)(0x48e5d8) = (float)(thPracParam.time * 46);
+            }
+            *(int16_t*)(0x48e60a) = thPracParam.beer_max * 100;
+            AlcostgBeer::Set(thPracParam.beer * 100);
+            *(int32_t*)(0x48e584) = *(int32_t*)(0x48e58c) = (int32_t)(thPracParam.score);
+
+            ECLHelper ecl;
+            ecl.SetBaseAddr((void*)GetMemAddr(0x474064, 0x60, 0xC));
+            THPatch(ecl, (th_sections_t)thPracParam.section);
+        }
+    }
+    EHOOK_DY(alcostg_logo, (void*)0x414de7)
+    {
+        if (!thLock && thPracParam.mode == 1 && (thPracParam.section || thPracParam.progress)) {
+            pCtx->Eip = 0x414e3b;
+        }
+    }
+    EHOOK_DY(alcostg_bgm, (void*)0x418e8a)
+    {
+        if (THBGMTest()) {
+            PushHelper32(pCtx, 1);
+            pCtx->Eip = 0x418e8c;
+        } 
+    }
+    EHOOK_DY(alcostg_rep_save, (void*)0x429d8b)
+    {
+        char* repName = (char*)(pCtx->Esp + 0x1c);
+        if (thPracParam.mode)
+            THSaveReplay(repName);
+    }
+    EHOOK_DY(alcostg_rep_menu_1, (void*)0x42f081)
+    {
+        THGuiRep::singleton().State(1);
+    }
+    EHOOK_DY(alcostg_rep_menu_2, (void*)0x42f13c)
+    {
+        THGuiRep::singleton().State(2);
+    }
+    EHOOK_DY(alcostg_rep_menu_3, (void*)0x42f287)
+    {
+        THGuiRep::singleton().State(3);
+    }
+    EHOOK_DY(alcostg_rep_menu_enter, (void*)0x42f2de)
+    {
+        int stage = pCtx->Edx;
+        if (stage != thPracParam.stage)
+            thHardLock = thLock = true;
+    }
+    EHOOK_DY(alcostg_render, (void*)0x43564a)
+    {
+        THGuiUpdate();
+    }
+    HOOKSET_ENDDEF()
+
+    HOOKSET_DEFINE(THInitHook)
+    static __declspec(noinline) void THGuiCreate()
+    {
+        // Init
+        GameGuiInit(IMPL_WIN32_DX9, 0x48e648, 0x48ef20, 0x435230,
+            Gui::INGAGME_INPUT_GEN2, 0x471514, 0x471510, 0,
+            -1);
+
+        // Gui components creation
+        THGuiPrac::singleton();
+        THGuiRep::singleton();
+        THOverlay::singleton();
+
+        // Hooks
+        THMainHook::singleton().EnableAllHooks();
+
+        // Reset thPracParam
+        thPracParam.Reset();
+    }
+    static __declspec(noinline) void THInitHookDisable()
+    {
+        auto& s = THInitHook::singleton();
+        s.alcostg_gui_init_1.Disable();
+        s.alcostg_gui_init_2.Disable();
+    }
+    PATCH_DY(alcostg_startup_1, (void*)0x42c281, "\xeb", 1);
+    EHOOK_DY(alcostg_gui_init_1, (void*)0x42ca17)
+    {
+        THGuiCreate();
+        THInitHookDisable();
+    }
+    EHOOK_DY(alcostg_gui_init_2, (void*)0x435e66)
+    {
+        THGuiCreate();
+        THInitHookDisable();
+    }
+    HOOKSET_ENDDEF()
+}
+
+void AlcostgInit()
+{
+    Alcostg::THInitHook::singleton().EnableAllHooks();
+    TryKeepUpRefreshRate((void*)0x435aa0);
+    if (GetModuleHandleA("vpatch_alcostg.dll")) {
+        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_alcostg.dll") + 0x560b));
+    }
+}
+}
