@@ -943,6 +943,7 @@ namespace Marketeer {
         }
         bool isSelected = false;
         bool isHidden = false;
+        bool isEditing = false;
         std::string name;
         std::string address;
         std::string desc;
@@ -1512,6 +1513,7 @@ private:
                 ImGui::Separator();
             }
             if (ImGui::Selectable("Edit")) {
+                server->isEditing = true;
             }
             if (ImGui::Selectable("Remove")) {
             }
@@ -1553,6 +1555,10 @@ search_hit:
         bool tableCtxMenu = false;
         auto tableFlag = ImGuiTableFlags_Resizable | ImGuiTableFlags_Sortable | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterV | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_BordersH | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY;
         static char filterInput[256];
+
+        static char serverNameInput[64];
+        static char serverAddressInput[64];
+        static char serverDescInput[64];
 
         if (ImGui::InputText("Filter", filterInput, 256)) {
             ServerFilter(filterInput);
@@ -1610,6 +1616,25 @@ search_hit:
                             tableCtxMenu = ServerCtxMenu(1, &(*serverIt));
                             if (tableCtxMenu) {
                                 mSelectedServer = serverIt;
+                            }
+                            if (serverIt->isEditing) {
+                                ImGui::OpenPopup("Edit");
+                                if (GuiModal("Edit")) {
+                                    ImGui::InputText("Name", serverNameInput, 64);
+                                    ImGui::InputText("Address", serverAddressInput, 64);
+                                    ImGui::InputText("Description", serverDescInput, 64);
+                                    if (ImGui::Button("Apply")) {
+                                        serverIt->name = serverNameInput;
+                                        serverIt->address = serverAddressInput;
+                                        serverIt->desc = serverDescInput;
+                                        serverIt->isEditing = false;
+                                    }
+                                    ImGui::SameLine();
+                                    if (ImGui::Button("Cancel")) {
+                                        serverIt->isEditing = false;
+                                    }
+                                }
+                                ImGui::EndPopup();
                             }
                         }
 
