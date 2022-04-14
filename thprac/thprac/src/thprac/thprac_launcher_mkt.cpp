@@ -1452,7 +1452,6 @@ public:
             }
             writer.EndArray();
             DWORD byteRet;
-            MessageBoxA(NULL, s.GetString(), NULL, NULL);
             WriteFile(hServersJson, s.GetString(), s.GetLength(), &byteRet, NULL);
             FlushFileBuffers(hServersJson);
             CloseHandle(hServersJson);
