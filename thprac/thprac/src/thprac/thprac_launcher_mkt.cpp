@@ -7,6 +7,8 @@
 #include "thprac_main.h"
 #include "thprac_config_db.h"
 #include "thprac_ssl.h"
+#pragma warning(default : 4091)
+#include <rapidjson/writer.h>
 #include "LRMP.h"
 #include <stdio.h>
 #include <string>
@@ -935,15 +937,28 @@ namespace Marketeer {
     }
 
     struct Server {
-        Server() = default;
+        Server()
+            : name(), address(), desc()
+        {
+        
+        }
+
+        Server(Server&& source) {
+            name = std::move(source.name);
+            address = std::move(source.address);
+            desc = std::move(source.desc);
+            isHidden = source.isHidden;
+            isEditing = source.isEditing;
+        }
+
         Server(std::string _name, std::string _address, std ::string _desc)
             : name(_name) , address(_address), desc(_desc)
         {
         
         }
-        bool isSelected = false;
         bool isHidden = false;
         bool isEditing = false;
+        bool toRemove = false;
         std::string name;
         std::string address;
         std::string desc;
@@ -1333,10 +1348,40 @@ private:
     THMarketeerGui()
     {
         SettingsInit();
-        mGuiUpdFunc = [&]() { return GuiContent(); };
-        //mServerList.emplace_back("TWC Server", "deafbeef.aaa:9961", "Something blah blah blah");
-        //mServerList.emplace_back("Custom Server", "12.34.56.78:9961", "blah blah blah");
-        mServerList.emplace_back("Debug Server", "ipc://marketeer_test", "Cool"); //ipc://marketeer_test
+        mGuiUpdFunc = [&]() { return GuiContent(); };     
+        {
+            auto serversPath = LauncherGetDataDir();
+            serversPath += L"\\marketeer";
+            CreateDirectoryW(serversPath.c_str(), NULL);
+            serversPath += L"\\servers.json";
+            rapidjson::Document serversJson;
+            HANDLE hServersJson = CreateFile(serversPath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            if (hServersJson != INVALID_HANDLE_VALUE) {
+                size_t serversJsonSize = GetFileSize(hServersJson, NULL);
+                char* serversJsonStr = (char*)malloc(serversJsonSize + 1);
+                DWORD byteRet;
+                BOOL success = ReadFile(hServersJson, (void*)serversJsonStr, serversJsonSize, &byteRet, NULL);
+                if (success && !serversJson.Parse(serversJsonStr, serversJsonSize).HasParseError() && serversJson.IsArray()) {
+                    for (auto& i : serversJson.GetArray()) {
+                        if (i.IsObject()) {
+                            Marketeer::Server newServer;
+                            if (i["name"].IsString())
+                                newServer.name = i["name"].GetString();
+
+                            if (i["address"].IsString())
+                                newServer.address = i["address"].GetString();
+
+                            if (i["desc"].IsString())
+                                newServer.desc = i["desc"].GetString();
+                            mServerList.push_back(std::move(newServer));
+                        }
+                    }
+                }
+                free(serversJsonStr);
+                CloseHandle(hServersJson);
+            }
+        }
+
         mSelectedServer = mServerList.end();
         mServerListFilteredSize = 1;
         mSelectedPlayer = mPlayerList.end();
@@ -1384,6 +1429,34 @@ public:
             view.Halt();
         }
         mViews.clear();
+
+        auto serversPath = LauncherGetDataDir();
+        serversPath += L"\\marketeer";
+        CreateDirectoryW(serversPath.c_str(), NULL);
+        serversPath += L"\\servers.json";
+        HANDLE hServersJson = CreateFile(serversPath.c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (hServersJson != INVALID_HANDLE_VALUE) {
+            using namespace rapidjson;
+            StringBuffer s;
+            Writer<StringBuffer> writer(s);
+            writer.StartArray();
+            for (auto& i : mServerList) {
+                writer.StartObject();
+                writer.Key("name");
+                writer.String(i.name.c_str());
+                writer.Key("address");
+                writer.String(i.address.c_str());
+                writer.Key("desc");
+                writer.String(i.desc.c_str());
+                writer.EndObject();
+            }
+            writer.EndArray();
+            DWORD byteRet;
+            MessageBoxA(NULL, s.GetString(), NULL, NULL);
+            WriteFile(hServersJson, s.GetString(), s.GetLength(), &byteRet, NULL);
+            FlushFileBuffers(hServersJson);
+            CloseHandle(hServersJson);
+        }
     }
 
 private:
@@ -1480,52 +1553,6 @@ private:
         }
     }
 
-    bool ServerCtxMenu(int type, Marketeer::Server* server = nullptr)
-    {
-        if (type == 0) {
-            if (!ImGui::BeginPopupContextWindow()) {
-                return false;
-            }
-        } else {
-            if (!ImGui::BeginPopupContextItem()) {
-                return false;
-            }
-        }
-
-        if (type == 1) {
-            if (!mStreams.size()) {
-                if (ImGui::Selectable("Stream")) {
-                    auto& stream = mStreams.emplace_back();
-
-                    auto streamName = Marketeer::GenStreamName(mUsername);
-                    stream.TabSwitch() = true;
-                    stream.SetIdStr(streamName);
-                    stream.SetURL(server->address.c_str());
-                    stream.SetUsername(mUsername.c_str());
-                    stream.SetKey(mPrivateKey);
-                    stream.StartStreamer();
-
-                    mStreamCtx = "STRM";
-                    mStreamCtx += "ipc://";
-                    mStreamCtx += streamName;
-                    mStreamCtx += '\0';
-                }
-                ImGui::Separator();
-            }
-            if (ImGui::Selectable("Edit")) {
-                server->isEditing = true;
-            }
-            if (ImGui::Selectable("Remove")) {
-            }
-            ImGui::Separator();
-        }
-
-        if (ImGui::Selectable("Add server")) {
-        }
-        ImGui::EndPopup();
-
-        return true;
-    }
     void ServerFilter(std::string filter)
     {
         mServerListFilteredSize = 0;
@@ -1562,6 +1589,8 @@ search_hit:
 
         if (ImGui::InputText("Filter", filterInput, 256)) {
             ServerFilter(filterInput);
+        } else {
+            mServerListFilteredSize = mServerList.size();
         }
         if (ImGui::BeginTable("mkt_server_table", 4, tableFlag)) {
             ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 128.0f, 0);
@@ -1607,16 +1636,52 @@ search_hit:
                         }
 
                         ImGui::TableNextRow(ImGuiTableRowFlags_None);
-
                         ImGui::TableSetColumnIndex(0);
-                        if (ImGui::Selectable(serverIt->name.c_str(), serverIt == mSelectedServer, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap)) {
+
+                        bool currentSelected = serverIt == mSelectedServer;
+                        ImGui::Selectable(serverIt->name.c_str(), &currentSelected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap);
+                        if (currentSelected) {
                             mSelectedServer = serverIt;
                         }
+
                         if (!tableCtxMenu) {
-                            tableCtxMenu = ServerCtxMenu(1, &(*serverIt));
-                            if (tableCtxMenu) {
+                            if (currentSelected && ImGui::BeginPopupContextWindow()) {
+                                if (!mStreams.size()) {
+                                    if (ImGui::Selectable("Stream")) {
+                                        auto& stream = mStreams.emplace_back();
+
+                                        auto streamName = Marketeer::GenStreamName(mUsername);
+                                        stream.TabSwitch() = true;
+                                        stream.SetIdStr(streamName);
+                                        stream.SetURL(serverIt->address.c_str());
+                                        stream.SetUsername(mUsername.c_str());
+                                        stream.SetKey(mPrivateKey);
+                                        stream.StartStreamer();
+
+                                        mStreamCtx = "STRM";
+                                        mStreamCtx += "ipc://";
+                                        mStreamCtx += streamName;
+                                        mStreamCtx += '\0';
+                                    }
+                                    ImGui::Separator();
+                                }
+                                if (ImGui::Selectable("Edit")) {
+                                    serverIt->isEditing = true;
+                                }
+                                if (ImGui::Selectable("Remove")) {
+                                    serverIt->toRemove = true;
+                                }
+                                ImGui::Separator();
+                                if (ImGui::Selectable("Add server")) {
+                                    Marketeer::Server newServer;
+                                    newServer.isEditing = true;
+                                    mServerList.push_back(std::move(newServer));
+                                }
+                                ImGui::EndPopup();
+                                tableCtxMenu = true;
                                 mSelectedServer = serverIt;
-                            }
+                            }                             
+                            
                             if (serverIt->isEditing) {
                                 ImGui::OpenPopup("Edit");
                                 if (GuiModal("Edit")) {
@@ -1670,9 +1735,29 @@ search_hit:
             }
 
             if (!tableCtxMenu) {
-                tableCtxMenu = ServerCtxMenu(0);
+                if (ImGui::BeginPopupContextWindow()) {
+                    if (ImGui::Selectable("Add Server")) {
+                        Marketeer::Server newServer;
+                        newServer.isEditing = true;
+                        mServerList.push_back(std::move(newServer));
+                    }
+                    ImGui::EndPopup();
+                    tableCtxMenu = true;
+                }
             }
             ImGui::EndTable();
+        }
+        bool removedAServer = false;
+        mServerList.remove_if([&removedAServer](Marketeer::Server& n) {
+            if (n.toRemove) {
+                removedAServer = true;
+                return true;
+            } else {
+                return false;
+            }
+        });
+        if (removedAServer) {
+            mSelectedServer = mServerList.end();
         }
     }
 
