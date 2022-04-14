@@ -7,6 +7,8 @@
 #include "thprac_main.h"
 #include "thprac_config_db.h"
 #include "thprac_ssl.h"
+#pragma warning(default : 4091)
+#include <rapidjson/writer.h>
 #include "LRMP.h"
 #include <stdio.h>
 #include <string>
@@ -1346,10 +1348,40 @@ private:
     THMarketeerGui()
     {
         SettingsInit();
-        mGuiUpdFunc = [&]() { return GuiContent(); };
-        //mServerList.emplace_back("TWC Server", "deafbeef.aaa:9961", "Something blah blah blah");
-        //mServerList.emplace_back("Custom Server", "12.34.56.78:9961", "blah blah blah");
-        mServerList.emplace_back("Debug Server", "ipc://marketeer_test", "Cool"); //ipc://marketeer_test
+        mGuiUpdFunc = [&]() { return GuiContent(); };     
+        {
+            auto serversPath = LauncherGetDataDir();
+            serversPath += L"\\marketeer";
+            CreateDirectoryW(serversPath.c_str(), NULL);
+            serversPath += L"\\servers.json";
+            rapidjson::Document serversJson;
+            HANDLE hServersJson = CreateFile(serversPath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            if (hServersJson != INVALID_HANDLE_VALUE) {
+                size_t serversJsonSize = GetFileSize(hServersJson, NULL);
+                char* serversJsonStr = (char*)malloc(serversJsonSize + 1);
+                DWORD byteRet;
+                BOOL success = ReadFile(hServersJson, (void*)serversJsonStr, serversJsonSize, &byteRet, NULL);
+                if (success && !serversJson.Parse(serversJsonStr, serversJsonSize).HasParseError() && serversJson.IsArray()) {
+                    for (auto& i : serversJson.GetArray()) {
+                        if (i.IsObject()) {
+                            Marketeer::Server newServer;
+                            if (i["name"].IsString())
+                                newServer.name = i["name"].GetString();
+
+                            if (i["address"].IsString())
+                                newServer.address = i["address"].GetString();
+
+                            if (i["desc"].IsString())
+                                newServer.desc = i["desc"].GetString();
+                            mServerList.push_back(std::move(newServer));
+                        }
+                    }
+                }
+                free(serversJsonStr);
+                CloseHandle(hServersJson);
+            }
+        }
+
         mSelectedServer = mServerList.end();
         mServerListFilteredSize = 1;
         mSelectedPlayer = mPlayerList.end();
@@ -1397,6 +1429,34 @@ public:
             view.Halt();
         }
         mViews.clear();
+
+        auto serversPath = LauncherGetDataDir();
+        serversPath += L"\\marketeer";
+        CreateDirectoryW(serversPath.c_str(), NULL);
+        serversPath += L"\\servers.json";
+        HANDLE hServersJson = CreateFile(serversPath.c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (hServersJson != INVALID_HANDLE_VALUE) {
+            using namespace rapidjson;
+            StringBuffer s;
+            Writer<StringBuffer> writer(s);
+            writer.StartArray();
+            for (auto& i : mServerList) {
+                writer.StartObject();
+                writer.Key("name");
+                writer.String(i.name.c_str());
+                writer.Key("address");
+                writer.String(i.address.c_str());
+                writer.Key("desc");
+                writer.String(i.desc.c_str());
+                writer.EndObject();
+            }
+            writer.EndArray();
+            DWORD byteRet;
+            MessageBoxA(NULL, s.GetString(), NULL, NULL);
+            WriteFile(hServersJson, s.GetString(), s.GetLength(), &byteRet, NULL);
+            FlushFileBuffers(hServersJson);
+            CloseHandle(hServersJson);
+        }
     }
 
 private:
