@@ -1702,15 +1702,15 @@ search_hit:
                                         serverIt->desc = serverDescInput;
                                         serverIt->isEditing = false;
                                         memset(serverNameInput, 0, sizeof(serverNameInput));
-                                        memset(serverNameInput, 0, sizeof(serverAddressInput));
-                                        memset(serverNameInput, 0, sizeof(serverDescInput));
+                                        memset(serverAddressInput, 0, sizeof(serverAddressInput));
+                                        memset(serverDescInput, 0, sizeof(serverDescInput));
                                     }
                                     ImGui::SameLine();
                                     if (ImGui::Button("Cancel")) {
                                         serverIt->isEditing = false;
                                         memset(serverNameInput, 0, sizeof(serverNameInput));
-                                        memset(serverNameInput, 0, sizeof(serverAddressInput));
-                                        memset(serverNameInput, 0, sizeof(serverDescInput));
+                                        memset(serverAddressInput, 0, sizeof(serverAddressInput));
+                                        memset(serverDescInput, 0, sizeof(serverDescInput));
                                     }
                                 }
                                 ImGui::EndPopup();
