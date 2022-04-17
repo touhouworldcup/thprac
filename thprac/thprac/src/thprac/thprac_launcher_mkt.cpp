@@ -1666,6 +1666,12 @@ search_hit:
                                 }
                                 if (ImGui::Selectable("Edit")) {
                                     serverIt->isEditing = true;
+                                    memset(serverNameInput, 0, sizeof(serverNameInput));
+                                    memcpy(serverNameInput, serverIt->name.c_str(), serverIt->name.length());
+                                    memset(serverAddressInput, 0, sizeof(serverAddressInput));
+                                    memcpy(serverAddressInput, serverIt->address.c_str(), serverIt->address.length());
+                                    memset(serverDescInput, 0, sizeof(serverDescInput));
+                                    memcpy(serverDescInput, serverIt->desc.c_str(), serverIt->desc.length());
                                 }
                                 if (ImGui::Selectable("Remove")) {
                                     serverIt->toRemove = true;
@@ -1674,6 +1680,9 @@ search_hit:
                                 if (ImGui::Selectable("Add server")) {
                                     Marketeer::Server newServer;
                                     newServer.isEditing = true;
+                                    memset(serverNameInput, 0, sizeof(serverNameInput));
+                                    memset(serverAddressInput, 0, sizeof(serverAddressInput));
+                                    memset(serverDescInput, 0, sizeof(serverDescInput));
                                     mServerList.push_back(std::move(newServer));
                                 }
                                 ImGui::EndPopup();
@@ -1692,10 +1701,16 @@ search_hit:
                                         serverIt->address = serverAddressInput;
                                         serverIt->desc = serverDescInput;
                                         serverIt->isEditing = false;
+                                        memset(serverNameInput, 0, sizeof(serverNameInput));
+                                        memset(serverNameInput, 0, sizeof(serverAddressInput));
+                                        memset(serverNameInput, 0, sizeof(serverDescInput));
                                     }
                                     ImGui::SameLine();
                                     if (ImGui::Button("Cancel")) {
                                         serverIt->isEditing = false;
+                                        memset(serverNameInput, 0, sizeof(serverNameInput));
+                                        memset(serverNameInput, 0, sizeof(serverAddressInput));
+                                        memset(serverNameInput, 0, sizeof(serverDescInput));
                                     }
                                 }
                                 ImGui::EndPopup();
@@ -1703,7 +1718,7 @@ search_hit:
                         }
 
                         if (ImGui::TableSetColumnIndex(1)) {
-                            ImGui::TextUnformatted("---"); // serverIt->address.c_str()
+                            ImGui::TextUnformatted(serverIt->address.c_str());
                         }
 
                         if (ImGui::TableSetColumnIndex(2)) {
@@ -1738,6 +1753,9 @@ search_hit:
                     if (ImGui::Selectable("Add Server")) {
                         Marketeer::Server newServer;
                         newServer.isEditing = true;
+                        memset(serverNameInput, 0, sizeof(serverNameInput));
+                        memset(serverAddressInput, 0, sizeof(serverAddressInput));
+                        memset(serverDescInput, 0, sizeof(serverDescInput));
                         mServerList.push_back(std::move(newServer));
                     }
                     ImGui::EndPopup();
