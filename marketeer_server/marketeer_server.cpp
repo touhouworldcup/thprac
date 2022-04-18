@@ -506,6 +506,7 @@ int main()
     std::ostringstream adminCmdOutput;
     tsl::robin_map<std::string, std::function<void(std::string&, std::ostringstream&)>> cmdMap;
     cmdMap["list"] = [&](std::string& arg, std::ostringstream& out) {
+        puts("[Admin] Requested command: list");
         int nbrPlayers = 0;
         for (auto& worker : workers) {
             for (unsigned int i = 0; i < worker->workerLoadMax; ++i) {
@@ -522,8 +523,11 @@ int main()
         if (!nbrPlayers) {
             out << "No player is streaming.\n";
         }
+        printf("[Admin] Players: %s\n", out.str().c_str());
     };
     cmdMap["kill"] = [&](std::string& arg, std::ostringstream& out) {
+        puts("[Admin] Requested command: kill");
+        printf("[Admin] Requested to kill: %s... ", arg.c_str());
         auto userIt = userMap.find(arg);
         if (userIt != userMap.end()) {
             auto user = userIt.value();
@@ -534,16 +538,21 @@ int main()
                 worker.workerLoad--;
                 updPlayersDesc();
                 out << "Success.\n";
+                printf("success!\n");
             } else {
                 out << "User not streaming.\n";
+                printf("user not streaming\n");
             }
         } else {
             out << "User not found.\n";
+            printf("not found\n");
         }
     };
     cmdMap["exit"] = [&](std::string& arg, std::ostringstream& out) {
+        puts("[Admin] Requested command: exit");
         g_CtrlCInt = true;
         out << "Oyasumi.\n";
+        puts("Oyasumi.");
     };
 
     char usernameRaw[16] {};
@@ -563,6 +572,7 @@ int main()
         switch (msgCmd) {
         case ServerCmd::CLIENT_AUTHORIZE: {
             // TODO: Check public key
+            puts("[Request] Authorization");
             if (LRMPMsgBodyLen(msg)) {
                 Cookie vrfyCookie[2];
                 vrfyCookie[0] = GenerateCookie();
@@ -578,16 +588,20 @@ int main()
                     userPtr->vrfyCookie[0] = vrfyCookie[0];
                     userPtr->vrfyCookie[1] = vrfyCookie[1];
                     updPlayersDesc();
+                    puts("[Auth] Ok");
                     LRMPMsgReset(msg, ServerCmd::REP_OK, std::pair(encData.c_str(), encData.size()));
                 } else {
+                    puts("[Auth] Invalid credentials");
                     LRMPMsgReset(msg, ServerCmd::REP_ERR_INVALID_CRED);
                 }
             } else {
+                puts("[Auth] Invalid request");
                 LRMPMsgReset(msg, ServerCmd::REP_ERR_INVALID_MSG);
             }
             LRMPMsgSend(backendSock, msg, 0);
         } break;
         case ServerCmd::CLIENT_VERIFY: {
+            puts("[Request]: Verify");
             if (LRMPMsgBodyLen(msg) == 48) {
                 std::string fingerprint((char*)LRMPMsgBodyPtr(msg), 24);
                 auto& userPtr = userMap[fingerprint];
@@ -608,19 +622,24 @@ int main()
                         userPtr->routeId = LRMPMsgHeaderPtr(msg)[1];
                         cookieMap[cookie] = userPtr.get();
 
+                        puts("[Verify] Ok");
                         LRMPMsgReset(msg, ServerCmd::REP_OK, &cookie);
                     } else {
+                        puts("[Verify] Invalid credentials");
                         LRMPMsgReset(msg, ServerCmd::REP_ERR_INVALID_CRED);
                     }
                 } else {
+                    puts("[Verify] Invalid credentials (user not found)");
                     LRMPMsgReset(msg, ServerCmd::REP_ERR_INVALID_CRED);
                 }
             } else {
+                puts("[Verify] Invalid request");
                 LRMPMsgReset(msg, ServerCmd::REP_ERR_INVALID_MSG);
             }
             LRMPMsgSend(backendSock, msg, 0);
         } break;
         case ServerCmd::CLIENT_START_LIVE: {
+            puts("[Request] Stream start");
             Cookie cookie;
             LRMPMsgDump(msg, 0, &cookie);
             auto userIt = cookieMap.find(cookie);
@@ -628,6 +647,7 @@ int main()
                 auto user = userIt.value();
                 if (!user->livePort) {
                     // TODO: Load balacing
+                    puts("[Stream start] No port specified");
                     LRMPMsgReset(msg, ServerCmd::REP_ERR_SERVER);
                     auto& worker = *workers[0];
                     for (unsigned int i = 0; i < worker.workerLoadMax; ++i) {
@@ -639,6 +659,7 @@ int main()
                             worker.workerLoad++;
                             updPlayersDesc();
                             uint32_t liveId = user->liveId;
+                            puts("[Stream start] Ok");
                             LRMPMsgReset(msg, ServerCmd::REP_OK, &livePort, &liveId, &liveIndex);
                             break;
                         }
@@ -646,14 +667,17 @@ int main()
                 } else {
                     uint16_t livePort = user->livePort;
                     uint16_t liveIndex = user->liveIndex;
+                    puts("[Stream start] Ok");
                     LRMPMsgReset(msg, ServerCmd::REP_OK, &livePort, &liveIndex);
                 }
             } else {
+                puts("[Stream start] Invalid credentials");
                 LRMPMsgReset(msg, ServerCmd::REP_ERR_INVALID_CRED);
             }
             LRMPMsgSend(backendSock, msg, 0);
         } break;
         case ServerCmd::CLIENT_END_LIVE: {
+            puts("[Request] End stream");
             Cookie cookie;
             LRMPMsgDump(msg, 0, &cookie);
             auto userIt = cookieMap.find(cookie);
@@ -665,21 +689,26 @@ int main()
                     worker.liveVec[user->liveIndex - 1].safe_assign(std::shared_ptr<LiveCtx>());
                     worker.workerLoad--;
                     updPlayersDesc();
+                    puts("[Stream end] Ok");
                     LRMPMsgReset(msg, ServerCmd::REP_OK);
                 } else {
+                    puts("[Stream end] Invalid stream");
                     LRMPMsgReset(msg, ServerCmd::REP_ERR_INVALID_LIVE);
                 }
             } else {
+                puts("[Stream end] Invalid credentials");
                 LRMPMsgReset(msg, ServerCmd::REP_ERR_INVALID_CRED);
             }
             LRMPMsgSend(backendSock, msg, 0);
         } break;
         case ServerCmd::CLIENT_PULL_PLAYERS: {
+            puts("[Request] Player list");
             uint8_t padding = 0;
             LRMPMsgReset(msg, ServerCmd::REP_OK, std::pair(playersDesc.c_str(), playersDesc.size()), &padding);
             LRMPMsgSend(backendSock, msg, 0);
         } break;
         case ServerCmd::CLIENT_CHECK_PLAYER: {
+            puts("[Request] Check player");
             if (LRMPMsgBodyLen(msg) == 24) {
                 memset(fingerprintRaw, 0, 32);
                 LRMPMsgDump(msg, 0, std::pair(fingerprintRaw, (size_t)24));
@@ -688,16 +717,20 @@ int main()
                     uint16_t livePort = userPtr->livePort;
                     uint16_t liveIndex = userPtr->liveIndex;
                     uint32_t liveId = userPtr->liveId;
+                    printf("[Check player] Ok. Checking %s (%d, index=%d) on port %d\n", userPtr->username.c_str(), liveId, liveIndex, livePort);
                     LRMPMsgReset(msg, ServerCmd::REP_OK, &livePort, &liveId, &liveIndex);
                 } else {
+                    puts("[Check player] invalid player (not live or doesn't exist");
                     LRMPMsgReset(msg, ServerCmd::REP_ERR_INVALID_LIVE);
                 }
             } else {
+                puts("[Check player] invalid request");
                 LRMPMsgReset(msg, ServerCmd::REP_ERR_INVALID_MSG);
             }
             LRMPMsgSend(backendSock, msg, 0);
         } break;
         case ServerCmd::CLIENT_ADMIN_CMD: {
+            puts("[Request] Admin command");
             if (LRMPMsgBodyLen(msg) > 16 && LRMPMsgBodyLen(msg) < 256) {
                 memset(adminPasswordBuf, 0, 32);
                 LRMPMsgDump(msg, 0, std::pair(adminPasswordBuf, (size_t)16));
@@ -718,13 +751,16 @@ int main()
                         auto output = adminCmdOutput.str();
                         LRMPMsgReset(msg, ServerCmd::REP_OK, std::pair(output.data(), (size_t)output.size() + 1));
                     } else {
+                        puts("[Admin] Invalid command");
                         LRMPMsgReset(msg, ServerCmd::REP_OK, std::pair("[error] Invalid command.", (size_t)25));
                     }
                     LRMPMsgSend(backendSock, msg, 0);
                 } else {
+                    puts("[Admin] Invalid password");
                     LRMPMsgFree(msg);
                 }
             } else {
+                puts("[Admin] Invalid request");
                 LRMPMsgFree(msg);
             }
         } break;
