@@ -296,19 +296,7 @@ bool RunGameReflective(THGameSig& gameSig, std::wstring& name, bool useVpatch)
                 entry.dwSize = sizeof(PROCESSENTRY32);
                 HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
                 if (Process32First(snapshot, &entry)) {
-                    gameSig = CheckOngoingGame(entry);
-                    if (gameSig) {
-                        if (ApplyTHPracToProc(entry)) {
-                            CloseHandle(snapshot);
-                            return true;
-                        } else {
-                            PromptUser(PR_ERR_ATTACH_FAILED);
-                            CloseHandle(snapshot);
-                            return true;
-                        }
-                    }
-
-                    while (Process32Next(snapshot, &entry)) {
+                    do {
                         gameSig = CheckOngoingGame(entry);
                         if (gameSig) {
                             if (ApplyTHPracToProc(entry)) {
@@ -320,7 +308,7 @@ bool RunGameReflective(THGameSig& gameSig, std::wstring& name, bool useVpatch)
                                 return true;
                             }
                         }
-                    }
+                    } while (Process32Next(snapshot, &entry));
                 }
             }
             Sleep(500);
@@ -378,23 +366,7 @@ bool FindOngoingGame(bool prompt)
         entry.dwSize = sizeof(PROCESSENTRY32);
         HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
         if (Process32First(snapshot, &entry)) {
-            gameSig = CheckOngoingGame(entry);
-            if (gameSig) {
-                hasPrompted = true;
-                if (PromptUser(PR_ASK_IF_ATTACH, gameSig)) {
-                    if (ApplyTHPracToProc(entry)) {
-                        PromptUser(PR_INFO_ATTACHED);
-                        CloseHandle(snapshot);
-                        return true;
-                    } else {
-                        PromptUser(PR_ERR_ATTACH_FAILED);
-                        CloseHandle(snapshot);
-                        return true;
-                    }
-                }
-            }
-
-            while (Process32Next(snapshot, &entry)) {
+            do {
                 gameSig = CheckOngoingGame(entry);
                 if (gameSig) {
                     hasPrompted = true;
@@ -410,7 +382,7 @@ bool FindOngoingGame(bool prompt)
                         }
                     }
                 }
-            }
+            } while (Process32Next(snapshot, &entry));
         }
     }
 
