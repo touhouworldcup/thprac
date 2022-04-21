@@ -456,19 +456,31 @@ struct WorkerCtx {
     }
 };
 
-int main()
+int main(int argc, char* argv[])
 {
     CtrlCHandling();
+
+    const std::string backendServerURL = "inproc://lrmp_backend";
+    // Default server URL and password
+    std::string serverURL = "ipc://marketeer_test";
+    std::string adminPassword = "e";
+
+    // These substring sizes are determined somewhere in the client code
+    if (argc > 1)
+        serverURL = std::move("ipc://" + std::string(argv[1]).substr(0, 127));
+    if (argc > 2)
+        adminPassword = std::move(std::string(argv[2]).substr(0, 16));
 
     tsl::robin_map<std::string, std::shared_ptr<User>> userMap;
     tsl::robin_map<Cookie, User*> cookieMap;
 
     nng_socket backendSock;
     nng_listener backendListener;
-    LRMPListenRaw(&backendSock, &backendListener, "inproc://lrmp_backend");
+    LRMPListenRaw(&backendSock, &backendListener, backendServerURL.c_str());
 
     std::vector<std::unique_ptr<WorkerCtx>> workers;
-    workers.emplace_back(std::make_unique<WorkerCtx>("ipc://marketeer_test", "inproc://lrmp_backend")); // tcp://*:9961 || ipc://marketeer_test
+    workers.emplace_back(std::make_unique<WorkerCtx>(serverURL, backendServerURL)); // tcp://*:9961
+    printf("Created server at %s with password %s.\n", serverURL.c_str(), adminPassword.c_str());
 
     std::string playersDesc = "{\"players\":[]}";
     auto updPlayersDesc = [&]() {
@@ -498,7 +510,6 @@ int main()
         playersDesc += "]}";
     };
 
-    std::string adminPassword { "8se.He;wN26J'T%\"" };
     char adminPasswordBuf[32];
     std::string adminCmd;
     char adminCmdBuf[256];
