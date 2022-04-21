@@ -1713,21 +1713,7 @@ public:
                 HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
                 //bool hasPrompted = false;
                 if (Process32FirstW(snapshot, &procEntry)) {
-                    bool test = isOmni ? CheckProcessOmni(procEntry) : CheckProcess(procEntry.th32ProcessID, exePath);
-                    if (test) {
-                        auto hProc = OpenProcess(
-                            //PROCESS_SUSPEND_RESUME |
-                            PROCESS_QUERY_INFORMATION | PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE,
-                            FALSE,
-                            procEntry.th32ProcessID);
-                        if (hProc) {
-                            auto result = (WriteTHPracSig(hProc) && LocalApplyTHPrac(hProc, mktCtx));
-                            CloseHandle(hProc);
-                            return result ? 1 : 0;
-                        }
-                    }
-
-                    while (Process32NextW(snapshot, &procEntry)) {
+                    do {
                         bool test = isOmni ? CheckProcessOmni(procEntry) : CheckProcess(procEntry.th32ProcessID, exePath);
                         if (test) {
                             auto hProc = OpenProcess(
@@ -1741,7 +1727,7 @@ public:
                                 return result ? 1 : 0;
                             }
                         }
-                    }
+                    } while (Process32NextW(snapshot, &procEntry));
                 }
             }
             Sleep(500);
