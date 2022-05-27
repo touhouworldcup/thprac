@@ -108,6 +108,7 @@ enum th_glossary_t
     TH128_START_EX,
     TH128_TITLE,
     TH12_TITLE,
+    TH12_UFO_SIDE,
     TH12_VENTRA_1,
     TH12_VENTRA_2,
     TH12_VENTRA_3,
@@ -616,6 +617,7 @@ enum th_glossary_t
     TH_INFLIVES,
     TH_INFPOWER,
     TH_INFSPELLCHARGE,
+    TH_LEFT,
     TH_LIFE,
     TH_LIFE_FRAGMENT,
     TH_MENU,
@@ -649,6 +651,7 @@ enum th_glossary_t
     TH_RAGE,
     TH_RESTART,
     TH_RESUME,
+    TH_RIGHT,
     TH_SCORE,
     TH_SHOTS_TAKEN,
     TH_SHOTS_TAKEN_ALT,
@@ -686,7 +689,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-static char* th_glossary_str[3][679]
+static char* th_glossary_str[3][682]
 {
     {
         "",
@@ -792,6 +795,7 @@ static char* th_glossary_str[3][679]
         u8"Extra (夜樱怪道)",
         u8"TH12.8 妖精大战争　～ 东方三月精",
         u8"TH12 东方星莲船　～ Undefined Fantastic Object.",
+        u8"UFO Side but in Chinese",
         u8"飞碟1",
         u8"飞碟2",
         u8"飞碟3",
@@ -1300,6 +1304,7 @@ static char* th_glossary_str[3][679]
         u8"锁残",
         u8"锁火力",
         u8"无限蓄力",
+        u8"Left but in Chinese",
         u8"残机",
         u8"残机碎片",
         u8"练习选项",
@@ -1333,6 +1338,7 @@ static char* th_glossary_str[3][679]
         u8"发狂",
         u8"重新开始",
         u8"继续游戏",
+        u8"Right but in Chinese",
         u8"分数",
         u8"摄影回数",
         u8"#__shots_taken",
@@ -1473,6 +1479,7 @@ static char* th_glossary_str[3][679]
         u8"Extra \n(Mysterious Night Cherry Blossom Path)",
         u8"TH12.8 Great Fairy Wars",
         u8"TH12 Undefined Fantastic Object",
+        u8"UFO Side",
         u8"Ventra 1",
         u8"Ventra 2",
         u8"Ventra 3",
@@ -1981,6 +1988,7 @@ static char* th_glossary_str[3][679]
         u8"Inf. Lives",
         u8"Inf. Power",
         u8"Inf. Charge",
+        u8"Left",
         u8"Life",
         u8"Life Frag.",
         u8"Option",
@@ -2014,6 +2022,7 @@ static char* th_glossary_str[3][679]
         u8"Rage",
         u8"Restart",
         u8"Resume",
+        u8"Right",
         u8"Score",
         u8"Shots Taken",
         u8"#__shots_taken",
@@ -2154,6 +2163,7 @@ static char* th_glossary_str[3][679]
         u8"Extra (夜桜怪道)",
         u8"TH12.8 妖精大戦争　～ 東方三月精",
         u8"TH12 東方星蓮船　～ Undefined Fantastic Object.",
+        u8"UFO Side but in Japanese",
         u8"ベントラー1",
         u8"ベントラー2",
         u8"ベントラー3",
@@ -2662,6 +2672,7 @@ static char* th_glossary_str[3][679]
         u8"残機減らない",
         u8"霊力減らない",
         u8"無限チャージ",
+        u8"Left but in Japanese",
         u8"残機",
         u8"残機の欠片",
         u8"オプション",
@@ -2695,6 +2706,7 @@ static char* th_glossary_str[3][679]
         u8"発狂",
         u8"リトライ",
         u8"再開",
+        u8"Right but in Japanese",
         u8"スコア",
         u8"撮影回数",
         u8"#__shots_taken",
@@ -11569,6 +11581,12 @@ static th_sections_t th_sections_cbt[7][2][14]
         { TH12_ST7_END_NS1, TH12_ST7_END_NS2, TH12_ST7_END_NS3, TH12_ST7_END_NS4, TH12_ST7_END_NS5, TH12_ST7_END_NS6, TH12_ST7_END_NS7, TH12_ST7_END_NS8, },
         { TH12_ST7_MID1, TH12_ST7_MID2, TH12_ST7_MID3, TH12_ST7_END_S1, TH12_ST7_END_S2, TH12_ST7_END_S3, TH12_ST7_END_S4, TH12_ST7_END_S5, TH12_ST7_END_S6, TH12_ST7_END_S7, TH12_ST7_END_S8, TH12_ST7_END_S9, TH12_ST7_END_S10, },
     },
+};
+
+static th_glossary_t TH12_UFO_SIDE_SELECT[3]
+{
+    TH_LEFT,
+    TH_RIGHT,
 };
 
 static th_glossary_t TH12_VENTRA_SELECT[5]

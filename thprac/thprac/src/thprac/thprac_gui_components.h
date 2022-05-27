@@ -850,16 +850,13 @@ namespace Gui {
         template <typename T>
         inline void CheckComboItemNew(T* selector, char** items, int nav)
         {
-            const char* naStr = "";
             const int origin = mCurrent;
-
             while (true) {
-                if (items[selector[mCurrent]] != naStr)
+                if (*items[selector[mCurrent]])
                     return;
                 mCurrent += nav;
                 if (mCurrent < 0) {
-                    for (; selector[++mCurrent];)
-                        ;
+                    for (;selector[++mCurrent];);
                     mCurrent--;
                 } else if (selector[mCurrent] == 0) {
                     mCurrent = 0;

@@ -16,6 +16,7 @@ namespace TH12 {
         int32_t power;
         int32_t value;
         int32_t graze;
+        int32_t ufo_side;
         int32_t ventra_1;
         int32_t ventra_2;
         int32_t ventra_3;
@@ -43,6 +44,7 @@ namespace TH12 {
             GetJsonValue(power);
             GetJsonValue(value);
             GetJsonValue(graze);
+            GetJsonValue(ufo_side);
             GetJsonValue(ventra_1);
             GetJsonValue(ventra_2);
             GetJsonValue(ventra_3);
@@ -70,6 +72,7 @@ namespace TH12 {
             AddJsonValue(power);
             AddJsonValue(value);
             AddJsonValue(graze);
+            AddJsonValue(ufo_side);
             if (ventra_1) {
                 AddJsonValue(ventra_1);
                 if (ventra_2) {
@@ -79,6 +82,7 @@ namespace TH12 {
                     }
                 }
             }
+
 
             ReturnJson();
         }
@@ -139,6 +143,7 @@ namespace TH12 {
                 thPracParam.power = *mPower;
                 thPracParam.value = *mValue;
                 thPracParam.graze = *mGraze;
+                thPracParam.ufo_side = *mUfoSide;
 
                 if (*mVentra1) {
                     thPracParam.ventra_1 = *mVentra1;
@@ -218,6 +223,7 @@ namespace TH12 {
                 mBombFragment();
                 auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
                 mPower(power_str.c_str());
+                mUfoSide();
                 mVentra1();
                 if (*mVentra1) {
                     mVentra2();
@@ -304,6 +310,7 @@ namespace TH12 {
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
+        Gui::GuiCombo mUfoSide { TH12_UFO_SIDE, TH12_UFO_SIDE_SELECT };
         Gui::GuiCombo mVentra1 { TH12_VENTRA_1, TH12_VENTRA_SELECT };
         Gui::GuiCombo mVentra2 { TH12_VENTRA_2, TH12_VENTRA_SELECT };
         Gui::GuiCombo mVentra3 { TH12_VENTRA_3, TH12_VENTRA_SELECT };
@@ -321,7 +328,7 @@ namespace TH12 {
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_SCORE, TH_LIFE, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT,
-            TH_POWER, TH_VALUE, TH_GRAZE, TH12_VENTRA_1, TH12_VENTRA_2, TH12_VENTRA_3 };
+            TH_POWER, TH_VALUE, TH_GRAZE, TH12_UFO_SIDE, TH12_VENTRA_1, TH12_VENTRA_2, TH12_VENTRA_3 };
 
         int mChapterSetup[7][2] {
             { 3, 2 },
@@ -1694,7 +1701,7 @@ namespace TH12 {
         pCtx->Eip = 0x446043;
     }
     PATCH_DY(th12_disable_prac_menu_3, (void*)0x446100, "\x00", 1);
-    EHOOK_DY(th12_patch_main, (void*)0x42227b)
+    EHOOK_DY(th12_patch_main, (void*)0x40e8df)
     {
         if (thPracParam.mode == 1) {
             *(int32_t*)(0x4b0c44) = (int32_t)(thPracParam.score / 10);
@@ -1705,6 +1712,7 @@ namespace TH12 {
             *(int32_t*)(0x4b0c48) = thPracParam.power;
             *(int32_t*)(0x4b0c78) = thPracParam.value * 100;
             *(int32_t*)(0x4b0cdc) = thPracParam.graze;
+            *(int32_t*)(*(uint32_t*)0x4b44f0 + 0x666fe0) = thPracParam.ufo_side;
 
             if (thPracParam.ventra_1) {
                 TH12AddVentra(thPracParam.ventra_1);
