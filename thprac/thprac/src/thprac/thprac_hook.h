@@ -47,8 +47,6 @@ public:
     bool Disable();
     bool Toggle(bool status);
 
-    bool SetFastHook();
-
     static void VEHInit();
 
 private:

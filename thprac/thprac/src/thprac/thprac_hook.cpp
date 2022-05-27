@@ -6,9 +6,11 @@
 #include "thprac_launcher_cfg.h"
 #include "thprac_launcher_utils.h"
 #include "thprac_gui_locale.h"
+
 #include "..\MinHook\src\buffer.h"
 #include "..\MinHook\src\trampoline.h"
 #include <MinHook.h>
+
 #include <Windows.h>
 #include <cstdint>
 #include <vector>
@@ -176,7 +178,6 @@ struct VEHHookCtx {
     }
 };
 
-VEHHookCtx g_fastHookCtx;
 std::vector<VEHHookCtx>* g_VEHHookVector = nullptr;
 std::vector<VEHHookCtx>::iterator VEHHookLookUp(void* addr)
 {
@@ -220,15 +221,10 @@ __declspec(noinline) LONG CALLBACK VEHHandler(EXCEPTION_POINTERS* ExceptionInfo)
 
     DWORD ExceptionCode = ExceptionInfo->ExceptionRecord->ExceptionCode;
     if (ExceptionCode == EXCEPTION_BREAKPOINT) {
-        if (g_fastHookCtx.isActivate && (DWORD)g_fastHookCtx.m_Src == ExceptionInfo->ContextRecord->XIP) {
-            InvokeCallback(g_fastHookCtx, ExceptionInfo->ContextRecord);
+        auto ctx = VEHHookLookUp(ExceptionInfo->ContextRecord->XIP);
+        if (ctx != g_VEHHookVector->end()) {
+            InvokeCallback(*ctx, ExceptionInfo->ContextRecord);
             return EXCEPTION_CONTINUE_EXECUTION;
-        } else {
-            auto ctx = VEHHookLookUp(ExceptionInfo->ContextRecord->XIP);
-            if (ctx != g_VEHHookVector->end()) {
-                InvokeCallback(*ctx, ExceptionInfo->ContextRecord);
-                return EXCEPTION_CONTINUE_EXECUTION;
-            }
         }
     }
 
@@ -303,9 +299,6 @@ void VEHHookDisable(void* target)
 
     VEHWriteByte(ctx->m_Src, ctx->m_StorageByte);
     FlushInstructionCache(GetCurrentProcess(), ctx->m_Src, 1);
-    if (g_fastHookCtx == *ctx) {
-        g_fastHookCtx.Reset();
-    }
 
     ctx->isActivate = false;
 }
@@ -331,14 +324,6 @@ void VEHHookDelete(void* target)
         g_VEHHookVector->erase(ctx);
     }
 }
-void VEHSetFastHook(void* target, void* detour, void* trampoline)
-{
-    g_fastHookCtx.m_Src = (uint8_t*)target;
-    g_fastHookCtx.m_Dest = (uint8_t*)detour;
-    g_fastHookCtx.m_Trampoline = (uint8_t*)trampoline;
-    g_fastHookCtx.isActivate = true;
-}
-
 
 HookCtx::~HookCtx()
 {
@@ -476,14 +461,7 @@ bool HookCtx::Toggle(bool status)
         return Disable();
     }
 }
-bool HookCtx::SetFastHook()
-{
-    if (!mIsHookReady || !mIsHookEnabled || mIsPatch) {
-        return false;
-    }
-    VEHSetFastHook(mTarget, mDetour, mTrampoline);
-    return true;
-}
+
 void HookCtx::VEHInit()
 {
     VEHHookInit();
