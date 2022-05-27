@@ -944,7 +944,7 @@ public:
     static bool WINAPI CheckExeName(const std::wstring& dir, const char* idStr)
     {
         if (!strcmp(idStr, "th06")) {
-            if (CheckExeName(dir, "“Œ•ûg–‚‹½") || CheckExeName(dir, "–|·½¼tÄ§à_")) {
+            if (CheckExeName(dir, "â€œÅ’â€¢Ã»Âgâ€“â€šâ€¹Â½") || CheckExeName(dir, "â€“|Â·Â½Â¼tÃ„Â§Ã _")) {
                 return true;
             }
         }
@@ -1591,7 +1591,7 @@ public:
     }
     static bool WINAPI CheckProcessOmni(PROCESSENTRY32W& proc)
     {
-        if (wcscmp(L"“Œ•ûg–‚‹½.exe", proc.szExeFile) && wcscmp(L"–|·½¼tÄ§à_.exe", proc.szExeFile)) {
+        if (wcscmp(L"æ¶æ›½å³ æºå«¿.exe", proc.szExeFile) && wcscmp(L"æ±æ–¹ç´…é­”éƒ·.exe", proc.szExeFile)) {
             if (proc.szExeFile[0] != L't' || proc.szExeFile[1] != L'h')
                 return nullptr;
             if (proc.szExeFile[2] < 0x30 || proc.szExeFile[2] > 0x39)
@@ -1853,7 +1853,7 @@ public:
 
         if (currentInst.useVpatch) {
             auto exeName = GetNameFromFullPath(currentInstPath);
-            if (exeName == L"–|·½¼tÄ§à_.exe") {
+            if (exeName == L"æ±æ–¹ç´…é­”éƒ·.exe") {
                 if (!CheckAndLoadVPatch(proc_info.hProcess, currentInstDir, L"vpatch_th06_unicode.dll")) {
                     CheckAndLoadVPatch(proc_info.hProcess, currentInstDir, L"vpatch_th06.dll");
                 }
