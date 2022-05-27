@@ -194,6 +194,12 @@ namespace TH15 {
                 }
 
                 mLife();
+                ;
+                if (*mStage == 6) {
+                    mLifeFragment.SetBound(0, 5);
+                } else {
+                    mLifeFragment.SetBound(0, 3);
+                }
                 mLifeFragment();
                 mBomb();
                 mBombFragment();
