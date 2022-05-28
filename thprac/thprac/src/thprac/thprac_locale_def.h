@@ -620,6 +620,7 @@ enum th_glossary_t
     TH_LEFT,
     TH_LIFE,
     TH_LIFE_FRAGMENT,
+    TH_LILY,
     TH_MENU,
     TH_MID_NS1,
     TH_MID_NS2,
@@ -689,7 +690,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-static char* th_glossary_str[3][682]
+static char* th_glossary_str[3][683]
 {
     {
         "",
@@ -1307,6 +1308,7 @@ static char* th_glossary_str[3][682]
         u8"左",
         u8"残机",
         u8"残机碎片",
+        u8"莉莉",
         u8"练习选项",
         u8"道中一非",
         u8"道中二非",
@@ -1991,6 +1993,7 @@ static char* th_glossary_str[3][682]
         u8"Left",
         u8"Life",
         u8"Life Frag.",
+        u8"Lily",
         u8"Option",
         u8"Mid Nonspell 1",
         u8"Mid Nonspell 2",
@@ -2675,6 +2678,7 @@ static char* th_glossary_str[3][682]
         u8"左",
         u8"残機",
         u8"残機の欠片",
+        u8"リリー",
         u8"オプション",
         u8"道中 通常1",
         u8"道中 通常2",

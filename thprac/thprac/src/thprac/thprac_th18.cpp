@@ -19,6 +19,7 @@ namespace TH18 {
         int32_t power;
         int32_t funds;
         int32_t mukade;
+        int32_t lily;
 
         bool _playLock = false;
         void Reset()
@@ -123,6 +124,7 @@ namespace TH18 {
             case 1:
                 mDiffculty = *((int32_t*)0x4c9ab0);
                 mMukadeToggle = CheckMukade();
+                mLilyToggle = CheckLily();
                 SetFade(0.8f, 0.1f);
                 Open();
                 thPracParam.Reset();
@@ -146,6 +148,7 @@ namespace TH18 {
                 thPracParam.power = *mPower;
                 thPracParam.funds = *mFunds;
                 thPracParam.mukade = *mMukade * 20;
+                thPracParam.lily = *mLily;
                 break;
             case 4:
                 Close();
@@ -163,6 +166,19 @@ namespace TH18 {
                 list = i;
                 auto cardId = ((uint32_t**)list)[0][1];
                 if (cardId == 54) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        static bool CheckLily()
+        {
+            uint32_t* list = nullptr;
+            for (uint32_t* i = (uint32_t*)GetMemContent(0x4cf298, 0x1c); i; i = (uint32_t*)i[1]) {
+                list = i;
+                auto cardId = ((uint32_t**)list)[0][1];
+                if (cardId == 48) {
                     return true;
                 }
             }
@@ -248,6 +264,9 @@ namespace TH18 {
                     char str[8];
                     sprintf_s(str, "1.%03d", *mMukade);
                     mMukade(str);
+                }
+                if (mLilyToggle) {
+                    mLily();
                 }
                 mScore();
                 mScore.RoundDown(10);
@@ -338,7 +357,9 @@ namespace TH18 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 100, 400 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mFunds { TH18_FUNDS, 0, 999990, 1, 100000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mMukade { TH18_MUKADE, 0, 800, 1, 100 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mLily { TH_LILY, 0, 10, 1, 1, 1 };
         bool mMukadeToggle = false;
+        bool mLilyToggle = false;
 
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
@@ -3143,7 +3164,16 @@ namespace TH18 {
             if (THGuiPrac::CheckMukade()) {
                 *(int32_t*)(0x4cf2d4) = thPracParam.mukade;
             }
-
+            if (THGuiPrac::CheckLily()) {
+                uint32_t* list = nullptr;
+                for (uint32_t* i = (uint32_t*)GetMemContent(0x4cf298, 0x1c); i; i = (uint32_t*)i[1]) {
+                    list = i;
+                    auto cardId = ((uint32_t**)list)[0][1];
+                    if (cardId == 48) {
+                        ((uint32_t**)list)[0][21] = thPracParam.lily;
+                    }
+                }
+            }
 
             THSectionPatch();
         } else if (thPracParam.mode == 2) {
