@@ -632,6 +632,11 @@
       "TH_STAGE_PORTION_1": [ "前半 #%d", "First Half #%d", "前半 #%d" ],
       "TH_STAGE_PORTION_2": [ "后半 #%d", "Second Half #%d", "後半 #%d" ],
 
+      "TH_LEFT": [ "左", "Left", "左" ],
+      "TH_RIGHT": [ "右", "Right", "右" ],
+
+      "TH_LILY": [ "莉莉", "Lily", "リリー" ],
+
       "TH_STAGE_1": [ "1", "1", "1" ],
       "TH_STAGE_2": [ "2", "2", "2" ],
       "TH_STAGE_3": [ "3", "3", "3" ],
@@ -674,7 +679,6 @@
       "TH_CHAPTER_HALF2": [ "后半道中 %d", "Stage Portion %d (Second Half)", "後半道中 %d" ],
       "TH_CHAPTER_BOSS": [ "Boss %d", "Boss %d", "Boss %d" ],
       "TH_CHAPTER_CH": [ "章节 %d", "Chapter %d", "チャプター %d" ],
-
 
       "TH_ABOUT_THPRAC": [ "关于thprac", "About thprac", "thpracのバージョン情報" ],
       "TH_ABOUT_VERSION": [ "thprac 版本 %s", "thprac version %s", "thprac ver.%s" ],
@@ -4137,6 +4141,7 @@
     "namespace": "TH12",
 
     "glossary": {
+      "TH12_UFO_SIDE": [ "碎片方向", "UFO Side", "ベントラー方向" ],
       "TH12_VENTRA_1": [ "飞碟1", "Ventra 1", "ベントラー1" ],
       "TH12_VENTRA_2": [ "飞碟2", "Ventra 2", "ベントラー2" ],
       "TH12_VENTRA_3": [ "飞碟3", "Ventra 3", "ベントラー3" ],
@@ -4612,6 +4617,10 @@
     },
 
     "groups": {
+      "TH12_UFO_SIDE_SELECT": [
+          "TH_LEFT",
+          "TH_RIGHT"
+      ],
       "TH12_VENTRA_SELECT": [
         "TH12_VENTRA_NONE",
         "TH12_VENTRA_RED",
@@ -6736,10 +6745,11 @@
         "TH14_CYCLE_4",
         "TH14_CYCLE_5"
       ],
-      "TH14_SPELL_3PHASE": [
+      "TH14_SPELL_4PHASE": [
         "TH_P1",
         "TH_P2",
-        "TH_P3"
+        "TH_P3",
+        "TH_P4"
       ],
       "TH14_SPELL_5PHASE": [
         "TH_P1",
