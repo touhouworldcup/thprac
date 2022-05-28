@@ -1,5 +1,4 @@
 #include "thprac_launcher_main.h"
-#include "thprac_av_evation.h"
 #include "thprac_gui_locale.h"
 #include "thprac_launcher_cfg.h"
 #include "thprac_launcher_games.h"

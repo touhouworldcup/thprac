@@ -226,18 +226,7 @@ namespace TH13 {
         }
         virtual void OnContentUpdate() override
         {
-            if (!QuickCfgHintText()) {
-                ImGui::Text(XSTR(TH_MENU));
-            }
             ImGui::Separator();
-
-            QuickCfg("th13", [](std::string& str, bool isWrite) {
-                if (isWrite) {
-                    str = THGuiPrac::singleton().GetParam();
-                } else {
-                    THGuiPrac::singleton().LoadParam(str);
-                }
-            });
 
             PracticeMenu();
         }
@@ -2007,8 +1996,6 @@ namespace TH13 {
         GameGuiInit(IMPL_WIN32_DX9, 0x4dc6a8, 0x4dd0a8, 0x45cb40,
             Gui::INGAGME_INPUT_GEN2, 0x4e49fc, 0x4e49f8, 0,
             -1);
-        ConfigDBInit();
-        CheckCfgTable("th13");
 
         // Gui components creation
         THGuiPrac::singleton();

@@ -10,9 +10,7 @@
 #include "thprac_hook.h"
 #include "thprac_locale_def.h"
 #include "thprac_log.h"
-
 #include "thprac_data_anly.h"
-#include "thprac_config_db.h"
 
 #include <Windows.h>
 #include <cstdint>

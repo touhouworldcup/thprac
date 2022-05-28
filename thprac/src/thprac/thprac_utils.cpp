@@ -5,8 +5,6 @@
 #include <metrohash128.h>
 #include <xxh3.h>
 #include "thprac_data_anly.h"
-#include "thprac_replay_db.h"
-#include "thprac_config_db.h"
 
 namespace THPrac {
 
@@ -599,9 +597,6 @@ bool DataRecOpt(adv_opt_ctx& ctx, bool preUpd, bool isInGame)
     if (ImGui::Button("Load")) {
         AnlyLoadTest();
     }
-    if (ImGui::Button("DB TEST")) {
-        ReplayDBInit();
-    }
     ImGui::Checkbox("Show Plot", &showPlot);
     ImGui::Checkbox("Show Tree", &showDataTree);
     auto& stageData = AnlyDataGet().stageData;
@@ -1094,85 +1089,4 @@ void* VFSOriginal(const char* file_name, int32_t* file_size, int32_t is_file)
 #endif
 #pragma endregion
 
-#pragma region Quick Config
-
-int g_quickCfgTextTimeBuffer = 2;
-float g_quickCfgTextTimer = 0.0f;
-char g_quickCfgTextStr[64] {};
-bool QuickCfgHotkey(const char* game, const char* cfgName, char hotkey, QuickCfgHotkeyCallback* callback)
-{
-    auto keyRes = Gui::ImplWin32CheckHotkey((int)hotkey | 0xFFFF0000);
-    auto modifier = HIWORD(keyRes);
-    if (modifier == MOD_CONTROL) {
-        std::string writeStr;
-        callback(writeStr, true);
-        SetStrToDB(game, cfgName, writeStr);
-        sprintf_s(g_quickCfgTextStr, "Wrote to config %c!", hotkey);
-        g_quickCfgTextTimeBuffer = 2;
-        g_quickCfgTextTimer = 2.0f;
-        return true;
-    } else if (modifier == MOD_ALT) {
-        std::string readStr;
-        if (GetStrFromDB(game, cfgName, readStr) == SQLITE_OK) {
-            callback(readStr, false);
-        }
-        sprintf_s(g_quickCfgTextStr, "Loaded config %c!", hotkey);
-        g_quickCfgTextTimeBuffer = 2;
-        g_quickCfgTextTimer = 2.0f;
-        return true;
-    }
-    return false;
-}
-int QuickCfg(const char* game, QuickCfgHotkeyCallback* callback)
-{
-    if (QuickCfgHotkey(game, "quick_cfg_1", '1', callback)) {
-        return 1;
-    }
-    if (QuickCfgHotkey(game, "quick_cfg_2", '2', callback)) {
-        return 2;
-    }
-    if (QuickCfgHotkey(game, "quick_cfg_3", '3', callback)) {
-        return 3;
-    }
-    if (QuickCfgHotkey(game, "quick_cfg_4", '4', callback)) {
-        return 4;
-    }
-    if (QuickCfgHotkey(game, "quick_cfg_5", '5', callback)) {
-        return 5;
-    }
-    if (QuickCfgHotkey(game, "quick_cfg_6", '6', callback)) {
-        return 6;
-    }
-    if (QuickCfgHotkey(game, "quick_cfg_7", '7', callback)) {
-        return 7;
-    }
-    if (QuickCfgHotkey(game, "quick_cfg_8", '8', callback)) {
-        return 8;
-    }
-    if (QuickCfgHotkey(game, "quick_cfg_9", '9', callback)) {
-        return 9;
-    }
-    return 0;
-}
-bool QuickCfgHintText(bool reset)
-{
-    if (reset) {
-        g_quickCfgTextTimeBuffer = 0;
-        g_quickCfgTextTimer = 0.0f;
-        return false;
-    }
-    
-    if (g_quickCfgTextTimeBuffer) {
-        g_quickCfgTextTimeBuffer--;
-    } 
-    if (g_quickCfgTextTimer > 0.0f) {
-        g_quickCfgTextTimer -= ImGui::GetIO().DeltaTime;
-        ImGui::Text(g_quickCfgTextStr);
-        return true;
-    }
-
-    return false;
-}
-
-#pragma endregion
 }

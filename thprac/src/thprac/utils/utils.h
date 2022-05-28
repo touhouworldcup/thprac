@@ -1,5 +1,4 @@
 #pragma once
-#include <mutex>
 
 namespace THPrac {
 
@@ -13,11 +12,8 @@ public:                                             \
     __declspec(noinline) static auto& singleton()   \
     {                                               \
         static className* s_singleton = nullptr;    \
-        static std::mutex s_mutex;                  \
-        s_mutex.lock();                             \
         if (!s_singleton)                           \
             s_singleton = new className();          \
-        s_mutex.unlock();                           \
         return *s_singleton;                        \
     }                                               \
                                                     \

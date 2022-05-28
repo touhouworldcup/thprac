@@ -52,14 +52,10 @@
     <ClInclude Include="src\3rdParties\MinHook\src\hde\table32.h" />
     <ClInclude Include="src\3rdParties\MinHook\src\hde\table64.h" />
     <ClInclude Include="src\3rdParties\MinHook\src\trampoline.h" />
-    <ClInclude Include="src\3rdParties\sqlite\sqlite3.h" />
-    <ClInclude Include="src\3rdParties\sqlite\sqlite3ext.h" />
     <ClInclude Include="src\3rdParties\xxHash\xxh3.h" />
     <ClInclude Include="src\3rdParties\xxHash\xxhash.h" />
     <ClInclude Include="src\thprac\dll_hack.h" />
-    <ClInclude Include="src\thprac\thprac_config_db.h" />
     <ClInclude Include="src\thprac\thprac_data_anly.h" />
-    <ClInclude Include="src\thprac\thprac_db_helper.h" />
     <ClInclude Include="src\thprac\thprac_games.h" />
     <ClInclude Include="src\thprac\thprac_game_data.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_dx8.h" />
@@ -83,7 +79,6 @@
     <ClInclude Include="src\thprac\thprac_locale_def.h" />
     <ClInclude Include="src\thprac\thprac_log.h" />
     <ClInclude Include="src\thprac\thprac_main.h" />
-    <ClInclude Include="src\thprac\thprac_replay_db.h" />
     <ClInclude Include="src\thprac\thprac_utils.h" />
     <ClInclude Include="src\thprac\thprac_version.h" />
     <ClInclude Include="src\thprac\utils\utils.h" />
@@ -121,13 +116,10 @@
     <ClCompile Include="src\3rdParties\MinHook\src\hook.c" />
     <ClCompile Include="src\3rdParties\MinHook\src\trampoline.c" />
     <ClCompile Include="src\3rdParties\MinHook\src\trampoline_new.c" />
-    <ClCompile Include="src\3rdParties\sqlite\shell.c" />
-    <ClCompile Include="src\3rdParties\sqlite\sqlite3.c" />
     <ClCompile Include="src\3rdParties\xxHash\xxhash.c" />
     <ClCompile Include="src\thprac\dllmain.cpp" />
     <ClCompile Include="src\thprac\main.cpp" />
     <ClCompile Include="src\thprac\thprac_alcostg.cpp" />
-    <ClCompile Include="src\thprac\thprac_config_db.cpp" />
     <ClCompile Include="src\thprac\thprac_data_anly.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_impl_dx8.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_components.cpp" />
@@ -147,7 +139,6 @@
     <ClCompile Include="src\thprac\thprac_gui_locale.cpp" />
     <ClCompile Include="src\thprac\thprac_log.cpp" />
     <ClCompile Include="src\thprac\thprac_main.cpp" />
-    <ClCompile Include="src\thprac\thprac_replay_db.cpp" />
     <ClCompile Include="src\thprac\thprac_th06.cpp" />
     <ClCompile Include="src\thprac\thprac_th07.cpp" />
     <ClCompile Include="src\thprac\thprac_th08.cpp" />
@@ -214,7 +205,7 @@
   <PropertyGroup>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>thprac</TargetName>
-    <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\distorm\include;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(ProjectDir)src\3rdParties\MinHook\include;$(ProjectDir)src\3rdParties\robin-map;$(ProjectDir)src\3rdParties\xxHash;$(ProjectDir)src\3rdParties\sqlite;$(ProjectDir)src\3rdParties\lzma;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\distorm\include;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(ProjectDir)src\3rdParties\MinHook\include;$(ProjectDir)src\3rdParties\robin-map;$(ProjectDir)src\3rdParties\xxHash;$(ProjectDir)src\3rdParties\lzma;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)src\3rdParties\FreeType\win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

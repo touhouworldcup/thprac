@@ -1,7 +1,6 @@
 #include "thprac_data_anly.h"
 #include <LzmaEnc.h>
 #include <LzmaDec.h>
-#include <sqlite3.h>
 
 namespace THPrac {
 
@@ -132,27 +131,6 @@ void AnlyAutoRecTest()
             g_prevFrame = DataRef<DATA_FRAME>();
         }
     }
-}
-void AnlyDBTest(void* blob = nullptr, size_t size = 0)
-{
-    char* errMsg = nullptr;
-    sqlite3* db;
-    sqlite3_open_v2("thprac_replays.db", &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-    sqlite3_exec(
-        db,
-        "CREATE TABLE IF NOT EXISTS replay_table (hash integer PRIMARY KEY, game text, player text, rank text, shot_type text, score integer, date_replay integer, date_added integer, replay_data blob, replay_data_size integer, replay_record blob, replay_record_size, UNIQUE(hash))",
-        [](void* param, int columnCount, char** columnValue, char** columnName) -> int {
-            return 0;
-        },
-        NULL, &errMsg);
-    sqlite3_exec(
-        db,
-        "INSERT OR IGNORE INTO replay_table VALUES (12345678, 'th13', 'Toutetsu', 'Lunatic', 'Spoon', 99999999, 20001225, 20100101, NULL, 0, NULL, 0)",
-        [](void* param, int columnCount, char** columnValue, char** columnName) -> int {
-            return 0;
-        },
-        NULL, &errMsg);
-    sqlite3_close(db);
 }
 void AnlyWriteTest()
 {
