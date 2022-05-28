@@ -194,7 +194,7 @@ namespace TH14 {
             if (section == TH14_ST6_BOSS9) {
                 return TH_SPELL_PHASE1;
             } else if (section == TH14_ST6_BOSS10) {
-                return TH14_SPELL_3PHASE;
+                return TH14_SPELL_4PHASE;
             } else if (section == TH14_ST7_END_S10) {
                 return TH14_SPELL_5PHASE;
             }
@@ -581,7 +581,7 @@ namespace TH14 {
             if (mSpellId >= 100 && mSpellId <= 103) {
                 return TH_SPELL_PHASE1;
             } else if (mSpellId >= 104 && mSpellId <= 107) {
-                return TH14_SPELL_3PHASE;
+                return TH14_SPELL_4PHASE;
             } else if (mSpellId == 119) {
                 return TH14_SPELL_5PHASE;
             }
@@ -1949,6 +1949,13 @@ namespace TH14 {
                 ECLJump(ecl, 0xa188, 0xa2cc, 120);
                 ECLJump(ecl, 0xa4a8, 0xa5ec, 120);
                 break;
+            case 3:
+                ecl << pair(0x638, 3300);
+                ecl << pair(0x9fb0, 0);
+                ECLJump(ecl, 0xa188, 0xa2cc, 120);
+                ECLJump(ecl, 0xa4a8, 0xa5ec, 120);
+                ECLJump(ecl, 0xa7b4, 0xa828, 120);
+                break;
             default:
                 break;
             }
@@ -2212,6 +2219,13 @@ namespace TH14 {
                 ecl << pair(0x9fb0, 0);
                 ECLJump(ecl, 0xa188, 0xa2cc, 120);
                 ECLJump(ecl, 0xa4a8, 0xa5ec, 120);
+                break;
+            case 3:
+                ecl << pair(0xae0, 3300);
+                ecl << pair(0x9fb0, 0);
+                ECLJump(ecl, 0xa188, 0xa2cc, 120);
+                ECLJump(ecl, 0xa4a8, 0xa5ec, 120);
+                ECLJump(ecl, 0xa7b4, 0xa828, 120);
                 break;
             default:
                 break;

@@ -16532,11 +16532,12 @@ static th_glossary_t TH14_CYCLE_LIST[6]
     TH14_CYCLE_5,
 };
 
-static th_glossary_t TH14_SPELL_3PHASE[4]
+static th_glossary_t TH14_SPELL_4PHASE[5]
 {
     TH_P1,
     TH_P2,
     TH_P3,
+    TH_P4,
 };
 
 static th_glossary_t TH14_SPELL_5PHASE[6]
