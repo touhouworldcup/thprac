@@ -778,11 +778,11 @@ private:
         if (!hSession) {
             goto internet_error;
         }
-        hConnect = WinHttpConnect(hSession, L"0.0.0.0", INTERNET_DEFAULT_HTTPS_PORT, 0);
+        hConnect = WinHttpConnect(hSession, L"raw.githubusercontent.com", INTERNET_DEFAULT_HTTPS_PORT, 0);
         if (!hSession) {
             goto internet_error;
         }
-        hRequest = WinHttpOpenRequest(hConnect, L"GET", L"/thprac/thprac_version.json",
+        hRequest = WinHttpOpenRequest(hConnect, L"GET", L"/touhouworldcup/thprac/master/thprac_version.json",
             NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE);
         if (!hSession) {
             goto internet_error;
