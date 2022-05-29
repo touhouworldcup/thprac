@@ -478,7 +478,7 @@ public:
     }
     bool thcrapLaunch()
     {
-        auto configure = mThcrapDir + L"\\thcrap_configure.exe";
+        auto configure = mThcrapDir + L"\\thcrap.exe";
         if (ShellExecuteW(NULL, L"open", configure.c_str(), NULL, mThcrapDir.c_str(), SW_SHOW) > (HINSTANCE)32) {
             return true;
         }
@@ -541,7 +541,7 @@ public:
     bool thcrapTest(std::wstring& dir)
     {
         auto loaderPath = dir + L"\\thcrap_loader.exe";
-        auto configurePath = dir + L"\\thcrap_configure.exe";
+        auto configurePath = dir + L"\\thcrap.exe";
         auto loaderAttr = GetFileAttributesW(loaderPath.c_str());
         auto configureAttr = GetFileAttributesW(configurePath.c_str());
 
