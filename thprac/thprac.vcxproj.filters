@@ -44,17 +44,8 @@
     <Filter Include="3rdParties\LZMA">
       <UniqueIdentifier>{3b22df3a-9c7d-4a33-810a-a903dd69008d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="3rdParties\SQLite">
-      <UniqueIdentifier>{60195f6f-1322-4303-8a52-3783688e322e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="3rdParties\xxHash">
       <UniqueIdentifier>{71279f06-bf79-4969-b624-067536af3f82}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="THPrac Database">
-      <UniqueIdentifier>{e295f024-9c55-4521-a44b-1a6bff8efb55}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="THPrac Marketeer">
-      <UniqueIdentifier>{ee235b1b-930d-40dd-91a4-4702d755ac26}</UniqueIdentifier>
     </Filter>
     <Filter Include="3rdParties\distorm">
       <UniqueIdentifier>{653ef50e-68b6-4a06-8e84-3ddf50867dfe}</UniqueIdentifier>
@@ -241,35 +232,11 @@
     <ClInclude Include="src\3rdParties\lzma\Threads.h">
       <Filter>3rdParties\LZMA</Filter>
     </ClInclude>
-    <ClInclude Include="src\3rdParties\sqlite\sqlite3.h">
-      <Filter>3rdParties\SQLite</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\sqlite\sqlite3ext.h">
-      <Filter>3rdParties\SQLite</Filter>
-    </ClInclude>
     <ClInclude Include="src\3rdParties\xxHash\xxh3.h">
       <Filter>3rdParties\xxHash</Filter>
     </ClInclude>
     <ClInclude Include="src\3rdParties\xxHash\xxhash.h">
       <Filter>3rdParties\xxHash</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_replay_db.h">
-      <Filter>THPrac Database</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_db_helper.h">
-      <Filter>THPrac Database</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_config_db.h">
-      <Filter>THPrac Database</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_marketeer.h">
-      <Filter>THPrac Marketeer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\LRMP.h">
-      <Filter>THPrac Marketeer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_launcher_mkt.h">
-      <Filter>THPrac Launcher</Filter>
     </ClInclude>
     <ClInclude Include="src\3rdParties\distorm\src\config.h">
       <Filter>3rdParties\distorm</Filter>
@@ -297,9 +264,6 @@
     </ClInclude>
     <ClInclude Include="src\3rdParties\distorm\src\x86defs.h">
       <Filter>3rdParties\distorm</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_ssl.h">
-      <Filter>THPrac Launcher</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -501,26 +465,8 @@
     <ClCompile Include="src\3rdParties\lzma\Threads.c">
       <Filter>3rdParties\LZMA</Filter>
     </ClCompile>
-    <ClCompile Include="src\3rdParties\sqlite\shell.c">
-      <Filter>3rdParties\SQLite</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\sqlite\sqlite3.c">
-      <Filter>3rdParties\SQLite</Filter>
-    </ClCompile>
     <ClCompile Include="src\3rdParties\xxHash\xxhash.c">
       <Filter>3rdParties\xxHash</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\thprac_replay_db.cpp">
-      <Filter>THPrac Database</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\thprac_config_db.cpp">
-      <Filter>THPrac Database</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\thprac_marketeer.cpp">
-      <Filter>THPrac Marketeer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\thprac_launcher_mkt.cpp">
-      <Filter>THPrac Launcher</Filter>
     </ClCompile>
     <ClCompile Include="src\3rdParties\distorm\src\decoder.c">
       <Filter>3rdParties\distorm</Filter>
@@ -545,9 +491,6 @@
     </ClCompile>
     <ClCompile Include="src\3rdParties\distorm\src\textdefs.c">
       <Filter>3rdParties\distorm</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\thprac_ssl.cpp">
-      <Filter>THPrac Launcher</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

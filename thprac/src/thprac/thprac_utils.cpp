@@ -185,7 +185,16 @@ void GameGuiEnd(game_gui_impl impl, bool draw_cursor)
         io.MouseDrawCursor = true;
     }
 
-    auto anyActivate = ImGui::IsAnyItemActive();
+    // Locale Change
+    if (!ImGui::IsAnyItemActive()) {
+        if (Gui::ImplWin32CheckHotkey(0x00010031)) {
+            Gui::LocaleSet(Gui::LOCALE_JA_JP);
+        } else if (Gui::ImplWin32CheckHotkey(0x00010032)) {
+            Gui::LocaleSet(Gui::LOCALE_ZH_CN);
+        } else if (Gui::ImplWin32CheckHotkey(0x00010033)) {
+            Gui::LocaleSet(Gui::LOCALE_EN_US);
+        }
+    }
 
     Gui::ImplWin32Check((void*)*g_gameGuiHwnd);
     switch (impl) {
@@ -205,18 +214,7 @@ void GameGuiEnd(game_gui_impl impl, bool draw_cursor)
         break;
     default:
         break;
-    }
-
-    // Locale Change
-    if (!anyActivate) {
-        if (Gui::ImplWin32CheckHotkey(0x00070031)) {
-            Gui::LocaleSet(Gui::LOCALE_JA_JP);
-        } else if (Gui::ImplWin32CheckHotkey(0x00070032)) {
-            Gui::LocaleSet(Gui::LOCALE_ZH_CN);
-        } else if (Gui::ImplWin32CheckHotkey(0x00070033)) {
-            Gui::LocaleSet(Gui::LOCALE_EN_US);
-        }
-    }
+    }    
 }
 
 void GameFreeze()

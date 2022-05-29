@@ -2270,16 +2270,10 @@ public:
             WriteGameCfg();
         }
 
-        auto needDisabled = currentInst.type != TYPE_ORIGINAL;
-        if (needDisabled) {
-            ImGui::BeginDisabled();
-        }
         if (GuiButtonRelCentered(XSTR(THPRAC_GAMES_LAUNCH_GAME), 0.85f, ImVec2(1.0f, 0.1f))) {
             GameLaunchModalOpen();
         }
-        if (needDisabled) {
-            ImGui::EndDisabled();
-        }
+
         GameLaunchModal();
     }
     void GuiGame()

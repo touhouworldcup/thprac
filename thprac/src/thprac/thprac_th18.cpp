@@ -44,6 +44,7 @@ namespace TH18 {
             GetJsonValue(power);
             GetJsonValue(funds);
             GetJsonValue(mukade);
+            GetJsonValue(lily);
 
             return true;
         }
@@ -69,6 +70,7 @@ namespace TH18 {
                 AddJsonValue(power);
                 AddJsonValue(funds);
                 AddJsonValue(mukade);
+                AddJsonValue(lily);
 
                 ReturnJson();
             } else if (mode == 2) {

@@ -855,7 +855,7 @@ namespace TH14 {
         // Option Related Functions
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("");
+            // mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("");
             if (false) {
                 //if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0)
                 //	mOptCtx.fps_status = 2;
