@@ -1543,12 +1543,7 @@ private:
         }
         ImGui::NewLine();
         ImGui::Text(XSTR(TH_ABOUT_AUTHOR));
-        ImGui::Text(XSTR(TH_ABOUT_CONTACT));
-        TextLink("github: ack7139(https://github.com/ack7139)", L"https://github.com/ack7139");
-        if (Gui::LocaleGet() == Gui::LOCALE_ZH_CN) {
-            TextLink("bilibili: Ap3r7ur3(https://space.bilibili.com/9453074)", L"https://space.bilibili.com/9453074");
-        }
-        TextLink("Twitter: @ack7139", L"https://twitter.com/ack7139");
+        TextLink(XSTR(TH_ABOUT_WEBSITE), L"https://github.com/touhouworldcup/thprac");
         ImGui::NewLine();
         ImGui::Text(XSTR(TH_ABOUT_THANKS), "You!");
     }

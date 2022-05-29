@@ -678,7 +678,7 @@ void AboutOpt(const char* thanks_text)
     if (BeginOptGroup<TH_ABOUT_THPRAC>()) {
         ImGui::Text(XSTR(TH_ABOUT_VERSION), GetVersionStr());
         ImGui::Text(XSTR(TH_ABOUT_AUTHOR));
-        ImGui::Text(XSTR(TH_ABOUT_CONTACT));
+        ImGui::Text(XSTR(TH_ABOUT_WEBSITE));
 
         ImGui::NewLine();
         ImGui::Text(XSTR(TH_ABOUT_THANKS), thanks_text ? thanks_text : "You!");
