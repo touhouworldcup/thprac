@@ -132,28 +132,20 @@ static DWORD PopHelper32(CONTEXT* pCtx)
     typedef EHookSingleton <target, (void*)__vehf_##name> name; \
     __declspec(noinline) void __stdcall __vehf_##name(PCONTEXT pCtx)
 
-#define PATCH_G1(name, target, patch, size)           \
-    static constexpr char __s1patch_##name[] = patch; \
-    typedef PatchSingleton<target, __s1patch_##name, size> name; 
-    
-#define EHOOK_S1(name, target)                                        \
-    typedef EHookSingleton<target, (void*)__vehf_##name> name;      \
-    static __declspec(noinline) void __stdcall __vehf_##name(PCONTEXT pCtx)
-
-#define PATCH_S1(name, target, patch, size)           \
-    static constexpr char __s1patch_##name[] = patch; \
-    typedef PatchSingleton<target, __s1patch_##name, size> name; 
-
 #define EHOOK_ST(name, target)                                \
     HookCtx name { target, (void*)&__vehf_##name }; \
     static __declspec(noinline) void __stdcall __vehf_##name(PCONTEXT pCtx)
 
-#define PATCH_ST(name, target, patch, size) \
-    HookCtx name { target, patch, size };
-
 #define EHOOK_DY(name, target)                                \
     HookCtx name { mHooks, target, (void*)&__vehf_##name }; \
     static __declspec(noinline) void __stdcall __vehf_##name(PCONTEXT pCtx)
+
+#define PATCH_S1(name, target, patch, size)           \
+    static constexpr char __s1patch_##name[] = patch; \
+    typedef PatchSingleton<target, __s1patch_##name, size> name;
+
+#define PATCH_ST(name, target, patch, size) \
+    HookCtx name { target, patch, size };
 
 #define PATCH_DY(name, target, patch, size) \
     HookCtx name { mHooks, target, patch, size };
