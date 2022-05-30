@@ -44,9 +44,6 @@
     <Filter Include="3rdParties\LZMA">
       <UniqueIdentifier>{3b22df3a-9c7d-4a33-810a-a903dd69008d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="3rdParties\xxHash">
-      <UniqueIdentifier>{71279f06-bf79-4969-b624-067536af3f82}</UniqueIdentifier>
-    </Filter>
     <Filter Include="3rdParties\distorm">
       <UniqueIdentifier>{653ef50e-68b6-4a06-8e84-3ddf50867dfe}</UniqueIdentifier>
     </Filter>
@@ -231,12 +228,6 @@
     </ClInclude>
     <ClInclude Include="src\3rdParties\lzma\Threads.h">
       <Filter>3rdParties\LZMA</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\xxHash\xxh3.h">
-      <Filter>3rdParties\xxHash</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\xxHash\xxhash.h">
-      <Filter>3rdParties\xxHash</Filter>
     </ClInclude>
     <ClInclude Include="src\3rdParties\distorm\src\config.h">
       <Filter>3rdParties\distorm</Filter>
@@ -464,9 +455,6 @@
     </ClCompile>
     <ClCompile Include="src\3rdParties\lzma\Threads.c">
       <Filter>3rdParties\LZMA</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\xxHash\xxhash.c">
-      <Filter>3rdParties\xxHash</Filter>
     </ClCompile>
     <ClCompile Include="src\3rdParties\distorm\src\decoder.c">
       <Filter>3rdParties\distorm</Filter>

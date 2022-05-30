@@ -694,8 +694,9 @@ namespace TH13 {
 
             mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th13.dll");
             if (mOptCtx.vpatch_base) {
-                uint64_t hash = CalcFileXXHash("vpatch_th13.dll");
-                if (hash != 2177391144691075464llu)
+                uint64_t hash[2];
+                CalcFileHash("vpatch_th13.dll", hash);
+                if (hash[0] != 6450385832836080372ll || hash[1] != 579365625616419970ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0) {
                     mOptCtx.fps_status = 2;

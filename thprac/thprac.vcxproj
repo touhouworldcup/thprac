@@ -52,8 +52,6 @@
     <ClInclude Include="src\3rdParties\MinHook\src\hde\table32.h" />
     <ClInclude Include="src\3rdParties\MinHook\src\hde\table64.h" />
     <ClInclude Include="src\3rdParties\MinHook\src\trampoline.h" />
-    <ClInclude Include="src\3rdParties\xxHash\xxh3.h" />
-    <ClInclude Include="src\3rdParties\xxHash\xxhash.h" />
     <ClInclude Include="src\thprac\dll_hack.h" />
     <ClInclude Include="src\thprac\thprac_data_anly.h" />
     <ClInclude Include="src\thprac\thprac_games.h" />
@@ -116,7 +114,6 @@
     <ClCompile Include="src\3rdParties\MinHook\src\hook.c" />
     <ClCompile Include="src\3rdParties\MinHook\src\trampoline.c" />
     <ClCompile Include="src\3rdParties\MinHook\src\trampoline_new.c" />
-    <ClCompile Include="src\3rdParties\xxHash\xxhash.c" />
     <ClCompile Include="src\thprac\dllmain.cpp" />
     <ClCompile Include="src\thprac\main.cpp" />
     <ClCompile Include="src\thprac\thprac_alcostg.cpp" />
@@ -207,6 +204,9 @@
     <TargetName>thprac</TargetName>
     <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\distorm\include;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(ProjectDir)src\3rdParties\MinHook\include;$(ProjectDir)src\3rdParties\robin-map;$(ProjectDir)src\3rdParties\xxHash;$(ProjectDir)src\3rdParties\lzma;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)src\3rdParties\FreeType\win32;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnabled>false</VcpkgEnabled>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

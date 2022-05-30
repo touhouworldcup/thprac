@@ -3,7 +3,6 @@
 #include "thprac_launcher_main.h"
 #include "thprac_launcher_cfg.h"
 #include <metrohash128.h>
-#include <xxh3.h>
 #include "thprac_data_anly.h"
 
 namespace THPrac {
@@ -310,22 +309,6 @@ void CalcFileHash(const char* file_name, uint64_t hash[2])
     UnmapViewOfFile(fileMapView);
     CloseHandle(fileMap);
     CloseHandle(hFile);
-}
-
-uint64_t CalcFileXXHash(const char* file_name)
-{
-    auto hFile = CreateFileA(file_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    auto fileSize = GetFileSize(hFile, NULL);
-    auto fileMap = CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
-    auto fileMapView = MapViewOfFile(fileMap, FILE_MAP_READ, 0, 0, fileSize);
-
-    uint64_t result = XXH3_64bits(fileMapView, fileSize);
-
-    UnmapViewOfFile(fileMapView);
-    CloseHandle(fileMap);
-    CloseHandle(hFile);
-
-    return result;
 }
 
 void HelpMarker(const char* desc)

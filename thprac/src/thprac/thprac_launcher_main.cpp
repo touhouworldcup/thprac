@@ -10,7 +10,6 @@
 #include <Windows.h>
 #include <cstdio>
 #include <sstream>
-#include <xxh3.h>
 
 namespace THPrac {
 const char* gTabToOpen = nullptr;
@@ -119,14 +118,14 @@ int DebugTabBar()
 
                     ExeSig exeSig;
                     GetExeInfo(pFileMapView, fileSize, exeSig);
-                    auto xxH = XXH3_64bits(pFileMapView, fileSize);
+                    // auto xxH = XXH3_64bits(pFileMapView, fileSize);
                     
-                    auto fmtStr = "%llullu\n {\n\"thXX\",\nTHXX_TITLE,\nCAT_MAIN,\n{\n%d, %d,\n{\n0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x,\n0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x\n},\n{\n0x%08x, 0x%08x,\n0x%08x, 0x%08x\n} } }";
-                    sprintf_s(text, fmtStr, xxH,
-                        exeSig.timeStamp, exeSig.textSize,
-                        exeSig.oepCode[0], exeSig.oepCode[1], exeSig.oepCode[2], exeSig.oepCode[3], exeSig.oepCode[4],
-                        exeSig.oepCode[5], exeSig.oepCode[6], exeSig.oepCode[7], exeSig.oepCode[8], exeSig.oepCode[9],
-                        exeSig.metroHash[0], exeSig.metroHash[1], exeSig.metroHash[2], exeSig.metroHash[3]);
+                    // auto fmtStr = "%llullu\n {\n\"thXX\",\nTHXX_TITLE,\nCAT_MAIN,\n{\n%d, %d,\n{\n0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x,\n0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x\n},\n{\n0x%08x, 0x%08x,\n0x%08x, 0x%08x\n} } }";
+                    // sprintf_s(text, fmtStr, xxH,
+                    //     exeSig.timeStamp, exeSig.textSize,
+                    //     exeSig.oepCode[0], exeSig.oepCode[1], exeSig.oepCode[2], exeSig.oepCode[3], exeSig.oepCode[4],
+                    //     exeSig.oepCode[5], exeSig.oepCode[6], exeSig.oepCode[7], exeSig.oepCode[8], exeSig.oepCode[9],
+                    //     exeSig.metroHash[0], exeSig.metroHash[1], exeSig.metroHash[2], exeSig.metroHash[3]);
                     
                     //auto fmtStr = "{ \"thXX\",\nnullptr,\nA0000ERROR_C,\n{ 0x%08x, 0x%08x,\n0x%08x, 0x%08x} },";
                     //sprintf_s(text, fmtStr, exeSig.metroHash[0], exeSig.metroHash[1], exeSig.metroHash[2], exeSig.metroHash[3]);
