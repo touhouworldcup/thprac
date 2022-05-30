@@ -8,9 +8,6 @@
     <Filter Include="Main">
       <UniqueIdentifier>{ef849942-3bcb-4624-98f3-a1db12a2a733}</UniqueIdentifier>
     </Filter>
-    <Filter Include="DLL">
-      <UniqueIdentifier>{ba69db79-acf5-45f0-8c7f-5048d893b3ff}</UniqueIdentifier>
-    </Filter>
     <Filter Include="3rdParties">
       <UniqueIdentifier>{37dd7e07-ee55-47db-b7fc-c0af4637b56f}</UniqueIdentifier>
     </Filter>
@@ -60,9 +57,6 @@
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_games.h">
       <Filter>THPrac Games</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\dll_hack.h">
-      <Filter>DLL</Filter>
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_init.h">
       <Filter>Main</Filter>
@@ -275,9 +269,6 @@
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_th11.cpp">
       <Filter>THPrac Games</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\dllmain.cpp">
-      <Filter>DLL</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\main.cpp">
       <Filter>Main</Filter>

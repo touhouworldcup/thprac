@@ -30,12 +30,6 @@ namespace Gui {
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("xxHash")) {
-                ImGui::BeginChild("COPYING.xxHash");
-                ImGui::TextUnformatted(COPYING_xxHash);
-                ImGui::EndChild();
-                ImGui::EndTabItem();
-            }
             if (ImGui::BeginTabItem("rapidjson")) {
                 ImGui::BeginChild("COPYING.rapidjson");
                 ImGui::TextUnformatted(COPYING_rapidjson);

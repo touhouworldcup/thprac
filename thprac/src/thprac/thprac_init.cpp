@@ -33,8 +33,7 @@ void RemoteInit()
                 break;
             }
         }
-        TerminateThread(GetCurrentThread(), 1);
-        return;
+        ExitThread(1);
     }
 }
 }

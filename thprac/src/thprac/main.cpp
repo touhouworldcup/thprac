@@ -41,8 +41,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     auto thpracMutex = OpenMutexW(SYNCHRONIZE, FALSE, L"thprac - Touhou Practice Tool##mutex");
     RemoteInit();
-    //SetCurrentDirectoryA("D:\\Touhou\\Games\\th18");
-    //SetCurrentDirectoryA("D:\\Projects\\thprac\\Debug");
 
     int launchBehavior = 0;
     bool dontFindOngoingGame = false;
