@@ -105,7 +105,7 @@ bool PromptUser(thprac_prompt_t info, THGameSig* gameSig = nullptr)
 THGameSig* CheckOngoingGame(PROCESSENTRY32& proc)
 {
     // Eliminate impossible process
-    if (strcmp("“Œ•ûg–‚‹½.exe", proc.szExeFile) && strcmp("–|·½¼tÄ§à_.exe", proc.szExeFile)) {
+    if (strcmp("æ¶æ›½å³ æºå«¿.exe", proc.szExeFile) && strcmp("æ±æ–¹ç´…é­”éƒ·.exe", proc.szExeFile)) {
         if (proc.szExeFile[0] != 't' || proc.szExeFile[1] != 'h')
             return nullptr;
         if (proc.szExeFile[2] < 0x30 || proc.szExeFile[2] > 0x39)
@@ -249,11 +249,11 @@ end:
 bool CheckIfGameExist(THGameSig& gameSig, std::wstring& name)
 {
     if (!strcmp(gameSig.idStr, "th06")) {
-        if (CheckIfGameExistEx(gameSig, L"“Œ•ûg–‚‹½.exe")) {
-            name = L"“Œ•ûg–‚‹½.exe";
+        if (CheckIfGameExistEx(gameSig, L"æ¶æ›½å³ æºå«¿.exe")) {
+            name = L"æ¶æ›½å³ æºå«¿.exe";
             return true;
-        } else if (CheckIfGameExistEx(gameSig, L"–|·½¼tÄ§à_.exe")) {
-            name = L"–|·½¼tÄ§à_.exe";
+        } else if (CheckIfGameExistEx(gameSig, L"æ±æ–¹ç´…é­”éƒ·.exe")) {
+            name = L"æ±æ–¹ç´…é­”éƒ·.exe";
             return true;
         }
     }

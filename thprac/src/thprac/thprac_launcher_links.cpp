@@ -57,12 +57,11 @@ private:
         const char* debugJsonStr = u8R"123({
     "Default":{
         "__is_open__" : true,
-        "–|·½Project¥¹¥³¥¢¥Ü©`¥É (Royalflare)":"http://score.royalflare.net/",
         "Lunarcast":"http://replay.lunarcast.net/",
         "PND":"https://thscore.pndsng.com/index.php",
         "Maribel Hearn's Touhou Portal":"https://maribelhearn.com/",
         "Eientei Forums":"https://eientei.boards.net/",
-        "ÌğÆ·Õ¾ (isndes)":"https://www.isndes.com/",
+        "ç”œå“ç«™ (isndes)":"https://www.isndes.com/",
         "Touhou Patch":"https://www.thpatch.net/",
         "THBWiki":"https://thwiki.cc/"
     }
