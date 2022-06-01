@@ -710,6 +710,7 @@ namespace TH08 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
+
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_DATANLY>()) {

@@ -111,6 +111,19 @@ public:
             hookCtxDyn->Enable();
         }
     }
+    void DisableAllHooks()
+    {
+        for (auto& hookCtxDyn : mHooks)
+            hookCtxDyn->Disable();
+    }
+    void ToggleAllHooks(bool status)
+    {
+        if (status)
+            EnableAllHooks();
+        else
+            DisableAllHooks();
+    }
+    
 
 protected:
     std::vector<HookCtx*> mHooks;
@@ -123,8 +136,10 @@ static void PushHelper32(CONTEXT* pCtx, DWORD value)
 }
 static DWORD PopHelper32(CONTEXT* pCtx)
 {
+    // The compiler will optimize this to just use eax
+    DWORD ret = *(DWORD*)pCtx->Esp;
     pCtx->Esp += 4;
-    return *(DWORD*)(pCtx->Esp - 4);
+    return ret;
 }
 
 #define EHOOK_G1(name, target) \

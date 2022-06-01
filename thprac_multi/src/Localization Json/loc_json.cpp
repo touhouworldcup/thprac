@@ -40,8 +40,8 @@ public:
 };
 
 
-#define INPUT_FILE "C:\\Users\\thc\\Documents\\git\\thprac\\thprac\\thprac\\src\\thprac\\thprac_games_def.json"
-#define OUTPUT_FILE "C:\\Users\\thc\\Documents\\git\\thprac\\thprac\\thprac\\src\\thprac\\thprac_locale_def.h"
+#define INPUT_FILE "C:\\Users\\thc\\Documents\\git\\thprac\\thprac\\src\\thprac\\thprac_games_def.json"
+#define OUTPUT_FILE "C:\\Users\\thc\\Documents\\git\\thprac\\thprac\\src\\thprac\\thprac_locale_def.h"
 
 #define ENDL "\n"
 #define SKIP_IF(statement, warning, ...) \
