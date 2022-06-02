@@ -485,7 +485,7 @@ int LauncherWndInit(unsigned int width, unsigned int height, unsigned int maxWid
     __thprac_lc_wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), icon, NULL, NULL, NULL, _T("thprac launcher window"), NULL };
     ::RegisterClassEx(&__thprac_lc_wc);
     __thprac_lc_hwnd = ::CreateWindow(__thprac_lc_wc.lpszClassName, windowTitle.c_str(),
-        WS_POPUP, 0, 0, width, height,
+        WS_POPUP | WS_SYSMENU | WS_MINIMIZEBOX, 0, 0, width, height,
         NULL, NULL, __thprac_lc_wc.hInstance, NULL);
 
     // DPI handling
