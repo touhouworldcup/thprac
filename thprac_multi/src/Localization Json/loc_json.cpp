@@ -1,4 +1,5 @@
 ﻿#include "loc_json.h"
+#include <Windows.h>
 #include "json.hpp"
 #include "rapidjson/document.h"
 #include <cstdint>
@@ -38,10 +39,6 @@ public:
 		return 2;
 	}
 };
-
-
-#define INPUT_FILE "C:\\Users\\thc\\Documents\\git\\thprac\\thprac\\src\\thprac\\thprac_games_def.json"
-#define OUTPUT_FILE "C:\\Users\\thc\\Documents\\git\\thprac\\thprac\\src\\thprac\\thprac_locale_def.h"
 
 #define ENDL "\n"
 #define SKIP_IF(statement, warning, ...) \
@@ -227,10 +224,29 @@ std::string GetEscapedStr(std::string& str)
 
 void loc_json()
 {
-
-	// TODO: Get input;
+	OPENFILENAMEW ofn = {};
+    wchar_t fn[MAX_PATH] = {};
+	ofn.lStructSize = sizeof(ofn);
+    ofn.lpstrFile = fn;
+    ofn.nMaxFile = sizeof(fn);
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+    
 	FILE* input;
-	fopen_s(&input, INPUT_FILE, "rb");
+	ofn.lpstrFilter = L"JSON file\0*.json";
+	if (!GetOpenFileNameW(&ofn) || _wfopen_s(&input, ofn.lpstrFile, L"rb")) {
+        puts("Error: failed to open input file");
+        return;
+    }
+
+	fn[0] = 0;
+    FILE* output;
+	ofn.lpstrFilter = L"C++ Header File\0*.h";
+	if (!GetOpenFileNameW(&ofn) || _wfopen_s(&output, ofn.lpstrFile, L"w")) {
+        fclose(input);
+		puts("Error: failed to open output file");
+		return;
+	}
+	
 	fseek(input, 0, SEEK_END);
 	auto input_size = ftell(input);
 	char* input_buf = (char*)malloc(input_size + 1);
@@ -239,11 +255,9 @@ void loc_json()
 	input_buf[input_size] = '\0';
 	input_buf += 3;
 
-
 	Document doc;
 	if (doc.Parse(input_buf).HasParseError())
 	{
-		
 		printf_s("Error: Parse error: %d at %d." ENDL, doc.GetParseError(), doc.GetErrorOffset());
 		getchar();
 		return;
@@ -360,8 +374,6 @@ void loc_json()
 	/******************************************************************************************/
 	// Output Init
 	/******************************************************************************************/
-	FILE* output;
-	fopen_s(&output, OUTPUT_FILE, "w");
 	putc(0xef, output);
 	putc(0xbb, output);
 	putc(0xbf, output);
