@@ -2252,7 +2252,8 @@
       "TH08_STAGE_4A": [ "4A", "4A", "4A" ],
       "TH08_STAGE_4B": [ "4B", "4B", "4B" ],
       "TH08_STAGE_6A": [ "6A", "6A", "6A" ],
-      "TH08_STAGE_6B": [ "6B", "6B", "6B" ]
+      "TH08_STAGE_6B": [ "6B", "6B", "6B" ],
+      "TH08_DOSWNC": [ "", "Don't overwrite scores when spell name changes", "" ]
     },
 
     "sections": {

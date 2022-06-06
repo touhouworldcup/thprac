@@ -68,6 +68,7 @@ enum th_glossary_t
     TH07_S2_MERLIN,
     TH07_SPELLBONUS,
     TH07_TITLE,
+    TH08_DOSWNC,
     TH08_FAMILIAR,
     TH08_GAUGE,
     TH08_LASTSPELL,
@@ -729,7 +730,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-static char* th_glossary_str[3][722]
+static char* th_glossary_str[3][723]
 {
     {
         "",
@@ -795,6 +796,7 @@ static char* th_glossary_str[3][722]
         u8"梅露兰二符",
         u8"符卡奖励",
         u8"TH07 东方妖妖梦　～ Perfect Cherry Blossom.",
+        u8"",
         u8"使魔",
         u8"人妖槽",
         u8"Last Spell",
@@ -1519,6 +1521,7 @@ static char* th_glossary_str[3][722]
         u8"Merlin Spell 3",
         u8"Spell Bonus",
         u8"TH07 Perfect Cherry Blossom",
+        u8"Don't overwrite scores when spell name changes",
         u8"Familiar",
         u8"Gauge",
         u8"Last Spell",
@@ -2243,6 +2246,7 @@ static char* th_glossary_str[3][722]
         u8"メルラン 通常3",
         u8"スペカ\nボーナス",
         u8"TH07 東方妖々夢　～ Perfect Cherry Blossom.",
+        u8"",
         u8"使い魔",
         u8"妖率ゲージ",
         u8"ラストスペル",

@@ -558,6 +558,8 @@ namespace TH08 {
         {
             pCtx->Eip = 0x438570;
         }
+        PATCH_ST(th08_DOSWNC_1, (void*)0x415A4E, "\x39\xC0", 2);
+        PATCH_ST(th08_DOSWNC_2, (void*)0x416463, "\x39\xC0", 2)
     private:
         void FpsInit()
         {
@@ -588,6 +590,8 @@ namespace TH08 {
             th08_all_clear_bonus_1.Setup();
             th08_all_clear_bonus_2.Setup();
             th08_all_clear_bonus_3.Setup();
+            th08_DOSWNC_1.Setup();
+            th08_DOSWNC_2.Setup();
         }
         void GameplaySet()
         {
@@ -697,6 +701,7 @@ namespace TH08 {
         }
         void ContentUpdate()
         {
+            static bool DOSWNC = false;
             *((int32_t*)0x17ce8cc) = 2;
             ImGui::Text(XSTR(TH_ADV_OPT));
             ImGui::Separator();
@@ -710,7 +715,11 @@ namespace TH08 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
-
+                
+                if (ImGui::Checkbox(XSTR(TH08_DOSWNC), &DOSWNC)) {
+                    th08_DOSWNC_1.Toggle(DOSWNC);
+                    th08_DOSWNC_2.Toggle(DOSWNC);
+                }
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_DATANLY>()) {
