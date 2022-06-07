@@ -298,7 +298,6 @@ float GetRelHeight(float rel)
 
 void CalcFileHash(const char* file_name, uint64_t hash[2])
 {
-    MessageBoxA(NULL, "", NULL, 0);
     hash[0] = 0ll;
     hash[1] = 0ll;
 
