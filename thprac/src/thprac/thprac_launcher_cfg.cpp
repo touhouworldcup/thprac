@@ -14,7 +14,10 @@
 #include <vector>
 #include <winhttp.h>
 #include <ShlObj.h>
+#pragma warning(push)
+#pragma warning(disable : 26819)
 #include <rapidjson/prettywriter.h>
+#pragma warning(pop)
 #pragma comment(lib, "winhttp.lib")
 #include <shlwapi.h>
 #pragma comment(lib, "Shlwapi.lib")

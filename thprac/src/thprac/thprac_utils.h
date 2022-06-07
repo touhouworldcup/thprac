@@ -17,8 +17,14 @@
 #include <imgui.h>
 #include <implot.h>
 #include <memory>
+#pragma warning(push)
+#pragma warning(disable : 26451)
+#pragma warning(disable : 26495)
+#pragma warning(disable : 33010)
+#pragma warning(disable : 26819)
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
+#pragma warning(pop)
 #include <string>
 #include <tsl/robin_map.h>
 #include <utility>

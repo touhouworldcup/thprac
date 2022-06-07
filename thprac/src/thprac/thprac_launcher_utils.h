@@ -148,7 +148,10 @@ public:
     {
         if (mThreadHnd != INVALID_HANDLE_VALUE) {
             if (IsActive()) {
+#pragma warning(push)
+#pragma warning(disable: 6258)
                 TerminateThread(mThreadHnd, 0);
+#pragma warning(pop)
             }
             CloseHandle(mThreadHnd);
             mThreadHnd = INVALID_HANDLE_VALUE;

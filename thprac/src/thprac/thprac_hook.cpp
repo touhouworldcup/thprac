@@ -35,7 +35,7 @@ namespace THPrac {
 
 struct DmpFileDesc {
     std::wstring path;
-    uint64_t time;
+    uint64_t time = 0;
     bool operator()(DmpFileDesc& a, DmpFileDesc& b) const { return a.time < b.time; }
 };
 
