@@ -13,10 +13,8 @@
 #include <string>
 #include <vector>
 #include <winhttp.h>
-#pragma warning(disable : 4091)
 #include <ShlObj.h>
-#pragma warning(default : 4091)
-#include <rapidjson/writer.h>
+#include <rapidjson/prettywriter.h>
 #pragma comment(lib, "winhttp.lib")
 #include <shlwapi.h>
 #pragma comment(lib, "Shlwapi.lib")
@@ -84,7 +82,7 @@ bool LauncherCfgWrite()
     }
 
     rapidjson::StringBuffer sb;
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
     gCfgJson.Accept(writer);
 
     auto jsonStr = sb.GetString();
