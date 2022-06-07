@@ -769,7 +769,7 @@ namespace TH13 {
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
-            InitUpdFunc([&]() { DataRecMenu(); },
+            InitUpdFunc([&]() { ContentUpdate(); },
                 [&]() { LocaleUpdate(); },
                 [&]() { PreUpdate(); },
                 []() {});
@@ -795,7 +795,7 @@ namespace TH13 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (false && Gui::KeyboardInputUpdate(VK_F12) == 1) {
+            if (Gui::KeyboardInputUpdate(VK_F12) == 1) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else
