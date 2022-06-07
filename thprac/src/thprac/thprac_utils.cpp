@@ -16,7 +16,10 @@ HIMC g_gameIMCCtx = 0;
 
 void VoidJoystickAPI()
 {
-    auto pJoyGetPosEx = GetProcAddress(GetModuleHandleA("winmm.dll"), "joyGetPosEx");
+    HMODULE winmm = GetModuleHandleW(L"winmm.dll");
+    if (!winmm)
+        return;
+    auto pJoyGetPosEx = GetProcAddress(winmm, "joyGetPosEx");
 
     if (pJoyGetPosEx) {
         DWORD oldProtect;
@@ -295,20 +298,25 @@ float GetRelHeight(float rel)
 
 void CalcFileHash(const char* file_name, uint64_t hash[2])
 {
+    MessageBoxA(NULL, "", NULL, 0);
     hash[0] = 0ll;
     hash[1] = 0ll;
 
     auto hFile = CreateFileA(file_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile == INVALID_HANDLE_VALUE)
+        return;
+    defer(CloseHandle(hFile));
     auto fileSize = GetFileSize(hFile, NULL);
     auto fileMap = CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
+    if (fileMap == NULL)
+        return;
+    defer(CloseHandle(fileMap));
     auto fileMapView = MapViewOfFile(fileMap, FILE_MAP_READ, 0, 0, fileSize);
-
+    if (!fileMapView)
+        return;
+    defer(UnmapViewOfFile(fileMapView));
     MetroHash128 metro;
     metro.Hash((uint8_t*)fileMapView, fileSize, (uint8_t*)hash);
-
-    UnmapViewOfFile(fileMapView);
-    CloseHandle(fileMap);
-    CloseHandle(hFile);
 }
 
 void HelpMarker(const char* desc)
@@ -599,8 +607,7 @@ bool DataRecOpt(adv_opt_ctx& ctx, bool preUpd, bool isInGame)
                 std::vector<uint32_t> y;
                 std::vector<uint32_t> z;
                 std::vector<std::pair<uint32_t, uint32_t>> chpater;
-                EventRecord::OmniData32 prev;
-                prev.i = 0;
+                EventRecord::OmniData32 prev = {};
 
                 for (size_t i = 0; i < frameData.size(); ++i) {
                     for (auto& event : frameData[i].eventData) {
@@ -695,13 +702,17 @@ bool ReplaySaveParam(const char* rep_path, std::string& param)
     auto repFile = CreateFileA(rep_path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (repFile == INVALID_HANDLE_VALUE)
         return false;
-    DWORD repMagic, bytesRead;
+    defer(CloseHandle(repFile));
+    DWORD repMagic = 0, bytesRead = 0;
     if ((SetFilePointer(repFile, 0, NULL, FILE_BEGIN) != INVALID_SET_FILE_POINTER) && (ReadFile(repFile, &repMagic, sizeof(LONG), &bytesRead, NULL))) {
         if (repMagic == 'PR6T' || repMagic == 'PR7T') {
             auto paramSize = param.size();
             for (paramSize++; paramSize % 4; paramSize++)
                 ;
             auto paramBuf = malloc(paramSize + 8);
+            if (!paramBuf)
+                return false;
+            defer(free(paramBuf));
             memset(paramBuf, 0, paramSize);
             memcpy(paramBuf, param.data(), param.size());
             *(int32_t*)((int)paramBuf + paramSize) = paramSize;
@@ -709,13 +720,16 @@ bool ReplaySaveParam(const char* rep_path, std::string& param)
 
             SetFilePointer(repFile, 0, NULL, FILE_END);
             WriteFile(repFile, paramBuf, paramSize + 8, &bytesRead, NULL);
-            free(paramBuf);
 
             // Recalculate checksum
             auto repSize = GetFileSize(repFile, NULL);
             uint8_t* repBuf = (uint8_t*)malloc(repSize - (repMagic == 'PR6T' ? 14 : 13));
+            if (!repBuf)
+                return false;
+            defer(free(repBuf));
             SetFilePointer(repFile, repMagic == 'PR6T' ? 14 : 13, NULL, FILE_BEGIN);
-            ReadFile(repFile, repBuf, repSize - (repMagic == 'PR6T' ? 14 : 13), &bytesRead, NULL);
+            if (!ReadFile(repFile, repBuf, repSize - (repMagic == 'PR6T' ? 14 : 13), &bytesRead, NULL))
+                return false;
 
             uint8_t key = *repBuf;
             auto decBuf = repBuf + (repMagic == 'PR6T' ? 1 : 3);
@@ -731,13 +745,14 @@ bool ReplaySaveParam(const char* rep_path, std::string& param)
 
             SetFilePointer(repFile, 8, NULL, FILE_BEGIN);
             WriteFile(repFile, &checksum, 4, &bytesRead, NULL);
-
-            free(repBuf);
         } else {
             auto paramSize = param.size() + 12;
             for (paramSize++; paramSize % 4; paramSize++)
                 ;
             auto paramBuf = malloc(paramSize);
+            if (!paramBuf)
+                return false;
+            defer(free(paramBuf));
             memset(paramBuf, 0, paramSize);
             *(int32_t*)((int)paramBuf) = 'RESU';
             *(int32_t*)((int)paramBuf + 4) = paramSize;
@@ -746,78 +761,68 @@ bool ReplaySaveParam(const char* rep_path, std::string& param)
 
             SetFilePointer(repFile, 0, NULL, FILE_END);
             WriteFile(repFile, paramBuf, paramSize, &bytesRead, NULL);
-            free(paramBuf);
         }
     }
-
-    CloseHandle(repFile);
     return false;
 }
 
 bool ReplayLoadParam(const char* rep_path, std::string& param)
 {
-    DWORD repMagic, bytesRead;
-    param = "";
+    DWORD repMagic = 0, bytesRead = 0;
 
     auto repFile = CreateFileA(rep_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (repFile == INVALID_HANDLE_VALUE)
         return false;
+    defer(CloseHandle(repFile));
 
     SetFilePointer(repFile, 0, NULL, FILE_BEGIN);
-    ReadFile(repFile, &repMagic, 4, &bytesRead, NULL);
-    if (bytesRead == 4) {
+    if (ReadFile(repFile, &repMagic, 4, &bytesRead, NULL) && bytesRead == 4) {
         if (repMagic == 'PR6T' || repMagic == 'PR7T') {
-            DWORD magic, paramLength;
+            DWORD magic = 0, paramLength = 0;
             DWORD repSize = GetFileSize(repFile, NULL);
 
             SetFilePointer(repFile, -4, NULL, FILE_END);
-            ReadFile(repFile, &magic, 4, &bytesRead, NULL);
-            if (bytesRead == 4 && magic == 'CARP') {
+            if (ReadFile(repFile, &magic, 4, &bytesRead, NULL) && bytesRead == 4 && magic == 'CARP') {
                 SetFilePointer(repFile, -8, NULL, FILE_CURRENT);
-                ReadFile(repFile, &paramLength, 4, &bytesRead, NULL);
-                if (bytesRead == 4 && paramLength > 0 && paramLength < repSize && paramLength < 512) {
-                    void* buf;
+                if (!ReadFile(repFile, &paramLength, 4, &bytesRead, NULL))
+                    return false;
 
+                if (bytesRead == 4 && paramLength > 0 && paramLength < repSize && paramLength < 512) {
                     SetFilePointer(repFile, ~paramLength - 3, NULL, FILE_CURRENT);
-                    buf = malloc(paramLength + 1);
+                    char* buf = (char*)malloc(paramLength + 1);
+                    if (!buf)
+                        return false;
+                    defer(free(buf));
                     memset(buf, 0, paramLength + 1);
-                    ReadFile(repFile, buf, paramLength, &bytesRead, NULL);
-                    if (bytesRead == paramLength)
-                        param = std::string((char*)buf, paramLength + 1);
-                    free(buf);
-                    CloseHandle(repFile);
+
+                    if (ReadFile(repFile, buf, paramLength, &bytesRead, NULL) && bytesRead == paramLength)
+                        param = std::string(buf, paramLength + 1);
 
                     return (bytesRead == paramLength);
                 }
             }
         } else {
-            DWORD userPtr, userMagic, userLength, userNo;
+            DWORD userPtr = 0, userMagic = 0, userLength = 0, userNo = 0;
 
             SetFilePointer(repFile, 12, NULL, FILE_BEGIN);
-            ReadFile(repFile, &userPtr, 4, &bytesRead, NULL);
-            if (bytesRead == 4) {
+            if (ReadFile(repFile, &userPtr, 4, &bytesRead, NULL) && bytesRead == 4) {
                 SetFilePointer(repFile, userPtr, NULL, FILE_BEGIN);
                 while (true) {
-                    ReadFile(repFile, &userMagic, 4, &bytesRead, NULL);
-                    if (bytesRead != 4 || userMagic != 'RESU')
+                    if (!ReadFile(repFile, &userMagic, 4, &bytesRead, NULL) || bytesRead != 4 || userMagic != 'RESU')
                         break;
-                    ReadFile(repFile, &userLength, 4, &bytesRead, NULL);
-                    if (bytesRead != 4)
+                    if (!ReadFile(repFile, &userLength, 4, &bytesRead, NULL)  || bytesRead != 4)
                         break;
-                    ReadFile(repFile, &userNo, 4, &bytesRead, NULL);
-                    if (bytesRead != 4)
+                    if (!ReadFile(repFile, &userNo, 4, &bytesRead, NULL) || bytesRead != 4)
                         break;
 
                     if (userNo == 'CARP') {
-                        void* buf;
-
-                        buf = malloc(userLength - 12 + 1);
+                        char* buf = (char*)malloc(userLength - 12 + 1);
+                        if (!buf)
+                            break;
+                        defer(free(buf));
                         memset(buf, 0, userLength - 12 + 1);
-                        ReadFile(repFile, buf, userLength - 12, &bytesRead, NULL);
-                        if (bytesRead == userLength - 12)
+                        if (ReadFile(repFile, buf, userLength - 12, &bytesRead, NULL) && bytesRead == userLength - 12)
                             param = std::string((char*)buf, userLength - 12 + 1);
-                        free(buf);
-                        CloseHandle(repFile);
 
                         return (bytesRead == userLength - 12);
                     } else {
@@ -827,8 +832,6 @@ bool ReplayLoadParam(const char* rep_path, std::string& param)
             }
         }
     }
-
-    CloseHandle(repFile);
     return false;
 }
 

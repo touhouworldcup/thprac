@@ -48,9 +48,9 @@ namespace Gui {
     struct WndKeyStatus {
         unsigned int hold = 0;
         int frame = 0;
-        char name[32] {};
-    } g_wndKeyStatus[256];
-    unsigned int g_wndKeyFrameStatus[256] {};
+        char name[32] = {};
+    } g_wndKeyStatus[256] = {};
+    unsigned int g_wndKeyFrameStatus[256] = {};
     bool g_isFullscreenCache = false;
 
     // Key
@@ -121,8 +121,6 @@ namespace Gui {
                     case VK_OEM_3:
                     case VK_OEM_102:
                         key = i;
-                    default:
-                        break;
                     }
                 }
                 if (key) {
@@ -261,8 +259,8 @@ namespace Gui {
             if (active_window == g_hWnd || ::IsChild(active_window, g_hWnd))
                 if (::GetCursorPos(&pos) && ::ScreenToClient(g_hWnd, &pos)) {
                     if (mouseMapping) {
-                        RECT rect;
-                        SIZE wndSize;
+                        RECT rect = {};
+                        SIZE wndSize = {};
                         GetClientRect(g_hWnd, &rect);
                         wndSize.cx = rect.right - rect.left;
                         wndSize.cy = rect.bottom - rect.top;
@@ -589,7 +587,7 @@ namespace Gui {
 			*/
 
         // Setup time step
-        INT64 current_time;
+        INT64 current_time = 0;
         ::QueryPerformanceCounter((LARGE_INTEGER*)&current_time);
         io.DeltaTime = (float)(current_time - g_Time) / g_TicksPerSecond;
         g_Time = current_time;

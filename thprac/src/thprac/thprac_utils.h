@@ -109,7 +109,7 @@ struct adv_opt_ctx {
     std::function<void(std::vector<RecordedValue>&)> data_rec_func;
     std::string data_rec_dir;
 
-    bool all_clear_bonus;
+    bool all_clear_bonus = false;
 };
 
 void CenteredText(const char* text, float wndX);
@@ -499,6 +499,37 @@ inline long RoundUp(long n, long m)
 {
     return n >= 0 ? ((n + m - 1) / m) * m : (n / m) * m;
 }
+
+#pragma endregion
+
+#pragma region Defer macro
+
+/// defer implementation for C++
+/// http://www.gingerbill.org/article/defer-in-cpp.html
+/// ----------------------------
+
+// Fun fact: in the vast majority of cases the compiler
+// optimizes this down to normal conditional branching.
+template <typename F>
+struct privDefer {
+    F f;
+    explicit privDefer(F f)
+        : f(f)
+    {
+    }
+    ~privDefer() { f(); }
+};
+
+template <typename F>
+privDefer<F> defer_func(F f)
+{
+    return privDefer<F>(f);
+}
+
+#define DEFER_1(x, y) x##y
+#define DEFER_2(x, y) DEFER_1(x, y)
+#define DEFER_3(x) DEFER_2(x, __COUNTER__)
+#define defer(code) auto DEFER_3(_defer_) = defer_func([&]() { code; })
 
 #pragma endregion
 }

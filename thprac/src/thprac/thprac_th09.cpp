@@ -126,13 +126,13 @@ namespace TH09 {
                 ImGui::SliderFloat("", gauge, 0, 400, _p);
                 ImGui::SameLine(0, style.ItemInnerSpacing.x);
                 if (ImGui::Button("-", ImVec2(bsize, bsize)) && *gauge > 0) {
-                    *gauge -= 1;
-                    *gauge = RoundDown(*gauge, 100);
+                    *gauge -= 1.0f;
+                    *gauge = static_cast<float>(RoundDown(static_cast<long>(*gauge), 100));
                 }
                 ImGui::SameLine(0, style.ItemInnerSpacing.x);
                 if (ImGui::Button("+", ImVec2(bsize, bsize)) && *gauge < 400) {
-                    *gauge += 1;
-                    *gauge = RoundUp(*gauge, 100);
+                    *gauge += 1.0f;
+                    *gauge = static_cast<float>(RoundUp(static_cast<long>(*gauge), 100));
                 }
                 style.FramePadding = backup_frame_padding;
                 ImGui::SameLine();
@@ -153,7 +153,7 @@ namespace TH09 {
                     ImGui::PushID(TH09_P1);
                     cpu_charge_p1 = (int)*(float*)(pl1 + 0x7c) / 100;
                     if (ImGui::SliderInt(XSTR(TH09_P1), &cpu_charge_p1, 1, 4)) {
-                        *(float*)(pl1 + 0x7c) = cpu_charge_p1 * 100;
+                        *(float*)(pl1 + 0x7c) = static_cast<float>(cpu_charge_p1) * 100;
                     }
                     ImGui::SameLine();
                     ImGui::Checkbox(XSTR(TH09_LOCK), &cpu_lock_attack_p1);
@@ -163,7 +163,7 @@ namespace TH09 {
                     ImGui::PushID(TH09_P2);
                     cpu_charge_p2 = (int)*(float*)(pl2 + 0x7c) / 100;
                     if (ImGui::SliderInt(XSTR(TH09_P2), &cpu_charge_p2, 1, 4)) {
-                        *(float*)(pl2 + 0x7c) = cpu_charge_p2 * 100;
+                        *(float*)(pl2 + 0x7c) = static_cast<float>(cpu_charge_p2) * 100;
                     }
                     ImGui::SameLine();
                     ImGui::Checkbox(XSTR(TH09_LOCK), &cpu_lock_attack_p2);

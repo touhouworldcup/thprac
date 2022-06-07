@@ -423,7 +423,7 @@ private:
 
 class THUpdate {
 private:
-    THUpdate() 
+    THUpdate()
     {
 
     }
@@ -533,7 +533,10 @@ public:
         hDialog = mUpdDialogHnd;
 
         auto titleStr = utf8_to_utf16(XSTR(THPRAC_UPDATE_DIALOG_CHECKING));
+#pragma warning(push) // TODO: make this less hacky
+#pragma warning(disable: 28183)
         SetWindowText(hDialog, titleStr.c_str());
+#pragma warning(pop)
         LONG_PTR style = GetWindowLongPtr(GetDlgItem(hDialog, IDC_PROGRESS1), GWL_STYLE);
         SetWindowLongPtr(GetDlgItem(hDialog, IDC_PROGRESS1), GWL_STYLE, style | PBS_MARQUEE);
         SendMessage(GetDlgItem(hDialog, IDC_PROGRESS1), PBM_SETMARQUEE, 1, 0);
@@ -679,7 +682,6 @@ private:
         if (versionJson.HasMember("direct_link") && versionJson["direct_link"].IsString()) {
             cfgGui.mUpdDirectLink = versionJson["direct_link"].GetString();
         }
-        cfgGui.mUpdFileSize = 0;
         if (versionJson.HasMember("file_size") && versionJson["file_size"].IsUint()) {
             cfgGui.mUpdFileSize = versionJson["file_size"].GetUint();
         }
@@ -730,9 +732,8 @@ private:
         THUpdate::singleton().mChkUpdStatus = STATUS_NO_UPDATE;
         return;
     }
-    static bool ParseURL_X(std::string& _url, std::wstring& serverNameOut, std::wstring& objectNameOut, std::wstring& fileNameOut, bool& isHttpsOut)
+    static bool ParseURL_X(std::string url, std::wstring& serverNameOut, std::wstring& objectNameOut, std::wstring& fileNameOut, bool& isHttpsOut)
     {
-        auto url = _url;
         bool isHttps = true;
         if (url.find("https://") == 0) {
             url = url.substr(8);
@@ -960,7 +961,7 @@ private:
     std::string mUpdVerStr;
     std::string mUpdDesc[3];
     std::string mUpdDirectLink;
-    size_t mUpdFileSize;
+    size_t mUpdFileSize = 0;
     float mUpdPercentage = 0.0f;
     GuiThread mUpdDialogThread { THUpdate::UpdateDialogCtrlFunc };
     HWND mUpdDialogHnd = NULL;
@@ -987,7 +988,7 @@ public:
 
     void FileOperateWrapper(FILEOP_FLAGS op, const wchar_t* from, const wchar_t* to)
     {
-        SHFILEOPSTRUCTW fileStruct;
+        SHFILEOPSTRUCTW fileStruct = {};
         fileStruct.hwnd = 0;
         fileStruct.wFunc = op;
         fileStruct.pFrom = from;

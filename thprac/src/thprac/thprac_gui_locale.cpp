@@ -325,7 +325,7 @@ static ImWchar baseUnicodeRanges[] =
     }
     HFONT CALLBACK CheckFontZh(HDC hdc, font_info& info)
     {
-        LOGFONTA font;
+        LOGFONTA font = {};
         int signal = 0;
 
         font.lfPitchAndFamily = 0;
@@ -362,7 +362,7 @@ static ImWchar baseUnicodeRanges[] =
     }
     HFONT CALLBACK CheckFontEn(HDC hdc, font_info& info)
     {
-        LOGFONTA font;
+        LOGFONTA font = {};
         int signal = 0;
 
         font.lfPitchAndFamily = 0;
@@ -392,7 +392,7 @@ static ImWchar baseUnicodeRanges[] =
     }
     HFONT CALLBACK CheckFontJa(HDC hdc, font_info& info)
     {
-        LOGFONTA font;
+        LOGFONTA font = {};
         int signal = 0;
 
         font.lfPitchAndFamily = 0;
@@ -492,7 +492,7 @@ static ImWchar baseUnicodeRanges[] =
             DWORD fontDataSize = 0;
 
             // Create Font and Device Context
-            font_info info;
+            font_info info = {};
             auto hdc = CreateCompatibleDC(nullptr);
             auto font = fontCheckers[locale](hdc, info);
             if (font == NULL) {
@@ -551,7 +551,7 @@ static ImWchar baseUnicodeRanges[] =
         DWORD fontDataSize = 0;
 
         // Create Font and Device Context
-        font_info info;
+        font_info info = {};
         auto hdc = CreateCompatibleDC(nullptr);
         auto font = fontCheckers[locale](hdc, info);
         if (font == NULL) {

@@ -26,14 +26,6 @@ namespace Gui {
             ImVec2 value;
         };
         GameGuiWnd() noexcept
-            : mStatus(0)
-            , mAlpha(0.0f)
-            , mWndFlag(STYLE_DEFAULT)
-            , mItemWidth(-100)
-            , mSizeFlag(true)
-            , mPosFlag(true)
-            , mFocus(false)
-            , mViewport(nullptr)
         {
             ImGuiIO& io = ImGui::GetIO();
             io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -84,19 +76,19 @@ namespace Gui {
         virtual void OnPreUpdate() {};
         virtual void OnPostUpdate() {};
 
-        int mStatus;
+        int mStatus = 0;
         std::vector<StyleValue> mStyle;
         std::string mTitle;
         ImVec2 mSize;
         ImVec2 mPos;
-        ImGuiWindowFlags mWndFlag;
-        float mItemWidth;
-        float mAlpha;
-        float mAlphaMax;
-        float mAlphaStep;
-        bool mSizeFlag;
-        bool mPosFlag;
-        bool mFocus;
+        ImGuiWindowFlags mWndFlag = STYLE_DEFAULT;
+        float mItemWidth = -100.0f;
+        float mAlpha = 0.0f;
+        float mAlphaMax = 0.0f;
+        float mAlphaStep = 0.0f;
+        bool mSizeFlag = true;
+        bool mPosFlag = true;
+        bool mFocus = false;
         Viewport* mViewport = nullptr;
 
     private:
@@ -705,9 +697,9 @@ namespace Gui {
         long long GetElapsedUs();
 
     private:
-        LARGE_INTEGER mStart;
-        LARGE_INTEGER mElapsed;
-        LARGE_INTEGER mFreq;
+        LARGE_INTEGER mStart = {};
+        LARGE_INTEGER mElapsed = {};
+        LARGE_INTEGER mFreq = {};
         bool mIsTiming = false;
     };
 

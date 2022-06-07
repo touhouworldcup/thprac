@@ -234,11 +234,11 @@ namespace THPrac
             } else if (size.y > 0.0f) {
                 mSize.y = io.DisplaySize.y * size.y;
             } else if (size.y == 0.0f) {
-                float font_y;
+                float font_y = 0.0f;
                 if (label_valid)
                     font_y = label_size.y;
                 else
-                    ImGui::GetFont()->FontSize;
+                    font_y = ImGui::GetFont()->FontSize;
 
                 mSize.y = (font_y + style.FramePadding.y * 2.0f + style.ItemSpacing.y) * widiget_counts;
             }
@@ -270,11 +270,11 @@ namespace THPrac
             } else if (y > 0.0f) {
                 mSize.y = io.DisplaySize.y * y;
             } else if (y == 0.0f) {
-                float font_y;
+                float font_y = 0.0f;
                 if (content || label)
                     font_y = ImGui::CalcTextSize(content ? content : label).y;
                 else
-                    ImGui::GetFont()->FontSize;
+                    font_y = ImGui::GetFont()->FontSize;
 
                 mSize.y = (font_y + style.FramePadding.y * 2.0f + style.ItemSpacing.y) * widigit_counts;
                 if (mSize.y > max_y)
