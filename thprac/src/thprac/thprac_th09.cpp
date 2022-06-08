@@ -11,6 +11,8 @@ namespace TH09 {
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
             SetSize(320, 480);
+            SetAutoSpacing(true);
+            SetItemWidthRel(0.0f);
             OnLocaleChange();
 
             th09_ranklock.Setup();
@@ -136,15 +138,27 @@ namespace TH09 {
                 }
                 style.FramePadding = backup_frame_padding;
                 ImGui::SameLine();
-                ImGui::Checkbox(XSTR(TH09_LOCK), lock_check);
+                ImGui::PushID(TH09_LOCK);
+                ImGui::Checkbox("", lock_check);
+                ImGui::PopID();
+                if (ImGui::IsItemHovered()) {
+                    ImGui::BeginTooltip();
+                    ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+                    ImGui::TextUnformatted(XSTR(TH09_LOCK));
+                    ImGui::PopTextWrapPos();
+                    ImGui::EndTooltip();
+                }
                 ImGui::PopID();
             };
 
             ImGui::PushID(TH09_CHARGE_GAUGE);
             ImGui::TextUnformatted(XSTR(TH09_CHARGE_GAUGE));
+
+            SetItemWidthRel(0.28f);
             chargegauge(pl1, &chargelock_p1);
             chargegauge(pl2, &chargelock_p2);
             ImGui::PopID();
+            SetItemWidthRel(0.0f);
 
             if (*(uint32_t*)0x4a7db8 || *(uint32_t*)0x4a7df0) {
                 ImGui::PushID(TH09_CPU_CHARGE);
