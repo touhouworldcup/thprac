@@ -153,12 +153,9 @@ namespace TH09 {
 
             ImGui::PushID(TH09_CHARGE_GAUGE);
             ImGui::TextUnformatted(XSTR(TH09_CHARGE_GAUGE));
-
-            SetItemWidthRel(0.28f);
             chargegauge(pl1, &chargelock_p1);
             chargegauge(pl2, &chargelock_p2);
             ImGui::PopID();
-            SetItemWidthRel(0.0f);
 
             if (*(uint32_t*)0x4a7db8 || *(uint32_t*)0x4a7df0) {
                 ImGui::PushID(TH09_CPU_CHARGE);
