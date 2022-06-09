@@ -1,11 +1,10 @@
 # thprac
 A tool for practicing Touhou Shmups
-
-[https://github.com/touhouworldcup/thprac/releases/latest](Download)
+## [Download](https://github.com/touhouworldcup/thprac/releases/latest)
 
 # Credits (May 27th 2022 and after)
-- [https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w](32th System), [https://github.com/hoangcaominh](Cao Minh), [https://github.com/raviddog](raviddog): Development
-- [https://twitter.com/CrestedPeak9](CrestedPeak9): Chinese translations
+- [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog): Development
+- [CrestedPeak9](https://twitter.com/CrestedPeak9): Chinese translations
 
 # How to build:
 A Visual Studio solution is bundled that uses the Visual Studio 2022 build tools (v143) for debug builds and the Visual Studio 2017 build tools with Windows XP support (v141_xp) for release builds.
