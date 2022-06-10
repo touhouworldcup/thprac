@@ -1,10 +1,18 @@
 # thprac
 A tool for practicing Touhou Shmups
+## [Download](https://github.com/touhouworldcup/thprac/releases/latest)
 
-> I will indefinitely cease all future development on thprac/Marketeer, you are free to continue working on it, granting that you follow the license's terms.
-> Due to my insufficient skill, the code is glutted with obscure writings and terrible logic, turning the whole thing into a complete mess. I'm sorry if that disturbs you.
-- Ack
+# Credits (May 27th 2022 and after)
+- Development: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 
+- Chinese translations: [CrestedPeak9](https://twitter.com/CrestedPeak9)
+- Transferring all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) to [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
 
 # How to build:
-Both thprac and marketeer_server include Visual Studio solutuions that can be built with Visual Studio 2022, but make sure that Windows XP support for the Visual Studio 2017 (v141) tools is installed.
-marketeer_server includes a Visual Studio solution for building on Windows but the code can be built on Linux (assuming wolfssl and nng are installed through your package manager) by just running `make`
+A Visual Studio solution is bundled that uses the Visual Studio 2022 build tools (v143) for debug builds and the Visual Studio 2017 build tools with Windows XP support (v141_xp) for release builds.
+
+If you add a new string to the codebase that needs to be localized, put it into thprac_games_def.json and run thprac_multi to generate a new thprac_locale_def.h
+
+# Why did thprac move?
+Ack has completely stopped thprac development and can not be contacted at the moment. This is the statement on his original repository
+> I will indefinitely cease all future development on thprac/Marketeer, you are free to continue working on it, granting that you follow the license's terms.
+> Due to my insufficient skill, the code is glutted with obscure writings and terrible logic, turning the whole thing into a complete mess. I'm sorry if that disturbs you.
