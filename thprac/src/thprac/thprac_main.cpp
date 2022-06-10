@@ -105,7 +105,7 @@ bool PromptUser(thprac_prompt_t info, THGameSig* gameSig = nullptr)
 THGameSig* CheckOngoingGame(PROCESSENTRY32& proc)
 {
     // Eliminate impossible process
-    if (strcmp("搶曽峠杺嫿.exe", proc.szExeFile) && strcmp("東方紅魔郷.exe", proc.szExeFile)) {
+    if (strcmp("搶曽峠杺嫿.exe", proc.szExeFile) && strcmp("東方紅魔郷.exe", proc.szExeFile) && strcmp("alcostg.exe", proc.szExeFile)) {
         if (proc.szExeFile[0] != 't' || proc.szExeFile[1] != 'h')
             return nullptr;
         if (proc.szExeFile[2] < 0x30 || proc.szExeFile[2] > 0x39)
