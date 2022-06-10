@@ -538,26 +538,6 @@ namespace TH09 {
         return advOptWnd->IsOpen();
     }
 
-    __declspec(noinline) void THGuiUpdate()
-    {
-        GameGuiBegin(IMPL_WIN32_DX8);
-
-        // Gui components update
-        TH09Tools& t = TH09Tools::singleton();
-        if (t.enabled) {
-            if (Gui::KeyboardInputUpdate(VK_F11) == 1) {
-                if (t.IsOpen())
-                    t.Close();
-                else
-                    t.Open();
-            }
-        }
-        t.Update();
-        THGuiPrac::singleton().Update();
-
-        GameGuiEnd(IMPL_WIN32_DX8, UpdateAdvOptWindow());
-    }
-
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th09_map_confirm, (void*)0x4263d5)
     {
@@ -581,10 +561,28 @@ namespace TH09 {
             pCtx->Eip = 0x4266ad;
         }
     }
-    
+    EHOOK_DY(th09_update, (void*)0x42c700)
+    {
+        GameGuiBegin(IMPL_WIN32_DX8);
+
+        // Gui components update
+        TH09Tools& t = TH09Tools::singleton();
+        if (t.enabled) {
+            if (Gui::KeyboardInputUpdate(VK_F11) == 1) {
+                if (t.IsOpen())
+                    t.Close();
+                else
+                    t.Open();
+            }
+        }
+        t.Update();
+        THGuiPrac::singleton().Update();
+
+        GameGuiEnd(UpdateAdvOptWindow());
+    }
     EHOOK_DY(th09_render, (void*)0x42dd51)
     {
-        THGuiUpdate();
+        GameGuiRender(IMPL_WIN32_DX8);
     }
     EHOOK_DY(th09_game_init, (void*)0x41b5c5)
     {

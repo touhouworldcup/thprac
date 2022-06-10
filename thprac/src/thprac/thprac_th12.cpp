@@ -1533,17 +1533,21 @@ namespace TH12 {
     {
         THGuiRep::singleton().State(3);
     }
-    EHOOK_DY(th12_render_1, (void*)0x45019f)
+    EHOOK_DY(th12_update, (void*)0x4624c0)
     {
-        THGuiUpdate();
+        GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
+
+        // Gui components update
+        THGuiPrac::singleton().Update();
+        THGuiRep::singleton().Update();
+        THOverlay::singleton().Update();
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+
+        GameGuiEnd(drawCursor);
     }
-    EHOOK_DY(th12_render_2, (void*)0x45054d)
+    EHOOK_DY(th12_render, (void*)0x462722)
     {
-        THGuiUpdate();
-    }
-    EHOOK_DY(th12_render_3, (void*)0x4506ec)
-    {
-        THGuiUpdate();
+        GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
 

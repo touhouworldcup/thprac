@@ -1605,18 +1605,6 @@ namespace TH10 {
         THStage6STD();
     }
 
-    __declspec(noinline) void THGuiUpdate()
-    {
-        GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
-
-        // Gui components update
-        THGuiPrac::singleton().Update();
-        THGuiRep::singleton().Update();
-        THOverlay::singleton().Update();
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
-
-        GameGuiEnd(IMPL_WIN32_DX9, drawCursor);
-    }
     int THBGMTest()
     {
         if (!thPracParam.mode)
@@ -2228,9 +2216,21 @@ namespace TH10 {
         pCtx->Eip = 0x431054;
     }
     PATCH_DY(th10_disable_prac_menu_3, (void*)0x43111b, "\x00", 1);
+    EHOOK_DY(th10_update, (void*)0x449c00)
+    {
+        GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
+
+        // Gui components update
+        THGuiPrac::singleton().Update();
+        THGuiRep::singleton().Update();
+        THOverlay::singleton().Update();
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+
+        GameGuiEnd(drawCursor);
+    }
     EHOOK_DY(th10_render, (void*)0x4394fa)
     {
-        THGuiUpdate();
+        GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
 

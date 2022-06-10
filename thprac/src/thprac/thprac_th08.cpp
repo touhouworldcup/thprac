@@ -2061,18 +2061,6 @@ namespace TH08 {
         }
     }
 
-    __declspec(noinline) void THGuiUpdate()
-    {
-        GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
-
-        // Gui components update
-        THGuiPrac::singleton().Update();
-        THGuiRep::singleton().Update();
-        THOverlay::singleton().Update();
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
-
-        GameGuiEnd(IMPL_WIN32_DX8, drawCursor);
-    }
     void THSetPoint()
     {
         int32_t pPointFunc = 0x440470;
@@ -2313,9 +2301,21 @@ namespace TH08 {
     PATCH_DY(th08_prac_menu_key1, (void*)0x46b06b, "\x01\x00\x00\x00", 4);
     PATCH_DY(th08_prac_menu_key2, (void*)0x46b07b, "\x01\x00\x00\x00", 4);
     PATCH_DY(th08_prac_menu_key3, (void*)0x46b088, "\x01\x00\x00\x00", 4);
+    EHOOK_DY(th08_update, (void*)0x43ca50)
+    {
+        GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
+
+        // Gui components update
+        THGuiPrac::singleton().Update();
+        THGuiRep::singleton().Update();
+        THOverlay::singleton().Update();
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+
+        GameGuiEnd(drawCursor);
+    }
     EHOOK_DY(th08_render, (void*)0x442014)
     {
-        THGuiUpdate();
+        GameGuiRender(IMPL_WIN32_DX8);
     }
     HOOKSET_ENDDEF()
 

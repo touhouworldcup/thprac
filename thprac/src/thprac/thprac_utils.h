@@ -45,7 +45,12 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3 = 0,
     int wnd_size_flag = -1, float x = 640.0f, float y = 480.0f);
 void GameGuiBegin(game_gui_impl impl, bool game_nav = true);
-void GameGuiEnd(game_gui_impl impl, bool draw_cursor = false);
+void GameGuiEnd(bool draw_cursor = false);
+void GameGuiRender(game_gui_impl impl);
+static void GameGuiEnd(game_gui_impl impl, bool draw_cursor = false) {
+    GameGuiEnd(draw_cursor);
+    GameGuiRender(impl);
+}
 void GameToggleIME(bool toggle);
 void TryKeepUpRefreshRate(void* address);
 void TryKeepUpRefreshRate(void* address, void* address2);
@@ -122,7 +127,6 @@ void CenteredText(const char* text, float wndX);
 float GetRelWidth(float rel);
 float GetRelHeight(float rel);
 void CalcFileHash(const char* file_name, uint64_t hash[2]);
-uint64_t CalcFileXXHash(const char* file_name);
 void HelpMarker(const char* desc);
 template <th_glossary_t name>
 static bool BeginOptGroup()

@@ -1960,21 +1960,6 @@ namespace TH06 {
     }
 
     // Hook Helper
-    __declspec(noinline) void THGuiUpdate()
-    {
-        GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
-
-        // Gui components update
-        Gui::KeyboardInputUpdate(VK_ESCAPE);
-        THPauseMenu::singleton().Update();
-        THGuiPrac::singleton().Update();
-        THGuiRep::singleton().Update();
-        THOverlay::singleton().Update();
-
-        GameGuiEnd(IMPL_WIN32_DX8, THAdvOptWnd::StaticUpdate() | THGuiPrac::singleton().IsOpen() | THPauseMenu::singleton().IsOpen());
-
-        THSnapshot::Update();
-    }
     bool THBGMTest()
     {
         if (!thPracParam.mode)
@@ -2168,9 +2153,23 @@ namespace TH06 {
     PATCH_DY(th06_disable_enter_1, (void*)0x437368, "\x00", 1);
     PATCH_DY(th06_disable_enter_2, (void*)0x437378, "\x00", 1);
     PATCH_DY(th06_disable_enter_3, (void*)0x437385, "\x00", 1);
+    EHOOK_DY(th06_update, (void*)0x41cad0)
+    {
+        GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
+
+        // Gui components update
+        Gui::KeyboardInputUpdate(VK_ESCAPE);
+        THPauseMenu::singleton().Update();
+        THGuiPrac::singleton().Update();
+        THGuiRep::singleton().Update();
+        THOverlay::singleton().Update();
+
+        GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
+    }
     EHOOK_DY(th06_render, (void*)0x4207e1)
     {
-        THGuiUpdate();
+        GameGuiRender(IMPL_WIN32_DX8);
+        THSnapshot::Update();
     }
     HOOKSET_ENDDEF()
 
