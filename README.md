@@ -5,6 +5,7 @@ A tool for practicing Touhou Shmups
 # Credits (May 27th 2022 and after)
 - Development: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 
 - Chinese translations: [CrestedPeak9](https://twitter.com/CrestedPeak9)
+- Japanese translations: [Yu-miya](https://www.twitch.tv/toho_yumiya)
 - Transferring all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) to [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
 
 # How to build:
