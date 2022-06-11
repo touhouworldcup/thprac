@@ -174,12 +174,10 @@ void GameGuiBegin(game_gui_impl impl, bool game_nav)
         Gui::ImplWin32NewFrame();
         ::ImGui::NewFrame();
         break;
-    default:
-        break;
     }
 }
 
-void GameGuiEnd(game_gui_impl impl, bool draw_cursor)
+void GameGuiEnd(bool draw_cursor)
 {
     // Draw cursor if needed
     if (draw_cursor && Gui::ImplWin32CheckFullScreen()) {
@@ -197,26 +195,28 @@ void GameGuiEnd(game_gui_impl impl, bool draw_cursor)
             Gui::LocaleSet(Gui::LOCALE_EN_US);
         }
     }
+    ::ImGui::EndFrame();
+}
 
+void GameGuiRender(game_gui_impl impl)
+{
     Gui::ImplWin32Check((void*)*g_gameGuiHwnd);
     switch (impl) {
     case THPrac::IMPL_WIN32_DX8:
         // End frame and render
         Gui::ImplDX8Check((IDirect3DDevice8*)*g_gameGuiDevice);
-        ::ImGui::EndFrame();
         ::ImGui::Render();
         Gui::ImplDX8RenderDrawData(::ImGui::GetDrawData());
         break;
     case THPrac::IMPL_WIN32_DX9:
         // End frame and render
         Gui::ImplDX9Check((IDirect3DDevice9*)*g_gameGuiDevice);
-        ::ImGui::EndFrame();
         ::ImGui::Render();
         Gui::ImplDX9RenderDrawData(::ImGui::GetDrawData());
         break;
     default:
         break;
-    }    
+    }
 }
 
 void GameFreeze()
