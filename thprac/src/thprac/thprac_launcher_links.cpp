@@ -62,6 +62,7 @@ private:
         const char* debugJsonStr = u8R"123({
     "Default":{
         "__is_open__" : true,
+        "Royalflare Archive":"https://maribelhearn.com/royalflare",
         "Lunarcast":"http://replay.lunarcast.net/",
         "PND":"https://thscore.pndsng.com/index.php",
         "Maribel Hearn's Touhou Portal":"https://maribelhearn.com/",
