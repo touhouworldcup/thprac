@@ -696,6 +696,7 @@ enum th_glossary_t
     TH_SCORE,
     TH_SHOTS_TAKEN,
     TH_SHOTS_TAKEN_ALT,
+    TH_SPEED,
     TH_SPELL,
     TH_SPELL_FINAL,
     TH_SPELL_PRAC,
@@ -730,7 +731,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-static char* th_glossary_str[3][723]
+static char* th_glossary_str[3][724]
 {
     {
         "",
@@ -1424,6 +1425,7 @@ static char* th_glossary_str[3][723]
         u8"分数",
         u8"摄影回数",
         u8"#__shots_taken",
+        u8"速度",
         u8"符卡",
         u8"终符",
         u8"符卡练习",
@@ -2149,6 +2151,7 @@ static char* th_glossary_str[3][723]
         u8"Score",
         u8"Shots Taken",
         u8"#__shots_taken",
+        u8"Speed",
         u8"Spell Card",
         u8"Final Spell",
         u8"Spell Practice",
@@ -2874,6 +2877,7 @@ static char* th_glossary_str[3][723]
         u8"スコア",
         u8"撮影回数",
         u8"#__shots_taken",
+        u8"速度",
         u8"スペカ",
         u8"ラスト",
         u8"スペルプラクティス",

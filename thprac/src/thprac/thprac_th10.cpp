@@ -12,6 +12,7 @@ namespace TH10 {
         int32_t power;
         int32_t faith;
         int32_t faith_bar;
+        int32_t st6_boss9_spd;
         int64_t score;
 
         bool _playLock = false;
@@ -33,6 +34,7 @@ namespace TH10 {
             GetJsonValue(power);
             GetJsonValue(faith);
             GetJsonValue(faith_bar);
+            GetJsonValue(st6_boss9_spd);
             GetJsonValue(score);
 
             return true;
@@ -54,6 +56,7 @@ namespace TH10 {
             AddJsonValue(power);
             AddJsonValue(faith);
             AddJsonValue(faith_bar);
+            AddJsonValue(st6_boss9_spd);
             AddJsonValue(score);
 
             ReturnJson();
@@ -69,6 +72,7 @@ namespace TH10 {
             *mMode = 1;
             *mFaith = 50000;
             *mFaithBar = 130;
+            *mSt6Boss9Spd = 160;
 
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -92,6 +96,24 @@ namespace TH10 {
                 SetFade(0.8f, 0.1f);
                 Open();
                 thPracParam.Reset();
+                switch (mDiffculty) {
+                case 0:
+                    mSt6Boss9Spd.SetBound(0, 140);
+                    mSt6Boss9Spd.SetValue(140);
+                    break;
+                case 1:
+                    mSt6Boss9Spd.SetBound(0, 120);
+                    mSt6Boss9Spd.SetValue(120);
+                    break;
+                case 2:
+                    mSt6Boss9Spd.SetBound(0, 100);
+                    mSt6Boss9Spd.SetValue(100);
+                    break;
+                case 3:
+                    mSt6Boss9Spd.SetBound(0, 50);
+                    mSt6Boss9Spd.SetValue(50);
+                    break;
+                }
             case 2:
                 break;
             case 3:
@@ -108,6 +130,7 @@ namespace TH10 {
                 thPracParam.power = *mPower;
                 thPracParam.faith = *mFaith;
                 thPracParam.faith_bar = *mFaithBar;
+                thPracParam.st6_boss9_spd = *mSt6Boss9Spd;
                 thPracParam.score = *mScore;
                 break;
             case 4:
@@ -147,14 +170,6 @@ namespace TH10 {
 
             PracticeMenu();
         }
-        th_glossary_t* SpellPhase()
-        {
-            auto section = CalcSection();
-            if (section == TH10_ST7_END_S10) {
-                return TH_SPELL_PHASE1;
-            }
-            return nullptr;
-        }
         void PracticeMenu()
         {
             mMode();
@@ -165,7 +180,12 @@ namespace TH10 {
                     *mSection = *mChapter = *mPhase = 0;
                 if (*mWarp) {
                     SectionWidget();
-                    mPhase(TH_PHASE, SpellPhase());
+                    int section = CalcSection();
+                    if (section == TH10_ST6_BOSS9) {
+                        mSt6Boss9Spd();
+                    } else if (section == TH10_ST7_END_S10) {
+                        mPhase(TH_PHASE, TH_SPELL_PHASE1);
+                    }
                 }
 
                 mLife();
@@ -256,6 +276,7 @@ namespace TH10 {
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mFaith { TH_FAITH, 0, 999990, 10, 100000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mFaithBar { TH10_FAITH_BAR, 0, 130, 1, 10 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mSt6Boss9Spd { "Speed", 0, 160, 1, 10 };
 
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
@@ -1457,6 +1478,9 @@ namespace TH10 {
             ecl << 0 << 0x00180103 << 0x02ff0000 << 0 << 3 << 18
                 << 0 << 0x00180103 << 0x02ff0000 << 0 << 4 << 19
                 << 9999 << 0x00100000 << 0x00ff0000 << 0;
+
+            ecl.SetPos(0x8d38 + *((int32_t*)0x474c74) * 4);
+            ecl << thPracParam.st6_boss9_spd;
             break;
         case THPrac::TH10::TH10_ST7_MID1:
             ECLSt7MidBoss(ecl);
