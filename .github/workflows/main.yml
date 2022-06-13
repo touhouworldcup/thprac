@@ -1,0 +1,20 @@
+name: CI
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - name: Setup MSBuild environment
+      uses: microsoft/setup-msbuild@v1.1
+	  with:
+	      msbuild-architecture: x86
+    - name: Build thprac
+      run: msbuild thprac.sln -p:Configuration=Release
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: thprac
+        path: |
+		    Release/thprac.exe
+			Release/thprac.pdb
