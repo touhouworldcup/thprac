@@ -59,18 +59,19 @@ private:
     };
     void WriteLinksCfgDefault()
     {
-        const char* debugJsonStr = u8R"123({
-    "Default":{
-        "__is_open__" : true,
-        "Lunarcast":"http://replay.lunarcast.net/",
-        "PND":"https://thscore.pndsng.com/index.php",
-        "Maribel Hearn's Touhou Portal":"https://maribelhearn.com/",
-        "Eientei Forums":"https://eientei.boards.net/",
-        "甜品站 (isndes)":"https://www.isndes.com/",
-        "Touhou Patch":"https://www.thpatch.net/",
-        "THBWiki":"https://thwiki.cc/"
-    }
-})123";
+        const char* debugJsonStr = R"123({
+            "Default":{
+                "__is_open__" : true,
+                "Royalflare Archive":"https://maribelhearn.com/royalflare",
+                "Lunarcast":"http://replay.lunarcast.net/",
+                "PND":"https://thscore.pndsng.com/index.php",
+                "Maribel Hearn's Touhou Portal":"https://maribelhearn.com/",
+                "Eientei Forums":"https://eientei.boards.net/",
+                "甜品站 (isndes)":"https://www.isndes.com/",
+                "Touhou Patch":"https://www.thpatch.net/",
+                "THBWiki":"https://thwiki.cc/"
+            }
+        })123";
         rapidjson::Document linksJson;
         linksJson.Parse(debugJsonStr);
 
