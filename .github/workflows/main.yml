@@ -5,6 +5,7 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
+    - uses: actions/checkout@v3
     - name: Setup MSBuild environment
       uses: microsoft/setup-msbuild@v1.1
       with:
