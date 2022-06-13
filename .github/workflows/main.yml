@@ -11,7 +11,7 @@ jobs:
       with:
           msbuild-architecture: x86
     - name: Build thprac
-      run: msbuild thprac.sln -p:Configuration=Release
+      run: msbuild thprac.sln -t:restore,build -p:RestorePackagesConfig=true,Configuration=Release
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
