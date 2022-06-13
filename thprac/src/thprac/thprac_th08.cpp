@@ -525,7 +525,7 @@ namespace TH08 {
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            (void*)0x44abda, "\xe9\xca\x02\x00\x00", 5,
+            (void*)0x44abda, "\xB9\x70\xA6\x4E\x00\xE8\xBC\x1F\x00\x00\xE9\xC0\x02\x00\x00", 15,
             (void*)0x44Ab86, "\x03", 1,
         };
         Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
