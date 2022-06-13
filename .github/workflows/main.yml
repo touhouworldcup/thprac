@@ -7,8 +7,8 @@ jobs:
     steps:
     - name: Setup MSBuild environment
       uses: microsoft/setup-msbuild@v1.1
-	  with:
-	      msbuild-architecture: x86
+      with:
+          msbuild-architecture: x86
     - name: Build thprac
       run: msbuild thprac.sln -p:Configuration=Release
     - name: Upload artifacts
@@ -16,5 +16,5 @@ jobs:
       with:
         name: thprac
         path: |
-		    Release/thprac.exe
-			Release/thprac.pdb
+            Release/thprac.exe
+            Release/thprac.pdb
