@@ -1817,7 +1817,7 @@ namespace TH11 {
         THGuiRep::singleton().State(3);
     }
     PATCH_DY(th11_prac_menu_key, (void*)0x43d7d7, "\x01\x00\x00\x00", 4);
-    EHOOK_DY(th11_update, (void*)0x456cb0)
+    EHOOK_DY(th11_update, (void*)0x456deb)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 

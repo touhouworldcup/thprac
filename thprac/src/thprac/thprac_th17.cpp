@@ -2127,7 +2127,7 @@ namespace TH17 {
             pCtx->Eip = 0x45c554;
         }
     }
-    EHOOK_DY(th17_update, (void*)0x4012a0)
+    EHOOK_DY(th17_update, (void*)0x4013b5)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 

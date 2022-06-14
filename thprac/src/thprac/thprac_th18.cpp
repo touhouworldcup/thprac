@@ -2901,7 +2901,7 @@ namespace TH18 {
     {
         THGuiRep::singleton().State(3);
     }
-    EHOOK_DY(th18_update, (void*)0x4012e0)
+    EHOOK_DY(th18_update, (void*)0x4013f5)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 

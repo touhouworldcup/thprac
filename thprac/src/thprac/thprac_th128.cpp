@@ -2300,7 +2300,7 @@ namespace TH128 {
         if (stage != thPracParam.stage)
             thHardLock = thLock = true;
     }
-    EHOOK_DY(th128_update, (void*)0x468310)
+    EHOOK_DY(th128_update, (void*)0x468434)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 

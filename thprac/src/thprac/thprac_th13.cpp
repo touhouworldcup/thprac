@@ -1960,7 +1960,7 @@ namespace TH13 {
     {
         THGuiRep::singleton().State(3);
     }
-    EHOOK_DY(th13_update, (void*)0x470af0)
+    EHOOK_DY(th13_update, (void*)0x470c04)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 

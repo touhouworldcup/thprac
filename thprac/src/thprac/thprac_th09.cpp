@@ -561,7 +561,7 @@ namespace TH09 {
             pCtx->Eip = 0x4266ad;
         }
     }
-    EHOOK_DY(th09_update, (void*)0x42c700)
+    EHOOK_DY(th09_update, (void*)0x42c7b5)
     {
         GameGuiBegin(IMPL_WIN32_DX8);
 

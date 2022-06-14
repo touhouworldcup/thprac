@@ -2153,7 +2153,7 @@ namespace TH06 {
     PATCH_DY(th06_disable_enter_1, (void*)0x437368, "\x00", 1);
     PATCH_DY(th06_disable_enter_2, (void*)0x437378, "\x00", 1);
     PATCH_DY(th06_disable_enter_3, (void*)0x437385, "\x00", 1);
-    EHOOK_DY(th06_update, (void*)0x41cad0)
+    EHOOK_DY(th06_update, (void*)0x41cb6d)
     {
         GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
 

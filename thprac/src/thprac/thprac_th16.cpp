@@ -2477,7 +2477,7 @@ namespace TH16 {
     {
         THGuiSP::singleton().State(5);
     }
-    EHOOK_DY(th16_update, (void*)0x401460)
+    EHOOK_DY(th16_update, (void*)0x40156f)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 

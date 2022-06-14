@@ -2301,7 +2301,7 @@ namespace TH08 {
     PATCH_DY(th08_prac_menu_key1, (void*)0x46b06b, "\x01\x00\x00\x00", 4);
     PATCH_DY(th08_prac_menu_key2, (void*)0x46b07b, "\x01\x00\x00\x00", 4);
     PATCH_DY(th08_prac_menu_key3, (void*)0x46b088, "\x01\x00\x00\x00", 4);
-    EHOOK_DY(th08_update, (void*)0x43ca50)
+    EHOOK_DY(th08_update, (void*)0x43cb37)
     {
         GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
 
