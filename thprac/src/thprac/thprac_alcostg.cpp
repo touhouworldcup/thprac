@@ -974,17 +974,6 @@ namespace Alcostg {
         }
     }
 
-    __declspec(noinline) void THGuiUpdate()
-    {
-        GameGuiBegin(IMPL_WIN32_DX9);
-
-        // Gui components update
-        THGuiPrac::singleton().Update();
-        //thGuiRep->Update();
-        THOverlay::singleton().Update();
-
-        GameGuiEnd(IMPL_WIN32_DX9, UpdateAdvOptWindow() | THGuiPrac::singleton().IsOpen());
-    }
     int THBGMTest()
     {
         if (thLock)
@@ -1126,9 +1115,20 @@ namespace Alcostg {
         if (stage != thPracParam.stage)
             thHardLock = thLock = true;
     }
+    EHOOK_DY(alcostg_update, (void*)0x445eee)
+    {
+        GameGuiBegin(IMPL_WIN32_DX9);
+
+        // Gui components update
+        THGuiPrac::singleton().Update();
+        // thGuiRep->Update();
+        THOverlay::singleton().Update();
+
+        GameGuiEnd(UpdateAdvOptWindow() || THGuiPrac::singleton().IsOpen());
+    }
     EHOOK_DY(alcostg_render, (void*)0x43564a)
     {
-        THGuiUpdate();
+        GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
 
