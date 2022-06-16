@@ -646,6 +646,7 @@ enum th_glossary_t
     TH_FPS_FREE_ADJ,
     TH_FPS_LOWERING,
     TH_FPS_UNSUPPORTED,
+    TH_FRAME,
     TH_GAMEPLAY,
     TH_GAME_SPEED,
     TH_GRAZE,
@@ -731,7 +732,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-static char* th_glossary_str[3][724]
+static char* th_glossary_str[3][725]
 {
     {
         "",
@@ -1375,6 +1376,7 @@ static char* th_glossary_str[3][724]
         u8"自由调整",
         u8"使用VsyncPatch时降低FPS可能会导致游戏冻结一小段时间，请耐心等待。",
         u8"不支持的VsyncPatch版本。",
+        u8"帧",
         u8"游戏进行",
         u8"游戏速度",
         u8"擦弹",
@@ -2101,6 +2103,7 @@ static char* th_glossary_str[3][724]
         u8"Adjust freely",
         u8"When using VsyncPatch, lowering FPS may freeze the game for a brief time. Please wait patiently.",
         u8"Unsupported VsyncPatch version.",
+        u8"Frame",
         u8"Gameplay",
         u8"Game Speed",
         u8"Graze",
@@ -2827,6 +2830,7 @@ static char* th_glossary_str[3][724]
         u8"自由調整",
         u8"VsyncPatchを使用している場合、FPSを下げるとゲームが一時的にフリーズする可能性がありますので、しばらくお待ちください。",
         u8"このバージョンのVsyncPatchはサポートされていません。",
+        u8"フレーム",
         u8"ゲームプレイ",
         u8"ゲームの速度",
         u8"グレイズ",
@@ -2954,6 +2958,17 @@ static th_glossary_t TH_WARP_SELECT[7]
     TH_END_STAGE,
     TH_NONSPELL,
     TH_SPELL,
+};
+
+static th_glossary_t TH_WARP_SELECT_FRAME[8]
+{
+    TH_NONE,
+    TH_STAGE_PORTION,
+    TH_MID_STAGE,
+    TH_END_STAGE,
+    TH_NONSPELL,
+    TH_SPELL,
+    TH_FRAME,
 };
 
 static th_glossary_t TH_WARP_CBA[4]

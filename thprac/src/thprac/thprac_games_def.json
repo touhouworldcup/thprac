@@ -592,6 +592,7 @@
       "TH_NONE": [ "无", "None", "なし" ],
       "TH_NONSPELL": [ "非符", "Non Spell", "通常" ],
       "TH_SPELL": [ "符卡", "Spell Card", "スペカ" ],
+      "TH_FRAME": [ "帧", "Frame", "フレーム" ],
       "TH_BOSSRUSH": [ "Boss Rush", "Boss Rush", "ボスラッシュ" ],
       "TH_BOSSRUSH_MIDBOSS": [ "中Boss##bossrush", "Mid Boss##bossrush", "中ボス##bossrush" ],
       "TH_BOSSRUSH_EXTRA": [ "6面后Extra", "Extra after Stage 6", "ステージ6の後にExtra" ],
@@ -774,6 +775,15 @@
         "TH_END_STAGE",
         "TH_NONSPELL",
         "TH_SPELL"
+      ],
+      "TH_WARP_SELECT_FRAME": [
+        "TH_NONE",
+        "TH_STAGE_PORTION",
+        "TH_MID_STAGE",
+        "TH_END_STAGE",
+        "TH_NONSPELL",
+        "TH_SPELL",
+        "TH_FRAME"
       ],
       "TH_WARP_CBA": [
         "TH_NONE",

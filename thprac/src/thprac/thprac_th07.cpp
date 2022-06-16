@@ -9,6 +9,7 @@ namespace TH07 {
         int32_t warp;
         int32_t section;
         int32_t phase;
+        int32_t frame;
         float life;
         float bomb;
         int64_t score;
@@ -39,6 +40,7 @@ namespace TH07 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
+            GetJsonValue(frame);
             GetJsonValue(score);
             GetJsonValue(life);
             GetJsonValue(bomb);
@@ -68,6 +70,8 @@ namespace TH07 {
                 AddJsonValue(section);
             if (phase)
                 AddJsonValue(phase);
+            if (frame)
+                AddJsonValue(frame);
 
             AddJsonValue(score);
             AddJsonValueEx(life, (int)life);
@@ -156,6 +160,7 @@ namespace TH07 {
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
                 thPracParam.phase = SpellPhase() ? *mPhase : 0;
+                thPracParam.frame = *mFrame;
                 thPracParam.score = *mScore;
                 thPracParam.life = (float)*mLife;
                 thPracParam.bomb = (float)*mBomb;
@@ -226,7 +231,7 @@ namespace TH07 {
                 *mSection = *mChapter = 0;
             if (*mMode == 1) {
                 if (mWarp())
-                    *mSection = *mChapter = *mPhase = 0;
+                    *mSection = *mChapter = *mPhase = *mFrame = 0;
                 if (*mWarp) {
                     SectionWidget();
                     mPhase(TH_PHASE, SpellPhase());
@@ -302,19 +307,20 @@ namespace TH07 {
                 break;
             case 2:
             case 3: // Mid boss & End boss
-                if (mSection(TH_WARP_SELECT[*mWarp],
+                if (mSection(TH_WARP_SELECT_FRAME[*mWarp],
                         th_sections_cba[*mStage][*mWarp - 2],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
                 break;
             case 4:
             case 5: // Non-spell & Spellcard
-                if (mSection(TH_WARP_SELECT[*mWarp],
+                if (mSection(TH_WARP_SELECT_FRAME[*mWarp],
                         th_sections_cbt[*mStage][*mWarp - 4],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
                 break;
-            default:
+            case 6: // Frame
+                mFrame();
                 break;
             }
         }
@@ -322,11 +328,12 @@ namespace TH07 {
         // Data
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
         Gui::GuiCombo mStage { TH_STAGE, TH07_STAGE_SELECT };
-        Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
+        Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT_FRAME };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mFrame { TH_FRAME, 0, INT_MAX };
         Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 8 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mBomb { TH_BOMB, 0, 8 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
@@ -342,7 +349,7 @@ namespace TH07 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mRank { TH_BULLET_RANK, 10, 32, 1, 10, 10 };
         Gui::GuiCheckBox mRankLock { TH_BULLET_RANKLOCK };
 
-        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP,
+        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_FRAME,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_LIFE, TH_BOMB, TH_SCORE, TH_POWER, TH_GRAZE, TH_POINT, TH_POINT_TOTAL, TH_POINT_STAGE,
             TH07_CHERRY, TH07_CHERRYMAX, TH07_CHERRYPLUS, TH07_SPELLBONUS, TH_BULLET_RANK, TH_BULLET_RANKLOCK };
@@ -1755,6 +1762,8 @@ namespace TH07 {
             int32_t* graze1 = (int32_t*)GetMemAddr(0x626278, 0x14);
             int32_t* graze2 = (int32_t*)GetMemAddr(0x626278, 0x18);
             *graze1 = *graze2 = thPracParam.graze;
+
+            *(int32_t*)0x12fe0fc = thPracParam.frame;
 
             THSetPoint();
 
