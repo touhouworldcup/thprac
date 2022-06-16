@@ -370,11 +370,11 @@ namespace TH08 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mBomb { TH_BOMB, 0, 8 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 0, 128 };
-        Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, 99999, 1, 10000 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, INT_MAX, 1, 10000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mPoint { TH_POINT, 0, 9999, 1, 1000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mPointTotal { TH_POINT_TOTAL, 0, 9999, 1, 1000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mPointStage { TH_POINT_STAGE, 0, 9999, 1, 1000 };
-        Gui::GuiDrag<int, ImGuiDataType_S32> mTime { TH08_TIME, 0, 9999, 1, 1000 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mTime { TH08_TIME, 0, INT_MAX, 1, 1000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH08_VALUE, 0, 9999999, 10, 100000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mGauge { TH08_GAUGE, -10000, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mFamiliar { TH08_FAMILIAR, 0, 2000, 1, 100 };
