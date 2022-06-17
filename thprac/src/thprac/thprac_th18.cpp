@@ -762,8 +762,19 @@ namespace TH18 {
             (void*)0x429eef, "\xeb", 1, (void*)0x43021b, "\x05\x8d", 2 };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F7", VK_F7,
             (void*)0x45c2bd, "\x90\x90\x90\x90\x90\x90", 6 };
-        Gui::GuiHotKey mZeroCD { TH18_ZERO_CD, "F8", VK_F8,
-            (void*)0x4097b0, "\xf3\x0f\x5c\xc0\x90\x90\x90\x90", 8 };
+        Gui::GuiHotKeyHook mZeroCD { TH18_ZERO_CD, "F8", VK_F8,
+            (void*)0x45c0e3, [](PCONTEXT pCtx) {
+                struct Timer {
+                    int32_t prev;
+                    int32_t cur;
+                    float cur_f;
+                    void* unused;
+                    uint32_t control;
+                };
+                Timer* timer = (Timer*)(pCtx->Ecx + 0x34);
+                *timer = { -1, 0, 0, 0, 0 };
+            }
+        };
         Gui::GuiHotKey mMarketManip { TH18_MARKET_MANIP, "F10", VK_F10 };
         bool isInMarket = false;
         bool isManipMarket = false;
