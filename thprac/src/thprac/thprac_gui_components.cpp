@@ -1,4 +1,4 @@
-#include "thprac_gui_components.h"
+﻿#include "thprac_gui_components.h"
 
 namespace THPrac
 {

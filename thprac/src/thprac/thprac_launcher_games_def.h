@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "thprac_gui_locale.h"
 #include <cstdint>
 

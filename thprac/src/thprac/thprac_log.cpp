@@ -1,4 +1,4 @@
-#include "thprac_log.h"
+﻿#include "thprac_log.h"
 #include "thprac_launcher_cfg.h"
 #include "thprac_launcher_utils.h"
 #define NOMINMAX

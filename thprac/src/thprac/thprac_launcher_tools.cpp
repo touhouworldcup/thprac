@@ -1,4 +1,4 @@
-#include "thprac_launcher_tools.h"
+﻿#include "thprac_launcher_tools.h"
 #include "thprac_launcher_utils.h"
 #include "thprac_launcher_games.h"
 #include "thprac_launcher_main.h"

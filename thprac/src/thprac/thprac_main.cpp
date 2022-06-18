@@ -1,4 +1,4 @@
-#include "thprac_main.h"
+﻿#include "thprac_main.h"
 #include "thprac_games.h"
 #include "thprac_gui_locale.h"
 #include "thprac_launcher_wnd.h"
@@ -102,23 +102,23 @@ bool PromptUser(thprac_prompt_t info, THGameSig* gameSig = nullptr)
     return false;
 }
 
-THGameSig* CheckOngoingGame(PROCESSENTRY32& proc)
+THGameSig* CheckOngoingGame(PROCESSENTRY32W& proc)
 {
     // Eliminate impossible process
-    if (strcmp("搶曽峠杺嫿.exe", proc.szExeFile) && strcmp("東方紅魔郷.exe", proc.szExeFile) && strcmp("alcostg.exe", proc.szExeFile)) {
-        if (proc.szExeFile[0] != 't' || proc.szExeFile[1] != 'h')
+    if ( wcscmp(L"東方紅魔郷.exe", proc.szExeFile) && wcscmp(L"alcostg.exe", proc.szExeFile)) {
+        if (proc.szExeFile[0] != L't' || proc.szExeFile[1] != L'h')
             return nullptr;
-        if (proc.szExeFile[2] < 0x30 || proc.szExeFile[2] > 0x39)
+        if (proc.szExeFile[2] < L'0' || proc.szExeFile[2] > L'9')
             return nullptr;
-        if (proc.szExeFile[3] < 0x30 || proc.szExeFile[3] > 0x39)
+        if (proc.szExeFile[3] < L'0' || proc.szExeFile[3] > L'9')
             return nullptr;
         if (proc.szExeFile[4] == '.') {
-            if (*(int32_t*)(&proc.szExeFile[5]) != 0x00657865)
+            if (*(uint64_t*)(&proc.szExeFile[5]) != 0x0000006500780065)
                 return nullptr;
-        } else if (proc.szExeFile[4] >= 0x30 && proc.szExeFile[4] <= 0x39) {
+        } else if (proc.szExeFile[4] >= L'0' && proc.szExeFile[4] <= L'9') {
             if (proc.szExeFile[5] != '.')
                 return nullptr;
-            if (*(int32_t*)(&proc.szExeFile[6]) != 0x00657865)
+            if (*(uint64_t*)(&proc.szExeFile[6]) != 0x0000006500780065)
                 return nullptr;
         } else {
             return nullptr;
@@ -188,7 +188,7 @@ bool WriteTHPracSig(HANDLE hProc)
     return true;
 }
 
-bool ApplyTHPracToProc(PROCESSENTRY32& proc)
+bool ApplyTHPracToProc(PROCESSENTRY32W& proc)
 {
     // Open the related process
     auto hProc = OpenProcess(
@@ -292,10 +292,10 @@ bool RunGameReflective(THGameSig& gameSig, std::wstring& name, bool useVpatch)
         for (int i = 0; i < 20; ++i) {
             if (CheckIfAnyGame()) {
                 THGameSig* gameSig = nullptr;
-                PROCESSENTRY32 entry;
-                entry.dwSize = sizeof(PROCESSENTRY32);
+                PROCESSENTRY32W entry;
+                entry.dwSize = sizeof(PROCESSENTRY32W);
                 HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-                if (Process32First(snapshot, &entry)) {
+                if (Process32FirstW(snapshot, &entry)) {
                     do {
                         gameSig = CheckOngoingGame(entry);
                         if (gameSig) {
@@ -308,7 +308,7 @@ bool RunGameReflective(THGameSig& gameSig, std::wstring& name, bool useVpatch)
                                 return true;
                             }
                         }
-                    } while (Process32Next(snapshot, &entry));
+                    } while (Process32NextW(snapshot, &entry));
                 }
             }
             Sleep(500);
@@ -362,10 +362,10 @@ bool FindOngoingGame(bool prompt)
 
     if (CheckIfAnyGame()) {
         THGameSig* gameSig = nullptr;
-        PROCESSENTRY32 entry;
-        entry.dwSize = sizeof(PROCESSENTRY32);
+        PROCESSENTRY32W entry;
+        entry.dwSize = sizeof(PROCESSENTRY32W);
         HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-        if (Process32First(snapshot, &entry)) {
+        if (Process32FirstW(snapshot, &entry)) {
             do {
                 gameSig = CheckOngoingGame(entry);
                 if (gameSig) {
@@ -382,7 +382,7 @@ bool FindOngoingGame(bool prompt)
                         }
                     }
                 }
-            } while (Process32Next(snapshot, &entry));
+            } while (Process32NextW(snapshot, &entry));
         }
     }
 

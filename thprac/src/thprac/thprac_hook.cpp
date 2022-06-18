@@ -1,4 +1,4 @@
-#include "thprac_hook.h"
+﻿#include "thprac_hook.h"
 
 #define NOMINMAX
 

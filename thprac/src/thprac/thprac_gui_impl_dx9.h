@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 /*
 	This file is a modified copy of imgui's DirectX9 renderer implemention's  header file.
 	Changes made:

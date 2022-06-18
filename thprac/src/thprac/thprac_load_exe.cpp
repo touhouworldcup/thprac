@@ -1,4 +1,4 @@
-#include "thprac_load_exe.h"
+﻿#include "thprac_load_exe.h"
 #include <windows.h>
 
 namespace THPrac {

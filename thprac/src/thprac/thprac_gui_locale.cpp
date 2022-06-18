@@ -1,4 +1,4 @@
-#include "thprac_gui_locale.h"
+ï»¿#include "thprac_gui_locale.h"
 #include "thprac_launcher_cfg.h"
 #include <imgui.h>
 #include <imgui_freetype.h>
@@ -184,11 +184,11 @@ static ImWchar baseUnicodeRanges[] =
     font_info zhFontsInfo[] = {
         { "Microsoft YaHei UI Light", 1, 1.0f },
         { "Microsoft YaHei Light", 0, 1.0f },
-        { "Î¢ÈíÑÅºÚ", 0, 1.0f },
+        { "å¾®è½¯é›…é»‘", 0, 1.0f },
         { "Microsoft YaHei", 0, 1.0f },
-        { "ºÚÌå", 0, 0.9f },
+        { "é»‘ä½“", 0, 0.9f },
         { "SimHei", 0, 0.9f },
-        { "ËÎÌå", 0, 0.9f },
+        { "å®‹ä½“", 0, 0.9f },
         { "SimSun", 0, 0.9f },
     };
     font_info enFontsInfo[] = {

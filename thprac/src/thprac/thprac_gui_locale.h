@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "thprac_locale_def.h"
 
 namespace THPrac {

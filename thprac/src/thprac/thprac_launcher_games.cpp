@@ -1,4 +1,4 @@
-#define NOMINMAX
+﻿#define NOMINMAX
 
 #include "thprac_launcher_games.h"
 #include "thprac_gui_locale.h"
@@ -943,7 +943,7 @@ public:
     static bool WINAPI CheckExeName(const std::wstring& dir, const char* idStr)
     {
         if (!strcmp(idStr, "th06")) {
-            if (CheckExeName(dir, "“Œ•ûg–‚‹½") || CheckExeName(dir, "–|·½¼tÄ§à_")) {
+            if (CheckExeName(dir, "東方紅魔郷")) {
                 return true;
             }
         }
@@ -1570,7 +1570,7 @@ public:
     }
     static bool WINAPI CheckProcessOmni(PROCESSENTRY32W& proc)
     {
-        if (wcscmp(L"搶曽峠杺嫿.exe", proc.szExeFile) && wcscmp(L"東方紅魔郷.exe", proc.szExeFile)) {
+        if (wcscmp(L"東方紅魔郷.exe", proc.szExeFile)) {
             if (proc.szExeFile[0] != L't' || proc.szExeFile[1] != L'h')
                 return nullptr;
             if (proc.szExeFile[2] < 0x30 || proc.szExeFile[2] > 0x39)

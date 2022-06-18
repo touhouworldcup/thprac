@@ -1,4 +1,4 @@
-#include "thprac_utils.h"
+ï»¿#include "thprac_utils.h"
 
 namespace THPrac {
 namespace TH16 {
@@ -604,8 +604,8 @@ namespace TH16 {
 				//ImVec2 renderSize = ImGui::GetIO().DisplaySize;
 				//ImGui::Text("Pos: %f, %f", ImGui::GetWindowPos().x / (float)renderSize.x, ImGui::GetWindowPos().y / (float)renderSize.y);
 				//ImGui::Text("Size: %f, %f", ImGui::GetWindowSize().x / (float)renderSize.x, ImGui::GetWindowSize().y / (float)renderSize.y);
-				// Size X & Item Width: ºÚÌå, Arial, MS UI Gothic
-				// Size Y & Pos: Î¢ÈíÑÅºÚ, Segoe UI, Yu Gothic UI
+				// Size X & Item Width: é»‘ä½“, Arial, MS UI Gothic
+				// Size Y & Pos: å¾®è½¯é›…é»‘, Segoe UI, Yu Gothic UI
 				static float testItemWidth{ 0.0f };
 				static ImVec2 testWndPos{ -1.0f, -1.0f };
 				static ImVec2 testWndSize{ -1.0f, -1.0f };

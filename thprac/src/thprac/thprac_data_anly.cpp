@@ -1,4 +1,4 @@
-#include "thprac_data_anly.h"
+﻿#include "thprac_data_anly.h"
 #include <LzmaEnc.h>
 #include <LzmaDec.h>
 

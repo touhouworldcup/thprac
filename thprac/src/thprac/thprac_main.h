@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #define NOMINMAX
 #include "thprac_games.h"
 #include "thprac_launcher_games_def.h"

@@ -1,4 +1,4 @@
-#include "thprac_launcher_wnd.h"
+﻿#include "thprac_launcher_wnd.h"
 #include "imgui.h"
 #include "thprac_gui_impl_dx9.h"
 #include "thprac_gui_impl_win32.h"
