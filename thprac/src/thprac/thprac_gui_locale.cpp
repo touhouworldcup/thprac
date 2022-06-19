@@ -176,33 +176,33 @@ static ImWchar baseUnicodeRanges[] =
     }
 
     struct font_info {
-        char* font_name;
+        const wchar_t* font_name;
         int font_index;
         float font_scale;
     };
 
     font_info zhFontsInfo[] = {
-        { "Microsoft YaHei UI Light", 1, 1.0f },
-        { "Microsoft YaHei Light", 0, 1.0f },
-        { "微软雅黑", 0, 1.0f },
-        { "Microsoft YaHei", 0, 1.0f },
-        { "黑体", 0, 0.9f },
-        { "SimHei", 0, 0.9f },
-        { "宋体", 0, 0.9f },
-        { "SimSun", 0, 0.9f },
+        { L"Microsoft YaHei UI Light", 1, 1.0f },
+        { L"Microsoft YaHei Light", 0, 1.0f },
+        { L"微软雅黑", 0, 1.0f },
+        { L"Microsoft YaHei", 0, 1.0f },
+        { L"黑体", 0, 0.9f },
+        { L"SimHei", 0, 0.9f },
+        { L"宋体", 0, 0.9f },
+        { L"SimSun", 0, 0.9f },
     };
     font_info enFontsInfo[] = {
-        { "Segoe UI", 0, 1.0f },
-        { "Tahoma", 0, 0.88f },
+        { L"Segoe UI", 0, 1.0f },
+        { L"Tahoma", 0, 0.88f },
     };
     font_info jaFontsInfo[] = {
-        { "Yu Gothic UI", 1, 1.0f },
-        { "Meiryo UI", 0, 1.0f },
-        { "MS UI Gothic", 0, 0.85f },
-        { "MS Mincho", 0, 0.85f },
+        { L"Yu Gothic UI", 1, 1.0f },
+        { L"Meiryo UI", 0, 1.0f },
+        { L"MS UI Gothic", 0, 0.85f },
+        { L"MS Mincho", 0, 0.85f },
     };
 
-    int CALLBACK __glocale_font_enum_proc(const LOGFONTA* lpelfe, const TEXTMETRICA* lpntme, DWORD FontType, LPARAM lParam)
+    int CALLBACK __glocale_font_enum_proc(const LOGFONTW* lpelfe, const TEXTMETRICW* lpntme, DWORD FontType, LPARAM lParam)
     {
         *((int*)lParam) = 1;
         return 0;
@@ -325,15 +325,15 @@ static ImWchar baseUnicodeRanges[] =
     }
     HFONT CALLBACK CheckFontZh(HDC hdc, font_info& info)
     {
-        LOGFONTA font = {};
+        LOGFONTW font = {};
         int signal = 0;
 
         font.lfPitchAndFamily = 0;
         font.lfCharSet = GB2312_CHARSET;
 
         for (auto f : zhFontsInfo) {
-            memcpy(font.lfFaceName, f.font_name, strlen(f.font_name) + 1);
-            EnumFontFamiliesExA(hdc, &font, __glocale_font_enum_proc, (LPARAM)&signal, 0);
+            wcsncpy(font.lfFaceName, f.font_name, 32);
+            EnumFontFamiliesExW(hdc, &font, __glocale_font_enum_proc, (LPARAM)&signal, 0);
             if (signal) {
                 info = f;
                 break;
@@ -347,14 +347,14 @@ static ImWchar baseUnicodeRanges[] =
             if (fontFamilyName.empty()) {
                 return false;
             }
-            info.font_name = "";
+            info.font_name = L"";
             info.font_index = 0;
             info.font_scale = 1.0f;
             return CreateFontW(0, 0, 0, 0, 0, 0, 0, 0, GB2312_CHARSET, 0, 0, 0, 0,
                 fontFamilyName.c_str());
         }
 
-        return CreateFontA(
+        return CreateFontW(
             0, 0, 0, 0, 0, 0, 0, 0,
             GB2312_CHARSET,
             0, 0, 0, 0,
@@ -362,15 +362,15 @@ static ImWchar baseUnicodeRanges[] =
     }
     HFONT CALLBACK CheckFontEn(HDC hdc, font_info& info)
     {
-        LOGFONTA font = {};
+        LOGFONTW font = {};
         int signal = 0;
 
         font.lfPitchAndFamily = 0;
         font.lfCharSet = ANSI_CHARSET;
 
         for (auto f : enFontsInfo) {
-            memcpy(font.lfFaceName, f.font_name, strlen(f.font_name) + 1);
-            EnumFontFamiliesExA(hdc, &font, __glocale_font_enum_proc, (LPARAM)&signal, 0);
+            wcsncpy(font.lfFaceName, f.font_name, 32);
+            EnumFontFamiliesExW(hdc, &font, __glocale_font_enum_proc, (LPARAM)&signal, 0);
             if (signal) {
                 info = f;
                 break;
@@ -378,13 +378,13 @@ static ImWchar baseUnicodeRanges[] =
         }
 
         if (!signal) {
-            info.font_name = "";
+            info.font_name = L"";
             info.font_index = 0;
             info.font_scale = 1.0f;
             return (HFONT)GetStockObject(SYSTEM_FONT);
         }
 
-        return CreateFontA(
+        return CreateFontW(
             0, 0, 0, 0, 0, 0, 0, 0,
             ANSI_CHARSET,
             0, 0, 0, 0,
@@ -392,15 +392,15 @@ static ImWchar baseUnicodeRanges[] =
     }
     HFONT CALLBACK CheckFontJa(HDC hdc, font_info& info)
     {
-        LOGFONTA font = {};
+        LOGFONTW font = {};
         int signal = 0;
 
         font.lfPitchAndFamily = 0;
         font.lfCharSet = SHIFTJIS_CHARSET;
 
         for (auto f : jaFontsInfo) {
-            memcpy(font.lfFaceName, f.font_name, strlen(f.font_name) + 1);
-            EnumFontFamiliesExA(hdc, &font, __glocale_font_enum_proc, (LPARAM)&signal, 0);
+            wcsncpy(font.lfFaceName, f.font_name, 32);
+            EnumFontFamiliesExW(hdc, &font, __glocale_font_enum_proc, (LPARAM)&signal, 0);
             if (signal) {
                 info = f;
                 break;
@@ -414,14 +414,14 @@ static ImWchar baseUnicodeRanges[] =
             if (fontFamilyName.empty()) {
                 return false;
             }
-            info.font_name = "";
+            info.font_name = L"";
             info.font_index = 0;
             info.font_scale = 1.0f;
             return CreateFontW(0, 0, 0, 0, 0, 0, 0, 0, SHIFTJIS_CHARSET, 0, 0, 0, 0,
                 fontFamilyName.c_str());
         }
 
-        return CreateFontA(
+        return CreateFontW(
             0, 0, 0, 0, 0, 0, 0, 0,
             SHIFTJIS_CHARSET,
             0, 0, 0, 0,
