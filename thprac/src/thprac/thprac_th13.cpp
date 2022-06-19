@@ -525,7 +525,7 @@ namespace TH13 {
             SetFade(1.0f, 0.1f);
             SetPos(10.0f, 10.0f);
             SetSize(100.0f, 100.0f);
-            SetWndFlag(ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            SetWndFlag(ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
 
             //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             OnLocaleChange();
@@ -550,6 +550,11 @@ namespace TH13 {
         }
         virtual void OnContentUpdate() override
         {
+            typedef void __stdcall Gui_update_hud_t(uint32_t, uint32_t, uint32_t);
+
+            ImGuiStyle& style = ImGui::GetStyle();
+            style.FramePadding.y = 0;
+
             mStageOffset(false);
             STAGE_OFFSET_INIT(DataBatchCache<0>(false), *mStageOffset);
 
@@ -559,9 +564,19 @@ namespace TH13 {
             ImGui::Separator();
 
             ImGui::Columns(2);
-            ImGui::Text("Life: %d", DataRef<DATA_LIFE>());
+
+            ImGui::TextUnformatted("Life:");
+            ImGui::SameLine();
+            if (ImGui::InputScalar("##life", ImGuiDataType_S32, (void*)0x4be7f4)) {
+                auto Gui_update_lifes = (Gui_update_hud_t*)0x42ae90;
+                Gui_update_lifes(*(uint32_t*)0x4c2190, *(uint32_t*)0x4be7f4, *(uint32_t*)0x4be7f8);
+            }
             ImGui::NextColumn();
-            ImGui::Text("Frag: %d/%d", DataRef<DATA_LIFE_FRAG>(), ((uint32_t*)(0x4bb994))[U32_REF(DATA_EXTEND)]);
+            auto extend = ((uint32_t*)(0x4bb994))[U32_REF(DATA_EXTEND)];
+            char extendFormat[8] = "%d/";
+            sprintf_s(extendFormat + 3, 5, "%d", extend);
+            ImGui::TextUnformatted("Frag:");
+            ImGui::SliderInt("##lifefrag", (int*)0x4be7f8, 0, extend, extendFormat);
             ImGui::NextColumn();
             ImGui::Text("Bomb: %d", DataRef<DATA_BOMB>());
             ImGui::NextColumn();
