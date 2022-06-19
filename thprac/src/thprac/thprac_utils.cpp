@@ -7,6 +7,233 @@
 
 namespace THPrac {
 
+#pragma region Locale
+static void* _str_cvt_buffer(size_t size)
+{
+    static size_t bufferSize = 512;
+    static void* bufferPtr = nullptr;
+    if (!bufferPtr) {
+        bufferPtr = malloc(bufferSize);
+    }
+    if (bufferSize < size) {
+        for (; bufferSize < size; bufferSize *= 2)
+            ;
+        if (bufferPtr) {
+            free(bufferPtr);
+        }
+        bufferPtr = malloc(size);
+    }
+    return bufferPtr;
+}
+std::string utf16_to_utf8(const std::wstring& utf16)
+{
+    int utf8Length = WideCharToMultiByte(CP_UTF8, 0, utf16.c_str(), -1, nullptr, 0, NULL, NULL);
+    char* utf8 = (char*)_str_cvt_buffer(utf8Length);
+    WideCharToMultiByte(CP_UTF8, 0, utf16.c_str(), -1, utf8, utf8Length, NULL, NULL);
+    return std::string(utf8);
+}
+std::string utf16_to_utf8(const wchar_t* utf16)
+{
+    int utf8Length = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, nullptr, 0, NULL, NULL);
+    char* utf8 = (char*)_str_cvt_buffer(utf8Length);
+    WideCharToMultiByte(CP_UTF8, 0, utf16, -1, utf8, utf8Length, NULL, NULL);
+    return std::string(utf8);
+}
+std::wstring utf8_to_utf16(const std::string& utf8)
+{
+    int utf16Length = MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), -1, nullptr, 0);
+    wchar_t* utf16 = (wchar_t*)_str_cvt_buffer(utf16Length);
+    MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), -1, utf16, utf16Length);
+    return std::wstring(utf16);
+}
+std::wstring utf8_to_utf16(const char* utf8)
+{
+    int utf16Length = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, nullptr, 0);
+    wchar_t* utf16 = (wchar_t*)_str_cvt_buffer(utf16Length);
+    MultiByteToWideChar(CP_UTF8, 0, utf8, -1, utf16, utf16Length);
+    return std::wstring(utf16);
+}
+std::string utf16_to_mb(const std::wstring& utf16)
+{
+    int utf8Length = WideCharToMultiByte(CP_ACP, 0, utf16.c_str(), -1, nullptr, 0, NULL, NULL);
+    char* utf8 = (char*)_str_cvt_buffer(utf8Length);
+    WideCharToMultiByte(CP_ACP, 0, utf16.c_str(), -1, utf8, utf8Length, NULL, NULL);
+    return std::string(utf8);
+}
+std::string utf16_to_mb(const wchar_t* utf16)
+{
+    int utf8Length = WideCharToMultiByte(CP_ACP, 0, utf16, -1, nullptr, 0, NULL, NULL);
+    char* utf8 = (char*)_str_cvt_buffer(utf8Length);
+    WideCharToMultiByte(CP_ACP, 0, utf16, -1, utf8, utf8Length, NULL, NULL);
+    return std::string(utf8);
+}
+std::wstring mb_to_utf16(const std::string& utf8)
+{
+    int utf16Length = MultiByteToWideChar(CP_ACP, 0, utf8.c_str(), -1, nullptr, 0);
+    wchar_t* utf16 = (wchar_t*)_str_cvt_buffer(utf16Length);
+    MultiByteToWideChar(CP_ACP, 0, utf8.c_str(), -1, utf16, utf16Length);
+    return std::wstring(utf16);
+}
+std::wstring mb_to_utf16(const char* utf8)
+{
+    int utf16Length = MultiByteToWideChar(CP_ACP, 0, utf8, -1, nullptr, 0);
+    wchar_t* utf16 = (wchar_t*)_str_cvt_buffer(utf16Length);
+    MultiByteToWideChar(CP_ACP, 0, utf8, -1, utf16, utf16Length);
+    return std::wstring(utf16);
+}
+#pragma endregion
+
+#pragma region Path
+std::string GetSuffixFromPath(const char* pathC)
+{
+    std::string path = pathC;
+    auto pos = path.rfind('.');
+    if (pos != std::string::npos) {
+        return path.substr(pos + 1);
+    }
+    return std::string("");
+}
+
+std::string GetSuffixFromPath(std::string& path)
+{
+    auto pos = path.rfind('.');
+    if (pos != std::string::npos) {
+        return path.substr(pos + 1);
+    }
+    return std::string("");
+}
+
+std::string GetDirFromFullPath(std::string& dir)
+{
+    auto slashPos = dir.rfind('\\');
+    if (slashPos == std::string::npos) {
+        slashPos = dir.rfind('/');
+    }
+    if (slashPos == std::string::npos) {
+        return dir;
+    }
+    return dir.substr(0, slashPos + 1);
+}
+
+std::wstring GetDirFromFullPath(std::wstring& dir)
+{
+    auto slashPos = dir.rfind(L'\\');
+    if (slashPos == std::wstring::npos) {
+        slashPos = dir.rfind(L'/');
+    }
+    if (slashPos == std::wstring::npos) {
+        return dir;
+    }
+    return dir.substr(0, slashPos + 1);
+}
+
+std::string GetNameFromFullPath(std::string& dir)
+{
+    auto slashPos = dir.rfind('\\');
+    if (slashPos == std::string::npos) {
+        slashPos = dir.rfind('/');
+    }
+    if (slashPos == std::string::npos) {
+        return dir;
+    }
+    return dir.substr(slashPos + 1);
+}
+
+std::wstring GetNameFromFullPath(std::wstring& dir)
+{
+    auto slashPos = dir.rfind(L'\\');
+    if (slashPos == std::wstring::npos) {
+        slashPos = dir.rfind(L'/');
+    }
+    if (slashPos == std::wstring::npos) {
+        return dir;
+    }
+    return dir.substr(slashPos + 1);
+}
+
+std::string GetCleanedPath(std::string& path)
+{
+    std::string result;
+    wchar_t lastChar = '\0';
+    for (auto& c : path) {
+        if (c == '/' || c == '\\') {
+            if (lastChar == '\\') {
+                continue;
+            } else {
+                result.push_back('\\');
+                lastChar = '\\';
+            }
+        } else {
+            result.push_back(c);
+            lastChar = c;
+        }
+    }
+    return result;
+}
+
+std::wstring GetCleanedPath(std::wstring& path)
+{
+    std::wstring result;
+    wchar_t lastChar = '\0';
+    for (auto& c : path) {
+        if (c == L'/' || c == L'\\') {
+            if (lastChar == L'\\') {
+                continue;
+            } else {
+                result.push_back(L'\\');
+                lastChar = L'\\';
+            }
+        } else {
+            result.push_back(c);
+            lastChar = c;
+        }
+    }
+    return result;
+}
+
+std::string GetUnifiedPath(std::string& path)
+{
+    std::string result;
+    wchar_t lastChar = '\0';
+    for (auto& c : path) {
+        if (c == '/' || c == '\\') {
+            if (lastChar == '\\') {
+                continue;
+            } else {
+                result.push_back('\\');
+                lastChar = '\\';
+            }
+        } else {
+            auto lower = tolower(c);
+            result.push_back(lower);
+            lastChar = lower;
+        }
+    }
+    return result;
+}
+
+std::wstring GetUnifiedPath(std::wstring& path)
+{
+    std::wstring result;
+    wchar_t lastChar = '\0';
+    for (auto& c : path) {
+        if (c == L'/' || c == L'\\') {
+            if (lastChar == L'\\') {
+                continue;
+            } else {
+                result.push_back(L'\\');
+                lastChar = L'\\';
+            }
+        } else {
+            auto lower = towlower(c);
+            result.push_back(lower);
+            lastChar = lower;
+        }
+    }
+    return result;
+}
+#pragma endregion
+
 #pragma region Gui Wrapper
 
 int g_gameGuiImpl = -1;

@@ -25,6 +25,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #pragma warning(pop)
+#include <random>
 #include <string>
 #include <tsl/robin_map.h>
 #include <utility>
@@ -33,6 +34,30 @@
 #define MB_INFO(str) MessageBoxA(NULL, str, str, MB_OK);
 
 namespace THPrac {
+
+#pragma region Locale
+std::string utf16_to_utf8(const std::wstring& utf16);
+std::string utf16_to_utf8(const wchar_t* utf16);
+std::wstring utf8_to_utf16(const std::string& utf8);
+std::wstring utf8_to_utf16(const char* utf8);
+std::string utf16_to_mb(const std::wstring& utf16);
+std::string utf16_to_mb(const wchar_t* utf16);
+std::wstring mb_to_utf16(const std::string& utf8);
+std::wstring mb_to_utf16(const char* utf8);
+#pragma endregion
+
+#pragma region Path
+std::string GetSuffixFromPath(const char* pathC);
+std::string GetSuffixFromPath(std::string& path);
+std::string GetDirFromFullPath(std::string& dir);
+std::wstring GetDirFromFullPath(std::wstring& dir);
+std::string GetNameFromFullPath(std::string& dir);
+std::wstring GetNameFromFullPath(std::wstring& dir);
+std::string GetCleanedPath(std::string& path);
+std::wstring GetCleanedPath(std::wstring& path);
+std::string GetUnifiedPath(std::string& path);
+std::wstring GetUnifiedPath(std::wstring& path);
+#pragma endregion
 
 #pragma region Gui Wrapper
 
@@ -512,34 +537,16 @@ inline long RoundUp(long n, long m)
 
 #pragma endregion
 
-#pragma region Defer macro
-
-/// defer implementation for C++
-/// http://www.gingerbill.org/article/defer-in-cpp.html
-/// ----------------------------
-
-// Fun fact: in the vast majority of cases the compiler
-// optimizes this down to normal conditional branching.
-template <typename F>
-struct privDefer {
-    F f;
-    explicit privDefer(F f)
-        : f(f)
-    {
-    }
-    ~privDefer() { f(); }
-};
-
-template <typename F>
-privDefer<F> defer_func(F f)
+template <typename T>
+static std::function<T(void)> GetRndGenerator(T min, T max, std::mt19937::result_type seed = 0)
 {
-    return privDefer<F>(f);
+    // std::mt19937::result_type seed = time(0);
+    if (!seed) {
+        seed = (std::mt19937::result_type)time(0);
+        // std::random_device rd;
+        // seed = rd();
+    }
+    auto dice_rand = std::bind(std::uniform_int_distribution<T>(min, max), std::mt19937(seed));
+    return dice_rand;
 }
-
-#define DEFER_1(x, y) x##y
-#define DEFER_2(x, y) DEFER_1(x, y)
-#define DEFER_3(x) DEFER_2(x, __COUNTER__)
-#define defer(code) auto DEFER_3(_defer_) = defer_func([&]() { code; })
-
-#pragma endregion
 }

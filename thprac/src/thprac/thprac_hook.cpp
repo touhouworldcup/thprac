@@ -4,7 +4,7 @@
 
 #include "thprac_log.h"
 #include "thprac_launcher_cfg.h"
-#include "thprac_launcher_utils.h"
+#include "thprac_utils.h"
 #include "thprac_gui_locale.h"
 
 #include "..\MinHook\src\buffer.h"

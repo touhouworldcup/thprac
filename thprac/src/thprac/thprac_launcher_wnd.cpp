@@ -4,6 +4,7 @@
 #include "thprac_gui_impl_win32.h"
 #include "thprac_gui_locale.h"
 #include "thprac_launcher_utils.h"
+#include "thprac_utils.h"
 #include "..\..\resource.h"
 #include <d3d9.h>
 #include <tchar.h>
