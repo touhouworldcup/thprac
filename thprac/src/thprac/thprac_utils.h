@@ -34,6 +34,17 @@
 
 namespace THPrac {
 
+#pragma region Locale
+std::string utf16_to_utf8(const std::wstring& utf16);
+std::string utf16_to_utf8(const wchar_t* utf16);
+std::wstring utf8_to_utf16(const std::string& utf8);
+std::wstring utf8_to_utf16(const char* utf8);
+std::string utf16_to_mb(const std::wstring& utf16);
+std::string utf16_to_mb(const wchar_t* utf16);
+std::wstring mb_to_utf16(const std::string& utf8);
+std::wstring mb_to_utf16(const char* utf8);
+#pragma endregion
+
 #pragma region Gui Wrapper
 
 enum game_gui_impl {
