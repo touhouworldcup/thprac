@@ -739,10 +739,10 @@ namespace TH13 {
             mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
                 return DataRecFunc(values);
             };
-            char* appdata = (char*)malloc(1000);
-            GetEnvironmentVariableA("APPDATA", appdata, 1000);
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mOptCtx.data_rec_dir = appdata;
-            mOptCtx.data_rec_dir += "\\ShanghaiAlice\\th13\\replay\\";
+            mOptCtx.data_rec_dir += L"\\ShanghaiAlice\\th13\\replay\\";
         }
         void DataRecPreUpd()
         {

@@ -118,7 +118,7 @@ struct adv_opt_ctx {
 
     bool data_rec_toggle = false;
     std::function<void(std::vector<RecordedValue>&)> data_rec_func;
-    std::string data_rec_dir;
+    std::wstring data_rec_dir;
 
     bool all_clear_bonus = false;
 };
