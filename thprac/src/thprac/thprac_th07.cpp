@@ -390,7 +390,7 @@ namespace TH07 {
             uint32_t index = GetMemContent((int)(&moduleList[7]), 0xb0b8);
             char* raw = (char*)GetMemAddr((int)(&moduleList[7]), index * 512 + 0x6c);
 
-            std::string repName(raw);
+            std::wstring repName = mb_to_utf16(raw);
             //auto pos = repName.rfind('/');
             //if (pos != std::string::npos)
             //	repName = repName.substr(pos + 1);
@@ -1671,7 +1671,7 @@ namespace TH07 {
     }
     void THSaveReplay(char* rep_name)
     {
-        ReplaySaveParam(rep_name, thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(rep_name).c_str(), thPracParam.GetJson());
     }
     void THDataInit()
     {

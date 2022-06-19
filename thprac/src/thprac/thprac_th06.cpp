@@ -705,7 +705,7 @@ namespace TH06 {
             char* raw = (char*)(0x6d46c0 + index * 512 + 0x823c);
 
             std::string param;
-            if (ReplayLoadParam(raw, param) && mRepParam.ReadJson(param))
+            if (ReplayLoadParam(mb_to_utf16(raw).c_str(), param) && mRepParam.ReadJson(param))
                 mParamStatus = true;
             else
                 mRepParam.Reset();
@@ -1978,7 +1978,7 @@ namespace TH06 {
     }
     void THSaveReplay(char* rep_name)
     {
-        ReplaySaveParam(rep_name, thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(rep_name).c_str(), thPracParam.GetJson());
     }
 
     HOOKSET_DEFINE(THMainHook)

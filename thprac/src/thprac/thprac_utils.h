@@ -314,8 +314,8 @@ static bool ElBgmTestTemp(bool hotkey_status, bool practice_status,
 
 typedef void*(__cdecl* p_malloc)(size_t size);
 
-bool ReplaySaveParam(const char* rep_path, std::string& param);
-bool ReplayLoadParam(const char* rep_path, std::string& param);
+bool ReplaySaveParam(const wchar_t* rep_path, std::string& param);
+bool ReplayLoadParam(const wchar_t* rep_path, std::string& param);
 
 #pragma endregion
 

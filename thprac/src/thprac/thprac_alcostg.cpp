@@ -364,8 +364,8 @@ namespace Alcostg {
         {
             uint32_t index = GetMemContent(0x4741ac, 0x5650);
             char* repName = (char*)GetMemAddr(0x4741ac, index * 4 + 0x5658, 0x104);
-            std::string repDir("replay/");
-            repDir.append(repName);
+            std::wstring repDir(L"replay\\");
+            repDir.append(mb_to_utf16(repName));
 
             std::string param;
             if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
@@ -984,7 +984,7 @@ namespace Alcostg {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(repName, thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
 
     HOOKSET_DEFINE(THMainHook)

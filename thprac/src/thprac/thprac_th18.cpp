@@ -383,16 +383,15 @@ namespace TH18 {
     class THGuiRep : public Gui::GameGuiWnd {
         THGuiRep() noexcept
         {
-            char* appdata = (char*)malloc(1000);
-            GetEnvironmentVariableA("APPDATA", appdata, 1000);
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mAppdataPath = appdata;
-            free(appdata);
         }
         SINGLETON(THGuiRep);
 
     public:
-        std::string mRepDir;
-        std::string mRepName;
+        std::wstring mRepDir;
+        std::wstring mRepName;
         uint64_t mRepMetroHash[2];
         bool mRepSelected = false;
         void CalcRepHash()
@@ -404,7 +403,7 @@ namespace TH18 {
             MetroHash128 metro;
 
             // Load replay
-            hFile = CreateFileA(THGuiRep::singleton().mRepDir.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            hFile = CreateFileW(THGuiRep::singleton().mRepDir.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
             if (hFile == INVALID_HANDLE_VALUE)
                 goto end;
             hFileMap = CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
@@ -432,9 +431,10 @@ namespace TH18 {
         void CheckReplay()
         {
             uint32_t index = GetMemContent(0x4cf43c, 0x5aac);
-            char* repName = (char*)GetMemAddr(0x4cf43c, index * 4 + 0x5ab4, 0x21c);
-            std::string repDir(mAppdataPath);
-            repDir.append("\\ShanghaiAlice\\th18\\replay\\");
+            char* repName_ = (char*)GetMemAddr(0x4cf43c, index * 4 + 0x5ab4, 0x21c);
+            std::wstring repName = mb_to_utf16(repName_);
+            std::wstring repDir(mAppdataPath);
+            repDir.append(L"\\ShanghaiAlice\\th18\\replay\\");
             repDir.append(repName);
             mRepName = repName;
             mRepDir = repDir;
@@ -473,7 +473,7 @@ namespace TH18 {
             }
         }
 
-        std::string mAppdataPath;
+        std::wstring mAppdataPath;
 
     protected:
         bool mParamStatus = false;
@@ -1065,8 +1065,8 @@ namespace TH18 {
         };
         bool mShowFixInstruction = false;
         std::vector<FixData> mFixData;
-        std::string mRepOriginalName;
-        std::string mRepOriginalPath;
+        std::wstring mRepOriginalName;
+        std::wstring mRepOriginalPath;
         uint64_t mRepMetroHash[2];
         uint32_t mRepHeader[9];
         void* mRepDataDecoded = nullptr;
@@ -1087,6 +1087,14 @@ namespace TH18 {
                 }
             }
         }
+        __declspec(noinline) void MsgBox(UINT type, const wchar_t* title, const wchar_t* msg, const wchar_t* msg2 = nullptr)
+        {
+            std::wstring _msg = msg;
+            if (msg2) {
+                _msg += msg2;
+            }
+            MessageBoxW(*(HWND*)0x568c30, _msg.c_str(), title, type);
+        }
         __declspec(noinline) void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nullptr)
         {
             wchar_t _title[256];
@@ -1096,9 +1104,9 @@ namespace TH18 {
             MultiByteToWideChar(CP_UTF8, 0, msg, -1, _msg, 256);
             if (msg2) {
                 MultiByteToWideChar(CP_UTF8, 0, msg2, -1, _msg2, 256);
-                wcscat_s(_msg, _msg2);
             }
-            MessageBoxW(*(HWND*)0x568c30, _msg, _title, type);
+            MsgBox(type, _title, _msg, msg2 ? _msg2 : nullptr);
+            
         }
         __declspec(noinline) uint32_t* FindCardDesc(uint32_t id)
         {
@@ -1251,25 +1259,25 @@ namespace TH18 {
             free(repDataOutput);
 
             DWORD bytesProcessed;
-            std::string repDir = THGuiRep::singleton().mAppdataPath;
-            repDir.append("\\ShanghaiAlice\\th18\\replay\\");
-            OPENFILENAMEA ofn;
-            char szFile[512];
-            strcpy_s(szFile, "th18_ud----.rpy");
+            std::wstring repDir = THGuiRep::singleton().mAppdataPath;
+            repDir.append(L"\\ShanghaiAlice\\th18\\replay\\");
+            OPENFILENAMEW ofn;
+            wchar_t szFile[512];
+            wcscpy_s(szFile, L"th18_ud----.rpy");
             ZeroMemory(&ofn, sizeof(ofn));
             ofn.lStructSize = sizeof(ofn);
             ofn.hwndOwner = *(HWND*)0x568c30;
             ofn.lpstrFile = szFile;
             ofn.nMaxFile = sizeof(szFile);
-            ofn.lpstrFilter = "Replay File\0*.rpy\0";
+            ofn.lpstrFilter = L"Replay File\0*.rpy\0";
             ofn.nFilterIndex = 1;
             ofn.lpstrFileTitle = NULL;
             ofn.nMaxFileTitle = 0;
             ofn.lpstrInitialDir = repDir.c_str();
-            ofn.lpstrDefExt = ".rpy";
+            ofn.lpstrDefExt = L".rpy";
             ofn.Flags = OFN_OVERWRITEPROMPT;
-            if (GetSaveFileNameA(&ofn)) {
-                auto outputFile = CreateFileA(szFile, GENERIC_READ | GENERIC_WRITE, NULL, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+            if (GetSaveFileNameW(&ofn)) {
+                auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, NULL, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
                 if (outputFile == INVALID_HANDLE_VALUE) {
                     MsgBox(MB_ICONERROR | MB_OK, XSTR(TH14_ERROR), XSTR(TH14_ERROR_DEST));
                     goto end;
@@ -1281,7 +1289,7 @@ namespace TH18 {
                 WriteFile(outputFile, mRepExtraData, mRepExtraDataSize, &bytesProcessed, NULL);
                 CloseHandle(outputFile);
 
-                MsgBox(MB_ICONINFORMATION | MB_OK, XSTR(TH14_SUCCESS), XSTR(TH14_SUCCESS_SAVED), szFile);
+                MsgBox(MB_ICONINFORMATION | MB_OK, utf8_to_utf16(XSTR(TH14_SUCCESS)).c_str(), utf8_to_utf16(XSTR(TH14_SUCCESS_SAVED)).c_str(), szFile);
             }
 
             end:
@@ -1298,10 +1306,10 @@ namespace TH18 {
             UnloadReplay();
 
             // Load replay
-            hFile = CreateFileA(THGuiRep::singleton().mRepDir.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            hFile = CreateFileW(THGuiRep::singleton().mRepDir.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
             if (hFile == INVALID_HANDLE_VALUE)
                 goto end;
-            hFileMap = CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
+            hFileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
             if (!hFileMap)
                 goto end;
             pFileMapView = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, fileSize);
@@ -2685,7 +2693,7 @@ namespace TH18 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(repName, thPracParam.GetJson());
+        ReplaySaveParam(utf8_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
     void THDataInit()
     {

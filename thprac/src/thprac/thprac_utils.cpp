@@ -923,9 +923,9 @@ void AboutOpt(const char* thanks_text)
 
 #pragma region Replay System
 
-bool ReplaySaveParam(const char* rep_path, std::string& param)
+bool ReplaySaveParam(const wchar_t* rep_path, std::string& param)
 {
-    auto repFile = CreateFileA(rep_path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    auto repFile = CreateFileW(rep_path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (repFile == INVALID_HANDLE_VALUE)
         return false;
     defer(CloseHandle(repFile));
@@ -992,11 +992,11 @@ bool ReplaySaveParam(const char* rep_path, std::string& param)
     return false;
 }
 
-bool ReplayLoadParam(const char* rep_path, std::string& param)
+bool ReplayLoadParam(const wchar_t* rep_path, std::string& param)
 {
     DWORD repMagic = 0, bytesRead = 0;
 
-    auto repFile = CreateFileA(rep_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    auto repFile = CreateFileW(rep_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (repFile == INVALID_HANDLE_VALUE)
         return false;
     defer(CloseHandle(repFile));

@@ -389,10 +389,9 @@ namespace TH17 {
     class THGuiRep : public Gui::GameGuiWnd {
         THGuiRep() noexcept
         {
-            char* appdata = (char*)malloc(1000);
-            GetEnvironmentVariableA("APPDATA", appdata, 1000);
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mAppdataPath = appdata;
-            free(appdata);
         }
         SINGLETON(THGuiRep);
     public:
@@ -400,9 +399,9 @@ namespace TH17 {
         {
             uint32_t index = GetMemContent(0x4b77f0, 0x5b54);
             char* repName = (char*)GetMemAddr(0x4b77f0, index * 4 + 0x5b5c, 0x220);
-            std::string repDir(mAppdataPath);
-            repDir.append("\\ShanghaiAlice\\th17\\replay\\");
-            repDir.append(repName);
+            std::wstring repDir(mAppdataPath);
+            repDir.append(L"\\ShanghaiAlice\\th17\\replay\\");
+            repDir.append(mb_to_utf16(repName));
 
             std::string param;
             if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
@@ -434,7 +433,7 @@ namespace TH17 {
         }
 
     protected:
-        std::string mAppdataPath;
+        std::wstring mAppdataPath;
         bool mParamStatus = false;
         THPracParam mRepParam;
     };
@@ -1896,7 +1895,7 @@ namespace TH17 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(repName, thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
     __declspec(noinline) void TH17AddGoast(int goast_id)
     {

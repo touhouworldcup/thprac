@@ -325,8 +325,8 @@ namespace TH11 {
         {
             uint32_t index = GetMemContent(0x4A8ECC, 0x59d4);
             char* repName = (char*)GetMemAddr(0x4A8ECC, index * 4 + 0x59dc, 0x1dc);
-            std::string repDir("replay/");
-            repDir.append(repName);
+            std::wstring repDir(L"replay/");
+            repDir.append(mb_to_utf16(repName));
 
             std::string param;
             if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
@@ -1652,7 +1652,7 @@ namespace TH11 {
     }
     void THSaveReplay(char* rep_name)
     {
-        ReplaySaveParam(rep_name, thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(rep_name).c_str(), thPracParam.GetJson());
     }
     void THDataInit()
     {
