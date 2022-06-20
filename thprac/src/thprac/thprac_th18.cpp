@@ -982,13 +982,20 @@ namespace TH18 {
         }
         EHOOK_ST(th18_score_uncap_replay_factor, (void*)0x44480d)
         {
-            auto stageScore = 100000 * (*(uint32_t*)(0x4cccdc));
-            auto finalScore = 100000 * (*(uint32_t*)(0x4ccd48) * 5 + *(uint32_t*)(0x4ccd58));
+            uint32_t* score = (uint32_t*)0x4cccfc;
+            uint32_t* stage_num = (uint32_t*)0x4cccdc;
+            uint32_t* lifes = (uint32_t*)0x4ccd48;
+            uint32_t* bombs = (uint32_t*)0x4ccd58;
+
+            auto stageBonus = 100000 * *stage_num;
+            auto clearBonus = 100000 * (*lifes * 5 + *bombs);
             if (GetMemContent(0x4cf2e4, 0xd0)) {
-                *(uint32_t*)(0x4cccfc) += stageScore;
-                if ((*(int32_t*)(0x4cccdc)) >= 6) {
-                    *(uint32_t*)(0x4cccfc) += finalScore;
-                }
+                uint32_t rpy = *(uint32_t*)(*(uint32_t*)0x4cf418 + 0x18);
+                if (*(uint32_t*)(rpy + 0xb8) == 8 && (*stage_num == 6 || *stage_num == 7))
+                    *score += clearBonus;
+                *score += stageBonus;
+                if (!THAdvOptWnd::singleton().scoreUncapChkbox && *score > 999999999)
+                    *score = 999999999;
             }
         }
         uint32_t scoreUncapOffsetNew[29] {
