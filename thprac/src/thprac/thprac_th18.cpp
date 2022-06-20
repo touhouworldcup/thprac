@@ -998,22 +998,20 @@ namespace TH18 {
                     *score = 999999999;
             }
         }
-        uint32_t scoreUncapOffsetNew[29] {
-            0x42a665, 0x42a7fd,
-            0x430eab, 0x44476b,
-            0x444ad9, 0x444c00,
-            0x4462eb, 0x4463b1,
-            0x44656e, 0x446ac6,
-            0x446d09, 0x45f2c4,
-            0x419e70, 0x42a659,
-            0x42a80f, 0x430eb6,
-            0x44477a, 0x444ade,
-            0x444c05, 0x446302,
-            0x4463a1, 0x446578,
-            0x446ad7, 0x446d1a,
-            0x45f2cf, 0x497937,
-            0x498515, 0x4a4248,
-            0x4aee78
+        uint32_t scoreUncapOffsetNew[23] {
+            0x419e70,
+            //0x42a659, 0x42a665,
+            0x42a7fd, 0x42a80f,
+            0x430eab, 0x430eb6,
+            0x44476b, 0x44477a,
+            0x444ad9, 0x444ade,
+            0x444c00, 0x444c05,
+            0x4462eb, 0x446302,
+            0x4463a1, 0x4463b1,
+            0x44656e, 0x446578,
+            0x446ac6, 0x446ad7,
+            0x446d09, 0x446d1a,
+            0x45f2c4, 0x45f2cf,
         };
         std::vector<HookCtx*> scoreUncapHooks;
         bool scoreUncapChkbox = false;
