@@ -1,6 +1,7 @@
 ﻿#include "thprac_utils.h"
 #include "thprac_game_data.h"
 #include <metrohash128.h>
+#include "..\MinHook\src\buffer.h"
 
 namespace THPrac {
 namespace TH18 {
@@ -969,7 +970,6 @@ namespace TH18 {
                 pCtx->Eip = 0x4448b0;
             }
         }
-
         EHOOK_ST(th18_score_uncap_replay_fix, (void*)0x4620b9)
         {
             if (pCtx->Eax >= 0x3b9aca00) {
@@ -1013,6 +1013,7 @@ namespace TH18 {
             0x446d09, 0x446d1a,
             0x45f2c4, 0x45f2cf,
         };
+        HookCtx* scoreUncapStageTrFix[2];
         std::vector<HookCtx*> scoreUncapHooks;
         bool scoreUncapChkbox = false;
         bool scoreUncapOverwrite = false;
@@ -1516,6 +1517,29 @@ namespace TH18 {
             th18_score_uncap_replay_fix.Setup();
             th18_score_uncap_replay_disp.Setup();
             th18_score_uncap_replay_factor.Setup();
+
+            {
+                LPVOID codecave = AllocateBuffer(0);
+                uint8_t* p = (uint8_t*)codecave;
+                
+                uint8_t code_1[] = "\x56\x8B\x71\x20\xFF\x74\x24\x08\xE8";
+                memcpy(p, code_1, sizeof(code_1) - 1);
+                p += sizeof(code_1) - 1;
+                uint32_t func_off = 0x00417A60 - (uint32_t)p - 4;
+                memcpy(p, &func_off, sizeof(func_off));
+                p += sizeof(func_off);
+                uint8_t code_2[] = "\x89\x71\x20\x5E\xC2\x04\x00";
+                memcpy(p, code_2, sizeof(code_2) - 1);
+
+                char patch_1[5] = "\xE8";
+                char patch_2[5] = "\xE8";
+                *(uintptr_t*)(patch_1 + 1) = (uintptr_t)codecave - 0x4179c7;
+                *(uintptr_t*)(patch_2 + 1) = (uintptr_t)codecave - 0x463045;
+                scoreUncapStageTrFix[0] = new HookCtx((void*)0x4179c2, patch_1, sizeof(patch_1));
+                scoreUncapStageTrFix[0]->Setup();
+                scoreUncapStageTrFix[1] = new HookCtx((void*)0x463040, patch_2, sizeof(patch_2));
+                scoreUncapStageTrFix[1]->Setup();
+            }
         }
         void ScoreUncapSet()
         {
@@ -1524,6 +1548,8 @@ namespace TH18 {
             }
             th18_score_uncap_replay_fix.Toggle(!scoreUncapOverwrite);
             th18_score_uncap_replay_disp.Toggle(scoreUncapChkbox);
+            scoreUncapStageTrFix[0]->Toggle(scoreUncapChkbox);
+            scoreUncapStageTrFix[1]->Toggle(scoreUncapChkbox);
         }
         void DatRecInit()
         {
