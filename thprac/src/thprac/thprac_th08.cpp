@@ -569,10 +569,10 @@ namespace TH08 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th08.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th08.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th08.dll", hash);
+                CalcFileHash(L"vpatch_th08.dll", hash);
                 if (hash[0] != 14324321420199198230ll || hash[1] != 10561235471127337137ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
@@ -747,33 +747,6 @@ namespace TH08 {
         adv_opt_ctx mOptCtx;
     };
 
-    void* THStage4ANMDbg(const char* file_name, int32_t* file_size, int unk, void* buffer)
-    {
-        if (false) {
-            void* mBuffer;
-            DWORD attr;
-            HANDLE hAnm;
-            DWORD size;
-            DWORD bytesRead;
-
-            attr = GetFileAttributesA("C:\\Users\\Ack\\Touhou\\Tools\\Touhou Toolkit\\08\\stg4abg.anm");
-            if (attr == INVALID_FILE_ATTRIBUTES || attr & FILE_ATTRIBUTE_DIRECTORY)
-                return nullptr;
-
-            hAnm = CreateFileA("C:\\Users\\Ack\\Touhou\\Tools\\Touhou Toolkit\\08\\stg4abg.anm", GENERIC_READ | GENERIC_WRITE,
-                FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-            size = GetFileSize(hAnm, NULL);
-            mBuffer = ((p_malloc)(0x4a4269))(size);
-
-            ReadFile(hAnm, mBuffer, size, &bytesRead, NULL);
-            if (file_size)
-                *file_size = size;
-            CloseHandle(hAnm);
-
-            return mBuffer;
-        }
-        return nullptr;
-    }
     void* THStage4ANM()
     {
         void* buffer = (void*)GetMemContent(0x18bdc90, 0x98);

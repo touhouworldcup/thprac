@@ -434,10 +434,10 @@ namespace TH09 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th09.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th09.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th09.dll", hash);
+                CalcFileHash(L"vpatch_th09.dll", hash);
                 if (hash[0] != 8777309807944811310ll || hash[1] != 16244273824227920047ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {

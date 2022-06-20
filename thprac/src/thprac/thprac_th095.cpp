@@ -108,10 +108,10 @@ namespace TH095 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th095.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th095.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th095.dll", hash);
+                CalcFileHash(L"vpatch_th095.dll", hash);
                 if (hash[0] != 11971022730696137433ll || hash[1] != 6069366661305861631ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1c024) == 0) {
@@ -280,8 +280,8 @@ void TH095Init()
 {
     TH095::THInitHook::singleton().EnableAllHooks();
     TryKeepUpRefreshRate((void*)0x420ee8);
-    if (GetModuleHandleA("vpatch_th095.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th095.dll") + 0x5424));
+    if (GetModuleHandleW(L"vpatch_th095.dll")) {
+        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleW(L"vpatch_th095.dll") + 0x5424));
     }
 }
 }

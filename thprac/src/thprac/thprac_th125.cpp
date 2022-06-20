@@ -111,10 +111,10 @@ namespace TH125 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th125.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th125.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th125.dll", hash);
+                CalcFileHash(L"vpatch_th125.dll", hash);
                 if (hash[0] != 10688862875744720998ll || hash[1] != 16306494719441951827ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {

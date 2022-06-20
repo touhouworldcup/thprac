@@ -479,10 +479,10 @@ namespace TH128 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th128.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th128.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th128.dll", hash);
+                CalcFileHash(L"vpatch_th128.dll", hash);
                 if (hash[0] != 14796143656184423751ll || hash[1] != 15800222838538749590ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {

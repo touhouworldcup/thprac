@@ -503,10 +503,10 @@ namespace TH12 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th12.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th12.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th12.dll", hash);
+                CalcFileHash(L"vpatch_th12.dll", hash);
                 if (hash[0] != 666604866657820391ll || hash[1] != 18391463919001639953ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {
@@ -1601,8 +1601,8 @@ void TH12Init()
 {
     TH12::THInitHook::singleton().EnableAllHooks();
     TryKeepUpRefreshRate((void*)0x450dcc);
-    if (GetModuleHandleA("vpatch_th12.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th12.dll") + 0x54ce));
+    if (GetModuleHandleW(L"vpatch_th12.dll")) {
+        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleW(L"vpatch_th12.dll") + 0x54ce));
     }
 }
 }

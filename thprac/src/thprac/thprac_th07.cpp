@@ -533,10 +533,10 @@ namespace TH07 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th07.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th07.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th07.dll", hash);
+                CalcFileHash(L"vpatch_th07.dll", hash);
                 if (hash[0] != 9678734212472211387ll || hash[1] != 9671871756369193188ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {

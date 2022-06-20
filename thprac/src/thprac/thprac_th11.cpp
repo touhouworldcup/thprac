@@ -473,10 +473,10 @@ namespace TH11 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th11.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th11.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th11.dll", hash);
+                CalcFileHash(L"vpatch_th11.dll", hash);
                 if (hash[0] != 5913416708557704950ll || hash[1] != 10824003281749047314ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {

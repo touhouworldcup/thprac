@@ -220,7 +220,7 @@ bool CheckIfGameExistEx(THGameSig& gameSig, const wchar_t* name)
     fileSize = GetFileSize(hFile, NULL);
     if (fileSize > (1 << 23))
         goto end; // Pass if the file is too large.
-    hFileMap = CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
+    hFileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
     if (!hFileMap)
         goto end;
     pFileMapView = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, fileSize);
@@ -320,9 +320,7 @@ bool RunGameReflective(THGameSig& gameSig, std::wstring& name, bool useVpatch)
 
 bool RunGameWithTHPrac(THGameSig& gameSig, std::wstring& name)
 {
-    std::string vPatchName = utf16_to_utf8(gameSig.vPatchStr);
-    auto vp = LoadLibraryA(vPatchName.c_str());
-    auto isVpatchValid = GetProcAddress(vp, "_Initialize@4");
+    auto isVpatchValid = CheckDLLFunction(gameSig.vPatchStr, "_Initialize@4");
     bool useReflectiveLaunch = false;
     LauncherSettingGet("reflective_launch", useReflectiveLaunch);
     if (useReflectiveLaunch) {
@@ -336,13 +334,14 @@ bool RunGameWithTHPrac(THGameSig& gameSig, std::wstring& name)
     CreateProcessW(name.c_str(), NULL, NULL, NULL, NULL, CREATE_SUSPENDED, NULL, NULL, &startup_info, &proc_info);
 
     if (isVpatchValid) {
-        auto vpNameLength = strlen(vPatchName.c_str()) + 1;
-        auto pLoadLibrary = GetProcAddress(GetModuleHandleA("kernel32.dll"), "LoadLibraryA");
-        auto remoteStr = VirtualAllocEx(proc_info.hProcess, NULL, vpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-        WriteProcessMemory(proc_info.hProcess, remoteStr, vPatchName.c_str(), vpNameLength, NULL);
-        auto t = CreateRemoteThread(proc_info.hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, remoteStr, 0, NULL);
-        WaitForSingleObject(t, INFINITE);
-        VirtualFreeEx(proc_info.hProcess, remoteStr, 0, MEM_RELEASE);
+        auto vpNameLength = (wcslen(gameSig.vPatchStr) + 1) * sizeof(wchar_t);
+        auto pLoadLibrary = ::LoadLibraryW;
+        if (auto remoteStr = VirtualAllocEx(proc_info.hProcess, NULL, vpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) {
+            WriteProcessMemory(proc_info.hProcess, remoteStr, gameSig.vPatchStr, vpNameLength, NULL);
+            if (auto t = CreateRemoteThread(proc_info.hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, remoteStr, 0, NULL))
+                WaitForSingleObject(t, INFINITE);
+            VirtualFreeEx(proc_info.hProcess, remoteStr, 0, MEM_RELEASE);
+        }
     }
 
     auto result = (WriteTHPracSig(proc_info.hProcess) && THPrac::LoadSelf(proc_info.hProcess));

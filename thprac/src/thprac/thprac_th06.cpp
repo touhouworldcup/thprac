@@ -741,14 +741,14 @@ namespace TH06 {
     private:
         static void Snapshot()
         {
-            char dir[] = "snapshot/th000.bmp";
+            wchar_t dir[] = L"snapshot/th000.bmp";
             HANDLE hFile;
-            CreateDirectoryA("snapshot", NULL);
+            CreateDirectoryW(L"snapshot", NULL);
             for (int i = 0; i < 1000; i++) {
                 dir[13] = i % 10 + 0x30;
                 dir[12] = ((i % 100 - i % 10) / 10) + 0x30;
                 dir[11] = ((i - i % 100) / 100) + 0x30;
-                hFile = CreateFileA(dir, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+                hFile = CreateFileW(dir, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
                 if (hFile != INVALID_HANDLE_VALUE)
                     break;
             }
@@ -858,10 +858,10 @@ namespace TH06 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th06.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th06.dll", hash);
+                CalcFileHash(L"vpatch_th06.dll", hash);
                 if (hash[0] != 3665784961181135876ll || hash[1] != 9283021252209177490ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
@@ -869,10 +869,10 @@ namespace TH06 {
                     mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x17034);
                 }
             } else {
-                mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th06_unicode.dll");
+                mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06_unicode.dll");
                 if (mOptCtx.vpatch_base) {
                     uint64_t hash[2];
-                    CalcFileHash("vpatch_th06_unicode.dll", hash);
+                    CalcFileHash(L"vpatch_th06_unicode.dll", hash);
                     if (hash[0] != 5021620919341617817ll || hash[1] != 10919509441391235291ll)
                         mOptCtx.fps_status = -1;
                     else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {

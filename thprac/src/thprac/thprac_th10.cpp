@@ -451,10 +451,10 @@ namespace TH10 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th10.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th10.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th10.dll", hash);
+                CalcFileHash(L"vpatch_th10.dll", hash);
                 if (hash[0] != 9704945468076323108ll || hash[1] != 99312983382598050ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {
@@ -2308,8 +2308,8 @@ void TH10Init()
 {
     TH10::THInitHook::singleton().EnableAllHooks();
     TryKeepUpRefreshRate((void*)0x439950);
-    if (GetModuleHandleA("vpatch_th10.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th10.dll") + 0x553b));
+    if (GetModuleHandleW(L"vpatch_th10.dll")) {
+        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleW(L"vpatch_th10.dll") + 0x553b));
     }
 }
 }

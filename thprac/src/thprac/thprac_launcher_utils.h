@@ -140,18 +140,6 @@ private:
     std::string mAscii = ".";
 };
 
-static void DeleteFolder(std::string path)
-{
-    path += '\0';
-    path += '\0';
-    SHFILEOPSTRUCTA fileOp;
-    memset(&fileOp, 0, sizeof(SHFILEOPSTRUCTW));
-    fileOp.wFunc = FO_DELETE;
-    fileOp.pFrom = path.c_str();
-    fileOp.fFlags = FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR | FOF_SILENT;
-    SHFileOperationA(&fileOp);
-}
-
 static void DeleteFolder(std::wstring path)
 {
     path += L'\0';

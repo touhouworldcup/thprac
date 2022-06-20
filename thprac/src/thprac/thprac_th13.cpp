@@ -691,10 +691,10 @@ namespace TH13 {
             mOptCtx.fps_debug_acc = 1;
             mOptCtx.fps_replay_fast = 600;
 
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th13.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th13.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th13.dll", hash);
+                CalcFileHash(L"vpatch_th13.dll", hash);
                 if (hash[0] != 6450385832836080372ll || hash[1] != 579365625616419970ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0) {
@@ -1820,11 +1820,11 @@ namespace TH13 {
         auto fileSize = *(uint32_t*)(*(uint32_t*)(pCtx->Ebx + 0x18) + 0x20);
         auto fileName = (char*)(pCtx->Esp + 0xC);
 
-        std::string fileNameDump = fileName;
-        fileNameDump += ".dump";
+        std::wstring fileNameDump = mb_to_utf16(fileName);
+        fileNameDump += L".dump";
 
         DWORD bytesProcessed;
-        auto hFile = CreateFileA(fileNameDump.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        auto hFile = CreateFileW(fileNameDump.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
         SetFilePointer(hFile, 0, NULL, FILE_BEGIN);
         SetEndOfFile(hFile);
         WriteFile(hFile, filePtr, fileSize, &bytesProcessed, NULL);
@@ -2031,8 +2031,8 @@ void TH13Init()
 {
     TH13::THInitHook::singleton().EnableAllHooks();
     TryKeepUpRefreshRate((void*)0x45dd99);
-    if (GetModuleHandleA("vpatch_th13.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th13.dll") + 0x5cc7));
+    if (GetModuleHandleW(L"vpatch_th13.dll")) {
+        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleW(L"vpatch_th13.dll") + 0x5cc7));
     }
 }
 }

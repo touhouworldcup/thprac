@@ -500,10 +500,10 @@ namespace Alcostg {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_alcostg.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_alcostg.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_alcostg.dll", hash);
+                CalcFileHash(L"vpatch_alcostg.dll", hash);
                 if (hash[0] != 6266639508503889982ll || hash[1] != 5871049704103251000ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {
@@ -1175,8 +1175,8 @@ void AlcostgInit()
 {
     Alcostg::THInitHook::singleton().EnableAllHooks();
     TryKeepUpRefreshRate((void*)0x435aa0);
-    if (GetModuleHandleA("vpatch_alcostg.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_alcostg.dll") + 0x560b));
+    if (GetModuleHandleW(L"vpatch_alcostg.dll")) {
+        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleW(L"vpatch_alcostg.dll") + 0x560b));
     }
 }
 }

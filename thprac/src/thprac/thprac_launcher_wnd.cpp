@@ -52,7 +52,7 @@ static IDirect3DSurface9* g_pDepthStencilSurface = nullptr;
 bool D3DCreateDevice(HWND hWnd, unsigned int width, unsigned int height)
 {
     // Create D3D object using LoadLibrary
-    auto d3d9Lib = LoadLibraryA("d3d9.dll");
+    auto d3d9Lib = LoadLibraryW(L"d3d9.dll");
     if (!d3d9Lib)
         return false;
     decltype(Direct3DCreate9)* d3dCreate9 = (decltype(Direct3DCreate9)*)GetProcAddress(d3d9Lib, "Direct3DCreate9");
@@ -499,8 +499,8 @@ int LauncherWndInit(unsigned int width, unsigned int height, unsigned int maxWid
     //GetDesktopResolution(displayX, displayY);
     PSetProcessDpiAwareness setProcDpiAwareness = nullptr;
     PGetDpiForMonitor getDpiForMonitor = nullptr;
-    setProcDpiAwareness = (PSetProcessDpiAwareness)GetProcAddress(GetModuleHandleA("shcore.dll"), "SetProcessDpiAwareness");
-    getDpiForMonitor = (PGetDpiForMonitor)GetProcAddress(GetModuleHandleA("shcore.dll"), "GetDpiForMonitor");
+    setProcDpiAwareness = (PSetProcessDpiAwareness)GetProcAddress(GetModuleHandleW(L"shcore.dll"), "SetProcessDpiAwareness");
+    getDpiForMonitor = (PGetDpiForMonitor)GetProcAddress(GetModuleHandleW(L"shcore.dll"), "GetDpiForMonitor");
     if (setProcDpiAwareness && getDpiForMonitor) {
         UINT dpiX;
         UINT dpiY;

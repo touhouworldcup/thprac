@@ -151,7 +151,7 @@ struct adv_opt_ctx {
 void CenteredText(const char* text, float wndX);
 float GetRelWidth(float rel);
 float GetRelHeight(float rel);
-void CalcFileHash(const char* file_name, uint64_t hash[2]);
+void CalcFileHash(const wchar_t* file_name, uint64_t hash[2]);
 void HelpMarker(const char* desc);
 template <th_glossary_t name>
 static bool BeginOptGroup()
@@ -549,4 +549,5 @@ static std::function<T(void)> GetRndGenerator(T min, T max, std::mt19937::result
     auto dice_rand = std::bind(std::uniform_int_distribution<T>(min, max), std::mt19937(seed));
     return dice_rand;
 }
+DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName);
 }

@@ -89,7 +89,7 @@ void CleanDumpDir(std::wstring& dmpDir)
 
 bool MakeMiniDump(EXCEPTION_POINTERS* e, std::wstring* dmpName = nullptr)
 {
-    auto hDbgHelp = LoadLibraryA("dbghelp.dll");
+    auto hDbgHelp = LoadLibraryW(L"dbghelp.dll");
     if (hDbgHelp == nullptr) {
         return false;
     }
