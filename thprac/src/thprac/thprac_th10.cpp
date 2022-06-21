@@ -86,37 +86,38 @@ namespace TH10 {
 
         __declspec(noinline) void State(int state)
         {
+            static int diff_prev = -1;
             switch (state) {
             case 0:
                 break;
             case 1:
                 mDiffculty = *((int32_t*)0x474c74);
-                //if (*((int32_t*)0x474c68) == 1)
-                //	SetPos(240.f, 100.f);
-                //else
-                //	SetPos(150.f, 100.f);
-
                 SetFade(0.8f, 0.1f);
                 Open();
                 thPracParam.Reset();
                 switch (mDiffculty) {
                 case 0:
                     mSt6Boss9Spd.SetBound(0, 140);
-                    mSt6Boss9Spd.SetValue(140);
+                    if (diff_prev != mDiffculty)
+                        mSt6Boss9Spd.SetValue(140);
                     break;
                 case 1:
                     mSt6Boss9Spd.SetBound(0, 120);
-                    mSt6Boss9Spd.SetValue(120);
+                    if (diff_prev != mDiffculty)
+                        mSt6Boss9Spd.SetValue(120);
                     break;
                 case 2:
                     mSt6Boss9Spd.SetBound(0, 100);
-                    mSt6Boss9Spd.SetValue(100);
+                    if (diff_prev != mDiffculty)
+                        mSt6Boss9Spd.SetValue(100);
                     break;
                 case 3:
                     mSt6Boss9Spd.SetBound(0, 50);
-                    mSt6Boss9Spd.SetValue(50);
+                    if (diff_prev != mDiffculty)
+                        mSt6Boss9Spd.SetValue(50);
                     break;
                 }
+                diff_prev = mDiffculty;
             case 2:
                 break;
             case 3:
