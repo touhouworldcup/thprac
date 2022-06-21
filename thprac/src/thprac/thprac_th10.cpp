@@ -34,8 +34,11 @@ namespace TH10 {
             GetJsonValue(power);
             GetJsonValue(faith);
             GetJsonValue(faith_bar);
-            GetJsonValue(st6_boss9_spd);
             GetJsonValue(score);
+            if (param.HasMember("st6_boss9_spd") && param["st6_boss9_spd"].IsNumber())
+                st6_boss9_spd = (int32_t)param["st6_boss9_spd"].GetDouble();
+            else
+                st6_boss9_spd = -1;
 
             return true;
         }
@@ -1479,8 +1482,10 @@ namespace TH10 {
                 << 0 << 0x00180103 << 0x02ff0000 << 0 << 4 << 19
                 << 9999 << 0x00100000 << 0x00ff0000 << 0;
 
-            ecl.SetPos(0x8d38 + *((int32_t*)0x474c74) * 4);
-            ecl << thPracParam.st6_boss9_spd;
+            if (thPracParam.st6_boss9_spd >= 0) {
+                ecl.SetPos(0x8d38 + *((int32_t*)0x474c74) * 4);
+                ecl << thPracParam.st6_boss9_spd;
+            }
             break;
         case THPrac::TH10::TH10_ST7_MID1:
             ECLSt7MidBoss(ecl);
