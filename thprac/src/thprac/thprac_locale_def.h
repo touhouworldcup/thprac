@@ -692,6 +692,7 @@ enum th_glossary_t
     TH_POINT_TOTAL,
     TH_POWER,
     TH_RAGE,
+    TH_REAL_BULLET_SIZE,
     TH_RESTART,
     TH_RESUME,
     TH_RIGHT,
@@ -732,7 +733,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-static char* th_glossary_str[3][725]
+static char* th_glossary_str[3][726]
 {
     {
         "",
@@ -1422,6 +1423,7 @@ static char* th_glossary_str[3][725]
         u8"总计蓝点",
         u8"火力",
         u8"发狂",
+        u8"子弹的真实精灵",
         u8"重新开始",
         u8"继续游戏",
         u8"右",
@@ -2149,6 +2151,7 @@ static char* th_glossary_str[3][725]
         u8"Point (Total)",
         u8"Power",
         u8"Rage",
+        u8"Real bullet sprite",
         u8"Restart",
         u8"Resume",
         u8"Right",
@@ -2876,6 +2879,7 @@ static char* th_glossary_str[3][725]
         u8"得点(合計)",
         u8"霊力",
         u8"発狂",
+        u8"弾のリアルスプライト",
         u8"リトライ",
         u8"再開",
         u8"右",

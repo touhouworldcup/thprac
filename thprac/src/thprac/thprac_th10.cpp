@@ -14,6 +14,7 @@ namespace TH10 {
         int32_t faith_bar;
         int32_t st6_boss9_spd;
         int64_t score;
+        bool real_bullet_sprite;
 
         bool _playLock = false;
         void Reset()
@@ -35,8 +36,8 @@ namespace TH10 {
             GetJsonValue(faith);
             GetJsonValue(faith_bar);
             GetJsonValue(score);
-            if (param.HasMember("st6_boss9_spd") && param["st6_boss9_spd"].IsNumber())
-                st6_boss9_spd = (int32_t)param["st6_boss9_spd"].GetDouble();
+            GetJsonValue(real_bullet_sprite);
+            GetJsonValue(st6_boss9_spd)
             else
                 st6_boss9_spd = -1;
 
@@ -61,6 +62,7 @@ namespace TH10 {
             AddJsonValue(faith_bar);
             AddJsonValue(st6_boss9_spd);
             AddJsonValue(score);
+            AddJsonValue(real_bullet_sprite);
 
             ReturnJson();
         }
@@ -136,6 +138,9 @@ namespace TH10 {
                 thPracParam.faith_bar = *mFaithBar;
                 thPracParam.st6_boss9_spd = *mSt6Boss9Spd;
                 thPracParam.score = *mScore;
+                                           
+                if (thPracParam.section == TH10_ST6_BOSS4 || thPracParam.section == TH10_ST6_BOSS8)
+                    thPracParam.real_bullet_sprite = *mRealBulletSprite;
                 break;
             case 4:
                 Close();
@@ -184,12 +189,18 @@ namespace TH10 {
                     *mSection = *mChapter = *mPhase = 0;
                 if (*mWarp) {
                     SectionWidget();
-                    int section = CalcSection();
-                    if (section == TH10_ST6_BOSS9) {
+                    switch (CalcSection()) {
+                    case TH10_ST6_BOSS8:
+                    case TH10_ST6_BOSS4:
+                        mRealBulletSprite();
+                        break;
+                    case TH10_ST6_BOSS9:
                         mSt6Boss9Spd();
-                    } else if (section == TH10_ST7_END_S10) {
+                        break;
+                    case TH10_ST7_END_S10:
                         mPhase(TH_PHASE, TH_SPELL_PHASE1);
-                    }
+                        break;
+                    }                        
                 }
 
                 mLife();
@@ -201,8 +212,6 @@ namespace TH10 {
                 mScore();
                 mScore.RoundDown(10);
             }
-            //WndDebugOutput();
-
             mNavFocus();
         }
         int CalcSection()
@@ -281,8 +290,9 @@ namespace TH10 {
         Gui::GuiDrag<int, ImGuiDataType_S32> mFaith { TH_FAITH, 0, 999990, 10, 100000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mFaithBar { TH10_FAITH_BAR, 0, 130, 1, 10 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mSt6Boss9Spd { TH_DELAY, 0, 160, 1, 10 };
+        Gui::GuiCheckBox mRealBulletSprite { TH_REAL_BULLET_SIZE };
 
-        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DELAY,
+        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DELAY, TH_REAL_BULLET_SIZE,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_LIFE, TH_FAITH, TH10_FAITH_BAR, TH_SCORE, TH_POWER, TH_GRAZE };
 
@@ -2119,6 +2129,7 @@ namespace TH10 {
         DataRef<DATA_STAGE>(U8_ARG(0x474c7c));
         DataRef<DATA_STARTING_STAGE>(U8_ARG(0x474c80));
     }
+    PATCH_ST(th10_real_bullet_sprite, (void*)0x406e03, "\x0F\x84\x13\x05\x00\x00", 6);
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th10_everlasting_bgm, (void*)0x43e460)
     {
@@ -2199,6 +2210,7 @@ namespace TH10 {
             *(int32_t*)(0x474c48) = thPracParam.power;
             *(int32_t*)(0x474c4c) = thPracParam.faith / 10;
             *(int32_t*)(0x474c44) = (int32_t)(thPracParam.score / 10);
+            th10_real_bullet_sprite.Toggle(thPracParam.real_bullet_sprite);
 
             if (thPracParam.faith_bar) {
                 *(int32_t*)(0x474c54) = thPracParam.faith_bar - 1;
@@ -2279,6 +2291,7 @@ namespace TH10 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
+        th10_real_bullet_sprite.Setup();
         THDataInit();
 
         // Reset thPracParam
