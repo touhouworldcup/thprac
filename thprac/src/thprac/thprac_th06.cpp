@@ -1981,6 +1981,12 @@ namespace TH06 {
         ReplaySaveParam(mb_to_utf16(rep_name).c_str(), thPracParam.GetJson());
     }
 
+    EHOOK_G1(th06_result_screen_create, (void*)0x42d812)
+    {
+        th06_result_screen_create::GetHook().Disable();
+        *(uint32_t*)(*(uint32_t*)(pCtx->Ebp - 0x10) + 0x8) = 0xA;
+        pCtx->Eip = 0x42d839;
+    }
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th06_bgm_play, (void*)0x424b5d)
     {
@@ -2026,7 +2032,9 @@ namespace TH06 {
             if (sig == THPauseMenu::SIGNAL_RESUME) {
                 pCtx->Eip = 0x40223d;
             } else if (sig == THPauseMenu::SIGNAL_EXIT) {
-                pCtx->Eip = 0x40263c;
+                *(uint32_t*)0x6c6ea4 = 7; // Set gamemode to result screen
+                *(uint16_t*)0x69d4bf = 0; // Close pause menu
+                th06_result_screen_create::GetHook().Enable();
             } else if (sig == THPauseMenu::SIGNAL_RESTART) {
                 pCtx->Eip = 0x40263c;
             } else {
