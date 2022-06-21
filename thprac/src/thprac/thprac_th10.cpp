@@ -280,9 +280,9 @@ namespace TH10 {
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mFaith { TH_FAITH, 0, 999990, 10, 100000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mFaithBar { TH10_FAITH_BAR, 0, 130, 1, 10 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mSt6Boss9Spd { "Speed", 0, 160, 1, 10 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mSt6Boss9Spd { TH_DELAY, 0, 160, 1, 10 };
 
-        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP,
+        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DELAY,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_LIFE, TH_FAITH, TH10_FAITH_BAR, TH_SCORE, TH_POWER, TH_GRAZE };
 
