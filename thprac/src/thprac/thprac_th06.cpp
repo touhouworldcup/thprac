@@ -1988,6 +1988,7 @@ namespace TH06 {
         pCtx->Eip = 0x42d839;
     }
     HOOKSET_DEFINE(THMainHook)
+    PATCH_DY(th06_reacquire_input, (void*)0x41dc58, "\x00\x00\x00\x00\x74", 5);
     EHOOK_DY(th06_bgm_play, (void*)0x424b5d)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];

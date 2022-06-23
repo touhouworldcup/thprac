@@ -1686,6 +1686,7 @@ namespace TH07 {
     }
 
     HOOKSET_DEFINE(THMainHook)
+    PATCH_DY(th07_reacquire_input, (void*)0x430f03, "\x00\x00\x00\x00\x74", 5);
     EHOOK_DY(th07_everlasting_bgm, (void*)0x44d2f0)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
