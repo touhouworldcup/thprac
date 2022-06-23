@@ -75,7 +75,7 @@ Thprac contains no malicious code, but due to how it works, an antivirus might c
 Thprac is compatible with thcrap. Thprac's launcher can act as a thcrap launcher as well, similair to [Universal THCRAP Launcher](https://github.com/thpatch/Universal-THCRAP-Launcher/). When launching a game with thcrap, thprac will be able to attach to it. Thprac is not compatible with static English patches, like the ones made by gensokyo.org
 
 ## Cannot find Embodiment of Scarlet Devil
-Make sure your exe is named "東方紅魔郷.exe" or "th06.exe". If thprac still can't find it, the launcher can launch an exe with any filename and attack thprac.
+Make sure your exe is named "東方紅魔郷.exe" or "th06.exe". If thprac still can't find it, the launcher can launch an exe with any filename and attach thprac.
 
 ## When warping to cerain bosses, the name of the midboss will show
 I was unable to find a way to fix it. According to Manual.txt from thprac 2.0.8.3, neither was ACK. [#22](https://github.com/touhouworldcup/thprac/issues/22) will remain open for the forseeable future
