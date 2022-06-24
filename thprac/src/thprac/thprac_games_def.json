@@ -583,7 +583,7 @@
       "TH_FAITH": [ "信仰", "Faith", "信仰" ],
       "TH_BULLET_RANK": [ "Rank", "Rank", "ランク" ],
       "TH_BULLET_RANKLOCK": [ "锁Rank", "Rank Lock", "ランクをロックする" ],
-      "TH_REAL_BULLET_SIZE": [ "子弹的真实精灵", "Real bullet sprite", "弾のリアルスプライト" ],
+      "TH_REAL_BULLET_SIZE": [ "真實子彈圖形", "Real bullet sprites", "弾のリアルスプライト" ],
       "TH_SHOTS_TAKEN": [ "摄影回数", "Shots Taken", "撮影回数" ],
       "TH_SHOTS_TAKEN_ALT": [ "#__shots_taken", "#__shots_taken", "#__shots_taken" ],
       "TH_ORIGINAL": [ "原版练习", "Original", "オリジナル" ],
