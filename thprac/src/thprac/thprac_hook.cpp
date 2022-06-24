@@ -154,12 +154,12 @@ __declspec(noinline) LONG WINAPI UEHandler(__in struct _EXCEPTION_POINTERS* Exce
 
 struct VEHHookCtx {
     uint8_t* m_Src = nullptr;
-    uint8_t* m_Dest = nullptr;
+    CallbackFunc* m_Dest = nullptr;
     uint8_t* m_Trampoline = nullptr;
     uint8_t m_StorageByte = 0;
     bool isActivate = false;
 
-    VEHHookCtx(uint8_t* Src, uint8_t* Dest)
+    VEHHookCtx(uint8_t* Src, CallbackFunc* Dest)
     {
         m_Dest = Dest;
         m_Src = Src;
@@ -205,12 +205,10 @@ static std::mutex m_TargetMutex;
 #define VEHHookMutexGuard()
 #endif
 
-typedef void __stdcall CallbackFunc(PCONTEXT);
 __declspec(noinline) void InvokeCallback(const VEHHookCtx vehHook, PCONTEXT pCtx)
 {
     auto xipBackup = pCtx->XIP;
-    CallbackFunc* callback = (CallbackFunc*)vehHook.m_Dest;
-    callback(pCtx);
+    vehHook.m_Dest(pCtx);
     if (xipBackup == pCtx->XIP) {
         pCtx->XIP = (DWORD_PTR)vehHook.m_Trampoline;
     }
@@ -302,14 +300,14 @@ void VEHHookDisable(void* target)
 
     ctx->isActivate = false;
 }
-bool VEHHookAdd(void* target, void* detour, void* trampoline)
+bool VEHHookAdd(void* target, CallbackFunc* detour, void* trampoline)
 {
     VEHHookInit();
     if (VEHHookLookUp(target) != g_VEHHookVector->end()) {
         return false;
     }
 
-    VEHHookCtx ctx((uint8_t*)target, (uint8_t*)detour);
+    VEHHookCtx ctx((uint8_t*)target, detour);
     ctx.m_Trampoline = (uint8_t*)trampoline;
     g_VEHHookVector->push_back(ctx);
 
@@ -369,7 +367,7 @@ bool HookCtx::Setup()
         return Setup(mTarget, mDetour);
     }
 }
-bool HookCtx::Setup(void* target, void* detour)
+bool HookCtx::Setup(void* target, CallbackFunc* detour)
 {
     if (mIsHookReady) {
         return false;

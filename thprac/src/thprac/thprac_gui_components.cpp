@@ -414,6 +414,8 @@ namespace THPrac
             return pressed;
         }
 
+
+
         void GuiHotKey::OnWidgetUpdate(bool status, bool has_changed)
         {
             char* text = mText ? mText : XSTR(mTextRef);
@@ -446,59 +448,6 @@ namespace THPrac
 #endif
         }
         bool GuiHotKey::operator()(bool use_widget)
-        {
-            bool flag = Gui::ImplWin32CheckHotkey(mKey);
-
-            if (flag) {
-                mStatus = !mStatus;
-                if (mStatus) {
-                    for (auto& patch : mPatches) {
-                        patch->Enable();
-                    }
-                } else {
-                    for (auto& patch : mPatches) {
-                        patch->Disable();
-                    }
-                }
-            }
-
-            if (use_widget)
-                OnWidgetUpdate(mStatus, flag);
-
-            return flag;
-        }
-        void GuiHotKeyHook::OnWidgetUpdate(bool status, bool has_changed)
-        {
-            char* text = mText ? mText : XSTR(mTextRef);
-
-            if (mStatus)
-                ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[%s: %s]", mKeyText, text);
-            else
-                ImGui::Text("%s: %s", mKeyText, text);
-            return;
-
-#if 0
-				ImGui::Text("(%s): ", mKeyText); ImGui::SameLine();
-				ImGui::Text("%s ", text); ImGui::SameLine(mXOffset1);
-				if (mStatus)
-					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), XSTR(TH_ON));
-				else
-					ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), XSTR(TH_OFF));
-				return;
-#endif
-
-#if 0
-				ImGui::Text("%s ", text);
-				ImGui::SameLine(mXOffset1);
-				ImGui::Text("(%s): ", mKeyText);
-				ImGui::SameLine(mXOffset2);
-				if (mStatus)
-					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), XSTR(TH_ON));
-				else
-					ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), XSTR(TH_OFF));
-#endif
-        }
-        bool GuiHotKeyHook::operator()(bool use_widget)
         {
             bool flag = Gui::ImplWin32CheckHotkey(mKey);
 

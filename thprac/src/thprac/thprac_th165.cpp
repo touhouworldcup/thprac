@@ -66,27 +66,16 @@ namespace TH165 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            (void*)0x446a80, "\x01", 1 };
-        Gui::GuiHotKey mInfCharge {
-            TH_INFCHARGE,
-            "F2",
-            VK_F2,
-            (void*)0x44c5f8,
-            "\x90\x90",
-            2,
-        };
-        //(void*)0x44c59c, "\x15\xd0\x39\x4b\x00\xeb\x04", 7, };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x446a80, "\x01", 1) } };
+        Gui::GuiHotKey mInfCharge { TH_INFCHARGE, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x44c5f8, "\x90\x90", 2) } };
     private:
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F3", VK_F3,
-            (void*)0x419a78, "\xeb\x63", 2 };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F3", VK_F3, {
+            new HookCtxPatch((void*)0x419a78, "\xeb\x63", 2) } };
 
     public:
-        Gui::GuiHotKey mElBgm {
-            TH_EL_BGM,
-            "F7",
-            VK_F7,
-        };
+        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
     };
 
     class THAdvOptWnd : public Gui::GameGuiWnd {

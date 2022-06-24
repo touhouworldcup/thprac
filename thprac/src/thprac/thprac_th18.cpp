@@ -1,4 +1,5 @@
 ﻿#include "thprac_utils.h"
+#include "thprac_utils.h"
 #include "thprac_game_data.h"
 #include <metrohash128.h>
 #include "..\MinHook\src\buffer.h"
@@ -745,26 +746,28 @@ namespace TH18 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            (void*)0x45d4ea, "\x01", 1 };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
-            (void*)0x45d1a2, "\x00", 1 };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3,
-            (void*)0x4574d3, "\x90\x90\x90\x90", 4,
-            (void*)0x40a3ed, "\x90\x90\x90\x90\x90\x90", 6, (void*)0x40a42c, "\x90\x90\x90\x90\x90\x90", 6 };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4,
-            (void*)0x45748e, "\x90\x90", 2 };
-        Gui::GuiHotKey mInfFunds { TH18_INFFUNDS, "F5", VK_F5,
-            (void*)0x45c244, "\x90\x90\x90\x90\x90\x90", 6,
-            (void*)0x40d96f, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10,
-            (void*)0x418496, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10,
-            (void*)0x418465, "\x90\x90", 2 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F6", VK_F6,
-            (void*)0x429eef, "\xeb", 1, (void*)0x43021b, "\x05\x8d", 2 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F7", VK_F7,
-            (void*)0x45c2bd, "\x90\x90\x90\x90\x90\x90", 6 };
-        Gui::GuiHotKeyHook mZeroCD { TH18_ZERO_CD, "F8", VK_F8,
-            (void*)0x45c0e3, [](PCONTEXT pCtx) {
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x45d4ea, "\x01", 1) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x45d1a2, "\x00", 1) } };
+        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
+            new HookCtxPatch ((void*)0x4574d3, "\x90\x90\x90\x90", 4),
+            new HookCtxPatch ((void*)0x40a3ed, "\x90\x90\x90\x90\x90\x90", 6),
+            new HookCtxPatch ((void*)0x40a42c, "\x90\x90\x90\x90\x90\x90", 6) } };
+        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
+            new HookCtxPatch((void*)0x45748e, "\x90\x90", 2) } };
+        Gui::GuiHotKey mInfFunds { TH18_INFFUNDS, "F5", VK_F5, {
+            new HookCtxPatch((void*)0x45c244, "\x90\x90\x90\x90\x90\x90", 6),
+            new HookCtxPatch((void*)0x40d96f, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10),
+            new HookCtxPatch((void*)0x418496, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10),
+            new HookCtxPatch((void*)0x418465, "\x90\x90", 2) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F6", VK_F6, {
+            new HookCtxPatch((void*)0x429eef, "\xeb", 1), 
+            new HookCtxPatch((void*)0x43021b, "\x05\x8d", 2) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F7", VK_F7, {
+            new HookCtxPatch((void*)0x45c2bd, "\x90\x90\x90\x90\x90\x90", 6) } };
+        Gui::GuiHotKey mZeroCD { TH18_ZERO_CD, "F8", VK_F8, {
+            new HookCtxHook((void*)0x45c0e3, [](PCONTEXT pCtx) {
                 struct Timer {
                     int32_t prev;
                     int32_t cur;
@@ -774,8 +777,7 @@ namespace TH18 {
                 };
                 Timer* timer = (Timer*)(pCtx->Ecx + 0x34);
                 *timer = { -1, 0, 0, 0, 0 };
-            }
-        };
+                }) } };
         Gui::GuiHotKey mMarketManip { TH18_MARKET_MANIP, "F10", VK_F10 };
         bool isInMarket = false;
         bool isManipMarket = false;

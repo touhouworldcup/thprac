@@ -6,12 +6,12 @@
 
 namespace THPrac {
 #define NAKED __declspec(naked)
-
+typedef void __stdcall CallbackFunc(PCONTEXT);
 class HookCtx {
 public:
     HookCtx() = default;
     ~HookCtx();
-    HookCtx(void* target, void* inject)
+    HookCtx(void* target, CallbackFunc* inject)
         : mTarget(target)
         , mDetour(inject)
     {
@@ -23,7 +23,7 @@ public:
         , mIsPatch(true)
     {
     }
-    HookCtx(std::vector<HookCtx*>& vec, void* target, void* inject)
+    HookCtx(std::vector<HookCtx*>& vec, void* target, CallbackFunc* inject)
         : mTarget(target)
         , mDetour(inject)
     {
@@ -38,7 +38,7 @@ public:
         vec.push_back(this);
     }
 
-    bool Setup(void* target, void* detour);
+    bool Setup(void* target, CallbackFunc* detour);
     bool Setup(void* target, const char* patch, size_t patch_size);
     bool Setup();
     bool Reset();
@@ -51,7 +51,7 @@ public:
 
 private:
     void* mTarget = nullptr;
-    void* mDetour = nullptr;
+    CallbackFunc* mDetour = nullptr;
     void* mTrampoline = nullptr;
     const char* mPatch = nullptr;
     size_t mPatchSize = 0;
@@ -60,7 +60,7 @@ private:
     bool mIsHookEnabled = false;
 };
 
-template<void* target, void* inject>
+template <void* target, CallbackFunc* inject>
 class EHookSingleton {
     EHookSingleton(const EHookSingleton&) = delete;
     EHookSingleton& operator=(EHookSingleton&) = delete;
@@ -142,17 +142,20 @@ static DWORD PopHelper32(CONTEXT* pCtx)
     return ret;
 }
 
+typedef HookCtx HookCtxPatch;
+typedef HookCtx HookCtxHook;
+
 #define EHOOK_G1(name, target) \
     __declspec(noinline) void __stdcall __vehf_##name(PCONTEXT pCtx); \
-    typedef EHookSingleton <target, (void*)__vehf_##name> name; \
+    typedef EHookSingleton <target, __vehf_##name> name; \
     __declspec(noinline) void __stdcall __vehf_##name(PCONTEXT pCtx)
 
 #define EHOOK_ST(name, target)                                \
-    HookCtx name { target, (void*)&__vehf_##name }; \
+    HookCtx name { target, __vehf_##name }; \
     static __declspec(noinline) void __stdcall __vehf_##name(PCONTEXT pCtx)
 
 #define EHOOK_DY(name, target)                                \
-    HookCtx name { mHooks, target, (void*)&__vehf_##name }; \
+    HookCtx name { mHooks, target, __vehf_##name }; \
     static __declspec(noinline) void __stdcall __vehf_##name(PCONTEXT pCtx)
 
 #define PATCH_S1(name, target, patch, size)           \

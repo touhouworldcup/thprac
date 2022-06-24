@@ -510,24 +510,25 @@ namespace TH17 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            (void*)0x44956a, "\x01", 1 };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
-            (void*)0x44921a, "\x90", 1 };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3,
-            (void*)0x411c96, "\x90\x90\x90", 3 };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4,
-            (void*)0x447b84, "\x31\xf6\x90\x90\x90\x90", 6 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5,
-            (void*)0x41a8cf, "\xeb", 1, (void*)0x420a1e, "\x05\x8d", 2 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6,
-            (void*)0x447c20, "\x90\x90\x90\x90\x90\x90", 6 };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x44956a, "\x01", 1) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x44921a, "\x90", 1) } };
+        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
+            new HookCtxPatch((void*)0x411c96, "\x90\x90\x90", 3) } };
+        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
+            new HookCtxPatch((void*)0x447b84, "\x31\xf6\x90\x90\x90\x90", 6) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtxPatch((void*)0x41a8cf, "\xeb", 1),
+            new HookCtxPatch((void*)0x420a1e, "\x05\x8d", 2) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
+            new HookCtxPatch((void*)0x447c20, "\x90\x90\x90\x90\x90\x90", 6) } };
 
     public:
-        Gui::GuiHotKey mInfRoaring { TH17_INF_ROARING, "F7", VK_F7,
-            (void*)0x40ef6a, "\x00", 1 };
-        Gui::GuiHotKey mNoGoast { TH17_NO_GOAST, "F8", VK_F8,
-            (void*)0x4347af, "\xe9\x03\x01\x00\x00", 5 };
+        Gui::GuiHotKey mInfRoaring { TH17_INF_ROARING, "F7", VK_F7, {
+            new HookCtxPatch((void*)0x40ef6a, "\x00", 1) } };
+        Gui::GuiHotKey mNoGoast { TH17_NO_GOAST, "F8", VK_F8, {
+            new HookCtxPatch((void*)0x4347af, "\xe9\x03\x01\x00\x00", 5) } };
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
     };
     class THGuiSP : public Gui::GameGuiWnd {

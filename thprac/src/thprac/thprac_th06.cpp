@@ -166,21 +166,24 @@ namespace TH06 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            (void*)0x4277c2, "\x03", 1,
-            (void*)0x42779a, "\x83\xc4\x10\x90\x90", 5,
-        };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
-            (void*)0x428DDC, "\x15", 1 };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3,
-            (void*)0x4289e3, "\x00", 1 }; //(void*)0x428e17, "\xeb\x13", 2 };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4,
-            (void*)0x41BBE2, "\x3E\xC6\x80", 3, (void*)0x41BBE9, "\x80", 1, (void*)0x428B7D, "\x00", 1 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5,
-            (void*)0x412DD1, "\xeb", 1 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6,
-            (void*)0x428989, "\xEB\x1D", 2, (void*)0x4289B4, "\x85\xD2", 2,
-            (void*)0x428A94, "\xFF\x89", 2, (void*)0x428A9D, "\x66\xC7\x05\x04\xD9\x69\x00\x02", 8 };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x4277c2, "\x03", 1),
+            new HookCtxPatch((void*)0x42779a, "\x83\xc4\x10\x90\x90", 5) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x428DDC, "\x15", 1) } };
+        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
+            new HookCtxPatch((void*)0x4289e3, "\x00", 1) } };
+        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
+            new HookCtxPatch((void*)0x41BBE2, "\x3E\xC6\x80", 3),
+            new HookCtxPatch((void*)0x41BBE9, "\x80", 1),
+            new HookCtxPatch((void*)0x428B7D, "\x00", 1) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtxPatch((void*)0x412DD1, "\xeb", 1) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
+            new HookCtxPatch((void*)0x428989, "\xEB\x1D", 2),
+            new HookCtxPatch((void*)0x4289B4, "\x85\xD2", 2),
+            new HookCtxPatch((void*)0x428A94, "\xFF\x89", 2),
+            new HookCtxPatch((void*)0x428A9D, "\x66\xC7\x05\x04\xD9\x69\x00\x02", 8) } };
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };

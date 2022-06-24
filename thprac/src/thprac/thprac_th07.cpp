@@ -501,21 +501,22 @@ namespace TH07 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            //(void*)0x43E37F, "\x00", 1, (void*)0x43EB6A, "\x00", 1 };
-            (void*)0x43Ee14, "\x03", 1 };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
-            (void*)0x44116B, "\x00", 1 };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3,
-            (void*)0x440BC7, "\x00", 1 };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4,
-            (void*)0x42F02B, "\xeb\x16", 2, (void*)0x440DD3, "\x00", 1 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5,
-            (void*)0x417726, "\xeb", 1, (void*)0x421F91, "\xeb", 1 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6,
-            (void*)0x440D2C, "\xff", 1,
-            (void*)0x440D35, "\x66\xC7\x05\x4C\x9E\x4B\x00\x02", 8,
-            (void*)0x440B8E, "\x54", 1 };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x43Ee14, "\x03", 1) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x44116B, "\x00", 1) } };
+        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
+            new HookCtxPatch((void*)0x440BC7, "\x00", 1) } };
+        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
+            new HookCtxPatch((void*)0x42F02B, "\xeb\x16", 2),
+            new HookCtxPatch((void*)0x440DD3, "\x00", 1) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtxPatch((void*)0x417726, "\xeb", 1),
+            new HookCtxPatch((void*)0x421F91, "\xeb", 1) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
+            new HookCtxPatch((void*)0x440D2C, "\xff", 1),
+            new HookCtxPatch((void*)0x440D35, "\x66\xC7\x05\x4C\x9E\x4B\x00\x02", 8),
+            new HookCtxPatch((void*)0x440B8E, "\x54", 1) } };
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };

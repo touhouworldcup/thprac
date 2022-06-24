@@ -2,6 +2,8 @@
 #include <imgui.h>
 #include <vector>
 #include <functional>
+#include <initializer_list>
+#include <utility>
 #define NOMINMAX
 #include <Windows.h>
 
@@ -587,138 +589,38 @@ namespace Gui {
         char* mKeyText = nullptr;
         int mKey;
         bool mStatus = false;
-        std::vector<HookCtx*> mPatches;
-        float mXOffset1 = 0.0f;
-        float mXOffset2 = 0.0f;
-
-    protected:
-        virtual void OnWidgetUpdate(bool status, bool has_changed);
-    public:
-        template <class... Args>
-        GuiHotKey(unsigned int text_ref, char* key_text, int vkey, Args... rest)
-            : mTextRef(text_ref)
-            , mKeyText(key_text)
-            , mKey(vkey)
-        {
-            AddPatch(rest...);
-        }
-        template <class... Args>
-        GuiHotKey(const char* text, char* key_text, int vkey, Args... rest)
-            : mText(const_cast<char*>(text))
-            , mKeyText(key_text)
-            , mKey(vkey)
-        {
-            AddPatch(rest...);
-        }
-        template <class... Args>
-        GuiHotKey(unsigned int text_ref, char* key_text, int vkey,
-            float x_offset_1, float x_offset_2, bool use_rel_offset,
-            Args... rest)
-            : mTextRef(text_ref)
-            , mKeyText(key_text)
-            , mKey(vkey)
-        {
-            if (use_rel_offset)
-                SetTextOffsetRel(x_offset_1, x_offset_2);
-            else
-                SetTextOffset(x_offset_1, x_offset_2);
-
-            AddPatch(rest...);
-        }
-
-        template <class... Args>
-        void AddPatch(void* target, const char* patch, size_t size, Args... rest)
-        {
-            HookCtx* hookPatch = new HookCtx(target, patch, size);
-            hookPatch->Setup();
-            mPatches.push_back(hookPatch);
-            AddPatch(rest...);
-        }
-        void AddPatch()
-        {
-        }
-
-        inline void SetText(unsigned int ref)
-        {
-            mTextRef = ref;
-            mText = nullptr;
-        }
-        inline void SetText(const char* label)
-        {
-            mTextRef = 0;
-            mText = const_cast<char*>(label);
-        }
-        inline void SetKey(const char* key_text, int vkey)
-        {
-            mKeyText = const_cast<char*>(key_text);
-            mKey = vkey;
-        }
-        inline void SetTextOffset(float x_offset_1, float x_offset_2)
-        {
-            mXOffset1 = x_offset_1;
-            mXOffset2 = x_offset_2;
-        }
-        inline void SetTextOffsetRel(float x_offset_prop_1, float x_offset_prop_2)
-        {
-            auto disp_x = ImGui::GetIO().DisplaySize.x;
-            mXOffset1 = x_offset_prop_1 * disp_x;
-            mXOffset2 = x_offset_prop_2 * disp_x;
-        }
-        inline void Toggle(bool status)
-        {
-            mStatus = status;
-            if (status) {
-                for (auto& patch : mPatches) {
-                    patch->Enable();
-                }
-            } else {
-                for (auto& patch : mPatches) {
-                    patch->Disable();
-                }
-            }
-        }
-        inline bool& operator*()
-        {
-            return mStatus;
-        }
-        bool operator()(bool use_widget = true);
-    };
-    class GuiHotKeyHook {
-        typedef void __stdcall CallbackFunc(PCONTEXT);
-    private:
-        unsigned int mTextRef = 0;
-        char* mText = nullptr;
-        char* mKeyText = nullptr;
-        int mKey;
-        bool mStatus = false;
         std::vector<HookCtx*> mHooks;
         float mXOffset1 = 0.0f;
         float mXOffset2 = 0.0f;
 
     protected:
         virtual void OnWidgetUpdate(bool status, bool has_changed);
-
     public:
-        template <class... Args>
-        GuiHotKeyHook(unsigned int text_ref, char* key_text, int vkey, Args... rest)
+        GuiHotKey(unsigned int text_ref, char* key_text, int vkey, std::initializer_list<HookCtx*> hooks = {})
             : mTextRef(text_ref)
             , mKeyText(key_text)
             , mKey(vkey)
         {
-            AddHook(rest...);
+            for (auto& hook : hooks) {
+                hook->Setup();
+                mHooks.push_back(hook);
+            }
         }
-        template <class... Args>
-        GuiHotKeyHook(const char* text, char* key_text, int vkey, Args... rest)
+
+        GuiHotKey(const char* text, char* key_text, int vkey, std::initializer_list<HookCtx*> hooks = {})
             : mText(const_cast<char*>(text))
             , mKeyText(key_text)
             , mKey(vkey)
         {
-            AddHook(rest...);
+            for (auto& hook : hooks) {
+                hook->Setup();
+                mHooks.push_back(hook);
+            }
         }
-        template <class... Args>
-        GuiHotKeyHook(unsigned int text_ref, char* key_text, int vkey,
+
+        GuiHotKey(unsigned int text_ref, char* key_text, int vkey,
             float x_offset_1, float x_offset_2, bool use_rel_offset,
-            Args... rest)
+            std::initializer_list<HookCtx*> hooks = {})
             : mTextRef(text_ref)
             , mKeyText(key_text)
             , mKey(vkey)
@@ -728,19 +630,10 @@ namespace Gui {
             else
                 SetTextOffset(x_offset_1, x_offset_2);
 
-            AddHook(rest...);
-        }
-
-        template <class... Args>
-        void AddHook(void* addr, CallbackFunc* inject, Args... rest)
-        {
-            HookCtx* hook = new HookCtx(addr, (void*)inject);
-            hook->Setup();
-            mHooks.push_back(hook);
-            AddHook(rest...);
-        }
-        void AddHook()
-        {
+            for (auto& hook : hooks) {
+                hook->Setup();
+                mHooks.push_back(hook);
+            }
         }
 
         inline void SetText(unsigned int ref)

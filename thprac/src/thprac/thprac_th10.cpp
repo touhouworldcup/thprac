@@ -427,19 +427,21 @@ namespace TH10 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            //(void*)0x426D05, "\x01", 1 }; //00426CF0-C20400
-            (void*)0x426D05, "\x01", 1, (void*)0x425a2b, "\xeb", 1,
-            (void*)0x426D69, "\x83\xc4\x08\x90\x90", 5 };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
-            (void*)0x426A15, "\x90", 1 };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F3", VK_F3,
-            (void*)0x4259DB, "\x00", 1, (void*)0x425C4A, "\x00", 1,
-            (void*)0x425ABD, "\x00", 1 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4,
-            (void*)0x408D93, "\xeb", 1, (void*)0x40E5B0, "\x90", 1 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F5", VK_F5,
-            (void*)0x425C13, "\xc6", 1 };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtx((void*)0x426D05, "\x01", 1),
+            new HookCtx((void*)0x425a2b, "\xeb", 1),
+            new HookCtx((void*)0x426D69, "\x83\xc4\x08\x90\x90", 5) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtx((void*)0x426A15, "\x90", 1) } };
+        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F3", VK_F3, {
+            new HookCtx((void*)0x4259DB, "\x00", 1),
+            new HookCtx((void*)0x425C4A, "\x00", 1),
+            new HookCtx((void*)0x425ABD, "\x00", 1) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4, {
+            new HookCtx((void*)0x408D93, "\xeb", 1), 
+            new HookCtx((void*)0x40E5B0, "\x90", 1) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F5", VK_F5, {
+            new HookCtx((void*)0x425C13, "\xc6", 1) } };
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F6", VK_F6 };
