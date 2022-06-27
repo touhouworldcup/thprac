@@ -467,8 +467,10 @@ namespace TH10 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th10.dll");
-            if (mOptCtx.vpatch_base) {
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                mOptCtx.fps_status = 3;
+                mOptCtx.oilp_set_game_fps = (adv_opt_ctx::oilp_set_game_fps_t*)GetProcAddress((HMODULE)mOptCtx.vpatch_base, "oilp_set_game_fps");
+            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th10.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th10.dll", hash);
                 if (hash[0] != 9704945468076323108ll || hash[1] != 99312983382598050ll)
@@ -482,7 +484,9 @@ namespace TH10 {
         }
         void FpsSet()
         {
-            if (mOptCtx.fps_status == 1) {
+            if (mOptCtx.fps_status == 3 && mOptCtx.oilp_set_game_fps) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+            } else if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
             } else if (mOptCtx.fps_status == 2) {
                 *(int32_t*)(mOptCtx.vpatch_base + 0x18ab4) = mOptCtx.fps;
@@ -2272,7 +2276,7 @@ namespace TH10 {
 
         GameGuiEnd(drawCursor);
     }
-    EHOOK_DY(th10_render, (void*)0x4394fa)
+    EHOOK_DY(th10_render, (void*)0x449e2e)
     {
         GameGuiRender(IMPL_WIN32_DX9);
     }

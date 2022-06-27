@@ -139,13 +139,16 @@ struct adv_opt_ctx {
     int fps_replay_slow = 0;
     int fps_replay_fast = 0;
     int fps_debug_acc = 0;
-    int32_t vpatch_base = 0;
+    uintptr_t vpatch_base = 0;
 
     bool data_rec_toggle = false;
     std::function<void(std::vector<RecordedValue>&)> data_rec_func;
     std::wstring data_rec_dir;
 
     bool all_clear_bonus = false;
+
+    typedef bool oilp_set_game_fps_t(int fps);
+    oilp_set_game_fps_t* oilp_set_game_fps = NULL;
 };
 
 void CenteredText(const char* text, float wndX);
