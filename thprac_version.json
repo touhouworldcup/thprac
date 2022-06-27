@@ -1,12 +1,12 @@
 {
-    "version": [2, 1, 1, 2],
+    "version": [2, 1, 1, 3],
     "description": [
-        "TH10: fix MoF/DVoWG delay option\nFull Changelog: https://github.com/touhouworldcup/thprac/releases/tag/v2.1.1.2",
+        "Changelog: https://github.com/touhouworldcup/thprac/releases/tag/v2.1.1.3",
         "",
         ""   
     ],
-    "file_size": 3449344,
-    "direct_link": "https://github.com/touhouworldcup/thprac/releases/download/v2.1.1.2/thprac.v2.1.1.2.exe",
+    "file_size": 3447296,
+    "direct_link": "https://github.com/touhouworldcup/thprac/releases/download/v2.1.1.3/thprac.v2.1.1.3.exe",
     "downloads": {
         "GitHub": "https://github.com/touhouworldcup/thprac/releases/latest"
     }
