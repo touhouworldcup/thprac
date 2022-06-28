@@ -354,6 +354,8 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
     ::ImGui::StyleColorsDark();
 }
 
+int GameGuiProgress = 0;
+
 void GameGuiBegin(game_gui_impl impl, bool game_nav)
 {
     // Locale Rotate
@@ -402,10 +404,13 @@ void GameGuiBegin(game_gui_impl impl, bool game_nav)
         ::ImGui::NewFrame();
         break;
     }
+    GameGuiProgress = 1;
 }
 
 void GameGuiEnd(bool draw_cursor)
 {
+    if (GameGuiProgress != 1)
+        return;
     // Draw cursor if needed
     if (draw_cursor && Gui::ImplWin32CheckFullScreen()) {
         auto& io = ::ImGui::GetIO();
@@ -423,10 +428,13 @@ void GameGuiEnd(bool draw_cursor)
         }
     }
     ::ImGui::EndFrame();
+    GameGuiProgress = 2;
 }
 
 void GameGuiRender(game_gui_impl impl)
 {
+    if (GameGuiProgress != 2)
+        return;
     Gui::ImplWin32Check((void*)*g_gameGuiHwnd);
     switch (impl) {
     case THPrac::IMPL_WIN32_DX8:
@@ -444,6 +452,7 @@ void GameGuiRender(game_gui_impl impl)
     default:
         break;
     }
+    GameGuiProgress = 0;
 }
 
 void GameFreeze()
