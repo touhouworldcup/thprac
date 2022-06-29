@@ -1887,7 +1887,7 @@ namespace TH07 {
 
         GameGuiEnd(drawCursor);
     }
-    EHOOK_DY(th07_render, (void*)0x43477a)
+    EHOOK_DY(th07_render, (void*)0x42feb9)
     {
         GameGuiRender(IMPL_WIN32_DX8);
     }

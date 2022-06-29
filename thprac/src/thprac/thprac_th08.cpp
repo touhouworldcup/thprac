@@ -2296,7 +2296,7 @@ namespace TH08 {
 
         GameGuiEnd(drawCursor);
     }
-    EHOOK_DY(th08_render, (void*)0x442014)
+    EHOOK_DY(th08_render, (void*)0x43cc45)
     {
         GameGuiRender(IMPL_WIN32_DX8);
     }
