@@ -634,7 +634,7 @@ namespace TH09 {
         THGuiCreate();
         THInitHookDisable();
     }
-    EHOOK_DY(th09_gui_init_2, (void*)0x42e3a8)
+    EHOOK_DY(th09_gui_init_2, (void*)0x42e627)
     {
         THGuiCreate();
         THInitHookDisable();
