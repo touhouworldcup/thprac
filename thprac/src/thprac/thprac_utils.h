@@ -143,7 +143,7 @@ struct adv_opt_ctx {
 
     bool all_clear_bonus = false;
 
-    typedef bool oilp_set_game_fps_t(int fps);
+    typedef bool __stdcall oilp_set_game_fps_t(int fps);
     oilp_set_game_fps_t* oilp_set_game_fps = NULL;
 };
 
