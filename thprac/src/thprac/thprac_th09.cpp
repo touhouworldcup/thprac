@@ -606,6 +606,12 @@ namespace TH09 {
         }
         g.Close();
     }
+    EHOOK_DY(th09_gui_reinit, (void*)0x42e50f)
+    {
+        GameGuiInit(IMPL_WIN32_DX8, 0x4b3108, 0x4b30b0, 0x42d3d0,
+            Gui::INGAGME_INPUT_GEN2, 0x4acf3a, 0x4acf38, 0,
+            -1);
+    }
     HOOKSET_ENDDEF()
 
     HOOKSET_DEFINE(THInitHook)
