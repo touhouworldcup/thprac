@@ -855,11 +855,16 @@ namespace TH14 {
         // Option Related Functions
         void FpsInit()
         {
-            // mOptCtx.vpatch_base = (int32_t)GetModuleHandleW("");
+            #if 0
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW("");
             if (false) {
-                //if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0)
-                //	mOptCtx.fps_status = 2;
-            } else if (*(uint8_t*)0x4d9159 == 3) {
+                if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0)
+                    mOptCtx.fps_status = 2;
+            } else 
+            #endif    
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                OILPInit(mOptCtx);
+            } else if(*(uint8_t*)0x4d9159 == 3) {
                 mOptCtx.fps_status = 1;
 
                 DWORD oldProtect;
@@ -871,11 +876,18 @@ namespace TH14 {
         }
         void FpsSet()
         {
-            if (mOptCtx.fps_status == 1) {
+            if (mOptCtx.fps_status == 3) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
+            } else if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
-            } else if (mOptCtx.fps_status == 2) {
-                //*(int32_t*)(mOptCtx.vpatch_base + 0x16a8c) = mOptCtx.fps;
             }
+            #if 0
+            else if (mOptCtx.fps_status == 2) {
+                *(int32_t*)(mOptCtx.vpatch_base + 0x16a8c) = mOptCtx.fps;
+            }
+            #endif
         }
         void GameplayInit()
         {
