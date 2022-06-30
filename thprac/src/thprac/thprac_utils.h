@@ -72,10 +72,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
 void GameGuiBegin(game_gui_impl impl, bool game_nav = true);
 void GameGuiEnd(bool draw_cursor = false);
 void GameGuiRender(game_gui_impl impl);
-static void GameGuiEnd(game_gui_impl impl, bool draw_cursor = false) {
-    GameGuiEnd(draw_cursor);
-    GameGuiRender(impl);
-}
 void GameToggleIME(bool toggle);
 void TryKeepUpRefreshRate(void* address);
 void TryKeepUpRefreshRate(void* address, void* address2);

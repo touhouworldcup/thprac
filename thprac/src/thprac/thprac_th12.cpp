@@ -1380,18 +1380,6 @@ namespace TH12 {
         }
     }
 
-    __declspec(noinline) void THGuiUpdate()
-    {
-        GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
-
-        // Gui components update
-        THGuiPrac::singleton().Update();
-        THGuiRep::singleton().Update();
-        THOverlay::singleton().Update();
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
-
-        GameGuiEnd(IMPL_WIN32_DX9, drawCursor);
-    }
     int THBGMTest()
     {
         if (!thPracParam.mode)
