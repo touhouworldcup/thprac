@@ -695,8 +695,9 @@ namespace TH13 {
             mOptCtx.fps_debug_acc = 1;
             mOptCtx.fps_replay_fast = 600;
 
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th13.dll");
-            if (mOptCtx.vpatch_base) {
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                OILPInit(mOptCtx);
+            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th13.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th13.dll", hash);
                 if (hash[0] != 6450385832836080372ll || hash[1] != 579365625616419970ll)
@@ -718,7 +719,12 @@ namespace TH13 {
         }
         void FpsSet()
         {
-            if (mOptCtx.fps_status == 1) {
+            if (mOptCtx.fps_status == 3) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
+            }
+            else if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
             } else if (mOptCtx.fps_status == 2) {
                 VPResetFPS(mOptCtx.fps);
