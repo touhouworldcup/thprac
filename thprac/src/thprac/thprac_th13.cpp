@@ -502,7 +502,10 @@ namespace TH13 {
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtxPatch((void*)0x444D7B, "\x01", 1) } };
+            new HookCtxHook((void*)0x444D7F, [](PCONTEXT pCtx) {
+                *(uint32_t*)(pCtx->Edi + 0x65C) = 1;
+                DataRef<EVENT_MISS>()++;
+            }) } };
         Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
             new HookCtxPatch((void*)0x444A52, "\xeb\x06", 2) } };
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
