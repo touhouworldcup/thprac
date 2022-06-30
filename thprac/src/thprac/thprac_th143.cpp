@@ -213,7 +213,8 @@ namespace TH143 {
         // Gui components update
         THOverlay::singleton().Update();
 
-        GameGuiEnd(IMPL_WIN32_DX9, UpdateAdvOptWindow());
+        GameGuiEnd(UpdateAdvOptWindow());
+        GameGuiRender(IMPL_WIN32_DX9);
     }
 
     HOOKSET_DEFINE(THMainHook)

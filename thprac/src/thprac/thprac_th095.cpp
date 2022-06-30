@@ -209,7 +209,8 @@ namespace TH095 {
         // Gui components update
         THOverlay::singleton().Update();
 
-        GameGuiEnd(IMPL_WIN32_DX8, UpdateAdvOptWindow());
+        GameGuiEnd(UpdateAdvOptWindow());
+        GameGuiRender(IMPL_WIN32_DX8);
     }
 
     HOOKSET_DEFINE(THMainHook)

@@ -1031,7 +1031,7 @@ bool ReplayLoadParam(const wchar_t* rep_path, std::string& param)
                     memset(buf, 0, paramLength + 1);
 
                     if (ReadFile(repFile, buf, paramLength, &bytesRead, NULL) && bytesRead == paramLength)
-                        param = std::string(buf, paramLength + 1);
+                        param = std::string(buf, paramLength);
 
                     return (bytesRead == paramLength);
                 }
