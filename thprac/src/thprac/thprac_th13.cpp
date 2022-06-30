@@ -557,6 +557,7 @@ namespace TH13 {
 
             ImGuiStyle& style = ImGui::GetStyle();
             style.FramePadding.y = 0;
+            style.ItemSpacing.x = 0;
 
             mStageOffset(false);
             STAGE_OFFSET_INIT(DataBatchCache<0>(false), *mStageOffset);
@@ -575,18 +576,49 @@ namespace TH13 {
                 Gui_update_lifes(*(uint32_t*)0x4c2190, *(uint32_t*)0x4be7f4, *(uint32_t*)0x4be7f8);
             }
             ImGui::NextColumn();
+
             auto extend = ((uint32_t*)(0x4bb994))[U32_REF(DATA_EXTEND)];
             char extendFormat[8] = "%d/";
             sprintf_s(extendFormat + 3, 5, "%d", extend);
             ImGui::TextUnformatted("Frag:");
+            ImGui::SameLine();
             ImGui::SliderInt("##lifefrag", (int*)0x4be7f8, 0, extend, extendFormat);
             ImGui::NextColumn();
-            ImGui::Text("Bomb: %d", DataRef<DATA_BOMB>());
+            
+            ImGui::TextUnformatted("Bomb:");
+            ImGui::SameLine();
+            if (ImGui::InputScalar("##bomb", ImGuiDataType_S32, (void*)0x4be800)) {
+                auto Gui__update_bombs = (Gui_update_hud_t*)0x42af60;
+                Gui__update_bombs(*(uint32_t*)0x4c2190, *(uint32_t*)0x4be800, *(uint32_t*)0x4be804);
+            }
             ImGui::NextColumn();
-            ImGui::Text("Frag: %d/8", DataRef<DATA_BOMB_FRAG>());
+            
+            ImGui::TextUnformatted("Frag:");
+            ImGui::SameLine();
+            ImGui::SliderInt("##bombfrag", (int*)0x4be804, 0, 8, "%d/8");
             ImGui::NextColumn();
-            ImGui::Text("Power: %1.2f", ((float)DataRef<DATA_POWER>() / 100.0f));
+
+            int* power = (int*)0x4be7e8;
+            char pStr[32];
+            // Please MSVC optimize this to just a single idiv
+            int pMajor = (*power) / 100;
+            int pMinor = (*power) % 100;
+            sprintf_s(pStr, "%d.%d", pMajor, pMinor);
+
+            ImGui::TextUnformatted("Power:");
+            ImGui::SameLine();
+            if (ImGui::SliderInt("##power", power, 0, 400, pStr)) {
+                // Yes, that function takes a parameter in edi.
+                // Yes, the inline assembler can't dereference int constants
+                __asm {
+                    mov eax, 0x4c22c4
+                    mov edi, [eax]
+                    mov eax, 0x444df0
+                    call eax
+                }
+            }
             ImGui::NextColumn();
+            
             PRT_WITH_SO("Items: %d", STAGE_OFFSET(DATA_ITEM_POWER));
             ImGui::NextColumn();
             PRT_WITH_SO("Value: %d", STAGE_OFFSET(DATA_VALUE) / 100);
