@@ -143,8 +143,10 @@ struct adv_opt_ctx {
 
     bool all_clear_bonus = false;
 
-    typedef bool __stdcall oilp_set_game_fps_t(int fps);
-    oilp_set_game_fps_t* oilp_set_game_fps = NULL;
+    typedef bool __stdcall oilp_set_fps_t(int fps);
+    oilp_set_fps_t* oilp_set_game_fps = NULL;
+    oilp_set_fps_t* oilp_set_replay_skip_fps = NULL;
+    oilp_set_fps_t* oilp_set_replay_slow_fps = NULL;
 };
 
 void CenteredText(const char* text, float wndX);
@@ -167,6 +169,7 @@ static void EndOptGroup()
     ImGui::Unindent();
 }
 typedef void __stdcall FPSHelperCallback(int32_t);
+void OILPInit(adv_opt_ctx& ctx);
 int FPSHelper(adv_opt_ctx& ctx, bool repStatus, bool vpFast, bool vpSlow, FPSHelperCallback* callback);
 bool GameFPSOpt(adv_opt_ctx& ctx);
 bool GameplayOpt(adv_opt_ctx& ctx);

@@ -468,13 +468,7 @@ namespace TH10 {
         void FpsInit()
         {
             if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
-                mOptCtx.fps_status = 3;
-                mOptCtx.oilp_set_game_fps = (adv_opt_ctx::oilp_set_game_fps_t*)GetProcAddress((HMODULE)mOptCtx.vpatch_base, "oilp_set_game_fps");
-                auto oilp_get_game_fps = (int(__stdcall*)())GetProcAddress((HMODULE)mOptCtx.vpatch_base, "oilp_get_game_fps");
-                if (oilp_get_game_fps)
-                    mOptCtx.fps = oilp_get_game_fps();
-                else
-                    mOptCtx.fps = 60;
+                OILPInit(mOptCtx);
             } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th10.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th10.dll", hash);
@@ -489,8 +483,10 @@ namespace TH10 {
         }
         void FpsSet()
         {
-            if (mOptCtx.fps_status == 3 && mOptCtx.oilp_set_game_fps) {
+            if (mOptCtx.fps_status == 3) {
                 mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
             } else if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
             } else if (mOptCtx.fps_status == 2) {
