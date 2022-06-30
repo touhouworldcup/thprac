@@ -418,6 +418,7 @@ enum th_glossary_t
     THPRAC_GAMES_SELECT_VER,
     THPRAC_GAMES_SPINOFF_OTHERS,
     THPRAC_GAMES_SPINOFF_STG,
+    THPRAC_GAMES_USE_OILP,
     THPRAC_GAMES_USE_VPATCH,
     THPRAC_GAME_ADJUSTMENTS,
     THPRAC_GOTO_STEAM_PAGE,
@@ -733,7 +734,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-static char* th_glossary_str[3][726]
+static char* th_glossary_str[3][727]
 {
     {
         "",
@@ -1149,6 +1150,7 @@ static char* th_glossary_str[3][726]
         u8"选择游戏：",
         u8"小数点作（其他）",
         u8"小数点作（STG）",
+        u8"使用OpenInputLagPatch (如果可用）",
         u8"使用VsyncPatch (如果可用）",
         u8"thprac - 游戏调整",
         u8"前往Steam页面",
@@ -1877,6 +1879,7 @@ static char* th_glossary_str[3][726]
         u8"Select game:",
         u8"Spinoff (Others)",
         u8"Spinoff (Shmup)",
+        u8"Use OpenInputLagPatch (if avaliable)",
         u8"Use VsyncPatch (if avaliable)",
         u8"thprac - Game adjustments",
         u8"Go to Steam page",
@@ -2605,6 +2608,7 @@ static char* th_glossary_str[3][726]
         u8"ゲームを選択：",
         u8"小数点作（その他）",
         u8"小数点作（STG）",
+        u8"OpenInputLagPatch を使用する (利用可能な場合)",
         u8"VsyncPatch を使用する (利用可能な場合)",
         u8"thprac - ゲームの調整",
         u8"Steamページに移動",

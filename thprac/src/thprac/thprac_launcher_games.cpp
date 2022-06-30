@@ -260,7 +260,8 @@ struct THGameInst {
     std::string path;
     THGameType type;
 
-    bool useVpatch = true;
+    bool useVpatch = false;
+    bool useOILP = true;
     bool useTHPrac = false;
 
     THGameInst() = default;
@@ -1771,7 +1772,23 @@ public:
         startup_info.cb = sizeof(STARTUPINFOW);
         CreateProcessW(currentInstPath.c_str(), NULL, NULL, NULL, NULL, CREATE_SUSPENDED, NULL, currentInstDir.c_str(), &startup_info, &proc_info);
 
-        if (currentInst.useVpatch) {
+        if (currentInst.useOILP) {
+            std::wstring path = currentInstDir + L"openinputlagpatch.dll";
+            if (CheckDLLFunction(path.c_str(), "oilp_set_game_fps")) {
+                auto oilpNameLength = (path.size() + 1) * sizeof(wchar_t);
+                auto pLoadLibrary = ::LoadLibraryW;
+                auto remoteStr = VirtualAllocEx(proc_info.hProcess, NULL, oilpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+                if (!remoteStr)
+                    return 0;
+                defer(VirtualFreeEx(proc_info.hProcess, remoteStr, 0, MEM_RELEASE));
+                WriteProcessMemory(proc_info.hProcess, remoteStr, path.data(), oilpNameLength, NULL);
+                auto t = CreateRemoteThread(proc_info.hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, remoteStr, 0, NULL);
+                if (t) {
+                    WaitForSingleObject(t, INFINITE);
+                    CloseHandle(t);
+                }
+            }
+        } else if (currentInst.useVpatch) {
             auto exeName = GetNameFromFullPath(currentInstPath);
             if (exeName == L"東方紅魔郷.exe") {
                 if (!CheckAndLoadVPatch(proc_info.hProcess, currentInstDir, L"vpatch_th06_unicode.dll")) {
@@ -1826,7 +1843,9 @@ public:
         case TYPE_TCHINESE:
             if (currentCatagory == CAT_MAIN || currentCatagory == CAT_SPINOFF_STG) {
                 if (useReflectiveLaunch) {
-                    if (currentGame->signature.vPatchStr && currentInst.useVpatch) {
+                    if (currentInst.useOILP) {
+                        executeResult = ShellExecuteW(NULL, L"open", (currentInstDir + L"oilp_loader.exe").c_str(), NULL, currentInstDir.c_str(), SW_SHOW);
+                    } else if (currentGame->signature.vPatchStr && currentInst.useVpatch) {
                         executeResult = ShellExecuteW(NULL, L"open", (currentInstDir + L"vpatch.exe").c_str(), NULL, currentInstDir.c_str(), SW_SHOW);
                     } else {
                         executeResult = ShellExecuteW(NULL, L"open", currentInstPath.c_str(), NULL, currentInstDir.c_str(), SW_SHOW);
@@ -2009,6 +2028,32 @@ public:
             ImGui::EndPopup();
         }
     }
+
+    void GameVpatchSelection(THGameInst& currentInst) {
+        if (mCurrentGame->signature.vPatchStr) {
+            if (ImGui::RadioButton(XSTR(THPRAC_GAMES_USE_VPATCH), currentInst.useVpatch)) {
+                if (currentInst.useVpatch) {
+                    currentInst.useVpatch = false;
+                } else {
+                    currentInst.useOILP = false;
+                    currentInst.useVpatch = true;
+                }
+            }
+            ImGui::SameLine();
+            if (ImGui::RadioButton(XSTR(THPRAC_GAMES_USE_OILP), currentInst.useOILP)) {
+                if (currentInst.useOILP) {
+                    currentInst.useOILP = false;
+                } else {
+                    currentInst.useOILP = true;
+                    currentInst.useVpatch = false;
+                }
+            }
+        } else {
+            currentInst.useVpatch = false;
+            ImGui::Checkbox(XSTR(THPRAC_GAMES_USE_OILP), &currentInst.useOILP);
+        }
+    }
+
     void GameVersionTable()
     {
         static int moveIdx = -1;
@@ -2134,10 +2179,7 @@ public:
         if (currentCatagory == CAT_MAIN || currentCatagory == CAT_SPINOFF_STG) {
             switch (currentInst.type) {
             case TYPE_ORIGINAL:
-                if (mCurrentGame->signature.vPatchStr) {
-                    ImGui::Checkbox(XSTR(THPRAC_GAMES_USE_VPATCH), &currentInst.useVpatch);
-                    ImGui::SameLine();
-                }
+                GameVpatchSelection(currentInst);
                 if (ImGui::Checkbox(XSTR(THPRAC_GAMES_APPLY_THPRAC), &currentInst.useTHPrac)) {
                     WriteGameCfg();
                 }
@@ -2153,10 +2195,7 @@ public:
             case TYPE_MALICIOUS:
             case TYPE_SCHINESE:
             case TYPE_TCHINESE:
-                if (mCurrentGame->signature.vPatchStr) {
-                    ImGui::Checkbox(XSTR(THPRAC_GAMES_USE_VPATCH), &currentInst.useVpatch);
-                    ImGui::SameLine();
-                }
+                GameVpatchSelection(currentInst);
                 if (ImGui::Checkbox(XSTR(THPRAC_GAMES_FORCE_THPRAC), &currentInst.useTHPrac)) {
                     if (currentInst.useTHPrac) {
                         currentInst.useTHPrac = false;

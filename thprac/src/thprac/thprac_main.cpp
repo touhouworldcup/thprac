@@ -266,74 +266,24 @@ bool CheckIfGameExist(THGameSig& gameSig, std::wstring& name)
     return false;
 }
 
-bool CheckVpatch(THGameSig& gameSig)
-{
-    auto attr = GetFileAttributesW(gameSig.vPatchStr);
-    if (attr == INVALID_FILE_ATTRIBUTES || (attr & FILE_ATTRIBUTE_DIRECTORY))
-        return false;
-    return true;
-}
-
-bool RunGameReflective(THGameSig& gameSig, std::wstring& name, bool useVpatch)
-{
-    HINSTANCE executeResult = (HINSTANCE)100;
-
-    if (useVpatch) {
-        executeResult = ShellExecuteW(NULL, L"open", L"vpatch.exe", NULL, NULL, SW_SHOW);
-    } else {
-        executeResult = ShellExecuteW(NULL, L"open", name.c_str(), NULL, NULL, SW_SHOW);
-    }
-
-    if (executeResult <= (HINSTANCE)32) {
-        return false;
-    }
-
-    if ((gameSig.catagory == CAT_MAIN || gameSig.catagory == CAT_SPINOFF_STG) && useVpatch) {
-        for (int i = 0; i < 20; ++i) {
-            if (CheckIfAnyGame()) {
-                THGameSig* gameSig = nullptr;
-                PROCESSENTRY32W entry;
-                entry.dwSize = sizeof(PROCESSENTRY32W);
-                HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-                if (Process32FirstW(snapshot, &entry)) {
-                    do {
-                        gameSig = CheckOngoingGame(entry);
-                        if (gameSig) {
-                            if (ApplyTHPracToProc(entry)) {
-                                CloseHandle(snapshot);
-                                return true;
-                            } else {
-                                PromptUser(PR_ERR_ATTACH_FAILED);
-                                CloseHandle(snapshot);
-                                return true;
-                            }
-                        }
-                    } while (Process32NextW(snapshot, &entry));
-                }
-            }
-            Sleep(500);
-        }
-    }
-
-    return true;
-}
-
 bool RunGameWithTHPrac(THGameSig& gameSig, std::wstring& name)
 {
-    auto isVpatchValid = CheckDLLFunction(gameSig.vPatchStr, "_Initialize@4");
-    bool useReflectiveLaunch = false;
-    LauncherSettingGet("reflective_launch", useReflectiveLaunch);
-    if (useReflectiveLaunch) {
-        return RunGameReflective(gameSig, name, isVpatchValid);
-    }
-
     STARTUPINFOW startup_info;
     PROCESS_INFORMATION proc_info;
     memset(&startup_info, 0, sizeof(startup_info));
     startup_info.cb = sizeof(startup_info);
     CreateProcessW(name.c_str(), NULL, NULL, NULL, NULL, CREATE_SUSPENDED, NULL, NULL, &startup_info, &proc_info);
 
-    if (isVpatchValid) {
+    if (CheckDLLFunction(L"openinputlagpatch.dll", "oilp_set_game_fps")) {
+        auto oilpNameLength = (wcslen(L"openinputlagpatch.dll") + 1) * sizeof(wchar_t);
+        auto pLoadLibrary = ::LoadLibraryW;
+        if (auto remoteStr = VirtualAllocEx(proc_info.hProcess, NULL, oilpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) {
+            WriteProcessMemory(proc_info.hProcess, remoteStr, L"openinputlagpatch.dll", oilpNameLength, NULL);
+            if (auto t = CreateRemoteThread(proc_info.hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, remoteStr, 0, NULL))
+                WaitForSingleObject(t, INFINITE);
+            VirtualFreeEx(proc_info.hProcess, remoteStr, 0, MEM_RELEASE);
+        }
+    } else if (CheckDLLFunction(gameSig.vPatchStr, "_Initialize@4")) {
         auto vpNameLength = (wcslen(gameSig.vPatchStr) + 1) * sizeof(wchar_t);
         auto pLoadLibrary = ::LoadLibraryW;
         if (auto remoteStr = VirtualAllocEx(proc_info.hProcess, NULL, vpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) {
