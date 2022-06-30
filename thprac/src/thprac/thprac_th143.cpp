@@ -66,75 +66,32 @@ namespace TH143 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            (void*)0x44F272, "\x01", 1 };
-        Gui::GuiHotKey mInfItems {
-            TH_INFITEMS,
-            "F2",
-            VK_F2,
-            (void*)0x457860,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x457F48,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x458FCB,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x45946A,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x459608,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x4597A6,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x459950,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x459EFF,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x459F4A,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x459F94,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x459FF4,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x45A5E3,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x45B4EA,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x45B9BC,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x45BDE8,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x45C1AD,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x45C7FD,
-            "\x0F\x1F\x00",
-            3,
-            (void*)0x45CE94,
-            "\x0F\x1F\x00",
-            3,
-        };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F3", VK_F3,
-            (void*)0x41894d, "\xeb", 1, (void*)0x4215C8, "\x90", 1 }; //(void*)0x421580, "\xeb\x59", 2};
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtx((void*)0x44F272, "\x01", 1) } };
+        Gui::GuiHotKey mInfItems { TH_INFITEMS, "F2", VK_F2, {
+            new HookCtx((void*)0x457860, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x457F48, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x458FCB, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x45946A, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x459608, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x4597A6, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x459950, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x459EFF, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x459F4A, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x459F94, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x459FF4, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x45A5E3, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x45B4EA, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x45B9BC, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x45BDE8, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x45C1AD, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x45C7FD, "\x0F\x1F\x00", 3),
+            new HookCtx((void*)0x45CE94, "\x0F\x1F\x00", 3) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F3", VK_F3, {
+            new HookCtx((void*)0x41894d, "\xeb", 1),
+            new HookCtx((void*)0x4215C8, "\x90", 1) } };
     public:
-        Gui::GuiHotKey mElBgm {
-            TH_EL_BGM,
-            "F7",
-            VK_F7,
-        };
+        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
     };
 
     class THAdvOptWnd : public Gui::GameGuiWnd {
@@ -142,11 +99,14 @@ namespace TH143 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("");
+            #if 0
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"");
             if (false) {
-                //if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0)
-                //	mOptCtx.fps_status = 2;
-            } else if (*(uint8_t*)0x4e49c9 == 3) {
+                if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0)
+                    mOptCtx.fps_status = 2;
+            } else 
+            #endif
+            if (*(uint8_t*)0x4e49c9 == 3) {
                 mOptCtx.fps_status = 1;
 
                 DWORD oldProtect;
@@ -253,7 +213,8 @@ namespace TH143 {
         // Gui components update
         THOverlay::singleton().Update();
 
-        GameGuiEnd(IMPL_WIN32_DX9, UpdateAdvOptWindow());
+        GameGuiEnd(UpdateAdvOptWindow());
+        GameGuiRender(IMPL_WIN32_DX9);
     }
 
     HOOKSET_DEFINE(THMainHook)

@@ -390,7 +390,7 @@ namespace TH07 {
             uint32_t index = GetMemContent((int)(&moduleList[7]), 0xb0b8);
             char* raw = (char*)GetMemAddr((int)(&moduleList[7]), index * 512 + 0x6c);
 
-            std::string repName(raw);
+            std::wstring repName = mb_to_utf16(raw);
             //auto pos = repName.rfind('/');
             //if (pos != std::string::npos)
             //	repName = repName.substr(pos + 1);
@@ -501,21 +501,22 @@ namespace TH07 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            //(void*)0x43E37F, "\x00", 1, (void*)0x43EB6A, "\x00", 1 };
-            (void*)0x43Ee14, "\x03", 1 };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
-            (void*)0x44116B, "\x00", 1 };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3,
-            (void*)0x440BC7, "\x00", 1 };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4,
-            (void*)0x42F02B, "\xeb\x16", 2, (void*)0x440DD3, "\x00", 1 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5,
-            (void*)0x417726, "\xeb", 1, (void*)0x421F91, "\xeb", 1 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6,
-            (void*)0x440D2C, "\xff", 1,
-            (void*)0x440D35, "\x66\xC7\x05\x4C\x9E\x4B\x00\x02", 8,
-            (void*)0x440B8E, "\x54", 1 };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x43Ee14, "\x03", 1) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x44116B, "\x00", 1) } };
+        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
+            new HookCtxPatch((void*)0x440BC7, "\x00", 1) } };
+        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
+            new HookCtxPatch((void*)0x42F02B, "\xeb\x16", 2),
+            new HookCtxPatch((void*)0x440DD3, "\x00", 1) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtxPatch((void*)0x417726, "\xeb", 1),
+            new HookCtxPatch((void*)0x421F91, "\xeb", 1) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
+            new HookCtxPatch((void*)0x440D2C, "\xff", 1),
+            new HookCtxPatch((void*)0x440D35, "\x66\xC7\x05\x4C\x9E\x4B\x00\x02", 8),
+            new HookCtxPatch((void*)0x440B8E, "\x54", 1) } };
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
@@ -533,10 +534,10 @@ namespace TH07 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th07.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th07.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th07.dll", hash);
+                CalcFileHash(L"vpatch_th07.dll", hash);
                 if (hash[0] != 9678734212472211387ll || hash[1] != 9671871756369193188ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
@@ -570,10 +571,10 @@ namespace TH07 {
             mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
                 return DataRecFunc(values);
             };
-            char tempStr[256];
-            GetCurrentDirectoryA(256, tempStr);
-            strcat_s(tempStr, "\\replay");
+            wchar_t tempStr[MAX_PATH];
+            GetCurrentDirectoryW(MAX_PATH, tempStr);
             mOptCtx.data_rec_dir = tempStr;
+            mOptCtx.data_rec_dir += L"\\replay";
         }
         void DataRecPreUpd()
         {
@@ -1671,7 +1672,7 @@ namespace TH07 {
     }
     void THSaveReplay(char* rep_name)
     {
-        ReplaySaveParam(rep_name, thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(rep_name).c_str(), thPracParam.GetJson());
     }
     void THDataInit()
     {
@@ -1686,6 +1687,7 @@ namespace TH07 {
     }
 
     HOOKSET_DEFINE(THMainHook)
+    PATCH_DY(th07_reacquire_input, (void*)0x430f03, "\x00\x00\x00\x00\x74", 5);
     EHOOK_DY(th07_everlasting_bgm, (void*)0x44d2f0)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
@@ -1875,7 +1877,7 @@ namespace TH07 {
 
         GameGuiEnd(drawCursor);
     }
-    EHOOK_DY(th07_render, (void*)0x43477a)
+    EHOOK_DY(th07_render, (void*)0x42feb9)
     {
         GameGuiRender(IMPL_WIN32_DX8);
     }

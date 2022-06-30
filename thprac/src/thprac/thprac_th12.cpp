@@ -353,8 +353,8 @@ namespace TH12 {
         {
             uint32_t index = GetMemContent(0x4b4530, 0x5a78);
             char* repName = (char*)GetMemAddr(0x4b4530, index * 4 + 0x5a80, 0x1e0);
-            std::string repDir("replay/");
-            repDir.append(repName);
+            std::wstring repDir(L"replay/");
+            repDir.append(mb_to_utf16(repName));
 
             std::string param;
             if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
@@ -461,19 +461,21 @@ namespace TH12 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            (void*)0x43837F, "\x01", 1, (void*)0x436d2f, "\xeb", 1,
-            (void*)0x4383cb, "\x83\xc4\x10\x90\x90", 5 };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
-            (void*)0x4381E7, "\x66\x0F\x1F\x44\x00", 5 };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3,
-            (void*)0x422F27, "\x00", 1 };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4,
-            (void*)0x43944B, "\x48", 1 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5,
-            (void*)0x40DB71, "\xeb", 1, (void*)0x414A9B, "\x90", 1 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6,
-            (void*)0x436D9B, "\xc6", 1 };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x43837F, "\x01", 1),
+            new HookCtxPatch((void*)0x436d2f, "\xeb", 1),
+            new HookCtxPatch((void*)0x4383cb, "\x83\xc4\x10\x90\x90", 5) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x4381E7, "\x66\x0F\x1F\x44\x00", 5) } };
+        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
+            new HookCtxPatch((void*)0x422F27, "\x00", 1) } };
+        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
+            new HookCtxPatch((void*)0x43944B, "\x48", 1) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtxPatch((void*)0x40DB71, "\xeb", 1),
+            new HookCtxPatch((void*)0x414A9B, "\x90", 1) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
+            new HookCtxPatch((void*)0x436D9B, "\xc6", 1) } };
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
@@ -503,10 +505,10 @@ namespace TH12 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th12.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th12.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th12.dll", hash);
+                CalcFileHash(L"vpatch_th12.dll", hash);
                 if (hash[0] != 666604866657820391ll || hash[1] != 18391463919001639953ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {
@@ -549,10 +551,10 @@ namespace TH12 {
             mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
                 return DataRecFunc(values);
             };
-            char tempStr[256];
-            GetCurrentDirectoryA(256, tempStr);
-            strcat_s(tempStr, "\\replay");
+            wchar_t tempStr[MAX_PATH];
+            GetCurrentDirectoryW(MAX_PATH, tempStr);
             mOptCtx.data_rec_dir = tempStr;
+            mOptCtx.data_rec_dir += L"\\replay";
         }
         void DataRecPreUpd()
         {
@@ -1378,18 +1380,6 @@ namespace TH12 {
         }
     }
 
-    __declspec(noinline) void THGuiUpdate()
-    {
-        GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
-
-        // Gui components update
-        THGuiPrac::singleton().Update();
-        THGuiRep::singleton().Update();
-        THOverlay::singleton().Update();
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
-
-        GameGuiEnd(IMPL_WIN32_DX9, drawCursor);
-    }
     int THBGMTest()
     {
         if (!thPracParam.mode)
@@ -1401,7 +1391,7 @@ namespace TH12 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(repName, thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
     __declspec(noinline) void TH12AddVentra(int ventra)
     {
@@ -1601,8 +1591,8 @@ void TH12Init()
 {
     TH12::THInitHook::singleton().EnableAllHooks();
     TryKeepUpRefreshRate((void*)0x450dcc);
-    if (GetModuleHandleA("vpatch_th12.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th12.dll") + 0x54ce));
+    if (GetModuleHandleW(L"vpatch_th12.dll")) {
+        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleW(L"vpatch_th12.dll") + 0x54ce));
     }
 }
 }

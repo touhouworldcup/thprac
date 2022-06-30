@@ -4,6 +4,7 @@
 namespace THPrac {
 namespace Gui {
     enum locale_t {
+        LOCALE_NONE = -1,
         LOCALE_ZH_CN = 0,
         LOCALE_EN_US = 1,
         LOCALE_JA_JP = 2,

@@ -19,13 +19,11 @@
 
 #define NOMINMAX
 #include <Windows.h>
+#include <ctime>
+#include <functional>
 #include <imgui.h>
 #include <string>
-#include <functional>
 #include <vector>
-#include <random>
-#include <ctime>
-#include <imgui.h>
 #pragma warning(disable : 4091)
 #include <Shlobj.h>
 #pragma warning(default : 4091)
@@ -36,6 +34,7 @@
 #pragma comment(lib, "advapi32.lib")
 
 namespace THPrac {
+
 #define JsonAddMember(json, key, value, alloc) json.AddMember(rapidjson::Value(key, alloc).Move(), rapidjson::Value(value).Move(), alloc);
 #define JsonAddMemberA(json, key, value, alloc) json.AddMember(rapidjson::Value(key, alloc).Move(), rapidjson::Value(value, alloc).Move(), alloc);
 
@@ -45,7 +44,7 @@ public:
     GuiThread(const GuiThread&) = delete;
     GuiThread& operator=(GuiThread&) = delete;
     GuiThread(GuiThread&&) = delete;
-    GuiThread& operator=(GuiThread&&) = delete; 
+    GuiThread& operator=(GuiThread&&) = delete;
     GuiThread(LPTHREAD_START_ROUTINE threadFunc)
     {
         mThreadFunc = threadFunc;
@@ -73,7 +72,7 @@ public:
         if (mThreadHnd != INVALID_HANDLE_VALUE) {
             if (IsActive()) {
 #pragma warning(push)
-#pragma warning(disable: 6258)
+#pragma warning(disable : 6258)
                 TerminateThread(mThreadHnd, 0);
 #pragma warning(pop)
             }
@@ -107,7 +106,7 @@ private:
 class GuiWaitingAnm {
 public:
     GuiWaitingAnm() = default;
-    
+
     std::string Get()
     {
         mCounter++;
@@ -140,18 +139,6 @@ private:
     std::string mAscii = ".";
 };
 
-static void DeleteFolder(std::string path)
-{
-    path += '\0';
-    path += '\0';
-    SHFILEOPSTRUCTA fileOp;
-    memset(&fileOp, 0, sizeof(SHFILEOPSTRUCTW));
-    fileOp.wFunc = FO_DELETE;
-    fileOp.pFrom = path.c_str();
-    fileOp.fFlags = FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR | FOF_SILENT;
-    SHFileOperationA(&fileOp);
-}
-
 static void DeleteFolder(std::wstring path)
 {
     path += L'\0';
@@ -176,168 +163,6 @@ static void MovWndToTop(HWND m_hWnd)
     ::SetFocus(m_hWnd);
     ::SetActiveWindow(m_hWnd);
     ::AttachThreadInput(dwCurID, dwMyID, FALSE);
-}
-
-template<typename T>
-static std::function<T(void)> GetRndGenerator(T min, T max, std::mt19937::result_type seed = 0)
-{
-    //std::mt19937::result_type seed = time(0);
-    if (!seed) {
-        seed = (std::mt19937::result_type)time(0);
-        //std::random_device rd;
-        //seed = rd();
-    }
-    auto dice_rand = std::bind(std::uniform_int_distribution<T>(min, max), std::mt19937(seed));
-    return dice_rand;
-}
-
-static std::string GetSuffixFromPath(const char* pathC)
-{
-    std::string path = pathC;
-    auto pos = path.rfind('.');
-    if (pos != std::string::npos) {
-        return path.substr(pos + 1);
-    }
-    return std::string("");
-}
-
-static std::string GetSuffixFromPath(std::string& path) 
-{
-    auto pos = path.rfind('.');
-    if (pos != std::string::npos) {
-        return path.substr(pos + 1);
-    }
-    return std::string("");
-}
-
-static std::string GetDirFromFullPath(std::string& dir)
-{
-    auto slashPos = dir.rfind('\\');
-    if (slashPos == std::string::npos) {
-        slashPos = dir.rfind('/');
-    }
-    if (slashPos == std::string::npos) {
-        return dir;
-    }
-    return dir.substr(0, slashPos + 1);
-}
-
-static std::wstring GetDirFromFullPath(std::wstring& dir)
-{
-    auto slashPos = dir.rfind(L'\\');
-    if (slashPos == std::wstring::npos) {
-        slashPos = dir.rfind(L'/');
-    }
-    if (slashPos == std::wstring::npos) {
-        return dir;
-    }
-    return dir.substr(0, slashPos + 1);
-}
-
-static std::string GetNameFromFullPath(std::string& dir)
-{
-    auto slashPos = dir.rfind('\\');
-    if (slashPos == std::string::npos) {
-        slashPos = dir.rfind('/');
-    }
-    if (slashPos == std::string::npos) {
-        return dir;
-    }
-    return dir.substr(slashPos + 1);
-}
-
-static std::wstring GetNameFromFullPath(std::wstring& dir)
-{
-    auto slashPos = dir.rfind(L'\\');
-    if (slashPos == std::wstring::npos) {
-        slashPos = dir.rfind(L'/');
-    }
-    if (slashPos == std::wstring::npos) {
-        return dir;
-    }
-    return dir.substr(slashPos + 1);
-}
-
-static std::string GetCleanedPath(std::string& path)
-{
-    std::string result;
-    wchar_t lastChar = '\0';
-    for (auto& c : path) {
-        if (c == '/' || c == '\\') {
-            if (lastChar == '\\') {
-                continue;
-            } else {
-                result.push_back('\\');
-                lastChar = '\\';
-            }
-        } else {
-            result.push_back(c);
-            lastChar = c;
-        }
-    }
-    return result;
-}
-
-static std::wstring GetCleanedPath(std::wstring& path)
-{
-    std::wstring result;
-    wchar_t lastChar = '\0';
-    for (auto& c : path) {
-        if (c == L'/' || c == L'\\') {
-            if (lastChar == L'\\') {
-                continue;
-            } else {
-                result.push_back(L'\\');
-                lastChar = L'\\';
-            }
-        } else {
-            result.push_back(c);
-            lastChar = c;
-        }
-    }
-    return result;
-}
-
-static std::string GetUnifiedPath(std::string& path)
-{
-    std::string result;
-    wchar_t lastChar = '\0';
-    for (auto& c : path) {
-        if (c == '/' || c == '\\') {
-            if (lastChar == '\\') {
-                continue;
-            } else {
-                result.push_back('\\');
-                lastChar = '\\';
-            }
-        } else {
-            auto lower = tolower(c);
-            result.push_back(lower);
-            lastChar = lower;
-        }
-    }
-    return result;
-}
-
-static std::wstring GetUnifiedPath(std::wstring& path) 
-{
-    std::wstring result;
-    wchar_t lastChar = '\0';
-    for (auto& c : path) {
-        if (c == L'/' || c == L'\\') {
-            if (lastChar == L'\\') {
-                continue;
-            } else {
-                result.push_back(L'\\');
-                lastChar = L'\\';
-            }
-        } else {
-            auto lower = towlower(c);
-            result.push_back(lower);
-            lastChar = lower;
-        }
-    }
-    return result;
 }
 
 static std::vector<ImVec2> g_guiCursorStack;

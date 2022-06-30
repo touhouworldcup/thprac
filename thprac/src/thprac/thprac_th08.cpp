@@ -419,7 +419,7 @@ namespace TH08 {
         {
             uint32_t index = GetMemContent(0x18bde08, 0xc28c);
             char* raw = (char*)GetMemAddr(0x18bde08, index * 512 + 0x70);
-            std::string repName(raw);
+            std::wstring repName = mb_to_utf16(raw);
             //auto pos = repName.rfind('/');
             //if (pos != std::string::npos)
             //	repName = repName.substr(pos + 1);
@@ -530,22 +530,24 @@ namespace TH08 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            (void*)0x44abda, "\xB9\x70\xA6\x4E\x00\xE8\xBC\x1F\x00\x00\xE9\xC0\x02\x00\x00", 15,
-            (void*)0x44Ab86, "\x03", 1,
-        };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
-            (void*)0x44D0FA, "\x00", 1 };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3,
-            (void*)0x44CA78, "\x00", 1, (void*)0x44CAA4, "\x00", 1 };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4,
-            (void*)0x43B295, "\x2e\xe9\x61", 3, (void*)0x44CDB1, "\x00", 1 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5,
-            (void*)0x416CBE, "\x2e\xe9", 2, (void*)0x42DDB5, "\xeb", 1 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6,
-            (void*)0x44CC18, "\xff\x89", 2,
-            (void*)0x44CC21, "\x66\xC7\x05\x28\xD5\x64\x01\x02", 8,
-            (void*)0x44C85D, "\x30", 1 };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x44abda, "\xB9\x70\xA6\x4E\x00\xE8\xBC\x1F\x00\x00\xE9\xC0\x02\x00\x00", 15),
+            new HookCtxPatch((void*)0x44Ab86, "\x03", 1) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x44D0FA, "\x00", 1) } };
+        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
+            new HookCtxPatch((void*)0x44CA78, "\x00", 1),
+            new HookCtxPatch((void*)0x44CAA4, "\x00", 1) } };
+        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
+            new HookCtxPatch((void*)0x43B295, "\x2e\xe9\x61", 3),
+            new HookCtxPatch((void*)0x44CDB1, "\x00", 1) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtxPatch((void*)0x416CBE, "\x2e\xe9", 2),
+            new HookCtxPatch((void*)0x42DDB5, "\xeb", 1) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
+            new HookCtxPatch((void*)0x44CC18, "\xff\x89", 2),
+            new HookCtxPatch((void*)0x44CC21, "\x66\xC7\x05\x28\xD5\x64\x01\x02", 8),
+            new HookCtxPatch((void*)0x44C85D, "\x30", 1) } };
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
@@ -569,10 +571,10 @@ namespace TH08 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th08.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th08.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th08.dll", hash);
+                CalcFileHash(L"vpatch_th08.dll", hash);
                 if (hash[0] != 14324321420199198230ll || hash[1] != 10561235471127337137ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
@@ -610,10 +612,10 @@ namespace TH08 {
             mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
                 return DataRecFunc(values);
             };
-            char tempStr[256];
-            GetCurrentDirectoryA(256, tempStr);
-            strcat_s(tempStr, "\\replay");
+            wchar_t tempStr[MAX_PATH];
+            GetCurrentDirectoryW(MAX_PATH, tempStr);
             mOptCtx.data_rec_dir = tempStr;
+            mOptCtx.data_rec_dir += L"\\replay";
         }
         void DataRecPreUpd()
         {
@@ -747,33 +749,6 @@ namespace TH08 {
         adv_opt_ctx mOptCtx;
     };
 
-    void* THStage4ANMDbg(const char* file_name, int32_t* file_size, int unk, void* buffer)
-    {
-        if (false) {
-            void* mBuffer;
-            DWORD attr;
-            HANDLE hAnm;
-            DWORD size;
-            DWORD bytesRead;
-
-            attr = GetFileAttributesA("C:\\Users\\Ack\\Touhou\\Tools\\Touhou Toolkit\\08\\stg4abg.anm");
-            if (attr == INVALID_FILE_ATTRIBUTES || attr & FILE_ATTRIBUTE_DIRECTORY)
-                return nullptr;
-
-            hAnm = CreateFileA("C:\\Users\\Ack\\Touhou\\Tools\\Touhou Toolkit\\08\\stg4abg.anm", GENERIC_READ | GENERIC_WRITE,
-                FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-            size = GetFileSize(hAnm, NULL);
-            mBuffer = ((p_malloc)(0x4a4269))(size);
-
-            ReadFile(hAnm, mBuffer, size, &bytesRead, NULL);
-            if (file_size)
-                *file_size = size;
-            CloseHandle(hAnm);
-
-            return mBuffer;
-        }
-        return nullptr;
-    }
     void* THStage4ANM()
     {
         void* buffer = (void*)GetMemContent(0x18bdc90, 0x98);
@@ -2113,7 +2088,7 @@ namespace TH08 {
     }
     void THSaveReplay(char* rep_name)
     {
-        ReplaySaveParam(rep_name, thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(rep_name).c_str(), thPracParam.GetJson());
     }
     void THDataInit()
     {
@@ -2321,7 +2296,7 @@ namespace TH08 {
 
         GameGuiEnd(drawCursor);
     }
-    EHOOK_DY(th08_render, (void*)0x442014)
+    EHOOK_DY(th08_render, (void*)0x43cc45)
     {
         GameGuiRender(IMPL_WIN32_DX8);
     }

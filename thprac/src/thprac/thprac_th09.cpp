@@ -434,10 +434,10 @@ namespace TH09 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th09.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th09.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th09.dll", hash);
+                CalcFileHash(L"vpatch_th09.dll", hash);
                 if (hash[0] != 8777309807944811310ll || hash[1] != 16244273824227920047ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
@@ -580,7 +580,7 @@ namespace TH09 {
 
         GameGuiEnd(UpdateAdvOptWindow());
     }
-    EHOOK_DY(th09_render, (void*)0x42dd51)
+    EHOOK_DY(th09_render, (void*)0x42c899)
     {
         GameGuiRender(IMPL_WIN32_DX8);
     }
@@ -605,6 +605,12 @@ namespace TH09 {
             }
         }
         g.Close();
+    }
+    EHOOK_DY(th09_gui_reinit, (void*)0x42e50f)
+    {
+        GameGuiInit(IMPL_WIN32_DX8, 0x4b3108, 0x4b30b0, 0x42d3d0,
+            Gui::INGAGME_INPUT_GEN2, 0x4acf3a, 0x4acf38, 0,
+            -1);
     }
     HOOKSET_ENDDEF()
 
@@ -634,7 +640,7 @@ namespace TH09 {
         THGuiCreate();
         THInitHookDisable();
     }
-    EHOOK_DY(th09_gui_init_2, (void*)0x42e3a8)
+    EHOOK_DY(th09_gui_init_2, (void*)0x42e627)
     {
         THGuiCreate();
         THInitHookDisable();

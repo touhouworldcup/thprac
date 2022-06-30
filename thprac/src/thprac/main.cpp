@@ -60,10 +60,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     }
 
     if (adminRights && !PrivilegeCheck()) {
-        char exePath[MAX_PATH];
-        GetModuleFileNameA(NULL, exePath, MAX_PATH);
+        wchar_t exePath[MAX_PATH];
+        GetModuleFileNameW(NULL, exePath, MAX_PATH);
         CloseHandle(thpracMutex);
-        ShellExecuteA(NULL, "runas", exePath, NULL, NULL, SW_SHOW);
+        ShellExecuteW(NULL, L"runas", exePath, NULL, NULL, SW_SHOW);
         return 0;
     }
 

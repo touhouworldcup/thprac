@@ -583,6 +583,7 @@
       "TH_FAITH": [ "信仰", "Faith", "信仰" ],
       "TH_BULLET_RANK": [ "Rank", "Rank", "ランク" ],
       "TH_BULLET_RANKLOCK": [ "锁Rank", "Rank Lock", "ランクをロックする" ],
+      "TH_REAL_BULLET_SIZE": [ "真實子彈圖形", "Real bullet sprites", "弾のリアルスプライト" ],
       "TH_SHOTS_TAKEN": [ "摄影回数", "Shots Taken", "撮影回数" ],
       "TH_SHOTS_TAKEN_ALT": [ "#__shots_taken", "#__shots_taken", "#__shots_taken" ],
       "TH_ORIGINAL": [ "原版练习", "Original", "オリジナル" ],
@@ -692,7 +693,7 @@
       "TH_ADV_OPT": [ "高级选项", "Advanced Options", "拡張オプション" ],
       "TH_ADV_OPT_APPLY": [ "应用", "Apply", "変更を適用" ],
       "TH_GAME_SPEED": [ "游戏速度", "Game Speed", "ゲームの速度" ],
-      "TH_SPEED": [ "速度", "Speed", "速度" ],
+      "TH_DELAY": [ "延迟", "Delay", "ディレイ" ],
       "TH_FPS_ADJ": [ "FPS调整", "FPS Adjustment", "FPS調整" ],
       "TH_FPS_ERR": [
         "FPS调整相关的功能已禁用，你必须满足以下条件之一以使用这些功能：\n1. 使用VsyncPatch，且在vpatch.ini中将”Vsync“一项的值设为0。\n2. 在游戏的custom.exe中将输入方式设置为”高速“。（仅限地灵殿及之后的游戏）",

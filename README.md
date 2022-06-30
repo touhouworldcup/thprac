@@ -52,8 +52,8 @@ When starting a game in Match Mode, you can select "Custom" in a "Mode" prompt. 
 
 # Credits (May 27th 2022 and after)
 - Development: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 
-- Chinese translations: [CrestedPeak9](https://twitter.com/CrestedPeak9)
-- Japanese translations: [Yu-miya](https://www.twitch.tv/toho_yumiya)
+- Chinese translations: [CrestedPeak9](https://twitter.com/CrestedPeak9), DeepL
+- Japanese translations: [Yu-miya](https://www.twitch.tv/toho_yumiya), CyrusVorazan, DeepL
 - Transferring all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) to [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
 
 # How to build:
@@ -75,7 +75,7 @@ Thprac contains no malicious code, but due to how it works, an antivirus might c
 Thprac is compatible with thcrap. Thprac's launcher can act as a thcrap launcher as well, similair to [Universal THCRAP Launcher](https://github.com/thpatch/Universal-THCRAP-Launcher/). When launching a game with thcrap, thprac will be able to attach to it. Thprac is not compatible with static English patches, like the ones made by gensokyo.org
 
 ## Cannot find Embodiment of Scarlet Devil
-Make sure your exe is named "東方紅魔郷.exe" or "th06.exe". If thprac still can't find it, the launcher can launch an exe with any filename and attack thprac.
+Make sure your exe is named "東方紅魔郷.exe" or "th06.exe". If thprac still can't find it, the launcher can launch an exe with any filename and attach thprac.
 
 ## When warping to cerain bosses, the name of the midboss will show
 I was unable to find a way to fix it. According to Manual.txt from thprac 2.0.8.3, neither was ACK. [#22](https://github.com/touhouworldcup/thprac/issues/22) will remain open for the forseeable future

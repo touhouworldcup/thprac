@@ -14,6 +14,7 @@ namespace TH10 {
         int32_t faith_bar;
         int32_t st6_boss9_spd;
         int64_t score;
+        bool real_bullet_sprite;
 
         bool _playLock = false;
         void Reset()
@@ -34,8 +35,11 @@ namespace TH10 {
             GetJsonValue(power);
             GetJsonValue(faith);
             GetJsonValue(faith_bar);
-            GetJsonValue(st6_boss9_spd);
             GetJsonValue(score);
+            GetJsonValue(real_bullet_sprite);
+            GetJsonValue(st6_boss9_spd)
+            else
+                st6_boss9_spd = -1;
 
             return true;
         }
@@ -58,6 +62,7 @@ namespace TH10 {
             AddJsonValue(faith_bar);
             AddJsonValue(st6_boss9_spd);
             AddJsonValue(score);
+            AddJsonValue(real_bullet_sprite);
 
             ReturnJson();
         }
@@ -83,37 +88,38 @@ namespace TH10 {
 
         __declspec(noinline) void State(int state)
         {
+            static int diff_prev = -1;
             switch (state) {
             case 0:
                 break;
             case 1:
                 mDiffculty = *((int32_t*)0x474c74);
-                //if (*((int32_t*)0x474c68) == 1)
-                //	SetPos(240.f, 100.f);
-                //else
-                //	SetPos(150.f, 100.f);
-
                 SetFade(0.8f, 0.1f);
                 Open();
                 thPracParam.Reset();
                 switch (mDiffculty) {
                 case 0:
                     mSt6Boss9Spd.SetBound(0, 140);
-                    mSt6Boss9Spd.SetValue(140);
+                    if (diff_prev != mDiffculty)
+                        mSt6Boss9Spd.SetValue(140);
                     break;
                 case 1:
                     mSt6Boss9Spd.SetBound(0, 120);
-                    mSt6Boss9Spd.SetValue(120);
+                    if (diff_prev != mDiffculty)
+                        mSt6Boss9Spd.SetValue(120);
                     break;
                 case 2:
                     mSt6Boss9Spd.SetBound(0, 100);
-                    mSt6Boss9Spd.SetValue(100);
+                    if (diff_prev != mDiffculty)
+                        mSt6Boss9Spd.SetValue(100);
                     break;
                 case 3:
                     mSt6Boss9Spd.SetBound(0, 50);
-                    mSt6Boss9Spd.SetValue(50);
+                    if (diff_prev != mDiffculty)
+                        mSt6Boss9Spd.SetValue(50);
                     break;
                 }
+                diff_prev = mDiffculty;
             case 2:
                 break;
             case 3:
@@ -132,6 +138,9 @@ namespace TH10 {
                 thPracParam.faith_bar = *mFaithBar;
                 thPracParam.st6_boss9_spd = *mSt6Boss9Spd;
                 thPracParam.score = *mScore;
+                                           
+                if (thPracParam.section == TH10_ST6_BOSS4 || thPracParam.section == TH10_ST6_BOSS8)
+                    thPracParam.real_bullet_sprite = *mRealBulletSprite;
                 break;
             case 4:
                 Close();
@@ -180,12 +189,18 @@ namespace TH10 {
                     *mSection = *mChapter = *mPhase = 0;
                 if (*mWarp) {
                     SectionWidget();
-                    int section = CalcSection();
-                    if (section == TH10_ST6_BOSS9) {
+                    switch (CalcSection()) {
+                    case TH10_ST6_BOSS8:
+                    case TH10_ST6_BOSS4:
+                        mRealBulletSprite();
+                        break;
+                    case TH10_ST6_BOSS9:
                         mSt6Boss9Spd();
-                    } else if (section == TH10_ST7_END_S10) {
+                        break;
+                    case TH10_ST7_END_S10:
                         mPhase(TH_PHASE, TH_SPELL_PHASE1);
-                    }
+                        break;
+                    }                        
                 }
 
                 mLife();
@@ -197,8 +212,6 @@ namespace TH10 {
                 mScore();
                 mScore.RoundDown(10);
             }
-            //WndDebugOutput();
-
             mNavFocus();
         }
         int CalcSection()
@@ -276,9 +289,10 @@ namespace TH10 {
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mFaith { TH_FAITH, 0, 999990, 10, 100000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mFaithBar { TH10_FAITH_BAR, 0, 130, 1, 10 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mSt6Boss9Spd { "Speed", 0, 160, 1, 10 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mSt6Boss9Spd { TH_DELAY, 0, 160, 1, 10 };
+        Gui::GuiCheckBox mRealBulletSprite { TH_REAL_BULLET_SIZE };
 
-        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP,
+        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DELAY, TH_REAL_BULLET_SIZE,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_LIFE, TH_FAITH, TH10_FAITH_BAR, TH_SCORE, TH_POWER, TH_GRAZE };
 
@@ -305,8 +319,8 @@ namespace TH10 {
         {
             uint32_t index = GetMemContent(0x47784c, 0x59dc);
             char* repName = (char*)GetMemAddr(0x47784c, index * 4 + 0x59e4, 0x1d4);
-            std::string repDir("replay/");
-            repDir.append(repName);
+            std::wstring repDir(L"replay/");
+            repDir.append(mb_to_utf16(repName));
 
             std::string param;
             if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
@@ -413,19 +427,21 @@ namespace TH10 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            //(void*)0x426D05, "\x01", 1 }; //00426CF0-C20400
-            (void*)0x426D05, "\x01", 1, (void*)0x425a2b, "\xeb", 1,
-            (void*)0x426D69, "\x83\xc4\x08\x90\x90", 5 };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
-            (void*)0x426A15, "\x90", 1 };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F3", VK_F3,
-            (void*)0x4259DB, "\x00", 1, (void*)0x425C4A, "\x00", 1,
-            (void*)0x425ABD, "\x00", 1 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4,
-            (void*)0x408D93, "\xeb", 1, (void*)0x40E5B0, "\x90", 1 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F5", VK_F5,
-            (void*)0x425C13, "\xc6", 1 };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtx((void*)0x426D05, "\x01", 1),
+            new HookCtx((void*)0x425a2b, "\xeb", 1),
+            new HookCtx((void*)0x426D69, "\x83\xc4\x08\x90\x90", 5) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtx((void*)0x426A15, "\x90", 1) } };
+        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F3", VK_F3, {
+            new HookCtx((void*)0x4259DB, "\x00", 1),
+            new HookCtx((void*)0x425C4A, "\x00", 1),
+            new HookCtx((void*)0x425ABD, "\x00", 1) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4, {
+            new HookCtx((void*)0x408D93, "\xeb", 1), 
+            new HookCtx((void*)0x40E5B0, "\x90", 1) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F5", VK_F5, {
+            new HookCtx((void*)0x425C13, "\xc6", 1) } };
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F6", VK_F6 };
@@ -451,10 +467,10 @@ namespace TH10 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th10.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th10.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th10.dll", hash);
+                CalcFileHash(L"vpatch_th10.dll", hash);
                 if (hash[0] != 9704945468076323108ll || hash[1] != 99312983382598050ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {
@@ -490,10 +506,10 @@ namespace TH10 {
             mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
                 return DataRecFunc(values);
             };
-            char tempStr[256];
-            GetCurrentDirectoryA(256, tempStr);
-            strcat_s(tempStr, "\\replay");
+            wchar_t tempStr[MAX_PATH];
+            GetCurrentDirectoryW(MAX_PATH, tempStr);
             mOptCtx.data_rec_dir = tempStr;
+            mOptCtx.data_rec_dir += L"\\replay";
         }
         void DataRecPreUpd()
         {
@@ -1479,8 +1495,10 @@ namespace TH10 {
                 << 0 << 0x00180103 << 0x02ff0000 << 0 << 4 << 19
                 << 9999 << 0x00100000 << 0x00ff0000 << 0;
 
-            ecl.SetPos(0x8d38 + *((int32_t*)0x474c74) * 4);
-            ecl << thPracParam.st6_boss9_spd;
+            if (thPracParam.st6_boss9_spd >= 0) {
+                ecl.SetPos(0x8d38 + *((int32_t*)0x474c74) * 4);
+                ecl << thPracParam.st6_boss9_spd;
+            }
             break;
         case THPrac::TH10::TH10_ST7_MID1:
             ECLSt7MidBoss(ecl);
@@ -1640,7 +1658,7 @@ namespace TH10 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(repName, thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
     void THReimuAFix(uint8_t* repBuffer)
     {
@@ -2113,6 +2131,7 @@ namespace TH10 {
         DataRef<DATA_STAGE>(U8_ARG(0x474c7c));
         DataRef<DATA_STARTING_STAGE>(U8_ARG(0x474c80));
     }
+    PATCH_ST(th10_real_bullet_sprite, (void*)0x406e03, "\x0F\x84\x13\x05\x00\x00", 6);
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th10_everlasting_bgm, (void*)0x43e460)
     {
@@ -2193,6 +2212,7 @@ namespace TH10 {
             *(int32_t*)(0x474c48) = thPracParam.power;
             *(int32_t*)(0x474c4c) = thPracParam.faith / 10;
             *(int32_t*)(0x474c44) = (int32_t)(thPracParam.score / 10);
+            th10_real_bullet_sprite.Toggle(thPracParam.real_bullet_sprite);
 
             if (thPracParam.faith_bar) {
                 *(int32_t*)(0x474c54) = thPracParam.faith_bar - 1;
@@ -2273,6 +2293,7 @@ namespace TH10 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
+        th10_real_bullet_sprite.Setup();
         THDataInit();
 
         // Reset thPracParam
@@ -2308,8 +2329,8 @@ void TH10Init()
 {
     TH10::THInitHook::singleton().EnableAllHooks();
     TryKeepUpRefreshRate((void*)0x439950);
-    if (GetModuleHandleA("vpatch_th10.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th10.dll") + 0x553b));
+    if (GetModuleHandleW(L"vpatch_th10.dll")) {
+        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleW(L"vpatch_th10.dll") + 0x553b));
     }
 }
 }

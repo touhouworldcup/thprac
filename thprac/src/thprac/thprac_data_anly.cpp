@@ -141,7 +141,7 @@ void AnlyWriteTest()
     ofn.lStructSize = sizeof(ofn);
     ofn.hwndOwner = NULL;
     ofn.lpstrFile = szFile;
-    ofn.lpstrFile[0] = '\0';
+    ofn.lpstrFile[0] = 0;
     ofn.nMaxFile = sizeof(szFile);
     ofn.lpstrFilter = nullptr;
     ofn.nFilterIndex = 1;
@@ -188,7 +188,7 @@ void AnlyLoadTest()
     ofn.lStructSize = sizeof(ofn);
     ofn.hwndOwner = NULL;
     ofn.lpstrFile = szFile;
-    ofn.lpstrFile[0] = '\0';
+    ofn.lpstrFile[0] = 0;
     ofn.nMaxFile = sizeof(szFile);
     ofn.lpstrFilter = nullptr;
     ofn.nFilterIndex = 1;
@@ -208,7 +208,7 @@ void AnlyLoadTest()
         //SetFilePointer(hFile, 0, NULL, FILE_BEGIN);
         //SetEndOfFile(hFile);
         fileSize = GetFileSize(hFile, NULL);
-        hFileMap = CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
+        hFileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
         pFileMapView = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, fileSize);
 
         AnlyDataRead(AnlyDataGet(), pFileMapView, fileSize);

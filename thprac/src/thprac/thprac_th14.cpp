@@ -332,10 +332,9 @@ namespace TH14 {
     class THGuiRep : public Gui::GameGuiWnd {
         THGuiRep() noexcept
         {
-            char* appdata = (char*)malloc(1000);
-            GetEnvironmentVariableA("APPDATA", appdata, 1000);
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mAppdataPath = appdata;
-            free(appdata);
         }
         SINGLETON(THGuiRep);
     public:
@@ -344,9 +343,9 @@ namespace TH14 {
         {
             uint32_t index = GetMemContent(0x4db6a4, 0x5aec);
             char* repName = (char*)GetMemAddr(0x4db6a4, index * 4 + 0x5af4, 0x220);
-            std::string repDir(mAppdataPath);
-            repDir.append("\\ShanghaiAlice\\th14\\replay\\");
-            repDir.append(repName);
+            std::wstring repDir(mAppdataPath);
+            repDir.append(L"\\ShanghaiAlice\\th14\\replay\\");
+            repDir.append(mb_to_utf16(repName));
 
             std::string param;
             if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
@@ -378,7 +377,7 @@ namespace TH14 {
         }
 
     protected:
-        std::string mAppdataPath;
+        std::wstring mAppdataPath;
         bool mParamStatus = false;
         THPracParam mRepParam;
     };
@@ -455,19 +454,20 @@ namespace TH14 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            (void*)0x44F877, "\x01", 1 };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
-            (void*)0x44F617, "\x90", 1 };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3,
-            (void*)0x412173, "\x90", 1 };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4,
-            (void*)0x44DDA5, "\x58", 1 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5,
-            (void*)0x41C5DD, "\xeb", 1, (void*)0x424ACA, "\x90", 1 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6,
-            (void*)0x44DEC4, "\xE9\x07\x31\x06\x00\x90\x90", 8,
-            (void*)0x4b0fd0, "\xA1\x2C\xB5\x4D\x00\x83\xC0\x40\x8B\x00\x85\xC0\x0F\x84\xEF\xCE\xF9\xFF\xE9\xEA\xCF\xF9\xFF\x90", 25 };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x44F877, "\x01", 1) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x44F617, "\x90", 1) } };
+        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
+            new HookCtxPatch((void*)0x412173, "\x90", 1) } };
+        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
+            new HookCtxPatch((void*)0x44DDA5, "\x58", 1) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtxPatch((void*)0x41C5DD, "\xeb", 1), 
+            new HookCtxPatch((void*)0x424ACA, "\x90", 1) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
+            new HookCtxPatch((void*)0x44DEC4, "\xE9\x07\x31\x06\x00\x90\x90", 8),
+            new HookCtxPatch((void*)0x4b0fd0, "\xA1\x2C\xB5\x4D\x00\x83\xC0\x40\x8B\x00\x85\xC0\x0F\x84\xEF\xCE\xF9\xFF\xE9\xEA\xCF\xF9\xFF\x90", 25) } };
 
     public:
         Gui::GuiHotKey mElBgm {
@@ -855,7 +855,7 @@ namespace TH14 {
         // Option Related Functions
         void FpsInit()
         {
-            // mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("");
+            // mOptCtx.vpatch_base = (int32_t)GetModuleHandleW("");
             if (false) {
                 //if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0)
                 //	mOptCtx.fps_status = 2;
@@ -894,10 +894,10 @@ namespace TH14 {
             mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
                 return DataRecFunc(values);
             };
-            char* appdata = (char*)malloc(1000);
-            GetEnvironmentVariableA("APPDATA", appdata, 1000);
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mOptCtx.data_rec_dir = appdata;
-            mOptCtx.data_rec_dir += "\\ShanghaiAlice\\th14\\replay\\";
+            mOptCtx.data_rec_dir += L"\\ShanghaiAlice\\th14\\replay\\";
         }
         void DataRecPreUpd()
         {
@@ -922,11 +922,10 @@ namespace TH14 {
             THMarisaLaser::singleton();
             th14_marisa_laser.Setup();
 
-            char* appdata = (char*)malloc(1000);
-            GetEnvironmentVariableA("APPDATA", appdata, 1000);
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mRepDir = appdata;
-            mRepDir += "\\ShanghaiAlice\\th14\\replay\\";
-            free(appdata);
+            mRepDir += L"\\ShanghaiAlice\\th14\\replay\\";
         }
         bool MarisaLaserMenu()
         {
@@ -982,7 +981,7 @@ namespace TH14 {
 
                 if (ImGui::Button(XSTR(TH14_SAVE))) {
                     if (mRepName[0]) {
-                        std::string rep;
+                        std::wstring rep;
                         rep = mRepDir;
                         rep += mRepName;
                         SaveReplayInternal(rep.c_str());
@@ -1048,59 +1047,65 @@ namespace TH14 {
 
             return wndFocus;
         }
+        void MsgBox(UINT type, const wchar_t* title, const wchar_t* msg, const wchar_t* msg2 = nullptr)
+        {
+            std::wstring _msg = msg;
+            if (msg2) {
+                _msg += msg2;
+            }
+            MessageBoxW(NULL, _msg.c_str(), _title, type);
+        }
         void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nullptr)
         {
+            wchar_t _title[256];
+            wchar_t _msg[256];
+            wchar_t _msg2[256];
             MultiByteToWideChar(CP_UTF8, 0, title, -1, _title, 256);
             MultiByteToWideChar(CP_UTF8, 0, msg, -1, _msg, 256);
             if (msg2) {
                 MultiByteToWideChar(CP_UTF8, 0, msg2, -1, _msg2, 256);
-                wcscat_s(_msg, _msg2);
             }
-            MessageBoxW(NULL, _msg, _title, type);
+            MsgBox(type, _title, _msg, msg2 ? _msg2 : nullptr);
+            
         }
-        bool LoadReplayInternal(const char* rep_path)
+        bool LoadReplayInternal(const wchar_t* rep_path)
         {
             auto thMarisaLaser = &THMarisaLaser::singleton();
             DWORD repMagic, bytesRead;
-            auto repFile = CreateFileA(rep_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            auto repFile = CreateFileW(rep_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
             if (repFile == INVALID_HANDLE_VALUE)
                 return false;
+            defer(CloseHandle(repFile));
 
             SetFilePointer(repFile, 0, NULL, FILE_BEGIN);
-            ReadFile(repFile, &repMagic, 4, &bytesRead, NULL);
 
-            if (bytesRead == 4) {
+            if (ReadFile(repFile, &repMagic, 4, &bytesRead, NULL) && bytesRead == 4) {
                 DWORD userPtr, userMagic, userLength, userNo;
-
                 SetFilePointer(repFile, 12, NULL, FILE_BEGIN);
-                ReadFile(repFile, &userPtr, 4, &bytesRead, NULL);
-                if (bytesRead == 4) {
+                if (ReadFile(repFile, &userPtr, 4, &bytesRead, NULL)  && bytesRead == 4) {
                     SetFilePointer(repFile, userPtr, NULL, FILE_BEGIN);
                     while (true) {
-                        ReadFile(repFile, &userMagic, 4, &bytesRead, NULL);
-                        if (bytesRead != 4 || userMagic != 'RESU')
+                        if (!ReadFile(repFile, &userMagic, 4, &bytesRead, NULL) || bytesRead != 4 || userMagic != 'RESU')
                             break;
-                        ReadFile(repFile, &userLength, 4, &bytesRead, NULL);
-                        if (bytesRead != 4)
+                        if (!ReadFile(repFile, &userLength, 4, &bytesRead, NULL) || bytesRead != 4)
                             break;
-                        ReadFile(repFile, &userNo, 4, &bytesRead, NULL);
-                        if (bytesRead != 4)
+                        if (!ReadFile(repFile, &userNo, 4, &bytesRead, NULL) || bytesRead != 4)
                             break;
 
                         if (userNo == 'RCER') {
                             if (userLength - 12 > 0 && (userLength - 12) % sizeof(THMarisaLaser::record_t) == 0) {
                                 void* dataBuffer = malloc(userLength - 12);
+                                if (!dataBuffer)
+                                    return false;
+                                defer(free(dataBuffer));
                                 memset(dataBuffer, 0, userLength - 12);
-                                ReadFile(repFile, dataBuffer, userLength - 12, &bytesRead, NULL);
-                                if (bytesRead == userLength - 12) {
+                                if (ReadFile(repFile, dataBuffer, userLength - 12, &bytesRead, NULL) && (bytesRead == userLength - 12)) {
                                     THMarisaLaser::record_t* p_rec = (THMarisaLaser::record_t*)dataBuffer;
                                     size_t count = (userLength - 12) / sizeof(THMarisaLaser::record_t);
                                     thMarisaLaser->mRecordsPlayback.clear();
                                     for (size_t i = 0; i < count; ++i, ++p_rec)
                                         thMarisaLaser->mRecordsPlayback.push_back(*p_rec);
                                 }
-                                free(dataBuffer);
-                                CloseHandle(repFile);
                                 return bytesRead == userLength - 12;
                             }
                         } else {
@@ -1110,26 +1115,36 @@ namespace TH14 {
                 }
             }
 
-            CloseHandle(repFile);
             return false;
         }
-        bool SaveReplayInternal(const char* rep_path)
+        bool SaveReplayInternal(const wchar_t* rep_path)
         {
             auto thMarisaLaser = &THMarisaLaser::singleton();
             DWORD bytesProcessed;
-            auto repFile = CreateFileA(rep_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            auto repFile = CreateFileW(rep_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
             if (repFile == INVALID_HANDLE_VALUE) {
                 MsgBox(MB_ICONERROR | MB_OK, XSTR(TH14_ERROR), XSTR(TH14_ERROR_SRC));
                 return false;
             }
             auto repSize = GetFileSize(repFile, NULL);
             auto repBuffer = malloc(repSize);
-            ReadFile(repFile, repBuffer, repSize, &bytesProcessed, NULL);
+            if (!repBuffer) {
+                CloseHandle(repFile);
+                return false;
+            }
+            if (!ReadFile(repFile, repBuffer, repSize, &bytesProcessed, NULL)) {
+                CloseHandle(repFile);
+                free(repBuffer);
+                return false;
+            }
             CloseHandle(repFile);
 
             std::list<THMarisaLaser::record_t>* records = (thMarisaLaser->mState == 3) ? &thMarisaLaser->mRecordsRecover : &thMarisaLaser->mRecordsNormal;
             auto dataSize = records->size() * sizeof(THMarisaLaser::record_t) + 12;
             auto dataBuffer = malloc(dataSize);
+            if (!dataBuffer)
+                return false;
+            defer(free(dataBuffer));
             memset(dataBuffer, 0, dataSize);
             *(uint32_t*)((int)dataBuffer) = 'RESU';
             *(uint32_t*)((int)dataBuffer + 4) = dataSize;
@@ -1139,23 +1154,22 @@ namespace TH14 {
             for (unsigned int i = 0; i < records->size(); ++i, ++p_rec, ++i_rec)
                 *p_rec = *i_rec;
 
-            OPENFILENAMEA ofn;
-            char szFile[512];
-            strcpy_s(szFile, "th14_ud----.rpy");
+            OPENFILENAMEW ofn;
+            wchar_t szFile[MAX_PATH] = L"th14_ud----.rpy";
             ZeroMemory(&ofn, sizeof(ofn));
             ofn.lStructSize = sizeof(ofn);
             ofn.hwndOwner = NULL;
             ofn.lpstrFile = szFile;
-            ofn.nMaxFile = sizeof(szFile);
-            ofn.lpstrFilter = "Replay File\0*.rpy\0";
+            ofn.nMaxFile = MAX_PATH;
+            ofn.lpstrFilter = L"Replay File\0*.rpy\0";
             ofn.nFilterIndex = 1;
             ofn.lpstrFileTitle = NULL;
             ofn.nMaxFileTitle = 0;
             ofn.lpstrInitialDir = mRepDir.c_str();
-            ofn.lpstrDefExt = ".rpy";
+            ofn.lpstrDefExt = L".rpy";
             ofn.Flags = OFN_OVERWRITEPROMPT;
-            if (GetSaveFileNameA(&ofn)) {
-                auto outputFile = CreateFileA(szFile, GENERIC_READ | GENERIC_WRITE, NULL, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+            if (GetSaveFileNameW(&ofn)) {
+                auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, NULL, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
                 if (outputFile == INVALID_HANDLE_VALUE) {
                     MsgBox(MB_ICONERROR | MB_OK, XSTR(TH14_ERROR), XSTR(TH14_ERROR_DEST));
                     return false;
@@ -1167,7 +1181,7 @@ namespace TH14 {
                     WriteFile(outputFile, dataBuffer, dataSize, &bytesProcessed, NULL);
                 CloseHandle(outputFile);
 
-                MsgBox(MB_ICONINFORMATION | MB_OK, XSTR(TH14_SUCCESS), XSTR(TH14_SUCCESS_SAVED), szFile);
+                MsgBox(MB_ICONINFORMATION | MB_OK, utf8_to_utf16(XSTR(TH14_SUCCESS)).c_str(), utf8_to_utf16(XSTR(TH14_SUCCESS_SAVED)).c_str(), szFile);
             }
 
             return true;
@@ -1222,21 +1236,20 @@ namespace TH14 {
         __declspec(noinline) void SelectReplay()
         {
             uint32_t index = GetMemContent(0x4db6a4, 0x5aec);
-            char* repName = (char*)GetMemAddr(0x4db6a4, index * 4 + 0x5af4, 0x220);
-            strcpy_s(mRepName, repName);
+            std::wstring repName = mb_to_utf16((char*)GetMemAddr(0x4db6a4, index * 4 + 0x5af4, 0x220));
+            wcscpy_s(mRepName, repName.c_str());
 
-            std::string rep;
-            rep = mRepDir;
+            std::wstring rep = mRepDir;
             rep += repName;
             LoadReplayInternal(rep.c_str());
         }
         __declspec(noinline) void DeselectReplay()
         {
             auto thMarisaLaser = &THMarisaLaser::singleton();
-            mRepName[0] = '\0';
+            mRepName[0] = 0;
             thMarisaLaser->mRecordsPlayback.clear();
         }
-        __declspec(noinline) void SaveReplay(const char* rep_path)
+        __declspec(noinline) void SaveReplay(const wchar_t* rep_path)
         {
             auto thMarisaLaser = &THMarisaLaser::singleton();
             if (thMarisaLaser->mState == 1 && *(int32_t*)0x4f5828 == 1 && thMarisaLaser->mRecordsNormal.size())
@@ -1314,8 +1327,8 @@ namespace TH14 {
         char mTempStr[128];
         bool mRecording = false;
         bool mLock = false;
-        char mRepName[64];
-        std::string mRepDir;
+        wchar_t mRepName[64];
+        std::wstring mRepDir;
         wchar_t _title[256];
         wchar_t _msg[256];
         wchar_t _msg2[256];
@@ -2285,7 +2298,7 @@ namespace TH14 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(repName, thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
     void THDataInit()
     {
@@ -2402,7 +2415,7 @@ namespace TH14 {
             THSaveReplay(repName);
         else if (thPracParam.mode == 2 && thPracParam.phase)
             THSaveReplay(repName);
-        THAdvOptWnd::singleton().SaveReplay(repName);
+        THAdvOptWnd::singleton().SaveReplay(mb_to_utf16(repName).c_str());
     }
     EHOOK_DY(th14_rep_menu_1, (void*)0x45f10b)
     {

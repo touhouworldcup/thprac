@@ -2,6 +2,7 @@
 #include "thprac_launcher_utils.h"
 #include "thprac_launcher_wnd.h"
 #include "thprac_gui_locale.h"
+#include "thprac_utils.h"
 #include "utils/utils.h"
 #include <functional>
 #include <imgui.h>

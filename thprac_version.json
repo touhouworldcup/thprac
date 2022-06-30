@@ -1,12 +1,12 @@
 {
-    "version": [2, 1, 1, 0],
+    "version": [2, 1, 1, 4],
     "description": [
-        "New TH09 support\nFull changelog: https://github.com/touhouworldcup/thprac/releases/tag/v2.1.1.0",
+        "Th06: fixed crash when launching game directly with no vpatch\nFull Changelog: https://github.com/touhouworldcup/thprac/releases/tag/v2.1.1.4",
         "",
         ""   
     ],
-    "file_size": 3429888,
-    "direct_link": "https://github.com/touhouworldcup/thprac/releases/download/v2.1.1.0/thprac.v2.1.1.0.exe",
+    "file_size": 3447296,
+    "direct_link": "https://github.com/touhouworldcup/thprac/releases/download/v2.1.1.4/thprac.v2.1.1.4.exe",
     "downloads": {
         "GitHub": "https://github.com/touhouworldcup/thprac/releases/latest"
     }

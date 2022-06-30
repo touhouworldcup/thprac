@@ -25,6 +25,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #pragma warning(pop)
+#include <random>
 #include <string>
 #include <tsl/robin_map.h>
 #include <utility>
@@ -45,6 +46,19 @@ std::wstring mb_to_utf16(const std::string& utf8);
 std::wstring mb_to_utf16(const char* utf8);
 #pragma endregion
 
+#pragma region Path
+std::string GetSuffixFromPath(const char* pathC);
+std::string GetSuffixFromPath(std::string& path);
+std::string GetDirFromFullPath(std::string& dir);
+std::wstring GetDirFromFullPath(std::wstring& dir);
+std::string GetNameFromFullPath(std::string& dir);
+std::wstring GetNameFromFullPath(std::wstring& dir);
+std::string GetCleanedPath(std::string& path);
+std::wstring GetCleanedPath(std::wstring& path);
+std::string GetUnifiedPath(std::string& path);
+std::wstring GetUnifiedPath(std::wstring& path);
+#pragma endregion
+
 #pragma region Gui Wrapper
 
 enum game_gui_impl {
@@ -58,10 +72,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
 void GameGuiBegin(game_gui_impl impl, bool game_nav = true);
 void GameGuiEnd(bool draw_cursor = false);
 void GameGuiRender(game_gui_impl impl);
-static void GameGuiEnd(game_gui_impl impl, bool draw_cursor = false) {
-    GameGuiEnd(draw_cursor);
-    GameGuiRender(impl);
-}
 void GameToggleIME(bool toggle);
 void TryKeepUpRefreshRate(void* address);
 void TryKeepUpRefreshRate(void* address, void* address2);
@@ -129,7 +139,7 @@ struct adv_opt_ctx {
 
     bool data_rec_toggle = false;
     std::function<void(std::vector<RecordedValue>&)> data_rec_func;
-    std::string data_rec_dir;
+    std::wstring data_rec_dir;
 
     bool all_clear_bonus = false;
 };
@@ -137,7 +147,7 @@ struct adv_opt_ctx {
 void CenteredText(const char* text, float wndX);
 float GetRelWidth(float rel);
 float GetRelHeight(float rel);
-void CalcFileHash(const char* file_name, uint64_t hash[2]);
+void CalcFileHash(const wchar_t* file_name, uint64_t hash[2]);
 void HelpMarker(const char* desc);
 template <th_glossary_t name>
 static bool BeginOptGroup()
@@ -300,8 +310,8 @@ static bool ElBgmTestTemp(bool hotkey_status, bool practice_status,
 
 typedef void*(__cdecl* p_malloc)(size_t size);
 
-bool ReplaySaveParam(const char* rep_path, std::string& param);
-bool ReplayLoadParam(const char* rep_path, std::string& param);
+bool ReplaySaveParam(const wchar_t* rep_path, std::string& param);
+bool ReplayLoadParam(const wchar_t* rep_path, std::string& param);
 
 #pragma endregion
 
@@ -523,34 +533,17 @@ inline long RoundUp(long n, long m)
 
 #pragma endregion
 
-#pragma region Defer macro
-
-/// defer implementation for C++
-/// http://www.gingerbill.org/article/defer-in-cpp.html
-/// ----------------------------
-
-// Fun fact: in the vast majority of cases the compiler
-// optimizes this down to normal conditional branching.
-template <typename F>
-struct privDefer {
-    F f;
-    explicit privDefer(F f)
-        : f(f)
-    {
-    }
-    ~privDefer() { f(); }
-};
-
-template <typename F>
-privDefer<F> defer_func(F f)
+template <typename T>
+static std::function<T(void)> GetRndGenerator(T min, T max, std::mt19937::result_type seed = 0)
 {
-    return privDefer<F>(f);
+    // std::mt19937::result_type seed = time(0);
+    if (!seed) {
+        seed = (std::mt19937::result_type)time(0);
+        // std::random_device rd;
+        // seed = rd();
+    }
+    auto dice_rand = std::bind(std::uniform_int_distribution<T>(min, max), std::mt19937(seed));
+    return dice_rand;
 }
-
-#define DEFER_1(x, y) x##y
-#define DEFER_2(x, y) DEFER_1(x, y)
-#define DEFER_3(x) DEFER_2(x, __COUNTER__)
-#define defer(code) auto DEFER_3(_defer_) = defer_func([&]() { code; })
-
-#pragma endregion
+DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName);
 }

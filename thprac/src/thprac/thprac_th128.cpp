@@ -332,10 +332,9 @@ namespace TH128 {
     class THGuiRep : public Gui::GameGuiWnd {
         THGuiRep() noexcept
         {
-            char* appdata = (char*)malloc(1000);
-            GetEnvironmentVariableA("APPDATA", appdata, 1000);
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mAppdataPath = appdata;
-            free(appdata);
         }
         SINGLETON(THGuiRep);
     public:
@@ -344,9 +343,9 @@ namespace TH128 {
         {
             uint32_t index = GetMemContent(0x4b8a9c, 0x5a2c);
             char* repName = (char*)GetMemAddr(0x4b8a9c, index * 4 + 0x5a34, 0x3b4);
-            std::string repDir(mAppdataPath);
-            repDir.append("\\ShanghaiAlice\\th128\\replay\\");
-            repDir.append(repName);
+            std::wstring repDir(mAppdataPath);
+            repDir.append(L"\\ShanghaiAlice\\th128\\replay\\");
+            repDir.append(mb_to_utf16(repName));
 
             std::string param;
             if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
@@ -380,7 +379,7 @@ namespace TH128 {
         }
 
     protected:
-        std::string mAppdataPath;
+        std::wstring mAppdataPath;
         bool mParamStatus = false;
         THPracParam mRepParam;
     };
@@ -456,20 +455,23 @@ namespace TH128 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            (void*)0x43D0D5, "\x01", 1, (void*)0x43B7FA, "\xeb", 1,
-            (void*)0x43d11b, "\x83\xc4\x10\x90\x90", 5,
-            (void*)0x432735, "\xe9\x9f\x00\x00\x00\x90", 6 };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
-            (void*)0x43CDD9, "\x00\x00\x00\x00", 4 };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3,
-            (void*)0x43B7D7, "\x00\x00\x00\x00", 4, (void*)0x43B90D, "\x00\x00\x00\x00", 4 };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4,
-            (void*)0x41F429, "\x00", 1 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5,
-            (void*)0x417307, "\x90", 1 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6,
-            (void*)0x43B8E8, "\xc6", 1, (void*)0x43B8F1, "\x00", 1 };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x43D0D5, "\x01", 1),
+            new HookCtxPatch((void*)0x43B7FA, "\xeb", 1),
+            new HookCtxPatch((void*)0x43d11b, "\x83\xc4\x10\x90\x90", 5),
+            new HookCtxPatch((void*)0x432735, "\xe9\x9f\x00\x00\x00\x90", 6) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x43CDD9, "\x00\x00\x00\x00", 4) } };
+        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
+            new HookCtxPatch((void*)0x43B7D7, "\x00\x00\x00\x00", 4),
+            new HookCtxPatch((void*)0x43B90D, "\x00\x00\x00\x00", 4) } };
+        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
+            new HookCtxPatch((void*)0x41F429, "\x00", 1) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtxPatch((void*)0x417307, "\x90", 1) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
+            new HookCtxPatch((void*)0x43B8E8, "\xc6", 1),
+            new HookCtxPatch((void*)0x43B8F1, "\x00", 1) } };
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
@@ -480,10 +482,10 @@ namespace TH128 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th128.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th128.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th128.dll", hash);
+                CalcFileHash(L"vpatch_th128.dll", hash);
                 if (hash[0] != 14796143656184423751ll || hash[1] != 15800222838538749590ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {
@@ -520,10 +522,10 @@ namespace TH128 {
             mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
                 return DataRecFunc(values);
             };
-            char* appdata = (char*)malloc(1000);
-            GetEnvironmentVariableA("APPDATA", appdata, 1000);
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mOptCtx.data_rec_dir = appdata;
-            mOptCtx.data_rec_dir += "\\ShanghaiAlice\\th128\\replay\\";
+            mOptCtx.data_rec_dir += L"\\ShanghaiAlice\\th128\\replay\\";
         }
         void DataRecPreUpd()
         {
@@ -2044,7 +2046,7 @@ namespace TH128 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(repName, thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
     void THDataInit()
     {

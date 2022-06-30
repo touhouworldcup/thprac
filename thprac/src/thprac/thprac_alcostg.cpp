@@ -364,8 +364,8 @@ namespace Alcostg {
         {
             uint32_t index = GetMemContent(0x4741ac, 0x5650);
             char* repName = (char*)GetMemAddr(0x4741ac, index * 4 + 0x5658, 0x104);
-            std::string repDir("replay/");
-            repDir.append(repName);
+            std::wstring repDir(L"replay\\");
+            repDir.append(mb_to_utf16(repName));
 
             std::string param;
             if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
@@ -476,20 +476,22 @@ namespace Alcostg {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            (void*)0x426eb5, "\x01", 1, (void*)0x425cfa, "\xeb", 1,
-            (void*)0x426f19, "\x83\xc4\x08\x90\x90", 5 };
-        Gui::GuiHotKey mFreeMiss { ALCOSTG_FREE_MISS, "F2", VK_F2,
-            (void*)0x42722c, "\x83\xc4\x04\x90\x90", 5,
-            (void*)0x426c2b, "\xeb\x60", 2 };
-        Gui::GuiHotKey mFreeBomb { ALCOSTG_FREE_BOMB, "F3", VK_F3,
-            (void*)0x427310, "\xc3", 1 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F4", VK_F4,
-            (void*)0x425dee, "\xc6", 1 };
-        Gui::GuiHotKey mLockTimeBar { ALCOSTG_LOCK_TIME_BAR, "F5", VK_F5,
-            (void*)0x419510, "\xc3", 1 };
-        Gui::GuiHotKey mLockTimeBoss { ALCOSTG_LOCK_TIME_BOSS, "F6", VK_F6,
-            (void*)0x4094b9, "\xeb", 1, (void*)0x40ed74, "\x90", 1 };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x426eb5, "\x01", 1),
+            new HookCtxPatch((void*)0x425cfa, "\xeb", 1),
+            new HookCtxPatch((void*)0x426f19, "\x83\xc4\x08\x90\x90", 5) } };
+        Gui::GuiHotKey mFreeMiss { ALCOSTG_FREE_MISS, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x42722c, "\x83\xc4\x04\x90\x90", 5),
+            new HookCtxPatch((void*)0x426c2b, "\xeb\x60", 2) } };
+        Gui::GuiHotKey mFreeBomb { ALCOSTG_FREE_BOMB, "F3", VK_F3, {
+            new HookCtxPatch((void*)0x427310, "\xc3", 1) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F4", VK_F4, {
+            new HookCtxPatch((void*)0x425dee, "\xc6", 1) } };
+        Gui::GuiHotKey mLockTimeBar { ALCOSTG_LOCK_TIME_BAR, "F5", VK_F5, {
+            new HookCtxPatch((void*)0x419510, "\xc3", 1) } };
+        Gui::GuiHotKey mLockTimeBoss { ALCOSTG_LOCK_TIME_BOSS, "F6", VK_F6, {
+            new HookCtxPatch((void*)0x4094b9, "\xeb", 1),
+            new HookCtxPatch((void*)0x40ed74, "\x90", 1) } };
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
@@ -500,10 +502,10 @@ namespace Alcostg {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_alcostg.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_alcostg.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_alcostg.dll", hash);
+                CalcFileHash(L"vpatch_alcostg.dll", hash);
                 if (hash[0] != 6266639508503889982ll || hash[1] != 5871049704103251000ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {
@@ -984,7 +986,7 @@ namespace Alcostg {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(repName, thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
 
     HOOKSET_DEFINE(THMainHook)
@@ -1175,8 +1177,8 @@ void AlcostgInit()
 {
     Alcostg::THInitHook::singleton().EnableAllHooks();
     TryKeepUpRefreshRate((void*)0x435aa0);
-    if (GetModuleHandleA("vpatch_alcostg.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_alcostg.dll") + 0x560b));
+    if (GetModuleHandleW(L"vpatch_alcostg.dll")) {
+        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleW(L"vpatch_alcostg.dll") + 0x560b));
     }
 }
 }

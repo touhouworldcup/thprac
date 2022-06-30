@@ -166,21 +166,24 @@ namespace TH06 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            (void*)0x4277c2, "\x03", 1,
-            (void*)0x42779a, "\x83\xc4\x10\x90\x90", 5,
-        };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
-            (void*)0x428DDC, "\x15", 1 };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3,
-            (void*)0x4289e3, "\x00", 1 }; //(void*)0x428e17, "\xeb\x13", 2 };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4,
-            (void*)0x41BBE2, "\x3E\xC6\x80", 3, (void*)0x41BBE9, "\x80", 1, (void*)0x428B7D, "\x00", 1 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5,
-            (void*)0x412DD1, "\xeb", 1 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6,
-            (void*)0x428989, "\xEB\x1D", 2, (void*)0x4289B4, "\x85\xD2", 2,
-            (void*)0x428A94, "\xFF\x89", 2, (void*)0x428A9D, "\x66\xC7\x05\x04\xD9\x69\x00\x02", 8 };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x4277c2, "\x03", 1),
+            new HookCtxPatch((void*)0x42779a, "\x83\xc4\x10\x90\x90", 5) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x428DDC, "\x15", 1) } };
+        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
+            new HookCtxPatch((void*)0x4289e3, "\x00", 1) } };
+        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
+            new HookCtxPatch((void*)0x41BBE2, "\x3E\xC6\x80", 3),
+            new HookCtxPatch((void*)0x41BBE9, "\x80", 1),
+            new HookCtxPatch((void*)0x428B7D, "\x00", 1) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtxPatch((void*)0x412DD1, "\xeb", 1) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
+            new HookCtxPatch((void*)0x428989, "\xEB\x1D", 2),
+            new HookCtxPatch((void*)0x4289B4, "\x85\xD2", 2),
+            new HookCtxPatch((void*)0x428A94, "\xFF\x89", 2),
+            new HookCtxPatch((void*)0x428A9D, "\x66\xC7\x05\x04\xD9\x69\x00\x02", 8) } };
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
@@ -705,7 +708,7 @@ namespace TH06 {
             char* raw = (char*)(0x6d46c0 + index * 512 + 0x823c);
 
             std::string param;
-            if (ReplayLoadParam(raw, param) && mRepParam.ReadJson(param))
+            if (ReplayLoadParam(mb_to_utf16(raw).c_str(), param) && mRepParam.ReadJson(param))
                 mParamStatus = true;
             else
                 mRepParam.Reset();
@@ -741,14 +744,14 @@ namespace TH06 {
     private:
         static void Snapshot()
         {
-            char dir[] = "snapshot/th000.bmp";
+            wchar_t dir[] = L"snapshot/th000.bmp";
             HANDLE hFile;
-            CreateDirectoryA("snapshot", NULL);
+            CreateDirectoryW(L"snapshot", NULL);
             for (int i = 0; i < 1000; i++) {
                 dir[13] = i % 10 + 0x30;
                 dir[12] = ((i % 100 - i % 10) / 10) + 0x30;
                 dir[11] = ((i - i % 100) / 100) + 0x30;
-                hFile = CreateFileA(dir, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+                hFile = CreateFileW(dir, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
                 if (hFile != INVALID_HANDLE_VALUE)
                     break;
             }
@@ -858,10 +861,10 @@ namespace TH06 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th06.dll");
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06.dll");
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
-                CalcFileHash("vpatch_th06.dll", hash);
+                CalcFileHash(L"vpatch_th06.dll", hash);
                 if (hash[0] != 3665784961181135876ll || hash[1] != 9283021252209177490ll)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
@@ -869,10 +872,10 @@ namespace TH06 {
                     mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x17034);
                 }
             } else {
-                mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("vpatch_th06_unicode.dll");
+                mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06_unicode.dll");
                 if (mOptCtx.vpatch_base) {
                     uint64_t hash[2];
-                    CalcFileHash("vpatch_th06_unicode.dll", hash);
+                    CalcFileHash(L"vpatch_th06_unicode.dll", hash);
                     if (hash[0] != 5021620919341617817ll || hash[1] != 10919509441391235291ll)
                         mOptCtx.fps_status = -1;
                     else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
@@ -903,10 +906,10 @@ namespace TH06 {
             mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
                 return DataRecFunc(values);
             };
-            char tempStr[256];
-            GetCurrentDirectoryA(256, tempStr);
-            strcat_s(tempStr, "\\replay");
+            wchar_t tempStr[MAX_PATH];
+            GetCurrentDirectoryW(MAX_PATH, tempStr);
             mOptCtx.data_rec_dir = tempStr;
+            mOptCtx.data_rec_dir += L"\\replay";
         }
         void DataRecPreUpd()
         {
@@ -1978,10 +1981,17 @@ namespace TH06 {
     }
     void THSaveReplay(char* rep_name)
     {
-        ReplaySaveParam(rep_name, thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(rep_name).c_str(), thPracParam.GetJson());
     }
 
+    EHOOK_G1(th06_result_screen_create, (void*)0x42d812)
+    {
+        th06_result_screen_create::GetHook().Disable();
+        *(uint32_t*)(*(uint32_t*)(pCtx->Ebp - 0x10) + 0x8) = 0xA;
+        pCtx->Eip = 0x42d839;
+    }
     HOOKSET_DEFINE(THMainHook)
+    PATCH_DY(th06_reacquire_input, (void*)0x41dc58, "\x00\x00\x00\x00\x74", 5);
     EHOOK_DY(th06_bgm_play, (void*)0x424b5d)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
@@ -2026,7 +2036,9 @@ namespace TH06 {
             if (sig == THPauseMenu::SIGNAL_RESUME) {
                 pCtx->Eip = 0x40223d;
             } else if (sig == THPauseMenu::SIGNAL_EXIT) {
-                pCtx->Eip = 0x40263c;
+                *(uint32_t*)0x6c6ea4 = 7; // Set gamemode to result screen
+                *(uint16_t*)0x69d4bf = 0; // Close pause menu
+                th06_result_screen_create::GetHook().Enable();
             } else if (sig == THPauseMenu::SIGNAL_RESTART) {
                 pCtx->Eip = 0x40263c;
             } else {
@@ -2161,7 +2173,7 @@ namespace TH06 {
     PATCH_DY(th06_disable_enter_1, (void*)0x437368, "\x00", 1);
     PATCH_DY(th06_disable_enter_2, (void*)0x437378, "\x00", 1);
     PATCH_DY(th06_disable_enter_3, (void*)0x437385, "\x00", 1);
-    EHOOK_DY(th06_update, (void*)0x41cb6d)
+    EHOOK_DY(th06_update, (void*)0x41caac)
     {
         GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
 
@@ -2174,7 +2186,7 @@ namespace TH06 {
 
         GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
     }
-    EHOOK_DY(th06_render, (void*)0x4207e1)
+    EHOOK_DY(th06_render, (void*)0x41cb6d)
     {
         GameGuiRender(IMPL_WIN32_DX8);
         THSnapshot::Update();

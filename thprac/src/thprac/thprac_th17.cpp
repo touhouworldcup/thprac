@@ -389,10 +389,9 @@ namespace TH17 {
     class THGuiRep : public Gui::GameGuiWnd {
         THGuiRep() noexcept
         {
-            char* appdata = (char*)malloc(1000);
-            GetEnvironmentVariableA("APPDATA", appdata, 1000);
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mAppdataPath = appdata;
-            free(appdata);
         }
         SINGLETON(THGuiRep);
     public:
@@ -400,9 +399,9 @@ namespace TH17 {
         {
             uint32_t index = GetMemContent(0x4b77f0, 0x5b54);
             char* repName = (char*)GetMemAddr(0x4b77f0, index * 4 + 0x5b5c, 0x220);
-            std::string repDir(mAppdataPath);
-            repDir.append("\\ShanghaiAlice\\th17\\replay\\");
-            repDir.append(repName);
+            std::wstring repDir(mAppdataPath);
+            repDir.append(L"\\ShanghaiAlice\\th17\\replay\\");
+            repDir.append(mb_to_utf16(repName));
 
             std::string param;
             if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
@@ -434,7 +433,7 @@ namespace TH17 {
         }
 
     protected:
-        std::string mAppdataPath;
+        std::wstring mAppdataPath;
         bool mParamStatus = false;
         THPracParam mRepParam;
     };
@@ -511,24 +510,25 @@ namespace TH17 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            (void*)0x44956a, "\x01", 1 };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
-            (void*)0x44921a, "\x90", 1 };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3,
-            (void*)0x411c96, "\x90\x90\x90", 3 };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4,
-            (void*)0x447b84, "\x31\xf6\x90\x90\x90\x90", 6 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5,
-            (void*)0x41a8cf, "\xeb", 1, (void*)0x420a1e, "\x05\x8d", 2 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6,
-            (void*)0x447c20, "\x90\x90\x90\x90\x90\x90", 6 };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x44956a, "\x01", 1) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x44921a, "\x90", 1) } };
+        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
+            new HookCtxPatch((void*)0x411c96, "\x90\x90\x90", 3) } };
+        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
+            new HookCtxPatch((void*)0x447b84, "\x31\xf6\x90\x90\x90\x90", 6) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtxPatch((void*)0x41a8cf, "\xeb", 1),
+            new HookCtxPatch((void*)0x420a1e, "\x05\x8d", 2) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
+            new HookCtxPatch((void*)0x447c20, "\x90\x90\x90\x90\x90\x90", 6) } };
 
     public:
-        Gui::GuiHotKey mInfRoaring { TH17_INF_ROARING, "F7", VK_F7,
-            (void*)0x40ef6a, "\x00", 1 };
-        Gui::GuiHotKey mNoGoast { TH17_NO_GOAST, "F8", VK_F8,
-            (void*)0x4347af, "\xe9\x03\x01\x00\x00", 5 };
+        Gui::GuiHotKey mInfRoaring { TH17_INF_ROARING, "F7", VK_F7, {
+            new HookCtxPatch((void*)0x40ef6a, "\x00", 1) } };
+        Gui::GuiHotKey mNoGoast { TH17_NO_GOAST, "F8", VK_F8, {
+            new HookCtxPatch((void*)0x4347af, "\xe9\x03\x01\x00\x00", 5) } };
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
     };
     class THGuiSP : public Gui::GameGuiWnd {
@@ -691,11 +691,14 @@ namespace TH17 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleA("");
+            #if 0
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"");
             if (false) {
-                //if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0)
-                //	mOptCtx.fps_status = 2;
-            } else if (*(uint8_t*)0x4b5cd9 == 3) {
+                if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0)
+                    mOptCtx.fps_status = 2;
+            } else
+            #endif
+            if (*(uint8_t*)0x4b5cd9 == 3) {
                 mOptCtx.fps_status = 1;
 
                 DWORD oldProtect;
@@ -730,10 +733,10 @@ namespace TH17 {
             mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
                 return DataRecFunc(values);
             };
-            char* appdata = (char*)malloc(1000);
-            GetEnvironmentVariableA("APPDATA", appdata, 1000);
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mOptCtx.data_rec_dir = appdata;
-            mOptCtx.data_rec_dir += "\\ShanghaiAlice\\th17\\replay\\";
+            mOptCtx.data_rec_dir += L"\\ShanghaiAlice\\th17\\replay\\";
         }
         void DataRecPreUpd()
         {
@@ -1896,7 +1899,7 @@ namespace TH17 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(repName, thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
     __declspec(noinline) void TH17AddGoast(int goast_id)
     {

@@ -9,6 +9,7 @@
 #include "thprac_launcher_wnd.h"
 #include "thprac_load_exe.h"
 #include "thprac_main.h"
+#include "thprac_utils.h"
 #include <Windows.h>
 #include <shlwapi.h>
 #include <cstdint>
@@ -1155,7 +1156,7 @@ public:
         fileSize = GetFileSize(hFile, NULL);
         if (fileSize > (1 << 23))
             goto end; // Pass if the file is too large.
-        hFileMap = CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
+        hFileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
         if (!hFileMap)
             goto end;
         pFileMapView = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, fileSize);
@@ -1713,81 +1714,21 @@ public:
         } while (!gameGui.mLaunchAbortInd);
         return 0;
     }
-    static DWORD WINAPI CheckDLLFunction(std::wstring& path, const char* funcName)
-    {
-#define MakePointer(t, p, offset) ((t)((PUINT8)(p) + offset))
-        int result = 0;
-        HANDLE hFile = INVALID_HANDLE_VALUE;
-        DWORD fileSize = 0;
-        HANDLE hFileMap = NULL;
-        void* pFileMapView = nullptr;
-        hFile = CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-        if (hFile == INVALID_HANDLE_VALUE)
-            goto cdf_end;
-        fileSize = GetFileSize(hFile, NULL);
-        if (fileSize > (1 << 23))
-            goto cdf_end; // Pass if the file is too large.
-        hFileMap = CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
-        if (!hFileMap)
-            goto cdf_end;
-        pFileMapView = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, fileSize);
-        if (!pFileMapView)
-            goto cdf_end;
-
-        auto exeSize = fileSize;
-        auto exeBuffer = pFileMapView;
-        if (exeSize < 128)
-            goto cdf_end;
-        PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)exeBuffer;
-        if (!pDosHeader || pDosHeader->e_magic != 0x5a4d || (size_t)pDosHeader->e_lfanew + 512 >= exeSize)
-            goto cdf_end;
-        PIMAGE_NT_HEADERS pNtHeader = (PIMAGE_NT_HEADERS)((DWORD)exeBuffer + pDosHeader->e_lfanew);
-        if (!pNtHeader || pNtHeader->Signature != 0x00004550)
-            goto cdf_end;
-        PIMAGE_SECTION_HEADER pSection = IMAGE_FIRST_SECTION(pNtHeader);
-        if (!pSection)
-            goto cdf_end;
-
-        if (pNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress != 0 && pNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].Size != 0) {
-            auto pExportSectionVA = pNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
-            for (DWORD i = 0; i < pNtHeader->FileHeader.NumberOfSections; i++, pSection++) {
-                if (pSection->VirtualAddress <= pExportSectionVA && pSection->VirtualAddress + pSection->SizeOfRawData > pExportSectionVA) {
-                    auto pSectionBase = (DWORD)exeBuffer - pSection->VirtualAddress + pSection->PointerToRawData;
-                    PIMAGE_EXPORT_DIRECTORY pExportDirectory = (PIMAGE_EXPORT_DIRECTORY)(pSectionBase + pExportSectionVA);
-                    char** pExportNames = (char**)(pSectionBase + pExportDirectory->AddressOfNames);
-                    for (DWORD i = 0; i < pExportDirectory->NumberOfNames; ++i) {
-                        auto pFunctionName = (char*)(pSectionBase + pExportNames[i]);
-                        if (!strcmp(pFunctionName, funcName)) {
-                            result = true;
-                            goto cdf_end;
-                        }
-                    }
-                }
-            }
-        }
-
-    cdf_end:
-        if (pFileMapView)
-            UnmapViewOfFile(pFileMapView);
-        if (hFileMap)
-            CloseHandle(hFileMap);
-        if (hFile != INVALID_HANDLE_VALUE)
-            CloseHandle(hFile);
-        return result;
-
-#undef MakePointer
-    }
     static DWORD WINAPI CheckAndLoadVPatch(HANDLE hProcess, std::wstring& dir, const wchar_t* vpatchName)
     {
         auto vpatchPath = dir + vpatchName;
-        if (CheckDLLFunction(vpatchPath, "_Initialize@4")) {
+        if (CheckDLLFunction(vpatchPath.c_str(), "_Initialize@4")) {
             auto vpNameLength = (vpatchPath.size() + 1) * sizeof(wchar_t);
-            auto pLoadLibrary = GetProcAddress(GetModuleHandleA("kernel32.dll"), "LoadLibraryW");
+            auto pLoadLibrary = ::LoadLibraryW;
             auto remoteStr = VirtualAllocEx(hProcess, NULL, vpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+            if (!remoteStr)
+                return 0;
+            defer(VirtualFreeEx(hProcess, remoteStr, 0, MEM_RELEASE));
             WriteProcessMemory(hProcess, remoteStr, vpatchPath.data(), vpNameLength, NULL);
             auto t = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, remoteStr, 0, NULL);
+            if (!t)
+                return 0;
             WaitForSingleObject(t, INFINITE);
-            VirtualFreeEx(hProcess, remoteStr, 0, MEM_RELEASE);
             return 1;
         }
 
@@ -1797,7 +1738,7 @@ public:
     {
         void* jsBuffer;
         size_t jsSize;
-        auto gameCfgPath = THGameGui::singleton().mThcrapCfgDir+ L"\\games.js";
+        auto gameCfgPath = THGameGui::singleton().mThcrapCfgDir + L"\\games.js";
         if (LoadJsonFile(gameCfgPath, jsBuffer, jsSize)) {
             rapidjson::Document json;
             if (!(json.Parse((const char*)jsBuffer, jsSize + 1).HasParseError()) && json.IsObject()) {
@@ -2164,14 +2105,13 @@ public:
         ImGui::SameLine();
         if (mCurrentGame->signature.appdataStr) {
             if (ImGui::Button(XSTR(THPRAC_GAMES_OPEN_APPDATA))) {
-                std::string dataFolder;
-                char* appdata = (char*)malloc(1000);
-                GetEnvironmentVariableA("APPDATA", appdata, 1000);
+                std::wstring dataFolder;
+                wchar_t appdata[MAX_PATH];
+                GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
                 dataFolder = appdata;
-                free(appdata);
-                dataFolder += "\\ShanghaiAlice\\";
-                dataFolder += mCurrentGame->signature.idStr;
-                ShellExecuteA(NULL, "explore", dataFolder.c_str(), NULL, NULL, SW_SHOW);
+                dataFolder += L"\\ShanghaiAlice\\";
+                dataFolder += utf8_to_utf16(mCurrentGame->signature.idStr);
+                ShellExecuteW(NULL, L"explore", dataFolder.c_str(), NULL, NULL, SW_SHOW);
             }
         }
 

@@ -1,6 +1,8 @@
 ﻿#include "thprac_utils.h"
+#include "thprac_utils.h"
 #include "thprac_game_data.h"
 #include <metrohash128.h>
+#include "..\MinHook\src\buffer.h"
 
 namespace THPrac {
 namespace TH18 {
@@ -383,16 +385,15 @@ namespace TH18 {
     class THGuiRep : public Gui::GameGuiWnd {
         THGuiRep() noexcept
         {
-            char* appdata = (char*)malloc(1000);
-            GetEnvironmentVariableA("APPDATA", appdata, 1000);
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mAppdataPath = appdata;
-            free(appdata);
         }
         SINGLETON(THGuiRep);
 
     public:
-        std::string mRepDir;
-        std::string mRepName;
+        std::wstring mRepDir;
+        std::wstring mRepName;
         uint64_t mRepMetroHash[2];
         bool mRepSelected = false;
         void CalcRepHash()
@@ -404,10 +405,10 @@ namespace TH18 {
             MetroHash128 metro;
 
             // Load replay
-            hFile = CreateFileA(THGuiRep::singleton().mRepDir.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            hFile = CreateFileW(THGuiRep::singleton().mRepDir.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
             if (hFile == INVALID_HANDLE_VALUE)
                 goto end;
-            hFileMap = CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
+            hFileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
             if (!hFileMap)
                 goto end;
             pFileMapView = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, fileSize);
@@ -432,9 +433,10 @@ namespace TH18 {
         void CheckReplay()
         {
             uint32_t index = GetMemContent(0x4cf43c, 0x5aac);
-            char* repName = (char*)GetMemAddr(0x4cf43c, index * 4 + 0x5ab4, 0x21c);
-            std::string repDir(mAppdataPath);
-            repDir.append("\\ShanghaiAlice\\th18\\replay\\");
+            char* repName_ = (char*)GetMemAddr(0x4cf43c, index * 4 + 0x5ab4, 0x21c);
+            std::wstring repName = mb_to_utf16(repName_);
+            std::wstring repDir(mAppdataPath);
+            repDir.append(L"\\ShanghaiAlice\\th18\\replay\\");
             repDir.append(repName);
             mRepName = repName;
             mRepDir = repDir;
@@ -473,7 +475,7 @@ namespace TH18 {
             }
         }
 
-        std::string mAppdataPath;
+        std::wstring mAppdataPath;
 
     protected:
         bool mParamStatus = false;
@@ -744,26 +746,28 @@ namespace TH18 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1,
-            (void*)0x45d4ea, "\x01", 1 };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2,
-            (void*)0x45d1a2, "\x00", 1 };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3,
-            (void*)0x4574d3, "\x90\x90\x90\x90", 4,
-            (void*)0x40a3ed, "\x90\x90\x90\x90\x90\x90", 6, (void*)0x40a42c, "\x90\x90\x90\x90\x90\x90", 6 };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4,
-            (void*)0x45748e, "\x90\x90", 2 };
-        Gui::GuiHotKey mInfFunds { TH18_INFFUNDS, "F5", VK_F5,
-            (void*)0x45c244, "\x90\x90\x90\x90\x90\x90", 6,
-            (void*)0x40d96f, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10,
-            (void*)0x418496, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10,
-            (void*)0x418465, "\x90\x90", 2 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F6", VK_F6,
-            (void*)0x429eef, "\xeb", 1, (void*)0x43021b, "\x05\x8d", 2 };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F7", VK_F7,
-            (void*)0x45c2bd, "\x90\x90\x90\x90\x90\x90", 6 };
-        Gui::GuiHotKeyHook mZeroCD { TH18_ZERO_CD, "F8", VK_F8,
-            (void*)0x45c0e3, [](PCONTEXT pCtx) {
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x45d4ea, "\x01", 1) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x45d1a2, "\x00", 1) } };
+        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
+            new HookCtxPatch ((void*)0x4574d3, "\x90\x90\x90\x90", 4),
+            new HookCtxPatch ((void*)0x40a3ed, "\x90\x90\x90\x90\x90\x90", 6),
+            new HookCtxPatch ((void*)0x40a42c, "\x90\x90\x90\x90\x90\x90", 6) } };
+        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
+            new HookCtxPatch((void*)0x45748e, "\x90\x90", 2) } };
+        Gui::GuiHotKey mInfFunds { TH18_INFFUNDS, "F5", VK_F5, {
+            new HookCtxPatch((void*)0x45c244, "\x90\x90\x90\x90\x90\x90", 6),
+            new HookCtxPatch((void*)0x40d96f, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10),
+            new HookCtxPatch((void*)0x418496, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10),
+            new HookCtxPatch((void*)0x418465, "\x90\x90", 2) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F6", VK_F6, {
+            new HookCtxPatch((void*)0x429eef, "\xeb", 1), 
+            new HookCtxPatch((void*)0x43021b, "\x05\x8d", 2) } };
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F7", VK_F7, {
+            new HookCtxPatch((void*)0x45c2bd, "\x90\x90\x90\x90\x90\x90", 6) } };
+        Gui::GuiHotKey mZeroCD { TH18_ZERO_CD, "F8", VK_F8, {
+            new HookCtxHook((void*)0x45c0e3, [](PCONTEXT pCtx) {
                 struct Timer {
                     int32_t prev;
                     int32_t cur;
@@ -773,8 +777,7 @@ namespace TH18 {
                 };
                 Timer* timer = (Timer*)(pCtx->Ecx + 0x34);
                 *timer = { -1, 0, 0, 0, 0 };
-            }
-        };
+                }) } };
         Gui::GuiHotKey mMarketManip { TH18_MARKET_MANIP, "F10", VK_F10 };
         bool isInMarket = false;
         bool isManipMarket = false;
@@ -969,7 +972,6 @@ namespace TH18 {
                 pCtx->Eip = 0x4448b0;
             }
         }
-
         EHOOK_ST(th18_score_uncap_replay_fix, (void*)0x4620b9)
         {
             if (pCtx->Eax >= 0x3b9aca00) {
@@ -982,38 +984,38 @@ namespace TH18 {
         }
         EHOOK_ST(th18_score_uncap_replay_factor, (void*)0x44480d)
         {
-            auto stageScore = 100000 * (*(uint32_t*)(0x4cccdc));
-            auto finalScore = 100000 * (*(uint32_t*)(0x4ccd48) * 5 + *(uint32_t*)(0x4ccd58));
+            uint32_t* score = (uint32_t*)0x4cccfc;
+            uint32_t* stage_num = (uint32_t*)0x4cccdc;
+            uint32_t* lifes = (uint32_t*)0x4ccd48;
+            uint32_t* bombs = (uint32_t*)0x4ccd58;
+
+            auto stageBonus = 100000 * *stage_num;
+            auto clearBonus = 100000 * (*lifes * 5 + *bombs);
             if (GetMemContent(0x4cf2e4, 0xd0)) {
-                *(uint32_t*)(0x4cccfc) += stageScore;
-                if ((*(int32_t*)(0x4cccdc)) >= 6) {
-                    *(uint32_t*)(0x4cccfc) += finalScore;
-                }
-                if ((*(uint32_t*)0x4cccc8 & 0x30) != 0x20) {
-                    uint32_t score = *(uint32_t*)0x4cccfc + 100000 + *(uint32_t*)0x4cccdc;
-                    if (!THAdvOptWnd::singleton().scoreUncapChkbox && score > 999999999) {
-                        *(uint32_t*)0x4cccdc = 999999999;
-                    }
-                }
+                uint32_t rpy = *(uint32_t*)(*(uint32_t*)0x4cf418 + 0x18);
+                if (*(uint32_t*)(rpy + 0xb8) == 8 && (*stage_num == 6 || *stage_num == 7))
+                    *score += clearBonus;
+                *score += stageBonus;
+                if (!THAdvOptWnd::singleton().scoreUncapChkbox && *score > 999999999)
+                    *score = 999999999;
             }
         }
-        uint32_t scoreUncapOffsetNew[29] {
-            0x42a665, 0x42a7fd,
-            0x430eab, 0x44476b,
-            0x444ad9, 0x444c00,
-            0x4462eb, 0x4463b1,
-            0x44656e, 0x446ac6,
-            0x446d09, 0x45f2c4,
-            0x419e70, 0x42a659,
-            0x42a80f, 0x430eb6,
-            0x44477a, 0x444ade,
-            0x444c05, 0x446302,
-            0x4463a1, 0x446578,
-            0x446ad7, 0x446d1a,
-            0x45f2cf, 0x497937,
-            0x498515, 0x4a4248,
-            0x4aee78
+        uint32_t scoreUncapOffsetNew[23] {
+            0x419e70,
+            //0x42a659, 0x42a665,
+            0x42a7fd, 0x42a80f,
+            0x430eab, 0x430eb6,
+            0x44476b, 0x44477a,
+            0x444ad9, 0x444ade,
+            0x444c00, 0x444c05,
+            0x4462eb, 0x446302,
+            0x4463a1, 0x4463b1,
+            0x44656e, 0x446578,
+            0x446ac6, 0x446ad7,
+            0x446d09, 0x446d1a,
+            0x45f2c4, 0x45f2cf,
         };
+        HookCtx* scoreUncapStageTrFix[2];
         std::vector<HookCtx*> scoreUncapHooks;
         bool scoreUncapChkbox = false;
         bool scoreUncapOverwrite = false;
@@ -1071,8 +1073,8 @@ namespace TH18 {
         };
         bool mShowFixInstruction = false;
         std::vector<FixData> mFixData;
-        std::string mRepOriginalName;
-        std::string mRepOriginalPath;
+        std::wstring mRepOriginalName;
+        std::wstring mRepOriginalPath;
         uint64_t mRepMetroHash[2];
         uint32_t mRepHeader[9];
         void* mRepDataDecoded = nullptr;
@@ -1093,6 +1095,14 @@ namespace TH18 {
                 }
             }
         }
+        __declspec(noinline) void MsgBox(UINT type, const wchar_t* title, const wchar_t* msg, const wchar_t* msg2 = nullptr)
+        {
+            std::wstring _msg = msg;
+            if (msg2) {
+                _msg += msg2;
+            }
+            MessageBoxW(*(HWND*)0x568c30, _msg.c_str(), title, type);
+        }
         __declspec(noinline) void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nullptr)
         {
             wchar_t _title[256];
@@ -1102,9 +1112,9 @@ namespace TH18 {
             MultiByteToWideChar(CP_UTF8, 0, msg, -1, _msg, 256);
             if (msg2) {
                 MultiByteToWideChar(CP_UTF8, 0, msg2, -1, _msg2, 256);
-                wcscat_s(_msg, _msg2);
             }
-            MessageBoxW(*(HWND*)0x568c30, _msg, _title, type);
+            MsgBox(type, _title, _msg, msg2 ? _msg2 : nullptr);
+            
         }
         __declspec(noinline) uint32_t* FindCardDesc(uint32_t id)
         {
@@ -1257,25 +1267,25 @@ namespace TH18 {
             free(repDataOutput);
 
             DWORD bytesProcessed;
-            std::string repDir = THGuiRep::singleton().mAppdataPath;
-            repDir.append("\\ShanghaiAlice\\th18\\replay\\");
-            OPENFILENAMEA ofn;
-            char szFile[512];
-            strcpy_s(szFile, "th18_ud----.rpy");
+            std::wstring repDir = THGuiRep::singleton().mAppdataPath;
+            repDir.append(L"\\ShanghaiAlice\\th18\\replay\\");
+            OPENFILENAMEW ofn;
+            wchar_t szFile[512];
+            wcscpy_s(szFile, L"th18_ud----.rpy");
             ZeroMemory(&ofn, sizeof(ofn));
             ofn.lStructSize = sizeof(ofn);
             ofn.hwndOwner = *(HWND*)0x568c30;
             ofn.lpstrFile = szFile;
             ofn.nMaxFile = sizeof(szFile);
-            ofn.lpstrFilter = "Replay File\0*.rpy\0";
+            ofn.lpstrFilter = L"Replay File\0*.rpy\0";
             ofn.nFilterIndex = 1;
             ofn.lpstrFileTitle = NULL;
             ofn.nMaxFileTitle = 0;
             ofn.lpstrInitialDir = repDir.c_str();
-            ofn.lpstrDefExt = ".rpy";
+            ofn.lpstrDefExt = L".rpy";
             ofn.Flags = OFN_OVERWRITEPROMPT;
-            if (GetSaveFileNameA(&ofn)) {
-                auto outputFile = CreateFileA(szFile, GENERIC_READ | GENERIC_WRITE, NULL, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+            if (GetSaveFileNameW(&ofn)) {
+                auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, NULL, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
                 if (outputFile == INVALID_HANDLE_VALUE) {
                     MsgBox(MB_ICONERROR | MB_OK, XSTR(TH14_ERROR), XSTR(TH14_ERROR_DEST));
                     goto end;
@@ -1287,7 +1297,7 @@ namespace TH18 {
                 WriteFile(outputFile, mRepExtraData, mRepExtraDataSize, &bytesProcessed, NULL);
                 CloseHandle(outputFile);
 
-                MsgBox(MB_ICONINFORMATION | MB_OK, XSTR(TH14_SUCCESS), XSTR(TH14_SUCCESS_SAVED), szFile);
+                MsgBox(MB_ICONINFORMATION | MB_OK, utf8_to_utf16(XSTR(TH14_SUCCESS)).c_str(), utf8_to_utf16(XSTR(TH14_SUCCESS_SAVED)).c_str(), szFile);
             }
 
             end:
@@ -1304,10 +1314,10 @@ namespace TH18 {
             UnloadReplay();
 
             // Load replay
-            hFile = CreateFileA(THGuiRep::singleton().mRepDir.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            hFile = CreateFileW(THGuiRep::singleton().mRepDir.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
             if (hFile == INVALID_HANDLE_VALUE)
                 goto end;
-            hFileMap = CreateFileMappingA(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
+            hFileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
             if (!hFileMap)
                 goto end;
             pFileMapView = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, fileSize);
@@ -1509,6 +1519,29 @@ namespace TH18 {
             th18_score_uncap_replay_fix.Setup();
             th18_score_uncap_replay_disp.Setup();
             th18_score_uncap_replay_factor.Setup();
+
+            {
+                LPVOID codecave = AllocateBuffer(0);
+                uint8_t* p = (uint8_t*)codecave;
+                
+                uint8_t code_1[] = "\x56\x8B\x71\x20\xFF\x74\x24\x08\xE8";
+                memcpy(p, code_1, sizeof(code_1) - 1);
+                p += sizeof(code_1) - 1;
+                uint32_t func_off = 0x00417A60 - (uint32_t)p - 4;
+                memcpy(p, &func_off, sizeof(func_off));
+                p += sizeof(func_off);
+                uint8_t code_2[] = "\x89\x71\x20\x5E\xC2\x04\x00";
+                memcpy(p, code_2, sizeof(code_2) - 1);
+
+                char patch_1[5] = "\xE8";
+                char patch_2[5] = "\xE8";
+                *(uintptr_t*)(patch_1 + 1) = (uintptr_t)codecave - 0x4179c7;
+                *(uintptr_t*)(patch_2 + 1) = (uintptr_t)codecave - 0x463045;
+                scoreUncapStageTrFix[0] = new HookCtx((void*)0x4179c2, patch_1, sizeof(patch_1));
+                scoreUncapStageTrFix[0]->Setup();
+                scoreUncapStageTrFix[1] = new HookCtx((void*)0x463040, patch_2, sizeof(patch_2));
+                scoreUncapStageTrFix[1]->Setup();
+            }
         }
         void ScoreUncapSet()
         {
@@ -1517,16 +1550,18 @@ namespace TH18 {
             }
             th18_score_uncap_replay_fix.Toggle(!scoreUncapOverwrite);
             th18_score_uncap_replay_disp.Toggle(scoreUncapChkbox);
+            scoreUncapStageTrFix[0]->Toggle(scoreUncapChkbox);
+            scoreUncapStageTrFix[1]->Toggle(scoreUncapChkbox);
         }
         void DatRecInit()
         {
             mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
                 return DataRecFunc(values);
             };
-            char* appdata = (char*)malloc(1000);
-            GetEnvironmentVariableA("APPDATA", appdata, 1000);
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mOptCtx.data_rec_dir = appdata;
-            mOptCtx.data_rec_dir += "\\ShanghaiAlice\\th18\\replay\\";
+            mOptCtx.data_rec_dir += L"\\ShanghaiAlice\\th18\\replay\\";
         }
         void DataRecPreUpd()
         {
@@ -2691,7 +2726,7 @@ namespace TH18 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(repName, thPracParam.GetJson());
+        ReplaySaveParam(utf8_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
     void THDataInit()
     {
