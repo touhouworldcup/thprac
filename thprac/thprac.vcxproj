@@ -196,7 +196,6 @@
     <TargetName>thprac</TargetName>
     <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\distorm\include;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(ProjectDir)src\3rdParties\MinHook\include;$(ProjectDir)src\3rdParties\robin-map;$(ProjectDir)src\3rdParties\xxHash;$(ProjectDir)src\3rdParties\lzma;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)src\3rdParties\FreeType\win32;$(LibraryPath)</LibraryPath>
-	<NoWarn>26812</NoWarn>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
@@ -220,6 +219,7 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <ControlFlowGuard>false</ControlFlowGuard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
