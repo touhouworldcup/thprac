@@ -634,12 +634,10 @@ namespace TH06 {
         virtual void OnContentUpdate() override
         {
             if (!inSettings) {
-                ImGui::SetWindowFocus();
                 ImGui::Dummy(ImVec2(10.0f, 140.0f));
                 ImGui::Indent(119.0f);
                 if (mResume())
                     StateResume();
-                ImGui::SetItemDefaultFocusAlt();
                 ImGui::Spacing();
                 if (mExit())
                     StateExit();
