@@ -47,6 +47,7 @@ When starting a game in Match Mode, you can select "Custom" in a "Mode" prompt. 
 
 ### TH06 pause menu
 ![TH06](https://user-images.githubusercontent.com/23106652/174436027-734d642a-300c-45ab-9591-b6219aca087b.png)
+Choosing "Exit" will prompt you to save a replay. Warning: replays saved like this will keep going even after the point you chose to save the replay. The player character will stand still and not shoot.
 
 ### ESC + R fix for Violet Detector, Wily Beast and Weakest Creature and Unconnected Marketeers
 
@@ -57,7 +58,7 @@ When starting a game in Match Mode, you can select "Custom" in a "Mode" prompt. 
 - Transferring all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) to [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
 
 # How to build:
-A Visual Studio solution is bundled that uses the Visual Studio 2022 build tools (v143) for debug builds and the Visual Studio 2017 build tools with Windows XP support (v141_xp) for release builds.
+A Visual Studio solution is bundled that uses the Visual Studio 2022 build tools (v143) for building. However, thprac will compile perfectly fine with Visual Studio 2019 build tools (v142) as well. Your builds will support Windows XP perfectly fine, v141_xp build tools are not needed.
 
 If you add a new string to the codebase that needs to be localized, put it into thprac_games_def.json and run thprac_multi to generate a new thprac_locale_def.h
 
