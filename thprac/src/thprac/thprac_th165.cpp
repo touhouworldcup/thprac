@@ -90,7 +90,9 @@ namespace TH165 {
                     mOptCtx.fps_status = 2;
             } else 
             #endif    
-            if (*(uint8_t*)0x4b3d09 == 3) {
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                OILPInit(mOptCtx);
+            } else if (*(uint8_t*)0x4b3d09 == 3) {
                 mOptCtx.fps_status = 1;
 
                 DWORD oldProtect;
@@ -102,7 +104,11 @@ namespace TH165 {
         }
         void FpsSet()
         {
-            if (mOptCtx.fps_status == 1) {
+            if (mOptCtx.fps_status == 3) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
+            } else if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
             } else if (mOptCtx.fps_status == 2) {
                 //*(int32_t*)(mOptCtx.vpatch_base + 0x16a8c) = mOptCtx.fps;
