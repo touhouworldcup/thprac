@@ -337,13 +337,16 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
     }
     //LocaleCreateMergeFont(Gui::LocaleGet(), io.DisplaySize.x * 0.025f);
 
-    if (!Gui::ImplWin32CheckFullScreen()) {
+    if (bool resizable_window = true && LauncherCfgInit(true) && 
+        LauncherSettingGet("resizable_window", resizable_window) && 
+        resizable_window && !Gui::ImplWin32CheckFullScreen()
+    ){
         RECT wndRect;
         GetClientRect(*(HWND*)hwnd, &wndRect);
         auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
         auto captionSize = GetSystemMetrics(SM_CYCAPTION);
-        auto longPtr = GetWindowLongPtrA(*(HWND*)hwnd, GWL_STYLE);
-        SetWindowLongPtr(*(HWND*)hwnd, GWL_STYLE, longPtr | WS_SIZEBOX);
+        auto longPtr = GetWindowLongW(*(HWND*)hwnd, GWL_STYLE);
+        SetWindowLongW(*(HWND*)hwnd, GWL_STYLE, longPtr | WS_SIZEBOX);
         SetWindowPos(*(HWND*)hwnd, HWND_NOTOPMOST,
             0, 0, wndRect.right + frameSize, wndRect.bottom + frameSize + captionSize,
             SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);

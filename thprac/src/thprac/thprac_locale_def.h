@@ -480,6 +480,7 @@ enum th_glossary_t
     THPRAC_RESET_LAUNCHER,
     THPRAC_RESET_LAUNCHER_MODAL,
     THPRAC_RESET_LAUNCHER_WARNING,
+    THPRAC_RESIZABLE_WINDOW,
     THPRAC_SCAN_COMPLETE,
     THPRAC_SCAN_CONFIRM_MALICIOUS,
     THPRAC_SCAN_CONFIRM_MODDED,
@@ -733,7 +734,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-static char* th_glossary_str[3][726]
+static char* th_glossary_str[3][727]
 {
     {
         "",
@@ -1211,6 +1212,7 @@ static char* th_glossary_str[3][726]
         u8"重置启动器",
         u8"重置启动器##modal",
         u8"确定重置启动器？\nthprac将会关闭，且在那之后你将丢失现有的所有数据！",
+        u8"窗口大小可调",
         u8"thprac成功完成了游戏的扫描。",
         u8"thprac查找到了以下游戏，但它们似乎被恶意地修改过了。\n这可能是某种蠕虫型病毒/木马的所为，亦或是游戏程序的来源本身就是有问题的。\n请使用杀毒软件对列出的游戏程序进行扫描，以确保不会有任何恶意程序对你的电脑造成危害。\n如果你确信这是一起误报，请送信至ack7139@outlook.com，并在信中附上被误报的游戏程序。",
         u8"thprac查找到了以下被修改过的游戏。\n请确认并勾选你需要加入的游戏。",
@@ -1939,6 +1941,7 @@ static char* th_glossary_str[3][726]
         u8"Reset launcher",
         u8"Reset##modal",
         u8"Are you sure you want to reset the launcher?\nthprac will be closed and after that, you will lose ALL existing data!",
+        u8"Resizable window",
         u8"thprac has successfully completed the scan.",
         u8"thprac has found the following games, but they seem to have been maliciously modified.\nThis may be caused by some kind of worm virus/trojan, or that the source of the game program is malicious at the first place.\nPlease use an anti-virus software to scan the listed game programs to ensure that no malicious program will harm your computer.\nIf you are sure that this is a false positive, please send to ack7139@outlook.com, along with the game program that was misreported.",
         u8"thprac has found the following modded games.\nPlease confirm and tick the game you want to add.",
@@ -2667,6 +2670,7 @@ static char* th_glossary_str[3][726]
         u8"ランチャーをリセット",
         u8"リセット##modal",
         u8"ランチャーをリセットしてもよろしいですか？\nthpracは閉じられ、その後、既存のデータがすべて失われます！",
+        u8"ウィンドウサイズ自由に変更",
         u8"thpracはゲームの検索を正常に完了しました。",
         u8"thpracは以下のゲームを発見しましたが、悪意を持って変更されたようです。\nこれは、何らかのワームウイルス/トロイの木馬が原因であるか、ゲームプログラムのソースがそもそも悪意のあるものである可能性があります。\n悪意のあるプログラムがコンピュータに害を及ぼさないようにするには、リストされているゲームプログラムをアンチウイルスプログラムでスキャンしてください。\nこれが誤検知であると確信している場合は、誤って報告されたゲームプログラムと一緒にack7139@outlook.comに送信してください。",
         u8"thpracは以下の改造されたゲームを見つけました。\n追加したいゲームを確認してチェックしてください。",
@@ -22323,6 +22327,7 @@ static wchar_t __thprac_loc_range_zh[] {
     0x7a79, 0x7a79,
     0x7a7a, 0x7a7a,
     0x7a92, 0x7a92,
+    0x7a97, 0x7a97,
     0x7a9f, 0x7a9f,
     0x7acb, 0x7acb,
     0x7ad9, 0x7ad9,

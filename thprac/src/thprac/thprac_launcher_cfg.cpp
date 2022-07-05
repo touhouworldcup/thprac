@@ -1461,6 +1461,7 @@ private:
         ImGui::EndDisabled();
         ImGui::SameLine();
         GuiHelpMarker(XSTR(THPRAC_REFLECTIVE_LAUNCH_DESC));
+        mResizableWindow.Gui(XSTR(THPRAC_RESIZABLE_WINDOW));
         ImGui::NewLine();
 
         ImGui::Text(XSTR(THPRAC_SETTING_LAUNCHER));
@@ -1562,6 +1563,7 @@ private:
     THCfgCheckbox mCfgUnlockRefreshRate { "unlock_refresh_rate", false };
     THCfgCheckbox mCfgCheckUpdate { "check_update", true };
 
+    THCfgCheckbox mResizableWindow { "resizable_window", false };
     THCfgCheckbox mReflectiveLaunch { "reflective_launch", false };
     THCfgCombo mExistingGameAction { "existing_game_launch_action", 0, 3 };
     THCfgCheckbox mDontSearchOngoingGame { "dont_search_ongoing_game", false };

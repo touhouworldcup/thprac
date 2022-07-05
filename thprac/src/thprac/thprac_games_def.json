@@ -194,6 +194,7 @@
         "Enable if the game behaves abnormally when launched by thprac but not when launched directly.\nThis will nullify any functionality that requires a direct game launch from thprac.",
         "thpracによって起動されたときにゲームが異常に動作するが、直接起動されたときは動作しない場合に有効にします。\nこれを有効にすると、thpracから直接ゲームを起動する必要がある機能が無効になります。"
       ],
+      "THPRAC_RESIZABLE_WINDOW": [ "窗口大小可调", "Resizable window", "ウィンドウサイズ自由に変更" ],
       "THPRAC_GAME_ADJUSTMENTS": [ "thprac - 游戏调整", "thprac - Game adjustments", "thprac - ゲームの調整" ],
       "THPRAC_CHECK_UPDATE_WHEN": [ "检查更新的时机:", "Check update when:", "更新を確認するタイミング:" ],
       "THPRAC_CHECK_UPDATE_WHEN_OPTION": [ "打开启动器时\\0执行thprac时\\0从不\\0\\0", "Opening launcher\\0Executing thprac\\0Never\\0\\0", "ランチャーを開くとき\\0thpracの実行するとき\\0なし\\0\\0" ],
