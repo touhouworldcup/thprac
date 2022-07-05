@@ -567,6 +567,7 @@ namespace TH09 {
 
         // Gui components update
         TH09Tools& t = TH09Tools::singleton();
+        THGuiPrac& p = THGuiPrac::singleton();
         if (t.enabled) {
             if (Gui::KeyboardInputUpdate(VK_F11) == 1) {
                 if (t.IsOpen())
@@ -576,9 +577,9 @@ namespace TH09 {
             }
         }
         t.Update();
-        THGuiPrac::singleton().Update();
+        p.Update();
 
-        GameGuiEnd(UpdateAdvOptWindow());
+        GameGuiEnd(UpdateAdvOptWindow() || t.IsOpen() || p.IsOpen());
     }
     EHOOK_DY(th09_render, (void*)0x42c899)
     {
