@@ -581,7 +581,7 @@ namespace TH09 {
 
         GameGuiEnd(UpdateAdvOptWindow() || t.IsOpen() || p.IsOpen());
     }
-    EHOOK_DY(th09_render, (void*)0x42c899)
+    EHOOK_DY(th09_render, (void*)0x42dd51)
     {
         GameGuiRender(IMPL_WIN32_DX8);
     }
