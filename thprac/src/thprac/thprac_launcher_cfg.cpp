@@ -13,13 +13,13 @@
 #include <functional>
 #include <string>
 #include <vector>
-#include <winhttp.h>
+#include <wininet.h>
 #include <ShlObj.h>
 #pragma warning(push)
 #pragma warning(disable : 26819)
 #include <rapidjson/prettywriter.h>
 #pragma warning(pop)
-#pragma comment(lib, "winhttp.lib")
+#pragma comment(lib, "wininet.lib")
 #include <shlwapi.h>
 #pragma comment(lib, "Shlwapi.lib")
 #pragma comment(linker, "\"/manifestdependency:type='win32' \
@@ -714,10 +714,10 @@ private:
 
         THUpdate::singleton().mChkUpdStatus = STATUS_UPDATE_PROMPT;
     }
-    static void CheckUpdateJson(std::string& jsonStr)
+    static void CheckUpdateJson(const char* jsonStr, size_t jsonSize = 0)
     {
         rapidjson::Document versionJson;
-        if (!versionJson.Parse(jsonStr.c_str(), jsonStr.size() + 1).HasParseError()) {
+        if (!versionJson.Parse(jsonStr, jsonSize ? jsonSize : strlen(jsonStr) + 1).HasParseError()) {
             if (versionJson.HasMember("version")) {
                 auto& version = versionJson["version"];
                 if (version.IsArray() && version.Size() == 4 && version[0].IsInt() && version[1].IsInt() && version[2].IsInt() && version[3].IsInt()) {
@@ -764,78 +764,62 @@ private:
         isHttpsOut = isHttps;
         return true;
     }
+
+    static DWORD DownloadSingleFile(
+        const wchar_t* url, std::vector<uint8_t>& out, std::function<void(DWORD, DWORD)> progressCallback = [](DWORD, DWORD) {})
+    {
+        static HINTERNET hInternet = NULL;
+        DWORD byteRet = sizeof(DWORD);
+        if (!hInternet) {
+            hInternet = InternetOpenW(L"thprac", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+            if (!hInternet)
+                return -1;
+            DWORD ignore = 1;
+            if (!InternetSetOptionW(hInternet, INTERNET_OPTION_IGNORE_OFFLINE, &ignore, sizeof(DWORD)))
+                return -2;
+        }
+        HINTERNET hFile = InternetOpenUrlW(hInternet, url, NULL, 0, INTERNET_FLAG_RELOAD | INTERNET_FLAG_KEEP_CONNECTION, 0);
+        if (!hFile)
+            return -3;
+        defer(InternetCloseHandle(hFile));
+        
+        DWORD fileSize = 0;
+        if (!HttpQueryInfoW(hFile, HTTP_QUERY_FLAG_NUMBER | HTTP_QUERY_CONTENT_LENGTH, &fileSize, &byteRet, 0))
+            return -4;
+
+        std::vector<uint8_t> buffer;
+        auto remSize = fileSize;
+        progressCallback(0, fileSize);
+        while (remSize) {
+            DWORD readSize = 0;
+            if (!InternetQueryDataAvailable(hFile, &readSize, 0, 0)) {
+                readSize = remSize;
+            }
+            if (readSize == 0) {
+                return -5;
+            }
+            buffer.resize(readSize);
+            if (InternetReadFile(hFile, buffer.data(), readSize, &byteRet) == FALSE) {
+                return -6;
+            }
+            remSize -= byteRet;
+            progressCallback(remSize, fileSize);
+            out.insert(out.end(), buffer.begin(), buffer.end());
+        }
+        return 0;
+    }
+
     static DWORD WINAPI CheckUpdateFunc(_In_ LPVOID lpParameter)
     {
         auto& updObj = THUpdate::singleton();
         updObj.mChkUpdStatus = STATUS_CHKING_OR_UPDATING;
 
-        std::string updateJson;
-        DWORD dwSize = 0;
-        DWORD dwDownloaded = 0;
-        LPSTR pszOutBuffer = nullptr;
-        HINTERNET hSession = NULL,
-                  hConnect = NULL,
-                  hRequest = NULL;
-
-        hSession = WinHttpOpen(L"thprac", WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
-        if (!hSession) {
-            goto internet_error;
-        }
-        hConnect = WinHttpConnect(hSession, L"raw.githubusercontent.com", INTERNET_DEFAULT_HTTPS_PORT, 0);
-        if (!hSession) {
-            goto internet_error;
-        }
-        hRequest = WinHttpOpenRequest(hConnect, L"GET", L"/touhouworldcup/thprac/master/thprac_version.json",
-            NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE);
-        if (!hSession) {
-            goto internet_error;
-        }
-        auto bResults = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0);
-        if (!bResults) {
-            goto internet_error;
-        }
-        bResults = WinHttpReceiveResponse(hRequest, NULL);
-        if (!bResults) {
-            goto internet_error;
-        }
-
-        do {
-            dwSize = 0;
-            if (updObj.mInterruptSignal) {
-                goto internet_error;
-            }
-            if (!WinHttpQueryDataAvailable(hRequest, &dwSize)) {
-                goto internet_error;
-            }
-            pszOutBuffer = (LPSTR)malloc(dwSize + 1);
-            if (!pszOutBuffer) {
-                dwSize = 0;
-            } else {
-                ZeroMemory(pszOutBuffer, dwSize + 1);
-
-                if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded)) {
-                    free(pszOutBuffer);
-                    goto internet_error;
-                } else {
-                    updateJson += pszOutBuffer;
-                }
-
-                free(pszOutBuffer);
-            }
-        } while (dwSize > 0);
-
-        CheckUpdateJson(updateJson);
-        goto success;
-
-    internet_error:
-        THUpdate::singleton().mChkUpdStatus = STATUS_INTERNET_ERROR;
-    success:
-        if (hRequest)
-            WinHttpCloseHandle(hRequest);
-        if (hConnect)
-            WinHttpCloseHandle(hConnect);
-        if (hSession)
-            WinHttpCloseHandle(hSession);
+        std::vector<uint8_t> updateJson;
+        DWORD status = DownloadSingleFile(L"https://raw.githubusercontent.com/touhouworldcup/thprac/master/thprac_version.json", updateJson);
+        if (status)
+            updObj.mChkUpdStatus = STATUS_INTERNET_ERROR;
+        else
+            CheckUpdateJson((char*)updateJson.data(), updateJson.size());
         return 0;
     }
     static DWORD WINAPI AutoUpdateFunc(_In_ LPVOID lpParameter)
@@ -843,13 +827,14 @@ private:
         auto& updObj = THUpdate::singleton();
         updObj.mAutoUpdStatus = STATUS_CHKING_OR_UPDATING;
 
-        DWORD dwSize = 0;
-        DWORD dwDownloaded = 0;
-        DWORD bytesProcessed = 0;
-        LPSTR pszOutBuffer = nullptr;
-        HINTERNET hSession = NULL,
-                  hConnect = NULL,
-                  hRequest = NULL;
+        std::vector<uint8_t> newFile;
+        DWORD status = DownloadSingleFile(utf8_to_utf16(updObj.mUpdDirectLink).c_str(), newFile, [&](DWORD remSize, DWORD fileSize) {
+            updObj.mUpdPercentage = (fileSize - remSize) * 100 / (float)fileSize;
+        });
+        if (status) {
+            updObj.mAutoUpdStatus = STATUS_INTERNET_ERROR;
+            return status;
+        }
 
         HANDLE localeFileHnd;
         wchar_t* exePathCstr;
@@ -858,101 +843,27 @@ private:
         std::wstring remoteFileName;
         std::wstring serverName;
         std::wstring objectName;
-        bool isHttps = true;
-        if (!ParseURL_X(updObj.mUpdDirectLink, serverName, objectName, remoteFileName, isHttps)) {
-            goto basic_error;
-        }
+        bool isHttps;
+        ParseURL_X(updObj.mUpdDirectLink, serverName, objectName, remoteFileName, isHttps);
         _get_wpgmptr(&exePathCstr);
         GetDirFromFullPath(std::wstring(exePathCstr));
         GetTempPath(MAX_PATH, tmpPath);
         localFileName = tmpPath;
         localFileName += remoteFileName;
-        localeFileHnd = CreateFile(localFileName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        localeFileHnd = CreateFileW(localFileName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
         if (localeFileHnd == INVALID_HANDLE_VALUE) {
-            goto basic_error;
+            return 1;
         }
         SetFilePointer(localeFileHnd, 0, NULL, FILE_BEGIN);
         SetEndOfFile(localeFileHnd);
 
-        hSession = WinHttpOpen(L"thprac", WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
-        if (!hSession) {
-            goto internet_error;
-        }
-        hConnect = WinHttpConnect(hSession, serverName.c_str(), INTERNET_DEFAULT_HTTPS_PORT, 0);
-        if (!hSession) {
-            goto internet_error;
-        }
-        hRequest = WinHttpOpenRequest(hConnect, L"GET", objectName.c_str(),
-            NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, isHttps ? WINHTTP_FLAG_SECURE : 0);
-        if (!hSession) {
-            goto internet_error;
-        }
-        auto bResults = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0);
-        if (!bResults) {
-            goto internet_error;
-        }
-        bResults = WinHttpReceiveResponse(hRequest, NULL);
-        if (!bResults) {
-            goto internet_error;
-        }
+        DWORD byteRet;
+        WriteFile(localeFileHnd, newFile.data(), newFile.size(), &byteRet, NULL);
 
-        size_t currentFileSize = 0;
-        do {
-            dwSize = 0;
-            if (updObj.mInterruptSignal) {
-                goto internet_error;
-            }
-            if (!WinHttpQueryDataAvailable(hRequest, &dwSize)) {
-                goto internet_error;
-            }
-            pszOutBuffer = (LPSTR)malloc(dwSize + 1);
-            if (!pszOutBuffer) {
-                goto internet_error;
-            } else {
-                ZeroMemory(pszOutBuffer, dwSize + 1);
-
-                if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded)) {
-                    free(pszOutBuffer);
-                    goto internet_error;
-                } else {
-                    WriteFile(localeFileHnd, pszOutBuffer, dwSize, &bytesProcessed, NULL);
-                    FlushFileBuffers(localeFileHnd);
-                    currentFileSize += dwSize;
-                    updObj.mUpdPercentage = (float)currentFileSize / (float)updObj.mUpdFileSize * 100.0f;
-                }
-
-                free(pszOutBuffer);
-            }
-        } while (dwSize > 0);
-
-        if (updObj.mUpdFileSize != GetFileSize(localeFileHnd, NULL)) {
-            goto internet_error;
-        }
         CloseHandle(localeFileHnd);
-#ifdef _DEBUG
-#if 0
-        DeleteFile(localFileName.c_str());
-        localFileName = GetDirFromFullPath(localFileName) + L"thprac_downloaded.exe";
-        CopyFile(exePathCstr, localFileName.c_str(), FALSE);
-#endif
-#endif
         ShellExecuteW(NULL, NULL, localFileName.c_str(),
             (std::wstring(L"--update-launcher-1 ") + exePathCstr).c_str(), tmpPath, SW_SHOW);
         updObj.mAutoUpdStatus = STATUS_UPD_ABLE_OR_FINISHED;
-        goto success;
-
-    internet_error:
-        CloseHandle(localeFileHnd);
-        DeleteFileW(localFileName.c_str());
-    basic_error:
-        updObj.mAutoUpdStatus = STATUS_INTERNET_ERROR;
-    success:
-        if (hRequest)
-            WinHttpCloseHandle(hRequest);
-        if (hConnect)
-            WinHttpCloseHandle(hConnect);
-        if (hSession)
-            WinHttpCloseHandle(hSession);
         return 0;
     }
 
