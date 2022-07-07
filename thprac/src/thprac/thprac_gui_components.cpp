@@ -356,7 +356,7 @@ namespace THPrac
             return it;
         }
 
-        bool GuiCombo::operator()()
+        bool GuiCombo::operator()(int skip)
         {
             auto items = XITEMS;
             CheckComboItemNew(mSelector, items, 1);
@@ -369,12 +369,15 @@ namespace THPrac
             else
                 label = "#ERROR";
 
-            auto hasChanged = ImGui::ComboSections(label, &mCurrent, mSelector, items, "");
+            const char* _skip = skip == -1 ? "" : XSTR(mSelector[skip]);
+            auto hasChanged = ImGui::ComboSections(label, &mCurrent, mSelector, items, _skip);
 
             if (ImGui::IsItemFocused()) {
                 if (InGameInputGet(VK_LEFT)) {
                     hasChanged = true;
                     --mCurrent;
+                    if (skip != -1 && mCurrent == skip)
+                        --mCurrent;
                     if (mCurrent < 0) {
                         for (mCurrent = 0; mSelector[mCurrent]; ++mCurrent)
                             ;
@@ -384,6 +387,8 @@ namespace THPrac
                 } else if (InGameInputGet(VK_RIGHT)) {
                     hasChanged = true;
                     ++mCurrent;
+                    if (skip != -1 && mCurrent == skip)
+                        ++mCurrent;
                     if (mSelector[mCurrent] == 0) {
                         mCurrent = 0;
                     }

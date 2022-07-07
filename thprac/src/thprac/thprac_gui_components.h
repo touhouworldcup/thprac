@@ -436,7 +436,10 @@ namespace Gui {
         {
             return mCurrent;
         }
-        bool operator()();
+        bool operator()(int skip);
+        bool operator()() {
+            return (*this)(-1);
+        }
         template <typename T>
         bool operator()(th_glossary_t new_label_ref, T* selector, char** items = XITEMS)
         {

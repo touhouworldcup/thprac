@@ -186,7 +186,13 @@ namespace TH15 {
             if (mStage())
                 *mSection = *mChapter = 0;
             if (*mMode == 1) {
-                if (mWarp())
+                int mbs = -1;
+                if (*mStage == 5) { // Counting from 0
+                    mbs = 2;
+                    if (*mWarp == 2)
+                        *mWarp = 0;
+                }
+                if (mWarp(mbs))
                     *mSection = *mChapter = *mPhase = 0;
                 if (*mWarp) {
                     SectionWidget();

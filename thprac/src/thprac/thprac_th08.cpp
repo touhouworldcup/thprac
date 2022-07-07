@@ -239,7 +239,13 @@ namespace TH08 {
             if (mStage())
                 *mSection = *mChapter = 0;
             if (*mMode == 1) {
-                if (mWarp())
+                int mbs = -1;
+                if (*mStage == 3 || *mStage == 4) { // Counting from 0
+                    mbs = 2;
+                    if (*mWarp == 2)
+                        *mWarp = 0;
+                }
+                if (mWarp(mbs))
                     *mSection = *mChapter = *mPhase = *mFrame = 0;
                 if (*mWarp) {
                     SectionWidget();
