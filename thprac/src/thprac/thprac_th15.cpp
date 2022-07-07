@@ -669,6 +669,11 @@ namespace TH15 {
             th15_chapter_disable::GetHook().Disable();
         pCtx->Eip = 0x43d0d5;
     }
+    EHOOK_G1(th15_st7boss1_chapter_bonus, (void*)0x43dece)
+    {
+        th15_st7boss1_chapter_bonus::GetHook().Disable();
+        *(uint32_t*)0x4e7484 = 1;
+    }
     EHOOK_G1(th15_stars_bgm_sync, (void*)0x48c294)
     {
         int32_t call_addr = *(int32_t*)(pCtx->Esp + 0x8);
@@ -1424,6 +1429,7 @@ namespace TH15 {
             ecl << pair(0x2fc, 3000) << pair(0x525, (int8_t)0x33); // Spell Health & Spell Ordinal
             break;
         case THPrac::TH15::TH15_ST7_END_NS1:
+            th15_st7boss1_chapter_bonus::GetHook().Enable();
             ECLJump(ecl, 0x8f6c, 0x93cc, 60);
             ECLSkipChapter(1);
             st7_hide_subboss();
