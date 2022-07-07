@@ -253,6 +253,13 @@ namespace TH15 {
         }
         void SectionWidget()
         {
+            static int Morbius = 0;
+            const char _MorbStr[] = "MORBIUS";
+            if (Gui::KeyboardInputUpdate(_MorbStr[Morbius]))
+                Morbius++;
+            if (Morbius == 7)
+                th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty][TH15_ST5_MID1] = "it's morbin time";
+
             static char chapterStr[256] {};
             auto& chapterCounts = mChapterSetup[*mStage];
 
