@@ -1381,6 +1381,8 @@ namespace TH13 {
             ECLJump(ecl, 0x4c0, 0x5a8, 0); // Utilize Spell Practice Jump
             ecl << pair(0x5b8, 2300); // Set Health
             ecl << pair(0x5d8, (int8_t)0x31); // Set Spell Ordinal
+            ecl.SetPos(0x368);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
             break;
         case THPrac::TH13::TH13_ST6_BOSS3:
             ECLJump(ecl, 0x4bdc, 0x4e20, 60);
@@ -1398,6 +1400,8 @@ namespace TH13 {
             ECLJump(ecl, 0x4c0, 0x5a8, 0); // Utilize Spell Practice Jump
             ecl << pair(0x5b8, 2500); // Set Health
             ecl << pair(0x5d8, (int8_t)0x32); // Set Spell Ordinal
+            ecl.SetPos(0x368);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
             break;
         case THPrac::TH13::TH13_ST6_BOSS5:
             ECLJump(ecl, 0x4bdc, 0x4e20, 60);
@@ -1415,6 +1419,8 @@ namespace TH13 {
             ECLJump(ecl, 0x4c0, 0x5a8, 0); // Utilize Spell Practice Jump
             ecl << pair(0x5b8, 3100); // Set Health
             ecl << pair(0x5d8, (int8_t)0x33); // Set Spell Ordinal
+            ecl.SetPos(0x368);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
             break;
         case THPrac::TH13::TH13_ST6_BOSS7:
             ECLJump(ecl, 0x4bdc, 0x4e20, 60);
@@ -1432,6 +1438,8 @@ namespace TH13 {
             ECLJump(ecl, 0x4c0, 0x5a8, 0); // Utilize Spell Practice Jump
             ecl << pair(0x5b8, 2800); // Set Health
             ecl << pair(0x5d8, (int8_t)0x34); // Set Spell Ordinal
+            ecl.SetPos(0x368);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
             break;
         case THPrac::TH13::TH13_ST6_BOSS9:
             ECLJump(ecl, 0x4bdc, 0x4e20, 60);
@@ -1440,6 +1448,8 @@ namespace TH13 {
             ecl << pair(0x3c8, 0.0f) << pair(0x3cc, 128.0f); // Change Pos
             ecl.SetPos(0x42c);
             ecl << 0.0f << 128.0f << 280.0f << 64.0f; // Change Movement Restriction
+            ecl.SetPos(0x368);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
             break;
         case THPrac::TH13::TH13_ST6_BOSS10:
             ECLJump(ecl, 0x4bdc, 0x4e20, 60);
@@ -1450,6 +1460,8 @@ namespace TH13 {
             ecl << pair(0x3c8, 0.0f) << pair(0x3cc, 128.0f); // Change Pos
             ecl.SetPos(0x42c);
             ecl << 0.0f << 128.0f << 280.0f << 64.0f; // Change Movement Restriction
+            ecl.SetPos(0x368);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
             break;
         case THPrac::TH13::TH13_ST6_BOSS11:
             ECLJump(ecl, 0x4bdc, 0x4e20, 60);
@@ -1459,6 +1471,8 @@ namespace TH13 {
             ecl << pair(0x5d8, (int8_t)0x37); // Set Spell Ordinal
             ecl << pair(0x3c8, 0.0f) << pair(0x3cc, 200.0f); // Change Pos
             ecl << pair(0x420, (int16_t)0); // Void 504
+            ecl.SetPos(0x368);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
 
             if (thPracParam.phase == 1) {
                 ecl << pair(0x5b8, 1650);
@@ -1503,6 +1517,8 @@ namespace TH13 {
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
             ecl.SetFile(3);
             ECLJump(ecl, 0x770, 0x8c4, 0); // Utilize Spell Practice Jump
+            ecl.SetPos(0x618);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
             break;
         case THPrac::TH13::TH13_ST7_END_NS3:
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
@@ -1518,6 +1534,8 @@ namespace TH13 {
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
             ecl.SetFile(3);
             ECLJump(ecl, 0x770, 0x978, 0); // Utilize Spell Practice Jump
+            ecl.SetPos(0x618);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
             break;
         case THPrac::TH13::TH13_ST7_END_NS4:
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
@@ -1533,6 +1551,8 @@ namespace TH13 {
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
             ecl.SetFile(3);
             ECLJump(ecl, 0x770, 0xa2c, 0); // Utilize Spell Practice Jump
+            ecl.SetPos(0x618);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
             break;
         case THPrac::TH13::TH13_ST7_END_NS5:
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
@@ -1548,6 +1568,8 @@ namespace TH13 {
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
             ecl.SetFile(3);
             ECLJump(ecl, 0x770, 0xae0, 0); // Utilize Spell Practice Jump
+            ecl.SetPos(0x618);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
             break;
         case THPrac::TH13::TH13_ST7_END_NS6:
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
@@ -1563,6 +1585,8 @@ namespace TH13 {
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
             ecl.SetFile(3);
             ECLJump(ecl, 0x770, 0xb94, 0); // Utilize Spell Practice Jump
+            ecl.SetPos(0x618);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
             break;
         case THPrac::TH13::TH13_ST7_END_NS7:
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
@@ -1578,6 +1602,8 @@ namespace TH13 {
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
             ecl.SetFile(3);
             ECLJump(ecl, 0x770, 0xcb0, 0); // Utilize Spell Practice Jump
+            ecl.SetPos(0x618);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
             break;
         case THPrac::TH13::TH13_ST7_END_NS8:
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
@@ -1593,16 +1619,22 @@ namespace TH13 {
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
             ecl.SetFile(3);
             ECLJump(ecl, 0x770, 0xd64, 0); // Utilize Spell Practice Jump
+            ecl.SetPos(0x618);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
             break;
         case THPrac::TH13::TH13_ST7_END_S9:
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
             ecl.SetFile(3);
             ECLJump(ecl, 0x770, 0xe18, 0); // Utilize Spell Practice Jump
+            ecl.SetPos(0x618);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
             break;
         case THPrac::TH13::TH13_ST7_END_S10:
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
             ecl.SetFile(3);
             ECLJump(ecl, 0x770, 0xefc, 0); // Utilize Spell Practice Jump
+            ecl.SetPos(0x618);
+            ecl << 48.0f << 48.0f; // Set Hurtbox
 
             if (thPracParam.phase == 1) {
                 ECLJump(ecl, 0x6a3c, 0x6ab0, 120);
