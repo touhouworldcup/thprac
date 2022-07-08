@@ -2500,7 +2500,7 @@ namespace TH16 {
     }
     EHOOK_DY(th16_render, (void*)0x40168a)
     {
-        GameGuiEnd(IMPL_WIN32_DX9);
+        GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
 
