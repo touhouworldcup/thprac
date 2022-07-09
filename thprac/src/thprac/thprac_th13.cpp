@@ -19,8 +19,6 @@ namespace TH13 {
         int32_t graze;
         int32_t trance_meter;
 
-        bool bossrush_midboss;
-
         void Reset()
         {
             memset(this, 0, sizeof(THPracParam));
@@ -96,11 +94,6 @@ namespace TH13 {
         SINGLETON(THGuiPrac);
     public:
 
-        int GetStage()
-        {
-            return *mStage;
-        }
-
         __declspec(noinline) void State(int state)
         {
             switch (state) {
@@ -134,7 +127,6 @@ namespace TH13 {
                 thPracParam.graze = *mGraze;
                 thPracParam.trance_meter = *mTranceMeter;
 
-                thPracParam.bossrush_midboss = *mBRMidBoss;
                 break;
             case 4:
                 Close();
@@ -272,13 +264,7 @@ namespace TH13 {
                 mGraze();
                 mScore();
                 mScore.RoundDown(10);
-            } else if (*mMode == 2) {
-                auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
-                mPower(power_str.c_str());
-                mBRMidBoss();
-                mBRExtra();
             }
-            //WndDebugOutput();
 
             mNavFocus();
         }
@@ -362,14 +348,11 @@ namespace TH13 {
         Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH_VALUE, 0, 999990, 10, 100000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, 999999, 1, 100000 };
 
-        Gui::GuiCheckBox mBRMidBoss { TH_BOSSRUSH_MIDBOSS };
-        Gui::GuiCheckBox mBRExtra { TH_BOSSRUSH_EXTRA };
 
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_SCORE, TH_LIFE, TH13_EXTEND, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT,
-            TH_POWER, TH_VALUE, TH_GRAZE, TH13_TRANCE_METER,
-            TH_BOSSRUSH_MIDBOSS, TH_BOSSRUSH_EXTRA };
+            TH_POWER, TH_VALUE, TH_GRAZE, TH13_TRANCE_METER };
 
         int mChapterSetup[7][2] {
             { 3, 2 },
@@ -1644,71 +1627,6 @@ namespace TH13 {
             break;
         }
     }
-    EHOOK_G1(th13_bossrush_msg, (void*)0x428ba4) 
-    {
-        while (true) {
-            uint32_t msgPtr = *(uint32_t*)(pCtx->Edi + 0x14c);
-            uint8_t msgId = *(uint8_t*)(msgPtr + 2);
-            switch (msgId) {
-            case 0:
-            case 19:
-            case 21:
-            case 22:
-                return;
-            default:
-                break;
-            }
-            *(uint32_t*)(pCtx->Edi + 0x14c) = pCtx->Eax = msgPtr + *(uint8_t*)(msgPtr + 3) + 4;
-            *(uint32_t*)(pCtx->Edi + 0x1c) = (uint32_t) * (uint16_t*)(msgPtr);
-        }
-
-    }
-    __declspec(noinline) void THBossRushInit() 
-    {
-        th13_bossrush_msg::GetHook().Enable();
-        ECLHelper ecl;
-        ecl.SetBaseAddr((void*)U32_PTR(DATA_ECL_BASE));
-        switch (U8_REF(DATA_STAGE)) {
-        case 1: {
-            if (thPracParam.bossrush_midboss) {
-                ECLJump(ecl, 0x8a70, 0x8c50, 60);
-                ecl.SetPos(0x8c80);
-                ecl << 0 << 0x00100208 << 0x00ff0000 << 0
-                    << 0 << 0x00140017 << 0x01ff0000 << 0 << 180;
-                ECLJump(ecl, 0, 0x8cc8, 60);
-            } else {
-                ECLJump(ecl, 0x8a70, 0x8cc8, 60);
-            }
-            break;
-        }
-        case 2: {
-
-            break;
-        }
-        case 3: {
-
-            break;
-        }
-        case 4: {
-
-            break;
-        }
-        case 5: {
-
-            break;
-        }
-        case 6: {
-
-            break;
-        }
-        case 7: {
-
-            break;
-        }
-        default:
-            break;
-        }
-    }
     __declspec(noinline) void THSectionPatch()
     {
         ECLHelper ecl;
@@ -1725,7 +1643,6 @@ namespace TH13 {
             }
         }
     }
-
     int THBGMTest()
     {
         if (!thPracParam.mode)
@@ -1968,9 +1885,6 @@ namespace TH13 {
             *(int32_t*)(0x4be808) = thPracParam.trance_meter;
 
             THSectionPatch();
-        } else if (thPracParam.mode == 2) {
-            *(int32_t*)(0x4be7e8) = thPracParam.power;
-            THBossRushInit();
         }
         THDataStage();
     }
