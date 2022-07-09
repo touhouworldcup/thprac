@@ -63,6 +63,10 @@ int GuiLauncherMain()
         ErrorMsgBox(THPRAC_PR_ERR_LAUNCHER_CFG);
         return -1;
     }
+    int theme;
+    if (LauncherSettingGet("theme", theme)) {
+        SetTheme(theme);
+    }
     LauncherPeekUpd();
     auto scale = LauncherWndGetScale();
 

@@ -1377,6 +1377,9 @@ private:
         ImGui::Text(XSTR(THPRAC_SETTING_LAUNCHER));
         ImGui::Separator();
         //mCfgAlwaysOpen.Gui(XSTR(THPRAC_ALWAYS_OPEN_LAUNCHER), XSTR(THPRAC_ALWAYS_OPEN_LAUNCHER_DESC));
+        if (mCfgTheme.Gui("Theme:", "Dark\0Light\0Classic\0\0")) {
+            SetTheme(mCfgTheme.Get());
+        }
         mCfgAfterLaunch.Gui(XSTR(THPRAC_AFTER_LAUNCH), XSTR(THPRAC_AFTER_LAUNCH_OPTION));
         mAutoDefLaunch.Gui(XSTR(THPRAC_AUTO_DEFAULT_LAUNCH), XSTR(THPRAC_AUTO_DEFAULT_LAUNCH_DESC));
         mCfgThpracDefault.Gui(XSTR(THPRAC_APPLY_THPRAC_DEFAULT), XSTR(THPRAC_APPLY_THPRAC_DEFAULT_OPTION));
@@ -1469,6 +1472,7 @@ private:
     THCfgCheckbox mAutoDefLaunch { "auto_default_launch", false };
     THCfgCombo mCfgThpracDefault { "apply_thprac_default", 0, 3 };
     THCfgCombo mCfgFilterDefault { "filter_default", 0, 3 };
+    THCfgCombo mCfgTheme { "theme", 0, 3 };
     THSetting<bool> mUseRelativePath { "use_relative_path", false };
     THSetting<std::string> mThcrap { "thcrap", "" };
     THCfgCheckbox mCfgUnlockRefreshRate { "unlock_refresh_rate", false };

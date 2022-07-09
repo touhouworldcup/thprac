@@ -546,4 +546,12 @@ static std::function<T(void)> GetRndGenerator(T min, T max, std::mt19937::result
     return dice_rand;
 }
 DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName);
+
+inline void SetTheme(int theme) {
+    switch (theme) {
+    case 0: ImGui::StyleColorsDark(); break;
+    case 1: ImGui::StyleColorsLight(); break;
+    case 2: ImGui::StyleColorsClassic(); break;
+    }
+}
 }
