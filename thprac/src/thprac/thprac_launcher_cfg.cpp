@@ -1372,7 +1372,6 @@ private:
         ImGui::EndDisabled();
         ImGui::SameLine();
         GuiHelpMarker(XSTR(THPRAC_REFLECTIVE_LAUNCH_DESC));
-        mResizableWindow.Gui(XSTR(THPRAC_RESIZABLE_WINDOW));
         ImGui::NewLine();
 
         ImGui::Text(XSTR(THPRAC_SETTING_LAUNCHER));
@@ -1391,6 +1390,7 @@ private:
         ImGui::Text(XSTR(THPRAC_GAME_ADJUSTMENTS));
         ImGui::Separator();
         mCfgUnlockRefreshRate.Gui(XSTR(THPRAC_UNLOCK_REFRESH_RATE), XSTR(THPRAC_UNLOCK_REFRESH_RATE_DESC));
+        mResizableWindow.Gui(XSTR(THPRAC_RESIZABLE_WINDOW));
         ImGui::NewLine();
 
         ImGui::Text(XSTR(THPRAC_SETTING_LANGUAGE));
