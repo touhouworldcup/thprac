@@ -115,14 +115,6 @@ namespace TH08 {
         SINGLETON(THGuiPrac);
     public:
 
-        void SetDiffculty(int rank)
-        {
-            mDiffculty = rank;
-        }
-        int GetStage()
-        {
-            return *mStage;
-        }
         __declspec(noinline) void State(int state)
         {
             int gaugeType = 0;

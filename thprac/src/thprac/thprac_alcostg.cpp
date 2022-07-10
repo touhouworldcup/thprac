@@ -120,11 +120,6 @@ namespace Alcostg {
         SINGLETON(THGuiPrac);
     public:
 
-        int GetStage()
-        {
-            return *mStage;
-        }
-
         int mState = 0;
         __declspec(noinline) int State()
         {

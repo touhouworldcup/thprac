@@ -107,11 +107,6 @@ namespace TH14 {
         SINGLETON(THGuiPrac);
     public:
 
-        int GetStage()
-        {
-            return *mStage;
-        }
-
         __declspec(noinline) void State(int state)
         {
             switch (state) {

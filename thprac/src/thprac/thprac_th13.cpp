@@ -136,58 +136,6 @@ namespace TH13 {
                 break;
             }
         }
-
-        bool LoadParam(std::string& json)
-        {
-            ParseJsonNoReset();
-
-            ForceJsonValue(game, "th13");
-            GetJsonValueAlt(mode, *mMode, Int);
-            GetJsonValueAlt(stage, *mStage, Int);
-            GetJsonValueAlt(warp, *mWarp, Int);
-            GetJsonValueAlt(section, *mSection, Int);
-            GetJsonValueAlt(phase, *mPhase, Int);
-            GetJsonValueAlt(chapter, *mChapter, Int);
-
-            GetJsonValueAlt(score, *mScore, Int64);
-            GetJsonValueAlt(life, *mLife, Int);
-            GetJsonValueAlt(extend, *mExtend, Int);
-            GetJsonValueAlt(life_fragment, *mLifeFragment, Int);
-            GetJsonValueAlt(bomb, *mBomb, Int);
-            GetJsonValueAlt(bomb_fragment, *mBombFragment, Int);
-            GetJsonValueAlt(power, *mPower, Int);
-            GetJsonValueAlt(value, *mValue, Int);
-            GetJsonValueAlt(graze, *mGraze, Int);
-            GetJsonValueAlt(trance_meter, *mTranceMeter, Int);
-
-            return true;
-        }
-        std::string GetParam()
-        {
-            CreateJson();
-
-            AddJsonValueEx(version, GetVersionStr(), jalloc);
-            AddJsonValueEx(game, "th13", jalloc);
-            AddJsonValueEx(mode, *mMode);
-            AddJsonValueEx(stage, *mStage);
-            AddJsonValueEx(warp, *mWarp);
-            AddJsonValueEx(section, *mSection);
-            AddJsonValueEx(phase, *mPhase);
-            AddJsonValueEx(chapter, *mChapter);
-
-            AddJsonValueEx(score, *mScore);
-            AddJsonValueEx(life, *mLife);
-            AddJsonValueEx(extend, *mExtend);
-            AddJsonValueEx(life_fragment, *mLifeFragment);
-            AddJsonValueEx(bomb, *mBomb);
-            AddJsonValueEx(bomb_fragment, *mBombFragment);
-            AddJsonValueEx(power, *mPower);
-            AddJsonValueEx(value, *mValue);
-            AddJsonValueEx(graze, *mGraze);
-            AddJsonValueEx(trance_meter, *mTranceMeter);
-
-            ReturnJson();
-        }
     protected:
         virtual void OnLocaleChange() override
         {
