@@ -1899,7 +1899,7 @@ namespace TH11 {
         GameGuiInit(IMPL_WIN32_DX9, 0x4c3288, 0x4c3d88, 0x445e00,
             Gui::INGAGME_INPUT_GEN2, 0x4c92b4, 0x4c92b0, 0,
             -1);
-
+        
         // Gui components creation
         THGuiPrac::singleton();
         THGuiRep::singleton();

@@ -241,24 +241,6 @@ DWORD* g_gameGuiDevice = nullptr;
 DWORD* g_gameGuiHwnd = nullptr;
 HIMC g_gameIMCCtx = 0;
 
-void VoidJoystickAPI()
-{
-    HMODULE winmm = GetModuleHandleW(L"winmm.dll");
-    if (!winmm)
-        return;
-    auto pJoyGetPosEx = GetProcAddress(winmm, "joyGetPosEx");
-
-    if (pJoyGetPosEx) {
-        DWORD oldProtect;
-        VirtualProtect(pJoyGetPosEx, 8, PAGE_EXECUTE_READWRITE, &oldProtect);
-        ((uint32_t*)pJoyGetPosEx)[0] = 0xCC0008C2;
-        ((uint32_t*)pJoyGetPosEx)[1] = 0xCC0008C2;
-        ((uint32_t*)pJoyGetPosEx)[0] = 0xA7B0C031;
-        FlushInstructionCache(GetCurrentProcess(), pJoyGetPosEx, 8);
-        VirtualProtect(pJoyGetPosEx, 8, oldProtect, &oldProtect);
-    }
-}
-
 void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3,
     int wnd_size_flag, float x, float y)
@@ -269,7 +251,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
     g_gameGuiDevice = (DWORD*)device;
     g_gameGuiHwnd = (DWORD*)hwnd;
     g_gameIMCCtx = ImmAssociateContext(*(HWND*)hwnd, 0);
-    VoidJoystickAPI();
 
     // Set Locale
     GuiLauncherLocaleInit();
