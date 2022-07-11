@@ -20,6 +20,8 @@ namespace TH14 {
         int32_t value;
         int32_t graze;
 
+        bool dlg;
+
         bool _playLock = false;
         void Reset()
         {
@@ -34,6 +36,7 @@ namespace TH14 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
+            GetJsonValueEx(dlg, Bool);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -60,6 +63,8 @@ namespace TH14 {
                     AddJsonValue(section);
                 if (phase)
                     AddJsonValue(phase);
+                if (dlg)
+                    AddJsonValue(dlg)
 
                 AddJsonValue(score);
                 AddJsonValue(life);
@@ -129,6 +134,8 @@ namespace TH14 {
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
                 thPracParam.phase = SpellPhase() ? *mPhase : 0;
+                if (SectionHasDlg(thPracParam.section))
+                    thPracParam.dlg = *mDlg;
 
                 thPracParam.score = *mScore;
                 thPracParam.life = *mLife;
@@ -248,6 +255,22 @@ namespace TH14 {
                 break;
             }
         }
+        bool SectionHasDlg(int32_t section)
+        {
+            switch (section) {
+            case TH14_ST1_BOSS1:
+            case TH14_ST2_BOSS1:
+            case TH14_ST3_BOSS1:
+            case TH14_ST4_BOSS1:
+            case TH14_ST5_BOSS1:
+            case TH14_ST6_BOSS1:
+            case TH14_ST7_END_NS1:
+            case TH14_ST7_MID1:
+                return true;
+            default:
+                return false;
+            }
+        }
         void SectionWidget()
         {
             int st_offset = 0;
@@ -276,6 +299,8 @@ namespace TH14 {
                         th_sections_cba[*mStage + st_offset][*mWarp - 2],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
+                    mDlg();
                 break;
             case 4:
             case 5: // Non-spell & Spellcard
@@ -283,6 +308,8 @@ namespace TH14 {
                         th_sections_cbt[*mStage + st_offset][*mWarp - 4],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
+                    mDlg();
                 break;
             default:
                 break;
@@ -294,6 +321,7 @@ namespace TH14 {
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
+        Gui::GuiCheckBox mDlg { TH_DLG };
         Gui::GuiCombo mCycle { TH14_CYCLE, TH14_CYCLE_LIST };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
@@ -306,7 +334,7 @@ namespace TH14 {
         Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH_VALUE, 0, 999990, 10, 100000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, 999999, 1, 100000 };
 
-        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP,
+        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_SCORE, TH_LIFE, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT, TH14_CYCLE,
             TH_POWER, TH_VALUE, TH_GRAZE };
@@ -1546,7 +1574,10 @@ namespace TH14 {
             ecl << pair(0x38c, (int16_t)0);
             break;
         case THPrac::TH14::TH14_ST1_BOSS1:
-            ECLJump(ecl, 0x689c, 0x6bbc, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x689c, 0x6b94, 60);
+            else
+                ECLJump(ecl, 0x689c, 0x6bbc, 60);
             break;
         case THPrac::TH14::TH14_ST1_BOSS2:
             ECLJump(ecl, 0x689c, 0x6bbc, 60);
@@ -1581,7 +1612,10 @@ namespace TH14 {
             ecl << pair(0xdf8, (int16_t)0);
             break;
         case THPrac::TH14::TH14_ST2_BOSS1:
-            ECLJump(ecl, 0x4f30, 0x5274, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x4f30, 0x524c, 60);
+            else
+                ECLJump(ecl, 0x4f30, 0x5274, 60);
             break;
         case THPrac::TH14::TH14_ST2_BOSS2:
             ECLJump(ecl, 0x4f30, 0x5274, 60);
@@ -1631,7 +1665,10 @@ namespace TH14 {
             ECLJump(ecl, 0x404, 0x4ec, 0);
             break;
         case THPrac::TH14::TH14_ST3_BOSS1:
-            ECLJump(ecl, 0x648c, 0x67d0, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x648c, 0x67a8, 60);
+            else
+                ECLJump(ecl, 0x648c, 0x67d0, 60);
             break;
         case THPrac::TH14::TH14_ST3_BOSS2:
             ECLJump(ecl, 0x648c, 0x67d0, 60);
@@ -1690,17 +1727,21 @@ namespace TH14 {
             ecl << pair(0xf34, 0) << pair(0xf48, (int16_t)0);
             break;
         case THPrac::TH14::TH14_ST4_BOSS1:
-            ECLJump(ecl, 0x97f8, 0x9b74, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x97f8, 0x9b4c, 60);
+            else {
+                ECLJump(ecl, 0x97f8, 0x9b74, 60);
 
-            // BossA
-            ecl.SetFile(4);
-            ECLJump(ecl, 0x9950, 0x9ab4, 0); // Skip Dummy Boss
-            ecl << pair(0x3e8, 0); // Cancel Msg Invi.
+                // BossA
+                ecl.SetFile(4);
+                ECLJump(ecl, 0x9950, 0x9ab4, 0); // Skip Dummy Boss
+                ecl << pair(0x3e8, 0); // Cancel Msg Invi.
 
-            // BossB
-            ecl.SetFile(5);
-            ECLJump(ecl, 0x4dcc, 0x4f30, 0); // Skip Dummy Boss
-            ecl << pair(0x358, 0); // Cancel Msg Invi.
+                // BossB
+                ecl.SetFile(5);
+                ECLJump(ecl, 0x4dcc, 0x4f30, 0); // Skip Dummy Boss
+                ecl << pair(0x358, 0); // Cancel Msg Invi.
+            }
             break;
         case THPrac::TH14::TH14_ST4_BOSS2:
             ECLJump(ecl, 0x97f8, 0x9b74, 60);
@@ -1813,7 +1854,10 @@ namespace TH14 {
             ecl << pair(0xd38, (int16_t)0);
             break;
         case THPrac::TH14::TH14_ST5_BOSS1:
-            ECLJump(ecl, 0x8654, 0x89e4, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x8654, 0x89bc, 60);
+            else
+                ECLJump(ecl, 0x8654, 0x89e4, 60);
             break;
         case THPrac::TH14::TH14_ST5_BOSS2:
             ECLJump(ecl, 0x8654, 0x89e4, 60);
@@ -1878,7 +1922,10 @@ namespace TH14 {
             ecl << pair(0xfd4, 59) << pair(0x105c, 20) << pair(0x1034, 0); // Change Move Time, Wait Time & Inv. Time
             break;
         case THPrac::TH14::TH14_ST6_BOSS1:
-            st6_boss(2);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x7988, 0x7c40, 60);
+            else
+                st6_boss(2);
             break;
         case THPrac::TH14::TH14_ST6_BOSS2:
             st6_boss(2);
@@ -1970,7 +2017,8 @@ namespace TH14 {
             break;
         case THPrac::TH14::TH14_ST7_MID1:
             ECLJump(ecl, 0x7778, 0x7a64, 60);
-            ecl << pair(0x390c, (int16_t)0);
+            if (!thPracParam.dlg)
+                ecl << pair(0x390c, (int16_t)0);
             break;
         case THPrac::TH14::TH14_ST7_MID2:
             ECLJump(ecl, 0x7778, 0x7a64, 60);
@@ -2011,7 +2059,10 @@ namespace TH14 {
             ecl << pair(0x29bc, (int16_t)0); // Void 401
             break;
         case THPrac::TH14::TH14_ST7_END_NS1:
-            ECLJump(ecl, 0x7778, 0x7b38, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x7778, 0x7b10, 60);
+            else
+                ECLJump(ecl, 0x7778, 0x7b38, 60);
             break;
         case THPrac::TH14::TH14_ST7_END_S1:
             ECLJump(ecl, 0x7778, 0x7b38, 60);
@@ -2287,6 +2338,8 @@ namespace TH14 {
         if (!thPracParam.mode)
             return 0;
         else if (thPracParam.section >= 10000)
+            return 0;
+        else if (thPracParam.dlg)
             return 0;
         else
             return th_sections_bgm[thPracParam.section];

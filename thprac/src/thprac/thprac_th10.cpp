@@ -14,6 +14,8 @@ namespace TH10 {
         int32_t faith_bar;
         int32_t st6_boss9_spd;
         int64_t score;
+
+        bool dlg;
         bool real_bullet_sprite;
 
         bool _playLock = false;
@@ -31,6 +33,7 @@ namespace TH10 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
+            GetJsonValueEx(dlg, Bool);
             GetJsonValue(life);
             GetJsonValue(power);
             GetJsonValue(faith);
@@ -55,6 +58,8 @@ namespace TH10 {
                 AddJsonValue(section);
             if (phase)
                 AddJsonValue(phase);
+            if (dlg)
+                AddJsonValue(dlg);
 
             AddJsonValue(life);
             AddJsonValue(power);
@@ -132,6 +137,8 @@ namespace TH10 {
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
                 thPracParam.phase = *mPhase;
+                if (SectionHasDlg(thPracParam.section))
+                    thPracParam.dlg = *mDlg;
                 thPracParam.life = *mLife;
                 thPracParam.power = *mPower;
                 thPracParam.faith = *mFaith;
@@ -244,6 +251,22 @@ namespace TH10 {
                 break;
             }
         }
+        bool SectionHasDlg(int32_t section)
+        {
+            switch (section) {
+            case TH10_ST1_BOSS1:
+            case TH10_ST2_BOSS1:
+            case TH10_ST3_BOSS1:
+            case TH10_ST4_BOSS1:
+            case TH10_ST5_BOSS1:
+            case TH10_ST6_BOSS1:
+            case TH10_ST7_END_NS1:
+            case TH10_ST7_MID1:
+                return true;
+            default:
+                return false;
+            }
+        }
         void SectionWidget()
         {
             static char chapterStr[256] {};
@@ -269,6 +292,8 @@ namespace TH10 {
                         th_sections_cba[*mStage][*mWarp - 2],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
+                    mDlg();
                 break;
             case 4:
             case 5: // Non-spell & Spellcard
@@ -276,6 +301,8 @@ namespace TH10 {
                         th_sections_cbt[*mStage][*mWarp - 4],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
+                    mDlg();
                 break;
             default:
                 break;
@@ -287,6 +314,7 @@ namespace TH10 {
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
+        Gui::GuiCheckBox mDlg { TH_DLG };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 9 };
@@ -876,7 +904,6 @@ namespace TH10 {
         ecl << pair(0x754, (int16_t)0);
         ECLJump(ecl, 0x10100, 0x10120, 0);
         ECLJump(ecl, 0xfb0c, 0xfb64, 3669);
-
         ecl.SetPos(p);
         while (true) {
             ecl >> ecl_time;
@@ -895,14 +922,14 @@ namespace TH10 {
     }
     void ECLSt7MidBoss(ECLHelper& ecl)
     {
-        ecl << pair(0x18983, (int8_t)0x37);
-        ECLJump(ecl, 0x171a8, 0x171cc, 61);
-        ecl << pair(0x10bb4, 60) << pair(0x10bc4, 60) << pair(0x10bd8, 60)
+        ecl << pair(0x18983, (int8_t)0x37)
+            << pair(0x10bb4, 60) << pair(0x10bc4, 60) << pair(0x10bd8, 60)
             << pair(0x10bec, 60) << pair(0x10c04, 60) << pair(0x10c18, 60)
             << pair(0x10c28, 60) << pair(0x10c48, 60) << pair(0x10c5c, 60)
             << pair(0x10c70, 60) << pair(0x10c88, 60) << pair(0x10c9c, 60)
-            << pair(0x10cb4, 60) << pair(0x10cc8, 60) << pair(0x10cdc, 60);
-        ecl << pair(0x10afc, (int16_t)0);
+            << pair(0x10cb4, 60) << pair(0x10cc8, 60) << pair(0x10cdc, 60)
+            << pair(0x10afc, (int16_t)0);
+        ECLJump(ecl, 0x171a8, 0x171cc, 61);
     }
     void ECLSt7Boss(ECLHelper& ecl)
     {
@@ -1193,7 +1220,10 @@ namespace TH10 {
             ECLVoid(ecl, 0x7134);
             break;
         case THPrac::TH10::TH10_ST1_BOSS1:
-            ECLJump(ecl, 0x9cb8, 0xbab0, 4370);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x9cb8, 0xba8c, 4370);
+            else
+                ECLJump(ecl, 0x9cb8, 0xbab0, 4370);
             break;
         case THPrac::TH10::TH10_ST1_BOSS2:
             ECLJump(ecl, 0x9cb8, 0xbab0, 4370);
@@ -1215,7 +1245,10 @@ namespace TH10 {
             ECLJump(ecl, 0x8f50, 0x96f0, 1578);
             break;
         case THPrac::TH10::TH10_ST2_BOSS1:
-            ECLJump(ecl, 0xb730, 0xd260, 5864);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0xb730, 0xd23c, 5864);
+            else
+                ECLJump(ecl, 0xb730, 0xd260, 5864);
             break;
         case THPrac::TH10::TH10_ST2_BOSS2:
             ECLJump(ecl, 0xb730, 0xd260, 5864);
@@ -1245,7 +1278,8 @@ namespace TH10 {
             break;
         case THPrac::TH10::TH10_ST3_BOSS1:
             ECLJump(ecl, 0xca48, 0xe354, 5885);
-            ECLJump(ecl, 0xe384, 0xe3a8, 5885);
+            if (!thPracParam.dlg)
+                ECLJump(ecl, 0xe384, 0xe3a8, 5885);
             break;
         case THPrac::TH10::TH10_ST3_BOSS2:
             ECLJump(ecl, 0xca48, 0xe354, 5885);
@@ -1288,7 +1322,8 @@ namespace TH10 {
             THStage4ANM(8688);
             THStage4STD(8688);
             ECLJump(ecl, 0x14a64, 0x14aa4, 8600);
-            ECLJump(ecl, 0x14ae4, 0x14b08, 8601);
+            if (!thPracParam.dlg)
+                ECLJump(ecl, 0x14ae4, 0x14b08, 8601);
             break;
         case THPrac::TH10::TH10_ST4_BOSS2:
             THStage4ANM(8688);
@@ -1358,8 +1393,9 @@ namespace TH10 {
             break;
         case THPrac::TH10::TH10_ST5_BOSS1:
             ECLJump(ecl, 0x14ba0, 0x14bc0, 0);
-            ecl << pair(0x14bdb, (int8_t)0x42) << pair(0x14bdc, 0x0073736f)
-                << pair(0x1432c, (int16_t)0) << pair(0x14370, (int16_t)0);
+            ecl << pair(0x14bdb, (int8_t)0x42) << pair(0x14bdc, 0x0073736f);
+            if (!thPracParam.dlg)
+                ecl << pair(0x1432c, (int16_t)0) << pair(0x14370, (int16_t)0);
             break;
         case THPrac::TH10::TH10_ST5_BOSS2:
             ECLJump(ecl, 0x14ba0, 0x14bc0, 0);
@@ -1410,7 +1446,11 @@ namespace TH10 {
             ecl << pair(0x7c34, 60);
             break;
         case THPrac::TH10::TH10_ST6_BOSS1:
-            ECLSt6Boss(ecl);
+            if (thPracParam.dlg) {
+                ECLJump(ecl, 0xfb0c, 0xfb40, 3668);
+                ECLJump(ecl, 0x10100, 0x10120, 0);
+            } else
+                ECLSt6Boss(ecl);
             ECLJump(ecl, 0x9bc, 0x9e8, 80);
             ecl << pair(0x994, 0) << pair(0x9a8, 0) << pair(0x990, 40);
             break;
@@ -1507,7 +1547,15 @@ namespace TH10 {
             }
             break;
         case THPrac::TH10::TH10_ST7_MID1:
-            ECLSt7MidBoss(ecl);
+            ecl << pair(0x18983, (int8_t)0x37)
+                << pair(0x10bb4, 60) << pair(0x10bc4, 60) << pair(0x10bd8, 60)
+                << pair(0x10bec, 60) << pair(0x10c04, 60) << pair(0x10c18, 60)
+                << pair(0x10c28, 60) << pair(0x10c48, 60) << pair(0x10c5c, 60)
+                << pair(0x10c70, 60) << pair(0x10c88, 60) << pair(0x10c9c, 60)
+                << pair(0x10cb4, 60) << pair(0x10cc8, 60) << pair(0x10cdc, 60)
+                << pair(0x10afc, (int16_t)0);
+            if (!thPracParam.dlg)
+                ECLJump(ecl, 0x171a8, 0x171cc, 61);
             break;
         case THPrac::TH10::TH10_ST7_MID2:
             ECLSt7MidBoss(ecl);
@@ -1526,7 +1574,11 @@ namespace TH10 {
             ECLJump(ecl, 0x126cc, 0x12724, 90);
             break;
         case THPrac::TH10::TH10_ST7_END_NS1:
-            ECLSt7Boss(ecl);
+            if (thPracParam.dlg)
+                ecl << pair(0x18983, (int8_t)0x42) << pair(0x18984, (int8_t)0x6f)
+                    << pair(0x18985, (int8_t)0x73) << pair(0x18986, (int8_t)0x73);
+            else
+                ECLSt7Boss(ecl);
             break;
         case THPrac::TH10::TH10_ST7_END_S1:
             ECLSt7Boss(ecl);

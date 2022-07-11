@@ -25,6 +25,8 @@ namespace TH07 {
         int32_t rank;
         bool rankLock;
 
+        bool dlg;
+
         bool _playLock = false;
         void Reset()
         {
@@ -40,6 +42,7 @@ namespace TH07 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
+            GetJsonValueEx(dlg, Bool);
             GetJsonValue(frame);
             GetJsonValue(score);
             GetJsonValue(life);
@@ -72,6 +75,8 @@ namespace TH07 {
                 AddJsonValue(phase);
             if (frame)
                 AddJsonValue(frame);
+            if (dlg)
+                AddJsonValue(dlg);
 
             AddJsonValue(score);
             AddJsonValueEx(life, (int)life);
@@ -152,6 +157,8 @@ namespace TH07 {
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
                 thPracParam.phase = SpellPhase() ? *mPhase : 0;
+                if (SectionHasDlg(thPracParam.section))
+                    thPracParam.dlg = *mDlg;
                 thPracParam.frame = *mFrame;
                 thPracParam.score = *mScore;
                 thPracParam.life = (float)*mLife;
@@ -278,6 +285,28 @@ namespace TH07 {
                 break;
             }
         }
+        bool SectionHasDlg(int32_t section)
+        {
+            switch (section) {
+            case TH07_ST1_BOSS1:
+            case TH07_ST2_BOSS1:
+            case TH07_ST3_BOSS1:
+            case TH07_ST4_BOSS1_LUNASA:
+            case TH07_ST4_BOSS1_MERLIN:
+            case TH07_ST4_BOSS1_LYRICA:
+            case TH07_ST5_BOSS1:
+            case TH07_ST5_MID1:
+            case TH07_ST6_BOSS1:
+            case TH07_ST6_MID1:
+            case TH07_ST7_END_NS1:
+            case TH07_ST7_MID1:
+            case TH07_ST8_END_NS1:
+            case TH07_ST8_MID1:
+                return true;
+            default:
+                return false;
+            }
+        }
         void SectionWidget()
         {
             static char chapterStr[256] {};
@@ -303,6 +332,8 @@ namespace TH07 {
                         th_sections_cba[*mStage][*mWarp - 2],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
+                    mDlg();
                 break;
             case 4:
             case 5: // Non-spell & Spellcard
@@ -310,6 +341,8 @@ namespace TH07 {
                         th_sections_cbt[*mStage][*mWarp - 4],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
+                    mDlg();
                 break;
             case 6: // Frame
                 mFrame();
@@ -323,6 +356,7 @@ namespace TH07 {
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT_FRAME };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
+        Gui::GuiCheckBox mDlg { TH_DLG };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mFrame { TH_FRAME, 0, INT_MAX };
@@ -1015,8 +1049,12 @@ namespace TH07 {
             ECLSetTime(ecl, 0x2580, 0x3c, 0x0);
             break;
         case THPrac::TH07::TH07_ST1_BOSS1:
-            ECLNameFix();
-            ECLTimeWarp(2, 0x13b3);
+            if (thPracParam.dlg)
+                ECLTimeWarp(2, 0x13b2);
+            else {
+                ECLTimeWarp(2, 0x13b3);
+                ECLNameFix();
+            }
             break;
         case THPrac::TH07::TH07_ST1_BOSS2:
             ECLNameFix();
@@ -1044,7 +1082,10 @@ namespace TH07 {
                 << pair(0x53e8, 0) << pair(0x5408, 0) << pair(0x5428, 0);
             break;
         case THPrac::TH07::TH07_ST2_BOSS1:
-            ECLTimeWarp(3, 0x1ddf);
+            if (thPracParam.dlg)
+                ECLTimeWarp(3, 0x1dde);
+            else
+                ECLTimeWarp(3, 0x1ddf);
             break;
         case THPrac::TH07::TH07_ST2_BOSS2:
             ECLTimeWarp(3, 0x1ddf);
@@ -1082,7 +1123,10 @@ namespace TH07 {
             break;
         case THPrac::TH07::TH07_ST3_BOSS1:
             ECLST3BG();
-            ECLTimeWarp(2, 0xd42);
+            if (thPracParam.dlg)
+                ECLTimeWarp(2, 0xd41);
+            else
+                ECLTimeWarp(2, 0xd42);
             break;
         case THPrac::TH07::TH07_ST3_BOSS2:
             ECLST3BG();
@@ -1126,17 +1170,26 @@ namespace TH07 {
             break;
         case THPrac::TH07::TH07_ST4_BOSS1_LUNASA:
             ECLNameFix();
-            ECLTimeWarp(2, 0x39eb);
+            if (thPracParam.dlg)
+                ECLTimeWarp(2, 0x39ea);
+            else
+                ECLTimeWarp(2, 0x39eb);
             thFakeShot = 0;
             break;
         case THPrac::TH07::TH07_ST4_BOSS1_MERLIN:
             ECLNameFix();
-            ECLTimeWarp(2, 0x39eb);
+            if (thPracParam.dlg)
+                ECLTimeWarp(2, 0x39ea);
+            else
+                ECLTimeWarp(2, 0x39eb);
             thFakeShot = 4;
             break;
         case THPrac::TH07::TH07_ST4_BOSS1_LYRICA:
             ECLNameFix();
-            ECLTimeWarp(2, 0x39eb);
+            if (thPracParam.dlg)
+                ECLTimeWarp(2, 0x39ea);
+            else
+                ECLTimeWarp(2, 0x39eb);
             thFakeShot = 2;
             break;
         case THPrac::TH07::TH07_ST4_BOSS2_LUNASA:
@@ -1217,6 +1270,8 @@ namespace TH07 {
             break;
         case THPrac::TH07::TH07_ST5_MID1:
             ECLTimeWarp(2, 0x12d4);
+            if (!thPracParam.dlg)
+                ecl << pair(0xb74c, (uint16_t)13);
             break;
         case THPrac::TH07::TH07_ST5_MID2:
             ECLTimeWarp(2, 0x12d4);
@@ -1224,7 +1279,10 @@ namespace TH07 {
             ECLSetHealth(ecl, 0x38b4, 0x3c, 0x5db);
             break;
         case THPrac::TH07::TH07_ST5_BOSS1:
-            ECLTimeWarp(2, 0x17e1);
+            if (thPracParam.dlg)
+                ECLTimeWarp(2, 0x17e1);
+            else
+                ECLTimeWarp(2, 0x17e2);
             break;
         case THPrac::TH07::TH07_ST5_BOSS2:
             ECLTimeWarp(2, 0x17e2);
@@ -1260,7 +1318,8 @@ namespace TH07 {
             break;
         case THPrac::TH07::TH07_ST6_MID1:
             ECLTimeWarp(2, 0x77a);
-            ecl << pair(0xe630, (int16_t)0);
+            if (!thPracParam.dlg)
+                ecl << pair(0xe630, (int16_t)0);
             break;
         case THPrac::TH07::TH07_ST6_MID2:
             ECLTimeWarp(2, 0x77a);
@@ -1268,9 +1327,13 @@ namespace TH07 {
             ECLSetHealth(ecl, 0x17cc, 0x3c, 0x5db);
             break;
         case THPrac::TH07::TH07_ST6_BOSS1:
-            ECLNameFix();
-            ECLTimeWarp(2, 0x9d7);
-            ecl << pair(0xe678, (int16_t)0x9d7);
+            if (thPracParam.dlg)
+                ECLTimeWarp(2, 2518);
+            else {
+                ECLTimeWarp(2, 0x9d7);
+                ECLNameFix();
+                ecl << pair(0xe678, (int16_t)0x9d7);
+            }
             break;
         case THPrac::TH07::TH07_ST6_BOSS2:
             ECLNameFix();
@@ -1330,7 +1393,8 @@ namespace TH07 {
             break;
         case THPrac::TH07::TH07_ST7_MID1:
             ECLTimeWarp(2, 0xfe1);
-            ecl << pair(0xee58, 0);
+            if (!thPracParam.dlg)
+                ecl << pair(0xee58, 0);
             break;
         case THPrac::TH07::TH07_ST7_MID2:
             ECLTimeWarp(2, 0xfe1);
@@ -1345,8 +1409,12 @@ namespace TH07 {
                 << pair(0x3a20, 0) << pair(0x3a40, 0) << pair(0x3a5c, 0) << pair(0x3a70, 0);
             break;
         case THPrac::TH07::TH07_ST7_END_NS1:
-            ECLNameFix();
-            ECLTimeWarp(2, 0x225f);
+            if (thPracParam.dlg)
+                ECLTimeWarp(2, 8798);
+            else {
+                ECLNameFix();
+                ECLTimeWarp(2, 0x225f);
+            }
             break;
         case THPrac::TH07::TH07_ST7_END_S1:
             ECLNameFix();
@@ -1460,7 +1528,8 @@ namespace TH07 {
             break;
         case THPrac::TH07::TH07_ST8_MID1:
             ECLTimeWarp(2, 0xf7d);
-            ecl << pair(0x12674, 0);
+            if (!thPracParam.dlg)
+                ecl << pair(0x12674, 0);
             break;
         case THPrac::TH07::TH07_ST8_MID2:
             ECLTimeWarp(2, 0xf7d);
@@ -1476,8 +1545,12 @@ namespace TH07 {
                 << pair(0x4300, 0) << pair(0x4320, 0) << pair(0x433c, 0);
             break;
         case THPrac::TH07::TH07_ST8_END_NS1:
-            ECLNameFix();
-            ECLTimeWarp(2, 0x242b);
+            if (thPracParam.dlg)
+                ECLTimeWarp(2, 9258);
+            else {
+                ECLNameFix();
+                ECLTimeWarp(2, 0x242b);
+            }
             break;
         case THPrac::TH07::TH07_ST8_END_S1:
             ECLNameFix();
@@ -1658,6 +1731,8 @@ namespace TH07 {
         if (!thPracParam.mode)
             return 0;
         else if (thPracParam.section >= 10000)
+            return 0;
+        else if (thPracParam.dlg)
             return 0;
         else
             return th_sections_bgm[thPracParam.section];

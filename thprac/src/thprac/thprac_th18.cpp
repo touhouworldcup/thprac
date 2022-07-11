@@ -23,6 +23,8 @@ namespace TH18 {
         int32_t mukade;
         int32_t lily;
 
+        bool dlg;
+
         bool _playLock = false;
         void Reset()
         {
@@ -37,6 +39,7 @@ namespace TH18 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
+            GetJsonValueEx(dlg, Bool);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -63,6 +66,8 @@ namespace TH18 {
                     AddJsonValue(section);
                 if (phase)
                     AddJsonValue(phase);
+                if (dlg)
+                    AddJsonValue(dlg);
 
                 AddJsonValue(score);
                 AddJsonValue(life);
@@ -139,6 +144,8 @@ namespace TH18 {
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
                 thPracParam.phase = SpellPhase() ? *mPhase : 0;
+                if (SectionHasDlg(thPracParam.section))
+                    thPracParam.dlg = *mDlg;
 
                 thPracParam.score = *mScore;
                 thPracParam.life = *mLife;
@@ -300,6 +307,21 @@ namespace TH18 {
                 break;
             }
         }
+        bool SectionHasDlg(int32_t section) {
+            switch (section) {
+            case TH18_ST1_BOSS1:
+            case TH18_ST2_BOSS1:
+            case TH18_ST3_BOSS1:
+            case TH18_ST4_BOSS1:
+            case TH18_ST5_BOSS1:
+            case TH18_ST6_BOSS1:
+            case TH18_ST7_END_NS1:
+            case TH18_ST7_MID1:
+                return true;
+            default:
+                return false;
+            }
+        }
         void SectionWidget()
         {
             static char chapterStr[256] {};
@@ -325,6 +347,8 @@ namespace TH18 {
                         th_sections_cba[*mStage][*mWarp - 2],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
+                    mDlg();
                 break;
             case 4:
             case 5: // Non-spell & Spellcard
@@ -332,6 +356,8 @@ namespace TH18 {
                         th_sections_cbt[*mStage][*mWarp - 4],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
+                    mDlg();
                 break;
             default:
                 break;
@@ -347,6 +373,7 @@ namespace TH18 {
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
+        Gui::GuiCheckBox mDlg { TH_DLG };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 42949672950, 10, 10000000000 };
@@ -361,7 +388,7 @@ namespace TH18 {
         bool mMukadeToggle = false;
         bool mLilyToggle = false;
 
-        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP,
+        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_SCORE, TH_LIFE, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT, 
             TH_POWER, TH18_FUNDS };
@@ -1982,7 +2009,10 @@ namespace TH18 {
             break;
         case THPrac::TH18::TH18_ST1_BOSS1:
             ECLStdExec(ecl, 0xa750, 1, 1);
-            ECLJump(ecl, 0, 0xacc0, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0xacac, 60);
+            else
+                ECLJump(ecl, 0, 0xacc0, 60);
             break;
         case THPrac::TH18::TH18_ST1_BOSS2:
             ECLStdExec(ecl, 0xa750, 1, 1);
@@ -2017,7 +2047,10 @@ namespace TH18 {
             break;
         case THPrac::TH18::TH18_ST2_BOSS1:
             ECLStdExec(ecl, 0x90b4, 1, 1);
-            ECLJump(ecl, 0, 0x9600, 60); // 0x9550, 0x9594, 0x9600
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0x95ec, 60);
+            else
+                ECLJump(ecl, 0, 0x9600, 60); // 0x9550, 0x9594, 0x9600
             break;
         case THPrac::TH18::TH18_ST2_BOSS2:
             ECLStdExec(ecl, 0x90b4, 1, 1);
@@ -2069,7 +2102,10 @@ namespace TH18 {
             break;
         case THPrac::TH18::TH18_ST3_BOSS1:
             ECLStdExec(ecl, 0x83a0, 1, 1);
-            ECLJump(ecl, 0, 0x8848, 60); // 0x8784, 0x87c8, 0x8848
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0x8834, 60);
+            else
+                ECLJump(ecl, 0, 0x8848, 60); // 0x8784, 0x87c8, 0x8848
             break;
         case THPrac::TH18::TH18_ST3_BOSS2:
             ECLStdExec(ecl, 0x83a0, 1, 1);
@@ -2126,7 +2162,10 @@ namespace TH18 {
             break;
         case THPrac::TH18::TH18_ST4_BOSS1:
             ECLStdExec(ecl, 0x5a04, 1, 1);
-            ECLJump(ecl, 0, 0x5e58, 60); // 0x5d94, 0x5dd8, 0x5e58
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0x5e44, 60); // 0x5d94, 0x5dd8, 0x5e58
+            else
+                ECLJump(ecl, 0, 0x5e58, 60); // 0x5d94, 0x5dd8, 0x5e58
             break;
         case THPrac::TH18::TH18_ST4_BOSS2:
             ECLStdExec(ecl, 0x5a04, 1, 1);
@@ -2186,8 +2225,12 @@ namespace TH18 {
             break;
         case THPrac::TH18::TH18_ST5_BOSS1:
             ECLStdExec(ecl, 0x96ec, 1, 1);
-            ECLJump(ecl, 0, 0x9c58, 60); // 0x9b94, 0x9bd8, 0x9c58
-            ECLJump(ecl, 0x4a44, 0x4a94, 3);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0x9c44, 60); // 0x9b94, 0x9bd8, 0x9c58
+            else {
+                ECLJump(ecl, 0, 0x9c58, 60); // 0x9b94, 0x9bd8, 0x9c58
+                ECLJump(ecl, 0x4a44, 0x4a94, 3);
+            }
             break;
         case THPrac::TH18::TH18_ST5_BOSS2:
             ECLStdExec(ecl, 0x96ec, 1, 1);
@@ -2263,11 +2306,14 @@ namespace TH18 {
             break;
         case THPrac::TH18::TH18_ST6_BOSS1:
             ECLStdExec(ecl, 0x7e70, 2, 1);
-            ECLJump(ecl, 0, 0x83dc, 60); // 0x8318, 0x835c, 0x83dc
-            ECLJump(ecl, 0x5a94, 0x5ae4, 3);
-
-            ecl.SetFile(2);
-            ECLJump(ecl, 0x488, 0x504, 2); // Skip dialogue
+            if (thPracParam.dlg) {
+                ECLJump(ecl, 0, 0x83c8, 60);
+            } else {
+                ECLJump(ecl, 0, 0x83dc, 60); // 0x8318, 0x835c, 0x83dc
+                ECLJump(ecl, 0x5a94, 0x5ae4, 3); // Skip dialogue
+                ecl.SetFile(2);
+                ECLJump(ecl, 0x488, 0x504, 2); // Skip dialogue
+            }
             break;
         case THPrac::TH18::TH18_ST6_BOSS2:
             ECLStdExec(ecl, 0x7e70, 2, 1);
@@ -2396,7 +2442,10 @@ namespace TH18 {
 
         case THPrac::TH18::TH18_ST7_MID1:
             ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xafa0, 124); // 0xafa0, 0xafe4, 0xb064
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0xaf78, 124); // 0xafa0, 0xafe4, 0xb064
+            else
+                ECLJump(ecl, 0, 0xafa0, 124); // 0xafa0, 0xafe4, 0xb064
             ecl.SetFile(3);
             ecl << pair(0x2d0, 99999) << pair(0x2d8, (int16_t)0) << pair(0x368, 90);
             ecl.SetPos(0x388);
@@ -2423,11 +2472,14 @@ namespace TH18 {
             break;
         case THPrac::TH18::TH18_ST7_END_NS1:
             ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
-
-            ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0xb050, 124); // 0xafa0, 0xafe4, 0xb064
+            else {
+                ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
+                ECLJump(ecl, 0x57cc, 0x585c, 3);
+                ecl.SetFile(2);
+                ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
+            }
             break;
         case THPrac::TH18::TH18_ST7_END_S1:
             ECLStdExec(ecl, 0xa8fc, 1, 1);
@@ -2716,6 +2768,8 @@ namespace TH18 {
         if (!thPracParam.mode)
             return 0;
         else if (thPracParam.section >= 10000)
+            return 0;
+        else if (thPracParam.dlg)
             return 0;
         else
             return th_sections_bgm[thPracParam.section];

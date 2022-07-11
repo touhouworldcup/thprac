@@ -19,6 +19,8 @@ namespace TH13 {
         int32_t graze;
         int32_t trance_meter;
 
+        bool dlg;
+
         void Reset()
         {
             memset(this, 0, sizeof(THPracParam));
@@ -33,6 +35,7 @@ namespace TH13 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
+            GetJsonValueEx(dlg, Bool);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -59,6 +62,8 @@ namespace TH13 {
                 AddJsonValue(section);
             if (phase)
                 AddJsonValue(phase);
+            if (dlg)
+                AddJsonValue(dlg);
 
             AddJsonValue(score);
             AddJsonValue(life);
@@ -115,6 +120,8 @@ namespace TH13 {
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
                 thPracParam.phase = SpellPhase() ? *mPhase : 0;
+                if (SectionHasDlg(thPracParam.section))
+                    thPracParam.dlg = *mDlg;
 
                 thPracParam.score = *mScore;
                 thPracParam.life = *mLife;
@@ -240,6 +247,23 @@ namespace TH13 {
                 break;
             }
         }
+        bool SectionHasDlg(int32_t section)
+        {
+            switch (section) {
+            case TH13_ST1_BOSS1:
+            case TH13_ST2_BOSS1:
+            case TH13_ST3_MID1:
+            case TH13_ST3_BOSS1:
+            case TH13_ST4_BOSS1:
+            case TH13_ST5_BOSS1:
+            case TH13_ST6_BOSS1:
+            case TH13_ST7_END_NS1:
+            case TH13_ST7_MID1:
+                return true;
+            default:
+                return false;
+            }
+        }
         void SectionWidget()
         {
             static char chapterStr[256] {};
@@ -265,6 +289,8 @@ namespace TH13 {
                         th_sections_cba[*mStage][*mWarp - 2],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
+                    mDlg();
                 break;
             case 4:
             case 5: // Non-spell & Spellcard
@@ -272,6 +298,8 @@ namespace TH13 {
                         th_sections_cbt[*mStage][*mWarp - 4],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
+                    mDlg();
                 break;
             default:
                 break;
@@ -283,6 +311,7 @@ namespace TH13 {
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
+        Gui::GuiCheckBox mDlg { TH_DLG };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
@@ -297,7 +326,7 @@ namespace TH13 {
         Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, 999999, 1, 100000 };
 
 
-        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP,
+        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_SCORE, TH_LIFE, TH13_EXTEND, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT,
             TH_POWER, TH_VALUE, TH_GRAZE, TH13_TRANCE_METER };
@@ -1032,7 +1061,10 @@ namespace TH13 {
             ECLJump(ecl, 0x8a70, 0x8c50, 60);
             break;
         case THPrac::TH13::TH13_ST1_BOSS1:
-            ECLJump(ecl, 0x8a70, 0x8d04, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x8a70, 0x8cdc, 60);
+            else
+                ECLJump(ecl, 0x8a70, 0x8d04, 60);
             break;
         case THPrac::TH13::TH13_ST1_BOSS2:
             ECLJump(ecl, 0x8a70, 0x8d04, 60);
@@ -1083,7 +1115,10 @@ namespace TH13 {
             ECLJump(ecl, 0x3b0, 0x498, 0); // Utilize Spell Practice Jump
             break;
         case THPrac::TH13::TH13_ST2_BOSS1:
-            ECLJump(ecl, 0x7718, 0x7a5c, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x7718, 0x7a34, 60);
+            else
+                ECLJump(ecl, 0x7718, 0x7a5c, 60);
             break;
         case THPrac::TH13::TH13_ST2_BOSS2:
             ECLJump(ecl, 0x7718, 0x7a5c, 60);
@@ -1116,7 +1151,8 @@ namespace TH13 {
             break;
         case THPrac::TH13::TH13_ST3_MID1:
             ECLJump(ecl, 0x67b0, 0x6a64, 60);
-            ECLJump(ecl, 0x2a9c, 0x2ac0, 10);
+            if (!thPracParam.dlg)
+                ECLJump(ecl, 0x2a9c, 0x2ac0, 10);
             break;
         case THPrac::TH13::TH13_ST3_MID2_EN:
             ECLJump(ecl, 0x67b0, 0x6a64, 60);
@@ -1134,7 +1170,10 @@ namespace TH13 {
             ECLJump(ecl, 0x388, 0x470, 0); // Utilize Spell Practice Jump
             break;
         case THPrac::TH13::TH13_ST3_BOSS1:
-            ECLJump(ecl, 0x67b0, 0x6b08, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x67b0, 0x6ae0, 60);
+            else
+                ECLJump(ecl, 0x67b0, 0x6b08, 60);
             break;
         case THPrac::TH13::TH13_ST3_BOSS2:
             ECLJump(ecl, 0x67b0, 0x6b08, 60);
@@ -1184,7 +1223,10 @@ namespace TH13 {
             ECLJump(ecl, 0xbf0, 0xcd8, 0); // Utilize Spell Practice Jump
             break;
         case THPrac::TH13::TH13_ST4_BOSS1:
-            st4_boss();
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x8554, 0x889c, 60);
+            else
+                st4_boss();
             break;
         case THPrac::TH13::TH13_ST4_BOSS2:
             st4_boss();
@@ -1251,7 +1293,10 @@ namespace TH13 {
             ECLJump(ecl, 0x3fc, 0x4e4, 0);
             break;
         case THPrac::TH13::TH13_ST5_BOSS1:
-            ECLJump(ecl, 0x60e4, 0x64b4, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x60e4, 0x648c, 60);
+            else
+                ECLJump(ecl, 0x60e4, 0x64b4, 60);
             break;
         case THPrac::TH13::TH13_ST5_BOSS2:
             ECLJump(ecl, 0x60e4, 0x64b4, 60);
@@ -1304,7 +1349,10 @@ namespace TH13 {
             ecl << pair(0x498, (int8_t)0x34); // Set Spell Ordinal
             break;
         case THPrac::TH13::TH13_ST6_BOSS1:
-            ECLJump(ecl, 0x4bdc, 0x4e20, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x4bdc, 0x4df8, 60);
+            else
+                ECLJump(ecl, 0x4bdc, 0x4e20, 60);
             break;
         case THPrac::TH13::TH13_ST6_BOSS2:
             ECLJump(ecl, 0x4bdc, 0x4e20, 60);
@@ -1412,7 +1460,8 @@ namespace TH13 {
             break;
         case THPrac::TH13::TH13_ST7_MID1:
             ECLJump(ecl, 0x4b98, 0x4e60, 60);
-            ECLJump(ecl, 0x3460, 0x3484, 10);
+            if (!thPracParam.dlg)
+                ECLJump(ecl, 0x3460, 0x3484, 10);
             break;
         case THPrac::TH13::TH13_ST7_MID2:
             ECLJump(ecl, 0x4b98, 0x4e60, 60);
@@ -1427,7 +1476,10 @@ namespace TH13 {
             ECLJump(ecl, 0x394, 0x59c, 0);
             break;
         case THPrac::TH13::TH13_ST7_END_NS1:
-            ECLJump(ecl, 0x4b98, 0x4ef0, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x4b98, 0x4ec8, 60);
+            else
+                ECLJump(ecl, 0x4b98, 0x4ef0, 60);
             break;
         case THPrac::TH13::TH13_ST7_END_S1:
             ECLJump(ecl, 0x4b98, 0x4ef0, 60);
@@ -1596,6 +1648,8 @@ namespace TH13 {
         if (!thPracParam.mode)
             return 0;
         else if (thPracParam.section >= 10000)
+            return 0;
+        else if (thPracParam.dlg)
             return 0;
         else
             return th_sections_bgm[thPracParam.section];

@@ -21,6 +21,8 @@ namespace TH12 {
         int32_t ventra_2;
         int32_t ventra_3;
 
+        bool dlg;
+
         bool _playLock = false;
         void Reset()
         {
@@ -35,6 +37,7 @@ namespace TH12 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
+            GetJsonValueEx(dlg, Bool);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -63,6 +66,8 @@ namespace TH12 {
                 AddJsonValue(section);
             if (phase)
                 AddJsonValue(phase);
+            if (dlg)
+                AddJsonValue(dlg);
 
             AddJsonValue(score);
             AddJsonValue(life);
@@ -129,6 +134,8 @@ namespace TH12 {
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
                 thPracParam.phase = SpellPhase() ? *mPhase : 0;
+                if (SectionHasDlg(thPracParam.section))
+                    thPracParam.dlg = *mDlg;
 
                 thPracParam.score = *mScore;
                 thPracParam.life = *mLife;
@@ -262,6 +269,23 @@ namespace TH12 {
                 break;
             }
         }
+        bool SectionHasDlg(int32_t section)
+        {
+            switch (section) {
+            case TH12_ST1_BOSS1:
+            case TH12_ST2_BOSS1:
+            case TH12_ST3_BOSS1:
+            case TH12_ST4_BOSS1:
+            case TH12_ST5_BOSS1:
+            case TH12_ST5_MID1:
+            case TH12_ST6_BOSS1:
+            case TH12_ST7_END_NS1:
+            case TH12_ST7_MID1:
+                return true;
+            default:
+                return false;
+            }
+        }
         void SectionWidget()
         {
             static char chapterStr[256] {};
@@ -287,6 +311,8 @@ namespace TH12 {
                         th_sections_cba[*mStage][*mWarp - 2],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
+                    mDlg();
                 break;
             case 4:
             case 5: // Non-spell & Spellcard
@@ -294,6 +320,8 @@ namespace TH12 {
                         th_sections_cbt[*mStage][*mWarp - 4],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
+                    mDlg();
                 break;
             default:
                 break;
@@ -305,6 +333,7 @@ namespace TH12 {
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
+        Gui::GuiCheckBox mDlg { TH_DLG };
         Gui::GuiCombo mUfoSide { TH12_UFO_SIDE, TH12_UFO_SIDE_SELECT };
         Gui::GuiCombo mVentra1 { TH12_VENTRA_1, TH12_VENTRA_SELECT };
         Gui::GuiCombo mVentra2 { TH12_VENTRA_2, TH12_VENTRA_SELECT };
@@ -899,7 +928,10 @@ namespace TH12 {
             ecl << pair(0xce94, 9999);
             break;
         case THPrac::TH12::TH12_ST1_BOSS1:
-            ECLJumpEx(ecl, 0x133b0, 0x137ac, 59);
+            if (thPracParam.dlg)
+                ECLJumpEx(ecl, 0x133b0, 0x13788, 59);
+            else
+                ECLJumpEx(ecl, 0x133b0, 0x137ac, 59);
             break;
         case THPrac::TH12::TH12_ST1_BOSS2:
             ECLJumpEx(ecl, 0x133b0, 0x137ac, 59);
@@ -936,7 +968,10 @@ namespace TH12 {
             //ecl << pair(0x9d7c, 0x546);
             break;
         case THPrac::TH12::TH12_ST2_BOSS1:
-            ECLJumpEx(ecl, 0x13108, 0x134fc, 59);
+            if (thPracParam.dlg)
+                ECLJumpEx(ecl, 0x13108, 0x134d8, 59);
+            else
+                ECLJumpEx(ecl, 0x13108, 0x134fc, 59);
             break;
         case THPrac::TH12::TH12_ST2_BOSS2:
             ECLJumpEx(ecl, 0x13108, 0x134fc, 59);
@@ -977,7 +1012,10 @@ namespace TH12 {
             ecl << pair(0x1086c, (int16_t)0x0) << pair(0x10a5c, (int16_t)0x0);
             break;
         case THPrac::TH12::TH12_ST3_BOSS1:
-            ECLJumpEx(ecl, 0x16864, 0x16a98, 59);
+            if (thPracParam.dlg)
+                ECLJumpEx(ecl, 0x16864, 0x16a98, 59);
+            else
+                ECLJumpEx(ecl, 0x16864, 0x16abc, 59);
             break;
         case THPrac::TH12::TH12_ST3_BOSS2:
             ECLJumpEx(ecl, 0x16864, 0x16abc, 59);
@@ -1014,7 +1052,10 @@ namespace TH12 {
             ECLJumpEx(ecl, 0x13800, 0x13904, 0);
             break;
         case THPrac::TH12::TH12_ST4_BOSS1:
-            ECLJumpEx(ecl, 0x13800, 0x13a70, 119);
+            if (thPracParam.dlg)
+                ECLJumpEx(ecl, 0x13800, 0x13a4c, 119);
+            else
+                ECLJumpEx(ecl, 0x13800, 0x13a70, 119);
             break;
         case THPrac::TH12::TH12_ST4_BOSS2:
             ECLJumpEx(ecl, 0x13800, 0x13a70, 119);
@@ -1057,9 +1098,13 @@ namespace TH12 {
             ecl << pair(0x8614, (int16_t)0x0) << pair(0x8774, (int16_t)0x0);
             break;
         case THPrac::TH12::TH12_ST5_MID1:
-            ECLJumpEx(ecl, 0x158c0, 0x159e8, 179);
-            ecl << pair(0xd6ac, (int16_t)0x0) << pair(0xd8b8, (int16_t)0x0);
-            ecl << pair(0xd6f0, 60);
+            if (thPracParam.dlg)
+                ECLJumpEx(ecl, 0x158c0, 0x159d8, 179);
+            else {
+                ECLJumpEx(ecl, 0x158c0, 0x159e8, 179);
+                ecl << pair(0xd6ac, (int16_t)0x0) << pair(0xd8b8, (int16_t)0x0);
+                ecl << pair(0xd6f0, 60);
+            }
             break;
         case THPrac::TH12::TH12_ST5_MID2:
             ECLJumpEx(ecl, 0x158c0, 0x159e8, 179);
@@ -1068,7 +1113,10 @@ namespace TH12 {
             ecl << pair(0x0d7d4, 0x7d0);
             break;
         case THPrac::TH12::TH12_ST5_BOSS1:
-            ECLJumpEx(ecl, 0x158c0, 0x15b0c, 190);
+            if (thPracParam.dlg)
+                ECLJumpEx(ecl, 0x158c0, 0x15ae8, 190);
+            else
+                ECLJumpEx(ecl, 0x158c0, 0x15b0c, 190);
             break;
         case THPrac::TH12::TH12_ST5_BOSS2:
             ECLJumpEx(ecl, 0x158c0, 0x15b0c, 190);
@@ -1118,7 +1166,10 @@ namespace TH12 {
             ECLJumpEx(ecl, 0x1a3c0, 0x1a4a0, 60);
             break;
         case THPrac::TH12::TH12_ST6_BOSS1:
-            ECLJumpEx(ecl, 0x1a3c0, 0x1a508, 59);
+            if (thPracParam.dlg)
+                ECLJumpEx(ecl, 0x1a3c0, 0x1a4e4, 59);
+            else
+                ECLJumpEx(ecl, 0x1a3c0, 0x1a508, 59);
             break;
         case THPrac::TH12::TH12_ST6_BOSS2:
             ECLJumpEx(ecl, 0x1a3c0, 0x1a508, 59);
@@ -1207,7 +1258,10 @@ namespace TH12 {
             }
             break;
         case THPrac::TH12::TH12_ST7_MID1:
-            ECLJumpEx(ecl, 0xdb14, 0xdc3c, 59);
+            if (thPracParam.dlg)
+                ECLJumpEx(ecl, 0xdb14, 0xdc28, 59);
+            else
+                ECLJumpEx(ecl, 0xdb14, 0xdc3c, 59);
             break;
         case THPrac::TH12::TH12_ST7_MID2:
             ECLJumpEx(ecl, 0xdb14, 0xdc3c, 59);
@@ -1224,7 +1278,10 @@ namespace TH12 {
             ecl << pair(0x5ec8, (int16_t)0x0) << pair(0x6084, (int16_t)0x0);
             break;
         case THPrac::TH12::TH12_ST7_END_NS1:
-            nue();
+            if (thPracParam.dlg)
+                ECLJumpEx(ecl, 0xdb14, 0xdd5c, 71);
+            else
+                nue();
             break;
         case THPrac::TH12::TH12_ST7_END_S1:
             nue();
@@ -1380,6 +1437,8 @@ namespace TH12 {
         if (!thPracParam.mode)
             return 0;
         else if (thPracParam.section >= 10000)
+            return 0;
+        else if (thPracParam.dlg)
             return 0;
         else
             return th_sections_bgm[thPracParam.section];

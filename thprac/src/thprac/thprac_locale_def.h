@@ -617,6 +617,7 @@ enum th_glossary_t
     TH_DATANLY_SELECT_ERR,
     TH_DATANLY_SELECT_PROMPT,
     TH_DELAY,
+    TH_DLG,
     TH_EL_BGM,
     TH_END_NS1,
     TH_END_NS2,
@@ -734,7 +735,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-static char* th_glossary_str[3][727]
+static char* th_glossary_str[3][728]
 {
     {
         "",
@@ -1349,6 +1350,7 @@ static char* th_glossary_str[3][727]
         u8"你必须选择/新建一个记录文件才能继续。",
         u8"你现在可以在游戏中按“,”键记录数据。",
         u8"延迟",
+        u8"对话",
         u8"永续BGM",
         u8"关底一非",
         u8"关底二非",
@@ -2078,6 +2080,7 @@ static char* th_glossary_str[3][727]
         u8"You must select/create a profile in order to continue.",
         u8"You can now press ',' to record data when you're playing.",
         u8"Delay",
+        u8"Dialog",
         u8"Everlasting BGM",
         u8"Boss Nonspell 1",
         u8"Boss Nonspell 2",
@@ -2807,6 +2810,7 @@ static char* th_glossary_str[3][727]
         u8"データ収集機能を使用するには、プロファイルを選択/作成する必要があります。",
         u8"ゲーム中に「,」キーを押すとデータを記録することができます。",
         u8"ディレイ",
+        u8"ダイアログ",
         u8"永遠に続くBGM",
         u8"ボス 通常1",
         u8"ボス 通常2",

@@ -27,6 +27,8 @@ namespace TH08 {
         int32_t rank;
         bool rankLock;
 
+        bool dlg;
+
         bool _playLock = false;
         void Reset()
         {
@@ -42,6 +44,7 @@ namespace TH08 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
+            GetJsonValueEx(dlg, Bool);
             GetJsonValue(frame);
             GetJsonValue(life);
             GetJsonValue(bomb);
@@ -75,6 +78,8 @@ namespace TH08 {
                 AddJsonValue(phase);
             if (frame)
                 AddJsonValue(frame);
+            if (dlg)
+                AddJsonValue(dlg);
 
             AddJsonValueEx(life, (int)life);
             AddJsonValueEx(bomb, (int)bomb);
@@ -168,6 +173,8 @@ namespace TH08 {
                 thPracParam.section = CalcSection();
                 //thPracParam.phase = SpellPhase() ? *mPhase : 0;
                 thPracParam.frame = *mFrame;
+                if (SectionHasDlg(thPracParam.section))
+                    thPracParam.dlg = *mDlg;
                 thPracParam.score = *mScore;
                 thPracParam.life = (float)*mLife;
                 thPracParam.bomb = (float)*mBomb;
@@ -308,6 +315,26 @@ namespace TH08 {
                 break;
             }
         }
+        bool SectionHasDlg(int32_t section)
+        {
+            switch (section) {
+            case TH08_ST1_BOSS1:
+            case TH08_ST2_BOSS1:
+            case TH08_ST3_BOSS1:
+            case TH08_ST4A_BOSS1:
+            case TH08_ST4B_BOSS1:
+            case TH08_ST5_BOSS1:
+            case TH08_ST6A_BOSS1:
+            case TH08_ST6A_MID1:
+            case TH08_ST6B_BOSS1:
+            case TH08_ST6B_MID1:
+            case TH08_ST7_END_NS1:
+            case TH08_ST7_MID1:
+                return true;
+            default:
+                return false;
+            }
+        }
         void SectionWidget()
         {
             static char chapterStr[256] {};
@@ -333,6 +360,8 @@ namespace TH08 {
                         th_sections_cba[*mStage][*mWarp - 2],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
+                    mDlg();
                 break;
             case 4:
             case 5: // Non-spell & Spellcard
@@ -340,6 +369,8 @@ namespace TH08 {
                         th_sections_cbt[*mStage][*mWarp - 4],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
+                    mDlg();
                 break;
             case 6:
                 mFrame();
@@ -367,6 +398,7 @@ namespace TH08 {
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT_FRAME };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
+        Gui::GuiCheckBox mDlg { TH_DLG };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mFrame { TH_FRAME, 0, INT_MAX };
@@ -386,7 +418,7 @@ namespace TH08 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mRank { TH_BULLET_RANK, 8, 16, 1, 10, 10 };
         Gui::GuiCheckBox mRankLock { TH_BULLET_RANKLOCK };
 
-        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_FRAME,
+        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_FRAME, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_LIFE, TH_BOMB, TH_SCORE, TH_POWER, TH_GRAZE, TH_POINT, TH_POINT_TOTAL, TH_POINT_STAGE,
             TH08_TIME, TH08_VALUE, TH08_GAUGE, TH08_NIGHT, TH_BULLET_RANK, TH_BULLET_RANKLOCK };
@@ -1109,7 +1141,10 @@ namespace TH08 {
             ECLSetTime(ecl, 0x178c, 0, 22, 60);
             break;
         case THPrac::TH08::TH08_ST1_BOSS1:
-            ECLWarp(4175, 0xac84, 0, -1);
+            if (thPracParam.dlg)
+                ECLWarp(4175, 0xac70, 0, -1);
+            else
+                ECLWarp(4175, 0xac84, 0, -1);
             break;
         case THPrac::TH08::TH08_ST1_BOSS2:
             ECLWarp(4175, 0xac84, 0, -1);
@@ -1148,11 +1183,21 @@ namespace TH08 {
             break;
         case THPrac::TH08::TH08_ST2_BOSS1:
             ECLWarp(4870, 0xc020, 0, -1);
-            ECLJump(ecl, 0x1e34, 0x1ea8);
-            ECLTimeFix(0x1ed8, 0, 7);
-            ECLCallSub(ecl, 0x1f98, 27, 60, true);
-            ECLJump(ecl, 0x37c0, 0x3880, 60);
-            ecl << ECLX(0xc026, (int8_t)0x50);
+            if (thPracParam.dlg) {
+                // I spent about an hour trying to do this
+                // I am not exactly sure why this works I just took it from the SpoilerAL SSG
+                // But I at least documented what it does for anyone curious
+                ecl.SetPos(0x1e6c);
+                ecl << 0 << 22; // Sub17: timerThreshold(1980, 23) -> timerThreshold(0, 22)
+                ecl.SetPos(0x3784);
+                ecl << 0 << 29; // Sub27: timerThreshold(1920, 38) -> timerThreshold(0, 29)
+            } else {
+                ECLJump(ecl, 0x1e34, 0x1ea8);
+                ECLTimeFix(0x1ed8, 0, 7);
+                ECLCallSub(ecl, 0x1f98, 27, 60, true);
+                ECLJump(ecl, 0x37c0, 0x3880, 60);
+                ecl << ECLX(0xc026, (int8_t)0x50);
+            }
             break;
         case THPrac::TH08::TH08_ST2_BOSS2:
             ECLWarp(4870, 0xc020, 0, -1);
@@ -1161,7 +1206,6 @@ namespace TH08 {
             ECLCallSub(ecl, 0x1f98, 27, 60, true);
             ECLJump(ecl, 0x37c0, 0x3880, 60);
             ecl << ECLX(0xc026, (int8_t)0x50);
-
             ECLSetTime(ecl, 0x389c, 0, (diff <= 1) ? 33 : 38, 60);
             break;
         case THPrac::TH08::TH08_ST2_BOSS3:
@@ -1224,7 +1268,8 @@ namespace TH08 {
             break;
         case THPrac::TH08::TH08_ST3_BOSS1:
             ECLWarp(4663, 0xb87c, 0, -1, 0, -1, 0, -1);
-            ecl << ECLX(0xb882, (int8_t)0x2c);
+            if (!thPracParam.dlg)
+                ecl << ECLX(0xb882, (int8_t)0x2c);
             break;
         case THPrac::TH08::TH08_ST3_BOSS2:
             ECLWarp(4663, 0xb87c, 0, -1, 0, -1, 0, -1);
@@ -1290,7 +1335,10 @@ namespace TH08 {
             ECLCheckTime(8800);
             break;
         case THPrac::TH08::TH08_ST4A_BOSS1:
-            ECLWarp(4962, 0xb280, 360, 0xbed4);
+            if (thPracParam.dlg)
+                ECLWarp(4962, 0xb26c, 360, 0xbed4);
+            else
+                ECLWarp(4962, 0xb280, 360, 0xbed4);
             STDJump(0xf48, 38, 4562);
             STDStage4Fix();
             break;
@@ -1368,7 +1416,10 @@ namespace TH08 {
             ecl << 0 << 0x00180093 << 0x0000ff00 << 2;
             break;
         case THPrac::TH08::TH08_ST4B_BOSS1:
-            ECLWarp(4962, 0xd504, 360, 0xe158);
+            if (thPracParam.dlg)
+                ECLWarp(4962, 0xd4f0, 360, 0xe158);
+            else
+                ECLWarp(4962, 0xd504, 360, 0xe158);
             STDJump(0xf48, 38, 4562);
             STDStage4Fix();
             break;
@@ -1464,9 +1515,13 @@ namespace TH08 {
             break;
         case THPrac::TH08::TH08_ST5_BOSS1:
             MSGNameFix();
-            ECLWarp(7481, 0xb79c);
-            ecl << pair(0xb7a2, (int8_t)0x78);
-            ECLCallSub(ecl, 0x4c6c, 51);
+            if (thPracParam.dlg)
+                ECLWarp(7481, 0xb788);
+            else {
+                ECLWarp(7481, 0xb79c);
+                ecl << pair(0xb7a2, (int8_t)0x78);
+                ECLCallSub(ecl, 0x4c6c, 51);
+            }
             break;
         case THPrac::TH08::TH08_ST5_BOSS2:
             MSGNameFix();
@@ -1543,10 +1598,12 @@ namespace TH08 {
             break;
         case THPrac::TH08::TH08_ST6A_MID1:
             ECLWarp(3400, 0xc7d4);
-            ecl << pair(0xc7da, (int8_t)0x44);
-            ECLTimeFix(0x1de4, 0, 6);
-            ecl << pair(0x1ea4, 60) << pair(0x1dd4, (int16_t)0);
-            ECLJump(ecl, 0x1ec0, 0x1ee0, 0, 60);
+            if (!thPracParam.dlg) {
+                ecl << pair(0xc7da, (int8_t)0x44);
+                ECLTimeFix(0x1de4, 0, 6);
+                ecl << pair(0x1ea4, 60) << pair(0x1dd4, (int16_t)0);
+                ECLJump(ecl, 0x1ec0, 0x1ee0, 0, 60);
+            }
             break;
         case THPrac::TH08::TH08_ST6A_MID2:
             ECLWarp(3400, 0xc7d4);
@@ -1560,9 +1617,13 @@ namespace TH08 {
         case THPrac::TH08::TH08_ST6A_BOSS1:
             *((int32_t*)0x4ea290) = 1;
             MSGNameFix();
-            ECLWarp(4022, 0xc838);
-            ecl << pair(0xc83e, (int8_t)0x38);
-            ECLCallSub(ecl, 0x367c, 33);
+            if (thPracParam.dlg)
+                ECLWarp(4022, 0xc824);
+            else {
+                ECLWarp(4022, 0xc838);
+                ecl << pair(0xc83e, (int8_t)0x38);
+                ECLCallSub(ecl, 0x367c, 33);
+            }
             break;
         case THPrac::TH08::TH08_ST6A_BOSS2:
             *((int32_t*)0x4ea290) = 1;
@@ -1663,10 +1724,12 @@ namespace TH08 {
             break;
         case THPrac::TH08::TH08_ST6B_MID1:
             ECLWarp(3490, 0x104e4);
-            ecl << pair(0x104ea, (int8_t)0x44);
-            ECLTimeFix(0x1bfc, 0, 6);
-            ecl << pair(0x1cbc, 60) << pair(0x1bec, (int16_t)0);
-            ECLCallSub(ecl, 0x1cd8, 15, 60);
+            if (!thPracParam.dlg) {
+                ecl << pair(0x104ea, (int8_t)0x44);
+                ECLTimeFix(0x1bfc, 0, 6);
+                ecl << pair(0x1cbc, 60) << pair(0x1bec, (int16_t)0);
+                ECLCallSub(ecl, 0x1cd8, 15, 60);
+            }
             break;
         case THPrac::TH08::TH08_ST6B_MID2:
             ECLWarp(3490, 0x104e4);
@@ -1679,10 +1742,14 @@ namespace TH08 {
             break;
         case THPrac::TH08::TH08_ST6B_BOSS1:
             *((int32_t*)0x4ea290) = 1;
-            MSGNameFix();
-            ECLWarp(4112, 0x10548);
-            ecl << pair(0x1054e, (int8_t)0x38);
-            ECLCallSub(ecl, 0x3a28, 27);
+            if (thPracParam.dlg) {
+                ECLWarp(4112, 0x10534);
+            } else {
+                MSGNameFix();
+                ECLWarp(4112, 0x10548);
+                ecl << pair(0x1054e, (int8_t)0x38);
+                ECLCallSub(ecl, 0x3a28, 27);
+            }
             break;
         case THPrac::TH08::TH08_ST6B_BOSS2:
             *((int32_t*)0x4ea290) = 1;
@@ -1804,10 +1871,11 @@ namespace TH08 {
             break;
         case THPrac::TH08::TH08_ST7_MID1:
             ECLWarp(5155, 0x13268, 810, 0x15d60);
-            ecl << pair(0x1326e, (int8_t)0x44) << pair(0x3e10, 60);
-            ECLTimeFix(0x3d50, 0, 6);
-            ECLCallSub(ecl, 0x3e2c, 51, 60);
-            break;
+            if (!thPracParam.dlg) {
+                ecl << pair(0x1326e, (int8_t)0x44) << pair(0x3e10, 60);
+                ECLTimeFix(0x3d50, 0, 6);
+                ECLCallSub(ecl, 0x3e2c, 51, 60);
+            }
             break;
         case THPrac::TH08::TH08_ST7_MID2:
             ECLWarp(5155, 0x13268, 810, 0x15d60);
@@ -1824,10 +1892,14 @@ namespace TH08 {
             ECLTimeFix(0x5418, 60, 6);
             break;
         case THPrac::TH08::TH08_ST7_END_NS1:
-            MSGNameFix();
-            ECLWarp(9497, 0x152c8, 0, -1);
-            ecl << pair(0x152ce, (int8_t)0x38);
-            ECLCallSub(ecl, 0x65c4, 66);
+            if (thPracParam.dlg)
+                ECLWarp(9497, 0x152b4, 0, -1);
+            else {
+                ECLWarp(9497, 0x152c8, 0, -1);
+                MSGNameFix();
+                ecl << pair(0x152ce, (int8_t)0x38);
+                ECLCallSub(ecl, 0x65c4, 66);
+            }
             break;
         case THPrac::TH08::TH08_ST7_END_S1:
             MSGNameFix();
@@ -2080,7 +2152,8 @@ namespace TH08 {
             } else {
                 return 0;
             }
-        }
+        } else if (thPracParam.dlg)
+            return 0;
         else
             return th_sections_bgm[thPracParam.section];
     }

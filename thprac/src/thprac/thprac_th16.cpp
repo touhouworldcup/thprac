@@ -17,6 +17,7 @@ namespace TH16 {
         int32_t power;
         int32_t value;
         int32_t graze;
+        bool dlg;
         bool bug_fix;
 
         bool _playLock = false;
@@ -33,6 +34,7 @@ namespace TH16 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
+            GetJsonValueEx(dlg, Bool);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -59,6 +61,8 @@ namespace TH16 {
                     AddJsonValue(section);
                 if (phase)
                     AddJsonValue(phase);
+                if (dlg)
+                    AddJsonValue(dlg);
 
                 AddJsonValue(score);
                 AddJsonValue(life);
@@ -133,6 +137,8 @@ namespace TH16 {
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
                 thPracParam.phase = SpellPhase() ? *mPhase : 0;
+                if (SectionHasDlg(thPracParam.section))
+                    thPracParam.dlg = *mDlg;
 
                 thPracParam.score = *mScore;
                 thPracParam.life = *mLife;
@@ -260,6 +266,22 @@ namespace TH16 {
                 break;
             }
         }
+        bool SectionHasDlg(int32_t section)
+        {
+            switch (section) {
+            case TH16_ST1_BOSS1:
+            case TH16_ST2_BOSS1:
+            case TH16_ST3_BOSS1:
+            case TH16_ST4_BOSS1:
+            case TH16_ST5_BOSS1:
+            case TH16_ST6_BOSS1:
+            case TH16_ST7_END_NS1:
+            case TH16_ST7_MID1:
+                return true;
+            default:
+                return false;
+            }
+        }
         void SectionWidget()
         {
             static char chapterStr[256] {};
@@ -285,6 +307,8 @@ namespace TH16 {
                         th_sections_cba[*mStage][*mWarp - 2],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
+                    mDlg();
                 break;
             case 4:
             case 5: // Non-spell & Spellcard
@@ -292,6 +316,8 @@ namespace TH16 {
                         th_sections_cbt[*mStage][*mWarp - 4],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
+                    mDlg();
                 break;
             default:
                 break;
@@ -303,6 +329,7 @@ namespace TH16 {
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
+        Gui::GuiCheckBox mDlg { TH_DLG };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
@@ -314,7 +341,7 @@ namespace TH16 {
         Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH_VALUE, 0, 999990, 10, 100000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, 999999, 1, 100000 };
 
-        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP,
+        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_SCORE, TH_LIFE, TH_BOMB, TH_BOMB_FRAGMENT, TH16_SEASON_GAUGE,
             TH_POWER, TH_VALUE, TH_GRAZE };
@@ -1117,7 +1144,10 @@ namespace TH16 {
             ECLJump(ecl, 0x7be8, 0x7e50, 60);
             break;
         case THPrac::TH16::TH16_ST1_BOSS1:
-            ECLJump(ecl, 0x7be8, 0x7f14, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x7be8, 0x7f00, 60);
+            else
+                ECLJump(ecl, 0x7be8, 0x7f14, 60);
             break;
         case THPrac::TH16::TH16_ST1_BOSS2:
             ECLJump(ecl, 0x7be8, 0x7f14, 60);
@@ -1145,10 +1175,14 @@ namespace TH16 {
             ECLJump(ecl, 0x77c8, 0x7a34, 60);
             break;
         case THPrac::TH16::TH16_ST2_BOSS1:
-            ECLJump(ecl, 0x77c8, 0x7a88, 60);
-            ecl.SetFile(2);
-            ECLJump(ecl, 0x144, 0x4a88, 0);
-            ECLJump(ecl, 0x4d50, 0x360, 1);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x77c8, 0x7a74, 60);
+            else {
+                ECLJump(ecl, 0x77c8, 0x7a88, 60);
+                ecl.SetFile(2);
+                ECLJump(ecl, 0x144, 0x4a88, 0);
+                ECLJump(ecl, 0x4d50, 0x360, 1);
+            }
             break;
         case THPrac::TH16::TH16_ST2_BOSS2:
             ECLJump(ecl, 0x77c8, 0x7a88, 60);
@@ -1205,7 +1239,10 @@ namespace TH16 {
             ecl << pair(0xdfc, (int16_t)0); // Disable Item Drops
             break;
         case THPrac::TH16::TH16_ST3_BOSS1:
-            ECLJump(ecl, 0x8648, 0x89e0, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x8648, 0x89cc, 60);
+            else
+                ECLJump(ecl, 0x8648, 0x89e0, 60);
             break;
         case THPrac::TH16::TH16_ST3_BOSS2:
             ECLJump(ecl, 0x8648, 0x89e0, 60);
@@ -1254,7 +1291,10 @@ namespace TH16 {
             ecl << pair(0x6378, 60);
             break;
         case THPrac::TH16::TH16_ST4_BOSS1:
-            ECLJump(ecl, 0x9bb0, 0x9f84, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x9bb0, 0x9f70, 60);
+            else
+                ECLJump(ecl, 0x9bb0, 0x9f84, 60);
             break;
         case THPrac::TH16::TH16_ST4_BOSS2:
             ECLJump(ecl, 0x9bb0, 0x9f84, 60);
@@ -1298,11 +1338,15 @@ namespace TH16 {
             ECLJump(ecl, 0x9070, 0x92b4, 60);
             break;
         case THPrac::TH16::TH16_ST5_BOSS1:
-            ECLJump(ecl, 0x9070, 0x9378, 60);
-            ecl << pair(0x93ac, (int16_t)0);
-            ecl.SetFile(3);
-            ecl << pair(0x4bc, 64.0f); // BossA Pos
-            ecl << pair(0x648, (int16_t)0); // BossA Move
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x9070, 0x9364, 60);
+            else {
+                ECLJump(ecl, 0x9070, 0x9378, 60);
+                ecl << pair(0x93ac, (int16_t)0);
+                ecl.SetFile(3);
+                ecl << pair(0x4bc, 64.0f); // BossA Pos
+                ecl << pair(0x648, (int16_t)0); // BossA Move
+            }
             break;
         case THPrac::TH16::TH16_ST5_BOSS2A:
             ECLJump(ecl, 0x9070, 0x9378, 60);
@@ -1433,7 +1477,10 @@ namespace TH16 {
             ecl << pair(0x636c, (int16_t)0); // Disable Item Drops
             break;
         case THPrac::TH16::TH16_ST6_BOSS1:
-            ECLJump(ecl, 0x56c0, 0x5940, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x56c0, 0x592c, 60);
+            else
+                ECLJump(ecl, 0x56c0, 0x5940, 60);
             ecl.SetFile(2);
             ECLST6Background(ecl, 1);
             break;
@@ -1667,29 +1714,33 @@ namespace TH16 {
             }
             break;
         case THPrac::TH16::TH16_ST7_MID1:
-            ECLJump(ecl, 0x988c, 0x9b84, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x988c, 0x9b4c, 60);
+            else {
+                ECLJump(ecl, 0x988c, 0x9b84, 60);
 
-            // Boss A
-            ecl.SetFile(2);
-            ECLJump(ecl, 0x1f0, 0x720, 0);
-            ecl.SetPos(0x720);
-            ecl << 0 << 0x00140203 << 0x01ff0000 << 0 << 101;
-            ecl << 0 << 0x0014002a << 0x01ff0000 << 0 << 0
-                << 0 << 0x0014002b << 0x01ff0001 << 0 << -9949;
-            ECLJump(ecl, ecl.GetPos(), 0x218, 0);
-            ECLJump(ecl, 0x458, 0x4a8, 0);
-            ECLJump(ecl, 0x4bc, 0x50c, 0);
+                // Boss A
+                ecl.SetFile(2);
+                ECLJump(ecl, 0x1f0, 0x720, 0);
+                ecl.SetPos(0x720);
+                ecl << 0 << 0x00140203 << 0x01ff0000 << 0 << 101;
+                ecl << 0 << 0x0014002a << 0x01ff0000 << 0 << 0
+                    << 0 << 0x0014002b << 0x01ff0001 << 0 << -9949;
+                ECLJump(ecl, ecl.GetPos(), 0x218, 0);
+                ECLJump(ecl, 0x458, 0x4a8, 0);
+                ECLJump(ecl, 0x4bc, 0x50c, 0);
 
-            // Boss B
-            ecl.SetFile(3);
-            ECLJump(ecl, 0x7e0, 0xc40, 0);
-            ecl.SetPos(0xc40);
-            ecl << 0 << 0x00140203 << 0x01ff0000 << 0 << 101;
-            ecl << 0 << 0x0014002a << 0x01ff0001 << 0 << -9914
-                << 0 << 0x0014002b << 0x01ff0001 << 0 << -9925;
-            ECLJump(ecl, ecl.GetPos(), 0x808, 0);
-            ECLJump(ecl, 0x978, 0x9c8, 0);
-            ECLJump(ecl, 0x9dc, 0xa2c, 0);
+                // Boss B
+                ecl.SetFile(3);
+                ECLJump(ecl, 0x7e0, 0xc40, 0);
+                ecl.SetPos(0xc40);
+                ecl << 0 << 0x00140203 << 0x01ff0000 << 0 << 101;
+                ecl << 0 << 0x0014002a << 0x01ff0001 << 0 << -9914
+                    << 0 << 0x0014002b << 0x01ff0001 << 0 << -9925;
+                ECLJump(ecl, ecl.GetPos(), 0x808, 0);
+                ECLJump(ecl, 0x978, 0x9c8, 0);
+                ECLJump(ecl, 0x9dc, 0xa2c, 0);
+            }
             break;
         case THPrac::TH16::TH16_ST7_MID2:
             ECLJump(ecl, 0x988c, 0x9b84, 60);
@@ -1742,7 +1793,10 @@ namespace TH16 {
             ECLJump(ecl, 0x9dc, 0xb64, 0);
             break;
         case THPrac::TH16::TH16_ST7_END_NS1:
-            ECLJump(ecl, 0x988c, 0x9c9c, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0x988c, 0x9c88, 60);
+            else
+                ECLJump(ecl, 0x988c, 0x9c9c, 60);
             break;
         case THPrac::TH16::TH16_ST7_END_S1:
             ECLJump(ecl, 0x988c, 0x9c9c, 60);

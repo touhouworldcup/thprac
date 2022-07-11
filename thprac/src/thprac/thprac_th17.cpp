@@ -23,6 +23,8 @@ namespace TH17 {
         int32_t value;
         int32_t graze;
 
+        bool dlg;
+
         bool _playLock = false;
         void Reset()
         {
@@ -37,6 +39,7 @@ namespace TH17 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
+            GetJsonValueEx(dlg, Bool);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -67,6 +70,8 @@ namespace TH17 {
                     AddJsonValue(section);
                 if (phase)
                     AddJsonValue(phase);
+                if (dlg)
+                    AddJsonValue(dlg);
 
                 AddJsonValue(score);
                 AddJsonValue(life);
@@ -152,6 +157,8 @@ namespace TH17 {
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
                 thPracParam.phase = SpellPhase() ? *mPhase : 0;
+                if (SectionHasDlg(thPracParam.section))
+                    thPracParam.dlg = *mDlg;
 
                 thPracParam.score = *mScore;
                 thPracParam.life = *mLife;
@@ -305,6 +312,22 @@ namespace TH17 {
                 break;
             }
         }
+        bool SectionHasDlg(int32_t section)
+        {
+            switch (section) {
+            case TH17_ST1_BOSS1:
+            case TH17_ST2_BOSS1:
+            case TH17_ST3_BOSS1:
+            case TH17_ST4_BOSS1:
+            case TH17_ST5_BOSS1:
+            case TH17_ST6_BOSS1:
+            case TH17_ST7_END_NS1:
+            case TH17_ST7_MID1:
+                return true;
+            default:
+                return false;
+            }
+        }
         void SectionWidget()
         {
             static char chapterStr[256] {};
@@ -330,6 +353,8 @@ namespace TH17 {
                         th_sections_cba[*mStage][*mWarp - 2],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
+                    mDlg();
                 break;
             case 4:
             case 5: // Non-spell & Spellcard
@@ -337,6 +362,8 @@ namespace TH17 {
                         th_sections_cbt[*mStage][*mWarp - 4],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
+                    mDlg();
                 break;
             default:
                 break;
@@ -348,6 +375,7 @@ namespace TH17 {
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
+        Gui::GuiCheckBox mDlg { TH_DLG };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
@@ -364,7 +392,7 @@ namespace TH17 {
         Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH_VALUE, 0, 999990, 10, 100000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, 999999, 1, 100000 };
 
-        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP,
+        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_SCORE, TH_LIFE, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT,
             TH17_GOAST_1, TH17_GOAST_2, TH17_GOAST_3, TH17_GOAST_4, TH17_GOAST_5,
@@ -1240,7 +1268,10 @@ namespace TH17 {
             break;
         case THPrac::TH17::TH17_ST1_BOSS1:
             ECLStdExec(ecl, 0x78c4, 1, 1);
-            ECLJump(ecl, 0, 0x7d84, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0x7d70, 60);
+            else
+                ECLJump(ecl, 0, 0x7d84, 60);
             break;
         case THPrac::TH17::TH17_ST1_BOSS2:
             ECLStdExec(ecl, 0x78c4, 1, 1);
@@ -1276,7 +1307,10 @@ namespace TH17 {
             break;
         case THPrac::TH17::TH17_ST2_BOSS1:
             ECLStdExec(ecl, 0x99fc, 1, 1);
-            ECLJump(ecl, 0, 0x9ef4, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0x9ee0, 60);
+            else
+                ECLJump(ecl, 0, 0x9ef4, 60);
             break;
         case THPrac::TH17::TH17_ST2_BOSS2:
             ECLStdExec(ecl, 0x99fc, 1, 1);
@@ -1320,7 +1354,10 @@ namespace TH17 {
             break;
         case THPrac::TH17::TH17_ST3_BOSS1:
             ECLStdExec(ecl, 0x8cec, 1, 1);
-            ECLJump(ecl, 0, 0x9140, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0x912c, 60);
+            else
+                ECLJump(ecl, 0, 0x9140, 60);
             break;
         case THPrac::TH17::TH17_ST3_BOSS2:
             ECLStdExec(ecl, 0x8cec, 1, 1);
@@ -1373,7 +1410,10 @@ namespace TH17 {
             break;
         case THPrac::TH17::TH17_ST4_BOSS1:
             ECLStdExec(ecl, 0xc374, 1, 1);
-            ECLJump(ecl, 0, 0xc7c8, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0xc7b4, 60);
+            else
+                ECLJump(ecl, 0, 0xc7c8, 60);
             break;
         case THPrac::TH17::TH17_ST4_BOSS2:
             ECLStdExec(ecl, 0xc374, 1, 1);
@@ -1426,7 +1466,10 @@ namespace TH17 {
             break;
         case THPrac::TH17::TH17_ST5_BOSS1:
             ECLStdExec(ecl, 0xae0c, 1, 1);
-            ECLJump(ecl, 0, 0xb270, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0xb25c, 60);
+            else
+                ECLJump(ecl, 0, 0xb270, 60);
             break;
         case THPrac::TH17::TH17_ST5_BOSS2:
             ECLStdExec(ecl, 0xae0c, 1, 1);
@@ -1488,7 +1531,10 @@ namespace TH17 {
         case THPrac::TH17::TH17_ST6_BOSS1:
             ECLStdExec(ecl, 0x71bc, 1, 1);
             ECLStdExec(ecl, 0, 2, 2);
-            ECLJump(ecl, 0, 0x7634, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0x7620, 60);
+            else
+                ECLJump(ecl, 0, 0x7634, 60);
             ecl.SetFile(2);
             ecl << pair(0x454, (int16_t)0);
             break;
@@ -1616,13 +1662,17 @@ namespace TH17 {
             break;
         case THPrac::TH17::TH17_ST7_MID1:
             ECLStdExec(ecl, 0xa208, 1, 1);
-            ECLJump(ecl, 0, 0xa714, 60);
-            ecl.SetFile(3);
-            ecl.SetPos(0x410);
-            ecl << 0 << 0x00140203 << 0x01ff0000 << 0 << 100;
-            ECLJump(ecl, 0, 0x55c, 0);
-            ecl << pair(0x5a4, 100);
-            ECLJump(ecl, 0x5d8, 0x678, 0);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0xa6ec, 60);
+            else {
+                ECLJump(ecl, 0, 0xa714, 60);
+                ecl.SetFile(3);
+                ecl.SetPos(0x410);
+                ecl << 0 << 0x00140203 << 0x01ff0000 << 0 << 100;
+                ECLJump(ecl, 0, 0x55c, 0);
+                ecl << pair(0x5a4, 100);
+                ECLJump(ecl, 0x5d8, 0x678, 0);
+            }
             break;
         case THPrac::TH17::TH17_ST7_MID2:
             ECLStdExec(ecl, 0xa208, 1, 1);
@@ -1646,7 +1696,10 @@ namespace TH17 {
             break;
         case THPrac::TH17::TH17_ST7_END_NS1:
             ECLStdExec(ecl, 0xa208, 1, 1);
-            ECLJump(ecl, 0, 0xa7d8, 60);
+            if (thPracParam.dlg)
+                ECLJump(ecl, 0, 0xa7c4, 60);
+            else
+                ECLJump(ecl, 0, 0xa7d8, 60);
             break;
         case THPrac::TH17::TH17_ST7_END_S1:
             ECLStdExec(ecl, 0xa208, 1, 1);
@@ -1889,6 +1942,8 @@ namespace TH17 {
         if (!thPracParam.mode)
             return 0;
         else if (thPracParam.section >= 10000)
+            return 0;
+        else if (thPracParam.dlg)
             return 0;
         else
             return th_sections_bgm[thPracParam.section];
