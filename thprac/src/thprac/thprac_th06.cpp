@@ -256,6 +256,7 @@ namespace TH06 {
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
                 thPracParam.phase = *mPhase;
+                thPracParam.frame = *mFrame;
 
                 thPracParam.score = *mScore;
                 thPracParam.life = (float)*mLife;
