@@ -1832,7 +1832,7 @@ namespace TH07 {
             int32_t* graze2 = (int32_t*)GetMemAddr(0x626278, 0x18);
             *graze1 = *graze2 = thPracParam.graze;
 
-            *(int32_t*)0x12fe0fc = thPracParam.frame;
+            ECLTimeWarp(2, thPracParam.frame);
 
             THSetPoint();
 
