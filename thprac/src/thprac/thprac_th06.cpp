@@ -1,4 +1,5 @@
 ﻿#include "thprac_utils.h"
+#include "../3rdParties/d3d8/include/d3d8.h"
 
 namespace THPrac {
 
@@ -770,121 +771,6 @@ namespace TH06 {
     protected:
         bool mParamStatus = false;
         THPracParam mRepParam;
-    };
-    class THSnapshot {
-    private:
-        static void Snapshot()
-        {
-            wchar_t dir[] = L"snapshot/th000.bmp";
-            HANDLE hFile;
-            CreateDirectoryW(L"snapshot", NULL);
-            for (int i = 0; i < 1000; i++) {
-                dir[13] = i % 10 + 0x30;
-                dir[12] = ((i % 100 - i % 10) / 10) + 0x30;
-                dir[11] = ((i - i % 100) / 100) + 0x30;
-                hFile = CreateFileW(dir, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
-                if (hFile != INVALID_HANDLE_VALUE)
-                    break;
-            }
-            if (hFile == INVALID_HANDLE_VALUE)
-                return;
-
-            auto header = "\x42\x4d\x36\x10\x0e\x00\x00\x00\x00\x00\x36\x00\x00\x00\x28\x00\x00\x00\x80\x02\x00\x00\xe0\x01\x00\x00\x01\x00\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-            void* bmp = nullptr;
-            DWORD bytesRead;
-            bmp = GetSnapshotData();
-            if (bmp) {
-                WriteFile(hFile, header, 0x36, &bytesRead, NULL);
-                WriteFile(hFile, bmp, 0xe1000, &bytesRead, NULL);
-                free(bmp);
-            }
-
-            CloseHandle(hFile);
-        }
-        static void* GetSnapshotData()
-        {
-            int hFile = 0;
-            void* surface = nullptr;
-            int32_t rect[2] { 0, 0 };
-            void* bmp = malloc(0xe2000);
-            //MB_INFO("FINDME");
-
-            __asm {
-					lea eax, surface
-					push eax
-					push 0
-					push 0
-					mov eax, 0x6c6d20
-					mov ecx, [eax]
-					push ecx
-					mov eax, 0x6c6d20
-					mov eax, [eax]
-					mov eax, [eax]
-					call dword ptr[eax + 0x40]
-					push 0
-					push 0
-					lea eax, rect
-					push eax
-					mov ecx, surface
-					push ecx
-					mov eax, [ecx]
-					call dword ptr[eax + 0x24]
-					mov esi, rect[4]
-					mov edi, bmp
-					mov ebx, 1
-					mov ecx, 0x1df
-
-				snap_loop_1:
-					cmp ecx, 0
-					jl snap_end
-					mov eax, ecx
-					mov edx, rect[0]
-					imul eax, edx
-					add esi, eax
-					mov ebx, 1
-				snap_loop_2:
-					cmp ebx, 0x280
-					jg snap_loop_3
-					movzx eax, byte ptr[esi]
-					mov byte ptr[edi], al
-					inc esi
-					inc edi
-					movzx eax, byte ptr[esi]
-					mov byte ptr[edi], al
-					inc esi
-					inc edi
-					movzx eax, byte ptr[esi]
-					mov byte ptr[edi], al
-					inc esi
-					inc edi
-					inc esi
-					inc ebx
-					jmp snap_loop_2
-				snap_loop_3 :
-					mov esi, rect[4]
-					dec ecx
-					jmp snap_loop_1
-
-				snap_end :
-					mov ecx, surface
-					push ecx
-					mov eax, [ecx]
-					call dword ptr[eax + 0x28]
-					mov ecx, surface
-					push ecx
-					mov eax, [ecx]
-					call dword ptr[eax + 0x8]
-            }
-
-            return bmp;
-        }
-
-    public:
-        static void Update()
-        {
-            if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
-                Snapshot();
-        }
     };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
@@ -2247,7 +2133,8 @@ namespace TH06 {
     EHOOK_DY(th06_render, (void*)0x41cb6d)
     {
         GameGuiRender(IMPL_WIN32_DX8);
-        THSnapshot::Update();
+        if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
+            THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);
     }
     HOOKSET_ENDDEF()
 

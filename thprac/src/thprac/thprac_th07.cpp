@@ -1947,6 +1947,8 @@ namespace TH07 {
     EHOOK_DY(th07_render, (void*)0x42feb9)
     {
         GameGuiRender(IMPL_WIN32_DX8);
+        if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
+            THSnapshot::Snapshot(*(IDirect3DDevice8**)0x575958);
     }
     HOOKSET_ENDDEF()
 

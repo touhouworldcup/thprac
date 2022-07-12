@@ -529,6 +529,13 @@ inline long RoundUp(long n, long m)
 
 #pragma endregion
 
+#pragma region Snapshot
+namespace THSnapshot {
+    void* GetSnapshotData(IDirect3DDevice8* d3d8);
+    void Snapshot(IDirect3DDevice8* d3d8);
+}
+#pragma endregion
+
 template <typename T>
 static std::function<T(void)> GetRndGenerator(T min, T max, std::mt19937::result_type seed = 0)
 {

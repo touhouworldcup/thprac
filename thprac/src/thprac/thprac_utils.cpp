@@ -4,6 +4,7 @@
 #include "thprac_launcher_cfg.h"
 #include <metrohash128.h>
 #include "thprac_data_anly.h"
+#include "../3rdParties/d3d8/include/d3d8.h"
 
 namespace THPrac {
 
@@ -1265,6 +1266,96 @@ void* VFSOriginal(const char* file_name, int32_t* file_size, int32_t is_file)
     return __vfs_original(file_name, file_size, is_file);
 }
 #endif
+#pragma endregion
+
+#pragma region Snapshot
+namespace THSnapshot {
+    void* GetSnapshotData(IDirect3DDevice8* d3d8)
+    {
+        int32_t rect[2] = {};
+        void* bmp = malloc(0xE2000);
+        // MB_INFO("FINDME");
+
+        IDirect3DSurface8* surface = NULL;
+        d3d8->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &surface);
+        surface->LockRect((D3DLOCKED_RECT*)&rect, NULL, 0);
+
+        // Serious bruh moment. For some reason ACK wrote this entire function
+        // in Assembly when it there's no reason why you couldn't write it in C
+        // I rewrote part of it but I couldn't figure out this loop so it's still
+        // written in Assembly.
+        __asm {
+                    mov esi, rect[4]
+					mov edi, bmp
+					mov ebx, 1
+					mov ecx, 0x1df
+				snap_loop_1:
+					cmp ecx, 0
+					jl snap_end
+					mov eax, ecx
+					mov edx, rect[0]
+					imul eax, edx
+					add esi, eax
+					mov ebx, 1
+				snap_loop_2:
+					cmp ebx, 0x280
+					jg snap_loop_3
+					movzx eax, byte ptr[esi]
+					mov byte ptr[edi], al
+					inc esi
+					inc edi
+					movzx eax, byte ptr[esi]
+					mov byte ptr[edi], al
+					inc esi
+					inc edi
+					movzx eax, byte ptr[esi]
+					mov byte ptr[edi], al
+					inc esi
+					inc edi
+					inc esi
+					inc ebx
+					jmp snap_loop_2
+				snap_loop_3 :
+					mov esi, rect[4]
+					dec ecx
+					jmp snap_loop_1
+				snap_end :
+        }
+
+        surface->UnlockRect();
+        surface->Release();
+
+        return bmp;
+    }
+    void Snapshot(IDirect3DDevice8* d3d8)
+    {
+        wchar_t dir[] = L"snapshot/th000.bmp";
+        HANDLE hFile;
+        CreateDirectoryW(L"snapshot", NULL);
+        for (int i = 0; i < 1000; i++) {
+            dir[13] = i % 10 + 0x30;
+            dir[12] = ((i % 100 - i % 10) / 10) + 0x30;
+            dir[11] = ((i - i % 100) / 100) + 0x30;
+            hFile = CreateFileW(dir, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+            if (hFile != INVALID_HANDLE_VALUE)
+                break;
+        }
+        if (hFile == INVALID_HANDLE_VALUE)
+            return;
+
+        auto header = "\x42\x4d\x36\x10\x0e\x00\x00\x00\x00\x00\x36\x00\x00\x00\x28\x00\x00\x00\x80\x02\x00\x00\xe0\x01\x00\x00\x01\x00\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+        void* bmp = nullptr;
+        DWORD bytesRead;
+        bmp = GetSnapshotData(d3d8);
+        if (bmp) {
+            WriteFile(hFile, header, 0x36, &bytesRead, NULL);
+            WriteFile(hFile, bmp, 0xE2000, &bytesRead, NULL);
+            free(bmp);
+        }
+
+        CloseHandle(hFile);
+    }
+};
 #pragma endregion
 
 DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName)
