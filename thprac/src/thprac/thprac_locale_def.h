@@ -2983,18 +2983,11 @@ static th_glossary_t TH_WARP_SELECT_FRAME[8]
     TH_FRAME,
 };
 
-static th_glossary_t TH_WARP_CBA[4]
+static th_glossary_t TH_WARP_ALCOSTG[4]
 {
     TH_NONE,
-    TH_MID_STAGE,
+    TH_STAGE_PORTION,
     TH_END_STAGE,
-};
-
-static th_glossary_t TH_WARP_CBT[4]
-{
-    TH_NONE,
-    TH_NONSPELL,
-    TH_SPELL,
 };
 
 static th_glossary_t TH_SPELL_PHASE1[3]

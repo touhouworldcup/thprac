@@ -195,8 +195,8 @@ private:
         std::wstring linkDirectoryW;
         HINSTANCE execResult;
         auto linkType = ResolveLink(link, linkExec, linkParam);
-        auto linkExecW = utf8_to_utf16(linkExec);
-        auto linkParamW = utf8_to_utf16(linkParam);
+        auto linkExecW = utf8_to_utf16(linkExec.c_str());
+        auto linkParamW = utf8_to_utf16(linkParam.c_str());
 
         switch (linkType) {
         case 1:
@@ -274,7 +274,7 @@ private:
                 mLinkInputErr = 0;
                 mLinkInputType = 1;
                 mLinkParamInput[0] = '\0';
-                sprintf_s(mLinkInput, "%s", utf16_to_utf8(fileStr).c_str());
+                sprintf_s(mLinkInput, "%s", utf16_to_utf8(fileStr.c_str()).c_str());
             }
         }
         ImGui::SameLine();
@@ -283,7 +283,7 @@ private:
             if (folderStr != L"") {
                 mLinkInputErr = 0;
                 mLinkInputType = 2;
-                sprintf_s(mLinkInput, "%s", utf16_to_utf8(folderStr).c_str());
+                sprintf_s(mLinkInput, "%s", utf16_to_utf8(folderStr.c_str()).c_str());
             }
         }
         ImGui::SameLine();

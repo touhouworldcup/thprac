@@ -788,15 +788,10 @@
         "TH_SPELL",
         "TH_FRAME"
       ],
-      "TH_WARP_CBA": [
+      "TH_WARP_ALCOSTG": [
         "TH_NONE",
-        "TH_MID_STAGE",
+        "TH_STAGE_PORTION",
         "TH_END_STAGE"
-      ],
-      "TH_WARP_CBT": [
-        "TH_NONE",
-        "TH_NONSPELL",
-        "TH_SPELL"
       ],
       "TH_SPELL_PHASE1": [
         "TH_NORMAL",

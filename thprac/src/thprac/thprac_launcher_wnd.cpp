@@ -497,25 +497,25 @@ int LauncherWndInit(unsigned int width, unsigned int height, unsigned int maxWid
     //auto displayX = GetSystemMetrics(SM_CXSCREEN);
     //auto displayY = GetSystemMetrics(SM_CYSCREEN);
     //GetDesktopResolution(displayX, displayY);
-    PSetProcessDpiAwareness setProcDpiAwareness = nullptr;
-    PGetDpiForMonitor getDpiForMonitor = nullptr;
-    setProcDpiAwareness = (PSetProcessDpiAwareness)GetProcAddress(GetModuleHandleW(L"shcore.dll"), "SetProcessDpiAwareness");
-    getDpiForMonitor = (PGetDpiForMonitor)GetProcAddress(GetModuleHandleW(L"shcore.dll"), "GetDpiForMonitor");
-    if (setProcDpiAwareness && getDpiForMonitor) {
-        UINT dpiX;
-        UINT dpiY;
-        setProcDpiAwareness(1);
-        getDpiForMonitor(MonitorFromWindow(__thprac_lc_hwnd, MONITOR_DEFAULTTONEAREST), 0, &dpiX, &dpiY);
-        if (dpiX != 96) {
-            __thprac_lc_scale = (float)dpiX / 96.0f;
-            width = (unsigned int)((float)width * __thprac_lc_scale);
-            height = (unsigned int)((float)height * __thprac_lc_scale);
-            maxWidth = (unsigned int)((float)maxWidth * __thprac_lc_scale);
-            maxHeight = (unsigned int)((float)maxHeight * __thprac_lc_scale);
-            widthCurrent = (unsigned int)((float)widthCurrent * __thprac_lc_scale);
-            heightCurrent = (unsigned int)((float)heightCurrent * __thprac_lc_scale);
-            //displayX = (unsigned int)((float)displayX / __thprac_lc_scale);
-            //displayY = (unsigned int)((float)displayY / __thprac_lc_scale);
+    if (auto shcore = GetModuleHandleW(L"shcore.dll")) {
+        auto setProcDpiAwareness = (PSetProcessDpiAwareness)GetProcAddress(shcore, "SetProcessDpiAwareness");
+        auto getDpiForMonitor = (PGetDpiForMonitor)GetProcAddress(shcore, "GetDpiForMonitor");
+        if (setProcDpiAwareness && getDpiForMonitor) {
+            UINT dpiX;
+            UINT dpiY;
+            setProcDpiAwareness(1);
+            getDpiForMonitor(MonitorFromWindow(__thprac_lc_hwnd, MONITOR_DEFAULTTONEAREST), 0, &dpiX, &dpiY);
+            if (dpiX != 96) {
+                __thprac_lc_scale = (float)dpiX / 96.0f;
+                width = (unsigned int)((float)width * __thprac_lc_scale);
+                height = (unsigned int)((float)height * __thprac_lc_scale);
+                maxWidth = (unsigned int)((float)maxWidth * __thprac_lc_scale);
+                maxHeight = (unsigned int)((float)maxHeight * __thprac_lc_scale);
+                widthCurrent = (unsigned int)((float)widthCurrent * __thprac_lc_scale);
+                heightCurrent = (unsigned int)((float)heightCurrent * __thprac_lc_scale);
+                // displayX = (unsigned int)((float)displayX / __thprac_lc_scale);
+                // displayY = (unsigned int)((float)displayY / __thprac_lc_scale);
+            }
         }
     }
     auto wndPosX = (displayX - widthCurrent) / 2;
@@ -731,20 +731,14 @@ std::wstring LauncherWndFolderSelect(const wchar_t* title)
 }
 
 std::wstring LauncherWndFileSelect(const wchar_t* title, const wchar_t* filter) {
-    OPENFILENAME ofn;
-    wchar_t szFile[MAX_PATH];
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lpstrTitle = nullptr;
+    OPENFILENAME ofn = {};
+    wchar_t szFile[MAX_PATH] = {};
     ofn.lStructSize = sizeof(ofn);
     ofn.hwndOwner = __thprac_lc_hwnd;
     ofn.lpstrFile = szFile;
-    ofn.lpstrFile[0] = '\0';
     ofn.nMaxFile = sizeof(szFile);
     ofn.lpstrFilter = filter;
     ofn.nFilterIndex = 1;
-    ofn.lpstrFileTitle = NULL;
-    ofn.nMaxFileTitle = 0;
-    ofn.lpstrInitialDir = NULL;
     ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NODEREFERENCELINKS;
     GetOpenFileName(&ofn);
     return std::wstring(szFile);

@@ -25,26 +25,12 @@ static void* _str_cvt_buffer(size_t size)
     }
     return bufferPtr;
 }
-std::string utf16_to_utf8(const std::wstring& utf16)
-{
-    int utf8Length = WideCharToMultiByte(CP_UTF8, 0, utf16.c_str(), -1, nullptr, 0, NULL, NULL);
-    char* utf8 = (char*)_str_cvt_buffer(utf8Length);
-    WideCharToMultiByte(CP_UTF8, 0, utf16.c_str(), -1, utf8, utf8Length, NULL, NULL);
-    return std::string(utf8);
-}
 std::string utf16_to_utf8(const wchar_t* utf16)
 {
     int utf8Length = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, nullptr, 0, NULL, NULL);
     char* utf8 = (char*)_str_cvt_buffer(utf8Length);
     WideCharToMultiByte(CP_UTF8, 0, utf16, -1, utf8, utf8Length, NULL, NULL);
     return std::string(utf8);
-}
-std::wstring utf8_to_utf16(const std::string& utf8)
-{
-    int utf16Length = MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), -1, nullptr, 0);
-    wchar_t* utf16 = (wchar_t*)_str_cvt_buffer(utf16Length);
-    MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), -1, utf16, utf16Length);
-    return std::wstring(utf16);
 }
 std::wstring utf8_to_utf16(const char* utf8)
 {
@@ -53,26 +39,12 @@ std::wstring utf8_to_utf16(const char* utf8)
     MultiByteToWideChar(CP_UTF8, 0, utf8, -1, utf16, utf16Length);
     return std::wstring(utf16);
 }
-std::string utf16_to_mb(const std::wstring& utf16)
-{
-    int utf8Length = WideCharToMultiByte(CP_ACP, 0, utf16.c_str(), -1, nullptr, 0, NULL, NULL);
-    char* utf8 = (char*)_str_cvt_buffer(utf8Length);
-    WideCharToMultiByte(CP_ACP, 0, utf16.c_str(), -1, utf8, utf8Length, NULL, NULL);
-    return std::string(utf8);
-}
 std::string utf16_to_mb(const wchar_t* utf16)
 {
     int utf8Length = WideCharToMultiByte(CP_ACP, 0, utf16, -1, nullptr, 0, NULL, NULL);
     char* utf8 = (char*)_str_cvt_buffer(utf8Length);
     WideCharToMultiByte(CP_ACP, 0, utf16, -1, utf8, utf8Length, NULL, NULL);
     return std::string(utf8);
-}
-std::wstring mb_to_utf16(const std::string& utf8)
-{
-    int utf16Length = MultiByteToWideChar(CP_ACP, 0, utf8.c_str(), -1, nullptr, 0);
-    wchar_t* utf16 = (wchar_t*)_str_cvt_buffer(utf16Length);
-    MultiByteToWideChar(CP_ACP, 0, utf8.c_str(), -1, utf16, utf16Length);
-    return std::wstring(utf16);
 }
 std::wstring mb_to_utf16(const char* utf8)
 {

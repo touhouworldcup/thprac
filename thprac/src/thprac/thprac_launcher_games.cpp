@@ -465,14 +465,14 @@ public:
             if (!PathIsRelativeW(mThcrapDir.c_str())) {
                 if (PathRelativePathToW(cvt, currentPath, FILE_ATTRIBUTE_DIRECTORY, mThcrapDir.c_str(), FILE_ATTRIBUTE_NORMAL)) {
                     mThcrapDir = cvt;
-                    LauncherSettingSet("thcrap", utf16_to_utf8(mThcrapDir));
+                    LauncherSettingSet("thcrap", utf16_to_utf8(mThcrapDir.c_str()));
                 }
             }
         } else {
             if (PathIsRelativeW(mThcrapDir.c_str())) {
                 if (GetFullPathNameW(mThcrapDir.c_str(), MAX_PATH, cvt, NULL)) {
                     mThcrapDir = cvt;
-                    LauncherSettingSet("thcrap", utf16_to_utf8(mThcrapDir));
+                    LauncherSettingSet("thcrap", utf16_to_utf8(mThcrapDir.c_str()));
                 }
             }
         }
@@ -618,7 +618,7 @@ public:
         std::string thcrapDirUtf8;
         std::wstring thcrapDir;
         LauncherSettingGet("thcrap", thcrapDirUtf8);
-        thcrapDir = utf8_to_utf16(thcrapDirUtf8);
+        thcrapDir = utf8_to_utf16(thcrapDirUtf8.c_str());
         if (!thcrapTest(thcrapDir)) {
             LauncherSettingSet("thcrap", std::string(""));
             return false;
@@ -674,7 +674,7 @@ public:
                 if (gameInst.type == TYPE_THCRAP) {
                     continue;
                 }
-                auto u16Path = utf8_to_utf16(gameInst.path);
+                auto u16Path = utf8_to_utf16(gameInst.path.c_str());
                 if (isRelative) {
                     if (!PathIsRelativeW(u16Path.c_str())) {
                         if (PathRelativePathToW(cvt, currentPath, FILE_ATTRIBUTE_DIRECTORY, u16Path.c_str(), FILE_ATTRIBUTE_NORMAL)) {
@@ -1053,7 +1053,7 @@ public:
     {
         auto& g = THGameGui::singleton();
         auto nextIdx = (g.mScanCurrentIdx == 0) ? 1 : 0;
-        g.mScanCurrent[nextIdx] = utf16_to_utf8(dir);
+        g.mScanCurrent[nextIdx] = utf16_to_utf8(dir.c_str());
 
         // Hopefully this is an atom operation.
         g.mScanCurrentIdx = nextIdx;
@@ -1068,7 +1068,7 @@ public:
             }
             std::wstring checkPath = path + L"\\appmanifest_" + gameDef.steamId + L".acf";
             if (GetFileAttributesW(checkPath.c_str()) != INVALID_FILE_ATTRIBUTES) {
-                ScanAddGame(TYPE_STEAM, "", utf16_to_utf8(path) + "\\common\\" + gameDef.idStr + '\\' + gameDef.idStr + ".exe", gameDef);
+                ScanAddGame(TYPE_STEAM, "", utf16_to_utf8(path.c_str()) + "\\common\\" + gameDef.idStr + '\\' + gameDef.idStr + ".exe", gameDef);
             }
         }
         return 0;
@@ -1127,8 +1127,8 @@ public:
                         steamappsPath.clear();
                         steamappsPath = cfgStr.substr(searchPos - 1, endQuotePos - searchPos + 1);
                         steamappsPath = GetCleanedPath(steamappsPath);
-                        if (utf8_to_utf16(steamappsPath) != steamPath) {
-                            ScanSteamappPath(utf8_to_utf16(steamappsPath + "\\steamapps"));
+                        if (utf8_to_utf16(steamappsPath.c_str()) != steamPath) {
+                            ScanSteamappPath(utf8_to_utf16((steamappsPath + "\\steamapps").c_str()));
                         }
                     }
                 }
@@ -1147,7 +1147,7 @@ public:
         HANDLE hFileMap = NULL;
         void* pFileMapView = nullptr;
         auto& games = THGameGui::singleton().mGames;
-        auto utf8Dir = utf16_to_utf8(dir);
+        auto utf8Dir = utf16_to_utf8(dir.c_str());
 
         // Open the file.
         hFile = CreateFileW(dir.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -1266,7 +1266,7 @@ public:
 
         for (auto it = gameGui.mGames.begin(); it != gameGui.mGames.end(); ++it) {
             for (auto& gameInst : it.value().instances) {
-                ScanSetCurrentPath(utf8_to_utf16(gameInst.path));
+                ScanSetCurrentPath(utf8_to_utf16(gameInst.path.c_str()));
                 switch (gameInst.type) {
                 case THPrac::TYPE_ORIGINAL:
                 case THPrac::TYPE_MODDED:
@@ -1275,10 +1275,10 @@ public:
                 case THPrac::TYPE_TCHINESE:
                 case THPrac::TYPE_MALICIOUS:
                 case THPrac::TYPE_NYASAMA:
-                    ScanExe(utf8_to_utf16(gameInst.path), gameInst.name);
+                    ScanExe(utf8_to_utf16(gameInst.path.c_str()), gameInst.name);
                     break;
                 case THPrac::TYPE_STEAM: {
-                    auto attr = GetFileAttributesW(utf8_to_utf16(gameInst.path).c_str());
+                    auto attr = GetFileAttributesW(utf8_to_utf16(gameInst.path.c_str()).c_str());
                     if (attr != INVALID_FILE_ATTRIBUTES && attr != FILE_ATTRIBUTE_DIRECTORY) {
                         ScanAddGame(TYPE_STEAM, gameInst.name, gameInst.path, it.value().signature);
                     }
@@ -1381,7 +1381,7 @@ public:
                     }
                 }
                 if (mScanPath != L"") {
-                    ImGui::TextWrapped(XSTR(THPRAC_SCAN_FOLDER_SELECTED), utf16_to_utf8(mScanPath).c_str());
+                    ImGui::TextWrapped(XSTR(THPRAC_SCAN_FOLDER_SELECTED), utf16_to_utf8(mScanPath.c_str()).c_str());
                 } else {
                     ImGui::TextWrapped(XSTR(THPRAC_SCAN_FOLDER_NOT_SELECTED));
                 }
@@ -1762,7 +1762,7 @@ public:
             return 0;
         }
         auto& currentInst = currentGame->instances[instance];
-        auto currentInstPath = utf8_to_utf16(currentInst.path);
+        auto currentInstPath = utf8_to_utf16(currentInst.path.c_str());
         auto currentInstDir = GetDirFromFullPath(currentInstPath);
 
         STARTUPINFOW startup_info;
@@ -1811,7 +1811,7 @@ public:
         }
         auto& currentInst = currentGame->instances[currentGame->selected];
         auto currentCatagory = currentGame->signature.catagory;
-        auto currentInstPath = utf8_to_utf16(currentInst.path);
+        auto currentInstPath = utf8_to_utf16(currentInst.path.c_str());
         auto currentInstExePath = currentInstPath;
         auto currentInstDir = GetDirFromFullPath(currentInstPath);
         HINSTANCE executeResult = (HINSTANCE)100;
@@ -1908,7 +1908,7 @@ public:
     }
     bool LaunchCustom(THGameInst& game, const char* idStr)
     {
-        auto dirU16 = utf8_to_utf16(GetDirFromFullPath(game.path));
+        auto dirU16 = utf8_to_utf16(GetDirFromFullPath(game.path).c_str());
 
         switch (game.type) {
         case TYPE_ORIGINAL:
@@ -1937,7 +1937,7 @@ public:
                 return true;
             break;
         case TYPE_STEAM:
-            if (TryLaunch(utf8_to_utf16(GetDirFromFullPath(game.path)) + L"\\custom.exe"))
+            if (TryLaunch(utf8_to_utf16(GetDirFromFullPath(game.path).c_str()) + L"\\custom.exe"))
                 return true;
             break;
             // TODO: Launch steam
@@ -2098,7 +2098,7 @@ public:
         if (ImGui::Button(XSTR(THPRAC_GAMES_OPEN_FOLDER))) {
             auto folderPath = GetDirFromFullPath(currentInst.path);
             if (folderPath != currentInst.path) {
-                ShellExecuteW(NULL, L"explore", utf8_to_utf16(folderPath).c_str(), NULL, NULL, SW_SHOW);
+                ShellExecuteW(NULL, L"explore", utf8_to_utf16(folderPath.c_str()).c_str(), NULL, NULL, SW_SHOW);
             }
         }
 

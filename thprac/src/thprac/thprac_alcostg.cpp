@@ -59,45 +59,30 @@ namespace Alcostg {
     bool thHardLock { false };
     bool thRestart { false };
 
-    // Beer and bad code.
-    bool alcostg_beer_engaged = false;
     unsigned int alcostg_beer_cd = 0;
-    int16_t alcostg_beer_to_add = 0;
-    __declspec(noinline) void AlcostgAddBeer(int16_t beer)
-    {
-        __asm
-        {
-				mov eax, 0x48e580;
-				mov cx, beer;
-				push ebx;
-				mov ebx, 0x413ef0;
-				call ebx;
-				pop ebx;
-        }
-    }
     EHOOK_G1(alcostg_add_beer, (void*)0x4264fc)
     {
-        if (thPracParam.mode == 1 && alcostg_beer_engaged) {
+        if (thPracParam.mode == 1) {
             if (++alcostg_beer_cd == 20) {
-                AlcostgAddBeer(thPracParam.beer * 100);
-                alcostg_beer_engaged = false;
+                int16_t beer = thPracParam.beer * 100;
+                __asm {
+				    mov eax, 0x48e580;
+				    mov cx, beer;
+				    mov edx, 0x413ef0;
+				    call edx;
+                }
                 alcostg_add_beer::GetHook().Disable();
             }
         }
     }
-    class AlcostgBeer {
-    public:
-        static __declspec(noinline) void Set(int16_t beer)
+    namespace AlcostgBeer {
+        static void Set(int16_t beer)
         {
-            alcostg_beer_engaged = true;
-            alcostg_beer_to_add = beer;
             alcostg_beer_cd = 0;
             alcostg_add_beer::GetHook().Enable();
         }
-        static __declspec(noinline) void Reset()
+        static void Reset()
         {
-            alcostg_beer_engaged = false;
-            alcostg_beer_to_add = 0;
             alcostg_beer_cd = 0;
             alcostg_add_beer::GetHook().Disable();
         }
@@ -147,7 +132,7 @@ namespace Alcostg {
                         if (*mWarp == 1)
                             thPracParam.progress = *mProgress;
                         else
-                            thPracParam.section = XSEC(*mCatagory, *mStage, *mWarp, *mSection);
+                            thPracParam.section = *mWarp ? th_sections_cba[*mStage][*mWarp - 1][*mSection] : 0;
                         thPracParam.time = *mTime;
                         thPracParam.beer = *mBeer;
                         thPracParam.beer_max = *mBeerMax;
@@ -256,7 +241,7 @@ namespace Alcostg {
                     *mTime = 0;
                     *mProgress = 1;
                 }
-                if (mWarp(TH_WARP, *mCatagory ? TH_WARP_CBT : TH_WARP_CBA)) {
+                if (mWarp()) {
                     *mSection = *mPhase = 0;
                     *mProgress = 1;
                 }
@@ -268,9 +253,7 @@ namespace Alcostg {
                             sprintf_s(temp, XSTR(ALCOSTG_ORDER), *mProgress);
                         mProgress(temp);
                     } else {
-                        if (mSection(*mCatagory ? TH_WARP_CBT[*mWarp] : TH_WARP_CBA[*mWarp],
-                                *mCatagory ? XCBT(*mStage, *mWarp - 1) : XCBA(*mStage, *mWarp - 1),
-                                XSSS(mDiffculty)))
+                        if (mSection(TH_WARP_ALCOSTG[*mWarp], XCBA(*mStage, *mWarp - 1), XSSS(mDiffculty)))
                             *mPhase = 0;
                         mPhase(TH_PHASE, SpellPhase());
                     }
@@ -331,10 +314,9 @@ namespace Alcostg {
 
     protected:
         Gui::GuiCombo mStage { TH_STAGE, ALCOSTG_STAGE_SELECT };
-        Gui::GuiCombo mWarp { TH_WARP, TH_WARP_CBT };
+        Gui::GuiCombo mWarp { TH_WARP, TH_WARP_ALCOSTG };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
-        Gui::GuiHotKey mCatagory { "Catagory", "Tab", VK_TAB };
 
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 99999990, 10, 10000000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mTime { ALCOSTG_TIME, 0, 210, 1, 60, 30 }; // 1 for 2 sec

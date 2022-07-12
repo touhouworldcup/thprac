@@ -505,7 +505,7 @@ public:
 
                 for (auto& download : mUpdDownloads) {
                     if (CenteredButton(download.first.c_str())) {
-                        ShellExecuteW(NULL, NULL, utf8_to_utf16(download.second).c_str(), NULL, NULL, SW_SHOW);
+                        ShellExecuteW(NULL, NULL, utf8_to_utf16(download.second.c_str()).c_str(), NULL, NULL, SW_SHOW);
                     }
                 }
             }
@@ -757,10 +757,10 @@ private:
 
         auto slashRPos = url.rfind('/');
         if (slashRPos != std::string::npos) {
-            fileNameOut = utf8_to_utf16(url.substr(slashRPos + 1));
+            fileNameOut = utf8_to_utf16(url.substr(slashRPos + 1).c_str());
         }
-        serverNameOut = utf8_to_utf16(url.substr(0, slashPos));
-        objectNameOut = utf8_to_utf16(url.substr(slashPos));
+        serverNameOut = utf8_to_utf16(url.substr(0, slashPos).c_str());
+        objectNameOut = utf8_to_utf16(url.substr(slashPos).c_str());
         isHttpsOut = isHttps;
         return true;
     }
@@ -828,7 +828,7 @@ private:
         updObj.mAutoUpdStatus = STATUS_CHKING_OR_UPDATING;
 
         std::vector<uint8_t> newFile;
-        DWORD status = DownloadSingleFile(utf8_to_utf16(updObj.mUpdDirectLink).c_str(), newFile, [&](DWORD remSize, DWORD fileSize) {
+        DWORD status = DownloadSingleFile(utf8_to_utf16(updObj.mUpdDirectLink.c_str()).c_str(), newFile, [&](DWORD remSize, DWORD fileSize) {
             updObj.mUpdPercentage = (fileSize - remSize) * 100 / (float)fileSize;
         });
         if (status) {
@@ -1293,7 +1293,7 @@ private:
                         mThcrapHintTime = 5.0f;
                         mThcrapHintStr = XSTR(THPRAC_THCRAP_INVALID);
                     } else {
-                        mThcrap.Set(utf16_to_utf8(path));
+                        mThcrap.Set(utf16_to_utf8(path.c_str()));
                         LauncherGamesThcrapSetup();
                         mThcrapHintTime = 0.0f;
                         //mThcrapHintTimeBuffer = 2;

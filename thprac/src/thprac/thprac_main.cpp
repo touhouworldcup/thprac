@@ -274,58 +274,9 @@ bool CheckVpatch(THGameSig& gameSig)
     return true;
 }
 
-bool RunGameReflective(THGameSig& gameSig, std::wstring& name, bool useVpatch)
-{
-    HINSTANCE executeResult = (HINSTANCE)100;
-
-    if (useVpatch) {
-        executeResult = ShellExecuteW(NULL, L"open", L"vpatch.exe", NULL, NULL, SW_SHOW);
-    } else {
-        executeResult = ShellExecuteW(NULL, L"open", name.c_str(), NULL, NULL, SW_SHOW);
-    }
-
-    if (executeResult <= (HINSTANCE)32) {
-        return false;
-    }
-
-    if ((gameSig.catagory == CAT_MAIN || gameSig.catagory == CAT_SPINOFF_STG) && useVpatch) {
-        for (int i = 0; i < 20; ++i) {
-            if (CheckIfAnyGame()) {
-                THGameSig* gameSig = nullptr;
-                PROCESSENTRY32W entry;
-                entry.dwSize = sizeof(PROCESSENTRY32W);
-                HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-                if (Process32FirstW(snapshot, &entry)) {
-                    do {
-                        gameSig = CheckOngoingGame(entry);
-                        if (gameSig) {
-                            if (ApplyTHPracToProc(entry)) {
-                                CloseHandle(snapshot);
-                                return true;
-                            } else {
-                                PromptUser(PR_ERR_ATTACH_FAILED);
-                                CloseHandle(snapshot);
-                                return true;
-                            }
-                        }
-                    } while (Process32NextW(snapshot, &entry));
-                }
-            }
-            Sleep(500);
-        }
-    }
-
-    return true;
-}
-
 bool RunGameWithTHPrac(THGameSig& gameSig, std::wstring& name)
 {
     auto isVpatchValid = CheckDLLFunction(gameSig.vPatchStr, "_Initialize@4");
-    bool useReflectiveLaunch = false;
-    LauncherSettingGet("reflective_launch", useReflectiveLaunch);
-    if (useReflectiveLaunch) {
-        return RunGameReflective(gameSig, name, isVpatchValid);
-    }
 
     STARTUPINFOW startup_info;
     PROCESS_INFORMATION proc_info;
@@ -361,7 +312,7 @@ bool FindOngoingGame(bool prompt)
 
     if (CheckIfAnyGame()) {
         THGameSig* gameSig = nullptr;
-        PROCESSENTRY32W entry;
+        PROCESSENTRY32W entry = {};
         entry.dwSize = sizeof(PROCESSENTRY32W);
         HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
         if (Process32FirstW(snapshot, &entry)) {

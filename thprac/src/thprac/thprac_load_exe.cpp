@@ -1,4 +1,5 @@
 ﻿#include "thprac_load_exe.h"
+#include "utils/utils.h"
 #include <windows.h>
 
 namespace THPrac {
@@ -430,16 +431,15 @@ extern "C" __declspec(safebuffers) DWORD WINAPI InitParamNew(remote_param* param
 
 bool LoadSelf(HANDLE hProcess, void* userdata, size_t userdataSize)
 {
-    remote_param lModule;
+    remote_param lModule = {};
 
     // User data
     if (userdata) {
-        auto rUserData = VirtualAllocEx(hProcess, NULL, userdataSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-        WriteProcessMemory(hProcess, rUserData, userdata, userdataSize, NULL);
-        lModule.pUserData = rUserData;
-        lModule.pAddrOfUserData = (PUINT8)((PUINT8)GetUserData() - (PUINT8)GetModuleHandleA(NULL));
-    } else {
-        lModule.pUserData = nullptr;
+        if (auto rUserData = VirtualAllocEx(hProcess, NULL, userdataSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) {
+            WriteProcessMemory(hProcess, rUserData, userdata, userdataSize, NULL);
+            lModule.pUserData = rUserData;
+            lModule.pAddrOfUserData = (PUINT8)((PUINT8)GetUserData() - (PUINT8)GetModuleHandleA(NULL));
+        }
     }
 
     // Prepare parameters
@@ -450,18 +450,23 @@ bool LoadSelf(HANDLE hProcess, void* userdata, size_t userdataSize)
     GetModuleFileNameA(NULL, lModule.sExePath, MAX_PATH);
 
     // Write shellcode and parameters
-    auto rModule = VirtualAllocEx(hProcess, NULL, sizeof(remote_param), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    LPVOID rModule = VirtualAllocEx(hProcess, NULL, sizeof(remote_param), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    if (!rModule)
+        return false;
+    defer(VirtualFreeEx(hProcess, rModule, 0, MEM_RELEASE));
     WriteProcessMemory(hProcess, rModule, &lModule, sizeof(remote_param), NULL);
-    auto pRemoteInit = VirtualAllocEx(hProcess, NULL, sizeof(INIT_SHELLCODE), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    LPVOID pRemoteInit = VirtualAllocEx(hProcess, NULL, sizeof(INIT_SHELLCODE), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    if (!pRemoteInit)
+        return false;
+    defer(VirtualFreeEx(hProcess, pRemoteInit, 0, MEM_RELEASE));
     WriteProcessMemory(hProcess, pRemoteInit, INIT_SHELLCODE, sizeof(INIT_SHELLCODE), NULL);
 
     // Invoke
-    DWORD rResult;
-    auto tInit = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pRemoteInit, rModule, 0, NULL);
-    WaitForSingleObject(tInit, INFINITE);
-    GetExitCodeThread(tInit, &rResult);
-    VirtualFreeEx(hProcess, rModule, 0, MEM_RELEASE);
-    VirtualFreeEx(hProcess, pRemoteInit, 0, MEM_RELEASE);
+    DWORD rResult = 0;
+    if (auto tInit = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pRemoteInit, rModule, 0, NULL)) {
+        WaitForSingleObject(tInit, INFINITE);
+        GetExitCodeThread(tInit, &rResult);
+    }    
 
     return rResult;
 }
