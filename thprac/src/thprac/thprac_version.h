@@ -2,5 +2,6 @@
 
 namespace THPrac {
 const char* GetVersionStr();
-const int* GetVersionInt();
+const wchar_t* GetVersionWcs();
+    const int* GetVersionInt();
 }

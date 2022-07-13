@@ -901,7 +901,7 @@ private:
         static HINTERNET hInternet = NULL;
         DWORD byteRet = sizeof(DWORD);
         if (!hInternet) {
-            hInternet = InternetOpenW((std::wstring(L"thprac on ") + windows_version()).c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+            hInternet = InternetOpenW((std::wstring(L"thprac ") + GetVersionWcs() + L" on " + windows_version()).c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
             if (!hInternet)
                 return -1;
             DWORD ignore = 1;
