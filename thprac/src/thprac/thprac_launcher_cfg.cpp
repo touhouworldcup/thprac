@@ -765,13 +765,143 @@ private:
         return true;
     }
 
+    // Code from thcrap
+    static const wchar_t* windows_version(void)
+    {
+        static wchar_t version[64];
+        if (version[0] != '\0') {
+            return version;
+        }
+
+        wchar_t* p = version;
+        size_t rem = sizeof(version) / sizeof(version[0]);
+
+#define snprintf_cat(fmt, ...)                                  \
+    if (rem > 0) {                                              \
+        int chars_printed = _snwprintf(p, rem, fmt, __VA_ARGS__); \
+        if (chars_printed < 0) {                                \
+            chars_printed = rem;                                \
+        }                                                       \
+        rem -= chars_printed;                                   \
+        p += chars_printed;                                     \
+    }
+
+        // Don't need to depend on the entire Driver Development Kit just for
+        // ntddk.h.
+        typedef struct _OSVERSIONINFOW {
+            ULONG dwOSVersionInfoSize;
+            ULONG dwMajorVersion;
+            ULONG dwMinorVersion;
+            ULONG dwBuildNumber;
+            ULONG dwPlatformId;
+            WCHAR szCSDVersion[128];
+            USHORT wServicePackMajor;
+            USHORT wServicePackMinor;
+            USHORT wSuiteMask;
+            UCHAR wProductType;
+            UCHAR wReserved;
+        } RTL_OSVERSIONINFOEXW, *PRTL_OSVERSIONINFOEXW;
+
+        // Or ntoskrnl.lib.
+        typedef LONG WINAPI RtlGetVersion_type(RTL_OSVERSIONINFOEXW * lpVersionInformation);
+        typedef const char* wine_get_version_type(void);
+
+        RtlGetVersion_type* RtlGetVersion;
+        wine_get_version_type* wine_get_version;
+
+        HMODULE hNTDLL = GetModuleHandleW(L"ntdll.dll");
+        if (!hNTDLL) {
+            snprintf_cat(L"%s", L"unknown operating system");
+            return version;
+        }
+
+        // Wine
+        // ----
+        wine_get_version = (wine_get_version_type*)GetProcAddress(hNTDLL, "wine_get_version");
+        if (wine_get_version) {
+            std::wstring wine_ver = L"";
+            if (const char* _wine_ver = wine_get_version()) {
+                wine_ver = utf8_to_utf16(_wine_ver);
+                if (wine_ver == L"") {
+                    wine_ver = L"<unknown>";
+                }
+            } else {
+                wine_ver = L"<unknown>";
+            }
+            snprintf_cat(L"Wine/%s", wine_ver.c_str());
+            return version;
+        }
+        // ----
+
+        RtlGetVersion = (RtlGetVersion_type*)GetProcAddress(hNTDLL, "RtlGetVersion");
+        RTL_OSVERSIONINFOEXW ver_info = { 0 };
+        ver_info.dwOSVersionInfoSize = sizeof(ver_info);
+        RtlGetVersion(&ver_info);
+
+        const wchar_t* winver = NULL;
+        ULONG major = ver_info.dwMajorVersion;
+        ULONG minor = ver_info.dwMinorVersion;
+        UCHAR product = ver_info.wProductType;
+        USHORT suite = ver_info.wSuiteMask;
+
+        // As per https://msdn.microsoft.com/en-us/library/windows/hardware/ff563620(v=vs.85).aspx
+        if (major == 10) {
+            winver = L"10";
+        } else if (major == 6 && minor == 3) {
+            winver = L"8.1";
+        } else if (major == 6 && minor == 2 && product == VER_NT_WORKSTATION) {
+            winver = L"8";
+        } else if (major == 6 && minor == 2 && product != VER_NT_WORKSTATION) {
+            winver = L"Server 2012";
+        } else if (major == 6 && minor == 1 && product == VER_NT_WORKSTATION) {
+            winver = L"7";
+        } else if (major == 6 && minor == 1 && product != VER_NT_WORKSTATION) {
+            winver = L"Server 2008 R2";
+        } else if (major == 6 && minor == 0 && product == VER_NT_WORKSTATION) {
+            winver = L"Vista";
+        } else if (major == 6 && minor == 0 && product != VER_NT_WORKSTATION) {
+            winver = L"Server 2008";
+        } else if (major == 5 && minor == 2 && suite == VER_SUITE_WH_SERVER) {
+            winver = L"Home Server";
+        } else if (major == 5 && minor == 2) {
+            winver = L"Server 2003";
+        } else if (major == 5 && minor == 1) {
+            winver = L"XP";
+        } else if (major == 5 && minor == 0) {
+            winver = L"2000";
+        }
+
+        if (winver) {
+            snprintf_cat(L"Windows %s", winver);
+        } else {
+            snprintf_cat(L"Windows %u.%u", major, minor);
+        }
+
+        // szCSDVersion can be localized, see
+        // https://channel9.msdn.com/forums/Coffeehouse/542106-The-Service-Pack-string/
+        // So...
+        if (ver_info.wServicePackMajor != 0) {
+            snprintf_cat(L", Service Pack %hu", ver_info.wServicePackMajor);
+            if (ver_info.wServicePackMinor != 0) {
+                snprintf_cat(L".%hu", ver_info.wServicePackMinor);
+            }
+        }
+
+        // If Windows 10 really will be the "last Windows", we better add this too.
+        if (ver_info.dwBuildNumber != 0) {
+            snprintf_cat(L", Build %u", ver_info.dwBuildNumber);
+        }
+#undef snprintf_cat
+        return version;
+    }
+
     static DWORD DownloadSingleFile(
         const wchar_t* url, std::vector<uint8_t>& out, std::function<void(DWORD, DWORD)> progressCallback = [](DWORD, DWORD) {})
     {
         static HINTERNET hInternet = NULL;
         DWORD byteRet = sizeof(DWORD);
         if (!hInternet) {
-            hInternet = InternetOpenW(L"thprac", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+            hInternet = InternetOpenW((std::wstring(L"thprac on ") + windows_version()).c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
             if (!hInternet)
                 return -1;
             DWORD ignore = 1;
