@@ -9,6 +9,7 @@
 #include "thprac_utils.h"
 #include <ShlObj.h>
 #include <Windows.h>
+#include <Shlwapi.h>
 #include <cstdio>
 #include <sstream>
 
@@ -63,9 +64,32 @@ int GuiLauncherMain()
         ErrorMsgBox(THPRAC_PR_ERR_LAUNCHER_CFG);
         return -1;
     }
+
     int theme;
     if (LauncherSettingGet("theme", theme)) {
-        SetTheme(theme);
+        // LauncherSettingSet doesn't take int, only int&.
+        // Passing 0 will call the overload with const char*
+        int Sus = 0;
+        const char* theme_user = NULL;
+        // LauncherSettingGet only accepts signed ints but I want to do an unsigned comparison
+        if ((unsigned int)theme > 2) {
+            if (LauncherSettingGet("theme_user", theme_user) && theme_user) {
+                std::wstring theme_path = LauncherGetDataDir() + L"themes\\" + utf8_to_utf16(theme_user);
+                if (!PathFileExistsW(theme_path.c_str())) {
+                    LauncherSettingSet("theme", Sus);
+                    theme = Sus;
+                }
+            } else {
+                LauncherSettingSet("theme", Sus);
+                theme = Sus;
+            }
+        }
+
+        if (theme_user) {
+            SetTheme(theme, utf8_to_utf16(theme_user).c_str());
+        } else {
+            SetTheme(theme);
+        }
     }
     LauncherPeekUpd();
     auto scale = LauncherWndGetScale();
