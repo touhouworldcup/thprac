@@ -60,21 +60,21 @@ private:
     };
     void WriteLinksCfgDefault()
     {
-        const char* debugJsonStr = R"123({
+        const char* linksJsonStr = R"123({
             "Default":{
                 "__is_open__" : true,
                 "Royalflare Archive":"https://maribelhearn.com/royalflare",
                 "Lunarcast":"http://replay.lunarcast.net/",
-                "PND":"https://thscore.pndsng.com/index.php",
+                "PND's Scoreboard":"https://thscore.pndsng.com/index.php",
                 "Maribel Hearn's Touhou Portal":"https://maribelhearn.com/",
-                "Eientei Forums":"https://eientei.boards.net/",
+                "Touhou Patch Center":"https://www.thpatch.net/",
+                "Touhou Replay Showcase:"https://twitch.tv/touhou_replay_showcase",
                 "甜品站 (isndes)":"https://www.isndes.com/",
-                "Touhou Patch":"https://www.thpatch.net/",
                 "THBWiki":"https://thwiki.cc/"
             }
         })123";
         rapidjson::Document linksJson;
-        linksJson.Parse(debugJsonStr);
+        linksJson.Parse(linksJsonStr);
 
         auto& cfg = LauncherCfgGet();
         if (cfg.HasMember("links")) {
