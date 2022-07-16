@@ -1944,6 +1944,5 @@ namespace TH11 {
 void TH11Init()
 {
     TH11::THInitHook::singleton().EnableAllHooks();
-    TryKeepUpRefreshRate((void*)0x446e3c);
 }
 }

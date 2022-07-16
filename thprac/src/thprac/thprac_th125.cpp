@@ -296,6 +296,5 @@ namespace TH125 {
 void TH125Init()
 {
     TH125::THInitHook::singleton().EnableAllHooks();
-    TryKeepUpRefreshRate((void*)0x44fb0c);
 }
 }
