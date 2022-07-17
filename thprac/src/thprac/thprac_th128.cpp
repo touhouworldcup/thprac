@@ -15,6 +15,8 @@ namespace TH128 {
         int32_t ice_power;
         int32_t ice_area;
 
+        bool dlg;
+
         bool _playLock = false;
         void Reset()
         {
@@ -29,6 +31,7 @@ namespace TH128 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
+            GetJsonValueEx(dlg, Bool);
 
             GetJsonValue(score);
             GetJsonValue(motivation);
@@ -50,6 +53,8 @@ namespace TH128 {
                 AddJsonValue(section);
             if (phase)
                 AddJsonValue(phase);
+            if (dlg)
+                AddJsonValue(dlg);
 
             AddJsonValue(score);
             AddJsonValue(motivation);
@@ -108,6 +113,8 @@ namespace TH128 {
                 thPracParam.stage = mStageMap[*mStart][*mPath][*mStage];
                 thPracParam.section = CalcSection();
                 thPracParam.phase = SpellPhase() ? *mPhase : 0;
+                if (SectionHasDlg(thPracParam.section))
+                    thPracParam.dlg = *mDlg;
 
                 thPracParam.score = *mScore;
                 thPracParam.motivation = *mLife;
@@ -245,6 +252,30 @@ namespace TH128 {
                 break;
             }
         }
+        bool SectionHasDlg(int32_t section)
+        {
+            switch (section) {
+            case TH128_A11_BOSS1:
+            case TH128_A12_BOSS1:
+            case TH128_A13_BOSS1:
+            case TH128_A22_BOSS1:
+            case TH128_A23_BOSS1:
+            case TH128_B11_BOSS1:
+            case TH128_B12_BOSS1:
+            case TH128_B13_BOSS1:
+            case TH128_B22_BOSS1:
+            case TH128_B23_BOSS1:
+            case TH128_C11_BOSS1:
+            case TH128_C12_BOSS1:
+            case TH128_C13_BOSS1:
+            case TH128_C22_BOSS1:
+            case TH128_C23_BOSS1:
+            case TH128_EX_END_NS1:
+                return true;
+            default:
+                return false;
+            }
+        }
         void SectionWidget()
         {
             static char chapterStr[256] {};
@@ -271,6 +302,8 @@ namespace TH128 {
                         th_sections_cba[realStage][*mWarp - 2],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
+                    mDlg();
                 break;
             case 4:
             case 5: // Non-spell & Spellcard
@@ -278,6 +311,8 @@ namespace TH128 {
                         th_sections_cbt[realStage][*mWarp - 4],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
+                if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
+                    mDlg();
                 break;
             default:
                 break;
@@ -303,6 +338,7 @@ namespace TH128 {
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
+        Gui::GuiCheckBox mDlg { TH_DLG };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
@@ -641,9 +677,11 @@ namespace TH128 {
         ecl.SetPos(start);
         ecl << ecl_time << 0x0018000C << 0x02ff0000 << 0x00000000 << dest - start << at_frame;
     }
-    void ECLBoss(ECLHelper& ecl, unsigned int pos, int nul)
+    void ECLBoss(ECLHelper& ecl, unsigned int pos, bool dlg)
     {
         ecl.SetPos(pos);
+        if (dlg)
+            ecl << 0 << 0x001401a2 << 0x01ff0000 << 0 << 0 << 0 << 0x001001a3 << 0x00ff0000 << 0;
         ecl << 0 << 0x00300101 << 0x06ff0000 << 0
             << 8 << 'ssoB' << 0
             << 0xc3100000 << 0xc1800000 << 0x28 << 0x3e8 << 1;
@@ -652,28 +690,29 @@ namespace TH128 {
         ecl << 0 << 0x001001a3 << 0x00ff0000 << 0;
         ecl << 0 << 0x0010000a << 0x00ff0000 << 0;
     }
-    void ECL3Boss(ECLHelper& ecl, unsigned int pos, unsigned int pos_11_1, unsigned int pos_11_2)
+    void ECL3Boss(ECLHelper& ecl, unsigned int pos, bool dlg)
     {
         ecl.SetFile(0);
         ecl.SetPos(pos);
 
+        if (dlg)
+            ecl << 0 << 0x001401a2 << 0x01ff0000 << 0 << 0 << 0 << 0x001001a3 << 0x00ff0000 << 0;
         ecl << 0 << 0x00300101 << 0x06ff0000 << 0
             << 8 << 'ssoB' << 0x41
             << 0xC3100000 << 0xC2000000 << 0x28 << 0x3e8 << 1;
-        ecl << 0 << 0x00300101 << 0x06ff0000 << 0
+        if (dlg)
+            ecl << 1 << 0x001001a3 << 0x00ff0000 << 0;
+        ecl << 1 << 0x00300101 << 0x06ff0000 << 0
             << 8 << 'ssoB' << 0x42
             << 0xC3400000 << 0xC2000000 << 0x28 << 0x3e8 << 1;
-        ecl << 0 << 0x00300101 << 0x06ff0000 << 0
+        ecl << 1 << 0x00300101 << 0x06ff0000 << 0
             << 8 << 'ssoB' << 0x43
             << 0x43400000 << 0xC2000000 << 0x28 << 0x3e8 << 1;
 
-        ecl << 0 << 0x001001a4 << 0x00ff0000 << 0;
-        ecl << 0 << 0x001401a2 << 0x01ff0000 << 0 << 1;
-        ecl << 0 << 0x001001a3 << 0x00ff0000 << 0;
-        ecl << 0 << 0x0010000a << 0x00ff0000 << 0;
-
-        ecl.SetFile(2);
-        ecl << pair(pos_11_1, 61) << pair(pos_11_2, 61);
+        ecl << 1 << 0x001001a4 << 0x00ff0000 << 0;
+        ecl << 61 << 0x001401a2 << 0x01ff0000 << 0 << 1;
+        ecl << 61 << 0x001001a3 << 0x00ff0000 << 0;
+        ecl << 61 << 0x0010000a << 0x00ff0000 << 0;
     }
     void ECLMBoss(ECLHelper& ecl, uint8_t ordinal, unsigned int pos_414_cmd_1, unsigned int pos_414_cmd_2 = 0)
     {
@@ -1227,20 +1266,20 @@ namespace TH128 {
             ECLMBoss(ecl, 3, 0x2ab0, 0x2a38);
             break;
         case THPrac::TH128::TH128_A11_BOSS1:
-            ECLBoss(ecl, 0x81d8, 0x0);
+            ECLBoss(ecl, 0x81d8, thPracParam.dlg);
             break;
         case THPrac::TH128::TH128_A11_BOSS2:
-            ECLBoss(ecl, 0x81d8, 0x0);
+            ECLBoss(ecl, 0x81d8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x268, 1, 1200);
             break;
         case THPrac::TH128::TH128_A11_BOSS3:
-            ECLBoss(ecl, 0x81d8, 0x0);
+            ECLBoss(ecl, 0x81d8, false);
             ecl.SetFile(2);
             ecl << pair(0x280, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_A11_BOSS4:
-            ECLBoss(ecl, 0x81d8, 0x0);
+            ECLBoss(ecl, 0x81d8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x268, 2, 1300);
             break;
@@ -1258,25 +1297,25 @@ namespace TH128 {
             ECLMBoss(ecl, 3, 0x3338);
             break;
         case THPrac::TH128::TH128_A12_BOSS1:
-            ECLBoss(ecl, 0x8680, 0x0);
+            ECLBoss(ecl, 0x8680, thPracParam.dlg);
             break;
         case THPrac::TH128::TH128_A12_BOSS2:
-            ECLBoss(ecl, 0x8680, 0x0);
+            ECLBoss(ecl, 0x8680, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2b4, 1, 1400);
             break;
         case THPrac::TH128::TH128_A12_BOSS3:
-            ECLBoss(ecl, 0x8680, 0x0);
+            ECLBoss(ecl, 0x8680, false);
             ecl.SetFile(2);
             ecl << pair(0x2cc, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_A12_BOSS4:
-            ECLBoss(ecl, 0x8680, 0x0);
+            ECLBoss(ecl, 0x8680, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2b4, 2, 4800, 2400.0f);
             break;
         case THPrac::TH128::TH128_A12_BOSS5:
-            ECLBoss(ecl, 0x8680, 0x0);
+            ECLBoss(ecl, 0x8680, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2b4, 3, 2400);
             ECLJump(ecl, 0x2438, 0x270);
@@ -1291,51 +1330,51 @@ namespace TH128 {
             ECLST3MBossCard(ecl, 0x36f8, 1900);
             break;
         case THPrac::TH128::TH128_A13_BOSS1:
-            ECL3Boss(ecl, 0x84b8, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x84b8, thPracParam.dlg);
             break;
         case THPrac::TH128::TH128_A13_BOSS2:
-            ECL3Boss(ecl, 0x84b8, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x84b8, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4f4, 0x10e8, 0x18d8, 1, 2000);
             break;
         case THPrac::TH128::TH128_A13_BOSS3:
-            ECL3Boss(ecl, 0x84b8, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x84b8, false);
             ecl.SetFile(2);
             ecl << pair(0x6d6c, (int8_t)0x32);
             ecl << pair(0x6f24, (int8_t)0x32);
             ecl << pair(0x70dc, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_A13_BOSS4:
-            ECL3Boss(ecl, 0x84b8, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x84b8, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4f4, 0x10e8, 0x18d8, 2, 2000);
             break;
         case THPrac::TH128::TH128_A13_BOSS5:
-            ECL3Boss(ecl, 0x84b8, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x84b8, false);
             ecl.SetFile(2);
             ecl << pair(0x6d6c, (int8_t)0x33);
             ecl << pair(0x6f24, (int8_t)0x33);
             ecl << pair(0x70dc, (int8_t)0x33);
             break;
         case THPrac::TH128::TH128_A13_BOSS6:
-            ECL3Boss(ecl, 0x84b8, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x84b8, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4f4, 0x10e8, 0x18d8, 3, 3000);
             break;
         case THPrac::TH128::TH128_A13_BOSS7:
-            ECL3Boss(ecl, 0x84b8, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x84b8, false);
             ecl.SetFile(2);
             ecl << pair(0x6d6c, (int8_t)0x34);
             ecl << pair(0x6f24, (int8_t)0x34);
             ecl << pair(0x70dc, (int8_t)0x34);
             break;
         case THPrac::TH128::TH128_A13_BOSS8:
-            ECL3Boss(ecl, 0x84b8, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x84b8, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4f4, 0x10e8, 0x18d8, 4, 1500);
             break;
         case THPrac::TH128::TH128_A13_BOSS9:
-            ECL3Boss(ecl, 0x84b8, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x84b8, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4f4, 0x10e8, 0x18d8, 5, 6000);
             break;
@@ -1353,25 +1392,25 @@ namespace TH128 {
             ECLMBoss(ecl, 3, 0x3724);
             break;
         case THPrac::TH128::TH128_A22_BOSS1:
-            ECLBoss(ecl, 0x94a8, 0x0);
+            ECLBoss(ecl, 0x94a8, thPracParam.dlg);
             break;
         case THPrac::TH128::TH128_A22_BOSS2:
-            ECLBoss(ecl, 0x94a8, 0x0);
+            ECLBoss(ecl, 0x94a8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x300, 1, 2800);
             break;
         case THPrac::TH128::TH128_A22_BOSS3:
-            ECLBoss(ecl, 0x94a8, 0x0);
+            ECLBoss(ecl, 0x94a8, false);
             ecl.SetFile(2);
             ecl << pair(0x318, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_A22_BOSS4:
-            ECLBoss(ecl, 0x94a8, 0x0);
+            ECLBoss(ecl, 0x94a8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x300, 2, 4600, 2000.0f);
             break;
         case THPrac::TH128::TH128_A22_BOSS5:
-            ECLBoss(ecl, 0x94a8, 0x0);
+            ECLBoss(ecl, 0x94a8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x300, 3, 2000);
             ECLJump(ecl, 0x2d78, 0x270);
@@ -1386,51 +1425,51 @@ namespace TH128 {
             ECLST3MBossCard(ecl, 0x4038, 2000);
             break;
         case THPrac::TH128::TH128_A23_BOSS1:
-            ECL3Boss(ecl, 0x7ce4, 0x6488, 0x6660);
+            ECL3Boss(ecl, 0x7ce4, thPracParam.dlg);
             break;
         case THPrac::TH128::TH128_A23_BOSS2:
-            ECL3Boss(ecl, 0x7ce4, 0x6488, 0x6660);
+            ECL3Boss(ecl, 0x7ce4, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4b4, 0x924, 0x10c0, 1, 2000);
             break;
         case THPrac::TH128::TH128_A23_BOSS3:
-            ECL3Boss(ecl, 0x7ce4, 0x6488, 0x6660);
+            ECL3Boss(ecl, 0x7ce4, false);
             ecl << pair(0x62c8, (int8_t)0x32);
             ecl << pair(0x64a0, (int8_t)0x32);
             ecl << pair(0x6678, (int8_t)0x32);
             ecl.SetFile(2);
             break;
         case THPrac::TH128::TH128_A23_BOSS4:
-            ECL3Boss(ecl, 0x7ce4, 0x6488, 0x6660);
+            ECL3Boss(ecl, 0x7ce4, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4b4, 0x924, 0x10c0, 2, 2000);
             break;
         case THPrac::TH128::TH128_A23_BOSS5:
-            ECL3Boss(ecl, 0x7ce4, 0x6488, 0x6660);
+            ECL3Boss(ecl, 0x7ce4, false);
             ecl << pair(0x62c8, (int8_t)0x33);
             ecl << pair(0x64a0, (int8_t)0x33);
             ecl << pair(0x6678, (int8_t)0x33);
             ecl.SetFile(2);
             break;
         case THPrac::TH128::TH128_A23_BOSS6:
-            ECL3Boss(ecl, 0x7ce4, 0x6488, 0x6660);
+            ECL3Boss(ecl, 0x7ce4, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4b4, 0x924, 0x10c0, 3, 2600);
             break;
         case THPrac::TH128::TH128_A23_BOSS7:
-            ECL3Boss(ecl, 0x7ce4, 0x6488, 0x6660);
+            ECL3Boss(ecl, 0x7ce4, false);
             ecl << pair(0x62c8, (int8_t)0x34);
             ecl << pair(0x64a0, (int8_t)0x34);
             ecl << pair(0x6678, (int8_t)0x34);
             ecl.SetFile(2);
             break;
         case THPrac::TH128::TH128_A23_BOSS8:
-            ECL3Boss(ecl, 0x7ce4, 0x6488, 0x6660);
+            ECL3Boss(ecl, 0x7ce4, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4b4, 0x924, 0x10c0, 4, 2000);
             break;
         case THPrac::TH128::TH128_A23_BOSS9:
-            ECL3Boss(ecl, 0x7ce4, 0x6488, 0x6660);
+            ECL3Boss(ecl, 0x7ce4, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4b4, 0x924, 0x10c0, 5, 6000);
             break;
@@ -1448,20 +1487,20 @@ namespace TH128 {
             ECLMBoss(ecl, 3, 0x2cb8);
             break;
         case THPrac::TH128::TH128_B11_BOSS1:
-            ECLBoss(ecl, 0x7d10, 0x0);
+            ECLBoss(ecl, 0x7d10, thPracParam.dlg);
             break;
         case THPrac::TH128::TH128_B11_BOSS2:
-            ECLBoss(ecl, 0x7d10, 0x0);
+            ECLBoss(ecl, 0x7d10, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x284, 1, 1300);
             break;
         case THPrac::TH128::TH128_B11_BOSS3:
-            ECLBoss(ecl, 0x7d10, 0x0);
+            ECLBoss(ecl, 0x7d10, false);
             ecl.SetFile(2);
             ecl << pair(0x29c, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_B11_BOSS4:
-            ECLBoss(ecl, 0x7d10, 0x0);
+            ECLBoss(ecl, 0x7d10, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x284, 2, 1300);
             break;
@@ -1479,26 +1518,26 @@ namespace TH128 {
             ECLMBoss(ecl, 3, 0x2c38);
             break;
         case THPrac::TH128::TH128_B12_BOSS1:
-            ECLBoss(ecl, 0x9afc, 0x0);
+            ECLBoss(ecl, 0x9afc, thPracParam.dlg);
             ecl.SetFile(2);
             break;
         case THPrac::TH128::TH128_B12_BOSS2:
-            ECLBoss(ecl, 0x9afc, 0x0);
+            ECLBoss(ecl, 0x9afc, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2b4, 1, 2400);
             break;
         case THPrac::TH128::TH128_B12_BOSS3:
-            ECLBoss(ecl, 0x9afc, 0x0);
+            ECLBoss(ecl, 0x9afc, false);
             ecl.SetFile(2);
             ecl << pair(0x2cc, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_B12_BOSS4:
-            ECLBoss(ecl, 0x9afc, 0x0);
+            ECLBoss(ecl, 0x9afc, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2b4, 2, 4000, 2000.0f);
             break;
         case THPrac::TH128::TH128_B12_BOSS5:
-            ECLBoss(ecl, 0x9afc, 0x0);
+            ECLBoss(ecl, 0x9afc, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2b4, 3, 2000);
             ECLJump(ecl, 0x2984, 0x270);
@@ -1513,51 +1552,51 @@ namespace TH128 {
             ECLST3MBossCard(ecl, 0x36dc, 1900);
             break;
         case THPrac::TH128::TH128_B13_BOSS1:
-            ECL3Boss(ecl, 0x7d54, 0x7404, 0x75dc);
+            ECL3Boss(ecl, 0x7d54, thPracParam.dlg);
             break;
         case THPrac::TH128::TH128_B13_BOSS2:
-            ECL3Boss(ecl, 0x7d54, 0x7404, 0x75dc);
+            ECL3Boss(ecl, 0x7d54, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4cc, 0xdf4, 0x1590, 1, 2000);
             break;
         case THPrac::TH128::TH128_B13_BOSS3:
-            ECL3Boss(ecl, 0x7d54, 0x7404, 0x75dc);
+            ECL3Boss(ecl, 0x7d54, false);
             ecl.SetFile(2);
             ecl << pair(0x7244, (int8_t)0x32);
             ecl << pair(0x741c, (int8_t)0x32);
             ecl << pair(0x75f4, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_B13_BOSS4:
-            ECL3Boss(ecl, 0x7d54, 0x7404, 0x75dc);
+            ECL3Boss(ecl, 0x7d54, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4cc, 0xdf4, 0x1590, 2, 2000);
             break;
         case THPrac::TH128::TH128_B13_BOSS5:
-            ECL3Boss(ecl, 0x7d54, 0x7404, 0x75dc);
+            ECL3Boss(ecl, 0x7d54, false);
             ecl.SetFile(2);
             ecl << pair(0x7244, (int8_t)0x33);
             ecl << pair(0x741c, (int8_t)0x33);
             ecl << pair(0x75f4, (int8_t)0x33);
             break;
         case THPrac::TH128::TH128_B13_BOSS6:
-            ECL3Boss(ecl, 0x7d54, 0x7404, 0x75dc);
+            ECL3Boss(ecl, 0x7d54, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4cc, 0xdf4, 0x1590, 3, 3000);
             break;
         case THPrac::TH128::TH128_B13_BOSS7:
-            ECL3Boss(ecl, 0x7d54, 0x7404, 0x75dc);
+            ECL3Boss(ecl, 0x7d54, false);
             ecl.SetFile(2);
             ecl << pair(0x7244, (int8_t)0x34);
             ecl << pair(0x741c, (int8_t)0x34);
             ecl << pair(0x75f4, (int8_t)0x34);
             break;
         case THPrac::TH128::TH128_B13_BOSS8:
-            ECL3Boss(ecl, 0x7d54, 0x7404, 0x75dc);
+            ECL3Boss(ecl, 0x7d54, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4cc, 0xdf4, 0x1590, 4, 2000);
             break;
         case THPrac::TH128::TH128_B13_BOSS9:
-            ECL3Boss(ecl, 0x7d54, 0x7404, 0x75dc);
+            ECL3Boss(ecl, 0x7d54, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4cc, 0xdf4, 0x1590, 5, 6000);
             break;
@@ -1575,26 +1614,26 @@ namespace TH128 {
             ECLMBoss(ecl, 3, 0x3724);
             break;
         case THPrac::TH128::TH128_B22_BOSS1:
-            ECLBoss(ecl, 0x94a8, 0x0);
+            ECLBoss(ecl, 0x94a8, thPracParam.dlg);
             ecl.SetFile(2);
             break;
         case THPrac::TH128::TH128_B22_BOSS2:
-            ECLBoss(ecl, 0x94a8, 0x0);
+            ECLBoss(ecl, 0x94a8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2d4, 1, 2200);
             break;
         case THPrac::TH128::TH128_B22_BOSS3:
-            ECLBoss(ecl, 0x94a8, 0x0);
+            ECLBoss(ecl, 0x94a8, false);
             ecl.SetFile(2);
             ecl << pair(0x2ec, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_B22_BOSS4:
-            ECLBoss(ecl, 0x94a8, 0x0);
+            ECLBoss(ecl, 0x94a8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2d4, 2, 4600, 1900.0f);
             break;
         case THPrac::TH128::TH128_B22_BOSS5:
-            ECLBoss(ecl, 0x94a8, 0x0);
+            ECLBoss(ecl, 0x94a8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2d4, 3, 1900);
             ECLJump(ecl, 0x2920, 0x270);
@@ -1609,51 +1648,51 @@ namespace TH128 {
             ECLST3MBossCard(ecl, 0x2b38, 2000);
             break;
         case THPrac::TH128::TH128_B23_BOSS1:
-            ECL3Boss(ecl, 0x7b04, 0x6448, 0x6600);
+            ECL3Boss(ecl, 0x7b04, thPracParam.dlg);
             break;
         case THPrac::TH128::TH128_B23_BOSS2:
-            ECL3Boss(ecl, 0x7b04, 0x6448, 0x6600);
+            ECL3Boss(ecl, 0x7b04, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4b4, 0x924, 0x10c0, 1, 2400);
             break;
         case THPrac::TH128::TH128_B23_BOSS3:
-            ECL3Boss(ecl, 0x7b04, 0x6448, 0x6600);
+            ECL3Boss(ecl, 0x7b04, false);
             ecl.SetFile(2);
             ecl << pair(0x62a8, (int8_t)0x32);
             ecl << pair(0x6460, (int8_t)0x32);
             ecl << pair(0x6618, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_B23_BOSS4:
-            ECL3Boss(ecl, 0x7b04, 0x6448, 0x6600);
+            ECL3Boss(ecl, 0x7b04, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4b4, 0x924, 0x10c0, 2, 2000);
             break;
         case THPrac::TH128::TH128_B23_BOSS5:
-            ECL3Boss(ecl, 0x7b04, 0x6448, 0x6600);
+            ECL3Boss(ecl, 0x7b04, false);
             ecl.SetFile(2);
             ecl << pair(0x62a8, (int8_t)0x33);
             ecl << pair(0x6460, (int8_t)0x33);
             ecl << pair(0x6618, (int8_t)0x33);
             break;
         case THPrac::TH128::TH128_B23_BOSS6:
-            ECL3Boss(ecl, 0x7b04, 0x6448, 0x6600);
+            ECL3Boss(ecl, 0x7b04, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4b4, 0x924, 0x10c0, 3, 2000);
             break;
         case THPrac::TH128::TH128_B23_BOSS7:
-            ECL3Boss(ecl, 0x7b04, 0x6448, 0x6600);
+            ECL3Boss(ecl, 0x7b04, false);
             ecl.SetFile(2);
             ecl << pair(0x62a8, (int8_t)0x34);
             ecl << pair(0x6460, (int8_t)0x34);
             ecl << pair(0x6618, (int8_t)0x34);
             break;
         case THPrac::TH128::TH128_B23_BOSS8:
-            ECL3Boss(ecl, 0x7b04, 0x6448, 0x6600);
+            ECL3Boss(ecl, 0x7b04, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4b4, 0x924, 0x10c0, 4, 2000);
             break;
         case THPrac::TH128::TH128_B23_BOSS9:
-            ECL3Boss(ecl, 0x7b04, 0x6448, 0x6600);
+            ECL3Boss(ecl, 0x7b04, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4b4, 0x924, 0x10c0, 5, 6000);
             break;
@@ -1671,20 +1710,20 @@ namespace TH128 {
             ECLMBoss(ecl, 3, 0x3814);
             break;
         case THPrac::TH128::TH128_C11_BOSS1:
-            ECLBoss(ecl, 0x9464, 0x0);
+            ECLBoss(ecl, 0x9464, thPracParam.dlg);
             break;
         case THPrac::TH128::TH128_C11_BOSS2:
-            ECLBoss(ecl, 0x9464, 0x0);
+            ECLBoss(ecl, 0x9464, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x278, 1, 1600);
             break;
         case THPrac::TH128::TH128_C11_BOSS3:
-            ECLBoss(ecl, 0x9464, 0x0);
+            ECLBoss(ecl, 0x9464, false);
             ecl.SetFile(2);
             ecl << pair(0x290, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_C11_BOSS4:
-            ECLBoss(ecl, 0x9464, 0x0);
+            ECLBoss(ecl, 0x9464, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x278, 2, 1600);
             break;
@@ -1702,25 +1741,25 @@ namespace TH128 {
             ECLMBoss(ecl, 3, 0x2c38);
             break;
         case THPrac::TH128::TH128_C12_BOSS1:
-            ECLBoss(ecl, 0x9afc, 0x0);
+            ECLBoss(ecl, 0x9afc, thPracParam.dlg);
             break;
         case THPrac::TH128::TH128_C12_BOSS2:
-            ECLBoss(ecl, 0x9afc, 0x0);
+            ECLBoss(ecl, 0x9afc, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2d0, 1, 2800);
             break;
         case THPrac::TH128::TH128_C12_BOSS3:
-            ECLBoss(ecl, 0x9afc, 0x0);
+            ECLBoss(ecl, 0x9afc, false);
             ecl.SetFile(2);
             ecl << pair(0x2e8, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_C12_BOSS4:
-            ECLBoss(ecl, 0x9afc, 0x0);
+            ECLBoss(ecl, 0x9afc, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2d0, 2, 4000, 2000.0f);
             break;
         case THPrac::TH128::TH128_C12_BOSS5:
-            ECLBoss(ecl, 0x9afc, 0x0);
+            ECLBoss(ecl, 0x9afc, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2d0, 3, 2000);
             ECLJump(ecl, 0x298c, 0x270);
@@ -1735,51 +1774,51 @@ namespace TH128 {
             ECLST3MBossCard(ecl, 0x4058, 2500);
             break;
         case THPrac::TH128::TH128_C13_BOSS1:
-            ECL3Boss(ecl, 0x8408, 0x7418, 0x75f0);
+            ECL3Boss(ecl, 0x8408, thPracParam.dlg);
             break;
         case THPrac::TH128::TH128_C13_BOSS2:
-            ECL3Boss(ecl, 0x8408, 0x7418, 0x75f0);
+            ECL3Boss(ecl, 0x8408, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4e0, 0xe08, 0x15a4, 1, 3000);
             break;
         case THPrac::TH128::TH128_C13_BOSS3:
-            ECL3Boss(ecl, 0x8408, 0x7418, 0x75f0);
+            ECL3Boss(ecl, 0x8408, false);
             ecl.SetFile(2);
             ecl << pair(0x7258, (int8_t)0x32);
             ecl << pair(0x7430, (int8_t)0x32);
             ecl << pair(0x7608, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_C13_BOSS4:
-            ECL3Boss(ecl, 0x8408, 0x7418, 0x75f0);
+            ECL3Boss(ecl, 0x8408, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4e0, 0xe08, 0x15a4, 2, 2000);
             break;
         case THPrac::TH128::TH128_C13_BOSS5:
-            ECL3Boss(ecl, 0x8408, 0x7418, 0x75f0);
+            ECL3Boss(ecl, 0x8408, false);
             ecl.SetFile(2);
             ecl << pair(0x7258, (int8_t)0x33);
             ecl << pair(0x7430, (int8_t)0x33);
             ecl << pair(0x7608, (int8_t)0x33);
             break;
         case THPrac::TH128::TH128_C13_BOSS6:
-            ECL3Boss(ecl, 0x8408, 0x7418, 0x75f0);
+            ECL3Boss(ecl, 0x8408, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4e0, 0xe08, 0x15a4, 3, 1500);
             break;
         case THPrac::TH128::TH128_C13_BOSS7:
-            ECL3Boss(ecl, 0x8408, 0x7418, 0x75f0);
+            ECL3Boss(ecl, 0x8408, false);
             ecl.SetFile(2);
             ecl << pair(0x7258, (int8_t)0x34);
             ecl << pair(0x7430, (int8_t)0x34);
             ecl << pair(0x7608, (int8_t)0x34);
             break;
         case THPrac::TH128::TH128_C13_BOSS8:
-            ECL3Boss(ecl, 0x8408, 0x7418, 0x75f0);
+            ECL3Boss(ecl, 0x8408, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4e0, 0xe08, 0x15a4, 4, 2000);
             break;
         case THPrac::TH128::TH128_C13_BOSS9:
-            ECL3Boss(ecl, 0x8408, 0x7418, 0x75f0);
+            ECL3Boss(ecl, 0x8408, false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4e0, 0xe08, 0x15a4, 5, 6000);
             break;
@@ -1797,25 +1836,25 @@ namespace TH128 {
             ECLMBoss(ecl, 3, 0x3338);
             break;
         case THPrac::TH128::TH128_C22_BOSS1:
-            ECLBoss(ecl, 0x8680, 0x0);
+            ECLBoss(ecl, 0x8680, thPracParam.dlg);
             break;
         case THPrac::TH128::TH128_C22_BOSS2:
-            ECLBoss(ecl, 0x8680, 0x0);
+            ECLBoss(ecl, 0x8680, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2e8, 1, 2200);
             break;
         case THPrac::TH128::TH128_C22_BOSS3:
-            ECLBoss(ecl, 0x8680, 0x0);
+            ECLBoss(ecl, 0x8680, false);
             ecl.SetFile(2);
             ecl << pair(0x300, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_C22_BOSS4:
-            ECLBoss(ecl, 0x8680, 0x0);
+            ECLBoss(ecl, 0x8680, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2e8, 2, 5800, 2500.0f);
             break;
         case THPrac::TH128::TH128_C22_BOSS5:
-            ECLBoss(ecl, 0x8680, 0x0);
+            ECLBoss(ecl, 0x8680, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x2e8, 3, 2500);
             ECLJump(ecl, 0x348c, 0x270);
@@ -1830,51 +1869,51 @@ namespace TH128 {
             ECLST3MBossCard(ecl, 0x2b50, 1900);
             break;
         case THPrac::TH128::TH128_C23_BOSS1:
-            ECL3Boss(ecl, 0x7c20, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x7c20,  thPracParam.dlg);
             break;
         case THPrac::TH128::TH128_C23_BOSS2:
-            ECL3Boss(ecl, 0x7c20, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x7c20,  false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4f4, 0x10fc, 0x18ec, 1, 2000);
             break;
         case THPrac::TH128::TH128_C23_BOSS3:
-            ECL3Boss(ecl, 0x7c20, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x7c20,  false);
             ecl.SetFile(2);
             ecl << pair(0x6d6c, (int8_t)0x32);
             ecl << pair(0x6f24, (int8_t)0x32);
             ecl << pair(0x70dc, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_C23_BOSS4:
-            ECL3Boss(ecl, 0x7c20, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x7c20,  false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4f4, 0x10fc, 0x18ec, 2, 2000);
             break;
         case THPrac::TH128::TH128_C23_BOSS5:
-            ECL3Boss(ecl, 0x7c20, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x7c20, false);
             ecl.SetFile(2);
             ecl << pair(0x6d6c, (int8_t)0x33);
             ecl << pair(0x6f24, (int8_t)0x33);
             ecl << pair(0x70dc, (int8_t)0x33);
             break;
         case THPrac::TH128::TH128_C23_BOSS6:
-            ECL3Boss(ecl, 0x7c20, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x7c20,  false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4f4, 0x10fc, 0x18ec, 3, 3000);
             break;
         case THPrac::TH128::TH128_C23_BOSS7:
-            ECL3Boss(ecl, 0x7c20, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x7c20,  false);
             ecl.SetFile(2);
             ecl << pair(0x6d6c, (int8_t)0x34);
             ecl << pair(0x6f24, (int8_t)0x34);
             ecl << pair(0x70dc, (int8_t)0x34);
             break;
         case THPrac::TH128::TH128_C23_BOSS8:
-            ECL3Boss(ecl, 0x7c20, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x7c20,  false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4f4, 0x10fc, 0x18ec, 4, 1500);
             break;
         case THPrac::TH128::TH128_C23_BOSS9:
-            ECL3Boss(ecl, 0x7c20, 0x6f0c, 0x70c4);
+            ECL3Boss(ecl, 0x7c20,  false);
             ecl.SetFile(2);
             ECL3BossCard(ecl, 0x4f4, 0x10fc, 0x18ec, 5, 6000);
             break;
@@ -1897,93 +1936,93 @@ namespace TH128 {
                 << pair(0xa51c, 60) << pair(0xa554, 60);
             break;
         case THPrac::TH128::TH128_EX_END_NS1:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, thPracParam.dlg);
             break;
         case THPrac::TH128::TH128_EX_END_S1:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x5f8, 1, 2400);
             break;
         case THPrac::TH128::TH128_EX_END_NS2:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ecl << pair(0x610, (int8_t)0x32);
             break;
         case THPrac::TH128::TH128_EX_END_S2:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x5f8, 2, 2400);
             break;
         case THPrac::TH128::TH128_EX_END_NS3:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ecl << pair(0x610, (int8_t)0x33);
             break;
         case THPrac::TH128::TH128_EX_END_S3:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x5f8, 3, 2400);
             break;
         case THPrac::TH128::TH128_EX_END_NS4:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ecl << pair(0x610, (int8_t)0x34);
             break;
         case THPrac::TH128::TH128_EX_END_S4:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x5f8, 4, 3000);
             break;
         case THPrac::TH128::TH128_EX_END_NS5:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ecl << pair(0x610, (int8_t)0x35);
             break;
         case THPrac::TH128::TH128_EX_END_S5:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x5f8, 5, 4000);
             break;
         case THPrac::TH128::TH128_EX_END_NS6:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ecl << pair(0x610, (int8_t)0x36);
             ECLJump(ecl, 0x3c08, 0x24);
             break;
         case THPrac::TH128::TH128_EX_END_S6:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x5f8, 6, 4000);
             break;
         case THPrac::TH128::TH128_EX_END_NS7:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ecl << pair(0x610, (int8_t)0x37);
             break;
         case THPrac::TH128::TH128_EX_END_S7:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x5f8, 7, 1700);
             ecl << pair(0x554, 224.0f);
             break;
         case THPrac::TH128::TH128_EX_END_NS8:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ecl << pair(0x610, (int8_t)0x38);
             break;
         case THPrac::TH128::TH128_EX_END_S8:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x5f8, 8, 3000);
             ecl << pair(0x554, 224.0f);
             break;
         case THPrac::TH128::TH128_EX_END_S9:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x5f8, 9, 2400);
             break;
         case THPrac::TH128::TH128_EX_END_S10:
-            ECLBoss(ecl, 0x0d7b8, 0x0);
+            ECLBoss(ecl, 0x0d7b8, false);
             ecl.SetFile(2);
             ECLBossCard(ecl, 0x5f8, 10, 7000);
 
@@ -2035,6 +2074,8 @@ namespace TH128 {
         if (!thPracParam.mode)
             return 0;
         else if (thPracParam.section >= 10000)
+            return 0;
+        else if (thPracParam.dlg)
             return 0;
         else
             return th_sections_bgm[thPracParam.section];
