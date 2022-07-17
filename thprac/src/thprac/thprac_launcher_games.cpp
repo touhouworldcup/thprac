@@ -1131,29 +1131,15 @@ public:
     }
     static DWORD WINAPI ScanExe(const std::wstring& dir, std::string name = "")
     {
-        HANDLE hFile = INVALID_HANDLE_VALUE;
-        DWORD fileSize = 0;
-        HANDLE hFileMap = NULL;
-        void* pFileMapView = nullptr;
         auto& games = THGameGui::singleton().mGames;
         auto utf8Dir = utf16_to_utf8(dir.c_str());
 
-        // Open the file.
-        hFile = CreateFileW(dir.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-        if (hFile == INVALID_HANDLE_VALUE)
-            goto end;
-        fileSize = GetFileSize(hFile, NULL);
-        if (fileSize > (1 << 23))
-            goto end; // Pass if the file is too large.
-        hFileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
-        if (!hFileMap)
-            goto end;
-        pFileMapView = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, fileSize);
-        if (!pFileMapView)
-            goto end;
+        MappedFile file(dir.c_str());
+        if (!file.fileMapView)
+            return 0;
 
         ExeSig exeSig;
-        GetExeInfo(pFileMapView, fileSize, exeSig);
+        GetExeInfo(file.fileMapView, file.fileSize, exeSig);
         THGameSig* ifSig = nullptr;
         THGameType ifType = TYPE_UNCERTAIN;
 
@@ -1170,19 +1156,19 @@ public:
                 ifType = TYPE_MODDED;
                 break;
             } else if (type == TYPE_MALICIOUS) {
-                if (!CheckHasSteamDRM(pFileMapView, fileSize)) {
+                if (!CheckHasSteamDRM(file.fileMapView, file.fileSize)) {
                     ScanAddGame(type, name, utf8Dir, gameSig);
                 }
             } else if (type != TYPE_UNCERTAIN) {
                 ScanAddGame(type, name, utf8Dir, gameSig);
-                goto end;
+                return 0;
             }
         }
 
         for (auto& known : gKnownGames) {
             if (HashCompare(exeSig.metroHash, known.metroHash)) {
                 ScanAddGame(known.type, name, utf8Dir, games[known.idStr].signature);
-                goto end;
+                return 0;
             }
         }
 
@@ -1190,13 +1176,6 @@ public:
             ScanAddGame(ifType, name, utf8Dir, *ifSig);
         }
 
-    end:
-        if (pFileMapView)
-            UnmapViewOfFile(pFileMapView);
-        if (hFileMap)
-            CloseHandle(hFileMap);
-        if (hFile != INVALID_HANDLE_VALUE)
-            CloseHandle(hFile);
         return 0;
     }
     static DWORD WINAPI ScanFolder(const std::wstring& dir)

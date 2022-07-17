@@ -1312,37 +1312,21 @@ namespace THSnapshot {
 DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName)
 {
 #define MakePointer(t, p, offset) ((t)((PUINT8)(p) + offset))
-    int result = 0;
-    HANDLE hFile = INVALID_HANDLE_VALUE;
-    DWORD fileSize = 0;
-    HANDLE hFileMap = NULL;
-    void* pFileMapView = nullptr;
-    hFile = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (hFile == INVALID_HANDLE_VALUE)
-        goto cdf_end;
-    fileSize = GetFileSize(hFile, NULL);
-    if (fileSize > (1 << 23))
-        goto cdf_end; // Pass if the file is too large.
-    hFileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
-    if (!hFileMap)
-        goto cdf_end;
-    pFileMapView = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, fileSize);
-    if (!pFileMapView)
-        goto cdf_end;
+    MappedFile file(path);
 
-    auto exeSize = fileSize;
-    auto exeBuffer = pFileMapView;
+    auto exeSize = file.fileSize;
+    auto exeBuffer = file.fileMapView;
     if (exeSize < 128)
-        goto cdf_end;
+        return 0;
     PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)exeBuffer;
     if (!pDosHeader || pDosHeader->e_magic != 0x5a4d || (size_t)pDosHeader->e_lfanew + 512 >= exeSize)
-        goto cdf_end;
+        return 0;
     PIMAGE_NT_HEADERS pNtHeader = (PIMAGE_NT_HEADERS)((DWORD)exeBuffer + pDosHeader->e_lfanew);
     if (!pNtHeader || pNtHeader->Signature != 0x00004550)
-        goto cdf_end;
+        return 0;
     PIMAGE_SECTION_HEADER pSection = IMAGE_FIRST_SECTION(pNtHeader);
     if (!pSection)
-        goto cdf_end;
+        return 0;
 
     if (pNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress != 0 && pNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].Size != 0) {
         auto pExportSectionVA = pNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
@@ -1354,22 +1338,14 @@ DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName)
                 for (DWORD i = 0; i < pExportDirectory->NumberOfNames; ++i) {
                     auto pFunctionName = (char*)(pSectionBase + pExportNames[i]);
                     if (!strcmp(pFunctionName, funcName)) {
-                        result = true;
-                        goto cdf_end;
+                        return true;
                     }
                 }
             }
         }
     }
 
-cdf_end:
-    if (pFileMapView)
-        UnmapViewOfFile(pFileMapView);
-    if (hFileMap)
-        CloseHandle(hFileMap);
-    if (hFile != INVALID_HANDLE_VALUE)
-        CloseHandle(hFile);
-    return result;
+    return true;
 
 #undef MakePointer
 }

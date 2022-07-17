@@ -199,26 +199,8 @@ void AnlyLoadTest()
     GetOpenFileName(&ofn);
 
     if (szFile[0]) {
-        HANDLE hFile = INVALID_HANDLE_VALUE;
-        DWORD fileSize = 0;
-        HANDLE hFileMap = NULL;
-        void* pFileMapView = nullptr;
-        //DWORD bytesProcessed;
-        hFile = CreateFileW(ofn.lpstrFile, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-        //SetFilePointer(hFile, 0, NULL, FILE_BEGIN);
-        //SetEndOfFile(hFile);
-        fileSize = GetFileSize(hFile, NULL);
-        hFileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
-        pFileMapView = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, fileSize);
-
-        AnlyDataRead(AnlyDataGet(), pFileMapView, fileSize);
-
-        if (pFileMapView)
-            UnmapViewOfFile(pFileMapView);
-        if (hFileMap)
-            CloseHandle(hFileMap);
-        if (hFile != INVALID_HANDLE_VALUE)
-            CloseHandle(hFile);
+        MappedFile file(szFile);
+        AnlyDataRead(AnlyDataGet(), file.fileMapView, file.fileSize);
     }
 }
 

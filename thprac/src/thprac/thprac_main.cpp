@@ -208,41 +208,17 @@ bool ApplyTHPracToProc(PROCESSENTRY32W& proc)
 bool CheckIfGameExistEx(THGameSig& gameSig, const wchar_t* name)
 {
     bool result = false;
-    HANDLE hFile = INVALID_HANDLE_VALUE;
-    DWORD fileSize = 0;
-    HANDLE hFileMap = NULL;
-    void* pFileMapView = nullptr;
-
-    // Open the file.
-    hFile = CreateFileW(name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (hFile == INVALID_HANDLE_VALUE)
-        goto end;
-    fileSize = GetFileSize(hFile, NULL);
-    if (fileSize > (1 << 23))
-        goto end; // Pass if the file is too large.
-    hFileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
-    if (!hFileMap)
-        goto end;
-    pFileMapView = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, fileSize);
-    if (!pFileMapView)
-        goto end;
+    MappedFile file(name);
 
     ExeSig exeSig;
-    GetExeInfo(pFileMapView, fileSize, exeSig);
+    GetExeInfo(file.fileMapView, file.fileSize, exeSig);
     for (int i = 0; i < 4; ++i) {
         if (exeSig.metroHash[i] != gameSig.exeSig.metroHash[i]) {
-            goto end;
+            return false;
         }
     }
     result = true;
 
-end:
-    if (pFileMapView)
-        UnmapViewOfFile(pFileMapView);
-    if (hFileMap)
-        CloseHandle(hFileMap);
-    if (hFile != INVALID_HANDLE_VALUE)
-        CloseHandle(hFile);
     return result;
 }
 

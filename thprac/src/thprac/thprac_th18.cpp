@@ -419,38 +419,6 @@ namespace TH18 {
         std::wstring mRepName;
         uint64_t mRepMetroHash[2];
         bool mRepSelected = false;
-        void CalcRepHash()
-        {
-            HANDLE hFile = INVALID_HANDLE_VALUE;
-            DWORD fileSize = 0;
-            HANDLE hFileMap = NULL;
-            void* pFileMapView = nullptr;
-
-            // Load replay
-            hFile = CreateFileW(THGuiRep::singleton().mRepDir.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-            if (hFile == INVALID_HANDLE_VALUE)
-                goto end;
-            hFileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
-            if (!hFileMap)
-                goto end;
-            pFileMapView = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, fileSize);
-            if (!pFileMapView)
-                goto end;
-            fileSize = GetFileSize(hFile, NULL);
-
-            mRepMetroHash[0] = 0;
-            mRepMetroHash[1] = 0;
-            MetroHash128::Hash((uint8_t*)pFileMapView, fileSize, (uint8_t*)mRepMetroHash);
-
-        end:
-            if (pFileMapView)
-                UnmapViewOfFile(pFileMapView);
-            if (hFileMap)
-                CloseHandle(hFileMap);
-            if (hFile != INVALID_HANDLE_VALUE)
-                CloseHandle(hFile);
-            return;
-        }
 
         void CheckReplay()
         {
@@ -490,7 +458,7 @@ namespace TH18 {
                 mRepStatus = true;
                 if (mParamStatus)
                     memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
-                CalcRepHash();
+                CalcFileHash(mRepDir.c_str(), mRepMetroHash);
                 break;
             default:
                 break;
@@ -1327,37 +1295,23 @@ namespace TH18 {
         }
         __declspec(noinline) void LoadReplay()
         {
-            HANDLE hFile = INVALID_HANDLE_VALUE;
-            DWORD fileSize = 0;
-            HANDLE hFileMap = NULL;
-            void* pFileMapView = nullptr;
-
             UnloadReplay();
 
             // Load replay
-            hFile = CreateFileW(THGuiRep::singleton().mRepDir.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-            if (hFile == INVALID_HANDLE_VALUE)
-                goto end;
-            hFileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
-            if (!hFileMap)
-                goto end;
-            pFileMapView = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, fileSize);
-            if (!pFileMapView)
-                goto end;
-            fileSize = GetFileSize(hFile, NULL);
+            MappedFile file(THGuiRep::singleton().mRepDir.c_str());
 
             mRepOriginalName = THGuiRep::singleton().mRepName;
             mRepOriginalPath = THGuiRep::singleton().mRepDir;
 
             // Decode and copy data
             void* mRepDataRaw = nullptr;
-            memcpy(mRepHeader, pFileMapView, 0x24);
+            memcpy(mRepHeader, file.fileMapView, 0x24);
             mRepDataRaw = malloc(mRepHeader[7]);
             mRepDataDecoded = malloc(mRepHeader[8]);
-            mRepExtraDataSize = fileSize - mRepHeader[3];
+            mRepExtraDataSize = file.fileSize - mRepHeader[3];
             mRepExtraData = malloc(mRepExtraDataSize);
-            memcpy(mRepDataRaw, (void*)((uint32_t)pFileMapView + 0x24), mRepHeader[7]);
-            memcpy(mRepExtraData, (void*)((uint32_t)pFileMapView + mRepHeader[3]), mRepExtraDataSize);
+            memcpy(mRepDataRaw, (void*)((uint32_t)file.fileMapView + 0x24), mRepHeader[7]);
+            memcpy(mRepExtraData, (void*)((uint32_t)file.fileMapView + mRepHeader[3]), mRepExtraDataSize);
             DecodeData(mRepDataRaw, mRepHeader[7], 0x5c, 0xe1, 0x400, mRepHeader[7]);
             DecodeData(mRepDataRaw, mRepHeader[7], 0x7d, 0x3a, 0x100, mRepHeader[7]);
             DecompressData(mRepDataRaw, mRepHeader[7], mRepDataDecoded, mRepHeader[8]);
@@ -1366,18 +1320,11 @@ namespace TH18 {
             // Calc Hash
             mRepMetroHash[0] = 0;
             mRepMetroHash[1] = 0;
-            MetroHash128::Hash((uint8_t*)pFileMapView, fileSize, (uint8_t*)mRepMetroHash);
+            MetroHash128::Hash((uint8_t*)file.fileMapView, file.fileSize, (uint8_t*)mRepMetroHash);
 
             ParseReplayData();
             th18_rep_card_fix.Enable();
             
-    end:
-            if (pFileMapView)
-                UnmapViewOfFile(pFileMapView);
-            if (hFileMap)
-                CloseHandle(hFileMap);
-            if (hFile != INVALID_HANDLE_VALUE)
-                CloseHandle(hFile);
             return;
         }
         bool GetAvailability()
