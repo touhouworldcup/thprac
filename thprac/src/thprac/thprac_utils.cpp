@@ -460,21 +460,9 @@ void CalcFileHash(const wchar_t* file_name, uint64_t hash[2])
     hash[0] = 0ll;
     hash[1] = 0ll;
 
-    auto hFile = CreateFileW(file_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (hFile == INVALID_HANDLE_VALUE)
-        return;
-    defer(CloseHandle(hFile));
-    auto fileSize = GetFileSize(hFile, NULL);
-    auto fileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
-    if (fileMap == NULL)
-        return;
-    defer(CloseHandle(fileMap));
-    auto fileMapView = MapViewOfFile(fileMap, FILE_MAP_READ, 0, 0, fileSize);
-    if (!fileMapView)
-        return;
-    defer(UnmapViewOfFile(fileMapView));
-    MetroHash128 metro;
-    metro.Hash((uint8_t*)fileMapView, fileSize, (uint8_t*)hash);
+    MappedFile file(file_name);
+    if (file.fileMapView)
+        MetroHash128::Hash((uint8_t*)file.fileMapView, file.fileSize, (uint8_t*)hash);
 }
 
 void HelpMarker(const char* desc)

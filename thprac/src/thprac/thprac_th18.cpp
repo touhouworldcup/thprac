@@ -425,7 +425,6 @@ namespace TH18 {
             DWORD fileSize = 0;
             HANDLE hFileMap = NULL;
             void* pFileMapView = nullptr;
-            MetroHash128 metro;
 
             // Load replay
             hFile = CreateFileW(THGuiRep::singleton().mRepDir.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -441,7 +440,7 @@ namespace TH18 {
 
             mRepMetroHash[0] = 0;
             mRepMetroHash[1] = 0;
-            metro.Hash((uint8_t*)pFileMapView, fileSize, (uint8_t*)mRepMetroHash);
+            MetroHash128::Hash((uint8_t*)pFileMapView, fileSize, (uint8_t*)mRepMetroHash);
 
         end:
             if (pFileMapView)
@@ -1332,7 +1331,6 @@ namespace TH18 {
             DWORD fileSize = 0;
             HANDLE hFileMap = NULL;
             void* pFileMapView = nullptr;
-            MetroHash128 metro;
 
             UnloadReplay();
 
@@ -1368,7 +1366,7 @@ namespace TH18 {
             // Calc Hash
             mRepMetroHash[0] = 0;
             mRepMetroHash[1] = 0;
-            metro.Hash((uint8_t*)pFileMapView, fileSize, (uint8_t*)mRepMetroHash);
+            MetroHash128::Hash((uint8_t*)pFileMapView, fileSize, (uint8_t*)mRepMetroHash);
 
             ParseReplayData();
             th18_rep_card_fix.Enable();

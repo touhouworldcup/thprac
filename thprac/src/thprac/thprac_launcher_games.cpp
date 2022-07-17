@@ -41,16 +41,6 @@ inline bool OepCompare(uint32_t oepCode1[10], uint32_t opeCode2[10])
     }
     return true;
 }
-void CalcMetroHash(void* buffer, size_t size, uint64_t result[2])
-{
-    if (!buffer)
-        return;
-
-    MetroHash128 metro;
-    result[0] = 0;
-    result[1] = 0;
-    metro.Hash((uint8_t*)buffer, size, (uint8_t*)result);
-}
 bool ReadMemory(void* buffer, void* addr, size_t size)
 {
     SIZE_T bytesRead = 0;
@@ -103,9 +93,8 @@ bool GetExeInfo(void* exeBuffer, size_t exeSize, ExeSig& exeSigOut)
         }
     }
 
-    MetroHash128 metro;
     if (exeSize < (1 << 23)) {
-        metro.Hash((uint8_t*)exeBuffer, exeSize, (uint8_t*)exeSigOut.metroHash);
+        MetroHash128::Hash((uint8_t*)exeBuffer, exeSize, (uint8_t*)exeSigOut.metroHash);
     }
 
     return true;

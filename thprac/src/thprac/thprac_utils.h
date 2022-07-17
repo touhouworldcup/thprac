@@ -62,9 +62,12 @@ struct MappedFile {
     }
     ~MappedFile()
     {
-        UnmapViewOfFile(fileMapView);
-        CloseHandle(fileMap);
-        CloseHandle(hFile);
+        if (fileMapView)
+            UnmapViewOfFile(fileMapView);
+        if (fileMap)
+            CloseHandle(fileMap);
+        if (hFile != INVALID_HANDLE_VALUE)
+            CloseHandle(hFile);
     }
 };
 
