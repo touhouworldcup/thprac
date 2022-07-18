@@ -209,6 +209,8 @@ bool CheckIfGameExistEx(THGameSig& gameSig, const wchar_t* name)
 {
     bool result = false;
     MappedFile file(name);
+    if (!file.fileMapView)
+        return false;
 
     ExeSig exeSig;
     GetExeInfo(file.fileMapView, file.fileSize, exeSig);
@@ -217,18 +219,14 @@ bool CheckIfGameExistEx(THGameSig& gameSig, const wchar_t* name)
             return false;
         }
     }
-    result = true;
 
-    return result;
+    return true;
 }
 
 bool CheckIfGameExist(THGameSig& gameSig, std::wstring& name)
 {
     if (!strcmp(gameSig.idStr, "th06")) {
-        if (CheckIfGameExistEx(gameSig, L"搶曽峠杺嫿.exe")) {
-            name = L"搶曽峠杺嫿.exe";
-            return true;
-        } else if (CheckIfGameExistEx(gameSig, L"東方紅魔郷.exe")) {
+        if (CheckIfGameExistEx(gameSig, L"東方紅魔郷.exe")) {
             name = L"東方紅魔郷.exe";
             return true;
         }

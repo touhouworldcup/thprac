@@ -41,13 +41,15 @@ struct MappedFile {
     size_t fileSize = 0;
     void* fileMapView = NULL;
 
-    MappedFile(const wchar_t* fn)
+    MappedFile(const wchar_t* fn, size_t max_size = -1)
     {
         hFile = CreateFileW(fn, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
         if (hFile == INVALID_HANDLE_VALUE) {
             return;
         }
         fileSize = GetFileSize(hFile, NULL);
+        if (fileSize > max_size)
+            return;
         fileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
         if (fileMap == NULL) {
             CloseHandle(hFile);

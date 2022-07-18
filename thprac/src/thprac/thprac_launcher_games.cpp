@@ -1134,7 +1134,7 @@ public:
         auto& games = THGameGui::singleton().mGames;
         auto utf8Dir = utf16_to_utf8(dir.c_str());
 
-        MappedFile file(dir.c_str());
+        MappedFile file(dir.c_str(), 1 << 23);
         if (!file.fileMapView)
             return 0;
 
