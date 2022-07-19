@@ -693,41 +693,143 @@ float LauncherWndGetScale()
     return __thprac_lc_scale;
 }
 
+// From thcrap
+// https://github.com/thpatch/thcrap/blob/33894bbac0def84d4f6d89aee7735716d1543b52/thcrap_configure/src/configure_search.cpp#L56
 
-int CALLBACK _BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
+// Work around a bug in Windows 7 and later by sending
+// BFFM_SETSELECTION a second time.
+// https://connect.microsoft.com/VisualStudio/feedback/details/518103/bffm-setselection-does-not-work-with-shbrowseforfolder-on-windows-7
+typedef struct {
+    ITEMIDLIST* path;
+    int attempts;
+} initial_path_t;
+
+int CALLBACK SetInitialBrowsePathProc(HWND hWnd, UINT uMsg, LPARAM lp, LPARAM pData)
 {
-    if (uMsg == BFFM_INITIALIZED) {
-        SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
+    initial_path_t* ip = (initial_path_t*)pData;
+    if (ip) {
+        switch (uMsg) {
+        case BFFM_INITIALIZED:
+            ip->attempts = 0;
+            // fallthrough
+        case BFFM_SELCHANGED:
+            if (ip->attempts < 2) {
+                SendMessageW(hWnd, BFFM_SETSELECTION, FALSE, (LPARAM)ip->path);
+                ip->attempts++;
+            }
+        }
     }
     return 0;
 }
-std::wstring LauncherWndFolderSelect(const wchar_t* title)
-{
-    TCHAR path[MAX_PATH];
 
-    BROWSEINFO bi = { 0 };
-    bi.hwndOwner = __thprac_lc_hwnd;
-    bi.lpszTitle = (nullptr);
-    bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
-    bi.lpfn = _BrowseCallbackProc;
+template <typename T>
+struct ComRAII {
+    T* p;
 
-    LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+    operator bool() const { return !!p; }
+    operator T*() const { return p; }
+    T** operator&() { return &p; }
+    T* operator->() const { return p; }
+    T& operator*() const { return *p; }
 
-    if (pidl != 0) {
-        //get the name of the folder and put it in path
-        SHGetPathFromIDList(pidl, path);
-
-        //free memory used
-        IMalloc* imalloc = 0;
-        if (SUCCEEDED(SHGetMalloc(&imalloc))) {
-            imalloc->Free(pidl);
-            imalloc->Release();
+    ComRAII()
+        : p(NULL)
+    {
+    }
+    explicit ComRAII(T* p)
+        : p(p)
+    {
+    }
+    ComRAII(const ComRAII<T>& other) = delete;
+    ComRAII<T>& operator=(const ComRAII<T>& other) = delete;
+    ~ComRAII()
+    {
+        if (p) {
+            p->Release();
+            p = NULL;
         }
-    } else {
-        return std::wstring(L"");
+    }
+};
+
+static int SelectFolderVista(HWND owner, PIDLIST_ABSOLUTE initial_path, PIDLIST_ABSOLUTE& pidl, const wchar_t* window_title)
+{
+    // Those two functions are absent in XP, so we have to load them dynamically
+    HMODULE shell32 = LoadLibraryW(L"Shell32.dll");
+    if (!shell32)
+        return -1;
+    auto pSHCreateItemFromIDList = (HRESULT(WINAPI*)(PCIDLIST_ABSOLUTE, REFIID, void**))GetProcAddress(shell32, "SHCreateItemFromIDList");
+    auto pSHGetIDListFromObject = (HRESULT(WINAPI*)(IUnknown*, PIDLIST_ABSOLUTE*))GetProcAddress(shell32, "SHGetIDListFromObject");
+    if (!pSHCreateItemFromIDList || !pSHGetIDListFromObject)
+        return -1;
+
+    ComRAII<IFileDialog> pfd;
+    if(FAILED(CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd))))
+        return -1;
+    if (!pfd)
+        return -1;
+
+    {
+        ComRAII<IShellItem> psi;
+        pSHCreateItemFromIDList(initial_path, IID_PPV_ARGS(&psi));
+        if (!psi)
+            return -1;
+        pfd->SetDefaultFolder(psi);
     }
 
-    return std::wstring(path);
+    pfd->SetOptions(
+        FOS_NOCHANGEDIR | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM
+        | FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST | FOS_DONTADDTORECENT);
+    pfd->SetTitle(window_title);
+    HRESULT hr = pfd->Show(owner);
+    ComRAII<IShellItem> psi;
+    if (SUCCEEDED(hr) && SUCCEEDED(pfd->GetResult(&psi))) {
+        pSHGetIDListFromObject(psi, &pidl);
+        return 0;
+    }
+
+    if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED))
+        return 0;
+    return -1;
+}
+
+static int SelectFolderXP(HWND owner, PIDLIST_ABSOLUTE initial_path, PIDLIST_ABSOLUTE& pidl, const wchar_t* window_title)
+{
+    BROWSEINFOW bi = { 0 };
+    initial_path_t ip = { 0 };
+    ip.path = initial_path;
+
+    bi.lpszTitle = window_title;
+    bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NONEWFOLDERBUTTON | BIF_USENEWUI;
+    bi.hwndOwner = owner;
+    bi.lpfn = SetInitialBrowsePathProc;
+    bi.lParam = (LPARAM)&ip;
+    pidl = SHBrowseForFolderW(&bi);
+    return 0;
+}
+
+std::wstring LauncherWndFolderSelect(const wchar_t* title) {
+    if (FAILED(CoInitialize(NULL)))
+        return L"";
+    defer(CoUninitialize());
+
+    PIDLIST_ABSOLUTE initial_path = NULL;
+    wchar_t path[MAX_PATH] = {};
+
+    GetCurrentDirectoryW(MAX_PATH, path);
+    SHParseDisplayName(path, NULL, &initial_path, 0, NULL);
+
+    PIDLIST_ABSOLUTE pidl = NULL;
+    if (-1 == SelectFolderVista(__thprac_lc_hwnd, initial_path, pidl, title)) {
+        SelectFolderXP(__thprac_lc_hwnd, initial_path, pidl, title);
+    }
+
+    if (pidl) {
+        defer(CoTaskMemFree(pidl));
+        if (SHGetPathFromIDListW(pidl, path)) {
+            return path;
+        }
+    }
+    return L"";
 }
 
 std::wstring LauncherWndFileSelect(const wchar_t* title, const wchar_t* filter) {

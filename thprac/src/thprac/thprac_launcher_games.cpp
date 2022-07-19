@@ -1180,7 +1180,7 @@ public:
     }
     static DWORD WINAPI ScanFolder(const std::wstring& dir)
     {
-        CoInitializeEx(NULL, COINIT_MULTITHREADED);
+        CoInitializeEx(NULL, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
         auto scanLnk = THGameGui::singleton().mScanOption[SCAN_OPT_THCRAP];
         std::wstring searchDir = dir + L"\\*";
         WIN32_FIND_DATAW findData;
@@ -1230,7 +1230,7 @@ public:
     {
         auto& gameGui = THGameGui::singleton();
         gameGui.thcrapSetup();
-        CoInitializeEx(NULL, COINIT_MULTITHREADED);
+        CoInitializeEx(NULL, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
 
         for (auto it = gameGui.mGames.begin(); it != gameGui.mGames.end(); ++it) {
             for (auto& gameInst : it.value().instances) {
