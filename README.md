@@ -78,9 +78,6 @@ Thprac is compatible with thcrap. Thprac's launcher can act as a thcrap launcher
 ## Cannot find Embodiment of Scarlet Devil
 Make sure your exe is named "東方紅魔郷.exe" or "th06.exe". If thprac still can't find it, the launcher can launch an exe with any filename and attach thprac.
 
-## When warping to cerain bosses, the name of the midboss will show
-I was unable to find a way to fix it. According to Manual.txt from thprac 2.0.8.3, neither was ACK. [#22](https://github.com/touhouworldcup/thprac/issues/22) will remain open for the forseeable future
-
 ## How do I save a replay mid-game in TH06/TH07/TH08/TH10?
 You can't. The thprac 2.0.8.3 manual says
 > Because of how these games were programmed, adding this feature would be quite troublesome, so currently there's no direct solution to this

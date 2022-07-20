@@ -1222,23 +1222,28 @@ namespace TH10 {
         case THPrac::TH10::TH10_ST1_BOSS1:
             if (thPracParam.dlg)
                 ECLJump(ecl, 0x9cb8, 0xba8c, 4370);
-            else
+            else {
                 ECLJump(ecl, 0x9cb8, 0xbab0, 4370);
+                *(uint32_t*)0x474c84 = 24;
+            }
             break;
         case THPrac::TH10::TH10_ST1_BOSS2:
             ECLJump(ecl, 0x9cb8, 0xbab0, 4370);
             ecl << pair(0x7a4, 0x898);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST1_BOSS3:
             ECLJump(ecl, 0x9cb8, 0xbab0, 4370);
             ecl << pair(0x850, (int8_t)0x32);
             ECLJump(ecl, 0x15ec, 0x1640, 60);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST1_BOSS4:
             ECLJump(ecl, 0x9cb8, 0xbab0, 4370);
             ecl << pair(0x850, (int8_t)0x32);
             ECLJump(ecl, 0x15ec, 0x1640, 60);
             ecl << pair(0x143c, 2200);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST2_MID1:
             ECLJump(ecl, 0xb730, 0xbfe4, 2200);
@@ -1577,8 +1582,10 @@ namespace TH10 {
             if (thPracParam.dlg)
                 ecl << pair(0x18983, (int8_t)0x42) << pair(0x18984, (int8_t)0x6f)
                     << pair(0x18985, (int8_t)0x73) << pair(0x18986, (int8_t)0x73);
-            else
+            else {
                 ECLSt7Boss(ecl);
+                *(uint32_t*)0x474c84 = 24;
+            }
             break;
         case THPrac::TH10::TH10_ST7_END_S1:
             ECLSt7Boss(ecl);
@@ -1587,89 +1594,105 @@ namespace TH10 {
             ecl.SetPos(0xde8);
             ecl << 0 << 0x002c014e << 0x04ff0000 << 0 << 0 << 0xaf0 << 0xe10
                 << 0xc << 0x73736f42 << 0x64726143 << 0x31;
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_NS2:
             ECLSt7Boss(ecl);
             ecl << pair(0xcf4, (int8_t)0x32);
             ECLJump(ecl, 0x12b8, 0x1324, 110);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_S2:
             ECLSt7Boss(ecl);
             ecl << pair(0xcf4, (int8_t)0x32);
             ECLJump(ecl, 0x12b8, 0x1324, 110);
             ecl << pair(0x10e8, 3600);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_NS3:
             ECLSt7Boss(ecl);
             ecl << pair(0xcf4, (int8_t)0x33);
             ECLJump(ecl, 0x17b8, 0x1824, 120);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_S3:
             ECLSt7Boss(ecl);
             ecl << pair(0xcf4, (int8_t)0x33);
             ECLJump(ecl, 0x17b8, 0x1824, 120);
             ecl << pair(0x15cc, 2800);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_NS4:
             ECLSt7Boss(ecl);
             ecl << pair(0xcf4, (int8_t)0x34);
             ECLJump(ecl, 0x207c, 0x20e8, 120);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_S4:
             ECLSt7Boss(ecl);
             ecl << pair(0xcf4, (int8_t)0x34);
             ECLJump(ecl, 0x207c, 0x20e8, 120);
             ecl << pair(0x1e70, 3600);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_NS5:
             ECLSt7Boss(ecl);
             ecl << pair(0xcf4, (int8_t)0x35);
             ECLJump(ecl, 0x2628, 0x2694, 110);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_S5:
             ECLSt7Boss(ecl);
             ecl << pair(0xcf4, (int8_t)0x35);
             ECLJump(ecl, 0x2628, 0x2694, 110);
             ecl << pair(0x2408, 3500);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_NS6:
             ECLSt7Boss(ecl);
             ecl << pair(0xcf4, (int8_t)0x36);
             ECLJump(ecl, 0x2b48, 0x2bb4, 120);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_S6:
             ECLSt7Boss(ecl);
             ecl << pair(0xcf4, (int8_t)0x36);
             ECLJump(ecl, 0x2b48, 0x2bb4, 120);
             ecl << pair(0x293c, 3500);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_NS7:
             ECLSt7Boss(ecl);
             ecl << pair(0xcf4, (int8_t)0x37);
             ECLJump(ecl, 0x340c, 0x3478, 120);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_S7:
             ECLSt7Boss(ecl);
             ecl << pair(0xcf4, (int8_t)0x37);
             ECLJump(ecl, 0x340c, 0x3478, 120);
             ecl << pair(0x3200, 4500);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_NS8:
             ECLSt7Boss(ecl);
             ecl << pair(0xcf4, (int8_t)0x38);
             ECLJump(ecl, 0x3988, 0x39f4, 110);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_S8:
             ECLSt7Boss(ecl);
             ecl << pair(0xcf4, (int8_t)0x38);
             ECLJump(ecl, 0x3988, 0x39f4, 110);
             ecl << pair(0x3798, 1);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_S9:
             ECLSt7Boss(ecl);
             ecl << pair(0xcec, 0xc) << pair(0xcf4, 0x64726143)
                 << pair(0xcf8, 0x39);
             ECLJump(ecl, 0xb3d8, 0xb444, 80);
+            *(uint32_t*)0x474c84 = 24;
             break;
         case THPrac::TH10::TH10_ST7_END_S10:
             ECLSt7Boss(ecl);
@@ -1682,6 +1705,7 @@ namespace TH10 {
                 ecl << pair(0x4338, 5);
                 ECLJump(ecl, 0x4af0, 0x5198, 0);
             }
+            *(uint32_t*)0x474c84 = 24;
             break;
         default:
             break;

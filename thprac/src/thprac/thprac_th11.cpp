@@ -979,24 +979,28 @@ namespace TH11 {
                 ECLJump(ecl, 0x10a90, 0x10d8c);
                 ecl << pair(0x10d8c, 0);
                 ECLVoid(ecl, 0x9bc);
+                *(uint32_t*)0x4a5730 = 24;
             }
             break;
         case THPrac::TH11::TH11_ST1_BOSS2:
             ECLJump(ecl, 0x10a90, 0x10d8c);
             ecl << pair(0x10d8c, 0) << pair(0x7dc, 1500);
             ECLVoid(ecl, 0x1fac);
+            *(uint32_t*)0x4a5730 = 24;
             break;
         case THPrac::TH11::TH11_ST1_BOSS3:
             ECLJump(ecl, 0x10a90, 0x10d8c);
             ecl << pair(0x10d8c, 0) << pair(0x8e0, (int8_t)0x32);
             ECLTimeFix(ecl, 0x828, -60);
             ECLVoid(ecl, 0x838, 0x1584, 0x1594, 0x15f8);
+            *(uint32_t*)0x4a5730 = 24;
             break;
         case THPrac::TH11::TH11_ST1_BOSS4:
             ECLJump(ecl, 0x10a90, 0x10d8c);
             ecl << pair(0x10d8c, 0) << pair(0x8e0, (int8_t)0x32);
             ECLVoid(ecl, 0x838, 0x1584, 0x1594, 0x15f8);
             ecl << pair(0x1298, 1760) << pair(0x2d04, (int16_t)0);
+            *(uint32_t*)0x4a5730 = 24;
             break;
         case THPrac::TH11::TH11_ST2_MID1:
             ECLJump(ecl, 0xf1b4, 0xf280);
