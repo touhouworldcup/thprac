@@ -60,7 +60,7 @@ Choosing "Exit" will prompt you to save a replay. Warning: replays saved like th
 # How to build:
 A Visual Studio solution is bundled that uses the Visual Studio 2022 build tools (v143) for building. However, thprac will compile perfectly fine with Visual Studio 2019 build tools (v142) as well. Your builds will support Windows XP perfectly fine, v141_xp build tools are not needed.
 
-If you add a new string to the codebase that needs to be localized, put it into thprac_games_def.json and run thprac_multi to generate a new thprac_locale_def.h
+If you add a new string to the codebase that needs to be localized, put it into thprac_games_def.json and use the [thprac devtools](https://github.com/touhouworldcup/thprac_utils) to generate a new thprac_locale_def.h
 
 # Q&A
 
