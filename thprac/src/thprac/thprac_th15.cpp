@@ -176,7 +176,7 @@ namespace TH15 {
             if (section == TH15_ST6_BOSS11) {
                 return TH_SPELL_PHASE2;
             } else if (section == TH15_ST7_END_S10) {
-                return TH_SPELL_PHASE1;
+                return TH15_SPELL_PHASE_HECATIA;
             } else if (section == TH15_ST5_MID1) {
                 return TH15_ITS_LUNATIC_TIME;
             }
@@ -1740,11 +1740,21 @@ namespace TH15 {
             // Stall
             ecl << 9999 << 0x00100000 << 0x00ff0000 << 0;
 
-            if (thPracParam.phase == 1) {
+            switch (thPracParam.phase) {
+            case 1:
+                ecl.SetFile(3);
+                ECLJump(ecl, 0x8f30, 0x8fc8, 94);
+                break;
+            case 2:
+                ecl.SetFile(4);
+                ECLJump(ecl, 0xb08, 0xba0, 0);
+                break;
+            case 3:
                 ecl.SetFile(3);
                 ECLJump(ecl, 0x8f30, 0x8fc8, 94);
                 ecl.SetFile(4);
                 ECLJump(ecl, 0xb08, 0xba0, 0);
+                break;
             }
             break;
         default:

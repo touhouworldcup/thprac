@@ -731,9 +731,13 @@ enum th_glossary_t
     TH_TYPE_UNKOWN,
     TH_VALUE,
     TH_WARP,
+    TH_BOTH_NORMAL,
+    TH_HECATIA_RAGE,
+    TH_JUNKO_RAGE,
+    TH_BOTH_RAGE,
 };
 
-static char* th_glossary_str[3][726]
+static char* th_glossary_str[3][730]
 {
     {
         "",
@@ -1462,6 +1466,10 @@ static char* th_glossary_str[3][726]
         u8"未知",
         u8"最大得点",
         u8"传送",
+        u8"都正常",
+        u8"赫卡蒂亚之怒",
+        u8"纯子愤怒",
+        u8"双方愤怒",
     },
     {
         "",
@@ -2190,6 +2198,10 @@ static char* th_glossary_str[3][726]
         u8"Unknown",
         u8"Value",
         u8"Warp",
+        u8"Both Normal",
+        u8"Hecatia Rage",
+        u8"Junko Rage",
+        u8"Both Rage",
     },
     {
         "",
@@ -2918,6 +2930,10 @@ static char* th_glossary_str[3][726]
         u8"不明",
         u8"最大得点",
         u8"ワープ",
+        u8"両方とも正常",
+        u8"ヘカティアの怒り",
+        u8"純子怒り",
+        u8"両方の怒り",
     },
 };
 
@@ -17981,6 +17997,13 @@ static th_glossary_t TH15_ITS_LUNATIC_TIME[8]
     TH15_ILT_4,
     TH15_ILT_5,
     TH15_ILT_6,
+};
+
+static th_glossary_t TH15_SPELL_PHASE_HECATIA[5] {
+    TH_BOTH_NORMAL,
+    TH_HECATIA_RAGE,
+    TH_JUNKO_RAGE,
+    TH_BOTH_RAGE,
 };
 
 }
