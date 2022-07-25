@@ -585,6 +585,10 @@
       "TH_ENHANCED": [ "自定义练习", "Custom", "カスタム" ],
       "TH_MODE": [ "模式", "Mode", "モード" ],
       "TH_WARP": [ "传送", "Warp", "ワープ" ],
+      "TH_BOTH_NORMAL": [ "都正常", "Both Normal", "両方とも正常" ],
+      "TH_HECATIA_RAGE": [ "赫卡蒂亚之怒", "Hecatia Rage", "ヘカティアの怒り" ],
+      "TH_JUNKO_RAGE": [ "纯子愤怒", "Junko Rage", "純子怒り" ],
+      "TH_BOTH_RAGE": [ "双方愤怒", "Both Rage", "両方の怒り" ],
       "TH_NONE": [ "无", "None", "なし" ],
       "TH_NONSPELL": [ "非符", "Non Spell", "通常" ],
       "TH_SPELL": [ "符卡", "Spell Card", "スペカ" ],
@@ -7318,6 +7322,12 @@
         "TH15_ILT_4",
         "TH15_ILT_5",
         "TH15_ILT_6"
+      ],
+      "TH15_EXTRA_LAST_SPELL": [
+        "TH_BOTH_NORMAL",
+        "TH_HECATIA_RAGE",
+        "TH_JUNKO_RAGE",
+        "TH_BOTH_RAGE"
       ]
     }
   },

@@ -176,7 +176,7 @@ namespace TH15 {
             if (section == TH15_ST6_BOSS11) {
                 return TH_SPELL_PHASE2;
             } else if (section == TH15_ST7_END_S10) {
-                return TH15_SPELL_PHASE_HECATIA;
+                return TH15_SPELL_PHASE_EXTRA_LAST;
             } else if (section == TH15_ST5_MID1) {
                 return TH15_ITS_LUNATIC_TIME;
             }
