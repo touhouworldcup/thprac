@@ -18004,7 +18004,7 @@ static th_glossary_t TH15_ITS_LUNATIC_TIME[8]
     TH15_ILT_6,
 };
 
-static th_glossary_t TH15_EXTRA_LAST_SPELL[5]
+static th_glossary_t TH15_SPELL_PHASE_EXTRA_LAST[5]
 {
     TH_BOTH_NORMAL,
     TH_HECATIA_RAGE,
