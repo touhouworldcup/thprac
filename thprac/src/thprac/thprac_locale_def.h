@@ -591,7 +591,6 @@ enum th_glossary_t
     TH_BOSSRUSH_MIDBOSS,
     TH_BOTH_NORMAL,
     TH_BOTH_RAGE,
-    TH_BOTH_Rage,
     TH_BULLETS,
     TH_BULLET_RANK,
     TH_BULLET_RANKLOCK,
@@ -743,7 +742,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-static char* th_glossary_str[3][731]
+static char* th_glossary_str[3][730]
 {
     {
         "",
@@ -1326,7 +1325,6 @@ static char* th_glossary_str[3][731]
         u8"6面后Extra",
         u8"中Boss##bossrush",
         u8"都正常",
-        u8"双方愤怒",
         u8"双方愤怒",
         u8"子弹",
         u8"Rank",
@@ -2060,7 +2058,6 @@ static char* th_glossary_str[3][731]
         u8"Mid Boss##bossrush",
         u8"Both Normal",
         u8"Both Rage",
-        u8"Both Rage",
         u8"Bullets",
         u8"Rank",
         u8"Rank Lock",
@@ -2792,7 +2789,6 @@ static char* th_glossary_str[3][731]
         u8"ステージ6の後にExtra",
         u8"中ボス##bossrush",
         u8"両方とも正常",
-        u8"両方の怒り",
         u8"両方の怒り",
         u8"",
         u8"ランク",
@@ -18008,7 +18004,7 @@ static th_glossary_t TH15_ITS_LUNATIC_TIME[8]
     TH15_ILT_6,
 };
 
-static th_glossary_t TH15_SPELL_PHASE_EXTRA_LAST[5]
+static th_glossary_t TH15_EXTRA_LAST_SPELL[5]
 {
     TH_BOTH_NORMAL,
     TH_HECATIA_RAGE,
