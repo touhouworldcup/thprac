@@ -18007,9 +18007,9 @@ static th_glossary_t TH15_ITS_LUNATIC_TIME[8]
 static th_glossary_t TH15_SPELL_PHASE_EXTRA_LAST[5]
 {
     TH_BOTH_NORMAL,
+    TH_BOTH_RAGE,
     TH_HECATIA_RAGE,
     TH_JUNKO_RAGE,
-    TH_BOTH_RAGE,
 };
 
 }

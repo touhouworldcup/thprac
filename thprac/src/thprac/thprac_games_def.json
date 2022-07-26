@@ -7325,9 +7325,9 @@
       ],
       "TH15_SPELL_PHASE_EXTRA_LAST": [
         "TH_BOTH_NORMAL",
+        "TH_BOTH_RAGE",
         "TH_HECATIA_RAGE",
-        "TH_JUNKO_RAGE",
-        "TH_BOTH_RAGE"
+        "TH_JUNKO_RAGE"
       ]
     }
   },
