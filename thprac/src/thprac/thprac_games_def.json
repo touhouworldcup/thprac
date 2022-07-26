@@ -1830,7 +1830,7 @@
         "!L": [ "饿王剑「饿鬼十王的报应」", "Hungry King Sword \n\"Ten Kings' Retribution on the Preta\"", "餓王剣「餓鬼十王の報い」" ]
       },
       "TH07_ST5_BOSS1": {
-        "bgm": 0,
+        "bgm": 1,
         "spell": 0,
         "appearance": [ 5, 2, 1 ],
         "!ENHL": "TH_END_NS1"
@@ -4313,7 +4313,7 @@
         "!L": [ "神拳「天海地狱冲」", "Divine Fist \"Hell Thrust from the Heavenly Seas\"", "神拳「天海地獄突き」" ]
       },
       "TH12_ST3_BOSS1": {
-        "bgm": 0,
+        "bgm": 1,
         "spell": 0,
         "appearance": [ 3, 2, 1 ],
         "!ENHL": "TH_END_NS1"
