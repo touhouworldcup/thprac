@@ -1744,14 +1744,14 @@ namespace TH15 {
             case 1:
                 ecl.SetFile(3);
                 ECLJump(ecl, 0x8f30, 0x8fc8, 94);
-                break;
-            case 2:
                 ecl.SetFile(4);
                 ECLJump(ecl, 0xb08, 0xba0, 0);
                 break;
-            case 3:
+            case 2:
                 ecl.SetFile(3);
                 ECLJump(ecl, 0x8f30, 0x8fc8, 94);
+                break;
+            case 3:
                 ecl.SetFile(4);
                 ECLJump(ecl, 0xb08, 0xba0, 0);
                 break;
