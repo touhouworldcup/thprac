@@ -202,7 +202,7 @@ namespace TH12 {
         {
             auto section = CalcSection();
             if (section == TH12_ST6_BOSS8 || section == TH12_ST6_BOSS10 || section == TH12_ST7_END_S10) {
-                return TH_SPELL_PHASE1;
+                return TH_SPELL_PHASE2;
             }
             return nullptr;
         }
@@ -1407,10 +1407,20 @@ namespace TH12 {
             ecl << pair(0xe6c, (int16_t)0x0) << pair(0xed8, (int16_t)0x0) << pair(0xeec, (int16_t)0x0);
             ecl << pair(0x7bc, 0) << pair(0x7c0, 0x43000000);
 
-            if (thPracParam.phase == 1) {
-                ecl << pair(0x7b48, 0x0e1c); // EXTRA
-                ecl << pair(0x8958, (int16_t)0x15); // EXTRA
-                ecl << pair(0x895e, (int16_t)0x0ff); // EXTRA
+            switch (thPracParam.phase) {
+                case 1:
+                    ECLSetHealth(ecl, 0x7b00, 0, 5000);
+                    ECLJumpEx(ecl, 0x7b14, 0x7e8c, 0);
+                    break;
+                case 2:
+                    ECLSetHealth(ecl, 0x7b00, 0, 3000);
+                    ECLJumpEx(ecl, 0x7b14, 0x823c, 0);
+                    ecl << pair(0x8648, 0);
+                    break;
+                case 3:
+                    ECLSetHealth(ecl, 0x7b00, 0, 1500);
+                    ECLJumpEx(ecl, 0x7b14, 0x8610, 0);
+                    break;
             }
             break;
         default:
