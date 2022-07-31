@@ -1409,15 +1409,18 @@ namespace TH12 {
 
             switch (thPracParam.phase) {
                 case 1:
-                    ECLSetHealth(ecl, 0x7b00, 0, 5000);
+                    ecl << pair(0x7a74, 180);
+                    ECLSetHealth(ecl, 0x7b00, 0, 4600);
                     ECLJumpEx(ecl, 0x7b14, 0x7e8c, 0);
                     break;
                 case 2:
+                    ecl << pair(0x7a74, 180);
                     ECLSetHealth(ecl, 0x7b00, 0, 3000);
                     ECLJumpEx(ecl, 0x7b14, 0x823c, 0);
                     break;
                 case 3:
-                    ECLSetHealth(ecl, 0x7b00, 0, 1500);
+                    ecl << pair(0x7a74, 180);
+                    ECLSetHealth(ecl, 0x7b00, 0, 1150);
                     ECLJumpEx(ecl, 0x7b14, 0x8610, 0);
                     break;
             }
