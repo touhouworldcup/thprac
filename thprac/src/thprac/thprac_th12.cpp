@@ -201,7 +201,9 @@ namespace TH12 {
         th_glossary_t* SpellPhase()
         {
             auto section = CalcSection();
-            if (section == TH12_ST6_BOSS8 || section == TH12_ST6_BOSS10 || section == TH12_ST7_END_S10) {
+            if (section == TH12_ST6_BOSS8 || section == TH12_ST7_END_S10) {
+                return TH_SPELL_PHASE1;
+            } else if (section == TH12_ST6_BOSS10) {
                 return TH_SPELL_PHASE2;
             }
             return nullptr;
