@@ -1973,5 +1973,9 @@ namespace TH15 {
 void TH15Init()
 {
     TH15::THInitHook::singleton().EnableAllHooks();
+    TryKeepUpRefreshRate((void*)0x47356c, (void*)0x47333d);
+    if (GetModuleHandleW(L"vpatch_th15.dll")) {
+        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleW(L"vpatch_th15.dll") + 0x6bd9));
+    }
 }
 }

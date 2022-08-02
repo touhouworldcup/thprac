@@ -1732,6 +1732,7 @@ private:
 
         ImGui::Text(XSTR(THPRAC_GAME_ADJUSTMENTS));
         ImGui::Separator();
+        mCfgUnlockRefreshRate.Gui(XSTR(THPRAC_UNLOCK_REFRESH_RATE), XSTR(THPRAC_UNLOCK_REFRESH_RATE_DESC));
         mResizableWindow.Gui(XSTR(THPRAC_RESIZABLE_WINDOW));
         ImGui::NewLine();
 
@@ -1814,6 +1815,7 @@ private:
     THCfgCombo mCfgTheme { "theme", 0, 4 };
     THSetting<bool> mUseRelativePath { "use_relative_path", false };
     THSetting<std::string> mThcrap { "thcrap", "" };
+    THCfgCheckbox mCfgUnlockRefreshRate { "unlock_refresh_rate", false };
     THCfgCheckbox mCfgCheckUpdate { "check_update", true };
 
     THCfgCheckbox mResizableWindow { "resizable_window", false };

@@ -297,5 +297,6 @@ namespace TH165 {
 void TH165Init()
 {
     TH165::THInitHook::singleton().EnableAllHooks();
+    TryKeepUpRefreshRate((void*)0x461c7a, (void*)0x461a4d);
 }
 }

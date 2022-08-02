@@ -2603,5 +2603,6 @@ namespace TH16 {
 void TH16Init()
 {
     TH16::THInitHook::singleton().EnableAllHooks();
+    TryKeepUpRefreshRate((void*)0x45b8da, (void*)0x45b6ad);
 }
 }

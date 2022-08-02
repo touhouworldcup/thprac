@@ -2250,5 +2250,6 @@ namespace TH17 {
 void TH17Init()
 {
     TH17::THInitHook::singleton().EnableAllHooks();
+    TryKeepUpRefreshRate((void*)0x462f7a, (void*)0x462d3d);
 }
 }

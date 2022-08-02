@@ -2410,5 +2410,9 @@ namespace TH10 {
 void TH10Init()
 {
     TH10::THInitHook::singleton().EnableAllHooks();
+    TryKeepUpRefreshRate((void*)0x439950);
+    if (GetModuleHandleW(L"vpatch_th10.dll")) {
+        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleW(L"vpatch_th10.dll") + 0x553b));
+    }
 }
 }

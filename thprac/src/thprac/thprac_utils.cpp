@@ -421,6 +421,49 @@ void GameGuiRender(game_gui_impl impl)
     GameGuiProgress = 0;
 }
 
+void GameFreeze()
+{
+
+
+}
+
+void GameToggleIME(bool toggle)
+{
+    ImmAssociateContext(*(HWND*)g_gameGuiHwnd, toggle ? g_gameIMCCtx : 0);
+}
+
+void TryKeepUpRefreshRate(void* address, void* address2)
+{
+    if (LauncherCfgInit(true)) {
+        bool tryRefreshRateChange = false;
+        if (LauncherSettingGet("unlock_refresh_rate", tryRefreshRateChange) && tryRefreshRateChange) {
+            DWORD oldProtect;
+
+            VirtualProtect(address, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
+            *(uint8_t*)address = 0;
+            VirtualProtect(address, 1, oldProtect, &oldProtect);
+
+            VirtualProtect(address2, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
+            *(uint8_t*)address2 = (uint8_t)0xeb;
+            VirtualProtect(address2, 1, oldProtect, &oldProtect);
+        }
+    }
+}
+
+void TryKeepUpRefreshRate(void* address)
+{
+    if (LauncherCfgInit(true)) {
+        bool tryRefreshRateChange = false;
+        if (LauncherSettingGet("unlock_refresh_rate", tryRefreshRateChange) && tryRefreshRateChange) {
+            DWORD oldProtect;
+
+            VirtualProtect(address, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
+            *(uint8_t*)address = 0;
+            VirtualProtect(address, 1, oldProtect, &oldProtect);
+        }
+    }
+}
+
 #pragma endregion
 
 #pragma region Advanced Options Menu
