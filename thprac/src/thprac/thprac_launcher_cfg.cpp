@@ -290,7 +290,7 @@ void LauncherSettingSet(const char* name, std::string& valueIn)
             if (jsonVec[i].IsNumber()) {                                        \
                 val = jsonVec[i].GetFloat();                                    \
             } else if (jsonVec[i].IsString()) {                                 \
-                val = std::stod(jsonVec[i].GetString());                        \
+                val = std::stof(jsonVec[i].GetString());                        \
             } else {                                                            \
                 throw std::runtime_error(#col ": wrong format");                \
             }                                                                   \
