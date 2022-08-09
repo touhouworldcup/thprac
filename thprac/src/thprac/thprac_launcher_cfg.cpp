@@ -1262,7 +1262,7 @@ private:
                 mCfgTheme.Set(Sus);
                 return;
             }
-            for (int i = 0; i < userThemes.size(); i++) {
+            for (size_t i = 0; i < userThemes.size(); i++) {
                 if (!strcmp(userThemes[i].utf8, cur_theme)) {
                     userThemeIdx = i;
                     configThemeExists = true;
@@ -1706,7 +1706,7 @@ private:
             }
         }
         if (themeIsUser && ImGui::BeginCombo("##themes_user", userThemes[userThemeIdx].utf8)) {
-            for (int i = 0; i < userThemes.size(); i++) {
+            for (size_t i = 0; i < userThemes.size(); i++) {
                 bool selected = i == userThemeIdx;
                 if (ImGui::Selectable(userThemes[i].utf8, selected)) {
                     userThemeIdx = i;
