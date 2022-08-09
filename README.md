@@ -57,7 +57,7 @@ Choosing "Exit" will prompt you to save a replay. Warning: replays saved like th
 - Chinese translations: [CrestedPeak9](https://twitter.com/CrestedPeak9), DeepL
 - Japanese translations: [Yu-miya](https://www.twitch.tv/toho_yumiya), CyrusVorazan, DeepL
 - Transferring all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) to [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
-- Chinese REDME translations: [TNT569](https://github.com/TNT569) 
+- Chinese README translations: [TNT569](https://github.com/TNT569) 
 
 # How to build:
 A Visual Studio solution is bundled that uses the Visual Studio 2022 build tools (v143) for building. However, thprac will compile perfectly fine with Visual Studio 2019 build tools (v142) as well. Your builds will support Windows XP perfectly fine, v141_xp build tools are not needed.
