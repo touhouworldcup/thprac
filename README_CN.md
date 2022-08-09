@@ -57,6 +57,7 @@ Thprac 会自动将您输入的选项保存到 replay 中，播放 replay 时，
 - 中文翻译: [CrestedPeak9](https://twitter.com/CrestedPeak9), DeepL
 - 日语翻译: [Yu-miya](https://www.twitch.tv/toho_yumiya), CyrusVorazan, DeepL
 - 将所有report从 [旧的bugtracker](https://github.com/ack7139/thprac/issues) 移到 [此处](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
+- 中文REDME翻译：[TNT569](https://github.com/TNT569) (翻译可能存在不足，敬请改正)
 
 # 如何构建:
 捆绑了一个 Visual Studio 解决方案，该解决方案使用 Visual Studio 2022 build tools (v143) 进行构建。但是，thprac 也可以使用 Visual Studio 2019 build tools (v142) 完美编译。您的构建将完全支持 Windows XP，而不需要 v141_xp build tools。
@@ -90,7 +91,7 @@ Thprac 与 thcrap 兼容。Thprac 的启动器也可以启动 thcrap，与 [Univ
 始终将相机锁定在 boss 身上并消除相机的装填时间
 
 ## 如何切换语言？
-Thprac 会自动将语言设置得与启动器一致。Thcrap 会根据 Windows 设置的语言自动设置。“如何使用” 中的视频解释了如何在一开始时就在启动器中更改语言。在游戏中可以使用 ALT + 1、2、3 在游戏中切换语言。此快捷键在启动器中无法使用。
+Thprac 会自动将语言设置得与启动器一致。Thcrap 会根据 Windows 设置的语言自动设置。“如何使用” 中的视频交代了如何在一开始时就在启动器中更改语言。在游戏中可以使用 ALT + 1、2、3 在游戏中切换语言。此快捷键在启动器中无法使用。
 
 ## 在何处报告bugs？
 [向上滚动并单击 “Issue” 选项卡。或者单击此文本](https://github.com/touhouworldcup/thprac/issues)
