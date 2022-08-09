@@ -1,3 +1,4 @@
+## [简体中文](/README_CN.md)
 # thprac
 A tool for practicing Touhou Shmups
 ## [Download](https://github.com/touhouworldcup/thprac/releases/latest)
