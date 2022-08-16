@@ -573,7 +573,7 @@ int FPSHelper(adv_opt_ctx& ctx, bool repStatus, bool vpFast, bool vpSlow, FPSHel
     return res;
 }
 
-bool GameFPSOpt(adv_opt_ctx& ctx)
+bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
 {
     static char tmpStr[32] {};
     static int fps = 0;
@@ -684,15 +684,18 @@ bool GameFPSOpt(adv_opt_ctx& ctx)
         }
     }
 
-    ImGui::PushItemWidth(GetRelWidth(0.23f));
-    if (fpsFastStatic > 20) {
-        sprintf(tmpStr, "infinite");
-    } else {
-        sprintf(tmpStr, "x%d.0 (%dfps)", fpsFastStatic, fpsFastStatic * 60);
+    if (replay) {
+        ImGui::PushItemWidth(GetRelWidth(0.23f));
+        if (fpsFastStatic > 20) {
+            sprintf(tmpStr, "infinite");
+        } else {
+            sprintf(tmpStr, "x%d.0 (%dfps)", fpsFastStatic, fpsFastStatic * 60);
+        }
+
+        ImGui::SliderInt("Replay slow FPS", &fpsSlowStatic, 1, 60);
+        ImGui::SliderInt("Replay fast FPS", &fpsFastStatic, 1, 21, tmpStr);
+        ImGui::PopItemWidth();
     }
-    ImGui::SliderInt("Replay slow FPS", &fpsSlowStatic, 1, 60);
-    ImGui::SliderInt("Replay fast FPS", &fpsFastStatic, 1, 21, tmpStr);
-    ImGui::PopItemWidth();
     ImGui::Checkbox("Debug acc.", (bool*)&fpsDebugAcc);
     ImGui::SameLine();
     HelpMarker("Blah");

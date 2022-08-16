@@ -471,6 +471,9 @@
     <ClCompile Include="src\3rdParties\distorm\src\textdefs.c">
       <Filter>3rdParties\distorm</Filter>
     </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th185.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

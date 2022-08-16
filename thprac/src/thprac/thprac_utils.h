@@ -199,7 +199,7 @@ static void EndOptGroup()
 }
 typedef void __stdcall FPSHelperCallback(int32_t);
 int FPSHelper(adv_opt_ctx& ctx, bool repStatus, bool vpFast, bool vpSlow, FPSHelperCallback* callback);
-bool GameFPSOpt(adv_opt_ctx& ctx);
+bool GameFPSOpt(adv_opt_ctx& ctx, bool replay = true);
 bool GameplayOpt(adv_opt_ctx& ctx);
 bool DataRecOpt(adv_opt_ctx& ctx, bool preUpd = false, bool isInGame = false);
 void AboutOpt(const char* thanks_text = nullptr);
