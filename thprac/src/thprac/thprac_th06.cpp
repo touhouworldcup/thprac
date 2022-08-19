@@ -321,9 +321,9 @@ namespace TH06 {
                 mRank();
                 if (mRankLock()) {
                     if (*mRankLock)
-                        mRank.SetBound(16, 99);
+                        mRank.SetBound(0, 99);
                     else
-                        mRank.SetBound(16, 32);
+                        mRank.SetBound(0, 32);
                 }
             }
 
@@ -469,7 +469,7 @@ namespace TH06 {
         Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, 99999, 1, 10000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mPoint { TH_POINT, 0, 9999, 1, 1000 };
 
-        Gui::GuiSlider<int, ImGuiDataType_S32> mRank { TH06_RANK, 16, 32, 1, 10, 10 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mRank { TH06_RANK, 0, 32, 1, 10, 10 };
         Gui::GuiCheckBox mRankLock { TH06_RANKLOCK };
         Gui::GuiCombo mFakeShot { TH06_FS, TH06_TYPE_SELECT };
 
