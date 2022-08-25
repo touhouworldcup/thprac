@@ -257,6 +257,29 @@ enum th_glossary_t
     TH17_INF_ROARING,
     TH17_NO_GOAST,
     TH17_TITLE,
+    TH185_ATTACK_STRENGTH,
+    TH185_BASIC,
+    TH185_BULLET_MONEY,
+    TH185_COOLTIME,
+    TH185_EXTENDED,
+    TH185_MAGIC_BREAK,
+    TH185_MAGIC_POWER,
+    TH185_MAGIC_SIZE,
+    TH185_MAGIC_TIME,
+    TH185_MARKET,
+    TH185_MARKET_0,
+    TH185_MARKET_1,
+    TH185_MARKET_2,
+    TH185_MARKET_3,
+    TH185_MARKET_4,
+    TH185_MARKET_5,
+    TH185_MARKET_6,
+    TH185_MARKET_7,
+    TH185_MARKET_8,
+    TH185_RELOAD,
+    TH185_SPEED,
+    TH185_STATISTICS_MODE,
+    TH185_STATS,
     TH185_TITLE,
     TH18_AC_FIX,
     TH18_AC_FIX_DESC,
@@ -745,7 +768,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-static char* th_glossary_str[3][733]
+static char* th_glossary_str[3][756]
 {
     {
         "",
@@ -995,6 +1018,29 @@ static char* th_glossary_str[3][733]
         u8"无限咆哮",
         u8"无动物灵",
         u8"TH17 东方鬼形兽　～ Wily Beast and Weakest Creature.",
+        u8"SAttack",
+        u8"基本的",
+        u8"BMoney",
+        u8"Cooltime",
+        u8"扩展的",
+        u8"MBreak",
+        u8"MPower",
+        u8"MSize",
+        u8"MTime",
+        u8"市场",
+        u8"Tutorial - 第一次黑市交易",
+        u8"1st Market - 隐藏的悬崖",
+        u8"2nd Market - 雾之湖",
+        u8"3rd Market - 赛之河原",
+        u8"4th Market - 守矢神社（黑庙会",
+        u8"5ft Market - 妖怪之山",
+        u8"6th Market - 虹龙洞",
+        u8"End of Market - 月虹市场",
+        u8"Challenge Market - 月虹黑市",
+        u8"Reload",
+        u8"Speed",
+        u8"字符统计",
+        u8"Character stats",
         u8"TH18.5 弹幕狂们的黑市　～ 100th Black Market.",
         u8"正确记录关卡开始时所选择的主动卡片",
         u8"如果要使这个选项生效，你必须在游戏时保持此选项开启。",
@@ -1730,6 +1776,29 @@ static char* th_glossary_str[3][733]
         u8"Inf. Roaring",
         u8"No Goast",
         u8"TH17 Wily Beast and Weakest Creature",
+        u8"SAttack",
+        u8"Basic",
+        u8"BMoney",
+        u8"Cooltime",
+        u8"Extended",
+        u8"MBreak",
+        u8"MPower",
+        u8"MSize",
+        u8"MTime",
+        u8"Market",
+        u8"Tutorial - Novice Black Market",
+        u8"1st Market - Hidden Cliff",
+        u8"2nd Market - Misty Lake",
+        u8"3rd Market - Sanzu Riverside",
+        u8"4th Market - Moriya Dark Fair",
+        u8"5ft Market - Youkai Mountain",
+        u8"6th Market - Rainbow Dragon Cave",
+        u8"End of Market - Lunar Rainbow Market",
+        u8"Challenge Market - Lunar Rain-Black Market",
+        u8"Reload",
+        u8"Speed",
+        u8"Stats",
+        u8"Character stats",
         u8"TH18.5 100th Black Market",
         u8"Correctly record the selected active card on stage beginning.",
         u8"This option needs to be enabled for the entire gaming session for it to work.",
@@ -2465,6 +2534,29 @@ static char* th_glossary_str[3][733]
         u8"無限のロアリング",
         u8"動物霊を落とさない",
         u8"TH17 東方鬼形獣　～ Wily Beast and Weakest Creature.",
+        u8"SAttack",
+        u8"基本",
+        u8"BMoney",
+        u8"Cooltime",
+        u8"拡張",
+        u8"MBreak",
+        u8"MPower",
+        u8"MSize",
+        u8"MTime",
+        u8"市場",
+        u8"Tutorial - 初めての闇取引",
+        u8"1st Market - 秘天崖",
+        u8"2nd Market - 霧の湖",
+        u8"3rd Market - 賽の河原",
+        u8"4th Market - 守矢神社(闇縁日)",
+        u8"ft Market - 妖怪の山",
+        u8"6th Market - 虹龍洞",
+        u8"End of Market - 月虹市場",
+        u8"Challenge Market - 月虹闇市場",
+        u8"Reload",
+        u8"Speed",
+        u8"統計",
+        u8"Character stats",
         u8"TH18.5 バレットフィリア達の闇市場　〜 100th Black Market.",
         u8"ステージ開始時に選択した使用カードを正しく記録します",
         u8"このオプションを機能させるには、プレイ中に常にこのオプションを有効にする必要があります。 ",
@@ -21342,6 +21434,100 @@ static th_glossary_t TH18_CARD_LIST[58]
 
 }
 
+namespace TH185 {
+
+enum th_sections_t : uint8_t
+{
+    A0000ERROR,
+};
+
+static char* th_sections_str[3][4][1]
+{
+    {
+        {
+            u8"",
+        },
+        {
+            u8"",
+        },
+        {
+            u8"",
+        },
+        {
+            u8"",
+        },
+    },
+    {
+        {
+            u8"",
+        },
+        {
+            u8"",
+        },
+        {
+            u8"",
+        },
+        {
+            u8"",
+        },
+    },
+    {
+        {
+            u8"",
+        },
+        {
+            u8"",
+        },
+        {
+            u8"",
+        },
+        {
+            u8"",
+        },
+    },
+};
+
+static uint8_t th_sections_bgm[]
+{
+    0,
+};
+
+static th_sections_t th_sections_cba[1][1][2]
+{
+    {
+        { },
+    },
+};
+
+static th_sections_t th_sections_cbt[1][2][1]
+{
+    {
+        { },
+        { },
+    },
+};
+
+static th_glossary_t TH185_MARKET_SELECT[10]
+{
+    TH185_MARKET_0,
+    TH185_MARKET_1,
+    TH185_MARKET_2,
+    TH185_MARKET_3,
+    TH185_MARKET_4,
+    TH185_MARKET_5,
+    TH185_MARKET_6,
+    TH185_MARKET_7,
+    TH185_MARKET_8,
+};
+
+static th_glossary_t TH185_STATISTICS_MODE_SELECT[3]
+{
+    TH185_BASIC,
+    TH185_EXTENDED,
+};
+
+}
+
 static wchar_t __thprac_loc_range_zh[] {
     0x0020, 0x00FF,
     0x201c, 0x201c,
@@ -21802,6 +21988,7 @@ static wchar_t __thprac_loc_range_zh[] {
     0x5ca9, 0x5ca9,
     0x5cad, 0x5cad,
     0x5d07, 0x5d07,
+    0x5d16, 0x5d16,
     0x5d29, 0x5d29,
     0x5ddd, 0x5ddd,
     0x5de2, 0x5de2,
@@ -21906,6 +22093,7 @@ static wchar_t __thprac_loc_range_zh[] {
     0x6076, 0x6076,
     0x6084, 0x6084,
     0x609f, 0x609f,
+    0x60ac, 0x60ac,
     0x60b2, 0x60b2,
     0x60c5, 0x60c5,
     0x60ca, 0x60ca,
@@ -22018,6 +22206,7 @@ static wchar_t __thprac_loc_range_zh[] {
     0x6606, 0x6606,
     0x660e, 0x660e,
     0x660f, 0x660f,
+    0x6613, 0x6613,
     0x661f, 0x661f,
     0x6620, 0x6620,
     0x6625, 0x6625,
@@ -22328,6 +22517,7 @@ static wchar_t __thprac_loc_range_zh[] {
     0x78d0, 0x78d0,
     0x78e8, 0x78e8,
     0x793a, 0x793a,
+    0x793e, 0x793e,
     0x7948, 0x7948,
     0x7956, 0x7956,
     0x7957, 0x7957,
@@ -22629,6 +22819,7 @@ static wchar_t __thprac_loc_range_zh[] {
     0x8d4e, 0x8d4e,
     0x8d56, 0x8d56,
     0x8d5a, 0x8d5a,
+    0x8d5b, 0x8d5b,
     0x8d64, 0x8d64,
     0x8d6b, 0x8d6b,
     0x8d70, 0x8d70,
@@ -23249,6 +23440,7 @@ static wchar_t __thprac_loc_range_ja[] {
     0x57df, 0x57df,
     0x57f4, 0x57f4,
     0x57f7, 0x57f7,
+    0x57fa, 0x57fa,
     0x5831, 0x5831,
     0x5834, 0x5834,
     0x5854, 0x5854,
@@ -23343,6 +23535,7 @@ static wchar_t __thprac_loc_range_ja[] {
     0x5c71, 0x5c71,
     0x5c90, 0x5c90,
     0x5cf6, 0x5cf6,
+    0x5d16, 0x5d16,
     0x5d50, 0x5d50,
     0x5dba, 0x5dba,
     0x5ddd, 0x5ddd,
@@ -23376,6 +23569,7 @@ static wchar_t __thprac_loc_range_ja[] {
     0x5f0f, 0x5f0f,
     0x5f10, 0x5f10,
     0x5f13, 0x5f13,
+    0x5f15, 0x5f15,
     0x5f1f, 0x5f1f,
     0x5f26, 0x5f26,
     0x5f29, 0x5f29,
@@ -23742,6 +23936,7 @@ static wchar_t __thprac_loc_range_ja[] {
     0x78ba, 0x78ba,
     0x78d0, 0x78d0,
     0x793a, 0x793a,
+    0x793e, 0x793e,
     0x7947, 0x7947,
     0x7948, 0x7948,
     0x7956, 0x7956,
@@ -23804,6 +23999,7 @@ static wchar_t __thprac_loc_range_ja[] {
     0x7d50, 0x7d50,
     0x7d61, 0x7d61,
     0x7d62, 0x7d62,
+    0x7d71, 0x7d71,
     0x7d76, 0x7d76,
     0x7d99, 0x7d99,
     0x7d9a, 0x7d9a,
@@ -23978,6 +24174,7 @@ static wchar_t __thprac_loc_range_ja[] {
     0x8cc7, 0x8cc7,
     0x8ce2, 0x8ce2,
     0x8cea, 0x8cea,
+    0x8cfd, 0x8cfd,
     0x8d04, 0x8d04,
     0x8d16, 0x8d16,
     0x8d64, 0x8d64,
