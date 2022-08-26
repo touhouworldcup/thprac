@@ -289,7 +289,7 @@ namespace TH185 {
         }
     };
 
-    stage_warps_t stages[] = {
+    stage_warps_t stages[9] = {
         {},
         {
             .label = "Progress",
@@ -334,7 +334,7 @@ namespace TH185 {
                     .label = "Nemuno Sakata"
                 }
             }
-        }
+        },
     };
 
     class THGuiPrac : public Gui::GameGuiWnd {
@@ -349,11 +349,11 @@ namespace TH185 {
         }
         SINGLETON(THGuiPrac)
     public:
-#define Stage (GetMemContent(0x4d7c68, 0xfc))
         __declspec(noinline) void State(int state)
         {
             switch (state) {
             case 0:
+                mStage = GetMemContent(0x4d7c68, 0xfc);
                 SetFade(0.8f, 0.1f);
                 Open();
                 thPracParam.Reset();
@@ -365,7 +365,7 @@ namespace TH185 {
                 // Fill Param
                 thPracParam.mode = *mMode;
                 thPracParam.warp = mWarp;
-                thPracParam.stage = Stage;
+                thPracParam.stage = mStage;
 
                 break;
             case 2:
@@ -416,15 +416,13 @@ namespace TH185 {
         {
             mMode();
             if (*mMode == 1) {
-                StageWarpsRender(stages[Stage], mWarp, 0);                
+                StageWarpsRender(stages[mStage], mWarp, 0);                
             }
             //mNavFocus();
-        }       
-
-
-        #undef Stage
+        }
 
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
+        size_t mStage;
         //Gui::GuiNavFocus mNavFocus { TH185_MARKET, TH_MODE, TH_WARP };
         std::vector<unsigned int> mWarp;
 
