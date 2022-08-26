@@ -1,34 +1,163 @@
 ﻿#include "thprac_utils.h"
+#include <optional>
 
 namespace THPrac {
 namespace TH185 {
+    __declspec(noinline) void AddCard(uint32_t cardId) {
+        auto real_AddCard = (void(__thiscall*)(uint32_t, uint32_t, uint32_t))0x414F20;
+        if (cardId < 85)
+            real_AddCard(*(uint32_t*)0x4d7ab8, cardId, 2);
+    }
+
+    struct ecl_write_t {
+        uint32_t off;
+        std::vector<uint8_t> bytes;
+        void apply(uint8_t* start) {
+            for (unsigned int i = 0; i < bytes.size(); i++) {
+                start[off + i] = bytes[i];
+            }
+        }
+    };
+
+    struct ecl_jump_t {
+        uint32_t off;
+        uint32_t dest;
+        uint32_t at_frame;
+        uint32_t ecl_time;
+    };
+
+    struct stage_warps_t;
+
+    struct section_param_t {
+        const char* label;
+        std::unordered_map<std::string, std::vector<ecl_jump_t>>  jumps;
+        std::unordered_map<std::string, std::vector<ecl_write_t>> writes;
+        stage_warps_t* phases;
+    };
+
+    struct stage_warps_t {
+        const char* label;
+        enum {
+            TYPE_SLIDER,
+            TYPE_COMBO
+        } type;
+        std::vector<section_param_t> section_param;
+    };
+
+    void StageWarpsRender(stage_warps_t& warps, std::vector<unsigned int>& out_warp, size_t level) {
+        if (warps.section_param.size() == 0)
+            return;
+
+        if (out_warp.size() <= level)
+            out_warp.resize(level + 1);
+
+        switch (warps.type) {
+        case stage_warps_t::TYPE_SLIDER:
+            ImGui::SliderInt(warps.label, (int*)&out_warp[level], 0, warps.section_param.size() - 1, warps.section_param[out_warp[level]].label);
+            break;
+        case stage_warps_t::TYPE_COMBO:
+            if (ImGui::BeginCombo(warps.label, warps.section_param[out_warp[level]].label)) {
+                for (unsigned int i = 0; i < warps.section_param.size(); i++) {
+                    ImGui::PushID(i);
+                    
+                    bool item_selected = (out_warp[level] == i);
+
+                    if (ImGui::Selectable(warps.section_param[i].label, &item_selected)) {
+                        out_warp[level] = i;
+                    }
+
+                    if (item_selected)
+                        ImGui::SetItemDefaultFocus();
+
+                    ImGui::PopID();
+                }
+                ImGui::EndCombo();
+            }
+            break;
+        }
+        /*
+        if (ImGui::IsItemFocused()) {
+            if (Gui::InGameInputGet(VK_LEFT) && out_warp[level] > 0) {
+                out_warp[level]--;
+            }
+            if (Gui::InGameInputGet(VK_RIGHT) && out_warp[level] + 1 < warps.section_labels.size()) {
+                out_warp[level]++;
+            }
+        }
+        */
+        if (warps.section_param[out_warp[level]].phases)
+            StageWarpsRender(*warps.section_param[out_warp[level]].phases, out_warp, level + 1);
+    }
+
+    void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, size_t level) {
+        auto& param = warps.section_param[in_warp[level]];
+
+        auto ECLGetSub = [](const char* name) -> uint8_t* {
+            struct ecl_sub_t {
+                const char* name;
+                uint8_t* data;
+            };
+            auto subs = (ecl_sub_t*)GetMemContent(0x004d7af4, 0x4f34, 0x10c);
+
+            while (strcmp(subs->name, name))
+                subs++;
+            return subs->data;
+        };
+
+        // This entire block gives me the idea to convert to jumps once there's a JSON file.
+        // But for readability, as long as there is no JSON file, this block will have to stay
+        for (auto& jumps : param.jumps) {
+            uint8_t* ecl = ECLGetSub(jumps.first.c_str());
+            for (auto& jmp : jumps.second) {
+                ecl_write_t real_write;
+                real_write.off = jmp.off;
+                union i32b {
+                    uint32_t i;
+                    uint8_t b[4];
+                    i32b(uint32_t a) : i(a) {}
+                };
+
+                i32b ecl_time = jmp.ecl_time;
+                uint8_t instr[] = { 0x0c, 0x00, 0x18, 0x00, 0x00, 0x00, 0xff, 0x2c, 0x00, 0x00, 0x00, 0x00 };
+                i32b dest = jmp.dest - jmp.off;
+                i32b at_frame = jmp.at_frame;
+                
+                #define BYTES_APPEND(a)                    \
+                for (size_t j = 0; j < sizeof(a); j++) \
+                    real_write.bytes.push_back(a[j]);
+                
+                BYTES_APPEND(ecl_time.b);
+                BYTES_APPEND(instr);
+                BYTES_APPEND(dest.b);
+                BYTES_APPEND(at_frame.b);
+                #undef BYTES_APPEND
+                
+                real_write.apply(ecl);
+            }
+        }
+
+        for (auto& writes : param.writes) {
+            uint8_t* ecl = ECLGetSub(writes.first.c_str());
+            for (auto& write : writes.second) {
+                write.apply(ecl);
+            }
+        }
+
+        if (param.phases)
+            StageWarpsApply(*param.phases, in_warp, level + 1);
+    }
+
     struct THPracParam {
         int32_t mode;
-        int32_t section;
-        int32_t phase;
-        int32_t statisticsMode;
+        int32_t stage;
+        std::vector<unsigned int> warp;
 
-        int32_t life;
-
-        int32_t bulletMoney;
-        int32_t power;
-        int32_t magicPower;
-        int32_t speed;
-        int32_t magicBreak;
-        int32_t sAttack;
-        int32_t magicTime;
-        int32_t magicSize;
-        int32_t reload;
-        int32_t cooltime;
-
-
-        bool dlg;
-
-        bool _playLock = false;
+        //bool _playLock = false;
         void Reset()
         {
-            memset(this, 0, sizeof(THPracParam));
+            *this = {};
         }
+        /*
         bool ReadJson(std::string& json)
         {
             ParseJson();
@@ -89,6 +218,7 @@ namespace TH185 {
 
             ReturnJson();
         }
+        */
     };
     THPracParam thPracParam {};
 
@@ -145,22 +275,72 @@ namespace TH185 {
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
     };
     
+
+    stage_warps_t mike = {
+        .label = "Attack",
+        .type = stage_warps_t::TYPE_COMBO,
+        .section_param = {
+            {
+                .label = "Nonspell 1"
+            },
+            {
+                .label = "Spell 1"
+            }
+        }
+    };
+
+    stage_warps_t stages[] = {
+        {},
+        {
+            .label = "Progress",
+            .type = stage_warps_t::TYPE_SLIDER,
+            .section_param = { 
+                {
+                    .label = "Wave 1"
+                },
+                {
+                    .label = "Wave 2",
+                    .jumps = {
+                        { "main", {
+                            {
+                                .off = 0x258,
+                                .dest = 0x380
+                            }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            {
+                                .off = 254,
+                                .bytes = { 2 }
+                            }
+                        } }
+                    },
+                },
+                {
+                    .label = "Wave 3"
+                },
+                {
+                    .label = "Mike Goutokuji",
+                    .phases = &mike
+                },
+                {
+                    .label = "Minoriko Aki"
+                },
+                {
+                    .label = "Eternity Larva"
+                },
+                {
+                    .label = "Nemuno Sakata"
+                }
+            }
+        }
+    };
+
     class THGuiPrac : public Gui::GameGuiWnd {
         THGuiPrac() noexcept
         {
             *mMode = 1;
-            *mStatisticsMode = 0;
-            *mLife = 1;
-            *mBulletMoney = 0;
-            *mPower = 1;
-            *mMagicPower = 100;
-            *mSpeed = 100;
-            *mReload = 0;
-            *mCooltime = 0;
-            *mMagicBreak=0;
-            *mSAttack=100;
-            *mMagicTime=100;
-            *mMagicSize=100;
 
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -169,6 +349,7 @@ namespace TH185 {
         }
         SINGLETON(THGuiPrac)
     public:
+#define Stage (GetMemContent(0x4d7c68, 0xfc))
         __declspec(noinline) void State(int state)
         {
             switch (state) {
@@ -183,23 +364,13 @@ namespace TH185 {
 
                 // Fill Param
                 thPracParam.mode = *mMode;
-                thPracParam.section = CalcSection();
-                thPracParam.statisticsMode = *mStatisticsMode;
-                thPracParam.life = *mLife;
-                thPracParam.bulletMoney = *mBulletMoney;
-                thPracParam.power = *mPower;
-                thPracParam.magicPower = *mMagicPower;
-                thPracParam.speed = *mSpeed;
-                thPracParam.reload = *mReload;
-                thPracParam.cooltime = *mCooltime;
-                thPracParam.magicBreak = *mMagicBreak; 
-                thPracParam.sAttack = *mSAttack;
-                thPracParam.magicTime = *mMagicTime;
-                thPracParam.magicSize = *mMagicSize;
+                thPracParam.warp = mWarp;
+                thPracParam.stage = Stage;
+
                 break;
             case 2:
                 Close();
-                *mNavFocus = 0;
+                //*mNavFocus = 0;
                 break;
             default:
                 break;
@@ -240,145 +411,22 @@ namespace TH185 {
 
             PracticeMenu();
         }
-        th_glossary_t* SpellPhase()
-        {
-            auto section = CalcSection();
-            return nullptr;
-        }
+
         void PracticeMenu()
         {
             mMode();
             if (*mMode == 1) {
-                if (mWarp())
-                    *mSection = *mChapter = *mPhase = 0;
-                if (*mWarp) {
-                    SectionWidget();
-                    mPhase(TH_PHASE, SpellPhase());
-                }
-                mStatisticsMode();
-                mLife();
-                if (*mStatisticsMode == 1) {
-                    mBulletMoney();
-                    mPower();
-                    mMagicPower();
-                    mSpeed();
-                    mReload();
-                    mCooltime();
-                    mMagicBreak();
-                    mSAttack();
-                    mMagicTime();
-                    mMagicSize();
-                }
+                StageWarpsRender(stages[Stage], mWarp, 0);                
             }
+            //mNavFocus();
+        }       
 
-            mNavFocus();
-        }
-
-        #define Stage (GetMemContent(0x4d7d68, 0xfc))
-
-        int CalcSection()
-        {           
-            int chapterId = 0;
-            switch (*mWarp) {
-            case 1: // Chapter
-                // Chapter Id = 10000 + Stage * 100 + Section
-                chapterId += (Stage + 1) * 100;
-                chapterId += *mChapter;
-                chapterId += 10000; // Base of chapter ID is 1000.
-                return chapterId;
-                break;
-            case 2:
-            case 3: // Mid boss & End boss
-                return th_sections_cba[Stage][*mWarp - 2][*mSection];
-                break;
-            case 4:
-            case 5: // Non-spell & Spellcard
-                return th_sections_cbt[Stage][*mWarp - 4][*mSection];
-                break;
-            default:
-                return 0;
-                break;
-            }
-        }
-
-        bool SectionHasDlg(int32_t section)
-        {
-            //TODO: Add dialogue section
-            switch (section) {
-            default:
-                return false;
-            }
-        }
-
-        void SectionWidget()
-        {
-            static char chapterStr[256] {};
-            auto& chapterCounts = mChapterSetup[Stage];
-
-            switch (*mWarp) {
-            case 1: // Chapter
-                mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
-
-                if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
-                    sprintf_s(chapterStr, XSTR(TH_STAGE_PORTION_N), *mChapter);
-                } else if (*mChapter <= chapterCounts[0]) {
-                    sprintf_s(chapterStr, XSTR(TH_STAGE_PORTION_1), *mChapter);
-                } else {
-                    sprintf_s(chapterStr, XSTR(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
-                };
-
-                mChapter(chapterStr);
-                break;
-            case 2:
-            case 3: // Mid boss & End boss
-                if (mSection(TH_WARP_SELECT[*mWarp],
-                        th_sections_cba[Stage][*mWarp - 2],
-                        th_sections_str[::THPrac::Gui::LocaleGet()][0]))
-                    *mPhase = 0;
-                if (SectionHasDlg(th_sections_cba[Stage][*mWarp - 2][*mSection]))
-                    mDlg();
-                break;
-            case 4:
-            case 5: // Non-spell & Spellcard
-                if (mSection(TH_WARP_SELECT[*mWarp],
-                        th_sections_cbt[Stage][*mWarp - 4],
-                        th_sections_str[::THPrac::Gui::LocaleGet()][0]))
-                    *mPhase = 0;
-                if (SectionHasDlg(th_sections_cbt[Stage][*mWarp - 4][*mSection]))
-                    mDlg();
-                break;
-            default:
-                break;
-            }
-        }
 
         #undef Stage
 
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
-        Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
-        Gui::GuiCombo mSection { TH_MODE };
-        Gui::GuiCombo mPhase { TH_PHASE };
-        Gui::GuiCombo mStatisticsMode { TH185_STATISTICS_MODE, TH_MODE_SELECT };
-        Gui::GuiCheckBox mDlg { TH_DLG };
-
-        Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 9 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 1, 10, 1, 1 };
-
-        Gui::GuiDrag<int, ImGuiDataType_S32> mBulletMoney { TH185_BULLET_MONEY, 0, 9999999, 1, 100000 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mMagicPower { TH185_MAGIC_POWER, 0, 999, 10, 10 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mReload { TH185_RELOAD, 0, 999, 10, 10 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mCooltime { TH185_COOLTIME, 0, 999, 10, 10 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mMagicBreak { TH185_MAGIC_BREAK, 0, 999, 10, 10 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mSAttack { TH185_ATTACK_STRENGTH, 0, 999, 10, 10 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mMagicTime { TH185_MAGIC_TIME, 0, 999, 10, 10 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mMagicSize { TH185_MAGIC_SIZE, 0, 999, 10, 10 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mSpeed { TH185_SPEED, 0, 999, 10, 10 };
-
-        Gui::GuiNavFocus mNavFocus { TH185_MARKET, TH_MODE, TH_WARP, TH_DLG, TH185_STATISTICS_MODE,
-            TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
-            TH185_SPEED, TH_LIFE, TH185_BULLET_MONEY,
-            TH_POWER, TH185_MAGIC_POWER, TH185_RELOAD, TH185_COOLTIME, TH185_MAGIC_BREAK, TH185_ATTACK_STRENGTH, TH185_MAGIC_TIME, TH185_MAGIC_SIZE };
+        //Gui::GuiNavFocus mNavFocus { TH185_MARKET, TH_MODE, TH_WARP };
+        std::vector<unsigned int> mWarp;
 
         // TODO: Setup chapters
         int mChapterSetup[7][2] {
@@ -391,7 +439,6 @@ namespace TH185 {
             { 5, 4 },
         };
     };
-    
 
     class THAdvOptWnd : public Gui::GameGuiWnd {
         // Option Related Functions
@@ -523,19 +570,32 @@ namespace TH185 {
         GameGuiRender(IMPL_WIN32_DX9);
     }
 
-    EHOOK_DY(th185_set_game_values, (void*)0x4487d2)
+    EHOOK_DY(th185_patch_main, (void*)0x448fb2)
     {
-        *(int32_t*)(0x4d10ac) = thPracParam.speed;
-        *(int32_t*)(0x4d1070) = thPracParam.bulletMoney;
-        *(int32_t*)(0x4d1074) = thPracParam.bulletMoney;
-        *(int32_t*)(0x4d10bc) = thPracParam.life;
-        *(int32_t*)(0x4d1094) = thPracParam.magicBreak;
-        *(int32_t*)(0x4d1088) = thPracParam.sAttack;
-        *(int32_t*)(0x4D1090) = thPracParam.magicSize;
-        *(int32_t*)(0x4D1098) = thPracParam.magicTime;
-        *(int32_t*)(0x4D109C) = thPracParam.reload; //-1
-        *(int32_t*)(0x4D10B8) = (thPracParam.cooltime-100)*-1;
-        *(int32_t*)(0x4d1078) = (thPracParam.power - 1) * 100;
+        /*
+            *(int32_t*)(0x4d10ac) = thPracParam.speed;
+            *(int32_t*)(0x4d1070) = thPracParam.bulletMoney;
+            *(int32_t*)(0x4d1074) = thPracParam.bulletMoney;
+            *(int32_t*)(0x4d10bc) = thPracParam.life;
+            *(int32_t*)(0x4d1094) = thPracParam.magicBreak;
+            *(int32_t*)(0x4d1088) = thPracParam.sAttack;
+            *(int32_t*)(0x4D1090) = thPracParam.magicSize;
+            *(int32_t*)(0x4D1098) = thPracParam.magicTime;
+            *(int32_t*)(0x4D109C) = thPracParam.reload; //-1
+            *(int32_t*)(0x4D10B8) = (thPracParam.cooltime - 100) * -1;
+            *(int32_t*)(0x4d1078) = (thPracParam.power - 1) * 100;
+
+            *(int32_t*)0x4d1024 = 1;
+            AddCard(24);
+            *(int32_t*)0x4d1024 = 2;
+            AddCard(24);
+            *(int32_t*)0x4d1024 = 0;
+            //*(int32_t*)0x4d1024 = 1;
+            // AddCard(24);
+        */
+        if (thPracParam.mode) {
+            StageWarpsApply(stages[thPracParam.stage], thPracParam.warp, 0);
+        }
     }
     EHOOK_DY(th185_prac_confirm, (void*)0x46d523)
     {
