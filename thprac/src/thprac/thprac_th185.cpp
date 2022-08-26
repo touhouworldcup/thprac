@@ -75,16 +75,16 @@ namespace TH185 {
             }
             break;
         }
-        /*
+        
         if (ImGui::IsItemFocused()) {
             if (Gui::InGameInputGet(VK_LEFT) && out_warp[level] > 0) {
                 out_warp[level]--;
             }
-            if (Gui::InGameInputGet(VK_RIGHT) && out_warp[level] + 1 < warps.section_labels.size()) {
+            if (Gui::InGameInputGet(VK_RIGHT) && out_warp[level] + 1 < warps.section_param.size()) {
                 out_warp[level]++;
             }
         }
-        */
+        
         if (warps.section_param[out_warp[level]].phases)
             StageWarpsRender(*warps.section_param[out_warp[level]].phases, out_warp, level + 1);
     }
