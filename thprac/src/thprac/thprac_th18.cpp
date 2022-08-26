@@ -534,16 +534,9 @@ namespace TH18 {
         }
         __declspec(noinline) void AddCard(uint32_t cardId)
         {
-            if (cardId > 0 && cardId < 55) {
-                uint32_t cardStruct = *(uint32_t*)0x4cf298;
-                __asm {
-                    push 2;
-                    push cardId;
-                    mov ecx, cardStruct;
-                    mov eax, 0x411460;
-                    call eax;
-                }
-            }
+            auto real_AddCard = (void(__thiscall*)(uint32_t, uint32_t, uint32_t))0x411460;
+            if (cardId < 55)
+                real_AddCard(*(uint32_t*)0x4cf298, cardId, 2);
         }
         __declspec(noinline) void AddIndicateCard()
         {

@@ -5,7 +5,7 @@ namespace Gui {
     void ShowLicenceInfo();
 }
 
-static constexpr const char* COPYING_distorm = u8R"COPYING(:[diStorm3}:
+static constexpr const char* COPYING_distorm = R"COPYING(:[diStorm3}:
 The ultimate disassembler library.
 Copyright (c) 2003-2018, Gil Dabah
 All rights reserved.
@@ -31,7 +31,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.)COPYING";
-static constexpr const char* COPYING_FreeType = u8R"COPYING(                    The FreeType Project LICENSE
+static constexpr const char* COPYING_FreeType = R"COPYING(                    The FreeType Project LICENSE
                     ----------------------------
 
                             2006-Jan-27
@@ -201,7 +201,7 @@ Legal Terms
 
 --- end of FTL.TXT ---
 )COPYING";
-static constexpr const char* COPYING_imgui = u8R"COPYING(The MIT License (MIT)
+static constexpr const char* COPYING_imgui = R"COPYING(The MIT License (MIT)
 
 Copyright (c) 2014-2019 Omar Cornut
 
@@ -222,7 +222,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.)COPYING";
-static constexpr const char* COPYING_MetroHash = u8R"COPYING(                                 Apache License
+static constexpr const char* COPYING_MetroHash = R"COPYING(                                 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
 
@@ -424,7 +424,7 @@ static constexpr const char* COPYING_MetroHash = u8R"COPYING(                   
    See the License for the specific language governing permissions and
    limitations under the License.
 )COPYING";
-static constexpr const char* COPYING_rapidjson = u8R"COPYING(Copyright (C) 2015 THL A29 Limited, a Tencent company, and Milo Yip.  All rights reserved.
+static constexpr const char* COPYING_rapidjson = R"COPYING(Copyright (C) 2015 THL A29 Limited, a Tencent company, and Milo Yip.  All rights reserved.
 
 Terms of the MIT License:
 --------------------------------------------------------------------
@@ -438,7 +438,7 @@ subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all copies or substantial 
 portions of the Software.
 )COPYING";
-static constexpr const char* COPYING_robin_map = u8R"COPYING(MIT License
+static constexpr const char* COPYING_robin_map = R"COPYING(MIT License
 
 Copyright (c) 2017 Tessil
 
@@ -459,7 +459,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.)COPYING";
-static constexpr const char* COPYING_thprac = u8R"COPYING(Copyright 2022 Ack, 32th System
+static constexpr const char* COPYING_thprac = R"COPYING(Copyright 2022 Ack, 32th System
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

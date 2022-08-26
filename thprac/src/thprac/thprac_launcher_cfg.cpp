@@ -1738,7 +1738,7 @@ private:
 
         ImGui::Text(XSTR(THPRAC_SETTING_LANGUAGE));
         ImGui::Separator();
-        mCfgLanguage.Gui(XSTR(THPRAC_LANGUAGE), u8"中文\0English\0日本語\0\0");
+        mCfgLanguage.Gui(XSTR(THPRAC_LANGUAGE), "中文\0English\0日本語\0\0");
         if (mOriginalLanguage != mCfgLanguage.Get()) {
             ImGui::Text(th_glossary_str[mCfgLanguage.Get()][THPRAC_LANGUAGE_HINT]);
         }
