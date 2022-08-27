@@ -154,6 +154,8 @@ namespace TH185 {
         int32_t mode;
         int32_t stage;
 
+        int32_t bulletMoney;
+
         std::vector<unsigned int> warp;
         std::queue<unsigned int> force_wave;
 
@@ -371,6 +373,7 @@ namespace TH185 {
                 thPracParam.mode = *mMode;
                 thPracParam.warp = mWarp;
                 thPracParam.stage = mStage;
+                thPracParam.bulletMoney = *mBulletMoney;
                 thPracParam.force_wave = { };
 
                 for (auto& w : mForceWave) {
@@ -555,6 +558,9 @@ namespace TH185 {
             mMode();
             if (*mMode == 1) {
                 StageWarpsRender(stages[mStage], mWarp, 0);
+
+                mBulletMoney();
+
                 ForceWave(0);
             }
             //mNavFocus();
@@ -562,6 +568,7 @@ namespace TH185 {
 
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
         size_t mStage;
+        Gui::GuiDrag<int32_t, ImGuiDataType_S32> mBulletMoney { TH185_BULLET_MONEY, 0, INT_MAX };
         //Gui::GuiNavFocus mNavFocus { TH185_MARKET, TH_MODE, TH_WARP };
         std::vector<unsigned int> mWarp;
         std::vector<unsigned int> mForceWave = { 0 };
@@ -710,10 +717,11 @@ namespace TH185 {
 
     EHOOK_DY(th185_patch_main, (void*)0x448fb2)
     {
+        *(int32_t*)(0x4d1070) = thPracParam.bulletMoney;
+        *(int32_t*)(0x4d1074) = thPracParam.bulletMoney;
         /*
             *(int32_t*)(0x4d10ac) = thPracParam.speed;
-            *(int32_t*)(0x4d1070) = thPracParam.bulletMoney;
-            *(int32_t*)(0x4d1074) = thPracParam.bulletMoney;
+            
             *(int32_t*)(0x4d10bc) = thPracParam.life;
             *(int32_t*)(0x4d1094) = thPracParam.magicBreak;
             *(int32_t*)(0x4d1088) = thPracParam.sAttack;
