@@ -1301,6 +1301,14 @@ void WarpsRender(th_section_t warp, std::vector<unsigned int>& gui_warp_selector
         break;
     }
 
+    if (ImGui::IsItemFocused()) {
+        if (Gui::InGameInputGet(VK_LEFT) && gui_warp_selector[level] > 0) {
+            gui_warp_selector[level]--;
+        }
+        if (Gui::InGameInputGet(VK_RIGHT) && gui_warp_selector[level] + 1 < warp.sub_warps.size()) {
+            gui_warp_selector[level]++;
+        }
+    }
     auto subwarp = warp.sub_warps[gui_warp_selector[level]];
     WarpsRender(subwarp, gui_warp_selector, level + 1);
 }

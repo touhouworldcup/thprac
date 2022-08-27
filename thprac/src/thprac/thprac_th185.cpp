@@ -1,5 +1,5 @@
 ﻿#include "thprac_utils.h"
-#include <optional>
+#include <queue>
 
 namespace THPrac {
 namespace TH185 {
@@ -9,11 +9,24 @@ namespace TH185 {
         if (cardId < 85)
             real_AddCard(*(uint32_t*)0x4d7ab8, cardId, 2);
     }
-    
+        /*
+        if (ImGui::IsItemFocused()) {
+            if (Gui::InGameInputGet(VK_LEFT) && out_warp[level] > 0) {
+                out_warp[level]--;
+            }
+            if (Gui::InGameInputGet(VK_RIGHT) && out_warp[level] + 1 < warps.section_param.size()) {
+                out_warp[level]++;
+            }
+        }*/
+
     struct THPracParam {
         int32_t mode;
         int32_t stage;
+
+        int32_t bulletMoney;
+
         std::vector<unsigned int> warp;
+        std::queue<unsigned int> force_wave;
 
         //bool _playLock = false;
         void Reset()
@@ -217,7 +230,7 @@ namespace TH185 {
                 
                 }
             }
-        }
+        },
     };
 
     class THGuiPrac : public Gui::GameGuiWnd {
@@ -232,11 +245,11 @@ namespace TH185 {
         }
         SINGLETON(THGuiPrac)
     public:
-#define Stage (GetMemContent(0x4d7c68, 0xfc))
         __declspec(noinline) void State(int state)
         {
             switch (state) {
             case 0:
+                mStage = GetMemContent(0x4d7c68, 0xfc);
                 SetFade(0.8f, 0.1f);
                 Open();
                 thPracParam.Reset();
@@ -248,7 +261,16 @@ namespace TH185 {
                 // Fill Param
                 thPracParam.mode = *mMode;
                 thPracParam.warp = mWarp;
-                thPracParam.stage = Stage;
+                thPracParam.stage = mStage;
+                thPracParam.bulletMoney = *mBulletMoney;
+                thPracParam.force_wave = { };
+
+                for (auto& w : mForceWave) {
+                    if (w)
+                        thPracParam.force_wave.push(w + 29);
+                    else
+                        break;
+                }
 
                 break;
             case 2:
@@ -295,21 +317,150 @@ namespace TH185 {
             PracticeMenu();
         }
 
+        const char* waves[83] = {
+            "None",
+            "Wave01t",
+            "Wave02t",
+            "Wave03t",
+            "Wave01",
+            "Wave02",
+            "Wave03",
+            "Wave04",
+            "Wave05",
+            "Wave06",
+            "Wave07",
+            "Wave08",
+            "Wave09",
+            "Wave10",
+            "Wave11",
+            "Wave12",
+            "Wave13",
+            "Wave14",
+            "Wave15",
+            "Wave16",
+            "Wave17",
+            "Wave18",
+            "Wave19",
+            "Wave20",
+            "Wave21",
+            "Wave22",
+            "Wave23",
+            "Wave24",
+            "Wave25",
+            "Wave26",
+            "Wave27",
+            "Wave28",
+            "Wave29",
+            "Wave30",
+            "Wave31",
+            "Wave32",
+            "Wave33",
+            "Wave34",
+            "Wave35",
+            "Wave36",
+            "Wave37",
+            "Wave38",
+            "Wave39",
+            "Wave40",
+            "Wave41",
+            "Wave42",
+            "Wave43",
+            "Wave44",
+            "Wave45",
+            "Wave46",
+            "Wave47",
+            "Wave48",
+            "Wave49",
+            "Wave50",
+            "Wave51",
+            "Wave52",
+            "Wave53",
+            "Wave54",
+            "Wave55",
+            "Wave56",
+            "Wave57",
+            "Wave58",
+            "Wave59",
+            "Wave60",
+            "Wave61",
+            "Wave62",
+            "Wave63",
+            "Wave64",
+            "Wave65",
+            "Wave66",
+            "Wave67",
+            "Wave68",
+            "Wave69",
+            "Wave70",
+            "Wave71",
+            "Wave72",
+            "Wave73",
+            "Wave74",
+            "Wave75",
+            "Wave76",
+            "Wave77",
+            "Wave78",
+            "Wave79"
+        };
+
+        void ForceWave(size_t level) {
+            if (mForceWave.size() <= level)
+                mForceWave.resize(level + 1);
+
+
+            if (ImGui::BeginCombo("Force Wave", waves[mForceWave[level]])) {
+                for (size_t i = 0; i < sizeof(waves) / sizeof(const char*); i++) {
+                    ImGui::PushID(i);
+
+                    bool item_selected = (i == mForceWave[level]);
+
+                    if (ImGui::Selectable(waves[i], &item_selected))
+                        mForceWave[level] = i;
+
+                    if (item_selected)
+                        ImGui::SetItemDefaultFocus();
+
+                    ImGui::PopID();
+                }
+                ImGui::EndCombo();
+            }
+
+            if (ImGui::IsItemFocused()) {
+                if (Gui::InGameInputGet(VK_LEFT) && mForceWave[level] > 0) {
+                    mForceWave[level]--;
+                }
+                if (Gui::InGameInputGet(VK_RIGHT) && mForceWave[level] + 1 < sizeof(waves) / sizeof(const char*)) {
+                    mForceWave[level]++;
+                }
+            }
+            
+            if (mForceWave[level]) {
+                ImGui::PushID(++level);
+                ForceWave(level);
+                ImGui::PopID();
+            }
+        }
+
+
         void PracticeMenu()
         {
             mMode();
             if (*mMode == 1) {
-                WarpsRender(th185_sections, mWarp, 0);                
+                WarpsRender(th185_sections, mWarp, 0);
+
+                mBulletMoney();
+
+                ForceWave(0);
             }
             //mNavFocus();
-        }       
-
-
-        #undef Stage
+        }
 
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
+        size_t mStage;
+        Gui::GuiDrag<int32_t, ImGuiDataType_S32> mBulletMoney { TH185_BULLET_MONEY, 0, INT_MAX };
         //Gui::GuiNavFocus mNavFocus { TH185_MARKET, TH_MODE, TH_WARP };
         std::vector<unsigned int> mWarp;
+        std::vector<unsigned int> mForceWave = { 0 };
 
         // TODO: Setup chapters
         int mChapterSetup[7][2] {
@@ -455,10 +606,11 @@ namespace TH185 {
 
     EHOOK_DY(th185_patch_main, (void*)0x448fb2)
     {
+        *(int32_t*)(0x4d1070) = thPracParam.bulletMoney;
+        *(int32_t*)(0x4d1074) = thPracParam.bulletMoney;
         /*
             *(int32_t*)(0x4d10ac) = thPracParam.speed;
-            *(int32_t*)(0x4d1070) = thPracParam.bulletMoney;
-            *(int32_t*)(0x4d1074) = thPracParam.bulletMoney;
+            
             *(int32_t*)(0x4d10bc) = thPracParam.life;
             *(int32_t*)(0x4d1094) = thPracParam.magicBreak;
             *(int32_t*)(0x4d1088) = thPracParam.sAttack;
@@ -478,6 +630,13 @@ namespace TH185 {
         */
         if (thPracParam.mode) {
             SectionParamsApply((ecl_sub_t*)GetMemContent(0x004d7af4, 0x4f34, 0x10c),th185_sections,thPracParam.warp,0);
+        }
+    }
+    EHOOK_DY(th185_force_wave, (void*)0x43d156)
+    {
+        if (thPracParam.force_wave.size()) {
+            pCtx->Esi = thPracParam.force_wave.front();
+            thPracParam.force_wave.pop();
         }
     }
     EHOOK_DY(th185_prac_confirm, (void*)0x46d523)

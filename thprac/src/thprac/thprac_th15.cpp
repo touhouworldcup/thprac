@@ -820,8 +820,8 @@ namespace TH15 {
             case 1:
                 break;
             case 2:
-                ECLJump(ecl, 0x60, 0x2ac, 60, 90); // 0x7544
-                ECLJump(ecl, 0x24, 0x80, 0, 0);
+                ECLJump(ecl, 0x7248, 0x7494, 60, 90); // 0x7544
+                ECLJump(ecl, 0x3f4c, 0x3fa8, 0, 0);
                 break;
             case 3:
                 ECLJump(ecl, 0x7248, 0x7544, 60, 90);
