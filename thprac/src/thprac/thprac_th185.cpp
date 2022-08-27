@@ -1,5 +1,5 @@
 ﻿#include "thprac_utils.h"
-#include <optional>
+#include <queue>
 
 namespace THPrac {
 namespace TH185 {
@@ -85,8 +85,11 @@ namespace TH185 {
             }
         }
         
-        if (warps.section_param[out_warp[level]].phases)
+        if (warps.section_param[out_warp[level]].phases) {
+            ImGui::PushID(level + 1);
             StageWarpsRender(*warps.section_param[out_warp[level]].phases, out_warp, level + 1);
+            ImGui::PopID();
+        }
     }
 
     void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, size_t level) {
@@ -104,8 +107,8 @@ namespace TH185 {
             return subs->data;
         };
 
-        // This entire block gives me the idea to convert to jumps once there's a JSON file.
-        // But for readability, as long as there is no JSON file, this block will have to stay
+        // This entire block gives me the idea to convert everything to writes once there's a JSON
+        // file. But for readability, as long as there is no JSON file, this block will have to stay
         for (auto& jumps : param.jumps) {
             uint8_t* ecl = ECLGetSub(jumps.first.c_str());
             for (auto& jmp : jumps.second) {
@@ -150,7 +153,9 @@ namespace TH185 {
     struct THPracParam {
         int32_t mode;
         int32_t stage;
+
         std::vector<unsigned int> warp;
+        std::queue<unsigned int> force_wave;
 
         //bool _playLock = false;
         void Reset()
@@ -366,6 +371,14 @@ namespace TH185 {
                 thPracParam.mode = *mMode;
                 thPracParam.warp = mWarp;
                 thPracParam.stage = mStage;
+                thPracParam.force_wave = { };
+
+                for (auto& w : mForceWave) {
+                    if (w)
+                        thPracParam.force_wave.push(w + 29);
+                    else
+                        break;
+                }
 
                 break;
             case 2:
@@ -412,11 +425,137 @@ namespace TH185 {
             PracticeMenu();
         }
 
+        const char* waves[83] = {
+            "None",
+            "Wave01t",
+            "Wave02t",
+            "Wave03t",
+            "Wave01",
+            "Wave02",
+            "Wave03",
+            "Wave04",
+            "Wave05",
+            "Wave06",
+            "Wave07",
+            "Wave08",
+            "Wave09",
+            "Wave10",
+            "Wave11",
+            "Wave12",
+            "Wave13",
+            "Wave14",
+            "Wave15",
+            "Wave16",
+            "Wave17",
+            "Wave18",
+            "Wave19",
+            "Wave20",
+            "Wave21",
+            "Wave22",
+            "Wave23",
+            "Wave24",
+            "Wave25",
+            "Wave26",
+            "Wave27",
+            "Wave28",
+            "Wave29",
+            "Wave30",
+            "Wave31",
+            "Wave32",
+            "Wave33",
+            "Wave34",
+            "Wave35",
+            "Wave36",
+            "Wave37",
+            "Wave38",
+            "Wave39",
+            "Wave40",
+            "Wave41",
+            "Wave42",
+            "Wave43",
+            "Wave44",
+            "Wave45",
+            "Wave46",
+            "Wave47",
+            "Wave48",
+            "Wave49",
+            "Wave50",
+            "Wave51",
+            "Wave52",
+            "Wave53",
+            "Wave54",
+            "Wave55",
+            "Wave56",
+            "Wave57",
+            "Wave58",
+            "Wave59",
+            "Wave60",
+            "Wave61",
+            "Wave62",
+            "Wave63",
+            "Wave64",
+            "Wave65",
+            "Wave66",
+            "Wave67",
+            "Wave68",
+            "Wave69",
+            "Wave70",
+            "Wave71",
+            "Wave72",
+            "Wave73",
+            "Wave74",
+            "Wave75",
+            "Wave76",
+            "Wave77",
+            "Wave78",
+            "Wave79"
+        };
+
+        void ForceWave(size_t level) {
+            if (mForceWave.size() <= level)
+                mForceWave.resize(level + 1);
+
+
+            if (ImGui::BeginCombo("Force Wave", waves[mForceWave[level]])) {
+                for (size_t i = 0; i < sizeof(waves) / sizeof(const char*); i++) {
+                    ImGui::PushID(i);
+
+                    bool item_selected = (i == mForceWave[level]);
+
+                    if (ImGui::Selectable(waves[i], &item_selected))
+                        mForceWave[level] = i;
+
+                    if (item_selected)
+                        ImGui::SetItemDefaultFocus();
+
+                    ImGui::PopID();
+                }
+                ImGui::EndCombo();
+            }
+
+            if (ImGui::IsItemFocused()) {
+                if (Gui::InGameInputGet(VK_LEFT) && mForceWave[level] > 0) {
+                    mForceWave[level]--;
+                }
+                if (Gui::InGameInputGet(VK_RIGHT) && mForceWave[level] + 1 < sizeof(waves) / sizeof(const char*)) {
+                    mForceWave[level]++;
+                }
+            }
+            
+            if (mForceWave[level]) {
+                ImGui::PushID(++level);
+                ForceWave(level);
+                ImGui::PopID();
+            }
+        }
+
+
         void PracticeMenu()
         {
             mMode();
             if (*mMode == 1) {
-                StageWarpsRender(stages[mStage], mWarp, 0);                
+                StageWarpsRender(stages[mStage], mWarp, 0);
+                ForceWave(0);
             }
             //mNavFocus();
         }
@@ -425,6 +564,7 @@ namespace TH185 {
         size_t mStage;
         //Gui::GuiNavFocus mNavFocus { TH185_MARKET, TH_MODE, TH_WARP };
         std::vector<unsigned int> mWarp;
+        std::vector<unsigned int> mForceWave = { 0 };
 
         // TODO: Setup chapters
         int mChapterSetup[7][2] {
@@ -593,6 +733,13 @@ namespace TH185 {
         */
         if (thPracParam.mode) {
             StageWarpsApply(stages[thPracParam.stage], thPracParam.warp, 0);
+        }
+    }
+    EHOOK_DY(th185_force_wave, (void*)0x43d156)
+    {
+        if (thPracParam.force_wave.size()) {
+            pCtx->Esi = thPracParam.force_wave.front();
+            thPracParam.force_wave.pop();
         }
     }
     EHOOK_DY(th185_prac_confirm, (void*)0x46d523)
