@@ -514,22 +514,46 @@ inline uint32_t GetMemAddr(int addr)
 
 #pragma region ECL Helper
 
+struct ecl_sub_t {
+    const char* name;
+    uint8_t* data;
+};
+
 class ECLHelper : public VFile {
 public:
     ECLHelper() = default;
+
+    void SetSubBaseAddr(ecl_sub_t* subBaseAddr) {
+        this->subBaseAddr = subBaseAddr;
+    }
+
+    void SetAddrToSub(const char* sub)
+    {
+        mPtrToBuffer = ECLGetSub(subBaseAddr, sub);
+        VFile::SetFile(mPtrToBuffer, 0x99999);
+    }
 
     void SetBaseAddr(void* addr)
     {
         mPtrToBuffer = (uint8_t*)addr;
         VFile::SetFile((uint8_t*)(*(uint32_t*)addr), 0x99999);
     }
+    
     void SetFile(unsigned int ordinal)
     {
         VFile::SetFile((uint8_t*)(*(uint32_t*)(mPtrToBuffer + ordinal * 4)), 0x99999);
     }
 
 private:
+    uint8_t* ECLGetSub(ecl_sub_t* subsAddr, const char* name)
+    {
+        while (strcmp(subsAddr->name, name)) {
+            subsAddr++;
+        }
+        return subsAddr->data;
+    };
     uint8_t* mPtrToBuffer = nullptr;
+    ecl_sub_t* subBaseAddr = nullptr;
 };
 
 template <typename T>

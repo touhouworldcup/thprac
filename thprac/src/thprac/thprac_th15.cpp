@@ -747,8 +747,10 @@ namespace TH15 {
             case 1:
                 break;
             case 2:
-                ECLJump(ecl, 0x7248, 0x7494, 60, 90); // 0x7544
-                ECLJump(ecl, 0x3f4c, 0x3fa8, 0, 0);
+                ecl.SetAddrToSub("main");
+                ECLJump(ecl, 0x60, 0x2ac, 60, 90); // 0x7544
+                ecl.SetAddrToSub("MainFront");
+                ECLJump(ecl, 0x24, 0x80, 0, 0);
                 break;
             case 3:
                 ECLJump(ecl, 0x7248, 0x7544, 60, 90);
@@ -1765,6 +1767,7 @@ namespace TH15 {
     {
         ECLHelper ecl;
         ecl.SetBaseAddr((void*)GetMemAddr(0x4e9a80, 0x17c, 0xC));
+        ecl.SetSubBaseAddr((ecl_sub_t*)GetMemContent(0x004e9a80, 0x17c, 0x8c));
 
         auto section = thPracParam.section;
         if (section >= 10000 && section < 20000) {
@@ -1880,6 +1883,7 @@ namespace TH15 {
 
             THSectionPatch();
         }
+
         thPracParam._playLock = true;
     }
     EHOOK_DY(th15_bgm, (void*)0x43d5c1)
