@@ -1265,6 +1265,108 @@ void* VFSOriginal(const char* file_name, int32_t* file_size, int32_t is_file)
 #endif
 #pragma endregion
 
+#pragma region NewGui
+
+void WarpsRender(th_section_t warp, std::vector<unsigned int>& gui_warp_selector, size_t level)
+{
+    if (warp.sub_warps.size() == 0)
+        return;
+
+    if (gui_warp_selector.size() <= level)
+        gui_warp_selector.push_back(0);
+
+    switch (warp.type) {
+    case th_section_t::TYPE_SLIDER:
+        ImGui::SliderInt(warp.label, (int*)&gui_warp_selector[level], 0, warp.sub_warps.size() - 1, warp.sub_warps[gui_warp_selector[level]].label);
+        break;
+    default:
+    case th_section_t::TYPE_COMBO:
+        if (ImGui::BeginCombo(warp.label, warp.sub_warps[gui_warp_selector[level]].label)) {
+            for (unsigned int i = 0; i < warp.sub_warps.size(); i++) {
+                ImGui::PushID(i);
+
+                bool item_selected = (gui_warp_selector[level] == i);
+
+                if (ImGui::Selectable(warp.sub_warps[i].label, &item_selected)) {
+                    gui_warp_selector[level] = i;
+                }
+
+                if (item_selected)
+                    ImGui::SetItemDefaultFocus();
+
+                ImGui::PopID();
+            }
+            ImGui::EndCombo();
+        }
+        break;
+    }
+
+    auto subwarp = warp.sub_warps[gui_warp_selector[level]];
+    WarpsRender(subwarp, gui_warp_selector, level + 1);
+}
+
+void SectionParamsApply(ecl_sub_t* baseSubAddr, th_section_t sections, const std::vector<unsigned int>& selectedWarps, const unsigned int level)
+{
+    if (sections.sub_warps.size() > 0) {
+        SectionParamsApply(baseSubAddr, sections.sub_warps[selectedWarps[level]], selectedWarps, level + 1);
+    }
+
+    auto ECLGetSub = [=](const char* name) -> uint8_t* {
+        struct ecl_sub_t {
+            const char* name;
+            uint8_t* data;
+        };
+        auto subs = baseSubAddr;
+
+        while (strcmp(subs->name, name))
+            subs++;
+        return subs->data;
+    };
+
+    // This entire block gives me the idea to convert to jumps once there's a JSON file.
+    // But for readability, as long as there is no JSON file, this block will have to stay
+    for (auto& jump : sections.section_params.jumps) {
+        uint8_t* ecl = ECLGetSub(jump.first.c_str());
+        for (auto& jmp : jump.second) {
+            ecl_write_t real_write;
+            real_write.off = jmp.off;
+            union i32b {
+                uint32_t i;
+                uint8_t b[4];
+                i32b(uint32_t a)
+                    : i(a)
+                {
+                }
+            };
+
+            i32b ecl_time = jmp.ecl_time;
+            uint8_t instr[] = { 0x0c, 0x00, 0x18, 0x00, 0x00, 0x00, 0xff, 0x2c, 0x00, 0x00, 0x00, 0x00 };
+            i32b dest = jmp.dest - jmp.off;
+            i32b at_frame = jmp.at_frame;
+
+#define BYTES_APPEND(a)                    \
+    for (size_t j = 0; j < sizeof(a); j++) \
+        real_write.bytes.push_back(a[j]);
+
+            BYTES_APPEND(ecl_time.b);
+            BYTES_APPEND(instr);
+            BYTES_APPEND(dest.b);
+            BYTES_APPEND(at_frame.b);
+#undef BYTES_APPEND
+
+            real_write.apply(ecl);
+        }
+    }
+
+    for (auto& write : sections.section_params.writes) {
+        uint8_t* ecl = ECLGetSub(write.first.c_str());
+        for (auto& write : write.second) {
+            write.apply(ecl);
+        }
+    }
+}
+
+#pragma endregion
 #pragma region Snapshot
 namespace THSnapshot {
     void* GetSnapshotData(IDirect3DDevice8* d3d8)

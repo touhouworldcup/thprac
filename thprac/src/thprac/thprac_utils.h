@@ -17,6 +17,7 @@
 #include <imgui.h>
 #include <implot.h>
 #include <memory>
+#include <optional>
 #pragma warning(push)
 #pragma warning(disable : 26451)
 #pragma warning(disable : 26495)
@@ -512,26 +513,57 @@ inline uint32_t GetMemAddr(int addr)
 
 #pragma endregion
 
-#pragma region ECL Helper
+#pragma region NewGUI
+struct ecl_write_t {
+    uint32_t off;
+    std::vector<uint8_t> bytes;
+    void apply(uint8_t* start)
+    {
+        for (unsigned int i = 0; i < bytes.size(); i++) {
+            start[off + i] = bytes[i];
+        }
+    }
+};
+
+struct ecl_jump_t {
+    uint32_t off;
+    uint32_t dest;
+    uint32_t at_frame;
+    uint32_t ecl_time;
+};
+
+struct section_param_t {
+    const char* label;
+    std::unordered_map<std::string, std::vector<ecl_jump_t>> jumps;
+    std::unordered_map<std::string, std::vector<ecl_write_t>> writes;
+};
+
+struct th_section_t {
+    const char* label;
+    enum {
+        TYPE_NONE=0,
+        TYPE_SLIDER=1,
+        TYPE_COMBO=2
+    } type;
+    std::vector<th_section_t> sub_warps;
+    section_param_t section_params;
+};
 
 struct ecl_sub_t {
     const char* name;
     uint8_t* data;
 };
+void WarpsRender(th_section_t warp, std::vector<unsigned int>& gui_warp_selector, size_t level);
+
+void SectionParamsApply(ecl_sub_t* subBaseAddr, th_section_t sections, const std::vector<unsigned int>& selectedWarps, const unsigned int level);
+
+#pragma endregion
+
+#pragma region ECL Helper
 
 class ECLHelper : public VFile {
 public:
     ECLHelper() = default;
-
-    void SetSubBaseAddr(ecl_sub_t* subBaseAddr) {
-        this->subBaseAddr = subBaseAddr;
-    }
-
-    void SetAddrToSub(const char* sub)
-    {
-        mPtrToBuffer = ECLGetSub(subBaseAddr, sub);
-        VFile::SetFile(mPtrToBuffer, 0x99999);
-    }
 
     void SetBaseAddr(void* addr)
     {
@@ -553,7 +585,6 @@ private:
         return subsAddr->data;
     };
     uint8_t* mPtrToBuffer = nullptr;
-    ecl_sub_t* subBaseAddr = nullptr;
 };
 
 template <typename T>

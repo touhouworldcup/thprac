@@ -3,6 +3,71 @@
 namespace THPrac {
 namespace TH15 {
     using std::pair;
+    std::vector<th_section_t> Stage1 = {
+        { 
+            .label = "Stage portion 1" 
+        },
+        {
+            .label = "Stage portion 2",
+            .section_params = {
+                .jumps = {
+                    {
+                         "main", 
+                         {
+                             {
+                                .off = 0x60,
+                                .dest = 0x2ac,
+                                .at_frame = 60,
+                                .ecl_time = 90,
+                             }
+                         }
+                    },
+                    {
+                        "MainFront", 
+                        { 
+                            {
+                                .off = 0x24,
+                                .dest = 0x80,
+                                .at_frame = 0,
+                                .ecl_time = 0,
+                            } 
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    th_section_t th15_sections = {
+        .label = "Warp type",
+        .type = th_section_t::TYPE_SLIDER,
+        .sub_warps =  {
+            {
+                .label = "Stage 1",
+                .type = th_section_t::TYPE_SLIDER,
+                .sub_warps = Stage1
+            },
+            { 
+                .label = "Stage 2" 
+            },
+            {
+                .label = "Stage 3" 
+            },
+            {
+                .label = "Stage 4" 
+            },
+            {
+                .label = "Stage 5" 
+            },
+            {
+                .label = "Stage 6" 
+            },
+            {
+                .label = "Extra" 
+            },
+        }
+    };
+
     struct THPracParam {
         int32_t mode;
         int32_t stage;
@@ -17,6 +82,8 @@ namespace TH15 {
         int32_t power;
         int32_t value;
         int32_t graze;
+
+        std::vector<unsigned int> selectedWarps;
         
         bool dlg;
 
@@ -111,7 +178,7 @@ namespace TH15 {
                 Close();
 
                 // Fill Param
-                thPracParam.mode = *mMode;
+                /* thPracParam.mode = *mMode;
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
                 thPracParam.phase = SpellPhase() ? *mPhase : 0;
@@ -125,7 +192,9 @@ namespace TH15 {
                 thPracParam.bomb_fragment = *mBombFragment;
                 thPracParam.power = *mPower;
                 thPracParam.value = *mValue;
-                thPracParam.graze = *mGraze;
+                thPracParam.graze = *mGraze;*/
+
+                thPracParam.selectedWarps = warp_selector;
                 break;
             case 4:
                 Close();
@@ -184,10 +253,12 @@ namespace TH15 {
         }
         void PracticeMenu()
         {
-            mMode();
+            /* mMode();
             if (mStage())
-                *mSection = *mChapter = 0;
+                *mSection = *mChapter = 0;*/
             if (*mMode == 1) {
+                WarpsRender(th15_sections, warp_selector, 0);
+                /*
                 int mbs = -1;
                 if (*mStage == 5) { // Counting from 0
                     mbs = 2;
@@ -217,7 +288,7 @@ namespace TH15 {
                 mValue.RoundDown(10);
                 mGraze();
                 mScore();
-                mScore.RoundDown(10);
+                mScore.RoundDown(10);*/
             }
 
             //SIZE renderSize;
@@ -321,6 +392,7 @@ namespace TH15 {
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
         Gui::GuiCombo mStage { TH_STAGE, TH_STAGE_SELECT };
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
+        std::vector<unsigned int> warp_selector;
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
         Gui::GuiCheckBox mDlg { TH_DLG };
@@ -740,6 +812,7 @@ namespace TH15 {
         ecl.SetPos(start);
         ecl << ecl_time << 0x0018000C << 0x02ff0000 << 0x00000000 << dest - start << at_frame;
     }
+
     __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
     {
         if (stage == 1) {
@@ -747,9 +820,7 @@ namespace TH15 {
             case 1:
                 break;
             case 2:
-                ecl.SetAddrToSub("main");
                 ECLJump(ecl, 0x60, 0x2ac, 60, 90); // 0x7544
-                ecl.SetAddrToSub("MainFront");
                 ECLJump(ecl, 0x24, 0x80, 0, 0);
                 break;
             case 3:
@@ -1766,8 +1837,8 @@ namespace TH15 {
     __declspec(noinline) void THSectionPatch()
     {
         ECLHelper ecl;
+        (ecl_sub_t*)GetMemContent(0x004e9a80, 0x17c, 0x8c);
         ecl.SetBaseAddr((void*)GetMemAddr(0x4e9a80, 0x17c, 0xC));
-        ecl.SetSubBaseAddr((ecl_sub_t*)GetMemContent(0x004e9a80, 0x17c, 0x8c));
 
         auto section = thPracParam.section;
         if (section >= 10000 && section < 20000) {
@@ -1871,8 +1942,9 @@ namespace TH15 {
         th15_chapter_set::GetHook().Disable();
         th15_chapter_disable::GetHook().Disable();
         th15_stars_bgm_sync::GetHook().Disable();
+        SectionParamsApply((ecl_sub_t*)GetMemContent(0x004e9a80, 0x17c, 0x8c), th15_sections, thPracParam.selectedWarps, 0);
         if (thPracParam.mode == 1) {
-            *(int32_t*)(0x4E740C) = (int32_t)(thPracParam.score / 10); // = *(int32_t*)(0x4E75BC)
+            /**(int32_t*)(0x4E740C) = (int32_t)(thPracParam.score / 10); // = *(int32_t*)(0x4E75BC)
             *(int32_t*)(0x4E7450) = thPracParam.life;
             *(int32_t*)(0x4E7454) = thPracParam.life_fragment;
             *(int32_t*)(0x4E745C) = thPracParam.bomb;
@@ -1881,7 +1953,7 @@ namespace TH15 {
             *(int32_t*)(0x4E7434) = thPracParam.value * 100;
             *(int32_t*)(0x4E741C) = thPracParam.graze; // 0x4E7420: Chapter Graze
 
-            THSectionPatch();
+            THSectionPatch();*/
         }
 
         thPracParam._playLock = true;
