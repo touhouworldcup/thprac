@@ -3,70 +3,70 @@
 namespace THPrac {
 namespace TH15 {
     using std::pair;
-    std::vector<th_section_t> Stage1 = {
-        { 
-            .label = "Stage portion 1" 
-        },
+    const char* SectionsJson = R"(
         {
-            .label = "Stage portion 2",
-            .section_params = {
-                .jumps = {
-                    {
-                         "main", 
-                         {
-                             {
-                                .off = 0x60,
-                                .dest = 0x2ac,
-                                .at_frame = 60,
-                                .ecl_time = 90,
-                             }
-                         }
-                    },
-                    {
-                        "MainFront", 
-                        { 
-                            {
-                                .off = 0x24,
-                                .dest = 0x80,
-                                .at_frame = 0,
-                                .ecl_time = 0,
-                            } 
+            "label": "Warp type",
+            "type": "slider",
+            "sub_warps":  [
+                {
+                    "label": "Stage 1",
+                    "type": "slider",
+                    "sub_warps": [
+                        {
+                            "label": "Stage portion 1" 
+                        },
+                        {
+                                "label": "Stage portion 2",
+                                "section_params": {
+                                    "jumps": [
+                                        {
+                                             "sub": "main",
+                                             "sub_jumps": [
+                                                 {
+                                                    "off": "60",
+                                                    "dest": "2ac",
+                                                    "at_frame": 60,
+                                                    "ecl_time": 90
+                                                 }
+                                            ]
+                                        },
+                                        {
+                                            "sub": "MainFront", 
+                                            "sub_jumps": [
+                                                {
+                                                    "off": "24",
+                                                    "dest": "80",
+                                                    "at_frame": 0,
+                                                    "ecl_time": 0
+                                                } 
+                                            ]
+                                        }
+                                    ]
+                                }
                         }
-                    }
+                    ]
+                },
+                { 
+                    "label": "Stage 2" 
+                },
+                {
+                    "label": "Stage 3" 
+                },
+                {
+                    "label": "Stage 4" 
+                },
+                {
+                    "label": "Stage 5" 
+                },
+                {
+                    "label": "Stage 6" 
+                },
+                {
+                    "label": "Extra" 
                 }
-            }
+            ]
         }
-    };
-
-    th_section_t th15_sections = {
-        .label = "Warp type",
-        .type = th_section_t::TYPE_SLIDER,
-        .sub_warps =  {
-            {
-                .label = "Stage 1",
-                .type = th_section_t::TYPE_SLIDER,
-                .sub_warps = Stage1
-            },
-            { 
-                .label = "Stage 2" 
-            },
-            {
-                .label = "Stage 3" 
-            },
-            {
-                .label = "Stage 4" 
-            },
-            {
-                .label = "Stage 5" 
-            },
-            {
-                .label = "Stage 6" 
-            },
-            {
-                .label = "Extra" 
-            },
-        }
-    };
+    )";
 
     struct THPracParam {
         int32_t mode;
@@ -144,6 +144,9 @@ namespace TH15 {
     THPracParam thPracParam {};
 
     class THGuiPrac : public Gui::GameGuiWnd {
+
+        th_section_t th15_sections;
+
         THGuiPrac() noexcept
         {
             *mMode = 1;
@@ -151,6 +154,8 @@ namespace TH15 {
             *mBomb = 9;
             *mPower = 400;
             *mValue = 10000;
+
+            th15_sections = LoadFromJson(SectionsJson);
 
             //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             SetFade(0.8f, 0.1f);
@@ -1942,6 +1947,9 @@ namespace TH15 {
         th15_chapter_set::GetHook().Disable();
         th15_chapter_disable::GetHook().Disable();
         th15_stars_bgm_sync::GetHook().Disable();
+
+        th_section_t th15_sections = LoadFromJson(SectionsJson);
+
         SectionParamsApply((ecl_sub_t*)GetMemContent(0x004e9a80, 0x17c, 0x8c), th15_sections, thPracParam.selectedWarps, 0);
         if (thPracParam.mode == 1) {
             /**(int32_t*)(0x4E740C) = (int32_t)(thPracParam.score / 10); // = *(int32_t*)(0x4E75BC)

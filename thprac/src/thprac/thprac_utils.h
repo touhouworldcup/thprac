@@ -533,13 +533,12 @@ struct ecl_jump_t {
 };
 
 struct section_param_t {
-    const char* label;
     std::unordered_map<std::string, std::vector<ecl_jump_t>> jumps;
     std::unordered_map<std::string, std::vector<ecl_write_t>> writes;
 };
 
 struct th_section_t {
-    const char* label;
+    std::string label;
     enum {
         TYPE_NONE=0,
         TYPE_SLIDER=1,
@@ -553,6 +552,10 @@ struct ecl_sub_t {
     const char* name;
     uint8_t* data;
 };
+
+th_section_t LoadFromJson(const char* json);
+th_section_t LoadJsonParts(const rapidjson::Value& JSON);
+
 void WarpsRender(th_section_t warp, std::vector<unsigned int>& gui_warp_selector, size_t level);
 
 void SectionParamsApply(ecl_sub_t* subBaseAddr, th_section_t sections, const std::vector<unsigned int>& selectedWarps, const unsigned int level);

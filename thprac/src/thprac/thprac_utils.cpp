@@ -1267,6 +1267,145 @@ void* VFSOriginal(const char* file_name, int32_t* file_size, int32_t is_file)
 
 #pragma region NewGui
 
+th_section_t LoadFromJson(const char* json)
+{
+    th_section_t section;
+    rapidjson::Document JSON;
+    JSON.Parse(json);
+    if (JSON.HasParseError()) {
+        printf("Json could not be parsed, Error code: %d", JSON.GetParseError());
+        abort();
+    }
+
+    return LoadJsonParts(JSON);
+}
+
+th_section_t LoadJsonParts(const rapidjson::Value& JSON)
+{
+    const char LABEL[] = "label";
+
+    const char TYPE[] = "type";
+    const std::string SLIDER = "slider";
+    const std::string COMBO = "combo";
+
+    const char* SECTION_PARAMS = "section_params";
+
+    const char JUMPS[] = "jumps";
+    const char SUB[] = "sub";
+    const char SUB_JUMPS[] = "sub_jumps";
+    const char OFF[] = "off";
+    const char DEST[] = "dest";
+    const char AT_FRAME[] = "at_frame";
+    const char ECL_TIME[] = "ecl_time";
+
+    const char WRITES[] = "writes";
+    const char SUB_WRITES[] = "sub_jumps";
+    const char BYTES[] = "bytes";
+
+    const char SUB_WARPS[] = "sub_warps";
+
+    th_section_t section;
+
+    if (JSON.HasMember(LABEL)) {
+        assert(JSON[LABEL].IsString());
+        section.label = JSON[LABEL].GetString();
+    }
+
+    if (JSON.HasMember(TYPE)) {
+        assert(JSON[TYPE].IsString());
+        std::string type = JSON[TYPE].GetString();
+        if (type == SLIDER) {
+            section.type = th_section_t::TYPE_SLIDER;
+        } else if (type == COMBO) {
+            section.type = th_section_t::TYPE_COMBO;
+        } else {
+            section.type = th_section_t::TYPE_NONE;
+        }
+    } else {
+        section.type = th_section_t::TYPE_COMBO;
+    }
+
+    if (JSON.HasMember(SECTION_PARAMS)) {
+        assert(JSON[SECTION_PARAMS].IsObject());
+
+        const rapidjson::Value& section_params = JSON[SECTION_PARAMS];
+        if (section_params.HasMember(JUMPS)) {
+            assert(section_params[JUMPS].IsArray());
+            //Initialize jumps
+            std::unordered_map<std::string, std::vector<ecl_jump_t>> jumps;
+            for (auto& jumpJson : section_params[JUMPS].GetArray()) {
+                assert(jumpJson.IsObject());
+                assert(jumpJson.HasMember(SUB) && jumpJson.HasMember(SUB_JUMPS));
+                assert(jumpJson[SUB].IsString() && jumpJson[SUB_JUMPS].IsArray());
+
+                //Initialize per sub jumps
+                std::vector<ecl_jump_t> sub_jumps;
+                for (auto& sub_jump_json : jumpJson[SUB_JUMPS].GetArray()) {
+                    assert(sub_jump_json.HasMember(OFF) && sub_jump_json.HasMember(DEST));
+
+                    ecl_jump_t j;
+                    std::string hex = sub_jump_json[OFF].GetString();
+                    j.off = std::stoul(hex, nullptr, 16);
+
+                    hex = sub_jump_json[DEST].GetString();
+                    j.dest = std::stoul(hex, nullptr, 16);
+
+                    if (sub_jump_json.HasMember(AT_FRAME)) {
+                        assert(sub_jump_json[AT_FRAME].IsUint());
+                        j.at_frame = sub_jump_json[AT_FRAME].GetUint();
+                    }
+
+                    if (sub_jump_json.HasMember(ECL_TIME)) {
+                        assert(sub_jump_json[ECL_TIME].IsUint());
+                        j.ecl_time = sub_jump_json[ECL_TIME].GetUint();
+                    }
+                    sub_jumps.push_back(j);
+                }
+                jumps.emplace(jumpJson[SUB].GetString(),sub_jumps);
+            }
+            section.section_params.jumps = jumps;
+        }
+
+        if (section_params.HasMember(WRITES)) {
+            assert(section_params[WRITES].IsArray());
+            // Initialize writes
+            std::unordered_map<std::string, std::vector<ecl_write_t>> writes;
+            for (auto& writeJson : section_params[WRITES].GetArray()) {
+                assert(writeJson.IsObject());
+                assert(writeJson.HasMember(SUB) && writeJson.HasMember(SUB_WRITES));
+                assert(writeJson[SUB].IsString() && writeJson[SUB_WRITES].IsArray());
+
+                // Initialize per sub writes
+                std::vector<ecl_write_t> sub_writes;
+                for (auto& sub_write_json : writeJson[SUB_WRITES].GetArray()) {
+                    assert(sub_write_json.HasMember(OFF) && sub_write_json.HasMember(BYTES));
+
+                    ecl_write_t w;
+                    std::string hex = sub_write_json[OFF].GetString();
+                    w.off = std::stoul(hex, nullptr, 16);
+
+                    for (auto& byte : sub_write_json[BYTES].GetArray()) {
+                        std::string hex = byte.GetString();
+                        w.bytes.push_back(std::stoul(hex, nullptr, 16));
+                    }
+                }
+                writes.emplace(writeJson[SUB].GetString(), sub_writes);
+            }
+
+            section.section_params.writes = writes;
+        }
+    }
+
+    if (JSON.HasMember(SUB_WARPS)) {
+        assert(JSON[SUB_WARPS].IsArray());
+        for (auto& sub_warp : JSON[SUB_WARPS].GetArray()) {
+            th_section_t new_sub = LoadJsonParts(sub_warp);
+            section.sub_warps.push_back(new_sub);
+        }
+    }
+
+    return section;
+}
 void WarpsRender(th_section_t warp, std::vector<unsigned int>& gui_warp_selector, size_t level)
 {
     if (warp.sub_warps.size() == 0)
@@ -1277,17 +1416,17 @@ void WarpsRender(th_section_t warp, std::vector<unsigned int>& gui_warp_selector
 
     switch (warp.type) {
     case th_section_t::TYPE_SLIDER:
-        ImGui::SliderInt(warp.label, (int*)&gui_warp_selector[level], 0, warp.sub_warps.size() - 1, warp.sub_warps[gui_warp_selector[level]].label);
+        ImGui::SliderInt(warp.label.c_str(), (int*)&gui_warp_selector[level], 0, warp.sub_warps.size() - 1, warp.sub_warps[gui_warp_selector[level]].label.c_str());
         break;
     default:
     case th_section_t::TYPE_COMBO:
-        if (ImGui::BeginCombo(warp.label, warp.sub_warps[gui_warp_selector[level]].label)) {
+        if (ImGui::BeginCombo(warp.label.c_str(), warp.sub_warps[gui_warp_selector[level]].label.c_str())) {
             for (unsigned int i = 0; i < warp.sub_warps.size(); i++) {
                 ImGui::PushID(i);
 
                 bool item_selected = (gui_warp_selector[level] == i);
 
-                if (ImGui::Selectable(warp.sub_warps[i].label, &item_selected)) {
+                if (ImGui::Selectable(warp.sub_warps[i].label.c_str(), &item_selected)) {
                     gui_warp_selector[level] = i;
                 }
 
