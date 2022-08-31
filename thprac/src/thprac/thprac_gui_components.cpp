@@ -361,7 +361,7 @@ namespace THPrac
             auto items = XITEMS;
             CheckComboItemNew(mSelector, items, 1);
 
-            char* label;
+            const char* label;
             if (mLabelRef != A0000ERROR_C)
                 label = XSTR(mLabelRef);
             else if (mLabel)
@@ -401,7 +401,7 @@ namespace THPrac
 
         bool GuiButton::operator()()
         {
-            char* label = mLabel ? mLabel : XSTR(mLabelRef);
+            const char* label = mLabel ? mLabel : XSTR(mLabelRef);
             bool res = ImGui::Button(label, mSize);
             if (ImGui::IsItemFocused() && InGameInputGet(0x5A))
                 res = true;
@@ -410,7 +410,7 @@ namespace THPrac
 
         bool GuiCheckBox::operator()()
         {
-            char* label = mLabel ? mLabel : XSTR(mLabelRef);
+            const char* label = mLabel ? mLabel : XSTR(mLabelRef);
             bool pressed = ImGui::Checkbox(label, &mToggle);
             if (ImGui::IsItemFocused() && (InGameInputGet(VK_LEFT) || InGameInputGet(VK_RIGHT))) {
                 mToggle = !mToggle;
@@ -423,7 +423,7 @@ namespace THPrac
 
         void GuiHotKey::OnWidgetUpdate(bool status, bool has_changed)
         {
-            char* text = mText ? mText : XSTR(mTextRef);
+            const char* text = mText ? mText : XSTR(mTextRef);
 
             if (mStatus)
                 ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[%s: %s]", mKeyText, text);

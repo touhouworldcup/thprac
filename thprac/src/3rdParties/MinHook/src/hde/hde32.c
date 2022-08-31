@@ -11,6 +11,7 @@
 #include "table32.h"
 #include <distorm.h>
 #include <mnemonics.h>
+#include <intrin.h>
 
 unsigned int hde32_disasm(const void *code, hde32s *hs)
 {
@@ -36,7 +37,7 @@ unsigned int hde32_disasm(const void *code, hde32s *hs)
 #endif
 	ci.features = DF_NONE;
 	
-	auto res = distorm_decompose(&ci, &di, 1, &diCount);
+	_DecodeResult res = distorm_decompose(&ci, &di, 1, &diCount);
 	if (di.flags == FLAG_NOT_DECODABLE ||
 		di.opcode == I_UNDEFINED)
 	{

@@ -37,6 +37,7 @@
 
 #include "buffer.h"
 #include "trampoline.h"
+#include <intrin.h>
 
 // Maximum size of a trampoline function.
 #if defined(_M_X64) || defined(__x86_64__)

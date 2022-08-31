@@ -24,10 +24,10 @@ namespace Gui {
     void LocalePopFont();
 
 #define XITEMS (th_glossary_str[::THPrac::Gui::LocaleGet()])
-#define XSTR(name) th_glossary_str[::THPrac::Gui::LocaleGet()][name]
+#define XSTR(name) (th_glossary_str[::THPrac::Gui::LocaleGet()][name])
 #define XCBT(stage, type) th_sections_cbt[stage][type]
 #define XCBA(stage, type) th_sections_cba[stage][type]
-#define XSSS(rank) th_sections_str[::THPrac::Gui::LocaleGet()][rank]
+#define XSSS(rank) (th_sections_str[::THPrac::Gui::LocaleGet()][rank])
 #define XSEC(is_cbt, stage, s1, s2) (is_cbt ? (s1 ? th_sections_cbt[stage][s1 - 1][s2] : 0) : (s1 ? th_sections_cba[stage][s1 - 1][s2] : 0))
 
 }

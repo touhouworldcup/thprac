@@ -26,7 +26,7 @@ void LauncherSettingSet(const char* name, int& valueIn);
 void LauncherSettingSet(const char* name, bool& valueIn);
 void LauncherSettingSet(const char* name, float& valueIn);
 void LauncherSettingSet(const char* name, const char* valueIn);
-void LauncherSettingSet(const char* name, std::string& valueIn);
+void LauncherSettingSet(const char* name, const std::string& valueIn);
 
 void LauncherCfgGuiUpd();
 void LauncherChkUpdPopup();

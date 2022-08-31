@@ -12,7 +12,7 @@ namespace ImGui
 	bool BeginComboAlt(const char* label, const char* preview_value, ImGuiComboFlags flags = 0);
 
 	template<typename T>
-	bool ComboSections(const char* label, int* current_item, T* selector, char** items, const char* skip)
+	bool ComboSections(const char* label, int* current_item, T* selector, const char** items, const char* skip)
 	{
 		if (!selector[0])
 		{
@@ -63,7 +63,7 @@ namespace ImGui
 	}
 
 	template<typename T>
-	bool ComboSectionsDefault(const char* label, int* current_item, T* selector, char** items, const char* skip)
+	bool ComboSectionsDefault(const char* label, int* current_item, T* selector, const char** items, const char* skip)
 	{
 		if (!selector[0])
 		{

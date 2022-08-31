@@ -60,7 +60,7 @@ private:
     bool mIsHookEnabled = false;
 };
 
-template <void* target, CallbackFunc* inject>
+template <uintptr_t target, CallbackFunc* inject>
 class EHookSingleton {
     EHookSingleton(const EHookSingleton&) = delete;
     EHookSingleton& operator=(EHookSingleton&) = delete;
@@ -71,7 +71,7 @@ public:
     {
         static HookCtx* hook_singleton = nullptr;
         if (!hook_singleton) {
-            hook_singleton = new HookCtx(target, inject);
+            hook_singleton = new HookCtx((void*)target, inject);
             hook_singleton->Setup();
         }
         return *hook_singleton;
@@ -83,7 +83,7 @@ public:
     }
 };
 
-template <void* target, const char* patch, size_t size>
+template <uintptr_t target, const char* patch, size_t size>
 class PatchSingleton {
     PatchSingleton(const PatchSingleton&) = delete;
     PatchSingleton& operator=(PatchSingleton&) = delete;
@@ -95,7 +95,7 @@ public:
     {
         static HookCtx* hook_singleton = nullptr;
         if (!hook_singleton) {
-            hook_singleton = new HookCtx(target, patch, size);
+            hook_singleton = new HookCtx((void*)target, patch, size);
             hook_singleton->Setup();
         }
         return *hook_singleton;

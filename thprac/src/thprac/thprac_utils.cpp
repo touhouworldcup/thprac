@@ -67,7 +67,7 @@ std::string GetSuffixFromPath(const char* pathC)
     return std::string("");
 }
 
-std::string GetSuffixFromPath(std::string& path)
+std::string GetSuffixFromPath(const std::string& path)
 {
     auto pos = path.rfind('.');
     if (pos != std::string::npos) {
@@ -76,7 +76,7 @@ std::string GetSuffixFromPath(std::string& path)
     return std::string("");
 }
 
-std::string GetDirFromFullPath(std::string& dir)
+std::string GetDirFromFullPath(const std::string& dir)
 {
     auto slashPos = dir.rfind('\\');
     if (slashPos == std::string::npos) {
@@ -88,7 +88,7 @@ std::string GetDirFromFullPath(std::string& dir)
     return dir.substr(0, slashPos + 1);
 }
 
-std::wstring GetDirFromFullPath(std::wstring& dir)
+std::wstring GetDirFromFullPath(const std::wstring& dir)
 {
     auto slashPos = dir.rfind(L'\\');
     if (slashPos == std::wstring::npos) {
@@ -100,7 +100,7 @@ std::wstring GetDirFromFullPath(std::wstring& dir)
     return dir.substr(0, slashPos + 1);
 }
 
-std::string GetNameFromFullPath(std::string& dir)
+std::string GetNameFromFullPath(const std::string& dir)
 {
     auto slashPos = dir.rfind('\\');
     if (slashPos == std::string::npos) {
@@ -112,7 +112,7 @@ std::string GetNameFromFullPath(std::string& dir)
     return dir.substr(slashPos + 1);
 }
 
-std::wstring GetNameFromFullPath(std::wstring& dir)
+std::wstring GetNameFromFullPath(const std::wstring& dir)
 {
     auto slashPos = dir.rfind(L'\\');
     if (slashPos == std::wstring::npos) {
@@ -124,7 +124,7 @@ std::wstring GetNameFromFullPath(std::wstring& dir)
     return dir.substr(slashPos + 1);
 }
 
-std::string GetCleanedPath(std::string& path)
+std::string GetCleanedPath(const std::string& path)
 {
     std::string result;
     wchar_t lastChar = '\0';
@@ -144,7 +144,7 @@ std::string GetCleanedPath(std::string& path)
     return result;
 }
 
-std::wstring GetCleanedPath(std::wstring& path)
+std::wstring GetCleanedPath(const std::wstring& path)
 {
     std::wstring result;
     wchar_t lastChar = '\0';
@@ -164,7 +164,7 @@ std::wstring GetCleanedPath(std::wstring& path)
     return result;
 }
 
-std::string GetUnifiedPath(std::string& path)
+std::string GetUnifiedPath(const std::string& path)
 {
     std::string result;
     wchar_t lastChar = '\0';
@@ -185,7 +185,7 @@ std::string GetUnifiedPath(std::string& path)
     return result;
 }
 
-std::wstring GetUnifiedPath(std::wstring& path)
+std::wstring GetUnifiedPath(const std::wstring& path)
 {
     std::wstring result;
     wchar_t lastChar = '\0';
@@ -485,7 +485,7 @@ void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nu
 void CenteredText(const char* text, float wndX)
 {
     ImGui::SetCursorPosX((wndX - ImGui::CalcTextSize(text).x) / 2.0f);
-    ImGui::Text(text);
+    ImGui::TextUnformatted(text);
 }
 
 float GetRelWidth(float rel)
@@ -584,7 +584,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx)
     static int fpsMultiplier = 0;
     static bool canFpsChangeFreely = false;
     bool clickedApply = false;
-    char* fpsMultiplierStr;
+    const char* fpsMultiplierStr;
     auto fontSize = ImGui::GetFontSize();
 
     if (fps == 0) {
@@ -623,9 +623,9 @@ bool GameFPSOpt(adv_opt_ctx& ctx)
     if (ctx.fps_status <= 0) {
         ImGui::PushTextWrapPos();
         if (ctx.fps_status == 0)
-            ImGui::TextColored(ImColor(255, 0, 0), XSTR(TH_FPS_ERR));
+            ImGui::TextColored(ImColor(255, 0, 0), "%s", XSTR(TH_FPS_ERR));
         else if (ctx.fps_status == -1)
-            ImGui::TextColored(ImColor(255, 0, 0), XSTR(TH_FPS_UNSUPPORTED));
+            ImGui::TextColored(ImColor(255, 0, 0), "%s", XSTR(TH_FPS_UNSUPPORTED));
         ImGui::PopTextWrapPos();
         ImGui::BeginDisabled();
     }
@@ -664,10 +664,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx)
     if (canFpsChangeFreely) {
         ImGui::DragInt(XSTR(TH_FPS_ADJ), &fps, 1.0f, 60, 6000);
         if (!ImGui::IsItemActive())
-            if (fps < 60)
-                fps = 60;
-            else if (fps > 6000)
-                fps = 6000;
+            fps = std::clamp(fps, 60, 6000);
     } else {
         ImGui::SliderInt(XSTR(TH_FPS_ADJ), &fpsMultiplier, 0, 8, fpsMultiplierStr);
         fps = fpsMultiplier * 15 + 60;
@@ -705,7 +702,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx)
         if (ImGui::Button(XSTR(TH_ADV_OPT_APPLY))) {
             clickedApply = true;
             if (fpsStatic > fps && ctx.fps_status != 1)
-                ImGui::Text(XSTR(TH_FPS_LOWERING));
+                ImGui::TextUnformatted(XSTR(TH_FPS_LOWERING));
             fpsStatic = fps;
             ctx.fps_replay_slow = fpsSlowStatic;
             ctx.fps_replay_fast = fpsFastStatic * 60;
@@ -809,7 +806,7 @@ bool DataRecOpt(adv_opt_ctx& ctx, bool preUpd, bool isInGame)
                             }
                             prev = event.valueData[0];
                         } else if (event.id == EVENT_SECTION) {
-                            chpater.push_back(std::pair<uint32_t, uint32_t>(frameData[i].frame, event.valueData[0].i));
+                            chpater.push_back(std::pair<uint32_t, uint32_t>{frameData[i].frame, event.valueData[0].i});
                         }
                     }
                 }
@@ -856,8 +853,8 @@ void AboutOpt(const char* thanks_text)
     static bool showLicense = false;
     if (BeginOptGroup<TH_ABOUT_THPRAC>()) {
         ImGui::Text(XSTR(TH_ABOUT_VERSION), GetVersionStr());
-        ImGui::Text(XSTR(TH_ABOUT_AUTHOR));
-        ImGui::Text(XSTR(TH_ABOUT_WEBSITE));
+        ImGui::TextUnformatted(XSTR(TH_ABOUT_AUTHOR));
+        ImGui::TextUnformatted(XSTR(TH_ABOUT_WEBSITE));
 
         ImGui::NewLine();
         ImGui::Text(XSTR(TH_ABOUT_THANKS), thanks_text ? thanks_text : "You!");
@@ -886,7 +883,7 @@ void AboutOpt(const char* thanks_text)
 
 #pragma region Replay System
 
-bool ReplaySaveParam(const wchar_t* rep_path, std::string& param)
+bool ReplaySaveParam(const wchar_t* rep_path, const std::string& param)
 {
     auto repFile = CreateFileW(rep_path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (repFile == INVALID_HANDLE_VALUE)

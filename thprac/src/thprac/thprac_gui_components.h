@@ -144,7 +144,7 @@ namespace Gui {
 
             mPreUpdFunc();
         }
-        void OnPostUpdate()
+        void OnPostUpdate() override
         {
             mPostUpdFunc();
         }
@@ -256,7 +256,7 @@ namespace Gui {
         bool operator()(const char* format = nullptr)
         {
             bool isFocused;
-            char* label = mLabel ? mLabel : XSTR(mLabelRef);
+            const char* label = mLabel ? mLabel : XSTR(mLabelRef);
 
             auto hasChanged = ImGui::SliderScalar(label, type, &mValue, &mValueMin, &mValueMax, format);
             isFocused = ImGui::IsItemFocused();
@@ -378,7 +378,7 @@ namespace Gui {
         void operator()(const char* format = nullptr)
         {
             bool isFocused;
-            char* label = mLabel ? mLabel : XSTR(mLabelRef);
+            const char* label = mLabel ? mLabel : XSTR(mLabelRef);
 
             ImGui::DragScalar(label, type, &mValue, (float)(mStep * 2), &mValueMin, &mValueMax, format);
             isFocused = ImGui::IsItemFocused();
@@ -410,12 +410,12 @@ namespace Gui {
 
     class GuiCombo {
     public:
-        GuiCombo(const char* label, th_glossary_t* selector = nullptr)
+        GuiCombo(const char* label, const th_glossary_t* selector = nullptr)
             : mLabel(const_cast<char*>(label))
             , mSelector(selector)
         {
         }
-        GuiCombo(unsigned int label_ref, th_glossary_t* selector = nullptr)
+        GuiCombo(unsigned int label_ref, const th_glossary_t* selector = nullptr)
             : mLabelRef(label_ref)
             , mSelector(selector)
         {
@@ -441,14 +441,14 @@ namespace Gui {
             return (*this)(-1);
         }
         template <typename T>
-        bool operator()(th_glossary_t new_label_ref, T* selector, char** items = XITEMS)
+        bool operator()(th_glossary_t new_label_ref, T* selector, const char** items = XITEMS)
         {
             if (selector == nullptr || items == nullptr)
                 return false;
 
             CheckComboItemNew(selector, items, 1);
 
-            char* label;
+            const char* label;
             if (new_label_ref != A0000ERROR_C)
                 label = XSTR(new_label_ref);
             else if (mLabelRef != A0000ERROR_C)
@@ -487,12 +487,12 @@ namespace Gui {
         unsigned int mLabelRef = 0;
         char* mLabel = nullptr;
 
-        th_glossary_t* mSelector;
+        const th_glossary_t* mSelector;
 
         int mCurrent = 0;
 
         template <typename T>
-        inline void CheckComboItemNew(T* selector, char** items, int nav)
+        inline void CheckComboItemNew(T* selector, const char** items, int nav)
         {
             const int origin = mCurrent;
             while (true) {
@@ -519,14 +519,14 @@ namespace Gui {
 
     public:
         GuiButton(unsigned int label_ref, float width, float height)
-            : mLabelRef(label_ref)
-            , mSize { width, height }
+            : mSize { width, height }
+            , mLabelRef(label_ref)
         {
         }
 
         GuiButton(const char* label, float width, float height)
-            : mLabel(const_cast<char*>(label))
-            , mSize { width, height }
+            : mSize { width, height }
+            , mLabel(const_cast<char*>(label))
         {
         }
 
@@ -588,8 +588,8 @@ namespace Gui {
     class GuiHotKey {
     private:
         unsigned int mTextRef = 0;
-        char* mText = nullptr;
-        char* mKeyText = nullptr;
+        const char* mText = nullptr;
+        const char* mKeyText = nullptr;
         int mKey;
         bool mStatus = false;
         std::vector<HookCtx*> mHooks;
@@ -599,7 +599,7 @@ namespace Gui {
     protected:
         virtual void OnWidgetUpdate(bool status, bool has_changed);
     public:
-        GuiHotKey(unsigned int text_ref, char* key_text, int vkey, std::initializer_list<HookCtx*> hooks = {})
+        GuiHotKey(unsigned int text_ref, const char* key_text, int vkey, std::initializer_list<HookCtx*> hooks = {})
             : mTextRef(text_ref)
             , mKeyText(key_text)
             , mKey(vkey)
@@ -610,8 +610,8 @@ namespace Gui {
             }
         }
 
-        GuiHotKey(const char* text, char* key_text, int vkey, std::initializer_list<HookCtx*> hooks = {})
-            : mText(const_cast<char*>(text))
+        GuiHotKey(const char* text, const char* key_text, int vkey, std::initializer_list<HookCtx*> hooks = {})
+            : mText(text)
             , mKeyText(key_text)
             , mKey(vkey)
         {
@@ -621,7 +621,7 @@ namespace Gui {
             }
         }
 
-        GuiHotKey(unsigned int text_ref, char* key_text, int vkey,
+        GuiHotKey(unsigned int text_ref, const char* key_text, int vkey,
             float x_offset_1, float x_offset_2, bool use_rel_offset,
             std::initializer_list<HookCtx*> hooks = {})
             : mTextRef(text_ref)
@@ -647,11 +647,11 @@ namespace Gui {
         inline void SetText(const char* label)
         {
             mTextRef = 0;
-            mText = const_cast<char*>(label);
+            mText = label;
         }
         inline void SetKey(const char* key_text, int vkey)
         {
-            mKeyText = const_cast<char*>(key_text);
+            mKeyText = key_text;
             mKey = vkey;
         }
         inline void SetTextOffset(float x_offset_1, float x_offset_2)

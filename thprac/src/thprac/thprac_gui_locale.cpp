@@ -345,7 +345,7 @@ static ImWchar baseUnicodeRanges[] =
             auto enumFontFamUserData = reinterpret_cast<LPARAM>(&fontFamilyName);
             EnumFontFamiliesExW(hdc, nullptr, (FONTENUMPROCW)&FindFirstChineseFontProc, enumFontFamUserData, 0);
             if (fontFamilyName.empty()) {
-                return false;
+                return nullptr;
             }
             info.font_name = L"";
             info.font_index = 0;
@@ -412,7 +412,7 @@ static ImWchar baseUnicodeRanges[] =
             auto enumFontFamUserData = reinterpret_cast<LPARAM>(&fontFamilyName);
             EnumFontFamiliesExW(hdc, nullptr, (FONTENUMPROCW)&FindFirstJapaneseFontProc, enumFontFamUserData, 0);
             if (fontFamilyName.empty()) {
-                return false;
+                return nullptr;
             }
             info.font_name = L"";
             info.font_index = 0;
@@ -465,7 +465,7 @@ static ImWchar baseUnicodeRanges[] =
         CheckFontJa,
     };
 
-    static wchar_t* __glocale_glyph_range[] = {
+    static const wchar_t* __glocale_glyph_range[] = {
         __thprac_loc_range_zh,
         __thprac_loc_range_en,
         __thprac_loc_range_ja

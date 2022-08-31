@@ -324,7 +324,7 @@ void AnlyLoadTest();
 
 static uint8_t g_counterHookCallbackTemplate[] { 0x83, 0x05, 0xCC, 0xCC, 0xCC, 0xCC, 0x01, 0x50, 0x50, 0xa1, 0xFF, 0xFF, 0xFF, 0xFF, 0x89, 0x44, 0x24, 0x04, 0x58, 0xc3 };
 template <uint32_t id>
-uint32_t& DataRef(uint32_t addr = 0, uint32_t(__stdcall* callback)(int) = nullptr)
+uint32_t& DataRef(uint32_t addr = 0, uint32_t(* callback)(int) = nullptr)
 {
     static uint32_t m_counter = 0;
     static void* m_target = nullptr;
@@ -426,8 +426,8 @@ void DataBatchReset()
     DataRef<id>() = 0;
     DataBatchReset<rest...>();
 }
-void DataBatchRem(EventRecord& rec, void(__stdcall* callback)(EventRecord&) = nullptr);
-void DataBatchResetRem(void(__stdcall* callback)() = nullptr);
+void DataBatchRem(EventRecord& rec, void(* callback)(EventRecord&) = nullptr);
+void DataBatchResetRem(void(* callback)() = nullptr);
 template <void* end = nullptr>
 void DataBatch(int idx = 0)
 {
@@ -436,7 +436,8 @@ template <uint32_t id, uint32_t... rest, void* end = nullptr>
 void DataBatch(int idx = 0)
 {
     if (idx == 0) {
-        DataBatchRem(EventRecord(EVENT_DATA_COLLECT),
+        auto record = EventRecord(EVENT_DATA_COLLECT);
+        DataBatchRem(record,
             [](EventRecord& rec) { AnlyDataRec<id, rest...>(rec); });
         DataBatchResetRem([]() {
             return DataBatchReset<id, rest...>();

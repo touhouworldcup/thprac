@@ -656,7 +656,7 @@ namespace Gui {
             target = pWndProc;
         }
         MH_Initialize();
-        MH_CreateHook(target, __ThImGui_WndProc_HookFunc, &__thimgui_wp_original);
+        MH_CreateHook(target, (void*)__ThImGui_WndProc_HookFunc, &__thimgui_wp_original);
         MH_EnableHook(target);
         return true;
     }

@@ -377,7 +377,7 @@ bool HookCtx::Setup(void* target, CallbackFunc* detour)
     if (buffer) {
         TRAMPOLINE ct;
         ct.pTarget = target;
-        ct.pDetour = detour;
+        ct.pDetour = (void*)detour;
         ct.pTrampoline = buffer;
         if (CreateTrampolineFunctionEx(&ct, 1, FALSE)) {
             mTrampoline = buffer;

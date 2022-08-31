@@ -181,12 +181,12 @@ static void GuiColumnText(const char* text)
 {
     auto columnX = ImGui::GetColumnWidth();
     auto itemX = ImGui::CalcTextSize(text).x + ImGui::GetStyle().ItemSpacing.x;
-    ImGui::Text(text);
+    ImGui::TextUnformatted(text);
     if (ImGui::IsItemHovered()) {
         if (itemX > columnX) {
             ImGui::BeginTooltip();
             ImGui::PushTextWrapPos(ImGui::GetIO().DisplaySize.x * 0.9f);
-            ImGui::Text(text);
+            ImGui::TextUnformatted(text);
             ImGui::PopTextWrapPos();
             ImGui::EndTooltip();
         }
@@ -196,7 +196,7 @@ static void GuiColumnText(const char* text)
 static void GuiCenteredText(const char* text)
 {
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(text, 0, false, 0.0f).x) / 2.0f);
-    ImGui::TextWrapped(text);
+    ImGui::TextWrapped("%s", text);
 }
 
 static void GuiSetPosXText(const char* text, float offset = 0.0f)
@@ -223,7 +223,7 @@ static void GuiHelpMarker(const char* desc)
 
 static void GuiHelpMarkerEx(const char* tiptxt, const char* desc)
 {
-    ImGui::TextDisabled(tiptxt);
+    ImGui::TextDisabled("%s", tiptxt);
     if (ImGui::IsItemHovered()) {
         ImGui::BeginTooltip();
         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
@@ -238,7 +238,7 @@ static void GuiDescMarker(const char* descTxt)
     auto xNow = ImGui::GetCursorPosX();
     auto xWnd = ImGui::GetWindowSize().x;
     auto xTxt = ImGui::CalcTextSize(descTxt).x + ImGui::GetStyle().ItemSpacing.x;
-    ImGui::TextDisabled(descTxt);
+    ImGui::TextDisabled("%s", descTxt);
     if (ImGui::IsItemHovered()) {
         if (xTxt > (xWnd - xNow)) {
             ImGui::BeginTooltip();
@@ -250,7 +250,7 @@ static void GuiDescMarker(const char* descTxt)
     }
 }
 
-static int GuiCornerButton(const char* text, const char* text2 = nullptr, ImVec2& offset = ImVec2(1.5f, 0.5f), bool useCurrentY = false)
+static int GuiCornerButton(const char* text, const char* text2 = nullptr, const ImVec2& offset = ImVec2(1.5f, 0.5f), bool useCurrentY = false)
 {
     int result = 0;
     auto& style = ImGui::GetStyle();
@@ -281,7 +281,7 @@ static int GuiCornerButton(const char* text, const char* text2 = nullptr, ImVec2
     return result;
 }
 
-static bool GuiButtonRelCentered(const char* buttonText, float posYRel, ImVec2& sizeRel)
+static bool GuiButtonRelCentered(const char* buttonText, float posYRel, const ImVec2& sizeRel)
 {
     auto wndSize = ImGui::GetWindowSize();
     ImGui::SetCursorPosX((wndSize.x - wndSize.x * sizeRel.x) / 2.0f);
@@ -332,7 +332,7 @@ static bool GuiModalOkCancel(const char* modalTitle, const char* modalText, floa
     bool result = false;
     if (GuiModal(modalTitle)) {
         ImGui::PushTextWrapPos(ImGui::GetIO().DisplaySize.x * 0.9f);
-        ImGui::TextWrapped(modalText);
+        ImGui::TextWrapped("%s", modalText);
         ImGui::PopTextWrapPos();
         if (ImGui::Button("OK", ImVec2(buttonSize * ImGui::GetFontSize(), 0))) {
             ImGui::CloseCurrentPopup();
@@ -382,7 +382,7 @@ static bool GuiButtonAndModalYesNo(const char* buttonText, const char* modalTitl
 
     GuiButtonModal(buttonText, modalTitle);
     if (GuiModal(modalTitle)) {
-        ImGui::Text(modalText);
+        ImGui::TextUnformatted(modalText);
         if (GuiButtonYesNo(buttonText1, buttonText2, buttonSize)) {
             result = true;
         }

@@ -60,7 +60,7 @@ namespace Alcostg {
     bool thRestart { false };
 
     unsigned int alcostg_beer_cd = 0;
-    EHOOK_G1(alcostg_add_beer, (void*)0x4264fc)
+    EHOOK_G1(alcostg_add_beer, 0x4264fc)
     {
         if (thPracParam.mode == 1) {
             if (++alcostg_beer_cd == 20) {
@@ -205,7 +205,7 @@ namespace Alcostg {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::Text(XSTR(TH_MENU));
+            ImGui::TextUnformatted(XSTR(TH_MENU));
             ImGui::Separator();
 
             PracticeMenu();
@@ -549,7 +549,7 @@ namespace Alcostg {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::Text(XSTR(TH_ADV_OPT));
+            ImGui::TextUnformatted(XSTR(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 
@@ -587,18 +587,18 @@ namespace Alcostg {
         VFile std;
         std.SetFile((void*)GetMemContent(0x474048, 0x10), 0x9999);
 
-        std << pair(0x0618, 0);
-        std << pair(0x0624, 0);
-        std << pair(0x0640, 0);
-        std << pair(0x065c, 0);
-        std << pair(0x0670, 0);
-        std << pair(0x068c, 0);
-        std << pair(0x069c, 0);
-        std << pair(0x06b0, 0);
-        std << pair(0x06bc, 0);
-        std << pair(0x06d0, 0);
-        std << pair(0x06e4, 128);
-        std << pair(0x06f0, 0);
+        std << pair{0x0618, 0};
+        std << pair{0x0624, 0};
+        std << pair{0x0640, 0};
+        std << pair{0x065c, 0};
+        std << pair{0x0670, 0};
+        std << pair{0x068c, 0};
+        std << pair{0x069c, 0};
+        std << pair{0x06b0, 0};
+        std << pair{0x06bc, 0};
+        std << pair{0x06d0, 0};
+        std << pair{0x06e4, 128};
+        std << pair{0x06f0, 0};
     }
     void ECLJump(ECLHelper& ecl, unsigned int start, unsigned int dest, int at_frame, int ecl_time = 0)
     {
@@ -833,7 +833,7 @@ namespace Alcostg {
         } else {
             auto st1_boss = [&]() {
                 ECLJump(ecl, 0xa094, 0xa0d8, 60);
-                ecl << pair(0x5cc, 60) << pair(0x5b8, 120);
+                ecl << pair{0x5cc, 60} << pair{0x5b8, 120};
                 ECLTimeFix(ecl, 0x604, -180);
             };
             auto st2_boss = [&]() {
@@ -841,14 +841,14 @@ namespace Alcostg {
                 ECLJump(ecl, 0x5d4, 0x5f4, 0);
                 ECLJump(ecl, 0x61c, 0x65c, 80);
                 ECLTimeFix(ecl, 0x6c0, -30);
-                ecl << pair(0x684, 60) << pair(0x5d0, 120);
+                ecl << pair{0x684, 60} << pair{0x5d0, 120};
             };
             auto st3_boss = [&]() {
                 ECLJump(ecl, 0xe9a4, 0xe9d4, 60);
                 ecl.SetPos(0x6a4);
                 ecl << 0 << 0x00200119 << 0x04ff0000 << 0 << 60 << 4 << 0.0f << 162.25f; // 0x4d726c
                 ECLJump(ecl, ecl.GetPos(), 0x810, 560);
-                ecl << pair(0x664, 60) << pair(0x894, 620) << pair(0x898, (int16_t)0);
+                ecl << pair{0x664, 60} << pair{0x894, 620} << pair{0x898, (int16_t)0};
                 AlcostgSt3Std();
             };
 
@@ -858,94 +858,94 @@ namespace Alcostg {
                 break;
             case THPrac::Alcostg::ALCOSTG_ST1_BOSS2:
                 st1_boss();
-                ecl << pair(0x5ec, 2000);
+                ecl << pair{0x5ec, 2000};
                 ECLTimeFix(ecl, 0x78c, -60, 4);
-                ecl << pair(0x77c, (int16_t)0);
+                ecl << pair{0x77c, (int16_t)0};
                 break;
             case THPrac::Alcostg::ALCOSTG_ST1_BOSS3:
                 st1_boss();
                 ECLJump(ecl, 0x6e0, 0x78c, 60);
                 ECLJump(ecl, 0x7e4, 0x178c, 0);
                 ECLJump(ecl, 0x1908, 0x19ec, 60);
-                ecl << pair(0x180c, 60);
+                ecl << pair{0x180c, 60};
                 break;
             case THPrac::Alcostg::ALCOSTG_ST1_BOSS4:
                 THPatch(ecl, ALCOSTG_ST1_BOSS3);
-                ecl << pair(0x17b0, 2700);
+                ecl << pair{0x17b0, 2700};
                 break;
             case THPrac::Alcostg::ALCOSTG_ST2_BOSS1:
                 st2_boss();
                 break;
             case THPrac::Alcostg::ALCOSTG_ST2_BOSS2:
                 st2_boss();
-                ecl << pair(0x604, 3000);
+                ecl << pair{0x604, 3000};
                 ECLTimeFix(ecl, 0x828, -60, 4);
-                ecl << pair(0x818, (int16_t)0);
+                ecl << pair{0x818, (int16_t)0};
                 break;
             case THPrac::Alcostg::ALCOSTG_ST2_BOSS3:
                 st2_boss();
                 ECLJump(ecl, 0x77c, 0x828, 60);
                 ECLJump(ecl, 0x880, 0x200c, 0);
                 ECLJump(ecl, 0x21a4, 0x2288, 60);
-                ecl << pair(0x20bc, 60);
+                ecl << pair{0x20bc, 60};
                 break;
             case THPrac::Alcostg::ALCOSTG_ST2_BOSS4:
                 THPatch(ecl, ALCOSTG_ST2_BOSS3);
-                ecl << pair(0x2030, 5700);
+                ecl << pair{0x2030, 5700};
                 break;
             case THPrac::Alcostg::ALCOSTG_ST2_BOSS5:
                 THPatch(ecl, ALCOSTG_ST2_BOSS3);
-                ecl << pair(0x205c, 0x33);
-                ecl << pair(0x2030, 3000) << pair(0x2048, 3000);
+                ecl << pair{0x205c, 0x33};
+                ecl << pair{0x2030, 3000} << pair{0x2048, 3000};
                 ECLJump(ecl, 0x5170, 0x51a4, 60);
-                ecl << pair(0x51f8, 60);
+                ecl << pair{0x51f8, 60};
                 break;
             case THPrac::Alcostg::ALCOSTG_ST3_BOSS1:
                 st3_boss();
                 break;
             case THPrac::Alcostg::ALCOSTG_ST3_BOSS2:
                 st3_boss();
-                ecl << pair(0x678, 3500);
+                ecl << pair{0x678, 3500};
                 break;
             case THPrac::Alcostg::ALCOSTG_ST3_BOSS3:
                 st3_boss();
                 ECLJump(ecl, 0x998, 0x11c8, 0);
                 ECLJump(ecl, 0x1380, 0x1468, 120);
-                ecl << pair(0x1248, 0) << pair(0x135c, (int16_t)0);
+                ecl << pair{0x1248, 0} << pair{0x135c, (int16_t)0};
                 break;
             case THPrac::Alcostg::ALCOSTG_ST3_BOSS4:
                 THPatch(ecl, ALCOSTG_ST3_BOSS3);
-                ecl << pair(0x11ec, 2000);
+                ecl << pair{0x11ec, 2000};
                 break;
             case THPrac::Alcostg::ALCOSTG_ST3_BOSS5:
                 st3_boss();
                 ECLJump(ecl, 0x998, 0x1d24, 0);
                 ECLJump(ecl, 0x1f30, 0x2000, 80);
-                ecl << pair(0x1da4, 40) << pair(0x1f0c, (int16_t)0);
+                ecl << pair{0x1da4, 40} << pair{0x1f0c, (int16_t)0};
                 break;
             case THPrac::Alcostg::ALCOSTG_ST3_BOSS6:
                 THPatch(ecl, ALCOSTG_ST3_BOSS5);
-                ecl << pair(0x1d48, 5000);
-                ecl << pair(0x204c, 0) << pair(0x2060, 0);
+                ecl << pair{0x1d48, 5000};
+                ecl << pair{0x204c, 0} << pair{0x2060, 0};
                 break;
             case THPrac::Alcostg::ALCOSTG_ST3_BOSS7:
                 st3_boss();
                 ECLJump(ecl, 0x998, 0x24f8, 0);
                 ECLJump(ecl, 0x2714, 0x27e4, 80);
-                ecl << pair(0x2588, 40) << pair(0x26f0, (int16_t)0);
+                ecl << pair{0x2588, 40} << pair{0x26f0, (int16_t)0};
                 break;
             case THPrac::Alcostg::ALCOSTG_ST3_BOSS8:
                 THPatch(ecl, ALCOSTG_ST3_BOSS7);
-                ecl << pair(0x251c, 3600);
-                ecl << pair(0x2854, 0) << pair(0x2868, 0);
+                ecl << pair{0x251c, 3600};
+                ecl << pair{0x2854, 0} << pair{0x2868, 0};
                 break;
             case THPrac::Alcostg::ALCOSTG_ST3_BOSS9:
                 THPatch(ecl, ALCOSTG_ST3_BOSS7);
-                ecl << pair(0x2548, 0x35);
-                ecl << pair(0x251c, 3600);
-                ecl << pair(0x2854, 0) << pair(0x2868, 0);
+                ecl << pair{0x2548, 0x35};
+                ecl << pair{0x251c, 3600};
+                ecl << pair{0x2854, 0} << pair{0x2868, 0};
                 ECLJump(ecl, 0x54e0, 0x5500, 140);
-                ecl << pair(0x53fc, 60) << pair(0x5404, (int16_t)0) << pair(0x5480, (int16_t)0);
+                ecl << pair{0x53fc, 60} << pair{0x5404, (int16_t)0} << pair{0x5480, (int16_t)0};
                 break;
             default:
                 break;

@@ -222,16 +222,16 @@ private:
     {
         switch (err) {
         case 1:
-            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), XSTR(THPRAC_LINKS_EDIT_ERR_NAME));
+            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", XSTR(THPRAC_LINKS_EDIT_ERR_NAME));
             break;
         case 2:
-            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), XSTR(THPRAC_LINKS_EDIT_ERR_LINK));
+            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", XSTR(THPRAC_LINKS_EDIT_ERR_LINK));
             break;
         case 3:
-            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), XSTR(THPRAC_LINKS_EDIT_ERR_REPEATED));
+            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", XSTR(THPRAC_LINKS_EDIT_ERR_REPEATED));
             break;
         case 4:
-            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), XSTR(THPRAC_LINKS_EDIT_ERR_RSV));
+            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", XSTR(THPRAC_LINKS_EDIT_ERR_RSV));
             break;
         default:
             break;
@@ -239,7 +239,7 @@ private:
     }
     int GuiLinkEditPopup()
     {
-        ImGui::Text(XSTR(THPRAC_LINKS_EDIT_NAME));
+        ImGui::TextUnformatted(XSTR(THPRAC_LINKS_EDIT_NAME));
         ImGui::SameLine();
         ImGui::SetNextItemWidth(-1.0f);
         if (ImGui::InputText("##__linkname_input", mLinkNameInput, sizeof(mLinkInput))) {
@@ -247,7 +247,7 @@ private:
                 mLinkInputErr = 0;
             }
         }
-        ImGui::Text(XSTR(THPRAC_LINKS_EDIT_LINK));
+        ImGui::TextUnformatted(XSTR(THPRAC_LINKS_EDIT_LINK));
         ImGui::SameLine();
         ImGui::SetNextItemWidth(-1.0f);
         if (mLinkInputType == 0) {
@@ -257,10 +257,10 @@ private:
                 }
             }
         } else {
-            ImGui::Text(mLinkInput);
+            ImGui::TextUnformatted(mLinkInput);
         }
         if (mLinkInputType == 1 && GetSuffixFromPath(mLinkInput) == "exe") {
-            ImGui::Text(XSTR(THPRAC_LINKS_EDIT_PARAM));
+            ImGui::TextUnformatted(XSTR(THPRAC_LINKS_EDIT_PARAM));
             ImGui::SameLine();
             ImGui::SetNextItemWidth(-1.0f);
             ImGui::InputText("##__linkparam_input", mLinkParamInput, sizeof(mLinkParamInput));
@@ -391,7 +391,7 @@ private:
         }
 
         if (GuiModal(XSTR(THPRAC_LINKS_DELETE_MODAL))) {
-            ImGui::Text(XSTR(THPRAC_LINKS_DELETE_WARNING));
+            ImGui::TextUnformatted(XSTR(THPRAC_LINKS_DELETE_WARNING));
             if (GuiButtonYesNo(XSTR(THPRAC_YES), XSTR(THPRAC_NO), 6.0f)) {
                 mLinks[mCurrentNode].leaves.erase(mLinks[mCurrentNode].leaves.begin() + mCurrentLeaf);
                 mLinkSelected = nullptr;
@@ -401,7 +401,7 @@ private:
         }
 
         if (GuiModal(XSTR(THPRAC_LINKS_FILTER_ADD_MODAL), ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, 0.0f))) {
-            ImGui::Text(XSTR(THPRAC_LINKS_EDIT_NAME));
+            ImGui::TextUnformatted(XSTR(THPRAC_LINKS_EDIT_NAME));
             ImGui::SameLine();
             ImGui::SetNextItemWidth(-1.0f);
             if (ImGui::InputText("##__linkname_input", mLinkNameInput, sizeof(mLinkInput))) {
@@ -437,7 +437,7 @@ private:
         }
 
         if (GuiModal(XSTR(THPRAC_LINKS_FILTER_DEL_MODAL))) {
-            ImGui::Text(XSTR(THPRAC_LINKS_FILTER_DELETE_WARNING));
+            ImGui::TextUnformatted(XSTR(THPRAC_LINKS_FILTER_DELETE_WARNING));
             if (GuiButtonYesNo(XSTR(THPRAC_YES), XSTR(THPRAC_NO), 6.0f)) {
                 mLinks.erase(mLinks.begin() + mCurrentNode);
                 mLinkSelected = nullptr;
@@ -447,7 +447,7 @@ private:
         }
 
         if (GuiModal(XSTR(THPRAC_LINKS_ERR_MOVE_MODAL))) {
-            ImGui::Text(XSTR(THPRAC_LINKS_ERR_MOVE));
+            ImGui::TextUnformatted(XSTR(THPRAC_LINKS_ERR_MOVE));
             if (GuiCornerButton(XSTR(THPRAC_OK), nullptr, ImVec2(1.0f, 0.0f), true)) {
                 ImGui::CloseCurrentPopup();
             }
@@ -455,7 +455,7 @@ private:
         }
 
         if (GuiModal(XSTR(THPRAC_LINKS_ERR_EXEC_MODAL))) {
-            ImGui::Text(XSTR(THPRAC_LINKS_ERR_EXEC));
+            ImGui::TextUnformatted(XSTR(THPRAC_LINKS_ERR_EXEC));
             if (GuiCornerButton(XSTR(THPRAC_OK), nullptr, ImVec2(1.0f, 0.0f), true)) {
                 ImGui::CloseCurrentPopup();
             }
@@ -561,7 +561,7 @@ private:
                     if (mLinkSelected == &leaf) {
                         nodeFlag |= ImGuiTreeNodeFlags_Selected;
                     }
-                    ImGui::TreeNodeEx((void*)(intptr_t)j, nodeFlag, leaf.name.c_str());
+                    ImGui::TreeNodeEx((void*)(intptr_t)j, nodeFlag, "%s", leaf.name.c_str());
                     if (ImGui::IsItemHovered()) {
                         if (ImGui::IsMouseDoubleClicked(0)) {
                             mLinkSelected = &leaf;

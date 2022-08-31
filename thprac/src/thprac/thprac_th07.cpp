@@ -210,12 +210,12 @@ namespace TH07 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::Text(XSTR(TH_MENU));
+            ImGui::TextUnformatted(XSTR(TH_MENU));
             ImGui::Separator();
 
             PracticeMenu();
         }
-        th_glossary_t* SpellPhase()
+        const th_glossary_t* SpellPhase()
         {
             auto section = CalcSection();
             if (section == TH07_ST8_END_S10) {
@@ -699,7 +699,7 @@ namespace TH07 {
         void ContentUpdate()
         {
             *((int32_t*)0x575ab4) = 2;
-            ImGui::Text(XSTR(TH_ADV_OPT));
+            ImGui::TextUnformatted(XSTR(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 
@@ -732,7 +732,7 @@ namespace TH07 {
         adv_opt_ctx mOptCtx;
     };
 
-    EHOOK_G1(th07_rb, (void*)0x4157f3)
+    EHOOK_G1(th07_rb, 0x4157f3)
     {
         th07_rb::GetHook().Disable();
         *(uint32_t*)(pCtx->Ecx + 0x6f0) = 0x1e0;
@@ -890,8 +890,8 @@ namespace TH07 {
                 break;
             case 3:
                 ECLTimeWarp(2, 1805);
-                ecl << pair(0xbb3c, (int16_t)1559)
-                    << pair(0xbb5c, (int16_t)1560);
+                ecl << pair{0xbb3c, (int16_t)1559}
+                    << pair{0xbb5c, (int16_t)1560};
                 break;
             default:
                 break;
@@ -972,7 +972,7 @@ namespace TH07 {
                 break;
             case 6:
                 ECLTimeWarp(2, 4028);
-                ecl << pair(0xee3e, (int16_t)0x68);
+                ecl << pair{0xee3e, (int16_t)0x68};
                 break;
             case 7:
                 ECLTimeWarp(2, 5808);
@@ -1001,7 +1001,7 @@ namespace TH07 {
                 break;
             case 6:
                 ECLTimeWarp(2, 3928);
-                ecl << pair(0x1265a, (int16_t)0x68);
+                ecl << pair{0x1265a, (int16_t)0x68};
                 break;
             case 7:
                 ECLTimeWarp(2, 5708);
@@ -1017,26 +1017,26 @@ namespace TH07 {
     {
         auto lunasa = [&]() {
             thFakeShot = 0;
-            ecl << pair(0x4f08, 1) << pair(0x4f30, 1) << pair(0x4f74, 1) << pair(0x4f9c, 1);
+            ecl << pair{0x4f08, 1} << pair{0x4f30, 1} << pair{0x4f74, 1} << pair{0x4f9c, 1};
         };
         auto merlin = [&]() {
             thFakeShot = 4;
-            ecl << pair(0x4f08, 2) << pair(0x4f30, 2) << pair(0x4f74, 2) << pair(0x4f9c, 2);
+            ecl << pair{0x4f08, 2} << pair{0x4f30, 2} << pair{0x4f74, 2} << pair{0x4f9c, 2};
         };
         auto lyrica = [&]() {
             thFakeShot = 2;
-            ecl << pair(0x4f08, 3) << pair(0x4f30, 3) << pair(0x4f74, 3) << pair(0x4f9c, 3);
+            ecl << pair{0x4f08, 3} << pair{0x4f30, 3} << pair{0x4f74, 3} << pair{0x4f9c, 3};
         };
         auto timesave = [&]() {
-            ecl << pair(0xc550, 0) << pair(0xc588, 0) << pair(0xc598, 0) << pair(0xf048, 0)
-                << pair(0xf080, 0) << pair(0xf090, 0) << pair(0x11670, 0) << pair(0x11684, 0)
-                << pair(0x11694, 0);
+            ecl << pair{0xc550, 0} << pair{0xc588, 0} << pair{0xc598, 0} << pair{0xf048, 0}
+                << pair{0xf080, 0} << pair{0xf090, 0} << pair{0x11670, 0} << pair{0x11684, 0}
+                << pair{0x11694, 0};
         };
         auto yuyuko = [&]() {
-            ecl << pair(0x425c, (int16_t)0) << pair(0x426c, (int16_t)0)
-                << pair(0xe678, (int16_t)0x9d7) << pair(0x3330, 0x22)
-                << pair(0x43a8, (int16_t)0) << pair(0x43f0, (int16_t)0)
-                << pair(0x43fc, 0) << pair(0x4410, 0) << pair(0x4420, 0) << pair(0x4434, 0) << pair(0x4444, 0);
+            ecl << pair{0x425c, (int16_t)0} << pair{0x426c, (int16_t)0}
+                << pair{0xe678, (int16_t)0x9d7} << pair{0x3330, 0x22}
+                << pair{0x43a8, (int16_t)0} << pair{0x43f0, (int16_t)0}
+                << pair{0x43fc, 0} << pair{0x4410, 0} << pair{0x4420, 0} << pair{0x4434, 0} << pair{0x4444, 0};
             ECLTimeWarp(2, 0x9d7);
         };
 
@@ -1064,12 +1064,12 @@ namespace TH07 {
         case THPrac::TH07::TH07_ST1_BOSS3:
             ECLNameFix();
             ECLTimeWarp(2, 0x13b3);
-            ecl << pair(0x4c2c, 0x27) << pair(0x4d7c, (int16_t)0) << pair(0x4d8c, (int16_t)0);
+            ecl << pair{0x4c2c, 0x27} << pair{0x4d7c, (int16_t)0} << pair{0x4d8c, (int16_t)0};
             break;
         case THPrac::TH07::TH07_ST1_BOSS4:
             ECLNameFix();
             ECLTimeWarp(2, 0x13b3);
-            ecl << pair(0x4c2c, 0x27) << pair(0x4d7c, (int16_t)0) << pair(0x4d8c, (int16_t)0);
+            ecl << pair{0x4c2c, 0x27} << pair{0x4d7c, (int16_t)0} << pair{0x4d8c, (int16_t)0};
             ECLSetTime(ecl, 0x4f44, 0, 0);
             break;
         case THPrac::TH07::TH07_ST2_MID1:
@@ -1078,8 +1078,8 @@ namespace TH07 {
         case THPrac::TH07::TH07_ST2_MID2:
             ECLTimeWarp(3, 0xb0a);
             ECLSetHealth(ecl, 0x5444, 0, 0x833);
-            ecl << pair(0x5388, 0) << pair(0x53a8, 0) << pair(0x53c8, 0)
-                << pair(0x53e8, 0) << pair(0x5408, 0) << pair(0x5428, 0);
+            ecl << pair{0x5388, 0} << pair{0x53a8, 0} << pair{0x53c8, 0}
+                << pair{0x53e8, 0} << pair{0x5408, 0} << pair{0x5428, 0};
             break;
         case THPrac::TH07::TH07_ST2_BOSS1:
             if (thPracParam.dlg)
@@ -1093,19 +1093,19 @@ namespace TH07 {
             break;
         case THPrac::TH07::TH07_ST2_BOSS3:
             ECLTimeWarp(3, 0x1ddf);
-            ecl << pair(0x6bb4, 0x35) << pair(0x80d4, (int16_t)0) << pair(0x80e4, (int16_t)0);
+            ecl << pair{0x6bb4, 0x35} << pair{0x80d4, (int16_t)0} << pair{0x80e4, (int16_t)0};
             break;
         case THPrac::TH07::TH07_ST2_BOSS4:
             ECLTimeWarp(3, 0x1ddf);
-            ecl << pair(0x6bb4, 0x35) << pair(0x80d4, (int16_t)0) << pair(0x80e4, (int16_t)0);
+            ecl << pair{0x6bb4, 0x35} << pair{0x80d4, (int16_t)0} << pair{0x80e4, (int16_t)0};
             ECLSetTime(ecl, 0x81f4, 0, 0);
             break;
         case THPrac::TH07::TH07_ST2_BOSS5:
             ECLTimeWarp(3, 0x1ddf);
-            ecl << pair(0x6bb4, 0x35) << pair(0x80d4, (int16_t)0) << pair(0x80e4, (int16_t)0)
-                << pair(0xc698, (int16_t)0) << pair(0xc6a8, (int16_t)0)
-                << pair(0xd4ec, (int16_t)0) << pair(0xd4fc, (int16_t)0)
-                << pair(0xcdd0, (int16_t)0) << pair(0xcde0, (int16_t)0);
+            ecl << pair{0x6bb4, 0x35} << pair{0x80d4, (int16_t)0} << pair{0x80e4, (int16_t)0}
+                << pair{0xc698, (int16_t)0} << pair{0xc6a8, (int16_t)0}
+                << pair{0xd4ec, (int16_t)0} << pair{0xd4fc, (int16_t)0}
+                << pair{0xcdd0, (int16_t)0} << pair{0xcde0, (int16_t)0};
             ECLForceSpell(ecl, 0x81f4, 0, 0x577, 0x578, 0x4444464b, 0xe10, 0x4444464b);
             break;
         case THPrac::TH07::TH07_ST3_MID1:
@@ -1136,33 +1136,33 @@ namespace TH07 {
         case THPrac::TH07::TH07_ST3_BOSS3:
             ECLST3BG();
             ECLTimeWarp(2, 0xd42);
-            ecl << pair(0x43dc, 36) << pair(0x4d30, (int16_t)0) << pair(0x4d40, (int16_t)0);
-            ecl << pair(0x4248, (int16_t)0) << pair(0x4264, (int16_t)0)
-                << pair(0x4274, (int16_t)0) << pair(0x4284, (int16_t)0)
-                << pair(0x42a4, (int16_t)0) << pair(0x42b4, (int16_t)0);
+            ecl << pair{0x43dc, 36} << pair{0x4d30, (int16_t)0} << pair{0x4d40, (int16_t)0};
+            ecl << pair{0x4248, (int16_t)0} << pair{0x4264, (int16_t)0}
+                << pair{0x4274, (int16_t)0} << pair{0x4284, (int16_t)0}
+                << pair{0x42a4, (int16_t)0} << pair{0x42b4, (int16_t)0};
             break;
         case THPrac::TH07::TH07_ST3_BOSS4:
             ECLST3BG();
             ECLTimeWarp(2, 0xd42);
-            ecl << pair(0x42ac, 0x2e) << pair(0x42bc, 0x30) << pair(0x42dc, 0x25);
+            ecl << pair{0x42ac, 0x2e} << pair{0x42bc, 0x30} << pair{0x42dc, 0x25};
             ECLSetTime(ecl, 0x43bc, 0x3c, 0);
             break;
         case THPrac::TH07::TH07_ST3_BOSS5:
             ECLST3BG();
             ECLTimeWarp(2, 0xd42);
-            ecl << pair(0x43dc, 0x25) << pair(0x4e50, (int16_t)0) << pair(0x4e60, (int16_t)0);
+            ecl << pair{0x43dc, 0x25} << pair{0x4e50, (int16_t)0} << pair{0x4e60, (int16_t)0};
             break;
         case THPrac::TH07::TH07_ST3_BOSS6:
             ECLST3BG();
             ECLTimeWarp(2, 0xd42);
-            ecl << pair(0x43dc, 0x25) << pair(0x4e50, (int16_t)0) << pair(0x4e60, (int16_t)0);
+            ecl << pair{0x43dc, 0x25} << pair{0x4e50, (int16_t)0} << pair{0x4e60, (int16_t)0};
             ECLSetTime(ecl, 0x4fb0, 0, 0);
             break;
         case THPrac::TH07::TH07_ST3_BOSS7:
             ECLST3BG();
             ECLTimeWarp(2, 0xd42);
-            ecl << pair(0x43dc, 0x25) << pair(0x4e50, (int16_t)0) << pair(0x4e60, (int16_t)0)
-                << pair(0x9c94, (int16_t)0) << pair(0x9ca4, (int16_t)0);
+            ecl << pair{0x43dc, 0x25} << pair{0x4e50, (int16_t)0} << pair{0x4e60, (int16_t)0}
+                << pair{0x9c94, (int16_t)0} << pair{0x9ca4, (int16_t)0};
             ECLForceSpell(ecl, 0x4fb0, 0, 0x7cf, 0x7d0, 0x38383838, 0xa8c, 0x38383838);
             break;
         case THPrac::TH07::TH07_ST4_MID1:
@@ -1213,7 +1213,7 @@ namespace TH07 {
         case THPrac::TH07::TH07_ST4_BOSS3:
             ECLNameFix();
             ECLTimeWarp(2, 0x39eb);
-            ecl << pair(0x4880, 0) << pair(0x4adc, 0);
+            ecl << pair{0x4880, 0} << pair{0x4adc, 0};
             break;
         case THPrac::TH07::TH07_ST4_BOSS4_LUNASA:
             ECLNameFix();
@@ -1271,11 +1271,11 @@ namespace TH07 {
         case THPrac::TH07::TH07_ST5_MID1:
             ECLTimeWarp(2, 0x12d4);
             if (!thPracParam.dlg)
-                ecl << pair(0xb74c, (uint16_t)13);
+                ecl << pair{0xb74c, (uint16_t)13};
             break;
         case THPrac::TH07::TH07_ST5_MID2:
             ECLTimeWarp(2, 0x12d4);
-            ecl << pair(0xb748, (int16_t)0);
+            ecl << pair{0xb748, (int16_t)0};
             ECLSetHealth(ecl, 0x38b4, 0x3c, 0x5db);
             break;
         case THPrac::TH07::TH07_ST5_BOSS1:
@@ -1291,24 +1291,24 @@ namespace TH07 {
         case THPrac::TH07::TH07_ST5_BOSS3:
             ECLTimeWarp(2, 0x17e2);
             ECLCallSub(ecl, 0x58f0, 0x3c, 0x34);
-            ecl << pair(0x68dc, (int16_t)0) << pair(0x68ec, (int16_t)0);
+            ecl << pair{0x68dc, (int16_t)0} << pair{0x68ec, (int16_t)0};
             break;
         case THPrac::TH07::TH07_ST5_BOSS4:
             ECLTimeWarp(2, 0x17e2);
             ECLCallSub(ecl, 0x58f0, 0x3c, 0x34);
-            ecl << pair(0x68dc, (int16_t)0) << pair(0x68ec, (int16_t)0);
+            ecl << pair{0x68dc, (int16_t)0} << pair{0x68ec, (int16_t)0};
             ECLSetTime(ecl, 0x68f8, 0, 0);
             break;
         case THPrac::TH07::TH07_ST5_BOSS5:
             ECLTimeWarp(2, 0x17e2);
             ECLCallSub(ecl, 0x58f0, 0x3c, 0x37);
-            ecl << pair(0x7010, (int16_t)0) << pair(0x7020, (int16_t)0)
-                << pair(0x7110, 0);
+            ecl << pair{0x7010, (int16_t)0} << pair{0x7020, (int16_t)0}
+                << pair{0x7110, 0};
             break;
         case THPrac::TH07::TH07_ST5_BOSS6:
-            ecl << pair(0x5820, 0) << pair(0x5840, 0) << pair(0x5860, 0) << pair(0x5880, 0)
-                << pair(0x58a0, 0) << pair(0x58c0, 0) << pair(0x58dc, 0)
-                << pair(0x7010, (int16_t)0) << pair(0x7020, (int16_t)0) << pair(0xa228, (int16_t)0) << pair(0xa238, (int16_t)0);
+            ecl << pair{0x5820, 0} << pair{0x5840, 0} << pair{0x5860, 0} << pair{0x5880, 0}
+                << pair{0x58a0, 0} << pair{0x58c0, 0} << pair{0x58dc, 0}
+                << pair{0x7010, (int16_t)0} << pair{0x7020, (int16_t)0} << pair{0xa228, (int16_t)0} << pair{0xa238, (int16_t)0};
             ECLTimeWarp(2, 0x17e2);
             ECLCallSub(ecl, 0x58f0, 0, 0x37);
             ECLSetHealth(ecl, 0x7110, 0, 0x7cf);
@@ -1319,11 +1319,11 @@ namespace TH07 {
         case THPrac::TH07::TH07_ST6_MID1:
             ECLTimeWarp(2, 0x77a);
             if (!thPracParam.dlg)
-                ecl << pair(0xe630, (int16_t)0);
+                ecl << pair{0xe630, (int16_t)0};
             break;
         case THPrac::TH07::TH07_ST6_MID2:
             ECLTimeWarp(2, 0x77a);
-            ecl << pair(0xe630, (int16_t)0);
+            ecl << pair{0xe630, (int16_t)0};
             ECLSetHealth(ecl, 0x17cc, 0x3c, 0x5db);
             break;
         case THPrac::TH07::TH07_ST6_BOSS1:
@@ -1332,13 +1332,13 @@ namespace TH07 {
             else {
                 ECLTimeWarp(2, 0x9d7);
                 ECLNameFix();
-                ecl << pair(0xe678, (int16_t)0x9d7);
+                ecl << pair{0xe678, (int16_t)0x9d7};
             }
             break;
         case THPrac::TH07::TH07_ST6_BOSS2:
             ECLNameFix();
             ECLTimeWarp(2, 0x9d7);
-            ecl << pair(0xe678, (int16_t)0x9d7);
+            ecl << pair{0xe678, (int16_t)0x9d7};
             ECLSetTime(ecl, 0x3324, 0x3c, 0);
             break;
         case THPrac::TH07::TH07_ST6_BOSS3:
@@ -1354,59 +1354,59 @@ namespace TH07 {
             ECLNameFix();
             yuyuko();
             ECLCallSub(ecl, 0x445c, 0, 0x24);
-            ecl << pair(0x47a4, (int16_t)0) << pair(0x47b4, (int16_t)0);
+            ecl << pair{0x47a4, (int16_t)0} << pair{0x47b4, (int16_t)0};
             break;
         case THPrac::TH07::TH07_ST6_BOSS6:
             ECLNameFix();
             yuyuko();
             ECLCallSub(ecl, 0x445c, 0, 0x24);
-            ecl << pair(0x47a4, (int16_t)0) << pair(0x47b4, (int16_t)0);
+            ecl << pair{0x47a4, (int16_t)0} << pair{0x47b4, (int16_t)0};
             ECLSetTime(ecl, 0x48d4, 0, 0);
             break;
         case THPrac::TH07::TH07_ST6_BOSS7:
             ECLNameFix();
             ECLTimeWarp(2, 0x9d7);
-            ecl << pair(0x5574, (int16_t)0) << pair(0x5584, (int16_t)0)
-                << pair(0xe678, (int16_t)0x9d7) << pair(0x3330, 0x26);
+            ecl << pair{0x5574, (int16_t)0} << pair{0x5584, (int16_t)0}
+                << pair{0xe678, (int16_t)0x9d7} << pair{0x3330, 0x26};
             break;
         case THPrac::TH07::TH07_ST6_BOSS8:
             ECLNameFix();
             ECLTimeWarp(2, 0x9d7);
-            ecl << pair(0x5574, (int16_t)0) << pair(0x5584, (int16_t)0)
-                << pair(0xe678, (int16_t)0x9d7) << pair(0x3330, 0x26);
+            ecl << pair{0x5574, (int16_t)0} << pair{0x5584, (int16_t)0}
+                << pair{0xe678, (int16_t)0x9d7} << pair{0x3330, 0x26};
             ECLSetTime(ecl, 0x5694, 0, 0);
             break;
         case THPrac::TH07::TH07_ST6_BOSS9:
             ECLNameFix();
-            ecl << pair(0x3240, 0) << pair(0x3260, 0) << pair(0x3280, 0) << pair(0x32a0, 0)
-                << pair(0x32c0, 0) << pair(0x32e0, 0) << pair(0x32fc, 0) << pair(0x3310, 0) << pair(0x3324, 0)
-                << pair(0xa4b4, (int16_t)0) << pair(0xa4c4, (int16_t)0)
-                << pair(0xe678, (int16_t)0x9d7) << pair(0x3330, 0x3a) << pair(0x3188, (int16_t)0);
+            ecl << pair{0x3240, 0} << pair{0x3260, 0} << pair{0x3280, 0} << pair{0x32a0, 0}
+                << pair{0x32c0, 0} << pair{0x32e0, 0} << pair{0x32fc, 0} << pair{0x3310, 0} << pair{0x3324, 0}
+                << pair{0xa4b4, (int16_t)0} << pair{0xa4c4, (int16_t)0}
+                << pair{0xe678, (int16_t)0x9d7} << pair{0x3330, 0x3a} << pair{0x3188, (int16_t)0};
             ECLTimeWarp(2, 0x9d7);
             break;
         case THPrac::TH07::TH07_ST6_BOSS10:
             ECLNameFix();
             ECLResButterfly(true);
             ECLTimeWarp(2, 0x9d7);
-            ecl << pair(0xe678, (int16_t)0x9d7) << pair(0x30dc, 0x3e)
-                << pair(0xb9f4, (int16_t)0) << pair(0xbab0, 0) << pair(0xc078, (int16_t)0);
+            ecl << pair{0xe678, (int16_t)0x9d7} << pair{0x30dc, 0x3e}
+                << pair{0xb9f4, (int16_t)0} << pair{0xbab0, 0} << pair{0xc078, (int16_t)0};
             break;
         case THPrac::TH07::TH07_ST7_MID1:
             ECLTimeWarp(2, 0xfe1);
             if (!thPracParam.dlg)
-                ecl << pair(0xee58, 0);
+                ecl << pair{0xee58, 0};
             break;
         case THPrac::TH07::TH07_ST7_MID2:
             ECLTimeWarp(2, 0xfe1);
-            ecl << pair(0xee58, 0);
+            ecl << pair{0xee58, 0};
             ECLSetTime(ecl, 0x3a70, 0x3c, 0);
             break;
         case THPrac::TH07::TH07_ST7_MID3:
             ECLTimeWarp(2, 0xfe1);
-            ecl << pair(0xee58, 0)
-                << pair(0x3900, (int16_t)0) << pair(0x3a7c, 0x3d)
-                << pair(0x39a0, 0) << pair(0x39c0, 0) << pair(0x39e0, 0) << pair(0x3a00, 0)
-                << pair(0x3a20, 0) << pair(0x3a40, 0) << pair(0x3a5c, 0) << pair(0x3a70, 0);
+            ecl << pair{0xee58, 0}
+                << pair{0x3900, (int16_t)0} << pair{0x3a7c, 0x3d}
+                << pair{0x39a0, 0} << pair{0x39c0, 0} << pair{0x39e0, 0} << pair{0x3a00, 0}
+                << pair{0x3a20, 0} << pair{0x3a40, 0} << pair{0x3a5c, 0} << pair{0x3a70, 0};
             break;
         case THPrac::TH07::TH07_ST7_END_NS1:
             if (thPracParam.dlg)
@@ -1424,125 +1424,125 @@ namespace TH07 {
         case THPrac::TH07::TH07_ST7_END_NS2:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x4df8, (int16_t)0) << pair(0x4e08, (int16_t)0) << pair(0x4e18, (int16_t)0);
+            ecl << pair{0x4df8, (int16_t)0} << pair{0x4e08, (int16_t)0} << pair{0x4e18, (int16_t)0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x46);
             break;
         case THPrac::TH07::TH07_ST7_END_S2:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x4df8, (int16_t)0) << pair(0x4e08, (int16_t)0) << pair(0x4e18, (int16_t)0);
+            ecl << pair{0x4df8, (int16_t)0} << pair{0x4e08, (int16_t)0} << pair{0x4e18, (int16_t)0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x46);
             ECLSetTime(ecl, 0x4f40, 0, 0);
             break;
         case THPrac::TH07::TH07_ST7_END_NS3:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x4fd4, (int16_t)0) << pair(0x4fe4, (int16_t)0);
+            ecl << pair{0x4fd4, (int16_t)0} << pair{0x4fe4, (int16_t)0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x47);
             break;
         case THPrac::TH07::TH07_ST7_END_S3:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x4fd4, (int16_t)0) << pair(0x4fe4, (int16_t)0);
+            ecl << pair{0x4fd4, (int16_t)0} << pair{0x4fe4, (int16_t)0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x47);
             ECLSetTime(ecl, 0x510c, 0, 0);
             break;
         case THPrac::TH07::TH07_ST7_END_NS4:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x5210, (int16_t)0) << pair(0x5220, (int16_t)0) << pair(0x5230, (int16_t)0);
+            ecl << pair{0x5210, (int16_t)0} << pair{0x5220, (int16_t)0} << pair{0x5230, (int16_t)0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x49);
             break;
         case THPrac::TH07::TH07_ST7_END_S4:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x5210, (int16_t)0) << pair(0x5220, (int16_t)0) << pair(0x5230, (int16_t)0);
+            ecl << pair{0x5210, (int16_t)0} << pair{0x5220, (int16_t)0} << pair{0x5230, (int16_t)0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x49);
             ECLSetTime(ecl, 0x5358, 0, 0);
             break;
         case THPrac::TH07::TH07_ST7_END_NS5:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x5430, (int16_t)0) << pair(0x5440, (int16_t)0);
+            ecl << pair{0x5430, (int16_t)0} << pair{0x5440, (int16_t)0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x4b);
             break;
         case THPrac::TH07::TH07_ST7_END_S5:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x5430, (int16_t)0) << pair(0x5440, (int16_t)0);
+            ecl << pair{0x5430, (int16_t)0} << pair{0x5440, (int16_t)0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x4b);
             ECLSetTime(ecl, 0x5590, 0, 0);
             break;
         case THPrac::TH07::TH07_ST7_END_NS6:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x56e4, (int16_t)0) << pair(0x56f4, (int16_t)0) << pair(0x5704, (int16_t)0);
+            ecl << pair{0x56e4, (int16_t)0} << pair{0x56f4, (int16_t)0} << pair{0x5704, (int16_t)0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x4d);
             break;
         case THPrac::TH07::TH07_ST7_END_S6:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x56e4, (int16_t)0) << pair(0x56f4, (int16_t)0) << pair(0x5704, (int16_t)0);
+            ecl << pair{0x56e4, (int16_t)0} << pair{0x56f4, (int16_t)0} << pair{0x5704, (int16_t)0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x4d);
             ECLSetTime(ecl, 0x5854, 0, 0);
             break;
         case THPrac::TH07::TH07_ST7_END_NS7:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x5964, (int16_t)0) << pair(0x5974, (int16_t)0);
+            ecl << pair{0x5964, (int16_t)0} << pair{0x5974, (int16_t)0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x4f);
             break;
         case THPrac::TH07::TH07_ST7_END_S7:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x5964, (int16_t)0) << pair(0x5974, (int16_t)0);
+            ecl << pair{0x5964, (int16_t)0} << pair{0x5974, (int16_t)0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x4f);
             ECLSetTime(ecl, 0x5ac4, 0, 0);
             break;
         case THPrac::TH07::TH07_ST7_END_NS8:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x5c28, (int16_t)0) << pair(0x5c38, (int16_t)0) << pair(0x5c48, (int16_t)0);
+            ecl << pair{0x5c28, (int16_t)0} << pair{0x5c38, (int16_t)0} << pair{0x5c48, (int16_t)0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x51);
             break;
         case THPrac::TH07::TH07_ST7_END_S8:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x5c28, (int16_t)0) << pair(0x5c38, (int16_t)0) << pair(0x5c48, (int16_t)0);
+            ecl << pair{0x5c28, (int16_t)0} << pair{0x5c38, (int16_t)0} << pair{0x5c48, (int16_t)0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x51);
             ECLSetTime(ecl, 0x5dc0, 0, 0);
             break;
         case THPrac::TH07::TH07_ST7_END_S9:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x4b5c, (int16_t)0) << pair(0x5ebc, (int16_t)0) << pair(0x5ecc, (int16_t)0)
-                << pair(0x5fdc, 0) << pair(0x5ff0, 0);
+            ecl << pair{0x4b5c, (int16_t)0} << pair{0x5ebc, (int16_t)0} << pair{0x5ecc, (int16_t)0}
+                << pair{0x5fdc, 0} << pair{0x5ff0, 0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x53);
             break;
         case THPrac::TH07::TH07_ST7_END_S10:
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair(0x4b5c, (int16_t)0) << pair(0x6030, (int16_t)0) << pair(0x6040, (int16_t)0)
-                << pair(0x614c, 0) << pair(0x6160, 0);
+            ecl << pair{0x4b5c, (int16_t)0} << pair{0x6030, (int16_t)0} << pair{0x6040, (int16_t)0}
+                << pair{0x614c, 0} << pair{0x6160, 0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x54);
             break;
         case THPrac::TH07::TH07_ST8_MID1:
             ECLTimeWarp(2, 0xf7d);
             if (!thPracParam.dlg)
-                ecl << pair(0x12674, 0);
+                ecl << pair{0x12674, 0};
             break;
         case THPrac::TH07::TH07_ST8_MID2:
             ECLTimeWarp(2, 0xf7d);
-            ecl << pair(0x12674, 0);
+            ecl << pair{0x12674, 0};
             ECLSetTime(ecl, 0x4350, 0x3c, 0);
             break;
         case THPrac::TH07::TH07_ST8_MID3:
             ECLTimeWarp(2, 0xf7d);
             ECLCallSub(ecl, 0x4350, 0x0, 0x3f);
-            ecl << pair(0x12674, 0)
-                << pair(0x41e0, (int16_t)0)
-                << pair(0x4280, 0) << pair(0x42a0, 0) << pair(0x42c0, 0) << pair(0x42e0, 0)
-                << pair(0x4300, 0) << pair(0x4320, 0) << pair(0x433c, 0);
+            ecl << pair{0x12674, 0}
+                << pair{0x41e0, (int16_t)0}
+                << pair{0x4280, 0} << pair{0x42a0, 0} << pair{0x42c0, 0} << pair{0x42e0, 0}
+                << pair{0x4300, 0} << pair{0x4320, 0} << pair{0x433c, 0};
             break;
         case THPrac::TH07::TH07_ST8_END_NS1:
             if (thPracParam.dlg)
@@ -1560,117 +1560,117 @@ namespace TH07 {
         case THPrac::TH07::TH07_ST8_END_NS2:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x5704, (int16_t)0) << pair(0x5714, (int16_t)0) << pair(0x5724, (int16_t)0);
+            ecl << pair{0x5704, (int16_t)0} << pair{0x5714, (int16_t)0} << pair{0x5724, (int16_t)0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x48);
             break;
         case THPrac::TH07::TH07_ST8_END_S2:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x5704, (int16_t)0) << pair(0x5714, (int16_t)0) << pair(0x5724, (int16_t)0);
+            ecl << pair{0x5704, (int16_t)0} << pair{0x5714, (int16_t)0} << pair{0x5724, (int16_t)0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x48);
             ECLSetTime(ecl, 0x584c, 0, 0);
             break;
         case THPrac::TH07::TH07_ST8_END_NS3:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x58e0, (int16_t)0) << pair(0x58f0, (int16_t)0);
+            ecl << pair{0x58e0, (int16_t)0} << pair{0x58f0, (int16_t)0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x49);
             break;
         case THPrac::TH07::TH07_ST8_END_S3:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x58e0, (int16_t)0) << pair(0x58f0, (int16_t)0);
+            ecl << pair{0x58e0, (int16_t)0} << pair{0x58f0, (int16_t)0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x49);
             ECLSetTime(ecl, 0x5a18, 0, 0);
             break;
         case THPrac::TH07::TH07_ST8_END_NS4:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x5b1c, (int16_t)0) << pair(0x5b2c, (int16_t)0) << pair(0x5b3c, (int16_t)0);
+            ecl << pair{0x5b1c, (int16_t)0} << pair{0x5b2c, (int16_t)0} << pair{0x5b3c, (int16_t)0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x4b);
             break;
         case THPrac::TH07::TH07_ST8_END_S4:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x5b1c, (int16_t)0) << pair(0x5b2c, (int16_t)0) << pair(0x5b3c, (int16_t)0);
+            ecl << pair{0x5b1c, (int16_t)0} << pair{0x5b2c, (int16_t)0} << pair{0x5b3c, (int16_t)0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x4b);
             ECLSetTime(ecl, 0x5c64, 0, 0);
             break;
         case THPrac::TH07::TH07_ST8_END_NS5:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x5d3c, (int16_t)0) << pair(0x5d4c, (int16_t)0);
+            ecl << pair{0x5d3c, (int16_t)0} << pair{0x5d4c, (int16_t)0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x4d);
             break;
         case THPrac::TH07::TH07_ST8_END_S5:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x5d3c, (int16_t)0) << pair(0x5d4c, (int16_t)0);
+            ecl << pair{0x5d3c, (int16_t)0} << pair{0x5d4c, (int16_t)0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x4d);
             ECLSetTime(ecl, 0x5e9c, 0, 0);
             break;
         case THPrac::TH07::TH07_ST8_END_NS6:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x5ff0, (int16_t)0) << pair(0x6000, (int16_t)0) << pair(0x6010, (int16_t)0);
+            ecl << pair{0x5ff0, (int16_t)0} << pair{0x6000, (int16_t)0} << pair{0x6010, (int16_t)0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x4f);
             break;
         case THPrac::TH07::TH07_ST8_END_S6:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x5ff0, (int16_t)0) << pair(0x6000, (int16_t)0) << pair(0x6010, (int16_t)0);
+            ecl << pair{0x5ff0, (int16_t)0} << pair{0x6000, (int16_t)0} << pair{0x6010, (int16_t)0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x4f);
             ECLSetTime(ecl, 0x6160, 0, 0);
             break;
         case THPrac::TH07::TH07_ST8_END_NS7:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x6270, (int16_t)0) << pair(0x6280, (int16_t)0);
+            ecl << pair{0x6270, (int16_t)0} << pair{0x6280, (int16_t)0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x51);
             break;
         case THPrac::TH07::TH07_ST8_END_S7:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x6270, (int16_t)0) << pair(0x6280, (int16_t)0);
+            ecl << pair{0x6270, (int16_t)0} << pair{0x6280, (int16_t)0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x51);
             ECLSetTime(ecl, 0x63d0, 0, 0);
             break;
         case THPrac::TH07::TH07_ST8_END_NS8:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x6534, (int16_t)0) << pair(0x6544, (int16_t)0) << pair(0x6554, (int16_t)0);
+            ecl << pair{0x6534, (int16_t)0} << pair{0x6544, (int16_t)0} << pair{0x6554, (int16_t)0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x53);
             break;
         case THPrac::TH07::TH07_ST8_END_S8:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x6534, (int16_t)0) << pair(0x6544, (int16_t)0) << pair(0x6554, (int16_t)0);
+            ecl << pair{0x6534, (int16_t)0} << pair{0x6544, (int16_t)0} << pair{0x6554, (int16_t)0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x53);
             ECLSetTime(ecl, 0x66cc, 0, 0);
             break;
         case THPrac::TH07::TH07_ST8_END_S9:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x5468, (int16_t)0) << pair(0x67d0, (int16_t)0) << pair(0x67e0, (int16_t)0)
-                << pair(0x68e8, 0) << pair(0x68fc, 0);
+            ecl << pair{0x5468, (int16_t)0} << pair{0x67d0, (int16_t)0} << pair{0x67e0, (int16_t)0}
+                << pair{0x68e8, 0} << pair{0x68fc, 0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x55);
             break;
         case THPrac::TH07::TH07_ST8_END_S10:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x5468, (int16_t)0) << pair(0x693c, (int16_t)0) << pair(0x694c, (int16_t)0) << pair(0x695c, (int16_t)0)
-                << pair(0x6a68, 0) << pair(0x6a7c, 0);
+            ecl << pair{0x5468, (int16_t)0} << pair{0x693c, (int16_t)0} << pair{0x694c, (int16_t)0} << pair{0x695c, (int16_t)0}
+                << pair{0x6a68, 0} << pair{0x6a7c, 0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x56);
 
             if (thPracParam.phase == 1) {
-                ecl << pair(0xe154, 0xa);
+                ecl << pair{0xe154, 0xa};
             }
             break;
         case THPrac::TH07::TH07_ST8_END_S11:
             ECLNameFix();
             ECLTimeWarp(2, 0x242b);
-            ecl << pair(0x5468, (int16_t)0) << pair(0x6abc, (int16_t)0) << pair(0x6acc, (int16_t)0)
-                << pair(0x6bd8, 0) << pair(0x6bec, 0);
+            ecl << pair{0x5468, (int16_t)0} << pair{0x6abc, (int16_t)0} << pair{0x6acc, (int16_t)0}
+                << pair{0x6bd8, 0} << pair{0x6bec, 0};
             ECLCallSub(ecl, 0x55ec, 0x3c, 0x57);
             break;
         default:

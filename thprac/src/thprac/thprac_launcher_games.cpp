@@ -474,7 +474,7 @@ public:
         }
         return false;
     }
-    void thcrapAdd(const char* gameId, std::string& cfg, bool use_thprac, bool flush = false)
+    void thcrapAdd(const char* gameId, const std::string& cfg, bool use_thprac, bool flush = false)
     {
         if (flush) {
             WriteGameCfg();
@@ -513,7 +513,7 @@ public:
     {
         cfgVec.clear();
         for (auto& cfg : mThcrapCfg) {
-            cfgVec.push_back(std::pair<std::string, bool>(cfg, false));
+            cfgVec.emplace_back(cfg, false);
         }
         for (int i = 0; i < 4; i++) {
             for (auto& game : gameVec[i]) {
@@ -760,9 +760,9 @@ public:
             }
         }
         ImGui::NextColumn();
-        ImGui::Text(XSTR(THPRAC_SCAN_SCAN_RESULT_C1));
+        ImGui::TextUnformatted(XSTR(THPRAC_SCAN_SCAN_RESULT_C1));
         ImGui::NextColumn();
-        ImGui::Text(XSTR(THPRAC_SCAN_SCAN_RESULT_C2));
+        ImGui::TextUnformatted(XSTR(THPRAC_SCAN_SCAN_RESULT_C2));
         ImGui::NextColumn();
         ImGui::Separator();
     }
@@ -780,11 +780,11 @@ public:
 
         if (color) {
             ImGui::PushStyleColor(ImGuiCol_Text, *color);
-            ImGui::TextWrapped(text);
+            ImGui::TextWrapped("%s", text);
             ImGui::PopStyleColor();
 
         } else {
-            ImGui::TextWrapped(text);
+            ImGui::TextWrapped("%s", text);
         }
 
         ImGui::NewLine();
@@ -856,7 +856,7 @@ public:
         ImGui::PopStyleColor();
         ImGui::Separator();
 
-        ImGui::TextWrapped(XSTR(THPRAC_SCAN_CONFIRM_MALICIOUS));
+        ImGui::TextWrapped("%s", XSTR(THPRAC_SCAN_CONFIRM_MALICIOUS));
 
         ImGui::NewLine();
         ImGui::BeginChild(childId, ImVec2(0, -2.0f * ImGui::GetFontSize()), true);
@@ -874,9 +874,9 @@ public:
             ImGui::SetColumnOffset(i, offset[i] * ImGui::GetFontSize());
         }
         ImGui::Separator();
-        ImGui::Text(XSTR(THPRAC_SCAN_SCAN_RESULT_C1));
+        ImGui::TextUnformatted(XSTR(THPRAC_SCAN_SCAN_RESULT_C1));
         ImGui::NextColumn();
-        ImGui::Text(XSTR(THPRAC_SCAN_SCAN_RESULT_C2));
+        ImGui::TextUnformatted(XSTR(THPRAC_SCAN_SCAN_RESULT_C2));
         ImGui::NextColumn();
         ImGui::Separator();
         for (auto& game : mGameScan[idx]) {
@@ -969,7 +969,7 @@ public:
         }
         return TYPE_UNCERTAIN;
     }
-    static DWORD WINAPI ScanAddGame(THGameType type, std::string name, std::string& path, THGameSig& sig)
+    static DWORD WINAPI ScanAddGame(THGameType type, std::string name, const std::string& path, THGameSig& sig)
     {
         auto& game = THGameGui::singleton();
         switch (type) {
@@ -1049,7 +1049,7 @@ public:
 
         return 0;
     }
-    static DWORD WINAPI ScanSteamappPath(std::wstring& path)
+    static DWORD WINAPI ScanSteamappPath(const std::wstring& path)
     {
         for (auto& gameDef : gGameDefs) {
             if (gameDef.steamId == nullptr) {
@@ -1332,9 +1332,9 @@ public:
         ImGui::Separator();
 
         if (mScanStatus == 0) {
-            ImGui::TextWrapped(XSTR(THPRAC_SCAN_INSTRUCTION));
+            ImGui::TextWrapped("%s", XSTR(THPRAC_SCAN_INSTRUCTION));
             ImGui::NewLine();
-            ImGui::Text(XSTR(THPRAC_SCAN_SCAN_FOR));
+            ImGui::TextUnformatted(XSTR(THPRAC_SCAN_SCAN_FOR));
             ImGui::Checkbox(XSTR(THPRAC_SCAN_ORIGINAL), &mScanOption[SCAN_OPT_ORIGINAL]);
             ImGui::Checkbox(XSTR(THPRAC_SCAN_MODDED), &mScanOption[SCAN_OPT_MODDED]);
             ImGui::Checkbox(XSTR(THPRAC_SCAN_STEAM), &mScanOption[SCAN_OPT_STEAM]);
@@ -1351,7 +1351,7 @@ public:
                 if (mScanPath != L"") {
                     ImGui::TextWrapped(XSTR(THPRAC_SCAN_FOLDER_SELECTED), utf16_to_utf8(mScanPath.c_str()).c_str());
                 } else {
-                    ImGui::TextWrapped(XSTR(THPRAC_SCAN_FOLDER_NOT_SELECTED));
+                    ImGui::TextWrapped("%s", XSTR(THPRAC_SCAN_FOLDER_NOT_SELECTED));
                 }
                 canProceed = mScanPath != L"";
             }
@@ -1364,9 +1364,9 @@ public:
         } else if (mScanStatus == 1) {
             GuiSetPosYRel(0.5f);
             GuiSetPosXText(XSTR(THPRAC_SCAN_SCANNING));
-            ImGui::TextWrapped(XSTR(THPRAC_SCAN_SCANNING));
+            ImGui::TextWrapped("%s", XSTR(THPRAC_SCAN_SCANNING));
             ImGui::SameLine(0.0f, 0.0f);
-            ImGui::Text(mScanAnm.Get().c_str());
+            ImGui::TextUnformatted(mScanAnm.Get().c_str());
             GuiCenteredText(mScanCurrent[mScanCurrentIdx].c_str());
 
             if (!mScanThread.IsActive()) {
@@ -1402,7 +1402,7 @@ public:
             GuiCenteredText(XSTR(THPRAC_STEAM_MNG));
             ImGui::Separator();
 
-            ImGui::TextWrapped(XSTR(THPRAC_STEAM_MNG_DESC));
+            ImGui::TextWrapped("%s", XSTR(THPRAC_STEAM_MNG_DESC));
             ImGui::NewLine();
             if (ImGui::Button(XSTR(THPRAC_STEAM_MNG_AUTO))) {
                 mScanOption[SCAN_OPT_STEAM] = true;
@@ -1411,7 +1411,7 @@ public:
                 mGuiUpdFunc = [&]() { GuiScanFolder(); };
             }
             ImGui::SameLine();
-            ImGui::Text(XSTR(THPRAC_STEAM_MNG_OR));
+            ImGui::TextUnformatted(XSTR(THPRAC_STEAM_MNG_OR));
             ImGui::SameLine();
             if (ImGui::Button(XSTR(THPRAC_STEAM_MNG_MANUAL))) {
                 for (auto& games : mSteamGames) {
@@ -1444,7 +1444,7 @@ public:
             GuiCenteredText(XSTR(THPRAC_STEAM_MNG_MANUAL_TITLE));
             ImGui::Separator();
 
-            ImGui::TextWrapped(XSTR(THPRAC_STEAM_MNG_MANUAL_INSTRUCTION));
+            ImGui::TextWrapped("%s", XSTR(THPRAC_STEAM_MNG_MANUAL_INSTRUCTION));
             ImGui::NewLine();
 
             int i = 0;
@@ -1541,11 +1541,11 @@ public:
     {
         if (wcscmp(L"東方紅魔郷.exe", proc.szExeFile)) {
             if (proc.szExeFile[0] != L't' || proc.szExeFile[1] != L'h')
-                return nullptr;
+                return false;
             if (proc.szExeFile[2] < 0x30 || proc.szExeFile[2] > 0x39)
-                return nullptr;
+                return false;
             if (proc.szExeFile[3] < 0x30 || proc.szExeFile[3] > 0x39)
-                return nullptr;
+                return false;
         }
 
         // Open the related process
@@ -1555,7 +1555,7 @@ public:
             FALSE,
             proc.th32ProcessID);
         if (!hProc)
-            return nullptr;
+            return false;
 
         // Check THPrac signature
         DWORD sigAddr = 0;
@@ -1564,12 +1564,12 @@ public:
         ReadProcessMemory(hProc, (void*)0x40003c, &sigAddr, 4, &bytesReadRPM);
         if (bytesReadRPM != 4 || !sigAddr) {
             CloseHandle(hProc);
-            return nullptr;
+            return false;
         }
         ReadProcessMemory(hProc, (void*)(0x400000 + sigAddr - 4), &sigCheck, 4, &bytesReadRPM);
         if (bytesReadRPM != 4 || sigCheck) {
             CloseHandle(hProc);
-            return nullptr;
+            return false;
         }
 
         ExeSig sig;
@@ -1581,11 +1581,11 @@ public:
                 if (gameDef.exeSig.textSize != sig.textSize || gameDef.exeSig.timeStamp != sig.timeStamp) {
                     continue;
                 }
-                return &gameDef;
+                return true;
             }
         }
         CloseHandle(hProc);
-        return nullptr;   
+        return false;   
     }
     static DWORD WINAPI CheckProcess(DWORD process, std::wstring& exePath)
     {
@@ -1863,7 +1863,7 @@ public:
             return false;
         }
     }
-    bool TryLaunch(std::wstring& path)
+    bool TryLaunch(const std::wstring& path)
     {
         auto attr = GetFileAttributesW(path.c_str());
         auto dir = GetDirFromFullPath(path);
@@ -1955,9 +1955,9 @@ public:
             if (!mLaunchFailed) {
                 GuiSetPosYRel(0.5f);
                 GuiSetPosXText(XSTR(THPRAC_GAMES_LAUNCHING));
-                ImGui::TextWrapped(XSTR(THPRAC_GAMES_LAUNCHING));
+                ImGui::TextWrapped("%s", XSTR(THPRAC_GAMES_LAUNCHING));
                 ImGui::SameLine(0.0f, 0.0f);
-                ImGui::Text(mLaunchAnm.Get().c_str());
+                ImGui::TextUnformatted(mLaunchAnm.Get().c_str());
                 if (GuiButtonTxtCentered(XSTR(THPRAC_CANCEL), 0.8f)) {
                     mLaunchAbortInd = true;
                     mLaunchThread.Wait();
@@ -1993,7 +1993,7 @@ public:
         float offset[] = {
             0.0f, 10.0f, 15.0f
         };
-        ImGui::Text(XSTR(THPRAC_GAMES_SELECT_VER));
+        ImGui::TextUnformatted(XSTR(THPRAC_GAMES_SELECT_VER));
         ImGui::BeginChild("##@_game_version", ImVec2(0, ImGui::GetWindowHeight() * 0.35f), true);
         if (mNewGameWnd) {
             mNewGameWnd = false;
@@ -2094,7 +2094,7 @@ public:
             if (mCustomErrTxtTime > 0.0f) {
                 mCustomErrTxtTime -= ImGui::GetIO().DeltaTime;
                 ImGui::SameLine();
-                ImGui::Text(XSTR(THPRAC_GAMES_LAUNCH_CUSTOM_ERR));
+                ImGui::TextUnformatted(XSTR(THPRAC_GAMES_LAUNCH_CUSTOM_ERR));
             }
         }
 
@@ -2135,7 +2135,7 @@ public:
                 }
                 if (GuiModal(XSTR(THPRAC_GAMES_FORCE_THPRAC_MODAL))) {
                     ImGui::PushTextWrapPos(ImGui::GetIO().DisplaySize.x * 0.9f);
-                    ImGui::TextWrapped(XSTR(THPRAC_GAMES_FORCE_THPRAC_CONFIRM));
+                    ImGui::TextWrapped("%s", XSTR(THPRAC_GAMES_FORCE_THPRAC_CONFIRM));
                     ImGui::PopTextWrapPos();
                     if (GuiButtonYesNo(XSTR(THPRAC_YES), XSTR(THPRAC_NO))) {
                         currentInst.useTHPrac = true;
@@ -2265,7 +2265,7 @@ public:
         int columns = 1;
         int i = 0;
 
-        ImGui::Text(title);
+        ImGui::TextUnformatted(title);
         ImGui::Columns(columns);
         for (auto& gameRef : gGameDefs) {
             if (gameRef.catagory == catagory) {
@@ -2352,9 +2352,9 @@ public:
             mRescanModalTimeout -= ImGui::GetIO().DeltaTime;
             GuiSetPosYRel(0.5f);
             GuiSetPosXText(XSTR(THPRAC_GAMES_RESCANNING));
-            ImGui::TextWrapped(XSTR(THPRAC_GAMES_RESCANNING));
+            ImGui::TextWrapped("%s", XSTR(THPRAC_GAMES_RESCANNING));
             ImGui::SameLine(0.0f, 0.0f);
-            ImGui::Text(mScanAnm.Get().c_str());
+            ImGui::TextUnformatted(mScanAnm.Get().c_str());
             GuiCenteredText(mScanCurrent[mScanCurrentIdx].c_str());
             ImGui::EndPopup();
         }
@@ -2435,7 +2435,7 @@ void LauncherGamesThcrapCfgGet(std::vector<std::pair<std::string, bool>>& cfgVec
     THGameGui::singleton().thcrapCfgGet(cfgVec, gameVec);
 }
 
-void LauncherGamesThcrapAdd(const char* gameId, std::string& cfg, bool use_thprac, bool flush)
+void LauncherGamesThcrapAdd(const char* gameId, const std::string& cfg, bool use_thprac, bool flush)
 {
     THGameGui::singleton().thcrapAdd(gameId, cfg, use_thprac, flush);
 }

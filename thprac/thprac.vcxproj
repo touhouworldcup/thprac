@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugLLVM|Win32">
+      <Configuration>DebugLLVM</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseLLVM|Win32">
+      <Configuration>ReleaseLLVM</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
@@ -176,14 +184,25 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup>
+    <BuildType Condition="'$(Configuration)'=='Debug'">Debug</BuildType>
+    <BuildType Condition="'$(Configuration)'=='Release'">Release</BuildType>
+    <BuildType Condition="'$(Configuration)'=='DebugLLVM'">Debug</BuildType>
+    <BuildType Condition="'$(Configuration)'=='ReleaseLLVM'">Release</BuildType>
+    <ToolsetType Condition="'$(Configuration)'=='Debug'">MSVC</ToolsetType>
+    <ToolsetType Condition="'$(Configuration)'=='Release'">MSVC</ToolsetType>
+    <ToolsetType Condition="'$(Configuration)'=='DebugLLVM'">ClangCL</ToolsetType>
+    <ToolsetType Condition="'$(Configuration)'=='ReleaseLLVM'">ClangCL</ToolsetType>
+  </PropertyGroup>
+  <PropertyGroup>
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset Condition="'$(ToolsetType)'=='MSVC'">v143</PlatformToolset>
+    <PlatformToolset Condition="'$(ToolsetType)'=='ClangCL'">ClangCL</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(BuildType)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(BuildType)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
@@ -207,6 +226,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
+      <AdditionalManifestDependencies>type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
+	  <AdditionalOptions Condition="'$(ToolsetType)'=='MSVC'">/IGNORE:4098 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -214,16 +235,16 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;HAVE_SSE2;_CRT_SECURE_NO_WARNINGS;_WINDOWS;WINVER=0x0601;_WIN32_WINNT=0x0601;DISTORM_LIGHT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard Condition="'$(ToolsetType)'=='MSVC'">stdcpp20</LanguageStandard>
+      <LanguageStandard Condition="'$(ToolsetType)'=='ClangCL'">stdcpplatest</LanguageStandard>
       <ConformanceMode>false</ConformanceMode>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <ControlFlowGuard>false</ControlFlowGuard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <DisableSpecificWarnings>
-      </DisableSpecificWarnings>
+      <AdditionalOptions Condition="'$(ToolsetType)'=='ClangCL'">-Wno-ambiguous-reversed-operator -Wno-unused-function -Wno-unused-const-variable -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-private-field -Wno-unused-label -Wno-unused-local-typedef -Wno-missing-braces %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ItemDefinitionGroup Condition="'$(BuildType)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -232,7 +253,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ItemDefinitionGroup Condition="'$(BuildType)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
