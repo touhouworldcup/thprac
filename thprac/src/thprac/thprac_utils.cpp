@@ -573,7 +573,7 @@ int FPSHelper(adv_opt_ctx& ctx, bool repStatus, bool vpFast, bool vpSlow, FPSHel
     return res;
 }
 
-bool GameFPSOpt(adv_opt_ctx& ctx)
+bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
 {
     static char tmpStr[32] {};
     static int fps = 0;
@@ -681,15 +681,18 @@ bool GameFPSOpt(adv_opt_ctx& ctx)
         }
     }
 
-    ImGui::PushItemWidth(GetRelWidth(0.23f));
-    if (fpsFastStatic > 20) {
-        sprintf(tmpStr, "infinite");
-    } else {
-        sprintf(tmpStr, "x%d.0 (%dfps)", fpsFastStatic, fpsFastStatic * 60);
+    if (replay) {
+        ImGui::PushItemWidth(GetRelWidth(0.23f));
+        if (fpsFastStatic > 20) {
+            sprintf(tmpStr, "infinite");
+        } else {
+            sprintf(tmpStr, "x%d.0 (%dfps)", fpsFastStatic, fpsFastStatic * 60);
+        }
+
+        ImGui::SliderInt("Replay slow FPS", &fpsSlowStatic, 1, 60);
+        ImGui::SliderInt("Replay fast FPS", &fpsFastStatic, 1, 21, tmpStr);
+        ImGui::PopItemWidth();
     }
-    ImGui::SliderInt("Replay slow FPS", &fpsSlowStatic, 1, 60);
-    ImGui::SliderInt("Replay fast FPS", &fpsFastStatic, 1, 21, tmpStr);
-    ImGui::PopItemWidth();
     ImGui::Checkbox("Debug acc.", (bool*)&fpsDebugAcc);
     ImGui::SameLine();
     HelpMarker("Blah");
@@ -1315,6 +1318,121 @@ namespace THSnapshot {
         CloseHandle(hFile);
     }
 };
+#pragma endregion
+
+#pragma region ECL Warp
+void StageWarpsRender(stage_warps_t& warps, std::vector<unsigned int>& out_warp, size_t level)
+{
+    if (warps.section_param.size() == 0)
+        return;
+
+    if (out_warp.size() <= level)
+        out_warp.resize(level + 1);
+
+    switch (warps.type) {
+    case stage_warps_t::TYPE_SLIDER:
+        ImGui::SliderInt(warps.label, (int*)&out_warp[level], 0, warps.section_param.size() - 1, warps.section_param[out_warp[level]].label);
+        break;
+    case stage_warps_t::TYPE_COMBO:
+        if (ImGui::BeginCombo(warps.label, warps.section_param[out_warp[level]].label)) {
+            for (unsigned int i = 0; i < warps.section_param.size(); i++) {
+                ImGui::PushID(i);
+
+                bool item_selected = (out_warp[level] == i);
+
+                if (ImGui::Selectable(warps.section_param[i].label, &item_selected)) {
+                    out_warp[level] = i;
+                }
+
+                if (item_selected)
+                    ImGui::SetItemDefaultFocus();
+
+                ImGui::PopID();
+            }
+            ImGui::EndCombo();
+        }
+        break;
+    }
+
+    if (ImGui::IsItemFocused()) {
+        if (Gui::InGameInputGet(VK_LEFT) && out_warp[level] > 0) {
+            out_warp[level]--;
+        }
+        if (Gui::InGameInputGet(VK_RIGHT) && out_warp[level] + 1 < warps.section_param.size()) {
+            out_warp[level]++;
+        }
+    }
+
+    if (warps.section_param[out_warp[level]].phases) {
+        ImGui::PushID(level + 1);
+        StageWarpsRender(*warps.section_param[out_warp[level]].phases, out_warp, level + 1);
+        ImGui::PopID();
+    }
+}
+
+void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, size_t level)
+{
+    if (!in_warp.size())
+        return;
+    auto& param = warps.section_param[in_warp[level]];
+
+    auto ECLGetSub = [](const char* name) -> uint8_t* {
+        struct ecl_sub_t {
+            const char* name;
+            uint8_t* data;
+        };
+        auto subs = (ecl_sub_t*)GetMemContent(0x004d7af4, 0x4f34, 0x10c);
+
+        while (strcmp(subs->name, name))
+            subs++;
+        return subs->data;
+    };
+
+    // This entire block gives me the idea to convert everything to writes once there's a JSON
+    // file. But for readability, as long as there is no JSON file, this block will have to stay
+    for (auto& jumps : param.jumps) {
+        uint8_t* ecl = ECLGetSub(jumps.first.c_str());
+        for (auto& jmp : jumps.second) {
+            ecl_write_t real_write;
+            real_write.off = jmp.off;
+            union i32b {
+                uint32_t i;
+                uint8_t b[4];
+                i32b(uint32_t a)
+                    : i(a)
+                {
+                }
+            };
+
+            i32b ecl_time = jmp.ecl_time;
+            uint8_t instr[] = { 0x0c, 0x00, 0x18, 0x00, 0x00, 0x00, 0xff, 0x2c, 0x00, 0x00, 0x00, 0x00 };
+            i32b dest = jmp.dest - jmp.off;
+            i32b at_frame = jmp.at_frame;
+
+#define BYTES_APPEND(a)                    \
+    for (size_t j = 0; j < sizeof(a); j++) \
+        real_write.bytes.push_back(a[j]);
+
+            BYTES_APPEND(ecl_time.b);
+            BYTES_APPEND(instr);
+            BYTES_APPEND(dest.b);
+            BYTES_APPEND(at_frame.b);
+#undef BYTES_APPEND
+
+            real_write.apply(ecl);
+        }
+    }
+
+    for (auto& writes : param.writes) {
+        uint8_t* ecl = ECLGetSub(writes.first.c_str());
+        for (auto& write : writes.second) {
+            write.apply(ecl);
+        }
+    }
+
+    if (param.phases)
+        StageWarpsApply(*param.phases, in_warp, level + 1);
+}
 #pragma endregion
 
 DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName)

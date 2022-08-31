@@ -257,6 +257,8 @@ enum th_glossary_t
     TH17_INF_ROARING,
     TH17_NO_GOAST,
     TH17_TITLE,
+    TH185_BULLET_MONEY,
+    TH185_TITLE,
     TH18_AC_FIX,
     TH18_AC_FIX_DESC,
     TH18_BUG_FIX,
@@ -744,7 +746,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-static const char* th_glossary_str[3][732]
+static const char* th_glossary_str[3][734]
 {
     {
         "",
@@ -994,6 +996,8 @@ static const char* th_glossary_str[3][732]
         "无限咆哮",
         "无动物灵",
         "TH17 东方鬼形兽　～ Wily Beast and Weakest Creature.",
+        "BMoney",
+        "TH18.5 弹幕狂们的黑市　～ 100th Black Market.",
         "正确记录关卡开始时所选择的主动卡片",
         "如果要使这个选项生效，你必须在游戏时保持此选项开启。",
         "Bug修复",
@@ -1728,6 +1732,8 @@ static const char* th_glossary_str[3][732]
         "Inf. Roaring",
         "No Goast",
         "TH17 Wily Beast and Weakest Creature",
+        "BMoney",
+        "TH18.5 100th Black Market",
         "Correctly record the selected active card on stage beginning.",
         "This option needs to be enabled for the entire gaming session for it to work.",
         "Bug fix",
@@ -2462,6 +2468,8 @@ static const char* th_glossary_str[3][732]
         "無限のロアリング",
         "動物霊を落とさない",
         "TH17 東方鬼形獣　～ Wily Beast and Weakest Creature.",
+        "BMoney",
+        "TH18.5 バレットフィリア達の闇市場　〜 100th Black Market.",
         "ステージ開始時に選択した使用カードを正しく記録します",
         "このオプションを機能させるには、プレイ中に常にこのオプションを有効にする必要があります。 ",
         "Bug修復",
@@ -21338,6 +21346,81 @@ static const th_glossary_t TH18_CARD_LIST[58]
 
 }
 
+namespace TH185 {
+
+enum th_sections_t : uint8_t
+{
+    A0000ERROR,
+};
+
+static const char* th_sections_str[3][4][1]
+{
+    {
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+    },
+    {
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+    },
+    {
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+    },
+};
+
+static const uint8_t th_sections_bgm[]
+{
+    0,
+};
+
+static const th_sections_t th_sections_cba[1][1][2]
+{
+    {
+        { },
+    },
+};
+
+static const th_sections_t th_sections_cbt[1][2][1]
+{
+    {
+        { },
+        { },
+    },
+};
+
+}
+
 static const wchar_t __thprac_loc_range_zh[] {
     0x0020, 0x00FF,
     0x201c, 0x201c,
@@ -22884,6 +22967,7 @@ static const wchar_t __thprac_loc_range_ja[] {
     0x3006, 0x3006,
     0x300c, 0x300c,
     0x300d, 0x300d,
+    0x301c, 0x301c,
     0x3042, 0x3042,
     0x3044, 0x3044,
     0x3046, 0x3046,

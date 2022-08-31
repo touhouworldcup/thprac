@@ -160,6 +160,7 @@
     <ClCompile Include="src\thprac\thprac_th165.cpp" />
     <ClCompile Include="src\thprac\thprac_th17.cpp" />
     <ClCompile Include="src\thprac\thprac_th18.cpp" />
+    <ClCompile Include="src\thprac\thprac_th185.cpp" />
     <ClCompile Include="src\thprac\thprac_utils.cpp" />
     <ClCompile Include="src\thprac\thprac_version.cpp" />
   </ItemGroup>

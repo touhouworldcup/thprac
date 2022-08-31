@@ -202,7 +202,7 @@ static void EndOptGroup()
 }
 typedef void __stdcall FPSHelperCallback(int32_t);
 int FPSHelper(adv_opt_ctx& ctx, bool repStatus, bool vpFast, bool vpSlow, FPSHelperCallback* callback);
-bool GameFPSOpt(adv_opt_ctx& ctx);
+bool GameFPSOpt(adv_opt_ctx& ctx, bool replay = true);
 bool GameplayOpt(adv_opt_ctx& ctx);
 bool DataRecOpt(adv_opt_ctx& ctx, bool preUpd = false, bool isInGame = false);
 void AboutOpt(const char* thanks_text = nullptr);
@@ -575,6 +575,48 @@ namespace THSnapshot {
     void* GetSnapshotData(IDirect3DDevice8* d3d8);
     void Snapshot(IDirect3DDevice8* d3d8);
 }
+#pragma endregion
+
+#pragma region ECL Warp
+struct ecl_write_t {
+    uint32_t off;
+    std::vector<uint8_t> bytes;
+    void apply(uint8_t* start)
+    {
+        for (unsigned int i = 0; i < bytes.size(); i++) {
+            start[off + i] = bytes[i];
+        }
+    }
+};
+
+struct ecl_jump_t {
+    uint32_t off;
+    uint32_t dest;
+    uint32_t at_frame;
+    uint32_t ecl_time;
+};
+
+struct stage_warps_t;
+
+struct section_param_t {
+    const char* label;
+    std::unordered_map<std::string, std::vector<ecl_jump_t>> jumps;
+    std::unordered_map<std::string, std::vector<ecl_write_t>> writes;
+    stage_warps_t* phases;
+};
+
+struct stage_warps_t {
+    const char* label;
+    enum {
+        TYPE_NONE,
+        TYPE_SLIDER,
+        TYPE_COMBO
+    } type;
+    std::vector<section_param_t> section_param;
+};
+
+void StageWarpsRender(stage_warps_t& warps, std::vector<unsigned int>& out_warp, size_t level);
+void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, size_t level);
 #pragma endregion
 
 template <typename T>
