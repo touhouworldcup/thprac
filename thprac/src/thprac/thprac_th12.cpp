@@ -1465,10 +1465,18 @@ namespace TH12 {
     {
         int32_t item_struct = GetMemAddr(0x4b44f0, 0x171254);
         ventra -= 1;
+#ifndef __clang__
         ASM mov eax, ventra;
         ASM mov ecx, item_struct;
         ASM mov edx, 0x4270b0;
         ASM call edx;
+#else
+        asm volatile(
+            "call *%[func]"
+            :
+            : [func] "r"(0x4270b0), "c"(item_struct), "a"(ventra)
+        );
+#endif
     }
     void THDataInit()
     {

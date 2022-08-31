@@ -207,38 +207,17 @@ namespace TH165 {
         auto s1 = pCtx->Esp + 0x14;
         auto s2 = pCtx->Edi + 0x2bc;
         auto s3 = *(DWORD*)(pCtx->Edi + 0x2c0);
-        auto lEcx = pCtx->Ecx;
-        auto lEdi = pCtx->Edi;
-        auto lEsi = pCtx->Esi;
+        asm_call<0x463e00, Stdcall>(0x7, pCtx->Ecx);
 
-        ASM push lEcx;
-        ASM push 0x7;
-        ASM mov edx, 0x463e00;
-        ASM call edx;
+        uint32_t* ret = asm_call<0x475880, Thiscall, uint32_t*>(s2, s1, 0x72, pCtx->Ecx);
 
-        ASM push lEcx;
-        ASM push 0x72;
-        ASM push s1;
-        ASM mov ecx, s2;
-        ASM mov edx, 0x475880;
-        ASM call edx;
-
-        ASM push 0x6;
-        ASM push[eax];
-        ASM mov edx, 0x475400;
-        ASM call edx;
+        asm_call<0x475400, Stdcall>(*ret, 0x6);
 
         // Restart New 1
-        ASM push 0x1;
-        ASM push s3;
-        ASM mov edx, 0x475400;
-        ASM call edx;
+        asm_call<0x475400, Stdcall>(s3, 0x1);
 
         // Restart Mod 1
-        ASM push 0x4;
-        ASM mov ecx, lEsi;
-        ASM mov edx, 0x415d40;
-        ASM call edx;
+        asm_call<0x415d40, Thiscall>(pCtx->Esi, 0x4);
 
         pCtx->Eip = 0x43cd31;
     }

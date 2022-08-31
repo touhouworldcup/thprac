@@ -810,7 +810,6 @@ namespace TH08 {
     {
         int32_t temp;
         if (thPracParam.mode == 1) {
-            int32_t func = 0x437f5c;
             int32_t name = 0;
             switch (thPracParam.stage) {
             case 5:
@@ -845,11 +844,7 @@ namespace TH08 {
                 break;
             }
             if (name) {
-                __asm
-                {
-						mov ecx, name
-						call func
-                }
+                asm_call<0x437f5c, Fastcall>(name);
             }
         }
         th08_name_fix::GetHook().Disable();

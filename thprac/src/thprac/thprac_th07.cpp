@@ -803,52 +803,22 @@ namespace TH07 {
     void ECLNameFix()
     {
         if (thPracParam.stage == 0) {
-            __asm
-            {
-					mov ecx, 0x60f;
-					mov eax, 0x427d92;
-					call eax;
-            }
-            ;
+            asm_call<0x427d92, Fastcall>(0x60f);
         } else if (thPracParam.stage == 3) {
-            __asm
-            {
-					mov ecx, 0x615;
-					mov eax, 0x427d92;
-					call eax;
-            }
-            ;
+            asm_call<0x427d92, Fastcall>(0x615);
         } else if (thPracParam.stage == 5) {
             *((int32_t*)0x1348024) = 2;
             *((int32_t*)0x9a9ab8) = 9;
-            __asm
-            {
-					mov ecx, 0x619;
-					mov eax, 0x427d92;
-					call eax;
-            }
-            ;
+            asm_call<0x427d92, Fastcall>(0x619);
         } else if (thPracParam.stage == 6) {
             *((int32_t*)0x1348024) = 1;
             *((int32_t*)0x1348020) = 2;
             *((int32_t*)0x9a9ab8) = 9;
-            __asm
-            {
-					mov ecx, 0x61b;
-					mov eax, 0x427d92;
-					call eax;
-            }
-            ;
+            asm_call<0x427d92, Fastcall>(0x61b);
         } else if (thPracParam.stage == 7) {
             *((int32_t*)0x1348024) = 2;
             *((int32_t*)0x9a9ab8) = 9;
-            __asm
-            {
-					mov ecx, 0x61d;
-					mov eax, 0x427d92;
-					call eax;
-            }
-            ;
+            asm_call<0x427d92, Fastcall>(0x61d);
         }
     }
     void ECLResButterfly(bool toggle)
@@ -1878,14 +1848,7 @@ namespace TH07 {
     {
         if (thPracParam.mode == 1 && thPracParam.section) {
             if (thPracParam.stage == 5) {
-                __asm
-                {
-                    push 0x4986b4;
-                    push 2;
-                    mov ecx, 0x575950;
-                    mov eax, 0x439dd0;
-                    call eax;
-                }
+                asm_call<0x439dd0, Thiscall>(0x575950, 2, 0x4986b4);
             }
 
             if (THBGMTest()) {

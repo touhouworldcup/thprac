@@ -1952,16 +1952,9 @@ namespace TH17 {
     {
         ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
-    __declspec(noinline) void TH17AddGoast(int goast_id)
-    {
-        int32_t unk = *(int32_t*)(0x4b7684);
 
-        ASM mov edx, goast_id;
-        ASM push edx;
-        ASM mov ecx, unk;
-        ASM mov edx, 0x40f980;
-        ASM call edx;
-    }
+#define TH17AddGoast(goast_id) asm_call<0x40f980, Thiscall>(GetMemContent(0x4b7684), goast_id)
+
     void THDataInit()
     {
         AnlyDataInit();
@@ -2107,44 +2100,21 @@ namespace TH17 {
         auto s1 = pCtx->Esp + 0x8;
         auto s2 = pCtx->Edi + 0x1e4;
         auto s3 = *(DWORD*)(pCtx->Edi + 0x1e8);
-        auto lEcx = pCtx->Ecx;
-        auto lEdi = pCtx->Edi;
-        auto lEsi = pCtx->Esi;
 
-        ASM push lEcx;
-        ASM push 0x7;
-        ASM mov edx, 0x465450;
-        ASM call edx;
+        asm_call<0x465450, Stdcall>(0x7, pCtx->Ecx);
 
-        ASM push lEcx;
-        ASM push 0x87;
-        ASM push s1;
-        ASM mov ecx, s2;
-        ASM mov edx, 0x4769f0;
-        ASM call edx;
+        uint32_t* ret = asm_call<0x4769f0, Thiscall, uint32_t*>(s2, s1, 0x87, pCtx->Ecx);
 
-        ASM push 0x6;
-        ASM push[eax];
-        ASM mov edx, 0x476510;
-        ASM call edx;
+        asm_call<0x476510, Stdcall>(*ret, 0x6);
 
         // Restart New 1
-        ASM push 0x1;
-        ASM push s3;
-        ASM mov edx, 0x476510;
-        ASM call edx;
+        asm_call<0x476510, Stdcall>(s3, 0x1);
 
         // Restart Mod 1
-        ASM push 0x4;
-        ASM mov ecx, lEsi;
-        ASM mov edx, 0x41b630;
-        ASM call edx;
+        asm_call<0x41b630, Thiscall>(pCtx->Esi, 0x4);
 
         // Restart New 2;
-        ASM push 0x10;
-        ASM mov ecx, lEdi;
-        ASM mov edx, 0x443800;
-        ASM call edx;
+        asm_call<0x443800, Thiscall>(pCtx->Edi, 0x10);
 
         pCtx->Edx = *(DWORD*)0x4b323c;
         pCtx->Eip = 0x445208;

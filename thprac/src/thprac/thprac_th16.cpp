@@ -2276,22 +2276,8 @@ namespace TH16 {
             } else if (signal == 3) {
                 *(*((int32_t**)0x4a6dc0) + 6) = 0;
 
-                DWORD retnValue;
-                DWORD regEdi = pCtx->Edi;
-
-                ASM push 2;
-                ASM mov ecx, regEdi;
-                ASM mov eax, 0x4251d0;
-                ASM call eax;
-                ASM mov retnValue, eax;
-                pCtx->Esi = retnValue;
-
-                ASM push 0;
-                ASM mov ecx, regEdi;
-                ASM mov eax, 0x4251d0;
-                ASM call eax;
-                ASM mov retnValue, eax;
-                pCtx->Eax = retnValue;
+                pCtx->Esi = asm_call<0x4251d0, Thiscall, DWORD>(pCtx->Edi, 2);
+                pCtx->Eax = asm_call<0x4251d0, Thiscall, DWORD>(pCtx->Edi, 0);
 
                 PushHelper32(pCtx, (DWORD)th16_spbugfix_str1);
                 pCtx->Eip = 0x42159b;

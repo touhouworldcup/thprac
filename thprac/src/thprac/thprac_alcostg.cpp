@@ -65,12 +65,20 @@ namespace Alcostg {
         if (thPracParam.mode == 1) {
             if (++alcostg_beer_cd == 20) {
                 int16_t beer = thPracParam.beer * 100;
+#ifndef __clang__
                 __asm {
 				    mov eax, 0x48e580;
 				    mov cx, beer;
 				    mov edx, 0x413ef0;
 				    call edx;
                 }
+#else
+                asm volatile(
+                    "call *%[func]"
+                    :
+                    : [func]"r"(0x413ef0), "a"(0x48e580), "c"(beer)
+                );
+#endif
                 alcostg_add_beer::GetHook().Disable();
             }
         }

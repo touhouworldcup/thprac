@@ -964,40 +964,12 @@ namespace TH06 {
     }
     void ECLNameFix()
     {
-        int32_t thisPtr = *((int32_t*)0x6d4588);
-        const char* str0601 = "data/eff06.anm";
-        const char* str0701 = "data/eff07.anm";
-        const char* str0702 = "data/face12c.anm";
-
+        void* thisPtr = *((void**)0x6d4588);
         if (thPracParam.stage == 5) {
-            __asm {
-					push 691;
-					push str0601;
-					push 11;
-					mov ecx, thisPtr;
-					mov eax, 0x431dc0;
-					call eax;
-            }
-            ;
+            asm_call<0x431dc0, Thiscall>(thisPtr, 11, "data/eff06.anm", 691);
         } else if (thPracParam.stage == 6) {
-            __asm {
-					push 691;
-					push str0701;
-					push 11;
-					mov ecx, thisPtr;
-					mov eax, 0x431dc0;
-					call eax;
-            }
-            ;
-            __asm {
-					push 1192;
-					push str0702;
-					push 18;
-					mov ecx, thisPtr;
-					mov eax, 0x431dc0;
-					call eax;
-            }
-            ;
+            asm_call<0x431dc0, Thiscall>(thisPtr, 11, "data/eff07.anm", 691);
+            asm_call<0x431dc0, Thiscall>(thisPtr, 18, "data/face12c.anm", 1192);
         }
     }
     __declspec(noinline) void THPatch(ECLHelper& ecl, th_sections_t section)

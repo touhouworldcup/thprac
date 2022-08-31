@@ -129,6 +129,37 @@ protected:
     std::vector<HookCtx*> mHooks;
 };
 
+enum CallType {
+    Cdecl, // cdecl and CDECL are both predefined. :P
+    Stdcall,
+    Fastcall,
+    Thiscall,
+    Vectorcall
+};
+template <uintptr_t addr, CallType type, typename R = void, typename... Args>
+static inline R asm_call(Args... args) {
+    if constexpr (type == Cdecl) {
+        auto* func = (R(__cdecl*)(Args...))addr;
+        return func(args...);
+    }
+    else if constexpr (type == Stdcall) {
+        auto* func = (R(__stdcall*)(Args...))addr;
+        return func(args...);
+    }
+    else if constexpr (type == Fastcall) {
+        auto* func = (R(__fastcall*)(Args...))addr;
+        return func(args...);
+    }
+    else if constexpr (type == Vectorcall) {
+        auto* func = (R(__vectorcall*)(Args...))addr;
+        return func(args...);
+    }
+    else if constexpr (type == Thiscall) {
+        auto* func = (R(__thiscall*)(Args...))addr;
+        return func(args...);
+    }
+}
+
 static void PushHelper32(CONTEXT* pCtx, DWORD value)
 {
     pCtx->Esp -= 4;

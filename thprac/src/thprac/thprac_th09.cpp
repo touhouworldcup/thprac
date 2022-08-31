@@ -86,11 +86,7 @@ namespace TH09 {
                 *(uint32_t*)(pl1 + 0xa8) = 0;
                 uint64_t charge_bak = *(uint64_t*)(pl1 + 0x30384);
                 *(uint64_t*)(pl1 + 0x30384) = 0;
-                __asm {
-                    mov ecx, pl1
-                    mov eax, 0x41e420
-                    call eax
-                }
+                asm_call<0x41e420, Thiscall>(pl1);
                 *(uint64_t*)(pl1 + 0x30384) = charge_bak;
             }
             ImGui::PopID();
@@ -100,11 +96,7 @@ namespace TH09 {
                 *(uint32_t*)(pl2 + 0xa8) = 0;
                 uint64_t charge_bak = *(uint64_t*)(pl2 + 0x30384);
                 *(uint64_t*)(pl2 + 0x30384) = 0;
-                __asm {
-                    mov ecx, pl2
-                    mov eax, 0x41e420
-                    call eax
-                }
+                asm_call<0x41e420, Thiscall>(pl2);
                 *(uint64_t*)(pl2 + 0x30384) = charge_bak;
             }
             ImGui::PopID();

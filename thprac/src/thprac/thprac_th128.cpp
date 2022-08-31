@@ -2101,18 +2101,7 @@ namespace TH128 {
         if (dword_4B8950) {
             auto v3 = GetMemContent(dword_4B8950 + 0x5a1c);
             if (v3) {
-                uint32_t result = 0;
-                uint32_t argEcx = GetMemContent(v3 + 0x6c);
-                uint32_t argEdx = GetMemContent(0x4d2e50);
-                _asm {
-                    push argEcx;
-                    mov ecx, argEcx;
-                    mov edx, argEdx;
-                    mov eax, 0x467420;
-                    call eax;
-                    mov result, eax;
-                }
-                if (result) {
+                if (asm_call<0x467420, Fastcall, uint32_t>(GetMemContent(v3 + 0x6c), GetMemContent(0x4d2e50))) {
                     return false;
                 }
             }

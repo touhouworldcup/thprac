@@ -523,46 +523,25 @@ namespace TH18 {
             pCtx->Eip = 0x411f52;
             THOverlay::singleton().th18_free_blank.Disable();
         }
-        __declspec(noinline) void ResetCardMenu()
+        inline void ResetCardMenu()
         {
-            uint32_t c1 = GetMemContent(0x4cf40c);
             th18_pause_skip_1.Enable();
             th18_pause_skip_2.Enable();
-            __asm {
-                mov ecx, c1;
-                mov eax, 0x458680;
-                call eax;
-            }
-            *(uint32_t*)((*(uint32_t*)ABILITY_SHOP_PTR) + 0xe38) = 0;
+            asm_call<0x458680, Thiscall>(GetMemContent(0x4cf40c));
+            *(uint32_t*)GetMemAddr(ABILITY_SHOP_PTR, 0xe38) = 0;
             th18_pause_skip_1.Disable();
             th18_pause_skip_2.Disable();
         }
-        __declspec(noinline) void AddCard(uint32_t cardId)
+        inline void AddCard(uint32_t cardId)
         {
-            if (cardId > 0 && cardId < 55) {
-                uint32_t cardStruct = *(uint32_t*)0x4cf298;
-                __asm {
-                    push 2;
-                    push cardId;
-                    mov ecx, cardStruct;
-                    mov eax, 0x411460;
-                    call eax;
-                }
-            }
+            if (cardId < 55)
+                asm_call<0x411460, Thiscall>(*(uint32_t*)0x4cf298, cardId, 2);
         }
-        __declspec(noinline) void AddIndicateCard()
+        void AddIndicateCard()
         {
             if (GetMemContent(0x4ccd00) == 4) {
                 th18_free_blank.Enable();
-                uint32_t cardStruct = *(uint32_t*)0x4cf298;
-                uint32_t cardId = 0;
-                __asm {
-                    push 2;
-                    push cardId;
-                    mov ecx, cardStruct;
-                    mov eax, 0x411460;
-                    call eax;
-                }
+                asm_call<0x411460, Thiscall>(GetMemContent(0x4cf298), 0, 2);
             } else {
                 uint32_t* list = nullptr;
                 uint8_t cardIdArray[64];
@@ -573,15 +552,7 @@ namespace TH18 {
                     cardIdArray[cardId] += 1;
                 }
                 if (!cardIdArray[55]) {
-                    uint32_t cardStruct = *(uint32_t*)0x4cf298;
-                    uint32_t cardId = 55;
-                    __asm {
-                    push 2;
-                    push cardId;
-                    mov ecx, cardStruct;
-                    mov eax, 0x411460;
-                    call eax;
-                    }
+                    asm_call<0x411460, Thiscall>(*(uint32_t*)0x4cf298, 55, 2);
                 }
             }
         }
@@ -1116,64 +1087,13 @@ namespace TH18 {
             }
             return nullptr;
         }
-        __declspec(noinline) void DecodeData(void* data, uint32_t size1, uint32_t param1, uint32_t param2, uint32_t param3, uint32_t size2)
-        {
-            __asm {
-                push size2;
-                push param3;
-                push param2;
-                push param1;
-                mov edx, size1;
-                mov ecx, data;
-                mov eax, 0x401e40;
-                call eax;
-            }
-        }
-        __declspec(noinline) void DecompressData(void* dataBuffer, uint32_t dataSize, void* outBuffer, uint32_t outSize)
-        {
-            __asm {
-                push outSize;
-                push outBuffer;
-                mov edx, dataSize;
-                mov ecx, dataBuffer;
-                mov eax, 0x46f840;
-                call eax;
-            }
-        }
-        __declspec(noinline) void EncodeData(void* data, uint32_t size1, uint32_t param1, uint32_t param2, uint32_t param3, uint32_t size2)
-        {
-            __asm {
-                push size2;
-                push param3;
-                push param2;
-                push param1;
-                mov edx, size1;
-                mov ecx, data;
-                mov eax, 0x401f50;
-                call eax;
-            }
-        }
-        __declspec(noinline) void* CompressData(void* dataBuffer, uint32_t dataSize, uint32_t* outSize)
-        {
-            void* result;
-            __asm {
-                push outSize;
-                mov edx, dataSize;
-                mov ecx, dataBuffer;
-                mov eax, 0x46f5b0;
-                call eax;
-                mov result, eax;
-            }
-            return result;
-        }
-        __declspec(noinline) void FreeCompressData(void* buffer)
-        {
-            __asm {
-                push buffer;
-                mov eax, 0x491a3f;
-                add esp, 4;
-            }
-        }
+
+#define ThEncrypt(data, size1, param1, param2, param3, size2) asm_call<0x401f50, Fastcall>(data, size1, param1, param2, param3, size2)
+#define ThDecrypt(data, size1, param1, param2, param3, size2) asm_call<0x401e40, Fastcall>(data, size1, param1, param2, param3, size2)
+#define ThUnlzss(dataBuffer, dataSize, outBuffer, outSize)    asm_call<0x46f840, Fastcall>(dataBuffer, dataSize, outBuffer, outSize)
+#define ThLzss(dataBuffer, dataSize, outSize)                 asm_call<0x46f5b0, Fastcall, void*>(dataBuffer, dataSize, outSize)
+#define _builtin_free(buffer)                                 asm_call<0x491a3f, Cdecl>(buffer)
+
         __declspec(noinline) void UnloadReplay()
         {
             if (mRepDataDecoded) {
@@ -1250,11 +1170,11 @@ namespace TH18 {
             OverwriteReplayData(repDataOutput);
 
             uint32_t repDataEncodedSize;
-            auto repDataEncoded = CompressData(repDataOutput, repHeader[8], &repDataEncodedSize);
+            auto repDataEncoded = ThLzss(repDataOutput, repHeader[8], &repDataEncodedSize);
             repHeader[7] = repDataEncodedSize;
             repHeader[3] = repDataEncodedSize + 0x24;
-            EncodeData(repDataEncoded, mRepHeader[7], 0x7d, 0x3a, 0x100, repHeader[7]);
-            EncodeData(repDataEncoded, mRepHeader[7], 0x5c, 0xe1, 0x400, repHeader[7]);
+            ThEncrypt(repDataEncoded, mRepHeader[7], 0x7d, 0x3a, 0x100, repHeader[7]);
+            ThEncrypt(repDataEncoded, mRepHeader[7], 0x5c, 0xe1, 0x400, repHeader[7]);
             free(repDataOutput);
 
             DWORD bytesProcessed;
@@ -1292,7 +1212,7 @@ namespace TH18 {
             }
 
             end:
-            FreeCompressData(repDataEncoded);
+            _builtin_free(repDataEncoded);
         }
         __declspec(noinline) void LoadReplay()
         {
@@ -1313,9 +1233,9 @@ namespace TH18 {
             mRepExtraData = malloc(mRepExtraDataSize);
             memcpy(mRepDataRaw, (void*)((uint32_t)file.fileMapView + 0x24), mRepHeader[7]);
             memcpy(mRepExtraData, (void*)((uint32_t)file.fileMapView + mRepHeader[3]), mRepExtraDataSize);
-            DecodeData(mRepDataRaw, mRepHeader[7], 0x5c, 0xe1, 0x400, mRepHeader[7]);
-            DecodeData(mRepDataRaw, mRepHeader[7], 0x7d, 0x3a, 0x100, mRepHeader[7]);
-            DecompressData(mRepDataRaw, mRepHeader[7], mRepDataDecoded, mRepHeader[8]);
+            ThDecrypt(mRepDataRaw, mRepHeader[7], 0x5c, 0xe1, 0x400, mRepHeader[7]);
+            ThDecrypt(mRepDataRaw, mRepHeader[7], 0x7d, 0x3a, 0x100, mRepHeader[7]);
+            ThUnlzss(mRepDataRaw, mRepHeader[7], mRepDataDecoded, mRepHeader[8]);
             free(mRepDataRaw);
 
             // Calc Hash
@@ -2836,44 +2756,21 @@ namespace TH18 {
         auto s1 = pCtx->Esp + 0xc;
         auto s2 = pCtx->Edi + 0x1e4;
         auto s3 = *(DWORD*)(pCtx->Edi + 0x1e8);
-        auto lEcx = pCtx->Ecx;
-        auto lEdi = pCtx->Edi;
-        auto lEsi = pCtx->Esi;
 
-        ASM push lEcx;
-        ASM push 0x7;
-        ASM mov edx, 0x476be0;
-        ASM call edx;
+        asm_call<0x476be0, Stdcall>(0x7, pCtx->Ecx);
 
-        ASM push lEcx;
-        ASM push 125;
-        ASM push s1;
-        ASM mov ecx, s2;
-        ASM mov edx, 0x489140;
-        ASM call edx;
+        uint32_t* ret = asm_call<0x489140, Thiscall, uint32_t*>(s2, s1, 125, pCtx->Ecx);
 
-        ASM push 0x6;
-        ASM push[eax];
-        ASM mov edx, 0x488be0;
-        ASM call edx;
+        asm_call<0x488be0, Stdcall>(*ret, 0x6);
 
         // Restart New 1
-        ASM push 0x1;
-        ASM push s3;
-        ASM mov edx, 0x488be0;
-        ASM call edx;
+        asm_call<0x488be0, Stdcall>(s3, 0x1);
 
         // Set restart flag, same under replay save status
-        ASM push 0x6;
-        ASM mov ecx, lEsi;
-        ASM mov edx, 0x416ba0;
-        ASM call edx;
+        asm_call<0x416ba0, Thiscall>(pCtx->Esi, 0x6);
 
         // Switch menu state to close
-        ASM push 18;
-        ASM mov ecx, lEdi;
-        ASM mov edx, 0x4577d0;
-        ASM call edx;
+        asm_call<0x4577d0, Thiscall>(pCtx->Edi, 18);
 
         pCtx->Edx = *(DWORD*)0x4ca21c;
         pCtx->Eip = 0x459562;
