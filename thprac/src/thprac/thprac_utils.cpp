@@ -1263,54 +1263,22 @@ void* VFSOriginal(const char* file_name, int32_t* file_size, int32_t is_file)
 namespace THSnapshot {
     void* GetSnapshotData(IDirect3DDevice8* d3d8)
     {
-        int32_t rect[2] = {};
-        void* bmp = malloc(0xE2000);
         // MB_INFO("FINDME");
 
         IDirect3DSurface8* surface = NULL;
         d3d8->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &surface);
-        surface->LockRect((D3DLOCKED_RECT*)&rect, NULL, 0);
+        D3DLOCKED_RECT rect = {};
+        surface->LockRect(&rect, NULL, 0);
 
-        // Serious bruh moment. For some reason ACK wrote this entire function
-        // in Assembly when it there's no reason why you couldn't write it in C
-        // I rewrote part of it but I couldn't figure out this loop so it's still
-        // written in Assembly.
-        __asm {
-                    mov esi, rect[4]
-					mov edi, bmp
-					mov ebx, 1
-					mov ecx, 0x1df
-				snap_loop_1:
-					cmp ecx, 0
-					jl snap_end
-					mov eax, ecx
-					mov edx, rect[0]
-					imul eax, edx
-					add esi, eax
-					mov ebx, 1
-				snap_loop_2:
-					cmp ebx, 0x280
-					jg snap_loop_3
-					movzx eax, byte ptr[esi]
-					mov byte ptr[edi], al
-					inc esi
-					inc edi
-					movzx eax, byte ptr[esi]
-					mov byte ptr[edi], al
-					inc esi
-					inc edi
-					movzx eax, byte ptr[esi]
-					mov byte ptr[edi], al
-					inc esi
-					inc edi
-					inc esi
-					inc ebx
-					jmp snap_loop_2
-				snap_loop_3 :
-					mov esi, rect[4]
-					dec ecx
-					jmp snap_loop_1
-				snap_end :
+        void* bmp = malloc(0xE2000);
+        uint8_t* bmp_write = (uint8_t*)bmp;
+        for (int32_t i = 0x1DF; i >= 0; --i) {
+            uint8_t* bmp_bits = ((uint8_t*)rect.pBits) + i * rect.Pitch;
+            for (size_t j = 0; j < 0x280; ++j) {
+                memcpy(bmp_write, bmp_bits, 3); // This *should* get optimized to byte/word MOVs
+                bmp_bits += 4;
+                bmp_write += 3;
+            }
         }
 
         surface->UnlockRect();
