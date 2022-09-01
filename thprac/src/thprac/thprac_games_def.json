@@ -8939,7 +8939,8 @@
       "namespace": "TH185",
 
       "glossary": {
-          "TH185_BULLET_MONEY": [ "BMoney", "BMoney", "BMoney" ]
+          "TH185_BULLET_MONEY": [ "BMoney", "BMoney", "BMoney" ],
+          "TH185_INF_BMONEY": [ "Inf. BMoney", "Inf. BMoney", "Inf. BMoney" ]
       }
   }
 }

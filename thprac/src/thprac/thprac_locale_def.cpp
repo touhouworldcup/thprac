@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][734]
+const char* th_glossary_str[3][735]
 {
     {
         "",
@@ -258,6 +258,7 @@ const char* th_glossary_str[3][734]
         "无动物灵",
         "TH17 东方鬼形兽　～ Wily Beast and Weakest Creature.",
         "BMoney",
+        "Inf. BMoney",
         "TH18.5 弹幕狂们的黑市　～ 100th Black Market.",
         "正确记录关卡开始时所选择的主动卡片",
         "如果要使这个选项生效，你必须在游戏时保持此选项开启。",
@@ -994,6 +995,7 @@ const char* th_glossary_str[3][734]
         "No Goast",
         "TH17 Wily Beast and Weakest Creature",
         "BMoney",
+        "Inf. BMoney",
         "TH18.5 100th Black Market",
         "Correctly record the selected active card on stage beginning.",
         "This option needs to be enabled for the entire gaming session for it to work.",
@@ -1730,6 +1732,7 @@ const char* th_glossary_str[3][734]
         "動物霊を落とさない",
         "TH17 東方鬼形獣　～ Wily Beast and Weakest Creature.",
         "BMoney",
+        "Inf. BMoney",
         "TH18.5 バレットフィリア達の闇市場　〜 100th Black Market.",
         "ステージ開始時に選択した使用カードを正しく記録します",
         "このオプションを機能させるには、プレイ中に常にこのオプションを有効にする必要があります。 ",

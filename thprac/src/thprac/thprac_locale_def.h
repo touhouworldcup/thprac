@@ -258,6 +258,7 @@ enum th_glossary_t
     TH17_NO_GOAST,
     TH17_TITLE,
     TH185_BULLET_MONEY,
+    TH185_INF_BMONEY,
     TH185_TITLE,
     TH18_AC_FIX,
     TH18_AC_FIX_DESC,
@@ -746,7 +747,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][734];
+extern const char* th_glossary_str[3][735];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

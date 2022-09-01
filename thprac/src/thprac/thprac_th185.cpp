@@ -62,6 +62,11 @@ namespace TH185 {
         }
         virtual void OnContentUpdate() override
         {
+            mMuteki();
+            mInfLives();
+            mInfBMoney();
+            mTimeLock();
+            mZeroCD();
         }
         virtual void OnPreUpdate() override
         {
@@ -74,6 +79,29 @@ namespace TH185 {
             }
         }
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
+        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
+            new HookCtxPatch((void*)0x4635a5, "\x01", 1) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
+            new HookCtxPatch((void*)0x40aec3, "\x66\x0f\x1f\x44\x00\x00", 6),
+            new HookCtxPatch((void*)0x463281, "\x00", 1) } };
+        Gui::GuiHotKey mInfBMoney { TH185_INF_BMONEY, "F3", VK_F3, {
+            new HookCtxPatch((void*)0x40ed5f, "\x66\x2e\x0f\x1f\x84\x00\x00\x00\x00\x00\x66\x2e\x0f\x1f\x84\x00\x00\x00\x00\x00", 20),
+            new HookCtxPatch((void*)0x41ee2d, "\x66\x0f\x1f\x44\x00\x00", 6) } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4, {
+            new HookCtxPatch((void*)0x434c85, "\x66\x0f\x1f\x44\x00\x00", 6),
+            new HookCtxPatch((void*)0x436E38, "\x0f\x1f\x84\x00\x00\x00\x00\x00\x0f\x1f\x84\x00\x00\x00\x00\x00\x0f\x1f\x84\x00\x00\x00\x00\x00", 24) } };
+        Gui::GuiHotKey mZeroCD { TH18_ZERO_CD, "F5", VK_F5, {
+            new HookCtxHook((void*)0x462146, [](PCONTEXT pCtx) {
+                struct Timer {
+                    int32_t prev;
+                    int32_t cur;
+                    float cur_f;
+                    void* unused;
+                    uint32_t control;
+                };
+                Timer* timer = (Timer*)(pCtx->Ecx + 0x34);
+                *timer = { -1, 0, 0, 0, 0 };
+            }) } };
     };
 
     stage_warps_t stages[9] = {};
