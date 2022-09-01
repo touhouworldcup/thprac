@@ -474,6 +474,9 @@
     <ClCompile Include="src\3rdParties\distorm\src\textdefs.c">
       <Filter>3rdParties\distorm</Filter>
     </ClCompile>
+    <ClCompile Include="src\thprac\thprac_locale_def.cpp">
+      <Filter>THPrac Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

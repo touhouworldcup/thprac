@@ -140,6 +140,7 @@
     <ClCompile Include="src\thprac\thprac_licence.cpp" />
     <ClCompile Include="src\thprac\thprac_load_exe.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_locale.cpp" />
+    <ClCompile Include="src\thprac\thprac_locale_def.cpp" />
     <ClCompile Include="src\thprac\thprac_log.cpp" />
     <ClCompile Include="src\thprac\thprac_main.cpp" />
     <ClCompile Include="src\thprac\thprac_th06.cpp" />
