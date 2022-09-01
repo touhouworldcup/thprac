@@ -11,26 +11,26 @@ class HookCtx {
 public:
     HookCtx() = default;
     ~HookCtx();
-    HookCtx(void* target, CallbackFunc* inject)
-        : mTarget(target)
+    HookCtx(uintptr_t target, CallbackFunc* inject)
+        : mTarget((void*)target)
         , mDetour(inject)
     {
     }
-    HookCtx(void* target, const char* patch, size_t size)
-        : mTarget(target)
+    HookCtx(uintptr_t target, const char* patch, size_t size)
+        : mTarget((void*)target)
         , mPatch(patch)
         , mPatchSize(size)
         , mIsPatch(true)
     {
     }
-    HookCtx(std::vector<HookCtx*>& vec, void* target, CallbackFunc* inject)
-        : mTarget(target)
+    HookCtx(std::vector<HookCtx*>& vec, uintptr_t target, CallbackFunc* inject)
+        : mTarget((void*)target)
         , mDetour(inject)
     {
         vec.push_back(this);
     }
-    HookCtx(std::vector<HookCtx*>& vec, void* target, const char* patch, size_t size)
-        : mTarget(target)
+    HookCtx(std::vector<HookCtx*>& vec, uintptr_t target, const char* patch, size_t size)
+        : mTarget((void*)target)
         , mPatch(patch)
         , mPatchSize(size)
         , mIsPatch(true)
@@ -71,7 +71,7 @@ public:
     {
         static HookCtx* hook_singleton = nullptr;
         if (!hook_singleton) {
-            hook_singleton = new HookCtx((void*)target, inject);
+            hook_singleton = new HookCtx(target, inject);
             hook_singleton->Setup();
         }
         return *hook_singleton;
@@ -95,7 +95,7 @@ public:
     {
         static HookCtx* hook_singleton = nullptr;
         if (!hook_singleton) {
-            hook_singleton = new HookCtx((void*)target, patch, size);
+            hook_singleton = new HookCtx(target, patch, size);
             hook_singleton->Setup();
         }
         return *hook_singleton;
@@ -141,9 +141,6 @@ static DWORD PopHelper32(CONTEXT* pCtx)
     pCtx->Esp += 4;
     return ret;
 }
-
-typedef HookCtx HookCtxPatch;
-typedef HookCtx HookCtxHook;
 
 #define EHOOK_G1(name, target) \
     __declspec(noinline) void __stdcall __vehf_##name(PCONTEXT pCtx); \

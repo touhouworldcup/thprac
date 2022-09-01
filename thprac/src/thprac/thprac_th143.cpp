@@ -67,29 +67,29 @@ namespace TH143 {
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtx((void*)0x44F272, "\x01", 1) } };
+            new HookCtx(0x44F272, "\x01", 1) } };
         Gui::GuiHotKey mInfItems { TH_INFITEMS, "F2", VK_F2, {
-            new HookCtx((void*)0x457860, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x457F48, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x458FCB, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x45946A, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x459608, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x4597A6, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x459950, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x459EFF, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x459F4A, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x459F94, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x459FF4, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x45A5E3, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x45B4EA, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x45B9BC, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x45BDE8, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x45C1AD, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x45C7FD, "\x0F\x1F\x00", 3),
-            new HookCtx((void*)0x45CE94, "\x0F\x1F\x00", 3) } };
+            new HookCtx(0x457860, "\x0F\x1F\x00", 3),
+            new HookCtx(0x457F48, "\x0F\x1F\x00", 3),
+            new HookCtx(0x458FCB, "\x0F\x1F\x00", 3),
+            new HookCtx(0x45946A, "\x0F\x1F\x00", 3),
+            new HookCtx(0x459608, "\x0F\x1F\x00", 3),
+            new HookCtx(0x4597A6, "\x0F\x1F\x00", 3),
+            new HookCtx(0x459950, "\x0F\x1F\x00", 3),
+            new HookCtx(0x459EFF, "\x0F\x1F\x00", 3),
+            new HookCtx(0x459F4A, "\x0F\x1F\x00", 3),
+            new HookCtx(0x459F94, "\x0F\x1F\x00", 3),
+            new HookCtx(0x459FF4, "\x0F\x1F\x00", 3),
+            new HookCtx(0x45A5E3, "\x0F\x1F\x00", 3),
+            new HookCtx(0x45B4EA, "\x0F\x1F\x00", 3),
+            new HookCtx(0x45B9BC, "\x0F\x1F\x00", 3),
+            new HookCtx(0x45BDE8, "\x0F\x1F\x00", 3),
+            new HookCtx(0x45C1AD, "\x0F\x1F\x00", 3),
+            new HookCtx(0x45C7FD, "\x0F\x1F\x00", 3),
+            new HookCtx(0x45CE94, "\x0F\x1F\x00", 3) } };
         Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F3", VK_F3, {
-            new HookCtx((void*)0x41894d, "\xeb", 1),
-            new HookCtx((void*)0x4215C8, "\x90", 1) } };
+            new HookCtx(0x41894d, "\xeb", 1),
+            new HookCtx(0x4215C8, "\x90", 1) } };
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
     };
@@ -218,15 +218,15 @@ namespace TH143 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th143_render_1, (void*)0x46ed3f)
+    EHOOK_DY(th143_render_1, 0x46ed3f)
     {
         THGuiUpdate();
     }
-    EHOOK_DY(th143_render_2, (void*)0x46f14f)
+    EHOOK_DY(th143_render_2, 0x46f14f)
     {
         THGuiUpdate();
     }
-    EHOOK_DY(th143_render_3, (void*)0x46f2ee)
+    EHOOK_DY(th143_render_3, 0x46f2ee)
     {
         THGuiUpdate();
     }
@@ -255,14 +255,14 @@ namespace TH143 {
         s.th143_gui_init_1.Disable();
         s.th143_gui_init_2.Disable();
     }
-    PATCH_DY(th143_startup_1, (void*)0x45ef95, "\xeb", 1);
-    PATCH_DY(th143_startup_2, (void*)0x45fbaf, "\xeb", 1);
-    EHOOK_DY(th143_gui_init_1, (void*)0x45fd77)
+    PATCH_DY(th143_startup_1, 0x45ef95, "\xeb", 1);
+    PATCH_DY(th143_startup_2, 0x45fbaf, "\xeb", 1);
+    EHOOK_DY(th143_gui_init_1, 0x45fd77)
     {
         THGuiCreate();
         THInitHookDisable();
     }
-    EHOOK_DY(th143_gui_init_2, (void*)0x46fc6b)
+    EHOOK_DY(th143_gui_init_2, 0x46fc6b)
     {
         THGuiCreate();
         THInitHookDisable();

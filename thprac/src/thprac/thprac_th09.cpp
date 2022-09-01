@@ -2,7 +2,7 @@
 
 namespace THPrac {
 namespace TH09 {
-    PATCH_ST(th09_ranklock, (void*)0x41ac7f, "\xEB", 1);
+    PATCH_ST(th09_ranklock, 0x41ac7f, "\xEB", 1);
 
     class TH09Tools : public Gui::GameGuiWnd {
         TH09Tools() {
@@ -247,7 +247,7 @@ namespace TH09 {
         }
     };
 
-    PATCH_ST(th09_disable_map_select, (void*)0x424671, "\xC2\x04\x00", 3);
+    PATCH_ST(th09_disable_map_select, 0x424671, "\xC2\x04\x00", 3);
 
     void th09_chargelock_bomb(PCONTEXT pCtx)
     {
@@ -268,98 +268,98 @@ namespace TH09 {
     }
 
     HOOKSET_DEFINE(TH09PracHook)
-    EHOOK_DY(th09_invincible, (void*)0x41e8ec)
+    EHOOK_DY(th09_invincible, 0x41e8ec)
     {
         TH09Tools& t = TH09Tools::singleton();
         uint32_t side = *(uint32_t*)(pCtx->Esi + 0x8);
         if ((side == 0 && t.invinc_p1) || (side == 1 && t.invinc_p2))
             pCtx->Eip = 0x41e8f1;
     }
-    EHOOK_DY(th09_infhealth, (void*)0x41e5fc)
+    EHOOK_DY(th09_infhealth, 0x41e5fc)
     {
         TH09Tools& t = TH09Tools::singleton();
         uint32_t side = *(uint32_t*)(pCtx->Esi + 0x8);
         if ((side == 0 && t.infhealth_p1) || (side == 1 && t.infhealth_p2))
             pCtx->Eip = 0x41e63c;
     }
-    EHOOK_DY(th09_cpu_lock_attack, (void*)0x404f80)
+    EHOOK_DY(th09_cpu_lock_attack, 0x404f80)
     {
         TH09Tools& t = TH09Tools::singleton();
         uint32_t side = *(uint32_t*)(pCtx->Esi - 0x1c);
         if ((side == 0 && t.cpu_lock_attack_p1) || (side == 1 && t.cpu_lock_attack_p2))
             pCtx->Eip = 0x404fe1;
     }
-    EHOOK_DY(th09_o_lily, (void*)0x41ad66)
+    EHOOK_DY(th09_o_lily, 0x41ad66)
     {
         if (!TH09Tools::singleton().o_lily) {
             pCtx->Eip = 0x41ae30;
         }
     }
-    EHOOK_DY(th09_o_fairy, (void*)0x40fd0e)
+    EHOOK_DY(th09_o_fairy, 0x40fd0e)
     {
         if (!TH09Tools::singleton().o_fairy) {
             pCtx->Eip = 0x40ff4d;
         }
     }
-    EHOOK_DY(th09_o_pellets_random, (void*)0x41d535)
+    EHOOK_DY(th09_o_pellets_random, 0x41d535)
     {
         if (!TH09Tools::singleton().o_pellets_random) {
             pCtx->Eip = 0x41d6dd;
         }
     }
-    EHOOK_DY(th09_o_pellets_rival, (void*)0x41e1a6)
+    EHOOK_DY(th09_o_pellets_rival, 0x41e1a6)
     {
         if (!TH09Tools::singleton().o_pellets_rival) {
             pCtx->Eip = 0x41e2c5;
         }
     }
-    EHOOK_DY(th09_o_large_bullets, (void*)0x41dd0d)
+    EHOOK_DY(th09_o_large_bullets, 0x41dd0d)
     {
         if (!TH09Tools::singleton().o_large_bullets) {
             pCtx->Eip = 0x41dea6;
         }
     }
-    EHOOK_DY(th09_o_spirits_random, (void*)0x41d3a4)
+    EHOOK_DY(th09_o_spirits_random, 0x41d3a4)
     {
         if (!TH09Tools::singleton().o_spirits_random) {
             pCtx->Eip = 0x41d526;
         }
     }
-    EHOOK_DY(th09_o_spirits_rival, (void*)0x4105d4)
+    EHOOK_DY(th09_o_spirits_rival, 0x4105d4)
     {
         if (!TH09Tools::singleton().o_spirits_rival) {
             pCtx->Eip = 0x41071d;
         }
     }
-    EHOOK_DY(th09_o_ex, (void*)0x41d389)
+    EHOOK_DY(th09_o_ex, 0x41d389)
     {
         if (!TH09Tools::singleton().o_ex) {
             pCtx->Eip = 0x41d38c;
         }
     }
-    EHOOK_DY(th09_o_lv2, (void*)0x441350)
+    EHOOK_DY(th09_o_lv2, 0x441350)
     {
         if (!TH09Tools::singleton().o_lv2) {
             pCtx->Eip = PopHelper32(pCtx);
         }
     }
-    EHOOK_DY(th09_o_lv3, (void*)0x4413d0)
+    EHOOK_DY(th09_o_lv3, 0x4413d0)
     {
         if (!TH09Tools::singleton().o_lv3) {
             pCtx->Eip = PopHelper32(pCtx);
         }
     }
-    EHOOK_DY(th09_o_boss, (void*)0x441420)
+    EHOOK_DY(th09_o_boss, 0x441420)
     {
         if (!TH09Tools::singleton().o_boss) {
             pCtx->Eip = PopHelper32(pCtx);
         }
     }
-    EHOOK_DY(th09_unpause, (void*)0x434ad8)
+    EHOOK_DY(th09_unpause, 0x434ad8)
     {
         ImGui::SetWindowFocus(NULL);
     }
-    EHOOK_DY(th09_game_end, (void*)0x41b82a)
+    EHOOK_DY(th09_game_end, 0x41b82a)
     {
         TH09Tools& t = TH09Tools::singleton();
         t.Close();
@@ -389,7 +389,7 @@ namespace TH09 {
         t.enabled = false;
         TH09PracHook::singleton().DisableAllHooks();
     }
-#define CHARGELOCK_BOMB(addr) EHOOK_DY(th09_chargelock_bomb_##addr, (void*)addr) { th09_chargelock_bomb(pCtx); }
+#define CHARGELOCK_BOMB(addr) EHOOK_DY(th09_chargelock_bomb_##addr, addr) { th09_chargelock_bomb(pCtx); }
     CHARGELOCK_BOMB(0x41ca86);
     CHARGELOCK_BOMB(0x41cb39);
     CHARGELOCK_BOMB(0x41cab9);
@@ -399,7 +399,7 @@ namespace TH09 {
     CHARGELOCK_BOMB(0x41e51c);
     CHARGELOCK_BOMB(0x41e5ac);
 #undef CHARGELOCK_BOMB
-#define CHARGELOCK_RET(addr) EHOOK_DY(th09_chargelock_ret_##addr, (void*)addr) { th09_chargelock_ret(pCtx); }
+#define CHARGELOCK_RET(addr) EHOOK_DY(th09_chargelock_ret_##addr, addr) { th09_chargelock_ret(pCtx); }
     CHARGELOCK_RET(0x41f310);
     CHARGELOCK_RET(0x41bc90);
 #undef CHARGELOCK_RET
@@ -539,7 +539,7 @@ namespace TH09 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th09_map_confirm, (void*)0x4263d5)
+    EHOOK_DY(th09_map_confirm, 0x4263d5)
     {
         THGuiPrac& g = THGuiPrac::singleton();
         if (g.IsClosed()) {
@@ -552,7 +552,7 @@ namespace TH09 {
             g.Close();
         }
     }
-    EHOOK_DY(th09_map_select_cancel, (void*)0x426507)
+    EHOOK_DY(th09_map_select_cancel, 0x426507)
     {
         THGuiPrac& g = THGuiPrac::singleton();
         if (g.IsOpen()) {
@@ -561,7 +561,7 @@ namespace TH09 {
             pCtx->Eip = 0x4266ad;
         }
     }
-    EHOOK_DY(th09_update, (void*)0x42c7b5)
+    EHOOK_DY(th09_update, 0x42c7b5)
     {
         GameGuiBegin(IMPL_WIN32_DX8);
 
@@ -581,11 +581,11 @@ namespace TH09 {
 
         GameGuiEnd(UpdateAdvOptWindow() || t.IsOpen() || p.IsOpen());
     }
-    EHOOK_DY(th09_render, (void*)0x42dd51)
+    EHOOK_DY(th09_render, 0x42dd51)
     {
         GameGuiRender(IMPL_WIN32_DX8);
     }
-    EHOOK_DY(th09_game_init, (void*)0x41b5c5)
+    EHOOK_DY(th09_game_init, 0x41b5c5)
     {
         THGuiPrac& g = THGuiPrac::singleton();
         if (g.allow && *g.mMode) {
@@ -607,7 +607,7 @@ namespace TH09 {
         }
         g.Close();
     }
-    EHOOK_DY(th09_gui_reinit, (void*)0x42e50f)
+    EHOOK_DY(th09_gui_reinit, 0x42e50f)
     {
         GameGuiInit(IMPL_WIN32_DX8, 0x4b3108, 0x4b30b0, 0x42d3d0,
             Gui::INGAGME_INPUT_GEN2, 0x4acf3a, 0x4acf38, 0,
@@ -636,17 +636,17 @@ namespace TH09 {
         s.th09_gui_init_1.Disable();
         s.th09_gui_init_2.Disable();
     }
-    EHOOK_DY(th09_gui_init_1, (void*)0x42a0c4)
+    EHOOK_DY(th09_gui_init_1, 0x42a0c4)
     {
         THGuiCreate();
         THInitHookDisable();
     }
-    EHOOK_DY(th09_gui_init_2, (void*)0x42e627)
+    EHOOK_DY(th09_gui_init_2, 0x42e627)
     {
         THGuiCreate();
         THInitHookDisable();
     }
-    PATCH_DY(th09_disable_mutex, (void*)0x42d928, "\xEB", 1);
+    PATCH_DY(th09_disable_mutex, 0x42d928, "\xEB", 1);
     HOOKSET_ENDDEF()
 }
 

@@ -67,12 +67,12 @@ namespace TH165 {
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtxPatch((void*)0x446a80, "\x01", 1) } };
+            new HookCtx(0x446a80, "\x01", 1) } };
         Gui::GuiHotKey mInfCharge { TH_INFCHARGE, "F2", VK_F2, {
-            new HookCtxPatch((void*)0x44c5f8, "\x90\x90", 2) } };
+            new HookCtx(0x44c5f8, "\x90\x90", 2) } };
     private:
         Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F3", VK_F3, {
-            new HookCtxPatch((void*)0x419a78, "\xeb\x63", 2) } };
+            new HookCtx(0x419a78, "\xeb\x63", 2) } };
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
@@ -202,7 +202,7 @@ namespace TH165 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th165_restart, (void*)0x43cd00)
+    EHOOK_DY(th165_restart, 0x43cd00)
     {
         auto s1 = pCtx->Esp + 0x14;
         auto s2 = pCtx->Edi + 0x2bc;
@@ -242,15 +242,15 @@ namespace TH165 {
 
         pCtx->Eip = 0x43cd31;
     }
-    EHOOK_DY(th165_render_1, (void*)0x46038d)
+    EHOOK_DY(th165_render_1, 0x46038d)
     {
         THGuiUpdate();
     }
-    EHOOK_DY(th165_render_2, (void*)0x460461)
+    EHOOK_DY(th165_render_2, 0x460461)
     {
         THGuiUpdate();
     }
-    EHOOK_DY(th165_render_3, (void*)0x4610aa)
+    EHOOK_DY(th165_render_3, 0x4610aa)
     {
         THGuiUpdate();
     }
@@ -279,14 +279,14 @@ namespace TH165 {
         s.th165_gui_init_1.Disable();
         s.th165_gui_init_2.Disable();
     }
-    PATCH_DY(th165_startup_1, (void*)0x4520cf, "\x90\x90", 2);
-    PATCH_DY(th165_startup_2, (void*)0x452fd1, "\xeb", 1);
-    EHOOK_DY(th165_gui_init_1, (void*)0x453218)
+    PATCH_DY(th165_startup_1, 0x4520cf, "\x90\x90", 2);
+    PATCH_DY(th165_startup_2, 0x452fd1, "\xeb", 1);
+    EHOOK_DY(th165_gui_init_1, 0x453218)
     {
         THGuiCreate();
         THInitHookDisable();
     }
-    EHOOK_DY(th165_gui_init_2, (void*)0x461b27)
+    EHOOK_DY(th165_gui_init_2, 0x461b27)
     {
         THGuiCreate();
         THInitHookDisable();

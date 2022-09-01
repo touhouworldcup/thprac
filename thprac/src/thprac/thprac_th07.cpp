@@ -528,32 +528,32 @@ namespace TH07 {
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtxPatch((void*)0x43Ee14, "\x03", 1) } };
+            new HookCtx(0x43Ee14, "\x03", 1) } };
         Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtxPatch((void*)0x44116B, "\x00", 1) } };
+            new HookCtx(0x44116B, "\x00", 1) } };
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
-            new HookCtxPatch((void*)0x440BC7, "\x00", 1) } };
+            new HookCtx(0x440BC7, "\x00", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
-            new HookCtxPatch((void*)0x42F02B, "\xeb\x16", 2),
-            new HookCtxPatch((void*)0x440DD3, "\x00", 1) } };
+            new HookCtx(0x42F02B, "\xeb\x16", 2),
+            new HookCtx(0x440DD3, "\x00", 1) } };
         Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
-            new HookCtxPatch((void*)0x417726, "\xeb", 1),
-            new HookCtxPatch((void*)0x421F91, "\xeb", 1) } };
+            new HookCtx(0x417726, "\xeb", 1),
+            new HookCtx(0x421F91, "\xeb", 1) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
-            new HookCtxPatch((void*)0x440D2C, "\xff", 1),
-            new HookCtxPatch((void*)0x440D35, "\x66\xC7\x05\x4C\x9E\x4B\x00\x02", 8),
-            new HookCtxPatch((void*)0x440B8E, "\x54", 1) } };
+            new HookCtx(0x440D2C, "\xff", 1),
+            new HookCtx(0x440D35, "\x66\xC7\x05\x4C\x9E\x4B\x00\x02", 8),
+            new HookCtx(0x440B8E, "\x54", 1) } };
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
     };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
-        EHOOK_ST(th07_all_clear_bonus_1, (void*)0x42b3d2)
+        EHOOK_ST(th07_all_clear_bonus_1, 0x42b3d2)
         {
             pCtx->Eip = 0x42b3d6;
         }
-        EHOOK_ST(th07_all_clear_bonus_2, (void*)0x4280b7)
+        EHOOK_ST(th07_all_clear_bonus_2, 0x4280b7)
         {
             pCtx->Eip = 0x4280bf;
         }
@@ -1754,8 +1754,8 @@ namespace TH07 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    PATCH_DY(th07_reacquire_input, (void*)0x430f03, "\x00\x00\x00\x00\x74", 5);
-    EHOOK_DY(th07_everlasting_bgm, (void*)0x44d2f0)
+    PATCH_DY(th07_reacquire_input, 0x430f03, "\x00\x00\x00\x00\x74", 5);
+    EHOOK_DY(th07_everlasting_bgm, 0x44d2f0)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
@@ -1781,11 +1781,11 @@ namespace TH07 {
             pCtx->Eip = 0x44d3ce;
         }
     }
-    EHOOK_DY(th07_prac_menu_1, (void*)0x45a214)
+    EHOOK_DY(th07_prac_menu_1, 0x45a214)
     {
         THGuiPrac::singleton().State(1);
     }
-    EHOOK_DY(th07_prac_menu_3, (void*)0x45a65d)
+    EHOOK_DY(th07_prac_menu_3, 0x45a65d)
     {
         THGuiPrac::singleton().State(3);
         *((int32_t*)0x62f85c) = thPracParam.stage;
@@ -1794,23 +1794,23 @@ namespace TH07 {
         else if (thPracParam.stage == 7)
             *((int32_t*)0x626280) = 5;
     }
-    EHOOK_DY(th07_prac_menu_4, (void*)0x45a6d4)
+    EHOOK_DY(th07_prac_menu_4, 0x45a6d4)
     {
         THGuiPrac::singleton().State(4);
     }
-    EHOOK_DY(th07_rep_menu_1, (void*)0x45ac43)
+    EHOOK_DY(th07_rep_menu_1, 0x45ac43)
     {
         THGuiRep::singleton().State(1);
     }
-    EHOOK_DY(th07_rep_menu_2, (void*)0x45af96)
+    EHOOK_DY(th07_rep_menu_2, 0x45af96)
     {
         THGuiRep::singleton().State(2);
     }
-    EHOOK_DY(th07_rep_menu_3, (void*)0x45b2c1)
+    EHOOK_DY(th07_rep_menu_3, 0x45b2c1)
     {
         THGuiRep::singleton().State(3);
     }
-    EHOOK_DY(th07_patch_main, (void*)0x42f2e3)
+    EHOOK_DY(th07_patch_main, 0x42f2e3)
     {
         th07_rb::GetHook().Disable();
         if (thPracParam.mode == 1) {
@@ -1860,21 +1860,21 @@ namespace TH07 {
         }
         thPracParam._playLock = true;
     }
-    EHOOK_DY(th07_disable_title, (void*)0x42956b)
+    EHOOK_DY(th07_disable_title, 0x42956b)
     {
         if (thPracParam.mode == 1 && thPracParam.section) {
             pCtx->Esp += 0xC;
             pCtx->Eip = 0x429570;
         }
     }
-    EHOOK_DY(th07_fake_shot, (void*)0x40e6ba)
+    EHOOK_DY(th07_fake_shot, 0x40e6ba)
     {
         if (thFakeShot != -1) {
             pCtx->Eax = thFakeShot;
             pCtx->Eip = 0x40eaca;
         }
     }
-    EHOOK_DY(th07_bgm, (void*)0x42f206)
+    EHOOK_DY(th07_bgm, 0x42f206)
     {
         if (thPracParam.mode == 1 && thPracParam.section) {
             if (thPracParam.stage == 5) {
@@ -1903,36 +1903,36 @@ namespace TH07 {
 
         }
     }
-    EHOOK_DY(th07_bgm_st6_1, (void*)0x427eda)
+    EHOOK_DY(th07_bgm_st6_1, 0x427eda)
     {
         if (thPracParam.mode == 1 && thPracParam.section) {
             pCtx->Eip = 0x427efa;
         }
     }
-    EHOOK_DY(th07_bgm_st6_2, (void*)0x42d9a5)
+    EHOOK_DY(th07_bgm_st6_2, 0x42d9a5)
     {
         if (thPracParam.mode == 1 && thPracParam.section) {
             pCtx->Eip = 0x42d9b1;
         }
     }
-    EHOOK_DY(th07_bgm_st6_3, (void*)0x40348a)
+    EHOOK_DY(th07_bgm_st6_3, 0x40348a)
     {
         if (thPracParam.mode == 1 && thPracParam.section) {
             pCtx->Eip = 0x403496;
         }
     }
-    EHOOK_DY(th07_save_replay, (void*)0x4443fd)
+    EHOOK_DY(th07_save_replay, 0x4443fd)
     {
         char* rep_name = *(char**)(pCtx->Ebp - 0x134);
         if (thPracParam.mode)
             THSaveReplay(rep_name);
     }
-    PATCH_DY(th07_disable_prac_menu1, (void*)0x45b9ea, "\x90\x90\x90\x90\x90", 5);
-    PATCH_DY(th07_disable_prac_menu2, (void*)0x45bb1c, "\x90\x90\x90\x90\x90", 5);
-    PATCH_DY(th07_prac_menu_key1, (void*)0x45a610, "\x01\x00\x00\x00", 4);
-    PATCH_DY(th07_prac_menu_key2, (void*)0x45a624, "\x01\x00\x00\x00", 4);
-    PATCH_DY(th07_prac_menu_key3, (void*)0x45a631, "\x01\x00\x00\x00", 4);
-    EHOOK_DY(th07_update, (void*)0x42fdf8)
+    PATCH_DY(th07_disable_prac_menu1, 0x45b9ea, "\x90\x90\x90\x90\x90", 5);
+    PATCH_DY(th07_disable_prac_menu2, 0x45bb1c, "\x90\x90\x90\x90\x90", 5);
+    PATCH_DY(th07_prac_menu_key1, 0x45a610, "\x01\x00\x00\x00", 4);
+    PATCH_DY(th07_prac_menu_key2, 0x45a624, "\x01\x00\x00\x00", 4);
+    PATCH_DY(th07_prac_menu_key3, 0x45a631, "\x01\x00\x00\x00", 4);
+    EHOOK_DY(th07_update, 0x42fdf8)
     {
         GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
 
@@ -1944,7 +1944,7 @@ namespace TH07 {
 
         GameGuiEnd(drawCursor);
     }
-    EHOOK_DY(th07_render, (void*)0x42feb9)
+    EHOOK_DY(th07_render, 0x42feb9)
     {
         GameGuiRender(IMPL_WIN32_DX8);
         if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
@@ -1978,18 +1978,18 @@ namespace TH07 {
         s.th07_gui_init_1.Disable();
         s.th07_gui_init_2.Disable();
     }
-    PATCH_DY(th07_disable_dataver, (void*)0x404fe0, "\x33\xc0\xc3", 3);
-    PATCH_DY(th07_disable_demo, (void*)0x455a9a, "\xff\xff\xff\x7f", 4);
-    EHOOK_DY(th07_disable_mutex, (void*)0x435bff)
+    PATCH_DY(th07_disable_dataver, 0x404fe0, "\x33\xc0\xc3", 3);
+    PATCH_DY(th07_disable_demo, 0x455a9a, "\xff\xff\xff\x7f", 4);
+    EHOOK_DY(th07_disable_mutex, 0x435bff)
     {
         pCtx->Eip = 0x435c1b;
     }
-    EHOOK_DY(th07_gui_init_1, (void*)0x45599d)
+    EHOOK_DY(th07_gui_init_1, 0x45599d)
     {
         THGuiCreate();
         THInitHookDisable();
     }
-    EHOOK_DY(th07_gui_init_2, (void*)0x4351ac)
+    EHOOK_DY(th07_gui_init_2, 0x4351ac)
     {
         THGuiCreate();
         THInitHookDisable();

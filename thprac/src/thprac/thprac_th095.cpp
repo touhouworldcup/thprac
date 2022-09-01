@@ -69,21 +69,21 @@ namespace TH095 {
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtxPatch((void*)0x4306DE, "\x01", 1),
-            new HookCtxPatch((void*)0x4307BB, "\x80", 1),
-            new HookCtxPatch((void*)0x43070d, "\x83\xc4\x0c\x90\x90", 5) } };
+            new HookCtx(0x4306DE, "\x01", 1),
+            new HookCtx(0x4307BB, "\x80", 1),
+            new HookCtx(0x43070d, "\x83\xc4\x0c\x90\x90", 5) } };
         Gui::GuiHotKey mInfCharge { TH_INFCHARGE, "F2", VK_F2, {
-            new HookCtxPatch((void*)0x433EE2, "\x00", 1) } };
+            new HookCtx(0x433EE2, "\x00", 1) } };
 
     public:
         Gui::GuiHotKey mFocusLockOn { TH_COERCIVE, "F3", VK_F3, {
-            new HookCtxPatch((void*)0x432ee4, "\x90\x90\x90\x90\x90\x90", 6),
-            new HookCtxPatch((void*)0x431cf2, "\x90\x90\x90\x90\x90\x90", 6),
-            new HookCtxPatch((void*)0x432f7e, "\x00", 1) } };
+            new HookCtx(0x432ee4, "\x90\x90\x90\x90\x90\x90", 6),
+            new HookCtx(0x431cf2, "\x90\x90\x90\x90\x90\x90", 6),
+            new HookCtx(0x432f7e, "\x00", 1) } };
 
     private:
         Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4, {
-            new HookCtxPatch((void*)0x418317, "\x2E\xE9", 2) } };
+            new HookCtx(0x418317, "\x2E\xE9", 2) } };
 
     public:
         Gui::GuiHotKey mElBgm {
@@ -214,7 +214,7 @@ namespace TH095 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th095_homing, (void*)0x40498e)
+    EHOOK_DY(th095_homing, 0x40498e)
     {
         float* view_pos = (float*)pCtx->Edx;
         float* crosshair_pos = *(float**)(pCtx->Esp + 0x90);
@@ -225,7 +225,7 @@ namespace TH095 {
             crosshair_pos[2] = view_pos[2] = boss_pos[2];
         }
     }
-    EHOOK_DY(th095_render, (void*)0x4208d6)
+    EHOOK_DY(th095_render, 0x4208d6)
     {
         THGuiUpdate();
     }
@@ -254,12 +254,12 @@ namespace TH095 {
         s.th095_gui_init_1.Disable();
         s.th095_gui_init_2.Disable();
     }
-    EHOOK_DY(th095_gui_init_1, (void*)0x4470a1)
+    EHOOK_DY(th095_gui_init_1, 0x4470a1)
     {
         THGuiCreate();
         THInitHookDisable();
     }
-    EHOOK_DY(th095_gui_init_2, (void*)0x42137e)
+    EHOOK_DY(th095_gui_init_2, 0x42137e)
     {
         THGuiCreate();
         THInitHookDisable();

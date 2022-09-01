@@ -454,21 +454,21 @@ namespace Alcostg {
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtxPatch((void*)0x426eb5, "\x01", 1),
-            new HookCtxPatch((void*)0x425cfa, "\xeb", 1),
-            new HookCtxPatch((void*)0x426f19, "\x83\xc4\x08\x90\x90", 5) } };
+            new HookCtx(0x426eb5, "\x01", 1),
+            new HookCtx(0x425cfa, "\xeb", 1),
+            new HookCtx(0x426f19, "\x83\xc4\x08\x90\x90", 5) } };
         Gui::GuiHotKey mFreeMiss { ALCOSTG_FREE_MISS, "F2", VK_F2, {
-            new HookCtxPatch((void*)0x42722c, "\x83\xc4\x04\x90\x90", 5),
-            new HookCtxPatch((void*)0x426c2b, "\xeb\x60", 2) } };
+            new HookCtx(0x42722c, "\x83\xc4\x04\x90\x90", 5),
+            new HookCtx(0x426c2b, "\xeb\x60", 2) } };
         Gui::GuiHotKey mFreeBomb { ALCOSTG_FREE_BOMB, "F3", VK_F3, {
-            new HookCtxPatch((void*)0x427310, "\xc3", 1) } };
+            new HookCtx(0x427310, "\xc3", 1) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F4", VK_F4, {
-            new HookCtxPatch((void*)0x425dee, "\xc6", 1) } };
+            new HookCtx(0x425dee, "\xc6", 1) } };
         Gui::GuiHotKey mLockTimeBar { ALCOSTG_LOCK_TIME_BAR, "F5", VK_F5, {
-            new HookCtxPatch((void*)0x419510, "\xc3", 1) } };
+            new HookCtx(0x419510, "\xc3", 1) } };
         Gui::GuiHotKey mLockTimeBoss { ALCOSTG_LOCK_TIME_BOSS, "F6", VK_F6, {
-            new HookCtxPatch((void*)0x4094b9, "\xeb", 1),
-            new HookCtxPatch((void*)0x40ed74, "\x90", 1) } };
+            new HookCtx(0x4094b9, "\xeb", 1),
+            new HookCtx(0x40ed74, "\x90", 1) } };
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
@@ -967,12 +967,12 @@ namespace Alcostg {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(alcostg_on_restart, (void*)0x4187a8)
+    EHOOK_DY(alcostg_on_restart, 0x4187a8)
     {
         thRestart = true;
         thLock = thHardLock;
     }
-    EHOOK_DY(alcostg_everlasting_bgm, (void*)0x43a580)
+    EHOOK_DY(alcostg_everlasting_bgm, 0x43a580)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
@@ -1007,7 +1007,7 @@ namespace Alcostg {
             pCtx->Eip = 0x43a5e5;
         } 
     }
-    EHOOK_DY(alcostg_param_reset, (void*)0x42c96b)
+    EHOOK_DY(alcostg_param_reset, 0x42c96b)
     {
         thPracParam.Reset();
         AlcostgBeer::Reset();
@@ -1015,26 +1015,26 @@ namespace Alcostg {
         thHardLock = false;
         thRestart = false;
     }
-    EHOOK_DY(alcostg_prac_menu_1, (void*)0x42cb0c)
+    EHOOK_DY(alcostg_prac_menu_1, 0x42cb0c)
     {
         if (THGuiPrac::singleton().State()) {
         } else {
             pCtx->Eip = 0x42cc50;
         }
     }
-    EHOOK_DY(alcostg_prac_menu_2, (void*)0x42ca20)
+    EHOOK_DY(alcostg_prac_menu_2, 0x42ca20)
     {
         if (THGuiPrac::singleton().mState) {
             pCtx->Eip = 0x42cb0c;
         }
     }
-    EHOOK_DY(alcostg_prac_menu_enter, (void*)0x42cbbd)
+    EHOOK_DY(alcostg_prac_menu_enter, 0x42cbbd)
     {
         if (thPracParam.mode == 1) {
             pCtx->Edx = thPracParam.stage + 1;
         }
     }
-    EHOOK_DY(alcostg_patch_main, (void*)0x4186ff)
+    EHOOK_DY(alcostg_patch_main, 0x4186ff)
     {
         AlcostgBeer::Reset();
         if (!thLock && thPracParam.mode == 1) {
@@ -1057,44 +1057,44 @@ namespace Alcostg {
             THPatch(ecl, (th_sections_t)thPracParam.section);
         }
     }
-    EHOOK_DY(alcostg_logo, (void*)0x414de7)
+    EHOOK_DY(alcostg_logo, 0x414de7)
     {
         if (!thLock && thPracParam.mode == 1 && (thPracParam.section || thPracParam.progress)) {
             pCtx->Eip = 0x414e3b;
         }
     }
-    EHOOK_DY(alcostg_bgm, (void*)0x418e8a)
+    EHOOK_DY(alcostg_bgm, 0x418e8a)
     {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x418e8c;
         } 
     }
-    EHOOK_DY(alcostg_rep_save, (void*)0x429d8b)
+    EHOOK_DY(alcostg_rep_save, 0x429d8b)
     {
         char* repName = (char*)(pCtx->Esp + 0x1c);
         if (thPracParam.mode)
             THSaveReplay(repName);
     }
-    EHOOK_DY(alcostg_rep_menu_1, (void*)0x42f081)
+    EHOOK_DY(alcostg_rep_menu_1, 0x42f081)
     {
         THGuiRep::singleton().State(1);
     }
-    EHOOK_DY(alcostg_rep_menu_2, (void*)0x42f13c)
+    EHOOK_DY(alcostg_rep_menu_2, 0x42f13c)
     {
         THGuiRep::singleton().State(2);
     }
-    EHOOK_DY(alcostg_rep_menu_3, (void*)0x42f287)
+    EHOOK_DY(alcostg_rep_menu_3, 0x42f287)
     {
         THGuiRep::singleton().State(3);
     }
-    EHOOK_DY(alcostg_rep_menu_enter, (void*)0x42f2de)
+    EHOOK_DY(alcostg_rep_menu_enter, 0x42f2de)
     {
         int stage = pCtx->Edx;
         if (stage != thPracParam.stage)
             thHardLock = thLock = true;
     }
-    EHOOK_DY(alcostg_update, (void*)0x445eee)
+    EHOOK_DY(alcostg_update, 0x445eee)
     {
         GameGuiBegin(IMPL_WIN32_DX9);
 
@@ -1105,7 +1105,7 @@ namespace Alcostg {
 
         GameGuiEnd(UpdateAdvOptWindow() || THGuiPrac::singleton().IsOpen());
     }
-    EHOOK_DY(alcostg_render, (void*)0x43564a)
+    EHOOK_DY(alcostg_render, 0x43564a)
     {
         GameGuiRender(IMPL_WIN32_DX9);
     }
@@ -1136,13 +1136,13 @@ namespace Alcostg {
         s.alcostg_gui_init_1.Disable();
         s.alcostg_gui_init_2.Disable();
     }
-    PATCH_DY(alcostg_startup_1, (void*)0x42c281, "\xeb", 1);
-    EHOOK_DY(alcostg_gui_init_1, (void*)0x42ca17)
+    PATCH_DY(alcostg_startup_1, 0x42c281, "\xeb", 1);
+    EHOOK_DY(alcostg_gui_init_1, 0x42ca17)
     {
         THGuiCreate();
         THInitHookDisable();
     }
-    EHOOK_DY(alcostg_gui_init_2, (void*)0x435e66)
+    EHOOK_DY(alcostg_gui_init_2, 0x435e66)
     {
         THGuiCreate();
         THInitHookDisable();

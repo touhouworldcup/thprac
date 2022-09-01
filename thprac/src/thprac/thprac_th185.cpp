@@ -80,18 +80,18 @@ namespace TH185 {
         }
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtxPatch((void*)0x4635a5, "\x01", 1) } };
+            new HookCtx(0x4635a5, "\x01", 1) } };
         Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtxPatch((void*)0x40aec3, "\x66\x0f\x1f\x44\x00\x00", 6),
-            new HookCtxPatch((void*)0x463281, "\x00", 1) } };
+            new HookCtx(0x40aec3, "\x66\x0f\x1f\x44\x00\x00", 6),
+            new HookCtx(0x463281, "\x00", 1) } };
         Gui::GuiHotKey mInfBMoney { TH185_INF_BMONEY, "F3", VK_F3, {
-            new HookCtxPatch((void*)0x40ed5f, "\x66\x2e\x0f\x1f\x84\x00\x00\x00\x00\x00\x66\x2e\x0f\x1f\x84\x00\x00\x00\x00\x00", 20),
-            new HookCtxPatch((void*)0x41ee2d, "\x66\x0f\x1f\x44\x00\x00", 6) } };
+            new HookCtx(0x40ed5f, "\x66\x2e\x0f\x1f\x84\x00\x00\x00\x00\x00\x66\x2e\x0f\x1f\x84\x00\x00\x00\x00\x00", 20),
+            new HookCtx(0x41ee2d, "\x66\x0f\x1f\x44\x00\x00", 6) } };
         Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4, {
-            new HookCtxPatch((void*)0x434c85, "\x66\x0f\x1f\x44\x00\x00", 6),
-            new HookCtxPatch((void*)0x436E38, "\x0f\x1f\x84\x00\x00\x00\x00\x00\x0f\x1f\x84\x00\x00\x00\x00\x00\x0f\x1f\x84\x00\x00\x00\x00\x00", 24) } };
+            new HookCtx(0x434c85, "\x66\x0f\x1f\x44\x00\x00", 6),
+            new HookCtx(0x436E38, "\x0f\x1f\x84\x00\x00\x00\x00\x00\x0f\x1f\x84\x00\x00\x00\x00\x00\x0f\x1f\x84\x00\x00\x00\x00\x00", 24) } };
         Gui::GuiHotKey mZeroCD { TH18_ZERO_CD, "F5", VK_F5, {
-            new HookCtxHook((void*)0x462146, [](PCONTEXT pCtx) {
+            new HookCtx(0x462146, [](PCONTEXT pCtx) {
                 struct Timer {
                     int32_t prev;
                     int32_t cur;
@@ -457,7 +457,7 @@ namespace TH185 {
         return advOptWnd->IsOpen();
     }
 
-    PATCH_ST(th185_prac_disable_arrows, (void*)0x46d39f, "\xe9\xcd\x00\x00\x00", 5);
+    PATCH_ST(th185_prac_disable_arrows, 0x46d39f, "\xe9\xcd\x00\x00\x00", 5);
     EHOOK_G1(th185_prac_leave, 0x46d481)
     {
         th185_prac_leave::GetHook().Disable();
@@ -467,7 +467,7 @@ namespace TH185 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th185_gui_update, (void*)0x4013dd)
+    EHOOK_DY(th185_gui_update, 0x4013dd)
     {
         GameGuiBegin(IMPL_WIN32_DX9);
 
@@ -477,12 +477,12 @@ namespace TH185 {
 
         GameGuiEnd(UpdateAdvOptWindow());
     }
-    EHOOK_DY(th185_gui_render, (void*)0x4014fa)
+    EHOOK_DY(th185_gui_render, 0x4014fa)
     {
         GameGuiRender(IMPL_WIN32_DX9);
     }
 
-    EHOOK_DY(th185_patch_main, (void*)0x448fb2)
+    EHOOK_DY(th185_patch_main, 0x448fb2)
     {
         // 0x4d1024 = phase
 
@@ -494,14 +494,14 @@ namespace TH185 {
             StageWarpsApply(stages[thPracParam.stage], thPracParam.warp, 0);
         }
     }
-    EHOOK_DY(th185_force_wave, (void*)0x43d156)
+    EHOOK_DY(th185_force_wave, 0x43d156)
     {
         if (thPracParam.force_wave.size()) {
             pCtx->Esi = thPracParam.force_wave.front();
             thPracParam.force_wave.pop();
         }
     }
-    EHOOK_DY(th185_prac_confirm, (void*)0x46d523)
+    EHOOK_DY(th185_prac_confirm, 0x46d523)
     {
         auto& p = THGuiPrac::singleton();
         if (p.IsOpen()) {
@@ -515,7 +515,7 @@ namespace TH185 {
             pCtx->Eip = 0x46d9c0;
         }
     }
-    PATCH_DY(th185_disable_topmost, (void*)0x4747ac, "\x00", 1);
+    PATCH_DY(th185_disable_topmost, 0x4747ac, "\x00", 1);
     HOOKSET_ENDDEF()
 
     HOOKSET_DEFINE(THInitHook)
@@ -545,12 +545,12 @@ namespace TH185 {
         s.th185_gui_init_2.Disable();
     }
 
-    EHOOK_DY(th185_gui_init_1, (void*)0x46ce39)
+    EHOOK_DY(th185_gui_init_1, 0x46ce39)
     {
         THGuiCreate();
         THInitHookDisable();
     }
-    EHOOK_DY(th185_gui_init_2, (void*)0x476580)
+    EHOOK_DY(th185_gui_init_2, 0x476580)
     {
         THGuiCreate();
         THInitHookDisable();

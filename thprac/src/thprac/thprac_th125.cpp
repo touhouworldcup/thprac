@@ -69,22 +69,22 @@ namespace TH125 {
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtxPatch((void*)0x436C2C, "\x01", 1),
-            new HookCtxPatch((void*)0x436DF8, "\xeb\x19", 2),
-            new HookCtxPatch((void*)0x436c76, "\x83\xc4\x10\x90\x90", 5) } };
+            new HookCtx(0x436C2C, "\x01", 1),
+            new HookCtx(0x436DF8, "\xeb\x19", 2),
+            new HookCtx(0x436c76, "\x83\xc4\x10\x90\x90", 5) } };
         Gui::GuiHotKey mInfCharge { TH_INFCHARGE, "F2", VK_F2, {
-            new HookCtxPatch((void*)0x43A0EA, "\x00", 1) } };
+            new HookCtx(0x43A0EA, "\x00", 1) } };
 
     public:
         Gui::GuiHotKey mFocusLockOn { TH_COERCIVE, "F3", VK_F3, {
-            new HookCtxPatch((void*)0x438eb9, "\x90\x90\x90\x90\x90\x90", 6),
-            new HookCtxPatch((void*)0x438ec9, "\x90\x90\x90\x90\x90\x90", 6),
-            new HookCtxPatch((void*)0x4379c5, "\x90\x90\x90\x90\x90\x90", 6),
-            new HookCtxPatch((void*)0x438f66, "\x00", 1) } };
+            new HookCtx(0x438eb9, "\x90\x90\x90\x90\x90\x90", 6),
+            new HookCtx(0x438ec9, "\x90\x90\x90\x90\x90\x90", 6),
+            new HookCtx(0x4379c5, "\x90\x90\x90\x90\x90\x90", 6),
+            new HookCtx(0x438f66, "\x00", 1) } };
 
     private:
         Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4, {
-            new HookCtxPatch( (void*)0x41DEDA, "\xeb", 1) } };
+            new HookCtx(0x41DEDA, "\xeb", 1) } };
 
     public:
         Gui::GuiHotKey mElBgm {
@@ -222,7 +222,7 @@ namespace TH125 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th125_homing, (void*)0x438714)
+    EHOOK_DY(th125_homing, 0x438714)
     {
         float* crosshair_pos;
         float* boss_pos;
@@ -241,15 +241,15 @@ namespace TH125 {
         }
 
     }
-    EHOOK_DY(th125_render_1, (void*)0x44ee42)
+    EHOOK_DY(th125_render_1, 0x44ee42)
     {
         THGuiUpdate();
     }
-    EHOOK_DY(th125_render_2, (void*)0x44f255)
+    EHOOK_DY(th125_render_2, 0x44f255)
     {
         THGuiUpdate();
     }
-    EHOOK_DY(th125_render_3, (void*)0x44f3fd)
+    EHOOK_DY(th125_render_3, 0x44f3fd)
     {
         THGuiUpdate();
     }
@@ -278,14 +278,14 @@ namespace TH125 {
         s.th125_gui_init_1.Disable();
         s.th125_gui_init_2.Disable();
     }
-    PATCH_DY(th125_startup_1, (void*)0x440657, "\xeb", 1);
-    PATCH_DY(th125_startup_2, (void*)0x4418a6, "\xeb", 1);
-    EHOOK_DY(th125_gui_init_1, (void*)0x441905)
+    PATCH_DY(th125_startup_1, 0x440657, "\xeb", 1);
+    PATCH_DY(th125_startup_2, 0x4418a6, "\xeb", 1);
+    EHOOK_DY(th125_gui_init_1, 0x441905)
     {
         THGuiCreate();
         THInitHookDisable();
     }
-    EHOOK_DY(th125_gui_init_2, (void*)0x44ff39)
+    EHOOK_DY(th125_gui_init_2, 0x44ff39)
     {
         THGuiCreate();
         THInitHookDisable();
