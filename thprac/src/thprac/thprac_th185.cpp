@@ -25,8 +25,10 @@ namespace TH185 {
         int32_t difficulty;
 
         std::vector<unsigned int> warp;
-        std::queue<unsigned int> force_wave;
+        std::vector<unsigned int> force_wave;
         std::vector<unsigned int> additional_cards;
+        
+        size_t __waves_forced;
     };
     THPracParam thPracParam {};
 
@@ -158,9 +160,10 @@ namespace TH185 {
                 thPracParam.bulletMoney = *mBulletMoney;
                 thPracParam.force_wave = {};
                 thPracParam.additional_cards = {};
+                thPracParam.__waves_forced = 0;
 
                 for (auto w : mForceWave) {
-                    if (w) thPracParam.force_wave.push(w + 29);
+                    if (w) thPracParam.force_wave.push_back(w + 29);
                     else   break;
                 }
                 for (auto c : mAdditionalCards) {
@@ -705,13 +708,15 @@ namespace TH185 {
                 StageWarpsApply(stages[thPracParam.stage], thPracParam.warp, ThModern_ECLGetSub, GetMemContent(0x004d7af4, 0x4f34, 0x10c), 0);
             for (auto& c : thPracParam.additional_cards)
                 AddCard(c);
+
+            thPracParam.__waves_forced = 0;
         }
     }
     EHOOK_DY(th185_force_wave, 0x43d156)
     {
-        if (thPracParam.force_wave.size()) {
+        if (thPracParam.force_wave.size() > thPracParam.__waves_forced) {
             pCtx->Esi = thPracParam.force_wave.front();
-            thPracParam.force_wave.pop();
+            thPracParam.__waves_forced++;
         }
     }
     EHOOK_DY(th185_prac_confirm, 0x46d523)
