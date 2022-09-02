@@ -124,6 +124,7 @@ namespace TH185 {
         THGuiPrac() noexcept
         {
             *mMode = 1;
+            *mLife = 9;
 
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
