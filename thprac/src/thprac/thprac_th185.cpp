@@ -197,6 +197,114 @@ namespace TH185 {
             default:
                 break;
             }
+
+            stages = {};
+                        
+            for (size_t i = 0; i < 9; i++) {
+                stage_warps_t stage = {
+                    .label = "Progress",
+                    .type = stage_warps_t::TYPE_SLIDER,
+                };
+                switch (i) {
+                case 0:
+                    stage.section_param = {
+                        {
+                            .label = "Tutorial"
+                        },
+                        {
+                            .label = "Wave 1",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x188, .dest = 0x230 }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 2",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x188, .dest = 0x2fc }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x184, .bytes = { 2 } }
+                                } } 
+                            }
+                        },
+                        {
+                            .label = "Wave 3",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x188, .dest = 0x3b8 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x184, .bytes = { 3 } }
+                                } } 
+                            }
+                        },
+                        {
+                            .label = "Boss",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x188, .dest = 0x488 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x184, .bytes = { 4 } }
+                                } } 
+                            }
+                        }
+                    };
+                    stage.section_param[4].phases = {
+                        .label = "Attack",
+                        .type = stage_warps_t::TYPE_COMBO,
+                        .section_param = {
+                            {
+                                .label = "Dialog"
+                            },
+                            {
+                                .label = "Nonspell",
+                                .writes {
+                                    { "Boss01tBoss", {
+                                        { .off = 0x220, .bytes = { 0x00, 0x00, 0x24, 0x00 } }
+                                    } }
+                                }
+                            },
+                            {
+                                .label = "Beckon Sign \"Danmaku Business Boom\"",
+                                .writes {
+                                    { "Boss01tBoss", {
+                                        { .off = 0x220, .bytes = { 0x00, 0x00, 0x24, 0x00 } },
+                                        { .off = 0x1b0, .bytes = { 0x84, 0x03, 0x00, 0x00 } }
+                                    } }
+                                }
+                            }
+                        }
+                    };
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    break;
+                case 7:
+                    break;
+                case 8:
+                    break;
+                };
+                stages.push_back(stage);
+            }
         }
         virtual void OnContentUpdate() override
         {
