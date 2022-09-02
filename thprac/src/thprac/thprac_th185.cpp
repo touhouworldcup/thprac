@@ -697,6 +697,10 @@ namespace TH185 {
             *(int32_t*)(0x4d106c) = thPracParam.funds;
             *(int32_t*)(0x4d10bc) = thPracParam.life;
             *(int32_t*)(0x4d1038) = thPracParam.difficulty;
+            // I want additional cards to always appear in the same wave slot
+            // but ZUN never initializes this variable outside the ecl script
+            // therefore, I have to set it myself.
+            *(int32_t*)(0x4d1024) = 1;
             if (stages.size() > thPracParam.stage)
                 StageWarpsApply(stages[thPracParam.stage], thPracParam.warp, ThModern_ECLGetSub, GetMemContent(0x004d7af4, 0x4f34, 0x10c), 0);
             for (auto& c : thPracParam.additional_cards)
