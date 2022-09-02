@@ -8940,7 +8940,16 @@
 
       "glossary": {
           "TH185_BULLET_MONEY": [ "BMoney", "BMoney", "BMoney" ],
-          "TH185_INF_BMONEY": [ "Inf. BMoney", "Inf. BMoney", "Inf. BMoney" ]
+          "TH185_INF_BMONEY": [ "Inf. BMoney", "Inf. BMoney", "Inf. BMoney" ],
+
+          "TH185_DIFF_0": [ "", "Very Easy",   "" ],
+          "TH185_DIFF_1": [ "", "Easy",        "" ],
+          "TH185_DIFF_2": [ "", "Normal",      "" ],
+          "TH185_DIFF_3": [ "", "Little Hard", "" ],
+          "TH185_DIFF_4": [ "", "Hard",        "" ],
+          "TH185_DIFF_5": [ "", "Very Hard",   "" ],
+          "TH185_DIFF_6": [ "", "Lunatic",     "" ],
+          "TH185_DIFF_7": [ "", "Over Drive",  "" ],
       }
   }
 }

@@ -22,6 +22,7 @@ namespace TH185 {
         int32_t bulletMoney;
         int32_t funds;
         int32_t life;
+        int32_t difficulty;
 
         std::vector<unsigned int> warp;
         std::queue<unsigned int> force_wave;
@@ -152,6 +153,7 @@ namespace TH185 {
                 thPracParam.stage = mStage;
                 thPracParam.life = *mLife;
                 thPracParam.funds = *mFunds;
+                thPracParam.difficulty = *mDifficulty;
                 thPracParam.bulletMoney = *mBulletMoney;
                 thPracParam.force_wave = {};
 
@@ -439,6 +441,17 @@ namespace TH185 {
             }
         }
 
+        const char* difficulties[8] = {
+            "Very Easy",
+            "Easy",
+            "Normal",
+            "Little Hard",
+            "Hard",
+            "Very Hard",
+            "Lunatic",
+            "Over Drive"
+        };
+
         void PracticeMenu()
         {
             mMode();
@@ -449,7 +462,7 @@ namespace TH185 {
                 mLife();
                 mFunds();
                 mBulletMoney();
-
+                mDifficulty(difficulties[*mDifficulty]);
                 ForceWave(0);
             }
             // mNavFocus();
@@ -460,6 +473,7 @@ namespace TH185 {
         Gui::GuiDrag<int32_t, ImGuiDataType_S32> mBulletMoney { TH185_BULLET_MONEY, 0, INT_MAX };
         Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 9 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mFunds { TH18_FUNDS, 0, 999990, 1, 100000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mDifficulty { "Difficulty", 0, 7 };
         // Gui::GuiNavFocus mNavFocus { TH185_MARKET, TH_MODE, TH_WARP };
         std::vector<unsigned int> mWarp;
         std::vector<unsigned int> mForceWave = { 0 };
@@ -615,6 +629,7 @@ namespace TH185 {
             *(int32_t*)(0x4d1074) = thPracParam.bulletMoney;
             *(int32_t*)(0x4d106c) = thPracParam.funds;
             *(int32_t*)(0x4d10bc) = thPracParam.life;
+            *(int32_t*)(0x4d1038) = thPracParam.difficulty;
             if (stages.size() > thPracParam.stage)
                 StageWarpsApply(stages[thPracParam.stage], thPracParam.warp, ThModern_ECLGetSub, GetMemContent(0x004d7af4, 0x4f34, 0x10c), 0);
         }
