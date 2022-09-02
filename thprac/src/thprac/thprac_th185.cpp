@@ -17,7 +17,7 @@ namespace TH185 {
 
     struct THPracParam {
         int32_t mode;
-        int32_t stage;
+        uint32_t stage;
 
         int32_t bulletMoney;
         int32_t funds;
@@ -116,7 +116,9 @@ namespace TH185 {
             }) } };
     };
 
-    stage_warps_t stages[9] = {};
+    // If a mod somehow changes the amount of stages there are
+    // and increases it, I want to account for that
+    std::vector<stage_warps_t> stages = {};
 
     class THGuiPrac : public Gui::GameGuiWnd {
         THGuiPrac() noexcept
@@ -332,7 +334,8 @@ namespace TH185 {
         {
             mMode();
             if (*mMode == 1) {
-                StageWarpsRender(stages[mStage], mWarp, 0);
+                if (stages.size() > mStage)
+                    StageWarpsRender(stages[mStage], mWarp, 0);
                 
                 mLife();
                 mFunds();
@@ -503,7 +506,8 @@ namespace TH185 {
             *(int32_t*)(0x4d1074) = thPracParam.bulletMoney;
             *(int32_t*)(0x4d106c) = thPracParam.funds;
             *(int32_t*)(0x4d10bc) = thPracParam.life;
-            StageWarpsApply(stages[thPracParam.stage], thPracParam.warp, 0);
+            if (stages.size() > thPracParam.stage)
+                StageWarpsApply(stages[thPracParam.stage], thPracParam.warp, ThModern_ECLGetSub, GetMemContent(0x004d7af4, 0x4f34, 0x10c), 0);
         }
     }
     EHOOK_DY(th185_force_wave, 0x43d156)

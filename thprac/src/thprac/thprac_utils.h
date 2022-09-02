@@ -17,6 +17,7 @@
 #include <imgui.h>
 #include <implot.h>
 #include <memory>
+#include <optional>
 #pragma warning(push)
 #pragma warning(disable : 26451)
 #pragma warning(disable : 26495)
@@ -596,14 +597,7 @@ struct ecl_jump_t {
     uint32_t ecl_time;
 };
 
-struct stage_warps_t;
-
-struct section_param_t {
-    const char* label;
-    std::unordered_map<std::string, std::vector<ecl_jump_t>> jumps;
-    std::unordered_map<std::string, std::vector<ecl_write_t>> writes;
-    stage_warps_t* phases;
-};
+struct section_param_t;
 
 struct stage_warps_t {
     const char* label;
@@ -615,8 +609,19 @@ struct stage_warps_t {
     std::vector<section_param_t> section_param;
 };
 
+struct section_param_t {
+    const char* label;
+    std::unordered_map<std::string, std::vector<ecl_jump_t>> jumps;
+    std::unordered_map<std::string, std::vector<ecl_write_t>> writes;
+    std::optional<stage_warps_t> phases;
+};
+
+typedef uint8_t* ecl_get_sub_t(const char* name, uintptr_t user_param);
+
+uint8_t* ThModern_ECLGetSub(const char* name, uintptr_t param);
+
 void StageWarpsRender(stage_warps_t& warps, std::vector<unsigned int>& out_warp, size_t level);
-void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, size_t level);
+void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, ecl_get_sub_t* ecl_get_sub, uintptr_t ecl_get_sub_param, size_t level);
 #pragma endregion
 
 template <typename T>

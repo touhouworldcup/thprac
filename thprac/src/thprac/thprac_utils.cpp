@@ -1370,28 +1370,29 @@ void StageWarpsRender(stage_warps_t& warps, std::vector<unsigned int>& out_warp,
     }
 }
 
-void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, size_t level)
+uint8_t* ThModern_ECLGetSub(const char* name, uintptr_t param)
+{
+    struct ecl_sub_t {
+        const char* name;
+        uint8_t* data;
+    };
+    auto subs = (ecl_sub_t*)param;
+
+    while (strcmp(subs->name, name))
+        subs++;
+    return subs->data;
+};
+
+void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, ecl_get_sub_t* ECLGetSub, uintptr_t ecl_get_sub_param, size_t level)
 {
     if (!in_warp.size())
         return;
     auto& param = warps.section_param[in_warp[level]];
 
-    auto ECLGetSub = [](const char* name) -> uint8_t* {
-        struct ecl_sub_t {
-            const char* name;
-            uint8_t* data;
-        };
-        auto subs = (ecl_sub_t*)GetMemContent(0x004d7af4, 0x4f34, 0x10c);
-
-        while (strcmp(subs->name, name))
-            subs++;
-        return subs->data;
-    };
-
     // This entire block gives me the idea to convert everything to writes once there's a JSON
     // file. But for readability, as long as there is no JSON file, this block will have to stay
     for (auto& jumps : param.jumps) {
-        uint8_t* ecl = ECLGetSub(jumps.first.c_str());
+        uint8_t* ecl = ECLGetSub(jumps.first.c_str(), ecl_get_sub_param);
         for (auto& jmp : jumps.second) {
             ecl_write_t real_write;
             real_write.off = jmp.off;
@@ -1424,14 +1425,14 @@ void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, s
     }
 
     for (auto& writes : param.writes) {
-        uint8_t* ecl = ECLGetSub(writes.first.c_str());
+        uint8_t* ecl = ECLGetSub(writes.first.c_str(), ecl_get_sub_param);
         for (auto& write : writes.second) {
             write.apply(ecl);
         }
     }
 
     if (param.phases)
-        StageWarpsApply(*param.phases, in_warp, level + 1);
+        StageWarpsApply(*param.phases, in_warp, ECLGetSub, ecl_get_sub_param, level + 1);
 }
 #pragma endregion
 
