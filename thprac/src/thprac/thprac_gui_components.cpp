@@ -538,5 +538,50 @@ namespace THPrac
                 mForceFocusId = 0;
             }
         }
-	}
+
+        void MultiComboSelect(std::vector<size_t>& out, const std::vector<const char*> choices, const char* format, size_t level)
+        {
+            if (out.size() <= level)
+                out.resize(level + 1);
+
+            size_t bufSize = snprintf(NULL, 0, format, level);
+            auto labelStr = new char[bufSize + 2];
+            labelStr[bufSize + 1] = 0;
+            snprintf(labelStr, bufSize + 1, format, level);
+
+            if (ImGui::BeginCombo(labelStr, choices[out[level]])) {
+                for (size_t i = 0; i < choices.size(); i++) {
+                    ImGui::PushID(i);
+
+                    bool item_selected = (i == out[level]);
+
+                    if (ImGui::Selectable(choices[i], &item_selected))
+                        out[level] = i;
+
+                    if (item_selected)
+                        ImGui::SetItemDefaultFocus();
+
+                    ImGui::PopID();
+                }
+                ImGui::EndCombo();
+            }
+
+            if (ImGui::IsItemFocused()) {
+                if (Gui::InGameInputGet(VK_LEFT) && out[level] > 0) {
+                    out[level]--;
+                }
+                if (Gui::InGameInputGet(VK_RIGHT) && out[level] + 1 < choices.size()) {
+                    out[level]++;
+                }
+            }
+
+            if (out[level]) {
+                ImGui::PushID(++level);
+                MultiComboSelect(out, choices, format, level);
+                ImGui::PopID();
+            }
+
+            delete[] labelStr;
+        }
+    }
 }

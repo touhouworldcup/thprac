@@ -750,5 +750,7 @@ namespace Gui {
             return true;
         return false;
     }
+
+    void MultiComboSelect(std::vector<size_t>& out, const std::vector<const char*> choices, const char* format = "%d", size_t level = 0);
 }
 }

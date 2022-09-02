@@ -26,6 +26,7 @@ namespace TH185 {
 
         std::vector<unsigned int> warp;
         std::queue<unsigned int> force_wave;
+        std::vector<unsigned int> additional_cards;
     };
     THPracParam thPracParam {};
 
@@ -156,12 +157,15 @@ namespace TH185 {
                 thPracParam.difficulty = *mDifficulty;
                 thPracParam.bulletMoney = *mBulletMoney;
                 thPracParam.force_wave = {};
+                thPracParam.additional_cards = {};
 
-                for (auto& w : mForceWave) {
-                    if (w)
-                        thPracParam.force_wave.push(w + 29);
-                    else
-                        break;
+                for (auto w : mForceWave) {
+                    if (w) thPracParam.force_wave.push(w + 29);
+                    else   break;
+                }
+                for (auto c : mAdditionalCards) {
+                    if (c) thPracParam.additional_cards.push_back(c - 1);
+                    else   break;
                 }
 
                 break;
@@ -199,6 +203,98 @@ namespace TH185 {
                 break;
             default:
                 break;
+            }
+
+            cards = { XSTR(TH_NONE) };
+            const th_glossary_t cardIds[] = {
+                TH185_CARD_0,
+                TH185_CARD_1,
+                TH185_CARD_2,
+                TH185_CARD_3,
+                TH185_CARD_4,
+                TH185_CARD_5,
+                TH185_CARD_6,
+                TH185_CARD_7,
+                TH185_CARD_8,
+                TH185_CARD_9,
+                TH185_CARD_10,
+                TH185_CARD_11,
+                TH185_CARD_12,
+                TH185_CARD_13,
+                TH185_CARD_14,
+                TH185_CARD_15,
+                TH185_CARD_16,
+                TH185_CARD_17,
+                TH185_CARD_18,
+                TH185_CARD_19,
+                TH185_CARD_20,
+                TH185_CARD_21,
+                TH185_CARD_22,
+                TH185_CARD_23,
+                TH185_CARD_24,
+                TH185_CARD_25,
+                TH185_CARD_26,
+                TH185_CARD_27,
+                TH185_CARD_28,
+                TH185_CARD_29,
+                TH185_CARD_30,
+                TH185_CARD_31,
+                TH185_CARD_32,
+                TH185_CARD_33,
+                TH185_CARD_34,
+                TH185_CARD_35,
+                TH185_CARD_36,
+                TH185_CARD_37,
+                TH185_CARD_38,
+                TH185_CARD_39,
+                TH185_CARD_40,
+                TH185_CARD_41,
+                TH185_CARD_42,
+                TH185_CARD_43,
+                TH185_CARD_44,
+                TH185_CARD_45,
+                TH185_CARD_46,
+                TH185_CARD_47,
+                TH185_CARD_48,
+                TH185_CARD_49,
+                TH185_CARD_50,
+                TH185_CARD_51,
+                TH185_CARD_52,
+                TH185_CARD_53,
+                TH185_CARD_54,
+                TH185_CARD_55,
+                TH185_CARD_56,
+                TH185_CARD_57,
+                TH185_CARD_58,
+                TH185_CARD_59,
+                TH185_CARD_60,
+                TH185_CARD_61,
+                TH185_CARD_62,
+                TH185_CARD_63,
+                TH185_CARD_64,
+                TH185_CARD_65,
+                TH185_CARD_66,
+                TH185_CARD_67,
+                TH185_CARD_68,
+                TH185_CARD_69,
+                TH185_CARD_70,
+                TH185_CARD_71,
+                TH185_CARD_72,
+                TH185_CARD_73,
+                TH185_CARD_74,
+                TH185_CARD_75,
+                TH185_CARD_76,
+                TH185_CARD_77,
+                TH185_CARD_78,
+                TH185_CARD_79,
+                TH185_CARD_80,
+                TH185_CARD_81,
+                TH185_CARD_82,
+                TH185_CARD_83,
+                TH185_CARD_84
+            };
+            for (auto cardId : cardIds) {
+                cards.push_back(XSTR(cardId));
             }
 
             stages = {};
@@ -317,7 +413,7 @@ namespace TH185 {
             PracticeMenu();
         }
 
-        const char* waves[83] = {
+        const std::vector<const char*> waves = {
             "None",
             "Wave01t",
             "Wave02t",
@@ -402,44 +498,7 @@ namespace TH185 {
             "Wave78",
             "Wave79"
         };
-
-        void ForceWave(size_t level)
-        {
-            if (mForceWave.size() <= level)
-                mForceWave.resize(level + 1);
-
-            if (ImGui::BeginCombo("Force Wave", waves[mForceWave[level]])) {
-                for (size_t i = 0; i < sizeof(waves) / sizeof(const char*); i++) {
-                    ImGui::PushID(i);
-
-                    bool item_selected = (i == mForceWave[level]);
-
-                    if (ImGui::Selectable(waves[i], &item_selected))
-                        mForceWave[level] = i;
-
-                    if (item_selected)
-                        ImGui::SetItemDefaultFocus();
-
-                    ImGui::PopID();
-                }
-                ImGui::EndCombo();
-            }
-
-            if (ImGui::IsItemFocused()) {
-                if (Gui::InGameInputGet(VK_LEFT) && mForceWave[level] > 0) {
-                    mForceWave[level]--;
-                }
-                if (Gui::InGameInputGet(VK_RIGHT) && mForceWave[level] + 1 < sizeof(waves) / sizeof(const char*)) {
-                    mForceWave[level]++;
-                }
-            }
-
-            if (mForceWave[level]) {
-                ImGui::PushID(++level);
-                ForceWave(level);
-                ImGui::PopID();
-            }
-        }
+        std::vector<const char*> cards = { };
 
         const char* difficulties[8] = {
             "Very Easy",
@@ -463,7 +522,14 @@ namespace TH185 {
                 mFunds();
                 mBulletMoney();
                 mDifficulty(difficulties[*mDifficulty]);
-                ForceWave(0);
+
+                ImGui::Separator();
+                ImGui::TextUnformatted("Additional Cards");
+                Gui::MultiComboSelect(mAdditionalCards, cards, "Card %d");
+
+                ImGui::Separator();
+                ImGui::TextUnformatted("Force Wave");
+                Gui::MultiComboSelect(mForceWave, waves, "Wave %d");
             }
             // mNavFocus();
         }
@@ -477,6 +543,7 @@ namespace TH185 {
         // Gui::GuiNavFocus mNavFocus { TH185_MARKET, TH_MODE, TH_WARP };
         std::vector<unsigned int> mWarp;
         std::vector<unsigned int> mForceWave = { 0 };
+        std::vector<unsigned int> mAdditionalCards = { 0 };
 
         // TODO: Setup chapters
         int mChapterSetup[7][2] {
@@ -632,6 +699,8 @@ namespace TH185 {
             *(int32_t*)(0x4d1038) = thPracParam.difficulty;
             if (stages.size() > thPracParam.stage)
                 StageWarpsApply(stages[thPracParam.stage], thPracParam.warp, ThModern_ECLGetSub, GetMemContent(0x004d7af4, 0x4f34, 0x10c), 0);
+            for (auto& c : thPracParam.additional_cards)
+                AddCard(c);
         }
     }
     EHOOK_DY(th185_force_wave, 0x43d156)
