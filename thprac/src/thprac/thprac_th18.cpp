@@ -6,6 +6,12 @@
 
 namespace THPrac {
 namespace TH18 {
+    enum addrs {
+        ABILITY_SHOP_PTR = 0x4cf2a4,
+        CARD_DESC_LIST = 0x4c53c0
+    };
+
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -492,7 +498,6 @@ namespace TH18 {
         }
         SINGLETON(THOverlay);
 
-    public:
     protected:
         EHOOK_ST(th18_pause_skip_1, 0x458692)
         {
@@ -528,7 +533,7 @@ namespace TH18 {
                 mov eax, 0x458680;
                 call eax;
             }
-            *(uint32_t*)((*(uint32_t*)0x4cf2a4) + 0xe38) = 0;
+            *(uint32_t*)((*(uint32_t*)ABILITY_SHOP_PTR) + 0xe38) = 0;
             th18_pause_skip_1.Disable();
             th18_pause_skip_2.Disable();
         }
@@ -582,7 +587,7 @@ namespace TH18 {
         }
         bool IsMarketAvailable()
         {
-            return !(OffsetValueBase::IsBadPtr((void*)GetMemContent(0x4cf2a4)));
+            return !(OffsetValueBase::IsBadPtr((void*)GetMemContent(ABILITY_SHOP_PTR)));
         }
         void CheckMarket()
         {
@@ -641,7 +646,7 @@ namespace TH18 {
                 mZeroCD();
                 mElBgm();
 
-                if (isInMarket && GetMemContent(0x4cf2a4, 0xe38) == 2) {
+                if (isInMarket && GetMemContent(ABILITY_SHOP_PTR, 0xe38) == 2) {
                     if (mMarketManip()) {
                         *mMarketManip = false;
                         isManipMarket = true;
@@ -678,15 +683,15 @@ namespace TH18 {
                     }
                     for (int i = 1; i <= 8; ++i) {
                         if (mmKeyStatus[i]) {
-                            uint32_t cardsCount = GetMemContent(0x4cf2a4, 0xa2c);
+                            uint32_t cardsCount = GetMemContent(ABILITY_SHOP_PTR, 0xa2c);
                             uint32_t cardsSrcIndex = (i - 1) * cardsCount + 1;
-                            uint32_t cardsSrcOffset = (0x4c53c0 + 0x34 * cardsSrcIndex);
-                            uint32_t* cardsDestOffset = (uint32_t*)GetMemAddr(0x4cf2a4, 0xa30);
+                            uint32_t cardsSrcOffset = (CARD_DESC_LIST + 0x34 * cardsSrcIndex);
+                            uint32_t* cardsDestOffset = (uint32_t*)GetMemAddr(ABILITY_SHOP_PTR, 0xa30);
 
                             for (uint32_t i = 0; i < cardsCount; ++i) {
                                 if (cardsSrcIndex >= 55) {
-                                    //*cardsDestOffset = 0x4c53c0;
-                                    *cardsDestOffset = 0x4c53c0 + 0x34 * 56;
+                                    //*cardsDestOffset = CARD_DESC_LIST;
+                                    *cardsDestOffset = CARD_DESC_LIST + 0x34 * 56;
                                 } else {
                                     *cardsDestOffset = cardsSrcOffset;
                                     cardsSrcOffset += 0x34;
@@ -702,15 +707,15 @@ namespace TH18 {
                     }
                     if (mmKeyStatus[0]) {
                         if (Gui::KeyboardInputGetRaw(VK_CONTROL)) {
-                            uint32_t cardsCount = GetMemContent(0x4cf2a4, 0xa2c);
+                            uint32_t cardsCount = GetMemContent(ABILITY_SHOP_PTR, 0xa2c);
                             for (uint32_t i = 0; i < cardsCount; ++i) {
-                                auto cardId = GetMemContent(0x4cf2a4, 0xa30 + i * 4, 4);
+                                auto cardId = GetMemContent(ABILITY_SHOP_PTR, 0xa30 + i * 4, 4);
                                 AddCard(cardId);
                             }
 
                         } else {
-                            auto cardIndex = GetMemContent(0x4cf2a4, 0xe4);
-                            auto cardId = GetMemContent(0x4cf2a4, 0xa30 + cardIndex * 4, 4);
+                            auto cardIndex = GetMemContent(ABILITY_SHOP_PTR, 0xe4);
+                            auto cardId = GetMemContent(ABILITY_SHOP_PTR, 0xa30 + cardIndex * 4, 4);
                             AddCard(cardId);
                         }
                     }
@@ -722,10 +727,6 @@ namespace TH18 {
                     Close();
                 }
             }
-
-            
-
-            
         }
         virtual void OnPostUpdate() override
         {
@@ -1108,7 +1109,7 @@ namespace TH18 {
         }
         __declspec(noinline) uint32_t* FindCardDesc(uint32_t id)
         {
-            for (uint32_t i = 0x4c53c0;; i += 0x34) {
+            for (uint32_t i = CARD_DESC_LIST;; i += 0x34) {
                 if (*(uint32_t*)(i + 4) == id) {
                     return (uint32_t*)i;
                 }
@@ -2905,9 +2906,9 @@ namespace TH18 {
             cardIdArray[cardId] += 1;
         }
 
-        uint32_t cardsSrcOffset = (0x4c53c0);
+        uint32_t cardsSrcOffset = (CARD_DESC_LIST);
         for (int i = 0; i < 56; ++i) {
-            uint32_t* cardsSrcOffset = (uint32_t*)(0x4c53c0 + 0x34 * i);
+            uint32_t* cardsSrcOffset = (uint32_t*)(CARD_DESC_LIST + 0x34 * i);
             if (cardIdArray[cardsSrcOffset[1]]) {
                 if (cardsSrcOffset[3] == 1) {
                     sub_count += (cardsSrcOffset[1] == 51 ? 2 : 1) * cardIdArray[cardsSrcOffset[1]];
