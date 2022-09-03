@@ -587,18 +587,577 @@ namespace TH185 {
                     };
                     break;
                 case 2:
+                    stage.section_param = {
+                        {
+                            .label = "Wave 1",
+                        },
+                        {
+                            .label = "Wave 2",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x380 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 3",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x44c }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 4",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x51c }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Boss",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x5e8 }
+                                } }
+                            },
+                        }
+                    };
                     break;
                 case 3:
+                    stage.section_param = {
+                        {
+                            .label = "Wave 1",
+                        },
+                        {
+                            .label = "Wave 2",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x380 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 3",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x44c }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 4",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x51c }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 5",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x5e8 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Boss",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x6b8 }
+                                } }
+                            },
+                        }
+                    };
                     break;
                 case 4:
+                    stage.section_param = {
+                        {
+                            .label = "Wave 1",
+                        },
+                        {
+                            .label = "Wave 2",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x380 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 3",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x44c }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 4",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x518 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 5",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x5e4 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Boss",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x6b0 }
+                                } }
+                            },
+                        }
+                    };
                     break;
                 case 5:
+                    stage.section_param = {
+                        {
+                            .label = "Wave 1",
+                        },
+                        {
+                            .label = "Wave 2",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x28c, .dest = 0x3b4 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x28a, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 3",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x28c, .dest = 0x480 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x28a, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 4",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x28c, .dest = 0x54c }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x28a, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 5",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x28c, .dest = 0x618 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x28a, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 6",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x28c, .dest = 0x6e4 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x28a, .bytes = { 0x06, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 7",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x28c, .dest = 0x7b0 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x28a, .bytes = { 0x07, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Boss",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x28c, .dest = 0x87c }
+                                } }
+                            },
+                        }
+                    };
                     break;
                 case 6:
+                    stage.section_param = {
+                        {
+                            .label = "Wave 1",
+                        },
+                        {
+                            .label = "Wave 2",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x380 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 3",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x44c }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 4",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x518 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 5",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x5e4 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 6",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x6b0 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x06, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 7",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x77c }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x254, .bytes = { 0x07, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Boss",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x258, .dest = 0x838 }
+                                } }
+                            },
+                        }
+                    };
                     break;
                 case 7:
+                    stage.section_param = {
+                        {
+                            .label = "Wave 1",
+                        },
+                        {
+                            .label = "Wave 2",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x29c, .dest = 0x3d4 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x288, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 3",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x29c, .dest = 0x4b0 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x288, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 4",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x29c, .dest = 0x58c }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x288, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Boss",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x29c, .dest = 0x668 }
+                                } }
+                            },
+                        }
+                    };
                     break;
                 case 8:
+                    stage.section_param = {
+                        {
+                            .label = "Wave 1",
+                        },
+                        {
+                            .label = "Boss - Wave 2",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x434, .dest = 0x518 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x3f0, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 3",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x434, .dest = 0x628 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x3f0, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Boss - Wave 4",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x434, .dest = 0x6c4 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x3f0, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 5",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x434, .dest = 0x7d4 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x3f0, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Boss - Wave 6",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x434, .dest = 0x870 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x3f0, .bytes = { 0x06, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 7",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x434, .dest = 0x980 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x3f0, .bytes = { 0x07, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Boss - Wave 8",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x434, .dest = 0xa1c }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x3f0, .bytes = { 0x08, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 9",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x434, .dest = 0xb2c }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x3f0, .bytes = { 0x09, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Boss - Wave 10",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x434, .dest = 0xbc8 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x3f0, .bytes = { 0x0a, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Wave 11",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x434, .dest = 0xcd8 }
+                                } }
+                            },
+                            .writes = {
+                                { "main", {
+                                    { .off = 0x3f0, .bytes = { 0x0b, 0x00, 0x00, 0x00 } }
+                                } }
+                            }
+                        },
+                        {
+                            .label = "Final wave",
+                            .jumps = {
+                                { "main", {
+                                    { .off = 0x434, .dest = 0xd74 }
+                                } }
+                            }
+                        },
+                    };
                     break;
                 };
                 stages.push_back(stage);
@@ -871,6 +1430,8 @@ namespace TH185 {
     }
 
     HOOKSET_DEFINE(THMainHook)
+
+    PATCH_DY(th185_unblock_all, 0x46d532, "\xeb", 1);
     EHOOK_DY(th185_gui_update, 0x4013dd)
     {
         GameGuiBegin(IMPL_WIN32_DX9);
