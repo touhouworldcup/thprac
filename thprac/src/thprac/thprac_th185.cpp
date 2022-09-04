@@ -1469,6 +1469,36 @@ namespace TH185 {
             thPracParam.__waves_forced = 0;
         }
     }
+    EHOOK_DY(th185_restart, 0x45f86d)
+    {
+        auto s1 = pCtx->Esp + 0xc;
+        auto s2 = pCtx->Edi + 0x1e4;
+        auto s3 = *(DWORD*)(pCtx->Edi + 0x1e8);
+
+        asm_call<0x479220, Stdcall>(0x7, pCtx->Ecx);
+
+        uint32_t* ret = asm_call<0x48AAA0, Thiscall, uint32_t*>(s2, s1, 125, pCtx->Ecx);
+
+        asm_call<0x48a540, Stdcall>(*ret, 0x6);
+
+        // Restart New 1
+        asm_call<0x48a540, Stdcall>(s3, 0x1);
+
+        // Set restart flag, same under replay save status
+        asm_call<0x41C7e0, Thiscall>(pCtx->Esi, 0x5);
+
+        // Switch menu state to close
+        asm_call<0x45e050, Thiscall>(pCtx->Edi, 19);
+
+        pCtx->Edx = *(DWORD*)0x4ce400;
+        pCtx->Eip = 0x45f918;
+    }
+    EHOOK_DY(th185_exit, 0x45f918)
+    {
+        if (Gui::KeyboardInputGetRaw('Q'))
+            pCtx->Eip = 0x45f92e;
+
+    }
     EHOOK_DY(th185_force_wave, 0x43d156)
     {
         if (thPracParam.force_wave.size() > thPracParam.__waves_forced) {
