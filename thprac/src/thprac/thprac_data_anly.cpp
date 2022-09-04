@@ -318,16 +318,16 @@ void InputButton(InputType type, int bitmask, ImVec2& buttonSize)
 
     switch (type) {
     case INPUT_SHOT:
-        ImGui::Button("##Shot", buttonSize);
+        ImGui::Button("Z", buttonSize);
         break;
     case INPUT_BOMB:
-        ImGui::Button("##Bomb", buttonSize);
+        ImGui::Button("X", buttonSize);
         break;
     case INPUT_SLOW:
-        ImGui::Button("##Slow", buttonSize);
+        ImGui::Button("Shift", buttonSize);
         break;
     case INPUT_SKIP:
-        ImGui::Button("##Skip", buttonSize);
+        ImGui::Button("Ctrl", buttonSize);
         break;
     case INPUT_UP:
         ImGui::ArrowButtonEx("##UP", ImGuiDir_Up, buttonSize, 0);

@@ -495,6 +495,116 @@ namespace TH15 {
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
     };
 
+    class THAuxDisp : public Gui::GameGuiWnd {
+        THAuxDisp() noexcept
+        {
+            SetTitle("Aux Disp");
+            SetFade(1.0f, 0.1f);
+            SetPos(10.0f, 10.0f);
+            SetSize(100.0f, 100.0f);
+            SetWndFlag(ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+
+            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+            OnLocaleChange();
+        }
+        SINGLETON(THAuxDisp);
+
+    public:
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+            case Gui::LOCALE_EN_US:
+            case Gui::LOCALE_JA_JP:
+                SetPos(424.0f, 40.0f);
+                SetSize(210.0f, 430.0f);
+                break;
+            default:
+                break;
+            }
+
+        }
+        virtual void OnContentUpdate() override
+        {
+            mStageOffset(false);
+            STAGE_OFFSET_INIT(DataBatchCache<0>(false), *mStageOffset);
+
+            //WndDebugOutput();
+            //PRT_WITH_SO("High Score: %s", FormatScore(STAGE_OFFSET(DATA_SCORE)));
+            PRT_WITH_SO("Score: %s", FormatScore(STAGE_OFFSET(DATA_SCORE)));
+            ImGui::Separator();
+
+           /* ImGui::Columns(2);
+            ImGui::Text("Life: %d", DataRef<DATA_LIFE>());
+            ImGui::NextColumn();
+            ImGui::Text("Frag: %d/%d", DataRef<DATA_LIFE_FRAG>(), ((uint32_t*)(0x4bb994))[U32_REF(DATA_EXTEND)]);
+            ImGui::NextColumn();
+            ImGui::Text("Bomb: %d", DataRef<DATA_BOMB>());
+            ImGui::NextColumn();
+            ImGui::Text("Frag: %d/8", DataRef<DATA_BOMB_FRAG>());
+            ImGui::NextColumn();
+            ImGui::Text("Power: %1.2f", ((float)DataRef<DATA_POWER>() / 100.0f));
+            ImGui::NextColumn();
+            PRT_WITH_SO("Items: %d", STAGE_OFFSET(DATA_ITEM_POWER));
+            ImGui::NextColumn();
+            PRT_WITH_SO("Value: %d", STAGE_OFFSET(DATA_VALUE) / 100);
+            ImGui::NextColumn();
+            PRT_WITH_SO("Items: %d", STAGE_OFFSET(DATA_ITEM_POINT));
+            ImGui::NextColumn();
+            PRT_WITH_SO("Graze: %d", STAGE_OFFSET(DATA_GRAZE));
+            ImGui::NextColumn();
+            PRT_WITH_SO("Cancel: %d", STAGE_OFFSET(DATA_ITEM_CANCEL));
+            ImGui::NextColumn();
+            ImGui::Columns();
+            ImGui::Separator();
+
+            ImGui::Columns(2);
+            PRT_WITH_SO("Miss: %d", STAGE_OFFSET(EVENT_MISS));
+            ImGui::NextColumn();
+            ImGui::Text("%df", DataRef<DATA_FRAME>());
+            ImGui::NextColumn();
+            PRT_WITH_SO("Bomb: %d", STAGE_OFFSET(EVENT_BOMB) + STAGE_OFFSET(EVENT_DEATH_BOMB));
+            ImGui::NextColumn();
+            PRT_WITH_SO("D. Bomb: %d", STAGE_OFFSET(EVENT_DEATH_BOMB));
+            ImGui::NextColumn();
+            ImGui::Text("SC Enter: %d", DataRef<EVENT_SPELLCARD_ENTER>());
+            ImGui::NextColumn();
+            ImGui::Text("SC Get: %d", DataRef<EVENT_SPELLCARD_GET>());
+            ImGui::Columns();
+            ImGui::Separator();
+
+             */
+            //ImGui::Text("Chapter NM Rate: %d/%d", 1, 1);
+            //ImGui::Separator();
+
+            //InputDispWidget(0, 1, 3, 4, 5, 6, 7, 9);
+        }
+        virtual void OnPreUpdate() override
+        {
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+            if (!DataRef<SYSFLAG_INGAME>()) {
+                Close();
+                return;
+            }
+            if (mAuxDisp(false) && !ImGui::IsAnyItemActive()) {
+                if (*mAuxDisp) {
+                    Open();
+                } else {
+                    Close();
+                }
+            }
+        }
+        virtual void OnPostUpdate() override
+        {
+            ImGui::PopStyleColor();
+        }
+
+        Gui::GuiHotKey mAuxDisp { "AuxDisp", "", 'L' };
+        Gui::GuiHotKey mStageOffset { "StageOffset", "", 'M' };
+    };
+
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
         EHOOK_ST(th15_all_clear_bonus_1, 0x43d99d)
         {
@@ -577,6 +687,7 @@ namespace TH15 {
         void DataRecPreUpd()
         {
             DataRecOpt(mOptCtx, true, thPracParam._playLock);
+            DataRecOpt(mOptCtx, true, DataRef<SYSFLAG_INGAME>());
         }
         void DataRecFunc(std::vector<RecordedValue>& values)
         {
@@ -1800,6 +1911,29 @@ namespace TH15 {
         //DataRef<DATA_SUB_SHOT_TYPE>(U8_ARG(0x4a57ac));
         DataRef<DATA_STAGE>(U8_ARG(0x4e73f0));
         DataRef<DATA_STARTING_STAGE>(U8_ARG(0x4e73f4));
+
+        DataRef<DATA_SCORE>(U8_ARG(0x4e740c));
+        DataRef<DATA_POWER>(U8_ARG(0x4e7440));
+
+        DataBatch<DATA_SCORE /*, DATA_LIFE, DATA_EXTEND, DATA_LIFE_FRAG, DATA_BOMB, DATA_BOMB_FRAG,
+            DATA_POWER, DATA_VALUE, DATA_GRAZE, DATA_TRANCE_METER,
+            DATA_SPIRIT_BLUE, DATA_SPIRIT_GREY, DATA_SPIRIT_LIFE, DATA_SPIRIT_BOMB,
+            DATA_SPIRIT_BLUE_TRANCE, DATA_SPIRIT_GREY_TRANCE, DATA_SPIRIT_LIFE_TRANCE, DATA_SPIRIT_BOMB_TRANCE,
+            DATA_ITEM_POWER, DATA_ITEM_POINT, DATA_ITEM_CANCEL,
+            EVENT_MISS, EVENT_BOMB, EVENT_DEATH_BOMB, EVENT_TRANCE_ACTIVE, EVENT_TRANCE_PASSIVE, EVENT_TRANCE_EXIT, EVENT_CONTINUE*/>();
+
+        
+        DataBatchCache<0>(true);
+    }
+
+    void THDataStage()
+    {
+        bool isStartingStage = U8_REF(DATA_STAGE) == U8_REF(DATA_STARTING_STAGE);
+        AnlyDataStageStart();
+        DataBatchCache<0>(true);
+        AnlyDataCollect();
+        InsHookApply();
+        DataRef<SYSFLAG_INGAME>() = 1;
     }
 
     static bool drawCursor;
@@ -1831,6 +1965,7 @@ namespace TH15 {
     EHOOK_DY(th15_param_reset, 0x461070)
     {
         thPracParam.Reset();
+        DataRef<SYSFLAG_INGAME>() = 0;
     }
     EHOOK_DY(th15_prac_menu_1, 0x4677be)
     {
@@ -1881,6 +2016,8 @@ namespace TH15 {
             THSectionPatch();
         }
         thPracParam._playLock = true;
+
+        THDataStage();
     }
     EHOOK_DY(th15_bgm, 0x43d5c1)
     {
@@ -1915,6 +2052,7 @@ namespace TH15 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
+        THAuxDisp::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
@@ -1936,6 +2074,7 @@ namespace TH15 {
         THGuiPrac::singleton();
         THGuiRep::singleton();
         THOverlay::singleton();
+        THAuxDisp::singleton();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
