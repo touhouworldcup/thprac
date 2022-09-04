@@ -817,6 +817,7 @@ namespace TH185 {
                             },
                         }
                     };
+
                     stage.section_param[5].phases = {
                         .label = "Boss",
                         .type = stage_warps_t::TYPE_COMBO,
@@ -1015,6 +1016,140 @@ namespace TH185 {
                                     { .off = 0x258, .dest = 0x6b0 }
                                 } }
                             },
+                        }
+                    };
+                    
+                    stage.section_param[5].phases = {
+                        .label = "Boss",
+                        .type = stage_warps_t::TYPE_COMBO,
+                        .section_param = {
+                            {
+                                .label = "None (Random)"
+                            },
+                            {
+                                .label = "Sanae Kochiya",
+                                .writes = {
+                                    { "WorldWaveB00", {
+                                        { .off = 0x34, .bytes = { FORCE_BOSS(0, 14) } }
+                                    } }
+                                }
+                            },
+                            {
+                                .label = "Sakuya Izayoi",
+                                .writes = {
+                                    { "WorldWaveB00", {
+                                        { .off = 0x34, .bytes = { FORCE_BOSS(1, 14) } }
+                                    } }
+                                }
+                            },
+                            {
+                                .label = "Youmu Konpaku",
+                                .writes = {
+                                    { "WorldWaveB00", {
+                                        { .off = 0x34, .bytes = { FORCE_BOSS(2, 14) } }
+                                    } }
+                                }
+                            },
+                            {
+                                .label = "Reimu Hakurei",
+                                .writes = {
+                                    { "WorldWaveB00", {
+                                        { .off = 0x34, .bytes = { FORCE_BOSS(3, 14) } }
+                                    } }
+                                }
+                            }
+                        }
+                    };
+
+                    stage.section_param[5].phases->section_param[1].phases = {
+                        .label = "Attack",
+                        .type = stage_warps_t::TYPE_COMBO,
+                        .section_param = {
+                            {
+                                .label = "Nonspell"
+                            },
+                            {
+                                .label = "Miracle \"Miracle Pentacle\"",
+                                .writes = {
+                                    { "Boss13Boss", {
+                                        { .off = 0x1b0, .bytes = { 0x98, 0x08, 0x00, 0x00 } }
+                                    } },
+                                    { "Boss13Boss1", {
+                                        // @Boss13BossCard1();
+                                        // ret();
+                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(13) } }
+                                    } }
+                                }
+                            }
+                        }
+                    };
+
+                    stage.section_param[5].phases->section_param[2].phases = {
+                        .label = "Attack",
+                        .type = stage_warps_t::TYPE_COMBO,
+                        .section_param = {
+                            {
+                                .label = "Nonspell"
+                            },
+                            {
+                                .label = "Time Sign \"Eye-wink Knife Hell\"",
+                                .writes = {
+                                    { "Boss14Boss", {
+                                        { .off = 0x1b0, .bytes = { 0x98, 0x08, 0x00, 0x00 } }
+                                    } },
+                                    { "Boss14Boss1", {
+                                        // @Boss14BossCard1();
+                                        // ret();
+                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(14) } }
+                                    } }
+                                }
+                            }
+                        }
+                    };
+
+                    stage.section_param[5].phases->section_param[3].phases = {
+                        .label = "Attack",
+                        .type = stage_warps_t::TYPE_COMBO,
+                        .section_param = {
+                            {
+                                .label = "Nonspell"
+                            },
+                            {
+                                .label = "Swordmanship \"Mouryou Wiping Blood From Their Blades\"",
+                                .writes = {
+                                    { "Boss15Boss", {
+                                        { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
+                                    } },
+                                    { "Boss15Boss1", {
+                                        // @Boss15BossCard1();
+                                        // ret();
+                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(15) } }
+                                    } }
+                                }
+                            }
+                        }
+                    };
+
+                    stage.section_param[5].phases->section_param[4].phases = {
+                        .label = "Attack",
+                        .type = stage_warps_t::TYPE_COMBO,
+                        .section_param = {
+                            {
+                                .label = "Nonspell"
+                            },
+                            {
+                                .label = "\"Full House Amulets: Bullet Money Bonus Packets\"",
+                                .writes = {
+                                    { "Boss16Boss", {
+                                        { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
+                                    } },
+                                    { "Boss16Boss1", {
+                                        // @Boss16BossCard1();
+                                        // ret();
+                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(16) } }
+                                    } }
+                                }
+                            }
                         }
                     };
                     break;
