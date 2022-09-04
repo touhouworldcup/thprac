@@ -11,6 +11,8 @@ namespace TH185 {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x00, 0x01, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x5E, 0xD9, 0xFF, 0xFF, \
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
         0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 3), 0x03 * (boss_index == 3), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index) + 3, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00
+    
+    #define BOSS_SPELL_CARD_ASYNC(boss_id) 0x00, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x24, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x42, 0x6F, 0x73, 0x73, boss_id / 10 + 0x30, boss_id % 10 + 0x30, 0x42, 0x6F, 0x73, 0x73, 0x43, 0x61, 0x72, 0x64, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x10, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00
     enum addrs {
         BLACK_MARKET_PTR = 0x4d7ac4,
         CARD_DESC_LIST = 0x4ca370
@@ -493,7 +495,7 @@ namespace TH185 {
                                     { "Boss01Boss1", {
                                         // @Boss01BossCard1();
                                         // ret();
-                                        { .off = 0x10, .bytes = { 0x00, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x24, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x42, 0x6F, 0x73, 0x73, 0x30, 0x31, 0x42, 0x6F, 0x73, 0x73, 0x43, 0x61, 0x72, 0x64, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x10, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00 } }
+                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(1) } }
                                     } }
                                 }
                             }
@@ -515,7 +517,7 @@ namespace TH185 {
                                     { "Boss02Boss1", {
                                         // @Boss02BossCard1();
                                         // ret();
-                                        { .off = 0x10, .bytes = { 0x00, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x24, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x42, 0x6F, 0x73, 0x73, 0x30, 0x32, 0x42, 0x6F, 0x73, 0x73, 0x43, 0x61, 0x72, 0x64, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x10, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00 } }
+                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(2) } }
                                     } }
                                 }
                             }
@@ -537,7 +539,7 @@ namespace TH185 {
                                     { "Boss03Boss1", {
                                         // @Boss03BossCard1();
                                         // ret();
-                                        { .off = 0x10, .bytes = { 0x00, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x24, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x42, 0x6F, 0x73, 0x73, 0x30, 0x33, 0x42, 0x6F, 0x73, 0x73, 0x43, 0x61, 0x72, 0x64, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x10, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00 } }
+                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(3) } }
                                     } }
                                 }
                             }
@@ -559,7 +561,7 @@ namespace TH185 {
                                     { "Boss04Boss1", {
                                         // @Boss04BossCard1();
                                         // ret();
-                                        { .off = 0x10, .bytes = { 0x00, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x24, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x42, 0x6F, 0x73, 0x73, 0x30, 0x34, 0x42, 0x6F, 0x73, 0x73, 0x43, 0x61, 0x72, 0x64, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x10, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00 } }
+                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(4) } }
                                     } }
                                 }
                             }
@@ -616,7 +618,7 @@ namespace TH185 {
                                 { "main", {
                                     { .off = 0x258, .dest = 0x5e8 }
                                 } }
-                            },
+                            }
                         }
                     };
                     stage.section_param[4].phases = {
@@ -676,7 +678,7 @@ namespace TH185 {
                                     { "Boss05Boss1", {
                                         // @Boss05BossCard1();
                                         // ret();
-                                        { .off = 0x10, .bytes = { 0x00, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x24, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x42, 0x6F, 0x73, 0x73, 0x30, 0x35, 0x42, 0x6F, 0x73, 0x73, 0x43, 0x61, 0x72, 0x64, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x10, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00 } }
+                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(5) } }
                                     } }
                                 }
                             }
@@ -698,35 +700,13 @@ namespace TH185 {
                                     { "Boss06Boss1", {
                                         // @Boss06BossCard1();
                                         // ret();
-                                        { .off = 0x10, .bytes = { 0x00, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x24, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x42, 0x6F, 0x73, 0x73, 0x30, 0x36, 0x42, 0x6F, 0x73, 0x73, 0x43, 0x61, 0x72, 0x64, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x10, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00 } }
+                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(6) } }
                                     } }
                                 }
                             }
                         }
                     };
                     stage.section_param[4].phases->section_param[3].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "\"Ripples of Rapacity\"",
-                                .writes = {
-                                    { "Boss08Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss08Boss1", {
-                                        // @Boss08BossCard1();
-                                        // ret();
-                                        { .off = 0x10, .bytes = { 0x00, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x24, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x42, 0x6F, 0x73, 0x73, 0x30, 0x38, 0x42, 0x6F, 0x73, 0x73, 0x43, 0x61, 0x72, 0x64, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x10, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00 } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[4].phases->section_param[4].phases = {
                         .label = "Attack",
                         .type = stage_warps_t::TYPE_COMBO,
                         .section_param = {
@@ -742,7 +722,29 @@ namespace TH185 {
                                     { "Boss07Boss1", {
                                         // @Boss07BossCard1();
                                         // ret();
-                                        { .off = 0x10, .bytes = { 0x00, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x24, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x42, 0x6F, 0x73, 0x73, 0x30, 0x37, 0x42, 0x6F, 0x73, 0x73, 0x43, 0x61, 0x72, 0x64, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x10, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00 } }
+                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(7)} }
+                                    } }
+                                }
+                            }
+                        }
+                    };
+                    stage.section_param[4].phases->section_param[4].phases = {
+                        .label = "Attack",
+                        .type = stage_warps_t::TYPE_COMBO,
+                        .section_param = {
+                            {
+                                .label = "Nonspell"
+                            },
+                            {
+                                .label = "\"Ripples of Rapacity\"",
+                                .writes = {
+                                    { "Boss08Boss", {
+                                        { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
+                                    } },
+                                    { "Boss08Boss1", {
+                                        // @Boss08BossCard1();
+                                        // ret();
+                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(8) } }
                                     } }
                                 }
                             }
@@ -813,6 +815,139 @@ namespace TH185 {
                                     { .off = 0x258, .dest = 0x6b8 }
                                 } }
                             },
+                        }
+                    };
+                    stage.section_param[5].phases = {
+                        .label = "Boss",
+                        .type = stage_warps_t::TYPE_COMBO,
+                        .section_param = {
+                            {
+                                .label = "None (Random)"
+                            },
+                            {
+                                .label = "Eika Ebisu",
+                                .writes = {
+                                    { "WorldWaveB00", {
+                                        { .off = 0x34, .bytes = { FORCE_BOSS(0, 10) } }
+                                    } }
+                                }
+                            },
+                            {
+                                .label = "Kutaka Niwatari",
+                                .writes = {
+                                    { "WorldWaveB00", {
+                                        { .off = 0x34, .bytes = { FORCE_BOSS(1, 10) } }
+                                    } }
+                                }
+                            },
+                            {
+                                .label = "Narumi Yatadera",
+                                .writes = {
+                                    { "WorldWaveB00", {
+                                        { .off = 0x34, .bytes = { FORCE_BOSS(2, 10) } }
+                                    } }
+                                }
+                            },
+                            {
+                                .label = "Komachi Onozuka",
+                                .writes = {
+                                    { "WorldWaveB00", {
+                                        { .off = 0x34, .bytes = { FORCE_BOSS(3, 10) } }
+                                    } }
+                                }
+                            }
+                        }
+                    };
+
+                    stage.section_param[5].phases->section_param[1].phases = {
+                        .label = "Attack",
+                        .type = stage_warps_t::TYPE_COMBO,
+                        .section_param = {
+                            {
+                                .label = "Nonspell"
+                            },
+                            {
+                                .label = "Stone Sign \"Red Stone Stack of Aja\"",
+                                .writes = {
+                                    { "Boss09Boss", {
+                                        { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
+                                    } },
+                                    { "Boss09Boss1", {
+                                        // @Boss09BossCard1();
+                                        // ret();
+                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(9) } }
+                                    } }
+                                }
+                            }
+                        }
+                    };
+
+                    stage.section_param[5].phases->section_param[2].phases = {
+                        .label = "Attack",
+                        .type = stage_warps_t::TYPE_COMBO,
+                        .section_param = {
+                            {
+                                .label = "Nonspell"
+                            },
+                            {
+                                .label = "\"Watershed of Life\"",
+                                .writes = {
+                                    { "Boss10Boss", {
+                                        { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
+                                    } },
+                                    { "Boss10Boss1", {
+                                        // @Boss10BossCard1();
+                                        // ret();
+                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(10) } }
+                                    } }
+                                }
+                            }
+                        }
+                    };
+
+                    stage.section_param[5].phases->section_param[3].phases = {
+                        .label = "Attack",
+                        .type = stage_warps_t::TYPE_COMBO,
+                        .section_param = {
+                            {
+                                .label = "Nonspell"
+                            },
+                            {
+                                .label = "\"5.67 Billion Years of Menial Labour\"",
+                                .writes = {
+                                    { "Boss11Boss", {
+                                        { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
+                                    } },
+                                    { "Boss11Boss1", {
+                                        // @Boss12BossCard1();
+                                        // ret();
+                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(11) } }
+                                    } }
+                                }
+                            }
+                        }
+                    };
+
+                    stage.section_param[5].phases->section_param[4].phases = {
+                        .label = "Attack",
+                        .type = stage_warps_t::TYPE_COMBO,
+                        .section_param = {
+                            {
+                                .label = "Nonspell"
+                            },
+                            {
+                                .label = "\"Money and Death Busily Piling Up.\"",
+                                .writes = {
+                                    { "Boss12Boss", {
+                                        { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
+                                    } },
+                                    { "Boss12Boss1", {
+                                        // @Boss12BossCard1();
+                                        // ret();
+                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(12) } }
+                                    } }
+                                }
+                            }
                         }
                     };
                     break;
