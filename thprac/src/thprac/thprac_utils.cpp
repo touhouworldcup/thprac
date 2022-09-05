@@ -1329,6 +1329,11 @@ void StageWarpsRender(stage_warps_t& warps, std::vector<unsigned int>& out_warp,
     if (out_warp.size() <= level)
         out_warp.resize(level + 1);
 
+
+    if (warps.section_param.size() <= out_warp[level]) {
+        out_warp[level] = warps.section_param.size() - 1;
+    }
+
     switch (warps.type) {
     case stage_warps_t::TYPE_SLIDER:
         ImGui::SliderInt(warps.label, (int*)&out_warp[level], 0, warps.section_param.size() - 1, warps.section_param[out_warp[level]].label);
