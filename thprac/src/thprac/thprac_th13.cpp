@@ -595,6 +595,7 @@ namespace TH13 {
         {
             ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
             if (!DataRef<SYSFLAG_INGAME>()) {
+                *mAuxDisp = false;
                 Close();
                 return;
             }
@@ -1889,6 +1890,7 @@ namespace TH13 {
             THSectionPatch();
         }
         THDataStage();
+        DataBatchResetRem();
     }
     EHOOK_DY(th13_bgm, 0x42c864)
     {

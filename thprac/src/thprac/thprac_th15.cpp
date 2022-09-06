@@ -531,59 +531,58 @@ namespace TH15 {
             STAGE_OFFSET_INIT(DataBatchCache<0>(false), *mStageOffset);
 
             //WndDebugOutput();
-            //PRT_WITH_SO("High Score: %s", FormatScore(STAGE_OFFSET(DATA_SCORE)));
+            PRT_WITH_SO("High Score: %s", FormatScore(STAGE_OFFSET(DATA_HIGH_SCORE)));
             PRT_WITH_SO("Score: %s", FormatScore(STAGE_OFFSET(DATA_SCORE)));
             ImGui::Separator();
 
-           /* ImGui::Columns(2);
+            ImGui::Columns(2);
             ImGui::Text("Life: %d", DataRef<DATA_LIFE>());
             ImGui::NextColumn();
-            ImGui::Text("Frag: %d/%d", DataRef<DATA_LIFE_FRAG>(), ((uint32_t*)(0x4bb994))[U32_REF(DATA_EXTEND)]);
+            ImGui::Text("Frag: %d/%d", DataRef<DATA_LIFE_FRAG>(), 3);
             ImGui::NextColumn();
+
             ImGui::Text("Bomb: %d", DataRef<DATA_BOMB>());
             ImGui::NextColumn();
             ImGui::Text("Frag: %d/8", DataRef<DATA_BOMB_FRAG>());
             ImGui::NextColumn();
-            ImGui::Text("Power: %1.2f", ((float)DataRef<DATA_POWER>() / 100.0f));
-            ImGui::NextColumn();
-            PRT_WITH_SO("Items: %d", STAGE_OFFSET(DATA_ITEM_POWER));
-            ImGui::NextColumn();
-            PRT_WITH_SO("Value: %d", STAGE_OFFSET(DATA_VALUE) / 100);
-            ImGui::NextColumn();
-            PRT_WITH_SO("Items: %d", STAGE_OFFSET(DATA_ITEM_POINT));
+
+            PRT_WITH_SO("Ch. graze: %d", STAGE_OFFSET(DATA_CHAPTER_GRAZE));
             ImGui::NextColumn();
             PRT_WITH_SO("Graze: %d", STAGE_OFFSET(DATA_GRAZE));
             ImGui::NextColumn();
-            PRT_WITH_SO("Cancel: %d", STAGE_OFFSET(DATA_ITEM_CANCEL));
+
+            ImGui::Text("Power: %1.2f", ((float)DataRef<DATA_POWER>() / 100.0f));
             ImGui::NextColumn();
+            ImGui::Text("Points: %d", DataRef<DATA_ITEM_POINT>());
             ImGui::Columns();
+
             ImGui::Separator();
 
             ImGui::Columns(2);
             PRT_WITH_SO("Miss: %d", STAGE_OFFSET(EVENT_MISS));
             ImGui::NextColumn();
-            ImGui::Text("%df", DataRef<DATA_FRAME>());
+            ImGui::Text("Frame: %d", DataRef<DATA_FRAME>());
             ImGui::NextColumn();
             PRT_WITH_SO("Bomb: %d", STAGE_OFFSET(EVENT_BOMB) + STAGE_OFFSET(EVENT_DEATH_BOMB));
             ImGui::NextColumn();
             PRT_WITH_SO("D. Bomb: %d", STAGE_OFFSET(EVENT_DEATH_BOMB));
-            ImGui::NextColumn();
+            /* ImGui::NextColumn();
             ImGui::Text("SC Enter: %d", DataRef<EVENT_SPELLCARD_ENTER>());
             ImGui::NextColumn();
-            ImGui::Text("SC Get: %d", DataRef<EVENT_SPELLCARD_GET>());
+            ImGui::Text("SC Get: %d", DataRef<EVENT_SPELLCARD_GET>());*/
             ImGui::Columns();
             ImGui::Separator();
 
-             */
             //ImGui::Text("Chapter NM Rate: %d/%d", 1, 1);
-            //ImGui::Separator();
+            ImGui::Separator();
 
-            //InputDispWidget(0, 1, 3, 4, 5, 6, 7, 9);
+            InputDispWidget(0, 1, 3, 4, 5, 6, 7, 9);
         }
         virtual void OnPreUpdate() override
         {
             ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
             if (!DataRef<SYSFLAG_INGAME>()) {
+                *mAuxDisp = false;
                 Close();
                 return;
             }
@@ -1912,16 +1911,39 @@ namespace TH15 {
         DataRef<DATA_STAGE>(U8_ARG(0x4e73f0));
         DataRef<DATA_STARTING_STAGE>(U8_ARG(0x4e73f4));
 
-        DataRef<DATA_SCORE>(U8_ARG(0x4e740c));
+        DataRef<DATA_FRAME>(U32_ARG(0x4e73fc));
+        DataRef<DATA_HIGH_SCORE>(U32_ARG(0x4e75bc));
+        DataRef<DATA_SCORE>(U32_ARG(0x4e740c));
         DataRef<DATA_POWER>(U8_ARG(0x4e7440));
+        DataRef<DATA_LIFE>(U8_ARG(0x4e7450));
+        DataRef<DATA_LIFE_FRAG>(U8_ARG(0x4e7454));
+        DataRef<DATA_BOMB>(U8_ARG(0x4e745c));
+        DataRef<DATA_BOMB_FRAG>(U8_ARG(0x4e7460));
+        DataRef<DATA_CHAPTER_GRAZE>(U32_ARG(0x4e7420));
+        DataRef<DATA_GRAZE>(U32_ARG(0x4e741c));
+        DataRef<DATA_ITEM_POINT>(U32_ARG(0x4e7430));
 
-        DataBatch<DATA_SCORE /*, DATA_LIFE, DATA_EXTEND, DATA_LIFE_FRAG, DATA_BOMB, DATA_BOMB_FRAG,
-            DATA_POWER, DATA_VALUE, DATA_GRAZE, DATA_TRANCE_METER,
-            DATA_SPIRIT_BLUE, DATA_SPIRIT_GREY, DATA_SPIRIT_LIFE, DATA_SPIRIT_BOMB,
-            DATA_SPIRIT_BLUE_TRANCE, DATA_SPIRIT_GREY_TRANCE, DATA_SPIRIT_LIFE_TRANCE, DATA_SPIRIT_BOMB_TRANCE,
-            DATA_ITEM_POWER, DATA_ITEM_POINT, DATA_ITEM_CANCEL,
-            EVENT_MISS, EVENT_BOMB, EVENT_DEATH_BOMB, EVENT_TRANCE_ACTIVE, EVENT_TRANCE_PASSIVE, EVENT_TRANCE_EXIT, EVENT_CONTINUE*/>();
+        DataRef<DATA_GAME_INPUT>(U16_ARG(0x4e6f28));
 
+        ImHook<EVENT_BOMB>((void*)0x41497a, [](PCONTEXT pCtx) {
+            AnlyEventRec(EVENT_BOMB);
+            DataRef<EVENT_BOMB>()++;
+        });
+
+        //0044FAB0 extend
+
+        ImHook<EVENT_DEATH_BOMB>((void*)0x454cf0, [](PCONTEXT pCtx) {
+            AnlyEventRec(EVENT_DEATH_BOMB);
+            DataRef<EVENT_DEATH_BOMB>()++;
+        });
+
+        ImHook<EVENT_MISS>((void*)0x454bbd, [](PCONTEXT pCtx) {
+            AnlyEventRec(EVENT_MISS);
+            DataRef<EVENT_MISS>()++;
+        });
+
+        DataBatch<DATA_SCORE, DATA_FRAME, DATA_POWER, DATA_LIFE, DATA_LIFE_FRAG, DATA_BOMB, DATA_BOMB_FRAG, DATA_ITEM_POINT,
+            EVENT_MISS, EVENT_BOMB, EVENT_DEATH_BOMB>();
         
         DataBatchCache<0>(true);
     }
@@ -1932,7 +1954,7 @@ namespace TH15 {
         AnlyDataStageStart();
         DataBatchCache<0>(true);
         AnlyDataCollect();
-        InsHookApply();
+        //InsHookApply();
         DataRef<SYSFLAG_INGAME>() = 1;
     }
 
@@ -2018,6 +2040,7 @@ namespace TH15 {
         thPracParam._playLock = true;
 
         THDataStage();
+        DataBatchResetRem();
     }
     EHOOK_DY(th15_bgm, 0x43d5c1)
     {
