@@ -2366,6 +2366,13 @@ namespace TH08 {
     {
         GameGuiRender(IMPL_WIN32_DX8);
     }
+    // Exactly one instruction before th08_gui_create_2
+    EHOOK_DY(th08_recreate_device, 0x442A7E)
+    {
+        GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700, 0x442390,
+            Gui::INGAGME_INPUT_GEN1, 0x164d528, 0x164d530, 0x164d538,
+            -1);
+    }
     HOOKSET_ENDDEF()
 
     HOOKSET_DEFINE(THInitHook)
@@ -2405,7 +2412,7 @@ namespace TH08 {
         THGuiCreate();
         THInitHookDisable();
     }
-    EHOOK_DY(th08_gui_init_2, 0x442a7a)
+    EHOOK_DY(th08_gui_init_2, 0x442a7f)
     {
         THGuiCreate();
         THInitHookDisable();
