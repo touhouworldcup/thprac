@@ -1177,10 +1177,13 @@ namespace TH185 {
                                         { .off = 0x208, .bytes = { 0x00, 0x00, 0x24, 0x00 } }
                                     } },
                                     { "Boss26Boss1", {
+                                        // lifeMarker(1, 2000.0f, -24448);
                                         // @Boss26BossCard1();
                                         // ret();
-                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(26, 1) } }
-                                    } }
+                                    { .off = 0x10, .bytes = {
+                                        0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFA, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
+                                        BOSS_SPELL_CARD_ASYNC(26, 1)
+                                    } } } }
                                 }
                             },
                             {
