@@ -18,6 +18,8 @@ namespace TH185 {
         CARD_DESC_LIST = 0x4ca370
     };
 
+    bool isItemEnabled = false;
+
     __declspec(noinline) void AddCard(uint32_t cardId)
     {
         auto real_AddCard = (void(__thiscall*)(uint32_t, uint32_t, uint32_t))0x414F20;
@@ -1862,6 +1864,10 @@ namespace TH185 {
     PATCH_ST(th185_prac_disable_arrows, 0x46d39f, "\xe9\xcd\x00\x00\x00", 5);
     EHOOK_G1(th185_prac_leave, 0x46d481)
     {
+        if (isItemEnabled) {
+            pCtx->Eip = 0x46d9c0;
+            return;
+        }
         th185_prac_leave::GetHook().Disable();
         THGuiPrac::singleton().State(2);
         th185_prac_disable_arrows.Disable();
@@ -1881,7 +1887,10 @@ namespace TH185 {
         THOverlay::singleton().Update();
         THGuiPrac::singleton().Update();
 
-        GameGuiEnd(UpdateAdvOptWindow());
+        bool drawCursor = UpdateAdvOptWindow();
+        isItemEnabled = ImGui::IsAnyItemActive();
+
+        GameGuiEnd(drawCursor);
     }
     EHOOK_DY(th185_gui_render, 0x4014fa)
     {
@@ -1956,6 +1965,10 @@ namespace TH185 {
     }
     EHOOK_DY(th185_prac_confirm, 0x46d523)
     {
+        if (isItemEnabled) {
+            pCtx->Eip = 0x46d9c0;
+            return;
+        }
         auto& p = THGuiPrac::singleton();
         if (p.IsOpen()) {
             p.State(1);

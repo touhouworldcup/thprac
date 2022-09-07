@@ -1,4 +1,5 @@
 ﻿#include "thprac_gui_components.h"
+#include <Shlwapi.h>
 
 namespace THPrac
 {
@@ -550,7 +551,14 @@ namespace THPrac
             snprintf(labelStr, bufSize + 1, format, level);
 
             if (ImGui::BeginCombo(labelStr, choices[out[level]])) {
+                static char search[1024] = {};
+                ImGui::InputText("Search", search, 1024);
                 for (size_t i = 0; i < choices.size(); i++) {
+                    if (*search) {
+                        if (!StrStrIA(choices[i], search))
+                            continue;
+                    }
+
                     ImGui::PushID(i);
 
                     bool item_selected = (i == out[level]);
