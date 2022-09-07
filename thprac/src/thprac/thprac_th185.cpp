@@ -1867,6 +1867,8 @@ namespace TH185 {
         th185_prac_disable_arrows.Disable();
         pCtx->Eip = 0x46d9c0;
     }
+    PATCH_ST(th185_unhardcode_nitori, 0x43d100, "\xeb", 1);
+    PATCH_ST(th185_unhardcode_takane, 0x43d12b, "\xeb", 1);
 
     HOOKSET_DEFINE(THMainHook)
 
@@ -1896,6 +1898,10 @@ namespace TH185 {
             *(int32_t*)(0x4d106c) = thPracParam.funds;
             *(int32_t*)(0x4d10bc) = thPracParam.life;
             *(int32_t*)(0x4d1038) = thPracParam.difficulty;
+
+            th185_unhardcode_nitori.Enable();
+            th185_unhardcode_takane.Enable();
+
             // I want additional cards to always appear in the same wave slot
             // but ZUN never initializes this variable outside the ecl script
             // therefore, I have to set it myself.
@@ -1906,6 +1912,9 @@ namespace TH185 {
                 AddCard(c);
 
             thPracParam.__waves_forced = 0;
+        } else {
+            th185_unhardcode_nitori.Disable();
+            th185_unhardcode_takane.Disable();
         }
     }
     EHOOK_DY(th185_restart, 0x45f86d)
@@ -1975,6 +1984,8 @@ namespace TH185 {
         THGuiPrac::singleton();
 
         th185_prac_disable_arrows.Setup();
+        th185_unhardcode_nitori.Setup();
+        th185_unhardcode_takane.Setup();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
