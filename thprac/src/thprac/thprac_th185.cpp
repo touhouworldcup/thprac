@@ -2054,8 +2054,7 @@ namespace TH185 {
         th185_prac_disable_arrows.Disable();
         pCtx->Eip = 0x46d9c0;
     }
-    PATCH_ST(th185_unhardcode_nitori, 0x43d100, "\xeb", 1);
-    PATCH_ST(th185_unhardcode_takane, 0x43d12b, "\xeb", 1);
+    PATCH_ST(th185_unhardcode_bosses, 0x43d0f6, "\xeb", 1);
 
     HOOKSET_DEFINE(THMainHook)
 
@@ -2068,10 +2067,7 @@ namespace TH185 {
         THOverlay::singleton().Update();
         THGuiPrac::singleton().Update();
 
-        bool drawCursor = UpdateAdvOptWindow();
-        isItemEnabled = ImGui::IsAnyItemActive();
-
-        GameGuiEnd(drawCursor);
+        GameGuiEnd(UpdateAdvOptWindow() || isItemEnabled);
     }
     EHOOK_DY(th185_gui_render, 0x4014fa)
     {
@@ -2089,8 +2085,7 @@ namespace TH185 {
             *(int32_t*)(0x4d10bc) = thPracParam.life;
             *(int32_t*)(0x4d1038) = thPracParam.difficulty;
 
-            th185_unhardcode_nitori.Enable();
-            th185_unhardcode_takane.Enable();
+            th185_unhardcode_bosses.Enable();
 
             // I want additional cards to always appear in the same wave slot
             // but ZUN never initializes this variable outside the ecl script
@@ -2102,8 +2097,7 @@ namespace TH185 {
 
             thPracParam.__waves_forced = 0;
         } else {
-            th185_unhardcode_nitori.Disable();
-            th185_unhardcode_takane.Disable();
+            th185_unhardcode_bosses.Disable();
         }
     }
     EHOOK_DY(th185_restart, 0x45f86d)
@@ -2177,8 +2171,7 @@ namespace TH185 {
         THGuiPrac::singleton();
 
         th185_prac_disable_arrows.Setup();
-        th185_unhardcode_nitori.Setup();
-        th185_unhardcode_takane.Setup();
+        th185_unhardcode_bosses.Setup();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
