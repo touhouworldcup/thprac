@@ -132,9 +132,7 @@ namespace TH185 {
             }) } };
     };
 
-    // If a mod somehow changes the amount of stages there are
-    // and increases it, I want to account for that
-    std::vector<stage_warps_t> stages = {};
+    stage_warps_t stages[9] = {};
 
     class THGuiPrac : public Gui::GameGuiWnd {
         THGuiPrac() noexcept
@@ -312,8 +310,6 @@ namespace TH185 {
                 cards.push_back(XSTR(cardId));
             }
 
-            stages = {};
-                        
             for (size_t i = 0; i < 9; i++) {
                 stage_warps_t stage = {
                     .label = "Progress",
@@ -1601,7 +1597,7 @@ namespace TH185 {
                     };
                     break;
                 };
-                stages.push_back(stage);
+                stages[i] = stage;
             }
         }
         virtual void OnContentUpdate() override
@@ -1714,8 +1710,7 @@ namespace TH185 {
         {
             mMode();
             if (*mMode == 1) {
-                if (stages.size() > mStage)
-                    StageWarpsRender(stages[mStage], mWarp, 0);
+                StageWarpsRender(stages[mStage], mWarp, 0);
                 
                 mLife();
                 mFunds();
@@ -1915,8 +1910,7 @@ namespace TH185 {
             // but ZUN never initializes this variable outside the ecl script
             // therefore, I have to set it myself.
             *(int32_t*)(0x4d1024) = 1;
-            if (stages.size() > thPracParam.stage)
-                StageWarpsApply(stages[thPracParam.stage], thPracParam.warp, ThModern_ECLGetSub, GetMemContent(0x004d7af4, 0x4f34, 0x10c), 0);
+            StageWarpsApply(stages[thPracParam.stage], thPracParam.warp, ThModern_ECLGetSub, GetMemContent(0x004d7af4, 0x4f34, 0x10c), 0);
             for (auto& c : thPracParam.additional_cards)
                 AddCard(c);
 
