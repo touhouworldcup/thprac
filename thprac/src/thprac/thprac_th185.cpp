@@ -1296,7 +1296,7 @@ namespace TH185 {
                         }
                     };
                     stage.section_param[7].phases = {
-                        .label = "Attack",
+                        .label = "Boss",
                         .type = stage_warps_t::TYPE_COMBO,
                         .section_param = {
                             {
@@ -1583,7 +1583,7 @@ namespace TH185 {
                         }
                     };
                     stage.section_param[7].phases = {
-                        .label = "Attack",
+                        .label = "Boss",
                         .type = stage_warps_t::TYPE_COMBO,
                         .section_param = {
                             {
@@ -1881,7 +1881,7 @@ namespace TH185 {
                             }
                         },
                         {
-                            .label = "Boss",
+                            .label = "Chimata Tenkyuu",
                             .jumps = {
                                 { "main", {
                                     { .off = 0x29c, .dest = 0x668 }
