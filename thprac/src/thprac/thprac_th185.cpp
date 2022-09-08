@@ -3,23 +3,6 @@
 
 namespace THPrac {
 namespace TH185 {
-
-    #define FORCE_BOSS(boss_index, start_index) \
-        0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 0), 0x03 * (boss_index == 0), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index), 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, \
-        0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 1), 0x03 * (boss_index == 1), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index) + 1, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, \
-        0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 2), 0x03 * (boss_index == 2), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index) + 2, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, \
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x00, 0x01, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x5E, 0xD9, 0xFF, 0xFF, \
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
-        0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 3), 0x03 * (boss_index == 3), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index) + 3, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00
-
-    #define FORCE_BOSS_C(boss_index, start_index) \
-        0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 0), 0x03 * (boss_index == 0), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index),     0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, \
-        0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 1), 0x03 * (boss_index == 1), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index) + 1, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, \
-        0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 2), 0x03 * (boss_index == 2), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index) + 2, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, \
-        0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 3), 0x03 * (boss_index == 3), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index) + 3, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00
-
-    #define BOSS_SPELL_CARD_ASYNC(boss_id, spell_id) 0x00, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x24, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x42, 0x6F, 0x73, 0x73, boss_id / 10 + 0x30, boss_id % 10 + 0x30, 0x42, 0x6F, 0x73, 0x73, 0x43, 0x61, 0x72, 0x64, 0x30+spell_id, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x10, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00
-
     enum addrs {
         BLACK_MARKET_PTR = 0x4d7ac4,
         CARD_DESC_LIST = 0x4ca370
@@ -36,7 +19,6 @@ namespace TH185 {
 
     struct THPracParam {
         int32_t mode;
-        uint32_t stage;
 
         int32_t bulletMoney;
         int32_t funds;
@@ -50,6 +32,2629 @@ namespace TH185 {
         size_t __waves_forced;
     };
     THPracParam thPracParam {};
+    stage_warps_t warps = {};
+
+    bool StageWarpsLoad(size_t stage, stage_warps_t& out) {
+#define FORCE_BOSS(boss_index, start_index)                                                                                                                                                                  \
+    0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 0), 0x03 * (boss_index == 0), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index), 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,         \
+        0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 1), 0x03 * (boss_index == 1), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index) + 1, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, \
+        0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 2), 0x03 * (boss_index == 2), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index) + 2, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, \
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x00, 0x01, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x5E, 0xD9, 0xFF, 0xFF,                                                                              \
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,                                                      \
+        0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 3), 0x03 * (boss_index == 3), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index) + 3, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00
+
+#define FORCE_BOSS_C(boss_index, start_index)                                                                                                                                                                \
+    0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 0), 0x03 * (boss_index == 0), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index), 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,         \
+        0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 1), 0x03 * (boss_index == 1), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index) + 1, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, \
+        0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 2), 0x03 * (boss_index == 2), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index) + 2, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, \
+        0x00, 0x00, 0x00, 0x00, 0xF3 * (boss_index == 3), 0x03 * (boss_index == 3), 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, (start_index) + 3, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00
+
+#define BOSS_SPELL_CARD_ASYNC(boss_id, spell_id) 0x00, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x24, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x42, 0x6F, 0x73, 0x73, boss_id / 10 + 0x30, boss_id % 10 + 0x30, 0x42, 0x6F, 0x73, 0x73, 0x43, 0x61, 0x72, 0x64, 0x30 + spell_id, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x10, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00
+
+        out = {
+            .label = "Progress",
+            .type = stage_warps_t::TYPE_SLIDER,
+        };
+        switch (stage) {
+        case 0:
+            out.section_param = {
+                {
+                    .label = "Tutorial"
+                },
+                {
+                    .label = "Wave 1",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x188, .dest = 0x230 }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 2",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x188, .dest = 0x2fc }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x184, .bytes = { 2 } }
+                        } } 
+                    }
+                },
+                {
+                    .label = "Wave 3",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x188, .dest = 0x3b8 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x184, .bytes = { 3 } }
+                        } } 
+                    }
+                },
+                {
+                    .label = "Boss",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x188, .dest = 0x488 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x184, .bytes = { 4 } }
+                        } } 
+                    }
+                }
+            };
+            out.section_param[4].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Dialog"
+                    },
+                    {
+                        .label = "Nonspell",
+                        .writes {
+                            { "Boss01tBoss", {
+                                { .off = 0x220, .bytes = { 0x00, 0x00, 0x24, 0x00 } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Beckon Sign \"Danmaku Business Boom\"",
+                        .writes {
+                            { "Boss01tBoss", {
+                                { .off = 0x220, .bytes = { 0x00, 0x00, 0x24, 0x00 } },
+                                { .off = 0x1b0, .bytes = { 0x84, 0x03, 0x00, 0x00 } }
+                            } }
+                        }
+                    }
+                }
+            };
+            break;
+        case 1:
+            out.section_param = {
+                { 
+                    .label = "Wave 1"
+                },
+                { 
+                    .label = "Wave 2",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x380 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                { 
+                    .label = "Wave 3",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x44c }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x03, 0x00, 0x00, 0x00 }}
+                        } }
+                    }
+                },
+                { 
+                    .label = "Boss",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x530 }
+                        } }
+                    }
+                }
+            };
+            out.section_param[3].phases = {
+                .label = "Boss",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "None (Random)"
+                    },
+                    {
+                        .label = "Mike Goutokuji",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(0, 2) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Minoriko Aki",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(1, 2) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Eternity Larva",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(2, 2) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Nemuno Sakata",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(3, 2) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[3].phases->section_param[1].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Money Sign \"Casting Koban Coins Before a Calico Cat\"",
+                        .writes = {
+                            { "Boss01Boss", {
+                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss01Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(1, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[3].phases->section_param[2].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Autumn Sign \"Bumper Crop Waves\"",
+                        .writes = {
+                            { "Boss02Boss", {
+                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss02Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(2, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[3].phases->section_param[3].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Butterfly Sign \"Deadly Butterfly\"",
+                        .writes = {
+                            { "Boss03Boss", {
+                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss03Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(3, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[3].phases->section_param[4].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Kitchen Knife \"Mince Up Till Your Blade Chips\"",
+                        .writes = {
+                            { "Boss04Boss", {
+                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss04Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(4, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            break;
+        case 2:
+            out.section_param = {
+                {
+                    .label = "Wave 1",
+                },
+                {
+                    .label = "Wave 2",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x380 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 3",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x44c }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 4",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x51c }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Boss",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x5fc }
+                        } }
+                    }
+                }
+            };
+            out.section_param[4].phases = {
+                .label = "Boss",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "None (Random)"
+                    },
+                    {
+                        .label = "Cirno",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(0, 6) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Wakasagihime",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(1, 6) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Sekibanki",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(2, 6) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Urumi Ushizaki",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(3, 6) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[4].phases->section_param[1].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"Perfect Freeeeeeeeze!\"",
+                        .writes = {
+                            { "Boss05Boss", {
+                                { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss05Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(5, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[4].phases->section_param[2].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Song Sign \"Mermaid's Song\"",
+                        .writes = {
+                            { "Boss06Boss", {
+                                { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss06Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(6, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[4].phases->section_param[3].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"Life of a Nimble Severed Head\"",
+                        .writes = {
+                            { "Boss07Boss", {
+                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss07Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(7, 1)} }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[4].phases->section_param[4].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"Ripples of Rapacity\"",
+                        .writes = {
+                            { "Boss08Boss", {
+                                { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss08Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(8, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            break;
+        case 3:
+            out.section_param = {
+                {
+                    .label = "Wave 1",
+                },
+                {
+                    .label = "Wave 2",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x380 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 3",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x44c }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 4",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x51c }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 5",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x5e8 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Boss",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x6cc }
+                        } }
+                    },
+                }
+            };
+            out.section_param[5].phases = {
+                .label = "Boss",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "None (Random)"
+                    },
+                    {
+                        .label = "Eika Ebisu",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(0, 10) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Kutaka Niwatari",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(1, 10) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Narumi Yatadera",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(2, 10) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Komachi Onozuka",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(3, 10) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[5].phases->section_param[1].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Stone Sign \"Red Stone Stack of Aja\"",
+                        .writes = {
+                            { "Boss09Boss", {
+                                { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
+                            } },
+                            { "Boss09Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(9, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[5].phases->section_param[2].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"Watershed of Life\"",
+                        .writes = {
+                            { "Boss10Boss", {
+                                { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
+                            } },
+                            { "Boss10Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(10, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[5].phases->section_param[3].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"5.67 Billion Years of Menial Labour\"",
+                        .writes = {
+                            { "Boss11Boss", {
+                                { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
+                            } },
+                            { "Boss11Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(11, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[5].phases->section_param[4].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"Money and Death Busily Piling Up.\"",
+                        .writes = {
+                            { "Boss12Boss", {
+                                { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
+                            } },
+                            { "Boss12Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(12, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            break;
+        case 4:
+            out.section_param = {
+                {
+                    .label = "Wave 1",
+                },
+                {
+                    .label = "Wave 2",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x380 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 3",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x44c }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 4",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x518 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 5",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x5e4 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Boss",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x6c4 }
+                        } }
+                    },
+                }
+            };
+            out.section_param[5].phases = {
+                .label = "Boss",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "None (Random)"
+                    },
+                    {
+                        .label = "Sanae Kochiya",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(0, 14) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Sakuya Izayoi",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(1, 14) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Youmu Konpaku",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(2, 14) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Reimu Hakurei",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(3, 14) } }
+                            } }
+                        }
+                    }, 
+                    {
+                        .label = "Nitori Kawashiro",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = {  
+                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 14, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
+                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 15, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
+                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 16, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
+                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x00, 0x01, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x5E, 0xD9, 0xFF, 0xFF,
+                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                0x00, 0x00, 0x00, 0x00, 0xF3, 0x03, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 27, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00 } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[5].phases->section_param[1].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Miracle \"Miracle Pentacle\"",
+                        .writes = {
+                            { "Boss13Boss", {
+                                { .off = 0x1b0, .bytes = { 0x98, 0x08, 0x00, 0x00 } }
+                            } },
+                            { "Boss13Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(13, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[5].phases->section_param[2].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Time Sign \"Eye-wink Knife Hell\"",
+                        .writes = {
+                            { "Boss14Boss", {
+                                { .off = 0x1b0, .bytes = { 0x98, 0x08, 0x00, 0x00 } }
+                            } },
+                            { "Boss14Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(14, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[5].phases->section_param[3].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Swordmanship \"Mouryou Wiping Blood From Their Blades\"",
+                        .writes = {
+                            { "Boss15Boss", {
+                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
+                            } },
+                            { "Boss15Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(15, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[5].phases->section_param[4].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"Full House Amulets: Bullet Money Bonus Packets\"",
+                        .writes = {
+                            { "Boss16Boss", {
+                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
+                            } },
+                            { "Boss16Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(16, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[5].phases->section_param[5].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Dialogue"
+                    },
+                    {
+                        .label = "Nonspell",
+                        .writes = {
+                            { "Boss26Boss", {
+                                { .off = 0x208, .bytes = {  0x00, 0x00, 0x24, 0x00 } }
+                            } },
+                        }
+                    },
+                    {
+                        .label = "Weapon \"Water Flamethrower\"",
+                        .writes = {
+                            { "Boss26Boss", {
+                                { .off = 0x1b0, .bytes = { 0xa0, 0x0f, 0x00, 0x00 } },
+                                { .off = 0x208, .bytes = { 0x00, 0x00, 0x24, 0x00 } }
+                            } },
+                            { "Boss26Boss1", {
+                                { .off = 0x10, .bytes = {
+                                    0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFA, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
+                                    BOSS_SPELL_CARD_ASYNC(26, 1)
+                                }
+                            } } }
+                        }
+                    },
+                    {
+                        .label = "\"Like the Flow of the Mountain Marsh\"",
+                        .writes = {
+                            { "Boss26Boss", {
+                                { .off = 0x1b0, .bytes = { 0xd0, 0x07, 0x00, 0x00 } },
+                                { .off = 0x208, .bytes = { 0x00, 0x00, 0x24, 0x00 } }
+                            } },
+                            { "Boss26Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(26, 2) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            break;
+        case 5:
+            out.section_param = {
+                {
+                    .label = "Wave 1",
+                },
+                {
+                    .label = "Wave 2",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x28c, .dest = 0x3b4 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x28a, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 3",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x28c, .dest = 0x480 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x28a, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 4",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x28c, .dest = 0x54c }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x28a, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 5",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x28c, .dest = 0x618 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x28a, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 6",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x28c, .dest = 0x6e4 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x28a, .bytes = { 0x06, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 7",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x28c, .dest = 0x7b0 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x28a, .bytes = { 0x07, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Boss",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x28c, .dest = 0x890 }
+                        } }
+                    },
+                }
+            };
+            out.section_param[7].phases = {
+                .label = "Boss",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "None (Random)"
+                    },
+                    {
+                        .label = "Tsukasa Kudamaki",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(0, 18) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Megumu Iizunamaru",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(1, 18) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Clownpiece",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(2, 18) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Tenshi Hinanawi",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(3, 18) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[7].phases->section_param[1].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Fox Sign \"Delayed Pipe Fox Bullet\"",
+                        .writes = {
+                            { "Boss17Boss", {
+                                { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
+                            } },
+                            { "Boss17Boss1", {
+                                { .off = 0x10, .bytes = { 
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(17, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "Fox Sign \"Wickedness Within the Pipe\"",
+                        .writes = {
+                            { "Boss17Boss", {
+                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
+                            } },
+                            { "Boss17Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(17, 2) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[7].phases->section_param[2].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Star Sign \"Star of Ingenuous Brilliance\"",
+                        .writes = {
+                            { "Boss18Boss", {
+                                { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
+                            } },
+                            { "Boss18Boss1", {
+                                { .off = 0x10, .bytes = {
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(18, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "Wind Sign \"Wind of Lonesome Emptiness\"",
+                        .writes = {
+                            { "Boss18Boss", {
+                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
+                            } },
+                            { "Boss18Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(18, 2) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[7].phases->section_param[3].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Great Blaze \"The Very, Very Bottom of Hell's Cauldron\"",
+                        .writes = {
+                            { "Boss19Boss", {
+                                { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
+                            } },
+                            { "Boss19Boss1", {
+                            { .off = 0x10, .bytes = {
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(19, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "\"Lunatic Torch Relay\"",
+                        .writes = {
+                            { "Boss19Boss", {
+                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
+                            } },
+                            { "Boss19Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(19, 2) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[7].phases->section_param[4].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Keystone \"Qian & Kun Rumbling Cannon\"",
+                        .writes = {
+                            { "Boss20Boss", {
+                                { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
+                            } },
+                            { "Boss20Boss1", {
+                            { .off = 0x10, .bytes = {
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(20, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "Keystone \"Diffuse Qian & Kun Rumbling Cannon\"",
+                        .writes = {
+                            { "Boss20Boss", {
+                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
+                            } },
+                            { "Boss20Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(20, 2) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            break;
+        case 6:
+            out.section_param = {
+                {
+                    .label = "Wave 1",
+                },
+                {
+                    .label = "Wave 2",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x380 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 3",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x44c }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 4",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x518 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 5",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x5e4 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 6",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x6b0 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x06, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 7",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x77c }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x254, .bytes = { 0x07, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Boss",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x258, .dest = 0x84c }
+                        } }
+                    },
+                }
+            };
+            out.section_param[7].phases = {
+                .label = "Boss",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "None (Random)"
+                    },
+                    {
+                        .label = "Suika Ibuki",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(0, 22) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Mamizou Futatsuiwa",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(1, 22) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Saki Kurokoma",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(2, 22) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Momoyo Himemushi",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { FORCE_BOSS(3, 22) } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Takane Yamashiro",
+                        .writes = {
+                            { "WorldWaveB00", {
+                                { .off = 0x34, .bytes = { {
+                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
+                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x17, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 
+                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
+                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x00, 0x01, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x5E, 0xD9, 0xFF, 0xFF,
+                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                0x00, 0x00, 0x00, 0x00, 0xF3, 0x03, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00,   28, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00 } }
+                            } }
+                        } }
+                    }
+                }
+            };
+            out.section_param[7].phases->section_param[1].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Dense Sign \"Ongyouki of Density\"",
+                        .writes = {
+                            { "Boss22Boss", {
+                                { .off = 0x1b0, .bytes = { 0xa0, 0x0f, 0x00, 0x00 } }
+                            } },
+                            { "Boss22Boss1", {
+                            { .off = 0x10, .bytes = {
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x96, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(21, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "\"Chief General of the Will-o'-wisps\"",
+                        .writes = {
+                            { "Boss22Boss", {
+                                { .off = 0x1b0, .bytes = { 0xb0, 0x04, 0x00, 0x00 } }
+                            } },
+                            { "Boss22Boss1", {
+                            { .off = 0x10, .bytes = {
+                                BOSS_SPELL_CARD_ASYNC(21, 2)
+                            } } } }
+                        }
+                    }
+                }
+            };
+            out.section_param[7].phases->section_param[2].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"First and Last of Its Kind: Black Market with a Giant Queue\"",
+                        .writes = {
+                            { "Boss22Boss", {
+                                { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
+                            } },
+                            { "Boss22Boss1", {
+                            { .off = 0x10, .bytes = {
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x40, 0x4E, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(22, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "Danmaku Transformation \"Youkai Biocenosis\"",
+                        .writes = {
+                            { "Boss22Boss", {
+                                { .off = 0x1b0, .bytes = { 0x4a, 0x01, 0x00, 0x00 } }
+                            } },
+                            { "Boss22Boss1", {
+                            { .off = 0x10, .bytes = {
+                                BOSS_SPELL_CARD_ASYNC(22, 2)
+                            } } } }
+                        }
+                    }
+                }
+            };
+            out.section_param[7].phases->section_param[3].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Heavenly Stellar Steed \"Pegasus Cross\"",
+                        .writes = {
+                            { "Boss23Boss", {
+                                { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
+                            } },
+                            { "Boss23Boss1", {
+                            { .off = 0x10, .bytes = {
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x96, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(23, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "\"This Explosion is Muscle Strength!\"",
+                        .writes = {
+                            { "Boss23Boss", {
+                                { .off = 0x1b0, .bytes = { 0x4a, 0x01, 0x00, 0x00 } }
+                            } },
+                            { "Boss23Boss1", {
+                            { .off = 0x10, .bytes = {
+                                BOSS_SPELL_CARD_ASYNC(23, 2)
+                            } } } }
+                        }
+                    }
+                }
+            };
+            out.section_param[7].phases->section_param[4].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Heavenly Stellar Steed \"Pegasus Cross\"",
+                        .writes = {
+                            { "Boss24Boss", {
+                                { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
+                            } },
+                            { "Boss24Boss1", {
+                            { .off = 0x10, .bytes = {
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x96, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(24, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "\"This Explosion is Muscle Strength!\"",
+                        .writes = {
+                            { "Boss24Boss", {
+                                { .off = 0x1b0, .bytes = { 0x4a, 0x01, 0x00, 0x00 } }
+                            } },
+                            { "Boss24Boss1", {
+                            { .off = 0x10, .bytes = {
+                                BOSS_SPELL_CARD_ASYNC(24, 2)
+                            } } } }
+                        }
+                    }
+                }
+            };
+            out.section_param[7].phases->section_param[5].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Dialog"
+                    },
+                    {
+                        .label = "Nonspell",
+                        .writes = {
+                            { "Boss27Boss", {
+                                { .off = 0x208, .bytes = { 0, 0 } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Bullet Money \"Bullet Money Glut\"",
+                        .writes = {
+                            { "Boss27Boss", {
+                                { .off = 0x208, .bytes = { 0, 0 } },
+                                { .off = 0x1b0, .bytes = { 0x88, 0x2c, 0x00, 0x00 } }
+                            } },
+                            { "Boss27Boss1", {
+                                { .off = 0x10, .bytes = {
+                                    0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0xC0, 0xF3, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                    0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7A, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                    BOSS_SPELL_CARD_ASYNC(27, 1)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Leaf Skill \"Super Green Spiral\"",
+                        .writes = {
+                            { "Boss27Boss", {
+                                { .off = 0x208, .bytes = { 0, 0 } },
+                                { .off = 0x1b0, .bytes = { 0x78, 0x1e, 0x00, 0x00 } }
+                            } },
+                            { "Boss27Boss1", {
+                                { .off = 0x10, .bytes = {
+                                    0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7A, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                    BOSS_SPELL_CARD_ASYNC(27, 2)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "\"Black Market Kaleidoscope\"",
+                        .writes = {
+                            { "Boss27Boss", {
+                                { .off = 0x208, .bytes = { 0, 0 } },
+                                { .off = 0x1b0, .bytes = { 0xa0, 0x0f, 0x00, 0x00 } }
+                            } },
+                            { "Boss27Boss1", {
+                                { .off = 0x10, .bytes = {
+                                    BOSS_SPELL_CARD_ASYNC(27, 3)
+                                } }
+                            } }
+                        }
+                    }
+                }
+            };
+            break;
+        case 7:
+            out.section_param = {
+                {
+                    .label = "Wave 1",
+                },
+                {
+                    .label = "Wave 2",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x29c, .dest = 0x3d4 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x288, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 3",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x29c, .dest = 0x4b0 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x288, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 4",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x29c, .dest = 0x58c }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x288, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Chimata Tenkyuu",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x29c, .dest = 0x67c }
+                        } }
+                    },
+                }
+            };
+            out.section_param[4].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Dialog"
+                    },
+                    {
+                        .label = "Nonspell",
+                        .writes = {
+                            { "Boss25Boss", {
+                                { .off = 0x208, .bytes = { 0, 0 } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "\"Legitimate Bullet Market\"",
+                        .writes = {
+                            { "Boss25Boss", {
+                                { .off = 0x208, .bytes = { 0, 0 } },
+                                { .off = 0x1b0, .bytes = { 0x58, 0x1b, 0x00, 0x00 } }
+                            } },
+                            { "Boss25Boss1", {
+                                { .off = 0x10, .bytes = {
+                                    0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7A, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                    BOSS_SPELL_CARD_ASYNC(25, 1)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "\"Black Market Michigan Roll\"",
+                        .writes = {
+                            { "Boss25Boss", {
+                                { .off = 0x208, .bytes = { 0, 0 } },
+                                { .off = 0x1b0, .bytes = { 0xa0, 0x0f, 0x00, 0x00 } }
+                            } },
+                            { "Boss25Boss1", {
+                                { .off = 0x10, .bytes = {
+                                    BOSS_SPELL_CARD_ASYNC(25, 2)
+                                } }
+                            } }
+                        }
+                    }
+                }
+            };
+            break;
+        case 8:
+            out.section_param = {
+                {
+                    .label = "Wave 1",
+                },
+                {
+                    .label = "Wave 2 (Boss)",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x434, .dest = 0x52c }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x3f0, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 3",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x434, .dest = 0x628 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x3f0, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 4 (Boss)",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x434, .dest = 0x6d8 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x3f0, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 5",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x434, .dest = 0x7d4 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x3f0, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 6 (Boss)",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x434, .dest = 0x884 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x3f0, .bytes = { 0x06, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 7",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x434, .dest = 0x980 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x3f0, .bytes = { 0x07, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 8 (Boss)",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x434, .dest = 0xa30 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x3f0, .bytes = { 0x08, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 9",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x434, .dest = 0xb2c }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x3f0, .bytes = { 0x09, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 10 (Boss)",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x434, .dest = 0xbdc }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x3f0, .bytes = { 0x0a, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 11",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x434, .dest = 0xcd8 }
+                        } }
+                    },
+                    .writes = {
+                        { "main", {
+                            { .off = 0x3f0, .bytes = { 0x0b, 0x00, 0x00, 0x00 } }
+                        } }
+                    }
+                },
+                {
+                    .label = "Wave 12 (Boss)",
+                    .jumps = {
+                        { "main", {
+                            { .off = 0x434, .dest = 0xd88 }
+                        } }
+                    }
+                },
+            };
+            out.section_param[1].phases = {
+                .label = "Boss",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "None (Random)"
+                    },
+                    {
+                        .label = "Mike Goutokuji",
+                        .writes = {
+                            { "WorldWaveB01", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(0, 2)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Minoriko Aki",
+                        .writes = {
+                            { "WorldWaveB01", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(1, 2)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Eternity Larva",
+                        .writes = {
+                            { "WorldWaveB01", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(2, 2)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Nemuno Sakata",
+                        .writes = {
+                            { "WorldWaveB01", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(3, 2)
+                                } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[3].phases = {
+                .label = "Boss",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "None (Random)"
+                    },
+                    {
+                        .label = "Cirno",
+                        .writes = {
+                            { "WorldWaveB02", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(0, 6)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Wakasagihime",
+                        .writes = {
+                            { "WorldWaveB02", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(1, 6)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Sekibanki",
+                        .writes = {
+                            { "WorldWaveB02", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(2, 6)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Urumi Ushizaki",
+                        .writes = {
+                            { "WorldWaveB02", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(3, 6)
+                                } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[5].phases = {
+                .label = "Boss",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "None (Random)"
+                    },
+                    {
+                        .label = "Eika Ebisu",
+                        .writes = {
+                            { "WorldWaveB03", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(0, 10)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Kutaka Niwatari",
+                        .writes = {
+                            { "WorldWaveB03", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(1, 10)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Narumi Yatadera",
+                        .writes = {
+                            { "WorldWaveB03", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(2, 10)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Komachi Onozuka",
+                        .writes = {
+                            { "WorldWaveB03", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(3, 10)
+                                } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[7].phases = {
+                .label = "Boss",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "None (Random)"
+                    },
+                    {
+                        .label = "Sanae Kochiya",
+                        .writes = {
+                            { "WorldWaveB04", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(0, 14)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Sakuya Izayoi",
+                        .writes = {
+                            { "WorldWaveB04", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(1, 14)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Youmu Konpaku",
+                        .writes = {
+                            { "WorldWaveB04", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(2, 14)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Reimu Hakurei",
+                        .writes = {
+                            { "WorldWaveB04", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(3, 14)
+                                } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[9].phases = {
+                .label = "Boss",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "None (Random)"
+                    },
+                    {
+                        .label = "Tsukasa Kudamaki",
+                        .writes = {
+                            { "WorldWaveB05", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(0, 18)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Megumu Iizunamaru",
+                        .writes = {
+                            { "WorldWaveB05", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(1, 18)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Clownpiece",
+                        .writes = {
+                            { "WorldWaveB05", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(2, 18)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Tenshi Hinanawi",
+                        .writes = {
+                            { "WorldWaveB05", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(3, 18)
+                                } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[11].phases = {
+                .label = "Boss",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "None (Random)"
+                    },
+                    {
+                        .label = "Suika Ibuki",
+                        .writes = {
+                            { "WorldWaveB06", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(0, 22)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Mamizou Futatsuiwa",
+                        .writes = {
+                            { "WorldWaveB06", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(1, 22)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Saki Kurokoma",
+                        .writes = {
+                            { "WorldWaveB06", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(2, 22)
+                                } }
+                            } }
+                        }
+                    },
+                    {
+                        .label = "Momoyo Himemushi",
+                        .writes = {
+                            { "WorldWaveB06", {
+                                { .off = 0x34, .bytes = {
+                                    FORCE_BOSS_C(3, 22)
+                                } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[1].phases->section_param[1].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Money Sign \"Casting Koban Coins Before a Calico Cat\"",
+                        .writes = {
+                            { "Boss01Boss", {
+                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss01Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(1, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[1].phases->section_param[2].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Autumn Sign \"Bumper Crop Waves\"",
+                        .writes = {
+                            { "Boss02Boss", {
+                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss02Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(2, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[1].phases->section_param[3].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Butterfly Sign \"Deadly Butterfly\"",
+                        .writes = {
+                            { "Boss03Boss", {
+                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss03Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(3, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[1].phases->section_param[4].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Kitchen Knife \"Mince Up Till Your Blade Chips\"",
+                        .writes = {
+                            { "Boss04Boss", {
+                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss04Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(4, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[3].phases->section_param[1].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"Perfect Freeeeeeeeze!\"",
+                        .writes = {
+                            { "Boss05Boss", {
+                                { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss05Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(5, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[3].phases->section_param[2].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Song Sign \"Mermaid's Song\"",
+                        .writes = {
+                            { "Boss06Boss", {
+                                { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss06Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(6, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[3].phases->section_param[3].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"Life of a Nimble Severed Head\"",
+                        .writes = {
+                            { "Boss07Boss", {
+                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss07Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(7, 1)} }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[3].phases->section_param[4].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"Ripples of Rapacity\"",
+                        .writes = {
+                            { "Boss08Boss", {
+                                { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
+                            } },
+                            { "Boss08Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(8, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[5].phases->section_param[1].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Stone Sign \"Red Stone Stack of Aja\"",
+                        .writes = {
+                            { "Boss09Boss", {
+                                { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
+                            } },
+                            { "Boss09Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(9, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[5].phases->section_param[2].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"Watershed of Life\"",
+                        .writes = {
+                            { "Boss10Boss", {
+                                { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
+                            } },
+                            { "Boss10Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(10, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[5].phases->section_param[3].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"5.67 Billion Years of Menial Labour\"",
+                        .writes = {
+                            { "Boss11Boss", {
+                                { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
+                            } },
+                            { "Boss11Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(11, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[5].phases->section_param[4].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"Money and Death Busily Piling Up.\"",
+                        .writes = {
+                            { "Boss12Boss", {
+                                { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
+                            } },
+                            { "Boss12Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(12, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[7].phases->section_param[1].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Miracle \"Miracle Pentacle\"",
+                        .writes = {
+                            { "Boss13Boss", {
+                                { .off = 0x1b0, .bytes = { 0x98, 0x08, 0x00, 0x00 } }
+                            } },
+                            { "Boss13Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(13, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[7].phases->section_param[2].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Time Sign \"Eye-wink Knife Hell\"",
+                        .writes = {
+                            { "Boss14Boss", {
+                                { .off = 0x1b0, .bytes = { 0x98, 0x08, 0x00, 0x00 } }
+                            } },
+                            { "Boss14Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(14, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[7].phases->section_param[3].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Swordmanship \"Mouryou Wiping Blood From Their Blades\"",
+                        .writes = {
+                            { "Boss15Boss", {
+                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
+                            } },
+                            { "Boss15Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(15, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[7].phases->section_param[4].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"Full House Amulets: Bullet Money Bonus Packets\"",
+                        .writes = {
+                            { "Boss16Boss", {
+                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
+                            } },
+                            { "Boss16Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(16, 1) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[9].phases->section_param[1].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Fox Sign \"Delayed Pipe Fox Bullet\"",
+                        .writes = {
+                            { "Boss17Boss", {
+                                { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
+                            } },
+                            { "Boss17Boss1", {
+                                { .off = 0x10, .bytes = { 
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(17, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "Fox Sign \"Wickedness Within the Pipe\"",
+                        .writes = {
+                            { "Boss17Boss", {
+                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
+                            } },
+                            { "Boss17Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(17, 2) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[9].phases->section_param[2].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Star Sign \"Star of Ingenuous Brilliance\"",
+                        .writes = {
+                            { "Boss18Boss", {
+                                { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
+                            } },
+                            { "Boss18Boss1", {
+                                { .off = 0x10, .bytes = {
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(18, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "Wind Sign \"Wind of Lonesome Emptiness\"",
+                        .writes = {
+                            { "Boss18Boss", {
+                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
+                            } },
+                            { "Boss18Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(18, 2) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[9].phases->section_param[3].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Great Blaze \"The Very, Very Bottom of Hell's Cauldron\"",
+                        .writes = {
+                            { "Boss19Boss", {
+                                { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
+                            } },
+                            { "Boss19Boss1", {
+                                { .off = 0x10, .bytes = {
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(19, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "\"Lunatic Torch Relay\"",
+                        .writes = {
+                            { "Boss19Boss", {
+                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
+                            } },
+                            { "Boss19Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(19, 2) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[9].phases->section_param[4].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Keystone \"Qian & Kun Rumbling Cannon\"",
+                        .writes = {
+                            { "Boss20Boss", {
+                                { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
+                            } },
+                            { "Boss20Boss1", {
+                                { .off = 0x10, .bytes = {
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(20, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "Keystone \"Diffuse Qian & Kun Rumbling Cannon\"",
+                        .writes = {
+                            { "Boss20Boss", {
+                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
+                            } },
+                            { "Boss20Boss1", {
+                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(20, 2) } }
+                            } }
+                        }
+                    }
+                }
+            };
+            out.section_param[11].phases->section_param[1].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Dense Sign \"Ongyouki of Density\"",
+                        .writes = {
+                            { "Boss22Boss", {
+                                { .off = 0x1b0, .bytes = { 0xa0, 0x0f, 0x00, 0x00 } }
+                            } },
+                            { "Boss22Boss1", {
+                            { .off = 0x10, .bytes = {
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x96, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(21, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "\"Chief General of the Will-o'-wisps\"",
+                        .writes = {
+                            { "Boss22Boss", {
+                                { .off = 0x1b0, .bytes = { 0xb0, 0x04, 0x00, 0x00 } }
+                            } },
+                            { "Boss22Boss1", {
+                            { .off = 0x10, .bytes = {
+                                BOSS_SPELL_CARD_ASYNC(21, 2)
+                            } } } }
+                        }
+                    }
+                }
+            };
+            out.section_param[11].phases->section_param[2].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "\"First and Last of Its Kind: Black Market with a Giant Queue\"",
+                        .writes = {
+                            { "Boss22Boss", {
+                                { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
+                            } },
+                            { "Boss22Boss1", {
+                            { .off = 0x10, .bytes = {
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x40, 0x4E, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(22, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "Danmaku Transformation \"Youkai Biocenosis\"",
+                        .writes = {
+                            { "Boss22Boss", {
+                                { .off = 0x1b0, .bytes = { 0x4a, 0x01, 0x00, 0x00 } }
+                            } },
+                            { "Boss22Boss1", {
+                            { .off = 0x10, .bytes = {
+                                BOSS_SPELL_CARD_ASYNC(22, 2)
+                            } } } }
+                        }
+                    }
+                }
+            };
+            out.section_param[11].phases->section_param[3].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Heavenly Stellar Steed \"Pegasus Cross\"",
+                        .writes = {
+                            { "Boss23Boss", {
+                                { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
+                            } },
+                            { "Boss23Boss1", {
+                            { .off = 0x10, .bytes = {
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x96, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(23, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "\"This Explosion is Muscle Strength!\"",
+                        .writes = {
+                            { "Boss23Boss", {
+                                { .off = 0x1b0, .bytes = { 0x4a, 0x01, 0x00, 0x00 } }
+                            } },
+                            { "Boss23Boss1", {
+                            { .off = 0x10, .bytes = {
+                                BOSS_SPELL_CARD_ASYNC(23, 2)
+                            } } } }
+                        }
+                    }
+                }
+            };
+            out.section_param[11].phases->section_param[4].phases = {
+                .label = "Attack",
+                .type = stage_warps_t::TYPE_COMBO,
+                .section_param = {
+                    {
+                        .label = "Nonspell"
+                    },
+                    {
+                        .label = "Heavenly Stellar Steed \"Pegasus Cross\"",
+                        .writes = {
+                            { "Boss24Boss", {
+                                { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
+                            } },
+                            { "Boss24Boss1", {
+                            { .off = 0x10, .bytes = {
+                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x96, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
+                                BOSS_SPELL_CARD_ASYNC(24, 1)
+                            } } } }
+                        }
+                    },
+                    {
+                        .label = "\"This Explosion is Muscle Strength!\"",
+                        .writes = {
+                            { "Boss24Boss", {
+                                { .off = 0x1b0, .bytes = { 0x4a, 0x01, 0x00, 0x00 } }
+                            } },
+                            { "Boss24Boss1", {
+                            { .off = 0x10, .bytes = {
+                                BOSS_SPELL_CARD_ASYNC(24, 2)
+                            } } } }
+                        }
+                    }
+                }
+            };
+            break;
+        default:
+            return false;
+        };
+        return true;
+
+#undef FORCE_BOSS
+#undef FORCE_BOSS_C
+#undef BOSS_SPELL_CARD_ASYNC
+    }
 
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
@@ -159,6 +2764,7 @@ namespace TH185 {
             switch (state) {
             case 0:
                 mStage = GetMemContent(0x4d7c68, 0xfc);
+                StageWarpsLoad(mStage, warps);
                 SetFade(0.8f, 0.1f);
                 Open();
                 thPracParam = {};
@@ -170,7 +2776,6 @@ namespace TH185 {
                 // Fill Param
                 thPracParam.mode = *mMode;
                 thPracParam.warp = mWarp;
-                thPracParam.stage = mStage;
                 thPracParam.life = *mLife;
                 thPracParam.funds = *mFunds;
                 thPracParam.difficulty = *mDifficulty;
@@ -317,2715 +2922,7 @@ namespace TH185 {
                 cards.push_back(XSTR(cardId));
             }
 
-            for (size_t i = 0; i < 9; i++) {
-                stage_warps_t stage = {
-                    .label = "Progress",
-                    .type = stage_warps_t::TYPE_SLIDER,
-                };
-                switch (i) {
-                case 0:
-                    stage.section_param = {
-                        {
-                            .label = "Tutorial"
-                        },
-                        {
-                            .label = "Wave 1",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x188, .dest = 0x230 }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 2",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x188, .dest = 0x2fc }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x184, .bytes = { 2 } }
-                                } } 
-                            }
-                        },
-                        {
-                            .label = "Wave 3",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x188, .dest = 0x3b8 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x184, .bytes = { 3 } }
-                                } } 
-                            }
-                        },
-                        {
-                            .label = "Boss",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x188, .dest = 0x488 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x184, .bytes = { 4 } }
-                                } } 
-                            }
-                        }
-                    };
-                    stage.section_param[4].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Dialog"
-                            },
-                            {
-                                .label = "Nonspell",
-                                .writes {
-                                    { "Boss01tBoss", {
-                                        { .off = 0x220, .bytes = { 0x00, 0x00, 0x24, 0x00 } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Beckon Sign \"Danmaku Business Boom\"",
-                                .writes {
-                                    { "Boss01tBoss", {
-                                        { .off = 0x220, .bytes = { 0x00, 0x00, 0x24, 0x00 } },
-                                        { .off = 0x1b0, .bytes = { 0x84, 0x03, 0x00, 0x00 } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    break;
-                case 1:
-                    stage.section_param = {
-                        { 
-                            .label = "Wave 1"
-                        },
-                        { 
-                            .label = "Wave 2",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x380 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        { 
-                            .label = "Wave 3",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x44c }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x03, 0x00, 0x00, 0x00 }}
-                                } }
-                            }
-                        },
-                        { 
-                            .label = "Boss",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x530 }
-                                } }
-                            }
-                        }
-                    };
-                    stage.section_param[3].phases = {
-                        .label = "Boss",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "None (Random)"
-                            },
-                            {
-                                .label = "Mike Goutokuji",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(0, 2) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Minoriko Aki",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(1, 2) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Eternity Larva",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(2, 2) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Nemuno Sakata",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(3, 2) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[3].phases->section_param[1].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Money Sign \"Casting Koban Coins Before a Calico Cat\"",
-                                .writes = {
-                                    { "Boss01Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss01Boss1", {
-                                        // @Boss01BossCard1();
-                                        // ret();
-                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(1, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[3].phases->section_param[2].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Autumn Sign \"Bumper Crop Waves\"",
-                                .writes = {
-                                    { "Boss02Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss02Boss1", {
-                                        // @Boss02BossCard1();
-                                        // ret();
-                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(2, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[3].phases->section_param[3].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Butterfly Sign \"Deadly Butterfly\"",
-                                .writes = {
-                                    { "Boss03Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss03Boss1", {
-                                        // @Boss03BossCard1();
-                                        // ret();
-                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(3, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[3].phases->section_param[4].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Kitchen Knife \"Mince Up Till Your Blade Chips\"",
-                                .writes = {
-                                    { "Boss04Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss04Boss1", {
-                                        // @Boss04BossCard1();
-                                        // ret();
-                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(4, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    break;
-                case 2:
-                    stage.section_param = {
-                        {
-                            .label = "Wave 1",
-                        },
-                        {
-                            .label = "Wave 2",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x380 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 3",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x44c }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 4",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x51c }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Boss",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x5fc }
-                                } }
-                            }
-                        }
-                    };
-                    stage.section_param[4].phases = {
-                        .label = "Boss",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "None (Random)"
-                            },
-                            {
-                                .label = "Cirno",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(0, 6) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Wakasagihime",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(1, 6) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Sekibanki",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(2, 6) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Urumi Ushizaki",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(3, 6) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[4].phases->section_param[1].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "\"Perfect Freeeeeeeeze!\"",
-                                .writes = {
-                                    { "Boss05Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss05Boss1", {
-                                        // @Boss05BossCard1();
-                                        // ret();
-                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(5, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[4].phases->section_param[2].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Song Sign \"Mermaid's Song\"",
-                                .writes = {
-                                    { "Boss06Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss06Boss1", {
-                                        // @Boss06BossCard1();
-                                        // ret();
-                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(6, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[4].phases->section_param[3].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "\"Life of a Nimble Severed Head\"",
-                                .writes = {
-                                    { "Boss07Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss07Boss1", {
-                                        // @Boss07BossCard1();
-                                        // ret();
-                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(7, 1)} }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[4].phases->section_param[4].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "\"Ripples of Rapacity\"",
-                                .writes = {
-                                    { "Boss08Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss08Boss1", {
-                                        // @Boss08BossCard1();
-                                        // ret();
-                                        { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(8, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    break;
-                case 3:
-                    stage.section_param = {
-                        {
-                            .label = "Wave 1",
-                        },
-                        {
-                            .label = "Wave 2",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x380 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 3",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x44c }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 4",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x51c }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 5",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x5e8 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Boss",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x6cc }
-                                } }
-                            },
-                        }
-                    };
-                    stage.section_param[5].phases = {
-                        .label = "Boss",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "None (Random)"
-                            },
-                            {
-                                .label = "Eika Ebisu",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(0, 10) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Kutaka Niwatari",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(1, 10) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Narumi Yatadera",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(2, 10) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Komachi Onozuka",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(3, 10) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[5].phases->section_param[1].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Stone Sign \"Red Stone Stack of Aja\"",
-                                .writes = {
-                                    { "Boss09Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss09Boss1", {
-                                        // @Boss09BossCard1();
-                                        // ret();
-                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(9, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[5].phases->section_param[2].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "\"Watershed of Life\"",
-                                .writes = {
-                                    { "Boss10Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss10Boss1", {
-                                        // @Boss10BossCard1();
-                                        // ret();
-                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(10, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[5].phases->section_param[3].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "\"5.67 Billion Years of Menial Labour\"",
-                                .writes = {
-                                    { "Boss11Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss11Boss1", {
-                                        // @Boss12BossCard1();
-                                        // ret();
-                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(11, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[5].phases->section_param[4].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "\"Money and Death Busily Piling Up.\"",
-                                .writes = {
-                                    { "Boss12Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss12Boss1", {
-                                        // @Boss12BossCard1();
-                                        // ret();
-                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(12, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    break;
-                case 4:
-                    stage.section_param = {
-                        {
-                            .label = "Wave 1",
-                        },
-                        {
-                            .label = "Wave 2",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x380 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 3",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x44c }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 4",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x518 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 5",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x5e4 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Boss",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x6c4 }
-                                } }
-                            },
-                        }
-                    };
-                    stage.section_param[5].phases = {
-                        .label = "Boss",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "None (Random)"
-                            },
-                            {
-                                .label = "Sanae Kochiya",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(0, 14) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Sakuya Izayoi",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(1, 14) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Youmu Konpaku",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(2, 14) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Reimu Hakurei",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(3, 14) } }
-                                    } }
-                                }
-                            }, 
-                            {
-                                .label = "Nitori Kawashiro",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = {  
-                                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 14, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-                                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 15, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-                                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 16, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-                                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x00, 0x01, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x5E, 0xD9, 0xFF, 0xFF,
-                                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                        0x00, 0x00, 0x00, 0x00, 0xF3, 0x03, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 27, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00 } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[5].phases->section_param[1].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Miracle \"Miracle Pentacle\"",
-                                .writes = {
-                                    { "Boss13Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x98, 0x08, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss13Boss1", {
-                                        // @Boss13BossCard1();
-                                        // ret();
-                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(13, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[5].phases->section_param[2].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Time Sign \"Eye-wink Knife Hell\"",
-                                .writes = {
-                                    { "Boss14Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x98, 0x08, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss14Boss1", {
-                                        // @Boss14BossCard1();
-                                        // ret();
-                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(14, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[5].phases->section_param[3].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Swordmanship \"Mouryou Wiping Blood From Their Blades\"",
-                                .writes = {
-                                    { "Boss15Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss15Boss1", {
-                                        // @Boss15BossCard1();
-                                        // ret();
-                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(15, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[5].phases->section_param[4].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "\"Full House Amulets: Bullet Money Bonus Packets\"",
-                                .writes = {
-                                    { "Boss16Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss16Boss1", {
-                                        // @Boss16BossCard1();
-                                        // ret();
-                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(16, 1) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[5].phases->section_param[5].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Dialogue"
-                            },
-                            {
-                                .label = "Nonspell",
-                                .writes = {
-                                    { "Boss26Boss", {
-                                        { .off = 0x208, .bytes = {  0x00, 0x00, 0x24, 0x00 } }
-                                    } },
-                                }
-                            },
-                            {
-                                .label = "Weapon \"Water Flamethrower\"",
-                                .writes = {
-                                    { "Boss26Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xa0, 0x0f, 0x00, 0x00 } },
-                                        { .off = 0x208, .bytes = { 0x00, 0x00, 0x24, 0x00 } }
-                                    } },
-                                    { "Boss26Boss1", {
-                                        // lifeMarker(1, 2000.0f, -24448);
-                                        // @Boss26BossCard1();
-                                        // ret();
-                                    { .off = 0x10, .bytes = {
-                                        0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFA, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
-                                        BOSS_SPELL_CARD_ASYNC(26, 1)
-                                    } } } }
-                                }
-                            },
-                            {
-                                .label = "\"Like the Flow of the Mountain Marsh\"",
-                                .writes = {
-                                    { "Boss26Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xd0, 0x07, 0x00, 0x00 } },
-                                        { .off = 0x208, .bytes = { 0x00, 0x00, 0x24, 0x00 } }
-                                    } },
-                                    { "Boss26Boss1", {
-                                        // @Boss26BossCard1();
-                                        // ret();
-                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(26, 2) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    break;
-                case 5:
-                    stage.section_param = {
-                        {
-                            .label = "Wave 1",
-                        },
-                        {
-                            .label = "Wave 2",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x28c, .dest = 0x3b4 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x28a, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 3",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x28c, .dest = 0x480 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x28a, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 4",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x28c, .dest = 0x54c }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x28a, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 5",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x28c, .dest = 0x618 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x28a, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 6",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x28c, .dest = 0x6e4 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x28a, .bytes = { 0x06, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 7",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x28c, .dest = 0x7b0 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x28a, .bytes = { 0x07, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Boss",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x28c, .dest = 0x890 }
-                                } }
-                            },
-                        }
-                    };
-                    stage.section_param[7].phases = {
-                        .label = "Boss",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "None (Random)"
-                            },
-                            {
-                                .label = "Tsukasa Kudamaki",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(0, 18) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Megumu Iizunamaru",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(1, 18) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Clownpiece",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(2, 18) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Tenshi Hinanawi",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(3, 18) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[7].phases->section_param[1].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Fox Sign \"Delayed Pipe Fox Bullet\"",
-                                .writes = {
-                                    { "Boss17Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss17Boss1", {
-                                        // lifeMarker(1, 2800.0f, -24448)
-                                        // @Boss17BossCard1();
-                                        // ret();
-                                    { .off = 0x10, .bytes = { 
-                                        0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
-                                        BOSS_SPELL_CARD_ASYNC(17, 1)
-                                    } } } }
-                                }
-                            },
-                            {
-                                .label = "Fox Sign \"Wickedness Within the Pipe\"",
-                                .writes = {
-                                    { "Boss17Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss17Boss1", {
-                                        // @Boss17BossCard2();
-                                        // ret();
-                                    { .off = 0x10, .bytes = {
-                                        BOSS_SPELL_CARD_ASYNC(17, 2)
-                                    } } } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[7].phases->section_param[2].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Star Sign \"Star of Ingenuous Brilliance\"",
-                                .writes = {
-                                    { "Boss18Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss18Boss1", {
-                                        // lifeMarker(1, 2800.0f, -24448)
-                                        // @Boss18BossCard1();
-                                        // ret();
-                                    { .off = 0x10, .bytes = {
-                                        0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
-                                        BOSS_SPELL_CARD_ASYNC(18, 1)
-                                    } } } }
-                                }
-                            },
-                            {
-                                .label = "Wind Sign \"Wind of Lonesome Emptiness\"",
-                                .writes = {
-                                    { "Boss18Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss18Boss1", {
-                                        // @Boss18BossCard2();
-                                        // ret();
-                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(18, 2) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[7].phases->section_param[3].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Great Blaze \"The Very, Very Bottom of Hell's Cauldron\"",
-                                .writes = {
-                                    { "Boss19Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss19Boss1", {
-                                        // lifeMarker(1, 2800.0f, -24448)
-                                        // @Boss19BossCard1();
-                                        // ret();
-                                    { .off = 0x10, .bytes = {
-                                        0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
-                                        BOSS_SPELL_CARD_ASYNC(19, 1)
-                                    } } } }
-                                }
-                            },
-                            {
-                                .label = "\"Lunatic Torch Relay\"",
-                                .writes = {
-                                    { "Boss19Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss19Boss1", {
-                                        // @Boss19BossCard2();
-                                        // ret();
-                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(19, 2) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[7].phases->section_param[4].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Keystone \"Qian & Kun Rumbling Cannon\"",
-                                .writes = {
-                                    { "Boss20Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss20Boss1", {
-                                        // lifeMarker(1, 2800.0f, -24448)
-                                        // @Boss20BossCard1();
-                                        // ret();
-                                    { .off = 0x10, .bytes = {
-                                        0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
-                                        BOSS_SPELL_CARD_ASYNC(20, 1)
-                                    } } } }
-                                }
-                            },
-                            {
-                                .label = "Keystone \"Diffuse Qian & Kun Rumbling Cannon\"",
-                                .writes = {
-                                    { "Boss20Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss20Boss1", {
-                                        // @Boss19BossCard2();
-                                        // ret();
-                                    { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(20, 2) } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    break;
-                case 6:
-                    stage.section_param = {
-                        {
-                            .label = "Wave 1",
-                        },
-                        {
-                            .label = "Wave 2",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x380 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 3",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x44c }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 4",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x518 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 5",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x5e4 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 6",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x6b0 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x06, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 7",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x77c }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x254, .bytes = { 0x07, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Boss",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x258, .dest = 0x84c }
-                                } }
-                            },
-                        }
-                    };
-                    stage.section_param[7].phases = {
-                        .label = "Boss",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "None (Random)"
-                            },
-                            {
-                                .label = "Suika Ibuki",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(0, 22) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Mamizou Futatsuiwa",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(1, 22) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Saki Kurokoma",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(2, 22) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Momoyo Himemushi",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { FORCE_BOSS(3, 22) } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Takane Yamashiro",
-                                .writes = {
-                                    { "WorldWaveB00", {
-                                        { .off = 0x34, .bytes = { {
-                                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-                                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x17, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 
-                                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-                                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x00, 0x01, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x5E, 0xD9, 0xFF, 0xFF,
-                                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                        0x00, 0x00, 0x00, 0x00, 0xF3, 0x03, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00,   28, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00 } }
-                                    } }
-                                } }
-                            }
-                        }
-                    };
-                    stage.section_param[7].phases->section_param[1].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Dense Sign \"Ongyouki of Density\"",
-                                .writes = {
-                                    { "Boss22Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xa0, 0x0f, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss22Boss1", {
-                                    { .off = 0x10, .bytes = {
-                                        0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x96, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
-                                        BOSS_SPELL_CARD_ASYNC(21, 1)
-                                    } } } }
-                                }
-                            },
-                            {
-                                .label = "\"Chief General of the Will-o'-wisps\"",
-                                .writes = {
-                                    { "Boss22Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xb0, 0x04, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss22Boss1", {
-                                    { .off = 0x10, .bytes = {
-                                        BOSS_SPELL_CARD_ASYNC(21, 2)
-                                    } } } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[7].phases->section_param[2].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "\"First and Last of Its Kind: Black Market with a Giant Queue\"",
-                                .writes = {
-                                    { "Boss22Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss22Boss1", {
-                                    { .off = 0x10, .bytes = {
-                                        0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x40, 0x4E, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
-                                        BOSS_SPELL_CARD_ASYNC(22, 1)
-                                    } } } }
-                                }
-                            },
-                            {
-                                .label = "Danmaku Transformation \"Youkai Biocenosis\"",
-                                .writes = {
-                                    { "Boss22Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x4a, 0x01, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss22Boss1", {
-                                    { .off = 0x10, .bytes = {
-                                        BOSS_SPELL_CARD_ASYNC(22, 2)
-                                    } } } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[7].phases->section_param[3].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Heavenly Stellar Steed \"Pegasus Cross\"",
-                                .writes = {
-                                    { "Boss23Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss23Boss1", {
-                                    { .off = 0x10, .bytes = {
-                                        0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x96, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
-                                        BOSS_SPELL_CARD_ASYNC(23, 1)
-                                    } } } }
-                                }
-                            },
-                            {
-                                .label = "\"This Explosion is Muscle Strength!\"",
-                                .writes = {
-                                    { "Boss23Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x4a, 0x01, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss23Boss1", {
-                                    { .off = 0x10, .bytes = {
-                                        BOSS_SPELL_CARD_ASYNC(23, 2)
-                                    } } } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[7].phases->section_param[4].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Nonspell"
-                            },
-                            {
-                                .label = "Heavenly Stellar Steed \"Pegasus Cross\"",
-                                .writes = {
-                                    { "Boss24Boss", {
-                                        { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss24Boss1", {
-                                    { .off = 0x10, .bytes = {
-                                        0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x96, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
-                                        BOSS_SPELL_CARD_ASYNC(24, 1)
-                                    } } } }
-                                }
-                            },
-                            {
-                                .label = "\"This Explosion is Muscle Strength!\"",
-                                .writes = {
-                                    { "Boss24Boss", {
-                                        { .off = 0x1b0, .bytes = { 0x4a, 0x01, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss24Boss1", {
-                                    { .off = 0x10, .bytes = {
-                                        BOSS_SPELL_CARD_ASYNC(24, 2)
-                                    } } } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[7].phases->section_param[5].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Dialog"
-                            },
-                            {
-                                .label = "Nonspell",
-                                .writes = {
-                                    { "Boss27Boss", {
-                                        { .off = 0x208, .bytes = { 0, 0 } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Bullet Money \"Bullet Money Glut\"",
-                                .writes = {
-                                    { "Boss27Boss", {
-                                        { .off = 0x208, .bytes = { 0, 0 } },
-                                        { .off = 0x1b0, .bytes = { 0x88, 0x2c, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss27Boss1", {
-                                        { .off = 0x10, .bytes = {
-                                            0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0xC0, 0xF3, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
-                                            0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7A, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
-                                            BOSS_SPELL_CARD_ASYNC(27, 1)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Leaf Skill \"Super Green Spiral\"",
-                                .writes = {
-                                    { "Boss27Boss", {
-                                        { .off = 0x208, .bytes = { 0, 0 } },
-                                        { .off = 0x1b0, .bytes = { 0x78, 0x1e, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss27Boss1", {
-                                        { .off = 0x10, .bytes = {
-                                            0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7A, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
-                                            BOSS_SPELL_CARD_ASYNC(27, 2)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "\"Black Market Kaleidoscope\"",
-                                .writes = {
-                                    { "Boss27Boss", {
-                                        { .off = 0x208, .bytes = { 0, 0 } },
-                                        { .off = 0x1b0, .bytes = { 0xa0, 0x0f, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss27Boss1", {
-                                        { .off = 0x10, .bytes = {
-                                            BOSS_SPELL_CARD_ASYNC(27, 3)
-                                        } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    break;
-                case 7:
-                    stage.section_param = {
-                        {
-                            .label = "Wave 1",
-                        },
-                        {
-                            .label = "Wave 2",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x29c, .dest = 0x3d4 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x288, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 3",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x29c, .dest = 0x4b0 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x288, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 4",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x29c, .dest = 0x58c }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x288, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Chimata Tenkyuu",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x29c, .dest = 0x67c }
-                                } }
-                            },
-                        }
-                    };
-                    stage.section_param[4].phases = {
-                        .label = "Attack",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "Dialog"
-                            },
-                            {
-                                .label = "Nonspell",
-                                .writes = {
-                                    { "Boss25Boss", {
-                                        { .off = 0x208, .bytes = { 0, 0 } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "\"Legitimate Bullet Market\"",
-                                .writes = {
-                                    { "Boss25Boss", {
-                                        { .off = 0x208, .bytes = { 0, 0 } },
-                                        { .off = 0x1b0, .bytes = { 0x58, 0x1b, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss25Boss1", {
-                                        { .off = 0x10, .bytes = {
-                                            0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7A, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
-                                            BOSS_SPELL_CARD_ASYNC(25, 1)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "\"Black Market Michigan Roll\"",
-                                .writes = {
-                                    { "Boss25Boss", {
-                                        { .off = 0x208, .bytes = { 0, 0 } },
-                                        { .off = 0x1b0, .bytes = { 0xa0, 0x0f, 0x00, 0x00 } }
-                                    } },
-                                    { "Boss25Boss1", {
-                                        { .off = 0x10, .bytes = {
-                                            BOSS_SPELL_CARD_ASYNC(25, 2)
-                                        } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    break;
-                case 8:
-                    stage.section_param = {
-                        {
-                            .label = "Wave 1",
-                        },
-                        {
-                            .label = "Wave 2 (Boss)",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x434, .dest = 0x52c }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x3f0, .bytes = { 0x02, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 3",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x434, .dest = 0x628 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x3f0, .bytes = { 0x03, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 4 (Boss)",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x434, .dest = 0x6d8 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x3f0, .bytes = { 0x04, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 5",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x434, .dest = 0x7d4 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x3f0, .bytes = { 0x05, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 6 (Boss)",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x434, .dest = 0x884 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x3f0, .bytes = { 0x06, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 7",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x434, .dest = 0x980 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x3f0, .bytes = { 0x07, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 8 (Boss)",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x434, .dest = 0xa30 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x3f0, .bytes = { 0x08, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 9",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x434, .dest = 0xb2c }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x3f0, .bytes = { 0x09, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 10 (Boss)",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x434, .dest = 0xbdc }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x3f0, .bytes = { 0x0a, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 11",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x434, .dest = 0xcd8 }
-                                } }
-                            },
-                            .writes = {
-                                { "main", {
-                                    { .off = 0x3f0, .bytes = { 0x0b, 0x00, 0x00, 0x00 } }
-                                } }
-                            }
-                        },
-                        {
-                            .label = "Wave 12 (Boss)",
-                            .jumps = {
-                                { "main", {
-                                    { .off = 0x434, .dest = 0xd88 }
-                                } }
-                            }
-                        },
-                    };
-                    stage.section_param[1].phases = {
-                        .label = "Boss",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "None (Random)"
-                            },
-                            {
-                                .label = "Mike Goutokuji",
-                                .writes = {
-                                    { "WorldWaveB01", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(0, 2)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Minoriko Aki",
-                                .writes = {
-                                    { "WorldWaveB01", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(1, 2)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Eternity Larva",
-                                .writes = {
-                                    { "WorldWaveB01", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(2, 2)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Nemuno Sakata",
-                                .writes = {
-                                    { "WorldWaveB01", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(3, 2)
-                                        } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[3].phases = {
-                        .label = "Boss",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "None (Random)"
-                            },
-                            {
-                                .label = "Cirno",
-                                .writes = {
-                                    { "WorldWaveB02", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(0, 6)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Wakasagihime",
-                                .writes = {
-                                    { "WorldWaveB02", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(1, 6)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Sekibanki",
-                                .writes = {
-                                    { "WorldWaveB02", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(2, 6)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Urumi Ushizaki",
-                                .writes = {
-                                    { "WorldWaveB02", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(3, 6)
-                                        } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[5].phases = {
-                        .label = "Boss",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "None (Random)"
-                            },
-                            {
-                                .label = "Eika Ebisu",
-                                .writes = {
-                                    { "WorldWaveB03", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(0, 10)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Kutaka Niwatari",
-                                .writes = {
-                                    { "WorldWaveB03", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(1, 10)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Narumi Yatadera",
-                                .writes = {
-                                    { "WorldWaveB03", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(2, 10)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Komachi Onozuka",
-                                .writes = {
-                                    { "WorldWaveB03", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(3, 10)
-                                        } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[7].phases = {
-                        .label = "Boss",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "None (Random)"
-                            },
-                            {
-                                .label = "Sanae Kochiya",
-                                .writes = {
-                                    { "WorldWaveB04", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(0, 14)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Sakuya Izayoi",
-                                .writes = {
-                                    { "WorldWaveB04", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(1, 14)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Youmu Konpaku",
-                                .writes = {
-                                    { "WorldWaveB04", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(2, 14)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Reimu Hakurei",
-                                .writes = {
-                                    { "WorldWaveB04", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(3, 14)
-                                        } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[9].phases = {
-                        .label = "Boss",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "None (Random)"
-                            },
-                            {
-                                .label = "Tsukasa Kudamaki",
-                                .writes = {
-                                    { "WorldWaveB05", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(0, 18)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Megumu Iizunamaru",
-                                .writes = {
-                                    { "WorldWaveB05", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(1, 18)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Clownpiece",
-                                .writes = {
-                                    { "WorldWaveB05", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(2, 18)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Tenshi Hinanawi",
-                                .writes = {
-                                    { "WorldWaveB05", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(3, 18)
-                                        } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[11].phases = {
-                        .label = "Boss",
-                        .type = stage_warps_t::TYPE_COMBO,
-                        .section_param = {
-                            {
-                                .label = "None (Random)"
-                            },
-                            {
-                                .label = "Suika Ibuki",
-                                .writes = {
-                                    { "WorldWaveB06", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(0, 22)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Mamizou Futatsuiwa",
-                                .writes = {
-                                    { "WorldWaveB06", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(1, 22)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Saki Kurokoma",
-                                .writes = {
-                                    { "WorldWaveB06", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(2, 22)
-                                        } }
-                                    } }
-                                }
-                            },
-                            {
-                                .label = "Momoyo Himemushi",
-                                .writes = {
-                                    { "WorldWaveB06", {
-                                        { .off = 0x34, .bytes = {
-                                            FORCE_BOSS_C(3, 22)
-                                        } }
-                                    } }
-                                }
-                            }
-                        }
-                    };
-                    stage.section_param[1].phases->section_param[1].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Money Sign \"Casting Koban Coins Before a Calico Cat\"",
-                        .writes = {
-                            { "Boss01Boss", {
-                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
-                            } },
-                            { "Boss01Boss1", {
-                                // @Boss01BossCard1();
-                                // ret();
-                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(1, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[1].phases->section_param[2].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Autumn Sign \"Bumper Crop Waves\"",
-                        .writes = {
-                            { "Boss02Boss", {
-                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
-                            } },
-                            { "Boss02Boss1", {
-                                // @Boss02BossCard1();
-                                // ret();
-                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(2, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[1].phases->section_param[3].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Butterfly Sign \"Deadly Butterfly\"",
-                        .writes = {
-                            { "Boss03Boss", {
-                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
-                            } },
-                            { "Boss03Boss1", {
-                                // @Boss03BossCard1();
-                                // ret();
-                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(3, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[1].phases->section_param[4].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Kitchen Knife \"Mince Up Till Your Blade Chips\"",
-                        .writes = {
-                            { "Boss04Boss", {
-                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
-                            } },
-                            { "Boss04Boss1", {
-                                // @Boss04BossCard1();
-                                // ret();
-                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(4, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[3].phases->section_param[1].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "\"Perfect Freeeeeeeeze!\"",
-                        .writes = {
-                            { "Boss05Boss", {
-                                { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
-                            } },
-                            { "Boss05Boss1", {
-                                // @Boss05BossCard1();
-                                // ret();
-                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(5, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[3].phases->section_param[2].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Song Sign \"Mermaid's Song\"",
-                        .writes = {
-                            { "Boss06Boss", {
-                                { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
-                            } },
-                            { "Boss06Boss1", {
-                                // @Boss06BossCard1();
-                                // ret();
-                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(6, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[3].phases->section_param[3].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "\"Life of a Nimble Severed Head\"",
-                        .writes = {
-                            { "Boss07Boss", {
-                                { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
-                            } },
-                            { "Boss07Boss1", {
-                                // @Boss07BossCard1();
-                                // ret();
-                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(7, 1)} }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[3].phases->section_param[4].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "\"Ripples of Rapacity\"",
-                        .writes = {
-                            { "Boss08Boss", {
-                                { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
-                            } },
-                            { "Boss08Boss1", {
-                                // @Boss08BossCard1();
-                                // ret();
-                                { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(8, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[5].phases->section_param[1].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Stone Sign \"Red Stone Stack of Aja\"",
-                        .writes = {
-                            { "Boss09Boss", {
-                                { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
-                            } },
-                            { "Boss09Boss1", {
-                                // @Boss09BossCard1();
-                                // ret();
-                            { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(9, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[5].phases->section_param[2].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "\"Watershed of Life\"",
-                        .writes = {
-                            { "Boss10Boss", {
-                                { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
-                            } },
-                            { "Boss10Boss1", {
-                                // @Boss10BossCard1();
-                                // ret();
-                            { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(10, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[5].phases->section_param[3].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "\"5.67 Billion Years of Menial Labour\"",
-                        .writes = {
-                            { "Boss11Boss", {
-                                { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
-                            } },
-                            { "Boss11Boss1", {
-                                // @Boss12BossCard1();
-                                // ret();
-                            { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(11, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[5].phases->section_param[4].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "\"Money and Death Busily Piling Up.\"",
-                        .writes = {
-                            { "Boss12Boss", {
-                                { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
-                            } },
-                            { "Boss12Boss1", {
-                                // @Boss12BossCard1();
-                                // ret();
-                            { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(12, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[7].phases->section_param[1].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Miracle \"Miracle Pentacle\"",
-                        .writes = {
-                            { "Boss13Boss", {
-                                { .off = 0x1b0, .bytes = { 0x98, 0x08, 0x00, 0x00 } }
-                            } },
-                            { "Boss13Boss1", {
-                                // @Boss13BossCard1();
-                                // ret();
-                            { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(13, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[7].phases->section_param[2].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Time Sign \"Eye-wink Knife Hell\"",
-                        .writes = {
-                            { "Boss14Boss", {
-                                { .off = 0x1b0, .bytes = { 0x98, 0x08, 0x00, 0x00 } }
-                            } },
-                            { "Boss14Boss1", {
-                                // @Boss14BossCard1();
-                                // ret();
-                            { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(14, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[7].phases->section_param[3].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Swordmanship \"Mouryou Wiping Blood From Their Blades\"",
-                        .writes = {
-                            { "Boss15Boss", {
-                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
-                            } },
-                            { "Boss15Boss1", {
-                                // @Boss15BossCard1();
-                                // ret();
-                            { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(15, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[7].phases->section_param[4].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "\"Full House Amulets: Bullet Money Bonus Packets\"",
-                        .writes = {
-                            { "Boss16Boss", {
-                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
-                            } },
-                            { "Boss16Boss1", {
-                                // @Boss16BossCard1();
-                                // ret();
-                            { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(16, 1) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[9].phases->section_param[1].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Fox Sign \"Delayed Pipe Fox Bullet\"",
-                        .writes = {
-                            { "Boss17Boss", {
-                                { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
-                            } },
-                            { "Boss17Boss1", {
-                                // lifeMarker(1, 2800.0f, -24448)
-                                // @Boss17BossCard1();
-                                // ret();
-                            { .off = 0x10, .bytes = { 
-                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
-                                BOSS_SPELL_CARD_ASYNC(17, 1)
-                            } } } }
-                        }
-                    },
-                    {
-                        .label = "Fox Sign \"Wickedness Within the Pipe\"",
-                        .writes = {
-                            { "Boss17Boss", {
-                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
-                            } },
-                            { "Boss17Boss1", {
-                                // @Boss17BossCard2();
-                                // ret();
-                            { .off = 0x10, .bytes = {
-                                BOSS_SPELL_CARD_ASYNC(17, 2)
-                            } } } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[9].phases->section_param[2].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Star Sign \"Star of Ingenuous Brilliance\"",
-                        .writes = {
-                            { "Boss18Boss", {
-                                { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
-                            } },
-                            { "Boss18Boss1", {
-                                // lifeMarker(1, 2800.0f, -24448)
-                                // @Boss18BossCard1();
-                                // ret();
-                            { .off = 0x10, .bytes = {
-                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
-                                BOSS_SPELL_CARD_ASYNC(18, 1)
-                            } } } }
-                        }
-                    },
-                    {
-                        .label = "Wind Sign \"Wind of Lonesome Emptiness\"",
-                        .writes = {
-                            { "Boss18Boss", {
-                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
-                            } },
-                            { "Boss18Boss1", {
-                                // @Boss18BossCard2();
-                                // ret();
-                            { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(18, 2) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[9].phases->section_param[3].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Great Blaze \"The Very, Very Bottom of Hell's Cauldron\"",
-                        .writes = {
-                            { "Boss19Boss", {
-                                { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
-                            } },
-                            { "Boss19Boss1", {
-                                // lifeMarker(1, 2800.0f, -24448)
-                                // @Boss19BossCard1();
-                                // ret();
-                            { .off = 0x10, .bytes = {
-                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
-                                BOSS_SPELL_CARD_ASYNC(19, 1)
-                            } } } }
-                        }
-                    },
-                    {
-                        .label = "\"Lunatic Torch Relay\"",
-                        .writes = {
-                            { "Boss19Boss", {
-                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
-                            } },
-                            { "Boss19Boss1", {
-                                // @Boss19BossCard2();
-                                // ret();
-                            { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(19, 2) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[9].phases->section_param[4].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Keystone \"Qian & Kun Rumbling Cannon\"",
-                        .writes = {
-                            { "Boss20Boss", {
-                                { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
-                            } },
-                            { "Boss20Boss1", {
-                                // lifeMarker(1, 2800.0f, -24448)
-                                // @Boss20BossCard1();
-                                // ret();
-                            { .off = 0x10, .bytes = {
-                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
-                                BOSS_SPELL_CARD_ASYNC(20, 1)
-                            } } } }
-                        }
-                    },
-                    {
-                        .label = "Keystone \"Diffuse Qian & Kun Rumbling Cannon\"",
-                        .writes = {
-                            { "Boss20Boss", {
-                                { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
-                            } },
-                            { "Boss20Boss1", {
-                                // @Boss19BossCard2();
-                                // ret();
-                            { .off = 0x10, .bytes = { BOSS_SPELL_CARD_ASYNC(20, 2) } }
-                            } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[11].phases->section_param[1].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Dense Sign \"Ongyouki of Density\"",
-                        .writes = {
-                            { "Boss22Boss", {
-                                { .off = 0x1b0, .bytes = { 0xa0, 0x0f, 0x00, 0x00 } }
-                            } },
-                            { "Boss22Boss1", {
-                            { .off = 0x10, .bytes = {
-                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x96, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
-                                BOSS_SPELL_CARD_ASYNC(21, 1)
-                            } } } }
-                        }
-                    },
-                    {
-                        .label = "\"Chief General of the Will-o'-wisps\"",
-                        .writes = {
-                            { "Boss22Boss", {
-                                { .off = 0x1b0, .bytes = { 0xb0, 0x04, 0x00, 0x00 } }
-                            } },
-                            { "Boss22Boss1", {
-                            { .off = 0x10, .bytes = {
-                                BOSS_SPELL_CARD_ASYNC(21, 2)
-                            } } } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[11].phases->section_param[2].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "\"First and Last of Its Kind: Black Market with a Giant Queue\"",
-                        .writes = {
-                            { "Boss22Boss", {
-                                { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
-                            } },
-                            { "Boss22Boss1", {
-                            { .off = 0x10, .bytes = {
-                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x40, 0x4E, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
-                                BOSS_SPELL_CARD_ASYNC(22, 1)
-                            } } } }
-                        }
-                    },
-                    {
-                        .label = "Danmaku Transformation \"Youkai Biocenosis\"",
-                        .writes = {
-                            { "Boss22Boss", {
-                                { .off = 0x1b0, .bytes = { 0x4a, 0x01, 0x00, 0x00 } }
-                            } },
-                            { "Boss22Boss1", {
-                            { .off = 0x10, .bytes = {
-                                BOSS_SPELL_CARD_ASYNC(22, 2)
-                            } } } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[11].phases->section_param[3].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Heavenly Stellar Steed \"Pegasus Cross\"",
-                        .writes = {
-                            { "Boss23Boss", {
-                                { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
-                            } },
-                            { "Boss23Boss1", {
-                            { .off = 0x10, .bytes = {
-                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x96, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
-                                BOSS_SPELL_CARD_ASYNC(23, 1)
-                            } } } }
-                        }
-                    },
-                    {
-                        .label = "\"This Explosion is Muscle Strength!\"",
-                        .writes = {
-                            { "Boss23Boss", {
-                                { .off = 0x1b0, .bytes = { 0x4a, 0x01, 0x00, 0x00 } }
-                            } },
-                            { "Boss23Boss1", {
-                            { .off = 0x10, .bytes = {
-                                BOSS_SPELL_CARD_ASYNC(23, 2)
-                            } } } }
-                        }
-                    }
-                }
-            };
-                    stage.section_param[11].phases->section_param[4].phases = {
-                .label = "Attack",
-                .type = stage_warps_t::TYPE_COMBO,
-                .section_param = {
-                    {
-                        .label = "Nonspell"
-                    },
-                    {
-                        .label = "Heavenly Stellar Steed \"Pegasus Cross\"",
-                        .writes = {
-                            { "Boss24Boss", {
-                                { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
-                            } },
-                            { "Boss24Boss1", {
-                            { .off = 0x10, .bytes = {
-                                0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x96, 0x44, 0x80, 0xA0, 0xFF, 0xFF,
-                                BOSS_SPELL_CARD_ASYNC(24, 1)
-                            } } } }
-                        }
-                    },
-                    {
-                        .label = "\"This Explosion is Muscle Strength!\"",
-                        .writes = {
-                            { "Boss24Boss", {
-                                { .off = 0x1b0, .bytes = { 0x4a, 0x01, 0x00, 0x00 } }
-                            } },
-                            { "Boss24Boss1", {
-                            { .off = 0x10, .bytes = {
-                                BOSS_SPELL_CARD_ASYNC(24, 2)
-                            } } } }
-                        }
-                    }
-                }
-            };
-                    break;
-                };
-                stages[i] = stage;
-            }
+            StageWarpsLoad(mStage, warps);
         }
         virtual void OnContentUpdate() override
         {
@@ -3137,7 +3034,7 @@ namespace TH185 {
         {
             mMode();
             if (*mMode == 1) {
-                StageWarpsRender(stages[mStage], mWarp, 0);
+                StageWarpsRender(warps, mWarp, 0);
                 
                 mLife();
                 mFunds();
@@ -3332,7 +3229,7 @@ namespace TH185 {
             // but ZUN never initializes this variable outside the ecl script
             // therefore, I have to set it myself.
             *(int32_t*)(0x4d1024) = 1;
-            StageWarpsApply(stages[thPracParam.stage], thPracParam.warp, ThModern_ECLGetSub, GetMemContent(0x004d7af4, 0x4f34, 0x10c), 0);
+            StageWarpsApply(warps, thPracParam.warp, ThModern_ECLGetSub, GetMemContent(0x004d7af4, 0x4f34, 0x10c), 0);
             for (auto& c : thPracParam.additional_cards)
                 AddCard(c);
 
@@ -3416,9 +3313,6 @@ namespace TH185 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-
-        // Reset thPracParam
-        // thPracParam.Reset();
     }
     static __declspec(noinline) void THInitHookDisable()
     {
