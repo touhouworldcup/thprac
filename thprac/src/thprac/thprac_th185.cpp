@@ -614,7 +614,7 @@ namespace TH185 {
                             .label = "Boss",
                             .jumps = {
                                 { "main", {
-                                    { .off = 0x258, .dest = 0x5e8 }
+                                    { .off = 0x258, .dest = 0x5fc }
                                 } }
                             }
                         }
@@ -810,7 +810,7 @@ namespace TH185 {
                             .label = "Boss",
                             .jumps = {
                                 { "main", {
-                                    { .off = 0x258, .dest = 0x6b8 }
+                                    { .off = 0x258, .dest = 0x6cc }
                                 } }
                             },
                         }
@@ -1006,7 +1006,7 @@ namespace TH185 {
                             .label = "Boss",
                             .jumps = {
                                 { "main", {
-                                    { .off = 0x258, .dest = 0x6b0 }
+                                    { .off = 0x258, .dest = 0x6c4 }
                                 } }
                             },
                         }
@@ -1290,7 +1290,7 @@ namespace TH185 {
                             .label = "Boss",
                             .jumps = {
                                 { "main", {
-                                    { .off = 0x28c, .dest = 0x87c }
+                                    { .off = 0x28c, .dest = 0x890 }
                                 } }
                             },
                         }
@@ -1577,7 +1577,7 @@ namespace TH185 {
                             .label = "Boss",
                             .jumps = {
                                 { "main", {
-                                    { .off = 0x258, .dest = 0x838 }
+                                    { .off = 0x258, .dest = 0x84c }
                                 } }
                             },
                         }
@@ -1884,7 +1884,7 @@ namespace TH185 {
                             .label = "Chimata Tenkyuu",
                             .jumps = {
                                 { "main", {
-                                    { .off = 0x29c, .dest = 0x668 }
+                                    { .off = 0x29c, .dest = 0x67c }
                                 } }
                             },
                         }
@@ -1942,10 +1942,10 @@ namespace TH185 {
                             .label = "Wave 1",
                         },
                         {
-                            .label = "Boss - Wave 2",
+                            .label = "Wave 2 (Boss)",
                             .jumps = {
                                 { "main", {
-                                    { .off = 0x434, .dest = 0x518 }
+                                    { .off = 0x434, .dest = 0x52c }
                                 } }
                             },
                             .writes = {
@@ -1968,10 +1968,10 @@ namespace TH185 {
                             }
                         },
                         {
-                            .label = "Boss - Wave 4",
+                            .label = "Wave 4 (Boss)",
                             .jumps = {
                                 { "main", {
-                                    { .off = 0x434, .dest = 0x6c4 }
+                                    { .off = 0x434, .dest = 0x6d8 }
                                 } }
                             },
                             .writes = {
@@ -1994,10 +1994,10 @@ namespace TH185 {
                             }
                         },
                         {
-                            .label = "Boss - Wave 6",
+                            .label = "Wave 6 (Boss)",
                             .jumps = {
                                 { "main", {
-                                    { .off = 0x434, .dest = 0x870 }
+                                    { .off = 0x434, .dest = 0x884 }
                                 } }
                             },
                             .writes = {
@@ -2020,10 +2020,10 @@ namespace TH185 {
                             }
                         },
                         {
-                            .label = "Boss - Wave 8",
+                            .label = "Wave 8 (Boss)",
                             .jumps = {
                                 { "main", {
-                                    { .off = 0x434, .dest = 0xa1c }
+                                    { .off = 0x434, .dest = 0xa30 }
                                 } }
                             },
                             .writes = {
@@ -2046,10 +2046,10 @@ namespace TH185 {
                             }
                         },
                         {
-                            .label = "Boss - Wave 10",
+                            .label = "Wave 10 (Boss)",
                             .jumps = {
                                 { "main", {
-                                    { .off = 0x434, .dest = 0xbc8 }
+                                    { .off = 0x434, .dest = 0xbdc }
                                 } }
                             },
                             .writes = {
@@ -2075,7 +2075,7 @@ namespace TH185 {
                             .label = "Final wave",
                             .jumps = {
                                 { "main", {
-                                    { .off = 0x434, .dest = 0xd74 }
+                                    { .off = 0x434, .dest = 0xd88 }
                                 } }
                             }
                         },
