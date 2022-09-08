@@ -1889,6 +1889,52 @@ namespace TH185 {
                             },
                         }
                     };
+                    stage.section_param[4].phases = {
+                        .label = "Attack",
+                        .type = stage_warps_t::TYPE_COMBO,
+                        .section_param = {
+                            {
+                                .label = "Dialog"
+                            },
+                            {
+                                .label = "Nonspell",
+                                .writes = {
+                                    { "Boss25Boss", {
+                                        { .off = 0x208, .bytes = { 0, 0 } }
+                                    } }
+                                }
+                            },
+                            {
+                                .label = "\"Legitimate Bullet Market\"",
+                                .writes = {
+                                    { "Boss25Boss", {
+                                        { .off = 0x208, .bytes = { 0, 0 } },
+                                        { .off = 0x1b0, .bytes = { 0x58, 0x1b, 0x00, 0x00 } }
+                                    } },
+                                    { "Boss25Boss1", {
+                                        { .off = 0x10, .bytes = {
+                                            0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7A, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
+                                            BOSS_SPELL_CARD_ASYNC(25, 1)
+                                        } }
+                                    } }
+                                }
+                            },
+                            {
+                                .label = "\"Black Market Michigan Roll\"",
+                                .writes = {
+                                    { "Boss25Boss", {
+                                        { .off = 0x208, .bytes = { 0, 0 } },
+                                        { .off = 0x1b0, .bytes = { 0xa0, 0x0f, 0x00, 0x00 } }
+                                    } },
+                                    { "Boss25Boss1", {
+                                        { .off = 0x10, .bytes = {
+                                            BOSS_SPELL_CARD_ASYNC(25, 2)
+                                        } }
+                                    } }
+                                }
+                            }
+                        }
+                    };
                     break;
                 case 8:
                     stage.section_param = {
