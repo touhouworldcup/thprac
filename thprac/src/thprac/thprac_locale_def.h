@@ -257,6 +257,7 @@ enum th_glossary_t
     TH17_INF_ROARING,
     TH17_NO_GOAST,
     TH17_TITLE,
+    TH185_ADDITIONAL_CARDS,
     TH185_BULLET_MONEY,
     TH185_CARD_0,
     TH185_CARD_1,
@@ -343,8 +344,64 @@ enum th_glossary_t
     TH185_CARD_83,
     TH185_CARD_84,
     TH185_CARD_9,
+    TH185_FORCE_WAVE,
     TH185_INF_BMONEY,
+    TH185_NONE_RANDOM,
+    TH185_SPELL_0_1,
+    TH185_SPELL_10_1,
+    TH185_SPELL_11_1,
+    TH185_SPELL_12_1,
+    TH185_SPELL_13_1,
+    TH185_SPELL_14_1,
+    TH185_SPELL_15_1,
+    TH185_SPELL_16_1,
+    TH185_SPELL_17_1,
+    TH185_SPELL_17_2,
+    TH185_SPELL_18_1,
+    TH185_SPELL_18_2,
+    TH185_SPELL_19_1,
+    TH185_SPELL_19_2,
+    TH185_SPELL_1_1,
+    TH185_SPELL_20_1,
+    TH185_SPELL_20_2,
+    TH185_SPELL_21_1,
+    TH185_SPELL_21_2,
+    TH185_SPELL_22_1,
+    TH185_SPELL_22_2,
+    TH185_SPELL_23_1,
+    TH185_SPELL_23_2,
+    TH185_SPELL_24_1,
+    TH185_SPELL_24_2,
+    TH185_SPELL_25_1,
+    TH185_SPELL_25_2,
+    TH185_SPELL_26_1,
+    TH185_SPELL_26_2,
+    TH185_SPELL_27_1,
+    TH185_SPELL_27_2,
+    TH185_SPELL_27_3,
+    TH185_SPELL_2_1,
+    TH185_SPELL_3_1,
+    TH185_SPELL_4_1,
+    TH185_SPELL_5_1,
+    TH185_SPELL_6_1,
+    TH185_SPELL_7_1,
+    TH185_SPELL_8_1,
+    TH185_SPELL_9_1,
     TH185_TITLE,
+    TH185_WAVE_1,
+    TH185_WAVE_10,
+    TH185_WAVE_11,
+    TH185_WAVE_12,
+    TH185_WAVE_2,
+    TH185_WAVE_3,
+    TH185_WAVE_4,
+    TH185_WAVE_5,
+    TH185_WAVE_6,
+    TH185_WAVE_7,
+    TH185_WAVE_8,
+    TH185_WAVE_9,
+    TH185_WAVE_FORMAT,
+    TH185_WHOLESALE,
     TH18_AC_FIX,
     TH18_AC_FIX_DESC,
     TH18_BUG_FIX,
@@ -407,6 +464,7 @@ enum th_glossary_t
     TH18_CARD_54,
     TH18_CARD_55,
     TH18_CARD_56,
+    TH18_CARD_FORMAT,
     TH18_FUNDS,
     TH18_INFFUNDS,
     TH18_MARKET_MANIP,
@@ -672,10 +730,12 @@ enum th_glossary_t
     TH_ABOUT_WEBSITE,
     TH_ADV_OPT,
     TH_ADV_OPT_APPLY,
+    TH_ATTACK,
     TH_AUTOBOMB,
     TH_BACK,
     TH_BOMB,
     TH_BOMB_FRAGMENT,
+    TH_BOSS,
     TH_BOSSRUSH,
     TH_BOSSRUSH_EXTRA,
     TH_BOSSRUSH_MIDBOSS,
@@ -712,6 +772,7 @@ enum th_glossary_t
     TH_DATANLY_SELECT_ERR,
     TH_DATANLY_SELECT_PROMPT,
     TH_DELAY,
+    TH_DIFFICULTY,
     TH_DLG,
     TH_EL_BGM,
     TH_END_NS1,
@@ -815,6 +876,7 @@ enum th_glossary_t
     TH_STAGE_PORTION_2,
     TH_STAGE_PORTION_N,
     TH_TIMELOCK,
+    TH_TUTORIAL,
     TH_TWEAK,
     TH_TYPE_CHINESE,
     TH_TYPE_ERROR,
@@ -832,7 +894,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][820];
+extern const char* th_glossary_str[3][882];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2324,10 +2386,10 @@ extern const th_sections_t th_sections_cbt[1][2][1];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3101];
+extern const wchar_t __thprac_loc_range_zh[3161];
 
 extern const wchar_t __thprac_loc_range_en[53];
 
-extern const wchar_t __thprac_loc_range_ja[2621];
+extern const wchar_t __thprac_loc_range_ja[2669];
 
 }
