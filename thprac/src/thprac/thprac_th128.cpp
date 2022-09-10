@@ -548,32 +548,6 @@ namespace TH128 {
         void GameplaySet()
         {
         }
-        void DatRecInit()
-        {
-            mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
-                return DataRecFunc(values);
-            };
-            wchar_t appdata[MAX_PATH];
-            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
-            mOptCtx.data_rec_dir = appdata;
-            mOptCtx.data_rec_dir += L"\\ShanghaiAlice\\th128\\replay\\";
-        }
-        void DataRecPreUpd()
-        {
-            DataRecOpt(mOptCtx, true, thPracParam._playLock);
-        }
-        void DataRecFunc(std::vector<RecordedValue>& values)
-        {
-            values.clear();
-            values.emplace_back("Score", (int64_t)*(int32_t*)(0x4b4cc4) * 10ll);
-            values.emplace_back("Area", (*(float*)(0x4B4D60)), "%.2f");
-        }
-        void DataRecMenu()
-        {
-            if (DataRecOpt(mOptCtx)) {
-                SetContentUpdFunc([&]() { ContentUpdate(); });
-            }
-        }
 
         THAdvOptWnd() noexcept
         {
@@ -584,13 +558,12 @@ namespace TH128 {
 
             InitUpdFunc([&]() { ContentUpdate(); },
                 [&]() { LocaleUpdate(); },
-                [&]() { PreUpdate(); },
+                [&]() {},
                 []() {});
 
             OnLocaleChange();
             FpsInit();
             GameplayInit();
-            DatRecInit();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -648,20 +621,10 @@ namespace TH128 {
                     FpsSet();
                 EndOptGroup();
             }
-            if (BeginOptGroup<TH_DATANLY>()) {
-                if (ImGui::Button(XSTR(TH_DATANLY_BUTTON))) {
-                    SetContentUpdFunc([&]() { DataRecMenu(); });
-                }
-                EndOptGroup();
-            }
 
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
-        }
-        void PreUpdate()
-        {
-            DataRecPreUpd();
         }
 
         adv_opt_ctx mOptCtx;
@@ -2084,30 +2047,6 @@ namespace TH128 {
     {
         ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
-    void THDataInit()
-    {
-        AnlyDataInit();
-
-        DataRef<DATA_SCENE_ID>(U32_ARG(0x4d33c0));
-        DataRef<DATA_RND_SEED>(U16_ARG(0x4d2ae0));
-        DataRef<DATA_DIFFCULTY>(U8_ARG(0x4b4d0c));
-        DataRef<DATA_STAGE>(U8_ARG(0x4b4d14));
-        DataRef<DATA_STARTING_STAGE>(U8_ARG(0x4b4d18));
-    }
-
-    __declspec(noinline) bool Mkt128TestMsg()
-    {
-        auto dword_4B8950 = GetMemContent(0x4B8950);
-        if (dword_4B8950) {
-            auto v3 = GetMemContent(dword_4B8950 + 0x5a1c);
-            if (v3) {
-                if (asm_call<0x467420, Fastcall, uint32_t>(GetMemContent(v3 + 0x6c), GetMemContent(0x4d2e50))) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
 
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th128_on_restart, 0x42657f)
@@ -2360,8 +2299,7 @@ namespace TH128 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        THDataInit();
-
+        
         // Reset thPracParam
         thPracParam.Reset();
     }

@@ -818,34 +818,6 @@ namespace TH06 {
         void GameplaySet()
         {
         }
-        void DatRecInit()
-        {
-            mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
-                return DataRecFunc(values);
-            };
-            wchar_t tempStr[MAX_PATH];
-            GetCurrentDirectoryW(MAX_PATH, tempStr);
-            mOptCtx.data_rec_dir = tempStr;
-            mOptCtx.data_rec_dir += L"\\replay";
-        }
-        void DataRecPreUpd()
-        {
-            DataRecOpt(mOptCtx, true, thPracParam._playLock);
-        }
-        void DataRecFunc(std::vector<RecordedValue>& values)
-        {
-            values.clear();
-            values.emplace_back("Score", *(int32_t*)(0x69bca4));
-            values.emplace_back("Graze", *(int32_t*)(0x69bcb4));
-            values.emplace_back("Point", *(int16_t*)(0x69d4b4));
-        }
-        void DataRecMenu()
-        {
-            *((int32_t*)0x6c6eb0) = 3;
-            if (DataRecOpt(mOptCtx)) {
-                SetContentUpdFunc([&]() { ContentUpdate(); });
-            }
-        }
 
         THAdvOptWnd() noexcept
         {
@@ -856,13 +828,12 @@ namespace TH06 {
 
             InitUpdFunc([&]() { ContentUpdate(); },
                 [&]() { LocaleUpdate(); },
-                [&]() { PreUpdate(); },
+                [&]() {},
                 []() {});
 
             OnLocaleChange();
             FpsInit();
             GameplayInit();
-            DatRecInit();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -921,20 +892,10 @@ namespace TH06 {
                     FpsSet();
                 EndOptGroup();
             }
-            if (BeginOptGroup<TH_DATANLY>()) {
-                if (ImGui::Button(XSTR(TH_DATANLY_BUTTON))) {
-                    SetContentUpdFunc([&]() { DataRecMenu(); });
-                }
-                EndOptGroup();
-            }
 
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
-        }
-        void PreUpdate()
-        {
-            DataRecPreUpd();
         }
 
         adv_opt_ctx mOptCtx;

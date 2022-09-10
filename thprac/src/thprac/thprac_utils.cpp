@@ -3,7 +3,6 @@
 #include "thprac_launcher_main.h"
 #include "thprac_launcher_cfg.h"
 #include <metrohash128.h>
-#include "thprac_data_anly.h"
 #include "../3rdParties/d3d8/include/d3d8.h"
 
 namespace THPrac {
@@ -219,7 +218,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
     int wnd_size_flag, float x, float y)
 {
     ::ImGui::CreateContext();
-    ::ImPlot::CreateContext();
     g_gameGuiImpl = impl;
     g_gameGuiDevice = (DWORD*)device;
     g_gameGuiHwnd = (DWORD*)hwnd;
@@ -729,126 +727,6 @@ bool GameplayOpt(adv_opt_ctx& ctx)
     HelpMarker(XSTR(TH_FACTOR_ACB_DESC));
 
     return hasChanged;
-}
-
-bool DataRecOpt(adv_opt_ctx& ctx, bool preUpd, bool isInGame)
-{
-    enum TestDataType {
-        PERIODIC_STAT,
-        PLAYER_MISS,
-        PLAYER_BOMB,
-        PLAYER_ACTIVE_TRANCE,
-        PLAYER_PASSIVE_TRANCE,
-
-    };
-
-    char tmpStr[256];
-    if (preUpd) {
-        return false;
-    }
-    static bool showDataTree = false;
-    static bool showPlot = true;
-    static bool showDemo = false;
-    static bool useDerivative = false;
-
-    // Title
-    bool backButton = false;
-    if (ImGui::Button(XSTR(TH_BACK))) {
-        backButton = true;
-    }
-    ImGui::SameLine();
-    CenteredText(XSTR(TH_DATANLY), ImGui::GetWindowSize().x);
-    ImGui::Separator();
-    
-    //ImGui::Separator();
-    //ImGui::Separator();
-
-    // Anlysis manage
-    ImGui::Checkbox("Demo", &showDemo);
-    if (showDemo) {
-        ImPlot::ShowDemoWindow();
-        ImGui::Separator();
-        ImGui::Separator();
-    }
-
-    
-    if (ImGui::Button("Load")) {
-        AnlyLoadTest();
-    }
-    ImGui::Checkbox("Show Plot", &showPlot);
-    ImGui::Checkbox("Show Tree", &showDataTree);
-    auto& stageData = AnlyDataGet().stageData;
-    if (ImGui::Button("Clear")) {
-        stageData.clear();
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("Save")) {
-        AnlyWriteTest();
-    }
-    for (size_t asd = 0; asd < stageData.size(); ++asd) {
-        auto& frameData = stageData[asd].frameData;
-        sprintf_s(tmpStr, "Stage %d", asd + 1);
-        ImGui::SetNextTreeNodeOpen(true, ImGuiCond_FirstUseEver);
-        if (ImGui::TreeNode(tmpStr)) {
-            if (showPlot) {
-                ImGui::Checkbox("Derivative", &useDerivative);
-                std::vector<uint32_t> x;
-                std::vector<uint32_t> y;
-                std::vector<uint32_t> z;
-                std::vector<std::pair<uint32_t, uint32_t>> chpater;
-                EventRecord::OmniData32 prev = {};
-
-                for (size_t i = 0; i < frameData.size(); ++i) {
-                    for (auto& event : frameData[i].eventData) {
-                        if (event.id == EVENT_DATA_COLLECT) {
-                            x.push_back(frameData[i].frame);
-                            if (useDerivative) {
-                                y.push_back(i ? event.valueData[0].i - prev.i : 0);
-                            } else {
-                                y.push_back(event.valueData[0].i);
-                            }
-                            prev = event.valueData[0];
-                        } else if (event.id == EVENT_SECTION) {
-                            chpater.push_back(std::pair<uint32_t, uint32_t>{frameData[i].frame, event.valueData[0].i});
-                        }
-                    }
-                }
-
-                ImPlot::SetNextAxesToFit();
-                if (ImPlot::BeginPlot("Line Plot")) {
-                    ImPlot::SetupAxes("Time", "Value");
-                    ImPlot::PlotStairs("Score", x.data(), y.data(), x.size());
-                    //ImPlot::PlotStairs("Value", x.data(), z.data(), x.size());
-                    for (auto& ch : chpater) {
-                        ImPlot::TagX((double)ch.first, ImVec4(0, 1, 1, 1), "%s", std::to_string(ch.second).c_str());
-                    }
-                    ImPlot::EndPlot();
-                }
-                ImGui::Text("%d, %d, %d", x.size(), y.size(), z.size());
-            }
-
-            if (showDataTree) {
-                for (auto& frame : frameData) {
-                    sprintf_s(tmpStr, "Frame %d", frame.frame);
-                    if (ImGui::TreeNode(tmpStr)) {
-                        for (auto& record : frame.eventData) {
-                            sprintf_s(tmpStr, "Data %u", record.id);
-                            if (ImGui::TreeNode(tmpStr)) {
-                                for (auto& value : record.valueData) {
-                                    sprintf_s(tmpStr, "%u", value.i);
-                                    ImGui::Selectable(tmpStr);
-                                }
-                                ImGui::TreePop();
-                            }
-                        }
-                        ImGui::TreePop();
-                    }
-                }
-            }
-            ImGui::TreePop();
-        }
-    }
-    return backButton;
 }
 
 void AboutOpt(const char* thanks_text)

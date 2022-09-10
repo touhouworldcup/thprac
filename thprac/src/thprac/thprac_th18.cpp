@@ -899,7 +899,6 @@ namespace TH18 {
             OnLocaleChange();
             FpsInit();
             GameplayInit();
-            DatRecInit();
             ScoreUncapInit();
             th18_mukade_fix.Setup();
             th18_scroll_fix.Setup();
@@ -1442,33 +1441,6 @@ namespace TH18 {
             scoreUncapStageTrFix[0]->Toggle(scoreUncapChkbox);
             scoreUncapStageTrFix[1]->Toggle(scoreUncapChkbox);
         }
-        void DatRecInit()
-        {
-            mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
-                return DataRecFunc(values);
-            };
-            wchar_t appdata[MAX_PATH];
-            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
-            mOptCtx.data_rec_dir = appdata;
-            mOptCtx.data_rec_dir += L"\\ShanghaiAlice\\th18\\replay\\";
-        }
-        void DataRecPreUpd()
-        {
-            DataRecOpt(mOptCtx, true, thPracParam._playLock);
-        }
-        void DataRecFunc(std::vector<RecordedValue>& values)
-        {
-            values.clear();
-            values.emplace_back("Score", (int64_t) * (int32_t*)(0x4cccfc) * 10ll);
-            values.emplace_back("Funds", *(int32_t*)(0x4ccd34));
-        }
-        void DataRecMenu()
-        {
-            if (DataRecOpt(mOptCtx)) {
-                SetContentUpdFunc([&]() { ContentUpdate(); });
-            }
-        }
-
 
     public:
         __declspec(noinline) static bool StaticUpdate()
@@ -1587,13 +1559,6 @@ namespace TH18 {
 
             wndFocus &= ReplayMenu();
 
-            if (BeginOptGroup<TH_DATANLY>()) {
-                if (ImGui::Button(XSTR(TH_DATANLY_BUTTON))) {
-                    SetContentUpdFunc([&]() { DataRecMenu(); });
-                }
-                EndOptGroup();
-            }
-
             AboutOpt();
             ImGui::EndChild();
             if (wndFocus)
@@ -1602,7 +1567,6 @@ namespace TH18 {
         void PreUpdate()
         {
             LocaleUpdate();
-            DataRecPreUpd();
         }
 
         adv_opt_ctx mOptCtx;
@@ -2644,17 +2608,6 @@ namespace TH18 {
     {
         ReplaySaveParam(utf8_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
-    void THDataInit()
-    {
-        AnlyDataInit();
-
-        DataRef<DATA_SCENE_ID>(U32_ARG(0x4cd5e8));
-        DataRef<DATA_RND_SEED>(U16_ARG(0x4cf288));
-        DataRef<DATA_DIFFCULTY>(U8_ARG(0x4ccd00));
-        DataRef<DATA_SHOT_TYPE>(U8_ARG(0x4cccf4));
-        DataRef<DATA_STAGE>(U8_ARG(0x4cccdc));
-        DataRef<DATA_STARTING_STAGE>(U8_ARG(0x4ccce0));
-    }
 
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th18_everlasting_bgm, 0x477a50)
@@ -2882,8 +2835,7 @@ namespace TH18 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        THDataInit();
-
+        
         // Reset thPracParam
         thPracParam.Reset();
     }

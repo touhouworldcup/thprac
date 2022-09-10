@@ -34,21 +34,8 @@
     <ClInclude Include="src\3rdParties\ImGui\imgui_freetype.h" />
     <ClInclude Include="src\3rdParties\ImGui\imgui_internal.h" />
     <ClInclude Include="src\3rdParties\ImGui\imgui_user.h" />
-    <ClInclude Include="src\3rdParties\ImGui\implot.h" />
-    <ClInclude Include="src\3rdParties\ImGui\implot_internal.h" />
     <ClInclude Include="src\3rdParties\ImGui\imstb_rectpack.h" />
     <ClInclude Include="src\3rdParties\ImGui\imstb_textedit.h" />
-    <ClInclude Include="src\3rdParties\ImGui\imstb_truetype.h" />
-    <ClInclude Include="src\3rdParties\lzma\7zTypes.h" />
-    <ClInclude Include="src\3rdParties\lzma\Compiler.h" />
-    <ClInclude Include="src\3rdParties\lzma\CpuArch.h" />
-    <ClInclude Include="src\3rdParties\lzma\LzFind.h" />
-    <ClInclude Include="src\3rdParties\lzma\LzFindMt.h" />
-    <ClInclude Include="src\3rdParties\lzma\LzHash.h" />
-    <ClInclude Include="src\3rdParties\lzma\LzmaDec.h" />
-    <ClInclude Include="src\3rdParties\lzma\LzmaEnc.h" />
-    <ClInclude Include="src\3rdParties\lzma\Precomp.h" />
-    <ClInclude Include="src\3rdParties\lzma\Threads.h" />
     <ClInclude Include="src\3rdParties\MetroHash\metrohash128.h" />
     <ClInclude Include="src\3rdParties\MetroHash\platform.h" />
     <ClInclude Include="src\3rdParties\MinHook\include\MinHook.h" />
@@ -60,7 +47,6 @@
     <ClInclude Include="src\3rdParties\MinHook\src\hde\table32.h" />
     <ClInclude Include="src\3rdParties\MinHook\src\hde\table64.h" />
     <ClInclude Include="src\3rdParties\MinHook\src\trampoline.h" />
-    <ClInclude Include="src\thprac\thprac_data_anly.h" />
     <ClInclude Include="src\thprac\thprac_games.h" />
     <ClInclude Include="src\thprac\thprac_game_data.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_dx8.h" />
@@ -103,16 +89,6 @@
     <ClCompile Include="src\3rdParties\ImGui\imgui_freetype.cpp" />
     <ClCompile Include="src\3rdParties\ImGui\imgui_tables.cpp" />
     <ClCompile Include="src\3rdParties\ImGui\imgui_widgets.cpp" />
-    <ClCompile Include="src\3rdParties\ImGui\implot.cpp" />
-    <ClCompile Include="src\3rdParties\ImGui\implot_demo.cpp" />
-    <ClCompile Include="src\3rdParties\ImGui\implot_items.cpp" />
-    <ClCompile Include="src\3rdParties\lzma\CpuArch.c" />
-    <ClCompile Include="src\3rdParties\lzma\LzFind.c" />
-    <ClCompile Include="src\3rdParties\lzma\LzFindMt.c" />
-    <ClCompile Include="src\3rdParties\lzma\LzFindOpt.c" />
-    <ClCompile Include="src\3rdParties\lzma\LzmaDec.c" />
-    <ClCompile Include="src\3rdParties\lzma\LzmaEnc.c" />
-    <ClCompile Include="src\3rdParties\lzma\Threads.c" />
     <ClCompile Include="src\3rdParties\MetroHash\metrohash128.cpp" />
     <ClCompile Include="src\3rdParties\MinHook\src\buffer.c" />
     <ClCompile Include="src\3rdParties\MinHook\src\disassembler.c" />
@@ -123,7 +99,6 @@
     <ClCompile Include="src\3rdParties\MinHook\src\trampoline_new.c" />
     <ClCompile Include="src\thprac\main.cpp" />
     <ClCompile Include="src\thprac\thprac_alcostg.cpp" />
-    <ClCompile Include="src\thprac\thprac_data_anly.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_impl_dx8.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_components.cpp" />
     <ClCompile Include="src\thprac\thprac_hook.cpp" />
@@ -215,7 +190,7 @@
   <PropertyGroup>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>thprac</TargetName>
-    <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\distorm\include;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(ProjectDir)src\3rdParties\MinHook\include;$(ProjectDir)src\3rdParties\robin-map;$(ProjectDir)src\3rdParties\xxHash;$(ProjectDir)src\3rdParties\lzma;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\distorm\include;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(ProjectDir)src\3rdParties\MinHook\include;$(ProjectDir)src\3rdParties\robin-map;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)src\3rdParties\FreeType\win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -229,7 +204,7 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
       <AdditionalManifestDependencies>type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
-	  <AdditionalOptions Condition="'$(ToolsetType)'=='MSVC'">/IGNORE:4098 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(ToolsetType)'=='MSVC'">/IGNORE:4098 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>

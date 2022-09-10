@@ -535,32 +535,6 @@ namespace TH10 {
             th10_all_clear_bonus_2.Toggle(mOptCtx.all_clear_bonus);
             th10_all_clear_bonus_3.Toggle(mOptCtx.all_clear_bonus);
         }
-        void DatRecInit()
-        {
-            mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
-                return DataRecFunc(values);
-            };
-            wchar_t tempStr[MAX_PATH];
-            GetCurrentDirectoryW(MAX_PATH, tempStr);
-            mOptCtx.data_rec_dir = tempStr;
-            mOptCtx.data_rec_dir += L"\\replay";
-        }
-        void DataRecPreUpd()
-        {
-            DataRecOpt(mOptCtx, true, thPracParam._playLock);
-        }
-        void DataRecFunc(std::vector<RecordedValue>& values)
-        {
-            values.clear();
-            values.emplace_back("Score", (int64_t) * (int32_t*)(0x474c44) * 10ll);
-            values.emplace_back("Faith", *(int32_t*)(0x474c4c) * 10);
-        }
-        void DataRecMenu()
-        {
-            if (DataRecOpt(mOptCtx)) {
-                SetContentUpdFunc([&]() { ContentUpdate(); });
-            }
-        }
 
         THAdvOptWnd() noexcept
         {
@@ -572,13 +546,12 @@ namespace TH10 {
 
             InitUpdFunc([&]() { ContentUpdate(); },
                 [&]() { LocaleUpdate(); },
-                [&]() { PreUpdate(); },
+                [&]() {},
                 []() {});
 
             OnLocaleChange();
             FpsInit();
             GameplayInit();
-            DatRecInit();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -641,20 +614,10 @@ namespace TH10 {
                     GameplaySet();
                 EndOptGroup();
             }
-            if (BeginOptGroup<TH_DATANLY>()) {
-                if (ImGui::Button(XSTR(TH_DATANLY_BUTTON))) {
-                    SetContentUpdFunc([&]() { DataRecMenu(); });
-                }
-                EndOptGroup();
-            }
 
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
-        }
-        void PreUpdate()
-        {
-            DataRecPreUpd();
         }
 
         adv_opt_ctx mOptCtx;
@@ -2201,18 +2164,6 @@ namespace TH10 {
             }
         }
     }
-    void THDataInit()
-    {
-        AnlyDataInit();
-
-        DataRef<DATA_SCENE_ID>(U32_ARG(0x491fb8));
-        DataRef<DATA_RND_SEED>(U16_ARG(0x4918b0));
-        DataRef<DATA_DIFFCULTY>(U8_ARG(0x474c74));
-        DataRef<DATA_SHOT_TYPE>(U8_ARG(0x474c68));
-        DataRef<DATA_SUB_SHOT_TYPE>(U8_ARG(0x474c6c));
-        DataRef<DATA_STAGE>(U8_ARG(0x474c7c));
-        DataRef<DATA_STARTING_STAGE>(U8_ARG(0x474c80));
-    }
     PATCH_ST(th10_real_bullet_sprite, 0x406e03, "\x0F\x84\x13\x05\x00\x00", 6);
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th10_everlasting_bgm, 0x43e460)
@@ -2376,8 +2327,7 @@ namespace TH10 {
         // Hooks
         THMainHook::singleton().EnableAllHooks();
         th10_real_bullet_sprite.Setup();
-        THDataInit();
-
+        
         // Reset thPracParam
         thPracParam.Reset();
     }

@@ -752,33 +752,6 @@ namespace TH17 {
             th17_all_clear_bonus_2.Toggle(mOptCtx.all_clear_bonus);
             th17_all_clear_bonus_3.Toggle(mOptCtx.all_clear_bonus);
         }
-        void DatRecInit()
-        {
-            mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
-                return DataRecFunc(values);
-            };
-            wchar_t appdata[MAX_PATH];
-            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
-            mOptCtx.data_rec_dir = appdata;
-            mOptCtx.data_rec_dir += L"\\ShanghaiAlice\\th17\\replay\\";
-        }
-        void DataRecPreUpd()
-        {
-            DataRecOpt(mOptCtx, true, thPracParam._playLock);
-        }
-        void DataRecFunc(std::vector<RecordedValue>& values)
-        {
-            values.clear();
-            values.emplace_back("Score", (int64_t) * (int32_t*)(0x4b59fc) * 10ll);
-            values.emplace_back("Graze", *(int32_t*)(0x4b5a0c));
-            values.emplace_back("Value", ((float)*(int32_t*)(0x4b5a24) / 100.0f), "%.2f");
-        }
-        void DataRecMenu()
-        {
-            if (DataRecOpt(mOptCtx)) {
-                SetContentUpdFunc([&]() { ContentUpdate(); });
-            }
-        }
 
         struct _goast {
             _goast(float _x, float _y, float _dir, int _type)
@@ -953,13 +926,12 @@ namespace TH17 {
 
             InitUpdFunc([&]() { ContentUpdate(); },
                 [&]() { LocaleUpdate(); },
-                [&]() { PreUpdate(); },
+                [&]() {},
                 []() {});
 
             OnLocaleChange();
             FpsInit();
             GameplayInit();
-            DatRecInit();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -1037,12 +1009,6 @@ namespace TH17 {
 
                 EndOptGroup();
             }
-            if (BeginOptGroup<TH_DATANLY>()) {
-                if (ImGui::Button(XSTR(TH_DATANLY_BUTTON))) {
-                    SetContentUpdFunc([&]() { DataRecMenu(); });
-                }
-                EndOptGroup();
-            }
             /*
 				if (BeginOptGroup<TH17_GOAST>())
 				{
@@ -1054,10 +1020,6 @@ namespace TH17 {
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
-        }
-        void PreUpdate()
-        {
-            DataRecPreUpd();
         }
 
         adv_opt_ctx mOptCtx;
@@ -1955,19 +1917,6 @@ namespace TH17 {
 
 #define TH17AddGoast(goast_id) asm_call<0x40f980, Thiscall>(GetMemContent(0x4b7684), goast_id)
 
-    void THDataInit()
-    {
-        AnlyDataInit();
-
-        DataRef<DATA_SCENE_ID>(U32_ARG(0x4b61d4));
-        DataRef<DATA_RND_SEED>(U16_ARG(0x4b7668));
-        DataRef<DATA_DIFFCULTY>(U8_ARG(0x4b5a00));
-        DataRef<DATA_SHOT_TYPE>(U8_ARG(0x4b59f4));
-        DataRef<DATA_SHOT_GOAST>(U8_ARG(0x4b59f8));
-        DataRef<DATA_STAGE>(U8_ARG(0x4b59dc));
-        DataRef<DATA_STARTING_STAGE>(U8_ARG(0x4b59e0));
-    }
-
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th17_goast_bugfix, 0x430080)
     {
@@ -2186,8 +2135,7 @@ namespace TH17 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        THDataInit();
-
+        
         // Reset thPracParam
         thPracParam.Reset();
     }

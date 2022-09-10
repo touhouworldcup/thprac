@@ -24,7 +24,6 @@ namespace TH13 {
         void Reset()
         {
             memset(this, 0, sizeof(THPracParam));
-            DataBatchResetRem();
         }
         bool ReadJson(std::string& json)
         {
@@ -468,10 +467,7 @@ namespace TH13 {
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtx(0x444D7F, [](PCONTEXT pCtx) {
-                *(uint32_t*)(pCtx->Edi + 0x65C) = 1;
-                DataRef<EVENT_MISS>()++;
-            }) } };
+            new HookCtx(0x444D7B, "\x01", 1) } };
         Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
             new HookCtx(0x444A52, "\xeb\x06", 2) } };
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
@@ -486,133 +482,6 @@ namespace TH13 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
-    };
-    class THAuxDisp : public Gui::GameGuiWnd {
-        THAuxDisp() noexcept
-        {
-            SetTitle("Aux Disp");
-            SetFade(1.0f, 0.1f);
-            SetPos(10.0f, 10.0f);
-            SetSize(100.0f, 100.0f);
-            SetWndFlag(ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
-
-            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
-            OnLocaleChange();
-        }
-        SINGLETON(THAuxDisp);
-
-    public:
-    protected:
-        virtual void OnLocaleChange() override
-        {
-            switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
-            case Gui::LOCALE_EN_US:
-            case Gui::LOCALE_JA_JP:
-                SetPos(424.0f, 40.0f);
-                SetSize(210.0f, 430.0f);
-                break;
-            default:
-                break;
-            }
-
-        }
-        virtual void OnContentUpdate() override
-        {
-            mStageOffset(false);
-            STAGE_OFFSET_INIT(DataBatchCache<0>(false), *mStageOffset);
-
-            //WndDebugOutput();
-            PRT_WITH_SO("High Score: %s", FormatScore(STAGE_OFFSET(DATA_SCORE)));
-            PRT_WITH_SO("Score: %s", FormatScore(STAGE_OFFSET(DATA_SCORE)));
-            ImGui::Separator();
-
-            ImGui::Columns(2);
-            ImGui::Text("Life: %d", DataRef<DATA_LIFE>());
-            ImGui::NextColumn();
-            ImGui::Text("Frag: %d/%d", DataRef<DATA_LIFE_FRAG>(), ((uint32_t*)(0x4bb994))[U32_REF(DATA_EXTEND)]);
-            ImGui::NextColumn();
-            ImGui::Text("Bomb: %d", DataRef<DATA_BOMB>());
-            ImGui::NextColumn();
-            ImGui::Text("Frag: %d/8", DataRef<DATA_BOMB_FRAG>());
-            ImGui::NextColumn();
-            ImGui::Text("Power: %1.2f", ((float)DataRef<DATA_POWER>() / 100.0f));
-            ImGui::NextColumn();
-            PRT_WITH_SO("Items: %d", STAGE_OFFSET(DATA_ITEM_POWER));
-            ImGui::NextColumn();
-            PRT_WITH_SO("Value: %d", STAGE_OFFSET(DATA_VALUE) / 100);
-            ImGui::NextColumn();
-            PRT_WITH_SO("Items: %d", STAGE_OFFSET(DATA_ITEM_POINT));
-            ImGui::NextColumn();
-            PRT_WITH_SO("Graze: %d", STAGE_OFFSET(DATA_GRAZE));
-            ImGui::NextColumn();
-            PRT_WITH_SO("Cancel: %d", STAGE_OFFSET(DATA_ITEM_CANCEL));
-            ImGui::NextColumn();
-            ImGui::Columns();
-            ImGui::Separator();
-
-            auto blue = STAGE_OFFSET(DATA_SPIRIT_BLUE);
-            auto blueTrance = STAGE_OFFSET(DATA_SPIRIT_BLUE_TRANCE);
-            auto blueTotal = blue + blueTrance;
-            auto grey = STAGE_OFFSET(DATA_SPIRIT_GREY);
-            auto greyTrance = STAGE_OFFSET(DATA_SPIRIT_GREY_TRANCE);
-            auto greyTotal = grey + greyTrance;
-            auto life = STAGE_OFFSET(DATA_SPIRIT_LIFE);
-            auto lifeTrance = STAGE_OFFSET(DATA_SPIRIT_LIFE_TRANCE);
-            auto lifeTotal = life + lifeTrance;
-            auto bomb = STAGE_OFFSET(DATA_SPIRIT_BOMB);
-            auto bombTrance = STAGE_OFFSET(DATA_SPIRIT_BOMB_TRANCE);
-            auto bombTotal = bomb + bombTrance;
-            PRT_WITH_SO("Blue: %d (%d, %.2f%%)", blueTotal, blueTrance, (blueTotal) ? (float)(blueTrance) / (float)(blueTotal)*100.0f : 0.0f);
-            PRT_WITH_SO("Grey: %d (%d, %.2f%%)", greyTotal, greyTrance, (greyTotal) ? (float)(greyTrance) / (float)(greyTotal)*100.0f : 0.0f);
-            PRT_WITH_SO("Purple: %d (%d, %.2f%%)", lifeTotal, lifeTrance, (lifeTotal) ? (float)(lifeTrance) / (float)(lifeTotal)*100.0f : 0.0f);
-            PRT_WITH_SO("Green: %d (%d, %.2f%%)", bombTotal, bombTrance, (bombTotal) ? (float)(bombTrance) / (float)(bombTotal)*100.0f : 0.0f);
-            PRT_WITH_SO("Active trance: %d", STAGE_OFFSET(EVENT_TRANCE_ACTIVE));
-            PRT_WITH_SO("Passive trance: %d", STAGE_OFFSET(EVENT_TRANCE_PASSIVE));
-            ImGui::Separator();
-
-            ImGui::Columns(2);
-            PRT_WITH_SO("Miss: %d", STAGE_OFFSET(EVENT_MISS));
-            ImGui::NextColumn();
-            ImGui::Text("%df", DataRef<DATA_FRAME>());
-            ImGui::NextColumn();
-            PRT_WITH_SO("Bomb: %d", STAGE_OFFSET(EVENT_BOMB) + STAGE_OFFSET(EVENT_DEATH_BOMB));
-            ImGui::NextColumn();
-            PRT_WITH_SO("D. Bomb: %d", STAGE_OFFSET(EVENT_DEATH_BOMB));
-            ImGui::NextColumn();
-            ImGui::Text("SC Enter: %d", DataRef<EVENT_SPELLCARD_ENTER>());
-            ImGui::NextColumn();
-            ImGui::Text("SC Get: %d", DataRef<EVENT_SPELLCARD_GET>());
-            ImGui::Columns();
-            ImGui::Separator();
-
-            //ImGui::Text("Chapter NM Rate: %d/%d", 1, 1);
-            //ImGui::Separator();
-
-            InputDispWidget(0, 1, 3, 4, 5, 6, 7, 9);
-        }
-        virtual void OnPreUpdate() override
-        {
-            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
-            if (!DataRef<SYSFLAG_INGAME>()) {
-                Close();
-                return;
-            }
-            if (mAuxDisp(false) && !ImGui::IsAnyItemActive()) {
-                if (*mAuxDisp) {
-                    Open();
-                } else {
-                    Close();
-                }
-            }
-        }
-        virtual void OnPostUpdate() override
-        {
-            ImGui::PopStyleColor();
-        }
-
-        Gui::GuiHotKey mAuxDisp { "AuxDisp", "", 'L' };
-        Gui::GuiHotKey mStageOffset { "StageOffset", "", 'M' };
     };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
@@ -703,33 +572,6 @@ namespace TH13 {
             th13_all_clear_bonus_2.Toggle(mOptCtx.all_clear_bonus);
             th13_all_clear_bonus_3.Toggle(mOptCtx.all_clear_bonus);
         }
-        void DatRecInit()
-        {
-            mOptCtx.data_rec_func = [&](std::vector<RecordedValue>& values) {
-                return DataRecFunc(values);
-            };
-            wchar_t appdata[MAX_PATH];
-            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
-            mOptCtx.data_rec_dir = appdata;
-            mOptCtx.data_rec_dir += L"\\ShanghaiAlice\\th13\\replay\\";
-        }
-        void DataRecPreUpd()
-        {
-            DataRecOpt(mOptCtx, true, DataRef<SYSFLAG_INGAME>());
-        }
-        void DataRecFunc(std::vector<RecordedValue>& values)
-        {
-            values.clear();
-            values.emplace_back("Score", (int64_t) * (int32_t*)(0x4be7c0) * 10ll);
-            values.emplace_back("Graze", *(int32_t*)(0x4be7d0));
-            values.emplace_back("Value", ((float)*(int32_t*)(0x4be7dc) / 100.0f), "%.2f");
-        }
-        void DataRecMenu()
-        {
-            if (DataRecOpt(mOptCtx)) {
-                SetContentUpdFunc([&]() { ContentUpdate(); });
-            }
-        }
 
         THAdvOptWnd() noexcept
         {
@@ -740,13 +582,12 @@ namespace TH13 {
 
             InitUpdFunc([&]() { ContentUpdate(); },
                 [&]() { LocaleUpdate(); },
-                [&]() { PreUpdate(); },
+                [&]() {},
                 []() {});
 
             OnLocaleChange();
             FpsInit();
             GameplayInit();
-            DatRecInit();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -818,20 +659,10 @@ namespace TH13 {
                     GameplaySet();
                 EndOptGroup();
             }
-            if (BeginOptGroup<TH_DATANLY>()) {
-                if (ImGui::Button(XSTR(TH_DATANLY_BUTTON))) {
-                    SetContentUpdFunc([&]() { DataRecMenu(); });
-                }
-                EndOptGroup();
-            }
 
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
-        }
-        void PreUpdate()
-        {
-            DataRecPreUpd();
         }
 
         adv_opt_ctx mOptCtx;
@@ -1630,7 +1461,7 @@ namespace TH13 {
     __declspec(noinline) void THSectionPatch()
     {
         ECLHelper ecl;
-        ecl.SetBaseAddr((void*)U32_PTR(DATA_ECL_BASE));
+        ecl.SetBaseAddr((void*)GetMemAddr(0x4c2188, 0xac, 0xC));
 
         if (thPracParam.mode == 1) {
             auto section = thPracParam.section;
@@ -1657,118 +1488,6 @@ namespace TH13 {
     void THSaveReplay(char* repName)
     {
         ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
-    }
-    void THDataInit()
-    {
-        AnlyDataInit();
-
-        SwitchHackSet<uint8_t, uint8_t>(InsHookCallback, (void*)0x4772ea, 30, (void*)0x4772fb, 0x10c, (void*)0x4772f4, 0x5e);
-        InsHookInit(100, (void*)0x4772e4, [](PCONTEXT pCtx) { return (pCtx->Eax + 4); });
-
-        InsHookRegister(1, 0, 0x5410, 10101);
-        InsHookRegister(1, 0, 0x5444, 10102);
-        InsHookRegister(1, 0, 0x54ac, 10103);
-        InsHookRegister(1, 0, 0x8c54, TH13_ST1_MID1);
-        InsHookRegister(1, 0, 0x4c44, 10104);
-        InsHookRegister(1, 0, 0x5544, 10105);
-        InsHookRegister(1, 2, 0x868, TH13_ST1_BOSS1);
-        InsHookRegister(1, 2, 0x1030, TH13_ST1_BOSS3);
-        InsHookRegister(1, 2, 0x167c, TH13_ST1_BOSS5);
-        InsHookRegister(1, 2, 0x1a34, TH13_ST1_BOSS6);
-        InsHookRegister(1, 2, 0x1f4c, TH13_ST1_BOSS2);
-        InsHookRegister(1, 2, 0x3124, TH13_ST1_BOSS4);
-        InsHookRegister(1, 2, 0x4114, TH13_ST1_BOSS5);
-        InsHookRegister(1, 2, 0x4a18, TH13_ST1_BOSS6);
-
-        DataRef<DATA_SCENE_ID>(U32_ARG(0x4dcc24));
-        DataRef<DATA_RND_SEED>(U16_ARG(0x4dc324));
-        DataRef<DATA_DIFFCULTY>(U8_ARG(0x4be7c4));
-        DataRef<DATA_SHOT_TYPE>(U8_ARG(0x4be7b8));
-        DataRef<DATA_STAGE>(U8_ARG(0x4be81c));
-        DataRef<DATA_STARTING_STAGE>(U8_ARG(0x4be820));
-        DataRef<DATA_FRAME>(U32_ARG(0x4be828));
-        DataRef<DATA_ECL_BASE>(U32_ARG(0x4c2188, 0xac, 0xC));
-        DataRef<DATA_GAME_INPUT>(U16_ARG(0x4E4C08));
-
-        DataRef<DATA_SCORE>(U32_ARG(0x4be7c0));
-        DataRef<DATA_LIFE>(U32_ARG(0x4be7f4));
-        DataRef<DATA_EXTEND>(U32_ARG(0x4be7fc));
-        DataRef<DATA_LIFE_FRAG>(U32_ARG(0x4be7f8));
-        DataRef<DATA_BOMB>(U32_ARG(0x4be800));
-        DataRef<DATA_BOMB_FRAG>(U32_ARG(0x4be804));
-        DataRef<DATA_POWER>(U32_ARG(0x4be7e8));
-        DataRef<DATA_VALUE>(U32_ARG(0x4be7dc));
-        DataRef<DATA_GRAZE>(U32_ARG(0x4be7d0));
-        DataRef<DATA_TRANCE_METER>(U32_ARG(0x4be808));
-
-        DataRef<DATA_SPIRIT_BLUE>(0x438ba6);
-        DataRef<DATA_SPIRIT_GREY>(0x438c3d);
-        DataRef<DATA_SPIRIT_LIFE>(0x438b5d);
-        DataRef<DATA_SPIRIT_BOMB>(0x438c19);
-        DataRef<DATA_SPIRIT_BLUE_TRANCE>(0x438d51);
-        DataRef<DATA_SPIRIT_GREY_TRANCE>(0x438da5);
-        DataRef<DATA_SPIRIT_LIFE_TRANCE>(0x438d0e);
-        DataRef<DATA_SPIRIT_BOMB_TRANCE>(0x438d84);
-        DataRef<DATA_ITEM_POWER>(0x42e94d);
-        DataRef<DATA_ITEM_POINT>(0x42e9e5);
-        DataRef<DATA_ITEM_CANCEL>(0x42eb46);
-
-        DataBatch<DATA_SCORE, DATA_LIFE, DATA_EXTEND, DATA_LIFE_FRAG, DATA_BOMB, DATA_BOMB_FRAG,
-            DATA_POWER, DATA_VALUE, DATA_GRAZE, DATA_TRANCE_METER, 
-            DATA_SPIRIT_BLUE, DATA_SPIRIT_GREY, DATA_SPIRIT_LIFE, DATA_SPIRIT_BOMB,
-            DATA_SPIRIT_BLUE_TRANCE, DATA_SPIRIT_GREY_TRANCE, DATA_SPIRIT_LIFE_TRANCE, DATA_SPIRIT_BOMB_TRANCE,
-            DATA_ITEM_POWER, DATA_ITEM_POINT, DATA_ITEM_CANCEL,
-            EVENT_MISS, EVENT_BOMB, EVENT_DEATH_BOMB, EVENT_TRANCE_ACTIVE, EVENT_TRANCE_PASSIVE, EVENT_TRANCE_EXIT, EVENT_CONTINUE>();
-
-        ImHook<EVENT_SPELLCARD_ENTER>((void*)0x413270, [](PCONTEXT pCtx) {
-            AnlyEventRec(EVENT_SPELLCARD_ENTER, *(uint32_t*)(pCtx->Esp + 4), (uint32_t)U8_REF(DATA_DIFFCULTY));
-            DataRef<EVENT_SPELLCARD_ENTER>()++;
-        });
-        ImHook<EVENT_SPELLCARD_GET>((void*)0x413acf, [](PCONTEXT pCtx) {
-            AnlyEventRec(EVENT_SPELLCARD_GET, GetMemContent(0x4c2178, 0x78), (uint32_t)U8_REF(DATA_DIFFCULTY));
-            DataRef<EVENT_SPELLCARD_GET>()++;
-        });
-        ImHook<EVENT_MISS>((void*)0x405c3e, [](PCONTEXT pCtx) {
-            AnlyEventRec(EVENT_MISS);
-            DataRef<EVENT_MISS>()++;
-        });
-        ImHook<EVENT_BOMB>((void*)0x4433f7, [](PCONTEXT pCtx) {
-            AnlyEventRec(EVENT_BOMB);
-            DataRef<EVENT_BOMB>()++;
-        });
-        ImHook<EVENT_DEATH_BOMB>((void*)0x44354c, [](PCONTEXT pCtx) {
-            AnlyEventRec(EVENT_DEATH_BOMB);
-            DataRef<EVENT_DEATH_BOMB>()++;
-        });
-        ImHook<EVENT_TRANCE_ACTIVE>((void*)0x405883, [](PCONTEXT pCtx) {
-            AnlyEventRec(EVENT_TRANCE_ACTIVE);
-            DataRef<EVENT_TRANCE_ACTIVE>()++;
-        });
-        ImHook<EVENT_TRANCE_PASSIVE>((void*)0x444a43, [](PCONTEXT pCtx) {
-            AnlyEventRec(EVENT_TRANCE_PASSIVE);
-            DataRef<EVENT_TRANCE_PASSIVE>()++;
-        });
-        ImHook<EVENT_TRANCE_EXIT>((void*)0x405c44, [](PCONTEXT pCtx) {
-            if (!(GetMemContent(0x4c2164, 0x14) & 2)) {
-                AnlyEventRec(EVENT_TRANCE_EXIT);
-                DataRef<EVENT_TRANCE_EXIT>()++;
-            }
-        });
-        ImHook<EVENT_CONTINUE>((void*)0x440758, [](PCONTEXT pCtx) {
-            AnlyEventRec(EVENT_CONTINUE);
-            DataRef<EVENT_CONTINUE>()++;
-        });
-
-        DataBatchCache<0>(true);
-    }
-    void THDataStage()
-    {
-        bool isStartingStage = U8_REF(DATA_STAGE) == U8_REF(DATA_STARTING_STAGE);
-        AnlyDataStageStart();
-        DataBatchCache<0>(true);
-        AnlyDataCollect();
-        InsHookApply();
-        DataRef<SYSFLAG_INGAME>() = 1;
     }
 
     bool th13ElBgmTranceFlag = false;
@@ -1834,7 +1553,6 @@ namespace TH13 {
     EHOOK_DY(th13_param_reset, 0x44cd2f)
     {
         thPracParam.Reset();
-        DataRef<SYSFLAG_INGAME>() = 0;
     }
     EHOOK_DY(th13_prac_menu_1, 0x451d14)
     {
@@ -1888,7 +1606,6 @@ namespace TH13 {
 
             THSectionPatch();
         }
-        THDataStage();
     }
     EHOOK_DY(th13_bgm, 0x42c864)
     {
@@ -1922,12 +1639,10 @@ namespace TH13 {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 
         // Gui components update
-        AnlyAutoRecTest();
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
-        THAuxDisp::singleton().Update();
 
         THAdvOptWnd::singleton().FpsUpd();
         GameGuiEnd(drawCursor);
@@ -1950,12 +1665,10 @@ namespace TH13 {
         THGuiPrac::singleton();
         THGuiRep::singleton();
         THOverlay::singleton();
-        THAuxDisp::singleton();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        THDataInit();
-
+        
         // Reset thPracParam
         thPracParam.Reset();
     }
