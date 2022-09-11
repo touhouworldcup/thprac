@@ -551,14 +551,17 @@ namespace THPrac
             snprintf(labelStr, bufSize + 1, format, level);
 
             if (ImGui::BeginCombo(labelStr, choices[out[level]])) {
+                #if 0
                 static char search[1024] = {};
                 ImGui::InputText("Search", search, 1024);
+                #endif
                 for (size_t i = 0; i < choices.size(); i++) {
+                    #if 0
                     if (*search) {
                         if (!StrStrIA(choices[i], search))
                             continue;
                     }
-
+                    #endif
                     ImGui::PushID(i);
 
                     bool item_selected = (i == out[level]);
