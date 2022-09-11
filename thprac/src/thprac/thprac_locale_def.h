@@ -21,7 +21,6 @@ enum th_glossary_t
     ALCOSTG_ORDER,
     ALCOSTG_ORDER_MBOSS,
     ALCOSTG_PRACTICE_MODE,
-    ALCOSTG_PROGRESS,
     ALCOSTG_TIME,
     ALCOSTG_TITLE,
     TH06_BOOKS,
@@ -851,6 +850,7 @@ enum th_glossary_t
     TH_POINT_STAGE,
     TH_POINT_TOTAL,
     TH_POWER,
+    TH_PROGRESS,
     TH_RAGE,
     TH_REAL_BULLET_SIZE,
     TH_RESTART,
@@ -2390,6 +2390,6 @@ extern const wchar_t __thprac_loc_range_zh[3161];
 
 extern const wchar_t __thprac_loc_range_en[53];
 
-extern const wchar_t __thprac_loc_range_ja[2669];
+extern const wchar_t __thprac_loc_range_ja[2671];
 
 }

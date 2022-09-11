@@ -330,9 +330,9 @@ namespace Alcostg {
         Gui::GuiSlider<int, ImGuiDataType_S32> mTime { ALCOSTG_TIME, 0, 210, 1, 60, 30 }; // 1 for 2 sec
         Gui::GuiSlider<int, ImGuiDataType_S32> mBeer { ALCOSTG_BEER, 0, 30, 1, 10 }; // 3000
         Gui::GuiSlider<int, ImGuiDataType_S32> mBeerMax { ALCOSTG_BEER_MAX, 0, 30, 1, 10 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mProgress { ALCOSTG_PROGRESS, 1, 19, 1, 1 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mProgress { TH_PROGRESS, 1, 19, 1, 1 };
 
-        Gui::GuiNavFocus mNavFocus { TH_MODE, TH_STAGE, TH_WARP, ALCOSTG_PROGRESS,
+        Gui::GuiNavFocus mNavFocus { TH_MODE, TH_STAGE, TH_WARP, TH_PROGRESS,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE,
             TH_SCORE, ALCOSTG_TIME, ALCOSTG_BEER, ALCOSTG_BEER_MAX };
 
