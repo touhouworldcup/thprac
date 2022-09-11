@@ -19,8 +19,8 @@
 #include <metrohash128.h>
 #include <psapi.h>
 #include <tlhelp32.h>
-#include <tsl/robin_map.h>
 #include <vector>
+#include <unordered_map>
 
 namespace THPrac {
 inline bool HashCompare(uint32_t hash1[4], uint32_t hash2[4])
@@ -391,8 +391,8 @@ private:
         auto& alloc = gameJson.GetAllocator();
         gameJson.SetObject();
 
-        for (auto it = mGames.begin(); it != mGames.end(); ++it) {
-            auto& game = it.value();
+        for (auto& it : mGames) {
+            auto& game = it.second;
             rapidjson::Value gameTitleJson;
             gameTitleJson.SetObject();
             JsonAddMember(gameTitleJson, "default_launch", game.defaultLaunch, alloc);
@@ -658,8 +658,8 @@ public:
         GetModuleFileNameW(GetModuleHandleW(NULL), currentPath, MAX_PATH);
 
         auto& gameGui = THGameGui::singleton();
-        for (auto it = gameGui.mGames.begin(); it != gameGui.mGames.end(); ++it) {
-            for (auto& gameInst : it.value().instances) {
+        for (auto& it : mGames) {
+            for (auto& gameInst : it.second.instances) {
                 if (gameInst.type == TYPE_THCRAP) {
                     continue;
                 }
@@ -1232,8 +1232,8 @@ public:
         gameGui.thcrapSetup();
         CoInitializeEx(NULL, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
 
-        for (auto it = gameGui.mGames.begin(); it != gameGui.mGames.end(); ++it) {
-            for (auto& gameInst : it.value().instances) {
+        for (auto& it : gameGui.mGames) {
+            for (auto& gameInst : it.second.instances) {
                 ScanSetCurrentPath(utf8_to_utf16(gameInst.path.c_str()));
                 switch (gameInst.type) {
                 case THPrac::TYPE_ORIGINAL:
@@ -1248,26 +1248,26 @@ public:
                 case THPrac::TYPE_STEAM: {
                     auto attr = GetFileAttributesW(utf8_to_utf16(gameInst.path.c_str()).c_str());
                     if (attr != INVALID_FILE_ATTRIBUTES && attr != FILE_ATTRIBUTE_DIRECTORY) {
-                        ScanAddGame(TYPE_STEAM, gameInst.name, gameInst.path, it.value().signature);
+                        ScanAddGame(TYPE_STEAM, gameInst.name, gameInst.path, it.second.signature);
                     }
                 } break;
                 case THPrac::TYPE_THCRAP:
                     for (auto& cfg : gameGui.mThcrapCfg) {
                         if (cfg == gameInst.path) {
-                            ScanAddGame(gameInst.type, gameInst.name, gameInst.path, it.value().signature);
+                            ScanAddGame(gameInst.type, gameInst.name, gameInst.path, it.second.signature);
                             continue;
                         }
                     }
                     break;
                 case THPrac::TYPE_UNCERTAIN:
                 case THPrac::TYPE_UNKNOWN:
-                    ScanAddGame(gameInst.type, gameInst.name, gameInst.path, it.value().signature);
+                    ScanAddGame(gameInst.type, gameInst.name, gameInst.path, it.second.signature);
                     break;
                 default:
                     break;
                 }
             }
-            it.value().instances.clear();
+            it.second.instances.clear();
         }
 
         for (auto& scan : gameGui.mGameScan) {
@@ -1421,10 +1421,9 @@ public:
                     auto gameType = (GameRollType)((int)game.catagory + 1);
                     GameRoll roll { game.idStr, gameType, game.steamId ? "STEAM": nullptr, 1, false };
 
-                    auto it = mGames.find(std::string(roll.name));
+                    auto it = mGames.find(roll.name);
                     if (it != mGames.end()) {
-                        auto& existingGames = it.value();
-                        for (auto& existingGame : existingGames.instances) {
+                        for (auto& existingGame : it->second.instances) {
                             if (existingGame.type == TYPE_STEAM) {
                                 roll.selected = true;
                                 break;
@@ -1493,14 +1492,14 @@ public:
                         auto it = mGames.find(std::string(steamGame.name));
                         if (it != mGames.end()) {
                             bool hasSteamGame = false;
-                            auto& existingGames = it.value().instances;
+                            auto& existingGames = it->second.instances;
                             for (auto gameIt = existingGames.begin();
                                 gameIt != existingGames.end();
                                 ++gameIt) {
                                 if ((*gameIt).type == TYPE_STEAM) {
                                     hasSteamGame = true;
                                     if (!steamGame.selected) {
-                                        it.value().selected = 0;
+                                        it->second.selected = 0;
                                         existingGames.erase(gameIt);
                                     }
                                     break;
@@ -1509,7 +1508,7 @@ public:
                             if (!hasSteamGame && steamGame.selected) {
                                 std::string gameName = steamGame.name;
                                 gameName += " (Steam)";
-                                mGameScan[3].emplace_back(gameName.c_str(), "", TYPE_STEAM, &(it.value().signature));
+                                mGameScan[3].emplace_back(gameName.c_str(), "", TYPE_STEAM, &(it->second.signature));
                             }
                         }
                     }
@@ -2240,10 +2239,9 @@ public:
     }
     void SwitchToGame(const char* idStr)
     {
-        for (auto it = mGames.begin(); it != mGames.end(); ++it) {
-            auto& game = it.value();
-            if (!strcmp(game.signature.idStr, idStr)) {
-                mCurrentGame = &game;
+        for (auto& it : mGames) {
+            if (!strcmp(it.second.signature.idStr, idStr)) {
+                mCurrentGame = &it.second;
                 mNewGameWnd = true;
                 mGuiUpdFunc = [&]() { GuiGame(); };
                 return;
@@ -2368,7 +2366,7 @@ public:
 
 private:
     std::function<void(void)> mGuiUpdFunc = []() {};
-    tsl::robin_map<std::string, THGame> mGames;
+    std::unordered_map<std::string, THGame> mGames;
     THGame* mCurrentGame = nullptr;
     bool mNewGameWnd = false;
     char mRename[256];

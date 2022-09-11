@@ -36,12 +36,6 @@ namespace Gui {
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("robin-map")) {
-                ImGui::BeginChild("COPYING.robin-map");
-                ImGui::TextUnformatted(COPYING_robin_map);
-                ImGui::EndChild();
-                ImGui::EndTabItem();
-            }
             if (ImGui::BeginTabItem("thprac")) {
                 ImGui::BeginChild("COPYING.thprac");
                 ImGui::TextUnformatted(COPYING_thprac);
