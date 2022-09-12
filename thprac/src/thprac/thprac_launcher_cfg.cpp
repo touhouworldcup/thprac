@@ -4,7 +4,6 @@
 #include "thprac_launcher_games.h"
 #include "thprac_launcher_utils.h"
 #include "thprac_licence.h"
-#include "thprac_log.h"
 #include "thprac_version.h"
 #include "thprac_utils.h"
 #include "utils/utils.h"
@@ -1172,7 +1171,6 @@ public:
     void LauncherCfgReset()
     {
         LauncherCfgClose();
-        LogClose();
         if (mCfgResetFlag == 1) {
             wchar_t appDataPath[MAX_PATH];
             if (SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, appDataPath) == S_OK) {

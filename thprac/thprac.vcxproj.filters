@@ -169,9 +169,6 @@
     <ClInclude Include="src\3rdParties\MinHook\src\disassembler.h">
       <Filter>3rdParties\MinHook</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_log.h">
-      <Filter>THPrac Utils</Filter>
-    </ClInclude>
     <ClInclude Include="src\thprac\thprac_game_data.h">
       <Filter>THPrac Utils</Filter>
     </ClInclude>
@@ -353,9 +350,6 @@
     </ClCompile>
     <ClCompile Include="src\3rdParties\MinHook\src\disassembler.c">
       <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\thprac_log.cpp">
-      <Filter>THPrac Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\3rdParties\ImGui\imgui_tables.cpp">
       <Filter>3rdParties\ImGui</Filter>

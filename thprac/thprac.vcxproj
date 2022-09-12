@@ -68,7 +68,6 @@
     <ClInclude Include="src\thprac\thprac_load_exe.h" />
     <ClInclude Include="src\thprac\thprac_gui_locale.h" />
     <ClInclude Include="src\thprac\thprac_locale_def.h" />
-    <ClInclude Include="src\thprac\thprac_log.h" />
     <ClInclude Include="src\thprac\thprac_main.h" />
     <ClInclude Include="src\thprac\thprac_utils.h" />
     <ClInclude Include="src\thprac\thprac_version.h" />
@@ -116,7 +115,6 @@
     <ClCompile Include="src\thprac\thprac_load_exe.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_locale.cpp" />
     <ClCompile Include="src\thprac\thprac_locale_def.cpp" />
-    <ClCompile Include="src\thprac\thprac_log.cpp" />
     <ClCompile Include="src\thprac\thprac_main.cpp" />
     <ClCompile Include="src\thprac\thprac_th06.cpp" />
     <ClCompile Include="src\thprac\thprac_th07.cpp" />

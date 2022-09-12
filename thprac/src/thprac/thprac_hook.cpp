@@ -2,7 +2,6 @@
 
 #define NOMINMAX
 
-#include "thprac_log.h"
 #include "thprac_launcher_cfg.h"
 #include "thprac_utils.h"
 #include "thprac_gui_locale.h"
@@ -225,30 +224,7 @@ __declspec(noinline) LONG CALLBACK VEHHandler(EXCEPTION_POINTERS* ExceptionInfo)
             return EXCEPTION_CONTINUE_EXECUTION;
         }
     }
-
-#if 0
-    auto c = ExceptionInfo->ContextRecord;
-    LogA(0, "[ERROR] Unknown exception encountered: %08x at %08x", ExceptionInfo->ExceptionRecord->ExceptionCode, c->Eip);
-    LogA(0, "thprac base: %08x", (int)&__ImageBase);
-    LogA(0, "Register: Eax: %08x, Ebx: %08x, Ecx: %08x, Edx: %08x, \nEsi: %08x, Edi: %08x, Ebp: %08x, Esp: %08x, ",
-        c->Eax, c->Ebx, c->Ecx, c->Edx, c->Esi, c->Edi, c->Ebp, c->Esp);
-    LogA(0, "Stack dump:");
-    for (int i = 0; i < 16; ++i) {
-        DWORD* stackPtr = (DWORD*)(c->Esp + i * 16 * sizeof(DWORD));
-        DWORD stackValue[16];
-        memset(stackValue, 0, 16 * sizeof(DWORD));
-        for (int j = 0; j < 16; ++j) {
-            if (!IsBadStackPtr(stackPtr)) {
-                stackValue[j] = *stackPtr;
-            }
-            stackPtr++;
-        }
-        LogA(0, "%08x|%08x|%08x|%08x|%08x|%08x|%08x|%08x|%08x|%08x|%08x|%08x|%08x|%08x|%08x|%08x",
-            stackValue[0], stackValue[1], stackValue[2], stackValue[3], stackValue[4], stackValue[5], stackValue[6], stackValue[7],
-            stackValue[8], stackValue[9], stackValue[10], stackValue[11], stackValue[12], stackValue[13], stackValue[14], stackValue[15]);
-    }
-#endif
-
+    
     MakeMiniDump(ExceptionInfo);
     SetUnhandledExceptionFilter(&UEHandler);
 

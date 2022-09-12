@@ -9,7 +9,6 @@
 #include "thprac_gui_impl_win32.h"
 #include "thprac_hook.h"
 #include "thprac_locale_def.h"
-#include "thprac_log.h"
 
 #include <Windows.h>
 #include <cstdint>
