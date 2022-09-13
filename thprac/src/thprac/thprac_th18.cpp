@@ -396,7 +396,7 @@ namespace TH18 {
 
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
-            TH_SCORE, TH_LIFE, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT, 
+            TH_SCORE, TH_LIFE, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT,
             TH_POWER, TH18_FUNDS };
 
         int mChapterSetup[7][2] {
@@ -723,7 +723,7 @@ namespace TH18 {
             new HookCtx(0x418496, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10),
             new HookCtx(0x418465, "\x90\x90", 2) } };
         Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F6", VK_F6, {
-            new HookCtx(0x429eef, "\xeb", 1), 
+            new HookCtx(0x429eef, "\xeb", 1),
             new HookCtx(0x43021b, "\x05\x8d", 2) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F7", VK_F7, {
             new HookCtx(0x45c2bd, "\x90\x90\x90\x90\x90\x90", 6) } };
@@ -859,17 +859,6 @@ namespace TH18 {
         void PracticeMenu()
         {
             mPhase(TH_PHASE, SpellPhase());
-
-#if 0
-				SIZE renderSize;
-				renderSize.cx = 1280;
-				renderSize.cy = 960;
-				ImGui::Text("Pos: %f, %f", ImGui::GetWindowPos().x / (float)renderSize.cx,
-					ImGui::GetWindowPos().y / (float)renderSize.cy);
-				ImGui::Text("Size: %f, %f", ImGui::GetWindowSize().x / (float)renderSize.cx,
-					ImGui::GetWindowSize().y / (float)renderSize.cy);
-#endif
-
             mNavFocus();
         }
 
@@ -1014,7 +1003,7 @@ namespace TH18 {
                 } else {
                     *(uint32_t*)(pCtx->Esi + 0x964) = -1;
                 }
-            } 
+            }
         }
         bool st6FinalFix = false;
         bool scrollFix = false;
@@ -1074,7 +1063,7 @@ namespace TH18 {
                 MultiByteToWideChar(CP_UTF8, 0, msg2, -1, _msg2, 256);
             }
             MsgBox(type, _title, _msg, msg2 ? _msg2 : nullptr);
-            
+
         }
         __declspec(noinline) uint32_t* FindCardDesc(uint32_t id)
         {
@@ -1243,7 +1232,7 @@ namespace TH18 {
 
             ParseReplayData();
             th18_rep_card_fix.Enable();
-            
+
             return;
         }
         bool GetAvailability()
@@ -1254,7 +1243,7 @@ namespace TH18 {
             auto& repMenu = THGuiRep::singleton();
             if (!OffsetValueBase::IsBadPtr((void*)GetMemContent(0x4cf2e4)) && !GetMemContent(0x4cf2e4, 0xd0)) {
                 return false;
-            } 
+            }
             if (repMenu.mRepStatus && (repMenu.mRepMetroHash[0] != mRepMetroHash[0] || repMenu.mRepMetroHash[1] != mRepMetroHash[1])) {
                 return false;
             }
@@ -1410,7 +1399,7 @@ namespace TH18 {
             {
                 LPVOID codecave = AllocateBuffer(0);
                 uint8_t* p = (uint8_t*)codecave;
-                
+
                 uint8_t code_1[] = "\x56\x8B\x71\x20\xFF\x74\x24\x08\xE8";
                 memcpy(p, code_1, sizeof(code_1) - 1);
                 p += sizeof(code_1) - 1;
@@ -2762,7 +2751,7 @@ namespace TH18 {
                 if (cardsSrcOffset[3] == 1) {
                     sub_count += (cardsSrcOffset[1] == 51 ? 2 : 1) * cardIdArray[cardsSrcOffset[1]];
                 }
-            } 
+            }
             if (cardsSrcOffset[1] == cardAddId) {
                 cardAddType = cardsSrcOffset[3];
             }
@@ -2817,7 +2806,7 @@ namespace TH18 {
         GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
-    
+
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
@@ -2834,7 +2823,7 @@ namespace TH18 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        
+
         // Reset thPracParam
         thPracParam.Reset();
     }

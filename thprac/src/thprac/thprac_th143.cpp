@@ -98,13 +98,6 @@ namespace TH143 {
     private:
         void FpsInit()
         {
-            #if 0
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"");
-            if (false) {
-                if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0)
-                    mOptCtx.fps_status = 2;
-            } else 
-            #endif
             if (*(uint8_t*)0x4e49c9 == 3) {
                 mOptCtx.fps_status = 1;
 

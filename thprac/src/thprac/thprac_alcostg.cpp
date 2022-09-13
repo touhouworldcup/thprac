@@ -281,33 +281,6 @@ namespace Alcostg {
                 mScore();
                 mScore.RoundDown(10);
             }
-#if 0
-				//SetTitle(XSTR(TH_MENU));
-				//SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
-				//ImVec2 renderSize = ImGui::GetIO().DisplaySize;
-				//ImGui::Text("Pos: %f, %f", ImGui::GetWindowPos().x / (float)renderSize.x, ImGui::GetWindowPos().y / (float)renderSize.y);
-				//ImGui::Text("Size: %f, %f", ImGui::GetWindowSize().x / (float)renderSize.x, ImGui::GetWindowSize().y / (float)renderSize.y);
-				// Size X & Item Width: 黑体, Arial, MS UI Gothic
-				// Size Y & Pos: 微软雅黑, Segoe UI, Yu Gothic UI
-				static float testItemWidth{ -35.0f };
-				static ImVec2 testWndPos{ -1.0f, -1.0f };
-				static ImVec2 testWndSize{ -1.0f, -1.0f };
-				if (testWndPos.x == -1.0f) testWndPos = ImGui::GetWindowPos();
-				if (testWndSize.x == -1.0f) testWndSize = ImGui::GetWindowSize();
-				ImGui::DragFloat2("_SIZE", (float*)&testWndSize);
-				if (ImGui::IsItemDeactivatedAfterEdit())
-					SetSize(testWndSize.x, testWndSize.y);
-				else if (!ImGui::IsItemActive())
-					testWndSize = ImGui::GetWindowSize();
-				ImGui::DragFloat2("_POS", (float*)&testWndPos);
-				if (ImGui::IsItemDeactivatedAfterEdit())
-					SetPos(testWndPos.x, testWndPos.y);
-				else if (!ImGui::IsItemActive())
-					testWndPos = ImGui::GetWindowPos();
-				ImGui::SliderFloat("IW", &testItemWidth, -150.0f, 0.0f);
-				if (ImGui::IsItemDeactivatedAfterEdit())
-					SetItemWidth(testItemWidth);
-#endif
 
             mNavFocus();
             if (mModePrv != *mMode) {
@@ -1013,7 +986,7 @@ namespace Alcostg {
 
         if (result) {
             pCtx->Eip = 0x43a5e5;
-        } 
+        }
     }
     EHOOK_DY(alcostg_param_reset, 0x42c96b)
     {
@@ -1076,7 +1049,7 @@ namespace Alcostg {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x418e8c;
-        } 
+        }
     }
     EHOOK_DY(alcostg_rep_save, 0x429d8b)
     {

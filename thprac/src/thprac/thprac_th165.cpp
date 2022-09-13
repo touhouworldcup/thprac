@@ -82,13 +82,6 @@ namespace TH165 {
     private:
         void FpsInit()
         {
-            #if 0
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"");
-            if (false) {
-                if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0)
-                    mOptCtx.fps_status = 2;
-            } else 
-            #endif    
             if (*(uint8_t*)0x4b3d09 == 3) {
                 mOptCtx.fps_status = 1;
 

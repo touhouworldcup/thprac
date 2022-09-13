@@ -492,7 +492,7 @@ namespace TH16 {
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
             new HookCtx(0x442749, "\x90\x90\x90\x90\x90\x90", 6) } };
         Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
-            new HookCtx(0x417965, "\xeb", 1), 
+            new HookCtx(0x417965, "\xeb", 1),
             new HookCtx(0x41d4ef, "\x05\x8d", 2) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
             new HookCtx(0x4427a1, "\xc6", 1) } };
@@ -615,60 +615,6 @@ namespace TH16 {
             if (mSpellId >= 46 && mSpellId <= 69)
                 mBugFix();
 
-#if 0
-				SIZE renderSize;
-				renderSize.cx = 1280;
-				renderSize.cy = 960;
-				ImGui::Text("Pos: %f, %f", ImGui::GetWindowPos().x / (float)renderSize.cx,
-					ImGui::GetWindowPos().y / (float)renderSize.cy);
-				ImGui::Text("Size: %f, %f", ImGui::GetWindowSize().x / (float)renderSize.cx,
-					ImGui::GetWindowSize().y / (float)renderSize.cy);
-#endif
-
-#if 0
-				//SetTitle(XSTR(TH_MENU));
-				//SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
-				//ImVec2 renderSize = ImGui::GetIO().DisplaySize;
-				//ImGui::Text("Pos: %f, %f", ImGui::GetWindowPos().x / (float)renderSize.x, ImGui::GetWindowPos().y / (float)renderSize.y);
-				//ImGui::Text("Size: %f, %f", ImGui::GetWindowSize().x / (float)renderSize.x, ImGui::GetWindowSize().y / (float)renderSize.y);
-				// Size X & Item Width: 黑体, Arial, MS UI Gothic
-				// Size Y & Pos: 微软雅黑, Segoe UI, Yu Gothic UI
-				static float testItemWidth{ 0.0f };
-				static ImVec2 testWndPos{ -1.0f, -1.0f };
-				static ImVec2 testWndSize{ -1.0f, -1.0f };
-				ImVec2 renderSize = ImGui::GetIO().DisplaySize;
-				if (testWndPos.x == -1.0f) {
-					testWndPos = ImGui::GetWindowPos();
-					testWndPos.x /= renderSize.x;
-					testWndPos.y /= renderSize.y;
-				}
-				if (testWndSize.x == -1.0f) {
-					testWndSize = ImGui::GetWindowSize();
-					testWndSize.x /= renderSize.x;
-					testWndSize.y /= renderSize.y;
-				}
-				ImGui::SliderFloat2("_SIZE", (float*)& testWndSize, 0.0, 1.0);
-				if (ImGui::IsItemDeactivatedAfterEdit()) {
-					SetSizeRel(testWndSize.x, testWndSize.y);
-				}
-				else if (!ImGui::IsItemActive()) {
-					testWndSize = ImGui::GetWindowSize();
-					testWndSize.x /= renderSize.x;
-					testWndSize.y /= renderSize.y;
-				}
-				ImGui::SliderFloat2("_POS", (float*)& testWndPos, 0.0, 1.0);
-				if (ImGui::IsItemDeactivatedAfterEdit()) {
-					SetPosRel(testWndPos.x, testWndPos.y);
-				}
-				else if (!ImGui::IsItemActive()) {
-					testWndPos = ImGui::GetWindowPos();
-					testWndPos.x /= renderSize.x;
-					testWndPos.y /= renderSize.y;
-				}
-				ImGui::SliderFloat("IW", &testItemWidth, -0.5f, 0.0f);
-				if (ImGui::IsItemDeactivatedAfterEdit())
-					SetItemWidthRel(testItemWidth);
-#endif
             mNavFocus();
         }
 
@@ -710,13 +656,6 @@ namespace TH16 {
     private:
         void FpsInit()
         {
-            #if 0
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW("");
-            if (false) {
-                if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0)
-                    mOptCtx.fps_status = 2;
-            } else 
-            #endif
             if (*(uint8_t*)0x4c12c9 == 3) {
                 mOptCtx.fps_status = 1;
 
@@ -2230,7 +2169,7 @@ namespace TH16 {
 
                 PushHelper32(pCtx, (DWORD)th16_spbugfix_str1);
                 pCtx->Eip = 0x42159b;
-            } 
+            }
         }
     }
     EHOOK_DY(th16_everlasting_bgm, 0x45ed00)
@@ -2251,7 +2190,7 @@ namespace TH16 {
 
         if (result) {
             pCtx->Eip = 0x45ed93;
-        } 
+        }
     }
     EHOOK_DY(th16_param_reset, 0x44b610)
     {
@@ -2409,7 +2348,7 @@ namespace TH16 {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x42de8e;
-        } 
+        }
     }
     EHOOK_DY(th16_rep_save, 0x448be4)
     {
@@ -2504,7 +2443,7 @@ namespace TH16 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        
+
         // Reset thPracParam
         thPracParam.Reset();
     }

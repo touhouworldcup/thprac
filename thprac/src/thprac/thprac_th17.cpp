@@ -665,17 +665,6 @@ namespace TH17 {
         void PracticeMenu()
         {
             mPhase(TH_PHASE, SpellPhase());
-
-#if 0
-				SIZE renderSize;
-				renderSize.cx = 1280;
-				renderSize.cy = 960;
-				ImGui::Text("Pos: %f, %f", ImGui::GetWindowPos().x / (float)renderSize.cx,
-					ImGui::GetWindowPos().y / (float)renderSize.cy);
-				ImGui::Text("Size: %f, %f", ImGui::GetWindowSize().x / (float)renderSize.cx,
-					ImGui::GetWindowSize().y / (float)renderSize.cy);
-#endif
-
             mNavFocus();
         }
 
@@ -714,13 +703,6 @@ namespace TH17 {
     private:
         void FpsInit()
         {
-            #if 0
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"");
-            if (false) {
-                if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0)
-                    mOptCtx.fps_status = 2;
-            } else
-            #endif
             if (*(uint8_t*)0x4b5cd9 == 3) {
                 mOptCtx.fps_status = 1;
 
@@ -831,7 +813,7 @@ namespace TH17 {
 					for (; it != mInitGoastCfg.end(); ++i)
 					{
 						ImGui::Text("Goast %d: { %.2f, %.2f }, %f, %d", i, it->x, it->y, it->dir, it->type);
-						
+
 						ImGui::SameLine();
 						sprintf_s(mTempStr, "%s##%d", "Config", i);
 						if (ImGui::Button(mTempStr))
@@ -2134,7 +2116,7 @@ namespace TH17 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        
+
         // Reset thPracParam
         thPracParam.Reset();
     }
