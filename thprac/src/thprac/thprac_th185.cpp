@@ -12,9 +12,9 @@ namespace TH185 {
 
     __declspec(noinline) void AddCard(uint32_t cardId)
     {
-        auto real_AddCard = (void(__thiscall*)(uint32_t, uint32_t, uint32_t))0x414F20;
-        if (cardId < 85)
-            real_AddCard(*(uint32_t*)0x4d7ab8, cardId, 2);
+        if (cardId < 85) {
+            asm_call<0x414F20, Thiscall>(*(uint32_t*)0x4d7ab8, cardId, 2);
+        }
     }
 
     struct THPracParam {
@@ -2924,7 +2924,7 @@ namespace TH185 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::Text(XSTR(TH_MENU));
+            ImGui::TextUnformatted(XSTR(TH_MENU));
             ImGui::Separator();
 
             PracticeMenu();
@@ -3145,7 +3145,7 @@ namespace TH185 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::Text(XSTR(TH_ADV_OPT));
+            ImGui::TextUnformatted(XSTR(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 

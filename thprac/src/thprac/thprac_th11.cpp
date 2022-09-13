@@ -695,13 +695,9 @@ namespace TH11 {
     {
         ecl.SetPos(pos + 4);
         ecl << (int16_t)0;
-    }
-    template <class... Args>
-    void ECLVoid(ECLHelper& ecl, size_t pos, Args... rest)
-    {
-        ecl.SetPos(pos + 4);
-        ecl << (int16_t)0;
-        ECLVoid(ecl, rest...);
+        if constexpr (sizeof...(Args) != 0) {
+            ECLVoid(ecl, rest...);
+        }
     }
     void ECLSatoriJump(ECLHelper& ecl, int shot_type)
     {

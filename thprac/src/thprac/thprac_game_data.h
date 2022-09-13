@@ -36,11 +36,9 @@ public:
     void SetOffset(size_t addr, Args... rest)
     {
         offset.push_back(addr);
-        SetOffset(rest...);
-    }
-    void SetOffset(size_t addr)
-    {
-        offset.push_back(addr);
+        if constexpr (sizeof...(Args) != 0) {
+            return SetOffset(rest...);
+        }
     }
     void ClrOffset()
     {

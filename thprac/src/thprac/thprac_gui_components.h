@@ -740,15 +740,13 @@ namespace Gui {
     template <class... Args>
     inline bool CheckPopups(int id, Args... rest)
     {
-        if (ImGui::IsPopupOpen(XSTR(id)))
+        if (ImGui::IsPopupOpen(XSTR(id))) {
             return true;
-        return CheckPopups(rest...);
-    }
-    inline bool CheckPopups(int id)
-    {
-        if (ImGui::IsPopupOpen(XSTR(id)))
-            return true;
-        return false;
+        } else if constexpr (sizeof...(Args) != 0) {
+            return CheckPopups(rest...);
+        } else {
+            return false;
+        }
     }
 
     void MultiComboSelect(std::vector<size_t>& out, const std::vector<const char*> choices, const char* format = "%d", size_t level = 0);
