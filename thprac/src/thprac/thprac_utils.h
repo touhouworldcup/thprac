@@ -479,32 +479,32 @@ void* VFSOriginal(const char* file_name, int32_t* file_size, int32_t is_file);
 
 #pragma region Memory Helper
 
-template <class... Args>
-inline uint32_t GetMemContent(int addr, int offset, Args... rest)
+inline uint32_t GetMemContent(int addr)
 {
-    return GetMemContent((int)(*((uint32_t*)addr) + (uint32_t)offset), rest...);
+    return *((uint32_t*)addr);
 }
 inline uint32_t GetMemContent(int addr, int offset)
 {
     return *((uint32_t*)(*((uint32_t*)addr) + (uint32_t)offset));
 }
-inline uint32_t GetMemContent(int addr)
+template <class... Args>
+inline uint32_t GetMemContent(int addr, int offset, Args... rest)
 {
-    return *((uint32_t*)addr);
+    return GetMemContent((int)(*((uint32_t*)addr) + (uint32_t)offset), rest...);
 }
 
-template <class... Args>
-inline uint32_t GetMemAddr(int addr, int offset, Args... rest)
+inline uint32_t GetMemAddr(int addr)
 {
-    return GetMemAddr((int)(*((uint32_t*)addr) + (uint32_t)offset), rest...);
+    return (uint32_t)addr;
 }
 inline uint32_t GetMemAddr(int addr, int offset)
 {
     return (*((uint32_t*)addr) + (uint32_t)offset);
 }
-inline uint32_t GetMemAddr(int addr)
+template <class... Args>
+inline uint32_t GetMemAddr(int addr, int offset, Args... rest)
 {
-    return (uint32_t)addr;
+    return GetMemAddr((int)(*((uint32_t*)addr) + (uint32_t)offset), rest...);
 }
 
 #define MDARRAY(arr, idx, size_of_subarray) (arr + idx * size_of_subarray)

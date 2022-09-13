@@ -691,17 +691,17 @@ namespace TH11 {
         if (stall)
             ecl << 9999 << 0x00100000 << 0x00ff0000 << 0;
     }
+    void ECLVoid(ECLHelper& ecl, size_t pos)
+    {
+        ecl.SetPos(pos + 4);
+        ecl << (int16_t)0;
+    }
     template <class... Args>
     void ECLVoid(ECLHelper& ecl, size_t pos, Args... rest)
     {
         ecl.SetPos(pos + 4);
         ecl << (int16_t)0;
         ECLVoid(ecl, rest...);
-    }
-    void ECLVoid(ECLHelper& ecl, size_t pos)
-    {
-        ecl.SetPos(pos + 4);
-        ecl << (int16_t)0;
     }
     void ECLSatoriJump(ECLHelper& ecl, int shot_type)
     {
@@ -1697,7 +1697,7 @@ namespace TH11 {
 
         if (result) {
             pCtx->Eip = 0x44aa54;
-        } 
+        }
     }
     EHOOK_DY(th11_game_init, 0x43a0bc)
     {
@@ -1784,14 +1784,14 @@ namespace TH11 {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x42053d;
-        } 
+        }
     }
     EHOOK_DY(th11_bgm_2, 0x420529)
     {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x42052b;
-        } 
+        }
     }
     EHOOK_DY(th11_bgm_3, 0x420542)
     {
@@ -1853,7 +1853,7 @@ namespace TH11 {
         GameGuiInit(IMPL_WIN32_DX9, 0x4c3288, 0x4c3d88, 0x445e00,
             Gui::INGAGME_INPUT_GEN2, 0x4c92b4, 0x4c92b0, 0,
             -1);
-        
+
         // Gui components creation
         THGuiPrac::singleton();
         THGuiRep::singleton();
@@ -1861,7 +1861,7 @@ namespace TH11 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        
+
         // Hooks
         THMainHook::singleton().EnableAllHooks();
 
