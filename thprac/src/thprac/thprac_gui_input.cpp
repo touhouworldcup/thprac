@@ -133,7 +133,7 @@ namespace THPrac
 		}
 
 
-		
+
 		/***                   Keyboard Input                     ***/
 
 		static uint8_t __ki_keystatus[0xFF]{};
@@ -147,12 +147,6 @@ namespace THPrac
 			else
 				__ki_keystatus[v_key] = 0;
 			return __ki_keystatus[v_key];
-		}
-		template<class... Args>
-		int KeyboardInputUpdate(int key, Args... rest)
-		{
-			UpdateKey(v_key);
-			UpdateKey(rest...);
 		}
 		void KeyboardInputUpdate()
 		{
