@@ -1234,6 +1234,7 @@ void StageWarpsRender(stage_warps_t& warps, std::vector<unsigned int>& out_warp,
             }
             ImGui::EndCombo();
         }
+    default:
         break;
     }
 

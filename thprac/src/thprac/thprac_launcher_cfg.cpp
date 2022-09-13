@@ -14,6 +14,7 @@
 #include <vector>
 #include <wininet.h>
 #include <ShlObj.h>
+#include <stdexcept>
 #pragma warning(push)
 #pragma warning(disable : 26819)
 #include <rapidjson/prettywriter.h>
