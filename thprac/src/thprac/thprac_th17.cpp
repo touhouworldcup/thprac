@@ -410,7 +410,7 @@ namespace TH17 {
 
         int mDiffculty = 0;
     };
-    class THGuiRep : public Gui::GameGuiWnd {
+    class THGuiRep {
         THGuiRep() noexcept
         {
             wchar_t appdata[MAX_PATH];
@@ -466,7 +466,6 @@ namespace TH17 {
         {
             SetTitle("Mod Menu");
             SetFade(0.5f, 0.5f);
-            SetCursor(nullptr);
             SetPos(10.0f, 10.0f);
             SetSize(0.0f, 0.0f);
             SetWndFlag(
@@ -2106,7 +2105,7 @@ namespace TH17 {
 
         // Gui components update
         THGuiPrac::singleton().Update();
-        THGuiRep::singleton().Update();
+        //THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
