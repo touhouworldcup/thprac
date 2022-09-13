@@ -431,27 +431,6 @@ namespace THPrac
             else
                 ImGui::Text("%s: %s", mKeyText, text);
             return;
-
-#if 0
-				ImGui::Text("(%s): ", mKeyText); ImGui::SameLine();
-				ImGui::Text("%s ", text); ImGui::SameLine(mXOffset1);
-				if (mStatus)
-					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), XSTR(TH_ON));
-				else
-					ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), XSTR(TH_OFF));
-				return;
-#endif
-
-#if 0
-				ImGui::Text("%s ", text);
-				ImGui::SameLine(mXOffset1);
-				ImGui::Text("(%s): ", mKeyText);
-				ImGui::SameLine(mXOffset2);
-				if (mStatus)
-					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), XSTR(TH_ON));
-				else
-					ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), XSTR(TH_OFF));
-#endif
         }
         bool GuiHotKey::operator()(bool use_widget)
         {
@@ -551,17 +530,7 @@ namespace THPrac
             snprintf(labelStr, bufSize + 1, format, level);
 
             if (ImGui::BeginCombo(labelStr, choices[out[level]])) {
-                #if 0
-                static char search[1024] = {};
-                ImGui::InputText("Search", search, 1024);
-                #endif
                 for (size_t i = 0; i < choices.size(); i++) {
-                    #if 0
-                    if (*search) {
-                        if (!StrStrIA(choices[i], search))
-                            continue;
-                    }
-                    #endif
                     ImGui::PushID(i);
 
                     bool item_selected = (i == out[level]);

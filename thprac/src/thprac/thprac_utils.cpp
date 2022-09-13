@@ -610,7 +610,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
 
             if (ctx.fps_replay_fast < 60) {
                 ctx.fps_replay_fast = 60;
-            } 
+            }
             ctx.fps_replay_fast = ctx.fps_replay_fast - ctx.fps_replay_fast % 60;
             fpsFastStatic = ctx.fps_replay_fast / 60;
 
@@ -696,8 +696,8 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
     HelpMarker("Blah");
 
     if (fpsStatic != fps
-        || fpsSlowStatic != ctx.fps_replay_slow 
-        || fpsFastStatic != ctx.fps_replay_fast / 60 
+        || fpsSlowStatic != ctx.fps_replay_slow
+        || fpsFastStatic != ctx.fps_replay_fast / 60
         || fpsDebugAcc != ctx.fps_debug_acc) {
         ImGui::SameLine();
         if (ImGui::Button(XSTR(TH_ADV_OPT_APPLY))) {
@@ -935,209 +935,6 @@ void VFile::Read(void* buffer, unsigned int length)
     }
     mPos += length;
 }
-#if 0
-struct _listener {
-    vfs_listener onCall;
-    vfs_listener onLoad;
-};
-static tsl::robin_map<std::string, _listener> __vfs_listener;
-static _listener __vfs_g_listener { nullptr, nullptr };
-
-typedef void*(__stdcall* p_vfs_main)(const char* file_name, int32_t* file_size, int32_t is_file);
-static p_vfs_main __vfs_original;
-
-static hook_ctx __vfs_hook;
-
-static void* __stdcall __VFSMain(const char* file_name, int32_t* file_size, int32_t is_file)
-{
-    // Disable Hook, initalize variables.
-    std::string mFileName(file_name);
-    auto l = __vfs_listener.find(mFileName);
-    void* fileBuffer;
-
-    // Load File
-    if (l != __vfs_listener.end() && l->second.onCall) {
-        fileBuffer = l->second.onCall(file_name, file_size, is_file, nullptr);
-        if (!fileBuffer)
-            fileBuffer = __vfs_original(file_name, file_size, is_file);
-
-    } else if (__vfs_g_listener.onCall) {
-        fileBuffer = __vfs_g_listener.onCall(file_name, file_size, is_file, nullptr);
-        if (!fileBuffer)
-            fileBuffer = __vfs_original(file_name, file_size, is_file);
-    } else {
-        fileBuffer = __vfs_original(file_name, file_size, is_file);
-    }
-
-    // Post Process
-    if (l != __vfs_listener.end() && l->second.onLoad) {
-        l->second.onLoad(file_name, file_size, is_file, fileBuffer);
-    } else if (__vfs_g_listener.onLoad) {
-        __vfs_g_listener.onLoad(file_name, file_size, is_file, fileBuffer);
-    }
-    return fileBuffer;
-}
-
-// TH11: File name at eax, others in stack
-__declspec(naked) static void __vfs_th11_trampoline()
-{
-    __asm
-    {
-			push [esp + 8]
-			push [esp + 8]
-			push eax
-			call __VFSMain
-			retn 8
-    }
-}
-static void* __stdcall __vfs_th11_original(const char* file_name, int32_t* file_size, int32_t is_file)
-{
-    char* ret_var;
-    void* func = __vfs_hook.trampoline;
-    __asm
-    {
-			push is_file
-			push file_size
-			mov eax, file_name
-			call func
-			mov ret_var, eax
-    }
-    return ret_var;
-}
-
-// TH08: File name at ecx, pBytesRead at edx, others in stack
-__declspec(naked) static void __vfs_th08_trampoline()
-{
-    __asm
-    {
-			push [esp + 4]
-			push edx
-			push ecx
-			call __VFSMain
-			retn 4
-    }
-}
-static void* __stdcall __vfs_th08_original(const char* file_name, int32_t* file_size, int32_t is_file)
-{
-    char* ret_var;
-    void* func = __vfs_hook.trampoline;
-    __asm
-    {
-			push is_file
-			mov edx, file_size
-			mov ecx, file_name
-			call func
-			mov ret_var, eax
-    }
-    return ret_var;
-}
-
-// TH07: File name at ecx, isFile at edx, pBytesRead is a global variable
-__declspec(naked) static void __vfs_th07_trampoline()
-{
-    __asm
-    {
-			push edx
-			push 0x4b9e64
-			push ecx
-			call __VFSMain
-			retn
-    }
-}
-static void* __stdcall __vfs_th07_original(const char* file_name, int32_t* file_size, int32_t is_file)
-{
-    char* ret_var;
-    void* func = __vfs_hook.trampoline;
-    __asm
-    {
-			mov edx, is_file
-			mov ecx, file_name
-			call func
-			mov ret_var, eax
-    }
-    return ret_var;
-}
-
-// TH06: All in stack, pBytesRead is a global variable
-__declspec(naked) static void __vfs_th06_trampoline()
-{
-    __asm
-    {
-			push [esp + 8]
-			push 0x69d914
-			push [esp + 12]
-			call __VFSMain
-			retn
-    }
-}
-static void* __stdcall __vfs_th06_original(const char* file_name, int32_t* file_size, int32_t is_file)
-{
-    char* ret_var;
-    void* func = __vfs_hook.trampoline;
-    __asm
-    {
-			push is_file
-			push file_name
-			call func
-			add esp, 8
-			mov ret_var, eax
-    }
-    return ret_var;
-}
-
-// API
-void VFSHook(VFS_TYPE type, void* addr)
-{
-    if (__vfs_hook.hook)
-        delete __vfs_hook.hook;
-
-    __vfs_hook.target = addr;
-    __vfs_hook.method = HOOK_INLINE;
-
-    // Type Switch
-    switch (type) {
-    case VFS_TH06:
-        __vfs_hook.detour = __vfs_th06_trampoline;
-        __vfs_original = __vfs_th06_original;
-        break;
-    case VFS_TH07:
-        __vfs_hook.detour = __vfs_th07_trampoline;
-        __vfs_original = __vfs_th07_original;
-        break;
-    case VFS_TH08:
-        __vfs_hook.detour = __vfs_th08_trampoline;
-        __vfs_original = __vfs_th08_original;
-        break;
-    case VFS_TH11:
-        __vfs_hook.detour = __vfs_th11_trampoline;
-        __vfs_original = __vfs_th11_original;
-        break;
-    default:
-        break;
-    }
-
-    Hook::CreateHook(__vfs_hook);
-}
-void VFSAddListener(const char* file_name, vfs_listener onCall, vfs_listener onLoad)
-{
-    if (!file_name) {
-        __vfs_g_listener.onCall = onCall;
-        __vfs_g_listener.onLoad = onLoad;
-        return;
-    }
-    std::string file(file_name);
-    _listener l;
-    l.onCall = onCall;
-    l.onLoad = onLoad;
-    __vfs_listener[file] = l;
-}
-void* VFSOriginal(const char* file_name, int32_t* file_size, int32_t is_file)
-{
-    if (!__vfs_original)
-        return nullptr;
-    return __vfs_original(file_name, file_size, is_file);
-}
-#endif
 #pragma endregion
 
 #pragma region Snapshot

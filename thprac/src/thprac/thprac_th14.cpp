@@ -485,7 +485,7 @@ namespace TH14 {
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
             new HookCtx(0x44DDA5, "\x58", 1) } };
         Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
-            new HookCtx(0x41C5DD, "\xeb", 1), 
+            new HookCtx(0x41C5DD, "\xeb", 1),
             new HookCtx(0x424ACA, "\x90", 1) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
             new HookCtx(0x44DEC4, "\xE9\x07\x31\x06\x00\x90\x90", 8),
@@ -612,17 +612,6 @@ namespace TH14 {
         void PracticeMenu()
         {
             mPhase(TH_PHASE, SpellPhase());
-
-#if 0
-				SIZE renderSize;
-				renderSize.cx = 1280;
-				renderSize.cy = 960;
-				ImGui::Text("Pos: %f, %f", ImGui::GetWindowPos().x / (float)renderSize.cx,
-					ImGui::GetWindowPos().y / (float)renderSize.cy);
-				ImGui::Text("Size: %f, %f", ImGui::GetWindowSize().x / (float)renderSize.cx,
-					ImGui::GetWindowSize().y / (float)renderSize.cy);
-#endif
-
             mNavFocus();
         }
 
@@ -1061,7 +1050,7 @@ namespace TH14 {
                 MultiByteToWideChar(CP_UTF8, 0, msg2, -1, _msg2, 256);
             }
             MsgBox(type, _title, _msg, msg2 ? _msg2 : nullptr);
-            
+
         }
         bool LoadReplayInternal(const wchar_t* rep_path)
         {
@@ -2329,7 +2318,7 @@ namespace TH14 {
 
         if (result) {
             pCtx->Eip = 0x46f022;
-        } 
+        }
     }
     EHOOK_DY(th14_param_reset, 0x45a111)
     {
@@ -2395,7 +2384,7 @@ namespace TH14 {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x43699c;
-        } 
+        }
     }
     EHOOK_DY(th14_on_restart, 0x447810)
     {
@@ -2480,7 +2469,7 @@ namespace TH14 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        
+
         // Reset thPracParam
         thPracParam.Reset();
     }
