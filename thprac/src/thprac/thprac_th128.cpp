@@ -72,7 +72,6 @@ namespace TH128 {
     class THGuiPrac : public Gui::GameGuiWnd {
         THGuiPrac() noexcept
         {
-            //*mMode = 1;
             *mLife = 100000;
             mLife.SetCurrentStep(10000);
             *mBomb = 30000;
@@ -82,7 +81,6 @@ namespace TH128 {
             *mPower = 10000;
             mPower.SetCurrentStep(1000);
 
-            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -97,7 +95,6 @@ namespace TH128 {
             case 0:
                 break;
             case 1:
-                //mDiffculty = *((int32_t*)0x4aebd0);
                 SetFade(0.8f, 0.1f);
                 Open();
                 thPracParam.Reset();
@@ -476,13 +473,8 @@ namespace TH128 {
                     Open();
                 } else {
                     Close();
-                    //*((int32_t*)0x6c6eb0) = 2;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -2212,7 +2204,7 @@ namespace TH128 {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x426bd8;
-        } 
+        }
     }
     EHOOK_DY(th128_rep_save, 0x441de8)
     {
@@ -2299,7 +2291,7 @@ namespace TH128 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        
+
         // Reset thPracParam
         thPracParam.Reset();
     }

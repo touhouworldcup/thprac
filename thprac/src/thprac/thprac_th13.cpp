@@ -90,7 +90,6 @@ namespace TH13 {
             *mValue = 10000;
             *mTranceMeter = 200;
 
-            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -456,13 +455,8 @@ namespace TH13 {
                     Open();
                 } else {
                     Close();
-                    //*((int32_t*)0x6c6eb0) = 2;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -692,7 +686,7 @@ namespace TH13 {
                 ECLJump(ecl, 0x540c, 0x54a8, 0, 0);
                 break;
             case 4:
-                ECLJump(ecl, 0x8a70, 0x8c94, 60, 90); 
+                ECLJump(ecl, 0x8a70, 0x8c94, 60, 90);
                 break;
             case 5:
                 ECLJump(ecl, 0x8a70, 0x8c94, 60, 90);
@@ -1587,7 +1581,6 @@ namespace TH13 {
     PATCH_DY(th13_disable_prac_menu_3, 0x451dc6, "\x00", 1);
     EHOOK_DY(th13_menu_rank_fix, 0x43f483)
     {
-        //*((int32_t*)0x4be7d4) = -1;
         *((int32_t*)0x4be7c4) = *((int32_t*)0x4bb4d0);
     }
     EHOOK_DY(th13_patch_main, 0x42bf8e)
@@ -1619,8 +1612,6 @@ namespace TH13 {
         char* repName = (char*)(pCtx->Esp + 0x38);
         if (thPracParam.mode == 1)
             THSaveReplay(repName);
-        //else if (thPracParam.mode == 2 && thPracParam.phase)
-        //	THSaveReplay(repName);
     }
     EHOOK_DY(th13_rep_menu_1, 0x452776)
     {
@@ -1668,7 +1659,7 @@ namespace TH13 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        
+
         // Reset thPracParam
         thPracParam.Reset();
     }

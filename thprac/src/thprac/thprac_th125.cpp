@@ -57,13 +57,8 @@ namespace TH125 {
                     Open();
                 } else {
                     Close();
-                    //*((int32_t*)0x6c6eb0) = 2;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -268,8 +263,6 @@ namespace TH125 {
         // Hooks
         THMainHook::singleton().EnableAllHooks();
 
-        // Reset thPracParam
-        //thPracParam.Reset();
     }
     static __declspec(noinline) void THInitHookDisable()
     {

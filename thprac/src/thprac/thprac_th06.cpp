@@ -165,10 +165,6 @@ namespace TH06 {
                     *((int32_t*)0x6c6eb0) = 3;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -450,7 +446,7 @@ namespace TH06 {
                 break;
             }
         }
-       
+
 
         // Data
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
@@ -502,7 +498,6 @@ namespace TH06 {
             SetItemWidth(-60);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
-            //OnLocaleChange();
         }
         SINGLETON(THPauseMenu);
     public:
@@ -648,9 +643,6 @@ namespace TH06 {
         }
         virtual void OnLocaleChange() override
         {
-            //SetTitle(XSTR(TH_MENU));
-            //LocaleFillStr(mWarpStr, TH_NONE, TH_NONSPELL, TH_SPELL);
-            //LocaleFillStr(mModeStr, TH_ORIGINAL, TH_ENHANCED);
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetItemWidth(-60.0f);
@@ -702,13 +694,6 @@ namespace TH06 {
                 ImGui::Unindent(67.0f);
                 THGuiPrac::singleton().PracticeMenu(mNavFocus);
             }
-
-            //if (Gui::KeyboardInputGetSingle(VK_ESCAPE))
-            //	mState = STATE_RESUMING;
-            //else if (Gui::KeyboardInputGetRaw(0x51))
-            //	mState = STATE_EXITING;
-            //else if (Gui::KeyboardInputGetRaw(0x52))
-            //	mState = STATE_RESTARTING;
         }
 
         // Var
@@ -880,7 +865,7 @@ namespace TH06 {
                 break;
             }
         }
-        void ContentUpdate() 
+        void ContentUpdate()
         {
             *((int32_t*)0x6c6eb0) = 3;
             ImGui::TextUnformatted(XSTR(TH_ADV_OPT));
@@ -900,7 +885,7 @@ namespace TH06 {
 
         adv_opt_ctx mOptCtx;
 
-        
+
     };
 
     // ECL Patch Helper
@@ -1927,6 +1912,7 @@ namespace TH06 {
     {
         THPauseMenu::singleton().el_bgm_changed = false;
         if (thPracParam.mode == 1) {
+            // TODO: Probably remove this ASM comment?
             /*
 					mov eax,dword ptr [@MENU_RANK]
 					mov dword ptr [69d710],eax
