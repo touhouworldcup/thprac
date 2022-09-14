@@ -10,8 +10,6 @@
 #include <psapi.h>
 #include <tlhelp32.h>
 
-#define MB_INFO(str) MessageBoxA(NULL, str, str, MB_OK);
-
 using namespace THPrac;
 
 bool PrivilegeCheck()

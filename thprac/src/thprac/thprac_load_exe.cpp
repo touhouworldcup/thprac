@@ -25,8 +25,6 @@ typedef struct __remote_param {
     char sExePath[MAX_PATH];
 } remote_param;
 
-#define MakePointer(t, p, offset) ((t)((PUINT8)(p) + offset))
-
 unsigned char INIT_SHELLCODE[1008] = {
 /* 0x0   */ 0x83, 0xEC, 0x20,                         //    sub    esp,0x20
 /* 0x3   */ 0x8B, 0x4C, 0x24, 0x24,                   //    mov    ecx,DWORD PTR [esp+0x24]
