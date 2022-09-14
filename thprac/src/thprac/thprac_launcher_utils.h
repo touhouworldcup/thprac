@@ -303,7 +303,6 @@ static bool GuiButtonTxtCentered(const char* buttonText)
     auto wndSize = ImGui::GetWindowSize();
     auto textSize = ImGui::CalcTextSize(buttonText);
     ImGui::SetCursorPosX((wndSize.x - textSize.x) / 2.0f);
-    //ImGui::SetCursorPosY(wndSize.y * posYRel);
     return ImGui::Button(buttonText);
 }
 

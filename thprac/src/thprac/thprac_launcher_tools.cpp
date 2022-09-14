@@ -9,7 +9,6 @@
 #include <functional>
 #include <string>
 #include <vector>
-//#include <climits>
 
 namespace THPrac {
 
@@ -34,7 +33,7 @@ public:
         SetPlayerOpt();
     }
 
-    void SwitchGame(const char* gameStr) 
+    void SwitchGame(const char* gameStr)
     {
         int i = 0;
         for (auto& game : mGameOption) {
@@ -234,7 +233,6 @@ public:
                 }
             }
             if (ImGui::Selectable(XSTR(THPRAC_TOOLS_RND_TURNTO_GAME))) {
-                //mRollText = "ROLL!";
                 GuiLauncherMainSwitchTab(XSTR(THPRAC_GAMES));
                 LauncherGamesGuiSwitch(mRollResult.name);
             }

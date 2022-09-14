@@ -121,13 +121,11 @@ private:
             for (auto it = linkRoot.MemberBegin(); it != linkRoot.MemberEnd(); ++it) {
                 if (it->value.IsObject()) {
                     LinkNode node;
-                    //node.type = LINK_NODE;
                     node.name = it->name.GetString();
                     for (auto linkIt = it->value.MemberBegin(); linkIt != it->value.MemberEnd(); ++linkIt) {
                         auto isOpenFlag = !strcmp(linkIt->name.GetString(), "__is_open__");
                         if (!isOpenFlag && linkIt->value.IsString()) {
                             LinkLeaf leaf;
-                            //leaf.type = LINK_LEAF;
                             leaf.name = linkIt->name.GetString();
                             leaf.link = linkIt->value.GetString();
                             node.leaves.push_back(leaf);
@@ -147,7 +145,7 @@ private:
             if (cfg.HasMember("links")) {
                 result = false;
                 cfg["links"].SetObject();
-            } 
+            }
         }
 
         WriteLinksCfg();
@@ -293,7 +291,7 @@ private:
             mLinkInputType = 0;
         }
         ImGui::SameLine();
-        
+
         auto result = GuiCornerButton(XSTR(THPRAC_OK), XSTR(THPRAC_CANCEL), ImVec2(1.0f, 0.0f), true);
         if (result == 1) {
             if (mLinkNameInput[0] == '\0') {
@@ -313,7 +311,7 @@ private:
             if (mLinkInputErr) {
                 result = 0;
             }
-        } 
+        }
         return result;
     }
     void GuiCtxMenuUpdate()
