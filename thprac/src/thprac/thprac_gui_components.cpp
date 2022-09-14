@@ -33,8 +33,6 @@ namespace THPrac
                     }
                 }
 
-                // io.NavInputs[ImGuiNavInput_Activate] = GetGameKey(0x5A); // Z
-                // io.NavInputs[ImGuiNavInput_Cancel] = GetGameKey(0x58); // X
                 io.NavInputs[ImGuiNavInput_DpadUp] = InGameInputGet(VK_UP);
                 io.NavInputs[ImGuiNavInput_DpadDown] = InGameInputGet(VK_DOWN);
                 io.NavInputs[ImGuiNavInput_DpadLeft] = InGameInputGet(VK_LEFT);

@@ -74,7 +74,6 @@ namespace THPrac
 		{
 			// Setup render state: fixed-pipeline, alpha-blending, no face culling, no depth testing, shade mode (for gradient)
 			g_pd3dDevice->SetPixelShader(NULL);
-			//g_pd3dDevice->SetVertexShader(NULL);
 			g_pd3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 			g_pd3dDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 			g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
@@ -206,7 +205,6 @@ namespace THPrac
 					vtx_dst->pos[1] = vtx_src->pos.y;
 					vtx_dst->pos[2] = 0.0f;
 					vtx_dst->col = vtx_src->col;
-					//vtx_dst->col = (vtx_src->col & 0xFF00FF00) | ((vtx_src->col & 0xFF0000) >> 16) | ((vtx_src->col & 0xFF) << 16);     // RGBA --> ARGB for DirectX9
 					vtx_dst->uv[0] = vtx_src->uv.x;
 					vtx_dst->uv[1] = vtx_src->uv.y;
 					vtx_dst++;
@@ -219,7 +217,6 @@ namespace THPrac
 			g_pIB->Unlock();
 			g_pd3dDevice->SetStreamSource(0, g_pVB, sizeof(CUSTOMVERTEX));
 			g_pd3dDevice->SetVertexShader(D3DFVF_CUSTOMVERTEX);
-			//g_pd3dDevice->SetIndices(g_pIB);
 
 			// Setup desired DX state
 			ImplDX8SetupRenderState(draw_data);
@@ -311,7 +308,7 @@ namespace THPrac
 		}
 		bool ImplDX8HookReset()
 		{
-			if (!__thimgui_dx8_reset_hook) 
+			if (!__thimgui_dx8_reset_hook)
 			{
 				MH_Initialize();
 				MH_CreateHook((void*)(*(int32_t*)(*(int32_t*)g_pd3dDevice + 0x38)), (void*)__ThImGui_DX8_Reset_HookFunc, &__thimgui_dx8_reset_hook);
@@ -322,7 +319,7 @@ namespace THPrac
 		}
 		bool ImplDX8UnHookReset()
 		{
-			if (__thimgui_dx8_reset_hook) 
+			if (__thimgui_dx8_reset_hook)
 			{
 				MH_RemoveHook((void*)(*(int32_t*)(*(int32_t*)g_pd3dDevice + 0x38)));
 				__thimgui_dx8_reset_hook = nullptr;
