@@ -295,7 +295,6 @@ bool LauncherWndNewFrame()
     Gui::ImplDX9NewFrame();
     Gui::ImplWin32NewFrame(false);
     ImGui::NewFrame();
-    Gui::LocalePushFont();
 
     return true;
 }
@@ -320,7 +319,6 @@ bool LauncherWndEndFrame(ImVec2& wndPos, ImVec2& wndSize, bool canMove)
     RECT renderRect = { (LONG)wndPos.x, (LONG)wndPos.y,
         (LONG)(wndSize.x) + (LONG)(wndPos.x), (LONG)(wndSize.y) + (LONG)(wndPos.y) };
 
-    Gui::LocalePopFont();
     ImGui::EndFrame();
 
     // Rendering
