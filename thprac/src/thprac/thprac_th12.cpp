@@ -103,7 +103,6 @@ namespace TH12 {
             *mPower = 400;
             *mValue = 10000;
 
-            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -241,9 +240,6 @@ namespace TH12 {
                 mScore();
                 mScore.RoundDown(10);
             }
-
-            //ImGui::Text("Pos: %f, %f", ImGui::GetWindowPos().x, ImGui::GetWindowPos().y);
-            //ImGui::Text("Size: %f, %f", ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
 
             mNavFocus();
         }
@@ -477,13 +473,8 @@ namespace TH12 {
                     Open();
                 } else {
                     Close();
-                    //*((int32_t*)0x6c6eb0) = 2;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -914,7 +905,7 @@ namespace TH12 {
             ECLJumpEx(ecl, 0x133b0, 0x137ac, 59);
             ecl << pair{0x0be4, (int8_t)0x32};
             ECLJumpEx(ecl, 0x190c, 0x1978, 0);
-            ecl << pair{0x17e4, (int16_t)0x0}; // << pair{0x197c, (int16_t)0x0};
+            ecl << pair{0x17e4, (int16_t)0x0};
             ecl << pair{0x162c, 0x4b0};
             ecl << pair{0x1640, 0x3e8};
             ecl.SetPos(0xb4c);
@@ -929,7 +920,6 @@ namespace TH12 {
             ecl << 0 << 0x0014019f << 0x01ff0000 << 0 << 60;
             ECLSetHealth(ecl, 0x09ed8, 60, 1350);
             ecl << pair{0x9eb8, 60};
-            //ecl << pair{0x9d7c, 0x546};
             break;
         case THPrac::TH12::TH12_ST2_BOSS1:
             if (thPracParam.dlg)
@@ -952,7 +942,7 @@ namespace TH12 {
             ECLJumpEx(ecl, 0x13108, 0x134fc, 59);
             ecl << pair{0x0df4, (int8_t)0x32};
             ECLJumpEx(ecl, 0x1268, 0x12d4, 0);
-            ecl << pair{0x1188, (int16_t)0x0}; // << pair{0x12d8, (int16_t)0x0};
+            ecl << pair{0x1188, (int16_t)0x0};
             ecl << pair{0x0fe4, 0x6a4};
             break;
         case THPrac::TH12::TH12_ST2_BOSS5:
@@ -996,7 +986,7 @@ namespace TH12 {
             ECLJumpEx(ecl, 0x16864, 0x16abc, 59);
             ecl << pair{0x0cc8, (int8_t)0x32};
             ECLJumpEx(ecl, 0x27f0, 0x285c, 0);
-            ecl << pair{0x2710, (int16_t)0x0}; // << pair{0x28a0, (int16_t)0x0};
+            ecl << pair{0x2710, (int16_t)0x0};
             ecl << pair{0x256c, 0x7d0};
             break;
         case THPrac::TH12::TH12_ST3_BOSS5:
@@ -1009,7 +999,7 @@ namespace TH12 {
             ECLJumpEx(ecl, 0x16864, 0x16abc, 59);
             ecl << pair{0x0cc8, (int8_t)0x33};
             ECLJumpEx(ecl, 0x40b0, 0x411c, 0);
-            ecl << pair{0x3fd0, (int16_t)0x0}; // << pair{0x4140, (int16_t)0x0};
+            ecl << pair{0x3fd0, (int16_t)0x0};
             ecl << pair{0x3e2c, 0x9c4};
             break;
         case THPrac::TH12::TH12_ST4_MID1:
@@ -1036,7 +1026,7 @@ namespace TH12 {
             ECLJumpEx(ecl, 0x13800, 0x13a70, 119);
             ecl << pair{0x35b0, (int8_t)0x32};
             ECLJumpEx(ecl, 0x4020, 0x408c, 0);
-            ecl << pair{0x3f40, (int16_t)0x0}; // << pair{0x40d0, (int16_t)0x0};
+            ecl << pair{0x3f40, (int16_t)0x0};
             ecl << pair{0x3d9c, 0x834};
             break;
         case THPrac::TH12::TH12_ST4_BOSS5:
@@ -1049,7 +1039,7 @@ namespace TH12 {
             ECLJumpEx(ecl, 0x13800, 0x13a70, 119);
             ecl << pair{0x35b0, (int8_t)0x33};
             ECLJumpEx(ecl, 0x5178, 0x51e4, 0);
-            ecl << pair{0x507c, (int16_t)0x0}; // << pair{0x5228, (int16_t)0x0};
+            ecl << pair{0x507c, (int16_t)0x0};
             ecl << pair{0x4ec4, 0x835};
             ecl << pair{0x4ed8, 0x835};
             break;
@@ -1072,7 +1062,7 @@ namespace TH12 {
             break;
         case THPrac::TH12::TH12_ST5_MID2:
             ECLJumpEx(ecl, 0x158c0, 0x159e8, 179);
-            ecl << pair{0xd6ac, (int16_t)0x0}; // << pair{0xd8b8, (int16_t)0x0};
+            ecl << pair{0xd6ac, (int16_t)0x0};
             ecl << pair{0xd6f0, 60};
             ecl << pair{0x0d7d4, 0x7d0};
             break;
@@ -1100,7 +1090,7 @@ namespace TH12 {
             ECLJumpEx(ecl, 0x158c0, 0x15b0c, 190);
             ecl << pair{0x0bf0, (int8_t)0x32};
             ECLJumpEx(ecl, 0x1fbc, 0x2028, 0);
-            ecl << pair{0x1edc, (int16_t)0x0}; // << pair{0x206c, (int16_t)0x0};
+            ecl << pair{0x1edc, (int16_t)0x0};
             ecl << pair{0x1d38, 0x7d0};
             break;
         case THPrac::TH12::TH12_ST5_BOSS5:
@@ -1116,7 +1106,7 @@ namespace TH12 {
             ECLJumpEx(ecl, 0x158c0, 0x15b0c, 190);
             ecl << pair{0x0bf0, (int8_t)0x33};
             ECLJumpEx(ecl, 0x35c0, 0x362c, 0);
-            ecl << pair{0x3498, (int16_t)0x0}; // << pair{0x3670, (int16_t)0x0};
+            ecl << pair{0x3498, (int16_t)0x0};
             ecl << pair{0x32e0, 0x76c};
             ecl << pair{0x32f4, 0x514};
             break;
@@ -1263,7 +1253,7 @@ namespace TH12 {
             nue();
             ecl << pair{0x98c, (int8_t)0x32};
             ECLJumpEx(ecl, 0x185c, 0x18dc, 0);
-            ecl << pair{0x1768, (int16_t)0x0}; // << pair{0x1920, (int16_t)0x0};
+            ecl << pair{0x1768, (int16_t)0x0};
             ecl << pair{0x7bc, 0} << pair{0x7c0, 0x43000000};
             ecl << pair{0x15c4, 0x514};
             break;
@@ -1278,7 +1268,7 @@ namespace TH12 {
             nue();
             ecl << pair{0x98c, (int8_t)0x33};
             ECLJumpEx(ecl, 0x2240, 0x22c0, 0);
-            ecl << pair{0x2160, (int16_t)0x0}; // << pair{0x2304, (int16_t)0x0};
+            ecl << pair{0x2160, (int16_t)0x0};
             ecl << pair{0x7bc, 0} << pair{0x7c0, 0x43000000};
             ecl << pair{0x1fbc, 0x0a8c};
             break;
@@ -1293,7 +1283,7 @@ namespace TH12 {
             nue();
             ecl << pair{0x98c, (int8_t)0x34};
             ECLJumpEx(ecl, 0x2dcc, 0x2e4c, 0);
-            ecl << pair{0x2cd8, (int16_t)0x0}; // << pair{0x2e90, (int16_t)0x0};
+            ecl << pair{0x2cd8, (int16_t)0x0};
             ecl << pair{0x7bc, 0} << pair{0x7c0, 0x43000000};
             ecl << pair{0x2b34, 0x6A4};
             break;
@@ -1308,7 +1298,7 @@ namespace TH12 {
             nue();
             ecl << pair{0x98c, (int8_t)0x35};
             ECLJumpEx(ecl, 0x3a2c, 0x3aac, 0);
-            ecl << pair{0x3938, (int16_t)0x0}; // << pair{0x3af0, (int16_t)0x0};
+            ecl << pair{0x3938, (int16_t)0x0};
             ecl << pair{0x7bc, 0} << pair{0x7c0, 0x43000000};
             ecl << pair{0x3794, 0x0e10};
             break;
@@ -1323,7 +1313,7 @@ namespace TH12 {
             nue();
             ecl << pair{0x98c, (int8_t)0x36};
             ECLJumpEx(ecl, 0x44cc, 0x454c, 0);
-            ecl << pair{0x43d8, (int16_t)0x0}; // << pair{0x4590, (int16_t)0x0};
+            ecl << pair{0x43d8, (int16_t)0x0};
             ecl << pair{0x7bc, 0} << pair{0x7c0, 0x43000000};
             ecl << pair{0x4234, 0x0a8c};
             break;
@@ -1338,7 +1328,7 @@ namespace TH12 {
             nue();
             ecl << pair{0x98c, (int8_t)0x37};
             ECLJumpEx(ecl, 0x51e8, 0x5268, 0);
-            ecl << pair{0x50f4, (int16_t)0x0}; // << pair{0x52ac, (int16_t)0x0};
+            ecl << pair{0x50f4, (int16_t)0x0};
             ecl << pair{0x7bc, 0} << pair{0x7c0, 0x43000000};
             ecl << pair{0x4f50, 0x898};
             break;
@@ -1353,7 +1343,7 @@ namespace TH12 {
             nue();
             ecl << pair{0x98c, (int8_t)0x38};
             ECLJumpEx(ecl, 0x5f04, 0x5f84, 0);
-            ecl << pair{0x5e10, (int16_t)0x0}; // << pair{0x5fa8, (int16_t)0x0};
+            ecl << pair{0x5e10, (int16_t)0x0};
             ecl << pair{0x7bc, 0} << pair{0x7c0, 0x43000000};
             ecl << pair{0x5c6c, 0x898};
             break;
@@ -1529,7 +1519,7 @@ namespace TH12 {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x42293b;
-        } 
+        }
     }
     EHOOK_DY(th12_rep_save, 0x43c32c)
     {
@@ -1582,7 +1572,7 @@ namespace TH12 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        
+
         // Reset thPracParam
         thPracParam.Reset();
     }

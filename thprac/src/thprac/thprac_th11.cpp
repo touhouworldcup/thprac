@@ -134,7 +134,7 @@ namespace TH11 {
                 thPracParam.life_fragment = *mLifeFragment;
                 thPracParam.power = *mPower;
                 thPracParam.graze = *mGraze;
-                thPracParam.signal = 0; //  *mSignal;
+                thPracParam.signal = 0;
                 thPracParam.value = *mValue;
                 thPracParam.score = *mScore;
                 break;
@@ -318,7 +318,6 @@ namespace TH11 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 0, 80 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH_FAITH, 0, 999990, 10, 100000 };
-        //GuiSliderNew<int, ImGuiDataType_S32> mSignal;
 
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
@@ -424,7 +423,6 @@ namespace TH11 {
             mMenu.SetTextOffsetRel(x_offset_1, x_offset_2);
             mMuteki.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfLives.SetTextOffsetRel(x_offset_1, x_offset_2);
-            //mInfBombs.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfPower.SetTextOffsetRel(x_offset_1, x_offset_2);
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
@@ -446,13 +444,8 @@ namespace TH11 {
                     Open();
                 } else {
                     Close();
-                    //*((int32_t*)0x6c6eb0) = 2;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -991,7 +984,6 @@ namespace TH11 {
         case THPrac::TH11::TH11_ST2_BOSS4:
             ECLJump(ecl, 0xf1b4, 0xf360);
             ecl << pair{0xf360, 0} << pair{0xd80, (int8_t)0x32} << pair{0x18b8, 3050};
-            //ECLTimeFix(ecl, 0xcf8, -60);
             ECLVoid(ecl, 0xd08, 0x1b10, 0x1b20, 0x3eb4);
             break;
         case THPrac::TH11::TH11_ST2_BOSS5:
@@ -1065,7 +1057,6 @@ namespace TH11 {
         case THPrac::TH11::TH11_ST4_MID2:
             ECLJump(ecl, 0xf764, 0xf8b0);
             ecl << pair{0x9668, (int16_t)0};
-            //<< pair{0x806c, (int16_t)0} << pair{0x8104, (int16_t)0} << pair{0x8118, (int16_t)0};
             break;
         case THPrac::TH11::TH11_ST4_BOSS1:
             if (thPracParam.dlg)
@@ -1273,19 +1264,9 @@ namespace TH11 {
             ECLVoid(ecl, 0x62f4);
             break;
         case THPrac::TH11::TH11_ST5_BOSS7:
-            /* Unfixed
-				ECLJump(ecl, 0x674c, 0x696c);
-				ecl.SetFile(3);
-				ECLVoid(ecl, 0xb64);
-				//ECLTimeFix(ecl, 0xb28, -1);
-				ECLJump(ecl, 0xbd8, 0x72ac);
-				ECLVoid(ecl, 0x7548, 0x7580);
-				ECLTimeFix(ecl, 0x75e8, -60);
-				*/
             ECLJump(ecl, 0x674c, 0x696c);
             ecl.SetFile(3);
             ECLVoid(ecl, 0xb64);
-            //ECLTimeFix(ecl, 0xb28, -1);
             ecl.SetPos(0xbd8);
             ecl << 0 << 0x0014015a << 0x01ff0000 << 0 << 48.0f;
             ECLJump(ecl, 0xbec, 0x72ac);
@@ -1721,19 +1702,6 @@ namespace TH11 {
     EHOOK_DY(th11_prac_menu_enter_2, 0x43da13)
     {
         pCtx->Eax = thPracParam.stage;
-        /*
-        * @0x43d9f5
-        ASM_START();
-
-        *((int32_t*)0x4a5728) = thGuiPrac->GetStage();
-
-        ASM_END();
-        ASM lea esi, [edi + 0x24];
-        ASM mov eax, 0x4a5728;
-        ASM mov eax, [eax];
-        ASM mov dword ptr[esi], eax;
-        ASM_JMP(0x43d9f8);
-        */
     }
     EHOOK_DY(th11_patch_main, 0x41fdfb)
     {

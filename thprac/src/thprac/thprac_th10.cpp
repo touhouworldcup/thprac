@@ -145,7 +145,7 @@ namespace TH10 {
                 thPracParam.faith_bar = *mFaithBar;
                 thPracParam.st6_boss9_spd = *mSt6Boss9Spd;
                 thPracParam.score = *mScore;
-                                           
+
                 if (thPracParam.section == TH10_ST6_BOSS4 || thPracParam.section == TH10_ST6_BOSS8)
                     thPracParam.real_bullet_sprite = *mRealBulletSprite;
                 break;
@@ -213,7 +213,7 @@ namespace TH10 {
                     case TH10_ST7_END_S10:
                         mPhase(TH_PHASE, TH_SPELL_PHASE1);
                         break;
-                    }                        
+                    }
                 }
 
                 mLife();
@@ -428,7 +428,6 @@ namespace TH10 {
             mMenu.SetTextOffsetRel(x_offset_1, x_offset_2);
             mMuteki.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfLives.SetTextOffsetRel(x_offset_1, x_offset_2);
-            //mInfBombs.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfPower.SetTextOffsetRel(x_offset_1, x_offset_2);
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
@@ -450,13 +449,8 @@ namespace TH10 {
                     Open();
                 } else {
                     Close();
-                    //*((int32_t*)0x6c6eb0) = 2;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -471,7 +465,7 @@ namespace TH10 {
             new HookCtx(0x425C4A, "\x00", 1),
             new HookCtx(0x425ABD, "\x00", 1) } };
         Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4, {
-            new HookCtx(0x408D93, "\xeb", 1), 
+            new HookCtx(0x408D93, "\xeb", 1),
             new HookCtx(0x40E5B0, "\x90", 1) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F5", VK_F5, {
             new HookCtx(0x425C13, "\xc6", 1) } };
@@ -899,27 +893,6 @@ namespace TH10 {
     }
     __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
     {
-        /*
-        if (GetMemContent(0x4776e8, 0x3c) == 7400) {
-            char tempBuf[256] {};
-            std::fstream recFile("rec.cpp", std::ios_base::in | std::ios_base::out | std::ios_base::app);
-            uint32_t* stdDataPtr = (uint32_t*)GetMemAddr(0x4776e8, 0x50);
-            recFile << "{\n";
-
-            sprintf_s(tempBuf, "%d, 0x%x, 0x%x, 0x%x, // Fog Color\n",
-                GetMemContent(0x4776e8, 0x15c), GetMemContent(0x4776e8, 0x100), GetMemContent(0x4776e8, 0xe8), GetMemContent(0x4776e8, 0xec));
-            recFile << tempBuf;
-            sprintf_s(tempBuf, "%d, 0x%x, 0x%x, 0x%x, // Cam Pos\n",
-                GetMemContent(0x4776e8, 0xd0), GetMemContent(0x4776e8, 0x9c), GetMemContent(0x4776e8, 0xa0), GetMemContent(0x4776e8, 0xa4));
-            recFile << tempBuf;
-            sprintf_s(tempBuf, "%d, 0x%x, 0x%x, 0x%x, // Cam Dir\n",
-                GetMemContent(0x4776e8, 0x84), GetMemContent(0x4776e8, 0x50), GetMemContent(0x4776e8, 0x54), GetMemContent(0x4776e8, 0x58));
-            recFile << tempBuf;
-
-            recFile << "}";
-            recFile.close();
-        }
-        */
         StdStatus st4_c2 {
             208, 0xffffffff, 0x43f00000, 0x44610000, // Fog Color
             208, 0x0, 0x42c80000, 0xc3e10000, // Cam Pos
@@ -1494,7 +1467,6 @@ namespace TH10 {
             ecl << pair{0x290c, 0}; // Invi. time
             ecl << pair{0x730, 0} << pair{0x734, 0x43200000}; // Pos
 
-            //ecl << pair{0x2a58, 9999};
             ecl << pair{0x272c, 3200};
 
             ecl << pair{0x2758, (int8_t)0x35};
@@ -2212,7 +2184,7 @@ namespace TH10 {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x4183e1;
-        } 
+        }
     }
     EHOOK_DY(th10_logo, 0x413e4b)
     {
@@ -2323,7 +2295,7 @@ namespace TH10 {
         // Hooks
         THMainHook::singleton().EnableAllHooks();
         th10_real_bullet_sprite.Setup();
-        
+
         // Reset thPracParam
         thPracParam.Reset();
     }

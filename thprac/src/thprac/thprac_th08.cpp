@@ -171,7 +171,6 @@ namespace TH08 {
                 thPracParam.mode = *mMode;
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
-                //thPracParam.phase = SpellPhase() ? *mPhase : 0;
                 thPracParam.frame = *mFrame;
                 if (SectionHasDlg(thPracParam.section))
                     thPracParam.dlg = *mDlg;
@@ -248,7 +247,6 @@ namespace TH08 {
                     *mSection = *mChapter = *mPhase = *mFrame = 0;
                 if (*mWarp) {
                     SectionWidget();
-                    //SpellPhase();
                 }
 
                 mLife();
@@ -257,7 +255,6 @@ namespace TH08 {
                 mScore.RoundDown(10);
                 mPower();
                 mGraze();
-                //mPoint();
                 mPointTotal();
                 mPointStage();
                 mTime();
@@ -450,9 +447,6 @@ namespace TH08 {
             uint32_t index = GetMemContent(0x18bde08, 0xc28c);
             char* raw = (char*)GetMemAddr(0x18bde08, index * 512 + 0x70);
             std::wstring repName = mb_to_utf16(raw);
-            //auto pos = repName.rfind('/');
-            //if (pos != std::string::npos)
-            //	repName = repName.substr(pos + 1);
 
             std::string param;
             if (ReplayLoadParam(repName.c_str(), param) && mRepParam.ReadJson(param))
@@ -552,10 +546,6 @@ namespace TH08 {
                     *((int32_t*)0x17ce8cc) = 2;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -590,7 +580,7 @@ namespace TH08 {
         EHOOK_ST(th08_all_clear_bonus_2, 0x4384b9)
         {
             pCtx->Eip = 0x4384c1;
-        } 
+        }
         EHOOK_ST(th08_all_clear_bonus_3, 0x438568)
         {
             pCtx->Eip = 0x438570;
@@ -636,7 +626,7 @@ namespace TH08 {
             th08_all_clear_bonus_2.Toggle(mOptCtx.all_clear_bonus);
             th08_all_clear_bonus_3.Toggle(mOptCtx.all_clear_bonus);
         }
-        
+
         THAdvOptWnd() noexcept
         {
             SetWndFlag(ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
@@ -714,7 +704,7 @@ namespace TH08 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
-                
+
                 if (ImGui::Checkbox(XSTR(TH08_DOSWNC), &DOSWNC)) {
                     th08_DOSWNC_1.Toggle(DOSWNC);
                     th08_DOSWNC_2.Toggle(DOSWNC);
@@ -734,13 +724,6 @@ namespace TH08 {
     {
         void* buffer = (void*)GetMemContent(0x18bdc90, 0x98);
         if (thPracParam.mode == 1 && thPracParam.stage >= 3 && thPracParam.stage <= 4 && thPracParam.section) {
-            //auto section = thPracParam.section;
-            //if (section >= 10000 && section < 20000) {
-            //    int portionId = (section - 10000) % 100;
-            //    if (portionId <= 4) {
-            //        return nullptr;
-            //    }
-            //}
             VFile anm;
             anm.SetFile(buffer, 0x99999);
             anm << pair{0x8029c, 0} << pair{0x802b0, 0} << pair{0x802bc, 4000}
@@ -1074,7 +1057,6 @@ namespace TH08 {
     {
         int32_t diff = *((int32_t*)0x160f538);
         int32_t sub_id;
-        //int32_t* std_flag = (int32_t*)0x4EA290;
 
         switch (section) {
         case THPrac::TH08::TH08_ST1_MID1:
@@ -1647,7 +1629,6 @@ namespace TH08 {
             ECLSetTime(ecl, 0x55e8, 0, 68, 60);
             break;
         case THPrac::TH08::TH08_ST6A_BOSS9:
-            //*((int32_t*)0x4ea290) = 1;
             MSGNameFix();
             ECLWarp(4022, 0xc838);
             ecl << pair{0xc83e, (int8_t)0x38};
@@ -2270,18 +2251,11 @@ namespace TH08 {
                 PushHelper32(pCtx, 1);
             }
             pCtx->Eip = 0x43a03e;
-        } 
+        }
     }
     EHOOK_DY(th08_save_replay, 0x453acc)
     {
         char* rep_name = *(char**)(pCtx->Ebp - 0x694);
-        //MB_INFO("Start!");
-        //__asm
-        //{
-		//		mov eax, [ebp]
-		//		mov eax, [eax - 0x694];
-		//		mov rep_name, eax;
-        //}
         if (thPracParam.mode)
             THSaveReplay(rep_name);
     }
@@ -2330,7 +2304,7 @@ namespace TH08 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        
+
         // Reset thPracParam
         thPracParam.Reset();
     }
@@ -2363,9 +2337,6 @@ void TH08Init()
 {
     TH08::THInitHook::singleton().EnableAllHooks();
     TryKeepUpRefreshRate((void*)0x442591);
-
-    //VFSHook(VFS_TH08, (void*)0x43e660);
-    //VFSAddListener("stg4abg.anm", nullptr, TH08::THStage4ANM);
 }
 
 /*
@@ -2375,5 +2346,4 @@ void TH08Init()
 	0x4E4824: STD Buffer
 	0x4E483C & 0x4E4844: STD Time
 	*/
-
 }

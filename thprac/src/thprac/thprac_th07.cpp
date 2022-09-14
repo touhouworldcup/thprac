@@ -145,7 +145,7 @@ namespace TH07 {
                     } else if (oldRank > 0 && mDiffculty == 0) {
                         *mRank = 20;
                     }
-                } 
+                }
             case 2:
                 break;
             case 3:
@@ -417,10 +417,6 @@ namespace TH07 {
             char* raw = (char*)GetMemAddr((int)(&moduleList[7]), index * 512 + 0x6c);
 
             std::wstring repName = mb_to_utf16(raw);
-            //auto pos = repName.rfind('/');
-            //if (pos != std::string::npos)
-            //	repName = repName.substr(pos + 1);
-
             std::string param;
             if (ReplayLoadParam(repName.c_str(), param) && mRepParam.ReadJson(param))
                 mParamStatus = true;
@@ -520,10 +516,6 @@ namespace TH07 {
                     *((int32_t*)0x575ab4) = 2;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -1867,7 +1859,7 @@ namespace TH07 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        
+
         // Reset thPracParam
         thPracParam.Reset();
     }
