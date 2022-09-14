@@ -28,7 +28,7 @@ namespace TH185 {
         std::vector<unsigned int> warp;
         std::vector<unsigned int> force_wave;
         std::vector<unsigned int> additional_cards;
-        
+
         size_t __waves_forced;
     };
     THPracParam thPracParam {};
@@ -79,7 +79,7 @@ namespace TH185 {
                     .writes = {
                         { "main", {
                             { .off = 0x184, .bytes = { 2 } }
-                        } } 
+                        } }
                     }
                 },
                 {
@@ -92,7 +92,7 @@ namespace TH185 {
                     .writes = {
                         { "main", {
                             { .off = 0x184, .bytes = { 3 } }
-                        } } 
+                        } }
                     }
                 },
                 {
@@ -105,7 +105,7 @@ namespace TH185 {
                     .writes = {
                         { "main", {
                             { .off = 0x184, .bytes = { 4 } }
-                        } } 
+                        } }
                     }
                 }
             };
@@ -138,10 +138,10 @@ namespace TH185 {
             break;
         case 1:
             out.section_param = {
-                { 
+                {
                     .label = XSTR(TH185_WAVE_1)
                 },
-                { 
+                {
                     .label = XSTR(TH185_WAVE_2),
                     .jumps = {
                         { "main", {
@@ -154,7 +154,7 @@ namespace TH185 {
                         } }
                     }
                 },
-                { 
+                {
                     .label = XSTR(TH185_WAVE_3),
                     .jumps = {
                         { "main", {
@@ -167,7 +167,7 @@ namespace TH185 {
                         } }
                     }
                 },
-                { 
+                {
                     .label = XSTR(TH_BOSS),
                     .jumps = {
                         { "main", {
@@ -764,12 +764,12 @@ namespace TH185 {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(3, 14) } }
                             } }
                         }
-                    }, 
+                    },
                     {
                         .label = "Nitori Kawashiro",
                         .writes = {
                             { "WorldWaveB00", {
-                                { .off = 0x34, .bytes = {  
+                                { .off = 0x34, .bytes = {
                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 14, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 15, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 16, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
@@ -1053,7 +1053,7 @@ namespace TH185 {
                                 { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
                             } },
                             { "Boss17Boss1", {
-                                { .off = 0x10, .bytes = { 
+                                { .off = 0x10, .bytes = {
                                 0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
                                 BOSS_SPELL_CARD_ASYNC(17, 1)
                             } } } }
@@ -1309,7 +1309,7 @@ namespace TH185 {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { {
                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x17, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 
+                                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x17, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x00, 0x01, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x5E, 0xD9, 0xFF, 0xFF,
                                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0xFF, 0x02, 0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -2390,7 +2390,7 @@ namespace TH185 {
                                 { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
                             } },
                             { "Boss17Boss1", {
-                                { .off = 0x10, .bytes = { 
+                                { .off = 0x10, .bytes = {
                                 0x00, 0x00, 0x00, 0x00, 0x0F, 0x02, 0x1C, 0x00, 0x00, 0x00, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x45, 0x80, 0xA0, 0xFF, 0xFF,
                                 BOSS_SPELL_CARD_ASYNC(17, 1)
                             } } } }
@@ -2794,7 +2794,6 @@ namespace TH185 {
                 break;
             case 2:
                 Close();
-                //*mNavFocus = 0;
                 break;
             default:
                 break;
@@ -3033,7 +3032,7 @@ namespace TH185 {
             mMode();
             if (*mMode == 1) {
                 StageWarpsRender(warps, mWarp, 0);
-                
+
                 mLife();
                 mFunds();
                 mBulletMoney();
@@ -3047,7 +3046,6 @@ namespace TH185 {
                 ImGui::TextUnformatted(XSTR(TH185_FORCE_WAVE));
                 Gui::MultiComboSelect(mForceWave, waves, XSTR(TH185_WAVE_FORMAT));
             }
-            // mNavFocus();
         }
 
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
@@ -3056,7 +3054,6 @@ namespace TH185 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 9 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mFunds { TH18_FUNDS, 0, 999990, 1, 100000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mDifficulty { TH_DIFFICULTY, 0, 7 };
-        // Gui::GuiNavFocus mNavFocus { TH185_MARKET, TH_MODE, TH_WARP };
         std::vector<unsigned int> mWarp;
         std::vector<unsigned int> mForceWave = { 0 };
         std::vector<unsigned int> mAdditionalCards = { 0 };
@@ -3092,8 +3089,6 @@ namespace TH185 {
         {
             if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
-            } else if (mOptCtx.fps_status == 2) {
-                //*(int32_t*)(mOptCtx.vpatch_base + 0x16a8c) = mOptCtx.fps;
             }
         }
         void GameplayInit()

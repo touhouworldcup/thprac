@@ -17,7 +17,7 @@ namespace TH15 {
         int32_t power;
         int32_t value;
         int32_t graze;
-        
+
         bool dlg;
 
         bool _playLock = false;
@@ -85,7 +85,6 @@ namespace TH15 {
             *mPower = 400;
             *mValue = 10000;
 
-            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -219,13 +218,6 @@ namespace TH15 {
                 mScore();
                 mScore.RoundDown(10);
             }
-
-            //SIZE renderSize;
-            //mCtx->GetImpl()->GetRenderSize(&renderSize);
-            //ImGui::Text("Pos: %f, %f", ImGui::GetWindowPos().x / (float)renderSize.cx,
-            //	ImGui::GetWindowPos().y / (float)renderSize.cy);
-            //ImGui::Text("Size: %f, %f", ImGui::GetWindowSize().x / (float)renderSize.cx,
-            //	ImGui::GetWindowSize().y / (float)renderSize.cy);
 
             mNavFocus();
         }
@@ -466,13 +458,8 @@ namespace TH15 {
                     Open();
                 } else {
                     Close();
-                    //*((int32_t*)0x6c6eb0) = 2;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -1775,7 +1762,7 @@ namespace TH15 {
 
         if (result) {
             pCtx->Eip = 0x476fa3;
-        } 
+        }
     }
     EHOOK_DY(th15_param_reset, 0x461070)
     {
@@ -1818,7 +1805,7 @@ namespace TH15 {
         th15_chapter_disable::GetHook().Disable();
         th15_stars_bgm_sync::GetHook().Disable();
         if (thPracParam.mode == 1) {
-            *(int32_t*)(0x4E740C) = (int32_t)(thPracParam.score / 10); // = *(int32_t*)(0x4E75BC)
+            *(int32_t*)(0x4E740C) = (int32_t)(thPracParam.score / 10);
             *(int32_t*)(0x4E7450) = thPracParam.life;
             *(int32_t*)(0x4E7454) = thPracParam.life_fragment;
             *(int32_t*)(0x4E745C) = thPracParam.bomb;
@@ -1836,7 +1823,7 @@ namespace TH15 {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x43d5c3;
-        } 
+        }
     }
     EHOOK_DY(th15_rep_save, 0x45cc49)
     {
@@ -1888,7 +1875,7 @@ namespace TH15 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-        
+
         // Reset thPracParam
         thPracParam.Reset();
     }

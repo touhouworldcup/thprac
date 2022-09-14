@@ -107,7 +107,6 @@ namespace TH17 {
 
                 if (phase)
                     AddJsonValue(phase);
-                //if (bug_fix) AddJsonValue(bug_fix);
 
                 ReturnJson();
             }
@@ -127,7 +126,6 @@ namespace TH17 {
             *mPower = 400;
             *mValue = 10000;
 
-            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -277,14 +275,6 @@ namespace TH17 {
                 mScore();
                 mScore.RoundDown(10);
             }
-
-            //SIZE renderSize;
-            //renderSize.cx = 1280;
-            //renderSize.cy = 960;
-            //ImGui::Text("Pos: %f, %f", ImGui::GetWindowPos().x / (float)renderSize.cx,
-            //	ImGui::GetWindowPos().y / (float)renderSize.cy);
-            //ImGui::Text("Size: %f, %f", ImGui::GetWindowSize().x / (float)renderSize.cx,
-            //	ImGui::GetWindowSize().y / (float)renderSize.cy);
 
             mNavFocus();
         }
@@ -523,13 +513,8 @@ namespace TH17 {
                     Open();
                 } else {
                     Close();
-                    //*((int32_t*)0x6c6eb0) = 2;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -559,7 +544,6 @@ namespace TH17 {
         {
             *mBugFix = true;
 
-            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -717,8 +701,6 @@ namespace TH17 {
         {
             if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
-            } else if (mOptCtx.fps_status == 2) {
-                //*(int32_t*)(mOptCtx.vpatch_base + 0x16a8c) = mOptCtx.fps;
             }
         }
         void GameplayInit()
@@ -802,39 +784,12 @@ namespace TH17 {
         {
             if (ImGui::Button("Config"))
                 mIsInGoastCfgMenu = true;
-
-            /*
-				if (mInitGoastCfg.size() == 0)
-					ImGui::Text("No goast.");
-				else
-				{
-					int i = 1;
-					auto it = mInitGoastCfg.begin();
-					for (; it != mInitGoastCfg.end(); ++i)
-					{
-						ImGui::Text("Goast %d: { %.2f, %.2f }, %f, %d", i, it->x, it->y, it->dir, it->type);
-
-						ImGui::SameLine();
-						sprintf_s(mTempStr, "%s##%d", "Config", i);
-						if (ImGui::Button(mTempStr))
-							mGoastInCfg = &(*it);
-
-						ImGui::SameLine();
-						sprintf_s(mTempStr, "%s##%d", "Delete", i);
-						if (ImGui::Button(mTempStr) && !mGoastInCfg)
-							it = mInitGoastCfg.erase(it);
-						else
-							++it;
-					}
-				}
-				*/
         }
         void InitGoastCfgMenu()
         {
             auto& io = ImGui::GetIO();
             auto drawList = ImGui::GetWindowDrawList();
             float scale = 2.0f;
-            //ImVec2 game_area_origin{ (32.0f + 192.0f) * scale, 16.0f * scale };
             ImVec2 play_area[2] { { 32.0f * scale, 16.0f * scale }, { 416.0f * scale, 464.0f * scale } }; // 384, 448
             ImVec2 goast_area[2] { { 44.0f * scale, 144.0f * scale }, { 404.0f * scale, 400.0f * scale } }; // 384, 448
 
@@ -843,7 +798,6 @@ namespace TH17 {
 
             ImGui::SetCursorPos(ImVec2(32.0f * scale, 16.0f * scale));
             ImGui::InvisibleButton("goast_canvas", ImVec2(384.0f * scale, 448.0f * scale));
-            //auto mouse_pos = ImVec2(io.MousePos.x - game_area_origin.x, io.MousePos.y - game_area_origin.y);
             auto mouse_pos = io.MousePos;
             if (ImGui::IsItemHovered()) {
                 if (mGoastMoving) {
@@ -870,9 +824,7 @@ namespace TH17 {
             }
 
             for (auto& goast : mInitGoastCfg) {
-                //auto goast_pos = ImVec2(goast.x + game_area_origin.x, goast.y + game_area_origin.y);
                 auto goast_pos = ImVec2(goast.x, goast.y);
-                //uint32_t col;
                 switch (goast.type) {
                 case 1:
                 case 2:
@@ -961,14 +913,6 @@ namespace TH17 {
         }
         void ContentUpdate()
         {
-            /*
-				if (mIsInGoastCfgMenu)
-				{
-					InitGoastCfgMenu();
-					return;
-				}
-				*/
-
             ImGui::TextUnformatted(XSTR(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
@@ -990,14 +934,6 @@ namespace TH17 {
 
                 EndOptGroup();
             }
-            /*
-				if (BeginOptGroup<TH17_GOAST>())
-				{
-					InitGoastOpt();
-					EndOptGroup();
-				}
-				*/
-
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
@@ -1978,7 +1914,6 @@ namespace TH17 {
     PATCH_DY(th17_disable_prac_menu_2, 0x456a23, "\x00", 1);
     EHOOK_DY(th17_menu_rank_fix, 0x445ed1)
     {
-        //*((int32_t*)0x4a57c8) = -1; // Reset spell practice ID
         *((int32_t*)0x4b5a00) = *((int32_t*)0x4b2b28); // Restore In-game rank to menu rank
     }
     EHOOK_DY(th17_patch_main, 0x430cb3)
@@ -2087,7 +2022,6 @@ namespace TH17 {
 
         // Gui components update
         THGuiPrac::singleton().Update();
-        //THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
