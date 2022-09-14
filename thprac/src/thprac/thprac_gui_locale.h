@@ -9,7 +9,6 @@ namespace Gui {
         LOCALE_EN_US = 1,
         LOCALE_JA_JP = 2,
     };
-    //static locale_t __glocale_current = LOCALE_ZH_CN;
 
     void LocaleSet(locale_t locale);
     void LocaleAutoSet();
@@ -20,6 +19,8 @@ namespace Gui {
     bool LocaleCreateFont(float font_size);
     bool LocaleCreateMergeFont(locale_t locale, float font_size);
     bool LocaleRecreateMergeFont(locale_t locale, float font_size);
+
+    // TODO: Remove these two declarations
     void LocalePushFont();
     void LocalePopFont();
 

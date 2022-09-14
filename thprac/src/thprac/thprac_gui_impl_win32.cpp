@@ -373,8 +373,6 @@ namespace Gui {
                 io.AddInputCharacter((unsigned short)wParam);
             }
 
-            //if (wParam > 0 && wParam <= 127)
-            //    io.AddInputCharacter((unsigned short)wParam);
             return 0;
         case WM_IME_CHAR:
             return 0;
@@ -579,27 +577,11 @@ namespace Gui {
         ImGuiIO& io = ImGui::GetIO();
         IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
 
-        // Setup display size (every frame to accommodate for window resizing)
-        /*
-			RECT rect;
-			::GetClientRect(g_hWnd, &rect);
-			io.DisplaySize = ImVec2((float)(rect.right - rect.left), (float)(rect.bottom - rect.top));
-			*/
-
         // Setup time step
         INT64 current_time = 0;
         ::QueryPerformanceCounter((LARGE_INTEGER*)&current_time);
         io.DeltaTime = (float)(current_time - g_Time) / g_TicksPerSecond;
         g_Time = current_time;
-
-        // Read keyboard modifiers inputs
-        /*
-			io.KeyCtrl = (::GetKeyState(VK_CONTROL) & 0x8000) != 0;
-			io.KeyShift = (::GetKeyState(VK_SHIFT) & 0x8000) != 0;
-			io.KeyAlt = (::GetKeyState(VK_MENU) & 0x8000) != 0;
-			io.KeySuper = false;
-			io.KeysDown[], io.MousePos, io.MouseDown[], io.MouseWheel: filled by the WndProc handler below.
-			*/
 
         // Update OS mouse position
         ImplWin32UpdateMousePos(mouseMapping);
@@ -610,11 +592,6 @@ namespace Gui {
             g_LastMouseCursor = mouse_cursor;
             ImplWin32UpdateMouseCursor();
         }
-
-        // Update game controllers (if enabled and available)
-        /*
-			ImGui_ImplWin32_UpdateGamepads();
-			*/
 
         ImplWin32UpdKeyFrame();
         g_isFullscreenCache = ImplWin32CheckFullScreen();

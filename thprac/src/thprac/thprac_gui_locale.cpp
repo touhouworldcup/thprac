@@ -631,15 +631,11 @@ static ImWchar baseUnicodeRanges[] =
     }
     void LocalePushFont()
     {
-        //ImGuiIO& io = ImGui::GetIO();
-        //io.FontDefault = io.Fonts->Fonts[__glocale_current];
-        //ImFontAtlas* atlas = io.Fonts;
-        //ImGui::PushFont(io.Fonts->Fonts[__glocale_current]);
-        //ImGui::PushFont(__glocale_fonts[__glocale_current]);
+        // TODO: This function does nothing, and should be removed.
     }
     void LocalePopFont()
     {
-        //ImGui::PopFont();
+        // TODO: This function does nothing, and should be removed.
     }
 }
 }
