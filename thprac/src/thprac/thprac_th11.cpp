@@ -684,7 +684,8 @@ namespace TH11 {
         if (stall)
             ecl << 9999 << 0x00100000 << 0x00ff0000 << 0;
     }
-    void ECLVoid(ECLHelper& ecl, size_t pos)
+    template<typename... Args>
+    void ECLVoid(ECLHelper& ecl, size_t pos, Args... rest)
     {
         ecl.SetPos(pos + 4);
         ecl << (int16_t)0;
