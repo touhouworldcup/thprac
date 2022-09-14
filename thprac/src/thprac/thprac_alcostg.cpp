@@ -99,12 +99,10 @@ namespace Alcostg {
     class THGuiPrac : public Gui::GameGuiWnd {
         THGuiPrac() noexcept
         {
-            //*mMode = 1;
             *mBeer = 30;
             *mBeerMax = 30;
             mTime.SetCurrentStep(30);
 
-            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -145,9 +143,6 @@ namespace Alcostg {
                         thPracParam.beer = *mBeer;
                         thPracParam.beer_max = *mBeerMax;
                         thPracParam.score = *mScore;
-
-                        // Reset Frame Counter
-                        //*(int32_t*)(*((int32_t*)0x4db6a4) + 0x2b8) = 0;
 
                         mState = 0;
 
@@ -424,13 +419,8 @@ namespace Alcostg {
                     Open();
                 } else {
                     Close();
-                    //*((int32_t*)0x6c6eb0) = 2;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -968,7 +958,6 @@ namespace Alcostg {
         if (thLock)
             el_switch = false;
 
-        //is_practice = (*((int32_t*)0x48e610) & 0x1);
         is_practice = false;
         if (thRestart) {
             is_practice = true;
@@ -1081,7 +1070,6 @@ namespace Alcostg {
 
         // Gui components update
         THGuiPrac::singleton().Update();
-        // thGuiRep->Update();
         THOverlay::singleton().Update();
 
         GameGuiEnd(UpdateAdvOptWindow() || THGuiPrac::singleton().IsOpen());

@@ -18,10 +18,7 @@
 #include <DbgHelp.h>
 #pragma warning(default : 4091)
 
-//#include <string>
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-
-// #define VEHHOOK_MULTITHREAD
 
 #ifdef VEHHOOK_MULTITHREAD
 #include <mutex>

@@ -612,11 +612,8 @@ void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, e
 template <typename T>
 static std::function<T(void)> GetRndGenerator(T min, T max, std::mt19937::result_type seed = 0)
 {
-    // std::mt19937::result_type seed = time(0);
     if (!seed) {
         seed = (std::mt19937::result_type)time(0);
-        // std::random_device rd;
-        // seed = rd();
     }
     auto dice_rand = std::bind(std::uniform_int_distribution<T>(min, max), std::mt19937(seed));
     return dice_rand;
