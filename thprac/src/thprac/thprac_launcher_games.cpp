@@ -217,7 +217,6 @@ int CheckHasSteamDRM(void* exeBuffer, size_t exeSize)
             static std::string_view ver3Sub3_2("\x8D", 1);
             std::string_view exeStr((char*)exeBuffer, exeSize);
 
-            //auto sectionOffset = (DWORD)exeBuffer + section.PointerToRawData;
             if (exeStr.find(ver2_0Sig, section.PointerToRawData) != std::string_view::npos) {
                 return 2;
             } else if (exeStr.find(ver2_0Sig, section.PointerToRawData) != std::string_view::npos) {
@@ -402,7 +401,6 @@ private:
             for (auto& inst : game.instances) {
                 rapidjson::Value gameInst;
                 gameInst.SetObject();
-                //gameInst.AddMember("name", inst.name.c_str(), alloc);
                 JsonAddMemberA(gameInst, "name", inst.name.c_str(), alloc);
                 JsonAddMember(gameInst, "type", (int)inst.type, alloc);
                 JsonAddMemberA(gameInst, "path", inst.path.c_str(), alloc);
@@ -501,7 +499,7 @@ public:
                 subname = subname.substr(0, subname.rfind(".js"));
             }
             sprintf_s(nameStr, "%s (%s)", gameId, subname.c_str());
-            
+
             inst.name = nameStr;
             inst.path = cfg;
             inst.type = TYPE_THCRAP;
@@ -598,7 +596,7 @@ public:
     }
     bool thcrapSetup()
     {
-        
+
         mThcrapDir = L"";
         mThcrapCfgDir = L"";
         mThcrapCfg.clear();
@@ -946,7 +944,7 @@ public:
         }
         fileName = GetUnifiedPath(fileName);
         if (fileName.find(idStr16) == 0) {
-            // TODO
+            // TODO: (Reason for TODO unknown)
             if (fileName == L"th155_log.exe") {
                 return false;
             }
@@ -1287,7 +1285,6 @@ public:
         mScanCurrent[0] = mScanCurrent[1] = "";
         mScanCurrentIdx = 0;
         mScanPath = L"";
-        //mScanPath = L"D:\\\\Touhou";
         mScanStatus = 0;
         mScanAnm.Reset();
 
@@ -1513,7 +1510,7 @@ public:
                         }
                     }
                 }
-                
+
                 FinalizeGameScan();
                 WriteGameCfg();
                 mSteamMenuStatus = 2;
@@ -1549,7 +1546,6 @@ public:
 
         // Open the related process
         auto hProc = OpenProcess(
-            //PROCESS_SUSPEND_RESUME |
             PROCESS_QUERY_INFORMATION | PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE,
             FALSE,
             proc.th32ProcessID);
@@ -1584,7 +1580,7 @@ public:
             }
         }
         CloseHandle(hProc);
-        return false;   
+        return false;
     }
     static DWORD WINAPI CheckProcess(DWORD process, std::wstring& exePath)
     {
@@ -1658,13 +1654,11 @@ public:
                 procEntry.dwSize = sizeof(PROCESSENTRY32W);
                 moduleEntry.dwSize = sizeof(MODULEENTRY32W);
                 HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-                //bool hasPrompted = false;
                 if (Process32FirstW(snapshot, &procEntry)) {
                     do {
                         bool test = isOmni ? CheckProcessOmni(procEntry) : CheckProcess(procEntry.th32ProcessID, exePath);
                         if (test) {
                             auto hProc = OpenProcess(
-                                //PROCESS_SUSPEND_RESUME |
                                 PROCESS_QUERY_INFORMATION | PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE,
                                 FALSE,
                                 procEntry.th32ProcessID);
@@ -1724,7 +1718,6 @@ public:
     static HANDLE WINAPI LaunchGameDirectly(THGame* currentGame, int instance)
     {
         bool result = true;
-        //auto currentGame = THGameGui::singleton().mCurrentGame;
         if (!currentGame) {
             return 0;
         }
@@ -1830,7 +1823,7 @@ public:
             ShellExecuteW(NULL, L"open", steamURL.c_str(), NULL, NULL, SW_SHOW);
             currentInstExePath = GetUnifiedPath(currentInstExePath);
             executeResult = (HINSTANCE)64;
-        }   
+        }
             break;
         default:
             executeResult = ShellExecuteW(NULL, L"open", currentInstPath.c_str(), NULL, currentInstDir.c_str(), SW_SHOW);
@@ -1851,10 +1844,7 @@ public:
     {
         switch (type) {
         case THPrac::TYPE_ORIGINAL:
-        //case THPrac::TYPE_MODDED:
         case THPrac::TYPE_THCRAP:
-        //case THPrac::TYPE_SCHINESE:
-        //case THPrac::TYPE_TCHINESE:
         case THPrac::TYPE_NYASAMA:
         case THPrac::TYPE_STEAM:
             return true;
@@ -2219,7 +2209,7 @@ public:
                 }
             }
             ImGui::Separator();
-        } 
+        }
 
         if (ImGui::Selectable(XSTR(THPRAC_GAMES_SCAN_FOLDER))) {
             ScanClear();

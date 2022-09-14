@@ -51,7 +51,6 @@ bool D3DCreateDevice(HWND hWnd, unsigned int width, unsigned int height)
     g_d3dpp.EnableAutoDepthStencil = TRUE;
     g_d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
     g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE; // Present with vsync
-    //g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;   // Present without vsync, maximum unthrottled framerate
     g_d3dpp.BackBufferWidth = width;
     g_d3dpp.BackBufferHeight = height;
     if (g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &g_d3dpp, &g_pd3dDevice) < 0)
@@ -85,9 +84,7 @@ void D3DResetDevice()
 
 void ResizeWindow(HWND hwnd, ImVec2& wndPos, ImVec2& wndSize)
 {
-    //RECT rect;
     RECT wndRect;
-    //::GetClientRect(hwnd, &rect);
     ::GetWindowRect(hwnd, &wndRect);
     if ((LONG)wndSize.x != wndRect.right - wndRect.left || (LONG)wndSize.y != wndRect.bottom - wndRect.top) {
         RECT rect = { 0, 0, (LONG)wndSize.x, (LONG)wndSize.y };
@@ -120,12 +117,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     }
         return 0;
     case WM_SIZE:
-        //if (g_pd3dDevice != NULL && wParam != SIZE_MINIMIZED)
-        //{
-        //    g_d3dpp.BackBufferWidth = LOWORD(lParam);
-        //    g_d3dpp.BackBufferHeight = HIWORD(lParam);
-        //    D3DResetDevice();
-        //}
         return 0;
     case WM_SYSCOMMAND:
         if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
@@ -202,9 +193,6 @@ int LauncherWndInit(unsigned int width, unsigned int height, unsigned int maxWid
     EnumDisplaySettingsW(NULL, ENUM_CURRENT_SETTINGS, &devMod);
     auto displayX = devMod.dmPelsWidth;
     auto displayY = devMod.dmPelsHeight;
-    //auto displayX = GetSystemMetrics(SM_CXSCREEN);
-    //auto displayY = GetSystemMetrics(SM_CYSCREEN);
-    //GetDesktopResolution(displayX, displayY);
     if (auto shcore = GetModuleHandleW(L"shcore.dll")) {
         auto setProcDpiAwareness = (PSetProcessDpiAwareness)GetProcAddress(shcore, "SetProcessDpiAwareness");
         auto getDpiForMonitor = (PGetDpiForMonitor)GetProcAddress(shcore, "GetDpiForMonitor");
@@ -221,8 +209,6 @@ int LauncherWndInit(unsigned int width, unsigned int height, unsigned int maxWid
                 maxHeight = (unsigned int)((float)maxHeight * __thprac_lc_scale);
                 widthCurrent = (unsigned int)((float)widthCurrent * __thprac_lc_scale);
                 heightCurrent = (unsigned int)((float)heightCurrent * __thprac_lc_scale);
-                // displayX = (unsigned int)((float)displayX / __thprac_lc_scale);
-                // displayY = (unsigned int)((float)displayY / __thprac_lc_scale);
             }
         }
     }
@@ -334,7 +320,6 @@ bool LauncherWndEndFrame(ImVec2& wndPos, ImVec2& wndSize, bool canMove)
     RECT renderRect = { (LONG)wndPos.x, (LONG)wndPos.y,
         (LONG)(wndSize.x) + (LONG)(wndPos.x), (LONG)(wndSize.y) + (LONG)(wndPos.y) };
 
-    //ResizeWindow(__thprac_lc_hwnd, wndPos, wndSize);
     Gui::LocalePopFont();
     ImGui::EndFrame();
 
@@ -419,7 +404,7 @@ int CALLBACK SetInitialBrowsePathProc(HWND hWnd, UINT uMsg, LPARAM lp, LPARAM pD
         switch (uMsg) {
         case BFFM_INITIALIZED:
             ip->attempts = 0;
-            // fallthrough
+            [[fallthrough]];
         case BFFM_SELCHANGED:
             if (ip->attempts < 2) {
                 SendMessageW(hWnd, BFFM_SETSELECTION, FALSE, (LPARAM)ip->path);

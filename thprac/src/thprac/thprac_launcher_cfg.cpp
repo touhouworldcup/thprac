@@ -317,7 +317,7 @@ bool SetTheme(int theme, const wchar_t* userThemeName)
                 rapidjson::Document theme;
                 if (theme.Parse((char*)file.fileMapView, file.fileSize).HasParseError())
                     throw std::runtime_error("Invalid JSON (TODO: describe how)");
-                
+
                 ImVec4 colors[ImGuiCol_COUNT];
                 GET_COLOR(Text);
                 GET_COLOR(TextDisabled);
@@ -602,7 +602,6 @@ public:
         if (GuiModal(XSTR(THPRAC_UPDATE_MODAL))) {
             ImGui::Text(XSTR(THPRAC_UPDATE_PROMPT), mUpdVerStr.c_str());
             ImGui::NewLine();
-            //ImGui::TextUnformatted(UpdateJsonDbg().c_str());
 
             if (mUpdDesc[Gui::LocaleGet()] != "") {
                 ImGui::TextUnformatted(mUpdDesc[Gui::LocaleGet()].c_str());
@@ -738,7 +737,7 @@ public:
                 } else {
                     mAutoUpdStatus = STATUS_RSV;
                 }
-            } 
+            }
         }
 
         mUpdDialogHnd = NULL;
@@ -1039,7 +1038,7 @@ private:
         if (!hFile)
             return -3;
         defer(InternetCloseHandle(hFile));
-        
+
         DWORD fileSize = 0;
         if (!HttpQueryInfoW(hFile, HTTP_QUERY_FLAG_NUMBER | HTTP_QUERY_CONTENT_LENGTH, &fileSize, &byteRet, 0))
             return -4;
@@ -1395,7 +1394,6 @@ private:
             ImGui::SameLine();
             if (ImGui::Button(XSTR(THPRAC_NO), ImVec2(buttonSize, 0))) {
                 dirSettingModalFlag = true;
-                //ImGui::OpenPopup("Data directory##modal");
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
@@ -1557,9 +1555,9 @@ private:
                     mThcrapAddPrompt = XSTR(THPRAC_THCRAP_ADDCFG_SUCCESS);
                     mThcrapAddPromptCol = { 0.0f, 0.75f, 0.0f, 1.0f };
                 }
-            } 
+            }
         }
-        
+
 
         ImGui::EndChild();
     }
@@ -1584,9 +1582,6 @@ private:
                         mThcrap.Set(utf16_to_utf8(path.c_str()));
                         LauncherGamesThcrapSetup();
                         mThcrapHintTime = 0.0f;
-                        //mThcrapHintTimeBuffer = 2;
-                        //mThcrapHintTime = 15.0f;
-                        //mThcrapHintStr = "Hint: Use the \"Batch add\" button to add thcrap configs to your game lists.";
                     }
                 }
             }
@@ -1681,7 +1676,6 @@ private:
         ImGui::NewLine();
         ImGui::TextUnformatted(XSTR(THPRAC_SETTING_LAUNCHER));
         ImGui::Separator();
-        //mCfgAlwaysOpen.Gui(XSTR(THPRAC_ALWAYS_OPEN_LAUNCHER), XSTR(THPRAC_ALWAYS_OPEN_LAUNCHER_DESC));
         int theme_prev = mCfgTheme.Get();
         if (mCfgTheme.Gui("Theme:", "Dark\0Light\0Classic\0Custom\0\0")) {
             int Sus = 0;
@@ -1741,7 +1735,6 @@ private:
 
         ImGui::TextUnformatted(XSTR(THPRAC_SETTING_UPDATE));
         ImGui::Separator();
-        //mCfgCheckUpdate.Gui(XSTR(THPRAC_CHK_UPDATE_ON_STARTUP));
         mCheckUpdateTiming.Gui(XSTR(THPRAC_CHECK_UPDATE_WHEN), XSTR(THPRAC_CHECK_UPDATE_WHEN_OPTION));
         if (mCheckUpdateTiming.Get() == 2) {
             ImGui::BeginDisabled();
@@ -1948,7 +1941,7 @@ bool LauncherPreUpdate(wchar_t* pCmdLine)
                 (std::wstring(L"--update-launcher-2 ") + exePathCstr).c_str(), finalDir.c_str(), SW_SHOW);
 
             return true;
-        } 
+        }
     }
 
     return false;
