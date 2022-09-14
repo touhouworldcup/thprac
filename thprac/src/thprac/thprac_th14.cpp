@@ -103,7 +103,6 @@ namespace TH14 {
             *mPower = 400;
             *mValue = 10000;
 
-            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -466,13 +465,8 @@ namespace TH14 {
                     Open();
                 } else {
                     Close();
-                    //*((int32_t*)0x6c6eb0) = 2;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -503,7 +497,6 @@ namespace TH14 {
         {
             *mBugFix = true;
 
-            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -634,7 +627,6 @@ namespace TH14 {
             uint32_t ordinal;
             float value;
             int fix;
-            //Gui::GuiCombo fix;
 
             record_t()
                 : stage(0)
@@ -825,10 +817,6 @@ namespace TH14 {
                 break;
             }
 
-            //char str[256];
-            //sprintf_s(str, "%f", _value);
-            //MB_INFO(str);
-
             return *(uint32_t*)(&_value);
         }
     };
@@ -866,11 +854,7 @@ namespace TH14 {
         // Option Related Functions
         void FpsInit()
         {
-            // mOptCtx.vpatch_base = (int32_t)GetModuleHandleW("");
-            if (false) {
-                //if (*(int32_t*)(mOptCtx.vpatch_base + 0x1a024) == 0)
-                //	mOptCtx.fps_status = 2;
-            } else if (*(uint8_t*)0x4d9159 == 3) {
+            if (*(uint8_t*)0x4d9159 == 3) {
                 mOptCtx.fps_status = 1;
 
                 DWORD oldProtect;
@@ -884,8 +868,6 @@ namespace TH14 {
         {
             if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
-            } else if (mOptCtx.fps_status == 2) {
-                //*(int32_t*)(mOptCtx.vpatch_base + 0x16a8c) = mOptCtx.fps;
             }
         }
         void GameplayInit()
@@ -1580,7 +1562,6 @@ namespace TH14 {
             ecl.SetFile(3);
             ecl << pair{0x800, (int8_t)0x32}; // Change Nonspell
             ecl << pair{0x13d4, (int16_t)0} << pair{0x1518, (int16_t)0}; // Disable Item Drops & SE
-            //ecl << pair{0x12e4, 0} << pair{0x12d0, 0}; // Change Wait Time & Inv. Time
             break;
         case THPrac::TH14::TH14_ST2_BOSS4:
             ECLJump(ecl, 0x4f30, 0x5274, 60);
@@ -1596,7 +1577,6 @@ namespace TH14 {
             ECLJump(ecl, 0x4e4, 0x5cc, 0); // Utilize Spell Practice Jump
             ecl << pair{0x5dc, 2100}; // Set Health
             ecl << pair{0x5fc, (int8_t)0x33}; // Set Spell Ordinal
-            //ecl << pair{0x1aa4, (int16_t)0}; // Disable Item Drops
             break;
         case THPrac::TH14::TH14_ST3_MID1:
             ECLJump(ecl, 0x648c, 0x6740, 60);
@@ -1699,7 +1679,6 @@ namespace TH14 {
             // BossA
             ecl.SetFile(4);
             ECLJump(ecl, 0x9950, 0x9ab4, 0); // Skip Dummy Boss
-            //ecl << pair{0x3e8, 0}; // Cancel Msg Invi.
             ECLJump(ecl, 0x4e8, 0x5d0, 0); // Utilize Spell Practice Jump
             ecl << pair{0x5e0, 2300}; // Set Health
             ecl << pair{0x600, (int8_t)0x31}; // Set Spell Ordinal
@@ -1708,7 +1687,6 @@ namespace TH14 {
             // BossB
             ecl.SetFile(5);
             ECLJump(ecl, 0x4dcc, 0x4f30, 0); // Skip Dummy Boss
-            //ecl << pair{0x358, 0}; // Cancel Msg Invi.
             ECLJump(ecl, 0x458, 0x540, 0); // Utilize Spell Practice Jump
             ecl << pair{0x550, 2300}; // Set Health
             ecl << pair{0x571, (int8_t)0x31}; // Set Spell Ordinal
@@ -1739,7 +1717,6 @@ namespace TH14 {
             // BossA
             ecl.SetFile(4);
             ECLJump(ecl, 0x9950, 0x9ab4, 0); // Skip Dummy Boss
-            //ecl << pair{0x3e8, 0}; // Cancel Msg Invi.
             ECLJump(ecl, 0x4e8, 0x5d0, 0); // Utilize Spell Practice Jump
             ecl << pair{0x5e0, 2300}; // Set Health
             ecl << pair{0x600, (int8_t)0x32}; // Set Spell Ordinal
@@ -1748,7 +1725,6 @@ namespace TH14 {
             // BossB
             ecl.SetFile(5);
             ECLJump(ecl, 0x4dcc, 0x4f30, 0); // Skip Dummy Boss
-            //ecl << pair{0x358, 0}; // Cancel Msg Invi.
             ECLJump(ecl, 0x458, 0x540, 0); // Utilize Spell Practice Jump
             ecl << pair{0x550, 2300}; // Set Health
             ecl << pair{0x571, (int8_t)0x32}; // Set Spell Ordinal
@@ -1779,7 +1755,6 @@ namespace TH14 {
             // BossA
             ecl.SetFile(4);
             ECLJump(ecl, 0x9950, 0x9ab4, 0); // Skip Dummy Boss
-            //ecl << pair{0x3e8, 0}; // Cancel Msg Invi.
             ECLJump(ecl, 0x4e8, 0x5d0, 0); // Utilize Spell Practice Jump
             ecl << pair{0x5e0, 2800}; // Set Health
             ecl << pair{0x600, (int8_t)0x33}; // Set Spell Ordinal
@@ -1788,7 +1763,6 @@ namespace TH14 {
             // BossB
             ecl.SetFile(5);
             ECLJump(ecl, 0x4dcc, 0x4f30, 0); // Skip Dummy Boss
-            //ecl << pair{0x358, 0}; // Cancel Msg Invi.
             ECLJump(ecl, 0x458, 0x540, 0); // Utilize Spell Practice Jump
             ecl << pair{0x550, 2500}; // Set Health
             ecl << pair{0x571, (int8_t)0x33}; // Set Spell Ordinal
@@ -2164,36 +2138,6 @@ namespace TH14 {
                 break;
             }
             break;
-        /*
-			case THPrac::TH14::TH14_ST4A_MID1:
-				break;
-			case THPrac::TH14::TH14_ST4A_BOSS1:
-				break;
-			case THPrac::TH14::TH14_ST4A_BOSS2:
-				break;
-			case THPrac::TH14::TH14_ST4A_BOSS3:
-				break;
-			case THPrac::TH14::TH14_ST4A_BOSS4:
-				break;
-			case THPrac::TH14::TH14_ST4A_BOSS5:
-				break;
-			case THPrac::TH14::TH14_ST4A_BOSS6:
-				break;
-			case THPrac::TH14::TH14_ST4B_MID1:
-				break;
-			case THPrac::TH14::TH14_ST4B_BOSS1:
-				break;
-			case THPrac::TH14::TH14_ST4B_BOSS2:
-				break;
-			case THPrac::TH14::TH14_ST4B_BOSS3:
-				break;
-			case THPrac::TH14::TH14_ST4B_BOSS4:
-				break;
-			case THPrac::TH14::TH14_ST4B_BOSS5:
-				break;
-			case THPrac::TH14::TH14_ST4B_BOSS6:
-				break;
-			*/
         default:
             break;
         }

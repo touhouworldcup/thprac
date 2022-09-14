@@ -107,7 +107,6 @@ namespace TH16 {
             *mPower = 400;
             *mValue = 10000;
 
-            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -231,14 +230,6 @@ namespace TH16 {
                 mScore();
                 mScore.RoundDown(10);
             }
-
-            //SIZE renderSize;
-            //renderSize.cx = 1280;
-            //renderSize.cy = 960;
-            //ImGui::Text("Pos: %f, %f", ImGui::GetWindowPos().x / (float)renderSize.cx,
-            //	ImGui::GetWindowPos().y / (float)renderSize.cy);
-            //ImGui::Text("Size: %f, %f", ImGui::GetWindowSize().x / (float)renderSize.cx,
-            //	ImGui::GetWindowSize().y / (float)renderSize.cy);
 
             mNavFocus();
         }
@@ -473,13 +464,8 @@ namespace TH16 {
                     Open();
                 } else {
                     Close();
-                    //*((int32_t*)0x6c6eb0) = 2;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -506,7 +492,6 @@ namespace TH16 {
             *mSeasonGauge = 3;
             *mBugFix = true;
 
-            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -670,8 +655,6 @@ namespace TH16 {
         {
             if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
-            } else if (mOptCtx.fps_status == 2) {
-                //*(int32_t*)(mOptCtx.vpatch_base + 0x16a8c) = mOptCtx.fps;
             }
         }
         void GameplayInit()

@@ -95,7 +95,6 @@ namespace TH18 {
 
                 if (phase)
                     AddJsonValue(phase);
-                //if (bug_fix) AddJsonValue(bug_fix);
 
                 ReturnJson();
             }
@@ -116,7 +115,6 @@ namespace TH18 {
             mMukade.SetCurrentStep(100);
             *mMukade = 800;
 
-            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -242,15 +240,6 @@ namespace TH18 {
             } else if (section == TH18_ST7_END_S10) {
                 return TH_SPELL_PHASE3;
             }
-            /*
-            if (mSpellId >= 80 && mSpellId <= 83) {
-                return TH_SPELL_PHASE2;
-            } else if (mSpellId == 92) {
-                return TH_SPELL_PHASE1;
-            } else if (mSpellId == 96) {
-                return TH_SPELL_PHASE3;
-            }
-            */
             return nullptr;
         }
         void PracticeMenu()
@@ -284,8 +273,6 @@ namespace TH18 {
                 mScore();
                 mScore.RoundDown(10);
             }
-
-            //WndDebugOutput();
 
             mNavFocus();
         }
@@ -660,7 +647,6 @@ namespace TH18 {
 
                             for (uint32_t i = 0; i < cardsCount; ++i) {
                                 if (cardsSrcIndex >= 55) {
-                                    //*cardsDestOffset = CARD_DESC_LIST;
                                     *cardsDestOffset = CARD_DESC_LIST + 0x34 * 56;
                                 } else {
                                     *cardsDestOffset = cardsSrcOffset;
@@ -752,7 +738,6 @@ namespace TH18 {
         {
             *mBugFix = true;
 
-            //SetWndFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -951,7 +936,6 @@ namespace TH18 {
         }
         uint32_t scoreUncapOffsetNew[23] {
             0x419e70,
-            //0x42a659, 0x42a665,
             0x42a7fd, 0x42a80f,
             0x430eab, 0x430eb6,
             0x44476b, 0x44477a,
@@ -1263,11 +1247,9 @@ namespace TH18 {
                         mShowFixInstruction = true;
                 }
                 if (mShowFixInstruction) {
-                    //ImGui::BeginChild("INSTRUCTION", ImVec2(0.0f, GetRelHeight(0.3f)), true, ImGuiWindowFlags_AlwaysAutoResize);
                     ImGui::PushTextWrapPos(GetRelWidth(0.95f));
                     ImGui::TextUnformatted(XSTR(TH18_REPFIX_INS));
                     ImGui::PopTextWrapPos();
-                    //ImGui::EndChild();
                 }
                 ImGui::NewLine();
 
@@ -1370,7 +1352,6 @@ namespace TH18 {
             if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
             } else if (mOptCtx.fps_status == 2) {
-                //*(int32_t*)(mOptCtx.vpatch_base + 0x16a8c) = mOptCtx.fps;
             }
         }
         void GameplayInit()
@@ -1533,8 +1514,6 @@ namespace TH18 {
                 HelpMarker(XSTR(TH18_ST6FINAL_FIX_DESC));
 
                 ImGui::Checkbox(XSTR(TH18_RESTART_FIX), &restartFix);
-                //ImGui::SameLine();
-                //HelpMarker(XSTR(TH18_ST6FINAL_FIX_DESC));
 
                 if (ImGui::Checkbox(XSTR(TH18_AC_FIX), &activeCardIdFix)) {
                     th18_active_card_fix.Toggle(activeCardIdFix);
@@ -1942,7 +1921,7 @@ namespace TH18 {
             ecl << pair{0x7c8, (int8_t)0x32}; // Change Nonspell
             ecl << pair{0x14cc, (int16_t)30}; // Disable Invincible
             ecl << pair{0x15ac, (int16_t)0} << pair{0x16d8, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x183c, (int16_t)0}; //ECLJump(ecl, 0x13bc, 0x13fc, 0); // Skip wait
+            ecl << pair{0x183c, (int16_t)0};
             break;
         case THPrac::TH18::TH18_ST3_BOSS4:
             ECLStdExec(ecl, 0x83a0, 1, 1);
@@ -1961,7 +1940,7 @@ namespace TH18 {
             ecl << pair{0x7c8, (int8_t)0x33}; // Change Nonspell
             ecl << pair{0x24f4, (int16_t)30}; // Disable Invincible
             ecl << pair{0x25d4, (int16_t)0} << pair{0x2700, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x2864, (int16_t)0}; //ECLJump(ecl, 0x13bc, 0x13fc, 0); // Skip wait
+            ecl << pair{0x2864, (int16_t)0};
             break;
         case THPrac::TH18::TH18_ST3_BOSS6:
             ECLStdExec(ecl, 0x83a0, 1, 1);
@@ -2002,7 +1981,7 @@ namespace TH18 {
             ecl << pair{0x758, (int8_t)0x32}; // Change Nonspell
             ecl << pair{0x12b4, (int16_t)30}; // Disable Invincible
             ecl << pair{0x1394, (int16_t)0} << pair{0x14c0, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x1624, (int16_t)0}; //ECLJump(ecl, 0x13bc, 0x13fc, 0); // Skip wait
+            ecl << pair{0x1624, (int16_t)0};
             break;
         case THPrac::TH18::TH18_ST4_BOSS4:
             ECLStdExec(ecl, 0x5a04, 1, 1);
@@ -2021,7 +2000,7 @@ namespace TH18 {
             ecl << pair{0x758, (int8_t)0x33}; // Change Nonspell
             ecl << pair{0x20e0, (int16_t)30}; // Disable Invincible
             ecl << pair{0x21c0, (int16_t)0} << pair{0x22ec, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x2450, (int16_t)0}; //ECLJump(ecl, 0x13bc, 0x13fc, 0); // Skip wait
+            ecl << pair{0x2450, (int16_t)0};
             break;
         case THPrac::TH18::TH18_ST4_BOSS6:
             ECLStdExec(ecl, 0x5a04, 1, 1);
@@ -2069,7 +2048,7 @@ namespace TH18 {
             ecl << pair{0x890, (int8_t)0x32}; // Change Nonspell
             ecl << pair{0x10b0, (int16_t)30}; // Disable Invincible
             ecl << pair{0x1190, (int16_t)0} << pair{0x12bc, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x13f4, (int16_t)0}; //ECLJump(ecl, 0x13bc, 0x13fc, 0); // Skip wait
+            ecl << pair{0x13f4, (int16_t)0};
             break;
         case THPrac::TH18::TH18_ST5_BOSS4:
             ECLStdExec(ecl, 0x96ec, 1, 1);
@@ -2090,7 +2069,7 @@ namespace TH18 {
             ecl << pair{0x890, (int8_t)0x33}; // Change Nonspell
             ecl << pair{0x1b9c, (int16_t)30}; // Disable Invincible
             ecl << pair{0x1c7c, (int16_t)0} << pair{0x1da8, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x1f0c, (int16_t)0}; //ECLJump(ecl, 0x13bc, 0x13fc, 0); // Skip wait
+            ecl << pair{0x1f0c, (int16_t)0};
             break;
         case THPrac::TH18::TH18_ST5_BOSS6:
             ECLStdExec(ecl, 0x96ec, 1, 1);
@@ -2154,7 +2133,7 @@ namespace TH18 {
             ecl << pair{0xc64, (int8_t)0x32}; // Change Nonspell
             ecl << pair{0x1db0, (int16_t)30}; // Disable Invincible
             ecl << pair{0x1e70, (int16_t)0} << pair{0x1ec8, (int16_t)0} << pair{0x2008, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x216c, (int16_t)0}; //ECLJump(ecl, 0x13bc, 0x13fc, 0); // Skip wait
+            ecl << pair{0x216c, (int16_t)0};
             break;
         case THPrac::TH18::TH18_ST6_BOSS4:
             ECLStdExec(ecl, 0x7e70, 2, 1);
@@ -2178,7 +2157,7 @@ namespace TH18 {
             ecl << pair{0xc64, (int8_t)0x33}; // Change Nonspell
             ecl << pair{0x2528, (int16_t)30}; // Disable Invincible
             ecl << pair{0x261c, (int16_t)0} << pair{0x2760, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x28c4, (int16_t)0}; //ECLJump(ecl, 0x13bc, 0x13fc, 0); // Skip wait
+            ecl << pair{0x28c4, (int16_t)0};
             ecl << pair{0x370, 176.0f};
             break;
         case THPrac::TH18::TH18_ST6_BOSS6:
@@ -2203,7 +2182,7 @@ namespace TH18 {
             ecl << pair{0xc64, (int8_t)0x34}; // Change Nonspell
             ecl << pair{0x2cb0, (int16_t)30}; // Disable Invincible
             ecl << pair{0x2da4, (int16_t)0} << pair{0x2ee8, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x304c, (int16_t)0}; //ECLJump(ecl, 0x13bc, 0x13fc, 0); // Skip wait
+            ecl << pair{0x304c, (int16_t)0};
             break;
         case THPrac::TH18::TH18_ST6_BOSS8:
             ECLStdExec(ecl, 0x7e70, 4, 1);
@@ -2316,9 +2295,7 @@ namespace TH18 {
             ecl.SetFile(2);
             ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
             ecl << pair{0x118c, (int8_t)0x32}; // Change Nonspell
-            //ecl << pair{0x2cb0, (int16_t)30}; // Disable Invincible
             ecl << pair{0x1cbc, (int16_t)0} << pair{0x1de8, (int16_t)0}; // Disable Item Drops & SE
-            //ecl << pair{0x304c, (int16_t)0}; //ECLJump(ecl, 0x13bc, 0x13fc, 0); // Skip wait
             break;
         case THPrac::TH18::TH18_ST7_END_S2:
             ECLStdExec(ecl, 0xa8fc, 1, 1);
@@ -2674,8 +2651,6 @@ namespace TH18 {
             }
 
             THSectionPatch();
-        } else if (thPracParam.mode == 2) {
-           // THPatchSP(ecl);
         }
         THAdvOptWnd::singleton().RestartFix();
         thPracParam._playLock = true;
@@ -2689,7 +2664,6 @@ namespace TH18 {
     }
     EHOOK_DY(th18_menu_rank_fix, 0x45a208)
     {
-        //*((int32_t*)0x4a57c8) = -1; // Reset spell practice ID
         *((int32_t*)0x4ccd00) = *((int32_t*)0x4c9ab0); // Restore In-game rank to menu rank
     }
     EHOOK_DY(th18_restart, 0x4594b7)

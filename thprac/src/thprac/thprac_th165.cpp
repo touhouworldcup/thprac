@@ -55,13 +55,8 @@ namespace TH165 {
                     Open();
                 } else {
                     Close();
-                    //*((int32_t*)0x6c6eb0) = 2;
                 }
             }
-            //if (*((int32_t*)0x6c6ea4) == 2)
-            //	SetPos(500.0f, 300.0f);
-            //else
-            //	SetPos(10.0f, 10.0f);
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
@@ -96,8 +91,6 @@ namespace TH165 {
         {
             if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
-            } else if (mOptCtx.fps_status == 2) {
-                //*(int32_t*)(mOptCtx.vpatch_base + 0x16a8c) = mOptCtx.fps;
             }
         }
         void GameplayInit()
@@ -240,9 +233,6 @@ namespace TH165 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-
-        // Reset thPracParam
-        //thPracParam.Reset();
     }
     static __declspec(noinline) void THInitHookDisable()
     {

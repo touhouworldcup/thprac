@@ -2794,7 +2794,6 @@ namespace TH185 {
                 break;
             case 2:
                 Close();
-                //*mNavFocus = 0;
                 break;
             default:
                 break;
@@ -3047,7 +3046,6 @@ namespace TH185 {
                 ImGui::TextUnformatted(XSTR(TH185_FORCE_WAVE));
                 Gui::MultiComboSelect(mForceWave, waves, XSTR(TH185_WAVE_FORMAT));
             }
-            // mNavFocus();
         }
 
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
@@ -3056,7 +3054,6 @@ namespace TH185 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 9 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mFunds { TH18_FUNDS, 0, 999990, 1, 100000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mDifficulty { TH_DIFFICULTY, 0, 7 };
-        // Gui::GuiNavFocus mNavFocus { TH185_MARKET, TH_MODE, TH_WARP };
         std::vector<unsigned int> mWarp;
         std::vector<unsigned int> mForceWave = { 0 };
         std::vector<unsigned int> mAdditionalCards = { 0 };
@@ -3092,8 +3089,6 @@ namespace TH185 {
         {
             if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
-            } else if (mOptCtx.fps_status == 2) {
-                //*(int32_t*)(mOptCtx.vpatch_base + 0x16a8c) = mOptCtx.fps;
             }
         }
         void GameplayInit()
