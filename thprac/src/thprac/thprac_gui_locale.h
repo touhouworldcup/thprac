@@ -20,10 +20,6 @@ namespace Gui {
     bool LocaleCreateMergeFont(locale_t locale, float font_size);
     bool LocaleRecreateMergeFont(locale_t locale, float font_size);
 
-    // TODO: Remove these two declarations
-    void LocalePushFont();
-    void LocalePopFont();
-
 #define XITEMS (th_glossary_str[::THPrac::Gui::LocaleGet()])
 #define XSTR(name) (th_glossary_str[::THPrac::Gui::LocaleGet()][name])
 #define XCBA(stage, type) th_sections_cba[stage][type]

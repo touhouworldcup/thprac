@@ -629,13 +629,5 @@ static ImWchar baseUnicodeRanges[] =
         io.Fonts->Clear();
         return LocaleCreateMergeFont(locale, font_size);
     }
-    void LocalePushFont()
-    {
-        // TODO: This function does nothing, and should be removed.
-    }
-    void LocalePopFont()
-    {
-        // TODO: This function does nothing, and should be removed.
-    }
 }
 }

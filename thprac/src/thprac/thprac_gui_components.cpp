@@ -39,7 +39,6 @@ namespace THPrac
                 io.NavInputs[ImGuiNavInput_DpadRight] = InGameInputGet(VK_RIGHT);
 
                 if (mStatus) {
-                    LocalePushFont();
                     for (auto& style : mStyle) {
                         ImGui::PushStyleVarAlt(style.style, style.value);
                         styleCount++;
@@ -68,7 +67,6 @@ namespace THPrac
                     ImGui::End();
                     for (size_t i = 0; i < styleCount; i++)
                         ImGui::PopStyleVar();
-                    LocalePopFont();
                 }
 
                 OnPostUpdate();
