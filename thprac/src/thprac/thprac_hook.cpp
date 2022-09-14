@@ -19,7 +19,6 @@
 #pragma warning(default : 4091)
 
 //#include <string>
-#define MB_INFO(str) MessageBoxA(NULL, str, str, MB_OK);
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 // #define VEHHOOK_MULTITHREAD
@@ -224,7 +223,7 @@ __declspec(noinline) LONG CALLBACK VEHHandler(EXCEPTION_POINTERS* ExceptionInfo)
             return EXCEPTION_CONTINUE_EXECUTION;
         }
     }
-    
+
     MakeMiniDump(ExceptionInfo);
     SetUnhandledExceptionFilter(&UEHandler);
 
@@ -232,8 +231,8 @@ __declspec(noinline) LONG CALLBACK VEHHandler(EXCEPTION_POINTERS* ExceptionInfo)
 }
 
 static bool __hook_gctx_status = false;
-bool VEHWriteByte(void* addr, uint8_t byte, uint8_t* backup = nullptr) 
-{ 
+bool VEHWriteByte(void* addr, uint8_t byte, uint8_t* backup = nullptr)
+{
     DWORD oldProtect;
     if (VirtualProtect(addr, 1, PAGE_EXECUTE_READWRITE, &oldProtect)) {
         if (backup) {
@@ -303,7 +302,7 @@ HookCtx::~HookCtx()
 {
     Reset();
 }
-bool HookCtx::Reset() 
+bool HookCtx::Reset()
 {
     if (!mIsHookReady) {
         return false;
@@ -331,7 +330,7 @@ bool HookCtx::Reset()
     mIsHookEnabled = false;
     return true;
 }
-bool HookCtx::Setup() 
+bool HookCtx::Setup()
 {
     if (mIsHookReady) {
         return false;

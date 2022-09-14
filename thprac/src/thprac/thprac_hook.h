@@ -5,7 +5,6 @@
 #include <vector>
 
 namespace THPrac {
-#define NAKED __declspec(naked)
 typedef void __stdcall CallbackFunc(PCONTEXT);
 class HookCtx {
 public:
@@ -123,7 +122,7 @@ public:
         else
             DisableAllHooks();
     }
-    
+
 
 protected:
     std::vector<HookCtx*> mHooks;
@@ -206,13 +205,4 @@ static DWORD PopHelper32(CONTEXT* pCtx)
 
 #define ASM \
     __asm
-#define ASM_JMP(addr) \
-    __asm push addr __asm retn
-#define ASM_START() \
-    __asm { push ebp __asm mov ebp,esp __asm sub esp,__LOCAL_SIZE __asm pushad }
-#define ASM_END() \
-    __asm { popad __asm mov esp,ebp __asm pop ebp }
-#define ASM_RETN(name) \
-    __asm { push eax __asm push eax __asm lea eax,name __asm mov eax,[eax]name.trampoline __asm mov [esp +4], eax __asm pop eax __asm retn }
-
 }

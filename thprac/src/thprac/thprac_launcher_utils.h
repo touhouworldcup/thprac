@@ -45,7 +45,7 @@ public:
     GuiThread(const GuiThread&) = delete;
     GuiThread& operator=(GuiThread&) = delete;
     GuiThread(GuiThread&&) = delete;
-    GuiThread& operator=(GuiThread&&) = delete; 
+    GuiThread& operator=(GuiThread&&) = delete;
     GuiThread(LPTHREAD_START_ROUTINE threadFunc)
     {
         mThreadFunc = threadFunc;
@@ -107,7 +107,7 @@ private:
 class GuiWaitingAnm {
 public:
     GuiWaitingAnm() = default;
-    
+
     std::string Get()
     {
         mCounter++;
