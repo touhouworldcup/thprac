@@ -287,7 +287,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         }
         Gui::LocaleCreateFont(io.DisplaySize.x * 0.025f);
     }
-    //LocaleCreateMergeFont(Gui::LocaleGet(), io.DisplaySize.x * 0.025f);
+
     if (LauncherCfgInit(true)) {
         bool resizable_window;
         if (LauncherSettingGet("resizable_window", resizable_window) && resizable_window && !Gui::ImplWin32CheckFullScreen()) {
@@ -322,26 +322,6 @@ int GameGuiProgress = 0;
 
 void GameGuiBegin(game_gui_impl impl, bool game_nav)
 {
-    // Locale Rotate
-    /**
-		if (Gui::KeyboardInputUpdate('1') == 1)
-		{
-			Gui::LocaleSet(Gui::LOCALE_JA_JP);
-		}
-		else if (Gui::KeyboardInputUpdate('2') == 1)
-		{
-			Gui::LocaleSet(Gui::LOCALE_ZH_CN);
-		}
-		else if (Gui::KeyboardInputUpdate('3') == 1)
-		{
-			Gui::LocaleSet(Gui::LOCALE_EN_US);
-		}
-		*/
-    /*
-		if (Gui::KeyboardInputUpdate(VK_OEM_3) == 1)
-			Gui::LocaleRotate();
-		*/
-
     // Acquire game input
     ImGuiIO& io = ImGui::GetIO();
     if (game_nav) {
@@ -941,8 +921,6 @@ void VFile::Read(void* buffer, unsigned int length)
 namespace THSnapshot {
     void* GetSnapshotData(IDirect3DDevice8* d3d8)
     {
-        // MB_INFO("FINDME");
-
         IDirect3DSurface8* surface = NULL;
         d3d8->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &surface);
         D3DLOCKED_RECT rect = {};
