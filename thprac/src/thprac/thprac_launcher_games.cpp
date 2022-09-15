@@ -281,7 +281,8 @@ struct THGame {
 };
 
 class THGameGui {
-#define GAME_SCAN_TYPE_CNT (6)
+    // TODO: This looks suspicious - why is it 6 when there are only 4 variants?
+    static constexpr size_t GAME_SCAN_TYPE_CNT = 6;
     enum ScanOption {
         SCAN_OPT_ORIGINAL = 0,
         SCAN_OPT_MODDED = 1,

@@ -25,7 +25,9 @@ namespace Gui {
         D3DCOLOR col;
         float uv[2];
     };
-#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1)
+
+    static constexpr DWORD D3DFVF_CUSTOMVERTEX =
+        D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 
     // DirectX data
     static LPDIRECT3DDEVICE9 g_pd3dDevice = NULL;
