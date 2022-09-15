@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <format>
+#include <cstdarg>
 #include <wininet.h>
 #include <ShlObj.h>
 #include <stdexcept>
@@ -911,16 +912,18 @@ private:
 
         wchar_t* p = version;
         size_t rem = sizeof(version) / sizeof(version[0]);
+        auto snprintf_cat = [&p, &rem](const wchar_t* fmt, ...) {
+            if (rem == 0)
+                return;
 
-#define snprintf_cat(fmt, ...)                                  \
-    if (rem > 0) {                                              \
-        int chars_printed = _snwprintf(p, rem, fmt, __VA_ARGS__); \
-        if (chars_printed < 0) {                                \
-            chars_printed = rem;                                \
-        }                                                       \
-        rem -= chars_printed;                                   \
-        p += chars_printed;                                     \
-    }
+            va_list args;
+            va_start(args, fmt);
+            int charsPrinted = _snwprintf(p, rem, fmt, args);
+            va_end(args);
+
+            rem -= charsPrinted;
+            p += charsPrinted;
+        };
 
         // Don't need to depend on the entire Driver Development Kit just for
         // ntddk.h.
@@ -1027,7 +1030,6 @@ private:
         if (ver_info.dwBuildNumber != 0) {
             snprintf_cat(L", Build %u", ver_info.dwBuildNumber);
         }
-#undef snprintf_cat
         return version;
     }
 
