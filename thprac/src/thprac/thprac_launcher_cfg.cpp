@@ -12,6 +12,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <format>
 #include <wininet.h>
 #include <ShlObj.h>
 #include <stdexcept>
@@ -271,33 +272,9 @@ void LauncherSettingSet(const char* name, const std::string& valueIn)
     LauncherSettingSet(name, valueIn.c_str());
 }
 
-#define GET_COLOR(col)                                                          \
-    {                                                                           \
-        if (!theme.HasMember(#col))                                             \
-            throw std::runtime_error("Missing element: " #col);                 \
-        if (!theme[#col].IsArray())                                             \
-            throw std::runtime_error("Wrong format for " #col);                 \
-        const auto& jsonVec = theme[#col].GetArray();                           \
-        if (jsonVec.Size() < 4)                                                 \
-            throw std::runtime_error("Not enough color channels in " #col);     \
-        float vec[4];                                                           \
-        for (int i = 0; i < 4; i++) {                                           \
-            float val;                                                          \
-            if (jsonVec[i].IsNumber()) {                                        \
-                val = jsonVec[i].GetFloat();                                    \
-            } else if (jsonVec[i].IsString()) {                                 \
-                val = std::stof(jsonVec[i].GetString());                        \
-            } else {                                                            \
-                throw std::runtime_error(#col ": wrong format");                \
-            }                                                                   \
-            vec[i] = val;                                                       \
-        }                                                                       \
-        colors[ImGuiCol_##col] = *(ImVec4*)&vec;                                \
-    }
-
-bool SetTheme(int theme, const wchar_t* userThemeName)
+bool SetTheme(int themeId, const wchar_t* userThemeName)
 {
-    switch (theme) {
+    switch (themeId) {
     case 0:
         ImGui::StyleColorsDark();
         return false;
@@ -308,86 +285,119 @@ bool SetTheme(int theme, const wchar_t* userThemeName)
         ImGui::StyleColorsClassic();
         return false;
     default:
-        if (userThemeName != NULL) {
-            std::wstring fn = LauncherGetDataDir() + L"themes\\" + userThemeName;
-            try {
-                MappedFile file(fn.c_str());
-                if (!file.fileMapView)
-                    throw std::runtime_error("File not found");
-                rapidjson::Document theme;
-                if (theme.Parse((char*)file.fileMapView, file.fileSize).HasParseError())
-                    throw std::runtime_error("Invalid JSON (TODO: describe how)");
-
-                ImVec4 colors[ImGuiCol_COUNT];
-                GET_COLOR(Text);
-                GET_COLOR(TextDisabled);
-                GET_COLOR(WindowBg);
-                GET_COLOR(ChildBg);
-                GET_COLOR(PopupBg);
-                GET_COLOR(Border);
-                GET_COLOR(BorderShadow);
-                GET_COLOR(FrameBg);
-                GET_COLOR(FrameBgHovered);
-                GET_COLOR(FrameBgActive);
-                GET_COLOR(TitleBg);
-                GET_COLOR(TitleBgActive);
-                GET_COLOR(TitleBgCollapsed);
-                GET_COLOR(MenuBarBg);
-                GET_COLOR(ScrollbarBg);
-                GET_COLOR(ScrollbarGrab);
-                GET_COLOR(ScrollbarGrabHovered);
-                GET_COLOR(ScrollbarGrabActive);
-                GET_COLOR(CheckMark);
-                GET_COLOR(SliderGrab);
-                GET_COLOR(SliderGrabActive);
-                GET_COLOR(Button);
-                GET_COLOR(ButtonHovered);
-                GET_COLOR(ButtonActive);
-                GET_COLOR(Header);
-                GET_COLOR(HeaderHovered);
-                GET_COLOR(HeaderActive);
-                GET_COLOR(Separator);
-                GET_COLOR(SeparatorHovered);
-                GET_COLOR(SeparatorActive);
-                GET_COLOR(ResizeGrip);
-                GET_COLOR(ResizeGripHovered);
-                GET_COLOR(ResizeGripActive);
-                GET_COLOR(Tab);
-                GET_COLOR(TabHovered);
-                GET_COLOR(TabActive);
-                GET_COLOR(TabUnfocused);
-                GET_COLOR(TabUnfocusedActive);
-                GET_COLOR(PlotLines);
-                GET_COLOR(PlotLinesHovered);
-                GET_COLOR(PlotHistogram);
-                GET_COLOR(PlotHistogramHovered);
-                GET_COLOR(TableHeaderBg);
-                GET_COLOR(TableBorderStrong);
-                GET_COLOR(TableBorderLight);
-                GET_COLOR(TableRowBg);
-                GET_COLOR(TableRowBgAlt);
-                GET_COLOR(TextSelectedBg);
-                GET_COLOR(DragDropTarget);
-                GET_COLOR(NavHighlight);
-                GET_COLOR(NavWindowingHighlight);
-                GET_COLOR(NavWindowingDimBg);
-                GET_COLOR(ModalWindowDimBg);
-
-                ImGuiStyle& style = ImGui::GetStyle();
-                memcpy(style.Colors, colors, sizeof(colors));
-            } catch (std::runtime_error err) {
-                std::wstring err_desc = L"Failed to load theme ";
-                err_desc.append(fn).append(L"\r\n").append(utf8_to_utf16(err.what()));
-                MessageBoxW(NULL, err_desc.c_str(), L"Failed to load theme", MB_ICONERROR);
-                ImGui::StyleColorsDark();
-            }
-            return true;
-        } else {
-            return true;
-        }
+        // Do nothing
+        break;
     }
+
+    if (userThemeName == nullptr)
+        return true; // TODO: Should we return false instead?
+
+    std::wstring filename = LauncherGetDataDir() + L"themes\\" + userThemeName;
+    rapidjson::Document theme;
+    auto getColor = [&filename, &theme](const char *const colorName) -> ImVec4 {
+        using std::runtime_error, std::format;
+
+        if (!theme.HasMember(colorName))
+            throw runtime_error(format("Missing element: %s", colorName));
+        if (!theme[colorName].IsArray())
+            throw runtime_error(format("Wrong format for %s", colorName));
+
+        const auto& jsonVec = theme[colorName].GetArray();
+        if (jsonVec.Size() < 4)
+            throw runtime_error(format("Not enough color channels in %s", colorName));
+
+        float channels[4];
+        for (int i = 0; i < 4; i++) {
+            if (jsonVec[i].IsNumber()) {
+                channels[i] = jsonVec[i].GetFloat();
+            } else if (jsonVec[i].IsString()) {
+                channels[i] = std::stof(jsonVec[i].GetString());
+            } else {
+                throw runtime_error(format("%s: wrong format", colorName));
+            }
+        }
+
+        return ImVec4(channels[0], channels[1], channels[2], channels[3]);
+    };
+
+    try {
+        MappedFile file(filename.c_str());
+        if (!file.fileMapView)
+            throw std::runtime_error("File not found");
+        if (theme.Parse((char*)file.fileMapView, file.fileSize).HasParseError())
+            throw std::runtime_error("Invalid JSON (TODO: describe how)");
+
+        ImVec4 colors[ImGuiCol_COUNT];
+        #define GET_COLOR(color) \
+            colors[ImGuiCol_ ## color] = getColor(#color);
+
+        GET_COLOR(Text);
+        GET_COLOR(TextDisabled);
+        GET_COLOR(WindowBg);
+        GET_COLOR(ChildBg);
+        GET_COLOR(PopupBg);
+        GET_COLOR(Border);
+        GET_COLOR(BorderShadow);
+        GET_COLOR(FrameBg);
+        GET_COLOR(FrameBgHovered);
+        GET_COLOR(FrameBgActive);
+        GET_COLOR(TitleBg);
+        GET_COLOR(TitleBgActive);
+        GET_COLOR(TitleBgCollapsed);
+        GET_COLOR(MenuBarBg);
+        GET_COLOR(ScrollbarBg);
+        GET_COLOR(ScrollbarGrab);
+        GET_COLOR(ScrollbarGrabHovered);
+        GET_COLOR(ScrollbarGrabActive);
+        GET_COLOR(CheckMark);
+        GET_COLOR(SliderGrab);
+        GET_COLOR(SliderGrabActive);
+        GET_COLOR(Button);
+        GET_COLOR(ButtonHovered);
+        GET_COLOR(ButtonActive);
+        GET_COLOR(Header);
+        GET_COLOR(HeaderHovered);
+        GET_COLOR(HeaderActive);
+        GET_COLOR(Separator);
+        GET_COLOR(SeparatorHovered);
+        GET_COLOR(SeparatorActive);
+        GET_COLOR(ResizeGrip);
+        GET_COLOR(ResizeGripHovered);
+        GET_COLOR(ResizeGripActive);
+        GET_COLOR(Tab);
+        GET_COLOR(TabHovered);
+        GET_COLOR(TabActive);
+        GET_COLOR(TabUnfocused);
+        GET_COLOR(TabUnfocusedActive);
+        GET_COLOR(PlotLines);
+        GET_COLOR(PlotLinesHovered);
+        GET_COLOR(PlotHistogram);
+        GET_COLOR(PlotHistogramHovered);
+        GET_COLOR(TableHeaderBg);
+        GET_COLOR(TableBorderStrong);
+        GET_COLOR(TableBorderLight);
+        GET_COLOR(TableRowBg);
+        GET_COLOR(TableRowBgAlt);
+        GET_COLOR(TextSelectedBg);
+        GET_COLOR(DragDropTarget);
+        GET_COLOR(NavHighlight);
+        GET_COLOR(NavWindowingHighlight);
+        GET_COLOR(NavWindowingDimBg);
+        GET_COLOR(ModalWindowDimBg);
+
+        #undef GET_COLOR
+        ImGuiStyle& style = ImGui::GetStyle();
+        memcpy(style.Colors, colors, sizeof(colors));
+    } catch (std::runtime_error err) {
+        std::wstring err_desc = L"Failed to load theme ";
+        err_desc.append(filename).append(L"\r\n").append(utf8_to_utf16(err.what()));
+        MessageBoxW(NULL, err_desc.c_str(), L"Failed to load theme", MB_ICONERROR);
+        ImGui::StyleColorsDark();
+        // TODO: Should we return false at this point?
+    }
+
+    return true;
 }
-#undef GET_COLOR
 
 template <typename T>
 class THSetting {
