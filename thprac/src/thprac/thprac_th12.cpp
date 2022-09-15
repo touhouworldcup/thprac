@@ -1418,10 +1418,10 @@ namespace TH12 {
         int32_t item_struct = GetMemAddr(0x4b44f0, 0x171254);
         ventra -= 1;
 #ifndef __clang__
-        ASM mov eax, ventra;
-        ASM mov ecx, item_struct;
-        ASM mov edx, 0x4270b0;
-        ASM call edx;
+        __asm mov eax, ventra;
+        __asm mov ecx, item_struct;
+        __asm mov edx, 0x4270b0;
+        __asm call edx;
 #else
         asm volatile(
             "call *%[func]"
