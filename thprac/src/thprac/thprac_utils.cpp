@@ -1097,7 +1097,6 @@ void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, e
 
 DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName)
 {
-#define MakePointer(t, p, offset) ((t)((PUINT8)(p) + offset))
     MappedFile file(path);
 
     auto exeSize = file.fileSize;
@@ -1132,8 +1131,6 @@ DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName)
     }
 
     return true;
-
-#undef MakePointer
 }
 
 }

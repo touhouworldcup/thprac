@@ -28,8 +28,6 @@
 #include <utility>
 #include <vector>
 
-#define MB_INFO(str) MessageBoxA(NULL, str, str, MB_OK);
-
 namespace THPrac {
 
 struct MappedFile {
@@ -355,10 +353,6 @@ bool ReplayLoadParam(const wchar_t* rep_path, std::string& param);
     rapidjson::Document param;                     \
     if (param.Parse(json.c_str()).HasParseError()) \
         return false;
-#define ParseJsonNoReset()                         \
-    rapidjson::Document param;                     \
-    if (param.Parse(json.c_str()).HasParseError()) \
-        return false;
 #define CreateJson()           \
     rapidjson::Document param; \
     param.SetObject();         \
@@ -377,9 +371,6 @@ bool ReplayLoadParam(const wchar_t* rep_path, std::string& param);
 #define GetJsonValueEx(value_name, type)                               \
     if (param.HasMember(#value_name) && param[#value_name].Is##type()) \
         value_name = (decltype(value_name))param[#value_name].Get##type();
-#define GetJsonValueAlt(value_name, valueVar, type)                    \
-    if (param.HasMember(#value_name) && param[#value_name].Is##type()) \
-        valueVar = param[#value_name].Get##type();
 #define AddJsonValue(value_name)                                           \
     {                                                                      \
         rapidjson::Value __key_##value_name(#value_name, jalloc);          \
@@ -497,8 +488,6 @@ inline R GetMemAddr(uintptr_t addr, size_t offset, OffsetArgs... remaining_offse
     return GetMemAddr<R>(((uintptr_t)*(R*)addr) + offset, remaining_offsets...);
 }
 
-#define MDARRAY(arr, idx, size_of_subarray) (arr + idx * size_of_subarray)
-
 #pragma endregion
 
 #pragma region ECL Helper
@@ -528,7 +517,6 @@ inline std::pair<size_t, T> ECLX(size_t pos, T data)
 }
 
 typedef void (*ecl_patch_func)(ECLHelper& ecl);
-#define ECLPatch(name, ...) void name(ECLHelper& ecl, __VA_ARGS__)
 
 #pragma endregion
 
