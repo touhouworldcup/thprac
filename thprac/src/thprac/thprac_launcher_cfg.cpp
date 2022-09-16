@@ -921,6 +921,8 @@ private:
             int charsPrinted = _snwprintf(p, rem, fmt, args);
             va_end(args);
 
+            if (charsPrinted < 0)
+                charsPrinted = rem;
             rem -= charsPrinted;
             p += charsPrinted;
         };
