@@ -1498,10 +1498,10 @@ namespace TH13 {
         fileNameDump += L".dump";
 
         DWORD bytesProcessed;
-        auto hFile = CreateFileW(fileNameDump.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-        SetFilePointer(hFile, 0, NULL, FILE_BEGIN);
+        auto hFile = CreateFileW(fileNameDump.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+        SetFilePointer(hFile, 0, nullptr, FILE_BEGIN);
         SetEndOfFile(hFile);
-        WriteFile(hFile, filePtr, fileSize, &bytesProcessed, NULL);
+        WriteFile(hFile, filePtr, fileSize, &bytesProcessed, nullptr);
         CloseHandle(hFile);
     }
     EHOOK_DY(th13_everlasting_bgm_2, 0x42c444)

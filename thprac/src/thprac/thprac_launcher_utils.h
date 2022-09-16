@@ -63,7 +63,7 @@ public:
     bool Start(void* threadData = nullptr)
     {
         if (mThreadHnd == INVALID_HANDLE_VALUE) {
-            mThreadHnd = CreateThread(NULL, 0, mThreadFunc, threadData, 0, NULL);
+            mThreadHnd = CreateThread(nullptr, 0, mThreadFunc, threadData, 0, nullptr);
             return mThreadHnd != INVALID_HANDLE_VALUE;
         }
         return false;
@@ -156,7 +156,7 @@ static void MovWndToTop(HWND m_hWnd)
 {
     HWND hCurWnd = ::GetForegroundWindow();
     DWORD dwMyID = ::GetCurrentThreadId();
-    DWORD dwCurID = ::GetWindowThreadProcessId(hCurWnd, NULL);
+    DWORD dwCurID = ::GetWindowThreadProcessId(hCurWnd, nullptr);
     ::AttachThreadInput(dwCurID, dwMyID, TRUE);
     ::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
     ::SetWindowPos(m_hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE);
@@ -315,7 +315,7 @@ static bool GuiModal(const char* modalTitle, ImVec2 sizeRel = ImVec2(0.0f, 0.0f)
     if (sizeRel.x != 0.0f || sizeRel.y != 0.0f) {
         ImGui::SetNextWindowSize(sizeRel, ImGuiCond_Always);
     }
-    return ImGui::BeginPopupModal(modalTitle, NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+    return ImGui::BeginPopupModal(modalTitle, nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
 }
 
 static bool GuiModalFullScreen(const char* modalTitle)
@@ -323,7 +323,7 @@ static bool GuiModalFullScreen(const char* modalTitle)
     auto wndSize = LauncherWndGetSize();
     ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Appearing);
     ImGui::SetNextWindowSize(wndSize, ImGuiCond_Appearing);
-    return ImGui::BeginPopupModal(modalTitle, NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+    return ImGui::BeginPopupModal(modalTitle, nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 }
 
 static bool GuiModalOkCancel(const char* modalTitle, const char* modalText, float buttonSize = 6.0f)

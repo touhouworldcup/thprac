@@ -1019,7 +1019,7 @@ namespace TH14 {
             if (msg2) {
                 _msg += msg2;
             }
-            MessageBoxW(NULL, _msg.c_str(), _title, type);
+            MessageBoxW(nullptr, _msg.c_str(), _title, type);
         }
         void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nullptr)
         {
@@ -1038,24 +1038,24 @@ namespace TH14 {
         {
             auto thMarisaLaser = &THMarisaLaser::singleton();
             DWORD repMagic, bytesRead;
-            auto repFile = CreateFileW(rep_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            auto repFile = CreateFileW(rep_path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (repFile == INVALID_HANDLE_VALUE)
                 return false;
             defer(CloseHandle(repFile));
 
-            SetFilePointer(repFile, 0, NULL, FILE_BEGIN);
+            SetFilePointer(repFile, 0, nullptr, FILE_BEGIN);
 
-            if (ReadFile(repFile, &repMagic, 4, &bytesRead, NULL) && bytesRead == 4) {
+            if (ReadFile(repFile, &repMagic, 4, &bytesRead, nullptr) && bytesRead == 4) {
                 DWORD userPtr, userMagic, userLength, userNo;
-                SetFilePointer(repFile, 12, NULL, FILE_BEGIN);
-                if (ReadFile(repFile, &userPtr, 4, &bytesRead, NULL)  && bytesRead == 4) {
-                    SetFilePointer(repFile, userPtr, NULL, FILE_BEGIN);
+                SetFilePointer(repFile, 12, nullptr, FILE_BEGIN);
+                if (ReadFile(repFile, &userPtr, 4, &bytesRead, nullptr)  && bytesRead == 4) {
+                    SetFilePointer(repFile, userPtr, nullptr, FILE_BEGIN);
                     while (true) {
-                        if (!ReadFile(repFile, &userMagic, 4, &bytesRead, NULL) || bytesRead != 4 || userMagic != 'RESU')
+                        if (!ReadFile(repFile, &userMagic, 4, &bytesRead, nullptr) || bytesRead != 4 || userMagic != 'RESU')
                             break;
-                        if (!ReadFile(repFile, &userLength, 4, &bytesRead, NULL) || bytesRead != 4)
+                        if (!ReadFile(repFile, &userLength, 4, &bytesRead, nullptr) || bytesRead != 4)
                             break;
-                        if (!ReadFile(repFile, &userNo, 4, &bytesRead, NULL) || bytesRead != 4)
+                        if (!ReadFile(repFile, &userNo, 4, &bytesRead, nullptr) || bytesRead != 4)
                             break;
 
                         if (userNo == 'RCER') {
@@ -1065,7 +1065,7 @@ namespace TH14 {
                                     return false;
                                 defer(free(dataBuffer));
                                 memset(dataBuffer, 0, userLength - 12);
-                                if (ReadFile(repFile, dataBuffer, userLength - 12, &bytesRead, NULL) && (bytesRead == userLength - 12)) {
+                                if (ReadFile(repFile, dataBuffer, userLength - 12, &bytesRead, nullptr) && (bytesRead == userLength - 12)) {
                                     THMarisaLaser::record_t* p_rec = (THMarisaLaser::record_t*)dataBuffer;
                                     size_t count = (userLength - 12) / sizeof(THMarisaLaser::record_t);
                                     thMarisaLaser->mRecordsPlayback.clear();
@@ -1075,7 +1075,7 @@ namespace TH14 {
                                 return bytesRead == userLength - 12;
                             }
                         } else {
-                            SetFilePointer(repFile, userLength - 12, NULL, FILE_CURRENT);
+                            SetFilePointer(repFile, userLength - 12, nullptr, FILE_CURRENT);
                         }
                     }
                 }
@@ -1087,18 +1087,18 @@ namespace TH14 {
         {
             auto thMarisaLaser = &THMarisaLaser::singleton();
             DWORD bytesProcessed;
-            auto repFile = CreateFileW(rep_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+            auto repFile = CreateFileW(rep_path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (repFile == INVALID_HANDLE_VALUE) {
                 MsgBox(MB_ICONERROR | MB_OK, XSTR(TH14_ERROR), XSTR(TH14_ERROR_SRC));
                 return false;
             }
-            auto repSize = GetFileSize(repFile, NULL);
+            auto repSize = GetFileSize(repFile, nullptr);
             auto repBuffer = malloc(repSize);
             if (!repBuffer) {
                 CloseHandle(repFile);
                 return false;
             }
-            if (!ReadFile(repFile, repBuffer, repSize, &bytesProcessed, NULL)) {
+            if (!ReadFile(repFile, repBuffer, repSize, &bytesProcessed, nullptr)) {
                 CloseHandle(repFile);
                 free(repBuffer);
                 return false;
@@ -1124,27 +1124,27 @@ namespace TH14 {
             wchar_t szFile[MAX_PATH] = L"th14_ud----.rpy";
             ZeroMemory(&ofn, sizeof(ofn));
             ofn.lStructSize = sizeof(ofn);
-            ofn.hwndOwner = NULL;
+            ofn.hwndOwner = nullptr;
             ofn.lpstrFile = szFile;
             ofn.nMaxFile = MAX_PATH;
             ofn.lpstrFilter = L"Replay File\0*.rpy\0";
             ofn.nFilterIndex = 1;
-            ofn.lpstrFileTitle = NULL;
+            ofn.lpstrFileTitle = nullptr;
             ofn.nMaxFileTitle = 0;
             ofn.lpstrInitialDir = mRepDir.c_str();
             ofn.lpstrDefExt = L".rpy";
             ofn.Flags = OFN_OVERWRITEPROMPT;
             if (GetSaveFileNameW(&ofn)) {
-                auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, NULL, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+                auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {
                     MsgBox(MB_ICONERROR | MB_OK, XSTR(TH14_ERROR), XSTR(TH14_ERROR_DEST));
                     return false;
                 }
-                SetFilePointer(outputFile, 0, NULL, FILE_BEGIN);
+                SetFilePointer(outputFile, 0, nullptr, FILE_BEGIN);
                 SetEndOfFile(outputFile);
-                WriteFile(outputFile, repBuffer, repSize, &bytesProcessed, NULL);
+                WriteFile(outputFile, repBuffer, repSize, &bytesProcessed, nullptr);
                 if (records->size())
-                    WriteFile(outputFile, dataBuffer, dataSize, &bytesProcessed, NULL);
+                    WriteFile(outputFile, dataBuffer, dataSize, &bytesProcessed, nullptr);
                 CloseHandle(outputFile);
 
                 MsgBox(MB_ICONINFORMATION | MB_OK, utf8_to_utf16(XSTR(TH14_SUCCESS)).c_str(), utf8_to_utf16(XSTR(TH14_SUCCESS_SAVED)).c_str(), szFile);

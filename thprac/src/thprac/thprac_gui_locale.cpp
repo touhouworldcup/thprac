@@ -475,10 +475,10 @@ static ImWchar baseUnicodeRanges[] =
     {
         if (__glocale_disabled) {
             if (__glocale_disabled == 7) {
-                MessageBoxW(NULL, L"No font can be loaded.\nthprac will now terminate.", L"Fatal error", MB_OK | MB_ICONERROR);
+                MessageBoxW(nullptr, L"No font can be loaded.\nthprac will now terminate.", L"Fatal error", MB_OK | MB_ICONERROR);
                 TerminateProcess(GetCurrentProcess(), -1);
             } else {
-                MessageBoxW(NULL, L"One or more fonts failed to load, which will cause certain non-Latin characters to not render properly.\nIf you are running thprac under wine/Crossover, seek help to link the appropriate fonts or try using wine-staging.", L"Warning", MB_OK | MB_ICONWARNING);
+                MessageBoxW(nullptr, L"One or more fonts failed to load, which will cause certain non-Latin characters to not render properly.\nIf you are running thprac under wine/Crossover, seek help to link the appropriate fonts or try using wine-staging.", L"Warning", MB_OK | MB_ICONWARNING);
             }
         }
     }
@@ -495,16 +495,16 @@ static ImWchar baseUnicodeRanges[] =
             font_info info = {};
             auto hdc = CreateCompatibleDC(nullptr);
             auto font = fontCheckers[locale](hdc, info);
-            if (font == NULL) {
+            if (font == nullptr) {
                 __glocale_disabled |= 1 << locale;
                 return false;
             }
             SelectObject(hdc, font);
 
             // Aquiring Font Data
-            fontDataSize = GetFontData(hdc, 0x66637474, 0, NULL, 0);
+            fontDataSize = GetFontData(hdc, 0x66637474, 0, nullptr, 0);
             if (fontDataSize == GDI_ERROR) {
-                fontDataSize = GetFontData(hdc, 0, 0, NULL, 0);
+                fontDataSize = GetFontData(hdc, 0, 0, nullptr, 0);
                 if (fontDataSize == GDI_ERROR) {
                     DeleteObject(font);
                     DeleteDC(hdc);
@@ -554,16 +554,16 @@ static ImWchar baseUnicodeRanges[] =
         font_info info = {};
         auto hdc = CreateCompatibleDC(nullptr);
         auto font = fontCheckers[locale](hdc, info);
-        if (font == NULL) {
+        if (font == nullptr) {
             __glocale_disabled |= 1 << locale;
             return false;
         }
         SelectObject(hdc, font);
 
         // Aquiring Font Data
-        fontDataSize = GetFontData(hdc, 0x66637474, 0, NULL, 0);
+        fontDataSize = GetFontData(hdc, 0x66637474, 0, nullptr, 0);
         if (fontDataSize == GDI_ERROR) {
-            fontDataSize = GetFontData(hdc, 0, 0, NULL, 0);
+            fontDataSize = GetFontData(hdc, 0, 0, nullptr, 0);
             if (fontDataSize == GDI_ERROR) {
                 DeleteObject(font);
                 DeleteDC(hdc);

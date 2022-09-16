@@ -49,7 +49,7 @@ int MsgBox(const char* title, const char* text, int flag)
 {
     auto titleU16 = utf8_to_utf16(title);
     auto textU16 = utf8_to_utf16(text);
-    return MessageBoxW(NULL, textU16.c_str(), titleU16.c_str(), flag);
+    return MessageBoxW(nullptr, textU16.c_str(), titleU16.c_str(), flag);
 }
 
 int MsgBoxWnd(const char* title, const char* text, int flag)
@@ -256,14 +256,14 @@ bool RunGameWithTHPrac(THGameSig& gameSig, std::wstring& name)
     PROCESS_INFORMATION proc_info;
     memset(&startup_info, 0, sizeof(startup_info));
     startup_info.cb = sizeof(startup_info);
-    CreateProcessW(name.c_str(), NULL, NULL, NULL, NULL, CREATE_SUSPENDED, NULL, NULL, &startup_info, &proc_info);
+    CreateProcessW(name.c_str(), nullptr, nullptr, nullptr, false, CREATE_SUSPENDED, nullptr, nullptr, &startup_info, &proc_info);
 
     if (isVpatchValid) {
         auto vpNameLength = (wcslen(gameSig.vPatchStr) + 1) * sizeof(wchar_t);
         auto pLoadLibrary = ::LoadLibraryW;
-        if (auto remoteStr = VirtualAllocEx(proc_info.hProcess, NULL, vpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) {
-            WriteProcessMemory(proc_info.hProcess, remoteStr, gameSig.vPatchStr, vpNameLength, NULL);
-            if (auto t = CreateRemoteThread(proc_info.hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, remoteStr, 0, NULL))
+        if (auto remoteStr = VirtualAllocEx(proc_info.hProcess, nullptr, vpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) {
+            WriteProcessMemory(proc_info.hProcess, remoteStr, gameSig.vPatchStr, vpNameLength, nullptr);
+            if (auto t = CreateRemoteThread(proc_info.hProcess, nullptr, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, remoteStr, 0, nullptr))
                 WaitForSingleObject(t, INFINITE);
             VirtualFreeEx(proc_info.hProcess, remoteStr, 0, MEM_RELEASE);
         }
@@ -288,7 +288,7 @@ bool FindOngoingGame(bool prompt)
         THGameSig* gameSig = nullptr;
         PROCESSENTRY32W entry = {};
         entry.dwSize = sizeof(PROCESSENTRY32W);
-        HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+        HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
         if (Process32FirstW(snapshot, &entry)) {
             do {
                 gameSig = CheckOngoingGame(entry);

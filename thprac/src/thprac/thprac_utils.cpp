@@ -27,9 +27,9 @@ static void* _str_cvt_buffer(size_t size)
 }
 std::string utf16_to_utf8(const wchar_t* utf16)
 {
-    int utf8Length = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, nullptr, 0, NULL, NULL);
+    int utf8Length = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, nullptr, 0, nullptr, nullptr);
     char* utf8 = (char*)_str_cvt_buffer(utf8Length);
-    WideCharToMultiByte(CP_UTF8, 0, utf16, -1, utf8, utf8Length, NULL, NULL);
+    WideCharToMultiByte(CP_UTF8, 0, utf16, -1, utf8, utf8Length, nullptr, nullptr);
     return std::string(utf8);
 }
 std::wstring utf8_to_utf16(const char* utf8)
@@ -41,9 +41,9 @@ std::wstring utf8_to_utf16(const char* utf8)
 }
 std::string utf16_to_mb(const wchar_t* utf16)
 {
-    int utf8Length = WideCharToMultiByte(CP_ACP, 0, utf16, -1, nullptr, 0, NULL, NULL);
+    int utf8Length = WideCharToMultiByte(CP_ACP, 0, utf16, -1, nullptr, 0, nullptr, nullptr);
     char* utf8 = (char*)_str_cvt_buffer(utf8Length);
-    WideCharToMultiByte(CP_ACP, 0, utf16, -1, utf8, utf8Length, NULL, NULL);
+    WideCharToMultiByte(CP_ACP, 0, utf16, -1, utf8, utf8Length, nullptr, nullptr);
     return std::string(utf8);
 }
 std::wstring mb_to_utf16(const char* utf8)
@@ -457,7 +457,7 @@ void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nu
         MultiByteToWideChar(CP_UTF8, 0, msg2, -1, _msg2, 256);
         wcscat_s(_msg, _msg2);
     }
-    MessageBoxW(NULL, _msg, _title, type);
+    MessageBoxW(nullptr, _msg, _title, type);
 }
 
 void CenteredText(const char* text, float wndX)
@@ -746,12 +746,12 @@ void AboutOpt(const char* thanks_text)
 
 bool ReplaySaveParam(const wchar_t* rep_path, const std::string& param)
 {
-    auto repFile = CreateFileW(rep_path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    auto repFile = CreateFileW(rep_path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (repFile == INVALID_HANDLE_VALUE)
         return false;
     defer(CloseHandle(repFile));
     DWORD repMagic = 0, bytesRead = 0;
-    if ((SetFilePointer(repFile, 0, NULL, FILE_BEGIN) != INVALID_SET_FILE_POINTER) && (ReadFile(repFile, &repMagic, sizeof(LONG), &bytesRead, NULL))) {
+    if ((SetFilePointer(repFile, 0, nullptr, FILE_BEGIN) != INVALID_SET_FILE_POINTER) && (ReadFile(repFile, &repMagic, sizeof(LONG), &bytesRead, nullptr))) {
         if (repMagic == 'PR6T' || repMagic == 'PR7T') {
             auto paramSize = param.size();
             for (paramSize++; paramSize % 4; paramSize++)
@@ -765,17 +765,17 @@ bool ReplaySaveParam(const wchar_t* rep_path, const std::string& param)
             *(int32_t*)((int)paramBuf + paramSize) = paramSize;
             *(int32_t*)((int)paramBuf + paramSize + 4) = 'CARP';
 
-            SetFilePointer(repFile, 0, NULL, FILE_END);
-            WriteFile(repFile, paramBuf, paramSize + 8, &bytesRead, NULL);
+            SetFilePointer(repFile, 0, nullptr, FILE_END);
+            WriteFile(repFile, paramBuf, paramSize + 8, &bytesRead, nullptr);
 
             // Recalculate checksum
-            auto repSize = GetFileSize(repFile, NULL);
+            auto repSize = GetFileSize(repFile, nullptr);
             uint8_t* repBuf = (uint8_t*)malloc(repSize - (repMagic == 'PR6T' ? 14 : 13));
             if (!repBuf)
                 return false;
             defer(free(repBuf));
-            SetFilePointer(repFile, repMagic == 'PR6T' ? 14 : 13, NULL, FILE_BEGIN);
-            if (!ReadFile(repFile, repBuf, repSize - (repMagic == 'PR6T' ? 14 : 13), &bytesRead, NULL))
+            SetFilePointer(repFile, repMagic == 'PR6T' ? 14 : 13, nullptr, FILE_BEGIN);
+            if (!ReadFile(repFile, repBuf, repSize - (repMagic == 'PR6T' ? 14 : 13), &bytesRead, nullptr))
                 return false;
 
             uint8_t key = *repBuf;
@@ -790,8 +790,8 @@ bool ReplaySaveParam(const wchar_t* rep_path, const std::string& param)
             for (DWORD i = 0; i < repSize - (repMagic == 'PR6T' ? 14 : 13); i++, decBuf++)
                 checksum += *decBuf;
 
-            SetFilePointer(repFile, 8, NULL, FILE_BEGIN);
-            WriteFile(repFile, &checksum, 4, &bytesRead, NULL);
+            SetFilePointer(repFile, 8, nullptr, FILE_BEGIN);
+            WriteFile(repFile, &checksum, 4, &bytesRead, nullptr);
         } else {
             auto paramSize = param.size() + 12;
             for (paramSize++; paramSize % 4; paramSize++)
@@ -806,8 +806,8 @@ bool ReplaySaveParam(const wchar_t* rep_path, const std::string& param)
             *(int32_t*)((int)paramBuf + 8) = 'CARP';
             memcpy((void*)((int)paramBuf + 12), param.data(), param.size());
 
-            SetFilePointer(repFile, 0, NULL, FILE_END);
-            WriteFile(repFile, paramBuf, paramSize, &bytesRead, NULL);
+            SetFilePointer(repFile, 0, nullptr, FILE_END);
+            WriteFile(repFile, paramBuf, paramSize, &bytesRead, nullptr);
         }
     }
     return false;
@@ -817,32 +817,32 @@ bool ReplayLoadParam(const wchar_t* rep_path, std::string& param)
 {
     DWORD repMagic = 0, bytesRead = 0;
 
-    auto repFile = CreateFileW(rep_path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    auto repFile = CreateFileW(rep_path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (repFile == INVALID_HANDLE_VALUE)
         return false;
     defer(CloseHandle(repFile));
 
-    SetFilePointer(repFile, 0, NULL, FILE_BEGIN);
-    if (ReadFile(repFile, &repMagic, 4, &bytesRead, NULL) && bytesRead == 4) {
+    SetFilePointer(repFile, 0, nullptr, FILE_BEGIN);
+    if (ReadFile(repFile, &repMagic, 4, &bytesRead, nullptr) && bytesRead == 4) {
         if (repMagic == 'PR6T' || repMagic == 'PR7T') {
             DWORD magic = 0, paramLength = 0;
-            DWORD repSize = GetFileSize(repFile, NULL);
+            DWORD repSize = GetFileSize(repFile, nullptr);
 
-            SetFilePointer(repFile, -4, NULL, FILE_END);
-            if (ReadFile(repFile, &magic, 4, &bytesRead, NULL) && bytesRead == 4 && magic == 'CARP') {
-                SetFilePointer(repFile, -8, NULL, FILE_CURRENT);
-                if (!ReadFile(repFile, &paramLength, 4, &bytesRead, NULL))
+            SetFilePointer(repFile, -4, nullptr, FILE_END);
+            if (ReadFile(repFile, &magic, 4, &bytesRead, nullptr) && bytesRead == 4 && magic == 'CARP') {
+                SetFilePointer(repFile, -8, nullptr, FILE_CURRENT);
+                if (!ReadFile(repFile, &paramLength, 4, &bytesRead, nullptr))
                     return false;
 
                 if (bytesRead == 4 && paramLength > 0 && paramLength < repSize && paramLength < 512) {
-                    SetFilePointer(repFile, ~paramLength - 3, NULL, FILE_CURRENT);
+                    SetFilePointer(repFile, ~paramLength - 3, nullptr, FILE_CURRENT);
                     char* buf = (char*)malloc(paramLength + 1);
                     if (!buf)
                         return false;
                     defer(free(buf));
                     memset(buf, 0, paramLength + 1);
 
-                    if (ReadFile(repFile, buf, paramLength, &bytesRead, NULL) && bytesRead == paramLength)
+                    if (ReadFile(repFile, buf, paramLength, &bytesRead, nullptr) && bytesRead == paramLength)
                         param = std::string(buf, paramLength);
 
                     return (bytesRead == paramLength);
@@ -851,15 +851,15 @@ bool ReplayLoadParam(const wchar_t* rep_path, std::string& param)
         } else {
             DWORD userPtr = 0, userMagic = 0, userLength = 0, userNo = 0;
 
-            SetFilePointer(repFile, 12, NULL, FILE_BEGIN);
-            if (ReadFile(repFile, &userPtr, 4, &bytesRead, NULL) && bytesRead == 4) {
-                SetFilePointer(repFile, userPtr, NULL, FILE_BEGIN);
+            SetFilePointer(repFile, 12, nullptr, FILE_BEGIN);
+            if (ReadFile(repFile, &userPtr, 4, &bytesRead, nullptr) && bytesRead == 4) {
+                SetFilePointer(repFile, userPtr, nullptr, FILE_BEGIN);
                 while (true) {
-                    if (!ReadFile(repFile, &userMagic, 4, &bytesRead, NULL) || bytesRead != 4 || userMagic != 'RESU')
+                    if (!ReadFile(repFile, &userMagic, 4, &bytesRead, nullptr) || bytesRead != 4 || userMagic != 'RESU')
                         break;
-                    if (!ReadFile(repFile, &userLength, 4, &bytesRead, NULL)  || bytesRead != 4)
+                    if (!ReadFile(repFile, &userLength, 4, &bytesRead, nullptr)  || bytesRead != 4)
                         break;
-                    if (!ReadFile(repFile, &userNo, 4, &bytesRead, NULL) || bytesRead != 4)
+                    if (!ReadFile(repFile, &userNo, 4, &bytesRead, nullptr) || bytesRead != 4)
                         break;
 
                     if (userNo == 'CARP') {
@@ -868,12 +868,12 @@ bool ReplayLoadParam(const wchar_t* rep_path, std::string& param)
                             break;
                         defer(free(buf));
                         memset(buf, 0, userLength - 12 + 1);
-                        if (ReadFile(repFile, buf, userLength - 12, &bytesRead, NULL) && bytesRead == userLength - 12)
+                        if (ReadFile(repFile, buf, userLength - 12, &bytesRead, nullptr) && bytesRead == userLength - 12)
                             param = std::string((char*)buf, userLength - 12 + 1);
 
                         return (bytesRead == userLength - 12);
                     } else {
-                        SetFilePointer(repFile, userLength - 12, NULL, FILE_CURRENT);
+                        SetFilePointer(repFile, userLength - 12, nullptr, FILE_CURRENT);
                     }
                 }
             }
@@ -921,10 +921,10 @@ void VFile::Read(void* buffer, unsigned int length)
 namespace THSnapshot {
     void* GetSnapshotData(IDirect3DDevice8* d3d8)
     {
-        IDirect3DSurface8* surface = NULL;
+        IDirect3DSurface8* surface = nullptr;
         d3d8->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &surface);
         D3DLOCKED_RECT rect = {};
-        surface->LockRect(&rect, NULL, 0);
+        surface->LockRect(&rect, nullptr, 0);
 
         void* bmp = malloc(0xE2000);
         uint8_t* bmp_write = (uint8_t*)bmp;
@@ -946,12 +946,12 @@ namespace THSnapshot {
     {
         wchar_t dir[] = L"snapshot/th000.bmp";
         HANDLE hFile;
-        CreateDirectoryW(L"snapshot", NULL);
+        CreateDirectoryW(L"snapshot", nullptr);
         for (int i = 0; i < 1000; i++) {
             dir[13] = i % 10 + 0x30;
             dir[12] = ((i % 100 - i % 10) / 10) + 0x30;
             dir[11] = ((i - i % 100) / 100) + 0x30;
-            hFile = CreateFileW(dir, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+            hFile = CreateFileW(dir, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (hFile != INVALID_HANDLE_VALUE)
                 break;
         }
@@ -963,8 +963,8 @@ namespace THSnapshot {
         DWORD bytesRead;
         bmp = GetSnapshotData(d3d8);
         if (bmp) {
-            WriteFile(hFile, header, 0x36, &bytesRead, NULL);
-            WriteFile(hFile, bmp, 0xE2000, &bytesRead, NULL);
+            WriteFile(hFile, header, 0x36, &bytesRead, nullptr);
+            WriteFile(hFile, bmp, 0xE2000, &bytesRead, nullptr);
             free(bmp);
         }
 

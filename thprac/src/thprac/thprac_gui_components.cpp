@@ -56,7 +56,7 @@ namespace THPrac
                         ImGui::SetNextWindowFocus();
 
                     ImGui::SetNextWindowBgAlpha(mAlpha);
-                    ImGui::Begin(mTitle.c_str(), NULL, mWndFlag);
+                    ImGui::Begin(mTitle.c_str(), nullptr, mWndFlag);
                     ImGui::PushItemWidth(mItemWidth);
 
                     if (mStatus == 2) {
@@ -520,7 +520,7 @@ namespace THPrac
             if (out.size() <= level)
                 out.resize(level + 1);
 
-            size_t bufSize = snprintf(NULL, 0, format, level);
+            size_t bufSize = snprintf(nullptr, 0, format, level);
             auto labelStr = new char[bufSize + 2];
             labelStr[bufSize + 1] = 0;
             snprintf(labelStr, bufSize + 1, format, level);

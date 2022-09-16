@@ -199,11 +199,11 @@ private:
         switch (linkType) {
         case 1:
             linkDirectoryW = GetDirFromFullPath(linkExecW);
-            execResult = ShellExecuteW(NULL, L"open", linkExecW.c_str(), linkParamW.c_str(), linkDirectoryW.c_str(), SW_SHOW);
+            execResult = ShellExecuteW(nullptr, L"open", linkExecW.c_str(), linkParamW.c_str(), linkDirectoryW.c_str(), SW_SHOW);
             break;
         case 0:
         case 2:
-            execResult = ShellExecuteW(NULL, NULL, linkExecW.c_str(), NULL, NULL, SW_SHOW);
+            execResult = ShellExecuteW(nullptr, nullptr, linkExecW.c_str(), nullptr, nullptr, SW_SHOW);
             break;
         default:
             return false;

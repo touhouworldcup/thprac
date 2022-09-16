@@ -1161,22 +1161,22 @@ namespace TH18 {
             ofn.nMaxFile = sizeof(szFile);
             ofn.lpstrFilter = L"Replay File\0*.rpy\0";
             ofn.nFilterIndex = 1;
-            ofn.lpstrFileTitle = NULL;
+            ofn.lpstrFileTitle = nullptr;
             ofn.nMaxFileTitle = 0;
             ofn.lpstrInitialDir = repDir.c_str();
             ofn.lpstrDefExt = L".rpy";
             ofn.Flags = OFN_OVERWRITEPROMPT;
             if (GetSaveFileNameW(&ofn)) {
-                auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, NULL, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+                auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {
                     MsgBox(MB_ICONERROR | MB_OK, XSTR(TH14_ERROR), XSTR(TH14_ERROR_DEST));
                     goto end;
                 }
-                SetFilePointer(outputFile, 0, NULL, FILE_BEGIN);
+                SetFilePointer(outputFile, 0, nullptr, FILE_BEGIN);
                 SetEndOfFile(outputFile);
-                WriteFile(outputFile, repHeader, sizeof(repHeader), &bytesProcessed, NULL);
-                WriteFile(outputFile, repDataEncoded, repDataEncodedSize, &bytesProcessed, NULL);
-                WriteFile(outputFile, mRepExtraData, mRepExtraDataSize, &bytesProcessed, NULL);
+                WriteFile(outputFile, repHeader, sizeof(repHeader), &bytesProcessed, nullptr);
+                WriteFile(outputFile, repDataEncoded, repDataEncodedSize, &bytesProcessed, nullptr);
+                WriteFile(outputFile, mRepExtraData, mRepExtraDataSize, &bytesProcessed, nullptr);
                 CloseHandle(outputFile);
 
                 MsgBox(MB_ICONINFORMATION | MB_OK, utf8_to_utf16(XSTR(TH14_SUCCESS)).c_str(), utf8_to_utf16(XSTR(TH14_SUCCESS_SAVED)).c_str(), szFile);

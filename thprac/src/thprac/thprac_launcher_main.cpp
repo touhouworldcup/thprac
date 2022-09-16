@@ -33,7 +33,7 @@ void ErrorMsgBox(th_glossary_t textRef)
 {
     auto title = utf8_to_utf16(XSTR(THPRAC_PR_ERROR));
     auto text = utf8_to_utf16(XSTR(textRef));
-    MessageBoxW(NULL, text.c_str(), title.c_str(), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+    MessageBoxW(nullptr, text.c_str(), title.c_str(), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 }
 
 void GuiLauncherLocaleInit()
@@ -70,7 +70,7 @@ int GuiLauncherMain()
         // LauncherSettingSet doesn't take int, only int&.
         // Passing 0 will call the overload with const char*
         int Sus = 0;
-        const char* theme_user = NULL;
+        const char* theme_user = nullptr;
         // LauncherSettingGet only accepts signed ints but I want to do an unsigned comparison
         if ((unsigned int)theme > 2) {
             if (LauncherSettingGet("theme_user", theme_user) && theme_user) {
@@ -178,7 +178,7 @@ int GuiLauncherMain()
             MSG msg;
             Gui::LocaleSet((Gui::locale_t)localeSwitch);
             LauncherWndShutdown();
-            while (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE)) {
+            while (::PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE)) {
             }
             LauncherWndInit(640, 480, 1280, 960, 960, 720);
             localeSwitch = -1;

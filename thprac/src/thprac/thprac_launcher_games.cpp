@@ -151,16 +151,16 @@ bool LoadJsonFile(std::wstring& path, void*& buffer, size_t& size)
 {
     DWORD openFlag = OPEN_EXISTING;
     DWORD openAccess = GENERIC_READ;
-    auto hFile = CreateFileW(path.c_str(), openAccess, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, openFlag, FILE_ATTRIBUTE_NORMAL, NULL);
+    auto hFile = CreateFileW(path.c_str(), openAccess, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, openFlag, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (hFile == INVALID_HANDLE_VALUE) {
         return false;
     }
 
     DWORD bytesProcessed;
-    auto fileSize = GetFileSize(hFile, NULL);
+    auto fileSize = GetFileSize(hFile, nullptr);
     auto fileBuffer = malloc(fileSize + 1);
     memset(fileBuffer, 0, fileSize + 1);
-    if (!ReadFile(hFile, fileBuffer, fileSize, &bytesProcessed, NULL)) {
+    if (!ReadFile(hFile, fileBuffer, fileSize, &bytesProcessed, nullptr)) {
         CloseHandle(hFile);
         free(fileBuffer);
         return false;
@@ -439,7 +439,7 @@ public:
 
         swprintf_s(thcrapDir, L"%s\\%s", THGameGui::singleton().mThcrapDir.c_str(), L"thcrap_loader.exe");
         swprintf_s(thcrapArg, L"\"%s\" %s%s", cfg.c_str(), utf8_to_utf16(game).c_str(), append ? utf8_to_utf16(append).c_str() : L"");
-        return ShellExecuteW(NULL, L"open", thcrapDir, thcrapArg, THGameGui::singleton().mThcrapDir.c_str(), SW_SHOW);
+        return ShellExecuteW(nullptr, L"open", thcrapDir, thcrapArg, THGameGui::singleton().mThcrapDir.c_str(), SW_SHOW);
     }
     void thcrapPathConversion()
     {
@@ -447,7 +447,7 @@ public:
         wchar_t cvt[MAX_PATH];
         bool isRelative = false;
         LauncherSettingGet("use_relative_path", isRelative);
-        GetModuleFileNameW(GetModuleHandleW(NULL), currentPath, MAX_PATH);
+        GetModuleFileNameW(GetModuleHandleW(nullptr), currentPath, MAX_PATH);
 
         if (isRelative) {
             if (!PathIsRelativeW(mThcrapDir.c_str())) {
@@ -458,7 +458,7 @@ public:
             }
         } else {
             if (PathIsRelativeW(mThcrapDir.c_str())) {
-                if (GetFullPathNameW(mThcrapDir.c_str(), MAX_PATH, cvt, NULL)) {
+                if (GetFullPathNameW(mThcrapDir.c_str(), MAX_PATH, cvt, nullptr)) {
                     mThcrapDir = cvt;
                     LauncherSettingSet("thcrap", utf16_to_utf8(mThcrapDir.c_str()));
                 }
@@ -468,7 +468,7 @@ public:
     bool thcrapLaunch()
     {
         auto configure = mThcrapDir + L"\\thcrap.exe";
-        if (ShellExecuteW(NULL, L"open", configure.c_str(), NULL, mThcrapDir.c_str(), SW_SHOW) > (HINSTANCE)32) {
+        if (ShellExecuteW(nullptr, L"open", configure.c_str(), nullptr, mThcrapDir.c_str(), SW_SHOW) > (HINSTANCE)32) {
             return true;
         }
         return false;
@@ -654,7 +654,7 @@ public:
         wchar_t cvt[MAX_PATH];
         bool isRelative = false;
         LauncherSettingGet("use_relative_path", isRelative);
-        GetModuleFileNameW(GetModuleHandleW(NULL), currentPath, MAX_PATH);
+        GetModuleFileNameW(GetModuleHandleW(nullptr), currentPath, MAX_PATH);
 
         auto& gameGui = THGameGui::singleton();
         for (auto& it : mGames) {
@@ -671,7 +671,7 @@ public:
                     }
                 } else {
                     if (PathIsRelativeW(u16Path.c_str())) {
-                        if (GetFullPathNameW(u16Path.c_str(), MAX_PATH, cvt, NULL)) {
+                        if (GetFullPathNameW(u16Path.c_str(), MAX_PATH, cvt, nullptr)) {
                             gameInst.path = utf16_to_utf8(cvt);
                         }
                     }
@@ -1073,14 +1073,14 @@ public:
         wchar_t value[MAX_PATH];
         DWORD value_length = sizeof(value);
         if (RegOpenKey(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Valve\\Steam", &hKey) == ERROR_SUCCESS) {
-            if (RegQueryValueEx(hKey, L"InstallPath", NULL, &dwType, (LPBYTE)value, &value_length) == ERROR_SUCCESS) {
+            if (RegQueryValueEx(hKey, L"InstallPath", nullptr, &dwType, (LPBYTE)value, &value_length) == ERROR_SUCCESS) {
                 steamPath = value;
             }
             RegCloseKey(hKey);
         }
         if (steamPath == L"") {
             if (RegOpenKey(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Wow6432Node\\Valve\\Steam", &hKey) == ERROR_SUCCESS) {
-                if (RegQueryValueEx(hKey, L"InstallPath", NULL, &dwType, (LPBYTE)value, &value_length) == ERROR_SUCCESS) {
+                if (RegQueryValueEx(hKey, L"InstallPath", nullptr, &dwType, (LPBYTE)value, &value_length) == ERROR_SUCCESS) {
                     steamPath = value;
                 }
                 RegCloseKey(hKey);
@@ -1093,13 +1093,13 @@ public:
 
         ScanSteamappPath(steamPath + L"\\steamapps");
         auto libraryCfgPath = steamPath + L"\\steamapps\\libraryfolders.vdf";
-        auto hCfg = CreateFileW(libraryCfgPath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        auto hCfg = CreateFileW(libraryCfgPath.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
         if (hCfg != INVALID_HANDLE_VALUE) {
             DWORD bytesRead;
-            auto cfgSize = GetFileSize(hCfg, NULL);
+            auto cfgSize = GetFileSize(hCfg, nullptr);
             auto cfgBuffer = malloc(cfgSize);
             memset(cfgBuffer, 0, cfgSize);
-            ReadFile(hCfg, cfgBuffer, cfgSize, &bytesRead, NULL);
+            ReadFile(hCfg, cfgBuffer, cfgSize, &bytesRead, nullptr);
             std::string cfgStr((const char*)cfgBuffer);
             std::string steamappsPath;
             steamappsPath.reserve(512);
@@ -1179,7 +1179,7 @@ public:
     }
     static DWORD WINAPI ScanFolder(const std::wstring& dir)
     {
-        CoInitializeEx(NULL, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
+        CoInitializeEx(nullptr, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
         auto scanLnk = THGameGui::singleton().mScanOption[SCAN_OPT_THCRAP];
         std::wstring searchDir = dir + L"\\*";
         WIN32_FIND_DATAW findData;
@@ -1229,7 +1229,7 @@ public:
     {
         auto& gameGui = THGameGui::singleton();
         gameGui.thcrapSetup();
-        CoInitializeEx(NULL, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
+        CoInitializeEx(nullptr, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
 
         for (auto& it : gameGui.mGames) {
             for (auto& gameInst : it.second.instances) {
@@ -1654,7 +1654,7 @@ public:
                 MODULEENTRY32W moduleEntry;
                 procEntry.dwSize = sizeof(PROCESSENTRY32W);
                 moduleEntry.dwSize = sizeof(MODULEENTRY32W);
-                HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+                HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
                 if (Process32FirstW(snapshot, &procEntry)) {
                     do {
                         bool test = isOmni ? CheckProcessOmni(procEntry) : CheckProcess(procEntry.th32ProcessID, exePath);
@@ -1682,12 +1682,12 @@ public:
         if (CheckDLLFunction(vpatchPath.c_str(), "_Initialize@4")) {
             auto vpNameLength = (vpatchPath.size() + 1) * sizeof(wchar_t);
             auto pLoadLibrary = ::LoadLibraryW;
-            auto remoteStr = VirtualAllocEx(hProcess, NULL, vpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+            auto remoteStr = VirtualAllocEx(hProcess, nullptr, vpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
             if (!remoteStr)
                 return 0;
             defer(VirtualFreeEx(hProcess, remoteStr, 0, MEM_RELEASE));
-            WriteProcessMemory(hProcess, remoteStr, vpatchPath.data(), vpNameLength, NULL);
-            auto t = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, remoteStr, 0, NULL);
+            WriteProcessMemory(hProcess, remoteStr, vpatchPath.data(), vpNameLength, nullptr);
+            auto t = CreateRemoteThread(hProcess, nullptr, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, remoteStr, 0, nullptr);
             if (!t)
                 return 0;
             WaitForSingleObject(t, INFINITE);
@@ -1730,7 +1730,7 @@ public:
         PROCESS_INFORMATION proc_info;
         memset(&startup_info, 0, sizeof(STARTUPINFOW));
         startup_info.cb = sizeof(STARTUPINFOW);
-        CreateProcessW(currentInstPath.c_str(), NULL, NULL, NULL, NULL, CREATE_SUSPENDED, NULL, currentInstDir.c_str(), &startup_info, &proc_info);
+        CreateProcessW(currentInstPath.c_str(), nullptr, nullptr, nullptr, false, CREATE_SUSPENDED, nullptr, currentInstDir.c_str(), &startup_info, &proc_info);
 
         if (currentInst.useVpatch) {
             auto exeName = GetNameFromFullPath(currentInstPath);
@@ -1788,9 +1788,9 @@ public:
             if (currentCatagory == CAT_MAIN || currentCatagory == CAT_SPINOFF_STG) {
                 if (useReflectiveLaunch) {
                     if (currentGame->signature.vPatchStr && currentInst.useVpatch) {
-                        executeResult = ShellExecuteW(NULL, L"open", (currentInstDir + L"vpatch.exe").c_str(), NULL, currentInstDir.c_str(), SW_SHOW);
+                        executeResult = ShellExecuteW(nullptr, L"open", (currentInstDir + L"vpatch.exe").c_str(), nullptr, currentInstDir.c_str(), SW_SHOW);
                     } else {
-                        executeResult = ShellExecuteW(NULL, L"open", currentInstPath.c_str(), NULL, currentInstDir.c_str(), SW_SHOW);
+                        executeResult = ShellExecuteW(nullptr, L"open", currentInstPath.c_str(), nullptr, currentInstDir.c_str(), SW_SHOW);
                     }
                     currentInstExePath = currentInstPath.c_str();
                     currentInstExePath = GetUnifiedPath(currentInstExePath);
@@ -1802,11 +1802,11 @@ public:
                     }
                 }
             } else {
-                executeResult = ShellExecuteW(NULL, L"open", currentInstPath.c_str(), NULL, currentInstDir.c_str(), SW_SHOW);
+                executeResult = ShellExecuteW(nullptr, L"open", currentInstPath.c_str(), nullptr, currentInstDir.c_str(), SW_SHOW);
             }
             break;
         case TYPE_NYASAMA:
-            executeResult = ShellExecuteW(NULL, L"open", currentInstPath.c_str(), NULL, currentInstDir.c_str(), SW_SHOW);
+            executeResult = ShellExecuteW(nullptr, L"open", currentInstPath.c_str(), nullptr, currentInstDir.c_str(), SW_SHOW);
             currentInstExePath = currentInstDir + utf8_to_utf16(currentGame->signature.idStr) + L".exe";
             currentInstExePath = GetUnifiedPath(currentInstExePath);
             break;
@@ -1820,14 +1820,14 @@ public:
             }
             std::wstring steamURL = L"steam://rungameid/";
             steamURL += currentGame->signature.steamId;
-            ShellExecuteW(NULL, L"open", L"steam://open/games", NULL, NULL, SW_SHOW);
-            ShellExecuteW(NULL, L"open", steamURL.c_str(), NULL, NULL, SW_SHOW);
+            ShellExecuteW(nullptr, L"open", L"steam://open/games", nullptr, nullptr, SW_SHOW);
+            ShellExecuteW(nullptr, L"open", steamURL.c_str(), nullptr, nullptr, SW_SHOW);
             currentInstExePath = GetUnifiedPath(currentInstExePath);
             executeResult = (HINSTANCE)64;
         }
             break;
         default:
-            executeResult = ShellExecuteW(NULL, L"open", currentInstPath.c_str(), NULL, currentInstDir.c_str(), SW_SHOW);
+            executeResult = ShellExecuteW(nullptr, L"open", currentInstPath.c_str(), nullptr, currentInstDir.c_str(), SW_SHOW);
             break;
         }
 
@@ -1858,7 +1858,7 @@ public:
         auto attr = GetFileAttributesW(path.c_str());
         auto dir = GetDirFromFullPath(path);
         if (attr != INVALID_FILE_ATTRIBUTES && !(attr & FILE_ATTRIBUTE_DIRECTORY)) {
-            if (ShellExecuteW(NULL, L"open", path.c_str(), NULL, dir.c_str(), SW_SHOW) > (HINSTANCE)32) {
+            if (ShellExecuteW(nullptr, L"open", path.c_str(), nullptr, dir.c_str(), SW_SHOW) > (HINSTANCE)32) {
                 return true;
             }
         }
@@ -2056,7 +2056,7 @@ public:
         if (ImGui::Button(XSTR(THPRAC_GAMES_OPEN_FOLDER))) {
             auto folderPath = GetDirFromFullPath(currentInst.path);
             if (folderPath != currentInst.path) {
-                ShellExecuteW(NULL, L"explore", utf8_to_utf16(folderPath.c_str()).c_str(), NULL, NULL, SW_SHOW);
+                ShellExecuteW(nullptr, L"explore", utf8_to_utf16(folderPath.c_str()).c_str(), nullptr, nullptr, SW_SHOW);
             }
         }
 
@@ -2069,7 +2069,7 @@ public:
                 dataFolder = appdata;
                 dataFolder += L"\\ShanghaiAlice\\";
                 dataFolder += utf8_to_utf16(mCurrentGame->signature.idStr);
-                ShellExecuteW(NULL, L"explore", dataFolder.c_str(), NULL, NULL, SW_SHOW);
+                ShellExecuteW(nullptr, L"explore", dataFolder.c_str(), nullptr, nullptr, SW_SHOW);
             }
         }
 
@@ -2293,11 +2293,11 @@ public:
                         mNewGameWnd = true;
                         mGuiUpdFunc = [&]() { GuiGame(); };
                     }
-                } else if (game.signature.steamId && ImGui::BeginPopupContextItem(NULL, ImGuiPopupFlags_MouseButtonLeft)) {
+                } else if (game.signature.steamId && ImGui::BeginPopupContextItem(nullptr, ImGuiPopupFlags_MouseButtonLeft)) {
                     if (ImGui::Selectable(XSTR(THPRAC_GOTO_STEAM_PAGE))) {
                         std::wstring steamURL { L"https://store.steampowered.com/app/" };
                         steamURL += game.signature.steamId;
-                        ShellExecuteW(NULL, L"open", steamURL.c_str(), NULL, NULL, SW_SHOW);
+                        ShellExecuteW(nullptr, L"open", steamURL.c_str(), nullptr, nullptr, SW_SHOW);
                     }
                     ImGui::EndPopup();
                 }

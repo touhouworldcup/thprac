@@ -94,9 +94,9 @@ bool MakeMiniDump(EXCEPTION_POINTERS* e, std::wstring* dmpName = nullptr)
     }
 
     auto logFilePath = LauncherGetDataDir();
-    CreateDirectoryW(logFilePath.c_str(), NULL);
+    CreateDirectoryW(logFilePath.c_str(), nullptr);
     logFilePath += L"crashdump";
-    CreateDirectoryW(logFilePath.c_str(), NULL);
+    CreateDirectoryW(logFilePath.c_str(), nullptr);
     CleanDumpDir(logFilePath);
     SYSTEMTIME time;
     GetSystemTime(&time);
@@ -105,7 +105,7 @@ bool MakeMiniDump(EXCEPTION_POINTERS* e, std::wstring* dmpName = nullptr)
     logFilePath += L"\\";
     logFilePath += logFileName;
 
-    auto hFile = CreateFileW(logFilePath.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    auto hFile = CreateFileW(logFilePath.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (hFile == INVALID_HANDLE_VALUE) {
         return false;
     }
@@ -135,7 +135,7 @@ bool MakeMiniDump(EXCEPTION_POINTERS* e, std::wstring* dmpName = nullptr)
 
 __declspec(noinline) LONG WINAPI UEHandler(__in struct _EXCEPTION_POINTERS* ExceptionInfo)
 {
-    MessageBoxW(NULL, utf8_to_utf16(XSTR(THPRAC_UNHANDLED_EXCEPTION)).c_str(), utf8_to_utf16(XSTR(THPRAC_PR_ERROR)).c_str(), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+    MessageBoxW(nullptr, utf8_to_utf16(XSTR(THPRAC_UNHANDLED_EXCEPTION)).c_str(), utf8_to_utf16(XSTR(THPRAC_PR_ERROR)).c_str(), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
     return EXCEPTION_CONTINUE_SEARCH;
 }
 

@@ -50,7 +50,7 @@ namespace TH09 {
         }
         virtual void OnPreUpdate() override {
             if (justOpened) {
-                ImGui::SetWindowFocus(NULL);
+                ImGui::SetWindowFocus(nullptr);
                 justOpened--;
             }
         }
@@ -174,7 +174,7 @@ namespace TH09 {
                 }
                 ImGui::PopID();
             }
-            
+
             ImGui::PushID(TH09_RANK);
             ImGui::TextUnformatted(XSTR(TH09_RANK));
             ImGui::SliderInt(XSTR(TH09_RANK), (int*)0x4a7e44, 1, *(uint32_t*)0x4a7e58);
@@ -196,7 +196,7 @@ namespace TH09 {
             ImGui::SliderInt(XSTR(TH09_P1), (int*)(pl1 + 0xa4), 1, 16);
             ImGui::SliderInt(XSTR(TH09_P2), (int*)(pl2 + 0xa4), 1, 16);
             ImGui::PopID();
-            
+
             ImGui::PushID(TH09_MISC);
             ImGui::TextUnformatted(XSTR(TH09_MISC));
             ImGui::SliderInt(XSTR(TH09_AI_POWER), (int*)0x4a7df4, 1, 60);
@@ -226,7 +226,7 @@ namespace TH09 {
                 ImGui::Text(XSTR(TH09_STAT_B_TOTAL), *(uint32_t*)(b + 0x25e16c));
                 ImGui::Unindent();
             };
-            
+
             ImGui::TextUnformatted(XSTR(TH09_STATS));
             if (BeginOptGroup<TH09_PLAYER_1>()) {
                 show_stats(*(uint32_t*)0x4a7d98);
@@ -349,7 +349,7 @@ namespace TH09 {
     }
     EHOOK_DY(th09_unpause, 0x434ad8)
     {
-        ImGui::SetWindowFocus(NULL);
+        ImGui::SetWindowFocus(nullptr);
     }
     EHOOK_DY(th09_game_end, 0x41b82a)
     {

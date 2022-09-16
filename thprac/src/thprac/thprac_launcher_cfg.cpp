@@ -61,7 +61,7 @@ void LauncherAquireDataDirVar()
     } else {
         gCfgIsLocalDir = 0;
         wchar_t appDataPath[MAX_PATH];
-        if (SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, appDataPath) == S_OK) {
+        if (SHGetFolderPathW(nullptr, CSIDL_APPDATA, nullptr, SHGFP_TYPE_CURRENT, appDataPath) == S_OK) {
             path = appDataPath;
             path += L"\\thprac\\";
         } else {
@@ -91,9 +91,9 @@ bool LauncherCfgWrite()
     auto jsonStr = sb.GetString();
     auto jsonStrLen = strlen(jsonStr);
     DWORD bytesProcessed;
-    SetFilePointer(gCfgHnd, 0, NULL, FILE_BEGIN);
+    SetFilePointer(gCfgHnd, 0, nullptr, FILE_BEGIN);
     SetEndOfFile(gCfgHnd);
-    return WriteFile(gCfgHnd, jsonStr, jsonStrLen, &bytesProcessed, NULL);
+    return WriteFile(gCfgHnd, jsonStr, jsonStrLen, &bytesProcessed, nullptr);
 }
 rapidjson::Document& LauncherCfgGet()
 {
@@ -106,21 +106,21 @@ bool LauncherCfgInit(bool noCreate)
     }
 
     std::wstring dataDir = LauncherGetDataDir();
-    CreateDirectoryW(dataDir.c_str(), NULL);
+    CreateDirectoryW(dataDir.c_str(), nullptr);
     std::wstring jsonPath = dataDir + L"thprac.json";
 
     DWORD openFlag = noCreate ? OPEN_EXISTING : OPEN_ALWAYS;
     DWORD openAccess = noCreate ? GENERIC_READ : GENERIC_READ | GENERIC_WRITE;
-    gCfgHnd = CreateFileW(jsonPath.c_str(), openAccess, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, openFlag, FILE_ATTRIBUTE_NORMAL, NULL);
+    gCfgHnd = CreateFileW(jsonPath.c_str(), openAccess, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, openFlag, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (gCfgHnd == INVALID_HANDLE_VALUE) {
         return false;
     }
 
     DWORD bytesProcessed;
-    auto fileSize = GetFileSize(gCfgHnd, NULL);
+    auto fileSize = GetFileSize(gCfgHnd, nullptr);
     auto fileBuffer = malloc(fileSize + 1);
     memset(fileBuffer, 0, fileSize + 1);
-    if (!ReadFile(gCfgHnd, fileBuffer, fileSize, &bytesProcessed, NULL)) {
+    if (!ReadFile(gCfgHnd, fileBuffer, fileSize, &bytesProcessed, nullptr)) {
         return false;
     }
 
@@ -392,7 +392,7 @@ bool SetTheme(int themeId, const wchar_t* userThemeName)
     } catch (std::runtime_error err) {
         std::wstring err_desc = L"Failed to load theme ";
         err_desc.append(filename).append(L"\r\n").append(utf8_to_utf16(err.what()));
-        MessageBoxW(NULL, err_desc.c_str(), L"Failed to load theme", MB_ICONERROR);
+        MessageBoxW(nullptr, err_desc.c_str(), L"Failed to load theme", MB_ICONERROR);
         ImGui::StyleColorsDark();
         // TODO: Should we return false at this point?
     }
@@ -642,7 +642,7 @@ public:
 
                 for (auto& download : mUpdDownloads) {
                     if (CenteredButton(download.first.c_str())) {
-                        ShellExecuteW(NULL, NULL, utf8_to_utf16(download.second.c_str()).c_str(), NULL, NULL, SW_SHOW);
+                        ShellExecuteW(nullptr, nullptr, utf8_to_utf16(download.second.c_str()).c_str(), nullptr, nullptr, SW_SHOW);
                     }
                 }
             }
@@ -714,7 +714,7 @@ public:
         if (mUpdDialogHnd && isUpdateAvailable) {
             auto titleStr = utf8_to_utf16(XSTR(THPRAC_UPDATE_DIALOG_TITLE));
             auto textStr = utf8_to_utf16(XSTR(THPRAC_UPDATE_DIALOG_TEXT));
-            if (confirmation || MessageBoxW(NULL, textStr.c_str(), titleStr.c_str(), MB_YESNO | MB_SETFOREGROUND) == IDYES) {
+            if (confirmation || MessageBoxW(nullptr, textStr.c_str(), titleStr.c_str(), MB_YESNO | MB_SETFOREGROUND) == IDYES) {
                 mAutoUpdateThread.Stop();
                 mUpdPercentage = 0.0f;
                 mAutoUpdateThread.Start();
@@ -751,7 +751,7 @@ public:
             }
         }
 
-        mUpdDialogHnd = NULL;
+        mUpdDialogHnd = nullptr;
         DestroyWindow(hDialog);
         mUpdDialogThread.Wait();
         mUpdDialogThread.Stop();
@@ -759,18 +759,18 @@ public:
     }
     static DWORD WINAPI UpdateDialogCtrlFunc(_In_ LPVOID lpParameter)
     {
-        auto hDialog = CreateDialog(NULL, MAKEINTRESOURCE(IDD_DIALOG1), NULL, UpdateDialogProc);
+        auto hDialog = CreateDialog(nullptr, MAKEINTRESOURCE(IDD_DIALOG1), nullptr, UpdateDialogProc);
         THUpdate::singleton().mUpdDialogHnd = hDialog;
 
         MSG msg;
         while (true) {
-            if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE)) {
+            if (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE)) {
                 if (!IsDialogMessage(hDialog, &msg)) {
                     TranslateMessage(&msg);
                     DispatchMessage(&msg);
                 }
             }
-            if (THUpdate::singleton().mUpdDialogHnd == NULL) {
+            if (THUpdate::singleton().mUpdDialogHnd == nullptr) {
                 break;
             }
         }
@@ -787,7 +787,7 @@ public:
             case IDOK:
                 break;
             case IDCANCEL:
-                THUpdate::singleton().mUpdDialogHnd = NULL;
+                THUpdate::singleton().mUpdDialogHnd = nullptr;
                 break;
             }
             break;
@@ -977,7 +977,7 @@ private:
         ver_info.dwOSVersionInfoSize = sizeof(ver_info);
         RtlGetVersion(&ver_info);
 
-        const wchar_t* winver = NULL;
+        const wchar_t* winver = nullptr;
         ULONG major = ver_info.dwMajorVersion;
         ULONG minor = ver_info.dwMinorVersion;
         UCHAR product = ver_info.wProductType;
@@ -1036,17 +1036,17 @@ private:
     static DWORD DownloadSingleFile(
         const wchar_t* url, std::vector<uint8_t>& out, std::function<void(DWORD, DWORD)> progressCallback = [](DWORD, DWORD) {})
     {
-        static HINTERNET hInternet = NULL;
+        static HINTERNET hInternet = nullptr;
         DWORD byteRet = sizeof(DWORD);
         if (!hInternet) {
-            hInternet = InternetOpenW((std::wstring(L"thprac ") + GetVersionWcs() + L" on " + windows_version()).c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+            hInternet = InternetOpenW((std::wstring(L"thprac ") + GetVersionWcs() + L" on " + windows_version()).c_str(), INTERNET_OPEN_TYPE_PRECONFIG, nullptr, nullptr, 0);
             if (!hInternet)
                 return -1;
             DWORD ignore = 1;
             if (!InternetSetOptionW(hInternet, INTERNET_OPTION_IGNORE_OFFLINE, &ignore, sizeof(DWORD)))
                 return -2;
         }
-        HINTERNET hFile = InternetOpenUrlW(hInternet, url, NULL, 0, INTERNET_FLAG_RELOAD | INTERNET_FLAG_KEEP_CONNECTION, 0);
+        HINTERNET hFile = InternetOpenUrlW(hInternet, url, nullptr, 0, INTERNET_FLAG_RELOAD | INTERNET_FLAG_KEEP_CONNECTION, 0);
         if (!hFile)
             return -3;
         defer(InternetCloseHandle(hFile));
@@ -1118,18 +1118,18 @@ private:
         GetTempPath(MAX_PATH, tmpPath);
         localFileName = tmpPath;
         localFileName += remoteFileName;
-        localeFileHnd = CreateFileW(localFileName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        localeFileHnd = CreateFileW(localFileName.c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
         if (localeFileHnd == INVALID_HANDLE_VALUE) {
             return 1;
         }
-        SetFilePointer(localeFileHnd, 0, NULL, FILE_BEGIN);
+        SetFilePointer(localeFileHnd, 0, nullptr, FILE_BEGIN);
         SetEndOfFile(localeFileHnd);
 
         DWORD byteRet;
-        WriteFile(localeFileHnd, newFile.data(), newFile.size(), &byteRet, NULL);
+        WriteFile(localeFileHnd, newFile.data(), newFile.size(), &byteRet, nullptr);
 
         CloseHandle(localeFileHnd);
-        ShellExecuteW(NULL, NULL, localFileName.c_str(),
+        ShellExecuteW(nullptr, nullptr, localFileName.c_str(),
             (std::wstring(L"--update-launcher-1 ") + exePathCstr).c_str(), tmpPath, SW_SHOW);
         updObj.mAutoUpdStatus = STATUS_UPD_ABLE_OR_FINISHED;
         return 0;
@@ -1147,7 +1147,7 @@ private:
     size_t mUpdFileSize = 0;
     float mUpdPercentage = 0.0f;
     GuiThread mUpdDialogThread { THUpdate::UpdateDialogCtrlFunc };
-    HWND mUpdDialogHnd = NULL;
+    HWND mUpdDialogHnd = nullptr;
     bool mInterruptSignal = false;
 };
 
@@ -1185,7 +1185,7 @@ public:
         LauncherCfgClose();
         if (mCfgResetFlag == 1) {
             wchar_t appDataPath[MAX_PATH];
-            if (SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, appDataPath) == S_OK) {
+            if (SHGetFolderPathW(nullptr, CSIDL_APPDATA, nullptr, SHGFP_TYPE_CURRENT, appDataPath) == S_OK) {
                 std::wstring jsonPath = appDataPath;
                 jsonPath += L"\\thprac";
                 jsonPath += L"\\thprac.json";
@@ -1195,7 +1195,7 @@ public:
             if (mCfgUseLocalDir != gCfgIsLocalDir) {
                 wchar_t pathBuffer[MAX_PATH];
                 wchar_t appDataPath[MAX_PATH];
-                SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, appDataPath);
+                SHGetFolderPathW(nullptr, CSIDL_APPDATA, nullptr, SHGFP_TYPE_CURRENT, appDataPath);
                 GetModuleFileNameW((HMODULE)&__ImageBase, pathBuffer, MAX_PATH);
                 std::wstring globalPath = appDataPath;
                 globalPath += L"\\thprac";
@@ -1214,7 +1214,7 @@ public:
                         auto src = localPath + L".thprac_data_backup";
                         MoveFileW(src.c_str(), dest.c_str());
                     } else if (mCfgDirChgLocalParam == 0) {
-                        CreateDirectoryW(dest.c_str(), NULL);
+                        CreateDirectoryW(dest.c_str(), nullptr);
                     }
                 } else {
                     auto src = localPath + L".thprac_data";
@@ -1263,7 +1263,7 @@ private:
             // only accepts references as an excuse to call this variable a funny
             int Sus = 0;
             bool configThemeExists = false;
-            const char* cur_theme = NULL;
+            const char* cur_theme = nullptr;
             if (!LauncherSettingGet("theme_user", cur_theme)) {
                 mCfgTheme.Set(Sus);
                 return;
@@ -1416,7 +1416,7 @@ private:
 
         ImGui::SameLine();
         if (ImGui::Button(XSTR(THPRAC_DATADIR_OPEN))) {
-            ShellExecuteW(NULL, L"open", LauncherGetDataDir().c_str(), NULL, NULL, SW_SHOW);
+            ShellExecuteW(nullptr, L"open", LauncherGetDataDir().c_str(), nullptr, nullptr, SW_SHOW);
         }
 
         ImGui::SameLine();
@@ -1580,7 +1580,7 @@ private:
         if (mThcrap.Get() == "") {
             ImGui::TextUnformatted(XSTR(THPRAC_THCRAP_NOTYET));
             if (ImGui::Button("Get thcrap")) {
-                ShellExecuteW(NULL, L"open", L"https://www.thpatch.net/", NULL, NULL, SW_SHOW);
+                ShellExecuteW(nullptr, L"open", L"https://www.thpatch.net/", nullptr, nullptr, SW_SHOW);
             }
             ImGui::SameLine();
             if (ImGui::Button(XSTR(THPRAC_THCRAP_SET))) {
@@ -1639,7 +1639,7 @@ private:
         if (ImGui::IsItemHovered()) {
             ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
             if (ImGui::IsMouseClicked(0)) {
-                ShellExecuteW(NULL, NULL, link, NULL, NULL, SW_SHOW);
+                ShellExecuteW(nullptr, nullptr, link, nullptr, nullptr, SW_SHOW);
             }
         }
     }
@@ -1949,7 +1949,7 @@ bool LauncherPreUpdate(wchar_t* pCmdLine)
             }
 
             CopyFile(exePathCstr, finalPath.c_str(), FALSE);
-            ShellExecuteW(NULL, NULL, finalPath.c_str(),
+            ShellExecuteW(nullptr, nullptr, finalPath.c_str(),
                 (std::wstring(L"--update-launcher-2 ") + exePathCstr).c_str(), finalDir.c_str(), SW_SHOW);
 
             return true;
