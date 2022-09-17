@@ -13,7 +13,6 @@
 #include <Windows.h>
 #include <shlwapi.h>
 #include <cstdint>
-#include <cwctype>
 #include <functional>
 #include <imgui.h>
 #include <metrohash128.h>
@@ -128,24 +127,18 @@ bool GetExeInfoEx(size_t process, ExeSig& exeSigOut)
 
     return false;
 }
-bool IfEndWith(std::string str, const char* subStr)
+bool IfEndWith(const char* str, const char* subStr)
 {
     auto subStrLen = strlen(subStr);
+    auto strLen = strlen(str);
 
-    auto it = --(str.end());
-    for (unsigned int i = 0; i < subStrLen; ++i) {
-        *it = tolower(*it);
-        if (it == str.begin()) {
-            break;
-        }
-        --it;
+    if (strLen < subStrLen)
+        return false;
+    for (size_t i = 1; i <= subStrLen; i++) {
+        if (str[strLen - i] != subStr[subStrLen - i])
+            return false;
     }
-
-    auto pos = str.rfind(subStr);
-    if (pos != std::string::npos && pos == str.size() - subStrLen) {
-        return true;
-    }
-    return false;
+    return true;
 }
 bool LoadJsonFile(std::wstring& path, void*& buffer, size_t& size)
 {
@@ -327,7 +320,7 @@ private:
                                         gameInst.name = game["name"].GetString();
                                     }
 
-                                    if (gameInst.type == TYPE_THCRAP && IfEndWith(gameInst.path, ".lnk")) {
+                                    if (gameInst.type == TYPE_THCRAP && IfEndWith(gameInst.path.c_str(), ".lnk")) {
                                         continue;
                                     }
                                     if (gameInst.type == TYPE_STEAM) {
@@ -492,7 +485,7 @@ public:
 
             char nameStr[256];
             std::string subname = cfg;
-            if (IfEndWith(subname, ".js")) {
+            if (IfEndWith(subname.c_str(), ".js")) {
                 for (auto& c : subname) {
                     c = tolower(c);
                 }
@@ -1199,11 +1192,7 @@ public:
                 ScanFolder(searchDir);
             } else {
                 ScanSetCurrentPath(searchDir);
-                auto suffix = searchDir.substr(searchDir.size() - 4, 4);
-                for (auto& c : suffix) {
-                    c = std::towlower(c);
-                }
-                if (suffix == L".exe") {
+                if (_wcsicmp(searchDir.c_str() + searchDir.size() - 4, L".exe") == 0) {
                     ScanExe(searchDir);
                 }
             }
