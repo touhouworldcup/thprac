@@ -364,53 +364,6 @@ namespace TH12 {
 
         int mDiffculty = 0;
     };
-    class THGuiRep : public Gui::GameGuiWnd {
-        THGuiRep() noexcept
-        {
-        }
-        SINGLETON(THGuiRep);
-    public:
-
-        void CheckReplay()
-        {
-            uint32_t index = GetMemContent(0x4b4530, 0x5a78);
-            char* repName = (char*)GetMemAddr(0x4b4530, index * 4 + 0x5a80, 0x1e0);
-            std::wstring repDir(L"replay/");
-            repDir.append(mb_to_utf16(repName));
-
-            std::string param;
-            if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
-                mParamStatus = true;
-            else
-                mRepParam.Reset();
-        }
-
-        bool mRepStatus = false;
-        void State(int state)
-        {
-            switch (state) {
-            case 1:
-                mRepStatus = false;
-                mParamStatus = false;
-                thPracParam.Reset();
-                break;
-            case 2:
-                CheckReplay();
-                break;
-            case 3:
-                mRepStatus = true;
-                if (mParamStatus)
-                    memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
-                break;
-            default:
-                break;
-            }
-        }
-
-    protected:
-        bool mParamStatus = false;
-        THPracParam mRepParam;
-    };
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
         {
@@ -1434,6 +1387,12 @@ namespace TH12 {
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th12_everlasting_bgm, 0x454960)
     {
+        auto isInReplay = []() -> bool {
+            if (*(uintptr_t*)0x4b4518)
+                return GetMemContent(0x4b4518, 0x10);
+            return false;
+        };
+
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -1443,7 +1402,7 @@ namespace TH12 {
         bool is_practice;
         bool result;
 
-        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode && thPracParam.section;
+        el_switch = *(THOverlay::singleton().mElBgm) && !isInReplay() && thPracParam.mode && thPracParam.section;
         is_practice = (*((int32_t*)0x4b0ce0) & 0x1);
         result = ElBgmTest<0x430183, 0x4226c7, 0x432820, 0x432982, 0xffffffff>(
             el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
@@ -1527,17 +1486,14 @@ namespace TH12 {
         if (thPracParam.mode)
             THSaveReplay(repName);
     }
-    EHOOK_DY(th12_rep_menu_1, 0x4467df)
+    EHOOK_DY(th12_rep_load, 0x43B1CA)
     {
-        THGuiRep::singleton().State(1);
-    }
-    EHOOK_DY(th12_rep_menu_2, 0x4468f8)
-    {
-        THGuiRep::singleton().State(2);
-    }
-    EHOOK_DY(th12_rep_menu_3, 0x446ab1)
-    {
-        THGuiRep::singleton().State(3);
+        thPracParam = {};
+        std::string param;
+        std::wstring path(L"replay/");
+        path += mb_to_utf16((char*)pCtx->Ecx);
+        if (ReplayLoadParam(path.c_str(), param))
+            thPracParam.ReadJson(param);
     }
     EHOOK_DY(th12_update, 0x4625fb)
     {
@@ -1545,7 +1501,6 @@ namespace TH12 {
 
         // Gui components update
         THGuiPrac::singleton().Update();
-        THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
@@ -1567,7 +1522,6 @@ namespace TH12 {
 
         // Gui components creation
         THGuiPrac::singleton();
-        THGuiRep::singleton();
         THOverlay::singleton();
 
         // Hooks

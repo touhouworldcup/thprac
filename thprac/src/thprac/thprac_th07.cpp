@@ -395,62 +395,6 @@ namespace TH07 {
         int mDiffculty = 0;
         bool isMarisaA = false;
     };
-    class THGuiRep : public Gui::GameGuiWnd {
-        THGuiRep() noexcept
-        {
-        }
-        SINGLETON(THGuiRep);
-    public:
-
-        void CheckReplay()
-        {
-            uint32_t* moduleList = (uint32_t*)0x626218;
-            while (true) {
-                if (moduleList[1] == 0x4554d6)
-                    break;
-                if (moduleList[5])
-                    moduleList = (uint32_t*)moduleList[5];
-                else
-                    return;
-            }
-            uint32_t index = GetMemContent((int)(&moduleList[7]), 0xb0b8);
-            char* raw = (char*)GetMemAddr((int)(&moduleList[7]), index * 512 + 0x6c);
-
-            std::wstring repName = mb_to_utf16(raw);
-            std::string param;
-            if (ReplayLoadParam(repName.c_str(), param) && mRepParam.ReadJson(param))
-                mParamStatus = true;
-            else
-                mRepParam.Reset();
-        }
-
-        bool mRepStatus = false;
-        void State(int state)
-        {
-            switch (state) {
-            case 1:
-                THReset();
-                mRepStatus = false;
-                mParamStatus = false;
-                thPracParam.Reset();
-                break;
-            case 2:
-                CheckReplay();
-                break;
-            case 3:
-                mRepStatus = true;
-                if (mParamStatus)
-                    memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
-                break;
-            default:
-                break;
-            }
-        }
-
-    protected:
-        bool mParamStatus = false;
-        THPracParam mRepParam;
-    };
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
         {
@@ -1656,6 +1600,12 @@ namespace TH07 {
     PATCH_DY(th07_reacquire_input, 0x430f03, "\x00\x00\x00\x00\x74", 5);
     EHOOK_DY(th07_everlasting_bgm, 0x44d2f0)
     {
+        auto isInReplay = []() -> bool {
+            if (*(uintptr_t*)0x4B9E48)
+                return GetMemContent(0x4B9E48, 0x44);
+            return false;
+        };
+
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -1665,7 +1615,7 @@ namespace TH07 {
         bool is_practice;
         bool result;
 
-        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode && thPracParam.section;
+        el_switch = *(THOverlay::singleton().mElBgm) && !isInReplay() && thPracParam.mode && thPracParam.section;
         if (thPracParam.mode && thPracParam.section == TH07_ST6_BOSS10)
             el_switch = false;
         is_practice = *((int32_t*)0x575aa8) == 10;
@@ -1696,18 +1646,6 @@ namespace TH07 {
     EHOOK_DY(th07_prac_menu_4, 0x45a6d4)
     {
         THGuiPrac::singleton().State(4);
-    }
-    EHOOK_DY(th07_rep_menu_1, 0x45ac43)
-    {
-        THGuiRep::singleton().State(1);
-    }
-    EHOOK_DY(th07_rep_menu_2, 0x45af96)
-    {
-        THGuiRep::singleton().State(2);
-    }
-    EHOOK_DY(th07_rep_menu_3, 0x45b2c1)
-    {
-        THGuiRep::singleton().State(3);
     }
     EHOOK_DY(th07_patch_main, 0x42f2e3)
     {
@@ -1819,6 +1757,13 @@ namespace TH07 {
         if (thPracParam.mode)
             THSaveReplay(rep_name);
     }
+    EHOOK_DY(th07_load_replay, 0x443587)
+    {
+        thPracParam = {};
+        std::string param;
+        if(ReplayLoadParam(mb_to_utf16((char*)pCtx->Ecx).c_str(), param))
+            thPracParam.ReadJson(param);
+    }
     PATCH_DY(th07_disable_prac_menu1, 0x45b9ea, "\x90\x90\x90\x90\x90", 5);
     PATCH_DY(th07_disable_prac_menu2, 0x45bb1c, "\x90\x90\x90\x90\x90", 5);
     PATCH_DY(th07_prac_menu_key1, 0x45a610, "\x01\x00\x00\x00", 4);
@@ -1830,7 +1775,6 @@ namespace TH07 {
 
         // Gui components update
         THGuiPrac::singleton().Update();
-        THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
@@ -1854,7 +1798,6 @@ namespace TH07 {
 
         // Gui components creation
         THGuiPrac::singleton();
-        THGuiRep::singleton();
         THOverlay::singleton();
 
         // Hooks
