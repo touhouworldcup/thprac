@@ -1122,9 +1122,5 @@ namespace Alcostg {
 void AlcostgInit()
 {
     Alcostg::THInitHook::singleton().EnableAllHooks();
-    TryKeepUpRefreshRate((void*)0x435aa0);
-    if (GetModuleHandleW(L"vpatch_alcostg.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleW(L"vpatch_alcostg.dll") + 0x560b));
-    }
 }
 }

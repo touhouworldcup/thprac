@@ -158,12 +158,6 @@
         "Are you sure you want to reset the launcher?\nthprac will be closed and after that, you will lose ALL existing data!",
         "ランチャーをリセットしてもよろしいですか？\nthpracは閉じられ、その後、既存のデータがすべて失われます！"
       ],
-      "THPRAC_UNLOCK_REFRESH_RATE": [ "解锁屏幕刷新率", "Unlock monitor refresh rate", "モニターのリフレッシュレートのロックを解除する" ],
-      "THPRAC_UNLOCK_REFRESH_RATE_DESC": [
-        "勾选后，应用thprac会阻止游戏在全屏模式下将屏幕刷新率锁定在60hz。\n在使用高刷新率显示器且关闭垂直同步的情况下，这么做可以稍微改善延迟并减少画面撕裂。\n注：只在使用thprac（或其启动器）启动游戏时有效。对于Steam版游戏和喵玉汉化，请在custom.exe中勾选“每次启动时询问/起動時に毎回訊れる/Ask each startup time”。",
-        "When enabled, applying thprac will prevent the game to lock monitor's refresh rate at 60hz in fullscreen mode.\nThis gives you slightly improved latency and reduced screen tearing when using a high refresh rate monitor and when vertical sync is disabled.\nNote: This only works when using thprac (and its launcher) to open the game. For Steam games, tick \"Ask each startup time/起動時に毎回訊れる\" in custom.exe.",
-        "有効にすると、thpracを適用すると、ゲームがフルスクリーンモードでモニターのリフレッシュレートを60hzにロックできなくなります。\nこれにより、高リフレッシュレートのモニターを使用しているとき、および垂直同期が無効になっているときに、遅延がわずかに改善され、画面のティアリングが減少します。\n注：これは、thprac（およびそのランチャー）を使用してゲームを開く場合にのみ機能します。 Steamゲームの場合は、custom.exeで「起動時に毎回訊れる/Ask each startup time」にチェックを入れてください。"
-      ],
       "THPRAC_LANGUAGE": [ "语言/Language/言語", "Language/言語/语言", "言語/Language/语言" ],
       "THPRAC_LANGUAGE_HINT": [
         "重新启动thprac以使变更生效。",

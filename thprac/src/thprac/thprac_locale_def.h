@@ -698,8 +698,6 @@ enum th_glossary_t
     THPRAC_TOOLS_ROLL,
     THPRAC_TOOLS_ROLL_RESULT,
     THPRAC_UNHANDLED_EXCEPTION,
-    THPRAC_UNLOCK_REFRESH_RATE,
-    THPRAC_UNLOCK_REFRESH_RATE_DESC,
     THPRAC_UPDATE_AUTO_UPDATE,
     THPRAC_UPDATE_AUTO_UPDATE_FALIED,
     THPRAC_UPDATE_AVALIABLE,
@@ -894,7 +892,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][882];
+extern const char* th_glossary_str[3][880];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2386,10 +2384,10 @@ extern const th_sections_t th_sections_cbt[1][2][1];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3161];
+extern const wchar_t __thprac_loc_range_zh[3129];
 
-extern const wchar_t __thprac_loc_range_en[53];
+extern const wchar_t __thprac_loc_range_en[35];
 
-extern const wchar_t __thprac_loc_range_ja[2671];
+extern const wchar_t __thprac_loc_range_ja[2665];
 
 }

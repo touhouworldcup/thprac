@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][882]
+const char* th_glossary_str[3][880]
 {
     {
         "",
@@ -698,8 +698,6 @@ const char* th_glossary_str[3][882]
         "ROLL!",
         "你随机到了：%s。（右键查看更多选项）",
         "遇到了未处理的异常，程序可能即将崩溃。\n当程序崩溃时，请通过在启动器中记述的任意联系方式将转储文件发送给我。\n此外，如有留下任何关于崩溃时情况的说明的话，我将不胜感激。\n转储文件储存在thprac的数据目录中。\n(打开启动器 - 设置 - 打开数据目录 - \"crashdump\"文件夹)",
-        "解锁屏幕刷新率",
-        "勾选后，应用thprac会阻止游戏在全屏模式下将屏幕刷新率锁定在60hz。\n在使用高刷新率显示器且关闭垂直同步的情况下，这么做可以稍微改善延迟并减少画面撕裂。\n注：只在使用thprac（或其启动器）启动游戏时有效。对于Steam版游戏和喵玉汉化，请在custom.exe中勾选“每次启动时询问/起動時に毎回訊れる/Ask each startup time”。",
         "自动更新",
         "自动更新失败！",
         "更新可用。",
@@ -1582,8 +1580,6 @@ const char* th_glossary_str[3][882]
         "ROLL!",
         "You've rolled: %s. (Right click for more options)",
         "An unhandled exception was encountered, this will most likely result in a crash.\nIf you experience a crash, please send the dump files to me with any of the contact methods described in the launcher.\nAdditionally, any notes describing how the crash has happened would be appreciated.\nYou can find the dump files in thprac's data folder.\n(Open launcher - Settings - Open data directory - \"crashdump\" folder)",
-        "Unlock monitor refresh rate",
-        "When enabled, applying thprac will prevent the game to lock monitor's refresh rate at 60hz in fullscreen mode.\nThis gives you slightly improved latency and reduced screen tearing when using a high refresh rate monitor and when vertical sync is disabled.\nNote: This only works when using thprac (and its launcher) to open the game. For Steam games, tick \"Ask each startup time/起動時に毎回訊れる\" in custom.exe.",
         "Auto update",
         "Failed to auto update!",
         "Update available.",
@@ -2466,8 +2462,6 @@ const char* th_glossary_str[3][882]
         "ROLL!",
         "結果：％s。（右クリックで詳細オプションを表示）",
         "未処理の例外が発生しました。これにより、クラッシュが発生する可能性があります。\nクラッシュが発生した場合は、ランチャーに記載されている連絡方法のいずれかを使用して、ダンプファイルを私に送信してください。\nさらに、クラッシュがどのように発生したかを説明するメモをいただければ幸いです。\nダンプファイルはthpracのデータフォルダにあります。\n（ランチャーを開く - 設定 - データディレクトリを開く - \"crashdump\"フォルダー）",
-        "モニターのリフレッシュレートのロックを解除する",
-        "有効にすると、thpracを適用すると、ゲームがフルスクリーンモードでモニターのリフレッシュレートを60hzにロックできなくなります。\nこれにより、高リフレッシュレートのモニターを使用しているとき、および垂直同期が無効になっているときに、遅延がわずかに改善され、画面のティアリングが減少します。\n注：これは、thprac（およびそのランチャー）を使用してゲームを開く場合にのみ機能します。 Steamゲームの場合は、custom.exeで「起動時に毎回訊れる/Ask each startup time」にチェックを入れてください。",
         "自動更新",
         "自動更新に失敗しました！",
         "利用可能な更新。",
@@ -19896,7 +19890,7 @@ const th_sections_t th_sections_cbt[1][2][1]
 
 }
 
-const wchar_t __thprac_loc_range_zh[3161] {
+const wchar_t __thprac_loc_range_zh[3129] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -19906,9 +19900,6 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0x3002, 0x3002,
     0x300c, 0x300c,
     0x300d, 0x300d,
-    0x306b, 0x306b,
-    0x308b, 0x308b,
-    0x308c, 0x308c,
     0x4e00, 0x4e00,
     0x4e03, 0x4e03,
     0x4e07, 0x4e07,
@@ -20071,7 +20062,6 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0x51c6, 0x51c6,
     0x51cb, 0x51cb,
     0x51cc, 0x51cc,
-    0x51cf, 0x51cf,
     0x51e0, 0x51e0,
     0x51e4, 0x51e4,
     0x51ed, 0x51ed,
@@ -20097,7 +20087,6 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0x522b, 0x522b,
     0x5230, 0x5230,
     0x5236, 0x5236,
-    0x5237, 0x5237,
     0x523a, 0x523a,
     0x523b, 0x523b,
     0x524d, 0x524d,
@@ -20117,7 +20106,6 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0x52b2, 0x52b2,
     0x52b3, 0x52b3,
     0x52c7, 0x52c7,
-    0x52d5, 0x52d5,
     0x52fa, 0x52fa,
     0x52fe, 0x52fe,
     0x5305, 0x5305,
@@ -20210,7 +20198,6 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0x5531, 0x5531,
     0x5546, 0x5546,
     0x5564, 0x5564,
-    0x5584, 0x5584,
     0x558a, 0x558a,
     0x559c, 0x559c,
     0x559d, 0x559d,
@@ -20245,7 +20232,6 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0x574d, 0x574d,
     0x574f, 0x574f,
     0x5764, 0x5764,
-    0x5782, 0x5782,
     0x578b, 0x578b,
     0x5792, 0x5792,
     0x57a9, 0x57a9,
@@ -20359,7 +20345,6 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0x5c42, 0x5c42,
     0x5c45, 0x5c45,
     0x5c48, 0x5c48,
-    0x5c4f, 0x5c4f,
     0x5c50, 0x5c50,
     0x5c55, 0x5c55,
     0x5c5e, 0x5c5e,
@@ -20446,7 +20431,6 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0x5fa1, 0x5fa1,
     0x5fa8, 0x5fa8,
     0x5faa, 0x5faa,
-    0x5fae, 0x5fae,
     0x5fb7, 0x5fb7,
     0x5fc3, 0x5fc3,
     0x5fc5, 0x5fc5,
@@ -20562,7 +20546,6 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0x6444, 0x6444,
     0x6446, 0x6446,
     0x6469, 0x6469,
-    0x6495, 0x6495,
     0x649e, 0x649e,
     0x64ad, 0x64ad,
     0x64c5, 0x64c5,
@@ -20609,7 +20592,6 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0x662f, 0x662f,
     0x663c, 0x663c,
     0x663e, 0x663e,
-    0x6642, 0x6642,
     0x6653, 0x6653,
     0x6655, 0x6655,
     0x665a, 0x665a,
@@ -20710,7 +20692,6 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0x6bbf, 0x6bbf,
     0x6bc1, 0x6bc1,
     0x6bcd, 0x6bcd,
-    0x6bce, 0x6bce,
     0x6bcf, 0x6bcf,
     0x6bd2, 0x6bd2,
     0x6bd5, 0x6bd5,
@@ -20956,7 +20937,6 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0x79fd, 0x79fd,
     0x7a00, 0x7a00,
     0x7a0b, 0x7a0b,
-    0x7a0d, 0x7a0d,
     0x7a20, 0x7a20,
     0x7a3b, 0x7a3b,
     0x7a70, 0x7a70,
@@ -21196,7 +21176,6 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0x89e3, 0x89e3,
     0x89e6, 0x89e6,
     0x8a00, 0x8a00,
-    0x8a0a, 0x8a0a,
     0x8a89, 0x8a89,
     0x8a9e, 0x8a9e,
     0x8b66, 0x8b66,
@@ -21364,7 +21343,6 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0x9634, 0x9634,
     0x9635, 0x9635,
     0x9636, 0x9636,
-    0x963b, 0x963b,
     0x963f, 0x963f,
     0x9644, 0x9644,
     0x9646, 0x9646,
@@ -21480,7 +21458,7 @@ const wchar_t __thprac_loc_range_zh[3161] {
     0
 };
 
-const wchar_t __thprac_loc_range_en[53] {
+const wchar_t __thprac_loc_range_en[35] {
     0x0020, 0x00FF,
     0x11b, 0x11b,
     0x12b, 0x12b,
@@ -21492,25 +21470,16 @@ const wchar_t __thprac_loc_range_en[53] {
     0x1d2, 0x1d2,
     0x219, 0x219,
     0x21a, 0x21a,
-    0x306b, 0x306b,
-    0x308b, 0x308b,
-    0x308c, 0x308c,
-    0x52d5, 0x52d5,
-    0x56de, 0x56de,
-    0x6642, 0x6642,
-    0x6bce, 0x6bce,
     0x786e, 0x786e,
     0x8a00, 0x8a00,
-    0x8a0a, 0x8a0a,
     0x8a9e, 0x8a9e,
     0x8ba4, 0x8ba4,
     0x8bed, 0x8bed,
-    0x8d77, 0x8d77,
     0xff01, 0xff01,
     0
 };
 
-const wchar_t __thprac_loc_range_ja[2671] {
+const wchar_t __thprac_loc_range_ja[2665] {
     0x0020, 0x00FF,
     0x2026, 0x2026,
     0x3000, 0x3000,
@@ -21864,7 +21833,6 @@ const wchar_t __thprac_loc_range_ja[2671] {
     0x54ee, 0x54ee,
     0x5546, 0x5546,
     0x554f, 0x554f,
-    0x5584, 0x5584,
     0x559a, 0x559a,
     0x559d, 0x559d,
     0x55b0, 0x55b0,
@@ -21885,7 +21853,6 @@ const wchar_t __thprac_loc_range_ja[2671] {
     0x5742, 0x5742,
     0x5747, 0x5747,
     0x5764, 0x5764,
-    0x5782, 0x5782,
     0x578b, 0x578b,
     0x57cb, 0x57cb,
     0x57ce, 0x57ce,
@@ -22605,7 +22572,6 @@ const wchar_t __thprac_loc_range_ja[2671] {
     0x89e3, 0x89e3,
     0x8a00, 0x8a00,
     0x8a08, 0x8a08,
-    0x8a0a, 0x8a0a,
     0x8a13, 0x8a13,
     0x8a18, 0x8a18,
     0x8a2a, 0x8a2a,

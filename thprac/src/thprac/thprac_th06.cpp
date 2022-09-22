@@ -2018,7 +2018,6 @@ namespace TH06 {
 void TH06Init()
 {
     TH06::THInitHook::singleton().EnableAllHooks();
-    TryKeepUpRefreshRate((void*)0x420f59);
 }
 
 }

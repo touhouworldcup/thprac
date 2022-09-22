@@ -261,9 +261,5 @@ namespace TH095 {
 void TH095Init()
 {
     TH095::THInitHook::singleton().EnableAllHooks();
-    TryKeepUpRefreshRate((void*)0x420ee8);
-    if (GetModuleHandleW(L"vpatch_th095.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleW(L"vpatch_th095.dll") + 0x5424));
-    }
 }
 }

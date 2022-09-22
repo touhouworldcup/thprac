@@ -645,6 +645,5 @@ namespace TH09 {
 void TH09Init()
 {
     TH09::THInitHook::singleton().EnableAllHooks();
-    TryKeepUpRefreshRate((void*)0x42de70);
 }
 }

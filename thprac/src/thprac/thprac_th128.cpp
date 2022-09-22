@@ -2324,6 +2324,5 @@ namespace TH128 {
 void TH128Init()
 {
     TH128::THInitHook::singleton().EnableAllHooks();
-    TryKeepUpRefreshRate((void*)0x455669);
 }
 }
