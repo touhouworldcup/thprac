@@ -203,7 +203,7 @@ namespace TH12 {
             if (section == TH12_ST6_BOSS8 || section == TH12_ST6_BOSS10) {
                 return TH_SPELL_PHASE1;
             } else if (section == TH12_ST7_END_S10) {
-                return TH_SPELL_PHASE2;
+                return TH_SPELL_PHASE3;
             }
             return nullptr;
         }
@@ -1330,6 +1330,10 @@ namespace TH12 {
                     ECLSetHealth(ecl, 0x7b00, 0, 1150);
                     ECLJumpEx(ecl, 0x7b14, 0x8610, 0);
                     break;
+                case 4:
+                    ecl << pair(0x7b48, 0x0e1c); // EXTRA
+                    ecl << pair(0x8958, (int16_t)0x15); // EXTRA
+                    ecl << pair(0x895e, (int16_t)0x0ff); // EXTRA
             }
             break;
         default:
