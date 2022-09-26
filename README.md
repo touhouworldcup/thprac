@@ -72,7 +72,7 @@ Ack has completely stopped thprac development and can not be contacted at the mo
 > Due to my insufficient skill, the code is glutted with obscure writings and terrible logic, turning the whole thing into a complete mess. I'm sorry if that disturbs you.
 
 ## My antivirus says it's malware. It is really?
-Thprac contains no malicious code, but due to how it works, an antivirus might complain about it. If your antivirus complains about thprac, add a trust/exception
+Thprac contains no malicious code, but due to how it works, an antivirus might complain about it. If your antivirus complains about thprac, add a trust/exception. Also try [this version](https://github.com/touhouworldcup/thprac/issues/112) and report back if your antivirus does not detect it
 
 ## English patch support
 Thprac is compatible with thcrap. Thprac's launcher can act as a thcrap launcher as well, similair to [Universal THCRAP Launcher](https://github.com/thpatch/Universal-THCRAP-Launcher/). When launching a game with thcrap, thprac will be able to attach to it. Thprac is not compatible with static English patches, like the ones made by gensokyo.org
