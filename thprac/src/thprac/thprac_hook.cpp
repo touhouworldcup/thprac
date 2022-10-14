@@ -27,118 +27,6 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #pragma intrinsic(memcpy)
 
 namespace THPrac {
-
-struct DmpFileDesc {
-    std::wstring path;
-    uint64_t time = 0;
-    bool operator()(DmpFileDesc& a, DmpFileDesc& b) const { return a.time < b.time; }
-};
-
-bool IsBadStackPtr(void* p)
-{
-    MEMORY_BASIC_INFORMATION mbi = { 0 };
-    if (::VirtualQuery(p, &mbi, sizeof(mbi))) {
-        DWORD mask = (PAGE_READONLY | PAGE_READWRITE | PAGE_WRITECOPY | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY);
-        bool b = !(mbi.Protect & mask);
-        // check the page is not a guard page
-        if (mbi.Protect & (PAGE_GUARD | PAGE_NOACCESS))
-            b = true;
-
-        return b;
-    }
-    return true;
-}
-
-void CleanDumpDir(std::wstring& dmpDir)
-{
-    WIN32_FIND_DATAW findData;
-    std::vector<DmpFileDesc> dmpFiles;
-    std::wstring searchDir = dmpDir + L"\\*.dmp";
-    HANDLE searchHnd = FindFirstFileW(searchDir.c_str(), &findData);
-
-    if (searchHnd == INVALID_HANDLE_VALUE) {
-        return;
-    }
-
-    do {
-        if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-            continue;
-        }
-        searchDir = dmpDir + L"\\" + std::wstring(findData.cFileName);
-        DmpFileDesc desc;
-        desc.path = searchDir;
-        desc.time = ((uint64_t)findData.ftCreationTime.dwHighDateTime << 32) + (uint64_t)findData.ftCreationTime.dwLowDateTime;
-        dmpFiles.push_back(desc);
-    } while (FindNextFileW(searchHnd, &findData));
-    FindClose(searchHnd);
-
-    if (dmpFiles.size() >= 50) {
-        DmpFileDesc dummy;
-        std::sort(dmpFiles.begin(), dmpFiles.end(), dummy);
-        for (size_t i = 0; dmpFiles.size() - i >= 50; ++i) {
-            DeleteFileW(dmpFiles[i].path.c_str());
-        }
-    }
-
-}
-
-bool MakeMiniDump(EXCEPTION_POINTERS* e, std::wstring* dmpName = nullptr)
-{
-    auto hDbgHelp = LoadLibraryW(L"dbghelp.dll");
-    if (hDbgHelp == nullptr) {
-        return false;
-    }
-    auto pMiniDumpWriteDump = (decltype(&MiniDumpWriteDump))GetProcAddress(hDbgHelp, "MiniDumpWriteDump");
-    if (pMiniDumpWriteDump == nullptr) {
-        return false;
-    }
-
-    auto logFilePath = LauncherGetDataDir();
-    CreateDirectoryW(logFilePath.c_str(), NULL);
-    logFilePath += L"crashdump";
-    CreateDirectoryW(logFilePath.c_str(), NULL);
-    CleanDumpDir(logFilePath);
-    SYSTEMTIME time;
-    GetSystemTime(&time);
-    wchar_t logFileName[MAX_PATH];
-    swprintf_s(logFileName, L"thprac-%04d%02d%02d-%02d%02d%02d-%04d.dmp", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
-    logFilePath += L"\\";
-    logFilePath += logFileName;
-
-    auto hFile = CreateFileW(logFilePath.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (hFile == INVALID_HANDLE_VALUE) {
-        return false;
-    }
-
-    MINIDUMP_EXCEPTION_INFORMATION exceptionInfo;
-    exceptionInfo.ThreadId = GetCurrentThreadId();
-    exceptionInfo.ExceptionPointers = e;
-    exceptionInfo.ClientPointers = FALSE;
-
-    auto dumped = pMiniDumpWriteDump(
-        GetCurrentProcess(),
-        GetCurrentProcessId(),
-        hFile,
-        MINIDUMP_TYPE(MiniDumpNormal | MiniDumpWithProcessThreadData | MiniDumpWithThreadInfo | MiniDumpWithUnloadedModules | MiniDumpWithFullMemoryInfo | MiniDumpScanMemory),
-        e ? &exceptionInfo : nullptr,
-        nullptr,
-        nullptr);
-
-    CloseHandle(hFile);
-
-    if (dmpName) {
-        *dmpName = logFileName;
-    }
-
-    return dumped;
-}
-
-__declspec(noinline) LONG WINAPI UEHandler(__in struct _EXCEPTION_POINTERS* ExceptionInfo)
-{
-    MessageBoxW(NULL, utf8_to_utf16(XSTR(THPRAC_UNHANDLED_EXCEPTION)).c_str(), utf8_to_utf16(XSTR(THPRAC_PR_ERROR)).c_str(), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-    return EXCEPTION_CONTINUE_SEARCH;
-}
-
 #ifdef _WIN64
 #define XIP Rip
 #define XIP_TYPE DWORD64
@@ -221,9 +109,6 @@ __declspec(noinline) LONG CALLBACK VEHHandler(EXCEPTION_POINTERS* ExceptionInfo)
         }
     }
 
-    MakeMiniDump(ExceptionInfo);
-    SetUnhandledExceptionFilter(&UEHandler);
-
     return EXCEPTION_CONTINUE_SEARCH;
 }
 
@@ -246,7 +131,6 @@ void VEHHookInit()
         g_VEHHookVector = new std::vector<VEHHookCtx>();
         AddVectoredExceptionHandler(1, &VEHHandler);
     }
-    SetUnhandledExceptionFilter(&UEHandler);
 }
 void VEHHookEnable(void* target)
 {
