@@ -1,12 +1,12 @@
 {
-    "version": [2, 2, 0, 0],
+    "version": [2, 2, 1, 2],
     "description": [
-        "Full th185 support",
-        "Full Changelog: https://github.com/touhouworldcup/thprac/releases/tag/v2.2.0.0",
-        ""   
+        "Changelog: https://github.com/touhouworldcup/thprac/releases/tag/v2.2.1.2",
+        " ",
+        " "   
     ],
-    "file_size": 3449856,
-    "direct_link": "https://github.com/touhouworldcup/thprac/releases/download/v2.2.0.0/thprac.v2.2.0.0.exe",
+    "file_size": 2562560,
+    "direct_link": "https://github.com/touhouworldcup/thprac/releases/download/v2.2.1.2/thprac.v2.2.1.2.exe",
     "downloads": {
         "GitHub": "https://github.com/touhouworldcup/thprac/releases/latest"
     }
