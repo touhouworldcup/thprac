@@ -1368,7 +1368,7 @@ namespace TH12 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
     __declspec(noinline) void TH12AddVentra(int ventra)
     {
@@ -1495,7 +1495,7 @@ namespace TH12 {
         thPracParam = {};
         std::string param;
         std::wstring path(L"replay/");
-        path += mb_to_utf16((char*)pCtx->Ecx);
+        path += mb_to_utf16((char*)pCtx->Ecx, 932);
         if (ReplayLoadParam(path.c_str(), param))
             thPracParam.ReadJson(param);
     }

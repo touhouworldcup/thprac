@@ -1624,7 +1624,7 @@ namespace TH10 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
     void THReimuAFix(uint8_t* repBuffer)
     {
@@ -2199,7 +2199,7 @@ namespace TH10 {
         thPracParam = {};
         std::string param;
         std::wstring path(L"replay/");
-        path += mb_to_utf16((char*)pCtx->Ecx);
+        path += mb_to_utf16((char*)pCtx->Ecx, 932);
         if (ReplayLoadParam(path.c_str(), param))
             thPracParam.ReadJson(param);
     }

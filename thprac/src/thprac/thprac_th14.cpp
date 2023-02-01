@@ -1149,7 +1149,7 @@ namespace TH14 {
         __declspec(noinline) void SelectReplay()
         {
             uint32_t index = GetMemContent(0x4db6a4, 0x5aec);
-            std::wstring repName = mb_to_utf16((char*)GetMemAddr(0x4db6a4, index * 4 + 0x5af4, 0x220));
+            std::wstring repName = mb_to_utf16((char*)GetMemAddr(0x4db6a4, index * 4 + 0x5af4, 0x220), 932);
             wcscpy_s(mRepName, repName.c_str());
 
             std::wstring rep = mRepDir;
@@ -2188,7 +2188,7 @@ namespace TH14 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
     HOOKSET_DEFINE(THMainHook)
@@ -2299,13 +2299,13 @@ namespace TH14 {
             THSaveReplay(repName);
         else if (thPracParam.mode == 2 && thPracParam.phase)
             THSaveReplay(repName);
-        THAdvOptWnd::singleton().SaveReplay(mb_to_utf16(repName).c_str());
+        THAdvOptWnd::singleton().SaveReplay(mb_to_utf16(repName, 932).c_str());
     }
     EHOOK_DY(th14_rep_load, 0x4549cf)
     {
         thPracParam = {};
         std::string param;
-        std::wstring path = mb_to_utf16((char*)0x4f5a45) + L"replay\\" + mb_to_utf16((char*)0x4db560);
+        std::wstring path = mb_to_utf16((char*)0x4f5a45, 932) + L"replay\\" + mb_to_utf16((char*)0x4db560, 932);
         if (ReplayLoadParam(path.c_str(), param))
             thPracParam.ReadJson(param);
     }

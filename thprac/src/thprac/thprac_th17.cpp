@@ -1778,7 +1778,7 @@ namespace TH17 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
 #define TH17AddGoast(goast_id) asm_call<0x40f980, Thiscall>(GetMemContent(0x4b7684), goast_id)
@@ -1951,7 +1951,7 @@ namespace TH17 {
     {
         thPracParam = {};
         std::string param;
-        std::wstring path = mb_to_utf16((char*)0x5226f1) + L"replay\\" + mb_to_utf16((char*)0x4b76c0);
+        std::wstring path = mb_to_utf16((char*)0x5226f1, 932) + L"replay\\" + mb_to_utf16((char*)0x4b76c0, 932);
         if (ReplayLoadParam(path.c_str(), param))
             thPracParam.ReadJson(param);
     }

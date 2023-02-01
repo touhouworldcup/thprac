@@ -1990,7 +1990,7 @@ namespace TH16 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
     unsigned char th16_spbugfix_ecl1[448] = {
@@ -2304,7 +2304,7 @@ namespace TH16 {
     {
         thPracParam = {};
         std::string param;
-        std::wstring path = mb_to_utf16((char*)0x4d7d0d) + L"replay\\" + mb_to_utf16((char*)0x4A6DE0);
+        std::wstring path = mb_to_utf16((char*)0x4d7d0d, 932) + L"replay\\" + mb_to_utf16((char*)0x4A6DE0, 932);
         if (ReplayLoadParam(path.c_str(), param))
             thPracParam.ReadJson(param);
     }

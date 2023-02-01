@@ -1593,7 +1593,7 @@ namespace TH07 {
     }
     void THSaveReplay(char* rep_name)
     {
-        ReplaySaveParam(mb_to_utf16(rep_name).c_str(), thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(rep_name, 932).c_str(), thPracParam.GetJson());
     }
 
     HOOKSET_DEFINE(THMainHook)
@@ -1761,7 +1761,7 @@ namespace TH07 {
     {
         thPracParam = {};
         std::string param;
-        if(ReplayLoadParam(mb_to_utf16((char*)pCtx->Ecx).c_str(), param))
+        if (ReplayLoadParam(mb_to_utf16((char*)pCtx->Ecx, 932).c_str(), param))
             thPracParam.ReadJson(param);
     }
     PATCH_DY(th07_disable_prac_menu1, 0x45b9ea, "\x90\x90\x90\x90\x90", 5);

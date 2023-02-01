@@ -416,7 +416,7 @@ namespace TH18 {
         {
             uint32_t index = GetMemContent(0x4cf43c, 0x5aac);
             char* repName_ = (char*)GetMemAddr(0x4cf43c, index * 4 + 0x5ab4, 0x21c);
-            std::wstring repName = mb_to_utf16(repName_);
+            std::wstring repName = mb_to_utf16(repName_, 932);
             std::wstring repDir(mAppdataPath);
             repDir.append(L"\\ShanghaiAlice\\th18\\replay\\");
             repDir.append(repName);

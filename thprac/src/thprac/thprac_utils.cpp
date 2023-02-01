@@ -25,34 +25,46 @@ static void* _str_cvt_buffer(size_t size)
     }
     return bufferPtr;
 }
-std::string utf16_to_utf8(const wchar_t* utf16)
+
+typedef int WINAPI MultiByteToWideChar_t(UINT CodePage, DWORD dwFlags, LPCCH lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar);
+typedef int WINAPI WideCharToMultiByte_t(UINT CodePage, DWORD dwFlags, LPCWCH lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCCH lpDefaultChar, LPBOOL lpUsedDefaultChar);
+
+WideCharToMultiByte_t* _WideCharToMultiByte = ::WideCharToMultiByte;
+MultiByteToWideChar_t* _MultiByteToWideChar = ::MultiByteToWideChar;
+
+std::string utf16_to_mb(const wchar_t* utf16, UINT encoding)
 {
-    int utf8Length = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, nullptr, 0, NULL, NULL);
+    int utf8Length = _WideCharToMultiByte(encoding, 0, utf16, -1, nullptr, 0, NULL, NULL);
     char* utf8 = (char*)_str_cvt_buffer(utf8Length);
-    WideCharToMultiByte(CP_UTF8, 0, utf16, -1, utf8, utf8Length, NULL, NULL);
+    _WideCharToMultiByte(encoding, 0, utf16, -1, utf8, utf8Length, NULL, NULL);
     return std::string(utf8);
 }
-std::wstring utf8_to_utf16(const char* utf8)
+std::wstring mb_to_utf16(const char* utf8, UINT encoding)
 {
-    int utf16Length = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, nullptr, 0);
+    int utf16Length = _MultiByteToWideChar(encoding, 0, utf8, -1, nullptr, 0);
     wchar_t* utf16 = (wchar_t*)_str_cvt_buffer(utf16Length);
-    MultiByteToWideChar(CP_UTF8, 0, utf8, -1, utf16, utf16Length);
+    _MultiByteToWideChar(encoding, 0, utf8, -1, utf16, utf16Length);
     return std::wstring(utf16);
 }
-std::string utf16_to_mb(const wchar_t* utf16)
+
+void ingame_mb_init()
 {
-    int utf8Length = WideCharToMultiByte(CP_ACP, 0, utf16, -1, nullptr, 0, NULL, NULL);
-    char* utf8 = (char*)_str_cvt_buffer(utf8Length);
-    WideCharToMultiByte(CP_ACP, 0, utf16, -1, utf8, utf8Length, NULL, NULL);
-    return std::string(utf8);
+    HMODULE win32_utf8 = GetModuleHandleW(L"win32_utf8.dll");
+    if (!win32_utf8) {
+        win32_utf8 = GetModuleHandleW(L"win32_utf8_d.dll");
+        if (!win32_utf8) {
+            return;
+        }
+    }
+    WideCharToMultiByte_t* WideCharToMultiByteU = (WideCharToMultiByte_t*)GetProcAddress(win32_utf8, "WideCharToMultiByteU");
+    MultiByteToWideChar_t* MultiByteToWideCharU = (MultiByteToWideChar_t*)GetProcAddress(win32_utf8, "MultiByteToWideCharU");
+    
+    if (WideCharToMultiByteU && MultiByteToWideCharU) {
+        _WideCharToMultiByte = WideCharToMultiByteU;
+        _MultiByteToWideChar = MultiByteToWideCharU;
+    }
 }
-std::wstring mb_to_utf16(const char* utf8)
-{
-    int utf16Length = MultiByteToWideChar(CP_ACP, 0, utf8, -1, nullptr, 0);
-    wchar_t* utf16 = (wchar_t*)_str_cvt_buffer(utf16Length);
-    MultiByteToWideChar(CP_ACP, 0, utf8, -1, utf16, utf16Length);
-    return std::wstring(utf16);
-}
+
 #pragma endregion
 
 #pragma region Path
@@ -217,6 +229,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3,
     int wnd_size_flag, float x, float y)
 {
+    ingame_mb_init();
     ::ImGui::CreateContext();
     g_gameGuiImpl = impl;
     g_gameGuiDevice = (DWORD*)device;

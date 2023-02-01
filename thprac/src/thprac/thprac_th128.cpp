@@ -373,7 +373,7 @@ namespace TH128 {
             char* repName = (char*)GetMemAddr(0x4b8a9c, index * 4 + 0x5a34, 0x3b4);
             std::wstring repDir(mAppdataPath);
             repDir.append(L"\\ShanghaiAlice\\th128\\replay\\");
-            repDir.append(mb_to_utf16(repName));
+            repDir.append(mb_to_utf16(repName, 932));
 
             std::string param;
             if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
@@ -2037,7 +2037,7 @@ namespace TH128 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
     HOOKSET_DEFINE(THMainHook)

@@ -1435,7 +1435,7 @@ namespace TH13 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
     bool th13ElBgmTranceFlag = false;
@@ -1555,7 +1555,7 @@ namespace TH13 {
     {
         thPracParam = {};
         std::string param;
-        std::wstring path = mb_to_utf16((char*)0x4dd0d1) + L"replay\\" + mb_to_utf16((char*)0x4C2198);
+        std::wstring path = mb_to_utf16((char*)0x4dd0d1, 932) + L"replay\\" + mb_to_utf16((char*)0x4C2198, 932);
         if (ReplayLoadParam(path.c_str(), param))
             thPracParam.ReadJson(param);
     }

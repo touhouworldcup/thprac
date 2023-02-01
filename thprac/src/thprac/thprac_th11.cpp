@@ -1606,7 +1606,7 @@ namespace TH11 {
     }
     void THSaveReplay(char* rep_name)
     {
-        ReplaySaveParam(mb_to_utf16(rep_name).c_str(), thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(rep_name, 932).c_str(), thPracParam.GetJson());
     }
 
     HOOKSET_DEFINE(THMainHook)
@@ -1708,7 +1708,7 @@ namespace TH11 {
         thPracParam = {};
         std::string param;
         std::wstring path(L"replay/");
-        path += mb_to_utf16((char*)pCtx->Ecx);
+        path += mb_to_utf16((char*)pCtx->Ecx, 932);
         if (ReplayLoadParam(path.c_str(), param))
             thPracParam.ReadJson(param);
     }

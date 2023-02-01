@@ -1679,7 +1679,7 @@ namespace TH15 {
     }
     void THSaveReplay(char* repName)
     {
-        ReplaySaveParam(mb_to_utf16(repName).c_str(), thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
     static bool drawCursor;
@@ -1785,7 +1785,7 @@ namespace TH15 {
     {
         thPracParam = {};
         std::string param;
-        std::wstring path = mb_to_utf16((char*)0x519Bdd) + L"replay\\" + mb_to_utf16((char*)0x4e9aa0);
+        std::wstring path = mb_to_utf16((char*)0x519Bdd, 932) + L"replay\\" + mb_to_utf16((char*)0x4e9aa0, 932);
         if (ReplayLoadParam(path.c_str(), param))
             thPracParam.ReadJson(param);
     }

@@ -1775,7 +1775,7 @@ namespace TH06 {
     }
     void THSaveReplay(char* rep_name)
     {
-        ReplaySaveParam(mb_to_utf16(rep_name).c_str(), thPracParam.GetJson());
+        ReplaySaveParam(mb_to_utf16(rep_name, 932).c_str(), thPracParam.GetJson());
     }
 
     EHOOK_G1(th06_result_screen_create, 0x42d812)
@@ -1919,7 +1919,7 @@ namespace TH06 {
         thPracParam = {};
         auto rep_name = GetMemContent<char*>(pCtx->Ebp + 0x8, 0xc);
         std::string param;
-        if (ReplayLoadParam(mb_to_utf16(rep_name).c_str(), param))
+        if (ReplayLoadParam(mb_to_utf16(rep_name, 932).c_str(), param))
             thPracParam.ReadJson(param);
 
     }
