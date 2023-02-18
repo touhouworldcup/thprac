@@ -15,6 +15,8 @@
 
 #pragma comment(lib, "psapi.lib")
 
+constexpr auto LGS = THPrac::Gui::LocaleGetStr;
+
 namespace THPrac {
 enum thprac_prompt_t {
     PR_FAILED,
@@ -65,35 +67,35 @@ bool PromptUser(thprac_prompt_t info, THGameSig* gameSig = nullptr)
     case THPrac::PR_FAILED:
         return true;
     case THPrac::PR_INFO_ATTACHED:
-        MsgBox(Gui::LocaleGetStr(THPRAC_PR_COMPLETE), Gui::LocaleGetStr(THPRAC_PR_INFO_ATTACHED), MB_ICONASTERISK | MB_OK | MB_SYSTEMMODAL);
+        MsgBox(LGS(THPRAC_PR_COMPLETE), LGS(THPRAC_PR_INFO_ATTACHED), MB_ICONASTERISK | MB_OK | MB_SYSTEMMODAL);
         return true;
     case THPrac::PR_INFO_NO_GAME_FOUND:
-        MsgBoxWnd(Gui::LocaleGetStr(THPRAC_PR_COMPLETE), Gui::LocaleGetStr(THPRAC_PR_ERR_NO_GAME), MB_ICONASTERISK | MB_OK | MB_SYSTEMMODAL);
+        MsgBoxWnd(LGS(THPRAC_PR_COMPLETE), LGS(THPRAC_PR_ERR_NO_GAME), MB_ICONASTERISK | MB_OK | MB_SYSTEMMODAL);
         return true;
     case THPrac::PR_ASK_IF_ATTACH: {
         if (!gameSig) {
             return false;
         }
         char gameExeStr[256];
-        sprintf_s(gameExeStr, Gui::LocaleGetStr(THPRAC_PR_ASK_ATTACH), gameSig->idStr);
-        if (MsgBox(Gui::LocaleGetStr(THPRAC_PR_APPLY), gameExeStr, MB_YESNO | MB_ICONQUESTION | MB_SYSTEMMODAL) == IDYES) {
+        sprintf_s(gameExeStr, LGS(THPRAC_PR_ASK_ATTACH), gameSig->idStr);
+        if (MsgBox(LGS(THPRAC_PR_APPLY), gameExeStr, MB_YESNO | MB_ICONQUESTION | MB_SYSTEMMODAL) == IDYES) {
             return true;
         }
         return false;
     }
     case THPrac::PR_ASK_IF_CONTINUE:
-        if (MsgBox(Gui::LocaleGetStr(THPRAC_PR_CONTINUE), Gui::LocaleGetStr(THPRAC_PR_ASK_CONTINUE), MB_YESNO | MB_ICONQUESTION | MB_SYSTEMMODAL) == IDYES) {
+        if (MsgBox(LGS(THPRAC_PR_CONTINUE), LGS(THPRAC_PR_ASK_CONTINUE), MB_YESNO | MB_ICONQUESTION | MB_SYSTEMMODAL) == IDYES) {
             return true;
         }
         return false;
     case THPrac::PR_ERR_NO_GAME_FOUND:
-        MsgBox(Gui::LocaleGetStr(THPRAC_PR_ERROR), Gui::LocaleGetStr(THPRAC_PR_ERR_NO_GAME), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+        MsgBox(LGS(THPRAC_PR_ERROR), LGS(THPRAC_PR_ERR_NO_GAME), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
         return true;
     case THPrac::PR_ERR_ATTACH_FAILED:
-        MsgBox(Gui::LocaleGetStr(THPRAC_PR_ERROR), Gui::LocaleGetStr(THPRAC_PR_ERR_ATTACH), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+        MsgBox(LGS(THPRAC_PR_ERROR), LGS(THPRAC_PR_ERR_ATTACH), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
         return true;
     case THPrac::PR_ERR_RUN_FAILED:
-        MsgBox(Gui::LocaleGetStr(THPRAC_PR_ERROR), Gui::LocaleGetStr(THPRAC_PR_ERR_RUN), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+        MsgBox(LGS(THPRAC_PR_ERROR), LGS(THPRAC_PR_ERR_RUN), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
         return true;
     default:
         break;
@@ -324,8 +326,8 @@ bool FindAndRunGame(bool prompt)
         if (CheckIfGameExist(sig, name)) {
             if (prompt) {
                 char gameExeStr[256];
-                sprintf_s(gameExeStr, Gui::LocaleGetStr(THPRAC_EXISTING_GAME_CONFIRMATION), sig.idStr);
-                auto msgBoxResult = MsgBox(Gui::LocaleGetStr(THPRAC_EXISTING_GAME_CONFIRMATION_TITLE), gameExeStr, MB_YESNOCANCEL | MB_ICONINFORMATION | MB_SYSTEMMODAL);
+                sprintf_s(gameExeStr, LGS(THPRAC_EXISTING_GAME_CONFIRMATION), sig.idStr);
+                auto msgBoxResult = MsgBox(LGS(THPRAC_EXISTING_GAME_CONFIRMATION_TITLE), gameExeStr, MB_YESNOCANCEL | MB_ICONINFORMATION | MB_SYSTEMMODAL);
                 if (msgBoxResult == IDNO) {
                     return false;
                 } else if (msgBoxResult != IDYES) {
