@@ -196,7 +196,7 @@ namespace TH17 {
     protected:
         virtual void OnLocaleChange() override
         {
-            SetTitle(XSTR(TH_MENU));
+            SetTitle(Gui::LocaleGetStr(TH_MENU));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSizeRel(0.5f, 0.81f);
@@ -222,7 +222,7 @@ namespace TH17 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(XSTR(TH_MENU));
+            ImGui::TextUnformatted(Gui::LocaleGetStr(TH_MENU));
             ImGui::Separator();
 
             PracticeMenu();
@@ -328,11 +328,11 @@ namespace TH17 {
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
                 if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
-                    sprintf_s(chapterStr, XSTR(TH_STAGE_PORTION_N), *mChapter);
+                    sprintf_s(chapterStr, Gui::LocaleGetStr(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
-                    sprintf_s(chapterStr, XSTR(TH_STAGE_PORTION_1), *mChapter);
+                    sprintf_s(chapterStr, Gui::LocaleGetStr(TH_STAGE_PORTION_1), *mChapter);
                 } else {
-                    sprintf_s(chapterStr, XSTR(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
+                    sprintf_s(chapterStr, Gui::LocaleGetStr(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
                 };
 
                 mChapter(chapterStr);
@@ -555,7 +555,7 @@ namespace TH17 {
     protected:
         virtual void OnLocaleChange() override
         {
-            SetTitle(XSTR(TH_SPELL_PRAC));
+            SetTitle(Gui::LocaleGetStr(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSizeRel(0.38f, 0.12f);
@@ -581,7 +581,7 @@ namespace TH17 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(XSTR(TH_SPELL_PRAC));
+            ImGui::TextUnformatted(Gui::LocaleGetStr(TH_SPELL_PRAC));
             ImGui::Separator();
 
             PracticeMenu();
@@ -862,7 +862,7 @@ namespace TH17 {
         }
         void ContentUpdate()
         {
-            ImGui::TextUnformatted(XSTR(TH_ADV_OPT));
+            ImGui::TextUnformatted(Gui::LocaleGetStr(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 
@@ -876,10 +876,10 @@ namespace TH17 {
                     GameplaySet();
 
                 // Temp
-                ImGui::Checkbox(XSTR(TH17_GOAST_BUGFIX), &mGoastBugfix);
-                ImGui::Checkbox(XSTR(TH17_GOAST_REPFIX), &mGoastRepfix);
+                ImGui::Checkbox(Gui::LocaleGetStr(TH17_GOAST_BUGFIX), &mGoastBugfix);
+                ImGui::Checkbox(Gui::LocaleGetStr(TH17_GOAST_REPFIX), &mGoastRepfix);
                 ImGui::SameLine();
-                HelpMarker(XSTR(TH17_GOAST_REPFIX_DESC));
+                HelpMarker(Gui::LocaleGetStr(TH17_GOAST_REPFIX_DESC));
 
                 EndOptGroup();
             }

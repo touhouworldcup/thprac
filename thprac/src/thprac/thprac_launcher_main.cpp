@@ -31,9 +31,9 @@ bool GuiTabItem(const char* tabText)
 }
 void ErrorMsgBox(th_glossary_t textRef)
 {
-    auto title = utf8_to_utf16(XSTR(THPRAC_PR_ERROR));
-    auto text = utf8_to_utf16(XSTR(textRef));
-    MessageBoxW(NULL, text.c_str(), title.c_str(), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+    auto title = utf8_to_utf16(Gui::LocaleGetStr(THPRAC_PR_ERROR));
+    auto text = utf8_to_utf16(Gui::LocaleGetStr(textRef));
+    MessageBoxW(nullptr, text.c_str(), title.c_str(), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 }
 
 void GuiLauncherLocaleInit()
@@ -70,7 +70,7 @@ int GuiLauncherMain()
         // LauncherSettingSet doesn't take int, only int&.
         // Passing 0 will call the overload with const char*
         int Sus = 0;
-        const char* theme_user = NULL;
+        const char* theme_user = nullptr;
         // LauncherSettingGet only accepts signed ints but I want to do an unsigned comparison
         if ((unsigned int)theme > 2) {
             if (LauncherSettingGet("theme_user", theme_user) && theme_user) {
@@ -104,11 +104,11 @@ int GuiLauncherMain()
         ImGui::SetNextWindowSize(ImVec2(960.0f * scale, 720.0f * scale), ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowBgAlpha(0.9f);
 
-        std::string wndTitleText = XSTR(THPRAC_LAUNCHER);
+        std::string wndTitleText = Gui::LocaleGetStr(THPRAC_LAUNCHER);
         if (LauncherIsChkingUpd()) {
             wndTitleText += " // Checking for updates...";
         }
-        wndTitleText = LauncherIsChkingUpd() ? XSTR(THPRAC_LAUNCHER_CHECKING_UPDATE) : XSTR(THPRAC_LAUNCHER);
+        wndTitleText = LauncherIsChkingUpd() ? Gui::LocaleGetStr(THPRAC_LAUNCHER_CHECKING_UPDATE) : Gui::LocaleGetStr(THPRAC_LAUNCHER);
         wndTitleText += "###thprac_wnd";
         ImGui::Begin(wndTitleText.c_str(), &isOpen, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove, &isMinimize);
         if (!isOpen)
@@ -120,25 +120,25 @@ int GuiLauncherMain()
         canMove = ImGui::IsItemHovered();
 
         if (ImGui::BeginTabBar("MenuTabBar")) {
-            if (GuiTabItem(XSTR(THPRAC_GAMES))) {
+            if (GuiTabItem(Gui::LocaleGetStr(THPRAC_GAMES))) {
                 ImGui::BeginChild("##games");
                 LauncherGamesGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }
-            if (GuiTabItem(XSTR(THPRAC_LINKS))) {
+            if (GuiTabItem(Gui::LocaleGetStr(THPRAC_LINKS))) {
                 ImGui::BeginChild("##links");
                 LauncherLinksGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }
-            if (GuiTabItem(XSTR(THPRAC_TOOLS))) {
+            if (GuiTabItem(Gui::LocaleGetStr(THPRAC_TOOLS))) {
                 ImGui::BeginChild("##tools");
                 LauncherToolsGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }
-            if (GuiTabItem(XSTR(THPRAC_SETTINGS))) {
+            if (GuiTabItem(Gui::LocaleGetStr(THPRAC_SETTINGS))) {
                 ImGui::BeginChild("##settings");
                 LauncherCfgGuiUpd();
                 ImGui::EndChild();
@@ -178,7 +178,7 @@ int GuiLauncherMain()
             MSG msg;
             Gui::LocaleSet((Gui::locale_t)localeSwitch);
             LauncherWndShutdown();
-            while (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE)) {
+            while (::PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE)) {
             }
             LauncherWndInit(640, 480, 1280, 960, 960, 720);
             localeSwitch = -1;

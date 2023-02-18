@@ -145,7 +145,7 @@ namespace TH125 {
     protected:
         virtual void OnLocaleChange() override
         {
-            SetTitle(XSTR(TH_SPELL_PRAC));
+            SetTitle(Gui::LocaleGetStr(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
@@ -171,7 +171,7 @@ namespace TH125 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(XSTR(TH_ADV_OPT));
+            ImGui::TextUnformatted(Gui::LocaleGetStr(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 

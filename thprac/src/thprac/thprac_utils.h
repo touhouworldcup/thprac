@@ -9,6 +9,7 @@
 #include "thprac_gui_impl_win32.h"
 #include "thprac_hook.h"
 #include "thprac_locale_def.h"
+#include "thprac_gui_locale.h"
 
 #include <Windows.h>
 #include <cstdint>
@@ -28,27 +29,25 @@
 #include <utility>
 #include <vector>
 
-#define MB_INFO(str) MessageBoxA(NULL, str, str, MB_OK);
-
 namespace THPrac {
 
 struct MappedFile {
-    HANDLE fileMap = NULL;
+    HANDLE fileMap = nullptr;
     HANDLE hFile = INVALID_HANDLE_VALUE;
     size_t fileSize = 0;
-    void* fileMapView = NULL;
+    void* fileMapView = nullptr;
 
     MappedFile(const wchar_t* fn, size_t max_size = -1)
     {
-        hFile = CreateFileW(fn, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        hFile = CreateFileW(fn, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
         if (hFile == INVALID_HANDLE_VALUE) {
             return;
         }
-        fileSize = GetFileSize(hFile, NULL);
+        fileSize = GetFileSize(hFile, nullptr);
         if (fileSize > max_size)
             return;
-        fileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
-        if (fileMap == NULL) {
+        fileMap = CreateFileMappingW(hFile, nullptr, PAGE_READONLY, 0, fileSize, nullptr);
+        if (fileMap == nullptr) {
             CloseHandle(hFile);
             return;
         }
@@ -182,7 +181,7 @@ static bool BeginOptGroup()
 {
     static bool group_status = true;
     ImGui::SetNextItemOpen(group_status);
-    group_status = ImGui::CollapsingHeader(XSTR(name), ImGuiTreeNodeFlags_None);
+    group_status = ImGui::CollapsingHeader(Gui::LocaleGetStr(name), ImGuiTreeNodeFlags_None);
     if (group_status)
         ImGui::Indent();
     return group_status;
@@ -349,10 +348,6 @@ bool ReplayLoadParam(const wchar_t* rep_path, std::string& param);
     rapidjson::Document param;                     \
     if (param.Parse(json.c_str()).HasParseError()) \
         return false;
-#define ParseJsonNoReset()                         \
-    rapidjson::Document param;                     \
-    if (param.Parse(json.c_str()).HasParseError()) \
-        return false;
 #define CreateJson()           \
     rapidjson::Document param; \
     param.SetObject();         \
@@ -371,9 +366,6 @@ bool ReplayLoadParam(const wchar_t* rep_path, std::string& param);
 #define GetJsonValueEx(value_name, type)                               \
     if (param.HasMember(#value_name) && param[#value_name].Is##type()) \
         value_name = (decltype(value_name))param[#value_name].Get##type();
-#define GetJsonValueAlt(value_name, valueVar, type)                    \
-    if (param.HasMember(#value_name) && param[#value_name].Is##type()) \
-        valueVar = param[#value_name].Get##type();
 #define AddJsonValue(value_name)                                           \
     {                                                                      \
         rapidjson::Value __key_##value_name(#value_name, jalloc);          \
@@ -491,8 +483,6 @@ inline R GetMemAddr(uintptr_t addr, size_t offset, OffsetArgs... remaining_offse
     return GetMemAddr<R>(((uintptr_t)*(R*)addr) + offset, remaining_offsets...);
 }
 
-#define MDARRAY(arr, idx, size_of_subarray) (arr + idx * size_of_subarray)
-
 #pragma endregion
 
 #pragma region ECL Helper
@@ -522,7 +512,6 @@ inline std::pair<size_t, T> ECLX(size_t pos, T data)
 }
 
 typedef void (*ecl_patch_func)(ECLHelper& ecl);
-#define ECLPatch(name, ...) void name(ECLHelper& ecl, __VA_ARGS__)
 
 #pragma endregion
 

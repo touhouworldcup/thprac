@@ -38,7 +38,7 @@ namespace Gui {
         static constexpr ImGuiWindowFlags STYLE_DEFAULT = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | 0;
 
         void Update();
-       
+
         void Open();
         void Close();
 
@@ -126,7 +126,7 @@ namespace Gui {
         {
             mLocaleUpdFuncTmp = localeUpdFunc;
         }
-                
+
         void OnLocaleChange() override final
         {
             mLocaleUpdFunc();
@@ -166,7 +166,7 @@ namespace Gui {
     template <typename T, ImGuiDataType type>
     class GuiSlider {
     private:
-        unsigned int mLabelRef = 0;
+        th_glossary_t mLabelRef = 0;
         char* mLabel = nullptr;
         T mValue = 0;
         T mValueMin = 0;
@@ -189,7 +189,7 @@ namespace Gui {
         {
         }
 
-        GuiSlider(unsigned int label_ref, const T&& minimum, const T&& maximum,
+        GuiSlider(th_glossary_t label_ref, const T&& minimum, const T&& maximum,
             T step_min = 1, T step_max = 1, T step_x = 10)
             : mLabelRef(label_ref)
             , mValueMin(minimum)
@@ -205,7 +205,7 @@ namespace Gui {
         {
             mValue = value;
         }
-        inline void SetLabel(unsigned int ref)
+        inline void SetLabel(th_glossary_t ref)
         {
             mLabelRef = ref;
             mLabel = nullptr;
@@ -256,7 +256,7 @@ namespace Gui {
         bool operator()(const char* format = nullptr)
         {
             bool isFocused;
-            const char* label = mLabel ? mLabel : XSTR(mLabelRef);
+            const char* label = mLabel ? mLabel : LocaleGetStr(mLabelRef);
 
             auto hasChanged = ImGui::SliderScalar(label, type, &mValue, &mValueMin, &mValueMax, format);
             isFocused = ImGui::IsItemFocused();
@@ -294,7 +294,7 @@ namespace Gui {
     template <typename T, ImGuiDataType type>
     class GuiDrag {
     private:
-        unsigned int mLabelRef = 0;
+        th_glossary_t mLabelRef = 0;
         char* mLabel = nullptr;
         T mValue = 0;
         T mValueMin = 0;
@@ -317,7 +317,7 @@ namespace Gui {
         {
         }
 
-        GuiDrag(unsigned int label_ref, const T&& minimum, const T&& maximum,
+        GuiDrag(th_glossary_t label_ref, const T&& minimum, const T&& maximum,
             T step_min = 1, T step_max = 1, T step_x = 10)
             : mLabelRef(label_ref)
             , mValueMin(minimum)
@@ -333,7 +333,7 @@ namespace Gui {
         {
             mValue = value;
         }
-        inline void SetLabel(unsigned int ref)
+        inline void SetLabel(th_glossary_t ref)
         {
             mLabelRef = ref;
             mLabel = nullptr;
@@ -378,7 +378,7 @@ namespace Gui {
         void operator()(const char* format = nullptr)
         {
             bool isFocused;
-            const char* label = mLabel ? mLabel : XSTR(mLabelRef);
+            const char* label = mLabel ? mLabel : LocaleGetStr(mLabelRef);
 
             ImGui::DragScalar(label, type, &mValue, (float)(mStep * 2), &mValueMin, &mValueMax, format);
             isFocused = ImGui::IsItemFocused();
@@ -415,20 +415,20 @@ namespace Gui {
             , mSelector(selector)
         {
         }
-        GuiCombo(unsigned int label_ref, const th_glossary_t* selector = nullptr)
+        GuiCombo(th_glossary_t label_ref, const th_glossary_t* selector = nullptr)
             : mLabelRef(label_ref)
             , mSelector(selector)
         {
         }
 
-        inline void SetLabel(unsigned int ref)
+        inline void SetLabel(th_glossary_t ref)
         {
             mLabelRef = ref;
             mLabel = nullptr;
         }
         inline void SetLabel(const char* label)
         {
-            mLabelRef = 0;
+            mLabelRef = A0000ERROR_C;
             mLabel = const_cast<char*>(label);
         }
 
@@ -441,7 +441,7 @@ namespace Gui {
             return (*this)(-1);
         }
         template <typename T>
-        bool operator()(th_glossary_t new_label_ref, T* selector, const char** items = XITEMS)
+        bool operator()(th_glossary_t new_label_ref, T* selector, const char** items = LocaleGetCurrentGlossary())
         {
             if (selector == nullptr || items == nullptr)
                 return false;
@@ -450,9 +450,9 @@ namespace Gui {
 
             const char* label;
             if (new_label_ref != A0000ERROR_C)
-                label = XSTR(new_label_ref);
+                label = LocaleGetStr(new_label_ref);
             else if (mLabelRef != A0000ERROR_C)
-                label = XSTR(mLabelRef);
+                label = LocaleGetStr(mLabelRef);
             else if (mLabel)
                 label = mLabel;
             else
@@ -484,7 +484,7 @@ namespace Gui {
         }
 
     private:
-        unsigned int mLabelRef = 0;
+        th_glossary_t mLabelRef = A0000ERROR_C;
         char* mLabel = nullptr;
 
         const th_glossary_t* mSelector;
@@ -514,11 +514,11 @@ namespace Gui {
     class GuiButton {
     private:
         ImVec2 mSize;
-        unsigned int mLabelRef = 0;
+        th_glossary_t mLabelRef = A0000ERROR_C;
         char* mLabel = nullptr;
 
     public:
-        GuiButton(unsigned int label_ref, float width, float height)
+        GuiButton(th_glossary_t label_ref, float width, float height)
             : mSize { width, height }
             , mLabelRef(label_ref)
         {
@@ -535,14 +535,14 @@ namespace Gui {
             mSize.x = width;
             mSize.y = height;
         }
-        inline void SetLabel(unsigned int ref)
+        inline void SetLabel(th_glossary_t ref)
         {
             mLabelRef = ref;
             mLabel = nullptr;
         }
         inline void SetLabel(const char* label)
         {
-            mLabelRef = 0;
+            mLabelRef = A0000ERROR_C;
             mLabel = const_cast<char*>(label);
         }
 
@@ -551,12 +551,12 @@ namespace Gui {
 
     class GuiCheckBox {
     private:
-        unsigned int mLabelRef = 0;
+        th_glossary_t mLabelRef = A0000ERROR_C;
         char* mLabel = nullptr;
         bool mToggle = false;
 
     public:
-        GuiCheckBox(unsigned int label_ref)
+        GuiCheckBox(th_glossary_t label_ref)
             : mLabelRef(label_ref)
         {
         }
@@ -566,14 +566,14 @@ namespace Gui {
         {
         }
 
-        inline void SetLabel(unsigned int ref)
+        inline void SetLabel(th_glossary_t ref)
         {
             mLabelRef = ref;
             mLabel = nullptr;
         }
         inline void SetLabel(const char* label)
         {
-            mLabelRef = 0;
+            mLabelRef = A0000ERROR_C;
             mLabel = const_cast<char*>(label);
         }
 
@@ -587,7 +587,7 @@ namespace Gui {
 
     class GuiHotKey {
     private:
-        unsigned int mTextRef = 0;
+        th_glossary_t mTextRef = A0000ERROR_C;
         const char* mText = nullptr;
         const char* mKeyText = nullptr;
         int mKey;
@@ -599,7 +599,7 @@ namespace Gui {
     protected:
         virtual void OnWidgetUpdate(bool status, bool has_changed);
     public:
-        GuiHotKey(unsigned int text_ref, const char* key_text, int vkey, std::initializer_list<HookCtx*> hooks = {})
+        GuiHotKey(th_glossary_t text_ref, const char* key_text, int vkey, std::initializer_list<HookCtx*> hooks = {})
             : mTextRef(text_ref)
             , mKeyText(key_text)
             , mKey(vkey)
@@ -621,7 +621,7 @@ namespace Gui {
             }
         }
 
-        GuiHotKey(unsigned int text_ref, const char* key_text, int vkey,
+        GuiHotKey(th_glossary_t text_ref, const char* key_text, int vkey,
             float x_offset_1, float x_offset_2, bool use_rel_offset,
             std::initializer_list<HookCtx*> hooks = {})
             : mTextRef(text_ref)
@@ -639,14 +639,14 @@ namespace Gui {
             }
         }
 
-        inline void SetText(unsigned int ref)
+        inline void SetText(th_glossary_t ref)
         {
             mTextRef = ref;
             mText = nullptr;
         }
         inline void SetText(const char* label)
         {
-            mTextRef = 0;
+            mTextRef = A0000ERROR_C;
             mText = label;
         }
         inline void SetKey(const char* key_text, int vkey)
@@ -740,7 +740,8 @@ namespace Gui {
     template <class... Args>
     inline bool CheckPopups(int id, Args... rest)
     {
-        if (ImGui::IsPopupOpen(XSTR(id))) {
+        // TODO: Should `id` be a th_glossary_t?
+        if (ImGui::IsPopupOpen(LocaleGetStr(static_cast<th_glossary_t>(id)))) {
             return true;
         } else if constexpr (sizeof...(Args) != 0) {
             return CheckPopups(rest...);

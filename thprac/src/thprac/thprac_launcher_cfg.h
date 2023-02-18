@@ -36,6 +36,6 @@ void LauncherPeekUpd();
 
 bool LauncherPreUpdate(wchar_t* pCmdLine);
 
-bool SetTheme(int theme, const wchar_t* userThemeName = NULL);
+bool SetTheme(int theme, const wchar_t* userThemeName = nullptr);
 
 }
