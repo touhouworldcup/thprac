@@ -13,15 +13,18 @@ namespace Gui {
     void LocaleSet(locale_t locale);
     void LocaleAutoSet();
     locale_t LocaleGet();
+    inline const char** LocaleGetCurrentGlossary() {
+        return th_glossary_str[LocaleGet()];
+    };
+    inline const char* LocaleGetStr(th_glossary_t name) {
+        return LocaleGetCurrentGlossary()[name];
+    };
     void LocaleRotate();
     bool LocaleInitFromCfg();
 
     bool LocaleCreateFont(float font_size);
     bool LocaleCreateMergeFont(locale_t locale, float font_size);
     bool LocaleRecreateMergeFont(locale_t locale, float font_size);
-
-    const char** LocaleGetCurrentGlossary();
-    const char* LocaleGetStr(th_glossary_t name);
 
 // TODO: These can't be refactored into functions as-is, because they depend on
 // the current game's namespace being active where they're used. Fixing this

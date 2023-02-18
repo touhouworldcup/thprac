@@ -149,6 +149,8 @@ static ImWchar baseUnicodeRanges[] =
     {
         return __glocale_current;
     }
+    inline const char** LocaleGetCurrentGlossary();
+    inline const char* LocaleGetStr(th_glossary_t name);
     void LocaleRotate()
     {
         switch (__glocale_current) {
@@ -628,12 +630,6 @@ static ImWchar baseUnicodeRanges[] =
         auto& io = ImGui::GetIO();
         io.Fonts->Clear();
         return LocaleCreateMergeFont(locale, font_size);
-    }
-    const char** LocaleGetCurrentGlossary() {
-        return th_glossary_str[LocaleGet()];
-    }
-    const char* LocaleGetStr(th_glossary_t name) {
-        return LocaleGetCurrentGlossary()[name];
     }
 }
 }
