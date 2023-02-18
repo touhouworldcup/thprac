@@ -1735,7 +1735,7 @@ private:
 
         ImGui::TextUnformatted(Gui::LocaleGetStr(THPRAC_GAME_ADJUSTMENTS));
         ImGui::Separator();
-        mResizableWindow.Gui(XSTR(THPRAC_RESIZABLE_WINDOW));
+        mResizableWindow.Gui(Gui::LocaleGetStr(THPRAC_RESIZABLE_WINDOW));
         ImGui::NewLine();
 
         ImGui::TextUnformatted(Gui::LocaleGetStr(THPRAC_SETTING_LANGUAGE));

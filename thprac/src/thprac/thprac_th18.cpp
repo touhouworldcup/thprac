@@ -1254,7 +1254,7 @@ namespace TH18 {
 
                 if (!mRepDataDecoded) {
                     if (THCurrentRep::singleton().mRepSelected) {
-                        ImGui::Text(XSTR(TH18_REPFIX_SELECTED), THCurrentRep::singleton().mRepName.c_str());
+                        ImGui::Text(Gui::LocaleGetStr(TH18_REPFIX_SELECTED), THCurrentRep::singleton().mRepName.c_str());
 
                         if (!mRepDataDecoded) {
                             ImGui::SameLine();
