@@ -1,6 +1,8 @@
 ﻿#include "thprac_utils.h"
 #include <list>
 
+constexpr auto LGS = THPrac::Gui::LocaleGetStr;
+
 namespace THPrac {
 namespace TH14 {
     using std::pair;
@@ -158,7 +160,7 @@ namespace TH14 {
     protected:
         virtual void OnLocaleChange() override
         {
-            SetTitle(Gui::LocaleGetStr(TH_MENU));
+            SetTitle(LGS(TH_MENU));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSizeRel(0.5f, 0.81f);
@@ -184,7 +186,7 @@ namespace TH14 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(Gui::LocaleGetStr(TH_MENU));
+            ImGui::TextUnformatted(LGS(TH_MENU));
             ImGui::Separator();
 
             PracticeMenu();
@@ -283,11 +285,11 @@ namespace TH14 {
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
                 if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
-                    sprintf_s(chapterStr, Gui::LocaleGetStr(TH_STAGE_PORTION_N), *mChapter);
+                    sprintf_s(chapterStr, LGS(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
-                    sprintf_s(chapterStr, Gui::LocaleGetStr(TH_STAGE_PORTION_1), *mChapter);
+                    sprintf_s(chapterStr, LGS(TH_STAGE_PORTION_1), *mChapter);
                 } else {
-                    sprintf_s(chapterStr, Gui::LocaleGetStr(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
+                    sprintf_s(chapterStr, LGS(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
                 };
 
                 mChapter(chapterStr);
@@ -508,7 +510,7 @@ namespace TH14 {
     protected:
         virtual void OnLocaleChange() override
         {
-            SetTitle(Gui::LocaleGetStr(TH_SPELL_PRAC));
+            SetTitle(LGS(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSizeRel(0.38f, 0.12f);
@@ -534,7 +536,7 @@ namespace TH14 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(Gui::LocaleGetStr(TH_SPELL_PRAC));
+            ImGui::TextUnformatted(LGS(TH_SPELL_PRAC));
             ImGui::Separator();
 
             PracticeMenu();
@@ -849,25 +851,25 @@ namespace TH14 {
             ImGui::PushItemWidth(GetRelWidth(0.25f));
             if (mLock)
                 ImGui::BeginDisabled();
-            ImGui::ComboSectionsDefault(Gui::LocaleGetStr(TH14_MODE), &(thMarisaLaser->mState), TH14_MODE_COMBO, Gui::LocaleGetCurrentGlossary(), "");
-            if (ImGui::IsPopupOpen(Gui::LocaleGetStr(TH14_MODE))) {
+            ImGui::ComboSectionsDefault(LGS(TH14_MODE), &(thMarisaLaser->mState), TH14_MODE_COMBO, Gui::LocaleGetCurrentGlossary(), "");
+            if (ImGui::IsPopupOpen(LGS(TH14_MODE))) {
                 wndFocus = false;
             }
             ImGui::PopItemWidth();
             if (mLock) {
                 ImGui::EndDisabled();
                 ImGui::SameLine();
-                ImGui::TextUnformatted(Gui::LocaleGetStr(TH14_LOCKED));
+                ImGui::TextUnformatted(LGS(TH14_LOCKED));
             }
 
             if (thMarisaLaser->mState == 0) {
-                ImGui::TextUnformatted(Gui::LocaleGetStr(TH14_MODE_NONE_DESC));
+                ImGui::TextUnformatted(LGS(TH14_MODE_NONE_DESC));
             } else if (thMarisaLaser->mState == 1) {
-                ImGui::TextUnformatted(Gui::LocaleGetStr(TH14_MODE_NORMAL_DESC));
+                ImGui::TextUnformatted(LGS(TH14_MODE_NORMAL_DESC));
             } else if (thMarisaLaser->mState == 2) {
-                ImGui::TextUnformatted(Gui::LocaleGetStr(TH14_MODE_PLAYBACK_DESC));
+                ImGui::TextUnformatted(LGS(TH14_MODE_PLAYBACK_DESC));
                 if (mRepName[0]) {
-                    ImGui::Text(Gui::LocaleGetStr(TH14_SELECTED_REPLAY), mRepName);
+                    ImGui::Text(LGS(TH14_SELECTED_REPLAY), mRepName);
                     if (thMarisaLaser->mRecordsPlayback.size()) {
                         int i = 1;
                         for (auto& record : thMarisaLaser->mRecordsPlayback) {
@@ -875,25 +877,25 @@ namespace TH14 {
                             int tempE = (record.fix & 0xffff0000) >> 16;
 
                             if (TH14_CORRECTION[tempFix] == TH14_CORRECTION_E_POSITIVE || TH14_CORRECTION[tempFix] == TH14_CORRECTION_E_NEGATIVE) {
-                                ImGui::Text(Gui::LocaleGetStr(TH14_RECORD_E), i++, record.stage, record.frame, *(uint32_t*)&(record.value),
+                                ImGui::Text(LGS(TH14_RECORD_E), i++, record.stage, record.frame, *(uint32_t*)&(record.value),
                                     TH14_CORRECTION[tempFix] == TH14_CORRECTION_E_POSITIVE ? "" : "-", tempE);
                             } else {
-                                ImGui::Text(Gui::LocaleGetStr(TH14_RECORD), i++, record.stage, record.frame, *(uint32_t*)&(record.value));
+                                ImGui::Text(LGS(TH14_RECORD), i++, record.stage, record.frame, *(uint32_t*)&(record.value));
                                 ImGui::SameLine(0.0f, 0.0f);
-                                ImGui::TextUnformatted(Gui::LocaleGetStr(TH14_CORRECTION[record.fix]));
+                                ImGui::TextUnformatted(LGS(TH14_CORRECTION[record.fix]));
                             }
                         }
                     } else {
-                        ImGui::TextUnformatted(Gui::LocaleGetStr(TH14_REPLAY_NO_RECORDS));
+                        ImGui::TextUnformatted(LGS(TH14_REPLAY_NO_RECORDS));
                     }
                 } else {
-                    ImGui::TextUnformatted(Gui::LocaleGetStr(TH14_SELECTED_NONE));
+                    ImGui::TextUnformatted(LGS(TH14_SELECTED_NONE));
                 }
                 // TODO: Replay info
             } else if (thMarisaLaser->mState == 3) {
-                ImGui::TextUnformatted(Gui::LocaleGetStr(TH14_MODE_RECOVER_DESC));
+                ImGui::TextUnformatted(LGS(TH14_MODE_RECOVER_DESC));
 
-                if (ImGui::Button(Gui::LocaleGetStr(TH14_SAVE))) {
+                if (ImGui::Button(LGS(TH14_SAVE))) {
                     if (mRepName[0]) {
                         std::wstring rep;
                         rep = mRepDir;
@@ -902,25 +904,25 @@ namespace TH14 {
                     }
                 }
                 ImGui::SameLine();
-                if (ImGui::Button(Gui::LocaleGetStr(TH14_LOAD)) && mRepName[0])
+                if (ImGui::Button(LGS(TH14_LOAD)) && mRepName[0])
                     thMarisaLaser->MergePbAndRec();
                 ImGui::SameLine();
-                if (ImGui::Button(Gui::LocaleGetStr(TH14_CLEAR_RECORDS)))
+                if (ImGui::Button(LGS(TH14_CLEAR_RECORDS)))
                     thMarisaLaser->mRecordsRecover.clear();
                 ImGui::SameLine();
                 if (mRepName[0])
-                    ImGui::Text(Gui::LocaleGetStr(TH14_SELECTED_REPLAY), mRepName);
+                    ImGui::Text(LGS(TH14_SELECTED_REPLAY), mRepName);
                 else
-                    ImGui::TextUnformatted(Gui::LocaleGetStr(TH14_SELECTED_NONE));
+                    ImGui::TextUnformatted(LGS(TH14_SELECTED_NONE));
 
                 ImGui::Separator();
                 auto it = thMarisaLaser->mRecordsRecover.begin();
                 if (it == thMarisaLaser->mRecordsRecover.end())
-                    ImGui::TextUnformatted(Gui::LocaleGetStr(TH14_NO_RECORDS));
+                    ImGui::TextUnformatted(LGS(TH14_NO_RECORDS));
                 else {
                     int i = 1;
                     for (; it != thMarisaLaser->mRecordsRecover.end(); ++i) {
-                        ImGui::Text(Gui::LocaleGetStr(TH14_RECORD), i, it->stage, it->frame, *(uint32_t*)&(it->value));
+                        ImGui::Text(LGS(TH14_RECORD), i, it->stage, it->frame, *(uint32_t*)&(it->value));
 
                         int tempFix = it->fix & 0x0000ffff;
                         int tempE = (it->fix & 0xffff0000) >> 16;
@@ -931,7 +933,7 @@ namespace TH14 {
                             ImGui::PushItemWidth(GetRelWidth(0.13f));
                         else
                             ImGui::PushItemWidth(GetRelWidth(0.27f));
-                        sprintf_s(mTempStr, "##%s_%d", Gui::LocaleGetStr(TH14_CORRECTION_VALUE), i);
+                        sprintf_s(mTempStr, "##%s_%d", LGS(TH14_CORRECTION_VALUE), i);
                         ImGui::ComboSectionsDefault(mTempStr, &tempFix, TH14_CORRECTION, Gui::LocaleGetCurrentGlossary(), "");
                         if (ImGui::IsPopupOpen(mTempStr)) {
                             wndFocus = false;
@@ -949,7 +951,7 @@ namespace TH14 {
                         ImGui::PopItemWidth();
 
                         ImGui::SameLine();
-                        sprintf_s(mTempStr, "%s##%d", Gui::LocaleGetStr(TH14_DELETE), i);
+                        sprintf_s(mTempStr, "%s##%d", LGS(TH14_DELETE), i);
                         if (ImGui::Button(mTempStr))
                             it = thMarisaLaser->mRecordsRecover.erase(it);
                         else
@@ -1037,7 +1039,7 @@ namespace TH14 {
             DWORD bytesProcessed;
             auto repFile = CreateFileW(rep_path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (repFile == INVALID_HANDLE_VALUE) {
-                MsgBox(MB_ICONERROR | MB_OK, Gui::LocaleGetStr(TH14_ERROR), Gui::LocaleGetStr(TH14_ERROR_SRC));
+                MsgBox(MB_ICONERROR | MB_OK, LGS(TH14_ERROR), LGS(TH14_ERROR_SRC));
                 return false;
             }
             auto repSize = GetFileSize(repFile, nullptr);
@@ -1085,7 +1087,7 @@ namespace TH14 {
             if (GetSaveFileNameW(&ofn)) {
                 auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {
-                    MsgBox(MB_ICONERROR | MB_OK, Gui::LocaleGetStr(TH14_ERROR), Gui::LocaleGetStr(TH14_ERROR_DEST));
+                    MsgBox(MB_ICONERROR | MB_OK, LGS(TH14_ERROR), LGS(TH14_ERROR_DEST));
                     return false;
                 }
                 SetFilePointer(outputFile, 0, nullptr, FILE_BEGIN);
@@ -1095,7 +1097,7 @@ namespace TH14 {
                     WriteFile(outputFile, dataBuffer, dataSize, &bytesProcessed, nullptr);
                 CloseHandle(outputFile);
 
-                MsgBox(MB_ICONINFORMATION | MB_OK, utf8_to_utf16(Gui::LocaleGetStr(TH14_SUCCESS)).c_str(), utf8_to_utf16(Gui::LocaleGetStr(TH14_SUCCESS_SAVED)).c_str(), szFile);
+                MsgBox(MB_ICONINFORMATION | MB_OK, utf8_to_utf16(LGS(TH14_SUCCESS)).c_str(), utf8_to_utf16(LGS(TH14_SUCCESS_SAVED)).c_str(), szFile);
             }
 
             return true;
@@ -1200,7 +1202,7 @@ namespace TH14 {
         {
             bool wndFocus = true;
 
-            ImGui::TextUnformatted(Gui::LocaleGetStr(TH_ADV_OPT));
+            ImGui::TextUnformatted(LGS(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 

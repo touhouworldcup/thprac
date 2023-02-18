@@ -1,5 +1,7 @@
 ﻿#include "thprac_utils.h"
 
+constexpr auto LGS = THPrac::Gui::LocaleGetStr;
+
 namespace THPrac {
 namespace Alcostg {
     using std::pair;
@@ -170,7 +172,7 @@ namespace Alcostg {
         }
         virtual void OnLocaleChange() override
         {
-            SetTitle(Gui::LocaleGetStr(TH_MENU));
+            SetTitle(LGS(TH_MENU));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 if (*mMode) {
@@ -208,7 +210,7 @@ namespace Alcostg {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(Gui::LocaleGetStr(TH_MENU));
+            ImGui::TextUnformatted(LGS(TH_MENU));
             ImGui::Separator();
 
             PracticeMenu();
@@ -251,9 +253,9 @@ namespace Alcostg {
                 if (*mWarp) {
                     if (*mWarp == 1) {
                         if (*mStage == 2 && *mProgress == 6)
-                            sprintf_s(temp, Gui::LocaleGetStr(ALCOSTG_ORDER_MBOSS), *mProgress);
+                            sprintf_s(temp, LGS(ALCOSTG_ORDER_MBOSS), *mProgress);
                         else
-                            sprintf_s(temp, Gui::LocaleGetStr(ALCOSTG_ORDER), *mProgress);
+                            sprintf_s(temp, LGS(ALCOSTG_ORDER), *mProgress);
                         mProgress(temp);
                     } else {
                         if (mSection(TH_WARP_ALCOSTG[*mWarp], XCBA(*mStage, *mWarp - 1), XSSS(mDiffculty)))
@@ -494,7 +496,7 @@ namespace Alcostg {
     protected:
         virtual void OnLocaleChange() override
         {
-            SetTitle(Gui::LocaleGetStr(TH_SPELL_PRAC));
+            SetTitle(LGS(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
@@ -520,7 +522,7 @@ namespace Alcostg {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(Gui::LocaleGetStr(TH_ADV_OPT));
+            ImGui::TextUnformatted(LGS(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 

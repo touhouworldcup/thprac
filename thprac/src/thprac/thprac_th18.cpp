@@ -4,6 +4,8 @@
 #include <metrohash128.h>
 #include "..\MinHook\src\buffer.h"
 
+constexpr auto LGS = THPrac::Gui::LocaleGetStr;
+
 namespace THPrac {
 namespace TH18 {
     enum addrs {
@@ -198,7 +200,7 @@ namespace TH18 {
 
         virtual void OnLocaleChange() override
         {
-            SetTitle(Gui::LocaleGetStr(TH_MENU));
+            SetTitle(LGS(TH_MENU));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSizeRel(0.5f, 0.7f);
@@ -224,7 +226,7 @@ namespace TH18 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(Gui::LocaleGetStr(TH_MENU));
+            ImGui::TextUnformatted(LGS(TH_MENU));
             ImGui::Separator();
 
             PracticeMenu();
@@ -324,11 +326,11 @@ namespace TH18 {
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
                 if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
-                    sprintf_s(chapterStr, Gui::LocaleGetStr(TH_STAGE_PORTION_N), *mChapter);
+                    sprintf_s(chapterStr, LGS(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
-                    sprintf_s(chapterStr, Gui::LocaleGetStr(TH_STAGE_PORTION_1), *mChapter);
+                    sprintf_s(chapterStr, LGS(TH_STAGE_PORTION_1), *mChapter);
                 } else {
-                    sprintf_s(chapterStr, Gui::LocaleGetStr(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
+                    sprintf_s(chapterStr, LGS(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
                 };
 
                 mChapter(chapterStr);
@@ -611,14 +613,14 @@ namespace TH18 {
                     }
                 } else {
                     ImGui::BeginDisabled();
-                    ImGui::Text("%s: %s", "F10", Gui::LocaleGetStr(TH18_MARKET_MANIP));
+                    ImGui::Text("%s: %s", "F10", LGS(TH18_MARKET_MANIP));
                     ImGui::EndDisabled();
                 }
             } else {
-                ImGui::TextUnformatted(Gui::LocaleGetStr(TH18_MARKET_MANIP_DESC1));
-                ImGui::TextUnformatted(Gui::LocaleGetStr(TH18_MARKET_MANIP_DESC2));
-                ImGui::TextUnformatted(Gui::LocaleGetStr(TH18_MARKET_MANIP_DESC3));
-                ImGui::TextUnformatted(Gui::LocaleGetStr(TH18_MARKET_MANIP_DESC4));
+                ImGui::TextUnformatted(LGS(TH18_MARKET_MANIP_DESC1));
+                ImGui::TextUnformatted(LGS(TH18_MARKET_MANIP_DESC2));
+                ImGui::TextUnformatted(LGS(TH18_MARKET_MANIP_DESC3));
+                ImGui::TextUnformatted(LGS(TH18_MARKET_MANIP_DESC4));
             }
         }
         virtual void OnPreUpdate() override
@@ -800,7 +802,7 @@ namespace TH18 {
     protected:
         virtual void OnLocaleChange() override
         {
-            SetTitle(Gui::LocaleGetStr(TH_SPELL_PRAC));
+            SetTitle(LGS(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSizeRel(0.38f, 0.12f);
@@ -826,7 +828,7 @@ namespace TH18 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(Gui::LocaleGetStr(TH_SPELL_PRAC));
+            ImGui::TextUnformatted(LGS(TH_SPELL_PRAC));
             ImGui::Separator();
 
             PracticeMenu();
@@ -1168,7 +1170,7 @@ namespace TH18 {
             if (GetSaveFileNameW(&ofn)) {
                 auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {
-                    MsgBox(MB_ICONERROR | MB_OK, Gui::LocaleGetStr(TH14_ERROR), Gui::LocaleGetStr(TH14_ERROR_DEST));
+                    MsgBox(MB_ICONERROR | MB_OK, LGS(TH14_ERROR), LGS(TH14_ERROR_DEST));
                     goto end;
                 }
                 SetFilePointer(outputFile, 0, nullptr, FILE_BEGIN);
@@ -1178,7 +1180,7 @@ namespace TH18 {
                 WriteFile(outputFile, mRepExtraData, mRepExtraDataSize, &bytesProcessed, nullptr);
                 CloseHandle(outputFile);
 
-                MsgBox(MB_ICONINFORMATION | MB_OK, utf8_to_utf16(Gui::LocaleGetStr(TH14_SUCCESS)).c_str(), utf8_to_utf16(Gui::LocaleGetStr(TH14_SUCCESS_SAVED)).c_str(), szFile);
+                MsgBox(MB_ICONINFORMATION | MB_OK, utf8_to_utf16(LGS(TH14_SUCCESS)).c_str(), utf8_to_utf16(LGS(TH14_SUCCESS_SAVED)).c_str(), szFile);
             }
 
             end:
@@ -1237,48 +1239,48 @@ namespace TH18 {
             bool wndFocus = true;
 
             if (BeginOptGroup<TH18_REPLAY_FIX>()) {
-                ImGui::TextUnformatted(Gui::LocaleGetStr(TH18_REPFIX_DESC));
+                ImGui::TextUnformatted(LGS(TH18_REPFIX_DESC));
                 if (mShowFixInstruction) {
-                    if (ImGui::Button(Gui::LocaleGetStr(TH18_REPFIX_HIDE_INS)))
+                    if (ImGui::Button(LGS(TH18_REPFIX_HIDE_INS)))
                         mShowFixInstruction = false;
                 } else {
-                    if (ImGui::Button(Gui::LocaleGetStr(TH18_REPFIX_SHOW_INS)))
+                    if (ImGui::Button(LGS(TH18_REPFIX_SHOW_INS)))
                         mShowFixInstruction = true;
                 }
                 if (mShowFixInstruction) {
                     ImGui::PushTextWrapPos(GetRelWidth(0.95f));
-                    ImGui::TextUnformatted(Gui::LocaleGetStr(TH18_REPFIX_INS));
+                    ImGui::TextUnformatted(LGS(TH18_REPFIX_INS));
                     ImGui::PopTextWrapPos();
                 }
                 ImGui::NewLine();
 
                 if (!mRepDataDecoded) {
                     if (THCurrentRep::singleton().mRepSelected) {
-                        ImGui::Text(Gui::LocaleGetStr(TH18_REPFIX_SELECTED), THCurrentRep::singleton().mRepName.c_str());
+                        ImGui::Text(LGS(TH18_REPFIX_SELECTED), THCurrentRep::singleton().mRepName.c_str());
 
                         if (!mRepDataDecoded) {
                             ImGui::SameLine();
-                            if (ImGui::Button(Gui::LocaleGetStr(TH18_REPFIX_LOCK))) {
+                            if (ImGui::Button(LGS(TH18_REPFIX_LOCK))) {
                                 LoadReplay();
                             }
                         }
                     } else {
-                        ImGui::TextUnformatted(Gui::LocaleGetStr(TH18_REPFIX_NOTHING));
+                        ImGui::TextUnformatted(LGS(TH18_REPFIX_NOTHING));
                     }
                 } else {
-                    ImGui::Text(Gui::LocaleGetStr(TH18_REPFIX_LOCKED), mRepOriginalName.c_str());
+                    ImGui::Text(LGS(TH18_REPFIX_LOCKED), mRepOriginalName.c_str());
                     ImGui::SameLine();
-                    if (ImGui::Button(Gui::LocaleGetStr(TH18_REPFIX_UNLOCK))) {
+                    if (ImGui::Button(LGS(TH18_REPFIX_UNLOCK))) {
                         UnloadReplay();
                     }
                     ImGui::SameLine();
-                    if (ImGui::Button(Gui::LocaleGetStr(TH18_REPFIX_SAVEAS))) {
+                    if (ImGui::Button(LGS(TH18_REPFIX_SAVEAS))) {
                         SaveReplay();
                     }
 
                     auto isAvailable = GetAvailability();
                     if (!isAvailable) {
-                        ImGui::TextUnformatted(Gui::LocaleGetStr(TH18_REPFIX_MISMATCH));
+                        ImGui::TextUnformatted(LGS(TH18_REPFIX_MISMATCH));
                         ImGui::BeginDisabled();
                     }
 
@@ -1288,7 +1290,7 @@ namespace TH18 {
                         if (data.activeCardId != -1) {
                             ImGui::Text("Stage %s:", mStageStr[data.stage]);
                             ImGui::SameLine();
-                            ImGui::TextUnformatted(Gui::LocaleGetStr(TH18_REPFIX_INITIAL_CARD));
+                            ImGui::TextUnformatted(LGS(TH18_REPFIX_INITIAL_CARD));
                             ImGui::SameLine(0.0f, 0.0f);
 
                             sprintf_s(comboId, "##active_card_idx_st%d", data.stage);
@@ -1457,7 +1459,7 @@ namespace TH18 {
         {
             bool wndFocus = true;
 
-            ImGui::TextUnformatted(Gui::LocaleGetStr(TH_ADV_OPT));
+            ImGui::TextUnformatted(LGS(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 
@@ -1469,7 +1471,7 @@ namespace TH18 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
-                if (ImGui::Checkbox(Gui::LocaleGetStr(TH18_UNCAP), &scoreUncapChkbox)) {
+                if (ImGui::Checkbox(LGS(TH18_UNCAP), &scoreUncapChkbox)) {
                     if (!scoreUncapChkbox) {
                         scoreUncapOverwrite = false;
                     }
@@ -1479,46 +1481,46 @@ namespace TH18 {
                 if (!scoreUncapChkbox) {
                     ImGui::BeginDisabled();
                 }
-                if (ImGui::Checkbox(Gui::LocaleGetStr(TH18_UNCAP_OVERWRITE), &scoreUncapOverwrite)) {
+                if (ImGui::Checkbox(LGS(TH18_UNCAP_OVERWRITE), &scoreUncapOverwrite)) {
                     ScoreUncapSet();
                 }
                 if (!scoreUncapChkbox) {
                     ImGui::EndDisabled();
                 }
 
-                if (ImGui::Checkbox(Gui::LocaleGetStr(TH18_REPLAY_BONUS), &scoreReplayFactor)) {
+                if (ImGui::Checkbox(LGS(TH18_REPLAY_BONUS), &scoreReplayFactor)) {
                     th18_score_uncap_replay_factor.Toggle(scoreReplayFactor);
                 }
                 EndOptGroup();
             }
             if (BeginOptGroup<TH18_BUG_FIX>()) {
-                ImGui::TextUnformatted(Gui::LocaleGetStr(TH18_BUG_FIX_DESC));
+                ImGui::TextUnformatted(LGS(TH18_BUG_FIX_DESC));
 
-                if (ImGui::Checkbox(Gui::LocaleGetStr(TH18_MUKADE_FIX), &mukadeFix)) {
+                if (ImGui::Checkbox(LGS(TH18_MUKADE_FIX), &mukadeFix)) {
                     th18_mukade_fix.Toggle(mukadeFix);
                 }
                 ImGui::SameLine();
-                HelpMarker(Gui::LocaleGetStr(TH18_MUKADE_FIX_DESC));
+                HelpMarker(LGS(TH18_MUKADE_FIX_DESC));
 
-                if (ImGui::Checkbox(Gui::LocaleGetStr(TH18_SCROLL_FIX), &scrollFix)) {
+                if (ImGui::Checkbox(LGS(TH18_SCROLL_FIX), &scrollFix)) {
                     th18_scroll_fix.Toggle(scrollFix);
                 }
                 ImGui::SameLine();
-                HelpMarker(Gui::LocaleGetStr(TH18_SCROLL_FIX_DESC));
+                HelpMarker(LGS(TH18_SCROLL_FIX_DESC));
 
-                if (ImGui::Checkbox(Gui::LocaleGetStr(TH18_ST6FINAL_FIX), &st6FinalFix)) {
+                if (ImGui::Checkbox(LGS(TH18_ST6FINAL_FIX), &st6FinalFix)) {
                     th18_st6final_fix.Toggle(st6FinalFix);
                 }
                 ImGui::SameLine();
-                HelpMarker(Gui::LocaleGetStr(TH18_ST6FINAL_FIX_DESC));
+                HelpMarker(LGS(TH18_ST6FINAL_FIX_DESC));
 
-                ImGui::Checkbox(Gui::LocaleGetStr(TH18_RESTART_FIX), &restartFix);
+                ImGui::Checkbox(LGS(TH18_RESTART_FIX), &restartFix);
 
-                if (ImGui::Checkbox(Gui::LocaleGetStr(TH18_AC_FIX), &activeCardIdFix)) {
+                if (ImGui::Checkbox(LGS(TH18_AC_FIX), &activeCardIdFix)) {
                     th18_active_card_fix.Toggle(activeCardIdFix);
                 }
                 ImGui::SameLine();
-                HelpMarker(Gui::LocaleGetStr(TH18_AC_FIX_DESC));
+                HelpMarker(LGS(TH18_AC_FIX_DESC));
 
                 EndOptGroup();
             }
