@@ -629,5 +629,11 @@ static ImWchar baseUnicodeRanges[] =
         io.Fonts->Clear();
         return LocaleCreateMergeFont(locale, font_size);
     }
+    const char** LocaleGetCurrentGlossary() {
+        return th_glossary_str[LocaleGet()];
+    }
+    const char* LocaleGetStr(th_glossary_t name) {
+        return LocaleGetCurrentGlossary()[name];
+    }
 }
 }

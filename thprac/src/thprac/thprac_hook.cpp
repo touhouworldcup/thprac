@@ -135,7 +135,7 @@ bool MakeMiniDump(EXCEPTION_POINTERS* e, std::wstring* dmpName = nullptr)
 
 __declspec(noinline) LONG WINAPI UEHandler(__in struct _EXCEPTION_POINTERS* ExceptionInfo)
 {
-    MessageBoxW(nullptr, utf8_to_utf16(XSTR(THPRAC_UNHANDLED_EXCEPTION)).c_str(), utf8_to_utf16(XSTR(THPRAC_PR_ERROR)).c_str(), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+    MessageBoxW(nullptr, utf8_to_utf16(Gui::LocaleGetStr(THPRAC_UNHANDLED_EXCEPTION)).c_str(), utf8_to_utf16(Gui::LocaleGetStr(THPRAC_PR_ERROR)).c_str(), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
     return EXCEPTION_CONTINUE_SEARCH;
 }
 

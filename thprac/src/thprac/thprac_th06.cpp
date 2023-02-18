@@ -329,7 +329,7 @@ namespace TH06 {
     protected:
         virtual void OnLocaleChange() override
         {
-            SetTitle(XSTR(TH_MENU));
+            SetTitle(Gui::LocaleGetStr(TH_MENU));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSize(330.f, 390.f);
@@ -352,7 +352,7 @@ namespace TH06 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(XSTR(TH_MENU));
+            ImGui::TextUnformatted(Gui::LocaleGetStr(TH_MENU));
             ImGui::Separator();
 
             PracticeMenu(mNavFocus);
@@ -414,11 +414,11 @@ namespace TH06 {
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
                 if (chapterCounts[1] == 0) {
-                    sprintf_s(chapterStr, XSTR(TH_STAGE_PORTION_N), *mChapter);
+                    sprintf_s(chapterStr, Gui::LocaleGetStr(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
-                    sprintf_s(chapterStr, XSTR(TH_STAGE_PORTION_1), *mChapter);
+                    sprintf_s(chapterStr, Gui::LocaleGetStr(TH_STAGE_PORTION_1), *mChapter);
                 } else {
-                    sprintf_s(chapterStr, XSTR(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
+                    sprintf_s(chapterStr, Gui::LocaleGetStr(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
                 };
 
                 mChapter(chapterStr);
@@ -841,7 +841,7 @@ namespace TH06 {
     protected:
         void LocaleUpdate()
         {
-            SetTitle(XSTR(TH_SPELL_PRAC));
+            SetTitle(Gui::LocaleGetStr(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
@@ -868,7 +868,7 @@ namespace TH06 {
         void ContentUpdate()
         {
             *((int32_t*)0x6c6eb0) = 3;
-            ImGui::TextUnformatted(XSTR(TH_ADV_OPT));
+            ImGui::TextUnformatted(Gui::LocaleGetStr(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 

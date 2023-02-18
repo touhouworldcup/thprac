@@ -355,18 +355,18 @@ namespace THPrac
 
         bool GuiCombo::operator()(int skip)
         {
-            auto items = XITEMS;
+            auto items = LocaleGetCurrentGlossary();
             CheckComboItemNew(mSelector, items, 1);
 
             const char* label;
             if (mLabelRef != A0000ERROR_C)
-                label = XSTR(mLabelRef);
+                label = LocaleGetStr(mLabelRef);
             else if (mLabel)
                 label = mLabel;
             else
                 label = "#ERROR";
 
-            const char* _skip = skip == -1 ? "" : XSTR(mSelector[skip]);
+            const char* _skip = skip == -1 ? "" : LocaleGetStr(mSelector[skip]);
             auto hasChanged = ImGui::ComboSections(label, &mCurrent, mSelector, items, _skip);
 
             if (ImGui::IsItemFocused()) {
@@ -398,7 +398,7 @@ namespace THPrac
 
         bool GuiButton::operator()()
         {
-            const char* label = mLabel ? mLabel : XSTR(mLabelRef);
+            const char* label = mLabel ? mLabel : LocaleGetStr(mLabelRef);
             bool res = ImGui::Button(label, mSize);
             if (ImGui::IsItemFocused() && InGameInputGet(0x5A))
                 res = true;
@@ -407,7 +407,7 @@ namespace THPrac
 
         bool GuiCheckBox::operator()()
         {
-            const char* label = mLabel ? mLabel : XSTR(mLabelRef);
+            const char* label = mLabel ? mLabel : LocaleGetStr(mLabelRef);
             bool pressed = ImGui::Checkbox(label, &mToggle);
             if (ImGui::IsItemFocused() && (InGameInputGet(VK_LEFT) || InGameInputGet(VK_RIGHT))) {
                 mToggle = !mToggle;
@@ -420,7 +420,7 @@ namespace THPrac
 
         void GuiHotKey::OnWidgetUpdate(bool status, bool has_changed)
         {
-            const char* text = mText ? mText : XSTR(mTextRef);
+            const char* text = mText ? mText : LocaleGetStr(mTextRef);
 
             if (mStatus)
                 ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[%s: %s]", mKeyText, text);
@@ -481,12 +481,14 @@ namespace THPrac
             int last_activated_id = 0;
 
             for (auto id : mNavId) {
-                if (ImGui::IsPopupOpen(XSTR(id)))
+                // TODO: Does `id` really need to be an int?
+                auto idAsGlossaryRef = static_cast<th_glossary_t>(id);
+                if (ImGui::IsPopupOpen(LocaleGetStr(idAsGlossaryRef)))
                     has_active_popup = true;
 
-                if (ImGui::IsItemActiveAlt(XSTR(id)))
+                if (ImGui::IsItemActiveAlt(LocaleGetStr(idAsGlossaryRef)))
                     last_activated_id = id;
-                else if (ImGui::IsItemFocusedAlt(XSTR(id)) && !mForceFocusId)
+                else if (ImGui::IsItemFocusedAlt(LocaleGetStr(idAsGlossaryRef)) && !mForceFocusId)
                     mFocusId = id;
             }
 
@@ -502,12 +504,13 @@ namespace THPrac
                 locale_changed = true;
             }
 
+            // TODO: Do `mForceFocusId`, `mFocusId`, and `mNavId` need to be ints?
             if (mForceFocusId)
-                ImGui::SetItemFocusAlt(XSTR(mForceFocusId), true);
+                ImGui::SetItemFocusAlt(LocaleGetStr(static_cast<th_glossary_t>(mForceFocusId)), true);
             else if (mFocusId)
-                ImGui::SetItemFocusAlt(XSTR(mFocusId), locale_changed);
+                ImGui::SetItemFocusAlt(LocaleGetStr(static_cast<th_glossary_t>(mFocusId)), locale_changed);
             else
-                ImGui::SetItemFocusAlt(XSTR(mNavId[0]), locale_changed);
+                ImGui::SetItemFocusAlt(LocaleGetStr(static_cast<th_glossary_t>(mNavId[0])), locale_changed);
 
             if (mForceFocusId) {
                 mFocusId = mForceFocusId;

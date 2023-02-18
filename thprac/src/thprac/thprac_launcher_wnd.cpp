@@ -180,7 +180,7 @@ int LauncherWndInit(unsigned int width, unsigned int height, unsigned int maxWid
     }
 
     // Create application window
-    auto windowTitle = utf8_to_utf16(XSTR(THPRAC_LAUNCHER));
+    auto windowTitle = utf8_to_utf16(Gui::LocaleGetStr(THPRAC_LAUNCHER));
     auto icon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON1));
     __thprac_lc_wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), icon, nullptr, nullptr, nullptr, _T("thprac launcher window"), nullptr };
     ::RegisterClassEx(&__thprac_lc_wc);

@@ -9,6 +9,7 @@
 #include "thprac_gui_impl_win32.h"
 #include "thprac_hook.h"
 #include "thprac_locale_def.h"
+#include "thprac_gui_locale.h"
 
 #include <Windows.h>
 #include <cstdint>
@@ -186,7 +187,7 @@ static bool BeginOptGroup()
 {
     static bool group_status = true;
     ImGui::SetNextItemOpen(group_status);
-    group_status = ImGui::CollapsingHeader(XSTR(name), ImGuiTreeNodeFlags_None);
+    group_status = ImGui::CollapsingHeader(Gui::LocaleGetStr(name), ImGuiTreeNodeFlags_None);
     if (group_status)
         ImGui::Indent();
     return group_status;

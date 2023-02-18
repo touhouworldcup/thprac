@@ -31,8 +31,8 @@ bool GuiTabItem(const char* tabText)
 }
 void ErrorMsgBox(th_glossary_t textRef)
 {
-    auto title = utf8_to_utf16(XSTR(THPRAC_PR_ERROR));
-    auto text = utf8_to_utf16(XSTR(textRef));
+    auto title = utf8_to_utf16(Gui::LocaleGetStr(THPRAC_PR_ERROR));
+    auto text = utf8_to_utf16(Gui::LocaleGetStr(textRef));
     MessageBoxW(nullptr, text.c_str(), title.c_str(), MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 }
 
@@ -104,11 +104,11 @@ int GuiLauncherMain()
         ImGui::SetNextWindowSize(ImVec2(960.0f * scale, 720.0f * scale), ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowBgAlpha(0.9f);
 
-        std::string wndTitleText = XSTR(THPRAC_LAUNCHER);
+        std::string wndTitleText = Gui::LocaleGetStr(THPRAC_LAUNCHER);
         if (LauncherIsChkingUpd()) {
             wndTitleText += " // Checking for updates...";
         }
-        wndTitleText = LauncherIsChkingUpd() ? XSTR(THPRAC_LAUNCHER_CHECKING_UPDATE) : XSTR(THPRAC_LAUNCHER);
+        wndTitleText = LauncherIsChkingUpd() ? Gui::LocaleGetStr(THPRAC_LAUNCHER_CHECKING_UPDATE) : Gui::LocaleGetStr(THPRAC_LAUNCHER);
         wndTitleText += "###thprac_wnd";
         ImGui::Begin(wndTitleText.c_str(), &isOpen, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove, &isMinimize);
         if (!isOpen)
@@ -120,25 +120,25 @@ int GuiLauncherMain()
         canMove = ImGui::IsItemHovered();
 
         if (ImGui::BeginTabBar("MenuTabBar")) {
-            if (GuiTabItem(XSTR(THPRAC_GAMES))) {
+            if (GuiTabItem(Gui::LocaleGetStr(THPRAC_GAMES))) {
                 ImGui::BeginChild("##games");
                 LauncherGamesGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }
-            if (GuiTabItem(XSTR(THPRAC_LINKS))) {
+            if (GuiTabItem(Gui::LocaleGetStr(THPRAC_LINKS))) {
                 ImGui::BeginChild("##links");
                 LauncherLinksGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }
-            if (GuiTabItem(XSTR(THPRAC_TOOLS))) {
+            if (GuiTabItem(Gui::LocaleGetStr(THPRAC_TOOLS))) {
                 ImGui::BeginChild("##tools");
                 LauncherToolsGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }
-            if (GuiTabItem(XSTR(THPRAC_SETTINGS))) {
+            if (GuiTabItem(Gui::LocaleGetStr(THPRAC_SETTINGS))) {
                 ImGui::BeginChild("##settings");
                 LauncherCfgGuiUpd();
                 ImGui::EndChild();

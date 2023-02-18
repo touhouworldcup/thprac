@@ -601,9 +601,9 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
     if (ctx.fps_status <= 0) {
         ImGui::PushTextWrapPos();
         if (ctx.fps_status == 0)
-            ImGui::TextColored(ImColor(255, 0, 0), "%s", XSTR(TH_FPS_ERR));
+            ImGui::TextColored(ImColor(255, 0, 0), "%s", Gui::LocaleGetStr(TH_FPS_ERR));
         else if (ctx.fps_status == -1)
-            ImGui::TextColored(ImColor(255, 0, 0), "%s", XSTR(TH_FPS_UNSUPPORTED));
+            ImGui::TextColored(ImColor(255, 0, 0), "%s", Gui::LocaleGetStr(TH_FPS_UNSUPPORTED));
         ImGui::PopTextWrapPos();
         ImGui::BeginDisabled();
     }
@@ -640,16 +640,16 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
 
     ImGui::PushItemWidth(GetRelWidth(0.23f));
     if (canFpsChangeFreely) {
-        ImGui::DragInt(XSTR(TH_FPS_ADJ), &fps, 1.0f, 60, 6000);
+        ImGui::DragInt(Gui::LocaleGetStr(TH_FPS_ADJ), &fps, 1.0f, 60, 6000);
         if (!ImGui::IsItemActive())
             fps = std::clamp(fps, 60, 6000);
     } else {
-        ImGui::SliderInt(XSTR(TH_FPS_ADJ), &fpsMultiplier, 0, 8, fpsMultiplierStr);
+        ImGui::SliderInt(Gui::LocaleGetStr(TH_FPS_ADJ), &fpsMultiplier, 0, 8, fpsMultiplierStr);
         fps = fpsMultiplier * 15 + 60;
     }
     ImGui::PopItemWidth();
     ImGui::SameLine();
-    if (ImGui::Checkbox(XSTR(TH_FPS_FREE_ADJ), &canFpsChangeFreely)) {
+    if (ImGui::Checkbox(Gui::LocaleGetStr(TH_FPS_FREE_ADJ), &canFpsChangeFreely)) {
         if (!canFpsChangeFreely) {
             int i = 0;
             for (; (i * 15 + 60) <= fps && i <= 8; ++i)
@@ -680,10 +680,10 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
         || fpsFastStatic != ctx.fps_replay_fast / 60
         || fpsDebugAcc != ctx.fps_debug_acc) {
         ImGui::SameLine();
-        if (ImGui::Button(XSTR(TH_ADV_OPT_APPLY))) {
+        if (ImGui::Button(Gui::LocaleGetStr(TH_ADV_OPT_APPLY))) {
             clickedApply = true;
             if (fpsStatic > fps && ctx.fps_status != 1)
-                ImGui::TextUnformatted(XSTR(TH_FPS_LOWERING));
+                ImGui::TextUnformatted(Gui::LocaleGetStr(TH_FPS_LOWERING));
             fpsStatic = fps;
             ctx.fps_replay_slow = fpsSlowStatic;
             ctx.fps_replay_fast = fpsFastStatic * 60;
@@ -702,9 +702,9 @@ bool GameplayOpt(adv_opt_ctx& ctx)
 {
     bool hasChanged = false;
 
-    hasChanged |= ImGui::Checkbox(XSTR(TH_FACTOR_ACB), &ctx.all_clear_bonus);
+    hasChanged |= ImGui::Checkbox(Gui::LocaleGetStr(TH_FACTOR_ACB), &ctx.all_clear_bonus);
     ImGui::SameLine();
-    HelpMarker(XSTR(TH_FACTOR_ACB_DESC));
+    HelpMarker(Gui::LocaleGetStr(TH_FACTOR_ACB_DESC));
 
     return hasChanged;
 }
@@ -713,19 +713,19 @@ void AboutOpt(const char* thanks_text)
 {
     static bool showLicense = false;
     if (BeginOptGroup<TH_ABOUT_THPRAC>()) {
-        ImGui::Text(XSTR(TH_ABOUT_VERSION), GetVersionStr());
-        ImGui::TextUnformatted(XSTR(TH_ABOUT_AUTHOR));
-        ImGui::TextUnformatted(XSTR(TH_ABOUT_WEBSITE));
+        ImGui::Text(Gui::LocaleGetStr(TH_ABOUT_VERSION), GetVersionStr());
+        ImGui::TextUnformatted(Gui::LocaleGetStr(TH_ABOUT_AUTHOR));
+        ImGui::TextUnformatted(Gui::LocaleGetStr(TH_ABOUT_WEBSITE));
 
         ImGui::NewLine();
-        ImGui::Text(XSTR(TH_ABOUT_THANKS), thanks_text ? thanks_text : "You!");
+        ImGui::Text(Gui::LocaleGetStr(TH_ABOUT_THANKS), thanks_text ? thanks_text : "You!");
 
         ImGui::NewLine();
         if (showLicense) {
-            if (ImGui::Button(XSTR(TH_ABOUT_HIDE_LICENCE)))
+            if (ImGui::Button(Gui::LocaleGetStr(TH_ABOUT_HIDE_LICENCE)))
                 showLicense = false;
         } else {
-            if (ImGui::Button(XSTR(TH_ABOUT_SHOW_LICENCE)))
+            if (ImGui::Button(Gui::LocaleGetStr(TH_ABOUT_SHOW_LICENCE)))
                 showLicense = true;
         }
         if (showLicense) {
