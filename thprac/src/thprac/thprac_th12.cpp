@@ -1449,7 +1449,6 @@ namespace TH12 {
         pCtx->Esp += 0x10;
         pCtx->Eip = 0x446043;
     }
-    PATCH_DY(th12_disable_prac_menu_3, 0x446100, "\x00", 1);
     EHOOK_DY(th12_patch_main, 0x40e8df)
     {
         if (thPracParam.mode == 1) {

@@ -2216,7 +2216,6 @@ namespace TH10 {
     {
         pCtx->Eip = 0x431054;
     }
-    PATCH_DY(th10_disable_prac_menu_3, 0x43111b, "\x00", 1);
     EHOOK_DY(th10_update, 0x449d0e)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());

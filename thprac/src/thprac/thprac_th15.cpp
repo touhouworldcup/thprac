@@ -1743,7 +1743,6 @@ namespace TH15 {
     {
         pCtx->Eip = 0x467d6e;
     }
-    PATCH_DY(th15_disable_prac_menu_2, 0x467871, "\x00", 1);
     EHOOK_DY(th15_menu_rank_fix, 0x4527be)
     {
         *((int32_t*)0x4e7424) = -1;

@@ -1954,9 +1954,6 @@ namespace TH06 {
         }
     }
     PATCH_DY(th06_disable_menu, 0x439ab2, "\x90\x90\x90\x90\x90", 5);
-    PATCH_DY(th06_disable_enter_1, 0x437368, "\x00", 1);
-    PATCH_DY(th06_disable_enter_2, 0x437378, "\x00", 1);
-    PATCH_DY(th06_disable_enter_3, 0x437385, "\x00", 1);
     EHOOK_DY(th06_update, 0x41caac)
     {
         GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());

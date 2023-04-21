@@ -2165,7 +2165,6 @@ namespace TH16 {
     {
         pCtx->Eip = 0x45150e;
     }
-    PATCH_DY(th16_disable_prac_menu_2, 0x451013, "\x00", 1);
     EHOOK_DY(th16_menu_rank_fix, 0x44097f)
     {
         *((int32_t*)0x4a57c8) = -1; // Reset spell practice ID

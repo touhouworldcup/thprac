@@ -521,7 +521,7 @@ namespace TH17 {
                 break;
             case 1:
                 if (IsOpen()) {
-                    if (Gui::InGameInputGet('Z')) {
+                    if (Gui::InGameInputGetConfirm()) {
                         SetFade(0.8f, 0.1f);
                         Close();
 
@@ -1866,7 +1866,6 @@ namespace TH17 {
     {
         pCtx->Eip = 0x456e15;
     }
-    PATCH_DY(th17_disable_prac_menu_2, 0x456a23, "\x00", 1);
     EHOOK_DY(th17_menu_rank_fix, 0x445ed1)
     {
         *((int32_t*)0x4b5a00) = *((int32_t*)0x4b2b28); // Restore In-game rank to menu rank

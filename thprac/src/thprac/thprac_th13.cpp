@@ -1516,7 +1516,6 @@ namespace TH13 {
         pCtx->Esp += 0x4;
         pCtx->Eip = 0x451cf7;
     }
-    PATCH_DY(th13_disable_prac_menu_3, 0x451dc6, "\x00", 1);
     EHOOK_DY(th13_menu_rank_fix, 0x43f483)
     {
         *((int32_t*)0x4be7c4) = *((int32_t*)0x4bb4d0);

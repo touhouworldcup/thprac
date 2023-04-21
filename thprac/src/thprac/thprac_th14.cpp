@@ -474,7 +474,7 @@ namespace TH14 {
                 break;
             case 1:
                 if (IsOpen()) {
-                    if (Gui::InGameInputGet('Z')) {
+                    if (Gui::InGameInputGetConfirm()) {
                         SetFade(0.8f, 0.1f);
                         Close();
 
@@ -2250,7 +2250,6 @@ namespace TH14 {
     {
         pCtx->Eip = 0x45ece4;
     }
-    PATCH_DY(th14_disable_prac_menu_2, 0x45e813, "\x00", 1);
     EHOOK_DY(th14_menu_rank_fix, 0x449c3d)
     {
         *((int32_t*)0x4f5844) = -1;

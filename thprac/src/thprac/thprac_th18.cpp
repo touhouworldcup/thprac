@@ -766,7 +766,7 @@ namespace TH18 {
                 break;
             case 1:
                 if (IsOpen()) {
-                    if (Gui::InGameInputGet('Z')) {
+                    if (Gui::InGameInputGetConfirm()) {
                         SetFade(0.8f, 0.1f);
                         Close();
 
@@ -2624,7 +2624,6 @@ namespace TH18 {
     {
         pCtx->Eip = 0x467959;
     }
-    PATCH_DY(th18_disable_prac_menu_2, 0x467455, "\x00", 1);
     EHOOK_DY(th18_patch_main, 0x4432a7)
     {
         if (thPracParam.mode == 1) {
