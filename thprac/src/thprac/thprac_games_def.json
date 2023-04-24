@@ -2375,7 +2375,7 @@
 
       "TH08_ST3_MID1": {
         "bgm": 0,
-        "spell": 1,
+        "spell": 0,
         "appearance": [ 3, 1, 1 ],
         "!ENHL": "TH_MID_NS1"
       },
@@ -2383,7 +2383,7 @@
         "bgm": 0,
         "spell": 1,
         "appearance": [ 3, 1, 2 ],
-        "!HL": [ "产灵「最初的金字塔」", "Spiritual Birth \"First Pyramid\"", "産霊「ファーストピラミッド」" ]
+        "!ENHL": [ "产灵「最初的金字塔」", "Spiritual Birth \"First Pyramid\"", "産霊「ファーストピラミッド」" ]
       },
       "TH08_ST3_BOSS1": {
         "bgm": 1,
