@@ -226,7 +226,7 @@ namespace TH06 {
                 SetFade(0.8f, 0.8f);
                 Close();
                 *mNavFocus = 0;
-            case 5:
+
                 // Fill Param
                 thPracParam.mode = *mMode;
 
@@ -252,6 +252,29 @@ namespace TH06 {
             case 4:
                 Close();
                 *mNavFocus = 0;
+                break;
+            case 5:
+                // Fill Param
+                thPracParam.mode = *mMode;
+
+                thPracParam.stage = *mStage;
+                thPracParam.section = CalcSection();
+                thPracParam.phase = *mPhase;
+                thPracParam.frame = *mFrame;
+                if (SectionHasDlg(thPracParam.section))
+                    thPracParam.dlg = *mDlg;
+
+                thPracParam.score = *mScore;
+                thPracParam.life = (float)*mLife;
+                thPracParam.bomb = (float)*mBomb;
+                thPracParam.power = (float)*mPower;
+                thPracParam.graze = *mGraze;
+                thPracParam.point = *mPoint;
+
+                thPracParam.rank = *mRank;
+                thPracParam.rankLock = *mRankLock;
+                if (thPracParam.section >= TH06_ST4_BOSS1 && thPracParam.section <= TH06_ST4_BOSS7)
+                    thPracParam.fakeType = *mFakeShot;
                 break;
             default:
                 break;
@@ -688,6 +711,51 @@ namespace TH06 {
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE,
             TH_LIFE, TH_BOMB, TH_SCORE, TH_POWER, TH_GRAZE, TH_POINT,
             TH06_RANK, TH06_RANKLOCK, TH06_FS };
+    };
+    class THGuiRep : public Gui::GameGuiWnd {
+        THGuiRep() noexcept
+        {
+        }
+        SINGLETON(THGuiRep);
+    public:
+
+        void CheckReplay()
+        {
+            uint32_t index = GetMemContent(0x6d46c0 + 0x81e8);
+            char* raw = (char*)(0x6d46c0 + index * 512 + 0x823c);
+
+            std::string param;
+            if (ReplayLoadParam(mb_to_utf16(raw, 932).c_str(), param) && mRepParam.ReadJson(param))
+                mParamStatus = true;
+            else
+                mRepParam.Reset();
+        }
+
+        bool mRepStatus = false;
+        void State(int state)
+        {
+            switch (state) {
+            case 1:
+                mRepStatus = false;
+                mParamStatus = false;
+                thPracParam.Reset();
+                break;
+            case 2:
+                CheckReplay();
+                break;
+            case 3:
+                mRepStatus = true;
+                if (mParamStatus)
+                    memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
+                break;
+            default:
+                break;
+            }
+        }
+
+    protected:
+        bool mParamStatus = false;
+        THPracParam mRepParam;
     };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
@@ -1908,20 +1976,31 @@ namespace TH06 {
             pCtx->Eip = 0x41af35;
         }
     }
+    PATCH_DY(th06_preplay_1, 0x42d835, "\x09", 1);
+    EHOOK_DY(th06_preplay_2, 0x418ef9)
+    {
+        if (thPracParam.mode && !THGuiRep::singleton().mRepStatus) {
+            *(uint32_t*)0x69bca0 = *(uint32_t*)0x69bca4;
+            pCtx->Eip = 0x418f0e;
+        }
+    }
     EHOOK_DY(th06_save_replay, 0x42b03b)
     {
         char* rep_name = *(char**)(pCtx->Ebp + 0x8);
         if (thPracParam.mode)
             THSaveReplay(rep_name);
     }
-    EHOOK_DY(th06_load_replay, 0x42a8a0)
+    EHOOK_DY(th06_rep_menu_1, 0x438262)
     {
-        thPracParam = {};
-        auto rep_name = GetMemContent<char*>(pCtx->Ebp + 0x8, 0xc);
-        std::string param;
-        if (ReplayLoadParam(mb_to_utf16(rep_name, 932).c_str(), param))
-            thPracParam.ReadJson(param);
-
+        THGuiRep::singleton().State(1);
+    }
+    EHOOK_DY(th06_rep_menu_2, 0x4385d5)
+    {
+        THGuiRep::singleton().State(2);
+    }
+    EHOOK_DY(th06_rep_menu_3, 0x438974)
+    {
+        THGuiRep::singleton().State(3);
     }
     EHOOK_DY(th06_fake_shot_type, 0x40b2f9)
     {
@@ -1962,6 +2041,7 @@ namespace TH06 {
         Gui::KeyboardInputUpdate(VK_ESCAPE);
         THPauseMenu::singleton().Update();
         THGuiPrac::singleton().Update();
+        THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
 
         GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
@@ -1985,6 +2065,7 @@ namespace TH06 {
         // Gui components creation
         THGuiPrac::singleton();
         THPauseMenu::singleton();
+        THGuiRep::singleton();
         THOverlay::singleton();
 
         // Hooks

@@ -341,6 +341,58 @@ namespace TH13 {
 
         int mDiffculty = 0;
     };
+    class THGuiRep : public Gui::GameGuiWnd {
+        THGuiRep() noexcept
+        {
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
+            mAppdataPath = appdata;
+        }
+        SINGLETON(THGuiRep);
+    public:
+
+        void CheckReplay()
+        {
+            uint32_t index = GetMemContent(0x4c22e0, 0x5aa0);
+            char* repName = (char*)GetMemAddr(0x4c22e0, index * 4 + 0x5aa8, 0x220);
+            std::wstring repDir(mAppdataPath);
+            repDir.append(L"\\ShanghaiAlice\\th13\\replay\\");
+            repDir.append(mb_to_utf16(repName, 932));
+
+            std::string param;
+            if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
+                mParamStatus = true;
+            else
+                mRepParam.Reset();
+        }
+
+        bool mRepStatus = false;
+        void State(int state)
+        {
+            switch (state) {
+            case 1:
+                mRepStatus = false;
+                mParamStatus = false;
+                thPracParam.Reset();
+                break;
+            case 2:
+                CheckReplay();
+                break;
+            case 3:
+                mRepStatus = true;
+                if (mParamStatus)
+                    memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
+                break;
+            default:
+                break;
+            }
+        }
+
+    protected:
+        std::wstring mAppdataPath;
+        bool mParamStatus = false;
+        THPracParam mRepParam;
+    };
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
         {
@@ -424,12 +476,6 @@ namespace TH13 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
-    };
-
-    bool isInReplay() {
-        if (*(uintptr_t*)0x4c22c8)
-            return GetMemContent(0x4c22c8, 0x10);
-        return false;
     };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
@@ -542,7 +588,7 @@ namespace TH13 {
     public:
         void FpsUpd()
         {
-            auto res = FPSHelper(mOptCtx, isInReplay(), false, true,
+            auto res = FPSHelper(mOptCtx, THGuiRep::singleton().mRepStatus, false, true,
                 [](int32_t fps) { THAdvOptWnd::singleton().VPResetFPS(fps); });
             if (res) {
 
@@ -1442,6 +1488,22 @@ namespace TH13 {
     bool th13ElBgmFlag = false;
 
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_ST(th13_dump_rep, 0x448d8c)
+    {
+        auto filePtr = (void*)pCtx->Eax;
+        auto fileSize = *(uint32_t*)(*(uint32_t*)(pCtx->Ebx + 0x18) + 0x20);
+        auto fileName = (char*)(pCtx->Esp + 0xC);
+
+        std::wstring fileNameDump = mb_to_utf16(fileName, 932);
+        fileNameDump += L".dump";
+
+        DWORD bytesProcessed;
+        auto hFile = CreateFileW(fileNameDump.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        SetFilePointer(hFile, 0, NULL, FILE_BEGIN);
+        SetEndOfFile(hFile);
+        WriteFile(hFile, filePtr, fileSize, &bytesProcessed, NULL);
+        CloseHandle(hFile);
+    }
     EHOOK_DY(th13_everlasting_bgm_2, 0x42c444)
     {
         if (th13ElBgmFlag) {
@@ -1463,7 +1525,7 @@ namespace TH13 {
         if (bgm_cmd == 9)
             th13ElBgmTranceFlag = !th13ElBgmTranceFlag;
 
-        el_switch = *(THOverlay::singleton().mElBgm) && !isInReplay() && thPracParam.mode == 1 && thPracParam.section && !th13ElBgmTranceFlag;
+        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode == 1 && thPracParam.section && !th13ElBgmTranceFlag;
         is_practice = (*((int32_t*)0x4be830) & 0x1);
 
         if (th13ElBgmTranceFlag && bgm_cmd == 3) {
@@ -1550,13 +1612,17 @@ namespace TH13 {
         if (thPracParam.mode == 1)
             THSaveReplay(repName);
     }
-    EHOOK_DY(th13_rep_load, 0x447c2e)
+    EHOOK_DY(th13_rep_menu_1, 0x452776)
     {
-        thPracParam = {};
-        std::string param;
-        std::wstring path = mb_to_utf16((char*)0x4dd0d1, 932) + L"replay\\" + mb_to_utf16((char*)0x4C2198, 932);
-        if (ReplayLoadParam(path.c_str(), param))
-            thPracParam.ReadJson(param);
+        THGuiRep::singleton().State(1);
+    }
+    EHOOK_DY(th13_rep_menu_2, 0x4528a2)
+    {
+        THGuiRep::singleton().State(2);
+    }
+    EHOOK_DY(th13_rep_menu_3, 0x452a94)
+    {
+        THGuiRep::singleton().State(3);
     }
     EHOOK_DY(th13_update, 0x470c04)
     {
@@ -1564,6 +1630,7 @@ namespace TH13 {
 
         // Gui components update
         THGuiPrac::singleton().Update();
+        THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
@@ -1586,6 +1653,7 @@ namespace TH13 {
 
         // Gui components creation
         THGuiPrac::singleton();
+        THGuiRep::singleton();
         THOverlay::singleton();
 
         // Hooks

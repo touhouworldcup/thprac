@@ -400,6 +400,57 @@ namespace TH17 {
 
         int mDiffculty = 0;
     };
+    class THGuiRep {
+        THGuiRep() noexcept
+        {
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
+            mAppdataPath = appdata;
+        }
+        SINGLETON(THGuiRep);
+    public:
+        void CheckReplay()
+        {
+            uint32_t index = GetMemContent(0x4b77f0, 0x5b54);
+            char* repName = (char*)GetMemAddr(0x4b77f0, index * 4 + 0x5b5c, 0x220);
+            std::wstring repDir(mAppdataPath);
+            repDir.append(L"\\ShanghaiAlice\\th17\\replay\\");
+            repDir.append(mb_to_utf16(repName, 932));
+
+            std::string param;
+            if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
+                mParamStatus = true;
+            else
+                mRepParam.Reset();
+        }
+
+        bool mRepStatus = false;
+        void State(int state)
+        {
+            switch (state) {
+            case 1:
+                mRepStatus = false;
+                mParamStatus = false;
+                thPracParam.Reset();
+                break;
+            case 2:
+                CheckReplay();
+                break;
+            case 3:
+                mRepStatus = true;
+                if (mParamStatus)
+                    memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
+                break;
+            default:
+                break;
+            }
+        }
+
+    protected:
+        std::wstring mAppdataPath;
+        bool mParamStatus = false;
+        THPracParam mRepParam;
+    };
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
         {
@@ -1813,12 +1864,6 @@ namespace TH17 {
     }
     EHOOK_DY(th17_everlasting_bgm, 0x4662e0)
     {
-        auto isInReplay = []() -> bool {
-            if (*(uintptr_t*)0x4b77d8)
-                return GetMemContent(0x4b77d8, 0x10);
-            return false;
-        };
-
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -1828,7 +1873,7 @@ namespace TH17 {
         bool is_practice;
         bool result;
 
-        el_switch = *(THOverlay::singleton().mElBgm) && !isInReplay() && (thPracParam.mode == 1) && thPracParam.section;
+        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && (thPracParam.mode == 1) && thPracParam.section;
         is_practice = (*((int32_t*)0x4b59c8) & 0x1);
         result = ElBgmTestTemp<0x4420f3, 0x42eab2, 0x4311f0, 0x443bbd, 0x445f12, 0xffffffff>(
             el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
@@ -1946,13 +1991,17 @@ namespace TH17 {
         else if (thPracParam.mode == 2 && thPracParam.phase)
             THSaveReplay(repName);
     }
-    EHOOK_DY(th17_rep_load, 0x44df92)
+    EHOOK_DY(th17_rep_menu_1, 0x4570f6)
     {
-        thPracParam = {};
-        std::string param;
-        std::wstring path = mb_to_utf16((char*)0x5226f1, 932) + L"replay\\" + mb_to_utf16((char*)0x4b76c0, 932);
-        if (ReplayLoadParam(path.c_str(), param))
-            thPracParam.ReadJson(param);
+        THGuiRep::singleton().State(1);
+    }
+    EHOOK_DY(th17_rep_menu_2, 0x457216)
+    {
+        THGuiRep::singleton().State(2);
+    }
+    EHOOK_DY(th17_rep_menu_3, 0x4573da)
+    {
+        THGuiRep::singleton().State(3);
     }
     EHOOK_DY(th17_sp_menu_1, 0x45c554)
     {
