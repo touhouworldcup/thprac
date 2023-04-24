@@ -1211,8 +1211,6 @@ namespace TH08 {
             ECLWarp(4663, 0xb87c, 0, -1, 0, -1, 0, -1);
             ecl << ECLX(0xb882, (int8_t)0x2c);
 
-            if (!diff)
-                break;
             ECLSetTime(ecl, 0x3f04, 0, 47, 60);
             ecl << ECLX(0x3ddc, (int16_t)0);
             break;
