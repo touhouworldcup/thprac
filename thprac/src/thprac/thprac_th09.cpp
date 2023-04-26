@@ -1,6 +1,6 @@
 ﻿#include "thprac_utils.h"
 
-constexpr auto LGS = THPrac::Gui::LocaleGetStr;
+constexpr auto S = THPrac::Gui::LocaleGetStr;
 
 namespace THPrac {
 namespace TH09 {
@@ -48,7 +48,7 @@ namespace TH09 {
         int cpu_charge_p1;
         int cpu_charge_p2;
         virtual void OnLocaleChange() override {
-            this->SetTitle(LGS(TH09_TOOLS_TITLE));
+            this->SetTitle(S(TH09_TOOLS_TITLE));
         }
         virtual void OnPreUpdate() override {
             if (justOpened) {
@@ -61,30 +61,30 @@ namespace TH09 {
             uint32_t pl2 = *(uint32_t*)0x4a7dcc;
 
             ImGui::PushID(TH_MUTEKI);
-            ImGui::TextUnformatted(LGS(TH_MUTEKI));
-            ImGui::Checkbox(LGS(TH09_P1), &invinc_p1);
+            ImGui::TextUnformatted(S(TH_MUTEKI));
+            ImGui::Checkbox(S(TH09_P1), &invinc_p1);
             ImGui::SameLine();
-            ImGui::Checkbox(LGS(TH09_P2), &invinc_p2);
+            ImGui::Checkbox(S(TH09_P2), &invinc_p2);
             ImGui::PopID();
 
             ImGui::PushID(TH_HEALTH);
-            ImGui::TextUnformatted(LGS(TH_HEALTH));
+            ImGui::TextUnformatted(S(TH_HEALTH));
             ImGui::PushID(TH09_P1);
-            ImGui::SliderInt("", (int*)(pl1 + 0xa8), 1, 10, LGS(TH09_P1_FORMAT_INT));
+            ImGui::SliderInt("", (int*)(pl1 + 0xa8), 1, 10, S(TH09_P1_FORMAT_INT));
             ImGui::SameLine();
-            ImGui::Checkbox(LGS(TH09_LOCK), &infhealth_p1);
+            ImGui::Checkbox(S(TH09_LOCK), &infhealth_p1);
             ImGui::PopID();
             ImGui::PushID(TH09_P2);
-            ImGui::SliderInt("", (int*)(pl2 + 0xa8), 1, 10, LGS(TH09_P2_FORMAT_INT));
+            ImGui::SliderInt("", (int*)(pl2 + 0xa8), 1, 10, S(TH09_P2_FORMAT_INT));
             ImGui::SameLine();
-            ImGui::Checkbox(LGS(TH09_LOCK), &infhealth_p2);
+            ImGui::Checkbox(S(TH09_LOCK), &infhealth_p2);
             ImGui::PopID();
             ImGui::PopID();
 
             ImGui::PushID(TH09_INSTANT_DEATH);
-            ImGui::TextUnformatted(LGS(TH09_INSTANT_DEATH));
+            ImGui::TextUnformatted(S(TH09_INSTANT_DEATH));
             ImGui::PushID(TH09_P1);
-            if (ImGui::Button(LGS(TH09_P1))) {
+            if (ImGui::Button(S(TH09_P1))) {
                 *(uint32_t*)(pl1 + 0xa8) = 0;
                 uint64_t charge_bak = *(uint64_t*)(pl1 + 0x30384);
                 *(uint64_t*)(pl1 + 0x30384) = 0;
@@ -94,7 +94,7 @@ namespace TH09 {
             ImGui::PopID();
             ImGui::SameLine();
             ImGui::PushID(TH09_P2);
-            if (ImGui::Button(LGS(TH09_P2))) {
+            if (ImGui::Button(S(TH09_P2))) {
                 *(uint32_t*)(pl2 + 0xa8) = 0;
                 uint64_t charge_bak = *(uint64_t*)(pl2 + 0x30384);
                 *(uint64_t*)(pl2 + 0x30384) = 0;
@@ -113,10 +113,10 @@ namespace TH09 {
                 float* gauge = (float*)(pl + 0x30388);
                 const char* _p;
                 if (*(uint32_t*)(pl + 8)) {
-                    _p = LGS(TH09_P2_FORMAT_FLOAT);
+                    _p = S(TH09_P2_FORMAT_FLOAT);
                     ImGui::PushID(TH09_P2);
                 } else {
-                    _p = LGS(TH09_P1_FORMAT_FLOAT);
+                    _p = S(TH09_P1_FORMAT_FLOAT);
                     ImGui::PushID(TH09_P1);
                 }
                 ImGui::SliderFloat("", gauge, 0, 400, _p);
@@ -138,7 +138,7 @@ namespace TH09 {
                 if (ImGui::IsItemHovered()) {
                     ImGui::BeginTooltip();
                     ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-                    ImGui::TextUnformatted(LGS(TH09_LOCK));
+                    ImGui::TextUnformatted(S(TH09_LOCK));
                     ImGui::PopTextWrapPos();
                     ImGui::EndTooltip();
                 }
@@ -146,90 +146,90 @@ namespace TH09 {
             };
 
             ImGui::PushID(TH09_CHARGE_GAUGE);
-            ImGui::TextUnformatted(LGS(TH09_CHARGE_GAUGE));
+            ImGui::TextUnformatted(S(TH09_CHARGE_GAUGE));
             chargegauge(pl1, &chargelock_p1);
             chargegauge(pl2, &chargelock_p2);
             ImGui::PopID();
 
             if (*(uint32_t*)0x4a7db8 || *(uint32_t*)0x4a7df0) {
                 ImGui::PushID(TH09_CPU_CHARGE);
-                ImGui::TextUnformatted(LGS(TH09_CPU_CHARGE));
+                ImGui::TextUnformatted(S(TH09_CPU_CHARGE));
                 if (*(uint32_t*)0x4a7db8) {
                     ImGui::PushID(TH09_P1);
                     cpu_charge_p1 = (int)*(float*)(pl1 + 0x7c) / 100;
-                    if (ImGui::SliderInt(LGS(TH09_P1), &cpu_charge_p1, 1, 4)) {
+                    if (ImGui::SliderInt(S(TH09_P1), &cpu_charge_p1, 1, 4)) {
                         *(float*)(pl1 + 0x7c) = static_cast<float>(cpu_charge_p1) * 100;
                     }
                     ImGui::SameLine();
-                    ImGui::Checkbox(LGS(TH09_LOCK), &cpu_lock_attack_p1);
+                    ImGui::Checkbox(S(TH09_LOCK), &cpu_lock_attack_p1);
                     ImGui::PopID();
                 }
                 if (*(uint32_t*)0x4a7df0) {
                     ImGui::PushID(TH09_P2);
                     cpu_charge_p2 = (int)*(float*)(pl2 + 0x7c) / 100;
-                    if (ImGui::SliderInt(LGS(TH09_P2), &cpu_charge_p2, 1, 4)) {
+                    if (ImGui::SliderInt(S(TH09_P2), &cpu_charge_p2, 1, 4)) {
                         *(float*)(pl2 + 0x7c) = static_cast<float>(cpu_charge_p2) * 100;
                     }
                     ImGui::SameLine();
-                    ImGui::Checkbox(LGS(TH09_LOCK), &cpu_lock_attack_p2);
+                    ImGui::Checkbox(S(TH09_LOCK), &cpu_lock_attack_p2);
                     ImGui::PopID();
                 }
                 ImGui::PopID();
             }
 
             ImGui::PushID(TH09_RANK);
-            ImGui::TextUnformatted(LGS(TH09_RANK));
-            ImGui::SliderInt(LGS(TH09_RANK), (int*)0x4a7e44, 1, *(uint32_t*)0x4a7e58);
-            ImGui::InputInt(LGS(TH09_RANK_MAX), (int*)0x4a7e58, 1, 5);
-            ImGui::InputInt(LGS(TH09_RANK_INC), (int*)0x4a7e54, 1, 1);
-            if (ImGui::Checkbox(LGS(TH09_LOCK), &ranklock)) {
+            ImGui::TextUnformatted(S(TH09_RANK));
+            ImGui::SliderInt(S(TH09_RANK), (int*)0x4a7e44, 1, *(uint32_t*)0x4a7e58);
+            ImGui::InputInt(S(TH09_RANK_MAX), (int*)0x4a7e58, 1, 5);
+            ImGui::InputInt(S(TH09_RANK_INC), (int*)0x4a7e54, 1, 1);
+            if (ImGui::Checkbox(S(TH09_LOCK), &ranklock)) {
                 th09_ranklock.Toggle(ranklock);
             }
             ImGui::PopID();
 
             ImGui::PushID(TH09_LV_RANK);
-            ImGui::TextUnformatted(LGS(TH09_LV_RANK));
-            ImGui::SliderInt(LGS(TH09_P1), (int*)(pl1 + 0xa0), 1, 16);
-            ImGui::SliderInt(LGS(TH09_P2), (int*)(pl2 + 0xa0), 1, 16);
+            ImGui::TextUnformatted(S(TH09_LV_RANK));
+            ImGui::SliderInt(S(TH09_P1), (int*)(pl1 + 0xa0), 1, 16);
+            ImGui::SliderInt(S(TH09_P2), (int*)(pl2 + 0xa0), 1, 16);
             ImGui::PopID();
 
             ImGui::PushID(TH09_BOSS_RANK);
-            ImGui::TextUnformatted(LGS(TH09_BOSS_RANK));
-            ImGui::SliderInt(LGS(TH09_P1), (int*)(pl1 + 0xa4), 1, 16);
-            ImGui::SliderInt(LGS(TH09_P2), (int*)(pl2 + 0xa4), 1, 16);
+            ImGui::TextUnformatted(S(TH09_BOSS_RANK));
+            ImGui::SliderInt(S(TH09_P1), (int*)(pl1 + 0xa4), 1, 16);
+            ImGui::SliderInt(S(TH09_P2), (int*)(pl2 + 0xa4), 1, 16);
             ImGui::PopID();
 
             ImGui::PushID(TH09_MISC);
-            ImGui::TextUnformatted(LGS(TH09_MISC));
-            ImGui::SliderInt(LGS(TH09_AI_POWER), (int*)0x4a7df4, 1, 60);
-            ImGui::InputInt(LGS(TH09_LILY_TIMER), (int*)0x4a7e5c, 1, 3);
+            ImGui::TextUnformatted(S(TH09_MISC));
+            ImGui::SliderInt(S(TH09_AI_POWER), (int*)0x4a7df4, 1, 60);
+            ImGui::InputInt(S(TH09_LILY_TIMER), (int*)0x4a7e5c, 1, 3);
             ImGui::PopID();
 
             if (BeginOptGroup<TH09_OCCURENCE>()) {
-                ImGui::Checkbox(LGS(TH09_O_LILY), &o_lily);
-                ImGui::Checkbox(LGS(TH09_O_FAIRY), &o_fairy);
-                ImGui::Checkbox(LGS(TH09_O_PELLETS_RANDOM), &o_pellets_random);
-                ImGui::Checkbox(LGS(TH09_O_PELLETS_RIVAL), &o_pellets_rival);
-                ImGui::Checkbox(LGS(TH09_O_LARGE_BULLETS), &o_large_bullets);
-                ImGui::Checkbox(LGS(TH09_O_SPIRITS_RANDOM), &o_spirits_random);
-                ImGui::Checkbox(LGS(TH09_O_SPIRITS_RIVAL), &o_spirits_rival);
-                ImGui::Checkbox(LGS(TH09_O_EX), &o_ex);
-                ImGui::Checkbox(LGS(TH09_O_LV2), &o_lv2);
-                ImGui::Checkbox(LGS(TH09_O_LV3), &o_lv3);
-                ImGui::Checkbox(LGS(TH09_O_BOSS), &o_boss);
+                ImGui::Checkbox(S(TH09_O_LILY), &o_lily);
+                ImGui::Checkbox(S(TH09_O_FAIRY), &o_fairy);
+                ImGui::Checkbox(S(TH09_O_PELLETS_RANDOM), &o_pellets_random);
+                ImGui::Checkbox(S(TH09_O_PELLETS_RIVAL), &o_pellets_rival);
+                ImGui::Checkbox(S(TH09_O_LARGE_BULLETS), &o_large_bullets);
+                ImGui::Checkbox(S(TH09_O_SPIRITS_RANDOM), &o_spirits_random);
+                ImGui::Checkbox(S(TH09_O_SPIRITS_RIVAL), &o_spirits_rival);
+                ImGui::Checkbox(S(TH09_O_EX), &o_ex);
+                ImGui::Checkbox(S(TH09_O_LV2), &o_lv2);
+                ImGui::Checkbox(S(TH09_O_LV3), &o_lv3);
+                ImGui::Checkbox(S(TH09_O_BOSS), &o_boss);
                 EndOptGroup();
             }
 
             auto show_stats = [](uint32_t b) {
-                ImGui::TextUnformatted(LGS(TH_BULLETS));
+                ImGui::TextUnformatted(S(TH_BULLETS));
                 ImGui::Indent();
-                ImGui::Text(LGS(TH09_STAT_B_FAIRY), *(uint32_t*)(b + 0x25e164));
-                ImGui::Text(LGS(TH09_STAT_B_RIVAL), *(uint32_t*)(b + 0x25e168));
-                ImGui::Text(LGS(TH09_STAT_B_TOTAL), *(uint32_t*)(b + 0x25e16c));
+                ImGui::Text(S(TH09_STAT_B_FAIRY), *(uint32_t*)(b + 0x25e164));
+                ImGui::Text(S(TH09_STAT_B_RIVAL), *(uint32_t*)(b + 0x25e168));
+                ImGui::Text(S(TH09_STAT_B_TOTAL), *(uint32_t*)(b + 0x25e16c));
                 ImGui::Unindent();
             };
 
-            ImGui::TextUnformatted(LGS(TH09_STATS));
+            ImGui::TextUnformatted(S(TH09_STATS));
             if (BeginOptGroup<TH09_PLAYER_1>()) {
                 show_stats(*(uint32_t*)0x4a7d98);
                 EndOptGroup();
@@ -415,7 +415,7 @@ namespace TH09 {
     protected:
         virtual void OnLocaleChange() override
         {
-            SetTitle(LGS(TH_MENU));
+            SetTitle(S(TH_MENU));
             SetSize(200, 38);
             SetPos(220, 74);
             SetItemWidthRel(-0.052f);
@@ -473,7 +473,7 @@ namespace TH09 {
     protected:
         virtual void OnLocaleChange() override
         {
-            SetTitle(LGS(TH_SPELL_PRAC));
+            SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
@@ -499,7 +499,7 @@ namespace TH09 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(LGS(TH_ADV_OPT));
+            ImGui::TextUnformatted(S(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 

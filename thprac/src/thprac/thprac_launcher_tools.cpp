@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-constexpr auto LGS = THPrac::Gui::LocaleGetStr;
+constexpr auto S = THPrac::Gui::LocaleGetStr;
 
 namespace THPrac {
 
@@ -58,7 +58,7 @@ public:
         if (candidate.size()) {
             auto rndFunc = GetRndGenerator(0u, candidate.size() - 1, mRndSeedGen());
             auto result = rndFunc();
-            sprintf_s(outputStr, LGS(THPRAC_TOOLS_ROLL_RESULT), candidate[result].c_str());
+            sprintf_s(outputStr, S(THPRAC_TOOLS_ROLL_RESULT), candidate[result].c_str());
             mRollText = outputStr;
             mRollGame = mGameOption[mGameSelected].name;
         }
@@ -78,14 +78,14 @@ public:
     bool GuiUpdate()
     {
         bool result = true;
-        if (ImGui::Button(LGS(THPRAC_BACK))) {
+        if (ImGui::Button(S(THPRAC_BACK))) {
             result = false;
         }
         ImGui::SameLine();
-        GuiCenteredText(LGS(THPRAC_TOOLS_RND_PLAYER));
+        GuiCenteredText(S(THPRAC_TOOLS_RND_PLAYER));
         ImGui::Separator();
 
-        if (ImGui::BeginCombo(LGS(THPRAC_TOOLS_RND_PLAYER_GAME), mGameOption[mGameSelected].name, 0)) // The second parameter is the label previewed before opening the combo.
+        if (ImGui::BeginCombo(S(THPRAC_TOOLS_RND_PLAYER_GAME), mGameOption[mGameSelected].name, 0)) // The second parameter is the label previewed before opening the combo.
         {
             for (size_t n = 0; n < mGameOption.size(); n++) {
                 bool is_selected = (mGameSelected == n);
@@ -115,8 +115,8 @@ public:
             RollPlayer();
         }
         if (mRollText != "ROLL!" && ImGui::BeginPopupContextItem("##roll_player_popup")) {
-            if (ImGui::Selectable(LGS(THPRAC_TOOLS_RND_TURNTO_GAME))) {
-                GuiLauncherMainSwitchTab(LGS(THPRAC_GAMES));
+            if (ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_GAME))) {
+                GuiLauncherMainSwitchTab(S(THPRAC_GAMES));
                 LauncherGamesGuiSwitch(mRollGame.c_str());
             }
             ImGui::EndPopup();
@@ -175,7 +175,7 @@ public:
         if (candidate.size()) {
             auto rndFunc = GetRndGenerator(0u, candidate.size() - 1, mRndSeedGen());
             auto result = rndFunc();
-            sprintf_s(outputStr, LGS(THPRAC_TOOLS_ROLL_RESULT), candidate[result].name);
+            sprintf_s(outputStr, S(THPRAC_TOOLS_ROLL_RESULT), candidate[result].name);
             mRollText = outputStr;
             mRollResult = candidate[result];
         }
@@ -191,11 +191,11 @@ public:
     bool GuiUpdate()
     {
         bool result = true;
-        if (ImGui::Button(LGS(THPRAC_BACK))) {
+        if (ImGui::Button(S(THPRAC_BACK))) {
             result = false;
         }
         ImGui::SameLine();
-        GuiCenteredText(LGS(THPRAC_TOOLS_RND_GAME));
+        GuiCenteredText(S(THPRAC_TOOLS_RND_GAME));
         ImGui::Separator();
 
         int i = 0;
@@ -216,26 +216,26 @@ public:
         }
 
         ImGui::NewLine();
-        GuiGameTypeChkBox(LGS(THPRAC_TOOLS_RND_GAME_PC98), 0);
+        GuiGameTypeChkBox(S(THPRAC_TOOLS_RND_GAME_PC98), 0);
         ImGui::SameLine();
-        GuiGameTypeChkBox(LGS(THPRAC_GAMES_MAIN_SERIES), 1);
+        GuiGameTypeChkBox(S(THPRAC_GAMES_MAIN_SERIES), 1);
         ImGui::SameLine();
-        GuiGameTypeChkBox(LGS(THPRAC_GAMES_SPINOFF_STG), 2);
+        GuiGameTypeChkBox(S(THPRAC_GAMES_SPINOFF_STG), 2);
         ImGui::SameLine();
-        GuiGameTypeChkBox(LGS(THPRAC_GAMES_SPINOFF_OTHERS), 3);
+        GuiGameTypeChkBox(S(THPRAC_GAMES_SPINOFF_OTHERS), 3);
 
         if (GuiButtonRelCentered(mRollText.c_str(), 0.9f, ImVec2(1.0f, 0.08f))) {
             RollGame();
         }
         if (mRollText != "ROLL!" && ImGui::BeginPopupContextItem("##roll_game_popup")) {
             if (mRollResult.playerSelect) {
-                if (ImGui::Selectable(LGS(THPRAC_TOOLS_RND_TURNTO_PLAYER))) {
+                if (ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_PLAYER))) {
                     mRollText = "ROLL!";
                     LauncherToolsGuiSwitch(mRollResult.name);
                 }
             }
-            if (ImGui::Selectable(LGS(THPRAC_TOOLS_RND_TURNTO_GAME))) {
-                GuiLauncherMainSwitchTab(LGS(THPRAC_GAMES));
+            if (ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_GAME))) {
+                GuiLauncherMainSwitchTab(S(THPRAC_GAMES));
                 LauncherGamesGuiSwitch(mRollResult.name);
             }
             ImGui::EndPopup();
@@ -297,14 +297,14 @@ private:
     }
     bool GuiContent()
     {
-        auto width = GetWidthRel(LGS(THPRAC_TOOLS_APPLY_THPRAC), 2.0f);
-        if (CenteredButton(LGS(THPRAC_TOOLS_APPLY_THPRAC), 0.2f, width)) {
+        auto width = GetWidthRel(S(THPRAC_TOOLS_APPLY_THPRAC), 2.0f);
+        if (CenteredButton(S(THPRAC_TOOLS_APPLY_THPRAC), 0.2f, width)) {
             FindOngoingGame(true);
         }
-        if (CenteredButton(LGS(THPRAC_TOOLS_RND_GAME), 0.4f, width)) {
+        if (CenteredButton(S(THPRAC_TOOLS_RND_GAME), 0.4f, width)) {
             mGuiUpdFunc = [&]() { return mGuiRollGame.GuiUpdate(); };
         }
-        if (CenteredButton(LGS(THPRAC_TOOLS_RND_PLAYER), 0.6f, width)) {
+        if (CenteredButton(S(THPRAC_TOOLS_RND_PLAYER), 0.6f, width)) {
             mGuiUpdFunc = [&]() { return mGuiRollPlayer.GuiUpdate(); };
         }
         return true;

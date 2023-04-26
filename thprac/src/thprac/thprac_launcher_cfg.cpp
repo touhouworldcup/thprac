@@ -25,7 +25,7 @@
 #include <shlwapi.h>
 #pragma comment(lib, "Shlwapi.lib")
 
-constexpr auto LGS = THPrac::Gui::LocaleGetStr;
+constexpr auto S = THPrac::Gui::LocaleGetStr;
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
@@ -610,10 +610,10 @@ public:
     {
         if (mChkUpdStatus == STATUS_UPDATE_PROMPT) {
             mChkUpdStatus = STATUS_UPD_ABLE_OR_FINISHED;
-            ImGui::OpenPopup(LGS(THPRAC_UPDATE_MODAL));
+            ImGui::OpenPopup(S(THPRAC_UPDATE_MODAL));
         }
-        if (GuiModal(LGS(THPRAC_UPDATE_MODAL))) {
-            ImGui::Text(LGS(THPRAC_UPDATE_PROMPT), mUpdVerStr.c_str());
+        if (GuiModal(S(THPRAC_UPDATE_MODAL))) {
+            ImGui::Text(S(THPRAC_UPDATE_PROMPT), mUpdVerStr.c_str());
             ImGui::NewLine();
 
             if (mUpdDesc[Gui::LocaleGet()] != "") {
@@ -624,7 +624,7 @@ public:
             bool disabled = mAutoUpdStatus == STATUS_CHKING_OR_UPDATING;
             if (mUpdDirectLink != "") {
                 ImGui::BeginDisabled(disabled);
-                if (ImGui::Button(LGS(THPRAC_UPDATE_AUTO_UPDATE))) {
+                if (ImGui::Button(S(THPRAC_UPDATE_AUTO_UPDATE))) {
                     mAutoUpdateThread.Stop();
                     mUpdPercentage = 0.0f;
                     mAutoUpdateThread.Start();
@@ -637,9 +637,9 @@ public:
             if (mUpdDownloads.size()) {
                 if (mUpdDirectLink != "") {
                     ImGui::SameLine();
-                    ImGui::TextUnformatted(LGS(THPRAC_UPDATE_OR_DOWNLOAD));
+                    ImGui::TextUnformatted(S(THPRAC_UPDATE_OR_DOWNLOAD));
                 } else {
-                    ImGui::TextUnformatted(LGS(THPRAC_UPDATE_DOWNLOADS));
+                    ImGui::TextUnformatted(S(THPRAC_UPDATE_DOWNLOADS));
                 }
 
                 for (auto& download : mUpdDownloads) {
@@ -650,15 +650,15 @@ public:
             }
 
             if (mAutoUpdStatus == STATUS_CHKING_OR_UPDATING) {
-                ImGui::Text(LGS(THPRAC_UPDATE_DOWNLOADING), mUpdPercentage);
+                ImGui::Text(S(THPRAC_UPDATE_DOWNLOADING), mUpdPercentage);
                 ImGui::SameLine();
             } else if (mAutoUpdStatus == STATUS_INTERNET_ERROR) {
-                ImGui::TextUnformatted(LGS(THPRAC_UPDATE_AUTO_UPDATE_FALIED));
+                ImGui::TextUnformatted(S(THPRAC_UPDATE_AUTO_UPDATE_FALIED));
                 ImGui::SameLine();
             }
 
             ImGui::BeginDisabled(disabled);
-            if (GuiCornerButton(LGS(THPRAC_CLOSE), nullptr, ImVec2(1.0f, 0.0f), true)) {
+            if (GuiCornerButton(S(THPRAC_CLOSE), nullptr, ImVec2(1.0f, 0.0f), true)) {
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndDisabled(disabled);
@@ -675,7 +675,7 @@ public:
         }
         hDialog = mUpdDialogHnd;
 
-        auto titleStr = utf8_to_utf16(LGS(THPRAC_UPDATE_DIALOG_CHECKING));
+        auto titleStr = utf8_to_utf16(S(THPRAC_UPDATE_DIALOG_CHECKING));
 #pragma warning(push) // TODO: make this less hacky
 #pragma warning(disable: 28183)
         SetWindowText(hDialog, titleStr.c_str());
@@ -714,14 +714,14 @@ public:
         }
 
         if (mUpdDialogHnd && isUpdateAvailable) {
-            auto titleStr = utf8_to_utf16(LGS(THPRAC_UPDATE_DIALOG_TITLE));
-            auto textStr = utf8_to_utf16(LGS(THPRAC_UPDATE_DIALOG_TEXT));
+            auto titleStr = utf8_to_utf16(S(THPRAC_UPDATE_DIALOG_TITLE));
+            auto textStr = utf8_to_utf16(S(THPRAC_UPDATE_DIALOG_TEXT));
             if (confirmation || MessageBoxW(nullptr, textStr.c_str(), titleStr.c_str(), MB_YESNO | MB_SETFOREGROUND) == IDYES) {
                 mAutoUpdateThread.Stop();
                 mUpdPercentage = 0.0f;
                 mAutoUpdateThread.Start();
 
-                titleStr = utf8_to_utf16(LGS(THPRAC_UPDATE_DIALOG_UPDATING));
+                titleStr = utf8_to_utf16(S(THPRAC_UPDATE_DIALOG_UPDATING));
                 SetWindowText(hDialog, titleStr.c_str());
                 LONG_PTR style = GetWindowLongPtr(GetDlgItem(hDialog, IDC_PROGRESS1), GWL_STYLE);
                 SetWindowLongPtr(GetDlgItem(hDialog, IDC_PROGRESS1), GWL_STYLE, style & (~PBS_MARQUEE));
@@ -1290,28 +1290,28 @@ private:
         bool dirSettingModalFlag = false;
         bool confirmModalFlag = false;
 
-        if (ImGui::Button(LGS(THPRAC_DIRECTORY_SETTING))) {
-            ImGui::OpenPopup(LGS(THPRAC_DIRECTORY_SETTING_MODAL));
+        if (ImGui::Button(S(THPRAC_DIRECTORY_SETTING))) {
+            ImGui::OpenPopup(S(THPRAC_DIRECTORY_SETTING_MODAL));
             mCfgUseLocalDir = gCfgIsLocalDir;
             mCfgDirChgGlobalParam = 0;
             mCfgDirChgLocalParam = 0;
             mCfgRelativePath = mUseRelativePath.Get();
         }
 
-        if (GuiModal(LGS(THPRAC_DIRECTORY_SETTING_MODAL))) {
+        if (GuiModal(S(THPRAC_DIRECTORY_SETTING_MODAL))) {
             ImGui::PushTextWrapPos(LauncherWndGetSize().x * 0.9f);
-            ImGui::TextUnformatted(LGS(THPRAC_DIRECTORY_SETTING_DESC));
+            ImGui::TextUnformatted(S(THPRAC_DIRECTORY_SETTING_DESC));
             ImGui::NewLine();
 
-            ImGui::RadioButton(LGS(THPRAC_DIR_GLOBAL), &mCfgUseLocalDir, 0);
+            ImGui::RadioButton(S(THPRAC_DIR_GLOBAL), &mCfgUseLocalDir, 0);
             ImGui::SameLine();
-            ImGui::RadioButton((LGS(THPRAC_DIR_LOCAL)), &mCfgUseLocalDir, 1);
+            ImGui::RadioButton((S(THPRAC_DIR_LOCAL)), &mCfgUseLocalDir, 1);
             ImGui::SameLine();
             if (mCfgUseLocalDir == 1) {
-                ImGui::Checkbox(LGS(THPRAC_USE_REL_PATH), &mCfgRelativePath);
+                ImGui::Checkbox(S(THPRAC_USE_REL_PATH), &mCfgRelativePath);
             } else {
                 ImGui::BeginDisabled();
-                ImGui::Checkbox(LGS(THPRAC_USE_REL_PATH), &mCfgRelativePath);
+                ImGui::Checkbox(S(THPRAC_USE_REL_PATH), &mCfgRelativePath);
                 ImGui::EndDisabled();
             }
 
@@ -1319,28 +1319,28 @@ private:
                 ImGui::BeginDisabled();
             }
             if (!gCfgIsLocalDir) {
-                ImGui::TextUnformatted(LGS(THPRAC_EXISTING_GLOBAL_DATA));
+                ImGui::TextUnformatted(S(THPRAC_EXISTING_GLOBAL_DATA));
                 ImGui::SameLine();
-                ImGui::RadioButton(LGS(THPRAC_IGNORE_GLOBAL_DATA), &mCfgDirChgGlobalParam, 0);
+                ImGui::RadioButton(S(THPRAC_IGNORE_GLOBAL_DATA), &mCfgDirChgGlobalParam, 0);
                 ImGui::SameLine();
-                ImGui::RadioButton(LGS(THPRAC_MOVE_TO_LOCAL), &mCfgDirChgGlobalParam, 1);
+                ImGui::RadioButton(S(THPRAC_MOVE_TO_LOCAL), &mCfgDirChgGlobalParam, 1);
                 ImGui::SameLine();
-                ImGui::RadioButton(LGS(THPRAC_COPY_TO_LOCAL), &mCfgDirChgGlobalParam, 2);
+                ImGui::RadioButton(S(THPRAC_COPY_TO_LOCAL), &mCfgDirChgGlobalParam, 2);
 
-                ImGui::TextUnformatted(LGS(THPRAC_EXISTING_LOCAL_DATA));
+                ImGui::TextUnformatted(S(THPRAC_EXISTING_LOCAL_DATA));
                 ImGui::SameLine();
-                ImGui::RadioButton(LGS(THPRAC_IGNORE_LOCAL_DATA), &mCfgDirChgLocalParam, 0);
+                ImGui::RadioButton(S(THPRAC_IGNORE_LOCAL_DATA), &mCfgDirChgLocalParam, 0);
                 ImGui::SameLine();
                 if (gCfgIsLocalDir != mCfgUseLocalDir && !gCfgLocalBackupAvaliable) {
                     ImGui::BeginDisabled();
                 }
-                ImGui::RadioButton(LGS(THPRAC_USE_BACKUP_DATA), &mCfgDirChgLocalParam, 1);
+                ImGui::RadioButton(S(THPRAC_USE_BACKUP_DATA), &mCfgDirChgLocalParam, 1);
                 if (gCfgIsLocalDir != mCfgUseLocalDir && !gCfgLocalBackupAvaliable) {
                     ImGui::EndDisabled();
                 }
                 ImGui::SameLine();
                 ImGui::BeginDisabled();
-                ImGui::RadioButton(LGS(THPRAC_OVERWRTITE_DATA), &mCfgDirChgLocalParam, 2);
+                ImGui::RadioButton(S(THPRAC_OVERWRTITE_DATA), &mCfgDirChgLocalParam, 2);
                 ImGui::EndDisabled();
                 if (mCfgDirChgGlobalParam == 1 || mCfgDirChgGlobalParam == 2) {
                     mCfgDirChgLocalParam = 2;
@@ -1349,14 +1349,14 @@ private:
                 }
             } else {
 
-                ImGui::TextUnformatted(LGS(THPRAC_EXISTING_GLOBAL_DATA));
+                ImGui::TextUnformatted(S(THPRAC_EXISTING_GLOBAL_DATA));
                 ImGui::SameLine();
-                ImGui::RadioButton(LGS(THPRAC_IGNORE_GLOBAL_DATA), &mCfgDirChgGlobalParam, 0);
+                ImGui::RadioButton(S(THPRAC_IGNORE_GLOBAL_DATA), &mCfgDirChgGlobalParam, 0);
                 ImGui::SameLine();
                 if (gCfgIsLocalDir != mCfgUseLocalDir) {
                     ImGui::BeginDisabled();
                 }
-                ImGui::RadioButton(LGS(THPRAC_OVERWRTITE_DATA), &mCfgDirChgGlobalParam, 1);
+                ImGui::RadioButton(S(THPRAC_OVERWRTITE_DATA), &mCfgDirChgGlobalParam, 1);
                 if (gCfgIsLocalDir != mCfgUseLocalDir) {
                     ImGui::EndDisabled();
                 }
@@ -1366,24 +1366,24 @@ private:
                     mCfgDirChgGlobalParam = 0;
                 }
 
-                ImGui::TextUnformatted(LGS(THPRAC_EXISTING_LOCAL_DATA));
+                ImGui::TextUnformatted(S(THPRAC_EXISTING_LOCAL_DATA));
                 ImGui::SameLine();
-                ImGui::RadioButton(LGS(THPRAC_CREATE_BACKUP_DATA), &mCfgDirChgLocalParam, 0);
+                ImGui::RadioButton(S(THPRAC_CREATE_BACKUP_DATA), &mCfgDirChgLocalParam, 0);
                 ImGui::SameLine();
-                ImGui::RadioButton(LGS(THPRAC_MOVE_TO_GLOBAL), &mCfgDirChgLocalParam, 1);
+                ImGui::RadioButton(S(THPRAC_MOVE_TO_GLOBAL), &mCfgDirChgLocalParam, 1);
                 ImGui::SameLine();
-                ImGui::RadioButton(LGS(THPRAC_PURGE_LOCAL), &mCfgDirChgLocalParam, 2);
+                ImGui::RadioButton(S(THPRAC_PURGE_LOCAL), &mCfgDirChgLocalParam, 2);
             }
             if (gCfgIsLocalDir == mCfgUseLocalDir) {
                 ImGui::EndDisabled();
             }
 
             if (gCfgIsLocalDir == mCfgUseLocalDir && mCfgRelativePath == mUseRelativePath.Get()) {
-                if (GuiCornerButton(LGS(THPRAC_CANCEL), nullptr, ImVec2(1.0f, 0.0f), true)) {
+                if (GuiCornerButton(S(THPRAC_CANCEL), nullptr, ImVec2(1.0f, 0.0f), true)) {
                     ImGui::CloseCurrentPopup();
                 }
             } else {
-                auto retnValue = GuiCornerButton(LGS(THPRAC_APPLY), LGS(THPRAC_CANCEL), ImVec2(1.0f, 0.0f), true);
+                auto retnValue = GuiCornerButton(S(THPRAC_APPLY), S(THPRAC_CANCEL), ImVec2(1.0f, 0.0f), true);
                 if (retnValue == 1) {
                     ImGui::CloseCurrentPopup();
                     confirmModalFlag = true;
@@ -1397,34 +1397,34 @@ private:
         }
 
         if (confirmModalFlag) {
-            ImGui::OpenPopup(LGS(THPRAC_DIRECTORY_CONFIRM));
+            ImGui::OpenPopup(S(THPRAC_DIRECTORY_CONFIRM));
         }
-        if (GuiModal(LGS(THPRAC_DIRECTORY_CONFIRM))) {
-            ImGui::TextUnformatted(LGS(THPRAC_DIRECTORY_CONFIRM_DESC));
+        if (GuiModal(S(THPRAC_DIRECTORY_CONFIRM))) {
+            ImGui::TextUnformatted(S(THPRAC_DIRECTORY_CONFIRM_DESC));
             auto buttonSize = ImGui::GetItemRectSize().x / 2.05f;
-            if (ImGui::Button(LGS(THPRAC_YES), ImVec2(buttonSize, 0))) {
+            if (ImGui::Button(S(THPRAC_YES), ImVec2(buttonSize, 0))) {
                 GuiLauncherMainTrigger(LAUNCHER_RESET);
                 mCfgResetFlag = 2;
                 ImGui::CloseCurrentPopup();
             }
             ImGui::SameLine();
-            if (ImGui::Button(LGS(THPRAC_NO), ImVec2(buttonSize, 0))) {
+            if (ImGui::Button(S(THPRAC_NO), ImVec2(buttonSize, 0))) {
                 dirSettingModalFlag = true;
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
         }
         if (dirSettingModalFlag) {
-            ImGui::OpenPopup(LGS(THPRAC_DIRECTORY_SETTING_MODAL));
+            ImGui::OpenPopup(S(THPRAC_DIRECTORY_SETTING_MODAL));
         }
 
         ImGui::SameLine();
-        if (ImGui::Button(LGS(THPRAC_DATADIR_OPEN))) {
+        if (ImGui::Button(S(THPRAC_DATADIR_OPEN))) {
             ShellExecuteW(nullptr, L"open", LauncherGetDataDir().c_str(), nullptr, nullptr, SW_SHOW);
         }
 
         ImGui::SameLine();
-        if (GuiButtonAndModalYesNo(LGS(THPRAC_RESET_LAUNCHER), LGS(THPRAC_RESET_LAUNCHER_MODAL), LGS(THPRAC_RESET_LAUNCHER_WARNING), -1.0f, LGS(THPRAC_YES), LGS(THPRAC_NO))) {
+        if (GuiButtonAndModalYesNo(S(THPRAC_RESET_LAUNCHER), S(THPRAC_RESET_LAUNCHER_MODAL), S(THPRAC_RESET_LAUNCHER_WARNING), -1.0f, S(THPRAC_YES), S(THPRAC_NO))) {
             GuiLauncherMainTrigger(LAUNCHER_RESET);
             mCfgResetFlag = 1;
         }
@@ -1450,11 +1450,11 @@ private:
     }
     void GuiThcrapBatchAddWnd()
     {
-        if (ImGui::Button(LGS(THPRAC_BACK))) {
+        if (ImGui::Button(S(THPRAC_BACK))) {
             mGuiUpdFunc = [&]() { GuiMain(); };
         }
         ImGui::SameLine();
-        GuiCenteredText(LGS(THPRAC_THCRAP_ADDCFG_CHILD));
+        GuiCenteredText(S(THPRAC_THCRAP_ADDCFG_CHILD));
         ImGui::Separator();
 
         ImGui::BeginChild("BATCH_ADD");
@@ -1462,7 +1462,7 @@ private:
         bool itemChanged = false;
         auto childHeight = std::max(ImGui::GetWindowHeight() * 0.37f, ImGui::GetFontSize() * 10.5f);
 
-        ImGui::TextUnformatted(LGS(THPRAC_THCRAP_ADDCFG_CONFIGS));
+        ImGui::TextUnformatted(S(THPRAC_THCRAP_ADDCFG_CONFIGS));
         ImGui::BeginChild("BATCH_ADD_CFG", ImVec2(0, childHeight), true);
         ImGui::Columns(3, 0, false);
         bool allCfgSelected = true;
@@ -1485,7 +1485,7 @@ private:
         ImGui::Columns(1);
         ImGui::EndChild();
 
-        ImGui::TextUnformatted(LGS(THPRAC_THCRAP_ADDCFG_GAMES));
+        ImGui::TextUnformatted(S(THPRAC_THCRAP_ADDCFG_GAMES));
         ImGui::BeginChild("BATCH_ADD_GAMES", ImVec2(0, childHeight), true);
         int i = 0;
         for (auto& gameType : mThcrapGames) {
@@ -1520,13 +1520,13 @@ private:
         }
         ImGui::EndChild();
         ImGui::Indent(ImGui::GetStyle().ItemSpacing.x);
-        itemChanged |= GuiGameTypeChkBox(LGS(THPRAC_THCRAP_ADDCFG_ALLCFG), 0);
+        itemChanged |= GuiGameTypeChkBox(S(THPRAC_THCRAP_ADDCFG_ALLCFG), 0);
         ImGui::SameLine();
-        itemChanged |= GuiGameTypeChkBox(LGS(THPRAC_GAMES_MAIN_SERIES), 1);
+        itemChanged |= GuiGameTypeChkBox(S(THPRAC_GAMES_MAIN_SERIES), 1);
         ImGui::SameLine();
-        itemChanged |= GuiGameTypeChkBox(LGS(THPRAC_GAMES_SPINOFF_STG), 2);
+        itemChanged |= GuiGameTypeChkBox(S(THPRAC_GAMES_SPINOFF_STG), 2);
         ImGui::SameLine();
-        itemChanged |= GuiGameTypeChkBox(LGS(THPRAC_GAMES_SPINOFF_OTHERS), 3);
+        itemChanged |= GuiGameTypeChkBox(S(THPRAC_GAMES_SPINOFF_OTHERS), 3);
         ImGui::Unindent(ImGui::GetStyle().ItemSpacing.x);
 
         if (itemChanged) {
@@ -1542,7 +1542,7 @@ private:
             ImGui::PopStyleColor();
             ImGui::PopStyleColor();
         } else {
-            auto retnValue = GuiCornerButton(LGS(THPRAC_APPLY), nullptr, ImVec2(1.0f, 0.0f), true);
+            auto retnValue = GuiCornerButton(S(THPRAC_APPLY), nullptr, ImVec2(1.0f, 0.0f), true);
             if (retnValue == 1) {
                 size_t cfgSize = 0;
                 size_t gameSize = 0;
@@ -1562,13 +1562,13 @@ private:
                 LauncherGamesThcrapAdd("", std::string(), false, true);
                 mThcrapAddPromptTime = 2.0f;
                 if (!cfgSize) {
-                    mThcrapAddPrompt = LGS(THPRAC_THCRAP_ADDCFG_NOCFG);
+                    mThcrapAddPrompt = S(THPRAC_THCRAP_ADDCFG_NOCFG);
                     mThcrapAddPromptCol = { 0.8f, 0.0f, 0.0f, 1.0f };
                 } else if (!gameSize) {
-                    mThcrapAddPrompt = LGS(THPRAC_THCRAP_ADDCFG_NOGAME);
+                    mThcrapAddPrompt = S(THPRAC_THCRAP_ADDCFG_NOGAME);
                     mThcrapAddPromptCol = { 0.8f, 0.0f, 0.0f, 1.0f };
                 } else {
-                    mThcrapAddPrompt = LGS(THPRAC_THCRAP_ADDCFG_SUCCESS);
+                    mThcrapAddPrompt = S(THPRAC_THCRAP_ADDCFG_SUCCESS);
                     mThcrapAddPromptCol = { 0.0f, 0.75f, 0.0f, 1.0f };
                 }
             }
@@ -1579,21 +1579,21 @@ private:
     }
     void GuiThcrapSettings()
     {
-        ImGui::TextUnformatted(LGS(THPRAC_THCRAP));
+        ImGui::TextUnformatted(S(THPRAC_THCRAP));
         ImGui::Separator();
         if (mThcrap.Get() == "") {
-            ImGui::TextUnformatted(LGS(THPRAC_THCRAP_NOTYET));
+            ImGui::TextUnformatted(S(THPRAC_THCRAP_NOTYET));
             if (ImGui::Button("Get thcrap")) {
                 ShellExecuteW(nullptr, L"open", L"https://www.thpatch.net/", nullptr, nullptr, SW_SHOW);
             }
             ImGui::SameLine();
-            if (ImGui::Button(LGS(THPRAC_THCRAP_SET))) {
+            if (ImGui::Button(S(THPRAC_THCRAP_SET))) {
                 auto path = LauncherWndFolderSelect();
                 if (path != L"") {
                     if (!LauncherGamesThcrapTest(path)) {
                         mThcrapHintTimeBuffer = 2;
                         mThcrapHintTime = 5.0f;
-                        mThcrapHintStr = LGS(THPRAC_THCRAP_INVALID);
+                        mThcrapHintStr = S(THPRAC_THCRAP_INVALID);
                     } else {
                         mThcrap.Set(utf16_to_utf8(path.c_str()));
                         LauncherGamesThcrapSetup();
@@ -1602,13 +1602,13 @@ private:
                 }
             }
         } else {
-            ImGui::Text(LGS(THPRAC_THCRAP_LOCATION), mThcrap.Get().c_str());
-            if (GuiButtonAndModalYesNo(LGS(THPRAC_THCRAP_UNSET), LGS(THPRAC_THCRAP_UNSET_MODAL), LGS(THPRAC_THCRAP_UNSET_TXT), -1.0f, LGS(THPRAC_YES), LGS(THPRAC_NO))) {
+            ImGui::Text(S(THPRAC_THCRAP_LOCATION), mThcrap.Get().c_str());
+            if (GuiButtonAndModalYesNo(S(THPRAC_THCRAP_UNSET), S(THPRAC_THCRAP_UNSET_MODAL), S(THPRAC_THCRAP_UNSET_TXT), -1.0f, S(THPRAC_YES), S(THPRAC_NO))) {
                 mThcrap.Set(std::string(""));
                 mThcrapHintTime = 0.0f;
             }
             ImGui::SameLine();
-            if (ImGui::Button(LGS(THPRAC_THCRAP_ADDCFG))) {
+            if (ImGui::Button(S(THPRAC_THCRAP_ADDCFG))) {
                 LauncherGamesThcrapSetup();
                 LauncherGamesThcrapCfgGet(mThcrapCfg, mThcrapGames);
                 if (mThcrapCfg.size()) {
@@ -1616,15 +1616,15 @@ private:
                 } else {
                     mThcrapHintTimeBuffer = 2;
                     mThcrapHintTime = 5.0f;
-                    mThcrapHintStr = LGS(THPRAC_THCRAP_ADDCFG_404);
+                    mThcrapHintStr = S(THPRAC_THCRAP_ADDCFG_404);
                 }
             }
             ImGui::SameLine();
-            if (ImGui::Button(LGS(THPRAC_THCRAP_LAUNCH_CONFIGURE))) {
+            if (ImGui::Button(S(THPRAC_THCRAP_LAUNCH_CONFIGURE))) {
                 if (!LauncherGamesThcrapLaunch()) {
                     mThcrapHintTimeBuffer = 2;
                     mThcrapHintTime = 5.0f;
-                    mThcrapHintStr = LGS(THPRAC_THCRAP_LAUNCH_FAILED);
+                    mThcrapHintStr = S(THPRAC_THCRAP_LAUNCH_FAILED);
                 }
             }
         }
@@ -1649,7 +1649,7 @@ private:
     }
     void GuiLicenceWnd()
     {
-        if (ImGui::Button(LGS(THPRAC_BACK))) {
+        if (ImGui::Button(S(THPRAC_BACK))) {
             mGuiUpdFunc = [&]() { GuiMain(); };
         }
         ImGui::SameLine();
@@ -1679,18 +1679,18 @@ private:
 
     void GuiMain()
     {
-        ImGui::TextUnformatted(LGS(THPRAC_LAUNCH_BEHAVIOR));
+        ImGui::TextUnformatted(S(THPRAC_LAUNCH_BEHAVIOR));
         ImGui::Separator();
-        mAdminRights.Gui(LGS(THPRAC_ADMIN_RIGHTS));
-        mExistingGameAction.Gui(LGS(THPRAC_EXISTING_GAME_ACTION), LGS(THPRAC_EXISTING_GAME_ACTION_OPTION));
-        mDontSearchOngoingGame.Gui(LGS(THPRAC_DONT_SEARCH_ONGOING));
+        mAdminRights.Gui(S(THPRAC_ADMIN_RIGHTS));
+        mExistingGameAction.Gui(S(THPRAC_EXISTING_GAME_ACTION), S(THPRAC_EXISTING_GAME_ACTION_OPTION));
+        mDontSearchOngoingGame.Gui(S(THPRAC_DONT_SEARCH_ONGOING));
         ImGui::BeginDisabled();
-        mReflectiveLaunch.Gui(LGS(THPRAC_REFLECTIVE_LAUNCH));
+        mReflectiveLaunch.Gui(S(THPRAC_REFLECTIVE_LAUNCH));
         ImGui::EndDisabled();
         ImGui::SameLine();
-        GuiHelpMarker(LGS(THPRAC_REFLECTIVE_LAUNCH_DESC));
+        GuiHelpMarker(S(THPRAC_REFLECTIVE_LAUNCH_DESC));
         ImGui::NewLine();
-        ImGui::TextUnformatted(LGS(THPRAC_SETTING_LAUNCHER));
+        ImGui::TextUnformatted(S(THPRAC_SETTING_LAUNCHER));
         ImGui::Separator();
         int theme_prev = mCfgTheme.Get();
         if (mCfgTheme.Gui("Theme:", "Dark\0Light\0Classic\0Custom\0\0")) {
@@ -1725,48 +1725,48 @@ private:
             ImGui::EndCombo();
         }
 
-        mCfgAfterLaunch.Gui(LGS(THPRAC_AFTER_LAUNCH), LGS(THPRAC_AFTER_LAUNCH_OPTION));
-        mAutoDefLaunch.Gui(LGS(THPRAC_AUTO_DEFAULT_LAUNCH), LGS(THPRAC_AUTO_DEFAULT_LAUNCH_DESC));
-        mCfgThpracDefault.Gui(LGS(THPRAC_APPLY_THPRAC_DEFAULT), LGS(THPRAC_APPLY_THPRAC_DEFAULT_OPTION));
-        mCfgFilterDefault.Gui(LGS(THPRAC_FILTER_DEFAULT), LGS(THPRAC_FILTER_DEFAULT_OPTION), LGS(THPRAC_FILTER_DEFAULT_DESC));
+        mCfgAfterLaunch.Gui(S(THPRAC_AFTER_LAUNCH), S(THPRAC_AFTER_LAUNCH_OPTION));
+        mAutoDefLaunch.Gui(S(THPRAC_AUTO_DEFAULT_LAUNCH), S(THPRAC_AUTO_DEFAULT_LAUNCH_DESC));
+        mCfgThpracDefault.Gui(S(THPRAC_APPLY_THPRAC_DEFAULT), S(THPRAC_APPLY_THPRAC_DEFAULT_OPTION));
+        mCfgFilterDefault.Gui(S(THPRAC_FILTER_DEFAULT), S(THPRAC_FILTER_DEFAULT_OPTION), S(THPRAC_FILTER_DEFAULT_DESC));
         PathAndDirSettings();
         ImGui::NewLine();
 
         GuiThcrapSettings();
         ImGui::NewLine();
 
-        ImGui::TextUnformatted(LGS(THPRAC_GAME_ADJUSTMENTS));
+        ImGui::TextUnformatted(S(THPRAC_GAME_ADJUSTMENTS));
         ImGui::Separator();
-        mResizableWindow.Gui(LGS(THPRAC_RESIZABLE_WINDOW));
+        mResizableWindow.Gui(S(THPRAC_RESIZABLE_WINDOW));
         ImGui::NewLine();
 
-        ImGui::TextUnformatted(LGS(THPRAC_SETTING_LANGUAGE));
+        ImGui::TextUnformatted(S(THPRAC_SETTING_LANGUAGE));
         ImGui::Separator();
-        mCfgLanguage.Gui(LGS(THPRAC_LANGUAGE), (const char*)u8"中文\0English\0日本語\0\0");
+        mCfgLanguage.Gui(S(THPRAC_LANGUAGE), (const char*)u8"中文\0English\0日本語\0\0");
         if (mOriginalLanguage != mCfgLanguage.Get()) {
             ImGui::TextUnformatted(th_glossary_str[mCfgLanguage.Get()][THPRAC_LANGUAGE_HINT]);
         }
         ImGui::NewLine();
 
-        ImGui::TextUnformatted(LGS(THPRAC_SETTING_UPDATE));
+        ImGui::TextUnformatted(S(THPRAC_SETTING_UPDATE));
         ImGui::Separator();
-        mCheckUpdateTiming.Gui(LGS(THPRAC_CHECK_UPDATE_WHEN), LGS(THPRAC_CHECK_UPDATE_WHEN_OPTION));
+        mCheckUpdateTiming.Gui(S(THPRAC_CHECK_UPDATE_WHEN), S(THPRAC_CHECK_UPDATE_WHEN_OPTION));
         if (mCheckUpdateTiming.Get() == 2) {
             ImGui::BeginDisabled();
-            mUpdateWithoutConfirm.Gui(LGS(THPRAC_UPDATE_WITHOUT_CONFIRMATION));
+            mUpdateWithoutConfirm.Gui(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION));
             ImGui::EndDisabled();
             ImGui::SameLine();
-            ImGui::TextUnformatted(LGS(THPRAC_UPDATE_WITHOUT_CONFIRMATION_DESC));
+            ImGui::TextUnformatted(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION_DESC));
         } else {
-            mUpdateWithoutConfirm.Gui(LGS(THPRAC_UPDATE_WITHOUT_CONFIRMATION));
+            mUpdateWithoutConfirm.Gui(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION));
         }
-        mFilenameAfterUpdate.Gui(LGS(THPRAC_FILENAME_AFTER_UPDATE), LGS(THPRAC_FILENAME_AFTER_UPDATE_OPTION));
+        mFilenameAfterUpdate.Gui(S(THPRAC_FILENAME_AFTER_UPDATE), S(THPRAC_FILENAME_AFTER_UPDATE_OPTION));
         if (THUpdate::singleton().IsCheckingUpdate()) {
             ImGui::BeginDisabled();
-            ImGui::Button(LGS(THPRAC_CHECK_UPDATE_NOW));
+            ImGui::Button(S(THPRAC_CHECK_UPDATE_NOW));
             ImGui::EndDisabled();
         } else {
-            if (ImGui::Button(LGS(THPRAC_CHECK_UPDATE_NOW))) {
+            if (ImGui::Button(S(THPRAC_CHECK_UPDATE_NOW))) {
                 if (!THUpdate::singleton().IsCheckingUpdate()) {
                     THUpdate::singleton().CheckUpdate();
                 }
@@ -1776,37 +1776,37 @@ private:
         switch (THUpdate::singleton().GetUpdateStatus()) {
         case THPrac::THUpdate::STATUS_CHKING_OR_UPDATING:
             ImGui::SameLine();
-            ImGui::TextUnformatted(LGS(THPRAC_UPDATE_CHECKING));
+            ImGui::TextUnformatted(S(THPRAC_UPDATE_CHECKING));
             break;
         case THPrac::THUpdate::STATUS_UPD_ABLE_OR_FINISHED:
             ImGui::SameLine();
-            ImGui::TextUnformatted(LGS(THPRAC_UPDATE_AVALIABLE));
+            ImGui::TextUnformatted(S(THPRAC_UPDATE_AVALIABLE));
             break;
         case THPrac::THUpdate::STATUS_NO_UPDATE:
             ImGui::SameLine();
-            ImGui::TextUnformatted(LGS(THPRAC_UPDATE_NO_UPDATE));
+            ImGui::TextUnformatted(S(THPRAC_UPDATE_NO_UPDATE));
             break;
         case THPrac::THUpdate::STATUS_INTERNET_ERROR:
             ImGui::SameLine();
-            ImGui::TextUnformatted(LGS(THPRAC_UPDATE_ERROR));
+            ImGui::TextUnformatted(S(THPRAC_UPDATE_ERROR));
             break;
         default:
             break;
         }
         ImGui::NewLine();
 
-        ImGui::TextUnformatted(LGS(THPRAC_SETTING_ABOUT));
+        ImGui::TextUnformatted(S(THPRAC_SETTING_ABOUT));
         ImGui::Separator();
-        ImGui::Text(LGS(TH_ABOUT_VERSION), GetVersionStr());
+        ImGui::Text(S(TH_ABOUT_VERSION), GetVersionStr());
         ImGui::SameLine();
-        if (ImGui::Button(LGS(TH_ABOUT_SHOW_LICENCE))) {
+        if (ImGui::Button(S(TH_ABOUT_SHOW_LICENCE))) {
             mGuiUpdFunc = [&]() { GuiLicenceWnd(); };
         }
         ImGui::NewLine();
-        ImGui::TextUnformatted(LGS(TH_ABOUT_AUTHOR));
-        TextLink(LGS(TH_ABOUT_WEBSITE), L"https://github.com/touhouworldcup/thprac");
+        ImGui::TextUnformatted(S(TH_ABOUT_AUTHOR));
+        TextLink(S(TH_ABOUT_WEBSITE), L"https://github.com/touhouworldcup/thprac");
         ImGui::NewLine();
-        ImGui::Text(LGS(TH_ABOUT_THANKS), "You!");
+        ImGui::Text(S(TH_ABOUT_THANKS), "You!");
     }
 
     THCfgCombo mCfgLanguage { "language", 0, 3 };

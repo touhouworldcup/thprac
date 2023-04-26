@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-constexpr auto LGS = THPrac::Gui::LocaleGetStr;
+constexpr auto S = THPrac::Gui::LocaleGetStr;
 
 namespace THPrac {
 
@@ -222,16 +222,16 @@ private:
     {
         switch (err) {
         case 1:
-            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", LGS(THPRAC_LINKS_EDIT_ERR_NAME));
+            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", S(THPRAC_LINKS_EDIT_ERR_NAME));
             break;
         case 2:
-            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", LGS(THPRAC_LINKS_EDIT_ERR_LINK));
+            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", S(THPRAC_LINKS_EDIT_ERR_LINK));
             break;
         case 3:
-            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", LGS(THPRAC_LINKS_EDIT_ERR_REPEATED));
+            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", S(THPRAC_LINKS_EDIT_ERR_REPEATED));
             break;
         case 4:
-            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", LGS(THPRAC_LINKS_EDIT_ERR_RSV));
+            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", S(THPRAC_LINKS_EDIT_ERR_RSV));
             break;
         default:
             break;
@@ -239,7 +239,7 @@ private:
     }
     int GuiLinkEditPopup()
     {
-        ImGui::TextUnformatted(LGS(THPRAC_LINKS_EDIT_NAME));
+        ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_NAME));
         ImGui::SameLine();
         ImGui::SetNextItemWidth(-1.0f);
         if (ImGui::InputText("##__linkname_input", mLinkNameInput, sizeof(mLinkInput))) {
@@ -247,7 +247,7 @@ private:
                 mLinkInputErr = 0;
             }
         }
-        ImGui::TextUnformatted(LGS(THPRAC_LINKS_EDIT_LINK));
+        ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_LINK));
         ImGui::SameLine();
         ImGui::SetNextItemWidth(-1.0f);
         if (mLinkInputType == 0) {
@@ -260,7 +260,7 @@ private:
             ImGui::TextUnformatted(mLinkInput);
         }
         if (mLinkInputType == 1 && GetSuffixFromPath(mLinkInput) == "exe") {
-            ImGui::TextUnformatted(LGS(THPRAC_LINKS_EDIT_PARAM));
+            ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_PARAM));
             ImGui::SameLine();
             ImGui::SetNextItemWidth(-1.0f);
             ImGui::InputText("##__linkparam_input", mLinkParamInput, sizeof(mLinkParamInput));
@@ -268,7 +268,7 @@ private:
 
         GuiLinkEditPopupErrTxt(mLinkInputErr);
 
-        if (ImGui::Button(LGS(THPRAC_LINKS_EDIT_FILE))) {
+        if (ImGui::Button(S(THPRAC_LINKS_EDIT_FILE))) {
             auto fileStr = LauncherWndFileSelect();
             if (fileStr != L"") {
                 mLinkInputErr = 0;
@@ -278,7 +278,7 @@ private:
             }
         }
         ImGui::SameLine();
-        if (ImGui::Button(LGS(THPRAC_LINKS_EDIT_FOLDER))) {
+        if (ImGui::Button(S(THPRAC_LINKS_EDIT_FOLDER))) {
             auto folderStr = LauncherWndFolderSelect();
             if (folderStr != L"") {
                 mLinkInputErr = 0;
@@ -287,14 +287,14 @@ private:
             }
         }
         ImGui::SameLine();
-        if (ImGui::Button(LGS(THPRAC_LINKS_EDIT_INPUT))) {
+        if (ImGui::Button(S(THPRAC_LINKS_EDIT_INPUT))) {
             mLinkInputErr = 0;
             mLinkInput[0] = '\0';
             mLinkInputType = 0;
         }
         ImGui::SameLine();
 
-        auto result = GuiCornerButton(LGS(THPRAC_OK), LGS(THPRAC_CANCEL), ImVec2(1.0f, 0.0f), true);
+        auto result = GuiCornerButton(S(THPRAC_OK), S(THPRAC_CANCEL), ImVec2(1.0f, 0.0f), true);
         if (result == 1) {
             if (mLinkNameInput[0] == '\0') {
                 mLinkInputErr = 1;
@@ -321,7 +321,7 @@ private:
         switch (mTrigger) {
         case THPrac::THLinksGui::TRIGGER_ADD_LINK:
             GuiLinkEditPopupClr();
-            ImGui::OpenPopup(LGS(THPRAC_LINKS_ADD));
+            ImGui::OpenPopup(S(THPRAC_LINKS_ADD));
             break;
         case THPrac::THLinksGui::TRIGGER_EDIT_LINK: {
             GuiLinkEditPopupClr();
@@ -332,31 +332,31 @@ private:
             strcpy_s(mLinkNameInput, leaf.name.c_str());
             strcpy_s(mLinkInput, linkOut.c_str());
             strcpy_s(mLinkParamInput, paramOut.c_str());
-            ImGui::OpenPopup(LGS(THPRAC_LINKS_EDIT));
+            ImGui::OpenPopup(S(THPRAC_LINKS_EDIT));
         }
             break;
         case THPrac::THLinksGui::TRIGGER_DELETE_LINK:
-            ImGui::OpenPopup(LGS(THPRAC_LINKS_DELETE_MODAL));
+            ImGui::OpenPopup(S(THPRAC_LINKS_DELETE_MODAL));
             break;
         case THPrac::THLinksGui::TRIGGER_ADD_FILTER:
             GuiLinkEditPopupClr();
-            ImGui::OpenPopup(LGS(THPRAC_LINKS_FILTER_ADD_MODAL));
+            ImGui::OpenPopup(S(THPRAC_LINKS_FILTER_ADD_MODAL));
             break;
         case THPrac::THLinksGui::TRIGGER_DELETE_FILTER:
-            ImGui::OpenPopup(LGS(THPRAC_LINKS_FILTER_DEL_MODAL));
+            ImGui::OpenPopup(S(THPRAC_LINKS_FILTER_DEL_MODAL));
             break;
         case THPrac::THLinksGui::TRIGGER_ERR_REPETED:
-            ImGui::OpenPopup(LGS(THPRAC_LINKS_ERR_MOVE_MODAL));
+            ImGui::OpenPopup(S(THPRAC_LINKS_ERR_MOVE_MODAL));
             break;
         case THPrac::THLinksGui::TRIGGER_ERR_EXEC:
-            ImGui::OpenPopup(LGS(THPRAC_LINKS_ERR_EXEC_MODAL));
+            ImGui::OpenPopup(S(THPRAC_LINKS_ERR_EXEC_MODAL));
             break;
         default:
             break;
         }
         mTrigger = TRIGGER_ERROR;
 
-        if (GuiModal(LGS(THPRAC_LINKS_ADD), ImVec2(ImGui::GetIO().DisplaySize.x * 0.9f, 0.0f))) {
+        if (GuiModal(S(THPRAC_LINKS_ADD), ImVec2(ImGui::GetIO().DisplaySize.x * 0.9f, 0.0f))) {
             auto result = GuiLinkEditPopup();
             if (result) {
                 if (result == 1) {
@@ -375,7 +375,7 @@ private:
             ImGui::EndPopup();
         }
 
-        if (GuiModal(LGS(THPRAC_LINKS_EDIT), ImVec2(ImGui::GetIO().DisplaySize.x * 0.9f, 0.0f))) {
+        if (GuiModal(S(THPRAC_LINKS_EDIT), ImVec2(ImGui::GetIO().DisplaySize.x * 0.9f, 0.0f))) {
             auto result = GuiLinkEditPopup();
             if (result) {
                 if (result == 1) {
@@ -390,9 +390,9 @@ private:
             ImGui::EndPopup();
         }
 
-        if (GuiModal(LGS(THPRAC_LINKS_DELETE_MODAL))) {
-            ImGui::TextUnformatted(LGS(THPRAC_LINKS_DELETE_WARNING));
-            if (GuiButtonYesNo(LGS(THPRAC_YES), LGS(THPRAC_NO), 6.0f)) {
+        if (GuiModal(S(THPRAC_LINKS_DELETE_MODAL))) {
+            ImGui::TextUnformatted(S(THPRAC_LINKS_DELETE_WARNING));
+            if (GuiButtonYesNo(S(THPRAC_YES), S(THPRAC_NO), 6.0f)) {
                 mLinks[mCurrentNode].leaves.erase(mLinks[mCurrentNode].leaves.begin() + mCurrentLeaf);
                 mLinkSelected = nullptr;
                 WriteLinksCfg();
@@ -400,8 +400,8 @@ private:
             ImGui::EndPopup();
         }
 
-        if (GuiModal(LGS(THPRAC_LINKS_FILTER_ADD_MODAL), ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, 0.0f))) {
-            ImGui::TextUnformatted(LGS(THPRAC_LINKS_EDIT_NAME));
+        if (GuiModal(S(THPRAC_LINKS_FILTER_ADD_MODAL), ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, 0.0f))) {
+            ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_NAME));
             ImGui::SameLine();
             ImGui::SetNextItemWidth(-1.0f);
             if (ImGui::InputText("##__linkname_input", mLinkNameInput, sizeof(mLinkInput))) {
@@ -410,7 +410,7 @@ private:
                 }
             }
             GuiLinkEditPopupErrTxt(mLinkInputErr);
-            auto result = GuiCornerButton(LGS(THPRAC_OK), LGS(THPRAC_CANCEL), ImVec2(1.0f, 0.0f), true);
+            auto result = GuiCornerButton(S(THPRAC_OK), S(THPRAC_CANCEL), ImVec2(1.0f, 0.0f), true);
             if (result == 1) {
                 if (mLinkNameInput[0] == '\0') {
                     mLinkInputErr = 1;
@@ -436,9 +436,9 @@ private:
             ImGui::EndPopup();
         }
 
-        if (GuiModal(LGS(THPRAC_LINKS_FILTER_DEL_MODAL))) {
-            ImGui::TextUnformatted(LGS(THPRAC_LINKS_FILTER_DELETE_WARNING));
-            if (GuiButtonYesNo(LGS(THPRAC_YES), LGS(THPRAC_NO), 6.0f)) {
+        if (GuiModal(S(THPRAC_LINKS_FILTER_DEL_MODAL))) {
+            ImGui::TextUnformatted(S(THPRAC_LINKS_FILTER_DELETE_WARNING));
+            if (GuiButtonYesNo(S(THPRAC_YES), S(THPRAC_NO), 6.0f)) {
                 mLinks.erase(mLinks.begin() + mCurrentNode);
                 mLinkSelected = nullptr;
                 WriteLinksCfg();
@@ -446,17 +446,17 @@ private:
             ImGui::EndPopup();
         }
 
-        if (GuiModal(LGS(THPRAC_LINKS_ERR_MOVE_MODAL))) {
-            ImGui::TextUnformatted(LGS(THPRAC_LINKS_ERR_MOVE));
-            if (GuiCornerButton(LGS(THPRAC_OK), nullptr, ImVec2(1.0f, 0.0f), true)) {
+        if (GuiModal(S(THPRAC_LINKS_ERR_MOVE_MODAL))) {
+            ImGui::TextUnformatted(S(THPRAC_LINKS_ERR_MOVE));
+            if (GuiCornerButton(S(THPRAC_OK), nullptr, ImVec2(1.0f, 0.0f), true)) {
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
         }
 
-        if (GuiModal(LGS(THPRAC_LINKS_ERR_EXEC_MODAL))) {
-            ImGui::TextUnformatted(LGS(THPRAC_LINKS_ERR_EXEC));
-            if (GuiCornerButton(LGS(THPRAC_OK), nullptr, ImVec2(1.0f, 0.0f), true)) {
+        if (GuiModal(S(THPRAC_LINKS_ERR_EXEC_MODAL))) {
+            ImGui::TextUnformatted(S(THPRAC_LINKS_ERR_EXEC));
+            if (GuiCornerButton(S(THPRAC_OK), nullptr, ImVec2(1.0f, 0.0f), true)) {
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
@@ -467,23 +467,23 @@ private:
         if (type) {
             if (ImGui::BeginPopupContextItem()) {
                 if (type == 2) {
-                    if (ImGui::Selectable(LGS(THPRAC_LINKS_EDIT))) {
+                    if (ImGui::Selectable(S(THPRAC_LINKS_EDIT))) {
                         mTrigger = TRIGGER_EDIT_LINK;
                     }
-                    if (ImGui::Selectable(LGS(THPRAC_LINKS_DELETE))) {
+                    if (ImGui::Selectable(S(THPRAC_LINKS_DELETE))) {
                         mTrigger = TRIGGER_DELETE_LINK;
                     }
                     ImGui::Separator();
                 } else {
-                    if (ImGui::Selectable(LGS(THPRAC_LINKS_FILTER_DEL))) {
+                    if (ImGui::Selectable(S(THPRAC_LINKS_FILTER_DEL))) {
                         mTrigger = TRIGGER_DELETE_FILTER;
                     }
                 }
-                if (ImGui::Selectable(LGS(THPRAC_LINKS_ADD))) {
+                if (ImGui::Selectable(S(THPRAC_LINKS_ADD))) {
                     mTrigger = TRIGGER_ADD_LINK;
                 }
                 ImGui::Separator();
-                if (ImGui::Selectable(LGS(THPRAC_LINKS_FILTER_ADD))) {
+                if (ImGui::Selectable(S(THPRAC_LINKS_FILTER_ADD))) {
                     mTrigger = TRIGGER_ADD_FILTER;
                 }
                 ImGui::EndPopup();
@@ -491,11 +491,11 @@ private:
             }
         } else {
             if (ImGui::BeginPopupContextWindow()) {
-                if (ImGui::Selectable(LGS(THPRAC_LINKS_FILTER_ADD))) {
+                if (ImGui::Selectable(S(THPRAC_LINKS_FILTER_ADD))) {
                     mTrigger = TRIGGER_ADD_FILTER;
                 }
                 if (!mLinks.size()) {
-                    if (ImGui::Selectable(LGS(THPRAC_LINKS_RESET))) {
+                    if (ImGui::Selectable(S(THPRAC_LINKS_RESET))) {
                         WriteLinksCfgDefault();
                         LoadLinksCfg();
                     }
@@ -518,7 +518,7 @@ private:
         }
         if (!mLinks.size()) {
             GuiSetPosYRel(0.5f);
-            GuiCenteredText(LGS(THPRAC_GAMES_MISSING));
+            GuiCenteredText(S(THPRAC_GAMES_MISSING));
             return;
         }
         ImGui::Columns(2, "##@__col_links", true, true);

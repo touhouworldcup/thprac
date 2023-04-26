@@ -1,7 +1,7 @@
 #include "thprac_utils.h"
 #include <queue>
 
-constexpr auto LGS = THPrac::Gui::LocaleGetStr;
+constexpr auto S = THPrac::Gui::LocaleGetStr;
 
 namespace THPrac {
 namespace TH185 {
@@ -54,17 +54,17 @@ namespace TH185 {
 #define BOSS_SPELL_CARD_ASYNC(boss_id, spell_id) 0x00, 0x00, 0x00, 0x00, 0x0B, 0x00, 0x24, 0x00, 0x00, 0x00, 0xFF, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x42, 0x6F, 0x73, 0x73, boss_id / 10 + 0x30, boss_id % 10 + 0x30, 0x42, 0x6F, 0x73, 0x73, 0x43, 0x61, 0x72, 0x64, 0x30 + spell_id, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x10, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00
 
         out = {
-            .label = LGS(TH_PROGRESS),
+            .label = S(TH_PROGRESS),
             .type = stage_warps_t::TYPE_SLIDER,
         };
         switch (stage) {
         case 0:
             out.section_param = {
                 {
-                    .label = LGS(TH_TUTORIAL)
+                    .label = S(TH_TUTORIAL)
                 },
                 {
-                    .label = LGS(TH185_WAVE_1),
+                    .label = S(TH185_WAVE_1),
                     .jumps = {
                         { "main", {
                             { .off = 0x188, .dest = 0x230 }
@@ -72,7 +72,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_2),
+                    .label = S(TH185_WAVE_2),
                     .jumps = {
                         { "main", {
                             { .off = 0x188, .dest = 0x2fc }
@@ -85,7 +85,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_3),
+                    .label = S(TH185_WAVE_3),
                     .jumps = {
                         { "main", {
                             { .off = 0x188, .dest = 0x3b8 }
@@ -98,7 +98,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH_BOSS),
+                    .label = S(TH_BOSS),
                     .jumps = {
                         { "main", {
                             { .off = 0x188, .dest = 0x488 }
@@ -112,14 +112,14 @@ namespace TH185 {
                 }
             };
             out.section_param[4].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_DLG)
+                        .label = S(TH_DLG)
                     },
                     {
-                        .label = LGS(TH_NONSPELL),
+                        .label = S(TH_NONSPELL),
                         .writes {
                             { "Boss01tBoss", {
                                 { .off = 0x220, .bytes = { 0x00, 0x00, 0x24, 0x00 } }
@@ -127,7 +127,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_0_1),
+                        .label = S(TH185_SPELL_0_1),
                         .writes {
                             { "Boss01tBoss", {
                                 { .off = 0x220, .bytes = { 0x00, 0x00, 0x24, 0x00 } },
@@ -141,10 +141,10 @@ namespace TH185 {
         case 1:
             out.section_param = {
                 {
-                    .label = LGS(TH185_WAVE_1)
+                    .label = S(TH185_WAVE_1)
                 },
                 {
-                    .label = LGS(TH185_WAVE_2),
+                    .label = S(TH185_WAVE_2),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x380 }
@@ -157,7 +157,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_3),
+                    .label = S(TH185_WAVE_3),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x44c }
@@ -170,7 +170,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH_BOSS),
+                    .label = S(TH_BOSS),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x530 }
@@ -179,11 +179,11 @@ namespace TH185 {
                 }
             };
             out.section_param[3].phases = {
-                .label = LGS(TH_BOSS),
+                .label = S(TH_BOSS),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH185_NONE_RANDOM)
+                        .label = S(TH185_NONE_RANDOM)
                     },
                     {
                         .label = "Mike Goutokuji",
@@ -220,14 +220,14 @@ namespace TH185 {
                 }
             };
             out.section_param[3].phases->section_param[1].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_1_1),
+                        .label = S(TH185_SPELL_1_1),
                         .writes = {
                             { "Boss01Boss", {
                                 { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
@@ -240,14 +240,14 @@ namespace TH185 {
                 }
             };
             out.section_param[3].phases->section_param[2].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_2_1),
+                        .label = S(TH185_SPELL_2_1),
                         .writes = {
                             { "Boss02Boss", {
                                 { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
@@ -260,14 +260,14 @@ namespace TH185 {
                 }
             };
             out.section_param[3].phases->section_param[3].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_3_1),
+                        .label = S(TH185_SPELL_3_1),
                         .writes = {
                             { "Boss03Boss", {
                                 { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
@@ -280,14 +280,14 @@ namespace TH185 {
                 }
             };
             out.section_param[3].phases->section_param[4].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_4_1),
+                        .label = S(TH185_SPELL_4_1),
                         .writes = {
                             { "Boss04Boss", {
                                 { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
@@ -303,10 +303,10 @@ namespace TH185 {
         case 2:
             out.section_param = {
                 {
-                    .label = LGS(TH185_WAVE_1),
+                    .label = S(TH185_WAVE_1),
                 },
                 {
-                    .label = LGS(TH185_WAVE_2),
+                    .label = S(TH185_WAVE_2),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x380 }
@@ -319,7 +319,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_3),
+                    .label = S(TH185_WAVE_3),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x44c }
@@ -332,7 +332,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_4),
+                    .label = S(TH185_WAVE_4),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x51c }
@@ -344,7 +344,7 @@ namespace TH185 {
                         } }
                     }
                 },
-                { .label = LGS(TH_BOSS),
+                { .label = S(TH_BOSS),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x5fc }
@@ -353,11 +353,11 @@ namespace TH185 {
                 }
             };
             out.section_param[4].phases = {
-                .label = LGS(TH_BOSS),
+                .label = S(TH_BOSS),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH185_NONE_RANDOM)
+                        .label = S(TH185_NONE_RANDOM)
                     },
                     {
                         .label = "Cirno",
@@ -394,14 +394,14 @@ namespace TH185 {
                 }
             };
             out.section_param[4].phases->section_param[1].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_ATTACK)
+                        .label = S(TH_ATTACK)
                     },
                     {
-                        .label = LGS(TH185_SPELL_5_1),
+                        .label = S(TH185_SPELL_5_1),
                         .writes = {
                             { "Boss05Boss", {
                                 { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
@@ -414,14 +414,14 @@ namespace TH185 {
                 }
             };
             out.section_param[4].phases->section_param[2].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_6_1),
+                        .label = S(TH185_SPELL_6_1),
                         .writes = {
                             { "Boss06Boss", {
                                 { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
@@ -434,14 +434,14 @@ namespace TH185 {
                 }
             };
             out.section_param[4].phases->section_param[3].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_7_1),
+                        .label = S(TH185_SPELL_7_1),
                         .writes = {
                             { "Boss07Boss", {
                                 { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
@@ -454,14 +454,14 @@ namespace TH185 {
                 }
             };
             out.section_param[4].phases->section_param[4].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_8_1),
+                        .label = S(TH185_SPELL_8_1),
                         .writes = {
                             { "Boss08Boss", {
                                 { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
@@ -477,10 +477,10 @@ namespace TH185 {
         case 3:
             out.section_param = {
                 {
-                    .label = LGS(TH185_WAVE_1)
+                    .label = S(TH185_WAVE_1)
                 },
                 {
-                    .label = LGS(TH185_WAVE_2),
+                    .label = S(TH185_WAVE_2),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x380 }
@@ -493,7 +493,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_3),
+                    .label = S(TH185_WAVE_3),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x44c }
@@ -506,7 +506,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_4),
+                    .label = S(TH185_WAVE_4),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x51c }
@@ -519,7 +519,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_5),
+                    .label = S(TH185_WAVE_5),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x5e8 }
@@ -532,7 +532,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH_BOSS),
+                    .label = S(TH_BOSS),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x6cc }
@@ -541,11 +541,11 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases = {
-                .label = LGS(TH_BOSS),
+                .label = S(TH_BOSS),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH185_NONE_RANDOM)
+                        .label = S(TH185_NONE_RANDOM)
                     },
                     {
                         .label = "Eika Ebisu",
@@ -582,14 +582,14 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases->section_param[1].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_9_1),
+                        .label = S(TH185_SPELL_9_1),
                         .writes = {
                             { "Boss09Boss", {
                                 { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
@@ -602,14 +602,14 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases->section_param[2].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_10_1),
+                        .label = S(TH185_SPELL_10_1),
                         .writes = {
                             { "Boss10Boss", {
                                 { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
@@ -622,14 +622,14 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases->section_param[3].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_11_1),
+                        .label = S(TH185_SPELL_11_1),
                         .writes = {
                             { "Boss11Boss", {
                                 { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
@@ -642,14 +642,14 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases->section_param[4].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_12_1),
+                        .label = S(TH185_SPELL_12_1),
                         .writes = {
                             { "Boss12Boss", {
                                 { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
@@ -665,10 +665,10 @@ namespace TH185 {
         case 4:
             out.section_param = {
                 {
-                    .label = LGS(TH185_WAVE_1),
+                    .label = S(TH185_WAVE_1),
                 },
                 {
-                    .label = LGS(TH185_WAVE_2),
+                    .label = S(TH185_WAVE_2),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x380 }
@@ -681,7 +681,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_3),
+                    .label = S(TH185_WAVE_3),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x44c }
@@ -694,7 +694,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_4),
+                    .label = S(TH185_WAVE_4),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x518 }
@@ -707,7 +707,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_5),
+                    .label = S(TH185_WAVE_5),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x5e4 }
@@ -720,7 +720,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH_BOSS),
+                    .label = S(TH_BOSS),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x6c4 }
@@ -729,11 +729,11 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases = {
-                .label = LGS(TH_BOSS),
+                .label = S(TH_BOSS),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH185_NONE_RANDOM)
+                        .label = S(TH185_NONE_RANDOM)
                     },
                     {
                         .label = "Sanae Kochiya",
@@ -784,14 +784,14 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases->section_param[1].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_13_1),
+                        .label = S(TH185_SPELL_13_1),
                         .writes = {
                             { "Boss13Boss", {
                                 { .off = 0x1b0, .bytes = { 0x98, 0x08, 0x00, 0x00 } }
@@ -804,14 +804,14 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases->section_param[2].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_14_1),
+                        .label = S(TH185_SPELL_14_1),
                         .writes = {
                             { "Boss14Boss", {
                                 { .off = 0x1b0, .bytes = { 0x98, 0x08, 0x00, 0x00 } }
@@ -824,14 +824,14 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases->section_param[3].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_15_1),
+                        .label = S(TH185_SPELL_15_1),
                         .writes = {
                             { "Boss15Boss", {
                                 { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
@@ -844,14 +844,14 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases->section_param[4].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_16_1),
+                        .label = S(TH185_SPELL_16_1),
                         .writes = {
                             { "Boss16Boss", {
                                 { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
@@ -864,14 +864,14 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases->section_param[5].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_DLG)
+                        .label = S(TH_DLG)
                     },
                     {
-                        .label = LGS(TH_NONSPELL),
+                        .label = S(TH_NONSPELL),
                         .writes = {
                             { "Boss26Boss", {
                                 { .off = 0x208, .bytes = {  0x00, 0x00, 0x24, 0x00 } }
@@ -879,7 +879,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_26_1),
+                        .label = S(TH185_SPELL_26_1),
                         .writes = {
                             { "Boss26Boss", {
                                 { .off = 0x1b0, .bytes = { 0xa0, 0x0f, 0x00, 0x00 } },
@@ -894,7 +894,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_26_2),
+                        .label = S(TH185_SPELL_26_2),
                         .writes = {
                             { "Boss26Boss", {
                                 { .off = 0x1b0, .bytes = { 0xd0, 0x07, 0x00, 0x00 } },
@@ -911,10 +911,10 @@ namespace TH185 {
         case 5:
             out.section_param = {
                 {
-                    .label = LGS(TH185_WAVE_1)
+                    .label = S(TH185_WAVE_1)
                 },
                 {
-                    .label = LGS(TH185_WAVE_2),
+                    .label = S(TH185_WAVE_2),
                     .jumps = {
                         { "main", {
                             { .off = 0x28c, .dest = 0x3b4 }
@@ -927,7 +927,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_3),
+                    .label = S(TH185_WAVE_3),
                     .jumps = {
                         { "main", {
                             { .off = 0x28c, .dest = 0x480 }
@@ -940,7 +940,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_4),
+                    .label = S(TH185_WAVE_4),
                     .jumps = {
                         { "main", {
                             { .off = 0x28c, .dest = 0x54c }
@@ -953,7 +953,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_5),
+                    .label = S(TH185_WAVE_5),
                     .jumps = {
                         { "main", {
                             { .off = 0x28c, .dest = 0x618 }
@@ -966,7 +966,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_6),
+                    .label = S(TH185_WAVE_6),
                     .jumps = {
                         { "main", {
                             { .off = 0x28c, .dest = 0x6e4 }
@@ -979,7 +979,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_7),
+                    .label = S(TH185_WAVE_7),
                     .jumps = {
                         { "main", {
                             { .off = 0x28c, .dest = 0x7b0 }
@@ -992,7 +992,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH_BOSS),
+                    .label = S(TH_BOSS),
                     .jumps = {
                         { "main", {
                             { .off = 0x28c, .dest = 0x890 }
@@ -1001,11 +1001,11 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases = {
-                .label = LGS(TH_BOSS),
+                .label = S(TH_BOSS),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH185_NONE_RANDOM)
+                        .label = S(TH185_NONE_RANDOM)
                     },
                     {
                         .label = "Tsukasa Kudamaki",
@@ -1042,14 +1042,14 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases->section_param[1].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_17_1),
+                        .label = S(TH185_SPELL_17_1),
                         .writes = {
                             { "Boss17Boss", {
                                 { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
@@ -1062,7 +1062,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_17_2),
+                        .label = S(TH185_SPELL_17_2),
                         .writes = {
                             { "Boss17Boss", {
                                 { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
@@ -1075,14 +1075,14 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases->section_param[2].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_18_1),
+                        .label = S(TH185_SPELL_18_1),
                         .writes = {
                             { "Boss18Boss", {
                                 { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
@@ -1095,7 +1095,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_18_2),
+                        .label = S(TH185_SPELL_18_2),
                         .writes = {
                             { "Boss18Boss", {
                                 { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
@@ -1108,14 +1108,14 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases->section_param[3].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_19_1),
+                        .label = S(TH185_SPELL_19_1),
                         .writes = {
                             { "Boss19Boss", {
                                 { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
@@ -1128,7 +1128,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_19_2),
+                        .label = S(TH185_SPELL_19_2),
                         .writes = {
                             { "Boss19Boss", {
                                 { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
@@ -1141,14 +1141,14 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases->section_param[4].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_20_1),
+                        .label = S(TH185_SPELL_20_1),
                         .writes = {
                             { "Boss20Boss", {
                                 { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
@@ -1161,7 +1161,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_20_2),
+                        .label = S(TH185_SPELL_20_2),
                         .writes = {
                             { "Boss20Boss", {
                                 { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
@@ -1177,10 +1177,10 @@ namespace TH185 {
         case 6:
             out.section_param = {
                 {
-                    .label = LGS(TH185_WAVE_1)
+                    .label = S(TH185_WAVE_1)
                 },
                 {
-                    .label = LGS(TH185_WAVE_2),
+                    .label = S(TH185_WAVE_2),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x380 }
@@ -1193,7 +1193,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_3),
+                    .label = S(TH185_WAVE_3),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x44c }
@@ -1206,7 +1206,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_4),
+                    .label = S(TH185_WAVE_4),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x518 }
@@ -1219,7 +1219,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_5),
+                    .label = S(TH185_WAVE_5),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x5e4 }
@@ -1232,7 +1232,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_6),
+                    .label = S(TH185_WAVE_6),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x6b0 }
@@ -1245,7 +1245,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_7),
+                    .label = S(TH185_WAVE_7),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x77c }
@@ -1258,7 +1258,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH_BOSS),
+                    .label = S(TH_BOSS),
                     .jumps = {
                         { "main", {
                             { .off = 0x258, .dest = 0x84c }
@@ -1267,11 +1267,11 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases = {
-                .label = LGS(TH_BOSS),
+                .label = S(TH_BOSS),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH185_NONE_RANDOM)
+                        .label = S(TH185_NONE_RANDOM)
                     },
                     {
                         .label = "Suika Ibuki",
@@ -1322,14 +1322,14 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases->section_param[1].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_21_1),
+                        .label = S(TH185_SPELL_21_1),
                         .writes = {
                             { "Boss21Boss", {
                                 { .off = 0x1b0, .bytes = { 0xa0, 0x0f, 0x00, 0x00 } }
@@ -1342,7 +1342,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_21_2),
+                        .label = S(TH185_SPELL_21_2),
                         .writes = {
                             { "Boss21Boss", {
                                 { .off = 0x1b0, .bytes = { 0xb0, 0x04, 0x00, 0x00 } }
@@ -1356,14 +1356,14 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases->section_param[2].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_22_1),
+                        .label = S(TH185_SPELL_22_1),
                         .writes = {
                             { "Boss22Boss", {
                                 { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
@@ -1376,7 +1376,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_22_2),
+                        .label = S(TH185_SPELL_22_2),
                         .writes = {
                             { "Boss22Boss", {
                                 { .off = 0x1b0, .bytes = { 0xe4, 0x0c, 0x00, 0x00 } }
@@ -1390,14 +1390,14 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases->section_param[3].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_23_1),
+                        .label = S(TH185_SPELL_23_1),
                         .writes = {
                             { "Boss23Boss", {
                                 { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
@@ -1410,7 +1410,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_23_2),
+                        .label = S(TH185_SPELL_23_2),
                         .writes = {
                             { "Boss23Boss", {
                                 { .off = 0x1b0, .bytes = { 0xe4, 0x0c, 0x00, 0x00 } }
@@ -1424,14 +1424,14 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases->section_param[4].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_24_1),
+                        .label = S(TH185_SPELL_24_1),
                         .writes = {
                             { "Boss24Boss", {
                                 { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
@@ -1444,7 +1444,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_24_2),
+                        .label = S(TH185_SPELL_24_2),
                         .writes = {
                             { "Boss24Boss", {
                                 { .off = 0x1b0, .bytes = { 0xe4, 0x0c, 0x00, 0x00 } }
@@ -1458,14 +1458,14 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases->section_param[5].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
                         .label = "Dialog"
                     },
                     {
-                        .label = LGS(TH_NONSPELL),
+                        .label = S(TH_NONSPELL),
                         .writes = {
                             { "Boss27Boss", {
                                 { .off = 0x208, .bytes = { 0, 0 } }
@@ -1473,7 +1473,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_27_1),
+                        .label = S(TH185_SPELL_27_1),
                         .writes = {
                             { "Boss27Boss", {
                                 { .off = 0x208, .bytes = { 0, 0 } },
@@ -1489,7 +1489,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_27_2),
+                        .label = S(TH185_SPELL_27_2),
                         .writes = {
                             { "Boss27Boss", {
                                 { .off = 0x208, .bytes = { 0, 0 } },
@@ -1504,7 +1504,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_27_3),
+                        .label = S(TH185_SPELL_27_3),
                         .writes = {
                             { "Boss27Boss", {
                                 { .off = 0x208, .bytes = { 0, 0 } },
@@ -1523,10 +1523,10 @@ namespace TH185 {
         case 7:
             out.section_param = {
                 {
-                    .label = LGS(TH185_WAVE_1)
+                    .label = S(TH185_WAVE_1)
                 },
                 {
-                    .label = LGS(TH185_WAVE_2),
+                    .label = S(TH185_WAVE_2),
                     .jumps = {
                         { "main", {
                             { .off = 0x29c, .dest = 0x3d4 }
@@ -1539,7 +1539,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_3),
+                    .label = S(TH185_WAVE_3),
                     .jumps = {
                         { "main", {
                             { .off = 0x29c, .dest = 0x4b0 }
@@ -1552,7 +1552,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_4),
+                    .label = S(TH185_WAVE_4),
                     .jumps = {
                         { "main", {
                             { .off = 0x29c, .dest = 0x58c }
@@ -1574,14 +1574,14 @@ namespace TH185 {
                 }
             };
             out.section_param[4].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_DLG)
+                        .label = S(TH_DLG)
                     },
                     {
-                        .label = LGS(TH_NONSPELL),
+                        .label = S(TH_NONSPELL),
                         .writes = {
                             { "Boss25Boss", {
                                 { .off = 0x208, .bytes = { 0, 0 } }
@@ -1589,7 +1589,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_25_1),
+                        .label = S(TH185_SPELL_25_1),
                         .writes = {
                             { "Boss25Boss", {
                                 { .off = 0x208, .bytes = { 0, 0 } },
@@ -1604,7 +1604,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_25_2),
+                        .label = S(TH185_SPELL_25_2),
                         .writes = {
                             { "Boss25Boss", {
                                 { .off = 0x208, .bytes = { 0, 0 } },
@@ -1623,10 +1623,10 @@ namespace TH185 {
         case 8:
             out.section_param = {
                 {
-                    .label = LGS(TH185_WAVE_1),
+                    .label = S(TH185_WAVE_1),
                 },
                 {
-                    .label = LGS(TH185_WAVE_2),
+                    .label = S(TH185_WAVE_2),
                     .jumps = {
                         { "main", {
                             { .off = 0x434, .dest = 0x52c }
@@ -1639,7 +1639,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_3),
+                    .label = S(TH185_WAVE_3),
                     .jumps = {
                         { "main", {
                             { .off = 0x434, .dest = 0x628 }
@@ -1652,7 +1652,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_4),
+                    .label = S(TH185_WAVE_4),
                     .jumps = {
                         { "main", {
                             { .off = 0x434, .dest = 0x6d8 }
@@ -1665,7 +1665,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_5),
+                    .label = S(TH185_WAVE_5),
                     .jumps = {
                         { "main", {
                             { .off = 0x434, .dest = 0x7d4 }
@@ -1678,7 +1678,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_6),
+                    .label = S(TH185_WAVE_6),
                     .jumps = {
                         { "main", {
                             { .off = 0x434, .dest = 0x884 }
@@ -1691,7 +1691,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_7),
+                    .label = S(TH185_WAVE_7),
                     .jumps = {
                         { "main", {
                             { .off = 0x434, .dest = 0x980 }
@@ -1704,7 +1704,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_8),
+                    .label = S(TH185_WAVE_8),
                     .jumps = {
                         { "main", {
                             { .off = 0x434, .dest = 0xa30 }
@@ -1717,7 +1717,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_9),
+                    .label = S(TH185_WAVE_9),
                     .jumps = {
                         { "main", {
                             { .off = 0x434, .dest = 0xb2c }
@@ -1730,7 +1730,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_10),
+                    .label = S(TH185_WAVE_10),
                     .jumps = {
                         { "main", {
                             { .off = 0x434, .dest = 0xbdc }
@@ -1743,7 +1743,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_11),
+                    .label = S(TH185_WAVE_11),
                     .jumps = {
                         { "main", {
                             { .off = 0x434, .dest = 0xcd8 }
@@ -1756,7 +1756,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = LGS(TH185_WAVE_12),
+                    .label = S(TH185_WAVE_12),
                     .jumps = {
                         { "main", {
                             { .off = 0x434, .dest = 0xd88 }
@@ -1765,11 +1765,11 @@ namespace TH185 {
                 },
             };
             out.section_param[1].phases = {
-                .label = LGS(TH_BOSS),
+                .label = S(TH_BOSS),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH185_NONE_RANDOM),
+                        .label = S(TH185_NONE_RANDOM),
                     },
                     {
                         .label = "Mike Goutokuji",
@@ -1814,11 +1814,11 @@ namespace TH185 {
                 }
             };
             out.section_param[3].phases = {
-                .label = LGS(TH_BOSS),
+                .label = S(TH_BOSS),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH185_NONE_RANDOM)
+                        .label = S(TH185_NONE_RANDOM)
                     },
                     {
                         .label = "Cirno",
@@ -1863,11 +1863,11 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases = {
-                .label = LGS(TH_BOSS),
+                .label = S(TH_BOSS),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH185_NONE_RANDOM)
+                        .label = S(TH185_NONE_RANDOM)
                     },
                     {
                         .label = "Eika Ebisu",
@@ -1912,11 +1912,11 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases = {
-                .label = LGS(TH_BOSS),
+                .label = S(TH_BOSS),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH185_NONE_RANDOM)
+                        .label = S(TH185_NONE_RANDOM)
                     },
                     {
                         .label = "Sanae Kochiya",
@@ -1961,11 +1961,11 @@ namespace TH185 {
                 }
             };
             out.section_param[9].phases = {
-                .label = LGS(TH_BOSS),
+                .label = S(TH_BOSS),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH185_NONE_RANDOM)
+                        .label = S(TH185_NONE_RANDOM)
                     },
                     {
                         .label = "Tsukasa Kudamaki",
@@ -2010,11 +2010,11 @@ namespace TH185 {
                 }
             };
             out.section_param[11].phases = {
-                .label = LGS(TH_BOSS),
+                .label = S(TH_BOSS),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH185_NONE_RANDOM)
+                        .label = S(TH185_NONE_RANDOM)
                     },
                     {
                         .label = "Suika Ibuki",
@@ -2059,14 +2059,14 @@ namespace TH185 {
                 }
             };
             out.section_param[1].phases->section_param[1].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_1_1),
+                        .label = S(TH185_SPELL_1_1),
                         .writes = {
                             { "Boss01Boss", {
                                 { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
@@ -2079,14 +2079,14 @@ namespace TH185 {
                 }
             };
             out.section_param[1].phases->section_param[2].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_2_1),
+                        .label = S(TH185_SPELL_2_1),
                         .writes = {
                             { "Boss02Boss", {
                                 { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
@@ -2099,14 +2099,14 @@ namespace TH185 {
                 }
             };
             out.section_param[1].phases->section_param[3].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_3_1),
+                        .label = S(TH185_SPELL_3_1),
                         .writes = {
                             { "Boss03Boss", {
                                 { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
@@ -2119,14 +2119,14 @@ namespace TH185 {
                 }
             };
             out.section_param[1].phases->section_param[4].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_4_1),
+                        .label = S(TH185_SPELL_4_1),
                         .writes = {
                             { "Boss04Boss", {
                                 { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
@@ -2139,14 +2139,14 @@ namespace TH185 {
                 }
             };
             out.section_param[3].phases->section_param[1].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_5_1),
+                        .label = S(TH185_SPELL_5_1),
                         .writes = {
                             { "Boss05Boss", {
                                 { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
@@ -2159,14 +2159,14 @@ namespace TH185 {
                 }
             };
             out.section_param[3].phases->section_param[2].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_6_1),
+                        .label = S(TH185_SPELL_6_1),
                         .writes = {
                             { "Boss06Boss", {
                                 { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
@@ -2179,14 +2179,14 @@ namespace TH185 {
                 }
             };
             out.section_param[3].phases->section_param[3].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_7_1),
+                        .label = S(TH185_SPELL_7_1),
                         .writes = {
                             { "Boss07Boss", {
                                 { .off = 0x1b0, .bytes = { 0x14, 0x05, 0x00, 0x00 } }
@@ -2199,14 +2199,14 @@ namespace TH185 {
                 }
             };
             out.section_param[3].phases->section_param[4].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_8_1),
+                        .label = S(TH185_SPELL_8_1),
                         .writes = {
                             { "Boss08Boss", {
                                 { .off = 0x1b0, .bytes = { 0xDC, 0x05, 0x00, 0x00 } }
@@ -2219,14 +2219,14 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases->section_param[1].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_9_1),
+                        .label = S(TH185_SPELL_9_1),
                         .writes = {
                             { "Boss09Boss", {
                                 { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
@@ -2239,14 +2239,14 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases->section_param[2].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_10_1),
+                        .label = S(TH185_SPELL_10_1),
                         .writes = {
                             { "Boss10Boss", {
                                 { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
@@ -2259,14 +2259,14 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases->section_param[3].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_11_1),
+                        .label = S(TH185_SPELL_11_1),
                         .writes = {
                             { "Boss11Boss", {
                                 { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
@@ -2279,14 +2279,14 @@ namespace TH185 {
                 }
             };
             out.section_param[5].phases->section_param[4].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_12_1),
+                        .label = S(TH185_SPELL_12_1),
                         .writes = {
                             { "Boss12Boss", {
                                 { .off = 0x1b0, .bytes = { 0x08, 0x07, 0x00, 0x00 } }
@@ -2299,14 +2299,14 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases->section_param[1].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_13_1),
+                        .label = S(TH185_SPELL_13_1),
                         .writes = {
                             { "Boss13Boss", {
                                 { .off = 0x1b0, .bytes = { 0x98, 0x08, 0x00, 0x00 } }
@@ -2319,14 +2319,14 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases->section_param[2].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_14_1),
+                        .label = S(TH185_SPELL_14_1),
                         .writes = {
                             { "Boss14Boss", {
                                 { .off = 0x1b0, .bytes = { 0x98, 0x08, 0x00, 0x00 } }
@@ -2339,14 +2339,14 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases->section_param[3].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_15_1),
+                        .label = S(TH185_SPELL_15_1),
                         .writes = {
                             { "Boss15Boss", {
                                 { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
@@ -2359,14 +2359,14 @@ namespace TH185 {
                 }
             };
             out.section_param[7].phases->section_param[4].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_16_1),
+                        .label = S(TH185_SPELL_16_1),
                         .writes = {
                             { "Boss16Boss", {
                                 { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
@@ -2379,14 +2379,14 @@ namespace TH185 {
                 }
             };
             out.section_param[9].phases->section_param[1].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_17_1),
+                        .label = S(TH185_SPELL_17_1),
                         .writes = {
                             { "Boss17Boss", {
                                 { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
@@ -2399,7 +2399,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_17_2),
+                        .label = S(TH185_SPELL_17_2),
                         .writes = {
                             { "Boss17Boss", {
                                 { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
@@ -2412,14 +2412,14 @@ namespace TH185 {
                 }
             };
             out.section_param[9].phases->section_param[2].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_18_1),
+                        .label = S(TH185_SPELL_18_1),
                         .writes = {
                             { "Boss18Boss", {
                                 { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
@@ -2432,7 +2432,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_18_2),
+                        .label = S(TH185_SPELL_18_2),
                         .writes = {
                             { "Boss18Boss", {
                                 { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
@@ -2445,14 +2445,14 @@ namespace TH185 {
                 }
             };
             out.section_param[9].phases->section_param[3].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_19_1),
+                        .label = S(TH185_SPELL_19_1),
                         .writes = {
                             { "Boss19Boss", {
                                 { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
@@ -2465,7 +2465,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_19_2),
+                        .label = S(TH185_SPELL_19_2),
                         .writes = {
                             { "Boss19Boss", {
                                 { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
@@ -2478,14 +2478,14 @@ namespace TH185 {
                 }
             };
             out.section_param[9].phases->section_param[4].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_20_1),
+                        .label = S(TH185_SPELL_20_1),
                         .writes = {
                             { "Boss20Boss", {
                                 { .off = 0x1b0, .bytes = { 0x18, 0x15, 0x00, 0x00 } }
@@ -2498,7 +2498,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_20_2),
+                        .label = S(TH185_SPELL_20_2),
                         .writes = {
                             { "Boss20Boss", {
                                 { .off = 0x1b0, .bytes = { 0xf0, 0x0a, 0x00, 0x00 } }
@@ -2511,14 +2511,14 @@ namespace TH185 {
                 }
             };
             out.section_param[11].phases->section_param[1].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_21_1),
+                        .label = S(TH185_SPELL_21_1),
                         .writes = {
                             { "Boss21Boss", {
                                 { .off = 0x1b0, .bytes = { 0xa0, 0x0f, 0x00, 0x00 } }
@@ -2531,7 +2531,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_21_2),
+                        .label = S(TH185_SPELL_21_2),
                         .writes = {
                             { "Boss21Boss", {
                                 { .off = 0x1b0, .bytes = { 0xb0, 0x04, 0x00, 0x00 } }
@@ -2545,14 +2545,14 @@ namespace TH185 {
                 }
             };
             out.section_param[11].phases->section_param[2].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_22_1),
+                        .label = S(TH185_SPELL_22_1),
                         .writes = {
                             { "Boss22Boss", {
                                 { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
@@ -2565,7 +2565,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_22_2),
+                        .label = S(TH185_SPELL_22_2),
                         .writes = {
                             { "Boss22Boss", {
                                 { .off = 0x1b0, .bytes = { 0x4a, 0x01, 0x00, 0x00 } }
@@ -2579,14 +2579,14 @@ namespace TH185 {
                 }
             };
             out.section_param[11].phases->section_param[3].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_23_1),
+                        .label = S(TH185_SPELL_23_1),
                         .writes = {
                             { "Boss23Boss", {
                                 { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
@@ -2599,7 +2599,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_23_2),
+                        .label = S(TH185_SPELL_23_2),
                         .writes = {
                             { "Boss23Boss", {
                                 { .off = 0x1b0, .bytes = { 0xe4, 0x0c, 0x00, 0x00 } }
@@ -2613,14 +2613,14 @@ namespace TH185 {
                 }
             };
             out.section_param[11].phases->section_param[4].phases = {
-                .label = LGS(TH_ATTACK),
+                .label = S(TH_ATTACK),
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = LGS(TH_NONSPELL)
+                        .label = S(TH_NONSPELL)
                     },
                     {
-                        .label = LGS(TH185_SPELL_24_1),
+                        .label = S(TH185_SPELL_24_1),
                         .writes = {
                             { "Boss24Boss", {
                                 { .off = 0x1b0, .bytes = { 0xd4, 0x17, 0x00, 0x00 } }
@@ -2633,7 +2633,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = LGS(TH185_SPELL_24_2),
+                        .label = S(TH185_SPELL_24_2),
                         .writes = {
                             { "Boss24Boss", {
                                 { .off = 0x1b0, .bytes = { 0x4a, 0x01, 0x00, 0x00 } }
@@ -2805,7 +2805,7 @@ namespace TH185 {
     protected:
         virtual void OnLocaleChange() override
         {
-            SetTitle(LGS(TH_MENU));
+            SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSizeRel(0.5f, 0.81f);
@@ -2829,7 +2829,7 @@ namespace TH185 {
                 break;
             }
 
-            cards = { LGS(TH_NONE) };
+            cards = { S(TH_NONE) };
             const th_glossary_t cardIds[] = {
                 TH185_CARD_0,
                 TH185_CARD_1,
@@ -2918,14 +2918,14 @@ namespace TH185 {
                 TH185_CARD_84
             };
             for (auto cardId : cardIds) {
-                cards.push_back(LGS(cardId));
+                cards.push_back(S(cardId));
             }
 
             StageWarpsLoad(mStage, warps);
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(LGS(TH_MENU));
+            ImGui::TextUnformatted(S(TH_MENU));
             ImGui::Separator();
 
             PracticeMenu();
@@ -3041,12 +3041,12 @@ namespace TH185 {
                 mDifficulty(difficulties[*mDifficulty]);
 
                 ImGui::Separator();
-                ImGui::TextUnformatted(LGS(TH185_ADDITIONAL_CARDS));
-                Gui::MultiComboSelect(mAdditionalCards, cards, LGS(TH18_CARD_FORMAT));
+                ImGui::TextUnformatted(S(TH185_ADDITIONAL_CARDS));
+                Gui::MultiComboSelect(mAdditionalCards, cards, S(TH18_CARD_FORMAT));
 
                 ImGui::Separator();
-                ImGui::TextUnformatted(LGS(TH185_FORCE_WAVE));
-                Gui::MultiComboSelect(mForceWave, waves, LGS(TH185_WAVE_FORMAT));
+                ImGui::TextUnformatted(S(TH185_FORCE_WAVE));
+                Gui::MultiComboSelect(mForceWave, waves, S(TH185_WAVE_FORMAT));
             }
         }
 
@@ -3116,7 +3116,7 @@ namespace TH185 {
     protected:
         virtual void OnLocaleChange() override
         {
-            SetTitle(LGS(TH_ADV_OPT));
+            SetTitle(S(TH_ADV_OPT));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
@@ -3142,7 +3142,7 @@ namespace TH185 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(LGS(TH_ADV_OPT));
+            ImGui::TextUnformatted(S(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 
