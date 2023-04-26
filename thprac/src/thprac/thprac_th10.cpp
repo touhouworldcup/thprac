@@ -344,6 +344,53 @@ namespace TH10 {
 
         int mDiffculty = 0;
     };
+    class THGuiRep : public Gui::GameGuiWnd {
+        THGuiRep() noexcept
+        {
+        }
+        SINGLETON(THGuiRep);
+    public:
+
+        void CheckReplay()
+        {
+            uint32_t index = GetMemContent(0x47784c, 0x59dc);
+            char* repName = (char*)GetMemAddr(0x47784c, index * 4 + 0x59e4, 0x1d4);
+            std::wstring repDir(L"replay/");
+            repDir.append(mb_to_utf16(repName, 932));
+
+            std::string param;
+            if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
+                mParamStatus = true;
+            else
+                mRepParam.Reset();
+        }
+
+        bool mRepStatus = false;
+        void State(int state)
+        {
+            switch (state) {
+            case 1:
+                mRepStatus = false;
+                mParamStatus = false;
+                thPracParam.Reset();
+                break;
+            case 2:
+                CheckReplay();
+                break;
+            case 3:
+                mRepStatus = true;
+                if (mParamStatus)
+                    memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
+                break;
+            default:
+                break;
+            }
+        }
+
+    protected:
+        bool mParamStatus = false;
+        THPracParam mRepParam;
+    };
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
         {
@@ -2091,12 +2138,6 @@ namespace TH10 {
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th10_everlasting_bgm, 0x43e460)
     {
-        auto isInReplay = []() -> bool {
-            if (*(uintptr_t*)0x477838)
-                return GetMemContent(0x477838, 0x10);
-            return false;
-        };
-
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -2106,7 +2147,7 @@ namespace TH10 {
         bool is_practice;
         bool result;
 
-        el_switch = *(THOverlay::singleton().mElBgm) && !isInReplay() && thPracParam.mode && thPracParam.section;
+        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode && thPracParam.section;
         is_practice = (*((int32_t*)0x474ca0) & 0x1);
         result = ElBgmTest<0x420b42, 0x4180a7, 0x422be1, 0x422c51, 0x4183e6>(
             el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, call_addr);
@@ -2155,6 +2196,18 @@ namespace TH10 {
             }
         }
     }
+    EHOOK_DY(th10_rep_menu_1, 0x4317b1)
+    {
+        THGuiRep::singleton().State(1);
+    }
+    EHOOK_DY(th10_rep_menu_2, 0x431869)
+    {
+        THGuiRep::singleton().State(2);
+    }
+    EHOOK_DY(th10_rep_menu_3, 0x4319b4)
+    {
+        THGuiRep::singleton().State(3);
+    }
     EHOOK_DY(th10_patch_main, 0x417c5e)
     {
         if (thPracParam.mode == 1) {
@@ -2196,15 +2249,6 @@ namespace TH10 {
         if (thPracParam.mode)
             THSaveReplay(repName);
     }
-    EHOOK_DY(th10_rep_load, 0x42924e)
-    {
-        thPracParam = {};
-        std::string param;
-        std::wstring path(L"replay/");
-        path += mb_to_utf16((char*)pCtx->Ecx, 932);
-        if (ReplayLoadParam(path.c_str(), param))
-            thPracParam.ReadJson(param);
-    }
     EHOOK_DY(th10_rep_power_fix, 0x42a322)
     {
         uint8_t* repBuffer = (uint8_t*)pCtx->Eax;
@@ -2218,13 +2262,13 @@ namespace TH10 {
     {
         pCtx->Eip = 0x431054;
     }
-    PATCH_DY(th10_disable_prac_menu_3, 0x43111b, "\x00", 1);
     EHOOK_DY(th10_update, 0x449d0e)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 
         // Gui components update
         THGuiPrac::singleton().Update();
+        THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
@@ -2246,6 +2290,7 @@ namespace TH10 {
 
         // Gui components creation
         THGuiPrac::singleton();
+        THGuiRep::singleton();
         THOverlay::singleton();
 
         // Hooks

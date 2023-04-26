@@ -353,6 +353,58 @@ namespace TH14 {
         int mDiffculty = 0;
         int mShotType = 0;
     };
+    class THGuiRep : public Gui::GameGuiWnd {
+        THGuiRep() noexcept
+        {
+            wchar_t appdata[MAX_PATH];
+            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
+            mAppdataPath = appdata;
+        }
+        SINGLETON(THGuiRep);
+    public:
+
+        void CheckReplay()
+        {
+            uint32_t index = GetMemContent(0x4db6a4, 0x5aec);
+            char* repName = (char*)GetMemAddr(0x4db6a4, index * 4 + 0x5af4, 0x220);
+            std::wstring repDir(mAppdataPath);
+            repDir.append(L"\\ShanghaiAlice\\th14\\replay\\");
+            repDir.append(mb_to_utf16(repName, 932));
+
+            std::string param;
+            if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
+                mParamStatus = true;
+            else
+                mRepParam.Reset();
+        }
+
+        bool mRepStatus = false;
+        void State(int state)
+        {
+            switch (state) {
+            case 1:
+                mRepStatus = false;
+                mParamStatus = false;
+                thPracParam.Reset();
+                break;
+            case 2:
+                CheckReplay();
+                break;
+            case 3:
+                mRepStatus = true;
+                if (mParamStatus)
+                    memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
+                break;
+            default:
+                break;
+            }
+        }
+
+    protected:
+        std::wstring mAppdataPath;
+        bool mParamStatus = false;
+        THPracParam mRepParam;
+    };
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
         {
@@ -476,7 +528,7 @@ namespace TH14 {
                 break;
             case 1:
                 if (IsOpen()) {
-                    if (Gui::InGameInputGet('Z')) {
+                    if (Gui::InGameInputGetConfirm()) {
                         SetFade(0.8f, 0.1f);
                         Close();
 
@@ -2196,12 +2248,6 @@ namespace TH14 {
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th14_everlasting_bgm, 0x46ef90)
     {
-        auto isInReplay = []() -> bool {
-            if (*(uintptr_t*)0x4db688)
-                return GetMemContent(0x4db688, 0x10);
-            return false;
-        };
-
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -2211,7 +2257,7 @@ namespace TH14 {
         bool is_practice;
         bool result;
 
-        el_switch = *(THOverlay::singleton().mElBgm) && !isInReplay() && thPracParam.mode == 1 && thPracParam.section;
+        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode == 1 && thPracParam.section;
         is_practice = (*((int32_t*)0x4f58b8) & 0x1); // is restarting
         result = ElBgmTest<0x445743, 0x436526, 0x448e91, 0x44908a, 0xffffffff>(
             el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
@@ -2252,7 +2298,6 @@ namespace TH14 {
     {
         pCtx->Eip = 0x45ece4;
     }
-    PATCH_DY(th14_disable_prac_menu_2, 0x45e813, "\x00", 1);
     EHOOK_DY(th14_menu_rank_fix, 0x449c3d)
     {
         *((int32_t*)0x4f5844) = -1;
@@ -2303,13 +2348,21 @@ namespace TH14 {
             THSaveReplay(repName);
         THAdvOptWnd::singleton().SaveReplay(mb_to_utf16(repName, 932).c_str());
     }
-    EHOOK_DY(th14_rep_load, 0x4549cf)
+    EHOOK_DY(th14_rep_menu_1, 0x45f10b)
     {
-        thPracParam = {};
-        std::string param;
-        std::wstring path = mb_to_utf16((char*)0x4f5a45, 932) + L"replay\\" + mb_to_utf16((char*)0x4db560, 932);
-        if (ReplayLoadParam(path.c_str(), param))
-            thPracParam.ReadJson(param);
+        THGuiRep::singleton().State(1);
+        THAdvOptWnd::singleton().ToggleLock(false);
+        THAdvOptWnd::singleton().DeselectReplay();
+    }
+    EHOOK_DY(th14_rep_menu_2, 0x45f216)
+    {
+        THGuiRep::singleton().State(2);
+        THAdvOptWnd::singleton().SelectReplay();
+    }
+    EHOOK_DY(th14_rep_menu_3, 0x45f3ed)
+    {
+        THGuiRep::singleton().State(3);
+        THAdvOptWnd::singleton().ToggleLock(true);
     }
     EHOOK_DY(th14_sp_menu_1, 0x464068)
     {
@@ -2332,6 +2385,7 @@ namespace TH14 {
 
         // Gui components update
         THGuiPrac::singleton().Update();
+        THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
@@ -2354,6 +2408,7 @@ namespace TH14 {
 
         // Gui components creation
         THGuiPrac::singleton();
+        THGuiRep::singleton();
         THOverlay::singleton();
         THGuiSP::singleton();
 

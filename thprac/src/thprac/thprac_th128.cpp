@@ -2178,7 +2178,6 @@ namespace TH128 {
             pCtx->Eax = thPracParam.stage + 1;
         }
     }
-    PATCH_DY(th128_disable_prac_menu, 0x44a241, "\x00\x00", 2);
     EHOOK_DY(th128_patch_main, 0x42641a)
     {
         if (!thLock && thPracParam.mode == 1) {

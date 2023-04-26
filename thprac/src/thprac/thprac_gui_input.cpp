@@ -165,5 +165,10 @@ namespace THPrac
 		{
 			return (ImplWin32CheckForeground()) ? (GetAsyncKeyState(v_key) < 0) : false;
 		}
+
+		bool InGameInputGetConfirm()
+		{
+			return Gui::InGameInputGet('Z') || KeyboardInputGetRaw(VK_RETURN);
+		}
 	}
 }

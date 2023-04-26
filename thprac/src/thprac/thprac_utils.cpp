@@ -28,6 +28,8 @@ static void* _str_cvt_buffer(size_t size)
     return bufferPtr;
 }
 
+RAII_CRITICAL_SECTION str_cvt_lock;
+
 typedef int WINAPI MultiByteToWideChar_t(UINT CodePage, DWORD dwFlags, LPCCH lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar);
 typedef int WINAPI WideCharToMultiByte_t(UINT CodePage, DWORD dwFlags, LPCWCH lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCCH lpDefaultChar, LPBOOL lpUsedDefaultChar);
 
@@ -37,6 +39,7 @@ MultiByteToWideChar_t* _MultiByteToWideChar = ::MultiByteToWideChar;
 std::string utf16_to_mb(const wchar_t* utf16, UINT encoding)
 {
     int utf8Length = _WideCharToMultiByte(encoding, 0, utf16, -1, nullptr, 0, NULL, NULL);
+    cs_lock lock(*str_cvt_lock);
     char* utf8 = (char*)_str_cvt_buffer(utf8Length);
     _WideCharToMultiByte(encoding, 0, utf16, -1, utf8, utf8Length, NULL, NULL);
     return std::string(utf8);
@@ -44,6 +47,7 @@ std::string utf16_to_mb(const wchar_t* utf16, UINT encoding)
 std::wstring mb_to_utf16(const char* utf8, UINT encoding)
 {
     int utf16Length = _MultiByteToWideChar(encoding, 0, utf8, -1, nullptr, 0);
+    cs_lock lock(*str_cvt_lock);
     wchar_t* utf16 = (wchar_t*)_str_cvt_buffer(utf16Length);
     _MultiByteToWideChar(encoding, 0, utf8, -1, utf16, utf16Length);
     return std::wstring(utf16);

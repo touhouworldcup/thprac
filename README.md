@@ -80,9 +80,11 @@ Thprac is compatible with thcrap. Thprac's launcher can act as a thcrap launcher
 ## Cannot find Embodiment of Scarlet Devil
 Make sure your exe is named "東方紅魔郷.exe" or "th06.exe". If thprac still can't find it, the launcher can launch an exe with any filename and attach thprac.
 
-## How do I save a replay mid-game in TH06/TH07/TH08/TH10?
+## How do I save a replay mid-game in TH06TH07/TH08/TH10?
 You can't. The thprac 2.0.8.3 manual says
 > Because of how these games were programmed, adding this feature would be quite troublesome, so currently there's no direct solution to this
+
+Recently, this feature was added to TH06. However, any replay saved mid game will not return to the title screen even after the point where you saved the replay. Consider this functionality "there and ready but still a bit quirky"
 
 ## What does "Everlasting BGM" mean?
 It prevents the BGM from resetting when you reset the game

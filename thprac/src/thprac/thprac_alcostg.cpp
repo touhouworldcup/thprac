@@ -130,7 +130,7 @@ namespace Alcostg {
                 break;
             case 1:
                 if (IsOpen()) {
-                    if (Gui::InGameInputGet('Z')) {
+                    if (Gui::InGameInputGetConfirm()) {
                         SetFade(0.8f, 0.1f);
                         Close();
 

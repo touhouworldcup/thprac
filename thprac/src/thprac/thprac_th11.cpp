@@ -339,6 +339,53 @@ namespace TH11 {
         int mDiffculty = 0;
         bool isMarisaA = false;
     };
+    class THGuiRep : public Gui::GameGuiWnd {
+        THGuiRep() noexcept
+        {
+        }
+        SINGLETON(THGuiRep);
+    public:
+
+        void CheckReplay()
+        {
+            uint32_t index = GetMemContent(0x4A8ECC, 0x59d4);
+            char* repName = (char*)GetMemAddr(0x4A8ECC, index * 4 + 0x59dc, 0x1dc);
+            std::wstring repDir(L"replay/");
+            repDir.append(mb_to_utf16(repName, 932));
+
+            std::string param;
+            if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
+                mParamStatus = true;
+            else
+                mRepParam.Reset();
+        }
+
+        bool mRepStatus = false;
+        void State(int state)
+        {
+            switch (state) {
+            case 1:
+                mRepStatus = false;
+                mParamStatus = false;
+                thPracParam.Reset();
+                break;
+            case 2:
+                CheckReplay();
+                break;
+            case 3:
+                mRepStatus = true;
+                if (mParamStatus)
+                    memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
+                break;
+            default:
+                break;
+            }
+        }
+
+    protected:
+        bool mParamStatus = false;
+        THPracParam mRepParam;
+    };
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
         {
@@ -1614,12 +1661,6 @@ namespace TH11 {
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th11_everlasting_bgm, 0x44a9c0)
     {
-        auto isInReplay = []() -> bool {
-            if (*(uintptr_t*)0x4a8eB8)
-                return GetMemContent(0x4a8eB8, 0x10);
-            return false;
-        };
-
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -1629,7 +1670,7 @@ namespace TH11 {
         bool is_practice;
         bool result;
 
-        el_switch = *(THOverlay::singleton().mElBgm) && !isInReplay() && thPracParam.mode && thPracParam.section;
+        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode && thPracParam.section;
         is_practice = (*((int32_t*)0x4a5758) & 0x1);
         result = ElBgmTest<0x42a183, 0x42028f, 0x42c72a, 0x42c8af, 0xffffffff>(
             el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
@@ -1705,15 +1746,6 @@ namespace TH11 {
         if (thPracParam.mode)
             THSaveReplay(repName);
     }
-    EHOOK_DY(th11_rep_load, 0x435a05)
-    {
-        thPracParam = {};
-        std::string param;
-        std::wstring path(L"replay/");
-        path += mb_to_utf16((char*)pCtx->Ecx, 932);
-        if (ReplayLoadParam(path.c_str(), param))
-            thPracParam.ReadJson(param);
-    }
     EHOOK_DY(th11_bgm_1, 0x42053b)
     {
         if (THBGMTest()) {
@@ -1746,6 +1778,22 @@ namespace TH11 {
             pCtx->Eip = 0x42c89b;
         }
     }
+    EHOOK_DY(th11_rep_menu_0, 0x43ddb2)
+    {
+        THGuiRep::singleton().State(1);
+    }
+    EHOOK_DY(th11_rep_menu_1, 0x43dec7)
+    {
+        THGuiRep::singleton().State(1);
+    }
+    EHOOK_DY(th11_rep_menu_2, 0x43dfdf)
+    {
+        THGuiRep::singleton().State(2);
+    }
+    EHOOK_DY(th11_rep_menu_3, 0x43e147)
+    {
+        THGuiRep::singleton().State(3);
+    }
     PATCH_DY(th11_prac_menu_key, 0x43d7d7, "\x01\x00\x00\x00", 4);
     EHOOK_DY(th11_update, 0x456deb)
     {
@@ -1753,6 +1801,7 @@ namespace TH11 {
 
         // Gui components update
         THGuiPrac::singleton().Update();
+        THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
@@ -1774,6 +1823,7 @@ namespace TH11 {
 
         // Gui components creation
         THGuiPrac::singleton();
+        THGuiRep::singleton();
         THOverlay::singleton();
 
         // Hooks

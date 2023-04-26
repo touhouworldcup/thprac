@@ -69,6 +69,36 @@ struct MappedFile {
     }
 };
 
+struct cs_lock {
+    CRITICAL_SECTION* cs;
+    cs_lock(CRITICAL_SECTION* cs)
+    {
+        EnterCriticalSection(cs);
+        this->cs = cs;
+    }
+    ~cs_lock()
+    {
+        LeaveCriticalSection(cs);
+    }
+};
+
+struct RAII_CRITICAL_SECTION {
+    CRITICAL_SECTION cs;
+    RAII_CRITICAL_SECTION()
+    {
+        InitializeCriticalSection(&cs);
+    }
+
+    ~RAII_CRITICAL_SECTION()
+    {
+        DeleteCriticalSection(&cs);
+    }
+
+    CRITICAL_SECTION* operator*() {
+        return &cs;
+    }
+};
+
 #pragma region Locale
 std::string utf16_to_mb(const wchar_t* utf16, UINT encoding);
 std::wstring mb_to_utf16(const char* utf8, UINT encoding);

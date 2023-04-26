@@ -13,6 +13,7 @@ namespace TH18 {
         CARD_DESC_LIST = 0x4c53c0
     };
 
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -399,14 +400,14 @@ namespace TH18 {
 
         int mDiffculty = 0;
     };
-    class THCurrentRep {
-        THCurrentRep() noexcept
+    class THGuiRep : public Gui::GameGuiWnd {
+        THGuiRep() noexcept
         {
             wchar_t appdata[MAX_PATH];
             GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mAppdataPath = appdata;
         }
-        SINGLETON(THCurrentRep);
+        SINGLETON(THGuiRep);
 
     public:
         std::wstring mRepDir;
@@ -768,7 +769,7 @@ namespace TH18 {
                 break;
             case 1:
                 if (IsOpen()) {
-                    if (Gui::InGameInputGet('Z')) {
+                    if (Gui::InGameInputGetConfirm()) {
                         SetFade(0.8f, 0.1f);
                         Close();
 
@@ -1150,7 +1151,7 @@ namespace TH18 {
             free(repDataOutput);
 
             DWORD bytesProcessed;
-            std::wstring repDir = THCurrentRep::singleton().mAppdataPath;
+            std::wstring repDir = THGuiRep::singleton().mAppdataPath;
             repDir.append(L"\\ShanghaiAlice\\th18\\replay\\");
             OPENFILENAMEW ofn;
             wchar_t szFile[512];
@@ -1191,10 +1192,10 @@ namespace TH18 {
             UnloadReplay();
 
             // Load replay
-            MappedFile file(THCurrentRep::singleton().mRepDir.c_str());
+            MappedFile file(THGuiRep::singleton().mRepDir.c_str());
 
-            mRepOriginalName = THCurrentRep::singleton().mRepName;
-            mRepOriginalPath = THCurrentRep::singleton().mRepDir;
+            mRepOriginalName = THGuiRep::singleton().mRepName;
+            mRepOriginalPath = THGuiRep::singleton().mRepDir;
 
             // Decode and copy data
             void* mRepDataRaw = nullptr;
@@ -1225,7 +1226,7 @@ namespace TH18 {
             if (!mRepDataDecoded) {
                 return false;
             }
-            auto& repMenu = THCurrentRep::singleton();
+            auto& repMenu = THGuiRep::singleton();
             if (!OffsetValueBase::IsBadPtr((void*)GetMemContent(0x4cf2e4)) && !GetMemContent(0x4cf2e4, 0xd0)) {
                 return false;
             }
@@ -1257,6 +1258,8 @@ namespace TH18 {
                 if (!mRepDataDecoded) {
                     if (THCurrentRep::singleton().mRepSelected) {
                         ImGui::Text(S(TH18_REPFIX_SELECTED), THCurrentRep::singleton().mRepName.c_str());
+                    if (THGuiRep::singleton().mRepSelected) {
+                        ImGui::Text(S(TH18_REPFIX_SELECTED), THGuiRep::singleton().mRepName.c_str());
 
                         if (!mRepDataDecoded) {
                             ImGui::SameLine();
@@ -2587,7 +2590,7 @@ namespace TH18 {
         bool is_practice;
         bool result;
 
-        el_switch = *(THOverlay::singleton().mElBgm) && !THCurrentRep::singleton().mRepStatus && (thPracParam.mode == 1) && thPracParam.section;
+        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && (thPracParam.mode == 1) && thPracParam.section;
         is_practice = (*((int32_t*)0x4cccc8) & 0x1);
         result = ElBgmTest<0x4546d3, 0x443762, 0x45873a, 0x45a24e, 0xffffffff>(
             el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
@@ -2626,7 +2629,6 @@ namespace TH18 {
     {
         pCtx->Eip = 0x467959;
     }
-    PATCH_DY(th18_disable_prac_menu_2, 0x467455, "\x00", 1);
     EHOOK_DY(th18_patch_main, 0x4432a7)
     {
         if (thPracParam.mode == 1) {
@@ -2754,15 +2756,15 @@ namespace TH18 {
     }
     EHOOK_DY(th18_rep_menu_1, 0x467c67)
     {
-        THCurrentRep::singleton().State(1);
+        THGuiRep::singleton().State(1);
     }
     EHOOK_DY(th18_rep_menu_2, 0x467d87)
     {
-        THCurrentRep::singleton().State(2);
+        THGuiRep::singleton().State(2);
     }
     EHOOK_DY(th18_rep_menu_3, 0x467f6f)
     {
-        THCurrentRep::singleton().State(3);
+        THGuiRep::singleton().State(3);
     }
     EHOOK_DY(th18_update, 0x4013f5)
     {
@@ -2770,6 +2772,7 @@ namespace TH18 {
 
         // Gui components update
         THGuiPrac::singleton().Update();
+        THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();

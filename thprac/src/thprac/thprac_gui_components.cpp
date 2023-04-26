@@ -400,7 +400,7 @@ namespace THPrac
         {
             const char* label = mLabel ? mLabel : LocaleGetStr(mLabelRef);
             bool res = ImGui::Button(label, mSize);
-            if (ImGui::IsItemFocused() && InGameInputGet(0x5A))
+            if (ImGui::IsItemFocused() && InGameInputGetConfirm())
                 res = true;
             return res;
         }
