@@ -301,9 +301,9 @@ bool SetTheme(int themeId, const wchar_t* userThemeName)
         using std::runtime_error, std::format;
 
         if (!theme.HasMember(colorName))
-            throw runtime_error(format("Missing element: %s", colorName));
+            throw runtime_error(format("Missing element: {}", colorName));
         if (!theme[colorName].IsArray())
-            throw runtime_error(format("Wrong format for %s", colorName));
+            throw runtime_error(format("Wrong format for {}", colorName));
 
         const auto& jsonVec = theme[colorName].GetArray();
         if (jsonVec.Size() < 4)
