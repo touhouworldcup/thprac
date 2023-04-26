@@ -920,7 +920,7 @@ private:
 
             va_list args;
             va_start(args, fmt);
-            int charsPrinted = _snwprintf(p, rem, fmt, args);
+            int charsPrinted = _vsnwprintf(p, rem, fmt, args);
             va_end(args);
 
             if (charsPrinted < 0)
