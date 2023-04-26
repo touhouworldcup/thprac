@@ -1,5 +1,7 @@
 ﻿#include "thprac_utils.h"
 
+constexpr auto S = THPrac::Gui::LocaleGetStr;
+
 namespace THPrac {
 namespace TH10 {
     using std::pair;
@@ -161,18 +163,18 @@ namespace TH10 {
     protected:
         virtual void OnLocaleChange() override
         {
-            SetTitle(XSTR(TH_MENU));
+            SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
-                AutoSize(0.0f, 0.0f, XSSS(0)[TH10_ST7_END_S9], XSTR(TH_MID_STAGE), 10.5f, 300.0f);
+                AutoSize(0.0f, 0.0f, XSSS(0)[TH10_ST7_END_S9], S(TH_MID_STAGE), 10.5f, 300.0f);
                 AutoPos(0.5f, 0.57f);
                 break;
             case Gui::LOCALE_EN_US:
-                AutoSize(0.0f, 0.0f, XSSS(0)[TH10_ST7_END_S2], XSTR(TH_END_STAGE), 10.5f, 300.0f);
+                AutoSize(0.0f, 0.0f, XSSS(0)[TH10_ST7_END_S2], S(TH_END_STAGE), 10.5f, 300.0f);
                 AutoPos(0.5f, 0.57f);
                 break;
             case Gui::LOCALE_JA_JP:
-                AutoSize(0.0f, 0.0f, XSSS(0)[TH10_ST7_END_S9], XSTR(TH10_FAITH_BAR), 10.5f, 300.0f);
+                AutoSize(0.0f, 0.0f, XSSS(0)[TH10_ST7_END_S9], S(TH10_FAITH_BAR), 10.5f, 300.0f);
                 AutoPos(0.5f, 0.57f);
                 break;
             default:
@@ -181,7 +183,7 @@ namespace TH10 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(XSTR(TH_MENU));
+            ImGui::TextUnformatted(S(TH_MENU));
             ImGui::Separator();
 
             PracticeMenu();
@@ -277,11 +279,11 @@ namespace TH10 {
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
                 if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
-                    sprintf_s(chapterStr, XSTR(TH_STAGE_PORTION_N), *mChapter);
+                    sprintf_s(chapterStr, S(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
-                    sprintf_s(chapterStr, XSTR(TH_STAGE_PORTION_1), *mChapter);
+                    sprintf_s(chapterStr, S(TH_STAGE_PORTION_1), *mChapter);
                 } else {
-                    sprintf_s(chapterStr, XSTR(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
+                    sprintf_s(chapterStr, S(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
                 };
 
                 mChapter(chapterStr);
@@ -567,7 +569,7 @@ namespace TH10 {
     protected:
         void LocaleUpdate()
         {
-            SetTitle(XSTR(TH_SPELL_PRAC));
+            SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
@@ -593,7 +595,7 @@ namespace TH10 {
         }
         void ContentUpdate()
         {
-            ImGui::TextUnformatted(XSTR(TH_ADV_OPT));
+            ImGui::TextUnformatted(S(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 

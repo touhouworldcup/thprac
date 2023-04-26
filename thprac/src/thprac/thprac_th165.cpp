@@ -1,5 +1,7 @@
 ﻿#include "thprac_utils.h"
 
+constexpr auto S = THPrac::Gui::LocaleGetStr;
+
 namespace THPrac {
 namespace TH165 {
     class THOverlay : public Gui::GameGuiWnd {
@@ -116,7 +118,7 @@ namespace TH165 {
     protected:
         virtual void OnLocaleChange() override
         {
-            SetTitle(XSTR(TH_SPELL_PRAC));
+            SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
@@ -142,7 +144,7 @@ namespace TH165 {
         }
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted(XSTR(TH_ADV_OPT));
+            ImGui::TextUnformatted(S(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 

@@ -261,10 +261,10 @@ bool LoadSelf(HANDLE hProcess, void* userdata, size_t userdataSize)
 
     // User data
     if (userdata) {
-        if (auto rUserData = VirtualAllocEx(hProcess, NULL, userdataSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) {
-            WriteProcessMemory(hProcess, rUserData, userdata, userdataSize, NULL);
+        if (auto rUserData = VirtualAllocEx(hProcess, nullptr, userdataSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) {
+            WriteProcessMemory(hProcess, rUserData, userdata, userdataSize, nullptr);
             lModule.pUserData = rUserData;
-            lModule.pAddrOfUserData = (PUINT8)((PUINT8)GetUserData() - (PUINT8)GetModuleHandleA(NULL));
+            lModule.pAddrOfUserData = (PUINT8)((PUINT8)GetUserData() - (PUINT8)GetModuleHandleA(nullptr));
         }
     }
 
@@ -273,23 +273,23 @@ bool LoadSelf(HANDLE hProcess, void* userdata, size_t userdataSize)
     lModule.pVirtualProtect = ::VirtualProtect;
     lModule.pGetModuleHandleA = ::GetModuleHandleA;
     lModule.pGetProcAddress = ::GetProcAddress;
-    GetModuleFileNameA(NULL, lModule.sExePath, MAX_PATH);
+    GetModuleFileNameA(nullptr, lModule.sExePath, MAX_PATH);
 
     // Write shellcode and parameters
-    LPVOID rModule = VirtualAllocEx(hProcess, NULL, sizeof(remote_param), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    LPVOID rModule = VirtualAllocEx(hProcess, nullptr, sizeof(remote_param), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
     if (!rModule)
         return false;
     defer(VirtualFreeEx(hProcess, rModule, 0, MEM_RELEASE));
-    WriteProcessMemory(hProcess, rModule, &lModule, sizeof(remote_param), NULL);
-    LPVOID pRemoteInit = VirtualAllocEx(hProcess, NULL, sizeof(INIT_SHELLCODE), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    WriteProcessMemory(hProcess, rModule, &lModule, sizeof(remote_param), nullptr);
+    LPVOID pRemoteInit = VirtualAllocEx(hProcess, nullptr, sizeof(INIT_SHELLCODE), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
     if (!pRemoteInit)
         return false;
     defer(VirtualFreeEx(hProcess, pRemoteInit, 0, MEM_RELEASE));
-    WriteProcessMemory(hProcess, pRemoteInit, INIT_SHELLCODE, sizeof(INIT_SHELLCODE), NULL);
+    WriteProcessMemory(hProcess, pRemoteInit, INIT_SHELLCODE, sizeof(INIT_SHELLCODE), nullptr);
 
     // Invoke
     DWORD rResult = 0;
-    if (auto tInit = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pRemoteInit, rModule, 0, NULL)) {
+    if (auto tInit = CreateRemoteThread(hProcess, nullptr, 0, (LPTHREAD_START_ROUTINE)pRemoteInit, rModule, 0, nullptr)) {
         WaitForSingleObject(tInit, INFINITE);
         GetExitCodeThread(tInit, &rResult);
     }

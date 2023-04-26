@@ -201,8 +201,4 @@ static DWORD PopHelper32(CONTEXT* pCtx)
         SINGLETON(name);
 
 #define HOOKSET_ENDDEF() };
-
-
-#define ASM \
-    __asm
 }

@@ -15,7 +15,7 @@ using namespace THPrac;
 bool PrivilegeCheck()
 {
     BOOL fRet = FALSE;
-    HANDLE hToken = NULL;
+    HANDLE hToken = nullptr;
     if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken)) {
         TOKEN_ELEVATION Elevation = {};
         DWORD cbSize = sizeof(TOKEN_ELEVATION);
@@ -58,9 +58,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     if (adminRights && !PrivilegeCheck()) {
         wchar_t exePath[MAX_PATH];
-        GetModuleFileNameW(NULL, exePath, MAX_PATH);
+        GetModuleFileNameW(nullptr, exePath, MAX_PATH);
         CloseHandle(thpracMutex);
-        ShellExecuteW(NULL, L"runas", exePath, NULL, NULL, SW_SHOW);
+        ShellExecuteW(nullptr, L"runas", exePath, nullptr, nullptr, SW_SHOW);
         return 0;
     }
 

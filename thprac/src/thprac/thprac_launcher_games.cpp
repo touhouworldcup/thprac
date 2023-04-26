@@ -21,6 +21,8 @@
 #include <vector>
 #include <unordered_map>
 
+constexpr auto S = THPrac::Gui::LocaleGetStr;
+
 namespace THPrac {
 inline bool HashCompare(uint32_t hash1[4], uint32_t hash2[4])
 {
@@ -144,16 +146,16 @@ bool LoadJsonFile(std::wstring& path, void*& buffer, size_t& size)
 {
     DWORD openFlag = OPEN_EXISTING;
     DWORD openAccess = GENERIC_READ;
-    auto hFile = CreateFileW(path.c_str(), openAccess, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, openFlag, FILE_ATTRIBUTE_NORMAL, NULL);
+    auto hFile = CreateFileW(path.c_str(), openAccess, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, openFlag, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (hFile == INVALID_HANDLE_VALUE) {
         return false;
     }
 
     DWORD bytesProcessed;
-    auto fileSize = GetFileSize(hFile, NULL);
+    auto fileSize = GetFileSize(hFile, nullptr);
     auto fileBuffer = malloc(fileSize + 1);
     memset(fileBuffer, 0, fileSize + 1);
-    if (!ReadFile(hFile, fileBuffer, fileSize, &bytesProcessed, NULL)) {
+    if (!ReadFile(hFile, fileBuffer, fileSize, &bytesProcessed, nullptr)) {
         CloseHandle(hFile);
         free(fileBuffer);
         return false;
@@ -274,7 +276,8 @@ struct THGame {
 };
 
 class THGameGui {
-#define GAME_SCAN_TYPE_CNT (6)
+    // TODO: This looks suspicious - why is it 6 when there are only 4 variants?
+    static constexpr size_t GAME_SCAN_TYPE_CNT = 6;
     enum ScanOption {
         SCAN_OPT_ORIGINAL = 0,
         SCAN_OPT_MODDED = 1,
@@ -431,7 +434,7 @@ public:
 
         swprintf_s(thcrapDir, L"%s\\%s", THGameGui::singleton().mThcrapDir.c_str(), L"thcrap_loader.exe");
         swprintf_s(thcrapArg, L"\"%s\" %s%s", cfg.c_str(), utf8_to_utf16(game).c_str(), append ? utf8_to_utf16(append).c_str() : L"");
-        return ShellExecuteW(NULL, L"open", thcrapDir, thcrapArg, THGameGui::singleton().mThcrapDir.c_str(), SW_SHOW);
+        return ShellExecuteW(nullptr, L"open", thcrapDir, thcrapArg, THGameGui::singleton().mThcrapDir.c_str(), SW_SHOW);
     }
     void thcrapPathConversion()
     {
@@ -439,7 +442,7 @@ public:
         wchar_t cvt[MAX_PATH];
         bool isRelative = false;
         LauncherSettingGet("use_relative_path", isRelative);
-        GetModuleFileNameW(GetModuleHandleW(NULL), currentPath, MAX_PATH);
+        GetModuleFileNameW(GetModuleHandleW(nullptr), currentPath, MAX_PATH);
 
         if (isRelative) {
             if (!PathIsRelativeW(mThcrapDir.c_str())) {
@@ -450,7 +453,7 @@ public:
             }
         } else {
             if (PathIsRelativeW(mThcrapDir.c_str())) {
-                if (GetFullPathNameW(mThcrapDir.c_str(), MAX_PATH, cvt, NULL)) {
+                if (GetFullPathNameW(mThcrapDir.c_str(), MAX_PATH, cvt, nullptr)) {
                     mThcrapDir = cvt;
                     LauncherSettingSet("thcrap", utf16_to_utf8(mThcrapDir.c_str()));
                 }
@@ -460,7 +463,7 @@ public:
     bool thcrapLaunch()
     {
         auto configure = mThcrapDir + L"\\thcrap.exe";
-        if (ShellExecuteW(NULL, L"open", configure.c_str(), NULL, mThcrapDir.c_str(), SW_SHOW) > (HINSTANCE)32) {
+        if (ShellExecuteW(nullptr, L"open", configure.c_str(), nullptr, mThcrapDir.c_str(), SW_SHOW) > (HINSTANCE)32) {
             return true;
         }
         return false;
@@ -646,7 +649,7 @@ public:
         wchar_t cvt[MAX_PATH];
         bool isRelative = false;
         LauncherSettingGet("use_relative_path", isRelative);
-        GetModuleFileNameW(GetModuleHandleW(NULL), currentPath, MAX_PATH);
+        GetModuleFileNameW(GetModuleHandleW(nullptr), currentPath, MAX_PATH);
 
         auto& gameGui = THGameGui::singleton();
         for (auto& it : mGames) {
@@ -663,7 +666,7 @@ public:
                     }
                 } else {
                     if (PathIsRelativeW(u16Path.c_str())) {
-                        if (GetFullPathNameW(u16Path.c_str(), MAX_PATH, cvt, NULL)) {
+                        if (GetFullPathNameW(u16Path.c_str(), MAX_PATH, cvt, nullptr)) {
                             gameInst.path = utf16_to_utf8(cvt);
                         }
                     }
@@ -727,7 +730,7 @@ public:
             ImGui::Checkbox(chkBoxId.c_str(), &(game.checked));
             result &= game.checked;
             ImGui::NextColumn();
-            ImGui::TextWrapped("%s (%s)", game.signature->idStr, XSTR(TH_TYPE_SELECT[game.game.type]));
+            ImGui::TextWrapped("%s (%s)", game.signature->idStr, S(TH_TYPE_SELECT[game.game.type]));
             ImGui::NextColumn();
             GuiColumnText(game.game.path.c_str());
             ImGui::NextColumn();
@@ -751,9 +754,9 @@ public:
             }
         }
         ImGui::NextColumn();
-        ImGui::TextUnformatted(XSTR(THPRAC_SCAN_SCAN_RESULT_C1));
+        ImGui::TextUnformatted(S(THPRAC_SCAN_SCAN_RESULT_C1));
         ImGui::NextColumn();
-        ImGui::TextUnformatted(XSTR(THPRAC_SCAN_SCAN_RESULT_C2));
+        ImGui::TextUnformatted(S(THPRAC_SCAN_SCAN_RESULT_C2));
         ImGui::NextColumn();
         ImGui::Separator();
     }
@@ -762,11 +765,11 @@ public:
         char childId[64];
         sprintf_s(childId, "##@__result_c%d", idx);
 
-        if (GuiButtonAndModalYesNo(XSTR(THPRAC_ABORT), XSTR(THPRAC_SCAN_SCAN_ABORT_TITLE), XSTR(THPRAC_SCAN_SCAN_ABORT_TEXT), 6.0f, XSTR(THPRAC_OK), XSTR(THPRAC_CANCEL))) {
+        if (GuiButtonAndModalYesNo(S(THPRAC_ABORT), S(THPRAC_SCAN_SCAN_ABORT_TITLE), S(THPRAC_SCAN_SCAN_ABORT_TEXT), 6.0f, S(THPRAC_OK), S(THPRAC_CANCEL))) {
             mGuiUpdFunc = [&]() { GuiMain(); };
         }
         ImGui::SameLine();
-        GuiCenteredText(XSTR(THPRAC_GAMES_SCAN_FOLDER));
+        GuiCenteredText(S(THPRAC_GAMES_SCAN_FOLDER));
         ImGui::Separator();
 
         if (color) {
@@ -790,7 +793,7 @@ public:
         ImGui::Columns(1);
         ImGui::EndChild();
 
-        auto buttonRes = GuiCornerButton(XSTR(THPRAC_BACK), XSTR(THPRAC_NEXT));
+        auto buttonRes = GuiCornerButton(S(THPRAC_BACK), S(THPRAC_NEXT));
         if (buttonRes == 1) {
             GuiScanCheckMenuSwitch(idx - 1, false);
         } else if (buttonRes == 2) {
@@ -800,8 +803,8 @@ public:
     void GuiScanCheckFinish()
     {
         GuiSetPosYRel(0.5f);
-        GuiCenteredText(XSTR(THPRAC_SCAN_COMPLETE));
-        auto buttonRes = GuiCornerButton(XSTR(THPRAC_BACK), XSTR(THPRAC_FINISH));
+        GuiCenteredText(S(THPRAC_SCAN_COMPLETE));
+        auto buttonRes = GuiCornerButton(S(THPRAC_BACK), S(THPRAC_FINISH));
         if (buttonRes == 1) {
             GuiScanCheckMenuSwitch(GAME_SCAN_TYPE_CNT - 1, false);
         } else if (buttonRes == 2) {
@@ -812,23 +815,23 @@ public:
     }
     void GuiScanCheckUncertain()
     {
-        GuiScanCheck(XSTR(THPRAC_SCAN_CONFIRM_UNCERTAIN), 5);
+        GuiScanCheck(S(THPRAC_SCAN_CONFIRM_UNCERTAIN), 5);
     }
     void GuiScanCheckModded()
     {
-        GuiScanCheck(XSTR(THPRAC_SCAN_CONFIRM_MODDED), 4);
+        GuiScanCheck(S(THPRAC_SCAN_CONFIRM_MODDED), 4);
     }
     void GuiScanCheckSteam()
     {
-        GuiScanCheck(XSTR(THPRAC_SCAN_CONFIRM_STEAM), 3);
+        GuiScanCheck(S(THPRAC_SCAN_CONFIRM_STEAM), 3);
     }
     void GuiScanCheckThcrap()
     {
-        GuiScanCheck(XSTR(THPRAC_SCAN_CONFIRM_THCRAP), 2);
+        GuiScanCheck(S(THPRAC_SCAN_CONFIRM_THCRAP), 2);
     }
     void GuiScanCheckValid()
     {
-        GuiScanCheck(XSTR(THPRAC_SCAN_CONFIRM_VALID), 1);
+        GuiScanCheck(S(THPRAC_SCAN_CONFIRM_VALID), 1);
     }
     void GuiScanCheckMalicious()
     {
@@ -838,16 +841,16 @@ public:
         char childId[64];
         sprintf_s(childId, "##@__result_c%d", idx);
 
-        if (GuiButtonAndModalYesNo(XSTR(THPRAC_ABORT), XSTR(THPRAC_SCAN_SCAN_ABORT_TITLE), XSTR(THPRAC_SCAN_SCAN_ABORT_TEXT), 6.0f, XSTR(THPRAC_OK), XSTR(THPRAC_CANCEL))) {
+        if (GuiButtonAndModalYesNo(S(THPRAC_ABORT), S(THPRAC_SCAN_SCAN_ABORT_TITLE), S(THPRAC_SCAN_SCAN_ABORT_TEXT), 6.0f, S(THPRAC_OK), S(THPRAC_CANCEL))) {
             mGuiUpdFunc = [&]() { GuiMain(); };
         }
         ImGui::SameLine();
         ImGui::PushStyleColor(ImGuiCol_Text, color);
-        GuiCenteredText(XSTR(THPRAC_SCAN_MALICIOUS_TITLE));
+        GuiCenteredText(S(THPRAC_SCAN_MALICIOUS_TITLE));
         ImGui::PopStyleColor();
         ImGui::Separator();
 
-        ImGui::TextWrapped("%s", XSTR(THPRAC_SCAN_CONFIRM_MALICIOUS));
+        ImGui::TextWrapped("%s", S(THPRAC_SCAN_CONFIRM_MALICIOUS));
 
         ImGui::NewLine();
         ImGui::BeginChild(childId, ImVec2(0, -2.0f * ImGui::GetFontSize()), true);
@@ -865,13 +868,13 @@ public:
             ImGui::SetColumnOffset(i, offset[i] * ImGui::GetFontSize());
         }
         ImGui::Separator();
-        ImGui::TextUnformatted(XSTR(THPRAC_SCAN_SCAN_RESULT_C1));
+        ImGui::TextUnformatted(S(THPRAC_SCAN_SCAN_RESULT_C1));
         ImGui::NextColumn();
-        ImGui::TextUnformatted(XSTR(THPRAC_SCAN_SCAN_RESULT_C2));
+        ImGui::TextUnformatted(S(THPRAC_SCAN_SCAN_RESULT_C2));
         ImGui::NextColumn();
         ImGui::Separator();
         for (auto& game : mGameScan[idx]) {
-            ImGui::TextWrapped("%s (%s)", game.signature->idStr, XSTR(TH_TYPE_SELECT[game.game.type]));
+            ImGui::TextWrapped("%s (%s)", game.signature->idStr, S(TH_TYPE_SELECT[game.game.type]));
             ImGui::NextColumn();
             GuiColumnText(game.game.path.c_str());
             ImGui::NextColumn();
@@ -880,7 +883,7 @@ public:
         ImGui::Columns(1);
         ImGui::EndChild();
 
-        auto buttonRes = GuiCornerButton(XSTR(THPRAC_BACK), XSTR(THPRAC_NEXT));
+        auto buttonRes = GuiCornerButton(S(THPRAC_BACK), S(THPRAC_NEXT));
         if (buttonRes == 1) {
             GuiScanCheckMenuSwitch(idx - 1, false);
         } else if (buttonRes == 2) {
@@ -1065,14 +1068,14 @@ public:
         wchar_t value[MAX_PATH];
         DWORD value_length = sizeof(value);
         if (RegOpenKey(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Valve\\Steam", &hKey) == ERROR_SUCCESS) {
-            if (RegQueryValueEx(hKey, L"InstallPath", NULL, &dwType, (LPBYTE)value, &value_length) == ERROR_SUCCESS) {
+            if (RegQueryValueEx(hKey, L"InstallPath", nullptr, &dwType, (LPBYTE)value, &value_length) == ERROR_SUCCESS) {
                 steamPath = value;
             }
             RegCloseKey(hKey);
         }
         if (steamPath == L"") {
             if (RegOpenKey(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Wow6432Node\\Valve\\Steam", &hKey) == ERROR_SUCCESS) {
-                if (RegQueryValueEx(hKey, L"InstallPath", NULL, &dwType, (LPBYTE)value, &value_length) == ERROR_SUCCESS) {
+                if (RegQueryValueEx(hKey, L"InstallPath", nullptr, &dwType, (LPBYTE)value, &value_length) == ERROR_SUCCESS) {
                     steamPath = value;
                 }
                 RegCloseKey(hKey);
@@ -1085,13 +1088,13 @@ public:
 
         ScanSteamappPath(steamPath + L"\\steamapps");
         auto libraryCfgPath = steamPath + L"\\steamapps\\libraryfolders.vdf";
-        auto hCfg = CreateFileW(libraryCfgPath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        auto hCfg = CreateFileW(libraryCfgPath.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
         if (hCfg != INVALID_HANDLE_VALUE) {
             DWORD bytesRead;
-            auto cfgSize = GetFileSize(hCfg, NULL);
+            auto cfgSize = GetFileSize(hCfg, nullptr);
             auto cfgBuffer = malloc(cfgSize);
             memset(cfgBuffer, 0, cfgSize);
-            ReadFile(hCfg, cfgBuffer, cfgSize, &bytesRead, NULL);
+            ReadFile(hCfg, cfgBuffer, cfgSize, &bytesRead, nullptr);
             std::string cfgStr((const char*)cfgBuffer);
             std::string steamappsPath;
             steamappsPath.reserve(512);
@@ -1171,7 +1174,7 @@ public:
     }
     static DWORD WINAPI ScanFolder(const std::wstring& dir)
     {
-        CoInitializeEx(NULL, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
+        CoInitializeEx(nullptr, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
         auto scanLnk = THGameGui::singleton().mScanOption[SCAN_OPT_THCRAP];
         std::wstring searchDir = dir + L"\\*";
         WIN32_FIND_DATAW findData;
@@ -1217,7 +1220,7 @@ public:
     {
         auto& gameGui = THGameGui::singleton();
         gameGui.thcrapSetup();
-        CoInitializeEx(NULL, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
+        CoInitializeEx(nullptr, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
 
         for (auto& it : gameGui.mGames) {
             for (auto& gameInst : it.second.instances) {
@@ -1308,49 +1311,49 @@ public:
     }
     void GuiScanFolder()
     {
-        if (GuiButtonAndModalYesNo(XSTR(THPRAC_ABORT), XSTR(THPRAC_SCAN_SCAN_ABORT_TITLE), XSTR(THPRAC_SCAN_SCAN_ABORT_TEXT), 6.0f, XSTR(THPRAC_OK), XSTR(THPRAC_CANCEL))) {
+        if (GuiButtonAndModalYesNo(S(THPRAC_ABORT), S(THPRAC_SCAN_SCAN_ABORT_TITLE), S(THPRAC_SCAN_SCAN_ABORT_TEXT), 6.0f, S(THPRAC_OK), S(THPRAC_CANCEL))) {
             ScanAbort();
             ScanClear();
             mGuiUpdFunc = [&]() { GuiMain(); };
         }
         ImGui::SameLine();
-        GuiCenteredText(XSTR(THPRAC_GAMES_SCAN_FOLDER));
+        GuiCenteredText(S(THPRAC_GAMES_SCAN_FOLDER));
         ImGui::Separator();
 
         if (mScanStatus == 0) {
-            ImGui::TextWrapped("%s", XSTR(THPRAC_SCAN_INSTRUCTION));
+            ImGui::TextWrapped("%s", S(THPRAC_SCAN_INSTRUCTION));
             ImGui::NewLine();
-            ImGui::TextUnformatted(XSTR(THPRAC_SCAN_SCAN_FOR));
-            ImGui::Checkbox(XSTR(THPRAC_SCAN_ORIGINAL), &mScanOption[SCAN_OPT_ORIGINAL]);
-            ImGui::Checkbox(XSTR(THPRAC_SCAN_MODDED), &mScanOption[SCAN_OPT_MODDED]);
-            ImGui::Checkbox(XSTR(THPRAC_SCAN_STEAM), &mScanOption[SCAN_OPT_STEAM]);
+            ImGui::TextUnformatted(S(THPRAC_SCAN_SCAN_FOR));
+            ImGui::Checkbox(S(THPRAC_SCAN_ORIGINAL), &mScanOption[SCAN_OPT_ORIGINAL]);
+            ImGui::Checkbox(S(THPRAC_SCAN_MODDED), &mScanOption[SCAN_OPT_MODDED]);
+            ImGui::Checkbox(S(THPRAC_SCAN_STEAM), &mScanOption[SCAN_OPT_STEAM]);
 
             bool canProceed = !mScanOption[SCAN_OPT_ORIGINAL] && !mScanOption[SCAN_OPT_MODDED] && !mScanOption[SCAN_OPT_THCRAP] && mScanOption[SCAN_OPT_STEAM];
             if (mScanOption[SCAN_OPT_ORIGINAL] || mScanOption[SCAN_OPT_MODDED] || mScanOption[SCAN_OPT_THCRAP]) {
                 ImGui::NewLine();
-                if (ImGui::Button(XSTR(THPRAC_SCAN_SELECT_FOLDER))) {
+                if (ImGui::Button(S(THPRAC_SCAN_SELECT_FOLDER))) {
                     auto path = LauncherWndFolderSelect();
                     if (path != L"") {
                         mScanPath = path;
                     }
                 }
                 if (mScanPath != L"") {
-                    ImGui::TextWrapped(XSTR(THPRAC_SCAN_FOLDER_SELECTED), utf16_to_utf8(mScanPath.c_str()).c_str());
+                    ImGui::TextWrapped(S(THPRAC_SCAN_FOLDER_SELECTED), utf16_to_utf8(mScanPath.c_str()).c_str());
                 } else {
-                    ImGui::TextWrapped("%s", XSTR(THPRAC_SCAN_FOLDER_NOT_SELECTED));
+                    ImGui::TextWrapped("%s", S(THPRAC_SCAN_FOLDER_NOT_SELECTED));
                 }
                 canProceed = mScanPath != L"";
             }
             if (canProceed) {
-                if (GuiCornerButton(XSTR(THPRAC_BEGIN))) {
+                if (GuiCornerButton(S(THPRAC_BEGIN))) {
                     mScanThread.Start();
                     mScanStatus = 1;
                 }
             }
         } else if (mScanStatus == 1) {
             GuiSetPosYRel(0.5f);
-            GuiSetPosXText(XSTR(THPRAC_SCAN_SCANNING));
-            ImGui::TextWrapped("%s", XSTR(THPRAC_SCAN_SCANNING));
+            GuiSetPosXText(S(THPRAC_SCAN_SCANNING));
+            ImGui::TextWrapped("%s", S(THPRAC_SCAN_SCANNING));
             ImGui::SameLine(0.0f, 0.0f);
             ImGui::TextUnformatted(mScanAnm.Get().c_str());
             GuiCenteredText(mScanCurrent[mScanCurrentIdx].c_str());
@@ -1360,8 +1363,8 @@ public:
             }
         } else if (mScanStatus == 2) {
             GuiSetPosYRel(0.5f);
-            GuiCenteredText(XSTR(THPRAC_SCAN_SCAN_FINISHED));
-            if (GuiCornerButton(XSTR(THPRAC_NEXT))) {
+            GuiCenteredText(S(THPRAC_SCAN_SCAN_FINISHED));
+            if (GuiCornerButton(S(THPRAC_NEXT))) {
                 GuiScanCheckMenuSwitch(0);
             }
         }
@@ -1381,25 +1384,25 @@ public:
     void GuiScanSteam()
     {
         if (mSteamMenuStatus == 0) {
-            if (ImGui::Button(XSTR(THPRAC_BACK))) {
+            if (ImGui::Button(S(THPRAC_BACK))) {
                 mGuiUpdFunc = [&]() { GuiMain(); };
             }
             ImGui::SameLine();
-            GuiCenteredText(XSTR(THPRAC_STEAM_MNG));
+            GuiCenteredText(S(THPRAC_STEAM_MNG));
             ImGui::Separator();
 
-            ImGui::TextWrapped("%s", XSTR(THPRAC_STEAM_MNG_DESC));
+            ImGui::TextWrapped("%s", S(THPRAC_STEAM_MNG_DESC));
             ImGui::NewLine();
-            if (ImGui::Button(XSTR(THPRAC_STEAM_MNG_AUTO))) {
+            if (ImGui::Button(S(THPRAC_STEAM_MNG_AUTO))) {
                 mScanOption[SCAN_OPT_STEAM] = true;
                 mScanThread.Start();
                 mScanStatus = 1;
                 mGuiUpdFunc = [&]() { GuiScanFolder(); };
             }
             ImGui::SameLine();
-            ImGui::TextUnformatted(XSTR(THPRAC_STEAM_MNG_OR));
+            ImGui::TextUnformatted(S(THPRAC_STEAM_MNG_OR));
             ImGui::SameLine();
-            if (ImGui::Button(XSTR(THPRAC_STEAM_MNG_MANUAL))) {
+            if (ImGui::Button(S(THPRAC_STEAM_MNG_MANUAL))) {
                 for (auto& games : mSteamGames) {
                     games.clear();
                 }
@@ -1422,14 +1425,14 @@ public:
                 mSteamMenuStatus = 1;
             }
         } else if (mSteamMenuStatus == 1) {
-            if (ImGui::Button(XSTR(THPRAC_BACK))) {
+            if (ImGui::Button(S(THPRAC_BACK))) {
                 mSteamMenuStatus = 0;
             }
             ImGui::SameLine();
-            GuiCenteredText(XSTR(THPRAC_STEAM_MNG_MANUAL_TITLE));
+            GuiCenteredText(S(THPRAC_STEAM_MNG_MANUAL_TITLE));
             ImGui::Separator();
 
-            ImGui::TextWrapped("%s", XSTR(THPRAC_STEAM_MNG_MANUAL_INSTRUCTION));
+            ImGui::TextWrapped("%s", S(THPRAC_STEAM_MNG_MANUAL_INSTRUCTION));
             ImGui::NewLine();
 
             int i = 0;
@@ -1465,14 +1468,14 @@ public:
             }
             ImGui::NewLine();
             ImGui::Indent(ImGui::GetStyle().ItemSpacing.x);
-            GuiGameTypeChkBox(XSTR(THPRAC_GAMES_MAIN_SERIES), 1);
+            GuiGameTypeChkBox(S(THPRAC_GAMES_MAIN_SERIES), 1);
             ImGui::SameLine();
-            GuiGameTypeChkBox(XSTR(THPRAC_GAMES_SPINOFF_STG), 2);
+            GuiGameTypeChkBox(S(THPRAC_GAMES_SPINOFF_STG), 2);
             ImGui::SameLine();
-            GuiGameTypeChkBox(XSTR(THPRAC_GAMES_SPINOFF_OTHERS), 3);
+            GuiGameTypeChkBox(S(THPRAC_GAMES_SPINOFF_OTHERS), 3);
             ImGui::Unindent(ImGui::GetStyle().ItemSpacing.x);
 
-            if (GuiCornerButton(XSTR(THPRAC_APPLY))) {
+            if (GuiCornerButton(S(THPRAC_APPLY))) {
                 for (auto& steamGames : mSteamGames) {
                     for (auto& steamGame : steamGames) {
                         auto it = mGames.find(std::string(steamGame.name));
@@ -1505,11 +1508,11 @@ public:
                 mSteamMenuStatus = 2;
             }
         } else if (mSteamMenuStatus == 2) {
-            GuiCenteredText(XSTR(THPRAC_STEAM_MNG_MANUAL_TITLE));
+            GuiCenteredText(S(THPRAC_STEAM_MNG_MANUAL_TITLE));
             ImGui::Separator();
             GuiSetPosYRel(0.5f);
-            GuiCenteredText(XSTR(THPRAC_STEAM_MNG_MANUAL_COMPLETE));
-             if (GuiCornerButton(XSTR(THPRAC_FINISH))) {
+            GuiCenteredText(S(THPRAC_STEAM_MNG_MANUAL_COMPLETE));
+             if (GuiCornerButton(S(THPRAC_FINISH))) {
                 mGuiUpdFunc = [&]() { GuiMain(); };
             }
         }
@@ -1642,7 +1645,7 @@ public:
                 MODULEENTRY32W moduleEntry;
                 procEntry.dwSize = sizeof(PROCESSENTRY32W);
                 moduleEntry.dwSize = sizeof(MODULEENTRY32W);
-                HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+                HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
                 if (Process32FirstW(snapshot, &procEntry)) {
                     do {
                         bool test = isOmni ? CheckProcessOmni(procEntry) : CheckProcess(procEntry.th32ProcessID, exePath);
@@ -1670,12 +1673,12 @@ public:
         if (CheckDLLFunction(vpatchPath.c_str(), "_Initialize@4")) {
             auto vpNameLength = (vpatchPath.size() + 1) * sizeof(wchar_t);
             auto pLoadLibrary = ::LoadLibraryW;
-            auto remoteStr = VirtualAllocEx(hProcess, NULL, vpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+            auto remoteStr = VirtualAllocEx(hProcess, nullptr, vpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
             if (!remoteStr)
                 return 0;
             defer(VirtualFreeEx(hProcess, remoteStr, 0, MEM_RELEASE));
-            WriteProcessMemory(hProcess, remoteStr, vpatchPath.data(), vpNameLength, NULL);
-            auto t = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, remoteStr, 0, NULL);
+            WriteProcessMemory(hProcess, remoteStr, vpatchPath.data(), vpNameLength, nullptr);
+            auto t = CreateRemoteThread(hProcess, nullptr, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, remoteStr, 0, nullptr);
             if (!t)
                 return 0;
             WaitForSingleObject(t, INFINITE);
@@ -1718,7 +1721,7 @@ public:
         PROCESS_INFORMATION proc_info;
         memset(&startup_info, 0, sizeof(STARTUPINFOW));
         startup_info.cb = sizeof(STARTUPINFOW);
-        CreateProcessW(currentInstPath.c_str(), NULL, NULL, NULL, NULL, CREATE_SUSPENDED, NULL, currentInstDir.c_str(), &startup_info, &proc_info);
+        CreateProcessW(currentInstPath.c_str(), nullptr, nullptr, nullptr, false, CREATE_SUSPENDED, nullptr, currentInstDir.c_str(), &startup_info, &proc_info);
 
         if (currentInst.useVpatch) {
             auto exeName = GetNameFromFullPath(currentInstPath);
@@ -1776,9 +1779,9 @@ public:
             if (currentCatagory == CAT_MAIN || currentCatagory == CAT_SPINOFF_STG) {
                 if (useReflectiveLaunch) {
                     if (currentGame->signature.vPatchStr && currentInst.useVpatch) {
-                        executeResult = ShellExecuteW(NULL, L"open", (currentInstDir + L"vpatch.exe").c_str(), NULL, currentInstDir.c_str(), SW_SHOW);
+                        executeResult = ShellExecuteW(nullptr, L"open", (currentInstDir + L"vpatch.exe").c_str(), nullptr, currentInstDir.c_str(), SW_SHOW);
                     } else {
-                        executeResult = ShellExecuteW(NULL, L"open", currentInstPath.c_str(), NULL, currentInstDir.c_str(), SW_SHOW);
+                        executeResult = ShellExecuteW(nullptr, L"open", currentInstPath.c_str(), nullptr, currentInstDir.c_str(), SW_SHOW);
                     }
                     currentInstExePath = currentInstPath.c_str();
                     currentInstExePath = GetUnifiedPath(currentInstExePath);
@@ -1790,11 +1793,11 @@ public:
                     }
                 }
             } else {
-                executeResult = ShellExecuteW(NULL, L"open", currentInstPath.c_str(), NULL, currentInstDir.c_str(), SW_SHOW);
+                executeResult = ShellExecuteW(nullptr, L"open", currentInstPath.c_str(), nullptr, currentInstDir.c_str(), SW_SHOW);
             }
             break;
         case TYPE_NYASAMA:
-            executeResult = ShellExecuteW(NULL, L"open", currentInstPath.c_str(), NULL, currentInstDir.c_str(), SW_SHOW);
+            executeResult = ShellExecuteW(nullptr, L"open", currentInstPath.c_str(), nullptr, currentInstDir.c_str(), SW_SHOW);
             currentInstExePath = currentInstDir + utf8_to_utf16(currentGame->signature.idStr) + L".exe";
             currentInstExePath = GetUnifiedPath(currentInstExePath);
             break;
@@ -1808,14 +1811,14 @@ public:
             }
             std::wstring steamURL = L"steam://rungameid/";
             steamURL += currentGame->signature.steamId;
-            ShellExecuteW(NULL, L"open", L"steam://open/games", NULL, NULL, SW_SHOW);
-            ShellExecuteW(NULL, L"open", steamURL.c_str(), NULL, NULL, SW_SHOW);
+            ShellExecuteW(nullptr, L"open", L"steam://open/games", nullptr, nullptr, SW_SHOW);
+            ShellExecuteW(nullptr, L"open", steamURL.c_str(), nullptr, nullptr, SW_SHOW);
             currentInstExePath = GetUnifiedPath(currentInstExePath);
             executeResult = (HINSTANCE)64;
         }
             break;
         default:
-            executeResult = ShellExecuteW(NULL, L"open", currentInstPath.c_str(), NULL, currentInstDir.c_str(), SW_SHOW);
+            executeResult = ShellExecuteW(nullptr, L"open", currentInstPath.c_str(), nullptr, currentInstDir.c_str(), SW_SHOW);
             break;
         }
 
@@ -1846,7 +1849,7 @@ public:
         auto attr = GetFileAttributesW(path.c_str());
         auto dir = GetDirFromFullPath(path);
         if (attr != INVALID_FILE_ATTRIBUTES && !(attr & FILE_ATTRIBUTE_DIRECTORY)) {
-            if (ShellExecuteW(NULL, L"open", path.c_str(), NULL, dir.c_str(), SW_SHOW) > (HINSTANCE)32) {
+            if (ShellExecuteW(nullptr, L"open", path.c_str(), nullptr, dir.c_str(), SW_SHOW) > (HINSTANCE)32) {
                 return true;
             }
         }
@@ -1932,11 +1935,11 @@ public:
             GuiSetPosYRel(0.5f);
             if (!mLaunchFailed) {
                 GuiSetPosYRel(0.5f);
-                GuiSetPosXText(XSTR(THPRAC_GAMES_LAUNCHING));
-                ImGui::TextWrapped("%s", XSTR(THPRAC_GAMES_LAUNCHING));
+                GuiSetPosXText(S(THPRAC_GAMES_LAUNCHING));
+                ImGui::TextWrapped("%s", S(THPRAC_GAMES_LAUNCHING));
                 ImGui::SameLine(0.0f, 0.0f);
                 ImGui::TextUnformatted(mLaunchAnm.Get().c_str());
-                if (GuiButtonTxtCentered(XSTR(THPRAC_CANCEL), 0.8f)) {
+                if (GuiButtonTxtCentered(S(THPRAC_CANCEL), 0.8f)) {
                     mLaunchAbortInd = true;
                     mLaunchThread.Wait();
                     mLaunchThread.Stop();
@@ -1945,8 +1948,8 @@ public:
                     ImGui::CloseCurrentPopup();
                 }
             } else {
-                GuiCenteredText(XSTR(THPRAC_GAMES_LAUNCH_ERR));
-                if (GuiButtonTxtCentered(XSTR(THPRAC_CLOSE), 0.8f)) {
+                GuiCenteredText(S(THPRAC_GAMES_LAUNCH_ERR));
+                if (GuiButtonTxtCentered(S(THPRAC_CLOSE), 0.8f)) {
                     mLaunchThread.Stop();
                     mLaunchAnm.Reset();
                     ImGui::CloseCurrentPopup();
@@ -1971,7 +1974,7 @@ public:
         float offset[] = {
             0.0f, 10.0f, 15.0f
         };
-        ImGui::TextUnformatted(XSTR(THPRAC_GAMES_SELECT_VER));
+        ImGui::TextUnformatted(S(THPRAC_GAMES_SELECT_VER));
         ImGui::BeginChild("##@_game_version", ImVec2(0, ImGui::GetWindowHeight() * 0.35f), true);
         if (mNewGameWnd) {
             mNewGameWnd = false;
@@ -2008,7 +2011,7 @@ public:
             ImGui::SameLine(0.0f, 0.0f);
             GuiColumnText(game.name.c_str());
             ImGui::NextColumn();
-            GuiColumnText(XSTR(TH_TYPE_SELECT[game.type]));
+            GuiColumnText(S(TH_TYPE_SELECT[game.type]));
             ImGui::NextColumn();
             GuiColumnText(game.path.c_str());
             ImGui::NextColumn();
@@ -2020,12 +2023,12 @@ public:
         ImGui::EndChild();
         auto& currentInst = currentGame[currentInstIdx];
 
-        if (GuiButtonModal(XSTR(THPRAC_GAMES_RENAME), XSTR(THPRAC_GAMES_RENAME_MODAL))) {
+        if (GuiButtonModal(S(THPRAC_GAMES_RENAME), S(THPRAC_GAMES_RENAME_MODAL))) {
             strcpy_s(mRename, currentInst.name.c_str());
         }
-        if (GuiModal(XSTR(THPRAC_GAMES_RENAME_MODAL))) {
+        if (GuiModal(S(THPRAC_GAMES_RENAME_MODAL))) {
             ImGui::InputText("##@__rename_input", mRename, sizeof(mRename));
-            if (GuiButtonYesNo(XSTR(THPRAC_OK), XSTR(THPRAC_CANCEL))) {
+            if (GuiButtonYesNo(S(THPRAC_OK), S(THPRAC_CANCEL))) {
                 currentInst.name = mRename;
                 WriteGameCfg();
             }
@@ -2033,7 +2036,7 @@ public:
         }
 
         ImGui::SameLine();
-        if (GuiButtonAndModalYesNo(XSTR(THPRAC_GAMES_DELETE), XSTR(THPRAC_GAMES_DELETE_MODAL), XSTR(THPRAC_GAMES_DELETE_CONFIRM), 6.0f, XSTR(THPRAC_YES), XSTR(THPRAC_NO))) {
+        if (GuiButtonAndModalYesNo(S(THPRAC_GAMES_DELETE), S(THPRAC_GAMES_DELETE_MODAL), S(THPRAC_GAMES_DELETE_CONFIRM), 6.0f, S(THPRAC_YES), S(THPRAC_NO))) {
             currentGame.erase(currentGame.begin() + currentInstIdx);
             for (; currentInstIdx > 0 && currentInstIdx >= (int)currentGame.size(); currentInstIdx--)
                 ;
@@ -2041,30 +2044,30 @@ public:
         }
 
         ImGui::SameLine();
-        if (ImGui::Button(XSTR(THPRAC_GAMES_OPEN_FOLDER))) {
+        if (ImGui::Button(S(THPRAC_GAMES_OPEN_FOLDER))) {
             auto folderPath = GetDirFromFullPath(currentInst.path);
             if (folderPath != currentInst.path) {
-                ShellExecuteW(NULL, L"explore", utf8_to_utf16(folderPath.c_str()).c_str(), NULL, NULL, SW_SHOW);
+                ShellExecuteW(nullptr, L"explore", utf8_to_utf16(folderPath.c_str()).c_str(), nullptr, nullptr, SW_SHOW);
             }
         }
 
         ImGui::SameLine();
         if (mCurrentGame->signature.appdataStr) {
-            if (ImGui::Button(XSTR(THPRAC_GAMES_OPEN_APPDATA))) {
+            if (ImGui::Button(S(THPRAC_GAMES_OPEN_APPDATA))) {
                 std::wstring dataFolder;
                 wchar_t appdata[MAX_PATH];
                 GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
                 dataFolder = appdata;
                 dataFolder += L"\\ShanghaiAlice\\";
                 dataFolder += utf8_to_utf16(mCurrentGame->signature.idStr);
-                ShellExecuteW(NULL, L"explore", dataFolder.c_str(), NULL, NULL, SW_SHOW);
+                ShellExecuteW(nullptr, L"explore", dataFolder.c_str(), nullptr, nullptr, SW_SHOW);
             }
         }
 
         ImGui::SameLine();
         auto cat = mCurrentGame->signature.catagory;
         if (cat == CAT_MAIN || cat == CAT_SPINOFF_STG) {
-            if (ImGui::Button(XSTR(THPRAC_GAMES_LAUNCH_CUSTOM))) {
+            if (ImGui::Button(S(THPRAC_GAMES_LAUNCH_CUSTOM))) {
                 if (!LaunchCustom(currentInst, mCurrentGame->signature.idStr)) {
                     mCustomErrTxtTime = 2.0f;
                 }
@@ -2072,7 +2075,7 @@ public:
             if (mCustomErrTxtTime > 0.0f) {
                 mCustomErrTxtTime -= ImGui::GetIO().DeltaTime;
                 ImGui::SameLine();
-                ImGui::TextUnformatted(XSTR(THPRAC_GAMES_LAUNCH_CUSTOM_ERR));
+                ImGui::TextUnformatted(S(THPRAC_GAMES_LAUNCH_CUSTOM_ERR));
             }
         }
 
@@ -2081,17 +2084,17 @@ public:
             switch (currentInst.type) {
             case TYPE_ORIGINAL:
                 if (mCurrentGame->signature.vPatchStr) {
-                    ImGui::Checkbox(XSTR(THPRAC_GAMES_USE_VPATCH), &currentInst.useVpatch);
+                    ImGui::Checkbox(S(THPRAC_GAMES_USE_VPATCH), &currentInst.useVpatch);
                     ImGui::SameLine();
                 }
-                if (ImGui::Checkbox(XSTR(THPRAC_GAMES_APPLY_THPRAC), &currentInst.useTHPrac)) {
+                if (ImGui::Checkbox(S(THPRAC_GAMES_APPLY_THPRAC), &currentInst.useTHPrac)) {
                     WriteGameCfg();
                 }
                 break;
             case TYPE_THCRAP:
             case TYPE_STEAM:
             case TYPE_NYASAMA:
-                if (ImGui::Checkbox(XSTR(THPRAC_GAMES_APPLY_THPRAC), &currentInst.useTHPrac)) {
+                if (ImGui::Checkbox(S(THPRAC_GAMES_APPLY_THPRAC), &currentInst.useTHPrac)) {
                     WriteGameCfg();
                 }
                 break;
@@ -2100,22 +2103,22 @@ public:
             case TYPE_SCHINESE:
             case TYPE_TCHINESE:
                 if (mCurrentGame->signature.vPatchStr) {
-                    ImGui::Checkbox(XSTR(THPRAC_GAMES_USE_VPATCH), &currentInst.useVpatch);
+                    ImGui::Checkbox(S(THPRAC_GAMES_USE_VPATCH), &currentInst.useVpatch);
                     ImGui::SameLine();
                 }
-                if (ImGui::Checkbox(XSTR(THPRAC_GAMES_FORCE_THPRAC), &currentInst.useTHPrac)) {
+                if (ImGui::Checkbox(S(THPRAC_GAMES_FORCE_THPRAC), &currentInst.useTHPrac)) {
                     if (currentInst.useTHPrac) {
                         currentInst.useTHPrac = false;
-                        ImGui::OpenPopup(XSTR(THPRAC_GAMES_FORCE_THPRAC_MODAL));
+                        ImGui::OpenPopup(S(THPRAC_GAMES_FORCE_THPRAC_MODAL));
                     } else {
                         WriteGameCfg();
                     }
                 }
-                if (GuiModal(XSTR(THPRAC_GAMES_FORCE_THPRAC_MODAL))) {
+                if (GuiModal(S(THPRAC_GAMES_FORCE_THPRAC_MODAL))) {
                     ImGui::PushTextWrapPos(ImGui::GetIO().DisplaySize.x * 0.9f);
-                    ImGui::TextWrapped("%s", XSTR(THPRAC_GAMES_FORCE_THPRAC_CONFIRM));
+                    ImGui::TextWrapped("%s", S(THPRAC_GAMES_FORCE_THPRAC_CONFIRM));
                     ImGui::PopTextWrapPos();
-                    if (GuiButtonYesNo(XSTR(THPRAC_YES), XSTR(THPRAC_NO))) {
+                    if (GuiButtonYesNo(S(THPRAC_YES), S(THPRAC_NO))) {
                         currentInst.useTHPrac = true;
                         WriteGameCfg();
                     }
@@ -2129,7 +2132,7 @@ public:
         }
 
         bool setDefaultLaunch = mCurrentGame->defaultLaunch == currentInstIdx;
-        if (ImGui::Checkbox(XSTR(THPRAC_GAMES_DEFAULT_LAUNCH), &setDefaultLaunch)) {
+        if (ImGui::Checkbox(S(THPRAC_GAMES_DEFAULT_LAUNCH), &setDefaultLaunch)) {
             if (setDefaultLaunch) {
                 mCurrentGame->defaultLaunch = currentInstIdx;
             } else  {
@@ -2138,7 +2141,7 @@ public:
             WriteGameCfg();
         }
         ImGui::SameLine();
-        GuiHelpMarker(XSTR(THPRAC_GAMES_DEFAULT_LAUNCH_DESC));
+        GuiHelpMarker(S(THPRAC_GAMES_DEFAULT_LAUNCH_DESC));
 
         if (sourceIdx != -1 && destIdx != -1) {
             auto gameTmp = currentGame[sourceIdx];
@@ -2156,7 +2159,7 @@ public:
             WriteGameCfg();
         }
 
-        if (GuiButtonRelCentered(XSTR(THPRAC_GAMES_LAUNCH_GAME), 0.85f, ImVec2(1.0f, 0.1f))) {
+        if (GuiButtonRelCentered(S(THPRAC_GAMES_LAUNCH_GAME), 0.85f, ImVec2(1.0f, 0.1f))) {
             GameLaunchModalOpen();
         }
 
@@ -2164,16 +2167,16 @@ public:
     }
     void GuiGame()
     {
-        if (ImGui::Button(XSTR(THPRAC_BACK))) {
+        if (ImGui::Button(S(THPRAC_BACK))) {
             mGuiUpdFunc = [&]() { GuiMain(); };
         }
         ImGui::SameLine();
-        GuiCenteredText(XSTR(mCurrentGame->signature.refStr));
+        GuiCenteredText(S(mCurrentGame->signature.refStr));
         ImGui::Separator();
 
         if (!mCurrentGame || !mCurrentGame->instances.size()) {
             GuiSetPosYRel(0.5f);
-            GuiCenteredText(XSTR(THPRAC_GAMES_MISSING));
+            GuiCenteredText(S(THPRAC_GAMES_MISSING));
         } else {
             GameVersionTable();
             ImGui::NewLine();
@@ -2192,7 +2195,7 @@ public:
             }
         }
         if (type == 1) {
-            if (ImGui::Selectable(XSTR(THPRAC_GAMES_DETAILS_PAGE))) {
+            if (ImGui::Selectable(S(THPRAC_GAMES_DETAILS_PAGE))) {
                 if (result) {
                     *result = 1;
                 }
@@ -2200,16 +2203,16 @@ public:
             ImGui::Separator();
         }
 
-        if (ImGui::Selectable(XSTR(THPRAC_GAMES_SCAN_FOLDER))) {
+        if (ImGui::Selectable(S(THPRAC_GAMES_SCAN_FOLDER))) {
             ScanClear();
             mGuiUpdFunc = [&]() { GuiScanFolder(); };
         }
-        if (ImGui::Selectable(XSTR(THPRAC_STEAM_MNG_BUTTON))) {
+        if (ImGui::Selectable(S(THPRAC_STEAM_MNG_BUTTON))) {
             ScanClear();
             mGuiUpdFunc = [&]() { GuiScanSteam(); };
         }
         ImGui::Separator();
-        if (ImGui::Selectable(XSTR(THPRAC_GAMES_RESCAN))) {
+        if (ImGui::Selectable(S(THPRAC_GAMES_RESCAN))) {
             mNeedRescan = true;
         }
         ImGui::EndPopup();
@@ -2252,7 +2255,7 @@ public:
                 }
 
                 auto disabled = !game.instances.size();
-                if (SelectableWrapped(XSTR(game.signature.refStr), disabled, mSelectedGameTmp == &game)) {
+                if (SelectableWrapped(S(game.signature.refStr), disabled, mSelectedGameTmp == &game)) {
                     bool autoDefaultLaunch = false;
                     LauncherSettingGet("auto_default_launch", autoDefaultLaunch);
                     auto autoLaunch = game.defaultLaunch;
@@ -2281,11 +2284,11 @@ public:
                         mNewGameWnd = true;
                         mGuiUpdFunc = [&]() { GuiGame(); };
                     }
-                } else if (game.signature.steamId && ImGui::BeginPopupContextItem(NULL, ImGuiPopupFlags_MouseButtonLeft)) {
-                    if (ImGui::Selectable(XSTR(THPRAC_GOTO_STEAM_PAGE))) {
+                } else if (game.signature.steamId && ImGui::BeginPopupContextItem(nullptr, ImGuiPopupFlags_MouseButtonLeft)) {
+                    if (ImGui::Selectable(S(THPRAC_GOTO_STEAM_PAGE))) {
                         std::wstring steamURL { L"https://store.steampowered.com/app/" };
                         steamURL += game.signature.steamId;
-                        ShellExecuteW(NULL, L"open", steamURL.c_str(), NULL, NULL, SW_SHOW);
+                        ShellExecuteW(nullptr, L"open", steamURL.c_str(), nullptr, nullptr, SW_SHOW);
                     }
                     ImGui::EndPopup();
                 }
@@ -2305,11 +2308,11 @@ public:
 
         GuiMainCtxMenu(0);
 
-        GameTable(XSTR(THPRAC_GAMES_MAIN_SERIES), CAT_MAIN);
+        GameTable(S(THPRAC_GAMES_MAIN_SERIES), CAT_MAIN);
         ImGui::NewLine();
-        GameTable(XSTR(THPRAC_GAMES_SPINOFF_STG), CAT_SPINOFF_STG);
+        GameTable(S(THPRAC_GAMES_SPINOFF_STG), CAT_SPINOFF_STG);
         ImGui::NewLine();
-        GameTable(XSTR(THPRAC_GAMES_SPINOFF_OTHERS), CAT_SPINOFF_OTHERS);
+        GameTable(S(THPRAC_GAMES_SPINOFF_OTHERS), CAT_SPINOFF_OTHERS);
 
         if (mNeedRescan) {
             ImGui::OpenPopup("rescan##@__rescan");
@@ -2328,8 +2331,8 @@ public:
             }
             mRescanModalTimeout -= ImGui::GetIO().DeltaTime;
             GuiSetPosYRel(0.5f);
-            GuiSetPosXText(XSTR(THPRAC_GAMES_RESCANNING));
-            ImGui::TextWrapped("%s", XSTR(THPRAC_GAMES_RESCANNING));
+            GuiSetPosXText(S(THPRAC_GAMES_RESCANNING));
+            ImGui::TextWrapped("%s", S(THPRAC_GAMES_RESCANNING));
             ImGui::SameLine(0.0f, 0.0f);
             ImGui::TextUnformatted(mScanAnm.Get().c_str());
             GuiCenteredText(mScanCurrent[mScanCurrentIdx].c_str());

@@ -27,8 +27,8 @@ static bool __thprac_lc_canMove = false;
 static HANDLE __thprac_lc_mutex;
 static MSG __thprac_lc_msg;
 static WNDCLASSEX __thprac_lc_wc;
-static LPDIRECT3D9 g_pD3D = NULL;
-static LPDIRECT3DDEVICE9 g_pd3dDevice = NULL;
+static LPDIRECT3D9 g_pD3D = nullptr;
+static LPDIRECT3DDEVICE9 g_pd3dDevice = nullptr;
 static D3DPRESENT_PARAMETERS g_d3dpp = {};
 
 // D3D Functions
@@ -40,7 +40,7 @@ bool D3DCreateDevice(HWND hWnd, unsigned int width, unsigned int height)
     if (!d3d9Lib)
         return false;
     decltype(Direct3DCreate9)* d3dCreate9 = (decltype(Direct3DCreate9)*)GetProcAddress(d3d9Lib, "Direct3DCreate9");
-    if (!d3dCreate9 || (g_pD3D = d3dCreate9(D3D_SDK_VERSION)) == NULL)
+    if (!d3dCreate9 || (g_pD3D = d3dCreate9(D3D_SDK_VERSION)) == nullptr)
         return false;
 
     // Create the D3DDevice
@@ -63,11 +63,11 @@ void D3DCleanupDevice()
 {
     if (g_pd3dDevice) {
         g_pd3dDevice->Release();
-        g_pd3dDevice = NULL;
+        g_pd3dDevice = nullptr;
     }
     if (g_pD3D) {
         g_pD3D->Release();
-        g_pD3D = NULL;
+        g_pD3D = nullptr;
     }
 }
 
@@ -89,7 +89,7 @@ void ResizeWindow(HWND hwnd, ImVec2& wndPos, ImVec2& wndSize)
     if ((LONG)wndSize.x != wndRect.right - wndRect.left || (LONG)wndSize.y != wndRect.bottom - wndRect.top) {
         RECT rect = { 0, 0, (LONG)wndSize.x, (LONG)wndSize.y };
         ::AdjustWindowRectEx(&rect, WS_POPUP, FALSE, WS_EX_APPWINDOW); // Client to Screen
-        ::SetWindowPos(hwnd, NULL,
+        ::SetWindowPos(hwnd, nullptr,
             wndRect.left + (LONG)wndPos.x, wndRect.top + (LONG)wndPos.y,
             rect.right - rect.left, rect.bottom - rect.top,
             SWP_NOZORDER | SWP_NOACTIVATE);
@@ -134,7 +134,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return ::DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-bool WndMsgUpdate(HWND hWnd = NULL)
+bool WndMsgUpdate(HWND hWnd = nullptr)
 {
     MSG msg;
     while (::PeekMessage(&msg, hWnd, 0U, 0U, PM_REMOVE)) {
@@ -166,8 +166,8 @@ int LauncherWndInit(unsigned int width, unsigned int height, unsigned int maxWid
     if (__thprac_lc_hasInited)
         return 0;
 
-    __thprac_lc_mutex = CreateMutex(NULL, TRUE, L"thprac launcher mutex");
-    if (__thprac_lc_mutex == NULL || GetLastError() == ERROR_ALREADY_EXISTS) {
+    __thprac_lc_mutex = CreateMutex(nullptr, TRUE, L"thprac launcher mutex");
+    if (__thprac_lc_mutex == nullptr || GetLastError() == ERROR_ALREADY_EXISTS) {
         for (int i = 0; i < 3; ++i) {
             auto tmpTitle = utf8_to_utf16(th_glossary_str[i][THPRAC_LAUNCHER]);
             HWND existingApp = FindWindowW(0, tmpTitle.c_str());
@@ -180,17 +180,17 @@ int LauncherWndInit(unsigned int width, unsigned int height, unsigned int maxWid
     }
 
     // Create application window
-    auto windowTitle = utf8_to_utf16(XSTR(THPRAC_LAUNCHER));
-    auto icon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
-    __thprac_lc_wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), icon, NULL, NULL, NULL, _T("thprac launcher window"), NULL };
+    auto windowTitle = utf8_to_utf16(Gui::LocaleGetStr(THPRAC_LAUNCHER));
+    auto icon = LoadIcon(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDI_ICON1));
+    __thprac_lc_wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), icon, nullptr, nullptr, nullptr, _T("thprac launcher window"), nullptr };
     ::RegisterClassEx(&__thprac_lc_wc);
     __thprac_lc_hwnd = ::CreateWindow(__thprac_lc_wc.lpszClassName, windowTitle.c_str(),
         WS_POPUP | WS_SYSMENU | WS_MINIMIZEBOX, 0, 0, width, height,
-        NULL, NULL, __thprac_lc_wc.hInstance, NULL);
+        nullptr, nullptr, __thprac_lc_wc.hInstance, nullptr);
 
     // DPI handling
     DEVMODE devMod;
-    EnumDisplaySettingsW(NULL, ENUM_CURRENT_SETTINGS, &devMod);
+    EnumDisplaySettingsW(nullptr, ENUM_CURRENT_SETTINGS, &devMod);
     auto displayX = devMod.dmPelsWidth;
     auto displayY = devMod.dmPelsHeight;
     if (auto shcore = GetModuleHandleW(L"shcore.dll")) {
@@ -277,7 +277,7 @@ bool LauncherWndNewFrame()
         return false;
 
     while (IsIconic(__thprac_lc_hwnd)) {
-        HRESULT result = g_pd3dDevice->Present(NULL, NULL, NULL, NULL);
+        HRESULT result = g_pd3dDevice->Present(nullptr, nullptr, nullptr, nullptr);
         // Handle loss of D3D9 device
         if (result == D3DERR_DEVICELOST && g_pd3dDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
             D3DResetDevice();
@@ -310,7 +310,7 @@ bool LauncherWndEndFrame(ImVec2& wndPos, ImVec2& wndSize, bool canMove)
         moved = true;
         RECT rect = { 0, 0, (LONG)wndSize.x, (LONG)wndSize.y };
         ::AdjustWindowRectEx(&rect, WS_POPUP, FALSE, WS_EX_APPWINDOW); // Client to Screen
-        ::SetWindowPos(__thprac_lc_hwnd, NULL,
+        ::SetWindowPos(__thprac_lc_hwnd, nullptr,
             wndRect.left + (LONG)wndPos.x, wndRect.top + (LONG)wndPos.y,
             rect.right - rect.left, rect.bottom - rect.top,
             SWP_NOZORDER | SWP_NOACTIVATE);
@@ -330,7 +330,7 @@ bool LauncherWndEndFrame(ImVec2& wndPos, ImVec2& wndSize, bool canMove)
     D3DCOLOR clear_col_dx = D3DCOLOR_RGBA(
         (int)(clear_color.x * 255.0f), (int)(clear_color.y * 255.0f),
         (int)(clear_color.z * 255.0f), (int)(clear_color.w * 255.0f));
-    g_pd3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, clear_col_dx, 1.0f, 0);
+    g_pd3dDevice->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, clear_col_dx, 1.0f, 0);
 
     if (g_pd3dDevice->BeginScene() >= 0) {
         ImGui::Render();
@@ -338,7 +338,7 @@ bool LauncherWndEndFrame(ImVec2& wndPos, ImVec2& wndSize, bool canMove)
         g_pd3dDevice->EndScene();
     }
 
-    HRESULT result = g_pd3dDevice->Present(&renderRect, NULL, NULL, NULL);
+    HRESULT result = g_pd3dDevice->Present(&renderRect, nullptr, nullptr, nullptr);
     // Handle loss of D3D9 device
     if (result == D3DERR_DEVICELOST && g_pd3dDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
         D3DResetDevice();
@@ -424,7 +424,7 @@ struct ComRAII {
     T& operator*() const { return *p; }
 
     ComRAII()
-        : p(NULL)
+        : p(nullptr)
     {
     }
     explicit ComRAII(T* p)
@@ -437,7 +437,7 @@ struct ComRAII {
     {
         if (p) {
             p->Release();
-            p = NULL;
+            p = nullptr;
         }
     }
 };
@@ -454,7 +454,7 @@ static int SelectFolderVista(HWND owner, PIDLIST_ABSOLUTE initial_path, PIDLIST_
         return -1;
 
     ComRAII<IFileDialog> pfd;
-    if(FAILED(CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd))))
+    if(FAILED(CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd))))
         return -1;
     if (!pfd)
         return -1;
@@ -499,17 +499,17 @@ static int SelectFolderXP(HWND owner, PIDLIST_ABSOLUTE initial_path, PIDLIST_ABS
 }
 
 std::wstring LauncherWndFolderSelect(const wchar_t* title) {
-    if (FAILED(CoInitialize(NULL)))
+    if (FAILED(CoInitialize(nullptr)))
         return L"";
     defer(CoUninitialize());
 
-    PIDLIST_ABSOLUTE initial_path = NULL;
+    PIDLIST_ABSOLUTE initial_path = nullptr;
     wchar_t path[MAX_PATH] = {};
 
     GetCurrentDirectoryW(MAX_PATH, path);
-    SHParseDisplayName(path, NULL, &initial_path, 0, NULL);
+    SHParseDisplayName(path, nullptr, &initial_path, 0, nullptr);
 
-    PIDLIST_ABSOLUTE pidl = NULL;
+    PIDLIST_ABSOLUTE pidl = nullptr;
     if (-1 == SelectFolderVista(__thprac_lc_hwnd, initial_path, pidl, title)) {
         SelectFolderXP(__thprac_lc_hwnd, initial_path, pidl, title);
     }

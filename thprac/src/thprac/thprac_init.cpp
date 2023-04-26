@@ -17,7 +17,7 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 namespace THPrac {
 void RemoteInit()
 {
-    if (((int)&__ImageBase) != ((int)GetModuleHandleW(NULL))) {
+    if (((int)&__ImageBase) != ((int)GetModuleHandleW(nullptr))) {
         ExeSig exeSig;
         if (GetExeInfoEx((size_t)GetCurrentProcess(), exeSig)) {
             for (auto& gameDef : gGameDefs) {
