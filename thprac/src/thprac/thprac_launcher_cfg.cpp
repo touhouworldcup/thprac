@@ -25,7 +25,6 @@
 #include <shlwapi.h>
 #pragma comment(lib, "Shlwapi.lib")
 
-constexpr auto S = THPrac::Gui::LocaleGetStr;
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 

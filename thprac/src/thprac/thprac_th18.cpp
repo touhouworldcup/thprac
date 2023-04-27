@@ -4,7 +4,6 @@
 #include <metrohash128.h>
 #include "..\MinHook\src\buffer.h"
 
-constexpr auto S = THPrac::Gui::LocaleGetStr;
 
 namespace THPrac {
 namespace TH18 {

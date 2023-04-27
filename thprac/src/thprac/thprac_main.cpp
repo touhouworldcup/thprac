@@ -15,8 +15,7 @@
 
 #pragma comment(lib, "psapi.lib")
 
-constexpr auto S = THPrac::Gui::LocaleGetStr;
-
+ 
 namespace THPrac {
 enum thprac_prompt_t {
     PR_FAILED,

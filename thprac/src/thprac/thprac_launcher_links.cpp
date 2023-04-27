@@ -15,7 +15,6 @@
 #include <string>
 #include <vector>
 
-constexpr auto S = THPrac::Gui::LocaleGetStr;
 
 namespace THPrac {
 

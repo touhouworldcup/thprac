@@ -1,7 +1,6 @@
 ﻿#include "thprac_utils.h"
 #include "../3rdParties/d3d8/include/d3d8.h"
 
-constexpr auto S = THPrac::Gui::LocaleGetStr;
 
 namespace THPrac {
 

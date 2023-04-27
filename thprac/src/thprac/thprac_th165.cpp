@@ -1,6 +1,5 @@
 ﻿#include "thprac_utils.h"
 
-constexpr auto S = THPrac::Gui::LocaleGetStr;
 
 namespace THPrac {
 namespace TH165 {

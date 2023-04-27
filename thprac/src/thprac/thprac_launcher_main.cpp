@@ -13,7 +13,6 @@
 #include <cstdio>
 #include <sstream>
 
-constexpr auto S = THPrac::Gui::LocaleGetStr;
 
 namespace THPrac {
 const char* gTabToOpen = nullptr;

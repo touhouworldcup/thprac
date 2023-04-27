@@ -21,7 +21,6 @@
 #include <vector>
 #include <unordered_map>
 
-constexpr auto S = THPrac::Gui::LocaleGetStr;
 
 namespace THPrac {
 inline bool HashCompare(uint32_t hash1[4], uint32_t hash2[4])

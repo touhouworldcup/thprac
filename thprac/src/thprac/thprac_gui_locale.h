@@ -12,13 +12,18 @@ namespace Gui {
 
     void LocaleSet(locale_t locale);
     void LocaleAutoSet();
-    locale_t LocaleGet();
-    inline const char** LocaleGetCurrentGlossary() {
+    extern locale_t __glocale_current;
+    __forceinline locale_t LocaleGet()
+    {
+        return __glocale_current;
+    }
+    __forceinline const char** LocaleGetCurrentGlossary() {
         return th_glossary_str[LocaleGet()];
     };
-    inline const char* LocaleGetStr(th_glossary_t name) {
+    __forceinline const char* LocaleGetStr(th_glossary_t name) {
         return LocaleGetCurrentGlossary()[name];
     };
+
     void LocaleRotate();
     bool LocaleInitFromCfg();
 
@@ -32,5 +37,10 @@ namespace Gui {
 #define XCBA(stage, type) th_sections_cba[stage][type]
 #define XSSS(rank) (th_sections_str[::THPrac::Gui::LocaleGet()][rank])
 
+}
+
+__forceinline const char* S(th_glossary_t name)
+{
+    return Gui::LocaleGetStr(name);
 }
 }

@@ -145,10 +145,6 @@ static ImWchar baseUnicodeRanges[] =
             break;
         }
     }
-    locale_t LocaleGet()
-    {
-        return __glocale_current;
-    }
     inline const char** LocaleGetCurrentGlossary();
     inline const char* LocaleGetStr(th_glossary_t name);
     void LocaleRotate()
