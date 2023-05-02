@@ -1,5 +1,4 @@
-﻿#include "thprac_utils.h"
-#include "thprac_utils.h"
+﻿#include "common.h"
 #include "thprac_game_data.h"
 #include <metrohash128.h>
 #include "..\MinHook\src\buffer.h"

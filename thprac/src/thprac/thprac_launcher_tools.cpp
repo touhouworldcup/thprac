@@ -4,7 +4,7 @@
 #include "thprac_launcher_main.h"
 #include "attach.h"
 #include "thprac_gui_locale.h"
-#include "thprac_utils.h"
+#include "common.h"
 #include "utils/utils.h"
 #include <functional>
 #include <string>

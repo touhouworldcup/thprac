@@ -6,7 +6,7 @@
 #include "thprac_launcher_tools.h"
 #include "thprac_launcher_utils.h"
 #include "thprac_launcher_wnd.h"
-#include "thprac_utils.h"
+#include "common.h"
 #include <ShlObj.h>
 #include <Windows.h>
 #include <Shlwapi.h>

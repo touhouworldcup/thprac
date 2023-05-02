@@ -9,7 +9,7 @@
 #include "thprac_launcher_wnd.h"
 #include "thprac_load_exe.h"
 #include "attach.h"
-#include "thprac_utils.h"
+#include "common.h"
 #include <Windows.h>
 #include <shlwapi.h>
 #include <cstdint>

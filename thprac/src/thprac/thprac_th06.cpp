@@ -1,4 +1,4 @@
-﻿#include "thprac_utils.h"
+﻿#include "common.h"
 #include "../3rdParties/d3d8/include/d3d8.h"
 
 

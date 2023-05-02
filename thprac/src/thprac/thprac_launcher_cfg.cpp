@@ -5,7 +5,7 @@
 #include "thprac_launcher_utils.h"
 #include "thprac_licence.h"
 #include "thprac_version.h"
-#include "thprac_utils.h"
+#include "common.h"
 #include "utils/utils.h"
 #include "..\..\resource.h"
 #include <Windows.h>

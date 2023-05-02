@@ -5,7 +5,7 @@
 #include "thprac_launcher_games.h"
 #include "thprac_launcher_cfg.h"
 #include "thprac_load_exe.h"
-#include "thprac_utils.h"
+#include "common.h"
 #include <Windows.h>
 #include <algorithm>
 #include <metrohash128.h>

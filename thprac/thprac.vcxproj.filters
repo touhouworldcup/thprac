@@ -43,7 +43,7 @@
     <ClInclude Include="resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_utils.h">
+    <ClInclude Include="src\thprac\common.h">
       <Filter>THPrac Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_hook.h">
@@ -201,7 +201,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\thprac\thprac_utils.cpp">
+    <ClCompile Include="src\thprac\common.cpp">
       <Filter>THPrac Utils</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_hook.cpp">
