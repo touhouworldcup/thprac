@@ -7,9 +7,9 @@
 #define NOMINMAX
 #include <Windows.h>
 
-#include "thprac_gui_impl_win32.h"
-#include "thprac_gui_input.h"
-#include "thprac_gui_locale.h"
+#include "gui_impl_win32.h"
+#include "gui_input.h"
+#include "gui_locale.h"
 #include "thprac_hook.h"
 #include "utils/utils.h"
 

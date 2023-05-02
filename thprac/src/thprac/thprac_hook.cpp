@@ -4,7 +4,7 @@
 
 #include "thprac_launcher_cfg.h"
 #include "common.h"
-#include "thprac_gui_locale.h"
+#include "gui_locale.h"
 
 #include "..\MinHook\src\buffer.h"
 #include "..\MinHook\src\trampoline.h"

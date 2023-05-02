@@ -1,5 +1,5 @@
-﻿#include "thprac_gui_input.h"
-#include "thprac_gui_impl_win32.h"
+﻿#include "gui_input.h"
+#include "gui_impl_win32.h"
 #define NOMINMAX
 #include <Windows.h>
 #include <cstdint>

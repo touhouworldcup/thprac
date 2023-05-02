@@ -18,7 +18,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 
-#include "thprac_gui_impl_win32.h"
+#include "gui_impl_win32.h"
 #include "thprac_hook.h"
 #include <MinHook.h>
 #include <imgui.h>

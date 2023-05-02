@@ -12,7 +12,7 @@
 	Last official change: 2019-04-30.
 */
 
-#include "thprac_gui_impl_dx9.h"
+#include "gui_impl_dx9.h"
 #include "thprac_hook.h"
 #include <MinHook.h>
 #include <d3d9.h>

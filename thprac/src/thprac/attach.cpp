@@ -1,5 +1,5 @@
 ﻿#include "attach.h"
-#include "thprac_gui_locale.h"
+#include "gui_locale.h"
 #include "thprac_launcher_wnd.h"
 #include "thprac_launcher_games.h"
 #include "thprac_launcher_cfg.h"
@@ -14,7 +14,7 @@
 
 #pragma comment(lib, "psapi.lib")
 
- 
+
 namespace THPrac {
 enum thprac_prompt_t {
     PR_FAILED,

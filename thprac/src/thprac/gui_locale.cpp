@@ -1,4 +1,4 @@
-﻿#include "thprac_gui_locale.h"
+﻿#include "gui_locale.h"
 #include "thprac_launcher_cfg.h"
 #include <imgui.h>
 #include <imgui_freetype.h>

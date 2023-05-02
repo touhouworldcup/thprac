@@ -106,25 +106,25 @@
     <ClInclude Include="src\3rdParties\MetroHash\platform.h">
       <Filter>3rdParties\MetroHash</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_gui_input.h">
+    <ClInclude Include="src\thprac\gui_input.h">
       <Filter>THPrac Gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_gui_locale.h">
+    <ClInclude Include="src\thprac\gui_locale.h">
       <Filter>THPrac Gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_gui_impl_dx9.h">
+    <ClInclude Include="src\thprac\gui_impl_dx9.h">
       <Filter>THPrac Gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_gui_impl_win32.h">
+    <ClInclude Include="src\thprac\gui_impl_win32.h">
       <Filter>THPrac Gui</Filter>
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_locale_def.h">
       <Filter>THPrac Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_gui_impl_dx8.h">
+    <ClInclude Include="src\thprac\gui_impl_dx8.h">
       <Filter>THPrac Gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_gui_components.h">
+    <ClInclude Include="src\thprac\gui_components.h">
       <Filter>THPrac Gui</Filter>
     </ClInclude>
     <ClInclude Include="src\thprac\attach.h">
@@ -204,16 +204,16 @@
     <ClCompile Include="src\thprac\thprac_hook.cpp">
       <Filter>THPrac Hook</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th06.cpp">
+    <ClCompile Include="src\thprac\th06.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th07.cpp">
+    <ClCompile Include="src\thprac\th07.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th08.cpp">
+    <ClCompile Include="src\thprac\th08.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th11.cpp">
+    <ClCompile Include="src\thprac\th11.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\main.cpp">
@@ -258,67 +258,67 @@
     <ClCompile Include="src\3rdParties\MetroHash\metrohash128.cpp">
       <Filter>3rdParties\MetroHash</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th10.cpp">
+    <ClCompile Include="src\thprac\th10.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th12.cpp">
+    <ClCompile Include="src\thprac\th12.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th13.cpp">
+    <ClCompile Include="src\thprac\th13.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th14.cpp">
+    <ClCompile Include="src\thprac\th14.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th15.cpp">
+    <ClCompile Include="src\thprac\th15.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th16.cpp">
+    <ClCompile Include="src\thprac\th16.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th128.cpp">
+    <ClCompile Include="src\thprac\th128.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_gui_input.cpp">
+    <ClCompile Include="src\thprac\gui_input.cpp">
       <Filter>THPrac Gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_gui_locale.cpp">
+    <ClCompile Include="src\thprac\gui_locale.cpp">
       <Filter>THPrac Gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_gui_impl_dx9.cpp">
+    <ClCompile Include="src\thprac\gui_impl_dx9.cpp">
       <Filter>THPrac Gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_gui_impl_win32.cpp">
+    <ClCompile Include="src\thprac\gui_impl_win32.cpp">
       <Filter>THPrac Gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_gui_impl_dx8.cpp">
+    <ClCompile Include="src\thprac\gui_impl_dx8.cpp">
       <Filter>THPrac Gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_gui_components.cpp">
+    <ClCompile Include="src\thprac\gui_components.cpp">
       <Filter>THPrac Gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th095.cpp">
+    <ClCompile Include="src\thprac\th095.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th125.cpp">
+    <ClCompile Include="src\thprac\th125.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th143.cpp">
+    <ClCompile Include="src\thprac\th143.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th165.cpp">
+    <ClCompile Include="src\thprac\th165.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th17.cpp">
+    <ClCompile Include="src\thprac\th17.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th09.cpp">
+    <ClCompile Include="src\thprac\th09.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\attach.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_alcostg.cpp">
+    <ClCompile Include="src\thprac\alcostg.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_launcher_games.cpp">
@@ -351,10 +351,10 @@
     <ClCompile Include="src\3rdParties\ImGui\imgui_tables.cpp">
       <Filter>3rdParties\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th18.cpp">
+    <ClCompile Include="src\thprac\th18.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th185.cpp">
+    <ClCompile Include="src\thprac\th185.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_version.cpp">

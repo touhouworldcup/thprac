@@ -13,7 +13,7 @@
 */
 
 
-#include "thprac_gui_impl_dx8.h"
+#include "gui_impl_dx8.h"
 #include "thprac_hook.h"
 #include <imgui.h>
 #include <MinHook.h>

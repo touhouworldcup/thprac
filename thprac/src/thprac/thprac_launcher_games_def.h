@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "thprac_gui_locale.h"
+#include "gui_locale.h"
 #include <cstdint>
 
 namespace THPrac {
