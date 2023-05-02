@@ -2,7 +2,7 @@
 #include "thprac_launcher_utils.h"
 #include "thprac_launcher_games.h"
 #include "thprac_launcher_main.h"
-#include "thprac_main.h"
+#include "attach.h"
 #include "thprac_gui_locale.h"
 #include "thprac_utils.h"
 #include "utils/utils.h"

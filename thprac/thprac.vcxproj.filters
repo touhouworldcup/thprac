@@ -130,7 +130,7 @@
     <ClInclude Include="src\thprac\thprac_gui_components.h">
       <Filter>THPrac Gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_main.h">
+    <ClInclude Include="src\thprac\attach.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_launcher_games.h">
@@ -318,7 +318,7 @@
     <ClCompile Include="src\thprac\thprac_th09.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_main.cpp">
+    <ClCompile Include="src\thprac\attach.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_alcostg.cpp">

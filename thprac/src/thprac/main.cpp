@@ -3,7 +3,7 @@
 #include "thprac_init.h"
 #include "thprac_launcher_main.h"
 #include "thprac_launcher_cfg.h"
-#include "thprac_main.h"
+#include "attach.h"
 #include "thprac_gui_locale.h"
 #include "thprac_hook.h"
 #include <Windows.h>
