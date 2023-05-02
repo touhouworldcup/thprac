@@ -49,9 +49,6 @@
     <ClInclude Include="src\thprac\thprac_hook.h">
       <Filter>THPrac Hook</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_games.h">
-      <Filter>THPrac Games</Filter>
-    </ClInclude>
     <ClInclude Include="src\thprac\thprac_init.h">
       <Filter>Main</Filter>
     </ClInclude>

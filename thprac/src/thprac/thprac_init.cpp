@@ -2,7 +2,6 @@
 #define NOMINMAX
 
 #include "thprac_init.h"
-#include "thprac_games.h"
 #include "thprac_launcher_games.h"
 #include <Windows.h>
 #include <imgui.h>

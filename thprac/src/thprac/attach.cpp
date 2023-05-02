@@ -1,5 +1,4 @@
 ﻿#include "attach.h"
-#include "thprac_games.h"
 #include "thprac_gui_locale.h"
 #include "thprac_launcher_wnd.h"
 #include "thprac_launcher_games.h"
