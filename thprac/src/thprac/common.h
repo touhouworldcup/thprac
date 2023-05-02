@@ -2,13 +2,13 @@
 
 #define NOMINMAX
 
-#include "thprac_version.h"
+#include "version.h"
 #include "gui_components.h"
 #include "gui_impl_dx8.h"
 #include "gui_impl_dx9.h"
 #include "gui_impl_win32.h"
 #include "thprac_hook.h"
-#include "thprac_locale_def.h"
+#include "locale_def.h"
 #include "gui_locale.h"
 
 #include <Windows.h>

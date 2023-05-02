@@ -1,8 +1,8 @@
 ﻿#define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 
-#include "thprac_init.h"
-#include "thprac_launcher_games.h"
+#include "init.h"
+#include "launcher_games.h"
 #include <Windows.h>
 #include <imgui.h>
 #include <metrohash128.h>

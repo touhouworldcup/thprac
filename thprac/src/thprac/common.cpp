@@ -1,7 +1,7 @@
 ﻿#include "common.h"
 #include "thprac_licence.h"
-#include "thprac_launcher_main.h"
-#include "thprac_launcher_cfg.h"
+#include "launcher_main.h"
+#include "launcher_cfg.h"
 #include <metrohash128.h>
 #include "../3rdParties/d3d8/include/d3d8.h"
 

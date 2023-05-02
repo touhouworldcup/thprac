@@ -1,4 +1,4 @@
-﻿#include "thprac_version.h"
+﻿#include "version.h"
 
 namespace THPrac {
 const char* g_thpracVersionStr { "2.2.1.3" };

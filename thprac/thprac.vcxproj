@@ -47,29 +47,29 @@
     <ClInclude Include="src\3rdParties\MinHook\src\hde\table32.h" />
     <ClInclude Include="src\3rdParties\MinHook\src\hde\table64.h" />
     <ClInclude Include="src\3rdParties\MinHook\src\trampoline.h" />
-    <ClInclude Include="src\thprac\thprac_game_data.h" />
+    <ClInclude Include="src\thprac\game_data.h" />
     <ClInclude Include="src\thprac\gui_impl_dx8.h" />
     <ClInclude Include="src\thprac\gui_components.h" />
     <ClInclude Include="src\thprac\thprac_hook.h" />
     <ClInclude Include="src\thprac\gui_impl_dx9.h" />
     <ClInclude Include="src\thprac\gui_impl_win32.h" />
-    <ClInclude Include="src\thprac\thprac_init.h" />
+    <ClInclude Include="src\thprac\init.h" />
     <ClInclude Include="src\thprac\gui_input.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_cfg.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_games.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_games_def.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_links.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_main.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_tools.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_utils.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_wnd.h" />
+    <ClInclude Include="src\thprac\launcher_cfg.h" />
+    <ClInclude Include="src\thprac\launcher_games.h" />
+    <ClInclude Include="src\thprac\launcher_games_def.h" />
+    <ClInclude Include="src\thprac\launcher_links.h" />
+    <ClInclude Include="src\thprac\launcher_main.h" />
+    <ClInclude Include="src\thprac\launcher_tools.h" />
+    <ClInclude Include="src\thprac\launcher_utils.h" />
+    <ClInclude Include="src\thprac\launcher_wnd.h" />
     <ClInclude Include="src\thprac\thprac_licence.h" />
-    <ClInclude Include="src\thprac\thprac_load_exe.h" />
+    <ClInclude Include="src\thprac\load_exe.h" />
     <ClInclude Include="src\thprac\gui_locale.h" />
-    <ClInclude Include="src\thprac\thprac_locale_def.h" />
+    <ClInclude Include="src\thprac\locale_def.h" />
     <ClInclude Include="src\thprac\attach.h" />
     <ClInclude Include="src\thprac\common.h" />
-    <ClInclude Include="src\thprac\thprac_version.h" />
+    <ClInclude Include="src\thprac\version.h" />
     <ClInclude Include="src\thprac\utils\utils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -102,18 +102,18 @@
     <ClCompile Include="src\thprac\thprac_hook.cpp" />
     <ClCompile Include="src\thprac\gui_impl_dx9.cpp" />
     <ClCompile Include="src\thprac\gui_impl_win32.cpp" />
-    <ClCompile Include="src\thprac\thprac_init.cpp" />
+    <ClCompile Include="src\thprac\init.cpp" />
     <ClCompile Include="src\thprac\gui_input.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_cfg.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_games.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_links.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_main.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_tools.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_wnd.cpp" />
+    <ClCompile Include="src\thprac\launcher_cfg.cpp" />
+    <ClCompile Include="src\thprac\launcher_games.cpp" />
+    <ClCompile Include="src\thprac\launcher_links.cpp" />
+    <ClCompile Include="src\thprac\launcher_main.cpp" />
+    <ClCompile Include="src\thprac\launcher_tools.cpp" />
+    <ClCompile Include="src\thprac\launcher_wnd.cpp" />
     <ClCompile Include="src\thprac\thprac_licence.cpp" />
-    <ClCompile Include="src\thprac\thprac_load_exe.cpp" />
+    <ClCompile Include="src\thprac\load_exe.cpp" />
     <ClCompile Include="src\thprac\gui_locale.cpp" />
-    <ClCompile Include="src\thprac\thprac_locale_def.cpp" />
+    <ClCompile Include="src\thprac\locale_def.cpp" />
     <ClCompile Include="src\thprac\attach.cpp" />
     <ClCompile Include="src\thprac\th06.cpp" />
     <ClCompile Include="src\thprac\th07.cpp" />
@@ -135,13 +135,13 @@
     <ClCompile Include="src\thprac\th18.cpp" />
     <ClCompile Include="src\thprac\th185.cpp" />
     <ClCompile Include="src\thprac\common.cpp" />
-    <ClCompile Include="src\thprac\thprac_version.cpp" />
+    <ClCompile Include="src\thprac\version.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="resource.hm" />
     <None Include="src\3rdParties\ImGui\imgui_user.inl" />
-    <None Include="src\thprac\thprac_games_def.json" />
+    <None Include="src\thprac\games_def.json" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="thprac.rc" />

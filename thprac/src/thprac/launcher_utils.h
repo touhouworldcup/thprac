@@ -28,7 +28,7 @@
 #pragma warning(disable : 4091)
 #include <Shlobj.h>
 #pragma warning(default : 4091)
-#include "thprac_launcher_wnd.h"
+#include "launcher_wnd.h"
 #pragma comment(lib, "ole32.lib")
 #pragma comment(lib, "comdlg32.lib")
 #pragma comment(lib, "shell32.lib")

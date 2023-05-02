@@ -2,7 +2,7 @@
 
 #define NOMINMAX
 
-#include "thprac_launcher_cfg.h"
+#include "launcher_cfg.h"
 #include "common.h"
 #include "gui_locale.h"
 

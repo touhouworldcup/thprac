@@ -1,9 +1,9 @@
-﻿#include "thprac_launcher_wnd.h"
+﻿#include "launcher_wnd.h"
 #include "imgui.h"
 #include "gui_impl_dx9.h"
 #include "gui_impl_win32.h"
 #include "gui_locale.h"
-#include "thprac_launcher_utils.h"
+#include "launcher_utils.h"
 #include "common.h"
 #include "..\..\resource.h"
 #include <d3d9.h>

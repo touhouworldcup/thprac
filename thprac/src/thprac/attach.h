@@ -1,6 +1,6 @@
 ﻿#pragma once
 #define NOMINMAX
-#include "thprac_launcher_games_def.h"
+#include "launcher_games_def.h"
 #include <Windows.h>
 #include <tlhelp32.h>
 

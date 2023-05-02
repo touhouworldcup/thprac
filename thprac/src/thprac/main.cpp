@@ -1,8 +1,8 @@
 ﻿#define NOMINMAX
 
-#include "thprac_init.h"
-#include "thprac_launcher_main.h"
-#include "thprac_launcher_cfg.h"
+#include "init.h"
+#include "launcher_main.h"
+#include "launcher_cfg.h"
 #include "attach.h"
 #include "gui_locale.h"
 #include "thprac_hook.h"

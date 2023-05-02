@@ -1,9 +1,9 @@
 ﻿#include "attach.h"
 #include "gui_locale.h"
-#include "thprac_launcher_wnd.h"
-#include "thprac_launcher_games.h"
-#include "thprac_launcher_cfg.h"
-#include "thprac_load_exe.h"
+#include "launcher_wnd.h"
+#include "launcher_games.h"
+#include "launcher_cfg.h"
+#include "load_exe.h"
 #include "common.h"
 #include <Windows.h>
 #include <algorithm>

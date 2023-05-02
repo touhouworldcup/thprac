@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "thprac_locale_def.h"
+#include "locale_def.h"
 
 namespace THPrac {
 namespace Gui {

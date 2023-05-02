@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "utils/utils.h"
 #include "gui_locale.h"
-#include "thprac_launcher_games_def.h"
+#include "launcher_games_def.h"
 #include <cstdint>
 #pragma warning(push)
 #pragma warning(disable : 26451)

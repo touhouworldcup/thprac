@@ -1,5 +1,5 @@
 ﻿#include "gui_locale.h"
-#include "thprac_launcher_cfg.h"
+#include "launcher_cfg.h"
 #include <imgui.h>
 #include <imgui_freetype.h>
 
