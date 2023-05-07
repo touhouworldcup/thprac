@@ -615,7 +615,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
 
     ImGui::PushItemWidth(GetRelWidth(0.23f));
     if (canFpsChangeFreely) {
-        ImGui::DragInt(S(TH_FPS_ADJ), &fps, 1.0f, 60, 6000);
+        ImGui::DragInt(S(TH_FPS_ADJ), &fps, 1.0f, 10, 6000);
         if (!ImGui::IsItemActive())
             fps = std::clamp(fps, 60, 6000);
     } else {
