@@ -8,6 +8,7 @@
 namespace THPrac {
 namespace TH18 {
     enum addrs {
+        ABILTIY_MANAGER_PTR = 0x4cf298,
         ABILITY_SHOP_PTR = 0x4cf2a4,
         CARD_DESC_LIST = 0x4c53c0
     };
@@ -174,7 +175,7 @@ namespace TH18 {
         static bool CheckMukade()
         {
             uint32_t* list = nullptr;
-            for (uint32_t* i = (uint32_t*)GetMemContent(0x4cf298, 0x1c); i; i = (uint32_t*)i[1]) {
+            for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
                 list = i;
                 auto cardId = ((uint32_t**)list)[0][1];
                 if (cardId == 54) {
@@ -187,7 +188,7 @@ namespace TH18 {
         static bool CheckLily()
         {
             uint32_t* list = nullptr;
-            for (uint32_t* i = (uint32_t*)GetMemContent(0x4cf298, 0x1c); i; i = (uint32_t*)i[1]) {
+            for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
                 list = i;
                 auto cardId = ((uint32_t**)list)[0][1];
                 if (cardId == 48) {
@@ -465,6 +466,32 @@ namespace TH18 {
         bool mParamStatus = false;
         THPracParam mRepParam;
     };
+
+    EHOOK_G1(th18_free_blank, 0x411f4b)
+    {
+        pCtx->Eip = 0x411f52;
+        th18_free_blank::GetHook().Disable();
+    }
+    void AddIndicateCard()
+    {   
+        if (GetMemContent(0x4ccd00) == 4) {
+            th18_free_blank::GetHook().Enable();
+            asm_call<0x411460, Thiscall>(GetMemContent(ABILTIY_MANAGER_PTR), 0, 2);
+        } else {
+            uint32_t* list = nullptr;
+            uint8_t cardIdArray[64];
+            memset(cardIdArray, 0, 64);
+            for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
+                list = i;
+                auto cardId = ((uint32_t**)list)[0][1];
+                cardIdArray[cardId] += 1;
+            }
+            if (!cardIdArray[55]) {
+                asm_call<0x411460, Thiscall>(*(uint32_t*)ABILTIY_MANAGER_PTR, 55, 2);
+            }
+        }
+    }
+
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
         {
@@ -481,7 +508,6 @@ namespace TH18 {
             th18_shop_disable.Setup();
             th18_shop_escape_1.Setup();
             th18_shop_escape_2.Setup();
-            th18_free_blank.Setup();
         }
         SINGLETON(THOverlay);
 
@@ -505,11 +531,6 @@ namespace TH18 {
             pCtx->Eip = 0x4184a0;
             THOverlay::singleton().th18_shop_escape_2.Disable();
         }
-        EHOOK_ST(th18_free_blank, 0x411f4b)
-        {
-            pCtx->Eip = 0x411f52;
-            THOverlay::singleton().th18_free_blank.Disable();
-        }
         inline void ResetCardMenu()
         {
             th18_pause_skip_1.Enable();
@@ -522,26 +543,7 @@ namespace TH18 {
         inline void AddCard(uint32_t cardId)
         {
             if (cardId < 55)
-                asm_call<0x411460, Thiscall>(*(uint32_t*)0x4cf298, cardId, 2);
-        }
-        void AddIndicateCard()
-        {
-            if (GetMemContent(0x4ccd00) == 4) {
-                th18_free_blank.Enable();
-                asm_call<0x411460, Thiscall>(GetMemContent(0x4cf298), 0, 2);
-            } else {
-                uint32_t* list = nullptr;
-                uint8_t cardIdArray[64];
-                memset(cardIdArray, 0, 64);
-                for (uint32_t* i = (uint32_t*)GetMemContent(0x4cf298, 0x1c); i; i = (uint32_t*)i[1]) {
-                    list = i;
-                    auto cardId = ((uint32_t**)list)[0][1];
-                    cardIdArray[cardId] += 1;
-                }
-                if (!cardIdArray[55]) {
-                    asm_call<0x411460, Thiscall>(*(uint32_t*)0x4cf298, 55, 2);
-                }
-            }
+                asm_call<0x411460, Thiscall>(*(uint32_t*)ABILTIY_MANAGER_PTR, cardId, 2);
         }
         bool IsMarketAvailable()
         {
@@ -590,6 +592,7 @@ namespace TH18 {
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mAllowShopAnywhere.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -616,6 +619,8 @@ namespace TH18 {
                     ImGui::Text("%s: %s", "F10", S(TH18_MARKET_MANIP));
                     ImGui::EndDisabled();
                 }
+
+                mAllowShopAnywhere();
             } else {
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC1));
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC2));
@@ -637,7 +642,7 @@ namespace TH18 {
                 } else {
                     bool mmKeyStatus[10];
                     for (int i = 0; i <= 8; ++i) {
-                        mmKeyStatus[i] = (Gui::KeyboardInputUpdate(0x30 + i) == 1);
+                        mmKeyStatus[i] = (Gui::KeyboardInputUpdate('0' + i) == 1);
                     }
                     for (int i = 1; i <= 8; ++i) {
                         if (mmKeyStatus[i]) {
@@ -733,6 +738,7 @@ namespace TH18 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
+        Gui::GuiHotKey mAllowShopAnywhere { "Allow opening the shop anywhere (press L)", "F11", VK_F11 };
     };
     class THGuiSP : public Gui::GameGuiWnd {
         THGuiSP() noexcept
@@ -982,7 +988,7 @@ namespace TH18 {
         EHOOK_ST(th18_active_card_fix, 0x462f33)
         {
             if (!OffsetValueBase::IsBadPtr((void*)GetMemContent(0x4cf2e4)) && !GetMemContent(0x4cf2e4, 0xd0)) {
-                uint32_t activeCardId = GetMemContent(0x4cf298, 0x38);
+                uint32_t activeCardId = GetMemContent(ABILTIY_MANAGER_PTR, 0x38);
                 if (activeCardId) {
                     *(uint32_t*)(pCtx->Esi + 0x964) = GetMemContent(activeCardId + 4);
                 } else {
@@ -1322,14 +1328,14 @@ namespace TH18 {
                     uint32_t* list = nullptr;
                     uint8_t cardIdArray[64];
                     memset(cardIdArray, 0, 64);
-                    for (uint32_t* i = (uint32_t*)GetMemContent(0x4cf298, 0x1c); i; i = (uint32_t*)i[1]) {
+                    for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
                         list = i;
                         auto cardId = ((uint32_t**)list)[0][1];
                         cardIdArray[cardId] += 1;
                     }
 
                     for (int i = 0; i < 56; ++i) {
-                        *(uint32_t*)GetMemAddr(0x4cf298, 0xc84 + i * 4) = cardIdArray[i] ? 1 : 0;
+                        *(uint32_t*)GetMemAddr(ABILTIY_MANAGER_PTR, 0xc84 + i * 4) = cardIdArray[i] ? 1 : 0;
                     }
                 }
             }
@@ -2641,7 +2647,7 @@ namespace TH18 {
             }
             if (THGuiPrac::CheckLily()) {
                 uint32_t* list = nullptr;
-                for (uint32_t* i = (uint32_t*)GetMemContent(0x4cf298, 0x1c); i; i = (uint32_t*)i[1]) {
+                for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
                     list = i;
                     auto cardId = ((uint32_t**)list)[0][1];
                     if (cardId == 48) {
@@ -2709,10 +2715,9 @@ namespace TH18 {
         uint32_t sub_count = 0;
         uint32_t cardAddId = *(uint32_t*)(pCtx->Esp + 4);
         uint32_t cardAddType = 0;
-        uint8_t cardIdArray[64];
-        memset(cardIdArray, 0, 64);
+        uint8_t cardIdArray[64] = {};
 
-        for (uint32_t* i = (uint32_t*)GetMemContent(0x4cf298, 0x1c); i; i = (uint32_t*)i[1]) {
+        for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
             list = i;
             auto cardId = ((uint32_t**)list)[0][1];
             cardIdArray[cardId] += 1;
@@ -2765,6 +2770,13 @@ namespace TH18 {
     }
     EHOOK_DY(th18_update, 0x4013f5)
     {
+        if (*THOverlay::singleton().mAllowShopAnywhere && Gui::KeyboardInputGetRaw('L') && GetMemContent(ABILITY_SHOP_PTR) == 0) {
+            if (uint32_t GAME_THREAD_PTR = GetMemContent(0x4cf2e4)) {
+                AddIndicateCard();
+                *(uint32_t*)GetMemAddr(0x4cf2e4, 0xB0) |= 0x20000;
+            }
+        }
+
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 
         // Gui components update
