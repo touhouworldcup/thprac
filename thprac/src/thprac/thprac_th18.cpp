@@ -592,7 +592,6 @@ namespace TH18 {
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
-            mAllowShopAnywhere.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -619,8 +618,12 @@ namespace TH18 {
                     ImGui::Text("%s: %s", "F10", S(TH18_MARKET_MANIP));
                     ImGui::EndDisabled();
                 }
-
-                mAllowShopAnywhere();
+                bool f11_enable = !GetMemContent(ABILITY_SHOP_PTR) && GetMemContent(0x4cf2e4);
+                if (!f11_enable)
+                    ImGui::BeginDisabled();
+                ImGui::TextUnformatted("F11: Open shop");
+                if (!f11_enable)
+                    ImGui::EndDisabled();
             } else {
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC1));
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC2));
@@ -738,7 +741,6 @@ namespace TH18 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
-        Gui::GuiHotKey mAllowShopAnywhere { "Allow opening the shop anywhere (press L)", "F11", VK_F11 };
     };
     class THGuiSP : public Gui::GameGuiWnd {
         THGuiSP() noexcept
@@ -2770,7 +2772,7 @@ namespace TH18 {
     }
     EHOOK_DY(th18_update, 0x4013f5)
     {
-        if (*THOverlay::singleton().mAllowShopAnywhere && Gui::KeyboardInputGetRaw('L') && GetMemContent(ABILITY_SHOP_PTR) == 0) {
+        if (THOverlay::singleton().IsOpen() && Gui::KeyboardInputGetRaw(VK_F11) && GetMemContent(ABILITY_SHOP_PTR) == 0) {
             if (uint32_t GAME_THREAD_PTR = GetMemContent(0x4cf2e4)) {
                 AddIndicateCard();
                 *(uint32_t*)GetMemAddr(0x4cf2e4, 0xB0) |= 0x20000;
