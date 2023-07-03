@@ -518,24 +518,16 @@ namespace THPrac
             }
         }
 
-        void MultiComboSelect(std::vector<size_t>& out, const std::vector<const char*> choices, const char* format, size_t level)
+        void ComboSelect(size_t& out, const char* const* choices, const size_t choices_count, const char* label)
         {
-            if (out.size() <= level)
-                out.resize(level + 1);
-
-            size_t bufSize = snprintf(nullptr, 0, format, level);
-            auto labelStr = new char[bufSize + 2];
-            labelStr[bufSize + 1] = 0;
-            snprintf(labelStr, bufSize + 1, format, level);
-
-            if (ImGui::BeginCombo(labelStr, choices[out[level]])) {
-                for (size_t i = 0; i < choices.size(); i++) {
+            if (ImGui::BeginCombo(label, choices[out])) {
+                for (size_t i = 0; i < choices_count; i++) {
                     ImGui::PushID(i);
 
-                    bool item_selected = (i == out[level]);
+                    bool item_selected = (i == out);
 
                     if (ImGui::Selectable(choices[i], &item_selected))
-                        out[level] = i;
+                        out = i;
 
                     if (item_selected)
                         ImGui::SetItemDefaultFocus();
@@ -546,21 +538,68 @@ namespace THPrac
             }
 
             if (ImGui::IsItemFocused()) {
-                if (Gui::InGameInputGet(VK_LEFT) && out[level] > 0) {
-                    out[level]--;
+                if (Gui::InGameInputGet(VK_LEFT) && out > 0) {
+                    out--;
                 }
-                if (Gui::InGameInputGet(VK_RIGHT) && out[level] + 1 < choices.size()) {
-                    out[level]++;
+                if (Gui::InGameInputGet(VK_RIGHT) && out + 1 < choices_count) {
+                    out++;
                 }
             }
+        }
+
+        void ComboSelect(size_t& out, th_glossary_t* choices, const size_t choices_count, const char* label)
+        {
+            if (ImGui::BeginCombo(label, S(choices[out]))) {
+                for (size_t i = 0; i < choices_count; i++) {
+                    ImGui::PushID(i);
+
+                    bool item_selected = (i == out);
+
+                    if (ImGui::Selectable(S(choices[i]), &item_selected))
+                        out = i;
+
+                    if (item_selected)
+                        ImGui::SetItemDefaultFocus();
+
+                    ImGui::PopID();
+                }
+                ImGui::EndCombo();
+            }
+
+            if (ImGui::IsItemFocused()) {
+                if (Gui::InGameInputGet(VK_LEFT) && out > 0) {
+                    out--;
+                }
+                if (Gui::InGameInputGet(VK_RIGHT) && out + 1 < choices_count) {
+                    out++;
+                }
+            }
+        }
+
+        void MultiComboSelectImpl(std::vector<size_t>& out, const char* const* choices, const size_t choices_count, const char* format, size_t level)
+        {
+            if (out.size() <= level)
+                out.resize(level + 1);
+
+            size_t bufSize = snprintf(nullptr, 0, format, level);
+            auto labelStr = new char[bufSize + 2];
+            labelStr[bufSize + 1] = 0;
+            snprintf(labelStr, bufSize + 1, format, level);
+
+            ComboSelect(out[level], choices, choices_count, labelStr);
 
             if (out[level]) {
                 ImGui::PushID(++level);
-                MultiComboSelect(out, choices, format, level);
+                MultiComboSelectImpl(out, choices, choices_count, format, level);
                 ImGui::PopID();
             }
 
             delete[] labelStr;
+        }
+
+        void MultiComboSelect(std::vector<size_t>& out, const char* const* choices, const size_t choices_count, const char* format)
+        {
+            MultiComboSelectImpl(out, choices, choices_count, format, 0);
         }
     }
 }

@@ -750,6 +750,9 @@ namespace Gui {
         }
     }
 
-    void MultiComboSelect(std::vector<size_t>& out, const std::vector<const char*> choices, const char* format = "%d", size_t level = 0);
+    void ComboSelect(size_t& out, th_glossary_t* choices, const size_t choices_count, const char* label);
+    void ComboSelect(size_t& out, const char* const* choices, const size_t choices_count, const char* label);
+
+    void MultiComboSelect(std::vector<size_t>& out, const char* const* choices, const size_t choices_count, const char* format = "%d");
 }
 }

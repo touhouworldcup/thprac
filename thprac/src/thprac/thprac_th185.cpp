@@ -3041,11 +3041,11 @@ namespace TH185 {
 
                 ImGui::Separator();
                 ImGui::TextUnformatted(S(TH185_ADDITIONAL_CARDS));
-                Gui::MultiComboSelect(mAdditionalCards, cards, S(TH18_CARD_FORMAT));
+                Gui::MultiComboSelect(mAdditionalCards, cards.data(), cards.size(), S(TH18_CARD_FORMAT));
 
                 ImGui::Separator();
                 ImGui::TextUnformatted(S(TH185_FORCE_WAVE));
-                Gui::MultiComboSelect(mForceWave, waves, S(TH185_WAVE_FORMAT));
+                Gui::MultiComboSelect(mForceWave, waves.data(), waves.size(), S(TH185_WAVE_FORMAT));
             }
         }
 
