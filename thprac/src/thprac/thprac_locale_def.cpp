@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][880]
+const char* th_glossary_str[3][883]
 {
     {
         "",
@@ -244,15 +244,18 @@ const char* th_glossary_str[3][880]
         "小鸡",
         "牛",
         "鹰",
+        "鹰 (static)",
         "埴轮",
         "埴轮（马）",
         "水母",
         "无",
         "獭",
+        "獭 (static)",
         "尝试正常播放已经爆炸的replay",
         "如果你的replay受到了上述bug的影响则可以尝试开启此选项。\n请不要在播放正常的replay时开启这个选项。",
         "龟",
         "狼",
+        "狼 (static)",
         "无限咆哮",
         "无动物灵",
         "TH17 东方鬼形兽　～ Wily Beast and Weakest Creature.",
@@ -1126,15 +1129,18 @@ const char* th_glossary_str[3][880]
         "Chick",
         "Cow",
         "Eagle",
+        "Eagle (static)",
         "Haniwa",
         "Haniwa (Horse)",
         "Jellyfish",
         "None",
         "Otter",
+        "Otter (static)",
         "Try to re-sync bugged replay",
         "Try to enable this option if you have any bugged replay.\nDo not enable this option when playbacking a normal replay.",
         "Turtle",
         "Wolf",
+        "Wolf (static)",
         "Inf. Roaring",
         "No Goast",
         "TH17 Wily Beast and Weakest Creature",
@@ -2008,15 +2014,18 @@ const char* th_glossary_str[3][880]
         "ひよこ",
         "牛",
         "オオワシ",
+        "オオワシ (static)",
         "埴輪",
         "埴輪（馬）",
         "クラゲ",
         "なし",
         "カワウソ",
+        "カワウソ (static)",
         "バグのあるリプレイを正常に再生してみます",
         "バグのあるリプレイがある場合は、このオプションを有効にしてみてください。\n普通のリプレイを再生するときは、このオプションを有効にしないでください。",
         "亀",
         "オオカミ",
+        "オオカミ (static)",
         "無限のロアリング",
         "動物霊を落とさない",
         "TH17 東方鬼形獣　～ Wily Beast and Weakest Creature.",
@@ -18782,6 +18791,28 @@ const th_glossary_t TH17_GOAST_SELECT[16]
     TH17_GOAST_HANIWA,
     TH17_GOAST_HORSE,
     TH17_GOAST_3CHICK,
+};
+
+const th_glossary_t TH17_GOAST_SELECT_TOKENS[19]
+{
+    TH17_GOAST_NONE,
+    TH17_GOAST_WOLF_STATIC,
+    TH17_GOAST_OTTER_STATIC,
+    TH17_GOAST_EAGLE_STATIC,
+    TH_BOMB_FRAGMENT,
+    TH_LIFE_FRAGMENT,
+    TH_POWER,
+    TH_POINT,
+    TH17_GOAST_JELLYFISH,
+    TH17_GOAST_COW,
+    TH17_GOAST_CHICK,
+    TH17_GOAST_TURTLE,
+    TH17_GOAST_HANIWA,
+    TH17_GOAST_HORSE,
+    TH17_GOAST_3CHICK,
+    TH17_GOAST_WOLF,
+    TH17_GOAST_OTTER,
+    TH17_GOAST_EAGLE,
 };
 
 const th_glossary_t TH17_SPELL_5PHASE[6]

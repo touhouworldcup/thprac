@@ -244,15 +244,18 @@ enum th_glossary_t
     TH17_GOAST_CHICK,
     TH17_GOAST_COW,
     TH17_GOAST_EAGLE,
+    TH17_GOAST_EAGLE_STATIC,
     TH17_GOAST_HANIWA,
     TH17_GOAST_HORSE,
     TH17_GOAST_JELLYFISH,
     TH17_GOAST_NONE,
     TH17_GOAST_OTTER,
+    TH17_GOAST_OTTER_STATIC,
     TH17_GOAST_REPFIX,
     TH17_GOAST_REPFIX_DESC,
     TH17_GOAST_TURTLE,
     TH17_GOAST_WOLF,
+    TH17_GOAST_WOLF_STATIC,
     TH17_INF_ROARING,
     TH17_NO_GOAST,
     TH17_TITLE,
@@ -892,7 +895,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][880];
+extern const char* th_glossary_str[3][883];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2278,6 +2281,8 @@ extern const th_sections_t th_sections_cba[7][2][19];
 extern const th_sections_t th_sections_cbt[7][2][14];
 
 extern const th_glossary_t TH17_GOAST_SELECT[16];
+
+extern const th_glossary_t TH17_GOAST_SELECT_TOKENS[19];
 
 extern const th_glossary_t TH17_SPELL_5PHASE[6];
 

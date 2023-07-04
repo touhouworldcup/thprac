@@ -802,7 +802,7 @@ namespace TH17 {
                 return;
             }
 
-            Gui::ComboSelect(mSelectedGoast, (th_glossary_t*)TH17_GOAST_SELECT, elementsof(TH17_GOAST_SELECT), S(TH17_GOAST));
+            Gui::ComboSelect(mSelectedGoast, (th_glossary_t*)TH17_GOAST_SELECT_TOKENS, elementsof(TH17_GOAST_SELECT_TOKENS) - 1, S(TH17_GOAST));
 
             if (!mSelectedGoast) {
                 ImGui::BeginDisabled();
