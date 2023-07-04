@@ -1,4 +1,5 @@
 ﻿#include "thprac_utils.h"
+#define M_PI 3.14159265358979323846f
 
 struct vec2f {
     float x;
@@ -808,10 +809,18 @@ namespace TH17 {
                 ImGui::BeginDisabled();
             }
 
-            ImGui::SliderFloat("Angle", &mGoastAng, -3.14159265359, 3.14159265359);
+            if (mGoastAngleRandom)
+                ImGui::BeginDisabled();
+
+            ImGui::SliderFloat("Angle", &mGoastAng, -M_PI, M_PI);
             ImGui::Checkbox("Force angle", &mForceGoastAngle);
             ImGui::SameLine();
             HelpMarker("Tokens will try to move away from eachother both when spawning and when bouncing from a wall. This will ensure that a token will always go in the direction you specify");
+            
+            if (mGoastAngleRandom)
+                ImGui::EndDisabled();
+            
+            ImGui::Checkbox("Random angle", &mGoastAngleRandom);
 
             ImRotateStart();
             ImGui::NewLine();
@@ -874,6 +883,7 @@ namespace TH17 {
         bool mGoastBugfix = true;
         bool mGoastRepfix = false;
         bool mForceGoastAngle = false;
+        bool mGoastAngleRandom = false;
 
         size_t mSelectedGoast = 0;
         float mGoastAng = 0;
@@ -1782,13 +1792,18 @@ namespace TH17 {
             float gameX = LOWORD(lParam) / (clientRect.right / 640.0f);
             float gameY = HIWORD(lParam) / (clientRect.bottom / 480.0f);
 
-            if (adv_opt.mForceGoastAngle) {
+            if (adv_opt.mForceGoastAngle && !adv_opt.mGoastAngleRandom) {
                 th17_force_goast_angle::GetHook().Enable();
             }
             vec2f stgFramePos { gameX - 224.0f, gameY - 16.0f };
             if (stgFramePos.y > 128 && stgFramePos.y < 448
                 && abs(stgFramePos.x) < 192) {
-                SpawnToken(adv_opt.mSelectedGoast, stgFramePos, adv_opt.mGoastAng);
+                float ang = adv_opt.mGoastAng;
+                if (adv_opt.mGoastAngleRandom) {
+                    ang = asm_call<0x402880, Thiscall, float>(0x4B7668) * M_PI;
+                }
+
+                SpawnToken(adv_opt.mSelectedGoast, stgFramePos, ang);
             }
         }
     }
