@@ -6,10 +6,13 @@ namespace THPrac {
 namespace TH185 {
     enum addrs {
         BLACK_MARKET_PTR = 0x4d7ac4,
-        CARD_DESC_LIST = 0x4ca370
+        CARD_DESC_LIST = 0x4ca370,
+        ENEMY_MANAGER = 0x4d7af4,
+        GAME_THREAD_PTR = 0x4d7b0c
     };
 
     bool isItemEnabled = false;
+    bool wave_forced = false;
 
     __declspec(noinline) void AddCard(uint32_t cardId)
     {
@@ -27,10 +30,7 @@ namespace TH185 {
         int32_t difficulty;
 
         std::vector<unsigned int> warp;
-        std::vector<unsigned int> force_wave;
         std::vector<unsigned int> additional_cards;
-
-        size_t __waves_forced;
     };
     THPracParam thPracParam {};
     stage_warps_t warps = {};
@@ -2745,6 +2745,70 @@ namespace TH185 {
 
     stage_warps_t stages[9] = {};
 
+    struct THWaveSelect : public Gui::GameGuiWnd {
+        SINGLETON(THWaveSelect);
+
+        THWaveSelect() noexcept
+        {
+            SetWndFlag(
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            
+            SetFade(0.5f, 0.5f);
+            SetSizeRel(0.3, 0.6);
+            SetPosRel(0.35f, 0.2f);
+
+            th185_replaymanager_on_tick_cutoff.Setup();
+        }
+
+        virtual void OnContentUpdate() override
+        {
+            ImGui::TextUnformatted(S(TH185_FORCE_WAVE));
+            ImGui::Separator();
+            
+            const ImVec4 green = { 0, 1, 0, 1 };
+
+            if (selectedWave == -1) {
+                ImGui::TextColored(green, "[%s]", S(TH185_NONE_RANDOM));
+            } else {
+                ImGui::TextUnformatted(S(TH185_NONE_RANDOM));
+            }
+            
+            for (size_t i = 0; i < waveOpts.size(); i++) {
+                auto [id, name] = waveOpts[i];
+                if (selectedWave == i) {
+                    ImGui::TextColored(green, "[%s]", name);
+                } else {
+                    ImGui::TextUnformatted(name);
+                }
+            }
+
+            if (Gui::InGameInputGet(VK_DOWN)) {
+                if (++selectedWave >= waveOpts.size()) {
+                    selectedWave = -1;
+                }
+            }
+            if (Gui::InGameInputGet(VK_UP)) {
+                if (selectedWave == -1) {
+                    selectedWave = waveOpts.size() - 1;
+                } else {
+                    --selectedWave;
+                }
+            }
+            if (Gui::InGameInputGet('Z') || Gui::KeyboardInputGetRaw(VK_RETURN)) {
+                th185_replaymanager_on_tick_cutoff.Disable();
+            }
+        }
+
+        public:
+        EHOOK_ST(th185_replaymanager_on_tick_cutoff, 0x468764)
+        {
+            pCtx->Eax = 3;
+        }
+
+        size_t selectedWave = -1;
+        std::vector<std::pair<size_t, const char*>> waveOpts;
+    };
+
     class THGuiPrac : public Gui::GameGuiWnd {
         THGuiPrac() noexcept
         {
@@ -2779,14 +2843,8 @@ namespace TH185 {
                 thPracParam.funds = *mFunds;
                 thPracParam.difficulty = *mDifficulty;
                 thPracParam.bulletMoney = *mBulletMoney;
-                thPracParam.force_wave = {};
                 thPracParam.additional_cards = {};
-                thPracParam.__waves_forced = 0;
 
-                for (auto w : mForceWave) {
-                    if (w) thPracParam.force_wave.push_back(w + 29);
-                    else   break;
-                }
                 for (auto c : mAdditionalCards) {
                     if (c) thPracParam.additional_cards.push_back(c - 1);
                     else   break;
@@ -2930,91 +2988,6 @@ namespace TH185 {
             PracticeMenu();
         }
 
-        const std::vector<const char*> waves = {
-            "None",
-            "Wave01t",
-            "Wave02t",
-            "Wave03t",
-            "Wave01",
-            "Wave02",
-            "Wave03",
-            "Wave04",
-            "Wave05",
-            "Wave06",
-            "Wave07",
-            "Wave08",
-            "Wave09",
-            "Wave10",
-            "Wave11",
-            "Wave12",
-            "Wave13",
-            "Wave14",
-            "Wave15",
-            "Wave16",
-            "Wave17",
-            "Wave18",
-            "Wave19",
-            "Wave20",
-            "Wave21",
-            "Wave22",
-            "Wave23",
-            "Wave24",
-            "Wave25",
-            "Wave26",
-            "Wave27",
-            "Wave28",
-            "Wave29",
-            "Wave30",
-            "Wave31",
-            "Wave32",
-            "Wave33",
-            "Wave34",
-            "Wave35",
-            "Wave36",
-            "Wave37",
-            "Wave38",
-            "Wave39",
-            "Wave40",
-            "Wave41",
-            "Wave42",
-            "Wave43",
-            "Wave44",
-            "Wave45",
-            "Wave46",
-            "Wave47",
-            "Wave48",
-            "Wave49",
-            "Wave50",
-            "Wave51",
-            "Wave52",
-            "Wave53",
-            "Wave54",
-            "Wave55",
-            "Wave56",
-            "Wave57",
-            "Wave58",
-            "Wave59",
-            "Wave60",
-            "Wave61",
-            "Wave62",
-            "Wave63",
-            "Wave64",
-            "Wave65",
-            "Wave66",
-            "Wave67",
-            "Wave68",
-            "Wave69",
-            "Wave70",
-            "Wave71",
-            "Wave72",
-            "Wave73",
-            "Wave74",
-            "Wave75",
-            "Wave76",
-            "Wave77",
-            "Wave78",
-            "Wave79"
-        };
         std::vector<const char*> cards = { };
 
         const char* difficulties[8] = {
@@ -3042,10 +3015,6 @@ namespace TH185 {
                 ImGui::Separator();
                 ImGui::TextUnformatted(S(TH185_ADDITIONAL_CARDS));
                 Gui::MultiComboSelect(mAdditionalCards, cards.data(), cards.size(), S(TH18_CARD_FORMAT));
-
-                ImGui::Separator();
-                ImGui::TextUnformatted(S(TH185_FORCE_WAVE));
-                Gui::MultiComboSelect(mForceWave, waves.data(), waves.size(), S(TH185_WAVE_FORMAT));
             }
         }
 
@@ -3056,7 +3025,6 @@ namespace TH185 {
         Gui::GuiDrag<int, ImGuiDataType_S32> mFunds { TH18_FUNDS, 0, 999990, 1, 100000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mDifficulty { TH_DIFFICULTY, 0, 7 };
         std::vector<unsigned int> mWarp;
-        std::vector<unsigned int> mForceWave = { 0 };
         std::vector<unsigned int> mAdditionalCards = { 0 };
 
         // TODO: Setup chapters
@@ -3187,8 +3155,76 @@ namespace TH185 {
         pCtx->Eip = 0x46d9c0;
     }
     PATCH_ST(th185_unhardcode_bosses, 0x43d0f6, "\xeb", 1);
-
+    
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th185_wave_fire, 0x43cf47)
+    {
+        if (!thPracParam.mode)
+            return;
+
+        auto getWaveName = [](const char* subName) -> const char* {
+            const char* retStr = subName;
+
+            auto subList = GetMemContent(0x004d7af4, 0x4f34, 0x10c);
+            uint8_t* sub = ThModern_ECLGetSub(subName, subList);
+
+            struct th10_instr_t {
+                uint32_t time;
+                uint16_t id;
+                uint16_t size;
+                uint16_t param_mask;
+                uint8_t rank_mask;
+                uint8_t param_count;
+                uint32_t zero;
+            };
+
+            uint8_t* p = sub + ((uint32_t*)sub)[1];
+            th10_instr_t* instr = (th10_instr_t*)p;
+
+            while (*(uint32_t*)p != 0x484C4345) {
+                if (instr->id == 1006) {
+                    retStr = (char*)(p + sizeof(th10_instr_t) + 4);
+                    break;
+                }
+                p += instr->size;
+                instr = (th10_instr_t*)p;
+            }
+
+            return retStr;
+        };
+
+        auto& wave_select = THWaveSelect::singleton();
+        
+        if (wave_select.IsClosed()) {
+            auto*  weights = (uint32_t*)GetMemAddr(ENEMY_MANAGER, 0x324);
+            auto** sub_names = (const char**)0x4B5D50;
+
+            wave_select.waveOpts = {};
+            wave_select.selectedWave = -1;
+
+            for (size_t i = 0; i < 110; i++) {
+                if (weights[i]) {
+                    wave_select.waveOpts.push_back({ i, getWaveName(sub_names[i]) });
+                }
+            }
+
+            if (wave_select.waveOpts.size() <= 1)
+                return;
+
+            pCtx->Eax = -1;
+            pCtx->Eip = 0x43d57a;
+            wave_select.th185_replaymanager_on_tick_cutoff.Enable();
+            wave_select.Open();
+        } else {
+            wave_select.Close();
+        }
+
+        if (wave_forced) {
+            wave_forced = false;
+            pCtx->Eax = -1;
+            pCtx->Eip = 0x43d57a;
+        }
+    }
 
     PATCH_DY(th185_unblock_all, 0x46d532, "\xeb", 1);
     EHOOK_DY(th185_gui_update, 0x4013dd)
@@ -3198,6 +3234,10 @@ namespace TH185 {
         // Gui components update
         THOverlay::singleton().Update();
         THGuiPrac::singleton().Update();
+
+        if (uintptr_t game_thread = GetMemContent(GAME_THREAD_PTR);
+            game_thread && !(GetMemContent(game_thread + 0xb0) & 0x10))
+            THWaveSelect::singleton().Update();
 
         GameGuiEnd(UpdateAdvOptWindow() || isItemEnabled);
     }
@@ -3227,7 +3267,6 @@ namespace TH185 {
             for (auto& c : thPracParam.additional_cards)
                 AddCard(c);
 
-            thPracParam.__waves_forced = 0;
         } else {
             th185_unhardcode_bosses.Disable();
         }
@@ -3262,11 +3301,19 @@ namespace TH185 {
             pCtx->Eip = 0x45f92e;
 
     }
+    EHOOK_DY(th185_change_gamemode, 0x45b77a)
+    {
+        auto& wave_select = THWaveSelect::singleton();
+        wave_select.Close();
+        wave_select.th185_replaymanager_on_tick_cutoff.Disable();
+    }
     EHOOK_DY(th185_force_wave, 0x43d156)
     {
-        if (thPracParam.force_wave.size() > thPracParam.__waves_forced) {
-            pCtx->Esi = thPracParam.force_wave.front();
-            thPracParam.__waves_forced++;
+        auto& wave_select = THWaveSelect::singleton();
+        if (auto i = wave_select.selectedWave; i != -1 && thPracParam.mode) {
+            auto& [id, name] = wave_select.waveOpts[i];
+            pCtx->Esi = id;
+            wave_forced = true;
         }
     }
     EHOOK_DY(th185_prac_confirm, 0x46d523)
@@ -3301,6 +3348,7 @@ namespace TH185 {
         // Gui components creation
         THOverlay::singleton();
         THGuiPrac::singleton();
+        THWaveSelect::singleton();
 
         th185_prac_disable_arrows.Setup();
         th185_unhardcode_bosses.Setup();
