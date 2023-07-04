@@ -75,3 +75,5 @@ privDefer<F> defer_func(F f)
 #define DEFER_2(x, y) DEFER_1(x, y)
 #define DEFER_3(x) DEFER_2(x, __COUNTER__)
 #define defer(code) auto DEFER_3(_defer_) = defer_func([&]() { code; })
+
+#define elementsof(a) (sizeof(a) / sizeof(a[0]))
