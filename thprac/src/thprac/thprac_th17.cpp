@@ -841,13 +841,14 @@ namespace TH17 {
 
         void ContentUpdate()
         {
-            ImGui::TextUnformatted(S(TH_ADV_OPT));
-            ImGui::Separator();
-
             if (mInGoastMenu) {
+                ImGui::TextUnformatted("Spawn a Goast");
+                ImGui::Separator();
                 GoastMenu();
                 return;
             }
+            ImGui::TextUnformatted(S(TH_ADV_OPT));
+            ImGui::Separator();
 
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
             
@@ -866,7 +867,7 @@ namespace TH17 {
                 ImGui::SameLine();
                 HelpMarker(S(TH17_GOAST_REPFIX_DESC));
                 
-                if (ImGui::Button("Goast")) {
+                if (ImGui::Button("Spawn a Goast")) {
                     mInGoastMenu = true;
                 }
 
