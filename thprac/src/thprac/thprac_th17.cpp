@@ -1,8 +1,18 @@
 ﻿#include "thprac_utils.h"
 
+struct vec2f {
+    float x;
+    float y;
+};
 
 namespace THPrac {
 namespace TH17 {
+    __declspec(noinline) void SpawnToken(uint32_t goast, vec2f& pos, float ang) {
+        uintptr_t goast_manager = GetMemContent(0x004B7684);
+        __asm movss xmm2, ang;
+        asm_call<0x00410380, Thiscall>(goast_manager, &pos, goast);
+    }
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -660,6 +670,11 @@ namespace TH17 {
         Gui::GuiNavFocus mNavFocus { TH_PHASE };
     };
 
+    EHOOK_G1(th17_force_goast_angle, 0x4105C9) {
+        th17_force_goast_angle::GetHook().Disable();
+        pCtx->Eip = 0x41062E;
+    }
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
         EHOOK_ST(th17_all_clear_bonus_1, 0x43229f)
         {
@@ -686,6 +701,8 @@ namespace TH17 {
             }
         }
     private:
+        bool mInGoastMenu = false;
+                
         void FpsInit()
         {
             if (*(uint8_t*)0x4b5cd9 == 3) {
@@ -715,140 +732,6 @@ namespace TH17 {
             th17_all_clear_bonus_1.Toggle(mOptCtx.all_clear_bonus);
             th17_all_clear_bonus_2.Toggle(mOptCtx.all_clear_bonus);
             th17_all_clear_bonus_3.Toggle(mOptCtx.all_clear_bonus);
-        }
-
-        struct _goast {
-            _goast(float _x, float _y, float _dir, int _type)
-                : x(_x)
-                , y(_y)
-                , dir(_dir)
-                , type(_type)
-            {
-            }
-            float x;
-            float y;
-            float dir;
-            int type;
-
-            inline void SetPos(float x, float y, float scale)
-            {
-                ImVec2 game_area_origin { (32.0f + 192.0f), 16.0f };
-                x = x / scale - game_area_origin.x;
-                y = y / scale - game_area_origin.y;
-            }
-            inline ImVec2 GetPos(float x, float y, float scale)
-            {
-            }
-        };
-        static constexpr float mGoastRadius = 15.0f;
-        char mTempStr[128];
-        bool mIsInGoastCfgMenu = false;
-        _goast* mGoastInCfg = nullptr;
-        bool mGoastMoving = false;
-        ImVec2 mGoastCursorBias { 0.0f, 0.0f };
-        std::list<_goast> mInitGoastCfg;
-        std::list<_goast> mInitGoastGame;
-        ImVec2 CordCvtWnd2Game(_goast& goast, float scale)
-        {
-            ImVec2 game_area_origin { (32.0f + 192.0f), 16.0f };
-            goast.x /= scale;
-            goast.x = goast.x - game_area_origin.x;
-            goast.y /= scale;
-            goast.y = goast.y - game_area_origin.y;
-        }
-        ImVec2 CordCvtGame2Wnd(_goast& goast, float scale)
-        {
-            ImVec2 game_area_origin { (32.0f + 192.0f), 16.0f };
-            goast.x /= scale;
-            goast.x = goast.x - game_area_origin.x;
-            goast.y /= scale;
-            goast.y = goast.y - game_area_origin.y;
-        }
-        void GoastCollisionTest(ImVec2 mouse_pos)
-        {
-            auto it = mInitGoastCfg.end();
-            while (it != mInitGoastCfg.begin()) {
-                --it;
-                if (std::hypot(it->x - mouse_pos.x, it->y - mouse_pos.y) <= mGoastRadius) {
-                    mGoastCursorBias.x = it->x - mouse_pos.x;
-                    mGoastCursorBias.y = it->y - mouse_pos.y;
-                    mInitGoastCfg.push_back(*it);
-                    mInitGoastCfg.erase(it);
-                    mGoastInCfg = &(mInitGoastCfg.back());
-                    return;
-                }
-            }
-
-            mGoastInCfg = nullptr;
-        }
-        void InitGoastOpt()
-        {
-            if (ImGui::Button("Config"))
-                mIsInGoastCfgMenu = true;
-        }
-        void InitGoastCfgMenu()
-        {
-            auto& io = ImGui::GetIO();
-            auto drawList = ImGui::GetWindowDrawList();
-            float scale = 2.0f;
-            ImVec2 play_area[2] { { 32.0f * scale, 16.0f * scale }, { 416.0f * scale, 464.0f * scale } }; // 384, 448
-            ImVec2 goast_area[2] { { 44.0f * scale, 144.0f * scale }, { 404.0f * scale, 400.0f * scale } }; // 384, 448
-
-            drawList->AddRectFilled(play_area[0], play_area[1], 0x300000ff);
-            drawList->AddRectFilled(goast_area[0], goast_area[1], 0x500030ff);
-
-            ImGui::SetCursorPos(ImVec2(32.0f * scale, 16.0f * scale));
-            ImGui::InvisibleButton("goast_canvas", ImVec2(384.0f * scale, 448.0f * scale));
-            auto mouse_pos = io.MousePos;
-            if (ImGui::IsItemHovered()) {
-                if (mGoastMoving) {
-                    if (!ImGui::IsMouseDown(0))
-                        mGoastMoving = false;
-                    else {
-                        mGoastInCfg->x = mouse_pos.x + mGoastCursorBias.x;
-                        mGoastInCfg->y = mouse_pos.y + mGoastCursorBias.y;
-                    }
-                } else if (ImGui::IsMouseClicked(0)) {
-                    GoastCollisionTest(mouse_pos);
-                    if (mGoastInCfg)
-                        mGoastMoving = true;
-                } else if (ImGui::IsMouseClicked(1)) {
-                    GoastCollisionTest(mouse_pos);
-                    if (mGoastInCfg) {
-                        mGoastInCfg = nullptr;
-                        mInitGoastCfg.pop_back();
-                    } else {
-                        mInitGoastCfg.emplace_back(mouse_pos.x, mouse_pos.y, 0.0f, 0);
-                        mGoastInCfg = &(mInitGoastCfg.back());
-                    }
-                }
-            }
-
-            for (auto& goast : mInitGoastCfg) {
-                auto goast_pos = ImVec2(goast.x, goast.y);
-                switch (goast.type) {
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                case 7:
-                case 8:
-                case 9:
-                case 10:
-                case 11:
-                default:
-                    break;
-                }
-                drawList->AddCircleFilled(goast_pos, mGoastRadius, 0x60ffffff, 24);
-                drawList->AddText(goast_pos, 0xa0000000, "T");
-            }
-
-            if (mGoastInCfg) {
-                ImGui::SetCursorPos(ImVec2(1000.0f, 480.0f));
-                ImGui::DragInt("TYPE", &mGoastInCfg->type);
-            }
         }
 
         THAdvOptWnd() noexcept
@@ -912,12 +795,53 @@ namespace TH17 {
                 break;
             }
         }
+
+        void GoastMenu() {
+            if (ImGui::Button(S(TH_BACK))) {
+                mInGoastMenu = false;
+                return;
+            }
+
+            Gui::ComboSelect(mSelectedGoast, (th_glossary_t*)TH17_GOAST_SELECT, elementsof(TH17_GOAST_SELECT), S(TH17_GOAST));
+
+            if (!mSelectedGoast) {
+                ImGui::BeginDisabled();
+            }
+
+            ImGui::SliderFloat("Angle", &mGoastAng, -3.14159265359, 3.14159265359);
+            ImGui::Checkbox("Force angle", &mForceGoastAngle);
+            ImGui::SameLine();
+            HelpMarker("Tokens will try to move away from eachother both when spawning and when bouncing from a wall. This will ensure that a token will always go in the direction you specify");
+
+            ImRotateStart();
+            ImGui::NewLine();
+            ImGui::NewLine();
+            ImGui::NewLine();
+            ImGui::Indent();
+            ImGui::Indent();
+            ImGui::TextUnformatted("--angle-preview-->");
+            ImGui::Unindent();
+            ImGui::Unindent();
+            ImRotateEnd(1.57079632679 - mGoastAng);
+
+            if (!mSelectedGoast) {
+                ImGui::EndDisabled();
+            }
+
+        }
+
         void ContentUpdate()
         {
             ImGui::TextUnformatted(S(TH_ADV_OPT));
             ImGui::Separator();
-            ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 
+            if (mInGoastMenu) {
+                GoastMenu();
+                return;
+            }
+
+            ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
+            
             if (BeginOptGroup<TH_GAME_SPEED>()) {
                 if (GameFPSOpt(mOptCtx))
                     FpsSet();
@@ -932,6 +856,10 @@ namespace TH17 {
                 ImGui::Checkbox(S(TH17_GOAST_REPFIX), &mGoastRepfix);
                 ImGui::SameLine();
                 HelpMarker(S(TH17_GOAST_REPFIX_DESC));
+                
+                if (ImGui::Button("Goast")) {
+                    mInGoastMenu = true;
+                }
 
                 EndOptGroup();
             }
@@ -945,6 +873,10 @@ namespace TH17 {
     public:
         bool mGoastBugfix = true;
         bool mGoastRepfix = false;
+        bool mForceGoastAngle = false;
+
+        size_t mSelectedGoast = 0;
+        float mGoastAng = 0;
     };
 
     void ECLStdExec(ECLHelper& ecl, unsigned int start, int std_id, int ecl_time = 0)
@@ -1836,6 +1768,30 @@ namespace TH17 {
 #define TH17AddGoast(goast_id) asm_call<0x40f980, Thiscall>(GetMemContent(0x4b7684), goast_id)
 
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th17_window_mousedown, 0x46198b) {
+        auto& adv_opt = THAdvOptWnd::singleton();
+
+        if (GetMemContent(0x4b7684) && adv_opt.IsClosed() && adv_opt.mSelectedGoast) {
+            LPARAM lParam = GetMemContent(pCtx->Ebp + 0x14);
+            HWND hWnd = (HWND)pCtx->Edx;
+
+            // Someone could have a non-standard window size
+            RECT clientRect;
+            GetClientRect(hWnd, &clientRect);
+
+            float gameX = LOWORD(lParam) / (clientRect.right / 640.0f);
+            float gameY = HIWORD(lParam) / (clientRect.bottom / 480.0f);
+
+            if (adv_opt.mForceGoastAngle) {
+                th17_force_goast_angle::GetHook().Enable();
+            }
+            vec2f stgFramePos { gameX - 224.0f, gameY - 16.0f };
+            if (stgFramePos.y > 128 && stgFramePos.y < 448
+                && abs(stgFramePos.x) < 192) {
+                SpawnToken(adv_opt.mSelectedGoast, stgFramePos, adv_opt.mGoastAng);
+            }
+        }
+    }
     EHOOK_DY(th17_goast_bugfix, 0x430080)
     {
         if (THAdvOptWnd::singleton().mGoastBugfix && *(uint32_t*)0x4b59dc == *(uint32_t*)0x4b59e0 && GetMemContent(0x4b76b0, 0xa8) == 0)
