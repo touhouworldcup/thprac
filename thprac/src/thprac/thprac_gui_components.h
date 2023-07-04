@@ -14,6 +14,9 @@
 #include "utils/utils.h"
 
 namespace THPrac {
+void ImRotateStart();
+ImVec2 ImRotationCenter();
+void ImRotateEnd(float rad, ImVec2 center = ImRotationCenter());
 namespace Gui {
     class GameGuiWnd {
     public:
