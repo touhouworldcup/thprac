@@ -1299,6 +1299,10 @@ namespace TH128 {
             ecl << pair{0x6d6c, (int8_t)0x32};
             ecl << pair{0x6f24, (int8_t)0x32};
             ecl << pair{0x70dc, (int8_t)0x32};
+
+            ecl << pair{0x6e98, (int16_t)0};
+            ecl << pair{0x7050, (int16_t)0};
+
             break;
         case THPrac::TH128::TH128_A13_BOSS4:
             ECL3Boss(ecl, 0x84b8, false);
@@ -1390,10 +1394,14 @@ namespace TH128 {
             break;
         case THPrac::TH128::TH128_A23_BOSS3:
             ECL3Boss(ecl, 0x7ce4, false);
+            ecl.SetFile(2);
+
             ecl << pair{0x62c8, (int8_t)0x32};
             ecl << pair{0x64a0, (int8_t)0x32};
             ecl << pair{0x6678, (int8_t)0x32};
-            ecl.SetFile(2);
+
+            ecl << pair{0x63f4, (int16_t)0};
+            ecl << pair{0x65cc, (int16_t)0};
             break;
         case THPrac::TH128::TH128_A23_BOSS4:
             ECL3Boss(ecl, 0x7ce4, false);
@@ -1521,6 +1529,9 @@ namespace TH128 {
             ecl << pair{0x7244, (int8_t)0x32};
             ecl << pair{0x741c, (int8_t)0x32};
             ecl << pair{0x75f4, (int8_t)0x32};
+
+            ecl << pair{0x7370, (int16_t)0};
+            ecl << pair{0x7548, (int16_t)0};
             break;
         case THPrac::TH128::TH128_B13_BOSS4:
             ECL3Boss(ecl, 0x7d54, false);
@@ -1617,6 +1628,9 @@ namespace TH128 {
             ecl << pair{0x62a8, (int8_t)0x32};
             ecl << pair{0x6460, (int8_t)0x32};
             ecl << pair{0x6618, (int8_t)0x32};
+
+            ecl << pair{0x63d4, (int16_t)0};
+            ecl << pair{0x658c, (int16_t)0};
             break;
         case THPrac::TH128::TH128_B23_BOSS4:
             ECL3Boss(ecl, 0x7b04, false);
@@ -1743,6 +1757,9 @@ namespace TH128 {
             ecl << pair{0x7258, (int8_t)0x32};
             ecl << pair{0x7430, (int8_t)0x32};
             ecl << pair{0x7608, (int8_t)0x32};
+
+            ecl << pair{0x7384, (int16_t)0};
+            ecl << pair{0x755c, (int16_t)0};
             break;
         case THPrac::TH128::TH128_C13_BOSS4:
             ECL3Boss(ecl, 0x8408, false);
@@ -1838,6 +1855,9 @@ namespace TH128 {
             ecl << pair{0x6d6c, (int8_t)0x32};
             ecl << pair{0x6f24, (int8_t)0x32};
             ecl << pair{0x70dc, (int8_t)0x32};
+
+            ecl << pair{0x6e98, (int16_t)0};
+            ecl << pair{0x7050, (int16_t)0};
             break;
         case THPrac::TH128::TH128_C23_BOSS4:
             ECL3Boss(ecl, 0x7c20,  false);
