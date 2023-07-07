@@ -792,6 +792,7 @@ namespace TH07 {
                 break;
             }
         } else if (stage == 3) {
+            ECLST3BG();
             switch (portion) {
             case 1:
                 ECLTimeWarp(2, 390);
@@ -1732,7 +1733,10 @@ namespace TH07 {
             int32_t* graze2 = (int32_t*)GetMemAddr(0x626278, 0x18);
             *graze1 = *graze2 = thPracParam.graze;
 
-            ECLTimeWarp(2, thPracParam.frame);
+            if (thPracParam.frame) {
+                ECLST3BG();
+                ECLTimeWarp(2, thPracParam.frame);
+            }
 
             THSetPoint();
 
