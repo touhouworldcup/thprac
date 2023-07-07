@@ -600,7 +600,7 @@ namespace Gui {
         float mXOffset2 = 0.0f;
 
     protected:
-        virtual void OnWidgetUpdate(bool status, bool has_changed);
+        bool OnWidgetUpdate();
     public:
         GuiHotKey(th_glossary_t text_ref, const char* key_text, int vkey, std::initializer_list<HookCtx*> hooks = {})
             : mTextRef(text_ref)

@@ -1,6 +1,7 @@
 ﻿#include "thprac_gui_components.h"
 #include "imgui_internal.h"
 #include <Shlwapi.h>
+#include <format>
 
 namespace THPrac
 {
@@ -448,19 +449,34 @@ namespace THPrac
 
 
 
-        void GuiHotKey::OnWidgetUpdate(bool status, bool has_changed)
+        bool GuiHotKey::OnWidgetUpdate()
         {
             const char* text = mText ? mText : LocaleGetStr(mTextRef);
+            std::string realText;
+            if (mStatus) {
+                realText = std::format("[{}: {}]", mKeyText, text);
+                ImGui::PushStyleColor(ImGuiCol_Text, { 0.0f, 1.0f, 0.0f, 1.0f });
+            } else {
+                realText = std::format("{}: {}", mKeyText, text);
+            }
+
+            auto cursor = ImGui::GetCursorPos();
+            ImGui::TextUnformatted(realText.c_str());
+            ImGui::SetCursorPos(cursor);
 
             if (mStatus)
-                ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "[%s: %s]", mKeyText, text);
+                ImGui::PopStyleColor();
+                        
+            if (ImGui::InvisibleButton(mKeyText, ImGui::CalcTextSize(realText.c_str())))
+                return true;
             else
-                ImGui::Text("%s: %s", mKeyText, text);
-            return;
+                return false;
         }
         bool GuiHotKey::operator()(bool use_widget)
         {
             bool flag = Gui::ImplWin32CheckHotkey(mKey);
+            if (use_widget)
+                flag |= OnWidgetUpdate();
 
             if (flag) {
                 mStatus = !mStatus;
@@ -475,8 +491,7 @@ namespace THPrac
                 }
             }
 
-            if (use_widget)
-                OnWidgetUpdate(mStatus, flag);
+            
 
             return flag;
         }
