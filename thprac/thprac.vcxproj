@@ -207,7 +207,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>thprac_std.h</PrecompiledHeaderFile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;HAVE_SSE2;_CRT_SECURE_NO_WARNINGS;_WINDOWS;WINVER=0x0601;_WIN32_WINNT=0x0601;DISTORM_LIGHT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard Condition="'$(ToolsetType)'=='MSVC'">stdcpp20</LanguageStandard>
