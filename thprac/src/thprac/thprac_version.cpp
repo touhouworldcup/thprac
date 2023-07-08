@@ -1,9 +1,9 @@
 ﻿#include "thprac_version.h"
 
 namespace THPrac {
-const char* g_thpracVersionStr { "2.2.1.3" };
-const wchar_t* g_thpracVersionWcs { L"2.2.1.3" };
-const int g_thpracVersionInt[] { 2, 2, 1, 3 };
+const char* g_thpracVersionStr { "2.2.1.4" };
+const wchar_t* g_thpracVersionWcs { L"2.2.1.4" };
+const int g_thpracVersionInt[] { 2, 2, 1, 4 };
 
 
 const char* GetVersionStr()
