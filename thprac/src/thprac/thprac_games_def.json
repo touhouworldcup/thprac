@@ -762,7 +762,7 @@
       "TH_DATANLY_RECORD": [ "记录 #%d: ", "Record #%d: ", "記録 #%d: " ],
       "TH_DATANLY_RECORD_DELETE": [ "删除##anly_%d", "Delete##anly_%d", "削除##anly_%d" ],
 
-      "TH_BULLETS": [ "子弹", "Bullets", "" ]
+      "TH_BULLETS": [ "子弹", "Bullets", "弾" ]
     },
 
     "groups": {
