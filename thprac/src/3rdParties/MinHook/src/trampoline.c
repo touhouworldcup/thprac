@@ -1,4 +1,5 @@
-﻿/*
+﻿#pragma warning (push, 0)
+/*
  *  MinHook - The Minimalistic API Hooking Library for x64/x86
  *  Copyright (C) 2009-2017 Tsuda Kageyu.
  *  All rights reserved.
@@ -288,7 +289,7 @@ BOOL CreateTrampolineFunctionNew(PTRAMPOLINE ct, UINT8 min_tf_length, BOOL check
     }
     while (!finished);
 
-	// MODIFIED 
+	// MODIFIED
 	if (check_jmp)
 	{
 		// Is there enough place for a long jump?

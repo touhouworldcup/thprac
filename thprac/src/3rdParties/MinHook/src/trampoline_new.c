@@ -1,3 +1,4 @@
+#pragma warning (push, 0)
 /*
  *  MinHook - The Minimalistic API Hooking Library for x64/x86
  *  Copyright (C) 2009-2017 Tsuda Kageyu.
