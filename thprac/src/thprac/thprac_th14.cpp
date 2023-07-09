@@ -1014,7 +1014,8 @@ namespace TH14 {
 
             return wndFocus;
         }
-        void MsgBox(UINT type, const wchar_t* title, const wchar_t* msg, const wchar_t* msg2 = nullptr)
+        // TODO: Remove title parameter?
+        void MsgBox(UINT type, [[maybe_unused]] const wchar_t* title, const wchar_t* msg, const wchar_t* msg2 = nullptr)
         {
             std::wstring _msg = msg;
             if (msg2) {

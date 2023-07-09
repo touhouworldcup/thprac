@@ -1205,7 +1205,7 @@ public:
 
         return 0;
     }
-    static DWORD WINAPI ScanThreadFunc(_In_ LPVOID lpParameter)
+    static DWORD WINAPI ScanThreadFunc([[maybe_unused]] _In_ LPVOID lpParameter)
     {
         auto& game = THGameGui::singleton();
         auto& dir = game.mScanPath;
@@ -1215,7 +1215,7 @@ public:
         ScanSteam();
         return 0;
     }
-    static DWORD WINAPI RescanThreadFunc(_In_ LPVOID lpParameter)
+    static DWORD WINAPI RescanThreadFunc([[maybe_unused]] _In_ LPVOID lpParameter)
     {
         auto& gameGui = THGameGui::singleton();
         gameGui.thcrapSetup();
@@ -1752,7 +1752,7 @@ public:
             return 0;
         }
     }
-    static DWORD WINAPI LaunchThreadFunc(_In_ LPVOID lpParameter)
+    static DWORD WINAPI LaunchThreadFunc([[maybe_unused]] _In_ LPVOID lpParameter)
     {
         int returnReuslt = 0;
 

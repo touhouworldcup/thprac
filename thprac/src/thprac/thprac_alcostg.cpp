@@ -85,7 +85,8 @@ namespace Alcostg {
         }
     }
     namespace AlcostgBeer {
-        static void Set(int16_t beer)
+        // TODO: Should this function take (void)?
+        static void Set([[maybe_unused]] int16_t beer)
         {
             alcostg_beer_cd = 0;
             alcostg_add_beer::GetHook().Enable();

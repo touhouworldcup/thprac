@@ -758,7 +758,7 @@ public:
         mUpdDialogThread.Stop();
         return returnValue;
     }
-    static DWORD WINAPI UpdateDialogCtrlFunc(_In_ LPVOID lpParameter)
+    static DWORD WINAPI UpdateDialogCtrlFunc([[maybe_unused]] _In_ LPVOID lpParameter)
     {
         auto hDialog = CreateDialog(nullptr, MAKEINTRESOURCE(IDD_DIALOG1), nullptr, UpdateDialogProc);
         THUpdate::singleton().mUpdDialogHnd = hDialog;
@@ -778,7 +778,7 @@ public:
 
         return 0;
     }
-    static INT_PTR __stdcall UpdateDialogProc(HWND hDialog, UINT msg, WPARAM wParam, LPARAM lParam)
+    static INT_PTR __stdcall UpdateDialogProc([[maybe_unused]] HWND hDialog, UINT msg, WPARAM wParam, [[maybe_unused]] LPARAM lParam)
     {
         switch (msg) {
         case WM_INITDIALOG:
@@ -1080,7 +1080,7 @@ private:
         return 0;
     }
 
-    static DWORD WINAPI CheckUpdateFunc(_In_ LPVOID lpParameter)
+    static DWORD WINAPI CheckUpdateFunc([[maybe_unused]] _In_ LPVOID lpParameter)
     {
         auto& updObj = THUpdate::singleton();
         updObj.mChkUpdStatus = STATUS_CHKING_OR_UPDATING;
@@ -1093,7 +1093,7 @@ private:
             CheckUpdateJson((char*)updateJson.data(), updateJson.size());
         return 0;
     }
-    static DWORD WINAPI AutoUpdateFunc(_In_ LPVOID lpParameter)
+    static DWORD WINAPI AutoUpdateFunc([[maybe_unused]] _In_ LPVOID lpParameter)
     {
         auto& updObj = THUpdate::singleton();
         updObj.mAutoUpdStatus = STATUS_CHKING_OR_UPDATING;

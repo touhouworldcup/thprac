@@ -173,17 +173,17 @@ static DWORD PopHelper32(CONTEXT* pCtx)
 }
 
 #define EHOOK_G1(name, target) \
-    __declspec(noinline) void __stdcall __vehf_##name(PCONTEXT pCtx); \
+    __declspec(noinline) void __stdcall __vehf_##name([[maybe_unused]] PCONTEXT pCtx); \
     typedef EHookSingleton <target, __vehf_##name> name; \
-    __declspec(noinline) void __stdcall __vehf_##name(PCONTEXT pCtx)
+    __declspec(noinline) void __stdcall __vehf_##name([[maybe_unused]] PCONTEXT pCtx)
 
 #define EHOOK_ST(name, target)                                \
     HookCtx name { target, __vehf_##name }; \
-    static __declspec(noinline) void __stdcall __vehf_##name(PCONTEXT pCtx)
+    static __declspec(noinline) void __stdcall __vehf_##name([[maybe_unused]] PCONTEXT pCtx)
 
 #define EHOOK_DY(name, target)                                \
     HookCtx name { mHooks, target, __vehf_##name }; \
-    static __declspec(noinline) void __stdcall __vehf_##name(PCONTEXT pCtx)
+    static __declspec(noinline) void __stdcall __vehf_##name([[maybe_unused]] PCONTEXT pCtx)
 
 #define PATCH_S1(name, target, patch, size)           \
     static constexpr char __s1patch_##name[] = patch; \

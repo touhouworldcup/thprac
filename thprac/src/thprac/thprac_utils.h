@@ -230,6 +230,7 @@ void AboutOpt(const char* thanks_text = nullptr);
 
 #pragma region Game BGM
 
+// TODO: Should bgm_cmd be removed?
 template <
     uintptr_t play_addr,
     uintptr_t stop_addr,
@@ -237,7 +238,7 @@ template <
     uintptr_t resume_addr,
     uintptr_t caller_addr>
 static bool ElBgmTest(bool hotkey_status, bool practice_status,
-    uintptr_t retn_addr, int32_t bgm_cmd, int32_t bgm_param, uintptr_t caller)
+    uintptr_t retn_addr, [[maybe_unused]] int32_t bgm_cmd, int32_t bgm_param, uintptr_t caller)
 {
     static bool mElStatus { false };
     static int mLockBgmId { -1 };
@@ -294,6 +295,7 @@ static bool ElBgmTest(bool hotkey_status, bool practice_status,
     return mElStatus;
 }
 
+// TODO: Should bgm_cmd be removed?
 template <
     uintptr_t play_addr,
     uintptr_t play_addr_2,
@@ -302,7 +304,7 @@ template <
     uintptr_t resume_addr,
     uintptr_t caller_addr>
 static bool ElBgmTestTemp(bool hotkey_status, bool practice_status,
-    uintptr_t retn_addr, int32_t bgm_cmd, int32_t bgm_param, uintptr_t caller)
+    uintptr_t retn_addr, [[maybe_unused]] int32_t bgm_cmd, int32_t bgm_param, uintptr_t caller)
 {
     static bool mElStatus { false };
     static int mLockBgmId { -1 };

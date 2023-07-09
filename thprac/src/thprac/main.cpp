@@ -29,8 +29,12 @@ bool PrivilegeCheck()
     return fRet;
 }
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
-{
+int WINAPI wWinMain(
+    [[maybe_unused]] HINSTANCE hInstance,
+    [[maybe_unused]] HINSTANCE hPrevInstance,
+    PWSTR pCmdLine,
+    [[maybe_unused]] int nCmdShow
+) {
     HookCtx::VEHInit();
     if (LauncherPreUpdate(pCmdLine)) {
         return 0;
