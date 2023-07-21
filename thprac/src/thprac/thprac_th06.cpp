@@ -1855,6 +1855,11 @@ namespace TH06 {
     }
     HOOKSET_DEFINE(THMainHook)
     PATCH_DY(th06_reacquire_input, 0x41dc58, "\x00\x00\x00\x00\x74", 5);
+    EHOOK_DY(th06_activateapp, 0x420D96)
+    {
+        // Wacky hack to disable rendering for one frame to prevent the game from crasing when alt tabbing into it if the pause menu is open and the game is in fullscreen mode
+        GameGuiProgress = 1; 
+    }
     EHOOK_DY(th06_bgm_play, 0x424b5d)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
