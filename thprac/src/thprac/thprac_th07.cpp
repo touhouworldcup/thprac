@@ -1766,7 +1766,7 @@ namespace TH07 {
     }
     EHOOK_DY(th07_disable_title, 0x42956b)
     {
-        if (thPracParam.mode == 1 && thPracParam.section) {
+        if (thPracParam.mode == 1 && (thPracParam.section || thPracParam.frame)) {
             pCtx->Esp += 0xC;
             pCtx->Eip = 0x429570;
         }
