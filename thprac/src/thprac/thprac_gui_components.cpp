@@ -474,7 +474,7 @@ namespace THPrac
         }
         bool GuiHotKey::operator()(bool use_widget)
         {
-            bool flag = Gui::ImplWin32CheckHotkey(mKey);
+            bool flag = Gui::KeyboardInputUpdate(mKey) == 1;
             if (use_widget)
                 flag |= OnWidgetUpdate();
 
