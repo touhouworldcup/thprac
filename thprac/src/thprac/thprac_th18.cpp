@@ -1061,12 +1061,11 @@ namespace TH18 {
         }
         __declspec(noinline) uint32_t* FindCardDesc(uint32_t id)
         {
-            for (uint32_t i = CARD_DESC_LIST;; i += 0x34) {
+            for (uint32_t i = CARD_DESC_LIST; true; i += 0x34) {
                 if (*(uint32_t*)(i + 4) == id) {
                     return (uint32_t*)i;
                 }
             }
-            return nullptr;
         }
 
 #define ThEncrypt(data, size1, param1, param2, param3, size2) asm_call<0x401f50, Fastcall>(data, size1, param1, param2, param3, size2)

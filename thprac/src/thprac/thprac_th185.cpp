@@ -2752,9 +2752,9 @@ namespace TH185 {
         {
             SetWndFlag(
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
-            
+
             SetFade(0.5f, 0.5f);
-            SetSizeRel(0.3, 0.6);
+            SetSizeRel(0.3f, 0.6f);
             SetPosRel(0.35f, 0.2f);
 
             th185_replaymanager_on_tick_cutoff.Setup();
@@ -2764,7 +2764,7 @@ namespace TH185 {
         {
             ImGui::TextUnformatted(S(TH185_FORCE_WAVE));
             ImGui::Separator();
-            
+
             const ImVec4 green = { 0, 1, 0, 1 };
 
             if (selectedWave == -1) {
@@ -2772,7 +2772,7 @@ namespace TH185 {
             } else {
                 ImGui::TextUnformatted(S(TH185_NONE_RANDOM));
             }
-            
+
             for (size_t i = 0; i < waveOpts.size(); i++) {
                 auto [id, name] = waveOpts[i];
                 if (selectedWave == i) {
@@ -3155,7 +3155,7 @@ namespace TH185 {
         pCtx->Eip = 0x46d9c0;
     }
     PATCH_ST(th185_unhardcode_bosses, 0x43d0f6, "\xeb", 1);
-    
+
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th185_wave_fire, 0x43cf47)
     {
@@ -3194,7 +3194,7 @@ namespace TH185 {
         };
 
         auto& wave_select = THWaveSelect::singleton();
-        
+
         if (wave_select.IsClosed()) {
             auto*  weights = (uint32_t*)GetMemAddr(ENEMY_MANAGER, 0x324);
             auto** sub_names = (const char**)0x4B5D50;

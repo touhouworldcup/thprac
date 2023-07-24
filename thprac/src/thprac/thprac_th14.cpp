@@ -766,8 +766,6 @@ namespace TH14 {
             default:
                 return fallback_value;
             }
-
-            return fallback_value;
         }
         float AccessNormal(record_t& current)
         {
