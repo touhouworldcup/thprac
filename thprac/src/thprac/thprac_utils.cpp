@@ -538,7 +538,6 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
     static bool canFpsChangeFreely = false;
     bool clickedApply = false;
     const char* fpsMultiplierStr;
-    auto fontSize = ImGui::GetFontSize();
 
     if (fps == 0) {
         if (ctx.fps_status == 1) {

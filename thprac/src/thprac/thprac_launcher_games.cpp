@@ -650,7 +650,8 @@ public:
         LauncherSettingGet("use_relative_path", isRelative);
         GetModuleFileNameW(GetModuleHandleW(nullptr), currentPath, MAX_PATH);
 
-        auto& gameGui = THGameGui::singleton();
+        // TODO: This variable is unused, but its assignment has a side effect.
+        [[maybe_unused]] auto& gameGui = THGameGui::singleton();
         for (auto& it : mGames) {
             for (auto& gameInst : it.second.instances) {
                 if (gameInst.type == TYPE_THCRAP) {
@@ -834,7 +835,6 @@ public:
     }
     void GuiScanCheckMalicious()
     {
-        const char* text = "Malicious";
         int idx = 0;
         ImVec4 color { 255.0f, 0.0f, 0.0f, 255.0f };
         char childId[64];
@@ -1098,7 +1098,6 @@ public:
             std::string steamappsPath;
             steamappsPath.reserve(512);
 
-            std::string::size_type searchStart = 0;
             std::string::size_type searchPos = 0;
             for (searchPos = cfgStr.find(":\\\\");
                  searchPos != std::string::npos;
@@ -1174,7 +1173,8 @@ public:
     static DWORD WINAPI ScanFolder(const std::wstring& dir)
     {
         CoInitializeEx(nullptr, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
-        auto scanLnk = THGameGui::singleton().mScanOption[SCAN_OPT_THCRAP];
+        // TODO: This variable is unused, but its assignment has a side effect.
+        [[maybe_unused]] auto scanLnk = THGameGui::singleton().mScanOption[SCAN_OPT_THCRAP];
         std::wstring searchDir = dir + L"\\*";
         WIN32_FIND_DATAW findData;
         HANDLE searchHnd = FindFirstFileW(searchDir.c_str(), &findData);
@@ -1581,7 +1581,6 @@ public:
         if (!currentGame) {
             return 0;
         }
-        auto& currentInst = currentGame->instances[currentGame->selected];
         auto exePathU16 = exePath;
 
         HANDLE hModuleSnap = INVALID_HANDLE_VALUE;
@@ -1754,8 +1753,6 @@ public:
     }
     static DWORD WINAPI LaunchThreadFunc([[maybe_unused]] _In_ LPVOID lpParameter)
     {
-        int returnReuslt = 0;
-
         auto currentGame = THGameGui::singleton().mCurrentGame;
         if (!currentGame) {
             return 0;

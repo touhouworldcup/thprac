@@ -102,6 +102,7 @@ namespace TH18 {
             }
 
             CreateJson();
+            jalloc; // Dummy usage to silence C4189
             ReturnJson();
         }
     };
@@ -2589,7 +2590,7 @@ namespace TH18 {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
-        int32_t call_addr = ((int32_t*)pCtx->Esp)[3];
+        // 4th stack item = i32 call_addr
 
         bool el_switch;
         bool is_practice;

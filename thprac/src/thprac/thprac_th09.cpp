@@ -586,8 +586,6 @@ namespace TH09 {
             TH09PracHook::singleton().EnableAllHooks();
             TH09Tools& t = TH09Tools::singleton();
             t.enabled = true;
-            uint32_t pl1 = *(uint32_t*)0x4a7d94;
-            uint32_t pl2 = *(uint32_t*)0x4a7dcc;
             if (*(uint32_t*)0x4a7db8) {
                 t.SetPos(0, 0);
                 t.Open();

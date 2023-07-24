@@ -485,7 +485,6 @@ static ImWchar baseUnicodeRanges[] =
         auto& io = ImGui::GetIO();
         for (unsigned int locale = 0; locale < 3; locale++) {
             // Var Definition
-            int fontIndex = -1;
             void* fontData = nullptr;
             DWORD fontDataSize = 0;
 
@@ -544,7 +543,6 @@ static ImWchar baseUnicodeRanges[] =
         auto& io = ImGui::GetIO();
 
         // Var Definition
-        int fontIndex = -1;
         void* fontData = nullptr;
         DWORD fontDataSize = 0;
 

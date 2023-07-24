@@ -15,7 +15,7 @@
 
 #pragma comment(lib, "psapi.lib")
 
- 
+
 namespace THPrac {
 enum thprac_prompt_t {
     PR_FAILED,
@@ -208,7 +208,6 @@ bool ApplyTHPracToProc(PROCESSENTRY32W& proc)
 
 bool CheckIfGameExistEx(THGameSig& gameSig, const wchar_t* name)
 {
-    bool result = false;
     MappedFile file(name);
     if (!file.fileMapView)
         return false;

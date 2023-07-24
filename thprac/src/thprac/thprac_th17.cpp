@@ -124,6 +124,7 @@ namespace TH17 {
             }
 
             CreateJson();
+            jalloc; // Dummy usage to silence C4189
             ReturnJson();
         }
     };
@@ -703,7 +704,7 @@ namespace TH17 {
         }
     private:
         bool mInGoastMenu = false;
-                
+
         void FpsInit()
         {
             if (*(uint8_t*)0x4b5cd9 == 3) {
@@ -816,10 +817,10 @@ namespace TH17 {
             ImGui::Checkbox("Force angle", &mForceGoastAngle);
             ImGui::SameLine();
             HelpMarker("Tokens will try to move away from eachother both when spawning and when bouncing from a wall. This will ensure that a token will always go in the direction you specify");
-            
+
             if (mGoastAngleRandom)
                 ImGui::EndDisabled();
-            
+
             ImGui::Checkbox("Random angle", &mGoastAngleRandom);
 
             ImRotateStart();
@@ -851,7 +852,7 @@ namespace TH17 {
             ImGui::Separator();
 
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
-            
+
             if (BeginOptGroup<TH_GAME_SPEED>()) {
                 if (GameFPSOpt(mOptCtx))
                     FpsSet();
@@ -866,7 +867,7 @@ namespace TH17 {
                 ImGui::Checkbox(S(TH17_GOAST_REPFIX), &mGoastRepfix);
                 ImGui::SameLine();
                 HelpMarker(S(TH17_GOAST_REPFIX_DESC));
-                
+
                 if (ImGui::Button("Spawn a Goast")) {
                     mInGoastMenu = true;
                 }
@@ -1840,7 +1841,7 @@ namespace TH17 {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
-        int32_t call_addr = ((int32_t*)pCtx->Esp)[3];
+        // 4th stack item = i32 call_addr
 
         bool el_switch;
         bool is_practice;
@@ -1900,7 +1901,6 @@ namespace TH17 {
             *(int32_t*)(0x4b5a24) = thPracParam.value * 100;
             *(int32_t*)(0x4b5a0c) = thPracParam.graze;
 
-            int32_t unk = *(int32_t*)(0x4b7684);
             if (thPracParam.goast_1) {
                 TH17AddGoast(thPracParam.goast_1);
                 if (thPracParam.goast_2) {
