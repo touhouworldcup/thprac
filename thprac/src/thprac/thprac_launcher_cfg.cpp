@@ -713,17 +713,17 @@ public:
         }
 
         if (mUpdDialogHnd && isUpdateAvailable) {
-            auto titleStr = utf8_to_utf16(S(THPRAC_UPDATE_DIALOG_TITLE));
+            auto updateTitleStr = utf8_to_utf16(S(THPRAC_UPDATE_DIALOG_TITLE));
             auto textStr = utf8_to_utf16(S(THPRAC_UPDATE_DIALOG_TEXT));
-            if (confirmation || MessageBoxW(nullptr, textStr.c_str(), titleStr.c_str(), MB_YESNO | MB_SETFOREGROUND) == IDYES) {
+            if (confirmation || MessageBoxW(nullptr, textStr.c_str(), updateTitleStr.c_str(), MB_YESNO | MB_SETFOREGROUND) == IDYES) {
                 mAutoUpdateThread.Stop();
                 mUpdPercentage = 0.0f;
                 mAutoUpdateThread.Start();
 
-                titleStr = utf8_to_utf16(S(THPRAC_UPDATE_DIALOG_UPDATING));
-                SetWindowText(hDialog, titleStr.c_str());
-                LONG_PTR style = GetWindowLongPtr(GetDlgItem(hDialog, IDC_PROGRESS1), GWL_STYLE);
-                SetWindowLongPtr(GetDlgItem(hDialog, IDC_PROGRESS1), GWL_STYLE, style & (~PBS_MARQUEE));
+                updateTitleStr = utf8_to_utf16(S(THPRAC_UPDATE_DIALOG_UPDATING));
+                SetWindowText(hDialog, updateTitleStr.c_str());
+                LONG_PTR updateStyle = GetWindowLongPtr(GetDlgItem(hDialog, IDC_PROGRESS1), GWL_STYLE);
+                SetWindowLongPtr(GetDlgItem(hDialog, IDC_PROGRESS1), GWL_STYLE, updateStyle & (~PBS_MARQUEE));
                 ShowWindow(hDialog, SW_SHOW);
                 MovWndToTop(hDialog);
 

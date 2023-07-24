@@ -473,7 +473,7 @@ namespace TH18 {
         th18_free_blank::GetHook().Disable();
     }
     void AddIndicateCard()
-    {   
+    {
         if (GetMemContent(0x4ccd00) == 4) {
             th18_free_blank::GetHook().Enable();
             asm_call<0x411460, Thiscall>(GetMemContent(ABILTIY_MANAGER_PTR), 0, 2);
@@ -654,7 +654,7 @@ namespace TH18 {
                             uint32_t cardsSrcOffset = (CARD_DESC_LIST + 0x34 * cardsSrcIndex);
                             uint32_t* cardsDestOffset = (uint32_t*)GetMemAddr(ABILITY_SHOP_PTR, 0xa30);
 
-                            for (uint32_t i = 0; i < cardsCount; ++i) {
+                            for (uint32_t _ = 0; _ < cardsCount; ++_) {
                                 if (cardsSrcIndex >= 55) {
                                     *cardsDestOffset = CARD_DESC_LIST + 0x34 * 56;
                                 } else {
@@ -2725,7 +2725,6 @@ namespace TH18 {
             cardIdArray[cardId] += 1;
         }
 
-        uint32_t cardsSrcOffset = (CARD_DESC_LIST);
         for (int i = 0; i < 56; ++i) {
             uint32_t* cardsSrcOffset = (uint32_t*)(CARD_DESC_LIST + 0x34 * i);
             if (cardIdArray[cardsSrcOffset[1]]) {

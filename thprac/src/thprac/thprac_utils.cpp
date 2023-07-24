@@ -1095,8 +1095,8 @@ DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName)
                 auto pSectionBase = (DWORD)exeBuffer - pSection->VirtualAddress + pSection->PointerToRawData;
                 PIMAGE_EXPORT_DIRECTORY pExportDirectory = (PIMAGE_EXPORT_DIRECTORY)(pSectionBase + pExportSectionVA);
                 char** pExportNames = (char**)(pSectionBase + pExportDirectory->AddressOfNames);
-                for (DWORD i = 0; i < pExportDirectory->NumberOfNames; ++i) {
-                    auto pFunctionName = (char*)(pSectionBase + pExportNames[i]);
+                for (DWORD j = 0; j < pExportDirectory->NumberOfNames; ++j) {
+                    auto pFunctionName = (char*)(pSectionBase + pExportNames[j]);
                     if (!strcmp(pFunctionName, funcName)) {
                         return true;
                     }

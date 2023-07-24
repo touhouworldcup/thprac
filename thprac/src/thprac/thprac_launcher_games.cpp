@@ -86,9 +86,9 @@ bool GetExeInfo(void* exeBuffer, size_t exeSize, ExeSig& exeSigOut)
             if (!ReadMemory(&oepCode, (void*)pOepCode, sizeof(oepCode)))
                 continue;
 
-            for (unsigned int i = 0; i < 10; ++i) {
-                exeSigOut.oepCode[i] = (uint32_t) * (oepCode + i);
-                exeSigOut.oepCode[i] ^= (i + 0x41) | ((i + 0x41) << 8);
+            for (unsigned int j = 0; j < 10; ++j) {
+                exeSigOut.oepCode[j] = (uint32_t) * (oepCode + j);
+                exeSigOut.oepCode[j] ^= (j + 0x41) | ((j + 0x41) << 8);
             }
         }
     }
