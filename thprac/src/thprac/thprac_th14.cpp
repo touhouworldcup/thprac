@@ -1018,23 +1018,23 @@ namespace TH14 {
         // TODO: Remove title parameter?
         void MsgBox(UINT type, [[maybe_unused]] const wchar_t* title, const wchar_t* msg, const wchar_t* msg2 = nullptr)
         {
-            std::wstring _msg = msg;
+            std::wstring finalMessage = msg;
             if (msg2) {
-                _msg += msg2;
+                finalMessage += msg2;
             }
-            MessageBoxW(nullptr, _msg.c_str(), _title, type);
+            MessageBoxW(nullptr, finalMessage.c_str(), _title, type);
         }
         void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nullptr)
         {
-            wchar_t _title[256];
-            wchar_t _msg[256];
-            wchar_t _msg2[256];
-            MultiByteToWideChar(CP_UTF8, 0, title, -1, _title, 256);
-            MultiByteToWideChar(CP_UTF8, 0, msg, -1, _msg, 256);
+            wchar_t title_wchar[256];
+            wchar_t msg_wchar[256];
+            wchar_t msg2_wchar[256];
+            MultiByteToWideChar(CP_UTF8, 0, title, -1, title_wchar, 256);
+            MultiByteToWideChar(CP_UTF8, 0, msg, -1, msg_wchar, 256);
             if (msg2) {
-                MultiByteToWideChar(CP_UTF8, 0, msg2, -1, _msg2, 256);
+                MultiByteToWideChar(CP_UTF8, 0, msg2, -1, msg2_wchar, 256);
             }
-            MsgBox(type, _title, _msg, msg2 ? _msg2 : nullptr);
+            MsgBox(type, title_wchar, msg_wchar, msg2 ? msg2_wchar : nullptr);
 
         }
         bool LoadReplayInternal(const wchar_t* rep_path)
