@@ -216,7 +216,7 @@ static bool BeginOptGroup()
         ImGui::Indent();
     return group_status;
 }
-static void EndOptGroup()
+inline void EndOptGroup()
 {
     ImGui::Unindent();
 }

@@ -159,12 +159,12 @@ static inline R asm_call(Args... args) {
     }
 }
 
-static void PushHelper32(CONTEXT* pCtx, DWORD value)
+inline void PushHelper32(CONTEXT* pCtx, DWORD value)
 {
     pCtx->Esp -= 4;
     *(DWORD*)pCtx->Esp = value;
 }
-static DWORD PopHelper32(CONTEXT* pCtx)
+inline DWORD PopHelper32(CONTEXT* pCtx)
 {
     // The compiler will optimize this to just use eax
     DWORD ret = *(DWORD*)pCtx->Esp;
