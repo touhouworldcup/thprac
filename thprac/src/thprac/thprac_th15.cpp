@@ -1739,7 +1739,6 @@ namespace TH15 {
         ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
-    static bool drawCursor;
     static bool frameStarted = false;
 
     HOOKSET_DEFINE(THMainHook)

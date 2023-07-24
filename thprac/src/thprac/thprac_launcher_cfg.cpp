@@ -928,6 +928,8 @@ private:
             p += charsPrinted;
         };
 
+#pragma warning(push)
+#pragma warning(disable: 4459) // Global declaration shadowing (defined in winnt.h)
         // Don't need to depend on the entire Driver Development Kit just for
         // ntddk.h.
         typedef struct _OSVERSIONINFOW {
@@ -943,6 +945,7 @@ private:
             UCHAR wProductType;
             UCHAR wReserved;
         } RTL_OSVERSIONINFOEXW, *PRTL_OSVERSIONINFOEXW;
+#pragma warning(pop)
 
         // Or ntoskrnl.lib.
         typedef LONG WINAPI RtlGetVersion_type(RTL_OSVERSIONINFOEXW * lpVersionInformation);
