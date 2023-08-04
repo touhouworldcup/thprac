@@ -489,7 +489,7 @@ public:
             std::string subname = cfg;
             if (IfEndWith(subname.c_str(), ".js")) {
                 for (auto& c : subname) {
-                    c = tolower(c);
+                    c = static_cast<char>(tolower(c));
                 }
                 subname = subname.substr(0, subname.rfind(".js"));
             }

@@ -1,4 +1,5 @@
 ﻿#include "thprac_utils.h"
+#include <numbers>
 #define M_PI 3.14159265358979323846f
 
 struct vec2f {
@@ -832,7 +833,8 @@ namespace TH17 {
             ImGui::TextUnformatted("--angle-preview-->");
             ImGui::Unindent();
             ImGui::Unindent();
-            ImRotateEnd(1.57079632679 - mGoastAng);
+            constexpr auto HALF_PI = static_cast<float>(std::numbers::pi / 2.0);
+            ImRotateEnd(HALF_PI - mGoastAng);
 
             if (!mSelectedGoast) {
                 ImGui::EndDisabled();

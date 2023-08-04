@@ -193,7 +193,7 @@ std::string GetUnifiedPath(const std::string& path)
                 lastChar = '\\';
             }
         } else {
-            auto lower = tolower(c);
+            char lower = static_cast<char>(tolower(c));
             result.push_back(lower);
             lastChar = lower;
         }
@@ -922,9 +922,9 @@ namespace THSnapshot {
         HANDLE hFile;
         CreateDirectoryW(L"snapshot", nullptr);
         for (int i = 0; i < 1000; i++) {
-            dir[13] = i % 10 + 0x30;
-            dir[12] = ((i % 100 - i % 10) / 10) + 0x30;
-            dir[11] = ((i - i % 100) / 100) + 0x30;
+            dir[13] = static_cast<wchar_t>(i % 10) + L'0';
+            dir[12] = static_cast<wchar_t>((i % 100 - i % 10) / 10) + L'0';
+            dir[11] = static_cast<wchar_t>((i - i % 100) / 100) + L'0';
             hFile = CreateFileW(dir, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (hFile != INVALID_HANDLE_VALUE)
                 break;
