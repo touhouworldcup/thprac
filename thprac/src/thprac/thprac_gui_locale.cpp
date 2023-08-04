@@ -474,7 +474,7 @@ static ImWchar baseUnicodeRanges[] =
         if (__glocale_disabled) {
             if (__glocale_disabled == 7) {
                 MessageBoxW(nullptr, L"No font can be loaded.\nthprac will now terminate.", L"Fatal error", MB_OK | MB_ICONERROR);
-                TerminateProcess(GetCurrentProcess(), -1);
+                TerminateProcess(GetCurrentProcess(), ERROR_FILE_CORRUPT);
             } else {
                 MessageBoxW(nullptr, L"One or more fonts failed to load, which will cause certain non-Latin characters to not render properly.\nIf you are running thprac under wine/Crossover, seek help to link the appropriate fonts or try using wine-staging.", L"Warning", MB_OK | MB_ICONWARNING);
             }

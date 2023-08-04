@@ -271,7 +271,7 @@ bool RunGameWithTHPrac(THGameSig& gameSig, std::wstring& name)
 
     auto result = (WriteTHPracSig(proc_info.hProcess) && THPrac::LoadSelf(proc_info.hProcess));
     if (!result)
-        TerminateThread(proc_info.hThread, -1);
+        TerminateThread(proc_info.hThread, ERROR_FUNCTION_FAILED);
     else
         ResumeThread(proc_info.hThread);
 

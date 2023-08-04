@@ -1047,34 +1047,43 @@ private:
         if (!hInternet) {
             hInternet = InternetOpenW((std::wstring(L"thprac ") + GetVersionWcs() + L" on " + windows_version()).c_str(), INTERNET_OPEN_TYPE_PRECONFIG, nullptr, nullptr, 0);
             if (!hInternet)
-                return -1;
+                return ERROR_INTERNET_NOT_INITIALIZED;
             DWORD ignore = 1;
             if (!InternetSetOptionW(hInternet, INTERNET_OPTION_IGNORE_OFFLINE, &ignore, sizeof(DWORD)))
-                return -2;
+                return ERROR_INTERNET_INVALID_OPTION;
         }
         HINTERNET hFile = InternetOpenUrlW(hInternet, url, nullptr, 0, INTERNET_FLAG_RELOAD | INTERNET_FLAG_KEEP_CONNECTION, 0);
         if (!hFile)
-            return -3;
+            return ERROR_INTERNET_CANNOT_CONNECT;
         defer(InternetCloseHandle(hFile));
 
         DWORD fileSize = 0;
         if (!HttpQueryInfoW(hFile, HTTP_QUERY_FLAG_NUMBER | HTTP_QUERY_CONTENT_LENGTH, &fileSize, &byteRet, 0))
-            return -4;
+            return ERROR_HTTP_INVALID_QUERY_REQUEST;
 
         std::vector<uint8_t> buffer;
         auto remSize = fileSize;
         progressCallback(0, fileSize);
+        // TODO: This code seems suspicious. Documentation for InternetReadFile
+        // says that it should be called "until [it] returns TRUE and [byteRet]
+        // equals zero." But this loop seems content to exit early by one call,
+        // as long as the EXPECTED number of bytes have all been read.
+        // This may or may not be an actual problem?
         while (remSize) {
             DWORD readSize = 0;
             if (!InternetQueryDataAvailable(hFile, &readSize, 0, 0)) {
                 readSize = remSize;
             }
             if (readSize == 0) {
-                return -5;
+                // TODO: Does this actually mean the connection was lost?
+                // Or could it just have been aborted?
+                return ERROR_INTERNET_DISCONNECTED;
             }
             buffer.resize(readSize);
             if (InternetReadFile(hFile, buffer.data(), readSize, &byteRet) == FALSE) {
-                return -6;
+                // TODO: Does this actually mean it was aborted?
+                // Or could it have simply been lost?
+                return ERROR_INTERNET_CONNECTION_ABORTED;
             }
             remSize -= byteRet;
             progressCallback(remSize, fileSize);

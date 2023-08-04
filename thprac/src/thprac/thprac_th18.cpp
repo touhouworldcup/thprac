@@ -857,7 +857,7 @@ namespace TH18 {
             mNavFocus();
         }
 
-        unsigned int mSpellId = -1;
+        unsigned int mSpellId = UINT_MAX;
 
         Gui::GuiCheckBox mBugFix { TH16_BUGFIX };
         Gui::GuiCombo mPhase { TH_PHASE };
@@ -995,7 +995,7 @@ namespace TH18 {
                 if (activeCardId) {
                     *(uint32_t*)(pCtx->Esi + 0x964) = GetMemContent(activeCardId + 4);
                 } else {
-                    *(uint32_t*)(pCtx->Esi + 0x964) = -1;
+                    *(uint32_t*)(pCtx->Esi + 0x964) = UINT_MAX;
                 }
             }
         }

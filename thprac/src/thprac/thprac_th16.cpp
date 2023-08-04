@@ -605,7 +605,7 @@ namespace TH16 {
             mNavFocus();
         }
 
-        unsigned int mSpellId = -1;
+        unsigned int mSpellId = UINT_MAX;
 
         Gui::GuiCombo mSubSeason { TH16_SUBSEASON };
         Gui::GuiSlider<int, ImGuiDataType_S32> mSeasonGauge { TH16_SEASON_GAUGE_ALT, 0, 6 };

@@ -2784,11 +2784,11 @@ namespace TH185 {
 
             if (Gui::InGameInputGet(VK_DOWN)) {
                 if (++selectedWave >= waveOpts.size()) {
-                    selectedWave = -1;
+                    selectedWave = SIZE_MAX;
                 }
             }
             if (Gui::InGameInputGet(VK_UP)) {
-                if (selectedWave == -1) {
+                if (selectedWave == SIZE_MAX) {
                     selectedWave = waveOpts.size() - 1;
                 } else {
                     --selectedWave;
@@ -2805,7 +2805,7 @@ namespace TH185 {
             pCtx->Eax = 3;
         }
 
-        size_t selectedWave = -1;
+        size_t selectedWave = SIZE_MAX;
         std::vector<std::pair<size_t, const char*>> waveOpts;
     };
 
@@ -3200,7 +3200,7 @@ namespace TH185 {
             auto** sub_names = (const char**)0x4B5D50;
 
             wave_select.waveOpts = {};
-            wave_select.selectedWave = -1;
+            wave_select.selectedWave = SIZE_MAX;
 
             for (size_t i = 0; i < 110; i++) {
                 if (weights[i]) {
@@ -3211,7 +3211,7 @@ namespace TH185 {
             if (wave_select.waveOpts.size() <= 1)
                 return;
 
-            pCtx->Eax = -1;
+            pCtx->Eax = ULONG_MAX; // Safe. DWORD == unsigned long
             pCtx->Eip = 0x43d57a;
             wave_select.th185_replaymanager_on_tick_cutoff.Enable();
             wave_select.Open();
@@ -3221,7 +3221,7 @@ namespace TH185 {
 
         if (wave_forced) {
             wave_forced = false;
-            pCtx->Eax = -1;
+            pCtx->Eax = ULONG_MAX; // Safe. DWORD == unsigned long
             pCtx->Eip = 0x43d57a;
         }
     }

@@ -665,7 +665,7 @@ namespace TH17 {
             mNavFocus();
         }
 
-        unsigned int mSpellId = -1;
+        unsigned int mSpellId = UINT_MAX;
 
         Gui::GuiCheckBox mBugFix { TH16_BUGFIX };
         Gui::GuiCombo mPhase { TH_PHASE };

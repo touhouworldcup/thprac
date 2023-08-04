@@ -1738,7 +1738,7 @@ public:
         }
 
         if (!result) {
-            TerminateThread(proc_info.hThread, -1);
+            TerminateThread(proc_info.hThread, ERROR_FUNCTION_FAILED);
         } else {
             ResumeThread(proc_info.hThread);
         }
