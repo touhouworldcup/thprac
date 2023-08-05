@@ -1014,6 +1014,7 @@ namespace TH14 {
             return wndFocus;
         }
         // TODO: Remove title parameter?
+        // TODO: Use utf8_to_utf16() instead?
         void MsgBox(UINT type, [[maybe_unused]] const wchar_t* title, const wchar_t* msg, const wchar_t* msg2 = nullptr)
         {
             std::wstring finalMessage = msg;
