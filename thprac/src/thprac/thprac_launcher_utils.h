@@ -140,103 +140,33 @@ private:
     std::string mAscii = ".";
 };
 
-// TODO: Move to source file?
-inline void MovWndToTop(HWND m_hWnd)
-{
-    HWND hCurWnd = ::GetForegroundWindow();
-    DWORD dwMyID = ::GetCurrentThreadId();
-    DWORD dwCurID = ::GetWindowThreadProcessId(hCurWnd, nullptr);
-    ::AttachThreadInput(dwCurID, dwMyID, TRUE);
-    ::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
-    ::SetWindowPos(m_hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE);
-    ::SetForegroundWindow(m_hWnd);
-    ::SetFocus(m_hWnd);
-    ::SetActiveWindow(m_hWnd);
-    ::AttachThreadInput(dwCurID, dwMyID, FALSE);
-}
+void MovWndToTop(HWND m_hWnd);
+void GuiColumnText(const char* text);
 
-// TODO: Move to source file?
-inline void GuiColumnText(const char* text)
-{
-    auto columnX = ImGui::GetColumnWidth();
-    auto itemX = ImGui::CalcTextSize(text).x + ImGui::GetStyle().ItemSpacing.x;
-    ImGui::TextUnformatted(text);
-    if (ImGui::IsItemHovered()) {
-        if (itemX > columnX) {
-            ImGui::BeginTooltip();
-            ImGui::PushTextWrapPos(ImGui::GetIO().DisplaySize.x * 0.9f);
-            ImGui::TextUnformatted(text);
-            ImGui::PopTextWrapPos();
-            ImGui::EndTooltip();
-        }
-    }
-}
-
-// TODO: Move to source file?
 inline void GuiCenteredText(const char* text)
 {
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(text, 0, false, 0.0f).x) / 2.0f);
     ImGui::TextWrapped("%s", text);
 }
 
-// TODO: Move to source file?
 inline void GuiSetPosXText(const char* text, float offset = 0.0f)
 {
     ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize(text, 0, false, 0.0f).x) / 2.0f - offset);
 }
 
-// TODO: Move to source file?
 inline void GuiSetPosYRel(float rel)
 {
     ImGui::SetCursorPosY(ImGui::GetWindowHeight() * rel);
 }
 
-// TODO: Move to source file?
-inline void GuiHelpMarker(const char* desc)
-{
-    ImGui::TextDisabled("(?)");
-    if (ImGui::IsItemHovered()) {
-        ImGui::BeginTooltip();
-        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-        ImGui::TextUnformatted(desc);
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
-    }
-}
+void GuiHelpMarker(const char* desc);
+int GuiCornerButton(
+    const char* text,
+    const char* text2 = nullptr,
+    const ImVec2& offset = ImVec2(1.5f, 0.5f),
+    bool useCurrentY = false
+);
 
-// TODO: Move to source file?
-inline int GuiCornerButton(const char* text, const char* text2 = nullptr, const ImVec2& offset = ImVec2(1.5f, 0.5f), bool useCurrentY = false)
-{
-    int result = 0;
-    auto& style = ImGui::GetStyle();
-    auto currentCursorY = ImGui::GetCursorPosY();
-    ImVec2 cursor = ImGui::GetWindowSize();
-    auto textSize = ImGui::CalcTextSize(text);
-    cursor.x = cursor.x - textSize.x - offset.x * ImGui::GetFontSize();
-    cursor.y = cursor.y - textSize.y - offset.y * ImGui::GetFontSize();
-    if (cursor.y < currentCursorY || useCurrentY) {
-        cursor.y = currentCursorY;
-    }
-    if (text2) {
-        cursor.x -= style.FramePadding.x * 2 + style.ItemSpacing.x;
-        cursor.x -= ImGui::CalcTextSize(text2).x;
-    }
-
-    ImGui::SetCursorPos(cursor);
-    if (ImGui::Button(text)) {
-        result = 1;
-    }
-    if (text2) {
-        ImGui::SameLine();
-        if (ImGui::Button(text2)) {
-            result = 2;
-        }
-    }
-
-    return result;
-}
-
-// TODO: Should this be moved to a source file?
 inline bool GuiButtonRelCentered(const char* buttonText, float posYRel, const ImVec2& sizeRel)
 {
     auto wndSize = ImGui::GetWindowSize();
@@ -245,7 +175,6 @@ inline bool GuiButtonRelCentered(const char* buttonText, float posYRel, const Im
     return ImGui::Button(buttonText, ImVec2(wndSize.x * sizeRel.x, wndSize.y * sizeRel.y));
 }
 
-// TODO: Move to source file?
 inline bool GuiButtonTxtCentered(const char* buttonText, float posYRel)
 {
     auto wndSize = ImGui::GetWindowSize();
@@ -255,7 +184,7 @@ inline bool GuiButtonTxtCentered(const char* buttonText, float posYRel)
     return ImGui::Button(buttonText);
 }
 
-static bool GuiModal(const char* modalTitle, ImVec2 sizeRel = ImVec2(0.0f, 0.0f))
+inline bool GuiModal(const char* modalTitle, ImVec2 sizeRel = ImVec2(0.0f, 0.0f))
 {
     auto wndSize = LauncherWndGetSize();
     wndSize.x *= 0.5f;
@@ -267,7 +196,6 @@ static bool GuiModal(const char* modalTitle, ImVec2 sizeRel = ImVec2(0.0f, 0.0f)
     return ImGui::BeginPopupModal(modalTitle, nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
 }
 
-// TODO: Move to source file?
 inline bool GuiModalFullScreen(const char* modalTitle)
 {
     auto wndSize = LauncherWndGetSize();
@@ -276,7 +204,7 @@ inline bool GuiModalFullScreen(const char* modalTitle)
     return ImGui::BeginPopupModal(modalTitle, nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 }
 
-static bool GuiButtonModal(const char* buttonText, const char* modalTitle)
+inline bool GuiButtonModal(const char* buttonText, const char* modalTitle)
 {
     if (ImGui::Button(buttonText)) {
         ImGui::OpenPopup(modalTitle);
@@ -285,40 +213,18 @@ static bool GuiButtonModal(const char* buttonText, const char* modalTitle)
     return false;
 }
 
-static bool GuiButtonYesNo(const char* buttonText1 = "OK", const char* buttonText2 = "Cancel", float buttonSize = -1.0f)
-{
-    if (buttonSize == -1.0f) {
-        buttonSize = ImGui::GetItemRectSize().x / 2.05f;
-    } else {
-        buttonSize = buttonSize * ImGui::GetFontSize();
-    }
-
-    if (ImGui::Button(buttonText1, ImVec2(buttonSize, 0))) {
-        ImGui::CloseCurrentPopup();
-        return true;
-    }
-    ImGui::SameLine();
-    if (ImGui::Button(buttonText2, ImVec2(buttonSize, 0))) {
-        ImGui::CloseCurrentPopup();
-    }
-    return false;
-}
-
-// TODO: Move to source file?
-inline bool GuiButtonAndModalYesNo(const char* buttonText, const char* modalTitle, const char* modalText, float buttonSize = 6.0f, const char* buttonText1 = "OK", const char* buttonText2 = "Cancel")
-{
-    bool result = false;
-
-    GuiButtonModal(buttonText, modalTitle);
-    if (GuiModal(modalTitle)) {
-        ImGui::TextUnformatted(modalText);
-        if (GuiButtonYesNo(buttonText1, buttonText2, buttonSize)) {
-            result = true;
-        }
-        ImGui::EndPopup();
-    }
-
-    return result;
-}
+bool GuiButtonYesNo(
+    const char* buttonText1 = "OK",
+    const char* buttonText2 = "Cancel",
+    float buttonSize = -1.0f
+);
+bool GuiButtonAndModalYesNo(
+    const char* buttonText,
+    const char* modalTitle,
+    const char* modalText,
+    float buttonSize = 6.0f,
+    const char* buttonText1 = "OK",
+    const char* buttonText2 = "Cancel"
+);
 
 }

@@ -110,6 +110,7 @@
     <ClCompile Include="src\thprac\thprac_launcher_links.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher_main.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher_tools.cpp" />
+    <ClCompile Include="src\thprac\thprac_launcher_utils.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher_wnd.cpp" />
     <ClCompile Include="src\thprac\thprac_licence.cpp" />
     <ClCompile Include="src\thprac\thprac_load_exe.cpp" />
