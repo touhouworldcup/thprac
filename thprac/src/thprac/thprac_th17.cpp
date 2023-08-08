@@ -1,4 +1,5 @@
-﻿#include "thprac_utils.h"
+﻿#include "thprac_games.h"
+#include "thprac_utils.h"
 #include <numbers>
 #define M_PI 3.14159265358979323846f
 

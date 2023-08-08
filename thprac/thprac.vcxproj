@@ -98,6 +98,7 @@
     <ClCompile Include="src\3rdParties\MinHook\src\trampoline_new.c" />
     <ClCompile Include="src\thprac\main.cpp" />
     <ClCompile Include="src\thprac\thprac_alcostg.cpp" />
+    <ClCompile Include="src\thprac\thprac_games.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_impl_dx8.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_components.cpp" />
     <ClCompile Include="src\thprac\thprac_hook.cpp" />
