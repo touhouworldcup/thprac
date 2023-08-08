@@ -1,7 +1,8 @@
 ## [简体中文](/README_CN.md)
 # thprac
 A tool for practicing Touhou Shmups
-## [Download](https://github.com/touhouworldcup/thprac/releases/latest) - [Donate](https://ko-fi.com/thprac)
+## [Download](https://github.com/touhouworldcup/thprac/releases/latest)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V7O03J4)
 
 # How to use
 Either: place the executable in the same folder as your game, and run it. The game must be updated to the latest version and the executable must have it's original filename (thXX.exe for most games, 東方紅魔郷.exe for Embodment of Scarlet Devil, alcostg.exe for Uwabami Breakers). Thprac will automatically detect vpatch. Steam versions will not work with this method.
