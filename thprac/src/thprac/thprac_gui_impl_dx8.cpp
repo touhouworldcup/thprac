@@ -1,4 +1,5 @@
-﻿/*
+﻿#pragma warning (disable : 4100)
+/*
 	This file is a modified copy of imgui's DirectX9 renderer implemention's  source file.
 	Changes made:
 

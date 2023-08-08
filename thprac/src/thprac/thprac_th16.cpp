@@ -92,6 +92,7 @@ namespace TH16 {
             }
 
             CreateJson();
+            jalloc; // Dummy usage to silence C4189
             ReturnJson();
         }
     };
@@ -604,7 +605,7 @@ namespace TH16 {
             mNavFocus();
         }
 
-        unsigned int mSpellId = -1;
+        unsigned int mSpellId = UINT_MAX;
 
         Gui::GuiCombo mSubSeason { TH16_SUBSEASON };
         Gui::GuiSlider<int, ImGuiDataType_S32> mSeasonGauge { TH16_SEASON_GAUGE_ALT, 0, 6 };
@@ -2161,7 +2162,7 @@ namespace TH16 {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
-        int32_t call_addr = ((int32_t*)pCtx->Esp)[3];
+        // 4th stack item = i32 call_addr
 
         bool el_switch;
         bool is_practice;

@@ -1,4 +1,5 @@
-﻿/*
+﻿#pragma warning (push, 0)
+/*
  * Hacker Disassembler Engine 64 C
  * Copyright (c) 2008-2009, Vyacheslav Patkov.
  * All rights reserved.

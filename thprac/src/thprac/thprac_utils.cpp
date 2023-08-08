@@ -193,7 +193,7 @@ std::string GetUnifiedPath(const std::string& path)
                 lastChar = '\\';
             }
         } else {
-            auto lower = tolower(c);
+            char lower = static_cast<char>(tolower(c));
             result.push_back(lower);
             lastChar = lower;
         }
@@ -538,7 +538,6 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
     static bool canFpsChangeFreely = false;
     bool clickedApply = false;
     const char* fpsMultiplierStr;
-    auto fontSize = ImGui::GetFontSize();
 
     if (fps == 0) {
         if (ctx.fps_status == 1) {
@@ -923,9 +922,9 @@ namespace THSnapshot {
         HANDLE hFile;
         CreateDirectoryW(L"snapshot", nullptr);
         for (int i = 0; i < 1000; i++) {
-            dir[13] = i % 10 + 0x30;
-            dir[12] = ((i % 100 - i % 10) / 10) + 0x30;
-            dir[11] = ((i - i % 100) / 100) + 0x30;
+            dir[13] = static_cast<wchar_t>(i % 10) + L'0';
+            dir[12] = static_cast<wchar_t>((i % 100 - i % 10) / 10) + L'0';
+            dir[11] = static_cast<wchar_t>((i - i % 100) / 100) + L'0';
             hFile = CreateFileW(dir, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (hFile != INVALID_HANDLE_VALUE)
                 break;
@@ -1095,8 +1094,8 @@ DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName)
                 auto pSectionBase = (DWORD)exeBuffer - pSection->VirtualAddress + pSection->PointerToRawData;
                 PIMAGE_EXPORT_DIRECTORY pExportDirectory = (PIMAGE_EXPORT_DIRECTORY)(pSectionBase + pExportSectionVA);
                 char** pExportNames = (char**)(pSectionBase + pExportDirectory->AddressOfNames);
-                for (DWORD i = 0; i < pExportDirectory->NumberOfNames; ++i) {
-                    auto pFunctionName = (char*)(pSectionBase + pExportNames[i]);
+                for (DWORD j = 0; j < pExportDirectory->NumberOfNames; ++j) {
+                    auto pFunctionName = (char*)(pSectionBase + pExportNames[j]);
                     if (!strcmp(pFunctionName, funcName)) {
                         return true;
                     }

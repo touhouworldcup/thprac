@@ -1,3 +1,4 @@
+#pragma warning (push, 0)
 #include "disassembler.h"
 #include <distorm.h>
 #include <mnemonics.h>

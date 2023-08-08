@@ -890,7 +890,7 @@ namespace TH08 {
     {
         th08_name_fix::GetHook().Enable();
     }
-    __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
+    __declspec(noinline) void THStageWarp([[maybe_unused]] ECLHelper& ecl, int stage, int portion)
     {
         if (stage == 1) {
             switch (portion) {

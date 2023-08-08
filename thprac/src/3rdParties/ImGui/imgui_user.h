@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning (push, 0)
 
 namespace ImGui
 {
@@ -113,3 +114,4 @@ namespace ImGui
 		return value_changed;
 	}
 }
+#pragma warning (pop)

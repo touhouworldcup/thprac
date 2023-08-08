@@ -102,6 +102,7 @@ namespace TH18 {
             }
 
             CreateJson();
+            jalloc; // Dummy usage to silence C4189
             ReturnJson();
         }
     };
@@ -473,7 +474,7 @@ namespace TH18 {
         th18_free_blank::GetHook().Disable();
     }
     void AddIndicateCard()
-    {   
+    {
         if (GetMemContent(0x4ccd00) == 4) {
             th18_free_blank::GetHook().Enable();
             asm_call<0x411460, Thiscall>(GetMemContent(ABILTIY_MANAGER_PTR), 0, 2);
@@ -654,7 +655,7 @@ namespace TH18 {
                             uint32_t cardsSrcOffset = (CARD_DESC_LIST + 0x34 * cardsSrcIndex);
                             uint32_t* cardsDestOffset = (uint32_t*)GetMemAddr(ABILITY_SHOP_PTR, 0xa30);
 
-                            for (uint32_t i = 0; i < cardsCount; ++i) {
+                            for (uint32_t _ = 0; _ < cardsCount; ++_) {
                                 if (cardsSrcIndex >= 55) {
                                     *cardsDestOffset = CARD_DESC_LIST + 0x34 * 56;
                                 } else {
@@ -856,7 +857,7 @@ namespace TH18 {
             mNavFocus();
         }
 
-        unsigned int mSpellId = -1;
+        unsigned int mSpellId = UINT_MAX;
 
         Gui::GuiCheckBox mBugFix { TH16_BUGFIX };
         Gui::GuiCombo mPhase { TH_PHASE };
@@ -994,7 +995,7 @@ namespace TH18 {
                 if (activeCardId) {
                     *(uint32_t*)(pCtx->Esi + 0x964) = GetMemContent(activeCardId + 4);
                 } else {
-                    *(uint32_t*)(pCtx->Esi + 0x964) = -1;
+                    *(uint32_t*)(pCtx->Esi + 0x964) = UINT_MAX;
                 }
             }
         }
@@ -1060,12 +1061,11 @@ namespace TH18 {
         }
         __declspec(noinline) uint32_t* FindCardDesc(uint32_t id)
         {
-            for (uint32_t i = CARD_DESC_LIST;; i += 0x34) {
+            for (uint32_t i = CARD_DESC_LIST; true; i += 0x34) {
                 if (*(uint32_t*)(i + 4) == id) {
                     return (uint32_t*)i;
                 }
             }
-            return nullptr;
         }
 
 #define ThEncrypt(data, size1, param1, param2, param3, size2) asm_call<0x401f50, Fastcall>(data, size1, param1, param2, param3, size2)
@@ -2589,7 +2589,7 @@ namespace TH18 {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
-        int32_t call_addr = ((int32_t*)pCtx->Esp)[3];
+        // 4th stack item = i32 call_addr
 
         bool el_switch;
         bool is_practice;
@@ -2725,7 +2725,6 @@ namespace TH18 {
             cardIdArray[cardId] += 1;
         }
 
-        uint32_t cardsSrcOffset = (CARD_DESC_LIST);
         for (int i = 0; i < 56; ++i) {
             uint32_t* cardsSrcOffset = (uint32_t*)(CARD_DESC_LIST + 0x34 * i);
             if (cardIdArray[cardsSrcOffset[1]]) {

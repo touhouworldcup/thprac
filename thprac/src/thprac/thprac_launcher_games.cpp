@@ -86,9 +86,9 @@ bool GetExeInfo(void* exeBuffer, size_t exeSize, ExeSig& exeSigOut)
             if (!ReadMemory(&oepCode, (void*)pOepCode, sizeof(oepCode)))
                 continue;
 
-            for (unsigned int i = 0; i < 10; ++i) {
-                exeSigOut.oepCode[i] = (uint32_t) * (oepCode + i);
-                exeSigOut.oepCode[i] ^= (i + 0x41) | ((i + 0x41) << 8);
+            for (unsigned int j = 0; j < 10; ++j) {
+                exeSigOut.oepCode[j] = (uint32_t) * (oepCode + j);
+                exeSigOut.oepCode[j] ^= (j + 0x41) | ((j + 0x41) << 8);
             }
         }
     }
@@ -489,7 +489,7 @@ public:
             std::string subname = cfg;
             if (IfEndWith(subname.c_str(), ".js")) {
                 for (auto& c : subname) {
-                    c = tolower(c);
+                    c = static_cast<char>(tolower(c));
                 }
                 subname = subname.substr(0, subname.rfind(".js"));
             }
@@ -650,7 +650,8 @@ public:
         LauncherSettingGet("use_relative_path", isRelative);
         GetModuleFileNameW(GetModuleHandleW(nullptr), currentPath, MAX_PATH);
 
-        auto& gameGui = THGameGui::singleton();
+        // TODO: This variable is unused, but its assignment has a side effect.
+        [[maybe_unused]] auto& gameGui = THGameGui::singleton();
         for (auto& it : mGames) {
             for (auto& gameInst : it.second.instances) {
                 if (gameInst.type == TYPE_THCRAP) {
@@ -834,7 +835,6 @@ public:
     }
     void GuiScanCheckMalicious()
     {
-        const char* text = "Malicious";
         int idx = 0;
         ImVec4 color { 255.0f, 0.0f, 0.0f, 255.0f };
         char childId[64];
@@ -1098,7 +1098,6 @@ public:
             std::string steamappsPath;
             steamappsPath.reserve(512);
 
-            std::string::size_type searchStart = 0;
             std::string::size_type searchPos = 0;
             for (searchPos = cfgStr.find(":\\\\");
                  searchPos != std::string::npos;
@@ -1174,7 +1173,8 @@ public:
     static DWORD WINAPI ScanFolder(const std::wstring& dir)
     {
         CoInitializeEx(nullptr, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
-        auto scanLnk = THGameGui::singleton().mScanOption[SCAN_OPT_THCRAP];
+        // TODO: This variable is unused, but its assignment has a side effect.
+        [[maybe_unused]] auto scanLnk = THGameGui::singleton().mScanOption[SCAN_OPT_THCRAP];
         std::wstring searchDir = dir + L"\\*";
         WIN32_FIND_DATAW findData;
         HANDLE searchHnd = FindFirstFileW(searchDir.c_str(), &findData);
@@ -1205,7 +1205,7 @@ public:
 
         return 0;
     }
-    static DWORD WINAPI ScanThreadFunc(_In_ LPVOID lpParameter)
+    static DWORD WINAPI ScanThreadFunc([[maybe_unused]] _In_ LPVOID lpParameter)
     {
         auto& game = THGameGui::singleton();
         auto& dir = game.mScanPath;
@@ -1215,7 +1215,7 @@ public:
         ScanSteam();
         return 0;
     }
-    static DWORD WINAPI RescanThreadFunc(_In_ LPVOID lpParameter)
+    static DWORD WINAPI RescanThreadFunc([[maybe_unused]] _In_ LPVOID lpParameter)
     {
         auto& gameGui = THGameGui::singleton();
         gameGui.thcrapSetup();
@@ -1581,7 +1581,6 @@ public:
         if (!currentGame) {
             return 0;
         }
-        auto& currentInst = currentGame->instances[currentGame->selected];
         auto exePathU16 = exePath;
 
         HANDLE hModuleSnap = INVALID_HANDLE_VALUE;
@@ -1739,7 +1738,7 @@ public:
         }
 
         if (!result) {
-            TerminateThread(proc_info.hThread, -1);
+            TerminateThread(proc_info.hThread, ERROR_FUNCTION_FAILED);
         } else {
             ResumeThread(proc_info.hThread);
         }
@@ -1752,10 +1751,8 @@ public:
             return 0;
         }
     }
-    static DWORD WINAPI LaunchThreadFunc(_In_ LPVOID lpParameter)
+    static DWORD WINAPI LaunchThreadFunc([[maybe_unused]] _In_ LPVOID lpParameter)
     {
-        int returnReuslt = 0;
-
         auto currentGame = THGameGui::singleton().mCurrentGame;
         if (!currentGame) {
             return 0;

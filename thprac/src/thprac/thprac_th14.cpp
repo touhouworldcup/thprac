@@ -90,6 +90,7 @@ namespace TH14 {
             }
 
             CreateJson();
+            jalloc; // Dummy usage to silence C4189
             ReturnJson();
         }
     };
@@ -609,7 +610,7 @@ namespace TH14 {
             mNavFocus();
         }
 
-        unsigned int mSpellId = -1;
+        unsigned int mSpellId = UINT_MAX;
 
         Gui::GuiCheckBox mBugFix { TH16_BUGFIX };
         Gui::GuiCombo mPhase { TH_PHASE };
@@ -765,8 +766,6 @@ namespace TH14 {
             default:
                 return fallback_value;
             }
-
-            return fallback_value;
         }
         float AccessNormal(record_t& current)
         {
@@ -1014,25 +1013,27 @@ namespace TH14 {
 
             return wndFocus;
         }
-        void MsgBox(UINT type, const wchar_t* title, const wchar_t* msg, const wchar_t* msg2 = nullptr)
+        // TODO: Remove title parameter?
+        // TODO: Use utf8_to_utf16() instead?
+        void MsgBox(UINT type, [[maybe_unused]] const wchar_t* title, const wchar_t* msg, const wchar_t* msg2 = nullptr)
         {
-            std::wstring _msg = msg;
+            std::wstring finalMessage = msg;
             if (msg2) {
-                _msg += msg2;
+                finalMessage += msg2;
             }
-            MessageBoxW(nullptr, _msg.c_str(), _title, type);
+            MessageBoxW(nullptr, finalMessage.c_str(), _title, type);
         }
         void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nullptr)
         {
-            wchar_t _title[256];
-            wchar_t _msg[256];
-            wchar_t _msg2[256];
-            MultiByteToWideChar(CP_UTF8, 0, title, -1, _title, 256);
-            MultiByteToWideChar(CP_UTF8, 0, msg, -1, _msg, 256);
+            wchar_t title_wchar[256];
+            wchar_t msg_wchar[256];
+            wchar_t msg2_wchar[256];
+            MultiByteToWideChar(CP_UTF8, 0, title, -1, title_wchar, 256);
+            MultiByteToWideChar(CP_UTF8, 0, msg, -1, msg_wchar, 256);
             if (msg2) {
-                MultiByteToWideChar(CP_UTF8, 0, msg2, -1, _msg2, 256);
+                MultiByteToWideChar(CP_UTF8, 0, msg2, -1, msg2_wchar, 256);
             }
-            MsgBox(type, _title, _msg, msg2 ? _msg2 : nullptr);
+            MsgBox(type, title_wchar, msg_wchar, msg2 ? msg2_wchar : nullptr);
 
         }
         bool LoadReplayInternal(const wchar_t* rep_path)
@@ -2250,7 +2251,7 @@ namespace TH14 {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
-        int32_t call_addr = ((int32_t*)pCtx->Esp)[3];
+        // 4th stack item = i32 call_addr
 
         bool el_switch;
         bool is_practice;

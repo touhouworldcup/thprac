@@ -713,17 +713,17 @@ public:
         }
 
         if (mUpdDialogHnd && isUpdateAvailable) {
-            auto titleStr = utf8_to_utf16(S(THPRAC_UPDATE_DIALOG_TITLE));
+            auto updateTitleStr = utf8_to_utf16(S(THPRAC_UPDATE_DIALOG_TITLE));
             auto textStr = utf8_to_utf16(S(THPRAC_UPDATE_DIALOG_TEXT));
-            if (confirmation || MessageBoxW(nullptr, textStr.c_str(), titleStr.c_str(), MB_YESNO | MB_SETFOREGROUND) == IDYES) {
+            if (confirmation || MessageBoxW(nullptr, textStr.c_str(), updateTitleStr.c_str(), MB_YESNO | MB_SETFOREGROUND) == IDYES) {
                 mAutoUpdateThread.Stop();
                 mUpdPercentage = 0.0f;
                 mAutoUpdateThread.Start();
 
-                titleStr = utf8_to_utf16(S(THPRAC_UPDATE_DIALOG_UPDATING));
-                SetWindowText(hDialog, titleStr.c_str());
-                LONG_PTR style = GetWindowLongPtr(GetDlgItem(hDialog, IDC_PROGRESS1), GWL_STYLE);
-                SetWindowLongPtr(GetDlgItem(hDialog, IDC_PROGRESS1), GWL_STYLE, style & (~PBS_MARQUEE));
+                updateTitleStr = utf8_to_utf16(S(THPRAC_UPDATE_DIALOG_UPDATING));
+                SetWindowText(hDialog, updateTitleStr.c_str());
+                LONG_PTR updateStyle = GetWindowLongPtr(GetDlgItem(hDialog, IDC_PROGRESS1), GWL_STYLE);
+                SetWindowLongPtr(GetDlgItem(hDialog, IDC_PROGRESS1), GWL_STYLE, updateStyle & (~PBS_MARQUEE));
                 ShowWindow(hDialog, SW_SHOW);
                 MovWndToTop(hDialog);
 
@@ -758,7 +758,7 @@ public:
         mUpdDialogThread.Stop();
         return returnValue;
     }
-    static DWORD WINAPI UpdateDialogCtrlFunc(_In_ LPVOID lpParameter)
+    static DWORD WINAPI UpdateDialogCtrlFunc([[maybe_unused]] _In_ LPVOID lpParameter)
     {
         auto hDialog = CreateDialog(nullptr, MAKEINTRESOURCE(IDD_DIALOG1), nullptr, UpdateDialogProc);
         THUpdate::singleton().mUpdDialogHnd = hDialog;
@@ -778,7 +778,7 @@ public:
 
         return 0;
     }
-    static INT_PTR __stdcall UpdateDialogProc(HWND hDialog, UINT msg, WPARAM wParam, LPARAM lParam)
+    static INT_PTR __stdcall UpdateDialogProc([[maybe_unused]] HWND hDialog, UINT msg, WPARAM wParam, [[maybe_unused]] LPARAM lParam)
     {
         switch (msg) {
         case WM_INITDIALOG:
@@ -928,6 +928,8 @@ private:
             p += charsPrinted;
         };
 
+#pragma warning(push)
+#pragma warning(disable: 4459) // Global declaration shadowing (defined in winnt.h)
         // Don't need to depend on the entire Driver Development Kit just for
         // ntddk.h.
         typedef struct _OSVERSIONINFOW {
@@ -943,6 +945,7 @@ private:
             UCHAR wProductType;
             UCHAR wReserved;
         } RTL_OSVERSIONINFOEXW, *PRTL_OSVERSIONINFOEXW;
+#pragma warning(pop)
 
         // Or ntoskrnl.lib.
         typedef LONG WINAPI RtlGetVersion_type(RTL_OSVERSIONINFOEXW * lpVersionInformation);
@@ -1044,19 +1047,19 @@ private:
         if (!hInternet) {
             hInternet = InternetOpenW((std::wstring(L"thprac ") + GetVersionWcs() + L" on " + windows_version()).c_str(), INTERNET_OPEN_TYPE_PRECONFIG, nullptr, nullptr, 0);
             if (!hInternet)
-                return -1;
+                return ERROR_INTERNET_NOT_INITIALIZED;
             DWORD ignore = 1;
             if (!InternetSetOptionW(hInternet, INTERNET_OPTION_IGNORE_OFFLINE, &ignore, sizeof(DWORD)))
-                return -2;
+                return ERROR_INTERNET_INVALID_OPTION;
         }
         HINTERNET hFile = InternetOpenUrlW(hInternet, url, nullptr, 0, INTERNET_FLAG_RELOAD | INTERNET_FLAG_KEEP_CONNECTION, 0);
         if (!hFile)
-            return -3;
+            return GetLastError();
         defer(InternetCloseHandle(hFile));
 
         DWORD fileSize = 0;
         if (!HttpQueryInfoW(hFile, HTTP_QUERY_FLAG_NUMBER | HTTP_QUERY_CONTENT_LENGTH, &fileSize, &byteRet, 0))
-            return -4;
+            return ERROR_HTTP_INVALID_QUERY_REQUEST;
 
         std::vector<uint8_t> buffer;
         auto remSize = fileSize;
@@ -1067,11 +1070,11 @@ private:
                 readSize = remSize;
             }
             if (readSize == 0) {
-                return -5;
+                return ERROR_INTERNET_DISCONNECTED;
             }
             buffer.resize(readSize);
             if (InternetReadFile(hFile, buffer.data(), readSize, &byteRet) == FALSE) {
-                return -6;
+                return GetLastError();
             }
             remSize -= byteRet;
             progressCallback(remSize, fileSize);
@@ -1080,7 +1083,7 @@ private:
         return 0;
     }
 
-    static DWORD WINAPI CheckUpdateFunc(_In_ LPVOID lpParameter)
+    static DWORD WINAPI CheckUpdateFunc([[maybe_unused]] _In_ LPVOID lpParameter)
     {
         auto& updObj = THUpdate::singleton();
         updObj.mChkUpdStatus = STATUS_CHKING_OR_UPDATING;
@@ -1093,7 +1096,7 @@ private:
             CheckUpdateJson((char*)updateJson.data(), updateJson.size());
         return 0;
     }
-    static DWORD WINAPI AutoUpdateFunc(_In_ LPVOID lpParameter)
+    static DWORD WINAPI AutoUpdateFunc([[maybe_unused]] _In_ LPVOID lpParameter)
     {
         auto& updObj = THUpdate::singleton();
         updObj.mAutoUpdStatus = STATUS_CHKING_OR_UPDATING;

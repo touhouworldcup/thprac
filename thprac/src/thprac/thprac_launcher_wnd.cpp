@@ -395,7 +395,7 @@ typedef struct {
     int attempts;
 } initial_path_t;
 
-int CALLBACK SetInitialBrowsePathProc(HWND hWnd, UINT uMsg, LPARAM lp, LPARAM pData)
+int CALLBACK SetInitialBrowsePathProc(HWND hWnd, UINT uMsg, [[maybe_unused]] LPARAM lp, LPARAM pData)
 {
     initial_path_t* ip = (initial_path_t*)pData;
     if (ip) {
@@ -523,7 +523,7 @@ std::wstring LauncherWndFolderSelect(const wchar_t* title) {
     return L"";
 }
 
-std::wstring LauncherWndFileSelect(const wchar_t* title, const wchar_t* filter) {
+std::wstring LauncherWndFileSelect([[maybe_unused]] const wchar_t* title, const wchar_t* filter) {
     OPENFILENAME ofn = {};
     wchar_t szFile[MAX_PATH] = {};
     ofn.lStructSize = sizeof(ofn);

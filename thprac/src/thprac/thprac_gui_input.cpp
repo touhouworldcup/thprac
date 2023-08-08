@@ -71,7 +71,7 @@ namespace THPrac
 			if (*__gi_gen2_r1 & mask) return true;
 			return false;
 		}
-		__forceinline bool __GI_Gen2_Init(int reg1, int reg2, int reg3)
+		__forceinline bool __GI_Gen2_Init(int reg1, int reg2, [[maybe_unused]] int reg3)
 		{
 			__gi_gen2_r1 = (int32_t*)reg1;
 			__gi_gen2_r2 = (int8_t*)reg2;

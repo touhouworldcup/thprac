@@ -1,4 +1,5 @@
 ﻿#include "thprac_utils.h"
+#include <numbers>
 #define M_PI 3.14159265358979323846f
 
 struct vec2f {
@@ -124,6 +125,7 @@ namespace TH17 {
             }
 
             CreateJson();
+            jalloc; // Dummy usage to silence C4189
             ReturnJson();
         }
     };
@@ -664,7 +666,7 @@ namespace TH17 {
             mNavFocus();
         }
 
-        unsigned int mSpellId = -1;
+        unsigned int mSpellId = UINT_MAX;
 
         Gui::GuiCheckBox mBugFix { TH16_BUGFIX };
         Gui::GuiCombo mPhase { TH_PHASE };
@@ -703,7 +705,7 @@ namespace TH17 {
         }
     private:
         bool mInGoastMenu = false;
-                
+
         void FpsInit()
         {
             if (*(uint8_t*)0x4b5cd9 == 3) {
@@ -816,10 +818,10 @@ namespace TH17 {
             ImGui::Checkbox("Force angle", &mForceGoastAngle);
             ImGui::SameLine();
             HelpMarker("Tokens will try to move away from eachother both when spawning and when bouncing from a wall. This will ensure that a token will always go in the direction you specify");
-            
+
             if (mGoastAngleRandom)
                 ImGui::EndDisabled();
-            
+
             ImGui::Checkbox("Random angle", &mGoastAngleRandom);
 
             ImRotateStart();
@@ -831,7 +833,8 @@ namespace TH17 {
             ImGui::TextUnformatted("--angle-preview-->");
             ImGui::Unindent();
             ImGui::Unindent();
-            ImRotateEnd(1.57079632679 - mGoastAng);
+            constexpr auto HALF_PI = static_cast<float>(std::numbers::pi / 2.0);
+            ImRotateEnd(HALF_PI - mGoastAng);
 
             if (!mSelectedGoast) {
                 ImGui::EndDisabled();
@@ -851,7 +854,7 @@ namespace TH17 {
             ImGui::Separator();
 
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
-            
+
             if (BeginOptGroup<TH_GAME_SPEED>()) {
                 if (GameFPSOpt(mOptCtx))
                     FpsSet();
@@ -866,7 +869,7 @@ namespace TH17 {
                 ImGui::Checkbox(S(TH17_GOAST_REPFIX), &mGoastRepfix);
                 ImGui::SameLine();
                 HelpMarker(S(TH17_GOAST_REPFIX_DESC));
-                
+
                 if (ImGui::Button("Spawn a Goast")) {
                     mInGoastMenu = true;
                 }
@@ -1840,7 +1843,7 @@ namespace TH17 {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
-        int32_t call_addr = ((int32_t*)pCtx->Esp)[3];
+        // 4th stack item = i32 call_addr
 
         bool el_switch;
         bool is_practice;
@@ -1900,7 +1903,6 @@ namespace TH17 {
             *(int32_t*)(0x4b5a24) = thPracParam.value * 100;
             *(int32_t*)(0x4b5a0c) = thPracParam.graze;
 
-            int32_t unk = *(int32_t*)(0x4b7684);
             if (thPracParam.goast_1) {
                 TH17AddGoast(thPracParam.goast_1);
                 if (thPracParam.goast_2) {

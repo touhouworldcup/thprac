@@ -85,7 +85,8 @@ namespace Alcostg {
         }
     }
     namespace AlcostgBeer {
-        static void Set(int16_t beer)
+        // TODO: Should this function take (void)?
+        static void Set([[maybe_unused]] int16_t beer)
         {
             alcostg_beer_cd = 0;
             alcostg_add_beer::GetHook().Enable();
@@ -141,8 +142,8 @@ namespace Alcostg {
                         else
                             thPracParam.section = *mWarp ? th_sections_cba[*mStage][*mWarp - 1][*mSection] : 0;
                         thPracParam.time = *mTime;
-                        thPracParam.beer = *mBeer;
-                        thPracParam.beer_max = *mBeerMax;
+                        thPracParam.beer = static_cast<int16_t>(*mBeer);
+                        thPracParam.beer_max = static_cast<int16_t>(*mBeerMax);
                         thPracParam.score = *mScore;
 
                         mState = 0;

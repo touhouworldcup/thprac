@@ -110,6 +110,7 @@
     <ClCompile Include="src\thprac\thprac_launcher_links.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher_main.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher_tools.cpp" />
+    <ClCompile Include="src\thprac\thprac_launcher_utils.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher_wnd.cpp" />
     <ClCompile Include="src\thprac\thprac_licence.cpp" />
     <ClCompile Include="src\thprac\thprac_load_exe.cpp" />
@@ -207,7 +208,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>thprac_std.h</PrecompiledHeaderFile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;HAVE_SSE2;_CRT_SECURE_NO_WARNINGS;_WINDOWS;WINVER=0x0601;_WIN32_WINNT=0x0601;DISTORM_LIGHT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard Condition="'$(ToolsetType)'=='MSVC'">stdcpp20</LanguageStandard>

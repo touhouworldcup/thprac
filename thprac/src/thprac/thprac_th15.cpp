@@ -1739,7 +1739,6 @@ namespace TH15 {
         ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
-    static bool drawCursor;
     static bool frameStarted = false;
 
     HOOKSET_DEFINE(THMainHook)
@@ -1748,7 +1747,7 @@ namespace TH15 {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
-        int32_t call_addr = ((int32_t*)pCtx->Esp)[3];
+        // 4th stack item = i32 call_addr
 
         bool el_switch;
         bool is_practice;

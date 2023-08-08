@@ -200,7 +200,7 @@ static ImWchar baseUnicodeRanges[] =
         { L"MS Mincho", 0, 0.85f },
     };
 
-    int CALLBACK __glocale_font_enum_proc(const LOGFONTW* lpelfe, const TEXTMETRICW* lpntme, DWORD FontType, LPARAM lParam)
+    int CALLBACK __glocale_font_enum_proc([[maybe_unused]] const LOGFONTW* lpelfe, [[maybe_unused]] const TEXTMETRICW* lpntme, [[maybe_unused]] DWORD FontType, LPARAM lParam)
     {
         *((int*)lParam) = 1;
         return 0;
@@ -474,7 +474,7 @@ static ImWchar baseUnicodeRanges[] =
         if (__glocale_disabled) {
             if (__glocale_disabled == 7) {
                 MessageBoxW(nullptr, L"No font can be loaded.\nthprac will now terminate.", L"Fatal error", MB_OK | MB_ICONERROR);
-                TerminateProcess(GetCurrentProcess(), -1);
+                ExitProcess(ERROR_FILE_CORRUPT);
             } else {
                 MessageBoxW(nullptr, L"One or more fonts failed to load, which will cause certain non-Latin characters to not render properly.\nIf you are running thprac under wine/Crossover, seek help to link the appropriate fonts or try using wine-staging.", L"Warning", MB_OK | MB_ICONWARNING);
             }
@@ -485,7 +485,6 @@ static ImWchar baseUnicodeRanges[] =
         auto& io = ImGui::GetIO();
         for (unsigned int locale = 0; locale < 3; locale++) {
             // Var Definition
-            int fontIndex = -1;
             void* fontData = nullptr;
             DWORD fontDataSize = 0;
 
@@ -544,7 +543,6 @@ static ImWchar baseUnicodeRanges[] =
         auto& io = ImGui::GetIO();
 
         // Var Definition
-        int fontIndex = -1;
         void* fontData = nullptr;
         DWORD fontDataSize = 0;
 

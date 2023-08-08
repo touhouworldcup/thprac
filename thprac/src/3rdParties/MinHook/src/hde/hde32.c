@@ -1,4 +1,5 @@
-﻿/*
+﻿#pragma warning (push, 0)
+/*
  * Hacker Disassembler Engine 32 C
  * Copyright (c) 2008-2009, Vyacheslav Patkov.
  * All rights reserved.
@@ -36,7 +37,7 @@ unsigned int hde32_disasm(const void *code, hde32s *hs)
 	ci.dt = Decode64Bits;
 #endif
 	ci.features = DF_NONE;
-	
+
 	_DecodeResult res = distorm_decompose(&ci, &di, 1, &diCount);
 	if (di.flags == FLAG_NOT_DECODABLE ||
 		di.opcode == I_UNDEFINED)

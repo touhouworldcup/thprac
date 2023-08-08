@@ -15,7 +15,7 @@
 
 #pragma comment(lib, "psapi.lib")
 
- 
+
 namespace THPrac {
 enum thprac_prompt_t {
     PR_FAILED,
@@ -208,7 +208,6 @@ bool ApplyTHPracToProc(PROCESSENTRY32W& proc)
 
 bool CheckIfGameExistEx(THGameSig& gameSig, const wchar_t* name)
 {
-    bool result = false;
     MappedFile file(name);
     if (!file.fileMapView)
         return false;
@@ -272,7 +271,7 @@ bool RunGameWithTHPrac(THGameSig& gameSig, std::wstring& name)
 
     auto result = (WriteTHPracSig(proc_info.hProcess) && THPrac::LoadSelf(proc_info.hProcess));
     if (!result)
-        TerminateThread(proc_info.hThread, -1);
+        TerminateThread(proc_info.hThread, ERROR_FUNCTION_FAILED);
     else
         ResumeThread(proc_info.hThread);
 

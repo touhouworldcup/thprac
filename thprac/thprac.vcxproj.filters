@@ -390,6 +390,9 @@
     <ClCompile Include="src\thprac\thprac_locale_def.cpp">
       <Filter>THPrac Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\thprac\thprac_launcher_utils.cpp">
+      <Filter>THPrac Launcher</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
