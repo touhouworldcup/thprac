@@ -42,6 +42,11 @@ In TH13, press L to view a more advanced HUD
 ![TH13](https://user-images.githubusercontent.com/23106652/174435095-51554934-83d3-4d05-847d-834f3068bc28.png)
 
 ## Game specific features
+### TH185 Force Wave
+![grafik](https://github.com/touhouworldcup/thprac/assets/23106652/02c55e5e-5c89-462f-beea-9ab07cbb1051)
+
+If thprac is enabled ("Mode" is set to "Custom"), this popup will appear whenever the game is about to randomly choose a wave.
+
 ### TH09 Tools (for Phantasmagoria of Flower View)
 ![TH09 Tools](https://user-images.githubusercontent.com/23106652/174434249-2bf1d70a-101c-4538-a4e6-8eeaf273dd88.png) 
 
