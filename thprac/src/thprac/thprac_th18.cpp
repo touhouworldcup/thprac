@@ -1,6 +1,5 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
-#include "thprac_utils.h"
 #include "thprac_game_data.h"
 #include <metrohash128.h>
 #include "..\MinHook\src\buffer.h"
@@ -388,7 +387,7 @@ namespace TH18 {
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_SCORE, TH_LIFE, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT,
-            TH_POWER, TH18_FUNDS };
+            TH_POWER, TH18_FUNDS, TH18_MUKADE, TH_LILY };
 
         int mChapterSetup[7][2] {
             { 3, 2 },
