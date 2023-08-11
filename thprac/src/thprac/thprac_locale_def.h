@@ -406,6 +406,7 @@ enum th_glossary_t
     TH185_WHOLESALE,
     TH18_AC_FIX,
     TH18_AC_FIX_DESC,
+    TH18_BASSDRUM_CD,
     TH18_BUG_FIX,
     TH18_BUG_FIX_DESC,
     TH18_CARD,
@@ -467,16 +468,24 @@ enum th_glossary_t
     TH18_CARD_55,
     TH18_CARD_56,
     TH18_CARD_FORMAT,
+    TH18_CYLINDER_CD,
     TH18_FUNDS,
     TH18_INFFUNDS,
+    TH18_KANAME_CD,
+    TH18_KOZUCHI_CD,
+    TH18_LILY_CD,
+    TH18_LILY_COUNT,
     TH18_MARKET_MANIP,
     TH18_MARKET_MANIP_DESC1,
     TH18_MARKET_MANIP_DESC2,
     TH18_MARKET_MANIP_DESC3,
     TH18_MARKET_MANIP_DESC4,
+    TH18_MIKOFLASH_CD,
+    TH18_MOON_CD,
     TH18_MUKADE,
     TH18_MUKADE_FIX,
     TH18_MUKADE_FIX_DESC,
+    TH18_PSYCO_CD,
     TH18_REPFIX_DESC,
     TH18_REPFIX_HIDE_INS,
     TH18_REPFIX_INITIAL_CARD,
@@ -493,13 +502,16 @@ enum th_glossary_t
     TH18_REPLAY_FIX,
     TH18_RESTART_FIX,
     TH18_RESTART_FIX_DESC,
+    TH18_RICEBALL_CD,
     TH18_SCROLL_FIX,
     TH18_SCROLL_FIX_DESC,
     TH18_ST6FINAL_FIX,
     TH18_ST6FINAL_FIX_DESC,
+    TH18_SUN_CD,
     TH18_TITLE,
     TH18_UNCAP,
     TH18_UNCAP_OVERWRITE,
+    TH18_VAMPIRE_CD,
     TH18_ZERO_CD,
     THPRAC_ABORT,
     THPRAC_ADMIN_RIGHTS,
@@ -895,7 +907,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][883];
+extern const char* th_glossary_str[3][895];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2389,10 +2401,10 @@ extern const th_sections_t th_sections_cbt[1][2][1];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3129];
+extern const wchar_t __thprac_loc_range_zh[3133];
 
 extern const wchar_t __thprac_loc_range_en[35];
 
-extern const wchar_t __thprac_loc_range_ja[2665];
+extern const wchar_t __thprac_loc_range_ja[2667];
 
 }
