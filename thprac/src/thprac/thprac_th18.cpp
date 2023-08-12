@@ -650,6 +650,7 @@ namespace TH18 {
         {
             if (cardId < 55)
                 asm_call<0x411460, Thiscall>(*(uint32_t*)ABILTIY_MANAGER_PTR, cardId, 2);
+                asm_call<0x418de0, Fastcall>(cardId, 0);
         }
         bool IsMarketAvailable()
         {
