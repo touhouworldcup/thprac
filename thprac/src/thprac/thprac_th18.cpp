@@ -2910,6 +2910,10 @@ namespace TH18 {
             }
         }
     }
+    EHOOK_DY(th18_active_buy_swap_fix, 0x412d94)
+    {
+        asm_call<0x408c30, Fastcall>(*(uint32_t*)ABILTIY_MANAGER_PTR);
+    }
     EHOOK_DY(th18_rep_save, 0x462657)
     {
         char* repName = (char*)(pCtx->Esp + 0x30);
