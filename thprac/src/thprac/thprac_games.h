@@ -9,6 +9,14 @@
 struct IDirect3DDevice8;
 
 namespace THPrac {
+struct Timer {
+    int32_t previous;
+    int32_t current;
+    float current_f;
+    float* __game_speed__disused;
+    uint32_t control;
+};
+
 #pragma region Gui Wrapper
 
 enum game_gui_impl {

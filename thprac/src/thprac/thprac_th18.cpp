@@ -10,7 +10,8 @@ namespace TH18 {
     enum addrs {
         ABILTIY_MANAGER_PTR = 0x4cf298,
         ABILITY_SHOP_PTR = 0x4cf2a4,
-        CARD_DESC_LIST = 0x4c53c0
+        CARD_DESC_LIST = 0x4c53c0,
+        MUKADE_ADDR = 0x4cf2d4,
     };
     
     enum cards {
@@ -26,6 +27,67 @@ namespace TH18 {
         CYLINDER = 52,
         RICEBALL,
         MUKADE
+    };
+
+    struct Thread {
+        void* vtable;
+        void* thread;
+        uint32_t tid;
+        int32_t __bool_c;
+        int32_t __bool_10;
+        struct HINSTANCE__** phModule;
+        char filler_24[0x4];
+    };
+
+    struct CardList {
+        struct CardBase* entry;
+        struct CardList* next;
+        struct CardList* prev;
+        struct CardList* __seldom_used;
+    };
+
+    struct CardBase {
+        struct VTableCard* vtable;
+        int32_t card_id;
+        int32_t array_index___plus_1_i_think;
+        struct CardList list_node;
+        int32_t anm_id_for_ingame_effect;
+        struct Timer recharge_timer;
+        struct Timer _recharge_timer;
+        int32_t recharge_time;
+        struct TableCardData* table_entry;
+        int32_t flags;
+    };
+
+    struct CardLily : public CardBase {
+        int32_t count;
+    };
+
+    struct AbilityManager {
+        char filler_0[0x4];
+        struct UpdateFunc* on_tick;
+        struct UpdateFunc* on_draw;
+        struct AnmLoaded* ability_anm;
+        struct AnmLoaded* abcard_anm;
+        struct AnmLoaded* abmenu_anm;
+        struct CardList card_list_head;
+        int32_t num_total_cards;
+        int32_t num_active_cards;
+        int32_t num_equipment_cards;
+        int32_t num_passive_cards;
+        struct CardBase* selected_active_card;
+        int32_t __id_3c;
+        char filler_64[0xc];
+        int32_t __id_4c;
+        char filler_80[0x4];
+        int32_t flags;
+        int32_t __array_1[0x100];
+        int32_t __array_2[0x100];
+        int32_t __array_3[0x100];
+        char filler_3160[0xc];
+        int32_t __created_ability_txt;
+        struct Thread __thread;
+        char filler_3208[0xe8];
     };
 
     using std::pair;
@@ -2744,87 +2806,76 @@ namespace TH18 {
     }
     EHOOK_DY(th18_patch_main, 0x4432a7)
     {
-        if (thPracParam.mode == 1) {
-            *(int32_t*)(0x4cccfc) = (int32_t)(thPracParam.score / 10);
-            *(int32_t*)(0x4ccd48) = thPracParam.life;
-            *(int32_t*)(0x4ccd4c) = thPracParam.life_fragment;
-            *(int32_t*)(0x4ccd58) = thPracParam.bomb;
-            *(int32_t*)(0x4ccd5c) = thPracParam.bomb_fragment;
-            *(int32_t*)(0x4ccd38) = thPracParam.power;
-            *(int32_t*)(0x4ccd30) = *(int32_t*)(0x4ccd34) = thPracParam.funds;
+        defer({
+            THAdvOptWnd::singleton().RestartFix();
+            thPracParam._playLock = true;
+        });
 
-            uint32_t* list = nullptr;
-            for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
-                list = i;
-                auto cardId = ((uint32_t**)list)[0][1];
+        if (thPracParam.mode != 1)
+            return;
 
-                switch (cardId) {
-                    case KOZUCHI:
-                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.kozuchi / 10000);
-                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.kozuchi / 10000.0f);
-                        break;
+#define R(name) \
+    card->_recharge_timer.current = card->recharge_time * (1 - thPracParam.name / 10000); \
+    card->_recharge_timer.current_f = card->recharge_time * (1.0f - thPracParam.name / 10000.0f)
 
-                    case KANAME:
-                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.kaname / 10000);
-                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.kaname / 10000.0f);
-                        break;
-
-                    case MOON:
-                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.moon / 10000);
-                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.moon / 10000.0f);
-                        break;
-
-                    case MIKOFLASH:
-                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.mikoflash / 10000);
-                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.mikoflash / 10000.0f);
-                        break;
-
-                    case VAMPIRE:
-                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.vampire / 10000);
-                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.vampire / 10000.0f);
-                        break;
-
-                    case SUN:
-                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.sun / 10000);
-                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.sun / 10000.0f);
-                        break;
-
-                    case LILY:
-                        ((uint32_t**)list)[0][21] = thPracParam.lily_count;
-                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.lily_cd / 10000);
-                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.lily_cd / 10000.0f);
-                        break;
-
-                    case BASSDRUM:
-                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.bassdrum / 10000);
-                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.bassdrum / 10000.0f);
-                        break;
-
-                    case PSYCO:
-                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.psyco / 10000);
-                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.psyco / 10000.0f);
-                        break;
-
-                    case CYLINDER:
-                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.cylinder / 10000);
-                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.cylinder / 10000.0f);
-                        break;
-
-                    case RICEBALL:
-                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.riceball / 10000);
-                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.riceball / 10000.0f);
-                        break;
-
-                    case MUKADE:
-                        *(int32_t*)(0x4cf2d4) = thPracParam.mukade;
-                        break;
-                }
+        *(int32_t*)(0x4cccfc) = (int32_t)(thPracParam.score / 10);
+        *(int32_t*)(0x4ccd48) = thPracParam.life;
+        *(int32_t*)(0x4ccd4c) = thPracParam.life_fragment;
+        *(int32_t*)(0x4ccd58) = thPracParam.bomb;
+        *(int32_t*)(0x4ccd5c) = thPracParam.bomb_fragment;
+        *(int32_t*)(0x4ccd38) = thPracParam.power;
+        *(int32_t*)(0x4ccd30) = *(int32_t*)(0x4ccd34) = thPracParam.funds;
+        
+        auto* ability_manager = *(AbilityManager**)ABILTIY_MANAGER_PTR;
+        
+        for (CardList* entry = &ability_manager->card_list_head; entry; entry = entry->next) {
+            CardBase* card = entry->entry;
+            if (!GameState_Assert(card != nullptr))
+                continue;
+        
+            switch (card->card_id) {
+            case KOZUCHI:
+                R(kozuchi);
+                break;
+            case KANAME:
+                R(kaname);
+                break;
+            case MOON:
+                R(moon);
+                break;
+            case MIKOFLASH:
+                R(mikoflash);
+                break;
+            case VAMPIRE:
+                R(vampire);
+                break;
+            case SUN:
+                R(sun);
+                break;
+            case LILY:
+                static_cast<CardLily*>(card)->count = thPracParam.lily_count;
+                R(lily_cd);
+                break;
+            case BASSDRUM:
+                R(bassdrum);
+                break;
+            case PSYCO:
+                R(psyco);
+                break;
+            case CYLINDER:
+                R(cylinder);
+                break;
+            case RICEBALL:
+                R(riceball);
+                break;
+            case MUKADE:
+                *(int32_t*)MUKADE_ADDR = thPracParam.mukade;
+                break;
             }
-
-            THSectionPatch();
         }
-        THAdvOptWnd::singleton().RestartFix();
-        thPracParam._playLock = true;
+        THSectionPatch();
+#undef R
+
     }
     EHOOK_DY(th18_bgm, 0x444370)
     {
