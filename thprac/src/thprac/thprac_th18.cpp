@@ -328,6 +328,9 @@ namespace TH18 {
                 mPower(power_str.c_str());
                 mFunds();
 
+                mScore();
+                mScore.RoundDown(10);
+
                 if (mCardToggles[MUKADE].second) {
                     char str[8];
                     sprintf_s(str, "1.%03d", *mMukade);
@@ -350,8 +353,7 @@ namespace TH18 {
                     }
                 }
 
-                mScore();
-                mScore.RoundDown(10);
+                
             }
 
             mNavFocus();
