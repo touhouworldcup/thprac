@@ -1,6 +1,5 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
-#include "thprac_utils.h"
 #include "thprac_game_data.h"
 #include <metrohash128.h>
 #include "..\MinHook\src\buffer.h"
@@ -13,7 +12,21 @@ namespace TH18 {
         ABILITY_SHOP_PTR = 0x4cf2a4,
         CARD_DESC_LIST = 0x4c53c0
     };
-
+    
+    enum cards {
+        KOZUCHI = 42,
+        KANAME,
+        MOON,
+        MIKOFLASH,
+        VAMPIRE,
+        SUN,
+        LILY,
+        BASSDRUM,
+        PSYCO,
+        CYLINDER = 52,
+        RICEBALL,
+        MUKADE
+    };
 
     using std::pair;
     struct THPracParam {
@@ -29,8 +42,20 @@ namespace TH18 {
         int32_t bomb_fragment;
         int32_t power;
         int32_t funds;
+
+        int32_t kozuchi;
+        int32_t kaname;
+        int32_t moon;
+        int32_t mikoflash;
+        int32_t vampire;
+        int32_t sun;
+        int32_t lily_count;
+        int32_t lily_cd;
+        int32_t bassdrum;
+        int32_t psyco;
+        int32_t cylinder;
+        int32_t riceball;
         int32_t mukade;
-        int32_t lily;
 
         bool dlg;
 
@@ -57,8 +82,19 @@ namespace TH18 {
             GetJsonValue(bomb_fragment);
             GetJsonValue(power);
             GetJsonValue(funds);
+            GetJsonValue(kozuchi);
+            GetJsonValue(kaname);
+            GetJsonValue(moon);
+            GetJsonValue(mikoflash);
+            GetJsonValue(vampire);
+            GetJsonValue(sun);
+            GetJsonValue(lily_count);
+            GetJsonValue(lily_cd);
+            GetJsonValue(bassdrum);
+            GetJsonValue(psyco);
+            GetJsonValue(cylinder);
+            GetJsonValue(riceball);
             GetJsonValue(mukade);
-            GetJsonValue(lily);
 
             return true;
         }
@@ -85,8 +121,19 @@ namespace TH18 {
                 AddJsonValue(bomb_fragment);
                 AddJsonValue(power);
                 AddJsonValue(funds);
+                AddJsonValue(kozuchi);
+                AddJsonValue(kaname);
+                AddJsonValue(moon);
+                AddJsonValue(mikoflash);
+                AddJsonValue(vampire);
+                AddJsonValue(sun);
+                AddJsonValue(lily_count);
+                AddJsonValue(lily_cd);
+                AddJsonValue(bassdrum);
+                AddJsonValue(psyco);
+                AddJsonValue(cylinder);
+                AddJsonValue(riceball);
                 AddJsonValue(mukade);
-                AddJsonValue(lily);
 
                 ReturnJson();
             } else if (mode == 2) {
@@ -116,6 +163,17 @@ namespace TH18 {
             *mLife = 7;
             *mBomb = 7;
             *mPower = 400;
+
+            for (auto& card : mCardToggles) {
+                if (card.first == MUKADE)
+                    continue;
+
+                auto& cardSlider = *(card.second.first);
+
+                cardSlider.SetCurrentStep(100);
+                *cardSlider = 10000;
+            }
+
             mMukade.SetCurrentStep(100);
             *mMukade = 800;
 
@@ -136,8 +194,8 @@ namespace TH18 {
                 break;
             case 1:
                 mDiffculty = *((int32_t*)0x4c9ab0);
-                mMukadeToggle = CheckMukade();
-                mLilyToggle = CheckLily();
+                ToggleCards();
+
                 SetFade(0.8f, 0.1f);
                 Open();
                 thPracParam.Reset();
@@ -162,8 +220,21 @@ namespace TH18 {
                 thPracParam.bomb_fragment = *mBombFragment;
                 thPracParam.power = *mPower;
                 thPracParam.funds = *mFunds;
+
+                thPracParam.kozuchi = *mKozuchi;
+                thPracParam.kaname = *mKaname;
+                thPracParam.moon = *mMoon;
+                thPracParam.mikoflash = *mMikoflash;
+                thPracParam.vampire = *mVampire;
+                thPracParam.sun = *mSun;
+                thPracParam.lily_count = *mLilyCount;
+                thPracParam.lily_cd = *mLilyCD;
+                thPracParam.bassdrum = *mBassdrum;
+                thPracParam.psyco = *mPsyco;
+                thPracParam.cylinder = *mCylinder;
+                thPracParam.riceball = *mRiceball;
                 thPracParam.mukade = *mMukade * 20;
-                thPracParam.lily = *mLily;
+
                 break;
             case 4:
                 Close();
@@ -174,31 +245,21 @@ namespace TH18 {
             }
         }
 
-        static bool CheckMukade()
+        void ToggleCards()
         {
+            for (auto& pair : mCardToggles)
+                pair.second.second = false;
+
             uint32_t* list = nullptr;
             for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
                 list = i;
                 auto cardId = ((uint32_t**)list)[0][1];
-                if (cardId == 54) {
-                    return true;
-                }
+
+                if (mCardToggles.find(cardId) != mCardToggles.end())
+                    mCardToggles[cardId].second = true;
             }
-            return false;
         }
 
-        static bool CheckLily()
-        {
-            uint32_t* list = nullptr;
-            for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
-                list = i;
-                auto cardId = ((uint32_t**)list)[0][1];
-                if (cardId == 48) {
-                    return true;
-                }
-            }
-            return false;
-        }
     protected:
 
         virtual void OnLocaleChange() override
@@ -266,14 +327,29 @@ namespace TH18 {
                 auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
                 mPower(power_str.c_str());
                 mFunds();
-                if (mMukadeToggle) {
+
+                if (mCardToggles[MUKADE].second) {
                     char str[8];
                     sprintf_s(str, "1.%03d", *mMukade);
                     mMukade(str);
                 }
-                if (mLilyToggle) {
-                    mLily();
+
+                for (auto& card : mCardToggles) {
+                    auto& [slider, isActive] = card.second;
+
+                    if (isActive) {
+                        if (card.first == MUKADE)
+                            continue;
+
+                        if (card.first == LILY)
+                            mLilyCount();
+
+                        char str[20];
+                        sprintf(str, "%.2f %%%%", **slider * 0.01f);
+                        (*slider)(str);
+                    }
                 }
+
                 mScore();
                 mScore.RoundDown(10);
             }
@@ -380,15 +456,43 @@ namespace TH18 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mBombFragment { TH_BOMB_FRAGMENT, 0, 2 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 100, 400 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mFunds { TH18_FUNDS, 0, 999990, 1, 100000 };
+
+        Gui::GuiSlider<int, ImGuiDataType_S32> mKozuchi { TH18_KOZUCHI_CD, 0, 10000, 1, 1000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mKaname { TH18_KANAME_CD, 0, 10000, 1, 1000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mMoon { TH18_MOON_CD, 0, 10000, 1, 1000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mMikoflash { TH18_MIKOFLASH_CD, 0, 10000, 1, 1000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mVampire { TH18_VAMPIRE_CD, 0, 10000, 1, 1000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mSun { TH18_SUN_CD, 0, 10000, 1, 1000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mLilyCount { TH18_LILY_COUNT, 0, 10, 1, 1, 1 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mLilyCD { TH18_LILY_CD, 0, 10000, 1, 1000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mBassdrum { TH18_BASSDRUM_CD, 0, 10000, 1, 1000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mPsyco { TH18_PSYCO_CD, 0, 10000, 1, 1000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mCylinder { TH18_CYLINDER_CD, 0, 10000, 1, 1000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mRiceball { TH18_RICEBALL_CD, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mMukade { TH18_MUKADE, 0, 800, 1, 100 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mLily { TH_LILY, 0, 10, 1, 1, 1 };
-        bool mMukadeToggle = false;
-        bool mLilyToggle = false;
+
+        std::unordered_map<int, std::pair<Gui::GuiSlider<int, ImGuiDataType_S32>*, bool>> mCardToggles = {
+            { KOZUCHI, { &mKozuchi, false } },
+            { KANAME, { &mKaname, false } },
+            { MOON, { &mMoon, false } },
+            { MIKOFLASH, { &mMikoflash, false } },
+            { VAMPIRE, { &mVampire, false } },
+            { SUN, { &mSun, false } },
+            { LILY, { &mLilyCD, false } },
+            { BASSDRUM, { &mBassdrum, false } },
+            { PSYCO, { &mPsyco, false } },
+            { CYLINDER, { &mCylinder, false } },
+            { RICEBALL, { &mRiceball, false } },
+            { MUKADE, { &mMukade, false } },
+        };
 
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_SCORE, TH_LIFE, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT,
-            TH_POWER, TH18_FUNDS };
+            TH_POWER, TH18_FUNDS, TH18_MUKADE, TH18_KOZUCHI_CD, TH18_KANAME_CD,
+            TH18_MOON_CD, TH18_MIKOFLASH_CD, TH18_VAMPIRE_CD, TH18_SUN_CD,
+            TH18_LILY_COUNT, TH18_LILY_CD, TH18_BASSDRUM_CD, TH18_PSYCO_CD,
+            TH18_CYLINDER_CD, TH18_RICEBALL_CD };
 
         int mChapterSetup[7][2] {
             { 3, 2 },
@@ -546,6 +650,7 @@ namespace TH18 {
         {
             if (cardId < 55)
                 asm_call<0x411460, Thiscall>(*(uint32_t*)ABILTIY_MANAGER_PTR, cardId, 2);
+                asm_call<0x418de0, Fastcall>(cardId, 0);
         }
         bool IsMarketAvailable()
         {
@@ -2645,17 +2750,72 @@ namespace TH18 {
             *(int32_t*)(0x4ccd5c) = thPracParam.bomb_fragment;
             *(int32_t*)(0x4ccd38) = thPracParam.power;
             *(int32_t*)(0x4ccd30) = *(int32_t*)(0x4ccd34) = thPracParam.funds;
-            if (THGuiPrac::CheckMukade()) {
-                *(int32_t*)(0x4cf2d4) = thPracParam.mukade;
-            }
-            if (THGuiPrac::CheckLily()) {
-                uint32_t* list = nullptr;
-                for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
-                    list = i;
-                    auto cardId = ((uint32_t**)list)[0][1];
-                    if (cardId == 48) {
-                        ((uint32_t**)list)[0][21] = thPracParam.lily;
-                    }
+
+            uint32_t* list = nullptr;
+            for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
+                list = i;
+                auto cardId = ((uint32_t**)list)[0][1];
+
+                switch (cardId) {
+                    case KOZUCHI:
+                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.kozuchi / 10000);
+                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.kozuchi / 10000.0f);
+                        break;
+
+                    case KANAME:
+                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.kaname / 10000);
+                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.kaname / 10000.0f);
+                        break;
+
+                    case MOON:
+                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.moon / 10000);
+                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.moon / 10000.0f);
+                        break;
+
+                    case MIKOFLASH:
+                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.mikoflash / 10000);
+                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.mikoflash / 10000.0f);
+                        break;
+
+                    case VAMPIRE:
+                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.vampire / 10000);
+                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.vampire / 10000.0f);
+                        break;
+
+                    case SUN:
+                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.sun / 10000);
+                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.sun / 10000.0f);
+                        break;
+
+                    case LILY:
+                        ((uint32_t**)list)[0][21] = thPracParam.lily_count;
+                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.lily_cd / 10000);
+                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.lily_cd / 10000.0f);
+                        break;
+
+                    case BASSDRUM:
+                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.bassdrum / 10000);
+                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.bassdrum / 10000.0f);
+                        break;
+
+                    case PSYCO:
+                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.psyco / 10000);
+                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.psyco / 10000.0f);
+                        break;
+
+                    case CYLINDER:
+                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.cylinder / 10000);
+                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.cylinder / 10000.0f);
+                        break;
+
+                    case RICEBALL:
+                        ((uint32_t**)list)[0][14] = ((uint32_t**)list)[0][18] * (1 - thPracParam.riceball / 10000);
+                        *((float*) &((uint32_t**)list)[0][15]) = ((uint32_t**)list)[0][18] * (1.0f - thPracParam.riceball / 10000.0f);
+                        break;
+
+                    case MUKADE:
+                        *(int32_t*)(0x4cf2d4) = thPracParam.mukade;
+                        break;
                 }
             }
 
