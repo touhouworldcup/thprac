@@ -285,18 +285,18 @@ namespace TH18 {
                 thPracParam.power = *mPower;
                 thPracParam.funds = *mFunds;
 
-                thPracParam.kozuchi = *mKozuchi;
-                thPracParam.kaname = *mKaname;
-                thPracParam.moon = *mMoon;
-                thPracParam.mikoflash = *mMikoflash;
-                thPracParam.vampire = *mVampire;
-                thPracParam.sun = *mSun;
-                thPracParam.lily_count = *mLilyCount;
-                thPracParam.lily_cd = *mLilyCD;
-                thPracParam.bassdrum = *mBassdrum;
-                thPracParam.psyco = *mPsyco;
-                thPracParam.cylinder = *mCylinder;
-                thPracParam.riceball = *mRiceball;
+                thPracParam.kozuchi = 10000 - *mKozuchi;
+                thPracParam.kaname = 10000 - *mKaname;
+                thPracParam.moon = 10000 - *mMoon;
+                thPracParam.mikoflash = 10000 - *mMikoflash;
+                thPracParam.vampire = 10000 - *mVampire;
+                thPracParam.sun = 10000 - *mSun;
+                thPracParam.lily_count = 10000 - *mLilyCount;
+                thPracParam.lily_cd = 10000 - *mLilyCD;
+                thPracParam.bassdrum = 10000 - *mBassdrum;
+                thPracParam.psyco = 10000 - *mPsyco;
+                thPracParam.cylinder = 10000 - *mCylinder;
+                thPracParam.riceball = 10000 - *mRiceball;
                 thPracParam.mukade = *mMukade * 20;
 
                 break;
@@ -2857,8 +2857,8 @@ namespace TH18 {
             return;
 
 #define R(name) \
-    card->_recharge_timer.current = card->recharge_time * (1 - thPracParam.name / 10000); \
-    card->_recharge_timer.current_f = card->recharge_time * (1.0f - thPracParam.name / 10000.0f)
+    card->_recharge_timer.current = static_cast<int32_t>(card->recharge_time * (static_cast<float>(thPracParam.name) / 10000)); \
+    card->_recharge_timer.current_f = card->recharge_time * (thPracParam.name / 10000.0f)
 
         *(int32_t*)(0x4cccfc) = (int32_t)(thPracParam.score / 10);
         *(int32_t*)(0x4ccd48) = thPracParam.life;
