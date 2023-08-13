@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][895]
+const char* th_glossary_str[3][897]
 {
     {
         "",
@@ -507,6 +507,8 @@ const char* th_glossary_str[3][895]
         "开启时，能够正常播放含有卷轴卡牌的replay（仅限Extra）。",
         "修复「弹幕的庇护所」",
         "开启时，在符卡练习中全避「弹幕的庇护所」将不再使游戏崩溃。",
+        "在重播时，将万宝槌的金币转换率固定为30里的11",
+        "启用后，在回放中，万宝槌的物品转换将不再受到RNG影响（每30子弹为11金物品和19绿物品；接近原版游戏的比率）。",
         "太阳冷却",
         "TH18 东方虹龙洞　～ Unconnected Marketeers.",
         "移除分数限制",
@@ -1404,6 +1406,8 @@ const char* th_glossary_str[3][895]
         "When enabled, allowing replays (Extra only) that contain the scroll card to play normally.",
         "Fix \"Asylum of Danmaku\"",
         "When enabled, timeouting \"Asylum of Danmaku\" in spell practice no longer crashes the game.",
+        "Fix Mallet gold conversion ratio to 11:30 when playing replay",
+        "When enabled, RNG will no longer play a part in the Miracle Mallet's item conversion during replays (11 gold items and 19 green items for every 30 bullets; close to vanilla rate).",
         "Sun CD",
         "TH18 Unconnected Marketeers",
         "Score uncap",
@@ -2301,6 +2305,8 @@ const char* th_glossary_str[3][895]
         "有効にすると、経典カードを含むリプレイ（Extraのみ）を再生した場合に正常に再生できるようになります。",
         "「弾幕のアジール」を修復",
         "有効にすると、スペルプラクティスで「弾幕のアジール」をタイムアウトしても、ゲームがクラッシュしなくなります。 ",
+        "リプレイ再生時の打ち出の小槌の金変換率を十一の三十に変更",
+        "有効にすると、リプレイ中の打ち出の小槌のアイテム変換においてRNGは影響しません（30弾毎に11の金アイテムと19の緑アイテム；ほぼバニラゲームのレートに近い）。",
         "太陽CD",
         "TH18 東方虹龍洞　～ Unconnected Marketeers.",
         "スコアキャップ解放",
@@ -19957,7 +19963,7 @@ const th_sections_t th_sections_cbt[1][2][1]
 
 }
 
-const wchar_t __thprac_loc_range_zh[3133] {
+const wchar_t __thprac_loc_range_zh[3141] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -20284,6 +20290,7 @@ const wchar_t __thprac_loc_range_zh[3133] {
     0x56ed, 0x56ed,
     0x56f0, 0x56f0,
     0x56f4, 0x56f4,
+    0x56fa, 0x56fa,
     0x56fd, 0x56fd,
     0x56fe, 0x56fe,
     0x5706, 0x5706,
@@ -20761,6 +20768,7 @@ const wchar_t __thprac_loc_range_zh[3133] {
     0x6bcd, 0x6bcd,
     0x6bcf, 0x6bcf,
     0x6bd2, 0x6bd2,
+    0x6bd4, 0x6bd4,
     0x6bd5, 0x6bd5,
     0x6bd8, 0x6bd8,
     0x6c0f, 0x6c0f,
@@ -21334,6 +21342,7 @@ const wchar_t __thprac_loc_range_zh[3133] {
     0x8fb9, 0x8fb9,
     0x8fc7, 0x8fc7,
     0x8fd0, 0x8fd0,
+    0x8fd1, 0x8fd1,
     0x8fd4, 0x8fd4,
     0x8fd9, 0x8fd9,
     0x8fdb, 0x8fdb,
@@ -21522,6 +21531,7 @@ const wchar_t __thprac_loc_range_zh[3133] {
     0xff0c, 0xff0c,
     0xff0e, 0xff0e,
     0xff1a, 0xff1a,
+    0xff1b, 0xff1b,
     0xff1f, 0xff1f,
     0xff5e, 0xff5e,
     0
@@ -21548,7 +21558,7 @@ const wchar_t __thprac_loc_range_en[35] {
     0
 };
 
-const wchar_t __thprac_loc_range_ja[2667] {
+const wchar_t __thprac_loc_range_ja[2671] {
     0x0020, 0x00FF,
     0x2026, 0x2026,
     0x3000, 0x3000,
@@ -22708,6 +22718,7 @@ const wchar_t __thprac_loc_range_ja[2667] {
     0x8f1d, 0x8f1d,
     0x8f2a, 0x8f2a,
     0x8fbc, 0x8fbc,
+    0x8fd1, 0x8fd1,
     0x8fd4, 0x8fd4,
     0x8fdc, 0x8fdc,
     0x8feb, 0x8feb,
@@ -22877,6 +22888,7 @@ const wchar_t __thprac_loc_range_ja[2667] {
     0xff17, 0xff17,
     0xff19, 0xff19,
     0xff1a, 0xff1a,
+    0xff1b, 0xff1b,
     0xff1f, 0xff1f,
     0xff26, 0xff26,
     0xff2f, 0xff2f,
