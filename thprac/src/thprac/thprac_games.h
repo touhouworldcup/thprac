@@ -9,6 +9,14 @@
 struct IDirect3DDevice8;
 
 namespace THPrac {
+struct Timer {
+    int32_t previous;
+    int32_t current;
+    float current_f;
+    float* __game_speed__disused;
+    uint32_t control;
+};
+
 #pragma region Gui Wrapper
 
 enum game_gui_impl {
@@ -466,5 +474,17 @@ uint8_t* ThModern_ECLGetSub(const char* name, uintptr_t param);
 
 void StageWarpsRender(stage_warps_t& warps, std::vector<unsigned int>& out_warp, size_t level);
 void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, ecl_get_sub_t* ecl_get_sub, uintptr_t ecl_get_sub_param, size_t level);
+#pragma endregion
+
+#pragma region Game State
+// GameState_Assert:
+// ---
+// Check if the game's own state is in order. Returns true if it is.
+// Otherwise it will display a message box. If the user clicks "No",
+// the function will terminate the current process. If the user
+// clicks "Yes", the function will return false to signal to the caller
+// that the assertion failed, but that the user wishes to proceed anyways
+bool GameState_Assert(bool cond);
+
 #pragma endregion
 }

@@ -851,4 +851,21 @@ void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, e
 }
 #pragma endregion
 
+#pragma region Game State
+bool GameState_Assert(bool cond)
+{
+    if (cond)
+        return true;
+
+    int res = MessageBoxW(NULL,
+        L"CORRUPT GAME STATE DETECTED!!!\n\n"
+        L"Your game will likely crash very soon\n"
+        L"Would you like to proceed anyways?",
+        L"FATAL ERROR", MB_ICONERROR | MB_YESNO);
+    if (res == IDYES)
+        return false;
+    else
+        ExitProcess(-1);
+}
+#pragma endregion
 }
