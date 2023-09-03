@@ -17,6 +17,14 @@ struct Timer {
     uint32_t control;
 };
 
+template<typename T>
+struct ThList {
+    T* entry;
+    ThList<T>* next;
+    ThList<T>* prev;
+    ThList<T>* __seldom_used;
+};
+
 #pragma region Gui Wrapper
 
 enum game_gui_impl {

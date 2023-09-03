@@ -35,25 +35,18 @@ namespace TH18 {
         uint32_t tid;
         int32_t __bool_c;
         int32_t __bool_10;
-        struct HINSTANCE__** phModule;
+        HINSTANCE* phModule;
         char filler_24[0x4];
-    };
-
-    struct CardList {
-        struct CardBase* entry;
-        struct CardList* next;
-        struct CardList* prev;
-        struct CardList* __seldom_used;
     };
 
     struct CardBase {
         struct VTableCard* vtable;
         int32_t card_id;
         int32_t array_index___plus_1_i_think;
-        struct CardList list_node;
+        ThList<CardBase> list_node;
         int32_t anm_id_for_ingame_effect;
-        struct Timer recharge_timer;
-        struct Timer _recharge_timer;
+        Timer recharge_timer;
+        Timer _recharge_timer;
         int32_t recharge_time;
         struct TableCardData* table_entry;
         int32_t flags;
@@ -70,12 +63,12 @@ namespace TH18 {
         struct AnmLoaded* ability_anm;
         struct AnmLoaded* abcard_anm;
         struct AnmLoaded* abmenu_anm;
-        struct CardList card_list_head;
+        ThList<CardBase> card_list_head;
         int32_t num_total_cards;
         int32_t num_active_cards;
         int32_t num_equipment_cards;
         int32_t num_passive_cards;
-        struct CardBase* selected_active_card;
+        CardBase* selected_active_card;
         int32_t __id_3c;
         char filler_64[0xc];
         int32_t __id_4c;
@@ -2828,7 +2821,7 @@ namespace TH18 {
         
         auto* ability_manager = *(AbilityManager**)ABILTIY_MANAGER_PTR;
         
-        for (CardList* entry = &ability_manager->card_list_head; entry; entry = entry->next) {
+        for (ThList<CardBase>* entry = &ability_manager->card_list_head; entry; entry = entry->next) {
             CardBase* card = entry->entry;
             if (!GameState_Assert(card != nullptr))
                 continue;
