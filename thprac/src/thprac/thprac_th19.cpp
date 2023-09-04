@@ -123,13 +123,58 @@ namespace TH19 {
         }
         bool allow = false;
 
+        bool p1_c3_level_lock = false;
+        bool p1_c4_level_lock = false;
+        bool p2_c3_level_lock = false;
+        bool p2_c4_level_lock = false;
+
+        int p1_c3_level_stored;
+        int p1_c4_level_stored;
+        int p2_c3_level_stored;
+        int p2_c4_level_stored;
+
         virtual void OnContentUpdate() override
         {
-            ImGui::TextUnformatted("Deez Nuts");
+            // A reference is basically a pointer that pretends to not be a pointer
+            Globals& globals = *(Globals*)RVA(GLOBALS);
+
+            // BIG TODO AT THE END: translation support
+            auto c3c4 = [](GlobalsSide& side, int& c3_level_stored, int& c4_level_stored, bool& c3_level_lock, bool& c4_level_lock) {
+                ImGui::PushID((int) &side);
+
+                if (!c3_level_lock) {
+                    c3_level_stored = side.c3_level;
+                }
+                int _c3_level = c3_level_stored + 1;
+                ImGui::SliderInt("C3##c3_level", &_c3_level, 1, 8);
+                c3_level_stored = _c3_level - 1;
+                side.c3_level = c3_level_stored;
+                ImGui::SameLine();
+                ImGui::Checkbox("Lock##c3_level_lock", &c3_level_lock);
+
+                if (!c4_level_lock) {
+                    c4_level_stored = side.c4_level;
+                }
+                int _c4_level = c4_level_stored + 1;
+                ImGui::SliderInt("C4##c4_level", &_c4_level, 1, 8);
+                c4_level_stored = _c4_level - 1;
+                side.c4_level = c4_level_stored;
+                ImGui::SameLine();
+                ImGui::Checkbox("Lock##c4_level_lock", &c4_level_lock);
+
+                ImGui::PopID();
+            };
+
+            ImGui::TextUnformatted("C3/C4 Level (P1)");
+            c3c4(globals.side[0], p1_c3_level_stored, p1_c4_level_stored, p1_c3_level_lock, p1_c4_level_lock);
+
+            ImGui::TextUnformatted("C3/C4 Level (P2)");
+            c3c4(globals.side[1], p2_c3_level_stored, p2_c4_level_stored, p2_c3_level_lock, p2_c4_level_lock);
+            
         }
         virtual void OnLocaleChange() override
         {
-            SetTitle("Deez Nuts");
+            SetTitle("TH19 Tools");
             SetSizeRel(0.5, 1);
             SetPosRel(0.5, 0);
         }
