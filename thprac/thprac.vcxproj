@@ -69,6 +69,7 @@
     <ClInclude Include="src\thprac\thprac_gui_locale.h" />
     <ClInclude Include="src\thprac\thprac_locale_def.h" />
     <ClInclude Include="src\thprac\thprac_main.h" />
+    <ClInclude Include="src\thprac\thprac_th19.h" />
     <ClInclude Include="src\thprac\thprac_utils.h" />
     <ClInclude Include="src\thprac\thprac_version.h" />
     <ClInclude Include="src\thprac\utils\utils.h" />

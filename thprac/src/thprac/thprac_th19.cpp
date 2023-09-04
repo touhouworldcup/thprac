@@ -1,8 +1,13 @@
 #include "thprac_games.h"
 #include "thprac_utils.h"
+#include "thprac_th19.h"
 
 namespace THPrac {
 namespace TH19 {
+    enum addrs {
+        GLOBALS = 0x207910,
+    };
+
     class THAdvOptWnd : public Gui::GameGuiWnd {
         // Option Related Functions
     private:
