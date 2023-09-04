@@ -35,6 +35,8 @@ namespace THPrac {
 #define XIP_TYPE DWORD
 #endif
 
+uintptr_t ingame_image_base = 0;
+
 struct VEHHookCtx {
     uint8_t* m_Src = nullptr;
     CallbackFunc* m_Dest = nullptr;
@@ -102,7 +104,7 @@ __declspec(noinline) LONG CALLBACK VEHHandler(EXCEPTION_POINTERS* ExceptionInfo)
 
     DWORD ExceptionCode = ExceptionInfo->ExceptionRecord->ExceptionCode;
     if (ExceptionCode == EXCEPTION_BREAKPOINT) {
-        auto ctx = VEHHookLookUp(ExceptionInfo->ContextRecord->XIP);
+        auto ctx = VEHHookLookUp(ExceptionInfo->ContextRecord->XIP - ingame_image_base);
         if (ctx != g_VEHHookVector->end()) {
             InvokeCallback(*ctx, ExceptionInfo->ContextRecord);
             return EXCEPTION_CONTINUE_EXECUTION;
@@ -139,8 +141,7 @@ void VEHHookEnable(void* target)
     if (ctx->isActivate)
         return;
 
-    VEHWriteByte(ctx->m_Src, 0xCC, &ctx->m_StorageByte);
-    FlushInstructionCache(GetCurrentProcess(), ctx->m_Src, 1);
+    VEHWriteByte((void*)(ingame_image_base + (uintptr_t)ctx->m_Src), 0xCC, &ctx->m_StorageByte);
 
     ctx->isActivate = true;
 }
@@ -151,7 +152,7 @@ void VEHHookDisable(void* target)
     if (!ctx->isActivate)
         return;
 
-    VEHWriteByte(ctx->m_Src, ctx->m_StorageByte);
+    VEHWriteByte((void*)(ingame_image_base + (uintptr_t)ctx->m_Src), ctx->m_StorageByte);
     FlushInstructionCache(GetCurrentProcess(), ctx->m_Src, 1);
 
     ctx->isActivate = false;
@@ -229,10 +230,10 @@ bool HookCtx::Setup(void* target, CallbackFunc* detour)
         return false;
     }
 
-    LPVOID buffer = AllocateBuffer(target);
+    LPVOID buffer = AllocateBuffer((LPVOID)((uintptr_t)target + ingame_image_base));
     if (buffer) {
         TRAMPOLINE ct;
-        ct.pTarget = target;
+        ct.pTarget = (LPVOID)((uintptr_t)target + ingame_image_base);
         ct.pDetour = (void*)detour;
         ct.pTrampoline = buffer;
         if (CreateTrampolineFunctionEx(&ct, 1, FALSE)) {
@@ -262,7 +263,7 @@ bool HookCtx::Setup(void* target, const char* patch, size_t patch_size)
     if (!buffer)
         return false;
     memcpy(buffer, patch, patch_size);
-    memcpy((void*)((size_t)buffer + patch_size), target, patch_size);
+    memcpy((void*)((size_t)buffer + patch_size), (void*)((uintptr_t)target + ingame_image_base), patch_size);
 
     mTarget = target;
     mIsPatch = true;
@@ -279,10 +280,9 @@ bool HookCtx::Enable()
 
     if (mIsPatch) {
         DWORD oldProtect;
-        VirtualProtect(mTarget, mPatchSize, PAGE_EXECUTE_READWRITE, &oldProtect);
-        memcpy(mTarget, mPatch, mPatchSize);
-        FlushInstructionCache(GetCurrentProcess(), mTarget, mPatchSize);
-        VirtualProtect(mTarget, mPatchSize, oldProtect, &oldProtect);
+        VirtualProtect((LPVOID)((uintptr_t)mTarget + ingame_image_base), mPatchSize, PAGE_EXECUTE_READWRITE, &oldProtect);
+        memcpy((void*)((uintptr_t)mTarget + ingame_image_base), mPatch, mPatchSize);
+        VirtualProtect((LPVOID)((uintptr_t)mTarget + ingame_image_base), mPatchSize, oldProtect, &oldProtect);
     } else {
         VEHHookEnable(mTarget);
     }
@@ -297,10 +297,9 @@ bool HookCtx::Disable()
 
     if (mIsPatch) {
         DWORD oldProtect;
-        VirtualProtect(mTarget, mPatchSize, PAGE_EXECUTE_READWRITE, &oldProtect);
-        memcpy(mTarget, (void*)((size_t)mPatch + mPatchSize), mPatchSize);
-        FlushInstructionCache(GetCurrentProcess(), mTarget, mPatchSize);
-        VirtualProtect(mTarget, mPatchSize, oldProtect, &oldProtect);
+        VirtualProtect((LPVOID)((uintptr_t)mTarget + ingame_image_base), mPatchSize, PAGE_EXECUTE_READWRITE, &oldProtect);
+        memcpy((void*)((uintptr_t)mTarget + ingame_image_base), (void*)((size_t)mPatch + mPatchSize), mPatchSize);
+        VirtualProtect((LPVOID)((uintptr_t)mTarget + ingame_image_base), mPatchSize, oldProtect, &oldProtect);
     } else {
         VEHHookDisable(mTarget);
     }

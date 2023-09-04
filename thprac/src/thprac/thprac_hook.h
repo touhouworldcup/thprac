@@ -5,6 +5,8 @@
 #include <vector>
 
 namespace THPrac {
+extern uintptr_t ingame_image_base;
+#define RVA(a) ((uintptr_t)a + ingame_image_base)
 typedef void __stdcall CallbackFunc(PCONTEXT);
 class HookCtx {
 public:
