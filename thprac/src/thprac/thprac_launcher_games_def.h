@@ -68,6 +68,7 @@ extern void TH165Init();
 extern void TH17Init();
 extern void TH18Init();
 extern void TH185Init();
+extern void TH19Init();
 
 static THKnownGame gKnownGames[] {
     { "th06",
@@ -509,6 +510,18 @@ static THGameSig gGameDefs[] {
                 0xcd13, 0xc4ab, 0x44a4, 0x04c4, 0xa2be },
             { 0xeff8426f, 0xa6522a33,
                 0xdc04050e, 0xc99233fe } } },
+    { "th19",
+        L"2400340",
+        TH19_TITLE,
+        CAT_MAIN,
+        nullptr,
+        L"%APPDATA%\\ShanghaiAlice\\th19",
+        TH19Init,
+        { 1690598468, 1433600,
+            { 0xdfa9, 0x4247, 0xaa43, 0xba3e, 0xbaba,
+                0x0e2e, 0x1d90, 0xb748, 0x8d5c, 0x1fbb },
+            { 0x1ef2d050, 0xbddd8da2,
+                0x56cedb87, 0xe674cd2c } } },
 };
 
 #pragma region Game Roll Def

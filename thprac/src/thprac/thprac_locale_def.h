@@ -513,6 +513,7 @@ enum th_glossary_t
     TH18_UNCAP_OVERWRITE,
     TH18_VAMPIRE_CD,
     TH18_ZERO_CD,
+    TH19_TITLE,
     THPRAC_ABORT,
     THPRAC_ADMIN_RIGHTS,
     THPRAC_AFTER_LAUNCH,
@@ -907,7 +908,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][895];
+extern const char* th_glossary_str[3][896];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2401,7 +2402,7 @@ extern const th_sections_t th_sections_cbt[1][2][1];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3133];
+extern const wchar_t __thprac_loc_range_zh[3135];
 
 extern const wchar_t __thprac_loc_range_en[35];
 
