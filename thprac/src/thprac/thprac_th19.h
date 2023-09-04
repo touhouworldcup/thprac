@@ -14,11 +14,11 @@ struct GlobalsSide { /* Size should be 0xC0. DO NOT REMOVE FIELDS */
     int __dword_14;
     int __dword_18;
     int __dword_1C;
-    int extra_attack_gauge;
-    int lv_1_spell_attack_threshold;
-    int lv_2_spell_attack_threshold;
-    int ex_attack_threshold;
-    int boss_attack_threshold;
+    int gauge;
+    int c1_threshold;
+    int c2_threshold;
+    int c3_threshold;
+    int c4_threshold;
     int32_t c3_level; /* first level is 0 but shown as lvl1 in-game */
     int32_t c4_level; /* first level is 0 but shown as lvl1 in-game */
     int __dword_3C;

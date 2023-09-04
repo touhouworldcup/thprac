@@ -119,9 +119,16 @@ namespace TH19 {
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
             SetAutoSpacing(true);
+            SetItemWidthRel(0.0f);
             OnLocaleChange();
         }
         bool allow = false;
+
+        bool p1_gauge_lock = false;
+        bool p2_gauge_lock = false;
+
+        int p1_gauge_stored;
+        int p2_gauge_stored;
 
         bool p1_c3_level_lock = false;
         bool p1_c4_level_lock = false;
@@ -139,6 +146,67 @@ namespace TH19 {
             Globals& globals = *(Globals*)RVA(GLOBALS);
 
             // BIG TODO AT THE END: translation support
+
+            ImGui::TextUnformatted("Charge Gauge");
+
+            auto chargegauge = [](GlobalsSide& side, bool& lock, const char* format, int& gauge_store) {
+                float bsize = ImGui::GetFrameHeight();
+                ImGuiStyle& style = ImGui::GetStyle();
+                const ImVec2 backup_frame_padding = style.FramePadding;
+                style.FramePadding.x = style.FramePadding.y;
+
+                ImGui::PushID(format);
+
+                if (!lock) {
+                    gauge_store = side.gauge;
+                }
+                ImGui::SliderInt("##_gauge", &gauge_store, 0, 2500, format);
+
+                ImGui::SameLine(0, style.ItemInnerSpacing.x);
+                if (ImGui::Button("-##_gauge_subtract", ImVec2(bsize, bsize))) {
+                    if (gauge_store > side.c4_threshold) {
+                        gauge_store = side.c4_threshold;
+                    } else if (gauge_store > side.c3_threshold) {
+                        gauge_store = side.c3_threshold;
+                    } else if (gauge_store > side.c2_threshold) {
+                        gauge_store = side.c2_threshold;
+                    } else if (gauge_store > side.c1_threshold) {
+                        gauge_store = side.c1_threshold;
+                    } else {
+                        gauge_store = 0;
+                    }
+                }
+                ImGui::SameLine(0, style.ItemInnerSpacing.x);
+                if (ImGui::Button("+##_gauge_add", ImVec2(bsize, bsize))) {
+                    if (gauge_store < side.c1_threshold) {
+                        gauge_store = side.c1_threshold;
+                    } else if (gauge_store < side.c2_threshold) {
+                        gauge_store = side.c2_threshold;
+                    } else if (gauge_store < side.c3_threshold) {
+                        gauge_store = side.c3_threshold;
+                    } else if (gauge_store < side.c4_threshold) {
+                        gauge_store = side.c4_threshold;
+                    } else {
+                        gauge_store = 2500;
+                    }
+                }
+                style.FramePadding = backup_frame_padding;
+                ImGui::SameLine();
+                ImGui::Checkbox("##_gauge_lock", &lock);
+                ImGui::PopID();
+                if (ImGui::IsItemHovered()) {
+                    ImGui::BeginTooltip();
+                    ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+                    ImGui::TextUnformatted("Lock");
+                    ImGui::PopTextWrapPos();
+                    ImGui::EndTooltip();
+                }
+                side.gauge = gauge_store;
+            };
+
+            chargegauge(globals.side[0], p1_gauge_lock, "P1: %d", p1_gauge_stored);
+            chargegauge(globals.side[1], p2_gauge_lock, "P2: %d", p2_gauge_stored);
+
             auto c3c4 = [](GlobalsSide& side, int& c3_level_stored, int& c4_level_stored, bool& c3_level_lock, bool& c4_level_lock) {
                 ImGui::PushID((int) &side);
 
@@ -170,7 +238,7 @@ namespace TH19 {
 
             ImGui::TextUnformatted("C3/C4 Level (P2)");
             c3c4(globals.side[1], p2_c3_level_stored, p2_c4_level_stored, p2_c3_level_lock, p2_c4_level_lock);
-            
+
         }
         virtual void OnLocaleChange() override
         {
