@@ -106,6 +106,74 @@ namespace TH19 {
         return advOptWnd->IsOpen();
     }
 
+    struct TH19Tools : public Gui::GameGuiWnd {
+        TH19Tools()
+        {
+            SetWndFlag(ImGuiWindowFlags_NoCollapse);
+            SetFade(0.8f, 0.8f);
+            SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
+            SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
+            SetAutoSpacing(true);
+            OnLocaleChange();
+        }
+        bool allow = false;
+
+        virtual void OnContentUpdate() override
+        {
+            ImGui::TextUnformatted("Deez Nuts");
+        }
+        virtual void OnLocaleChange() override
+        {
+            SetTitle("Deez Nuts");
+            SetSizeRel(0.5, 1);
+            SetPosRel(0.5, 0);
+        }
+        SINGLETON(TH19Tools);
+    };
+
+    HOOKSET_DEFINE(TH19PracHook)
+
+    // In the loader thread, right before the instruction that tells the main thread that loading has finished
+    EHOOK_DY(th19_prac_init, 0x106878) {
+        TH19Tools::singleton().Open();
+        TH19Tools::singleton().allow = true;
+    }
+    
+    // In the gamemode switching code where the game switches to main menu mode
+    EHOOK_DY(th19_prac_uninit, 0x11FA07) {
+        TH19Tools::singleton().Close();
+        TH19Tools::singleton().allow = false;
+    }
+
+    HOOKSET_ENDDEF()
+
+    struct THGuiPrac : public Gui::GameGuiWnd {
+        THGuiPrac()
+        {
+            SetFade(0.8f, 0.1f);
+            SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
+            SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
+            SetAutoSpacing(true);
+            OnLocaleChange();
+        }
+
+    public:
+        Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
+        SINGLETON(THGuiPrac);
+
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            SetTitle(S(TH_MENU));
+            SetSizeRel(0.3125f, 0.075f);
+            SetPosRel(0.34375f, 0.15f);
+            SetItemWidthRel(-0.052f);
+        }
+        virtual void OnContentUpdate() override { mMode(); }
+    };
+
+    PATCH_ST(th19_vs_mode_disable_movement, 0x142131, "\xeb", 1);
+
     HOOKSET_DEFINE(THMainHook)
 
     EHOOK_DY(th19_update_begin, 0xC89E0) {
@@ -113,11 +181,55 @@ namespace TH19 {
     }
 
     EHOOK_DY(th19_update_end, 0xC8B75) {
-        GameGuiEnd(UpdateAdvOptWindow());
+        auto& p = THGuiPrac::singleton();
+        p.Update();
+
+        auto& t = TH19Tools::singleton();
+        if (t.allow) {
+            if (Gui::KeyboardInputUpdate(VK_F11) == 1) {
+                if (t.IsOpen()) {
+                    t.Close();
+                } else {
+                    t.Open();
+                }
+            }
+            t.Update();
+        }
+        
+        GameGuiEnd(UpdateAdvOptWindow() || p.IsOpen() || t.IsOpen());
     }
 
     EHOOK_DY(th19_render, 0xC8C8D) {
         GameGuiRender(IMPL_WIN32_DX9);
+    }
+
+    EHOOK_DY(th19_vs_mode_enter, 0x14220F)
+    {
+        auto& p = THGuiPrac::singleton();
+
+        if (p.IsClosed()) {
+            p.Open();
+            pCtx->Eip = RVA(0x14231C);
+            th19_vs_mode_disable_movement.Enable();
+            TH19PracHook::singleton().DisableAllHooks();
+            return;
+        }
+
+        p.Close();
+        if (*p.mMode) {
+            TH19PracHook::singleton().EnableAllHooks();
+        }
+        th19_vs_mode_disable_movement.Disable();
+    }
+    EHOOK_DY(th19_vs_mode_exit, 0x1421CB) {
+        TH19PracHook::singleton().DisableAllHooks();
+        auto& p = THGuiPrac::singleton();
+        if (p.IsClosed()) {
+            return;
+        }
+        p.Close();
+        th19_vs_mode_disable_movement.Disable();
+        pCtx->Eip = RVA(0x142204);
     }
 
     HOOKSET_ENDDEF()
@@ -125,6 +237,8 @@ namespace TH19 {
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
+        th19_vs_mode_disable_movement.Setup();
+
         // Init
         GameGuiInit(IMPL_WIN32_DX9, RVA(0x208388), RVA(0x209110), RVA(0xA9EE0),
             Gui::INGAGME_INPUT_GEN2, GetMemContent(RVA(0x1AE3A0)) + 0x30 + 0x2B0, GetMemContent(RVA(0x1AE3A0)) + 0x30 + 0x10, 0,
@@ -132,7 +246,8 @@ namespace TH19 {
 
         //// Gui components creation
         //THOverlay::singleton();
-        //THGuiPrac::singleton();
+        THGuiPrac::singleton();
+        TH19Tools::singleton();
         //
         // Hooks
         THMainHook::singleton().EnableAllHooks();
