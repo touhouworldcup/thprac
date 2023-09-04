@@ -99,22 +99,22 @@ bool GetExeInfo(void* exeBuffer, size_t exeSize, ExeSig& exeSigOut)
 
     return true;
 }
-bool GetExeInfoEx(size_t process, ExeSig& exeSigOut)
+bool GetExeInfoEx(uintptr_t hProcess, uintptr_t base, ExeSig& exeSigOut)
 {
-    HANDLE hProc = (HANDLE)process;
     DWORD bytesRead;
+    HANDLE hProc = (HANDLE)hProcess;
 
     IMAGE_DOS_HEADER dosHeader;
-    if (!ReadProcessMemory(hProc, (void*)0x400000, &dosHeader, sizeof(IMAGE_DOS_HEADER), &bytesRead)) {
+    if (!ReadProcessMemory(hProc, (void*)base, &dosHeader, sizeof(IMAGE_DOS_HEADER), &bytesRead)) {
         return false;
     }
     IMAGE_NT_HEADERS ntHeader;
-    if (!ReadProcessMemory(hProc, (void*)(0x400000 + dosHeader.e_lfanew), &ntHeader, sizeof(IMAGE_NT_HEADERS), &bytesRead)) {
+    if (!ReadProcessMemory(hProc, (void*)(base + dosHeader.e_lfanew), &ntHeader, sizeof(IMAGE_NT_HEADERS), &bytesRead)) {
         return false;
     }
 
     exeSigOut.timeStamp = ntHeader.FileHeader.TimeDateStamp;
-    PIMAGE_SECTION_HEADER pSection = (PIMAGE_SECTION_HEADER)((ULONG_PTR)(0x400000 + dosHeader.e_lfanew) + ((LONG)(LONG_PTR) & (((IMAGE_NT_HEADERS*)0)->OptionalHeader)) + ntHeader.FileHeader.SizeOfOptionalHeader);
+    PIMAGE_SECTION_HEADER pSection = (PIMAGE_SECTION_HEADER)((ULONG_PTR)(base + dosHeader.e_lfanew) + ((LONG)(LONG_PTR) & (((IMAGE_NT_HEADERS*)0)->OptionalHeader)) + ntHeader.FileHeader.SizeOfOptionalHeader);
     for (int i = 0; i < ntHeader.FileHeader.NumberOfSections; i++, pSection++) {
         IMAGE_SECTION_HEADER section;
         if (!ReadProcessMemory(hProc, (void*)(pSection), &section, sizeof(IMAGE_SECTION_HEADER), &bytesRead)) {
@@ -1524,7 +1524,7 @@ public:
 
         return THPrac::LoadSelf(process, extraData, extraSize);
     }
-    static bool WINAPI CheckProcessOmni(PROCESSENTRY32W& proc)
+    static bool WINAPI CheckProcessOmni(PROCESSENTRY32W& proc, uintptr_t& base)
     {
         if (wcscmp(L"東方紅魔郷.exe", proc.szExeFile)) {
             if (proc.szExeFile[0] != L't' || proc.szExeFile[1] != L'h')
@@ -1543,23 +1543,29 @@ public:
         if (!hProc)
             return false;
 
+        base = GetGameModuleBase(hProc);
+        if (!base) {
+            return false;
+        }
+
         // Check THPrac signature
         DWORD sigAddr = 0;
         DWORD sigCheck = 0;
         DWORD bytesReadRPM;
-        ReadProcessMemory(hProc, (void*)0x40003c, &sigAddr, 4, &bytesReadRPM);
+
+        ReadProcessMemory(hProc, (void*)(base + 0x3c), &sigAddr, 4, &bytesReadRPM);
         if (bytesReadRPM != 4 || !sigAddr) {
             CloseHandle(hProc);
             return false;
         }
-        ReadProcessMemory(hProc, (void*)(0x400000 + sigAddr - 4), &sigCheck, 4, &bytesReadRPM);
+        ReadProcessMemory(hProc, (void*)(base + sigAddr - 4), &sigCheck, 4, &bytesReadRPM);
         if (bytesReadRPM != 4 || sigCheck) {
             CloseHandle(hProc);
             return false;
         }
 
         ExeSig sig;
-        if (GetExeInfoEx((size_t)hProc, sig)) {
+        if (GetExeInfoEx((size_t)hProc, base, sig)) {
             for (auto& gameDef : gGameDefs) {
                 if (gameDef.catagory != CAT_MAIN && gameDef.catagory != CAT_SPINOFF_STG) {
                     continue;
@@ -1573,7 +1579,7 @@ public:
         CloseHandle(hProc);
         return false;
     }
-    static DWORD WINAPI CheckProcess(DWORD process, std::wstring& exePath)
+    static DWORD WINAPI CheckProcess(DWORD process, std::wstring& exePath, uintptr_t& base)
     {
         // TODO: THPRAC SIG CHECK & EXE TIME STAMP CHECK
         int result = 0;
@@ -1596,6 +1602,7 @@ public:
                     modulePath = GetUnifiedPath(std::wstring(me32.szExePath));
                     if (exePathU16 == modulePath) {
                         result = 1;
+                        base = (uintptr_t)me32.modBaseAddr;
                         break;
                     }
                 }
@@ -1646,14 +1653,15 @@ public:
                 HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
                 if (Process32FirstW(snapshot, &procEntry)) {
                     do {
-                        bool test = isOmni ? CheckProcessOmni(procEntry) : CheckProcess(procEntry.th32ProcessID, exePath);
+                        uintptr_t base;
+                        bool test = isOmni ? CheckProcessOmni(procEntry, base) : CheckProcess(procEntry.th32ProcessID, exePath, base);
                         if (test) {
                             auto hProc = OpenProcess(
                                 PROCESS_QUERY_INFORMATION | PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE,
                                 FALSE,
                                 procEntry.th32ProcessID);
                             if (hProc) {
-                                auto result = (WriteTHPracSig(hProc) && LocalApplyTHPrac(hProc));
+                                auto result = (WriteTHPracSig(hProc, base) && LocalApplyTHPrac(hProc));
                                 CloseHandle(hProc);
                                 return result ? 1 : 0;
                             }
@@ -1721,6 +1729,8 @@ public:
         startup_info.cb = sizeof(STARTUPINFOW);
         CreateProcessW(currentInstPath.c_str(), nullptr, nullptr, nullptr, false, CREATE_SUSPENDED, nullptr, currentInstDir.c_str(), &startup_info, &proc_info);
 
+        uintptr_t base = GetGameModuleBase(proc_info.hProcess);
+
         if (currentInst.useVpatch) {
             auto exeName = GetNameFromFullPath(currentInstPath);
             if (exeName == L"東方紅魔郷.exe") {
@@ -1734,7 +1744,7 @@ public:
             }
         }
         if (currentInst.useTHPrac) {
-            result = (WriteTHPracSig(proc_info.hProcess) && LocalApplyTHPrac(proc_info.hProcess));
+            result = (WriteTHPracSig(proc_info.hProcess, base) && LocalApplyTHPrac(proc_info.hProcess));
         }
 
         if (!result) {

@@ -72,6 +72,7 @@
     <ClInclude Include="src\thprac\thprac_utils.h" />
     <ClInclude Include="src\thprac\thprac_version.h" />
     <ClInclude Include="src\thprac\utils\utils.h" />
+    <ClInclude Include="src\thprac\utils\wininternal.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\3rdParties\distorm\src\decoder.c" />

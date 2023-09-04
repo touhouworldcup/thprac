@@ -148,6 +148,9 @@
     <ClInclude Include="src\thprac\utils\utils.h">
       <Filter>THPrac Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac\utils\wininternal.h">
+      <Filter>THPrac Utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\thprac\thprac_launcher_cfg.h">
       <Filter>THPrac Launcher</Filter>
     </ClInclude>
