@@ -149,6 +149,8 @@ namespace TH19 {
         {
             // A reference is basically a pointer that pretends to not be a pointer
             Globals& globals = *(Globals*)RVA(GLOBALS);
+            uintptr_t p1 = *(uintptr_t*)RVA(P1_PTR);
+            uintptr_t p2 = *(uintptr_t*)RVA(P2_PTR);
 
             // BIG TODO AT THE END: translation support
 
@@ -156,6 +158,24 @@ namespace TH19 {
             ImGui::Checkbox("P1##invincible_p1", &p1_invincible);
             ImGui::SameLine();
             ImGui::Checkbox("P2##invincible_p2", &p2_invincible);
+
+            ImGui::TextUnformatted("Instant death");
+            if (ImGui::Button("P1##instant_death_p1")) {
+                globals.side[0].lives = 0;
+                *(int*)(p1 + 0x10) = 4;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("P2##instant_death_p2")) {
+                globals.side[1].lives = 0;
+                *(int*)(p2 + 0x10) = 4;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Both##instant_death_p2")) {
+                globals.side[0].lives = 0;
+                globals.side[1].lives = 0;
+                *(int*)(p1 + 0x10) = 4;
+                *(int*)(p2 + 0x10) = 4;
+            }
 
             ImGui::TextUnformatted("Charge Gauge");
 
