@@ -4,8 +4,10 @@
 
 namespace THPrac {
 namespace TH19 {
+#define Gui__UpdateHearts asm_call_rel<0x101E90, Thiscall>
     enum addrs {
         GLOBALS = 0x207910,
+        GUI_PTR = 0x1AE460,
         P1_PTR = 0x1AE474,
         P2_PTR = 0x1AE4B0,
     };
@@ -145,12 +147,16 @@ namespace TH19 {
         bool p1_invincible = false;
         bool p2_invincible = false;
 
+        bool p1_lives_lock = false;
+        bool p2_lives_lock = false;
+
         virtual void OnContentUpdate() override
         {
             // A reference is basically a pointer that pretends to not be a pointer
             Globals& globals = *(Globals*)RVA(GLOBALS);
             uintptr_t p1 = *(uintptr_t*)RVA(P1_PTR);
             uintptr_t p2 = *(uintptr_t*)RVA(P2_PTR);
+            uintptr_t gui = *(uintptr_t*)RVA(GUI_PTR);
 
             // BIG TODO AT THE END: translation support
 
@@ -159,6 +165,20 @@ namespace TH19 {
             ImGui::SameLine();
             ImGui::Checkbox("P2##invincible_p2", &p2_invincible);
 
+            ImGui::TextUnformatted("Lives");
+
+            if (ImGui::SliderInt("P1##lives_p1", &globals.side[0].lives, 1, globals.side[0].max_lives)) {
+                Gui__UpdateHearts(gui + 0x10);                
+            }
+            ImGui::SameLine();
+            ImGui::Checkbox("Lock##lives_lock_p1", &p1_lives_lock);
+
+            if(ImGui::SliderInt("P2##lives_p2", &globals.side[1].lives, 1, globals.side[1].max_lives)) {
+                Gui__UpdateHearts(gui + 0x7C);
+            }
+            ImGui::SameLine();
+            ImGui::Checkbox("Lock##lives_lock_p2", &p2_lives_lock);
+            
             ImGui::TextUnformatted("Instant death");
             if (ImGui::Button("P1##instant_death_p1")) {
                 globals.side[0].lives = 0;
@@ -301,7 +321,8 @@ namespace TH19 {
         }
     }
 
-    EHOOK_DY(th19_invincible_barrier, 0x12FBC0) {
+    EHOOK_DY(th19_invincible_barrier, 0x12FBC0)
+    {
         TH19Tools& t = TH19Tools::singleton();
         DWORD p = pCtx->Ecx - 0x18;
 
@@ -309,6 +330,18 @@ namespace TH19 {
             || ((p == *(DWORD*)RVA(P2_PTR)) && t.p2_invincible)) {
             pCtx->Eax = 0;
             pCtx->Eip = PopHelper32(pCtx);
+        }
+    }
+    
+    EHOOK_DY(th19_lock_lives, 0x123EB5)
+    {
+        Globals& globals = *(Globals*)RVA(GLOBALS);
+        TH19Tools& t = TH19Tools::singleton();
+
+        if (((pCtx->Edi == (uintptr_t)&globals.side[0]) && t.p1_lives_lock)
+            || ((pCtx->Edi == (uintptr_t)&globals.side[1]) && t.p2_lives_lock))
+        {
+            pCtx->Eip++;
         }
     }
 

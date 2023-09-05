@@ -27,7 +27,7 @@ struct GlobalsSide { /* Size should be 0xC0. DO NOT REMOVE FIELDS */
     int __dword_48;
     int __dword_4C;
     int lives;
-    int __dword_54;
+    int max_lives;
     int __dword_58;
     int __dword_5C;
     int __dword_60;
