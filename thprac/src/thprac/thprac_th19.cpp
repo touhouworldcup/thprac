@@ -6,6 +6,8 @@ namespace THPrac {
 namespace TH19 {
     enum addrs {
         GLOBALS = 0x207910,
+        P1_PTR = 0x1AE474,
+        P2_PTR = 0x1AE4B0,
     };
 
     class THAdvOptWnd : public Gui::GameGuiWnd {
@@ -140,12 +142,20 @@ namespace TH19 {
         int p2_c3_level_stored;
         int p2_c4_level_stored;
 
+        bool p1_invincible = false;
+        bool p2_invincible = false;
+
         virtual void OnContentUpdate() override
         {
             // A reference is basically a pointer that pretends to not be a pointer
             Globals& globals = *(Globals*)RVA(GLOBALS);
 
             // BIG TODO AT THE END: translation support
+
+            ImGui::TextUnformatted("Invincible");
+            ImGui::Checkbox("P1##invincible_p1", &p1_invincible);
+            ImGui::SameLine();
+            ImGui::Checkbox("P2##invincible_p2", &p2_invincible);
 
             ImGui::TextUnformatted("Charge Gauge");
 
@@ -238,7 +248,6 @@ namespace TH19 {
 
             ImGui::TextUnformatted("C3/C4 Level (P2)");
             c3c4(globals.side[1], p2_c3_level_stored, p2_c4_level_stored, p2_c3_level_lock, p2_c4_level_lock);
-
         }
         virtual void OnLocaleChange() override
         {
@@ -261,6 +270,26 @@ namespace TH19 {
     EHOOK_DY(th19_prac_uninit, 0x11FA07) {
         TH19Tools::singleton().Close();
         TH19Tools::singleton().allow = false;
+    }
+
+    EHOOK_DY(th19_invincible, 0x130ACC) {
+        TH19Tools& t = TH19Tools::singleton();
+        if (((pCtx->Edi == *(DWORD*)RVA(P1_PTR)) && t.p1_invincible)
+            || ((pCtx->Edi == *(DWORD*)RVA(P2_PTR)) && t.p2_invincible))
+        {
+            pCtx->Eip = RVA(0x130AD3);
+        }
+    }
+
+    EHOOK_DY(th19_invincible_barrier, 0x12FBC0) {
+        TH19Tools& t = TH19Tools::singleton();
+        DWORD p = pCtx->Ecx - 0x18;
+
+        if (((p == *(DWORD*)RVA(P1_PTR)) && t.p1_invincible)
+            || ((p == *(DWORD*)RVA(P2_PTR)) && t.p2_invincible)) {
+            pCtx->Eax = 0;
+            pCtx->Eip = PopHelper32(pCtx);
+        }
     }
 
     HOOKSET_ENDDEF()
