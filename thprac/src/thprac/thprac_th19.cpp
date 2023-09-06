@@ -163,6 +163,10 @@ namespace TH19 {
             uintptr_t p2 = *(uintptr_t*)RVA(P2_PTR);
             uintptr_t gui = *(uintptr_t*)RVA(GUI_PTR);
 
+            if (!p1 || !p2 || !gui) {
+                return;
+            }
+
             // BIG TODO AT THE END: translation support
 
             ImGui::TextUnformatted("Invincible");
