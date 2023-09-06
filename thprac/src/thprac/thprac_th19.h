@@ -96,4 +96,17 @@ struct Globals {
     int __dword_A54;
 };
 
+enum PlayerBarrierState : int {
+    BARRIER_ACTIVE = 1,
+    BARRIER_INACTIVE = 2,
+    BARRIER_DISABLED = 3,
+};
+
+struct PlayerBarrier { /* size uncertain */
+    PlayerBarrierState state;
+    Timer19 no_hit_timer; /* hitstun seems to last 40f (timer does not dictate stun status) */
+    uint8_t unk0[4];
+    int anm_id;
+};
+
 } }

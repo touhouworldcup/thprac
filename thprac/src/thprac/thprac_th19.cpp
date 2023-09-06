@@ -5,6 +5,11 @@
 namespace THPrac {
 namespace TH19 {
 #define Gui__UpdateHearts asm_call_rel<0x101E90, Thiscall>
+
+#define PlayerBarrier__restore asm_call_rel<0xA430, Thiscall>
+
+#define AnmInterrupt asm_call_rel<0xBE070, Stdcall>
+
     enum addrs {
         GLOBALS = 0x207910,
         GUI_PTR = 0x1AE460,
@@ -288,6 +293,42 @@ namespace TH19 {
 
             ImGui::TextUnformatted("C3/C4 Level (P2)");
             c3c4(globals.side[1], p2_c3_level_stored, p2_c4_level_stored, p2_c3_level_lock, p2_c4_level_lock);
+            
+            ImGui::TextUnformatted("Barrier");
+            
+            auto _barrier = [](PlayerBarrier* barrier, const char* label) {
+                bool barrier_bool = false;
+
+                if (barrier->state == BARRIER_DISABLED) { 
+                    ImGui::BeginDisabled();
+                } else if (barrier->state == BARRIER_ACTIVE) {
+                    barrier_bool = true;
+                }
+                
+                ImGui::Checkbox(label, &barrier_bool);
+
+                if (barrier->state == BARRIER_DISABLED) {
+                    ImGui::EndDisabled();
+                } else if (barrier_bool && (barrier->state == BARRIER_INACTIVE)) {
+                    PlayerBarrier__restore(barrier);
+                } else if (!barrier_bool && (barrier->state == BARRIER_ACTIVE)) {
+                    // I am not calling PlayerBarrier::break (Rx12FBC0) here because:
+                    // ---
+                    // 1) That function is hooked to do nothing and return 0 if invincibility is enabled
+                    // 1.5) I kinda wrote myself in a corner when I put all of this code *above* TH19PracHook....
+                    // 2) But none of that matters because the function does a bunch of other stuff that I don't want.
+                    //    So I decided to just put in the parts that I do want.
+                    barrier->state = BARRIER_INACTIVE;
+                    barrier->no_hit_timer = {};
+                    barrier->no_hit_timer.previous = -1;
+                    AnmInterrupt(barrier->anm_id, 1);
+                    barrier->anm_id = 0;
+                }
+            };
+
+            _barrier((PlayerBarrier*)(p1 + 0x18), "P1##p1_barrier");
+            ImGui::SameLine();
+            _barrier((PlayerBarrier*)(p2 + 0x18), "P2##p2_barrier");
         }
         virtual void OnLocaleChange() override
         {

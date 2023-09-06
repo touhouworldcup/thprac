@@ -17,6 +17,14 @@ struct Timer {
     uint32_t control;
 };
 
+struct Timer19 {
+    int32_t previous;
+    int32_t current;
+    float current_f;
+    uint32_t scale_table_index;
+    uint32_t flags;
+};
+
 template<typename T>
 struct ThList {
     T* entry;
