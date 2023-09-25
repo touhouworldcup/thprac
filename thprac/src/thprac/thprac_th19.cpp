@@ -158,6 +158,9 @@ namespace TH19 {
         bool p1_lives_lock = false;
         bool p2_lives_lock = false;
 
+        int rank_stored;
+        bool rank_lock = false;
+
         virtual void OnContentUpdate() override
         {
             // A reference is basically a pointer that pretends to not be a pointer
@@ -336,6 +339,16 @@ namespace TH19 {
             _barrier((PlayerBarrier*)(p1 + 0x18), "P1##p1_barrier");
             ImGui::SameLine();
             _barrier((PlayerBarrier*)(p2 + 0x18), "P2##p2_barrier");
+
+            ImGui::TextUnformatted("Misc.");
+
+            if (!rank_lock) {
+                rank_stored = globals.difficulty;
+            }
+            ImGui::SliderInt("##rank", &rank_stored, 0, 7, "Rank: %d");
+            ImGui::SameLine();
+            ImGui::Checkbox("Lock##rank_lock", &rank_lock);
+            globals.difficulty = rank_stored;
         }
         virtual void OnLocaleChange() override
         {
