@@ -11,11 +11,14 @@ namespace TH19 {
 #define AnmInterrupt asm_call_rel<0xBE070, Stdcall>
 
     enum addrs {
+        SCALE = 0x20B1D0,
         GLOBALS = 0x207910,
         GUI_PTR = 0x1AE460,
         P1_PTR = 0x1AE474,
         P2_PTR = 0x1AE4B0,
     };
+
+    #define SCALE (*(float*)RVA(SCALE))
 
     class THAdvOptWnd : public Gui::GameGuiWnd {
         // Option Related Functions
@@ -487,7 +490,7 @@ namespace TH19 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, RVA(0x208388), RVA(0x209110), RVA(0xA9EE0),
             Gui::INGAGME_INPUT_GEN2, GetMemContent(RVA(0x1AE3A0)) + 0x30 + 0x2B0, GetMemContent(RVA(0x1AE3A0)) + 0x30 + 0x10, 0,
-            -2, GetMemContent<float>(RVA(0x20B1D0)), 0.0f);
+            -2, SCALE, 0.0f);
 
         //// Gui components creation
         //THOverlay::singleton();
