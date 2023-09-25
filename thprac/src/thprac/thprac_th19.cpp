@@ -133,7 +133,47 @@ namespace TH19 {
             SetAutoSpacing(true);
             SetItemWidthRel(0.0f);
             OnLocaleChange();
+
+            th19_enemy_tick.Setup();
         }
+
+        EHOOK_ST(th19_enemy_tick, 0xf6dd0)
+        {
+            uint32_t side = *(uint32_t*)(pCtx->Ecx + 0x5638);
+
+            if (!GameState_Assert(side <= 1)) {
+                return;
+            }
+
+            static const ImVec2 side_offsets[] = {
+                { 164.0f, 16.0f },
+                { 476.0f, 16.0f },
+            };
+
+            const ImVec2& offset = side_offsets[side];
+
+            uint32_t flags = *(uint32_t*)(pCtx->Ecx + 0x516c);
+            if (flags & 0x21) {
+                return;
+            }
+
+            float* enm_pos = (float*)(pCtx->Ecx + 0x48);
+            uint32_t hp = *(uint32_t*)(pCtx->Ecx + 0x5008);
+
+            std::string hp_str = std::to_string(hp);
+
+            auto* drawList = ImGui::GetOverlayDrawList();
+            auto* font = ImGui::GetFont();
+
+            ImVec2 textSize = font->CalcTextSizeA(font->FontSize, ImGui::GetIO().DisplaySize.x, 0.0f, hp_str.c_str(), hp_str.c_str() + hp_str.size());
+            
+            ImVec2 upperLeft = ImVec2((enm_pos[0] + offset.x) * SCALE, (enm_pos[1] + offset.y) * SCALE);
+            ImVec2 lowerRight = ImVec2(upperLeft.x + textSize.x, upperLeft.y + textSize.y);
+
+            drawList->AddRectFilled(upperLeft, lowerRight, 0xAA555555);
+            drawList->AddText(upperLeft, 0xFFFF55FF, hp_str.c_str(), hp_str.c_str() + hp_str.size());
+        }
+
         bool allow = false;
 
         bool p1_gauge_lock = false;
@@ -160,6 +200,8 @@ namespace TH19 {
 
         int rank_stored;
         bool rank_lock = false;
+
+        bool hp_show = false;
 
         virtual void OnContentUpdate() override
         {
@@ -205,7 +247,7 @@ namespace TH19 {
                 *(int*)(p2 + 0x10) = 4;
             }
             ImGui::SameLine();
-            if (ImGui::Button("Both##instant_death_p2")) {
+            if (ImGui::Button("Both##instant_death_both")) {
                 globals.side[0].lives = 0;
                 globals.side[1].lives = 0;
                 *(int*)(p1 + 0x10) = 4;
@@ -349,6 +391,15 @@ namespace TH19 {
             ImGui::SameLine();
             ImGui::Checkbox("Lock##rank_lock", &rank_lock);
             globals.difficulty = rank_stored;
+
+            if (ImGui::Checkbox("Show enemy HP##hp_show", &hp_show)) {
+                if (hp_show) {
+                    th19_enemy_tick.Enable();
+                } else {
+                    th19_enemy_tick.Disable(); 
+                }
+            }
+
         }
         virtual void OnLocaleChange() override
         {
