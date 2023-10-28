@@ -507,6 +507,8 @@ enum th_glossary_t
     TH18_SCROLL_FIX_DESC,
     TH18_ST6FINAL_FIX,
     TH18_ST6FINAL_FIX_DESC,
+    TH18_STATIC_MALLET,
+    TH18_STATIC_MALLET_DESC,
     TH18_SUN_CD,
     TH18_TITLE,
     TH18_UNCAP,
@@ -907,7 +909,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][895];
+extern const char* th_glossary_str[3][897];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2401,10 +2403,10 @@ extern const th_sections_t th_sections_cbt[1][2][1];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3133];
+extern const wchar_t __thprac_loc_range_zh[3141];
 
 extern const wchar_t __thprac_loc_range_en[35];
 
-extern const wchar_t __thprac_loc_range_ja[2667];
+extern const wchar_t __thprac_loc_range_ja[2671];
 
 }

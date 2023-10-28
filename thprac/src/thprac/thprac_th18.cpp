@@ -8,6 +8,8 @@
 namespace THPrac {
 namespace TH18 {
     enum addrs {
+        BULLET_MANAGER_PTR = 0x4cf2bc,
+        ITEM_MANAGER_PTR = 0x4cf2ec,
         ABILTIY_MANAGER_PTR = 0x4cf298,
         ABILITY_SHOP_PTR = 0x4cf2a4,
         CARD_DESC_LIST = 0x4c53c0,
@@ -276,18 +278,18 @@ namespace TH18 {
                 thPracParam.power = *mPower;
                 thPracParam.funds = *mFunds;
 
-                thPracParam.kozuchi = *mKozuchi;
-                thPracParam.kaname = *mKaname;
-                thPracParam.moon = *mMoon;
-                thPracParam.mikoflash = *mMikoflash;
-                thPracParam.vampire = *mVampire;
-                thPracParam.sun = *mSun;
-                thPracParam.lily_count = *mLilyCount;
-                thPracParam.lily_cd = *mLilyCD;
-                thPracParam.bassdrum = *mBassdrum;
-                thPracParam.psyco = *mPsyco;
-                thPracParam.cylinder = *mCylinder;
-                thPracParam.riceball = *mRiceball;
+                thPracParam.kozuchi = 10000 - *mKozuchi;
+                thPracParam.kaname = 10000 - *mKaname;
+                thPracParam.moon = 10000 - *mMoon;
+                thPracParam.mikoflash = 10000 - *mMikoflash;
+                thPracParam.vampire = 10000 - *mVampire;
+                thPracParam.sun = 10000 - *mSun;
+                thPracParam.lily_count = 10000 - *mLilyCount;
+                thPracParam.lily_cd = 10000 - *mLilyCD;
+                thPracParam.bassdrum = 10000 - *mBassdrum;
+                thPracParam.psyco = 10000 - *mPsyco;
+                thPracParam.cylinder = 10000 - *mCylinder;
+                thPracParam.riceball = 10000 - *mRiceball;
                 thPracParam.mukade = *mMukade * 20;
 
                 break;
@@ -1051,6 +1053,8 @@ namespace TH18 {
             th18_st6final_fix.Setup();
             th18_active_card_fix.Setup();
             th18_rep_card_fix.Setup();
+            th18_static_mallet_replay_gold.Setup();
+            th18_static_mallet_replay_green.Setup();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -1107,6 +1111,35 @@ namespace TH18 {
                     *score = 999999999;
             }
         }
+        static void StaticMalletConversion(PCONTEXT pCtx) {
+            int32_t mallet_cancel_item_type = GetMemContent(BULLET_MANAGER_PTR, 0x7a41d0) % 30;
+            
+            switch (mallet_cancel_item_type) {
+                case 0:
+                case 3:
+                case 6:
+                case 8:
+                case 11:
+                case 14:
+                case 16:
+                case 19:
+                case 22:
+                case 25:
+                case 28:
+                    pCtx->Eip = 0x429222; // gold
+                    break;
+                default:
+                    pCtx->Eip = 0x42917b; // green
+            }
+        }
+        EHOOK_ST(th18_static_mallet_replay_gold, 0x429222)
+        {
+            if (GetMemContent(0x4cf2e4, 0xd0)) StaticMalletConversion(pCtx);
+        }
+        EHOOK_ST(th18_static_mallet_replay_green, 0x42921d)
+        {
+            if (GetMemContent(0x4cf2e4, 0xd0)) StaticMalletConversion(pCtx);
+        }
         uint32_t scoreUncapOffsetNew[23] {
             0x419e70,
             0x42a7fd, 0x42a80f,
@@ -1126,6 +1159,7 @@ namespace TH18 {
         bool scoreUncapChkbox = false;
         bool scoreUncapOverwrite = false;
         bool scoreReplayFactor = false;
+        bool staticMalletReplay = false;
 
         EHOOK_ST(th18_st6final_fix, 0x438e47)
         {
@@ -1662,6 +1696,14 @@ namespace TH18 {
                 if (ImGui::Checkbox(S(TH18_REPLAY_BONUS), &scoreReplayFactor)) {
                     th18_score_uncap_replay_factor.Toggle(scoreReplayFactor);
                 }
+                
+                if (ImGui::Checkbox(S(TH18_STATIC_MALLET), &staticMalletReplay)) {
+                    th18_static_mallet_replay_gold.Toggle(staticMalletReplay);
+                    th18_static_mallet_replay_green.Toggle(staticMalletReplay);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH18_STATIC_MALLET_DESC));
+                
                 EndOptGroup();
             }
             if (BeginOptGroup<TH18_BUG_FIX>()) {
@@ -2808,8 +2850,8 @@ namespace TH18 {
             return;
 
 #define R(name) \
-    card->_recharge_timer.current = card->recharge_time * (1 - thPracParam.name / 10000); \
-    card->_recharge_timer.current_f = card->recharge_time * (1.0f - thPracParam.name / 10000.0f)
+    card->_recharge_timer.current = static_cast<int32_t>(card->recharge_time * (static_cast<float>(thPracParam.name) / 10000)); \
+    card->_recharge_timer.current_f = card->recharge_time * (thPracParam.name / 10000.0f)
 
         *(int32_t*)(0x4cccfc) = (int32_t)(thPracParam.score / 10);
         *(int32_t*)(0x4ccd48) = thPracParam.life;
@@ -2955,6 +2997,10 @@ namespace TH18 {
                 pCtx->Eip = 0x412d29;
             }
         }
+    }
+    EHOOK_DY(th18_active_buy_swap_fix, 0x412d94)
+    {
+        asm_call<0x408c30, Fastcall>(*(uint32_t*)ABILTIY_MANAGER_PTR);
     }
     EHOOK_DY(th18_rep_save, 0x462657)
     {
