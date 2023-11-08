@@ -16,6 +16,9 @@ namespace TH19 {
         GUI_PTR = 0x1AE460,
         P1_PTR = 0x1AE474,
         P2_PTR = 0x1AE4B0,
+
+        P1_CPU_PTR = 0x1ae4a4,
+        P2_CPU_PTR = 0x1ae4e0,
     };
 
     #define SCALE (*(float*)RVA(SCALE))
@@ -198,6 +201,9 @@ namespace TH19 {
         bool p1_lives_lock = false;
         bool p2_lives_lock = false;
 
+        bool p1_cpu_next_charge_lock = false;
+        bool p2_cpu_next_charge_lock = false;
+
         int rank_stored;
         bool rank_lock = false;
 
@@ -346,6 +352,26 @@ namespace TH19 {
             ImGui::TextUnformatted("C3/C4 Level (P2)");
             c3c4(globals.side[1], p2_c3_level_stored, p2_c4_level_stored, p2_c3_level_lock, p2_c4_level_lock);
             
+            ImGui::TextUnformatted("CPU Next Charge");
+
+            auto cpu_next_charge = [](uintptr_t addr, const char* label, bool& lock) {
+                if (!GetMemContent(addr)) {
+                    return;
+                }
+                int* ptr = GetMemAddr<int*>(addr, 0x30, 0xEA630);
+
+                ImGui::PushID(addr);
+
+                ImGui::SliderInt(label, ptr, 2, 4);
+                ImGui::SameLine();
+                ImGui::Checkbox("Lock", &lock);
+
+                ImGui::PopID();
+            };
+
+            cpu_next_charge(RVA(P1_CPU_PTR), "P1", p1_cpu_next_charge_lock);
+            cpu_next_charge(RVA(P2_CPU_PTR), "P2", p2_cpu_next_charge_lock);
+
             ImGui::TextUnformatted("Barrier");
             
             auto _barrier = [](PlayerBarrier* barrier, const char* label) {
@@ -454,6 +480,28 @@ namespace TH19 {
             || ((pCtx->Edi == (uintptr_t)&globals.side[1]) && t.p2_lives_lock))
         {
             pCtx->Eip++;
+        }
+    }
+
+    EHOOK_DY(th19_lock_cpu_next_charge, 0xE9D33) {
+        auto ptr = pCtx->Edi;
+        auto& t = TH19Tools::singleton();
+
+        auto CHK = [ptr](uintptr_t addr) -> bool {
+            auto cpu_ptr = GetMemContent(RVA(addr));
+            if (cpu_ptr) {
+                return GetMemContent(cpu_ptr + 0x30) == ptr;
+            } else {
+                return false;
+            }
+        };
+
+        if (
+            (CHK(P1_CPU_PTR) && t.p1_cpu_next_charge_lock) ||
+            (CHK(P2_CPU_PTR) && t.p2_cpu_next_charge_lock)
+        )
+        {
+            pCtx->Eip = RVA(0xE9D3E);
         }
     }
 
