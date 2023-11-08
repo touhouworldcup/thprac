@@ -565,6 +565,10 @@ namespace TH19 {
 
     EHOOK_DY(th19_vs_mode_enter, 0x14220F)
     {
+        if (*(uint32_t*)(pCtx->Edi + 0x2c) > 2) {
+            return;
+        }
+
         auto& p = THGuiPrac::singleton();
 
         if (p.IsClosed()) {
