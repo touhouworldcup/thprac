@@ -5,15 +5,15 @@
 namespace THPrac {
 namespace TH19 {
 #define Gui__UpdateHearts asm_call_rel<0x101E90, Thiscall>
-
 #define PlayerBarrier__restore asm_call_rel<0xA430, Thiscall>
-
 #define AnmInterrupt asm_call_rel<0xBE070, Stdcall>
+#define Ascii__debugf asm_call_rel<0xD7950, Cdecl>
 
     enum addrs {
         SCALE = 0x20B1D0,
         GLOBALS = 0x207910,
         GUI_PTR = 0x1AE460,
+        ASCII_MANAGER_PTR = 0x1ae444,
         P1_PTR = 0x1AE474,
         P2_PTR = 0x1AE4B0,
 
@@ -534,6 +534,21 @@ namespace TH19 {
 
     PATCH_ST(th19_vs_mode_disable_movement, 0x142131, "\xeb", 1);
 
+    void draw_slowdown()
+    {
+        UINT_PTR FPS_COUNTER = *(UINT_PTR*)RVA(0x1ae45c);
+        double n0 = *(double*)(FPS_COUNTER + 0x28);
+        double n1 = *(double*)(FPS_COUNTER + 0x30);
+        double slowdown = 0.0;
+
+        if (n1 != 0.0)
+            slowdown = 100.0 - 100.0 * (n0 / n1);
+
+        Float3 pos { 490.0f, 470.0f, 0.0f };
+
+        Ascii__debugf(*(UINT_PTR*)RVA(ASCII_MANAGER_PTR), &pos, "Slowdown: %2.1f%%", slowdown);
+    }
+
     HOOKSET_DEFINE(THMainHook)
 
     EHOOK_DY(th19_update_begin, 0xC89E0) {
@@ -561,6 +576,16 @@ namespace TH19 {
 
     EHOOK_DY(th19_render, 0xC8C8D) {
         GameGuiRender(IMPL_WIN32_DX9);
+    }
+
+    EHOOK_DY(th19_draw_slowdown_1, 0xFCA02)
+    {
+        draw_slowdown();
+    }
+
+    EHOOK_DY(th19_draw_slowdown_2, 0xFCACF)
+    {
+        draw_slowdown();
     }
 
     EHOOK_DY(th19_vs_mode_enter, 0x14220F)
