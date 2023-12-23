@@ -9,6 +9,18 @@
 struct IDirect3DDevice8;
 
 namespace THPrac {
+
+struct Float2 {
+    float x;
+    float y;
+};
+    
+struct Float3 {
+    float x;
+    float y;
+    float z;
+};
+
 struct Timer {
     int32_t previous;
     int32_t current;
