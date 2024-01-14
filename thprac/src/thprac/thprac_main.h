@@ -14,8 +14,9 @@
 #endif
 
 namespace THPrac {
+uintptr_t GetGameModuleBase(HANDLE hProc);
 bool CheckIfAnyGame();
-bool WriteTHPracSig(HANDLE hProc);
+bool WriteTHPracSig(HANDLE hProc, uintptr_t base);
 bool FindOngoingGame(bool prompt = false);
 bool FindAndRunGame(bool prompt = false);
 }

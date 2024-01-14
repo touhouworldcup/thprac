@@ -148,6 +148,9 @@
     <ClInclude Include="src\thprac\utils\utils.h">
       <Filter>THPrac Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac\utils\wininternal.h">
+      <Filter>THPrac Utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\thprac\thprac_launcher_cfg.h">
       <Filter>THPrac Launcher</Filter>
     </ClInclude>
@@ -198,6 +201,9 @@
     </ClInclude>
     <ClInclude Include="src\3rdParties\distorm\src\x86defs.h">
       <Filter>3rdParties\distorm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_th19.h">
+      <Filter>THPrac Games</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -394,6 +400,9 @@
       <Filter>THPrac Launcher</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_games.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th19.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
   </ItemGroup>

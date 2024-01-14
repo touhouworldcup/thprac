@@ -15,7 +15,7 @@
 namespace THPrac {
 
 bool GetExeInfo(void* exeBuffer, size_t exeSize, ExeSig& exeSigOut);
-bool GetExeInfoEx(size_t process, ExeSig& exeSigOut);
+bool GetExeInfoEx(uintptr_t hProcess, uintptr_t base, ExeSig& exeSigOut);
 
 bool LauncherGamesGuiUpd();
 void LauncherGamesGuiSwitch(const char* idStr);

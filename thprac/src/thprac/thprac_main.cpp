@@ -6,15 +6,13 @@
 #include "thprac_launcher_cfg.h"
 #include "thprac_load_exe.h"
 #include "thprac_utils.h"
+#include "utils/wininternal.h"
 #include <Windows.h>
 #include <algorithm>
 #include <metrohash128.h>
 #include <psapi.h>
 #include <string>
 #include <tlhelp32.h>
-
-#pragma comment(lib, "psapi.lib")
-
 
 namespace THPrac {
 enum thprac_prompt_t {
@@ -41,7 +39,7 @@ bool CheckMutex(const char* mutex_name)
 
 bool CheckIfAnyGame()
 {
-    if (CheckMutex("Touhou Koumakyou App") || CheckMutex("Touhou YouYouMu App") || CheckMutex("Touhou 08 App") || CheckMutex("Touhou 10 App") || CheckMutex("Touhou 11 App") || CheckMutex("Touhou 12 App") || CheckMutex("th17 App") || CheckMutex("th18 App") || CheckMutex("th185 App"))
+    if (CheckMutex("Touhou Koumakyou App") || CheckMutex("Touhou YouYouMu App") || CheckMutex("Touhou 08 App") || CheckMutex("Touhou 10 App") || CheckMutex("Touhou 11 App") || CheckMutex("Touhou 12 App") || CheckMutex("th17 App") || CheckMutex("th18 App") || CheckMutex("th185 App") || CheckMutex("th19 App"))
         return true;
     return false;
 }
@@ -103,7 +101,26 @@ bool PromptUser(thprac_prompt_t info, THGameSig* gameSig = nullptr)
     return false;
 }
 
-THGameSig* CheckOngoingGame(PROCESSENTRY32W& proc)
+uintptr_t GetGameModuleBase(HANDLE hProc) {
+    static decltype(NtQueryInformationProcess)* _NtQueryInformationProcess;
+
+    if (!_NtQueryInformationProcess) {
+        _NtQueryInformationProcess = (decltype(NtQueryInformationProcess)*)GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "NtQueryInformationProcess");
+    }
+
+    PROCESS_BASIC_INFORMATION pbi;
+    _NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi, sizeof(pbi), nullptr);
+
+    LPVOID based = (LPVOID)((uintptr_t)pbi.PebBaseAddress + offsetof(PEB, ImageBaseAddress));
+
+    uintptr_t ret = 0;
+    DWORD byteRet;
+    ReadProcessMemory(hProc, based, &ret, sizeof(ret), &byteRet);
+
+    return ret;
+}
+
+THGameSig* CheckOngoingGame(PROCESSENTRY32W& proc, uintptr_t& base)
 {
     // Eliminate impossible process
     if ( wcscmp(L"東方紅魔郷.exe", proc.szExeFile) && wcscmp(L"alcostg.exe", proc.szExeFile)) {
@@ -135,23 +152,28 @@ THGameSig* CheckOngoingGame(PROCESSENTRY32W& proc)
     if (!hProc)
         return nullptr;
 
+    base = GetGameModuleBase(hProc);
+    if (!base) {
+        return nullptr;
+    }
+
     // Check THPrac signature
     DWORD sigAddr = 0;
     DWORD sigCheck = 0;
     DWORD bytesReadRPM;
-    ReadProcessMemory(hProc, (void*)0x40003c, &sigAddr, 4, &bytesReadRPM);
+    ReadProcessMemory(hProc, (void*)(base + 0x3c), &sigAddr, 4, &bytesReadRPM);
     if (bytesReadRPM != 4 || !sigAddr) {
         CloseHandle(hProc);
         return nullptr;
     }
-    ReadProcessMemory(hProc, (void*)(0x400000 + sigAddr - 4), &sigCheck, 4, &bytesReadRPM);
+    ReadProcessMemory(hProc, (void*)(base + sigAddr - 4), &sigCheck, 4, &bytesReadRPM);
     if (bytesReadRPM != 4 || sigCheck) {
         CloseHandle(hProc);
         return nullptr;
     }
 
     ExeSig sig;
-    if (GetExeInfoEx((size_t)hProc, sig)) {
+    if (GetExeInfoEx((size_t)hProc, base, sig)) {
         for (auto& gameDef : gGameDefs) {
             if (gameDef.catagory != CAT_MAIN && gameDef.catagory != CAT_SPINOFF_STG) {
                 continue;
@@ -166,14 +188,14 @@ THGameSig* CheckOngoingGame(PROCESSENTRY32W& proc)
     return nullptr;
 }
 
-bool WriteTHPracSig(HANDLE hProc)
+bool WriteTHPracSig(HANDLE hProc, uintptr_t base)
 {
     DWORD sigAddr = 0;
     DWORD bytesReadRPM;
-    ReadProcessMemory(hProc, (void*)0x40003c, &sigAddr, 4, &bytesReadRPM);
+    ReadProcessMemory(hProc, (void*)(base + 0x3c), &sigAddr, 4, &bytesReadRPM);
     if (bytesReadRPM != 4 || !sigAddr)
         return false;
-    sigAddr += 0x400000;
+    sigAddr += base;
     sigAddr -= 4;
 
     constexpr DWORD thpracSig = 'CARP';
@@ -189,7 +211,7 @@ bool WriteTHPracSig(HANDLE hProc)
     return true;
 }
 
-bool ApplyTHPracToProc(PROCESSENTRY32W& proc)
+bool ApplyTHPracToProc(PROCESSENTRY32W& proc, uintptr_t base)
 {
     // Open the related process
     auto hProc = OpenProcess(
@@ -200,7 +222,7 @@ bool ApplyTHPracToProc(PROCESSENTRY32W& proc)
     if (!hProc)
         return false;
 
-    auto result = (WriteTHPracSig(hProc) && THPrac::LoadSelf(hProc));
+    auto result = (WriteTHPracSig(hProc, base) && THPrac::LoadSelf(hProc));
     CloseHandle(hProc);
 
     return result;
@@ -257,6 +279,7 @@ bool RunGameWithTHPrac(THGameSig& gameSig, std::wstring& name)
     memset(&startup_info, 0, sizeof(startup_info));
     startup_info.cb = sizeof(startup_info);
     CreateProcessW(name.c_str(), nullptr, nullptr, nullptr, false, CREATE_SUSPENDED, nullptr, nullptr, &startup_info, &proc_info);
+    uintptr_t base = GetGameModuleBase(proc_info.hProcess);
 
     if (isVpatchValid) {
         auto vpNameLength = (wcslen(gameSig.vPatchStr) + 1) * sizeof(wchar_t);
@@ -269,7 +292,7 @@ bool RunGameWithTHPrac(THGameSig& gameSig, std::wstring& name)
         }
     }
 
-    auto result = (WriteTHPracSig(proc_info.hProcess) && THPrac::LoadSelf(proc_info.hProcess));
+    auto result = (WriteTHPracSig(proc_info.hProcess, base) && THPrac::LoadSelf(proc_info.hProcess));
     if (!result)
         TerminateThread(proc_info.hThread, ERROR_FUNCTION_FAILED);
     else
@@ -291,11 +314,12 @@ bool FindOngoingGame(bool prompt)
         HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
         if (Process32FirstW(snapshot, &entry)) {
             do {
-                gameSig = CheckOngoingGame(entry);
+                uintptr_t base;
+                gameSig = CheckOngoingGame(entry, base);
                 if (gameSig) {
                     hasPrompted = true;
                     if (PromptUser(PR_ASK_IF_ATTACH, gameSig)) {
-                        if (ApplyTHPracToProc(entry)) {
+                        if (ApplyTHPracToProc(entry, base)) {
                             PromptUser(PR_INFO_ATTACHED);
                             CloseHandle(snapshot);
                             return true;

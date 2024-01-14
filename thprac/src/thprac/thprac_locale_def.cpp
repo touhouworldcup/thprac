@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][897]
+const char* th_glossary_str[3][898]
 {
     {
         "",
@@ -515,6 +515,7 @@ const char* th_glossary_str[3][897]
         "...并写入replay中",
         "牙冷却",
         "0CD",
+        "TH19 东方兽王园 〜 Unfinished Dream of All Living Ghost.",
         "中止",
         "以管理员身份启动thprac",
         "启动游戏后:",
@@ -1414,6 +1415,7 @@ const char* th_glossary_str[3][897]
         "...and write into the replay",
         "Fang CD",
         "0CD",
+        "TH19 Unfinished Dream of All Living Ghost",
         "Abort",
         "Launch thprac with admin rights",
         "After launching game:",
@@ -2313,6 +2315,7 @@ const char* th_glossary_str[3][897]
         "...そしてリプレイに書き込みます ",
         "牙CD",
         "0CD",
+        "TH19 東方獣王園 〜 Unfinished Dream of All Living Ghost.",
         "中止",
         "管理者権限でthpracを起動する",
         "ゲーム起動後:",
@@ -19963,7 +19966,7 @@ const th_sections_t th_sections_cbt[1][2][1]
 
 }
 
-const wchar_t __thprac_loc_range_zh[3141] {
+const wchar_t __thprac_loc_range_zh[3143] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -19973,6 +19976,7 @@ const wchar_t __thprac_loc_range_zh[3141] {
     0x3002, 0x3002,
     0x300c, 0x300c,
     0x300d, 0x300d,
+    0x301c, 0x301c,
     0x4e00, 0x4e00,
     0x4e03, 0x4e03,
     0x4e07, 0x4e07,

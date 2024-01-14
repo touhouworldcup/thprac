@@ -5,6 +5,8 @@
 #include <vector>
 
 namespace THPrac {
+extern uintptr_t ingame_image_base;
+#define RVA(a) ((uintptr_t)a + ingame_image_base)
 typedef void __stdcall CallbackFunc(PCONTEXT);
 class HookCtx {
 public:
@@ -158,6 +160,29 @@ static inline R asm_call(Args... args) {
         return func(args...);
     }
 }
+
+template <uintptr_t addr, CallType type, typename R = void, typename... Args>
+static inline R asm_call_rel(Args... args)
+{
+    uintptr_t _addr = RVA(addr);
+    if constexpr (type == Cdecl) {
+        auto* func = (R(__cdecl*)(Args...))_addr;
+        return func(args...);
+    } else if constexpr (type == Stdcall) {
+        auto* func = (R(__stdcall*)(Args...))_addr;
+        return func(args...);
+    } else if constexpr (type == Fastcall) {
+        auto* func = (R(__fastcall*)(Args...))_addr;
+        return func(args...);
+    } else if constexpr (type == Vectorcall) {
+        auto* func = (R(__vectorcall*)(Args...))_addr;
+        return func(args...);
+    } else if constexpr (type == Thiscall) {
+        auto* func = (R(__thiscall*)(Args...))_addr;
+        return func(args...);
+    }
+}
+
 
 inline void PushHelper32(CONTEXT* pCtx, DWORD value)
 {

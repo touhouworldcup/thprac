@@ -69,9 +69,11 @@
     <ClInclude Include="src\thprac\thprac_gui_locale.h" />
     <ClInclude Include="src\thprac\thprac_locale_def.h" />
     <ClInclude Include="src\thprac\thprac_main.h" />
+    <ClInclude Include="src\thprac\thprac_th19.h" />
     <ClInclude Include="src\thprac\thprac_utils.h" />
     <ClInclude Include="src\thprac\thprac_version.h" />
     <ClInclude Include="src\thprac\utils\utils.h" />
+    <ClInclude Include="src\thprac\utils\wininternal.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\3rdParties\distorm\src\decoder.c" />
@@ -137,6 +139,7 @@
     <ClCompile Include="src\thprac\thprac_th17.cpp" />
     <ClCompile Include="src\thprac\thprac_th18.cpp" />
     <ClCompile Include="src\thprac\thprac_th185.cpp" />
+    <ClCompile Include="src\thprac\thprac_th19.cpp" />
     <ClCompile Include="src\thprac\thprac_utils.cpp" />
     <ClCompile Include="src\thprac\thprac_version.cpp" />
   </ItemGroup>

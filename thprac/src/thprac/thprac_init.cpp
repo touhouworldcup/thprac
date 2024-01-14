@@ -19,7 +19,7 @@ void RemoteInit()
 {
     if (((int)&__ImageBase) != ((int)GetModuleHandleW(nullptr))) {
         ExeSig exeSig;
-        if (GetExeInfoEx((size_t)GetCurrentProcess(), exeSig)) {
+        if (GetExeInfoEx((size_t)GetCurrentProcess(), (uintptr_t)GetModuleHandleW(NULL), exeSig)) {
             for (auto& gameDef : gGameDefs) {
                 if (gameDef.catagory != CAT_MAIN && gameDef.catagory != CAT_SPINOFF_STG) {
                     continue;
