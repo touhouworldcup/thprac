@@ -202,6 +202,9 @@
     <ClInclude Include="src\3rdParties\distorm\src\x86defs.h">
       <Filter>3rdParties\distorm</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac\thprac_th19.h">
+      <Filter>THPrac Games</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\thprac\thprac_utils.cpp">
