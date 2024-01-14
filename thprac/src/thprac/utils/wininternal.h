@@ -16,6 +16,9 @@ Struct definitions based on the fields documented to have
 consistent offsets in all Windoes versions 5.0+
 TEB: https://www.geoffchappell.com/studies/windows/km/ntoskrnl/inc/api/pebteb/teb/index.htm
 PEB: https://www.geoffchappell.com/studies/windows/km/ntoskrnl/inc/api/pebteb/peb/index.htm
+
+Rest in Peace:
+Geoff Chappell
 */
 
 typedef struct _PEB PEB;
