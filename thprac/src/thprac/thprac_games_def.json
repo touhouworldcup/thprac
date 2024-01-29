@@ -5881,7 +5881,7 @@
         "bgm": 0,
         "spell": 1,
         "appearance": [ 4, 1, 2 ],
-        "!EN": [ "邪符「养小鬼」", "Evil Sign \"Yǎng Xiǎoguǐ\"", "邪符「ヤンシャオグイ」" ],
+        "!N": [ "邪符「养小鬼」", "Evil Sign \"Yǎng Xiǎoguǐ\"", "邪符「ヤンシャオグイ」" ],
         "!HL": [ "邪符「孤魂野鬼」", "Evil Sign \"Gūhún Yěguǐ\"", "邪符「グーフンイエグイ」" ]
       },
       "TH13_ST4_BOSS1": {
@@ -5932,7 +5932,7 @@
         "bgm": 0,
         "spell": 1,
         "appearance": [ 5, 1, 2 ],
-        "!EN": [ "雷矢「元兴寺的旋风」", "Thunder Arrow \"Gagouji's Cyclone\"", "雷矢「ガゴウジサイクロン」" ],
+        "!N": [ "雷矢「元兴寺的旋风」", "Thunder Arrow \"Gagouji's Cyclone\"", "雷矢「ガゴウジサイクロン」" ],
         "!HL": [ "雷矢「元兴寺的龙卷」", "Thunder Arrow \"Gagouji's Tornado\"", "雷矢「ガゴウジトルネード」" ]
       },
       "TH13_ST5_BOSS1": {
@@ -9142,7 +9142,7 @@
 
           "TH19_BARRIER": [ "盾", "Barrier", "バリア" ],
           "TH19_RANK_FORMAT": [ "Rank: %d", "Rank: %d", "ランク: %d" ],
-          "TH19_SHOW_ENEMY_HP": [ "显示小怪HP", "Show Enemy HP", "敵のHPを表示する" ]
+          "TH19_SHOW_ENEMY_HP": [ "显示敌人HP", "Show Enemy HP", "敵のHPを表示する" ]
       }
   }
 }
