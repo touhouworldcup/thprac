@@ -52,6 +52,11 @@ If thprac is enabled ("Mode" is set to "Custom"), this popup will appear wheneve
 
 When starting a game in Match Mode, you can select "Custom" in a "Mode" prompt. If you do that, this window will appear in your game. It can be moved and resized as you want and can be fully hidden by pushing F11.
 
+### TH19  Tools
+![TH19 Tools](https://github.com/touhouworldcup/thprac/assets/23106652/a2cdb385-b61d-4111-af6b-b195e85bf18a)
+
+It's just like TH09 Tools, but for TH19
+
 ### TH06 pause menu
 ![TH06](https://user-images.githubusercontent.com/23106652/174436027-734d642a-300c-45ab-9591-b6219aca087b.png)
 Choosing "Exit" will prompt you to save a replay. Warning: replays saved like this will keep going even after the point you chose to save the replay. The player character will stand still and not shoot.
