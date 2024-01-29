@@ -3240,7 +3240,7 @@ namespace TH185 {
             game_thread && !(GetMemContent(game_thread + 0xb0) & 0x10))
             THWaveSelect::singleton().Update();
 
-        GameGuiEnd(UpdateAdvOptWindow() || isItemEnabled);
+        GameGuiEnd(UpdateAdvOptWindow() || isItemEnabled || THGuiPrac::singleton().IsOpen());
     }
     EHOOK_DY(th185_gui_render, 0x4014fa)
     {
