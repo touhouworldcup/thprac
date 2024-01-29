@@ -60,7 +60,7 @@ Choosing "Exit" will prompt you to save a replay. Warning: replays saved like th
 
 # Credits (May 27th 2022 and after)
 - Development: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [muter3000](https://github.com/muter3000), [zero318](https://github.com/zero318), [Lmocinemod](https://github.com/Lmocinemod), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 
-- Chinese translations: [CrestedPeak9](https://twitter.com/CrestedPeak9), DeepL
+- Chinese translations: [CrestedPeak9](https://twitter.com/CrestedPeak9), maksim71_doll, DeepL
 - Japanese translations: [Yu-miya](https://www.twitch.tv/toho_yumiya), CyrusVorazan, DeepL
 - Transferring all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) to [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
 - Chinese README translations: [TNT569](https://github.com/TNT569) 

@@ -87,6 +87,7 @@ enum th_glossary_t
     TH095_TITLE,
     TH09_AI_POWER,
     TH09_BOSS_RANK,
+    TH09_BOTH,
     TH09_CHARGE_GAUGE,
     TH09_CPU_CHARGE,
     TH09_INSTANT_DEATH,
@@ -515,6 +516,11 @@ enum th_glossary_t
     TH18_UNCAP_OVERWRITE,
     TH18_VAMPIRE_CD,
     TH18_ZERO_CD,
+    TH19_BARRIER,
+    TH19_C_RANK_P1,
+    TH19_C_RANK_P2,
+    TH19_RANK_FORMAT,
+    TH19_SHOW_ENEMY_HP,
     TH19_TITLE,
     THPRAC_ABORT,
     THPRAC_ADMIN_RIGHTS,
@@ -910,7 +916,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][898];
+extern const char* th_glossary_str[3][904];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2388,6 +2394,23 @@ extern const th_glossary_t TH18_CARD_LIST[58];
 }
 
 namespace TH185 {
+
+enum th_sections_t : uint8_t
+{
+    A0000ERROR,
+};
+
+extern const char* th_sections_str[3][4][1];
+
+extern const uint8_t th_sections_bgm[1];
+
+extern const th_sections_t th_sections_cba[1][1][2];
+
+extern const th_sections_t th_sections_cbt[1][2][1];
+
+}
+
+namespace TH19 {
 
 enum th_sections_t : uint8_t
 {

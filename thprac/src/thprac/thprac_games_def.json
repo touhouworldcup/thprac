@@ -2999,6 +2999,7 @@
         "TH09_PLAYER_2": [ "P2", "Player 2", "プレイヤー2" ],
         "TH09_P1": [ "P1", "P1", "P1" ],
         "TH09_P2": [ "P2", "P2", "P2" ],
+        "TH09_BOTH": [ "Both", "Both", "Both" ],
         "TH09_P1_FORMAT_INT": [ "P1: %d", "P1: %d", "P1: %d" ],
         "TH09_P2_FORMAT_INT": [ "P2: %d", "P2: %d", "P2: %d" ],
         "TH09_P1_FORMAT_FLOAT": [ "P1: %.3f", "P1: %.3f", "P1: %.3f" ],
@@ -9130,6 +9131,18 @@
           "TH185_SPELL_27_1": [ "弹币「Bullet Money Glut」(弹币过剩)", "Bullet Money \"Bullet Money Glut\"" , "弾貨「バレットマネーグラット」" ],
           "TH185_SPELL_27_2": [ "叶技「Super Green Spiral」(超绿色螺旋)", "Leaf Skill \"Super Green Spiral\"" , "葉技「スーパーグリーンスパイラル」" ],
           "TH185_SPELL_27_3": [ "「黑市的万华镜」", "\"Black Market Kaleidoscope\"" , "「ブラックマーケットの万華鏡」" ]
+      }
+  },
+  "th19": {
+      "namespace": "TH19",
+
+      "glossary": {
+          "TH19_C_RANK_P1": [ "C3/C4 Rank (P1)", "C3/C4 Rank (P1)", "C3/C4ランク(P1)" ],
+          "TH19_C_RANK_P2": [ "C3/C4 Rank (P2)", "C3/C4 Rank (P2)", "C3/C4ランク(P2)" ],
+
+          "TH19_BARRIER": [ "盾", "Barrier", "バリア" ],
+          "TH19_RANK_FORMAT": [ "Rank: %d", "Rank: %d", "ランク: %d" ],
+          "TH19_SHOW_ENEMY_HP": [ "显示小怪HP", "Show Enemy HP", "敵のHPを表示する" ]
       }
   }
 }

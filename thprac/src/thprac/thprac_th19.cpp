@@ -221,28 +221,30 @@ namespace TH19 {
                 return;
             }
 
-            // BIG TODO AT THE END: translation support
-
-            ImGui::TextUnformatted("Invincible");
+            ImGui::TextUnformatted(S(TH_MUTEKI));
             ImGui::Checkbox("P1##invincible_p1", &p1_invincible);
             ImGui::SameLine();
             ImGui::Checkbox("P2##invincible_p2", &p2_invincible);
 
-            ImGui::TextUnformatted("Lives");
+            ImGui::TextUnformatted(S(TH_LIFE));
 
             if (ImGui::SliderInt("P1##lives_p1", &globals.side[0].lives, 1, globals.side[0].max_lives)) {
                 Gui__UpdateHearts(gui + 0x10);                
             }
             ImGui::SameLine();
-            ImGui::Checkbox("Lock##lives_lock_p1", &p1_lives_lock);
+            ImGui::PushID((int)&p1_lives_lock);
+            ImGui::Checkbox(S(TH09_LOCK), &p1_lives_lock);
+            ImGui::PopID();
 
             if(ImGui::SliderInt("P2##lives_p2", &globals.side[1].lives, 1, globals.side[1].max_lives)) {
                 Gui__UpdateHearts(gui + 0x7C);
             }
             ImGui::SameLine();
-            ImGui::Checkbox("Lock##lives_lock_p2", &p2_lives_lock);
-            
-            ImGui::TextUnformatted("Instant death");
+            ImGui::PushID((int)&p2_lives_lock);
+            ImGui::Checkbox(S(TH09_LOCK), &p2_lives_lock);
+            ImGui::PopID();
+
+            ImGui::TextUnformatted(S(TH09_INSTANT_DEATH));
             if (ImGui::Button("P1##instant_death_p1")) {
                 globals.side[0].lives = 0;
                 *(int*)(p1 + 0x10) = 4;
@@ -253,14 +255,14 @@ namespace TH19 {
                 *(int*)(p2 + 0x10) = 4;
             }
             ImGui::SameLine();
-            if (ImGui::Button("Both##instant_death_both")) {
+            if (ImGui::Button(S(TH09_BOTH))) {
                 globals.side[0].lives = 0;
                 globals.side[1].lives = 0;
                 *(int*)(p1 + 0x10) = 4;
                 *(int*)(p2 + 0x10) = 4;
             }
 
-            ImGui::TextUnformatted("Charge Gauge");
+            ImGui::TextUnformatted(S(TH09_CHARGE_GAUGE));
 
             auto chargegauge = [](GlobalsSide& side, bool& lock, const char* format, int& gauge_store) {
                 float bsize = ImGui::GetFrameHeight();
@@ -310,7 +312,7 @@ namespace TH19 {
                 if (ImGui::IsItemHovered()) {
                     ImGui::BeginTooltip();
                     ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-                    ImGui::TextUnformatted("Lock");
+                    ImGui::TextUnformatted(S(TH09_LOCK));
                     ImGui::PopTextWrapPos();
                     ImGui::EndTooltip();
                 }
@@ -331,7 +333,9 @@ namespace TH19 {
                 c3_level_stored = _c3_level - 1;
                 side.c3_level = c3_level_stored;
                 ImGui::SameLine();
-                ImGui::Checkbox("Lock##c3_level_lock", &c3_level_lock);
+                ImGui::PushID((int)&c3_level_lock);
+                ImGui::Checkbox(S(TH09_LOCK), &c3_level_lock);
+                ImGui::PopID();
 
                 if (!c4_level_lock) {
                     c4_level_stored = side.c4_level;
@@ -341,18 +345,20 @@ namespace TH19 {
                 c4_level_stored = _c4_level - 1;
                 side.c4_level = c4_level_stored;
                 ImGui::SameLine();
-                ImGui::Checkbox("Lock##c4_level_lock", &c4_level_lock);
+                ImGui::PushID((int)&c4_level_lock);
+                ImGui::Checkbox(S(TH09_LOCK), &c4_level_lock);
+                ImGui::PopID();
 
                 ImGui::PopID();
             };
 
-            ImGui::TextUnformatted("C3/C4 Level (P1)");
+            ImGui::TextUnformatted(S(TH19_C_RANK_P1));
             c3c4(globals.side[0], p1_c3_level_stored, p1_c4_level_stored, p1_c3_level_lock, p1_c4_level_lock);
 
-            ImGui::TextUnformatted("C3/C4 Level (P2)");
+            ImGui::TextUnformatted(S(TH19_C_RANK_P2));
             c3c4(globals.side[1], p2_c3_level_stored, p2_c4_level_stored, p2_c3_level_lock, p2_c4_level_lock);
             
-            ImGui::TextUnformatted("CPU Next Charge");
+            ImGui::TextUnformatted(S(TH09_CPU_CHARGE));
 
             auto cpu_next_charge = [](uintptr_t addr, const char* label, bool& lock) {
                 if (!GetMemContent(addr)) {
@@ -372,7 +378,7 @@ namespace TH19 {
             cpu_next_charge(RVA(P1_CPU_PTR), "P1", p1_cpu_next_charge_lock);
             cpu_next_charge(RVA(P2_CPU_PTR), "P2", p2_cpu_next_charge_lock);
 
-            ImGui::TextUnformatted("Barrier");
+            ImGui::TextUnformatted(S(TH19_BARRIER));
             
             auto _barrier = [](PlayerBarrier* barrier, const char* label) {
                 bool barrier_bool = false;
@@ -408,17 +414,19 @@ namespace TH19 {
             ImGui::SameLine();
             _barrier((PlayerBarrier*)(p2 + 0x18), "P2##p2_barrier");
 
-            ImGui::TextUnformatted("Misc.");
+            ImGui::TextUnformatted(S(TH09_MISC));
 
             if (!rank_lock) {
                 rank_stored = globals.difficulty;
             }
-            ImGui::SliderInt("##rank", &rank_stored, 0, 7, "Rank: %d");
+            ImGui::SliderInt("##rank", &rank_stored, 0, 7, S(TH19_RANK_FORMAT));
             ImGui::SameLine();
-            ImGui::Checkbox("Lock##rank_lock", &rank_lock);
+            ImGui::PushID((int)&rank_lock);
+            ImGui::Checkbox(S(TH09_LOCK), &rank_lock);
+            ImGui::PopID();
             globals.difficulty = rank_stored;
 
-            if (ImGui::Checkbox("Show enemy HP##hp_show", &hp_show)) {
+            if (ImGui::Checkbox(S(TH19_SHOW_ENEMY_HP), &hp_show)) {
                 if (hp_show) {
                     th19_enemy_tick.Enable();
                 } else {

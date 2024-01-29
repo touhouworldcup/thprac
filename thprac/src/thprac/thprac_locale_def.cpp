@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][898]
+const char* th_glossary_str[3][904]
 {
     {
         "",
@@ -87,6 +87,7 @@ const char* th_glossary_str[3][898]
         "TH09.5 东方文花帖　～ Shoot the Bullet.",
         "AI难度",
         "C4 Rank",
+        "Both",
         "Charge Gauge",
         "AI下回蓄力攻击",
         "清零血条",
@@ -515,6 +516,11 @@ const char* th_glossary_str[3][898]
         "...并写入replay中",
         "牙冷却",
         "0CD",
+        "盾",
+        "C3/C4 Rank (P1)",
+        "C3/C4 Rank (P2)",
+        "Rank: %d",
+        "显示敌人HP",
         "TH19 东方兽王园 〜 Unfinished Dream of All Living Ghost.",
         "中止",
         "以管理员身份启动thprac",
@@ -987,6 +993,7 @@ const char* th_glossary_str[3][898]
         "TH09.5 Shoot the Bullet",
         "AI Difficulty",
         "Boss Rank",
+        "Both",
         "Charge Gauge",
         "AI next charge attack",
         "Instant death",
@@ -1415,6 +1422,11 @@ const char* th_glossary_str[3][898]
         "...and write into the replay",
         "Fang CD",
         "0CD",
+        "Barrier",
+        "C3/C4 Rank (P1)",
+        "C3/C4 Rank (P2)",
+        "Rank: %d",
+        "Show Enemy HP",
         "TH19 Unfinished Dream of All Living Ghost",
         "Abort",
         "Launch thprac with admin rights",
@@ -1887,6 +1899,7 @@ const char* th_glossary_str[3][898]
         "TH09.5 東方文花帖　～ Shoot the Bullet.",
         "AI難易度",
         "ボスランク",
+        "Both",
         "チャージゲージ",
         "AI次回チャージ攻撃",
         "即死",
@@ -2315,6 +2328,11 @@ const char* th_glossary_str[3][898]
         "...そしてリプレイに書き込みます ",
         "牙CD",
         "0CD",
+        "バリア",
+        "C3/C4ランク(P1)",
+        "C3/C4ランク(P2)",
+        "ランク: %d",
+        "敵のHPを表示する",
         "TH19 東方獣王園 〜 Unfinished Dream of All Living Ghost.",
         "中止",
         "管理者権限でthpracを起動する",
@@ -19897,6 +19915,76 @@ const th_glossary_t TH18_CARD_LIST[58]
 }
 
 namespace TH185 {
+
+const char* th_sections_str[3][4][1]
+{
+    {
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+    },
+    {
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+    },
+    {
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+    },
+};
+
+const uint8_t th_sections_bgm[1]
+{
+    0,
+};
+
+const th_sections_t th_sections_cba[1][1][2]
+{
+    {
+        { },
+    },
+};
+
+const th_sections_t th_sections_cbt[1][2][1]
+{
+    {
+        { },
+        { },
+    },
+};
+
+}
+
+namespace TH19 {
 
 const char* th_sections_str[3][4][1]
 {
