@@ -2757,6 +2757,7 @@ namespace TH185 {
             SetFade(0.5f, 0.5f);
             SetSizeRel(0.3f, 0.6f);
             SetPosRel(0.35f, 0.2f);
+            SetTitle("THWaveSelect");
 
             th185_replaymanager_on_tick_cutoff.Setup();
         }
