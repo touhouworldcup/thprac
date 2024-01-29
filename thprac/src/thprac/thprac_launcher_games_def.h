@@ -726,6 +726,18 @@ static GameRoll gGameRoll[] = {
         ROLL_MAIN,
         "Reimu\0Marisa\0Sanae\0Sakuya\0\0",
         4,
+    },
+    {
+        "th185",
+        ROLL_SPINOFF_STG,
+        nullptr,
+        1,
+    },
+    {
+        "th19",
+        ROLL_MAIN,
+        "Reimu\0Marisa\0Sanae\0Ran\0Aunn\0Nazrin\0Seiran\0Orin\0Tsukasa\0Mamizou\0Yachie\0Saki\0Yuuma\0Suika\0Biten\0Enoko\0Chiyari\0Hisami\0Zanmu\0\0",
+        4,
     }
 };
 #pragma endregion
