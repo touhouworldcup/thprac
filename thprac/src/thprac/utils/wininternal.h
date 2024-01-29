@@ -78,9 +78,9 @@ struct _PEB {
     ULONG OSMajorVersion;
     ULONG OSMinorVersion;
     USHORT OSBuildNumber;
-    union {
+    union OSCSDVERSION {
         USHORT OSCSDVersion;
-        struct {
+        struct OSCSDVERSION_BYTES {
             BYTE OSCSDMajorVersion;
             BYTE OSCSDMinorVersion;
         };

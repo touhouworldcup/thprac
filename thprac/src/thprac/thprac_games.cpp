@@ -716,14 +716,11 @@ namespace THSnapshot {
             return;
 
         auto header = "\x42\x4d\x36\x10\x0e\x00\x00\x00\x00\x00\x36\x00\x00\x00\x28\x00\x00\x00\x80\x02\x00\x00\xe0\x01\x00\x00\x01\x00\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-        void* bmp = nullptr;
+        void* bmp = GetSnapshotData(d3d8);
         DWORD bytesRead;
-        bmp = GetSnapshotData(d3d8);
-        if (bmp) {
-            WriteFile(hFile, header, 0x36, &bytesRead, nullptr);
-            WriteFile(hFile, bmp, 0xE2000, &bytesRead, nullptr);
-            free(bmp);
-        }
+        WriteFile(hFile, header, 0x36, &bytesRead, nullptr);
+        WriteFile(hFile, bmp, 0xE2000, &bytesRead, nullptr);
+        free(bmp);
 
         CloseHandle(hFile);
     }
@@ -865,7 +862,7 @@ bool GameState_Assert(bool cond)
     if (res == IDYES)
         return false;
     else
-        ExitProcess(-1);
+        ExitProcess(UINT_MAX);
 }
 #pragma endregion
 }

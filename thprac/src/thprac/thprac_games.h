@@ -460,7 +460,7 @@ namespace THSnapshot {
 
 #pragma region ECL Warp
 struct ecl_write_t {
-    uint32_t off;
+    uint32_t off = 0;
     std::vector<uint8_t> bytes;
     void apply(uint8_t* start)
     {
