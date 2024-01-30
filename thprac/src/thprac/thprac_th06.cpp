@@ -2033,6 +2033,13 @@ namespace TH06 {
             pCtx->Eip = 0x429ecb;
         }
     }
+    EHOOK_DY(th06_set_deathbomb_timer, 0x42a09c)
+    {
+        if (thPracParam.mode) {
+            *(uint32_t*)(pCtx->Eax + 0x9d8) = 6;
+            pCtx->Eip = 0x42a0a6;
+        }
+    }
     EHOOK_DY(th06_hamon_rage, 0x40e1c7)
     {
         if (thPracParam.mode && thPracParam.stage == 6 && thPracParam.section == TH06_ST7_END_S10 && thPracParam.phase == 1) {
