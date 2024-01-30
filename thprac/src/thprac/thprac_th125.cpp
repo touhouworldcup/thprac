@@ -134,11 +134,14 @@ namespace TH125 {
     public:
         THAdvOptWnd() noexcept
         {
+
             SetWndFlag(ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
             SetFade(0.8f, 0.8f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
             OnLocaleChange();
+
+            th125_hiscore_fix.Setup();
 
             FpsInit();
             GameplayInit();
@@ -183,12 +186,24 @@ namespace TH125 {
                 EndOptGroup();
             }
 
+            if (BeginOptGroup<TH18_BUG_FIX>()) {
+                if (ImGui::Checkbox(S(TH125_SPOILER_HISCORE_FIX), &mHiscoreFix)) {
+                    th125_hiscore_fix.Toggle(mHiscoreFix);
+                }
+
+                EndOptGroup();
+            }
+
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
         }
 
         adv_opt_ctx mOptCtx;
+
+        PATCH_ST(th125_hiscore_fix, 0x42ea14, "\x90\x90\x90\x90\x90\x90\x90", 7);
+
+        bool mHiscoreFix = false;
     };
     bool UpdateAdvOptWindow()
     {

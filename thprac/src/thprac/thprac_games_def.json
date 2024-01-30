@@ -4699,6 +4699,14 @@
     }
   },
 
+  "th125": {
+      "namespace": "TH125",
+
+      "glossary": {
+          "TH125_SPOILER_HISCORE_FIX": [ "修复了 SP 分数更新错误", "High-score fix for Spoiler scenes", "SPスコア更新バグ修正" ]
+      }
+  },
+
   "th128": {
 
     "namespace": "TH128",

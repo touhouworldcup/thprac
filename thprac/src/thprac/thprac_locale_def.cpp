@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][905]
+const char* th_glossary_str[3][906]
 {
     {
         "",
@@ -131,6 +131,7 @@ const char* th_glossary_str[3][905]
         "信号强度",
         "TH11 东方地灵殿　～ Subterranean Animism.",
         "TH12.3 东方非想天则　～ 追寻特大型人偶之谜",
+        "修复了 SP 分数更新错误",
         "TH12.5 Double Spoiler　～ 东方文花帖",
         "冰冻面积",
         "冰冻力量",
@@ -1038,6 +1039,7 @@ const char* th_glossary_str[3][905]
         "C. Gauge",
         "TH11 Subterranean Animism",
         "TH12.3 Touhou Hisoutensoku",
+        "High-score fix for Spoiler scenes",
         "TH12.5 Double Spoiler",
         "Ice Area",
         "Ice Power",
@@ -1945,6 +1947,7 @@ const char* th_glossary_str[3][905]
         "交信強度",
         "TH11 東方地霊殿　～ Subterranean Animism.",
         "TH12.3 東方非想天則　～ 超弩級ギニョルの謎を追え",
+        "SPスコア更新バグ修正",
         "TH12.5 ダブルスポイラー　～ 東方文花帖",
         "こおらせた\n面積",
         "こおりパワー",
@@ -11063,6 +11066,76 @@ const th_glossary_t TH12_VENTRA_SELECT[5]
     TH12_VENTRA_RED,
     TH12_VENTRA_BLUE,
     TH12_VENTRA_GREEN,
+};
+
+}
+
+namespace TH125 {
+
+const char* th_sections_str[3][4][1]
+{
+    {
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+    },
+    {
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+    },
+    {
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+    },
+};
+
+const uint8_t th_sections_bgm[1]
+{
+    0,
+};
+
+const th_sections_t th_sections_cba[1][1][2]
+{
+    {
+        { },
+    },
+};
+
+const th_sections_t th_sections_cbt[1][2][1]
+{
+    {
+        { },
+        { },
+    },
 };
 
 }

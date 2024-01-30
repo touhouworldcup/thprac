@@ -131,6 +131,7 @@ enum th_glossary_t
     TH11_SIGNAL,
     TH11_TITLE,
     TH123_TITLE,
+    TH125_SPOILER_HISCORE_FIX,
     TH125_TITLE,
     TH128_ICE_AREA,
     TH128_ICE_POWER,
@@ -917,7 +918,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][905];
+extern const char* th_glossary_str[3][906];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1644,6 +1645,23 @@ extern const th_sections_t th_sections_cbt[7][2][14];
 extern const th_glossary_t TH12_UFO_SIDE_SELECT[3];
 
 extern const th_glossary_t TH12_VENTRA_SELECT[5];
+
+}
+
+namespace TH125 {
+
+enum th_sections_t : uint8_t
+{
+    A0000ERROR,
+};
+
+extern const char* th_sections_str[3][4][1];
+
+extern const uint8_t th_sections_bgm[1];
+
+extern const th_sections_t th_sections_cba[1][1][2];
+
+extern const th_sections_t th_sections_cbt[1][2][1];
 
 }
 
