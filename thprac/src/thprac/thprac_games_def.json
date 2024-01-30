@@ -3028,7 +3028,8 @@
     "namespace": "TH10",
 
     "glossary": {
-      "TH10_FAITH_BAR": [ "信仰条", "Faith Bar", "カウンター" ]
+      "TH10_FAITH_BAR": [ "信仰条", "Faith Bar", "カウンター" ],
+      "TH10_NO_FAITH_LOSS": [ "不掉信仰", "No faith loss", "信仰点を減少させない" ]
     },
 
     "sections": {

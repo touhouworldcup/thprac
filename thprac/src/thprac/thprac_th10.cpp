@@ -433,6 +433,7 @@ namespace TH10 {
             mInfPower.SetTextOffsetRel(x_offset_1, x_offset_2);
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mNoFaithLoss.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
@@ -442,6 +443,7 @@ namespace TH10 {
             mInfPower();
             mTimeLock();
             mAutoBomb();
+            mNoFaithLoss();
             mElBgm();
         }
         virtual void OnPreUpdate() override
@@ -471,9 +473,14 @@ namespace TH10 {
             new HookCtx(0x40E5B0, "\x90", 1) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F5", VK_F5, {
             new HookCtx(0x425C13, "\xc6", 1) } };
+        Gui::GuiHotKey mNoFaithLoss { TH10_NO_FAITH_LOSS, "F6", VK_F6, {
+            new HookCtx(0x418A2B, "\x90\x90\x90", 3),
+            new HookCtx(0x426A22, "\x90\x90\x90\x90\x90\x90", 6),
+            new HookCtx(0x412E8F, "\x90\x90\x90", 3) } };
+
 
     public:
-        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F6", VK_F6 };
+        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
     };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {

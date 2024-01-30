@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][904]
+const char* th_glossary_str[3][905]
 {
     {
         "",
@@ -126,6 +126,7 @@ const char* th_glossary_str[3][904]
         "花映塚工具",
         "TH10.5 东方绯想天　～ Scarlet Weather Rhapsody.",
         "信仰条",
+        "不掉信仰",
         "TH10 东方风神录　～ Mountain of Faith.",
         "信号强度",
         "TH11 东方地灵殿　～ Subterranean Animism.",
@@ -1032,6 +1033,7 @@ const char* th_glossary_str[3][904]
         "TH09 Tools",
         "TH10.5 Scarlet Weather Rhapsody",
         "Faith Bar",
+        "No faith loss",
         "TH10 Mountain of Faith",
         "C. Gauge",
         "TH11 Subterranean Animism",
@@ -1938,6 +1940,7 @@ const char* th_glossary_str[3][904]
         "花映塚ツール",
         "TH10.5 東方緋想天　～ Scarlet Weather Rhapsody.",
         "カウンター",
+        "信仰点を減少させない",
         "TH10 東方風神録　～ Mountain of Faith.",
         "交信強度",
         "TH11 東方地霊殿　～ Subterranean Animism.",
@@ -20054,7 +20057,7 @@ const th_sections_t th_sections_cbt[1][2][1]
 
 }
 
-const wchar_t __thprac_loc_range_zh[3143] {
+const wchar_t __thprac_loc_range_zh[3145] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -20697,6 +20700,7 @@ const wchar_t __thprac_loc_range_zh[3143] {
     0x6362, 0x6362,
     0x636e, 0x636e,
     0x6377, 0x6377,
+    0x6389, 0x6389,
     0x638c, 0x638c,
     0x6392, 0x6392,
     0x6398, 0x6398,

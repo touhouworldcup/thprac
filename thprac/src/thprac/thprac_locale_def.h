@@ -126,6 +126,7 @@ enum th_glossary_t
     TH09_TOOLS_TITLE,
     TH105_TITLE,
     TH10_FAITH_BAR,
+    TH10_NO_FAITH_LOSS,
     TH10_TITLE,
     TH11_SIGNAL,
     TH11_TITLE,
@@ -916,7 +917,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][904];
+extern const char* th_glossary_str[3][905];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2427,7 +2428,7 @@ extern const th_sections_t th_sections_cbt[1][2][1];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3143];
+extern const wchar_t __thprac_loc_range_zh[3145];
 
 extern const wchar_t __thprac_loc_range_en[35];
 
