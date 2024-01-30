@@ -387,7 +387,7 @@ namespace TH17 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 9 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mLifeFragment { TH_LIFE_FRAGMENT, 0, 2 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mBomb { TH_BOMB, 0, 9 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mBombFragment { TH_BOMB_FRAGMENT, 0, 4 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mBombFragment { TH_BOMB_FRAGMENT, 0, 2 };
         Gui::GuiCombo mGoast1 { TH17_GOAST_1, TH17_GOAST_SELECT };
         Gui::GuiCombo mGoast2 { TH17_GOAST_2, TH17_GOAST_SELECT };
         Gui::GuiCombo mGoast3 { TH17_GOAST_3, TH17_GOAST_SELECT };
