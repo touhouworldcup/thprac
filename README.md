@@ -115,5 +115,7 @@ You can find a compatible version of vpatch [here](https://maribelhearn.com/tool
 ## FPS adjustment seems to be broken when using vpatch
 Certain tools ("DX8 to DX9 Convertor" for example) conflict with VsyncPatch
 
+As for adjusting replay speedup and slowdown FPS: this functionality is only implemented in TH13
+
 ## What is "DDC - Marisa Laser Related"?
 It's an attempt to fix the infamous Marisa laser desync bug in Double Dealing Character
