@@ -33,7 +33,9 @@ void RemoteInit()
                 break;
             }
         }
-        ExitThread(1);
+        // This is an InjectResult { .error = Ok, .lastError = 0 }
+        // See thprac_load_exe.cpp, thprac_load_exe.h and inject_shellcode.cpp for more info
+        ExitThread(0);
     }
 }
 }
