@@ -169,7 +169,7 @@ namespace Gui {
     template <typename T, ImGuiDataType type>
     class GuiSlider {
     private:
-        th_glossary_t mLabelRef = 0;
+        th_glossary_t mLabelRef = A0000ERROR_C;
         char* mLabel = nullptr;
         T mValue = 0;
         T mValueMin = 0;
@@ -297,7 +297,7 @@ namespace Gui {
     template <typename T, ImGuiDataType type>
     class GuiDrag {
     private:
-        th_glossary_t mLabelRef = 0;
+        th_glossary_t mLabelRef = A0000ERROR_C;
         char* mLabel = nullptr;
         T mValue = 0;
         T mValueMin = 0;
