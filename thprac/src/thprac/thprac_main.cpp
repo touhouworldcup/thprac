@@ -102,14 +102,8 @@ bool PromptUser(thprac_prompt_t info, THGameSig* gameSig = nullptr)
 }
 
 uintptr_t GetGameModuleBase(HANDLE hProc) {
-    static decltype(NtQueryInformationProcess)* _NtQueryInformationProcess;
-
-    if (!_NtQueryInformationProcess) {
-        _NtQueryInformationProcess = (decltype(NtQueryInformationProcess)*)GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "NtQueryInformationProcess");
-    }
-
     PROCESS_BASIC_INFORMATION pbi;
-    _NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi, sizeof(pbi), nullptr);
+    NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi, sizeof(pbi), nullptr);
 
     LPVOID based = (LPVOID)((uintptr_t)pbi.PebBaseAddress + offsetof(PEB, ImageBaseAddress));
 

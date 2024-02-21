@@ -224,7 +224,7 @@ typedef enum _PROCESSINFOCLASS {
     ProcessBreakOnTermination = 29
 } PROCESSINFOCLASS;
 
-__kernel_entry NTSTATUS
+extern "C" __kernel_entry NTSTATUS
     NTAPI
     NtQueryInformationProcess(
         IN HANDLE ProcessHandle,
