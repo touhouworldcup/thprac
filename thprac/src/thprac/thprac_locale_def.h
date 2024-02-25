@@ -163,6 +163,7 @@ enum th_glossary_t
     TH12_VENTRA_RED,
     TH135_TITLE,
     TH13_EXTEND,
+    TH13_SPIRIT_SIDE,
     TH13_TITLE,
     TH13_TRANCE_METER,
     TH143_TITLE,
@@ -918,7 +919,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][906];
+extern const char* th_glossary_str[3][907];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -937,6 +938,8 @@ extern const th_glossary_t TH_SPELL_PHASE1[3];
 extern const th_glossary_t TH_SPELL_PHASE2[5];
 
 extern const th_glossary_t TH_SPELL_PHASE3[6];
+
+extern const th_glossary_t TH_SIDE_SELECT[3];
 
 namespace TH06 {
 
@@ -1641,8 +1644,6 @@ extern const uint8_t th_sections_bgm[72];
 extern const th_sections_t th_sections_cba[7][2][19];
 
 extern const th_sections_t th_sections_cbt[7][2][14];
-
-extern const th_glossary_t TH12_UFO_SIDE_SELECT[3];
 
 extern const th_glossary_t TH12_VENTRA_SELECT[5];
 

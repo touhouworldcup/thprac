@@ -334,7 +334,7 @@ namespace TH12 {
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
         Gui::GuiCheckBox mDlg { TH_DLG };
-        Gui::GuiCombo mUfoSide { TH12_UFO_SIDE, TH12_UFO_SIDE_SELECT };
+        Gui::GuiCombo mUfoSide { TH12_UFO_SIDE, TH_SIDE_SELECT };
         Gui::GuiCombo mVentra1 { TH12_VENTRA_1, TH12_VENTRA_SELECT };
         Gui::GuiCombo mVentra2 { TH12_VENTRA_2, TH12_VENTRA_SELECT };
         Gui::GuiCombo mVentra3 { TH12_VENTRA_3, TH12_VENTRA_SELECT };

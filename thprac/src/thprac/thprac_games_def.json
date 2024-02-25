@@ -822,6 +822,10 @@
         "TH_P3",
         "TH_P4",
         "TH_RAGE"
+      ],
+      "TH_SIDE_SELECT": [
+          "TH_LEFT",
+          "TH_RIGHT"
       ]
     }
   },
@@ -4686,10 +4690,6 @@
     },
 
     "groups": {
-      "TH12_UFO_SIDE_SELECT": [
-          "TH_LEFT",
-          "TH_RIGHT"
-      ],
       "TH12_VENTRA_SELECT": [
         "TH12_VENTRA_NONE",
         "TH12_VENTRA_RED",
@@ -5728,7 +5728,8 @@
 
     "glossary": {
       "TH13_TRANCE_METER": [ "灵界槽", "Trance Meter", "霊界ゲージ" ],
-      "TH13_EXTEND": [ "奖残次数", "Times extended", "エクステンド回数" ]
+      "TH13_EXTEND": [ "奖残次数", "Times extended", "エクステンド回数" ],
+      "TH13_SPIRIT_SIDE": [ "灵方向", "Spirit side", "霊ー方向" ]
     },
 
     "sections": {
