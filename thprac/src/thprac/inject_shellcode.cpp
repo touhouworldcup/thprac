@@ -3,14 +3,18 @@
 // BIG HEADS UP:
 // If you update this file, do the following:
 
-// Run "cl /O1 inject_shellcode.cpp /link /NODEFAULTLIB /DLL" in an x86 native tools command prompt inside this folder
-// Open the generated inject_shellcode.exe in something like x64dbg and copy paste all of the code into INIT_SHELLCODE in thprac_load_exe.cpp
-// Pad the array with 0xCC until the static_assert is happy
+// 1) Run "cl /O1 inject_shellcode.cpp /link /NODEFAULTLIB /DLL" in an x86 native tools command prompt inside this folder
+// 2) Open the generated inject_shellcode.exe in something like x64dbg and copy paste every byte of the generated InjectShellcode
+//    function into the INJECT_SHELLCODE array
+// 3) Pad the array with 0xCC until the static_assert is happy
 
 // If there's a better way to do this, please tell me
 
 typedef void PExeMain();
 
+// Undefined behaviour yeah whatever.
+// If the one thing that calls this actually manages to overflow this buffer then you're trying to 
+// inject thprac into an exe that is genuinely malformed and that wouldn't run even without thprac.
 __forceinline void string_copy(char* out, char* in) {
     DWORD i = 0;
     for(; in[i]; i++) {
