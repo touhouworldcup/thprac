@@ -925,6 +925,8 @@ extern const th_glossary_t TH_TYPE_SELECT[13];
 
 extern const th_glossary_t TH_STAGE_SELECT[8];
 
+extern const th_glossary_t TH_STAGE_SELECT_NOEX[7];
+
 extern const th_glossary_t TH_MODE_SELECT[3];
 
 extern const th_glossary_t TH_WARP_SELECT[7];

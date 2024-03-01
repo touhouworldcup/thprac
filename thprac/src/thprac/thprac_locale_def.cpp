@@ -2765,6 +2765,16 @@ const th_glossary_t TH_STAGE_SELECT[8]
     TH_STAGE_EXTRA,
 };
 
+const th_glossary_t TH_STAGE_SELECT_NOEX[7]
+{
+    TH_STAGE_1,
+    TH_STAGE_2,
+    TH_STAGE_3,
+    TH_STAGE_4,
+    TH_STAGE_5,
+    TH_STAGE_6,
+};
+
 const th_glossary_t TH_MODE_SELECT[3]
 {
     TH_ORIGINAL,

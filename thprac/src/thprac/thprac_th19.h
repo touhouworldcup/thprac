@@ -72,7 +72,7 @@ struct Globals {
     int __dword_9A4;
     int __dword_9A8;
     int __dword_9AC;
-    int __dword_9B0;
+    int story_stage;
     int __dword_9B4;
     int __dword_9B8;
     int32_t chapter;
