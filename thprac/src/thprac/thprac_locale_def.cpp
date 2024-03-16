@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][906]
+const char* th_glossary_str[3][907]
 {
     {
         "",
@@ -163,6 +163,7 @@ const char* th_glossary_str[3][906]
         "红",
         "TH13.5 东方心绮楼　～ Hopeless Masquerade.",
         "奖残次数",
+        "灵方向",
         "TH13 东方神灵庙　～ Ten Desires.",
         "灵界槽",
         "TH14.3 弹幕天邪鬼　～ Impossible Spell Card.",
@@ -1071,6 +1072,7 @@ const char* th_glossary_str[3][906]
         "Red",
         "TH13.5 Hopeless Masquerade",
         "Times extended",
+        "Spirit side",
         "TH13 Ten Desires",
         "Trance Meter",
         "TH14.3 Impossible Spell Card",
@@ -1979,6 +1981,7 @@ const char* th_glossary_str[3][906]
         "赤",
         "TH13.5 東方心綺楼　～ Hopeless Masquerade.",
         "エクステンド回数",
+        "霊ー方向",
         "TH13 東方神霊廟　～ Ten Desires.",
         "霊界ゲージ",
         "TH14.3 弾幕アマノジャク　～ Impossible Spell Card.",
@@ -2762,6 +2765,16 @@ const th_glossary_t TH_STAGE_SELECT[8]
     TH_STAGE_EXTRA,
 };
 
+const th_glossary_t TH_STAGE_SELECT_NOEX[7]
+{
+    TH_STAGE_1,
+    TH_STAGE_2,
+    TH_STAGE_3,
+    TH_STAGE_4,
+    TH_STAGE_5,
+    TH_STAGE_6,
+};
+
 const th_glossary_t TH_MODE_SELECT[3]
 {
     TH_ORIGINAL,
@@ -2817,6 +2830,12 @@ const th_glossary_t TH_SPELL_PHASE3[6]
     TH_P3,
     TH_P4,
     TH_RAGE,
+};
+
+const th_glossary_t TH_SIDE_SELECT[3]
+{
+    TH_LEFT,
+    TH_RIGHT,
 };
 
 namespace TH06 {
@@ -11052,12 +11071,6 @@ const th_sections_t th_sections_cbt[7][2][14]
         { TH12_ST7_END_NS1, TH12_ST7_END_NS2, TH12_ST7_END_NS3, TH12_ST7_END_NS4, TH12_ST7_END_NS5, TH12_ST7_END_NS6, TH12_ST7_END_NS7, TH12_ST7_END_NS8, },
         { TH12_ST7_MID1, TH12_ST7_MID2, TH12_ST7_MID3, TH12_ST7_END_S1, TH12_ST7_END_S2, TH12_ST7_END_S3, TH12_ST7_END_S4, TH12_ST7_END_S5, TH12_ST7_END_S6, TH12_ST7_END_S7, TH12_ST7_END_S8, TH12_ST7_END_S9, TH12_ST7_END_S10, },
     },
-};
-
-const th_glossary_t TH12_UFO_SIDE_SELECT[3]
-{
-    TH_LEFT,
-    TH_RIGHT,
 };
 
 const th_glossary_t TH12_VENTRA_SELECT[5]

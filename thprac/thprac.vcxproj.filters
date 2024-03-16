@@ -38,6 +38,9 @@
     <Filter Include="3rdParties\distorm">
       <UniqueIdentifier>{653ef50e-68b6-4a06-8e84-3ddf50867dfe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="THPrac Logging">
+      <UniqueIdentifier>{89b3b162-0590-4673-a372-b4699cc95cb7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -204,6 +207,9 @@
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_th19.h">
       <Filter>THPrac Games</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_log.h">
+      <Filter>THPrac Logging</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -404,6 +410,9 @@
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_th19.cpp">
       <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_log.cpp">
+      <Filter>THPrac Logging</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

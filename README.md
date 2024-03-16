@@ -1,7 +1,7 @@
 ## [简体中文](/README_CN.md)
 # thprac
 A tool for practicing Touhou Shmups
-## [Download](https://github.com/touhouworldcup/thprac/releases/latest)
+## [Download](https://github.com/touhouworldcup/thprac/releases/latest) ([latest beta](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip))
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V7O03J4)
 
 # How to use

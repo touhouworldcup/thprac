@@ -40,8 +40,8 @@ int WINAPI wWinMain(
         return 0;
     }
 
-    auto thpracMutex = OpenMutexW(SYNCHRONIZE, FALSE, L"thprac - Touhou Practice Tool##mutex");
     RemoteInit();
+    auto thpracMutex = OpenMutexW(SYNCHRONIZE, FALSE, L"thprac - Touhou Practice Tool##mutex");
 
     int launchBehavior = 0;
     bool dontFindOngoingGame = false;

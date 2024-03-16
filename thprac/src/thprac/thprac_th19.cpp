@@ -8,19 +8,23 @@ namespace TH19 {
 #define PlayerBarrier__restore asm_call_rel<0xA430, Thiscall>
 #define AnmInterrupt asm_call_rel<0xBE070, Stdcall>
 #define Ascii__debugf asm_call_rel<0xD7950, Cdecl>
+#define AddCard asm_call_rel<0xCFAE0, Thiscall>
 
     enum addrs {
         SCALE = 0x20B1D0,
         GLOBALS = 0x207910,
         GUI_PTR = 0x1AE460,
         ASCII_MANAGER_PTR = 0x1ae444,
+
         P1_PTR = 0x1AE474,
         P2_PTR = 0x1AE4B0,
 
         P1_CPU_PTR = 0x1ae4a4,
         P2_CPU_PTR = 0x1ae4e0,
-    };
 
+        P1_ABILITYMANAGER = 0x1AE490,
+    };
+        
     #define SCALE (*(float*)RVA(SCALE))
 
     class THAdvOptWnd : public Gui::GameGuiWnd {
@@ -444,6 +448,7 @@ namespace TH19 {
         SINGLETON(TH19Tools);
     };
 
+
     HOOKSET_DEFINE(TH19PracHook)
 
     // In the loader thread, right before the instruction that tells the main thread that loading has finished
@@ -515,8 +520,8 @@ namespace TH19 {
 
     HOOKSET_ENDDEF()
 
-    struct THGuiPrac : public Gui::GameGuiWnd {
-        THGuiPrac()
+    struct THVSSelect : public Gui::GameGuiWnd {
+        THVSSelect()
         {
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -527,7 +532,7 @@ namespace TH19 {
 
     public:
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
-        SINGLETON(THGuiPrac);
+        SINGLETON(THVSSelect);
 
     protected:
         virtual void OnLocaleChange() override
@@ -540,7 +545,90 @@ namespace TH19 {
         virtual void OnContentUpdate() override { mMode(); }
     };
 
+    bool storymode;
+
+    std::vector<const char*> cards = {
+        "None",
+        "Physical Enhancement Jizou",
+        "Yin-Yang Orb",
+        "Amulet of Benevolence",
+        "Mini-Hakkero",
+        "Hoarders' Teachings",
+        "Amulet of Kanako Yasaka",
+        "Amulet of Suwako Moriya",
+        "Cat Shikigami (Front)",
+        "Cat Shikigami (Side)",
+        "Ferocious Komainu",
+        "Vigilant Komainu",
+        "Pendulum",
+        "Nazrin's Rods",
+        "The Moon Rabbit Has Landed",
+        "The Urban Rabbit Has Landed",
+        "Spirit Hauling Cart",
+        "Feline Understanding",
+        "Fox in a Tube (Vertical)",
+        "Fox in a Tube (Horizontal)",
+        "Mobile Leaf",
+        "Just One Puff",
+        "Hard-Working Otter",
+        "Jittery Otter",
+        "Keiga Intimidation",
+        "Keiga Harsh Hierarchy",
+        "Gorged Animal Spirit",
+        "Bottom of the Food Chain",
+        "Clingy Sake Gourd",
+        "Drunken Fist, All the Time",
+        "Far-Reaching Pole",
+        "Kiketsu Inductee",
+        "Handy/Hazardous Bear Trap",
+        "Friend of the Keiga Family",
+        "Extremely Cursed Blood",
+        "Chupacabra's Fame",
+        "Crimson Glory of Disgrace",
+        "Taunting Road to Yomi",
+        "Land of the Heartless",
+        "Violence is Hell's Flower",
+    };
+
+    struct THGuiPrac : public Gui::GameGuiWnd {
+        THGuiPrac()
+        {
+            SetFade(0.8f, 0.1f);
+            SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
+            SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
+            SetAutoSpacing(true);
+            OnLocaleChange();
+        }
+
+    public:
+        Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
+        Gui::GuiCombo mStage { TH_STAGE, TH_STAGE_SELECT_NOEX };
+        std::vector<unsigned int> mAdditionalCards = { 0 };
+        SINGLETON(THGuiPrac);
+    
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            SetTitle(S(TH_MENU));
+            SetSizeRel(0.6f, 0.8f);
+            SetPosRel(0.2f, 0.1f);
+            SetItemWidthRel(-0.052f);
+        }
+        virtual void OnContentUpdate() override {
+            mMode();
+
+            if (!*mMode) {
+                return;
+            }
+            mStage();
+            ImGui::Separator();
+            ImGui::TextUnformatted("Additonal cards");
+            Gui::MultiComboSelect(mAdditionalCards, cards.data(), cards.size(), S(TH18_CARD_FORMAT));
+        }
+    };
+    
     PATCH_ST(th19_vs_mode_disable_movement, 0x142131, "\xeb", 1);
+    PATCH_ST(th19_charsel_disable_movement, 0x140850, "\x90\xe9", 2);
 
     void draw_slowdown()
     {
@@ -564,8 +652,8 @@ namespace TH19 {
     }
 
     EHOOK_DY(th19_update_end, 0xC8B75) {
-        auto& p = THGuiPrac::singleton();
-        p.Update();
+        THVSSelect::singleton().Update();
+        THGuiPrac::singleton().Update();
 
         auto& t = TH19Tools::singleton();
         if (t.allow) {
@@ -578,8 +666,8 @@ namespace TH19 {
             }
             t.Update();
         }
-        
-        GameGuiEnd(UpdateAdvOptWindow() || p.IsOpen() || t.IsOpen());
+
+        GameGuiEnd(UpdateAdvOptWindow() || THVSSelect::singleton().IsOpen() || THGuiPrac::singleton().IsOpen() || t.IsOpen());
     }
 
     EHOOK_DY(th19_render, 0xC8C8D) {
@@ -602,7 +690,7 @@ namespace TH19 {
             return;
         }
 
-        auto& p = THGuiPrac::singleton();
+        auto& p = THVSSelect::singleton();
 
         if (p.IsClosed()) {
             p.Open();
@@ -620,7 +708,7 @@ namespace TH19 {
     }
     EHOOK_DY(th19_vs_mode_exit, 0x1421CB) {
         TH19PracHook::singleton().DisableAllHooks();
-        auto& p = THGuiPrac::singleton();
+        auto& p = THVSSelect::singleton();
         if (p.IsClosed()) {
             return;
         }
@@ -629,12 +717,69 @@ namespace TH19 {
         pCtx->Eip = RVA(0x142204);
     }
 
+    EHOOK_DY(th19_main_menu_confirm, 0x142F7C) {
+        storymode = GetMemContent(pCtx->Esi + 0x2c) == 0;
+    }
+
+    EHOOK_DY(th19_character_select_confirm, 0x14112D) {
+        if (!storymode)
+            return;
+        
+        auto& g = THGuiPrac::singleton();
+
+        if (g.IsClosed()) {            
+            g.Open();
+            th19_charsel_disable_movement.Enable();
+
+            pCtx->Eip = RVA(0x1412AC);
+            return;
+        } else {
+            g.Close();
+            th19_charsel_disable_movement.Disable();
+        }
+    }
+
+    EHOOK_DY(th19_character_select_abort, 0x141239) {
+        auto& g = THGuiPrac::singleton();
+
+        if (g.IsOpen()) {
+            g.Close();
+            pCtx->Eip = RVA(0x141301);
+        }
+    }
+
+    EHOOK_DY(th19_story_force_stage, 0x141568)
+    {
+        Globals& globals = *(Globals*)RVA(GLOBALS);
+        auto& g = THGuiPrac::singleton();
+        if (!storymode || !*g.mMode) {
+            TH19PracHook::singleton().DisableAllHooks();
+            TH19Tools::singleton().allow = false;
+            TH19Tools::singleton().Close();
+    
+            return;
+        }
+
+        // Globals::
+        globals.story_stage = *g.mStage + 1;
+        
+        for (const auto i : g.mAdditionalCards) {
+            AddCard(GetMemContent(RVA(P1_ABILITYMANAGER)), i - 1, 1);
+        }
+
+        TH19PracHook::singleton().EnableAllHooks();
+        TH19Tools::singleton().allow = true;
+        TH19Tools::singleton().Open();
+
+    }
+
     HOOKSET_ENDDEF()
 
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
         th19_vs_mode_disable_movement.Setup();
+        th19_charsel_disable_movement.Setup();
 
         // Init
         GameGuiInit(IMPL_WIN32_DX9, RVA(0x208388), RVA(0x209110), RVA(0xA9EE0),
@@ -643,7 +788,7 @@ namespace TH19 {
 
         //// Gui components creation
         //THOverlay::singleton();
-        THGuiPrac::singleton();
+        THVSSelect::singleton();
         TH19Tools::singleton();
         //
         // Hooks

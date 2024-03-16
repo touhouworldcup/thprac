@@ -74,6 +74,7 @@
     <ClInclude Include="src\thprac\thprac_version.h" />
     <ClInclude Include="src\thprac\utils\utils.h" />
     <ClInclude Include="src\thprac\utils\wininternal.h" />
+    <ClInclude Include="src\thprac\thprac_log.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\3rdParties\distorm\src\decoder.c" />
@@ -142,6 +143,7 @@
     <ClCompile Include="src\thprac\thprac_th19.cpp" />
     <ClCompile Include="src\thprac\thprac_utils.cpp" />
     <ClCompile Include="src\thprac\thprac_version.cpp" />
+    <ClCompile Include="src\thprac\thprac_log.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -200,7 +202,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <FixedBaseAddress>false</FixedBaseAddress>
-      <AdditionalDependencies>kernel32.lib;user32.lib;freetype.lib;gdi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;ntdll.lib;user32.lib;freetype.lib;gdi32.lib</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <GenerateDebugInformation>true</GenerateDebugInformation>

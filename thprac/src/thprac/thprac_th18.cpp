@@ -3026,7 +3026,6 @@ namespace TH18 {
     {
         if (THOverlay::singleton().IsOpen() && Gui::KeyboardInputGetRaw(VK_F11) && GetMemContent(ABILITY_SHOP_PTR) == 0) {
             if (uint32_t GAME_THREAD_PTR = GetMemContent(0x4cf2e4)) {
-                AddIndicateCard();
                 *(uint32_t*)GetMemAddr(0x4cf2e4, 0xB0) |= 0x20000;
             }
         }
