@@ -15,15 +15,15 @@ namespace TH08 {
         int32_t mimic;
         float life;
         float bomb;
-        int64_t score;
         float power;
+        int16_t gauge;
+        int64_t score;
         int32_t graze;
         int32_t point;
         int32_t point_total;
         int32_t point_stage;
         int32_t time;
         int32_t value;
-        int16_t gauge;
         int32_t night;
         int32_t familiar;
         int32_t rank;
@@ -50,15 +50,15 @@ namespace TH08 {
             GetJsonValue(frame);
             GetJsonValue(life);
             GetJsonValue(bomb);
-            GetJsonValue(score);
             GetJsonValue(power);
+            GetJsonValue(gauge);
+            GetJsonValue(score);
             GetJsonValue(graze);
             GetJsonValue(point);
             GetJsonValue(point_total);
             GetJsonValue(point_stage);
             GetJsonValue(time);
             GetJsonValue(value);
-            GetJsonValue(gauge);
             GetJsonValue(night);
             GetJsonValue(familiar);
             GetJsonValue(rank);
@@ -85,14 +85,14 @@ namespace TH08 {
 
             AddJsonValueEx(life, (int)life);
             AddJsonValueEx(bomb, (int)bomb);
-            AddJsonValue(score);
             AddJsonValueEx(power, (int)power);
+            AddJsonValue(gauge);
+            AddJsonValue(score);
             AddJsonValue(graze);
             AddJsonValue(point_total);
             AddJsonValue(point_stage);
             AddJsonValue(time);
             AddJsonValue(value);
-            AddJsonValue(gauge);
             AddJsonValue(night);
             AddJsonValue(familiar);
             AddJsonValue(rank);
@@ -106,12 +106,12 @@ namespace TH08 {
     class THGuiPrac : public Gui::GameGuiWnd {
         THGuiPrac() noexcept
         {
-            *mLife = 8;
+            *mLife = 2;
             *mBomb = 8;
             *mPower = 128;
+            mGauge.SetCurrentStep(5000);
             *mMode = 1;
             *mValue = 60000;
-            mGauge.SetCurrentStep(1000);
             *mRank = 12;
 
             SetFade(0.8f, 0.1f);
@@ -133,11 +133,15 @@ namespace TH08 {
                 Open();
                 mDiffculty = (int)(*((int8_t*)0x17ce891));
                 switch (*((int8_t*)0x164d0b1)) {
-                case 3:
+                case 2: // scarlet team
+                    mGauge.SetBound(-10000, 10000);
+                    gaugeType = -1;
+                    break;
+                case 3: // ghost team
                     mGauge.SetBound(-5000, 10000);
                     gaugeType = 1;
                     break;
-                case 10:
+                case 10: // solo youmu
                     mGauge.SetBound(-5000, 5000);
                     gaugeType = 2;
                     break;
@@ -159,8 +163,23 @@ namespace TH08 {
                     gaugeType = 0;
                     break;
                 }
-                if (mGaugeType != gaugeType)
-                    *mGauge = 0;
+                if (mGaugeType != gaugeType) {
+                    switch (gaugeType) {
+                    case -1: // scarlet team
+						*mGauge = 10000;
+						break;
+                    case 1: // ghost team
+						*mGauge = -5000;
+						break;
+                    case 2: // solo youmu
+                        *mGauge = -5000;
+                        break;
+                    default:
+                        *mGauge = 0;
+						break;
+                    }
+                    
+                }
                 mGaugeType = gaugeType;
                 break;
             case 2:
@@ -176,17 +195,17 @@ namespace TH08 {
                 thPracParam.frame = *mFrame;
                 if (SectionHasDlg(thPracParam.section))
                     thPracParam.dlg = *mDlg;
-                thPracParam.score = *mScore;
                 thPracParam.life = (float)*mLife;
                 thPracParam.bomb = (float)*mBomb;
                 thPracParam.power = (float)*mPower;
+                thPracParam.gauge = (int16_t)*mGauge;
+                thPracParam.score = *mScore;
                 thPracParam.graze = *mGraze;
                 thPracParam.point = 0;
                 thPracParam.point_total = *mPointTotal;
                 thPracParam.point_stage = *mPointStage;
                 thPracParam.time = *mTime;
                 thPracParam.value = *mValue;
-                thPracParam.gauge = (int16_t)*mGauge;
                 thPracParam.night = *mNight;
                 thPracParam.familiar = *mFamiliar;
                 thPracParam.rank = *mRank;
@@ -253,20 +272,21 @@ namespace TH08 {
 
                 mLife();
                 mBomb();
+                mPower();
+
+                char temp_str[256];
+                float gauge_f = (float)*mGauge / 100.0f;
+                sprintf_s(temp_str, "%3.2f%%%%", gauge_f);
+                mGauge(temp_str);
+
                 mScore();
                 mScore.RoundDown(10);
-                mPower();
                 mGraze();
                 mPointTotal();
                 mPointStage();
                 mTime();
                 mValue();
                 mValue.RoundDown(10);
-
-                char temp_str[256];
-                float gauge_f = (float)*mGauge / 100.0f;
-                sprintf_s(temp_str, "%3.2f%%%%", gauge_f);
-                mGauge(temp_str);
 
                 auto night = *mNight;
                 if (night < 2)
@@ -403,15 +423,15 @@ namespace TH08 {
         Gui::GuiDrag<int, ImGuiDataType_S32> mFrame { TH_FRAME, 0, INT_MAX };
         Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 8 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mBomb { TH_BOMB, 0, 8 };
-        Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 0, 128 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mGauge { TH08_GAUGE, -10000, 10000, 1, 1000 };
+        Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, INT_MAX, 1, 10000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mPoint { TH_POINT, 0, 9999, 1, 1000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mPointTotal { TH_POINT_TOTAL, 0, 9999, 1, 1000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mPointStage { TH_POINT_STAGE, 0, 9999, 1, 1000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mTime { TH08_TIME, 0, INT_MAX, 1, 1000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH08_VALUE, 0, 9999999, 10, 100000 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mGauge { TH08_GAUGE, -10000, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mFamiliar { TH08_FAMILIAR, 0, 2000, 1, 100 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mNight { TH08_NIGHT, 0, 11, 1, 1 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mRank { TH_BULLET_RANK, 8, 16, 1, 10, 10 };
@@ -419,8 +439,8 @@ namespace TH08 {
 
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_FRAME, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
-            TH_LIFE, TH_BOMB, TH_SCORE, TH_POWER, TH_GRAZE, TH_POINT, TH_POINT_TOTAL, TH_POINT_STAGE,
-            TH08_TIME, TH08_VALUE, TH08_GAUGE, TH08_NIGHT, TH_BULLET_RANK, TH_BULLET_RANKLOCK };
+            TH_LIFE, TH_BOMB, TH_POWER, TH08_GAUGE, TH_SCORE, TH_GRAZE, TH_POINT, TH_POINT_TOTAL, TH_POINT_STAGE,
+            TH08_TIME, TH08_VALUE,  TH08_NIGHT, TH_BULLET_RANK, TH_BULLET_RANKLOCK };
 
         int mChapterSetup[9][2] {
             { 1, 1 },
@@ -2202,6 +2222,9 @@ namespace TH08 {
             float* power = (float*)GetMemAddr(0x160f510, 0x98);
             *power = thPracParam.power;
 
+            int16_t* gauge = (int16_t*)GetMemAddr(0x160f510, 0x22);
+            *gauge = thPracParam.gauge;
+
             int32_t* graze1 = (int32_t*)GetMemAddr(0x160f510, 0x4);
             int32_t* graze2 = (int32_t*)GetMemAddr(0x160f510, 0xc);
             *graze1 = *graze2 = thPracParam.graze;
@@ -2217,9 +2240,6 @@ namespace TH08 {
 
             int32_t* value = (int32_t*)GetMemAddr(0x160f510, 0x24);
             *value = thPracParam.value;
-
-            int16_t* gauge = (int16_t*)GetMemAddr(0x160f510, 0x22);
-            *gauge = thPracParam.gauge;
 
             int8_t* night = (int8_t*)GetMemAddr(0x160f510, 0x28);
             *night = (int8_t)thPracParam.night;
