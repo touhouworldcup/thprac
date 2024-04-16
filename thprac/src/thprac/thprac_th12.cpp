@@ -1055,7 +1055,7 @@ namespace TH12 {
             break;
         case THPrac::TH12::TH12_ST5_MID1:
             if (thPracParam.dlg)
-                ECLJumpEx(ecl, 0x158c0, 0x159d8, 179);
+                ECLJumpEx(ecl, 0x158c0, 0x159d4, 179);
             else {
                 ECLJumpEx(ecl, 0x158c0, 0x159e8, 179);
                 ecl << pair{0xd6ac, (int16_t)0x0} << pair{0xd8b8, (int16_t)0x0};
