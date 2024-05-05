@@ -1438,6 +1438,13 @@ namespace TH12 {
     }
 
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(relay_patch_main, 0x421EA9)
+    {
+        auto& r = THRelayUI::singleton();
+        *(int32_t*)0x4B0C98 = r.lives;
+        *(int32_t*)0x4B0CA0 = r.bombs;
+        r.Close();
+    }
     EHOOK_DY(th12_everlasting_bgm, 0x454960)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
@@ -1552,7 +1559,14 @@ namespace TH12 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+
+        if (Gui::KeyboardInputGetRaw(VK_INSERT)) {
+            THRelayUI::singleton().Open();
+        }
+
+        THRelayUI::singleton().Update();
+
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THRelayUI::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
     }

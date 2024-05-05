@@ -1656,6 +1656,13 @@ namespace TH07 {
     }
 
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(relay_patch_main, 0x42EA41)
+    {
+        auto& r = THRelayUI::singleton();
+        *GetMemAddr<float*>(0x00626278, 0x5C) = r.lives;
+        *GetMemAddr<float*>(0x00626278, 0x68) = r.bombs;
+        r.Close();
+    }
     PATCH_DY(th07_reacquire_input, 0x430f03, "\x00\x00\x00\x00\x74", 5);
     EHOOK_DY(th07_everlasting_bgm, 0x44d2f0)
     {
@@ -1835,7 +1842,14 @@ namespace TH07 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+
+        if (Gui::KeyboardInputGetRaw(VK_INSERT)) {
+            THRelayUI::singleton().Open();
+        }
+
+        THRelayUI::singleton().Update();
+
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THRelayUI::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
     }
