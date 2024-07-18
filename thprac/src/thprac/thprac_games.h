@@ -10,38 +10,6 @@ struct IDirect3DDevice8;
 
 namespace THPrac {
 
-struct THRelayUI : public Gui::GameGuiWnd {
-    int lives = 2;
-    int bombs = 3;
-
-    bool has_bombs = true;
-
-    THRelayUI() noexcept
-    {
-        SetTitle("Relay Resources");
-        SetWndFlag(ImGuiWindowFlags_NoCollapse);
-        SetSizeRel(0.5f, 0.25f);
-        SetFade(0.8f, 0.8f);
-        Open();
-    }
-
-    virtual void OnContentUpdate()
-    {
-        ImGui::SliderInt("Lives", &lives, 0, 32);
-        if (!has_bombs)
-            ImGui::BeginDisabled();
-        ImGui::SliderInt("Bombs", &bombs, 0, 32);
-        if (!has_bombs)
-            ImGui::EndDisabled();
-        ImGui::NewLine();
-        if (ImGui::Button("Close (Press Ins to re-open)")) {
-            Close();
-        }
-    }
-
-    SINGLETON(THRelayUI);
-};
-
 struct Float2 {
     float x;
     float y;

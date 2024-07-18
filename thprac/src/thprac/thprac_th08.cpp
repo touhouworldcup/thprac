@@ -2110,12 +2110,6 @@ namespace TH08 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(relay_patch_main, 0x43AE67) {
-        auto& r = THRelayUI::singleton();
-        *GetMemAddr<float*>(0x160F510, 0x74) = r.lives;
-        *GetMemAddr<float*>(0x160F510, 0x80) = r.bombs;
-        r.Close();
-    }
     EHOOK_ST(th08_familiar, 0x42a55f)
     {
         uint32_t target = *(uint32_t*)(pCtx->Ebp - 8);
@@ -2295,14 +2289,7 @@ namespace TH08 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
-
-        if (Gui::KeyboardInputGetRaw(VK_INSERT)) {
-            THRelayUI::singleton().Open();
-        }
-
-        THRelayUI::singleton().Update();
-
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THRelayUI::singleton().IsOpen();
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
     }

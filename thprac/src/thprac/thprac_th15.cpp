@@ -1743,13 +1743,6 @@ namespace TH15 {
     static bool frameStarted = false;
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(relay_patch_main, 0x43C2D9)
-    {
-        auto& r = THRelayUI::singleton();
-        *(int32_t*)0x4E7450 = r.lives;
-        *(int32_t*)0x4E745C = r.bombs;
-        r.Close();
-    }
     EHOOK_DY(th15_everlasting_bgm, 0x476f10)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
@@ -1858,15 +1851,7 @@ namespace TH15 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
-
-        
-        if (Gui::KeyboardInputGetRaw(VK_INSERT)) {
-            THRelayUI::singleton().Open();
-        }
-
-        THRelayUI::singleton().Update();
-
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THRelayUI::singleton().IsOpen();
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
     EHOOK_DY(th15_render, 0x40170a)

@@ -1494,13 +1494,6 @@ namespace TH13 {
     bool th13ElBgmFlag = false;
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(relay_patch_main, 0x42BC3E)
-    {
-        auto& r = THRelayUI::singleton();
-        *(int32_t*)0x4BE7F4 = r.lives;
-        *(int32_t*)0x4BE800 = r.bombs;
-        r.Close();
-    }
     EHOOK_ST(th13_dump_rep, 0x448d8c)
     {
         auto filePtr = (void*)pCtx->Eax;
@@ -1647,14 +1640,7 @@ namespace TH13 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
-
-        if (Gui::KeyboardInputGetRaw(VK_INSERT)) {
-            THRelayUI::singleton().Open();
-        }
-
-        THRelayUI::singleton().Update();
-
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THRelayUI::singleton().IsOpen();
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         THAdvOptWnd::singleton().FpsUpd();
         GameGuiEnd(drawCursor);

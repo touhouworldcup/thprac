@@ -2143,13 +2143,6 @@ namespace TH10 {
     }
     PATCH_ST(th10_real_bullet_sprite, 0x406e03, "\x0F\x84\x13\x05\x00\x00", 6);
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(relay_patch_main, 0x417976)
-    {
-        auto& r = THRelayUI::singleton();
-        *(int32_t*)0x474C70 = r.lives;
-        r.Close();
-    }
-
     EHOOK_DY(th10_everlasting_bgm, 0x43e460)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
@@ -2284,14 +2277,7 @@ namespace TH10 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
-
-        if (Gui::KeyboardInputGetRaw(VK_INSERT)) {
-            THRelayUI::singleton().Open();
-        }
-
-        THRelayUI::singleton().Update();
-
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THRelayUI::singleton().IsOpen();
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
     }
@@ -2320,7 +2306,6 @@ namespace TH10 {
 
         // Reset thPracParam
         thPracParam.Reset();
-        THRelayUI::singleton().has_bombs = false;
     }
     static __declspec(noinline) void THInitHookDisable()
     {

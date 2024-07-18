@@ -1855,14 +1855,6 @@ namespace TH06 {
         pCtx->Eip = 0x42d839;
     }
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(relay_patch_main, 0x436DFB)
-    {
-        auto& r = THRelayUI::singleton();
-        *(char*)0x69D4BA = r.lives;
-        *(char*)0x69D4BB = r.bombs;
-        r.Close();
-    }
-        
     PATCH_DY(th06_reacquire_input, 0x41dc58, "\x00\x00\x00\x00\x74", 5);
     EHOOK_DY(th06_activateapp, 0x420D96)
     {
@@ -2066,14 +2058,7 @@ namespace TH06 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
 
-        if (Gui::KeyboardInputGetRaw(VK_INSERT)) {
-            THRelayUI::singleton().Open();
-        }
-
-        THRelayUI::singleton().Update();
-
-
-        GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen() || THRelayUI::singleton().IsOpen());
+        GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
     }
     EHOOK_DY(th06_render, 0x41cb6d)
     {

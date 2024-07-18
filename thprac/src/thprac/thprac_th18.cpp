@@ -2789,13 +2789,6 @@ namespace TH18 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(relay_patch_main, 0x442978)
-    {
-        auto& r = THRelayUI::singleton();
-        *(int32_t*)0x4CCD48 = r.lives;
-        *(int32_t*)0x4CCD58 = r.bombs;
-        r.Close();
-    }
     EHOOK_DY(th18_everlasting_bgm, 0x477a50)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
@@ -3044,14 +3037,7 @@ namespace TH18 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
-
-        if (Gui::KeyboardInputGetRaw(VK_INSERT)) {
-            THRelayUI::singleton().Open();
-        }
-
-        THRelayUI::singleton().Update();
-
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen() || THRelayUI::singleton().IsOpen();
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
     EHOOK_DY(th18_render, 0x401510)

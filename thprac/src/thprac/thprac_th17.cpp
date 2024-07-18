@@ -1783,13 +1783,6 @@ namespace TH17 {
 #define TH17AddGoast(goast_id) asm_call<0x40f980, Thiscall>(GetMemContent(0x4b7684), goast_id)
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(relay_patch_main, 0x430474)
-    {
-        auto& r = THRelayUI::singleton();
-        *(int32_t*)0x4B5A40 = r.lives;
-        *(int32_t*)0x4B5A4C = r.bombs;
-        r.Close();
-    }
     EHOOK_DY(th17_window_mousedown, 0x46198b) {
         auto& adv_opt = THAdvOptWnd::singleton();
 
@@ -2006,14 +1999,7 @@ namespace TH17 {
         THGuiPrac::singleton().Update();
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
-
-        if (Gui::KeyboardInputGetRaw(VK_INSERT)) {
-            THRelayUI::singleton().Open();
-        }
-
-        THRelayUI::singleton().Update();
-
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen() || THRelayUI::singleton().IsOpen();
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
     EHOOK_DY(th17_render, 0x4014d0)
