@@ -818,9 +818,13 @@ namespace TH19 {
 }
 
 
-void TH19Init()
+void TH19_v1_00a_Init()
 {    
     ingame_image_base = (uintptr_t)GetModuleHandleW(NULL);
     TH19::THInitHook::singleton().EnableAllHooks();
+}
+
+void TH19_v1_10c_Init() {
+    MessageBoxW(NULL, L"TODO: add support for v1.10c", L"", MB_ICONINFORMATION);
 }
 }
