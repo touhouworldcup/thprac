@@ -15,6 +15,8 @@ Or: Use the launcher. This video explains how the launcher works.
 ## Compatibility
 thprac officially supports every version of Windows starting with **Windows Vista**. Windows XP may work using [One-Core-API](https://github.com/Skulltrail192/One-Core-API-Binaries), but this is NOT being actively tested.
 
+**Wine** and the Steam Deck are also officially supported. Note that the backspace menu is also specifically coded to work well with the Steam Deck (not tested though cause I don't have a Steam Deck)
+
 # Features
 ## Enchanced practice mode (supports all main games, Great Fairy Wars and Uwabami Breakers. Does not support Phantasmagoria of Flower View)
 ![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174433923-0a6069e7-d10d-4107-8f0d-f4a8a9d56976.png)
@@ -31,6 +33,8 @@ Thprac will automatically save the options you input into this into any replay s
 
 ## Backspace menu
 In any supported game (except for TH09) you can press BACKSPACE to access the Backspace menu. It will show you options that can be activated with the F keys.
+
+NOTE for Steam Deck users: these options are also **clickable**. This means that you can use your left thumb to tap the options to toggle them. Therefore, you only need to map backspace in Steam Input.
 
 ![TH18](https://user-images.githubusercontent.com/23106652/174434813-73748a66-0f6d-4c6e-9f3a-895a49b93434.png)
 ![TH17](https://user-images.githubusercontent.com/23106652/174434834-6bd93104-1ed2-48ae-a440-9d9cb871ea03.png)
