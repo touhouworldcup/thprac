@@ -12,6 +12,9 @@ Or: Run the game in whatever way you want (be it through thcrap, with vpatch, th
 Or: Use the launcher. This video explains how the launcher works.
 [![A quick and dirty overview of thprac 2.0](https://i.ytimg.com/vi/sRV4PDQceYo/maxresdefault.jpg)](https://www.youtube.com/watch?v=sRV4PDQceYo)
 
+## Compatibility
+thprac officially supports every version of Windows starting with **Windows Vista**. Windows XP may work using [One-Core-API](https://github.com/Skulltrail192/One-Core-API-Binaries), but this is NOT being actively tested.
+
 # Features
 ## Enchanced practice mode (supports all main games, Great Fairy Wars and Uwabami Breakers. Does not support Phantasmagoria of Flower View)
 ![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174433923-0a6069e7-d10d-4107-8f0d-f4a8a9d56976.png)
