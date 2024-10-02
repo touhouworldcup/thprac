@@ -5,8 +5,11 @@
 #include "thprac_gui_impl_dx8.h"
 #include "thprac_gui_impl_dx9.h"
 #include "thprac_utils.h"
+#include "thprac_hook.h"
+#include <dinput.h>
 #include "../3rdParties/d3d8/include/d3d8.h"
 #include <metrohash128.h>
+#include <array>
 
 namespace THPrac {
 #pragma region Gui Wrapper
@@ -15,6 +18,105 @@ int g_gameGuiImpl = -1;
 DWORD* g_gameGuiDevice = nullptr;
 DWORD* g_gameGuiHwnd = nullptr;
 HIMC g_gameIMCCtx = 0;
+
+
+typedef BOOL(WINAPI* GetKeyboardStateType)(PBYTE lpKeyboardState);
+typedef HRESULT (STDMETHODCALLTYPE* GetDeviceStateType)(LPDIRECTINPUTDEVICE8 thiz, DWORD, LPVOID);
+
+GetKeyboardStateType g_realGetKeyboardState;
+GetDeviceStateType g_realGetDeviceState;
+
+#define IS_KEY_DOWN(x) (((x)&0x80)==0x80)
+
+enum Key {
+    K_LEFT,
+    K_RIGHT,
+    K_UP,
+    K_DOWN
+};
+
+BOOL WINAPI GetKeyboardState_SOCD(PBYTE keyBoardState)
+{
+    static BYTE last_keyBoardState[256] = { 0 };
+    static unsigned __int64 cur_time = 0;
+    static unsigned __int64 keyBoard_press_time[4] = { 0 };
+
+    cur_time++;
+    g_realGetKeyboardState(keyBoardState);
+    
+    
+    if (IS_KEY_DOWN(keyBoardState[VK_LEFT]) && !IS_KEY_DOWN(last_keyBoardState[VK_LEFT]))
+        keyBoard_press_time[K_LEFT] = cur_time;
+    if (IS_KEY_DOWN(keyBoardState[VK_RIGHT]) && !IS_KEY_DOWN(last_keyBoardState[VK_RIGHT]))
+        keyBoard_press_time[K_RIGHT] = cur_time;
+    if (IS_KEY_DOWN(keyBoardState[VK_UP]) && !IS_KEY_DOWN(last_keyBoardState[VK_UP]))
+        keyBoard_press_time[K_UP] = cur_time;
+    if (IS_KEY_DOWN(keyBoardState[VK_DOWN]) && !IS_KEY_DOWN(last_keyBoardState[VK_DOWN]))
+        keyBoard_press_time[K_DOWN] = cur_time;
+
+    memcpy_s(last_keyBoardState, 256, keyBoardState, 256);
+    
+    
+    if (IS_KEY_DOWN(keyBoardState[VK_LEFT]) && IS_KEY_DOWN(keyBoardState[VK_RIGHT])){
+        if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]){
+            keyBoardState[VK_RIGHT] = 0;
+        }else{
+            keyBoardState[VK_LEFT] = 0;
+        }
+    }
+    if (IS_KEY_DOWN(keyBoardState[VK_DOWN]) && IS_KEY_DOWN(keyBoardState[VK_UP])) {
+        if (keyBoard_press_time[K_UP] > keyBoard_press_time[K_DOWN]) {
+            keyBoardState[VK_DOWN] = 0;
+        } else {
+            keyBoardState[VK_UP] = 0;
+        }
+    }
+    return true;
+}
+
+HookCtx g_dinput8Hook;
+
+
+HRESULT STDMETHODCALLTYPE GetDeviceState_SOCD(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state)
+{
+    static BYTE last_keyBoardState[256] = { 0 };
+    static unsigned __int64 cur_time = 0;
+    static unsigned __int64 keyBoard_press_time[4] = { 0 };
+
+    BYTE* keyBoardState = (BYTE*)state;
+    cur_time++;
+    HRESULT res=g_realGetDeviceState(thiz, num, state);
+
+
+    if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_LEFTARROW]))
+        keyBoard_press_time[K_LEFT] = cur_time;
+    if (IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_RIGHTARROW]))
+        keyBoard_press_time[K_RIGHT] = cur_time;
+    if (IS_KEY_DOWN(keyBoardState[DIK_UPARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_UPARROW]))
+        keyBoard_press_time[K_UP] = cur_time;
+    if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_DOWNARROW]))
+        keyBoard_press_time[K_DOWN] = cur_time;
+
+    memcpy_s(last_keyBoardState, 256, keyBoardState, 256);
+
+    if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW])) {
+        if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]) {
+            keyBoardState[DIK_RIGHTARROW] = 0;
+        } else {
+            keyBoardState[DIK_LEFTARROW] = 0;
+        }
+    }
+    if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && IS_KEY_DOWN(keyBoardState[DIK_UPARROW])) {
+        if (keyBoard_press_time[K_UP] > keyBoard_press_time[K_DOWN]) {
+            keyBoardState[DIK_DOWNARROW] = 0;
+        } else {
+            keyBoardState[DIK_UPARROW] = 0;
+        }
+    }
+    return res;
+}
+
+
 
 void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3,
@@ -105,6 +207,43 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
                 0, 0, wndRect.right + frameSize, wndRect.bottom + frameSize + captionSize,
                 SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
         }
+
+        bool change_window_when_open;
+        if (LauncherSettingGet("change_window_size_when_open", change_window_when_open) && change_window_when_open && !Gui::ImplWin32CheckFullScreen()) {
+            std::array<int, 2> windowsz = {0, 0};
+            if (LauncherSettingGet("changed_window_size", windowsz)){
+                if (windowsz[0] > 0 && windowsz[1] > 0)
+                {
+                    auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
+                    auto captionSize = GetSystemMetrics(SM_CYCAPTION);
+                    SetWindowPos(*(HWND*)hwnd, HWND_NOTOPMOST,
+                        0, 0, windowsz[0] + frameSize, windowsz[1] + frameSize + captionSize,
+                        SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+                }
+            }
+        }
+
+        bool keyboard_socd;
+        if (LauncherSettingGet("keyboard_SOCD", keyboard_socd) && keyboard_socd){
+            HookIAT(GetModuleHandle(NULL), "user32.dll", "GetKeyboardState", GetKeyboardState_SOCD, (void**) & g_realGetKeyboardState);
+            
+
+            LPDIRECTINPUT8 pdinput;
+            DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**) & pdinput, NULL);
+            if (FAILED(pdinput)){
+            
+            }
+            LPDIRECTINPUTDEVICE8 ddevice;
+            pdinput->CreateDevice(GUID_SysKeyboard, &ddevice, NULL);
+            void* GetDeviceStateAddr = (*(void***)ddevice)[9];
+
+            HookVTable(ddevice, 9, GetDeviceState_SOCD, (void**) & g_realGetDeviceState);
+            
+            pdinput->Release();
+            ddevice->Release();
+        }
+        
+
         int theme;
         if (LauncherSettingGet("theme", theme)) {
             const char* userThemeName;
@@ -201,6 +340,37 @@ void GameGuiRender(game_gui_impl impl)
     GameGuiProgress = 0;
 }
 
+void TryKeepUpRefreshRate(void* address, void* address2)
+{
+    if (LauncherCfgInit(true)) {
+        bool tryRefreshRateChange = false;
+        if (LauncherSettingGet("unlock_refresh_rate", tryRefreshRateChange) && tryRefreshRateChange) {
+            DWORD oldProtect;
+
+            VirtualProtect(address, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
+            *(uint8_t*)address = 0;
+            VirtualProtect(address, 1, oldProtect, &oldProtect);
+
+            VirtualProtect(address2, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
+            *(uint8_t*)address2 = (uint8_t)0xeb;
+            VirtualProtect(address2, 1, oldProtect, &oldProtect);
+        }
+    }
+}
+
+void TryKeepUpRefreshRate(void* address)
+{
+    if (LauncherCfgInit(true)) {
+        bool tryRefreshRateChange = false;
+        if (LauncherSettingGet("unlock_refresh_rate", tryRefreshRateChange) && tryRefreshRateChange) {
+            DWORD oldProtect;
+
+            VirtualProtect(address, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
+            *(uint8_t*)address = 0;
+            VirtualProtect(address, 1, oldProtect, &oldProtect);
+        }
+    }
+}
 #pragma endregion
 
 #pragma region Advanced Options Menu

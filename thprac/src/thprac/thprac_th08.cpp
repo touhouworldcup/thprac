@@ -2353,7 +2353,7 @@ namespace TH08 {
 void TH08Init()
 {
     TH08::THInitHook::singleton().EnableAllHooks();
-
+    TryKeepUpRefreshRate((void*)0x442591);
 
     //VFSHook(VFS_TH08, (void*)0x43e660);
     //VFSAddListener("stg4abg.anm", nullptr, TH08::THStage4ANM);

@@ -2448,5 +2448,6 @@ namespace TH14 {
 void TH14Init()
 {
     TH14::THInitHook::singleton().EnableAllHooks();
+    TryKeepUpRefreshRate((void*)0x46b4b3, (void*)0x46b2de);
 }
 }

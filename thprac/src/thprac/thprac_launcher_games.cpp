@@ -649,6 +649,7 @@ public:
         bool isRelative = false;
         LauncherSettingGet("use_relative_path", isRelative);
         GetModuleFileNameW(GetModuleHandleW(nullptr), currentPath, MAX_PATH);
+        
 
         // TODO: This variable is unused, but its assignment has a side effect.
         [[maybe_unused]] auto& gameGui = THGameGui::singleton();
@@ -660,7 +661,8 @@ public:
                 auto u16Path = utf8_to_utf16(gameInst.path.c_str());
                 if (isRelative) {
                     if (!PathIsRelativeW(u16Path.c_str())) {
-                        if (PathRelativePathToW(cvt, currentPath, FILE_ATTRIBUTE_DIRECTORY, u16Path.c_str(), FILE_ATTRIBUTE_NORMAL)) {
+                        //if (PathRelativePathToW(cvt, currentPath, FILE_ATTRIBUTE_DIRECTORY, u16Path.c_str(), FILE_ATTRIBUTE_NORMAL)) {
+                        if (PathRelativePathToW(cvt, currentPath, 0, u16Path.c_str(), FILE_ATTRIBUTE_NORMAL)) {
                             gameInst.path = utf16_to_utf8(cvt);
                         }
                     }
@@ -1676,6 +1678,13 @@ public:
     static DWORD WINAPI CheckAndLoadVPatch(HANDLE hProcess, std::wstring& dir, const wchar_t* vpatchName)
     {
         auto vpatchPath = dir + vpatchName;
+        bool isRelative = false;
+        LauncherSettingGet("use_relative_path", isRelative);
+        if (isRelative){
+            WCHAR full_path[256];
+            GetFullPathName(vpatchPath.c_str(), 256, full_path, 0);
+            vpatchPath = std::wstring(full_path);
+        }
         if (CheckDLLFunction(vpatchPath.c_str(), "_Initialize@4")) {
             auto vpNameLength = (vpatchPath.size() + 1) * sizeof(wchar_t);
             auto pLoadLibrary = ::LoadLibraryW;
@@ -2253,15 +2262,7 @@ public:
 
         ImGui::TextUnformatted(title);
         ImGui::Columns(columns);
-        for (size_t i = 0; i < elementsof(gGameDefs); i++) {
-            // In case I need multiple gameDefs for the same game cause I, let's say
-            // want to support multiple versions of the same game
-            // 
-            // Yes I'm comparing string pointers and not actual strings. This is OK here.
-            auto& gameRef = gGameDefs[i];
-            if (i != 0 && gameRef.idStr == gGameDefs[i - 1].idStr) {
-                continue;
-            }
+        for (auto& gameRef : gGameDefs) {
             if (gameRef.catagory == catagory) {
                 auto& game = mGames[gameRef.idStr];
                 if (!(i % columns)) {

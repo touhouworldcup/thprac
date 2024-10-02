@@ -14,6 +14,256 @@ namespace THPrac {
 
 void LauncherToolsGuiSwitch(const char* gameStr);
 
+
+class THGuiTestReactionTest {
+
+    double CalTimePeriod(LARGE_INTEGER start, LARGE_INTEGER end)
+    {
+        return ((double)(end.QuadPart - start.QuadPart) / (double)(mTimeFreq.QuadPart)) * 1000.0; // ms
+    }
+
+    enum TestState
+    {
+        NOT_BEGIN,
+        WAIT_TIME,
+        WAIT_TIME_PRESSED,
+        REACT_TIME,
+        TOO_EARLY,
+        SHOW_RES,
+    };
+    enum TestType
+    {
+        PRESS,RELEASE
+    };
+public:
+    THGuiTestReactionTest()
+    {
+        QueryPerformanceFrequency(&mTimeFreq);
+        mTestState = NOT_BEGIN;
+        mTestType = PRESS;
+        mTestTime = 5;
+        mRndSeedGen = GetRndGenerator(1200u, 2800u);
+        // mRndSeedGen = GetRndGenerator(0u, 1u);
+        mShowProgressBar = false;
+        mCurTest = 0;
+    }
+    bool GuiUpdate()
+    {
+        bool isKeyPressed = ImGui::IsKeyDown(37) || ImGui::IsKeyDown(38) || ImGui::IsKeyDown(39) || ImGui::IsKeyDown(40);
+
+        LARGE_INTEGER curTime;
+        QueryPerformanceCounter(&curTime);
+        bool result = true;
+        if (ImGui::Button(S(THPRAC_BACK))) {
+            result = false;
+        }
+        switch (mTestState)
+        {
+        case NOT_BEGIN:
+        {
+            ImGui::SameLine();
+            GuiCenteredText(S(THPRAC_TOOLS_REACTION_TEST));
+            ImGui::Separator();
+
+            ImGui::RadioButton(S(THPRAC_TOOLS_REACTION_TEST_DOWN), (int*)&mTestType, PRESS);
+            ImGui::SameLine();
+            ImGui::RadioButton(S(THPRAC_TOOLS_REACTION_TEST_UP), (int*)&mTestType, RELEASE);
+
+            ImGui::Checkbox(S(THPRAC_TOOLS_REACTION_SHOW_PROC_BAR), &mShowProgressBar);
+
+            ImGui::DragInt(S(THPRAC_TOOLS_REACTION_TEST_TIME), &mTestTime, 1.0f, 1, 20);
+            ImGui::NewLine();
+            if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_BEGIN))) {
+                mCurTestReactionTimeMs = 0;
+                mTestState = WAIT_TIME;
+                mCurTest = 1;
+                mCurTestWaitTimeMs = mRndSeedGen();
+                mCurTestWaitTimeTotMs = mCurTestWaitTimeMs + 0.0001;
+                mResults = {};
+            }
+        } break;
+
+        case TOO_EARLY: {
+            ImGui::Text(S(THPRAC_TOOLS_REACTION_TEST_TOO_EARLY));
+            if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_NEXT_TEST)) || ImGui::IsKeyPressed(90))// press z
+            {
+                mCurTestReactionTimeMs = 0;
+                mTestState = WAIT_TIME;
+                mCurTestWaitTimeMs = mRndSeedGen();
+                mCurTestWaitTimeTotMs = mCurTestWaitTimeMs + 0.0001;
+            }
+        } break;
+        case SHOW_RES: {
+            ImGui::Text("%s(%d): %.1f ms", S(THPRAC_TOOLS_REACTION_TEST_RESULT), mCurTest, mCurTestReactionTimeMs);
+            if (mCurTest == mTestTime)
+            {
+                float avg = 0.0f;
+                float maxv = 60.0f;
+                float minv = 0.0f;
+                for (auto x : mResults) {
+                    avg += fabsf(x);
+                    maxv = std::max(x, maxv);
+                    minv = std::min(x, minv);
+                }
+                avg /= (float)mTestTime;
+                ImGui::Separator();
+                ImGui::Text("%s: %s, %s", S(THPRAC_TOOLS_REACTION_MODE), mTestType == PRESS ? S(THPRAC_TOOLS_REACTION_MODE_DOWN) : S(THPRAC_TOOLS_REACTION_MODE_UP), 
+                    mShowProgressBar ? S(THPRAC_TOOLS_REACTION_MODE_PROGRESSBAR) : S(THPRAC_TOOLS_REACTION_MODE_NORMAL)
+                );
+                ImGui::Text("%s: %.1f ms", S(THPRAC_TOOLS_REACTION_TEST_RESULT_AVG), avg);
+                
+                ImGui::PlotHistogram(S(THPRAC_TOOLS_REACTION_TEST_RESULT), &mResults[0], mTestTime, 0, S(THPRAC_TOOLS_REACTION_TEST_RESULT), minv-10.0f, maxv+20.0f, ImVec2(0, 200.0));
+
+                if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_NEXT_TEST)) || ImGui::IsKeyPressed(90)) {
+                    mTestState = NOT_BEGIN;
+                }
+            }else {
+                if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_NEXT_TEST)) || ImGui::IsKeyPressed(90)) // press z
+                {
+                    mCurTest++;
+                    mCurTestReactionTimeMs = 0;
+                    mTestState = WAIT_TIME;
+                    mCurTestWaitTimeMs = mRndSeedGen();
+                    mCurTestWaitTimeTotMs = mCurTestWaitTimeMs+0.0001;
+                }
+            }
+            
+        } break;
+
+        case REACT_TIME:
+        case WAIT_TIME:
+        case WAIT_TIME_PRESSED:
+        {
+            if (mTestType == PRESS)
+            {
+                if (mTestState == WAIT_TIME)
+                {
+                    mCurTestWaitTimeMs -= CalTimePeriod(mLastTime, curTime);
+                    if (mCurTestWaitTimeMs <= 0) {
+                        mTestState = REACT_TIME;
+                        mCurTestWaitTimeMs = 0;
+                    }
+                }else{
+                    mCurTestWaitTimeMs -= CalTimePeriod(mLastTime, curTime);
+                }
+                ImGui::Text("test %d", mCurTest);
+                
+                if (mTestState == WAIT_TIME) {
+                    if (mShowProgressBar) {
+                        ImGui::ProgressBar(std::clamp(std::fabsf(mCurTestWaitTimeMs / mCurTestWaitTimeTotMs), 0.0f, 1.0f), ImVec2(0, 0), "waiting...");
+                    }
+                    ImGui::ColorButton("color", ImVec4(1, 0.2, 0.2, 1), 0, ImVec2(350.0, 200.0));
+                    if (isKeyPressed){
+                        if (!mShowProgressBar)
+                        {
+                            mTestState = TOO_EARLY;
+                        } else {
+                            //allow negative reaction time
+                            mCurTestReactionTimeMs = -mCurTestWaitTimeMs;
+                            mResults.push_back(mCurTestReactionTimeMs);
+                            mTestState = SHOW_RES;
+                        }
+                    }
+                } else {
+                    if (mShowProgressBar) {
+                        ImGui::ProgressBar(0.0f, ImVec2(0, 0), "press...");
+                    }
+                    ImGui::ColorButton("color", ImVec4(0.2, 1, 0.2, 1), 0, ImVec2(350.0, 200.0));
+                    if (isKeyPressed){
+                        mCurTestReactionTimeMs = -mCurTestWaitTimeMs;
+                        mResults.push_back(mCurTestReactionTimeMs);
+                        mTestState = SHOW_RES;
+                    }
+                }
+
+
+
+
+            }else{
+                if (mTestState == WAIT_TIME_PRESSED) {
+                    mCurTestWaitTimeMs -= CalTimePeriod(mLastTime, curTime);
+                    if (mCurTestWaitTimeMs <= 0) {
+                        mTestState = REACT_TIME;
+                        mCurTestWaitTimeMs = 0;
+                    }
+                } else if (mTestState == REACT_TIME) {
+                    mCurTestWaitTimeMs -= CalTimePeriod(mLastTime, curTime);
+                }
+
+                ImGui::Text("test %d", mCurTest);
+                if (mTestState == WAIT_TIME) {
+                    if (mShowProgressBar) {
+                        ImGui::ProgressBar(1.0f, ImVec2(0, 0), "waiting...");
+                    }
+                    ImGui::ColorButton("color", ImVec4(1, 1, 0.2, 1), 0, ImVec2(350.0, 200.0));
+                    if (isKeyPressed) {
+                        mTestState = WAIT_TIME_PRESSED;
+                    }
+                } else if(mTestState==REACT_TIME){
+                    if (mShowProgressBar) {
+                        ImGui::ProgressBar(0.0f, ImVec2(0, 0), "press...");
+                    }
+                    ImGui::ColorButton("color", ImVec4(0.2, 1, 0.2, 1), 0, ImVec2(350.0, 200.0));
+                    if (!isKeyPressed) {
+                        mCurTestReactionTimeMs = -mCurTestWaitTimeMs;
+                        mResults.push_back(mCurTestReactionTimeMs);
+                        mTestState = SHOW_RES;
+                    }
+                }
+                else if (mTestState == WAIT_TIME_PRESSED){
+                    if (mShowProgressBar) {
+                        ImGui::ProgressBar(std::clamp(std::fabsf(mCurTestWaitTimeMs / mCurTestWaitTimeTotMs), 0.0f, 1.0f), ImVec2(0, 0), "waiting...");
+                    }
+                    ImGui::ColorButton("color", ImVec4(1, 0.2, 0.2, 1), 0, ImVec2(350.0, 200.0));
+                    if (!isKeyPressed) {
+                        if (!mShowProgressBar) {
+                            mTestState = TOO_EARLY;
+                        } else {
+                            // allow negative reaction time
+                            mCurTestReactionTimeMs = -mCurTestWaitTimeMs;
+                            mResults.push_back(mCurTestReactionTimeMs);
+                            mTestState = SHOW_RES;
+                        }
+                    }
+                }
+            }
+        } 
+        break;
+
+        }
+        mLastTime = curTime;
+        if (result == false)
+        {
+            mTestState = NOT_BEGIN;
+            mTestType = PRESS;
+            mTestTime = 5;
+            mRndSeedGen = GetRndGenerator(1200u, 3500u);
+            mShowProgressBar = false;
+            mCurTest = 0;
+            mResults = {};
+        }
+        return result;
+    }
+
+private:
+    LARGE_INTEGER mTimeFreq;
+    LARGE_INTEGER mLastTime;
+    TestState mTestState;
+    TestType mTestType;
+    int mTestTime;
+    bool mShowProgressBar;
+
+    int mCurTest;
+    float mCurTestWaitTimeMs;
+    float mCurTestWaitTimeTotMs;
+    
+    float mCurTestReactionTimeMs;
+    std::function<unsigned int(void)> mRndSeedGen;
+    std::vector<float> mResults;
+};
+
+
+
 class THGuiRollPlayer {
 public:
     THGuiRollPlayer()
@@ -310,6 +560,9 @@ private:
         if (CenteredButton(S(THPRAC_TOOLS_RND_PLAYER), 0.6f, width)) {
             mGuiUpdFunc = [&]() { return mGuiRollPlayer.GuiUpdate(); };
         }
+        if (CenteredButton(S(THPRAC_TOOLS_REACTION_TEST), 0.8f, width)) {
+            mGuiUpdFunc = [&]() { return mGuiReactionTest.GuiUpdate(); };
+        }
         return true;
     }
     void GuiMain()
@@ -322,6 +575,7 @@ private:
     std::function<bool(void)> mGuiUpdFunc = []() { return true; };
     THGuiRollGame mGuiRollGame;
     THGuiRollPlayer mGuiRollPlayer;
+    THGuiTestReactionTest mGuiReactionTest;
 };
 
 bool LauncherToolsGuiUpd()

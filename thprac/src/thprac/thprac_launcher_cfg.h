@@ -22,6 +22,8 @@ bool LauncherSettingGet(const char* name, bool& valueOut);
 bool LauncherSettingGet(const char* name, float& valueOut);
 bool LauncherSettingGet(const char* name, const char*& valueOut);
 bool LauncherSettingGet(const char* name, std::string& valueOut);
+bool LauncherSettingGet(const char* name, std::array<int, 2>& valueOut);
+
 void LauncherSettingSet(const char* name, int& valueIn);
 void LauncherSettingSet(const char* name, bool& valueIn);
 void LauncherSettingSet(const char* name, float& valueIn);

@@ -37,6 +37,84 @@ namespace THPrac {
 
 uintptr_t ingame_image_base = 0;
 
+
+
+#pragma region IAT_hook_VTable_hook
+BOOL HookVTable(void* pInterface, int index, void* hookFunction, void** oldAddress)
+{
+    void** address = &(*(void***)pInterface)[index];
+    if (address == NULL)
+        return FALSE;
+    if (oldAddress != NULL)
+        *oldAddress = *address;
+    DWORD oldProtect, oldProtect2;
+    VirtualProtect(address, sizeof(DWORD), PAGE_READWRITE, &oldProtect);
+    *address = hookFunction;
+    VirtualProtect(address, sizeof(DWORD), oldProtect, &oldProtect2);
+    return TRUE;
+}
+
+BOOL UnhookVTable(void* pInterface, int index, void* oldAddress)
+{
+    return HookVTable(pInterface, index, oldAddress, NULL);
+}
+
+void** FindImportAddress(HANDLE hookModule, LPCSTR moduleName, LPCSTR functionName)
+{
+    uintptr_t hookModuleBase = (uintptr_t)hookModule;
+    PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)hookModuleBase;
+    PIMAGE_NT_HEADERS ntHeader = (PIMAGE_NT_HEADERS)(hookModuleBase + dosHeader->e_lfanew);
+    PIMAGE_IMPORT_DESCRIPTOR importTable = (PIMAGE_IMPORT_DESCRIPTOR)(hookModuleBase
+        + ntHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress);
+    for (; importTable->Characteristics != 0; importTable++) {
+        if (_stricmp((LPCSTR)(hookModuleBase + importTable->Name), moduleName) != 0)
+            continue;
+
+        PIMAGE_THUNK_DATA info = (PIMAGE_THUNK_DATA)(hookModuleBase + importTable->OriginalFirstThunk);
+        void** iat = (void**)(hookModuleBase + importTable->FirstThunk);
+
+        // 遍历导入的函数
+        for (; info->u1.AddressOfData != 0; info++, iat++) {
+            if ((info->u1.Ordinal & IMAGE_ORDINAL_FLAG) == 0) // 是用函数名导入的
+            {
+                PIMAGE_IMPORT_BY_NAME name = (PIMAGE_IMPORT_BY_NAME)(hookModuleBase + info->u1.AddressOfData);
+                if (strcmp((LPCSTR)name->Name, functionName) == 0)
+                    return iat;
+            }
+        }
+        return nullptr;
+    }
+    return nullptr;
+}
+
+bool HookIAT(HANDLE hookModule, LPCSTR moduleName, LPCSTR functionName, void* hookFunction, void** oldAddress)
+{
+    void** address = FindImportAddress(hookModule, moduleName, functionName);
+    if (address == NULL)
+        return false;
+    if (oldAddress != nullptr)
+        *oldAddress = *address;
+    DWORD oldProtect, oldProtect2;
+    VirtualProtect(address, sizeof(DWORD), PAGE_READWRITE, &oldProtect);
+    *address = hookFunction;
+    VirtualProtect(address, sizeof(DWORD), oldProtect, &oldProtect2);
+    return true;
+}
+
+bool UnhookIAT(HANDLE hookModule, LPCSTR moduleName, LPCSTR functionName)
+{
+    if (GetModuleHandleA(moduleName)) {
+        void* oldAddress = GetProcAddress(GetModuleHandleA(moduleName), functionName);
+        if (oldAddress == NULL)
+            return false;
+        return HookIAT(hookModule, moduleName, functionName, oldAddress, NULL);
+    }
+    return false;
+}
+#pragma endregion
+
+
+
 struct VEHHookCtx {
     uint8_t* m_Src = nullptr;
     CallbackFunc* m_Dest = nullptr;

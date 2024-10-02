@@ -398,6 +398,9 @@ namespace TH15 {
         bool mParamStatus = false;
         THPracParam mRepParam;
     };
+    
+    
+    
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
         {
@@ -442,6 +445,7 @@ namespace TH15 {
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mShowReTimes.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -452,6 +456,7 @@ namespace TH15 {
             mTimeLock();
             mAutoBomb();
             mElBgm();
+            mShowReTimes();
         }
         virtual void OnPreUpdate() override
         {
@@ -481,6 +486,89 @@ namespace TH15 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
+        Gui::GuiHotKey mShowReTimes { TH15_RE_TIMES, "F8", VK_F8 };
+    };
+
+    
+    
+    class TH15ReTimes : public Gui::GameGuiWnd {
+        TH15ReTimes() noexcept
+        {
+            SetTitle("Re times");
+            SetFade(0.9f, 0.9f);
+            SetPos(860.0f, 520.0f);
+            SetSize(280.0f, 350.0f);
+            SetWndFlag(
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+        }
+        SINGLETON(TH15ReTimes);
+
+    public:
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            float x_offset_1 = 0.0f;
+            float x_offset_2 = 0.0f;
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.172f;
+                break;
+            case Gui::LOCALE_EN_US:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.16f;
+                break;
+            case Gui::LOCALE_JA_JP:
+                x_offset_1 = 0.18f;
+                x_offset_2 = 0.235f;
+                break;
+            default:
+                break;
+            }
+        }
+
+        virtual void OnContentUpdate() override
+        {
+            // 004E73F0:当前面数?
+            // 004E7594:总re数
+            // 004E75B8:当前章节re数
+            // 004E759C+4*X:从此开始每4字节是stage (X+1)的re数(X为0-6(5?))
+            bool is_in_P_mode = (*(byte*)(0x004E7795)) & 0x1;
+            if (*(DWORD*)(0x004E9BB8) && is_in_P_mode) // pplayer
+            {
+                int cur_stage = *(int*)(0x004E73F0);
+                int tot_re = *(int*)(0x004E7594);
+                int cur_re = *(int*)(0x004E75B8);
+                int* stage_re = (int*)(0x004E759C);
+                ImGui::Text(S(TH15_RE_TIMES_TOTAL), tot_re);
+                ImGui::Text(S(TH15_RE_TIMES_CURRENT), cur_re);
+
+                const char* big_numbers[8] = { "１", "２", "３", "４", "５", "６", "７", "８" };
+                for (int i = 0; i < std::min(7,cur_stage); i++){
+                    ImGui::Text(S(TH15_RE_TIMES_STAGE), big_numbers[i], stage_re[i]);
+                }
+            }else{
+                ImGui::Text("QAQ");
+                ImGui::Text("QAQ");
+                ImGui::Text("QAQ");
+                ImGui::Text("QAQ");
+                ImGui::Text("QAQ");
+                ImGui::Text("QAQ");
+                ImGui::Text("QAQ");
+            }
+        }
+
+        virtual void OnPreUpdate() override
+        {
+            if (*(THOverlay::singleton().mShowReTimes)) {
+                Open();
+            } else {
+                Close();
+            }
+        }
+
+    public:
     };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
@@ -1851,6 +1939,7 @@ namespace TH15 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
+        TH15ReTimes::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
@@ -1872,6 +1961,7 @@ namespace TH15 {
         THGuiPrac::singleton();
         THGuiRep::singleton();
         THOverlay::singleton();
+        TH15ReTimes::singleton();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
@@ -1908,5 +1998,9 @@ namespace TH15 {
 void TH15Init()
 {
     TH15::THInitHook::singleton().EnableAllHooks();
+    TryKeepUpRefreshRate((void*)0x47356c, (void*)0x47333d);
+    if (GetModuleHandleA("vpatch_th15.dll")) {
+        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th15.dll") + 0x6bd9));
+    }
 }
 }

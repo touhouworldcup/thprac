@@ -5,6 +5,19 @@
 #include <vector>
 
 namespace THPrac {
+
+#pragma region IAT_hook_VTableHook
+BOOL HookVTable(void* pInterface, int index, void* hookFunction, void** oldAddress);
+BOOL UnhookVTable(void* pInterface, int index, void* oldAddress);
+bool HookIAT(HANDLE hookModule, LPCSTR moduleName, LPCSTR functionName, void* hookFunction, void** oldAddress);
+bool UnhookIAT(HANDLE hookModule, LPCSTR moduleName, LPCSTR functionName);
+
+#pragma endregion
+
+
+
+
+
 extern uintptr_t ingame_image_base;
 #define RVA(a) ((uintptr_t)a + ingame_image_base)
 typedef void __stdcall CallbackFunc(PCONTEXT);

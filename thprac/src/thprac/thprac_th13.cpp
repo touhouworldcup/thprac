@@ -1699,5 +1699,9 @@ namespace TH13 {
 void TH13Init()
 {
     TH13::THInitHook::singleton().EnableAllHooks();
+    TryKeepUpRefreshRate((void*)0x45dd99);
+    if (GetModuleHandleA("vpatch_th13.dll")) {
+        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th13.dll") + 0x5cc7));
+    }
 }
 }

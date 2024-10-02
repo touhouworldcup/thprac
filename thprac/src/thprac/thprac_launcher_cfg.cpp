@@ -12,6 +12,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <array>
 #include <format>
 #include <cstdarg>
 #include <wininet.h>
@@ -261,6 +262,47 @@ void LauncherSettingSet(const char* name, float& valueIn)
     JsonAddMember(settingsJson, name, valueIn, gCfgJson.GetAllocator());
     LauncherCfgWrite();
 }
+bool LauncherSettingGet(const char* name, std::array<int, 2>& valueOut)
+{
+    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+        auto& settingsJson = gCfgJson["settings"];
+        char name2[256] = { 0 };
+        sprintf_s(name2, "%s_1", name);
+        if (settingsJson.HasMember(name2) && settingsJson[name2].IsInt()) {
+            valueOut[0] = settingsJson[name2].GetInt();
+        } else {
+            return false;
+        }
+        sprintf_s(name2, "%s_2", name);
+        if (settingsJson.HasMember(name2) && settingsJson[name2].IsInt()) {
+            valueOut[1] = settingsJson[name2].GetInt();
+        } else {
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+void LauncherSettingSet(const char* name, std::array<int,2> valueIn)
+{
+    auto& settingsJson = GetCfgSettingsJson();
+    char name2[256] = { 0 };
+    sprintf_s(name2, "%s_1", name);
+    if (settingsJson.HasMember(name2)) {
+        settingsJson.RemoveMember(name2);
+    }
+    JsonAddMember(settingsJson, name2, valueIn[0], gCfgJson.GetAllocator());
+
+
+    sprintf_s(name2, "%s_2", name);
+    if (settingsJson.HasMember(name2)) {
+        settingsJson.RemoveMember(name2);
+    }
+    JsonAddMember(settingsJson, name2, valueIn[1], gCfgJson.GetAllocator());
+    LauncherCfgWrite();
+}
+
 void LauncherSettingSet(const char* name, const char* valueIn) {
     auto& settingsJson = GetCfgSettingsJson();
     if (settingsJson.HasMember(name)) {
@@ -475,6 +517,25 @@ public:
 protected:
     std::string name;
     std::string value;
+};
+
+
+class THCfgInt2 : public THSetting<std::array<int,2>> {
+public:
+    THCfgInt2(const char* _name, std::array<int, 2> _value)
+        : THSetting(_name, _value)
+    {
+    }
+    void Gui(const char* guiTxt, const char* helpTxt = nullptr)
+    {
+        if (ImGui::DragInt2(guiTxt, value.data(),1.0,1,8192)) {
+            LauncherSettingSet(name.c_str(), value);
+        }
+        if (helpTxt) {
+            ImGui::SameLine();
+            GuiHelpMarker(helpTxt);
+        }
+    }
 };
 
 class THCfgCheckboxEx : public THSetting<bool> {
@@ -1737,13 +1798,20 @@ private:
         GuiThcrapSettings();
         ImGui::NewLine();
 
-        ImGui::TextUnformatted(S(THPRAC_GAME_ADJUSTMENTS));
+        //add refreshrate change
+        ImGui::Text(S(THPRAC_GAME_ADJUSTMENTS));
         ImGui::Separator();
+        mCfgUnlockRefreshRate.Gui(S(THPRAC_UNLOCK_REFRESH_RATE), S(THPRAC_UNLOCK_REFRESH_RATE_DESC));
+        
         mResizableWindow.Gui(S(THPRAC_RESIZABLE_WINDOW));
+
+        mWindowSizeChangeWhenOpen.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN));
+        mWindowSize.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE));
+        mEnableKeyboardSOCD.Gui(S(THPRAC_ENABLE_KEYBOARD_SOCD), S(THPRAC_ENABLE_KEYBOARD_SOCD_DESC));
+        
         ImGui::NewLine();
 
         ImGui::TextUnformatted(S(THPRAC_SETTING_LANGUAGE));
-        ImGui::Separator();
         mCfgLanguage.Gui(S(THPRAC_LANGUAGE), (const char*)u8"中文\0English\0日本語\0\0");
         if (mOriginalLanguage != mCfgLanguage.Get()) {
             ImGui::TextUnformatted(th_glossary_str[mCfgLanguage.Get()][THPRAC_LANGUAGE_HINT]);
@@ -1820,9 +1888,16 @@ private:
     THCfgCombo mCfgTheme { "theme", 0, 4 };
     THSetting<bool> mUseRelativePath { "use_relative_path", false };
     THSetting<std::string> mThcrap { "thcrap", "" };
+    THCfgCheckbox mCfgUnlockRefreshRate { "unlock_refresh_rate", false };
     THCfgCheckbox mCfgCheckUpdate { "check_update", true };
 
     THCfgCheckbox mResizableWindow { "resizable_window", false };
+
+    THCfgCheckbox mWindowSizeChangeWhenOpen { "change_window_size_when_open", false };
+    THCfgInt2 mWindowSize { "changed_window_size", {1920,1440} };
+
+    THCfgCheckbox mEnableKeyboardSOCD { "keyboard_SOCD", false };
+
     THCfgCheckbox mReflectiveLaunch { "reflective_launch", false };
     THCfgCombo mExistingGameAction { "existing_game_launch_action", 0, 3 };
     THCfgCheckbox mDontSearchOngoingGame { "dont_search_ongoing_game", false };

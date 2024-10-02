@@ -1894,6 +1894,8 @@ namespace TH07 {
 void TH07Init()
 {
     TH07::THInitHook::singleton().EnableAllHooks();
+    TH07::THInitHook::singleton().EnableAllHooks();
+    TryKeepUpRefreshRate((void*)0x434ca2);
 }
 
 }

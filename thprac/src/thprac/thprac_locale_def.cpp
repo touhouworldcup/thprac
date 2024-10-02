@@ -7,8 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][907]
-{
+const char* th_glossary_str[3][936] {
     {
         "",
         "啤酒",
@@ -917,6 +916,37 @@ const char* th_glossary_str[3][907]
         "未知",
         "最大得点",
         "传送",
+        "显示符卡收率",
+        "详情",
+        "解锁屏幕刷新率",
+        "勾选后，应用thprac会阻止游戏在全屏模式下将屏幕刷新率锁定在60hz。\n在使用高刷新率显示器且关闭垂直同步的情况下，这么做可以稍微改善延迟并减少画面撕裂。\n注：只在使用thprac（或其启动器）启动游戏时有效。对于Steam版游戏和喵玉汉化，请在custom.exe中勾选“每次启动时询问/起動時に毎回訊れる/Ask each startup time”。",
+        "显示判定点",
+        "反应力测试",
+        "按下反应测试(等待变色后按下方向键)",
+        "弹起反应测试(按下方向键后,等待变色时弹起)",
+        "测试次数",
+        "开始测试",
+        "等待红色变绿时弹起或放下方向键",
+        "结果",
+        "按太快了",
+        "再测一次(快捷键z)",
+        "显示等待时间进度条",
+        "按下测试",
+        "弹起测试",
+        "不显示进度条",
+        "显示进度条",
+        "模式",
+        "结果(平均值)",
+
+        "显示无欠重试次数",
+        "第%s面Re数:\t%6d",
+        "总Re数: 　\t%6d",
+        "当前Re数: \t%6d",
+
+        "修改启动时窗口的大小",
+        "窗口大小",
+        "启用键盘SOCD功能",
+        "当同时按下反向方向键时，仅激活最后使用的方向键。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。"
     },
     {
         "",
@@ -1826,6 +1856,36 @@ const char* th_glossary_str[3][907]
         "Unknown",
         "Value",
         "Warp",
+        "Show Spell Capture",
+        "Details",
+        "Unlock monitor refresh rate",
+        "When enabled, applying thprac will prevent the game to lock monitor's refresh rate at 60hz in fullscreen mode.\nThis gives you slightly improved latency and reduced screen tearing when using a high refresh rate monitor and when vertical sync is disabled.\nNote: This only works when using thprac (and its launcher) to open the game. For Steam games, tick \"Ask each startup time/起動時に毎回訊れる\" in custom.exe.",
+        "show hit",
+        "reaction test",
+        "keydown test(wait for color changed then press arrow key)",
+        "keyup test(press arrow key until color changes)",
+        "times for test",
+        "start",
+        "wait for color changes then press or release key",
+        "result",
+        "too early",
+        "next test(hotkey z)",
+        "show wait time progress bar",
+        "press time test",
+        "release time test",
+        "no progress bar",
+        "with progress bar",
+        "mode",
+        "result(avg)",
+        "Show Re Count",
+        "Re Count for Stage %s: %6d",
+        "Total Re Count:   \t%6d",
+        "Current Re Count: \t%6d",
+
+        "change window size when open",
+        "window size",
+        "enable keyboard SOCD",
+        "When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."
     },
     {
         "",
@@ -2735,6 +2795,36 @@ const char* th_glossary_str[3][907]
         "不明",
         "最大得点",
         "ワープ",
+        "Show Spell Capture",
+        "Details",
+        "モニターのリフレッシュレートのロックを解除する",
+        "有効にすると、thpracを適用すると、ゲームがフルスクリーンモードでモニターのリフレッシュレートを60hzにロックできなくなります。\nこれにより、高リフレッシュレートのモニターを使用しているとき、および垂直同期が無効になっているときに、遅延がわずかに改善され、画面のティアリングが減少します。\n注：これは、thprac（およびそのランチャー）を使用してゲームを開く場合にのみ機能します。 Steamゲームの場合は、custom.exeで「起動時に毎回訊れる/Ask each startup time」にチェックを入れてください。",
+        "show hit",
+        "reaction test",
+        "keydown test(wait for color changed then press arrow key)",
+        "keyup test(press arrow key until color changes)",
+        "times for test",
+        "start",
+        "wait for color changes then press or release key",
+        "result",
+        "too early",
+        "next test(hotkey z)",
+        "show wait time progress bar",
+        "press time test",
+        "release time test",
+        "no progress bar",
+        "with progress bar",
+        "mode",
+        "result(avg)",
+        "Show Re Count",
+        "Re Count for Stage %s: %6d",
+        "Total Re Count:   \t%6d",
+        "Current Re Count: \t%6d",
+
+        "change window size when open",
+        "window size",
+        "enable keyboard SOCD",
+        "When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."
     },
 };
 
@@ -23080,3 +23170,4 @@ const wchar_t __thprac_loc_range_ja[2671] {
 };
 
 }
+

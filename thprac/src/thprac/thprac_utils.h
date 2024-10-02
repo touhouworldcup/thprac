@@ -30,6 +30,8 @@
 #include <vector>
 
 namespace THPrac {
+void TryKeepUpRefreshRate(void* address);
+void TryKeepUpRefreshRate(void* address, void* address2);
 
 struct MappedFile {
     HANDLE fileMap = nullptr;

@@ -1,11 +1,222 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 #include "../3rdParties/d3d8/include/d3d8.h"
+#include <fstream>
 
-
+#include <format>
 namespace THPrac {
 
 namespace TH06 {
+    static const char* th06_spells_str[3][65] {
+        { 
+            "月符「月光」",
+            "夜符「夜雀」",
+            "暗符「境界线」",
+            "冰符「冰瀑」",
+            "雹符「冰雹暴风」",
+            "冻符「完美冻结」",
+            "雪符「钻石风暴」",
+            "华符「芳华绚烂」",
+            "华符「卷柏9」",
+            "虹符「彩虹的风铃」",
+            "幻符「华想梦葛」",
+            "彩符「彩雨」",
+            "彩符「彩光乱舞」",
+            "彩符「极彩台风」",
+            "火符「火神之光」",
+            "水符「水精公主」",
+            "木符「风灵角笛」",
+            "土符「慵懒三石塔」",
+            "金符「金属疲劳」",
+            "火符「火神之光 上级」",
+            "木符「风灵角笛 上级」",
+            "土符「慵懒三石塔 上级」",
+            "火符「火神的光辉」",
+            "水符「湖葬」",
+            "木符「翠绿风暴」",
+            "土符「三石塔的震动」",
+            "金符「银龙」",
+            "火&土符「环状熔岩带」",
+            "木&火符「森林大火」",
+            "水&木符「水精灵」",
+            "金&水符「水银之毒」",
+            "土&金符「翡翠巨石」",
+            "奇术「误导」",
+            "奇术「幻惑误导」",
+            "幻在「时钟遗骸」",
+            "幻象「月神之钟」",
+            "女仆秘技「操弄玩偶」",
+            "幻幽「迷幻杰克」",
+            "幻世「世界」",
+            "女仆秘技「杀人玩偶」",
+            "奇术「永恒的温柔」",
+            "天罚「大卫之星」",
+            "冥符「红色的冥界」",
+            "诅咒「弗拉德·特佩斯的诅咒」",
+            "红符「深红射击」",
+            "「红魔法」",
+            "神罚「幼小的恶魔领主」",
+            "狱符「千根针的针山」",
+            "神术「吸血鬼幻想」",
+            "红符「绯红之主」",
+            "「红色的幻想乡」",
+            "月符「沉静的月神」",
+            "日符「皇家烈焰」",
+            "火水木金土符「贤者之石」",
+            "禁忌「红莓陷阱」",
+            "禁忌「莱瓦汀」",
+            "禁忌「四重存在」",
+            "禁忌「笼中鸟」",
+            "禁忌「恋之迷宫」",
+            "禁弹「星弧破碎」",
+            "禁弹「折返射」",
+            "禁弹「刻着过去的钟表」",
+            "秘弹「之后就一个人都没有了吗？」",
+            "QED「495年的波纹」",
+            "收率「估计十一成之魔法阵之阵了又阵」" },
+        { 
+            " Moon Sign \"Moonlight Ray\"",
+            "Night Sign \"Night Bird\"",
+            "Darkness Sign \"Demarcation\"",
+            "Ice Sign \"Icicle Fall\"",
+            "Hail Sign \"Hailstorm\"",
+            "Freeze Sign \"Perfect Freeze\"",
+            "Snow Sign \"Diamond Blizzard\"",
+            "Flower Sign \"Gorgeous Sweet Flower\"",
+            "Flower Sign \"Selaginella 9\"",
+            "Rainbow Sign \"Wind Chime of Colorful Rainbow\"",
+            "Illusion Sign \"Flower Imaginary Dream Vine\"",
+            "Colorful Sign \"Colorful Rain\"",
+            "Colorful Sign \"Colorful Light Chaotic Dance\"",
+            "Colorful Sign \"Extreme Color Typhoon\"",
+            "Fire Sign \"Agni Shine\"",
+            "Water Sign \"Princess Undine\"",
+            "Wood Sign \"Sylphae Horn\"",
+            "Earth Sign \"Rage Trilithon\"",
+            "Metal Sign \"Metal Fatigue\"",
+            "Fire Sign \"Agni Shine High Level\"",
+            "Wood Sign \"Sylphae Horn High Level\"",
+            "Earth Sign \"Rage Trilithon High Level\"",
+            "Fire Sign \"Agni Radiance\"",
+            "Water Sign \"Bury In Lake\"",
+            "Wood Sign \"Green Storm\"",
+            "Earth Sign \"Trilithon Shake\"",
+            "Metal Sign \"Silver Dragon\"",
+            "Fire & Earth Sign \"Lava Cromlech\"",
+            "Wood & Fire Sign \"Forest Blaze\"",
+            "Water & Wood Sign \"Water Elf\"",
+            "Metal & Water Sign \"Mercury Poison\"",
+            "Earth & Metal Sign \"Emerald Megalith\"",
+            "Conjuring \"Misdirection\"",
+            "Conjuring \"Illusional Misdirection\"",
+            "Illusion Existence \"Clock Corpse\"",
+            "Illusion Image \"Luna Clock\"",
+            "Maid Secret Skill \"Puppet Doll\"",
+            "Illusion Phantom \"Jack the Ludo Bile\"",
+            "Illusion World \"The World\"",
+            "Maid Secret Skill \"Killer Doll\"",
+            "Conjuring \"Eternal Meek\"",
+            "Heaven's Punishment \"Star of David\"",
+            "Nether Sign \"Scarlet Netherworld\"",
+            "Curse \"Curse of Vlad Tepes\"",
+            "Scarlet Sign \"Scarlet Shoot\"",
+            "\"Red Magic\"",
+            "Divine Punishment \"Young Demon Lord\"",
+            "Hell Sign \"Mountain of a Thousand Needles\"",
+            "God Art \"Vampire Illusion\"",
+            "Scarlet Sign \"Scarlet Meister\"",
+            "\"Scarlet Gensokyo\"",
+            "Moon Sign \"Silent Selene\"",
+            "Sun Sign \"Royal Flare\"",
+            "Fire Water Wood Metal Earth Sign \"Philosopher's Stone\"",
+            "Taboo \"Cranberry Trap\"",
+            "Taboo \"Lævateinn\"",
+            "Taboo \"Four of a Kind\"",
+            "Taboo \"Kagome, Kagome\"",
+            "Taboo \"Maze of Love\"",
+            "Forbidden Barrage \"Starbow Break\"",
+            "Forbidden Barrage \"Catadioptric\"",
+            "Forbidden Barrage \"Clock that Ticks Away the Past\"",
+            "Secret Barrage \"And Then Will There Be None?\"",
+            "Q.E.D. \"Ripples of 495 Years\"",
+            "Books" },
+        { 
+            "月符「ムーンライトレイ」",
+            "夜符「ナイトバード」",
+            "闇符「ディマーケイション」	",
+            "氷符「アイシクルフォール」	",
+            "雹符「ヘイルストーム」	",
+            "凍符「パーフェクトフリーズ」",
+            "雪符「ダイアモンドブリザード」	",
+            "華符「芳華絢爛」",
+            "華符「セラギネラ９」",
+            "虹符「彩虹の風鈴」	",
+            "幻符「華想夢葛」	",
+            "彩符「彩雨」	",
+            "彩符「彩光乱舞」	",
+            "彩符「極彩颱風」",
+            "火符「アグニシャイン」	",
+            "水符「プリンセスウンディネ」	",
+            "木符「シルフィホルン」",
+            "土符「レイジィトリリトン」",
+            "金符「メタルファティーグ」",
+            "火符「アグニシャイン上級」",
+            "木符「シルフィホルン上級」",
+            "土符「レイジィトリリトン上級」",
+            "火符「アグニレイディアンス」",
+            "水符「ベリーインレイク」",
+            "木符「グリーンストーム」",
+            "土符「トリリトンシェイク」",
+            "金符「シルバードラゴン」",
+            "火＆土符「ラーヴァクロムレク」",
+            "木＆火符「フォレストブレイズ」",
+            "水＆木符「ウォーターエルフ」",
+            "金＆水符「マーキュリポイズン」",
+            "土＆金符「エメラルドメガリス」",
+            "奇術「ミスディレクション」	",
+            "奇術「幻惑ミスディレクション」",
+            "幻在「クロックコープス」",
+            "幻象「ルナクロック」",
+            "メイド秘技「操りドール」",
+            "幻幽「ジャック・ザ・ルドビレ」",
+            "幻世「ザ・ワールド」",
+            "メイド秘技「殺人ドール」",
+            "奇術「エターナルミーク」",
+            "天罰「スターオブダビデ」	",
+            "冥符「紅色の冥界」",
+            "呪詛「ブラド・ツェペシュの呪い」",
+            "紅符「スカーレットシュート」",
+            "「レッドマジック」",
+            "神罰「幼きデーモンロード」",
+            "獄符「千本の針の山」",
+            "神術「吸血鬼幻想」",
+            "紅符「スカーレットマイスタ」",
+            "「紅色の幻想郷」",
+            "月符「サイレントセレナ」",
+            "日符「ロイヤルフレア」",
+            "火水木金土符「賢者の石」",
+            "禁忌「クランベリートラップ」",
+            "禁忌「レーヴァテイン」",
+            "禁忌「フォーオブアカインド」",
+            "禁忌「カゴメカゴメ」",
+            "禁忌「恋の迷路」",
+            "禁弾「スターボウブレイク」",
+            "禁弾「カタディオプトリック」",
+            "禁弾「過去を刻む時計」",
+            "秘弾「そして誰もいなくなるか？」",
+            "ＱＥＤ「４９５年の波紋」",
+            "魔法陣" },
+    };
+    static bool is_spell_used[5][65] {
+        { 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+        { 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+        { 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+        { 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
+    };
+    static bool is_spell_get=true;
+
+
     bool THBGMTest();
     using std::pair;
     struct THPracParam {
@@ -146,6 +357,7 @@ namespace TH06 {
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mShowSpellCapture.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -156,10 +368,11 @@ namespace TH06 {
             mTimeLock();
             mAutoBomb();
             mElBgm();
+            mShowSpellCapture();
         }
         virtual void OnPreUpdate() override
         {
-            if (mMenu(false) && !ImGui::IsAnyItemActive()) {
+            if (mMenu(false) && (!ImGui::IsAnyItemActive() || *mShowSpellCapture)) {
                 if (*mMenu) {
                     Open();
                 } else {
@@ -191,7 +404,388 @@ namespace TH06 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
+        Gui::GuiHotKey mShowSpellCapture { TH06_SHOWSPELLCAPTURE, "F8", VK_F8 };
+   
     };
+
+    
+    class TH06SpellCaptureOverlay : public Gui::GameGuiWnd {
+        TH06SpellCaptureOverlay() noexcept
+        {
+            SetTitle("Spell Capture");
+            SetFade(0.1f, 0.1f);
+            SetPos(420.0f, 245.0f);
+            SetSize(180.0f, 120.0f);
+            SetWndFlag(
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+        }
+        SINGLETON(TH06SpellCaptureOverlay);
+
+    public:
+    protected:
+        Gui::GuiHotKey mDetails { TH06_SHOWSPELLCAPTURE_DETAIL, "F9", VK_F9 };
+
+        struct
+        {
+            int Power = 0;
+            int Bombs = 0;
+            int EndFrame = 0;
+            byte SCB = 0;
+        } doubleKOFix;
+
+        int SC_History_total[65][5][4][3] = { 0 }; // spellid, diff, playertype, [capture/attempt/timeout]
+        int SC_History_current[65][5][4][3] = { 0 };
+        bool last_is_in_spell = false;
+        byte last_spell_id = 0;
+        byte last_diff = 0;
+        byte last_ingame_flag = 16;
+        byte last_player_typea = 0;
+        byte last_player_typeb = 0;
+        int last_cur_face_time = 0;
+        int last_stage = 0;
+        int last_pl_power = 0;
+        int last_pl_bomb = 0;
+        short last_cur_hp = 0;
+        short last_tot_hp = 0;
+        byte last_has_SCB = 0;
+
+        bool power_decreased = false;
+        bool bomb_decreased = false;
+        bool fin_flag = false;
+        bool is_magic_book = false;
+
+        bool detail_open = false;
+
+        int last_spell_id_hist = -1;
+        int last_diff_hist = -1;
+
+        std::vector<std::wstring> g_directory;
+        int g_count_directory = 0;
+        void PushCurrentDirectory(LPCWSTR new_dictionary)
+        {
+            WCHAR buffer[MAX_PATH] = { 0 };
+            GetCurrentDirectoryW(MAX_PATH, buffer);
+            if (g_directory.size() <= g_count_directory)
+                g_directory.push_back(std::wstring(buffer));
+            else
+                g_directory[g_count_directory] = std::wstring(buffer);
+            g_count_directory++;
+
+            ExpandEnvironmentStringsW(new_dictionary, buffer, MAX_PATH);
+            if (GetFileAttributesW(buffer) == INVALID_FILE_ATTRIBUTES) {
+                CreateDirectoryW(buffer, NULL);
+            }
+            SetCurrentDirectoryW(buffer);
+        }
+        void PopCurrentDirectory()
+        {
+            if (!g_directory.empty()) {
+                std::wstring last_dicg_dict = g_directory[g_count_directory - 1];
+                SetCurrentDirectoryW(last_dicg_dict.c_str());
+                g_count_directory--;
+            }
+        }
+
+        void LoadSpell()
+        {
+            PushCurrentDirectory(L"%appdata%\\ShanghaiAlice\\th06");
+            auto fs = ::std::fstream("spell_capture.dat", ::std::ios::in | ::std::ios::binary);
+            if (fs.is_open()) {
+                fs.read((char*)SC_History_total, sizeof(SC_History_total));
+                // for (int i = 0; i < 3; i++) {
+                //     for (int diff = 0; diff <= 4; diff++) {
+                //         for (int spell = 0; spell < 65; spell++) {
+                //             fs.read((char*)(&SC_History_total[spell][diff][i]),4);
+                //         }
+                //     }
+                // }
+            }
+            PopCurrentDirectory();
+        }
+
+        void SaveSpell()
+        {
+            PushCurrentDirectory(L"%appdata%\\ShanghaiAlice\\th06");
+            auto fs = ::std::fstream("spell_capture.dat", ::std::ios::out | ::std::ios::binary);
+            if (fs.is_open()) {
+                fs.write((char*)SC_History_total, sizeof(SC_History_total));
+                // for (int i = 0; i < 3; i++) {
+                //     for (int diff = 0; diff <= 4; diff++) {
+                //         for (int spell = 0; spell < 65; spell++) {
+                //             fs.write((const char*)(& SC_History_total[spell][diff][i]),4);
+                //         }
+                //     }
+                // }
+            }
+            PopCurrentDirectory();
+        }
+
+        virtual void OnLocaleChange() override
+        {
+            float x_offset_1 = 0.0f;
+            float x_offset_2 = 0.0f;
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.172f;
+                break;
+            case Gui::LOCALE_EN_US:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.16f;
+                break;
+            case Gui::LOCALE_JA_JP:
+                x_offset_1 = 0.18f;
+                x_offset_2 = 0.235f;
+                break;
+            default:
+                break;
+            }
+            mDetails.SetTextOffsetRel(x_offset_1, x_offset_2);
+        }
+
+        virtual void OnContentUpdate() override
+        {
+            int spell_id = last_spell_id;
+            if (is_magic_book)
+                spell_id = 64;
+            if (spell_id != -1 && last_ingame_flag > 0 && (last_is_in_spell || is_magic_book)) {
+                byte last_player_type = (last_player_typea << 1) | last_player_typeb;
+                ImGui::Text("%s", th06_spells_str[Gui::LocaleGet()][spell_id]);
+                ImGui::Text("%d/%d(%.1f%%); %d",
+                    SC_History_total[spell_id][last_diff][last_player_type][0],
+                    SC_History_total[spell_id][last_diff][last_player_type][1],
+                    (float)(SC_History_total[spell_id][last_diff][last_player_type][0]) / std::fmax(1.0f, SC_History_total[spell_id][last_diff][last_player_type][1]) * 100.0f,
+                    SC_History_total[spell_id][last_diff][last_player_type][2]);
+                ImGui::Text("%d/%d(%.1f%%); %d",
+                    SC_History_current[spell_id][last_diff][last_player_type][0],
+                    SC_History_current[spell_id][last_diff][last_player_type][1],
+                    (float)(SC_History_current[spell_id][last_diff][last_player_type][0]) / std::fmax(1.0f, SC_History_current[spell_id][last_diff][last_player_type][1]) * 100.0f,
+                    SC_History_current[spell_id][last_diff][last_player_type][2]);
+            } else {
+                ImGui::Text("OvO");
+                ImGui::Text("OvO");
+                ImGui::Text("OvO");
+            }
+            mDetails();
+        }
+        void ResetSpell()
+        {
+            memset(SC_History_current, 0, sizeof(SC_History_current));
+        }
+        void AddAttempt(int spell_id, byte diff, byte player_type)
+        {
+            is_spell_get = true;
+            SC_History_total[spell_id][diff][player_type][1]++;
+            SC_History_current[spell_id][diff][player_type][1]++;
+            SaveSpell();
+        }
+        void AddCapture(int spell_id, byte diff, byte player_type)
+        {
+            SC_History_total[spell_id][diff][player_type][0]++;
+            SC_History_current[spell_id][diff][player_type][0]++;
+            SaveSpell();
+        }
+        void AddTimeOut(int spell_id, byte diff, byte player_type)
+        {
+            SC_History_total[spell_id][diff][player_type][2]++;
+            SC_History_current[spell_id][diff][player_type][2]++;
+            SaveSpell();
+        }
+        virtual void OnPreUpdate() override
+        {
+
+            bool cur_is_in_spell = *(bool*)(0x5A5F90);
+            byte cur_spell_id = *(byte*)(0x5A5F98);
+            byte cur_ingame_flag = *(byte*)(0x69BC8C);
+            byte cur_diff = *(byte*)(0x69BCB0);
+            byte cur_player_typea = *(byte*)(0x69D4BD);
+            byte cur_player_typeb = *(byte*)(0x69D4BE);
+            int cur_cur_face_time = *(int*)(0x69BC08);
+            int cur_stage = *(int*)(0x69D6D4);
+            int cur_pl_power = *(int*)(0x69D4B0);
+            int cur_pl_bomb = *(int*)(0x69D4BB);
+            short cur_cur_hp = *(short*)(0x4B957C);
+            short cur_tot_hp = *(short*)(0x4B9580);
+            byte cur_has_SCB = *(byte*)(0x5A5F8C);
+
+            byte is_rep = *(byte*)(0x69BCBC);
+            int time_sec = *(int*)(0x69BC48);
+
+            byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
+            // is_rep = false;
+            if (is_rep == 0) {
+                if (cur_pl_power < last_pl_power) {
+                    power_decreased = true;
+                }
+                if (cur_pl_bomb < last_pl_bomb) {
+                    bomb_decreased = true;
+                }
+                if (cur_stage == 4) {
+                    if (last_cur_hp < 3500 && cur_cur_hp == 3500 && last_tot_hp < 3500 && cur_tot_hp == 3500) // 第一本魔法书的血量
+                    {
+                        AddAttempt(64, cur_diff, cur_player_type);
+                        power_decreased = false;
+                        bomb_decreased = false;
+                        fin_flag = false;
+                        is_magic_book = true;
+                    }
+                    if (is_magic_book && (time_sec == 39 || time_sec == 38)  && cur_ingame_flag > 0) { // 见到小谔魔
+                        if (!fin_flag) {
+                            doubleKOFix.Power = last_pl_power;
+                            doubleKOFix.Bombs = last_pl_bomb;
+                            doubleKOFix.EndFrame = cur_cur_face_time;
+                            fin_flag = true;
+                        }
+                        if (fin_flag && cur_cur_face_time - doubleKOFix.EndFrame >= 8) {
+                            if (cur_pl_power < doubleKOFix.Power) {
+                                power_decreased = true;
+                            }
+                            if (cur_pl_bomb < doubleKOFix.Bombs) {
+                                bomb_decreased = true;
+                            }
+                            if (!power_decreased && !bomb_decreased && is_spell_get==true) {
+                                AddCapture(64, cur_diff, cur_player_type);
+                            }
+                            fin_flag = false;
+                            is_magic_book = false;
+                        }
+                    }
+                    if (((last_ingame_flag > 0 && cur_ingame_flag == 0) && is_magic_book)) {
+                        is_magic_book = false;
+                        fin_flag = false;
+                    }
+                }
+                if ((last_is_in_spell == 1 && cur_is_in_spell == 0 && cur_ingame_flag > 0) || (last_is_in_spell == 1 && cur_is_in_spell == 2 && cur_ingame_flag > 0) || (last_is_in_spell == 1 && cur_is_in_spell == 1 && cur_ingame_flag > 0 && (last_spell_id != cur_spell_id && cur_spell_id != 0 && last_spell_id != 0))) {
+                    if (!fin_flag) {
+                        doubleKOFix.Power = last_pl_power;
+                        doubleKOFix.Bombs = last_pl_bomb;
+                        doubleKOFix.EndFrame = cur_cur_face_time;
+                        fin_flag = true;
+                        doubleKOFix.SCB = last_has_SCB;
+                    }
+                } else if ((last_is_in_spell == 1 && last_ingame_flag > 0 && cur_ingame_flag == 0) || ((last_ingame_flag > 0 && cur_ingame_flag == 0) && fin_flag)) {
+                    fin_flag = false;
+                }
+                if (fin_flag && ((cur_cur_face_time - doubleKOFix.EndFrame >= 8) || (last_spell_id != cur_spell_id && cur_spell_id != 0 && last_spell_id != 0))) {
+                    if (cur_pl_power < doubleKOFix.Power) {
+                        power_decreased = true;
+                    }
+                    if (cur_pl_bomb < doubleKOFix.Bombs) {
+                        bomb_decreased = true;
+                    }
+                    if (doubleKOFix.SCB == 1 && last_has_SCB == 1 && cur_ingame_flag > 0 && is_spell_get == true) {
+                        AddCapture(last_spell_id, cur_diff, cur_player_type);
+                    }
+                    if (last_has_SCB == 0 && cur_ingame_flag > 0 && !power_decreased && !bomb_decreased) {
+                        AddTimeOut(last_spell_id, cur_diff, cur_player_type);
+                    }
+                    fin_flag = false;
+                }
+
+                if ((last_is_in_spell == 0 && cur_is_in_spell == 1) || (last_spell_id != cur_spell_id && cur_spell_id != 0 && last_spell_id != 0)) {
+                    AddAttempt(cur_spell_id, cur_diff, cur_player_type);
+                    power_decreased = false;
+                    bomb_decreased = false;
+                    fin_flag = false;
+                }
+            }
+            last_is_in_spell = cur_is_in_spell;
+            last_spell_id = cur_spell_id;
+            last_ingame_flag = cur_ingame_flag;
+            last_diff = cur_diff;
+            last_player_typea = cur_player_typea;
+            last_player_typeb = cur_player_typeb;
+            last_diff = cur_diff;
+            last_cur_face_time = cur_cur_face_time;
+            last_stage = cur_stage;
+            last_pl_power = cur_pl_power;
+            last_pl_bomb = cur_pl_bomb;
+            last_cur_hp = cur_cur_hp;
+            last_tot_hp = cur_tot_hp;
+            last_has_SCB = cur_has_SCB;
+            if (*THOverlay::singleton().mShowSpellCapture) {
+                Open();
+            } else {
+                Close();
+                *((int32_t*)0x6c6eb0) = 3;
+            }
+
+            if (*THOverlay::singleton().mShowSpellCapture && *mDetails) {
+                detail_open = true;
+                if (ImGui::Begin("Details", &detail_open,
+                        ImGuiWindowFlags_NoMove)) {
+                    mDetails.Toggle(detail_open);
+                    *((int32_t*)0x6c6eb0) = 3;
+                }
+                ImGui::SetWindowPos("Details", ImVec2(10.0f, 10.0f));
+                ImGui::SetWindowSize("Details", ImVec2(620.0f, 460.0f));
+                ImGui::BeginTabBar("Detail Spell");
+                const char* tabs_diff[5] = { "easy", "normal", "hard", "lunatic", "extra" };
+                for (int diff = 0; diff < 5; diff++) {
+                    if (ImGui::BeginTabItem(tabs_diff[diff])) {
+                        ImGui::BeginTabBar("Player Type");
+                        const char* tabs_player[4] = { "Reimu A", "Reimu B", "Marisa A", "Marisa B" };
+                        for (int pl = 0; pl < 4; pl++) {
+                            if (ImGui::BeginTabItem(tabs_player[pl])) {
+                                ImGui::Columns(5, 0, true, true);
+                                ImGui::Text("spell name");
+                                ImGui::NextColumn();
+                                ImGui::Text("capture/total");
+                                ImGui::NextColumn();
+                                ImGui::Text("timeout");
+                                ImGui::NextColumn();
+                                ImGui::Text("capture/total(cur)");
+                                ImGui::NextColumn();
+                                ImGui::Text("timeout(cur)");
+                                ImGui::NextColumn();
+                                for (int spell = 0; spell < 65; spell++) {
+                                    if (is_spell_used[diff][spell]) {
+                                        ImGui::Text("%s", th06_spells_str[Gui::LocaleGet()][spell]);
+                                        ImGui::NextColumn();
+
+                                        ImGui::Text("%d/%d(%.1f%%)",
+                                            SC_History_total[spell][diff][pl][0],
+                                            SC_History_total[spell][diff][pl][1],
+                                            (float)(SC_History_total[spell][diff][pl][0]) / std::fmax(1.0f, SC_History_total[spell][diff][pl][1]) * 100);
+                                        ImGui::NextColumn();
+
+                                        ImGui::Text("%d", SC_History_total[spell][diff][pl][2]);
+                                        ImGui::NextColumn();
+
+                                        ImGui::Text("%d/%d(%.1f%%)",
+                                            SC_History_current[spell][diff][pl][0],
+                                            SC_History_current[spell][diff][pl][1],
+                                            (float)(SC_History_current[spell][diff][pl][0]) / std::fmax(1.0f, SC_History_current[spell][diff][pl][1]) * 100);
+                                        ImGui::NextColumn();
+
+                                        ImGui::Text("%d", SC_History_current[spell][diff][pl][2]);
+                                        ImGui::NextColumn();
+                                    }
+                                }
+                                ImGui::Columns(1);
+                                ImGui::EndTabItem();
+                            }
+                        }
+                        ImGui::EndTabBar();
+                        ImGui::EndTabItem();
+                    }
+                }
+                ImGui::EndTabBar();
+                ImGui::End();
+            }
+        }
+
+    public:
+        void InitSpell()
+        {
+            LoadSpell();
+        }
+    };
+
+
+
+
     class THGuiPrac : public Gui::GameGuiWnd {
         THGuiPrac() noexcept
         {
@@ -490,6 +1084,7 @@ namespace TH06 {
         int mDiffculty = 0;
         int mShotType = 0;
     };
+    
     class THPauseMenu : public Gui::GameGuiWnd {
         THPauseMenu() noexcept
         {
@@ -2057,7 +2652,7 @@ namespace TH06 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
-
+        TH06SpellCaptureOverlay::singleton().Update();
         GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
     }
     EHOOK_DY(th06_render, 0x41cb6d)
@@ -2066,6 +2661,11 @@ namespace TH06 {
         if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
             THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);
     }
+    EHOOK_DY(spellcard_get_failed,0x4277C3)
+    {
+        is_spell_get = false;
+    }
+
     HOOKSET_ENDDEF()
 
     HOOKSET_DEFINE(THInitHook)
@@ -2081,6 +2681,8 @@ namespace TH06 {
         THPauseMenu::singleton();
         THGuiRep::singleton();
         THOverlay::singleton();
+        TH06SpellCaptureOverlay::singleton();
+        TH06SpellCaptureOverlay::singleton().InitSpell();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
@@ -2106,10 +2708,12 @@ namespace TH06 {
     }
     HOOKSET_ENDDEF()
 }
-
+#include <d3d9types.h>
 void TH06Init()
 {
     TH06::THInitHook::singleton().EnableAllHooks();
+    TryKeepUpRefreshRate((void*)0x420f59);
 }
+
 
 }

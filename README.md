@@ -1,3 +1,21 @@
+## This is a branch of 2.2.1.8 which added more features(which might be buggy though), changes are:
+- re-add unlock monitor refresh rate to thprac
+- added a spellcard capture rate monitor for EoSD (copyed from others' project) (use backspace and F8/F9 to show)
+- added a window resize option when open game (in settings - Game adjustments)
+- fix bugs for using local data directory
+- add a reaction test in Tools tabbar
+- added retry time monitor for LoLK
+- add SOCD option for keyboard (in settings - Game adjustments), since some keyboard already has this function, I think it's ok to use when playing TH games
+
+## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
+- 重新把解锁刷新率加回来了
+- 红魔乡收率显示 (进入 backspace 界面后按 F8/F9 )
+- 可以在游戏开始前修改窗口大小
+- 修复使用本地目录的一个八哥
+- 加了个反应力测试功能(在工具界面)
+- 给绀珠传加入了无欠模式的Re数显示
+- 内置键盘SOCD功能, 考虑到部分高端键盘已经有这个功能了所以我觉得加入了应该也无所谓(吧大概
+
 ## [简体中文](/README_CN.md)
 # thprac
 A tool for practicing Touhou Shmups

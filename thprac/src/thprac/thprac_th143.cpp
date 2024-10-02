@@ -257,5 +257,6 @@ namespace TH143 {
 void TH143Init()
 {
     TH143::THInitHook::singleton().EnableAllHooks();
+    TryKeepUpRefreshRate((void*)0x46fdbc, (void*)0x46fb8d);
 }
 }

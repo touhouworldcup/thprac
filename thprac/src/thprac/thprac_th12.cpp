@@ -1610,5 +1610,9 @@ namespace TH12 {
 void TH12Init()
 {
     TH12::THInitHook::singleton().EnableAllHooks();
+    TryKeepUpRefreshRate((void*)0x450dcc);
+    if (GetModuleHandleA("vpatch_th12.dll")) {
+        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th12.dll") + 0x54ce));
+    }
 }
 }
