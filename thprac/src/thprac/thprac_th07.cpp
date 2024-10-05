@@ -497,6 +497,7 @@ namespace TH07 {
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mInGameInfo.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -507,6 +508,7 @@ namespace TH07 {
             mTimeLock();
             mAutoBomb();
             mElBgm();
+            mInGameInfo();
         }
         virtual void OnPreUpdate() override
         {
@@ -540,8 +542,112 @@ namespace TH07 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
+        Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
 
+    class TH07InGameInfo : public Gui::GameGuiWnd {
+
+        TH07InGameInfo() noexcept
+        {
+            SetTitle("igi");
+            SetFade(0.9f, 0.9f);
+            SetPos(-10000.0f, -10000.0f);
+            SetSize(280.0f, 350.0f);
+            SetWndFlag(
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+        }
+        SINGLETON(TH07InGameInfo);
+
+    public:
+        int32_t mMissCount;
+        int32_t mBombCount;
+        int32_t mBorderBreakCount;
+        int32_t mCherry;
+        int32_t mCherryPlus;
+        int32_t mCherryMax;
+        int32_t mCherryBase;
+
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            float x_offset_1 = 0.0f;
+            float x_offset_2 = 0.0f;
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.172f;
+                break;
+            case Gui::LOCALE_EN_US:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.16f;
+                break;
+            case Gui::LOCALE_JA_JP:
+                x_offset_1 = 0.18f;
+                x_offset_2 = 0.235f;
+                break;
+            default:
+                break;
+            }
+        }
+
+        virtual void OnContentUpdate() override
+        {
+            if (!*(int8_t*)(0x0062F8C7)) {
+                SetPos(-10000.0f, -10000.0f); // fly~
+                return;
+            }
+            {
+                SetPos(450.0f, 193.0f);
+                SetSize(170.0f, 140.0f);
+
+                DWORD p = *(DWORD*)(0x00626278);
+                mCherryBase = *(int32_t*)(p+0x88);
+                mMissCount = *(float*)(p+0x50);
+                mBombCount = *(float*)(p+0x6C);
+
+                mCherry = *(int32_t*)(0x0062F888) - mCherryBase;
+                mCherryMax = *(int32_t*)(0x0062F88C) - mCherryBase;
+                mCherryPlus = *(int32_t*)(0x0062F890) - mCherryBase;
+
+                ImGui::Columns(2);
+                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mMissCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mBombCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_BORDER_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mBorderBreakCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_CHERRY));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mCherry);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_CHERRY_PLUS));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mCherryPlus);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_CHERRY_MAX));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mCherryMax);
+            }
+        }
+
+        virtual void OnPreUpdate() override
+        {
+            if (*(THOverlay::singleton().mInGameInfo)) {
+                Open();
+            } else {
+                Close();
+            }
+        }
+
+    public:
+    };
     class THAdvOptWnd : public Gui::PPGuiWnd {
         EHOOK_ST(th07_all_clear_bonus_1, 0x42b3d2)
         {
@@ -1835,6 +1941,7 @@ namespace TH07 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
+        TH07InGameInfo::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
@@ -1859,6 +1966,7 @@ namespace TH07 {
         THGuiPrac::singleton();
         THGuiRep::singleton();
         THOverlay::singleton();
+        TH07InGameInfo::singleton();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
@@ -1888,6 +1996,19 @@ namespace TH07 {
         THGuiCreate();
         THInitHookDisable();
     }
+#pragma region igi
+    EHOOK_DY(th07_enter_game, 0x42EB08) // set inner misscount to 0
+    {
+        TH07InGameInfo::singleton().mBombCount = 0;
+        TH07InGameInfo::singleton().mMissCount = 0;
+        TH07InGameInfo::singleton().mBorderBreakCount = 0;
+    }
+    EHOOK_DY(th07_border_break, 0x441DA4)
+    {
+        TH07InGameInfo::singleton().mBorderBreakCount++;
+    }
+
+#pragma endregion
     HOOKSET_ENDDEF()
 }
 

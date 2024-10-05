@@ -508,6 +508,7 @@ namespace TH17 {
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mInGameInfo.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -520,6 +521,7 @@ namespace TH17 {
             mInfRoaring();
             mNoGoast();
             mElBgm();
+            mInGameInfo();
         }
         virtual void OnPreUpdate() override
         {
@@ -553,7 +555,114 @@ namespace TH17 {
         Gui::GuiHotKey mNoGoast { TH17_NO_GOAST, "F8", VK_F8, {
             new HookCtx(0x4347af, "\xe9\x03\x01\x00\x00", 5) } };
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
+        Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F10", VK_F10 };
     };
+
+    
+    class TH17InGameInfo : public Gui::GameGuiWnd {
+        TH17InGameInfo() noexcept
+        {
+            SetTitle("igi");
+            SetFade(0.9f, 0.9f);
+            SetPos(-10000.0f, -10000.0f);
+            SetSize(280.0f, 350.0f);
+            SetWndFlag(
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+        }
+        SINGLETON(TH17InGameInfo);
+
+    public:
+        int32_t mMissCount;
+        int32_t mBombCount;
+        int32_t mRoarBreakCount;
+        int32_t mRoarCount;
+        int32_t mSpecialGoastCount;
+        int32_t mWolfCount;
+        int32_t mOtterCount;
+        int32_t mEagerCount;
+
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            float x_offset_1 = 0.0f;
+            float x_offset_2 = 0.0f;
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.172f;
+                break;
+            case Gui::LOCALE_EN_US:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.16f;
+                break;
+            case Gui::LOCALE_JA_JP:
+                x_offset_1 = 0.18f;
+                x_offset_2 = 0.235f;
+                break;
+            default:
+                break;
+            }
+        }
+
+        virtual void OnContentUpdate() override
+        {
+            if (!*(DWORD*)(0x004B77D0)) {
+                SetPos(-10000.0f, -10000.0f); // fly~
+                return;
+            }
+            {
+                SetPos(900.0f, 500.0f);
+                SetSize(340.0f, 320.0f);
+                ImGui::Columns(2);
+                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mMissCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mBombCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_SPECIAL_GOAST_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mSpecialGoastCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_ROAR_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mRoarCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_ROAR_BREAK_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mRoarBreakCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_WOLF_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mWolfCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_OTTER_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mOtterCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_EAGLE_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mEagerCount);
+                ImGui::NextColumn();
+            }
+        }
+
+        virtual void OnPreUpdate() override
+        {
+            if (*(THOverlay::singleton().mInGameInfo)) {
+                Open();
+            } else {
+                Close();
+            }
+        }
+
+    public:
+    };
+
+
     class THGuiSP : public Gui::GameGuiWnd {
         THGuiSP() noexcept
         {
@@ -1807,7 +1916,6 @@ namespace TH17 {
                 if (adv_opt.mGoastAngleRandom) {
                     ang = asm_call<0x402880, Thiscall, float>(0x4B7668) * M_PI;
                 }
-
                 SpawnToken(adv_opt.mSelectedGoast, stgFramePos, ang);
             }
         }
@@ -1999,6 +2107,7 @@ namespace TH17 {
         THGuiPrac::singleton().Update();
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
+        TH17InGameInfo::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
@@ -2022,6 +2131,7 @@ namespace TH17 {
         THGuiPrac::singleton();
         THGuiPrac::singleton();
         THGuiPrac::singleton();
+        TH17InGameInfo::singleton();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
@@ -2052,6 +2162,59 @@ namespace TH17 {
         THGuiCreate();
         THInitHookDisable();
     }
+
+    
+#pragma region igi
+    EHOOK_DY(th17_game_start, 0x4302E6) // gamestart-bomb set
+    {
+        TH17InGameInfo::singleton().mMissCount = 0;
+        TH17InGameInfo::singleton().mBombCount = 0;
+        TH17InGameInfo::singleton().mRoarBreakCount = 0;
+        TH17InGameInfo::singleton().mRoarCount = 0;
+        TH17InGameInfo::singleton().mSpecialGoastCount = 0;
+        TH17InGameInfo::singleton().mWolfCount = 0;
+        TH17InGameInfo::singleton().mOtterCount = 0;
+        TH17InGameInfo::singleton().mEagerCount = 0;
+    }
+    EHOOK_DY(th17_roar_break, 0x40F880)
+    {
+        TH17InGameInfo::singleton().mRoarBreakCount++;
+    }
+    EHOOK_DY(th17_roar, 0x40FC8A)
+    {
+        int32_t cur_roar = *(DWORD*)0x004B5ABC;
+        TH17InGameInfo::singleton().mRoarCount++;
+        switch (cur_roar)
+        {
+        case 1:
+            TH17InGameInfo::singleton().mWolfCount++;
+            break;
+        case 2:
+            TH17InGameInfo::singleton().mOtterCount++;
+            break;
+        case 3:
+            TH17InGameInfo::singleton().mEagerCount++;
+            break;
+        default:
+            break;
+        }
+        for (int32_t i = 0; i < 5; i++){
+            int32_t type = *(int32_t*)(0x004B5A64 + 4 * i);
+            if (type >= 8 && type <= 0xE){
+                TH17InGameInfo::singleton().mSpecialGoastCount++;
+            }
+        }
+    }
+    EHOOK_DY(th17_life_dec, 0x44921B)
+    {
+        TH17InGameInfo::singleton().mMissCount++;
+    }
+    EHOOK_DY(th17_bomb_dec, 0x411CAB)
+    {
+        TH17InGameInfo::singleton().mBombCount++;
+    }
+#pragma endregion
+
     HOOKSET_ENDDEF()
 }
 

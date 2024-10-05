@@ -457,6 +457,7 @@ namespace TH128 {
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mInGameInfo.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -467,6 +468,7 @@ namespace TH128 {
             mTimeLock();
             mAutoBomb();
             mElBgm();
+            mInGameInfo();
         }
         virtual void OnPreUpdate() override
         {
@@ -500,7 +502,83 @@ namespace TH128 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
+        Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
+
+    
+    class TH128InGameInfo : public Gui::GameGuiWnd {
+
+        TH128InGameInfo() noexcept
+        {
+            SetTitle("igi");
+            SetFade(0.9f, 0.9f);
+            SetPos(-10000.0f, -10000.0f);
+            SetSize(280.0f, 350.0f);
+            SetWndFlag(
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+        }
+        SINGLETON(TH128InGameInfo);
+
+    public:
+        int32_t mMissCount;
+        int32_t mBombCount;
+
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            float x_offset_1 = 0.0f;
+            float x_offset_2 = 0.0f;
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.172f;
+                break;
+            case Gui::LOCALE_EN_US:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.16f;
+                break;
+            case Gui::LOCALE_JA_JP:
+                x_offset_1 = 0.18f;
+                x_offset_2 = 0.235f;
+                break;
+            default:
+                break;
+            }
+        }
+
+        virtual void OnContentUpdate() override
+        {
+            if (!*(DWORD*)(0x004B8A80)) {
+                SetPos(-10000.0f, -10000.0f); // fly~
+                return;
+            }
+            {
+                SetPos(516.0f, 226.0f);
+                SetSize(120.0f, 60.0f);
+                ImGui::Columns(2);
+                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%6d", mMissCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%6d", mBombCount);
+            }
+        }
+
+        virtual void OnPreUpdate() override
+        {
+            if (*(THOverlay::singleton().mInGameInfo)) {
+                Open();
+            } else {
+                Close();
+            }
+        }
+
+    public:
+    };
+
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
         // Option Related Functions
@@ -2287,6 +2365,7 @@ namespace TH128 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
+        TH128InGameInfo::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
@@ -2295,6 +2374,25 @@ namespace TH128 {
     {
         GameGuiRender(IMPL_WIN32_DX9);
     }
+#pragma region igi
+    EHOOK_DY(th128_game_start, 0x426009) // gamestart-bomb set
+    {
+        TH128InGameInfo::singleton().mBombCount = 0;
+        TH128InGameInfo::singleton().mMissCount = 0;
+    }
+    EHOOK_DY(th128_bomb_dec, 0x43B7DB) // bomb dec
+    {
+        TH128InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th128_bomb_dec2, 0x43B911) // deadbomb
+    {
+        TH128InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th128_life_dec, 0x43CDDF) // life dec
+    {
+        TH128InGameInfo::singleton().mMissCount++;
+    }
+#pragma endregion
     HOOKSET_ENDDEF()
 
     HOOKSET_DEFINE(THInitHook)
@@ -2309,6 +2407,7 @@ namespace TH128 {
         THGuiPrac::singleton();
         THGuiRep::singleton();
         THOverlay::singleton();
+        TH128InGameInfo::singleton();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();

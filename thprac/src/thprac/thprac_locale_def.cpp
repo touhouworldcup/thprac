@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][936] {
+const char* th_glossary_str[3][956] {
     {
         "",
         "啤酒",
@@ -938,15 +938,35 @@ const char* th_glossary_str[3][936] {
         "模式",
         "结果(平均值)",
 
-        "显示无欠重试次数",
-        "第%s面Re数:\t%6d",
-        "总Re数: 　\t%6d",
-        "当前Re数: \t%6d",
-
         "修改启动时窗口的大小",
         "窗口大小",
-        "启用键盘SOCD功能",
-        "当同时按下反向方向键时，仅激活最后使用的方向键。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。"
+        "启用SOCD后覆盖功能",
+        "当同时按下反向方向键时，仅激活最后使用的方向键。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。",
+        
+        "更多游戏信息",
+        "miss:",//miss count
+        "bomb:",//bomb count
+        "灵界:",//th13
+        "红碟:",//th12
+        "绿碟:",
+        "蓝碟:",
+        "彩蝶:",
+        "撞结界:",//th7
+        "Cherry:",
+        "CherryP:",
+        "CherryM:",
+        "隐藏灵:",//th17
+        "撞咆哮:",
+        "咆哮:",
+        "狼:",
+        "獭:",
+        "鹰:",
+        "LSC:",//th8
+        "SC:",//th8
+        "季节解放:",//th16
+        "第%d面Re数:",
+        "总Re数:",
+        "当前Re数:",
     },
     {
         "",
@@ -1877,15 +1897,36 @@ const char* th_glossary_str[3][936] {
         "with progress bar",
         "mode",
         "result(avg)",
-        "Show Re Count",
-        "Re Count for Stage %s: %6d",
-        "Total Re Count:   \t%6d",
-        "Current Re Count: \t%6d",
 
         "change window size when open",
         "window size",
-        "enable keyboard SOCD",
-        "When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."
+        "enable keyboard SOCD (last input priority)",
+        "When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.",
+    
+        "in game info",
+        "miss:",
+        "bomb:",
+        "trance:",
+        "R UFO:",
+        "G UFO:",
+        "B UFO:",
+        "Rb UFO:",
+        "border:",
+        "Cherry:",
+        "CherryP:",
+        "CherryM:",
+        "spec goast:",
+        "roar break:",
+        "roar:",
+        "wolf:",
+        "otter:",
+        "eagle:",
+        "LSC:",
+        "SC:",
+        "release:",
+        "stage %d Re:",
+        "total Re:",
+        "current Re:",
     },
     {
         "",
@@ -2816,17 +2857,39 @@ const char* th_glossary_str[3][936] {
         "with progress bar",
         "mode",
         "result(avg)",
-        "Show Re Count",
-        "Re Count for Stage %s: %6d",
-        "Total Re Count:   \t%6d",
-        "Current Re Count: \t%6d",
-
+        
         "change window size when open",
         "window size",
-        "enable keyboard SOCD",
-        "When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."
+        "enable keyboard SOCD (last input priority)",
+        "When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.",
+
+        "in game info",
+        "miss:",
+        "bomb:",
+        "trance:",
+        "R UFO:",
+        "G UFO:",
+        "B UFO:",
+        "Rb UFO:",
+        "border:",
+        "Cherry:",
+        "CherryP:",
+        "CherryM:",
+        "spec goast:",
+        "roar break:",
+        "roar:",
+        "wolf:",
+        "otter:",
+        "eagle:",
+        "LSC:",
+        "SC:",
+        "release:",
+        "Stage %d Re:",
+        "Total Re:",
+        "Current Re:",
     },
 };
+
 
 const th_glossary_t TH_TYPE_SELECT[13]
 {

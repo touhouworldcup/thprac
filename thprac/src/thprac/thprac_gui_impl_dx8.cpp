@@ -47,6 +47,9 @@ namespace THPrac
 		static D3DMATRIX				g_pOrigWorld;
 		static D3DMATRIX				g_pOrigView;
 		static D3DMATRIX				g_pOrigProj;
+		static D3DVIEWPORT8				g_pOrigViewPort;
+
+        static IDirect3DBaseTexture8*	g_pOrigTexture = NULL;
 		static bool ImplDX8CreateFontsTexture()
 		{
 			// Build texture atlas
@@ -114,6 +117,10 @@ namespace THPrac
 			g_pd3dDevice->GetTransform(D3DTS_VIEW, &g_pOrigView);
 			g_pd3dDevice->GetTransform(D3DTS_PROJECTION, &g_pOrigProj);
 
+			// bug fix
+            if (g_pd3dDevice->GetTexture(0, &g_pOrigTexture) < 0)
+                g_pOrigTexture = 0;
+            g_pd3dDevice->GetViewport(&g_pOrigViewPort);
 			return true;
 		}
 		static __forceinline void ImplDX8StateRestore()
@@ -126,6 +133,12 @@ namespace THPrac
 			// Restore the DX8 state
 			g_pd3dDevice->ApplyStateBlock(g_pOrigStateBlock);
 			g_pd3dDevice->DeleteStateBlock(g_pOrigStateBlock);
+
+			// bug fix
+            if (g_pOrigTexture)
+				g_pd3dDevice->SetTexture(0, g_pOrigTexture);
+            g_pd3dDevice->SetViewport(&g_pOrigViewPort);
+
 			g_pOrigStateBlock = NULL;
 		}
 

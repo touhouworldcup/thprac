@@ -547,6 +547,7 @@ namespace TH08 {
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mInGameInfo.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -557,6 +558,7 @@ namespace TH08 {
             mTimeLock();
             mAutoBomb();
             mElBgm();
+            mInGameInfo();
         }
         virtual void OnPreUpdate() override
         {
@@ -592,6 +594,97 @@ namespace TH08 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
+        Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
+    };
+
+    
+    class TH08InGameInfo : public Gui::GameGuiWnd {
+
+        TH08InGameInfo() noexcept
+        {
+            SetTitle("igi");
+            SetFade(0.9f, 0.9f);
+            SetPos(-10000.0f, -10000.0f);
+            SetSize(280.0f, 350.0f);
+            SetWndFlag(
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+        }
+        SINGLETON(TH08InGameInfo);
+
+    public:
+        int32_t mMissCount;
+        int32_t mBombCount;
+        int32_t mLSCCount;
+        int32_t mSCCount;
+        bool mIsInGame;
+
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            float x_offset_1 = 0.0f;
+            float x_offset_2 = 0.0f;
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.172f;
+                break;
+            case Gui::LOCALE_EN_US:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.16f;
+                break;
+            case Gui::LOCALE_JA_JP:
+                x_offset_1 = 0.18f;
+                x_offset_2 = 0.235f;
+                break;
+            default:
+                break;
+            }
+        }
+
+        virtual void OnContentUpdate() override
+        {
+            if (!mIsInGame) {
+                SetPos(-10000.0f, -10000.0f); // fly~
+                return;
+            }
+            {
+                SetPos(450.0f, 220.0f);
+                SetSize(170.0f, 100.0f);
+                
+                mMissCount = *(int8_t*)(0x0164CFA4);
+                mBombCount = *(int8_t*)(0x0164CFA8) + *(int8_t*)(0x0164CFAC);
+                
+                ImGui::Columns(2);
+                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mMissCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mBombCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_SC_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mSCCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_LSC_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mLSCCount);
+            }
+            mIsInGame = false;
+        }
+
+        virtual void OnPreUpdate() override
+        {
+            if (*(THOverlay::singleton().mInGameInfo)) {
+                Open();
+            } else {
+                Close();
+            }
+        }
+
+    public:
     };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
@@ -2289,6 +2382,7 @@ namespace TH08 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
+        TH08InGameInfo::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
@@ -2318,6 +2412,7 @@ namespace TH08 {
         THGuiPrac::singleton();
         THGuiRep::singleton();
         THOverlay::singleton();
+        TH08InGameInfo::singleton();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
@@ -2347,6 +2442,39 @@ namespace TH08 {
         THGuiCreate();
         THInitHookDisable();
     }
+#pragma region igi
+    EHOOK_DY(th08_enter_game, 0x43BDD2)//set inner misscount to 0
+    {
+        TH08InGameInfo::singleton().mLSCCount = 0;
+        TH08InGameInfo::singleton().mSCCount = 0;
+        TH08InGameInfo::singleton().mBombCount = 0;
+        TH08InGameInfo::singleton().mMissCount = 0;
+    }
+    EHOOK_DY(th08_ingame, 0x436B6B)
+    {
+        TH08InGameInfo::singleton().mIsInGame = true;
+    }
+    EHOOK_DY(th08_spell_capture, 0x416265)// to enable SC count in rep, do not directly read spell capture array
+    {
+        const static int32_t last_spells[] = {
+            10, 11, 12,
+            29, 30, 31,
+            51, 52, 53,
+            74, 75, 76,
+            97, 98, 99,
+            116, 117, 118,
+            143, 144, 145, 146,
+            171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190,
+            204
+        };
+        TH08InGameInfo::singleton().mSCCount++;
+        int32_t cur_spell = *(int32_t*)0x004EA678;
+        for (int j = 0; j < 43; j++) {
+            if (cur_spell == last_spells[j])
+                TH08InGameInfo::singleton().mLSCCount++;
+        }
+    }
+#pragma endregion
     HOOKSET_ENDDEF()
 }
 

@@ -6,6 +6,8 @@
 - add a reaction test in Tools tabbar
 - added retry time monitor for LoLK
 - add SOCD option for keyboard (in settings - Game adjustments), since some keyboard already has this function, I think it's ok to use when playing TH games
+- add ingame info for many games(6,7,8,10,11,12,13,14,15,16,17,18,128), which includes miss count, bomb count and other counts(like UFO count), use key F8(key 1 in th18) to enable
+- fix a bug for imgui of d3d8
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
@@ -15,6 +17,8 @@
 - 加了个反应力测试功能(在工具界面)
 - 给绀珠传加入了无欠模式的Re数显示
 - 内置键盘SOCD功能, 考虑到部分高端键盘已经有这个功能了所以我觉得加入了应该也无所谓(吧大概
+- 内置游戏内部分数据显示
+- 修复一个 imgui-d3d8 的八哥
 
 ## [简体中文](/README_CN.md)
 # thprac

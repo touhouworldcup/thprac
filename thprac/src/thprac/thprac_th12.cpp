@@ -457,6 +457,7 @@ namespace TH12 {
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mInGameInfo.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -467,6 +468,7 @@ namespace TH12 {
             mTimeLock();
             mAutoBomb();
             mElBgm();
+            mInGameInfo();
         }
         virtual void OnPreUpdate() override
         {
@@ -498,6 +500,101 @@ namespace TH12 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
+        Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
+    };
+
+    class TH12InGameInfo : public Gui::GameGuiWnd {
+
+        TH12InGameInfo() noexcept
+        {
+            SetTitle("igi");
+            SetFade(0.9f, 0.9f);
+            SetPos(-10000.0f, -10000.0f);
+            SetSize(280.0f, 350.0f);
+            SetWndFlag(
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+        }
+        SINGLETON(TH12InGameInfo);
+
+    public:
+        int32_t mMissCount;
+        int32_t mBombCount;
+
+        int32_t mRUFOCount;
+        int32_t mGUFOCount;
+        int32_t mBUFOCount;
+        int32_t mCUFOCount;
+
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            float x_offset_1 = 0.0f;
+            float x_offset_2 = 0.0f;
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.172f;
+                break;
+            case Gui::LOCALE_EN_US:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.16f;
+                break;
+            case Gui::LOCALE_JA_JP:
+                x_offset_1 = 0.18f;
+                x_offset_2 = 0.235f;
+                break;
+            default:
+                break;
+            }
+        }
+
+        virtual void OnContentUpdate() override
+        {
+            if (!*(DWORD*)(0x004B4514)) {
+                SetPos(-10000.0f, -10000.0f); // fly~
+                return;
+            }
+            {
+                SetPos(450.0f, 338.0f);
+                SetSize(170.0f, 138.0f);
+                ImGui::Columns(2);
+                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mMissCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mBombCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_UFO_RED_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mRUFOCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_UFO_GREEN_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mGUFOCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_UFO_BLUE_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mBUFOCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_UFO_RAINBOW_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mCUFOCount);
+            }
+        }
+
+        virtual void OnPreUpdate() override
+        {
+            if (*(THOverlay::singleton().mInGameInfo)) {
+                Open();
+            } else {
+                Close();
+            }
+        }
+
+    public:
     };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
@@ -1552,6 +1649,7 @@ namespace TH12 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
+        TH12InGameInfo::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
@@ -1574,6 +1672,7 @@ namespace TH12 {
         THGuiPrac::singleton();
         THGuiRep::singleton();
         THOverlay::singleton();
+        TH12InGameInfo::singleton();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
@@ -1604,6 +1703,39 @@ namespace TH12 {
         THGuiCreate();
         THInitHookDisable();
     }
+
+#pragma region igi
+    EHOOK_DY(th12_game_start, 0x421DEF) // gamestart-bomb set
+    {
+        TH12InGameInfo::singleton().mBombCount = 0;
+        TH12InGameInfo::singleton().mMissCount = 0;
+        TH12InGameInfo::singleton().mRUFOCount = 0;
+        TH12InGameInfo::singleton().mGUFOCount = 0;
+        TH12InGameInfo::singleton().mBUFOCount = 0;
+        TH12InGameInfo::singleton().mCUFOCount = 0;
+    }
+    EHOOK_DY(th12_bomb_dec, 0x422F28) // bomb dec
+    {
+        TH12InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th12_life_dec, 0x4381E7) // life dec
+    {
+        TH12InGameInfo::singleton().mMissCount++;
+    }
+    EHOOK_DY(th12_ufo_open, 0x44A909) // open ufo
+    {
+        int32_t type=pCtx->Eax;
+        if (type == 0)
+            TH12InGameInfo::singleton().mRUFOCount++;
+        else if (type==1)
+            TH12InGameInfo::singleton().mBUFOCount++;
+        else if (type == 2)
+            TH12InGameInfo::singleton().mGUFOCount++;
+        else if (type == 3)
+            TH12InGameInfo::singleton().mCUFOCount++;
+    }
+#pragma endregion
+
     HOOKSET_ENDDEF()
 }
 

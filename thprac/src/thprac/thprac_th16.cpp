@@ -449,6 +449,7 @@ namespace TH16 {
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mInGameInfo.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -459,6 +460,7 @@ namespace TH16 {
             mTimeLock();
             mAutoBomb();
             mElBgm();
+            mInGameInfo();
         }
         virtual void OnPreUpdate() override
         {
@@ -488,7 +490,88 @@ namespace TH16 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
+        Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
+
+    
+    class TH16InGameInfo : public Gui::GameGuiWnd {
+        TH16InGameInfo() noexcept
+        {
+            SetTitle("igi");
+            SetFade(0.9f, 0.9f);
+            SetPos(-10000.0f, -10000.0f);
+            SetSize(280.0f, 350.0f);
+            SetWndFlag(
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+        }
+        SINGLETON(TH16InGameInfo);
+
+    public:
+        int32_t mMissCount;
+        int32_t mBombCount;
+        int32_t mReleaseCount;
+
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            float x_offset_1 = 0.0f;
+            float x_offset_2 = 0.0f;
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.172f;
+                break;
+            case Gui::LOCALE_EN_US:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.16f;
+                break;
+            case Gui::LOCALE_JA_JP:
+                x_offset_1 = 0.18f;
+                x_offset_2 = 0.235f;
+                break;
+            default:
+                break;
+            }
+        }
+
+        virtual void OnContentUpdate() override
+        {
+            if (!*(DWORD*)(0x004A6EF8)) {
+                SetPos(-10000.0f, -10000.0f); // fly~
+                return;
+            }
+            {
+                SetPos(900.0f, 500.0f);
+                SetSize(340.0f, 130.0f);
+                ImGui::Columns(2);
+                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mMissCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mBombCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_RELEASE_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mReleaseCount);
+            }
+        }
+
+        virtual void OnPreUpdate() override
+        {
+            if (*(THOverlay::singleton().mInGameInfo)) {
+                Open();
+            } else {
+                Close();
+            }
+        }
+
+    public:
+    };
+
+
     class THGuiSP : public Gui::GameGuiWnd {
         THGuiSP() noexcept
         {
@@ -2403,6 +2486,7 @@ namespace TH16 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
+        TH16InGameInfo::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
@@ -2425,6 +2509,7 @@ namespace TH16 {
         THGuiRep::singleton();
         THOverlay::singleton();
         THGuiSP::singleton();
+        TH16InGameInfo::singleton();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
@@ -2455,6 +2540,28 @@ namespace TH16 {
         THGuiCreate();
         THInitHookDisable();
     }
+
+#pragma region igi
+    EHOOK_DY(th16_game_start, 0x42E5AE) // gamestart-bomb set
+    {
+        TH16InGameInfo::singleton().mBombCount = 0;
+        TH16InGameInfo::singleton().mMissCount = 0;
+        TH16InGameInfo::singleton().mReleaseCount = 0;
+    }
+    EHOOK_DY(th16_bomb_dec, 0x40DB9C) // bomb dec
+    {
+        TH16InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th16_life_dec, 0x443D3A) // life dec
+    {
+        TH16InGameInfo::singleton().mMissCount++;
+    }
+    EHOOK_DY(th16_release, 0x40DC8A)
+    {
+        TH16InGameInfo::singleton().mReleaseCount++;
+    }
+#pragma endregion
+
     HOOKSET_ENDDEF()
 }
 

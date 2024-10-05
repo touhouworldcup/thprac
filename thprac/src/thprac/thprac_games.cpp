@@ -38,8 +38,8 @@ enum Key {
 BOOL WINAPI GetKeyboardState_SOCD(PBYTE keyBoardState)
 {
     static BYTE last_keyBoardState[256] = { 0 };
-    static unsigned __int64 cur_time = 0;
-    static unsigned __int64 keyBoard_press_time[4] = { 0 };
+    static uint32_t cur_time = 0;
+    static uint32_t keyBoard_press_time[4] = { 0 };
 
     cur_time++;
     g_realGetKeyboardState(keyBoardState);
@@ -80,8 +80,8 @@ HookCtx g_dinput8Hook;
 HRESULT STDMETHODCALLTYPE GetDeviceState_SOCD(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state)
 {
     static BYTE last_keyBoardState[256] = { 0 };
-    static unsigned __int64 cur_time = 0;
-    static unsigned __int64 keyBoard_press_time[4] = { 0 };
+    static uint32_t cur_time = 0;
+    static uint32_t keyBoard_press_time[4] = { 0 };
 
     BYTE* keyBoardState = (BYTE*)state;
     cur_time++;

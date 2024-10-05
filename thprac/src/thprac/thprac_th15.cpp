@@ -5,6 +5,7 @@
 namespace THPrac {
 namespace TH15 {
     using std::pair;
+
     struct THPracParam {
         int32_t mode;
         int32_t stage;
@@ -445,7 +446,7 @@ namespace TH15 {
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
-            mShowReTimes.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mInGameInfo.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -456,7 +457,7 @@ namespace TH15 {
             mTimeLock();
             mAutoBomb();
             mElBgm();
-            mShowReTimes();
+            mInGameInfo();
         }
         virtual void OnPreUpdate() override
         {
@@ -486,25 +487,27 @@ namespace TH15 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
-        Gui::GuiHotKey mShowReTimes { TH15_RE_TIMES, "F8", VK_F8 };
+        Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
 
     
-    
-    class TH15ReTimes : public Gui::GameGuiWnd {
-        TH15ReTimes() noexcept
+    class TH15InGameInfo : public Gui::GameGuiWnd {
+
+        TH15InGameInfo() noexcept
         {
-            SetTitle("Re times");
+            SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPos(860.0f, 520.0f);
+            SetPos(-10000.0f, -10000.0f);
             SetSize(280.0f, 350.0f);
             SetWndFlag(
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(TH15ReTimes);
+        SINGLETON(TH15InGameInfo);
 
     public:
+        int32_t mMissCount;
+        int32_t mBombCount;
     protected:
         virtual void OnLocaleChange() override
         {
@@ -530,38 +533,56 @@ namespace TH15 {
 
         virtual void OnContentUpdate() override
         {
-            // 004E73F0:当前面数?
-            // 004E7594:总re数
-            // 004E75B8:当前章节re数
-            // 004E759C+4*X:从此开始每4字节是stage (X+1)的re数(X为0-6(5?))
+            if (!*(DWORD*)(0x004E9BB8)){
+                SetPos(-10000.0f, -10000.0f); //fly~
+                return;
+            }
             bool is_in_P_mode = (*(byte*)(0x004E7795)) & 0x1;
-            if (*(DWORD*)(0x004E9BB8) && is_in_P_mode) // pplayer
+            if (is_in_P_mode) // pplayer
             {
+                SetPos(900.0f, 520.0f);
+                SetSize(340.0f, 350.0f);
                 int cur_stage = *(int*)(0x004E73F0);
                 int tot_re = *(int*)(0x004E7594);
                 int cur_re = *(int*)(0x004E75B8);
                 int* stage_re = (int*)(0x004E759C);
-                ImGui::Text(S(TH15_RE_TIMES_TOTAL), tot_re);
-                ImGui::Text(S(TH15_RE_TIMES_CURRENT), cur_re);
+                ImGui::Columns(2);
+                ImGui::Text(S(THPRAC_INGAMEINFO_RE_TIMES_TOTAL));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", tot_re);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_RE_TIMES_CURRENT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", cur_re);
 
-                const char* big_numbers[8] = { "１", "２", "３", "４", "５", "６", "７", "８" };
+                ImGui::Columns(1);
+                ImGui::NewLine();
+                ImGui::Columns(2);
+                // ImGui::NextColumn();
+                // ImGui::NewLine();
+                // ImGui::NextColumn();
+                // ImGui::NewLine();
+                // ImGui::NextColumn();
+
                 for (int i = 0; i < std::min(7,cur_stage); i++){
-                    ImGui::Text(S(TH15_RE_TIMES_STAGE), big_numbers[i], stage_re[i]);
+                    ImGui::Text(S(THPRAC_INGAMEINFO_RE_TIMES_STAGE), i + 1);
+                    ImGui::NextColumn();
+                    ImGui::Text("%8d", stage_re[i]);
+                    ImGui::NextColumn();
                 }
-            }else{
-                ImGui::Text("QAQ");
-                ImGui::Text("QAQ");
-                ImGui::Text("QAQ");
-                ImGui::Text("QAQ");
-                ImGui::Text("QAQ");
-                ImGui::Text("QAQ");
-                ImGui::Text("QAQ");
+            } else {
+                SetPos(900.0f, 520.0f);
+                SetSize(280.0f, 100.0f);
+                ImGui::Columns(2);
+                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));ImGui::NextColumn();ImGui::Text("%8d",mMissCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));ImGui::NextColumn();ImGui::Text("%8d",mBombCount);
             }
         }
 
         virtual void OnPreUpdate() override
         {
-            if (*(THOverlay::singleton().mShowReTimes)) {
+            if (*(THOverlay::singleton().mInGameInfo)) {
                 Open();
             } else {
                 Close();
@@ -1939,7 +1960,7 @@ namespace TH15 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
-        TH15ReTimes::singleton().Update();
+        TH15InGameInfo::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
@@ -1961,7 +1982,7 @@ namespace TH15 {
         THGuiPrac::singleton();
         THGuiRep::singleton();
         THOverlay::singleton();
-        TH15ReTimes::singleton();
+        TH15InGameInfo::singleton();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
@@ -1992,6 +2013,24 @@ namespace TH15 {
         THGuiCreate();
         THInitHookDisable();
     }
+
+#pragma region igi
+    EHOOK_DY(th15_game_start, 0x43E6EE) // gamestart-bomb set
+    {
+        TH15InGameInfo::singleton().mBombCount = 0;
+        TH15InGameInfo::singleton().mMissCount = 0;
+    }
+    EHOOK_DY(th15_bomb_dec, 0x41497A) // bomb dec
+    {
+        TH15InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th15_life_dec, 0x456398) // life dec
+    {
+        TH15InGameInfo::singleton().mMissCount++;
+    }
+#pragma endregion
+
+    
     HOOKSET_ENDDEF()
 }
 

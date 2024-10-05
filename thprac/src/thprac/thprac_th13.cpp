@@ -443,6 +443,7 @@ namespace TH13 {
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mInGameInfo.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -453,6 +454,7 @@ namespace TH13 {
             mTimeLock();
             mAutoBomb();
             mElBgm();
+            mInGameInfo();
         }
         virtual void OnPreUpdate() override
         {
@@ -482,7 +484,87 @@ namespace TH13 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
+        Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
+
+    class TH13InGameInfo : public Gui::GameGuiWnd {
+
+        TH13InGameInfo() noexcept
+        {
+            SetTitle("igi");
+            SetFade(0.9f, 0.9f);
+            SetPos(-10000.0f, -10000.0f);
+            SetSize(280.0f, 350.0f);
+            SetWndFlag(
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+        }
+        SINGLETON(TH13InGameInfo);
+
+    public:
+        int32_t mMissCount;
+        int32_t mBombCount;
+        int32_t mTranceCount;
+
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            float x_offset_1 = 0.0f;
+            float x_offset_2 = 0.0f;
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.172f;
+                break;
+            case Gui::LOCALE_EN_US:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.16f;
+                break;
+            case Gui::LOCALE_JA_JP:
+                x_offset_1 = 0.18f;
+                x_offset_2 = 0.235f;
+                break;
+            default:
+                break;
+            }
+        }
+
+        virtual void OnContentUpdate() override
+        {
+            if (!*(DWORD*)(0x004C22C4)) {
+                SetPos(-10000.0f, -10000.0f); // fly~
+                return;
+            }
+            {
+                SetPos(450.0f, 280.0f);
+                SetSize(170.0f, 80.0f);
+                ImGui::Columns(2);
+                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mMissCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mBombCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_TRANCE_COUNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", mTranceCount);
+            }
+        }
+
+        virtual void OnPreUpdate() override
+        {
+            if (*(THOverlay::singleton().mInGameInfo)) {
+                Open();
+            } else {
+                Close();
+            }
+        }
+
+    public:
+    };
+
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
         EHOOK_ST(th13_all_clear_bonus_1, 0x42ce28)
@@ -1640,6 +1722,7 @@ namespace TH13 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
+        TH13InGameInfo::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         THAdvOptWnd::singleton().FpsUpd();
@@ -1663,7 +1746,7 @@ namespace TH13 {
         THGuiPrac::singleton();
         THGuiRep::singleton();
         THOverlay::singleton();
-
+        TH13InGameInfo::singleton();
         // Hooks
         THMainHook::singleton().EnableAllHooks();
 
@@ -1693,6 +1776,26 @@ namespace TH13 {
         THGuiCreate();
         THInitHookDisable();
     }
+#pragma region igi
+    EHOOK_DY(th13_game_start, 0x42D3D7) // gamestart-bomb set
+    {
+        TH13InGameInfo::singleton().mBombCount = 0;
+        TH13InGameInfo::singleton().mMissCount = 0;
+        TH13InGameInfo::singleton().mTranceCount = 0;
+    }
+    EHOOK_DY(th13_bomb_dec, 0x40A404) // bomb dec
+    {
+        TH13InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th13_life_dec, 0x444A52) // life dec
+    {
+        TH13InGameInfo::singleton().mMissCount++;
+    }
+    EHOOK_DY(th13_trance, 0x40587a)
+    {
+        TH13InGameInfo::singleton().mTranceCount++;
+    }
+#pragma endregion
     HOOKSET_ENDDEF()
 }
 

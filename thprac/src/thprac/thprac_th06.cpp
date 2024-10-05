@@ -404,25 +404,27 @@ namespace TH06 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
-        Gui::GuiHotKey mShowSpellCapture { TH06_SHOWSPELLCAPTURE, "F8", VK_F8 };
+        Gui::GuiHotKey mShowSpellCapture { THPRAC_INGAMEINFO, "F8", VK_F8 };
    
     };
 
     
-    class TH06SpellCaptureOverlay : public Gui::GameGuiWnd {
-        TH06SpellCaptureOverlay() noexcept
+    class TH06InGameInfo : public Gui::GameGuiWnd {
+        TH06InGameInfo() noexcept
         {
             SetTitle("Spell Capture");
-            SetFade(0.1f, 0.1f);
-            SetPos(420.0f, 245.0f);
-            SetSize(180.0f, 120.0f);
+            SetFade(0.9f, 0.9f);
+            SetPos(-10000.0f, -10000.0f);
+            SetSize(180.0f, 150.0f);
             SetWndFlag(
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(TH06SpellCaptureOverlay);
+        SINGLETON(TH06InGameInfo);
 
     public:
+        int32_t mMissCount;
+        bool mIsInGame;
     protected:
         Gui::GuiHotKey mDetails { TH06_SHOWSPELLCAPTURE_DETAIL, "F9", VK_F9 };
 
@@ -493,13 +495,6 @@ namespace TH06 {
             auto fs = ::std::fstream("spell_capture.dat", ::std::ios::in | ::std::ios::binary);
             if (fs.is_open()) {
                 fs.read((char*)SC_History_total, sizeof(SC_History_total));
-                // for (int i = 0; i < 3; i++) {
-                //     for (int diff = 0; diff <= 4; diff++) {
-                //         for (int spell = 0; spell < 65; spell++) {
-                //             fs.read((char*)(&SC_History_total[spell][diff][i]),4);
-                //         }
-                //     }
-                // }
             }
             PopCurrentDirectory();
         }
@@ -510,13 +505,6 @@ namespace TH06 {
             auto fs = ::std::fstream("spell_capture.dat", ::std::ios::out | ::std::ios::binary);
             if (fs.is_open()) {
                 fs.write((char*)SC_History_total, sizeof(SC_History_total));
-                // for (int i = 0; i < 3; i++) {
-                //     for (int diff = 0; diff <= 4; diff++) {
-                //         for (int spell = 0; spell < 65; spell++) {
-                //             fs.write((const char*)(& SC_History_total[spell][diff][i]),4);
-                //         }
-                //     }
-                // }
             }
             PopCurrentDirectory();
         }
@@ -549,6 +537,24 @@ namespace TH06 {
             int spell_id = last_spell_id;
             if (is_magic_book)
                 spell_id = 64;
+            if (!mIsInGame)
+            {
+                SetPos(-10000.0f, -10000.0f);
+                return;
+            }
+            SetPos(433.0f, 245.0f);
+            int32_t mBombCount = *(int8_t*)(0x0069BCC4);
+
+            ImGui::Columns(2);
+            ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mMissCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mBombCount);
+            ImGui::Columns(1);
+
             if (spell_id != -1 && last_ingame_flag > 0 && (last_is_in_spell || is_magic_book)) {
                 byte last_player_type = (last_player_typea << 1) | last_player_typeb;
                 ImGui::Text("%s", th06_spells_str[Gui::LocaleGet()][spell_id]);
@@ -562,12 +568,9 @@ namespace TH06 {
                     SC_History_current[spell_id][last_diff][last_player_type][1],
                     (float)(SC_History_current[spell_id][last_diff][last_player_type][0]) / std::fmax(1.0f, SC_History_current[spell_id][last_diff][last_player_type][1]) * 100.0f,
                     SC_History_current[spell_id][last_diff][last_player_type][2]);
-            } else {
-                ImGui::Text("OvO");
-                ImGui::Text("OvO");
-                ImGui::Text("OvO");
             }
             mDetails();
+            mIsInGame = false;
         }
         void ResetSpell()
         {
@@ -2652,7 +2655,7 @@ namespace TH06 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
-        TH06SpellCaptureOverlay::singleton().Update();
+        TH06InGameInfo::singleton().Update();
         GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
     }
     EHOOK_DY(th06_render, 0x41cb6d)
@@ -2661,10 +2664,27 @@ namespace TH06 {
         if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
             THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);
     }
-    EHOOK_DY(spellcard_get_failed,0x4277C3)
+
+    #pragma region igi
+    EHOOK_DY(th06_enter_game, 0x41BDE8) // set inner misscount to 0
+    {
+        TH06InGameInfo::singleton().mMissCount = 0;
+    }
+    EHOOK_DY(spellcard_get_failed, 0x4277C3)
     {
         is_spell_get = false;
     }
+    EHOOK_DY(th06_ingame, 0x41AB7F)
+    {
+        TH06InGameInfo::singleton().mIsInGame = true;
+    }
+    EHOOK_DY(th06_miss, 0x428DED)// dec life
+    {
+        TH06InGameInfo::singleton().mMissCount++;
+    }
+
+#pragma endregion
+    
 
     HOOKSET_ENDDEF()
 
@@ -2681,8 +2701,8 @@ namespace TH06 {
         THPauseMenu::singleton();
         THGuiRep::singleton();
         THOverlay::singleton();
-        TH06SpellCaptureOverlay::singleton();
-        TH06SpellCaptureOverlay::singleton().InitSpell();
+        TH06InGameInfo::singleton();
+        TH06InGameInfo::singleton().InitSpell();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
