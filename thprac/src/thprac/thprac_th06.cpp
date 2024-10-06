@@ -426,7 +426,7 @@ namespace TH06 {
         int32_t mMissCount;
         bool mIsInGame;
     protected:
-        Gui::GuiHotKey mDetails { TH06_SHOWSPELLCAPTURE_DETAIL, "F9", VK_F9 };
+        Gui::GuiHotKey mDetails { THPRAC_INGAMEINFO_06_SHOWSPELLCAPTURE_DETAIL, "F9", VK_F9 };
 
         struct
         {

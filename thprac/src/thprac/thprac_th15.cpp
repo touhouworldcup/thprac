@@ -547,11 +547,11 @@ namespace TH15 {
                 int cur_re = *(int*)(0x004E75B8);
                 int* stage_re = (int*)(0x004E759C);
                 ImGui::Columns(2);
-                ImGui::Text(S(THPRAC_INGAMEINFO_RE_TIMES_TOTAL));
+                ImGui::Text(S(THPRAC_INGAMEINFO_15_RE_TIMES_TOTAL));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", tot_re);
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_RE_TIMES_CURRENT));
+                ImGui::Text(S(THPRAC_INGAMEINFO_15_RE_TIMES_CURRENT));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", cur_re);
 
@@ -565,7 +565,7 @@ namespace TH15 {
                 // ImGui::NextColumn();
 
                 for (int i = 0; i < std::min(7,cur_stage); i++){
-                    ImGui::Text(S(THPRAC_INGAMEINFO_RE_TIMES_STAGE), i + 1);
+                    ImGui::Text(S(THPRAC_INGAMEINFO_15_RE_TIMES_STAGE), i + 1);
                     ImGui::NextColumn();
                     ImGui::Text("%8d", stage_re[i]);
                     ImGui::NextColumn();

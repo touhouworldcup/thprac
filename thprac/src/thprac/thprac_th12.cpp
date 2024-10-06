@@ -567,19 +567,19 @@ namespace TH12 {
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mBombCount);
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_UFO_RED_COUNT));
+                ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_RED_COUNT));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mRUFOCount);
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_UFO_GREEN_COUNT));
+                ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_GREEN_COUNT));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mGUFOCount);
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_UFO_BLUE_COUNT));
+                ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_BLUE_COUNT));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mBUFOCount);
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_UFO_RAINBOW_COUNT));
+                ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_RAINBOW_COUNT));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mCUFOCount);
             }

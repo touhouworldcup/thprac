@@ -547,7 +547,7 @@ namespace TH13 {
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mBombCount);
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_TRANCE_COUNT));
+                ImGui::Text(S(THPRAC_INGAMEINFO_13_TRANCE_COUNT));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mTranceCount);
             }

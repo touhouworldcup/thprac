@@ -664,11 +664,11 @@ namespace TH08 {
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mBombCount);
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_SC_COUNT));
+                ImGui::Text(S(THPRAC_INGAMEINFO_08_SC_COUNT));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mSCCount);
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_LSC_COUNT));
+                ImGui::Text(S(THPRAC_INGAMEINFO_08_LSC_COUNT));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mLSCCount);
             }

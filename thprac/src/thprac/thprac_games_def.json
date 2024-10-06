@@ -211,6 +211,14 @@
       "THPRAC_UPDATE_DIALOG_CHECKING": [ "检查更新中", "Checking for update", "更新を確認しています" ],
       "THPRAC_UPDATE_DIALOG_UPDATING": [ "正在更新thprac", "Updating thprac", "thpracを更新しています" ],
 
+      "THPRAC_UNLOCK_REFRESH_RATE":["解锁屏幕刷新率","Unlock monitor refresh rate","Unlock monitor refresh rate"],
+      "THPRAC_UNLOCK_REFRESH_RATE_DESC":["勾选后，应用thprac会阻止游戏在全屏模式下将屏幕刷新率锁定在60hz。\n在使用高刷新率显示器且关闭垂直同步的情况下，这么做可以稍微改善延迟并减少画面撕裂。\n注：只在使用thprac（或其启动器）启动游戏时有效。对于Steam版游戏和喵玉汉化，请在custom.exe中勾选“每次启动时询问/起動時に毎回訊れる/Ask each startup time”。",	"When enabled, applying thprac will prevent the game to lock monitor's refresh rate at 60hz in fullscreen mode.\nThis gives you slightly improved latency and reduced screen tearing when using a high refresh rate monitor and when vertical sync is disabled.\nNote: This only works when using thprac (and its launcher) to open the game. For Steam games, tick \"Ask each startup time/起動時に毎回訊れる\" in custom.exe.","When enabled, applying thprac will prevent the game to lock monitor's refresh rate at 60hz in fullscreen mode.\nThis gives you slightly improved latency and reduced screen tearing when using a high refresh rate monitor and when vertical sync is disabled.\nNote: This only works when using thprac (and its launcher) to open the game. For Steam games, tick \"Ask each startup time/起動時に毎回訊れる\" in custom.exe."],
+    
+    "THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN":["修改启动时窗口的大小","change window size when open","change window size when open"],
+"THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE":["窗口大小","window size","window size"],
+"THPRAC_ENABLE_KEYBOARD_SOCD":["启用SOCD后覆盖功能","enable keyboard SOCD (last input priority)","enable keyboard SOCD (last input priority)"],
+"THPRAC_ENABLE_KEYBOARD_SOCD_DESC":["当同时按下反向方向键时，仅激活最后使用的方向键。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."],
+
       "THPRAC_TOOLS": [ "工具", "Tools", "ツール" ],
       "THPRAC_TOOLS_APPLY_THPRAC": [ "应用thprac至正在运行的游戏", "Apply thprac to ongoing game", "実行中のゲームにthpracを適用します" ],
       "THPRAC_TOOLS_RND_GAME": [ "随机游戏", "Random game", "ランダムゲーム" ],
@@ -221,6 +229,22 @@
       "THPRAC_TOOLS_RND_PLAYER_GAME": [ "游戏", "Game", "ゲーム" ],
       "THPRAC_TOOLS_RND_TURNTO_PLAYER": [ "转至随机机体", "Turn to random shot type", "ランダム機体に移動" ],
       "THPRAC_TOOLS_RND_TURNTO_GAME": [ "转至游戏页面", "Turn to game page", "ゲームページに移動" ],
+	  "THPRAC_TOOLS_REACTION_TEST":["反应力测试","reaction test","reaction test"],
+      "THPRAC_TOOLS_REACTION_TEST_DOWN":["按下反应测试(等待变色后按下方向键)","keydown test(wait for color changed then press arrow key)","keydown test(wait for color changed then press arrow key)"],
+      "THPRAC_TOOLS_REACTION_TEST_UP":["弹起反应测试(按下方向键后,等待变色时弹起)","keyup test(press arrow key until color changes)","keyup test(press arrow key until color changes)"],
+      "THPRAC_TOOLS_REACTION_TEST_TIME":["测试次数","times for test","times for test"],
+      "THPRAC_TOOLS_REACTION_TEST_BEGIN":["开始测试","start","start"],
+      "THPRAC_TOOLS_REACTION_TEST_WAIT":["等待红色变绿时弹起或放下方向键","wait for color changes then press or release key","wait for color changes then press or release key"],
+      "THPRAC_TOOLS_REACTION_TEST_RESULT":["结果","result","result"],
+      "THPRAC_TOOLS_REACTION_TEST_TOO_EARLY":["按太快了","too early","too early"],
+      "THPRAC_TOOLS_REACTION_TEST_NEXT_TEST":["再测一次(快捷键z)","next test(hotkey z)","next test(hotkey z)"],
+      "THPRAC_TOOLS_REACTION_SHOW_PROC_BAR":["显示等待时间进度条","show wait time progress bar","show wait time progress bar"],
+      "THPRAC_TOOLS_REACTION_MODE_DOWN":["按下测试","press time test","press time test"],
+      "THPRAC_TOOLS_REACTION_MODE_UP":["弹起测试","release time test","release time test"],
+      "THPRAC_TOOLS_REACTION_MODE_NORMAL":["不显示进度条","no progress bar","no progress bar"],
+      "THPRAC_TOOLS_REACTION_MODE_PROGRESSBAR":["显示进度条","with progress bar","with progress bar"],
+      "THPRAC_TOOLS_REACTION_MODE":["模式","mode","mode"],
+      "THPRAC_TOOLS_REACTION_TEST_RESULT_AVG":["结果(平均值)","result(avg)","result(avg)"],
 
       "THPRAC_LINKS": [ "链接", "Links", "リンク" ],
       "THPRAC_LINKS_RESET": [ "重置默认", "Reset default", "デフォルトにリセット" ],
@@ -576,6 +600,38 @@
     }
   },
 
+
+   "inGameInfo": {
+
+      "glossary": {
+          "THPRAC_INGAMEINFO":["更多游戏信息","in game info","in game info"],
+       "THPRAC_INGAMEINFO_MISS_COUNT":["miss:","miss:","miss:"],
+       "THPRAC_INGAMEINFO_BOMB_COUNT":["bomb:","bomb:","bomb:"],
+       "THPRAC_INGAMEINFO_13_TRANCE_COUNT":["灵界:","trance:","trance:"],
+       "THPRAC_INGAMEINFO_12_UFO_RED_COUNT":["红碟:","R UFO:","R UFO:"],
+       "THPRAC_INGAMEINFO_12_UFO_GREEN_COUNT":["绿碟:","G UFO:","G UFO:"],
+       "THPRAC_INGAMEINFO_12_UFO_BLUE_COUNT":["蓝碟:","B UFO:","B UFO:"],
+       "THPRAC_INGAMEINFO_12_UFO_RAINBOW_COUNT":["彩蝶:","Rb UFO:","Rb UFO:"],
+       "THPRAC_INGAMEINFO_07_BORDER_COUNT":["撞结界:","border:","border:"],
+       "THPRAC_INGAMEINFO_07_CHERRY":["Cherry:","Cherry:","Cherry:"],
+       "THPRAC_INGAMEINFO_07_CHERRY_PLUS":["CherryP:","CherryP:","CherryP:"],
+       "THPRAC_INGAMEINFO_07_CHERRY_MAX":["CherryM:","CherryM:","CherryM:"],
+       "THPRAC_INGAMEINFO_17_SPECIAL_GOAST_COUNT":["隐藏灵:","spec goast:","spec goast:"],
+       "THPRAC_INGAMEINFO_17_ROAR_BREAK_COUNT":["撞咆哮:","roar break:","roar break:"],
+       "THPRAC_INGAMEINFO_17_ROAR_COUNT":["咆哮:","roar:","roar:"],
+       "THPRAC_INGAMEINFO_17_WOLF_COUNT":["狼:","wolf:","wolf:"],
+       "THPRAC_INGAMEINFO_17_OTTER_COUNT":["獭:","otter:","otter:"],
+       "THPRAC_INGAMEINFO_17_EAGLE_COUNT":["鹰:","eagle:","eagle:"],
+       "THPRAC_INGAMEINFO_08_LSC_COUNT":["LSC:","LSC:","LSC:"],
+       "THPRAC_INGAMEINFO_08_SC_COUNT":["SC:","SC:","SC:"],
+       "THPRAC_INGAMEINFO_16_RELEASE_COUNT":["季节解放:","release:","release:"],
+       "THPRAC_INGAMEINFO_15_RE_TIMES_STAGE":["第%d面Re数:","stage %d Re:","stage %d Re:"],
+       "THPRAC_INGAMEINFO_15_RE_TIMES_TOTAL":["总Re数:","total Re:","total Re:"],
+       "THPRAC_INGAMEINFO_15_RE_TIMES_CURRENT":["当前Re数:","current Re:","current Re:"],
+       "THPRAC_INGAMEINFO_06_SHOWSPELLCAPTURE_DETAIL":["详情","Details","Details"]
+      }
+  },
+  
   "common": {
     "glossary": {
       "TH_MENU": [ "练习选项", "Option", "オプション" ],

@@ -553,7 +553,7 @@ namespace TH16 {
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mBombCount);
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_RELEASE_COUNT));
+                ImGui::Text(S(THPRAC_INGAMEINFO_16_RELEASE_COUNT));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mReleaseCount);
             }

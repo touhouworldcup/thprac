@@ -619,19 +619,19 @@ namespace TH07 {
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mBombCount);
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_BORDER_COUNT));
+                ImGui::Text(S(THPRAC_INGAMEINFO_07_BORDER_COUNT));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mBorderBreakCount);
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_CHERRY));
+                ImGui::Text(S(THPRAC_INGAMEINFO_07_CHERRY));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mCherry);
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_CHERRY_PLUS));
+                ImGui::Text(S(THPRAC_INGAMEINFO_07_CHERRY_PLUS));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mCherryPlus);
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_CHERRY_MAX));
+                ImGui::Text(S(THPRAC_INGAMEINFO_07_CHERRY_MAX));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mCherryMax);
             }
