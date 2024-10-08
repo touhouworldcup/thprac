@@ -408,11 +408,17 @@
     <ClCompile Include="src\thprac\thprac_games.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th19.cpp">
+    <ClCompile Include="src\thprac\thprac_th19.v1.00a.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_log.cpp">
       <Filter>THPrac Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th19.v1.10c.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th19.cpp">
+      <Filter>THPrac Games</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
