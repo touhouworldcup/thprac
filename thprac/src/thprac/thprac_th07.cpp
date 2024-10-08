@@ -552,7 +552,7 @@ namespace TH07 {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
             SetPos(-10000.0f, -10000.0f);
-            SetSize(280.0f, 350.0f);
+            SetSize(0.0f, 0.0f);
             SetWndFlag(
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
@@ -598,8 +598,8 @@ namespace TH07 {
                 return;
             }
             {
-                SetPos(450.0f, 193.0f);
-                SetSize(170.0f, 140.0f);
+                SetPosRel(450.0f/640.0f, 193.0f/480.0f);
+                SetSizeRel(170.0f/640.0f, 140.0f/480.0f);
 
                 DWORD p = *(DWORD*)(0x00626278);
                 mCherryBase = *(int32_t*)(p+0x88);

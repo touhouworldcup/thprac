@@ -498,7 +498,7 @@ namespace TH15 {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
             SetPos(-10000.0f, -10000.0f);
-            SetSize(280.0f, 350.0f);
+            SetSize(0.0f, 0.0f);
             SetWndFlag(
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
@@ -540,8 +540,8 @@ namespace TH15 {
             bool is_in_P_mode = (*(byte*)(0x004E7795)) & 0x1;
             if (is_in_P_mode) // pplayer
             {
-                SetPos(900.0f, 520.0f);
-                SetSize(340.0f, 350.0f);
+                SetPosRel(900.0f / 1280.0f, 520.0f / 960.0f);
+                SetSizeRel(340.0f / 1280.0f, 350.0f / 960.0f);
                 int cur_stage = *(int*)(0x004E73F0);
                 int tot_re = *(int*)(0x004E7594);
                 int cur_re = *(int*)(0x004E75B8);
@@ -571,8 +571,8 @@ namespace TH15 {
                     ImGui::NextColumn();
                 }
             } else {
-                SetPos(900.0f, 520.0f);
-                SetSize(280.0f, 100.0f);
+                SetPosRel(900.0f / 1280.0f, 520.0f / 960.0f);
+                SetSizeRel(280.0f / 1280.0f, 100.0f / 960.0f);
                 ImGui::Columns(2);
                 ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));ImGui::NextColumn();ImGui::Text("%8d",mMissCount);
                 ImGui::NextColumn();

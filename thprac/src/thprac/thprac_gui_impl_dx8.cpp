@@ -47,9 +47,10 @@ namespace THPrac
 		static D3DMATRIX				g_pOrigWorld;
 		static D3DMATRIX				g_pOrigView;
 		static D3DMATRIX				g_pOrigProj;
-		static D3DVIEWPORT8				g_pOrigViewPort;
 
+		static D3DVIEWPORT8				g_pOrigViewPort;
         static IDirect3DBaseTexture8*	g_pOrigTexture = NULL;
+
 		static bool ImplDX8CreateFontsTexture()
 		{
 			// Build texture atlas

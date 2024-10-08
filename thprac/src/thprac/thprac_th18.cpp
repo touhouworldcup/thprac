@@ -918,7 +918,7 @@ namespace TH18 {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
             SetPos(-10000.0f, -10000.0f);
-            SetSize(280.0f, 350.0f);
+            SetSize(0.0f, 0.0f);
             SetWndFlag(
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
@@ -960,8 +960,8 @@ namespace TH18 {
                 return;
             }
             {
-                SetPos(900.0f, 840.0f);
-                SetSize(340.0f, 96.0f);
+                SetPosRel(900.0f / 1280.0f, 840.0f / 960.0f);
+                SetSizeRel(340.0f/1280.0f, 100.0f/960.0f);
                 ImGui::Columns(2);
                 ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
                 ImGui::NextColumn();
@@ -3102,6 +3102,11 @@ namespace TH18 {
     }
     EHOOK_DY(th18_update, 0x4013f5)
     {
+        // static int x = 0;
+        // x++;
+        // if (x < 5)
+        //     return;
+
         if (THOverlay::singleton().IsOpen() && Gui::KeyboardInputGetRaw(VK_F11) && GetMemContent(ABILITY_SHOP_PTR) == 0) {
             if (uint32_t GAME_THREAD_PTR = GetMemContent(0x4cf2e4)) {
                 *(uint32_t*)GetMemAddr(0x4cf2e4, 0xB0) |= 0x20000;
@@ -3144,6 +3149,8 @@ namespace TH18 {
         THMainHook::singleton().EnableAllHooks();
 
         // Reset thPracParam
+
+        //Gui::ImplDX9NewFrame();
         thPracParam.Reset();
     }
     static __declspec(noinline) void THInitHookDisable()

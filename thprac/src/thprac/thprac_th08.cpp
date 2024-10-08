@@ -605,7 +605,7 @@ namespace TH08 {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
             SetPos(-10000.0f, -10000.0f);
-            SetSize(280.0f, 350.0f);
+            SetSize(0.0f, 0.0f);
             SetWndFlag(
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
@@ -649,8 +649,8 @@ namespace TH08 {
                 return;
             }
             {
-                SetPos(450.0f, 220.0f);
-                SetSize(170.0f, 100.0f);
+                SetPosRel(450.0f/640.0f, 220.0f/480.0f);
+                SetSizeRel(170.0f / 640.0f, 100.0f / 480.0f);
                 
                 mMissCount = *(int8_t*)(0x0164CFA4);
                 mBombCount = *(int8_t*)(0x0164CFA8) + *(int8_t*)(0x0164CFAC);

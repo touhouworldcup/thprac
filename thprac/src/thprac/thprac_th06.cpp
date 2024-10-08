@@ -542,7 +542,7 @@ namespace TH06 {
                 SetPos(-10000.0f, -10000.0f);
                 return;
             }
-            SetPos(433.0f, 245.0f);
+            SetPosRel(433.0f/640.0f, 245.0f/480.0f);
             int32_t mBombCount = *(int8_t*)(0x0069BCC4);
 
             ImGui::Columns(2);

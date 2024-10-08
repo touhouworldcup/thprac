@@ -612,8 +612,8 @@ namespace TH17 {
                 return;
             }
             {
-                SetPos(900.0f, 500.0f);
-                SetSize(340.0f, 320.0f);
+                SetPosRel(900.0f / 1280.0f, 500.0f / 960.0f);
+                SetSizeRel(340.0f/1280.0f, 320.0f/960.0f);
                 ImGui::Columns(2);
                 ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
                 ImGui::NextColumn();
@@ -2101,8 +2101,12 @@ namespace TH17 {
     }
     EHOOK_DY(th17_update, 0x4013b5)
     {
+        static int x = 0;
+        x++;
+        if (x<5)
+            return;
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
-
+        
         // Gui components update
         THGuiPrac::singleton().Update();
         THOverlay::singleton().Update();
@@ -2136,6 +2140,7 @@ namespace TH17 {
         // Hooks
         THMainHook::singleton().EnableAllHooks();
 
+        Gui::ImplDX9NewFrame();
         // Reset thPracParam
         thPracParam.Reset();
     }

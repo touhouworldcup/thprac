@@ -510,7 +510,7 @@ namespace TH12 {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
             SetPos(-10000.0f, -10000.0f);
-            SetSize(280.0f, 350.0f);
+            SetSize(0.0f, 0.0f);
             SetWndFlag(
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
@@ -556,8 +556,8 @@ namespace TH12 {
                 return;
             }
             {
-                SetPos(450.0f, 338.0f);
-                SetSize(170.0f, 138.0f);
+                SetPosRel(450.0f / 640.0f, 338.0f / 480.0f);
+                SetSizeRel(170.0f/640.0f, 138.0f/480.0f);
                 ImGui::Columns(2);
                 ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
                 ImGui::NextColumn();

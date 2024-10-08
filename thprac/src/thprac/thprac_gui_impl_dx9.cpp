@@ -41,6 +41,10 @@ namespace Gui {
     static D3DMATRIX g_pOrigWorld;
     static D3DMATRIX g_pOrigView;
     static D3DMATRIX g_pOrigProj;
+
+    static D3DVIEWPORT9 g_pOrigViewPort;
+    static IDirect3DBaseTexture9* g_pOrigTexture = NULL;
+
     static bool ImplDX9CreateFontsTexture()
     {
         // Build texture atlas
@@ -130,6 +134,10 @@ namespace Gui {
         g_pd3dDevice->GetTransform(D3DTS_VIEW, &g_pOrigView);
         g_pd3dDevice->GetTransform(D3DTS_PROJECTION, &g_pOrigProj);
 
+        if (g_pd3dDevice->GetTexture(0, &g_pOrigTexture) < 0)
+            g_pOrigTexture = 0;
+        g_pd3dDevice->GetViewport(&g_pOrigViewPort);
+
         return true;
     }
     static __forceinline void ImplDX9StateRestore()
@@ -143,6 +151,10 @@ namespace Gui {
         g_pOrigStateBlock->Apply();
         g_pOrigStateBlock->Release();
         g_pOrigStateBlock = NULL;
+
+        if (g_pOrigTexture)
+            g_pd3dDevice->SetTexture(0, g_pOrigTexture);
+        g_pd3dDevice->SetViewport(&g_pOrigViewPort);
     }
 
     // Api functions
