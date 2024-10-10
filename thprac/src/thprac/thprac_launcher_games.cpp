@@ -660,7 +660,7 @@ public:
                 auto u16Path = utf8_to_utf16(gameInst.path.c_str());
                 if (isRelative) {
                     if (!PathIsRelativeW(u16Path.c_str())) {
-                        if (PathRelativePathToW(cvt, currentPath, FILE_ATTRIBUTE_DIRECTORY, u16Path.c_str(), FILE_ATTRIBUTE_NORMAL)) {
+                        if (PathRelativePathToW(cvt, currentPath, 0, u16Path.c_str(), FILE_ATTRIBUTE_NORMAL)) {
                             gameInst.path = utf16_to_utf8(cvt);
                         }
                     }
@@ -1676,6 +1676,13 @@ public:
     static DWORD WINAPI CheckAndLoadVPatch(HANDLE hProcess, std::wstring& dir, const wchar_t* vpatchName)
     {
         auto vpatchPath = dir + vpatchName;
+        bool isRelative = false;
+        LauncherSettingGet("use_relative_path", isRelative);
+        if (isRelative) {
+            WCHAR full_path[MAX_PATH + 1];
+            GetFullPathNameW(vpatchPath.c_str(), MAX_PATH, full_path, 0);
+            vpatchPath = std::wstring(full_path);
+        }
         if (CheckDLLFunction(vpatchPath.c_str(), "_Initialize@4")) {
             auto vpNameLength = (vpatchPath.size() + 1) * sizeof(wchar_t);
             auto pLoadLibrary = ::LoadLibraryW;
