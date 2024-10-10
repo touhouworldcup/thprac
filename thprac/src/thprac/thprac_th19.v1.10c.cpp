@@ -473,8 +473,9 @@ namespace V1_10c {
         }
     }
 
-    EHOOK_DY(th19_lock_cpu_next_charge, 0xFA790) {
-        auto ptr = pCtx->Edi;
+    EHOOK_DY(th19_lock_cpu_next_charge, 0xFA722)
+    {
+        auto ptr = pCtx->Ebx;
         auto& t = TH19Tools::singleton();
 
         auto CHK = [ptr](uintptr_t addr) -> bool {
@@ -491,7 +492,7 @@ namespace V1_10c {
             (CHK(P2_CPU_PTR) && t.p2_cpu_next_charge_lock)
         )
         {
-            pCtx->Eip = RVA(0xFA796);
+            pCtx->Eip = RVA(0xFA728);
         }
     }
 
