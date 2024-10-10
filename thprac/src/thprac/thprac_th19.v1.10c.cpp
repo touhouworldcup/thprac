@@ -436,10 +436,12 @@ namespace V1_10c {
         TH19Tools::singleton().allow = true;
     }
     
-    // When gamemode is set to 4
-    EHOOK_DY(th19_prac_uninit, 0x1391D3) {
-        TH19Tools::singleton().Close();
-        TH19Tools::singleton().allow = false;
+    // When gamemode is changed from 7
+    EHOOK_DY(th19_prac_uninit, 0x132E3D) {
+        if (GetMemContent(pCtx->Esi + 0x90C) == 7) {
+            TH19Tools::singleton().Close();
+            TH19Tools::singleton().allow = false;
+        }
     }
 
     EHOOK_DY(th19_invincible, 0x145EE3) {
