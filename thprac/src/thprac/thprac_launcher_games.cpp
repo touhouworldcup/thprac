@@ -2259,7 +2259,8 @@ public:
             // 
             // Yes I'm comparing string pointers and not actual strings. This is OK here.
             auto& gameRef = gGameDefs[i];
-            if (i != 0 && gameRef.idStr == gGameDefs[i - 1].idStr) {
+            if (i != 0 && strcmp(gameRef.idStr, gGameDefs[i - 1].idStr) == 0) {
+                i++;
                 continue;
             }
             if (gameRef.catagory == catagory) {
@@ -2308,7 +2309,6 @@ public:
                 }
 
                 ImGui::NextColumn();
-                i++;
             }
         }
         ImGui::Columns(1);
