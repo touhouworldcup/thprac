@@ -9,6 +9,7 @@
 - add ingame info for many games(6,7,8,10,11,12,13,14,15,16,17,18,128), which includes miss count, bomb count and other counts(like UFO count), use key F8(key 1 in th18) to enable
 - fix a bug for imgui of d3d8
 - add a X-key(bomb) disable in f12 menu for lnb neta
+- add a keybind change function
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
@@ -21,6 +22,7 @@
 - 内置游戏内部分数据显示
 - 修复一个 imgui-d3d8 的八哥
 - 可以在f12菜单里扣x键了
+- 改键功能
 
 ## [简体中文](/README_CN.md)
 # thprac
