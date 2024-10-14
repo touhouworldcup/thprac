@@ -971,10 +971,11 @@ namespace TH17 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
+                DisableXKeyOpt();
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
-
                 // Temp
+
                 ImGui::Checkbox(S(TH17_GOAST_BUGFIX), &mGoastBugfix);
                 ImGui::Checkbox(S(TH17_GOAST_REPFIX), &mGoastRepfix);
                 ImGui::SameLine();
@@ -2101,12 +2102,12 @@ namespace TH17 {
     }
     EHOOK_DY(th17_update, 0x4013b5)
     {
-        static int x = 0;
-        x++;
-        if (x<5)
-            return;
+        // static int x = 0;
+        // x++;
+        // if (x<5)
+        //     return;
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
-        
+
         // Gui components update
         THGuiPrac::singleton().Update();
         THOverlay::singleton().Update();

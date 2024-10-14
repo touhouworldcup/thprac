@@ -736,6 +736,7 @@ namespace TH12 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
+                DisableXKeyOpt();
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
                 EndOptGroup();

@@ -1752,6 +1752,7 @@ namespace TH18 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
+                DisableXKeyOpt();
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
                 if (ImGui::Checkbox(S(TH18_UNCAP), &scoreUncapChkbox)) {

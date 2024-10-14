@@ -11,6 +11,8 @@
 #include <metrohash128.h>
 #include <array>
 
+#include <MinHook.h>
+
 namespace THPrac {
 #pragma region Gui Wrapper
 
@@ -18,6 +20,8 @@ int g_gameGuiImpl = -1;
 DWORD* g_gameGuiDevice = nullptr;
 DWORD* g_gameGuiHwnd = nullptr;
 HIMC g_gameIMCCtx = 0;
+bool g_disable_xkey = false;
+bool g_enable_SOCD = false;
 
 
 typedef BOOL(WINAPI* GetKeyboardStateType)(PBYTE lpKeyboardState);
@@ -37,13 +41,18 @@ enum Key {
 
 BOOL WINAPI GetKeyboardState_SOCD(PBYTE keyBoardState)
 {
+    bool res = g_realGetKeyboardState(keyBoardState);
+    if (g_disable_xkey) {
+        keyBoardState['X'] = 0x0;
+    }
+    if (!g_enable_SOCD){
+        return res;
+    }
     static BYTE last_keyBoardState[256] = { 0 };
     static uint32_t cur_time = 0;
     static uint32_t keyBoard_press_time[4] = { 0 };
 
     cur_time++;
-    g_realGetKeyboardState(keyBoardState);
-    
     
     if (IS_KEY_DOWN(keyBoardState[VK_LEFT]) && !IS_KEY_DOWN(last_keyBoardState[VK_LEFT]))
         keyBoard_press_time[K_LEFT] = cur_time;
@@ -71,7 +80,7 @@ BOOL WINAPI GetKeyboardState_SOCD(PBYTE keyBoardState)
             keyBoardState[VK_UP] = 0;
         }
     }
-    return true;
+    return res;
 }
 
 HookCtx g_dinput8Hook;
@@ -79,14 +88,19 @@ HookCtx g_dinput8Hook;
 
 HRESULT STDMETHODCALLTYPE GetDeviceState_SOCD(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state)
 {
+    HRESULT res = g_realGetDeviceState(thiz, num, state);
+    if (g_disable_xkey) {
+        ((BYTE*)state)[DIK_X] = 0x0;
+    }
+    if (!g_enable_SOCD) {
+        return res;
+    }
     static BYTE last_keyBoardState[256] = { 0 };
     static uint32_t cur_time = 0;
     static uint32_t keyBoard_press_time[4] = { 0 };
 
     BYTE* keyBoardState = (BYTE*)state;
     cur_time++;
-    HRESULT res=g_realGetDeviceState(thiz, num, state);
-
 
     if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_LEFTARROW]))
         keyBoard_press_time[K_LEFT] = cur_time;
@@ -224,21 +238,27 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         }
 
         bool keyboard_socd;
-        if (LauncherSettingGet("keyboard_SOCD", keyboard_socd) && keyboard_socd){
-            HookIAT(GetModuleHandle(NULL), "user32.dll", "GetKeyboardState", GetKeyboardState_SOCD, (void**) & g_realGetKeyboardState);
+        if (LauncherSettingGet("keyboard_SOCD", keyboard_socd) && keyboard_socd) {
+            g_enable_SOCD = true;
             
+        }else{
+            g_enable_SOCD = false;
+        }
+        {//hook keyboard to enable SOCD and X-disable
+            LPVOID pTarget;
+            MH_CreateHookApiEx(L"user32.dll", "GetKeyboardState", GetKeyboardState_SOCD, (void**)&g_realGetKeyboardState, &pTarget);
+            MH_EnableHook(pTarget);
 
             LPDIRECTINPUT8 pdinput;
-            DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**) & pdinput, NULL);
-            if (FAILED(pdinput)){
-            
+            DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&pdinput, NULL);
+            if (FAILED(pdinput)) {
             }
             LPDIRECTINPUTDEVICE8 ddevice;
             pdinput->CreateDevice(GUID_SysKeyboard, &ddevice, NULL);
             void* GetDeviceStateAddr = (*(void***)ddevice)[9];
 
-            HookVTable(ddevice, 9, GetDeviceState_SOCD, (void**) & g_realGetDeviceState);
-            
+            HookVTable(ddevice, 9, GetDeviceState_SOCD, (void**)&g_realGetDeviceState);
+
             pdinput->Release();
             ddevice->Release();
         }
@@ -624,6 +644,15 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
     ctx.fps = fpsStatic;
     return clickedApply;
 }
+
+bool DisableXKeyOpt()
+{
+    ImGui::Checkbox(S(TH_ADV_DISABLE_X_KEY), &g_disable_xkey);
+    ImGui::SameLine();
+    HelpMarker(S(TH_ADV_DISABLE_X_KEY_DESC));
+    return g_disable_xkey;
+}
+
 
 bool GameplayOpt(adv_opt_ctx& ctx)
 {

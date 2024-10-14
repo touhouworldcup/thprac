@@ -572,7 +572,7 @@ namespace TH15 {
                 }
             } else {
                 SetPosRel(900.0f / 1280.0f, 520.0f / 960.0f);
-                SetSizeRel(280.0f / 1280.0f, 100.0f / 960.0f);
+                SetSizeRel(340.0f / 1280.0f, 100.0f / 960.0f);
                 ImGui::Columns(2);
                 ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));ImGui::NextColumn();ImGui::Text("%8d",mMissCount);
                 ImGui::NextColumn();
@@ -736,6 +736,7 @@ namespace TH15 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
+                DisableXKeyOpt();
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
                 EndOptGroup();

@@ -1477,7 +1477,7 @@ namespace TH06 {
                     FpsSet();
                 EndOptGroup();
             }
-
+            DisableXKeyOpt();
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();

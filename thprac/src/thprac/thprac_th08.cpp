@@ -817,6 +817,7 @@ namespace TH08 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
+                DisableXKeyOpt();
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
 
