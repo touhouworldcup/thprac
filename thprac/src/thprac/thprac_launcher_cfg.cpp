@@ -25,7 +25,7 @@
 #pragma comment(lib, "wininet.lib")
 #include <shlwapi.h>
 #pragma comment(lib, "Shlwapi.lib")
-
+#include <dinput.h>
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
@@ -315,6 +315,55 @@ void LauncherSettingSet(const char* name, const std::string& valueIn)
 {
     LauncherSettingSet(name, valueIn.c_str());
 }
+
+std::unordered_map<KeyDefine, KeyDefine, KeyDefineHashFunction> g_keybind;
+void LauncherSettingGet_KeyBind()
+{
+    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+        auto& settingsJson = gCfgJson["settings"];
+        if (settingsJson.HasMember("keybind") && settingsJson["keybind"].IsArray())
+        {
+            auto keybind_arr = settingsJson["keybind"].GetArray();
+            for (auto& keybind : keybind_arr){
+                if (keybind.HasMember("from") && keybind["from"].IsString() && keybind.HasMember("to") && keybind["to"].IsString()) {
+                    std::string keyname1 = keybind["from"].GetString();
+                    std::string keyname2 = keybind["to"].GetString();
+                    KeyDefine k1 = { 0 }, k2 = { 0 };
+                    int ok = 0;
+                    for (auto& keydef : keyBindDefine)
+                    {
+                        if (keydef.keyname == keyname1) {k1 = keydef; ok++; }
+                        if (keydef.keyname == keyname2) {k2 = keydef; ok++; }
+                    }
+                    if (ok == 2)
+                        g_keybind[k1] = k2;
+                }
+            }
+        }
+    }
+    return;
+}
+
+void LauncherSettingSet_KeyBind()
+{
+    auto& settingsJson = GetCfgSettingsJson();
+    if (settingsJson.HasMember("keybind")) {
+        settingsJson.RemoveMember("keybind");
+    }
+    rapidjson::Value arr(rapidjson::kArrayType);
+    for (auto& keybind : g_keybind)
+    {
+        rapidjson::Value bind(rapidjson::kObjectType);
+        auto key1=keybind.first.keyname;
+        auto key2 = keybind.second.keyname;
+        JsonAddMemberA(bind, "from", key1.c_str(), gCfgJson.GetAllocator());
+        JsonAddMemberA(bind, "to", key2.c_str(), gCfgJson.GetAllocator());
+        arr.PushBack(bind, gCfgJson.GetAllocator());
+    }
+    JsonAddMemberA(settingsJson, "keybind", arr, gCfgJson.GetAllocator());
+    LauncherCfgWrite();
+}
+
 
 bool SetTheme(int themeId, const wchar_t* userThemeName)
 {
@@ -1347,6 +1396,133 @@ private:
             }
         }
     }
+    void KeyBindSettings()
+    {
+        bool dirSettingModalFlag = false;
+        bool confirmModalFlag = false;
+        LauncherSettingGet_KeyBind();
+
+        if (ImGui::Button(S(THPRAC_KEYBIND))) {
+            ImGui::OpenPopup(S(THPRAC_KEYBIND_MODAL));
+        }
+        
+        if (GuiModal(S(THPRAC_KEYBIND_MODAL), { LauncherWndGetSize().x * 0.95f, LauncherWndGetSize().y * 0.8f })) {
+            ImGui::PushTextWrapPos(LauncherWndGetSize().x * 0.9f);
+            {
+                ImGui::TextUnformatted(S(THPRAC_KEYBIND));
+                ImGui::BeginTable("keys binded",3,ImGuiTableFlags_::ImGuiTableFlags_Borders);
+                ImGui::TableSetupColumn(S(THPRAC_KEYBIND_FROM), 0, LauncherWndGetSize().x * 0.95f * 0.4f);
+                ImGui::TableSetupColumn(S(THPRAC_KEYBIND_TO), 0, LauncherWndGetSize().x * 0.95f * 0.4f);
+                ImGui::TableSetupColumn(S(THPRAC_KEYBIND_REMOVE), 0, LauncherWndGetSize().x * 0.95f * 0.2f);
+                ImGui::TableHeadersRow();
+
+                int row = 0;
+                bool is_to_remove = false;
+                KeyDefine key_to_remove = { 0 };
+                for (auto& bind : g_keybind)
+                {
+                    auto key1 = bind.first.keyname;
+                    auto key2 = bind.second.keyname;
+                    ImGui::TableNextColumn();
+                    ImGui::Text(key1.c_str());
+                    ImGui::TableNextColumn();
+                    ImGui::Text(key2.c_str());
+                    ImGui::TableNextColumn();
+                    char btn_name[100];
+                    sprintf_s(btn_name, "%s##%d", S(THPRAC_KEYBIND_REMOVE), row);
+                    if (ImGui::Button(btn_name)){
+                        is_to_remove = true;
+                        key_to_remove = bind.first;
+                    }
+                    row++;
+                }
+                ImGui::EndTable();
+                if (is_to_remove){
+                    g_keybind.erase(key_to_remove);
+                    LauncherSettingSet_KeyBind();
+                }
+
+
+                static int keyid_from = 0;
+                static int keyid_to = 0;
+                static const char* keys_name[109] = { 0 };
+                if (keys_name[0] == nullptr) {
+                    int i = 0;
+                    for (auto& key : keyBindDefine) {
+                        keys_name[i] = key.keyname.c_str();
+                        i++;
+                    }
+                }
+                static bool press_a_key_from = false;
+                static bool press_a_key_to = false;
+                if (ImGui::Button(S(THPRAC_KEYBIND_ADD))){
+                    ImGui::OpenPopup(S(THPRAC_KEYBIND_ADD_MODAL));
+                    keyid_from = 0;
+                    keyid_to = 0;
+                    press_a_key_from = false;
+                    press_a_key_to = false;
+                }
+                if (GuiModal(S(THPRAC_KEYBIND_ADD_MODAL), { LauncherWndGetSize().x * 0.7f, LauncherWndGetSize().y * 0.7f })) {
+                    ImGui::PushTextWrapPos(LauncherWndGetSize().x * 0.9f);
+                    {
+                        ImGui::Combo(S(THPRAC_KEYBIND_FROM_COMBO), &keyid_from, keys_name, 109);
+                        ImGui::SameLine();
+                        char press_key_text[100] = { 0 };
+                        sprintf_s(press_key_text, "%s##%d", S(THPRAC_KEYBIND_PRESS_A_KEY),1);
+                        if (ImGui::Button(press_key_text) && !press_a_key_from && !press_a_key_to) {
+                            press_a_key_from = true;
+                        }
+                        ImGui::Combo(S(THPRAC_KEYBIND_TO_COMBO), &keyid_to, keys_name, 109);
+                        ImGui::SameLine();
+                        sprintf_s(press_key_text, "%s##%d", S(THPRAC_KEYBIND_PRESS_A_KEY), 2);
+                        if (ImGui::Button(press_key_text) && !press_a_key_from && !press_a_key_to) {
+                            press_a_key_to = true;
+                        }
+                        if (press_a_key_from || press_a_key_to){
+                            ImGui::Text(S(THPRAC_KEYBIND_PRESS_A_KEY));
+                            int key_id = -1;
+                            for (int i = 0; i < 109; i++) {
+                                auto key_state = GetAsyncKeyState(keyBindDefine[i].vk);
+                                if (key_state & 0x8000) {
+                                    key_id = i;
+                                    break;
+                                }
+                            }
+                            if (key_id != -1) {
+                                if (press_a_key_from){
+                                    keyid_from = key_id;
+                                }else if (press_a_key_to){
+                                    keyid_to = key_id;
+                                }
+                                press_a_key_from = press_a_key_to = false;
+                            }
+                        }
+                    }
+                    auto retnValue = GuiCornerButton(S(THPRAC_APPLY), S(THPRAC_CANCEL), ImVec2(1.0f, 0.0f), true);
+                    if (retnValue == 1) {
+                        g_keybind[keyBindDefine[keyid_from]] = keyBindDefine[keyid_to];
+                        ImGui::CloseCurrentPopup();
+                    } else if (retnValue == 2) {
+                        ImGui::CloseCurrentPopup();
+                    }
+                    ImGui::PopTextWrapPos();
+                    ImGui::EndPopup();
+                }
+            }
+
+            auto retnValue = GuiCornerButton(S(THPRAC_APPLY), S(THPRAC_CANCEL), ImVec2(1.0f, 0.0f), true);
+            if (retnValue == 1) {
+                ImGui::CloseCurrentPopup();
+                LauncherSettingSet_KeyBind();
+                confirmModalFlag = true;
+            } else if (retnValue == 2) {
+                ImGui::CloseCurrentPopup();
+                confirmModalFlag = false;
+            }
+            ImGui::PopTextWrapPos();
+            ImGui::EndPopup();
+        }
+    }
 
     void PathAndDirSettings()
     {
@@ -1808,7 +1984,9 @@ private:
         mWindowSizeChangeWhenOpen.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN));
         mWindowSize.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE));
         mEnableKeyboardSOCD.Gui(S(THPRAC_ENABLE_KEYBOARD_SOCD), S(THPRAC_ENABLE_KEYBOARD_SOCD_DESC));
-        
+        KeyBindSettings();
+
+        ImGui::NewLine();
         ImGui::NewLine();
 
         ImGui::TextUnformatted(S(THPRAC_SETTING_LANGUAGE));

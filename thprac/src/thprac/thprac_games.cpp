@@ -39,9 +39,26 @@ enum Key {
     K_DOWN
 };
 
-BOOL WINAPI GetKeyboardState_SOCD(PBYTE keyBoardState)
+extern std::unordered_map<KeyDefine, KeyDefine, KeyDefineHashFunction> g_keybind;
+
+BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
 {
     bool res = g_realGetKeyboardState(keyBoardState);
+    if (g_keybind.size() != 0)
+    {
+        static BYTE new_keyBoardState[256] = { 0 };
+        bool new_keyBoardState_changed[256] = { 0 };
+        memcpy_s(new_keyBoardState,256, keyBoardState, 256);
+        for (auto& bind : g_keybind) {
+            if (IS_KEY_DOWN(keyBoardState[bind.second.vk])) {
+                new_keyBoardState[bind.first.vk] |= 0x80;
+                if (!new_keyBoardState_changed[bind.first.vk])
+                    new_keyBoardState[bind.second.vk] &= (~0x80);
+                new_keyBoardState_changed[bind.first.vk] = true;
+            }
+        }
+        memcpy_s(keyBoardState, 256, new_keyBoardState, 256);
+    }
     if (g_disable_xkey) {
         keyBoardState['X'] = 0x0;
     }
@@ -86,9 +103,23 @@ BOOL WINAPI GetKeyboardState_SOCD(PBYTE keyBoardState)
 HookCtx g_dinput8Hook;
 
 
-HRESULT STDMETHODCALLTYPE GetDeviceState_SOCD(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state)
+HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state)
 {
     HRESULT res = g_realGetDeviceState(thiz, num, state);
+    if (g_keybind.size() != 0) {
+        static BYTE new_keyBoardState[256] = { 0 };
+        bool new_keyBoardState_changed[256] = { 0 };
+        memcpy_s(new_keyBoardState, num, ((BYTE*)state), num);
+        for (auto& bind : g_keybind) {
+            if (IS_KEY_DOWN(((BYTE*)state)[bind.second.dik])) {
+                new_keyBoardState[bind.first.dik] |= 0x80;
+                if (!new_keyBoardState_changed[bind.first.dik])
+                    new_keyBoardState[bind.second.dik] &= (~0x80);
+                new_keyBoardState_changed[bind.first.dik] = true;
+            }
+        }
+        memcpy_s(((BYTE*)state), num, new_keyBoardState, num);
+    }
     if (g_disable_xkey) {
         ((BYTE*)state)[DIK_X] = 0x0;
     }
@@ -111,7 +142,7 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_SOCD(LPDIRECTINPUTDEVICE8 thiz, DWORD n
     if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_DOWNARROW]))
         keyBoard_press_time[K_DOWN] = cur_time;
 
-    memcpy_s(last_keyBoardState, 256, keyBoardState, 256);
+    memcpy_s(last_keyBoardState, num, keyBoardState, num);
 
     if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW])) {
         if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]) {
@@ -240,13 +271,13 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         bool keyboard_socd;
         if (LauncherSettingGet("keyboard_SOCD", keyboard_socd) && keyboard_socd) {
             g_enable_SOCD = true;
-            
         }else{
             g_enable_SOCD = false;
         }
+        LauncherSettingGet_KeyBind();
         {//hook keyboard to enable SOCD and X-disable
             LPVOID pTarget;
-            MH_CreateHookApiEx(L"user32.dll", "GetKeyboardState", GetKeyboardState_SOCD, (void**)&g_realGetKeyboardState, &pTarget);
+            MH_CreateHookApiEx(L"user32.dll", "GetKeyboardState", GetKeyboardState_Changed, (void**)&g_realGetKeyboardState, &pTarget);
             MH_EnableHook(pTarget);
 
             LPDIRECTINPUT8 pdinput;
@@ -257,7 +288,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
             pdinput->CreateDevice(GUID_SysKeyboard, &ddevice, NULL);
             void* GetDeviceStateAddr = (*(void***)ddevice)[9];
 
-            HookVTable(ddevice, 9, GetDeviceState_SOCD, (void**)&g_realGetDeviceState);
+            HookVTable(ddevice, 9, GetDeviceState_Changed, (void**)&g_realGetDeviceState);
 
             pdinput->Release();
             ddevice->Release();

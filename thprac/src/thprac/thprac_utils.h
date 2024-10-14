@@ -33,6 +33,27 @@ namespace THPrac {
 void TryKeepUpRefreshRate(void* address);
 void TryKeepUpRefreshRate(void* address, void* address2);
 
+
+struct KeyDefine {
+    uint16_t dik;
+    uint16_t vk;
+    std::string keyname;
+    bool operator==(const KeyDefine& k2)const
+    {
+        return dik == k2.dik && vk == k2.vk && keyname == k2.keyname;
+    }
+};
+struct KeyDefineHashFunction {
+    size_t operator()(const KeyDefine& key) const
+    {
+        std::hash<uint16_t> h;
+        std::hash<std::string> h2;
+        std::hash<size_t> h3;
+        return h3(h(key.dik) + h(key.vk) + h2(key.keyname));
+    }
+};
+extern const KeyDefine keyBindDefine[109];
+
 struct MappedFile {
     HANDLE fileMap = nullptr;
     HANDLE hFile = INVALID_HANDLE_VALUE;
