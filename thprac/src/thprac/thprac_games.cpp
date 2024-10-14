@@ -105,6 +105,10 @@ HookCtx g_dinput8Hook;
 
 HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state)
 {
+    if (num != 256) {//no keyboard
+        return g_realGetDeviceState(thiz, num, state);
+    }
+
     HRESULT res = g_realGetDeviceState(thiz, num, state);
     if (g_keybind.size() != 0) {
         static BYTE new_keyBoardState[256] = { 0 };
@@ -288,8 +292,10 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
             pdinput->CreateDevice(GUID_SysKeyboard, &ddevice, NULL);
             void* GetDeviceStateAddr = (*(void***)ddevice)[9];
 
-            HookVTable(ddevice, 9, GetDeviceState_Changed, (void**)&g_realGetDeviceState);
-
+            MH_CreateHook(GetDeviceStateAddr, GetDeviceState_Changed, (LPVOID*) & g_realGetDeviceState);
+            MH_EnableHook(GetDeviceStateAddr);
+            // HookVTable(ddevice, 9, GetDeviceState_Changed, (void**)&g_realGetDeviceState);
+            
             pdinput->Release();
             ddevice->Release();
         }
