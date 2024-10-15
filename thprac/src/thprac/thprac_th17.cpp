@@ -2141,7 +2141,7 @@ namespace TH17 {
         // Hooks
         THMainHook::singleton().EnableAllHooks();
 
-        Gui::ImplDX9NewFrame();
+        // Gui::ImplDX9NewFrame();
         // Reset thPracParam
         thPracParam.Reset();
     }

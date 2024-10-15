@@ -1719,7 +1719,7 @@ namespace TH12 {
     {
         TH12InGameInfo::singleton().mBombCount++;
     }
-    EHOOK_DY(th12_life_dec, 0x4381E7) // life dec
+    EHOOK_DY(th12_life_dec, 0x4381E2) // life dec
     {
         TH12InGameInfo::singleton().mMissCount++;
     }

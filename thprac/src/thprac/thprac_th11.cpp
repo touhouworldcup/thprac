@@ -1941,12 +1941,7 @@ namespace TH11 {
     }
 
 #pragma region igi
-    EHOOK_DY(th11_game_start, 0x41FA8C) // gamestart-bomb set
-    {
-        TH11InGameInfo::singleton().mBombCount = 0;
-        TH11InGameInfo::singleton().mMissCount = 0;
-    }
-    EHOOK_DY(th11_game_start2, 0x432CD9) // gamestart-bomb set
+    EHOOK_DY(th11_game_start, 0x41FA6D) // gamestart-bomb set
     {
         TH11InGameInfo::singleton().mBombCount = 0;
         TH11InGameInfo::singleton().mMissCount = 0;

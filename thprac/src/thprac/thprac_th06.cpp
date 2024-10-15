@@ -2678,7 +2678,7 @@ namespace TH06 {
     {
         TH06InGameInfo::singleton().mIsInGame = true;
     }
-    EHOOK_DY(th06_miss, 0x428DED)// dec life
+    EHOOK_DY(th06_miss, 0x428DD9)// dec life
     {
         TH06InGameInfo::singleton().mMissCount++;
     }

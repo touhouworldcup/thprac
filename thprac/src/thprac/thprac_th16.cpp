@@ -2514,7 +2514,7 @@ namespace TH16 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-
+        //Gui::ImplDX9NewFrame();
         // Reset thPracParam
         thPracParam.Reset();
     }
@@ -2538,8 +2538,8 @@ namespace TH16 {
     }
     EHOOK_DY(th16_gui_init_2, 0x45b788)
     {
-        // THGuiCreate();
-        // THInitHookDisable();
+         // THGuiCreate();
+         // THInitHookDisable();
     }
 
 #pragma region igi

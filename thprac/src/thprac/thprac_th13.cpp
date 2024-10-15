@@ -1788,7 +1788,7 @@ namespace TH13 {
     {
         TH13InGameInfo::singleton().mBombCount++;
     }
-    EHOOK_DY(th13_life_dec, 0x444A52) // life dec
+    EHOOK_DY(th13_life_dec, 0x444A75) // life dec
     {
         TH13InGameInfo::singleton().mMissCount++;
     }
