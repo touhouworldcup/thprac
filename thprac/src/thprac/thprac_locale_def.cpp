@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][968] {
+const char* th_glossary_str[3][969] {
     {
         "",
         "啤酒",
@@ -634,7 +634,6 @@ const char* th_glossary_str[3][968] {
         "按键名",
         "原按键",
         "原按键",
-        "删除",
         "修改按键映射##modal",
         "请按下一个按键",
         "删除",
@@ -857,6 +856,8 @@ const char* th_glossary_str[3][968] {
         "你现在可以在游戏中按“,”键记录数据。",
         "延迟",
         "难度",
+        "符卡收率完整显示",
+        "不显示master 0/99+等",
         "对话",
         "永续BGM",
         "关底一非",
@@ -1604,7 +1605,6 @@ const char* th_glossary_str[3][968] {
         "key name",
         "original key",
         "original key",
-        "remove",
         "set keybind##modal",
         "please press a key",
         "remove",
@@ -1827,6 +1827,8 @@ const char* th_glossary_str[3][968] {
         "You can now press ',' to record data when you're playing.",
         "Delay",
         "Difficulty",
+        "show complete spellcard capture rate",
+        "no master, 0/99+, etc",
         "Dialog",
         "Everlasting BGM",
         "Boss Nonspell 1",
@@ -2574,7 +2576,6 @@ const char* th_glossary_str[3][968] {
         "key name",
         "original key",
         "original key",
-        "remove",
         "set keybind##modal",
         "please press a key",
         "remove",
@@ -2797,6 +2798,8 @@ const char* th_glossary_str[3][968] {
         "ゲーム中に「,」キーを押すとデータを記録することができます。",
         "ディレイ",
         "難易度",
+        "show complete spellcard capture rate",
+        "no master, 0/99+, etc",
         "ダイアログ",
         "永遠に続くBGM",
         "ボス 通常1",

@@ -1125,6 +1125,7 @@ namespace TH18 {
             OnLocaleChange();
             FpsInit();
             GameplayInit();
+            MasterDisableInit();
             ScoreUncapInit();
             th18_mukade_fix.Setup();
             th18_scroll_fix.Setup();
@@ -1210,6 +1211,8 @@ namespace TH18 {
                     pCtx->Eip = 0x42917b; // green
             }
         }
+        HookCtx* th18_master_disable[3];
+
         EHOOK_ST(th18_static_mallet_replay_gold, 0x429222)
         {
             if (GetMemContent(0x4cf2e4, 0xd0)) StaticMalletConversion(pCtx);
@@ -1238,6 +1241,7 @@ namespace TH18 {
         bool scoreUncapOverwrite = false;
         bool scoreReplayFactor = false;
         bool staticMalletReplay = false;
+        bool disableMaster = false;
 
         EHOOK_ST(th18_st6final_fix, 0x438e47)
         {
@@ -1650,6 +1654,16 @@ namespace TH18 {
             th18_all_clear_bonus_2.Toggle(mOptCtx.all_clear_bonus);
             th18_all_clear_bonus_3.Toggle(mOptCtx.all_clear_bonus);
         }
+        void MasterDisableInit()
+        {
+            th18_master_disable[0] = new HookCtx(0x42A26E, "\xEB", 1);
+            th18_master_disable[0]->Setup();
+            th18_master_disable[1] = new HookCtx(0x42A2B3, "\xEB", 1);
+            th18_master_disable[1]->Setup();
+            th18_master_disable[2] = new HookCtx(0x42A1C6, "\x03", 1);
+            th18_master_disable[2]->Setup();
+        }
+
         void ScoreUncapInit()
         {
             for (auto addr : scoreUncapOffsetNew) {
@@ -1753,6 +1767,15 @@ namespace TH18 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
+                    th18_master_disable[0]->Toggle(disableMaster);
+                    th18_master_disable[1]->Toggle(disableMaster);
+                    th18_master_disable[2]->Toggle(disableMaster);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH_DISABLE_MASTER_DESC));
+
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
                 if (ImGui::Checkbox(S(TH18_UNCAP), &scoreUncapChkbox)) {

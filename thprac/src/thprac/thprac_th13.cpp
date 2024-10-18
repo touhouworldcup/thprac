@@ -591,7 +591,30 @@ namespace TH13 {
                 pCtx->Eip = 0x42ce2d;
             }
         }
+        HookCtx* th13_master_disable[5];
+        EHOOK_ST(th13_master_disable2,0x4130CE)
+        {
+            *(DWORD*)(pCtx->Esi + 0x0001917C) = 0;
+        }
+        bool disableMaster = false;
     private:
+        void MasterDisableInit()
+        {
+            th13_master_disable[0] = new HookCtx(0x41318B, "\xEB", 1);
+            th13_master_disable[0]->Setup();
+            th13_master_disable[1] = new HookCtx(0x4131A6, "\xEB", 1);
+            th13_master_disable[1]->Setup();
+
+            th13_master_disable[2] = new HookCtx(0x4AEDA0, "\x00\x80\x80\x43", 4);//257
+            th13_master_disable[2]->Setup();
+            th13_master_disable[3] = new HookCtx(0x4AED98, "\x00\x80\x87\x43", 4); // 271
+            th13_master_disable[3]->Setup();
+            th13_master_disable[4] = new HookCtx(0x4AED94, "\x00\x00\xB0\x43", 4); // 352
+            th13_master_disable[4]->Setup();
+            th13_master_disable2.Setup();
+
+            
+        }
         void VPResetFPS(int32_t FPS)
         {
             if (*(int32_t*)(mOptCtx.vpatch_base + 0x16a8c) != FPS) {
@@ -670,6 +693,7 @@ namespace TH13 {
             OnLocaleChange();
             FpsInit();
             GameplayInit();
+            MasterDisableInit();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -738,6 +762,16 @@ namespace TH13 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
+                    th13_master_disable[0]->Toggle(disableMaster);
+                    th13_master_disable[1]->Toggle(disableMaster);
+                    th13_master_disable[2]->Toggle(disableMaster);
+                    th13_master_disable[3]->Toggle(disableMaster);
+                    th13_master_disable[4]->Toggle(disableMaster);
+                    th13_master_disable2.Toggle(disableMaster);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH_DISABLE_MASTER_DESC));
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
                 EndOptGroup();

@@ -570,7 +570,16 @@ namespace TH11 {
                 pCtx->Eip = 0x41ebc2;
             }
         }
+        EHOOK_ST(th11_master_disable2, 0x40C50E)
+        {
+            *(DWORD*)(pCtx->Ecx + 0x1849c) = 0;
+        }
+        bool disableMaster = false;
     private:
+        void MasterDisableInit()
+        {
+            th11_master_disable2.Setup();
+        }
         void FpsInit()
         {
             mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th11.dll");
@@ -630,6 +639,7 @@ namespace TH11 {
             OnLocaleChange();
             FpsInit();
             GameplayInit();
+            MasterDisableInit();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -689,6 +699,11 @@ namespace TH11 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
+                    th11_master_disable2.Toggle(disableMaster);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH_DISABLE_MASTER_DESC));
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
                 EndOptGroup();

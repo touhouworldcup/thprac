@@ -617,7 +617,18 @@ namespace TH15 {
                 pCtx->Eip = 0x43d9a2;
             }
         }
+        HookCtx* th15_master_disable[3];
+        bool disableMaster = false;
     private:
+        void MasterDisableInit()
+        {
+            th15_master_disable[0] = new HookCtx(0x420346, "\xEB", 1);
+            th15_master_disable[0]->Setup();
+            th15_master_disable[1] = new HookCtx(0x42036B, "\xEB", 1);
+            th15_master_disable[1]->Setup();
+            th15_master_disable[2] = new HookCtx(0x420296, "\x00", 1);
+            th15_master_disable[2]->Setup();
+        }
         void FpsInit()
         {
             mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th15.dll");
@@ -677,6 +688,7 @@ namespace TH15 {
             OnLocaleChange();
             FpsInit();
             GameplayInit();
+            MasterDisableInit();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -737,6 +749,13 @@ namespace TH15 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
+                    th15_master_disable[0]->Toggle(disableMaster);
+                    th15_master_disable[1]->Toggle(disableMaster);
+                    th15_master_disable[2]->Toggle(disableMaster);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH_DISABLE_MASTER_DESC));
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
                 EndOptGroup();

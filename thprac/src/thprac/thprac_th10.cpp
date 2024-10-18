@@ -576,7 +576,45 @@ namespace TH10 {
                 pCtx->Eip = 0x416c46;
             }
         }
+        EHOOK_ST(th10_master_disable2, 0x409064)
+        {
+            for (int i=0;i<5;i++)
+                *(float*)(pCtx->Edi + 0x24D8+0x3AC*i+0x334) = -9999.0f; //original ascii texture
+            DWORD thiz = *(DWORD*)(0x4776E0);
+            if (*(DWORD*)(0x00477834) && *(float*)(*(DWORD*)(0x00477834) + 0x3C4) < 120.0f)
+                *(DWORD*)(thiz + 0x8974) = 0x80FFFFFF;
+            else
+                *(DWORD*)(thiz + 0x8974) = 0xFFFFFFFF;
+            static const char ch[] = "%d/%d";
+
+            int capture_cur = *(DWORD*)(144 * *(DWORD*)(pCtx->Edi + 0x3788)
+                + *(DWORD*)(0x47783C)+ 17276 * (*(DWORD*)(0x474C68) + *(DWORD*)(0x474C6C) + 2 * *(DWORD*)(0x474C68)) + 1572);
+            int capture_tot = *(DWORD*)(144 * *(DWORD*)(pCtx->Edi + 0x3788)
+                + *(DWORD*)(0x47783C)  + 17276 * (*(DWORD*)(0x474C68) + *(DWORD*)(0x474C6C) + 2 * *(DWORD*)(0x474C68))+ 1576);
+            float pos[3] = { 360.0f, 52.0f, 0.0f };
+
+            DWORD ppos = (DWORD)pos;
+            DWORD pch=(DWORD)ch;
+            __asm
+            {
+                push capture_tot
+                push capture_cur
+                push pch
+
+                mov ebx,ppos
+                mov esi,thiz
+
+                mov eax,0x00401690
+                call eax
+                add esp,0xC
+            }
+        }
+        bool disableMaster = false;
     private:
+        void MasterDisableInit()
+        {
+            th10_master_disable2.Setup();
+        }
         void FpsInit()
         {
             mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th10.dll");
@@ -630,6 +668,7 @@ namespace TH10 {
             OnLocaleChange();
             FpsInit();
             GameplayInit();
+            MasterDisableInit();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -689,6 +728,11 @@ namespace TH10 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
+                    th10_master_disable2.Toggle(disableMaster);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH_DISABLE_MASTER_DESC));
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
                 EndOptGroup();

@@ -634,7 +634,6 @@ enum th_glossary_t {
     THPRAC_KEYBIND_ENTER,
     THPRAC_KEYBIND_FROM,
     THPRAC_KEYBIND_FROM_COMBO,
-    THPRAC_KEYBIND_MINUS,
     THPRAC_KEYBIND_MODAL,
     THPRAC_KEYBIND_PRESS_A_KEY,
     THPRAC_KEYBIND_REMOVE,
@@ -857,6 +856,8 @@ enum th_glossary_t {
     TH_DATANLY_SELECT_PROMPT,
     TH_DELAY,
     TH_DIFFICULTY,
+    TH_DISABLE_MASTER,
+    TH_DISABLE_MASTER_DESC,
     TH_DLG,
     TH_EL_BGM,
     TH_END_NS1,
@@ -979,7 +980,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][968];
+extern const char* th_glossary_str[3][969];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

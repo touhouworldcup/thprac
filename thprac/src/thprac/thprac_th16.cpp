@@ -724,7 +724,18 @@ namespace TH16 {
                 pCtx->Eip = 0x42e245;
             }
         }
+        HookCtx* th16_master_disable[3];
+        bool disableMaster = false;
     private:
+        void MasterDisableInit()
+        {
+            th16_master_disable[0] = new HookCtx(0x417E5C, "\xEB", 1);
+            th16_master_disable[0]->Setup();
+            th16_master_disable[1] = new HookCtx(0x417E81, "\xEB", 1);
+            th16_master_disable[1]->Setup();
+            th16_master_disable[2] = new HookCtx(0x417DC6, "\x00", 1);
+            th16_master_disable[2]->Setup();
+        }
         void FpsInit()
         {
             if (*(uint8_t*)0x4c12c9 == 3) {
@@ -771,6 +782,7 @@ namespace TH16 {
             OnLocaleChange();
             FpsInit();
             GameplayInit();
+            MasterDisableInit();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -830,6 +842,13 @@ namespace TH16 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
+                    th16_master_disable[0]->Toggle(disableMaster);
+                    th16_master_disable[1]->Toggle(disableMaster);
+                    th16_master_disable[2]->Toggle(disableMaster);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH_DISABLE_MASTER_DESC));
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
                 EndOptGroup();

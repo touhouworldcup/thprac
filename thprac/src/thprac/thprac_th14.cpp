@@ -924,8 +924,19 @@ namespace TH14 {
                 pCtx->Eip = 0x43708f;
             }
         }
+        HookCtx* th14_master_disable[3];
+        bool disableMaster = false;
     private:
         // Option Related Functions
+        void MasterDisableInit()
+        {
+            th14_master_disable[0] = new HookCtx(0x41CAD9, "\xEB", 1);
+            th14_master_disable[0]->Setup();
+            th14_master_disable[1] = new HookCtx(0x41CAB4, "\xEB", 1);
+            th14_master_disable[1]->Setup();
+            th14_master_disable[2] = new HookCtx(0x41CA0F, "\x00", 1);
+            th14_master_disable[2]->Setup();
+        }
         void FpsInit()
         {
             if (*(uint8_t*)0x4d9159 == 3) {
@@ -1245,6 +1256,7 @@ namespace TH14 {
             FpsInit();
             GameplayInit();
             MarisaLaserInit();
+            MasterDisableInit();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -1339,6 +1351,13 @@ namespace TH14 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
+                    th14_master_disable[0]->Toggle(disableMaster);
+                    th14_master_disable[1]->Toggle(disableMaster);
+                    th14_master_disable[2]->Toggle(disableMaster);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH_DISABLE_MASTER_DESC));
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
                 EndOptGroup();

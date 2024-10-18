@@ -705,6 +705,10 @@
       "TH_COERCIVE": [ "暴力取材", "Coercive Reporting", "圧迫取材" ],
       "TH_INFITEMS": [ "无限道具", "Inf. Items", "アイテム減らない" ],
       "TH_EL_BGM": [ "永续BGM", "Everlasting BGM", "永遠に続くBGM" ],
+      "TH_DISABLE_MASTER": [ "符卡收率完整显示", "show complete spellcard capture rate", "show complete spellcard capture rate" ],
+      "TH_DISABLE_MASTER_DESC": [ "不显示master 0/99+等", "no master, 0/99+, etc", "no master, 0/99+, etc" ],
+	  
+	  
       "TH_ON": [ "开启", "On", "有効" ],
       "TH_OFF": [ "关闭", "Off", "無効" ],
       "TH_NORMAL": [ "正常", "Normal", "普通" ],

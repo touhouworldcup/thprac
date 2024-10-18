@@ -10,6 +10,7 @@
 - fix a bug for imgui of d3d8
 - add a X-key(bomb) disable in f12 menu for lnb neta
 - add a keybind change function
+- add complete spell capture rate for th10-18(not showing master when capture trial>99)(use f12 menu)
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
@@ -23,6 +24,7 @@
 - 修复一个 imgui-d3d8 的八哥
 - 可以在f12菜单里扣x键了
 - 改键功能
+- 收率查看(10-18)
 
 ## [简体中文](/README_CN.md)
 # thprac
