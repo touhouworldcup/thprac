@@ -57,6 +57,16 @@ BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
                 new_keyBoardState_changed[bind.first.vk] = true;
             }
         }
+        if (IS_KEY_DOWN(new_keyBoardState[VK_LSHIFT]) || IS_KEY_DOWN(new_keyBoardState[VK_RSHIFT]))
+        {
+            new_keyBoardState[VK_SHIFT] |= 0x80;
+        }
+        if (IS_KEY_DOWN(new_keyBoardState[VK_LCONTROL]) || IS_KEY_DOWN(new_keyBoardState[VK_RCONTROL])) {
+            new_keyBoardState[VK_CONTROL] |= 0x80;
+        }
+        if (IS_KEY_DOWN(new_keyBoardState[VK_LMENU]) || IS_KEY_DOWN(new_keyBoardState[VK_RMENU])) {
+            new_keyBoardState[VK_MENU] |= 0x80;
+        }
         memcpy_s(keyBoardState, 256, new_keyBoardState, 256);
     }
     if (g_disable_xkey) {
