@@ -11,6 +11,7 @@
 - add a X-key(bomb) disable in f12 menu for lnb neta
 - add a keybind change function
 - add complete spell capture rate for th10-18(not showing master when capture trial>99)(use f12 menu)
+- add one key die for th7,8,10 to save rep quickly(f12 menu)
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
@@ -22,9 +23,10 @@
 - 内置键盘SOCD功能, 考虑到部分高端键盘已经有这个功能了所以我觉得加入了应该也无所谓(吧大概
 - 内置游戏内部分数据显示
 - 修复一个 imgui-d3d8 的八哥
-- 可以在f12菜单里扣x键了
+- 可以在F12菜单里扣x键了
 - 改键功能
 - 收率查看(10-18)
+- th7,8,10的一键疮痍(F12)(用于光速存rep)
 
 ## [简体中文](/README_CN.md)
 # thprac

@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][969] {
+const char* th_glossary_str[3][971] {
     {
         "",
         "啤酒",
@@ -823,7 +823,7 @@ const char* th_glossary_str[3][969] {
         "6面后Extra",
         "中Boss##bossrush",
         "都正常",
-        "双方愤怒",
+        "夫妻双打",
         "子弹",
         "Rank",
         "锁Rank",
@@ -895,7 +895,7 @@ const char* th_glossary_str[3][969] {
         "游戏速度",
         "擦弹",
         "血量",
-        "赫卡蒂亚之怒",
+        "赫卡提亚狂暴",
         "锁Bomb",
         "无限装填率",
         "锁生命",
@@ -903,7 +903,7 @@ const char* th_glossary_str[3][969] {
         "锁残",
         "锁火力",
         "无限蓄力",
-        "纯子愤怒",
+        "纯狐狂暴",
         "左",
         "残机",
         "残机碎片",
@@ -925,6 +925,8 @@ const char* th_glossary_str[3][969] {
         "关闭",
         "确认",
         "开启",
+        "一键疮痍",
+        "为了在某些作品的练习模式中快速存rep",
         "原版练习",
         "P1",
         "P2",
@@ -1896,6 +1898,8 @@ const char* th_glossary_str[3][969] {
         "Off",
         "OK",
         "On",
+        "one key DIE",
+        "for rep storage in practice mode",
         "Original",
         "P1",
         "P2",
@@ -2867,6 +2871,8 @@ const char* th_glossary_str[3][969] {
         "無効",
         "OK",
         "有効",
+        "one key DIE",
+        "for rep storage in practice mode",
         "オリジナル",
         "P1",
         "P2",
@@ -22960,7 +22966,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3183] {
+const wchar_t __thprac_loc_range_zh[3189] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -23345,6 +23351,7 @@ const wchar_t __thprac_loc_range_zh[3183] {
     0x5927, 0x5927,
     0x5929, 0x5929,
     0x592a, 0x592a,
+    0x592b, 0x592b,
     0x592e, 0x592e,
     0x5931, 0x5931,
     0x5934, 0x5934,
@@ -23360,6 +23367,7 @@ const wchar_t __thprac_loc_range_zh[3183] {
     0x5984, 0x5984,
     0x5992, 0x5992,
     0x5996, 0x5996,
+    0x59bb, 0x59bb,
     0x59c6, 0x59c6,
     0x59cb, 0x59cb,
     0x59e5, 0x59e5,
@@ -23955,12 +23963,14 @@ const wchar_t __thprac_loc_range_zh[3183] {
     0x7559, 0x7559,
     0x755c, 0x755c,
     0x7591, 0x7591,
+    0x75ae, 0x75ae,
     0x75af, 0x75af,
     0x75b2, 0x75b2,
     0x75b5, 0x75b5,
     0x75be, 0x75be,
     0x75c5, 0x75c5,
     0x75c7, 0x75c7,
+    0x75cd, 0x75cd,
     0x75d5, 0x75d5,
     0x75db, 0x75db,
     0x7634, 0x7634,
@@ -24205,7 +24215,6 @@ const wchar_t __thprac_loc_range_zh[3183] {
     0x845b, 0x845b,
     0x846c, 0x846c,
     0x8471, 0x8471,
-    0x8482, 0x8482,
     0x8499, 0x8499,
     0x84c4, 0x84c4,
     0x84d3, 0x84d3,

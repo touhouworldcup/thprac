@@ -106,7 +106,7 @@ namespace TH08 {
     class THGuiPrac : public Gui::GameGuiWnd {
         THGuiPrac() noexcept
         {
-            *mLife = 2;
+            *mLife = 8;
             *mBomb = 8;
             *mPower = 128;
             mGauge.SetCurrentStep(5000);
@@ -587,6 +587,8 @@ namespace TH08 {
         Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
             new HookCtx(0x416CBE, "\x2e\xe9", 2),
             new HookCtx(0x42DDB5, "\xeb", 1) } };
+
+    public:
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
             new HookCtx(0x44CC18, "\xff\x89", 2),
             new HookCtx(0x44CC21, "\x66\xC7\x05\x28\xD5\x64\x01\x02", 8),
@@ -722,7 +724,8 @@ namespace TH08 {
         {
             if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
-            } else if (mOptCtx.fps_status == 2) {
+            }
+            else if (mOptCtx.fps_status == 2) {
                 *(int32_t*)(mOptCtx.vpatch_base + 0x15a4c) = mOptCtx.fps;
                 *(int32_t*)(mOptCtx.vpatch_base + 0x17034) = mOptCtx.fps;
             }
@@ -818,6 +821,18 @@ namespace TH08 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+                if (ImGui::Button(S(TH_ONE_KEY_DIE)))
+                {
+                    if (*(DWORD*)(0x160f510))
+                    {
+                        *(float*)(*(DWORD*)(0x160f510) + 0x74) = 0.0f;
+                        *(float*)(*(DWORD*)(0x160f510) + 0x80) = 0.0f;// prevent autobomb
+                        *(BYTE*)(0x017D5EF8) = 2;
+                    }
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH_ONE_KEY_DIE_DESC));
+
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
 

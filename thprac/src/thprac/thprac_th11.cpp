@@ -1961,7 +1961,11 @@ namespace TH11 {
         TH11InGameInfo::singleton().mBombCount = 0;
         TH11InGameInfo::singleton().mMissCount = 0;
     }
-    EHOOK_DY(th11_bomb_dec, 0x4311F1) // bomb dec
+    EHOOK_DY(th11_bomb_dec, 0x4311E6) // bomb dec
+    {
+        TH11InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th11_bomb_dec2, 0x431293) // dead bomb
     {
         TH11InGameInfo::singleton().mBombCount++;
     }

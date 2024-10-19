@@ -728,6 +728,16 @@ namespace TH10 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+                if (ImGui::Button(S(TH_ONE_KEY_DIE))) {
+                    if (*(DWORD*)(0x477834)) {
+                        *(DWORD*)(0x474C70) = -1;
+                        *(DWORD*)(0x474C48) = 0; // prevent autobomb
+                        *(BYTE*)(*(DWORD*)(0x477834) + 0x458) = 4;
+                    }
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH_ONE_KEY_DIE_DESC));
+
                 if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
                     th10_master_disable2.Toggle(disableMaster);
                 }
@@ -2459,7 +2469,11 @@ namespace TH10 {
         TH10InGameInfo::singleton().mBombCount = 0;
         TH10InGameInfo::singleton().mMissCount = 0;
     }
-    EHOOK_DY(th10_bomb_dec, 0x4259D4) // bomb dec
+    EHOOK_DY(th10_bomb_dec, 0x4259CF) // bomb dec
+    {
+        TH10InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th10_bomb_dec2, 0x425C3E) // bomb dec
     {
         TH10InGameInfo::singleton().mBombCount++;
     }

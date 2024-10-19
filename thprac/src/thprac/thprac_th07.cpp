@@ -768,6 +768,16 @@ namespace TH07 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+                if (ImGui::Button(S(TH_ONE_KEY_DIE))) {
+                    if (*(DWORD*)(0x626278)) {
+                        *(float*)(*(DWORD*)(0x626278) + 0x5c) = 0.0f;
+                        *(float*)(*(DWORD*)(0x626278) + 0x68) = 0.0f; // prevent autobomb
+                        *(BYTE*)(0x004BDAD8+0x2408) = 2;
+                    }
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH_ONE_KEY_DIE_DESC));
+
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
                 EndOptGroup();

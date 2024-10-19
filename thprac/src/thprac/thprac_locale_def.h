@@ -925,6 +925,8 @@ enum th_glossary_t {
     TH_OFF,
     TH_OK,
     TH_ON,
+    TH_ONE_KEY_DIE,
+    TH_ONE_KEY_DIE_DESC,
     TH_ORIGINAL,
     TH_P1,
     TH_P2,
@@ -980,7 +982,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][969];
+extern const char* th_glossary_str[3][971];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2492,7 +2494,7 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3183];
+extern const wchar_t __thprac_loc_range_zh[3189];
 
 extern const wchar_t __thprac_loc_range_en[53];
 
