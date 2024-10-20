@@ -557,7 +557,7 @@ namespace TH12 {
             }
             {
                 SetPosRel(450.0f / 640.0f, 338.0f / 480.0f);
-                SetSizeRel(170.0f/640.0f, 138.0f/480.0f);
+                SetSizeRel(170.0f/640.0f, 132.0f/480.0f);
                 ImGui::Columns(2);
                 ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
                 ImGui::NextColumn();
@@ -598,6 +598,7 @@ namespace TH12 {
     };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
+        SINGLETON(THAdvOptWnd);
         EHOOK_ST(th12_all_clear_bonus_1, 0x420a9b)
         {
             pCtx->Eip = 0x420acd;
@@ -623,6 +624,21 @@ namespace TH12 {
             *(DWORD*)(pCtx->Esi + 0x00018F9C) = 0;
         }
         bool disableMaster = false;
+
+     public:
+        bool forceBossMoveDown = false;
+    private:
+        float bossMoveDownRange = 0.8;
+        EHOOK_ST(th12_bossmovedown, 0x00417562)
+        {
+            float* y_pos = (float*)(pCtx->Ebx + 0x15F8);
+            float* y_range = (float*)(pCtx->Ebx + 0x1600);
+            float y_max = (*y_pos) + (*y_range);
+            float y_min2 = y_max - 2 * (*y_range) * (1.0f - THAdvOptWnd::singleton().bossMoveDownRange);
+            *y_pos = (y_max + y_min2) * 0.5f;
+            *y_range = (y_max - y_min2) * 0.5f;
+        }
+
     private:
         void MasterDisableInit()
         {
@@ -688,8 +704,8 @@ namespace TH12 {
             FpsInit();
             GameplayInit();
             MasterDisableInit();
+            th12_bossmovedown.Setup();
         }
-        SINGLETON(THAdvOptWnd);
 
     public:
         __declspec(noinline) static bool StaticUpdate()
@@ -747,6 +763,17 @@ namespace TH12 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+
+                if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
+                    th12_bossmovedown.Toggle(forceBossMoveDown);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH_BOSS_FORCE_MOVE_DOWN_DESC));
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(180.0f);
+                if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &bossMoveDownRange, 0.002f, 0.0f, 1.0f))
+                    bossMoveDownRange = std::clamp(bossMoveDownRange, 0.0f, 1.0f);
+
                 if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
                     th12_master_disable2.Toggle(disableMaster);
                 }
@@ -1667,7 +1694,15 @@ namespace TH12 {
         THOverlay::singleton().Update();
         TH12InGameInfo::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
-
+        // in case boss movedown do not disabled when playing normal games
+        {
+            if (THAdvOptWnd::singleton().forceBossMoveDown) {
+                auto p = ImGui::GetOverlayDrawList();
+                auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
+                p->AddRectFilled({ 60.0f, 0.0f }, { sz.x + 60.0f, sz.y }, 0xFFCCCCCC);
+                p->AddText({ 60.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
+            }
+        }
         GameGuiEnd(drawCursor);
     }
     EHOOK_DY(th12_render, 0x462722)

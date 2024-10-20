@@ -22,6 +22,7 @@ DWORD* g_gameGuiHwnd = nullptr;
 HIMC g_gameIMCCtx = 0;
 bool g_disable_xkey = false;
 bool g_enable_SOCD = false;
+bool g_disable_f10_11_13 = false;
 
 
 typedef BOOL(WINAPI* GetKeyboardStateType)(PBYTE lpKeyboardState);
@@ -71,6 +72,10 @@ BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
     }
     if (g_disable_xkey) {
         keyBoardState['X'] = 0x0;
+    }
+    if (g_disable_f10_11_13)
+    {
+        keyBoardState[VK_F10] = 0x0;
     }
     if (!g_enable_SOCD){
         return res;
@@ -136,6 +141,9 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
     }
     if (g_disable_xkey) {
         ((BYTE*)state)[DIK_X] = 0x0;
+    }
+    if (g_disable_f10_11_13) {
+        ((BYTE*)state)[DIK_F10] = 0x0;
     }
     if (!g_enable_SOCD) {
         return res;
@@ -288,6 +296,25 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         }else{
             g_enable_SOCD = false;
         }
+
+        bool disable_f10;
+        if (LauncherSettingGet("disable_F10_11_13", disable_f10) && disable_f10) {
+            if (device == 0x4c3288 // 11
+                || device == 0x4ce8f0 // 12 
+                || device == 0x4d0cd8 // 125 
+                || device == 0x4d2e70 // 128
+                || device == 0x4dc6a8 // 13
+                )
+            {
+                g_disable_f10_11_13 = true;
+            }else{
+                g_disable_f10_11_13 = false;
+            }
+            
+        } else {
+            g_disable_f10_11_13 = false;
+        }
+
         LauncherSettingGet_KeyBind();
         {//hook keyboard to enable SOCD and X-disable
             LPVOID pTarget;

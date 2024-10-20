@@ -1134,6 +1134,7 @@ namespace TH18 {
             th18_rep_card_fix.Setup();
             th18_static_mallet_replay_gold.Setup();
             th18_static_mallet_replay_green.Setup();
+            th18_bossmovedown.Setup();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -1242,6 +1243,20 @@ namespace TH18 {
         bool scoreReplayFactor = false;
         bool staticMalletReplay = false;
         bool disableMaster = false;
+
+    public:
+         bool forceBossMoveDown = false;
+    private:
+         float bossMoveDownRange = 0.8;
+        EHOOK_ST(th18_bossmovedown, 0x00433347)
+        {
+            float* y_pos = (float*)(pCtx->Edi + 0x4FE4);
+            float* y_range = (float*)(pCtx->Edi + 0x4FEC);
+            float y_max = (*y_pos) + (*y_range);
+            float y_min2 = y_max - 2 * (*y_range) * (1.0f - THAdvOptWnd::singleton().bossMoveDownRange);
+            *y_pos = (y_max + y_min2) * 0.5f;
+            *y_range = (y_max - y_min2) * 0.5f;
+        }
 
         EHOOK_ST(th18_st6final_fix, 0x438e47)
         {
@@ -1767,6 +1782,15 @@ namespace TH18 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+                if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
+                    th18_bossmovedown.Toggle(forceBossMoveDown);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH_BOSS_FORCE_MOVE_DOWN_DESC));
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(180.0f);
+                if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &bossMoveDownRange, 0.002f, 0.0f, 1.0f))
+                    bossMoveDownRange = std::clamp(bossMoveDownRange, 0.0f, 1.0f);
 
                 if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
                     th18_master_disable[0]->Toggle(disableMaster);
@@ -3145,6 +3169,19 @@ namespace TH18 {
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
         TH18InGameInfo::singleton().Update();
+
+        // in case boss movedown do not disabled when playing normal games
+        {
+            if (THAdvOptWnd::singleton().forceBossMoveDown)
+            {
+                auto p=ImGui::GetOverlayDrawList();
+                auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
+                p->AddRectFilled({ 120.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
+                p->AddText({120.0f,0.0f},0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
+            }
+        }
+
+
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }

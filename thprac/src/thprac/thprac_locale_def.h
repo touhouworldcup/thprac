@@ -555,6 +555,7 @@ enum th_glossary_t {
     THPRAC_DIRECTORY_SETTING_MODAL,
     THPRAC_DIR_GLOBAL,
     THPRAC_DIR_LOCAL,
+    THPRAC_DISABLE_F10_11_13,
     THPRAC_DONT_SEARCH_ONGOING,
     THPRAC_ENABLE_KEYBOARD_SOCD,
     THPRAC_ENABLE_KEYBOARD_SOCD_DESC,
@@ -822,6 +823,9 @@ enum th_glossary_t {
     TH_BOSSRUSH,
     TH_BOSSRUSH_EXTRA,
     TH_BOSSRUSH_MIDBOSS,
+    TH_BOSS_FORCE_MOVE_DOWN,
+    TH_BOSS_FORCE_MOVE_DOWN_DESC,
+    TH_BOSS_FORCE_MOVE_DOWN_RANGE,
     TH_BOTH_NORMAL,
     TH_BOTH_RAGE,
     TH_BULLETS,
@@ -982,7 +986,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][971];
+extern const char* th_glossary_str[3][975];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2494,7 +2498,7 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3189];
+extern const wchar_t __thprac_loc_range_zh[3191];
 
 extern const wchar_t __thprac_loc_range_en[53];
 

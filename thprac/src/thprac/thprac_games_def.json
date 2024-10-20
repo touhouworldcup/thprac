@@ -218,7 +218,9 @@
 	"THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE":["窗口大小","window size","window size"],
 	"THPRAC_ENABLE_KEYBOARD_SOCD":["启用SOCD后覆盖功能","enable keyboard SOCD (last input priority)","enable keyboard SOCD (last input priority)"],
 	"THPRAC_ENABLE_KEYBOARD_SOCD_DESC":["当同时按下反向方向键时，仅激活最后使用的方向键。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."],
-
+	
+	"THPRAC_DISABLE_F10_11_13":["在th11到th13靳用F10键","disable f10 for th11-13","disable f10 for th11-13"],
+	
 	"THPRAC_KEYBIND":["修改按键映射","set keybind","set keybind"],
 	"THPRAC_KEYBIND_MODAL":["修改按键映射##modal","set keybind##modal","set keybind##modal"],
 	"THPRAC_KEYBIND_ADD":["增加","add","add"],
@@ -785,10 +787,17 @@
       "TH_ABOUT_HIDE_LICENCE": [ "隐藏许可信息", "Hide license info", "ライセンス情報を非表示" ],
       "TH_ADV_OPT": [ "高级选项", "Advanced Options", "拡張オプション" ],
       "TH_ADV_OPT_APPLY": [ "应用", "Apply", "変更を適用" ],
+	  
       "TH_ONE_KEY_DIE": [ "一键疮痍", "one key DIE", "one key DIE" ],
       "TH_ONE_KEY_DIE_DESC": [ "为了在某些作品的练习模式中快速存rep", "for rep storage in practice mode", "for rep storage in practice mode" ],
       "TH_ADV_DISABLE_X_KEY": [ "禁用X键", "disable x key", "disable x key" ],
       "TH_ADV_DISABLE_X_KEY_DESC": [ "给打nb的人准备", "for who want to play nb neta", "for who want to play nb neta" ],
+	  
+	  "TH_BOSS_FORCE_MOVE_DOWN": [ "完全下压", "force boss region to move down", "force boss region to move down" ],
+	  "TH_BOSS_FORCE_MOVE_DOWN_RANGE": [ "下压幅度", "range", "range" ],
+      "TH_BOSS_FORCE_MOVE_DOWN_DESC": [ "只给练习用，会对rep造成影响注意，基于原理对部分boss有bug", "for practice, it will affect the rep, buggy for some bosses", "for practice, it will affect the rep, buggy for some bosses" ],
+	  
+	  
       "TH_GAME_SPEED": [ "游戏速度", "Game Speed", "ゲームの速度" ],
       "TH_DELAY": [ "延迟", "Delay", "ディレイ" ],
       "TH_FPS_ADJ": [ "FPS调整", "FPS Adjustment", "FPS調整" ],

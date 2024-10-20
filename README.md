@@ -12,6 +12,8 @@
 - add a keybind change function
 - add complete spell capture rate for th10-18(not showing master when capture trial>99)(use f12 menu)
 - add one key die for th7,8,10 to save rep quickly(f12 menu)
+- add buggy force boss DOWN(F12)
+- add a option in settings to disable F10 for th11-13 (in case toggle fullscreen/window)
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
@@ -27,6 +29,8 @@
 - 改键功能
 - 收率查看(10-18)
 - th7,8,10的一键疮痍(F12)(用于光速存rep)
+- 八哥多多的boss下压器(F12)
+- 设置th11-13靳用F10(以防窗口切换)
 
 ## [简体中文](/README_CN.md)
 # thprac

@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][971] {
+const char* th_glossary_str[3][975] {
     {
         "",
         "啤酒",
@@ -555,6 +555,7 @@ const char* th_glossary_str[3][971] {
         "数据目录##modal",
         "全局目录",
         "本地目录",
+        "在th11到th13靳用F10键",
         "启动thprac时不搜索正在运行的游戏",
         "启用SOCD后覆盖功能",
         "当同时按下反向方向键时，仅激活最后使用的方向键。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。",
@@ -822,6 +823,9 @@ const char* th_glossary_str[3][971] {
         "Boss Rush",
         "6面后Extra",
         "中Boss##bossrush",
+        "完全下压",
+        "只给练习用，会对rep造成影响注意，基于原理对部分boss有bug",
+        "下压幅度",
         "都正常",
         "夫妻双打",
         "子弹",
@@ -1528,6 +1532,7 @@ const char* th_glossary_str[3][971] {
         "Data directory##modal",
         "Global directory",
         "Local directory",
+        "disable f10 for th11-13",
         "Do not search for any ongoing game when launching thprac",
         "enable keyboard SOCD (last input priority)",
         "When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.",
@@ -1795,6 +1800,9 @@ const char* th_glossary_str[3][971] {
         "Boss Rush",
         "Extra after Stage 6",
         "Mid Boss##bossrush",
+        "force boss region to move down",
+        "for practice, it will affect the rep, buggy for some bosses",
+        "range",
         "Both Normal",
         "Both Rage",
         "Bullets",
@@ -2501,6 +2509,7 @@ const char* th_glossary_str[3][971] {
         "データディレクトリ##modal",
         "グローバルディレクトリ",
         "ローカルディレクトリ ",
+        "disable f10 for th11-13",
         "thpracを起動するときに進行中のゲームを検索しない",
         "enable keyboard SOCD (last input priority)",
         "When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.",
@@ -2768,6 +2777,9 @@ const char* th_glossary_str[3][971] {
         "ボスラッシュ",
         "ステージ6の後にExtra",
         "中ボス##bossrush",
+        "force boss region to move down",
+        "for practice, it will affect the rep, buggy for some bosses",
+        "range",
         "両方とも正常",
         "両方の怒り",
         "弾",
@@ -22966,7 +22978,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3189] {
+const wchar_t __thprac_loc_range_zh[3191] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -23465,6 +23477,7 @@ const wchar_t __thprac_loc_range_zh[3189] {
     0x5e2d, 0x5e2d,
     0x5e38, 0x5e38,
     0x5e3d, 0x5e3d,
+    0x5e45, 0x5e45,
     0x5e55, 0x5e55,
     0x5e72, 0x5e72,
     0x5e73, 0x5e73,

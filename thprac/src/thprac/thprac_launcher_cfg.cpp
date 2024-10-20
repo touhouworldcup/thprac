@@ -1984,6 +1984,7 @@ private:
         mWindowSizeChangeWhenOpen.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN));
         mWindowSize.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE));
         mEnableKeyboardSOCD.Gui(S(THPRAC_ENABLE_KEYBOARD_SOCD), S(THPRAC_ENABLE_KEYBOARD_SOCD_DESC));
+        mDisableF10_11_13.Gui(S(THPRAC_DISABLE_F10_11_13));
         KeyBindSettings();
 
         ImGui::NewLine();
@@ -2075,6 +2076,7 @@ private:
     THCfgInt2 mWindowSize { "changed_window_size", {1920,1440} };
 
     THCfgCheckbox mEnableKeyboardSOCD { "keyboard_SOCD", false };
+    THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };
 
     THCfgCheckbox mReflectiveLaunch { "reflective_launch", false };
     THCfgCombo mExistingGameAction { "existing_game_launch_action", 0, 3 };
