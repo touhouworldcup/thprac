@@ -738,10 +738,10 @@ namespace TH16 {
         {
             float* y_pos = (float*)(pCtx->Edi + 0x3F64);
             float* y_range = (float*)(pCtx->Edi + 0x3F6C);
-            float y_max = (*y_pos) + (*y_range);
-            float y_min2 = y_max - 2 * (*y_range) * (1.0f - THAdvOptWnd::singleton().bossMoveDownRange);
+            float y_max = (*y_pos) + (*y_range) * 0.5f;
+            float y_min2 = y_max - (*y_range) * (1.0f - THAdvOptWnd::singleton().bossMoveDownRange);
             *y_pos = (y_max + y_min2) * 0.5f;
-            *y_range = (y_max - y_min2) * 0.5f;
+            *y_range = (y_max - y_min2);
         }
 
 

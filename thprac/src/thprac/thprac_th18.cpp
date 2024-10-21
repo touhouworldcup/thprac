@@ -1252,10 +1252,10 @@ namespace TH18 {
         {
             float* y_pos = (float*)(pCtx->Edi + 0x4FE4);
             float* y_range = (float*)(pCtx->Edi + 0x4FEC);
-            float y_max = (*y_pos) + (*y_range);
-            float y_min2 = y_max - 2 * (*y_range) * (1.0f - THAdvOptWnd::singleton().bossMoveDownRange);
+            float y_max = (*y_pos) + (*y_range)*0.5f;
+            float y_min2 = y_max - (*y_range) * (1.0f - THAdvOptWnd::singleton().bossMoveDownRange);
             *y_pos = (y_max + y_min2) * 0.5f;
-            *y_range = (y_max - y_min2) * 0.5f;
+            *y_range = (y_max - y_min2);
         }
 
         EHOOK_ST(th18_st6final_fix, 0x438e47)
