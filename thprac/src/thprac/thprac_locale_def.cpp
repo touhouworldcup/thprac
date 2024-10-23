@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][976] {
+const char* th_glossary_str[3][978] {
     {
         "",
         "啤酒",
@@ -223,6 +223,8 @@ const char* th_glossary_str[3][976] {
         "章节七（激光阵）",
         "章节八（太田飞行阵）",
         "章节九",
+        "强制第二波",
+        "正常",
         "TH15 东方绀珠传　～ Legacy of Lunatic Kingdom.",
         "TH16.5 秘封噩梦日记　～ Violet Detector.",
         "秋",
@@ -1201,6 +1203,8 @@ const char* th_glossary_str[3][976] {
         "Chapter 7",
         "Chapter 8",
         "Chapter 9",
+        "force wave2",
+        "normal",
         "TH15 Legacy of Lunatic Kingdom",
         "TH16.5 Violet Detector",
         "Autumn",
@@ -2179,6 +2183,8 @@ const char* th_glossary_str[3][976] {
         "チャプター 7",
         "チャプター 8",
         "チャプター 9",
+        "force wave2",
+        "normal",
         "TH15 東方紺珠伝　～ Legacy of Lunatic Kingdom.",
         "TH16.5 秘封ナイトメアダイアリー　～ Violet Detector.",
         "秋",
@@ -8266,6 +8272,14 @@ namespace TH08 {
         TH08_STAGE_6A,
         TH08_STAGE_6B,
         TH_STAGE_EXTRA,
+    };
+
+    const th_glossary_t TH08_SPELL_5PHASE[6] {
+        TH_P1,
+        TH_P2,
+        TH_P3,
+        TH_P4,
+        TH_P5,
     };
 
 }
@@ -19254,6 +19268,11 @@ namespace TH15 {
         TH_BOTH_RAGE,
         TH_HECATIA_RAGE,
         TH_JUNKO_RAGE,
+    };
+
+    const th_glossary_t TH15_ST3_NORMAL1_TYPE[3] {
+        TH15_ST3_NORMAL1_TYPE_NORMAL,
+        TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2,
     };
 
 }

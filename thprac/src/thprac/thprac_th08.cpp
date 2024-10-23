@@ -192,6 +192,7 @@ namespace TH08 {
                 thPracParam.mode = *mMode;
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
+                thPracParam.phase = SpellPhase() ? *mPhase : 0;
                 thPracParam.frame = *mFrame;
                 if (SectionHasDlg(thPracParam.section))
                     thPracParam.dlg = *mDlg;
@@ -251,7 +252,14 @@ namespace TH08 {
 
             PracticeMenu();
         }
-
+        const th_glossary_t* SpellPhase()
+        {
+            auto section = CalcSection();
+            if (section == TH08_ST6A_LS) {
+                return TH08_SPELL_5PHASE;
+            }
+            return nullptr;
+        }
         void PracticeMenu()
         {
             mMode();
@@ -268,7 +276,9 @@ namespace TH08 {
                     *mSection = *mChapter = *mPhase = *mFrame = 0;
                 if (*mWarp) {
                     SectionWidget();
+                    mPhase(TH_PHASE, SpellPhase());
                 }
+
 
                 mLife();
                 mBomb();
@@ -1772,11 +1782,44 @@ namespace TH08 {
             MSGNameFix();
             ECLWarp(4083, 0xc89c);
             ecl << pair{0xc8a2, (int8_t)0x44};
+
             ECLCallSub(ecl, 0x376c, 30);
+            ecl << pair { 0x37A4, (int16_t)0 } << pair { 0x3928, (int16_t)0 };//disable setBoss(-1) to avoid countdown disappear
+
             ecl << pair{0x3760, (int16_t)0} << pair{0x3918, (int16_t)0}
                 << pair{0x3938, (int16_t)0};
             ecl << pair{0xc8e0, 4084} << pair{0xc900, 4084}
                 << pair{0xc90c, 4084} << pair{0xc918, 4084};
+
+            switch (thPracParam.phase) {
+            case 0:
+                break;
+            case 1:
+                ecl << pair { 0xB2A4, (int16_t)0 }; // et_cancel
+                ecl << pair { 0xAC6C, 5940 - (920-260) }; // time
+                ECLJump(ecl, 0xB244, 0xB264, 920, 260);
+                break;
+            case 2:
+                ecl << pair { 0xB2FC, (int16_t)0 }; // et_cancel
+                ecl << pair { 0xAC6C, 5940 - (2920 - 260) };
+                ECLJump(ecl, 0xB244, 0xB2BC, 2920, 260);
+                break;
+            case 3:
+                ecl << pair { 0xB2FC, (int16_t)0 }; // et_cancel
+                ecl << pair { 0xAC6C, (5940 - (2920 - 260 + (60 + 38) * 12 / 2 + 260 ))  };
+                ECLJump(ecl, 0xB244, 0xB2BC, 2920, 260);
+                ECLJump(ecl, 0xBEC8, 0xC064, 260, 0);
+                break;
+            case 4:
+                ecl << pair { 0xB2FC, (int16_t)0 }; //et_cancel
+                ecl << pair { 0xAC6C, (5940 - (2920 - 260 + (60 + 38) * 12 / 2 + (80 + 26) * 10 / 2 + 260  + 200 ))  };
+                ECLJump(ecl, 0xB244, 0xB2BC, 2920, 260);
+                ECLJump(ecl, 0xBEC8, 0xC228, 460, 0);
+                break;
+            default:
+                break;
+            }
+
             break;
         case THPrac::TH08::TH08_ST6B_MID1:
             ECLWarp(3490, 0x104e4);

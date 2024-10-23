@@ -181,6 +181,8 @@ namespace TH15 {
                 return TH15_SPELL_PHASE_EXTRA_LAST;
             } else if (section == TH15_ST5_MID1) {
                 return TH15_ITS_LUNATIC_TIME;
+            } else if (section == TH15_ST3_BOSS1) {
+                return TH15_ST3_NORMAL1_TYPE;
             }
             return nullptr;
         }
@@ -1222,6 +1224,15 @@ namespace TH15 {
                 ECLJump(ecl, 0xa258, 0xa614, 60);
             ecl.SetFile(2);
             ECLSkipChapter(1);
+            // wave2
+            switch (thPracParam.phase) {
+            case 1:
+                ECLJump(ecl, 0x7D4, 0x898, 0);
+                break;
+            default:
+                break;
+            }
+            //---
             break;
         case THPrac::TH15::TH15_ST3_BOSS2:
             ECLJump(ecl, 0xa258, 0xa614, 60);

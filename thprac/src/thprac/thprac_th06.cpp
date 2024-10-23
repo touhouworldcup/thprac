@@ -2544,7 +2544,7 @@ namespace TH06 {
                 int32_t n = *(int32_t*)(soundstruct + 0x10);
                 IDirectSound8* d;
                 IDirectSoundBuffer** soundbuffers = *(IDirectSoundBuffer***)(soundstruct + 0x4);
-                if (*(BYTE*)(0x69D4BF) == 0) // show menu==0
+                if (*(BYTE*)(0x69D4BF) == 0 || (*(THOverlay::singleton().mElBgm)) ) // show menu==0
                 {
                     for (int i = 0; i < n; i++) {
                         DWORD st = 0;

@@ -680,6 +680,8 @@
       "TH_HECATIA_RAGE": [ "赫卡提亚狂暴", "Hecatia Rage", "ヘカティアの怒り" ],
       "TH_JUNKO_RAGE": [ "纯狐狂暴", "Junko Rage", "純子怒り" ],
       "TH_BOTH_RAGE": [ "夫妻双打", "Both Rage", "両方の怒り" ],
+	  "TH15_ST3_NORMAL1_TYPE_NORMAL":["正常","normal","normal"],
+	  "TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2":["强制第二波","force wave2","force wave2"],
       "TH_NONE": [ "无", "None", "なし" ],
       "TH_NONSPELL": [ "非符", "Non Spell", "通常" ],
       "TH_SPELL": [ "符卡", "Spell Card", "スペカ" ],
@@ -3080,6 +3082,13 @@
         "TH08_STAGE_6A",
         "TH08_STAGE_6B",
         "TH_STAGE_EXTRA"
+      ],
+	  "TH08_SPELL_5PHASE": [
+        "TH_P1",
+        "TH_P2",
+        "TH_P3",
+        "TH_P4",
+        "TH_P5"
       ]
     }
   },
@@ -7453,7 +7462,12 @@
         "TH_BOTH_RAGE",
         "TH_HECATIA_RAGE",
         "TH_JUNKO_RAGE"
-      ]
+      ],
+	  "TH15_ST3_NORMAL1_TYPE":
+	  [
+		"TH15_ST3_NORMAL1_TYPE_NORMAL",
+		"TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2"
+	  ]
     }
   },
 

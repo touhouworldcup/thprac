@@ -223,6 +223,8 @@ enum th_glossary_t {
     TH15_ILT_4,
     TH15_ILT_5,
     TH15_ILT_6,
+    TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2,
+    TH15_ST3_NORMAL1_TYPE_NORMAL,
     TH15_TITLE,
     TH165_TITLE,
     TH16_AUTUMN,
@@ -987,7 +989,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][976];
+extern const char* th_glossary_str[3][978];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1375,6 +1377,8 @@ namespace TH08 {
     extern const th_sections_t th_sections_cbt[9][2][15];
 
     extern const th_glossary_t TH08_STAGE_SELECT[10];
+
+    extern const th_glossary_t TH08_SPELL_5PHASE[6];
 
 }
 
@@ -2201,6 +2205,8 @@ namespace TH15 {
     extern const th_glossary_t TH15_ITS_LUNATIC_TIME[8];
 
     extern const th_glossary_t TH15_SPELL_PHASE_EXTRA_LAST[5];
+
+    extern const th_glossary_t TH15_ST3_NORMAL1_TYPE[3];
 
 }
 
