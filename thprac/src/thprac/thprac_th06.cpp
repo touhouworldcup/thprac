@@ -4,8 +4,10 @@
 #include <fstream>
 
 #include <format>
-namespace THPrac {
+#include "../3rdParties/d3d8/include/dsound.h"
 
+namespace THPrac {
+extern bool g_pauseBGM_06;
 namespace TH06 {
     static const char* th06_spells_str[3][65] {
         { 
@@ -311,6 +313,9 @@ namespace TH06 {
         }
     };
     bool thRestartFlag = false;
+    bool threstartflag_normalgame = false;
+    
+
     THPracParam thPracParam {};
 
     class THOverlay : public Gui::GameGuiWnd {
@@ -2512,7 +2517,56 @@ namespace TH06 {
                 pCtx->Eip = 0x4026a6;
             }
         }
+        // escR patch
+        DWORD thiz = pCtx->Ecx;
+        if (!thPracParam.mode && (*((int32_t*)0x69bcbc) == 0))
+        {
+            if (*(DWORD*)(thiz) != 7) {
+                WORD key = *(WORD*)(0x69D904);
+                WORD key_last = *(WORD*)(0x69D908);
+                if (((key & (292)) == 292 && (key & (292)) != (key_last & (292))) || (GetAsyncKeyState('R')&0x8000) ){ // ctrl+shift+down or R
+                    *(DWORD*)(thiz) = 7;
+                    threstartflag_normalgame = true;
+                }
+            }
+        }
+        if (*(DWORD*)(thiz) == 7) {
+            pCtx->Eip = 0x40263c;
+        }
     }
+
+    EHOOK_DY(th06_pause_menu_pauseBGM, 0x402714)
+    {
+        if (g_pauseBGM_06) {
+            DWORD soundstruct = *(DWORD*)(0x6D457C);
+            if (soundstruct)
+            {
+                int32_t n = *(int32_t*)(soundstruct + 0x10);
+                IDirectSound8* d;
+                IDirectSoundBuffer** soundbuffers = *(IDirectSoundBuffer***)(soundstruct + 0x4);
+                if (*(BYTE*)(0x69D4BF) == 0) // show menu==0
+                {
+                    for (int i = 0; i < n; i++) {
+                        DWORD st = 0;
+                        soundbuffers[i]->GetStatus(&st);
+                        if (!(st & DSBSTATUS_PLAYING)) {
+                            soundbuffers[i]->Play(0, 0, DSBPLAY_LOOPING);
+                        }
+                    }
+
+                } else {
+                    for (int i = 0; i < n; i++) {
+                        DWORD st = 0;
+                        soundbuffers[i]->GetStatus(&st);
+                        if (st & DSBSTATUS_PLAYING) {
+                            soundbuffers[i]->Stop();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     EHOOK_DY(th06_patch_main, 0x41c17a)
     {
         THPauseMenu::singleton().el_bgm_changed = false;
@@ -2566,13 +2620,21 @@ namespace TH06 {
     PATCH_S1(th06_white_screen, 0x42fee0, "\xc3", 1);
     EHOOK_DY(th06_restart, 0x435901)
     {
+        if (!threstartflag_normalgame && !thRestartFlag) {
+            th06_white_screen::GetPatch().Disable();
+        }
+        if (threstartflag_normalgame)
+        {
+            th06_white_screen::GetPatch().Enable();
+            threstartflag_normalgame = false;
+            pCtx->Eip = 0x436DCB;
+        }
         if (thRestartFlag) {
             th06_white_screen::GetPatch().Enable();
             thRestartFlag = false;
             pCtx->Eip = 0x43738c;
         } else {
             thPracParam.Reset();
-            th06_white_screen::GetPatch().Disable();
         }
     }
     EHOOK_DY(th06_title, 0x41ae2c)

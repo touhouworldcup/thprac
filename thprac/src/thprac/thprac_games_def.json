@@ -220,6 +220,7 @@
 	"THPRAC_ENABLE_KEYBOARD_SOCD_DESC":["当同时按下反向方向键时，仅激活最后使用的方向键。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."],
 	
 	"THPRAC_DISABLE_F10_11_13":["在th11到th13靳用F10键","disable f10 for th11-13","disable f10 for th11-13"],
+	"THPRAC_PAUSE_BGM_TH06":["红魔乡在3036时暂停bgm(仅wav)","pause bgm when esc in EoSD(wav only)","pause bgm when esc in EoSD(wav only)"],
 	
 	"THPRAC_KEYBIND":["修改按键映射","set keybind","set keybind"],
 	"THPRAC_KEYBIND_MODAL":["修改按键映射##modal","set keybind##modal","set keybind##modal"],

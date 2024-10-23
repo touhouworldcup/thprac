@@ -1985,6 +1985,7 @@ private:
         mWindowSize.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE));
         mEnableKeyboardSOCD.Gui(S(THPRAC_ENABLE_KEYBOARD_SOCD), S(THPRAC_ENABLE_KEYBOARD_SOCD_DESC));
         mDisableF10_11_13.Gui(S(THPRAC_DISABLE_F10_11_13));
+        mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
         KeyBindSettings();
 
         ImGui::NewLine();
@@ -2077,6 +2078,7 @@ private:
 
     THCfgCheckbox mEnableKeyboardSOCD { "keyboard_SOCD", false };
     THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };
+    THCfgCheckbox mPauseBGM_06 { "pauseBGM_06", false };
 
     THCfgCheckbox mReflectiveLaunch { "reflective_launch", false };
     THCfgCombo mExistingGameAction { "existing_game_launch_action", 0, 3 };

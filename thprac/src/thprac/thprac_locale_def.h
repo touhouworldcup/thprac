@@ -679,6 +679,7 @@ enum th_glossary_t {
     THPRAC_NO,
     THPRAC_OK,
     THPRAC_OVERWRTITE_DATA,
+    THPRAC_PAUSE_BGM_TH06,
     THPRAC_PR_APPLY,
     THPRAC_PR_ASK_ATTACH,
     THPRAC_PR_ASK_CONTINUE,
@@ -986,7 +987,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][975];
+extern const char* th_glossary_str[3][976];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2498,7 +2499,7 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3191];
+extern const wchar_t __thprac_loc_range_zh[3195];
 
 extern const wchar_t __thprac_loc_range_en[53];
 

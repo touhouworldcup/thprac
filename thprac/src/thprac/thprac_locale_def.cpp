@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][975] {
+const char* th_glossary_str[3][976] {
     {
         "",
         "啤酒",
@@ -679,6 +679,7 @@ const char* th_glossary_str[3][975] {
         "否",
         "确定",
         "覆盖",
+        "红魔乡在3036时暂停bgm(仅wav)",
         "应用thprac？",
         "找到进行中的游戏: %s。\n为其应用thprac?",
         "当前目录下找到一个有效的游戏，然而似乎有另一个游戏仍在运行。\n继续执行thprac?",
@@ -1656,6 +1657,7 @@ const char* th_glossary_str[3][975] {
         "No",
         "OK",
         "Overwrite",
+        "pause bgm when esc in EoSD(wav only)",
         "Apply thprac?",
         "Found ongoing game: %s.\nApply thprac?",
         "A valid game was found under the current folder, however it appears that another game is still running.\nContinue executing thprac?",
@@ -2633,6 +2635,7 @@ const char* th_glossary_str[3][975] {
         "いいえ",
         "OK",
         "上書き",
+        "pause bgm when esc in EoSD(wav only)",
         "thpracを適用しますか？",
         "進行中のゲームが見つかりました：%s。\nthpracを適用しますか？",
         "現在のフォルダーの下に有効なゲームが見つかりましたが、別のゲームがまだ実行されているようです。\nthpracの実行を続けますか？",
@@ -22978,7 +22981,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3191] {
+const wchar_t __thprac_loc_range_zh[3195] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -23705,6 +23708,7 @@ const wchar_t __thprac_loc_range_zh[3191] {
     0x6666, 0x6666,
     0x666f, 0x666f,
     0x6674, 0x6674,
+    0x6682, 0x6682,
     0x6691, 0x6691,
     0x6697, 0x6697,
     0x66b4, 0x66b4,
@@ -24499,6 +24503,7 @@ const wchar_t __thprac_loc_range_zh[3191] {
     0x9761, 0x9761,
     0x9762, 0x9762,
     0x9769, 0x9769,
+    0x9773, 0x9773,
     0x97e6, 0x97e6,
     0x97f3, 0x97f3,
     0x9875, 0x9875,

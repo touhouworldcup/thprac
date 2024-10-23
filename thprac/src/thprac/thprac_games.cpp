@@ -23,6 +23,7 @@ HIMC g_gameIMCCtx = 0;
 bool g_disable_xkey = false;
 bool g_enable_SOCD = false;
 bool g_disable_f10_11_13 = false;
+bool g_pauseBGM_06 = false;
 
 
 typedef BOOL(WINAPI* GetKeyboardStateType)(PBYTE lpKeyboardState);
@@ -290,14 +291,14 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
             }
         }
 
-        bool keyboard_socd;
+        bool keyboard_socd = false;
         if (LauncherSettingGet("keyboard_SOCD", keyboard_socd) && keyboard_socd) {
             g_enable_SOCD = true;
         }else{
             g_enable_SOCD = false;
         }
 
-        bool disable_f10;
+        bool disable_f10 = false;
         if (LauncherSettingGet("disable_F10_11_13", disable_f10) && disable_f10) {
             if (device == 0x4c3288 // 11
                 || device == 0x4ce8f0 // 12 
@@ -313,6 +314,12 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
             
         } else {
             g_disable_f10_11_13 = false;
+        }
+        bool pauseBGM_06 = false;
+        if (LauncherSettingGet("pauseBGM_06", pauseBGM_06) && pauseBGM_06) {
+            g_pauseBGM_06 = true;
+        } else {
+            g_pauseBGM_06 = false;
         }
 
         LauncherSettingGet_KeyBind();
