@@ -1790,7 +1790,7 @@ namespace TH08 {
                 << pair{0x3938, (int16_t)0};
             ecl << pair{0xc8e0, 4084} << pair{0xc900, 4084}
                 << pair{0xc90c, 4084} << pair{0xc918, 4084};
-
+            
             switch (thPracParam.phase) {
             case 0:
                 break;
@@ -1815,6 +1815,17 @@ namespace TH08 {
                 ecl << pair { 0xAC6C, (5940 - (2920 - 260 + (60 + 38) * 12 / 2 + (80 + 26) * 10 / 2 + 260  + 200 ))  };
                 ECLJump(ecl, 0xB244, 0xB2BC, 2920, 260);
                 ECLJump(ecl, 0xBEC8, 0xC228, 460, 0);
+                break;
+            case 5:
+                ecl << pair { 0xB2FC, (int16_t)0 }; // et_cancel
+                ecl << pair { 0xAC6C, (5940 - (2920 - 260 + (60 + 38) * 12 / 2 + (80 + 26) * 10 / 2 + 260 + 200 + (100+20)*17 / 2)) };
+                // use L case(first interval=100, then decrease 5 eachtime till 15)
+                ECLJump(ecl, 0xB244, 0xB2BC, 2920, 260);
+                ECLJump(ecl, 0xBEC8, 0xC228, 460, 0);
+                ecl << pair { 0xC274, (int32_t)15 }; // rage
+                ecl << pair { 0xC288, (int32_t)15 }; // rage
+                ecl << pair { 0xC29C, (int32_t)15 }; // rage
+                ecl << pair { 0xC2B0, (int32_t)15 }; // rage
                 break;
             default:
                 break;

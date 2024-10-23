@@ -1378,7 +1378,7 @@ namespace TH08 {
 
     extern const th_glossary_t TH08_STAGE_SELECT[10];
 
-    extern const th_glossary_t TH08_SPELL_5PHASE[6];
+    extern const th_glossary_t TH08_SPELL_5PHASE[7];
 
 }
 

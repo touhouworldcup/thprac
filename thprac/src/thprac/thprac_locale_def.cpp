@@ -8274,12 +8274,13 @@ namespace TH08 {
         TH_STAGE_EXTRA,
     };
 
-    const th_glossary_t TH08_SPELL_5PHASE[6] {
+    const th_glossary_t TH08_SPELL_5PHASE[7] {
         TH_P1,
         TH_P2,
         TH_P3,
         TH_P4,
         TH_P5,
+        TH_RAGE,
     };
 
 }
