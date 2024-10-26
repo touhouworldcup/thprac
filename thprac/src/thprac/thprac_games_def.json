@@ -233,6 +233,7 @@
 	"THPRAC_KEYBIND_TO_COMBO":["修改按键","new key","new key"],
 	"THPRAC_KEYBIND_PRESS_A_KEY":["请按下一个按键","please press a key","please press a key"],
 	"THPRAC_KEYBIND_ENTER":["按键名","key name","key name"],
+	
 
       "THPRAC_TOOLS": [ "工具", "Tools", "ツール" ],
       "THPRAC_TOOLS_APPLY_THPRAC": [ "应用thprac至正在运行的游戏", "Apply thprac to ongoing game", "実行中のゲームにthpracを適用します" ],
@@ -814,6 +815,8 @@
         "Unsupported VsyncPatch version.",
         "このバージョンのVsyncPatchはサポートされていません。"
       ],
+	  "TH_GAME_SPEED_PLSPD_KEEP": [ "保持自机速度不变", "keep player speed", "keep player speed" ],
+	  
       "TH_FPS_LOWERING": [
         "使用VsyncPatch时降低FPS可能会导致游戏冻结一小段时间，请耐心等待。",
         "When using VsyncPatch, lowering FPS may freeze the game for a brief time. Please wait patiently.",
@@ -3143,7 +3146,15 @@
 
     "glossary": {
       "TH10_FAITH_BAR": [ "信仰条", "Faith Bar", "カウンター" ],
-      "TH10_NO_FAITH_LOSS": [ "不掉信仰", "No faith loss", "信仰点を減少させない" ]
+      "TH10_NO_FAITH_LOSS": [ "不掉信仰", "No faith loss", "信仰点を減少させない" ],
+      "TH10_HINT_EDIT": [ "hint编辑", "hint edit", "hint edit" ],
+	  
+      "TH10_HINT_EDIT_COLOR": [ "颜色", "color", "color" ],
+      "TH10_HINT_EDIT_POS": [ "位置", "position", "position" ],
+      "TH10_HINT_EDIT_SCALE": [ "大小", "scale", "scale" ],
+      "TH10_HINT_EDIT_COPY": [ "复制", "copy", "copy" ],
+      "TH10_HINT_EDIT_DRAG": [ "鼠标拖动", "enable mouse drag", "enable mouse drag" ]
+	  
     },
 
     "sections": {

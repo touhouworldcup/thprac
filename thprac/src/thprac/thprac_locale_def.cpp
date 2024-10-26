@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][978] {
+const char* th_glossary_str[3][985] {
     {
         "",
         "啤酒",
@@ -125,6 +125,12 @@ const char* th_glossary_str[3][978] {
         "花映塚工具",
         "TH10.5 东方绯想天　～ Scarlet Weather Rhapsody.",
         "信仰条",
+        "hint编辑",
+        "颜色",
+        "复制",
+        "鼠标拖动",
+        "位置",
+        "大小",
         "不掉信仰",
         "TH10 东方风神录　～ Mountain of Faith.",
         "信号强度",
@@ -900,6 +906,7 @@ const char* th_glossary_str[3][978] {
         "帧",
         "游戏进行",
         "游戏速度",
+        "保持自机速度不变",
         "擦弹",
         "血量",
         "赫卡提亚狂暴",
@@ -1105,6 +1112,12 @@ const char* th_glossary_str[3][978] {
         "TH09 Tools",
         "TH10.5 Scarlet Weather Rhapsody",
         "Faith Bar",
+        "hint edit",
+        "color",
+        "copy",
+        "enable mouse drag",
+        "position",
+        "scale",
         "No faith loss",
         "TH10 Mountain of Faith",
         "C. Gauge",
@@ -1880,6 +1893,7 @@ const char* th_glossary_str[3][978] {
         "Frame",
         "Gameplay",
         "Game Speed",
+        "keep player speed",
         "Graze",
         "Health",
         "Hecatia Rage",
@@ -2085,6 +2099,12 @@ const char* th_glossary_str[3][978] {
         "花映塚ツール",
         "TH10.5 東方緋想天　～ Scarlet Weather Rhapsody.",
         "カウンター",
+        "hint edit",
+        "color",
+        "copy",
+        "enable mouse drag",
+        "position",
+        "scale",
         "信仰点を減少させない",
         "TH10 東方風神録　～ Mountain of Faith.",
         "交信強度",
@@ -2860,6 +2880,7 @@ const char* th_glossary_str[3][978] {
         "フレーム",
         "ゲームプレイ",
         "ゲームの速度",
+        "keep player speed",
         "グレイズ",
         "ライフ",
         "ヘカティアの怒り",
@@ -23001,7 +23022,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3195] {
+const wchar_t __thprac_loc_range_zh[3199] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -23639,6 +23660,7 @@ const wchar_t __thprac_loc_range_zh[3195] {
     0x62c9, 0x62c9,
     0x62cd, 0x62cd,
     0x62d2, 0x62d2,
+    0x62d6, 0x62d6,
     0x62db, 0x62db,
     0x62dc, 0x62dc,
     0x62e8, 0x62e8,
@@ -24536,6 +24558,7 @@ const wchar_t __thprac_loc_range_zh[3195] {
     0x9888, 0x9888,
     0x9897, 0x9897,
     0x9898, 0x9898,
+    0x989c, 0x989c,
     0x989d, 0x989d,
     0x98aa, 0x98aa,
     0x98ce, 0x98ce,

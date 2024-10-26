@@ -1,9 +1,13 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
+#include <format>
 
 
 namespace THPrac {
 namespace TH10 {
+    bool g_mouse_move_hint = false;
+    bool g_pl_speed_keep = false;
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -42,9 +46,7 @@ namespace TH10 {
             GetJsonValue(faith_bar);
             GetJsonValue(score);
             GetJsonValue(real_bullet_sprite);
-            GetJsonValue(st6_boss9_spd)
-            else
-                st6_boss9_spd = -1;
+            GetJsonValue(st6_boss9_spd) else st6_boss9_spd = -1;
 
             return true;
         }
@@ -92,7 +94,7 @@ namespace TH10 {
         }
         SINGLETON(THGuiPrac);
     public:
-
+    
         __declspec(noinline) void State(int state)
         {
             static int diff_prev = -1;
@@ -348,7 +350,7 @@ namespace TH10 {
         THGuiRep() noexcept
         {
         }
-        SINGLETON(THGuiRep);
+       SINGLETON(THGuiRep);
     public:
 
         void CheckReplay()
@@ -736,9 +738,110 @@ namespace TH10 {
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 
+            if (ImGui::CollapsingHeader(S(TH10_HINT_EDIT)) && *(DWORD*)(0x477814)) {
+                ImGui::Checkbox(S(TH10_HINT_EDIT_DRAG), &g_mouse_move_hint);
+                
+                ImGui::BeginTable("hints", 4, ImGuiTableFlags_::ImGuiTableFlags_Resizable);
+
+                ImGui::TableSetupColumn("id", ImGuiTableColumnFlags_WidthFixed);
+                ImGui::TableSetupColumn(S(TH10_HINT_EDIT_POS));
+                ImGui::TableSetupColumn(S(TH10_HINT_EDIT_SCALE));
+                ImGui::TableSetupColumn(S(TH10_HINT_EDIT_COLOR));
+                ImGui::TableHeadersRow();
+                static struct
+                {
+                    Float2* pANM_pos;
+                    Float2* pANM_scale;
+                    BYTE* pTextSz;
+                    DWORD* pColor;
+                    DWORD* pAlpha;
+
+                    ImVec4 color_input;
+                    float scale_input;
+                    float pos_input[2];
+                } Hints[10] = { 0 };
+                for (int i = 0; i < 10; i++) {
+                    DWORD ANM_idx = *(DWORD*)(*(DWORD*)(0x477814) + 0xDC + 4 * i);
+                    if (ANM_idx) {
+                        DWORD(__fastcall * find_pANM_from_index)
+                        (int idx, int lst, int idx2);
+                        find_pANM_from_index = (decltype(find_pANM_from_index))0x4491C0;
+                        auto pANM = find_pANM_from_index(ANM_idx, *(DWORD*)(0x491C10), ANM_idx);
+                        if (pANM) {
+                            Hints[i].pANM_pos = (Float2*)(pANM + 0x340); // pos = pos_file + (224,16) + (0,scale_file * 8.0)
+                            // Float2* pANM_scale = (Float2*)(pANM + 0x3E8); 
+                            Hints[i].pANM_scale = (Float2*)(pANM + 0x3C); 
+                            Hints[i].pColor = (DWORD*)(pANM + 0x2FC);
+                            Hints[i].pAlpha = (DWORD*)(pANM + 0x310);
+                            Hints[i].pTextSz = (BYTE*)(pANM + 0x3A0); 
+                            // if(scale_file < 1):      TextSz=15,              scale=scale_file
+                            // if(1 < scale_file < 2):  TextSz=15*scale_file,   scale=scale_file*0.5
+                            // if(2 < scale_file):      TextSz=30,              scale=scale_file*0.5
+
+                            // it will be buggy if 1<scale_file<1.07
+
+                            Float2 scale = *Hints[i].pANM_scale;
+                            scale.x *= (*Hints[i].pTextSz > 15) ? 2.0f : 1.0f;
+                            scale.y *= (*Hints[i].pTextSz > 15) ? 2.0f : 1.0f;
+                            Float2 pos = *Hints[i].pANM_pos;
+                            pos.x -= 224.0f;
+                            pos.y -= 16.0f + scale.y * 8.0f;
+
+                            ImGui::TableNextRow();
+
+                            ImGui::TableNextColumn();
+                            ImGui::Text("%x(%d)",pANM,ANM_idx);
+                            ImGui::SameLine();
+                            if (ImGui::Button(std::format("{}##cphint{}",S(TH10_HINT_EDIT_COPY), i).c_str())) {
+                                ImGui::SetClipboardText(std::format("   Pos:{}, {}\r\n   Alpha:{}\r\n   Scale:{}\r\n   Color:{}, {}, {}\r\n",
+                                    pos.x, pos.y,
+                                    (unsigned int)*Hints[i].pAlpha,
+                                    scale.x,
+                                    (unsigned int)((*Hints[i].pColor) >> 16 & 0xFF),
+                                    (unsigned int)((*Hints[i].pColor) >> 8 & 0xFF),
+                                    (unsigned int)((*Hints[i].pColor) & 0xFF))
+                                                            .c_str());
+                            }
+                            ImGui::SameLine();
+                            ImGui::Text("hint %d", i);
+                            
+                            
+
+                            ImGui::TableNextColumn();
+                            Hints[i].pos_input[0] = pos.x;
+                            Hints[i].pos_input[1] = pos.y;
+                            if (ImGui::DragFloat2(std::format("##poshint{}", i).c_str(), Hints[i].pos_input, 1.0f)) {
+                                Hints[i].pANM_pos->x = Hints[i].pos_input[0] + 224.0f;
+                                Hints[i].pANM_pos->y = Hints[i].pos_input[1] + 16.0f + scale.y * 8.0f;
+                            }
+                            // ImGui::Text("(%f,%f)", pos.x, pos.y);
+                            ImGui::TableNextColumn();
+                            Hints[i].scale_input = scale.x;
+                            if (ImGui::DragFloat(std::format("##scalehint{}", i).c_str(), &(Hints[i].scale_input), 0.1f, (*Hints[i].pTextSz > 15)?1.07f:0.0f, (*Hints[i].pTextSz > 15)?4.0f:1.0f)) {
+                                if (*Hints[i].pTextSz > 15) //scale_file>1.0
+                                    Hints[i].scale_input = std::clamp(Hints[i].scale_input, 1.07f, 4.0f);
+                                else
+                                    Hints[i].scale_input = std::clamp(Hints[i].scale_input, 0.0f, 1.0f);
+                                Hints[i].pANM_scale->x = ((*Hints[i].pTextSz > 15)?0.5f:1.0f) * Hints[i].scale_input;
+                                Hints[i].pANM_scale->y = ((*Hints[i].pTextSz > 15)?0.5f:1.0f) * Hints[i].scale_input;
+                            }
+                            ImGui::TableNextColumn();
+                            Hints[i].color_input = ImGui::ColorConvertU32ToFloat4(*Hints[i].pColor);
+                            Hints[i].color_input.w = *Hints[i].pAlpha / 255.0f;
+                            if (ImGui::ColorEdit4(std::format("##colorhintpicker{}", i).c_str(), (float*)&Hints[i].color_input,ImGuiColorEditFlags_::ImGuiColorEditFlags_AlphaPreview)) {
+                                *Hints[i].pAlpha = ((int32_t)floorf(255.0f * Hints[i].color_input.w)) & 0xFF;
+                                *Hints[i].pColor = (ImGui::ColorConvertFloat4ToU32(Hints[i].color_input) & 0xFFFFFF) | *Hints[i].pAlpha << 24;
+                            }
+                        }
+                    }
+                }
+                ImGui::EndTable();
+            }
             if (BeginOptGroup<TH_GAME_SPEED>()) {
                 if (GameFPSOpt(mOptCtx))
                     FpsSet();
+                
+                ImGui::Checkbox(S(TH_GAME_SPEED_PLSPD_KEEP), &g_pl_speed_keep);
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
@@ -778,8 +881,11 @@ namespace TH10 {
             ImGui::EndChild();
             ImGui::SetWindowFocus();
         }
-
+        
         adv_opt_ctx mOptCtx;
+
+    public:
+        int GetFps() { return mOptCtx.fps; }
     };
 
     void* THStage4ANM(int16_t time_delta)
@@ -2444,6 +2550,63 @@ namespace TH10 {
                 p->AddText({ 60.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
+        // move hint
+
+        auto& adv_opt = THAdvOptWnd::singleton();
+
+        if (adv_opt.IsClosed() && g_mouse_move_hint && *(DWORD*)(0x477814)) {
+            auto p = ImGui::GetOverlayDrawList();
+            static struct
+            {
+                Float2* pANM_pos;
+                Float2* pANM_scale;
+                BYTE* pTextSz;
+            } Hints[10] = { 0 };
+            static int cur_selected_hint = -1;
+            if (!ImGui::IsMouseDown(ImGuiMouseButton_::ImGuiMouseButton_Left))
+                cur_selected_hint = -1;
+            for (int i = 0; i < 10; i++) {
+                DWORD ANM_idx = *(DWORD*)(*(DWORD*)(0x477814) + 0xDC + 4 * i);
+                if (ANM_idx) {
+                    DWORD(__fastcall * find_pANM_from_index)
+                    (int idx, int lst, int idx2);
+                    find_pANM_from_index = (decltype(find_pANM_from_index))0x4491C0;
+                    auto pANM = find_pANM_from_index(ANM_idx, *(DWORD*)(0x491C10), ANM_idx);
+                    if (pANM) {
+                        Hints[i].pANM_pos = (Float2*)(pANM + 0x340); // pos = pos_file + (224,16) + (0,scale_file * 8.0)
+                        // Float2* pANM_scale = (Float2*)(pANM + 0x3E8); 
+                        Hints[i].pANM_scale = (Float2*)(pANM + 0x3C);
+                        Hints[i].pTextSz = (BYTE*)(pANM + 0x3A0);
+
+                        Float2 scale = *Hints[i].pANM_scale;
+                        scale.x *= (*Hints[i].pTextSz > 15) ? 2.0f : 1.0f;
+                        scale.y *= (*Hints[i].pTextSz > 15) ? 2.0f : 1.0f;
+                        Float2 pos = *Hints[i].pANM_pos;
+                        pos.x -= 224.0f;
+                        pos.y -= 16.0f + scale.y * 8.0f;
+
+                        int32_t col = 0x22CCCCFF;
+                        auto r = 8.0f;
+                        ImVec2 rcmin = { Hints[i].pANM_pos->x - r, Hints[i].pANM_pos->y - r }, rcmax = { Hints[i].pANM_pos->x + r, Hints[i].pANM_pos->y + r };
+                        if (ImGui::IsMouseHoveringRect(rcmin, rcmax, false) && cur_selected_hint == -1 && (!ImGui::IsMouseDown(ImGuiMouseButton_::ImGuiMouseButton_Left))) {
+                            cur_selected_hint = i;
+                        }
+                        if (cur_selected_hint == i) {
+                            col = 0x88FFCCCC;
+                            if (ImGui::IsMouseDown(ImGuiMouseButton_::ImGuiMouseButton_Left)){
+                                auto delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_::ImGuiMouseButton_Left,0.0f);
+                                ImGui::ResetMouseDragDelta(ImGuiMouseButton_::ImGuiMouseButton_Left);
+                                Hints[i].pANM_pos->x += delta.x;
+                                Hints[i].pANM_pos->y += delta.y;
+                            }
+                        }
+                        p->AddRectFilled(rcmin, rcmax, col);
+                        p->AddRect(rcmin, rcmax, 0xFFFFFFFF);
+                    }
+                }
+            }
+        }
+
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
@@ -2517,6 +2680,20 @@ namespace TH10 {
         TH10InGameInfo::singleton().mMissCount++;
     }
 #pragma endregion
+    EHOOK_DY(th10_move, 0x425442) 
+    {
+        if (g_pl_speed_keep && THAdvOptWnd::singleton().GetFps()!=60)
+        {
+            auto spd1=(int32_t*)(pCtx->Edi + 0x3F0);
+            auto spd2=(int32_t*)(pCtx->Edi + 0x3F4);
+            float inv_spd = 60.0f / (float)THAdvOptWnd::singleton().GetFps();
+            *spd1 = (*spd1) * inv_spd;
+            *spd2 = (*spd2) * inv_spd;
+            pCtx->Ecx = *spd1;
+            pCtx->Edx = *spd2;
+        }
+    }
+
     HOOKSET_ENDDEF()
 }
 

@@ -125,6 +125,12 @@ enum th_glossary_t {
     TH09_TOOLS_TITLE,
     TH105_TITLE,
     TH10_FAITH_BAR,
+    TH10_HINT_EDIT,
+    TH10_HINT_EDIT_COLOR,
+    TH10_HINT_EDIT_COPY,
+    TH10_HINT_EDIT_DRAG,
+    TH10_HINT_EDIT_POS,
+    TH10_HINT_EDIT_SCALE,
     TH10_NO_FAITH_LOSS,
     TH10_TITLE,
     TH11_SIGNAL,
@@ -900,6 +906,7 @@ enum th_glossary_t {
     TH_FRAME,
     TH_GAMEPLAY,
     TH_GAME_SPEED,
+    TH_GAME_SPEED_PLSPD_KEEP,
     TH_GRAZE,
     TH_HEALTH,
     TH_HECATIA_RAGE,
@@ -989,7 +996,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][978];
+extern const char* th_glossary_str[3][985];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2505,7 +2512,7 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3195];
+extern const wchar_t __thprac_loc_range_zh[3199];
 
 extern const wchar_t __thprac_loc_range_en[53];
 
