@@ -579,6 +579,8 @@ enum th_glossary_t {
     THPRAC_FILTER_DEFAULT_DESC,
     THPRAC_FILTER_DEFAULT_OPTION,
     THPRAC_FINISH,
+    THPRAC_FORCE_ONLY_RENDER_TEXT_USED,
+    THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC,
     THPRAC_GAMES,
     THPRAC_GAMES_APPLY_THPRAC,
     THPRAC_GAMES_DEFAULT_LAUNCH,
@@ -1023,7 +1025,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1012];
+extern const char* th_glossary_str[3][1014];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2539,7 +2541,7 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3203];
+extern const wchar_t __thprac_loc_range_zh[3209];
 
 extern const wchar_t __thprac_loc_range_en[53];
 

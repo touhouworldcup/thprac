@@ -25,6 +25,8 @@ bool g_enable_SOCD = false;
 bool g_disable_f10_11_13 = false;
 bool g_pauseBGM_06 = false;
 
+bool g_OnlyRenderUsedFont=false;
+
 
 typedef BOOL(WINAPI* GetKeyboardStateType)(PBYTE lpKeyboardState);
 typedef HRESULT (STDMETHODCALLTYPE* GetDeviceStateType)(LPDIRECTINPUTDEVICE8 thiz, DWORD, LPVOID);
@@ -297,6 +299,8 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         }else{
             g_enable_SOCD = false;
         }
+
+        
 
         bool disable_f10 = false;
         if (LauncherSettingGet("disable_F10_11_13", disable_f10) && disable_f10) {

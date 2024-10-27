@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1012] {
+const char* th_glossary_str[3][1014] {
     {
         "",
         "啤酒",
@@ -579,6 +579,8 @@ const char* th_glossary_str[3][1012] {
         "用于设置“链接”选项卡中筛选器的默认状态。",
         "之前的状态\0打开\0关闭\0\0",
         "完成",
+        "只渲染用到的字体",
+        "游戏启动时如果爆显存，导致字体显示全为白块或透明等错误，则需要设置此项",
         "游戏",
         "应用thprac",
         "默认启动此游戏",
@@ -1593,6 +1595,8 @@ const char* th_glossary_str[3][1012] {
         "Used to set the default state of the filters in the \"Links\" tab.",
         "Previous state\0Open\0Close\0\0",
         "Finish",
+        "only render used font",
+        "if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it",
         "Games",
         "Apply thprac",
         "Start this game by default",
@@ -2607,6 +2611,8 @@ const char* th_glossary_str[3][1012] {
         "「リンク」タブのフィルタのデフォルトの状態を設定します。",
         "前の状態\0開く\0閉じる\0\0",
         "終了",
+        "only render used font",
+        "if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it",
         "ゲーム",
         "thpracを適用する",
         "デフォルトでこのゲームを開始します",
@@ -23103,7 +23109,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3203] {
+const wchar_t __thprac_loc_range_zh[3209] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -23453,6 +23459,7 @@ const wchar_t __thprac_loc_range_zh[3203] {
     0x5747, 0x5747,
     0x574d, 0x574d,
     0x574f, 0x574f,
+    0x5757, 0x5757,
     0x5764, 0x5764,
     0x5782, 0x5782,
     0x578b, 0x578b,
@@ -23983,6 +23990,7 @@ const wchar_t __thprac_loc_range_zh[3203] {
     0x6e21, 0x6e21,
     0x6e29, 0x6e29,
     0x6e2f, 0x6e2f,
+    0x6e32, 0x6e32,
     0x6e38, 0x6e38,
     0x6e56, 0x6e56,
     0x6e7f, 0x6e7f,
@@ -24526,6 +24534,7 @@ const wchar_t __thprac_loc_range_zh[3203] {
     0x9001, 0x9001,
     0x9006, 0x9006,
     0x9009, 0x9009,
+    0x900f, 0x900f,
     0x9012, 0x9012,
     0x9014, 0x9014,
     0x901a, 0x901a,

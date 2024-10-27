@@ -2222,8 +2222,8 @@ namespace TH17 {
     }
     EHOOK_DY(th17_gui_init_2, 0x462e17)
     {
-        THGuiCreate();
-        THInitHookDisable();
+         THGuiCreate();
+         THInitHookDisable();
     }
 
     

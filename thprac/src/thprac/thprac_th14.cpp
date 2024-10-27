@@ -2573,8 +2573,8 @@ namespace TH14 {
     }
     EHOOK_DY(th14_gui_init_2, 0x46b37b)
     {
-        // THGuiCreate();
-        // THInitHookDisable();
+        THGuiCreate();
+        THInitHookDisable();
     }
 #pragma region igi
     EHOOK_DY(th14_game_start, 0x4375BE) // gamestart-bomb set

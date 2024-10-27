@@ -1920,6 +1920,10 @@ private:
     {
         ImGui::TextUnformatted(S(THPRAC_LAUNCH_BEHAVIOR));
         ImGui::Separator();
+        mForceOnlyRenderTextUsed.Gui(S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED));
+        ImGui::SameLine();
+        GuiHelpMarker(S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC));
+
         mAdminRights.Gui(S(THPRAC_ADMIN_RIGHTS));
         mExistingGameAction.Gui(S(THPRAC_EXISTING_GAME_ACTION), S(THPRAC_EXISTING_GAME_ACTION_OPTION));
         mDontSearchOngoingGame.Gui(S(THPRAC_DONT_SEARCH_ONGOING));
@@ -2081,6 +2085,8 @@ private:
     THCfgCheckbox mPauseBGM_06 { "pauseBGM_06", false };
 
     THCfgCheckbox mReflectiveLaunch { "reflective_launch", false };
+    THCfgCheckbox mForceOnlyRenderTextUsed { "force_only_render_text_used", false };
+
     THCfgCombo mExistingGameAction { "existing_game_launch_action", 0, 3 };
     THCfgCheckbox mDontSearchOngoingGame { "dont_search_ongoing_game", false };
     THCfgCheckbox mAdminRights { "thprac_admin_rights", false };
