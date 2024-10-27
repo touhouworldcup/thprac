@@ -627,7 +627,7 @@
        "THPRAC_INGAMEINFO_12_UFO_RED_COUNT":["红碟:","R UFO:","R UFO:"],
        "THPRAC_INGAMEINFO_12_UFO_GREEN_COUNT":["绿碟:","G UFO:","G UFO:"],
        "THPRAC_INGAMEINFO_12_UFO_BLUE_COUNT":["蓝碟:","B UFO:","B UFO:"],
-       "THPRAC_INGAMEINFO_12_UFO_RAINBOW_COUNT":["彩蝶:","Rb UFO:","Rb UFO:"],
+       "THPRAC_INGAMEINFO_12_UFO_RAINBOW_COUNT":["彩碟:","Rb UFO:","Rb UFO:"],
        "THPRAC_INGAMEINFO_07_BORDER_COUNT":["撞结界:","border:","border:"],
        "THPRAC_INGAMEINFO_07_CHERRY":["Cherry:","Cherry:","Cherry:"],
        "THPRAC_INGAMEINFO_07_CHERRY_PLUS":["CherryP:","CherryP:","CherryP:"],
@@ -644,7 +644,37 @@
        "THPRAC_INGAMEINFO_15_RE_TIMES_STAGE":["第%d面Re数:","stage %d Re:","stage %d Re:"],
        "THPRAC_INGAMEINFO_15_RE_TIMES_TOTAL":["总Re数:","total Re:","total Re:"],
        "THPRAC_INGAMEINFO_15_RE_TIMES_CURRENT":["当前Re数:","current Re:","current Re:"],
-       "THPRAC_INGAMEINFO_06_SHOWSPELLCAPTURE_DETAIL":["详情","Details","Details"]
+	   
+       "THPRAC_INGAMEINFO_06_SHOWDETAIL_HOTKEY":["详情","Details","Details"],
+	   "THPRAC_INGAMEINFO_06_SHOWDETAIL_PAGE":["游戏详情","Details","Details"],
+	   "THPRAC_INGAMEINFO_06_SHOWDETAIL_COLLAPSE":["游戏详情","Details","Details"],
+       "THPRAC_INGAMEINFO_06_E":["Easy","Easy","Easy"],
+       "THPRAC_INGAMEINFO_06_N":["Normal","Normal","Easy"],
+       "THPRAC_INGAMEINFO_06_H":["Hard","Hard","Hard"],
+       "THPRAC_INGAMEINFO_06_L":["Lunatic","Lunatic","Lunatic"],
+       "THPRAC_INGAMEINFO_06_EX":["Extra","Extra","Extra"],
+       "THPRAC_INGAMEINFO_06_RA":["梦 A","Reimu A","Reimu A"],
+       "THPRAC_INGAMEINFO_06_RB":["梦 B","Reimu B","Reimu B"],
+       "THPRAC_INGAMEINFO_06_MA":["魔 A","Marisa A","Marisa A"],
+       "THPRAC_INGAMEINFO_06_MB":["魔 B","Marisa B","Marisa B"],
+	   
+       "THPRAC_INGAMEINFO_06_GAMTIME_TOT":["总游戏时间","game time(total)","game time(total)"],
+       "THPRAC_INGAMEINFO_06_GAMTIME_CUR":["本次游戏时间","game time(current)","game time(current)"],
+	   "THPRAC_INGAMEINFO_06_GAMTIME_CHARACTER_TOT":["本机体总时间","character game time(total)","character game time(total)"],
+	   "THPRAC_INGAMEINFO_06_GAMTIME_ALL":["全机体全难度总时间","game time(all char/diff)","character game time(all char/diff)"],
+	   "THPRAC_INGAMEINFO_06_GAMTIME_YEAR":["年","Y","Y"],
+	   "THPRAC_INGAMEINFO_06_GAMTIME_MONTH":["月","M","M"],
+	   "THPRAC_INGAMEINFO_06_GAMTIME_DAY":["日","D","D"],
+	   "THPRAC_INGAMEINFO_06_GAMTIME_HOUR":["时","h","h"],
+	   "THPRAC_INGAMEINFO_06_GAMTIME_MINUTE":["分","min","min"],
+	   "THPRAC_INGAMEINFO_06_GAMTIME_SECOND":["秒","s","s"],
+	   "THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND":["毫秒","ms","ms"],
+	   
+       "THPRAC_INGAMEINFO_06_SPELL_NAME":["符卡","spell name","spell name"],
+       "THPRAC_INGAMEINFO_06_CAPTURE_TOT":["收率(总)","capture(total)","capture(total)"],
+       "THPRAC_INGAMEINFO_06_CAPTURE_CUR":["收率(本次)","capture(current)","capture(current)"],
+       "THPRAC_INGAMEINFO_06_TIMEOUT_TOT":["超时(总)","timeout(total)","timeout(total)"],
+       "THPRAC_INGAMEINFO_06_TIMEOUT_CUR":["超时(本次)","timeout(current)","timeout(current)"]
       }
   },
   

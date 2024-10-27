@@ -1,6 +1,7 @@
 ## This is a branch of 2.2.1.8 which added more features(which might be buggy though), changes are:
 - re-add unlock monitor refresh rate to thprac
-- added a spellcard capture rate monitor for EoSD (copyed from others' project) (use backspace and F8/F9 to show)
+- added a spellcard capture rate monitor for EoSD (copyed from others' project) (use backspace and F8/F9 or F12 to show)
+- game time counter for EoSD
 - added a window resize option when open game (in settings - Game adjustments)
 - fix bugs for using local data directory
 - add a reaction test in Tools tabbar
@@ -17,10 +18,12 @@
 - add esc + r/ctrl+shift+down to quick restart in EoSD
 - add a option for EoSD to pause BGM when using esc pause menu
 - add a phase selection for IN st6A LSC;  add FORCE wave 2 for 123 normal 1
+- add hint editor for MoF
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
-- 红魔乡收率显示 (进入 backspace 界面后按 F8/F9 )
+- 红魔乡收率显示 (进入 backspace 界面后按 F8/F9 或开 F12)
+- 红魔乡游戏时间计时器
 - 可以在游戏开始前修改窗口大小
 - 修复使用本地目录的一个八哥
 - 加了个反应力测试功能(在工具界面)
@@ -37,3 +40,4 @@
 - 红魔乡ESC+R/ctrl+shift+下 快速重开
 - 红魔乡3036后自动暂停bgm(设置界面)
 - 给蓬莱之药加了阶段选择; 给123一非加了阶段选择
+- 给风加了个hint编辑器

@@ -75,7 +75,7 @@ namespace TH06 {
             "禁弹「刻着过去的钟表」",
             "秘弹「之后就一个人都没有了吗？」",
             "QED「495年的波纹」",
-            "收率「估计十一成之魔法阵之阵了又阵」" },
+            "「估计二一四七四八三六四八成之魔法阵」" },
         { 
             " Moon Sign \"Moonlight Ray\"",
             "Night Sign \"Night Bird\"",
@@ -429,9 +429,8 @@ namespace TH06 {
 
     public:
         int32_t mMissCount;
-        bool mIsInGame;
     protected:
-        Gui::GuiHotKey mDetails { THPRAC_INGAMEINFO_06_SHOWSPELLCAPTURE_DETAIL, "F9", VK_F9 };
+        Gui::GuiHotKey mDetails { THPRAC_INGAMEINFO_06_SHOWDETAIL_HOTKEY, "F9", VK_F9 };
 
         struct
         {
@@ -441,8 +440,16 @@ namespace TH06 {
             byte SCB = 0;
         } doubleKOFix;
 
-        int SC_History_total[65][5][4][3] = { 0 }; // spellid, diff, playertype, [capture/attempt/timeout]
-        int SC_History_current[65][5][4][3] = { 0 };
+
+        struct TH06Save
+        {
+            int32_t SC_History[65][5][4][3] = { 0 }; // spellid, diff, playertype, [capture/attempt/timeout]
+            int64_t timePlayer[5][4] = { 0 }; // diff/type
+        };
+        TH06Save save_current;
+        TH06Save save_total;
+        bool mIsSaveLoaded = false;
+
         bool last_is_in_spell = false;
         byte last_spell_id = 0;
         byte last_diff = 0;
@@ -494,23 +501,28 @@ namespace TH06 {
             }
         }
 
-        void LoadSpell()
+        void LoadSave()
         {
+            mIsSaveLoaded = true;
             PushCurrentDirectory(L"%appdata%\\ShanghaiAlice\\th06");
             auto fs = ::std::fstream("spell_capture.dat", ::std::ios::in | ::std::ios::binary);
             if (fs.is_open()) {
-                fs.read((char*)SC_History_total, sizeof(SC_History_total));
+                fs.read((char*)save_total.SC_History, sizeof(save_total.SC_History));
+                if (!fs.eof())
+                    fs.read((char*)save_total.timePlayer, sizeof(save_total.timePlayer)); // compatible , avoid eof
             }
+            fs.close();
             PopCurrentDirectory();
         }
 
-        void SaveSpell()
+        void SaveSave()
         {
             PushCurrentDirectory(L"%appdata%\\ShanghaiAlice\\th06");
             auto fs = ::std::fstream("spell_capture.dat", ::std::ios::out | ::std::ios::binary);
             if (fs.is_open()) {
-                fs.write((char*)SC_History_total, sizeof(SC_History_total));
+                fs.write((char*)(&save_total), sizeof(save_total));
             }
+            fs.close();
             PopCurrentDirectory();
         }
 
@@ -542,8 +554,8 @@ namespace TH06 {
             int spell_id = last_spell_id;
             if (is_magic_book)
                 spell_id = 64;
-            if (!mIsInGame)
-            {
+            bool IsInGame = (*(DWORD*)(0x6C6EA4) == 2);
+            if (!IsInGame){
                 SetPos(-10000.0f, -10000.0f);
                 return;
             }
@@ -558,48 +570,226 @@ namespace TH06 {
             ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
             ImGui::NextColumn();
             ImGui::Text("%8d", mBombCount);
+
+            // byte last_player_type = (last_player_typea << 1) | last_player_typeb;
+            // ImGui::NextColumn();
+            // ImGui::Text("%8d", save_current.timePlayer[last_diff][last_player_type]);
+            // ImGui::NextColumn();
+            // ImGui::Text("%8d", save_total.timePlayer[last_diff][last_player_type]);
+
             ImGui::Columns(1);
 
             if (spell_id != -1 && last_ingame_flag > 0 && (last_is_in_spell || is_magic_book)) {
                 byte last_player_type = (last_player_typea << 1) | last_player_typeb;
                 ImGui::Text("%s", th06_spells_str[Gui::LocaleGet()][spell_id]);
-                ImGui::Text("%d/%d(%.1f%%); %d",
-                    SC_History_total[spell_id][last_diff][last_player_type][0],
-                    SC_History_total[spell_id][last_diff][last_player_type][1],
-                    (float)(SC_History_total[spell_id][last_diff][last_player_type][0]) / std::fmax(1.0f, SC_History_total[spell_id][last_diff][last_player_type][1]) * 100.0f,
-                    SC_History_total[spell_id][last_diff][last_player_type][2]);
-                ImGui::Text("%d/%d(%.1f%%); %d",
-                    SC_History_current[spell_id][last_diff][last_player_type][0],
-                    SC_History_current[spell_id][last_diff][last_player_type][1],
-                    (float)(SC_History_current[spell_id][last_diff][last_player_type][0]) / std::fmax(1.0f, SC_History_current[spell_id][last_diff][last_player_type][1]) * 100.0f,
-                    SC_History_current[spell_id][last_diff][last_player_type][2]);
+                int tot_sc_caped = save_total.SC_History[spell_id][last_diff][last_player_type][0];
+                int tot_sc_tot = save_total.SC_History[spell_id][last_diff][last_player_type][1];
+                int tot_sc_to = save_total.SC_History[spell_id][last_diff][last_player_type][2];
+                ImGui::Text("%d/%d(%.1f%%); %d", tot_sc_caped,tot_sc_tot, (float)(tot_sc_caped) / std::fmax(1.0f, tot_sc_tot) * 100.0f,  tot_sc_to);
+
+                int cur_sc_caped = save_current.SC_History[spell_id][last_diff][last_player_type][0];
+                int cur_sc_tot = save_current.SC_History[spell_id][last_diff][last_player_type][1];
+                int cur_sc_to = save_current.SC_History[spell_id][last_diff][last_player_type][2];
+                ImGui::Text("%d/%d(%.1f%%); %d", cur_sc_caped, cur_sc_tot, (float)(cur_sc_caped) / std::fmax(1.0f, cur_sc_tot) * 100.0f, cur_sc_to);
             }
             mDetails();
-            mIsInGame = false;
         }
         void ResetSpell()
         {
-            memset(SC_History_current, 0, sizeof(SC_History_current));
+            memset(save_current.SC_History, 0, sizeof(save_current.SC_History));
         }
         void AddAttempt(int spell_id, byte diff, byte player_type)
         {
             is_spell_get = true;
-            SC_History_total[spell_id][diff][player_type][1]++;
-            SC_History_current[spell_id][diff][player_type][1]++;
-            SaveSpell();
+            save_total.SC_History[spell_id][diff][player_type][1]++;
+            save_current.SC_History[spell_id][diff][player_type][1]++;
+            SaveSave();
         }
         void AddCapture(int spell_id, byte diff, byte player_type)
         {
-            SC_History_total[spell_id][diff][player_type][0]++;
-            SC_History_current[spell_id][diff][player_type][0]++;
-            SaveSpell();
+            save_total.SC_History[spell_id][diff][player_type][0]++;
+            save_current.SC_History[spell_id][diff][player_type][0]++;
+            SaveSave();
         }
         void AddTimeOut(int spell_id, byte diff, byte player_type)
         {
-            SC_History_total[spell_id][diff][player_type][2]++;
-            SC_History_current[spell_id][diff][player_type][2]++;
-            SaveSpell();
+            save_total.SC_History[spell_id][diff][player_type][2]++;
+            save_current.SC_History[spell_id][diff][player_type][2]++;
+            SaveSave();
         }
+        std::string GetTime_HHMMSS(int64_t ms)
+        {
+            int t_ms = ms % 1000;
+            int t_s = (ms / 1000) % 60;
+            int t_min = (ms / 1000 / 60) % 60;
+            int t_h = (ms / 1000 / 60 / 60);
+            return std::format("{}:{:0>2}:{:0>2}.{:0>4}" ,t_h,t_min,t_s,t_ms);
+        }
+        std::string GetTime_YYMMDD_HHMMSS(int64_t ms)
+        {
+            int t_ms = ms % 1000;
+            int t_s = (ms / 1000) % 60;
+            int t_min = (ms / 1000 / 60) % 60;
+            int t_h = (ms / 1000 / 60 / 60) % 24;
+            int t_day = (ms / 1000 / 60 / 60 / 24) % 30;
+            int t_month = (ms / 1000 / 60 / 60 / 24 / 30) % 12;
+            int t_year = ms / 1000 / 60 / 60 / 24 / 30 / 12;
+            if (t_year > 0)
+            {
+                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>4}{}", 
+                    t_year, S(THPRAC_INGAMEINFO_06_GAMTIME_YEAR),
+                    t_month, S(THPRAC_INGAMEINFO_06_GAMTIME_MONTH),
+                    t_day, S(THPRAC_INGAMEINFO_06_GAMTIME_DAY),
+                    t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
+                    t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
+                    t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
+                    t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND)
+                );
+            }else if (t_month > 0){
+                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>4}{}",
+                    t_month, S(THPRAC_INGAMEINFO_06_GAMTIME_MONTH),
+                    t_day, S(THPRAC_INGAMEINFO_06_GAMTIME_DAY),
+                    t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
+                    t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
+                    t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
+                    t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
+            } else if (t_day > 0) {
+                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>4}{}",
+                    t_day, S(THPRAC_INGAMEINFO_06_GAMTIME_DAY),
+                    t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
+                    t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
+                    t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
+                    t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
+            } else if (t_h > 0) {
+                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>4}{}",
+                    t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
+                    t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
+                    t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
+                    t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
+            } else if (t_min > 0) {
+                return std::format("{}{}{:0>2}{}{:0>4}{}",
+                    t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
+                    t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
+                    t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
+            } else if (t_s > 0) {
+                return std::format("{}{}{:0>4}{}",
+                    t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
+                    t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
+            }
+            return std::format("{}{}",
+                t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
+        }
+
+        public:
+            void ShowDetail(bool *isOpen){
+                ImGui::BeginTabBar("Detail Spell");
+                {
+                    const char* tabs_diff[5] = { S(THPRAC_INGAMEINFO_06_E), S(THPRAC_INGAMEINFO_06_N), S(THPRAC_INGAMEINFO_06_H), S(THPRAC_INGAMEINFO_06_L), S(THPRAC_INGAMEINFO_06_EX) };
+                    for (int diff = 0; diff < 5; diff++) {
+                        if (ImGui::BeginTabItem(tabs_diff[diff])) {
+                            ImGui::BeginTabBar("Player Type");
+                            const char* tabs_player[4] = { S(THPRAC_INGAMEINFO_06_RA), S(THPRAC_INGAMEINFO_06_RB), S(THPRAC_INGAMEINFO_06_MA), S(THPRAC_INGAMEINFO_06_MB) };
+                            for (int pl = 0; pl < 4; pl++) {
+                                if (ImGui::BeginTabItem(tabs_player[pl])) {
+                                    // time
+                                    ImGui::BeginTable(std::format("{}{}timetable", tabs_diff[diff], tabs_player[pl]).c_str(), 4, ImGuiTableFlags_::ImGuiTableFlags_Resizable);
+                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_GAMTIME_TOT));
+                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_GAMTIME_CUR));
+                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_GAMTIME_CHARACTER_TOT));
+                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_GAMTIME_ALL));
+                                    ImGui::TableHeadersRow();
+
+                                    int64_t gametime_tot = save_total.timePlayer[diff][pl];
+                                    int64_t gametime_cur = save_current.timePlayer[diff][pl];
+                                    int64_t gametime_chartot = 0;
+                                    for (int i = 0; i < 5; i++)
+                                        gametime_chartot += save_total.timePlayer[i][pl];
+                                    int64_t gametime_all = 0;
+                                    for (int i = 0; i < 5; i++)
+                                        for (int j = 0; j < 4; j++)
+                                            gametime_all += save_total.timePlayer[i][j];
+
+                                    ImGui::TableNextRow();
+                                    ImGui::TableNextColumn();
+                                    ImGui::Text(GetTime_HHMMSS(gametime_tot).c_str());
+                                    ImGui::TableNextColumn();
+                                    ImGui::Text(GetTime_HHMMSS(gametime_cur).c_str());
+                                    ImGui::TableNextColumn();
+                                    ImGui::Text(GetTime_HHMMSS(gametime_chartot).c_str());
+                                    ImGui::TableNextColumn();
+                                    ImGui::Text(GetTime_HHMMSS(gametime_all).c_str());
+
+                                    ImGui::TableNextRow();
+                                    ImGui::TableNextColumn();
+                                    ImGui::TextWrapped(GetTime_YYMMDD_HHMMSS(gametime_tot).c_str());
+                                    ImGui::TableNextColumn();
+                                    ImGui::TextWrapped(GetTime_YYMMDD_HHMMSS(gametime_cur).c_str());
+                                    ImGui::TableNextColumn();
+                                    ImGui::TextWrapped(GetTime_YYMMDD_HHMMSS(gametime_chartot).c_str());
+                                    ImGui::TableNextColumn();
+                                    ImGui::TextWrapped(GetTime_YYMMDD_HHMMSS(gametime_all).c_str());
+
+                                    ImGui::TableNextRow();
+                                    ImGui::TableNextColumn();
+                                    ImGui::TextWrapped("(%lld ms)", gametime_tot);
+                                    ImGui::TableNextColumn();
+                                    ImGui::TextWrapped("(%lld ms)", gametime_cur);
+                                    ImGui::TableNextColumn();
+                                    ImGui::TextWrapped("(%lld ms)", gametime_chartot);
+                                    ImGui::TableNextColumn();
+                                    ImGui::TextWrapped("(%lld ms)", gametime_all);
+
+                                    ImGui::EndTable();
+                                    // spell capture
+                                    ImGui::BeginTable(std::format("{}{}sptable", tabs_diff[diff], tabs_player[pl]).c_str(), 5, ImGuiTableFlags_::ImGuiTableFlags_Resizable);
+                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_SPELL_NAME), 0, 100.0f);
+                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_CAPTURE_TOT), 0, 50.0f);
+                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_TIMEOUT_TOT), 0, 30.0f);
+                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_CAPTURE_CUR), 0, 50.0f);
+                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_TIMEOUT_CUR), 0, 30.0f);
+                                    ImGui::TableHeadersRow();
+
+                                    for (int spell = 0; spell < 65; spell++) {
+                                        if (is_spell_used[diff][spell]) {
+                                            ImGui::TableNextRow();
+                                            ImGui::TableNextColumn();
+                                            ImGui::Text("%s", th06_spells_str[Gui::LocaleGet()][spell]);
+                                            ImGui::TableNextColumn();
+
+                                            ImGui::Text("%d/%d(%.1f%%)",
+                                                save_total.SC_History[spell][diff][pl][0],
+                                                save_total.SC_History[spell][diff][pl][1],
+                                                (float)(save_total.SC_History[spell][diff][pl][0]) / std::fmax(1.0f, save_total.SC_History[spell][diff][pl][1]) * 100);
+                                            ImGui::TableNextColumn();
+
+                                            ImGui::Text("%d", save_total.SC_History[spell][diff][pl][2]);
+                                            ImGui::TableNextColumn();
+
+                                            ImGui::Text("%d/%d(%.1f%%)",
+                                                save_current.SC_History[spell][diff][pl][0],
+                                                save_current.SC_History[spell][diff][pl][1],
+                                                (float)(save_current.SC_History[spell][diff][pl][0]) / std::fmax(1.0f, save_current.SC_History[spell][diff][pl][1]) * 100);
+                                            ImGui::TableNextColumn();
+
+                                            ImGui::Text("%d", save_current.SC_History[spell][diff][pl][2]);
+                                        }
+                                    }
+                                    ImGui::EndTable();
+                                    ImGui::EndTabItem();
+                                }
+                            }
+                            ImGui::EndTabBar();
+                            ImGui::EndTabItem();
+                        }
+                    }
+                }
+                ImGui::EndTabBar();
+                if (isOpen != nullptr && ImGui::Button(S(TH_BACK))){
+                    *isOpen = false;
+                }
+            }
+        private:
+
         virtual void OnPreUpdate() override
         {
 
@@ -721,78 +911,60 @@ namespace TH06 {
 
             if (*THOverlay::singleton().mShowSpellCapture && *mDetails) {
                 detail_open = true;
-                if (ImGui::Begin("Details", &detail_open,
+                if (ImGui::Begin(S(THPRAC_INGAMEINFO_06_SHOWDETAIL_PAGE), &detail_open,
                         ImGuiWindowFlags_NoMove)) {
                     mDetails.Toggle(detail_open);
                     *((int32_t*)0x6c6eb0) = 3;
                 }
-                ImGui::SetWindowPos("Details", ImVec2(10.0f, 10.0f));
-                ImGui::SetWindowSize("Details", ImVec2(620.0f, 460.0f));
-                ImGui::BeginTabBar("Detail Spell");
-                const char* tabs_diff[5] = { "easy", "normal", "hard", "lunatic", "extra" };
-                for (int diff = 0; diff < 5; diff++) {
-                    if (ImGui::BeginTabItem(tabs_diff[diff])) {
-                        ImGui::BeginTabBar("Player Type");
-                        const char* tabs_player[4] = { "Reimu A", "Reimu B", "Marisa A", "Marisa B" };
-                        for (int pl = 0; pl < 4; pl++) {
-                            if (ImGui::BeginTabItem(tabs_player[pl])) {
-                                ImGui::Columns(5, 0, true, true);
-                                ImGui::Text("spell name");
-                                ImGui::NextColumn();
-                                ImGui::Text("capture/total");
-                                ImGui::NextColumn();
-                                ImGui::Text("timeout");
-                                ImGui::NextColumn();
-                                ImGui::Text("capture/total(cur)");
-                                ImGui::NextColumn();
-                                ImGui::Text("timeout(cur)");
-                                ImGui::NextColumn();
-                                for (int spell = 0; spell < 65; spell++) {
-                                    if (is_spell_used[diff][spell]) {
-                                        ImGui::Text("%s", th06_spells_str[Gui::LocaleGet()][spell]);
-                                        ImGui::NextColumn();
-
-                                        ImGui::Text("%d/%d(%.1f%%)",
-                                            SC_History_total[spell][diff][pl][0],
-                                            SC_History_total[spell][diff][pl][1],
-                                            (float)(SC_History_total[spell][diff][pl][0]) / std::fmax(1.0f, SC_History_total[spell][diff][pl][1]) * 100);
-                                        ImGui::NextColumn();
-
-                                        ImGui::Text("%d", SC_History_total[spell][diff][pl][2]);
-                                        ImGui::NextColumn();
-
-                                        ImGui::Text("%d/%d(%.1f%%)",
-                                            SC_History_current[spell][diff][pl][0],
-                                            SC_History_current[spell][diff][pl][1],
-                                            (float)(SC_History_current[spell][diff][pl][0]) / std::fmax(1.0f, SC_History_current[spell][diff][pl][1]) * 100);
-                                        ImGui::NextColumn();
-
-                                        ImGui::Text("%d", SC_History_current[spell][diff][pl][2]);
-                                        ImGui::NextColumn();
-                                    }
-                                }
-                                ImGui::Columns(1);
-                                ImGui::EndTabItem();
-                            }
-                        }
-                        ImGui::EndTabBar();
-                        ImGui::EndTabItem();
-                    }
-                }
-                ImGui::EndTabBar();
+                ImGui::SetWindowPos(S(THPRAC_INGAMEINFO_06_SHOWDETAIL_PAGE), ImVec2(10.0f, 10.0f));
+                ImGui::SetWindowSize(S(THPRAC_INGAMEINFO_06_SHOWDETAIL_PAGE), ImVec2(620.0f, 460.0f));
+                bool is_close = false;
+                ShowDetail(&detail_open);
+                mDetails.Toggle(detail_open);
                 ImGui::End();
             }
         }
-
+        LARGE_INTEGER mPerformanceFreq = { 0 };
+        LARGE_INTEGER mLastCount = { 0 };
+        int64_t mTimePlayedms = 0;
     public:
-        void InitSpell()
-        {
-            LoadSpell();
+        void SaveAll(){
+            if (mIsSaveLoaded)
+                SaveSave();
+        }
+        void Init() {
+            QueryPerformanceFrequency(&mPerformanceFreq);
+            mLastCount.QuadPart=0;
+            mTimePlayedms = 0;
+            LoadSave();
+        }
+        void IncreaseGameTime(){
+            DWORD gameState = *(DWORD*)(0x6C6EA4);
+            BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
+            byte is_rep = *(byte*)(0x69BCBC);
+            if ((!is_rep) && gameState==2 && pauseMenuState == 0) {
+                byte cur_diff = *(byte*)(0x69BCB0);
+                byte cur_player_typea = *(byte*)(0x69D4BD);
+                byte cur_player_typeb = *(byte*)(0x69D4BE);
+                byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
+
+                LARGE_INTEGER curCount;
+                QueryPerformanceCounter(&curCount);
+                if (mLastCount.QuadPart != 0) {
+                    int64_t time_ms = ((curCount.QuadPart - mLastCount.QuadPart) * 1000 ) / mPerformanceFreq.QuadPart;
+                    save_total.timePlayer[cur_diff][cur_player_type] += time_ms;
+                    save_current.timePlayer[cur_diff][cur_player_type] += time_ms;
+                    mTimePlayedms += time_ms;
+                    if (mTimePlayedms >= 1000 * 60 * 3){//save every 3 minutes automatically
+                        SaveSave();
+                    }
+                }
+                mLastCount = curCount;
+            } else {
+                QueryPerformanceCounter(&mLastCount);
+            }
         }
     };
-
-
-
 
     class THGuiPrac : public Gui::GameGuiWnd {
         THGuiPrac() noexcept
@@ -1476,13 +1648,26 @@ namespace TH06 {
             ImGui::TextUnformatted(S(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
-
+            
             if (BeginOptGroup<TH_GAME_SPEED>()) {
                 if (GameFPSOpt(mOptCtx))
                     FpsSet();
                 EndOptGroup();
             }
             DisableXKeyOpt();
+            {
+                ImGui::SetNextWindowCollapsed(false);
+                if (ImGui::CollapsingHeader(S(THPRAC_INGAMEINFO_06_SHOWDETAIL_COLLAPSE)))
+                {
+                    TH06InGameInfo::singleton().ShowDetail(nullptr);
+                    ImGui::NewLine();
+                    ImGui::Separator();
+                    ImGui::Separator();
+                    ImGui::Separator();
+                    ImGui::NewLine();
+                }
+            }
+            
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
@@ -2718,6 +2903,8 @@ namespace TH06 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         TH06InGameInfo::singleton().Update();
+        TH06InGameInfo::singleton().IncreaseGameTime();
+
         GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
     }
     EHOOK_DY(th06_render, 0x41cb6d)
@@ -2735,10 +2922,6 @@ namespace TH06 {
     EHOOK_DY(spellcard_get_failed, 0x4277C3)
     {
         is_spell_get = false;
-    }
-    EHOOK_DY(th06_ingame, 0x41AB7F)
-    {
-        TH06InGameInfo::singleton().mIsInGame = true;
     }
     EHOOK_DY(th06_miss, 0x428DD9)// dec life
     {
@@ -2764,8 +2947,7 @@ namespace TH06 {
         THGuiRep::singleton();
         THOverlay::singleton();
         TH06InGameInfo::singleton();
-        TH06InGameInfo::singleton().InitSpell();
-
+        TH06InGameInfo::singleton().Init();
         // Hooks
         THMainHook::singleton().EnableAllHooks();
 
@@ -2787,6 +2969,10 @@ namespace TH06 {
     {
         THGuiCreate();
         THInitHookDisable();
+    }
+    EHOOK_DY(th06_close, 0x420669)
+    {
+        TH06InGameInfo::singleton().SaveAll();
     }
     HOOKSET_ENDDEF()
 }
