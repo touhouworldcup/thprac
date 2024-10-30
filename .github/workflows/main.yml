@@ -8,15 +8,15 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup MSBuild environment
-      uses: microsoft/setup-msbuild@v1.1
+      uses: microsoft/setup-msbuild@v2
       with:
           msbuild-architecture: x86
     - name: Build thprac
       run: msbuild thprac.sln -t:restore,build -p:RestorePackagesConfig=true,Configuration=Release
     - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: thprac
         path: |
