@@ -19,6 +19,7 @@
 - add a option for EoSD to pause BGM when using esc pause menu
 - add a phase selection for IN st6A LSC;  add FORCE wave 2 for 123 normal 1
 - add hint editor for MoF
+- add font bug fix(mainly chinese)
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
@@ -41,3 +42,4 @@
 - 红魔乡3036后自动暂停bgm(设置界面)
 - 给蓬莱之药加了阶段选择; 给123一非加了阶段选择
 - 给风加了个hint编辑器
+- 字体修复(thwiki.cc/官方游戏/错误解决办法   字体不正常一节)

@@ -24,15 +24,37 @@ bool g_disable_xkey = false;
 bool g_enable_SOCD = false;
 bool g_disable_f10_11_13 = false;
 bool g_pauseBGM_06 = false;
+bool g_forceRenderCursor=false;
+bool g_testKey=false;
 
-bool g_OnlyRenderUsedFont=false;
 
 
 typedef BOOL(WINAPI* GetKeyboardStateType)(PBYTE lpKeyboardState);
 typedef HRESULT (STDMETHODCALLTYPE* GetDeviceStateType)(LPDIRECTINPUTDEVICE8 thiz, DWORD, LPVOID);
+typedef HFONT(WINAPI* CreateFontAType)(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,
+    DWORD bStrikeOut,DWORD iCharSet,DWORD iOutPrecision,DWORD iClipPrecision,DWORD iQuality,DWORD iPitchAndFamily,LPCSTR pszFaceName);
 
 GetKeyboardStateType g_realGetKeyboardState;
 GetDeviceStateType g_realGetDeviceState;
+CreateFontAType g_realCreateFontA;
+
+HFONT WINAPI CreateFontA_Changed
+(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,
+    DWORD bStrikeOut, DWORD iCharSet, DWORD iOutPrecision, DWORD iClipPrecision, DWORD iQuality, DWORD iPitchAndFamily, LPCSTR pszFaceName)
+{
+    char fontA[] = 
+        {0x82,0x6C,0x82,0x72,0x20,0x96,0xBE,0x92,0xA9,0x00};//‚l‚r –¾’©, MS Mincho
+    char fontB[] = 
+        {0x82, 0x6C, 0x82, 0x72, 0x20, 0x83, 0x53, 0x83, 0x56, 0x83, 0x62, 0x83, 0x4E, 0x00};//‚l‚r ƒSƒVƒbƒN, MS Gothic
+    if (strcmp(fontA,pszFaceName)==0){
+        return g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, "MS Mincho");
+    }
+    else if (strcmp(fontB, pszFaceName) == 0){
+        return g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, "MS Gothic");
+    }
+    return g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, pszFaceName);
+}
+
 
 #define IS_KEY_DOWN(x) (((x)&0x80)==0x80)
 
@@ -293,14 +315,18 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
             }
         }
 
-        bool keyboard_socd = false;
-        if (LauncherSettingGet("keyboard_SOCD", keyboard_socd) && keyboard_socd) {
-            g_enable_SOCD = true;
-        }else{
-            g_enable_SOCD = false;
-        }
+        LauncherSettingGet("keyboard_SOCD", g_enable_SOCD);
+        LauncherSettingGet("force_render_cursor", g_forceRenderCursor);
+        LauncherSettingGet("pauseBGM_06", g_pauseBGM_06);
+        LauncherSettingGet("test_key", g_testKey);
 
-        
+        bool useCorrectJaFonts=false;
+        if (LauncherSettingGet("use_correct_ja_fonts", useCorrectJaFonts) && useCorrectJaFonts)
+        {
+            LPVOID pTarget;
+            MH_CreateHookApiEx(L"GDI32.dll", "CreateFontA", CreateFontA_Changed, (void**)&g_realCreateFontA, &pTarget);
+            MH_EnableHook(pTarget);
+        }
 
         bool disable_f10 = false;
         if (LauncherSettingGet("disable_F10_11_13", disable_f10) && disable_f10) {
@@ -318,12 +344,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
             
         } else {
             g_disable_f10_11_13 = false;
-        }
-        bool pauseBGM_06 = false;
-        if (LauncherSettingGet("pauseBGM_06", pauseBGM_06) && pauseBGM_06) {
-            g_pauseBGM_06 = true;
-        } else {
-            g_pauseBGM_06 = false;
         }
 
         LauncherSettingGet_KeyBind();
@@ -379,6 +399,35 @@ void GameGuiBegin(game_gui_impl impl, bool game_nav)
     } else {
         Gui::GuiNavFocus::GlobalDisable(true);
     }
+    if (g_testKey && (ImGui::IsAnyItemActive() || ImGui::IsAnyItemHovered()))
+    {
+        io.MouseDown[0] = GetAsyncKeyState(VK_LBUTTON) & 0x8000;
+        io.MouseDown[1] = GetAsyncKeyState(VK_RBUTTON) & 0x8000;
+        io.KeyCtrl = GetAsyncKeyState(VK_CONTROL) & 0x8000;
+        io.KeyShift = GetAsyncKeyState(VK_SHIFT) & 0x8000;
+        io.KeyAlt = GetAsyncKeyState(VK_MENU) & 0x8000;
+
+        if (GetAsyncKeyState(VK_BACK) & 0x8000)
+            io.KeysDown[VK_BACK] = true;
+        else
+            io.KeysDown[VK_BACK] = false;
+        static int last_down[11] = { 0 };
+        for (int i = 0; i <= 9; i++)
+            if ((GetAsyncKeyState(i + '0') & 0x8000) || (GetAsyncKeyState(i + VK_NUMPAD0) & 0x8000)) {
+                if (last_down[i] == false)
+                    io.AddInputCharacter(i + '0');
+                last_down[i] = true;
+            } else {
+                last_down[i] = false;
+            }
+        if ((GetAsyncKeyState(VK_DECIMAL) & 0x8000) || (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000)) {
+            if (last_down[10] == false)
+                io.AddInputCharacter('.');
+            last_down[10] = true;
+        } else {
+            last_down[10] = false;
+        }
+    }
 
     switch (impl) {
     case THPrac::IMPL_WIN32_DX8:
@@ -402,7 +451,7 @@ void GameGuiEnd(bool draw_cursor)
     if (GameGuiProgress != 1)
         return;
     // Draw cursor if needed
-    if (draw_cursor && Gui::ImplWin32CheckFullScreen()) {
+    if (draw_cursor && (g_forceRenderCursor || Gui::ImplWin32CheckFullScreen())) {
         auto& io = ::ImGui::GetIO();
         io.MouseDrawCursor = true;
     }

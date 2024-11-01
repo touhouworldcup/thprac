@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1014] {
+const char* th_glossary_str[3][1020] {
     {
         "",
         "啤酒",
@@ -581,6 +581,8 @@ const char* th_glossary_str[3][1014] {
         "完成",
         "只渲染用到的字体",
         "游戏启动时如果爆显存，导致字体显示全为白块或透明等错误，则需要设置此项",
+        "强制渲染鼠标",
+        "全屏时无法看见鼠标则设置此项，将会导致窗口时出现两个重叠的鼠标",
         "游戏",
         "应用thprac",
         "默认启动此游戏",
@@ -732,6 +734,8 @@ const char* th_glossary_str[3][1014] {
         "清除",
         "反射启动",
         "如果游戏在经thprac启动后会出现异常，但直接运行时却一切正常，则打开此选项。\n这将导致任何需要从thprac直接启动游戏的功能失效。",
+        "渲染正确的日文字体",
+        "当游戏字体(对话/符卡)渲染错误时尝试开启本选项",
         "重置启动器",
         "重置启动器##modal",
         "确定重置启动器？\nthprac将会关闭，且在那之后你将丢失现有的所有数据！",
@@ -773,6 +777,8 @@ const char* th_glossary_str[3][1014] {
         "勾选你想要添加进thprac的游戏并点击\"应用\"",
         "Steam游戏 - 手动选取",
         "或",
+        "强制按键检测",
+        "某些情况下消息队列会被其他补丁替换导致无法按键，此时启用此选项",
         "thcrap",
         "添加thcrap配置...",
         "没有找到任何thcrap配置！",
@@ -1597,6 +1603,8 @@ const char* th_glossary_str[3][1014] {
         "Finish",
         "only render used font",
         "if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it",
+        "force render cursor",
+        "set this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode",
         "Games",
         "Apply thprac",
         "Start this game by default",
@@ -1748,6 +1756,8 @@ const char* th_glossary_str[3][1014] {
         "Purge",
         "Reflective launch",
         "Enable if the game behaves abnormally when launched by thprac but not when launched directly.\nThis will nullify any functionality that requires a direct game launch from thprac.",
+        "render correct ja fonts",
+        "use this option when game font is wrong(msg/spell)",
         "Reset launcher",
         "Reset##modal",
         "Are you sure you want to reset the launcher?\nthprac will be closed and after that, you will lose ALL existing data!",
@@ -1789,6 +1799,8 @@ const char* th_glossary_str[3][1014] {
         "Tick the games you wish to add into thprac and click \"Apply\".",
         "Steam games - Manual select",
         "or",
+        "force key test",
+        "set this setting to true when some patches replace the message queue function, which result in key press disabled",
         "thcrap",
         "Add thcrap configs...",
         "No thcrap configs was found!",
@@ -2613,6 +2625,8 @@ const char* th_glossary_str[3][1014] {
         "終了",
         "only render used font",
         "if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it",
+        "force render cursor",
+        "et this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode",
         "ゲーム",
         "thpracを適用する",
         "デフォルトでこのゲームを開始します",
@@ -2764,6 +2778,8 @@ const char* th_glossary_str[3][1014] {
         "削除",
         "リフレクティブローンチ ",
         "thpracによって起動されたときにゲームが異常に動作するが、直接起動されたときは動作しない場合に有効にします。\nこれを有効にすると、thpracから直接ゲームを起動する必要がある機能が無効になります。",
+        "render correct ja fonts",
+        "use this option when game font is wrong(msg/spell)",
         "ランチャーをリセット",
         "リセット##modal",
         "ランチャーをリセットしてもよろしいですか？\nthpracは閉じられ、その後、既存のデータがすべて失われます！",
@@ -2805,6 +2821,8 @@ const char* th_glossary_str[3][1014] {
         "thpracに追加したいゲームにチェックを入れ、「適用する」をクリックします。",
         "Steamゲーム - 手動選択",
         "または",
+        "force key test",
+        "set this setting to true when some patches replace the message queue function, which result in key press disabled",
         "thcrap",
         "thcrapコンフィグを追加...",
         "thcrapのコンフィグが見つかりませんでした！",
@@ -23109,7 +23127,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3209] {
+const wchar_t __thprac_loc_range_zh[3215] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -23124,6 +23142,7 @@ const wchar_t __thprac_loc_range_zh[3209] {
     0x308b, 0x308b,
     0x308c, 0x308c,
     0x4e00, 0x4e00,
+    0x4e01, 0x4e01,
     0x4e03, 0x4e03,
     0x4e07, 0x4e07,
     0x4e09, 0x4e09,
@@ -23371,6 +23390,7 @@ const wchar_t __thprac_loc_range_zh[3209] {
     0x53d7, 0x53d7,
     0x53d8, 0x53d8,
     0x53db, 0x53db,
+    0x53e0, 0x53e0,
     0x53e3, 0x53e3,
     0x53e4, 0x53e4,
     0x53e6, 0x53e6,
@@ -24408,6 +24428,7 @@ const wchar_t __thprac_loc_range_zh[3209] {
     0x8861, 0x8861,
     0x8862, 0x8862,
     0x8863, 0x8863,
+    0x8865, 0x8865,
     0x8868, 0x8868,
     0x8870, 0x8870,
     0x888b, 0x888b,

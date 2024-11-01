@@ -1920,9 +1920,20 @@ private:
     {
         ImGui::TextUnformatted(S(THPRAC_LAUNCH_BEHAVIOR));
         ImGui::Separator();
+
         mForceOnlyRenderTextUsed.Gui(S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED));
         ImGui::SameLine();
         GuiHelpMarker(S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC));
+        mForceRenderCursor.Gui(S(THPRAC_FORCE_RENDER_CURSOR));
+        ImGui::SameLine();
+        GuiHelpMarker(S(THPRAC_FORCE_RENDER_CURSOR_DESC));
+        mTestKey.Gui(S(THPRAC_TEST_KEY));
+        ImGui::SameLine();
+        GuiHelpMarker(S(THPRAC_TEST_KEY_DESC));
+        mUseCorrectJaFonts.Gui(S(THPRAC_RENDER_CORRECT_FONT));
+        ImGui::SameLine();
+        GuiHelpMarker(S(THPRAC_RENDER_CORRECT_FONT_DESC));
+        ImGui::Separator();
 
         mAdminRights.Gui(S(THPRAC_ADMIN_RIGHTS));
         mExistingGameAction.Gui(S(THPRAC_EXISTING_GAME_ACTION), S(THPRAC_EXISTING_GAME_ACTION_OPTION));
@@ -2086,6 +2097,9 @@ private:
 
     THCfgCheckbox mReflectiveLaunch { "reflective_launch", false };
     THCfgCheckbox mForceOnlyRenderTextUsed { "force_only_render_text_used", false };
+    THCfgCheckbox mForceRenderCursor { "force_render_cursor", false };
+    THCfgCheckbox mTestKey { "test_key", false };
+    THCfgCheckbox mUseCorrectJaFonts { "use_correct_ja_fonts", false };
 
     THCfgCombo mExistingGameAction { "existing_game_launch_action", 0, 3 };
     THCfgCheckbox mDontSearchOngoingGame { "dont_search_ongoing_game", false };

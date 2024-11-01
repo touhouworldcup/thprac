@@ -75,7 +75,7 @@ namespace TH06 {
             "禁弹「刻着过去的钟表」",
             "秘弹「之后就一个人都没有了吗？」",
             "QED「495年的波纹」",
-            "「估计二一四七四八三六四八成之魔法阵」" },
+            "「大约魔法阵的确死了」" },
         { 
             " Moon Sign \"Moonlight Ray\"",
             "Night Sign \"Night Bird\"",
@@ -623,7 +623,7 @@ namespace TH06 {
             int t_s = (ms / 1000) % 60;
             int t_min = (ms / 1000 / 60) % 60;
             int t_h = (ms / 1000 / 60 / 60);
-            return std::format("{}:{:0>2}:{:0>2}.{:0>4}" ,t_h,t_min,t_s,t_ms);
+            return std::format("{}:{:0>2}:{:0>2}.{:0>3}" ,t_h,t_min,t_s,t_ms);
         }
         std::string GetTime_YYMMDD_HHMMSS(int64_t ms)
         {
@@ -636,7 +636,7 @@ namespace TH06 {
             int t_year = ms / 1000 / 60 / 60 / 24 / 30 / 12;
             if (t_year > 0)
             {
-                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>4}{}", 
+                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>3}{}", 
                     t_year, S(THPRAC_INGAMEINFO_06_GAMTIME_YEAR),
                     t_month, S(THPRAC_INGAMEINFO_06_GAMTIME_MONTH),
                     t_day, S(THPRAC_INGAMEINFO_06_GAMTIME_DAY),
@@ -646,7 +646,7 @@ namespace TH06 {
                     t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND)
                 );
             }else if (t_month > 0){
-                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>4}{}",
+                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>3}{}",
                     t_month, S(THPRAC_INGAMEINFO_06_GAMTIME_MONTH),
                     t_day, S(THPRAC_INGAMEINFO_06_GAMTIME_DAY),
                     t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
@@ -654,25 +654,25 @@ namespace TH06 {
                     t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
                     t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
             } else if (t_day > 0) {
-                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>4}{}",
+                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>3}{}",
                     t_day, S(THPRAC_INGAMEINFO_06_GAMTIME_DAY),
                     t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
                     t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
                     t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
                     t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
             } else if (t_h > 0) {
-                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>4}{}",
+                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>3}{}",
                     t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
                     t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
                     t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
                     t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
             } else if (t_min > 0) {
-                return std::format("{}{}{:0>2}{}{:0>4}{}",
+                return std::format("{}{}{:0>2}{}{:0>3}{}",
                     t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
                     t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
                     t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
             } else if (t_s > 0) {
-                return std::format("{}{}{:0>4}{}",
+                return std::format("{}{}{:0>3}{}",
                     t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
                     t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
             }

@@ -581,6 +581,8 @@ enum th_glossary_t {
     THPRAC_FINISH,
     THPRAC_FORCE_ONLY_RENDER_TEXT_USED,
     THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC,
+    THPRAC_FORCE_RENDER_CURSOR,
+    THPRAC_FORCE_RENDER_CURSOR_DESC,
     THPRAC_GAMES,
     THPRAC_GAMES_APPLY_THPRAC,
     THPRAC_GAMES_DEFAULT_LAUNCH,
@@ -732,6 +734,8 @@ enum th_glossary_t {
     THPRAC_PURGE_LOCAL,
     THPRAC_REFLECTIVE_LAUNCH,
     THPRAC_REFLECTIVE_LAUNCH_DESC,
+    THPRAC_RENDER_CORRECT_FONT,
+    THPRAC_RENDER_CORRECT_FONT_DESC,
     THPRAC_RESET_LAUNCHER,
     THPRAC_RESET_LAUNCHER_MODAL,
     THPRAC_RESET_LAUNCHER_WARNING,
@@ -773,6 +777,8 @@ enum th_glossary_t {
     THPRAC_STEAM_MNG_MANUAL_INSTRUCTION,
     THPRAC_STEAM_MNG_MANUAL_TITLE,
     THPRAC_STEAM_MNG_OR,
+    THPRAC_TEST_KEY,
+    THPRAC_TEST_KEY_DESC,
     THPRAC_THCRAP,
     THPRAC_THCRAP_ADDCFG,
     THPRAC_THCRAP_ADDCFG_404,
@@ -1025,7 +1031,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1014];
+extern const char* th_glossary_str[3][1020];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2541,7 +2547,7 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3209];
+extern const wchar_t __thprac_loc_range_zh[3215];
 
 extern const wchar_t __thprac_loc_range_en[53];
 

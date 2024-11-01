@@ -225,6 +225,15 @@
 	"THPRAC_FORCE_ONLY_RENDER_TEXT_USED":["只渲染用到的字体","only render used font","only render used font"],
 	"THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC":["游戏启动时如果爆显存，导致字体显示全为白块或透明等错误，则需要设置此项","if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it","if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it"],
 	
+	"THPRAC_RENDER_CORRECT_FONT":["渲染正确的日文字体","render correct ja fonts","render correct ja fonts"],
+	"THPRAC_RENDER_CORRECT_FONT_DESC":["当游戏字体(对话/符卡)渲染错误时尝试开启本选项","use this option when game font is wrong(msg/spell)","use this option when game font is wrong(msg/spell)"],
+	
+	"THPRAC_FORCE_RENDER_CURSOR":["强制渲染鼠标","force render cursor","force render cursor"],
+	"THPRAC_FORCE_RENDER_CURSOR_DESC":["全屏时无法看见鼠标则设置此项，将会导致窗口时出现两个重叠的鼠标","set this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode","et this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode"],
+	
+	"THPRAC_TEST_KEY":["强制按键检测","force key test","force key test"],
+	"THPRAC_TEST_KEY_DESC":["某些情况下消息队列会被其他补丁替换导致无法按键，此时启用此选项","set this setting to true when some patches replace the message queue function, which result in key press disabled","set this setting to true when some patches replace the message queue function, which result in key press disabled"],
+	
 	"THPRAC_KEYBIND":["修改按键映射","set keybind","set keybind"],
 	"THPRAC_KEYBIND_MODAL":["修改按键映射##modal","set keybind##modal","set keybind##modal"],
 	"THPRAC_KEYBIND_ADD":["增加","add","add"],

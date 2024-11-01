@@ -7,7 +7,6 @@
 #include <Windows.h>
 
 namespace THPrac {
-extern bool g_OnlyRenderUsedFont;
 namespace Gui {
 #pragma region Japanese Glyph Range
 static const short offsetsFrom0x4E00[] =
@@ -429,17 +428,13 @@ static ImWchar baseUnicodeRanges[] =
     ImWchar* GetGlyphRange(int locale)
     {
         bool onlyRenderUsedFont = false;
-        if (LauncherSettingGet("force_only_render_text_used", onlyRenderUsedFont) && onlyRenderUsedFont) {
-            g_OnlyRenderUsedFont = true;
-        } else {
-            g_OnlyRenderUsedFont = false;
-        }
+        LauncherSettingGet("force_only_render_text_used", onlyRenderUsedFont);
 
         auto& io = ImGui::GetIO();
         ImWchar* glyphRange = nullptr;
         switch (locale) {
         case LOCALE_ZH_CN:
-        if(g_OnlyRenderUsedFont)
+            if (onlyRenderUsedFont)
             glyphRange = (ImWchar*)__thprac_loc_range_zh;
         else
             glyphRange = (ImWchar*)io.Fonts->GetGlyphRangesChineseFull();
@@ -448,7 +443,7 @@ static ImWchar baseUnicodeRanges[] =
             glyphRange = (ImWchar*)io.Fonts->GetGlyphRangesDefault();
             break;
         case LOCALE_JA_JP: {
-            if (g_OnlyRenderUsedFont)
+            if (onlyRenderUsedFont)
                 glyphRange = (ImWchar*)__thprac_loc_range_ja;
             else
             {
