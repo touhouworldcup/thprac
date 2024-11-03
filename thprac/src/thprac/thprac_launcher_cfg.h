@@ -42,4 +42,7 @@ bool LauncherPreUpdate(wchar_t* pCmdLine);
 
 bool SetTheme(int theme, const wchar_t* userThemeName = nullptr);
 
+int64_t LauncherGetGameTime();
+void LauncherSetGameTime(int64_t timens);
+
 }

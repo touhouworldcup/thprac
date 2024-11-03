@@ -214,10 +214,19 @@
       "THPRAC_UNLOCK_REFRESH_RATE":["解锁屏幕刷新率","Unlock monitor refresh rate","Unlock monitor refresh rate"],
       "THPRAC_UNLOCK_REFRESH_RATE_DESC":["勾选后，应用thprac会阻止游戏在全屏模式下将屏幕刷新率锁定在60hz。\n在使用高刷新率显示器且关闭垂直同步的情况下，这么做可以稍微改善延迟并减少画面撕裂。\n注：只在使用thprac（或其启动器）启动游戏时有效。对于Steam版游戏和喵玉汉化，请在custom.exe中勾选“每次启动时询问/起動時に毎回訊れる/Ask each startup time”。",	"When enabled, applying thprac will prevent the game to lock monitor's refresh rate at 60hz in fullscreen mode.\nThis gives you slightly improved latency and reduced screen tearing when using a high refresh rate monitor and when vertical sync is disabled.\nNote: This only works when using thprac (and its launcher) to open the game. For Steam games, tick \"Ask each startup time/起動時に毎回訊れる\" in custom.exe.","When enabled, applying thprac will prevent the game to lock monitor's refresh rate at 60hz in fullscreen mode.\nThis gives you slightly improved latency and reduced screen tearing when using a high refresh rate monitor and when vertical sync is disabled.\nNote: This only works when using thprac (and its launcher) to open the game. For Steam games, tick \"Ask each startup time/起動時に毎回訊れる\" in custom.exe."],
     
+	"THPRAC_RECORD_GAME_TIME":["记录飞行时间","record game time","record game time"],
+	"THPRAC_GAME_TIME_HINT":["飞行时间提示长度(小时)","game time hint(hour)","game time hint(hour)"],
+	"THPRAC_GAME_TIME_HINT_SE":["飞行时间过长音效提示","game time too long SE","game time too long SE"],
+	"THPRAC_GAME_TIME_HINT_SE_STOP":["音效重复间隔秒数","SE repeat interval(second)","SE repeat interval(second)"],
+	"THPRAC_GAME_TIME_HINT_SE_TEST":["测试音效","SE test","SE test"],
+	"THPRAC_GAME_TIME_HINT_SE_DESC":["将音效文件放在thprac同目录下, 名称为SE.wav","put SE file in thprac path with name SE.wav","put SE file in thprac path with name SE.wav"],
+	
     "THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN":["修改启动时窗口的大小","change window size when open","change window size when open"],
 	"THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE":["窗口大小","window size","window size"],
 	"THPRAC_ENABLE_KEYBOARD_SOCD":["启用SOCD后覆盖功能","enable keyboard SOCD (last input priority)","enable keyboard SOCD (last input priority)"],
 	"THPRAC_ENABLE_KEYBOARD_SOCD_DESC":["当同时按下反向方向键时，仅激活最后使用的方向键。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."],
+	
+	"THPRAC_COMPATIBILITY_SETTINGS":["兼容性设置","Compatibility Settings","Compatibility Settings"],
 	
 	"THPRAC_DISABLE_F10_11_13":["在th11到th13靳用F10键","disable f10 for th11-13","disable f10 for th11-13"],
 	"THPRAC_PAUSE_BGM_TH06":["红魔乡在3036时暂停bgm(仅wav)","pause bgm when esc in EoSD(wav only)","pause bgm when esc in EoSD(wav only)"],
@@ -226,7 +235,13 @@
 	"THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC":["游戏启动时如果爆显存，导致字体显示全为白块或透明等错误，则需要设置此项","if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it","if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it"],
 	
 	"THPRAC_RENDER_CORRECT_FONT":["渲染正确的日文字体","render correct ja fonts","render correct ja fonts"],
-	"THPRAC_RENDER_CORRECT_FONT_DESC":["当游戏字体(对话/符卡)渲染错误时尝试开启本选项","use this option when game font is wrong(msg/spell)","use this option when game font is wrong(msg/spell)"],
+	"THPRAC_RENDER_CORRECT_FONT_DESC":["当游戏字体(对话/符卡)渲染错误时尝试开启本选项, 仅在使用thprac启动游戏时生效","use this option when game font is wrong(msg/spell), only works when launch game by thprac","use this option when game font is wrong(msg/spell), only works when launch game by thprac"],
+	
+	"THPRAC_CUSTOM_FONTS":["使用自定义游戏字体","use custom game fonts","use custom game fonts"],
+	"THPRAC_CUSTOM_FONTS_DESC":["仅在使用thprac启动游戏时生效","only works when launch game by thprac","only works when launch game by thprac"],
+	"THPRAC_CUSTOM_FONT":["字体","font","font"],
+	
+	
 	
 	"THPRAC_FORCE_RENDER_CURSOR":["强制渲染鼠标","force render cursor","force render cursor"],
 	"THPRAC_FORCE_RENDER_CURSOR_DESC":["全屏时无法看见鼠标则设置此项，将会导致窗口时出现两个重叠的鼠标","set this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode","et this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode"],
@@ -246,8 +261,13 @@
 	"THPRAC_KEYBIND_PRESS_A_KEY":["请按下一个按键","please press a key","please press a key"],
 	"THPRAC_KEYBIND_ENTER":["按键名","key name","key name"],
 	
-
+      "THPRAC_OTHERS": [ "其它", "others", "others" ],
+      "THPRAC_GAME_TIME_TOTAL": [ "总飞行时间", "total game time", "total game time" ],
+	  "THPRAC_GAME_TIME_CURRENT": [ "本次飞行时间", "current game time", "current game time" ],
+	  "THPRAC_GAME_TIME_LONG": [ "阿伟你又在玩电动哦，休息一下吧", "long game time", "long game time" ],
+	  "THPRAC_ENABLE_GAMETIME_RECORD": [ "在设置界面设置「记录飞行时间」以查看(下一次启动生效)", "enable record game time in Settings to check(works when launch next time)", "enable record game time in Settings to check(works when launch next time)" ],
       "THPRAC_TOOLS": [ "工具", "Tools", "ツール" ],
+	  
       "THPRAC_TOOLS_APPLY_THPRAC": [ "应用thprac至正在运行的游戏", "Apply thprac to ongoing game", "実行中のゲームにthpracを適用します" ],
       "THPRAC_TOOLS_RND_GAME": [ "随机游戏", "Random game", "ランダムゲーム" ],
       "THPRAC_TOOLS_RND_PLAYER": [ "随机机体", "Random shot type", "ランダム機体" ],
@@ -674,6 +694,7 @@
        "THPRAC_INGAMEINFO_06_GAMTIME_CUR":["本次游戏时间","game time(current)","game time(current)"],
 	   "THPRAC_INGAMEINFO_06_GAMTIME_CHARACTER_TOT":["本机体总时间","character game time(total)","character game time(total)"],
 	   "THPRAC_INGAMEINFO_06_GAMTIME_ALL":["全机体全难度总时间","game time(all char/diff)","character game time(all char/diff)"],
+	   "THPRAC_INGAMEINFO_06_GAMTIME_CENTRY":["世纪","Cen","Cen"],
 	   "THPRAC_INGAMEINFO_06_GAMTIME_YEAR":["年","Y","Y"],
 	   "THPRAC_INGAMEINFO_06_GAMTIME_MONTH":["月","M","M"],
 	   "THPRAC_INGAMEINFO_06_GAMTIME_DAY":["日","D","D"],
@@ -681,6 +702,8 @@
 	   "THPRAC_INGAMEINFO_06_GAMTIME_MINUTE":["分","min","min"],
 	   "THPRAC_INGAMEINFO_06_GAMTIME_SECOND":["秒","s","s"],
 	   "THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND":["毫秒","ms","ms"],
+	   "THPRAC_INGAMEINFO_06_GAMTIME_MICROSECOND":["微秒","us","us"],
+	   "THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND":["纳秒","ns","ns"],
 	   
        "THPRAC_INGAMEINFO_06_SPELL_NAME":["符卡","spell name","spell name"],
        "THPRAC_INGAMEINFO_06_CAPTURE_TOT":["收率(总)","capture(total)","capture(total)"],

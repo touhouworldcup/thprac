@@ -444,7 +444,7 @@ namespace TH06 {
         struct TH06Save
         {
             int32_t SC_History[65][5][4][3] = { 0 }; // spellid, diff, playertype, [capture/attempt/timeout]
-            int64_t timePlayer[5][4] = { 0 }; // diff/type
+            int64_t timePlayer[5][4] = { 0 }; // diff/type, precision:ns
         };
         TH06Save save_current;
         TH06Save save_total;
@@ -505,24 +505,56 @@ namespace TH06 {
         {
             mIsSaveLoaded = true;
             PushCurrentDirectory(L"%appdata%\\ShanghaiAlice\\th06");
-            auto fs = ::std::fstream("spell_capture.dat", ::std::ios::in | ::std::ios::binary);
-            if (fs.is_open()) {
-                fs.read((char*)save_total.SC_History, sizeof(save_total.SC_History));
-                if (!fs.eof())
-                    fs.read((char*)save_total.timePlayer, sizeof(save_total.timePlayer)); // compatible , avoid eof
+            auto fs_new = ::std::fstream("score06.dat", ::std::ios::in | ::std::ios::binary);
+            if (fs_new.is_open()){
+                int version = 1;
+                fs_new.read((char*)&version,sizeof(version));
+                switch (version)
+                {
+                default:
+                case 1:
+                {
+                    fs_new.read((char*)save_total.SC_History, sizeof(save_total.SC_History));
+                    fs_new.read((char*)save_total.timePlayer, sizeof(save_total.timePlayer));
+                }
+                    break;
+                }
+                fs_new.close();
+            } else {
+                //compatible
+                auto fs = ::std::fstream("spell_capture.dat", ::std::ios::in | ::std::ios::binary);
+                if (fs.is_open()) {
+                      fs.read((char*)save_total.SC_History, sizeof(save_total.SC_History));
+                      if (!fs.eof())
+                          fs.read((char*)save_total.timePlayer, sizeof(save_total.timePlayer)); // compatible , avoid eof
+
+                      for(int i=0;i<5;i++)
+                          for(int j=0;j<4;j++)
+                              save_total.timePlayer[i][j] *= 1000000;// make precision to ns
+                }
+                fs.close();
             }
-            fs.close();
             PopCurrentDirectory();
         }
 
         void SaveSave()
         {
+            int version = 1;
             PushCurrentDirectory(L"%appdata%\\ShanghaiAlice\\th06");
-            auto fs = ::std::fstream("spell_capture.dat", ::std::ios::out | ::std::ios::binary);
+            auto fs = ::std::fstream("score06.dat", ::std::ios::out | ::std::ios::binary);
             if (fs.is_open()) {
+                fs.write((char*)(&version), sizeof(version));
                 fs.write((char*)(&save_total), sizeof(save_total));
+                fs.close();
             }
-            fs.close();
+            // {
+            //     auto fs = ::std::fstream("spell_capture.dat", ::std::ios::out | ::std::ios::binary);
+            //     if (fs.is_open()) {
+            //         fs.write((char*)(&save_total), sizeof(save_total));
+            //     }
+            //     fs.close();
+            // }
+            
             PopCurrentDirectory();
         }
 
@@ -617,68 +649,6 @@ namespace TH06 {
             save_current.SC_History[spell_id][diff][player_type][2]++;
             SaveSave();
         }
-        std::string GetTime_HHMMSS(int64_t ms)
-        {
-            int t_ms = ms % 1000;
-            int t_s = (ms / 1000) % 60;
-            int t_min = (ms / 1000 / 60) % 60;
-            int t_h = (ms / 1000 / 60 / 60);
-            return std::format("{}:{:0>2}:{:0>2}.{:0>3}" ,t_h,t_min,t_s,t_ms);
-        }
-        std::string GetTime_YYMMDD_HHMMSS(int64_t ms)
-        {
-            int t_ms = ms % 1000;
-            int t_s = (ms / 1000) % 60;
-            int t_min = (ms / 1000 / 60) % 60;
-            int t_h = (ms / 1000 / 60 / 60) % 24;
-            int t_day = (ms / 1000 / 60 / 60 / 24) % 30;
-            int t_month = (ms / 1000 / 60 / 60 / 24 / 30) % 12;
-            int t_year = ms / 1000 / 60 / 60 / 24 / 30 / 12;
-            if (t_year > 0)
-            {
-                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>3}{}", 
-                    t_year, S(THPRAC_INGAMEINFO_06_GAMTIME_YEAR),
-                    t_month, S(THPRAC_INGAMEINFO_06_GAMTIME_MONTH),
-                    t_day, S(THPRAC_INGAMEINFO_06_GAMTIME_DAY),
-                    t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
-                    t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
-                    t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
-                    t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND)
-                );
-            }else if (t_month > 0){
-                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>3}{}",
-                    t_month, S(THPRAC_INGAMEINFO_06_GAMTIME_MONTH),
-                    t_day, S(THPRAC_INGAMEINFO_06_GAMTIME_DAY),
-                    t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
-                    t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
-                    t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
-                    t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
-            } else if (t_day > 0) {
-                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>3}{}",
-                    t_day, S(THPRAC_INGAMEINFO_06_GAMTIME_DAY),
-                    t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
-                    t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
-                    t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
-                    t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
-            } else if (t_h > 0) {
-                return std::format("{}{}{:0>2}{}{:0>2}{}{:0>3}{}",
-                    t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
-                    t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
-                    t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
-                    t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
-            } else if (t_min > 0) {
-                return std::format("{}{}{:0>2}{}{:0>3}{}",
-                    t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
-                    t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
-                    t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
-            } else if (t_s > 0) {
-                return std::format("{}{}{:0>3}{}",
-                    t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
-                    t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
-            }
-            return std::format("{}{}",
-                t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND));
-        }
 
         public:
             void ShowDetail(bool *isOpen){
@@ -711,13 +681,13 @@ namespace TH06 {
 
                                     ImGui::TableNextRow();
                                     ImGui::TableNextColumn();
-                                    ImGui::Text(GetTime_HHMMSS(gametime_tot).c_str());
+                                    ImGui::TextWrapped(GetTime_HHMMSS(gametime_tot).c_str());
                                     ImGui::TableNextColumn();
-                                    ImGui::Text(GetTime_HHMMSS(gametime_cur).c_str());
+                                    ImGui::TextWrapped(GetTime_HHMMSS(gametime_cur).c_str());
                                     ImGui::TableNextColumn();
-                                    ImGui::Text(GetTime_HHMMSS(gametime_chartot).c_str());
+                                    ImGui::TextWrapped(GetTime_HHMMSS(gametime_chartot).c_str());
                                     ImGui::TableNextColumn();
-                                    ImGui::Text(GetTime_HHMMSS(gametime_all).c_str());
+                                    ImGui::TextWrapped(GetTime_HHMMSS(gametime_all).c_str());
 
                                     ImGui::TableNextRow();
                                     ImGui::TableNextColumn();
@@ -731,13 +701,13 @@ namespace TH06 {
 
                                     ImGui::TableNextRow();
                                     ImGui::TableNextColumn();
-                                    ImGui::TextWrapped("(%lld ms)", gametime_tot);
+                                    ImGui::TextWrapped("(%lld %s)", gametime_tot, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
                                     ImGui::TableNextColumn();
-                                    ImGui::TextWrapped("(%lld ms)", gametime_cur);
+                                    ImGui::TextWrapped("(%lld %s)", gametime_cur, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
                                     ImGui::TableNextColumn();
-                                    ImGui::TextWrapped("(%lld ms)", gametime_chartot);
+                                    ImGui::TextWrapped("(%lld %s)", gametime_chartot, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
                                     ImGui::TableNextColumn();
-                                    ImGui::TextWrapped("(%lld ms)", gametime_all);
+                                    ImGui::TextWrapped("(%lld %s)", gametime_all, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
 
                                     ImGui::EndTable();
                                     // spell capture
@@ -926,7 +896,7 @@ namespace TH06 {
         }
         LARGE_INTEGER mPerformanceFreq = { 0 };
         LARGE_INTEGER mLastCount = { 0 };
-        int64_t mTimePlayedms = 0;
+        int64_t mTimePlayedns = 0;
     public:
         void SaveAll(){
             if (mIsSaveLoaded)
@@ -935,7 +905,7 @@ namespace TH06 {
         void Init() {
             QueryPerformanceFrequency(&mPerformanceFreq);
             mLastCount.QuadPart=0;
-            mTimePlayedms = 0;
+            mTimePlayedns = 0;
             LoadSave();
         }
         void IncreaseGameTime(){
@@ -951,11 +921,12 @@ namespace TH06 {
                 LARGE_INTEGER curCount;
                 QueryPerformanceCounter(&curCount);
                 if (mLastCount.QuadPart != 0) {
-                    int64_t time_ms = ((curCount.QuadPart - mLastCount.QuadPart) * 1000 ) / mPerformanceFreq.QuadPart;
-                    save_total.timePlayer[cur_diff][cur_player_type] += time_ms;
-                    save_current.timePlayer[cur_diff][cur_player_type] += time_ms;
-                    mTimePlayedms += time_ms;
-                    if (mTimePlayedms >= 1000 * 60 * 3){//save every 3 minutes automatically
+                    int64_t time_ns = ((((double)(curCount.QuadPart - mLastCount.QuadPart)) / (double)mPerformanceFreq.QuadPart) * 1e9);
+                    save_total.timePlayer[cur_diff][cur_player_type] += time_ns;
+                    save_current.timePlayer[cur_diff][cur_player_type] += time_ns;
+                    mTimePlayedns += time_ns;
+                    if (mTimePlayedns >= (1000000000ll*60*3)) { // save every 3 minutes automatically
+                        mTimePlayedns = 0;
                         SaveSave();
                     }
                 }

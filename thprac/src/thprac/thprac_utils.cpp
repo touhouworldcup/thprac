@@ -5,6 +5,8 @@
 #include <metrohash128.h>
 #include "../3rdParties/d3d8/include/d3d8.h"
 #include <dinput.h>
+#include <set>
+#include <format>
 
 namespace THPrac {
 #pragma region Key
@@ -122,6 +124,160 @@ const KeyDefine keyBindDefine[109] = {
 };
 
     #pragma endregion
+#pragma region TimeCvt
+std::string GetTime_HHMMSS(int64_t ns)
+{
+
+    int64_t t_us = ns / 1000ll;
+    int64_t t_ms = t_us / 1000ll;
+    int64_t t_s = t_ms / 1000ll;
+    int t_min = t_s / 60ll; // t_min = ns/60e9 < INT_MAX
+    int t_h = t_min / 60ll;
+
+    int t_ns = ns % 1000ll;
+    t_us = t_us % 1000ll;
+    t_ms = t_ms % 1000ll;
+    t_s = t_s % 60ll;
+    t_min = t_min % 60ll;
+    return std::format("{}:{:0>2}:{:0>2}.{:0>3}.{:0>3}.{:0>3}", t_h, t_min, t_s, t_ms, t_us, t_ns);
+}
+std::string GetTime_YYMMDD_HHMMSS(int64_t ns)
+{
+    int64_t t_us = ns / 1000ll;
+    int64_t t_ms = t_us / 1000ll;
+    int64_t t_s = t_ms / 1000ll;
+    int t_min = t_s / 60ll;
+    int t_h = t_min / 60ll;
+    
+    int t_day = t_h / 24;
+    int t_month = t_day / 30;
+    int t_year = t_month / 12;
+    int t_centry = t_year / 100;
+
+    int t_ns = ns % 1000ll;
+    t_us = t_us % 1000ll;
+    t_ms = t_ms % 1000ll;
+    t_s = t_s % 60ll;
+    t_min = t_min % 60ll;
+    t_h = t_h % 24ll;
+    t_day = t_day % 30ll;
+    t_month = t_month % 12ll;
+    t_year = t_year % 100ll;
+
+    if (t_centry > 0) {
+        return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{}{}{}{}{}{}",
+            t_centry, S(THPRAC_INGAMEINFO_06_GAMTIME_CENTRY),
+            t_year, S(THPRAC_INGAMEINFO_06_GAMTIME_YEAR),
+            t_month, S(THPRAC_INGAMEINFO_06_GAMTIME_MONTH),
+            t_day, S(THPRAC_INGAMEINFO_06_GAMTIME_DAY),
+            t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
+            t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
+            t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
+            t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND),
+            t_us, S(THPRAC_INGAMEINFO_06_GAMTIME_MICROSECOND),
+            t_ns, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
+    }else if (t_year > 0) {
+        return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{}{}{}{}{}{}",
+            t_year, S(THPRAC_INGAMEINFO_06_GAMTIME_YEAR),
+            t_month, S(THPRAC_INGAMEINFO_06_GAMTIME_MONTH),
+            t_day, S(THPRAC_INGAMEINFO_06_GAMTIME_DAY),
+            t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
+            t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
+            t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
+            t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND),
+            t_us, S(THPRAC_INGAMEINFO_06_GAMTIME_MICROSECOND),
+            t_ns, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
+    } else if (t_month > 0) {
+        return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{:0>2}{}{}{}{}{}{}{}",
+            t_month, S(THPRAC_INGAMEINFO_06_GAMTIME_MONTH),
+            t_day, S(THPRAC_INGAMEINFO_06_GAMTIME_DAY),
+            t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
+            t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
+            t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
+            t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND),
+            t_us, S(THPRAC_INGAMEINFO_06_GAMTIME_MICROSECOND),
+            t_ns, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
+    } else if (t_day > 0) {
+        return std::format("{}{}{:0>2}{}{:0>2}{}{:0>2}{}{}{}{}{}{}{}",
+            t_day, S(THPRAC_INGAMEINFO_06_GAMTIME_DAY),
+            t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
+            t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
+            t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
+            t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND),
+            t_us, S(THPRAC_INGAMEINFO_06_GAMTIME_MICROSECOND),
+            t_ns, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
+    } else if (t_h > 0) {
+        return std::format("{}{}{:0>2}{}{:0>2}{}{}{}{}{}{}{}",
+            t_h, S(THPRAC_INGAMEINFO_06_GAMTIME_HOUR),
+            t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
+            t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
+            t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND),
+            t_us, S(THPRAC_INGAMEINFO_06_GAMTIME_MICROSECOND),
+            t_ns, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
+    } else if (t_min > 0) {
+        return std::format("{}{}{:0>2}{}{}{}{}{}{}{}",
+            t_min, S(THPRAC_INGAMEINFO_06_GAMTIME_MINUTE),
+            t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
+            t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND),
+            t_us, S(THPRAC_INGAMEINFO_06_GAMTIME_MICROSECOND),
+            t_ns, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
+    } else if (t_s > 0) {
+        return std::format("{}{}{}{}{}{}{}{}",
+            t_s, S(THPRAC_INGAMEINFO_06_GAMTIME_SECOND),
+            t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND),
+            t_us, S(THPRAC_INGAMEINFO_06_GAMTIME_MICROSECOND),
+            t_ns, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
+    } else if (t_ms > 0) {
+        return std::format("{}{}{}{}{}{}",
+            t_ms, S(THPRAC_INGAMEINFO_06_GAMTIME_MILLISECOND),
+            t_us, S(THPRAC_INGAMEINFO_06_GAMTIME_MICROSECOND),
+            t_ns, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
+    } else if (t_us > 0) {
+        return std::format("{}{}{}{}",
+            t_us, S(THPRAC_INGAMEINFO_06_GAMTIME_MICROSECOND),
+            t_ns, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
+    }
+    return std::format("{}{}",
+        t_ns, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
+}
+#pragma endregion
+
+#pragma region FontsEnum
+std::set<std::string> g_fonts; //make sure fonts are arranged
+int CALLBACK EnumFontFamExProc(ENUMLOGFONTEXA* lpelfe, const TEXTMETRICA* lpntme, DWORD FontType, LPARAM lParam)
+{
+    if (lpelfe == NULL)
+        return 0;
+    if (lpelfe->elfFullName[0] != '@')
+        g_fonts.insert(std::string((char*)lpelfe->elfFullName));
+    return 1;
+}
+std::vector<std::string>& EnumAllFonts()
+{
+    static std::vector<std::string> res;
+    if (res.size() != 0)
+        return res;
+    LOGFONTA logFont = { 0 };
+    logFont.lfFaceName[0] = '\0';
+    logFont.lfCharSet = SHIFTJIS_CHARSET;
+    EnumFontFamiliesExA(GetDC(NULL), &logFont, (FONTENUMPROCA)EnumFontFamExProc, 0, 0);
+    for (auto& i : g_fonts)
+        res.push_back(i);
+    return res;
+}
+std::string GetComboStr(std::vector<std::string>& str_lst)
+{
+    std::string res;
+    for (auto& i : g_fonts) {
+        res += utf16_to_mb(mb_to_utf16(i.c_str(), GetACP()).c_str(), CP_UTF8);
+        res += '\0';
+    }
+    res += '\0';
+    return res;
+}
+
+#pragma endregion
+
 #pragma region Locale
 static void* _str_cvt_buffer(size_t size)
 {

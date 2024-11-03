@@ -26,6 +26,7 @@
 #include <shlwapi.h>
 #pragma comment(lib, "Shlwapi.lib")
 #include <dinput.h>
+#include <set>
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
@@ -36,6 +37,7 @@ bool gCfgLocalBackupAvaliable = false;
 bool gCfgReadOnly = false;
 HANDLE gCfgHnd = INVALID_HANDLE_VALUE;
 rapidjson::Document gCfgJson;
+
 
 void LauncherAquireDataDirVar()
 {
@@ -587,6 +589,26 @@ public:
     }
 };
 
+class THCfgFloat : public THSetting<float> {
+public:
+    float mMin, mMax;
+    THCfgFloat(const char* _name, float _value,float _min,float _max)
+        : THSetting(_name, _value) , mMin(_min), mMax(_max)
+    {
+    }
+    void Gui(const char* guiTxt, const char* helpTxt = nullptr)
+    {
+        if (ImGui::DragFloat(guiTxt, &value, 1.0, mMin, mMax)) {
+            value = std::clamp(value, mMin, mMax);
+            LauncherSettingSet(name.c_str(), value);
+        }
+        if (helpTxt) {
+            ImGui::SameLine();
+            GuiHelpMarker(helpTxt);
+        }
+    }
+};
+
 class THCfgCheckboxEx : public THSetting<bool> {
 public:
     THCfgCheckboxEx(const char* _name, bool _value)
@@ -644,6 +666,14 @@ public:
         if (value < 0 || value >= counts) {
             value = def;
         }
+    }
+    void SetCounts(int cnt)
+    {
+        counts = cnt;
+        if (value < 0)
+            value = 0;
+        if (value >= cnt)
+            value = cnt-1;
     }
     virtual void Set(int& _value) override
     {
@@ -1918,23 +1948,27 @@ private:
 
     void GuiMain()
     {
+        {
+            ImGui::TextUnformatted(S(THPRAC_COMPATIBILITY_SETTINGS));
+            ImGui::Separator();
+            mForceOnlyRenderTextUsed.Gui(S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED), S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC));
+            mForceRenderCursor.Gui(S(THPRAC_FORCE_RENDER_CURSOR), S(THPRAC_FORCE_RENDER_CURSOR_DESC));
+            mTestKey.Gui(S(THPRAC_TEST_KEY), S(THPRAC_TEST_KEY_DESC));
+            mUseCorrectJaFonts.Gui(S(THPRAC_RENDER_CORRECT_FONT), S(THPRAC_RENDER_CORRECT_FONT_DESC));
+            //custom fonts
+            mUseCustomFont.Gui(S(THPRAC_CUSTOM_FONTS), S(THPRAC_CUSTOM_FONTS_DESC));
+            if (mUseCustomFont.Get())
+            {
+                auto& fonts = EnumAllFonts();
+                mCustomFont.SetCounts(fonts.size());
+                mCustomFont.Gui(S(THPRAC_CUSTOM_FONT), GetComboStr(EnumAllFonts()).c_str());
+            }
+        }
+        ImGui::NewLine();
+        ImGui::Separator();
+
         ImGui::TextUnformatted(S(THPRAC_LAUNCH_BEHAVIOR));
         ImGui::Separator();
-
-        mForceOnlyRenderTextUsed.Gui(S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED));
-        ImGui::SameLine();
-        GuiHelpMarker(S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC));
-        mForceRenderCursor.Gui(S(THPRAC_FORCE_RENDER_CURSOR));
-        ImGui::SameLine();
-        GuiHelpMarker(S(THPRAC_FORCE_RENDER_CURSOR_DESC));
-        mTestKey.Gui(S(THPRAC_TEST_KEY));
-        ImGui::SameLine();
-        GuiHelpMarker(S(THPRAC_TEST_KEY_DESC));
-        mUseCorrectJaFonts.Gui(S(THPRAC_RENDER_CORRECT_FONT));
-        ImGui::SameLine();
-        GuiHelpMarker(S(THPRAC_RENDER_CORRECT_FONT_DESC));
-        ImGui::Separator();
-
         mAdminRights.Gui(S(THPRAC_ADMIN_RIGHTS));
         mExistingGameAction.Gui(S(THPRAC_EXISTING_GAME_ACTION), S(THPRAC_EXISTING_GAME_ACTION_OPTION));
         mDontSearchOngoingGame.Gui(S(THPRAC_DONT_SEARCH_ONGOING));
@@ -1946,6 +1980,19 @@ private:
         ImGui::NewLine();
         ImGui::TextUnformatted(S(THPRAC_SETTING_LAUNCHER));
         ImGui::Separator();
+
+        mRecordGameTime.Gui(S(THPRAC_RECORD_GAME_TIME));
+        ImGui::SetNextItemWidth(75.0f + ImGui::CalcTextSize(S(THPRAC_GAME_TIME_HINT)).x);
+        mGameTimeTooLongTime.Gui(S(THPRAC_GAME_TIME_HINT));
+        mGameTimeTooLongSE.Gui(S(THPRAC_GAME_TIME_HINT_SE),S(THPRAC_GAME_TIME_HINT_SE_DESC));
+        ImGui::SetNextItemWidth(75.0f + ImGui::CalcTextSize(S(THPRAC_GAME_TIME_HINT)).x);
+        mGameTimeTooLongSERepeat.Gui(S(THPRAC_GAME_TIME_HINT_SE_STOP));
+        if (ImGui::Button(S(THPRAC_GAME_TIME_HINT_SE_TEST))){
+            PlaySoundW(L"SE.wav", NULL, SND_FILENAME | SND_ASYNC);
+        }
+
+        ImGui::NewLine();
+
         int theme_prev = mCfgTheme.Get();
         if (mCfgTheme.Gui("Theme:", "Dark\0Light\0Classic\0Custom\0\0")) {
             int Sus = 0;
@@ -2094,12 +2141,18 @@ private:
     THCfgCheckbox mEnableKeyboardSOCD { "keyboard_SOCD", false };
     THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };
     THCfgCheckbox mPauseBGM_06 { "pauseBGM_06", false };
+    THCfgCheckbox mRecordGameTime { "recordGameTime", false };
+    THCfgFloat mGameTimeTooLongTime { "gameTimeTooLong_Time", 3.0f, 0.001f,1000.0f };
+    THCfgCheckbox mGameTimeTooLongSE { "gameTimeTooLong_SE", false };
+    THCfgFloat mGameTimeTooLongSERepeat { "gameTimeTooLong_SE_repeat", 5.0f, 5.0f,100000.0f };
 
     THCfgCheckbox mReflectiveLaunch { "reflective_launch", false };
     THCfgCheckbox mForceOnlyRenderTextUsed { "force_only_render_text_used", false };
     THCfgCheckbox mForceRenderCursor { "force_render_cursor", false };
     THCfgCheckbox mTestKey { "test_key", false };
     THCfgCheckbox mUseCorrectJaFonts { "use_correct_ja_fonts", false };
+    THCfgCheckbox mUseCustomFont { "use_custom_font", false };
+    THCfgCombo mCustomFont { "custom_font", 0, 999 };
 
     THCfgCombo mExistingGameAction { "existing_game_launch_action", 0, 3 };
     THCfgCheckbox mDontSearchOngoingGame { "dont_search_ongoing_game", false };
@@ -2127,6 +2180,25 @@ private:
 
     std::function<void(void)> mGuiUpdFunc = []() {};
 };
+
+int64_t LauncherGetGameTime()
+{
+    std::string gametime;
+    if (LauncherSettingGet("Gametime", gametime)){
+        int64_t gametime_ns = 0;
+        if (sscanf_s(gametime.c_str(), "%lld", &gametime_ns)) {
+            return gametime_ns;
+        }
+    }
+    return -1;
+}
+
+void LauncherSetGameTime(int64_t gametime_ns)
+{
+    std::string gametime = std::format("{}",gametime_ns);
+    LauncherSettingSet("Gametime", gametime);
+    return;
+}
 
 void LauncherCfgReset()
 {

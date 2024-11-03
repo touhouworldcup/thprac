@@ -121,6 +121,15 @@ struct RAII_CRITICAL_SECTION {
         return &cs;
     }
 };
+#pragma region FontsEnum
+std::vector<std::string>& EnumAllFonts();
+std::string GetComboStr(std::vector<std::string>& str_lst);
+#pragma endregion
+
+#pragma region TimeCvt
+std::string GetTime_HHMMSS(int64_t ns);
+std::string GetTime_YYMMDD_HHMMSS(int64_t ns);
+#pragma endregion
 
 #pragma region Locale
 std::string utf16_to_mb(const wchar_t* utf16, UINT encoding);

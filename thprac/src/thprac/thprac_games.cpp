@@ -28,6 +28,10 @@ bool g_forceRenderCursor=false;
 bool g_testKey=false;
 
 
+bool g_useCustomFont = false;
+std::string g_customFont = "MS Gothic";
+
+
 
 typedef BOOL(WINAPI* GetKeyboardStateType)(PBYTE lpKeyboardState);
 typedef HRESULT (STDMETHODCALLTYPE* GetDeviceStateType)(LPDIRECTINPUTDEVICE8 thiz, DWORD, LPVOID);
@@ -42,15 +46,14 @@ HFONT WINAPI CreateFontA_Changed
 (int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,
     DWORD bStrikeOut, DWORD iCharSet, DWORD iOutPrecision, DWORD iClipPrecision, DWORD iQuality, DWORD iPitchAndFamily, LPCSTR pszFaceName)
 {
-    char fontA[] = 
-        {0x82,0x6C,0x82,0x72,0x20,0x96,0xBE,0x92,0xA9,0x00};//‚l‚r –¾’©, MS Mincho
-    char fontB[] = 
-        {0x82, 0x6C, 0x82, 0x72, 0x20, 0x83, 0x53, 0x83, 0x56, 0x83, 0x62, 0x83, 0x4E, 0x00};//‚l‚r ƒSƒVƒbƒN, MS Gothic
-    if (strcmp(fontA,pszFaceName)==0){
+    char font_Gothic[] = { 0x82, 0x6C, 0x82, 0x72, 0x20, 0x83, 0x53, 0x83, 0x56, 0x83, 0x62, 0x83, 0x4E, 0x00 }; // ‚l‚r ƒSƒVƒbƒN, MS Gothic
+    char font_Mincho[] = { 0x82, 0x6C, 0x82, 0x72, 0x20, 0x96, 0xBE, 0x92, 0xA9, 0x00 }; // ‚l‚r –¾’©, MS Mincho
+    if (g_useCustomFont)
+        return g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, g_customFont.c_str());
+    if (strcmp(font_Gothic, pszFaceName) == 0) {
+       return g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, "MS Gothic");
+    }else if (strcmp(font_Mincho, pszFaceName) == 0) {
         return g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, "MS Mincho");
-    }
-    else if (strcmp(fontB, pszFaceName) == 0){
-        return g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, "MS Gothic");
     }
     return g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, pszFaceName);
 }
@@ -321,12 +324,23 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         LauncherSettingGet("test_key", g_testKey);
 
         bool useCorrectJaFonts=false;
-        if (LauncherSettingGet("use_correct_ja_fonts", useCorrectJaFonts) && useCorrectJaFonts)
+        LauncherSettingGet("use_custom_fonts", g_useCustomFont);
+        LauncherSettingGet("use_correct_ja_fonts", useCorrectJaFonts);
+        if (g_useCustomFont || useCorrectJaFonts)
         {
             LPVOID pTarget;
             MH_CreateHookApiEx(L"GDI32.dll", "CreateFontA", CreateFontA_Changed, (void**)&g_realCreateFontA, &pTarget);
             MH_EnableHook(pTarget);
         }
+        if (g_useCustomFont)
+        {
+            int font = 0;
+            LauncherSettingGet("custom_font", font);
+            auto &all_fonts = EnumAllFonts();
+            if (font >= 0 && font < all_fonts.size())
+                g_customFont = all_fonts[font];
+        }
+        
 
         bool disable_f10 = false;
         if (LauncherSettingGet("disable_F10_11_13", disable_f10) && disable_f10) {
@@ -385,7 +399,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
 }
 
 int GameGuiProgress = 0;
-
+bool g_ItemActive=false;
 void GameGuiBegin(game_gui_impl impl, bool game_nav)
 {
     // Acquire game input
@@ -399,7 +413,7 @@ void GameGuiBegin(game_gui_impl impl, bool game_nav)
     } else {
         Gui::GuiNavFocus::GlobalDisable(true);
     }
-    if (g_testKey && (ImGui::IsAnyItemActive() || ImGui::IsAnyItemHovered()))
+    if (g_testKey && g_ItemActive)
     {
         io.MouseDown[0] = GetAsyncKeyState(VK_LBUTTON) & 0x8000;
         io.MouseDown[1] = GetAsyncKeyState(VK_RBUTTON) & 0x8000;
@@ -451,6 +465,7 @@ void GameGuiEnd(bool draw_cursor)
     if (GameGuiProgress != 1)
         return;
     // Draw cursor if needed
+    g_ItemActive = draw_cursor || ImGui::IsAnyItemActive() || ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
     if (draw_cursor && (g_forceRenderCursor || Gui::ImplWin32CheckFullScreen())) {
         auto& io = ::ImGui::GetIO();
         io.MouseDrawCursor = true;

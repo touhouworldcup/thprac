@@ -17,6 +17,11 @@ namespace THPrac {
 void ImRotateStart();
 ImVec2 ImRotationCenter();
 void ImRotateEnd(float rad, ImVec2 center = ImRotationCenter());
+
+void ImScaleStart();
+ImVec2 ImScaleCenter();
+void ImScaleEnd(float scaleX, float scaleY, ImVec2 center = ImScaleCenter());
+
 namespace Gui {
     class GameGuiWnd {
     public:
