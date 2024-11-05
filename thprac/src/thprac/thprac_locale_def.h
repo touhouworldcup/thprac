@@ -1018,6 +1018,8 @@ enum th_glossary_t {
     TH_SPELL_FINAL,
     TH_SPELL_PRAC,
     TH_SPELL_TIMEOUT,
+    TH_SPELL_TIME_INF,
+    TH_SPELL_TIME_NORMAL,
     TH_STAGE,
     TH_STAGE_1,
     TH_STAGE_2,
@@ -1049,7 +1051,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1038];
+extern const char* th_glossary_str[3][1040];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1066,6 +1068,8 @@ extern const th_glossary_t TH_WARP_SELECT_FRAME[8];
 extern const th_glossary_t TH_WARP_ALCOSTG[4];
 
 extern const th_glossary_t TH_SPELL_PHASE1[3];
+
+extern const th_glossary_t TH_SPELL_PHASE_INF_TIME[3];
 
 extern const th_glossary_t TH_SPELL_PHASE2[5];
 

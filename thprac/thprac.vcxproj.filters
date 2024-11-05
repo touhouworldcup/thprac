@@ -211,6 +211,9 @@
     <ClInclude Include="src\thprac\thprac_log.h">
       <Filter>THPrac Logging</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac\thprac_launcher_others.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\thprac\thprac_utils.cpp">
@@ -413,6 +416,9 @@
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_log.cpp">
       <Filter>THPrac Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_launcher_others.cpp">
+      <Filter>THPrac Launcher</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

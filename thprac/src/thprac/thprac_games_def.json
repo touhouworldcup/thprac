@@ -783,6 +783,8 @@
       "TH_ON": [ "开启", "On", "有効" ],
       "TH_OFF": [ "关闭", "Off", "無効" ],
       "TH_NORMAL": [ "正常", "Normal", "普通" ],
+      "TH_SPELL_TIME_NORMAL": [ "正常", "Normal", "普通" ],
+      "TH_SPELL_TIME_INF": [ "无限时间", "Inf time", "Inf time" ],
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
       "TH_P1": [ "P1", "P1", "P1" ],
       "TH_P2": [ "P2", "P2", "P2" ],
@@ -979,6 +981,10 @@
       "TH_SPELL_PHASE1": [
         "TH_NORMAL",
         "TH_RAGE"
+      ],
+	  "TH_SPELL_PHASE_INF_TIME": [
+        "TH_SPELL_TIME_NORMAL",
+        "TH_SPELL_TIME_INF"
       ],
       "TH_SPELL_PHASE2": [
         "TH_P1",

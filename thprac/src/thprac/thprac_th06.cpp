@@ -1034,6 +1034,9 @@ namespace TH06 {
             if (section == TH06_ST7_END_S10) {
                 mPhase(TH_PHASE, TH_SPELL_PHASE1);
             }
+            if (section == TH06_ST4_BOOKS) {
+                mPhase(TH_PHASE, TH_SPELL_PHASE_INF_TIME);
+            }
         }
         void PracticeMenu(Gui::GuiNavFocus& nav_focus)
         {
@@ -1891,6 +1894,10 @@ namespace TH06 {
             ecl << pair{0x4bec, (int16_t)0x0};
             break;
         case THPrac::TH06::TH06_ST4_BOOKS:
+            if (thPracParam.phase == 1){
+                ecl << pair { 0xCE7C, (int16_t)-1 };//disable timeline after books
+                ecl << pair { 0x1324, (int32_t)99999999 };//loop forever
+            }
             ECLWarp(0x0d40);
             break;
         case THPrac::TH06::TH06_ST4_MID1:
@@ -2690,7 +2697,7 @@ namespace TH06 {
             pCtx->Eip = 0x40263c;
         }
     }
-
+    
     EHOOK_DY(th06_pause_menu_pauseBGM, 0x402714)
     {
         if (g_pauseBGM_06) {
@@ -2709,7 +2716,6 @@ namespace TH06 {
                             soundbuffers[i]->Play(0, 0, DSBPLAY_LOOPING);
                         }
                     }
-
                 } else {
                     for (int i = 0; i < n; i++) {
                         DWORD st = 0;

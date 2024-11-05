@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1038] {
+const char* th_glossary_str[3][1040] {
     {
         "",
         "啤酒",
@@ -1018,6 +1018,8 @@ const char* th_glossary_str[3][1038] {
         "终符",
         "符卡练习",
         "时符",
+        "无限时间",
+        "正常",
         "关卡",
         "1",
         "2",
@@ -2058,6 +2060,8 @@ const char* th_glossary_str[3][1038] {
         "Final Spell",
         "Spell Practice",
         "Timeout Spell",
+        "Inf time",
+        "Normal",
         "Stage",
         "1",
         "2",
@@ -3098,6 +3102,8 @@ const char* th_glossary_str[3][1038] {
         "ラスト",
         "スペルプラクティス",
         "耐久",
+        "Inf time",
+        "普通",
         "ステージ",
         "1",
         "2",
@@ -3197,6 +3203,11 @@ const th_glossary_t TH_WARP_ALCOSTG[4] {
 const th_glossary_t TH_SPELL_PHASE1[3] {
     TH_NORMAL,
     TH_RAGE,
+};
+
+const th_glossary_t TH_SPELL_PHASE_INF_TIME[3] {
+    TH_SPELL_TIME_NORMAL,
+    TH_SPELL_TIME_INF,
 };
 
 const th_glossary_t TH_SPELL_PHASE2[5] {

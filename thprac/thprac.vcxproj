@@ -61,6 +61,7 @@
     <ClInclude Include="src\thprac\thprac_launcher_games_def.h" />
     <ClInclude Include="src\thprac\thprac_launcher_links.h" />
     <ClInclude Include="src\thprac\thprac_launcher_main.h" />
+    <ClInclude Include="src\thprac\thprac_launcher_others.h" />
     <ClInclude Include="src\thprac\thprac_launcher_tools.h" />
     <ClInclude Include="src\thprac\thprac_launcher_utils.h" />
     <ClInclude Include="src\thprac\thprac_launcher_wnd.h" />
@@ -113,6 +114,7 @@
     <ClCompile Include="src\thprac\thprac_launcher_games.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher_links.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher_main.cpp" />
+    <ClCompile Include="src\thprac\thprac_launcher_others.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher_tools.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher_utils.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher_wnd.cpp" />
