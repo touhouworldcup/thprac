@@ -242,6 +242,36 @@ std::string GetTime_YYMMDD_HHMMSS(int64_t ns)
 }
 #pragma endregion
 
+#pragma region Directory
+
+std::vector<std::wstring> g_directory;
+int g_count_directory = 0;
+void PushCurrentDirectory(LPCWSTR new_dictionary)
+{
+    WCHAR buffer[MAX_PATH] = { 0 };
+    GetCurrentDirectoryW(MAX_PATH, buffer);
+    if (g_directory.size() <= g_count_directory)
+        g_directory.push_back(std::wstring(buffer));
+    else
+        g_directory[g_count_directory] = std::wstring(buffer);
+    g_count_directory++;
+
+    ExpandEnvironmentStringsW(new_dictionary, buffer, MAX_PATH);
+    if (GetFileAttributesW(buffer) == INVALID_FILE_ATTRIBUTES) {
+        CreateDirectoryW(buffer, NULL);
+    }
+    SetCurrentDirectoryW(buffer);
+}
+void PopCurrentDirectory()
+{
+    if (!g_directory.empty()) {
+        std::wstring last_dicg_dict = g_directory[g_count_directory - 1];
+        SetCurrentDirectoryW(last_dicg_dict.c_str());
+        g_count_directory--;
+    }
+}
+#pragma endregion
+
 #pragma region FontsEnum
 std::set<std::string> g_fonts; //make sure fonts are arranged
 int CALLBACK EnumFontFamExProc(ENUMLOGFONTEXA* lpelfe, const TEXTMETRICA* lpntme, DWORD FontType, LPARAM lParam)

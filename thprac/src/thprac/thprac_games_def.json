@@ -214,60 +214,55 @@
       "THPRAC_UNLOCK_REFRESH_RATE":["解锁屏幕刷新率","Unlock monitor refresh rate","Unlock monitor refresh rate"],
       "THPRAC_UNLOCK_REFRESH_RATE_DESC":["勾选后，应用thprac会阻止游戏在全屏模式下将屏幕刷新率锁定在60hz。\n在使用高刷新率显示器且关闭垂直同步的情况下，这么做可以稍微改善延迟并减少画面撕裂。\n注：只在使用thprac（或其启动器）启动游戏时有效。对于Steam版游戏和喵玉汉化，请在custom.exe中勾选“每次启动时询问/起動時に毎回訊れる/Ask each startup time”。",	"When enabled, applying thprac will prevent the game to lock monitor's refresh rate at 60hz in fullscreen mode.\nThis gives you slightly improved latency and reduced screen tearing when using a high refresh rate monitor and when vertical sync is disabled.\nNote: This only works when using thprac (and its launcher) to open the game. For Steam games, tick \"Ask each startup time/起動時に毎回訊れる\" in custom.exe.","When enabled, applying thprac will prevent the game to lock monitor's refresh rate at 60hz in fullscreen mode.\nThis gives you slightly improved latency and reduced screen tearing when using a high refresh rate monitor and when vertical sync is disabled.\nNote: This only works when using thprac (and its launcher) to open the game. For Steam games, tick \"Ask each startup time/起動時に毎回訊れる\" in custom.exe."],
     
-	"THPRAC_RECORD_GAME_TIME":["记录飞行时间","record game time","record game time"],
-	"THPRAC_GAME_TIME_HINT":["飞行时间提示长度(小时)","game time hint(hour)","game time hint(hour)"],
-	"THPRAC_GAME_TIME_HINT_SE":["飞行时间过长音效提示","game time too long SE","game time too long SE"],
-	"THPRAC_GAME_TIME_HINT_SE_STOP":["音效重复间隔秒数","SE repeat interval(second)","SE repeat interval(second)"],
-	"THPRAC_GAME_TIME_HINT_SE_TEST":["测试音效","SE test","SE test"],
-	"THPRAC_GAME_TIME_HINT_SE_DESC":["将音效文件放在thprac同目录下, 名称为SE.wav","put SE file in thprac path with name SE.wav","put SE file in thprac path with name SE.wav"],
-	
+    "THPRAC_RECORD_GAME_TIME":["记录飞行时间","record game time","record game time"],
+    "THPRAC_GAME_TIME_HINT":["飞行时间提示长度(小时)","game time hint(hour)","game time hint(hour)"],
+    "THPRAC_GAME_TIME_HINT_SE":["飞行时间过长音效提示","game time too long SE","game time too long SE"],
+    "THPRAC_GAME_TIME_HINT_SE_STOP":["音效重复间隔秒数","SE repeat interval(second)","SE repeat interval(second)"],
+    "THPRAC_GAME_TIME_HINT_SE_TEST":["测试音效","SE test","SE test"],
+    "THPRAC_GAME_TIME_HINT_SE_DESC":["将音效文件放在thprac同目录下, 名称为SE.wav","put SE file in thprac path with name SE.wav","put SE file in thprac path with name SE.wav"],
+    
     "THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN":["修改启动时窗口的大小","change window size when open","change window size when open"],
-	"THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE":["窗口大小","window size","window size"],
-	"THPRAC_ENABLE_KEYBOARD_SOCD":["启用SOCD后覆盖功能","enable keyboard SOCD (last input priority)","enable keyboard SOCD (last input priority)"],
-	"THPRAC_ENABLE_KEYBOARD_SOCD_DESC":["当同时按下反向方向键时，仅激活最后使用的方向键。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."],
-	
-	"THPRAC_COMPATIBILITY_SETTINGS":["兼容性设置","Compatibility Settings","Compatibility Settings"],
-	
-	"THPRAC_DISABLE_F10_11_13":["在th11到th13靳用F10键","disable f10 for th11-13","disable f10 for th11-13"],
-	"THPRAC_PAUSE_BGM_TH06":["红魔乡在3036时暂停bgm(仅wav)","pause bgm when esc in EoSD(wav only)","pause bgm when esc in EoSD(wav only)"],
-	
-	"THPRAC_FORCE_ONLY_RENDER_TEXT_USED":["只渲染用到的字体","only render used font","only render used font"],
-	"THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC":["游戏启动时如果爆显存，导致字体显示全为白块或透明等错误，则需要设置此项","if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it","if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it"],
-	
-	"THPRAC_RENDER_CORRECT_FONT":["渲染正确的日文字体","render correct ja fonts","render correct ja fonts"],
-	"THPRAC_RENDER_CORRECT_FONT_DESC":["当游戏字体(对话/符卡)渲染错误时尝试开启本选项, 仅在使用thprac启动游戏时生效","use this option when game font is wrong(msg/spell), only works when launch game by thprac","use this option when game font is wrong(msg/spell), only works when launch game by thprac"],
-	
-	"THPRAC_CUSTOM_FONTS":["使用自定义游戏字体","use custom game fonts","use custom game fonts"],
-	"THPRAC_CUSTOM_FONTS_DESC":["仅在使用thprac启动游戏时生效","only works when launch game by thprac","only works when launch game by thprac"],
-	"THPRAC_CUSTOM_FONT":["字体","font","font"],
-	
-	
-	
-	"THPRAC_FORCE_RENDER_CURSOR":["强制渲染鼠标","force render cursor","force render cursor"],
-	"THPRAC_FORCE_RENDER_CURSOR_DESC":["全屏时无法看见鼠标则设置此项，将会导致窗口时出现两个重叠的鼠标","set this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode","et this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode"],
-	
-	"THPRAC_TEST_KEY":["强制按键检测","force key test","force key test"],
-	"THPRAC_TEST_KEY_DESC":["某些情况下消息队列会被其他补丁替换导致无法按键，此时启用此选项","set this setting to true when some patches replace the message queue function, which result in key press disabled","set this setting to true when some patches replace the message queue function, which result in key press disabled"],
-	
-	"THPRAC_KEYBIND":["修改按键映射","set keybind","set keybind"],
-	"THPRAC_KEYBIND_MODAL":["修改按键映射##modal","set keybind##modal","set keybind##modal"],
-	"THPRAC_KEYBIND_ADD":["增加","add","add"],
-	"THPRAC_KEYBIND_ADD_MODAL":["增加按键映射##modal","add keybind##modal","add keybind##modal"],
-	"THPRAC_KEYBIND_REMOVE":["删除","remove","remove"],
-	"THPRAC_KEYBIND_FROM":["原按键","original key","original key"],
-	"THPRAC_KEYBIND_FROM_COMBO":["原按键","original key","original key"],
-	"THPRAC_KEYBIND_TO":["修改按键","new key","new key"],
-	"THPRAC_KEYBIND_TO_COMBO":["修改按键","new key","new key"],
-	"THPRAC_KEYBIND_PRESS_A_KEY":["请按下一个按键","please press a key","please press a key"],
-	"THPRAC_KEYBIND_ENTER":["按键名","key name","key name"],
-	
-      "THPRAC_OTHERS": [ "其它", "others", "others" ],
-      "THPRAC_GAME_TIME_TOTAL": [ "总飞行时间", "total game time", "total game time" ],
-	  "THPRAC_GAME_TIME_CURRENT": [ "本次飞行时间", "current game time", "current game time" ],
-	  "THPRAC_GAME_TIME_LONG": [ "阿伟你又在玩电动哦，休息一下吧", "long game time", "long game time" ],
-	  "THPRAC_ENABLE_GAMETIME_RECORD": [ "在设置界面设置「记录飞行时间」以查看(下一次启动生效)", "enable record game time in Settings to check(works when launch next time)", "enable record game time in Settings to check(works when launch next time)" ],
+    "THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE":["窗口大小","window size","window size"],
+    "THPRAC_ENABLE_KEYBOARD_SOCD":["启用SOCD后覆盖功能","enable keyboard SOCD (last input priority)","enable keyboard SOCD (last input priority)"],
+    "THPRAC_ENABLE_KEYBOARD_SOCD_DESC":["当同时按下反向方向键时，仅激活最后使用的方向键。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."],
+    
+    "THPRAC_COMPATIBILITY_SETTINGS":["兼容性设置","Compatibility Settings","Compatibility Settings"],
+    
+    "THPRAC_DISABLE_F10_11_13":["在th11到th13靳用F10键","disable f10 for th11-13","disable f10 for th11-13"],
+    "THPRAC_PAUSE_BGM_TH06":["红魔乡在3036时暂停bgm(仅wav)","pause bgm when esc in EoSD(wav only)","pause bgm when esc in EoSD(wav only)"],
+    
+    "THPRAC_FORCE_ONLY_RENDER_TEXT_USED":["只渲染用到的字体","only render used font","only render used font"],
+    "THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC":["游戏启动时如果爆显存，导致字体显示全为白块或透明等错误，则需要设置此项","if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it","if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it"],
+    
+    "THPRAC_RENDER_CORRECT_FONT":["渲染正确的日文字体","render correct ja fonts","render correct ja fonts"],
+    "THPRAC_RENDER_CORRECT_FONT_DESC":["当游戏字体(对话/符卡)渲染错误时尝试开启本选项, 仅在使用thprac启动游戏时生效","use this option when game font is wrong(msg/spell), only works when launch game by thprac","use this option when game font is wrong(msg/spell), only works when launch game by thprac"],
+    
+    "THPRAC_CUSTOM_FONTS":["使用自定义游戏字体","use custom game fonts","use custom game fonts"],
+    "THPRAC_CUSTOM_FONTS_DESC":["仅在使用thprac启动游戏时生效","only works when launch game by thprac","only works when launch game by thprac"],
+    "THPRAC_CUSTOM_FONT":["字体","font","font"],
+    
+    
+    
+    "THPRAC_FORCE_RENDER_CURSOR":["强制渲染鼠标","force render cursor","force render cursor"],
+    "THPRAC_FORCE_RENDER_CURSOR_DESC":["全屏时无法看见鼠标则设置此项，将会导致窗口时出现两个重叠的鼠标","set this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode","et this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode"],
+    
+    "THPRAC_TEST_KEY":["强制按键检测","force key test","force key test"],
+    "THPRAC_TEST_KEY_DESC":["某些情况下消息队列会被其他补丁替换导致无法按键，此时启用此选项","set this setting to true when some patches replace the message queue function, which result in key press disabled","set this setting to true when some patches replace the message queue function, which result in key press disabled"],
+    
+    "THPRAC_KEYBIND":["修改按键映射","set keybind","set keybind"],
+    "THPRAC_KEYBIND_MODAL":["修改按键映射##modal","set keybind##modal","set keybind##modal"],
+    "THPRAC_KEYBIND_ADD":["增加","add","add"],
+    "THPRAC_KEYBIND_ADD_MODAL":["增加按键映射##modal","add keybind##modal","add keybind##modal"],
+    "THPRAC_KEYBIND_REMOVE":["删除","remove","remove"],
+    "THPRAC_KEYBIND_FROM":["原按键","original key","original key"],
+    "THPRAC_KEYBIND_FROM_COMBO":["原按键","original key","original key"],
+    "THPRAC_KEYBIND_TO":["修改按键","new key","new key"],
+    "THPRAC_KEYBIND_TO_COMBO":["修改按键","new key","new key"],
+    "THPRAC_KEYBIND_PRESS_A_KEY":["请按下一个按键","please press a key","please press a key"],
+    "THPRAC_KEYBIND_ENTER":["按键名","key name","key name"],
+    
       "THPRAC_TOOLS": [ "工具", "Tools", "ツール" ],
-	  
+      
       "THPRAC_TOOLS_APPLY_THPRAC": [ "应用thprac至正在运行的游戏", "Apply thprac to ongoing game", "実行中のゲームにthpracを適用します" ],
       "THPRAC_TOOLS_RND_GAME": [ "随机游戏", "Random game", "ランダムゲーム" ],
       "THPRAC_TOOLS_RND_PLAYER": [ "随机机体", "Random shot type", "ランダム機体" ],
@@ -277,7 +272,7 @@
       "THPRAC_TOOLS_RND_PLAYER_GAME": [ "游戏", "Game", "ゲーム" ],
       "THPRAC_TOOLS_RND_TURNTO_PLAYER": [ "转至随机机体", "Turn to random shot type", "ランダム機体に移動" ],
       "THPRAC_TOOLS_RND_TURNTO_GAME": [ "转至游戏页面", "Turn to game page", "ゲームページに移動" ],
-	  "THPRAC_TOOLS_REACTION_TEST":["反应力测试","reaction test","reaction test"],
+      "THPRAC_TOOLS_REACTION_TEST":["反应力测试","reaction test","reaction test"],
       "THPRAC_TOOLS_REACTION_TEST_DOWN":["按下反应测试(等待变色后按下方向键)","keydown test(wait for color changed then press arrow key)","keydown test(wait for color changed then press arrow key)"],
       "THPRAC_TOOLS_REACTION_TEST_UP":["弹起反应测试(按下方向键后,等待变色时弹起)","keyup test(press arrow key until color changes)","keyup test(press arrow key until color changes)"],
       "THPRAC_TOOLS_REACTION_TEST_TIME":["测试次数","times for test","times for test"],
@@ -648,9 +643,220 @@
     }
   },
 
-
+ "othersUI": {
+      "glossary": {
+       "THPRAC_OTHERS": [ "其它", "others", "others" ],
+      "THPRAC_GAME_TIME_TOTAL": [ "总飞行时间", "total game time", "total game time" ],
+      "THPRAC_GAME_TIME_CURRENT": [ "本次飞行时间", "current game time", "current game time" ],
+      "THPRAC_GAME_TIME_LONG": [ "阿伟你又在玩电动哦，休息一下吧", "long game time", "long game time" ],
+      "THPRAC_ENABLE_GAMETIME_RECORD": [ "在设置界面设置「记录飞行时间」以查看(下一次启动生效)", "enable record game time in Settings to check(works when launch next time)", "enable record game time in Settings to check(works when launch next time)" ],
+      
+      "THPRAC_OTHER_NAME": [ "机签", "name", "name" ],
+      "THPRAC_OTHER_CLOCK_IN": [ "点击打卡", "Clock in", "Clock in" ],
+      "THPRAC_OTHER_DRAW_LUCK": [ "今日运势", "TODAY LUCK", "TODAY LUCK" ],
+      "THPRAC_OTHER_CONTINUE": [ "已经打卡了%d天", "%d days", "%d days" ],
+      "THPRAC_OTHER_TODAY": [ "%d年%d月%d日", "%d-%d-%d", "%d-%d-%d" ],
+	  
+      "THPRAC_OTHER_LUCK_A": [ "§大吉§", "GOOD JI", "GOOD JI" ],
+      "THPRAC_OTHER_LUCK_B": [ "§中吉§", "MID JI", "MID JI" ],
+      "THPRAC_OTHER_LUCK_C": [ "§小吉§", "SMALL JI", "SMALL JI" ],
+      "THPRAC_OTHER_LUCK_D": [ "§中平§", "MID", "MID" ],
+      "THPRAC_OTHER_LUCK_E": [ "§凶§",   "CHEST", "CHEST" ],
+      "THPRAC_OTHER_LUCK_F": [ "§大凶§", "BIG CUP", "BIG CUP" ],
+      
+      "THPRAC_OTHER_LUCK_BETTER": [ "宜", "BETTER", "BETTER" ],
+      "THPRAC_OTHER_LUCK_BETTER_NOT": [ "忌", "BETTER NOT", "BETTER NOT" ],
+      "THPRAC_OTHER_LUCK_BETTER_ALL": [ "诸事皆宜", "ALL BETTER", "ALL BETTER" ],
+      "THPRAC_OTHER_LUCK_BETTER_NOT_ALL": [ "诸事皆忌", "ALL BETTER NOT", "ALL BETTER NOT"],
+      
+      "THPRAC_OTHER_LUCK_EOSD":  [ "打红魔乡", "Play EOSD", "Play EOSD"],
+      "THPRAC_OTHER_LUCK_EOSDA": [ "红红火火", "Play EOSD", "Play EOSD"],
+      "THPRAC_OTHER_LUCK_EOSDB": [ "九九六一", "Play EOSD", "Play EOSD"],
+     
+      "THPRAC_OTHER_LUCK_PCB":    [ "打妖妖梦", "Play PCB",  "Play PCB"],
+      "THPRAC_OTHER_LUCK_PCBA":   [ "早睡早起", "Play PCB",  "Play PCB"],
+      "THPRAC_OTHER_LUCK_PCBB":   [ "自尽自尽", "Play PCB",  "Play PCB"],
+     
+      "THPRAC_OTHER_LUCK_IN":     [ "打永夜抄",  "Play IN",    "Play IN"],
+      "THPRAC_OTHER_LUCK_INA":    [ "永久触手",  "Play IN",    "Play IN"],
+      "THPRAC_OTHER_LUCK_INB":    [ "永夜失眠",  "Play IN",    "Play IN"],
+     
+      "THPRAC_OTHER_LUCK_MOF":   [ "打风神录",  "Play MOF",   "Play MOF"],
+      "THPRAC_OTHER_LUCK_MOFA":  [ "秋高气爽",  "Play MOF",   "Play MOF"],
+      "THPRAC_OTHER_LUCK_MOFB":  [ "*Player's score*",  "Play MOF",   "Play MOF"],
+	  
+      "THPRAC_OTHER_LUCK_SA":     [ "打地灵殿",  "Play SA",    "Play SA"],
+      "THPRAC_OTHER_LUCK_SAA":    [ "全员上压",  "Play SA",    "Play SA"],
+      "THPRAC_OTHER_LUCK_SAB":    [ "七星连珠",  "Play SA",    "Play SA"],
+	  
+      "THPRAC_OTHER_LUCK_UFO":    [ "打星莲船",  "Play UFO",   "Play UFO"],
+      "THPRAC_OTHER_LUCK_UFOA":   [ "宝塔站收",  "Play UFO",   "Play UFO"],
+      "THPRAC_OTHER_LUCK_UFOB":   [ "开碟红红蓝",  "Play UFO",   "Play UFO"],
+	  
+      "THPRAC_OTHER_LUCK_TD":    [ "打神灵庙",  "Play TD",    "Play TD"],
+      "THPRAC_OTHER_LUCK_TDA":   [ "星辰降临",  "Play TD",    "Play TD"],
+      "THPRAC_OTHER_LUCK_TDB":   [ "星辰陨落",  "Play TD",    "Play TD"],
+	  
+      "THPRAC_OTHER_LUCK_DDC":   [ "打辉针城",  "Play DDC",   "Play DDC"],
+      "THPRAC_OTHER_LUCK_DDCA":  [ "随机弹随机封",  "Play DDC",   "Play DDC"],
+      "THPRAC_OTHER_LUCK_DDCB":  [ "DDC永久SB",  "Play DDC",   "Play DDC"],
+	  
+	  
+      "THPRAC_OTHER_LUCK_LOLK":  [ "打绀珠传",  "Play LOLK",  "Play LOLK"],
+      "THPRAC_OTHER_LUCK_LOLKA": [ "神清气爽",  "Play LOLK",  "Play LOLK"],
+      "THPRAC_OTHER_LUCK_LOLKB": [ "全一九九",  "Play LOLK",  "Play LOLK"],
+	  
+      "THPRAC_OTHER_LUCK_HSIFS":  [ "打天空璋",  "Play HSIFS", "Play HSIFS"],
+      "THPRAC_OTHER_LUCK_HSIFSA": [ "四季如春",  "Play HSIFS", "Play HSIFS"],
+      "THPRAC_OTHER_LUCK_HSIFSB": [ "瞎几把躲",  "Play HSIFS", "Play HSIFS"],
+	  
+      "THPRAC_OTHER_LUCK_WBABC":  [ "打鬼形兽",  "Play WBABC", "Play WBABC"],
+      "THPRAC_OTHER_LUCK_WBABCA": [ "跳脱三界",  "Play WBABC", "Play WBABC"],
+      "THPRAC_OTHER_LUCK_WBABCB": [ "狼狈逃窜",  "Play WBABC", "Play WBABC"],
+	  
+      "THPRAC_OTHER_LUCK_UM":     [ "打虹龙洞",  "Play UM",    "Play UM"],
+      "THPRAC_OTHER_LUCK_UMA":    [ "零元购",  "Play UM",    "Play UM"],
+      "THPRAC_OTHER_LUCK_UMB":    [ "P点全无",  "Play UM",    "Play UM"],
+      
+      "THPRAC_OTHER_LUCK_POFV":   [ "打花映冢", "Play POFV",    "Play POFV"],
+      "THPRAC_OTHER_LUCK_POFVA":  [ "无限连击", "Play POFV",    "Play POFV"],
+      "THPRAC_OTHER_LUCK_POFVB":  [ "花容失色", "Play POFV",    "Play POFV"],
+	  
+      "THPRAC_OTHER_LUCK_UDOALG": [ "打兽王园", "Play UDOALG",  "Play UDOALG"],
+      "THPRAC_OTHER_LUCK_UDOALGA":[ "无限连击2.0", "Play UDOALG",  "Play UDOALG"],
+      "THPRAC_OTHER_LUCK_UDOALGB":[ "打到失联", "Play UDOALG",  "Play UDOALG"],
+	  
+      "THPRAC_OTHER_LUCK_STB":    [ "打文花帖", "Play STB",     "Play STB"],
+      "THPRAC_OTHER_LUCK_STBA":   [ "抓拍强者", "Play STB",     "Play STB"],
+      "THPRAC_OTHER_LUCK_STBB":   [ "偷拍被抓", "Play STB",     "Play STB"],
+	  
+      "THPRAC_OTHER_LUCK_DS":    [ "打文花帖DS","Play DS",     "Play DS"],
+	  "THPRAC_OTHER_LUCK_DSA":   [ "抓拍强者2.0", "Play STB",     "Play STB"],
+      "THPRAC_OTHER_LUCK_DSB":   [ "偷拍被抓2.0", "Play STB",     "Play STB"],
+	  
+      "THPRAC_OTHER_LUCK_GFW":    [ "打大战争",  "Play GFW",     "Play GFW"],
+      "THPRAC_OTHER_LUCK_GFWA":   [ "俺最强",  "Play GFW",     "Play GFW"],
+      "THPRAC_OTHER_LUCK_GFWB":   [ "俺最强?真假...",  "Play GFW",     "Play GFW"],
+	  
+      "THPRAC_OTHER_LUCK_ISC":    [ "打天邪鬼",  "Play ISC",     "Play ISC"],
+      "THPRAC_OTHER_LUCK_ISCA":   [ "反则生命",  "Play ISC",     "Play ISC"],
+      "THPRAC_OTHER_LUCK_ISCB":   [ "道具失控",  "Play ISC",     "Play ISC"],
+	  
+      "THPRAC_OTHER_LUCK_VD":     [ "打噩梦日记","Play VD",      "Play VD"],
+      "THPRAC_OTHER_LUCK_VDA":    [ "做个好梦","Play VD",      "Play VD"],
+      "THPRAC_OTHER_LUCK_VDB":    [ "小心做噩梦","Play VD",      "Play VD"],
+	  
+      "THPRAC_OTHER_LUCK_BM":     [ "打黑集市",   "Play BM",     "Play BM"],
+      "THPRAC_OTHER_LUCK_BMA":    [ "零元购2.0",   "Play BM",     "Play BM"],
+      "THPRAC_OTHER_LUCK_BMB":    [ "陵园购",   "Play BM",     "Play BM"],
+	  
+      "THPRAC_OTHER_LUCK_FTG":    [ "打FTG", "Play FTG~", "Play FTG~"],
+      "THPRAC_OTHER_LUCK_FTGA":   [ "虐虐菜", "Play FTG~", "Play FTG~"],
+      "THPRAC_OTHER_LUCK_FTGB":   [ "被虐菜", "Play FTG~", "Play FTG~"],
+	  
+	  
+      "THPRAC_OTHER_LUCK_OLD":    [ "打旧作", "Play Some PC98 Games", "Play Some PC98 Games"],
+      "THPRAC_OTHER_LUCK_OLDA":   [ "永远怀念", "Play Some PC98 Games", "Play Some PC98 Games"],
+      "THPRAC_OTHER_LUCK_OLDB":   [ "裂开", "Play Some PC98 Games", "Play Some PC98 Games"],
+	  
+      "THPRAC_OTHER_LUCK_FAN":    [ "打二创STG", "Play Some Fan Game", "Play Some Fan Game"],
+      "THPRAC_OTHER_LUCK_FANA":   [ "淘到宝藏", "Play Some Fan Game", "Play Some Fan Game"],
+      "THPRAC_OTHER_LUCK_FANB":   [ "弹设一坨", "Play Some Fan Game", "Play Some Fan Game"]
+      },
+	  "groups": {
+	  "LUCK_RANGE": [
+        "THPRAC_OTHER_LUCK_A",  
+        "THPRAC_OTHER_LUCK_B",   
+        "THPRAC_OTHER_LUCK_C",    
+        "THPRAC_OTHER_LUCK_D",   
+        "THPRAC_OTHER_LUCK_E",    
+        "THPRAC_OTHER_LUCK_F"
+      ],
+      "LUCK_DESC_1": [
+        "THPRAC_OTHER_LUCK_EOSD",  
+        "THPRAC_OTHER_LUCK_PCB",   
+        "THPRAC_OTHER_LUCK_IN",    
+        "THPRAC_OTHER_LUCK_MOF",   
+        "THPRAC_OTHER_LUCK_SA",    
+        "THPRAC_OTHER_LUCK_UFO",   
+        "THPRAC_OTHER_LUCK_TD",    
+        "THPRAC_OTHER_LUCK_DDC",   
+        "THPRAC_OTHER_LUCK_LOLK",  
+        "THPRAC_OTHER_LUCK_HSIFS", 
+        "THPRAC_OTHER_LUCK_WBABC", 
+        "THPRAC_OTHER_LUCK_UM"
+      ],
+      "LUCK_DESC_1A": [
+        "THPRAC_OTHER_LUCK_EOSDA",  
+        "THPRAC_OTHER_LUCK_PCBA",   
+        "THPRAC_OTHER_LUCK_INA",    
+        "THPRAC_OTHER_LUCK_MOFA",   
+        "THPRAC_OTHER_LUCK_SAA",    
+        "THPRAC_OTHER_LUCK_UFOA",   
+        "THPRAC_OTHER_LUCK_TDA",    
+        "THPRAC_OTHER_LUCK_DDCA",   
+        "THPRAC_OTHER_LUCK_LOLKA",  
+        "THPRAC_OTHER_LUCK_HSIFSA", 
+        "THPRAC_OTHER_LUCK_WBABCA", 
+        "THPRAC_OTHER_LUCK_UMA"   
+      ],
+      "LUCK_DESC_1B": [
+        "THPRAC_OTHER_LUCK_EOSDB",  
+        "THPRAC_OTHER_LUCK_PCBB",   
+        "THPRAC_OTHER_LUCK_INB",    
+        "THPRAC_OTHER_LUCK_MOFB",   
+        "THPRAC_OTHER_LUCK_SAB",    
+        "THPRAC_OTHER_LUCK_UFOB",   
+        "THPRAC_OTHER_LUCK_TDB",    
+        "THPRAC_OTHER_LUCK_DDCB",   
+        "THPRAC_OTHER_LUCK_LOLKB",  
+        "THPRAC_OTHER_LUCK_HSIFSB", 
+        "THPRAC_OTHER_LUCK_WBABCB", 
+        "THPRAC_OTHER_LUCK_UMB"
+      ],
+	  "LUCK_DESC_2": [
+        "THPRAC_OTHER_LUCK_POFV",
+        "THPRAC_OTHER_LUCK_UDOALG",
+        "THPRAC_OTHER_LUCK_STB",
+        "THPRAC_OTHER_LUCK_DS",
+        "THPRAC_OTHER_LUCK_GFW",
+        "THPRAC_OTHER_LUCK_ISC",
+        "THPRAC_OTHER_LUCK_VD",
+        "THPRAC_OTHER_LUCK_BM",
+        "THPRAC_OTHER_LUCK_FTG",
+        "THPRAC_OTHER_LUCK_OLD",
+        "THPRAC_OTHER_LUCK_FAN"
+      ],
+      "LUCK_DESC_2A": [
+        "THPRAC_OTHER_LUCK_POFVA",
+        "THPRAC_OTHER_LUCK_UDOALGA",
+        "THPRAC_OTHER_LUCK_STBA",
+        "THPRAC_OTHER_LUCK_DSA",
+        "THPRAC_OTHER_LUCK_GFWA",
+        "THPRAC_OTHER_LUCK_ISCA",
+        "THPRAC_OTHER_LUCK_VDA",
+        "THPRAC_OTHER_LUCK_BMA",
+        "THPRAC_OTHER_LUCK_FTGA",
+        "THPRAC_OTHER_LUCK_OLDA",
+        "THPRAC_OTHER_LUCK_FANA"
+      ],
+      "LUCK_DESC_2B": [
+        "THPRAC_OTHER_LUCK_POFVB",
+        "THPRAC_OTHER_LUCK_UDOALGB",
+        "THPRAC_OTHER_LUCK_STBB",
+        "THPRAC_OTHER_LUCK_DSB",
+        "THPRAC_OTHER_LUCK_GFWB",
+        "THPRAC_OTHER_LUCK_ISCB",
+        "THPRAC_OTHER_LUCK_VDB",
+        "THPRAC_OTHER_LUCK_BMB",
+        "THPRAC_OTHER_LUCK_FTGB",
+        "THPRAC_OTHER_LUCK_OLDB",
+        "THPRAC_OTHER_LUCK_FANB"
+      ]
+    }
+  },
+  
    "inGameInfo": {
-
       "glossary": {
        "THPRAC_INGAMEINFO":["更多游戏信息","in game info","in game info"],
        "THPRAC_INGAMEINFO_MISS_COUNT":["miss:","miss:","miss:"],
@@ -784,7 +990,8 @@
       "TH_OFF": [ "关闭", "Off", "無効" ],
       "TH_NORMAL": [ "正常", "Normal", "普通" ],
       "TH_SPELL_TIME_NORMAL": [ "正常", "Normal", "普通" ],
-      "TH_SPELL_TIME_INF": [ "无限时间", "Inf time", "Inf time" ],
+      "TH_SPELL_TIME_INF": [ "无限时间(6本)", "Inf time(6 book)", "Inf time(6 book)" ],
+      "TH_SPELL_TIME_INF_BOOK5": [ "无限时间(5本)", "Inf time(5 book)", "Inf time(5 book)" ],
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
       "TH_P1": [ "P1", "P1", "P1" ],
       "TH_P2": [ "P2", "P2", "P2" ],
@@ -982,9 +1189,10 @@
         "TH_NORMAL",
         "TH_RAGE"
       ],
-	  "TH_SPELL_PHASE_INF_TIME": [
+	  "TH_BOOKS_PHASE_INF_TIME": [
         "TH_SPELL_TIME_NORMAL",
-        "TH_SPELL_TIME_INF"
+        "TH_SPELL_TIME_INF",
+        "TH_SPELL_TIME_INF_BOOK5"
       ],
       "TH_SPELL_PHASE2": [
         "TH_P1",

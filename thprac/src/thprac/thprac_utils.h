@@ -131,6 +131,11 @@ std::string GetTime_HHMMSS(int64_t ns);
 std::string GetTime_YYMMDD_HHMMSS(int64_t ns);
 #pragma endregion
 
+#pragma region Directory
+void PushCurrentDirectory(LPCWSTR new_dictionary);
+void PopCurrentDirectory();
+#pragma endregion
+
 #pragma region Locale
 std::string utf16_to_mb(const wchar_t* utf16, UINT encoding);
 std::wstring mb_to_utf16(const char* utf8, UINT encoding);

@@ -1540,7 +1540,7 @@ private:
                 }
             }
 
-            auto retnValue = GuiCornerButton(S(THPRAC_APPLY), S(THPRAC_CANCEL), ImVec2(1.0f, 0.0f), true);
+            auto retnValue = GuiCornerButton(S(THPRAC_APPLY), nullptr, ImVec2(1.0f, 0.0f), true);
             if (retnValue == 1) {
                 ImGui::CloseCurrentPopup();
                 LauncherSettingSet_KeyBind();

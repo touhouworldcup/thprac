@@ -75,7 +75,7 @@ namespace TH06 {
             "禁弹「刻着过去的钟表」",
             "秘弹「之后就一个人都没有了吗？」",
             "QED「495年的波纹」",
-            "「大约魔法阵的确死了」" },
+            "「我打魔法阵？真的要上吗...」" },
         { 
             " Moon Sign \"Moonlight Ray\"",
             "Night Sign \"Night Bird\"",
@@ -420,7 +420,7 @@ namespace TH06 {
             SetTitle("Spell Capture");
             SetFade(0.9f, 0.9f);
             SetPos(-10000.0f, -10000.0f);
-            SetSize(180.0f, 150.0f);
+            SetSize(180.0f, 160.0f);
             SetWndFlag(
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
@@ -474,32 +474,7 @@ namespace TH06 {
         int last_spell_id_hist = -1;
         int last_diff_hist = -1;
 
-        std::vector<std::wstring> g_directory;
-        int g_count_directory = 0;
-        void PushCurrentDirectory(LPCWSTR new_dictionary)
-        {
-            WCHAR buffer[MAX_PATH] = { 0 };
-            GetCurrentDirectoryW(MAX_PATH, buffer);
-            if (g_directory.size() <= g_count_directory)
-                g_directory.push_back(std::wstring(buffer));
-            else
-                g_directory[g_count_directory] = std::wstring(buffer);
-            g_count_directory++;
-
-            ExpandEnvironmentStringsW(new_dictionary, buffer, MAX_PATH);
-            if (GetFileAttributesW(buffer) == INVALID_FILE_ATTRIBUTES) {
-                CreateDirectoryW(buffer, NULL);
-            }
-            SetCurrentDirectoryW(buffer);
-        }
-        void PopCurrentDirectory()
-        {
-            if (!g_directory.empty()) {
-                std::wstring last_dicg_dict = g_directory[g_count_directory - 1];
-                SetCurrentDirectoryW(last_dicg_dict.c_str());
-                g_count_directory--;
-            }
-        }
+        int time_books = 0;
 
         void LoadSave()
         {
@@ -547,14 +522,6 @@ namespace TH06 {
                 fs.write((char*)(&save_total), sizeof(save_total));
                 fs.close();
             }
-            // {
-            //     auto fs = ::std::fstream("spell_capture.dat", ::std::ios::out | ::std::ios::binary);
-            //     if (fs.is_open()) {
-            //         fs.write((char*)(&save_total), sizeof(save_total));
-            //     }
-            //     fs.close();
-            // }
-            
             PopCurrentDirectory();
         }
 
@@ -623,6 +590,18 @@ namespace TH06 {
                 int cur_sc_tot = save_current.SC_History[spell_id][last_diff][last_player_type][1];
                 int cur_sc_to = save_current.SC_History[spell_id][last_diff][last_player_type][2];
                 ImGui::Text("%d/%d(%.1f%%); %d", cur_sc_caped, cur_sc_tot, (float)(cur_sc_caped) / std::fmax(1.0f, cur_sc_tot) * 100.0f, cur_sc_to);
+
+                // books time
+                DWORD gameState = *(DWORD*)(0x6C6EA4);
+                BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
+                if (is_magic_book && thPracParam.mode && (thPracParam.phase == 1 || thPracParam.phase == 2)) { // books
+                    ImGui::Text("%.1f", (float)time_books / 60.0f);
+                    if (gameState == 2 && pauseMenuState == 0) {
+                        time_books++;
+                    }
+                } else {
+                    time_books = 0;
+                }
             }
             mDetails();
         }
@@ -793,6 +772,7 @@ namespace TH06 {
                     if (last_cur_hp < 3500 && cur_cur_hp == 3500 && last_tot_hp < 3500 && cur_tot_hp == 3500) // 第一本魔法书的血量
                     {
                         AddAttempt(64, cur_diff, cur_player_type);
+                        time_books = 0;
                         power_decreased = false;
                         bomb_decreased = false;
                         fin_flag = false;
@@ -898,6 +878,29 @@ namespace TH06 {
         LARGE_INTEGER mLastCount = { 0 };
         int64_t mTimePlayedns = 0;
     public:
+        void Retry()
+        {
+            last_is_in_spell = false;
+            last_spell_id = 0;
+            last_diff = 0;
+            last_ingame_flag = 16;
+            last_player_typea = 0;
+            last_player_typeb = 0;
+            last_cur_face_time = 0;
+            last_stage = 0;
+            last_pl_power = 0;
+            last_pl_bomb = 0;
+            last_cur_hp = 0;
+            last_tot_hp = 0;
+            last_has_SCB = 0;
+            power_decreased = false;
+            bomb_decreased = false;
+            fin_flag = false;
+            is_magic_book = false;
+            last_spell_id_hist = -1;
+            last_diff_hist = -1;
+            time_books = 0;
+        }
         void SaveAll(){
             if (mIsSaveLoaded)
                 SaveSave();
@@ -1035,7 +1038,7 @@ namespace TH06 {
                 mPhase(TH_PHASE, TH_SPELL_PHASE1);
             }
             if (section == TH06_ST4_BOOKS) {
-                mPhase(TH_PHASE, TH_SPELL_PHASE_INF_TIME);
+                mPhase(TH_PHASE, TH_BOOKS_PHASE_INF_TIME);
             }
         }
         void PracticeMenu(Gui::GuiNavFocus& nav_focus)
@@ -1897,6 +1900,9 @@ namespace TH06 {
             if (thPracParam.phase == 1){
                 ecl << pair { 0xCE7C, (int16_t)-1 };//disable timeline after books
                 ecl << pair { 0x1324, (int32_t)99999999 };//loop forever
+            } else if (thPracParam.phase == 2) {
+                ecl << pair { 0xCE60, (int16_t)-1 }; // disable timeline after books
+                ecl << pair { 0x1324, (int32_t)99999999 }; // loop forever
             }
             ECLWarp(0x0d40);
             break;
@@ -2895,6 +2901,7 @@ namespace TH06 {
     EHOOK_DY(th06_enter_game, 0x41BDE8) // set inner misscount to 0
     {
         TH06InGameInfo::singleton().mMissCount = 0;
+        TH06InGameInfo::singleton().Retry();
     }
     EHOOK_DY(spellcard_get_failed, 0x4277C3)
     {
