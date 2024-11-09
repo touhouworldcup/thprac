@@ -184,7 +184,7 @@ inline bool GuiButtonTxtCentered(const char* buttonText, float posYRel)
     return ImGui::Button(buttonText);
 }
 
-inline bool GuiModal(const char* modalTitle, ImVec2 sizeRel = ImVec2(0.0f, 0.0f))
+inline bool GuiModal(const char* modalTitle, ImVec2 sizeRel = ImVec2(0.0f, 0.0f),bool* popen=nullptr,ImGuiWindowFlags flagex=0)
 {
     auto wndSize = LauncherWndGetSize();
     wndSize.x *= 0.5f;
@@ -193,7 +193,7 @@ inline bool GuiModal(const char* modalTitle, ImVec2 sizeRel = ImVec2(0.0f, 0.0f)
     if (sizeRel.x != 0.0f || sizeRel.y != 0.0f) {
         ImGui::SetNextWindowSize(sizeRel, ImGuiCond_Always);
     }
-    return ImGui::BeginPopupModal(modalTitle, nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+    return ImGui::BeginPopupModal(modalTitle, popen, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | flagex);
 }
 
 inline bool GuiModalFullScreen(const char* modalTitle)

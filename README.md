@@ -23,6 +23,7 @@
 - add total game time and game time too long hint
 - add inf time magic books for EoSD
 - add clock-in in others menu(only in chinese)
+- add keng tools
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
@@ -49,3 +50,4 @@
 - 总游戏时间记录, 游戏时间过长提示功能
 - 无限时间魔法阵(神仙专用)
 - 打卡功能
+- 填坑器

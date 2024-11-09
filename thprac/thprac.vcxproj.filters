@@ -41,6 +41,9 @@
     <Filter Include="THPrac Logging">
       <UniqueIdentifier>{89b3b162-0590-4673-a372-b4699cc95cb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="3rdParties\rapidcsv">
+      <UniqueIdentifier>{99698ba9-4ff9-46ce-86b5-f9fa9173670f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -213,6 +216,12 @@
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_launcher_others.h">
       <Filter>THPrac Launcher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_launcher_keng.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\rapidcsv\rapidcsv.h">
+      <Filter>3rdParties\rapidcsv</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -418,6 +427,9 @@
       <Filter>THPrac Logging</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_launcher_others.cpp">
+      <Filter>THPrac Launcher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_launcher_keng.cpp">
       <Filter>THPrac Launcher</Filter>
     </ClCompile>
   </ItemGroup>

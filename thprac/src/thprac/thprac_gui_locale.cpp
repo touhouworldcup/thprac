@@ -7,6 +7,8 @@
 #include <Windows.h>
 
 namespace THPrac {
+bool g_isLauncher=false;
+
 namespace Gui {
 #pragma region Japanese Glyph Range
 static const short offsetsFrom0x4E00[] =
@@ -429,6 +431,8 @@ static ImWchar baseUnicodeRanges[] =
     {
         bool onlyRenderUsedFont = false;
         LauncherSettingGet("force_only_render_text_used", onlyRenderUsedFont);
+        if (g_isLauncher)
+            onlyRenderUsedFont = false;
 
         auto& io = ImGui::GetIO();
         ImWchar* glyphRange = nullptr;

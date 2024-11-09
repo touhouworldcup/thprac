@@ -684,6 +684,43 @@ enum th_glossary_t {
     THPRAC_INGAMEINFO_17_WOLF_COUNT,
     THPRAC_INGAMEINFO_BOMB_COUNT,
     THPRAC_INGAMEINFO_MISS_COUNT,
+    THPRAC_KENG,
+    THPRAC_KENG_ADD_DIFF_POPUP,
+    THPRAC_KENG_ADD_KENG,
+    THPRAC_KENG_ADD_KENG_POPUP,
+    THPRAC_KENG_DATE,
+    THPRAC_KENG_DEL,
+    THPRAC_KENG_DEL_POPUP,
+    THPRAC_KENG_DEL_YES_OR_NO,
+    THPRAC_KENG_DESC,
+    THPRAC_KENG_DETAILS,
+    THPRAC_KENG_DETAILS_DIFF_CNT,
+    THPRAC_KENG_DETAILS_DIFF_INDEX,
+    THPRAC_KENG_DETAILS_DIFF_NAME,
+    THPRAC_KENG_DETAILS_DIFF_PASSRATE,
+    THPRAC_KENG_DETAILS_DIFF_TABLE,
+    THPRAC_KENG_DETAILS_PASS_MISS,
+    THPRAC_KENG_DETAILS_PASS_PROB,
+    THPRAC_KENG_DETAILS_PASS_TABLE,
+    THPRAC_KENG_DETAILS_POPUP,
+    THPRAC_KENG_DIFF_NAME,
+    THPRAC_KENG_DIFF_TABLE_ADD,
+    THPRAC_KENG_DIFF_TABLE_CK,
+    THPRAC_KENG_DIFF_TABLE_D,
+    THPRAC_KENG_DIFF_TABLE_NAME,
+    THPRAC_KENG_DIFF_TABLE_REM,
+    THPRAC_KENG_DIFF_TABLE_U,
+    THPRAC_KENG_NAME,
+    THPRAC_KENG_PLAY_ADD,
+    THPRAC_KENG_PLAY_ADD_POPUP,
+    THPRAC_KENG_PLAY_CMT,
+    THPRAC_KENG_PLAY_CNT,
+    THPRAC_KENG_PLAY_DATE,
+    THPRAC_KENG_PLAY_NAME,
+    THPRAC_KENG_PLAY_TABLE,
+    THPRAC_KENG_READ_CSV,
+    THPRAC_KENG_RETURN,
+    THPRAC_KENG_SAVE_CSV,
     THPRAC_KEYBIND,
     THPRAC_KEYBIND_ADD,
     THPRAC_KEYBIND_ADD_MODAL,
@@ -1136,7 +1173,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1125];
+extern const char* th_glossary_str[3][1162];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2668,10 +2705,10 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3275];
+extern const wchar_t __thprac_loc_range_zh[3283];
 
-extern const wchar_t __thprac_loc_range_en[53];
+extern const wchar_t __thprac_loc_range_en[57];
 
-extern const wchar_t __thprac_loc_range_ja[2677];
+extern const wchar_t __thprac_loc_range_ja[2681];
 
 }

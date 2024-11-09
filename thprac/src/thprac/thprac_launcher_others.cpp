@@ -232,9 +232,9 @@ public:
                             // idk why the dev tool made arr 1 element larger
                             std::uniform_int_distribution<int32_t> rand_luck_value(0, ARRAYSIZE(LUCK_RANGE) - 2);
                             std::vector<int> ld1, ld2;
-                            for (int i = 0; i < ARRAYSIZE(LUCK_DESC_1) - 2; i++)
+                            for (int i = 0; i <= ARRAYSIZE(LUCK_DESC_1) - 2; i++)
                                 ld1.push_back(i);
-                            for (int i = 0; i < ARRAYSIZE(LUCK_DESC_2) - 2; i++)
+                            for (int i = 0; i <= ARRAYSIZE(LUCK_DESC_2) - 2; i++)
                                 ld2.push_back(i);
                             std::shuffle(ld1.begin(), ld1.end(), rand);
                             std::shuffle(ld2.begin(), ld2.end(), rand);
@@ -243,7 +243,7 @@ public:
                             better1 = ld1[0];
                             betternot1 = ld1[1];
                             better3 = ld1[2];
-                            betternot3 = ld2[3];
+                            betternot3 = ld1[3];
 
                             better2 = ld2[0];
                             betternot2 = ld2[1];

@@ -16,6 +16,8 @@ typedef HRESULT(WINAPI* PSetProcessDpiAwareness)(DWORD value);
 typedef HRESULT(WINAPI* PGetDpiForMonitor)(HMONITOR hmonitor, DWORD dpiType, UINT* dpiX, UINT* dpiY);
 
 namespace THPrac {
+extern bool g_isLauncher;
+
 namespace Gui {
     extern LRESULT ImplWin32WndProcHandlerW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 }
@@ -163,6 +165,8 @@ void GetDesktopResolution(int& horizontal, int& vertical)
 
 int LauncherWndInit(unsigned int width, unsigned int height, unsigned int maxWidth, unsigned int maxHeight, unsigned int widthCurrent, unsigned int heightCurrent)
 {
+    g_isLauncher = true;
+
     if (__thprac_lc_hasInited)
         return 0;
 

@@ -5,6 +5,7 @@
 #include "thprac_launcher_links.h"
 #include "thprac_launcher_tools.h"
 #include "thprac_launcher_others.h"
+#include "thprac_launcher_keng.h"
 #include "thprac_launcher_utils.h"
 #include "thprac_launcher_wnd.h"
 #include "thprac_utils.h"
@@ -19,9 +20,10 @@
 
 
 namespace THPrac {
-
+extern bool g_isLauncher;
 const char* gTabToOpen = nullptr;
 LauncherTrigger gLauncherTrigger = LAUNCHER_NOTHING;
+
 void GuiLauncherMainSwitchTab(const char* tab)
 {
     gTabToOpen = tab;
@@ -101,6 +103,7 @@ int GuiLauncherMain()
     LauncherPeekUpd();
     auto scale = LauncherWndGetScale();
     LauncherOthersInit();
+    LauncherKengInit();
 
     while (LauncherWndNewFrame()) {
         static bool isOpen = true;
@@ -159,6 +162,12 @@ int GuiLauncherMain()
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }
+            if (GuiTabItem(S(THPRAC_KENG))) {
+                ImGui::BeginChild("##keng");
+                LauncherKengGuiUpd();
+                ImGui::EndChild();
+                ImGui::EndTabItem();
+            }
             ImGui::EndTabBar();
         }
         
@@ -199,6 +208,7 @@ int GuiLauncherMain()
         }
     }
     LauncherOthersDestroy();
+    LauncherKengDestroy();
 
     LauncherCfgClose();
     LauncherWndShutdown();

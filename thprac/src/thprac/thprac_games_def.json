@@ -645,7 +645,7 @@
 
  "othersUI": {
       "glossary": {
-       "THPRAC_OTHERS": [ "其它", "others", "others" ],
+      "THPRAC_OTHERS": [ "其它", "others", "others" ],
       "THPRAC_GAME_TIME_TOTAL": [ "总飞行时间", "total game time", "total game time" ],
       "THPRAC_GAME_TIME_CURRENT": [ "本次飞行时间", "current game time", "current game time" ],
       "THPRAC_GAME_TIME_LONG": [ "阿伟你又在玩电动哦，休息一下吧", "long game time", "long game time" ],
@@ -656,7 +656,7 @@
       "THPRAC_OTHER_DRAW_LUCK": [ "今日运势", "TODAY LUCK", "TODAY LUCK" ],
       "THPRAC_OTHER_CONTINUE": [ "已经打卡了%d天", "%d days", "%d days" ],
       "THPRAC_OTHER_TODAY": [ "%d年%d月%d日", "%d-%d-%d", "%d-%d-%d" ],
-	  
+    
       "THPRAC_OTHER_LUCK_A": [ "§大吉§", "GOOD JI", "GOOD JI" ],
       "THPRAC_OTHER_LUCK_B": [ "§中吉§", "MID JI", "MID JI" ],
       "THPRAC_OTHER_LUCK_C": [ "§小吉§", "SMALL JI", "SMALL JI" ],
@@ -684,36 +684,36 @@
       "THPRAC_OTHER_LUCK_MOF":   [ "打风神录",  "Play MOF",   "Play MOF"],
       "THPRAC_OTHER_LUCK_MOFA":  [ "秋高气爽",  "Play MOF",   "Play MOF"],
       "THPRAC_OTHER_LUCK_MOFB":  [ "*Player's score*",  "Play MOF",   "Play MOF"],
-	  
+      
       "THPRAC_OTHER_LUCK_SA":     [ "打地灵殿",  "Play SA",    "Play SA"],
-      "THPRAC_OTHER_LUCK_SAA":    [ "全员上压",  "Play SA",    "Play SA"],
+      "THPRAC_OTHER_LUCK_SAA":    [ "永不下压",  "Play SA",    "Play SA"],
       "THPRAC_OTHER_LUCK_SAB":    [ "七星连珠",  "Play SA",    "Play SA"],
-	  
+      
       "THPRAC_OTHER_LUCK_UFO":    [ "打星莲船",  "Play UFO",   "Play UFO"],
       "THPRAC_OTHER_LUCK_UFOA":   [ "宝塔站收",  "Play UFO",   "Play UFO"],
       "THPRAC_OTHER_LUCK_UFOB":   [ "开碟红红蓝",  "Play UFO",   "Play UFO"],
-	  
+      
       "THPRAC_OTHER_LUCK_TD":    [ "打神灵庙",  "Play TD",    "Play TD"],
       "THPRAC_OTHER_LUCK_TDA":   [ "星辰降临",  "Play TD",    "Play TD"],
       "THPRAC_OTHER_LUCK_TDB":   [ "星辰陨落",  "Play TD",    "Play TD"],
-	  
+      
       "THPRAC_OTHER_LUCK_DDC":   [ "打辉针城",  "Play DDC",   "Play DDC"],
       "THPRAC_OTHER_LUCK_DDCA":  [ "随机弹随机封",  "Play DDC",   "Play DDC"],
       "THPRAC_OTHER_LUCK_DDCB":  [ "DDC永久SB",  "Play DDC",   "Play DDC"],
-	  
-	  
+      
+      
       "THPRAC_OTHER_LUCK_LOLK":  [ "打绀珠传",  "Play LOLK",  "Play LOLK"],
       "THPRAC_OTHER_LUCK_LOLKA": [ "神清气爽",  "Play LOLK",  "Play LOLK"],
       "THPRAC_OTHER_LUCK_LOLKB": [ "全一九九",  "Play LOLK",  "Play LOLK"],
-	  
+      
       "THPRAC_OTHER_LUCK_HSIFS":  [ "打天空璋",  "Play HSIFS", "Play HSIFS"],
       "THPRAC_OTHER_LUCK_HSIFSA": [ "四季如春",  "Play HSIFS", "Play HSIFS"],
       "THPRAC_OTHER_LUCK_HSIFSB": [ "瞎几把躲",  "Play HSIFS", "Play HSIFS"],
-	  
+      
       "THPRAC_OTHER_LUCK_WBABC":  [ "打鬼形兽",  "Play WBABC", "Play WBABC"],
       "THPRAC_OTHER_LUCK_WBABCA": [ "跳脱三界",  "Play WBABC", "Play WBABC"],
       "THPRAC_OTHER_LUCK_WBABCB": [ "狼狈逃窜",  "Play WBABC", "Play WBABC"],
-	  
+      
       "THPRAC_OTHER_LUCK_UM":     [ "打虹龙洞",  "Play UM",    "Play UM"],
       "THPRAC_OTHER_LUCK_UMA":    [ "零元购",  "Play UM",    "Play UM"],
       "THPRAC_OTHER_LUCK_UMB":    [ "P点全无",  "Play UM",    "Play UM"],
@@ -721,50 +721,50 @@
       "THPRAC_OTHER_LUCK_POFV":   [ "打花映冢", "Play POFV",    "Play POFV"],
       "THPRAC_OTHER_LUCK_POFVA":  [ "无限连击", "Play POFV",    "Play POFV"],
       "THPRAC_OTHER_LUCK_POFVB":  [ "花容失色", "Play POFV",    "Play POFV"],
-	  
+      
       "THPRAC_OTHER_LUCK_UDOALG": [ "打兽王园", "Play UDOALG",  "Play UDOALG"],
       "THPRAC_OTHER_LUCK_UDOALGA":[ "无限连击2.0", "Play UDOALG",  "Play UDOALG"],
       "THPRAC_OTHER_LUCK_UDOALGB":[ "打到失联", "Play UDOALG",  "Play UDOALG"],
-	  
+      
       "THPRAC_OTHER_LUCK_STB":    [ "打文花帖", "Play STB",     "Play STB"],
       "THPRAC_OTHER_LUCK_STBA":   [ "抓拍强者", "Play STB",     "Play STB"],
       "THPRAC_OTHER_LUCK_STBB":   [ "偷拍被抓", "Play STB",     "Play STB"],
-	  
+      
       "THPRAC_OTHER_LUCK_DS":    [ "打文花帖DS","Play DS",     "Play DS"],
-	  "THPRAC_OTHER_LUCK_DSA":   [ "抓拍强者2.0", "Play STB",     "Play STB"],
+      "THPRAC_OTHER_LUCK_DSA":   [ "抓拍强者2.0", "Play STB",     "Play STB"],
       "THPRAC_OTHER_LUCK_DSB":   [ "偷拍被抓2.0", "Play STB",     "Play STB"],
-	  
+      
       "THPRAC_OTHER_LUCK_GFW":    [ "打大战争",  "Play GFW",     "Play GFW"],
       "THPRAC_OTHER_LUCK_GFWA":   [ "俺最强",  "Play GFW",     "Play GFW"],
       "THPRAC_OTHER_LUCK_GFWB":   [ "俺最强?真假...",  "Play GFW",     "Play GFW"],
-	  
+      
       "THPRAC_OTHER_LUCK_ISC":    [ "打天邪鬼",  "Play ISC",     "Play ISC"],
       "THPRAC_OTHER_LUCK_ISCA":   [ "反则生命",  "Play ISC",     "Play ISC"],
       "THPRAC_OTHER_LUCK_ISCB":   [ "道具失控",  "Play ISC",     "Play ISC"],
-	  
+      
       "THPRAC_OTHER_LUCK_VD":     [ "打噩梦日记","Play VD",      "Play VD"],
       "THPRAC_OTHER_LUCK_VDA":    [ "做个好梦","Play VD",      "Play VD"],
       "THPRAC_OTHER_LUCK_VDB":    [ "小心做噩梦","Play VD",      "Play VD"],
-	  
+      
       "THPRAC_OTHER_LUCK_BM":     [ "打黑集市",   "Play BM",     "Play BM"],
       "THPRAC_OTHER_LUCK_BMA":    [ "零元购2.0",   "Play BM",     "Play BM"],
       "THPRAC_OTHER_LUCK_BMB":    [ "陵园购",   "Play BM",     "Play BM"],
-	  
+      
       "THPRAC_OTHER_LUCK_FTG":    [ "打FTG", "Play FTG~", "Play FTG~"],
       "THPRAC_OTHER_LUCK_FTGA":   [ "虐虐菜", "Play FTG~", "Play FTG~"],
       "THPRAC_OTHER_LUCK_FTGB":   [ "被虐菜", "Play FTG~", "Play FTG~"],
-	  
-	  
+      
+      
       "THPRAC_OTHER_LUCK_OLD":    [ "打旧作", "Play Some PC98 Games", "Play Some PC98 Games"],
       "THPRAC_OTHER_LUCK_OLDA":   [ "永远怀念", "Play Some PC98 Games", "Play Some PC98 Games"],
       "THPRAC_OTHER_LUCK_OLDB":   [ "裂开", "Play Some PC98 Games", "Play Some PC98 Games"],
-	  
+      
       "THPRAC_OTHER_LUCK_FAN":    [ "打二创STG", "Play Some Fan Game", "Play Some Fan Game"],
       "THPRAC_OTHER_LUCK_FANA":   [ "淘到宝藏", "Play Some Fan Game", "Play Some Fan Game"],
       "THPRAC_OTHER_LUCK_FANB":   [ "弹设一坨", "Play Some Fan Game", "Play Some Fan Game"]
       },
-	  "groups": {
-	  "LUCK_RANGE": [
+      "groups": {
+      "LUCK_RANGE": [
         "THPRAC_OTHER_LUCK_A",  
         "THPRAC_OTHER_LUCK_B",   
         "THPRAC_OTHER_LUCK_C",    
@@ -814,7 +814,7 @@
         "THPRAC_OTHER_LUCK_WBABCB", 
         "THPRAC_OTHER_LUCK_UMB"
       ],
-	  "LUCK_DESC_2": [
+     "LUCK_DESC_2": [
         "THPRAC_OTHER_LUCK_POFV",
         "THPRAC_OTHER_LUCK_UDOALG",
         "THPRAC_OTHER_LUCK_STB",
@@ -854,6 +854,52 @@
         "THPRAC_OTHER_LUCK_FANB"
       ]
     }
+  },
+  "keng": {
+      "glossary": {
+       "THPRAC_KENG":["填坑器","keng tools","keng tools"],
+       "THPRAC_KENG_ADD_DIFF_POPUP":["增加难点##adpp","add difficulty##adpp","add difficulty##adpp"],
+       "THPRAC_KENG_DIFF_NAME":["难点名","difficulty name","difficulty name"],
+       "THPRAC_KENG_PLAY_NAME":["记录名:","play name","play name"],
+       "THPRAC_KENG_PLAY_CMT":["注释:","play comment","play comment"],
+       "THPRAC_KENG_PLAY_DATE":["记录日期:","play date","play date"],
+       "THPRAC_KENG_DIFF_TABLE_CK":["难点选择","diff check","diff check"],
+       "THPRAC_KENG_DIFF_TABLE_NAME":["难点名","difficulty name","difficulty name"],
+       "THPRAC_KENG_DIFF_TABLE_ADD":["[+]","[+]","[+]"],
+       "THPRAC_KENG_DIFF_TABLE_REM":["[-]","[-]","[-]"],
+       "THPRAC_KENG_DIFF_TABLE_U":["[↑]","[↑]","[↑]"],
+       "THPRAC_KENG_DIFF_TABLE_D":["[↓]","[↓]","[↓]"],
+       "THPRAC_KENG_RETURN":["返回","return","return"],
+       "THPRAC_KENG_DEL":["删除","delete","delete"],
+       "THPRAC_KENG_DEL_POPUP":["确定删除?##delpp","delete?##delpp","delete?##delpp"],
+       "THPRAC_KENG_DEL_YES_OR_NO":["确定删除?","sure to delete?","sure to delete?"],
+
+       "THPRAC_KENG_DETAILS":["详情","details","details"],
+       "THPRAC_KENG_DETAILS_POPUP":["详情##dtpp","details##dtpp","details##dtpp"],
+       "THPRAC_KENG_DETAILS_DIFF_TABLE":["难点详情","diff details","diff details"],
+       "THPRAC_KENG_DETAILS_DIFF_INDEX":["编号","index","index"],
+       "THPRAC_KENG_DETAILS_DIFF_NAME":["难点名","name","name"],
+       "THPRAC_KENG_DETAILS_DIFF_CNT":["计数","count","count"],
+       "THPRAC_KENG_DETAILS_DIFF_PASSRATE":["通过率","pass rate","pass rate"],
+       "THPRAC_KENG_DETAILS_PASS_TABLE":["通过率详情","pass details","pass details"],
+       "THPRAC_KENG_DETAILS_PASS_MISS":["miss数","miss count","miss count"],
+       "THPRAC_KENG_DETAILS_PASS_PROB":["概率","prob","prob"],
+	   
+       "THPRAC_KENG_NAME":["坑名:","name","name"],
+       "THPRAC_KENG_DATE":["创建日期:","date","date"],
+       "THPRAC_KENG_DESC":["描述:","description","description"],
+       "THPRAC_KENG_PLAY_TABLE":["记录表##pltb","play table##pltb","play table##pltb"],
+       "THPRAC_KENG_PLAY_CNT":["难点计数","difficulties count","difficulties count"],
+	   
+       "THPRAC_KENG_PLAY_ADD":["增加记录","add play record","add play record"],
+       "THPRAC_KENG_PLAY_ADD_POPUP":["增加记录##appp","add play record##appp","add play record##appp"],
+       
+	   "THPRAC_KENG_SAVE_CSV":["保存为csv","save as csv","save as csv"],
+
+       "THPRAC_KENG_ADD_KENG":["开坑","add keng","add keng"],
+       "THPRAC_KENG_ADD_KENG_POPUP":["开坑##akpp","add keng##akpp","add keng##akpp"],
+       "THPRAC_KENG_READ_CSV":["从CSV导入","read from csv","read from csv"]
+      }
   },
   
    "inGameInfo": {
