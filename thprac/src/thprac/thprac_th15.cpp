@@ -542,13 +542,30 @@ namespace TH15 {
             bool is_in_P_mode = (*(byte*)(0x004E7795)) & 0x1;
             if (is_in_P_mode) // pplayer
             {
+                if (g_adv_igi_options.th15_showShootingDownRate)
+                    SetSizeRel(340.0f / 1280.0f, 410.0f / 960.0f);
+                else
+                    SetSizeRel(340.0f / 1280.0f, 350.0f / 960.0f);
                 SetPosRel(900.0f / 1280.0f, 520.0f / 960.0f);
-                SetSizeRel(340.0f / 1280.0f, 350.0f / 960.0f);
+                
                 int cur_stage = *(int*)(0x004E73F0);
                 int tot_re = *(int*)(0x004E7594);
                 int cur_re = *(int*)(0x004E75B8);
                 int* stage_re = (int*)(0x004E759C);
                 ImGui::Columns(2);
+                if (g_adv_igi_options.th15_showShootingDownRate) {
+                    int32_t cur_killed = *(int32_t*)(0x004E7488);
+                    int32_t tot_enm = *(int32_t*)(0x004E7484);
+                    int32_t graze = *(int32_t*)(0x004E7420);
+                    ImGui::Text(S(THPRAC_INGAMEINFO_TH15_SHOOTING_DOWN_RATE));
+                    ImGui::NextColumn();
+                    ImGui::Text("%2.1f%%(%d/%d)", tot_enm == 0 ? 0.0f : (float)cur_killed / (float)tot_enm * 100.0f, cur_killed, tot_enm);
+                    ImGui::NextColumn();
+                    ImGui::Text(S(THPRAC_INGAMEINFO_TH15_PRODUCT));
+                    ImGui::NextColumn();
+                    ImGui::Text("%2.1f", tot_enm == 0 ? 0.0f : (float)cur_killed / (float)tot_enm * (float)graze);
+                    ImGui::NextColumn();
+                }
                 ImGui::Text(S(THPRAC_INGAMEINFO_15_RE_TIMES_TOTAL));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", tot_re);
@@ -556,15 +573,9 @@ namespace TH15 {
                 ImGui::Text(S(THPRAC_INGAMEINFO_15_RE_TIMES_CURRENT));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", cur_re);
-
                 ImGui::Columns(1);
                 ImGui::NewLine();
                 ImGui::Columns(2);
-                // ImGui::NextColumn();
-                // ImGui::NewLine();
-                // ImGui::NextColumn();
-                // ImGui::NewLine();
-                // ImGui::NextColumn();
 
                 for (int i = 0; i < std::min(7,cur_stage); i++){
                     ImGui::Text(S(THPRAC_INGAMEINFO_15_RE_TIMES_STAGE), i + 1);
@@ -573,12 +584,29 @@ namespace TH15 {
                     ImGui::NextColumn();
                 }
             } else {
+                if (g_adv_igi_options.th15_showShootingDownRate)
+                    SetSizeRel(340.0f / 1280.0f, 180.0f / 960.0f);
+                else
+                    SetSizeRel(340.0f / 1280.0f, 100.0f / 960.0f);
                 SetPosRel(900.0f / 1280.0f, 520.0f / 960.0f);
-                SetSizeRel(340.0f / 1280.0f, 100.0f / 960.0f);
                 ImGui::Columns(2);
                 ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));ImGui::NextColumn();ImGui::Text("%8d",mMissCount);
                 ImGui::NextColumn();
                 ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));ImGui::NextColumn();ImGui::Text("%8d",mBombCount);
+                ImGui::NextColumn();
+                if (g_adv_igi_options.th15_showShootingDownRate) {
+                    int32_t cur_killed = *(int32_t*)(0x004E7488);
+                    int32_t tot_enm = *(int32_t*)(0x004E7484);
+                    int32_t graze = *(int32_t*)(0x004E7420);
+                    ImGui::Text(S(THPRAC_INGAMEINFO_TH15_SHOOTING_DOWN_RATE));
+                    ImGui::NextColumn();
+                    ImGui::Text("%2.1f%%(%d/%d)", tot_enm == 0 ? 0.0f : (float)cur_killed / (float)tot_enm * 100.0f, cur_killed, tot_enm);
+                    ImGui::NextColumn();
+                    ImGui::Text(S(THPRAC_INGAMEINFO_TH15_PRODUCT));
+                    ImGui::NextColumn();
+                    ImGui::Text("%2.1f", tot_enm == 0 ? 0.0f : (float)cur_killed / (float)tot_enm * (float)graze);
+                    ImGui::NextColumn();
+                }
             }
         }
 
@@ -770,7 +798,7 @@ namespace TH15 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
-
+                ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE), &(g_adv_igi_options.th15_showShootingDownRate));
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th15_bossmovedown.Toggle(forceBossMoveDown);
                 }

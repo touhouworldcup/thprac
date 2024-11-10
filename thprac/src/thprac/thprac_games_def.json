@@ -219,7 +219,7 @@
     "THPRAC_GAME_TIME_HINT_SE":["飞行时间过长音效提示","game time too long SE","game time too long SE"],
     "THPRAC_GAME_TIME_HINT_SE_STOP":["音效重复间隔秒数","SE repeat interval(second)","SE repeat interval(second)"],
     "THPRAC_GAME_TIME_HINT_SE_TEST":["测试音效","SE test","SE test"],
-    "THPRAC_GAME_TIME_HINT_SE_DESC":["将音效文件放在thprac同目录下, 名称为SE.wav","put SE file in thprac path with name SE.wav","put SE file in thprac path with name SE.wav"],
+    "THPRAC_GAME_TIME_HINT_SE_DESC":["将音效文件放在thprac同目录下, 名称为SE.wav","put SE file in thprac folder with name SE.wav","put SE file in thprac folder with name SE.wav"],
     
     "THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN":["修改启动时窗口的大小","change window size when open","change window size when open"],
     "THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE":["窗口大小","window size","window size"],
@@ -890,6 +890,7 @@
        "THPRAC_KENG_DESC":["描述:","description","description"],
        "THPRAC_KENG_PLAY_TABLE":["记录表##pltb","play table##pltb","play table##pltb"],
        "THPRAC_KENG_PLAY_CNT":["难点计数","difficulties count","difficulties count"],
+       "THPRAC_KENG_PLAY_INDEX":["记录编号","play index","play index"],
 	   
        "THPRAC_KENG_PLAY_ADD":["增加记录","add play record","add play record"],
        "THPRAC_KENG_PLAY_ADD_POPUP":["增加记录##appp","add play record##appp","add play record##appp"],
@@ -904,6 +905,50 @@
   
    "inGameInfo": {
       "glossary": {
+	  "THPRAC_INGAMEINFO_ADV2":["自动开启高级IGI功能","automatically use advanced igi","automatically use advanced igi"],
+	  "THPRAC_INGAMEINFO_ADV":["高级IGI功能","advanced igi","advanced igi"],
+	  "THPRAC_INGAMEINFO_ADV_DESC1":["需要打开更多游戏信息(backspace菜单)中的选项开启","need to enable ingameinfo(in backspace menu) to show","need to enable ingameinfo(in backspace menu) to show"],
+	  "THPRAC_INGAMEINFO_ADV_DESC2":["免责声明: 部分功能可能会被认为是作弊","disclaimer: might be considered as cheating","disclaimer: might be considered as cheating"],
+	  
+	  "THPRAC_INGAMEINFO_TH06_SHOW_RANK":["显示rank","show rank","show rank"],
+	  "THPRAC_INGAMEINFO_TH06_SHOW_RANK2":["红魔乡显示rank","EoSD show rank","EoSD show rank"],
+	  "THPRAC_INGAMEINFO_TH06_SHOW_HITBOX":["显示低速判定","show hitbox when focused","show hitbox when focused"],
+	  "THPRAC_INGAMEINFO_TH06_SHOW_HITBOX2":["红魔乡显示低速判定","EoSD show hitbox when focused","EoSD show hitbox when focused"],
+	  "THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC":["将判定点图片hitbox.png放入thprac.exe所在文件夹","put hitbox.png file in thprac.exe folder","put hitbox.png file in thprac.exe folder"],
+	  "THPRAC_INGAMEINFO_TH06_RANK":["rank","rank","rank"],
+	  
+	  "THPRAC_INGAMEINFO_TH11_SHOW_HINT":["显示hint","show hint","show hint"],
+	  "THPRAC_INGAMEINFO_TH11_SHOW_HINT2":["地灵殿显示hint","SA show hint","SA show hint"],
+	  
+	  "THPRAC_INGAMEINFO_TH13_SHOW_HITS":["显示连击","show hits","show hits"],
+	  "THPRAC_INGAMEINFO_TH13_SHOW_HITS2":["神灵庙显示连击","TD show hits","TD show hits"],
+	  "THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR":["显示连击条","show hit bar","show hit bar"],
+	  "THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR2":["神灵庙显示连击条","TD show hit bar","TD show hit bar"],
+	  "THPRAC_INGAMEINFO_TH13_HITS":["连击","hits","hits"],
+	  
+	  "THPRAC_INGAMEINFO_TH14_SHOW_BONUS":["显示bouns数","show bonuses","show bonuses"],
+	  "THPRAC_INGAMEINFO_TH14_SHOW_BONUS2":["辉针城显示bouns数","DDC show bonuses","DDC show bonuses"],
+	  "THPRAC_INGAMEINFO_TH14_SHOW_ITEMS":["显示道具量","show items","show items"],
+	  "THPRAC_INGAMEINFO_TH14_SHOW_ITEMS2":["辉针城显示道具量","DDC show items","DDC show items"],
+	  "THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR":["显示掉落收集条","show drop bar","show drop bar"],
+	  "THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR2":["辉针城显示掉落收集条","DDC show drop bar","DDC show drop bar"],
+	  
+	  "THPRAC_INGAMEINFO_TH14_BONUS_05":["0.5","0.5","0.5"],
+	  "THPRAC_INGAMEINFO_TH14_BONUS_08":["0.8","0.8","0.8"],
+	  "THPRAC_INGAMEINFO_TH14_BONUS_12":["1.2","1.2","1.2"],
+	  "THPRAC_INGAMEINFO_TH14_BONUS_16":["1.6","1.6","1.6"],
+	  "THPRAC_INGAMEINFO_TH14_BONUS_20":["2.0","2.0","2.0"],
+	  "THPRAC_INGAMEINFO_TH14_BONUS_NEXT":["下一奖励","next bouns","next bouns"],
+	  "THPRAC_INGAMEINFO_TH14_BONUS_LIFE":["残","L","L"],
+	  "THPRAC_INGAMEINFO_TH14_BONUS_BOMB":["B","B","B"],
+	  "THPRAC_INGAMEINFO_TH14_ITEMS_CNT":["道具量","items","items"],
+	  
+	  "THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE":["显示击破数","show shooting down","show shooting down"],
+	  "THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2":["绀珠传显示击破数","LoLK show shooting down","LoLK show shooting down"],
+	  "THPRAC_INGAMEINFO_TH15_SHOOTING_DOWN_RATE":["击破数","shoot down","shoot down"],
+	  "THPRAC_INGAMEINFO_TH15_PRODUCT":["乘积","product","product"],
+	  
+	  
        "THPRAC_INGAMEINFO":["更多游戏信息","in game info","in game info"],
        "THPRAC_INGAMEINFO_MISS_COUNT":["miss:","miss:","miss:"],
        "THPRAC_INGAMEINFO_BOMB_COUNT":["bomb:","bomb:","bomb:"],

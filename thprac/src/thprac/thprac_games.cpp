@@ -26,7 +26,7 @@ bool g_disable_f10_11_13 = false;
 bool g_pauseBGM_06 = false;
 bool g_forceRenderCursor=false;
 bool g_testKey=false;
-
+AdvancedIGI_Options g_adv_igi_options;
 
 bool g_useCustomFont = false;
 std::string g_customFont = "MS Gothic";
@@ -322,6 +322,17 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         LauncherSettingGet("force_render_cursor", g_forceRenderCursor);
         LauncherSettingGet("pauseBGM_06", g_pauseBGM_06);
         LauncherSettingGet("test_key", g_testKey);
+
+        memset(&g_adv_igi_options, 0, sizeof(g_adv_igi_options));
+        LauncherSettingGet("auto_th06_show_rank", g_adv_igi_options.th06_showRank);
+        LauncherSettingGet("auto_th06_show_hitbox", g_adv_igi_options.th06_showHitbox);
+        LauncherSettingGet("auto_th11_show_hint", g_adv_igi_options.th11_showHint);
+        LauncherSettingGet("auto_th13_show_hits", g_adv_igi_options.th13_showHits);
+        LauncherSettingGet("auto_th13_show_hitbar", g_adv_igi_options.th13_showHitBar);
+        LauncherSettingGet("auto_th14_show_bonus", g_adv_igi_options.th14_showBonus);
+        LauncherSettingGet("auto_th14_show_item_cnt", g_adv_igi_options.th14_showItemsCount);
+        LauncherSettingGet("auto_th14_show_drop_bar", g_adv_igi_options.th14_showDropBar);
+        LauncherSettingGet("auto_th15_show_rate", g_adv_igi_options.th15_showShootingDownRate);
 
         bool useCorrectJaFonts=false;
         LauncherSettingGet("use_custom_fonts", g_useCustomFont);

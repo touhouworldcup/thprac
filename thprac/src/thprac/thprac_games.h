@@ -9,6 +9,19 @@
 struct IDirect3DDevice8;
 
 namespace THPrac {
+    struct AdvancedIGI_Options
+    {
+    bool th06_showRank;
+    bool th06_showHitbox;
+    bool th11_showHint;
+    bool th13_showHits;
+    bool th13_showHitBar;
+    bool th14_showBonus;
+    bool th14_showItemsCount;
+    bool th14_showDropBar;
+    bool th15_showShootingDownRate;
+    };
+    extern AdvancedIGI_Options g_adv_igi_options;
 
 struct Float2 {
     float x;

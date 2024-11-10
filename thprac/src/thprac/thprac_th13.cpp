@@ -3,6 +3,7 @@
 
 
 namespace THPrac {
+
 namespace TH13 {
     using std::pair;
     struct THPracParam {
@@ -537,7 +538,11 @@ namespace TH13 {
             }
             {
                 SetPosRel(450.0f / 640.0f, 280.0f / 480.0f);
-                SetSizeRel(170.0f/640.0f, 80.0f/480.0f);
+                if (g_adv_igi_options.th13_showHits)
+                    SetSizeRel(170.0f / 640.0f, 110.0f / 480.0f);
+                else
+                    SetSizeRel(170.0f/640.0f, 80.0f/480.0f);
+
                 ImGui::Columns(2);
                 ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
                 ImGui::NextColumn();
@@ -550,6 +555,19 @@ namespace TH13 {
                 ImGui::Text(S(THPRAC_INGAMEINFO_13_TRANCE_COUNT));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mTranceCount);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH13_HITS));
+                ImGui::NextColumn();
+                int32_t hits = 0;
+                if (*(DWORD*)(0x4C22A4)){
+                    hits = *(int32_t*)(*(DWORD*)(0x4C22A4) + 0x8838);
+                }
+                ImVec4 col;
+                if (hits >= 10)
+                    col = { 1, 1, 1, 1 };
+                else
+                    col = { 0.3, 0.3, 1, 1 };
+                ImGui::TextColored(col,"%8d", hits);
             }
         }
 
@@ -779,6 +797,12 @@ namespace TH13 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+                ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH13_SHOW_HITS), &(g_adv_igi_options.th13_showHits));
+                ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR), &(g_adv_igi_options.th13_showHitBar));
+                ImGui::SameLine();
+                HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC1));
+                ImGui::SameLine();
+                HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC2));
 
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th13_bossmovedown.Toggle(forceBossMoveDown);
@@ -1795,6 +1819,42 @@ namespace TH13 {
                 p->AddText({ 60.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
+        // hit bar
+        {
+            if (g_adv_igi_options.th13_showHitBar) {
+                float hits_time = 0.0f;
+                int hits = 0;
+                if (*(DWORD*)(0x4C22A4)) {
+                    hits_time = (float)*(int32_t*)(*(DWORD*)(0x4C22A4) + 0x8828) / 60.0f;
+                    hits = *(int32_t*)(*(DWORD*)(0x4C22A4) + 0x8838);
+                    hits_time = std::clamp(hits_time, 0.0f, 1.0f);
+                    DWORD ppl = *(DWORD*)(0x004C22C4);
+                    if (ppl && hits_time>0.0f) {
+                        float xpos = *(float*)(ppl + 0x5B8) + 224.0f;
+                        float ypos = *(float*)(ppl + 0x5BC) + 16.0f;
+                        auto p = ImGui::GetOverlayDrawList();
+                        p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
+                        const float bar_xszhalf = 24.0f;
+                        const float bar_yszhalf = 1.5f;
+                        ImVec2 pmin = { xpos - bar_xszhalf, ypos - 24.0f - bar_yszhalf };
+                        ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f * hits_time, pmin.y + bar_yszhalf*2.0f };
+                        DWORD col = hits < 10 ? 0xFF5555FF : 0xFFFFFFFF;
+                        // shadow
+                        pmin.x += 1.0f;
+                        pmin.y += 1.0f;
+                        pmax.x += 1.0f;
+                        pmax.y += 1.0f;
+                        p->AddRectFilled(pmin, pmax, 0xFF000000);
+                        pmin.x -= 1.0f;
+                        pmin.y -= 1.0f;
+                        pmax.x -= 1.0f;
+                        pmax.y -= 1.0f;
+                        p->AddRectFilled(pmin, pmax, col);
+                        p->PopClipRect();
+                    }
+                }
+            }
+        }
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         THAdvOptWnd::singleton().FpsUpd();
@@ -1813,7 +1873,6 @@ namespace TH13 {
         GameGuiInit(IMPL_WIN32_DX9, 0x4dc6a8, 0x4dd0a8, 0x45cb40,
             Gui::INGAGME_INPUT_GEN2, 0x4e49fc, 0x4e49f8, 0,
             -1);
-
         // Gui components creation
         THGuiPrac::singleton();
         THGuiRep::singleton();

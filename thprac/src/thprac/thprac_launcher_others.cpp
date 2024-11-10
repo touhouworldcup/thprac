@@ -98,6 +98,8 @@ private:
             ss >> draw_luck_Y >> draw_luck_M >> draw_luck_D;
         }
         std::string namestr;
+        memset(name_orig, 0, sizeof(name_orig));
+        memset(name, 0, sizeof(name));
         if (LauncherSettingGet("luck_name", namestr)) {
             for (int i = 0; i < sizeof(name) - 1 && i < namestr.size(); i++)
             {
@@ -225,9 +227,10 @@ public:
                             for (int i = 0; i < sizeof(name); i++) {
                                 if (name[i] == 0)
                                     break;
-                                name_s ^= name[i];
+                                name_s *= 114;
+                                name_s ^= name[i] * name[i];
                             }
-                            std::default_random_engine rand((draw_luck_D * 114) ^ (draw_luck_Y * 514) ^ (draw_luck_M * 1919) ^ (name_s * 810));
+                            std::default_random_engine rand((draw_luck_D * draw_luck_D * 114) ^ (draw_luck_Y * 514) ^ (draw_luck_M * 1919) ^ (name_s * 810));
 
                             // idk why the dev tool made arr 1 element larger
                             std::uniform_int_distribution<int32_t> rand_luck_value(0, ARRAYSIZE(LUCK_RANGE) - 2);

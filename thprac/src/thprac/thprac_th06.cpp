@@ -5,9 +5,15 @@
 
 #include <format>
 #include "../3rdParties/d3d8/include/dsound.h"
+#include "../3rdParties/d3d8/include/d3dx8.h"
 
 namespace THPrac {
 extern bool g_pauseBGM_06;
+LPDIRECT3DTEXTURE8 g_hitbox_texture = NULL;
+ImTextureID g_hitbox_textureID = NULL;
+float g_hitbox_width = 32.0f;
+float g_hitbox_height=32.0f;
+
 namespace TH06 {
     static const char* th06_spells_str[3][65] {
         { 
@@ -217,7 +223,7 @@ namespace TH06 {
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
     };
     static bool is_spell_get=true;
-
+   
 
     bool THBGMTest();
     using std::pair;
@@ -558,6 +564,11 @@ namespace TH06 {
                 SetPos(-10000.0f, -10000.0f);
                 return;
             }
+            if (g_adv_igi_options.th06_showRank) {
+                SetSize(180.0f, 190.0f);
+            }else{
+                SetSize(180.0f, 160.0f);
+            }
             SetPosRel(433.0f/640.0f, 245.0f/480.0f);
             int32_t mBombCount = *(int8_t*)(0x0069BCC4);
 
@@ -569,6 +580,13 @@ namespace TH06 {
             ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
             ImGui::NextColumn();
             ImGui::Text("%8d", mBombCount);
+
+            if (g_adv_igi_options.th06_showRank) {
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH06_RANK));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", *(int32_t*)(0x69d710));
+            }
 
             // byte last_player_type = (last_player_typea << 1) | last_player_typeb;
             // ImGui::NextColumn();
@@ -1632,6 +1650,14 @@ namespace TH06 {
                 EndOptGroup();
             }
             DisableXKeyOpt();
+            ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK), &g_adv_igi_options.th06_showRank);
+            ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX), &g_adv_igi_options.th06_showHitbox);
+            HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC1));
+            ImGui::SameLine();
+            HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC2));
+            ImGui::SameLine();
+            HelpMarker(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC));
+
             {
                 ImGui::SetNextWindowCollapsed(false);
                 if (ImGui::CollapsingHeader(S(THPRAC_INGAMEINFO_06_SHOWDETAIL_COLLAPSE)))
@@ -2767,10 +2793,10 @@ namespace TH06 {
                     *(int8_t*)(0x69d4bc) = 1;
             }
 
-            *(int32_t*)(0x69d710) = *(int32_t*)(0x69d710) = (int32_t)thPracParam.rank;
+            *(int32_t*)(0x69d710)  = (int32_t)thPracParam.rank;
             if (thPracParam.rankLock) {
-                *(int32_t*)(0x69d714) = *(int32_t*)(0x69d714) = (int32_t)thPracParam.rank;
-                *(int32_t*)(0x69d718) = *(int32_t*)(0x69d718) = (int32_t)thPracParam.rank;
+                *(int32_t*)(0x69d714)  = (int32_t)thPracParam.rank;
+                *(int32_t*)(0x69d718)  = (int32_t)thPracParam.rank;
             }
 
             THSectionPatch();
@@ -2890,8 +2916,59 @@ namespace TH06 {
 
         GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
     }
+    static float Mlerp(float t, float a, float b)
+    {
+        if (t < 0.0f) {
+            return a;
+        } else if (t < 0.5) {
+            float k = (b - a) *2.0f;
+            return k*t*t+a;
+        } else if (t <  1.0f) {
+            float k = (b - a) * 2.0f;
+            t = t - 1.0f;
+            return -k * t * t + b;
+        }
+        return b;
+    }
     EHOOK_DY(th06_render, 0x41cb6d)
     {
+        static float t = 0.0f;
+        if (g_adv_igi_options.th06_showHitbox && g_hitbox_textureID != NULL) {
+            DWORD gameState = *(DWORD*)(0x6C6EA4);
+            BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
+            WORD keyState = *(WORD*)(0x69D904);
+            bool is_shift_pressed = keyState & 0x4;
+
+            auto p = ImGui::GetOverlayDrawList();
+            if (gameState == 2 && is_shift_pressed) {
+                if (pauseMenuState == 0){
+                    t += 1.0f;
+                    float scale = Mlerp(t / 18.0f, 1.5f, 1.0f),
+                          scale2 = Mlerp(t / 12.0f, 0.3f, 1.0f),
+                          angle = 3.14159f,
+                          angle2 = 0.0f,
+                          alpha = t < 6.0f ? t / 6.0f : 1.0f;
+                    if (t < 18.0f) {
+                        angle = Mlerp(t / 18.0f, 3.14159f, -3.14159f);
+                        angle2 = -angle;
+                    } else {
+                        angle = -3.14159f + t * 0.05235988f;
+                        angle2 = 3.14159f - t * 0.05235988f;
+                    }
+                    scale *= 0.75f;
+                    scale2 *= 0.75f; // 32->24
+                    p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
+                    ImVec2 p1 = { *(float*)(0x6CAA68) + 32.0f, *(float*)(0x6CAA6C) + 16.0f };
+                    float c, s;
+                    c = cosf(angle) * scale * g_hitbox_width, s = sinf(angle) * scale * g_hitbox_height;
+                    p->AddImageQuad(g_hitbox_textureID, { p1.x + c, p1.y + s }, { p1.x - s, p1.y + c }, { p1.x - c, p1.y - s }, { p1.x + s, p1.y - c }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, ImGui::ColorConvertFloat4ToU32({ 1, 1, 1, alpha }));
+                    c = cosf(angle2) * scale2 * g_hitbox_width, s = sinf(angle2) * scale2 * g_hitbox_height;
+                    p->AddImageQuad(g_hitbox_textureID, { p1.x + c, p1.y + s }, { p1.x - s, p1.y + c }, { p1.x - c, p1.y - s }, { p1.x + s, p1.y - c });
+                }
+            }else{
+               t = 0.0f;
+            }
+        }
         GameGuiRender(IMPL_WIN32_DX8);
         if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
             THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);
@@ -2924,7 +3001,17 @@ namespace TH06 {
         GameGuiInit(IMPL_WIN32_DX8, 0x6c6d20, 0x6c6bd4, 0x420d40,
             Gui::INGAGME_INPUT_GEN1, 0x69d904, 0x69d908, 0x69d90c,
             -1);
-
+        // g_adv_igi_options.th06_showHitbox
+        if(GetFileAttributes(L"hitbox.png") != INVALID_FILE_ATTRIBUTES){
+            IDirect3DDevice8* device = *(IDirect3DDevice8**)0x6c6d20;
+            if (D3DXCreateTextureFromFileA(device, "hitbox.png", &g_hitbox_texture) == D3D_OK) {
+                g_hitbox_textureID = (ImTextureID)g_hitbox_texture;
+                D3DSURFACE_DESC desc;
+                g_hitbox_texture->GetLevelDesc(0, &desc);
+                g_hitbox_width = desc.Width;
+                g_hitbox_height = desc.Height;
+            }
+        }
         // Gui components creation
         THGuiPrac::singleton();
         THPauseMenu::singleton();

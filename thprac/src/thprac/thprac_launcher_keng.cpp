@@ -271,17 +271,13 @@ namespace THPrac {
             {
                 ImGui::TableSetupColumn(S(THPRAC_KENG_DIFF_TABLE_CK), 0, ImGui::GetTextLineHeight() * 10);
                 ImGui::TableSetupColumn(S(THPRAC_KENG_DIFF_TABLE_NAME), 0, LauncherWndGetSize().x * 0.9f - ImGui::GetTextLineHeight() * 10);
-
                 ImGui::TableHeadersRow();
-
-                
                 if (diffs.size() == 0) {
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
                     if (ImGui::Button(S(THPRAC_KENG_DIFF_TABLE_ADD)))
                         idx_add = 0;
                 }
-                
                 for (int idx = 0; idx < diffs.size(); idx++) {
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -308,54 +304,54 @@ namespace THPrac {
             }else{
                 idx_add = -1;
             }
-
-            static bool isopen_changename = false;
-            static char diffname[256];
-            bool focus = (isopen_changename == false);
-            if (idx_changename != -1)
             {
-                if (!isopen_changename){
-                    strcpy_s(diffname, diffs[idx_changename].name);
-                }
-                isopen_changename = true;
-                ImGui::OpenPopup(std::format("{}##diffname", S(THPRAC_KENG_DIFF_NAME)).c_str());
-            }
-            if (GuiModal(std::format("{}##diffname", S(THPRAC_KENG_DIFF_NAME)).c_str(), { LauncherWndGetSize().x * 0.5f, LauncherWndGetSize().y * 0.3f }, &isopen_changename)) {
-                ImGui::PushTextWrapPos(LauncherWndGetSize().x * 0.9f);
-                {
-                    ImGui::Columns(2, 0, false);
-                    ImGui::SetColumnWidth(0, 300.0f);
-                    ImGui::Text(S(THPRAC_KENG_DIFF_NAME));
-                    ImGui::NextColumn();
-                    if (focus)
-                        ImGui::SetKeyboardFocusHere();
-                    ImGui::InputText("##diffnameip", diffname, sizeof(diffname), ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsNoBlank);
-
-                    ImGui::Columns(1);
-                    ImGui::SetCursorPosY(std::fmaxf(ImGui::GetCursorPosY(), ImGui::GetWindowHeight() - ImGui::GetTextLineHeightWithSpacing() * 1.5f));
-                    if (ImGui::Button(S(THPRAC_APPLY)) || ImGui::IsKeyDown(0xD)) { // enter
-                        bool find = false;
-                        for (int i = 0; i < diffs.size(); i++)
-                            if (!strcmp(diffs[i].name, diffname)) {
-                                find = true;
-                                break;
-                            }
-                        if (!find) {
-                            strcpy_s(diffs[idx_changename].name, diffname);
-                        }
-                        KengSave();
-                        isopen_changename = false;
-                    } 
+                static bool isopen_changename = false;
+                static char diffname[256];
+                bool focus = (isopen_changename == false);
+                if (idx_changename != -1) {
                     if (!isopen_changename) {
-                        ImGui::CloseCurrentPopup();
-                        idx_changename = -1;
+                        strcpy_s(diffname, diffs[idx_changename].name);
                     }
-                    ImGui::PopTextWrapPos();
-                    ImGui::EndPopup();
+                    isopen_changename = true;
+                    ImGui::OpenPopup(std::format("{}##diffname", S(THPRAC_KENG_DIFF_NAME)).c_str());
                 }
+                if (GuiModal(std::format("{}##diffname", S(THPRAC_KENG_DIFF_NAME)).c_str(), { LauncherWndGetSize().x * 0.5f, LauncherWndGetSize().y * 0.3f }, &isopen_changename)) {
+                    ImGui::PushTextWrapPos(LauncherWndGetSize().x * 0.9f);
+                    {
+                        ImGui::Columns(2, 0, false);
+                        ImGui::SetColumnWidth(0, 300.0f);
+                        ImGui::Text(S(THPRAC_KENG_DIFF_NAME));
+                        ImGui::NextColumn();
+                        if (focus)
+                            ImGui::SetKeyboardFocusHere();
+                        ImGui::InputText("##diffnameip", diffname, sizeof(diffname), ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsNoBlank);
+
+                        ImGui::Columns(1);
+                        ImGui::SetCursorPosY(std::fmaxf(ImGui::GetCursorPosY(), ImGui::GetWindowHeight() - ImGui::GetTextLineHeightWithSpacing() * 1.5f));
+                        if (ImGui::Button(S(THPRAC_APPLY)) || ImGui::IsKeyDown(0xD)) { // enter
+                            bool find = false;
+                            for (int i = 0; i < diffs.size(); i++)
+                                if (!strcmp(diffs[i].name, diffname)) {
+                                    find = true;
+                                    break;
+                                }
+                            if (!find) {
+                                strcpy_s(diffs[idx_changename].name, diffname);
+                            }
+                            KengSave();
+                            isopen_changename = false;
+                        }
+                        if (!isopen_changename) {
+                            ImGui::CloseCurrentPopup();
+                            idx_changename = -1;
+                        }
+                        ImGui::PopTextWrapPos();
+                        ImGui::EndPopup();
+                    }
+                }
+                if (!isopen_changename)
+                    idx_changename = -1;
             }
-            if(!isopen_changename)
-                idx_changename = -1;
             GuiSwapDiff(idx_u, idx_d, diffs, diffs_select);
             is_changed |= GuiInsertDiff(idx_add, diffs, diffs_select, diffs_id_tot);
             if (idx_rem != -1){
@@ -789,17 +785,20 @@ namespace THPrac {
                 ImGui::Separator();
                 // play draw
                 ImGui::SetCursorPosX(LauncherWndGetSize().x * 0.05f);
-                if (ImGui::BeginTable(S(THPRAC_KENG_PLAY_TABLE), 4, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable, ImVec2(LauncherWndGetSize().x * 0.9f, 0.0f)))
+                if (ImGui::BeginTable(S(THPRAC_KENG_PLAY_TABLE), 5, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable, ImVec2(LauncherWndGetSize().x * 0.9f, 0.0f)))
                 {
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_INDEX), 0, LauncherWndGetSize().x * 0.9f * 0.1f);
                     ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_NAME), 0, LauncherWndGetSize().x * 0.9f * 0.15f);
                     ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_DATE), 0, LauncherWndGetSize().x * 0.9f * 0.2f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_CMT), 0, LauncherWndGetSize().x * 0.9f * 0.5f);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_CMT), 0, LauncherWndGetSize().x * 0.9f * 0.4f);
                     ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_CNT), 0, LauncherWndGetSize().x * 0.9f * 0.15f);
                     ImGui::TableHeadersRow();
                     int idx = 0;
                     for (auto it = mPlays.begin(); it != mPlays.end(); it++) {
 
                         ImGui::TableNextRow();
+                        ImGui::TableNextColumn();
+                        ImGui::Text("%2d", idx+1);
                         ImGui::TableNextColumn();
                         if (ImGui::Selectable(std::format("{}##{}", it->mPlayName, idx).c_str(), false, ImGuiSelectableFlags_::ImGuiSelectableFlags_SpanAllColumns)) {
                             play_index_draw = idx;
@@ -896,14 +895,13 @@ namespace THPrac {
                         }else {
                             idx_add = -1;
                         }
-                        
                         GuiSwapDiff(idx_u, idx_d, mKengDifficulties, diffs_select);
                         GuiInsertDiff(idx_add, mKengDifficulties, diffs_select, mDifficulties_idtot);
                         if(idx_rem!=-1)
                             RemoveDiffs(idx_rem);
 
                         ImGui::SetCursorPosY(std::fmaxf(ImGui::GetCursorPosY(), ImGui::GetWindowHeight() - ImGui::GetTextLineHeightWithSpacing() * 1.5f));
-                        auto retnValue = GuiCornerButton(S(THPRAC_APPLY), S(THPRAC_CANCEL), ImVec2(0.8f, 0.0f), true);
+                        auto retnValue = GuiCornerButton(S(THPRAC_APPLY), S(THPRAC_CANCEL), ImVec2(1.5f, 0.0f), true);
                         if (retnValue == 1) {
                             std::vector<int> ids;
                             for (int i = 0; i < mKengDifficulties.size(); i++) {

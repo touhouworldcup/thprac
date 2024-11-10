@@ -4,6 +4,7 @@
 
 
 namespace THPrac {
+
 namespace TH14 {
     using std::pair;
     struct THPracParam {
@@ -512,6 +513,11 @@ namespace TH14 {
     public:
         int32_t mMissCount;
         int32_t mBombCount;
+        int32_t m05Count;
+        int32_t m08Count;
+        int32_t m12Count;
+        int32_t m16Count;
+        int32_t m20Count;
 
     protected:
         virtual void OnLocaleChange() override
@@ -544,7 +550,12 @@ namespace TH14 {
             }
             {
                 SetPosRel(900.0f / 1280.0f, 560.0f / 960.0f);
-                SetSizeRel(340.0f / 1280.0f, 100.0f / 960.0f);
+                if (g_adv_igi_options.th14_showBonus)
+                    SetSizeRel(340.0f / 1280.0f, 350.0f / 960.0f);
+                else if (g_adv_igi_options.th14_showItemsCount)
+                    SetSizeRel(340.0f / 1280.0f, 130.0f / 960.0f);
+                else
+                    SetSizeRel(340.0f / 1280.0f, 100.0f / 960.0f);
                 ImGui::Columns(2);
                 ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
                 ImGui::NextColumn();
@@ -553,6 +564,56 @@ namespace TH14 {
                 ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
                 ImGui::NextColumn();
                 ImGui::Text("%8d", mBombCount);
+                if (g_adv_igi_options.th14_showItemsCount)
+                {
+                    int n = 0;
+                    DWORD pitems = *(DWORD*)(0x4DB660);
+                    if (pitems) {
+                        DWORD iter = pitems + 0x14;
+                        for (int i = 0; i < 0x1258; i++) {
+                            int type = *(DWORD*)(iter + 0xBF4);
+                            int movement = *(DWORD*)(iter + 0xBF0);
+                            if (movement != 0)
+                                if (type ==1 || type==2 || type==3)
+                                    n++;
+                            iter += 0xC18;
+                        }
+                    }
+                    ImGui::NextColumn();
+                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_ITEMS_CNT));
+                    ImGui::NextColumn();
+                    ImGui::Text("%8d", n);
+                }
+                if (g_adv_igi_options.th14_showBonus)
+                {
+                    ImGui::NextColumn();
+                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_05));
+                    ImGui::NextColumn();
+                    ImGui::Text("%8d", m05Count);
+                    ImGui::NextColumn();
+                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_08));
+                    ImGui::NextColumn();
+                    ImGui::Text("%8d", m08Count);
+                    ImGui::NextColumn();
+                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_12));
+                    ImGui::NextColumn();
+                    ImGui::Text("%8d", m12Count);
+                    ImGui::NextColumn();
+                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_16));
+                    ImGui::NextColumn();
+                    ImGui::Text("%8d", m16Count);
+                    ImGui::NextColumn();
+                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_20));
+                    ImGui::NextColumn();
+                    ImGui::Text("%8d", m20Count);
+                    ImGui::NextColumn();
+                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_NEXT));
+                    ImGui::NextColumn();
+                    if (*(DWORD*)(0x4F5894) % 5==4)
+                        ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_LIFE));
+                    else
+                        ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_BOMB));
+                }
             }
         }
 
@@ -1369,6 +1430,13 @@ namespace TH14 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+                ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_BONUS), &(g_adv_igi_options.th14_showBonus));
+                ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_ITEMS), &(g_adv_igi_options.th14_showItemsCount));
+                ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR), &(g_adv_igi_options.th14_showDropBar));
+                ImGui::SameLine();
+                HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC1));
+                ImGui::SameLine();
+                HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC2));
 
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th14_bossmovedown.Toggle(forceBossMoveDown);
@@ -2522,6 +2590,71 @@ namespace TH14 {
                 p->AddText({ 120.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
+
+        // hit bar
+        {
+            if (g_adv_igi_options.th14_showDropBar) {
+                int items = *(DWORD*)(0x4F5880);
+                DWORD ppl = *(DWORD*)(0x004DB67C);
+                if (items > 0 && ppl) {
+                    float num = 0.0f;
+                    DWORD col = 0xFFFFFFFF;
+                    DWORD col2 = 0xFF000000;
+                    if (items < 20){
+                        num = items / 20.0f;
+                        col = 0xFF888888;
+                    }else if (items < 30) {
+                        num = (items - 20.0f) / 10.0f;
+                        col = 0xFF0000FF;
+                        col2 = 0xFF888888;
+                    } else if (items < 40) {
+                        num = (items - 30.0f) / 10.0f;
+                        col = 0xFF00FFCC;
+                        col2 = 0xFF0000FF;
+                    } else if (items < 50) {
+                        num = (items - 40.0f) / 10.0f;
+                        col = 0xFF00FF00;
+                        col2 = 0xFF00FFCC;
+                    } else if (items < 60) {
+                        num = (items - 50.0f) / 10.0f;
+                        col = 0xFFFFCC00;
+                        col2 = 0xFF00FF00;
+                    }else{
+                        num = 1.0f;
+                        col = 0xFFFFFF00;
+                        col2 = 0xFFFFCC00;
+                    }
+                    float xpos = *(float*)(ppl + 0x5B0)*2.0f + 448.0f;
+                    float ypos = *(float*)(ppl + 0x5B4)*2.0f + 32.0f;
+                    auto p = ImGui::GetOverlayDrawList();
+                    p->PushClipRect({ 64.0f, 32.0f }, { 832.0f, 928.0f });
+                    const float bar_xszhalf = 48.0f;
+                    const float bar_yszhalf = 3.0f;
+                    // shadow
+                    {
+                        ImVec2 pmin,pmax;
+                        if (items >= 20) {
+                            pmin = { xpos - bar_xszhalf, ypos - 48.0f - bar_yszhalf };
+                            pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f };
+                        }else{
+                            pmin = { xpos - bar_xszhalf, ypos - 48.0f - bar_yszhalf };
+                            pmax = { pmin.x + bar_xszhalf * 2.0f * num, pmin.y + bar_yszhalf * 2.0f };
+                        }
+                        pmin.x += 1.0f;
+                        pmin.y += 1.0f;
+                        pmax.x += 1.0f;
+                        pmax.y += 1.0f;
+                        p->AddRectFilled(pmin, pmax, col2);
+                    }
+                    {
+                        ImVec2 pmin = { xpos - bar_xszhalf, ypos - 48.0f - bar_yszhalf };
+                        ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f * num, pmin.y + bar_yszhalf * 2.0f };
+                        p->AddRectFilled(pmin, pmax, col);
+                    }
+                    p->PopClipRect();
+                }
+            }
+        }
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
@@ -2581,6 +2714,11 @@ namespace TH14 {
     {
         TH14InGameInfo::singleton().mBombCount = 0;
         TH14InGameInfo::singleton().mMissCount = 0;
+        TH14InGameInfo::singleton().m05Count = 0;
+        TH14InGameInfo::singleton().m08Count = 0;
+        TH14InGameInfo::singleton().m12Count = 0;
+        TH14InGameInfo::singleton().m16Count = 0;
+        TH14InGameInfo::singleton().m20Count = 0;
     }
     EHOOK_DY(th14_bomb_dec, 0x41218A) // bomb dec
     {
@@ -2589,6 +2727,20 @@ namespace TH14 {
     EHOOK_DY(th14_life_dec, 0x44F618) // life dec
     {
         TH14InGameInfo::singleton().mMissCount++;
+    }
+    EHOOK_DY(th14_get_item, 0x438DF8)
+    {
+        int item_cnt = *(int32_t*)(0x4F5880);
+        if (item_cnt >= 60)
+            TH14InGameInfo::singleton().m20Count++;
+        else if (item_cnt >= 50)
+            TH14InGameInfo::singleton().m16Count++;
+        else if (item_cnt >= 40)
+            TH14InGameInfo::singleton().m12Count++;
+        else if (item_cnt >= 30)
+            TH14InGameInfo::singleton().m08Count++;
+        else if (item_cnt >= 20)
+            TH14InGameInfo::singleton().m05Count++;
     }
 #pragma endregion
     HOOKSET_ENDDEF()

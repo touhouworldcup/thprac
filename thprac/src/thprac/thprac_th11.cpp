@@ -3,6 +3,7 @@
 
 
 namespace THPrac {
+
 namespace TH11 {
     using std::pair;
     struct THPracParam {
@@ -662,6 +663,13 @@ namespace TH11 {
         
 
     public:
+        static void SetHint()
+        {
+            if (g_adv_igi_options.th11_showHint)
+                *(byte*)(0x4C3448 + 0x22) = 1;
+            else
+                *(byte*)(0x4C3448 + 0x22) = 0;
+        }
         __declspec(noinline) static bool StaticUpdate()
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
@@ -717,6 +725,13 @@ namespace TH11 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableXKeyOpt();
+                if (ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH11_SHOW_HINT), &(g_adv_igi_options.th11_showHint))) {
+                    THAdvOptWnd::SetHint();
+                }
+                ImGui::SameLine();
+                HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC1));
+                ImGui::SameLine();
+                HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC2));
 
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th11_bossmovedown.Toggle(forceBossMoveDown);
@@ -1957,6 +1972,7 @@ namespace TH11 {
             Gui::INGAGME_INPUT_GEN2, 0x4c92b4, 0x4c92b0, 0,
             -1);
 
+        THAdvOptWnd::SetHint();
         // Gui components creation
         THGuiPrac::singleton();
         THGuiRep::singleton();

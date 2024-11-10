@@ -1848,8 +1848,6 @@ private:
     }
     void GuiThcrapSettings()
     {
-        ImGui::TextUnformatted(S(THPRAC_THCRAP));
-        ImGui::Separator();
         if (mThcrap.Get() == "") {
             ImGui::TextUnformatted(S(THPRAC_THCRAP_NOTYET));
             if (ImGui::Button("Get thcrap")) {
@@ -1948,177 +1946,178 @@ private:
 
     void GuiMain()
     {
-        {
-            ImGui::TextUnformatted(S(THPRAC_COMPATIBILITY_SETTINGS));
-            ImGui::Separator();
+        if (ImGui::CollapsingHeader(S(THPRAC_COMPATIBILITY_SETTINGS))) {
             mForceOnlyRenderTextUsed.Gui(S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED), S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC));
             mForceRenderCursor.Gui(S(THPRAC_FORCE_RENDER_CURSOR), S(THPRAC_FORCE_RENDER_CURSOR_DESC));
             mTestKey.Gui(S(THPRAC_TEST_KEY), S(THPRAC_TEST_KEY_DESC));
             mUseCorrectJaFonts.Gui(S(THPRAC_RENDER_CORRECT_FONT), S(THPRAC_RENDER_CORRECT_FONT_DESC));
-            //custom fonts
+            // custom fonts
             mUseCustomFont.Gui(S(THPRAC_CUSTOM_FONTS), S(THPRAC_CUSTOM_FONTS_DESC));
-            if (mUseCustomFont.Get())
-            {
+            if (mUseCustomFont.Get()) {
                 auto& fonts = EnumAllFonts();
                 mCustomFont.SetCounts(fonts.size());
                 mCustomFont.Gui(S(THPRAC_CUSTOM_FONT), GetComboStr(EnumAllFonts()).c_str());
             }
         }
-        ImGui::NewLine();
         ImGui::Separator();
-
-        ImGui::TextUnformatted(S(THPRAC_LAUNCH_BEHAVIOR));
-        ImGui::Separator();
-        mAdminRights.Gui(S(THPRAC_ADMIN_RIGHTS));
-        mExistingGameAction.Gui(S(THPRAC_EXISTING_GAME_ACTION), S(THPRAC_EXISTING_GAME_ACTION_OPTION));
-        mDontSearchOngoingGame.Gui(S(THPRAC_DONT_SEARCH_ONGOING));
-        ImGui::BeginDisabled();
-        mReflectiveLaunch.Gui(S(THPRAC_REFLECTIVE_LAUNCH));
-        ImGui::EndDisabled();
-        ImGui::SameLine();
-        GuiHelpMarker(S(THPRAC_REFLECTIVE_LAUNCH_DESC));
-        ImGui::NewLine();
-        ImGui::TextUnformatted(S(THPRAC_SETTING_LAUNCHER));
-        ImGui::Separator();
-
-        mRecordGameTime.Gui(S(THPRAC_RECORD_GAME_TIME));
-        ImGui::SetNextItemWidth(75.0f + ImGui::CalcTextSize(S(THPRAC_GAME_TIME_HINT)).x);
-        mGameTimeTooLongTime.Gui(S(THPRAC_GAME_TIME_HINT));
-        mGameTimeTooLongSE.Gui(S(THPRAC_GAME_TIME_HINT_SE),S(THPRAC_GAME_TIME_HINT_SE_DESC));
-        ImGui::SetNextItemWidth(75.0f + ImGui::CalcTextSize(S(THPRAC_GAME_TIME_HINT)).x);
-        mGameTimeTooLongSERepeat.Gui(S(THPRAC_GAME_TIME_HINT_SE_STOP));
-        if (ImGui::Button(S(THPRAC_GAME_TIME_HINT_SE_TEST))){
-            PlaySoundW(L"SE.wav", NULL, SND_FILENAME | SND_ASYNC);
+        if (ImGui::CollapsingHeader(S(THPRAC_LAUNCH_BEHAVIOR))) {
+            mAdminRights.Gui(S(THPRAC_ADMIN_RIGHTS));
+            mExistingGameAction.Gui(S(THPRAC_EXISTING_GAME_ACTION), S(THPRAC_EXISTING_GAME_ACTION_OPTION));
+            mDontSearchOngoingGame.Gui(S(THPRAC_DONT_SEARCH_ONGOING));
+            mReflectiveLaunch.Gui(S(THPRAC_REFLECTIVE_LAUNCH), S(THPRAC_REFLECTIVE_LAUNCH_DESC));
         }
+        ImGui::Separator();
+        if (ImGui::CollapsingHeader(S(THPRAC_SETTING_LAUNCHER))) {
+            mRecordGameTime.Gui(S(THPRAC_RECORD_GAME_TIME));
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(50.0f + ImGui::CalcTextSize(S(THPRAC_GAME_TIME_HINT)).x);
+            mGameTimeTooLongTime.Gui(S(THPRAC_GAME_TIME_HINT));
 
-        ImGui::NewLine();
+            mGameTimeTooLongSE.Gui(S(THPRAC_GAME_TIME_HINT_SE), S(THPRAC_GAME_TIME_HINT_SE_DESC));
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(50.0f + ImGui::CalcTextSize(S(THPRAC_GAME_TIME_HINT)).x);
+            mGameTimeTooLongSERepeat.Gui(S(THPRAC_GAME_TIME_HINT_SE_STOP));
+            ImGui::SameLine();
+            if (ImGui::Button(S(THPRAC_GAME_TIME_HINT_SE_TEST))) {
+                PlaySoundW(L"SE.wav", NULL, SND_FILENAME | SND_ASYNC);
+            }
+            ImGui::Separator();
 
-        int theme_prev = mCfgTheme.Get();
-        if (mCfgTheme.Gui("Theme:", "Dark\0Light\0Classic\0Custom\0\0")) {
-            int Sus = 0;
-            if (mCfgTheme.Get() > 2) {
-                UpdateThemesList();
-                themeIsUser = (unsigned int)theme_prev > 2;
-                if (userThemes.size() == 0) {
-                    mCfgTheme.Set(themeIsUser ? Sus : theme_prev);
-                } else if (!themeIsUser) {
-                    LauncherSettingSet("theme_user", userThemes[0].utf8);
-                    SetTheme(mCfgTheme.Get(), userThemes[userThemeIdx].utf16);
-                    themeIsUser = true;
+            int theme_prev = mCfgTheme.Get();
+            if (mCfgTheme.Gui("Theme:", "Dark\0Light\0Classic\0Custom\0\0")) {
+                int Sus = 0;
+                if (mCfgTheme.Get() > 2) {
+                    UpdateThemesList();
+                    themeIsUser = (unsigned int)theme_prev > 2;
+                    if (userThemes.size() == 0) {
+                        mCfgTheme.Set(themeIsUser ? Sus : theme_prev);
+                    } else if (!themeIsUser) {
+                        LauncherSettingSet("theme_user", userThemes[0].utf8);
+                        SetTheme(mCfgTheme.Get(), userThemes[userThemeIdx].utf16);
+                        themeIsUser = true;
+                    }
+                } else {
+                    SetTheme(mCfgTheme.Get());
+                    themeIsUser = false;
                 }
+            }
+            if (themeIsUser && userThemes.size() != 0 && ImGui ::BeginCombo("##themes_user", userThemes[userThemeIdx].utf8)) {
+                for (size_t i = 0; i < userThemes.size(); i++) {
+                    bool selected = i == userThemeIdx;
+                    if (ImGui::Selectable(userThemes[i].utf8, selected)) {
+                        userThemeIdx = i;
+                        SetTheme(mCfgTheme.Get(), userThemes[userThemeIdx].utf16);
+                        LauncherSettingSet("theme_user", userThemes[userThemeIdx].utf8);
+                    }
+                    if (selected) {
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+                ImGui::EndCombo();
+            }
+            mCfgAfterLaunch.Gui(S(THPRAC_AFTER_LAUNCH), S(THPRAC_AFTER_LAUNCH_OPTION));
+            mAutoDefLaunch.Gui(S(THPRAC_AUTO_DEFAULT_LAUNCH), S(THPRAC_AUTO_DEFAULT_LAUNCH_DESC));
+            mCfgThpracDefault.Gui(S(THPRAC_APPLY_THPRAC_DEFAULT), S(THPRAC_APPLY_THPRAC_DEFAULT_OPTION));
+            mCfgFilterDefault.Gui(S(THPRAC_FILTER_DEFAULT), S(THPRAC_FILTER_DEFAULT_OPTION), S(THPRAC_FILTER_DEFAULT_DESC));
+            PathAndDirSettings();
+        }
+        ImGui::Separator();
+        if (ImGui::CollapsingHeader(S(THPRAC_THCRAP))) {
+            GuiThcrapSettings();
+        }
+        ImGui::Separator();
+        if (ImGui::CollapsingHeader(S(THPRAC_GAME_ADJUSTMENTS))) {
+            mCfgUnlockRefreshRate.Gui(S(THPRAC_UNLOCK_REFRESH_RATE), S(THPRAC_UNLOCK_REFRESH_RATE_DESC));
+            mResizableWindow.Gui(S(THPRAC_RESIZABLE_WINDOW));
+
+            mWindowSizeChangeWhenOpen.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN));
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(75.0f + ImGui::CalcTextSize(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE)).x);
+            mWindowSize.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE));
+            mEnableKeyboardSOCD.Gui(S(THPRAC_ENABLE_KEYBOARD_SOCD), S(THPRAC_ENABLE_KEYBOARD_SOCD_DESC));
+            mDisableF10_11_13.Gui(S(THPRAC_DISABLE_F10_11_13));
+            mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
+            KeyBindSettings();
+        }
+        ImGui::Separator();
+        if (ImGui::CollapsingHeader(S(THPRAC_INGAMEINFO_ADV2))) {
+            ImGui::TextWrapped(S(THPRAC_INGAMEINFO_ADV_DESC1));
+            ImGui::TextWrapped(S(THPRAC_INGAMEINFO_ADV_DESC2));
+            mCfgEnableTH06_ShowRank_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK2));
+            mCfgEnableTH06_ShowHitbox_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX2), S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC));
+            mCfgEnableTH11_ShowHint_autoly.Gui(S(THPRAC_INGAMEINFO_TH11_SHOW_HINT2));
+            mCfgEnableTH13_ShowHits_autoly.Gui(S(THPRAC_INGAMEINFO_TH13_SHOW_HITS2));
+            mCfgEnableTH13_ShowHitBar_autoly.Gui(S(THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR2));
+            mCfgEnableTH14_ShowBonus_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_BONUS2));
+            mCfgEnableTH14_ShowItemsCnt_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_ITEMS2));
+            mCfgEnableTH14_ShowDropBar_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR2));
+            mCfgEnableTH15_ShowShootingDownRate_autoly.Gui(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2));
+        }
+        ImGui::Separator();
+        if (ImGui::CollapsingHeader(S(THPRAC_SETTING_LANGUAGE))) {
+            mCfgLanguage.Gui(S(THPRAC_LANGUAGE), (const char*)u8"中文\0English\0日本語\0\0");
+            if (mOriginalLanguage != mCfgLanguage.Get()) {
+                ImGui::TextUnformatted(th_glossary_str[mCfgLanguage.Get()][THPRAC_LANGUAGE_HINT]);
+            }
+        }
+        ImGui::Separator();
+        if (ImGui::CollapsingHeader(S(THPRAC_SETTING_UPDATE))) {
+            mCheckUpdateTiming.Gui(S(THPRAC_CHECK_UPDATE_WHEN), S(THPRAC_CHECK_UPDATE_WHEN_OPTION));
+            if (mCheckUpdateTiming.Get() == 2) {
+                ImGui::BeginDisabled();
+                mUpdateWithoutConfirm.Gui(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION));
+                ImGui::EndDisabled();
+                ImGui::SameLine();
+                ImGui::TextUnformatted(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION_DESC));
             } else {
-                SetTheme(mCfgTheme.Get());
-                themeIsUser = false;
+                mUpdateWithoutConfirm.Gui(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION));
             }
-        }
-        if (themeIsUser && userThemes.size() != 0 && ImGui ::BeginCombo("##themes_user", userThemes[userThemeIdx].utf8)) {
-            for (size_t i = 0; i < userThemes.size(); i++) {
-                bool selected = i == userThemeIdx;
-                if (ImGui::Selectable(userThemes[i].utf8, selected)) {
-                    userThemeIdx = i;
-                    SetTheme(mCfgTheme.Get(), userThemes[userThemeIdx].utf16);
-                    LauncherSettingSet("theme_user", userThemes[userThemeIdx].utf8);
-                }
-                if (selected) {
-                    ImGui::SetItemDefaultFocus();
+            mFilenameAfterUpdate.Gui(S(THPRAC_FILENAME_AFTER_UPDATE), S(THPRAC_FILENAME_AFTER_UPDATE_OPTION));
+            if (THUpdate::singleton().IsCheckingUpdate()) {
+                ImGui::BeginDisabled();
+                ImGui::Button(S(THPRAC_CHECK_UPDATE_NOW));
+                ImGui::EndDisabled();
+            } else {
+                if (ImGui::Button(S(THPRAC_CHECK_UPDATE_NOW))) {
+                    if (!THUpdate::singleton().IsCheckingUpdate()) {
+                        THUpdate::singleton().CheckUpdate();
+                    }
                 }
             }
-            ImGui::EndCombo();
-        }
-
-        mCfgAfterLaunch.Gui(S(THPRAC_AFTER_LAUNCH), S(THPRAC_AFTER_LAUNCH_OPTION));
-        mAutoDefLaunch.Gui(S(THPRAC_AUTO_DEFAULT_LAUNCH), S(THPRAC_AUTO_DEFAULT_LAUNCH_DESC));
-        mCfgThpracDefault.Gui(S(THPRAC_APPLY_THPRAC_DEFAULT), S(THPRAC_APPLY_THPRAC_DEFAULT_OPTION));
-        mCfgFilterDefault.Gui(S(THPRAC_FILTER_DEFAULT), S(THPRAC_FILTER_DEFAULT_OPTION), S(THPRAC_FILTER_DEFAULT_DESC));
-        PathAndDirSettings();
-        ImGui::NewLine();
-
-        GuiThcrapSettings();
-        ImGui::NewLine();
-
-        //add refreshrate change
-        ImGui::Text(S(THPRAC_GAME_ADJUSTMENTS));
-        ImGui::Separator();
-        mCfgUnlockRefreshRate.Gui(S(THPRAC_UNLOCK_REFRESH_RATE), S(THPRAC_UNLOCK_REFRESH_RATE_DESC));
-        
-        mResizableWindow.Gui(S(THPRAC_RESIZABLE_WINDOW));
-
-        mWindowSizeChangeWhenOpen.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN));
-        mWindowSize.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE));
-        mEnableKeyboardSOCD.Gui(S(THPRAC_ENABLE_KEYBOARD_SOCD), S(THPRAC_ENABLE_KEYBOARD_SOCD_DESC));
-        mDisableF10_11_13.Gui(S(THPRAC_DISABLE_F10_11_13));
-        mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
-        KeyBindSettings();
-
-        ImGui::NewLine();
-        ImGui::NewLine();
-
-        ImGui::TextUnformatted(S(THPRAC_SETTING_LANGUAGE));
-        mCfgLanguage.Gui(S(THPRAC_LANGUAGE), (const char*)u8"中文\0English\0日本語\0\0");
-        if (mOriginalLanguage != mCfgLanguage.Get()) {
-            ImGui::TextUnformatted(th_glossary_str[mCfgLanguage.Get()][THPRAC_LANGUAGE_HINT]);
-        }
-        ImGui::NewLine();
-
-        ImGui::TextUnformatted(S(THPRAC_SETTING_UPDATE));
-        ImGui::Separator();
-        mCheckUpdateTiming.Gui(S(THPRAC_CHECK_UPDATE_WHEN), S(THPRAC_CHECK_UPDATE_WHEN_OPTION));
-        if (mCheckUpdateTiming.Get() == 2) {
-            ImGui::BeginDisabled();
-            mUpdateWithoutConfirm.Gui(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION));
-            ImGui::EndDisabled();
-            ImGui::SameLine();
-            ImGui::TextUnformatted(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION_DESC));
-        } else {
-            mUpdateWithoutConfirm.Gui(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION));
-        }
-        mFilenameAfterUpdate.Gui(S(THPRAC_FILENAME_AFTER_UPDATE), S(THPRAC_FILENAME_AFTER_UPDATE_OPTION));
-        if (THUpdate::singleton().IsCheckingUpdate()) {
-            ImGui::BeginDisabled();
-            ImGui::Button(S(THPRAC_CHECK_UPDATE_NOW));
-            ImGui::EndDisabled();
-        } else {
-            if (ImGui::Button(S(THPRAC_CHECK_UPDATE_NOW))) {
-                if (!THUpdate::singleton().IsCheckingUpdate()) {
-                    THUpdate::singleton().CheckUpdate();
-                }
+            switch (THUpdate::singleton().GetUpdateStatus()) {
+            case THPrac::THUpdate::STATUS_CHKING_OR_UPDATING:
+                ImGui::SameLine();
+                ImGui::TextUnformatted(S(THPRAC_UPDATE_CHECKING));
+                break;
+            case THPrac::THUpdate::STATUS_UPD_ABLE_OR_FINISHED:
+                ImGui::SameLine();
+                ImGui::TextUnformatted(S(THPRAC_UPDATE_AVALIABLE));
+                break;
+            case THPrac::THUpdate::STATUS_NO_UPDATE:
+                ImGui::SameLine();
+                ImGui::TextUnformatted(S(THPRAC_UPDATE_NO_UPDATE));
+                break;
+            case THPrac::THUpdate::STATUS_INTERNET_ERROR:
+                ImGui::SameLine();
+                ImGui::TextUnformatted(S(THPRAC_UPDATE_ERROR));
+                break;
+            default:
+                break;
             }
         }
-
-        switch (THUpdate::singleton().GetUpdateStatus()) {
-        case THPrac::THUpdate::STATUS_CHKING_OR_UPDATING:
-            ImGui::SameLine();
-            ImGui::TextUnformatted(S(THPRAC_UPDATE_CHECKING));
-            break;
-        case THPrac::THUpdate::STATUS_UPD_ABLE_OR_FINISHED:
-            ImGui::SameLine();
-            ImGui::TextUnformatted(S(THPRAC_UPDATE_AVALIABLE));
-            break;
-        case THPrac::THUpdate::STATUS_NO_UPDATE:
-            ImGui::SameLine();
-            ImGui::TextUnformatted(S(THPRAC_UPDATE_NO_UPDATE));
-            break;
-        case THPrac::THUpdate::STATUS_INTERNET_ERROR:
-            ImGui::SameLine();
-            ImGui::TextUnformatted(S(THPRAC_UPDATE_ERROR));
-            break;
-        default:
-            break;
-        }
-        ImGui::NewLine();
-
-        ImGui::TextUnformatted(S(THPRAC_SETTING_ABOUT));
         ImGui::Separator();
-        ImGui::Text(S(TH_ABOUT_VERSION), GetVersionStr());
-        ImGui::SameLine();
-        if (ImGui::Button(S(TH_ABOUT_SHOW_LICENCE))) {
-            mGuiUpdFunc = [&]() { GuiLicenceWnd(); };
+        if (ImGui::CollapsingHeader(S(THPRAC_SETTING_ABOUT))) {
+            ImGui::Text(S(TH_ABOUT_VERSION), GetVersionStr());
+            ImGui::SameLine();
+            if (ImGui::Button(S(TH_ABOUT_SHOW_LICENCE))) {
+                mGuiUpdFunc = [&]() { GuiLicenceWnd(); };
+            }
+            ImGui::NewLine();
+            ImGui::TextUnformatted(S(TH_ABOUT_AUTHOR));
+            TextLink(S(TH_ABOUT_WEBSITE), L"https://github.com/touhouworldcup/thprac");
+            ImGui::NewLine();
+            ImGui::Text(S(TH_ABOUT_THANKS), "You!");
         }
-        ImGui::NewLine();
-        ImGui::TextUnformatted(S(TH_ABOUT_AUTHOR));
-        TextLink(S(TH_ABOUT_WEBSITE), L"https://github.com/touhouworldcup/thprac");
-        ImGui::NewLine();
-        ImGui::Text(S(TH_ABOUT_THANKS), "You!");
     }
 
     THCfgCombo mCfgLanguage { "language", 0, 3 };
@@ -2131,7 +2130,18 @@ private:
     THSetting<bool> mUseRelativePath { "use_relative_path", false };
     THSetting<std::string> mThcrap { "thcrap", "" };
     THCfgCheckbox mCfgUnlockRefreshRate { "unlock_refresh_rate", false };
-    THCfgCheckbox mCfgCheckUpdate { "check_update", true };
+    THCfgCheckbox mCfgCheckUpdate { "check_update", false };
+
+    // advanced igi
+    THCfgCheckbox mCfgEnableTH06_ShowRank_autoly { "auto_th06_show_rank", false};
+    THCfgCheckbox mCfgEnableTH06_ShowHitbox_autoly { "auto_th06_show_hitbox", false};
+    THCfgCheckbox mCfgEnableTH11_ShowHint_autoly { "auto_th11_show_hint", false};
+    THCfgCheckbox mCfgEnableTH13_ShowHits_autoly { "auto_th13_show_hits", false};
+    THCfgCheckbox mCfgEnableTH13_ShowHitBar_autoly { "auto_th13_show_hitbar", false};
+    THCfgCheckbox mCfgEnableTH14_ShowBonus_autoly { "auto_th14_show_bonus", false};
+    THCfgCheckbox mCfgEnableTH14_ShowItemsCnt_autoly { "auto_th14_show_item_cnt", false};
+    THCfgCheckbox mCfgEnableTH14_ShowDropBar_autoly { "auto_th14_show_drop_bar", false};
+    THCfgCheckbox mCfgEnableTH15_ShowShootingDownRate_autoly { "auto_th15_show_rate", false};
 
     THCfgCheckbox mResizableWindow { "resizable_window", false };
 
