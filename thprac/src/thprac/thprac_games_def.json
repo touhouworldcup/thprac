@@ -1068,6 +1068,7 @@
       "TH_TIMELOCK": [ "锁时", "Time Lock", "残り時間減らない" ],
       "TH_MUTEKI": [ "无敌", "Invincible", "無敵" ],
       "TH_INFLIVES": [ "锁残", "Inf. Lives", "残機減らない" ],
+      "TH_INFLIVES2": [ "不疮", "No continue", "No continue" ],
       "TH_INFBOMBS": [ "锁Bomb", "Inf. Bombs", "ボム減らない" ],
       "TH_INFPOWER": [ "锁火力", "Inf. Power", "霊力減らない" ],
       "TH_AUTOBOMB": [ "自动B", "Auto Bomb", "自動喰らいボム" ],

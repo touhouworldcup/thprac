@@ -399,6 +399,7 @@ namespace TH06 {
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
             mShowSpellCapture.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mNotContinue.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -410,6 +411,7 @@ namespace TH06 {
             mAutoBomb();
             mElBgm();
             mShowSpellCapture();
+            mNotContinue();
         }
         virtual void OnPreUpdate() override
         {
@@ -427,8 +429,10 @@ namespace TH06 {
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
             new HookCtx(0x4277c2, "\x03", 1),
             new HookCtx(0x42779a, "\x83\xc4\x10\x90\x90", 5) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x428DDC, "\x15", 1) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, { 
+            new HookCtx(0x428DDB, "\xEB\x15", 2),
+            new HookCtx(0x428AC6, "\x90\x90\x90\x90\x90\x90", 6)// do not drop F item
+        } };
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
             new HookCtx(0x4289e3, "\x00", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
@@ -446,7 +450,10 @@ namespace TH06 {
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mShowSpellCapture { THPRAC_INGAMEINFO, "F8", VK_F8 };
-   
+        Gui::GuiHotKey mNotContinue { TH_INFLIVES2, "F9", VK_F9, { 
+            new HookCtx(0x428DDB, "\xA0\xBA\xD4\x69\x00\x7F\x09\x04\x01\x90\x90\x90\x90\x90\x90\x90", 16), 
+            new HookCtx(0x428AC6, "\x90\x90\x90\x90\x90\x90", 6) // do not drop F item
+        } };
     };
 
     

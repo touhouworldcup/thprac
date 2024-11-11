@@ -1132,6 +1132,7 @@ enum th_glossary_t {
     TH_INFHEALTH,
     TH_INFITEMS,
     TH_INFLIVES,
+    TH_INFLIVES2,
     TH_INFPOWER,
     TH_INFSPELLCHARGE,
     TH_JUNKO_RAGE,
@@ -1216,7 +1217,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1205];
+extern const char* th_glossary_str[3][1206];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
