@@ -12,6 +12,7 @@
 #include <array>
 
 #include <MinHook.h>
+#include <format>
 
 namespace THPrac {
 #pragma region Gui Wrapper
@@ -26,6 +27,7 @@ bool g_disable_f10_11_13 = false;
 bool g_pauseBGM_06 = false;
 bool g_forceRenderCursor=false;
 bool g_testKey=false;
+bool g_disable_max_btn = true;
 AdvancedIGI_Options g_adv_igi_options;
 
 bool g_useCustomFont = false;
@@ -288,35 +290,60 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         }
         Gui::LocaleCreateFont(io.DisplaySize.x * 0.025f);
     }
-
+    
     if (LauncherCfgInit(true)) {
-        bool resizable_window;
-        if (LauncherSettingGet("resizable_window", resizable_window) && resizable_window && !Gui::ImplWin32CheckFullScreen()) {
-            RECT wndRect;
-            GetClientRect(*(HWND*)hwnd, &wndRect);
-            auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
-            auto captionSize = GetSystemMetrics(SM_CYCAPTION);
-            auto longPtr = GetWindowLongW(*(HWND*)hwnd, GWL_STYLE);
-            SetWindowLongW(*(HWND*)hwnd, GWL_STYLE, longPtr | WS_SIZEBOX);
-            SetWindowPos(*(HWND*)hwnd, HWND_NOTOPMOST,
-                0, 0, wndRect.right + frameSize, wndRect.bottom + frameSize + captionSize,
-                SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
-        }
+        if (!Gui::ImplWin32CheckFullScreen())
+        {
+            bool resizable_window = false, change_window_when_open = false,init_window_pos=true;
+            LauncherSettingGet("disableMax_btn", g_disable_max_btn);
+            LauncherSettingGet("resizable_window", resizable_window);
+            LauncherSettingGet("change_window_size_when_open", change_window_when_open);
+            LauncherSettingGet("init_window_pos", init_window_pos);
 
-        bool change_window_when_open;
-        if (LauncherSettingGet("change_window_size_when_open", change_window_when_open) && change_window_when_open && !Gui::ImplWin32CheckFullScreen()) {
-            std::array<int, 2> windowsz = {0, 0};
-            if (LauncherSettingGet("changed_window_size", windowsz)){
-                if (windowsz[0] > 0 && windowsz[1] > 0)
+            if (g_disable_max_btn || resizable_window)
+            {
+                auto longPtr = GetWindowLongW(*(HWND*)hwnd, GWL_STYLE);
+                if (resizable_window)
+                    longPtr |= WS_SIZEBOX;
+                if (g_disable_max_btn)
+                    longPtr = longPtr & (~WS_MAXIMIZEBOX);
+                SetWindowLongW(*(HWND*)hwnd, GWL_STYLE, longPtr);
+                if (resizable_window)
                 {
+                    RECT wndRect;
+                    GetClientRect(*(HWND*)hwnd, &wndRect);
                     auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
                     auto captionSize = GetSystemMetrics(SM_CYCAPTION);
                     SetWindowPos(*(HWND*)hwnd, HWND_NOTOPMOST,
-                        0, 0, windowsz[0] + frameSize, windowsz[1] + frameSize + captionSize,
+                        0, 0, wndRect.right + frameSize, wndRect.bottom + frameSize + captionSize,
                         SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
                 }
             }
+            if (init_window_pos) {
+                RECT wndRect;
+                GetWindowRect(*(HWND*)hwnd, &wndRect);
+                if (wndRect.left < 0 || wndRect.top < 0 || (wndRect.bottom + wndRect.top) / 2 >= GetSystemMetrics(SM_CYSCREEN) || (wndRect.right + wndRect.left) / 2 >= GetSystemMetrics(SM_CXSCREEN))
+                SetWindowPos(*(HWND*)hwnd, HWND_NOTOPMOST, 0, 0, wndRect.right-wndRect.left, wndRect.bottom-wndRect.top, SWP_NOZORDER | SWP_FRAMECHANGED);
+            }
+            if (change_window_when_open) {
+                std::array<int, 2> windowsz = { 0, 0 };
+                if (LauncherSettingGet("changed_window_size", windowsz) && windowsz[0] > 0 && windowsz[1] > 0) {
+                        RECT wndRect;
+                        RECT clientRect;
+                        GetClientRect(*(HWND*)hwnd, &clientRect);
+                        GetWindowRect(*(HWND*)hwnd, &wndRect);
+                        int szx = (wndRect.right - wndRect.left)-(clientRect.right-clientRect.left);
+                        int szy = (wndRect.bottom - wndRect.top) - (clientRect.bottom - clientRect.top);
+                        auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
+                        auto captionSize = GetSystemMetrics(SM_CYCAPTION);
+                        SetWindowPos(*(HWND*)hwnd, HWND_NOTOPMOST,
+                            0, 0, windowsz[0] + szx, windowsz[1] + szy,
+                            SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+                }
+            }
+           
         }
+        
 
         LauncherSettingGet("keyboard_SOCD", g_enable_SOCD);
         LauncherSettingGet("force_render_cursor", g_forceRenderCursor);
@@ -372,27 +399,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         }
 
         LauncherSettingGet_KeyBind();
-        {//hook keyboard to enable SOCD and X-disable
-            LPVOID pTarget;
-            MH_CreateHookApiEx(L"user32.dll", "GetKeyboardState", GetKeyboardState_Changed, (void**)&g_realGetKeyboardState, &pTarget);
-            MH_EnableHook(pTarget);
-
-            LPDIRECTINPUT8 pdinput;
-            DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&pdinput, NULL);
-            if (FAILED(pdinput)) {
-            }
-            LPDIRECTINPUTDEVICE8 ddevice;
-            pdinput->CreateDevice(GUID_SysKeyboard, &ddevice, NULL);
-            void* GetDeviceStateAddr = (*(void***)ddevice)[9];
-
-            MH_CreateHook(GetDeviceStateAddr, GetDeviceState_Changed, (LPVOID*) & g_realGetDeviceState);
-            MH_EnableHook(GetDeviceStateAddr);
-            // HookVTable(ddevice, 9, GetDeviceState_Changed, (void**)&g_realGetDeviceState);
-            
-            pdinput->Release();
-            ddevice->Release();
-        }
-        
 
         int theme;
         if (LauncherSettingGet("theme", theme)) {
@@ -405,6 +411,27 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
             ImGui::StyleColorsDark();
     } else
         ::ImGui::StyleColorsDark();
+
+     { // hook keyboard to enable SOCD and X-disable
+        LPVOID pTarget;
+        MH_CreateHookApiEx(L"user32.dll", "GetKeyboardState", GetKeyboardState_Changed, (void**)&g_realGetKeyboardState, &pTarget);
+        MH_EnableHook(pTarget);
+
+        LPDIRECTINPUT8 pdinput;
+        DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&pdinput, NULL);
+        if (FAILED(pdinput)) {
+        }
+        LPDIRECTINPUTDEVICE8 ddevice;
+        pdinput->CreateDevice(GUID_SysKeyboard, &ddevice, NULL);
+        void* GetDeviceStateAddr = (*(void***)ddevice)[9];
+
+        MH_CreateHook(GetDeviceStateAddr, GetDeviceState_Changed, (LPVOID*)&g_realGetDeviceState);
+        MH_EnableHook(GetDeviceStateAddr);
+        // HookVTable(ddevice, 9, GetDeviceState_Changed, (void**)&g_realGetDeviceState);
+
+        pdinput->Release();
+        ddevice->Release();
+    }
     // Imgui settings
     io.IniFilename = nullptr;
 }

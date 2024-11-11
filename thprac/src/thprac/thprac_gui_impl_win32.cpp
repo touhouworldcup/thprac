@@ -27,6 +27,7 @@
 #include <windows.h>
 
 namespace THPrac {
+extern bool g_disable_max_btn;
 namespace Gui {
     // Macros
     // Allow compilation with old Windows SDK. MinGW doesn't have default _WIN32_WINNT/WINVER versions.
@@ -606,7 +607,9 @@ namespace Gui {
     static LRESULT CALLBACK __ThImGui_WndProc_HookFunc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
         typedef decltype(__ThImGui_WndProc_HookFunc)* PWndProc;
-        
+        if (msg == WM_SIZE && wParam == 2 && g_disable_max_btn){
+            return 1;
+        }
         if (g_wndNoClose_ && msg == WM_CLOSE) {
             return 1;
         }

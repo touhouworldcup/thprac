@@ -24,6 +24,8 @@
 - add inf time magic books for EoSD
 - add clock-in in others menu(only in chinese)
 - add keng tools
+- add some advanced options like show rank in EoSD, show bonus count in DDC,...
+- fix bug for not showing window when open game
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
@@ -51,3 +53,5 @@
 - 无限时间魔法阵(神仙专用)
 - 打卡功能
 - 填坑器
+- 一些高级IGI功能
+- 修复开游戏后没有窗口的bug

@@ -156,15 +156,15 @@ int GuiLauncherMain()
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }
-            if (GuiTabItem(S(THPRAC_SETTINGS))) {
-                ImGui::BeginChild("##settings");
-                LauncherCfgGuiUpd();
-                ImGui::EndChild();
-                ImGui::EndTabItem();
-            }
             if (GuiTabItem(S(THPRAC_KENG))) {
                 ImGui::BeginChild("##keng");
                 LauncherKengGuiUpd();
+                ImGui::EndChild();
+                ImGui::EndTabItem();
+            }
+            if (GuiTabItem(S(THPRAC_SETTINGS))) {
+                ImGui::BeginChild("##settings");
+                LauncherCfgGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }

@@ -14,6 +14,36 @@ ImTextureID g_hitbox_textureID = NULL;
 float g_hitbox_width = 32.0f;
 float g_hitbox_height=32.0f;
 
+#include "thprac_th06_hitbox.h"
+void ReadHitboxFile()
+{
+    if (g_hitbox_texture != NULL)
+    {
+        g_hitbox_texture->Release();
+        g_hitbox_texture = NULL;
+        g_hitbox_textureID = NULL;
+    }
+    if (GetFileAttributes(L"hitbox.png") != INVALID_FILE_ATTRIBUTES) {
+        IDirect3DDevice8* device = *(IDirect3DDevice8**)0x6c6d20;
+        if (D3DXCreateTextureFromFileA(device, "hitbox.png", &g_hitbox_texture) == D3D_OK) {
+            g_hitbox_textureID = (ImTextureID)g_hitbox_texture;
+            D3DSURFACE_DESC desc;
+            g_hitbox_texture->GetLevelDesc(0, &desc);
+            g_hitbox_width = desc.Width;
+            g_hitbox_height = desc.Height;
+        }
+    } else {
+        IDirect3DDevice8* device = *(IDirect3DDevice8**)0x6c6d20;
+        if (D3DXCreateTextureFromFileInMemory(device, hitbox_file, sizeof(hitbox_file), &g_hitbox_texture) == D3D_OK) {
+            g_hitbox_textureID = (ImTextureID)g_hitbox_texture;
+            D3DSURFACE_DESC desc;
+            g_hitbox_texture->GetLevelDesc(0, &desc);
+            g_hitbox_width = desc.Width;
+            g_hitbox_height = desc.Height;
+        }
+    }
+    
+}
 namespace TH06 {
     static const char* th06_spells_str[3][65] {
         { 
@@ -585,14 +615,8 @@ namespace TH06 {
                 ImGui::NextColumn();
                 ImGui::Text(S(THPRAC_INGAMEINFO_TH06_RANK));
                 ImGui::NextColumn();
-                ImGui::Text("%8d", *(int32_t*)(0x69d710));
+                ImGui::Text("%8d.%02d", *(int32_t*)(0x69d710), *(int32_t*)(0x69d71C));
             }
-
-            // byte last_player_type = (last_player_typea << 1) | last_player_typeb;
-            // ImGui::NextColumn();
-            // ImGui::Text("%8d", save_current.timePlayer[last_diff][last_player_type]);
-            // ImGui::NextColumn();
-            // ImGui::Text("%8d", save_total.timePlayer[last_diff][last_player_type]);
 
             ImGui::Columns(1);
 
@@ -1652,11 +1676,17 @@ namespace TH06 {
             DisableXKeyOpt();
             ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK), &g_adv_igi_options.th06_showRank);
             ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX), &g_adv_igi_options.th06_showHitbox);
+            ImGui::SameLine();
+            HelpMarker(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC));
+            ImGui::SameLine();
+            if (ImGui::Button(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_RELOAD))) {
+                ReadHitboxFile();
+            }
             HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC1));
             ImGui::SameLine();
             HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC2));
-            ImGui::SameLine();
-            HelpMarker(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC));
+            
+            
 
             {
                 ImGui::SetNextWindowCollapsed(false);
@@ -3002,16 +3032,7 @@ namespace TH06 {
             Gui::INGAGME_INPUT_GEN1, 0x69d904, 0x69d908, 0x69d90c,
             -1);
         // g_adv_igi_options.th06_showHitbox
-        if(GetFileAttributes(L"hitbox.png") != INVALID_FILE_ATTRIBUTES){
-            IDirect3DDevice8* device = *(IDirect3DDevice8**)0x6c6d20;
-            if (D3DXCreateTextureFromFileA(device, "hitbox.png", &g_hitbox_texture) == D3D_OK) {
-                g_hitbox_textureID = (ImTextureID)g_hitbox_texture;
-                D3DSURFACE_DESC desc;
-                g_hitbox_texture->GetLevelDesc(0, &desc);
-                g_hitbox_width = desc.Width;
-                g_hitbox_height = desc.Height;
-            }
-        }
+        ReadHitboxFile();
         // Gui components creation
         THGuiPrac::singleton();
         THPauseMenu::singleton();
@@ -3053,6 +3074,5 @@ void TH06Init()
     TH06::THInitHook::singleton().EnableAllHooks();
     TryKeepUpRefreshRate((void*)0x420f59);
 }
-
 
 }

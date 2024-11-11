@@ -195,6 +195,7 @@
         "thpracによって起動されたときにゲームが異常に動作するが、直接起動されたときは動作しない場合に有効にします。\nこれを有効にすると、thpracから直接ゲームを起動する必要がある機能が無効になります。"
       ],
       "THPRAC_RESIZABLE_WINDOW": [ "窗口大小可调", "Resizable window", "ウィンドウサイズ自由に変更" ],
+      "THPRAC_RESIZABLE_WINDOW_DESC": [ "与specialK等补丁不兼容", "do not compatiable with patches like specialK", "ウィンドウサイズ自由に変更" ],
       "THPRAC_GAME_ADJUSTMENTS": [ "thprac - 游戏调整", "thprac - Game adjustments", "thprac - ゲームの調整" ],
       "THPRAC_CHECK_UPDATE_WHEN": [ "检查更新的时机:", "Check update when:", "更新を確認するタイミング:" ],
       "THPRAC_CHECK_UPDATE_WHEN_OPTION": [ "打开启动器时\\0执行thprac时\\0从不\\0\\0", "Opening launcher\\0Executing thprac\\0Never\\0\\0", "ランチャーを開くとき\\0thpracの実行するとき\\0なし\\0\\0" ],
@@ -221,6 +222,9 @@
     "THPRAC_GAME_TIME_HINT_SE_TEST":["测试音效","SE test","SE test"],
     "THPRAC_GAME_TIME_HINT_SE_DESC":["将音效文件放在thprac同目录下, 名称为SE.wav","put SE file in thprac folder with name SE.wav","put SE file in thprac folder with name SE.wav"],
     
+	"THPRAC_DISABLE_MAXIMIZE_BTN":["靳止最大化窗口按钮的全屏切换","disable maximizebox to toggle full screen","disable maximizebox to toggle full screen"],
+	"THPRAC_INIT_WINDOW_POS":["初始化窗口位置","init window pos","init window pos"],
+	"THPRAC_INIT_WINDOW_POS_DESC":["如果遇到游戏启动后没窗口可尝试开启此选项","try this option when game is invisible after opened","try this option when game is invisible after opened"],
     "THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN":["修改启动时窗口的大小","change window size when open","change window size when open"],
     "THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE":["窗口大小","window size","window size"],
     "THPRAC_ENABLE_KEYBOARD_SOCD":["启用SOCD后覆盖功能","enable keyboard SOCD (last input priority)","enable keyboard SOCD (last input priority)"],
@@ -907,14 +911,15 @@
       "glossary": {
 	  "THPRAC_INGAMEINFO_ADV2":["自动开启高级IGI功能","automatically use advanced igi","automatically use advanced igi"],
 	  "THPRAC_INGAMEINFO_ADV":["高级IGI功能","advanced igi","advanced igi"],
-	  "THPRAC_INGAMEINFO_ADV_DESC1":["需要打开更多游戏信息(backspace菜单)中的选项开启","need to enable ingameinfo(in backspace menu) to show","need to enable ingameinfo(in backspace menu) to show"],
+	  "THPRAC_INGAMEINFO_ADV_DESC1":["部分功能需要打开更多游戏信息(backspace菜单)中的选项开启","need to enable ingameinfo(in backspace menu) to show","need to enable ingameinfo(in backspace menu) to show"],
 	  "THPRAC_INGAMEINFO_ADV_DESC2":["免责声明: 部分功能可能会被认为是作弊","disclaimer: might be considered as cheating","disclaimer: might be considered as cheating"],
 	  
 	  "THPRAC_INGAMEINFO_TH06_SHOW_RANK":["显示rank","show rank","show rank"],
 	  "THPRAC_INGAMEINFO_TH06_SHOW_RANK2":["红魔乡显示rank","EoSD show rank","EoSD show rank"],
 	  "THPRAC_INGAMEINFO_TH06_SHOW_HITBOX":["显示低速判定","show hitbox when focused","show hitbox when focused"],
 	  "THPRAC_INGAMEINFO_TH06_SHOW_HITBOX2":["红魔乡显示低速判定","EoSD show hitbox when focused","EoSD show hitbox when focused"],
-	  "THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC":["将判定点图片hitbox.png放入thprac.exe所在文件夹","put hitbox.png file in thprac.exe folder","put hitbox.png file in thprac.exe folder"],
+	  "THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC":["自定义判定: 将判定点图片hitbox.png放入红魔乡游戏所在文件夹","custom hitbox: put hitbox.png file in EoSD .exe folder","custom hitbox: put hitbox.png file in EoSD .exe folder"],
+	  "THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_RELOAD":["重载","reload","reload"],
 	  "THPRAC_INGAMEINFO_TH06_RANK":["rank","rank","rank"],
 	  
 	  "THPRAC_INGAMEINFO_TH11_SHOW_HINT":["显示hint","show hint","show hint"],
@@ -1150,7 +1155,8 @@
       "TH_ABOUT_THPRAC": [ "关于thprac", "About thprac", "thpracのバージョン情報" ],
       "TH_ABOUT_VERSION": [ "thprac 版本 %s", "thprac version %s", "thprac ver.%s" ],
       "TH_ABOUT_AUTHOR": [ "作者：Ack", "Author: Ack", "作者：Ack" ],
-      "TH_ABOUT_WEBSITE": [ "网站：https://github.com/touhouworldcup/thprac", "Website: https://github.com/touhouworldcup/thprac", "ウェブサイト：https://github.com/touhouworldcup/thprac" ],
+      "TH_ABOUT_BRANCH": [ "基于touhouworldcup/thprac", "based on touhouworldcup/thprac", "based on touhouworldcup/thprac" ],
+      "TH_ABOUT_WEBSITE": [ "网站：https://github.com/RUEEE/thprac", "Website: https://github.com/RUEEE/thprac", "ウェブサイト：https://github.com/RUEEE/thprac" ],
       "TH_ABOUT_THANKS": [ "特别感谢：\n%s", "Special thanks: \n%s", "スペシャルサンクス：\n%s" ],
       "TH_ABOUT_SHOW_LICENCE": [ "显示许可信息", "Show license info", "ライセンス情報を表示" ],
       "TH_ABOUT_HIDE_LICENCE": [ "隐藏许可信息", "Hide license info", "ライセンス情報を非表示" ],

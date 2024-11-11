@@ -117,7 +117,7 @@ uintptr_t GetGameModuleBase(HANDLE hProc) {
 THGameSig* CheckOngoingGame(PROCESSENTRY32W& proc, uintptr_t& base)
 {
     // Eliminate impossible process
-    if ( wcscmp(L"東方紅魔郷.exe", proc.szExeFile) && wcscmp(L"alcostg.exe", proc.szExeFile)) {
+    if (wcscmp(L"搶曽峠杺嫿.exe", proc.szExeFile) && wcscmp(L"東方紅魔郷.exe", proc.szExeFile) && wcscmp(L"alcostg.exe", proc.szExeFile)) {
         if (proc.szExeFile[0] != L't' || proc.szExeFile[1] != L'h')
             return nullptr;
         if (proc.szExeFile[2] < L'0' || proc.szExeFile[2] > L'9')

@@ -1947,6 +1947,10 @@ private:
     void GuiMain()
     {
         if (ImGui::CollapsingHeader(S(THPRAC_COMPATIBILITY_SETTINGS))) {
+            mInitWindowPos.Gui(S(THPRAC_INIT_WINDOW_POS), S(THPRAC_INIT_WINDOW_POS_DESC));
+            mDisableMaximizeBtn.Gui(S(THPRAC_DISABLE_MAXIMIZE_BTN));
+            mDisableF10_11_13.Gui(S(THPRAC_DISABLE_F10_11_13));
+            mCfgUnlockRefreshRate.Gui(S(THPRAC_UNLOCK_REFRESH_RATE), S(THPRAC_UNLOCK_REFRESH_RATE_DESC));
             mForceOnlyRenderTextUsed.Gui(S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED), S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC));
             mForceRenderCursor.Gui(S(THPRAC_FORCE_RENDER_CURSOR), S(THPRAC_FORCE_RENDER_CURSOR_DESC));
             mTestKey.Gui(S(THPRAC_TEST_KEY), S(THPRAC_TEST_KEY_DESC));
@@ -1958,6 +1962,31 @@ private:
                 mCustomFont.SetCounts(fonts.size());
                 mCustomFont.Gui(S(THPRAC_CUSTOM_FONT), GetComboStr(EnumAllFonts()).c_str());
             }
+        }
+        ImGui::Separator();
+        if (ImGui::CollapsingHeader(S(THPRAC_GAME_ADJUSTMENTS))) {
+            mResizableWindow.Gui(S(THPRAC_RESIZABLE_WINDOW), S(THPRAC_RESIZABLE_WINDOW_DESC));
+            mWindowSizeChangeWhenOpen.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN));
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(75.0f + ImGui::CalcTextSize(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE)).x);
+            mWindowSize.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE));
+            mEnableKeyboardSOCD.Gui(S(THPRAC_ENABLE_KEYBOARD_SOCD), S(THPRAC_ENABLE_KEYBOARD_SOCD_DESC));
+            mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
+            KeyBindSettings();
+        }
+        ImGui::Separator();
+        if (ImGui::CollapsingHeader(S(THPRAC_INGAMEINFO_ADV2))) {
+            ImGui::TextWrapped(S(THPRAC_INGAMEINFO_ADV_DESC1));
+            ImGui::TextWrapped(S(THPRAC_INGAMEINFO_ADV_DESC2));
+            mCfgEnableTH06_ShowRank_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK2));
+            mCfgEnableTH06_ShowHitbox_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX2), S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC));
+            mCfgEnableTH11_ShowHint_autoly.Gui(S(THPRAC_INGAMEINFO_TH11_SHOW_HINT2));
+            mCfgEnableTH13_ShowHits_autoly.Gui(S(THPRAC_INGAMEINFO_TH13_SHOW_HITS2));
+            mCfgEnableTH13_ShowHitBar_autoly.Gui(S(THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR2));
+            mCfgEnableTH14_ShowBonus_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_BONUS2));
+            mCfgEnableTH14_ShowItemsCnt_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_ITEMS2));
+            mCfgEnableTH14_ShowDropBar_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR2));
+            mCfgEnableTH15_ShowShootingDownRate_autoly.Gui(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2));
         }
         ImGui::Separator();
         if (ImGui::CollapsingHeader(S(THPRAC_LAUNCH_BEHAVIOR))) {
@@ -2026,34 +2055,6 @@ private:
             GuiThcrapSettings();
         }
         ImGui::Separator();
-        if (ImGui::CollapsingHeader(S(THPRAC_GAME_ADJUSTMENTS))) {
-            mCfgUnlockRefreshRate.Gui(S(THPRAC_UNLOCK_REFRESH_RATE), S(THPRAC_UNLOCK_REFRESH_RATE_DESC));
-            mResizableWindow.Gui(S(THPRAC_RESIZABLE_WINDOW));
-
-            mWindowSizeChangeWhenOpen.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN));
-            ImGui::SameLine();
-            ImGui::SetNextItemWidth(75.0f + ImGui::CalcTextSize(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE)).x);
-            mWindowSize.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE));
-            mEnableKeyboardSOCD.Gui(S(THPRAC_ENABLE_KEYBOARD_SOCD), S(THPRAC_ENABLE_KEYBOARD_SOCD_DESC));
-            mDisableF10_11_13.Gui(S(THPRAC_DISABLE_F10_11_13));
-            mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
-            KeyBindSettings();
-        }
-        ImGui::Separator();
-        if (ImGui::CollapsingHeader(S(THPRAC_INGAMEINFO_ADV2))) {
-            ImGui::TextWrapped(S(THPRAC_INGAMEINFO_ADV_DESC1));
-            ImGui::TextWrapped(S(THPRAC_INGAMEINFO_ADV_DESC2));
-            mCfgEnableTH06_ShowRank_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK2));
-            mCfgEnableTH06_ShowHitbox_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX2), S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC));
-            mCfgEnableTH11_ShowHint_autoly.Gui(S(THPRAC_INGAMEINFO_TH11_SHOW_HINT2));
-            mCfgEnableTH13_ShowHits_autoly.Gui(S(THPRAC_INGAMEINFO_TH13_SHOW_HITS2));
-            mCfgEnableTH13_ShowHitBar_autoly.Gui(S(THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR2));
-            mCfgEnableTH14_ShowBonus_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_BONUS2));
-            mCfgEnableTH14_ShowItemsCnt_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_ITEMS2));
-            mCfgEnableTH14_ShowDropBar_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR2));
-            mCfgEnableTH15_ShowShootingDownRate_autoly.Gui(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2));
-        }
-        ImGui::Separator();
         if (ImGui::CollapsingHeader(S(THPRAC_SETTING_LANGUAGE))) {
             mCfgLanguage.Gui(S(THPRAC_LANGUAGE), (const char*)u8"中文\0English\0日本語\0\0");
             if (mOriginalLanguage != mCfgLanguage.Get()) {
@@ -2114,7 +2115,8 @@ private:
             }
             ImGui::NewLine();
             ImGui::TextUnformatted(S(TH_ABOUT_AUTHOR));
-            TextLink(S(TH_ABOUT_WEBSITE), L"https://github.com/touhouworldcup/thprac");
+            ImGui::TextUnformatted(S(TH_ABOUT_BRANCH));
+            TextLink(S(TH_ABOUT_WEBSITE), L"https://github.com/RUEEE/thprac");
             ImGui::NewLine();
             ImGui::Text(S(TH_ABOUT_THANKS), "You!");
         }
@@ -2144,6 +2146,8 @@ private:
     THCfgCheckbox mCfgEnableTH15_ShowShootingDownRate_autoly { "auto_th15_show_rate", false};
 
     THCfgCheckbox mResizableWindow { "resizable_window", false };
+    THCfgCheckbox mDisableMaximizeBtn { "disableMax_btn", false };
+    THCfgCheckbox mInitWindowPos { "init_window_pos", true };
 
     THCfgCheckbox mWindowSizeChangeWhenOpen { "change_window_size_when_open", false };
     THCfgInt2 mWindowSize { "changed_window_size", {1920,1440} };
