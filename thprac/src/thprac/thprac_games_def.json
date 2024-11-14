@@ -7360,6 +7360,17 @@
     "namespace": "TH15",
 
     "glossary": {
+      "TH15_AB_TEST_AB": [ "底力", "ab", "ab" ],
+      "TH15_AB_TEST_RES": [ "测试结果", "result", "result" ],
+      "TH15_AB_TEST_RES_DESC": [ "仅供娱乐", "only for amusement", "only for amusement" ],
+	  
+      "TH15_AB_TEST_REACTION": [ "反应", "re", "re" ],
+      "TH15_AB_TEST_MOV": [ "走位", "mv", "mv" ],
+      "TH15_AB_TEST_RET": [ "折返", "rt", "rt" ],
+      "TH15_AB_TEST_HORIZON": [ "视野", "ho", "ho" ],
+      "TH15_AB_TEST_PREC": [ "精度", "pr", "pr" ],
+      "TH15_AB_TEST_LUCK": [ "狗运", "lc", "lc" ],
+	  
       "TH15_ILT_0": [ "克劳恩皮丝", "Clownpiece", "クラウンピース" ],
       "TH15_ILT_1": [ "章节四", "Chapter 4", "チャプター 4" ],
       "TH15_ILT_2": [ "章节五", "Chapter 5", "チャプター 5" ],
@@ -7518,6 +7529,12 @@
         "spell": 1,
         "appearance": [ 3, 2, 7 ],
         "!ENHL": [ "月符「绀色的狂梦」", "Moon Sign \"Ultramarine Lunatic Dream\"", "月符「紺色の狂夢」" ]
+      },
+	  "TH15_AB_TEST": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 3, 2, 7 ],
+        "!ENHL": [ "底力测试", "ab test", "ab test" ]
       },
 
       "TH15_ST4_MID1": {
@@ -7851,6 +7868,13 @@
         "TH_BOTH_RAGE",
         "TH_HECATIA_RAGE",
         "TH_JUNKO_RAGE"
+      ],
+	  "TH15_AB_5PHASE": [
+        "TH_P1",
+        "TH_P2",
+        "TH_P3",
+        "TH_P4",
+        "TH_P5"
       ],
 	  "TH15_ST3_NORMAL1_TYPE":
 	  [

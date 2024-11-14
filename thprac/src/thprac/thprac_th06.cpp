@@ -2953,7 +2953,7 @@ namespace TH06 {
 
         GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
     }
-    static float Mlerp(float t, float a, float b)
+    static float MInterpolation(float t, float a, float b)
     {
         if (t < 0.0f) {
             return a;
@@ -2980,13 +2980,13 @@ namespace TH06 {
             if (gameState == 2 && is_shift_pressed) {
                 if (pauseMenuState == 0){
                     t += 1.0f;
-                    float scale = Mlerp(t / 18.0f, 1.5f, 1.0f),
-                          scale2 = Mlerp(t / 12.0f, 0.3f, 1.0f),
+                    float scale = MInterpolation(t / 18.0f, 1.5f, 1.0f),
+                          scale2 = MInterpolation(t / 12.0f, 0.3f, 1.0f),
                           angle = 3.14159f,
                           angle2 = 0.0f,
                           alpha = t < 6.0f ? t / 6.0f : 1.0f;
                     if (t < 18.0f) {
-                        angle = Mlerp(t / 18.0f, 3.14159f, -3.14159f);
+                        angle = MInterpolation(t / 18.0f, 3.14159f, -3.14159f);
                         angle2 = -angle;
                     } else {
                         angle = -3.14159f + t * 0.05235988f;

@@ -222,6 +222,15 @@ enum th_glossary_t {
     TH14_SUCCESS_SAVED,
     TH14_TITLE,
     TH155_TITLE,
+    TH15_AB_TEST_AB,
+    TH15_AB_TEST_HORIZON,
+    TH15_AB_TEST_LUCK,
+    TH15_AB_TEST_MOV,
+    TH15_AB_TEST_PREC,
+    TH15_AB_TEST_REACTION,
+    TH15_AB_TEST_RES,
+    TH15_AB_TEST_RES_DESC,
+    TH15_AB_TEST_RET,
     TH15_ILT_0,
     TH15_ILT_1,
     TH15_ILT_2,
@@ -1217,7 +1226,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1206];
+extern const char* th_glossary_str[3][1215];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2386,6 +2395,7 @@ namespace TH15 {
         TH15_ST3_BOSS5,
         TH15_ST3_BOSS6,
         TH15_ST3_BOSS7,
+        TH15_AB_TEST,
         TH15_ST4_MID1,
         TH15_ST4_BOSS1,
         TH15_ST4_BOSS2,
@@ -2438,9 +2448,9 @@ namespace TH15 {
         TH15_ST7_END_S10,
     };
 
-    extern const char* th_sections_str[3][4][74];
+    extern const char* th_sections_str[3][4][75];
 
-    extern const uint8_t th_sections_bgm[74];
+    extern const uint8_t th_sections_bgm[75];
 
     extern const th_sections_t th_sections_cba[7][2][19];
 
@@ -2449,6 +2459,8 @@ namespace TH15 {
     extern const th_glossary_t TH15_ITS_LUNATIC_TIME[8];
 
     extern const th_glossary_t TH15_SPELL_PHASE_EXTRA_LAST[5];
+
+    extern const th_glossary_t TH15_AB_5PHASE[6];
 
     extern const th_glossary_t TH15_ST3_NORMAL1_TYPE[3];
 
@@ -2749,7 +2761,7 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3289];
+extern const wchar_t __thprac_loc_range_zh[3291];
 
 extern const wchar_t __thprac_loc_range_en[57];
 

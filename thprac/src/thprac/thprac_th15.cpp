@@ -1,5 +1,8 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
+#include "thprac_th15_abtest.h"
+#include <format>
+#include <numbers>
 
 
 namespace THPrac {
@@ -183,6 +186,8 @@ namespace TH15 {
                 return TH15_ITS_LUNATIC_TIME;
             } else if (section == TH15_ST3_BOSS1) {
                 return TH15_ST3_NORMAL1_TYPE;
+            } else if (section == TH15_AB_TEST) {
+                return TH15_AB_5PHASE;
             }
             return nullptr;
         }
@@ -537,6 +542,36 @@ namespace TH15 {
         {
             if (!*(DWORD*)(0x004E9BB8)){
                 SetPos(-10000.0f, -10000.0f); //fly~
+                return;
+            }
+            if (thPracParam.mode && thPracParam.section == TH15_AB_TEST) {
+                DWORD ecl_glob = *(DWORD*)(0x4E9A80);
+                if (ecl_glob)
+                {
+                    SetSizeRel(340.0f / 1280.0f, 350.0f / 960.0f);
+                    SetPosRel(900.0f / 1280.0f, 520.0f / 960.0f);
+                    ImGui::Columns(2);
+                    ImGui::Text("p1");
+                    ImGui::NextColumn();
+                    ImGui::Text("%.2f",*(float*)(ecl_glob + 0x38));
+                    ImGui::NextColumn();
+                    ImGui::Text("p2");
+                    ImGui::NextColumn();
+                    ImGui::Text("%.2f", *(float*)(ecl_glob + 0x34));
+                    ImGui::NextColumn();
+                    ImGui::Text("p3");
+                    ImGui::NextColumn();
+                    ImGui::Text("%.2f", *(float*)(ecl_glob + 0x30));
+                    ImGui::NextColumn();
+                    ImGui::Text("p4");
+                    ImGui::NextColumn();
+                    ImGui::Text("%.2f", *(float*)(ecl_glob + 0x2C));
+                    ImGui::NextColumn();
+                    ImGui::Text("p5");
+                    ImGui::NextColumn();
+                    ImGui::Text("%.2f", *(float*)(ecl_glob + 0x28));
+                    ImGui::Columns(1);
+                }
                 return;
             }
             bool is_in_P_mode = (*(byte*)(0x004E7795)) & 0x1;
@@ -1260,6 +1295,18 @@ namespace TH15 {
             default:
                 break;
             }
+            //---
+            break;
+        case THPrac::TH15::TH15_AB_TEST:
+            ECLJump(ecl, 0xa258, 0xa614, 60);
+            ecl.SetFile(2);
+            ECLSkipChapter(1);
+            ecl << pair { 0x23C, (int8_t)0 };
+            ecl << pair { 0x288, (int8_t)0 };
+            ecl << pair { 0x2D4, (int8_t)0 };
+            for (int i = 0; i < sizeof(th15_abtest_ecl_file);i++)
+                ecl << pair { 0x694 + i, th15_abtest_ecl_file[i] };
+            ecl << pair { 0x694 + (0x66C - 0x5E8), (int32_t)thPracParam.phase + 1 };
             //---
             break;
         case THPrac::TH15::TH15_ST3_BOSS2:
@@ -2060,7 +2107,155 @@ namespace TH15 {
                 p->AddText({ 120.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
+        // ab test
+        {
+            if (thPracParam.mode && thPracParam.section == TH15_AB_TEST) {
+                static int t=0;
+                DWORD ecl_glob = *(DWORD*)(0x4E9A80);
+                DWORD m9923 = ecl_glob  ? * (DWORD*)(ecl_glob + 0x18) : 0;
+                if (m9923 == 6)
+                {
+                    t++;
+                    float intp = (t >= 90) ? 1.0f : t/90.0f;
+                    auto &io = ImGui::GetIO();
+                    auto szx = io.DisplaySize.x;
+                    auto szy = io.DisplaySize.y;
+                    ImVec2 mid_st = { 64.0f + 384.0f, 32.0f + 448.0f };
+                    mid_st.x *= szx/1280.0f;
+                    mid_st.y *= szy/960.0f;
+                    ImVec2 sz = { 380.0f * 2.0f, 600.0f * intp };
+                    sz.x *= szx / 1280.0f;
+                    sz.y *= szy / 960.0f;
+                    
+                    ImGui::SetNextWindowPos({ mid_st.x - sz.x * 0.5f, mid_st.y - sz.y * 0.5f });
+                    ImGui::SetNextWindowSize(sz);
+                    ImGui::Begin("##res", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+                    if (t >= 90)
+                    {
+                        ImGui::Text(S(TH15_AB_TEST_RES));
+                        ImGui::Text(S(TH15_AB_TEST_RES_DESC));
 
+                        ImVec2 p0 = ImGui::GetCursorScreenPos();
+                        ImVec2 csz = ImGui::GetContentRegionAvail();
+                        ImVec2 cmid = { p0.x + csz.x * 0.5f, p0.y + csz.y * 0.5f };
+                        ImVec2 p1 = { cmid.x + csz.x * 0.5f, cmid.y + csz.y * 0.5f };
+                        float hheight = csz.y * 0.75f * 0.5f;
+
+                        ImDrawList* p = ImGui::GetWindowDrawList();
+                        p->AddRectFilled(p0, p1, IM_COL32(50, 50, 50, 100));
+                        p->AddRect(p0, p1, IM_COL32(255, 255, 255, 100));
+                        p->PushClipRect(p0, p1);
+                        {
+                            float result_origs[5] = {
+                                *(float*)(ecl_glob + 0x38),
+                                *(float*)(ecl_glob + 0x34),
+                                *(float*)(ecl_glob + 0x30),
+                                *(float*)(ecl_glob + 0x2C),
+                                *(float*)(ecl_glob + 0x28)
+                            };
+                            float scores[6] = { 0, 0.1,0.5,0.6,0.9,1.0 };
+                            //calculates
+                            {
+                                float div[5] = {3.5f,4.8f,4.0f,3.1f,3.2f};
+                                float pows[5] = {1.2,1.1,1.1,1.2,1.4};
+                                for (int i = 0; i < 5; i++)
+                                {
+                                    result_origs[i] = (result_origs[i] - 3.0f) / div[i];
+                                    result_origs[i] = powf(result_origs[i], pows[i]);
+                                }
+                                scores[0] = 0.6f * result_origs[0] + 0.15f * result_origs[1] + 0.05f * result_origs[2] + 0.15f * result_origs[3] + 0.05f * result_origs[4];
+                                scores[1] = 0.0f * result_origs[0] + 0.5f * result_origs[1] + 0.2f * result_origs[2] + 0.15f * result_origs[3] + 0.15f * result_origs[4];
+                                scores[2] = 0.0f * result_origs[0] + 0.1f * result_origs[1] + 0.75f * result_origs[2] + 0.05f * result_origs[3] + 0.1f * result_origs[4];
+                                scores[3] = 0.1f * result_origs[0] + 0.4f * result_origs[1] + 0.0f * result_origs[2] + 0.5f * result_origs[3] + 0.0f * result_origs[4];
+                                scores[4] = 0.2f * result_origs[0] + 0.0f * result_origs[1] + 0.0f * result_origs[2] + 0.1f * result_origs[3] + 0.7f * result_origs[4];
+                                scores[5] = 0.1f * result_origs[0] + 0.3f * result_origs[1] + 0.3f * result_origs[2] + 0.2f * result_origs[3] + 0.1f * result_origs[4];
+                                for (int i = 0; i < 6; i++)
+                                {
+                                    scores[i] = 1.0f / (1.0f + expf(1.8f - 4.0f * scores[i]));
+                                }
+                            }
+
+                            ImVec2 points[6];
+                            //radar
+                            for (int i = 0; i < 6; i++) {
+                                p->AddLine(cmid, { cmid.x + hheight * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + hheight * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) }, 0xFFFFFFFF, 2.0f);
+                            }
+                            for (int i = 0; i < 5; i++) {
+                                float ra = hheight * ((i+1) / 5.0f);
+                                for (int i = 0; i < 6; i++) {
+                                    points[i] = { cmid.x + ra * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + ra * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
+                                }
+                                p->AddPolyline(points,6,0xFFCCCCCC,ImDrawFlags_::ImDrawFlags_Closed,1.0f);
+                            }
+                            //scores
+                            auto MInterpolation = [](float t, float a, float b) {
+                                if (t < 0.0f) {
+                                    return a;
+                                } else if (t < 0.5) {
+                                    float k = (b - a) * 2.0f;
+                                    return k * t * t + a;
+                                } else if (t < 1.0f) {
+                                    float k = (b - a) * 2.0f;
+                                    t = t - 1.0f;
+                                    return -k * t * t + b;
+                                }
+                                return b;
+                            };
+                            float t2 = MInterpolation((t-90.0f)/90.0f,0.0f,0.9f);
+                            for (int i = 0; i < 6; i++) {
+                                points[i] = { cmid.x + t2 * hheight * scores[i] * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + t2 * hheight * scores[i] * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
+                            }
+
+                            p->AddPolyline(points, 6, 0xFFFFFFFF, ImDrawFlags_::ImDrawFlags_Closed, 1.0f);
+                            for (int i = 0; i < 6; i++) {
+                                auto col = ImGui::GetStyleColorVec4(ImGuiCol_PlotHistogram); col.w = 0.8f;
+                                p->AddTriangleFilled(points[i], points[(i + 1) % 6], cmid, ImGui::ColorConvertFloat4ToU32(col));
+                            }
+                            //text
+                            const char* chars[] = {
+                                S(TH15_AB_TEST_REACTION),
+                                S(TH15_AB_TEST_MOV),
+                                S(TH15_AB_TEST_RET),
+                                S(TH15_AB_TEST_HORIZON),
+                                S(TH15_AB_TEST_PREC),
+                                S(TH15_AB_TEST_LUCK), };
+                            for (int i = 0; i < 6; i++) {
+                                const char* rank = "E";
+                                if (scores[i] < 0.2f)
+                                    rank = "E"; // 0-0.2
+                                else if (scores[i] < 0.4f)
+                                    rank = "D"; // 0.2-0.4
+                                else if (scores[i] < 0.6f)
+                                    rank = "C"; // 0.4-0.6
+                                else if (scores[i] < 0.8f)
+                                    rank = "D"; // 0.6-0.8
+                                else if (scores[i] < 0.9f)
+                                    rank = "B"; // 0.8-0.9
+                                else if (scores[i] < 0.95f)
+                                    rank = "A"; // 0.9-0.95
+                                else if (scores[i] < 0.98f)
+                                    rank = "S"; // 0.95-0.98
+                                else
+                                    rank = "SS";//0.98+
+                                std::string text = std::format("{}:{}({:>3.1f})", chars[i], rank, scores[i]*100.0f).c_str();
+                                auto sz_text=ImGui::CalcTextSize(text.c_str());
+                                float h2=hheight;
+                                if(i==0 || i==3)h2 = hheight+sz_text.y;
+                                else h2 = hheight+sz_text.x*0.85f;
+                                ImVec2 pos = { cmid.x + h2 * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + h2 * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
+                                pos.x -= sz_text.x * 0.5f;
+                                pos.y -= sz_text.y * 0.5f;
+                                p->AddText(pos, 0xFFFFFFFF, text.c_str());
+                            }
+                        }
+                        p->PopClipRect();
+                    }
+                    ImGui::End();
+                }else{
+                    t = 0;
+                }
+            }
+        }
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }

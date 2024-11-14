@@ -226,6 +226,9 @@
     <ClInclude Include="src\thprac\thprac_th06_hitbox.h">
       <Filter>THPrac Games</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac\thprac_th15_abtest.h">
+      <Filter>THPrac Games</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\thprac\thprac_utils.cpp">

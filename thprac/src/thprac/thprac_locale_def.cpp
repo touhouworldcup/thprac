@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1206] {
+const char* th_glossary_str[3][1215] {
     {
         "",
         "啤酒",
@@ -222,6 +222,15 @@ const char* th_glossary_str[3][1206] {
         "成功保存Replay至：",
         "TH14 东方辉针城　～ Double Dealing Character.",
         "TH15.5 东方凭依华　～ Antinomy of Common Flowers.",
+        "底力",
+        "视野",
+        "狗运",
+        "走位",
+        "精度",
+        "反应",
+        "测试结果",
+        "仅供娱乐",
+        "折返",
         "克劳恩皮丝",
         "章节四",
         "章节五",
@@ -1430,6 +1439,15 @@ const char* th_glossary_str[3][1206] {
         "Successfully saved replay to: ",
         "TH14 Double Dealing Character",
         "TH15.5 Antinomy of Common Flowers",
+        "ab",
+        "ho",
+        "lc",
+        "mv",
+        "pr",
+        "re",
+        "result",
+        "only for amusement",
+        "rt",
         "Clownpiece",
         "Chapter 4",
         "Chapter 5",
@@ -2638,6 +2656,15 @@ const char* th_glossary_str[3][1206] {
         "リプレイは正常に保存されました：",
         "TH14 東方輝針城　～ Double Dealing Character.",
         "TH15.5 東方憑依華　～ Antinomy of Common Flowers.",
+        "ab",
+        "ho",
+        "lc",
+        "mv",
+        "pr",
+        "re",
+        "result",
+        "only for amusement",
+        "rt",
         "クラウンピース",
         "チャプター 4",
         "チャプター 5",
@@ -18806,7 +18833,7 @@ namespace TH14 {
 
 namespace TH15 {
 
-    const char* th_sections_str[3][4][74] {
+    const char* th_sections_str[3][4][75] {
         {
             {
                 "",
@@ -18833,6 +18860,7 @@ namespace TH15 {
                 "关底三非",
                 "梦符「捕梦网」",
                 "月符「绀色的狂梦」",
+                "底力测试",
                 "道中一非",
                 "关底一非",
                 "玉符「乌合之咒」",
@@ -18909,6 +18937,7 @@ namespace TH15 {
                 "关底三非",
                 "梦符「捕梦网」",
                 "月符「绀色的狂梦」",
+                "底力测试",
                 "道中一非",
                 "关底一非",
                 "玉符「乌合之咒」",
@@ -18985,6 +19014,7 @@ namespace TH15 {
                 "关底三非",
                 "梦符「苍蓝色的捕梦网」",
                 "月符「绀色的狂梦」",
+                "底力测试",
                 "道中一非",
                 "关底一非",
                 "玉符「乌合的逆咒」",
@@ -19061,6 +19091,7 @@ namespace TH15 {
                 "关底三非",
                 "梦符「梦我梦中」",
                 "月符「绀色的狂梦」",
+                "底力测试",
                 "道中一非",
                 "关底一非",
                 "玉符「乌合的二重咒」",
@@ -19139,6 +19170,7 @@ namespace TH15 {
                 "Boss Nonspell 3",
                 "Dream Sign \"Dream Catcher\"",
                 "Moon Sign \"Ultramarine Lunatic Dream\"",
+                "ab test",
                 "Mid Nonspell 1",
                 "Boss Nonspell 1",
                 "Orb Sign \"Disorderly Flock's Curse\"",
@@ -19215,6 +19247,7 @@ namespace TH15 {
                 "Boss Nonspell 3",
                 "Dream Sign \"Dream Catcher\"",
                 "Moon Sign \"Ultramarine Lunatic Dream\"",
+                "ab test",
                 "Mid Nonspell 1",
                 "Boss Nonspell 1",
                 "Orb Sign \"Disorderly Flock's Curse\"",
@@ -19291,6 +19324,7 @@ namespace TH15 {
                 "Boss Nonspell 3",
                 "Dream Sign \"Azure Dream Catcher\"",
                 "Moon Sign \"Ultramarine Lunatic Dream\"",
+                "ab test",
                 "Mid Nonspell 1",
                 "Boss Nonspell 1",
                 "Orb Sign \"Disorderly Flock's Reverse Curse\"",
@@ -19367,6 +19401,7 @@ namespace TH15 {
                 "Boss Nonspell 3",
                 "Dream Sign \"Losing Oneself in a Dream\"",
                 "Moon Sign \"Ultramarine Lunatic Dream\"",
+                "ab test",
                 "Mid Nonspell 1",
                 "Boss Nonspell 1",
                 "Orb Sign \"Disorderly Flock's Duplex Curse\"",
@@ -19445,6 +19480,7 @@ namespace TH15 {
                 "ボス 通常3",
                 "夢符「ドリームキャッチャー」",
                 "月符「紺色の狂夢」",
+                "ab test",
                 "道中 通常1",
                 "ボス 通常1",
                 "玉符「烏合の呪」",
@@ -19521,6 +19557,7 @@ namespace TH15 {
                 "ボス 通常3",
                 "夢符「ドリームキャッチャー」",
                 "月符「紺色の狂夢」",
+                "ab test",
                 "道中 通常1",
                 "ボス 通常1",
                 "玉符「烏合の呪」",
@@ -19597,6 +19634,7 @@ namespace TH15 {
                 "ボス 通常3",
                 "夢符「蒼色のドリームキャッチャー」",
                 "月符「紺色の狂夢」",
+                "ab test",
                 "道中 通常1",
                 "ボス 通常1",
                 "玉符「烏合の逆呪」",
@@ -19673,6 +19711,7 @@ namespace TH15 {
                 "ボス 通常3",
                 "夢符「夢我夢中」",
                 "月符「紺色の狂夢」",
+                "ab test",
                 "道中 通常1",
                 "ボス 通常1",
                 "玉符「烏合の二重呪」",
@@ -19727,7 +19766,7 @@ namespace TH15 {
         },
     };
 
-    const uint8_t th_sections_bgm[74] {
+    const uint8_t th_sections_bgm[75] {
         0,
         0,
         0,
@@ -19745,6 +19784,7 @@ namespace TH15 {
         1,
         0,
         0,
+        1,
         1,
         1,
         1,
@@ -19843,7 +19883,7 @@ namespace TH15 {
                 TH15_ST3_BOSS4,
                 TH15_ST3_BOSS5,
                 TH15_ST3_BOSS6,
-                TH15_ST3_BOSS7,
+                TH15_AB_TEST,
             },
         },
         {
@@ -19955,6 +19995,7 @@ namespace TH15 {
                 TH15_ST3_BOSS1,
                 TH15_ST3_BOSS3,
                 TH15_ST3_BOSS5,
+                TH15_AB_TEST,
             },
             {
                 TH15_ST3_MID2,
@@ -20055,6 +20096,14 @@ namespace TH15 {
         TH_BOTH_RAGE,
         TH_HECATIA_RAGE,
         TH_JUNKO_RAGE,
+    };
+
+    const th_glossary_t TH15_AB_5PHASE[6] {
+        TH_P1,
+        TH_P2,
+        TH_P3,
+        TH_P4,
+        TH_P5,
     };
 
     const th_glossary_t TH15_ST3_NORMAL1_TYPE[3] {
@@ -23787,7 +23836,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3289] {
+const wchar_t __thprac_loc_range_zh[3291] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -24215,6 +24264,7 @@ const wchar_t __thprac_loc_range_zh[3289] {
     0x59ff, 0x59ff,
     0x5a01, 0x5a01,
     0x5a1c, 0x5a1c,
+    0x5a31, 0x5a31,
     0x5a46, 0x5a46,
     0x5a74, 0x5a74,
     0x5ac9, 0x5ac9,
