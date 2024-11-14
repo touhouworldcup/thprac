@@ -627,7 +627,7 @@ namespace THPrac {
         Keng(std::wstring csv_filename)
         {
             std::string name = utf16_to_mb(GetNameFromFullPath(csv_filename).c_str(), CP_UTF8);
-            strcpy(mKengName,name.c_str());
+            strcpy_s(mKengName, name.c_str());
             mTimeCreate = std::chrono::year_month_day(std::chrono::floor<std::chrono::days>(std::chrono::system_clock::now()));
             memset(mKengDescription, 0, sizeof(mKengDescription));
 

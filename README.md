@@ -27,6 +27,7 @@
 - add some advanced options like show rank in EoSD, show bonus count in DDC,...
 - fix bug for not showing window when open game
 - add a ab test in th15, 123's normal
+- add roll from csv
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
@@ -57,3 +58,4 @@
 - 一些高级IGI功能
 - 修复开游戏后没有窗口的bug
 - 在绀珠传123非符后面加了个底力测试
+- 使用CSV文件随机roll东西

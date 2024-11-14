@@ -1013,6 +1013,12 @@ enum th_glossary_t {
     THPRAC_TOOLS_RND_TURNTO_GAME,
     THPRAC_TOOLS_RND_TURNTO_PLAYER,
     THPRAC_TOOLS_ROLL,
+    THPRAC_TOOLS_ROLLF_CLPS,
+    THPRAC_TOOLS_ROLLF_CSV,
+    THPRAC_TOOLS_ROLLF_CSV_DESC,
+    THPRAC_TOOLS_ROLLF_FROM_FILE,
+    THPRAC_TOOLS_ROLLF_START,
+    THPRAC_TOOLS_ROLLF_TIME,
     THPRAC_TOOLS_ROLL_RESULT,
     THPRAC_UNHANDLED_EXCEPTION,
     THPRAC_UNLOCK_REFRESH_RATE,
@@ -1226,7 +1232,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1215];
+extern const char* th_glossary_str[3][1221];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

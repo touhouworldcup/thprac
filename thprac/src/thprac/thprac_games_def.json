@@ -267,6 +267,14 @@
     
       "THPRAC_TOOLS": [ "工具", "Tools", "ツール" ],
       
+	  "THPRAC_TOOLS_ROLLF_CSV": [ "读取CSV文件", "read csv file", "read csv file" ],
+	  "THPRAC_TOOLS_ROLLF_CSV_DESC": [ "需要为utf-8格式, 共两列, 分别为名称和权重", "need to be utf-8, has a name column and a weight column", "need to be utf-8, has a name column and a weight column" ],
+	  "THPRAC_TOOLS_ROLLF_FROM_FILE": [ "随机ROLL", "ROLL from file", "ROLL from file" ],
+	  "THPRAC_TOOLS_ROLLF_START": [ "开ROLL", "ROLL", "ROLL" ],
+	  "THPRAC_TOOLS_ROLLF_CLPS": [ "查看", "view", "view" ],
+	  "THPRAC_TOOLS_ROLLF_TIME": [ "转盘时间", "time", "time" ],
+	  
+	  
       "THPRAC_TOOLS_APPLY_THPRAC": [ "应用thprac至正在运行的游戏", "Apply thprac to ongoing game", "実行中のゲームにthpracを適用します" ],
       "THPRAC_TOOLS_RND_GAME": [ "随机游戏", "Random game", "ランダムゲーム" ],
       "THPRAC_TOOLS_RND_PLAYER": [ "随机机体", "Random shot type", "ランダム機体" ],

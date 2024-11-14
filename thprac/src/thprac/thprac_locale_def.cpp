@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1215] {
+const char* th_glossary_str[3][1221] {
     {
         "",
         "啤酒",
@@ -1013,6 +1013,12 @@ const char* th_glossary_str[3][1215] {
         "转至游戏页面",
         "转至随机机体",
         "ROLL!",
+        "查看",
+        "读取CSV文件",
+        "需要为utf-8格式, 共两列, 分别为名称和权重",
+        "随机ROLL",
+        "开ROLL",
+        "转盘时间",
         "你随机到了：%s。（右键查看更多选项）",
         "遇到了未处理的异常，程序可能即将崩溃。\n当程序崩溃时，请通过在启动器中记述的任意联系方式将转储文件发送给我。\n此外，如有留下任何关于崩溃时情况的说明的话，我将不胜感激。\n转储文件储存在thprac的数据目录中。\n(打开启动器 - 设置 - 打开数据目录 - \"crashdump\"文件夹)",
         "解锁屏幕刷新率",
@@ -2230,6 +2236,12 @@ const char* th_glossary_str[3][1215] {
         "Turn to game page",
         "Turn to random shot type",
         "ROLL!",
+        "view",
+        "read csv file",
+        "need to be utf-8, has a name column and a weight column",
+        "ROLL from file",
+        "ROLL",
+        "time",
         "You've rolled: %s. (Right click for more options)",
         "An unhandled exception was encountered, this will most likely result in a crash.\nIf you experience a crash, please send the dump files to me with any of the contact methods described in the launcher.\nAdditionally, any notes describing how the crash has happened would be appreciated.\nYou can find the dump files in thprac's data folder.\n(Open launcher - Settings - Open data directory - \"crashdump\" folder)",
         "Unlock monitor refresh rate",
@@ -3447,6 +3459,12 @@ const char* th_glossary_str[3][1215] {
         "ゲームページに移動",
         "ランダム機体に移動",
         "ROLL!",
+        "view",
+        "read csv file",
+        "need to be utf-8, has a name column and a weight column",
+        "ROLL from file",
+        "ROLL",
+        "time",
         "結果：％s。（右クリックで詳細オプションを表示）",
         "未処理の例外が発生しました。これにより、クラッシュが発生する可能性があります。\nクラッシュが発生した場合は、ランチャーに記載されている連絡方法のいずれかを使用して、ダンプファイルを私に送信してください。\nさらに、クラッシュがどのように発生したかを説明するメモをいただければ幸いです。\nダンプファイルはthpracのデータフォルダにあります。\n（ランチャーを開く - 設定 - データディレクトリを開く - \"crashdump\"フォルダー）",
         "Unlock monitor refresh rate",

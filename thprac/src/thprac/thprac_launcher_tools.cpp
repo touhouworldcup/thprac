@@ -9,10 +9,252 @@
 #include <functional>
 #include <string>
 #include <vector>
-
+#include "..\3rdParties\rapidcsv\rapidcsv.h"
+#include <numbers>
+#include <format>
 namespace THPrac {
 
 void LauncherToolsGuiSwitch(const char* gameStr);
+class THGuiRollAll {
+private:
+    char mRollName[256] = { 0 };
+    std::vector<std::string> mNames;
+    std::vector<float> mProbs;
+    std::vector<float> mProbs2;
+    std::vector<ImVec4> mColors;
+    std::vector<ImVec4> mColors2;
+    float mTotWeight;
+
+    std::random_device mRandDevice;
+    std::default_random_engine mRandEngine;
+
+public:
+    float GetRandomFloat()
+    {
+        static std::uniform_real_distribution<float> rand_value(0.0f,1.0f);
+        return rand_value(mRandEngine);
+    }
+    float MInterpolation(float t, float a, float b) 
+    {
+        if (t < 0.0f) {
+            return a;
+        } else if (t < 0.5) {
+            float k = (b - a) * 2.0f;
+            return k * t * t + a;
+        } else if (t < 1.0f) {
+            float k = (b - a) * 4.0f;
+            t = t - 1.0f;
+            return k * t * t * t + b;
+        }
+        return b;
+    };
+    THGuiRollAll() : mRandEngine(mRandDevice())
+    {
+    }
+    void LoadRoll()
+    {
+        mProbs2 = {};
+        mNames = {};
+        mProbs = {};
+        mColors = {};
+        std::wstring csv_filename = LauncherWndFileSelect(nullptr, L"csv(*.csv)\0*.csv\0*.*\0\0");
+        std::string name = utf16_to_mb(GetNameFromFullPath(csv_filename).c_str(), CP_UTF8);
+        strcpy_s(mRollName, name.c_str());
+
+        rapidcsv::Document doc(utf16_to_mb(csv_filename.c_str(), CP_ACP), rapidcsv::LabelParams(0, -1));
+
+        mNames = doc.GetColumn<std::string>(0);
+        mProbs = doc.GetColumn<float>(1);
+        if (mProbs.size() < mNames.size())
+        {
+            int d = mNames.size() - mProbs.size();
+            for (int i = 0; i < d; i++)
+                mProbs.emplace_back(1);
+        }
+        float tot = 0.0f;
+        for (int i = 0; i < mNames.size(); i++){
+            tot += mProbs[i];
+            mProbs[i]=tot;
+        }
+        mTotWeight = tot;
+        mProbs2.push_back(0.0f);
+        for (int i = 0; i < mNames.size(); i++)
+        {
+            mProbs2.push_back(mProbs[i] / mTotWeight);
+            float r, g, b,h,s,v;
+            h = GetRandomFloat();
+            s = GetRandomFloat() * 0.4f + 0.6f;
+            v = GetRandomFloat() * 0.4f + 0.6f;
+            ImGui::ColorConvertHSVtoRGB(h,s,v , r, g, b);
+            mColors.push_back({r,g,b,1.0f});
+            ImGui::ColorConvertHSVtoRGB(h, s, v-0.3f, r, g, b);
+            mColors2.push_back({r,g,b,1.0f});
+        }
+    }
+    void RollGame()
+    {
+        
+    }
+    bool DrawPie(ImDrawList* p, ImVec2 mid, float radius, float angle1, float angle2, uint32_t col_fill, uint32_t col_fill2, uint32_t col_line)
+    {
+        bool res = false;
+        std::vector<ImVec2> points;
+        points.push_back({ cosf(angle1), sinf(angle1) });
+        float dangle = std::numbers::pi * 0.005f;
+        for (float angle = angle1+dangle; angle < angle2; angle += dangle)
+            points.push_back({ cosf(angle), sinf(angle) });
+        points.push_back({ cosf(angle2), sinf(angle2) });
+
+        auto mp = ImGui::GetMousePos();
+        if (hypotf(mp.y - mid.y, mp.x - mid.x)<radius)
+        {
+            float mangle = atan2(mp.y - mid.y, mp.x - mid.x);
+            mangle += (2.0f * std::numbers::pi) * ceilf((angle1 - mangle) / (2.0f * std::numbers::pi));
+            res = mangle < angle2;
+        }
+        for (int i = 0; i < points.size() - 1; i++) {
+            ImVec2 p2 = { mid.x + points[i].x * radius, mid.y + points[i].y * radius };
+            ImVec2 p3 = {mid.x + points[i + 1].x * radius, mid.y + points[i + 1].y * radius};
+            p->AddTriangleFilled(mid,p2,p3,res?col_fill2:col_fill);
+            p->AddTriangle(mid,p2,p3,res?col_fill2:col_fill,1.33f);
+        }
+        
+        p->AddLine(mid, { mid.x + points[0].x * radius, mid.y + points[0].y * radius }, col_line, 2.0f);
+        return res;
+    }
+    bool GuiUpdate()
+    {
+        bool result = true;
+        if (ImGui::Button(S(THPRAC_BACK))) {
+            result = false;
+        }
+        ImGui::SameLine();
+        GuiCenteredText(S(THPRAC_TOOLS_ROLLF_FROM_FILE));
+        ImGui::Separator();
+        if (ImGui::Button(S(THPRAC_TOOLS_ROLLF_CSV)))
+        {
+            LoadRoll();
+        }
+        ImGui::SameLine();
+        GuiHelpMarker(S(THPRAC_TOOLS_ROLLF_CSV_DESC));
+        ImGui::SameLine();
+        if (ImGui::CollapsingHeader(S(THPRAC_TOOLS_ROLLF_CLPS)))
+        {
+            if (ImGui::BeginTable("__rolls table",2))
+            {
+                for (int i = 0; i < mNames.size(); i++)
+                {
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%s", mNames[i].c_str());
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%.2f", mProbs[i]);
+                }
+                ImGui::EndTable();
+            }
+        }
+        ImGui::Separator();
+        static bool roll = false;
+        static bool has_result = false;
+        static int roll_time = 0;
+        static float roll_rand=0.0f;
+        static int roll_result=0;
+        static int tot_time = 240;
+        static float last_angle = 0.0f;
+        if (ImGui::Button(S(THPRAC_TOOLS_ROLLF_START)) && mNames.size() > 0)
+        {
+            roll = true;
+            has_result = false;
+            roll_time = 0;
+            roll_rand = GetRandomFloat();
+        }
+        ;
+        if (!roll){
+            ImGui::SameLine();
+            ImGui::Text(S(THPRAC_TOOLS_ROLLF_TIME));
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(150.0f);
+            if (ImGui::DragInt("##roll time", &tot_time, 1.0f, 1, 1000))
+                tot_time = std::clamp(tot_time, 1, 1000);
+        }
+        if (mNames.size() > 0 && roll_result >= 0 && roll_result < mNames.size()) {
+            ImGui::SameLine();
+            ImGui::Text(std::format("{}", mNames[roll_result]).c_str());
+        }
+        {
+            static float angle_add,angle_wraped;
+            if (roll){
+                angle_add = MInterpolation(roll_time / (float)tot_time, last_angle, roll_rand * 2.0f * std::numbers::pi + 30.0f * std::numbers::pi);
+                angle_wraped = angle_add - floorf(angle_add / (2.0f * std::numbers::pi)) * 2.0f * std::numbers::pi;
+                if (roll_time < tot_time)
+                {
+                    roll_time++;
+                }else{
+                    roll = false;
+                    has_result = true;
+                    last_angle = angle_wraped;
+                }
+                
+            }
+            roll_result = -1;
+            float roll_res_temp;
+            if (has_result == false)
+                roll_res_temp = angle_wraped / (2.0f * std::numbers::pi);
+            else
+                roll_res_temp = roll_rand;
+            for (int i = 0; i < mNames.size(); i++) {
+                if (mProbs2[i] <= roll_res_temp && mProbs2[i + 1] > roll_res_temp) {
+                    roll_result = i;
+                    break;
+                }
+            }
+            if (roll_result == -1)
+                roll_result = mNames.size() - 1;
+
+            ImVec2 p0 = ImGui::GetCursorScreenPos();
+            ImVec2 csz = ImGui::GetContentRegionAvail();
+            if (csz.y < 0)
+                csz.y = 0;
+            ImVec2 cmid = { p0.x + csz.x * 0.5f, p0.y + csz.y * 0.5f };
+            ImVec2 p1 = { cmid.x + csz.x * 0.5f, cmid.y + csz.y * 0.5f};
+            float hheight = std::min(csz.x,csz.y) * 0.95f * 0.5f;
+
+            ImDrawList* p = ImGui::GetWindowDrawList();
+            p->AddRectFilled(p0, p1, IM_COL32(50, 50, 50, 100));
+            p->AddRect(p0, p1, IM_COL32(255, 255, 255, 100));
+            p->PushClipRect(p0, p1);
+
+           ImVec2 cir_cen = { hheight * 1.1f, cmid.y };
+           if (mNames.size() > 0 && csz.y>0.0f)
+           {
+               {
+                   // p->AddCircleFilled(cir_cen, hheight, ImGui::ColorConvertFloat4ToU32(col1));
+                   p->AddCircle(cir_cen, hheight, 0xFFFFFFFF);
+                   //
+                   for (int i = 0; i < mNames.size(); i++) {
+                       auto col1 = ImGui::ColorConvertFloat4ToU32(mColors[i]);
+                       auto col2 = ImGui::ColorConvertFloat4ToU32(mColors2[i]);
+                       auto res = DrawPie(p, cir_cen, hheight, mProbs2[i] * 2.0f * std::numbers::pi - angle_wraped, mProbs2[i + 1] * 2.0f * std::numbers::pi - angle_wraped, col1, col2, 0xFFFFFFFF);
+                       if (res)
+                           ImGui::SetTooltip("%s", mNames[i].c_str());
+                   }
+               }
+               p->PopClipRect();
+               ImVec2 tri_pos1 = { cir_cen.x + hheight * 0.75f, cir_cen.y };
+               ImVec2 tri_pos2 = { cir_cen.x + hheight * 1.25f, cir_cen.y - hheight * 0.05f };
+               ImVec2 tri_pos3 = { cir_cen.x + hheight * 1.25f, cir_cen.y + hheight * 0.05f };
+               p->AddTriangleFilled(tri_pos1, tri_pos2, tri_pos3, 0xFFFFCCCC);
+               p->AddTriangle(tri_pos1, tri_pos2, tri_pos3, 0xFFFFFFFF, 1.5f);
+               if (roll_result >= 0 && roll_result < mNames.size()) {
+                   p->AddText({ cir_cen.x + hheight * 1.3f, cir_cen.y - ImGui::GetTextLineHeight() * 0.5f }, 0xFFFFFFFF, std::format("{}", mNames[roll_result]).c_str());
+               }
+           }
+        }
+        return result;
+    }
+
+private:
+};
 
 
 class THGuiTestReactionTest {
@@ -554,14 +796,17 @@ private:
         if (CenteredButton(S(THPRAC_TOOLS_APPLY_THPRAC), 0.2f, width)) {
             FindOngoingGame(true);
         }
-        if (CenteredButton(S(THPRAC_TOOLS_RND_GAME), 0.4f, width)) {
+        if (CenteredButton(S(THPRAC_TOOLS_RND_GAME), 0.3f, width)) {
             mGuiUpdFunc = [&]() { return mGuiRollGame.GuiUpdate(); };
         }
-        if (CenteredButton(S(THPRAC_TOOLS_RND_PLAYER), 0.6f, width)) {
+        if (CenteredButton(S(THPRAC_TOOLS_RND_PLAYER), 0.4f, width)) {
             mGuiUpdFunc = [&]() { return mGuiRollPlayer.GuiUpdate(); };
         }
-        if (CenteredButton(S(THPRAC_TOOLS_REACTION_TEST), 0.8f, width)) {
+        if (CenteredButton(S(THPRAC_TOOLS_REACTION_TEST), 0.5f, width)) {
             mGuiUpdFunc = [&]() { return mGuiReactionTest.GuiUpdate(); };
+        }
+        if (CenteredButton(S(THPRAC_TOOLS_ROLLF_FROM_FILE), 0.6f, width)) {
+            mGuiUpdFunc = [&]() { return mGuiRollAll.GuiUpdate(); };
         }
         return true;
     }
@@ -576,6 +821,7 @@ private:
     THGuiRollGame mGuiRollGame;
     THGuiRollPlayer mGuiRollPlayer;
     THGuiTestReactionTest mGuiReactionTest;
+    THGuiRollAll mGuiRollAll;
 };
 
 bool LauncherToolsGuiUpd()
