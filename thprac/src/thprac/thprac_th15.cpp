@@ -2156,8 +2156,8 @@ namespace TH15 {
                             float scores[6] = { 0, 0.1,0.5,0.6,0.9,1.0 };
                             //calculates
                             {
-                                float div[5] = {3.5f,4.8f,4.0f,3.1f,3.2f};
-                                float pows[5] = {1.2,1.1,1.1,1.2,1.4};
+                                float div[5] = {3.5f,4.8f,4.0f,3.1f,3.0f};
+                                float pows[5] = {1.2,1.1,1.1,1.2,2.05};
                                 for (int i = 0; i < 5; i++)
                                 {
                                     result_origs[i] = (result_origs[i] - 3.0f) / div[i];
@@ -2167,7 +2167,7 @@ namespace TH15 {
                                 scores[1] = 0.0f * result_origs[0] + 0.5f * result_origs[1] + 0.2f * result_origs[2] + 0.15f * result_origs[3] + 0.15f * result_origs[4];
                                 scores[2] = 0.0f * result_origs[0] + 0.1f * result_origs[1] + 0.75f * result_origs[2] + 0.05f * result_origs[3] + 0.1f * result_origs[4];
                                 scores[3] = 0.1f * result_origs[0] + 0.4f * result_origs[1] + 0.0f * result_origs[2] + 0.5f * result_origs[3] + 0.0f * result_origs[4];
-                                scores[4] = 0.2f * result_origs[0] + 0.0f * result_origs[1] + 0.0f * result_origs[2] + 0.1f * result_origs[3] + 0.7f * result_origs[4];
+                                scores[4] = 0.05f * result_origs[0] + 0.05f * result_origs[1] + 0.0f * result_origs[2] + 0.1f * result_origs[3] + 0.8f * result_origs[4];
                                 scores[5] = 0.1f * result_origs[0] + 0.3f * result_origs[1] + 0.3f * result_origs[2] + 0.2f * result_origs[3] + 0.1f * result_origs[4];
                                 for (int i = 0; i < 6; i++)
                                 {
@@ -2180,12 +2180,19 @@ namespace TH15 {
                             for (int i = 0; i < 6; i++) {
                                 p->AddLine(cmid, { cmid.x + hheight * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + hheight * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) }, 0xFFFFFFFF, 2.0f);
                             }
-                            for (int i = 0; i < 5; i++) {
-                                float ra = hheight * ((i+1) / 5.0f);
+                            // lines
+                            constexpr float radiuses_ranks[] = { 
+                                0.18f / 0.9f * 0.5f, 
+                                0.36f / 0.9f * 0.5f, 
+                                0.54f / 0.9f * 0.5f, 
+                                0.72f / 0.9f * 0.5f, 
+                                0.5f, 0.65f, 0.85f, 1.0f };
+                            for (int i = 0; i < 8; i++) {
+                                float ra = radiuses_ranks[i] * hheight;
                                 for (int i = 0; i < 6; i++) {
                                     points[i] = { cmid.x + ra * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + ra * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
                                 }
-                                p->AddPolyline(points,6,0xFFCCCCCC,ImDrawFlags_::ImDrawFlags_Closed,1.0f);
+                                p->AddPolyline(points, 6, i == 7 ? 0xFFFFFFFF : 0xFFAAAAAA, ImDrawFlags_::ImDrawFlags_Closed, i == 7 ? 2.0f : 1.0f);
                             }
                             //scores
                             auto MInterpolation = [](float t, float a, float b) {
@@ -2201,16 +2208,28 @@ namespace TH15 {
                                 }
                                 return b;
                             };
-                            float t2 = MInterpolation((t-90.0f)/90.0f,0.0f,0.9f);
+                            float t2 = MInterpolation((t-90.0f)/90.0f,0.0f,1.0f);
                             for (int i = 0; i < 6; i++) {
-                                points[i] = { cmid.x + t2 * hheight * scores[i] * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + t2 * hheight * scores[i] * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
+                                float radius = scores[i];
+                                if (scores[i] < 0.9f)
+                                {
+                                    radius = scores[i]/0.9f*0.5f;
+                                }else if (scores[i] < 0.95f){
+                                    radius = scores[i] * 3.0f - 2.2f;
+                                }else if(scores[i] < 0.98f) {
+                                    radius = scores[i] * 6.66667f - 5.683333f;
+                                } else{
+                                    radius = scores[i] * 7.5f - 6.5f;
+                                }
+                                points[i] = { cmid.x + t2 * hheight * radius * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + t2 * hheight * radius * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
                             }
-
-                            p->AddPolyline(points, 6, 0xFFFFFFFF, ImDrawFlags_::ImDrawFlags_Closed, 1.0f);
                             for (int i = 0; i < 6; i++) {
                                 auto col = ImGui::GetStyleColorVec4(ImGuiCol_PlotHistogram); col.w = 0.8f;
                                 p->AddTriangleFilled(points[i], points[(i + 1) % 6], cmid, ImGui::ColorConvertFloat4ToU32(col));
                             }
+                            p->AddPolyline(points, 6, 0xFFFFFFFF, ImDrawFlags_::ImDrawFlags_Closed, 1.0f);
+
+                            
                             //text
                             const char* chars[] = {
                                 S(TH15_AB_TEST_REACTION),
@@ -2221,22 +2240,24 @@ namespace TH15 {
                                 S(TH15_AB_TEST_LUCK), };
                             for (int i = 0; i < 6; i++) {
                                 const char* rank = "E";
-                                if (scores[i] < 0.2f)
-                                    rank = "E"; // 0-0.2
-                                else if (scores[i] < 0.4f)
-                                    rank = "D"; // 0.2-0.4
-                                else if (scores[i] < 0.6f)
-                                    rank = "C"; // 0.4-0.6
-                                else if (scores[i] < 0.8f)
-                                    rank = "D"; // 0.6-0.8
+                                if (scores[i] < 0.18f)
+                                    rank = "E"; 
+                                else if (scores[i] < 0.36f)
+                                    rank = "D"; 
+                                else if (scores[i] < 0.54f)
+                                    rank = "C"; 
+                                else if (scores[i] < 0.72f)
+                                    rank = "D"; 
                                 else if (scores[i] < 0.9f)
-                                    rank = "B"; // 0.8-0.9
+                                    rank = "B"; 
                                 else if (scores[i] < 0.95f)
                                     rank = "A"; // 0.9-0.95
                                 else if (scores[i] < 0.98f)
                                     rank = "S"; // 0.95-0.98
-                                else
-                                    rank = "SS";//0.98+
+                                else if (scores[i]<0.99f)
+                                    rank = "SS";// 0.98-0.99
+                                else 
+                                    rank = "???"; // 0.99+
                                 std::string text = std::format("{}:{}({:>3.1f})", chars[i], rank, scores[i]*100.0f).c_str();
                                 auto sz_text=ImGui::CalcTextSize(text.c_str());
                                 float h2=hheight;

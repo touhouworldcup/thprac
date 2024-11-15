@@ -51,49 +51,64 @@ public:
     THGuiRollAll() : mRandEngine(mRandDevice())
     {
     }
-    void LoadRoll()
+    void InitRoll(int remove,bool change_color)
     {
-        mProbs2 = {};
-        mNames = {};
-        mProbs = {};
-        mColors = {};
-        std::wstring csv_filename = LauncherWndFileSelect(nullptr, L"csv(*.csv)\0*.csv\0*.*\0\0");
-        std::string name = utf16_to_mb(GetNameFromFullPath(csv_filename).c_str(), CP_UTF8);
-        strcpy_s(mRollName, name.c_str());
-
-        rapidcsv::Document doc(utf16_to_mb(csv_filename.c_str(), CP_ACP), rapidcsv::LabelParams(0, -1));
-
-        mNames = doc.GetColumn<std::string>(0);
-        mProbs = doc.GetColumn<float>(1);
-        if (mProbs.size() < mNames.size())
-        {
+        if (mProbs.size() < mNames.size()) {
             int d = mNames.size() - mProbs.size();
             for (int i = 0; i < d; i++)
                 mProbs.emplace_back(1);
         }
-        float tot = 0.0f;
-        for (int i = 0; i < mNames.size(); i++){
-            tot += mProbs[i];
-            mProbs[i]=tot;
+        if (mNames.size() == 0)
+            return;
+        if (remove >=0 && remove<mNames.size()){
+            mNames.erase(mNames.begin() + remove);
+            mProbs.erase(mProbs.begin() + remove);
+            mColors.erase(mColors.begin() + remove);
+            mColors2.erase(mColors2.begin() + remove);
         }
+        if (mNames.size() == 0)
+            return;
+
+        float tot = 0.0f;
+        for (int i = 0; i < mNames.size(); i++) tot += mProbs[i];
+
         mTotWeight = tot;
+        mProbs2 = {};
+        if (change_color) {
+            mColors = {};
+            mColors2 = {};
+        }
         mProbs2.push_back(0.0f);
-        for (int i = 0; i < mNames.size(); i++)
-        {
-            mProbs2.push_back(mProbs[i] / mTotWeight);
-            float r, g, b,h,s,v;
-            h = GetRandomFloat();
-            s = GetRandomFloat() * 0.4f + 0.6f;
-            v = GetRandomFloat() * 0.4f + 0.6f;
-            ImGui::ColorConvertHSVtoRGB(h,s,v , r, g, b);
-            mColors.push_back({r,g,b,1.0f});
-            ImGui::ColorConvertHSVtoRGB(h, s, v-0.3f, r, g, b);
-            mColors2.push_back({r,g,b,1.0f});
+        tot = 0.0f;
+        for (int i = 0; i < mNames.size(); i++) {
+            tot += mProbs[i];
+            mProbs2.push_back(tot / mTotWeight);
+            if (change_color)
+            {
+                float r, g, b, h, s, v;
+                h = GetRandomFloat();
+                s = GetRandomFloat() * 0.4f + 0.6f;
+                v = GetRandomFloat() * 0.4f + 0.6f;
+                ImGui::ColorConvertHSVtoRGB(h, s, v, r, g, b);
+                mColors.push_back({ r, g, b, 1.0f });
+                ImGui::ColorConvertHSVtoRGB(h, s, v - 0.3f, r, g, b);
+                mColors2.push_back({ r, g, b, 1.0f });
+            }
         }
     }
-    void RollGame()
+    void LoadRoll()
     {
         
+        mNames = {};
+        mProbs = {};
+        
+        std::wstring csv_filename = LauncherWndFileSelect(nullptr, L"csv(*.csv)\0*.csv\0*.*\0\0");
+        std::string name = utf16_to_mb(GetNameFromFullPath(csv_filename).c_str(), CP_UTF8);
+        strcpy_s(mRollName, name.c_str());
+        rapidcsv::Document doc(utf16_to_mb(csv_filename.c_str(), CP_ACP), rapidcsv::LabelParams(0, -1));
+        mNames = doc.GetColumn<std::string>(0);
+        mProbs = doc.GetColumn<float>(1);
+        InitRoll(-1, true);
     }
     bool DrawPie(ImDrawList* p, ImVec2 mid, float radius, float angle1, float angle2, uint32_t col_fill, uint32_t col_fill2, uint32_t col_line)
     {
@@ -168,7 +183,16 @@ public:
             roll_time = 0;
             roll_rand = GetRandomFloat();
         }
-        ;
+        ImGui::SameLine();
+        if (ImGui::Button(S(THPRAC_TOOLS_ROLLF_REMOVE_CUR)))
+        {
+            if (has_result == true){
+                InitRoll(roll_result, false);
+                roll = false;
+                has_result = false;
+            }
+        }
+        
         if (!roll){
             ImGui::SameLine();
             ImGui::Text(S(THPRAC_TOOLS_ROLLF_TIME));

@@ -273,6 +273,7 @@
 	  "THPRAC_TOOLS_ROLLF_START": [ "开ROLL", "ROLL", "ROLL" ],
 	  "THPRAC_TOOLS_ROLLF_CLPS": [ "查看", "view", "view" ],
 	  "THPRAC_TOOLS_ROLLF_TIME": [ "转盘时间", "time", "time" ],
+	  "THPRAC_TOOLS_ROLLF_REMOVE_CUR": [ "删除roll到的", "remove rolled", "remove rolled" ],
 	  
 	  
       "THPRAC_TOOLS_APPLY_THPRAC": [ "应用thprac至正在运行的游戏", "Apply thprac to ongoing game", "実行中のゲームにthpracを適用します" ],

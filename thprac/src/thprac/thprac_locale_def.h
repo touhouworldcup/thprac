@@ -1017,6 +1017,7 @@ enum th_glossary_t {
     THPRAC_TOOLS_ROLLF_CSV,
     THPRAC_TOOLS_ROLLF_CSV_DESC,
     THPRAC_TOOLS_ROLLF_FROM_FILE,
+    THPRAC_TOOLS_ROLLF_REMOVE_CUR,
     THPRAC_TOOLS_ROLLF_START,
     THPRAC_TOOLS_ROLLF_TIME,
     THPRAC_TOOLS_ROLL_RESULT,
@@ -1232,7 +1233,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1221];
+extern const char* th_glossary_str[3][1222];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

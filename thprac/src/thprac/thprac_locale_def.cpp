@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1221] {
+const char* th_glossary_str[3][1222] {
     {
         "",
         "啤酒",
@@ -1017,6 +1017,7 @@ const char* th_glossary_str[3][1221] {
         "读取CSV文件",
         "需要为utf-8格式, 共两列, 分别为名称和权重",
         "随机ROLL",
+        "删除roll到的",
         "开ROLL",
         "转盘时间",
         "你随机到了：%s。（右键查看更多选项）",
@@ -2240,6 +2241,7 @@ const char* th_glossary_str[3][1221] {
         "read csv file",
         "need to be utf-8, has a name column and a weight column",
         "ROLL from file",
+        "remove rolled",
         "ROLL",
         "time",
         "You've rolled: %s. (Right click for more options)",
@@ -3463,6 +3465,7 @@ const char* th_glossary_str[3][1221] {
         "read csv file",
         "need to be utf-8, has a name column and a weight column",
         "ROLL from file",
+        "remove rolled",
         "ROLL",
         "time",
         "結果：％s。（右クリックで詳細オプションを表示）",
