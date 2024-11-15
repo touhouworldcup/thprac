@@ -80,6 +80,7 @@ enum th_glossary_t {
     TH08_STAGE_4B,
     TH08_STAGE_6A,
     TH08_STAGE_6B,
+    TH08_STAGE_LW,
     TH08_TIME,
     TH08_TITLE,
     TH08_VALUE,
@@ -576,6 +577,8 @@ enum th_glossary_t {
     THPRAC_DIRECTORY_SETTING_MODAL,
     THPRAC_DIR_GLOBAL,
     THPRAC_DIR_LOCAL,
+    THPRAC_DISABLE_CHECKSUM_08,
+    THPRAC_DISABLE_CHECKSUM_08_DESC,
     THPRAC_DISABLE_F10_11_13,
     THPRAC_DISABLE_MAXIMIZE_BTN,
     THPRAC_DONT_SEARCH_ONGOING,
@@ -1233,7 +1236,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1222];
+extern const char* th_glossary_str[3][1225];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1626,17 +1629,34 @@ namespace TH08 {
         TH08_ST7_END_S9,
         TH08_ST7_END_S10,
         TH08_ST7_END_LS,
+        TH08_LW_1,
+        TH08_LW_2,
+        TH08_LW_3,
+        TH08_LW_4,
+        TH08_LW_5,
+        TH08_LW_6,
+        TH08_LW_7,
+        TH08_LW_8,
+        TH08_LW_9,
+        TH08_LW_10,
+        TH08_LW_11,
+        TH08_LW_12,
+        TH08_LW_13,
+        TH08_LW_14,
+        TH08_LW_15,
+        TH08_LW_16,
+        TH08_LW_17,
     };
 
-    extern const char* th_sections_str[3][4][105];
+    extern const char* th_sections_str[3][4][122];
 
-    extern const uint8_t th_sections_bgm[105];
+    extern const uint8_t th_sections_bgm[122];
 
-    extern const th_sections_t th_sections_cba[9][2][20];
+    extern const th_sections_t th_sections_cba[10][2][20];
 
-    extern const th_sections_t th_sections_cbt[9][2][15];
+    extern const th_sections_t th_sections_cbt[10][2][18];
 
-    extern const th_glossary_t TH08_STAGE_SELECT[10];
+    extern const th_glossary_t TH08_STAGE_SELECT[11];
 
     extern const th_glossary_t TH08_SPELL_5PHASE[7];
 
@@ -2768,10 +2788,10 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3291];
+extern const wchar_t __thprac_loc_range_zh[3313];
 
 extern const wchar_t __thprac_loc_range_en[57];
 
-extern const wchar_t __thprac_loc_range_ja[2681];
+extern const wchar_t __thprac_loc_range_ja[2703];
 
 }

@@ -1,8 +1,9 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
-
+#include <format>
 
 namespace THPrac {
+extern bool g_disable_checksum;
 namespace TH08 {
     using std::pair;
     struct THPracParam {
@@ -266,19 +267,24 @@ namespace TH08 {
             if (mStage())
                 *mSection = *mChapter = 0;
             if (*mMode == 1) {
-                int mbs = -1;
-                if (*mStage == 3 || *mStage == 4) { // Counting from 0
-                    mbs = 2;
-                    if (*mWarp == 2)
-                        *mWarp = 0;
-                }
-                if (mWarp(mbs))
-                    *mSection = *mChapter = *mPhase = *mFrame = 0;
-                if (*mWarp) {
-                    SectionWidget();
-                    mPhase(TH_PHASE, SpellPhase());
-                }
+                if (*mStage != 9) { // LW
+                    int mbs = -1;
+                    if (*mStage == 3 || *mStage == 4) { // Counting from 0
+                        mbs = 2;
+                        if (*mWarp == 2)
+                            *mWarp = 0;
+                    }
 
+                    if (mWarp(mbs))
+                        *mSection = *mChapter = *mPhase = *mFrame = 0;
+                    if (*mWarp) {
+                        SectionWidget();
+                        mPhase(TH_PHASE, SpellPhase());
+                    }
+                }else{
+                    *mWarp = 5;
+                    SectionWidget();
+                }
 
                 mLife();
                 mBomb();
@@ -452,7 +458,7 @@ namespace TH08 {
             TH_LIFE, TH_BOMB, TH_POWER, TH08_GAUGE, TH_SCORE, TH_GRAZE, TH_POINT, TH_POINT_TOTAL, TH_POINT_STAGE,
             TH08_TIME, TH08_VALUE,  TH08_NIGHT, TH_BULLET_RANK, TH_BULLET_RANKLOCK };
 
-        int mChapterSetup[9][2] {
+        int mChapterSetup[10][2] {
             { 1, 1 },
             { 4, 0 },
             { 2, 1 },
@@ -461,7 +467,8 @@ namespace TH08 {
             { 3, 2 },
             { 2, 0 },
             { 2, 0 },
-            { 3, 4 }
+            { 3, 4 },
+            { 0, 0 }, //LW chapters
         };
 
         int mGaugeType;
@@ -2201,6 +2208,25 @@ namespace TH08 {
             ECLJump(ecl, 0x851c, 0x8544);
             ECLCheckTime(10);
             break;
+
+        case THPrac::TH08::TH08_LW_1:
+        case THPrac::TH08::TH08_LW_2:
+        case THPrac::TH08::TH08_LW_3:
+        case THPrac::TH08::TH08_LW_4:
+        case THPrac::TH08::TH08_LW_5:
+        case THPrac::TH08::TH08_LW_6:
+        case THPrac::TH08::TH08_LW_7:
+        case THPrac::TH08::TH08_LW_8:
+        case THPrac::TH08::TH08_LW_9:
+        case THPrac::TH08::TH08_LW_10:
+        case THPrac::TH08::TH08_LW_11:
+        case THPrac::TH08::TH08_LW_12:
+        case THPrac::TH08::TH08_LW_13:
+        case THPrac::TH08::TH08_LW_14:
+        case THPrac::TH08::TH08_LW_15:
+        case THPrac::TH08::TH08_LW_16:
+        case THPrac::TH08::TH08_LW_17:
+            break;
         default:
             break;
         }
@@ -2320,6 +2346,15 @@ namespace TH08 {
     }
     EHOOK_DY(th08_game_init, 0x4674ed)
     {
+        if (thPracParam.mode == 1 && thPracParam.stage == 9) {
+            *(DWORD*)(pCtx->Ebp - 0x40) = 8;
+        }else{
+            if (*(DWORD*)(pCtx->Ecx + 0x6C) == 2){
+                *(DWORD*)(pCtx->Ebp - 0x40) = 15;
+            }else{
+                *(DWORD*)(pCtx->Ebp - 0x40) =  8;
+            }
+        }
         thPracParam.Reset();
         THMainHook::singleton().th08_familiar.Disable();
     }
@@ -2335,7 +2370,37 @@ namespace TH08 {
             int32_t* diff = (int32_t*)0x160f538;
             *diff = 4;
         }
+        if (thPracParam.stage == 9) {
+            int32_t* diff = (int32_t*)0x160f538;
+            *diff = 1;
+
+            int32_t* sp = (int32_t*)0x164D0B4;
+             *sp |= 0x4000;
+            int16_t sp_idx = thPracParam.section - TH08_LW_1 + 205; // sp index
+            *(WORD*)(0x164D0B8) = sp_idx;
+            int stage = 3;
+            switch (sp_idx)
+            {
+            case 205: stage = 0;break;
+            case 206: stage = 1;break;
+            case 207: stage = 2;break;
+            case 208: stage = 5;break;
+            case 209: stage = 6;break;
+            case 210: stage = 7;break;
+            case 211: stage = 8;break;
+            case 212: stage = 5;break;
+            case 213: stage = 8;break;
+            case 214: stage = 3;break;
+            case 215: stage = 4;break;
+            default: stage = 3;break;
+            }
+            *(DWORD*)(0x164D2CC)=stage;
+        }
         pCtx->Eip = 0x46b0b4;
+    }
+    EHOOK_DY(th08_prac_lw1, 0x467774)
+    {
+        pCtx->Eax = *(DWORD*)(pCtx->Ebp - 0x40);
     }
     EHOOK_DY(th08_prac_menu_4, 0x46b117)
     {
@@ -2524,7 +2589,7 @@ namespace TH08 {
     {
         TH08InGameInfo::singleton().mIsInGame = true;
     }
-    EHOOK_DY(th08_spell_capture, 0x416265)// to enable SC count in rep, do not directly read spell capture array
+    EHOOK_DY(th08_spell_capture, 0x416265) // to enable SC count in rep, do not directly read spell capture array
     {
         const static int32_t last_spells[] = {
             10, 11, 12,
@@ -2542,6 +2607,17 @@ namespace TH08 {
         for (int j = 0; j < 43; j++) {
             if (cur_spell == last_spells[j])
                 TH08InGameInfo::singleton().mLSCCount++;
+        }
+    }
+    EHOOK_DY(th08_checksum, 0x44858D)
+    {
+        static bool init = false;
+        if (!init)
+            GameGuiInit(IMPL_WIN32_DX8, 0, 0,0, Gui::INGAGME_INPUT_GEN1, 0, 0);
+        if (g_disable_checksum)
+        {
+            pCtx->Eax = 0;
+            pCtx->Eip = 0x4486B7;
         }
     }
 #pragma endregion

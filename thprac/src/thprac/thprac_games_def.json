@@ -231,8 +231,12 @@
     "THPRAC_ENABLE_KEYBOARD_SOCD_DESC":["当同时按下反向方向键时，仅激活最后使用的方向键。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."],
     
     "THPRAC_COMPATIBILITY_SETTINGS":["兼容性设置","Compatibility Settings","Compatibility Settings"],
-    
+	
+    "THPRAC_DISABLE_CHECKSUM_08":["永夜抄禁用checksum检测","disable checksum in IN","disable checksum in IN"],
+    "THPRAC_DISABLE_CHECKSUM_08_DESC":["当由于存档问题无法启动可尝试","try this when game crashes because of score.dat","try this when game crashes because of score.dat"],
+	
     "THPRAC_DISABLE_F10_11_13":["在th11到th13靳用F10键","disable f10 for th11-13","disable f10 for th11-13"],
+    
     "THPRAC_PAUSE_BGM_TH06":["红魔乡在3036时暂停bgm(仅wav)","pause bgm when esc in EoSD(wav only)","pause bgm when esc in EoSD(wav only)"],
     
     "THPRAC_FORCE_ONLY_RENDER_TEXT_USED":["只渲染用到的字体","only render used font","only render used font"],
@@ -2770,6 +2774,7 @@
       "TH08_STAGE_4B": [ "4B", "4B", "4B" ],
       "TH08_STAGE_6A": [ "6A", "6A", "6A" ],
       "TH08_STAGE_6B": [ "6B", "6B", "6B" ],
+      "TH08_STAGE_LW": [ "LW", "LW", "LW" ],
       "TH08_DOSWNC": [ "符卡名不一致时不重置符卡历史", "Don't overwrite scores when spell name changes", "言語切替時にスペルカード履歴を上書きしない" ]
     },
 
@@ -3426,7 +3431,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 9, 2, 14 ],
-        "!X": [ "不灭「不死鸟之尾」", "Inextinguishable \"Phoenix's Tail\"", "復燃「恋の埋火」" ]
+        "!X": [ "不灭「不死鸟之尾」", "Inextinguishable \"Phoenix's Tail\"", "不滅「フェニックスの尾」" ]
       },
       "TH08_ST7_END_NS8": {
         "bgm": 1,
@@ -3457,6 +3462,108 @@
         "spell": 1,
         "appearance": [ 9, 2, 19 ],
         "!X": [ "「不朽的弹幕」", "\"Imperishable Shooting\"", "「インペリシャブルシューティング」" ]
+      },
+      "TH08_LW_1": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 1 ],
+        "!ENHL": [ "「不合时令的蝶雨」", "\"Unseasonal Butterfly Storm\"", "「季節外れのバタフライストーム」" ]
+      },
+	  "TH08_LW_2": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 2 ],
+        "!ENHL": [ "「Blind Night-Bird」（失明的夜雀）", "\"Blind Nightbird\"", "「ブラインドナイトバード」" ]
+      },
+	  "TH08_LW_3": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 3 ],
+        "!ENHL": [ "「日出国之天子」", "\"Emperor of the Land of the Rising Sun\"", "「日出づる国の天子」" ]
+      },
+	  "TH08_LW_4": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 4 ],
+        "!ENHL": [ "「幻胧月睨（Lunatic Red Eyes）」（疯狂红眼）", "\"Lunatic Red Eyes\"", "「幻朧月睨（ルナティックレッドアイズ）」" ]
+      },
+	  "TH08_LW_5": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 5 ],
+        "!ENHL": [ "「天网蛛网捕蝶之法」", "\"Heaven Spider's Butterfly-Capturing Web\"", "「「天網蜘網捕蝶の法」" ]
+      },
+	  "TH08_LW_6": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 6 ],
+        "!ENHL": [ "「蓬莱的树海」", "\"Hourai's Sea of Trees\"", "「蓬莱の樹海」" ]
+      },
+	  "TH08_LW_7": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 7 ],
+        "!ENHL": [ "「不死鸟重生」", "\"Phoenix Rebirth\"", "「フェニックス再誕」" ]
+      },
+	  "TH08_LW_8": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 8 ],
+        "!ENHL": [ "「Ancient Duper」（远古的欺骗者）", "\"Ancient Duper\"", "「エンシェントデューパー」" ]
+      },
+	  "TH08_LW_9": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 9 ],
+        "!ENHL": [ "「无何有的浄化」", "\"Total Purification\"", "「無何有浄化」" ]
+      },
+	  "TH08_LW_10": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 10 ],
+        "!ENHL": [ "「梦想天生」", "\"Innate Dream\"", "「夢想天生」" ]
+      },
+	  "TH08_LW_11": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 11 ],
+        "!ENHL": [ "「Blazing Star」（彗星）", "\"Blazing Star\"", "「ブレイジングスター」" ]
+      },
+	  "TH08_LW_12": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 12 ],
+        "!ENHL": [ "「Deflation World」（收缩的世界）", "\"Deflation World\"", "「デフレーションワールド」" ]
+      },
+	  "TH08_LW_13": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 13 ],
+        "!ENHL": [ "「待宵反射卫星斩」", "\"Matsuyoi-Reflecting Satellite Slash\"", "「待宵反射衛星斬」" ]
+      },
+	  "TH08_LW_14": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 14 ],
+        "!ENHL": [ "「猎奇剧团里的怪人」", "\"The Phantom of the Grand Guignol\"", "「グランギニョル座の怪人」" ]
+      },
+	  "TH08_LW_15": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 15 ],
+        "!ENHL": [ "「Scarlet Destiny」（绯红色的命运）", "\"Scarlet Destiny\"", "「スカーレットディスティニー」" ]
+      },
+	  "TH08_LW_16": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 16 ],
+        "!ENHL": [ "「西行寺无余涅槃」", "\"Saigyouji Parinirvana\"", "「西行寺無余涅槃」" ]
+      },
+	  "TH08_LW_17": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 10, 2, 17 ],
+        "!ENHL": [ "「深弹幕结界 -梦幻泡影-」", "\"Profound Danmaku Barrier -Phantasm, Foam and Shadow-\"", "「深弾幕結界　-夢幻泡影-」" ]
       }
     },
 
@@ -3470,7 +3577,8 @@
         "TH_STAGE_5",
         "TH08_STAGE_6A",
         "TH08_STAGE_6B",
-        "TH_STAGE_EXTRA"
+        "TH_STAGE_EXTRA",
+		"TH08_STAGE_LW"
       ],
 	  "TH08_SPELL_5PHASE": [
         "TH_P1",
