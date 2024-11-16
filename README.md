@@ -29,6 +29,7 @@
 - add a ab test in th15, 123's normal
 - add roll from csv
 - add LW practice for IN
+- make IN and PCB ignore .exe checksum to avoid unexpected changes in .exe file(like using SpecialK and game crashes)
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
@@ -61,3 +62,4 @@
 - 在绀珠传123非符后面加了个底力测试
 - 使用CSV文件随机roll东西
 - 永夜抄LW练习
+- 妖/永禁用checksum, 从而如汉化版等修改版的rep和score.dat不会导致游戏崩溃/游戏存档清零了(但是rep可能仍然会炸)

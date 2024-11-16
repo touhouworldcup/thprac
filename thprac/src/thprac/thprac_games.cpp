@@ -28,7 +28,6 @@ bool g_pauseBGM_06 = false;
 bool g_forceRenderCursor=false;
 bool g_testKey=false;
 bool g_disable_max_btn = true;
-bool g_disable_checksum = false;
 AdvancedIGI_Options g_adv_igi_options;
 
 bool g_useCustomFont = false;
@@ -220,19 +219,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3,
     int wnd_size_flag, float x, float y)
 {
-    if (device == 0) // special for th08
-    {
-        if (LauncherCfgInit(true)) {
-            bool disable_checksum = false;
-            if (LauncherSettingGet("disable_checksum", disable_checksum) && disable_checksum) {
-                if (device == 0x17ce760) // 08
-                {
-                    g_disable_checksum = true;
-                }
-            }
-        }
-        return;
-    }
     ingame_mb_init();
     ::ImGui::CreateContext();
     g_gameGuiImpl = impl;
@@ -410,14 +396,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
             
         } else {
             g_disable_f10_11_13 = false;
-        }
-
-        bool disable_checksum = false;
-        if (LauncherSettingGet("disable_checksum", disable_checksum) && disable_checksum) {
-            if (device == 0x17ce760) // 08
-            {
-                g_disable_checksum = true;
-            }
         }
 
         LauncherSettingGet_KeyBind();

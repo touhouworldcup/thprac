@@ -2020,6 +2020,17 @@ namespace TH07 {
     }
 
 #pragma endregion
+    EHOOK_DY(th07_checksum1, 0x43A655) // checksum read fix
+    {
+        *(DWORD*)(pCtx->Ebp + 0xC) = *(DWORD*)(pCtx->Ebp - 0x14);
+        *(DWORD*)(pCtx->Ebp + 0x10) = *(DWORD*)(pCtx->Ebp - 0x8);
+    }
+    EHOOK_DY(th07_checksum2, 0x435FBB) // checksum
+    {
+        *(DWORD*)(0x575C14) = 650752;
+        *(DWORD*)(0x575C10) = 2932163676;
+        // 1.00b
+    }
     HOOKSET_ENDDEF()
 }
 

@@ -1947,7 +1947,6 @@ private:
     void GuiMain()
     {
         if (ImGui::CollapsingHeader(S(THPRAC_COMPATIBILITY_SETTINGS))) {
-            mDisableChecksum.Gui(S(THPRAC_DISABLE_CHECKSUM_08), S(THPRAC_DISABLE_CHECKSUM_08_DESC));
             mInitWindowPos.Gui(S(THPRAC_INIT_WINDOW_POS), S(THPRAC_INIT_WINDOW_POS_DESC));
             mDisableMaximizeBtn.Gui(S(THPRAC_DISABLE_MAXIMIZE_BTN));
             mDisableF10_11_13.Gui(S(THPRAC_DISABLE_F10_11_13));
@@ -2167,7 +2166,6 @@ private:
     THCfgCheckbox mTestKey { "test_key", false };
     THCfgCheckbox mUseCorrectJaFonts { "use_correct_ja_fonts", false };
     THCfgCheckbox mUseCustomFont { "use_custom_font", false };
-    THCfgCheckbox mDisableChecksum { "disable_checksum", false };
     THCfgCombo mCustomFont { "custom_font", 0, 999 };
 
     THCfgCombo mExistingGameAction { "existing_game_launch_action", 0, 3 };

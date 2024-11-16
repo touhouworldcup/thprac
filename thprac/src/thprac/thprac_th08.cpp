@@ -3,7 +3,6 @@
 #include <format>
 
 namespace THPrac {
-extern bool g_disable_checksum;
 namespace TH08 {
     using std::pair;
     struct THPracParam {
@@ -2609,18 +2608,18 @@ namespace TH08 {
                 TH08InGameInfo::singleton().mLSCCount++;
         }
     }
-    EHOOK_DY(th08_checksum, 0x44858D)
-    {
-        static bool init = false;
-        if (!init)
-            GameGuiInit(IMPL_WIN32_DX8, 0, 0,0, Gui::INGAGME_INPUT_GEN1, 0, 0);
-        if (g_disable_checksum)
-        {
-            pCtx->Eax = 0;
-            pCtx->Eip = 0x4486B7;
-        }
-    }
 #pragma endregion
+    EHOOK_DY(th08_checksum1, 0x448679) // checksum read fix
+    {
+        *(DWORD*)(pCtx->Ebp + 0xC) = *(DWORD*)(pCtx->Ebp - 0x14);
+        *(DWORD*)(pCtx->Ebp + 0x10) = *(DWORD*)(pCtx->Ebp - 0x8);
+    }
+    EHOOK_DY(th08_checksum2, 0x443836) // checksum
+    {
+        *(DWORD*)(0x17CEAB0) = 840704;
+        *(DWORD*)(0x17CEAAC) = 2724749753;
+        // 1.00d
+    }
     HOOKSET_ENDDEF()
 }
 
