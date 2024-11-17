@@ -1680,7 +1680,7 @@ namespace TH06 {
                     FpsSet();
                 EndOptGroup();
             }
-            DisableXKeyOpt();
+            DisableKeyOpt();
             ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK), &g_adv_igi_options.th06_showRank);
             ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX), &g_adv_igi_options.th06_showHitbox);
             ImGui::SameLine();

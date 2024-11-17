@@ -22,6 +22,8 @@ DWORD* g_gameGuiDevice = nullptr;
 DWORD* g_gameGuiHwnd = nullptr;
 HIMC g_gameIMCCtx = 0;
 bool g_disable_xkey = false;
+bool g_disable_shiftkey = false;
+bool g_disable_zkey = false;
 bool g_enable_SOCD = false;
 bool g_disable_f10_11_13 = false;
 bool g_pauseBGM_06 = false;
@@ -103,8 +105,13 @@ BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
     if (g_disable_xkey) {
         keyBoardState['X'] = 0x0;
     }
-    if (g_disable_f10_11_13)
-    {
+    if (g_disable_shiftkey) {
+        keyBoardState[VK_LSHIFT] = keyBoardState[VK_LSHIFT] = keyBoardState[VK_SHIFT] = 0x0;
+    }
+    if (g_disable_zkey) {
+        keyBoardState['Z']= 0x0;
+    }
+    if (g_disable_f10_11_13){
         keyBoardState[VK_F10] = 0x0;
     }
     if (!g_enable_SOCD){
@@ -171,6 +178,13 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
     }
     if (g_disable_xkey) {
         ((BYTE*)state)[DIK_X] = 0x0;
+    }
+    if (g_disable_shiftkey) {
+        ((BYTE*)state)[DIK_LSHIFT] = 0x0;
+        ((BYTE*)state)[DIK_RSHIFT] = 0x0;
+    }
+    if (g_disable_zkey) {
+        ((BYTE*)state)[DIK_Z] = 0x0;
     }
     if (g_disable_f10_11_13) {
         ((BYTE*)state)[DIK_F10] = 0x0;
@@ -832,12 +846,20 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
     return clickedApply;
 }
 
-bool DisableXKeyOpt()
+void DisableKeyOpt()
 {
     ImGui::Checkbox(S(TH_ADV_DISABLE_X_KEY), &g_disable_xkey);
     ImGui::SameLine();
     HelpMarker(S(TH_ADV_DISABLE_X_KEY_DESC));
-    return g_disable_xkey;
+    ImGui::SameLine();
+    ImGui::Checkbox(S(TH_ADV_DISABLE_SHIFT_KEY), &g_disable_shiftkey);
+    ImGui::SameLine();
+    HelpMarker(S(TH_ADV_DISABLE_SHIFT_KEY_DESC));
+    ImGui::SameLine();
+    ImGui::Checkbox(S(TH_ADV_DISABLE_Z_KEY), &g_disable_zkey);
+    ImGui::SameLine();
+    HelpMarker(S(TH_ADV_DISABLE_Z_KEY_DESC));
+    return;
 }
 
 

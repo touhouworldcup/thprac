@@ -1429,7 +1429,7 @@ namespace TH14 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
-                DisableXKeyOpt();
+                DisableKeyOpt();
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_BONUS), &(g_adv_igi_options.th14_showBonus));
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_ITEMS), &(g_adv_igi_options.th14_showItemsCount));
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR), &(g_adv_igi_options.th14_showDropBar));

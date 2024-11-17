@@ -845,7 +845,7 @@ namespace TH10 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
-                DisableXKeyOpt();
+                DisableKeyOpt();
 
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th10_bossmovedown.Toggle(forceBossMoveDown);

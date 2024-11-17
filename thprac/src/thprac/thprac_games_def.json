@@ -890,7 +890,12 @@
        "THPRAC_KENG_DEL_YES_OR_NO":["确定删除?","sure to delete?","sure to delete?"],
 
        "THPRAC_KENG_DETAILS":["详情","details","details"],
-       "THPRAC_KENG_DETAILS_POPUP":["详情##dtpp","details##dtpp","details##dtpp"],
+       "THPRAC_KENG_DETAILS_AFTER":["只计算在此之后的记录:","only calculate records after:","only calculate records after:"],
+       "THPRAC_KENG_DETAILS_CAL":["计算","calculate","calculate"],
+       "THPRAC_KENG_DETAILS_CAL_EM":["基于期望最大化","based on exception maximization","based on exception maximization"],
+       "THPRAC_KENG_DETAILS_CAL_EM_DESC":["打n次撞m次则计算为p(miss)=(m+1)/(n+2)","miss m times in n records, then p(miss)=(m+1)/(n+2)","miss m times in n records, then p(miss)=(m+1)/(n+2)"],
+       
+	   "THPRAC_KENG_DETAILS_POPUP":["详情##dtpp","details##dtpp","details##dtpp"],
        "THPRAC_KENG_DETAILS_DIFF_TABLE":["难点详情","diff details","diff details"],
        "THPRAC_KENG_DETAILS_DIFF_INDEX":["编号","index","index"],
        "THPRAC_KENG_DETAILS_DIFF_NAME":["难点名","name","name"],
@@ -899,6 +904,8 @@
        "THPRAC_KENG_DETAILS_PASS_TABLE":["通过率详情","pass details","pass details"],
        "THPRAC_KENG_DETAILS_PASS_MISS":["miss数","miss count","miss count"],
        "THPRAC_KENG_DETAILS_PASS_PROB":["概率","prob","prob"],
+       "THPRAC_KENG_DETAILS_PASS_EXCEPTION":["期望局数","exception num of games","exception num of games"],
+       "THPRAC_KENG_DETAILS_PASS_EXCEPTION_INF":["近乎无限","almost inf","almost inf"],
 	   
        "THPRAC_KENG_NAME":["坑名:","name","name"],
        "THPRAC_KENG_DATE":["创建日期:","date","date"],
@@ -1177,8 +1184,13 @@
 	  
       "TH_ONE_KEY_DIE": [ "一键疮痍", "one key DIE", "one key DIE" ],
       "TH_ONE_KEY_DIE_DESC": [ "为了在某些作品的练习模式中快速存rep", "for rep storage in practice mode", "for rep storage in practice mode" ],
-      "TH_ADV_DISABLE_X_KEY": [ "禁用X键", "disable x key", "disable x key" ],
+      "TH_ADV_DISABLE_X_KEY": [ "禁用X键", "disable X key", "disable X key" ],
+	  "TH_ADV_DISABLE_Z_KEY": [ "禁用Z键", "disable Z key", "disable Z key" ],
+      "TH_ADV_DISABLE_SHIFT_KEY": [ "禁用Shift键", "disable shift key", "disable shift key" ],
+	  
       "TH_ADV_DISABLE_X_KEY_DESC": [ "给打nb的人准备", "for who want to play nb neta", "for who want to play nb neta" ],
+	  "TH_ADV_DISABLE_Z_KEY_DESC": [ "真假...", "really?", "really?" ],
+	  "TH_ADV_DISABLE_SHIFT_KEY_DESC": [ "喜欢低封?", "like NO FOCUS?", "like NO FOCUS?" ],
 	  
 	  "TH_BOSS_FORCE_MOVE_DOWN": [ "完全下压", "force boss region to move down", "force boss region to move down" ],
 	  "TH_BOSS_FORCE_MOVE_DOWN_RANGE": [ "下压幅度", "range", "range" ],

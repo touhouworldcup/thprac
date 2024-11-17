@@ -724,7 +724,7 @@ namespace TH11 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
-                DisableXKeyOpt();
+                DisableKeyOpt();
                 if (ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH11_SHOW_HINT), &(g_adv_igi_options.th11_showHint))) {
                     THAdvOptWnd::SetHint();
                 }

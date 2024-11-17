@@ -1781,7 +1781,7 @@ namespace TH18 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
-                DisableXKeyOpt();
+                DisableKeyOpt();
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th18_bossmovedown.Toggle(forceBossMoveDown);
                 }

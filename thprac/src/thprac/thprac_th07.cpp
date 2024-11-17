@@ -767,7 +767,7 @@ namespace TH07 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
-                DisableXKeyOpt();
+                DisableKeyOpt();
                 if (ImGui::Button(S(TH_ONE_KEY_DIE))) {
                     if (*(DWORD*)(0x626278)) {
                         *(float*)(*(DWORD*)(0x626278) + 0x5c) = 0.0f;

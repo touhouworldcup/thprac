@@ -1000,7 +1000,7 @@ namespace TH17 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
-                DisableXKeyOpt();
+                DisableKeyOpt();
 
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th17_bossmovedown.Toggle(forceBossMoveDown);

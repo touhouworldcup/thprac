@@ -796,7 +796,7 @@ namespace TH13 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
-                DisableXKeyOpt();
+                DisableKeyOpt();
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH13_SHOW_HITS), &(g_adv_igi_options.th13_showHits));
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR), &(g_adv_igi_options.th13_showHitBar));
                 ImGui::SameLine();

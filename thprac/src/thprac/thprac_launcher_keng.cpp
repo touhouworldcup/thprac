@@ -413,6 +413,55 @@ namespace THPrac {
         friend class Keng;
     };
 
+    struct DiffsDetailedTableItem {
+        int index;
+        std::string name;
+        int count;
+        double pass_rate;
+        static const ImGuiTableSortSpecs* s_current_sort_specs;
+
+#ifndef IMGUI_CDECL
+#ifdef _MSC_VER
+#define IMGUI_CDECL __cdecl
+#else
+#define IMGUI_CDECL
+#endif
+#endif
+        static int IMGUI_CDECL CompareWithSortSpecs(const void* lhs, const void* rhs)
+        {
+            const DiffsDetailedTableItem* a = (const DiffsDetailedTableItem*)lhs;
+            const DiffsDetailedTableItem* b = (const DiffsDetailedTableItem*)rhs;
+            for (int n = 0; n < s_current_sort_specs->SpecsCount; n++) {
+                // Here we identify columns using the ColumnUserID value that we ourselves passed to TableSetupColumn()
+                // We could also choose to identify columns based on their index (sort_spec->ColumnIndex), which is simpler!
+                const ImGuiTableColumnSortSpecs* sort_spec = &s_current_sort_specs->Specs[n];
+                double delta = 0;
+                switch (sort_spec->ColumnUserID) {
+                case 0:
+                    delta = (a->index - b->index);
+                    break;
+                case 1:
+                    delta = (strcmp(a->name.c_str(), b->name.c_str()));
+                    break;
+                case 2:
+                    delta = (a->count - b->count);
+                    break;
+                case 3:
+                    delta = (a->pass_rate - b->pass_rate);
+                    break;
+                default:
+                    IM_ASSERT(0);
+                    break;
+                }
+                if (delta > 0)
+                    return (sort_spec->SortDirection == ImGuiSortDirection_Ascending) ? +1 : -1;
+                if (delta < 0)
+                    return (sort_spec->SortDirection == ImGuiSortDirection_Ascending) ? -1 : +1;
+            }
+            return (a->index - b->index);
+        };
+    };
+    const ImGuiTableSortSpecs* DiffsDetailedTableItem::s_current_sort_specs = NULL;
 
     class Keng
     {
@@ -434,28 +483,59 @@ namespace THPrac {
         void GuiGetDetails()
         {
             static std::map<int, int> diffs_die_count;
+            static std::map<int, double> probs_pass_map;
             static std::vector<double> probs_pass_vec;
-            static std::vector<float> pass_rate;
+            static std::vector<double> pass_rate;
             static bool isopen = false;
+            static bool use_EM = false;
+            static int n_plays = 0;
+            static std::chrono::year_month_day after_this=std::chrono::year_month_day(std::chrono::year(1900),std::chrono::month(1),std::chrono::day(1));
+
+            static ImVector<DiffsDetailedTableItem> table_itmes;
+            static bool calculated = false;
+
             if (ImGui::Button(S(THPRAC_KENG_DETAILS))) {
+                calculated = false;
                 isopen = true;
 
+                if (mPlays.size()==0)
+                    after_this = std::chrono::year_month_day(std::chrono::year(1900), std::chrono::month(1), std::chrono::day(1));
+                else 
+                    after_this = mPlays[0].mTimeCreate;
+                for (auto& play : mPlays) {
+                    if (play.mTimeCreate < after_this)
+                        after_this = play.mTimeCreate;
+                }
+                ImGui::OpenPopup(S(THPRAC_KENG_DETAILS_POPUP));
+            }
+            if (!calculated) {
+                calculated = true;
                 diffs_die_count = {};
                 probs_pass_vec = {};
                 pass_rate = {};
+                probs_pass_map = {};
+                table_itmes.clear();
+                n_plays = 0;
                 for (auto& play : mPlays) {
-                    for (auto& diff : play.mDiffsDied) {
-                        if (diffs_die_count.contains(diff))
-                            diffs_die_count[diff]++;
-                        else
-                            diffs_die_count[diff] = 1;
+                    if (play.mTimeCreate >= after_this) {
+                        for (auto& diff : play.mDiffsDied) {
+                            if (diffs_die_count.contains(diff))
+                                diffs_die_count[diff]++;
+                            else
+                                diffs_die_count[diff] = 1;
+                        }
+                        n_plays++;
                     }
                 }
-                double play_time = mPlays.size();
                 probs_pass_vec.resize(mKengDifficulties.size(), 0.0);
                 for (int i = 0; i < mKengDifficulties.size(); i++) {
                     if (diffs_die_count.contains(mKengDifficulties[i].id)) {
-                        probs_pass_vec[i] = 1.0f - (double)diffs_die_count[mKengDifficulties[i].id] / std::max(1.0, play_time);
+                        if (use_EM)
+                            probs_pass_map[mKengDifficulties[i].id] = probs_pass_vec[i] = 1.0 - ((double)diffs_die_count[mKengDifficulties[i].id] + 1.0) / std::max(1.0, (double)n_plays + 2.0);
+                        else
+                            probs_pass_map[mKengDifficulties[i].id] = probs_pass_vec[i] = 1.0 - (double)diffs_die_count[mKengDifficulties[i].id] / std::max(1.0, (double)n_plays);
+                    }else{
+                        probs_pass_map[mKengDifficulties[i].id] = probs_pass_vec[i] = 1.0;
                     }
                 }
                 auto CalProbForN = [](std::vector<double>& probs_single) -> std::vector<double> {
@@ -494,7 +574,18 @@ namespace THPrac {
                     pass_rate[miss] = tot;
                     miss++;
                 }
-                ImGui::OpenPopup(S(THPRAC_KENG_DETAILS_POPUP));
+
+                // fill the table
+                int n = 1;
+                for (auto& diff : mKengDifficulties) {
+                    DiffsDetailedTableItem item;
+                    item.index = n;
+                    item.name = diff.name;
+                    item.count = diffs_die_count[diff.id];
+                    item.pass_rate = probs_pass_map[diff.id];
+                    table_itmes.push_back(item);
+                    n++;
+                }
             }
             
             if (GuiModal(S(THPRAC_KENG_DETAILS_POPUP), { LauncherWndGetSize().x * 0.95f, LauncherWndGetSize().y * 0.8f }, &isopen)) {
@@ -502,39 +593,65 @@ namespace THPrac {
                 ImGui::SetCursorPosX(ImGui::GetWindowWidth() * 0.05f);
                 if (ImGui::Button(S(THPRAC_KENG_RETURN)))
                     isopen = false;
+
                 ImGui::SetCursorPosX(ImGui::GetWindowWidth() * 0.05f);
-                if (ImGui::BeginTable(S(THPRAC_KENG_DETAILS_DIFF_TABLE), 4, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable, ImVec2(ImGui::GetWindowWidth() * 0.9f, 0.0f))) {
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_INDEX), 0, ImGui::GetWindowWidth() * 0.15f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_NAME), 0, ImGui::GetWindowWidth() * 0.4f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_CNT), 0, ImGui::GetWindowWidth() * 0.2f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_PASSRATE), 0, ImGui::GetWindowWidth() * 0.25f);
+                ImGui::Text(S(THPRAC_KENG_DETAILS_AFTER));
+                ImGui::SameLine();
+                GuiDateSelector("##ymd_after", &after_this);
+                ImGui::SameLine();
+                ImGui::Text("(%d)", n_plays);
+                ImGui::SetCursorPosX(ImGui::GetWindowWidth() * 0.05f);
+                ImGui::Checkbox(S(THPRAC_KENG_DETAILS_CAL_EM), &use_EM);
+                ImGui::SameLine();
+                GuiHelpMarker(S(THPRAC_KENG_DETAILS_CAL_EM_DESC));
+                ImGui::SetCursorPosX(ImGui::GetWindowWidth() * 0.05f);
+                if (ImGui::Button(S(THPRAC_KENG_DETAILS_CAL))) {
+                    calculated = false;
+                }
+
+                ImGui::SetCursorPosX(ImGui::GetWindowWidth() * 0.05f);
+
+                if (ImGui::BeginTable(S(THPRAC_KENG_DETAILS_DIFF_TABLE), 4, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable | ImGuiTableFlags_::ImGuiTableFlags_Sortable | ImGuiTableFlags_::ImGuiTableFlags_SortMulti, ImVec2(ImGui::GetWindowWidth() * 0.9f, 0.0f))) {
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_INDEX), 0, ImGui::GetWindowWidth() * 0.15f, 0);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_NAME), 0, ImGui::GetWindowWidth() * 0.4f, 1);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_CNT), 0, ImGui::GetWindowWidth() * 0.2f, 2);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_PASSRATE), 0, ImGui::GetWindowWidth() * 0.25f, 3);
                     ImGui::TableHeadersRow();
-                    int n = 1;
-                    for (auto& diff : mKengDifficulties) {
+
+                    if (ImGuiTableSortSpecs* sorts_specs = ImGui::TableGetSortSpecs())
+                        if (sorts_specs->SpecsDirty) {
+                            DiffsDetailedTableItem::s_current_sort_specs = sorts_specs; // Store in variable accessible by the sort function.
+                            if (table_itmes.Size > 1)
+                                qsort(&table_itmes[0], (size_t)table_itmes.Size, sizeof(table_itmes[0]), DiffsDetailedTableItem::CompareWithSortSpecs);
+                            DiffsDetailedTableItem::s_current_sort_specs = NULL;
+                            sorts_specs->SpecsDirty = false;
+                        }
+
+                    for (auto& item : table_itmes) {
                         ImGui::TableNextRow();
                         ImGui::TableNextColumn();
-                        ImGui::Text("%d", n);
+                        ImGui::Text("%d", item.index);
                         ImGui::TableNextColumn();
-                        ImGui::Text("%s", diff.name);
+                        ImGui::Text("%s", item.name.c_str());
                         ImGui::TableNextColumn();
-                        ImGui::Text("%6d", diffs_die_count[diff.id]);
+                        ImGui::Text("%6d", item.count);
                         ImGui::TableNextColumn();
                         float r, g, b;
-                        double passrate = (1.0 - (double)diffs_die_count[diff.id] / (std::max(1.0, (double)mPlays.size())));
+                        double passrate = item.pass_rate;
                         passrate = std::clamp(passrate, 0.0, 1.0);
                         ImGui::ColorConvertHSVtoRGB(passrate * passrate * passrate * passrate * 0.33f, 0.75f, 1.0f, r, g, b);
                         ImGui::TextColored({r,g,b,1.0f}, "%6.2lf%%", passrate * 100.0);
-                        n++;
                     }
                     ImGui::EndTable();
 
                     ImGui::NewLine();
                     ImGui::Separator();
                     ImGui::SetCursorPosX(LauncherWndGetSize().x * 0.05f);
-                    if (ImGui::BeginTable(S(THPRAC_KENG_DETAILS_PASS_TABLE), 2, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable, ImVec2(ImGui::GetWindowWidth() * 0.9f, 0.0f)))
+                    if (ImGui::BeginTable(S(THPRAC_KENG_DETAILS_PASS_TABLE), 3, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable, ImVec2(ImGui::GetWindowWidth() * 0.9f, 0.0f)))
                     {
                         ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_PASS_MISS), 0, ImGui::GetWindowWidth() * 0.15f);
-                        ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_PASS_PROB), 0, ImGui::GetWindowWidth() * 0.85f);
+                        ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_PASS_PROB), 0, ImGui::GetWindowWidth() * 0.42f);
+                        ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_PASS_EXCEPTION), 0, ImGui::GetWindowWidth() * 0.43f);
                         ImGui::TableHeadersRow();
 
                         for (int miss = 0; miss < pass_rate.size(); miss++) {
@@ -543,6 +660,11 @@ namespace THPrac {
                             ImGui::Text("%6d", miss);
                             ImGui::TableNextColumn();
                             ImGui::Text("%10.6lf%%", pass_rate[miss] * 100.0);
+                            ImGui::TableNextColumn();
+                            if (pass_rate[miss]<1e-9)
+                                ImGui::Text(S(THPRAC_KENG_DETAILS_PASS_EXCEPTION_INF));
+                            else
+                                ImGui::Text("%10.1lf%", std::max(1.0, 1.0 / pass_rate[miss]));
                         }
                         ImGui::EndTable();
                     }
@@ -555,6 +677,8 @@ namespace THPrac {
                 ImGui::PopTextWrapPos();
                 ImGui::EndPopup();
             }
+            if(!isopen)
+                calculated=false;
         }
 
         const char* GetDescription_Line()

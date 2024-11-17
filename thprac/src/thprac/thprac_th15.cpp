@@ -832,7 +832,7 @@ namespace TH15 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
-                DisableXKeyOpt();
+                DisableKeyOpt();
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE), &(g_adv_igi_options.th15_showShootingDownRate));
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th15_bossmovedown.Toggle(forceBossMoveDown);

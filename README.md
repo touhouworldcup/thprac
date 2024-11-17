@@ -9,7 +9,7 @@
 - add SOCD option for keyboard (in settings - Game adjustments), since some keyboard already has this function, I think it's ok to use when playing TH games
 - add ingame info for many games(6,7,8,10,11,12,13,14,15,16,17,18,128), which includes miss count, bomb count and other counts(like UFO count), use key F8(key 1 in th18) to enable
 - fix a bug for imgui of d3d8
-- add a X-key(bomb) disable in f12 menu for lnb neta
+- add a X/shift/Z-key disable in f12 menu for lnb neta
 - add a keybind change function
 - add complete spell capture rate for th10-18(not showing master when capture trial>99)(use f12 menu)
 - add one key die for th7,8,10 to save rep quickly(f12 menu)
@@ -42,7 +42,7 @@
 - 内置键盘SOCD功能, 考虑到部分高端键盘已经有这个功能了所以我觉得加入了应该也无所谓(吧大概
 - 内置游戏内部分数据显示
 - 修复一个 imgui-d3d8 的八哥
-- 可以在F12菜单里扣x键了
+- 可以在F12菜单里扣X/shift/Z键了
 - 改键功能
 - 收率查看(10-18)
 - th7,8,10的一键疮痍(F12)(用于光速存rep)

@@ -688,9 +688,15 @@ namespace TH128 {
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
 
+            
             if (BeginOptGroup<TH_GAME_SPEED>()) {
                 if (GameFPSOpt(mOptCtx))
                     FpsSet();
+                EndOptGroup();
+            }
+
+            if (BeginOptGroup<TH_GAMEPLAY>()) {
+                DisableKeyOpt();
                 EndOptGroup();
             }
 
