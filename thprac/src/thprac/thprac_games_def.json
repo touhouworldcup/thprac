@@ -232,9 +232,6 @@
     
     "THPRAC_COMPATIBILITY_SETTINGS":["兼容性设置","Compatibility Settings","Compatibility Settings"],
 	
-    "THPRAC_DISABLE_CHECKSUM_08":["永夜抄禁用checksum检测","disable checksum in IN","disable checksum in IN"],
-    "THPRAC_DISABLE_CHECKSUM_08_DESC":["当由于存档问题无法启动可尝试","try this when game crashes because of score.dat","try this when game crashes because of score.dat"],
-	
     "THPRAC_DISABLE_F10_11_13":["在th11到th13靳用F10键","disable f10 for th11-13","disable f10 for th11-13"],
     
     "THPRAC_PAUSE_BGM_TH06":["红魔乡在3036时暂停bgm(仅wav)","pause bgm when esc in EoSD(wav only)","pause bgm when esc in EoSD(wav only)"],
@@ -275,6 +272,7 @@
 	  "THPRAC_TOOLS_ROLLF_CSV_DESC": [ "需要为utf-8格式, 共两列, 分别为名称和权重", "need to be utf-8, has a name column and a weight column", "need to be utf-8, has a name column and a weight column" ],
 	  "THPRAC_TOOLS_ROLLF_FROM_FILE": [ "随机ROLL", "ROLL from file", "ROLL from file" ],
 	  "THPRAC_TOOLS_ROLLF_START": [ "开ROLL", "ROLL", "ROLL" ],
+	  "THPRAC_TOOLS_ROLLF_RANDOM_COLOR": [ "随机色", "random color", "random color" ],
 	  "THPRAC_TOOLS_ROLLF_CLPS": [ "查看", "view", "view" ],
 	  "THPRAC_TOOLS_ROLLF_TIME": [ "转盘时间", "time", "time" ],
 	  "THPRAC_TOOLS_ROLLF_REMOVE_CUR": [ "删除roll到的", "remove rolled", "remove rolled" ],
@@ -7478,7 +7476,19 @@
 
     "glossary": {
       "TH15_AB_TEST_AB": [ "底力", "ab", "ab" ],
-      "TH15_AB_TEST_RES": [ "测试结果", "result", "result" ],
+      "TH15_AB_TEST_RES": [ "测试结果:", "result :", "result :" ],
+      "TH15_AB_TEST_RES_RANK_1": [ "大花园 级", "LV GARDEN", "LV GARDEN" ],
+      "TH15_AB_TEST_RES_RANK_2": [ "忙碌海狸 级", "LV BUSY BEAVER", "LV BUSY BEAVER" ],
+      "TH15_AB_TEST_RES_RANK_3": [ "大树 级", "LV TREE", "LV TREE" ],
+      "TH15_AB_TEST_RES_RANK_4": [ "燃烧 级", "LV FUSE", "LV FUSE" ],
+      "TH15_AB_TEST_RES_RANK_5": [ "葛立恒 级", "LV GRAHAM", "LV GRAHAM" ],
+      "TH15_AB_TEST_RES_RANK_6": [ "指数塔 级", "LV TETRATION", "LV TETRATION" ],
+      "TH15_AB_TEST_RES_RANK_7": [ "指数 级", "LV EXPONTENT", "LV EXPONTENT" ],
+      "TH15_AB_TEST_RES_RANK_8": [ "乘法 级", "LV MULTIPLICATION", "LV MULTIPLICATION" ],
+      "TH15_AB_TEST_RES_RANK_9": [ "加法 级", "LV ADDITION", "LV ADDITION" ],
+      "TH15_AB_TEST_RES_RANK_10": [ "后继 级", "LV SUCCESSOR", "LV SUCCESSOR" ],
+	  
+	  
       "TH15_AB_TEST_RES_DESC": [ "仅供娱乐", "only for amusement", "only for amusement" ],
 	  
       "TH15_AB_TEST_REACTION": [ "反应", "re", "re" ],

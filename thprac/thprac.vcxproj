@@ -65,6 +65,7 @@
     <ClInclude Include="src\thprac\thprac_launcher_main.h" />
     <ClInclude Include="src\thprac\thprac_launcher_others.h" />
     <ClInclude Include="src\thprac\thprac_launcher_tools.h" />
+    <ClInclude Include="src\thprac\thprac_launcher_tools_waifus.h" />
     <ClInclude Include="src\thprac\thprac_launcher_utils.h" />
     <ClInclude Include="src\thprac\thprac_launcher_wnd.h" />
     <ClInclude Include="src\thprac\thprac_licence.h" />

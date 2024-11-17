@@ -2129,10 +2129,64 @@ namespace TH15 {
                     
                     ImGui::SetNextWindowPos({ mid_st.x - sz.x * 0.5f, mid_st.y - sz.y * 0.5f });
                     ImGui::SetNextWindowSize(sz);
-                    ImGui::Begin("##res", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+                    ImGui::SetNextWindowBgAlpha(0.8f);
+                    ImGui::Begin("##res", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
                     if (t >= 90)
                     {
-                        ImGui::Text(S(TH15_AB_TEST_RES));
+                        float result_origs[5] = {
+                            *(float*)(ecl_glob + 0x38),
+                            *(float*)(ecl_glob + 0x34),
+                            *(float*)(ecl_glob + 0x30),
+                            *(float*)(ecl_glob + 0x2C),
+                            *(float*)(ecl_glob + 0x28)
+                        };
+                        float scores[6] = { 0, 0.1, 0.5, 0.6, 0.9, 1.0 };
+                        // calculates
+                        {
+                            float div[5] = { 3.5f, 4.8f, 4.0f, 3.1f, 3.0f };
+                            float pows[5] = { 1.2, 1.1, 1.1, 1.2, 2.05 };
+                            for (int i = 0; i < 5; i++) {
+                                result_origs[i] = (result_origs[i] - 3.0f) / div[i];
+                                result_origs[i] = powf(result_origs[i], pows[i]);
+                            }
+                            scores[0] = 0.6f * result_origs[0] + 0.15f * result_origs[1] + 0.05f * result_origs[2] + 0.15f * result_origs[3] + 0.05f * result_origs[4];
+                            scores[1] = 0.0f * result_origs[0] + 0.5f * result_origs[1] + 0.2f * result_origs[2] + 0.15f * result_origs[3] + 0.15f * result_origs[4];
+                            scores[2] = 0.0f * result_origs[0] + 0.1f * result_origs[1] + 0.75f * result_origs[2] + 0.05f * result_origs[3] + 0.1f * result_origs[4];
+                            scores[3] = 0.1f * result_origs[0] + 0.4f * result_origs[1] + 0.0f * result_origs[2] + 0.5f * result_origs[3] + 0.0f * result_origs[4];
+                            scores[4] = 0.05f * result_origs[0] + 0.05f * result_origs[1] + 0.0f * result_origs[2] + 0.1f * result_origs[3] + 0.8f * result_origs[4];
+                            scores[5] = 0.1f * result_origs[0] + 0.3f * result_origs[1] + 0.3f * result_origs[2] + 0.2f * result_origs[3] + 0.1f * result_origs[4];
+                            for (int i = 0; i < 6; i++) {
+                                scores[i] = 1.0f / (1.0f + expf(1.8f - 4.0f * scores[i]));
+                            }
+                        }
+                        float avg_score=0.0f;
+                        for (int i = 0; i < 6; i++)
+                            avg_score += scores[i];
+                        avg_score /= 6.0f;
+
+                        const char* abtest_rank;
+                        if (avg_score < 0.2f)
+                            abtest_rank = S(TH15_AB_TEST_RES_RANK_10);
+                        else if (avg_score<0.36f)
+                            abtest_rank = S(TH15_AB_TEST_RES_RANK_9);
+                        else if (avg_score < 0.54f)
+                            abtest_rank = S(TH15_AB_TEST_RES_RANK_8);
+                        else if (avg_score < 0.72f)
+                            abtest_rank = S(TH15_AB_TEST_RES_RANK_7);
+                        else if (avg_score < 0.9f)
+                            abtest_rank = S(TH15_AB_TEST_RES_RANK_6);
+                        else if (avg_score < 0.95f)
+                            abtest_rank = S(TH15_AB_TEST_RES_RANK_5);
+                        else if (avg_score < 0.98f)
+                            abtest_rank = S(TH15_AB_TEST_RES_RANK_4);
+                        else if (avg_score < 0.985f)
+                            abtest_rank = S(TH15_AB_TEST_RES_RANK_3);
+                        else if (avg_score < 0.99f)
+                            abtest_rank = S(TH15_AB_TEST_RES_RANK_2);
+                        else
+                            abtest_rank = S(TH15_AB_TEST_RES_RANK_1);
+
+                        ImGui::Text("%s %s", S(TH15_AB_TEST_RES), abtest_rank);
                         ImGui::Text(S(TH15_AB_TEST_RES_DESC));
 
                         ImVec2 p0 = ImGui::GetCursorScreenPos();
@@ -2142,43 +2196,16 @@ namespace TH15 {
                         float hheight = csz.y * 0.75f * 0.5f;
 
                         ImDrawList* p = ImGui::GetWindowDrawList();
-                        p->AddRectFilled(p0, p1, IM_COL32(50, 50, 50, 100));
-                        p->AddRect(p0, p1, IM_COL32(255, 255, 255, 100));
+                        ImVec4 color1 = ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_ChildBg);
+                        color1.w = 0.1f;
+                        p->AddRectFilled(p0, p1, ImGui::ColorConvertFloat4ToU32(color1));
+                        p->AddRect(p0, p1, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_Text)));
                         p->PushClipRect(p0, p1);
                         {
-                            float result_origs[5] = {
-                                *(float*)(ecl_glob + 0x38),
-                                *(float*)(ecl_glob + 0x34),
-                                *(float*)(ecl_glob + 0x30),
-                                *(float*)(ecl_glob + 0x2C),
-                                *(float*)(ecl_glob + 0x28)
-                            };
-                            float scores[6] = { 0, 0.1,0.5,0.6,0.9,1.0 };
-                            //calculates
-                            {
-                                float div[5] = {3.5f,4.8f,4.0f,3.1f,3.0f};
-                                float pows[5] = {1.2,1.1,1.1,1.2,2.05};
-                                for (int i = 0; i < 5; i++)
-                                {
-                                    result_origs[i] = (result_origs[i] - 3.0f) / div[i];
-                                    result_origs[i] = powf(result_origs[i], pows[i]);
-                                }
-                                scores[0] = 0.6f * result_origs[0] + 0.15f * result_origs[1] + 0.05f * result_origs[2] + 0.15f * result_origs[3] + 0.05f * result_origs[4];
-                                scores[1] = 0.0f * result_origs[0] + 0.5f * result_origs[1] + 0.2f * result_origs[2] + 0.15f * result_origs[3] + 0.15f * result_origs[4];
-                                scores[2] = 0.0f * result_origs[0] + 0.1f * result_origs[1] + 0.75f * result_origs[2] + 0.05f * result_origs[3] + 0.1f * result_origs[4];
-                                scores[3] = 0.1f * result_origs[0] + 0.4f * result_origs[1] + 0.0f * result_origs[2] + 0.5f * result_origs[3] + 0.0f * result_origs[4];
-                                scores[4] = 0.05f * result_origs[0] + 0.05f * result_origs[1] + 0.0f * result_origs[2] + 0.1f * result_origs[3] + 0.8f * result_origs[4];
-                                scores[5] = 0.1f * result_origs[0] + 0.3f * result_origs[1] + 0.3f * result_origs[2] + 0.2f * result_origs[3] + 0.1f * result_origs[4];
-                                for (int i = 0; i < 6; i++)
-                                {
-                                    scores[i] = 1.0f / (1.0f + expf(1.8f - 4.0f * scores[i]));
-                                }
-                            }
-
                             ImVec2 points[6];
                             //radar
                             for (int i = 0; i < 6; i++) {
-                                p->AddLine(cmid, { cmid.x + hheight * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + hheight * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) }, 0xFFFFFFFF, 2.0f);
+                                p->AddLine(cmid, { cmid.x + hheight * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + hheight * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) }, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_Text)), 2.0f);
                             }
                             // lines
                             constexpr float radiuses_ranks[] = { 
@@ -2192,7 +2219,7 @@ namespace TH15 {
                                 for (int i = 0; i < 6; i++) {
                                     points[i] = { cmid.x + ra * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + ra * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
                                 }
-                                p->AddPolyline(points, 6, i == 7 ? 0xFFFFFFFF : 0xFFAAAAAA, ImDrawFlags_::ImDrawFlags_Closed, i == 7 ? 2.0f : 1.0f);
+                                p->AddPolyline(points, 6, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_Text)), ImDrawFlags_::ImDrawFlags_Closed, i == 7 ? 2.0f : 1.0f);
                             }
                             //scores
                             auto MInterpolation = [](float t, float a, float b) {
@@ -2209,6 +2236,9 @@ namespace TH15 {
                                 return b;
                             };
                             float t2 = MInterpolation((t-90.0f)/90.0f,0.0f,1.0f);
+                            for (int i = 0; i < 6; i++)
+                                scores[i] *= t2;
+                            //animation
                             for (int i = 0; i < 6; i++) {
                                 float radius = scores[i];
                                 if (scores[i] < 0.9f)
@@ -2221,13 +2251,13 @@ namespace TH15 {
                                 } else{
                                     radius = scores[i] * 7.5f - 6.5f;
                                 }
-                                points[i] = { cmid.x + t2 * hheight * radius * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + t2 * hheight * radius * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
+                                points[i] = { cmid.x + hheight * radius * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + hheight * radius * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
                             }
                             for (int i = 0; i < 6; i++) {
-                                auto col = ImGui::GetStyleColorVec4(ImGuiCol_PlotHistogram); col.w = 0.8f;
+                                auto col = ImGui::GetStyleColorVec4(ImGuiCol_PlotHistogram); col.w = 0.75f;
                                 p->AddTriangleFilled(points[i], points[(i + 1) % 6], cmid, ImGui::ColorConvertFloat4ToU32(col));
                             }
-                            p->AddPolyline(points, 6, 0xFFFFFFFF, ImDrawFlags_::ImDrawFlags_Closed, 1.0f);
+                            p->AddPolyline(points, 6, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_PlotLines)), ImDrawFlags_::ImDrawFlags_Closed, 1.0f);
 
                             
                             //text
@@ -2266,7 +2296,7 @@ namespace TH15 {
                                 ImVec2 pos = { cmid.x + h2 * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + h2 * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
                                 pos.x -= sz_text.x * 0.5f;
                                 pos.y -= sz_text.y * 0.5f;
-                                p->AddText(pos, 0xFFFFFFFF, text.c_str());
+                                p->AddText(pos, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_Text)), text.c_str());
                             }
                         }
                         p->PopClipRect();

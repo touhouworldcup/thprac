@@ -231,6 +231,16 @@ enum th_glossary_t {
     TH15_AB_TEST_REACTION,
     TH15_AB_TEST_RES,
     TH15_AB_TEST_RES_DESC,
+    TH15_AB_TEST_RES_RANK_1,
+    TH15_AB_TEST_RES_RANK_10,
+    TH15_AB_TEST_RES_RANK_2,
+    TH15_AB_TEST_RES_RANK_3,
+    TH15_AB_TEST_RES_RANK_4,
+    TH15_AB_TEST_RES_RANK_5,
+    TH15_AB_TEST_RES_RANK_6,
+    TH15_AB_TEST_RES_RANK_7,
+    TH15_AB_TEST_RES_RANK_8,
+    TH15_AB_TEST_RES_RANK_9,
     TH15_AB_TEST_RET,
     TH15_ILT_0,
     TH15_ILT_1,
@@ -577,8 +587,6 @@ enum th_glossary_t {
     THPRAC_DIRECTORY_SETTING_MODAL,
     THPRAC_DIR_GLOBAL,
     THPRAC_DIR_LOCAL,
-    THPRAC_DISABLE_CHECKSUM_08,
-    THPRAC_DISABLE_CHECKSUM_08_DESC,
     THPRAC_DISABLE_F10_11_13,
     THPRAC_DISABLE_MAXIMIZE_BTN,
     THPRAC_DONT_SEARCH_ONGOING,
@@ -1020,6 +1028,7 @@ enum th_glossary_t {
     THPRAC_TOOLS_ROLLF_CSV,
     THPRAC_TOOLS_ROLLF_CSV_DESC,
     THPRAC_TOOLS_ROLLF_FROM_FILE,
+    THPRAC_TOOLS_ROLLF_RANDOM_COLOR,
     THPRAC_TOOLS_ROLLF_REMOVE_CUR,
     THPRAC_TOOLS_ROLLF_START,
     THPRAC_TOOLS_ROLLF_TIME,
@@ -1236,7 +1245,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1225];
+extern const char* th_glossary_str[3][1234];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2788,7 +2797,7 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3313];
+extern const wchar_t __thprac_loc_range_zh[3311];
 
 extern const wchar_t __thprac_loc_range_en[57];
 

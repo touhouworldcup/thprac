@@ -12,6 +12,7 @@
 #include "..\3rdParties\rapidcsv\rapidcsv.h"
 #include <numbers>
 #include <format>
+#include "thprac_launcher_tools_waifus.h"
 namespace THPrac {
 
 void LauncherToolsGuiSwitch(const char* gameStr);
@@ -27,6 +28,7 @@ private:
 
     std::random_device mRandDevice;
     std::default_random_engine mRandEngine;
+    bool mRandColor;
 
 public:
     float GetRandomFloat()
@@ -48,7 +50,9 @@ public:
         }
         return b;
     };
-    THGuiRollAll() : mRandEngine(mRandDevice())
+    THGuiRollAll()
+        : mRandEngine(mRandDevice())
+        , mRandColor(false)
     {
     }
     void InitRoll(int remove,bool change_color)
@@ -80,15 +84,45 @@ public:
         }
         mProbs2.push_back(0.0f);
         tot = 0.0f;
+
+        int hi=0, si=255, vi=255;
         for (int i = 0; i < mNames.size(); i++) {
             tot += mProbs[i];
             mProbs2.push_back(tot / mTotWeight);
             if (change_color)
             {
+                
                 float r, g, b, h, s, v;
-                h = GetRandomFloat();
-                s = GetRandomFloat() * 0.4f + 0.6f;
-                v = GetRandomFloat() * 0.4f + 0.6f;
+                //256=2^8
+                if (!mRandColor)
+                {
+                    if (mNames.size() > 100)
+                        hi += 7;
+                    else if (mNames.size() > 50)
+                        hi += 19;
+                    else
+                        hi += 41;
+                    if (hi >= 256) {
+                        hi -= 256;
+                        si -= 83;
+                        if (si <= 64) {
+                            si += 191;
+                            vi -= 101;
+                            if (vi <= 128)
+                                vi += 127;
+                        }
+                    }
+                    hi %= 256;
+                    h = (float)hi / 255.0f;
+                    vi %= 256;
+                    s = (float)vi / 255.0f;
+                    si %= 256;
+                    v = (float)si / 255.0f;
+                }else{
+                    h = GetRandomFloat();
+                    s = GetRandomFloat() * 0.4f + 0.6f;
+                    v = GetRandomFloat() * 0.4f + 0.6f;
+                }
                 ImGui::ColorConvertHSVtoRGB(h, s, v, r, g, b);
                 mColors.push_back({ r, g, b, 1.0f });
                 ImGui::ColorConvertHSVtoRGB(h, s, v - 0.3f, r, g, b);
@@ -108,6 +142,14 @@ public:
         rapidcsv::Document doc(utf16_to_mb(csv_filename.c_str(), CP_ACP), rapidcsv::LabelParams(0, -1));
         mNames = doc.GetColumn<std::string>(0);
         mProbs = doc.GetColumn<float>(1);
+        InitRoll(-1, true);
+    }
+    void LoadRollWaifu()
+    {
+        mNames = {};
+        mProbs = {};
+        mNames = waifus;
+        mProbs.resize(mNames.size(),1);
         InitRoll(-1, true);
     }
     bool DrawPie(ImDrawList* p, ImVec2 mid, float radius, float angle1, float angle2, uint32_t col_fill, uint32_t col_fill2, uint32_t col_line)
@@ -147,16 +189,17 @@ public:
         GuiCenteredText(S(THPRAC_TOOLS_ROLLF_FROM_FILE));
         ImGui::Separator();
         if (ImGui::Button(S(THPRAC_TOOLS_ROLLF_CSV)))
-        {
             LoadRoll();
-        }
         ImGui::SameLine();
         GuiHelpMarker(S(THPRAC_TOOLS_ROLLF_CSV_DESC));
         ImGui::SameLine();
-        if (ImGui::CollapsingHeader(S(THPRAC_TOOLS_ROLLF_CLPS)))
-        {
-            if (ImGui::BeginTable("__rolls table",2))
-            {
+        if (ImGui::Button("waifus"))
+            LoadRollWaifu();
+        ImGui::SameLine();
+        ImGui::Checkbox(S(THPRAC_TOOLS_ROLLF_RANDOM_COLOR), &mRandColor);
+        ImGui::SameLine();
+        if (ImGui::CollapsingHeader(S(THPRAC_TOOLS_ROLLF_CLPS))){
+            if (ImGui::BeginTable("__rolls table",2)) {
                 for (int i = 0; i < mNames.size(); i++)
                 {
                     ImGui::TableNextRow();
@@ -201,40 +244,39 @@ public:
             if (ImGui::DragInt("##roll time", &tot_time, 1.0f, 1, 1000))
                 tot_time = std::clamp(tot_time, 1, 1000);
         }
+
+        static float angle_add, angle_wraped;
+        if (roll) {
+            angle_add = MInterpolation(roll_time / (float)tot_time, last_angle, roll_rand * 2.0f * std::numbers::pi + 30.0f * std::numbers::pi);
+            angle_wraped = angle_add - floorf(angle_add / (2.0f * std::numbers::pi)) * 2.0f * std::numbers::pi;
+            if (roll_time < tot_time) {
+                roll_time++;
+            } else {
+                roll = false;
+                has_result = true;
+                last_angle = angle_wraped;
+            }
+        }
+        roll_result = -1;
+        float roll_res_temp;
+        if (has_result == false)
+            roll_res_temp = angle_wraped / (2.0f * std::numbers::pi);
+        else
+            roll_res_temp = roll_rand;
+        for (int i = 0; i < mNames.size(); i++) {
+            if (mProbs2[i] <= roll_res_temp && mProbs2[i + 1] > roll_res_temp) {
+                roll_result = i;
+                break;
+            }
+        }
+        if (roll_result == -1)
+            roll_result = mNames.size() - 1;
+
         if (mNames.size() > 0 && roll_result >= 0 && roll_result < mNames.size()) {
             ImGui::SameLine();
             ImGui::Text(std::format("{}", mNames[roll_result]).c_str());
         }
         {
-            static float angle_add,angle_wraped;
-            if (roll){
-                angle_add = MInterpolation(roll_time / (float)tot_time, last_angle, roll_rand * 2.0f * std::numbers::pi + 30.0f * std::numbers::pi);
-                angle_wraped = angle_add - floorf(angle_add / (2.0f * std::numbers::pi)) * 2.0f * std::numbers::pi;
-                if (roll_time < tot_time)
-                {
-                    roll_time++;
-                }else{
-                    roll = false;
-                    has_result = true;
-                    last_angle = angle_wraped;
-                }
-                
-            }
-            roll_result = -1;
-            float roll_res_temp;
-            if (has_result == false)
-                roll_res_temp = angle_wraped / (2.0f * std::numbers::pi);
-            else
-                roll_res_temp = roll_rand;
-            for (int i = 0; i < mNames.size(); i++) {
-                if (mProbs2[i] <= roll_res_temp && mProbs2[i + 1] > roll_res_temp) {
-                    roll_result = i;
-                    break;
-                }
-            }
-            if (roll_result == -1)
-                roll_result = mNames.size() - 1;
-
             ImVec2 p0 = ImGui::GetCursorScreenPos();
             ImVec2 csz = ImGui::GetContentRegionAvail();
             if (csz.y < 0)

@@ -229,6 +229,9 @@
     <ClInclude Include="src\thprac\thprac_th15_abtest.h">
       <Filter>THPrac Games</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac\thprac_launcher_tools_waifus.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\thprac\thprac_utils.cpp">
