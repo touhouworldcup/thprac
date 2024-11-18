@@ -2441,7 +2441,6 @@ namespace TH15 {
         TH15_ST3_BOSS5,
         TH15_ST3_BOSS6,
         TH15_ST3_BOSS7,
-        TH15_AB_TEST,
         TH15_ST4_MID1,
         TH15_ST4_BOSS1,
         TH15_ST4_BOSS2,
@@ -2492,6 +2491,7 @@ namespace TH15 {
         TH15_ST7_END_S8,
         TH15_ST7_END_S9,
         TH15_ST7_END_S10,
+        TH15_ST8_AB_TEST,
     };
 
     extern const char* th_sections_str[3][4][75];

@@ -186,7 +186,7 @@ namespace TH15 {
                 return TH15_ITS_LUNATIC_TIME;
             } else if (section == TH15_ST3_BOSS1) {
                 return TH15_ST3_NORMAL1_TYPE;
-            } else if (section == TH15_AB_TEST) {
+            } else if (section == TH15_ST8_AB_TEST) {
                 return TH15_AB_5PHASE;
             }
             return nullptr;
@@ -544,7 +544,7 @@ namespace TH15 {
                 SetPos(-10000.0f, -10000.0f); //fly~
                 return;
             }
-            if (thPracParam.mode && thPracParam.section == TH15_AB_TEST) {
+            if (thPracParam.mode && thPracParam.section == TH15_ST8_AB_TEST) {
                 DWORD ecl_glob = *(DWORD*)(0x4E9A80);
                 if (ecl_glob)
                 {
@@ -1297,7 +1297,7 @@ namespace TH15 {
             }
             //---
             break;
-        case THPrac::TH15::TH15_AB_TEST:
+        case THPrac::TH15::TH15_ST8_AB_TEST:
             ECLJump(ecl, 0xa258, 0xa614, 60);
             ecl.SetFile(2);
             ECLSkipChapter(1);
@@ -2109,7 +2109,7 @@ namespace TH15 {
         }
         // ab test
         {
-            if (thPracParam.mode && thPracParam.section == TH15_AB_TEST) {
+            if (thPracParam.mode && thPracParam.section == TH15_ST8_AB_TEST) {
                 static int t=0;
                 DWORD ecl_glob = *(DWORD*)(0x4E9A80);
                 DWORD m9923 = ecl_glob  ? * (DWORD*)(ecl_glob + 0x18) : 0;
@@ -2271,13 +2271,13 @@ namespace TH15 {
                             for (int i = 0; i < 6; i++) {
                                 const char* rank = "E";
                                 if (scores[i] < 0.18f)
-                                    rank = "E"; 
+                                    rank = "F"; 
                                 else if (scores[i] < 0.36f)
-                                    rank = "D"; 
+                                    rank = "E"; 
                                 else if (scores[i] < 0.54f)
-                                    rank = "C"; 
-                                else if (scores[i] < 0.72f)
                                     rank = "D"; 
+                                else if (scores[i] < 0.72f)
+                                    rank = "C"; 
                                 else if (scores[i] < 0.9f)
                                     rank = "B"; 
                                 else if (scores[i] < 0.95f)

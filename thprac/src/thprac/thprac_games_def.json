@@ -7669,12 +7669,6 @@
         "appearance": [ 3, 2, 7 ],
         "!ENHL": [ "月符「绀色的狂梦」", "Moon Sign \"Ultramarine Lunatic Dream\"", "月符「紺色の狂夢」" ]
       },
-	  "TH15_AB_TEST": {
-        "bgm": 1,
-        "spell": 0,
-        "appearance": [ 3, 2, 7 ],
-        "!ENHL": [ "底力测试", "ab test", "ab test" ]
-      },
 
       "TH15_ST4_MID1": {
         "bgm": 0,
@@ -7989,6 +7983,12 @@
         "spell": 1,
         "appearance": [ 7, 2, 18 ],
         "!X": [ "「最初与最后的无名弹幕」", "\"First and Last Nameless Danmaku\"", "「最初で最後の無名の弾幕」" ]
+      },
+	  "TH15_ST8_AB_TEST": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 3, 2, 7 ],
+        "!ENHL": [ "底力测试", "ab test", "ab test" ]
       }
     },
 
