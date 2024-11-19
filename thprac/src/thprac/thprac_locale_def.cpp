@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1244] {
+const char* th_glossary_str[3][1242] {
     {
         "",
         "啤酒",
@@ -984,8 +984,6 @@ const char* th_glossary_str[3][1244] {
         "勾选你想要添加进thprac的游戏并点击\"应用\"",
         "Steam游戏 - 手动选取",
         "或",
-        "强制按键检测",
-        "某些情况下消息队列会被其他补丁替换导致无法按键，此时启用此选项",
         "thcrap",
         "添加thcrap配置...",
         "没有找到任何thcrap配置！",
@@ -2230,8 +2228,6 @@ const char* th_glossary_str[3][1244] {
         "Tick the games you wish to add into thprac and click \"Apply\".",
         "Steam games - Manual select",
         "or",
-        "force key test",
-        "set this setting to true when some patches replace the message queue function, which result in key press disabled",
         "thcrap",
         "Add thcrap configs...",
         "No thcrap configs was found!",
@@ -3476,8 +3472,6 @@ const char* th_glossary_str[3][1244] {
         "thpracに追加したいゲームにチェックを入れ、「適用する」をクリックします。",
         "Steamゲーム - 手動選択",
         "または",
-        "force key test",
-        "set this setting to true when some patches replace the message queue function, which result in key press disabled",
         "thcrap",
         "thcrapコンフィグを追加...",
         "thcrapのコンフィグが見つかりませんでした！",

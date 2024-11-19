@@ -30,5 +30,6 @@ namespace THPrac
 		int ImplWin32CheckHotkey(int hotkey);
 
 		void ImplWin32SetNoClose(bool noClose);
+        void ReHookWndProc();
 	}
 }

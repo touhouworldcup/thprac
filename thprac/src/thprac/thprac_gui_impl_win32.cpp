@@ -610,14 +610,27 @@ namespace Gui {
         if (msg == WM_SIZE && wParam == 2 && g_disable_max_btn){
             return 1;
         }
+        if (msg == WM_SYSCOMMAND && (wParam & 0xFFF0) == SC_MAXIMIZE && g_disable_max_btn) {
+            return 1;
+        }
         if (g_wndNoClose_ && msg == WM_CLOSE) {
             return 1;
         }
         if (ImplWin32WndProcHandler(hwnd, msg, wParam, lParam)) {
             return 1;
         }
-
         return ((PWndProc)__thimgui_wp_original)(hwnd, msg, wParam, lParam);
+    }
+
+    // some patches like Special K will destroy the win32 hook, so it should be re-hooked
+    DWORD g_wndproc_bytes = { 0 };
+    void* g_wndproc_addr;
+    void ReHookWndProc(){
+        if (g_wndproc_bytes != *(DWORD*)((DWORD)g_wndproc_addr + 1)) {
+            MH_DisableHook(g_wndproc_addr);
+            MH_EnableHook(g_wndproc_addr);
+            g_wndproc_bytes = *(DWORD*)((DWORD)g_wndproc_addr + 1);
+        }
     }
     bool ImplWin32HookWndProc(void* wndproc_addr)
     {
@@ -635,9 +648,13 @@ namespace Gui {
             void* pWndProc = (void*)cinfo.lpfnWndProc;
             target = pWndProc;
         }
+        g_wndproc_addr = target;
+
         MH_Initialize();
         MH_CreateHook(target, (void*)__ThImGui_WndProc_HookFunc, &__thimgui_wp_original);
         MH_EnableHook(target);
+        g_wndproc_bytes = *(DWORD*)((DWORD)g_wndproc_addr + 1);
+
         return true;
     }
     bool ImplWin32UnHookWndProc()

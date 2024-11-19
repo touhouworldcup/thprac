@@ -246,13 +246,8 @@
     "THPRAC_CUSTOM_FONTS_DESC":["仅在使用thprac启动游戏时生效","only works when launch game by thprac","only works when launch game by thprac"],
     "THPRAC_CUSTOM_FONT":["字体","font","font"],
     
-    
-    
     "THPRAC_FORCE_RENDER_CURSOR":["强制渲染鼠标","force render cursor","force render cursor"],
     "THPRAC_FORCE_RENDER_CURSOR_DESC":["全屏时无法看见鼠标则设置此项，将会导致窗口时出现两个重叠的鼠标","set this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode","et this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode"],
-    
-    "THPRAC_TEST_KEY":["强制按键检测","force key test","force key test"],
-    "THPRAC_TEST_KEY_DESC":["某些情况下消息队列会被其他补丁替换导致无法按键，此时启用此选项","set this setting to true when some patches replace the message queue function, which result in key press disabled","set this setting to true when some patches replace the message queue function, which result in key press disabled"],
     
     "THPRAC_KEYBIND":["修改按键映射","set keybind","set keybind"],
     "THPRAC_KEYBIND_MODAL":["修改按键映射##modal","set keybind##modal","set keybind##modal"],

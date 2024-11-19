@@ -28,7 +28,6 @@ bool g_enable_SOCD = false;
 bool g_disable_f10_11_13 = false;
 bool g_pauseBGM_06 = false;
 bool g_forceRenderCursor=false;
-bool g_testKey=false;
 bool g_disable_max_btn = true;
 AdvancedIGI_Options g_adv_igi_options;
 
@@ -362,7 +361,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         LauncherSettingGet("keyboard_SOCD", g_enable_SOCD);
         LauncherSettingGet("force_render_cursor", g_forceRenderCursor);
         LauncherSettingGet("pauseBGM_06", g_pauseBGM_06);
-        LauncherSettingGet("test_key", g_testKey);
 
         memset(&g_adv_igi_options, 0, sizeof(g_adv_igi_options));
         LauncherSettingGet("auto_th06_show_rank", g_adv_igi_options.th06_showRank);
@@ -451,7 +449,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
 }
 
 int GameGuiProgress = 0;
-bool g_ItemActive=false;
 void GameGuiBegin(game_gui_impl impl, bool game_nav)
 {
     // Acquire game input
@@ -465,36 +462,6 @@ void GameGuiBegin(game_gui_impl impl, bool game_nav)
     } else {
         Gui::GuiNavFocus::GlobalDisable(true);
     }
-    if (g_testKey && g_ItemActive)
-    {
-        io.MouseDown[0] = GetAsyncKeyState(VK_LBUTTON) & 0x8000;
-        io.MouseDown[1] = GetAsyncKeyState(VK_RBUTTON) & 0x8000;
-        io.KeyCtrl = GetAsyncKeyState(VK_CONTROL) & 0x8000;
-        io.KeyShift = GetAsyncKeyState(VK_SHIFT) & 0x8000;
-        io.KeyAlt = GetAsyncKeyState(VK_MENU) & 0x8000;
-
-        if (GetAsyncKeyState(VK_BACK) & 0x8000)
-            io.KeysDown[VK_BACK] = true;
-        else
-            io.KeysDown[VK_BACK] = false;
-        static int last_down[11] = { 0 };
-        for (int i = 0; i <= 9; i++)
-            if ((GetAsyncKeyState(i + '0') & 0x8000) || (GetAsyncKeyState(i + VK_NUMPAD0) & 0x8000)) {
-                if (last_down[i] == false)
-                    io.AddInputCharacter(i + '0');
-                last_down[i] = true;
-            } else {
-                last_down[i] = false;
-            }
-        if ((GetAsyncKeyState(VK_DECIMAL) & 0x8000) || (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000)) {
-            if (last_down[10] == false)
-                io.AddInputCharacter('.');
-            last_down[10] = true;
-        } else {
-            last_down[10] = false;
-        }
-    }
-
     switch (impl) {
     case THPrac::IMPL_WIN32_DX8:
         // New frame
@@ -516,8 +483,12 @@ void GameGuiEnd(bool draw_cursor)
 {
     if (GameGuiProgress != 1)
         return;
+    if (draw_cursor){
+        // if (draw_cursor || ImGui::IsAnyItemActive() || ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)){
+        // try to re-hook wnd proc
+        Gui::ReHookWndProc();
+    }
     // Draw cursor if needed
-    g_ItemActive = draw_cursor || ImGui::IsAnyItemActive() || ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow);
     if (draw_cursor && (g_forceRenderCursor || Gui::ImplWin32CheckFullScreen())) {
         auto& io = ::ImGui::GetIO();
         io.MouseDrawCursor = true;
