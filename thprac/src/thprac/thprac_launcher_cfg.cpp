@@ -21,9 +21,7 @@
 #pragma warning(disable : 26819)
 #include <rapidjson/prettywriter.h>
 #pragma warning(pop)
-#pragma comment(lib, "wininet.lib")
 #include <shlwapi.h>
-#pragma comment(lib, "Shlwapi.lib")
 
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
