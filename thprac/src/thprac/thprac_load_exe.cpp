@@ -1,6 +1,6 @@
 ﻿#include "thprac_load_exe.h"
 #include "utils/utils.h"
-#include <windows.h>
+#include "utils/wininternal.h"
 
 namespace THPrac {
 
@@ -57,6 +57,43 @@ unsigned char INJECT_SHELLCODE[] = {
 };
 
 static_assert(sizeof(INJECT_SHELLCODE) % 16 == 0);
+
+uintptr_t GetGameModuleBase(HANDLE hProc)
+{
+    PROCESS_BASIC_INFORMATION pbi;
+    NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi, sizeof(pbi), nullptr);
+
+    LPVOID based = (LPVOID)((uintptr_t)pbi.PebBaseAddress + offsetof(PEB, ImageBaseAddress));
+
+    uintptr_t ret = 0;
+    DWORD byteRet;
+    ReadProcessMemory(hProc, based, &ret, sizeof(ret), &byteRet);
+
+    return ret;
+}
+
+bool WriteTHPracSig(HANDLE hProc, uintptr_t base)
+{
+    DWORD sigAddr = 0;
+    DWORD bytesReadRPM;
+    ReadProcessMemory(hProc, (void*)(base + 0x3c), &sigAddr, 4, &bytesReadRPM);
+    if (bytesReadRPM != 4 || !sigAddr)
+        return false;
+    sigAddr += base;
+    sigAddr -= 4;
+
+    constexpr DWORD thpracSig = 'CARP';
+    DWORD bytesWrote;
+    DWORD oldProtect;
+    if (!VirtualProtectEx(hProc, (void*)sigAddr, 4, PAGE_EXECUTE_READWRITE, &oldProtect))
+        return false;
+    if (!WriteProcessMemory(hProc, (void*)sigAddr, &thpracSig, 4, &bytesWrote))
+        return false;
+    if (!VirtualProtectEx(hProc, (void*)sigAddr, 4, oldProtect, &oldProtect))
+        return false;
+
+    return true;
+}
 
 bool LoadSelf(HANDLE hProcess, void* userdata, size_t userdataSize)
 {
