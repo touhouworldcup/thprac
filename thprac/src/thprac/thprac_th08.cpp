@@ -2394,6 +2394,9 @@ namespace TH08 {
             default: stage = 3;break;
             }
             *(DWORD*)(0x164D2CC)=stage;
+        }else{
+            int32_t* sp = (int32_t*)0x164D0B4;
+            *sp &= ~0x4000;
         }
         pCtx->Eip = 0x46b0b4;
     }

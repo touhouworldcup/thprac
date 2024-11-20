@@ -247,7 +247,12 @@
     "THPRAC_CUSTOM_FONT":["字体","font","font"],
     
     "THPRAC_FORCE_RENDER_CURSOR":["强制渲染鼠标","force render cursor","force render cursor"],
-    "THPRAC_FORCE_RENDER_CURSOR_DESC":["全屏时无法看见鼠标则设置此项，将会导致窗口时出现两个重叠的鼠标","set this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode","et this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode"],
+    "THPRAC_FORCE_RENDER_CURSOR_DESC":["全屏时无法看见鼠标则设置此项，将会导致窗口时出现两个重叠的鼠标","set this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode","set this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode"],
+    "THPRAC_WIN_KEY_STATE":["win键状态","win key state","win key state"],
+    "THPRAC_DISABLE_WIN_KEY":["禁用","disabled","disabled"],
+    "THPRAC_ENABLE_WIN_KEY":["启用","enabled","enabled"],
+	"THPRAC_DISABLE_WIN_KEY_CHECKBOX":["thp启动后自动禁用win键","disable win key when thprac.exe launches","disable win key when thprac.exe launches"],
+	"THPRAC_DISABLE_WIN_KEY_DESC":["关闭thp以激活win键","shut down thprac to enable win key again","shut down thprac to enable win key again"],
     
     "THPRAC_KEYBIND":["修改按键映射","set keybind","set keybind"],
     "THPRAC_KEYBIND_MODAL":["修改按键映射##modal","set keybind##modal","set keybind##modal"],
@@ -1100,7 +1105,8 @@
       "TH_OFF": [ "关闭", "Off", "無効" ],
       "TH_NORMAL": [ "正常", "Normal", "普通" ],
       "TH_SPELL_TIME_NORMAL": [ "正常", "Normal", "普通" ],
-      "TH_SPELL_TIME_INF": [ "无限时间(6本)", "Inf time(6 book)", "Inf time(6 book)" ],
+      "TH_SPELL_TIME_INF": [ "无限时间", "Inf time", "Inf time" ],
+      "TH_SPELL_TIME_INF_BOOK6": [ "无限时间(6本)", "Inf time(6 book)", "Inf time(6 book)" ],
       "TH_SPELL_TIME_INF_BOOK5": [ "无限时间(5本)", "Inf time(5 book)", "Inf time(5 book)" ],
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
       "TH_P1": [ "P1", "P1", "P1" ],
@@ -1307,8 +1313,13 @@
       ],
 	  "TH_BOOKS_PHASE_INF_TIME": [
         "TH_SPELL_TIME_NORMAL",
-        "TH_SPELL_TIME_INF",
+        "TH_SPELL_TIME_INF_BOOK6",
         "TH_SPELL_TIME_INF_BOOK5"
+      ],
+	  
+	  "TH_PHASE_INF_TIME": [
+        "TH_SPELL_TIME_NORMAL",
+        "TH_SPELL_TIME_INF"
       ],
       "TH_SPELL_PHASE2": [
         "TH_P1",

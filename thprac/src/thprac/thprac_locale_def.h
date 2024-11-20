@@ -589,10 +589,14 @@ enum th_glossary_t {
     THPRAC_DIR_LOCAL,
     THPRAC_DISABLE_F10_11_13,
     THPRAC_DISABLE_MAXIMIZE_BTN,
+    THPRAC_DISABLE_WIN_KEY,
+    THPRAC_DISABLE_WIN_KEY_CHECKBOX,
+    THPRAC_DISABLE_WIN_KEY_DESC,
     THPRAC_DONT_SEARCH_ONGOING,
     THPRAC_ENABLE_GAMETIME_RECORD,
     THPRAC_ENABLE_KEYBOARD_SOCD,
     THPRAC_ENABLE_KEYBOARD_SOCD_DESC,
+    THPRAC_ENABLE_WIN_KEY,
     THPRAC_EXISTING_GAME_ACTION,
     THPRAC_EXISTING_GAME_ACTION_OPTION,
     THPRAC_EXISTING_GAME_CONFIRMATION,
@@ -1059,6 +1063,7 @@ enum th_glossary_t {
     THPRAC_UPDATE_WITHOUT_CONFIRMATION_DESC,
     THPRAC_USE_BACKUP_DATA,
     THPRAC_USE_REL_PATH,
+    THPRAC_WIN_KEY_STATE,
     THPRAC_YES,
     TH_ABOUT_AUTHOR,
     TH_ABOUT_BRANCH,
@@ -1221,6 +1226,7 @@ enum th_glossary_t {
     TH_SPELL_TIMEOUT,
     TH_SPELL_TIME_INF,
     TH_SPELL_TIME_INF_BOOK5,
+    TH_SPELL_TIME_INF_BOOK6,
     TH_SPELL_TIME_NORMAL,
     TH_STAGE,
     TH_STAGE_1,
@@ -1253,7 +1259,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1242];
+extern const char* th_glossary_str[3][1248];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1286,6 +1292,8 @@ extern const th_glossary_t TH_WARP_ALCOSTG[4];
 extern const th_glossary_t TH_SPELL_PHASE1[3];
 
 extern const th_glossary_t TH_BOOKS_PHASE_INF_TIME[4];
+
+extern const th_glossary_t TH_PHASE_INF_TIME[3];
 
 extern const th_glossary_t TH_SPELL_PHASE2[5];
 

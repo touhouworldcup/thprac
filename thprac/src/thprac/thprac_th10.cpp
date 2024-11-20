@@ -94,7 +94,7 @@ namespace TH10 {
         }
         SINGLETON(THGuiPrac);
     public:
-    
+
         __declspec(noinline) void State(int state)
         {
             static int diff_prev = -1;
@@ -207,6 +207,9 @@ namespace TH10 {
                 if (*mWarp) {
                     SectionWidget();
                     switch (CalcSection()) {
+                    case TH10_ST4_MID1:
+                        mPhase(TH_PHASE, TH_PHASE_INF_TIME);
+                        break;
                     case TH10_ST6_BOSS8:
                     case TH10_ST6_BOSS4:
                         mRealBulletSprite();
@@ -1526,6 +1529,11 @@ namespace TH10 {
             THStage4STD(3600);
             ECLJump(ecl, 0x14a64, 0x14a84, 3600);
             ECLJump(ecl, 0xf8ec, 0xf900, 3600);
+            if (thPracParam.phase == 1) {
+                ecl << pair { 0xF934, (int16_t)83 };
+                ecl << pair { 0xF940, (int32_t)9999999 };// disable main latter
+                ecl << pair { 0xD2EC, (int32_t)9999999 };// boss time
+            }
             break;
         case THPrac::TH10::TH10_ST4_BOSS1:
             THStage4ANM(8688);

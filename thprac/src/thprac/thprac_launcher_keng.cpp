@@ -20,6 +20,11 @@
 #include "..\3rdParties\rapidcsv\rapidcsv.h"
 
 namespace THPrac {
+    #define DIFF_NAME_SIZE 256
+    #define PLAY_NAME_SIZE 256
+    #define KENG_NAME_SIZE 256
+    #define PLAY_CMT_SIZE 2048
+    #define KENG_DESC_SIZE 2048
     void KengSave();
     void GuiDateSelector(const char* id, std::chrono::year_month_day* time)
     {
@@ -49,7 +54,7 @@ namespace THPrac {
 
     struct KengDifficulty {
         DiffIndex id;
-        char name[256];
+        char name[DIFF_NAME_SIZE];
 
         KengDifficulty(int iid = 0, const char* nname = "")
             : id(iid)
@@ -94,7 +99,7 @@ namespace THPrac {
         if (GuiModal(S(THPRAC_KENG_ADD_DIFF_POPUP), { LauncherWndGetSize().x * 0.5f, LauncherWndGetSize().y * 0.3f }, &isopen)) {
             ImGui::PushTextWrapPos(LauncherWndGetSize().x * 0.9f);
             {
-                static char diff_name[256] = { 0 };
+                static char diff_name[DIFF_NAME_SIZE] = { 0 };
                 ImGui::Columns(2, 0, false);
                 ImGui::SetColumnWidth(0, 300.0f);
                 ImGui::Text(S(THPRAC_KENG_DIFF_NAME));
@@ -148,8 +153,8 @@ namespace THPrac {
 
     class SingleGamePlay
     {
-        char mPlayName[256];
-        char mPlayComment[2048];
+        char mPlayName[PLAY_NAME_SIZE];
+        char mPlayComment[PLAY_CMT_SIZE];
         std::chrono::year_month_day mTimeCreate;
         std::vector<DiffIndex> mDiffsDied;
     public:
@@ -306,7 +311,7 @@ namespace THPrac {
             }
             {
                 static bool isopen_changename = false;
-                static char diffname[256];
+                static char diffname[DIFF_NAME_SIZE];
                 bool focus = (isopen_changename == false);
                 if (idx_changename != -1) {
                     if (!isopen_changename) {
@@ -415,7 +420,7 @@ namespace THPrac {
 
     struct DiffsDetailedTableItem {
         int index;
-        std::string name;
+        char name[DIFF_NAME_SIZE];
         int count;
         double pass_rate;
         static const ImGuiTableSortSpecs* s_current_sort_specs;
@@ -437,20 +442,18 @@ namespace THPrac {
                 const ImGuiTableColumnSortSpecs* sort_spec = &s_current_sort_specs->Specs[n];
                 double delta = 0;
                 switch (sort_spec->ColumnUserID) {
+                default:
                 case 0:
                     delta = (a->index - b->index);
                     break;
                 case 1:
-                    delta = (strcmp(a->name.c_str(), b->name.c_str()));
+                    delta = (strcmp(a->name, b->name));
                     break;
                 case 2:
                     delta = (a->count - b->count);
                     break;
                 case 3:
                     delta = (a->pass_rate - b->pass_rate);
-                    break;
-                default:
-                    IM_ASSERT(0);
                     break;
                 }
                 if (delta > 0)
@@ -465,8 +468,8 @@ namespace THPrac {
 
     class Keng
     {
-        char mKengName[256];
-        char mKengDescription[2048];
+        char mKengName[KENG_NAME_SIZE];
+        char mKengDescription[KENG_DESC_SIZE];
         std::chrono::year_month_day mTimeCreate;
 
         std::vector<KengDifficulty> mKengDifficulties;
@@ -508,6 +511,8 @@ namespace THPrac {
                 }
                 ImGui::OpenPopup(S(THPRAC_KENG_DETAILS_POPUP));
             }
+            if (!isopen)
+                return;
             if (!calculated) {
                 calculated = true;
                 diffs_die_count = {};
@@ -580,7 +585,7 @@ namespace THPrac {
                 for (auto& diff : mKengDifficulties) {
                     DiffsDetailedTableItem item;
                     item.index = n;
-                    item.name = diff.name;
+                    memcpy(item.name,diff.name,sizeof(diff.name));
                     item.count = diffs_die_count[diff.id];
                     item.pass_rate = probs_pass_map[diff.id];
                     table_itmes.push_back(item);
@@ -632,7 +637,7 @@ namespace THPrac {
                         ImGui::TableNextColumn();
                         ImGui::Text("%d", item.index);
                         ImGui::TableNextColumn();
-                        ImGui::Text("%s", item.name.c_str());
+                        ImGui::Text("%s", item.name);
                         ImGui::TableNextColumn();
                         ImGui::Text("%6d", item.count);
                         ImGui::TableNextColumn();
@@ -943,8 +948,8 @@ namespace THPrac {
                 ImGui::Separator();
                 ImGui::SetCursorPosX(LauncherWndGetSize().x * 0.05f);
 
-                static char playName[256] = { 0 };
-                static char playCmt[2048] = { 0 };
+                static char playName[PLAY_NAME_SIZE] = { 0 };
+                static char playCmt[PLAY_CMT_SIZE] = { 0 };
                 static std::chrono::year_month_day time;
                 static std::vector<char> diffs_select;
                 static bool isopen = false;
@@ -1174,8 +1179,8 @@ namespace THPrac {
                 if (GuiModal(S(THPRAC_KENG_ADD_KENG_POPUP), { LauncherWndGetSize().x * 0.95f, LauncherWndGetSize().y * 0.8f }, &isopen)) {
                     ImGui::PushTextWrapPos(LauncherWndGetSize().x * 0.9f);
                     {
-                        static char kengName[256];
-                        static char kengDesc[2048];
+                        static char kengName[KENG_NAME_SIZE];
+                        static char kengDesc[KENG_DESC_SIZE];
 
                         ImGui::Columns(2, 0, false);
                         ImGui::SetColumnWidth(0, 300.0f);

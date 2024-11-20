@@ -13,4 +13,6 @@ int GuiLauncherMain();
 void GuiLauncherMainSwitchTab(const char* tab);
 void GuiLauncherMainTrigger(LauncherTrigger trigger);
 void GuiLauncherLocaleInit();
+void DisableWinKey();
+void DisableDisableWinKey();
 }

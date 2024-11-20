@@ -627,7 +627,20 @@ namespace Gui {
     void* g_wndproc_addr;
     void ReHookWndProc(){
         if (g_wndproc_bytes != *(DWORD*)((DWORD)g_wndproc_addr + 1)) {
+            BYTE bytes[5];
+            for (int i = 0; i < 5; i++)
+                bytes[i] = *(BYTE*)((DWORD)g_wndproc_addr + i);
+
             MH_DisableHook(g_wndproc_addr);
+            MH_RemoveHook(g_wndproc_addr);
+
+            DWORD old_protect;
+            VirtualProtect(g_wndproc_addr, 5, PAGE_EXECUTE_READWRITE, &old_protect);
+            memcpy(g_wndproc_addr, bytes, 5);
+            VirtualProtect(g_wndproc_addr, 5, old_protect, &old_protect);
+            __thimgui_wp_original = nullptr;
+
+            MH_CreateHook(g_wndproc_addr, (void*)__ThImGui_WndProc_HookFunc, &__thimgui_wp_original);
             MH_EnableHook(g_wndproc_addr);
             g_wndproc_bytes = *(DWORD*)((DWORD)g_wndproc_addr + 1);
         }

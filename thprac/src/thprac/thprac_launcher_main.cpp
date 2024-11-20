@@ -58,6 +58,41 @@ void GuiLauncherMainTrigger(LauncherTrigger trigger)
     gLauncherTrigger = trigger;
 }
 
+HHOOK g_hKeyboardHook = nullptr;
+LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+    if (nCode < 0 || nCode != HC_ACTION) // do not process message
+        return CallNextHookEx(g_hKeyboardHook, nCode, wParam, lParam);
+
+    bool bEatKeystroke = false;
+    auto p = reinterpret_cast<KBDLLHOOKSTRUCT*>(lParam);
+    switch (wParam) {
+    case WM_KEYDOWN:
+    case WM_KEYUP: {
+        bEatKeystroke =(p->vkCode == VK_LWIN) || (p->vkCode == VK_RWIN);
+        // Note that this will not block the Xbox Game Bar hotkeys (Win+G, Win+Alt+R, etc.)
+        break;
+    }
+    }
+
+    if (bEatKeystroke)
+        return 1;
+    else
+        return CallNextHookEx(g_hKeyboardHook, nCode, wParam, lParam);
+}
+void DisableWinKey(){
+    if (!g_hKeyboardHook)
+        g_hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, GetModuleHandle(nullptr), 0);
+}
+
+void DisableDisableWinKey()
+{
+    if (g_hKeyboardHook){
+        UnhookWindowsHookEx(g_hKeyboardHook);
+        g_hKeyboardHook = nullptr;
+    }
+}
+
 int GuiLauncherMain()
 {
     int localeSwitch = -1;
@@ -105,6 +140,11 @@ int GuiLauncherMain()
     LauncherOthersInit();
     LauncherKengInit();
 
+    g_hKeyboardHook = nullptr;
+    bool disable_win;
+    if (LauncherSettingGet("disable_win_key", disable_win) && disable_win) {
+        DisableWinKey();
+    }
     while (LauncherWndNewFrame()) {
         static bool isOpen = true;
         static bool isMinimize = false;
@@ -209,13 +249,14 @@ int GuiLauncherMain()
     }
     LauncherOthersDestroy();
     LauncherKengDestroy();
+    DisableDisableWinKey();
 
     LauncherCfgClose();
     LauncherWndShutdown();
     if (gLauncherTrigger == LAUNCHER_RESET) {
         LauncherCfgReset();
     }
-
+    
     return 0;
 }
 

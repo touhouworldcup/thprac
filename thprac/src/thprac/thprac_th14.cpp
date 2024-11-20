@@ -2595,8 +2595,25 @@ namespace TH14 {
         {
             if (g_adv_igi_options.th14_showDropBar) {
                 int items = *(DWORD*)(0x4F5880);
+                bool border=true;
+                if (items == 0)
+                {
+                    border=false;
+                    DWORD pitems = *(DWORD*)(0x4DB660);
+                    if (pitems) {
+                        DWORD iter = pitems + 0x14;
+                        for (int i = 0; i < 0x1258; i++) {
+                            int type = *(DWORD*)(iter + 0xBF4);
+                            int movement = *(DWORD*)(iter + 0xBF0);
+                            if (movement != 0)
+                                if (type == 1 || type == 2 || type == 3)
+                                    items++;
+                            iter += 0xC18;
+                        }
+                    }
+                }
                 DWORD ppl = *(DWORD*)(0x004DB67C);
-                if (items > 0 && ppl) {
+                if (ppl) {
                     float num = 0.0f;
                     DWORD col = 0xFFFFFFFF;
                     DWORD col2 = 0xFF000000;
@@ -2629,7 +2646,7 @@ namespace TH14 {
                     auto p = ImGui::GetOverlayDrawList();
                     p->PushClipRect({ 64.0f, 32.0f }, { 832.0f, 928.0f });
                     const float bar_xszhalf = 48.0f;
-                    const float bar_yszhalf = 3.0f;
+                    const float bar_yszhalf = 4.0f;
                     // shadow
                     {
                         ImVec2 pmin,pmax;
@@ -2650,6 +2667,15 @@ namespace TH14 {
                         ImVec2 pmin = { xpos - bar_xszhalf, ypos - 48.0f - bar_yszhalf };
                         ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f * num, pmin.y + bar_yszhalf * 2.0f };
                         p->AddRectFilled(pmin, pmax, col);
+                        if (border){
+                            ImVec2 pmin = { xpos - bar_xszhalf, ypos - 48.0f - bar_yszhalf};
+                            ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f};
+                            p->AddRect(pmin, pmax, 0xFFFFFF00);
+                        }else{
+                            ImVec2 pmin = { xpos - bar_xszhalf, ypos - 48.0f - bar_yszhalf };
+                            ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f };
+                            p->AddRect(pmin, pmax, 0xFFCCCCCC);
+                        }
                     }
                     p->PopClipRect();
                 }

@@ -17,7 +17,7 @@
 - add a option in settings to disable F10 for th11-13 (in case toggle fullscreen/window)
 - add esc + r/ctrl+shift+down to quick restart in EoSD
 - add a option for EoSD to pause BGM when using esc pause menu
-- add a phase selection for IN st6A LSC;  add FORCE wave 2 for 123 normal 1
+- add a phase selection for IN st6A LSC;  add FORCE wave 2 for 123 normal 1; add inf time for momoji
 - add hint editor for MoF
 - add font bug fix(mainly chinese) and customized font
 - add total game time and game time too long hint
@@ -30,6 +30,7 @@
 - add roll from csv
 - add LW practice for IN
 - make IN and PCB ignore .exe checksum to avoid unexpected changes in .exe file(like using SpecialK and game crashes)
+- add win key disable
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
@@ -50,7 +51,7 @@
 - 设置th11-13靳用F10(以防窗口切换)
 - 红魔乡ESC+R/ctrl+shift+下 快速重开
 - 红魔乡3036后自动暂停bgm(设置界面)
-- 给蓬莱之药加了阶段选择; 给123一非加了阶段选择
+- 给蓬莱之药加了阶段选择; 给123一非加了阶段选择; 给狗椛加了无限时间
 - 给风加了个hint编辑器
 - 字体修复(thwiki.cc/官方游戏/错误解决办法   字体不正常一节)与自定义字体
 - 总游戏时间记录, 游戏时间过长提示功能
@@ -63,3 +64,4 @@
 - 使用CSV文件随机roll东西
 - 永夜抄LW练习
 - 妖/永禁用checksum, 从而如汉化版等修改版的rep和score.dat不会导致游戏崩溃/游戏存档清零了(但是rep可能仍然会炸)
+- 禁用win键
