@@ -232,6 +232,9 @@
     <ClInclude Include="src\thprac\thprac_launcher_tools_waifus.h">
       <Filter>THPrac Launcher</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac\thprac_igi_key_render.h">
+      <Filter>THPrac Games</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\thprac\thprac_utils.cpp">
@@ -440,6 +443,9 @@
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_launcher_keng.cpp">
       <Filter>THPrac Launcher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_igi_key_render.cpp">
+      <Filter>THPrac Games</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

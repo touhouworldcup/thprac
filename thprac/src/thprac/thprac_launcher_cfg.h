@@ -6,7 +6,6 @@
 #include <rapidjson/document.h>
 #pragma warning(pop)
 #include <string>
-
 namespace THPrac {
 
 std::wstring LauncherGetDataDir();
@@ -18,6 +17,7 @@ void LauncherCfgClose();
 void LauncherCfgReset();
 
 bool LauncherSettingGet(const char* name, int& valueOut);
+bool LauncherSettingGet(const char* name, unsigned int& valueOut);
 bool LauncherSettingGet(const char* name, bool& valueOut);
 bool LauncherSettingGet(const char* name, float& valueOut);
 bool LauncherSettingGet(const char* name, const char*& valueOut);
@@ -26,6 +26,7 @@ bool LauncherSettingGet(const char* name, std::array<int, 2>& valueOut);
 void LauncherSettingGet_KeyBind();
 
 void LauncherSettingSet(const char* name, int& valueIn);
+void LauncherSettingSet(const char* name, unsigned int& valueIn);
 void LauncherSettingSet(const char* name, bool& valueIn);
 void LauncherSettingSet(const char* name, float& valueIn);
 void LauncherSettingSet(const char* name, const char* valueIn);

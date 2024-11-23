@@ -582,7 +582,7 @@ namespace TH11 {
     public:
         bool forceBossMoveDown = false;
     private:
-        float bossMoveDownRange = 0.8;
+        float bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
         EHOOK_ST(th11_bossmovedown, 0x0041497C)
         {
             float* y_pos = (float*)(pCtx->Ebx + 0x14E0);
@@ -725,6 +725,7 @@ namespace TH11 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
+                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
                 if (ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH11_SHOW_HINT), &(g_adv_igi_options.th11_showHint))) {
                     THAdvOptWnd::SetHint();
                 }
@@ -1516,25 +1517,25 @@ namespace TH11 {
             ecl << 0 << 0x00200118 << 0x02ff0000 << 0 << 0 << 0x43600000;
 
             switch (thPracParam.phase) {
-            case 1:
+            case 1:// 2
                 ecl << pair{0x8cb0, 4999};
                 ECLJump(ecl, 0x9260, 0x9318);
                 ecl << pair{0x9344, (int16_t)0};
                 break;
-            case 2:
+            case 2:// 3
                 ecl << pair{0x8cb0, 2999};
                 ECLJump(ecl, 0x9260, 0x9318);
                 ECLJump(ecl, 0x9354, 0x940c);
                 ecl << pair{0x9344, (int16_t)0} << pair{0x9438, (int16_t)0};
                 break;
-            case 3:
+            case 3:// 4
                 ecl << pair{0x8cb0, 1499};
                 ECLJump(ecl, 0x9260, 0x9318);
                 ECLJump(ecl, 0x9354, 0x940c);
                 ECLJump(ecl, 0x946c, 0x9524);
                 ecl << pair{0x9344, (int16_t)0} << pair{0x9438, (int16_t)0} << pair{0x9550, (int16_t)0};
                 break;
-            case 4:
+            case 4://rage 4
                 ecl << pair{0x8cb0, 1499};
                 ECLJump(ecl, 0x9260, 0x9318);
                 ECLJump(ecl, 0x9354, 0x940c);
@@ -1542,6 +1543,25 @@ namespace TH11 {
                 ecl << pair{0x9344, (int16_t)0} << pair{0x9438, (int16_t)0} << pair{0x9550, (int16_t)0};
                 ecl << pair{0x9f70, 2181}; // 2180
                 ecl << pair{0xa08c, (int16_t)0};
+                break;
+            case 5://rage 3
+                ecl << pair { 0x8cb0, 2999 };
+                ECLJump(ecl, 0x9260, 0x9318);
+                ECLJump(ecl, 0x9354, 0x940c);
+                ecl << pair { 0x9344, (int16_t)0 } << pair { 0x9438, (int16_t)0 };
+                ecl << pair { 0x9f70, 2181 }; // 2180
+                ecl << pair { 0xa08c, (int16_t)0 };
+                break;
+            case 6: // rage 2
+                ecl << pair { 0x8cb0, 4999 };
+                ECLJump(ecl, 0x9260, 0x9318);
+                ecl << pair { 0x9344, (int16_t)0 };
+                ecl << pair { 0x9f70, 2181 }; // 2180
+                ecl << pair { 0xa08c, (int16_t)0 };
+                break;
+            case 7: // rage 1
+                ecl << pair { 0x9f70, 2181 }; // 2180
+                ecl << pair { 0xa08c, (int16_t)0 };
                 break;
             default:
                 break;
@@ -1953,9 +1973,11 @@ namespace TH11 {
             }
         }
 
-
+        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x4A8EB4)) {
+            g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
+            KeysHUD(11, *(DWORD*)(0x4C93C0), { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+        }
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
-
         GameGuiEnd(drawCursor);
     }
     EHOOK_DY(th11_render, 0x456f12)

@@ -17,6 +17,7 @@
 #include <cstdarg>
 #include <wininet.h>
 #include <ShlObj.h>
+#include "thprac_igi_key_render.h"
 #include <stdexcept>
 #pragma warning(push)
 #pragma warning(disable : 26819)
@@ -603,6 +604,29 @@ public:
         if (ImGui::DragFloat(guiTxt, &value, 1.0, mMin, mMax)) {
             value = std::clamp(value, mMin, mMax);
             LauncherSettingSet(name.c_str(), value);
+        }
+        if (helpTxt) {
+            ImGui::SameLine();
+            GuiHelpMarker(helpTxt);
+        }
+    }
+};
+
+class THCfgColor : public THSetting<uint32_t> {
+public:
+    THCfgColor(const char* _name, uint32_t _value)
+        : THSetting(_name, _value)
+    {
+    }
+    void Gui(const char* guiTxt, const char* helpTxt = nullptr)
+    {
+        ImVec4 color = ImGui::ColorConvertU32ToFloat4(value);
+        if (ImGui::ColorEdit4(guiTxt, (float*)&color),ImGuiColorEditFlags_NoInputs) {
+            uint32_t value2 = ImGui::ColorConvertFloat4ToU32(color);
+            if (value != value2){
+                value = value2;
+                LauncherSettingSet(name.c_str(), value2);
+            }
         }
         if (helpTxt) {
             ImGui::SameLine();
@@ -1308,7 +1332,6 @@ private:
         for (auto& game : gGameRoll) {
             mThcrapGames[game.type].push_back(game);
         }
-
     }
     SINGLETON(THCfgGui);
 
@@ -1437,12 +1460,12 @@ private:
         if (ImGui::Button(S(THPRAC_KEYBIND))) {
             ImGui::OpenPopup(S(THPRAC_KEYBIND_MODAL));
         }
-        
+
         if (GuiModal(S(THPRAC_KEYBIND_MODAL), { LauncherWndGetSize().x * 0.95f, LauncherWndGetSize().y * 0.8f })) {
             ImGui::PushTextWrapPos(LauncherWndGetSize().x * 0.9f);
             {
                 ImGui::TextUnformatted(S(THPRAC_KEYBIND));
-                ImGui::BeginTable("keys binded",3,ImGuiTableFlags_::ImGuiTableFlags_Borders);
+                ImGui::BeginTable("keys binded", 3, ImGuiTableFlags_::ImGuiTableFlags_Borders);
                 ImGui::TableSetupColumn(S(THPRAC_KEYBIND_FROM), 0, LauncherWndGetSize().x * 0.95f * 0.4f);
                 ImGui::TableSetupColumn(S(THPRAC_KEYBIND_TO), 0, LauncherWndGetSize().x * 0.95f * 0.4f);
                 ImGui::TableSetupColumn(S(THPRAC_KEYBIND_REMOVE), 0, LauncherWndGetSize().x * 0.95f * 0.2f);
@@ -1451,8 +1474,7 @@ private:
                 int row = 0;
                 bool is_to_remove = false;
                 KeyDefine key_to_remove = { 0 };
-                for (auto& bind : g_keybind)
-                {
+                for (auto& bind : g_keybind) {
                     auto key1 = bind.first.keyname;
                     auto key2 = bind.second.keyname;
                     ImGui::TableNextColumn();
@@ -1462,18 +1484,17 @@ private:
                     ImGui::TableNextColumn();
                     char btn_name[100];
                     sprintf_s(btn_name, "%s##%d", S(THPRAC_KEYBIND_REMOVE), row);
-                    if (ImGui::Button(btn_name)){
+                    if (ImGui::Button(btn_name)) {
                         is_to_remove = true;
                         key_to_remove = bind.first;
                     }
                     row++;
                 }
                 ImGui::EndTable();
-                if (is_to_remove){
+                if (is_to_remove) {
                     g_keybind.erase(key_to_remove);
                     LauncherSettingSet_KeyBind();
                 }
-
 
                 static int keyid_from = 0;
                 static int keyid_to = 0;
@@ -1487,7 +1508,7 @@ private:
                 }
                 static bool press_a_key_from = false;
                 static bool press_a_key_to = false;
-                if (ImGui::Button(S(THPRAC_KEYBIND_ADD))){
+                if (ImGui::Button(S(THPRAC_KEYBIND_ADD))) {
                     ImGui::OpenPopup(S(THPRAC_KEYBIND_ADD_MODAL));
                     keyid_from = 0;
                     keyid_to = 0;
@@ -1500,7 +1521,7 @@ private:
                         ImGui::Combo(S(THPRAC_KEYBIND_FROM_COMBO), &keyid_from, keys_name, 109);
                         ImGui::SameLine();
                         char press_key_text[100] = { 0 };
-                        sprintf_s(press_key_text, "%s##%d", S(THPRAC_KEYBIND_PRESS_A_KEY),1);
+                        sprintf_s(press_key_text, "%s##%d", S(THPRAC_KEYBIND_PRESS_A_KEY), 1);
                         if (ImGui::Button(press_key_text) && !press_a_key_from && !press_a_key_to) {
                             press_a_key_from = true;
                         }
@@ -1510,7 +1531,7 @@ private:
                         if (ImGui::Button(press_key_text) && !press_a_key_from && !press_a_key_to) {
                             press_a_key_to = true;
                         }
-                        if (press_a_key_from || press_a_key_to){
+                        if (press_a_key_from || press_a_key_to) {
                             ImGui::Text(S(THPRAC_KEYBIND_PRESS_A_KEY));
                             int key_id = -1;
                             for (int i = 0; i < 109; i++) {
@@ -1521,9 +1542,9 @@ private:
                                 }
                             }
                             if (key_id != -1) {
-                                if (press_a_key_from){
+                                if (press_a_key_from) {
                                     keyid_from = key_id;
-                                }else if (press_a_key_to){
+                                } else if (press_a_key_to) {
                                     keyid_to = key_id;
                                 }
                                 press_a_key_from = press_a_key_to = false;
@@ -1845,7 +1866,6 @@ private:
             }
         }
 
-
         ImGui::EndChild();
     }
     void GuiThcrapSettings()
@@ -1929,7 +1949,8 @@ private:
         ImGui::EndChild();
     }
 
-    void UpdateThemesList() {
+    void UpdateThemesList()
+    {
         for (const auto& file : userThemes) {
             if (file.utf8)
                 free((void*)file.utf8);
@@ -1956,11 +1977,12 @@ private:
                 mDisableWinKey.Gui(S(THPRAC_DISABLE_WIN_KEY_CHECKBOX), S(THPRAC_DISABLE_WIN_KEY_DESC));
                 ImGui::SameLine();
                 ImGui::Text(S(THPRAC_WIN_KEY_STATE));
-                ImGui::SameLine();{
+                ImGui::SameLine();
+                {
                     ImVec4 toggle_bg_disabled = ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled);
                     ImVec4 toggle_bg_enabled = ImGui::GetStyleColorVec4(ImGuiCol_FrameBgActive);
                     // ImVec4 toggle_btn = ImGui::GetStyleColorVec4(ImGuiCol_Text);
-                    ImVec4 toggle_btn = {1.0f,1.0f,1.0f,1.0f};// force this to be white
+                    ImVec4 toggle_btn = { 1.0f, 1.0f, 1.0f, 1.0f }; // force this to be white
                     float btn_sz = 0.75f;
                     float height = 0.9f;
                     float width = 1.5f;
@@ -1977,9 +1999,9 @@ private:
 
                     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 100.0f);
                     ImGui::PushStyleVar(ImGuiStyleVar_GrabRounding, 100.0f);
-                    
-                    ImVec2 cursor_pos=ImGui::GetCursorPos();
-                    ImGui::SetNextItemWidth(1.8f*ImGui::GetFrameHeight());
+
+                    ImVec2 cursor_pos = ImGui::GetCursorPos();
+                    ImGui::SetNextItemWidth(1.8f * ImGui::GetFrameHeight());
 
                     ImVec4 toggle_bg;
                     toggle_bg.x = toggle_bg_enabled.x * slider_f + (1.0f - slider_f) * toggle_bg_disabled.x;
@@ -1987,14 +2009,14 @@ private:
                     toggle_bg.z = toggle_bg_enabled.z * slider_f + (1.0f - slider_f) * toggle_bg_disabled.z;
                     toggle_bg.w = toggle_bg_enabled.w * slider_f + (1.0f - slider_f) * toggle_bg_disabled.w;
 
-                    ImVec2 pos_bg = { cursor_pos.x, cursor_pos.y + ImGui::GetFrameHeight() * 0.5f * (1.0f-height) };
+                    ImVec2 pos_bg = { cursor_pos.x, cursor_pos.y + ImGui::GetFrameHeight() * 0.5f * (1.0f - height) };
                     ImVec2 pos_btn = { pos_bg.x + slider_f * diameter * (width - 1.0f) + 0.5f * diameter * (1.0f - btn_sz), pos_bg.y + 0.5f * diameter * (1.0f - btn_sz) };
                     ImVec2 sz_bg = { diameter * width, diameter };
                     ImVec2 sz_btn = { diameter * btn_sz, diameter * btn_sz };
 
                     ImGui::BeginDisabled();
                     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-                    
+
                     ImGui::SetCursorPos(pos_bg);
                     ImGui::PushStyleColor(ImGuiCol_Button, toggle_bg);
                     ImGui::Button(" ##wtoggle_bk", sz_bg);
@@ -2057,6 +2079,40 @@ private:
             mCfgEnableTH14_ShowItemsCnt_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_ITEMS2));
             mCfgEnableTH14_ShowDropBar_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR2));
             mCfgEnableTH15_ShowShootingDownRate_autoly.Gui(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2));
+
+            ImGui::Separator();
+            KeyRectStyle style;
+            style.separated = mKb_Separated.Get();
+            style.border_color_press = mKb_ColorBorderPress.Get();
+            style.border_color_release = mKb_ColorBorderRelease.Get();
+            style.fill_color_press = mKb_ColorFillPress.Get();
+            style.fill_color_release = mKb_ColorFillRelease.Get();
+            style.text_color_press = mKb_ColorTextPress.Get();
+            style.text_color_release = mKb_ColorTextRelease.Get();
+            style.type = mKb_Type.Get();
+            float kb_padding = mKb_Padding.Get();
+            style.padding = { kb_padding, kb_padding };
+
+            ImGuiIO& io = ImGui::GetIO(); 
+            style.size = { 34.0f / io.DisplaySize.x * 1280.0f, 34.0f / io.DisplaySize.y * 960.0f };
+
+            auto pos = ImGui::GetCursorScreenPos();
+            auto width = ImGui::GetWindowSize().x*0.5f;
+            ImGui::InvisibleButton("##keys", { 34.0f, 34.0f * 2.5f });
+            KeysHUD(15, 69, { width / io.DisplaySize.x * 1280.0f, pos.y / io.DisplaySize.y * 960.0f }, { pos.x / io.DisplaySize.x * 1280.0f, pos.y / io.DisplaySize.y * 960.0f }, style, true, false);
+
+            ImGui::Separator();
+            ImGui::Text(S(THPRAC_KB));
+            mKb_Auto.Gui(S(THPRAC_KB_AUTO));
+            mKb_ColorBorderPress.Gui(S(THPRAC_KB_COL_BORDER_PRESSED));
+            mKb_ColorBorderRelease.Gui(S(THPRAC_KB_COL_BORDER_RELEASED));
+            mKb_ColorFillPress.Gui(S(THPRAC_KB_COL_FILL_PRESSED));
+            mKb_ColorFillRelease.Gui(S(THPRAC_KB_COL_FILL_RELEASED));
+            mKb_ColorTextPress.Gui(S(THPRAC_KB_COL_TEXT_PRESSED));
+            mKb_ColorTextRelease.Gui(S(THPRAC_KB_COL_TEXT_RELEASED));
+            mKb_Separated.Gui(S(THPRAC_KB_SEPARATER));
+            mKb_Padding.Gui(S(THPRAC_KB_PADDING));
+            mKb_Type.Gui(S(THPRAC_KB_TYPE),S(THPRAC_KB_TYPE_COMBO));
         }
         ImGui::Separator();
         if (ImGui::CollapsingHeader(S(THPRAC_LAUNCH_BEHAVIOR))) {
@@ -2205,15 +2261,26 @@ private:
     THCfgCheckbox mCfgCheckUpdate { "check_update", false };
 
     // advanced igi
-    THCfgCheckbox mCfgEnableTH06_ShowRank_autoly { "auto_th06_show_rank", false};
-    THCfgCheckbox mCfgEnableTH06_ShowHitbox_autoly { "auto_th06_show_hitbox", false};
-    THCfgCheckbox mCfgEnableTH11_ShowHint_autoly { "auto_th11_show_hint", false};
-    THCfgCheckbox mCfgEnableTH13_ShowHits_autoly { "auto_th13_show_hits", false};
-    THCfgCheckbox mCfgEnableTH13_ShowHitBar_autoly { "auto_th13_show_hitbar", false};
-    THCfgCheckbox mCfgEnableTH14_ShowBonus_autoly { "auto_th14_show_bonus", false};
-    THCfgCheckbox mCfgEnableTH14_ShowItemsCnt_autoly { "auto_th14_show_item_cnt", false};
-    THCfgCheckbox mCfgEnableTH14_ShowDropBar_autoly { "auto_th14_show_drop_bar", false};
-    THCfgCheckbox mCfgEnableTH15_ShowShootingDownRate_autoly { "auto_th15_show_rate", false};
+    THCfgCheckbox mCfgEnableTH06_ShowRank_autoly { "auto_th06_show_rank", false };
+    THCfgCheckbox mCfgEnableTH06_ShowHitbox_autoly { "auto_th06_show_hitbox", false };
+    THCfgCheckbox mCfgEnableTH11_ShowHint_autoly { "auto_th11_show_hint", false };
+    THCfgCheckbox mCfgEnableTH13_ShowHits_autoly { "auto_th13_show_hits", false };
+    THCfgCheckbox mCfgEnableTH13_ShowHitBar_autoly { "auto_th13_show_hitbar", false };
+    THCfgCheckbox mCfgEnableTH14_ShowBonus_autoly { "auto_th14_show_bonus", false };
+    THCfgCheckbox mCfgEnableTH14_ShowItemsCnt_autoly { "auto_th14_show_item_cnt", false };
+    THCfgCheckbox mCfgEnableTH14_ShowDropBar_autoly { "auto_th14_show_drop_bar", false };
+    THCfgCheckbox mCfgEnableTH15_ShowShootingDownRate_autoly { "auto_th15_show_rate", false };
+    // kbs
+    THCfgColor mKb_ColorBorderPress { "kb_border_color_press", 0xFFFFFFFF };
+    THCfgColor mKb_ColorBorderRelease { "kb_border_color_release", 0xFFFFFFFF };
+    THCfgColor mKb_ColorFillPress { "kb_fill_color_press", 0xFFFF4444 };
+    THCfgColor mKb_ColorFillRelease { "kb_fill_color_release", 0xFFFFCCCC };
+    THCfgColor mKb_ColorTextPress { "kb_text_color_press", 0xFFFFFFFF };
+    THCfgColor mKb_ColorTextRelease { "kb_text_color_release", 0xFFFFFFFF };
+    THCfgCheckbox mKb_Separated { "kb_separated", true };
+    THCfgCheckbox mKb_Auto { "auto_keyboard_monitor", true };
+    THCfgCombo mKb_Type { "kb_type",0,4 };
+    THCfgFloat mKb_Padding  { "kb_padding",0.05f,0.0f,0.1f};
 
     THCfgCheckbox mResizableWindow { "resizable_window", false };
     THCfgCheckbox mDisableMaximizeBtn { "disableMax_btn", false };

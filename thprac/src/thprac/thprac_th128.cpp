@@ -697,6 +697,7 @@ namespace TH128 {
 
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
+                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
                 EndOptGroup();
             }
 
@@ -2373,7 +2374,8 @@ namespace TH128 {
         THOverlay::singleton().Update();
         TH128InGameInfo::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
-
+        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004B8A80))
+            KeysHUD(128, *(DWORD*)(0x4DB210), { 256.0f, 0.0f }, { 0.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         GameGuiEnd(drawCursor);
     }
     EHOOK_DY(th128_render, 0x468560)

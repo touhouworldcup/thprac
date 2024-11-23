@@ -1,10 +1,12 @@
 ﻿#pragma once
 
 #include "thprac_gui_components.h"
+#include "thprac_igi_key_render.h"
 
 #include <vector>
 #include <unordered_map>
 #include <optional>
+#define BOSS_MOVE_DOWN_RANGE_INIT 0.5
 
 struct IDirect3DDevice8;
 
@@ -20,6 +22,8 @@ namespace THPrac {
     bool th14_showItemsCount;
     bool th14_showDropBar;
     bool th15_showShootingDownRate;
+    bool show_keyboard_monitor;
+    KeyRectStyle keyboard_style;
     };
     extern AdvancedIGI_Options g_adv_igi_options;
 

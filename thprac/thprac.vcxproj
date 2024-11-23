@@ -55,6 +55,7 @@
     <ClInclude Include="src\thprac\thprac_hook.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_dx9.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_win32.h" />
+    <ClInclude Include="src\thprac\thprac_igi_key_render.h" />
     <ClInclude Include="src\thprac\thprac_init.h" />
     <ClInclude Include="src\thprac\thprac_gui_input.h" />
     <ClInclude Include="src\thprac\thprac_launcher_cfg.h" />
@@ -113,6 +114,7 @@
     <ClCompile Include="src\thprac\thprac_hook.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_impl_dx9.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_impl_win32.cpp" />
+    <ClCompile Include="src\thprac\thprac_igi_key_render.cpp" />
     <ClCompile Include="src\thprac\thprac_init.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_input.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher_cfg.cpp" />

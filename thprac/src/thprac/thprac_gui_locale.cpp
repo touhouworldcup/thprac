@@ -111,8 +111,17 @@ static ImWchar baseUnicodeRanges[] =
 	0x3000, 0x30FF, // Punctuations, Hiragana, Katakana
 	0x31F0, 0x31FF, // Katakana Phonetic Extensions
 	0xFF00, 0xFFEF, // Half-width characters
-	0x2191, 0x2191, // Upwards arrow
-	0x2193, 0x2193, // Downwards arrow
+	0x2190, 0x2199, // arrows
+	0x0391, 0x03C9, // greece chars
+};
+static const ImWchar __thprac_loc_range_ChineseFull[] = {
+    0x0020, 0x00FF, // Basic Latin + Latin Supplement
+    0x2000, 0x206F, // General Punctuation
+    0x3000, 0x30FF, // CJK Symbols and Punctuations, Hiragana, Katakana
+    0x31F0, 0x31FF, // Katakana Phonetic Extensions
+    0xFF00, 0xFFEF, // Half-width characters
+    0x4e00, 0x9FAF, // CJK Ideograms
+    0,
 };
 #pragma endregion
 
@@ -120,6 +129,8 @@ static ImWchar baseUnicodeRanges[] =
     bool __glocale_merge = false;
     unsigned int __glocale_disabled = 0;
     ImWchar* __glocale_jp_glyphrange = nullptr;
+    ImWchar* __glocale_zh_glyphrange = nullptr;
+    ImWchar* __glocale_en_glyphrange = nullptr;
 
     void LocaleSet(locale_t locale)
     {
@@ -438,22 +449,36 @@ static ImWchar baseUnicodeRanges[] =
         ImWchar* glyphRange = nullptr;
         switch (locale) {
         case LOCALE_ZH_CN:
-            if (onlyRenderUsedFont)
-            glyphRange = (ImWchar*)__thprac_loc_range_zh;
-        else
-            glyphRange = (ImWchar*)io.Fonts->GetGlyphRangesChineseFull();
+            if (!__glocale_zh_glyphrange){
+                if (onlyRenderUsedFont) {
+                    __glocale_zh_glyphrange = (ImWchar*)malloc((_countof(baseUnicodeRanges) + _countof(__thprac_loc_range_zh)) * sizeof(ImWchar));
+                    memcpy(__glocale_zh_glyphrange, baseUnicodeRanges, sizeof(baseUnicodeRanges));
+                    memcpy(__glocale_zh_glyphrange + _countof(baseUnicodeRanges), __thprac_loc_range_zh, sizeof(__thprac_loc_range_zh));
+                }else {
+                    __glocale_zh_glyphrange = (ImWchar*)malloc((_countof(baseUnicodeRanges) + _countof(__thprac_loc_range_ChineseFull)) * sizeof(ImWchar));
+                    memcpy(__glocale_zh_glyphrange, baseUnicodeRanges, sizeof(baseUnicodeRanges));
+                    memcpy(__glocale_zh_glyphrange + _countof(baseUnicodeRanges), __thprac_loc_range_ChineseFull, sizeof(__thprac_loc_range_ChineseFull));
+                }
+            }
+            glyphRange = (ImWchar*)__glocale_zh_glyphrange;
             break;
         case LOCALE_EN_US:
-            glyphRange = (ImWchar*)io.Fonts->GetGlyphRangesDefault();
+            if (!__glocale_en_glyphrange){
+                __glocale_en_glyphrange = (ImWchar*)malloc((_countof(baseUnicodeRanges) + 1) * sizeof(ImWchar));
+                memcpy(__glocale_en_glyphrange, baseUnicodeRanges, sizeof(baseUnicodeRanges));
+                __glocale_en_glyphrange[_countof(baseUnicodeRanges)] = 0;
+            }
+            // glyphRange = (ImWchar*)io.Fonts->GetGlyphRangesDefault();
+            glyphRange = __glocale_en_glyphrange;
             break;
-        case LOCALE_JA_JP: {
-            if (onlyRenderUsedFont)
-                glyphRange = (ImWchar*)__thprac_loc_range_ja;
-            else
-            {
-                if (!__glocale_jp_glyphrange) {
+        case LOCALE_JA_JP:
+            if (!__glocale_jp_glyphrange){
+                if (onlyRenderUsedFont) {
+                    __glocale_jp_glyphrange = (ImWchar*)malloc((_countof(baseUnicodeRanges) + _countof(__thprac_loc_range_ja)) * sizeof(ImWchar));
+                    memcpy(__glocale_jp_glyphrange, baseUnicodeRanges, sizeof(baseUnicodeRanges));
+                    memcpy(__glocale_jp_glyphrange + _countof(baseUnicodeRanges), __thprac_loc_range_ja, sizeof(__thprac_loc_range_ja));
+                } else {
                     __glocale_jp_glyphrange = (ImWchar*)malloc((_countof(baseUnicodeRanges) + _countof(offsetsFrom0x4E00) * 2 + 1) * sizeof(ImWchar));
-                    // Unpack
                     int codepoint = 0x4e00;
                     memcpy(__glocale_jp_glyphrange, baseUnicodeRanges, sizeof(baseUnicodeRanges));
                     ImWchar* dst = __glocale_jp_glyphrange + _countof(baseUnicodeRanges);
@@ -463,7 +488,6 @@ static ImWchar baseUnicodeRanges[] =
                     dst[0] = 0;
                 }
             }
-        }
             glyphRange = (ImWchar*)__glocale_jp_glyphrange;
             break;
         default:

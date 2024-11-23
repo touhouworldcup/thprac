@@ -373,6 +373,21 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         LauncherSettingGet("auto_th14_show_drop_bar", g_adv_igi_options.th14_showDropBar);
         LauncherSettingGet("auto_th15_show_rate", g_adv_igi_options.th15_showShootingDownRate);
 
+        LauncherSettingGet("auto_keyboard_monitor", g_adv_igi_options.show_keyboard_monitor);
+        if (!LauncherSettingGet("kb_separated",             g_adv_igi_options.keyboard_style.separated))                g_adv_igi_options.keyboard_style.separated = true;
+        if (!LauncherSettingGet("kb_border_color_press",    g_adv_igi_options.keyboard_style.border_color_press))       g_adv_igi_options.keyboard_style.border_color_press = 0xFFFFFFFF;
+        if (!LauncherSettingGet("kb_border_color_release",  g_adv_igi_options.keyboard_style.border_color_release))     g_adv_igi_options.keyboard_style.border_color_release = 0xFFFFFFFF;
+        if (!LauncherSettingGet("kb_fill_color_press",      g_adv_igi_options.keyboard_style.fill_color_press))         g_adv_igi_options.keyboard_style.fill_color_press = 0xFFFF4444;
+        if (!LauncherSettingGet("kb_fill_color_release",    g_adv_igi_options.keyboard_style.fill_color_release))       g_adv_igi_options.keyboard_style.fill_color_release = 0xFFFFCCCC;
+        if (!LauncherSettingGet("kb_text_color_press",      g_adv_igi_options.keyboard_style.text_color_press))         g_adv_igi_options.keyboard_style.text_color_press = 0xFFFFFFFF;
+        if (!LauncherSettingGet("kb_text_color_release",    g_adv_igi_options.keyboard_style.text_color_release))       g_adv_igi_options.keyboard_style.text_color_release = 0xFFFFFFFF;
+        if (!LauncherSettingGet("kb_text_color_style",      g_adv_igi_options.keyboard_style.type))                     g_adv_igi_options.keyboard_style.type = 2;
+        float kb_padding = 0.05f;
+        LauncherSettingGet("kb_padding", kb_padding);
+        g_adv_igi_options.keyboard_style.padding = { kb_padding, kb_padding };
+        g_adv_igi_options.keyboard_style.size = { 34.0f, 34.0f };
+        LauncherSettingGet("kb_type", g_adv_igi_options.keyboard_style.type);
+
         bool useCorrectJaFonts=false;
         LauncherSettingGet("use_custom_fonts", g_useCustomFont);
         LauncherSettingGet("use_correct_ja_fonts", useCorrectJaFonts);
@@ -421,8 +436,19 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
                 SetTheme(theme);
         } else
             ImGui::StyleColorsDark();
-    } else
+    }else{
         ::ImGui::StyleColorsDark();
+        g_adv_igi_options.keyboard_style.separated = true;
+        g_adv_igi_options.keyboard_style.border_color_press = 0xFFFFFFFF;
+        g_adv_igi_options.keyboard_style.border_color_release = 0xFFFFFFFF;
+        g_adv_igi_options.keyboard_style.fill_color_press = 0xFFFF4444;
+        g_adv_igi_options.keyboard_style.fill_color_release = 0xFFFFCCCC;
+        g_adv_igi_options.keyboard_style.text_color_press = 0xFFFFFFFF;
+        g_adv_igi_options.keyboard_style.text_color_release = 0xFFFFFFFF;
+        g_adv_igi_options.keyboard_style.type = 2;
+        g_adv_igi_options.keyboard_style.padding = { 0.0, 0.0 };
+
+    }
 
      { // hook keyboard to enable SOCD and X-disable
         LPVOID pTarget;
@@ -829,6 +855,16 @@ void DisableKeyOpt()
     ImGui::SameLine();
     ImGui::Checkbox(S(TH_ADV_DISABLE_Z_KEY), &g_disable_zkey);
     ImGui::SameLine();
+    if (ImGui::IsKeyDown(0x10))//shift
+    {
+        if (ImGui::IsKeyPressed('D'))
+            g_disable_xkey = !g_disable_xkey;
+        if (ImGui::IsKeyPressed('S'))
+            g_disable_zkey = !g_disable_zkey;
+        if (ImGui::IsKeyPressed('A'))
+            g_disable_shiftkey = !g_disable_shiftkey;
+    }
+    
     HelpMarker(S(TH_ADV_DISABLE_Z_KEY_DESC));
     return;
 }

@@ -620,7 +620,7 @@ namespace TH10 {
         bool forceBossMoveDown = false;
 
     private:
-        float bossMoveDownRange = 0.8;
+        float bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
         EHOOK_ST(th10_bossmovedown, 0x0040FA33)
         {
             float* y_pos = (float*)(pCtx->Ebx + 0x13B0);
@@ -849,7 +849,7 @@ namespace TH10 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
-
+                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th10_bossmovedown.Toggle(forceBossMoveDown);
                 }
@@ -1533,6 +1533,7 @@ namespace TH10 {
                 ecl << pair { 0xF934, (int16_t)83 };
                 ecl << pair { 0xF940, (int32_t)9999999 };// disable main latter
                 ecl << pair { 0xD2EC, (int32_t)9999999 };// boss time
+                ecl << pair { 0x14AB4, (int32_t)9999999 };// boss time
             }
             break;
         case THPrac::TH10::TH10_ST4_BOSS1:
@@ -2614,7 +2615,10 @@ namespace TH10 {
                 }
             }
         }
-
+        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x0477834)){
+            g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
+            KeysHUD(10, *(WORD*)(0x474E5C), { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+        }
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);

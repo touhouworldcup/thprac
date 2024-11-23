@@ -249,10 +249,8 @@
     "THPRAC_FORCE_RENDER_CURSOR":["强制渲染鼠标","force render cursor","force render cursor"],
     "THPRAC_FORCE_RENDER_CURSOR_DESC":["全屏时无法看见鼠标则设置此项，将会导致窗口时出现两个重叠的鼠标","set this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode","set this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode"],
     "THPRAC_WIN_KEY_STATE":["win键状态","win key state","win key state"],
-    "THPRAC_DISABLE_WIN_KEY":["禁用","disabled","disabled"],
-    "THPRAC_ENABLE_WIN_KEY":["启用","enabled","enabled"],
 	"THPRAC_DISABLE_WIN_KEY_CHECKBOX":["thp启动后自动禁用win键","disable win key when thprac.exe launches","disable win key when thprac.exe launches"],
-	"THPRAC_DISABLE_WIN_KEY_DESC":["关闭thp以激活win键","shut down thprac to enable win key again","shut down thprac to enable win key again"],
+	"THPRAC_DISABLE_WIN_KEY_DESC":["可能引入延迟, 因此不建议通过软件禁用win键","might cause delay, so it's not recommended to disable win key by software","might cause delay, so it's not recommended to disable win key by software"],
     
     "THPRAC_KEYBIND":["修改按键映射","set keybind","set keybind"],
     "THPRAC_KEYBIND_MODAL":["修改按键映射##modal","set keybind##modal","set keybind##modal"],
@@ -927,6 +925,21 @@
   
    "inGameInfo": {
       "glossary": {
+	  "THPRAC_KB":["按键显示设置","key monitor setting","key monitor setting"],
+	  "THPRAC_KB_AUTO":["自动打开按键显示","open key monitor automatically","open key monitor automatically"],
+	  "THPRAC_KB_OPEN":["打开按键显示","open key monitor","open key monitor"],
+	  "THPRAC_KB_COL_BORDER_PRESSED":["描边颜色(按下)","border color(pressed)","border color(pressed)"],
+	  "THPRAC_KB_COL_BORDER_RELEASED":["描边颜色(抬起)","border color(released)","border color(released)"],
+	  "THPRAC_KB_COL_FILL_PRESSED":["填充颜色(按下)","fill color(pressed)","fill color(pressed)"],
+	  "THPRAC_KB_COL_FILL_RELEASED":["填充颜色(抬起)","fill color(released)","fill color(released)"],
+	  "THPRAC_KB_COL_TEXT_PRESSED":["字体颜色(按下)","text color(pressed)","text color(pressed)"],
+	  "THPRAC_KB_COL_TEXT_RELEASED":["字体颜色(抬起)","text color(released)","text color(released)"],
+	  "THPRAC_KB_PADDING":["边界大小","padding","padding"],
+	  "THPRAC_KB_SEPARATER":["分体键盘","separated keys","separated keys"],
+	  "THPRAC_KB_TYPE":["样式","style","style"],
+	  "THPRAC_KB_TYPE_COMBO": [ "矩形\\0圆角矩形\\0切角矩形\\0心形\\0\\0", "rect\\0rounded rect\\0chamfered rect\\0heart\\0\\0", "rect\\0rounded rect\\0chamfered rect\\0heart\\0\\0" ],
+      
+	  
 	  "THPRAC_INGAMEINFO_ADV2":["自动开启高级IGI功能","automatically use advanced igi","automatically use advanced igi"],
 	  "THPRAC_INGAMEINFO_ADV":["高级IGI功能","advanced igi","advanced igi"],
 	  "THPRAC_INGAMEINFO_ADV_DESC1":["部分功能需要打开更多游戏信息(backspace菜单)中的选项开启","need to enable ingameinfo(in backspace menu) to show","need to enable ingameinfo(in backspace menu) to show"],
@@ -1189,9 +1202,9 @@
 	  "TH_ADV_DISABLE_Z_KEY": [ "禁用Z键", "disable Z key", "disable Z key" ],
       "TH_ADV_DISABLE_SHIFT_KEY": [ "禁用Shift键", "disable shift key", "disable shift key" ],
 	  
-      "TH_ADV_DISABLE_X_KEY_DESC": [ "给打nb的人准备", "for who want to play nb neta", "for who want to play nb neta" ],
-	  "TH_ADV_DISABLE_Z_KEY_DESC": [ "真假...", "really?", "really?" ],
-	  "TH_ADV_DISABLE_SHIFT_KEY_DESC": [ "喜欢低封?", "like NO FOCUS?", "like NO FOCUS?" ],
+      "TH_ADV_DISABLE_X_KEY_DESC": [ "给打nb的人准备(快捷键 shift+D)", "for who want to play nb neta(hotkey shift+D)", "for who want to play nb neta(hotkey shift+D)" ],
+	  "TH_ADV_DISABLE_Z_KEY_DESC": [ "真假...(快捷键 shift+S)", "really?(hotkey shift+S)", "really?(hotkey shift+S)" ],
+	  "TH_ADV_DISABLE_SHIFT_KEY_DESC": [ "喜欢低封?(快捷键 shift+A)", "like NO FOCUS?(hotkey shift+A)", "like NO FOCUS?(hotkey shift+A)" ],
 	  
 	  "TH_BOSS_FORCE_MOVE_DOWN": [ "完全下压", "force boss region to move down", "force boss region to move down" ],
 	  "TH_BOSS_FORCE_MOVE_DOWN_RANGE": [ "下压幅度", "range", "range" ],
@@ -4266,7 +4279,11 @@
     "namespace": "TH11",
 
     "glossary": {
-      "TH11_SIGNAL": [ "信号强度", "C. Gauge", "交信強度" ]
+      "TH11_SIGNAL": [ "信号强度", "C. Gauge", "交信強度" ],
+      "TH_11_SS_RAGE4": [ "P4狂暴", "Rage(P4)", "Rage(P4)" ],
+      "TH_11_SS_RAGE3": [ "P3狂暴", "Rage(P3)", "Rage(P3)" ],
+      "TH_11_SS_RAGE2": [ "P2狂暴", "Rage(P2)", "Rage(P2)" ],
+      "TH_11_SS_RAGE1": [ "P1狂暴", "Rage(P1)", "Rage(P1)" ]
     },
 
     "sections": {
@@ -4835,7 +4852,10 @@
         "TH_P2",
         "TH_P3",
         "TH_P4",
-        "TH_RAGE"
+        "TH_11_SS_RAGE4",
+		"TH_11_SS_RAGE3",
+		"TH_11_SS_RAGE2",
+		"TH_11_SS_RAGE1"
       ]
     }
   },

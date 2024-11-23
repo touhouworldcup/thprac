@@ -1,6 +1,7 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 #include "thprac_th15_abtest.h"
+#include "thprac_igi_key_render.h"
 #include <format>
 #include <numbers>
 
@@ -691,7 +692,7 @@ namespace TH15 {
         bool forceBossMoveDown = false;
 
     private:
-        float bossMoveDownRange = 0.8;
+        float bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
         EHOOK_ST(th15_bossmovedown, 0x0042B261)
         {
             float* y_pos = (float*)(pCtx->Edi + 0x3F64);
@@ -833,6 +834,7 @@ namespace TH15 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
+                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE), &(g_adv_igi_options.th15_showShootingDownRate));
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th15_bossmovedown.Toggle(forceBossMoveDown);
@@ -2088,6 +2090,8 @@ namespace TH15 {
     {
         THGuiRep::singleton().State(3);
     }
+
+
     EHOOK_DY(th15_update, 0x4015fa)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
@@ -2307,6 +2311,9 @@ namespace TH15 {
                 }
             }
         }
+
+        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004E9BB8))
+            KeysHUD(15, *(DWORD*)(0x004E6F28), { 1280.0f, 0.0f }, {840.0f,0.0f},g_adv_igi_options.keyboard_style);
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }

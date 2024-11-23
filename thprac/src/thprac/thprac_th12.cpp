@@ -628,7 +628,7 @@ namespace TH12 {
      public:
         bool forceBossMoveDown = false;
     private:
-        float bossMoveDownRange = 0.8;
+        float bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
         EHOOK_ST(th12_bossmovedown, 0x00417562)
         {
             float* y_pos = (float*)(pCtx->Ebx + 0x15F8);
@@ -763,7 +763,7 @@ namespace TH12 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
-
+                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th12_bossmovedown.Toggle(forceBossMoveDown);
                 }
@@ -1702,6 +1702,11 @@ namespace TH12 {
                 p->AddRectFilled({ 60.0f, 0.0f }, { sz.x + 60.0f, sz.y }, 0xFFCCCCCC);
                 p->AddText({ 60.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
+        }
+        
+        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004B4514)) {
+            g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
+            KeysHUD(12, *(DWORD*)(0x4D49D0), { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }
         GameGuiEnd(drawCursor);
     }

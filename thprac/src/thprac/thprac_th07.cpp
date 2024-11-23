@@ -768,6 +768,7 @@ namespace TH07 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
+                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
                 if (ImGui::Button(S(TH_ONE_KEY_DIE))) {
                     if (*(DWORD*)(0x626278)) {
                         *(float*)(*(DWORD*)(0x626278) + 0x5c) = 0.0f;
@@ -1953,8 +1954,15 @@ namespace TH07 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         TH07InGameInfo::singleton().Update();
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
+        static DWORD last_key = *(WORD*)(0x4B9E50);
+        if (g_adv_igi_options.show_keyboard_monitor && *(int8_t*)(0x62F8C7)) {
+            if (*(DWORD*)(0x62F640) == 0)
+                last_key = *(WORD*)(0x4B9E50);
+            g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
+            KeysHUD(7, last_key, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+        }
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
     EHOOK_DY(th07_render, 0x42feb9)

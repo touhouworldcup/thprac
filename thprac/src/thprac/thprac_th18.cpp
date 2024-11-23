@@ -1247,7 +1247,7 @@ namespace TH18 {
     public:
          bool forceBossMoveDown = false;
     private:
-         float bossMoveDownRange = 0.8;
+         float bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
         EHOOK_ST(th18_bossmovedown, 0x00433347)
         {
             float* y_pos = (float*)(pCtx->Edi + 0x4FE4);
@@ -1782,6 +1782,7 @@ namespace TH18 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
+                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th18_bossmovedown.Toggle(forceBossMoveDown);
                 }
@@ -3180,8 +3181,8 @@ namespace TH18 {
                 p->AddText({120.0f,0.0f},0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
-
-
+        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004CF410))
+            KeysHUD(18, *(DWORD*)(0x4CA428), { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
