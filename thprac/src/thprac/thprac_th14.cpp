@@ -2643,40 +2643,76 @@ namespace TH14 {
                         col = 0xFFFFFF00;
                         col2 = 0xFFFFCC00;
                     }
-                    float xpos = *(float*)(ppl + 0x5B0)*2.0f + 448.0f;
-                    float ypos = *(float*)(ppl + 0x5B4)*2.0f + 32.0f;
+                    ImGuiIO& io = ImGui::GetIO();
+                    float x_ratio = io.DisplaySize.x / 1280.0f;
+                    float y_ratio = io.DisplaySize.y / 960.0f;
+
+                    float xpos = *(float*)(ppl + 0x5B0) * 2.0f * x_ratio + 448.0f * x_ratio;
+                    float ypos = *(float*)(ppl + 0x5B4) * 2.0f * y_ratio + 32.0f * y_ratio;
                     auto p = ImGui::GetOverlayDrawList();
-                    p->PushClipRect({ 64.0f, 32.0f }, { 832.0f, 928.0f });
-                    const float bar_xszhalf = 48.0f;
-                    const float bar_yszhalf = 4.0f;
+                    p->PushClipRect({ 64.0f * x_ratio, 32.0f * y_ratio }, { 832.0f * x_ratio, 928.0f * y_ratio });
+                    const float bar_xszhalf = 48.0f * x_ratio;
+                    const float bar_yszhalf = 4.0f * y_ratio;
+                    const float bar_yofs = 48.0f * y_ratio;
+                    // st5 rev
+                    float stage_y_rev = 1.0f, stage_x_rev = 1.0f, stage_rotate = 0.0f;
+                    if (*(DWORD*)0x4D9128){
+                        stage_y_rev = *(float*)((*(DWORD*)0x4D9128) + 0x64);
+                        stage_x_rev = *(float*)((*(DWORD*)0x4D9128) + 0x60);
+                        stage_rotate = *(float*)((*(DWORD*)0x4D9128) + 0x50);
+                    }
+                    auto GetXY_Revd = [stage_y_rev, stage_x_rev, stage_rotate, y_ratio, x_ratio](ImVec2 pos) -> ImVec2 {
+                        float &x = pos.x, &y = pos.y;
+                        float dx = x - 448.0f * x_ratio, dy = y - 480.0f * y_ratio;
+                        if (stage_rotate != 0.0f){
+                            
+                            float c = cosf(stage_rotate);
+                            float s = sinf(stage_rotate);
+                            float a = dx * c - dy * s;
+                            float b = dx * s + dy * c;
+                            dx = a;
+                            dy = b;
+                        }
+                        dx *= stage_x_rev;
+                        dy *= stage_y_rev;
+                        return { dx + 448.0f * x_ratio, dy + 480.0f * y_ratio };
+                    };
+                    auto AddQuadFilled_Revd = [stage_y_rev, stage_x_rev, stage_rotate, y_ratio, x_ratio, p, GetXY_Revd](ImVec2 pmin, ImVec2 pmax, DWORD col) -> void {
+                        ImVec2 p3 = { pmax.x, pmin.y }, p4 = {pmin.x,pmax.y};
+                        p->AddQuadFilled(GetXY_Revd(pmin), GetXY_Revd(p3), GetXY_Revd(pmax), GetXY_Revd(p4), col);
+                    };
+                    auto AddQuad_Revd = [stage_y_rev, stage_x_rev, stage_rotate, y_ratio, x_ratio, p, GetXY_Revd](ImVec2 pmin, ImVec2 pmax, DWORD col) -> void {
+                        ImVec2 p3 = { pmax.x, pmin.y }, p4 = { pmin.x, pmax.y };
+                        p->AddQuad(GetXY_Revd(pmin), GetXY_Revd(p3), GetXY_Revd(pmax), GetXY_Revd(p4), col);
+                    };
                     // shadow
                     {
                         ImVec2 pmin,pmax;
                         if (items >= 20) {
-                            pmin = { xpos - bar_xszhalf, ypos - 48.0f - bar_yszhalf };
+                            pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
                             pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f };
                         }else{
-                            pmin = { xpos - bar_xszhalf, ypos - 48.0f - bar_yszhalf };
+                            pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
                             pmax = { pmin.x + bar_xszhalf * 2.0f * num, pmin.y + bar_yszhalf * 2.0f };
                         }
                         pmin.x += 1.0f;
                         pmin.y += 1.0f;
                         pmax.x += 1.0f;
                         pmax.y += 1.0f;
-                        p->AddRectFilled(pmin, pmax, col2);
+                        AddQuadFilled_Revd(pmin, pmax, col2);
                     }
                     {
-                        ImVec2 pmin = { xpos - bar_xszhalf, ypos - 48.0f - bar_yszhalf };
+                        ImVec2 pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
                         ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f * num, pmin.y + bar_yszhalf * 2.0f };
-                        p->AddRectFilled(pmin, pmax, col);
+                        AddQuadFilled_Revd(pmin, pmax, col);
                         if (border){
-                            ImVec2 pmin = { xpos - bar_xszhalf, ypos - 48.0f - bar_yszhalf};
+                            ImVec2 pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
                             ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f};
-                            p->AddRect(pmin, pmax, 0xFFFFFF00);
+                            AddQuad_Revd(pmin, pmax, 0xFFFFFF00);
                         }else{
-                            ImVec2 pmin = { xpos - bar_xszhalf, ypos - 48.0f - bar_yszhalf };
+                            ImVec2 pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
                             ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f };
-                            p->AddRect(pmin, pmax, 0xFFCCCCCC);
+                            AddQuad_Revd(pmin, pmax, 0xFFCCCCCC);
                         }
                     }
                     p->PopClipRect();
