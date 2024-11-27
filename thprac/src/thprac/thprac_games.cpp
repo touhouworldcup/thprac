@@ -29,21 +29,46 @@ bool g_disable_f10_11_13 = false;
 bool g_pauseBGM_06 = false;
 bool g_forceRenderCursor=false;
 bool g_disable_max_btn = true;
+bool g_disable_joy = false;
 AdvancedIGI_Options g_adv_igi_options;
 
 bool g_useCustomFont = false;
 std::string g_customFont = "MS Gothic";
 
+BOOL(WINAPI* g_realGetKeyboardState)(PBYTE lpKeyboardState);
+HRESULT(STDMETHODCALLTYPE* g_realGetDeviceState)(LPDIRECTINPUTDEVICE8 thiz, DWORD, LPVOID);
+HFONT(WINAPI* g_realCreateFontA)(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,DWORD bStrikeOut,DWORD iCharSet,DWORD iOutPrecision,DWORD iClipPrecision,DWORD iQuality,DWORD iPitchAndFamily,LPCSTR pszFaceName);
+MMRESULT (WINAPI *g_realJoyGetDevCapsA)(UINT uJoyID, LPJOYCAPSA pjc, UINT cbjc);
+MMRESULT (WINAPI *g_realJoyGetPosEx)(UINT uJoyID, LPJOYINFOEX pji);
+DWORD (WINAPI *g_realXInputGetState)(DWORD dwUserIndex, void* pState);
+HRESULT (WINAPI* g_realEnumDevices)(LPDIRECTINPUT8 thiz, DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef,DWORD dwFlags);
 
 
-typedef BOOL(WINAPI* GetKeyboardStateType)(PBYTE lpKeyboardState);
-typedef HRESULT (STDMETHODCALLTYPE* GetDeviceStateType)(LPDIRECTINPUTDEVICE8 thiz, DWORD, LPVOID);
-typedef HFONT(WINAPI* CreateFontAType)(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,
-    DWORD bStrikeOut,DWORD iCharSet,DWORD iOutPrecision,DWORD iClipPrecision,DWORD iQuality,DWORD iPitchAndFamily,LPCSTR pszFaceName);
+HRESULT WINAPI EnumDevices_Changed(LPDIRECTINPUT8 thiz, DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef, DWORD dwFlags)
+{
+    if (g_disable_joy && dwDevType == DI8DEVCLASS_GAMECTRL)
+        return DI_OK;
+    return g_realEnumDevices(thiz, dwDevType, lpCallback, pvRef, dwFlags);
+}
 
-GetKeyboardStateType g_realGetKeyboardState;
-GetDeviceStateType g_realGetDeviceState;
-CreateFontAType g_realCreateFontA;
+MMRESULT WINAPI joyGetDevCapsA_Changed(UINT uJoyID, LPJOYCAPSA pjc, UINT cbjc) {
+    if (g_disable_joy)
+        return MMSYSERR_NODRIVER;
+    return g_realJoyGetDevCapsA(uJoyID, pjc, cbjc);
+}
+
+MMRESULT WINAPI joyGetPosEx_Changed(UINT uJoyID, LPJOYINFOEX pji) { 
+    if (g_disable_joy)
+        return MMSYSERR_NODRIVER;
+    return g_realJoyGetPosEx(uJoyID, pji);
+}
+
+DWORD WINAPI XInputGetState_Changed(DWORD dwUserIndex, void* pState)
+{
+    if (g_disable_joy)
+        return ERROR_DEVICE_NOT_CONNECTED;
+    return g_realXInputGetState(dwUserIndex, pState);
+}
 
 HFONT WINAPI CreateFontA_Changed
 (int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,
@@ -157,6 +182,8 @@ HookCtx g_dinput8Hook;
 HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state)
 {
     if (num != 256) {//no keyboard
+        if (g_disable_joy)
+            return DIERR_INPUTLOST;//8007001E   
         return g_realGetDeviceState(thiz, num, state);
     }
 
@@ -427,6 +454,16 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
 
         LauncherSettingGet_KeyBind();
 
+        if (LauncherSettingGet("disableJoy", g_disable_joy) && g_disable_joy)
+        {
+            LPVOID pTarget;
+            if (MH_OK == MH_CreateHookApiEx(L"winmm.dll", "joyGetPosEx", joyGetPosEx_Changed, (void**)&g_realJoyGetPosEx, &pTarget))
+                MH_EnableHook(pTarget);
+            if(MH_OK == MH_CreateHookApiEx(L"winmm.dll", "joyGetDevCapsA", joyGetDevCapsA_Changed, (void**)&g_realJoyGetDevCapsA, &pTarget))
+                MH_EnableHook(pTarget);
+            if (MH_OK == MH_CreateHookApiEx(L"xinput1_3.dll", "XInputGetState", XInputGetState_Changed, (void**)&g_realXInputGetState, &pTarget))
+                MH_EnableHook(pTarget);
+        }
         int theme;
         if (LauncherSettingGet("theme", theme)) {
             const char* userThemeName;
@@ -452,23 +489,26 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
 
      { // hook keyboard to enable SOCD and X-disable
         LPVOID pTarget;
-        MH_CreateHookApiEx(L"user32.dll", "GetKeyboardState", GetKeyboardState_Changed, (void**)&g_realGetKeyboardState, &pTarget);
-        MH_EnableHook(pTarget);
+        if(MH_OK==MH_CreateHookApiEx(L"user32.dll", "GetKeyboardState", GetKeyboardState_Changed, (void**)&g_realGetKeyboardState, &pTarget))
+            MH_EnableHook(pTarget);
 
         LPDIRECTINPUT8 pdinput;
         DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&pdinput, NULL);
         if (FAILED(pdinput)) {
         }
+        void* EnumDeviceAddr = (*(void***)pdinput)[4];
+        if (g_disable_joy){
+            MH_CreateHook(EnumDeviceAddr, EnumDevices_Changed, (LPVOID*)&g_realEnumDevices);
+            MH_EnableHook(EnumDeviceAddr);
+        }
         LPDIRECTINPUTDEVICE8 ddevice;
         pdinput->CreateDevice(GUID_SysKeyboard, &ddevice, NULL);
         void* GetDeviceStateAddr = (*(void***)ddevice)[9];
-
         MH_CreateHook(GetDeviceStateAddr, GetDeviceState_Changed, (LPVOID*)&g_realGetDeviceState);
         MH_EnableHook(GetDeviceStateAddr);
-        // HookVTable(ddevice, 9, GetDeviceState_Changed, (void**)&g_realGetDeviceState);
-
         pdinput->Release();
         ddevice->Release();
+        // dinput8 is inited before GameGuiInit(), so create a new device for hook
     }
     // Imgui settings
     io.IniFilename = nullptr;

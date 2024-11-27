@@ -32,6 +32,7 @@
 - make IN and PCB ignore .exe checksum to avoid unexpected changes in .exe file(like using SpecialK and game crashes)
 - add win key disable
 - add key monitor
+- disable joystick to avoid lags
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
@@ -67,3 +68,4 @@
 - 妖/永禁用checksum, 从而如汉化版等修改版的rep和score.dat不会导致游戏崩溃/游戏存档清零了(但是rep可能仍然会炸)
 - 禁用win键
 - 按键显示
+- 禁用手柄

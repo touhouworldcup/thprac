@@ -196,7 +196,7 @@ namespace TH15 {
         {
             mMode();
             if (mStage())
-                *mSection = *mChapter = 0;
+                *mSection = *mChapter = *mPhase = 0;
             if (*mMode == 1) {
                 int mbs = -1;
                 if (*mStage == 5) { // Counting from 0
@@ -212,7 +212,7 @@ namespace TH15 {
                 }
 
                 mLife();
-                ;
+                
                 if (*mStage == 6) {
                     mLifeFragment.SetBound(0, 5);
                 } else {
@@ -295,7 +295,7 @@ namespace TH15 {
                 } else {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
                 };
-
+                
                 mChapter(chapterStr);
                 break;
             case 2:

@@ -233,6 +233,8 @@
     "THPRAC_COMPATIBILITY_SETTINGS":["兼容性设置","Compatibility Settings","Compatibility Settings"],
 	
     "THPRAC_DISABLE_F10_11_13":["在th11到th13靳用F10键","disable f10 for th11-13","disable f10 for th11-13"],
+    "THPRAC_DISABLE_JOY":["禁用手柄","disable joystick","disable joystick"],
+    "THPRAC_DISABLE_JOY_DESC":["对部分作有效, 禁用有关手柄的部分函数以减少掉帧","works for some games, disables functions for joystick to avoid lags","works for some games, disables functions for joystick to avoid lags"],
     
     "THPRAC_PAUSE_BGM_TH06":["红魔乡在3036时暂停bgm(仅wav)","pause bgm when esc in EoSD(wav only)","pause bgm when esc in EoSD(wav only)"],
     
@@ -8013,7 +8015,7 @@
 	  "TH15_ST8_AB_TEST": {
         "bgm": 1,
         "spell": 0,
-        "appearance": [ 3, 2, 7 ],
+        "appearance": [ 3, 2, 8 ],
         "!ENHL": [ "底力测试", "ab test", "ab test" ]
       }
     },

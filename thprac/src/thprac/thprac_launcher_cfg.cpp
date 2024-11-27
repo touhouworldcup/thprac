@@ -2043,6 +2043,7 @@ private:
             }
 
             mDisableF10_11_13.Gui(S(THPRAC_DISABLE_F10_11_13));
+            mDisableJoy.Gui(S(THPRAC_DISABLE_JOY), S(THPRAC_DISABLE_JOY_DESC));
             mCfgUnlockRefreshRate.Gui(S(THPRAC_UNLOCK_REFRESH_RATE), S(THPRAC_UNLOCK_REFRESH_RATE_DESC));
             mForceOnlyRenderTextUsed.Gui(S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED), S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC));
             mForceRenderCursor.Gui(S(THPRAC_FORCE_RENDER_CURSOR), S(THPRAC_FORCE_RENDER_CURSOR_DESC));
@@ -2278,7 +2279,7 @@ private:
     THCfgColor mKb_ColorTextPress { "kb_text_color_press", 0xFFFFFFFF };
     THCfgColor mKb_ColorTextRelease { "kb_text_color_release", 0xFFFFFFFF };
     THCfgCheckbox mKb_Separated { "kb_separated", true };
-    THCfgCheckbox mKb_Auto { "auto_keyboard_monitor", true };
+    THCfgCheckbox mKb_Auto { "auto_keyboard_monitor", false };
     THCfgCombo mKb_Type { "kb_type",0,4 };
     THCfgFloat mKb_Padding  { "kb_padding",0.05f,0.0f,0.1f};
 
@@ -2300,6 +2301,7 @@ private:
 
     THCfgCheckbox mReflectiveLaunch { "reflective_launch", false };
     THCfgCheckbox mForceOnlyRenderTextUsed { "force_only_render_text_used", false };
+    THCfgCheckbox mDisableJoy { "disableJoy", false };
     THCfgCheckbox mForceRenderCursor { "force_render_cursor", false };
     THCfgCheckbox mUseCorrectJaFonts { "use_correct_ja_fonts", false };
     THCfgCheckbox mUseCustomFont { "use_custom_font", false };

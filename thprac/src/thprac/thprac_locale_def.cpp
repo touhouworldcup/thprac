@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1263] {
+const char* th_glossary_str[3][1265] {
     {
         "",
         "啤酒",
@@ -588,6 +588,8 @@ const char* th_glossary_str[3][1263] {
         "全局目录",
         "本地目录",
         "在th11到th13靳用F10键",
+        "禁用手柄",
+        "对部分作有效, 禁用有关手柄的部分函数以减少掉帧",
         "靳止最大化窗口按钮的全屏切换",
         "thp启动后自动禁用win键",
         "可能引入延迟, 因此不建议通过软件禁用win键",
@@ -1853,6 +1855,8 @@ const char* th_glossary_str[3][1263] {
         "Global directory",
         "Local directory",
         "disable f10 for th11-13",
+        "disable joystick",
+        "works for some games, disables functions for joystick to avoid lags",
         "disable maximizebox to toggle full screen",
         "disable win key when thprac.exe launches",
         "might cause delay, so it's not recommended to disable win key by software",
@@ -3118,6 +3122,8 @@ const char* th_glossary_str[3][1263] {
         "グローバルディレクトリ",
         "ローカルディレクトリ ",
         "disable f10 for th11-13",
+        "disable joystick",
+        "works for some games, disables functions for joystick to avoid lags",
         "disable maximizebox to toggle full screen",
         "disable win key when thprac.exe launches",
         "might cause delay, so it's not recommended to disable win key by software",
@@ -20301,6 +20307,7 @@ namespace TH15 {
                 TH15_ST3_BOSS4,
                 TH15_ST3_BOSS5,
                 TH15_ST3_BOSS6,
+                TH15_ST3_BOSS7,
                 TH15_ST8_AB_TEST,
             },
         },
@@ -24254,7 +24261,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3321] {
+const wchar_t __thprac_loc_range_zh[3325] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -24453,6 +24460,7 @@ const wchar_t __thprac_loc_range_zh[3321] {
     0x51f6, 0x51f6,
     0x51fa, 0x51fa,
     0x51fb, 0x51fb,
+    0x51fd, 0x51fd,
     0x51ff, 0x51ff,
     0x5200, 0x5200,
     0x5203, 0x5203,
@@ -25055,6 +25063,7 @@ const wchar_t __thprac_loc_range_zh[3321] {
     0x67ad, 0x67ad,
     0x67af, 0x67af,
     0x67b7, 0x67b7,
+    0x67c4, 0x67c4,
     0x67cf, 0x67cf,
     0x67d0, 0x67d0,
     0x67d3, 0x67d3,

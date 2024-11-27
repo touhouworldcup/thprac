@@ -588,6 +588,8 @@ enum th_glossary_t {
     THPRAC_DIR_GLOBAL,
     THPRAC_DIR_LOCAL,
     THPRAC_DISABLE_F10_11_13,
+    THPRAC_DISABLE_JOY,
+    THPRAC_DISABLE_JOY_DESC,
     THPRAC_DISABLE_MAXIMIZE_BTN,
     THPRAC_DISABLE_WIN_KEY_CHECKBOX,
     THPRAC_DISABLE_WIN_KEY_DESC,
@@ -1274,7 +1276,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1263];
+extern const char* th_glossary_str[3][1265];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2828,7 +2830,7 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3321];
+extern const wchar_t __thprac_loc_range_zh[3325];
 
 extern const wchar_t __thprac_loc_range_en[57];
 
