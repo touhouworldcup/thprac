@@ -827,7 +827,7 @@ namespace TH06 {
                         fin_flag = false;
                         is_magic_book = true;
                     }
-                    if (is_magic_book && (time_sec == 39 || time_sec == 38)  && cur_ingame_flag > 0) { // 见到小谔魔
+                    if (is_magic_book && (time_sec == 40 || time_sec == 39) && cur_ingame_flag > 0) { // 见到小谔魔
                         if (!fin_flag) {
                             doubleKOFix.Power = last_pl_power;
                             doubleKOFix.Bombs = last_pl_bomb;

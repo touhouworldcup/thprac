@@ -402,6 +402,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
 
         LauncherSettingGet("auto_keyboard_monitor", g_adv_igi_options.show_keyboard_monitor);
         if (!LauncherSettingGet("kb_separated",             g_adv_igi_options.keyboard_style.separated))                g_adv_igi_options.keyboard_style.separated = true;
+        if (!LauncherSettingGet("kb_aps",                   g_adv_igi_options.keyboard_style.show_aps))                 g_adv_igi_options.keyboard_style.show_aps = true;
         if (!LauncherSettingGet("kb_border_color_press",    g_adv_igi_options.keyboard_style.border_color_press))       g_adv_igi_options.keyboard_style.border_color_press = 0xFFFFFFFF;
         if (!LauncherSettingGet("kb_border_color_release",  g_adv_igi_options.keyboard_style.border_color_release))     g_adv_igi_options.keyboard_style.border_color_release = 0xFFFFFFFF;
         if (!LauncherSettingGet("kb_fill_color_press",      g_adv_igi_options.keyboard_style.fill_color_press))         g_adv_igi_options.keyboard_style.fill_color_press = 0xFFFF4444;

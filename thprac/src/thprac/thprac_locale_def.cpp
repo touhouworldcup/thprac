@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1265] {
+const char* th_glossary_str[3][1266] {
     {
         "",
         "啤酒",
@@ -749,6 +749,7 @@ const char* th_glossary_str[3][1265] {
         "初始化窗口位置",
         "如果遇到游戏启动后没窗口可尝试开启此选项",
         "按键显示设置",
+        "显示APS(每秒按键数)",
         "自动打开按键显示",
         "描边颜色(按下)",
         "描边颜色(抬起)",
@@ -2016,6 +2017,7 @@ const char* th_glossary_str[3][1265] {
         "init window pos",
         "try this option when game is invisible after opened",
         "key monitor setting",
+        "show APS(Action Per Second)",
         "open key monitor automatically",
         "border color(pressed)",
         "border color(released)",
@@ -3283,6 +3285,7 @@ const char* th_glossary_str[3][1265] {
         "init window pos",
         "try this option when game is invisible after opened",
         "key monitor setting",
+        "show APS(Action Per Second)",
         "open key monitor automatically",
         "border color(pressed)",
         "border color(released)",

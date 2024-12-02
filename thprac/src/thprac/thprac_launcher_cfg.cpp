@@ -2091,6 +2091,7 @@ private:
             style.text_color_press = mKb_ColorTextPress.Get();
             style.text_color_release = mKb_ColorTextRelease.Get();
             style.type = mKb_Type.Get();
+            style.show_aps = mKb_APS.Get();
             float kb_padding = mKb_Padding.Get();
             style.padding = { kb_padding, kb_padding };
 
@@ -2112,6 +2113,7 @@ private:
             mKb_ColorTextPress.Gui(S(THPRAC_KB_COL_TEXT_PRESSED));
             mKb_ColorTextRelease.Gui(S(THPRAC_KB_COL_TEXT_RELEASED));
             mKb_Separated.Gui(S(THPRAC_KB_SEPARATER));
+            mKb_APS.Gui(S(THPRAC_KB_APS));
             mKb_Padding.Gui(S(THPRAC_KB_PADDING));
             mKb_Type.Gui(S(THPRAC_KB_TYPE),S(THPRAC_KB_TYPE_COMBO));
         }
@@ -2279,6 +2281,7 @@ private:
     THCfgColor mKb_ColorTextPress { "kb_text_color_press", 0xFFFFFFFF };
     THCfgColor mKb_ColorTextRelease { "kb_text_color_release", 0xFFFFFFFF };
     THCfgCheckbox mKb_Separated { "kb_separated", true };
+    THCfgCheckbox mKb_APS { "kb_aps", true };
     THCfgCheckbox mKb_Auto { "auto_keyboard_monitor", false };
     THCfgCombo mKb_Type { "kb_type",0,4 };
     THCfgFloat mKb_Padding  { "kb_padding",0.05f,0.0f,0.1f};

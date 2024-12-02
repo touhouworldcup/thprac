@@ -938,6 +938,7 @@
 	  "THPRAC_KB_COL_TEXT_RELEASED":["字体颜色(抬起)","text color(released)","text color(released)"],
 	  "THPRAC_KB_PADDING":["边界大小","padding","padding"],
 	  "THPRAC_KB_SEPARATER":["分体键盘","separated keys","separated keys"],
+	  "THPRAC_KB_APS":["显示APS(每秒按键数)","show APS(Action Per Second)","show APS(Action Per Second)"],
 	  "THPRAC_KB_TYPE":["样式","style","style"],
 	  "THPRAC_KB_TYPE_COMBO": [ "矩形\\0圆角矩形\\0切角矩形\\0心形\\0\\0", "rect\\0rounded rect\\0chamfered rect\\0heart\\0\\0", "rect\\0rounded rect\\0chamfered rect\\0heart\\0\\0" ],
       

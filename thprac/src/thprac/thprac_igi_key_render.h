@@ -4,6 +4,7 @@
 namespace THPrac {
 struct KeyRectStyle {
     bool separated;
+    bool show_aps;
     uint32_t fill_color_press;
     uint32_t fill_color_release;
     uint32_t border_color_press;

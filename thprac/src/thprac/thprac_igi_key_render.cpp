@@ -1,5 +1,7 @@
 ﻿#include "thprac_igi_key_render.h"
 #include <cmath>
+#include <deque>
+#include <format>
 
 namespace THPrac {
 void static KeysRect(ImDrawList* p, ImVec2 pos, ImVec2 size, float border_size, const KeyRectStyle& style, bool is_pressed, const char* text, bool disabled = false)
@@ -247,6 +249,50 @@ void KeysHUD(int ver, uint32_t cur_key, ImVec2 render_pos_arrow, ImVec2 render_p
         KeysRect(p, render_pos_key, size, border_size, style, keys_down[Key_C], "C", key_mask[Key_C] == 0);
         render_pos_key.x += size.x;
         KeysRect(p, render_pos_key, size, border_size, style, keys_down[Key_D], "D", key_mask[Key_D] == 0);
+        render_pos_key = render_pos_orig;
+    }
+    if (style.show_aps){
+        uint32_t key_cur = 0;
+        for (int i = 0; i < END; i++){
+            if (keys_down[i])
+                key_cur |= 1 << i;
+        }// not use zun's keycode
+
+        static std::deque<uint32_t> keys_per_sec; // 60 f
+        uint32_t aps_cur = 0;
+        uint32_t key_last = 0;
+        while (keys_per_sec.size() >= 60) {
+            key_last = keys_per_sec.front();
+            keys_per_sec.pop_front();
+        }
+        keys_per_sec.push_back(key_cur);
+        for (auto key : keys_per_sec) {
+            if (key != key_last) {
+                uint32_t diff = key ^ key_last;
+                uint32_t diff_cnt = 0;
+                for (int i = 0; i < END; i++){
+                    if (diff & (1 << i))
+                    diff_cnt++;
+                }
+                aps_cur += diff_cnt;
+                key_last = key;
+            }
+        }
+        std::string aps_text = std::format("aps: {:>3}/(60frame)", aps_cur);
+        auto sz = ImGui::CalcTextSize(aps_text.c_str());
+        if (ver != 128){
+            render_pos_key.x -= size.x * 0.25f;
+            render_pos_key.y -= size.y * 0.25f;
+            p->AddRectFilled({ render_pos_key.x - sz.x, render_pos_key.y }, { render_pos_key.x, render_pos_key.y + sz.y }, 0xCC000000);
+            p->AddText({ render_pos_key.x - sz.x, render_pos_key.y }, 0xFFFFFFFF, aps_text.c_str());
+        }else{
+            render_pos_key.x += size.x * 7.25f;
+            render_pos_key.y += size.y * 2.25f;
+            p->AddRectFilled({ render_pos_key.x - sz.x, render_pos_key.y }, { render_pos_key.x, render_pos_key.y + sz.y }, 0xCC000000);
+            p->AddText({ render_pos_key.x - sz.x, render_pos_key.y }, 0xFFFFFFFF, aps_text.c_str());
+        }
+       
+
     }
 }
 
