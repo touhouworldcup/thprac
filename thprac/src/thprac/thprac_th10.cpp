@@ -849,7 +849,7 @@ namespace TH10 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
-                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
+                KeyHUDOpt();
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th10_bossmovedown.Toggle(forceBossMoveDown);
                 }
@@ -2617,11 +2617,16 @@ namespace TH10 {
         }
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x0477834)){
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
-            KeysHUD(10, *(WORD*)(0x474E5C), { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+            KeysHUD(10, { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
+    }
+    EHOOK_DY(th10_player_state, 0x425730)
+    {
+        if (g_adv_igi_options.show_keyboard_monitor)
+            RecordKey(10, *(DWORD*)(0x474E5C));
     }
     EHOOK_DY(th10_render, 0x4394fa)
     {
@@ -2673,7 +2678,8 @@ namespace TH10 {
         THGuiCreate();
         THInitHookDisable();
     }
-#pragma region igi
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th10_game_start, 0x41798C) // gamestart-bomb set
     {
         TH10InGameInfo::singleton().mBombCount = 0;
@@ -2691,7 +2697,6 @@ namespace TH10 {
     {
         TH10InGameInfo::singleton().mMissCount++;
     }
-#pragma endregion
     EHOOK_DY(th10_move, 0x425442) 
     {
         if (g_pl_speed_keep && THAdvOptWnd::singleton().GetFps()!=60)

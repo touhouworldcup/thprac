@@ -758,7 +758,10 @@ enum th_glossary_t {
     THPRAC_KB_COL_TEXT_PRESSED,
     THPRAC_KB_COL_TEXT_RELEASED,
     THPRAC_KB_OPEN,
+    THPRAC_KB_OUTPUT,
     THPRAC_KB_PADDING,
+    THPRAC_KB_RECORD_START,
+    THPRAC_KB_RECORD_STOP,
     THPRAC_KB_SEPARATER,
     THPRAC_KB_TYPE,
     THPRAC_KB_TYPE_COMBO,
@@ -1277,7 +1280,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1266];
+extern const char* th_glossary_str[3][1269];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

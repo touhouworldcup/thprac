@@ -763,7 +763,7 @@ namespace TH12 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
-                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
+                KeyHUDOpt();
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th12_bossmovedown.Toggle(forceBossMoveDown);
                 }
@@ -1706,9 +1706,14 @@ namespace TH12 {
         
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004B4514)) {
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
-            KeysHUD(12, *(DWORD*)(0x4D49D0), { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+            KeysHUD(12, { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }
         GameGuiEnd(drawCursor);
+    }
+    EHOOK_DY(th12_player_state, 0x436BA0)
+    {
+        if (g_adv_igi_options.show_keyboard_monitor)
+            RecordKey(12, *(DWORD*)(0x4D49D0));
     }
     EHOOK_DY(th12_render, 0x462722)
     {
@@ -1759,8 +1764,8 @@ namespace TH12 {
         THGuiCreate();
         THInitHookDisable();
     }
-
-#pragma region igi
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th12_game_start, 0x421DEF) // gamestart-bomb set
     {
         TH12InGameInfo::singleton().mBombCount = 0;
@@ -1790,8 +1795,6 @@ namespace TH12 {
         else if (type == 3)
             TH12InGameInfo::singleton().mCUFOCount++;
     }
-#pragma endregion
-
     HOOKSET_ENDDEF()
 }
 

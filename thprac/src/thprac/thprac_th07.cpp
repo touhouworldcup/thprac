@@ -768,7 +768,7 @@ namespace TH07 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
-                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
+                KeyHUDOpt();
                 if (ImGui::Button(S(TH_ONE_KEY_DIE))) {
                     if (*(DWORD*)(0x626278)) {
                         *(float*)(*(DWORD*)(0x626278) + 0x5c) = 0.0f;
@@ -1955,12 +1955,9 @@ namespace TH07 {
         THOverlay::singleton().Update();
         TH07InGameInfo::singleton().Update();
 
-        static DWORD last_key = *(WORD*)(0x4B9E50);
         if (g_adv_igi_options.show_keyboard_monitor && *(int8_t*)(0x62F8C7)) {
-            if (*(DWORD*)(0x62F640) == 0)
-                last_key = *(WORD*)(0x4B9E50);
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
-            KeysHUD(7, last_key, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+            KeysHUD(7, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
@@ -1970,6 +1967,11 @@ namespace TH07 {
         GameGuiRender(IMPL_WIN32_DX8);
         if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
             THSnapshot::Snapshot(*(IDirect3DDevice8**)0x575958);
+    }
+    EHOOK_DY(th07_player_state, 0x441FB0)
+    {
+        if (g_adv_igi_options.show_keyboard_monitor)
+            RecordKey(7, *(WORD*)(0x4B9E50));
     }
     HOOKSET_ENDDEF()
 
@@ -2015,7 +2017,8 @@ namespace TH07 {
         THGuiCreate();
         THInitHookDisable();
     }
-#pragma region igi
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th07_enter_game, 0x42EB08) // set inner misscount to 0
     {
         TH07InGameInfo::singleton().mBombCount = 0;
@@ -2026,8 +2029,8 @@ namespace TH07 {
     {
         TH07InGameInfo::singleton().mBorderBreakCount++;
     }
-
-#pragma endregion
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(TH07Checksum)
     EHOOK_DY(th07_checksum1, 0x43A655) // checksum read fix
     {
         *(DWORD*)(pCtx->Ebp + 0xC) = *(DWORD*)(pCtx->Ebp - 0x14);

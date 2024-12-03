@@ -1001,7 +1001,7 @@ namespace TH17 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
-                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
+                KeyHUDOpt();
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th17_bossmovedown.Toggle(forceBossMoveDown);
                 }
@@ -2170,9 +2170,14 @@ namespace TH17 {
             }
         }
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004B77D0))
-            KeysHUD(17, *(DWORD*)(0x4B3448), { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+            KeysHUD(17, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
+    }
+    EHOOK_DY(th17_player_state, 0x447970)
+    {
+        if (g_adv_igi_options.show_keyboard_monitor)
+            RecordKey(17, *(DWORD*)(0x4B3448));
     }
     EHOOK_DY(th17_render, 0x4014d0)
     {
@@ -2226,9 +2231,8 @@ namespace TH17 {
          THGuiCreate();
          THInitHookDisable();
     }
-
-    
-#pragma region igi
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th17_game_start, 0x4302E6) // gamestart-bomb set
     {
         TH17InGameInfo::singleton().mMissCount = 0;
@@ -2277,8 +2281,6 @@ namespace TH17 {
     {
         TH17InGameInfo::singleton().mBombCount++;
     }
-#pragma endregion
-
     HOOKSET_ENDDEF()
 }
 

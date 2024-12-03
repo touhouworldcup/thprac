@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1266] {
+const char* th_glossary_str[3][1269] {
     {
         "",
         "啤酒",
@@ -758,7 +758,10 @@ const char* th_glossary_str[3][1266] {
         "字体颜色(按下)",
         "字体颜色(抬起)",
         "打开按键显示",
+        "导出到游戏文件夹",
         "边界大小",
+        "开始记录APS",
+        "停止记录APS",
         "分体键盘",
         "样式",
         "矩形\0圆角矩形\0切角矩形\0心形\0\0",
@@ -2026,7 +2029,10 @@ const char* th_glossary_str[3][1266] {
         "text color(pressed)",
         "text color(released)",
         "open key monitor",
+        "output to game folder",
         "padding",
+        "start to record APS",
+        "stop recording",
         "separated keys",
         "style",
         "rect\0rounded rect\0chamfered rect\0heart\0\0",
@@ -3294,7 +3300,10 @@ const char* th_glossary_str[3][1266] {
         "text color(pressed)",
         "text color(released)",
         "open key monitor",
+        "output to game folder",
         "padding",
+        "start to record APS",
+        "stop recording",
         "separated keys",
         "style",
         "rect\0rounded rect\0chamfered rect\0heart\0\0",

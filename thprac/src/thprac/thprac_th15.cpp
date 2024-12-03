@@ -834,7 +834,7 @@ namespace TH15 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
-                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
+                KeyHUDOpt();
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE), &(g_adv_igi_options.th15_showShootingDownRate));
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th15_bossmovedown.Toggle(forceBossMoveDown);
@@ -2313,9 +2313,13 @@ namespace TH15 {
         }
 
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004E9BB8))
-            KeysHUD(15, *(DWORD*)(0x004E6F28), { 1280.0f, 0.0f }, {840.0f,0.0f},g_adv_igi_options.keyboard_style);
+            KeysHUD(15, { 1280.0f, 0.0f }, {840.0f,0.0f},g_adv_igi_options.keyboard_style);
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
+    }
+    EHOOK_DY(th15_player_state, 0x454a70){
+        if (g_adv_igi_options.show_keyboard_monitor)
+            RecordKey(15, *(DWORD*)(0x004E6F28));
     }
     EHOOK_DY(th15_render, 0x40170a)
     {
@@ -2366,8 +2370,8 @@ namespace TH15 {
         THGuiCreate();
         THInitHookDisable();
     }
-
-#pragma region igi
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th15_game_start, 0x43E6EE) // gamestart-bomb set
     {
         TH15InGameInfo::singleton().mBombCount = 0;
@@ -2381,9 +2385,6 @@ namespace TH15 {
     {
         TH15InGameInfo::singleton().mMissCount++;
     }
-#pragma endregion
-
-    
     HOOKSET_ENDDEF()
 }
 

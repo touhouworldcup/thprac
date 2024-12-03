@@ -2,8 +2,39 @@
 #include <cmath>
 #include <deque>
 #include <format>
+#include <vector>
+#include "..\3rdParties\rapidcsv\rapidcsv.h"
+#include "thprac_utils.h"
 
 namespace THPrac {
+extern bool g_record_key_aps;
+std::vector<uint8_t> g_recorded_aps;
+std::vector<uint16_t> g_recorded_keys;//has 10 keys
+uint32_t g_aps_cur = 0;
+
+
+enum THKey { 
+    Key_Up,
+    Key_Down,
+    Key_Left,
+    Key_Right,
+    Key_Z,
+    Key_X,
+    Key_C,
+    Key_D,
+    Key_Ctrl,
+    Key_Shift,
+    END
+};
+
+const std::string THKeyNames[] = { "up", "down", "left", "right", "Z", "X", "C", "D", "Ctrl", "Shift" };
+bool g_keys_down[END] = { 0 };
+int g_key_mask[END] = { 0 };
+
+
+
+
+
 void static KeysRect(ImDrawList* p, ImVec2 pos, ImVec2 size, float border_size, const KeyRectStyle& style, bool is_pressed, const char* text, bool disabled = false)
 {
     uint32_t fill_color = is_pressed ? style.fill_color_press : style.fill_color_release;
@@ -101,7 +132,118 @@ void static KeysRect(ImDrawList* p, ImVec2 pos, ImVec2 size, float border_size, 
     p->AddText(textPos, text_color, text);
 }
 
-void KeysHUD(int ver, uint32_t cur_key, ImVec2 render_pos_arrow, ImVec2 render_pos_key, const KeyRectStyle& style, bool align_right_arrow, bool align_right_key)
+void RecordKey(int ver, uint32_t cur_key)
+{
+    switch (ver) {
+    default:
+    case 6:
+    case 7:
+    case 8:
+    case 10:
+        g_key_mask[Key_Shift] = 0x4;
+        g_key_mask[Key_Z] = 0x1;
+        g_key_mask[Key_X] = 0x2;
+        g_key_mask[Key_Ctrl] = 0x100;
+        g_key_mask[Key_Up] = 0x10;
+        g_key_mask[Key_Down] = 0x20;
+        g_key_mask[Key_Left] = 0x40;
+        g_key_mask[Key_Right] = 0x80;
+        break;
+    case 11:
+    case 12:
+        g_key_mask[Key_Shift] = 0x8;
+        g_key_mask[Key_Z] = 0x1;
+        g_key_mask[Key_X] = 0x2;
+        g_key_mask[Key_Ctrl] = 0x200;
+        g_key_mask[Key_Up] = 0x10;
+        g_key_mask[Key_Down] = 0x20;
+        g_key_mask[Key_Left] = 0x40;
+        g_key_mask[Key_Right] = 0x80;
+        break;
+    case 128:
+        g_key_mask[Key_Shift] = 0x8;
+        g_key_mask[Key_Z] = 0x1;
+        g_key_mask[Key_X] = 0x2;
+        g_key_mask[Key_C] = 0x200;
+        g_key_mask[Key_Up] = 0x10;
+        g_key_mask[Key_Down] = 0x20;
+        g_key_mask[Key_Left] = 0x40;
+        g_key_mask[Key_Right] = 0x80;
+        break;
+    case 13:
+    case 16:
+        g_key_mask[Key_Shift] = 0x8;
+        g_key_mask[Key_Z] = 0x1;
+        g_key_mask[Key_X] = 0x2;
+        g_key_mask[Key_C] = 0xA00;
+        g_key_mask[Key_Ctrl] = 0x200;
+        g_key_mask[Key_Up] = 0x10;
+        g_key_mask[Key_Down] = 0x20;
+        g_key_mask[Key_Left] = 0x40;
+        g_key_mask[Key_Right] = 0x80;
+        break;
+    case 14:
+    case 15:
+    case 17:
+        g_key_mask[Key_Shift] = 0x8;
+        g_key_mask[Key_Z] = 0x1;
+        g_key_mask[Key_X] = 0x2;
+        g_key_mask[Key_Ctrl] = 0x200;
+        g_key_mask[Key_Up] = 0x10;
+        g_key_mask[Key_Down] = 0x20;
+        g_key_mask[Key_Left] = 0x40;
+        g_key_mask[Key_Right] = 0x80;
+        break;
+    case 18:
+        g_key_mask[Key_Shift] = 0x8;
+        g_key_mask[Key_Z] = 0x1;
+        g_key_mask[Key_X] = 0x2;
+        g_key_mask[Key_C] = 0x400;
+        g_key_mask[Key_D] = 0x800;
+        g_key_mask[Key_Up] = 0x10;
+        g_key_mask[Key_Down] = 0x20;
+        g_key_mask[Key_Left] = 0x40;
+        g_key_mask[Key_Right] = 0x80;
+        break;
+    }
+    for (int i = 0; i < END; i++) {
+        if (g_key_mask[i])
+            g_keys_down[i] = ((cur_key & g_key_mask[i]) == g_key_mask[i]);
+    }
+    uint32_t key_cur = 0;
+    for (int i = 0; i < END; i++) {
+        if (g_keys_down[i])
+            key_cur |= 1 << i;
+    } // not use zun's keycode
+
+    static std::deque<uint32_t> keys_per_sec; // 60 f
+    
+    uint32_t key_last = 0;
+    while (keys_per_sec.size() >= 60) {
+        key_last = keys_per_sec.front();
+        keys_per_sec.pop_front();
+    }
+    keys_per_sec.push_back(key_cur);
+    g_aps_cur = 0;
+    for (auto key : keys_per_sec) {
+        if (key != key_last) {
+            uint32_t diff = key ^ key_last;
+            uint32_t diff_cnt = 0;
+            for (int i = 0; i < END; i++) {
+                if (diff & (1 << i))
+                    diff_cnt++;
+            }
+            g_aps_cur += diff_cnt;
+            key_last = key;
+        }
+    }
+    if (g_record_key_aps){
+        g_recorded_aps.push_back(g_aps_cur);
+        g_recorded_keys.push_back((uint16_t)key_cur);
+    }
+}
+
+void KeysHUD(int ver, ImVec2 render_pos_arrow, ImVec2 render_pos_key, const KeyRectStyle& style, bool align_right_arrow, bool align_right_key)
 {
     ImGuiIO& io = ImGui::GetIO();
     float iratio_x = io.DisplaySize.x / 1280.0f;
@@ -113,97 +255,6 @@ void KeysHUD(int ver, uint32_t cur_key, ImVec2 render_pos_arrow, ImVec2 render_p
     render_pos_key.x *= iratio_y;
     render_pos_key.y *= iratio_y;
     float border_size = ceilf(style.size.x * iratio_x / 32.0f*3.0f);
-    enum THKey { Key_Up,
-        Key_Down,
-        Key_Left,
-        Key_Right,
-        Key_Z,
-        Key_X,
-        Key_C,
-        Key_D,
-        Key_Ctrl,
-        Key_Shift,
-        END };
-    bool keys_down[END] = { 0 };
-    int key_mask[END] = { 0 };
-    switch (ver) {
-    default:
-    case 6:
-    case 7:
-    case 8:
-    case 10:
-        key_mask[Key_Shift] = 0x4;
-        key_mask[Key_Z] = 0x1;
-        key_mask[Key_X] = 0x2;
-        key_mask[Key_Ctrl] = 0x100;
-        key_mask[Key_Up] = 0x10;
-        key_mask[Key_Down] = 0x20;
-        key_mask[Key_Left] = 0x40;
-        key_mask[Key_Right] = 0x80;
-        break;
-    case 11:
-    case 12:
-        key_mask[Key_Shift] = 0x8;
-        key_mask[Key_Z] = 0x1;
-        key_mask[Key_X] = 0x2;
-        key_mask[Key_Ctrl] = 0x200;
-        key_mask[Key_Up] = 0x10;
-        key_mask[Key_Down] = 0x20;
-        key_mask[Key_Left] = 0x40;
-        key_mask[Key_Right] = 0x80;
-        break;
-    case 128:
-        key_mask[Key_Shift] = 0x8;
-        key_mask[Key_Z] = 0x1;
-        key_mask[Key_X] = 0x2;
-        key_mask[Key_C] = 0x200;
-        key_mask[Key_Up] = 0x10;
-        key_mask[Key_Down] = 0x20;
-        key_mask[Key_Left] = 0x40;
-        key_mask[Key_Right] = 0x80;
-        break;
-    case 13:
-    case 16:
-        key_mask[Key_Shift] = 0x8;
-        key_mask[Key_Z] = 0x1;
-        key_mask[Key_X] = 0x2;
-        key_mask[Key_C] = 0xA00;
-        key_mask[Key_Ctrl] = 0x200;
-
-        key_mask[Key_Up] = 0x10;
-        key_mask[Key_Down] = 0x20;
-        key_mask[Key_Left] = 0x40;
-        key_mask[Key_Right] = 0x80;
-        break;
-    case 14:
-    case 15:
-    case 17:
-        key_mask[Key_Shift] = 0x8;
-        key_mask[Key_Z] = 0x1;
-        key_mask[Key_X] = 0x2;
-        key_mask[Key_Ctrl] = 0x200;
-
-        key_mask[Key_Up] = 0x10;
-        key_mask[Key_Down] = 0x20;
-        key_mask[Key_Left] = 0x40;
-        key_mask[Key_Right] = 0x80;
-        break;
-    case 18:
-        key_mask[Key_Shift] = 0x8;
-        key_mask[Key_Z] = 0x1;
-        key_mask[Key_X] = 0x2;
-        key_mask[Key_C] = 0x400;
-        key_mask[Key_D] = 0x800;
-
-        key_mask[Key_Up] = 0x10;
-        key_mask[Key_Down] = 0x20;
-        key_mask[Key_Left] = 0x40;
-        key_mask[Key_Right] = 0x80;
-        break;
-    }
-    for (int i = 0; i < END; i++) {
-        keys_down[i] = ((cur_key & key_mask[i]) == key_mask[i]);
-    }
     auto p = ImGui::GetOverlayDrawList();
 
     if (align_right_arrow){
@@ -226,74 +277,78 @@ void KeysHUD(int ver, uint32_t cur_key, ImVec2 render_pos_arrow, ImVec2 render_p
     { // arrows
         ImVec2 render_pos_orig = render_pos_arrow;
         render_pos_arrow.x += size.x;
-        KeysRect(p, render_pos_arrow, size, border_size, style, keys_down[Key_Up], "↑");
+        KeysRect(p, render_pos_arrow, size, border_size, style, g_keys_down[Key_Up], "↑");
         render_pos_arrow.y += size.y;
         render_pos_arrow.x = render_pos_orig.x;
-        KeysRect(p, render_pos_arrow, size, border_size, style, keys_down[Key_Left], "←");
+        KeysRect(p, render_pos_arrow, size, border_size, style, g_keys_down[Key_Left], "←");
         render_pos_arrow.x += size.x;
-        KeysRect(p, render_pos_arrow, size, border_size, style, keys_down[Key_Down], "↓");
+        KeysRect(p, render_pos_arrow, size, border_size, style, g_keys_down[Key_Down], "↓");
         render_pos_arrow.x += size.x;
-        KeysRect(p, render_pos_arrow, size, border_size, style, keys_down[Key_Right], "→");
+        KeysRect(p, render_pos_arrow, size, border_size, style, g_keys_down[Key_Right], "→");
     }
     { // keys
         ImVec2 render_pos_orig = render_pos_key;
-        KeysRect(p, render_pos_key, { size.x * 1.5f, size.y }, border_size, style, keys_down[Key_Shift], "Δ");
+        KeysRect(p, render_pos_key, { size.x * 1.5f, size.y }, border_size, style, g_keys_down[Key_Shift], "Δ");
         render_pos_key.x += size.x * 1.5f;
-        KeysRect(p, render_pos_key, size, border_size, style, keys_down[Key_Z], "Z");
+        KeysRect(p, render_pos_key, size, border_size, style, g_keys_down[Key_Z], "Z");
         render_pos_key.x += size.x;
-        KeysRect(p, render_pos_key, size, border_size, style, keys_down[Key_X], "X");
+        KeysRect(p, render_pos_key, size, border_size, style, g_keys_down[Key_X], "X");
         render_pos_key.y += size.y;
         render_pos_key.x = render_pos_orig.x;
-        KeysRect(p, render_pos_key, size, border_size, style, keys_down[Key_Ctrl], "Σ", key_mask[Key_Ctrl] == 0);
+        KeysRect(p, render_pos_key, size, border_size, style, g_keys_down[Key_Ctrl], "Σ", g_key_mask[Key_Ctrl] == 0);
         render_pos_key.x += size.x;
-        KeysRect(p, render_pos_key, size, border_size, style, keys_down[Key_C], "C", key_mask[Key_C] == 0);
+        KeysRect(p, render_pos_key, size, border_size, style, g_keys_down[Key_C], "C", g_key_mask[Key_C] == 0);
         render_pos_key.x += size.x;
-        KeysRect(p, render_pos_key, size, border_size, style, keys_down[Key_D], "D", key_mask[Key_D] == 0);
+        KeysRect(p, render_pos_key, size, border_size, style, g_keys_down[Key_D], "D", g_key_mask[Key_D] == 0);
         render_pos_key = render_pos_orig;
     }
-    if (style.show_aps){
-        uint32_t key_cur = 0;
-        for (int i = 0; i < END; i++){
-            if (keys_down[i])
-                key_cur |= 1 << i;
-        }// not use zun's keycode
-
-        static std::deque<uint32_t> keys_per_sec; // 60 f
-        uint32_t aps_cur = 0;
-        uint32_t key_last = 0;
-        while (keys_per_sec.size() >= 60) {
-            key_last = keys_per_sec.front();
-            keys_per_sec.pop_front();
-        }
-        keys_per_sec.push_back(key_cur);
-        for (auto key : keys_per_sec) {
-            if (key != key_last) {
-                uint32_t diff = key ^ key_last;
-                uint32_t diff_cnt = 0;
-                for (int i = 0; i < END; i++){
-                    if (diff & (1 << i))
-                    diff_cnt++;
-                }
-                aps_cur += diff_cnt;
-                key_last = key;
-            }
-        }
-        std::string aps_text = std::format("aps: {:>3}/(60frame)", aps_cur);
+    if (style.show_aps) {
+        std::string aps_text = std::format("aps: {:>3}/(60frame)", g_aps_cur);
         auto sz = ImGui::CalcTextSize(aps_text.c_str());
-        if (ver != 128){
+        if (ver != 128) {
             render_pos_key.x -= size.x * 0.25f;
             render_pos_key.y -= size.y * 0.25f;
             p->AddRectFilled({ render_pos_key.x - sz.x, render_pos_key.y }, { render_pos_key.x, render_pos_key.y + sz.y }, 0xCC000000);
             p->AddText({ render_pos_key.x - sz.x, render_pos_key.y }, 0xFFFFFFFF, aps_text.c_str());
-        }else{
+        } else {
             render_pos_key.x += size.x * 7.25f;
             render_pos_key.y += size.y * 2.25f;
             p->AddRectFilled({ render_pos_key.x - sz.x, render_pos_key.y }, { render_pos_key.x, render_pos_key.y + sz.y }, 0xCC000000);
             p->AddText({ render_pos_key.x - sz.x, render_pos_key.y }, 0xFFFFFFFF, aps_text.c_str());
         }
-       
+    }
+}
+
+void SaveKeyRecorded()
+{
+    rapidcsv::Document doc;
+    doc.SetColumnName(0, "frame");
+    doc.SetColumnName(1, "aps");
+    for (int i = 0; i < END; i++)
+        doc.SetColumnName(2 + i, THKeyNames[i]);
+    for (int j = 0; j < g_recorded_aps.size(); j++) {
+        std::vector<std::string> row;
+        row.push_back(std::format("{}", j + 1));
+        row.push_back(std::format("{}", (uint32_t)g_recorded_aps[j]));
+        for (int i = 0; i < END; i++)
+            row.push_back((g_recorded_keys[j] & (1 << i)) ? "O" : "-");
+        doc.SetRow(j, row);
+    }
+    try {
+        doc.Save(utf16_to_mb(L"APS.csv", CP_ACP));
+    }catch (std::exception& e){
 
     }
 }
 
+std::vector<uint8_t>& GetKeyAPS()
+{
+    return g_recorded_aps;
+}
+
+void ClearKeyRecord()
+{
+    g_recorded_aps = {};
+    g_recorded_keys = {};
+}
 }

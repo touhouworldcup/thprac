@@ -13,6 +13,7 @@
 
 #include <MinHook.h>
 #include <format>
+#include <vector>
 
 namespace THPrac {
 #pragma region Gui Wrapper
@@ -30,6 +31,7 @@ bool g_pauseBGM_06 = false;
 bool g_forceRenderCursor=false;
 bool g_disable_max_btn = true;
 bool g_disable_joy = false;
+bool g_record_key_aps = false;
 AdvancedIGI_Options g_adv_igi_options;
 
 bool g_useCustomFont = false;
@@ -908,6 +910,35 @@ void DisableKeyOpt()
     
     HelpMarker(S(TH_ADV_DISABLE_Z_KEY_DESC));
     return;
+}
+
+void KeyHUDOpt()
+{
+    ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
+    if (g_adv_igi_options.show_keyboard_monitor){
+        
+        if (!g_record_key_aps){
+            if (ImGui::Button(S(THPRAC_KB_RECORD_START))){
+                ClearKeyRecord();
+                g_record_key_aps = true;
+            }
+        }else if (ImGui::Button(S(THPRAC_KB_RECORD_STOP)))
+            g_record_key_aps = false;
+        ImGui::SameLine();
+        if (ImGui::Button(S(THPRAC_KB_OUTPUT))){
+            SaveKeyRecorded();
+        }
+        auto& recorded_aps = GetKeyAPS();
+        if (recorded_aps.size() >= 2) {
+            ImGui::PlotLines("##APS", 
+                [](void* data, int idx) -> float { 
+                    std::vector<uint8_t> &recorded_aps = *(std::vector<uint8_t>*)data;
+                    if (recorded_aps.size() > 600) 
+                        return recorded_aps[recorded_aps.size() - 600 + idx];
+                    else return  recorded_aps[idx]; }
+                ,&recorded_aps, recorded_aps.size() > 600 ? 600 : recorded_aps.size(), 0, 0, FLT_MAX, FLT_MAX, { 0, ImGui::GetFrameHeight() * 3.0f });
+        }
+    }
 }
 
 

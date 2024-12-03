@@ -797,7 +797,7 @@ namespace TH13 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
-                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
+                KeyHUDOpt();
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH13_SHOW_HITS), &(g_adv_igi_options.th13_showHits));
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR), &(g_adv_igi_options.th13_showHitBar));
                 ImGui::SameLine();
@@ -1858,12 +1858,17 @@ namespace TH13 {
         }
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004C22C4)){
             g_adv_igi_options.keyboard_style.size = { 36.0f, 36.0f };
-            KeysHUD(13, *(DWORD*)(0x4E4C08), { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+            KeysHUD(13, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         THAdvOptWnd::singleton().FpsUpd();
         GameGuiEnd(drawCursor);
+    }
+    EHOOK_DY(th13_player_state, 0x443240)
+    {
+        if (g_adv_igi_options.show_keyboard_monitor)
+            RecordKey(13, *(DWORD*)(0x4E4C08));
     }
     EHOOK_DY(th13_render, 0x470d27)
     {
@@ -1912,7 +1917,8 @@ namespace TH13 {
         THGuiCreate();
         THInitHookDisable();
     }
-#pragma region igi
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th13_game_start, 0x42D3D7) // gamestart-bomb set
     {
         TH13InGameInfo::singleton().mBombCount = 0;
@@ -1931,7 +1937,6 @@ namespace TH13 {
     {
         TH13InGameInfo::singleton().mTranceCount++;
     }
-#pragma endregion
     HOOKSET_ENDDEF()
 }
 

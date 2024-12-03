@@ -697,7 +697,7 @@ namespace TH128 {
 
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
-                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
+                KeyHUDOpt();
                 EndOptGroup();
             }
 
@@ -2375,14 +2375,20 @@ namespace TH128 {
         TH128InGameInfo::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004B8A80))
-            KeysHUD(128, *(DWORD*)(0x4DB210), { 256.0f, 0.0f }, { 0.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+            KeysHUD(128, { 256.0f, 0.0f }, { 0.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         GameGuiEnd(drawCursor);
+    }
+    EHOOK_DY(th128_player_state, 0x43B680)
+    {
+        if (g_adv_igi_options.show_keyboard_monitor)
+            RecordKey(128, *(DWORD*)(0x4DB210));
     }
     EHOOK_DY(th128_render, 0x468560)
     {
         GameGuiRender(IMPL_WIN32_DX9);
     }
-#pragma region igi
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th128_game_start, 0x426009) // gamestart-bomb set
     {
         TH128InGameInfo::singleton().mBombCount = 0;
@@ -2400,7 +2406,6 @@ namespace TH128 {
     {
         TH128InGameInfo::singleton().mMissCount++;
     }
-#pragma endregion
     HOOKSET_ENDDEF()
 
     HOOKSET_DEFINE(THInitHook)

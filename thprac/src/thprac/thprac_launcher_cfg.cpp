@@ -2101,7 +2101,8 @@ private:
             auto pos = ImGui::GetCursorScreenPos();
             auto width = ImGui::GetWindowSize().x*0.5f;
             ImGui::InvisibleButton("##keys", { 34.0f, 34.0f * 2.5f });
-            KeysHUD(15, 69, { width / io.DisplaySize.x * 1280.0f, pos.y / io.DisplaySize.y * 960.0f }, { pos.x / io.DisplaySize.x * 1280.0f, pos.y / io.DisplaySize.y * 960.0f }, style, true, false);
+            RecordKey(15, 69);
+            KeysHUD(15, { width / io.DisplaySize.x * 1280.0f, pos.y / io.DisplaySize.y * 960.0f }, { pos.x / io.DisplaySize.x * 1280.0f, pos.y / io.DisplaySize.y * 960.0f }, style, true, false);
 
             ImGui::Separator();
             ImGui::Text(S(THPRAC_KB));

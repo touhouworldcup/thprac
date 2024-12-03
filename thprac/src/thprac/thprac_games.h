@@ -119,6 +119,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay = true);
 bool GameplayOpt(adv_opt_ctx& ctx);
 void AboutOpt(const char* thanks_text = nullptr);
 void DisableKeyOpt();
+void KeyHUDOpt();
 
 #pragma endregion
 

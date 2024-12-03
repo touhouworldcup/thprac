@@ -1681,7 +1681,7 @@ namespace TH06 {
                 EndOptGroup();
             }
             DisableKeyOpt();
-            ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
+            KeyHUDOpt();
             ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK), &g_adv_igi_options.th06_showRank);
             ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX), &g_adv_igi_options.th06_showHitbox);
             ImGui::SameLine();
@@ -3008,19 +3008,21 @@ namespace TH06 {
                t = 0.0f;
             }
         }
-        static DWORD last_key = *(WORD*)(0x69D904);
         if (g_adv_igi_options.show_keyboard_monitor && (*(DWORD*)(0x6C6EA4) == 2)) {
-            if (*(BYTE*)(0x69D4BF) == 0)
-                last_key = *(WORD*)(0x69D904);
             g_adv_igi_options.keyboard_style.size = { 48.0f, 48.0f };
-            KeysHUD(6, last_key, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+            KeysHUD(6, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }
         GameGuiRender(IMPL_WIN32_DX8);
         if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
             THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);
     }
-
-    #pragma region igi
+    EHOOK_DY(th06_player_state, 0x4288C0)
+    {
+        if (g_adv_igi_options.show_keyboard_monitor)
+            RecordKey(6, *(WORD*)(0x69D904));
+    }
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th06_enter_game, 0x41BDE8) // set inner misscount to 0
     {
         TH06InGameInfo::singleton().mMissCount = 0;
@@ -3034,10 +3036,6 @@ namespace TH06 {
     {
         TH06InGameInfo::singleton().mMissCount++;
     }
-
-#pragma endregion
-    
-
     HOOKSET_ENDDEF()
 
     HOOKSET_DEFINE(THInitHook)

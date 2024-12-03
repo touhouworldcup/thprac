@@ -837,7 +837,7 @@ namespace TH08 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
-                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
+                KeyHUDOpt();
                 if (ImGui::Button(S(TH_ONE_KEY_DIE)))
                 {
                     if (*(DWORD*)(0x160f510))
@@ -2521,17 +2521,17 @@ namespace TH08 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
 
-        static DWORD last_key = *(WORD*)(0x164D52C);
         if (g_adv_igi_options.show_keyboard_monitor && TH08InGameInfo::singleton().mIsInGame){
-            if (*(DWORD*)(0x164D0A0)==0)
-                last_key = *(WORD*)(0x164D52C);
             g_adv_igi_options.keyboard_style.size = { 34.0f, 34.0f };
-            KeysHUD(8, last_key, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+            KeysHUD(8, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }
-
         TH08InGameInfo::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
+    }
+    EHOOK_DY(th08_player_state, 0x44C390){
+        if (g_adv_igi_options.show_keyboard_monitor)
+            RecordKey(8, *(WORD*)(0x164D52C));
     }
     EHOOK_DY(th08_render, 0x43cc45)
     {
@@ -2588,7 +2588,8 @@ namespace TH08 {
         THGuiCreate();
         THInitHookDisable();
     }
-#pragma region igi
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th08_enter_game, 0x43BDD2)//set inner misscount to 0
     {
         TH08InGameInfo::singleton().mLSCCount = 0;
@@ -2620,7 +2621,8 @@ namespace TH08 {
                 TH08InGameInfo::singleton().mLSCCount++;
         }
     }
-#pragma endregion
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(TH08Checksum)
     EHOOK_DY(th08_checksum1, 0x448679) // checksum read fix
     {
         *(DWORD*)(pCtx->Ebp + 0xC) = *(DWORD*)(pCtx->Ebp - 0x14);

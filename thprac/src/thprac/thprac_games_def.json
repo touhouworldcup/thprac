@@ -941,6 +941,9 @@
 	  "THPRAC_KB_APS":["显示APS(每秒按键数)","show APS(Action Per Second)","show APS(Action Per Second)"],
 	  "THPRAC_KB_TYPE":["样式","style","style"],
 	  "THPRAC_KB_TYPE_COMBO": [ "矩形\\0圆角矩形\\0切角矩形\\0心形\\0\\0", "rect\\0rounded rect\\0chamfered rect\\0heart\\0\\0", "rect\\0rounded rect\\0chamfered rect\\0heart\\0\\0" ],
+	  "THPRAC_KB_RECORD_START": [ "开始记录APS", "start to record APS", "start to record APS"],
+	  "THPRAC_KB_RECORD_STOP": [ "停止记录APS", "stop recording", "stop recording"],
+	  "THPRAC_KB_OUTPUT": [ "导出到游戏文件夹", "output to game folder", "output to game folder"],
       
 	  
 	  "THPRAC_INGAMEINFO_ADV2":["自动开启高级IGI功能","automatically use advanced igi","automatically use advanced igi"],

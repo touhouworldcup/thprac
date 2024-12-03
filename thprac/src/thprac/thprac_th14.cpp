@@ -1430,8 +1430,7 @@ namespace TH14 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
-                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
-
+                KeyHUDOpt();
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_BONUS), &(g_adv_igi_options.th14_showBonus));
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_ITEMS), &(g_adv_igi_options.th14_showItemsCount));
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR), &(g_adv_igi_options.th14_showDropBar));
@@ -2720,10 +2719,15 @@ namespace TH14 {
             }
         }
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x04DB67C))
-            KeysHUD(14, *(DWORD*)(0x004D6A90), { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+            KeysHUD(14, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
+    }
+    EHOOK_DY(th14_player_state, 0x44DBD0)
+    {
+        if (g_adv_igi_options.show_keyboard_monitor)
+            RecordKey(14, *(DWORD*)(0x004D6A90));
     }
     EHOOK_DY(th14_render, 0x40149a)
     {
@@ -2775,7 +2779,8 @@ namespace TH14 {
         THGuiCreate();
         THInitHookDisable();
     }
-#pragma region igi
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th14_game_start, 0x4375BE) // gamestart-bomb set
     {
         TH14InGameInfo::singleton().mBombCount = 0;
@@ -2808,7 +2813,6 @@ namespace TH14 {
         else if (item_cnt >= 20)
             TH14InGameInfo::singleton().m05Count++;
     }
-#pragma endregion
     HOOKSET_ENDDEF()
 }
 

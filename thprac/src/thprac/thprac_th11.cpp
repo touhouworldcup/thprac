@@ -725,7 +725,7 @@ namespace TH11 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
-                ImGui::Checkbox(S(THPRAC_KB_OPEN), &(g_adv_igi_options.show_keyboard_monitor));
+                KeyHUDOpt();
                 if (ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH11_SHOW_HINT), &(g_adv_igi_options.th11_showHint))) {
                     THAdvOptWnd::SetHint();
                 }
@@ -1975,10 +1975,15 @@ namespace TH11 {
 
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x4A8EB4)) {
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
-            KeysHUD(11, *(DWORD*)(0x4C93C0), { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+            KeysHUD(11, { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
+    }
+    EHOOK_DY(th11_player_state, 0x431070)
+    {
+        if (g_adv_igi_options.show_keyboard_monitor)
+            RecordKey(11, *(DWORD*)(0x4C93C0));
     }
     EHOOK_DY(th11_render, 0x456f12)
     {
@@ -2033,8 +2038,8 @@ namespace TH11 {
         THGuiCreate();
         THInitHookDisable();
     }
-
-#pragma region igi
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th11_game_start, 0x41FA6D) // gamestart-bomb set
     {
         TH11InGameInfo::singleton().mBombCount = 0;
@@ -2052,8 +2057,6 @@ namespace TH11 {
     {
         TH11InGameInfo::singleton().mMissCount++;
     }
-#pragma endregion
-
     HOOKSET_ENDDEF()
 }
 
