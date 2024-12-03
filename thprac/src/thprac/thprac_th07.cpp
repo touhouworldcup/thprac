@@ -1974,7 +1974,31 @@ namespace TH07 {
             RecordKey(7, *(WORD*)(0x4B9E50));
     }
     HOOKSET_ENDDEF()
-
+    HOOKSET_DEFINE(THInGameInfo)
+    EHOOK_DY(th07_enter_game, 0x42EB08) // set inner misscount to 0
+    {
+        TH07InGameInfo::singleton().mBombCount = 0;
+        TH07InGameInfo::singleton().mMissCount = 0;
+        TH07InGameInfo::singleton().mBorderBreakCount = 0;
+    }
+    EHOOK_DY(th07_border_break, 0x441DA4)
+    {
+        TH07InGameInfo::singleton().mBorderBreakCount++;
+    }
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(TH07Checksum)
+    EHOOK_DY(th07_checksum1, 0x43A655) // checksum read fix
+    {
+        *(DWORD*)(pCtx->Ebp + 0xC) = *(DWORD*)(pCtx->Ebp - 0x14);
+        *(DWORD*)(pCtx->Ebp + 0x10) = *(DWORD*)(pCtx->Ebp - 0x8);
+    }
+    EHOOK_DY(th07_checksum2, 0x435FBB) // checksum
+    {
+        *(DWORD*)(0x575C14) = 650752;
+        *(DWORD*)(0x575C10) = 2932163676;
+        // 1.00b
+    }
+    HOOKSET_ENDDEF()
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
@@ -1991,6 +2015,8 @@ namespace TH07 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
+        THInGameInfo::singleton().EnableAllHooks();
+        TH07Checksum::singleton().EnableAllHooks();
 
         // Reset thPracParam
         thPracParam.Reset();
@@ -2018,36 +2044,10 @@ namespace TH07 {
         THInitHookDisable();
     }
     HOOKSET_ENDDEF()
-    HOOKSET_DEFINE(THInGameInfo)
-    EHOOK_DY(th07_enter_game, 0x42EB08) // set inner misscount to 0
-    {
-        TH07InGameInfo::singleton().mBombCount = 0;
-        TH07InGameInfo::singleton().mMissCount = 0;
-        TH07InGameInfo::singleton().mBorderBreakCount = 0;
-    }
-    EHOOK_DY(th07_border_break, 0x441DA4)
-    {
-        TH07InGameInfo::singleton().mBorderBreakCount++;
-    }
-    HOOKSET_ENDDEF()
-    HOOKSET_DEFINE(TH07Checksum)
-    EHOOK_DY(th07_checksum1, 0x43A655) // checksum read fix
-    {
-        *(DWORD*)(pCtx->Ebp + 0xC) = *(DWORD*)(pCtx->Ebp - 0x14);
-        *(DWORD*)(pCtx->Ebp + 0x10) = *(DWORD*)(pCtx->Ebp - 0x8);
-    }
-    EHOOK_DY(th07_checksum2, 0x435FBB) // checksum
-    {
-        *(DWORD*)(0x575C14) = 650752;
-        *(DWORD*)(0x575C10) = 2932163676;
-        // 1.00b
-    }
-    HOOKSET_ENDDEF()
 }
 
 void TH07Init()
 {
-    TH07::THInitHook::singleton().EnableAllHooks();
     TH07::THInitHook::singleton().EnableAllHooks();
     TryKeepUpRefreshRate((void*)0x434ca2);
 }

@@ -1990,7 +1990,25 @@ namespace TH11 {
         GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
-
+    HOOKSET_DEFINE(THInGameInfo)
+    EHOOK_DY(th11_game_start, 0x41FA6D) // gamestart-bomb set
+    {
+        TH11InGameInfo::singleton().mBombCount = 0;
+        TH11InGameInfo::singleton().mMissCount = 0;
+    }
+    EHOOK_DY(th11_bomb_dec, 0x4311E6) // bomb dec
+    {
+        TH11InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th11_bomb_dec2, 0x431293) // dead bomb
+    {
+        TH11InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th11_life_dec, 0x4327F0) // life dec
+    {
+        TH11InGameInfo::singleton().mMissCount++;
+    }
+    HOOKSET_ENDDEF()
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
@@ -2008,10 +2026,7 @@ namespace TH11 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
-
-        // Hooks
-        THMainHook::singleton().EnableAllHooks();
-
+        THInGameInfo::singleton().EnableAllHooks();
         // Reset thPracParam
         thPracParam.Reset();
     }
@@ -2037,25 +2052,6 @@ namespace TH11 {
     {
         THGuiCreate();
         THInitHookDisable();
-    }
-    HOOKSET_ENDDEF()
-    HOOKSET_DEFINE(THInGameInfo)
-    EHOOK_DY(th11_game_start, 0x41FA6D) // gamestart-bomb set
-    {
-        TH11InGameInfo::singleton().mBombCount = 0;
-        TH11InGameInfo::singleton().mMissCount = 0;
-    }
-    EHOOK_DY(th11_bomb_dec, 0x4311E6) // bomb dec
-    {
-        TH11InGameInfo::singleton().mBombCount++;
-    }
-    EHOOK_DY(th11_bomb_dec2, 0x431293) // dead bomb
-    {
-        TH11InGameInfo::singleton().mBombCount++;
-    }
-    EHOOK_DY(th11_life_dec, 0x4327F0) // life dec
-    {
-        TH11InGameInfo::singleton().mMissCount++;
     }
     HOOKSET_ENDDEF()
 }

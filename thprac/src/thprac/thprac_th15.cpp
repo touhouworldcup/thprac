@@ -2326,7 +2326,21 @@ namespace TH15 {
         GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
-
+    HOOKSET_DEFINE(THInGameInfo)
+    EHOOK_DY(th15_game_start, 0x43E6EE) // gamestart-bomb set
+    {
+        TH15InGameInfo::singleton().mBombCount = 0;
+        TH15InGameInfo::singleton().mMissCount = 0;
+    }
+    EHOOK_DY(th15_bomb_dec, 0x41497A) // bomb dec
+    {
+        TH15InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th15_life_dec, 0x456398) // life dec
+    {
+        TH15InGameInfo::singleton().mMissCount++;
+    }
+    HOOKSET_ENDDEF()
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
@@ -2340,6 +2354,7 @@ namespace TH15 {
         THGuiRep::singleton();
         THOverlay::singleton();
         TH15InGameInfo::singleton();
+        THInGameInfo::singleton();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
@@ -2369,21 +2384,6 @@ namespace TH15 {
     {
         THGuiCreate();
         THInitHookDisable();
-    }
-    HOOKSET_ENDDEF()
-    HOOKSET_DEFINE(THInGameInfo)
-    EHOOK_DY(th15_game_start, 0x43E6EE) // gamestart-bomb set
-    {
-        TH15InGameInfo::singleton().mBombCount = 0;
-        TH15InGameInfo::singleton().mMissCount = 0;
-    }
-    EHOOK_DY(th15_bomb_dec, 0x41497A) // bomb dec
-    {
-        TH15InGameInfo::singleton().mBombCount++;
-    }
-    EHOOK_DY(th15_life_dec, 0x456398) // life dec
-    {
-        TH15InGameInfo::singleton().mMissCount++;
     }
     HOOKSET_ENDDEF()
 }

@@ -2184,7 +2184,55 @@ namespace TH17 {
         GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
-
+    HOOKSET_DEFINE(THInGameInfo)
+    EHOOK_DY(th17_game_start, 0x4302E6) // gamestart-bomb set
+    {
+        TH17InGameInfo::singleton().mMissCount = 0;
+        TH17InGameInfo::singleton().mBombCount = 0;
+        TH17InGameInfo::singleton().mRoarBreakCount = 0;
+        TH17InGameInfo::singleton().mRoarCount = 0;
+        TH17InGameInfo::singleton().mSpecialGoastCount = 0;
+        TH17InGameInfo::singleton().mWolfCount = 0;
+        TH17InGameInfo::singleton().mOtterCount = 0;
+        TH17InGameInfo::singleton().mEagerCount = 0;
+    }
+    EHOOK_DY(th17_roar_break, 0x40F880)
+    {
+        TH17InGameInfo::singleton().mRoarBreakCount++;
+    }
+    EHOOK_DY(th17_roar, 0x40FC8A)
+    {
+        int32_t cur_roar = *(DWORD*)0x004B5ABC;
+        TH17InGameInfo::singleton().mRoarCount++;
+        switch (cur_roar) {
+        case 1:
+            TH17InGameInfo::singleton().mWolfCount++;
+            break;
+        case 2:
+            TH17InGameInfo::singleton().mOtterCount++;
+            break;
+        case 3:
+            TH17InGameInfo::singleton().mEagerCount++;
+            break;
+        default:
+            break;
+        }
+        for (int32_t i = 0; i < 5; i++) {
+            int32_t type = *(int32_t*)(0x004B5A64 + 4 * i);
+            if (type >= 8 && type <= 0xE) {
+                TH17InGameInfo::singleton().mSpecialGoastCount++;
+            }
+        }
+    }
+    EHOOK_DY(th17_life_dec, 0x44921B)
+    {
+        TH17InGameInfo::singleton().mMissCount++;
+    }
+    EHOOK_DY(th17_bomb_dec, 0x411CAB)
+    {
+        TH17InGameInfo::singleton().mBombCount++;
+    }
+    HOOKSET_ENDDEF()
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
@@ -2203,6 +2251,7 @@ namespace TH17 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
+        THInGameInfo::singleton().EnableAllHooks();
 
         // Gui::ImplDX9NewFrame();
         // Reset thPracParam
@@ -2230,56 +2279,6 @@ namespace TH17 {
     {
          THGuiCreate();
          THInitHookDisable();
-    }
-    HOOKSET_ENDDEF()
-    HOOKSET_DEFINE(THInGameInfo)
-    EHOOK_DY(th17_game_start, 0x4302E6) // gamestart-bomb set
-    {
-        TH17InGameInfo::singleton().mMissCount = 0;
-        TH17InGameInfo::singleton().mBombCount = 0;
-        TH17InGameInfo::singleton().mRoarBreakCount = 0;
-        TH17InGameInfo::singleton().mRoarCount = 0;
-        TH17InGameInfo::singleton().mSpecialGoastCount = 0;
-        TH17InGameInfo::singleton().mWolfCount = 0;
-        TH17InGameInfo::singleton().mOtterCount = 0;
-        TH17InGameInfo::singleton().mEagerCount = 0;
-    }
-    EHOOK_DY(th17_roar_break, 0x40F880)
-    {
-        TH17InGameInfo::singleton().mRoarBreakCount++;
-    }
-    EHOOK_DY(th17_roar, 0x40FC8A)
-    {
-        int32_t cur_roar = *(DWORD*)0x004B5ABC;
-        TH17InGameInfo::singleton().mRoarCount++;
-        switch (cur_roar)
-        {
-        case 1:
-            TH17InGameInfo::singleton().mWolfCount++;
-            break;
-        case 2:
-            TH17InGameInfo::singleton().mOtterCount++;
-            break;
-        case 3:
-            TH17InGameInfo::singleton().mEagerCount++;
-            break;
-        default:
-            break;
-        }
-        for (int32_t i = 0; i < 5; i++){
-            int32_t type = *(int32_t*)(0x004B5A64 + 4 * i);
-            if (type >= 8 && type <= 0xE){
-                TH17InGameInfo::singleton().mSpecialGoastCount++;
-            }
-        }
-    }
-    EHOOK_DY(th17_life_dec, 0x44921B)
-    {
-        TH17InGameInfo::singleton().mMissCount++;
-    }
-    EHOOK_DY(th17_bomb_dec, 0x411CAB)
-    {
-        TH17InGameInfo::singleton().mBombCount++;
     }
     HOOKSET_ENDDEF()
 }

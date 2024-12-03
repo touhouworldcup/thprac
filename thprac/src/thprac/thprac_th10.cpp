@@ -2633,7 +2633,37 @@ namespace TH10 {
         GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
-
+    HOOKSET_DEFINE(THInGameInfo)
+    EHOOK_DY(th10_game_start, 0x41798C) // gamestart-bomb set
+    {
+        TH10InGameInfo::singleton().mBombCount = 0;
+        TH10InGameInfo::singleton().mMissCount = 0;
+    }
+    EHOOK_DY(th10_bomb_dec, 0x4259CF) // bomb dec
+    {
+        TH10InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th10_bomb_dec2, 0x425C3E) // bomb dec
+    {
+        TH10InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th10_life_dec, 0x426A1C) // life dec
+    {
+        TH10InGameInfo::singleton().mMissCount++;
+    }
+    EHOOK_DY(th10_move, 0x425442)
+    {
+        if (g_pl_speed_keep && THAdvOptWnd::singleton().GetFps() != 60) {
+            auto spd1 = (int32_t*)(pCtx->Edi + 0x3F0);
+            auto spd2 = (int32_t*)(pCtx->Edi + 0x3F4);
+            float inv_spd = 60.0f / (float)THAdvOptWnd::singleton().GetFps();
+            *spd1 = (*spd1) * inv_spd;
+            *spd2 = (*spd2) * inv_spd;
+            pCtx->Ecx = *spd1;
+            pCtx->Edx = *spd2;
+        }
+    }
+    HOOKSET_ENDDEF()
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
@@ -2650,6 +2680,7 @@ namespace TH10 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
+        THInGameInfo::singleton().EnableAllHooks();
         th10_real_bullet_sprite.Setup();
 
         // Reset thPracParam
@@ -2678,39 +2709,6 @@ namespace TH10 {
         THGuiCreate();
         THInitHookDisable();
     }
-    HOOKSET_ENDDEF()
-    HOOKSET_DEFINE(THInGameInfo)
-    EHOOK_DY(th10_game_start, 0x41798C) // gamestart-bomb set
-    {
-        TH10InGameInfo::singleton().mBombCount = 0;
-        TH10InGameInfo::singleton().mMissCount = 0;
-    }
-    EHOOK_DY(th10_bomb_dec, 0x4259CF) // bomb dec
-    {
-        TH10InGameInfo::singleton().mBombCount++;
-    }
-    EHOOK_DY(th10_bomb_dec2, 0x425C3E) // bomb dec
-    {
-        TH10InGameInfo::singleton().mBombCount++;
-    }
-    EHOOK_DY(th10_life_dec, 0x426A1C) // life dec
-    {
-        TH10InGameInfo::singleton().mMissCount++;
-    }
-    EHOOK_DY(th10_move, 0x425442) 
-    {
-        if (g_pl_speed_keep && THAdvOptWnd::singleton().GetFps()!=60)
-        {
-            auto spd1=(int32_t*)(pCtx->Edi + 0x3F0);
-            auto spd2=(int32_t*)(pCtx->Edi + 0x3F4);
-            float inv_spd = 60.0f / (float)THAdvOptWnd::singleton().GetFps();
-            *spd1 = (*spd1) * inv_spd;
-            *spd2 = (*spd2) * inv_spd;
-            pCtx->Ecx = *spd1;
-            pCtx->Edx = *spd2;
-        }
-    }
-
     HOOKSET_ENDDEF()
 }
 

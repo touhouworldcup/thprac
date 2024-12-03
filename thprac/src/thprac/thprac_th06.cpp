@@ -3056,6 +3056,7 @@ namespace TH06 {
         TH06InGameInfo::singleton().Init();
         // Hooks
         THMainHook::singleton().EnableAllHooks();
+        THInGameInfo::singleton().EnableAllHooks();
 
         // Reset thPracParam
         thPracParam.Reset();

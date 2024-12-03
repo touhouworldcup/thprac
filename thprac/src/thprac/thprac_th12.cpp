@@ -1720,7 +1720,37 @@ namespace TH12 {
         GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
-
+    HOOKSET_DEFINE(THInGameInfo)
+    EHOOK_DY(th12_game_start, 0x421DEF) // gamestart-bomb set
+    {
+        TH12InGameInfo::singleton().mBombCount = 0;
+        TH12InGameInfo::singleton().mMissCount = 0;
+        TH12InGameInfo::singleton().mRUFOCount = 0;
+        TH12InGameInfo::singleton().mGUFOCount = 0;
+        TH12InGameInfo::singleton().mBUFOCount = 0;
+        TH12InGameInfo::singleton().mCUFOCount = 0;
+    }
+    EHOOK_DY(th12_bomb_dec, 0x422F28) // bomb dec
+    {
+        TH12InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th12_life_dec, 0x4381E2) // life dec
+    {
+        TH12InGameInfo::singleton().mMissCount++;
+    }
+    EHOOK_DY(th12_ufo_open, 0x44A909) // open ufo
+    {
+        int32_t type = pCtx->Eax;
+        if (type == 0)
+            TH12InGameInfo::singleton().mRUFOCount++;
+        else if (type == 1)
+            TH12InGameInfo::singleton().mBUFOCount++;
+        else if (type == 2)
+            TH12InGameInfo::singleton().mGUFOCount++;
+        else if (type == 3)
+            TH12InGameInfo::singleton().mCUFOCount++;
+    }
+    HOOKSET_ENDDEF()
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
@@ -1737,6 +1767,7 @@ namespace TH12 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
+        THInGameInfo::singleton().EnableAllHooks();
 
         // Reset thPracParam
         thPracParam.Reset();
@@ -1763,37 +1794,6 @@ namespace TH12 {
     {
         THGuiCreate();
         THInitHookDisable();
-    }
-    HOOKSET_ENDDEF()
-    HOOKSET_DEFINE(THInGameInfo)
-    EHOOK_DY(th12_game_start, 0x421DEF) // gamestart-bomb set
-    {
-        TH12InGameInfo::singleton().mBombCount = 0;
-        TH12InGameInfo::singleton().mMissCount = 0;
-        TH12InGameInfo::singleton().mRUFOCount = 0;
-        TH12InGameInfo::singleton().mGUFOCount = 0;
-        TH12InGameInfo::singleton().mBUFOCount = 0;
-        TH12InGameInfo::singleton().mCUFOCount = 0;
-    }
-    EHOOK_DY(th12_bomb_dec, 0x422F28) // bomb dec
-    {
-        TH12InGameInfo::singleton().mBombCount++;
-    }
-    EHOOK_DY(th12_life_dec, 0x4381E2) // life dec
-    {
-        TH12InGameInfo::singleton().mMissCount++;
-    }
-    EHOOK_DY(th12_ufo_open, 0x44A909) // open ufo
-    {
-        int32_t type=pCtx->Eax;
-        if (type == 0)
-            TH12InGameInfo::singleton().mRUFOCount++;
-        else if (type==1)
-            TH12InGameInfo::singleton().mBUFOCount++;
-        else if (type == 2)
-            TH12InGameInfo::singleton().mGUFOCount++;
-        else if (type == 3)
-            TH12InGameInfo::singleton().mCUFOCount++;
     }
     HOOKSET_ENDDEF()
 }

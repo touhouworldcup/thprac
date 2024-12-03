@@ -2563,7 +2563,26 @@ namespace TH16 {
         GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
-
+    HOOKSET_DEFINE(THInGameInfo)
+    EHOOK_DY(th16_game_start, 0x42E5AE) // gamestart-bomb set
+    {
+        TH16InGameInfo::singleton().mBombCount = 0;
+        TH16InGameInfo::singleton().mMissCount = 0;
+        TH16InGameInfo::singleton().mReleaseCount = 0;
+    }
+    EHOOK_DY(th16_bomb_dec, 0x40DB9C) // bomb dec
+    {
+        TH16InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th16_life_dec, 0x443D3A) // life dec
+    {
+        TH16InGameInfo::singleton().mMissCount++;
+    }
+    EHOOK_DY(th16_release, 0x40DC8A)
+    {
+        TH16InGameInfo::singleton().mReleaseCount++;
+    }
+    HOOKSET_ENDDEF()
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
@@ -2581,6 +2600,7 @@ namespace TH16 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
+        THInGameInfo::singleton().EnableAllHooks();
         //Gui::ImplDX9NewFrame();
         // Reset thPracParam
         thPracParam.Reset();
@@ -2607,26 +2627,6 @@ namespace TH16 {
     {
          THGuiCreate();
          THInitHookDisable();
-    }
-    HOOKSET_ENDDEF()
-    HOOKSET_DEFINE(THInGameInfo)
-    EHOOK_DY(th16_game_start, 0x42E5AE) // gamestart-bomb set
-    {
-        TH16InGameInfo::singleton().mBombCount = 0;
-        TH16InGameInfo::singleton().mMissCount = 0;
-        TH16InGameInfo::singleton().mReleaseCount = 0;
-    }
-    EHOOK_DY(th16_bomb_dec, 0x40DB9C) // bomb dec
-    {
-        TH16InGameInfo::singleton().mBombCount++;
-    }
-    EHOOK_DY(th16_life_dec, 0x443D3A) // life dec
-    {
-        TH16InGameInfo::singleton().mMissCount++;
-    }
-    EHOOK_DY(th16_release, 0x40DC8A)
-    {
-        TH16InGameInfo::singleton().mReleaseCount++;
     }
     HOOKSET_ENDDEF()
 }

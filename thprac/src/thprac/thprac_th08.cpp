@@ -2545,52 +2545,8 @@ namespace TH08 {
             -1);
     }
     HOOKSET_ENDDEF()
-
-    HOOKSET_DEFINE(THInitHook)
-    static __declspec(noinline) void THGuiCreate()
-    {
-        // Init
-        GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700, 0x442390,
-            Gui::INGAGME_INPUT_GEN1, 0x164d528, 0x164d530, 0x164d538,
-            -1);
-
-        // Gui components creation
-        THGuiPrac::singleton();
-        THGuiRep::singleton();
-        THOverlay::singleton();
-        TH08InGameInfo::singleton();
-
-        // Hooks
-        THMainHook::singleton().EnableAllHooks();
-
-        // Reset thPracParam
-        thPracParam.Reset();
-    }
-    static __declspec(noinline) void THInitHookDisable()
-    {
-        auto& s = THInitHook::singleton();
-        s.th08_gui_init_1.Disable();
-        s.th08_gui_init_2.Disable();
-    }
-    PATCH_DY(th08_disable_dataver, 0x40bb80, "\x33\xc0\xc3", 3);
-    PATCH_DY(th08_disable_demo, 0x467aca, "\xff\xff\xff\x7f", 4);
-    EHOOK_DY(th08_disable_mutex, 0x44344f)
-    {
-        pCtx->Eip = 0x44346b;
-    }
-    EHOOK_DY(th08_gui_init_1, 0x467960)
-    {
-        THGuiCreate();
-        THInitHookDisable();
-    }
-    EHOOK_DY(th08_gui_init_2, 0x442a7f)
-    {
-        THGuiCreate();
-        THInitHookDisable();
-    }
-    HOOKSET_ENDDEF()
     HOOKSET_DEFINE(THInGameInfo)
-    EHOOK_DY(th08_enter_game, 0x43BDD2)//set inner misscount to 0
+    EHOOK_DY(th08_enter_game, 0x43BDD2) // set inner misscount to 0
     {
         TH08InGameInfo::singleton().mLSCCount = 0;
         TH08InGameInfo::singleton().mSCCount = 0;
@@ -2633,6 +2589,50 @@ namespace TH08 {
         *(DWORD*)(0x17CEAB0) = 840704;
         *(DWORD*)(0x17CEAAC) = 2724749753;
         // 1.00d
+    }
+    HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(THInitHook)
+    static __declspec(noinline) void THGuiCreate()
+    {
+        // Init
+        GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700, 0x442390,
+            Gui::INGAGME_INPUT_GEN1, 0x164d528, 0x164d530, 0x164d538,
+            -1);
+
+        // Gui components creation
+        THGuiPrac::singleton();
+        THGuiRep::singleton();
+        THOverlay::singleton();
+        TH08InGameInfo::singleton();
+
+        // Hooks
+        THMainHook::singleton().EnableAllHooks();
+        THInGameInfo::singleton().EnableAllHooks();
+        TH08Checksum::singleton().EnableAllHooks();
+        // Reset thPracParam
+        thPracParam.Reset();
+    }
+    static __declspec(noinline) void THInitHookDisable()
+    {
+        auto& s = THInitHook::singleton();
+        s.th08_gui_init_1.Disable();
+        s.th08_gui_init_2.Disable();
+    }
+    PATCH_DY(th08_disable_dataver, 0x40bb80, "\x33\xc0\xc3", 3);
+    PATCH_DY(th08_disable_demo, 0x467aca, "\xff\xff\xff\x7f", 4);
+    EHOOK_DY(th08_disable_mutex, 0x44344f)
+    {
+        pCtx->Eip = 0x44346b;
+    }
+    EHOOK_DY(th08_gui_init_1, 0x467960)
+    {
+        THGuiCreate();
+        THInitHookDisable();
+    }
+    EHOOK_DY(th08_gui_init_2, 0x442a7f)
+    {
+        THGuiCreate();
+        THInitHookDisable();
     }
     HOOKSET_ENDDEF()
 }

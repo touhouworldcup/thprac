@@ -3196,7 +3196,35 @@ namespace TH18 {
             RecordKey(18, *(DWORD*)(0x4CA428));
     }
     HOOKSET_ENDDEF()
+    HOOKSET_DEFINE(THInGameInfo)
+    EHOOK_DY(th16_game_start, 0x44278F) // gamestart-bomb set
+    {
+        TH18InGameInfo::singleton().mBombCount = 0;
+        TH18InGameInfo::singleton().mMissCount = 0;
+        TH18InGameInfo::singleton().mDeadBombCount = 0;
+    }
+    EHOOK_DY(th16_bomb_dec, 0x4574D3) // bomb dec
+    {
+        TH18InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th16_cylinder, 0x410F22) // cylinder
+    {
+        TH18InGameInfo::singleton().mBombCount++;
+    }
+    EHOOK_DY(th16_life_dec, 0x45D1A3) // life dec
+    {
+        TH18InGameInfo::singleton().mMissCount++;
+    }
 
+    EHOOK_DY(th16_deadbomb1, 0x40DA1C) // rokumon
+    {
+        TH18InGameInfo::singleton().mDeadBombCount++;
+    }
+    EHOOK_DY(th16_deadbomb2, 0x40A534) // autobomb
+    {
+        TH18InGameInfo::singleton().mDeadBombCount++;
+    }
+    HOOKSET_ENDDEF()
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
@@ -3214,6 +3242,7 @@ namespace TH18 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
+        THInGameInfo::singleton().EnableAllHooks();
 
         // Reset thPracParam
 
@@ -3250,35 +3279,6 @@ namespace TH18 {
     {
         THGuiCreate();
         THInitHookDisable();
-    }
-    HOOKSET_ENDDEF()
-    HOOKSET_DEFINE(THInGameInfo)
-    EHOOK_DY(th16_game_start, 0x44278F) // gamestart-bomb set
-    {
-        TH18InGameInfo::singleton().mBombCount = 0;
-        TH18InGameInfo::singleton().mMissCount = 0;
-        TH18InGameInfo::singleton().mDeadBombCount = 0;
-    }
-    EHOOK_DY(th16_bomb_dec, 0x4574D3) // bomb dec
-    {
-        TH18InGameInfo::singleton().mBombCount++;
-    }
-    EHOOK_DY(th16_cylinder, 0x410F22) // cylinder
-    {
-        TH18InGameInfo::singleton().mBombCount++;
-    }
-    EHOOK_DY(th16_life_dec, 0x45D1A3) // life dec
-    {
-        TH18InGameInfo::singleton().mMissCount++;
-    }
-
-    EHOOK_DY(th16_deadbomb1, 0x40DA1C)//rokumon
-    {
-        TH18InGameInfo::singleton().mDeadBombCount++;
-    }
-    EHOOK_DY(th16_deadbomb2, 0x40A534) // autobomb
-    {
-        TH18InGameInfo::singleton().mDeadBombCount++;
     }
     HOOKSET_ENDDEF()
 }

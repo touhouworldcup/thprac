@@ -2424,6 +2424,7 @@ namespace TH128 {
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
+        THInGameInfo::singleton().EnableAllHooks();
 
         // Reset thPracParam
         thPracParam.Reset();
