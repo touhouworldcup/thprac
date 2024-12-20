@@ -186,9 +186,10 @@ namespace TH11 {
             auto section = CalcSection();
             if (section == TH11_ST6_BOSS9) {
                 return TH11_SPELL_5PHASE;
-            }
-            if (section == TH11_ST7_END_S10) {
+            }else if (section == TH11_ST7_END_S10) {
                 return TH_SPELL_PHASE2;
+            } else if (section == 10000 + 5 * 100 + 4) {
+                return TH_PHASE_INF_MODE;
             }
             return nullptr;
         }
@@ -962,6 +963,9 @@ namespace TH11 {
                 ecl << pair{0x67a4, 30};
                 break;
             case 4:
+                if (thPracParam.phase == 1) {
+                    ECLJump(ecl, 0x2BF8, 0x2AB0, 0, 0);
+                }
                 ecl << pair{0x6790, 0};
                 ECLJump(ecl, 0x67a8, 0x6878);
                 break;

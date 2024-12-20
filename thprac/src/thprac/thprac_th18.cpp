@@ -361,6 +361,10 @@ namespace TH18 {
                 return TH_SPELL_PHASE1;
             } else if (section == TH18_ST7_END_S10) {
                 return TH_SPELL_PHASE3;
+            } else if (section == 10000 + 4 * 100 + 4) {
+                return TH_PHASE_INF_MODE;
+            } else if (section == 10000 + 3 * 100 + 6) {
+                return TH_PHASE_INF_MODE;
             }
             return nullptr;
         }
@@ -1969,6 +1973,10 @@ namespace TH18 {
                 break;
             case 6:
                 // ECLStdExec(ecl, 0x83a0, 1, 1);
+                if (thPracParam.phase == 1) {
+                    ECLJump(ecl, 0x66D0, 0x6590, 0, 0);
+                    ECLJump(ecl, 0x68B0, 0x6770, 0, 0);
+                }
                 ECLStdExec(ecl, 0x83a0, 0, 1);
                 ECLJump(ecl, 0, 0x87c8, 60, 90); // 0x8784, 0x87c8, 0x8848
                 ECLJump(ecl, 0x4d90, 0x4e38, 0, 0);
@@ -1989,6 +1997,9 @@ namespace TH18 {
                 ECLJump(ecl, 0x33cc, 0x3434, 0, 0);
                 break;
             case 4:
+                if(thPracParam.phase==1) {
+                    ECLJump(ecl, 0x43E4, 0x4364, 0, 0);
+                }
                 ECLJump(ecl, 0x5a04, 0x5d50, 60, 90); // 0x5d94, 0x5dd8, 0x5e58
                 ECLJump(ecl, 0x33cc, 0x3468, 0, 0);
                 break;

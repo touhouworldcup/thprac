@@ -1248,6 +1248,7 @@ enum th_glossary_t {
     TH_SPELL_TIME_INF,
     TH_SPELL_TIME_INF_BOOK5,
     TH_SPELL_TIME_INF_BOOK6,
+    TH_SPELL_TIME_INF_MODE,
     TH_SPELL_TIME_NORMAL,
     TH_STAGE,
     TH_STAGE_1,
@@ -1280,7 +1281,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1269];
+extern const char* th_glossary_str[3][1270];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1315,6 +1316,8 @@ extern const th_glossary_t TH_SPELL_PHASE1[3];
 extern const th_glossary_t TH_BOOKS_PHASE_INF_TIME[4];
 
 extern const th_glossary_t TH_PHASE_INF_TIME[3];
+
+extern const th_glossary_t TH_PHASE_INF_MODE[3];
 
 extern const th_glossary_t TH_SPELL_PHASE2[5];
 

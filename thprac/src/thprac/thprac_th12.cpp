@@ -206,6 +206,8 @@ namespace TH12 {
                 return TH_SPELL_PHASE1;
             } else if (section == TH12_ST7_END_S10) {
                 return TH_SPELL_PHASE3;
+            } else if (section == 10000 + 4 * 100 + 8) {
+                return TH_PHASE_INF_MODE;
             }
             return nullptr;
         }
@@ -913,6 +915,9 @@ namespace TH12 {
                 ECLJumpEx(ecl, 0x13800, 0x139b0, 0, 90);
                 break;
             case 8:
+                if (thPracParam.phase == 1) {
+                    ECLJumpEx(ecl, 0x12B10, 0x12110, 0, 0);
+                }
                 ECLJumpEx(ecl, 0x13800, 0x139e4, 0, 90);
                 break;
             default:

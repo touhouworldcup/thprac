@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1269] {
+const char* th_glossary_str[3][1270] {
     {
         "",
         "啤酒",
@@ -1248,6 +1248,7 @@ const char* th_glossary_str[3][1269] {
         "无限时间",
         "无限时间(5本)",
         "无限时间(6本)",
+        "无尽模式",
         "正常",
         "关卡",
         "1",
@@ -2519,6 +2520,7 @@ const char* th_glossary_str[3][1269] {
         "Inf time",
         "Inf time(5 book)",
         "Inf time(6 book)",
+        "Inf mode",
         "Normal",
         "Stage",
         "1",
@@ -3790,6 +3792,7 @@ const char* th_glossary_str[3][1269] {
         "Inf time",
         "Inf time(5 book)",
         "Inf time(6 book)",
+        "Inf mode",
         "普通",
         "ステージ",
         "1",
@@ -3997,6 +4000,11 @@ const th_glossary_t TH_BOOKS_PHASE_INF_TIME[4] {
 const th_glossary_t TH_PHASE_INF_TIME[3] {
     TH_SPELL_TIME_NORMAL,
     TH_SPELL_TIME_INF,
+};
+
+const th_glossary_t TH_PHASE_INF_MODE[3] {
+    TH_SPELL_TIME_NORMAL,
+    TH_SPELL_TIME_INF_MODE,
 };
 
 const th_glossary_t TH_SPELL_PHASE2[5] {

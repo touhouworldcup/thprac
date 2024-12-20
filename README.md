@@ -21,7 +21,6 @@
 - add hint editor for MoF
 - add font bug fix(mainly chinese) and customized font
 - add total game time and game time too long hint
-- add inf time magic books for EoSD
 - add clock-in in others menu(only in chinese)
 - add keng tools
 - add some advanced options like show rank in EoSD, show bonus count in DDC,...
@@ -33,6 +32,7 @@
 - add win key disable
 - add key monitor
 - disable joystick to avoid lags
+- inf time for EoSD magic books / SA sperm bath / UFO st4 random bullet formation / UM mung bean formation / UM yellow wind god
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
@@ -57,7 +57,6 @@
 - 给风加了个hint编辑器
 - 字体修复(thwiki.cc/官方游戏/错误解决办法   字体不正常一节)与自定义字体
 - 总游戏时间记录, 游戏时间过长提示功能
-- 无限时间魔法阵(神仙专用)
 - 打卡功能
 - 填坑器
 - 一些高级IGI功能
@@ -69,3 +68,4 @@
 - 禁用win键
 - 按键显示
 - 禁用手柄
+- 魔法书/精子浴/船四后半/绿豆阵/黄风神 无尽模式
