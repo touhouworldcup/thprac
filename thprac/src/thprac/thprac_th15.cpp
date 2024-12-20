@@ -2354,10 +2354,10 @@ namespace TH15 {
         THGuiRep::singleton();
         THOverlay::singleton();
         TH15InGameInfo::singleton();
-        THInGameInfo::singleton();
 
         // Hooks
         THMainHook::singleton().EnableAllHooks();
+        THInGameInfo::singleton().EnableAllHooks();
 
         // Reset thPracParam
         thPracParam.Reset();

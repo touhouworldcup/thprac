@@ -252,7 +252,7 @@ namespace TH06 {
         { 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
     };
-    static bool is_spell_get=true;
+    static bool is_died = false;
    
 
     bool THBGMTest();
@@ -660,7 +660,7 @@ namespace TH06 {
         }
         void AddAttempt(int spell_id, byte diff, byte player_type)
         {
-            is_spell_get = true;
+            is_died = false;
             save_total.SC_History[spell_id][diff][player_type][1]++;
             save_current.SC_History[spell_id][diff][player_type][1]++;
             SaveSave();
@@ -841,7 +841,7 @@ namespace TH06 {
                             if (cur_pl_bomb < doubleKOFix.Bombs) {
                                 bomb_decreased = true;
                             }
-                            if (!power_decreased && !bomb_decreased && is_spell_get==true) {
+                            if (!power_decreased && !bomb_decreased && is_died == false) {
                                 AddCapture(64, cur_diff, cur_player_type);
                             }
                             fin_flag = false;
@@ -871,10 +871,10 @@ namespace TH06 {
                     if (cur_pl_bomb < doubleKOFix.Bombs) {
                         bomb_decreased = true;
                     }
-                    if (doubleKOFix.SCB == 1 && last_has_SCB == 1 && cur_ingame_flag > 0 && is_spell_get == true) {
+                    if (doubleKOFix.SCB == 1 && last_has_SCB == 1 && cur_ingame_flag > 0 && is_died == false) {
                         AddCapture(last_spell_id, cur_diff, cur_player_type);
                     }
-                    if (last_has_SCB == 0 && cur_ingame_flag > 0 && !power_decreased && !bomb_decreased) {
+                    if (last_has_SCB == 0 && cur_ingame_flag > 0 && !power_decreased && !bomb_decreased && is_died == false) {
                         AddTimeOut(last_spell_id, cur_diff, cur_player_type);
                     }
                     fin_flag = false;
@@ -3028,9 +3028,9 @@ namespace TH06 {
         TH06InGameInfo::singleton().mMissCount = 0;
         TH06InGameInfo::singleton().Retry();
     }
-    EHOOK_DY(spellcard_get_failed, 0x4277C3)
+    EHOOK_DY(miss_spellcard_get_failed, 0x4277C3)
     {
-        is_spell_get = false;
+        is_died = true;
     }
     EHOOK_DY(th06_miss, 0x428DD9)// dec life
     {

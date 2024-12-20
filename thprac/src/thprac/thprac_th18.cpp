@@ -1957,16 +1957,19 @@ namespace TH18 {
                 ECLJump(ecl, 0x4c34, 0x4cc8, 0, 0);
                 break;
             case 4:
-                ECLStdExec(ecl, 0x83a0, 1, 1);
+                // ECLStdExec(ecl, 0x83a0, 1, 1);
+                ECLStdExec(ecl, 0x83a0, 0, 1);
                 ECLJump(ecl, 0, 0x87c8, 60, 90); // 0x8784, 0x87c8, 0x8848
                 break;
             case 5:
-                ECLStdExec(ecl, 0x83a0, 1, 1);
+                // ECLStdExec(ecl, 0x83a0, 1, 1);
+                ECLStdExec(ecl, 0x83a0, 0, 1);
                 ECLJump(ecl, 0, 0x87c8, 60, 90); // 0x8784, 0x87c8, 0x8848
                 ECLJump(ecl, 0x4d90, 0x4dd8, 0, 0);
                 break;
             case 6:
-                ECLStdExec(ecl, 0x83a0, 1, 1);
+                // ECLStdExec(ecl, 0x83a0, 1, 1);
+                ECLStdExec(ecl, 0x83a0, 0, 1);
                 ECLJump(ecl, 0, 0x87c8, 60, 90); // 0x8784, 0x87c8, 0x8848
                 ECLJump(ecl, 0x4d90, 0x4e38, 0, 0);
                 break;
@@ -2230,7 +2233,8 @@ namespace TH18 {
 
 
         case THPrac::TH18::TH18_ST3_MID1:
-            ECLStdExec(ecl, 0x83a0, 1, 1);
+            //ECLStdExec(ecl, 0x83a0, 1, 1);
+            ECLStdExec(ecl, 0x83a0, 0, 1);
             ECLJump(ecl, 0, 0x8784, 60); // 0x8784, 0x87c8, 0x8848
             ecl.SetFile(3);
             ecl << pair{0x324, (int16_t)100};
