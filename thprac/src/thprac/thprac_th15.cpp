@@ -189,6 +189,12 @@ namespace TH15 {
                 return TH15_ST3_NORMAL1_TYPE;
             } else if (section == TH15_ST8_AB_TEST) {
                 return TH15_AB_5PHASE;
+            } else if (section == 10000 + 5 * 100 + 8){//green/yellow
+                return TH_PHASE_INF_MODE_TH15_LASERS;
+            } else if (section == 10000 + 5 * 100 + 10) {
+                return TH_PHASE_INF_MODE;
+            } else if (section == TH15_ST6_STARS) {
+                return TH_PHASE_INF_MODE;
             }
             return nullptr;
         }
@@ -1060,6 +1066,12 @@ namespace TH15 {
                 ecl << pair{0x845c, 0};
                 break;
             case 8:
+                if (thPracParam.phase == 1) {
+                    ECLJump(ecl, 0x89C0, 0x8824, 0, 0);
+                } else if (thPracParam.phase == 2) {
+                    ECLJump(ecl, 0x880C, 0x8A00, 0, 0);
+                    ECLJump(ecl, 0x8C78, 0x8A40, 0, 0);
+                }
                 ECLJump(ecl, 0x9f34, 0xa1a0, 60, 90);
                 ECLJump(ecl, 0x70ec, 0x726c, 0, 0);
                 ecl << pair{0x87e0, 0};
@@ -1070,6 +1082,9 @@ namespace TH15 {
                 ecl << pair{0x8ce8, 0};
                 break;
             case 10:
+                if (thPracParam.phase == 1) {
+                    ECLJump(ecl, 0x9CE0, 0x9ABC, 0, 0);
+                }
                 ECLJump(ecl, 0x9f34, 0xa1a0, 60, 90);
                 ECLJump(ecl, 0x70ec, 0x736c, 0, 0);
                 ecl << pair{0x9a50, 0};
@@ -1520,10 +1535,29 @@ namespace TH15 {
             ecl << pair{0x640, (int8_t)0x35}; // Set Spell Ordinal
             break;
         case THPrac::TH15::TH15_ST6_STARS:
-            ECLJump(ecl, 0x91d0, 0x93e0, 0);
-            ECLJump(ecl, 0x2b34, 0x2c40, 60);
-            ECLSkipChapter(1);
-            ECLStarsBGMSync();
+            if (thPracParam.phase == 1) {
+                ECLJump(ecl, 0x91d0, 0x93e0, 0);
+                ECLJump(ecl, 0x2b34, 0x2c68, 0);
+                ecl << pair(0x436C, (int32_t)99999999) // endless
+                    << pair(0x40AC, (int32_t)0)
+                    // << pair(0x40F4, (int32_t)0)
+                    // << pair(0x413C, (int32_t)0)
+                    // << pair(0x4184, (int32_t)0)
+                    // << pair(0x41CC, (int32_t)0)
+                    << pair(0x4214, (int32_t)0)
+                    //<< pair(0x425C, (int32_t)0)
+                    //<< pair(0x42A4, (int32_t)0)
+                    //<< pair(0x42EC, (int32_t)0)
+                    //<< pair(0x4334, (int32_t)0)
+                    << pair(0x79CC, (int32_t)99999999)
+                    << pair(0x8FC4, (int32_t)99999999)
+                    ;
+            }else{
+                ECLJump(ecl, 0x91d0, 0x93e0, 0);
+                ECLJump(ecl, 0x2b34, 0x2c40, 60);
+                ECLSkipChapter(1);
+                ECLStarsBGMSync();
+            }
             break;
         case THPrac::TH15::TH15_ST6_BOSS1:
             if (thPracParam.dlg)

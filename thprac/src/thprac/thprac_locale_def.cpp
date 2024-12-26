@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1270] {
+const char* th_glossary_str[3][1272] {
     {
         "",
         "啤酒",
@@ -874,7 +874,7 @@ const char* th_glossary_str[3][1270] {
         "§小吉§",
         "§中平§",
         "打辉针城",
-        "随机弹随机封",
+        "随机弹随机收",
         "DDC永久SB",
         "打文花帖DS",
         "抓拍强者2.0",
@@ -1249,6 +1249,8 @@ const char* th_glossary_str[3][1270] {
         "无限时间(5本)",
         "无限时间(6本)",
         "无尽模式",
+        "无尽模式(绿)",
+        "无尽模式(黄)",
         "正常",
         "关卡",
         "1",
@@ -1962,7 +1964,7 @@ const char* th_glossary_str[3][1270] {
         "Cherry:",
         "CherryM:",
         "CherryP:",
-        "LSC:",
+        "LS:",
         "SC:",
         "B UFO:",
         "G UFO:",
@@ -2521,6 +2523,8 @@ const char* th_glossary_str[3][1270] {
         "Inf time(5 book)",
         "Inf time(6 book)",
         "Inf mode",
+        "Inf mode(G)",
+        "Inf mode(Y)",
         "Normal",
         "Stage",
         "1",
@@ -3234,7 +3238,7 @@ const char* th_glossary_str[3][1270] {
         "Cherry:",
         "CherryM:",
         "CherryP:",
-        "LSC:",
+        "LS:",
         "SC:",
         "B UFO:",
         "G UFO:",
@@ -3793,6 +3797,8 @@ const char* th_glossary_str[3][1270] {
         "Inf time(5 book)",
         "Inf time(6 book)",
         "Inf mode",
+        "Inf mode(Y)",
+        "Inf mode(G)",
         "普通",
         "ステージ",
         "1",
@@ -4005,6 +4011,12 @@ const th_glossary_t TH_PHASE_INF_TIME[3] {
 const th_glossary_t TH_PHASE_INF_MODE[3] {
     TH_SPELL_TIME_NORMAL,
     TH_SPELL_TIME_INF_MODE,
+};
+
+const th_glossary_t TH_PHASE_INF_MODE_TH15_LASERS[4] {
+    TH_SPELL_TIME_NORMAL,
+    TH_SPELL_TIME_INF_MODE_Y,
+    TH_SPELL_TIME_INF_MODE_G,
 };
 
 const th_glossary_t TH_SPELL_PHASE2[5] {

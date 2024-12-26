@@ -220,6 +220,9 @@ namespace TH10 {
                     case TH10_ST7_END_S10:
                         mPhase(TH_PHASE, TH_SPELL_PHASE1);
                         break;
+                    case 10000 + 4 * 100 + 8:
+                        mPhase(TH_PHASE,TH_PHASE_INF_MODE);
+                        break;
                     }
                 }
 
@@ -1333,6 +1336,10 @@ namespace TH10 {
                 ECLJump(ecl, 0x14a64, 0x14a84, 0);
                 ECLJump(ecl, 0xf900, 0x12e00, 1610);
                 st4_boss_timeskip(7400);
+                if (thPracParam.phase == 1) {
+                    ECLJump(ecl, 0x12EC0, 0x12E00, 1470);
+                    ecl << pair(0x14AB4,(int32_t) 99999999);// avoid boss
+                }
                 break;
             default:
                 break;

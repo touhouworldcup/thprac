@@ -365,6 +365,10 @@ namespace TH18 {
                 return TH_PHASE_INF_MODE;
             } else if (section == 10000 + 3 * 100 + 6) {
                 return TH_PHASE_INF_MODE;
+            } else if (section == 10000 + 5 * 100 + 5) {
+                return TH_PHASE_INF_MODE;
+            } else if (section == 10000 + 5 * 100 + 8) {
+                return TH_PHASE_INF_MODE;
             }
             return nullptr;
         }
@@ -2044,6 +2048,9 @@ namespace TH18 {
                 ECLJump(ecl, 0x4c40, 0x4cf0, 0, 0);
                 break;
             case 5:
+                if (thPracParam.phase == 1) {
+                    ECLJump(ecl, 0x5D7C, 0x5CDC, 0, 0);
+                }
                 ECLJump(ecl, 0x96ec, 0x9bd8, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
                 ecl << pair{0x4d94, 0};
                 break;
@@ -2057,6 +2064,9 @@ namespace TH18 {
                 ECLJump(ecl, 0x4d84, 0x4e2c, 0, 0);
                 break;
             case 8:
+                if (thPracParam.phase == 1) {
+                    ECLJump(ecl, 0x675C, 0x6630, 0, 0);
+                }
                 ECLStdExec(ecl, 0x96ec, 1, 1);
                 ECLJump(ecl, 0, 0x9bd8, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
                 ECLJump(ecl, 0x4d84, 0x4e8c, 0, 0);

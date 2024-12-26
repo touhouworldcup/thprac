@@ -199,7 +199,9 @@ namespace TH16 {
             auto section = CalcSection();
             if (section == TH16_ST6_SPRING_FINAL || section == TH16_ST6_SUMMER_FINAL || section == TH16_ST6_AUTUMN_FINAL || section == TH16_ST6_WINTER_FINAL || section == TH16_ST7_END_S10) {
                 return TH_SPELL_PHASE2;
-            }
+            } else if (section == 10000 + 4 * 100 + 6) {
+                return TH_PHASE_INF_MODE;
+            } 
             return nullptr;
         }
         void PracticeMenu()
@@ -1065,6 +1067,9 @@ namespace TH16 {
                 ECLJump(ecl, 0x6314, 0x6348, 0, 0);
                 break;
             case 6:
+                if (thPracParam.phase == 1) {
+                    ECLJump(ecl, 0x8B28, 0x8648, 0, 0);
+                }
                 ECLJump(ecl, 0x9bb0, 0x9ec0, 60, 90);
                 ECLJump(ecl, 0x6314, 0x63a8, 0, 0);
                 break;

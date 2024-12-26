@@ -1126,6 +1126,8 @@
       "TH_SPELL_TIME_NORMAL": [ "正常", "Normal", "普通" ],
       "TH_SPELL_TIME_INF": [ "无限时间", "Inf time", "Inf time" ],
       "TH_SPELL_TIME_INF_MODE": [ "无尽模式", "Inf mode", "Inf mode" ],
+      "TH_SPELL_TIME_INF_MODE_Y": [ "无尽模式(黄)", "Inf mode(Y)", "Inf mode(G)" ],
+      "TH_SPELL_TIME_INF_MODE_G": [ "无尽模式(绿)", "Inf mode(G)", "Inf mode(Y)" ],
       "TH_SPELL_TIME_INF_BOOK6": [ "无限时间(6本)", "Inf time(6 book)", "Inf time(6 book)" ],
       "TH_SPELL_TIME_INF_BOOK5": [ "无限时间(5本)", "Inf time(5 book)", "Inf time(5 book)" ],
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
@@ -1344,6 +1346,11 @@
 	  "TH_PHASE_INF_MODE": [
         "TH_SPELL_TIME_NORMAL",
         "TH_SPELL_TIME_INF_MODE"
+      ],
+	  "TH_PHASE_INF_MODE_TH15_LASERS": [
+        "TH_SPELL_TIME_NORMAL",
+        "TH_SPELL_TIME_INF_MODE_Y",
+        "TH_SPELL_TIME_INF_MODE_G"
       ],
       "TH_SPELL_PHASE2": [
         "TH_P1",

@@ -32,7 +32,7 @@
 - add win key disable
 - add key monitor
 - disable joystick to avoid lags
-- inf time for EoSD magic books / SA sperm bath / UFO st4 random bullet formation / UM mung bean formation / UM yellow wind god
+- inf time for EoSD magic books / MoF soya beans formation / SA sperm bath / UFO st4 random bullet formation / UFO st5 formation / LoLK yellow laser/ LoLK green laser / LoLK yellow-green-blue / LoLK shining shooting stars / HSiFS st4 formation / UM mung bean formation / UM yellow wind god / UM st5 reinforcements / UM st5 formation
 
 ## 给 thprac 2.2.1.8 加了个实用(?) branch, 其加入的功能如下
 - 重新把解锁刷新率加回来了
@@ -68,4 +68,6 @@
 - 禁用win键
 - 按键显示
 - 禁用手柄
-- 魔法书/精子浴/船四后半/绿豆阵/黄风神 无尽模式
+- 魔法书/风黄豆阵/殿精子浴/船四后半/船五后半/绀黄激光/绀绿激光/绀黄绿蓝/绀流星雨/璋四飞行阵/洞绿豆阵/洞黄风神/洞五后半增援/洞五后半飞行阵 无尽模式
+
+
