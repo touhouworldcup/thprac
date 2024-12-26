@@ -274,8 +274,8 @@ namespace THPrac {
             bool is_changed = false;
             if (ImGui::BeginTable("##diffTable", 2, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable, ImVec2(LauncherWndGetSize().x * 0.9f, 0.0f)))
             {
-                ImGui::TableSetupColumn(S(THPRAC_KENG_DIFF_TABLE_CK), 0, ImGui::GetTextLineHeight() * 10);
-                ImGui::TableSetupColumn(S(THPRAC_KENG_DIFF_TABLE_NAME), 0, LauncherWndGetSize().x * 0.9f - ImGui::GetTextLineHeight() * 10);
+                ImGui::TableSetupColumn(S(THPRAC_KENG_DIFF_TABLE_CK), ImGuiTableColumnFlags_WidthStretch, ImGui::GetTextLineHeight() * 10);
+                ImGui::TableSetupColumn(S(THPRAC_KENG_DIFF_TABLE_NAME), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f - ImGui::GetTextLineHeight() * 10);
                 ImGui::TableHeadersRow();
                 if (diffs.size() == 0) {
                     ImGui::TableNextRow();
@@ -617,10 +617,10 @@ namespace THPrac {
                 ImGui::SetCursorPosX(ImGui::GetWindowWidth() * 0.05f);
 
                 if (ImGui::BeginTable(S(THPRAC_KENG_DETAILS_DIFF_TABLE), 4, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable | ImGuiTableFlags_::ImGuiTableFlags_Sortable | ImGuiTableFlags_::ImGuiTableFlags_SortMulti, ImVec2(ImGui::GetWindowWidth() * 0.9f, 0.0f))) {
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_INDEX), 0, ImGui::GetWindowWidth() * 0.15f, 0);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_NAME), 0, ImGui::GetWindowWidth() * 0.4f, 1);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_CNT), 0, ImGui::GetWindowWidth() * 0.2f, 2);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_PASSRATE), 0, ImGui::GetWindowWidth() * 0.25f, 3);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_INDEX), ImGuiTableColumnFlags_WidthStretch, ImGui::GetWindowWidth() * 0.15f, 0);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_NAME), ImGuiTableColumnFlags_WidthStretch, ImGui::GetWindowWidth() * 0.4f, 1);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_CNT), ImGuiTableColumnFlags_WidthStretch, ImGui::GetWindowWidth() * 0.2f, 2);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_PASSRATE), ImGuiTableColumnFlags_WidthStretch, ImGui::GetWindowWidth() * 0.25f, 3);
                     ImGui::TableHeadersRow();
 
                     if (ImGuiTableSortSpecs* sorts_specs = ImGui::TableGetSortSpecs())
@@ -654,9 +654,9 @@ namespace THPrac {
                     ImGui::SetCursorPosX(LauncherWndGetSize().x * 0.05f);
                     if (ImGui::BeginTable(S(THPRAC_KENG_DETAILS_PASS_TABLE), 3, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable, ImVec2(ImGui::GetWindowWidth() * 0.9f, 0.0f)))
                     {
-                        ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_PASS_MISS), 0, ImGui::GetWindowWidth() * 0.15f);
-                        ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_PASS_PROB), 0, ImGui::GetWindowWidth() * 0.42f);
-                        ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_PASS_EXCEPTION), 0, ImGui::GetWindowWidth() * 0.43f);
+                        ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_PASS_MISS), ImGuiTableColumnFlags_WidthStretch, ImGui::GetWindowWidth() * 0.15f);
+                        ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_PASS_PROB), ImGuiTableColumnFlags_WidthStretch, ImGui::GetWindowWidth() * 0.42f);
+                        ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_PASS_EXCEPTION), ImGuiTableColumnFlags_WidthStretch, ImGui::GetWindowWidth() * 0.43f);
                         ImGui::TableHeadersRow();
 
                         for (int miss = 0; miss < pass_rate.size(); miss++) {
@@ -916,11 +916,11 @@ namespace THPrac {
                 ImGui::SetCursorPosX(LauncherWndGetSize().x * 0.05f);
                 if (ImGui::BeginTable(S(THPRAC_KENG_PLAY_TABLE), 5, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable, ImVec2(LauncherWndGetSize().x * 0.9f, 0.0f)))
                 {
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_INDEX), 0, LauncherWndGetSize().x * 0.9f * 0.1f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_NAME), 0, LauncherWndGetSize().x * 0.9f * 0.15f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_DATE), 0, LauncherWndGetSize().x * 0.9f * 0.2f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_CMT), 0, LauncherWndGetSize().x * 0.9f * 0.4f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_CNT), 0, LauncherWndGetSize().x * 0.9f * 0.15f);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_INDEX), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.1f);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_NAME), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.15f);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_DATE), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.2f);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_CMT), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.4f);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_CNT), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.15f);
                     ImGui::TableHeadersRow();
                     int idx = 0;
                     for (auto it = mPlays.begin(); it != mPlays.end(); it++) {
@@ -987,8 +987,8 @@ namespace THPrac {
                         int idx_u = -1, idx_d = -1, idx_rem = -1;
                         if (ImGui::BeginTable("##diffaddTable", 2, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable))
                         {
-                            ImGui::TableSetupColumn(S(THPRAC_KENG_DIFF_TABLE_CK), 0, ImGui::GetTextLineHeight() * 10);
-                            ImGui::TableSetupColumn(S(THPRAC_KENG_DIFF_TABLE_NAME), 0, ImGui::GetWindowWidth() - ImGui::GetTextLineHeight() * 10);
+                            ImGui::TableSetupColumn(S(THPRAC_KENG_DIFF_TABLE_CK), ImGuiTableColumnFlags_WidthStretch, ImGui::GetTextLineHeight() * 10);
+                            ImGui::TableSetupColumn(S(THPRAC_KENG_DIFF_TABLE_NAME), ImGuiTableColumnFlags_WidthStretch, ImGui::GetWindowWidth() - ImGui::GetTextLineHeight() * 10);
 
                             ImGui::TableHeadersRow();
                             
@@ -1141,9 +1141,9 @@ namespace THPrac {
                 ImGui::SetCursorPosX(LauncherWndGetSize().x * 0.05f);
                 if (ImGui::BeginTable("##kengsTable", 3, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable, ImVec2(LauncherWndGetSize().x * 0.9f, 0.0f)))
                 {
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_NAME), 0, LauncherWndGetSize().x * 0.9f * 0.25f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_DATE), 0, LauncherWndGetSize().x * 0.9f * 0.25f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_DESC), 0, LauncherWndGetSize().x * 0.9f * 0.5f);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_NAME), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.25f);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_DATE), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.25f);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_DESC), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.5f);
                     ImGui::TableHeadersRow();
 
                     int idx = 0;
@@ -1258,13 +1258,13 @@ public:
     }
 };
 
-class THOthersGui {
+class THKengsGui {
 private:
-    THOthersGui()
+    THKengsGui()
     {
 
     }
-    SINGLETON(THOthersGui);
+    SINGLETON(THKengsGui);
 
 public:
     void GuiUpdate(){
@@ -1279,7 +1279,7 @@ private:
 
 bool LauncherKengGuiUpd()
 {
-    THOthersGui::singleton().GuiUpdate();
+    THKengsGui::singleton().GuiUpdate();
     return true;
 }
 

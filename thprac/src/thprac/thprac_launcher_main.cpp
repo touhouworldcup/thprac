@@ -97,6 +97,11 @@ int GuiLauncherMain()
 {
     int localeSwitch = -1;
 
+    if (!LauncherCfgInit()) {
+        ErrorMsgBox(THPRAC_PR_ERR_LAUNCHER_CFG);
+        return -1;
+    }
+
     auto initResult = LauncherWndInit(640, 480, 1280, 960, 960, 720);
     if (initResult <= 0) {
         if (initResult) {
@@ -104,10 +109,7 @@ int GuiLauncherMain()
         }
         return -1;
     }
-    if (!LauncherCfgInit()) {
-        ErrorMsgBox(THPRAC_PR_ERR_LAUNCHER_CFG);
-        return -1;
-    }
+    
 
     int theme;
     if (LauncherSettingGet("theme", theme)) {

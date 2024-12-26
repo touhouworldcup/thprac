@@ -713,7 +713,7 @@
       "THPRAC_OTHER_LUCK_TDB":   [ "星辰陨落",  "Play TD",    "Play TD"],
       
       "THPRAC_OTHER_LUCK_DDC":   [ "打辉针城",  "Play DDC",   "Play DDC"],
-      "THPRAC_OTHER_LUCK_DDCA":  [ "随机弹随机封",  "Play DDC",   "Play DDC"],
+      "THPRAC_OTHER_LUCK_DDCA":  [ "随机弹随机收",  "Play DDC",   "Play DDC"],
       "THPRAC_OTHER_LUCK_DDCB":  [ "DDC永久SB",  "Play DDC",   "Play DDC"],
       
       
@@ -1009,7 +1009,7 @@
        "THPRAC_INGAMEINFO_17_WOLF_COUNT":["狼:","wolf:","wolf:"],
        "THPRAC_INGAMEINFO_17_OTTER_COUNT":["獭:","otter:","otter:"],
        "THPRAC_INGAMEINFO_17_EAGLE_COUNT":["鹰:","eagle:","eagle:"],
-       "THPRAC_INGAMEINFO_08_LSC_COUNT":["LSC:","LSC:","LSC:"],
+       "THPRAC_INGAMEINFO_08_LSC_COUNT":["LSC:","LS:","LS:"],
        "THPRAC_INGAMEINFO_08_SC_COUNT":["SC:","SC:","SC:"],
        "THPRAC_INGAMEINFO_16_RELEASE_COUNT":["季节解放:","release:","release:"],
        "THPRAC_INGAMEINFO_15_RE_TIMES_STAGE":["第%d面Re数:","stage %d Re:","stage %d Re:"],
