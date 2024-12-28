@@ -53,7 +53,7 @@ thprac replaces the original practice menu with a new UI shown in the image abov
 ![Uwabami Breakers](https://user-images.githubusercontent.com/23106652/174434103-5fee7a13-0254-4602-a468-42330b985bb2.png)
 ![Great Fairy Wars](https://user-images.githubusercontent.com/23106652/174434121-063142f2-ef3d-4721-ab96-a252343cdb0e.png)
 
-This menu can be controlled using your keyboard or your controller. Using this, you can select options using the **UP** and **DOWN** keys and change the option using the **LEFT** and **RIGHT** keys. You can also use your mouse to interact with the menu.
+This menu can be controlled using your keyboard or your controller. Using this, you can select options using the **UP** and **DOWN** keys and change the option using the **LEFT** and **RIGHT** keys and the **SHOT** key to select. You can also use your mouse to interact with the menu.
 
 thprac will also automatically save the options you selected into any replay saved. When playing back the replay, thprac will automatically apply said options. **Replays saved while thprac is active using "Custom" mode will NOT work with the unmodified game.**
 
@@ -72,7 +72,7 @@ In any supported game, you may use the F12 key to access the advanced options; t
 ![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174435006-e906d30d-0ef5-4930-ae57-1f0919beb5af.png)
 
 ## <a name="statistics"></a> **Statistics (WIP)**
-If you are in Touhou 13, you can press the "L" key to access a more advanced HUD.
+If you are playing Touhou 13, you can press the "L" key to access a more advanced HUD.
 
 ![TH13](https://user-images.githubusercontent.com/23106652/174435095-51554934-83d3-4d05-847d-834f3068bc28.png)
 
@@ -107,7 +107,7 @@ Choosing "Exit" will now prompt you to save a replay.
 - Development: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [muter3000](https://github.com/muter3000), [zero318](https://github.com/zero318), [Lmocinemod](https://github.com/Lmocinemod), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 
 - Chinese translations: [CrestedPeak9](https://twitter.com/CrestedPeak9), maksim71_doll, DeepL
 - Japanese translations: [Yu-miya](https://www.twitch.tv/toho_yumiya), CyrusVorazan, DeepL
-- Transferring all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
+- Moving all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
 - Chinese README.md translations: [TNT569](https://github.com/TNT569) 
 
 ## <a name="faq"></a> **Frequently Asked Questions (FAQ)**
