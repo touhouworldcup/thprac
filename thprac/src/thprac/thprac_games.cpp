@@ -394,6 +394,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         memset(&g_adv_igi_options, 0, sizeof(g_adv_igi_options));
         LauncherSettingGet("auto_disable_master", g_adv_igi_options.disable_master_autoly);
         LauncherSettingGet("auto_th06_show_rank", g_adv_igi_options.th06_showRank);
+        LauncherSettingGet("auto_th06_disable_rank_drop", g_adv_igi_options.th06_disable_drop_rank);
         LauncherSettingGet("auto_th06_show_hitbox", g_adv_igi_options.th06_showHitbox);
         LauncherSettingGet("auto_th11_show_hint", g_adv_igi_options.th11_showHint);
         LauncherSettingGet("auto_th13_show_hits", g_adv_igi_options.th13_showHits);

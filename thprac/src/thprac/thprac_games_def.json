@@ -946,7 +946,8 @@
 	  "THPRAC_KB_OUTPUT": [ "导出到游戏文件夹", "output to game folder", "output to game folder"],
       
 	  
-	  "THPRAC_INGAMEINFO_ADV2":["自动开启高级IGI功能","automatically use advanced igi","automatically use advanced igi"],
+	  "THPRAC_INGAMEINFO_ADV2":["自动开启高级功能","automatically use advanced opts","automatically use advanced opts"],
+	  "THPRAC_TH06_RANKLOCK_DOWN": [ "红魔乡自动miss/bomb后不掉rank", "EoSD no rank drop after miss/bomb", "EoSD no rank drop after miss/bomb" ],
 	  "THPRAC_DISABLE_MASTER_AUTO":["自动禁用MASTER","automatically disable master","automatically disable master"],
 	  "THPRAC_INGAMEINFO_ADV":["高级IGI功能","advanced igi","advanced igi"],
 	  "THPRAC_INGAMEINFO_ADV_DESC1":["部分功能需要打开更多游戏信息(backspace菜单)中的选项开启","need to enable ingameinfo(in backspace menu) to show","need to enable ingameinfo(in backspace menu) to show"],

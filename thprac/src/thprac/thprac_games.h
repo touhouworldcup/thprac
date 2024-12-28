@@ -14,6 +14,7 @@ namespace THPrac {
     struct AdvancedIGI_Options
     {
     bool disable_master_autoly;
+    bool th06_disable_drop_rank;
     bool th06_showRank;
     bool th06_showHitbox;
     bool th11_showHint;

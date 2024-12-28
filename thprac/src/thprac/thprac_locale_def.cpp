@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1280] {
+const char* th_glossary_str[3][1281] {
     {
         "",
         "啤酒",
@@ -711,7 +711,7 @@ const char* th_glossary_str[3][1280] {
         "隐藏灵:",
         "狼:",
         "高级IGI功能",
-        "自动开启高级IGI功能",
+        "自动开启高级功能",
         "部分功能需要打开更多游戏信息(backspace菜单)中的选项开启",
         "免责声明: 部分功能可能会被认为是作弊",
         "bomb:",
@@ -1008,6 +1008,7 @@ const char* th_glossary_str[3][1280] {
         "勾选你想要添加进thprac的游戏并点击\"应用\"",
         "Steam游戏 - 手动选取",
         "或",
+        "红魔乡自动miss/bomb后不掉rank",
         "thcrap",
         "添加thcrap配置...",
         "没有找到任何thcrap配置！",
@@ -1993,7 +1994,7 @@ const char* th_glossary_str[3][1280] {
         "spec goast:",
         "wolf:",
         "advanced igi",
-        "automatically use advanced igi",
+        "automatically use advanced opts",
         "need to enable ingameinfo(in backspace menu) to show",
         "disclaimer: might be considered as cheating",
         "bomb:",
@@ -2290,6 +2291,7 @@ const char* th_glossary_str[3][1280] {
         "Tick the games you wish to add into thprac and click \"Apply\".",
         "Steam games - Manual select",
         "or",
+        "EoSD no rank drop after miss/bomb",
         "thcrap",
         "Add thcrap configs...",
         "No thcrap configs was found!",
@@ -3275,7 +3277,7 @@ const char* th_glossary_str[3][1280] {
         "spec goast:",
         "wolf:",
         "advanced igi",
-        "automatically use advanced igi",
+        "automatically use advanced opts",
         "need to enable ingameinfo(in backspace menu) to show",
         "disclaimer: might be considered as cheating",
         "bomb:",
@@ -3572,6 +3574,7 @@ const char* th_glossary_str[3][1280] {
         "thpracに追加したいゲームにチェックを入れ、「適用する」をクリックします。",
         "Steamゲーム - 手動選択",
         "または",
+        "EoSD no rank drop after miss/bomb",
         "thcrap",
         "thcrapコンフィグを追加...",
         "thcrapのコンフィグが見つかりませんでした！",

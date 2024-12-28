@@ -1595,7 +1595,6 @@ namespace TH06 {
         // Option Related Functions
     private:
         HookCtx* th06_rankdown_disable[2];
-        bool is_th06_rankdown_disable;
 
         void FpsInit()
         {
@@ -1658,7 +1657,8 @@ namespace TH06 {
             th06_rankdown_disable[1] = new HookCtx(0x428A55, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 15);
             th06_rankdown_disable[0]->Setup();
             th06_rankdown_disable[1]->Setup();
-            is_th06_rankdown_disable = false;
+            th06_rankdown_disable[0]->Toggle(g_adv_igi_options.th06_disable_drop_rank);
+            th06_rankdown_disable[1]->Toggle(g_adv_igi_options.th06_disable_drop_rank);
             GameplayInit();
         }
         SINGLETON(THAdvOptWnd);
@@ -1719,10 +1719,10 @@ namespace TH06 {
                 EndOptGroup();
             }
             {
-                if (ImGui::Checkbox(S(TH06_RANKLOCK_DOWN), &is_th06_rankdown_disable))
+                if (ImGui::Checkbox(S(TH06_RANKLOCK_DOWN), &g_adv_igi_options.th06_disable_drop_rank))
                 {
-                    th06_rankdown_disable[0]->Toggle(is_th06_rankdown_disable);
-                    th06_rankdown_disable[1]->Toggle(is_th06_rankdown_disable);
+                    th06_rankdown_disable[0]->Toggle(g_adv_igi_options.th06_disable_drop_rank);
+                    th06_rankdown_disable[1]->Toggle(g_adv_igi_options.th06_disable_drop_rank);
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH06_RANKLOCK_DOWN_DESC));
@@ -1730,9 +1730,9 @@ namespace TH06 {
                 {
                     if (ImGui::IsKeyPressed('C'))
                     {
-                        is_th06_rankdown_disable = !is_th06_rankdown_disable;
-                        th06_rankdown_disable[0]->Toggle(is_th06_rankdown_disable);
-                        th06_rankdown_disable[1]->Toggle(is_th06_rankdown_disable);
+                        g_adv_igi_options.th06_disable_drop_rank = !g_adv_igi_options.th06_disable_drop_rank;
+                        th06_rankdown_disable[0]->Toggle(g_adv_igi_options.th06_disable_drop_rank);
+                        th06_rankdown_disable[1]->Toggle(g_adv_igi_options.th06_disable_drop_rank);
                     }
                 }
             }
