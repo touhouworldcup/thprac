@@ -1594,6 +1594,9 @@ namespace TH06 {
     class THAdvOptWnd : public Gui::PPGuiWnd {
         // Option Related Functions
     private:
+        HookCtx* th06_rankdown_disable[2];
+        bool is_th06_rankdown_disable;
+
         void FpsInit()
         {
             mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06.dll");
@@ -1651,6 +1654,11 @@ namespace TH06 {
 
             OnLocaleChange();
             FpsInit();
+            th06_rankdown_disable[0] =  new HookCtx(0x428C34, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 15);
+            th06_rankdown_disable[1] = new HookCtx(0x428A55, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 15);
+            th06_rankdown_disable[0]->Setup();
+            th06_rankdown_disable[1]->Setup();
+            is_th06_rankdown_disable = false;
             GameplayInit();
         }
         SINGLETON(THAdvOptWnd);
@@ -1709,6 +1717,24 @@ namespace TH06 {
                 if (GameFPSOpt(mOptCtx))
                     FpsSet();
                 EndOptGroup();
+            }
+            {
+                if (ImGui::Checkbox(S(TH06_RANKLOCK_DOWN), &is_th06_rankdown_disable))
+                {
+                    th06_rankdown_disable[0]->Toggle(is_th06_rankdown_disable);
+                    th06_rankdown_disable[1]->Toggle(is_th06_rankdown_disable);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH06_RANKLOCK_DOWN_DESC));
+                if (ImGui::IsKeyDown(0x10)) // shift
+                {
+                    if (ImGui::IsKeyPressed('C'))
+                    {
+                        is_th06_rankdown_disable = !is_th06_rankdown_disable;
+                        th06_rankdown_disable[0]->Toggle(is_th06_rankdown_disable);
+                        th06_rankdown_disable[1]->Toggle(is_th06_rankdown_disable);
+                    }
+                }
             }
             DisableKeyOpt();
             KeyHUDOpt();

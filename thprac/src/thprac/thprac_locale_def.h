@@ -29,6 +29,8 @@ enum th_glossary_t {
     TH06_NONE,
     TH06_RANK,
     TH06_RANKLOCK,
+    TH06_RANKLOCK_DOWN,
+    TH06_RANKLOCK_DOWN_DESC,
     TH06_REIMU_A,
     TH06_REIMU_B,
     TH06_ST4_EARTH1,
@@ -1289,7 +1291,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1278];
+extern const char* th_glossary_str[3][1280];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

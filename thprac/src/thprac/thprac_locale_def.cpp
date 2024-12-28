@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1278] {
+const char* th_glossary_str[3][1280] {
     {
         "",
         "啤酒",
@@ -29,6 +29,8 @@ const char* th_glossary_str[3][1278] {
         "无",
         "Rank",
         "锁Rank",
+        "miss/bomb后不掉rank",
+        "快捷键 shift+C",
         "灵A",
         "灵B",
         "土符「慵懒三石塔」",
@@ -1309,6 +1311,8 @@ const char* th_glossary_str[3][1278] {
         "None",
         "Rank",
         "Rank Lock",
+        "no rank drop after miss/bomb",
+        "hotkey shift+C",
         "Reimu A",
         "Reimu B",
         "Earth Sign \"Lazy Trilithon\"",
@@ -2589,6 +2593,8 @@ const char* th_glossary_str[3][1278] {
         "なし",
         "ランク",
         "ランクをロックする",
+        "no rank drop after miss/bomb",
+        "hotkey shift+C",
         "霊符",
         "夢符",
         "土符「レイジィトリリトン」",
