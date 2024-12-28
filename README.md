@@ -1,5 +1,9 @@
+## [简体中文](/README_CN.md)
+
 # **thprac**
 > thprac is a tool for practicing Touhou shmups.
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V7O03J4)
 
 ## **Table of Contents**
 * [Downloading](#downloading)
@@ -17,52 +21,52 @@
 If you want to download the tool, you can download the [latest release](https://github.com/touhouworldcup/thprac/releases/latest) here and the [latest beta](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip) here.
 
 ## <a name="usage"></a> **Usage**
-You can use this tool in a variety of ways, the main ways to do this are **placing the executable in the same folder as your game**, **running the executable after running your game**, or **use the thprac launcher**.
+You can use this tool in a variety of ways; the main ways to do this are **placing the executable in the same folder as your game**, **running the executable after running your game**, or **using the thprac launcher**.
 
 ### **Using the folder**
-**This method will NOT work with Steam games.** You can run the thprac tool by placing the `thprac.exe` file in the same folder as your Touhou game. This method will also automatically detect vpatch. You must ensure that the game is updated to the latest version and follows one of the following naming schemes:
+**This method will NOT work with Steam games.** You can run the thprac tool by placing the `thprac.exe` file in the same folder as your game. This method will also automatically detect vpatch. You must ensure that the game is updated to the latest version and follows one of the following naming schemes. This method also works with vpatch.
 - thXX.exe (most games)
 - 東方紅魔郷.exe (Embodiment of Scarlet Devil)
 - alcostg.exe (Uwabami Breakers)
 
 ### **Running the Executable**
-**This method will work for most methods.** First, run the game in whichever method you want (whether it's thcrap, using vpatch, Steam, etc.) and then run `thcrap.exe`. thcrap will then detect the running game attempt to attach itself to it. You may have to return to the menu screen to see thprac take effect.
+**This method will work for most methods.** First, run the game in whichever method you want (whether it's thcrap, using vpatch, Steam, etc.) and then run `thcrap.exe`. thcrap will then detect the running game and attempt to attach itself to it. You may have to return to the menu screen to see thprac take effect.
 
 ### **Using the Launcher**
 This video explains how to use the launcher.
 [![A quick and dirty overview of thprac 2.0](https://i.ytimg.com/vi/sRV4PDQceYo/maxresdefault.jpg)](https://www.youtube.com/watch?v=sRV4PDQceYo)
 
 ## <a name="compatability"></a> **Compatability**
-thprac is compatible with all Windows versions proceeding and including Windows Vista. You may attempt to apply thprac on Windows XP using the [One-Core-API](https://github.com/Skulltrail192/One-Core-API-Binaries) but this is not guranteed to work.
+thprac is compatible with all Windows versions proceeding and including Windows Vista. You may attempt to apply thprac on Windows XP using the [One-Core-API](https://github.com/Skulltrail192/One-Core-API-Binaries) but this is not guaranteed to work.
 
 thprac is also compatible with **Wine** and the Steam Deck. Do note that the backspace menu is tailored to work well with the Steam Deck, although this is untested.
 
 ## <a name="features"></a> **Features**
-thprac features an enhanced practice mode that supports all main games along with Great Fairy Wars and Uwabami Breakers, do note that thprac **does not support Phantasmagoria of Flower View**.
+thprac features an enhanced practice mode that supports all main games along with Great Fairy Wars and Uwabami Breakers; do note that thprac **does not support Phantasmagoria of Flower View**.
 
 ![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174433923-0a6069e7-d10d-4107-8f0d-f4a8a9d56976.png)
 
 ![Imperishable Night](https://user-images.githubusercontent.com/23106652/174433975-8f23b0b0-e48e-4be1-8cb7-d8e3e7ab6b8e.png)
 
-thprac replaces the original practice menu with a new UI shown in the image above, certain spells allow you to select phases or change certain parameters.
+thprac replaces the original practice menu with a new UI shown in the image above; certain spells allow you to select phases or change certain parameters.
 
 ![Uwabami Breakers](https://user-images.githubusercontent.com/23106652/174434103-5fee7a13-0254-4602-a468-42330b985bb2.png)
 ![Great Fairy Wars](https://user-images.githubusercontent.com/23106652/174434121-063142f2-ef3d-4721-ab96-a252343cdb0e.png)
 
-This menu can be controlled using your keyboard or your controller, using this, you can selection options using the **UP** and **DOWN** key and change the option using the **LEFT** and **RIGHT** keys. You can also use your mouse to interact with the menu.
+This menu can be controlled using your keyboard or your controller. Using this, you can select options using the **UP** and **DOWN** keys and change the option using the **LEFT** and **RIGHT** keys. You can also use your mouse to interact with the menu.
 
-thprac will also automatically save the options you selected into any replay saved. When playing back the replay, thprac will automatically apply said options. **Replays saved whilst thprac is active using "Custom" mode will NOT work with the unmodified game.**
+thprac will also automatically save the options you selected into any replay saved. When playing back the replay, thprac will automatically apply said options. **Replays saved while thprac is active using "Custom" mode will NOT work with the unmodified game.**
 
 ## <a name="backspace-menu"></a> **Backspace Menu**
-In any supported game (**except Touhou 9**), you can press the **backspace** key to enter the backspace menu, the backspace menu will show you a variety of options that can be activated using the function (F) keys.
+In any supported game (**except Touhou 9**), you can press the **backspace** key to enter the backspace menu; the backspace menu will show you a variety of options that can be activated using the function (F) keys.
 
-Do note that on the **Steam Deck** the options are clickable, you can use your left thumb to tap the options to toggle them. As a result, you only need to map the backspace key in Steam Input.
+Do note that on the **Steam Deck** the options are clickable; you can use your left thumb to tap the options to toggle them. As a result, you only need to map the backspace key in Steam Input.
 
 ![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174434813-73748a66-0f6d-4c6e-9f3a-895a49b93434.png)
 ![Wily Beast and Weakest Creature](https://user-images.githubusercontent.com/23106652/174434834-6bd93104-1ed2-48ae-a440-9d9cb871ea03.png)
 
 ## <a name="advanced-options"></a> **Advanced Options**
-In any supported game, you may use the F12 key to access the advanced options, these options may offer fixes or patches related to the game or other quality of life features.
+In any supported game, you may use the F12 key to access the advanced options; these options may offer fixes or patches related to the game or other quality of life features.
 
 ![Imperishable Night](https://user-images.githubusercontent.com/23106652/174434977-683da583-324b-4bd5-8408-13373dfd5a93.png)
 ![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174435006-e906d30d-0ef5-4930-ae57-1f0919beb5af.png)
@@ -78,7 +82,7 @@ Some games such as **100th Black Market** and **Phantasmagoria of Flower View** 
 ### 100th BM - Force Wave
 ![100th Black Market](https://github.com/touhouworldcup/thprac/assets/23106652/02c55e5e-5c89-462f-beea-9ab07cbb1051)
 
-If thprac is enabled using "Custom" mode, this popup will appear whenever the game is about to randomly choose a wave.
+If thprac is enabled using "Custom" mode, the popup above will appear when the game is about to choose a wave.
 
 ### PoFV - Tools
 ![Phantasmagoria of Flower View](https://user-images.githubusercontent.com/23106652/174434249-2bf1d70a-101c-4538-a4e6-8eeaf273dd88.png) 
@@ -88,12 +92,14 @@ When starting a game in Match Mode, you can select "Custom" in a "Mode" prompt. 
 ### UDoALG - Tools
 ![TH19 Tools](https://github.com/touhouworldcup/thprac/assets/23106652/a2cdb385-b61d-4111-af6b-b195e85bf18a)
 
-It's just like TH09 Tools, but for TH19
+It's just like PoFV Tools, but for UDoALG.
 
 ### EoSD - Pause Menu
 ![TH06](https://user-images.githubusercontent.com/23106652/174436027-734d642a-300c-45ab-9591-b6219aca087b.png)
 
-Choosing "Exit" will prompt you to save a replay. **Warning**: replays saved like this will continue after the point you chose to save the replay. The player character will stand still and not shoot.
+Choosing "Exit" will now prompt you to save a replay. 
+
+**Warning**: replays saved like this will continue after the point you chose to save the replay. The player character will stand still and not shoot.
 
 ### ESC + R fix for Violet Detector, Wily Beast and Weakest Creature and Unconnected Marketeers
 
@@ -118,14 +124,14 @@ Ack cannot be contacted at this time, and development has been taken over by oth
 ---
 
 ### My antivirus says thprac is malware. Is it safe?
-Thprac contains no malicious code, but its behavior may trigger antivirus software. If flagged, add an exception or trust rule in your antivirus. Alternatively, try [this version](https://github.com/touhouworldcup/thprac/issues/112) and report back if the issue persists.
+Thprac contains no malicious code, but its behavior may trigger your antivirus. If flagged, add an exception or trust rule in your antivirus to allow thcrap to work. Alternatively, you can try [this version](https://github.com/touhouworldcup/thprac/issues/112) and report back if the issue persists.
 
 ---
 
 ## Compatibility
 
 ### Does thprac work with English patches?
-Thprac is compatible with **thcrap** and can function as a thcrap launcher, similar to the [Universal THCRAP Launcher](https://github.com/thpatch/Universal-THCRAP-Launcher/). It does not support static English patches, like those made by gensokyo.org.
+Thprac is compatible with **thcrap** and can function as a thcrap launcher, similar to the [Universal THCRAP Launcher](https://github.com/thpatch/Universal-THCRAP-Launcher/). It does not support static English patches, like those created by gensokyo.org.
 
 ---
 
@@ -140,7 +146,9 @@ Ensure your executable is named either `東方紅魔郷.exe` or `th06.exe`. If t
 Saving replays mid-game is not supported due to technical limitations. As per the thprac 2.0.8.3 manual:
 > Because of how these games were programmed, adding this feature would be quite troublesome, so currently there's no direct solution to this.  
 
-However, TH06 now supports this functionality, albeit with quirks. Note: replays saved mid-game do not return to the title screen after the save point.
+However, EoSD now supports this functionality, albeit with quirks. 
+
+Note: replays saved mid-game do not return to the title screen after the save point.
 
 ---
 
@@ -161,7 +169,7 @@ This feature locks the camera onto the boss at all times and eliminates the came
   - **ALT + 2**: Language 2  
   - **ALT + 3**: Language 3  
 
-These shortcuts do not work in the launcher itself. Refer to the video in the "How to Use" section for detailed instructions.
+These shortcuts do not work in the launcher itself. Refer to the video in the **"How to Use"** section for detailed instructions.
 
 ---
 
