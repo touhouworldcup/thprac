@@ -2071,6 +2071,7 @@ private:
         if (ImGui::CollapsingHeader(S(THPRAC_INGAMEINFO_ADV2))) {
             ImGui::TextWrapped(S(THPRAC_INGAMEINFO_ADV_DESC1));
             ImGui::TextWrapped(S(THPRAC_INGAMEINFO_ADV_DESC2));
+            mCfgEnableMasterDisable_autoly.Gui(S(THPRAC_DISABLE_MASTER_AUTO));
             mCfgEnableTH06_ShowRank_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK2));
             mCfgEnableTH06_ShowHitbox_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX2), S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC));
             mCfgEnableTH11_ShowHint_autoly.Gui(S(THPRAC_INGAMEINFO_TH11_SHOW_HINT2));
@@ -2274,6 +2275,7 @@ private:
     THCfgCheckbox mCfgEnableTH14_ShowItemsCnt_autoly { "auto_th14_show_item_cnt", false };
     THCfgCheckbox mCfgEnableTH14_ShowDropBar_autoly { "auto_th14_show_drop_bar", false };
     THCfgCheckbox mCfgEnableTH15_ShowShootingDownRate_autoly { "auto_th15_show_rate", false };
+    THCfgCheckbox mCfgEnableMasterDisable_autoly { "auto_disable_master", false };
     // kbs
     THCfgColor mKb_ColorBorderPress { "kb_border_color_press", 0xFFFFFFFF };
     THCfgColor mKb_ColorBorderRelease { "kb_border_color_release", 0xFFFFFFFF };

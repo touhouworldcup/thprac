@@ -1250,7 +1250,6 @@ namespace TH18 {
         bool scoreUncapOverwrite = false;
         bool scoreReplayFactor = false;
         bool staticMalletReplay = false;
-        bool disableMaster = false;
 
     public:
          bool forceBossMoveDown = false;
@@ -1680,11 +1679,14 @@ namespace TH18 {
         void MasterDisableInit()
         {
             th18_master_disable[0] = new HookCtx(0x42A26E, "\xEB", 1);
-            th18_master_disable[0]->Setup();
             th18_master_disable[1] = new HookCtx(0x42A2B3, "\xEB", 1);
-            th18_master_disable[1]->Setup();
             th18_master_disable[2] = new HookCtx(0x42A1C6, "\x03", 1);
+            th18_master_disable[0]->Setup();
+            th18_master_disable[1]->Setup();
             th18_master_disable[2]->Setup();
+            th18_master_disable[0]->Toggle(g_adv_igi_options.disable_master_autoly);
+            th18_master_disable[1]->Toggle(g_adv_igi_options.disable_master_autoly);
+            th18_master_disable[2]->Toggle(g_adv_igi_options.disable_master_autoly);
         }
 
         void ScoreUncapInit()
@@ -1801,10 +1803,10 @@ namespace TH18 {
                 if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &bossMoveDownRange, 0.002f, 0.0f, 1.0f))
                     bossMoveDownRange = std::clamp(bossMoveDownRange, 0.0f, 1.0f);
 
-                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
-                    th18_master_disable[0]->Toggle(disableMaster);
-                    th18_master_disable[1]->Toggle(disableMaster);
-                    th18_master_disable[2]->Toggle(disableMaster);
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
+                    th18_master_disable[0]->Toggle(g_adv_igi_options.disable_master_autoly);
+                    th18_master_disable[1]->Toggle(g_adv_igi_options.disable_master_autoly);
+                    th18_master_disable[2]->Toggle(g_adv_igi_options.disable_master_autoly);
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));

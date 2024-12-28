@@ -947,6 +947,7 @@
       
 	  
 	  "THPRAC_INGAMEINFO_ADV2":["自动开启高级IGI功能","automatically use advanced igi","automatically use advanced igi"],
+	  "THPRAC_DISABLE_MASTER_AUTO":["自动禁用MASTER","automatically disable master","automatically disable master"],
 	  "THPRAC_INGAMEINFO_ADV":["高级IGI功能","advanced igi","advanced igi"],
 	  "THPRAC_INGAMEINFO_ADV_DESC1":["部分功能需要打开更多游戏信息(backspace菜单)中的选项开启","need to enable ingameinfo(in backspace menu) to show","need to enable ingameinfo(in backspace menu) to show"],
 	  "THPRAC_INGAMEINFO_ADV_DESC2":["免责声明: 部分功能可能会被认为是作弊","disclaimer: might be considered as cheating","disclaimer: might be considered as cheating"],
@@ -1099,6 +1100,7 @@
       "TH_TUTORIAL": [ "教程", "Tutorial", "チュートリアル" ],
       "TH_RESUME": [ "继续游戏", "Resume", "再開" ],
       "TH_EXIT": [ "退出游戏", "Exit", "終了" ],
+      "TH_EXIT2": [ "不存rep退出游戏", "Exit(no rep)", "終了(no rep)" ],
       "TH_RESTART": [ "重新开始", "Restart", "リトライ" ],
       "TH_TWEAK": [ "调整选项", "Settings", "設定変更" ],
       "TH_NA": [ "N/A", "N/A", "N/A" ],
@@ -1281,6 +1283,13 @@
       "TH_DATANLY_NORECORD": [ "没有记录。", "No record.", "記録なし。" ],
       "TH_DATANLY_RECORD": [ "记录 #%d: ", "Record #%d: ", "記録 #%d: " ],
       "TH_DATANLY_RECORD_DELETE": [ "删除##anly_%d", "Delete##anly_%d", "削除##anly_%d" ],
+	  
+	 
+	  
+      "TH_EOSD_SAKUYA_DOLLS_MORE_BLUE_TO_GREEN": [ "更多蓝弹变绿", "more blue turn green", "more blue turn green" ],
+      "TH_EOSD_SAKUYA_DOLLS_MORE_RED_TO_GREEN": [ "更多红弹变绿", "more red turn green", "more red turn green"],
+      "TH_EOSD_SAKUYA_DOLLS_HALF_HALF": [ "五五开", "half half", "half half" ],
+      "TH_EOSD_SAKUYA_DOLLS_RANDOM": [ "随机", "randomly", "randomly" ],
 
       "TH_BULLETS": [ "子弹", "Bullets", "弾" ]
     },
@@ -1338,7 +1347,12 @@
         "TH_SPELL_TIME_INF_BOOK6",
         "TH_SPELL_TIME_INF_BOOK5"
       ],
-	  
+	  "TH_EOSD_SAKUYA_DOLLS": [
+        "TH_EOSD_SAKUYA_DOLLS_MORE_BLUE_TO_GREEN",
+        "TH_EOSD_SAKUYA_DOLLS_MORE_RED_TO_GREEN",
+        "TH_EOSD_SAKUYA_DOLLS_HALF_HALF",
+        "TH_EOSD_SAKUYA_DOLLS_RANDOM"
+      ],
 	  "TH_PHASE_INF_TIME": [
         "TH_SPELL_TIME_NORMAL",
         "TH_SPELL_TIME_INF"

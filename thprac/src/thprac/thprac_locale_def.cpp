@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1272] {
+const char* th_glossary_str[3][1278] {
     {
         "",
         "啤酒",
@@ -590,6 +590,7 @@ const char* th_glossary_str[3][1272] {
         "在th11到th13靳用F10键",
         "禁用手柄",
         "对部分作有效, 禁用有关手柄的部分函数以减少掉帧",
+        "自动禁用MASTER",
         "靳止最大化窗口按钮的全屏切换",
         "thp启动后自动禁用win键",
         "可能引入延迟, 因此不建议通过软件禁用win键",
@@ -1172,7 +1173,12 @@ const char* th_glossary_str[3][1272] {
         "关底九符",
         "关底Boss",
         "自定义练习",
+        "五五开",
+        "更多蓝弹变绿",
+        "更多红弹变绿",
+        "随机",
         "退出游戏",
+        "不存rep退出游戏",
         "Extra",
         "总是计入All Clear Bonus",
         "开启时，单关练习六面结束后将会计入All Clear Bonus。",
@@ -1864,6 +1870,7 @@ const char* th_glossary_str[3][1272] {
         "disable f10 for th11-13",
         "disable joystick",
         "works for some games, disables functions for joystick to avoid lags",
+        "automatically disable master",
         "disable maximizebox to toggle full screen",
         "disable win key when thprac.exe launches",
         "might cause delay, so it's not recommended to disable win key by software",
@@ -2446,7 +2453,12 @@ const char* th_glossary_str[3][1272] {
         "Boss Spell 9",
         "End Boss",
         "Custom",
+        "half half",
+        "more blue turn green",
+        "more red turn green",
+        "randomly",
         "Exit",
+        "Exit(no rep)",
         "Extra",
         "Always factor in the \"All Clear Bonus\"",
         "If enabled, when practicing stage 6, the \"All Clear Bonus\" will be added to the total score at the end.",
@@ -3138,6 +3150,7 @@ const char* th_glossary_str[3][1272] {
         "disable f10 for th11-13",
         "disable joystick",
         "works for some games, disables functions for joystick to avoid lags",
+        "automatically disable master",
         "disable maximizebox to toggle full screen",
         "disable win key when thprac.exe launches",
         "might cause delay, so it's not recommended to disable win key by software",
@@ -3720,7 +3733,12 @@ const char* th_glossary_str[3][1272] {
         "ボス スペル9",
         "ボス",
         "カスタム",
+        "half half",
+        "more blue turn green",
+        "more red turn green",
+        "randomly",
         "終了",
+        "終了(no rep)",
         "エクストラ",
         "いつもオールクリアボーナスを加算します",
         "有効になっている場合、練習モードのステージ6の終わりに、最終スコアにオールクリアボーナスを加算されます。",
@@ -4001,6 +4019,13 @@ const th_glossary_t TH_BOOKS_PHASE_INF_TIME[4] {
     TH_SPELL_TIME_NORMAL,
     TH_SPELL_TIME_INF_BOOK6,
     TH_SPELL_TIME_INF_BOOK5,
+};
+
+const th_glossary_t TH_EOSD_SAKUYA_DOLLS[5] {
+    TH_EOSD_SAKUYA_DOLLS_MORE_BLUE_TO_GREEN,
+    TH_EOSD_SAKUYA_DOLLS_MORE_RED_TO_GREEN,
+    TH_EOSD_SAKUYA_DOLLS_HALF_HALF,
+    TH_EOSD_SAKUYA_DOLLS_RANDOM,
 };
 
 const th_glossary_t TH_PHASE_INF_TIME[3] {

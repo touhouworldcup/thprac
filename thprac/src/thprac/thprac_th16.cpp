@@ -728,7 +728,6 @@ namespace TH16 {
             }
         }
         HookCtx* th16_master_disable[3];
-        bool disableMaster = false;
 
         
     public:
@@ -751,11 +750,14 @@ namespace TH16 {
         void MasterDisableInit()
         {
             th16_master_disable[0] = new HookCtx(0x417E5C, "\xEB", 1);
-            th16_master_disable[0]->Setup();
             th16_master_disable[1] = new HookCtx(0x417E81, "\xEB", 1);
-            th16_master_disable[1]->Setup();
             th16_master_disable[2] = new HookCtx(0x417DC6, "\x00", 1);
+            th16_master_disable[0]->Setup();
+            th16_master_disable[1]->Setup();
             th16_master_disable[2]->Setup();
+            th16_master_disable[0]->Toggle(g_adv_igi_options.disable_master_autoly);
+            th16_master_disable[1]->Toggle(g_adv_igi_options.disable_master_autoly);
+            th16_master_disable[2]->Toggle(g_adv_igi_options.disable_master_autoly);
         }
         void FpsInit()
         {
@@ -876,10 +878,10 @@ namespace TH16 {
                     bossMoveDownRange = std::clamp(bossMoveDownRange, 0.0f, 1.0f);
 
 
-                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
-                    th16_master_disable[0]->Toggle(disableMaster);
-                    th16_master_disable[1]->Toggle(disableMaster);
-                    th16_master_disable[2]->Toggle(disableMaster);
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
+                    th16_master_disable[0]->Toggle(g_adv_igi_options.disable_master_autoly);
+                    th16_master_disable[1]->Toggle(g_adv_igi_options.disable_master_autoly);
+                    th16_master_disable[2]->Toggle(g_adv_igi_options.disable_master_autoly);
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));

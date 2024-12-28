@@ -815,7 +815,6 @@ namespace TH17 {
             }
         }
         HookCtx* th17_master_disable[3];
-        bool disableMaster = false;
 
     public:
         bool forceBossMoveDown = false;
@@ -837,11 +836,14 @@ namespace TH17 {
         void MasterDisableInit()
         {
             th17_master_disable[0] = new HookCtx(0x41AC42, "\xEB", 1);
-            th17_master_disable[0]->Setup();
             th17_master_disable[1] = new HookCtx(0x41AC87, "\xEB", 1);
-            th17_master_disable[1]->Setup();
             th17_master_disable[2] = new HookCtx(0x41AB96, "\x00", 1);
+            th17_master_disable[0]->Setup();
+            th17_master_disable[1]->Setup();
             th17_master_disable[2]->Setup();
+            th17_master_disable[0]->Toggle(g_adv_igi_options.disable_master_autoly);
+            th17_master_disable[1]->Toggle(g_adv_igi_options.disable_master_autoly);
+            th17_master_disable[2]->Toggle(g_adv_igi_options.disable_master_autoly);
         }
         void FpsInit()
         {
@@ -1012,10 +1014,10 @@ namespace TH17 {
                 if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &bossMoveDownRange, 0.002f, 0.0f, 1.0f))
                     bossMoveDownRange = std::clamp(bossMoveDownRange, 0.0f, 1.0f);
 
-                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
-                    th17_master_disable[0]->Toggle(disableMaster);
-                    th17_master_disable[1]->Toggle(disableMaster);
-                    th17_master_disable[2]->Toggle(disableMaster);
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
+                    th17_master_disable[0]->Toggle(g_adv_igi_options.disable_master_autoly);
+                    th17_master_disable[1]->Toggle(g_adv_igi_options.disable_master_autoly);
+                    th17_master_disable[2]->Toggle(g_adv_igi_options.disable_master_autoly);
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));

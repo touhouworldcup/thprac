@@ -392,6 +392,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         LauncherSettingGet("pauseBGM_06", g_pauseBGM_06);
 
         memset(&g_adv_igi_options, 0, sizeof(g_adv_igi_options));
+        LauncherSettingGet("auto_disable_master", g_adv_igi_options.disable_master_autoly);
         LauncherSettingGet("auto_th06_show_rank", g_adv_igi_options.th06_showRank);
         LauncherSettingGet("auto_th06_show_hitbox", g_adv_igi_options.th06_showHitbox);
         LauncherSettingGet("auto_th11_show_hint", g_adv_igi_options.th11_showHint);

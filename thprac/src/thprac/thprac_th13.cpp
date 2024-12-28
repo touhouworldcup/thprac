@@ -615,9 +615,6 @@ namespace TH13 {
         {
             *(DWORD*)(pCtx->Esi + 0x0001917C) = 0;
         }
-        bool disableMaster = false;
-
-        
     public:
         bool forceBossMoveDown = false;
 
@@ -648,6 +645,13 @@ namespace TH13 {
             th13_master_disable[4] = new HookCtx(0x4AED94, "\x00\x00\xB0\x43", 4); // 352
             th13_master_disable[4]->Setup();
             th13_master_disable2.Setup();
+
+            th13_master_disable[0]->Toggle(g_adv_igi_options.disable_master_autoly);
+            th13_master_disable[1]->Toggle(g_adv_igi_options.disable_master_autoly);
+            th13_master_disable[2]->Toggle(g_adv_igi_options.disable_master_autoly);
+            th13_master_disable[3]->Toggle(g_adv_igi_options.disable_master_autoly);
+            th13_master_disable[4]->Toggle(g_adv_igi_options.disable_master_autoly);
+            th13_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
 
             
         }
@@ -815,13 +819,13 @@ namespace TH13 {
                 if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &bossMoveDownRange, 0.002f, 0.0f, 1.0f))
                     bossMoveDownRange = std::clamp(bossMoveDownRange, 0.0f, 1.0f);
 
-                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
-                    th13_master_disable[0]->Toggle(disableMaster);
-                    th13_master_disable[1]->Toggle(disableMaster);
-                    th13_master_disable[2]->Toggle(disableMaster);
-                    th13_master_disable[3]->Toggle(disableMaster);
-                    th13_master_disable[4]->Toggle(disableMaster);
-                    th13_master_disable2.Toggle(disableMaster);
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
+                    th13_master_disable[0]->Toggle(g_adv_igi_options.disable_master_autoly);
+                    th13_master_disable[1]->Toggle(g_adv_igi_options.disable_master_autoly);
+                    th13_master_disable[2]->Toggle(g_adv_igi_options.disable_master_autoly);
+                    th13_master_disable[3]->Toggle(g_adv_igi_options.disable_master_autoly);
+                    th13_master_disable[4]->Toggle(g_adv_igi_options.disable_master_autoly);
+                    th13_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));

@@ -590,6 +590,7 @@ enum th_glossary_t {
     THPRAC_DISABLE_F10_11_13,
     THPRAC_DISABLE_JOY,
     THPRAC_DISABLE_JOY_DESC,
+    THPRAC_DISABLE_MASTER_AUTO,
     THPRAC_DISABLE_MAXIMIZE_BTN,
     THPRAC_DISABLE_WIN_KEY_CHECKBOX,
     THPRAC_DISABLE_WIN_KEY_DESC,
@@ -1172,7 +1173,12 @@ enum th_glossary_t {
     TH_END_S9,
     TH_END_STAGE,
     TH_ENHANCED,
+    TH_EOSD_SAKUYA_DOLLS_HALF_HALF,
+    TH_EOSD_SAKUYA_DOLLS_MORE_BLUE_TO_GREEN,
+    TH_EOSD_SAKUYA_DOLLS_MORE_RED_TO_GREEN,
+    TH_EOSD_SAKUYA_DOLLS_RANDOM,
     TH_EXIT,
+    TH_EXIT2,
     TH_EXTRA,
     TH_FACTOR_ACB,
     TH_FACTOR_ACB_DESC,
@@ -1283,7 +1289,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1272];
+extern const char* th_glossary_str[3][1278];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1316,6 +1322,8 @@ extern const th_glossary_t TH_WARP_ALCOSTG[4];
 extern const th_glossary_t TH_SPELL_PHASE1[3];
 
 extern const th_glossary_t TH_BOOKS_PHASE_INF_TIME[4];
+
+extern const th_glossary_t TH_EOSD_SAKUYA_DOLLS[5];
 
 extern const th_glossary_t TH_PHASE_INF_TIME[3];
 

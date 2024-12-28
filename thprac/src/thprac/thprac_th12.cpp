@@ -628,7 +628,6 @@ namespace TH12 {
         {
             *(DWORD*)(pCtx->Esi + 0x00018F9C) = 0;
         }
-        bool disableMaster = false;
 
      public:
         bool forceBossMoveDown = false;
@@ -648,6 +647,7 @@ namespace TH12 {
         void MasterDisableInit()
         {
             th12_master_disable2.Setup();
+            th12_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
         }
         void FpsInit()
         {
@@ -779,8 +779,8 @@ namespace TH12 {
                 if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &bossMoveDownRange, 0.002f, 0.0f, 1.0f))
                     bossMoveDownRange = std::clamp(bossMoveDownRange, 0.0f, 1.0f);
 
-                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
-                    th12_master_disable2.Toggle(disableMaster);
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
+                    th12_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));

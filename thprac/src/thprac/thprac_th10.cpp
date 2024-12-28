@@ -618,7 +618,7 @@ namespace TH10 {
                 add esp,0xC
             }
         }
-        bool disableMaster = false;
+        
     public:
         bool forceBossMoveDown = false;
 
@@ -637,6 +637,7 @@ namespace TH10 {
         void MasterDisableInit()
         {
             th10_master_disable2.Setup();
+            th10_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
         }
         void FpsInit()
         {
@@ -873,8 +874,8 @@ namespace TH10 {
                 ImGui::SameLine();
                 HelpMarker(S(TH_ONE_KEY_DIE_DESC));
 
-                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
-                    th10_master_disable2.Toggle(disableMaster);
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)){
+                    th10_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));

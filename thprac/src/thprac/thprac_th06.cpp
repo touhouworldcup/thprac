@@ -1089,6 +1089,9 @@ namespace TH06 {
             if (section == TH06_ST4_BOOKS) {
                 mPhase(TH_PHASE, TH_BOOKS_PHASE_INF_TIME);
             }
+            if (section == TH06_ST5_BOSS6) {
+                mPhase(TH_PHASE, TH_EOSD_SAKUYA_DOLLS);
+            }
         }
         void PracticeMenu(Gui::GuiNavFocus& nav_focus)
         {
@@ -1314,12 +1317,14 @@ namespace TH06 {
             STATE_EXIT = 2,
             STATE_RESTART = 3,
             STATE_OPEN = 4,
+            STATE_EXIT2 = 5,
         };
         enum signal {
             SIGNAL_NONE = 0,
             SIGNAL_RESUME = 1,
             SIGNAL_EXIT = 2,
             SIGNAL_RESTART = 3,
+            SIGNAL_EXIT2 = 4,
         };
         signal PMState()
         {
@@ -1330,6 +1335,8 @@ namespace TH06 {
                 return StateResume();
             case THPrac::TH06::THPauseMenu::STATE_EXIT:
                 return StateExit();
+            case THPrac::TH06::THPauseMenu::STATE_EXIT2:
+                return StateExit2();
             case THPrac::TH06::THPauseMenu::STATE_RESTART:
                 return StateRestart();
             case THPrac::TH06::THPauseMenu::STATE_OPEN:
@@ -1386,6 +1393,22 @@ namespace TH06 {
 
             return SIGNAL_NONE;
         }
+        signal StateExit2()
+        {
+            if (mState != STATE_EXIT2) {
+                mState = STATE_EXIT2;
+                mFrameCounter = 0;
+            }
+            if (mFrameCounter == 1) {
+                *mNavFocus = 0;
+                inSettings = false;
+                Close();
+            } else if (mFrameCounter == 10) {
+                StateClose();
+                return SIGNAL_EXIT2;
+            }
+            return SIGNAL_NONE;
+        }
         signal StateResume()
         {
             if (mState != STATE_RESUME) {
@@ -1431,7 +1454,7 @@ namespace TH06 {
                 if (Gui::KeyboardInputGetSingle(VK_ESCAPE))
                     StateResume();
                 else if (Gui::KeyboardInputGetRaw(0x51))
-                    StateExit();
+                    StateExit2();
                 else if (Gui::KeyboardInputGetRaw(0x52))
                     StateRestart();
             }
@@ -1471,6 +1494,9 @@ namespace TH06 {
                 if (mExit())
                     StateExit();
                 ImGui::Spacing();
+                if (mExit2())
+                    StateExit2();
+                ImGui::Spacing();
                 if (mRestart())
                     StateRestart();
                 ImGui::Spacing();
@@ -1487,6 +1513,9 @@ namespace TH06 {
                 ImGui::Spacing();
                 if (mExit())
                     StateExit();
+                if (mExit2())
+                    StateExit2();
+                ImGui::Spacing();
                 ImGui::Spacing();
                 if (mRestart())
                     StateRestart();
@@ -1506,10 +1535,11 @@ namespace TH06 {
 
         Gui::GuiButton mResume { TH_RESUME, 130.0f, 25.0f };
         Gui::GuiButton mExit { TH_EXIT, 130.0f, 25.0f };
+        Gui::GuiButton mExit2 { TH_EXIT2, 130.0f, 25.0f };
         Gui::GuiButton mRestart { TH_RESTART, 130.0f, 25.0f };
         Gui::GuiButton mSettings { TH_TWEAK, 130.0f, 25.0f };
 
-        Gui::GuiNavFocus mNavFocus { TH_RESUME, TH_EXIT, TH_RESTART, TH_TWEAK,
+        Gui::GuiNavFocus mNavFocus { TH_RESUME, TH_EXIT, TH_EXIT2, TH_RESTART, TH_TWEAK,
             TH_STAGE, TH_MODE, TH_WARP,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE,
             TH_LIFE, TH_BOMB, TH_SCORE, TH_POWER, TH_GRAZE, TH_POINT,
@@ -2128,6 +2158,24 @@ namespace TH06 {
             ecl << pair{0x46e8, (int16_t)0x0};
             break;
         case THPrac::TH06::TH06_ST5_BOSS6:
+        {
+            std::default_random_engine rand_engine(*(WORD*)(0x69D8F8));
+            std::uniform_int_distribution<int32_t> rand_value(0, 640);
+            DWORD* pBulletInsertCount = (DWORD*)(0x005A5FF8 + 0xF5C00);
+            switch (thPracParam.phase) {
+            case 0:
+                break;
+            case 1:
+                *pBulletInsertCount = 640 - 360;
+                break;
+            case 2:
+                *pBulletInsertCount = 550;
+                break;
+            case 3:
+                *pBulletInsertCount = rand_value(rand_engine);
+                break;
+            }
+        }
             ECLWarp(0x1e18);
             ecl << pair{0x767c, (int16_t)0x0};
             ecl << pair{0x22c8, 0x0};
@@ -2746,6 +2794,10 @@ namespace TH06 {
                 th06_result_screen_create::GetHook().Enable();
             } else if (sig == THPauseMenu::SIGNAL_RESTART) {
                 pCtx->Eip = 0x40263c;
+            } else if (sig == THPauseMenu::SIGNAL_EXIT2) {
+                *(uint32_t*)0x6c6ea4 = 1; 
+                *(uint16_t*)0x69d4bf = 0;
+                th06_result_screen_create::GetHook().Enable();
             } else {
                 pCtx->Eip = 0x4026a6;
             }

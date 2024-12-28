@@ -987,7 +987,6 @@ namespace TH14 {
             }
         }
         HookCtx* th14_master_disable[3];
-        bool disableMaster = false;
 
     public:
         bool forceBossMoveDown = false;
@@ -1009,11 +1008,14 @@ namespace TH14 {
         void MasterDisableInit()
         {
             th14_master_disable[0] = new HookCtx(0x41CAD9, "\xEB", 1);
-            th14_master_disable[0]->Setup();
             th14_master_disable[1] = new HookCtx(0x41CAB4, "\xEB", 1);
-            th14_master_disable[1]->Setup();
             th14_master_disable[2] = new HookCtx(0x41CA0F, "\x00", 1);
+            th14_master_disable[0]->Setup();
+            th14_master_disable[1]->Setup();
             th14_master_disable[2]->Setup();
+            th14_master_disable[0]->Toggle(g_adv_igi_options.disable_master_autoly);
+            th14_master_disable[1]->Toggle(g_adv_igi_options.disable_master_autoly);
+            th14_master_disable[2]->Toggle(g_adv_igi_options.disable_master_autoly);
         }
         void FpsInit()
         {
@@ -1450,10 +1452,10 @@ namespace TH14 {
                     bossMoveDownRange = std::clamp(bossMoveDownRange, 0.0f, 1.0f);
 
 
-                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &disableMaster)) {
-                    th14_master_disable[0]->Toggle(disableMaster);
-                    th14_master_disable[1]->Toggle(disableMaster);
-                    th14_master_disable[2]->Toggle(disableMaster);
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
+                    th14_master_disable[0]->Toggle(g_adv_igi_options.disable_master_autoly);
+                    th14_master_disable[1]->Toggle(g_adv_igi_options.disable_master_autoly);
+                    th14_master_disable[2]->Toggle(g_adv_igi_options.disable_master_autoly);
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));
