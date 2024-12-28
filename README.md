@@ -1,10 +1,22 @@
 # **thprac**
 > thprac is a tool for practicing Touhou shmups.
 
-## **Downloading**
+## **Table of Contents**
+* [Downloading](#downloading)
+* [Usage](#usage)
+* [Compatability](#compatability)
+* [Features](#features)
+* [Backspace Menu](#backspace-menu)
+* [Advanced Options](#advanced-options)
+* [Statistics](#statistics)
+* [Game Specific Features](#game-specific-features)
+* [Credits](#credits)
+* [FAQ](#faq)
+
+## <a name="downloading"></a> **Downloading**
 If you want to download the tool, you can download the [latest release](https://github.com/touhouworldcup/thprac/releases/latest) here and the [latest beta](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip) here.
 
-## **Usage**
+## <a name="usage"></a> **Usage**
 You can use this tool in a variety of ways, the main ways to do this are **placing the executable in the same folder as your game**, **running the executable after running your game**, or **use the thprac launcher**.
 
 ### **Using the folder**
@@ -20,12 +32,12 @@ You can use this tool in a variety of ways, the main ways to do this are **placi
 This video explains how to use the launcher.
 [![A quick and dirty overview of thprac 2.0](https://i.ytimg.com/vi/sRV4PDQceYo/maxresdefault.jpg)](https://www.youtube.com/watch?v=sRV4PDQceYo)
 
-## **Compatability**
+## <a name="compatability"></a> **Compatability**
 thprac is compatible with all Windows versions proceeding and including Windows Vista. You may attempt to apply thprac on Windows XP using the [One-Core-API](https://github.com/Skulltrail192/One-Core-API-Binaries) but this is not guranteed to work.
 
 thprac is also compatible with **Wine** and the Steam Deck. Do note that the backspace menu is tailored to work well with the Steam Deck, although this is untested.
 
-## Features
+## <a name="features"></a> **Features**
 thprac features an enhanced practice mode that supports all main games along with Great Fairy Wars and Uwabami Breakers, do note that thprac **does not support Phantasmagoria of Flower View**.
 
 ![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174433923-0a6069e7-d10d-4107-8f0d-f4a8a9d56976.png)
@@ -41,7 +53,7 @@ This menu can be controlled using your keyboard or your controller, using this, 
 
 thprac will also automatically save the options you selected into any replay saved. When playing back the replay, thprac will automatically apply said options. **Replays saved whilst thprac is active using "Custom" mode will NOT work with the unmodified game.**
 
-## Backspace Menu
+## <a name="backspace-menu"></a> **Backspace Menu**
 In any supported game (**except Touhou 9**), you can press the **backspace** key to enter the backspace menu, the backspace menu will show you a variety of options that can be activated using the function (F) keys.
 
 Do note that on the **Steam Deck** the options are clickable, you can use your left thumb to tap the options to toggle them. As a result, you only need to map the backspace key in Steam Input.
@@ -49,18 +61,18 @@ Do note that on the **Steam Deck** the options are clickable, you can use your l
 ![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174434813-73748a66-0f6d-4c6e-9f3a-895a49b93434.png)
 ![Wily Beast and Weakest Creature](https://user-images.githubusercontent.com/23106652/174434834-6bd93104-1ed2-48ae-a440-9d9cb871ea03.png)
 
-## Advanced Options
+## <a name="advanced-options"></a> **Advanced Options**
 In any supported game, you may use the F12 key to access the advanced options, these options may offer fixes or patches related to the game or other quality of life features.
 
 ![Imperishable Night](https://user-images.githubusercontent.com/23106652/174434977-683da583-324b-4bd5-8408-13373dfd5a93.png)
 ![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174435006-e906d30d-0ef5-4930-ae57-1f0919beb5af.png)
 
-## Statistics (WIP)
+## <a name="statistics"></a> **Statistics (WIP)**
 If you are in Touhou 13, you can press the "L" key to access a more advanced HUD.
 
 ![TH13](https://user-images.githubusercontent.com/23106652/174435095-51554934-83d3-4d05-847d-834f3068bc28.png)
 
-## Game-specific Features
+## <a name="game-specific-features"></a> **Game-specific Features**
 Some games such as **100th Black Market** and **Phantasmagoria of Flower View** have game specific features to make practicing easier.
 
 ### 100th BM - Force Wave
@@ -85,14 +97,14 @@ Choosing "Exit" will prompt you to save a replay. **Warning**: replays saved lik
 
 ### ESC + R fix for Violet Detector, Wily Beast and Weakest Creature and Unconnected Marketeers
 
-## Credits (May 27th 2022 and after)
+## <a name="credits"></a> **Credits (post May 27th, 2022)**
 - Development: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [muter3000](https://github.com/muter3000), [zero318](https://github.com/zero318), [Lmocinemod](https://github.com/Lmocinemod), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 
 - Chinese translations: [CrestedPeak9](https://twitter.com/CrestedPeak9), maksim71_doll, DeepL
 - Japanese translations: [Yu-miya](https://www.twitch.tv/toho_yumiya), CyrusVorazan, DeepL
-- Transferring all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) to [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
-- Chinese README translations: [TNT569](https://github.com/TNT569) 
+- Transferring all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
+- Chinese README.md translations: [TNT569](https://github.com/TNT569) 
 
-## Frequently Asked Questions (FAQ)
+## <a name="faq"></a> **Frequently Asked Questions (FAQ)**
 
 ## General
 
