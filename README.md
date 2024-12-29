@@ -5,7 +5,7 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V7O03J4)
 
-# [Latest Release]((https://github.com/touhouworldcup/thprac/releases/latest)) - [Latest Beta](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip)
+# [Latest Release](https://github.com/touhouworldcup/thprac/releases/latest) - [Latest Beta](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip)
 
 ## **Table of Contents**
 * [Downloading](#downloading)
