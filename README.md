@@ -5,7 +5,8 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V7O03J4)
 
-# [Latest Release](https://github.com/touhouworldcup/thprac/releases/latest) - [Latest Beta](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip)
+# [Download](https://github.com/touhouworldcup/thprac/releases/latest) - [Download Beta](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip)
+> Note that beta versions will only update to the next stable version, not the next beta version.
 
 ## **Table of Contents**
 * [Downloading](#downloading)
@@ -20,7 +21,7 @@
 * [FAQ](#faq)
 
 ## <a name="downloading"></a> **Downloading**
-If you want to download the tool, you can download the [latest release](https://github.com/touhouworldcup/thprac/releases/latest) here and the [latest beta](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip) here.
+If you want to download the tool, you can download the [latest release](https://github.com/touhouworldcup/thprac/releases/latest) here and the [latest beta](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip) here. Do note that the latest beta will update into the next stable release and NOT the next beta release.
 
 ## <a name="usage"></a> **Usage**
 You can use this tool in a variety of ways; the main ways to do this are **placing the executable in the same folder as your game**, **running the executable after running your game**, or **using thprac's launcher**.
