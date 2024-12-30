@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1281] {
+const char* th_glossary_str[3][1283] {
     {
         "",
         "啤酒",
@@ -1008,6 +1008,8 @@ const char* th_glossary_str[3][1281] {
         "勾选你想要添加进thprac的游戏并点击\"应用\"",
         "Steam游戏 - 手动选取",
         "或",
+        "红魔乡背景修复",
+        "当关闭弹幕虚影时不让蕾咪变蓝狗",
         "红魔乡自动miss/bomb后不掉rank",
         "thcrap",
         "添加thcrap配置...",
@@ -2291,6 +2293,8 @@ const char* th_glossary_str[3][1281] {
         "Tick the games you wish to add into thprac and click \"Apply\".",
         "Steam games - Manual select",
         "or",
+        "EoSD background fix",
+        "let Remilia not be blue when disables bullet shadow",
         "EoSD no rank drop after miss/bomb",
         "thcrap",
         "Add thcrap configs...",
@@ -3574,6 +3578,8 @@ const char* th_glossary_str[3][1281] {
         "thpracに追加したいゲームにチェックを入れ、「適用する」をクリックします。",
         "Steamゲーム - 手動選択",
         "または",
+        "EoSD background fix",
+        "let Remilia not be blue when disables bullet shadow",
         "EoSD no rank drop after miss/bomb",
         "thcrap",
         "thcrapコンフィグを追加...",
@@ -24327,7 +24333,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3325] {
+const wchar_t __thprac_loc_range_zh[3331] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -24647,6 +24653,7 @@ const wchar_t __thprac_loc_range_zh[3325] {
     0x5486, 0x5486,
     0x548c, 0x548c,
     0x5492, 0x5492,
+    0x54aa, 0x54aa,
     0x54b2, 0x54b2,
     0x54b8, 0x54b8,
     0x54c0, 0x54c0,
@@ -25641,6 +25648,7 @@ const wchar_t __thprac_loc_range_zh[3325] {
     0x84ec, 0x84ec,
     0x851a, 0x851a,
     0x8537, 0x8537,
+    0x857e, 0x857e,
     0x8584, 0x8584,
     0x8587, 0x8587,
     0x85cf, 0x85cf,
@@ -25704,6 +25712,7 @@ const wchar_t __thprac_loc_range_zh[3325] {
     0x8ba1, 0x8ba1,
     0x8ba2, 0x8ba2,
     0x8ba4, 0x8ba4,
+    0x8ba9, 0x8ba9,
     0x8bad, 0x8bad,
     0x8bae, 0x8bae,
     0x8bb0, 0x8bb0,

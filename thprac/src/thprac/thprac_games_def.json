@@ -947,6 +947,8 @@
       
 	  
 	  "THPRAC_INGAMEINFO_ADV2":["自动开启高级功能","automatically use advanced opts","automatically use advanced opts"],
+	  "THPRAC_TH06_BACKGROUND_FIX": [ "红魔乡背景修复", "EoSD background fix", "EoSD background fix" ],
+	  "THPRAC_TH06_BACKGROUND_FIX_DESC": [ "当关闭弹幕虚影时不让蕾咪变蓝狗", "let Remilia not be blue when disables bullet shadow", "let Remilia not be blue when disables bullet shadow" ],
 	  "THPRAC_TH06_RANKLOCK_DOWN": [ "红魔乡自动miss/bomb后不掉rank", "EoSD no rank drop after miss/bomb", "EoSD no rank drop after miss/bomb" ],
 	  "THPRAC_DISABLE_MASTER_AUTO":["自动禁用MASTER","automatically disable master","automatically disable master"],
 	  "THPRAC_INGAMEINFO_ADV":["高级IGI功能","advanced igi","advanced igi"],

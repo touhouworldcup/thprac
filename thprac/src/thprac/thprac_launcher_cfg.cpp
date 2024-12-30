@@ -2073,6 +2073,7 @@ private:
             ImGui::TextWrapped(S(THPRAC_INGAMEINFO_ADV_DESC2));
             mCfgEnableMasterDisable_autoly.Gui(S(THPRAC_DISABLE_MASTER_AUTO));
             mCfgEnableTH06_ShowRank_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK2));
+            mCfgEnableTH06_BgFix_autoly.Gui(S(THPRAC_TH06_BACKGROUND_FIX), S(THPRAC_TH06_BACKGROUND_FIX_DESC));
             mCfgEnableTH06_DisableRankDrop_autoly.Gui(S(THPRAC_TH06_RANKLOCK_DOWN));
             mCfgEnableTH06_ShowHitbox_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX2), S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC));
             mCfgEnableTH11_ShowHint_autoly.Gui(S(THPRAC_INGAMEINFO_TH11_SHOW_HINT2));
@@ -2269,6 +2270,7 @@ private:
     // advanced igi
     THCfgCheckbox mCfgEnableTH06_DisableRankDrop_autoly { "auto_th06_disable_rank_drop", false };
     THCfgCheckbox mCfgEnableTH06_ShowRank_autoly { "auto_th06_show_rank", false };
+    THCfgCheckbox mCfgEnableTH06_BgFix_autoly { "auto_th06_bg_fix", false };
     THCfgCheckbox mCfgEnableTH06_ShowHitbox_autoly { "auto_th06_show_hitbox", false };
     THCfgCheckbox mCfgEnableTH11_ShowHint_autoly { "auto_th11_show_hint", false };
     THCfgCheckbox mCfgEnableTH13_ShowHits_autoly { "auto_th13_show_hits", false };

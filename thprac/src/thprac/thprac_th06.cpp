@@ -1746,6 +1746,7 @@ namespace TH06 {
             if (ImGui::Button(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_RELOAD))) {
                 ReadHitboxFile();
             }
+            ImGui::Checkbox(S(THPRAC_TH06_BACKGROUND_FIX), &g_adv_igi_options.th06_bg_fix);
             HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC1));
             ImGui::SameLine();
             HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC2));
@@ -3093,6 +3094,12 @@ namespace TH06 {
         GameGuiRender(IMPL_WIN32_DX8);
         if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
             THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);
+    }
+    EHOOK_DY(th06_stage_color_fix, 0x4039E5)
+    {
+        if (g_adv_igi_options.th06_bg_fix) {
+            pCtx->Edx = 0x00000000;
+        }
     }
     EHOOK_DY(th06_player_state, 0x4288C0)
     {
