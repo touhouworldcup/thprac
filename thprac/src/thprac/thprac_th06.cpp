@@ -12,7 +12,8 @@ extern bool g_pauseBGM_06;
 LPDIRECT3DTEXTURE8 g_hitbox_texture = NULL;
 ImTextureID g_hitbox_textureID = NULL;
 float g_hitbox_width = 32.0f;
-float g_hitbox_height=32.0f;
+float g_hitbox_height = 32.0f;
+int32_t g_last_rep_seed = 0;
 
 #include "thprac_th06_hitbox.h"
 void ReadHitboxFile()
@@ -1746,12 +1747,18 @@ namespace TH06 {
             if (ImGui::Button(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_RELOAD))) {
                 ReadHitboxFile();
             }
+            ImGui::Checkbox(S(THPRAC_TH06_FIX_RAND_SEED), &g_adv_igi_options.th06_fix_seed);
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(180.0f);
+            if (ImGui::InputInt(S(THPRAC_TH06_RAND_SEED), &g_adv_igi_options.th06_seed)){
+                g_adv_igi_options.th06_seed = std::clamp(g_adv_igi_options.th06_seed, 0, 65535);
+            }
+            ImGui::Text("%s: %d",S(THPRAC_TH06_REP_RAND_SEED),g_last_rep_seed);
+
             ImGui::Checkbox(S(THPRAC_TH06_BACKGROUND_FIX), &g_adv_igi_options.th06_bg_fix);
             HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC1));
             ImGui::SameLine();
             HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC2));
-            
-            
 
             {
                 ImGui::SetNextWindowCollapsed(false);
@@ -3106,6 +3113,20 @@ namespace TH06 {
         if (g_adv_igi_options.show_keyboard_monitor)
             RecordKey(6, *(WORD*)(0x69D904));
     }
+    EHOOK_DY(th06_rep_seed,0x42A97E)
+    {
+       g_last_rep_seed = *(uint16_t*)(0x0069D8F8);
+    }
+    EHOOK_DY(th06_fix_seed, 0x41BE47)
+    {
+        if (g_adv_igi_options.th06_fix_seed)
+        {
+            if (*(DWORD*)(0x69d6d4) == 1 || *(DWORD*)(0x69d6d4) == 7) {
+                *(uint16_t*)(0x69D8F8) = (uint16_t)((int32_t)g_adv_igi_options.th06_seed & 0xFFFF);
+            }
+        }
+    }
+
     HOOKSET_ENDDEF()
     HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th06_enter_game, 0x41BDE8) // set inner misscount to 0

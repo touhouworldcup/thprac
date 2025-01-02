@@ -574,15 +574,44 @@ protected:
 };
 
 
-class THCfgInt2 : public THSetting<std::array<int,2>> {
+class THCfgInt : public THSetting<int> {
+private:
+    int minv, maxv;
 public:
-    THCfgInt2(const char* _name, std::array<int, 2> _value)
+    THCfgInt(const char* _name, int _value, int minval,int maxval)
         : THSetting(_name, _value)
+        , minv(minval)
+        , maxv(maxval)
     {
     }
     void Gui(const char* guiTxt, const char* helpTxt = nullptr)
     {
-        if (ImGui::DragInt2(guiTxt, value.data(),1.0,1,8192)) {
+        if (ImGui::InputInt(guiTxt, &value)) {
+            value = std::clamp(value, minv, maxv);
+            LauncherSettingSet(name.c_str(), value);
+        }
+        if (helpTxt) {
+            ImGui::SameLine();
+            GuiHelpMarker(helpTxt);
+        }
+    }
+};
+
+
+class THCfgInt2 : public THSetting<std::array<int,2>> {
+private:
+    int minv, maxv;
+
+public:
+    THCfgInt2(const char* _name, std::array<int, 2> _value, int minval, int maxval)
+        : THSetting(_name, _value)
+        , minv(minval)
+        , maxv(maxval)
+    {
+    }
+    void Gui(const char* guiTxt, const char* helpTxt = nullptr)
+    {
+        if (ImGui::DragInt2(guiTxt, value.data(), 1.0, minv, maxv)) {
             LauncherSettingSet(name.c_str(), value);
         }
         if (helpTxt) {
@@ -2076,6 +2105,10 @@ private:
             mCfgEnableTH06_BgFix_autoly.Gui(S(THPRAC_TH06_BACKGROUND_FIX), S(THPRAC_TH06_BACKGROUND_FIX_DESC));
             mCfgEnableTH06_DisableRankDrop_autoly.Gui(S(THPRAC_TH06_RANKLOCK_DOWN));
             mCfgEnableTH06_ShowHitbox_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX2), S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC));
+            mCfgEnableTH06_FixSeed_autoly.Gui(S(THPRAC_TH06_FIX_RAND_SEED));
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(180.0f);
+            mCfgTH06_Seed.Gui(S(THPRAC_TH06_RAND_SEED));
             mCfgEnableTH11_ShowHint_autoly.Gui(S(THPRAC_INGAMEINFO_TH11_SHOW_HINT2));
             mCfgEnableTH13_ShowHits_autoly.Gui(S(THPRAC_INGAMEINFO_TH13_SHOW_HITS2));
             mCfgEnableTH13_ShowHitBar_autoly.Gui(S(THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR2));
@@ -2271,6 +2304,8 @@ private:
     THCfgCheckbox mCfgEnableTH06_DisableRankDrop_autoly { "auto_th06_disable_rank_drop", false };
     THCfgCheckbox mCfgEnableTH06_ShowRank_autoly { "auto_th06_show_rank", false };
     THCfgCheckbox mCfgEnableTH06_BgFix_autoly { "auto_th06_bg_fix", false };
+    THCfgCheckbox mCfgEnableTH06_FixSeed_autoly { "auto_th06_fix_seed", false };
+    THCfgInt      mCfgTH06_Seed { "th06_seed", 0, 0, 65535 };
     THCfgCheckbox mCfgEnableTH06_ShowHitbox_autoly { "auto_th06_show_hitbox", false };
     THCfgCheckbox mCfgEnableTH11_ShowHint_autoly { "auto_th11_show_hint", false };
     THCfgCheckbox mCfgEnableTH13_ShowHits_autoly { "auto_th13_show_hits", false };
@@ -2298,7 +2333,7 @@ private:
     THCfgCheckbox mInitWindowPos { "init_window_pos", true };
 
     THCfgCheckbox mWindowSizeChangeWhenOpen { "change_window_size_when_open", false };
-    THCfgInt2 mWindowSize { "changed_window_size", {1920,1440} };
+    THCfgInt2 mWindowSize { "changed_window_size", {1920,1440},1,8192 };
 
     THCfgCheckbox mEnableKeyboardSOCD { "keyboard_SOCD", false };
     THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };

@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1283] {
+const char* th_glossary_str[3][1286] {
     {
         "",
         "啤酒",
@@ -1010,7 +1010,10 @@ const char* th_glossary_str[3][1283] {
         "或",
         "红魔乡背景修复",
         "当关闭弹幕虚影时不让蕾咪变蓝狗",
+        "红魔乡固定初始种子",
+        "初始种子",
         "红魔乡自动miss/bomb后不掉rank",
+        "当前打开rep的初始种子",
         "thcrap",
         "添加thcrap配置...",
         "没有找到任何thcrap配置！",
@@ -2295,7 +2298,10 @@ const char* th_glossary_str[3][1283] {
         "or",
         "EoSD background fix",
         "let Remilia not be blue when disables bullet shadow",
+        "fix EoSD rand seed when begin",
+        "rand seed",
         "EoSD no rank drop after miss/bomb",
+        "rand seed for current rep",
         "thcrap",
         "Add thcrap configs...",
         "No thcrap configs was found!",
@@ -3580,7 +3586,10 @@ const char* th_glossary_str[3][1283] {
         "または",
         "EoSD background fix",
         "let Remilia not be blue when disables bullet shadow",
+        "fix EoSD rand seed when begin",
+        "rand seed",
         "EoSD no rank drop after miss/bomb",
+        "rand seed for current rep",
         "thcrap",
         "thcrapコンフィグを追加...",
         "thcrapのコンフィグが見つかりませんでした！",

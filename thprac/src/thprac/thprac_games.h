@@ -15,6 +15,8 @@ namespace THPrac {
     {
     bool disable_master_autoly;
     bool th06_bg_fix;
+    bool th06_fix_seed;
+    int32_t th06_seed; // to match imgui
     bool th06_disable_drop_rank;
     bool th06_showRank;
     bool th06_showHitbox;

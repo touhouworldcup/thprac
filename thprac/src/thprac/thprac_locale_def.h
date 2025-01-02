@@ -1010,7 +1010,10 @@ enum th_glossary_t {
     THPRAC_STEAM_MNG_OR,
     THPRAC_TH06_BACKGROUND_FIX,
     THPRAC_TH06_BACKGROUND_FIX_DESC,
+    THPRAC_TH06_FIX_RAND_SEED,
+    THPRAC_TH06_RAND_SEED,
     THPRAC_TH06_RANKLOCK_DOWN,
+    THPRAC_TH06_REP_RAND_SEED,
     THPRAC_THCRAP,
     THPRAC_THCRAP_ADDCFG,
     THPRAC_THCRAP_ADDCFG_404,
@@ -1294,7 +1297,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1283];
+extern const char* th_glossary_str[3][1286];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
