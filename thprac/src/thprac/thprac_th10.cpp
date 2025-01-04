@@ -500,9 +500,9 @@ namespace TH10 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPos(-10000.0f, -10000.0f);
-            SetSize(0.0f, 0.0f);
-            SetWndFlag(
+            SetPosRel(450.0f / 640.0f, 150.0f / 480.0f);
+            SetSizeRel(170.0f / 640.0f, 0.0f);
+            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
@@ -537,27 +537,21 @@ namespace TH10 {
 
         virtual void OnContentUpdate() override
         {
-            if (!*(DWORD*)(0x0477834)) {
-                SetPos(-10000.0f, -10000.0f); // fly~
-                return;
-            }
-            {
-                SetPosRel(450.0f/640.0f, 150.0f/480.0f);
-                SetSizeRel(170.0f/640.0f, 55.0f/480.0f);
-                ImGui::Columns(2);
-                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mMissCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mBombCount);
-            }
+            ImGui::Columns(2);
+            ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mMissCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mBombCount);
         }
 
         virtual void OnPreUpdate() override
         {
-            if (*(THOverlay::singleton().mInGameInfo)) {
+            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x0477834)) {
+                SetPosRel(450.0f / 640.0f, 150.0f / 480.0f);
+                SetSizeRel(170.0f / 640.0f, 0.0f);
                 Open();
             } else {
                 Close();

@@ -502,9 +502,9 @@ namespace TH14 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPos(-10000.0f, -10000.0f);
-            SetSize(0.0f, 0.0f);
-            SetWndFlag(
+            SetPosRel(900.0f / 1280.0f, 560.0f / 960.0f);
+            SetSizeRel(340.0f / 1280.0f, 0.0f);
+            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
@@ -544,82 +544,71 @@ namespace TH14 {
 
         virtual void OnContentUpdate() override
         {
-            if (!*(DWORD*)(0x04DB67C)) {
-                SetPos(-10000.0f, -10000.0f); // fly~
-                return;
-            }
+            ImGui::Columns(2);
+            ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mMissCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mBombCount);
+            if (g_adv_igi_options.th14_showItemsCount)
             {
-                SetPosRel(900.0f / 1280.0f, 560.0f / 960.0f);
-                if (g_adv_igi_options.th14_showBonus)
-                    SetSizeRel(340.0f / 1280.0f, 350.0f / 960.0f);
-                else if (g_adv_igi_options.th14_showItemsCount)
-                    SetSizeRel(340.0f / 1280.0f, 130.0f / 960.0f);
-                else
-                    SetSizeRel(340.0f / 1280.0f, 100.0f / 960.0f);
-                ImGui::Columns(2);
-                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mMissCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mBombCount);
-                if (g_adv_igi_options.th14_showItemsCount)
-                {
-                    int n = 0;
-                    DWORD pitems = *(DWORD*)(0x4DB660);
-                    if (pitems) {
-                        DWORD iter = pitems + 0x14;
-                        for (int i = 0; i < 0x1258; i++) {
-                            int type = *(DWORD*)(iter + 0xBF4);
-                            int movement = *(DWORD*)(iter + 0xBF0);
-                            if (movement != 0)
-                                if (type ==1 || type==2 || type==3)
-                                    n++;
-                            iter += 0xC18;
-                        }
+                int n = 0;
+                DWORD pitems = *(DWORD*)(0x4DB660);
+                if (pitems) {
+                    DWORD iter = pitems + 0x14;
+                    for (int i = 0; i < 0x1258; i++) {
+                        int type = *(DWORD*)(iter + 0xBF4);
+                        int movement = *(DWORD*)(iter + 0xBF0);
+                        if (movement != 0)
+                            if (type ==1 || type==2 || type==3)
+                                n++;
+                        iter += 0xC18;
                     }
-                    ImGui::NextColumn();
-                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_ITEMS_CNT));
-                    ImGui::NextColumn();
-                    ImGui::Text("%8d", n);
                 }
-                if (g_adv_igi_options.th14_showBonus)
-                {
-                    ImGui::NextColumn();
-                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_05));
-                    ImGui::NextColumn();
-                    ImGui::Text("%8d", m05Count);
-                    ImGui::NextColumn();
-                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_08));
-                    ImGui::NextColumn();
-                    ImGui::Text("%8d", m08Count);
-                    ImGui::NextColumn();
-                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_12));
-                    ImGui::NextColumn();
-                    ImGui::Text("%8d", m12Count);
-                    ImGui::NextColumn();
-                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_16));
-                    ImGui::NextColumn();
-                    ImGui::Text("%8d", m16Count);
-                    ImGui::NextColumn();
-                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_20));
-                    ImGui::NextColumn();
-                    ImGui::Text("%8d", m20Count);
-                    ImGui::NextColumn();
-                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_NEXT));
-                    ImGui::NextColumn();
-                    if (*(DWORD*)(0x4F5894) % 5==4)
-                        ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_LIFE));
-                    else
-                        ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_BOMB));
-                }
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH14_ITEMS_CNT));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", n);
+            }
+            if (g_adv_igi_options.th14_showBonus)
+            {
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_05));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", m05Count);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_08));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", m08Count);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_12));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", m12Count);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_16));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", m16Count);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_20));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", m20Count);
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_NEXT));
+                ImGui::NextColumn();
+                if (*(DWORD*)(0x4F5894) % 5==4)
+                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_LIFE));
+                else
+                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_BOMB));
             }
         }
 
         virtual void OnPreUpdate() override
         {
-            if (*(THOverlay::singleton().mInGameInfo)) {
+            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x04DB67C)) {
+                SetPosRel(900.0f / 1280.0f, 560.0f / 960.0f);
+                SetSizeRel(340.0f / 1280.0f, 0.0f);
                 Open();
             } else {
                 Close();

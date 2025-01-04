@@ -925,9 +925,9 @@ namespace TH18 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPos(-10000.0f, -10000.0f);
-            SetSize(0.0f, 0.0f);
-            SetWndFlag(
+            SetPosRel(900.0f / 1280.0f, 840.0f / 960.0f);
+            SetSizeRel(340.0f / 1280.0f, 0.0f);
+            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
@@ -963,27 +963,22 @@ namespace TH18 {
 
         virtual void OnContentUpdate() override
         {
-            if (!*(DWORD*)(0x004CF410)) {
-                SetPos(-10000.0f, -10000.0f); // fly~
-                return;
-            }
-            {
-                SetPosRel(900.0f / 1280.0f, 840.0f / 960.0f);
-                SetSizeRel(340.0f/1280.0f, 100.0f/960.0f);
-                ImGui::Columns(2);
-                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%6d (%d)", mMissCount, mDeadBombCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mBombCount);
-            }
+            ImGui::Columns(2);
+            ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%6d (%d)", mMissCount, mDeadBombCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mBombCount);
+            
         }
 
         virtual void OnPreUpdate() override
         {
-            if (*(THOverlay::singleton().mInGameInfo)) {
+            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004CF410)) {
+                SetPosRel(900.0f / 1280.0f, 840.0f / 960.0f);
+                SetSizeRel(340.0f / 1280.0f, 0.0f);
                 Open();
             } else {
                 Close();

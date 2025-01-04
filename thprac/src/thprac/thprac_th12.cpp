@@ -514,9 +514,9 @@ namespace TH12 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPos(-10000.0f, -10000.0f);
-            SetSize(0.0f, 0.0f);
-            SetWndFlag(
+            SetPosRel(450.0f / 640.0f, 338.0f / 480.0f);
+            SetSizeRel(170.0f / 640.0f, 0.0f);
+            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
@@ -556,43 +556,37 @@ namespace TH12 {
 
         virtual void OnContentUpdate() override
         {
-            if (!*(DWORD*)(0x004B4514)) {
-                SetPos(-10000.0f, -10000.0f); // fly~
-                return;
-            }
-            {
-                SetPosRel(450.0f / 640.0f, 338.0f / 480.0f);
-                SetSizeRel(170.0f/640.0f, 132.0f/480.0f);
-                ImGui::Columns(2);
-                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mMissCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mBombCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_RED_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mRUFOCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_GREEN_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mGUFOCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_BLUE_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mBUFOCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_RAINBOW_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mCUFOCount);
-            }
+            ImGui::Columns(2);
+            ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mMissCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mBombCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_RED_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mRUFOCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_GREEN_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mGUFOCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_BLUE_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mBUFOCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_RAINBOW_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mCUFOCount);
         }
 
         virtual void OnPreUpdate() override
         {
-            if (*(THOverlay::singleton().mInGameInfo)) {
+            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004B4514)) {
+                SetPosRel(450.0f / 640.0f, 338.0f / 480.0f);
+                SetSizeRel(170.0f / 640.0f, 0.0f);
                 Open();
             } else {
                 Close();

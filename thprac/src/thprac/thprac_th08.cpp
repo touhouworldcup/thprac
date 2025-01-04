@@ -622,9 +622,9 @@ namespace TH08 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPos(-10000.0f, -10000.0f);
-            SetSize(0.0f, 0.0f);
-            SetWndFlag(
+            SetPosRel(450.0f / 640.0f, 220.0f / 480.0f);
+            SetSizeRel(170.0f / 640.0f, 0.0f);
+            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
@@ -635,7 +635,6 @@ namespace TH08 {
         int32_t mBombCount;
         int32_t mLSCCount;
         int32_t mSCCount;
-        bool mIsInGame;
 
     protected:
         virtual void OnLocaleChange() override
@@ -662,40 +661,32 @@ namespace TH08 {
 
         virtual void OnContentUpdate() override
         {
-            if (!mIsInGame) {
-                SetPos(-10000.0f, -10000.0f); // fly~
-                return;
-            }
-            {
-                SetPosRel(450.0f/640.0f, 220.0f/480.0f);
-                SetSizeRel(170.0f / 640.0f, 100.0f / 480.0f);
-                
-                mMissCount = *(int8_t*)(0x0164CFA4);
-                mBombCount = *(int8_t*)(0x0164CFA8) + *(int8_t*)(0x0164CFAC);
-                
-                ImGui::Columns(2);
-                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mMissCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mBombCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_08_SC_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mSCCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_08_LSC_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mLSCCount);
-            }
-            mIsInGame = false;
+            mMissCount = *(int8_t*)(0x0164CFA4);
+            mBombCount = *(int8_t*)(0x0164CFA8) + *(int8_t*)(0x0164CFAC);
+            
+            ImGui::Columns(2);
+            ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mMissCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mBombCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_08_SC_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mSCCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_08_LSC_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mLSCCount);
         }
 
         virtual void OnPreUpdate() override
         {
-            if (*(THOverlay::singleton().mInGameInfo)) {
+            if (*(THOverlay::singleton().mInGameInfo) && (*(DWORD*)(0x17CE8B4) == 2)) {
+                SetPosRel(450.0f / 640.0f, 220.0f / 480.0f);
+                SetSizeRel(170.0f / 640.0f, 0.0f);
                 Open();
             } else {
                 Close();
@@ -2521,7 +2512,7 @@ namespace TH08 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
 
-        if (g_adv_igi_options.show_keyboard_monitor && TH08InGameInfo::singleton().mIsInGame){
+        if (g_adv_igi_options.show_keyboard_monitor && (*(DWORD*)(0x17CE8B4) == 2)) {
             g_adv_igi_options.keyboard_style.size = { 34.0f, 34.0f };
             KeysHUD(8, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }
@@ -2552,10 +2543,6 @@ namespace TH08 {
         TH08InGameInfo::singleton().mSCCount = 0;
         TH08InGameInfo::singleton().mBombCount = 0;
         TH08InGameInfo::singleton().mMissCount = 0;
-    }
-    EHOOK_DY(th08_ingame, 0x436B6B)
-    {
-        TH08InGameInfo::singleton().mIsInGame = true;
     }
     EHOOK_DY(th08_spell_capture, 0x416265) // to enable SC count in rep, do not directly read spell capture array
     {

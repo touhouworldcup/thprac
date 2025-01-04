@@ -461,11 +461,11 @@ namespace TH06 {
     class TH06InGameInfo : public Gui::GameGuiWnd {
         TH06InGameInfo() noexcept
         {
-            SetTitle("Spell Capture");
+            SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPos(-10000.0f, -10000.0f);
-            SetSize(180.0f, 160.0f);
-            SetWndFlag(
+            SetSizeRel(180.0f/640.0f, 0.0f);
+            SetPosRel(433.0f / 640.0f, 245.0f / 480.0f);
+            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
@@ -597,17 +597,6 @@ namespace TH06 {
             int spell_id = last_spell_id;
             if (is_magic_book)
                 spell_id = 64;
-            bool IsInGame = (*(DWORD*)(0x6C6EA4) == 2);
-            if (!IsInGame){
-                SetPos(-10000.0f, -10000.0f);
-                return;
-            }
-            if (g_adv_igi_options.th06_showRank) {
-                SetSize(180.0f, 190.0f);
-            }else{
-                SetSize(180.0f, 160.0f);
-            }
-            SetPosRel(433.0f/640.0f, 245.0f/480.0f);
             int32_t mBombCount = *(int8_t*)(0x0069BCC4);
 
             ImGui::Columns(2);
@@ -641,16 +630,8 @@ namespace TH06 {
                 int cur_sc_to = save_current.SC_History[spell_id][last_diff][last_player_type][2];
                 ImGui::Text("%d/%d(%.1f%%); %d", cur_sc_caped, cur_sc_tot, (float)(cur_sc_caped) / std::fmax(1.0f, cur_sc_tot) * 100.0f, cur_sc_to);
 
-                // books time
-                DWORD gameState = *(DWORD*)(0x6C6EA4);
-                BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
                 if (is_magic_book && thPracParam.mode && (thPracParam.phase == 1 || thPracParam.phase == 2)) { // books
                     ImGui::Text("%.1f", (float)time_books / 60.0f);
-                    if (gameState == 2 && pauseMenuState == 0) {
-                        time_books++;
-                    }
-                } else {
-                    time_books = 0;
                 }
             }
             mDetails();
@@ -902,7 +883,21 @@ namespace TH06 {
             last_cur_hp = cur_cur_hp;
             last_tot_hp = cur_tot_hp;
             last_has_SCB = cur_has_SCB;
-            if (*THOverlay::singleton().mShowSpellCapture) {
+
+             // books time
+            DWORD gameState = *(DWORD*)(0x6C6EA4);
+            BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
+            if (is_magic_book && thPracParam.mode && (thPracParam.phase == 1 || thPracParam.phase == 2)) { // books
+                if (gameState == 2 && pauseMenuState == 0) {
+                    time_books++;
+                }
+            } else {
+                time_books = 0;
+            }
+
+            if (*THOverlay::singleton().mShowSpellCapture && (*(DWORD*)(0x6C6EA4) == 2)) {
+                SetSizeRel(180.0f / 640.0f, 0.0f);
+                SetPosRel(433.0f / 640.0f, 245.0f / 480.0f);
                 Open();
             } else {
                 Close();

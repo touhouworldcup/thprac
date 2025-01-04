@@ -511,9 +511,9 @@ namespace TH15 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPos(-10000.0f, -10000.0f);
-            SetSize(0.0f, 0.0f);
-            SetWndFlag(
+            SetSizeRel(340.0f / 1280.0f, 0.0f);
+            SetPosRel(900.0f / 1280.0f, 520.0f / 960.0f);
+            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
@@ -547,49 +547,27 @@ namespace TH15 {
 
         virtual void OnContentUpdate() override
         {
-            if (!*(DWORD*)(0x004E9BB8)){
-                SetPos(-10000.0f, -10000.0f); //fly~
-                return;
-            }
             if (thPracParam.mode && thPracParam.section == TH15_ST8_AB_TEST) {
                 DWORD ecl_glob = *(DWORD*)(0x4E9A80);
-                if (ecl_glob)
-                {
-                    SetSizeRel(340.0f / 1280.0f, 350.0f / 960.0f);
-                    SetPosRel(900.0f / 1280.0f, 520.0f / 960.0f);
-                    ImGui::Columns(2);
-                    ImGui::Text("p1");
-                    ImGui::NextColumn();
-                    ImGui::Text("%.2f",*(float*)(ecl_glob + 0x38));
-                    ImGui::NextColumn();
-                    ImGui::Text("p2");
-                    ImGui::NextColumn();
-                    ImGui::Text("%.2f", *(float*)(ecl_glob + 0x34));
-                    ImGui::NextColumn();
-                    ImGui::Text("p3");
-                    ImGui::NextColumn();
-                    ImGui::Text("%.2f", *(float*)(ecl_glob + 0x30));
-                    ImGui::NextColumn();
-                    ImGui::Text("p4");
-                    ImGui::NextColumn();
-                    ImGui::Text("%.2f", *(float*)(ecl_glob + 0x2C));
-                    ImGui::NextColumn();
-                    ImGui::Text("p5");
-                    ImGui::NextColumn();
-                    ImGui::Text("%.2f", *(float*)(ecl_glob + 0x28));
-                    ImGui::Columns(1);
+                float scores[5] = { 0.0f };
+                if (ecl_glob){
+                    for (int i=0;i<5;i++)
+                        scores[i] = *(float*)(ecl_glob + 0x38 - i * 4);
                 }
+                ImGui::Columns(2);
+                for (int i = 0; i < 5; i++)
+                {
+                    ImGui::Text("p%d",i+1);
+                    ImGui::NextColumn();
+                    ImGui::Text("%.2f", scores[i]);
+                    ImGui::NextColumn();
+                }
+                ImGui::Columns(1);
                 return;
             }
             bool is_in_P_mode = (*(byte*)(0x004E7795)) & 0x1;
             if (is_in_P_mode) // pplayer
             {
-                if (g_adv_igi_options.th15_showShootingDownRate)
-                    SetSizeRel(340.0f / 1280.0f, 410.0f / 960.0f);
-                else
-                    SetSizeRel(340.0f / 1280.0f, 350.0f / 960.0f);
-                SetPosRel(900.0f / 1280.0f, 520.0f / 960.0f);
-                
                 int cur_stage = *(int*)(0x004E73F0);
                 int tot_re = *(int*)(0x004E7594);
                 int cur_re = *(int*)(0x004E75B8);
@@ -618,7 +596,6 @@ namespace TH15 {
                 ImGui::Columns(1);
                 ImGui::NewLine();
                 ImGui::Columns(2);
-
                 for (int i = 0; i < std::min(7,cur_stage); i++){
                     ImGui::Text(S(THPRAC_INGAMEINFO_15_RE_TIMES_STAGE), i + 1);
                     ImGui::NextColumn();
@@ -626,11 +603,6 @@ namespace TH15 {
                     ImGui::NextColumn();
                 }
             } else {
-                if (g_adv_igi_options.th15_showShootingDownRate)
-                    SetSizeRel(340.0f / 1280.0f, 180.0f / 960.0f);
-                else
-                    SetSizeRel(340.0f / 1280.0f, 100.0f / 960.0f);
-                SetPosRel(900.0f / 1280.0f, 520.0f / 960.0f);
                 ImGui::Columns(2);
                 ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));ImGui::NextColumn();ImGui::Text("%8d",mMissCount);
                 ImGui::NextColumn();
@@ -654,7 +626,9 @@ namespace TH15 {
 
         virtual void OnPreUpdate() override
         {
-            if (*(THOverlay::singleton().mInGameInfo)) {
+            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004E9BB8)) {
+                SetSizeRel(340.0f / 1280.0f, 0.0f);
+                SetPosRel(900.0f / 1280.0f, 520.0f / 960.0f);
                 Open();
             } else {
                 Close();

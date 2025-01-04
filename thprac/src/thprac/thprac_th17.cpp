@@ -564,9 +564,9 @@ namespace TH17 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPos(-10000.0f, -10000.0f);
-            SetSize(280.0f, 350.0f);
-            SetWndFlag(
+            SetPosRel(900.0f / 1280.0f, 500.0f / 960.0f);
+            SetSizeRel(340.0f / 1280.0f, 0.0f);
+            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
@@ -607,52 +607,47 @@ namespace TH17 {
 
         virtual void OnContentUpdate() override
         {
-            if (!*(DWORD*)(0x004B77D0)) {
-                SetPos(-10000.0f, -10000.0f); // fly~
-                return;
-            }
-            {
-                SetPosRel(900.0f / 1280.0f, 500.0f / 960.0f);
-                SetSizeRel(340.0f/1280.0f, 320.0f/960.0f);
-                ImGui::Columns(2);
-                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mMissCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mBombCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_17_SPECIAL_GOAST_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mSpecialGoastCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_17_ROAR_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mRoarCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_17_ROAR_BREAK_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mRoarBreakCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_17_WOLF_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mWolfCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_17_OTTER_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mOtterCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_17_EAGLE_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mEagerCount);
-                ImGui::NextColumn();
-            }
+            ImGui::Columns(2);
+            ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mMissCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mBombCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_17_SPECIAL_GOAST_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mSpecialGoastCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_17_ROAR_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mRoarCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_17_ROAR_BREAK_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mRoarBreakCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_17_WOLF_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mWolfCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_17_OTTER_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mOtterCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_17_EAGLE_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mEagerCount);
+            ImGui::NextColumn();
+            
         }
 
         virtual void OnPreUpdate() override
         {
-            if (*(THOverlay::singleton().mInGameInfo)) {
+            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004B77D0)) {
+                SetPosRel(900.0f / 1280.0f, 500.0f / 960.0f);
+                SetSizeRel(340.0f / 1280.0f, 0.0f);
                 Open();
             } else {
                 Close();

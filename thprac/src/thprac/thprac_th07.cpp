@@ -551,9 +551,9 @@ namespace TH07 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPos(-10000.0f, -10000.0f);
-            SetSize(0.0f, 0.0f);
-            SetWndFlag(
+            SetPosRel(450.0f / 640.0f, 193.0f / 480.0f);
+            SetSizeRel(170.0f / 640.0f, 0.0f);
+            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
@@ -593,53 +593,47 @@ namespace TH07 {
 
         virtual void OnContentUpdate() override
         {
-            if (!*(int8_t*)(0x0062F8C7)) {
-                SetPos(-10000.0f, -10000.0f); // fly~
-                return;
-            }
-            {
-                SetPosRel(450.0f/640.0f, 193.0f/480.0f);
-                SetSizeRel(170.0f/640.0f, 140.0f/480.0f);
 
-                DWORD p = *(DWORD*)(0x00626278);
-                mCherryBase = *(int32_t*)(p+0x88);
-                mMissCount = *(float*)(p+0x50);
-                mBombCount = *(float*)(p+0x6C);
+            DWORD p = *(DWORD*)(0x00626278);
+            mCherryBase = *(int32_t*)(p+0x88);
+            mMissCount = *(float*)(p+0x50);
+            mBombCount = *(float*)(p+0x6C);
 
-                mCherry = *(int32_t*)(0x0062F888) - mCherryBase;
-                mCherryMax = *(int32_t*)(0x0062F88C) - mCherryBase;
-                mCherryPlus = *(int32_t*)(0x0062F890) - mCherryBase;
+            mCherry = *(int32_t*)(0x0062F888) - mCherryBase;
+            mCherryMax = *(int32_t*)(0x0062F88C) - mCherryBase;
+            mCherryPlus = *(int32_t*)(0x0062F890) - mCherryBase;
 
-                ImGui::Columns(2);
-                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mMissCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mBombCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_07_BORDER_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mBorderBreakCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_07_CHERRY));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mCherry);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_07_CHERRY_PLUS));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mCherryPlus);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_07_CHERRY_MAX));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mCherryMax);
-            }
+            ImGui::Columns(2);
+            ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mMissCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mBombCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_07_BORDER_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mBorderBreakCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_07_CHERRY));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mCherry);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_07_CHERRY_PLUS));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mCherryPlus);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_07_CHERRY_MAX));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mCherryMax);
         }
 
         virtual void OnPreUpdate() override
         {
-            if (*(THOverlay::singleton().mInGameInfo)) {
+            if (*(THOverlay::singleton().mInGameInfo) && (*(DWORD*)(0x575AA8) == 2)) {
+                SetPosRel(450.0f / 640.0f, 193.0f / 480.0f);
+                SetSizeRel(170.0f / 640.0f, 0.0f);
                 Open();
             } else {
                 Close();
@@ -1955,7 +1949,7 @@ namespace TH07 {
         THOverlay::singleton().Update();
         TH07InGameInfo::singleton().Update();
 
-        if (g_adv_igi_options.show_keyboard_monitor && *(int8_t*)(0x62F8C7)) {
+        if (g_adv_igi_options.show_keyboard_monitor && (*(DWORD*)(0x575AA8) == 2)) {
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
             KeysHUD(7, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }

@@ -494,9 +494,9 @@ namespace TH13 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPos(-10000.0f, -10000.0f);
-            SetSize(0.0f, 0.0f);
-            SetWndFlag(
+            SetPosRel(450.0f / 640.0f, 280.0f / 480.0f);
+            SetSizeRel(170.0f / 640.0f, 0.0f);
+            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
@@ -532,34 +532,24 @@ namespace TH13 {
 
         virtual void OnContentUpdate() override
         {
-            if (!*(DWORD*)(0x004C22C4)) {
-                SetPos(-10000.0f, -10000.0f); // fly~
-                return;
-            }
-            {
-                SetPosRel(450.0f / 640.0f, 280.0f / 480.0f);
-                if (g_adv_igi_options.th13_showHits)
-                    SetSizeRel(170.0f / 640.0f, 110.0f / 480.0f);
-                else
-                    SetSizeRel(170.0f/640.0f, 80.0f/480.0f);
-
-                ImGui::Columns(2);
-                ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mMissCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mBombCount);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_13_TRANCE_COUNT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", mTranceCount);
-                ImGui::NextColumn();
+            ImGui::Columns(2);
+            ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mMissCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mBombCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_13_TRANCE_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mTranceCount);
+            ImGui::NextColumn();
+            if (g_adv_igi_options.th13_showHits){
                 ImGui::Text(S(THPRAC_INGAMEINFO_TH13_HITS));
                 ImGui::NextColumn();
                 int32_t hits = 0;
-                if (*(DWORD*)(0x4C22A4)){
+                if (*(DWORD*)(0x4C22A4)) {
                     hits = *(int32_t*)(*(DWORD*)(0x4C22A4) + 0x8838);
                 }
                 ImVec4 col;
@@ -567,13 +557,15 @@ namespace TH13 {
                     col = { 1, 1, 1, 1 };
                 else
                     col = { 0.3, 0.3, 1, 1 };
-                ImGui::TextColored(col,"%8d", hits);
+                ImGui::TextColored(col, "%8d", hits);
             }
         }
 
         virtual void OnPreUpdate() override
         {
-            if (*(THOverlay::singleton().mInGameInfo)) {
+            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004C22C4)) {
+                SetPosRel(450.0f / 640.0f, 280.0f / 480.0f);
+                SetSizeRel(170.0f / 640.0f, 0.0f);
                 Open();
             } else {
                 Close();
