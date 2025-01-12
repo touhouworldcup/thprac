@@ -471,8 +471,6 @@ namespace TH13 {
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
             new HookCtx(0x444D7B, "\x01", 1) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x444A52, "\xeb\x06", 2) } };
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
             new HookCtx(0x40A402, "\x66\x90", 2) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
@@ -484,6 +482,7 @@ namespace TH13 {
             new HookCtx(0x443525, "\xc6", 1) } };
 
     public:
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
@@ -794,6 +793,7 @@ namespace TH13 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
                 KeyHUDOpt();
+                InfLifeOpt();
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH13_SHOW_HITS), &(g_adv_igi_options.th13_showHits));
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR), &(g_adv_igi_options.th13_showHitBar));
                 ImGui::SameLine();
@@ -1660,6 +1660,17 @@ namespace TH13 {
     bool th13ElBgmFlag = false;
 
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th13_inf_lives, 0x00444A52)
+    {
+        if ((*(THOverlay::singleton().mInfLives))) {
+            if (!g_adv_igi_options.map_inf_life_to_no_continue) {
+                *(DWORD*)(0x4BE7F4) = *(DWORD*)(0x4BE7F4) + 1;
+            } else {
+                if (*(DWORD*)(0x4BE7F4) == 0)
+                    *(DWORD*)(0x4BE7F4) = 1;
+            }
+        }
+    }
     EHOOK_ST(th13_dump_rep, 0x448d8c)
     {
         auto filePtr = (void*)pCtx->Eax;

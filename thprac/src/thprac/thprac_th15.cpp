@@ -25,6 +25,8 @@ namespace TH15 {
         int32_t value;
         int32_t graze;
 
+        float doremy_normal_1_phase; // used for 123 Normal 1
+
         bool dlg;
 
         bool _playLock = false;
@@ -51,6 +53,7 @@ namespace TH15 {
             GetJsonValue(power);
             GetJsonValue(value);
             GetJsonValue(graze);
+            GetJsonValue(doremy_normal_1_phase);
 
             return true;
         }
@@ -68,6 +71,8 @@ namespace TH15 {
                 AddJsonValue(phase);
             if (dlg)
                 AddJsonValue(dlg);
+            if (section == TH15_ST3_BOSS1)
+                AddJsonValue(doremy_normal_1_phase);
 
             AddJsonValue(score);
             AddJsonValue(life);
@@ -125,6 +130,7 @@ namespace TH15 {
                     thPracParam.dlg = *mDlg;
 
                 thPracParam.score = *mScore;
+                thPracParam.doremy_normal_1_phase = *mDoremyNormal1Phase;
                 thPracParam.life = *mLife;
                 thPracParam.life_fragment = *mLifeFragment;
                 thPracParam.bomb = *mBomb;
@@ -215,6 +221,10 @@ namespace TH15 {
                 if (*mWarp) {
                     SectionWidget();
                     mPhase(TH_PHASE, SpellPhase());
+                    auto section = CalcSection();
+                    if (section == TH15_ST3_BOSS1 && *mPhase>=2){
+                        mDoremyNormal1Phase();
+                    }
                 }
 
                 mLife();
@@ -333,6 +343,8 @@ namespace TH15 {
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
         Gui::GuiCheckBox mDlg { TH_DLG };
+
+        Gui::GuiSlider<float, ImGuiDataType_Float> mDoremyNormal1Phase{ TH_BT_PHASE,-3.14159265f,3.14159265f,0.01f,1.0f };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
@@ -487,8 +499,6 @@ namespace TH15 {
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
             new HookCtx(0x4566a5, "\x01", 1) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x456397, "\x90", 1) } };
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
             new HookCtx(0x414963, "\x90", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
@@ -501,6 +511,7 @@ namespace TH15 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
 
@@ -818,6 +829,7 @@ namespace TH15 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
                 KeyHUDOpt();
+                InfLifeOpt();
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE), &(g_adv_igi_options.th15_showShootingDownRate));
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th15_bossmovedown.Toggle(forceBossMoveDown);
@@ -1283,7 +1295,18 @@ namespace TH15 {
             ECLSkipChapter(1);
             // wave2
             switch (thPracParam.phase) {
+            case 0:
+                break;
             case 1:
+                ECLJump(ecl, 0x7D4, 0x898, 0);
+                break;
+            case 2:
+                ecl << pair { 0xD3C, thPracParam.doremy_normal_1_phase };
+                ecl << pair { 0xD34, (BYTE)0x00 };
+                break;
+            case 3:
+                ecl << pair { 0xD3C, thPracParam.doremy_normal_1_phase };
+                ecl << pair { 0xD34, (BYTE)0x00 };
                 ECLJump(ecl, 0x7D4, 0x898, 0);
                 break;
             default:
@@ -2001,6 +2024,17 @@ namespace TH15 {
     static bool frameStarted = false;
 
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th15_inf_lives, 0x456397)
+    {
+        if ((*(THOverlay::singleton().mInfLives))) {
+            if (!g_adv_igi_options.map_inf_life_to_no_continue) {
+                pCtx->Eax++;
+            } else {
+                if (*(DWORD*)(0x4E7450) == 0)
+                    pCtx->Eax++;
+            }
+        }
+    }
     EHOOK_DY(th15_everlasting_bgm, 0x476f10)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];

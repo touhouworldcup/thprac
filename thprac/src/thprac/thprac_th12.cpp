@@ -202,7 +202,9 @@ namespace TH12 {
         const th_glossary_t* SpellPhase()
         {
             auto section = CalcSection();
-            if (section == TH12_ST6_BOSS8 || section == TH12_ST6_BOSS10) {
+            if (section == TH12_ST6_BOSS8)
+                return TH12_SPELL_PHASE4_LOCK;
+            else if(section == TH12_ST6_BOSS10) {
                 return TH_SPELL_PHASE1;
             } else if (section == TH12_ST7_END_S10) {
                 return TH_SPELL_PHASE3;
@@ -491,8 +493,6 @@ namespace TH12 {
             new HookCtx(0x43837F, "\x01", 1),
             new HookCtx(0x436d2f, "\xeb", 1),
             new HookCtx(0x4383cb, "\x83\xc4\x10\x90\x90", 5) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x4381E7, "\x66\x0F\x1F\x44\x00", 5) } };
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
             new HookCtx(0x422F27, "\x00", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
@@ -504,6 +504,7 @@ namespace TH12 {
             new HookCtx(0x436D9B, "\xc6", 1) } };
 
     public:
+         Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
@@ -763,6 +764,7 @@ namespace TH12 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
                 KeyHUDOpt();
+                InfLifeOpt();
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th12_bossmovedown.Toggle(forceBossMoveDown);
                 }
@@ -1331,7 +1333,46 @@ namespace TH12 {
 
             ecl << pair{0x5fd8, 0x1388};
 
-            if (thPracParam.phase == 1) {
+            switch (thPracParam.phase) {
+            default:
+            case 0:
+                break;
+            case 1:
+                ECLJumpEx(ecl, 0xd264, 0xd294, 120);
+                ecl << pair { 0xd508, (int16_t)0x0 };
+
+                ecl << pair { 0x0ec0c, 0x0 };
+                ecl << pair { 0x10188, 0x0 };
+                break;
+            case 2:
+                ECLJumpEx(ecl, 0xd264, 0xd294, 120);
+                ecl << pair { 0xd508, (int16_t)0x0 };
+
+                ecl << pair { 0x0ec0c, 0x0 };
+                ecl << pair { 0x0f468, 0x0 };
+                ecl << pair { 0x10188, 0x0 };
+                break;
+            case 3:
+                ECLJumpEx(ecl, 0xd264, 0xd294, 120);
+                ecl << pair { 0xd508, (int16_t)0x0 };
+
+                ecl << pair { 0x0ec0c, 0x0 };
+                ecl << pair { 0x0f468, 0x0 };
+                ecl << pair { 0x0f650, 0x3d };
+                ecl << pair { 0x10188, 0x0 };
+                break;
+            case 4:
+                ECLJumpEx(ecl, 0xd264, 0xd294, 120);
+                ecl << pair { 0xd508, (int16_t)0x0 };
+                ecl << pair { 0xD620, (int16_t)0x0 };
+
+                ecl << pair { 0x0ec0c, 0x0 };
+                ecl << pair { 0x0f468, 0x0 };
+                ecl << pair { 0x0f650, 0x3d };
+                ecl << pair { 0x0fa90, 0x0 };
+                ecl << pair { 0x10188, 0x0 };
+                break;
+            case 5:
                 ECLJumpEx(ecl, 0xd264, 0xd294, 120);
                 ecl << pair{0xd508, (int16_t)0x0};
 
@@ -1339,8 +1380,20 @@ namespace TH12 {
                 ecl << pair{0x0f468, 0x0};
                 ecl << pair{0x0f650, 0x3d};
                 ecl << pair{0x0fa90, 0x0};
-                ecl << pair{0x0ffdc, 0x0};
+                ecl << pair{0x0ffdc, 99999999};
                 ecl << pair{0x10188, 0x0};
+                break;
+            case 6:
+                ECLJumpEx(ecl, 0xd264, 0xd294, 120);
+                ecl << pair { 0xd508, (int16_t)0x0 };
+
+                ecl << pair { 0x0ec0c, 0x0 };
+                ecl << pair { 0x0f468, 0x0 };
+                ecl << pair { 0x0f650, 0x3d };
+                ecl << pair { 0x0fa90, 0x0 };
+                ecl << pair { 0x0ffdc, 0x0 };
+                ecl << pair { 0x10188, 0x0 };
+                break;
             }
             break;
         case THPrac::TH12::TH12_ST6_BOSS9:
@@ -1586,6 +1639,17 @@ namespace TH12 {
     }
 
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th12_inf_lives, 0x4381E7)
+    {
+        if ((*(THOverlay::singleton().mInfLives))) {
+            if (!g_adv_igi_options.map_inf_life_to_no_continue) {
+                *(DWORD*)(0x004B0C98) = *(DWORD*)(0x004B0C98)+1;
+            } else {
+                if (*(DWORD*)(0x004B0C98) == 0)
+                    *(DWORD*)(0x004B0C98) = 1;
+            }
+        }
+    }
     EHOOK_DY(th12_everlasting_bgm, 0x454960)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];

@@ -400,7 +400,6 @@ namespace TH06 {
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
             mShowSpellCapture.SetTextOffsetRel(x_offset_1, x_offset_2);
-            mNotContinue.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -412,7 +411,6 @@ namespace TH06 {
             mAutoBomb();
             mElBgm();
             mShowSpellCapture();
-            mNotContinue();
         }
         virtual void OnPreUpdate() override
         {
@@ -430,10 +428,7 @@ namespace TH06 {
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
             new HookCtx(0x4277c2, "\x03", 1),
             new HookCtx(0x42779a, "\x83\xc4\x10\x90\x90", 5) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, { 
-            new HookCtx(0x428DDB, "\xEB\x15", 2),
-            new HookCtx(0x428AC6, "\x90\x90\x90\x90\x90\x90", 6)// do not drop F item
-        } };
+        
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
             new HookCtx(0x4289e3, "\x00", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
@@ -449,12 +444,12 @@ namespace TH06 {
             new HookCtx(0x428A9D, "\x66\xC7\x05\x04\xD9\x69\x00\x02", 8) } };
 
     public:
-        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
-        Gui::GuiHotKey mShowSpellCapture { THPRAC_INGAMEINFO, "F8", VK_F8 };
-        Gui::GuiHotKey mNotContinue { TH_INFLIVES2, "F9", VK_F9, { 
-            new HookCtx(0x428DDB, "\xA0\xBA\xD4\x69\x00\x7F\x09\x04\x01\x90\x90\x90\x90\x90\x90\x90", 16), 
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2, { 
+            new HookCtx(0x428DDB, "\xA0\xBA\xD4\x69\x00\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 16), 
             new HookCtx(0x428AC6, "\x90\x90\x90\x90\x90\x90", 6) // do not drop F item
         } };
+        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
+        Gui::GuiHotKey mShowSpellCapture { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
 
     
@@ -1509,9 +1504,9 @@ namespace TH06 {
                 ImGui::Spacing();
                 if (mExit())
                     StateExit();
+                ImGui::Spacing();
                 if (mExit2())
                     StateExit2();
-                ImGui::Spacing();
                 ImGui::Spacing();
                 if (mRestart())
                     StateRestart();
@@ -1734,6 +1729,7 @@ namespace TH06 {
             }
             DisableKeyOpt();
             KeyHUDOpt();
+            InfLifeOpt();
             ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK), &g_adv_igi_options.th06_showRank);
             ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX), &g_adv_igi_options.th06_showHitbox);
             ImGui::SameLine();
@@ -2849,6 +2845,20 @@ namespace TH06 {
         }
     }
     
+    EHOOK_DY(th06_inf_lives,0x00428DEB)
+    {
+        if ((*(THOverlay::singleton().mInfLives)))
+        {
+            if (!g_adv_igi_options.map_inf_life_to_no_continue){
+                pCtx->Eax += 1;
+            }else{
+                if ((pCtx->Eax & 0xFF) == 0)
+                    pCtx->Eax += 1;
+            }
+        }
+        
+    }
+
     EHOOK_DY(th06_pause_menu_pauseBGM, 0x402714)
     {
         if (g_pauseBGM_06) {
@@ -3052,16 +3062,21 @@ namespace TH06 {
     EHOOK_DY(th06_render, 0x41cb6d)
     {
         static float t = 0.0f;
+        static bool is_shift_pressed = false;
         if (g_adv_igi_options.th06_showHitbox && g_hitbox_textureID != NULL) {
+            bool is_time_stopped = *(BYTE*)(0x69BCCC);
+
             DWORD gameState = *(DWORD*)(0x6C6EA4);
             BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
             WORD keyState = *(WORD*)(0x69D904);
-            bool is_shift_pressed = keyState & 0x4;
+            if (!is_time_stopped)
+                is_shift_pressed = keyState & 0x4;
 
             auto p = ImGui::GetOverlayDrawList();
             if (gameState == 2 && is_shift_pressed) {
-                if (pauseMenuState == 0){
-                    t += 1.0f;
+                if (pauseMenuState == 0) {
+                    if (!is_time_stopped)
+                        t += 1.0f;
                     float scale = MInterpolation(t / 18.0f, 1.5f, 1.0f),
                           scale2 = MInterpolation(t / 12.0f, 0.3f, 1.0f),
                           angle = 3.14159f,

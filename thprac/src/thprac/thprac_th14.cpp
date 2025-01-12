@@ -478,8 +478,6 @@ namespace TH14 {
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
             new HookCtx(0x44F877, "\x01", 1) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x44F617, "\x90", 1) } };
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
             new HookCtx(0x412173, "\x90", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
@@ -492,6 +490,7 @@ namespace TH14 {
             new HookCtx(0x4b0fd0, "\xA1\x2C\xB5\x4D\x00\x83\xC0\x40\x8B\x00\x85\xC0\x0F\x84\xEF\xCE\xF9\xFF\xE9\xEA\xCF\xF9\xFF\x90", 25) } };
 
     public:
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
         Gui::GuiHotKey mElBgm {TH_EL_BGM, "F7",  VK_F7,  };
         Gui::GuiHotKey mInGameInfo {  THPRAC_INGAMEINFO, "F8",  VK_F8, };
     };
@@ -1422,6 +1421,7 @@ namespace TH14 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
                 KeyHUDOpt();
+                InfLifeOpt();
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_BONUS), &(g_adv_igi_options.th14_showBonus));
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_ITEMS), &(g_adv_igi_options.th14_showItemsCount));
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR), &(g_adv_igi_options.th14_showDropBar));
@@ -2430,6 +2430,17 @@ namespace TH14 {
     }
 
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th14_inf_lives, 0x0044F617)
+    {
+        if ((*(THOverlay::singleton().mInfLives))) {
+            if (!g_adv_igi_options.map_inf_life_to_no_continue) {
+                pCtx->Eax++;
+            } else {
+                if (*(DWORD*)(0x4F5864) == 0)
+                    pCtx->Eax++;
+            }
+        }
+    }
     EHOOK_DY(th14_everlasting_bgm, 0x46ef90)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];

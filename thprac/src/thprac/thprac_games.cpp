@@ -393,6 +393,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
 
         memset(&g_adv_igi_options, 0, sizeof(g_adv_igi_options));
         LauncherSettingGet("auto_disable_master", g_adv_igi_options.disable_master_autoly);
+        LauncherSettingGet("auto_map_inf_life_to_no_continue", g_adv_igi_options.map_inf_life_to_no_continue);
         LauncherSettingGet("auto_th06_bg_fix", g_adv_igi_options.th06_bg_fix);
         LauncherSettingGet("auto_th06_fix_seed", g_adv_igi_options.th06_fix_seed);
         LauncherSettingGet("th06_seed", g_adv_igi_options.th06_seed);
@@ -989,6 +990,12 @@ void AboutOpt(const char* thanks_text)
 
         EndOptGroup();
     }
+}
+
+void InfLifeOpt()
+{
+    ImGui::Checkbox(S(THPRAC_INFLIVES_MAP), &g_adv_igi_options.map_inf_life_to_no_continue);
+    return;
 }
 
 #pragma endregion

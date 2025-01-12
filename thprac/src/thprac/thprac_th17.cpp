@@ -537,8 +537,6 @@ namespace TH17 {
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
             new HookCtx(0x44956a, "\x01", 1) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x44921a, "\x90", 1) } };
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
             new HookCtx(0x411c96, "\x90\x90\x90", 3) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
@@ -554,6 +552,7 @@ namespace TH17 {
             new HookCtx(0x40ef6a, "\x00", 1) } };
         Gui::GuiHotKey mNoGoast { TH17_NO_GOAST, "F8", VK_F8, {
             new HookCtx(0x4347af, "\xe9\x03\x01\x00\x00", 5) } };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F10", VK_F10 };
     };
@@ -999,6 +998,7 @@ namespace TH17 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
                 KeyHUDOpt();
+                InfLifeOpt();
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th17_bossmovedown.Toggle(forceBossMoveDown);
                 }
@@ -1937,6 +1937,17 @@ namespace TH17 {
 #define TH17AddGoast(goast_id) asm_call<0x40f980, Thiscall>(GetMemContent(0x4b7684), goast_id)
 
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th17_inf_lives, 0x44921A)
+    {
+        if ((*(THOverlay::singleton().mInfLives))) {
+            if (!g_adv_igi_options.map_inf_life_to_no_continue) {
+                pCtx->Ecx++;
+            } else {
+                if (*(DWORD*)(0x4B5A40) == 0)
+                    pCtx->Ecx++;
+            }
+        }
+    }
     EHOOK_DY(th17_window_mousedown, 0x46198b) {
         auto& adv_opt = THAdvOptWnd::singleton();
 

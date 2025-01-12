@@ -525,8 +525,7 @@ namespace TH07 {
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
             new HookCtx(0x43Ee14, "\x03", 1) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x44116B, "\x00", 1) } };
+        
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
             new HookCtx(0x440BC7, "\x00", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
@@ -541,6 +540,10 @@ namespace TH07 {
             new HookCtx(0x440B8E, "\x54", 1) } };
 
     public:
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2, {
+            new HookCtx(0x44115F, "\xEB", 1),
+            new HookCtx(0x440DA1, "\x90\x90\x90\x90\x90\x90", 6),//no F
+        } };
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
@@ -763,6 +766,7 @@ namespace TH07 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
                 KeyHUDOpt();
+                InfLifeOpt();
                 if (ImGui::Button(S(TH_ONE_KEY_DIE))) {
                     if (*(DWORD*)(0x626278)) {
                         *(float*)(*(DWORD*)(0x626278) + 0x5c) = 0.0f;
@@ -1769,6 +1773,19 @@ namespace TH07 {
 
     HOOKSET_DEFINE(THMainHook)
     PATCH_DY(th07_reacquire_input, 0x430f03, "\x00\x00\x00\x00\x74", 5);
+
+    EHOOK_DY(th07_inf_lives, 0x00441171)
+    {
+        if ((*(THOverlay::singleton().mInfLives))) {
+            if (!g_adv_igi_options.map_inf_life_to_no_continue) {
+                *(DWORD*)(pCtx->Esp) = 0;
+            } else {
+                if (*(float*)(*(DWORD*)(0x626278) + 0x5C) < 1.0f)
+                    *(DWORD*)(pCtx->Esp) = 0;
+            }
+        }
+    }
+
     EHOOK_DY(th07_everlasting_bgm, 0x44d2f0)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];

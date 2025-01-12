@@ -2100,6 +2100,7 @@ private:
         if (ImGui::CollapsingHeader(S(THPRAC_INGAMEINFO_ADV2))) {
             ImGui::TextWrapped(S(THPRAC_INGAMEINFO_ADV_DESC1));
             ImGui::TextWrapped(S(THPRAC_INGAMEINFO_ADV_DESC2));
+            mCfgMapInfLifeToNoContinue_autoly.Gui(S(THPRAC_INFLIVES_MAP));
             mCfgEnableMasterDisable_autoly.Gui(S(THPRAC_DISABLE_MASTER_AUTO));
             mCfgEnableTH06_ShowRank_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK2));
             mCfgEnableTH06_BgFix_autoly.Gui(S(THPRAC_TH06_BACKGROUND_FIX), S(THPRAC_TH06_BACKGROUND_FIX_DESC));
@@ -2301,6 +2302,7 @@ private:
     THCfgCheckbox mCfgCheckUpdate { "check_update", false };
 
     // advanced igi
+    THCfgCheckbox mCfgMapInfLifeToNoContinue_autoly { "auto_map_inf_life_to_no_continue", true };
     THCfgCheckbox mCfgEnableTH06_DisableRankDrop_autoly { "auto_th06_disable_rank_drop", false };
     THCfgCheckbox mCfgEnableTH06_ShowRank_autoly { "auto_th06_show_rank", false };
     THCfgCheckbox mCfgEnableTH06_BgFix_autoly { "auto_th06_bg_fix", false };

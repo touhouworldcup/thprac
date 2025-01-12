@@ -592,8 +592,6 @@ namespace TH08 {
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
             new HookCtx(0x44abda, "\xB9\x70\xA6\x4E\x00\xE8\xBC\x1F\x00\x00\xE9\xC0\x02\x00\x00", 15),
             new HookCtx(0x44Ab86, "\x03", 1) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x44D0FA, "\x00", 1) } };
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
             new HookCtx(0x44CA78, "\x00", 1),
             new HookCtx(0x44CAA4, "\x00", 1) } };
@@ -605,6 +603,10 @@ namespace TH08 {
             new HookCtx(0x42DDB5, "\xeb", 1) } };
 
     public:
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,{
+            new HookCtx(0x44D0EE, "\x90", 1) ,
+            new HookCtx(0x44CD8D, "\x90\x90\x90\x90\x90\x90", 6),// no F
+        }}; 
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
             new HookCtx(0x44CC18, "\xff\x89", 2),
             new HookCtx(0x44CC21, "\x66\xC7\x05\x28\xD5\x64\x01\x02", 8),
@@ -829,6 +831,7 @@ namespace TH08 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
                 KeyHUDOpt();
+                InfLifeOpt();
                 if (ImGui::Button(S(TH_ONE_KEY_DIE)))
                 {
                     if (*(DWORD*)(0x160f510))
@@ -2301,6 +2304,19 @@ namespace TH08 {
             THMainHook::singleton().th08_familiar.Disable();
         }
     }
+
+    EHOOK_DY(th08_inf_lives, 0x0044D0FB)
+    {
+        if ((*(THOverlay::singleton().mInfLives))) {
+            if (!g_adv_igi_options.map_inf_life_to_no_continue) {
+                *(DWORD*)(pCtx->Esp) = 0;
+            } else {
+                if (*(float*)(*(DWORD*)(0x160f510) + 0x74) < 1.0f)
+                    *(DWORD*)(pCtx->Esp) = 0;
+            }
+        }
+    }
+
     EHOOK_DY(th08_everlasting_bgm, 0x45e1e0)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];

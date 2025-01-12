@@ -19,6 +19,9 @@ namespace TH11 {
         int32_t value;
         int64_t score;
 
+        float boss_x;// used for RA spell 2
+        float boss_y;
+
         bool dlg;
 
         bool _playLock = false;
@@ -44,6 +47,9 @@ namespace TH11 {
             GetJsonValue(value);
             GetJsonValue(score);
 
+            GetJsonValue(boss_x);
+            GetJsonValue(boss_y);
+
             return true;
         }
         std::string GetJson()
@@ -60,6 +66,11 @@ namespace TH11 {
                 AddJsonValue(phase);
             if (dlg)
                 AddJsonValue(dlg);
+            if (section == TH11_ST4_RA2 && phase!=0) {
+                AddJsonValue(boss_x);
+                AddJsonValue(boss_y);
+            }
+                
 
             AddJsonValue(life);
             AddJsonValue(life_fragment);
@@ -140,6 +151,11 @@ namespace TH11 {
                 thPracParam.signal = 0;
                 thPracParam.value = *mValue;
                 thPracParam.score = *mScore;
+                if (thPracParam.section == TH11_ST4_RA2 && *mPhase!=0)
+                {
+                    thPracParam.boss_x = *mBossX;
+                    thPracParam.boss_y = *mBossY;
+                }
                 break;
             case 4:
                 Close();
@@ -190,6 +206,10 @@ namespace TH11 {
                 return TH_SPELL_PHASE2;
             } else if (section == 10000 + 5 * 100 + 4) {
                 return TH_PHASE_INF_MODE;
+            } else if (section == TH11_ST4_RA2){
+                return TH11_SPELL_STARTSET;
+            } else if (section == TH11_ST5_MID3) {
+                return TH11_WAVE2_START;
             }
             return nullptr;
         }
@@ -204,6 +224,11 @@ namespace TH11 {
                 if (*mWarp) {
                     SectionWidget();
                     mPhase(TH_PHASE, SpellPhase());
+                     auto section = CalcSection();
+                    if (section == TH11_ST4_RA2 && *mPhase!=0){
+                        mBossX();
+                        mBossY();
+                    }
                 }
 
                 mLife();
@@ -322,6 +347,9 @@ namespace TH11 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 0, 80 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH_FAITH, 0, 999990, 10, 100000 };
+
+        Gui::GuiDrag<float, ImGuiDataType_Float> mBossX { TH_BOSSX, -140.0f, 140.0f, 1.0f, 100.0f };
+        Gui::GuiDrag<float, ImGuiDataType_Float> mBossY { TH_BOSSY, 80.0f, 176.0f, 1.0f, 100.0f };
 
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
@@ -459,8 +487,6 @@ namespace TH11 {
             new HookCtx(0x432AA4, "\x01", 1),
             new HookCtx(0x431205, "\xeb", 1),
             new HookCtx(0x432ae7, "\x83\xc4\x0c\x90\x90", 5) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x4327EC, "\x90", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F3", VK_F3, {
             new HookCtx(0x4311EB, "\xeb\x0a", 2),
             new HookCtx(0x431298, "\xeb\x09", 2),
@@ -473,6 +499,7 @@ namespace TH11 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F6", VK_F6 };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F7", VK_F7 };
     };
 
@@ -721,6 +748,7 @@ namespace TH11 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
                 KeyHUDOpt();
+                InfLifeOpt();
                 if (ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH11_SHOW_HINT), &(g_adv_igi_options.th11_showHint))) {
                     THAdvOptWnd::SetHint();
                 }
@@ -1219,6 +1247,14 @@ namespace TH11 {
             ECLSatoriJump(ecl, 0);
             break;
         case THPrac::TH11::TH11_ST4_RA2:
+            switch (thPracParam.phase) {
+            case 0:
+                break;
+            case 1:
+                ecl << pair { 0x5438 + 0x8, thPracParam.boss_x };
+                ecl << pair { 0x5438 + 0xC, thPracParam.boss_y };
+                break;
+            }
             ECLSatoriJump(ecl, 0);
             ecl.SetFile(2);
             ECLJump(ecl, 0x1ac, 0x3f4);
@@ -1336,6 +1372,14 @@ namespace TH11 {
             ECLJump(ecl, 0x674c, 0x6844);
             ECLVoid(ecl, 0x29f8);
             ecl.SetFile(2);
+            switch (thPracParam.phase) {
+            case 0:
+                break;
+            case 1:
+                ECLJump(ecl, 0x239C, 0x2A60, 90, 90);
+                ECLJump(ecl, 0x3194, 0x3BC8, 90, 90);
+                break;
+            }
             ecl << pair{0x1b8, 1500} << pair{0x1f8, 1500};
             ecl.SetPos(0x1284);
             ecl << 0 << 0x0014014f << 0x01ff0000 << 0 << 60; // Invicible
@@ -1815,6 +1859,17 @@ namespace TH11 {
     }
 
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th11_inf_lives, 0x004327EC)
+    {
+        if ((*(THOverlay::singleton().mInfLives))) {
+            if (!g_adv_igi_options.map_inf_life_to_no_continue) {
+                pCtx->Edx++;
+            } else {
+                if (pCtx->Edx == 0)
+                    pCtx->Edx++;
+            }
+        }
+    }
     EHOOK_DY(th11_everlasting_bgm, 0x44a9c0)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];

@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1286] {
+const char* th_glossary_str[3][1296] {
     {
         "",
         "啤酒",
@@ -252,7 +252,9 @@ const char* th_glossary_str[3][1286] {
         "章节八（太田飞行阵）",
         "章节九",
         "强制第二波",
+        "强制第二波(强制相位)",
         "正常",
+        "正常(强制相位)",
         "TH15 东方绀珠传　～ Legacy of Lunatic Kingdom.",
         "TH16.5 秘封噩梦日记　～ Violet Detector.",
         "秋",
@@ -657,6 +659,7 @@ const char* th_glossary_str[3][1286] {
         "前往Steam页面",
         "无视##global_data",
         "无视##local_data",
+        "将锁残修改为不疮",
         "更多游戏信息",
         "收率(本次)",
         "收率(总)",
@@ -1091,10 +1094,13 @@ const char* th_glossary_str[3][1286] {
         "使用相对路径",
         "win键状态",
         "是",
+        "默认",
+        "修改初始位置",
         "P1狂暴",
         "P2狂暴",
         "P3狂暴",
         "P4狂暴",
+        "初始第二波",
         "作者：Ack",
         "基于touhouworldcup/thprac",
         "隐藏许可信息",
@@ -1120,11 +1126,14 @@ const char* th_glossary_str[3][1286] {
         "Boss Rush",
         "6面后Extra",
         "中Boss##bossrush",
+        "BossX",
+        "BossY",
         "完全下压",
         "只给练习用，会对rep造成影响注意，基于原理对部分boss有bug",
         "下压幅度",
         "都正常",
         "夫妻双打",
+        "发弹相位",
         "子弹",
         "Rank",
         "锁Rank",
@@ -1208,7 +1217,7 @@ const char* th_glossary_str[3][1286] {
         "锁生命",
         "无限道具",
         "锁残",
-        "不疮",
+        "锁残/不疮",
         "锁火力",
         "无限蓄力",
         "纯狐狂暴",
@@ -1241,6 +1250,7 @@ const char* th_glossary_str[3][1286] {
         "P3",
         "P4",
         "P5",
+        "锁P5",
         "阶段",
         "蓝点",
         "本关蓝点",
@@ -1540,7 +1550,9 @@ const char* th_glossary_str[3][1286] {
         "Chapter 8",
         "Chapter 9",
         "force wave2",
+        "force wave2(force phase)",
         "normal",
+        "normal(force phase)",
         "TH15 Legacy of Lunatic Kingdom",
         "TH16.5 Violet Detector",
         "Autumn",
@@ -1945,6 +1957,7 @@ const char* th_glossary_str[3][1286] {
         "Go to Steam page",
         "Ignore##global_data",
         "Ignore##local_data",
+        "map inf.lives to no continue",
         "in game info",
         "capture(current)",
         "capture(total)",
@@ -2379,10 +2392,13 @@ const char* th_glossary_str[3][1286] {
         "Use relative path",
         "win key state",
         "Yes",
+        "default start",
+        "init pos change",
         "Rage(P1)",
         "Rage(P2)",
         "Rage(P3)",
         "Rage(P4)",
+        "wave 2 start",
         "Author: Ack",
         "based on touhouworldcup/thprac",
         "Hide license info",
@@ -2408,11 +2424,14 @@ const char* th_glossary_str[3][1286] {
         "Boss Rush",
         "Extra after Stage 6",
         "Mid Boss##bossrush",
+        "BossX",
+        "BossY",
         "force boss region to move down",
         "for practice, it will affect the rep, buggy for some bosses",
         "range",
         "Both Normal",
         "Both Rage",
+        "bullet phase",
         "Bullets",
         "Rank",
         "Rank Lock",
@@ -2496,7 +2515,7 @@ const char* th_glossary_str[3][1286] {
         "Inf. Health",
         "Inf. Items",
         "Inf. Lives",
-        "No continue",
+        "Inf. Lives/No Continue",
         "Inf. Power",
         "Inf. Charge",
         "Junko Rage",
@@ -2529,6 +2548,7 @@ const char* th_glossary_str[3][1286] {
         "P3",
         "P4",
         "P5",
+        "P5 lock",
         "Phase",
         "Point",
         "Point (Stage)",
@@ -2828,7 +2848,9 @@ const char* th_glossary_str[3][1286] {
         "チャプター 8",
         "チャプター 9",
         "force wave2",
+        "force wave2(force phase)",
         "normal",
+        "normal(force phase)",
         "TH15 東方紺珠伝　～ Legacy of Lunatic Kingdom.",
         "TH16.5 秘封ナイトメアダイアリー　～ Violet Detector.",
         "秋",
@@ -3233,6 +3255,7 @@ const char* th_glossary_str[3][1286] {
         "Steamページに移動",
         "無視する##global_data",
         "無視する##local_data",
+        "map inf.lives to no continue",
         "in game info",
         "capture(current)",
         "capture(total)",
@@ -3667,10 +3690,13 @@ const char* th_glossary_str[3][1286] {
         "相対パスを使う",
         "win key state",
         "はい",
+        "default start",
+        "init pos change",
         "Rage(P1)",
         "Rage(P2)",
         "Rage(P3)",
         "Rage(P4)",
+        "wave 2 start",
         "作者：Ack",
         "based on touhouworldcup/thprac",
         "ライセンス情報を非表示",
@@ -3696,11 +3722,14 @@ const char* th_glossary_str[3][1286] {
         "ボスラッシュ",
         "ステージ6の後にExtra",
         "中ボス##bossrush",
+        "BossX",
+        "BossY",
         "force boss region to move down",
         "for practice, it will affect the rep, buggy for some bosses",
         "range",
         "両方とも正常",
         "両方の怒り",
+        "bullet phase",
         "弾",
         "ランク",
         "ランクをロックする",
@@ -3784,7 +3813,7 @@ const char* th_glossary_str[3][1286] {
         "ライフ減らない",
         "アイテム減らない",
         "残機減らない",
-        "No continue",
+        "残機減らない/No Continue",
         "霊力減らない",
         "無限チャージ",
         "純子怒り",
@@ -3817,6 +3846,7 @@ const char* th_glossary_str[3][1286] {
         "P3",
         "P4",
         "P5",
+        "P5 lock",
         "段階",
         "得点",
         "得点\n(ステージ)",
@@ -4080,6 +4110,15 @@ const th_glossary_t TH_SPELL_PHASE3[6] {
     TH_P2,
     TH_P3,
     TH_P4,
+    TH_RAGE,
+};
+
+const th_glossary_t TH_SPELL_PHASE4[7] {
+    TH_P1,
+    TH_P2,
+    TH_P3,
+    TH_P4,
+    TH_P5,
     TH_RAGE,
 };
 
@@ -12673,6 +12712,16 @@ namespace TH11 {
         TH_11_SS_RAGE1,
     };
 
+    const th_glossary_t TH11_SPELL_STARTSET[3] {
+        TH_11_DEFAULT_START,
+        TH_11_INIT_POS_CHANGE,
+    };
+
+    const th_glossary_t TH11_WAVE2_START[3] {
+        TH_11_DEFAULT_START,
+        TH_11_WAVE2_START,
+    };
+
 }
 
 namespace TH12 {
@@ -13886,6 +13935,16 @@ namespace TH12 {
         TH12_VENTRA_RED,
         TH12_VENTRA_BLUE,
         TH12_VENTRA_GREEN,
+    };
+
+    const th_glossary_t TH12_SPELL_PHASE4_LOCK[8] {
+        TH_P1,
+        TH_P2,
+        TH_P3,
+        TH_P4,
+        TH_P5,
+        TH_P5_LOCK,
+        TH_RAGE,
     };
 
 }
@@ -20612,9 +20671,11 @@ namespace TH15 {
         TH_P5,
     };
 
-    const th_glossary_t TH15_ST3_NORMAL1_TYPE[3] {
+    const th_glossary_t TH15_ST3_NORMAL1_TYPE[5] {
         TH15_ST3_NORMAL1_TYPE_NORMAL,
         TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2,
+        TH15_ST3_NORMAL1_TYPE_NORMAL_PHASE,
+        TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2_PHASE,
     };
 
 }

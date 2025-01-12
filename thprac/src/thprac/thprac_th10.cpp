@@ -472,8 +472,6 @@ namespace TH10 {
             new HookCtx(0x426D05, "\x01", 1),
             new HookCtx(0x425a2b, "\xeb", 1),
             new HookCtx(0x426D69, "\x83\xc4\x08\x90\x90", 5) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x426A15, "\x90", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F3", VK_F3, {
             new HookCtx(0x4259DB, "\x00", 1),
             new HookCtx(0x425C4A, "\x00", 1),
@@ -490,6 +488,7 @@ namespace TH10 {
 
 
     public:
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
@@ -848,6 +847,7 @@ namespace TH10 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
                 KeyHUDOpt();
+                InfLifeOpt();
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th10_bossmovedown.Toggle(forceBossMoveDown);
                 }
@@ -2417,6 +2417,17 @@ namespace TH10 {
     }
     PATCH_ST(th10_real_bullet_sprite, 0x406e03, "\x0F\x84\x13\x05\x00\x00", 6);
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th10_inf_lives, 0x00426A15)
+    {
+        if ((*(THOverlay::singleton().mInfLives))) {
+            if (!g_adv_igi_options.map_inf_life_to_no_continue) {
+                pCtx->Ecx++;
+            } else {
+                if (pCtx->Ecx == 0)
+                    pCtx->Ecx++;
+            }
+        }
+    }
     EHOOK_DY(th10_everlasting_bgm, 0x43e460)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];

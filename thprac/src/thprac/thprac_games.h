@@ -14,6 +14,7 @@ namespace THPrac {
     struct AdvancedIGI_Options
     {
     bool disable_master_autoly;
+    bool map_inf_life_to_no_continue;
     bool th06_bg_fix;
     bool th06_fix_seed;
     int32_t th06_seed; // to match imgui
@@ -123,6 +124,7 @@ int FPSHelper(adv_opt_ctx& ctx, bool repStatus, bool vpFast, bool vpSlow, FPSHel
 bool GameFPSOpt(adv_opt_ctx& ctx, bool replay = true);
 bool GameplayOpt(adv_opt_ctx& ctx);
 void AboutOpt(const char* thanks_text = nullptr);
+void InfLifeOpt();
 void DisableKeyOpt();
 void KeyHUDOpt();
 

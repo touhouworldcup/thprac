@@ -252,7 +252,9 @@ enum th_glossary_t {
     TH15_ILT_5,
     TH15_ILT_6,
     TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2,
+    TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2_PHASE,
     TH15_ST3_NORMAL1_TYPE_NORMAL,
+    TH15_ST3_NORMAL1_TYPE_NORMAL_PHASE,
     TH15_TITLE,
     TH165_TITLE,
     TH16_AUTUMN,
@@ -657,6 +659,7 @@ enum th_glossary_t {
     THPRAC_GOTO_STEAM_PAGE,
     THPRAC_IGNORE_GLOBAL_DATA,
     THPRAC_IGNORE_LOCAL_DATA,
+    THPRAC_INFLIVES_MAP,
     THPRAC_INGAMEINFO,
     THPRAC_INGAMEINFO_06_CAPTURE_CUR,
     THPRAC_INGAMEINFO_06_CAPTURE_TOT,
@@ -1091,10 +1094,13 @@ enum th_glossary_t {
     THPRAC_USE_REL_PATH,
     THPRAC_WIN_KEY_STATE,
     THPRAC_YES,
+    TH_11_DEFAULT_START,
+    TH_11_INIT_POS_CHANGE,
     TH_11_SS_RAGE1,
     TH_11_SS_RAGE2,
     TH_11_SS_RAGE3,
     TH_11_SS_RAGE4,
+    TH_11_WAVE2_START,
     TH_ABOUT_AUTHOR,
     TH_ABOUT_BRANCH,
     TH_ABOUT_HIDE_LICENCE,
@@ -1120,11 +1126,14 @@ enum th_glossary_t {
     TH_BOSSRUSH,
     TH_BOSSRUSH_EXTRA,
     TH_BOSSRUSH_MIDBOSS,
+    TH_BOSSX,
+    TH_BOSSY,
     TH_BOSS_FORCE_MOVE_DOWN,
     TH_BOSS_FORCE_MOVE_DOWN_DESC,
     TH_BOSS_FORCE_MOVE_DOWN_RANGE,
     TH_BOTH_NORMAL,
     TH_BOTH_RAGE,
+    TH_BT_PHASE,
     TH_BULLETS,
     TH_BULLET_RANK,
     TH_BULLET_RANKLOCK,
@@ -1241,6 +1250,7 @@ enum th_glossary_t {
     TH_P3,
     TH_P4,
     TH_P5,
+    TH_P5_LOCK,
     TH_PHASE,
     TH_POINT,
     TH_POINT_STAGE,
@@ -1297,7 +1307,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1286];
+extern const char* th_glossary_str[3][1296];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1342,6 +1352,8 @@ extern const th_glossary_t TH_PHASE_INF_MODE_TH15_LASERS[4];
 extern const th_glossary_t TH_SPELL_PHASE2[5];
 
 extern const th_glossary_t TH_SPELL_PHASE3[6];
+
+extern const th_glossary_t TH_SPELL_PHASE4[7];
 
 extern const th_glossary_t TH_SIDE_SELECT[3];
 
@@ -1973,6 +1985,10 @@ namespace TH11 {
 
     extern const th_glossary_t TH11_SPELL_5PHASE[9];
 
+    extern const th_glossary_t TH11_SPELL_STARTSET[3];
+
+    extern const th_glossary_t TH11_WAVE2_START[3];
+
 }
 
 namespace TH12 {
@@ -2061,6 +2077,8 @@ namespace TH12 {
     extern const th_sections_t th_sections_cbt[7][2][14];
 
     extern const th_glossary_t TH12_VENTRA_SELECT[5];
+
+    extern const th_glossary_t TH12_SPELL_PHASE4_LOCK[8];
 
 }
 
@@ -2558,7 +2576,7 @@ namespace TH15 {
 
     extern const th_glossary_t TH15_AB_5PHASE[6];
 
-    extern const th_glossary_t TH15_ST3_NORMAL1_TYPE[3];
+    extern const th_glossary_t TH15_ST3_NORMAL1_TYPE[5];
 
 }
 

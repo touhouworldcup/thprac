@@ -955,6 +955,7 @@
 	  "THPRAC_TH06_REP_RAND_SEED": [ "当前打开rep的初始种子", "rand seed for current rep", "rand seed for current rep" ],
 	  
 	  "THPRAC_TH06_RANKLOCK_DOWN": [ "红魔乡自动miss/bomb后不掉rank", "EoSD no rank drop after miss/bomb", "EoSD no rank drop after miss/bomb" ],
+	  "THPRAC_INFLIVES_MAP": [ "将锁残修改为不疮", "map inf.lives to no continue", "map inf.lives to no continue" ],
 	  "THPRAC_DISABLE_MASTER_AUTO":["自动禁用MASTER","automatically disable master","automatically disable master"],
 	  "THPRAC_INGAMEINFO_ADV":["高级IGI功能","advanced igi","advanced igi"],
 	  "THPRAC_INGAMEINFO_ADV_DESC1":["部分功能需要打开更多游戏信息(backspace菜单)中的选项开启","need to enable ingameinfo(in backspace menu) to show","need to enable ingameinfo(in backspace menu) to show"],
@@ -1077,7 +1078,12 @@
       "TH_POINT_STAGE": [ "本关蓝点", "Point (Stage)", "得点\n(ステージ)" ],
       "TH_VALUE": [ "最大得点", "Value", "最大得点" ],
       "TH_FAITH": [ "信仰", "Faith", "信仰" ],
-      "TH_BULLET_RANK": [ "Rank", "Rank", "ランク" ],
+	  
+      "TH_BOSSX": [ "BossX", "BossX", "BossX" ],
+      "TH_BOSSY": [ "BossY", "BossY", "BossY" ],
+      "TH_BT_PHASE": [ "发弹相位", "bullet phase", "bullet phase" ],
+      
+	  "TH_BULLET_RANK": [ "Rank", "Rank", "ランク" ],
       "TH_BULLET_RANKLOCK": [ "锁Rank", "Rank Lock", "ランクをロックする" ],
       "TH_DIFFICULTY": [ "难度", "Difficulty", "難易度" ],
       "TH_REAL_BULLET_SIZE": [ "真實子彈圖形", "Real bullet sprites", "弾のリアルスプライト" ],
@@ -1096,6 +1102,9 @@
       "TH_BOTH_RAGE": [ "夫妻双打", "Both Rage", "両方の怒り" ],
 	  "TH15_ST3_NORMAL1_TYPE_NORMAL":["正常","normal","normal"],
 	  "TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2":["强制第二波","force wave2","force wave2"],
+	  "TH15_ST3_NORMAL1_TYPE_NORMAL_PHASE":["正常(强制相位)","normal(force phase)","normal(force phase)"],
+	  "TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2_PHASE":["强制第二波(强制相位)","force wave2(force phase)","force wave2(force phase)"],
+	  
       "TH_NONE": [ "无", "None", "なし" ],
       "TH_NONSPELL": [ "非符", "Non Spell", "通常" ],
       "TH_SPELL": [ "符卡", "Spell Card", "スペカ" ],
@@ -1115,7 +1124,8 @@
       "TH_TIMELOCK": [ "锁时", "Time Lock", "残り時間減らない" ],
       "TH_MUTEKI": [ "无敌", "Invincible", "無敵" ],
       "TH_INFLIVES": [ "锁残", "Inf. Lives", "残機減らない" ],
-      "TH_INFLIVES2": [ "不疮", "No continue", "No continue" ],
+      "TH_INFLIVES2": [ "锁残/不疮", "Inf. Lives/No Continue", "残機減らない/No Continue" ],
+	  
       "TH_INFBOMBS": [ "锁Bomb", "Inf. Bombs", "ボム減らない" ],
       "TH_INFPOWER": [ "锁火力", "Inf. Power", "霊力減らない" ],
       "TH_AUTOBOMB": [ "自动B", "Auto Bomb", "自動喰らいボム" ],
@@ -1385,6 +1395,14 @@
         "TH_P2",
         "TH_P3",
         "TH_P4",
+        "TH_RAGE"
+      ],
+	  "TH_SPELL_PHASE4": [
+        "TH_P1",
+        "TH_P2",
+        "TH_P3",
+        "TH_P4",
+        "TH_P5",
         "TH_RAGE"
       ],
       "TH_SIDE_SELECT": [
@@ -4322,6 +4340,11 @@
 
     "glossary": {
       "TH11_SIGNAL": [ "信号强度", "C. Gauge", "交信強度" ],
+	  
+	  "TH_11_DEFAULT_START": [ "默认", "default start", "default start" ],
+	  "TH_11_INIT_POS_CHANGE": [ "修改初始位置", "init pos change", "init pos change" ],
+	  "TH_11_WAVE2_START": [ "初始第二波", "wave 2 start", "wave 2 start" ],
+	  
       "TH_11_SS_RAGE4": [ "P4狂暴", "Rage(P4)", "Rage(P4)" ],
       "TH_11_SS_RAGE3": [ "P3狂暴", "Rage(P3)", "Rage(P3)" ],
       "TH_11_SS_RAGE2": [ "P2狂暴", "Rage(P2)", "Rage(P2)" ],
@@ -4898,6 +4921,14 @@
 		"TH_11_SS_RAGE3",
 		"TH_11_SS_RAGE2",
 		"TH_11_SS_RAGE1"
+      ],
+	  "TH11_SPELL_STARTSET": [
+        "TH_11_DEFAULT_START",
+        "TH_11_INIT_POS_CHANGE"
+      ],
+	  "TH11_WAVE2_START": [
+        "TH_11_DEFAULT_START",
+        "TH_11_WAVE2_START"
       ]
     }
   },
@@ -4907,6 +4938,7 @@
     "namespace": "TH12",
 
     "glossary": {
+      "TH_P5_LOCK": [ "锁P5", "P5 lock", "P5 lock" ],
       "TH12_UFO_SIDE": [ "碎片方向", "UFO Side", "ベントラー方向" ],
       "TH12_VENTRA_1": [ "飞碟1", "Ventra 1", "ベントラー1" ],
       "TH12_VENTRA_2": [ "飞碟2", "Ventra 2", "ベントラー2" ],
@@ -5388,6 +5420,15 @@
         "TH12_VENTRA_RED",
         "TH12_VENTRA_BLUE",
         "TH12_VENTRA_GREEN"
+      ],
+	  "TH12_SPELL_PHASE4_LOCK": [
+        "TH_P1",
+        "TH_P2",
+        "TH_P3",
+        "TH_P4",
+        "TH_P5",
+		"TH_P5_LOCK",
+        "TH_RAGE"
       ]
     }
   },
@@ -8086,7 +8127,9 @@
 	  "TH15_ST3_NORMAL1_TYPE":
 	  [
 		"TH15_ST3_NORMAL1_TYPE_NORMAL",
-		"TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2"
+		"TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2",
+		"TH15_ST3_NORMAL1_TYPE_NORMAL_PHASE",
+		"TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2_PHASE"
 	  ]
     }
   },

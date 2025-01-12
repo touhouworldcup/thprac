@@ -478,8 +478,6 @@ namespace TH16 {
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
         Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
             new HookCtx(0x443fe1, "\x01", 1) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x443d39, "\x90", 1) } };
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
             new HookCtx(0x40db83, "\x90\x90\x90", 3) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
@@ -491,6 +489,7 @@ namespace TH16 {
             new HookCtx(0x4427a1, "\xc6", 1) } };
 
     public:
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
@@ -861,6 +860,7 @@ namespace TH16 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 DisableKeyOpt();
                 KeyHUDOpt();
+                InfLifeOpt();
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th16_bossmovedown.Toggle(forceBossMoveDown);
                 }
@@ -2268,6 +2268,17 @@ namespace TH16 {
     }
 
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th16_inf_lives, 0x00443D39)
+    {
+        if ((*(THOverlay::singleton().mInfLives))) {
+            if (!g_adv_igi_options.map_inf_life_to_no_continue) {
+                pCtx->Eax++;
+            } else {
+                if (*(DWORD*)(0x4A57F4) == 0)
+                    pCtx->Eax++;
+            }
+        }
+    }
     EHOOK_DY(th16_spbugfix, 0x4214fa)
     {
         char* sub_str;
