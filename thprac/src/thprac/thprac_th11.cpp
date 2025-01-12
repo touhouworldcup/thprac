@@ -1379,6 +1379,18 @@ namespace TH11 {
                 ECLJump(ecl, 0x239C, 0x2A60, 90, 90);
                 ECLJump(ecl, 0x3194, 0x3BC8, 90, 90);
                 break;
+            case 2:
+                ecl << pair { 0x4808, 24 };
+                // ecl << pair { 0x4920, 0 };
+                // ecl << pair { 0x4958, 0 };
+                break;
+            case 3:
+                ecl << pair { 0x4808, 24 };
+                // ecl << pair { 0x4920, 0 };
+                // ecl << pair { 0x4958, 0 };
+                ECLJump(ecl, 0x239C, 0x2A60, 90, 90);
+                ECLJump(ecl, 0x3194, 0x3BC8, 90, 90);
+                break;
             }
             ecl << pair{0x1b8, 1500} << pair{0x1f8, 1500};
             ecl.SetPos(0x1284);

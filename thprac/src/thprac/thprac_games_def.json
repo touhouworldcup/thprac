@@ -4344,6 +4344,8 @@
 	  "TH_11_DEFAULT_START": [ "默认", "default start", "default start" ],
 	  "TH_11_INIT_POS_CHANGE": [ "修改初始位置", "init pos change", "init pos change" ],
 	  "TH_11_WAVE2_START": [ "初始第二波", "wave 2 start", "wave 2 start" ],
+	  "TH_11_DEFAULT_START_FAST": [ "初始第一波(光速)", "wave 1 start(fast)", "wave 1 start(fast)" ],
+	  "TH_11_WAVE2_START_FAST": [ "初始第二波(光速)", "wave 2 start(fast)", "wave 2 start(fast)" ],
 	  
       "TH_11_SS_RAGE4": [ "P4狂暴", "Rage(P4)", "Rage(P4)" ],
       "TH_11_SS_RAGE3": [ "P3狂暴", "Rage(P3)", "Rage(P3)" ],
@@ -4928,7 +4930,9 @@
       ],
 	  "TH11_WAVE2_START": [
         "TH_11_DEFAULT_START",
-        "TH_11_WAVE2_START"
+        "TH_11_WAVE2_START",
+		"TH_11_DEFAULT_START_FAST",
+        "TH_11_WAVE2_START_FAST"
       ]
     }
   },

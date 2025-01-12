@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1296] {
+const char* th_glossary_str[3][1298] {
     {
         "",
         "啤酒",
@@ -1095,12 +1095,14 @@ const char* th_glossary_str[3][1296] {
         "win键状态",
         "是",
         "默认",
+        "初始第一波(光速)",
         "修改初始位置",
         "P1狂暴",
         "P2狂暴",
         "P3狂暴",
         "P4狂暴",
         "初始第二波",
+        "初始第二波(光速)",
         "作者：Ack",
         "基于touhouworldcup/thprac",
         "隐藏许可信息",
@@ -2393,12 +2395,14 @@ const char* th_glossary_str[3][1296] {
         "win key state",
         "Yes",
         "default start",
+        "wave 1 start(fast)",
         "init pos change",
         "Rage(P1)",
         "Rage(P2)",
         "Rage(P3)",
         "Rage(P4)",
         "wave 2 start",
+        "wave 2 start(fast)",
         "Author: Ack",
         "based on touhouworldcup/thprac",
         "Hide license info",
@@ -3691,12 +3695,14 @@ const char* th_glossary_str[3][1296] {
         "win key state",
         "はい",
         "default start",
+        "wave 1 start(fast)",
         "init pos change",
         "Rage(P1)",
         "Rage(P2)",
         "Rage(P3)",
         "Rage(P4)",
         "wave 2 start",
+        "wave 2 start(fast)",
         "作者：Ack",
         "based on touhouworldcup/thprac",
         "ライセンス情報を非表示",
@@ -12717,9 +12723,11 @@ namespace TH11 {
         TH_11_INIT_POS_CHANGE,
     };
 
-    const th_glossary_t TH11_WAVE2_START[3] {
+    const th_glossary_t TH11_WAVE2_START[5] {
         TH_11_DEFAULT_START,
         TH_11_WAVE2_START,
+        TH_11_DEFAULT_START_FAST,
+        TH_11_WAVE2_START_FAST,
     };
 
 }

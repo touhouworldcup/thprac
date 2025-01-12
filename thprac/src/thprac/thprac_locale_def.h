@@ -1095,12 +1095,14 @@ enum th_glossary_t {
     THPRAC_WIN_KEY_STATE,
     THPRAC_YES,
     TH_11_DEFAULT_START,
+    TH_11_DEFAULT_START_FAST,
     TH_11_INIT_POS_CHANGE,
     TH_11_SS_RAGE1,
     TH_11_SS_RAGE2,
     TH_11_SS_RAGE3,
     TH_11_SS_RAGE4,
     TH_11_WAVE2_START,
+    TH_11_WAVE2_START_FAST,
     TH_ABOUT_AUTHOR,
     TH_ABOUT_BRANCH,
     TH_ABOUT_HIDE_LICENCE,
@@ -1307,7 +1309,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1296];
+extern const char* th_glossary_str[3][1298];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1987,7 +1989,7 @@ namespace TH11 {
 
     extern const th_glossary_t TH11_SPELL_STARTSET[3];
 
-    extern const th_glossary_t TH11_WAVE2_START[3];
+    extern const th_glossary_t TH11_WAVE2_START[5];
 
 }
 
