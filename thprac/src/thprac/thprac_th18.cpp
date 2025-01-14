@@ -3,6 +3,7 @@
 #include "thprac_game_data.h"
 #include <metrohash128.h>
 #include "..\MinHook\src\buffer.h"
+#include <format>
 
 
 namespace THPrac {
@@ -1129,6 +1130,7 @@ namespace TH18 {
             GameplayInit();
             MasterDisableInit();
             ScoreUncapInit();
+            BossMovementInit();
             th18_mukade_fix.Setup();
             th18_scroll_fix.Setup();
             th18_st6final_fix.Setup();
@@ -1245,8 +1247,10 @@ namespace TH18 {
         bool scoreReplayFactor = false;
         bool staticMalletReplay = false;
 
+        HookCtx* bossMovementHook[4];
     public:
-         bool forceBossMoveDown = false;
+        int forceBossMoveDir = 0;
+        bool forceBossMoveDown = false;
     private:
          float bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
         EHOOK_ST(th18_bossmovedown, 0x00433347)
@@ -1683,6 +1687,18 @@ namespace TH18 {
             th18_master_disable[2]->Toggle(g_adv_igi_options.disable_master_autoly);
         }
 
+        void BossMovementInit()
+        {
+            // opposite
+            bossMovementHook[0] = new HookCtx(0x4334D4, "\xEB",1);
+            bossMovementHook[1] = new HookCtx(0x4334A3, "\x90\x90",2);
+            // samedir
+            bossMovementHook[2] = new HookCtx(0x4334D4, "\x90\x90", 2);
+            bossMovementHook[3] = new HookCtx(0x4334A3, "\xEB", 1);
+            for (int i=0;i<4;i++)
+                bossMovementHook[i]->Setup();
+        }
+
         void ScoreUncapInit()
         {
             for (auto addr : scoreUncapOffsetNew) {
@@ -1794,9 +1810,28 @@ namespace TH18 {
                 ImGui::SameLine();
                 HelpMarker(S(TH_BOSS_FORCE_MOVE_DOWN_DESC));
                 ImGui::SameLine();
-                ImGui::SetNextItemWidth(180.0f);
+                ImGui::SetNextItemWidth(150.0f);
                 if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &bossMoveDownRange, 0.002f, 0.0f, 1.0f))
                     bossMoveDownRange = std::clamp(bossMoveDownRange, 0.0f, 1.0f);
+                ImGui::SameLine();
+                ImGui::InvisibleButton("##align", { 50.0f, 1.0f });
+                ImGui::SameLine();
+                const char* const chs[3] = { S(TH_BOSS_MOVE_DEFAULT), S(TH_BOSS_FORCE_MOVE_OPPOSITE_DIR), S(TH_BOSS_FORCE_MOVE_SAME_DIR) };
+                ImGui::SetNextItemWidth(180.0f);
+                if (ImGui::SliderInt(S(TH_BOSS_HORIZONTAL), &forceBossMoveDir, 0, 2, chs[std::clamp(forceBossMoveDir, 0, 2)]))
+                {
+                    forceBossMoveDir = std::clamp(forceBossMoveDir, 0, 2);
+                    for(int i=0;i<4;i++)
+                        bossMovementHook[i]->Toggle(false);
+                    if (forceBossMoveDir == 1){
+                        bossMovementHook[0]->Toggle(true);
+                        bossMovementHook[1]->Toggle(true);
+                    }else if (forceBossMoveDir == 2){
+                        bossMovementHook[2]->Toggle(true);
+                        bossMovementHook[3]->Toggle(true);
+                    }
+                }
+                
 
                 if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
                     th18_master_disable[0]->Toggle(g_adv_igi_options.disable_master_autoly);
@@ -3206,7 +3241,7 @@ namespace TH18 {
 
         // in case boss movedown do not disabled when playing normal games
         {
-            if (THAdvOptWnd::singleton().forceBossMoveDown)
+            if (THAdvOptWnd::singleton().forceBossMoveDown || THAdvOptWnd::singleton().forceBossMoveDir)
             {
                 auto p=ImGui::GetOverlayDrawList();
                 auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));

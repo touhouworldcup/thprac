@@ -978,7 +978,7 @@
 	  "THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR2":["神灵庙显示连击条","TD show hit bar","TD show hit bar"],
 	  "THPRAC_INGAMEINFO_TH13_HITS":["连击","hits","hits"],
 	  
-	  "THPRAC_INGAMEINFO_TH14_SHOW_BONUS":["显示bouns数","show bonuses","show bonuses"],
+	  "THPRAC_INGAMEINFO_TH14_SHOW_BONUS":["显示bonus数","show bonuses","show bonuses"],
 	  "THPRAC_INGAMEINFO_TH14_SHOW_BONUS2":["辉针城显示bouns数","DDC show bonuses","DDC show bonuses"],
 	  "THPRAC_INGAMEINFO_TH14_SHOW_ITEMS":["显示道具量","show items","show items"],
 	  "THPRAC_INGAMEINFO_TH14_SHOW_ITEMS2":["辉针城显示道具量","DDC show items","DDC show items"],
@@ -990,7 +990,7 @@
 	  "THPRAC_INGAMEINFO_TH14_BONUS_12":["1.2","1.2","1.2"],
 	  "THPRAC_INGAMEINFO_TH14_BONUS_16":["1.6","1.6","1.6"],
 	  "THPRAC_INGAMEINFO_TH14_BONUS_20":["2.0","2.0","2.0"],
-	  "THPRAC_INGAMEINFO_TH14_BONUS_NEXT":["下一奖励","next bouns","next bouns"],
+	  "THPRAC_INGAMEINFO_TH14_BONUS_NEXT":["下一奖励","next bonus","next bonus"],
 	  "THPRAC_INGAMEINFO_TH14_BONUS_LIFE":["残","L","L"],
 	  "THPRAC_INGAMEINFO_TH14_BONUS_BOMB":["B","B","B"],
 	  "THPRAC_INGAMEINFO_TH14_ITEMS_CNT":["道具量","items","items"],
@@ -1236,6 +1236,12 @@
 	  "TH_ADV_DISABLE_SHIFT_KEY_DESC": [ "喜欢低封?(快捷键 shift+A)", "like NO FOCUS?(hotkey shift+A)", "like NO FOCUS?(hotkey shift+A)" ],
 	  
 	  "TH_BOSS_FORCE_MOVE_DOWN": [ "完全下压", "force boss region to move down", "force boss region to move down" ],
+	  
+	  "TH_BOSS_HORIZONTAL": [ "水平移动方式", "boss horizontal movement", "boss horizontal movement" ],
+	  "TH_BOSS_MOVE_DEFAULT": [ "正常移动", "move normally", "move normally" ],
+	  "TH_BOSS_FORCE_MOVE_OPPOSITE_DIR": [ "必定反走", "force boss move opposite", "force boss move opposite" ],
+	  "TH_BOSS_FORCE_MOVE_SAME_DIR": [ "必定正走", "force boss move same dir with player", "force boss move same dir with player" ],
+	  
 	  "TH_BOSS_FORCE_MOVE_DOWN_RANGE": [ "下压幅度", "range", "range" ],
       "TH_BOSS_FORCE_MOVE_DOWN_DESC": [ "只给练习用，会对rep造成影响注意，基于原理对部分boss有bug", "for practice, it will affect the rep, buggy for some bosses", "for practice, it will affect the rep, buggy for some bosses" ],
 	  

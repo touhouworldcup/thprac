@@ -1133,6 +1133,10 @@ enum th_glossary_t {
     TH_BOSS_FORCE_MOVE_DOWN,
     TH_BOSS_FORCE_MOVE_DOWN_DESC,
     TH_BOSS_FORCE_MOVE_DOWN_RANGE,
+    TH_BOSS_FORCE_MOVE_OPPOSITE_DIR,
+    TH_BOSS_FORCE_MOVE_SAME_DIR,
+    TH_BOSS_HORIZONTAL,
+    TH_BOSS_MOVE_DEFAULT,
     TH_BOTH_NORMAL,
     TH_BOTH_RAGE,
     TH_BT_PHASE,
@@ -1309,7 +1313,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1298];
+extern const char* th_glossary_str[3][1302];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

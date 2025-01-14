@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1298] {
+const char* th_glossary_str[3][1302] {
     {
         "",
         "啤酒",
@@ -742,7 +742,7 @@ const char* th_glossary_str[3][1298] {
         "残",
         "下一奖励",
         "道具量",
-        "显示bouns数",
+        "显示bonus数",
         "辉针城显示bouns数",
         "显示掉落收集条",
         "辉针城显示掉落收集条",
@@ -1133,6 +1133,10 @@ const char* th_glossary_str[3][1298] {
         "完全下压",
         "只给练习用，会对rep造成影响注意，基于原理对部分boss有bug",
         "下压幅度",
+        "必定反走",
+        "必定正走",
+        "水平移动方式",
+        "正常移动",
         "都正常",
         "夫妻双打",
         "发弹相位",
@@ -2040,7 +2044,7 @@ const char* th_glossary_str[3][1298] {
         "2.0",
         "B",
         "L",
-        "next bouns",
+        "next bonus",
         "items",
         "show bonuses",
         "DDC show bonuses",
@@ -2433,6 +2437,10 @@ const char* th_glossary_str[3][1298] {
         "force boss region to move down",
         "for practice, it will affect the rep, buggy for some bosses",
         "range",
+        "force boss move opposite",
+        "force boss move same dir with player",
+        "boss horizontal movement",
+        "move normally",
         "Both Normal",
         "Both Rage",
         "bullet phase",
@@ -3340,7 +3348,7 @@ const char* th_glossary_str[3][1298] {
         "2.0",
         "B",
         "L",
-        "next bouns",
+        "next bonus",
         "items",
         "show bonuses",
         "DDC show bonuses",
@@ -3733,6 +3741,10 @@ const char* th_glossary_str[3][1298] {
         "force boss region to move down",
         "for practice, it will affect the rep, buggy for some bosses",
         "range",
+        "force boss move opposite",
+        "force boss move same dir with player",
+        "boss horizontal movement",
+        "move normally",
         "両方とも正常",
         "両方の怒り",
         "bullet phase",
