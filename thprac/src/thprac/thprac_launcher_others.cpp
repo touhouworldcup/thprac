@@ -440,11 +440,11 @@ public:
             ImGui::PushStyleColor(ImGuiCol_Text, { r, g, b, 1 });
             ImGui::TextWrapped("(%lld ns)", mGameTimeCur_ns);
             ImGui::PopStyleColor();
-            ImGui::NewLine();
             if (ImGui::Button(S(THPRAC_GAME_TIME_RESET)))
             {
                 mGameTimeCur_ns = 0;
             }
+            ImGui::NewLine();
             ImGui::Separator();
 
             if (mGameTimeCur_ns >= 1000000000ll * 3600 * (double)mTooLongGamePlay_hour) {
