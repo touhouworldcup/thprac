@@ -663,6 +663,7 @@
       "THPRAC_OTHERS": [ "其它", "others", "others" ],
       "THPRAC_GAME_TIME_TOTAL": [ "总飞行时间", "total game time", "total game time" ],
       "THPRAC_GAME_TIME_CURRENT": [ "本次飞行时间", "current game time", "current game time" ],
+      "THPRAC_GAME_TIME_RESET": [ "重置时间", "reset", "reset" ],
       "THPRAC_GAME_TIME_LONG": [ "阿伟你又在玩电动哦，休息一下吧", "long game time", "long game time" ],
       "THPRAC_ENABLE_GAMETIME_RECORD": [ "在设置界面设置「记录飞行时间」以查看(下一次启动生效)", "enable record game time in Settings to check(works when launch next time)", "enable record game time in Settings to check(works when launch next time)" ],
       

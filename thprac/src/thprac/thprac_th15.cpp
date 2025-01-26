@@ -201,6 +201,8 @@ namespace TH15 {
                 return TH_PHASE_INF_MODE;
             } else if (section == TH15_ST6_STARS) {
                 return TH_PHASE_INF_MODE;
+            }else if (section == TH15_ST6_BOSS4) {
+                return TH_SPELL_PHASE1;
             }
             return nullptr;
         }
@@ -1585,6 +1587,10 @@ namespace TH15 {
         case THPrac::TH15::TH15_ST6_BOSS4:
             ECLJump(ecl, 0x91d0, 0x9500, 60);
             ecl.SetFile(2);
+            if (thPracParam.phase == 1) {
+                ECLJump(ecl, 0x5A94, 0x5BB8, 94);
+                ECLJump(ecl, 0x390, 0x43C, 0);
+            }
             ECLSkipChapter(2);
             ECLJump(ecl, 0x5a0, 0x688, 0); // Utilize Spell Practice Jump
             ecl << pair{0x698, 2600}; // Set Health

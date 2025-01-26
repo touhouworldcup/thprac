@@ -655,6 +655,7 @@ enum th_glossary_t {
     THPRAC_GAME_TIME_HINT_SE_STOP,
     THPRAC_GAME_TIME_HINT_SE_TEST,
     THPRAC_GAME_TIME_LONG,
+    THPRAC_GAME_TIME_RESET,
     THPRAC_GAME_TIME_TOTAL,
     THPRAC_GOTO_STEAM_PAGE,
     THPRAC_IGNORE_GLOBAL_DATA,
@@ -1313,7 +1314,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1302];
+extern const char* th_glossary_str[3][1303];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

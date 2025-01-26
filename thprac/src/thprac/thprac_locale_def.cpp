@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1302] {
+const char* th_glossary_str[3][1303] {
     {
         "",
         "啤酒",
@@ -655,6 +655,7 @@ const char* th_glossary_str[3][1302] {
         "音效重复间隔秒数",
         "测试音效",
         "阿伟你又在玩电动哦，休息一下吧",
+        "重置时间",
         "总飞行时间",
         "前往Steam页面",
         "无视##global_data",
@@ -1959,6 +1960,7 @@ const char* th_glossary_str[3][1302] {
         "SE repeat interval(second)",
         "SE test",
         "long game time",
+        "reset",
         "total game time",
         "Go to Steam page",
         "Ignore##global_data",
@@ -3263,6 +3265,7 @@ const char* th_glossary_str[3][1302] {
         "SE repeat interval(second)",
         "SE test",
         "long game time",
+        "reset",
         "total game time",
         "Steamページに移動",
         "無視する##global_data",
