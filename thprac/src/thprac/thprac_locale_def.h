@@ -1197,6 +1197,7 @@ enum th_glossary_t {
     TH_END_S9,
     TH_END_STAGE,
     TH_ENHANCED,
+    TH_ENHANCEMENT_VALUE,
     TH_EOSD_SAKUYA_DOLLS_HALF_HALF,
     TH_EOSD_SAKUYA_DOLLS_MORE_BLUE_TO_GREEN,
     TH_EOSD_SAKUYA_DOLLS_MORE_RED_TO_GREEN,
@@ -1241,6 +1242,7 @@ enum th_glossary_t {
     TH_MID_S3,
     TH_MID_STAGE,
     TH_MODE,
+    TH_MODE_ENHANCED,
     TH_MUTEKI,
     TH_NA,
     TH_NONE,
@@ -1314,7 +1316,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1303];
+extern const char* th_glossary_str[3][1305];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2576,6 +2578,8 @@ namespace TH15 {
     extern const th_sections_t th_sections_cba[7][2][19];
 
     extern const th_sections_t th_sections_cbt[7][2][14];
+
+    extern const th_glossary_t TH15_ST6_BOSS6_PHASE[3];
 
     extern const th_glossary_t TH15_ITS_LUNATIC_TIME[8];
 

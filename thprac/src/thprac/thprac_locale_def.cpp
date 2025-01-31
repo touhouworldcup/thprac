@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1303] {
+const char* th_glossary_str[3][1305] {
     {
         "",
         "啤酒",
@@ -1197,6 +1197,7 @@ const char* th_glossary_str[3][1303] {
         "关底九符",
         "关底Boss",
         "自定义练习",
+        "增强程度",
         "五五开",
         "更多蓝弹变绿",
         "更多红弹变绿",
@@ -1241,6 +1242,7 @@ const char* th_glossary_str[3][1303] {
         "道中三符",
         "道中Boss",
         "模式",
+        "增强",
         "无敌",
         "N/A",
         "无",
@@ -2502,6 +2504,7 @@ const char* th_glossary_str[3][1303] {
         "Boss Spell 9",
         "End Boss",
         "Custom",
+        "enhancement degree",
         "half half",
         "more blue turn green",
         "more red turn green",
@@ -2546,6 +2549,7 @@ const char* th_glossary_str[3][1303] {
         "Mid Spell 3",
         "Mid Boss",
         "Mode",
+        "enhanced",
         "Invincible",
         "N/A",
         "None",
@@ -3807,6 +3811,7 @@ const char* th_glossary_str[3][1303] {
         "ボス スペル9",
         "ボス",
         "カスタム",
+        "enhancement degree",
         "half half",
         "more blue turn green",
         "more red turn green",
@@ -3851,6 +3856,7 @@ const char* th_glossary_str[3][1303] {
         "道中 スペル3",
         "道中ボス",
         "モード",
+        "enhanced",
         "無敵",
         "N/A",
         "なし",
@@ -20667,6 +20673,11 @@ namespace TH15 {
                 TH15_ST7_END_S10,
             },
         },
+    };
+
+    const th_glossary_t TH15_ST6_BOSS6_PHASE[3] {
+        TH_NORMAL,
+        TH_MODE_ENHANCED,
     };
 
     const th_glossary_t TH15_ITS_LUNATIC_TIME[8] {

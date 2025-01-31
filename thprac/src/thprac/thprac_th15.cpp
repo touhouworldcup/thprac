@@ -26,6 +26,7 @@ namespace TH15 {
         int32_t graze;
 
         float doremy_normal_1_phase; // used for 123 Normal 1
+        float enhanced_para; // used for st6boss6
 
         bool dlg;
 
@@ -54,6 +55,7 @@ namespace TH15 {
             GetJsonValue(value);
             GetJsonValue(graze);
             GetJsonValue(doremy_normal_1_phase);
+            GetJsonValue(enhanced_para);
 
             return true;
         }
@@ -73,6 +75,8 @@ namespace TH15 {
                 AddJsonValue(dlg);
             if (section == TH15_ST3_BOSS1)
                 AddJsonValue(doremy_normal_1_phase);
+            if (section == TH15_ST6_BOSS6)
+                AddJsonValue(enhanced_para);
 
             AddJsonValue(score);
             AddJsonValue(life);
@@ -131,6 +135,7 @@ namespace TH15 {
 
                 thPracParam.score = *mScore;
                 thPracParam.doremy_normal_1_phase = *mDoremyNormal1Phase;
+                thPracParam.enhanced_para = *mEnhanced_para;
                 thPracParam.life = *mLife;
                 thPracParam.life_fragment = *mLifeFragment;
                 thPracParam.bomb = *mBomb;
@@ -203,6 +208,8 @@ namespace TH15 {
                 return TH_PHASE_INF_MODE;
             }else if (section == TH15_ST6_BOSS4) {
                 return TH_SPELL_PHASE1;
+            } else if (section == TH15_ST6_BOSS6 && mDiffculty>=2) {
+                return TH15_ST6_BOSS6_PHASE;
             }
             return nullptr;
         }
@@ -226,6 +233,8 @@ namespace TH15 {
                     auto section = CalcSection();
                     if (section == TH15_ST3_BOSS1 && *mPhase>=2){
                         mDoremyNormal1Phase();
+                    } else if (section == TH15_ST6_BOSS6 && *mPhase==1 && mDiffculty >= 2){
+                        mEnhanced_para();
                     }
                 }
 
@@ -347,6 +356,7 @@ namespace TH15 {
         Gui::GuiCheckBox mDlg { TH_DLG };
 
         Gui::GuiSlider<float, ImGuiDataType_Float> mDoremyNormal1Phase{ TH_BT_PHASE,-3.14159265f,3.14159265f,0.01f,1.0f };
+        Gui::GuiSlider<float, ImGuiDataType_Float> mEnhanced_para { TH_ENHANCEMENT_VALUE, 0.0f, 1.0f, 0.01f, 1.0f };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
@@ -1589,7 +1599,7 @@ namespace TH15 {
             ecl.SetFile(2);
             if (thPracParam.phase == 1) {
                 ECLJump(ecl, 0x5A94, 0x5BB8, 94);
-                ECLJump(ecl, 0x390, 0x43C, 0);
+                ECLJump(ecl, 0x390, 0x43C, 0);//disable waiting time
             }
             ECLSkipChapter(2);
             ECLJump(ecl, 0x5a0, 0x688, 0); // Utilize Spell Practice Jump
@@ -1606,6 +1616,12 @@ namespace TH15 {
         case THPrac::TH15::TH15_ST6_BOSS6:
             ECLJump(ecl, 0x91d0, 0x9500, 60);
             ecl.SetFile(2);
+            if (thPracParam.phase == 1) {
+                ECLJump(ecl, 0x390, 0x43C, 0);//disable waiting time
+                ecl << pair { 0x94BC, -9999.0f};
+                ecl << pair { 0x94D0, (2.0f - thPracParam.enhanced_para) * 1.570796f };
+                
+            }
             ECLSkipChapter(2);
             ECLJump(ecl, 0x5a0, 0x63c, 0); // Utilize Spell Practice Jump
             ecl << pair{0x698, 4000}; // Set Health

@@ -1083,6 +1083,7 @@
       "TH_BOSSX": [ "BossX", "BossX", "BossX" ],
       "TH_BOSSY": [ "BossY", "BossY", "BossY" ],
       "TH_BT_PHASE": [ "发弹相位", "bullet phase", "bullet phase" ],
+      "TH_ENHANCEMENT_VALUE": [ "增强程度", "enhancement degree", "enhancement degree" ],
       
 	  "TH_BULLET_RANK": [ "Rank", "Rank", "ランク" ],
       "TH_BULLET_RANKLOCK": [ "锁Rank", "Rank Lock", "ランクをロックする" ],
@@ -1144,6 +1145,7 @@
       "TH_ON": [ "开启", "On", "有効" ],
       "TH_OFF": [ "关闭", "Off", "無効" ],
       "TH_NORMAL": [ "正常", "Normal", "普通" ],
+      "TH_MODE_ENHANCED": [ "增强", "enhanced", "enhanced" ],
       "TH_SPELL_TIME_NORMAL": [ "正常", "Normal", "普通" ],
       "TH_SPELL_TIME_INF": [ "无限时间", "Inf time", "Inf time" ],
       "TH_SPELL_TIME_INF_MODE": [ "无尽模式", "Inf mode", "Inf mode" ],
@@ -8113,6 +8115,10 @@
     },
 
     "groups": {
+		"TH15_ST6_BOSS6_PHASE": [
+        "TH_NORMAL",
+        "TH_MODE_ENHANCED"
+      ],
       "TH15_ITS_LUNATIC_TIME": [
         "TH15_ILT_0",
         "TH15_ILT_1",
