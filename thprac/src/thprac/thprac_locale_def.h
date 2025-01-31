@@ -1267,6 +1267,8 @@ enum th_glossary_t {
     TH_POWER,
     TH_PROGRESS,
     TH_RAGE,
+    TH_RAGE_PRO,
+    TH_RAGE_PRO_MAX,
     TH_REAL_BULLET_SIZE,
     TH_RESTART,
     TH_RESUME,
@@ -1316,7 +1318,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1305];
+extern const char* th_glossary_str[3][1307];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2374,6 +2376,8 @@ namespace TH13 {
     extern const th_sections_t th_sections_cba[7][2][19];
 
     extern const th_sections_t th_sections_cbt[7][2][14];
+
+    extern const th_glossary_t TH13_RAGE[5];
 
 }
 

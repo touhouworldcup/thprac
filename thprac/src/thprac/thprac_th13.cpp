@@ -183,9 +183,12 @@ namespace TH13 {
         const th_glossary_t* SpellPhase()
         {
             auto section = CalcSection();
-            if (section == TH13_ST7_END_S10 || section == TH13_ST6_BOSS11) {
+            if (section == TH13_ST7_END_S10)
                 return TH_SPELL_PHASE1;
-            }
+            else if(section == TH13_ST6_BOSS11)
+                return TH_SPELL_PHASE1;
+            else if (section == TH13_ST1_BOSS5)
+                return TH13_RAGE;
             return nullptr;
         }
         void PracticeMenu()
@@ -1090,6 +1093,29 @@ namespace TH13 {
         case THPrac::TH13::TH13_ST1_BOSS5:
             ECLJump(ecl, 0x8a70, 0x8d04, 60);
             ecl.SetFile(2);
+            switch(thPracParam.phase) {
+            case 0:
+            default:
+                break;
+            case 1:
+                ecl << pair { 0x4530, 30 };
+                ecl << pair { 0x4534, 30 };
+                ecl << pair { 0x4538, 20 };
+                ecl << pair { 0x453C, 10 };
+                break;
+            case 2:
+                ecl << pair { 0x4530, 20 };
+                ecl << pair { 0x4534, 20 };
+                ecl << pair { 0x4538, 15 };
+                ecl << pair { 0x453C, 7 };
+                break;
+            case 3:
+                ecl << pair { 0x4530, 15 };
+                ecl << pair { 0x4534, 15 };
+                ecl << pair { 0x4538, 10 };
+                ecl << pair { 0x453C, 5 };
+                break;
+            }
             ECLJump(ecl, 0x35c, 0x444, 0); // Utilize Spell Practice Jump
             ecl << pair{0x454, 2500}; // Set Health
             ecl << pair{0x474, (int8_t)0x33}; // Set Spell Ordinal

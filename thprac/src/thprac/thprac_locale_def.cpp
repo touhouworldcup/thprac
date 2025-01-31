@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1305] {
+const char* th_glossary_str[3][1307] {
     {
         "",
         "啤酒",
@@ -1267,6 +1267,8 @@ const char* th_glossary_str[3][1305] {
         "火力",
         "进度",
         "发狂",
+        "发狂Pro",
+        "发狂ProMax",
         "真實子彈圖形",
         "重新开始",
         "继续游戏",
@@ -2574,6 +2576,8 @@ const char* th_glossary_str[3][1305] {
         "Power",
         "Progress",
         "Rage",
+        "Rage Pro",
+        "Rage ProMax",
         "Real bullet sprites",
         "Restart",
         "Resume",
@@ -3881,6 +3885,8 @@ const char* th_glossary_str[3][1305] {
         "霊力",
         "進行度",
         "発狂",
+        "発狂 Pro",
+        "発狂 ProMax",
         "弾のリアルスプライト",
         "リトライ",
         "再開",
@@ -17890,6 +17896,13 @@ namespace TH13 {
                 TH13_ST7_END_S10,
             },
         },
+    };
+
+    const th_glossary_t TH13_RAGE[5] {
+        TH_NORMAL,
+        TH_RAGE,
+        TH_RAGE_PRO,
+        TH_RAGE_PRO_MAX,
     };
 
 }

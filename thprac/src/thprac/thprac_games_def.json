@@ -1154,6 +1154,9 @@
       "TH_SPELL_TIME_INF_BOOK6": [ "无限时间(6本)", "Inf time(6 book)", "Inf time(6 book)" ],
       "TH_SPELL_TIME_INF_BOOK5": [ "无限时间(5本)", "Inf time(5 book)", "Inf time(5 book)" ],
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
+      "TH_RAGE_PRO": [ "发狂Pro", "Rage Pro", "発狂 Pro" ],
+      "TH_RAGE_PRO_MAX": [ "发狂ProMax", "Rage ProMax", "発狂 ProMax" ],
+	  
       "TH_P1": [ "P1", "P1", "P1" ],
       "TH_P2": [ "P2", "P2", "P2" ],
       "TH_P3": [ "P3", "P3", "P3" ],
@@ -6936,6 +6939,15 @@
         "appearance": [ 7, 2, 18 ],
         "!X": [ "貉符「满月下的腹鼓舞」", "Raccoon Sign \"Full Moon Pompokolin\"", "狢符「満月のポンポコリン」" ]
       }
+    },
+
+    "groups": {
+      "TH13_RAGE": [
+        "TH_NORMAL",
+        "TH_RAGE",
+        "TH_RAGE_PRO",
+        "TH_RAGE_PRO_MAX"
+      ]
     }
   },
 
