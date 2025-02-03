@@ -186,15 +186,15 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Mike Goutokuji",
+                        .label = S(TH185_GOUTOKUZI_MIKE),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(0, 2) } }
                             } }
                         }
                     },
-                    {
-                        .label = "Minoriko Aki",
+                    { 
+                        .label = S(TH185_AKI_MINORIKO),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(1, 2) } }
@@ -202,15 +202,15 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Eternity Larva",
+                        .label = S(TH185_ETERNITY_LARVA),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(2, 2) } }
                             } }
                         }
                     },
-                    {
-                        .label = "Nemuno Sakata",
+                    { 
+                        .label = S(TH185_SAKATA_NEMUNO),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(3, 2) } }
@@ -359,8 +359,8 @@ namespace TH185 {
                     {
                         .label = S(TH185_NONE_RANDOM)
                     },
-                    {
-                        .label = "Cirno",
+                    { 
+                        .label = S(TH185_CIRNO),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(0, 6) } }
@@ -368,15 +368,15 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Wakasagihime",
+                        .label = S(TH185_WAKASAGIHIME),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(1, 6) } }
                             } }
                         }
                     },
-                    {
-                        .label = "Sekibanki",
+                    { 
+                        .label = S(TH185_SEKIBANKI),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(2, 6) } }
@@ -384,7 +384,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Urumi Ushizaki",
+                        .label = S(TH185_USHIZAKI_URUMI),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(3, 6) } }
@@ -548,7 +548,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Eika Ebisu",
+                        .label = S(TH185_EBISU_EIKA),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(0, 10) } }
@@ -556,7 +556,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Kutaka Niwatari",
+                        .label = S(TH185_NIWATARI_KUTAKA),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(1, 10) } }
@@ -564,7 +564,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Narumi Yatadera",
+                        .label = S(TH185_YATADERA_NARUMI),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(2, 10) } }
@@ -572,7 +572,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Komachi Onozuka",
+                        .label = S(TH185_ONOZUKA_KOMACHI),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(3, 10) } }
@@ -736,7 +736,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Sanae Kochiya",
+                        .label = S(TH185_KOCHIYA_SANAE),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(0, 14) } }
@@ -744,7 +744,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Sakuya Izayoi",
+                        .label = S(TH185_IZAYOI_SAKUYA),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(1, 14) } }
@@ -752,7 +752,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Youmu Konpaku",
+                        .label = S(TH185_KONPAKU_YOUMU),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(2, 14) } }
@@ -760,7 +760,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Reimu Hakurei",
+                        .label = S(TH185_HAKUREI_REIMU),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(3, 14) } }
@@ -768,7 +768,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Nitori Kawashiro",
+                        .label = S(TH185_KAWASIRO_NITORI),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = {
@@ -1008,7 +1008,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Tsukasa Kudamaki",
+                        .label = S(TH185_KUDAMAKI_TSUKASA),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(0, 18) } }
@@ -1016,7 +1016,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Megumu Iizunamaru",
+                        .label = S(TH185_IIZUNAMARU_MEGUMU),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(1, 18) } }
@@ -1024,7 +1024,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Clownpiece",
+                        .label = S(TH185_CLOWNPIECE),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(2, 18) } }
@@ -1032,7 +1032,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Tenshi Hinanawi",
+                        .label = S(TH185_HINANAWI_TENSHI),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(3, 18) } }
@@ -1274,7 +1274,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Suika Ibuki",
+                        .label = S(TH185_IBUKI_SUIKA),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(0, 22) } }
@@ -1282,7 +1282,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Mamizou Futatsuiwa",
+                        .label = S(TH185_FUTATUIWA_MAMIZOU),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(1, 22) } }
@@ -1290,7 +1290,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Saki Kurokoma",
+                        .label = S(TH185_KUROKOMA_SAKI),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(2, 22) } }
@@ -1298,7 +1298,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Momoyo Himemushi",
+                        .label = S(TH185_HIMEMUSHI_MOMOYO),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(3, 22) } }
@@ -1306,7 +1306,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Takane Yamashiro",
+                        .label = S(TH185_YAMASHIRO_TAKANE),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { {
@@ -1565,7 +1565,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = "Chimata Tenkyuu",
+                    .label = S(TH185_TENKYU_CHIMATA),
                     .jumps = {
                         { "main", {
                             { .off = 0x29c, .dest = 0x67c }
@@ -1772,7 +1772,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM),
                     },
                     {
-                        .label = "Mike Goutokuji",
+                        .label = S(TH185_GOUTOKUZI_MIKE),
                         .writes = {
                             { "WorldWaveB01", {
                                 { .off = 0x34, .bytes = {
@@ -1782,7 +1782,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Minoriko Aki",
+                        .label = S(TH185_AKI_MINORIKO),
                         .writes = {
                             { "WorldWaveB01", {
                                 { .off = 0x34, .bytes = {
@@ -1792,7 +1792,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Eternity Larva",
+                        .label = S(TH185_ETERNITY_LARVA),
                         .writes = {
                             { "WorldWaveB01", {
                                 { .off = 0x34, .bytes = {
@@ -1802,7 +1802,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Nemuno Sakata",
+                        .label = S(TH185_SAKATA_NEMUNO),
                         .writes = {
                             { "WorldWaveB01", {
                                 { .off = 0x34, .bytes = {
@@ -1821,7 +1821,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Cirno",
+                        .label = S(TH185_CIRNO),
                         .writes = {
                             { "WorldWaveB02", {
                                 { .off = 0x34, .bytes = {
@@ -1831,7 +1831,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Wakasagihime",
+                        .label = S(TH185_WAKASAGIHIME),
                         .writes = {
                             { "WorldWaveB02", {
                                 { .off = 0x34, .bytes = {
@@ -1841,7 +1841,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Sekibanki",
+                        .label = S(TH185_SEKIBANKI),
                         .writes = {
                             { "WorldWaveB02", {
                                 { .off = 0x34, .bytes = {
@@ -1851,7 +1851,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Urumi Ushizaki",
+                        .label = S(TH185_USHIZAKI_URUMI),
                         .writes = {
                             { "WorldWaveB02", {
                                 { .off = 0x34, .bytes = {
@@ -1870,7 +1870,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Eika Ebisu",
+                        .label = S(TH185_EBISU_EIKA),
                         .writes = {
                             { "WorldWaveB03", {
                                 { .off = 0x34, .bytes = {
@@ -1880,7 +1880,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Kutaka Niwatari",
+                        .label = S(TH185_NIWATARI_KUTAKA),
                         .writes = {
                             { "WorldWaveB03", {
                                 { .off = 0x34, .bytes = {
@@ -1890,7 +1890,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Narumi Yatadera",
+                        .label = S(TH185_YATADERA_NARUMI),
                         .writes = {
                             { "WorldWaveB03", {
                                 { .off = 0x34, .bytes = {
@@ -1900,7 +1900,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Komachi Onozuka",
+                        .label = S(TH185_ONOZUKA_KOMACHI),
                         .writes = {
                             { "WorldWaveB03", {
                                 { .off = 0x34, .bytes = {
@@ -1919,7 +1919,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Sanae Kochiya",
+                        .label = S(TH185_KOCHIYA_SANAE),
                         .writes = {
                             { "WorldWaveB04", {
                                 { .off = 0x34, .bytes = {
@@ -1929,7 +1929,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Sakuya Izayoi",
+                        .label = S(TH185_IZAYOI_SAKUYA),
                         .writes = {
                             { "WorldWaveB04", {
                                 { .off = 0x34, .bytes = {
@@ -1939,7 +1939,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Youmu Konpaku",
+                        .label = S(TH185_KONPAKU_YOUMU),
                         .writes = {
                             { "WorldWaveB04", {
                                 { .off = 0x34, .bytes = {
@@ -1949,7 +1949,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Reimu Hakurei",
+                        .label = S(TH185_HAKUREI_REIMU),
                         .writes = {
                             { "WorldWaveB04", {
                                 { .off = 0x34, .bytes = {
@@ -1968,7 +1968,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Tsukasa Kudamaki",
+                        .label = S(TH185_KUDAMAKI_TSUKASA),
                         .writes = {
                             { "WorldWaveB05", {
                                 { .off = 0x34, .bytes = {
@@ -1978,7 +1978,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Megumu Iizunamaru",
+                        .label = S(TH185_IIZUNAMARU_MEGUMU),
                         .writes = {
                             { "WorldWaveB05", {
                                 { .off = 0x34, .bytes = {
@@ -1988,7 +1988,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Clownpiece",
+                        .label = S(TH185_CLOWNPIECE),
                         .writes = {
                             { "WorldWaveB05", {
                                 { .off = 0x34, .bytes = {
@@ -1998,7 +1998,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Tenshi Hinanawi",
+                        .label = S(TH185_HINANAWI_TENSHI),
                         .writes = {
                             { "WorldWaveB05", {
                                 { .off = 0x34, .bytes = {
@@ -2017,7 +2017,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Suika Ibuki",
+                        .label = S(TH185_IBUKI_SUIKA),
                         .writes = {
                             { "WorldWaveB06", {
                                 { .off = 0x34, .bytes = {
@@ -2027,7 +2027,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Mamizou Futatsuiwa",
+                        .label = S(TH185_FUTATUIWA_MAMIZOU),
                         .writes = {
                             { "WorldWaveB06", {
                                 { .off = 0x34, .bytes = {
@@ -2037,7 +2037,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Saki Kurokoma",
+                        .label = S(TH185_KUROKOMA_SAKI),
                         .writes = {
                             { "WorldWaveB06", {
                                 { .off = 0x34, .bytes = {
@@ -2047,7 +2047,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Momoyo Himemushi",
+                        .label = S(TH185_HIMEMUSHI_MOMOYO),
                         .writes = {
                             { "WorldWaveB06", {
                                 { .off = 0x34, .bytes = {
