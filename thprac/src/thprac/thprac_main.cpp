@@ -162,6 +162,11 @@ THGameSig* CheckOngoingGame(PROCESSENTRY32W& proc, uintptr_t* base, HANDLE* pOut
             if (gameDef.exeSig.textSize != sig.textSize || gameDef.exeSig.timeStamp != sig.timeStamp) {
                 continue;
             }
+            if (pOutHandle) {
+                *pOutHandle = hProc;
+            } else {
+                CloseHandle(hProc);
+            }
             return &gameDef;
         }
     }
