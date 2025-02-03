@@ -1462,7 +1462,7 @@ namespace TH185 {
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = "Dialog"
+                        .label = S(TH_DLG)
                     },
                     {
                         .label = S(TH_NONSPELL),
