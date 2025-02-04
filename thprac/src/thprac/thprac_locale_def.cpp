@@ -525,7 +525,7 @@ const char* th_glossary_str[3][908]
         "C3/C4 Rank (P2)",
         "Rank: %d",
         "显示敌人HP",
-        "TH19 东方兽王园 〜 Unfinished Dream of All Living Ghost.",
+        "TH19 东方兽王园　～ Unfinished Dream of All Living Ghost.",
         "中止",
         "以管理员身份启动thprac",
         "启动游戏后:",
@@ -2213,7 +2213,7 @@ const char* th_glossary_str[3][908]
         "「身軽な生首ライフ」",
         "「剽掠のさざ波」",
         "石符「エイジャの積石」",
-        "TH18.5 バレットフィリア達の闇市場　〜 100th Black Market.",
+        "TH18.5 バレットフィリア達の闇市場　～ 100th Black Market.",
         "Wave 1",
         "Wave 10",
         "Wave 11",
@@ -2345,7 +2345,7 @@ const char* th_glossary_str[3][908]
         "C3/C4ランク(P2)",
         "ランク: %d",
         "敵のHPを表示する",
-        "TH19 東方獣王園 〜 Unfinished Dream of All Living Ghost.",
+        "TH19 東方獣王園　～ Unfinished Dream of All Living Ghost.",
         "中止",
         "管理者権限でthpracを起動する",
         "ゲーム起動後:",
@@ -20146,7 +20146,7 @@ const th_sections_t th_sections_cbt[1][2][1]
 
 }
 
-const wchar_t __thprac_loc_range_zh[3145] {
+const wchar_t __thprac_loc_range_zh[3143] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -20156,7 +20156,6 @@ const wchar_t __thprac_loc_range_zh[3145] {
     0x3002, 0x3002,
     0x300c, 0x300c,
     0x300d, 0x300d,
-    0x301c, 0x301c,
     0x4e00, 0x4e00,
     0x4e03, 0x4e03,
     0x4e07, 0x4e07,
@@ -21743,7 +21742,7 @@ const wchar_t __thprac_loc_range_en[35] {
     0
 };
 
-const wchar_t __thprac_loc_range_ja[2671] {
+const wchar_t __thprac_loc_range_ja[2669] {
     0x0020, 0x00FF,
     0x2026, 0x2026,
     0x3000, 0x3000,
@@ -21753,7 +21752,6 @@ const wchar_t __thprac_loc_range_ja[2671] {
     0x3006, 0x3006,
     0x300c, 0x300c,
     0x300d, 0x300d,
-    0x301c, 0x301c,
     0x3042, 0x3042,
     0x3044, 0x3044,
     0x3046, 0x3046,

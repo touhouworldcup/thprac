@@ -2450,10 +2450,10 @@ extern const th_sections_t th_sections_cbt[1][2][1];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3145];
+extern const wchar_t __thprac_loc_range_zh[3143];
 
 extern const wchar_t __thprac_loc_range_en[35];
 
-extern const wchar_t __thprac_loc_range_ja[2671];
+extern const wchar_t __thprac_loc_range_ja[2669];
 
 }
