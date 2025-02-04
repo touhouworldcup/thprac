@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][934]
+const char* th_glossary_str[3][935]
 {
     {
         "",
@@ -505,7 +505,7 @@ const char* th_glossary_str[3][934]
         "基石冷却",
         "锤子冷却",
         "莉莉冷却",
-        "莉莉用计数",
+        "莉莉使用数",
         "市场操纵",
         "1-8: 顺序展示卡片",
         "0: 获取选中卡片",
@@ -516,6 +516,7 @@ const char* th_glossary_str[3][934]
         "蜈蚣",
         "蜈蚣卡牌修复",
         "开启时，能够从一面开始正常播放含有蜈蚣卡牌的replay。",
+        "打开市场",
         "菫子冷却",
         "你可以使用这个区域中的功能修复被“关卡间切换主动卡”bug影响的replay。\n修复的replay可以使用原版游戏播放（不需要thprac）。",
         "隐藏说明##th18",
@@ -538,20 +539,20 @@ const char* th_glossary_str[3][934]
         "开启时，能够正常播放含有卷轴卡牌的replay（仅限Extra）。",
         "修复「弹幕的庇护所」",
         "开启时，在符卡练习中全避「弹幕的庇护所」将不再使游戏崩溃。",
-        "在重播时，将万宝槌的金币转换率固定为30里的11",
-        "启用后，在回放中，万宝槌的物品转换将不再受到RNG影响（每30子弹为11金物品和19绿物品；接近原版游戏的比率）。",
+        "在播放replay时，将万宝槌的金币转换率固定为11/30",
+        "启用后，在回放中，万宝槌的物品转换将不再受到RNG影响（每30颗子弹变为11个金钱道具和19个得分道具；接近原版游戏的比率）。",
         "太阳冷却",
         "TH18 东方虹龙洞　～ Unconnected Marketeers.",
         "移除分数限制",
         "...并写入replay中",
         "牙冷却",
-        "0CD",
+        "无冷却",
         "盾",
         "C3/C4 Rank (P1)",
         "C3/C4 Rank (P2)",
         "Rank: %d",
         "显示敌人HP",
-        "TH19 东方兽王园 〜 Unfinished Dream of All Living Ghost.",
+        "TH19 东方兽王园　～ Unfinished Dream of All Living Ghost.",
         "中止",
         "以管理员身份启动thprac",
         "启动游戏后:",
@@ -1452,6 +1453,7 @@ const char* th_glossary_str[3][934]
         "Centipede",
         "Centipede card fix",
         "When enabled, allowing replays that contain the centipede card to play normally if start from stage one.",
+        "Open shop",
         "Sumi CD",
         "This section allows you to fix replays that were affected by the \"switching active cards in-between stages\" bug.\nRepaired replays can be played with the original game (thprac is not needed).",
         "Hide instruction##th18",
@@ -1474,14 +1476,14 @@ const char* th_glossary_str[3][934]
         "When enabled, allowing replays (Extra only) that contain the scroll card to play normally.",
         "Fix \"Asylum of Danmaku\"",
         "When enabled, timeouting \"Asylum of Danmaku\" in spell practice no longer crashes the game.",
-        "Fix Mallet gold conversion ratio to 11:30 when playing replay",
+        "Fix Mallet gold conversion ratio to 11/30 when playing replay",
         "When enabled, RNG will no longer play a part in the Miracle Mallet's item conversion during replays (11 gold items and 19 green items for every 30 bullets; close to vanilla rate).",
         "Sun CD",
         "TH18 Unconnected Marketeers",
         "Score uncap",
         "...and write into the replay",
         "Fang CD",
-        "0CD",
+        "No cooldown",
         "Barrier",
         "C3/C4 Rank (P1)",
         "C3/C4 Rank (P2)",
@@ -2288,7 +2290,7 @@ const char* th_glossary_str[3][934]
         "「剽掠のさざ波」",
         "石符「エイジャの積石」",
         "天弓千亦",
-        "TH18.5 バレットフィリア達の闇市場　〜 100th Black Market.",
+        "TH18.5 バレットフィリア達の闇市場　～ 100th Black Market.",
         "牛崎　潤美",
         "わかさぎ姫",
         "Wave 1",
@@ -2388,6 +2390,7 @@ const char* th_glossary_str[3][934]
         "ムカデ",
         "ムカデカード修復",
         "有効にすると、ムカデカードを含むリプレイを一面から再生した場合に正常に再生できるようになります。",
+        "市場に入る",
         "菫子CD",
         "このセクションでは、「ステージ間で使用カードを切り替える」バグの影響を受けたリプレイを修正できます。\n修復されたリプレイは、オリジナルゲームで再生できます（thpracは必要ありません）。",
         "指示を非表示##th18",
@@ -2417,13 +2420,13 @@ const char* th_glossary_str[3][934]
         "スコアキャップ解放",
         "...そしてリプレイに書き込みます ",
         "牙CD",
-        "0CD",
+        "クールタイムがない",
         "バリア",
         "C3/C4ランク(P1)",
         "C3/C4ランク(P2)",
         "ランク: %d",
         "敵のHPを表示する",
-        "TH19 東方獣王園 〜 Unfinished Dream of All Living Ghost.",
+        "TH19 東方獣王園　～ Unfinished Dream of All Living Ghost.",
         "中止",
         "管理者権限でthpracを起動する",
         "ゲーム起動後:",
@@ -20224,7 +20227,7 @@ const th_sections_t th_sections_cbt[1][2][1]
 
 }
 
-const wchar_t __thprac_loc_range_zh[3171] {
+const wchar_t __thprac_loc_range_zh[3169] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -20234,7 +20237,6 @@ const wchar_t __thprac_loc_range_zh[3171] {
     0x3002, 0x3002,
     0x300c, 0x300c,
     0x300d, 0x300d,
-    0x301c, 0x301c,
     0x4e00, 0x4e00,
     0x4e03, 0x4e03,
     0x4e07, 0x4e07,
@@ -21834,7 +21836,7 @@ const wchar_t __thprac_loc_range_en[35] {
     0
 };
 
-const wchar_t __thprac_loc_range_ja[2705] {
+const wchar_t __thprac_loc_range_ja[2703] {
     0x0020, 0x00FF,
     0x2026, 0x2026,
     0x3000, 0x3000,
@@ -21844,7 +21846,6 @@ const wchar_t __thprac_loc_range_ja[2705] {
     0x3006, 0x3006,
     0x300c, 0x300c,
     0x300d, 0x300d,
-    0x301c, 0x301c,
     0x3042, 0x3042,
     0x3044, 0x3044,
     0x3046, 0x3046,

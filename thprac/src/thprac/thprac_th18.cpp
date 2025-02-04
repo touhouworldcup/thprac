@@ -787,7 +787,7 @@ namespace TH18 {
                 bool f11_enable = !GetMemContent(ABILITY_SHOP_PTR) && GetMemContent(0x4cf2e4);
                 if (!f11_enable)
                     ImGui::BeginDisabled();
-                ImGui::TextUnformatted("F11: Open shop");
+                ImGui::Text("%s: %s", "F11", S(TH18_OPEN_MARKET));
                 if (!f11_enable)
                     ImGui::EndDisabled();
             } else {
