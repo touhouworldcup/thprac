@@ -543,12 +543,12 @@
       "TH185_TITLE": [
           "TH18.5 弹幕狂们的黑市　～ 100th Black Market.",
           "TH18.5 100th Black Market",
-          "TH18.5 バレットフィリア達の闇市場　〜 100th Black Market."
+          "TH18.5 バレットフィリア達の闇市場　～ 100th Black Market."
       ],
       "TH19_TITLE": [
-          "TH19 东方兽王园 〜 Unfinished Dream of All Living Ghost.",
+          "TH19 东方兽王园　～ Unfinished Dream of All Living Ghost.",
           "TH19 Unfinished Dream of All Living Ghost",
-          "TH19 東方獣王園 〜 Unfinished Dream of All Living Ghost."
+          "TH19 東方獣王園　～ Unfinished Dream of All Living Ghost."
       ]
     },
 
@@ -8380,8 +8380,9 @@
       "TH18_CARD": [ "卡片", "Card", "カード" ],
       "TH18_CARD_FORMAT": [ "卡片 %d", "Card %d", "カード %d" ],
       "TH18_INFFUNDS": [ "锁资金", "Inf. Funds", "資金力減らない" ],
-      "TH18_ZERO_CD": [ "0CD", "0CD", "0CD" ],
+      "TH18_ZERO_CD": [ "无冷却", "No cooldown", "クールタイムがない" ],
       "TH18_MARKET_MANIP": [ "市场操纵", "Market Manip.", "市場操作" ],
+      "TH18_OPEN_MARKET": [ "打开市场", "Open shop", "市場に入る" ],
       "TH18_MARKET_MANIP_DESC1": [ "1-8: 顺序展示卡片", "1-8: Display cards in order", "1-8: カードを順番に表示する " ],
       "TH18_MARKET_MANIP_DESC2": [ "0: 获取选中卡片", "0: Acquire selected card", "0: 選択したカードを取得する" ],
       "TH18_MARKET_MANIP_DESC3": [ "Ctrl+0: 获取所有卡片", "Ctrl+0: Acquire all cards", "Ctrl+0: すべてのカードを取得する " ],
@@ -8393,7 +8394,7 @@
       "TH18_MIKOFLASH_CD": [ "神子冷却", "Miko CD", "神子CD" ],
       "TH18_VAMPIRE_CD": [ "牙冷却", "Fang CD", "牙CD" ],
       "TH18_SUN_CD": [ "太阳冷却", "Sun CD", "太陽CD" ],
-      "TH18_LILY_COUNT": [ "莉莉用计数", "Lily Count", "リリ使回数" ],
+      "TH18_LILY_COUNT": [ "莉莉使用数", "Lily Count", "リリ使回数" ],
       "TH18_LILY_CD": [ "莉莉冷却", "Lily CD", "リリCD" ],
       "TH18_BASSDRUM_CD": [ "鼓冷却", "Drum CD", "低音鼓CD" ],
       "TH18_PSYCO_CD": [ "菫子冷却", "Sumi CD", "菫子CD" ],
@@ -8402,9 +8403,9 @@
       "TH18_UNCAP": [ "移除分数限制", "Score uncap", "スコアキャップ解放" ],
       "TH18_UNCAP_OVERWRITE": [ "...并写入replay中", "...and write into the replay", "...そしてリプレイに書き込みます " ],
       "TH18_REPLAY_BONUS": [ "播放replay时计算关卡/Clear Bonus", "Add stage/clear bonus when playing replay", "リプレイを再生するときにステージ/クリアボーナスを加算する" ],
-      "TH18_STATIC_MALLET": [ "在重播时，将万宝槌的金币转换率固定为30里的11", "Fix Mallet gold conversion ratio to 11:30 when playing replay", "リプレイ再生時の小槌の金変換率を十一の三十に変更" ],
+      "TH18_STATIC_MALLET": [ "在播放replay时，将万宝槌的金币转换率固定为11/30", "Fix Mallet gold conversion ratio to 11/30 when playing replay", "リプレイ再生時の小槌の金変換率を十一の三十に変更" ],
       "TH18_STATIC_MALLET_DESC": [
-        "启用后，在回放中，万宝槌的物品转换将不再受到RNG影响（每30子弹为11金物品和19绿物品；接近原版游戏的比率）。",
+        "启用后，在回放中，万宝槌的物品转换将不再受到RNG影响（每30颗子弹变为11个金钱道具和19个得分道具；接近原版游戏的比率）。",
         "When enabled, RNG will no longer play a part in the Miracle Mallet's item conversion during replays (11 gold items and 19 green items for every 30 bullets; close to vanilla rate).",
         "有効にすると、リプレイ中の打ち出の小槌のアイテム変換においてRNGは影響しません（30弾毎に11の金アイテムと19の緑アイテム；ほぼバニラゲームのレートに近い）。" ],
       "TH18_MUKADE_FIX": [ "蜈蚣卡牌修复", "Centipede card fix", "ムカデカード修復" ],
@@ -9149,7 +9150,7 @@
           "TH185_SPELL_27_1": [ "弹币「Bullet Money Glut」(弹币过剩)", "Bullet Money \"Bullet Money Glut\"" , "弾貨「バレットマネーグラット」" ],
           "TH185_SPELL_27_2": [ "叶技「Super Green Spiral」(超绿色螺旋)", "Leaf Skill \"Super Green Spiral\"" , "葉技「スーパーグリーンスパイラル」" ],
           "TH185_SPELL_27_3": [ "「黑市的万华镜」", "\"Black Market Kaleidoscope\"" , "「ブラックマーケットの万華鏡」" ],
-
+          
           "TH185_GOUTOKUZI_MIKE": ["豪德寺三花", "Goutokuzi Mike", "豪徳寺　ミケ"],
           "TH185_AKI_MINORIKO": ["秋穰子", "Aki Minoriko", "秋　穣子"],
           "TH185_ETERNITY_LARVA": ["爱塔妮缇拉尔瓦", "Eternity Larva", "エタニティラルバ"],
