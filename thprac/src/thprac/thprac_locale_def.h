@@ -489,6 +489,7 @@ enum th_glossary_t
     TH18_MUKADE,
     TH18_MUKADE_FIX,
     TH18_MUKADE_FIX_DESC,
+    TH18_OPEN_MARKET,
     TH18_PSYCO_CD,
     TH18_REPFIX_DESC,
     TH18_REPFIX_HIDE_INS,
@@ -919,7 +920,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][907];
+extern const char* th_glossary_str[3][908];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

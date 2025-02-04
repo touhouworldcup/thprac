@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][907]
+const char* th_glossary_str[3][908]
 {
     {
         "",
@@ -489,6 +489,7 @@ const char* th_glossary_str[3][907]
         "蜈蚣",
         "蜈蚣卡牌修复",
         "开启时，能够从一面开始正常播放含有蜈蚣卡牌的replay。",
+        "打开市场",
         "菫子冷却",
         "你可以使用这个区域中的功能修复被“关卡间切换主动卡”bug影响的replay。\n修复的replay可以使用原版游戏播放（不需要thprac）。",
         "隐藏说明##th18",
@@ -518,7 +519,7 @@ const char* th_glossary_str[3][907]
         "移除分数限制",
         "...并写入replay中",
         "牙冷却",
-        "0CD",
+        "无冷却",
         "盾",
         "C3/C4 Rank (P1)",
         "C3/C4 Rank (P2)",
@@ -1398,6 +1399,7 @@ const char* th_glossary_str[3][907]
         "Centipede",
         "Centipede card fix",
         "When enabled, allowing replays that contain the centipede card to play normally if start from stage one.",
+        "Open shop",
         "Sumi CD",
         "This section allows you to fix replays that were affected by the \"switching active cards in-between stages\" bug.\nRepaired replays can be played with the original game (thprac is not needed).",
         "Hide instruction##th18",
@@ -1427,7 +1429,7 @@ const char* th_glossary_str[3][907]
         "Score uncap",
         "...and write into the replay",
         "Fang CD",
-        "0CD",
+        "No cooldown",
         "Barrier",
         "C3/C4 Rank (P1)",
         "C3/C4 Rank (P2)",
@@ -2307,6 +2309,7 @@ const char* th_glossary_str[3][907]
         "ムカデ",
         "ムカデカード修復",
         "有効にすると、ムカデカードを含むリプレイを一面から再生した場合に正常に再生できるようになります。",
+        "市場に入る",
         "菫子CD",
         "このセクションでは、「ステージ間で使用カードを切り替える」バグの影響を受けたリプレイを修正できます。\n修復されたリプレイは、オリジナルゲームで再生できます（thpracは必要ありません）。",
         "指示を非表示##th18",
@@ -2336,7 +2339,7 @@ const char* th_glossary_str[3][907]
         "スコアキャップ解放",
         "...そしてリプレイに書き込みます ",
         "牙CD",
-        "0CD",
+        "クールタイムがない",
         "バリア",
         "C3/C4ランク(P1)",
         "C3/C4ランク(P2)",
