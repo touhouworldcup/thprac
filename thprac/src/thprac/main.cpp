@@ -67,7 +67,7 @@ int WINAPI wWinMain(
         ShellExecuteW(nullptr, L"runas", exePath, nullptr, nullptr, SW_SHOW);
         return 0;
     }
-
+    checkUpdateWhen = 2;// disable auto update
     if (checkUpdateWhen == 1) {
         if (LauncherUpdDialog(autoUpdate)) {
             return 0;

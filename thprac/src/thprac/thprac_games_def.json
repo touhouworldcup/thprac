@@ -199,6 +199,7 @@
       "THPRAC_GAME_ADJUSTMENTS": [ "thprac - 游戏调整", "thprac - Game adjustments", "thprac - ゲームの調整" ],
       "THPRAC_CHECK_UPDATE_WHEN": [ "检查更新的时机:", "Check update when:", "更新を確認するタイミング:" ],
       "THPRAC_CHECK_UPDATE_WHEN_OPTION": [ "打开启动器时\\0执行thprac时\\0从不\\0\\0", "Opening launcher\\0Executing thprac\\0Never\\0\\0", "ランチャーを開くとき\\0thpracの実行するとき\\0なし\\0\\0" ],
+      "THPRAC_CHECK_UPDATE_WHEN_OPTION_2": [ "不准QAQ", "NO QAQ", "NO QAQ" ],
       "THPRAC_UPDATE_WITHOUT_CONFIRMATION": [ "不作确认并自动更新thprac", "Update thprac without confirmation", "確認なしでthpracを更新する" ],
       "THPRAC_UPDATE_WITHOUT_CONFIRMATION_DESC": [ "(上个选项被设置成\"从不\"时无效)", "(Does nothing if the previous option is set to \"Never\")", "(前のオプションが「なし」に設定されている場合は効果がありません)" ],
       "THPRAC_FILENAME_AFTER_UPDATE": [ "更新后的程序文件名:", "Program filename after update:", "更新後のプログラムのファイル名:" ],
@@ -233,6 +234,7 @@
     "THPRAC_COMPATIBILITY_SETTINGS":["兼容性设置","Compatibility Settings","Compatibility Settings"],
 	
     "THPRAC_DISABLE_F10_11_13":["在th11到th13靳用F10键","disable f10 for th11-13","disable f10 for th11-13"],
+    "THPRAC_DISABLE_F10_11_13_DESC":["该按键用于切换全屏","which is used for toggle fullscreen","which is used for toggle fullscreen"],
     "THPRAC_DISABLE_JOY":["禁用手柄","disable joystick","disable joystick"],
     "THPRAC_DISABLE_JOY_DESC":["对部分作有效, 禁用有关手柄的部分函数以减少掉帧","works for some games, disables functions for joystick to avoid lags","works for some games, disables functions for joystick to avoid lags"],
     
@@ -242,7 +244,8 @@
     "THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC":["游戏启动时如果爆显存，导致字体显示全为白块或透明等错误，则需要设置此项","if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it","if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it"],
     
     "THPRAC_RENDER_CORRECT_FONT":["渲染正确的日文字体","render correct ja fonts","render correct ja fonts"],
-    "THPRAC_RENDER_CORRECT_FONT_DESC":["当游戏字体(对话/符卡)渲染错误时尝试开启本选项, 仅在使用thprac启动游戏时生效","use this option when game font is wrong(msg/spell), only works when launch game by thprac","use this option when game font is wrong(msg/spell), only works when launch game by thprac"],
+    "THPRAC_RENDER_CORRECT_FONT_DESC":["当游戏字体(对话/符卡)渲染错误时尝试开启本选项, 仅在使用thprac启动游戏时生效","use this option when game fonts are wrong(msg/spell), only works when launch game by thprac","use this option when game fonts are wrong(msg/spell), only works when launch game by thprac"],
+	"THPRAC_RENDER_CORRECT_FONT_DESC2":["原版游戏使用 MS Gothic 和 MS Mincho 字体, 若开启此选项后仍不能正确显示, 请确认两个字体已经安装","original game use font 'MS Gothic' and 'MS Mincho', if fonts are still wrong after toggling this option, please check the font installation","original game use font 'MS Gothic' and 'MS Mincho', if fonts are still wrong after toggling this option, please check the font installation"],
     
     "THPRAC_CUSTOM_FONTS":["使用自定义游戏字体","use custom game fonts","use custom game fonts"],
     "THPRAC_CUSTOM_FONTS_DESC":["仅在使用thprac启动游戏时生效","only works when launch game by thprac","only works when launch game by thprac"],
