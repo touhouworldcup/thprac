@@ -106,7 +106,7 @@ Choosing "Exit" will now prompt you to save a replay.
 - Japanese translations: [Yu-miya](https://www.twitch.tv/toho_yumiya), CyrusVorazan, DeepL
 - Moving all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
 - English README.md: [Galagyy](https://github.com/Galagyy)
-- Chinese README.md translations: [TNT569](https://github.com/TNT569) 
+- Chinese README.md translation: [TNT569](https://github.com/TNT569), [H-J-Granger](https://github.com/H-J-Granger)
 
 ## <a name="faq"></a> **Frequently Asked Questions (FAQ)**
 
