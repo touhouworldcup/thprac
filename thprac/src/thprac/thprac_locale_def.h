@@ -264,6 +264,7 @@ enum th_glossary_t
     TH17_NO_GOAST,
     TH17_TITLE,
     TH185_ADDITIONAL_CARDS,
+    TH185_AKI_MINORIKO,
     TH185_BULLET_MONEY,
     TH185_CARD_0,
     TH185_CARD_1,
@@ -350,9 +351,30 @@ enum th_glossary_t
     TH185_CARD_83,
     TH185_CARD_84,
     TH185_CARD_9,
+    TH185_CIRNO,
+    TH185_CLOWNPIECE,
+    TH185_EBISU_EIKA,
+    TH185_ETERNITY_LARVA,
     TH185_FORCE_WAVE,
+    TH185_FUTATUIWA_MAMIZOU,
+    TH185_GOUTOKUZI_MIKE,
+    TH185_HAKUREI_REIMU,
+    TH185_HIMEMUSHI_MOMOYO,
+    TH185_HINANAWI_TENSHI,
+    TH185_IBUKI_SUIKA,
+    TH185_IIZUNAMARU_MEGUMU,
     TH185_INF_BMONEY,
+    TH185_IZAYOI_SAKUYA,
+    TH185_KAWASIRO_NITORI,
+    TH185_KOCHIYA_SANAE,
+    TH185_KONPAKU_YOUMU,
+    TH185_KUDAMAKI_TSUKASA,
+    TH185_KUROKOMA_SAKI,
+    TH185_NIWATARI_KUTAKA,
     TH185_NONE_RANDOM,
+    TH185_ONOZUKA_KOMACHI,
+    TH185_SAKATA_NEMUNO,
+    TH185_SEKIBANKI,
     TH185_SPELL_0_1,
     TH185_SPELL_10_1,
     TH185_SPELL_11_1,
@@ -393,7 +415,10 @@ enum th_glossary_t
     TH185_SPELL_7_1,
     TH185_SPELL_8_1,
     TH185_SPELL_9_1,
+    TH185_TENKYU_CHIMATA,
     TH185_TITLE,
+    TH185_USHIZAKI_URUMI,
+    TH185_WAKASAGIHIME,
     TH185_WAVE_1,
     TH185_WAVE_10,
     TH185_WAVE_11,
@@ -408,6 +433,8 @@ enum th_glossary_t
     TH185_WAVE_9,
     TH185_WAVE_FORMAT,
     TH185_WHOLESALE,
+    TH185_YAMASHIRO_TAKANE,
+    TH185_YATADERA_NARUMI,
     TH18_AC_FIX,
     TH18_AC_FIX_DESC,
     TH18_BASSDRUM_CD,
@@ -920,7 +947,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][908];
+extern const char* th_glossary_str[3][935];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2450,10 +2477,10 @@ extern const th_sections_t th_sections_cbt[1][2][1];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3143];
+extern const wchar_t __thprac_loc_range_zh[3169];
 
 extern const wchar_t __thprac_loc_range_en[35];
 
-extern const wchar_t __thprac_loc_range_ja[2669];
+extern const wchar_t __thprac_loc_range_ja[2703];
 
 }

@@ -215,8 +215,8 @@ namespace Gui {
         }
         inline void SetLabel(const char* label)
         {
-            mLabelRef = 0;
-            mLabel = label;
+            mLabelRef = static_cast<th_glossary_t>(0);
+            mLabel = const_cast<char*>(label);
         }
         inline void SetBound(const T minimum, const T maximum)
         {
@@ -343,8 +343,8 @@ namespace Gui {
         }
         inline void SetLabel(const char* label)
         {
-            mLabelRef = 0;
-            mLabel = label;
+            mLabelRef = static_cast<th_glossary_t>(0);
+            mLabel = const_cast<char*>(label);
         }
         inline void SetBound(const T&& minimum, const T&& maximum)
         {
