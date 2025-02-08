@@ -1067,11 +1067,21 @@ namespace TH15 {
                 ecl << pair{0x845c, 0};
                 break;
             case 8:
-                if (thPracParam.phase == 1) {
+                switch (thPracParam.phase)
+                {
+                default:
+                case 0:
+                    break;
+                case 1:
                     ECLJump(ecl, 0x89C0, 0x8824, 0, 0);
-                } else if (thPracParam.phase == 2) {
+                    break;
+                case 2:
                     ECLJump(ecl, 0x880C, 0x8A00, 0, 0);
                     ECLJump(ecl, 0x8C78, 0x8A40, 0, 0);
+                    break;
+                case 3:
+                    ECLJump(ecl, 0x880C, 0x8A00, 0, 0);
+                    break;
                 }
                 ECLJump(ecl, 0x9f34, 0xa1a0, 60, 90);
                 ECLJump(ecl, 0x70ec, 0x726c, 0, 0);

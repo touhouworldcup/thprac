@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1310] {
+const char* th_glossary_str[3][1311] {
     {
         "",
         "啤酒",
@@ -1290,6 +1290,7 @@ const char* th_glossary_str[3][1310] {
         "无尽模式(绿)",
         "无尽模式(黄)",
         "正常",
+        "正常(绿)",
         "关卡",
         "1",
         "2",
@@ -2602,6 +2603,7 @@ const char* th_glossary_str[3][1310] {
         "Inf mode(G)",
         "Inf mode(Y)",
         "Normal",
+        "Normal(G)",
         "Stage",
         "1",
         "2",
@@ -3914,6 +3916,7 @@ const char* th_glossary_str[3][1310] {
         "Inf mode(Y)",
         "Inf mode(G)",
         "普通",
+        "Normal(G)",
         "ステージ",
         "1",
         "2",
@@ -4134,10 +4137,11 @@ const th_glossary_t TH_PHASE_INF_MODE[3] {
     TH_SPELL_TIME_INF_MODE,
 };
 
-const th_glossary_t TH_PHASE_INF_MODE_TH15_LASERS[4] {
+const th_glossary_t TH_PHASE_INF_MODE_TH15_LASERS[5] {
     TH_SPELL_TIME_NORMAL,
     TH_SPELL_TIME_INF_MODE_Y,
     TH_SPELL_TIME_INF_MODE_G,
+    TH_SPELL_TIME_NORMAL_G,
 };
 
 const th_glossary_t TH_SPELL_PHASE2[5] {

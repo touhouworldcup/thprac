@@ -1290,6 +1290,7 @@ enum th_glossary_t {
     TH_SPELL_TIME_INF_MODE_G,
     TH_SPELL_TIME_INF_MODE_Y,
     TH_SPELL_TIME_NORMAL,
+    TH_SPELL_TIME_NORMAL_G,
     TH_STAGE,
     TH_STAGE_1,
     TH_STAGE_2,
@@ -1321,7 +1322,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1310];
+extern const char* th_glossary_str[3][1311];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1361,7 +1362,7 @@ extern const th_glossary_t TH_PHASE_INF_TIME[3];
 
 extern const th_glossary_t TH_PHASE_INF_MODE[3];
 
-extern const th_glossary_t TH_PHASE_INF_MODE_TH15_LASERS[4];
+extern const th_glossary_t TH_PHASE_INF_MODE_TH15_LASERS[5];
 
 extern const th_glossary_t TH_SPELL_PHASE2[5];
 
