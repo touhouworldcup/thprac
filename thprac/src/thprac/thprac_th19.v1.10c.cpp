@@ -41,7 +41,8 @@ namespace V1_10c {
         
     #define SCALE (*(float*)RVA(0x22EEB0))
 
-    inline float square(float x)
+    template<typename T>
+    __forceinline T square(T x)
     {
         return x * x;
     }
@@ -77,29 +78,29 @@ namespace V1_10c {
 
         // I don't feel like trying to make this more readable
         check_pos_list[1].y = check_pos_list[1].y - unfocused_linear_px;
-        check_pos_list[10].y = check_pos_list[10].y - focused_linear_px;
         check_pos_list[2].y = check_pos_list[2].y + unfocused_linear_px;
-        check_pos_list[11].y = check_pos_list[11].y + focused_linear_px;
         check_pos_list[3].x = check_pos_list[3].x - unfocused_linear_px;
-        check_pos_list[12].x = check_pos_list[12].x - focused_linear_px;
         check_pos_list[4].x = check_pos_list[4].x + unfocused_linear_px;
-        check_pos_list[13].x = check_pos_list[13].x + focused_linear_px;
-        check_pos_list[5].y = check_pos_list[5].y - unfocused_diagonal_px;
         check_pos_list[5].x = check_pos_list[5].x - unfocused_diagonal_px;
-        check_pos_list[14].y = check_pos_list[14].y - focused_diagonal_px;
-        check_pos_list[14].x = check_pos_list[14].x - focused_diagonal_px;
-        check_pos_list[6].y = check_pos_list[6].y - unfocused_diagonal_px;
+        check_pos_list[5].y = check_pos_list[5].y - unfocused_diagonal_px;
         check_pos_list[6].x = check_pos_list[6].x + unfocused_diagonal_px;
-        check_pos_list[15].y = check_pos_list[15].y - focused_diagonal_px;
-        check_pos_list[15].x = check_pos_list[15].x + focused_diagonal_px;
-        check_pos_list[7].y = check_pos_list[7].y + unfocused_diagonal_px;
+        check_pos_list[6].y = check_pos_list[6].y - unfocused_diagonal_px;
         check_pos_list[7].x = check_pos_list[7].x - unfocused_diagonal_px;
-        check_pos_list[16].y = check_pos_list[16].y + focused_diagonal_px;
-        check_pos_list[16].x = check_pos_list[16].x - focused_diagonal_px;
-        check_pos_list[8].y = check_pos_list[8].y + unfocused_diagonal_px;
+        check_pos_list[7].y = check_pos_list[7].y + unfocused_diagonal_px;
         check_pos_list[8].x = check_pos_list[8].x + unfocused_diagonal_px;
-        check_pos_list[17].y = check_pos_list[17].y + focused_diagonal_px;
+        check_pos_list[8].y = check_pos_list[8].y + unfocused_diagonal_px;
+        check_pos_list[10].y = check_pos_list[10].y - focused_linear_px;
+        check_pos_list[11].y = check_pos_list[11].y + focused_linear_px;
+        check_pos_list[12].x = check_pos_list[12].x - focused_linear_px;
+        check_pos_list[13].x = check_pos_list[13].x + focused_linear_px;
+        check_pos_list[14].x = check_pos_list[14].x - focused_diagonal_px;
+        check_pos_list[14].y = check_pos_list[14].y - focused_diagonal_px;
+        check_pos_list[15].x = check_pos_list[15].x + focused_diagonal_px;
+        check_pos_list[15].y = check_pos_list[15].y - focused_diagonal_px;
+        check_pos_list[16].x = check_pos_list[16].x - focused_diagonal_px;
+        check_pos_list[16].y = check_pos_list[16].y + focused_diagonal_px;
         check_pos_list[17].x = check_pos_list[17].x + focused_diagonal_px;
+        check_pos_list[17].y = check_pos_list[17].y + focused_diagonal_px;
 
         // Idk if it's faster to have this clamping as a separate loop
         for (size_t i = 0; i < _countof(check_pos_list); i++) {
