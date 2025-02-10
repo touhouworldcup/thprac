@@ -4,6 +4,8 @@
 #include <immintrin.h>
 #include <algorithm>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 namespace THPrac {
 namespace TH19 {
@@ -45,6 +47,47 @@ namespace V1_10c {
     __forceinline T square(T x)
     {
         return x * x;
+    }
+
+    inline float angle_normalize(float angle)
+    {
+        while (angle < -(M_PI)) {
+            angle += (2 * M_PI);
+        }
+        while (angle > (M_PI)) {
+            angle -= (2 * M_PI);
+        }
+        return angle;
+    }
+
+    bool line_segments_intersect_2d(
+        float a1,
+        float a2,
+        float a3,
+        float a4,
+        float a5,
+        float a6,
+        float a7,
+        float a8)
+    {
+        float v19 = ((a1 - a3) * (a6 - a2)) + ((a2 - a4) * (a1 - a5));
+        float v13 = ((a1 - a3) * (a8 - a2)) + ((a2 - a4) * (a1 - a7));
+
+        if ((v13 * v19) <= 0.0) {
+            if (v19 != 0.0 || v13 != 0.0)
+                return ((((a4 - a6) * (a5 - a7)) + ((a5 - a3) * (a6 - a8))) * (((a5 - a1) * (a6 - a8)) + ((a2 - a6) * (a5 - a7)))) <= 0.0;
+            if (a1 > a3) {
+                std::swap(a1, a3);
+                std::swap(a2, a4);
+            }
+            if (a5 > a7) {
+                std::swap(a5, a7);
+                std::swap(a6, a8);
+            }
+            if (a7 >= a1 && a8 >= a2 && a3 >= a5 && a4 >= a6)
+                return 1;
+        }
+        return 0;
     }
 
     // Code written by Khangaroo (https://github.com/khang06)
@@ -124,6 +167,7 @@ namespace V1_10c {
                         hit_flags |= 1 << j;
                 }
             } else {
+                // Clang doesn't like __libm_sse2_sincosf_ for some reason, so this might be faster with MSVC with /fp:fast
                 float angle_sin = sinf(-collider->angle);
                 float angle_cos = cosf(-collider->angle);
                 float half_size_x = collider->size.x * 0.5f;
@@ -161,6 +205,62 @@ namespace V1_10c {
     };
 
     HookCtx th19_patch_cpu_check_colliders(0xF8F60, (char*)cpu_check_collider_patch_code, sizeof(cpu_check_collider_patch_code));
+
+    static_assert(false && "This function needs caller cleanup, but compiles with callee cleanup right now");
+    bool __vectorcall _RxD1E00_fast(
+        int a1,
+        float a2,
+        float a3,
+        float a4,
+        float a5,
+        float, float,
+        float a6,
+        float a7,
+        float a8,
+        float a9,
+        float a10)
+    {
+        float sin_a10_2 = sinf(a10);
+        float cos_a10_2 = cosf(a10);
+
+        for (int i = 0; i < a1 * 2; ++i) {
+            float v13 = a8;
+            if (i & 1)
+                v13 = a9;
+
+            float sin_a10_1 = sin_a10_2;
+            float cos_a10_1 = cos_a10_2;
+
+            a10 = angle_normalize(a10 + M_PI / a1);
+
+            float sin_a10_2 = sinf(a10);
+            float cos_a10_2 = cosf(a10);
+
+            if (line_segments_intersect_2d(
+                    (cos_a10_1 * v13) + a6,
+                    (sin_a10_1 * v13) + a7,
+
+                    (cos_a10_2 * v13) + a6,
+                    (sin_a10_2 * v13) + a7,
+
+                    a2, a3, a4, a5))
+                return true;
+        }
+        return false;
+    }
+
+    static uint8_t patch_RxD1E00_code[] = {
+        0xe9,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0xcc,
+        0xcc,
+        0xcc,
+    };
+
+    HookCtx th19_patch_RxD1E00(0xD1E00, (char*)patch_RxD1E00_code, sizeof(patch_RxD1E00_code));
 
     class THAdvOptWnd : public Gui::GameGuiWnd {
         // Option Related Functions
@@ -246,11 +346,13 @@ namespace V1_10c {
             }
 
             if (BeginOptGroup<TH_PERFORMANCE>()) {
-                if (ImGui::Checkbox("Improve CPU collider checking performance", &this->cpu_check_collider_performance_fix)) {
+                if (ImGui::Checkbox("Replace certain functions with faster variants", &this->cpu_check_collider_performance_fix)) {
                     if (this->cpu_check_collider_performance_fix) {
                         th19_patch_cpu_check_colliders.Enable();
+                        th19_patch_RxD1E00.Enable();
                     } else {
                         th19_patch_cpu_check_colliders.Disable();
+                        th19_patch_RxD1E00.Disable();
                     }
                 }
                 EndOptGroup();
@@ -895,8 +997,12 @@ namespace V1_10c {
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
-        *(uintptr_t*)(cpu_check_collider_patch_code + 1) = (uintptr_t)&TH19::V1_10c::CPUHitInf_CheckColliders - RVA(0xF8F65);
+        *(uintptr_t*)(cpu_check_collider_patch_code + 1) = (uintptr_t)&TH19::V1_10c::CPUHitInf_CheckColliders - RVA((uintptr_t)th19_patch_cpu_check_colliders.mTarget + 5);
+        *(uintptr_t*)(patch_RxD1E00_code + 1) = (uintptr_t)&TH19::V1_10c::_RxD1E00_fast - RVA((uintptr_t)th19_patch_RxD1E00.mTarget + 5);
+        
         th19_patch_cpu_check_colliders.Setup();
+        th19_patch_RxD1E00.Setup();
+
         th19_vs_mode_disable_movement.Setup();
         th19_charsel_disable_movement.Setup();
 

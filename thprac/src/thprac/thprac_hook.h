@@ -8,8 +8,7 @@ namespace THPrac {
 extern uintptr_t ingame_image_base;
 #define RVA(a) ((uintptr_t)a + ingame_image_base)
 typedef void __stdcall CallbackFunc(PCONTEXT);
-class HookCtx {
-public:
+struct HookCtx {
     HookCtx() = default;
     ~HookCtx();
     HookCtx(uintptr_t target, CallbackFunc* inject)
@@ -50,7 +49,6 @@ public:
 
     static void VEHInit();
 
-private:
     void* mTarget = nullptr;
     CallbackFunc* mDetour = nullptr;
     void* mTrampoline = nullptr;
