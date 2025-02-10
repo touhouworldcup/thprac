@@ -46,6 +46,7 @@ namespace V1_10c {
         return x * x;
     }
 
+    // Code written by Khangaroo (https://github.com/khang06)
     static uint32_t* __vectorcall CPUHitInf_CheckColliders(CPUHitInf* self, int, uint32_t* hit_flags_ptr, float, float, float radius)
     {
 #ifdef __clang__
