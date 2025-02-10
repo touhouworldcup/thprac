@@ -898,6 +898,7 @@ enum th_glossary_t
     TH_P3,
     TH_P4,
     TH_P5,
+    TH_PERFORMANCE,
     TH_PHASE,
     TH_POINT,
     TH_POINT_STAGE,
@@ -947,7 +948,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][935];
+extern const char* th_glossary_str[3][936];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2477,7 +2478,7 @@ extern const th_sections_t th_sections_cbt[1][2][1];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3169];
+extern const wchar_t __thprac_loc_range_zh[3179];
 
 extern const wchar_t __thprac_loc_range_en[35];
 

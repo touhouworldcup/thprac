@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][935]
+const char* th_glossary_str[3][936]
 {
     {
         "",
@@ -898,6 +898,7 @@ const char* th_glossary_str[3][935]
         "P3",
         "P4",
         "P5",
+        "タースピード",
         "阶段",
         "蓝点",
         "本关蓝点",
@@ -1835,6 +1836,7 @@ const char* th_glossary_str[3][935]
         "P3",
         "P4",
         "P5",
+        "Performance",
         "Phase",
         "Point",
         "Point (Stage)",
@@ -2772,6 +2774,7 @@ const char* th_glossary_str[3][935]
         "P3",
         "P4",
         "P5",
+        "速度",
         "段階",
         "得点",
         "得点\n(ステージ)",
@@ -20227,7 +20230,7 @@ const th_sections_t th_sections_cbt[1][2][1]
 
 }
 
-const wchar_t __thprac_loc_range_zh[3169] {
+const wchar_t __thprac_loc_range_zh[3179] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -20237,6 +20240,11 @@ const wchar_t __thprac_loc_range_zh[3169] {
     0x3002, 0x3002,
     0x300c, 0x300c,
     0x300d, 0x300d,
+    0x30b9, 0x30b9,
+    0x30bf, 0x30bf,
+    0x30c9, 0x30c9,
+    0x30d4, 0x30d4,
+    0x30fc, 0x30fc,
     0x4e00, 0x4e00,
     0x4e03, 0x4e03,
     0x4e07, 0x4e07,

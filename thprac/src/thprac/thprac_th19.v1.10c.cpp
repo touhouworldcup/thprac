@@ -1,6 +1,10 @@
 #include "thprac_utils.h"
 #include "thprac_th19.h"
 
+#include <immintrin.h>
+#include <algorithm>
+
+
 namespace THPrac {
 namespace TH19 {
 namespace V1_10c {
@@ -37,6 +41,125 @@ namespace V1_10c {
         
     #define SCALE (*(float*)RVA(0x22EEB0))
 
+    inline float square(float x)
+    {
+        return x * x;
+    }
+
+    static uint32_t* __vectorcall CPUHitInf_CheckColliders(CPUHitInf* self, int, uint32_t* hit_flags_ptr, float, float, float radius)
+    {
+#ifdef __clang__
+        __m128 temp = _mm_cvtepi32_ps(_mm_loadu_si128((__m128i*)&self->game_side_ptr->player_ptr->unfocused_linear_speed)) * (1.0f / 128.0f);
+        float unfocused_linear_px = temp[0];
+        float focused_linear_px = temp[1];
+        float unfocused_diagonal_px = temp[2];
+        float focused_diagonal_px = temp[3];
+#else
+        // MSVC doesn't overload operator * on __m128, needs explicit _mm_mul_ps
+        __m128 mult = { .m128_f32 {
+            (1.0f / 128.0f),
+            (1.0f / 128.0f),
+            (1.0f / 128.0f),
+            (1.0f / 128.0f) } };
+
+        __m128 temp = _mm_mul_ps(_mm_cvtepi32_ps(_mm_loadu_si128((__m128i*)&self->game_side_ptr->player_ptr->unfocused_linear_speed)), mult);
+
+        float unfocused_linear_px = temp.m128_f32[0];
+        float focused_linear_px = temp.m128_f32[1];
+        float unfocused_diagonal_px = temp.m128_f32[2];
+        float focused_diagonal_px = temp.m128_f32[3];
+#endif
+
+        Float2 check_pos_list[18];
+        for (size_t i = 0; i < _countof(check_pos_list); i++)
+            check_pos_list[i] = Float2(self->pos.x, self->pos.y);
+
+        // I don't feel like trying to make this more readable
+        check_pos_list[1].y = check_pos_list[1].y - unfocused_linear_px;
+        check_pos_list[10].y = check_pos_list[10].y - focused_linear_px;
+        check_pos_list[2].y = check_pos_list[2].y + unfocused_linear_px;
+        check_pos_list[11].y = check_pos_list[11].y + focused_linear_px;
+        check_pos_list[3].x = check_pos_list[3].x - unfocused_linear_px;
+        check_pos_list[12].x = check_pos_list[12].x - focused_linear_px;
+        check_pos_list[4].x = check_pos_list[4].x + unfocused_linear_px;
+        check_pos_list[13].x = check_pos_list[13].x + focused_linear_px;
+        check_pos_list[5].y = check_pos_list[5].y - unfocused_diagonal_px;
+        check_pos_list[5].x = check_pos_list[5].x - unfocused_diagonal_px;
+        check_pos_list[14].y = check_pos_list[14].y - focused_diagonal_px;
+        check_pos_list[14].x = check_pos_list[14].x - focused_diagonal_px;
+        check_pos_list[6].y = check_pos_list[6].y - unfocused_diagonal_px;
+        check_pos_list[6].x = check_pos_list[6].x + unfocused_diagonal_px;
+        check_pos_list[15].y = check_pos_list[15].y - focused_diagonal_px;
+        check_pos_list[15].x = check_pos_list[15].x + focused_diagonal_px;
+        check_pos_list[7].y = check_pos_list[7].y + unfocused_diagonal_px;
+        check_pos_list[7].x = check_pos_list[7].x - unfocused_diagonal_px;
+        check_pos_list[16].y = check_pos_list[16].y + focused_diagonal_px;
+        check_pos_list[16].x = check_pos_list[16].x - focused_diagonal_px;
+        check_pos_list[8].y = check_pos_list[8].y + unfocused_diagonal_px;
+        check_pos_list[8].x = check_pos_list[8].x + unfocused_diagonal_px;
+        check_pos_list[17].y = check_pos_list[17].y + focused_diagonal_px;
+        check_pos_list[17].x = check_pos_list[17].x + focused_diagonal_px;
+
+        // Idk if it's faster to have this clamping as a separate loop
+        for (size_t i = 0; i < _countof(check_pos_list); i++) {
+            check_pos_list[i].x = std::clamp(check_pos_list[i].x, -140.0f, 140.0f);
+            check_pos_list[i].y = std::clamp(check_pos_list[i].y, 32.0f, 448.0f - 16.0f);
+        }
+
+        uint32_t hit_flags = 0;
+        float radius_sq = radius * radius;
+        for (int32_t i = 0; i < self->collider_count; i++) {
+            CPUCollider* collider = &self->colliders1[i];
+            if (collider->flags & 1) {
+                float total_dist = (collider->radius * collider->radius) + radius_sq;
+                for (size_t j = 0; j < _countof(check_pos_list); j++) {
+                    if ((hit_flags >> j) & 1)
+                        continue;
+
+                    float x_diff = check_pos_list[j].x - collider->pos.x;
+                    float y_diff = check_pos_list[j].y - collider->pos.y;
+                    if (total_dist > (y_diff * y_diff) + (x_diff * x_diff))
+                        hit_flags |= 1 << j;
+                }
+            } else {
+                float angle_sin = sinf(-collider->angle);
+                float angle_cos = cosf(-collider->angle);
+                float half_size_x = collider->size.x * 0.5f;
+                float half_size_y = collider->size.y * 0.5f;
+
+                for (size_t j = 0; j < _countof(check_pos_list); j++) {
+                    if ((hit_flags >> j) & 1)
+                        continue;
+
+                    float x_diff = check_pos_list[j].x - collider->pos.x;
+                    float y_diff = check_pos_list[j].y - collider->pos.y;
+                    float rot_x = (angle_cos * x_diff) - (angle_sin * y_diff);
+                    float rot_y = (angle_cos * y_diff) + (angle_sin * x_diff);
+                    float x_sq1 = square(rot_x - half_size_x);
+                    float x_sq2 = square(half_size_x + rot_x);
+                    float y_sq1 = square(rot_y - half_size_y);
+                    float y_sq2 = square(half_size_y + rot_y);
+                    if ((half_size_x + radius) >= fabs(rot_x) && half_size_y >= fabs(rot_y)
+                        || half_size_x >= fabs(rot_x) && (half_size_y + radius) >= fabs(rot_y)
+                        || radius_sq > x_sq1 + y_sq1
+                        || radius_sq > x_sq2 + y_sq1
+                        || radius_sq > x_sq1 + y_sq2
+                        || radius_sq > x_sq2 + y_sq2)
+                        hit_flags |= 1 << j;
+                }
+            }
+        }
+
+        *hit_flags_ptr = hit_flags;
+        return hit_flags_ptr;
+    }
+
+    static uint8_t cpu_check_collider_patch_code[] = {
+        0xe9, 0x00, 0x00, 0x00, 0x00, 0xcc, 0xcc, 0xcc,
+    };
+
+    HookCtx th19_patch_cpu_check_colliders(0xF8F60, (char*)cpu_check_collider_patch_code, sizeof(cpu_check_collider_patch_code));
+
     class THAdvOptWnd : public Gui::GameGuiWnd {
         // Option Related Functions
     private:
@@ -65,6 +188,8 @@ namespace V1_10c {
         void GameplaySet()
         {
         }
+
+        bool cpu_check_collider_performance_fix = false;
 
     public:
         THAdvOptWnd() noexcept
@@ -115,6 +240,17 @@ namespace V1_10c {
             if (BeginOptGroup<TH_GAME_SPEED>()) {
                 if (GameFPSOpt(mOptCtx, false))
                     FpsSet();
+                EndOptGroup();
+            }
+
+            if (BeginOptGroup<TH_PERFORMANCE>()) {
+                if (ImGui::Checkbox("Improve CPU collider checking performance", &this->cpu_check_collider_performance_fix)) {
+                    if (this->cpu_check_collider_performance_fix) {
+                        th19_patch_cpu_check_colliders.Enable();
+                    } else {
+                        th19_patch_cpu_check_colliders.Disable();
+                    }
+                }
                 EndOptGroup();
             }
 
@@ -754,10 +890,11 @@ namespace V1_10c {
 
     }
     HOOKSET_ENDDEF()
-
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
+        *(uintptr_t*)(cpu_check_collider_patch_code + 1) = (uintptr_t)&TH19::V1_10c::CPUHitInf_CheckColliders - RVA(0xF8F65);
+        th19_patch_cpu_check_colliders.Setup();
         th19_vs_mode_disable_movement.Setup();
         th19_charsel_disable_movement.Setup();
 
