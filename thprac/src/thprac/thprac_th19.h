@@ -193,6 +193,42 @@ namespace V1_10c {
         int pvp_timer;
         int field_A64;
     };
+
+    struct CPUCollider {
+        Float3 pos; // 0x0
+        char gapC[12]; // 0xC
+        Float2 size; // 0x18
+        float radius; // 0x20
+        char gap24[4]; // 0x24
+        float angle; // 0x28
+        char gap2C[12]; // 0x2C
+        uint32_t flags; // 0x38
+        // 0x3C
+    };
+
+    struct Player {
+        char gap0[8420]; // 0x0
+        int32_t unfocused_linear_speed; // 0x20E4
+        int32_t focused_linear_speed; // 0x20E8
+        int32_t unfocused_diagonal_speed; // 0x20EC
+        int32_t focused_diagonal_speed; // 0x20F0
+    };
+
+    struct GameSide {
+        char gap0[4]; // 0x0
+        Player* player_ptr; // 0x4
+    };
+
+    struct CPUHitInf {
+        void* vtbl; // 0x0
+        CPUCollider colliders1[30000]; // 0x4
+        CPUCollider colliders2[30000]; // 0x1B7744
+        int32_t collider_count; // 0x36EE84
+        Float3 pos; // 0x36EE88
+        char gap36EE94[52]; // 0x36EE94
+        GameSide* game_side_ptr; // 0x36EEC8
+        // 0x36EECC
+    };
 };
 
 enum PlayerBarrierState : int {
