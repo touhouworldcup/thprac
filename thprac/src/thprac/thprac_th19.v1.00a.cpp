@@ -526,7 +526,7 @@ namespace V1_00a {
 
     bool storymode;
 
-    std::vector<const char*> cards = {
+    const char* cards[] = {
         "None",
         "Physical Enhancement Jizou",
         "Yin-Yang Orb",
@@ -602,7 +602,7 @@ namespace V1_00a {
             mStage();
             ImGui::Separator();
             ImGui::TextUnformatted("Additonal cards");
-            Gui::MultiComboSelect(mAdditionalCards, cards.data(), cards.size(), S(TH18_CARD_FORMAT));
+            Gui::MultiComboSelect(mAdditionalCards, cards, elementsof(cards), S(TH18_CARD_FORMAT));
         }
     };
     
