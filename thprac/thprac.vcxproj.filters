@@ -175,9 +175,6 @@
     <ClInclude Include="src\3rdParties\MinHook\src\disassembler.h">
       <Filter>3rdParties\MinHook</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_game_data.h">
-      <Filter>THPrac Utils</Filter>
-    </ClInclude>
     <ClInclude Include="src\3rdParties\distorm\src\config.h">
       <Filter>3rdParties\distorm</Filter>
     </ClInclude>

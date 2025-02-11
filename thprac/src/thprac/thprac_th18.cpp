@@ -1,6 +1,5 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
-#include "thprac_game_data.h"
 #include <metrohash128.h>
 #include "..\MinHook\src\buffer.h"
 
@@ -8,6 +7,7 @@
 namespace THPrac {
 namespace TH18 {
     enum addrs {
+        GAME_THREAD_PTR = 0x4cf2e4,
         BULLET_MANAGER_PTR = 0x4cf2bc,
         ITEM_MANAGER_PTR = 0x4cf2ec,
         ABILTIY_MANAGER_PTR = 0x4cf298,
@@ -711,13 +711,9 @@ namespace TH18 {
                 asm_call<0x411460, Thiscall>(*(uint32_t*)ABILTIY_MANAGER_PTR, cardId, 2);
                 asm_call<0x418de0, Fastcall>(cardId, 0);
         }
-        bool IsMarketAvailable()
-        {
-            return !(OffsetValueBase::IsBadPtr((void*)GetMemContent(ABILITY_SHOP_PTR)));
-        }
         void CheckMarket()
         {
-            auto isMarketAvail = IsMarketAvailable();
+            bool isMarketAvail = GetMemContent(ABILITY_SHOP_PTR);
             if (isInMarket != isMarketAvail) {
                 th18_shop_disable.Disable();
                 th18_shop_escape_1.Disable();
@@ -784,7 +780,7 @@ namespace TH18 {
                     ImGui::Text("%s: %s", "F10", S(TH18_MARKET_MANIP));
                     ImGui::EndDisabled();
                 }
-                bool f11_enable = !GetMemContent(ABILITY_SHOP_PTR) && GetMemContent(0x4cf2e4);
+                bool f11_enable = !GetMemContent(ABILITY_SHOP_PTR) && GetMemContent(GAME_THREAD_PTR);
                 if (!f11_enable)
                     ImGui::BeginDisabled();
                 ImGui::Text("%s: %s", "F11", S(TH18_OPEN_MARKET));
@@ -1102,7 +1098,7 @@ namespace TH18 {
 
             auto stageBonus = 100000 * *stage_num;
             auto clearBonus = 100000 * (*lifes * 5 + *bombs);
-            if (GetMemContent(0x4cf2e4, 0xd0)) {
+            if (GetMemContent(GAME_THREAD_PTR, 0xd0)) {
                 uint32_t rpy = *(uint32_t*)(*(uint32_t*)0x4cf418 + 0x18);
                 if (*(uint32_t*)(rpy + 0xb8) == 8 && (*stage_num == 6 || *stage_num == 7))
                     *score += clearBonus;
@@ -1134,11 +1130,11 @@ namespace TH18 {
         }
         EHOOK_ST(th18_static_mallet_replay_gold, 0x429222)
         {
-            if (GetMemContent(0x4cf2e4, 0xd0)) StaticMalletConversion(pCtx);
+            if (GetMemContent(GAME_THREAD_PTR, 0xd0)) StaticMalletConversion(pCtx);
         }
         EHOOK_ST(th18_static_mallet_replay_green, 0x42921d)
         {
-            if (GetMemContent(0x4cf2e4, 0xd0)) StaticMalletConversion(pCtx);
+            if (GetMemContent(GAME_THREAD_PTR, 0xd0)) StaticMalletConversion(pCtx);
         }
         uint32_t scoreUncapOffsetNew[23] {
             0x419e70,
@@ -1170,7 +1166,7 @@ namespace TH18 {
         }
         EHOOK_ST(th18_scroll_fix, 0x407e05)
         {
-            if (!OffsetValueBase::IsBadPtr((void*)GetMemContent(0x4cf2e4)) && GetMemContent(0x4cf2e4, 0xd0) && *(uint32_t*)(pCtx->Esp + 0x18) == 0x417955 && *(uint32_t*)(pCtx->Esp + 0x3c) == 0x417d39) {
+            if (GetMemContent(GAME_THREAD_PTR) && GetMemContent(GAME_THREAD_PTR, 0xd0) && *(uint32_t*)(pCtx->Esp + 0x18) == 0x417955 && *(uint32_t*)(pCtx->Esp + 0x3c) == 0x417d39) {
                 pCtx->Eip = 0x407e0f;
             }
         }
@@ -1187,7 +1183,7 @@ namespace TH18 {
         }
         EHOOK_ST(th18_active_card_fix, 0x462f33)
         {
-            if (!OffsetValueBase::IsBadPtr((void*)GetMemContent(0x4cf2e4)) && !GetMemContent(0x4cf2e4, 0xd0)) {
+            if (GetMemContent(GAME_THREAD_PTR) && !GetMemContent(GAME_THREAD_PTR, 0xd0)) {
                 uint32_t activeCardId = GetMemContent(ABILTIY_MANAGER_PTR, 0x38);
                 if (activeCardId) {
                     *(uint32_t*)(pCtx->Esi + 0x964) = GetMemContent(activeCardId + 4);
@@ -1431,7 +1427,7 @@ namespace TH18 {
                 return false;
             }
             auto& repMenu = THGuiRep::singleton();
-            if (!OffsetValueBase::IsBadPtr((void*)GetMemContent(0x4cf2e4)) && !GetMemContent(0x4cf2e4, 0xd0)) {
+            if (GetMemContent(GAME_THREAD_PTR) && !GetMemContent(GAME_THREAD_PTR, 0xd0)) {
                 return false;
             }
             if (repMenu.mRepStatus && (repMenu.mRepMetroHash[0] != mRepMetroHash[0] || repMenu.mRepMetroHash[1] != mRepMetroHash[1])) {
@@ -3025,8 +3021,8 @@ namespace TH18 {
     EHOOK_DY(th18_update, 0x4013f5)
     {
         if (THOverlay::singleton().IsOpen() && Gui::KeyboardInputGetRaw(VK_F11) && GetMemContent(ABILITY_SHOP_PTR) == 0) {
-            if (uint32_t GAME_THREAD_PTR = GetMemContent(0x4cf2e4)) {
-                *(uint32_t*)GetMemAddr(0x4cf2e4, 0xB0) |= 0x20000;
+            if (uint32_t game_thread = GetMemContent(GAME_THREAD_PTR)) {
+                *(uint32_t*)(game_thread + 0xB0) |= 0x20000;
             }
         }
 

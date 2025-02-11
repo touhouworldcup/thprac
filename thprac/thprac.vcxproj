@@ -48,7 +48,6 @@
     <ClInclude Include="src\3rdParties\MinHook\src\hde\table64.h" />
     <ClInclude Include="src\3rdParties\MinHook\src\trampoline.h" />
     <ClInclude Include="src\thprac\thprac_games.h" />
-    <ClInclude Include="src\thprac\thprac_game_data.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_dx8.h" />
     <ClInclude Include="src\thprac\thprac_gui_components.h" />
     <ClInclude Include="src\thprac\thprac_hook.h" />
