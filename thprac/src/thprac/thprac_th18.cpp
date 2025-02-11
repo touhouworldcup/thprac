@@ -1026,6 +1026,24 @@ namespace TH18 {
     };
 
     static const char* scoreDispFmt = "%s  %.8u%u";
+
+    uint32_t scoreUncapOffsetNew[] = {
+        0x419e70,
+        0x42a7fd, 0x42a80f,
+        0x430eab, 0x430eb6,
+        0x44476b, 0x44477a,
+        0x444ad9, 0x444ade,
+        0x444c00, 0x444c05,
+        0x4462eb, 0x446302,
+        0x4463a1, 0x4463b1,
+        0x44656e, 0x446578,
+        0x446ac6, 0x446ad7,
+        0x446d09, 0x446d1a,
+        0x45f2c4, 0x45f2cf,
+    };
+    HookCtx scoreUncapStageTrFix[2];
+    HookCtx scoreUncapHooks[elementsof(scoreUncapOffsetNew)];
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
     private:
         THAdvOptWnd() noexcept
@@ -1136,22 +1154,6 @@ namespace TH18 {
         {
             if (GetMemContent(GAME_THREAD_PTR, 0xd0)) StaticMalletConversion(pCtx);
         }
-        uint32_t scoreUncapOffsetNew[23] {
-            0x419e70,
-            0x42a7fd, 0x42a80f,
-            0x430eab, 0x430eb6,
-            0x44476b, 0x44477a,
-            0x444ad9, 0x444ade,
-            0x444c00, 0x444c05,
-            0x4462eb, 0x446302,
-            0x4463a1, 0x4463b1,
-            0x44656e, 0x446578,
-            0x446ac6, 0x446ad7,
-            0x446d09, 0x446d1a,
-            0x45f2c4, 0x45f2cf,
-        };
-        HookCtx* scoreUncapStageTrFix[2];
-        std::vector<HookCtx*> scoreUncapHooks;
         bool scoreUncapChkbox = false;
         bool scoreUncapOverwrite = false;
         bool scoreReplayFactor = false;
@@ -1570,11 +1572,11 @@ namespace TH18 {
         }
         void ScoreUncapInit()
         {
-            for (auto addr : scoreUncapOffsetNew) {
-                HookCtx* hook = new HookCtx();
-                hook->Setup((void*)addr, "\xff\xff\xff\xff", 4);
-                scoreUncapHooks.push_back(hook);
+
+            for (size_t i = 0; i < elementsof(scoreUncapHooks); i++) {
+                scoreUncapHooks[i].Setup((void*)scoreUncapOffsetNew[i], "\xff\xff\xff\xff", 4);
             }
+
             th18_score_uncap_replay_fix.Setup();
             th18_score_uncap_replay_disp.Setup();
             th18_score_uncap_replay_factor.Setup();
@@ -1596,21 +1598,19 @@ namespace TH18 {
                 char patch_2[5] = "\xE8";
                 *(uintptr_t*)(patch_1 + 1) = (uintptr_t)codecave - 0x4179c7;
                 *(uintptr_t*)(patch_2 + 1) = (uintptr_t)codecave - 0x463045;
-                scoreUncapStageTrFix[0] = new HookCtx(0x4179c2, patch_1, sizeof(patch_1));
-                scoreUncapStageTrFix[0]->Setup();
-                scoreUncapStageTrFix[1] = new HookCtx(0x463040, patch_2, sizeof(patch_2));
-                scoreUncapStageTrFix[1]->Setup();
+                scoreUncapStageTrFix[0].Setup((void*)0x4179c2, patch_1, sizeof(patch_1));
+                scoreUncapStageTrFix[1].Setup((void*)0x463040, patch_2, sizeof(patch_2));
             }
         }
         void ScoreUncapSet()
         {
             for (auto& hook : scoreUncapHooks) {
-                hook->Toggle(scoreUncapChkbox);
+                hook.Toggle(scoreUncapChkbox);
             }
             th18_score_uncap_replay_fix.Toggle(!scoreUncapOverwrite);
             th18_score_uncap_replay_disp.Toggle(scoreUncapChkbox);
-            scoreUncapStageTrFix[0]->Toggle(scoreUncapChkbox);
-            scoreUncapStageTrFix[1]->Toggle(scoreUncapChkbox);
+            scoreUncapStageTrFix[0].Toggle(scoreUncapChkbox);
+            scoreUncapStageTrFix[1].Toggle(scoreUncapChkbox);
         }
 
     public:
