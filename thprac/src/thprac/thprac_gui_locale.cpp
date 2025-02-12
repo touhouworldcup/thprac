@@ -463,11 +463,6 @@ static ImWchar baseUnicodeRanges[] =
         CheckFontJa,
     };
 
-    static const wchar_t* __glocale_glyph_range[] = {
-        __thprac_loc_range_zh,
-        __thprac_loc_range_en,
-        __thprac_loc_range_ja
-    };
     static ImFont* __glocale_fonts[3] {};
     void LocaleFontWarning()
     {
