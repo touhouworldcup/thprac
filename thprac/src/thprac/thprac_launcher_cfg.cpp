@@ -2122,31 +2122,62 @@ private:
             mCfgEnableTH14_ShowDropBar_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR2));
             mCfgEnableTH15_ShowShootingDownRate_autoly.Gui(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2));
 
-            ImGui::Separator();
-            KeyRectStyle style;
-            style.separated = mKb_Separated.Get();
-            style.border_color_press = mKb_ColorBorderPress.Get();
-            style.border_color_release = mKb_ColorBorderRelease.Get();
-            style.fill_color_press = mKb_ColorFillPress.Get();
-            style.fill_color_release = mKb_ColorFillRelease.Get();
-            style.text_color_press = mKb_ColorTextPress.Get();
-            style.text_color_release = mKb_ColorTextRelease.Get();
-            style.type = mKb_Type.Get();
-            style.show_aps = mKb_APS.Get();
-            float kb_padding = mKb_Padding.Get();
-            style.padding = { kb_padding, kb_padding };
-
-            ImGuiIO& io = ImGui::GetIO(); 
-            style.size = { 34.0f / io.DisplaySize.x * 1280.0f, 34.0f / io.DisplaySize.y * 960.0f };
-
-            auto pos = ImGui::GetCursorScreenPos();
-            auto width = ImGui::GetWindowSize().x*0.5f;
-            ImGui::InvisibleButton("##keys", { 34.0f, 34.0f * 2.5f });
-            RecordKey(15, 69);
-            KeysHUD(15, { width / io.DisplaySize.x * 1280.0f, pos.y / io.DisplaySize.y * 960.0f }, { pos.x / io.DisplaySize.x * 1280.0f, pos.y / io.DisplaySize.y * 960.0f }, style, true, false);
-
+            mCfgTH18ForceCard.Gui(S(THPRAC_TH18_FORCE_CARD), S(THPRAC_TH18_FORCE_CARD_DESC));
+            ImGui::SameLine();
+            GuiHelpMarker(S(THPRAC_TH18_FORCE_CARD_DESC2));
+            if (mCfgTH18ForceCard.Get()){
+                if (ImGui::TreeNode(S(THPRAC_TH18_CARD))){
+                    static char card_names[32768];
+                    {// set cards
+                        static bool is_inited = false;
+                        if (!is_inited){
+                            is_inited = true;
+                            memset(card_names, 0, sizeof(card_names));
+                            char* cur_p=card_names;
+                            for (int i = 0; i < 56; i++)
+                            {
+                                int sz = strlen(S(TH18::TH18_CARD_LIST[i]));
+                                memcpy(cur_p,S(TH18::TH18_CARD_LIST[i]), sz);
+                                cur_p += sz+1;
+                            }
+                        }
+                    }
+                    mCfgTH18Card_st1.Gui(S(THPRAC_TH18_CARD_1), card_names);
+                    mCfgTH18Card_st2.Gui(S(THPRAC_TH18_CARD_2), card_names);
+                    mCfgTH18Card_st3.Gui(S(THPRAC_TH18_CARD_3), card_names);
+                    mCfgTH18Card_st4.Gui(S(THPRAC_TH18_CARD_4), card_names);
+                    mCfgTH18Card_st5.Gui(S(THPRAC_TH18_CARD_5), card_names);
+                    mCfgTH18Card_st7.Gui(S(THPRAC_TH18_CARD_7), card_names);
+                    ImGui::TreePop();
+                }
+            }
             ImGui::Separator();
             ImGui::Text(S(THPRAC_KB));
+            
+            if (ImGui::TreeNode(S(THPRAC_KB_SHOW))) {
+                KeyRectStyle style;
+                style.separated = mKb_Separated.Get();
+                style.border_color_press = mKb_ColorBorderPress.Get();
+                style.border_color_release = mKb_ColorBorderRelease.Get();
+                style.fill_color_press = mKb_ColorFillPress.Get();
+                style.fill_color_release = mKb_ColorFillRelease.Get();
+                style.text_color_press = mKb_ColorTextPress.Get();
+                style.text_color_release = mKb_ColorTextRelease.Get();
+                style.type = mKb_Type.Get();
+                style.show_aps = mKb_APS.Get();
+                float kb_padding = mKb_Padding.Get();
+                style.padding = { kb_padding, kb_padding };
+
+                ImGuiIO& io = ImGui::GetIO();
+                style.size = { 34.0f / io.DisplaySize.x * 1280.0f, 34.0f / io.DisplaySize.y * 960.0f };
+
+                auto pos = ImGui::GetCursorScreenPos();
+                auto width = ImGui::GetWindowSize().x * 0.5f;
+                ImGui::InvisibleButton("##keys", { 34.0f, 34.0f * 2.5f });
+                RecordKey(15, 69);
+                KeysHUD(15, { width / io.DisplaySize.x * 1280.0f, pos.y / io.DisplaySize.y * 960.0f }, { pos.x / io.DisplaySize.x * 1280.0f, pos.y / io.DisplaySize.y * 960.0f }, style, true, false);
+                ImGui::TreePop();
+            }
             mKb_Auto.Gui(S(THPRAC_KB_AUTO));
             mKb_ColorBorderPress.Gui(S(THPRAC_KB_COL_BORDER_PRESSED));
             mKb_ColorBorderRelease.Gui(S(THPRAC_KB_COL_BORDER_RELEASED));
@@ -2325,6 +2356,14 @@ private:
     THCfgCheckbox mCfgEnableTH14_ShowDropBar_autoly { "auto_th14_show_drop_bar", false };
     THCfgCheckbox mCfgEnableTH15_ShowShootingDownRate_autoly { "auto_th15_show_rate", false };
     THCfgCheckbox mCfgEnableMasterDisable_autoly { "auto_disable_master", false };
+
+    THCfgCheckbox mCfgTH18ForceCard { "th18_force_card", false };
+    THCfgCombo mCfgTH18Card_st1 { "th18_card_st1", 0,56 };
+    THCfgCombo mCfgTH18Card_st2 { "th18_card_st2", 0,56 };
+    THCfgCombo mCfgTH18Card_st3 { "th18_card_st3", 0,56 };
+    THCfgCombo mCfgTH18Card_st4 { "th18_card_st4", 0,56 };
+    THCfgCombo mCfgTH18Card_st5 { "th18_card_st5", 0,56 };
+    THCfgCombo mCfgTH18Card_st7 { "th18_card_st7", 0,56 };
     // kbs
     THCfgColor mKb_ColorBorderPress { "kb_border_color_press", 0xFFFFFFFF };
     THCfgColor mKb_ColorBorderRelease { "kb_border_color_release", 0xFFFFFFFF };

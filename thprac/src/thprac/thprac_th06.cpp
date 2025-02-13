@@ -14,7 +14,7 @@ ImTextureID g_hitbox_textureID = NULL;
 float g_hitbox_width = 32.0f;
 float g_hitbox_height = 32.0f;
 int32_t g_last_rep_seed = 0;
-
+extern bool g_forceRenderCursor;
 #include "thprac_th06_hitbox.h"
 void ReadHitboxFile()
 {
@@ -911,6 +911,12 @@ namespace TH06 {
                 bool is_close = false;
                 ShowDetail(&detail_open);
                 mDetails.Toggle(detail_open);
+
+                if (g_forceRenderCursor || Gui::ImplWin32CheckFullScreen()) {
+                    auto& io = ::ImGui::GetIO();
+                    io.MouseDrawCursor = true;
+                }
+
                 ImGui::End();
             }
         }

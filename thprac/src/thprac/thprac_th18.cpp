@@ -796,7 +796,7 @@ namespace TH18 {
                 bool f11_enable = !GetMemContent(ABILITY_SHOP_PTR) && GetMemContent(0x4cf2e4);
                 if (!f11_enable)
                     ImGui::BeginDisabled();
-                ImGui::TextUnformatted("F11: Open shop");
+                ImGui::TextUnformatted(std::format("F11: {}",S(TH18_OPEN_MARKET)).c_str());
                 if (!f11_enable)
                     ImGui::EndDisabled();
             } else {
@@ -1804,6 +1804,38 @@ namespace TH18 {
                 DisableKeyOpt();
                 KeyHUDOpt();
                 InfLifeOpt();
+                ImGui::Separator();
+
+                ImGui::Checkbox(S(THPRAC_TH18_FORCE_CARD), &g_adv_igi_options.th18_force_card);
+                if (g_adv_igi_options.th18_force_card)
+                {
+                    if (ImGui::TreeNode(S(THPRAC_TH18_CARD))) {
+                        static const char* card_names[56];
+                        { // set cards
+                            static bool is_inited = false;
+                            static int language = Gui::LocaleGet();
+                            if (Gui::LocaleGet() != language) {
+                                is_inited = false;
+                            }
+                            if (!is_inited) {
+                                is_inited = true;
+                                language = Gui::LocaleGet();
+                                for (int i = 0; i < 56; i++) {
+                                    card_names[i] = S(TH18_CARD_LIST[i]);
+                                }
+                            }
+                        }
+                        ImGui::Combo(S(THPRAC_TH18_CARD_1), &g_adv_igi_options.th18_cards[0], card_names, 56);
+                        ImGui::Combo(S(THPRAC_TH18_CARD_2), &g_adv_igi_options.th18_cards[1], card_names, 56);
+                        ImGui::Combo(S(THPRAC_TH18_CARD_3), &g_adv_igi_options.th18_cards[2], card_names, 56);
+                        ImGui::Combo(S(THPRAC_TH18_CARD_4), &g_adv_igi_options.th18_cards[3], card_names, 56);
+                        ImGui::Combo(S(THPRAC_TH18_CARD_5), &g_adv_igi_options.th18_cards[4], card_names, 56);
+                        ImGui::Combo(S(THPRAC_TH18_CARD_7), &g_adv_igi_options.th18_cards[5], card_names, 56);
+                        ImGui::TreePop();
+                    }
+                }
+
+
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th18_bossmovedown.Toggle(forceBossMoveDown);
                 }
@@ -1909,8 +1941,8 @@ namespace TH18 {
 
             AboutOpt();
             ImGui::EndChild();
-            if (wndFocus)
-                ImGui::SetWindowFocus();
+            // if (wndFocus)
+            //     ImGui::SetWindowFocus();
         }
         void PreUpdate()
         {
@@ -3265,6 +3297,32 @@ namespace TH18 {
     }
     HOOKSET_ENDDEF()
     HOOKSET_DEFINE(THInGameInfo)
+    EHOOK_DY(th16_force_card, 0x00417310)
+    {
+        if (g_adv_igi_options.th18_force_card){
+            int stage = *(DWORD*)0x4CCCDC;
+            if (stage >= 1 && stage <= 7 && stage != 6){
+                if (stage == 7)
+                    stage = 5;
+                else
+                    stage = stage - 1;
+                int card_id2 = -1;
+                for (int i = 0; i < 56; i++) { 
+                    if (g_adv_igi_options.th18_cards[stage] == *(DWORD*)(CARD_DESC_LIST + 0x34 * i + 4)){
+                        card_id2 = i;
+                        break;
+                    }
+                }
+                if (card_id2 != -1){
+                    *(DWORD*)(pCtx->Edi + 0xA2C) = 1;
+                    *(DWORD*)(pCtx->Eax) = CARD_DESC_LIST + 0x34 * card_id2;
+                    *(DWORD*)(pCtx->Esp + 8) = 1;
+                    pCtx->Eax = pCtx->Eax + 4;
+                }
+                    
+            }
+        }
+    }
     EHOOK_DY(th16_game_start, 0x44278F) // gamestart-bomb set
     {
         TH18InGameInfo::singleton().mBombCount = 0;

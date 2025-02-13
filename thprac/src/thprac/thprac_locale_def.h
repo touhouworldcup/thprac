@@ -520,6 +520,7 @@ enum th_glossary_t {
     TH18_MUKADE,
     TH18_MUKADE_FIX,
     TH18_MUKADE_FIX_DESC,
+    TH18_OPEN_MARKET,
     TH18_PSYCO_CD,
     TH18_REPFIX_DESC,
     TH18_REPFIX_HIDE_INS,
@@ -772,6 +773,7 @@ enum th_glossary_t {
     THPRAC_KB_RECORD_START,
     THPRAC_KB_RECORD_STOP,
     THPRAC_KB_SEPARATER,
+    THPRAC_KB_SHOW,
     THPRAC_KB_TYPE,
     THPRAC_KB_TYPE_COMBO,
     THPRAC_KENG,
@@ -1021,6 +1023,16 @@ enum th_glossary_t {
     THPRAC_TH06_RAND_SEED,
     THPRAC_TH06_RANKLOCK_DOWN,
     THPRAC_TH06_REP_RAND_SEED,
+    THPRAC_TH18_CARD,
+    THPRAC_TH18_CARD_1,
+    THPRAC_TH18_CARD_2,
+    THPRAC_TH18_CARD_3,
+    THPRAC_TH18_CARD_4,
+    THPRAC_TH18_CARD_5,
+    THPRAC_TH18_CARD_7,
+    THPRAC_TH18_FORCE_CARD,
+    THPRAC_TH18_FORCE_CARD_DESC,
+    THPRAC_TH18_FORCE_CARD_DESC2,
     THPRAC_THCRAP,
     THPRAC_THCRAP_ADDCFG,
     THPRAC_THCRAP_ADDCFG_404,
@@ -1322,7 +1334,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1311];
+extern const char* th_glossary_str[3][1323];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2894,7 +2906,7 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3331];
+extern const wchar_t __thprac_loc_range_zh[3343];
 
 extern const wchar_t __thprac_loc_range_en[57];
 

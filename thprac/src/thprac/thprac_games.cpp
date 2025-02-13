@@ -192,7 +192,7 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
             return DIERR_INPUTLOST;//8007001E   
         return g_realGetDeviceState(thiz, num, state);
     }
-
+    
     HRESULT res = g_realGetDeviceState(thiz, num, state);
     if (g_keybind.size() != 0) {
         static BYTE new_keyBoardState[256] = { 0 };
@@ -396,6 +396,14 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         LauncherSettingGet("pauseBGM_06", g_pauseBGM_06);
 
         memset(&g_adv_igi_options, 0, sizeof(g_adv_igi_options));
+        LauncherSettingGet("th18_force_card", g_adv_igi_options.th18_force_card);
+        LauncherSettingGet("th18_card_st1", g_adv_igi_options.th18_cards[0]);
+        LauncherSettingGet("th18_card_st2", g_adv_igi_options.th18_cards[1]);
+        LauncherSettingGet("th18_card_st3", g_adv_igi_options.th18_cards[2]);
+        LauncherSettingGet("th18_card_st4", g_adv_igi_options.th18_cards[3]);
+        LauncherSettingGet("th18_card_st5", g_adv_igi_options.th18_cards[4]);
+        LauncherSettingGet("th18_card_st7", g_adv_igi_options.th18_cards[5]);
+
         LauncherSettingGet("auto_disable_master", g_adv_igi_options.disable_master_autoly);
         LauncherSettingGet("auto_map_inf_life_to_no_continue", g_adv_igi_options.map_inf_life_to_no_continue);
         LauncherSettingGet("auto_th06_bg_fix", g_adv_igi_options.th06_bg_fix);

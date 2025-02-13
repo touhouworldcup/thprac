@@ -13,23 +13,25 @@ struct IDirect3DDevice8;
 namespace THPrac {
     struct AdvancedIGI_Options
     {
-    bool disable_master_autoly;
-    bool map_inf_life_to_no_continue;
-    bool th06_bg_fix;
-    bool th06_fix_seed;
-    int32_t th06_seed; // to match imgui
-    bool th06_disable_drop_rank;
-    bool th06_showRank;
-    bool th06_showHitbox;
-    bool th11_showHint;
-    bool th13_showHits;
-    bool th13_showHitBar;
-    bool th14_showBonus;
-    bool th14_showItemsCount;
-    bool th14_showDropBar;
-    bool th15_showShootingDownRate;
-    bool show_keyboard_monitor;
-    KeyRectStyle keyboard_style;
+        int th18_cards[6]; //card for st1,2,3,4,5,7
+        bool th18_force_card;
+        bool disable_master_autoly;
+        bool map_inf_life_to_no_continue;
+        bool th06_bg_fix;
+        bool th06_fix_seed;
+        int32_t th06_seed; // to match imgui
+        bool th06_disable_drop_rank;
+        bool th06_showRank;
+        bool th06_showHitbox;
+        bool th11_showHint;
+        bool th13_showHits;
+        bool th13_showHitBar;
+        bool th14_showBonus;
+        bool th14_showItemsCount;
+        bool th14_showDropBar;
+        bool th15_showShootingDownRate;
+        bool show_keyboard_monitor;
+        KeyRectStyle keyboard_style;
     };
     extern AdvancedIGI_Options g_adv_igi_options;
 
