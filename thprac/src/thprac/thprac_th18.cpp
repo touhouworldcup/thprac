@@ -6,6 +6,12 @@
 
 namespace THPrac {
 namespace TH18 {
+#define play_sound_centered(id) asm_call<0x476BE0, Stdcall>(id, UNUSED_DWORD)
+
+    enum sound_id : uint32_t {
+        SND_INVALID = 16,
+    };
+
     enum addrs {
         GAME_THREAD_PTR = 0x4cf2e4,
         BULLET_MANAGER_PTR = 0x4cf2bc,
@@ -776,16 +782,8 @@ namespace TH18 {
                         AddIndicateCard();
                     }
                 } else {
-                    ImGui::BeginDisabled();
-                    ImGui::Text("%s: %s", "F10", S(TH18_MARKET_MANIP));
-                    ImGui::EndDisabled();
+                    mOpenMarket();
                 }
-                bool f11_enable = !GetMemContent(ABILITY_SHOP_PTR) && GetMemContent(GAME_THREAD_PTR);
-                if (!f11_enable)
-                    ImGui::BeginDisabled();
-                ImGui::Text("%s: %s", "F11", S(TH18_OPEN_MARKET));
-                if (!f11_enable)
-                    ImGui::EndDisabled();
             } else {
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC1));
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC2));
@@ -903,6 +901,7 @@ namespace TH18 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
+        Gui::GuiHotKey mOpenMarket { TH18_OPEN_MARKET, "F10", VK_F10 };
     };
     class THGuiSP : public Gui::GameGuiWnd {
         THGuiSP() noexcept
@@ -3020,18 +3019,23 @@ namespace TH18 {
     }
     EHOOK_DY(th18_update, 0x4013f5)
     {
-        if (THOverlay::singleton().IsOpen() && Gui::KeyboardInputGetRaw(VK_F11) && GetMemContent(ABILITY_SHOP_PTR) == 0) {
-            if (uint32_t game_thread = GetMemContent(GAME_THREAD_PTR)) {
-                *(uint32_t*)(game_thread + 0xB0) |= 0x20000;
-            }
-        }
-
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 
         // Gui components update
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
-        THOverlay::singleton().Update();
+        auto& o = THOverlay::singleton();
+        o.Update();
+
+        if (*o.mOpenMarket) {
+            *o.mOpenMarket = false;
+            if (uint32_t game_thread = GetMemContent(GAME_THREAD_PTR)) {
+                *(uint32_t*)(game_thread + 0xB0) |= 0x20000;
+            } else {
+                play_sound_centered(SND_INVALID);
+            }
+        }
+
         THGuiSP::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
