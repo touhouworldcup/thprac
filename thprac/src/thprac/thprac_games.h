@@ -395,6 +395,32 @@ inline R GetMemAddr(uintptr_t addr, size_t offset, OffsetArgs... remaining_offse
     return GetMemAddr<R>(((uintptr_t) * (R*)addr) + offset, remaining_offsets...);
 }
 
+// Code by zero318 (https://github.com/zero318)
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wuninitialized"
+#elif defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable:4700)
+#endif
+
+template <typename T>
+static inline constexpr T garbage_value(void)
+{
+    T garbage;
+    return garbage;
+}
+#define GARBAGE_VALUE(type) garbage_value<type>()
+#ifdef __clang__
+#pragma clang diagnostic pop
+#elif defined(_MSC_VER)
+#pragma warning(pop)
+#endif
+
+#define UNUSED_DWORD (GARBAGE_VALUE(int32_t))
+#define UNUSED_FLOAT (GARBAGE_VALUE(float))
+// ---
+
 #pragma endregion
 
 #pragma region ECL Helper
