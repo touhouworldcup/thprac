@@ -407,7 +407,11 @@ inline R GetMemAddr(uintptr_t addr, size_t offset, OffsetArgs... remaining_offse
 template <typename T>
 static inline constexpr T garbage_value(void)
 {
+    #ifdef NDEBUG
     T garbage;
+    #else
+    T garbage = {};
+    #endif
     return garbage;
 }
 #define GARBAGE_VALUE(type) garbage_value<type>()
