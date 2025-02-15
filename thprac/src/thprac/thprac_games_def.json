@@ -1161,6 +1161,7 @@
       "TH_ON": [ "开启", "On", "有効" ],
       "TH_OFF": [ "关闭", "Off", "無効" ],
       "TH_NORMAL": [ "正常", "Normal", "普通" ],
+      "TH_SKIP_HALF": [ "跳过前半部分", "skip half", "skip half" ],
       "TH_MODE_ENHANCED": [ "增强", "enhanced", "enhanced" ],
       "TH_SPELL_TIME_NORMAL": [ "正常", "Normal", "普通" ],
       "TH_SPELL_TIME_INF": [ "无限时间", "Inf time", "Inf time" ],
@@ -1403,6 +1404,10 @@
 	  "TH_PHASE_INF_TIME": [
         "TH_SPELL_TIME_NORMAL",
         "TH_SPELL_TIME_INF"
+      ],
+	  "TH_STAGE_SKIP_HALF": [
+        "TH_NORMAL",
+        "TH_SKIP_HALF"
       ],
 	  "TH_PHASE_INF_MODE": [
         "TH_SPELL_TIME_NORMAL",

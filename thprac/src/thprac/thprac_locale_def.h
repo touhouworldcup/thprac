@@ -1291,6 +1291,7 @@ enum th_glossary_t {
     TH_SCORE,
     TH_SHOTS_TAKEN,
     TH_SHOTS_TAKEN_ALT,
+    TH_SKIP_HALF,
     TH_SPELL,
     TH_SPELL_FINAL,
     TH_SPELL_PRAC,
@@ -1334,7 +1335,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1323];
+extern const char* th_glossary_str[3][1324];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1371,6 +1372,8 @@ extern const th_glossary_t TH_BOOKS_PHASE_INF_TIME[4];
 extern const th_glossary_t TH_EOSD_SAKUYA_DOLLS[5];
 
 extern const th_glossary_t TH_PHASE_INF_TIME[3];
+
+extern const th_glossary_t TH_STAGE_SKIP_HALF[3];
 
 extern const th_glossary_t TH_PHASE_INF_MODE[3];
 

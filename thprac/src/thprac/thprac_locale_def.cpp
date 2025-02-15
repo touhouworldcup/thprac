@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1323] {
+const char* th_glossary_str[3][1324] {
     {
         "",
         "啤酒",
@@ -1291,6 +1291,7 @@ const char* th_glossary_str[3][1323] {
         "分数",
         "摄影回数",
         "#__shots_taken",
+        "跳过前半部分",
         "符卡",
         "终符",
         "符卡练习",
@@ -2616,6 +2617,7 @@ const char* th_glossary_str[3][1323] {
         "Score",
         "Shots Taken",
         "#__shots_taken",
+        "skip half",
         "Spell Card",
         "Final Spell",
         "Spell Practice",
@@ -3941,6 +3943,7 @@ const char* th_glossary_str[3][1323] {
         "スコア",
         "撮影回数",
         "#__shots_taken",
+        "skip half",
         "スペカ",
         "ラスト",
         "スペルプラクティス",
@@ -4166,6 +4169,11 @@ const th_glossary_t TH_EOSD_SAKUYA_DOLLS[5] {
 const th_glossary_t TH_PHASE_INF_TIME[3] {
     TH_SPELL_TIME_NORMAL,
     TH_SPELL_TIME_INF,
+};
+
+const th_glossary_t TH_STAGE_SKIP_HALF[3] {
+    TH_NORMAL,
+    TH_SKIP_HALF,
 };
 
 const th_glossary_t TH_PHASE_INF_MODE[3] {

@@ -190,26 +190,36 @@ namespace TH15 {
         const th_glossary_t* SpellPhase()
         {
             auto section = CalcSection();
-            if (section == TH15_ST6_BOSS11) {
+            switch (section)
+            {
+            default:
+                return nullptr;
+            case TH15_ST6_BOSS11:
                 return TH_SPELL_PHASE2;
-            } else if (section == TH15_ST7_END_S10) {
+            case TH15_ST7_END_S10:
                 return TH15_SPELL_PHASE_EXTRA_LAST;
-            } else if (section == TH15_ST5_MID1) {
+            case TH15_ST5_MID1:
                 return TH15_ITS_LUNATIC_TIME;
-            } else if (section == TH15_ST3_BOSS1) {
+            case TH15_ST3_BOSS1:
                 return TH15_ST3_NORMAL1_TYPE;
-            } else if (section == TH15_ST8_AB_TEST) {
+            case TH15_ST8_AB_TEST:
                 return TH15_AB_5PHASE;
-            } else if (section == 10000 + 5 * 100 + 8){//green/yellow
+            case 10000 + 5 * 100 + 8:
                 return TH_PHASE_INF_MODE_TH15_LASERS;
-            } else if (section == 10000 + 5 * 100 + 10) {
+            case 10000 + 5 * 100 + 10:
                 return TH_PHASE_INF_MODE;
-            } else if (section == TH15_ST6_STARS) {
+            case TH15_ST6_STARS:
                 return TH_PHASE_INF_MODE;
-            }else if (section == TH15_ST6_BOSS4) {
+            case TH15_ST6_BOSS4:
                 return TH_SPELL_PHASE1;
-            } else if (section == TH15_ST6_BOSS6 && mDiffculty>=2) {
-                return TH15_ST6_BOSS6_PHASE;
+            case TH15_ST6_BOSS6:
+                if (mDiffculty>=2)
+                    return TH15_ST6_BOSS6_PHASE;
+                return nullptr;
+            case 10000 + 3 * 100 + 3:
+                return TH_STAGE_SKIP_HALF;
+            case 10000 + 4 * 100 + 2:
+                return TH_STAGE_SKIP_HALF;
             }
             return nullptr;
         }
@@ -990,6 +1000,10 @@ namespace TH15 {
             case 3:
                 ECLJump(ecl, 0xa280, 0xa4cc, 60, 30); // 0xa56c
                 ECLJump(ecl, 0x5b6c, 0x5c6c, 0, 0);
+                if (thPracParam.phase == 1) {
+                    ecl << pair { 0x71D8, (int32_t)30 };
+                    ECLJump(ecl, 0x71DC, 0x7468, 0, 0);
+                }
                 break;
             case 4:
                 ECLJump(ecl, 0xa280, 0xa56c, 60, 50);
@@ -1013,6 +1027,10 @@ namespace TH15 {
             case 2:
                 ECLJump(ecl, 0x8634, 0x8880, 60, 90); // 0x8930
                 ECLJump(ecl, 0x406c, 0x40ec, 0, 0);
+                if (thPracParam.phase == 1) {
+                    ecl << pair { 0x4DD0, (int32_t)0 };
+                    ECLJump(ecl, 0x485C, 0x4DC0, 0, 0);
+                }
                 break;
             case 3:
                 ECLJump(ecl, 0x8634, 0x8880, 60, 90); // 0x8930
