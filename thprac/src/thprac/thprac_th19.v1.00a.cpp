@@ -432,8 +432,19 @@ namespace V1_00a {
 
     // In the loader thread, right before the instruction that tells the main thread that loading has finished
     EHOOK_DY(th19_prac_init, 0x106878) {
-        TH19Tools::singleton().Open();
-        TH19Tools::singleton().allow = true;
+        auto& t = TH19Tools::singleton();
+        t.Open();
+
+        t.SetSizeRel(0.5f, 1.0f);
+        if (GetMemContent(RVA(P1_CPU_PTR)) && !GetMemContent(RVA(P2_CPU_PTR))) {
+            t.SetPosRel(0.0f, 0.0f);
+        } else if (GetMemContent(RVA(P2_CPU_PTR)) && !GetMemContent(RVA(P1_CPU_PTR))) {
+            t.SetPosRel(0.5f, 0.0f);
+        } else {
+            t.SetPosRel(0.25f, 0.0f);
+        }
+
+        t.allow = true;
     }
     
     // In the gamemode switching code where the game switches to main menu mode

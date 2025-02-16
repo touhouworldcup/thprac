@@ -6,6 +6,11 @@ namespace THPrac {
 namespace TH09 {
     PATCH_ST(th09_ranklock, 0x41ac7f, "\xEB", 1);
 
+    enum addrs {
+        P1_CPU_PTR = 0x4a7db8,
+        P2_CPU_PTR = 0x4a7df0,
+    };
+
     class TH09Tools : public Gui::GameGuiWnd {
         TH09Tools() {
             SetWndFlag(ImGuiWindowFlags_NoCollapse);
@@ -151,10 +156,10 @@ namespace TH09 {
             chargegauge(pl2, &chargelock_p2);
             ImGui::PopID();
 
-            if (*(uint32_t*)0x4a7db8 || *(uint32_t*)0x4a7df0) {
+            if (*(uint32_t*)P1_CPU_PTR || *(uint32_t*)P2_CPU_PTR) {
                 ImGui::PushID(TH09_CPU_CHARGE);
                 ImGui::TextUnformatted(S(TH09_CPU_CHARGE));
-                if (*(uint32_t*)0x4a7db8) {
+                if (*(uint32_t*)P1_CPU_PTR) {
                     ImGui::PushID(TH09_P1);
                     cpu_charge_p1 = (int)*(float*)(pl1 + 0x7c) / 100;
                     if (ImGui::SliderInt(S(TH09_P1), &cpu_charge_p1, 1, 4)) {
@@ -164,7 +169,7 @@ namespace TH09 {
                     ImGui::Checkbox(S(TH09_LOCK), &cpu_lock_attack_p1);
                     ImGui::PopID();
                 }
-                if (*(uint32_t*)0x4a7df0) {
+                if (*(uint32_t*)P2_CPU_PTR) {
                     ImGui::PushID(TH09_P2);
                     cpu_charge_p2 = (int)*(float*)(pl2 + 0x7c) / 100;
                     if (ImGui::SliderInt(S(TH09_P2), &cpu_charge_p2, 1, 4)) {
@@ -587,15 +592,16 @@ namespace TH09 {
             TH09PracHook::singleton().EnableAllHooks();
             TH09Tools& t = TH09Tools::singleton();
             t.enabled = true;
-            if (*(uint32_t*)0x4a7db8) {
-                t.SetPos(0, 0);
-                t.Open();
-                t.justOpened = 2;
-            } else if (*(uint32_t*)0x4a7df0) {
-                t.SetPos(320, 0);
-                t.Open();
-                t.justOpened = 2;
+            t.SetSizeRel(0.5f, 1.0f);
+            if (GetMemContent(RVA(P1_CPU_PTR)) && !GetMemContent(RVA(P2_CPU_PTR))) {
+                t.SetPosRel(0.0f, 0.0f);
+            } else if (GetMemContent(RVA(P2_CPU_PTR)) && !GetMemContent(RVA(P1_CPU_PTR))) {
+                t.SetPosRel(0.5f, 0.0f);
+            } else {
+                t.SetPosRel(0.25f, 0.0f);
             }
+            t.Open();
+            t.justOpened = 2;
         }
         g.Close();
     }

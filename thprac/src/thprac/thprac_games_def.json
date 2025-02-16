@@ -3016,7 +3016,7 @@
         "TH09_P2_FORMAT_INT": [ "P2: %d", "P2: %d", "P2: %d" ],
         "TH09_P1_FORMAT_FLOAT": [ "P1: %.3f", "P1: %.3f", "P1: %.3f" ],
         "TH09_P2_FORMAT_FLOAT": [ "P2: %.3f", "P2: %.3f", "P2: %.3f" ],
-        "TH09_TOOLS_TITLE": [ "花映塚工具", "TH09 Tools", "花映塚ツール" ],
+        "TH09_TOOLS_TITLE": [ "花映塚工具###_th09_tools", "TH09 Tools###_th09_tools", "花映塚ツール###_th09_tools" ],
         "TH09_STATS": [ "统计数据", "Stats", "ステータス" ],
         "TH09_STAT_B_FAIRY": [ "妖精: %d", "Fairy: %d", "妖精: %d" ],
         "TH09_STAT_B_RIVAL": [ "敌方: %d", "Rival: %d", "敵弾: %d" ],
