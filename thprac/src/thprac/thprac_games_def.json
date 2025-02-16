@@ -3643,7 +3643,13 @@
     "namespace": "TH11",
 
     "glossary": {
-      "TH11_SIGNAL": [ "信号强度", "C. Gauge", "交信強度" ]
+      "TH11_SIGNAL": [ "信号强度", "C. Gauge", "交信強度" ],
+      "TH11_MARISAB_FORMATION_LABEL": [ "配置", "Formation", "配置" ],
+      "TH11_MARISAB_FIRE":  [ "火符", "Fire",  "火符" ],
+      "TH11_MARISAB_WATER": [ "水符", "Water", "水符" ],
+      "TH11_MARISAB_WOOD":  [ "木符", "Wood",  "木符" ],
+      "TH11_MARISAB_METAL": [ "金符", "Metal", "金符" ],
+      "TH11_MARISAB_EARTH": [ "土符", "Earth", "土符" ]
     },
 
     "sections": {
@@ -4213,6 +4219,13 @@
         "TH_P3",
         "TH_P4",
         "TH_RAGE"
+      ],
+      "TH11_MARISAB_FORMATION": [
+          "TH11_MARISAB_FIRE",
+          "TH11_MARISAB_WATER",
+          "TH11_MARISAB_WOOD",
+          "TH11_MARISAB_METAL",
+          "TH11_MARISAB_EARTH"
       ]
     }
   },

@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][850]
+const char* th_glossary_str[3][856]
 {
     {
         "",
@@ -128,6 +128,12 @@ const char* th_glossary_str[3][850]
         "信仰条",
         "不掉信仰",
         "TH10 东方风神录　～ Mountain of Faith.",
+        "土符",
+        "火符",
+        "配置",
+        "金符",
+        "水符",
+        "木符",
         "信号强度",
         "TH11 东方地灵殿　～ Subterranean Animism.",
         "TH12.3 东方非想天则　～ 追寻特大型人偶之谜",
@@ -980,6 +986,12 @@ const char* th_glossary_str[3][850]
         "Faith Bar",
         "No faith loss",
         "TH10 Mountain of Faith",
+        "Earth",
+        "Fire",
+        "Formation",
+        "Metal",
+        "Water",
+        "Wood",
         "C. Gauge",
         "TH11 Subterranean Animism",
         "TH12.3 Touhou Hisoutensoku",
@@ -1832,6 +1844,12 @@ const char* th_glossary_str[3][850]
         "カウンター",
         "信仰点を減少させない",
         "TH10 東方風神録　～ Mountain of Faith.",
+        "土符",
+        "火符",
+        "配置",
+        "金符",
+        "水符",
+        "木符",
         "交信強度",
         "TH11 東方地霊殿　～ Subterranean Animism.",
         "TH12.3 東方非想天則　～ 超弩級ギニョルの謎を追え",
@@ -9858,6 +9876,15 @@ const th_glossary_t TH11_SPELL_5PHASE[6]
     TH_P3,
     TH_P4,
     TH_RAGE,
+};
+
+const th_glossary_t TH11_MARISAB_FORMATION[6]
+{
+    TH11_MARISAB_FIRE,
+    TH11_MARISAB_WATER,
+    TH11_MARISAB_WOOD,
+    TH11_MARISAB_METAL,
+    TH11_MARISAB_EARTH,
 };
 
 }

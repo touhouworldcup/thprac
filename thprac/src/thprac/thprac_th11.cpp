@@ -4,6 +4,18 @@
 
 namespace THPrac {
 namespace TH11 {
+    struct Player {
+        char gap0[0x8bab];
+        int32_t marisa_b_formation;
+    };
+    static_assert(offsetof(Player, marisa_b_formation) == 0x8bac);
+
+    enum addrs {
+        CHARA = 0x4a5710,
+        SUBSHOT = 0x4a5714,
+        PLAYER_PTR = 0x4a8eb4,
+    };
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -17,6 +29,7 @@ namespace TH11 {
         int32_t signal;
         int32_t value;
         int64_t score;
+        int32_t marisa_b_formation;
 
         bool dlg;
 
@@ -42,6 +55,7 @@ namespace TH11 {
             GetJsonValue(signal);
             GetJsonValue(value);
             GetJsonValue(score);
+            GetJsonValue(marisa_b_formation);
 
             return true;
         }
@@ -67,6 +81,7 @@ namespace TH11 {
             AddJsonValue(signal);
             AddJsonValue(value);
             AddJsonValue(score);
+            AddJsonValue(marisa_b_formation);
 
             ReturnJson();
         }
@@ -139,6 +154,7 @@ namespace TH11 {
                 thPracParam.signal = 0;
                 thPracParam.value = *mValue;
                 thPracParam.score = *mScore;
+                thPracParam.marisa_b_formation = *mMarisaBFormation;
                 break;
             case 4:
                 Close();
@@ -218,6 +234,10 @@ namespace TH11 {
                 mValue.RoundDown(10);
                 mScore();
                 mScore.RoundDown(10);
+
+                if (GetMemContent<uint32_t>(CHARA) == 1 && GetMemContent(SUBSHOT) == 1) {
+                    mMarisaBFormation();
+                }
             }
 
             mNavFocus();
@@ -309,6 +329,7 @@ namespace TH11 {
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
         Gui::GuiCombo mStage { TH_STAGE, TH_STAGE_SELECT };
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
+        Gui::GuiCombo mMarisaBFormation { TH11_MARISAB_FORMATION_LABEL, TH11_MARISAB_FORMATION };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
         Gui::GuiCheckBox mDlg { TH_DLG };
@@ -323,7 +344,7 @@ namespace TH11 {
 
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
-            TH_LIFE, TH_FAITH, TH_SCORE, TH_POWER, TH_GRAZE };
+            TH_LIFE, TH_FAITH, TH_SCORE, TH_POWER, TH_GRAZE, TH11_MARISAB_FORMATION_LABEL };
 
         int mChapterSetup[7][2] {
             { 2, 2 },
@@ -1727,6 +1748,9 @@ namespace TH11 {
             auto score = thPracParam.score;
             score /= 10;
             *target = *((uint32_t*)&score);
+
+            Player* player = GetMemContent<Player*>(PLAYER_PTR);
+            player->marisa_b_formation = thPracParam.marisa_b_formation;
 
             THSectionPatch();
         }

@@ -128,6 +128,12 @@ enum th_glossary_t
     TH10_FAITH_BAR,
     TH10_NO_FAITH_LOSS,
     TH10_TITLE,
+    TH11_MARISAB_EARTH,
+    TH11_MARISAB_FIRE,
+    TH11_MARISAB_FORMATION_LABEL,
+    TH11_MARISAB_METAL,
+    TH11_MARISAB_WATER,
+    TH11_MARISAB_WOOD,
     TH11_SIGNAL,
     TH11_TITLE,
     TH123_TITLE,
@@ -862,7 +868,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][850];
+extern const char* th_glossary_str[3][856];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1501,6 +1507,8 @@ extern const th_sections_t th_sections_cba[7][2][22];
 extern const th_sections_t th_sections_cbt[7][2][20];
 
 extern const th_glossary_t TH11_SPELL_5PHASE[6];
+
+extern const th_glossary_t TH11_MARISAB_FORMATION[6];
 
 }
 
