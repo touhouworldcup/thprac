@@ -568,6 +568,9 @@ enum th_glossary_t {
     THPRAC_APPLY_THPRAC_DEFAULT_OPTION,
     THPRAC_AUTO_DEFAULT_LAUNCH,
     THPRAC_AUTO_DEFAULT_LAUNCH_DESC,
+    THPRAC_AUTO_NAME_NAME,
+    THPRAC_AUTO_NAME_TH06,
+    THPRAC_AUTO_NAME_TH06_DESC,
     THPRAC_BACK,
     THPRAC_BEGIN,
     THPRAC_CANCEL,
@@ -1335,7 +1338,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1324];
+extern const char* th_glossary_str[3][1327];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2909,7 +2912,7 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3343];
+extern const wchar_t __thprac_loc_range_zh[3347];
 
 extern const wchar_t __thprac_loc_range_en[57];
 

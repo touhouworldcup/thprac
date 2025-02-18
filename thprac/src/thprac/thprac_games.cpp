@@ -28,6 +28,8 @@ bool g_disable_zkey = false;
 bool g_enable_SOCD = false;
 bool g_disable_f10_11_13 = false;
 bool g_pauseBGM_06 = false;
+bool g_autoName_06;
+std::string g_name_06;
 bool g_forceRenderCursor=false;
 bool g_disable_max_btn = true;
 bool g_disable_joy = false;
@@ -394,6 +396,8 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         LauncherSettingGet("keyboard_SOCD", g_enable_SOCD);
         LauncherSettingGet("force_render_cursor", g_forceRenderCursor);
         LauncherSettingGet("pauseBGM_06", g_pauseBGM_06);
+        LauncherSettingGet("autoInputName_06", g_autoName_06);
+        LauncherSettingGet("autoName_06", g_name_06);
 
         memset(&g_adv_igi_options, 0, sizeof(g_adv_igi_options));
         LauncherSettingGet("th18_force_card", g_adv_igi_options.th18_force_card);

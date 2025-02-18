@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1324] {
+const char* th_glossary_str[3][1327] {
     {
         "",
         "啤酒",
@@ -568,6 +568,9 @@ const char* th_glossary_str[3][1324] {
         "之前的状态\0打开\0关闭\0\0",
         "自动设置默认启动游戏",
         "勾选后，将游戏列表中的第一个游戏自动作为默认启动游戏。\n手动设置的默认启动游戏覆盖此选项。",
+        "机签",
+        "红魔乡自动输入机签",
+        "使用~代替红斜杠",
         "返回",
         "开始",
         "取消",
@@ -1894,6 +1897,9 @@ const char* th_glossary_str[3][1324] {
         "Previous state\0Open\0Close\0\0",
         "Auto set default start game",
         "When enabled, the first game in the game list will be automatically used as the default starting game.\nManually set default startup games override this option.",
+        "name",
+        "auto input name for EoSD",
+        "use ~ replace red slash",
         "Back",
         "Begin",
         "Cancel",
@@ -3220,6 +3226,9 @@ const char* th_glossary_str[3][1324] {
         "前の状態\0開く\0閉じる\0\0",
         "デフォルトの起動ゲームを自動的に設定します",
         "有効にすると、ゲームリストの最初のゲームがデフォルトの開始ゲームとして自動的に使用されます。\nデフォルトの起動ゲームを手動で設定すると、このオプションが上書きされます。",
+        "name",
+        "auto input name for EoSD",
+        "use ~ replace red slash",
         "戻る",
         "開始",
         "キャンセル",
@@ -24507,7 +24516,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3343] {
+const wchar_t __thprac_loc_range_zh[3347] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -25240,6 +25249,7 @@ const wchar_t __thprac_loc_range_zh[3343] {
     0x6574, 0x6574,
     0x6587, 0x6587,
     0x6591, 0x6591,
+    0x659c, 0x659c,
     0x65a9, 0x65a9,
     0x65ad, 0x65ad,
     0x65af, 0x65af,
@@ -25297,6 +25307,7 @@ const wchar_t __thprac_loc_range_zh[3343] {
     0x6750, 0x6750,
     0x675c, 0x675c,
     0x675f, 0x675f,
+    0x6760, 0x6760,
     0x6761, 0x6761,
     0x6765, 0x6765,
     0x676f, 0x676f,

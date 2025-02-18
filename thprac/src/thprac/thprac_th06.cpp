@@ -9,6 +9,8 @@
 
 namespace THPrac {
 extern bool g_pauseBGM_06;
+extern bool g_autoName_06;
+extern std::string g_name_06;
 LPDIRECT3DTEXTURE8 g_hitbox_texture = NULL;
 ImTextureID g_hitbox_textureID = NULL;
 float g_hitbox_width = 32.0f;
@@ -2874,7 +2876,7 @@ namespace TH06 {
                 int32_t n = *(int32_t*)(soundstruct + 0x10);
                 IDirectSound8* d;
                 IDirectSoundBuffer** soundbuffers = *(IDirectSoundBuffer***)(soundstruct + 0x4);
-                if (*(BYTE*)(0x69D4BF) == 0 || (*(THOverlay::singleton().mElBgm)) ) // show menu==0
+                if (*(BYTE*)(0x69D4BF) == 0 || (*(THOverlay::singleton().mElBgm) && thPracParam.mode)) // show menu==0
                 {
                     for (int i = 0; i < n; i++) {
                         DWORD st = 0;
@@ -3157,6 +3159,69 @@ namespace TH06 {
     EHOOK_DY(th06_miss, 0x428DD9)// dec life
     {
         TH06InGameInfo::singleton().mMissCount++;
+    }
+
+    EHOOK_DY(th06_autoName_score,0x42BE49){
+        if (g_autoName_06){
+            int size = g_name_06.size();
+            if (size > 8)
+                size = 8;
+            if (size >= 1){
+                *(DWORD*)(pCtx->Eax + 0x10) = size - 1;
+                for (int i = 0; i < size; i++) {
+                    *(char*)(pCtx->Eax + 0x5193 + i) = (g_name_06[i] == '~') ? '\xA5' : g_name_06[i]; // red slash = 0xA5
+                }
+            }
+        }
+    }
+    EHOOK_DY(th06_autoName_rep_overwrite, 0x42D085)
+    {
+        if (g_autoName_06) {
+            bool set_name = true;
+            for (int i = 0; i <= 8; i++) {
+                char ch = *(char*)(pCtx->Eax + 0x34 + i);
+                if (ch != ' ' && ch!=0) {
+                    set_name = false;
+                    break;
+                }
+            }
+            if (set_name) {
+                int size = g_name_06.size();
+                if (size > 8)
+                    size = 8;
+                if (size >= 1) {
+                    *(DWORD*)(pCtx->Eax + 0x10) = size - 1;
+                    for (int i = 0; i < size; i++) {
+                        *(char*)(pCtx->Eax + 0x34 + i) = (g_name_06[i] == '~') ? '\xA5' : g_name_06[i]; // red slash = 0xA5
+                    }
+                }
+            }
+        }
+    }
+    EHOOK_DY(th06_autoName_rep, 0x42C8A0)
+    {
+        if (g_autoName_06) {
+            bool set_name = true;
+            for (int i = 0; i <= 8; i++){
+                char ch = *(char*)(pCtx->Eax + 0x34 + i);
+                if (ch != ' ' && ch != 0) {
+                    set_name = false;
+                    break;
+                }
+            }
+            if (set_name){
+                int size = g_name_06.size();
+                if (size > 8)
+                    size = 8;
+                if (size >= 1) {
+                    *(DWORD*)(pCtx->Eax + 0x10) = size - 1;
+                    for (int i = 0; i < size; i++) {
+                        *(char*)(pCtx->Eax + 0x34 + i) = (g_name_06[i] == '~') ? '\xA5' : g_name_06[i]; // red slash = 0xA5
+                    }
+                }
+            }
+        }
+        pCtx->Eip = 0x42C91C;
     }
     HOOKSET_ENDDEF()
 

@@ -708,6 +708,28 @@ public:
     }
 };
 
+class THCfgText : public THSetting<std::string> {
+private:
+    int32_t len;
+public:
+    THCfgText(const char* _name, std::string _value, int32_t _len)
+        : THSetting(_name, _value)
+        , len(_len)
+    {
+    }
+    void Gui(const char* guiTxt, const char* helpTxt = nullptr, ImGuiInputTextFlags_ flags = ImGuiInputTextFlags_None, ImGuiInputTextCallback callback = nullptr)
+    {
+        value.resize(len);
+        if (ImGui::InputText(guiTxt, value.data(), len, flags, callback)) {
+            LauncherSettingSet(name.c_str(), value);
+        }
+        if (helpTxt) {
+            ImGui::SameLine();
+            GuiHelpMarker(helpTxt);
+        }
+    }
+};
+
 class THCfgCombo : public THSetting<int> {
 public:
     THCfgCombo(const char* _name, int _value, int _counts)
@@ -2098,6 +2120,29 @@ private:
             mWindowSize.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE));
             mEnableKeyboardSOCD.Gui(S(THPRAC_ENABLE_KEYBOARD_SOCD), S(THPRAC_ENABLE_KEYBOARD_SOCD_DESC));
             mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
+
+            mAutoName_06.Gui(S(THPRAC_AUTO_NAME_TH06), S(THPRAC_AUTO_NAME_TH06_DESC));
+
+            if (mAutoName_06.Get())
+            {
+                auto charfilter = [](ImGuiInputTextCallbackData* data) -> int {
+                    static std::string allowed = ".,:;~@+-/*=%(){}[]<>#!?'\"$ ";
+                    if (data->EventFlag == ImGuiInputTextFlags_CallbackCharFilter) {
+                        if ((data->EventChar >= '0' && data->EventChar <= '9') || (data->EventChar >= 'A' && data->EventChar <= 'Z') || (data->EventChar >= 'a' && data->EventChar <= 'z')) {
+                            return 0;
+                        } else {
+                            for (auto ch : allowed)
+                                if (data->EventChar == ch)
+                                    return 0;
+                            data->EventChar = 0;
+                            return 1;
+                        }
+                    }
+                    return 0;
+                };
+                ImGui::SetNextItemWidth(150.0f);
+                mName_06.Gui(S(THPRAC_AUTO_NAME_NAME), nullptr, ImGuiInputTextFlags_::ImGuiInputTextFlags_CallbackCharFilter, charfilter);
+            }
             KeyBindSettings();
         }
         ImGui::Separator();
@@ -2388,6 +2433,9 @@ private:
     THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };
     THCfgCheckbox mDisableWinKey { "disable_win_key", false };
     THCfgCheckbox mPauseBGM_06 { "pauseBGM_06", false };
+    THCfgCheckbox mAutoName_06 { "autoInputName_06", false };
+    THCfgText mName_06 { "autoName_06", "", 9};
+    
     THCfgCheckbox mRecordGameTime { "recordGameTime", false };
     THCfgFloat mGameTimeTooLongTime { "gameTimeTooLong_Time", 3.0f, 0.001f,1000.0f };
     THCfgCheckbox mGameTimeTooLongSE { "gameTimeTooLong_SE", false };
