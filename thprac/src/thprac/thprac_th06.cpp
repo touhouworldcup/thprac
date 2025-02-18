@@ -1591,8 +1591,20 @@ namespace TH06 {
     };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
+        SINGLETON(THAdvOptWnd);
         // Option Related Functions
     private:
+        float bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
+        EHOOK_ST(th06_bossmovedown, 0x0040917F)
+        {
+            float* left = (float*)(pCtx->Ecx + 0xE60);
+            float* top = (float*)(pCtx->Ecx + 0xE64);
+            float* right = (float*)(pCtx->Ecx + 0xE68);
+            float* bottom = (float*)(pCtx->Ecx + 0xE6C);
+            float range = *bottom - *top;
+            *top = *bottom - range * (1.0f - THAdvOptWnd::singleton().bossMoveDownRange);
+        }
+
         HookCtx* th06_rankdown_disable[2];
 
         void FpsInit()
@@ -1658,11 +1670,13 @@ namespace TH06 {
             th06_rankdown_disable[1]->Setup();
             th06_rankdown_disable[0]->Toggle(g_adv_igi_options.th06_disable_drop_rank);
             th06_rankdown_disable[1]->Toggle(g_adv_igi_options.th06_disable_drop_rank);
+            th06_bossmovedown.Setup();
+            th06_bossmovedown.Toggle(false);
             GameplayInit();
         }
-        SINGLETON(THAdvOptWnd);
 
     public:
+        bool forceBossMoveDown = false;
         __declspec(noinline) static bool StaticUpdate()
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
@@ -1738,6 +1752,16 @@ namespace TH06 {
             DisableKeyOpt();
             KeyHUDOpt();
             InfLifeOpt();
+            if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
+                th06_bossmovedown.Toggle(forceBossMoveDown);
+            }
+            ImGui::SameLine();
+            HelpMarker(S(TH_BOSS_FORCE_MOVE_DOWN_DESC));
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(180.0f);
+            if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &bossMoveDownRange, 0.002f, 0.0f, 1.0f))
+                bossMoveDownRange = std::clamp(bossMoveDownRange, 0.0f, 1.0f);
+
             ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK), &g_adv_igi_options.th06_showRank);
             ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX), &g_adv_igi_options.th06_showHitbox);
             ImGui::SameLine();
@@ -3051,6 +3075,14 @@ namespace TH06 {
         TH06InGameInfo::singleton().Update();
         TH06InGameInfo::singleton().IncreaseGameTime();
 
+        {
+            if (THAdvOptWnd::singleton().forceBossMoveDown) {
+                auto p = ImGui::GetOverlayDrawList();
+                auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
+                p->AddRectFilled({ 60.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
+                p->AddText({ 60.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
+            }
+        }
         GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
     }
     static float MInterpolation(float t, float a, float b)
