@@ -3211,7 +3211,7 @@ namespace TH06 {
         if (g_autoName_06) {
             bool set_name = true;
             int name_len = 0;
-            for (int i = 0; i <= 8; i++) {
+            for (int i = 0; i < 8; i++) {
                 char ch = *(char*)(pCtx->Eax + 0x34 + i);
                 if (ch != ' ' && ch!=0) {
                     set_name = false;
@@ -3224,8 +3224,11 @@ namespace TH06 {
                     size = 8;
                 if (size >= 1) {
                     *(DWORD*)(pCtx->Eax + 0x10) = size - 1;
-                    for (int i = 0; i < size; i++) {
-                        *(char*)(pCtx->Eax + 0x34 + i) = (g_name_06[i] == '~') ? '\xA5' : g_name_06[i]; // red slash = 0xA5
+                    for (int i = 0; i < 8; i++) {
+                        if (i < size)
+                            *(char*)(pCtx->Eax + 0x34 + i) = (g_name_06[i] == '~') ? '\xA5' : g_name_06[i]; // red slash = 0xA5
+                        else
+                            *(char*)(pCtx->Eax + 0x34 + i) = ' ';
                     }
                 }
             }else{
@@ -3238,22 +3241,24 @@ namespace TH06 {
         if (g_autoName_06) {
             bool set_name = true;
             int name_len = 0;
-            for (int i = 0; i <= 8; i++){
+            for (int i = 0; i < 8; i++){
                 char ch = *(char*)(pCtx->Eax + 0x34 + i);
                 if (ch != ' ' && ch != 0) {
                     set_name = false;
                     name_len = i;
                 }
             }
-            
             if (set_name){
                 int size = g_name_06.size();
                 if (size > 8)
                     size = 8;
                 if (size >= 1) {
                     *(DWORD*)(pCtx->Eax + 0x10) = size - 1;
-                    for (int i = 0; i < size; i++) {
-                        *(char*)(pCtx->Eax + 0x34 + i) = (g_name_06[i] == '~') ? '\xA5' : g_name_06[i]; // red slash = 0xA5
+                    for (int i = 0; i < 8; i++) {
+                        if (i < size)
+                            *(char*)(pCtx->Eax + 0x34 + i) = (g_name_06[i] == '~') ? '\xA5' : g_name_06[i]; // red slash = 0xA5
+                        else
+                            *(char*)(pCtx->Eax + 0x34 + i) = ' ';
                     }
                     pCtx->Eip = 0x42C91C;
                 }
