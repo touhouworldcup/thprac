@@ -3178,11 +3178,12 @@ namespace TH06 {
     {
         if (g_autoName_06) {
             bool set_name = true;
+            int name_len = 0;
             for (int i = 0; i <= 8; i++) {
                 char ch = *(char*)(pCtx->Eax + 0x34 + i);
                 if (ch != ' ' && ch!=0) {
                     set_name = false;
-                    break;
+                    name_len = i;
                 }
             }
             if (set_name) {
@@ -3195,6 +3196,8 @@ namespace TH06 {
                         *(char*)(pCtx->Eax + 0x34 + i) = (g_name_06[i] == '~') ? '\xA5' : g_name_06[i]; // red slash = 0xA5
                     }
                 }
+            }else{
+                *(DWORD*)(pCtx->Eax + 0x10) = name_len;
             }
         }
     }
@@ -3202,13 +3205,15 @@ namespace TH06 {
     {
         if (g_autoName_06) {
             bool set_name = true;
+            int name_len = 0;
             for (int i = 0; i <= 8; i++){
                 char ch = *(char*)(pCtx->Eax + 0x34 + i);
                 if (ch != ' ' && ch != 0) {
                     set_name = false;
-                    break;
+                    name_len = i;
                 }
             }
+            
             if (set_name){
                 int size = g_name_06.size();
                 if (size > 8)
@@ -3218,10 +3223,14 @@ namespace TH06 {
                     for (int i = 0; i < size; i++) {
                         *(char*)(pCtx->Eax + 0x34 + i) = (g_name_06[i] == '~') ? '\xA5' : g_name_06[i]; // red slash = 0xA5
                     }
+                    pCtx->Eip = 0x42C91C;
                 }
+            }else{
+                *(DWORD*)(pCtx->Eax + 0x10) = name_len;
+                pCtx->Eip = 0x42C91C;
             }
         }
-        pCtx->Eip = 0x42C91C;
+       
     }
     HOOKSET_ENDDEF()
 
