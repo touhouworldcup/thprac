@@ -352,6 +352,8 @@ namespace TH08 {
         bool SectionHasDlg(int32_t section)
         {
             switch (section) {
+            case 10000 + 4 * 100 + 5:
+            case 10000 + 5 * 100 + 5:
             case TH08_ST1_BOSS1:
             case TH08_ST2_BOSS1:
             case TH08_ST3_BOSS1:
@@ -385,8 +387,10 @@ namespace TH08 {
                 } else {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
                 };
-
                 mChapter(chapterStr);
+                if ((*mStage == 3 && *mChapter == 5) || (*mStage == 4 && *mChapter == 5)){
+                    mDlg();
+                }
                 break;
             case 2:
             case 3: // Mid boss & End boss
@@ -1090,8 +1094,16 @@ namespace TH08 {
                 ECLWarp(3180, 0xabcc, 360, 0xbed4);
                 break;
             case 5:
-                ECLWarp(4903, 0xb2d8, 360, 0xbed4);
-                STDJump(0xf48, 56, 6558);
+                if (thPracParam.dlg){
+                    ECLWarp(4962, 0xb280, 360, 0xbed4);
+                    // ECLCallSub(ecl, 0x1870, 22, 60);//sub17
+                    ECLCallSub(ecl, 0x1758, 22, 60); // sub17
+                    STDJump(0xf48, 38, 4562);
+                    STDStage4Fix();
+                }else{
+                    STDJump(0xf48, 56, 6558);
+                    ECLWarp(4903, 0xb2d8, 360, 0xbed4);
+                }
                 break;
             case 6:
                 ECLWarp(5363, 0xb598, 360, 0xbed4);
@@ -1115,8 +1127,18 @@ namespace TH08 {
                 ECLWarp(3180, 0xce50, 360, 0xe158);
                 break;
             case 5:
-                ECLWarp(4903, 0xd55c, 360, 0xe158);
-                STDJump(0xf48, 56, 6558);
+                if (thPracParam.dlg) {
+                    ECLWarp(4962, 0xd504, 360, 0xe158);
+                    ECLTimeFix(0x1814, 0, 5);
+                    //ECLCallSub(ecl, 0x18b4, 22, 60);
+                    ECLCallSub(ecl, 0x179C, 25, 60);
+                    STDStage4Fix();
+
+                    ECLSetTime(ecl, 0x2570, 0, 41, 0);
+                } else {
+                    ECLWarp(4903, 0xd55c, 360, 0xe158);
+                    STDJump(0xf48, 56, 6558);
+                }
                 break;
             case 6:
                 ECLWarp(5363, 0xd81c, 360, 0xe158);
@@ -1429,7 +1451,7 @@ namespace TH08 {
             ECLCallSub(ecl, 0x1870, 19, 60);
             STDJump(0xf48, 38, 4562);
             STDStage4Fix();
-
+            
             ECLSetTime(ecl, 0x22f0, 0, 30, 0);
             break;
         case THPrac::TH08::TH08_ST4A_BOSS5:
