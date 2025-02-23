@@ -3141,7 +3141,7 @@ namespace TH06 {
             DWORD is_practice = *(DWORD*)(0x69d4c3);
             DWORD gameState = *(DWORD*)(0x6C6EA4);
             DWORD is_rep = *(DWORD*)(0x69BCBC);
-            if (((is_practice) || (is_rep)) && gameState == 2) {
+            if (((is_practice) || (is_rep) || (thPracParam.mode)) && gameState == 2) {
 
                 p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
 
