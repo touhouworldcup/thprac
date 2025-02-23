@@ -1011,6 +1011,7 @@ enum th_glossary_t {
     THPRAC_SETTING_LANGUAGE,
     THPRAC_SETTING_LAUNCHER,
     THPRAC_SETTING_UPDATE,
+    THPRAC_SHOW_BULLET_HITBOX,
     THPRAC_STEAM_MNG,
     THPRAC_STEAM_MNG_AUTO,
     THPRAC_STEAM_MNG_BUTTON,
@@ -1338,7 +1339,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1327];
+extern const char* th_glossary_str[3][1328];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

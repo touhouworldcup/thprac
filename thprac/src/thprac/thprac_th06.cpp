@@ -11,43 +11,46 @@ namespace THPrac {
 extern bool g_pauseBGM_06;
 extern bool g_autoName_06;
 extern std::string g_name_06;
-LPDIRECT3DTEXTURE8 g_hitbox_texture = NULL;
-ImTextureID g_hitbox_textureID = NULL;
-float g_hitbox_width = 32.0f;
-float g_hitbox_height = 32.0f;
-int32_t g_last_rep_seed = 0;
 extern bool g_forceRenderCursor;
-#include "thprac_th06_hitbox.h"
-void ReadHitboxFile()
-{
-    if (g_hitbox_texture != NULL)
-    {
-        g_hitbox_texture->Release();
-        g_hitbox_texture = NULL;
-        g_hitbox_textureID = NULL;
-    }
-    if (GetFileAttributes(L"hitbox.png") != INVALID_FILE_ATTRIBUTES) {
-        IDirect3DDevice8* device = *(IDirect3DDevice8**)0x6c6d20;
-        if (D3DXCreateTextureFromFileA(device, "hitbox.png", &g_hitbox_texture) == D3D_OK) {
-            g_hitbox_textureID = (ImTextureID)g_hitbox_texture;
-            D3DSURFACE_DESC desc;
-            g_hitbox_texture->GetLevelDesc(0, &desc);
-            g_hitbox_width = desc.Width;
-            g_hitbox_height = desc.Height;
-        }
-    } else {
-        IDirect3DDevice8* device = *(IDirect3DDevice8**)0x6c6d20;
-        if (D3DXCreateTextureFromFileInMemory(device, hitbox_file, sizeof(hitbox_file), &g_hitbox_texture) == D3D_OK) {
-            g_hitbox_textureID = (ImTextureID)g_hitbox_texture;
-            D3DSURFACE_DESC desc;
-            g_hitbox_texture->GetLevelDesc(0, &desc);
-            g_hitbox_width = desc.Width;
-            g_hitbox_height = desc.Height;
-        }
-    }
-    
-}
+
 namespace TH06 {
+    LPDIRECT3DTEXTURE8 g_hitbox_texture = NULL;
+    ImTextureID g_hitbox_textureID = NULL;
+    float g_hitbox_width = 32.0f;
+    float g_hitbox_height = 32.0f;
+    int32_t g_last_rep_seed = 0;
+    bool g_show_bullet_hitbox = false;
+    #include "thprac_th06_hitbox.h"
+
+    
+    void ReadHitboxFile()
+    {
+        if (g_hitbox_texture != NULL) {
+            g_hitbox_texture->Release();
+            g_hitbox_texture = NULL;
+            g_hitbox_textureID = NULL;
+        }
+        if (GetFileAttributes(L"hitbox.png") != INVALID_FILE_ATTRIBUTES) {
+            IDirect3DDevice8* device = *(IDirect3DDevice8**)0x6c6d20;
+            if (D3DXCreateTextureFromFileA(device, "hitbox.png", &g_hitbox_texture) == D3D_OK) {
+                g_hitbox_textureID = (ImTextureID)g_hitbox_texture;
+                D3DSURFACE_DESC desc;
+                g_hitbox_texture->GetLevelDesc(0, &desc);
+                g_hitbox_width = desc.Width;
+                g_hitbox_height = desc.Height;
+            }
+        } else {
+            IDirect3DDevice8* device = *(IDirect3DDevice8**)0x6c6d20;
+            if (D3DXCreateTextureFromFileInMemory(device, hitbox_file, sizeof(hitbox_file), &g_hitbox_texture) == D3D_OK) {
+                g_hitbox_textureID = (ImTextureID)g_hitbox_texture;
+                D3DSURFACE_DESC desc;
+                g_hitbox_texture->GetLevelDesc(0, &desc);
+                g_hitbox_width = desc.Width;
+                g_hitbox_height = desc.Height;
+            }
+        }
+    }
+
     static const char* th06_spells_str[3][65] {
         { 
             "月符「月光」",
@@ -1762,6 +1765,8 @@ namespace TH06 {
             if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &bossMoveDownRange, 0.002f, 0.0f, 1.0f))
                 bossMoveDownRange = std::clamp(bossMoveDownRange, 0.0f, 1.0f);
 
+            ImGui::Checkbox(S(THPRAC_SHOW_BULLET_HITBOX), &g_show_bullet_hitbox);
+
             ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK), &g_adv_igi_options.th06_showRank);
             ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX), &g_adv_igi_options.th06_showHitbox);
             ImGui::SameLine();
@@ -3075,12 +3080,91 @@ namespace TH06 {
         TH06InGameInfo::singleton().Update();
         TH06InGameInfo::singleton().IncreaseGameTime();
 
+        auto p = ImGui::GetOverlayDrawList();
+        {// player hitbox
+            static float t = 0.0f;
+            static bool is_shift_pressed = false;
+            if (g_adv_igi_options.th06_showHitbox && g_hitbox_textureID != NULL) {
+                bool is_time_stopped = *(BYTE*)(0x69BCCC);
+
+                DWORD gameState = *(DWORD*)(0x6C6EA4);
+                BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
+                WORD keyState = *(WORD*)(0x69D904);
+                if (!is_time_stopped)
+                    is_shift_pressed = keyState & 0x4;
+                if (gameState == 2 && is_shift_pressed) {
+                    if (pauseMenuState == 0) {
+                        if (!is_time_stopped)
+                            t += 1.0f;
+                        float scale = MInterpolation(t / 18.0f, 1.5f, 1.0f),
+                              scale2 = MInterpolation(t / 12.0f, 0.3f, 1.0f),
+                              angle = 3.14159f,
+                              angle2 = 0.0f,
+                              alpha = t < 6.0f ? t / 6.0f : 1.0f;
+                        if (t < 18.0f) {
+                            angle = MInterpolation(t / 18.0f, 3.14159f, -3.14159f);
+                            angle2 = -angle;
+                        } else {
+                            angle = -3.14159f + t * 0.05235988f;
+                            angle2 = 3.14159f - t * 0.05235988f;
+                        }
+                        scale *= 0.75f;
+                        scale2 *= 0.75f; // 32->24
+                        p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
+                        ImVec2 p1 = { *(float*)(0x6CAA68) + 32.0f, *(float*)(0x6CAA6C) + 16.0f };
+                        float c, s;
+                        c = cosf(angle) * scale * g_hitbox_width, s = sinf(angle) * scale * g_hitbox_height;
+                        p->AddImageQuad(g_hitbox_textureID, { p1.x + c, p1.y + s }, { p1.x - s, p1.y + c }, { p1.x - c, p1.y - s }, { p1.x + s, p1.y - c }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, ImGui::ColorConvertFloat4ToU32({ 1, 1, 1, alpha }));
+                        c = cosf(angle2) * scale2 * g_hitbox_width, s = sinf(angle2) * scale2 * g_hitbox_height;
+                        p->AddImageQuad(g_hitbox_textureID, { p1.x + c, p1.y + s }, { p1.x - s, p1.y + c }, { p1.x - c, p1.y - s }, { p1.x + s, p1.y - c });
+                        p->PopClipRect();
+                    }
+                } else {
+                    t = 0.0f;
+                }
+            }
+        }
+        if (g_adv_igi_options.show_keyboard_monitor && (*(DWORD*)(0x6C6EA4) == 2)) {
+            g_adv_igi_options.keyboard_style.size = { 48.0f, 48.0f };
+            KeysHUD(6, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+        }
         {
             if (THAdvOptWnd::singleton().forceBossMoveDown) {
                 auto p = ImGui::GetOverlayDrawList();
                 auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
                 p->AddRectFilled({ 60.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
                 p->AddText({ 60.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
+            }
+        }
+        // show bullet hitbox
+        if (g_show_bullet_hitbox) {
+            DWORD is_practice = *(DWORD*)(0x69d4c3);
+            DWORD gameState = *(DWORD*)(0x6C6EA4);
+            DWORD is_rep = *(DWORD*)(0x69BCBC);
+            if (((is_practice) || (is_rep)) && gameState == 2) {
+
+                p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
+
+                ImVec2 plpos1 = *(ImVec2*)(0x6CAA80);
+                ImVec2 plpos2 = *(ImVec2*)(0x6CAA8C);
+                float plhit = plpos2.x - plpos1.x;
+
+                for (int i = 0; i < 640; i++) {
+                    DWORD pbt = 0x005AB5F8 + i * 0x5C4;
+                    if ((*(WORD*)(pbt + 0x5BE) != 1) || (* (WORD*)(pbt + 0x5BE) == 0)) {
+                        continue;
+                    }
+                    ImVec2 pos = *(ImVec2*)(pbt + 0x560);
+                    ImVec2 hit = *(ImVec2*)(pbt + 0x550);
+
+                    ImVec2 stage_pos = { 32.0f, 16.0f };
+                    ImVec2 p1 = { pos.x - hit.x * 0.5f - plhit * 0.5f + stage_pos.x, pos.y - hit.y * 0.5f - plhit * 0.5f + stage_pos.y };
+                    ImVec2 p2 = { pos.x + hit.x * 0.5f + plhit * 0.5f + stage_pos.x, pos.y + hit.y * 0.5f + plhit * 0.5f + stage_pos.y };
+                    p->AddRectFilled(p1, p2, 0x88002288);
+                    p->AddRect(p1, p2, 0xFFFFFFFF, 0.0f);
+                }
+
+                p->PopClipRect();
             }
         }
         GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
@@ -3101,53 +3185,6 @@ namespace TH06 {
     }
     EHOOK_DY(th06_render, 0x41cb6d)
     {
-        static float t = 0.0f;
-        static bool is_shift_pressed = false;
-        if (g_adv_igi_options.th06_showHitbox && g_hitbox_textureID != NULL) {
-            bool is_time_stopped = *(BYTE*)(0x69BCCC);
-
-            DWORD gameState = *(DWORD*)(0x6C6EA4);
-            BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
-            WORD keyState = *(WORD*)(0x69D904);
-            if (!is_time_stopped)
-                is_shift_pressed = keyState & 0x4;
-
-            auto p = ImGui::GetOverlayDrawList();
-            if (gameState == 2 && is_shift_pressed) {
-                if (pauseMenuState == 0) {
-                    if (!is_time_stopped)
-                        t += 1.0f;
-                    float scale = MInterpolation(t / 18.0f, 1.5f, 1.0f),
-                          scale2 = MInterpolation(t / 12.0f, 0.3f, 1.0f),
-                          angle = 3.14159f,
-                          angle2 = 0.0f,
-                          alpha = t < 6.0f ? t / 6.0f : 1.0f;
-                    if (t < 18.0f) {
-                        angle = MInterpolation(t / 18.0f, 3.14159f, -3.14159f);
-                        angle2 = -angle;
-                    } else {
-                        angle = -3.14159f + t * 0.05235988f;
-                        angle2 = 3.14159f - t * 0.05235988f;
-                    }
-                    scale *= 0.75f;
-                    scale2 *= 0.75f; // 32->24
-                    p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
-                    ImVec2 p1 = { *(float*)(0x6CAA68) + 32.0f, *(float*)(0x6CAA6C) + 16.0f };
-                    float c, s;
-                    c = cosf(angle) * scale * g_hitbox_width, s = sinf(angle) * scale * g_hitbox_height;
-                    p->AddImageQuad(g_hitbox_textureID, { p1.x + c, p1.y + s }, { p1.x - s, p1.y + c }, { p1.x - c, p1.y - s }, { p1.x + s, p1.y - c }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, ImGui::ColorConvertFloat4ToU32({ 1, 1, 1, alpha }));
-                    c = cosf(angle2) * scale2 * g_hitbox_width, s = sinf(angle2) * scale2 * g_hitbox_height;
-                    p->AddImageQuad(g_hitbox_textureID, { p1.x + c, p1.y + s }, { p1.x - s, p1.y + c }, { p1.x - c, p1.y - s }, { p1.x + s, p1.y - c });
-                    p->PopClipRect();
-                }
-            }else{
-               t = 0.0f;
-            }
-        }
-        if (g_adv_igi_options.show_keyboard_monitor && (*(DWORD*)(0x6C6EA4) == 2)) {
-            g_adv_igi_options.keyboard_style.size = { 48.0f, 48.0f };
-            KeysHUD(6, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
-        }
         GameGuiRender(IMPL_WIN32_DX8);
         if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
             THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);

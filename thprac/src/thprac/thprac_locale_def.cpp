@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1327] {
+const char* th_glossary_str[3][1328] {
     {
         "",
         "啤酒",
@@ -1011,6 +1011,7 @@ const char* th_glossary_str[3][1327] {
         "语言",
         "启动器",
         "更新",
+        "显示弹幕判定(仅练习/rep)",
         "Steam游戏",
         "自动扫描",
         "Steam游戏...",
@@ -2340,6 +2341,7 @@ const char* th_glossary_str[3][1327] {
         "Language",
         "Launcher",
         "Update",
+        "show bullet hitbox(only prac/rep)",
         "Steam games",
         "Auto-scan",
         "Steam games...",
@@ -3669,6 +3671,7 @@ const char* th_glossary_str[3][1327] {
         "言語",
         "ランチャー",
         "更新",
+        "show bullet hitbox(only prac/rep)",
         "Steamゲーム",
         "自動スキャン",
         "Steamゲーム...",

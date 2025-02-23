@@ -4,6 +4,9 @@
 
 namespace THPrac {
 namespace TH08 {
+
+    bool g_show_bullet_hitbox=false;
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -847,6 +850,8 @@ namespace TH08 {
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_ONE_KEY_DIE_DESC));
+
+                ImGui::Checkbox(S(THPRAC_SHOW_BULLET_HITBOX), &g_show_bullet_hitbox);
 
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
@@ -2556,6 +2561,37 @@ namespace TH08 {
         }
         TH08InGameInfo::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+
+        // show bullet hitbox
+        if (g_show_bullet_hitbox)
+        {
+            DWORD mode = *(DWORD*)(0x164D0B4);
+            if (((mode & 0x1) || (mode & 0x8)) && (*(DWORD*)(0x17CE8B4) == 2)) {
+                auto dl = ImGui::GetOverlayDrawList();
+
+                dl->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
+                
+                ImVec2 plpos1 = *(ImVec2*)(0x017D6284);
+                ImVec2 plpos2 = *(ImVec2*)(0x017D6290);
+                float plhit = plpos2.x - plpos1.x;
+
+                for (int i = 0; i < 0x600; i++) {
+                    DWORD pbt = 0x00F54E90 + 0x1A880 + i * 0x10B8;
+                    if (*(WORD*)(pbt + 0xD88) == 0)
+                        continue;
+                    ImVec2 pos = *(ImVec2*)(pbt + 0xD44);
+                    ImVec2 hit = *(ImVec2*)(pbt + 0xD34);
+
+                    ImVec2 stage_pos = { 32.0f, 16.0f };
+                    ImVec2 p1 = { pos.x - hit.x * 0.5f - plhit * 0.5f + stage_pos.x, pos.y - hit.y * 0.5f - plhit * 0.5f + stage_pos.y };
+                    ImVec2 p2 = { pos.x + hit.x * 0.5f + plhit * 0.5f + stage_pos.x, pos.y + hit.y * 0.5f + plhit * 0.5f + stage_pos.y };
+                    dl->AddRectFilled(p1, p2, 0x88002288);
+                    dl->AddRect(p1, p2, 0xFFFFFFFF, 0.0f);
+                }
+
+                dl->PopClipRect();
+            }
+        }
         GameGuiEnd(drawCursor);
     }
     EHOOK_DY(th08_player_state, 0x44C390){
