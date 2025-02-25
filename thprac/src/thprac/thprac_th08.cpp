@@ -603,8 +603,10 @@ namespace TH08 {
             new HookCtx(0x44CA78, "\x00", 1),
             new HookCtx(0x44CAA4, "\x00", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
-            new HookCtx(0x43B295, "\x2e\xe9\x61", 3),
-            new HookCtx(0x44CDB1, "\x00", 1) } };
+            //new HookCtx(0x43B295, "\x2e\xe9\x61", 3),
+            new HookCtx(0x44CDB1, "\x00", 1) ,
+            new HookCtx(0x44CDA2, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 12) ,
+        } };
         Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
             new HookCtx(0x416CBE, "\x2e\xe9", 2),
             new HookCtx(0x42DDB5, "\xeb", 1) } };

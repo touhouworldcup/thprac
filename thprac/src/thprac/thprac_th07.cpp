@@ -529,8 +529,9 @@ namespace TH07 {
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
             new HookCtx(0x440BC7, "\x00", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
-            new HookCtx(0x42F02B, "\xeb\x16", 2),
-            new HookCtx(0x440DD3, "\x00", 1) } };
+            //new HookCtx(0x42F02B, "\xeb\x16", 2),
+            new HookCtx(0x440DD3, "\x00", 1),
+            new HookCtx(0x440DBF, "\x90\x90\x90\x90\x90\x90\x90", 7) } };
         Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
             new HookCtx(0x417726, "\xeb", 1),
             new HookCtx(0x421F91, "\xeb", 1) } };

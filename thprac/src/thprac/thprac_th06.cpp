@@ -437,9 +437,10 @@ namespace TH06 {
         Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
             new HookCtx(0x4289e3, "\x00", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
-            new HookCtx(0x41BBE2, "\x3E\xC6\x80", 3),
-            new HookCtx(0x41BBE9, "\x80", 1),
-            new HookCtx(0x428B7D, "\x00", 1) } };
+            // new HookCtx(0x41BBE2, "\x3E\xC6\x80", 3),
+            // new HookCtx(0x41BBE9, "\x80", 1),
+            new HookCtx(0x428B7D, "\x00", 1),
+            new HookCtx(0x428B67,"\x90\x90\x90\x90\x90\x90\x90\x90\x90", 9) } };
         Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
             new HookCtx(0x412DD1, "\xeb", 1) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
