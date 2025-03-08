@@ -515,11 +515,25 @@ namespace TH15 {
             if (mOptCtx.vpatch_base) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th15.dll", hash);
-                if (hash[0] != 16371671977271057239ll || hash[1] != 17823539316282081507ll)
-                    mOptCtx.fps_status = -1;
-                else if (*(int32_t*)(mOptCtx.vpatch_base + 0x42fbc) == 0) {
+                
+                bool vp_valid = hash[0] == 7265142250215198902ll && hash[1] == 13547095955570115225ll;
+                if (hash[0] == 16371671977271057239ll && hash[1] == 17823539316282081507ll) {
+                    vp_valid = true;
+                    if (MessageBoxW(
+                        *(HWND*)0x519bb0,
+                        L"Old version of vpatch detected. Do you want to download the newest version?",
+                        L"thprac: warning",
+                        MB_ICONWARNING | MB_YESNO
+                    ) == IDYES) {
+                        ShellExecuteW(NULL, NULL, L"https://maribelhearn.com/mirror/VsyncPatch.zip", NULL, NULL, SW_SHOW);
+                    }
+                }               
+
+                if (vp_valid && *(int32_t*)(mOptCtx.vpatch_base + 0x42fbc) == 0) {
                     mOptCtx.fps_status = 2;
                     mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x42fcc);
+                } else if (!vp_valid) {
+                    mOptCtx.fps_status = -1;
                 }
             } else if (*(uint8_t*)0x4e79c9 == 3) {
                 mOptCtx.fps_status = 1;
