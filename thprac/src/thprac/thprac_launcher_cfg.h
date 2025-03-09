@@ -17,6 +17,8 @@ void LauncherCfgClose();
 void LauncherCfgReset();
 
 bool LauncherSettingGet(const char* name, int& valueOut);
+bool LauncherSettingRemove(const char* name);
+
 bool LauncherSettingGet(const char* name, unsigned int& valueOut);
 bool LauncherSettingGet(const char* name, bool& valueOut);
 bool LauncherSettingGet(const char* name, float& valueOut);

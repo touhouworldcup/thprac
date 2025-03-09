@@ -606,8 +606,6 @@ enum th_glossary_t {
     THPRAC_DISABLE_WIN_KEY_DESC,
     THPRAC_DONT_SEARCH_ONGOING,
     THPRAC_ENABLE_GAMETIME_RECORD,
-    THPRAC_ENABLE_KEYBOARD_SOCD,
-    THPRAC_ENABLE_KEYBOARD_SOCD_DESC,
     THPRAC_EXISTING_GAME_ACTION,
     THPRAC_EXISTING_GAME_ACTION_OPTION,
     THPRAC_EXISTING_GAME_CONFIRMATION,
@@ -834,6 +832,9 @@ enum th_glossary_t {
     THPRAC_KEYBIND_REMOVE,
     THPRAC_KEYBIND_TO,
     THPRAC_KEYBIND_TO_COMBO,
+    THPRAC_KEYBOARD_SOCD,
+    THPRAC_KEYBOARD_SOCD_DESC,
+    THPRAC_KEYBOARD_SOCD_SETTINGS,
     THPRAC_LANGUAGE,
     THPRAC_LANGUAGE_HINT,
     THPRAC_LAUNCHER,
@@ -1339,7 +1340,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1328];
+extern const char* th_glossary_str[3][1329];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2913,7 +2914,7 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3347];
+extern const wchar_t __thprac_loc_range_zh[3349];
 
 extern const wchar_t __thprac_loc_range_en[57];
 

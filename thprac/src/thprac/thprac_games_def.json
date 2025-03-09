@@ -228,8 +228,10 @@
 	"THPRAC_INIT_WINDOW_POS_DESC":["如果遇到游戏启动后没窗口可尝试开启此选项","try this option when game is invisible after opened","try this option when game is invisible after opened"],
     "THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN":["修改启动时窗口的大小","change window size when open","change window size when open"],
     "THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE":["窗口大小","window size","window size"],
-    "THPRAC_ENABLE_KEYBOARD_SOCD":["启用SOCD后覆盖功能","enable keyboard SOCD (last input priority)","enable keyboard SOCD (last input priority)"],
-    "THPRAC_ENABLE_KEYBOARD_SOCD_DESC":["当同时按下反向方向键时，仅激活最后使用的方向键。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.","When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."],
+	
+    "THPRAC_KEYBOARD_SOCD":["SOCD设置","SOCD setting","SOCD setting"],
+    "THPRAC_KEYBOARD_SOCD_SETTINGS":["默认SOCD(zun's)\\0启用SOCD后覆盖功能\\0启用SOCD回中功能\\0\\0","default SOCD(zun's)\\0enable keyboard SOCD (last input priority)\\0enable keyboard SOCD (neutral)\\0\\0","default SOCD(zun's)\\0enable keyboard SOCD (last input priority)\\0enable keyboard SOCD (neutral)\\0\\0"],
+    "THPRAC_KEYBOARD_SOCD_DESC":["当同时按下反向方向键时，修改按键逻辑。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。","Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.","Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."],
     
     "THPRAC_COMPATIBILITY_SETTINGS":["兼容性设置","Compatibility Settings","Compatibility Settings"],
 	

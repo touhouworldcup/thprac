@@ -177,6 +177,17 @@ bool LauncherSettingGet(const char* name, int& valueOut)
     }
     return false;
 }
+bool LauncherSettingRemove(const char* name)
+{
+    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+        auto& settingsJson = gCfgJson["settings"];
+        if (settingsJson.HasMember(name)) {
+            settingsJson.EraseMember(name);
+            return true;
+        }
+    }
+    return false;
+}
 bool LauncherSettingGet(const char* name, unsigned int& valueOut)
 {
     if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
@@ -2118,7 +2129,16 @@ private:
             ImGui::SameLine();
             ImGui::SetNextItemWidth(75.0f + ImGui::CalcTextSize(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE)).x);
             mWindowSize.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE));
-            mEnableKeyboardSOCD.Gui(S(THPRAC_ENABLE_KEYBOARD_SOCD), S(THPRAC_ENABLE_KEYBOARD_SOCD_DESC));
+
+            
+            bool enable_SOCD_v1 = false;
+            LauncherSettingGet("keyboard_SOCD", enable_SOCD_v1);
+            if (LauncherSettingRemove("keyboard_SOCD")) {
+                int type = enable_SOCD_v1 ? 1 : 0;
+                mKeyboardSOCD.Set(type);
+            }
+
+            mKeyboardSOCD.Gui(S(THPRAC_KEYBOARD_SOCD), S(THPRAC_KEYBOARD_SOCD_SETTINGS), S(THPRAC_KEYBOARD_SOCD_DESC));
             mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
 
             mAutoName_06.Gui(S(THPRAC_AUTO_NAME_TH06), S(THPRAC_AUTO_NAME_TH06_DESC));
@@ -2429,7 +2449,7 @@ private:
     THCfgCheckbox mWindowSizeChangeWhenOpen { "change_window_size_when_open", false };
     THCfgInt2 mWindowSize { "changed_window_size", {1920,1440},1,8192 };
 
-    THCfgCheckbox mEnableKeyboardSOCD { "keyboard_SOCD", false };
+    THCfgCombo mKeyboardSOCD { "keyboard_SOCDv2", 0, 3 };
     THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };
     THCfgCheckbox mDisableWinKey { "disable_win_key", false };
     THCfgCheckbox mPauseBGM_06 { "pauseBGM_06", false };

@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1328] {
+const char* th_glossary_str[3][1329] {
     {
         "",
         "啤酒",
@@ -606,8 +606,6 @@ const char* th_glossary_str[3][1328] {
         "可能引入延迟, 因此不建议通过软件禁用win键",
         "启动thprac时不搜索正在运行的游戏",
         "在设置界面设置「记录飞行时间」以查看(下一次启动生效)",
-        "启用SOCD后覆盖功能",
-        "当同时按下反向方向键时，仅激活最后使用的方向键。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。",
         "启动thprac时，如果同一目录下存在游戏:",
         "启动游戏\0打开启动器\0总是询问\0\0",
         "当前目录下已找到游戏: %s。\n按\"是\"启动游戏。\n按\"否\"打开启动器。",
@@ -834,6 +832,9 @@ const char* th_glossary_str[3][1328] {
         "删除",
         "修改按键",
         "修改按键",
+        "SOCD设置",
+        "当同时按下反向方向键时，修改按键逻辑。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。",
+        "默认SOCD(zun's)\0启用SOCD后覆盖功能\0启用SOCD回中功能\0\0",
         "语言/Language/言語",
         "重新启动thprac以使变更生效。",
         "thprac - 东方游戏启动器",
@@ -1936,8 +1937,6 @@ const char* th_glossary_str[3][1328] {
         "might cause delay, so it's not recommended to disable win key by software",
         "Do not search for any ongoing game when launching thprac",
         "enable record game time in Settings to check(works when launch next time)",
-        "enable keyboard SOCD (last input priority)",
-        "When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.",
         "When starting thprac, if a game exists under the same directory:",
         "Launch game\0Open launcher\0Always ask\0\0",
         "An existing game was found: %s.\nClick \"Yes\" to launch the game.\nClick \"No\" to open the launcher.",
@@ -2164,6 +2163,9 @@ const char* th_glossary_str[3][1328] {
         "remove",
         "new key",
         "new key",
+        "SOCD setting",
+        "Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.",
+        "default SOCD(zun's)\0enable keyboard SOCD (last input priority)\0enable keyboard SOCD (neutral)\0\0",
         "Language/言語/语言",
         "Restart thprac for changes to take effect.",
         "thprac - Touhou Game Launcher",
@@ -3266,8 +3268,6 @@ const char* th_glossary_str[3][1328] {
         "might cause delay, so it's not recommended to disable win key by software",
         "thpracを起動するときに進行中のゲームを検索しない",
         "enable record game time in Settings to check(works when launch next time)",
-        "enable keyboard SOCD (last input priority)",
-        "When press opposite arrow key, only the last pressed one will be activated.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.",
         "thpracを起動するときに、ゲームが同じディレクトリに存在する場合:",
         "ゲームを起動します\0ランチャーを開く\0常に尋ねる\0\0",
         "既存のゲームが見つかりました: %s。\n「はい」をクリックしてゲームを起動します。\n「いいえ」をクリックしてランチャーを開きます。",
@@ -3494,6 +3494,9 @@ const char* th_glossary_str[3][1328] {
         "remove",
         "new key",
         "new key",
+        "SOCD setting",
+        "Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.",
+        "default SOCD(zun's)\0enable keyboard SOCD (last input priority)\0enable keyboard SOCD (neutral)\0\0",
         "言語/Language/语言",
         "変更を有効にするためにthpracを再起動してください。",
         "thprac - 東方ゲームランチャー",
@@ -24519,7 +24522,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3347] {
+const wchar_t __thprac_loc_range_zh[3349] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -26018,6 +26021,7 @@ const wchar_t __thprac_loc_range_zh[3347] {
     0x901f, 0x901f,
     0x9020, 0x9020,
     0x9022, 0x9022,
+    0x903b, 0x903b,
     0x903c, 0x903c,
     0x9041, 0x9041,
     0x9047, 0x9047,

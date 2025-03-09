@@ -25,7 +25,9 @@ HIMC g_gameIMCCtx = 0;
 bool g_disable_xkey = false;
 bool g_disable_shiftkey = false;
 bool g_disable_zkey = false;
-bool g_enable_SOCD = false;
+
+enum SOCD_Setting {SOCD_Default,SOCD_2,SOCD_N};
+SOCD_Setting g_socd_setting = SOCD_Default;
 bool g_disable_f10_11_13 = false;
 bool g_pauseBGM_06 = false;
 bool g_autoName_06;
@@ -146,7 +148,7 @@ BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
     if (g_disable_f10_11_13){
         keyBoardState[VK_F10] = 0x0;
     }
-    if (!g_enable_SOCD){
+    if (g_socd_setting == SOCD_Default) {
         return res;
     }
     static BYTE last_keyBoardState[256] = { 0 };
@@ -168,16 +170,28 @@ BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
     
     
     if (IS_KEY_DOWN(keyBoardState[VK_LEFT]) && IS_KEY_DOWN(keyBoardState[VK_RIGHT])){
-        if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]){
+        if (g_socd_setting == SOCD_2)
+        {
+            if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]) {
+                keyBoardState[VK_RIGHT] = 0;
+            } else {
+                keyBoardState[VK_LEFT] = 0;
+            }
+        } else if (g_socd_setting == SOCD_N) {
             keyBoardState[VK_RIGHT] = 0;
-        }else{
             keyBoardState[VK_LEFT] = 0;
         }
+       
     }
     if (IS_KEY_DOWN(keyBoardState[VK_DOWN]) && IS_KEY_DOWN(keyBoardState[VK_UP])) {
-        if (keyBoard_press_time[K_UP] > keyBoard_press_time[K_DOWN]) {
+        if (g_socd_setting == SOCD_2) {
+            if (keyBoard_press_time[K_UP] > keyBoard_press_time[K_DOWN]) {
+                keyBoardState[VK_DOWN] = 0;
+            } else {
+                keyBoardState[VK_UP] = 0;
+            }
+        } else if (g_socd_setting == SOCD_N) {
             keyBoardState[VK_DOWN] = 0;
-        } else {
             keyBoardState[VK_UP] = 0;
         }
     }
@@ -223,7 +237,7 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
     if (g_disable_f10_11_13) {
         ((BYTE*)state)[DIK_F10] = 0x0;
     }
-    if (!g_enable_SOCD) {
+    if (g_socd_setting == SOCD_Default) {
         return res;
     }
     static BYTE last_keyBoardState[256] = { 0 };
@@ -245,16 +259,28 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
     memcpy_s(last_keyBoardState, num, keyBoardState, num);
 
     if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW])) {
-        if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]) {
+        if (g_socd_setting == SOCD_2)
+        {
+            if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]) {
+                keyBoardState[DIK_RIGHTARROW] = 0;
+            } else {
+                keyBoardState[DIK_LEFTARROW] = 0;
+            }
+        }else if (g_socd_setting == SOCD_N){
             keyBoardState[DIK_RIGHTARROW] = 0;
-        } else {
             keyBoardState[DIK_LEFTARROW] = 0;
         }
+        
     }
     if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && IS_KEY_DOWN(keyBoardState[DIK_UPARROW])) {
-        if (keyBoard_press_time[K_UP] > keyBoard_press_time[K_DOWN]) {
+        if (g_socd_setting == SOCD_2) {
+            if (keyBoard_press_time[K_UP] > keyBoard_press_time[K_DOWN]) {
+                keyBoardState[DIK_DOWNARROW] = 0;
+            } else {
+                keyBoardState[DIK_UPARROW] = 0;
+            }
+        } else if (g_socd_setting == SOCD_N) {
             keyBoardState[DIK_DOWNARROW] = 0;
-        } else {
             keyBoardState[DIK_UPARROW] = 0;
         }
     }
@@ -391,9 +417,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
             }
            
         }
-        
-
-        LauncherSettingGet("keyboard_SOCD", g_enable_SOCD);
+        LauncherSettingGet("keyboard_SOCDv2", (int &)g_socd_setting);
         LauncherSettingGet("force_render_cursor", g_forceRenderCursor);
         LauncherSettingGet("pauseBGM_06", g_pauseBGM_06);
         LauncherSettingGet("autoInputName_06", g_autoName_06);

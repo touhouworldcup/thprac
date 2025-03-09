@@ -1493,6 +1493,13 @@ namespace TH06 {
                 ImGui::Indent(119.0f);
                 if (mResume())
                     StateResume();
+                if (ImGui::IsItemFocused()) {
+                    WORD key = *(WORD*)(0x69D904);
+                    WORD key_last = *(WORD*)(0x69D908);
+                    if (((key & (16)) == 16 && (key & (16)) != (key_last & (16)))) { // up
+                        mNavFocus.ForceFocus(TH_TWEAK);
+                    }
+                }
                 ImGui::Spacing();
                 if (mExit())
                     StateExit();
@@ -1505,6 +1512,13 @@ namespace TH06 {
                 ImGui::Spacing();
                 if (mSettings())
                     inSettings = !inSettings;
+                if (ImGui::IsItemFocused()) {
+                    WORD key = *(WORD*)(0x69D904);
+                    WORD key_last = *(WORD*)(0x69D908);
+                    if (((key & (32)) == 32 && (key & (32)) != (key_last & (32)))) { // down
+                        mNavFocus.ForceFocus(TH_RESUME);
+                    }
+                }
                 ImGui::Spacing();
                 ImGui::Unindent();
                 mNavFocus();
@@ -3209,7 +3223,7 @@ namespace TH06 {
     {
         if (g_adv_igi_options.th06_fix_seed)
         {
-            if (*(DWORD*)(0x69d6d4) == 1 || *(DWORD*)(0x69d6d4) == 7) {
+            if ((*(DWORD*)(0x69d6d4) == 1 || *(DWORD*)(0x69d6d4) == 7) && !thPracParam.mode) {
                 *(uint16_t*)(0x69D8F8) = (uint16_t)((int32_t)g_adv_igi_options.th06_seed & 0xFFFF);
             }
         }
