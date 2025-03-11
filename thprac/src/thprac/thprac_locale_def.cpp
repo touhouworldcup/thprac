@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1329] {
+const char* th_glossary_str[3][1336] {
     {
         "",
         "啤酒",
@@ -23,6 +23,10 @@ const char* th_glossary_str[3][1329] {
         "时间",
         "黄昏酒场",
         "魔法阵",
+        "默认",
+        "纯全56way",
+        "混全56way(3)",
+        "混全56way(2,3)",
         "伪装",
         "魔A",
         "魔B",
@@ -171,6 +175,7 @@ const char* th_glossary_str[3][1329] {
         "红",
         "TH13.5 东方心绮楼　～ Hopeless Masquerade.",
         "奖残次数",
+        "启用OD",
         "灵方向",
         "TH13 东方神灵庙　～ Ten Desires.",
         "灵界槽",
@@ -1322,6 +1327,8 @@ const char* th_glossary_str[3][1329] {
         "后半 #%d",
         "#%d",
         "锁时",
+        "一般收取",
+        "允许全避收取",
         "教程",
         "调整选项",
         "汉化版",
@@ -1354,6 +1361,10 @@ const char* th_glossary_str[3][1329] {
         "Time",
         "Uwabami Breakers",
         "Books",
+        "default",
+        "all 56 way",
+        "56 way, wave 3",
+        "56 way, wave 2,3",
         "Fake Shot",
         "Marisa A",
         "Marisa B",
@@ -1502,6 +1513,7 @@ const char* th_glossary_str[3][1329] {
         "Red",
         "TH13.5 Hopeless Masquerade",
         "Times extended",
+        "use overdrive",
         "Spirit side",
         "TH13 Ten Desires",
         "Trance Meter",
@@ -2653,6 +2665,8 @@ const char* th_glossary_str[3][1329] {
         "Second Half #%d",
         "#%d",
         "Time Lock",
+        "normal mode",
+        "allow timeout",
         "Tutorial",
         "Settings",
         "S.Chinese",
@@ -2685,6 +2699,10 @@ const char* th_glossary_str[3][1329] {
         "時間",
         "黄昏酒場～Uwabami Breakers～",
         "魔導書",
+        "default",
+        "all 56 way",
+        "56 way, wave 3",
+        "56 way, wave 2,3",
         "機体偽装",
         "魔符",
         "恋符",
@@ -2833,6 +2851,7 @@ const char* th_glossary_str[3][1329] {
         "赤",
         "TH13.5 東方心綺楼　～ Hopeless Masquerade.",
         "エクステンド回数",
+        "use overdrive",
         "霊ー方向",
         "TH13 東方神霊廟　～ Ten Desires.",
         "霊界ゲージ",
@@ -3984,6 +4003,8 @@ const char* th_glossary_str[3][1329] {
         "後半 #%d",
         "#%d",
         "残り時間減らない",
+        "normal mode",
+        "allow timeout",
         "チュートリアル",
         "設定変更",
         "漢訳",
@@ -4112,6 +4133,11 @@ const th_glossary_t LUCK_DESC_2B[12] {
     THPRAC_OTHER_LUCK_FTGB,
     THPRAC_OTHER_LUCK_OLDB,
     THPRAC_OTHER_LUCK_FANB,
+};
+
+const th_glossary_t TH_TIMEOUT_SETTING[3] {
+    TH_TIMEOUT_SPELLCARD1,
+    TH_TIMEOUT_SPELLCARD2,
 };
 
 const th_glossary_t TH_STAGE_SELECT[8] {
@@ -6009,6 +6035,13 @@ namespace TH06 {
                 TH06_ST4_MB_BOSS7,
             },
         },
+    };
+
+    const th_glossary_t TH06_FINAL_SPELL[5] {
+        TH06_FINAL_SPELL_W1,
+        TH06_FINAL_SPELL_W2,
+        TH06_FINAL_SPELL_W3,
+        TH06_FINAL_SPELL_W4,
     };
 
     const th_glossary_t TH06_TYPE_SELECT[6] {
@@ -22028,6 +22061,14 @@ namespace TH16 {
 
     const th_glossary_t TH16_SUBSEASON_2[2] {
         TH16_DOGDAYS,
+    };
+
+    const th_glossary_t TH16_AUTUMN_SPELL[6] {
+        TH_P1,
+        TH_P2,
+        TH_P3,
+        TH_P4,
+        TH_TIMEOUT_SPELLCARD2,
     };
 
 }

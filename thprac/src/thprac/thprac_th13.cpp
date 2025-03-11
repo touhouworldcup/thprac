@@ -22,6 +22,7 @@ namespace TH13 {
         int32_t graze;
         int32_t trance_meter;
         int32_t spirit_side;
+        bool useOD;
 
         bool dlg;
 
@@ -39,6 +40,7 @@ namespace TH13 {
             GetJsonValue(section);
             GetJsonValue(phase);
             GetJsonValueEx(dlg, Bool);
+            GetJsonValueEx(useOD, Bool);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -67,7 +69,8 @@ namespace TH13 {
                 AddJsonValue(phase);
             if (dlg)
                 AddJsonValue(dlg);
-
+            if (useOD)
+                AddJsonValue(useOD);
             AddJsonValue(score);
             AddJsonValue(life);
             AddJsonValue(extend);
@@ -108,6 +111,8 @@ namespace TH13 {
                 break;
             case 1:
                 mDiffculty = *((int32_t*)0x4be7c4);
+                if (mDiffculty == 5)
+                    *((int32_t*)0x4be7c4) = mDiffculty = (*mStage == 7) ? 4:3;
                 SetFade(0.8f, 0.1f);
                 Open();
                 thPracParam.Reset();
@@ -124,7 +129,8 @@ namespace TH13 {
                 thPracParam.phase = SpellPhase() ? *mPhase : 0;
                 if (SectionHasDlg(thPracParam.section))
                     thPracParam.dlg = *mDlg;
-
+                if (SectionHasOD(thPracParam.section))
+                    thPracParam.useOD = *mUseOD;
                 thPracParam.score = *mScore;
                 thPracParam.life = *mLife;
                 thPracParam.extend = *mExtend;
@@ -271,6 +277,22 @@ namespace TH13 {
                 return false;
             }
         }
+        bool SectionHasOD(int32_t section)
+        {
+            switch (section) {
+            case TH13_ST1_BOSS6:
+            case TH13_ST2_BOSS4:
+            case TH13_ST3_BOSS4:
+            case TH13_ST4_BOSS6:
+            case TH13_ST5_MID2:
+            case TH13_ST5_BOSS7:
+            case TH13_ST6_BOSS8:
+            case TH13_ST7_END_S7:
+                return true;
+            default:
+                return false;
+            }
+        }
         void SectionWidget()
         {
             static char chapterStr[256] {};
@@ -298,6 +320,8 @@ namespace TH13 {
                     *mPhase = 0;
                 if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
                     mDlg();
+                if (SectionHasOD(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
+                    mUseOD();
                 break;
             case 4:
             case 5: // Non-spell & Spellcard
@@ -307,6 +331,8 @@ namespace TH13 {
                     *mPhase = 0;
                 if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
                     mDlg();
+                if (SectionHasOD(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
+                    mUseOD();
                 break;
             default:
                 break;
@@ -320,6 +346,7 @@ namespace TH13 {
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
         Gui::GuiCheckBox mDlg { TH_DLG };
+        Gui::GuiCheckBox mUseOD { TH13_OD };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
@@ -1804,6 +1831,8 @@ namespace TH13 {
             *(int32_t*)(0x4be7dc) = thPracParam.value * 100;
             *(int32_t*)(0x4be7d0) = thPracParam.graze;
             *(int32_t*)(0x4be808) = thPracParam.trance_meter;
+            if (thPracParam.useOD)
+                *(int32_t*)(0x4BE7C4) = 5;
 
             *(uint32_t*)GetMemAddr(0x4c22a4, 0x8820) = !thPracParam.spirit_side;
 

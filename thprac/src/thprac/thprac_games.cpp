@@ -15,6 +15,10 @@
 #include <format>
 #include <vector>
 
+
+#include <dwmapi.h>
+#pragma comment(lib, "dwmapi.lib")
+
 namespace THPrac {
 #pragma region Gui Wrapper
 
@@ -49,6 +53,13 @@ MMRESULT (WINAPI *g_realJoyGetPosEx)(UINT uJoyID, LPJOYINFOEX pji);
 DWORD (WINAPI *g_realXInputGetState)(DWORD dwUserIndex, void* pState);
 HRESULT (WINAPI* g_realEnumDevices)(LPDIRECTINPUT8 thiz, DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef,DWORD dwFlags);
 
+
+// HRESULT (STDMETHODCALLTYPE *g_realPresent)(DWORD* thiz, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion);
+// HRESULT STDMETHODCALLTYPE Present_Changed(DWORD* thiz, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion)
+// {
+//     auto res = g_realPresent(thiz, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+//     return res;
+// }
 
 HRESULT WINAPI EnumDevices_Changed(LPDIRECTINPUT8 thiz, DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef, DWORD dwFlags)
 {
@@ -561,6 +572,22 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         ddevice->Release();
         // dinput8 is inited before GameGuiInit(), so create a new device for hook
     }
+
+     // if(device){
+     //    void* pInterface = (void*)(*(int*)device);
+     //    void* PresentAddr;
+     //    switch (impl) {
+     //    case THPrac::IMPL_WIN32_DX8:
+     //        PresentAddr = (*(void***)pInterface)[15];
+     //        break;
+     //    default:
+     //    case THPrac::IMPL_WIN32_DX9:
+     //        PresentAddr = (*(void***)pInterface)[17];
+     //        break;
+     //    }
+     //    MH_CreateHook(PresentAddr, Present_Changed, (LPVOID*)&g_realPresent);
+     //    MH_EnableHook(PresentAddr);
+     // }
     // Imgui settings
     io.IniFilename = nullptr;
 }

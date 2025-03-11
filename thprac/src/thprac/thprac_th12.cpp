@@ -213,6 +213,8 @@ namespace TH12 {
             } else if (section == 10000 + 5 * 100 + 6)
             {
                 return TH_PHASE_INF_MODE;
+            }else if (section == TH12_ST5_MID2) {
+                return TH_TIMEOUT_SETTING;
             }
             return nullptr;
         }
@@ -1217,6 +1219,14 @@ namespace TH12 {
             ecl << pair{0xd6ac, (int16_t)0x0};
             ecl << pair{0xd6f0, 60};
             ecl << pair{0x0d7d4, 0x7d0};
+            switch (thPracParam.phase) {
+            default:
+            case 0:
+                break;
+            case 1:
+                ecl << pair { 0xdd54, (int16_t)442 };
+                break;
+            }
             break;
         case THPrac::TH12::TH12_ST5_BOSS1:
             if (thPracParam.dlg)

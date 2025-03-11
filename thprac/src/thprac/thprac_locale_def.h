@@ -23,6 +23,10 @@ enum th_glossary_t {
     ALCOSTG_TIME,
     ALCOSTG_TITLE,
     TH06_BOOKS,
+    TH06_FINAL_SPELL_W1,
+    TH06_FINAL_SPELL_W2,
+    TH06_FINAL_SPELL_W3,
+    TH06_FINAL_SPELL_W4,
     TH06_FS,
     TH06_MARISA_A,
     TH06_MARISA_B,
@@ -171,6 +175,7 @@ enum th_glossary_t {
     TH12_VENTRA_RED,
     TH135_TITLE,
     TH13_EXTEND,
+    TH13_OD,
     TH13_SPIRIT_SIDE,
     TH13_TITLE,
     TH13_TRANCE_METER,
@@ -1322,6 +1327,8 @@ enum th_glossary_t {
     TH_STAGE_PORTION_2,
     TH_STAGE_PORTION_N,
     TH_TIMELOCK,
+    TH_TIMEOUT_SPELLCARD1,
+    TH_TIMEOUT_SPELLCARD2,
     TH_TUTORIAL,
     TH_TWEAK,
     TH_TYPE_CHINESE,
@@ -1340,7 +1347,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1329];
+extern const char* th_glossary_str[3][1336];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1357,6 +1364,8 @@ extern const th_glossary_t LUCK_DESC_2[12];
 extern const th_glossary_t LUCK_DESC_2A[12];
 
 extern const th_glossary_t LUCK_DESC_2B[12];
+
+extern const th_glossary_t TH_TIMEOUT_SETTING[3];
 
 extern const th_glossary_t TH_STAGE_SELECT[8];
 
@@ -1511,6 +1520,8 @@ namespace TH06 {
     extern const th_sections_t th_sections_cba[11][2][19];
 
     extern const th_sections_t th_sections_cbt[11][2][14];
+
+    extern const th_glossary_t TH06_FINAL_SPELL[5];
 
     extern const th_glossary_t TH06_TYPE_SELECT[6];
 
@@ -2708,6 +2719,8 @@ namespace TH16 {
     extern const th_glossary_t TH16_SUBSEASON_1[5];
 
     extern const th_glossary_t TH16_SUBSEASON_2[2];
+
+    extern const th_glossary_t TH16_AUTUMN_SPELL[6];
 
 }
 

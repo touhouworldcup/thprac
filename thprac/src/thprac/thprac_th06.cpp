@@ -1088,12 +1088,12 @@ namespace TH06 {
             auto section = CalcSection();
             if (section == TH06_ST7_END_S10) {
                 mPhase(TH_PHASE, TH_SPELL_PHASE1);
-            }
-            if (section == TH06_ST4_BOOKS) {
+            }else if (section == TH06_ST4_BOOKS) {
                 mPhase(TH_PHASE, TH_BOOKS_PHASE_INF_TIME);
-            }
-            if (section == TH06_ST5_BOSS6) {
+            }else if (section == TH06_ST5_BOSS6) {
                 mPhase(TH_PHASE, TH_EOSD_SAKUYA_DOLLS);
+            }else if (section == TH06_ST6_BOSS9){
+                mPhase(TH_PHASE, TH06_FINAL_SPELL);
             }
         }
         void PracticeMenu(Gui::GuiNavFocus& nav_focus)
@@ -1827,6 +1827,13 @@ namespace TH06 {
     };
 
     // ECL Patch Helper
+
+    void ECLJump(ECLHelper& ecl,int32_t time,int32_t pos, int32_t time_jmp,int32_t target)
+    {
+        ecl << pair { pos, (int32_t)time } << pair { pos + 4, (int16_t)0x2 } << pair { pos + 6, (int16_t)0x14 } << pair { pos + 8, (int32_t)0x00FFFF00 };
+        ecl << pair { pos + 0xC, (int32_t)time_jmp } << pair { pos + 0xC + 4, (int32_t)target - pos };
+    }
+
     void ECLWarp(int32_t time)
     {
         *((int32_t*)(0x5a5fb0)) = time;
@@ -2408,6 +2415,24 @@ namespace TH06 {
         case THPrac::TH06::TH06_ST6_BOSS9:
             ECLNameFix();
             ECLWarp(0x0c61);
+
+            switch (thPracParam.phase) {
+            case 0:
+                break;
+            case 1:
+                //full 56way
+                ECLJump(ecl, 180 + 90, 0x6592, 180, 0x6486);
+                break;
+            case 2:
+                // + wave 3
+                ECLJump(ecl, 180, 0x6592, 180, 0x678A);
+                break;
+            case 3:
+                // + wave 2,3
+                ECLJump(ecl, 180, 0x6592, 180, 0x668E);
+                break;
+            }
+
             ecl << pair{0x1686, 0x0};
             ecl << pair{0x16a6, 0x0};
             ecl << pair{0x16c6, 0x0};

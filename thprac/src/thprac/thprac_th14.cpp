@@ -202,6 +202,8 @@ namespace TH14 {
                 return TH14_SPELL_4PHASE;
             } else if (section == TH14_ST7_END_S10) {
                 return TH14_SPELL_5PHASE;
+            } else if (section == TH14_ST3_MID2_HL){
+                return TH_TIMEOUT_SETTING;
             }
             return nullptr;
         }
@@ -1778,6 +1780,14 @@ namespace TH14 {
         case THPrac::TH14::TH14_ST3_MID2_HL:
             ECLJump(ecl, 0x648c, 0x6740, 60);
             ecl.SetFile(2);
+            switch (thPracParam.phase) {
+            default:
+            case 0:
+                break;
+            case 1:
+                ecl << pair { 0x1718,(int16_t)542};
+                break;
+            }
             ECLJump(ecl, 0x404, 0x4ec, 0);
             break;
         case THPrac::TH14::TH14_ST3_BOSS1:

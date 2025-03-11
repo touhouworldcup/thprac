@@ -1106,6 +1106,8 @@
       "TH_BOSSX": [ "BossX", "BossX", "BossX" ],
       "TH_BOSSY": [ "BossY", "BossY", "BossY" ],
       "TH_BT_PHASE": [ "发弹相位", "bullet phase", "bullet phase" ],
+      "TH_TIMEOUT_SPELLCARD1": [ "一般收取", "normal mode", "normal mode" ],
+      "TH_TIMEOUT_SPELLCARD2": [ "允许全避收取", "allow timeout", "allow timeout" ],
       "TH_ENHANCEMENT_VALUE": [ "增强程度", "enhancement degree", "enhancement degree" ],
       
 	  "TH_BULLET_RANK": [ "Rank", "Rank", "ランク" ],
@@ -1350,6 +1352,12 @@
     },
 
     "groups": {
+	
+	
+	"TH_TIMEOUT_SETTING": [
+        "TH_TIMEOUT_SPELLCARD1",
+        "TH_TIMEOUT_SPELLCARD2"
+      ],
       "TH_STAGE_SELECT": [
         "TH_STAGE_1",
         "TH_STAGE_2",
@@ -1459,6 +1467,11 @@
     "namespace": "TH06",
 
     "glossary": {
+      "TH06_FINAL_SPELL_W1": [ "默认", "default", "default" ],
+      "TH06_FINAL_SPELL_W2": [ "纯全56way", "all 56 way", "all 56 way" ],
+      "TH06_FINAL_SPELL_W3": [ "混全56way(3)", "56 way, wave 3", "56 way, wave 3" ],
+      "TH06_FINAL_SPELL_W4": [ "混全56way(2,3)", "56 way, wave 2,3", "56 way, wave 2,3" ],
+	  
       "TH06_FS": [ "伪装", "Fake Shot", "機体偽装" ],
       "TH06_NONE": [ "无", "None", "なし" ],
       "TH06_REIMU_A": [ "灵A", "Reimu A", "霊符" ],
@@ -2161,6 +2174,12 @@
     },
 
     "groups": {
+	  "TH06_FINAL_SPELL":[
+		"TH06_FINAL_SPELL_W1",
+        "TH06_FINAL_SPELL_W2",
+        "TH06_FINAL_SPELL_W3",
+        "TH06_FINAL_SPELL_W4"
+		],
       "TH06_TYPE_SELECT": [
         "TH06_NONE",
         "TH06_REIMU_A",
@@ -6509,6 +6528,7 @@
     "glossary": {
       "TH13_TRANCE_METER": [ "灵界槽", "Trance Meter", "霊界ゲージ" ],
       "TH13_EXTEND": [ "奖残次数", "Times extended", "エクステンド回数" ],
+      "TH13_OD": [ "启用OD", "use overdrive", "use overdrive" ],
       "TH13_SPIRIT_SIDE": [ "灵方向", "Spirit side", "霊ー方向" ]
     },
 
@@ -8676,6 +8696,13 @@
       ],
       "TH16_SUBSEASON_2": [
         "TH16_DOGDAYS"
+      ],
+	  "TH16_AUTUMN_SPELL": [
+        "TH_P1",
+        "TH_P2",
+        "TH_P3",
+        "TH_P4",
+		"TH_TIMEOUT_SPELLCARD2"
       ]
     }
   },

@@ -197,11 +197,13 @@ namespace TH16 {
         const th_glossary_t* SpellPhase()
         {
             auto section = CalcSection();
-            if (section == TH16_ST6_SPRING_FINAL || section == TH16_ST6_SUMMER_FINAL || section == TH16_ST6_AUTUMN_FINAL || section == TH16_ST6_WINTER_FINAL || section == TH16_ST7_END_S10) {
+            if (section == TH16_ST6_SPRING_FINAL || section == TH16_ST6_SUMMER_FINAL || section == TH16_ST6_WINTER_FINAL || section == TH16_ST7_END_S10) {
                 return TH_SPELL_PHASE2;
             } else if (section == 10000 + 4 * 100 + 6) {
                 return TH_PHASE_INF_MODE;
-            } 
+            } else if (section == TH16_ST6_AUTUMN_FINAL) {
+                return TH16_AUTUMN_SPELL;
+            }
             return nullptr;
         }
         void PracticeMenu()
@@ -1694,6 +1696,9 @@ namespace TH16 {
                 ecl << pair{0xe328, (int16_t)0};
                 ecl << pair{0xe49c, (int16_t)0};
                 ecl << pair{0xdff4, (int16_t)0}; // Disable Anm
+                break;
+            case 4:
+                ecl << pair { 0xe088, (int16_t)542 };
                 break;
             default:
                 break;
