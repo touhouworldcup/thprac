@@ -282,6 +282,7 @@ namespace TH06 {
         bool rankLock;
         int32_t fakeType;
 
+        int32_t delay_st6bs9;
         bool dlg;
 
         bool _playLock;
@@ -321,6 +322,7 @@ namespace TH06 {
             GetJsonValue(rank);
             GetJsonValueEx(rankLock, Bool);
             GetJsonValue(fakeType);
+            GetJsonValue(delay_st6bs9);
 
             return true;
         }
@@ -350,6 +352,7 @@ namespace TH06 {
             AddJsonValue(rank);
             AddJsonValue(rankLock);
             AddJsonValue(fakeType);
+            AddJsonValue(delay_st6bs9);
 
             ReturnJson();
         }
@@ -1038,6 +1041,8 @@ namespace TH06 {
                 thPracParam.frame = *mFrame;
                 if (SectionHasDlg(thPracParam.section))
                     thPracParam.dlg = *mDlg;
+                if (thPracParam.section == TH06_ST6_BOSS9)
+                    thPracParam.delay_st6bs9 = *mDelaySt6Bs9;
 
                 thPracParam.score = *mScore;
                 thPracParam.life = (float)*mLife;
@@ -1065,6 +1070,8 @@ namespace TH06 {
                 thPracParam.frame = *mFrame;
                 if (SectionHasDlg(thPracParam.section))
                     thPracParam.dlg = *mDlg;
+                if (thPracParam.section == TH06_ST6_BOSS9)
+                    thPracParam.delay_st6bs9 = *mDelaySt6Bs9;
 
                 thPracParam.score = *mScore;
                 thPracParam.life = (float)*mLife;
@@ -1094,6 +1101,8 @@ namespace TH06 {
                 mPhase(TH_PHASE, TH_EOSD_SAKUYA_DOLLS);
             }else if (section == TH06_ST6_BOSS9){
                 mPhase(TH_PHASE, TH06_FINAL_SPELL);
+                if (*mPhase==1)
+                    mDelaySt6Bs9();
             }
         }
         void PracticeMenu(Gui::GuiNavFocus& nav_focus)
@@ -1103,14 +1112,13 @@ namespace TH06 {
                 *mSection = *mChapter = 0;
             if (*mMode == 1) {
                 if (mWarp())
-                    *mSection = *mChapter = *mPhase = *mFrame = 0;
+                    *mSection = *mChapter = *mPhase = *mFrame = 0, *mDelaySt6Bs9 = 120;
                 if (*mWarp) {
                     int st = 0;
                     if (*mStage == 3) {
                         mFakeShot();
                         st = (*mFakeShot ? *mFakeShot - 1 : mShotType) + 4;
                     }
-
                     SectionWidget();
                     SpellPhase();
                 }
@@ -1272,6 +1280,7 @@ namespace TH06 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 0, 128 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, 99999, 1, 10000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mPoint { TH_POINT, 0, 9999, 1, 1000 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mDelaySt6Bs9 { TH_DELAY, 1, 600, 1, 10,10};
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mRank { TH06_RANK, 0, 32, 1, 10, 10 };
         Gui::GuiCheckBox mRankLock { TH06_RANKLOCK };
@@ -2421,11 +2430,11 @@ namespace TH06 {
                 break;
             case 1:
                 //full 56way
-                ECLJump(ecl, 180 + 90, 0x6592, 180, 0x6486);
+                ECLJump(ecl, 180 + thPracParam.delay_st6bs9, 0x6592, 180, 0x6486);
                 break;
             case 2:
                 // + wave 3
-                ECLJump(ecl, 180, 0x6592, 180, 0x678A);
+                ECLJump(ecl, 180, 0x6592, 180, 0x6756);
                 break;
             case 3:
                 // + wave 2,3
