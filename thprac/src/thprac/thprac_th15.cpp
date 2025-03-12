@@ -216,6 +216,8 @@ namespace TH15 {
                 if (mDiffculty>=2)
                     return TH15_ST6_BOSS6_PHASE;
                 return nullptr;
+            case TH15_ST5_BOSS4:
+                return TH_TIMEOUT_SETTING;
             case 10000 + 3 * 100 + 3:
                 return TH_STAGE_SKIP_HALF;
             case 10000 + 4 * 100 + 2:
@@ -1541,6 +1543,14 @@ namespace TH15 {
             ECLJump(ecl, 0x528, 0x610, 0); // Utilize Spell Practice Jump
             ecl << pair{0x620, 3400}; // Set Health
             ecl << pair{0x640, (int8_t)0x32}; // Set Spell Ordinal
+            switch (thPracParam.phase) {
+            default:
+            case 0:
+                break;
+            case 1:
+                ecl << pair { 0x5B20, (int16_t)542 };
+                break;
+            }
             break;
         case THPrac::TH15::TH15_ST5_BOSS5:
             ECLJump(ecl, 0x9f0c, 0xa220, 60);
