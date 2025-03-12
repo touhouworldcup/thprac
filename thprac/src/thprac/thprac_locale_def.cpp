@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][856]
+const char* th_glossary_str[3][857]
 {
     {
         "",
@@ -819,6 +819,7 @@ const char* th_glossary_str[3][856]
         "P3",
         "P4",
         "P5",
+        "タースピード",
         "阶段",
         "蓝点",
         "本关蓝点",
@@ -1677,6 +1678,7 @@ const char* th_glossary_str[3][856]
         "P3",
         "P4",
         "P5",
+        "Performance",
         "Phase",
         "Point",
         "Point (Stage)",
@@ -2535,6 +2537,7 @@ const char* th_glossary_str[3][856]
         "P3",
         "P4",
         "P5",
+        "速度",
         "段階",
         "得点",
         "得点\n(ステージ)",

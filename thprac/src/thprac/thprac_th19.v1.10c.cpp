@@ -1,6 +1,43 @@
 #include "thprac_utils.h"
 #include "thprac_th19.h"
 
+// Part of a fix to improve some performance issues
+// To make it work I replace certain functions in the game's code. In order
+// for that replacement to work, my code needs to match the calling convention
+// of the game's original function EXACTLY. The problem here is that during
+// compilation of TH19, MSVC decided to make up calling conventions, that you
+// cannot explicitly tell MSVC to replicate.
+//
+// One of the functions I'm replacing has a calling convention where 4 float
+// parameters are taken in the first 4 XMM registers, and 4 more floats are on
+// the stack. This is easy enough to replicate with vectorcall. In vectorcall,
+// the first 6 float parameters are in the first 6 XMM registers, with the
+// remaining ones on the stack. To replicate that I can just declare my first 4
+// parameters, declare two dummy parameters, then declare the final 4.
+//
+// Problem: that function does caller stack cleanup (meaning that whoever calls
+// that function must clean the stack parameters off the stack themselves).
+// Vectorcall does callee cleanup, meaning that the function being called is
+// itself responsible for cleaning up the parameters that were passed on the
+// stack. Trying to do both callee and caller stack cleanup will crash
+//
+// It is impossible to explicitly tell MSVC to generate a function with a
+// calling convention like that. The way I made the build that I sent you is by
+// binary hacking thprac.exe to modify my replacement function to do caller
+// stack cleanup.
+//
+// To work around this, th19_fast_msvc.obj is precompiled, and binary hacked to
+// replace all ret 14 instructions with just ret. This is the only way to get
+// a function out of MSVC that takes parameters in XMM registers and does
+// caller stack cleanup.
+
+#ifndef _DEBUG
+extern "C" {
+uint32_t* __vectorcall CPUHitInf_CheckColliders(void*, int, uint32_t*, float, float, float);
+bool __vectorcall _RxD1E00_fast(uint32_t, uint32_t, float, float, float, float, float, float, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
+}
+#endif
+
 namespace THPrac {
 namespace TH19 {
 namespace V1_10c {
@@ -37,6 +74,18 @@ namespace V1_10c {
         
     #define SCALE (*(float*)RVA(0x22EEB0))
 
+#ifndef _DEBUG
+    static uint8_t cpu_check_collider_patch_code[] = {
+        0xe9, 0x00, 0x00, 0x00, 0x00, 0xcc, 0xcc, 0xcc,
+    };
+    static uint8_t patch_RxD1E00_code[] = {
+        0xe9, 0x00, 0x00, 0x00, 0x00, 0xcc, 0xcc, 0xcc,
+    };
+
+    HookCtx th19_patch_cpu_check_colliders(0xF8F60, (char*)cpu_check_collider_patch_code, sizeof(cpu_check_collider_patch_code));
+    HookCtx th19_patch_RxD1E00(0xD1E00, (char*)patch_RxD1E00_code, sizeof(patch_RxD1E00_code));
+#endif
+
     class THAdvOptWnd : public Gui::GameGuiWnd {
         // Option Related Functions
     private:
@@ -65,6 +114,8 @@ namespace V1_10c {
         void GameplaySet()
         {
         }
+
+        bool perf_fix = false;
 
     public:
         THAdvOptWnd() noexcept
@@ -118,6 +169,21 @@ namespace V1_10c {
                 EndOptGroup();
             }
 
+#ifndef _DEBUG
+            if (BeginOptGroup<TH_PERFORMANCE>()) {
+                if (ImGui::Checkbox("Replace certain functions with faster variants", &this->perf_fix)) {
+                    if (this->perf_fix) {
+                        th19_patch_cpu_check_colliders.Enable();
+                        th19_patch_RxD1E00.Enable();
+                    } else {
+                        th19_patch_cpu_check_colliders.Disable();
+                        th19_patch_RxD1E00.Disable();
+                    }
+                }
+                EndOptGroup();
+            }
+#endif
+            
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
@@ -768,8 +834,14 @@ namespace V1_10c {
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
+        *(uintptr_t*)(cpu_check_collider_patch_code + 1) = (uintptr_t)&CPUHitInf_CheckColliders - RVA((uintptr_t)th19_patch_cpu_check_colliders.mTarget + 5);
+        *(uintptr_t*)(patch_RxD1E00_code + 1) = (uintptr_t)&_RxD1E00_fast - RVA((uintptr_t)th19_patch_RxD1E00.mTarget + 5);
+
         th19_vs_mode_disable_movement.Setup();
         th19_charsel_disable_movement.Setup();
+
+        th19_patch_cpu_check_colliders.Setup();
+        th19_patch_RxD1E00.Setup();
 
         // Init
         GameGuiInit(IMPL_WIN32_DX9, RVA(D3D_DEVICE), RVA(HWND_PTR), RVA(WNDPROC_ADDR),
@@ -808,6 +880,7 @@ namespace V1_10c {
     HOOKSET_ENDDEF()
 }
 }
+
 void TH19_v1_10c_Init()
 {
     ingame_image_base = (uintptr_t)GetModuleHandleW(NULL);

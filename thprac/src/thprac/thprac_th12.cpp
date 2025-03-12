@@ -1437,7 +1437,28 @@ namespace TH12 {
 #endif
     }
 
+    
+    static bool IsBadPtr(void* p)
+    {
+        MEMORY_BASIC_INFORMATION mbi = { 0 };
+        if (::VirtualQuery(p, &mbi, sizeof(mbi))) {
+            DWORD mask = (PAGE_READONLY | PAGE_READWRITE | PAGE_WRITECOPY | PAGE_EXECUTE_READ | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY);
+            bool b = !(mbi.Protect & mask);
+            if (mbi.Protect & (PAGE_GUARD | PAGE_NOACCESS))
+                b = true;
+            return b;
+        }
+        return true;
+    }
+
     HOOKSET_DEFINE(THMainHook)
+
+    EHOOK_DY(test_fix, 0x45A286)
+    {
+        if (IsBadPtr((void*)pCtx->Eax)) {
+            pCtx->Eip = 0x45A2B4;
+        }
+    }
     EHOOK_DY(th12_everlasting_bgm, 0x454960)
     {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
