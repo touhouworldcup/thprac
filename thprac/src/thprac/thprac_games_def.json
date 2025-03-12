@@ -1469,8 +1469,10 @@
     "glossary": {
       "TH06_FINAL_SPELL_W1": [ "默认", "default", "default" ],
       "TH06_FINAL_SPELL_W2": [ "纯全56way", "all 56 way", "all 56 way" ],
-      "TH06_FINAL_SPELL_W3": [ "混全56way(3)", "56 way, wave 3", "56 way, wave 3" ],
-      "TH06_FINAL_SPELL_W4": [ "混全56way(2,3)", "56 way, wave 2,3", "56 way, wave 2,3" ],
+	  "TH06_FINAL_SPELL_W3": [ "红色的砌墙乡", "Scarlet Wallsokyo", "Scarlet Wallsokyo" ],
+	  "TH06_FINAL_SPELL_W4": [ "红色的半墙乡", "Scarlet Half-Wallsokyo", "Scarlet Half-Wallsokyo" ],
+      "TH06_FINAL_SPELL_W5": [ "混全56way(3)", "56 way, wave 3", "56 way, wave 3" ],
+      "TH06_FINAL_SPELL_W6": [ "混全56way(2,3)", "56 way, wave 2,3", "56 way, wave 2,3" ],
 	  
       "TH06_FS": [ "伪装", "Fake Shot", "機体偽装" ],
       "TH06_NONE": [ "无", "None", "なし" ],
@@ -2178,7 +2180,9 @@
 		"TH06_FINAL_SPELL_W1",
         "TH06_FINAL_SPELL_W2",
         "TH06_FINAL_SPELL_W3",
-        "TH06_FINAL_SPELL_W4"
+        "TH06_FINAL_SPELL_W4",
+        "TH06_FINAL_SPELL_W5",
+        "TH06_FINAL_SPELL_W6"
 		],
       "TH06_TYPE_SELECT": [
         "TH06_NONE",

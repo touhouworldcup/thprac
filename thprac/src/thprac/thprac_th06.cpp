@@ -1101,7 +1101,7 @@ namespace TH06 {
                 mPhase(TH_PHASE, TH_EOSD_SAKUYA_DOLLS);
             }else if (section == TH06_ST6_BOSS9){
                 mPhase(TH_PHASE, TH06_FINAL_SPELL);
-                if (*mPhase==1)
+                if (*mPhase == 1 || *mPhase == 2 || *mPhase == 3)
                     mDelaySt6Bs9();
             }
         }
@@ -1280,7 +1280,7 @@ namespace TH06 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 0, 128 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, 99999, 1, 10000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mPoint { TH_POINT, 0, 9999, 1, 1000 };
-        Gui::GuiDrag<int, ImGuiDataType_S32> mDelaySt6Bs9 { TH_DELAY, 1, 600, 1, 10,10};
+        Gui::GuiDrag<int, ImGuiDataType_S32> mDelaySt6Bs9 { TH_DELAY, 0, 600, 1, 10,10};
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mRank { TH06_RANK, 0, 32, 1, 10, 10 };
         Gui::GuiCheckBox mRankLock { TH06_RANKLOCK };
@@ -2429,14 +2429,37 @@ namespace TH06 {
             case 0:
                 break;
             case 1:
-                //full 56way
+                // full 56 way
                 ECLJump(ecl, 180 + thPracParam.delay_st6bs9, 0x6592, 180, 0x6486);
                 break;
             case 2:
+                // super full 56 way
+                ECLJump(ecl, 180 + thPracParam.delay_st6bs9, 0x6592, 180, 0x6486);
+                ecl << pair { 0x658A, (int32_t)9 };
+                break;
+            case 3:
+            {// half full 56 way
+                const uint8_t data[132] = {
+                    0x04, 0x01, 0x00, 0x00, 0x52, 0x00, 0x2C, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x78, 0x00, 0x00, 0x00,
+                    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F, 0x6A, 0xBC, 0x3C,
+                    0xDB, 0x0F, 0xC9, 0x3C, 0x00, 0x00, 0x80, 0xBF, 0x00, 0x00, 0x80, 0xBF, 0x04, 0x01, 0x00, 0x00,
+                    0x46, 0x00, 0x2C, 0x00, 0x00, 0x04, 0xFF, 0x00, 0x09, 0x00, 0x01, 0x00, 0x0A, 0x00, 0x00, 0x00,
+                    0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x40, 0x66, 0x66, 0xE6, 0x3F, 0x00, 0x54, 0x1C, 0xC6,
+                    0x7C, 0xD9, 0xA0, 0xBE, 0x00, 0x02, 0x00, 0x00, 0x04, 0x01, 0x00, 0x00, 0x46, 0x00, 0x2C, 0x00,
+                    0x00, 0x08, 0xFF, 0x00, 0x09, 0x00, 0x01, 0x00, 0x0E, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x80, 0x40, 0x66, 0x66, 0xE6, 0x3F, 0x00, 0x54, 0x1C, 0xC6, 0x7C, 0xD9, 0xA0, 0xBE,
+                    0x00, 0x02, 0x00, 0x00
+                };
+                for (int i=0;i < 132;i++)
+                    ecl << pair { 0x67A2 + i,data[i] };
+                ECLJump(ecl, 180 + thPracParam.delay_st6bs9, 0x6592, 260, 0x6756);
+            }
+                break;
+            case 4:
                 // + wave 3
                 ECLJump(ecl, 180, 0x6592, 180, 0x6756);
                 break;
-            case 3:
+            case 5:
                 // + wave 2,3
                 ECLJump(ecl, 180, 0x6592, 180, 0x668E);
                 break;

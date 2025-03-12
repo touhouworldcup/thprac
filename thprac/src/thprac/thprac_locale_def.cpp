@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1336] {
+const char* th_glossary_str[3][1338] {
     {
         "",
         "啤酒",
@@ -25,6 +25,8 @@ const char* th_glossary_str[3][1336] {
         "魔法阵",
         "默认",
         "纯全56way",
+        "红色的砌墙乡",
+        "红色的半墙乡",
         "混全56way(3)",
         "混全56way(2,3)",
         "伪装",
@@ -1363,6 +1365,8 @@ const char* th_glossary_str[3][1336] {
         "Books",
         "default",
         "all 56 way",
+        "Scarlet Wallsokyo",
+        "Scarlet Half-Wallsokyo",
         "56 way, wave 3",
         "56 way, wave 2,3",
         "Fake Shot",
@@ -2701,6 +2705,8 @@ const char* th_glossary_str[3][1336] {
         "魔導書",
         "default",
         "all 56 way",
+        "Scarlet Wallsokyo",
+        "Scarlet Half-Wallsokyo",
         "56 way, wave 3",
         "56 way, wave 2,3",
         "機体偽装",
@@ -6037,11 +6043,13 @@ namespace TH06 {
         },
     };
 
-    const th_glossary_t TH06_FINAL_SPELL[5] {
+    const th_glossary_t TH06_FINAL_SPELL[7] {
         TH06_FINAL_SPELL_W1,
         TH06_FINAL_SPELL_W2,
         TH06_FINAL_SPELL_W3,
         TH06_FINAL_SPELL_W4,
+        TH06_FINAL_SPELL_W5,
+        TH06_FINAL_SPELL_W6,
     };
 
     const th_glossary_t TH06_TYPE_SELECT[6] {
@@ -24563,7 +24571,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3349] {
+const wchar_t __thprac_loc_range_zh[3351] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -25656,6 +25664,7 @@ const wchar_t __thprac_loc_range_zh[3349] {
     0x77ed, 0x77ed,
     0x77f3, 0x77f3,
     0x77ff, 0x77ff,
+    0x780c, 0x780c,
     0x7814, 0x7814,
     0x7834, 0x7834,
     0x7840, 0x7840,
