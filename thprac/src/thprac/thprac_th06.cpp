@@ -2424,7 +2424,7 @@ namespace TH06 {
         case THPrac::TH06::TH06_ST6_BOSS9:
             ECLNameFix();
             ECLWarp(0x0c61);
-
+            
             switch (thPracParam.phase) {
             case 0:
                 break;
@@ -3172,24 +3172,25 @@ namespace TH06 {
                               scale2 = MInterpolation(t / 12.0f, 0.3f, 1.0f),
                               angle = 3.14159f,
                               angle2 = 0.0f,
-                              alpha = t < 6.0f ? t / 6.0f : 1.0f;
-                        if (t < 18.0f) {
-                            angle = MInterpolation(t / 18.0f, 3.14159f, -3.14159f);
-                            angle2 = -angle;
-                        } else {
-                            angle = -3.14159f + t * 0.05235988f;
-                            angle2 = 3.14159f - t * 0.05235988f;
-                        }
-                        scale *= 0.75f;
-                        scale2 *= 0.75f; // 32->24
-                        p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
-                        ImVec2 p1 = { *(float*)(0x6CAA68) + 32.0f, *(float*)(0x6CAA6C) + 16.0f };
-                        float c, s;
-                        c = cosf(angle) * scale * g_hitbox_width, s = sinf(angle) * scale * g_hitbox_height;
-                        p->AddImageQuad(g_hitbox_textureID, { p1.x + c, p1.y + s }, { p1.x - s, p1.y + c }, { p1.x - c, p1.y - s }, { p1.x + s, p1.y - c }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, ImGui::ColorConvertFloat4ToU32({ 1, 1, 1, alpha }));
-                        c = cosf(angle2) * scale2 * g_hitbox_width, s = sinf(angle2) * scale2 * g_hitbox_height;
-                        p->AddImageQuad(g_hitbox_textureID, { p1.x + c, p1.y + s }, { p1.x - s, p1.y + c }, { p1.x - c, p1.y - s }, { p1.x + s, p1.y - c });
-                        p->PopClipRect();
+                                  alpha = t < 6.0f ? t / 6.0f : 1.0f;
+                              if (t < 18.0f) {
+                                  angle = MInterpolation(t / 18.0f, 3.14159f, -3.14159f);
+                                  angle2 = -angle;
+                              }
+                              else {
+                                  angle = -3.14159f + t * 0.05235988f;
+                                  angle2 = 3.14159f - t * 0.05235988f;
+                              }
+                              scale *= 0.75f;
+                              scale2 *= 0.75f; // 32->24
+                              p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
+                              ImVec2 p1 = { *(float*)(0x6CAA68) + 32.0f, *(float*)(0x6CAA6C) + 16.0f };
+                              float c, s;
+                              c = cosf(angle) * scale * g_hitbox_width, s = sinf(angle) * scale * g_hitbox_height;
+                              p->AddImageQuad(g_hitbox_textureID, { p1.x + c, p1.y + s }, { p1.x - s, p1.y + c }, { p1.x - c, p1.y - s }, { p1.x + s, p1.y - c }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, ImGui::ColorConvertFloat4ToU32({ 1, 1, 1, alpha }));
+                              c = cosf(angle2) * scale2 * g_hitbox_width, s = sinf(angle2) * scale2 * g_hitbox_height;
+                              p->AddImageQuad(g_hitbox_textureID, { p1.x + c, p1.y + s }, { p1.x - s, p1.y + c }, { p1.x - c, p1.y - s }, { p1.x + s, p1.y - c });
+                              p->PopClipRect();
                     }
                 } else {
                     t = 0.0f;
@@ -3214,27 +3215,112 @@ namespace TH06 {
             DWORD gameState = *(DWORD*)(0x6C6EA4);
             DWORD is_rep = *(DWORD*)(0x69BCBC);
             if (((is_practice) || (is_rep) || (thPracParam.mode)) && gameState == 2) {
-
                 p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
-
+                ImVec2 stage_pos = { 32.0f, 16.0f };
                 ImVec2 plpos1 = *(ImVec2*)(0x6CAA80);
                 ImVec2 plpos2 = *(ImVec2*)(0x6CAA8C);
                 float plhit = plpos2.x - plpos1.x;
 
+                // bullet hitbox
                 for (int i = 0; i < 640; i++) {
                     DWORD pbt = 0x005AB5F8 + i * 0x5C4;
-                    if ((*(WORD*)(pbt + 0x5BE) != 1) || (* (WORD*)(pbt + 0x5BE) == 0)) {
+                    if ((*(WORD*)(pbt + 0x5BE) != 1) || (*(WORD*)(pbt + 0x5BE) == 0)) {
                         continue;
                     }
                     ImVec2 pos = *(ImVec2*)(pbt + 0x560);
                     ImVec2 hit = *(ImVec2*)(pbt + 0x550);
 
-                    ImVec2 stage_pos = { 32.0f, 16.0f };
+
                     ImVec2 p1 = { pos.x - hit.x * 0.5f - plhit * 0.5f + stage_pos.x, pos.y - hit.y * 0.5f - plhit * 0.5f + stage_pos.y };
                     ImVec2 p2 = { pos.x + hit.x * 0.5f + plhit * 0.5f + stage_pos.x, pos.y + hit.y * 0.5f + plhit * 0.5f + stage_pos.y };
                     p->AddRectFilled(p1, p2, 0x88002288);
                     p->AddRect(p1, p2, 0xFFFFFFFF, 0.0f);
                 }
+
+                // laser hitbox
+                for (int i = 0; i < 64; i++){
+                    DWORD pls = 0x00691FF8 + 0x270 * i;
+                    DWORD is_used = *(DWORD*)(pls + 0x258);
+                    if (is_used)
+                    {
+                        ImVec2 pos = *(ImVec2*)(pls + 0x220);
+                        float angle = *(float*)(pls + 0x22C);
+                        float quat_width = *(float*)(pls + 0x23C) * 0.5f * 0.5f;
+                        float half_width_pl = plhit * 0.5f;
+                        float start_ofs = *(float*)(pls + 0x230);
+                        float end_ofs = *(float*)(pls + 0x234);
+                        float len = *(float*)(pls + 0x238);
+                        int state = *(DWORD*)(pls + 0x26C);
+                        
+                        int start_time_graze = *(DWORD*)(pls + 0x248);
+                        int end_time_graze = *(DWORD*)(pls + 0x254);
+                        int time_cur_state = *(DWORD*)(pls + 0x264);
+                        float sub_frame = *(float*)(pls + 0x260);
+                        if (state == 0){
+                             int state_change_time_hit = *(DWORD*)(pls + 0x244);
+                             float l2 = 0.0f;
+                             if (time_cur_state <= state_change_time_hit - std::max(30, state_change_time_hit)) {
+                                 l2 = 1.2f * 0.5f;
+                             } else {
+                                 l2 = quat_width * ((float)time_cur_state + sub_frame) / (float)state_change_time_hit;
+                             }
+                             float mid = (start_ofs + end_ofs) * 0.5f;
+                             start_ofs = mid - l2;
+                             end_ofs = mid + l2;
+                        }
+                        if (state == 2) {
+                            int state_change_time_disappear = *(DWORD*)(pls + 0x250);
+                            float l2 = 0.0f;
+                            if (state_change_time_disappear > 0)
+                            {
+                                l2 = quat_width - quat_width * ((float)time_cur_state + sub_frame) / (float)state_change_time_disappear;
+                            }
+                            float mid = (start_ofs + end_ofs) * 0.5f;
+                            start_ofs = mid - l2;
+                            end_ofs = mid + l2;
+                        }
+                        if (state == 1 || (state==0 && time_cur_state >= start_time_graze) || (state==2 && time_cur_state < end_time_graze)) {
+                            float c = cosf(angle);
+                            float s = sinf(angle);
+                            ImVec2 hitpos[4] = {
+                                { start_ofs - half_width_pl, -quat_width - half_width_pl },
+                                { end_ofs + half_width_pl, -quat_width - half_width_pl },
+                                { end_ofs + half_width_pl, quat_width + half_width_pl },
+                                { start_ofs - half_width_pl, quat_width + half_width_pl }
+                            };
+                            auto RotPos = [](ImVec2 p, float c, float s)->ImVec2 {
+                                return {p.x*c - p.y*s,p.x*s + p.y*c};
+                            };
+                            for (int j = 0; j < 4; j++)
+                            {
+                                hitpos[j] = RotPos(hitpos[j], c, s);
+                                hitpos[j].x += pos.x + stage_pos.x;
+                                hitpos[j].y += pos.y + stage_pos.y;
+                            }
+                            p->AddQuad(hitpos[0], hitpos[1], hitpos[2], hitpos[3], 0xFFFF0000);
+                            p->AddQuadFilled(hitpos[0], hitpos[1], hitpos[2], hitpos[3], 0x88882200);
+                            *(DWORD*)(pls + 0x258) = 1;
+                        }
+                    }
+                }
+
+                // enemy hitbox
+                for (int i = 0; i < 0x100; i++) {
+                    DWORD penm = 0x4B79C8 + 0xED0 + i * 0xEC8;
+                    if (*(char*)(0xE50 + penm) < 0) {
+                        if ((*(BYTE*)(penm + 0xE51) & 4) != 0 && (*(BYTE*)(penm + 0xE51) & 2) != 0 && (*(BYTE*)(penm + 0xE51) & 1) != 0) {
+                            ImVec2 pos = *(ImVec2*)(penm + 0xC6C);
+                            ImVec2 hit = *(ImVec2*)(penm + 0xC78);
+                            hit.x *= 0.666666f;
+                            hit.y *= 0.666666f;
+                            ImVec2 p1 = { pos.x - hit.x * 0.5f - plhit * 0.5f + stage_pos.x, pos.y - hit.y * 0.5f - plhit * 0.5f + stage_pos.y };
+                            ImVec2 p2 = { pos.x + hit.x * 0.5f + plhit * 0.5f + stage_pos.x, pos.y + hit.y * 0.5f + plhit * 0.5f + stage_pos.y };
+                            p->AddRectFilled(p1, p2, 0xAAFF5500);
+                            p->AddRect(p1, p2, 0xFFFFFFFF);
+                        }
+                    }
+                }
+
 
                 p->PopClipRect();
             }
