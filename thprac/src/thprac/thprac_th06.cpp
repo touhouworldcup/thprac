@@ -3249,7 +3249,6 @@ namespace TH06 {
                         float half_width_pl = plhit * 0.5f;
                         float start_ofs = *(float*)(pls + 0x230);
                         float end_ofs = *(float*)(pls + 0x234);
-                        float len = *(float*)(pls + 0x238);
                         int state = *(DWORD*)(pls + 0x26C);
                         
                         int start_time_graze = *(DWORD*)(pls + 0x248);
@@ -3299,7 +3298,6 @@ namespace TH06 {
                             }
                             p->AddQuad(hitpos[0], hitpos[1], hitpos[2], hitpos[3], 0xFFFF0000);
                             p->AddQuadFilled(hitpos[0], hitpos[1], hitpos[2], hitpos[3], 0x88882200);
-                            *(DWORD*)(pls + 0x258) = 1;
                         }
                     }
                 }
