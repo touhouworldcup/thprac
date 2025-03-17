@@ -607,6 +607,8 @@ enum th_glossary_t {
     THPRAC_DISABLE_F10_11_13_DESC,
     THPRAC_DISABLE_JOY,
     THPRAC_DISABLE_JOY_DESC,
+    THPRAC_DISABLE_LOCALE_CHANGE_HOTKEY,
+    THPRAC_DISABLE_LOCALE_CHANGE_HOTKEY_DESC,
     THPRAC_DISABLE_MASTER_AUTO,
     THPRAC_DISABLE_MAXIMIZE_BTN,
     THPRAC_DISABLE_WIN_KEY_CHECKBOX,
@@ -1035,6 +1037,7 @@ enum th_glossary_t {
     THPRAC_TH06_RAND_SEED,
     THPRAC_TH06_RANKLOCK_DOWN,
     THPRAC_TH06_REP_RAND_SEED,
+    THPRAC_TH06_SHOW_REP_MARKER,
     THPRAC_TH18_CARD,
     THPRAC_TH18_CARD_1,
     THPRAC_TH18_CARD_2,
@@ -1349,7 +1352,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1338];
+extern const char* th_glossary_str[3][1341];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

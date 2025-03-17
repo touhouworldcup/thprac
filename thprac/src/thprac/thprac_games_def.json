@@ -244,6 +244,9 @@
     "THPRAC_AUTO_NAME_TH06":["红魔乡自动输入机签","auto input name for EoSD","auto input name for EoSD"],
     "THPRAC_AUTO_NAME_TH06_DESC":["使用~代替红斜杠","use ~ replace red slash","use ~ replace red slash"],
     "THPRAC_AUTO_NAME_NAME":["机签","name","name"],
+	
+    "THPRAC_DISABLE_LOCALE_CHANGE_HOTKEY":["禁用游戏内语言切换快捷键","disable in-game locale change hotkey","disable in-game locale change hotkey"],
+    "THPRAC_DISABLE_LOCALE_CHANGE_HOTKEY_DESC":["快捷键:alt+1/2/3","hotkey: alt+1/2/3","hotkey: alt+1/2/3"],
     
     "THPRAC_FORCE_ONLY_RENDER_TEXT_USED":["只渲染用到的字体","only render used font","only render used font"],
     "THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC":["游戏启动时如果爆显存，导致字体显示全为白块或透明等错误，则需要设置此项","if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it","if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it"],
@@ -959,6 +962,7 @@
       
 	  
 	  "THPRAC_INGAMEINFO_ADV2":["自动开启高级功能","automatically use advanced opts","automatically use advanced opts"],
+	   "THPRAC_TH06_SHOW_REP_MARKER":["红魔乡显示是否为rep","show rep marker in EoSD","show rep marker in EoSD"],
 	  "THPRAC_TH18_FORCE_CARD": [ "虹龙洞强制卡牌", "UM force card", "UM force card" ],
 	  "THPRAC_TH18_FORCE_CARD_DESC": [ "强制让商店内第一张卡牌为想要的卡牌", "force the first card in market", "force the first card in market" ],
 	  "THPRAC_TH18_FORCE_CARD_DESC2": [ "作者认为作为一个游戏就不应该用一个纯随机要素限制打分玩家, 如果你觉得是作弊, 那你说得对.jpg", "the author believes that as a game, it shouldn't rely on a purely random element to restrict players' ability to rate the game. If you think that's cheating, then you're right.jpg", "the author believes that as a game, it shouldn't rely on a purely random element to restrict players' ability to rate the game. If you think that's cheating, then you're right.jpg" ],
@@ -1277,7 +1281,6 @@
 	  
 	  "TH_BOSS_FORCE_MOVE_DOWN_RANGE": [ "下压幅度", "range", "range" ],
       "TH_BOSS_FORCE_MOVE_DOWN_DESC": [ "只给练习用，会对rep造成影响注意，基于原理对部分boss有bug", "for practice, it will affect the rep, buggy for some bosses", "for practice, it will affect the rep, buggy for some bosses" ],
-	  
 	  
       "TH_GAME_SPEED": [ "游戏速度", "Game Speed", "ゲームの速度" ],
       "TH_DELAY": [ "延迟", "Delay", "ディレイ" ],

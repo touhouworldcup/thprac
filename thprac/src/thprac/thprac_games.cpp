@@ -30,11 +30,12 @@ bool g_disable_xkey = false;
 bool g_disable_shiftkey = false;
 bool g_disable_zkey = false;
 
+bool g_disable_locale_change_hotkey = true;
+
 enum SOCD_Setting {SOCD_Default,SOCD_2,SOCD_N};
 SOCD_Setting g_socd_setting = SOCD_Default;
 bool g_disable_f10_11_13 = false;
 bool g_pauseBGM_06 = false;
-bool g_autoName_06;
 std::string g_name_06;
 bool g_forceRenderCursor=false;
 bool g_disable_max_btn = true;
@@ -428,13 +429,20 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
             }
            
         }
+        LauncherSettingGet("disable_locale_change_hotkey", g_disable_locale_change_hotkey);
         LauncherSettingGet("keyboard_SOCDv2", (int &)g_socd_setting);
         LauncherSettingGet("force_render_cursor", g_forceRenderCursor);
         LauncherSettingGet("pauseBGM_06", g_pauseBGM_06);
-        LauncherSettingGet("autoInputName_06", g_autoName_06);
-        LauncherSettingGet("autoName_06", g_name_06);
-
+        
         memset(&g_adv_igi_options, 0, sizeof(g_adv_igi_options));
+
+        LauncherSettingGet("autoInputName_06", g_adv_igi_options.th06_autoname);
+        std::string name06 = "";
+        LauncherSettingGet("autoName_06", name06);
+        if (name06.size() >= 1 && name06.size() <= 9) {
+            strcpy_s(g_adv_igi_options.th06_autoname_name, name06.c_str());
+        }
+
         LauncherSettingGet("th18_force_card", g_adv_igi_options.th18_force_card);
         LauncherSettingGet("th18_card_st1", g_adv_igi_options.th18_cards[0]);
         LauncherSettingGet("th18_card_st2", g_adv_igi_options.th18_cards[1]);
@@ -450,9 +458,10 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         LauncherSettingGet("th06_seed", g_adv_igi_options.th06_seed);
         g_adv_igi_options.th06_seed = std::clamp(g_adv_igi_options.th06_seed, 0, 65535);
 
+        LauncherSettingGet("auto_th06_rep_marker", g_adv_igi_options.th06_showRepMarker);
         LauncherSettingGet("auto_th06_show_rank", g_adv_igi_options.th06_showRank);
         LauncherSettingGet("auto_th06_disable_rank_drop", g_adv_igi_options.th06_disable_drop_rank);
-        LauncherSettingGet("auto_th06_show_hitbox", g_adv_igi_options.th06_showHitbox);
+        LauncherSettingGet("auto_th06_show_hitbox", g_adv_igi_options.th06_show_hitbox);
         LauncherSettingGet("auto_th11_show_hint", g_adv_igi_options.th11_showHint);
         LauncherSettingGet("auto_th13_show_hits", g_adv_igi_options.th13_showHits);
         LauncherSettingGet("auto_th13_show_hitbar", g_adv_igi_options.th13_showHitBar);
@@ -640,12 +649,15 @@ void GameGuiEnd(bool draw_cursor)
 
     // Locale Change
     if (!ImGui::IsAnyItemActive()) {
-        if (Gui::ImplWin32CheckHotkey(0x00010031)) {
-            Gui::LocaleSet(Gui::LOCALE_JA_JP);
-        } else if (Gui::ImplWin32CheckHotkey(0x00010032)) {
-            Gui::LocaleSet(Gui::LOCALE_ZH_CN);
-        } else if (Gui::ImplWin32CheckHotkey(0x00010033)) {
-            Gui::LocaleSet(Gui::LOCALE_EN_US);
+        if (!g_disable_locale_change_hotkey)
+        {
+            if (Gui::ImplWin32CheckHotkey(0x00010031)) {
+                Gui::LocaleSet(Gui::LOCALE_JA_JP);
+            } else if (Gui::ImplWin32CheckHotkey(0x00010032)) {
+                Gui::LocaleSet(Gui::LOCALE_ZH_CN);
+            } else if (Gui::ImplWin32CheckHotkey(0x00010033)) {
+                Gui::LocaleSet(Gui::LOCALE_EN_US);
+            }
         }
     }
     ::ImGui::EndFrame();

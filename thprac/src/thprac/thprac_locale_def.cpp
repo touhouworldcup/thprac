@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1338] {
+const char* th_glossary_str[3][1341] {
     {
         "",
         "啤酒",
@@ -607,6 +607,8 @@ const char* th_glossary_str[3][1338] {
         "该按键用于切换全屏",
         "禁用手柄",
         "对部分作有效, 禁用有关手柄的部分函数以减少掉帧",
+        "禁用游戏内语言切换快捷键",
+        "快捷键:alt+1/2/3",
         "自动禁用MASTER",
         "靳止最大化窗口按钮的全屏切换",
         "thp启动后自动禁用win键",
@@ -1035,6 +1037,7 @@ const char* th_glossary_str[3][1338] {
         "初始种子",
         "红魔乡自动miss/bomb后不掉rank",
         "当前打开rep的初始种子",
+        "红魔乡显示是否为rep",
         "想要的卡牌",
         "stage1 卡牌",
         "stage2 卡牌",
@@ -1947,6 +1950,8 @@ const char* th_glossary_str[3][1338] {
         "which is used for toggle fullscreen",
         "disable joystick",
         "works for some games, disables functions for joystick to avoid lags",
+        "disable in-game locale change hotkey",
+        "hotkey: alt+1/2/3",
         "automatically disable master",
         "disable maximizebox to toggle full screen",
         "disable win key when thprac.exe launches",
@@ -2375,6 +2380,7 @@ const char* th_glossary_str[3][1338] {
         "rand seed",
         "EoSD no rank drop after miss/bomb",
         "rand seed for current rep",
+        "show rep marker in EoSD",
         "cards you want",
         "card for stage 1",
         "card for stage 2",
@@ -3287,6 +3293,8 @@ const char* th_glossary_str[3][1338] {
         "which is used for toggle fullscreen",
         "disable joystick",
         "works for some games, disables functions for joystick to avoid lags",
+        "disable in-game locale change hotkey",
+        "hotkey: alt+1/2/3",
         "automatically disable master",
         "disable maximizebox to toggle full screen",
         "disable win key when thprac.exe launches",
@@ -3715,6 +3723,7 @@ const char* th_glossary_str[3][1338] {
         "rand seed",
         "EoSD no rank drop after miss/bomb",
         "rand seed for current rep",
+        "show rep marker in EoSD",
         "cards you want",
         "card for stage 1",
         "card for stage 2",

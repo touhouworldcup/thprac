@@ -2171,6 +2171,7 @@ private:
             ImGui::TextWrapped(S(THPRAC_INGAMEINFO_ADV_DESC2));
             mCfgMapInfLifeToNoContinue_autoly.Gui(S(THPRAC_INFLIVES_MAP));
             mCfgEnableMasterDisable_autoly.Gui(S(THPRAC_DISABLE_MASTER_AUTO));
+            mCfgTH06_RepMarker.Gui(S(THPRAC_TH06_SHOW_REP_MARKER));
             mCfgEnableTH06_ShowRank_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK2));
             mCfgEnableTH06_BgFix_autoly.Gui(S(THPRAC_TH06_BACKGROUND_FIX), S(THPRAC_TH06_BACKGROUND_FIX_DESC));
             mCfgEnableTH06_DisableRankDrop_autoly.Gui(S(THPRAC_TH06_RANKLOCK_DOWN));
@@ -2327,6 +2328,7 @@ private:
             if (mOriginalLanguage != mCfgLanguage.Get()) {
                 ImGui::TextUnformatted(th_glossary_str[mCfgLanguage.Get()][THPRAC_LANGUAGE_HINT]);
             }
+            mDisableLocaleChangeHotkey.Gui(S(THPRAC_DISABLE_LOCALE_CHANGE_HOTKEY), S(THPRAC_DISABLE_LOCALE_CHANGE_HOTKEY_DESC));
         }
         ImGui::Separator();
         if (ImGui::CollapsingHeader(S(THPRAC_SETTING_UPDATE))) {
@@ -2412,6 +2414,7 @@ private:
     THCfgCheckbox mCfgEnableTH06_BgFix_autoly { "auto_th06_bg_fix", false };
     THCfgCheckbox mCfgEnableTH06_FixSeed_autoly { "auto_th06_fix_seed", false };
     THCfgInt      mCfgTH06_Seed { "th06_seed", 0, 0, 65535 };
+    THCfgCheckbox mCfgTH06_RepMarker { "auto_th06_rep_marker",true };
     THCfgCheckbox mCfgEnableTH06_ShowHitbox_autoly { "auto_th06_show_hitbox", false };
     THCfgCheckbox mCfgEnableTH11_ShowHint_autoly { "auto_th11_show_hint", false };
     THCfgCheckbox mCfgEnableTH13_ShowHits_autoly { "auto_th13_show_hits", false };
@@ -2445,6 +2448,7 @@ private:
     THCfgCheckbox mResizableWindow { "resizable_window", false };
     THCfgCheckbox mDisableMaximizeBtn { "disableMax_btn", false };
     THCfgCheckbox mInitWindowPos { "init_window_pos", true };
+    THCfgCheckbox mDisableLocaleChangeHotkey { "disable_locale_change_hotkey", true };
 
     THCfgCheckbox mWindowSizeChangeWhenOpen { "change_window_size_when_open", false };
     THCfgInt2 mWindowSize { "changed_window_size", {1920,1440},1,8192 };

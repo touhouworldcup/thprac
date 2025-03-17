@@ -9,8 +9,6 @@
 
 namespace THPrac {
 extern bool g_pauseBGM_06;
-extern bool g_autoName_06;
-extern std::string g_name_06;
 extern bool g_forceRenderCursor;
 
 namespace TH06 {
@@ -1792,13 +1790,14 @@ namespace TH06 {
             ImGui::Checkbox(S(THPRAC_SHOW_BULLET_HITBOX), &g_show_bullet_hitbox);
 
             ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK), &g_adv_igi_options.th06_showRank);
-            ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX), &g_adv_igi_options.th06_showHitbox);
+            ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX), &g_adv_igi_options.th06_show_hitbox);
             ImGui::SameLine();
             HelpMarker(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC));
             ImGui::SameLine();
             if (ImGui::Button(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_RELOAD))) {
                 ReadHitboxFile();
             }
+            ImGui::Checkbox(S(THPRAC_TH06_SHOW_REP_MARKER), &g_adv_igi_options.th06_showRepMarker);
             ImGui::Checkbox(S(THPRAC_TH06_FIX_RAND_SEED), &g_adv_igi_options.th06_fix_seed);
             ImGui::SameLine();
             ImGui::SetNextItemWidth(180.0f);
@@ -3153,10 +3152,24 @@ namespace TH06 {
         TH06InGameInfo::singleton().IncreaseGameTime();
 
         auto p = ImGui::GetOverlayDrawList();
+        // rep marker
+        {
+            if (g_adv_igi_options.th06_showRepMarker)
+            {
+                DWORD is_rep = *(DWORD*)(0x69BCBC);
+                if (is_rep) {
+                    auto f = ImGui::GetFont();
+                    auto sz = f->CalcTextSizeA(20, 100, 100, "ＲＥＰ");
+                    ImVec2 p1 = { 416.0f, 464.0f };
+                    p->AddRectFilled({ p1.x - sz.x, p1.y - sz.y }, p1, 0x77000000);
+                    p->AddText(f, 20, { p1.x - sz.x, p1.y - sz.y }, 0xFFFFFFFF, "ＲＥＰ");
+                }
+            }
+        }
         {// player hitbox
             static float t = 0.0f;
             static bool is_shift_pressed = false;
-            if (g_adv_igi_options.th06_showHitbox && g_hitbox_textureID != NULL) {
+            if (g_adv_igi_options.th06_show_hitbox && g_hitbox_textureID != NULL) {
                 bool is_time_stopped = *(BYTE*)(0x69BCCC);
 
                 DWORD gameState = *(DWORD*)(0x6C6EA4);
@@ -3387,21 +3400,21 @@ namespace TH06 {
     }
 
     EHOOK_DY(th06_autoName_score,0x42BE49){
-        if (g_autoName_06){
-            int size = g_name_06.size();
+        if (g_adv_igi_options.th06_autoname){
+            int size = strlen(g_adv_igi_options.th06_autoname_name);
             if (size > 8)
                 size = 8;
             if (size >= 1){
                 *(DWORD*)(pCtx->Eax + 0x10) = size - 1;
                 for (int i = 0; i < size; i++) {
-                    *(char*)(pCtx->Eax + 0x5193 + i) = (g_name_06[i] == '~') ? '\xA5' : g_name_06[i]; // red slash = 0xA5
+                    *(char*)(pCtx->Eax + 0x5193 + i) = (g_adv_igi_options.th06_autoname_name[i] == '~') ? '\xA5' : g_adv_igi_options.th06_autoname_name[i]; // red slash = 0xA5
                 }
             }
         }
     }
     EHOOK_DY(th06_autoName_rep_overwrite, 0x42D085)
     {
-        if (g_autoName_06) {
+        if (g_adv_igi_options.th06_autoname) {
             bool set_name = true;
             int name_len = 0;
             for (int i = 0; i < 8; i++) {
@@ -3412,14 +3425,14 @@ namespace TH06 {
                 }
             }
             if (set_name) {
-                int size = g_name_06.size();
+                int size = strlen(g_adv_igi_options.th06_autoname_name);
                 if (size > 8)
                     size = 8;
                 if (size >= 1) {
                     *(DWORD*)(pCtx->Eax + 0x10) = size - 1;
                     for (int i = 0; i < 8; i++) {
                         if (i < size)
-                            *(char*)(pCtx->Eax + 0x34 + i) = (g_name_06[i] == '~') ? '\xA5' : g_name_06[i]; // red slash = 0xA5
+                            *(char*)(pCtx->Eax + 0x34 + i) = (g_adv_igi_options.th06_autoname_name[i] == '~') ? '\xA5' : g_adv_igi_options.th06_autoname_name[i]; // red slash = 0xA5
                         else
                             *(char*)(pCtx->Eax + 0x34 + i) = ' ';
                     }
@@ -3431,7 +3444,7 @@ namespace TH06 {
     }
     EHOOK_DY(th06_autoName_rep, 0x42C8A0)
     {
-        if (g_autoName_06) {
+        if (g_adv_igi_options.th06_autoname) {
             bool set_name = true;
             int name_len = 0;
             for (int i = 0; i < 8; i++){
@@ -3442,14 +3455,14 @@ namespace TH06 {
                 }
             }
             if (set_name){
-                int size = g_name_06.size();
+                int size = strlen(g_adv_igi_options.th06_autoname_name);
                 if (size > 8)
                     size = 8;
                 if (size >= 1) {
                     *(DWORD*)(pCtx->Eax + 0x10) = size - 1;
                     for (int i = 0; i < 8; i++) {
                         if (i < size)
-                            *(char*)(pCtx->Eax + 0x34 + i) = (g_name_06[i] == '~') ? '\xA5' : g_name_06[i]; // red slash = 0xA5
+                            *(char*)(pCtx->Eax + 0x34 + i) = (g_adv_igi_options.th06_autoname_name[i] == '~') ? '\xA5' : g_adv_igi_options.th06_autoname_name[i]; // red slash = 0xA5
                         else
                             *(char*)(pCtx->Eax + 0x34 + i) = ' ';
                     }
