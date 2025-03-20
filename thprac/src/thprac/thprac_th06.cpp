@@ -322,7 +322,7 @@ namespace TH06 {
             GetJsonValueEx(rankLock, Bool);
             GetJsonValue(fakeType);
             GetJsonValue(delay_st6bs9);
-            GetJsonValue(wall_prac_st6);
+            GetJsonValueEx(wall_prac_st6, Bool);
 
             return true;
         }
