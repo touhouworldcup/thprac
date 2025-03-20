@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1341] {
+const char* th_glossary_str[3][1343] {
     {
         "",
         "啤酒",
@@ -57,6 +57,8 @@ const char* th_glossary_str[3][1341] {
         "木符「风灵角笛 上级」",
         "木符「翠绿风暴」",
         "木&火符「森林大火」",
+        "砌墙练习器",
+        "红幻/吸幻使用",
         "TH06 东方红魔乡　～ the Embodiment of Scarlet Devil.",
         "TH07.5 东方萃梦想　～ Immaterial and Missing Power.",
         "道中小妖精",
@@ -1400,6 +1402,8 @@ const char* th_glossary_str[3][1341] {
         "Wood Sign \"Sylphy Horn High Level\"",
         "Wood Sign \"Green Storm\"",
         "Wood & Fire Sign \"Forest Blaze\"",
+        "wall prac",
+        "for Scarlet Gensokyo/Vampire Illusion",
         "TH06 The Embodiment of Scarlet Devil",
         "TH07.5 Immaterial and Missing Power",
         "Chaos",
@@ -2743,6 +2747,8 @@ const char* th_glossary_str[3][1341] {
         "木符「シルフィホルン上級」",
         "木符「グリーンストーム」",
         "木＆火符「フォレストブレイズ」",
+        "wall prac",
+        "for Scarlet Gensokyo/Vampire Illusion",
         "TH06 東方紅魔郷　～ the Embodiment of Scarlet Devil.",
         "TH07.5 東方萃夢想　～ Immaterial and Missing Power.",
         "ケイオス",

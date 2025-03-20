@@ -281,6 +281,7 @@ namespace TH06 {
         int32_t fakeType;
 
         int32_t delay_st6bs9;
+        bool wall_prac_st6;
         bool dlg;
 
         bool _playLock;
@@ -321,6 +322,7 @@ namespace TH06 {
             GetJsonValueEx(rankLock, Bool);
             GetJsonValue(fakeType);
             GetJsonValue(delay_st6bs9);
+            GetJsonValue(wall_prac_st6);
 
             return true;
         }
@@ -351,6 +353,7 @@ namespace TH06 {
             AddJsonValue(rankLock);
             AddJsonValue(fakeType);
             AddJsonValue(delay_st6bs9);
+            AddJsonValue(wall_prac_st6);
 
             ReturnJson();
         }
@@ -1041,6 +1044,8 @@ namespace TH06 {
                     thPracParam.dlg = *mDlg;
                 if (thPracParam.section == TH06_ST6_BOSS9)
                     thPracParam.delay_st6bs9 = *mDelaySt6Bs9;
+                if (thPracParam.section == TH06_ST6_BOSS9 || thPracParam.section == TH06_ST6_BOSS6)
+                    thPracParam.wall_prac_st6 = *mWallPrac;
 
                 thPracParam.score = *mScore;
                 thPracParam.life = (float)*mLife;
@@ -1070,7 +1075,8 @@ namespace TH06 {
                     thPracParam.dlg = *mDlg;
                 if (thPracParam.section == TH06_ST6_BOSS9)
                     thPracParam.delay_st6bs9 = *mDelaySt6Bs9;
-
+                if (thPracParam.section == TH06_ST6_BOSS9 || thPracParam.section == TH06_ST6_BOSS6)
+                    thPracParam.wall_prac_st6 = *mWallPrac;
                 thPracParam.score = *mScore;
                 thPracParam.life = (float)*mLife;
                 thPracParam.bomb = (float)*mBomb;
@@ -1101,6 +1107,9 @@ namespace TH06 {
                 mPhase(TH_PHASE, TH06_FINAL_SPELL);
                 if (*mPhase == 1 || *mPhase == 2 || *mPhase == 3)
                     mDelaySt6Bs9();
+                mWallPrac();
+            } else if (section == TH06_ST6_BOSS6) {
+                mWallPrac();
             }
         }
         void PracticeMenu(Gui::GuiNavFocus& nav_focus)
@@ -1110,7 +1119,7 @@ namespace TH06 {
                 *mSection = *mChapter = 0;
             if (*mMode == 1) {
                 if (mWarp())
-                    *mSection = *mChapter = *mPhase = *mFrame = 0, *mDelaySt6Bs9 = 120;
+                    *mSection = *mChapter = *mPhase = *mFrame = 0, *mDelaySt6Bs9 = 120,*mWallPrac = false;
                 if (*mWarp) {
                     int st = 0;
                     if (*mStage == 3) {
@@ -1279,6 +1288,7 @@ namespace TH06 {
         Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, 99999, 1, 10000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mPoint { TH_POINT, 0, 9999, 1, 1000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mDelaySt6Bs9 { TH_DELAY, 0, 600, 1, 10,10};
+        Gui::GuiCheckBox mWallPrac { TH06_ST6_WALL_PRAC };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mRank { TH06_RANK, 0, 32, 1, 10, 10 };
         Gui::GuiCheckBox mRankLock { TH06_RANKLOCK };
@@ -3137,6 +3147,59 @@ namespace TH06 {
             pCtx->Eip = 0x40e1d8;
         }
     }
+    EHOOK_DY(th06_wall_prac, 0x40D57C)
+    {
+        if (thPracParam.mode && thPracParam.stage == 5  && thPracParam.wall_prac_st6) {
+            if (thPracParam.section == TH06_ST6_BOSS6 || thPracParam.section == TH06_ST6_BOSS9)
+            {
+                auto GetRandF = []()->float{
+                    unsigned int(__fastcall *sb_41E7F0_rand_int)(DWORD thiz);
+                    sb_41E7F0_rand_int = (decltype(sb_41E7F0_rand_int))0x41E7F0;
+
+                    unsigned int randi = sb_41E7F0_rand_int(0x69D8F8);
+                    return (double)randi / 4294967296.0;
+                };// rand from 0 to 1
+                float* wall_angle = (float*)(pCtx->Ebp - 0x68);
+                DWORD penm = *(DWORD*)(pCtx->Ebp + 0x8);
+                float bossx = *(float*)(penm + 0xC6C);
+                float bossy = *(float*)(penm + 0xC70);
+                float plx = *(float*)(0x6CAA68);
+                float ply = *(float*)(0x6CAA6C);
+                float angle_pl = atan2f(ply - bossy, plx - bossx);
+                float dist_pl = hypotf(ply - bossy, plx - bossx);
+                
+                float decision = GetRandF();
+                
+                    // - 1.570796f + GetRandF() * 1.745329f
+                if (decision < 0.4f) {
+                    float min_dist_bt = 99999.0f;
+                    for (int i = 0; i < 640; i++) {
+                        DWORD pbt = 0x005AB5F8 + i * 0x5C4;
+                        if (*(WORD*)(pbt + 0x5BE)
+                            && *(WORD*)(pbt + 0x5BE) != 5
+                            && *(DWORD*)(pbt + 0xC0)
+                            && *(float*)(*(DWORD*)(pbt + 0xC0) + 0x2C) < 30.0
+                            && *(float*)(pbt + 0x584) == 0.0)
+                        {
+                            ImVec2 pos = *(ImVec2*)(pbt + 0x560);
+                            min_dist_bt = std::min(min_dist_bt, hypotf(pos.x - bossx, pos.y - bossy));
+                        }
+                    }
+                    if (decision<0.2f)
+                        *wall_angle = angle_pl - min_dist_bt * 3.14159f / 256.0f - 0.5235988f + GetRandF() * 0.5235988f; // -30 deg ~ 0deg
+                    else
+                        *wall_angle = angle_pl - min_dist_bt * 3.14159f / 256.0f - 1.570796f + GetRandF() * 1.745329f; // -90 deg ~ 10deg
+                } else if (decision < 0.9f) {
+                    // angle = randA + dist*pi/256 = pi
+                    // => randA = pi - dist*pi/256
+                    *wall_angle = 3.14159f - dist_pl * 3.14159f / 256.0f - 0.2617f + GetRandF() * 0.5235988f; //
+                }else {
+                    *wall_angle = GetRandF() * 6.28318f - 3.1415926f;
+                }
+            }
+        }
+        
+    }
     PATCH_DY(th06_disable_menu, 0x439ab2, "\x90\x90\x90\x90\x90", 5);
     EHOOK_DY(th06_update, 0x41caac)
     {
@@ -3157,7 +3220,8 @@ namespace TH06 {
             if (g_adv_igi_options.th06_showRepMarker)
             {
                 DWORD is_rep = *(DWORD*)(0x69BCBC);
-                if (is_rep) {
+                DWORD gameState = *(DWORD*)(0x6C6EA4);
+                if (is_rep && gameState == 2) {
                     auto f = ImGui::GetFont();
                     auto sz = f->CalcTextSizeA(20, 100, 100, "ＲＥＰ");
                     ImVec2 p1 = { 416.0f, 464.0f };

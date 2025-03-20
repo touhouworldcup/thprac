@@ -57,6 +57,8 @@ enum th_glossary_t {
     TH06_ST4_WOOD2,
     TH06_ST4_WOOD3,
     TH06_ST4_WOOD_FIRE,
+    TH06_ST6_WALL_PRAC,
+    TH06_ST6_WALL_PRAC_DESC,
     TH06_TITLE,
     TH075_TITLE,
     TH07_CHAOS,
@@ -1352,7 +1354,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1341];
+extern const char* th_glossary_str[3][1343];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
