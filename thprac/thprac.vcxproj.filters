@@ -223,7 +223,7 @@
     <ClInclude Include="src\3rdParties\rapidcsv\rapidcsv.h">
       <Filter>3rdParties\rapidcsv</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_th06_hitbox.h">
+    <ClInclude Include="src\thprac\thprac_res.h">
       <Filter>THPrac Games</Filter>
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_th15_abtest.h">

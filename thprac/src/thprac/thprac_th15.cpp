@@ -9,6 +9,8 @@
 namespace THPrac {
 namespace TH15 {
     using std::pair;
+    bool g_blind_view = false;
+    float g_blind_size = 150.0f;
 
     struct THPracParam {
         int32_t mode;
@@ -876,7 +878,7 @@ namespace TH15 {
                     GameplaySet();
                 EndOptGroup();
             }
-
+            SSS_UI();
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
@@ -2416,7 +2418,8 @@ namespace TH15 {
                 }
             }
         }
-
+        if (*(DWORD*)0x004E9BB8)
+            RenderBlindView(9, *(DWORD*)(0x4e77d8), *(ImVec2*)(*(DWORD*)0x004E9BB8 + 0x618), { 192.0f, 0.0f }, { 32.0f, 16.0f }, ImGui::GetIO().DisplaySize.x / 640.0f);
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004E9BB8))
             KeysHUD(15, { 1280.0f, 0.0f }, {840.0f,0.0f},g_adv_igi_options.keyboard_style);
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();

@@ -786,7 +786,7 @@ namespace TH12 {
                     GameplaySet();
                 EndOptGroup();
             }
-
+            SSS_UI();
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
@@ -1785,7 +1785,8 @@ namespace TH12 {
                 p->AddText({ 60.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
-        
+        if (*(DWORD*)0x004B4514)
+            RenderBlindView(9, *(DWORD*)(0x4ce8f0), *(ImVec2*)(*(DWORD*)0x004B4514 + 0x97C), { 192.0f, 0.0f }, { 32.0f, 16.0f }, ImGui::GetIO().DisplaySize.x / 640.0f);
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004B4514)) {
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
             KeysHUD(12, { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);

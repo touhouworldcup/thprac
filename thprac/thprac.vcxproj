@@ -74,7 +74,7 @@
     <ClInclude Include="src\thprac\thprac_gui_locale.h" />
     <ClInclude Include="src\thprac\thprac_locale_def.h" />
     <ClInclude Include="src\thprac\thprac_main.h" />
-    <ClInclude Include="src\thprac\thprac_th06_hitbox.h" />
+    <ClInclude Include="src\thprac\thprac_res.h" />
     <ClInclude Include="src\thprac\thprac_th15_abtest.h" />
     <ClInclude Include="src\thprac\thprac_th19.h" />
     <ClInclude Include="src\thprac\thprac_utils.h" />
@@ -206,13 +206,13 @@
     <LinkIncremental>false</LinkIncremental>
     <TargetName>thprac</TargetName>
     <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\distorm\include;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(ProjectDir)src\3rdParties\MinHook\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)src\3rdParties\FreeType\win32;$(ProjectDir)src\3rdParties\d3d8\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)src\3rdParties\FreeType\win32;$(ProjectDir)src\3rdParties\d3d8\lib;$(ProjectDir)src\3rdParties\d3d9\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
       <SubSystem>Windows</SubSystem>
       <FixedBaseAddress>false</FixedBaseAddress>
-      <AdditionalDependencies>kernel32.lib;ntdll.lib;user32.lib;freetype.lib;gdi32.lib;dxguid.lib;d3d9.lib;xinput.lib;winmm.lib;dinput8.lib;ws2_32.lib;d3dx8.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;ntdll.lib;user32.lib;freetype.lib;gdi32.lib;dxguid.lib;d3d9.lib;xinput.lib;winmm.lib;dinput8.lib;ws2_32.lib</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <GenerateDebugInformation>true</GenerateDebugInformation>

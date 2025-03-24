@@ -939,6 +939,11 @@
   
    "inGameInfo": {
       "glossary": {
+	  "THPRAC_BLIND":["夜雀视野","blind view","blind view"],
+	  "THPRAC_BLIND_DESC":["娱乐用, 使用blind.png重载","for fun(use blind.png to reload)","for fun(use blind.png to reload)"],
+	  "THPRAC_BLIND_SZ":["视野大小","view sz","view sz"],
+	  
+	  
 	  "THPRAC_SHOW_BULLET_HITBOX":["显示弹幕判定(仅练习/rep)","show bullet hitbox(only prac/rep)","show bullet hitbox(only prac/rep)"],
 	  
 	  "THPRAC_KB":["按键显示设置","key monitor setting","key monitor setting"],

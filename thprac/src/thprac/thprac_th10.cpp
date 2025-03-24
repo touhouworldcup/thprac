@@ -877,7 +877,7 @@ namespace TH10 {
                     GameplaySet();
                 EndOptGroup();
             }
-
+            SSS_UI();
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
@@ -2628,6 +2628,8 @@ namespace TH10 {
                 }
             }
         }
+        if (*(DWORD*)0x00477834)
+            RenderBlindView(9, *(DWORD*)(0x491c30), *(ImVec2*)(*(DWORD*)0x00477834 + 0x3C0), { 192.0f, 0.0f }, {32.0f,16.0f}, ImGui::GetIO().DisplaySize.x / 640.0f);
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x0477834)){
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
             KeysHUD(10, { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);

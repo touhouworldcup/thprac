@@ -135,6 +135,13 @@ void KeyHUDOpt();
 
 #pragma endregion
 
+#pragma region SSS
+
+void RenderBlindView(int dx_ver, DWORD device, ImVec2 plpos, ImVec2 plpos_ofs,ImVec2 stagepos, float zoom);
+void SSS_UI();
+
+#pragma endregion
+
 #pragma region Game BGM
 
 // TODO: Should bgm_cmd be removed?

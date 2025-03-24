@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1343] {
+const char* th_glossary_str[3][1346] {
     {
         "",
         "啤酒",
@@ -582,6 +582,9 @@ const char* th_glossary_str[3][1343] {
         "使用~代替红斜杠",
         "返回",
         "开始",
+        "夜雀视野",
+        "娱乐用, 使用blind.png重载",
+        "视野大小",
         "取消",
         "修改启动时窗口的大小",
         "窗口大小",
@@ -1927,6 +1930,9 @@ const char* th_glossary_str[3][1343] {
         "use ~ replace red slash",
         "Back",
         "Begin",
+        "blind view",
+        "for fun(use blind.png to reload)",
+        "view sz",
         "Cancel",
         "change window size when open",
         "window size",
@@ -3272,6 +3278,9 @@ const char* th_glossary_str[3][1343] {
         "use ~ replace red slash",
         "戻る",
         "開始",
+        "blind view",
+        "for fun(use blind.png to reload)",
+        "view sz",
         "キャンセル",
         "change window size when open",
         "window size",

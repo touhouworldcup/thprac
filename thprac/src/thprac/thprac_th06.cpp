@@ -5,257 +5,21 @@
 
 #include <format>
 #include "../3rdParties/d3d8/include/dsound.h"
-#include "../3rdParties/d3d8/include/d3dx8.h"
 
+
+#include "thprac_res.h"
 namespace THPrac {
 extern bool g_pauseBGM_06;
 extern bool g_forceRenderCursor;
 
 namespace TH06 {
-    LPDIRECT3DTEXTURE8 g_hitbox_texture = NULL;
     ImTextureID g_hitbox_textureID = NULL;
-    float g_hitbox_width = 32.0f;
-    float g_hitbox_height = 32.0f;
+    ImVec2 g_hitbox_sz = { 32.0f, 32.0f };
+
     int32_t g_last_rep_seed = 0;
     bool g_show_bullet_hitbox = false;
-    #include "thprac_th06_hitbox.h"
-
     
-    void ReadHitboxFile()
-    {
-        if (g_hitbox_texture != NULL) {
-            g_hitbox_texture->Release();
-            g_hitbox_texture = NULL;
-            g_hitbox_textureID = NULL;
-        }
-        if (GetFileAttributes(L"hitbox.png") != INVALID_FILE_ATTRIBUTES) {
-            IDirect3DDevice8* device = *(IDirect3DDevice8**)0x6c6d20;
-            if (D3DXCreateTextureFromFileA(device, "hitbox.png", &g_hitbox_texture) == D3D_OK) {
-                g_hitbox_textureID = (ImTextureID)g_hitbox_texture;
-                D3DSURFACE_DESC desc;
-                g_hitbox_texture->GetLevelDesc(0, &desc);
-                g_hitbox_width = desc.Width;
-                g_hitbox_height = desc.Height;
-            }
-        } else {
-            IDirect3DDevice8* device = *(IDirect3DDevice8**)0x6c6d20;
-            if (D3DXCreateTextureFromFileInMemory(device, hitbox_file, sizeof(hitbox_file), &g_hitbox_texture) == D3D_OK) {
-                g_hitbox_textureID = (ImTextureID)g_hitbox_texture;
-                D3DSURFACE_DESC desc;
-                g_hitbox_texture->GetLevelDesc(0, &desc);
-                g_hitbox_width = desc.Width;
-                g_hitbox_height = desc.Height;
-            }
-        }
-    }
 
-    static const char* th06_spells_str[3][65] {
-        { 
-            "月符「月光」",
-            "夜符「夜雀」",
-            "暗符「境界线」",
-            "冰符「冰瀑」",
-            "雹符「冰雹暴风」",
-            "冻符「完美冻结」",
-            "雪符「钻石风暴」",
-            "华符「芳华绚烂」",
-            "华符「卷柏9」",
-            "虹符「彩虹的风铃」",
-            "幻符「华想梦葛」",
-            "彩符「彩雨」",
-            "彩符「彩光乱舞」",
-            "彩符「极彩台风」",
-            "火符「火神之光」",
-            "水符「水精公主」",
-            "木符「风灵角笛」",
-            "土符「慵懒三石塔」",
-            "金符「金属疲劳」",
-            "火符「火神之光 上级」",
-            "木符「风灵角笛 上级」",
-            "土符「慵懒三石塔 上级」",
-            "火符「火神的光辉」",
-            "水符「湖葬」",
-            "木符「翠绿风暴」",
-            "土符「三石塔的震动」",
-            "金符「银龙」",
-            "火&土符「环状熔岩带」",
-            "木&火符「森林大火」",
-            "水&木符「水精灵」",
-            "金&水符「水银之毒」",
-            "土&金符「翡翠巨石」",
-            "奇术「误导」",
-            "奇术「幻惑误导」",
-            "幻在「时钟遗骸」",
-            "幻象「月神之钟」",
-            "女仆秘技「操弄玩偶」",
-            "幻幽「迷幻杰克」",
-            "幻世「世界」",
-            "女仆秘技「杀人玩偶」",
-            "奇术「永恒的温柔」",
-            "天罚「大卫之星」",
-            "冥符「红色的冥界」",
-            "诅咒「弗拉德·特佩斯的诅咒」",
-            "红符「深红射击」",
-            "「红魔法」",
-            "神罚「幼小的恶魔领主」",
-            "狱符「千根针的针山」",
-            "神术「吸血鬼幻想」",
-            "红符「绯红之主」",
-            "「红色的幻想乡」",
-            "月符「沉静的月神」",
-            "日符「皇家烈焰」",
-            "火水木金土符「贤者之石」",
-            "禁忌「红莓陷阱」",
-            "禁忌「莱瓦汀」",
-            "禁忌「四重存在」",
-            "禁忌「笼中鸟」",
-            "禁忌「恋之迷宫」",
-            "禁弹「星弧破碎」",
-            "禁弹「折返射」",
-            "禁弹「刻着过去的钟表」",
-            "秘弹「之后就一个人都没有了吗？」",
-            "QED「495年的波纹」",
-            "「我打魔法阵？真的要上吗...」" },
-        { 
-            " Moon Sign \"Moonlight Ray\"",
-            "Night Sign \"Night Bird\"",
-            "Darkness Sign \"Demarcation\"",
-            "Ice Sign \"Icicle Fall\"",
-            "Hail Sign \"Hailstorm\"",
-            "Freeze Sign \"Perfect Freeze\"",
-            "Snow Sign \"Diamond Blizzard\"",
-            "Flower Sign \"Gorgeous Sweet Flower\"",
-            "Flower Sign \"Selaginella 9\"",
-            "Rainbow Sign \"Wind Chime of Colorful Rainbow\"",
-            "Illusion Sign \"Flower Imaginary Dream Vine\"",
-            "Colorful Sign \"Colorful Rain\"",
-            "Colorful Sign \"Colorful Light Chaotic Dance\"",
-            "Colorful Sign \"Extreme Color Typhoon\"",
-            "Fire Sign \"Agni Shine\"",
-            "Water Sign \"Princess Undine\"",
-            "Wood Sign \"Sylphae Horn\"",
-            "Earth Sign \"Rage Trilithon\"",
-            "Metal Sign \"Metal Fatigue\"",
-            "Fire Sign \"Agni Shine High Level\"",
-            "Wood Sign \"Sylphae Horn High Level\"",
-            "Earth Sign \"Rage Trilithon High Level\"",
-            "Fire Sign \"Agni Radiance\"",
-            "Water Sign \"Bury In Lake\"",
-            "Wood Sign \"Green Storm\"",
-            "Earth Sign \"Trilithon Shake\"",
-            "Metal Sign \"Silver Dragon\"",
-            "Fire & Earth Sign \"Lava Cromlech\"",
-            "Wood & Fire Sign \"Forest Blaze\"",
-            "Water & Wood Sign \"Water Elf\"",
-            "Metal & Water Sign \"Mercury Poison\"",
-            "Earth & Metal Sign \"Emerald Megalith\"",
-            "Conjuring \"Misdirection\"",
-            "Conjuring \"Illusional Misdirection\"",
-            "Illusion Existence \"Clock Corpse\"",
-            "Illusion Image \"Luna Clock\"",
-            "Maid Secret Skill \"Puppet Doll\"",
-            "Illusion Phantom \"Jack the Ludo Bile\"",
-            "Illusion World \"The World\"",
-            "Maid Secret Skill \"Killer Doll\"",
-            "Conjuring \"Eternal Meek\"",
-            "Heaven's Punishment \"Star of David\"",
-            "Nether Sign \"Scarlet Netherworld\"",
-            "Curse \"Curse of Vlad Tepes\"",
-            "Scarlet Sign \"Scarlet Shoot\"",
-            "\"Red Magic\"",
-            "Divine Punishment \"Young Demon Lord\"",
-            "Hell Sign \"Mountain of a Thousand Needles\"",
-            "God Art \"Vampire Illusion\"",
-            "Scarlet Sign \"Scarlet Meister\"",
-            "\"Scarlet Gensokyo\"",
-            "Moon Sign \"Silent Selene\"",
-            "Sun Sign \"Royal Flare\"",
-            "Fire Water Wood Metal Earth Sign \"Philosopher's Stone\"",
-            "Taboo \"Cranberry Trap\"",
-            "Taboo \"Lævateinn\"",
-            "Taboo \"Four of a Kind\"",
-            "Taboo \"Kagome, Kagome\"",
-            "Taboo \"Maze of Love\"",
-            "Forbidden Barrage \"Starbow Break\"",
-            "Forbidden Barrage \"Catadioptric\"",
-            "Forbidden Barrage \"Clock that Ticks Away the Past\"",
-            "Secret Barrage \"And Then Will There Be None?\"",
-            "Q.E.D. \"Ripples of 495 Years\"",
-            "Books" },
-        { 
-            "月符「ムーンライトレイ」",
-            "夜符「ナイトバード」",
-            "闇符「ディマーケイション」	",
-            "氷符「アイシクルフォール」	",
-            "雹符「ヘイルストーム」	",
-            "凍符「パーフェクトフリーズ」",
-            "雪符「ダイアモンドブリザード」	",
-            "華符「芳華絢爛」",
-            "華符「セラギネラ９」",
-            "虹符「彩虹の風鈴」	",
-            "幻符「華想夢葛」	",
-            "彩符「彩雨」	",
-            "彩符「彩光乱舞」	",
-            "彩符「極彩颱風」",
-            "火符「アグニシャイン」	",
-            "水符「プリンセスウンディネ」	",
-            "木符「シルフィホルン」",
-            "土符「レイジィトリリトン」",
-            "金符「メタルファティーグ」",
-            "火符「アグニシャイン上級」",
-            "木符「シルフィホルン上級」",
-            "土符「レイジィトリリトン上級」",
-            "火符「アグニレイディアンス」",
-            "水符「ベリーインレイク」",
-            "木符「グリーンストーム」",
-            "土符「トリリトンシェイク」",
-            "金符「シルバードラゴン」",
-            "火＆土符「ラーヴァクロムレク」",
-            "木＆火符「フォレストブレイズ」",
-            "水＆木符「ウォーターエルフ」",
-            "金＆水符「マーキュリポイズン」",
-            "土＆金符「エメラルドメガリス」",
-            "奇術「ミスディレクション」	",
-            "奇術「幻惑ミスディレクション」",
-            "幻在「クロックコープス」",
-            "幻象「ルナクロック」",
-            "メイド秘技「操りドール」",
-            "幻幽「ジャック・ザ・ルドビレ」",
-            "幻世「ザ・ワールド」",
-            "メイド秘技「殺人ドール」",
-            "奇術「エターナルミーク」",
-            "天罰「スターオブダビデ」	",
-            "冥符「紅色の冥界」",
-            "呪詛「ブラド・ツェペシュの呪い」",
-            "紅符「スカーレットシュート」",
-            "「レッドマジック」",
-            "神罰「幼きデーモンロード」",
-            "獄符「千本の針の山」",
-            "神術「吸血鬼幻想」",
-            "紅符「スカーレットマイスタ」",
-            "「紅色の幻想郷」",
-            "月符「サイレントセレナ」",
-            "日符「ロイヤルフレア」",
-            "火水木金土符「賢者の石」",
-            "禁忌「クランベリートラップ」",
-            "禁忌「レーヴァテイン」",
-            "禁忌「フォーオブアカインド」",
-            "禁忌「カゴメカゴメ」",
-            "禁忌「恋の迷路」",
-            "禁弾「スターボウブレイク」",
-            "禁弾「カタディオプトリック」",
-            "禁弾「過去を刻む時計」",
-            "秘弾「そして誰もいなくなるか？」",
-            "ＱＥＤ「４９５年の波紋」",
-            "魔法陣" },
-    };
-    static bool is_spell_used[5][65] {
-        { 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
-    };
     static bool is_died = false;
    
 
@@ -1805,7 +1569,10 @@ namespace TH06 {
             HelpMarker(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC));
             ImGui::SameLine();
             if (ImGui::Button(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_RELOAD))) {
-                ReadHitboxFile();
+                g_hitbox_textureID = ReadImage(8, *(DWORD*)0x6c6d20, "hitbox.png", hitbox_file, sizeof(hitbox_file));
+                D3DSURFACE_DESC desc;
+                ((LPDIRECT3DTEXTURE8)g_hitbox_textureID)->GetLevelDesc(0, &desc);
+                g_hitbox_sz.x = desc.Width,g_hitbox_sz.y = desc.Height;
             }
             ImGui::Checkbox(S(THPRAC_TH06_SHOW_REP_MARKER), &g_adv_igi_options.th06_showRepMarker);
             ImGui::Checkbox(S(THPRAC_TH06_FIX_RAND_SEED), &g_adv_igi_options.th06_fix_seed);
@@ -1820,6 +1587,8 @@ namespace TH06 {
             HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC1));
             ImGui::SameLine();
             HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC2));
+
+            SSS_UI();
 
             {
                 ImGui::SetNextWindowCollapsed(false);
@@ -3152,6 +2921,9 @@ namespace TH06 {
         if (thPracParam.mode && thPracParam.stage == 5  && thPracParam.wall_prac_st6) {
             if (thPracParam.section == TH06_ST6_BOSS6 || thPracParam.section == TH06_ST6_BOSS9)
             {
+                float posb1 = thPracParam.section == TH06_ST6_BOSS6 ? 0.4 : 0.7;
+                float posb2 = thPracParam.section == TH06_ST6_BOSS6 ? 0.9 : 0.95;
+                float posb3 = thPracParam.section == TH06_ST6_BOSS6 ? 0.2 : 0.3;
                 auto GetRandF = []()->float{
                     unsigned int(__fastcall *sb_41E7F0_rand_int)(DWORD thiz);
                     sb_41E7F0_rand_int = (decltype(sb_41E7F0_rand_int))0x41E7F0;
@@ -3171,7 +2943,7 @@ namespace TH06 {
                 float decision = GetRandF();
                 
                     // - 1.570796f + GetRandF() * 1.745329f
-                if (decision < 0.4f) {
+                if (decision < posb1) {
                     float min_dist_bt = 99999.0f;
                     for (int i = 0; i < 640; i++) {
                         DWORD pbt = 0x005AB5F8 + i * 0x5C4;
@@ -3185,11 +2957,11 @@ namespace TH06 {
                             min_dist_bt = std::min(min_dist_bt, hypotf(pos.x - bossx, pos.y - bossy));
                         }
                     }
-                    if (decision<0.2f)
+                    if (decision < posb3)
                         *wall_angle = angle_pl - min_dist_bt * 3.14159f / 256.0f - 0.5235988f + GetRandF() * 0.5235988f; // -30 deg ~ 0deg
                     else
                         *wall_angle = angle_pl - min_dist_bt * 3.14159f / 256.0f - 1.570796f + GetRandF() * 1.745329f; // -90 deg ~ 10deg
-                } else if (decision < 0.9f) {
+                } else if (decision < posb2) {
                     // angle = randA + dist*pi/256 = pi
                     // => randA = pi - dist*pi/256
                     *wall_angle = 3.14159f - dist_pl * 3.14159f / 256.0f - 0.2617f + GetRandF() * 0.5235988f; //
@@ -3201,41 +2973,27 @@ namespace TH06 {
         
     }
     PATCH_DY(th06_disable_menu, 0x439ab2, "\x90\x90\x90\x90\x90", 5);
-    EHOOK_DY(th06_update, 0x41caac)
+    static void RenderRepMarker(ImDrawList* p)
     {
-        GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
-
-        // Gui components update
-        Gui::KeyboardInputUpdate(VK_ESCAPE);
-        THPauseMenu::singleton().Update();
-        THGuiPrac::singleton().Update();
-        THGuiRep::singleton().Update();
-        THOverlay::singleton().Update();
-        TH06InGameInfo::singleton().Update();
-        TH06InGameInfo::singleton().IncreaseGameTime();
-
-        auto p = ImGui::GetOverlayDrawList();
-        // rep marker
-        {
-            if (g_adv_igi_options.th06_showRepMarker)
-            {
-                DWORD is_rep = *(DWORD*)(0x69BCBC);
-                DWORD gameState = *(DWORD*)(0x6C6EA4);
-                if (is_rep && gameState == 2) {
-                    auto f = ImGui::GetFont();
-                    auto sz = f->CalcTextSizeA(20, 100, 100, "ＲＥＰ");
-                    ImVec2 p1 = { 416.0f, 464.0f };
-                    p->AddRectFilled({ p1.x - sz.x, p1.y - sz.y }, p1, 0x77000000);
-                    p->AddText(f, 20, { p1.x - sz.x, p1.y - sz.y }, 0xFFFFFFFF, "ＲＥＰ");
-                }
+        if (g_adv_igi_options.th06_showRepMarker) {
+            DWORD is_rep = *(DWORD*)(0x69BCBC);
+            DWORD gameState = *(DWORD*)(0x6C6EA4);
+            if (is_rep && gameState == 2) {
+                auto f = ImGui::GetFont();
+                auto sz = f->CalcTextSizeA(20, 100, 100, "ＲＥＰ");
+                ImVec2 p1 = { 416.0f, 464.0f };
+                p->AddRectFilled({ p1.x - sz.x, p1.y - sz.y }, p1, 0x77000000);
+                p->AddText(f, 20, { p1.x - sz.x, p1.y - sz.y }, 0xFFFFFFFF, "ＲＥＰ");
             }
         }
-        {// player hitbox
+    }
+    static void RenderPlHitbox(ImDrawList* p)
+    {
+        { // player hitbox
             static float t = 0.0f;
             static bool is_shift_pressed = false;
             if (g_adv_igi_options.th06_show_hitbox && g_hitbox_textureID != NULL) {
                 bool is_time_stopped = *(BYTE*)(0x69BCCC);
-
                 DWORD gameState = *(DWORD*)(0x6C6EA4);
                 BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
                 WORD keyState = *(WORD*)(0x69D904);
@@ -3249,43 +3007,33 @@ namespace TH06 {
                               scale2 = MInterpolation(t / 12.0f, 0.3f, 1.0f),
                               angle = 3.14159f,
                               angle2 = 0.0f,
-                                  alpha = t < 6.0f ? t / 6.0f : 1.0f;
-                              if (t < 18.0f) {
-                                  angle = MInterpolation(t / 18.0f, 3.14159f, -3.14159f);
-                                  angle2 = -angle;
-                              }
-                              else {
-                                  angle = -3.14159f + t * 0.05235988f;
-                                  angle2 = 3.14159f - t * 0.05235988f;
-                              }
-                              scale *= 0.75f;
-                              scale2 *= 0.75f; // 32->24
-                              p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
-                              ImVec2 p1 = { *(float*)(0x6CAA68) + 32.0f, *(float*)(0x6CAA6C) + 16.0f };
-                              float c, s;
-                              c = cosf(angle) * scale * g_hitbox_width, s = sinf(angle) * scale * g_hitbox_height;
-                              p->AddImageQuad(g_hitbox_textureID, { p1.x + c, p1.y + s }, { p1.x - s, p1.y + c }, { p1.x - c, p1.y - s }, { p1.x + s, p1.y - c }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, ImGui::ColorConvertFloat4ToU32({ 1, 1, 1, alpha }));
-                              c = cosf(angle2) * scale2 * g_hitbox_width, s = sinf(angle2) * scale2 * g_hitbox_height;
-                              p->AddImageQuad(g_hitbox_textureID, { p1.x + c, p1.y + s }, { p1.x - s, p1.y + c }, { p1.x - c, p1.y - s }, { p1.x + s, p1.y - c });
-                              p->PopClipRect();
+                              alpha = t < 6.0f ? t / 6.0f : 1.0f;
+                        if (t < 18.0f) {
+                            angle = MInterpolation(t / 18.0f, 3.14159f, -3.14159f);
+                            angle2 = -angle;
+                        } else {
+                            angle = -3.14159f + t * 0.05235988f;
+                            angle2 = 3.14159f - t * 0.05235988f;
+                        }
+                        scale *= 0.75f;
+                        scale2 *= 0.75f; // 32->24
+                        p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
+                        ImVec2 p1 = { *(float*)(0x6CAA68) + 32.0f, *(float*)(0x6CAA6C) + 16.0f };
+                        float c, s;
+                        c = cosf(angle) * scale * g_hitbox_sz.x, s = sinf(angle) * scale * g_hitbox_sz.y;
+                        p->AddImageQuad(g_hitbox_textureID, { p1.x + c, p1.y + s }, { p1.x - s, p1.y + c }, { p1.x - c, p1.y - s }, { p1.x + s, p1.y - c }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, ImGui::ColorConvertFloat4ToU32({ 1, 1, 1, alpha }));
+                        c = cosf(angle2) * scale2 * g_hitbox_sz.x, s = sinf(angle2) * scale2 * g_hitbox_sz.y;
+                        p->AddImageQuad(g_hitbox_textureID, { p1.x + c, p1.y + s }, { p1.x - s, p1.y + c }, { p1.x - c, p1.y - s }, { p1.x + s, p1.y - c });
+                        p->PopClipRect();
                     }
                 } else {
                     t = 0.0f;
                 }
             }
         }
-        if (g_adv_igi_options.show_keyboard_monitor && (*(DWORD*)(0x6C6EA4) == 2)) {
-            g_adv_igi_options.keyboard_style.size = { 48.0f, 48.0f };
-            KeysHUD(6, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
-        }
-        {
-            if (THAdvOptWnd::singleton().forceBossMoveDown) {
-                auto p = ImGui::GetOverlayDrawList();
-                auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
-                p->AddRectFilled({ 60.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
-                p->AddText({ 60.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
-            }
-        }
+    }
+    static void RenderBtHitbox(ImDrawList* p)
+    {
         // show bullet hitbox
         if (g_show_bullet_hitbox) {
             DWORD is_practice = *(DWORD*)(0x69d4c3);
@@ -3307,7 +3055,6 @@ namespace TH06 {
                     ImVec2 pos = *(ImVec2*)(pbt + 0x560);
                     ImVec2 hit = *(ImVec2*)(pbt + 0x550);
 
-
                     ImVec2 p1 = { pos.x - hit.x * 0.5f - plhit * 0.5f + stage_pos.x, pos.y - hit.y * 0.5f - plhit * 0.5f + stage_pos.y };
                     ImVec2 p2 = { pos.x + hit.x * 0.5f + plhit * 0.5f + stage_pos.x, pos.y + hit.y * 0.5f + plhit * 0.5f + stage_pos.y };
                     p->AddRectFilled(p1, p2, 0x88002288);
@@ -3315,11 +3062,10 @@ namespace TH06 {
                 }
 
                 // laser hitbox
-                for (int i = 0; i < 64; i++){
+                for (int i = 0; i < 64; i++) {
                     DWORD pls = 0x00691FF8 + 0x270 * i;
                     DWORD is_used = *(DWORD*)(pls + 0x258);
-                    if (is_used)
-                    {
+                    if (is_used) {
                         ImVec2 pos = *(ImVec2*)(pls + 0x220);
                         float angle = *(float*)(pls + 0x22C);
                         float quat_width = *(float*)(pls + 0x23C) * 0.5f * 0.5f;
@@ -3327,35 +3073,34 @@ namespace TH06 {
                         float start_ofs = *(float*)(pls + 0x230);
                         float end_ofs = *(float*)(pls + 0x234);
                         int state = *(DWORD*)(pls + 0x26C);
-                        
+
                         int start_time_graze = *(DWORD*)(pls + 0x248);
                         int end_time_graze = *(DWORD*)(pls + 0x254);
                         int time_cur_state = *(DWORD*)(pls + 0x264);
                         float sub_frame = *(float*)(pls + 0x260);
-                        if (state == 0){
-                             int state_change_time_hit = *(DWORD*)(pls + 0x244);
-                             float l2 = 0.0f;
-                             if (time_cur_state <= state_change_time_hit - std::max(30, state_change_time_hit)) {
-                                 l2 = 1.2f * 0.5f;
-                             } else {
-                                 l2 = quat_width * ((float)time_cur_state + sub_frame) / (float)state_change_time_hit;
-                             }
-                             float mid = (start_ofs + end_ofs) * 0.5f;
-                             start_ofs = mid - l2;
-                             end_ofs = mid + l2;
+                        if (state == 0) {
+                            int state_change_time_hit = *(DWORD*)(pls + 0x244);
+                            float l2 = 0.0f;
+                            if (time_cur_state <= state_change_time_hit - std::max(30, state_change_time_hit)) {
+                                l2 = 1.2f * 0.5f;
+                            } else {
+                                l2 = quat_width * ((float)time_cur_state + sub_frame) / (float)state_change_time_hit;
+                            }
+                            float mid = (start_ofs + end_ofs) * 0.5f;
+                            start_ofs = mid - l2;
+                            end_ofs = mid + l2;
                         }
                         if (state == 2) {
                             int state_change_time_disappear = *(DWORD*)(pls + 0x250);
                             float l2 = 0.0f;
-                            if (state_change_time_disappear > 0)
-                            {
+                            if (state_change_time_disappear > 0) {
                                 l2 = quat_width - quat_width * ((float)time_cur_state + sub_frame) / (float)state_change_time_disappear;
                             }
                             float mid = (start_ofs + end_ofs) * 0.5f;
                             start_ofs = mid - l2;
                             end_ofs = mid + l2;
                         }
-                        if (state == 1 || (state==0 && time_cur_state >= start_time_graze) || (state==2 && time_cur_state < end_time_graze)) {
+                        if (state == 1 || (state == 0 && time_cur_state >= start_time_graze) || (state == 2 && time_cur_state < end_time_graze)) {
                             float c = cosf(angle);
                             float s = sinf(angle);
                             ImVec2 hitpos[4] = {
@@ -3364,11 +3109,10 @@ namespace TH06 {
                                 { end_ofs + half_width_pl, quat_width + half_width_pl },
                                 { start_ofs - half_width_pl, quat_width + half_width_pl }
                             };
-                            auto RotPos = [](ImVec2 p, float c, float s)->ImVec2 {
-                                return {p.x*c - p.y*s,p.x*s + p.y*c};
+                            auto RotPos = [](ImVec2 p, float c, float s) -> ImVec2 {
+                                return { p.x * c - p.y * s, p.x * s + p.y * c };
                             };
-                            for (int j = 0; j < 4; j++)
-                            {
+                            for (int j = 0; j < 4; j++) {
                                 hitpos[j] = RotPos(hitpos[j], c, s);
                                 hitpos[j].x += pos.x + stage_pos.x;
                                 hitpos[j].y += pos.y + stage_pos.y;
@@ -3395,11 +3139,43 @@ namespace TH06 {
                         }
                     }
                 }
-
-
-                p->PopClipRect();
+                 p->PopClipRect();
             }
         }
+    }
+    
+    EHOOK_DY(th06_update, 0x41caac)
+    {
+        GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
+        
+        // Gui components update
+        Gui::KeyboardInputUpdate(VK_ESCAPE);
+        THPauseMenu::singleton().Update();
+        THGuiPrac::singleton().Update();
+        THGuiRep::singleton().Update();
+        THOverlay::singleton().Update();
+        TH06InGameInfo::singleton().Update();
+        TH06InGameInfo::singleton().IncreaseGameTime();
+
+        auto p = ImGui::GetOverlayDrawList();
+        RenderPlHitbox(ImGui::GetBackgroundDrawList());
+        if (*(DWORD*)(0x6C6EA4) == 2) {
+            RenderBlindView(8, *(DWORD*)0x6c6d20, *(ImVec2*)(0x6CAA68), { 0.0f, 0.0f }, { 32.0f, 16.0f }, 1.0f);
+        }
+        RenderRepMarker(p);
+        RenderBtHitbox(p);
+        if (g_adv_igi_options.show_keyboard_monitor && (*(DWORD*)(0x6C6EA4) == 2)) {
+            g_adv_igi_options.keyboard_style.size = { 48.0f, 48.0f };
+            KeysHUD(6, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+        }
+        {
+            if (THAdvOptWnd::singleton().forceBossMoveDown) {
+                auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
+                p->AddRectFilled({ 60.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
+                p->AddText({ 60.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
+            }
+        }
+        
         GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
     }
     static float MInterpolation(float t, float a, float b)
@@ -3549,7 +3325,11 @@ namespace TH06 {
             Gui::INGAGME_INPUT_GEN1, 0x69d904, 0x69d908, 0x69d90c,
             -1);
         // g_adv_igi_options.th06_showHitbox
-        ReadHitboxFile();
+        g_hitbox_textureID = ReadImage(8, *(DWORD*)0x6c6d20, "hitbox.png", hitbox_file, sizeof(hitbox_file));
+        D3DSURFACE_DESC desc;
+        ((LPDIRECT3DTEXTURE8)g_hitbox_textureID)->GetLevelDesc(0, &desc);
+        g_hitbox_sz.x = desc.Width, g_hitbox_sz.y = desc.Height;
+
         // Gui components creation
         THGuiPrac::singleton();
         THPauseMenu::singleton();

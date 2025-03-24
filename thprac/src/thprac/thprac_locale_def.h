@@ -582,6 +582,9 @@ enum th_glossary_t {
     THPRAC_AUTO_NAME_TH06_DESC,
     THPRAC_BACK,
     THPRAC_BEGIN,
+    THPRAC_BLIND,
+    THPRAC_BLIND_DESC,
+    THPRAC_BLIND_SZ,
     THPRAC_CANCEL,
     THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN,
     THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE,
@@ -1354,7 +1357,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1343];
+extern const char* th_glossary_str[3][1346];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
