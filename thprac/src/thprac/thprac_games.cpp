@@ -7,6 +7,9 @@
 #include "thprac_utils.h"
 #include "../3rdParties/d3d8/include/d3d8.h"
 #include <metrohash128.h>
+#include <format>
+
+#include "utils/wininternal.h"
 
 namespace THPrac {
 #pragma region Gui Wrapper
@@ -15,6 +18,7 @@ int g_gameGuiImpl = -1;
 DWORD* g_gameGuiDevice = nullptr;
 DWORD* g_gameGuiHwnd = nullptr;
 HIMC g_gameIMCCtx = 0;
+bool show_time = false;
 
 void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3,
@@ -114,6 +118,8 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
                 SetTheme(theme);
         } else
             ImGui::StyleColorsDark();
+
+        LauncherSettingGet("show_time", show_time);
     } else
         ::ImGui::StyleColorsDark();
     // Imgui settings
@@ -157,9 +163,34 @@ void GameGuiEnd(bool draw_cursor)
 {
     if (GameGuiProgress != 1)
         return;
+
+
+    auto& io = ::ImGui::GetIO();
+    
+    if(show_time) {
+        auto time = *reinterpret_cast<uint64_t*>(&Kuser_Shared_Data->SystemTime) - *reinterpret_cast<uint64_t*>(&Kuser_Shared_Data->TimeZoneBias);
+
+        auto ms = (time / 10000);
+        auto sec = (time / 10000000);
+        auto min = (time / 10000000) / 60;
+        auto hr = (time / 10000000) / 60 / 60;
+
+        ms %= 1000;
+        sec %= 60;
+        min %= 60;
+        hr %= 24;
+
+        ImGui::Begin("Time", nullptr, ImGuiWindowFlags_NoDecoration);
+
+        char buf[64] = {};
+        std::format_to_n(buf, 63, "{:02}:{:02}:{:02}.{:03}", hr, min, sec, ms);
+        ImGui::TextUnformatted(buf);
+
+        ImGui::End();
+    }
+
     // Draw cursor if needed
-    if (draw_cursor && Gui::ImplWin32CheckFullScreen()) {
-        auto& io = ::ImGui::GetIO();
+    if (Gui::ImplWin32CheckFullScreen() && (draw_cursor || show_time)) {
         io.MouseDrawCursor = true;
     }
 
