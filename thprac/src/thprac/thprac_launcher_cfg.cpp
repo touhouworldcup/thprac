@@ -1738,6 +1738,7 @@ private:
         ImGui::TextUnformatted(S(THPRAC_GAME_ADJUSTMENTS));
         ImGui::Separator();
         mResizableWindow.Gui(S(THPRAC_RESIZABLE_WINDOW));
+        mShowTime.Gui("Show local time");
         ImGui::NewLine();
 
         ImGui::TextUnformatted(S(THPRAC_SETTING_LANGUAGE));
@@ -1828,6 +1829,7 @@ private:
     THCfgCombo mCheckUpdateTiming { "check_update_timing", 0, 3 };
     THCfgCheckbox mUpdateWithoutConfirm { "update_without_confirmation", false };
     THCfgCombo mFilenameAfterUpdate { "filename_after_update", 0, 3 };
+    THCfgCheckbox mShowTime { "show_time", false };
     int mOriginalLanguage;
 
     std::string mThcrapHintStr;
