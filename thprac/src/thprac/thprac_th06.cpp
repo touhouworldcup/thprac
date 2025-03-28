@@ -16,6 +16,8 @@ namespace TH06 {
     ImTextureID g_hitbox_textureID = NULL;
     ImVec2 g_hitbox_sz = { 32.0f, 32.0f };
 
+    ImVec2 g_books_pos[6] = { { 0.0f, 0.0f } };
+
     int32_t g_last_rep_seed = 0;
     bool g_show_bullet_hitbox = false;
     
@@ -48,6 +50,25 @@ namespace TH06 {
         bool wall_prac_st6;
         bool dlg;
 
+        bool book_fix1;
+        bool book_fix2;
+        bool book_fix3;
+        bool book_fix4;
+        bool book_fix5;
+        bool book_fix6;
+        int book_x1;
+        int book_y1;
+        int book_x2;
+        int book_y2;
+        int book_x3;
+        int book_y3;
+        int book_x4;
+        int book_y4;
+        int book_x5;
+        int book_y5;
+        int book_x6;
+        int book_y6;
+
         bool _playLock;
         void Reset()
         {
@@ -64,6 +85,26 @@ namespace TH06 {
             rank = 0;
             rankLock = false;
             fakeType = 0;
+
+            book_y1 = 32.0f,
+            book_y2 = 128.0f,
+            book_y3 = 144.0f,
+            book_y4 = 64.0f,
+            book_y5 = 80.0f,
+            book_y6 = 96.0f;
+            book_x1 = 0.0f;
+            book_x2 = 0.0f;
+            book_x3 = 0.0f;
+            book_x4 = 0.0f;
+            book_x5 = 0.0f;
+            book_x6 = 0.0f;
+            book_fix1 = false;
+            book_fix2 = false;
+            book_fix3 = false;
+            book_fix4 = false;
+            book_fix5 = false;
+            book_fix6 = false;
+            
         }
         bool ReadJson(std::string& json)
         {
@@ -87,6 +128,25 @@ namespace TH06 {
             GetJsonValue(fakeType);
             GetJsonValue(delay_st6bs9);
             GetJsonValueEx(wall_prac_st6, Bool);
+
+            GetJsonValueEx(book_fix1, Bool);
+            GetJsonValueEx(book_fix2, Bool);
+            GetJsonValueEx(book_fix3, Bool);
+            GetJsonValueEx(book_fix4, Bool);
+            GetJsonValueEx(book_fix5, Bool);
+            GetJsonValueEx(book_fix6, Bool);
+            GetJsonValue(book_x1);
+            GetJsonValue(book_x2);
+            GetJsonValue(book_x3);
+            GetJsonValue(book_x4);
+            GetJsonValue(book_x5);
+            GetJsonValue(book_x6);
+            GetJsonValue(book_y1);
+            GetJsonValue(book_y2);
+            GetJsonValue(book_y3);
+            GetJsonValue(book_y4);
+            GetJsonValue(book_y5);
+            GetJsonValue(book_y6);
 
             return true;
         }
@@ -118,6 +178,25 @@ namespace TH06 {
             AddJsonValue(fakeType);
             AddJsonValue(delay_st6bs9);
             AddJsonValue(wall_prac_st6);
+            
+            AddJsonValue(book_fix1);
+            AddJsonValue(book_fix2);
+            AddJsonValue(book_fix3);
+            AddJsonValue(book_fix4);
+            AddJsonValue(book_fix5);
+            AddJsonValue(book_fix6);
+            AddJsonValue(book_x1);
+            AddJsonValue(book_x2);
+            AddJsonValue(book_x3);
+            AddJsonValue(book_x4);
+            AddJsonValue(book_x5);
+            AddJsonValue(book_x6);
+            AddJsonValue(book_y1);
+            AddJsonValue(book_y2);
+            AddJsonValue(book_y3);
+            AddJsonValue(book_y4);
+            AddJsonValue(book_y5);
+            AddJsonValue(book_y6);
 
             ReturnJson();
         }
@@ -399,7 +478,7 @@ namespace TH06 {
                 int cur_sc_to = save_current.SC_History[spell_id][last_diff][last_player_type][2];
                 ImGui::Text("%d/%d(%.1f%%); %d", cur_sc_caped, cur_sc_tot, (float)(cur_sc_caped) / std::fmax(1.0f, cur_sc_tot) * 100.0f, cur_sc_to);
 
-                if (is_magic_book && thPracParam.mode && (thPracParam.phase == 1 || thPracParam.phase == 2)) { // books
+                if (is_magic_book && thPracParam.mode && (thPracParam.phase != 0)) { // books
                     ImGui::Text("%.1f", (float)time_books / 60.0f);
                 }
             }
@@ -656,7 +735,7 @@ namespace TH06 {
              // books time
             DWORD gameState = *(DWORD*)(0x6C6EA4);
             BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
-            if (is_magic_book && thPracParam.mode && (thPracParam.phase == 1 || thPracParam.phase == 2)) { // books
+            if (is_magic_book && thPracParam.mode && (thPracParam.phase != 0)) { // books
                 if (gameState == 2 && pauseMenuState == 0) {
                     time_books++;
                 }
@@ -810,6 +889,15 @@ namespace TH06 {
                     thPracParam.delay_st6bs9 = *mDelaySt6Bs9;
                 if (thPracParam.section == TH06_ST6_BOSS9 || thPracParam.section == TH06_ST6_BOSS6)
                     thPracParam.wall_prac_st6 = *mWallPrac;
+                if (thPracParam.section == TH06_ST4_BOOKS)
+                {
+                    thPracParam.book_fix1 = *mBookC1;thPracParam.book_x1 = *mBookX1;thPracParam.book_y1 = *mBookY1;
+                    thPracParam.book_fix2 = *mBookC2;thPracParam.book_x2 = *mBookX2;thPracParam.book_y2 = *mBookY2;
+                    thPracParam.book_fix3 = *mBookC3;thPracParam.book_x3 = *mBookX3;thPracParam.book_y3 = *mBookY3;
+                    thPracParam.book_fix4 = *mBookC4;thPracParam.book_x4 = *mBookX4;thPracParam.book_y4 = *mBookY4;
+                    thPracParam.book_fix5 = *mBookC5;thPracParam.book_x5 = *mBookX5;thPracParam.book_y5 = *mBookY5;
+                    thPracParam.book_fix6 = *mBookC6;thPracParam.book_x6 = *mBookX6;thPracParam.book_y6 = *mBookY6;
+                }
 
                 thPracParam.score = *mScore;
                 thPracParam.life = (float)*mLife;
@@ -841,6 +929,14 @@ namespace TH06 {
                     thPracParam.delay_st6bs9 = *mDelaySt6Bs9;
                 if (thPracParam.section == TH06_ST6_BOSS9 || thPracParam.section == TH06_ST6_BOSS6)
                     thPracParam.wall_prac_st6 = *mWallPrac;
+                if (thPracParam.section == TH06_ST4_BOOKS) {
+                    thPracParam.book_fix1= *mBookC1;thPracParam.book_x1 = *mBookX1;thPracParam.book_y1 = *mBookY1;
+                    thPracParam.book_fix2= *mBookC2;thPracParam.book_x2 = *mBookX2;thPracParam.book_y2 = *mBookY2;
+                    thPracParam.book_fix3= *mBookC3;thPracParam.book_x3 = *mBookX3;thPracParam.book_y3 = *mBookY3;
+                    thPracParam.book_fix4= *mBookC4;thPracParam.book_x4 = *mBookX4;thPracParam.book_y4 = *mBookY4;
+                    thPracParam.book_fix5= *mBookC5;thPracParam.book_x5 = *mBookX5;thPracParam.book_y5 = *mBookY5;
+                    thPracParam.book_fix6= *mBookC6;thPracParam.book_x6 = *mBookX6;thPracParam.book_y6 = *mBookY6;
+                }
                 thPracParam.score = *mScore;
                 thPracParam.life = (float)*mLife;
                 thPracParam.bomb = (float)*mBomb;
@@ -865,6 +961,69 @@ namespace TH06 {
                 mPhase(TH_PHASE, TH_SPELL_PHASE1);
             }else if (section == TH06_ST4_BOOKS) {
                 mPhase(TH_PHASE, TH_BOOKS_PHASE_INF_TIME);
+                if (*mPhase == 4){
+                    float w = ImGui::GetColumnWidth();
+                    ImGui::Columns(3);
+                    ImGui::SetColumnWidth(0, 0.2f*w);
+                    ImGui::SetColumnWidth(1, 0.4f*w);
+                    ImGui::SetColumnWidth(2, 0.4f*w);
+
+                    mBookC1();ImGui::NextColumn(); mBookX1();ImGui::NextColumn();mBookY1();ImGui::NextColumn();
+                    mBookC2();ImGui::NextColumn(); mBookX2();ImGui::NextColumn();mBookY2();ImGui::NextColumn();
+                    mBookC3();ImGui::NextColumn(); mBookX3();ImGui::NextColumn();mBookY3();ImGui::NextColumn();
+                    mBookC4();ImGui::NextColumn(); mBookX4();ImGui::NextColumn();mBookY4();ImGui::NextColumn();
+                    mBookC5();ImGui::NextColumn(); mBookX5();ImGui::NextColumn();mBookY5();ImGui::NextColumn();
+                    mBookC6();ImGui::NextColumn(); mBookX6();ImGui::NextColumn();mBookY6();ImGui::NextColumn();
+                    ImGui::Columns(1);
+                    if (ImGui::Button(S(TH_BOOK_MIRROR))) {
+                        *mBookX4 = -*mBookX3;
+                        *mBookX5 = -*mBookX2;
+                        *mBookX6 = -*mBookX1;
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button(S(TH_BOOK_RANDX))) {
+                        static std::default_random_engine rand_engine(timeGetTime());
+                        static std::uniform_int_distribution<int32_t> rand_value(-192, 192);
+                        *mBookX1 = rand_value(rand_engine);
+                        *mBookX2 = rand_value(rand_engine);
+                        *mBookX3 = rand_value(rand_engine);
+                        *mBookX4 = rand_value(rand_engine);
+                        *mBookX5 = rand_value(rand_engine);
+                        *mBookX6 = rand_value(rand_engine);
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button(S(TH_BOOK_RESETY))) {
+                        *mBookY1 = 32;
+                        *mBookY2 = 128;
+                        *mBookY3 = 144;
+                        *mBookY4 = 64;
+                        *mBookY5 = 80;
+                        *mBookY6 = 96;
+                    }
+                    if (ImGui::Button(S(TH_BOOK_COPY_SETTING)))
+                    {
+                        ImGui::SetClipboardText(std::format("({},{}),({},{}),({},{}),({},{}),({},{}),({},{})", 
+                            *mBookX1, *mBookY1, 
+                            *mBookX2, *mBookY2, 
+                            *mBookX3, *mBookY3,
+                            *mBookX4, *mBookY4,
+                            *mBookX5, *mBookY5,
+                            *mBookX6, *mBookY6
+                        ).c_str());
+                    }
+                    if (ImGui::Button(S(TH_BOOK_PASTE_SETTING))){
+                        int xs[6] = { 0 }, ys[6] = { 32,128,144,64,80,96 };
+                        auto text = ImGui::GetClipboardText();
+                        if (text && sscanf_s(text, "(%d,%d),(%d,%d),(%d,%d),(%d,%d),(%d,%d),(%d,%d)", &xs[0], &ys[0], &xs[1], &ys[1], &xs[2], &ys[2], &xs[3], &ys[3], &xs[4], &ys[4], &xs[5], &ys[5])) {
+                            *mBookX1 = xs[0], *mBookY1 = ys[0],
+                            *mBookX2 = xs[1], *mBookY2 = ys[1],
+                            *mBookX3 = xs[2], *mBookY3 = ys[2],
+                            *mBookX4 = xs[3], *mBookY4 = ys[3],
+                            *mBookX5 = xs[4], *mBookY5 = ys[4],
+                            *mBookX6 = xs[5], *mBookY6 = ys[5];
+                        }
+                    }
+                }
             }else if (section == TH06_ST5_BOSS6) {
                 mPhase(TH_PHASE, TH_EOSD_SAKUYA_DOLLS);
             }else if (section == TH06_ST6_BOSS9){
@@ -882,8 +1041,15 @@ namespace TH06 {
             if (mStage())
                 *mSection = *mChapter = 0;
             if (*mMode == 1) {
-                if (mWarp())
+                if (mWarp()) {
                     *mSection = *mChapter = *mPhase = *mFrame = 0, *mDelaySt6Bs9 = 120,*mWallPrac = false;
+                    *mBookC1 = true,*mBookX1 = -180, *mBookY1 = 32;
+                    *mBookC2 = true,*mBookX2 = -90, *mBookY2 = 128;
+                    *mBookC3 = true, *mBookX3 = -30, *mBookY3 = 144;
+                    *mBookC4 = true,*mBookX4 = 30, *mBookY4 = 64;
+                    *mBookC5 = true,*mBookX5 = 90, *mBookY5 = 80;
+                    *mBookC6 = true,*mBookX6 = 180, *mBookY6 = 96;
+                }
                 if (*mWarp) {
                     int st = 0;
                     if (*mStage == 3) {
@@ -1054,6 +1220,27 @@ namespace TH06 {
         Gui::GuiDrag<int, ImGuiDataType_S32> mDelaySt6Bs9 { TH_DELAY, 0, 600, 1, 10,10};
         Gui::GuiCheckBox mWallPrac { TH06_ST6_WALL_PRAC };
 
+
+        Gui::GuiDrag<int, ImGuiDataType_S32> mBookX1 { TH_BOOK_X1, -192, 192, 1, 10, 10 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mBookY1 { TH_BOOK_Y1, -50, 448, 1, 10, 10 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mBookX2 { TH_BOOK_X2, -192, 192, 1, 10, 10 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mBookY2 { TH_BOOK_Y2, -50, 448, 1, 10, 10 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mBookX3 { TH_BOOK_X3, -192, 192, 1, 10, 10 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mBookY3 { TH_BOOK_Y3, -50, 448, 1, 10, 10 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mBookX4 { TH_BOOK_X4, -192, 192, 1, 10, 10 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mBookY4 { TH_BOOK_Y4, -50, 448, 1, 10, 10 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mBookX5 { TH_BOOK_X5, -192, 192, 1, 10, 10 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mBookY5 { TH_BOOK_Y5, -50, 448, 1, 10, 10 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mBookX6 { TH_BOOK_X6, -192, 192, 1, 10, 10 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mBookY6 { TH_BOOK_Y6, -50, 448, 1, 10, 10 };
+        Gui::GuiCheckBox                           mBookC1 { TH_BOOK_C1};
+        Gui::GuiCheckBox                           mBookC2 { TH_BOOK_C2};
+        Gui::GuiCheckBox                           mBookC3 { TH_BOOK_C3};
+        Gui::GuiCheckBox                           mBookC4 { TH_BOOK_C4};
+        Gui::GuiCheckBox                           mBookC5 { TH_BOOK_C5};
+        Gui::GuiCheckBox                           mBookC6 { TH_BOOK_C6};
+
+
         Gui::GuiSlider<int, ImGuiDataType_S32> mRank { TH06_RANK, 0, 32, 1, 10, 10 };
         Gui::GuiCheckBox mRankLock { TH06_RANKLOCK };
         Gui::GuiCombo mFakeShot { TH06_FS, TH06_TYPE_SELECT };
@@ -1061,7 +1248,14 @@ namespace TH06 {
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_FRAME,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_LIFE, TH_BOMB, TH_SCORE, TH_POWER, TH_GRAZE, TH_POINT,
-            TH06_RANK, TH06_RANKLOCK, TH06_FS };
+            TH06_RANK, TH06_RANKLOCK, TH06_FS,
+            TH_BOOK_X1,TH_BOOK_Y1,
+            TH_BOOK_X2,TH_BOOK_Y2,
+            TH_BOOK_X3,TH_BOOK_Y3,
+            TH_BOOK_X4,TH_BOOK_Y4,
+            TH_BOOK_X5,TH_BOOK_Y5,
+            TH_BOOK_X6,TH_BOOK_Y6,
+        };
 
         int mChapterSetup[7][2] {
             { 4, 2 },
@@ -1601,6 +1795,23 @@ namespace TH06 {
                     ImGui::Separator();
                     ImGui::NewLine();
                 }
+                ImGui::Text("%s:(%d,%d),(%d,%d),(%d,%d),(%d,%d),(%d,%d),(%d,%d)", S(TH_BOOK_LAST), 
+                    (int)(g_books_pos[0].x - 192.0f), (int)g_books_pos[0].y,
+                    (int)(g_books_pos[1].x - 192.0f), (int)g_books_pos[1].y,
+                    (int)(g_books_pos[2].x - 192.0f), (int)g_books_pos[2].y,
+                    (int)(g_books_pos[3].x - 192.0f), (int)g_books_pos[3].y,
+                    (int)(g_books_pos[4].x - 192.0f), (int)g_books_pos[4].y,
+                    (int)(g_books_pos[5].x - 192.0f), (int)g_books_pos[5].y
+                );
+                if (ImGui::Button(S(TH_BOOK_COPY_SETTING))) {
+                    ImGui::SetClipboardText(std::format("({},{}),({},{}),({},{}),({},{}),({},{}),({},{})", 
+                        (int)(g_books_pos[0].x - 192.0f), (int)g_books_pos[0].y,
+                        (int)(g_books_pos[1].x - 192.0f), (int)g_books_pos[1].y,
+                        (int)(g_books_pos[2].x - 192.0f), (int)g_books_pos[2].y,
+                        (int)(g_books_pos[3].x - 192.0f), (int)g_books_pos[3].y,
+                        (int)(g_books_pos[4].x - 192.0f), (int)g_books_pos[4].y,
+                        (int)(g_books_pos[5].x - 192.0f), (int)g_books_pos[5].y).c_str());
+                }
             }
             
             AboutOpt();
@@ -1862,12 +2073,37 @@ namespace TH06 {
             ecl << pair{0x4bec, (int16_t)0x0};
             break;
         case THPrac::TH06::TH06_ST4_BOOKS:
-            if (thPracParam.phase == 1){
-                ecl << pair { 0xCE7C, (int16_t)-1 };//disable timeline after books
-                ecl << pair { 0x1324, (int32_t)99999999 };//loop forever
-            } else if (thPracParam.phase == 2) {
+            switch (thPracParam.phase)
+            {
+            case 0:
+            default:
+                break;
+            case 1:
+                ecl << pair { 0xCE7C, (int16_t)-1 }; // disable timeline after books
+                ecl << pair { 0x1324, (int32_t)99999999 }; // loop forever
+                break;
+            case 2:
                 ecl << pair { 0xCE60, (int16_t)-1 }; // disable timeline after books
                 ecl << pair { 0x1324, (int32_t)99999999 }; // loop forever
+                break;
+            case 3:
+                ecl << pair { 0xCDFC, (float)12345.0f }; // disable book 2
+                ecl << pair { 0xCE7C, (int16_t)-1 }; // disable timeline after books
+                ecl << pair { 0x1324, (int32_t)99999999 }; // loop forever
+                break;
+            case 4:{
+                int32_t ofs = 0xCDD8;
+                if (thPracParam.book_fix1) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.book_x1 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.book_y1 }; ofs += 0x1C;
+                if (thPracParam.book_fix2) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.book_x2 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.book_y2 }; ofs += 0x1C;
+                if (thPracParam.book_fix3) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.book_x3 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.book_y3 }; ofs += 0x1C;
+                if (thPracParam.book_fix4) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.book_x4 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.book_y4 }; ofs += 0x1C;
+                if (thPracParam.book_fix5) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.book_x5 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.book_y5 }; ofs += 0x1C;
+                if (thPracParam.book_fix6) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.book_x6 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.book_y6 };
+                ecl << pair { 0xCE7C, (int16_t)-1 }; // disable timeline after books
+                ecl << pair { 0x1324, (int32_t)99999999 }; // loop forever
+            }
+                break;
+
             }
             ECLWarp(0x0d40);
             break;
@@ -3144,6 +3380,19 @@ namespace TH06 {
         }
     }
     
+    EHOOK_DY(th06_books_position_test, 0x0041188A)
+    {
+        if (*(DWORD*)0x69d6d4 == 4){
+            DWORD pCode = *(DWORD*)0x487e50;
+            DWORD pCodeOfs = *(DWORD*)(pCtx->Ebp - 0x14) - 8;
+            float posx = *(float*)(pCtx->Ebp - 0x20);
+            float posy = *(float*)(pCtx->Ebp - 0x1C);
+            int n = (pCodeOfs - pCode - 0xCDD4) / 0x1C;
+            g_books_pos[n] = { posx, posy };
+        }
+        
+    }
+
     EHOOK_DY(th06_update, 0x41caac)
     {
         GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());

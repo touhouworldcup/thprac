@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1346] {
+const char* th_glossary_str[3][1372] {
     {
         "",
         "啤酒",
@@ -1160,6 +1160,30 @@ const char* th_glossary_str[3][1346] {
         "返回",
         "Bomb",
         "Bomb碎片",
+        "固定1",
+        "固定2",
+        "固定3",
+        "固定4",
+        "固定5",
+        "固定6",
+        "复制配置到剪贴板",
+        "上一次魔法书坐标",
+        "对称后三本",
+        "粘贴剪贴板配置",
+        "随机X",
+        "重置Y",
+        "x1",
+        "x2",
+        "x3",
+        "x4",
+        "x5",
+        "x6",
+        "y1",
+        "y2",
+        "y3",
+        "y4",
+        "y5",
+        "y6",
         "Boss",
         "Boss Rush",
         "6面后Extra",
@@ -1318,7 +1342,9 @@ const char* th_glossary_str[3][1346] {
         "时符",
         "无限时间",
         "无限时间(5本)",
+        "无限时间(13456)",
         "无限时间(6本)",
+        "无限时间(自定义)",
         "无尽模式",
         "无尽模式(绿)",
         "无尽模式(黄)",
@@ -2508,6 +2534,30 @@ const char* th_glossary_str[3][1346] {
         "Back",
         "Bomb",
         "Bomb Frag.",
+        "fix1",
+        "fix2",
+        "fix3",
+        "fix4",
+        "fix5",
+        "fix6",
+        "copy setting to clipboard",
+        "last books' pos",
+        "mirror 3 books",
+        "paste setting from clipboard",
+        "随机X",
+        "reset y",
+        "x1",
+        "x2",
+        "x3",
+        "x4",
+        "x5",
+        "x6",
+        "y1",
+        "y2",
+        "y3",
+        "y4",
+        "y5",
+        "y6",
         "Boss",
         "Boss Rush",
         "Extra after Stage 6",
@@ -2666,7 +2716,9 @@ const char* th_glossary_str[3][1346] {
         "Timeout Spell",
         "Inf time",
         "Inf time(5 book)",
+        "Inf time(13456)",
         "Inf time(6 book)",
+        "Inf time(custom)",
         "Inf mode",
         "Inf mode(G)",
         "Inf mode(Y)",
@@ -3856,6 +3908,30 @@ const char* th_glossary_str[3][1346] {
         "戻る",
         "ボム",
         "ボムの欠片",
+        "fix1",
+        "fix2",
+        "fix3",
+        "fix4",
+        "fix5",
+        "fix6",
+        "copy setting to clipboard",
+        "last books' pos",
+        "mirror 3 books",
+        "paste setting from clipboard",
+        "随机X",
+        "reset y",
+        "x1",
+        "x2",
+        "x3",
+        "x4",
+        "x5",
+        "x6",
+        "y1",
+        "y2",
+        "y3",
+        "y4",
+        "y5",
+        "y6",
         "ボス",
         "ボスラッシュ",
         "ステージ6の後にExtra",
@@ -4014,7 +4090,9 @@ const char* th_glossary_str[3][1346] {
         "耐久",
         "Inf time",
         "Inf time(5 book)",
+        "Inf time(13456)",
         "Inf time(6 book)",
+        "Inf time(custom)",
         "Inf mode",
         "Inf mode(Y)",
         "Inf mode(G)",
@@ -4224,10 +4302,12 @@ const th_glossary_t TH_SPELL_PHASE1[3] {
     TH_RAGE,
 };
 
-const th_glossary_t TH_BOOKS_PHASE_INF_TIME[4] {
+const th_glossary_t TH_BOOKS_PHASE_INF_TIME[6] {
     TH_SPELL_TIME_NORMAL,
     TH_SPELL_TIME_INF_BOOK6,
     TH_SPELL_TIME_INF_BOOK5,
+    TH_SPELL_TIME_INF_BOOK5_2,
+    TH_SPELL_TIME_INF_BOOK_CUSTOM,
 };
 
 const th_glossary_t TH_EOSD_SAKUYA_DOLLS[5] {
@@ -24595,7 +24675,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3351] {
+const wchar_t __thprac_loc_range_zh[3359] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -24649,6 +24729,7 @@ const wchar_t __thprac_loc_range_zh[3351] {
     0x4e5f, 0x4e5f,
     0x4e60, 0x4e60,
     0x4e61, 0x4e61,
+    0x4e66, 0x4e66,
     0x4e69, 0x4e69,
     0x4e71, 0x4e71,
     0x4e7e, 0x4e7e,
@@ -24965,6 +25046,7 @@ const wchar_t __thprac_loc_range_zh[3351] {
     0x5747, 0x5747,
     0x574d, 0x574d,
     0x574f, 0x574f,
+    0x5750, 0x5750,
     0x5751, 0x5751,
     0x5757, 0x5757,
     0x5764, 0x5764,
@@ -25764,6 +25846,7 @@ const wchar_t __thprac_loc_range_zh[3351] {
     0x7c7b, 0x7c7b,
     0x7c89, 0x7c89,
     0x7c92, 0x7c92,
+    0x7c98, 0x7c98,
     0x7ca5, 0x7ca5,
     0x7cb9, 0x7cb9,
     0x7cbc, 0x7cbc,
@@ -26034,6 +26117,7 @@ const wchar_t __thprac_loc_range_zh[3351] {
     0x8d25, 0x8d25,
     0x8d2a, 0x8d2a,
     0x8d2d, 0x8d2d,
+    0x8d34, 0x8d34,
     0x8d3d, 0x8d3d,
     0x8d44, 0x8d44,
     0x8d4e, 0x8d4e,
@@ -26274,7 +26358,7 @@ const wchar_t __thprac_loc_range_zh[3351] {
     0
 };
 
-const wchar_t __thprac_loc_range_en[57] {
+const wchar_t __thprac_loc_range_en[61] {
     0x0020, 0x00FF,
     0x11b, 0x11b,
     0x12b, 0x12b,
@@ -26294,6 +26378,7 @@ const wchar_t __thprac_loc_range_en[57] {
     0x52d5, 0x52d5,
     0x56de, 0x56de,
     0x6642, 0x6642,
+    0x673a, 0x673a,
     0x6bce, 0x6bce,
     0x786e, 0x786e,
     0x8a00, 0x8a00,
@@ -26302,11 +26387,12 @@ const wchar_t __thprac_loc_range_en[57] {
     0x8ba4, 0x8ba4,
     0x8bed, 0x8bed,
     0x8d77, 0x8d77,
+    0x968f, 0x968f,
     0xff01, 0xff01,
     0
 };
 
-const wchar_t __thprac_loc_range_ja[2703] {
+const wchar_t __thprac_loc_range_ja[2707] {
     0x0020, 0x00FF,
     0x2026, 0x2026,
     0x2191, 0x2191,
@@ -26980,6 +27066,7 @@ const wchar_t __thprac_loc_range_ja[2703] {
     0x6728, 0x6728,
     0x672a, 0x672a,
     0x672c, 0x672c,
+    0x673a, 0x673a,
     0x6749, 0x6749,
     0x6750, 0x6750,
     0x6753, 0x6753,
@@ -27559,6 +27646,7 @@ const wchar_t __thprac_loc_range_ja[2703] {
     0x967d, 0x967d,
     0x968a, 0x968a,
     0x968e, 0x968e,
+    0x968f, 0x968f,
     0x9694, 0x9694,
     0x9699, 0x9699,
     0x969c, 0x969c,

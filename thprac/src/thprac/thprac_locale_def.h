@@ -1160,6 +1160,30 @@ enum th_glossary_t {
     TH_BACK,
     TH_BOMB,
     TH_BOMB_FRAGMENT,
+    TH_BOOK_C1,
+    TH_BOOK_C2,
+    TH_BOOK_C3,
+    TH_BOOK_C4,
+    TH_BOOK_C5,
+    TH_BOOK_C6,
+    TH_BOOK_COPY_SETTING,
+    TH_BOOK_LAST,
+    TH_BOOK_MIRROR,
+    TH_BOOK_PASTE_SETTING,
+    TH_BOOK_RANDX,
+    TH_BOOK_RESETY,
+    TH_BOOK_X1,
+    TH_BOOK_X2,
+    TH_BOOK_X3,
+    TH_BOOK_X4,
+    TH_BOOK_X5,
+    TH_BOOK_X6,
+    TH_BOOK_Y1,
+    TH_BOOK_Y2,
+    TH_BOOK_Y3,
+    TH_BOOK_Y4,
+    TH_BOOK_Y5,
+    TH_BOOK_Y6,
     TH_BOSS,
     TH_BOSSRUSH,
     TH_BOSSRUSH_EXTRA,
@@ -1318,7 +1342,9 @@ enum th_glossary_t {
     TH_SPELL_TIMEOUT,
     TH_SPELL_TIME_INF,
     TH_SPELL_TIME_INF_BOOK5,
+    TH_SPELL_TIME_INF_BOOK5_2,
     TH_SPELL_TIME_INF_BOOK6,
+    TH_SPELL_TIME_INF_BOOK_CUSTOM,
     TH_SPELL_TIME_INF_MODE,
     TH_SPELL_TIME_INF_MODE_G,
     TH_SPELL_TIME_INF_MODE_Y,
@@ -1357,7 +1383,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1346];
+extern const char* th_glossary_str[3][1372];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1391,7 +1417,7 @@ extern const th_glossary_t TH_WARP_ALCOSTG[4];
 
 extern const th_glossary_t TH_SPELL_PHASE1[3];
 
-extern const th_glossary_t TH_BOOKS_PHASE_INF_TIME[4];
+extern const th_glossary_t TH_BOOKS_PHASE_INF_TIME[6];
 
 extern const th_glossary_t TH_EOSD_SAKUYA_DOLLS[5];
 
@@ -2937,10 +2963,10 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3351];
+extern const wchar_t __thprac_loc_range_zh[3359];
 
-extern const wchar_t __thprac_loc_range_en[57];
+extern const wchar_t __thprac_loc_range_en[61];
 
-extern const wchar_t __thprac_loc_range_ja[2703];
+extern const wchar_t __thprac_loc_range_ja[2707];
 
 }

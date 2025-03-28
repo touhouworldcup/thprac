@@ -1189,6 +1189,35 @@
       "TH_SPELL_TIME_INF_MODE_G": [ "无尽模式(绿)", "Inf mode(G)", "Inf mode(Y)" ],
       "TH_SPELL_TIME_INF_BOOK6": [ "无限时间(6本)", "Inf time(6 book)", "Inf time(6 book)" ],
       "TH_SPELL_TIME_INF_BOOK5": [ "无限时间(5本)", "Inf time(5 book)", "Inf time(5 book)" ],
+      "TH_SPELL_TIME_INF_BOOK5_2": [ "无限时间(13456)", "Inf time(13456)", "Inf time(13456)" ],
+      "TH_SPELL_TIME_INF_BOOK_CUSTOM": [ "无限时间(自定义)", "Inf time(custom)", "Inf time(custom)" ],
+	  
+      "TH_BOOK_X1": [ "x1", "x1", "x1" ],
+      "TH_BOOK_Y1": [ "y1", "y1", "y1" ],
+      "TH_BOOK_C1": [ "固定1", "fix1", "fix1" ],
+      "TH_BOOK_X2": [ "x2", "x2", "x2" ],
+      "TH_BOOK_Y2": [ "y2", "y2", "y2" ],
+      "TH_BOOK_C2": [ "固定2", "fix2", "fix2" ],
+      "TH_BOOK_X3": [ "x3", "x3", "x3" ],
+      "TH_BOOK_Y3": [ "y3", "y3", "y3" ],
+      "TH_BOOK_C3": [ "固定3", "fix3", "fix3" ],
+      "TH_BOOK_X4": [ "x4", "x4", "x4" ],
+      "TH_BOOK_Y4": [ "y4", "y4", "y4" ],
+      "TH_BOOK_C4": [ "固定4", "fix4", "fix4" ],
+      "TH_BOOK_X5": [ "x5", "x5", "x5" ],
+      "TH_BOOK_Y5": [ "y5", "y5", "y5" ],
+      "TH_BOOK_C5": [ "固定5", "fix5", "fix5" ],
+      "TH_BOOK_X6": [ "x6", "x6", "x6" ],
+      "TH_BOOK_Y6": [ "y6", "y6", "y6" ],
+      "TH_BOOK_C6": [ "固定6", "fix6", "fix6" ],
+      "TH_BOOK_MIRROR": [ "对称后三本", "mirror 3 books", "mirror 3 books" ],
+      "TH_BOOK_RANDX": [ "随机X", "随机X", "随机X" ],
+      "TH_BOOK_RESETY": [ "重置Y", "reset y", "reset y" ],
+      "TH_BOOK_COPY_SETTING": [ "复制配置到剪贴板", "copy setting to clipboard", "copy setting to clipboard" ],
+      "TH_BOOK_PASTE_SETTING": [ "粘贴剪贴板配置", "paste setting from clipboard", "paste setting from clipboard" ],
+      "TH_BOOK_LAST": [ "上一次魔法书坐标", "last books' pos", "last books' pos" ],
+	  
+	  
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
       "TH_RAGE_PRO": [ "发狂Pro", "Rage Pro", "発狂 Pro" ],
       "TH_RAGE_PRO_MAX": [ "发狂ProMax", "Rage ProMax", "発狂 ProMax" ],
@@ -1416,7 +1445,9 @@
 	  "TH_BOOKS_PHASE_INF_TIME": [
         "TH_SPELL_TIME_NORMAL",
         "TH_SPELL_TIME_INF_BOOK6",
-        "TH_SPELL_TIME_INF_BOOK5"
+        "TH_SPELL_TIME_INF_BOOK5",
+		"TH_SPELL_TIME_INF_BOOK5_2",
+		"TH_SPELL_TIME_INF_BOOK_CUSTOM"
       ],
 	  "TH_EOSD_SAKUYA_DOLLS": [
         "TH_EOSD_SAKUYA_DOLLS_MORE_BLUE_TO_GREEN",
