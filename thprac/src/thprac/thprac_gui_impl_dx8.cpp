@@ -79,6 +79,7 @@ namespace THPrac
 		{
 			// Setup render state: fixed-pipeline, alpha-blending, no face culling, no depth testing, shade mode (for gradient)
 			g_pd3dDevice->SetPixelShader(NULL);
+			g_pd3dDevice->SetVertexShader(D3DFVF_CUSTOMVERTEX);
 			g_pd3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 			g_pd3dDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 			g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
@@ -105,7 +106,7 @@ namespace THPrac
 			// Setup world & view matrix
 			D3DMATRIX mat_identity = { { { 1.0f, 0.0f, 0.0f, 0.0f,  0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f, 1.0f } } };
 			g_pd3dDevice->SetTransform(D3DTS_WORLD, &mat_identity);
-			g_pd3dDevice->SetTransform(D3DTS_VIEW, &mat_identity);
+            g_pd3dDevice->SetTransform(D3DTS_VIEW, &mat_identity);
 		}
 		static __forceinline bool ImplDX8StateBackup()
 		{
@@ -119,7 +120,7 @@ namespace THPrac
 			g_pd3dDevice->GetTransform(D3DTS_PROJECTION, &g_pOrigProj);
 
 			// bug fix
-            if (g_pd3dDevice->GetTexture(0, &g_pOrigTexture) < 0)
+            if (g_pd3dDevice->GetTexture(0, &g_pOrigTexture) != D3D_OK)
                 g_pOrigTexture = 0;
             g_pd3dDevice->GetViewport(&g_pOrigViewPort);
 			return true;
@@ -136,8 +137,11 @@ namespace THPrac
 			g_pd3dDevice->DeleteStateBlock(g_pOrigStateBlock);
 
 			// bug fix
-            if (g_pOrigTexture)
+			if (g_pOrigTexture){
 				g_pd3dDevice->SetTexture(0, g_pOrigTexture);
+                g_pOrigTexture->Release();
+                g_pOrigTexture=NULL;
+			}
             g_pd3dDevice->SetViewport(&g_pOrigViewPort);
 
 			g_pOrigStateBlock = NULL;

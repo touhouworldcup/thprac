@@ -134,7 +134,7 @@ namespace Gui {
         g_pd3dDevice->GetTransform(D3DTS_VIEW, &g_pOrigView);
         g_pd3dDevice->GetTransform(D3DTS_PROJECTION, &g_pOrigProj);
 
-        if (g_pd3dDevice->GetTexture(0, &g_pOrigTexture) < 0)
+        if (g_pd3dDevice->GetTexture(0, &g_pOrigTexture) != D3D_OK)
             g_pOrigTexture = 0;
         g_pd3dDevice->GetViewport(&g_pOrigViewPort);
 
@@ -152,8 +152,11 @@ namespace Gui {
         g_pOrigStateBlock->Release();
         g_pOrigStateBlock = NULL;
 
-        if (g_pOrigTexture)
+        if (g_pOrigTexture){
             g_pd3dDevice->SetTexture(0, g_pOrigTexture);
+            g_pOrigTexture->Release();
+            g_pOrigTexture = NULL;
+        }
         g_pd3dDevice->SetViewport(&g_pOrigViewPort);
     }
 

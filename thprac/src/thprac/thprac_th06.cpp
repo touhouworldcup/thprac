@@ -650,7 +650,9 @@ namespace TH06 {
                 if (cur_stage == 4) {
                     if (last_cur_hp < 3500 && cur_cur_hp == 3500 && last_tot_hp < 3500 && cur_tot_hp == 3500) // 第一本魔法书的血量
                     {
-                        AddAttempt(64, cur_diff, cur_player_type);
+                        if (!(thPracParam.mode && thPracParam.stage == 3 && thPracParam.section == TH06_ST4_BOOKS && thPracParam.phase != 0)) {
+                            AddAttempt(64, cur_diff, cur_player_type);
+                        }
                         time_books = 0;
                         power_decreased = false;
                         bomb_decreased = false;
@@ -744,8 +746,11 @@ namespace TH06 {
             }
 
             if (*THOverlay::singleton().mShowSpellCapture && (*(DWORD*)(0x6C6EA4) == 2)) {
-                SetSizeRel(180.0f / 640.0f, 0.0f);
                 SetPosRel(433.0f / 640.0f, 245.0f / 480.0f);
+                SetSizeRel(180.0f / 640.0f, 0.0f);
+                // DWORD cfg = *(DWORD*)(0x006C6E60);
+                // cfg |= 1 << 3;
+                // *(DWORD*)(0x6C6E60) = cfg;
                 Open();
             } else {
                 Close();
@@ -1014,14 +1019,21 @@ namespace TH06 {
                     if (ImGui::Button(S(TH_BOOK_PASTE_SETTING))){
                         int xs[6] = { 0 }, ys[6] = { 32,128,144,64,80,96 };
                         auto text = ImGui::GetClipboardText();
-                        if (text && sscanf_s(text, "(%d,%d),(%d,%d),(%d,%d),(%d,%d),(%d,%d),(%d,%d)", &xs[0], &ys[0], &xs[1], &ys[1], &xs[2], &ys[2], &xs[3], &ys[3], &xs[4], &ys[4], &xs[5], &ys[5])) {
-                            *mBookX1 = xs[0], *mBookY1 = ys[0],
-                            *mBookX2 = xs[1], *mBookY2 = ys[1],
-                            *mBookX3 = xs[2], *mBookY3 = ys[2],
-                            *mBookX4 = xs[3], *mBookY4 = ys[3],
-                            *mBookX5 = xs[4], *mBookY5 = ys[4],
-                            *mBookX6 = xs[5], *mBookY6 = ys[5];
+                        if (text){
+                            int n = 0;
+                            while (isspace(text[n]) && text[n+1] != 0)
+                                n++;
+                            // trim
+                            if (text && sscanf_s(text + n, "(%d,%d),(%d,%d),(%d,%d),(%d,%d),(%d,%d),(%d,%d)", &xs[0], &ys[0], &xs[1], &ys[1], &xs[2], &ys[2], &xs[3], &ys[3], &xs[4], &ys[4], &xs[5], &ys[5])) {
+                                *mBookX1 = xs[0], *mBookY1 = ys[0],
+                                *mBookX2 = xs[1], *mBookY2 = ys[1],
+                                *mBookX3 = xs[2], *mBookY3 = ys[2],
+                                *mBookX4 = xs[3], *mBookY4 = ys[3],
+                                *mBookX5 = xs[4], *mBookY5 = ys[4],
+                                *mBookX6 = xs[5], *mBookY6 = ys[5];
+                            }
                         }
+                       
                     }
                 }
             }else if (section == TH06_ST5_BOSS6) {
@@ -3163,7 +3175,6 @@ namespace TH06 {
                 auto GetRandF = []()->float{
                     unsigned int(__fastcall *sb_41E7F0_rand_int)(DWORD thiz);
                     sb_41E7F0_rand_int = (decltype(sb_41E7F0_rand_int))0x41E7F0;
-
                     unsigned int randi = sb_41E7F0_rand_int(0x69D8F8);
                     return (double)randi / 4294967296.0;
                 };// rand from 0 to 1
@@ -3209,6 +3220,10 @@ namespace TH06 {
         
     }
     PATCH_DY(th06_disable_menu, 0x439ab2, "\x90\x90\x90\x90\x90", 5);
+    // fix igi render problem
+    PATCH_DY(th06_background_fix_1, 0x42073B, "\x90\x90\x90\x90\x90\x90", 6);
+    PATCH_DY(th06_background_fix_2, 0x419F4B, "\x90\x90\x90\x90\x90\x90", 6);
+    PATCH_DY(th06_background_fix_3, 0x419F81, "\x90\x90\x90\x90\x90\x90", 6);
     static void RenderRepMarker(ImDrawList* p)
     {
         if (g_adv_igi_options.th06_showRepMarker) {
