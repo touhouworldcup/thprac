@@ -1775,6 +1775,11 @@ namespace TH06 {
             HelpMarker(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC));
             ImGui::SameLine();
             if (ImGui::Button(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_RELOAD))) {
+                if (g_hitbox_textureID)
+                {
+                    ((LPDIRECT3DTEXTURE8)g_hitbox_textureID)->Release();
+                    g_hitbox_textureID = nullptr;
+                }
                 g_hitbox_textureID = ReadImage(8, *(DWORD*)0x6c6d20, "hitbox.png", hitbox_file, sizeof(hitbox_file));
                 D3DSURFACE_DESC desc;
                 ((LPDIRECT3DTEXTURE8)g_hitbox_textureID)->GetLevelDesc(0, &desc);
