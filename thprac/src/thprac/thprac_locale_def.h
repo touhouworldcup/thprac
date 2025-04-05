@@ -243,6 +243,9 @@ enum th_glossary_t
     TH16_TITLE,
     TH16_WINTER,
     TH175_TITLE,
+    TH17_ANGLE_PREVIEW,
+    TH17_FORCE_ANGLE,
+    TH17_FORCE_ANGLE_HELP,
     TH17_GOAST,
     TH17_GOAST_1,
     TH17_GOAST_2,
@@ -250,6 +253,7 @@ enum th_glossary_t
     TH17_GOAST_3CHICK,
     TH17_GOAST_4,
     TH17_GOAST_5,
+    TH17_GOAST_ANGLE,
     TH17_GOAST_BUGFIX,
     TH17_GOAST_CHICK,
     TH17_GOAST_COW,
@@ -268,6 +272,8 @@ enum th_glossary_t
     TH17_GOAST_WOLF_STATIC,
     TH17_INF_ROARING,
     TH17_NO_GOAST,
+    TH17_RANDOM_ANGLE,
+    TH17_SPAWN_A_GOAST,
     TH17_TITLE,
     TH185_ADDITIONAL_CARDS,
     TH185_AKI_MINORIKO,
@@ -869,7 +875,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][857];
+extern const char* th_glossary_str[3][863];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

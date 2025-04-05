@@ -815,15 +815,15 @@ namespace TH17 {
             if (mGoastAngleRandom)
                 ImGui::BeginDisabled();
 
-            ImGui::SliderFloat("Angle", &mGoastAng, -M_PI, M_PI);
-            ImGui::Checkbox("Force angle", &mForceGoastAngle);
+            ImGui::SliderFloat(S(TH17_GOAST_ANGLE), &mGoastAng, -M_PI, M_PI);
+            ImGui::Checkbox(S(TH17_FORCE_ANGLE), &mForceGoastAngle);
             ImGui::SameLine();
-            HelpMarker("Tokens will try to move away from eachother both when spawning and when bouncing from a wall. This will ensure that a token will always go in the direction you specify");
+            HelpMarker(S(TH17_FORCE_ANGLE_HELP));
 
             if (mGoastAngleRandom)
                 ImGui::EndDisabled();
 
-            ImGui::Checkbox("Random angle", &mGoastAngleRandom);
+            ImGui::Checkbox(S(TH17_RANDOM_ANGLE), &mGoastAngleRandom);
 
             ImRotateStart();
             ImGui::NewLine();
@@ -831,7 +831,7 @@ namespace TH17 {
             ImGui::NewLine();
             ImGui::Indent();
             ImGui::Indent();
-            ImGui::TextUnformatted("--angle-preview-->");
+            ImGui::TextUnformatted(S(TH17_ANGLE_PREVIEW));
             ImGui::Unindent();
             ImGui::Unindent();
             constexpr auto HALF_PI = static_cast<float>(std::numbers::pi / 2.0);
@@ -846,7 +846,7 @@ namespace TH17 {
         void ContentUpdate()
         {
             if (mInGoastMenu) {
-                ImGui::TextUnformatted("Spawn a Goast");
+                ImGui::TextUnformatted(S(TH17_SPAWN_A_GOAST));
                 ImGui::Separator();
                 GoastMenu();
                 return;
@@ -871,7 +871,7 @@ namespace TH17 {
                 ImGui::SameLine();
                 HelpMarker(S(TH17_GOAST_REPFIX_DESC));
 
-                if (ImGui::Button("Spawn a Goast")) {
+                if (ImGui::Button(S(TH17_SPAWN_A_GOAST))) {
                     mInGoastMenu = true;
                 }
 

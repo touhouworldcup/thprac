@@ -7160,7 +7160,7 @@
         "bgm": 0,
         "spell": 0,
         "appearance": [ 6, 1, 1 ],
-        "!ENHL": [ "流星雨", "#th15_stars", "Stars" ]
+        "!ENHL": [ "流星雨", "Stars", "流星雨" ]
       },
       "TH15_ST6_BOSS1": {
         "bgm": 1,
@@ -7881,18 +7881,28 @@
       "TH17_GOAST_WOLF": [ "狼", "Wolf", "オオカミ" ],
       "TH17_GOAST_OTTER": [ "獭", "Otter", "カワウソ" ],
       "TH17_GOAST_EAGLE": [ "鹰", "Eagle", "オオワシ" ],
-      "TH17_GOAST_WOLF_STATIC": [ "狼 (static)", "Wolf (static)", "オオカミ (static)" ],
-      "TH17_GOAST_OTTER_STATIC": [ "獭 (static)", "Otter (static)", "カワウソ (static)" ],
-      "TH17_GOAST_EAGLE_STATIC": [ "鹰 (static)", "Eagle (static)", "オオワシ (static)" ],
+      "TH17_GOAST_WOLF_STATIC": [ "狼（不变色）", "Wolf (static)", "オオカミ（色変わりしない）" ],
+      "TH17_GOAST_OTTER_STATIC": [ "獭（不变色）", "Otter (static)", "カワウソ（色変わりしない）" ],
+      "TH17_GOAST_EAGLE_STATIC": [ "鹰（不变色）", "Eagle (static)", "オオワシ（色変わりしない）" ],
       "TH17_GOAST_JELLYFISH": [ "水母", "Jellyfish", "クラゲ" ],
       "TH17_GOAST_COW": [ "牛", "Cow", "牛" ],
       "TH17_GOAST_CHICK": [ "小鸡", "Chick", "ひよこ" ],
       "TH17_GOAST_TURTLE": [ "龟", "Turtle", "亀" ],
       "TH17_GOAST_HANIWA": [ "埴轮", "Haniwa", "埴輪" ],
       "TH17_GOAST_HORSE": [ "埴轮（马）", "Haniwa (Horse)", "埴輪（馬）" ],
-      "TH17_GOAST_3CHICK": [ "3只小鸡", "3 Chicks", "三匹のひよこ" ],
+      "TH17_GOAST_3CHICK": [ "三只小鸡", "3 Chicks", "三匹のひよこ" ],
       "TH17_INF_ROARING": [ "无限咆哮", "Inf. Roaring", "無限のロアリング" ],
       "TH17_NO_GOAST": [ "无动物灵", "No Goast", "動物霊を落とさない" ],
+      "TH17_GOAST_ANGLE": [ "角度", "Angle", "角度" ],
+      "TH17_SPAWN_A_GOAST": [ "生成一只动物灵", "Spawn a Goast", "動物霊アイテムを生成する" ],
+      "TH17_FORCE_ANGLE": [ "角度固定", "Force Angle", "固定角度で生成する" ],
+      "TH17_RANDOM_ANGLE": [ "角度随机", "Random Angle", "ランダムな角度で生成する" ],
+      "TH17_ANGLE_PREVIEW": [ "--预览角度-->", "--angle-preview-->", "--プレビューのアングル-->"],
+      "TH17_FORCE_ANGLE_HELP": [
+        "动物灵在生成时或在墙上反弹时会试图远离彼此。这个选项会保证生成的动物灵总是朝指定的方向移动",
+        "Tokens will try to move away from each other both when spawning and when bouncing from a wall. This will ensure that a token will always go in the direction you specify",
+        "動物霊は生成時や壁で反射する際に互いに遠ざかろうとします。このオプションを有効にすると、生成された動物霊が常に指定された方向に移動するようになります"
+      ],
       "TH17_GOAST_BUGFIX": [
         "修复因在咆哮模式中退出/推把而导致replay爆炸的bug",
         "Fix the replay desync bug that occurs when you exit/retry the game while roaring mode is active",
