@@ -1898,7 +1898,7 @@
         "appearance": [ 5, 2, 6 ],
         "!EN": [ "天上剑「天人之五衰」", "Heaven Sword \"Five Signs of the Dying Deva\"", "天上剣「天人の五衰」" ],
         "!H": [ "天界剑「七魄忌讳」", "Deva Realm Sword \"Displeasure of the Seven Hakus\"", "天界剣「七魄忌諱」" ],
-        "!L": [ "天神剑「三魂七魄」", "Heaven God Sword \"Three Kons, Seven Hakus\"", "天神剣「叁魂七魄」" ]
+        "!L": [ "天神剑「三魂七魄」", "Heaven God Sword \"Three Kons, Seven Hakus\"", "天神剣「三魂七魄」" ]
       },
 
       "TH07_ST6_CHAOS": {
@@ -2315,7 +2315,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 1, 2, 2 ],
-        "!ENHL": [ "灯符「萤光现象」", "Lamp Sign \"Firefly Phenomenon\"", "灯符「Firefly Phenomemon」" ]
+        "!ENHL": [ "灯符「萤光现象」", "Lamp Sign \"Firefly Phenomenon\"", "灯符「ファイヤフライフェノメノン」" ]
       },
       "TH08_ST1_BOSS3": {
         "bgm": 1,
@@ -2872,7 +2872,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 9, 2, 2 ],
-        "!X": [ "时效「月岩笠的诅咒」", "Limiting Edict \"Curse of Tsuki-no-Iwakasa\"", "时効「月のいはかさの呪い」" ]
+        "!X": [ "时效「月岩笠的诅咒」", "Limiting Edict \"Curse of Tsuki-no-Iwakasa\"", "時効「月のいはかさの呪い」" ]
       },
       "TH08_ST7_END_NS2": {
         "bgm": 1,
@@ -2908,7 +2908,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 9, 2, 8 ],
-        "!X": [ "不死「徐福时空」", "Undying \"Xu Fu's Dimension\"", "不死「徐福时空」" ]
+        "!X": [ "不死「徐福时空」", "Undying \"Xu Fu's Dimension\"", "不死「徐福時空」" ]
       },
       "TH08_ST7_END_NS5": {
         "bgm": 1,
@@ -4075,7 +4075,7 @@
         "spell": 1,
         "appearance": [ 6, 2, 8 ],
         "!EN": [ "「地狱极乐熔毁」", "\"Hell & Heaven Meltdown\"", "「地獄極楽メルトダウン」" ],
-        "!HL": [ "「地狱的托卡马克装置」", "\"Hell's Tokamak\"", "「ヘルズトカマク」 " ]
+        "!HL": [ "「地狱的托卡马克装置」", "\"Hell's Tokamak\"", "「ヘルズトカマク」" ]
       },
       "TH11_ST6_BOSS9": {
         "bgm": 1,
@@ -4623,7 +4623,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 4 ],
-        "!X": [ "真相不明「愤怒的红色UFO袭来」", "Unidentified \"Red UFO Invasion of Rage\"", "正体不明「忿怒のレッドUFO襲来」" ]
+        "!X": [ "真相不明「愤怒的红色UFO袭来」", "Unidentified \"Red UFO Invasion of Rage\"", "正体不明「忿怒のレッドＵＦＯ襲来」" ]
       },
       "TH12_ST7_END_NS3": {
         "bgm": 1,
@@ -4647,7 +4647,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 8 ],
-        "!X": [ "真相不明「哀愁的蓝色UFO袭来」", "Unidentified \"Blue UFO Invasion of Grief\"", "正体不明「哀愁のブルーUFO襲来」" ]
+        "!X": [ "真相不明「哀愁的蓝色UFO袭来」", "Unidentified \"Blue UFO Invasion of Grief\"", "正体不明「哀愁のブルーＵＦＯ襲来」" ]
       },
       "TH12_ST7_END_NS5": {
         "bgm": 1,
@@ -4671,7 +4671,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 12 ],
-        "!X": [ "真相不明「忠义的绿色UFO袭来」", "Unidentified \"Green UFO Invasion of Justice\"", "正体不明「義心のグリーンUFO襲来」" ]
+        "!X": [ "真相不明「忠义的绿色UFO袭来」", "Unidentified \"Green UFO Invasion of Justice\"", "正体不明「義心のグリーンＵＦＯ襲来」" ]
       },
       "TH12_ST7_END_NS7": {
         "bgm": 1,
@@ -5644,7 +5644,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 16, 2, 8 ],
-        "!X": [ "闭符「大坍缩」", "Closure Sign \"Big Crunch\"", "闭符「ビッグクランチ」" ]
+        "!X": [ "闭符「大坍缩」", "Closure Sign \"Big Crunch\"", "閉符「ビッグクランチ」" ]
       },
       "TH128_EX_END_NS5": {
         "bgm": 1,
@@ -6408,7 +6408,7 @@
         "spell": 1,
         "appearance": [ 3, 2, 4 ],
         "!EN": [ "咆哮「陌生的咆哮」", "Roar \"Strange Roar\"", "咆哮「ストレンジロア」" ],
-        "!HL": [ "咆哮「満月的远吠」", "Roar \"Full Moon Howling\"", "咆哮「満月の远吠え」" ]
+        "!HL": [ "咆哮「満月的远吠」", "Roar \"Full Moon Howling\"", "咆哮「満月の遠吠え」" ]
       },
       "TH14_ST3_BOSS5": {
         "bgm": 1,
@@ -6421,7 +6421,7 @@
         "spell": 1,
         "appearance": [ 3, 2, 6 ],
         "!EN": [ "狼符「星环猛扑」", "Wolf Sign \"Star Ring Pounce\"", "狼符「スターリングパウンス」" ],
-        "!HL": [ "天狼「高速猛扑」", "Sirius \"High-Speed Pounce\"", "天狼「ハイスピードバウンス」" ]
+        "!HL": [ "天狼「高速猛扑」", "Sirius \"High-Speed Pounce\"", "天狼「ハイスピードパウンス」" ]
       },
 
       "TH14_ST4_MID1": {
@@ -6832,8 +6832,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 9, 2, 6 ],
-        "!EN": [ "筝曲「下克上送筝曲」", "Koto Music \"Social Upheaval Koto Music Complement\"", "筝曲「下克上送筝曲」" ],
-        "!HL": [ "筝曲「下克上安魂曲」", "Koto Music \"Social Upheaval Requiem\"", "筝曲「下克上レクイエム」" ]
+        "!EN": [ "筝曲「下克上送筝曲」", "Koto Music \"Social Upheaval Koto Music Complement\"", "箏曲「下克上送箏曲」" ],
+        "!HL": [ "筝曲「下克上安魂曲」", "Koto Music \"Social Upheaval Requiem\"", "箏曲「下克上レクイエム」" ]
       }
     },
 
@@ -8593,8 +8593,8 @@
         "spell": 1,
         "appearance": [ 2, 2, 2 ],
         "!EN": [ "森符「木隐的技术」", "Forest Sign \"Tree-Veiling Technology\"", "森符「木隠れの技術」" ],
-        "!H": [ "森符「极·木隐的技术」", "Forest Sign \"Extreme Tree-Veiling Technology\"", "森符「極·木隠れの技術」" ],
-        "!L": [ "森符「真·木隐的技术」", "Forest Sign \"True Tree-Veiling Technology\"", "森符「真·木隠れの技術」" ]
+        "!H": [ "森符「极·木隐的技术」", "Forest Sign \"Extreme Tree-Veiling Technology\"", "森符「極・木隠れの技術」" ],
+        "!L": [ "森符「真·木隐的技术」", "Forest Sign \"True Tree-Veiling Technology\"", "森符「真・木隠れの技術」" ]
       },
       "TH18_ST2_BOSS3": {
         "bgm": 1,
@@ -8607,8 +8607,8 @@
         "spell": 1,
         "appearance": [ 2, 2, 4 ],
         "!EN": [ "森符「最深的森域」", "Forest Sign \"Innermost Forest Region\"", "森符「最奧の森域」" ],
-        "!H": [ "森符「极·最深的森域」", "Forest Sign \"Extreme Innermost Forest Region\"", "森符「極·最奧の森域」" ],
-        "!L": [ "森符「真·最深的森域」", "Forest Sign \"True Innermost Forest Region\"", "森符「真·最奧の森域」" ]
+        "!H": [ "森符「极·最深的森域」", "Forest Sign \"Extreme Innermost Forest Region\"", "森符「極・最奧の森域」" ],
+        "!L": [ "森符「真·最深的森域」", "Forest Sign \"True Innermost Forest Region\"", "森符「真・最奧の森域」" ]
       },
       "TH18_ST2_BOSS5": {
         "bgm": 1,
