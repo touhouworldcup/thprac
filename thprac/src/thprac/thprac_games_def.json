@@ -1211,6 +1211,8 @@
       "TH_BOOK_Y6": [ "y6", "y6", "y6" ],
       "TH_BOOK_C6": [ "固定6", "fix6", "fix6" ],
       "TH_BOOK_MIRROR": [ "对称后三本", "mirror 3 books", "mirror 3 books" ],
+      "TH_BOOK_MIRROR2": [ "对称", "mirror", "mirror" ],
+      "TH_BOOK_ROLL": [ "轮换", "roll", "roll" ],
       "TH_BOOK_RANDX": [ "随机X", "随机X", "随机X" ],
       "TH_BOOK_RESETY": [ "重置Y", "reset y", "reset y" ],
       "TH_BOOK_COPY_SETTING": [ "复制配置到剪贴板", "copy setting to clipboard", "copy setting to clipboard" ],
@@ -1514,6 +1516,9 @@
       "TH06_FINAL_SPELL_W6": [ "混全56way(2,3)", "56 way, wave 2,3", "56 way, wave 2,3" ],
 	  
       "TH06_ST6_WALL_PRAC": [ "砌墙练习器", "wall prac", "wall prac" ],
+      "TH06_ST6_WALL_PRAC_SNIPE_N": [ "近场狙度", "snipe ratio near", "snipe ratio near" ],
+      "TH06_ST6_WALL_PRAC_SNIPE_F": [ "远场狙度", "snipe ratio far", "snipe ratio far" ],
+	  
       "TH06_ST6_WALL_PRAC_DESC": ["红幻/吸幻使用", "for Scarlet Gensokyo/Vampire Illusion", "for Scarlet Gensokyo/Vampire Illusion" ],
 	  
       "TH06_FS": [ "伪装", "Fake Shot", "機体偽装" ],

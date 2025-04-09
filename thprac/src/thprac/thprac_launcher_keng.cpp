@@ -910,39 +910,6 @@ namespace THPrac {
                 //ImGui::TextWrapped(mKengDescription.c_str());
                 ImGui::Columns(1);
 
-                ImGui::NewLine();
-                ImGui::Separator();
-                // play draw
-                ImGui::SetCursorPosX(LauncherWndGetSize().x * 0.05f);
-                if (ImGui::BeginTable(S(THPRAC_KENG_PLAY_TABLE), 5, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable, ImVec2(LauncherWndGetSize().x * 0.9f, 0.0f)))
-                {
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_INDEX), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.1f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_NAME), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.15f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_DATE), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.2f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_CMT), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.4f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_CNT), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.15f);
-                    ImGui::TableHeadersRow();
-                    int idx = 0;
-                    for (auto it = mPlays.begin(); it != mPlays.end(); it++) {
-
-                        ImGui::TableNextRow();
-                        ImGui::TableNextColumn();
-                        ImGui::Text("%2d", idx+1);
-                        ImGui::TableNextColumn();
-                        if (ImGui::Selectable(std::format("{}##{}", it->mPlayName, idx).c_str(), false, ImGuiSelectableFlags_::ImGuiSelectableFlags_SpanAllColumns)) {
-                            play_index_draw = idx;
-                        }
-                        ImGui::TableNextColumn();
-                        ImGui::Text(it->GetTimeDesc());
-                        ImGui::TableNextColumn();
-                        ImGui::Text(it->GetDescription_Line());
-                        ImGui::TableNextColumn();
-                        ImGui::Text("%6d", it->mDiffsDied.size());
-                        idx++;
-                    }
-                    ImGui::EndTable();
-                }
-
                 // add play
                 ImGui::NewLine();
                 ImGui::Separator();
@@ -1077,6 +1044,43 @@ namespace THPrac {
                     }
                 }
                 
+                
+                ImGui::Separator();
+                // play draw
+                ImGui::SetCursorPosX(LauncherWndGetSize().x * 0.05f);
+                if (ImGui::CollapsingHeader(std::format("{}##header", S(THPRAC_KENG_PLAY_TABLE)).c_str(),ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    ImGui::SetCursorPosX(LauncherWndGetSize().x * 0.05f);
+                    if (ImGui::BeginTable(S(THPRAC_KENG_PLAY_TABLE), 5, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable, ImVec2(LauncherWndGetSize().x * 0.9f, 0.0f))) {
+                        ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_INDEX), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.1f);
+                        ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_NAME), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.15f);
+                        ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_DATE), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.2f);
+                        ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_CMT), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.4f);
+                        ImGui::TableSetupColumn(S(THPRAC_KENG_PLAY_CNT), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.15f);
+                        ImGui::TableHeadersRow();
+                        int idx = mPlays.size()-1;
+                        for (auto it = mPlays.rbegin(); it != mPlays.rend(); it++) {
+
+                            ImGui::TableNextRow();
+                            ImGui::TableNextColumn();
+                            ImGui::Text("%2d", idx + 1);
+                            ImGui::TableNextColumn();
+                            if (ImGui::Selectable(std::format("{}##{}", it->mPlayName, idx).c_str(), false, ImGuiSelectableFlags_::ImGuiSelectableFlags_SpanAllColumns)) {
+                                play_index_draw = idx;
+                            }
+                            ImGui::TableNextColumn();
+                            ImGui::Text(it->GetTimeDesc());
+                            ImGui::TableNextColumn();
+                            ImGui::Text(it->GetDescription_Line());
+                            ImGui::TableNextColumn();
+                            ImGui::Text("%6d", it->mDiffsDied.size());
+                            idx--;
+                        }
+                        ImGui::EndTable();
+                    }
+                }
+                ImGui::NewLine();
+                ImGui::Separator();
                 ImGui::SetCursorPosX(LauncherWndGetSize().x * 0.05f);
                 if (ImGui::Button(std::format("{}##2", S(THPRAC_KENG_RETURN)).c_str()))
                     *is_open = false;
@@ -1101,6 +1105,7 @@ namespace THPrac {
                         ImGui::EndPopup();
                     }
                 }
+
             }
         }
         friend class KengRecorder;

@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1372] {
+const char* th_glossary_str[3][1376] {
     {
         "",
         "啤酒",
@@ -59,6 +59,8 @@ const char* th_glossary_str[3][1372] {
         "木&火符「森林大火」",
         "砌墙练习器",
         "红幻/吸幻使用",
+        "远场狙度",
+        "近场狙度",
         "TH06 东方红魔乡　～ the Embodiment of Scarlet Devil.",
         "TH07.5 东方萃梦想　～ Immaterial and Missing Power.",
         "道中小妖精",
@@ -1169,9 +1171,11 @@ const char* th_glossary_str[3][1372] {
         "复制配置到剪贴板",
         "上一次魔法书坐标",
         "对称后三本",
+        "对称",
         "粘贴剪贴板配置",
         "随机X",
         "重置Y",
+        "轮换",
         "x1",
         "x2",
         "x3",
@@ -1433,6 +1437,8 @@ const char* th_glossary_str[3][1372] {
         "Wood & Fire Sign \"Forest Blaze\"",
         "wall prac",
         "for Scarlet Gensokyo/Vampire Illusion",
+        "snipe ratio far",
+        "snipe ratio near",
         "TH06 The Embodiment of Scarlet Devil",
         "TH07.5 Immaterial and Missing Power",
         "Chaos",
@@ -2543,9 +2549,11 @@ const char* th_glossary_str[3][1372] {
         "copy setting to clipboard",
         "last books' pos",
         "mirror 3 books",
+        "mirror",
         "paste setting from clipboard",
         "随机X",
         "reset y",
+        "roll",
         "x1",
         "x2",
         "x3",
@@ -2807,6 +2815,8 @@ const char* th_glossary_str[3][1372] {
         "木＆火符「フォレストブレイズ」",
         "wall prac",
         "for Scarlet Gensokyo/Vampire Illusion",
+        "snipe ratio far",
+        "snipe ratio near",
         "TH06 東方紅魔郷　～ the Embodiment of Scarlet Devil.",
         "TH07.5 東方萃夢想　～ Immaterial and Missing Power.",
         "ケイオス",
@@ -3917,9 +3927,11 @@ const char* th_glossary_str[3][1372] {
         "copy setting to clipboard",
         "last books' pos",
         "mirror 3 books",
+        "mirror",
         "paste setting from clipboard",
         "随机X",
         "reset y",
+        "roll",
         "x1",
         "x2",
         "x3",
@@ -24675,7 +24687,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3359] {
+const wchar_t __thprac_loc_range_zh[3361] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -25676,6 +25688,7 @@ const wchar_t __thprac_loc_range_zh[3359] {
     0x72c8, 0x72c8,
     0x72d0, 0x72d0,
     0x72d7, 0x72d7,
+    0x72d9, 0x72d9,
     0x72db, 0x72db,
     0x72e9, 0x72e9,
     0x72ec, 0x72ec,

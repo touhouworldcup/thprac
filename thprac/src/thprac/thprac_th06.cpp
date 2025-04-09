@@ -20,7 +20,7 @@ namespace TH06 {
 
     int32_t g_last_rep_seed = 0;
     bool g_show_bullet_hitbox = false;
-    
+    float g_last_boss_x, g_last_boss_y;
 
     static bool is_died = false;
    
@@ -69,6 +69,9 @@ namespace TH06 {
         int book_x6;
         int book_y6;
 
+        float wall_prac_snipe_ratio_near;
+        float wall_prac_snipe_ratio_far;
+
         bool _playLock;
         void Reset()
         {
@@ -98,6 +101,8 @@ namespace TH06 {
             book_x4 = 0.0f;
             book_x5 = 0.0f;
             book_x6 = 0.0f;
+            wall_prac_snipe_ratio_near = 0.0f;
+            wall_prac_snipe_ratio_far = 0.0f;
             book_fix1 = false;
             book_fix2 = false;
             book_fix3 = false;
@@ -148,6 +153,9 @@ namespace TH06 {
             GetJsonValue(book_y5);
             GetJsonValue(book_y6);
 
+            GetJsonValue(wall_prac_snipe_ratio_near);
+            GetJsonValue(wall_prac_snipe_ratio_far);
+
             return true;
         }
         std::string GetJson()
@@ -197,6 +205,9 @@ namespace TH06 {
             AddJsonValue(book_y4);
             AddJsonValue(book_y5);
             AddJsonValue(book_y6);
+
+            AddJsonValue(wall_prac_snipe_ratio_near);
+            AddJsonValue(wall_prac_snipe_ratio_far);
 
             ReturnJson();
         }
@@ -893,7 +904,11 @@ namespace TH06 {
                 if (thPracParam.section == TH06_ST6_BOSS9)
                     thPracParam.delay_st6bs9 = *mDelaySt6Bs9;
                 if (thPracParam.section == TH06_ST6_BOSS9 || thPracParam.section == TH06_ST6_BOSS6)
+                {
                     thPracParam.wall_prac_st6 = *mWallPrac;
+                    thPracParam.wall_prac_snipe_ratio_far = *mWallPracSnipeF;
+                    thPracParam.wall_prac_snipe_ratio_near = *mWallPracSnipeN;
+                }
                 if (thPracParam.section == TH06_ST4_BOOKS)
                 {
                     thPracParam.book_fix1 = *mBookC1;thPracParam.book_x1 = *mBookX1;thPracParam.book_y1 = *mBookY1;
@@ -932,8 +947,11 @@ namespace TH06 {
                     thPracParam.dlg = *mDlg;
                 if (thPracParam.section == TH06_ST6_BOSS9)
                     thPracParam.delay_st6bs9 = *mDelaySt6Bs9;
-                if (thPracParam.section == TH06_ST6_BOSS9 || thPracParam.section == TH06_ST6_BOSS6)
+                if (thPracParam.section == TH06_ST6_BOSS9 || thPracParam.section == TH06_ST6_BOSS6) {
                     thPracParam.wall_prac_st6 = *mWallPrac;
+                    thPracParam.wall_prac_snipe_ratio_far = *mWallPracSnipeF;
+                    thPracParam.wall_prac_snipe_ratio_near = *mWallPracSnipeN;
+                }
                 if (thPracParam.section == TH06_ST4_BOOKS) {
                     thPracParam.book_fix1= *mBookC1;thPracParam.book_x1 = *mBookX1;thPracParam.book_y1 = *mBookY1;
                     thPracParam.book_fix2= *mBookC2;thPracParam.book_x2 = *mBookX2;thPracParam.book_y2 = *mBookY2;
@@ -986,6 +1004,24 @@ namespace TH06 {
                         *mBookX6 = -*mBookX1;
                     }
                     ImGui::SameLine();
+                    if (ImGui::Button(S(TH_BOOK_MIRROR2))) {
+                        *mBookX1 = -*mBookX1;
+                        *mBookX2 = -*mBookX2;
+                        *mBookX3 = -*mBookX3;
+                        *mBookX4 = -*mBookX4;
+                        *mBookX5 = -*mBookX5;
+                        *mBookX6 = -*mBookX6;
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button(S(TH_BOOK_ROLL))) {
+                        int temp = *mBookX6;
+                        *mBookX6 = *mBookX5;
+                        *mBookX5 = *mBookX4;
+                        *mBookX4 = *mBookX3;
+                        *mBookX3 = *mBookX2;
+                        *mBookX2 = *mBookX1;
+                        *mBookX1 = temp;
+                    }
                     if (ImGui::Button(S(TH_BOOK_RANDX))) {
                         static std::default_random_engine rand_engine(timeGetTime());
                         static std::uniform_int_distribution<int32_t> rand_value(-192, 192);
@@ -1043,8 +1079,20 @@ namespace TH06 {
                 if (*mPhase == 1 || *mPhase == 2 || *mPhase == 3)
                     mDelaySt6Bs9();
                 mWallPrac();
+                if (*mWallPrac) {
+                    mWallPracSnipeN("%.2f");
+                    mWallPracSnipeF("%.2f");
+                    *mWallPracSnipeN = floorf(*mWallPracSnipeN / 0.01f + 0.005f) * 0.01f;
+                    *mWallPracSnipeF = floorf(*mWallPracSnipeF / 0.01f + 0.005f) * 0.01f;
+                }
             } else if (section == TH06_ST6_BOSS6) {
                 mWallPrac();
+                if (*mWallPrac){
+                    mWallPracSnipeN("%.2f");
+                    mWallPracSnipeF("%.2f");
+                    *mWallPracSnipeN = floorf(*mWallPracSnipeN / 0.01f + 0.005f) * 0.01f;
+                    *mWallPracSnipeF = floorf(*mWallPracSnipeF / 0.01f + 0.005f) * 0.01f;
+                }
             }
         }
         void PracticeMenu(Gui::GuiNavFocus& nav_focus)
@@ -1054,12 +1102,14 @@ namespace TH06 {
                 *mSection = *mChapter = 0;
             if (*mMode == 1) {
                 if (mWarp()) {
-                    *mSection = *mChapter = *mPhase = *mFrame = 0, *mDelaySt6Bs9 = 120,*mWallPrac = false;
+                    *mSection = *mChapter = *mPhase = *mFrame = 0, *mDelaySt6Bs9 = 120,*mWallPrac = false,*mWallPracSnipeF=0.3f,*mWallPracSnipeN=0.0f;
+                    //(-180,32),(-116,128),(-61,144),(41,64),(112,80),(180,96)
+                    //(-180,32),(-12,128),(-72,144),(68,64),(130,80),(180,96)
                     *mBookC1 = true,*mBookX1 = -180, *mBookY1 = 32;
-                    *mBookC2 = true,*mBookX2 = -90, *mBookY2 = 128;
-                    *mBookC3 = true, *mBookX3 = -30, *mBookY3 = 144;
-                    *mBookC4 = true,*mBookX4 = 30, *mBookY4 = 64;
-                    *mBookC5 = true,*mBookX5 = 90, *mBookY5 = 80;
+                    *mBookC2 = true,*mBookX2 = -116, *mBookY2 = 128;
+                    *mBookC3 = true, *mBookX3 = -61, *mBookY3 = 144;
+                    *mBookC4 = true,*mBookX4 = 41, *mBookY4 = 64;
+                    *mBookC5 = true,*mBookX5 = 112, *mBookY5 = 80;
                     *mBookC6 = true,*mBookX6 = 180, *mBookY6 = 96;
                 }
                 if (*mWarp) {
@@ -1245,6 +1295,10 @@ namespace TH06 {
         Gui::GuiDrag<int, ImGuiDataType_S32> mBookY5 { TH_BOOK_Y5, -50, 448, 1, 10, 10 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mBookX6 { TH_BOOK_X6, -192, 192, 1, 10, 10 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mBookY6 { TH_BOOK_Y6, -50, 448, 1, 10, 10 };
+
+        Gui::GuiSlider<float, ImGuiDataType_Float> mWallPracSnipeF { TH06_ST6_WALL_PRAC_SNIPE_F, 0.0f, 1.0f, 0.05f,0.05f,0.05f };
+        Gui::GuiSlider<float, ImGuiDataType_Float> mWallPracSnipeN { TH06_ST6_WALL_PRAC_SNIPE_N, 0.0f, 1.0f, 0.05f, 0.05f, 0.05f };
+
         Gui::GuiCheckBox                           mBookC1 { TH_BOOK_C1};
         Gui::GuiCheckBox                           mBookC2 { TH_BOOK_C2};
         Gui::GuiCheckBox                           mBookC3 { TH_BOOK_C3};
@@ -3169,20 +3223,31 @@ namespace TH06 {
             pCtx->Eip = 0x40e1d8;
         }
     }
+
+
+    EHOOK_DY(th06_wall_prac_boss_pos, 0x40907F)
+    {
+        if (thPracParam.mode && thPracParam.stage == 5 && thPracParam.wall_prac_st6 && thPracParam.section == TH06_ST6_BOSS9) {
+            DWORD penm = *(DWORD*)(pCtx->Ebp + 0x8);
+            g_last_boss_x = *(float*)(penm + 0xC6C);
+            g_last_boss_y = *(float*)(penm + 0xC70);
+        }
+    }
     EHOOK_DY(th06_wall_prac, 0x40D57C)
     {
         if (thPracParam.mode && thPracParam.stage == 5  && thPracParam.wall_prac_st6) {
-            if (thPracParam.section == TH06_ST6_BOSS6 || thPracParam.section == TH06_ST6_BOSS9)
+            auto GetRandF = []() -> float {
+                unsigned int(__fastcall * sb_41E7F0_rand_int)(DWORD thiz);
+                sb_41E7F0_rand_int = (decltype(sb_41E7F0_rand_int))0x41E7F0;
+                unsigned int randi = sb_41E7F0_rand_int(0x69D8F8);
+                return (double)randi / 4294967296.0;
+            }; // rand from 0 to 1
+            if (thPracParam.section == TH06_ST6_BOSS6)
             {
-                float posb1 = thPracParam.section == TH06_ST6_BOSS6 ? 0.4 : 0.7;
-                float posb2 = thPracParam.section == TH06_ST6_BOSS6 ? 0.9 : 0.95;
-                float posb3 = thPracParam.section == TH06_ST6_BOSS6 ? 0.2 : 0.3;
-                auto GetRandF = []()->float{
-                    unsigned int(__fastcall *sb_41E7F0_rand_int)(DWORD thiz);
-                    sb_41E7F0_rand_int = (decltype(sb_41E7F0_rand_int))0x41E7F0;
-                    unsigned int randi = sb_41E7F0_rand_int(0x69D8F8);
-                    return (double)randi / 4294967296.0;
-                };// rand from 0 to 1
+                float posb1 = 0.4;
+                float posb2 = 0.9;
+                float posb3 = 0.2;
+               
                 float* wall_angle = (float*)(pCtx->Ebp - 0x68);
                 DWORD penm = *(DWORD*)(pCtx->Ebp + 0x8);
                 float bossx = *(float*)(penm + 0xC6C);
@@ -3194,7 +3259,7 @@ namespace TH06 {
                 
                 float decision = GetRandF();
                 
-                    // - 1.570796f + GetRandF() * 1.745329f
+                // - 1.570796f + GetRandF() * 1.745329f
                 if (decision < posb1) {
                     float min_dist_bt = 99999.0f;
                     for (int i = 0; i < 640; i++) {
@@ -3220,9 +3285,62 @@ namespace TH06 {
                 }else {
                     *wall_angle = GetRandF() * 6.28318f - 3.1415926f;
                 }
+            } else if (thPracParam.section == TH06_ST6_BOSS9) {
+                float* wall_angle = (float*)(pCtx->Ebp - 0x68);
+                DWORD penm = *(DWORD*)(pCtx->Ebp + 0x8);
+                float bossx = *(float*)(penm + 0xC6C);
+                float bossy = *(float*)(penm + 0xC70);
+                float plx = *(float*)(0x6CAA68);
+                float ply = *(float*)(0x6CAA6C);
+                float angle_pl = atan2f(ply - bossy, plx - bossx);
+                float dist_pl = hypotf(ply - bossy, plx - bossx);
+
+                float decision = GetRandF();
+                if (decision < 0.8) {
+                    float min_dist_bt = 99999.0f;
+                    ImVec2 bt_pos = { 0.0f, 0.0f };
+                    for (int i = 0; i < 640; i++) {
+                        DWORD pbt = 0x005AB5F8 + i * 0x5C4;
+                        if (*(WORD*)(pbt + 0x5BE)
+                            && *(WORD*)(pbt + 0x5BE) != 5
+                            && *(DWORD*)(pbt + 0xC0)
+                            && *(float*)(*(DWORD*)(pbt + 0xC0) + 0x2C) < 30.0
+                            && *(float*)(pbt + 0x584) == 0.0) {
+                            ImVec2 pos = *(ImVec2*)(pbt + 0x560);
+                            auto dist = hypotf(pos.x - g_last_boss_x, pos.y - g_last_boss_y);
+                            if (min_dist_bt > dist) {
+                                min_dist_bt = dist;
+                                bt_pos = pos;
+                            }
+                        }
+                    }
+                    *wall_angle = angle_pl - hypotf(bt_pos.x - bossx, bt_pos.y - bossy) * 3.14159f / 256.0f + (GetRandF() - 0.5f) * 2.0f * 0.34f;
+                }else {
+                    *wall_angle = GetRandF() * 6.28318f - 3.1415926f;
+                }
             }
         }
-        
+    }
+    EHOOK_DY(th06_wall_prac2, 0x0040D900)
+    {
+        if (thPracParam.mode && thPracParam.stage == 5 && thPracParam.wall_prac_st6 && thPracParam.section == TH06_ST6_BOSS9 
+            && (thPracParam.wall_prac_snipe_ratio_far > 0.0001f || thPracParam.wall_prac_snipe_ratio_near > 0.0001f)
+            ) {
+                float* angle = (float*)(pCtx->Ebp - 0x70);
+                DWORD pbt = *(DWORD*)(pCtx->Ebp - 0x60);
+                ImVec2 pos = *(ImVec2*)(pbt + 0x560);
+                float plx = *(float*)(0x6CAA68);
+                float ply = *(float*)(0x6CAA6C);
+                float dist_pl = hypotf(plx - pos.x, ply - pos.y);
+                float angle_pl = atan2f(ply - pos.y, plx - pos.x);
+                float random_near = 1.0f - thPracParam.wall_prac_snipe_ratio_near;
+                float random_far = 1.0f - thPracParam.wall_prac_snipe_ratio_far;
+                if (dist_pl > 400.0f) {
+                    dist_pl = 400.0f;
+                }
+                *angle = *angle * (dist_pl * (random_far - random_near) / 400.0f + random_near) + angle_pl;
+
+        }
     }
     PATCH_DY(th06_disable_menu, 0x439ab2, "\x90\x90\x90\x90\x90", 5);
     // fix igi render problem

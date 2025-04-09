@@ -59,6 +59,8 @@ enum th_glossary_t {
     TH06_ST4_WOOD_FIRE,
     TH06_ST6_WALL_PRAC,
     TH06_ST6_WALL_PRAC_DESC,
+    TH06_ST6_WALL_PRAC_SNIPE_F,
+    TH06_ST6_WALL_PRAC_SNIPE_N,
     TH06_TITLE,
     TH075_TITLE,
     TH07_CHAOS,
@@ -1169,9 +1171,11 @@ enum th_glossary_t {
     TH_BOOK_COPY_SETTING,
     TH_BOOK_LAST,
     TH_BOOK_MIRROR,
+    TH_BOOK_MIRROR2,
     TH_BOOK_PASTE_SETTING,
     TH_BOOK_RANDX,
     TH_BOOK_RESETY,
+    TH_BOOK_ROLL,
     TH_BOOK_X1,
     TH_BOOK_X2,
     TH_BOOK_X3,
@@ -1383,7 +1387,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1372];
+extern const char* th_glossary_str[3][1376];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2963,7 +2967,7 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3359];
+extern const wchar_t __thprac_loc_range_zh[3361];
 
 extern const wchar_t __thprac_loc_range_en[61];
 

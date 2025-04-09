@@ -1811,8 +1811,8 @@ void SSS_UI()
         ImGui::DragFloat(S(THPRAC_BLIND_SZ), &g_blind_size, 1.0f, 20.0f, 600.0f);
         ImGui::SameLine();
         if (ImGui::Button(std::format("{}##blind_reload", S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_RELOAD)).c_str())) {
-            if (g_blind_texture)
-                ((IUnknown*)(g_blind_texture))->Release();
+            // if (g_blind_texture)
+            //     ((IUnknown*)(g_blind_texture))->Release();
             g_blind_texture = NULL;
             g_is_texture_failed = false;
         }
