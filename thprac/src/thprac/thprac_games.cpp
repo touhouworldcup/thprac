@@ -1171,7 +1171,7 @@ bool ReplayLoadParam(const wchar_t* rep_path, std::string& param)
                 if (!ReadFile(repFile, &paramLength, 4, &bytesRead, nullptr))
                     return false;
 
-                if (bytesRead == 4 && paramLength > 0 && paramLength < repSize && paramLength < 512) {
+                if (bytesRead == 4 && paramLength > 0 && paramLength < repSize) {
                     SetFilePointer(repFile, ~paramLength - 3, nullptr, FILE_CURRENT);
                     char* buf = (char*)malloc(paramLength + 1);
                     if (!buf)

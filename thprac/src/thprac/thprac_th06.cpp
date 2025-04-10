@@ -50,27 +50,23 @@ namespace TH06 {
         bool wall_prac_st6;
         bool dlg;
 
-        bool book_fix1;
-        bool book_fix2;
-        bool book_fix3;
-        bool book_fix4;
-        bool book_fix5;
-        bool book_fix6;
-        int book_x1;
-        int book_y1;
-        int book_x2;
-        int book_y2;
-        int book_x3;
-        int book_y3;
-        int book_x4;
-        int book_y4;
-        int book_x5;
-        int book_y5;
-        int book_x6;
-        int book_y6;
+        int bF;//book_fix
+        int bX1;//book_x
+        int bX2;
+        int bX3;
+        int bX4;
+        int bX5;
+        int bX6;
 
-        float wall_prac_snipe_ratio_near;
-        float wall_prac_snipe_ratio_far;
+        int bY1;//book_y
+        int bY2;
+        int bY3;
+        int bY4;
+        int bY5;
+        int bY6;
+
+        int snipeN;
+        int snipeF;
 
         bool _playLock;
         void Reset()
@@ -89,26 +85,21 @@ namespace TH06 {
             rankLock = false;
             fakeType = 0;
 
-            book_y1 = 32.0f,
-            book_y2 = 128.0f,
-            book_y3 = 144.0f,
-            book_y4 = 64.0f,
-            book_y5 = 80.0f,
-            book_y6 = 96.0f;
-            book_x1 = 0.0f;
-            book_x2 = 0.0f;
-            book_x3 = 0.0f;
-            book_x4 = 0.0f;
-            book_x5 = 0.0f;
-            book_x6 = 0.0f;
-            wall_prac_snipe_ratio_near = 0.0f;
-            wall_prac_snipe_ratio_far = 0.0f;
-            book_fix1 = false;
-            book_fix2 = false;
-            book_fix3 = false;
-            book_fix4 = false;
-            book_fix5 = false;
-            book_fix6 = false;
+            bY1 = 32.0f,
+            bY2 = 128.0f,
+            bY3 = 144.0f,
+            bY4 = 64.0f,
+            bY5 = 80.0f,
+            bY6 = 96.0f;
+            bX1 = 0.0f;
+            bX2 = 0.0f;
+            bX3 = 0.0f;
+            bX4 = 0.0f;
+            bX5 = 0.0f;
+            bX6 = 0.0f;
+            bF = 0;
+            snipeN = 0;
+            snipeF = 0;
             
         }
         bool ReadJson(std::string& json)
@@ -134,27 +125,22 @@ namespace TH06 {
             GetJsonValue(delay_st6bs9);
             GetJsonValueEx(wall_prac_st6, Bool);
 
-            GetJsonValueEx(book_fix1, Bool);
-            GetJsonValueEx(book_fix2, Bool);
-            GetJsonValueEx(book_fix3, Bool);
-            GetJsonValueEx(book_fix4, Bool);
-            GetJsonValueEx(book_fix5, Bool);
-            GetJsonValueEx(book_fix6, Bool);
-            GetJsonValue(book_x1);
-            GetJsonValue(book_x2);
-            GetJsonValue(book_x3);
-            GetJsonValue(book_x4);
-            GetJsonValue(book_x5);
-            GetJsonValue(book_x6);
-            GetJsonValue(book_y1);
-            GetJsonValue(book_y2);
-            GetJsonValue(book_y3);
-            GetJsonValue(book_y4);
-            GetJsonValue(book_y5);
-            GetJsonValue(book_y6);
+            GetJsonValue(bF);
+            GetJsonValue(bX1);
+            GetJsonValue(bX2);
+            GetJsonValue(bX3);
+            GetJsonValue(bX4);
+            GetJsonValue(bX5);
+            GetJsonValue(bX6);
+            GetJsonValue(bY1);
+            GetJsonValue(bY2);
+            GetJsonValue(bY3);
+            GetJsonValue(bY4);
+            GetJsonValue(bY5);
+            GetJsonValue(bY6);
 
-            GetJsonValue(wall_prac_snipe_ratio_near);
-            GetJsonValue(wall_prac_snipe_ratio_far);
+            GetJsonValue(snipeN);
+            GetJsonValue(snipeF);
 
             return true;
         }
@@ -187,27 +173,22 @@ namespace TH06 {
             AddJsonValue(delay_st6bs9);
             AddJsonValue(wall_prac_st6);
             
-            AddJsonValue(book_fix1);
-            AddJsonValue(book_fix2);
-            AddJsonValue(book_fix3);
-            AddJsonValue(book_fix4);
-            AddJsonValue(book_fix5);
-            AddJsonValue(book_fix6);
-            AddJsonValue(book_x1);
-            AddJsonValue(book_x2);
-            AddJsonValue(book_x3);
-            AddJsonValue(book_x4);
-            AddJsonValue(book_x5);
-            AddJsonValue(book_x6);
-            AddJsonValue(book_y1);
-            AddJsonValue(book_y2);
-            AddJsonValue(book_y3);
-            AddJsonValue(book_y4);
-            AddJsonValue(book_y5);
-            AddJsonValue(book_y6);
+            AddJsonValue(bF);
+            AddJsonValue(bX1);
+            AddJsonValue(bX2);
+            AddJsonValue(bX3);
+            AddJsonValue(bX4);
+            AddJsonValue(bX5);
+            AddJsonValue(bX6);
+            AddJsonValue(bY1);
+            AddJsonValue(bY2);
+            AddJsonValue(bY3);
+            AddJsonValue(bY4);
+            AddJsonValue(bY5);
+            AddJsonValue(bY6);
 
-            AddJsonValue(wall_prac_snipe_ratio_near);
-            AddJsonValue(wall_prac_snipe_ratio_far);
+            AddJsonValue(snipeN);
+            AddJsonValue(snipeF);
 
             ReturnJson();
         }
@@ -906,17 +887,17 @@ namespace TH06 {
                 if (thPracParam.section == TH06_ST6_BOSS9 || thPracParam.section == TH06_ST6_BOSS6)
                 {
                     thPracParam.wall_prac_st6 = *mWallPrac;
-                    thPracParam.wall_prac_snipe_ratio_far = *mWallPracSnipeF;
-                    thPracParam.wall_prac_snipe_ratio_near = *mWallPracSnipeN;
+                    thPracParam.snipeF = *mWallPracSnipeF;
+                    thPracParam.snipeN = *mWallPracSnipeN;
                 }
-                if (thPracParam.section == TH06_ST4_BOOKS)
-                {
-                    thPracParam.book_fix1 = *mBookC1;thPracParam.book_x1 = *mBookX1;thPracParam.book_y1 = *mBookY1;
-                    thPracParam.book_fix2 = *mBookC2;thPracParam.book_x2 = *mBookX2;thPracParam.book_y2 = *mBookY2;
-                    thPracParam.book_fix3 = *mBookC3;thPracParam.book_x3 = *mBookX3;thPracParam.book_y3 = *mBookY3;
-                    thPracParam.book_fix4 = *mBookC4;thPracParam.book_x4 = *mBookX4;thPracParam.book_y4 = *mBookY4;
-                    thPracParam.book_fix5 = *mBookC5;thPracParam.book_x5 = *mBookX5;thPracParam.book_y5 = *mBookY5;
-                    thPracParam.book_fix6 = *mBookC6;thPracParam.book_x6 = *mBookX6;thPracParam.book_y6 = *mBookY6;
+                if (thPracParam.section == TH06_ST4_BOOKS) {
+                    thPracParam.bF = 0;
+                    thPracParam.bF |= ((int)*mBookC1)<<0;thPracParam.bX1 = *mBookX1;thPracParam.bY1 = *mBookY1;
+                    thPracParam.bF |= ((int)*mBookC2)<<1;thPracParam.bX2 = *mBookX2;thPracParam.bY2 = *mBookY2;
+                    thPracParam.bF |= ((int)*mBookC3)<<2;thPracParam.bX3 = *mBookX3;thPracParam.bY3 = *mBookY3;
+                    thPracParam.bF |= ((int)*mBookC4)<<3;thPracParam.bX4 = *mBookX4;thPracParam.bY4 = *mBookY4;
+                    thPracParam.bF |= ((int)*mBookC5)<<4;thPracParam.bX5 = *mBookX5;thPracParam.bY5 = *mBookY5;
+                    thPracParam.bF |= ((int)*mBookC6)<<5;thPracParam.bX6 = *mBookX6;thPracParam.bY6 = *mBookY6;
                 }
 
                 thPracParam.score = *mScore;
@@ -949,16 +930,17 @@ namespace TH06 {
                     thPracParam.delay_st6bs9 = *mDelaySt6Bs9;
                 if (thPracParam.section == TH06_ST6_BOSS9 || thPracParam.section == TH06_ST6_BOSS6) {
                     thPracParam.wall_prac_st6 = *mWallPrac;
-                    thPracParam.wall_prac_snipe_ratio_far = *mWallPracSnipeF;
-                    thPracParam.wall_prac_snipe_ratio_near = *mWallPracSnipeN;
+                    thPracParam.snipeF = *mWallPracSnipeF;
+                    thPracParam.snipeN = *mWallPracSnipeN;
                 }
                 if (thPracParam.section == TH06_ST4_BOOKS) {
-                    thPracParam.book_fix1= *mBookC1;thPracParam.book_x1 = *mBookX1;thPracParam.book_y1 = *mBookY1;
-                    thPracParam.book_fix2= *mBookC2;thPracParam.book_x2 = *mBookX2;thPracParam.book_y2 = *mBookY2;
-                    thPracParam.book_fix3= *mBookC3;thPracParam.book_x3 = *mBookX3;thPracParam.book_y3 = *mBookY3;
-                    thPracParam.book_fix4= *mBookC4;thPracParam.book_x4 = *mBookX4;thPracParam.book_y4 = *mBookY4;
-                    thPracParam.book_fix5= *mBookC5;thPracParam.book_x5 = *mBookX5;thPracParam.book_y5 = *mBookY5;
-                    thPracParam.book_fix6= *mBookC6;thPracParam.book_x6 = *mBookX6;thPracParam.book_y6 = *mBookY6;
+                    thPracParam.bF = 0;
+                    thPracParam.bF |= ((int)*mBookC1)<<0;thPracParam.bX1 = *mBookX1;thPracParam.bY1 = *mBookY1;
+                    thPracParam.bF |= ((int)*mBookC2)<<1;thPracParam.bX2 = *mBookX2;thPracParam.bY2 = *mBookY2;
+                    thPracParam.bF |= ((int)*mBookC3)<<2;thPracParam.bX3 = *mBookX3;thPracParam.bY3 = *mBookY3;
+                    thPracParam.bF |= ((int)*mBookC4)<<3;thPracParam.bX4 = *mBookX4;thPracParam.bY4 = *mBookY4;
+                    thPracParam.bF |= ((int)*mBookC5)<<4;thPracParam.bX5 = *mBookX5;thPracParam.bY5 = *mBookY5;
+                    thPracParam.bF |= ((int)*mBookC6)<<5;thPracParam.bX6 = *mBookX6;thPracParam.bY6 = *mBookY6;
                 }
                 thPracParam.score = *mScore;
                 thPracParam.life = (float)*mLife;
@@ -1080,18 +1062,14 @@ namespace TH06 {
                     mDelaySt6Bs9();
                 mWallPrac();
                 if (*mWallPrac) {
-                    mWallPracSnipeN("%.2f");
-                    mWallPracSnipeF("%.2f");
-                    *mWallPracSnipeN = floorf(*mWallPracSnipeN / 0.01f + 0.005f) * 0.01f;
-                    *mWallPracSnipeF = floorf(*mWallPracSnipeF / 0.01f + 0.005f) * 0.01f;
+                    mWallPracSnipeN("%d%%");
+                    mWallPracSnipeF("%d%%");
                 }
             } else if (section == TH06_ST6_BOSS6) {
                 mWallPrac();
                 if (*mWallPrac){
-                    mWallPracSnipeN("%.2f");
-                    mWallPracSnipeF("%.2f");
-                    *mWallPracSnipeN = floorf(*mWallPracSnipeN / 0.01f + 0.005f) * 0.01f;
-                    *mWallPracSnipeF = floorf(*mWallPracSnipeF / 0.01f + 0.005f) * 0.01f;
+                    mWallPracSnipeN("%d%%");
+                    mWallPracSnipeF("%d%%");
                 }
             }
         }
@@ -1102,7 +1080,7 @@ namespace TH06 {
                 *mSection = *mChapter = 0;
             if (*mMode == 1) {
                 if (mWarp()) {
-                    *mSection = *mChapter = *mPhase = *mFrame = 0, *mDelaySt6Bs9 = 120,*mWallPrac = false,*mWallPracSnipeF=0.3f,*mWallPracSnipeN=0.0f;
+                    *mSection = *mChapter = *mPhase = *mFrame = 0, *mDelaySt6Bs9 = 120,*mWallPrac = false,*mWallPracSnipeF=30,*mWallPracSnipeN=0;
                     //(-180,32),(-116,128),(-61,144),(41,64),(112,80),(180,96)
                     //(-180,32),(-12,128),(-72,144),(68,64),(130,80),(180,96)
                     *mBookC1 = true,*mBookX1 = -180, *mBookY1 = 32;
@@ -1296,8 +1274,8 @@ namespace TH06 {
         Gui::GuiDrag<int, ImGuiDataType_S32> mBookX6 { TH_BOOK_X6, -192, 192, 1, 10, 10 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mBookY6 { TH_BOOK_Y6, -50, 448, 1, 10, 10 };
 
-        Gui::GuiSlider<float, ImGuiDataType_Float> mWallPracSnipeF { TH06_ST6_WALL_PRAC_SNIPE_F, 0.0f, 1.0f, 0.05f,0.05f,0.05f };
-        Gui::GuiSlider<float, ImGuiDataType_Float> mWallPracSnipeN { TH06_ST6_WALL_PRAC_SNIPE_N, 0.0f, 1.0f, 0.05f, 0.05f, 0.05f };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mWallPracSnipeF { TH06_ST6_WALL_PRAC_SNIPE_F, 0, 100};
+        Gui::GuiSlider<int, ImGuiDataType_S32> mWallPracSnipeN { TH06_ST6_WALL_PRAC_SNIPE_N, 0, 100};
 
         Gui::GuiCheckBox                           mBookC1 { TH_BOOK_C1};
         Gui::GuiCheckBox                           mBookC2 { TH_BOOK_C2};
@@ -2164,12 +2142,12 @@ namespace TH06 {
                 break;
             case 4:{
                 int32_t ofs = 0xCDD8;
-                if (thPracParam.book_fix1) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.book_x1 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.book_y1 }; ofs += 0x1C;
-                if (thPracParam.book_fix2) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.book_x2 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.book_y2 }; ofs += 0x1C;
-                if (thPracParam.book_fix3) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.book_x3 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.book_y3 }; ofs += 0x1C;
-                if (thPracParam.book_fix4) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.book_x4 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.book_y4 }; ofs += 0x1C;
-                if (thPracParam.book_fix5) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.book_x5 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.book_y5 }; ofs += 0x1C;
-                if (thPracParam.book_fix6) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.book_x6 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.book_y6 };
+                if (thPracParam.bF & (1<<0)) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.bX1 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.bY1 }; ofs += 0x1C;
+                if (thPracParam.bF & (1<<1)) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.bX2 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.bY2 }; ofs += 0x1C;
+                if (thPracParam.bF & (1<<2)) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.bX3 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.bY3 }; ofs += 0x1C;
+                if (thPracParam.bF & (1<<3)) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.bX4 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.bY4 }; ofs += 0x1C;
+                if (thPracParam.bF & (1<<4)) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.bX5 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.bY5 }; ofs += 0x1C;
+                if (thPracParam.bF & (1<<5)) ecl << pair { ofs, (int16_t)0 } << pair { ofs + 0x4, (float)thPracParam.bX6 + 192.0f } << pair { ofs + 0x8, (float)thPracParam.bY6 };
                 ecl << pair { 0xCE7C, (int16_t)-1 }; // disable timeline after books
                 ecl << pair { 0x1324, (int32_t)99999999 }; // loop forever
             }
@@ -3324,7 +3302,7 @@ namespace TH06 {
     EHOOK_DY(th06_wall_prac2, 0x0040D900)
     {
         if (thPracParam.mode && thPracParam.stage == 5 && thPracParam.wall_prac_st6 && thPracParam.section == TH06_ST6_BOSS9 
-            && (thPracParam.wall_prac_snipe_ratio_far > 0.0001f || thPracParam.wall_prac_snipe_ratio_near > 0.0001f)
+            && (thPracParam.snipeF > 0 || thPracParam.snipeN > 0)
             ) {
                 float* angle = (float*)(pCtx->Ebp - 0x70);
                 DWORD pbt = *(DWORD*)(pCtx->Ebp - 0x60);
@@ -3333,8 +3311,8 @@ namespace TH06 {
                 float ply = *(float*)(0x6CAA6C);
                 float dist_pl = hypotf(plx - pos.x, ply - pos.y);
                 float angle_pl = atan2f(ply - pos.y, plx - pos.x);
-                float random_near = 1.0f - thPracParam.wall_prac_snipe_ratio_near;
-                float random_far = 1.0f - thPracParam.wall_prac_snipe_ratio_far;
+                float random_near = 1.0f - thPracParam.snipeN/100.0f;
+                float random_far = 1.0f - thPracParam.snipeF / 100.0f;
                 if (dist_pl > 400.0f) {
                     dist_pl = 400.0f;
                 }
