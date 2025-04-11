@@ -3506,7 +3506,7 @@
       "ALCOSTG_BEER": [ "啤酒", "Beer", "ビール" ],
       "ALCOSTG_BEER_MAX": [ "啤酒上限", "Max Beer", "ビール最大値" ],
       "ALCOSTG_ORDER": [ "订单 #%d", "Order #%d", "注文 #%d" ],
-      "ALCOSTG_ORDER_MBOSS": [ "订单 #%d (中Boss）", "Order #%d (Mid Boss)", "注文 #%d (道中ボス)" ],
+      "ALCOSTG_ORDER_MBOSS": [ "订单 #%d (中Boss)", "Order #%d (Mid Boss)", "注文 #%d (道中ボス)" ],
       "ALCOSTG_FREE_MISS": [ "无偿Miss", "Costless Miss", "無償ミス" ],
       "ALCOSTG_FREE_BOMB": [ "无偿Bomb", "Costless Bomb", "無償ボム" ],
       "ALCOSTG_LOCK_TIME_BAR": [ "锁时 (酒场)", "Time Lock (Bar)", "酒場の時間は進みません" ],
