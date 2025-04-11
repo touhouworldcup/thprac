@@ -211,7 +211,7 @@
       "THPRAC_TOOLS_RND_PLAYER": [ "随机机体", "Random shot type", "ランダム機体" ],
       "THPRAC_TOOLS_RND_GAME_PC98": [ "PC98", "PC98", "PC98" ],
       "THPRAC_TOOLS_ROLL": [ "ROLL!", "ROLL!", "ROLL!" ],
-      "THPRAC_TOOLS_ROLL_RESULT": [ "你随机到了：%s。（右键查看更多选项）", "You've rolled: %s. (Right click for more options)", "結果：％s。（右クリックで詳細オプションを表示）" ],
+      "THPRAC_TOOLS_ROLL_RESULT": [ "你随机到了：%s。（右键查看更多选项）", "You've rolled: %s. (Right click for more options)", "結果：%s。（右クリックで詳細オプションを表示）" ],
       "THPRAC_TOOLS_RND_PLAYER_GAME": [ "游戏", "Game", "ゲーム" ],
       "THPRAC_TOOLS_RND_TURNTO_PLAYER": [ "转至随机机体", "Turn to random shot type", "ランダム機体に移動" ],
       "THPRAC_TOOLS_RND_TURNTO_GAME": [ "转至游戏页面", "Turn to game page", "ゲームページに移動" ],

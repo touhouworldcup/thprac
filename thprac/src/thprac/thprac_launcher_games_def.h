@@ -558,199 +558,199 @@ static GameRoll gGameRoll[] = {
         "alcostg",
         ROLL_SPINOFF_STG,
         nullptr,
-        1,
+        1
     },
     {
         "th01",
         ROLL_PC98,
         nullptr,
-        1,
+        1
     },
     {
         "th02",
         ROLL_PC98,
-        nullptr,
-        1,
+        "Reimu A\0Reimu B\0Reimu C\0\0",
+        3
     },
     {
         "th03",
         ROLL_PC98,
         "Reimu\0Mima\0Marisa\0Ellen\0Kotohime\0Kana\0Rikako\0Chiyuri\0Yumemi\0\0",
-        3,
+        3
     },
     {
         "th04",
         ROLL_PC98,
         "Reimu\0Marisa\0\0",
-        2,
+        2
     },
     {
         "th05",
         ROLL_PC98,
         "Reimu\0Marisa\0Mima\0Yuuka\0\0",
-        4,
+        4
     },
     {
         "th06",
         ROLL_MAIN,
         "Reimu A\0Reimu B\0Marisa A\0Marisa B\0\0",
-        2,
+        2
     },
     {
         "th07",
         ROLL_MAIN,
         "Reimu A\0Reimu B\0Marisa A\0Marisa B\0Sakuya A\0Sakuya B\0\0",
-        2,
+        2
     },
     {
         "th075",
         ROLL_SPINOFF_OTHERS,
         nullptr,
-        1,
+        1
     },
     {
         "th08",
         ROLL_MAIN,
         "Reimu&Yukari\0Marisa&Alice\0Sakuya&Remilia\0Youmu&Yuyuko\0Reimu\0Yukari\0Marisa\0Alice\0Sakuya\0Remilia\0Youmu\0Yuyuko\0\0",
-        4,
+        4
     },
     {
         "th09",
         ROLL_MAIN,
         "Reimu\0Marisa\0Sakuya\0Youmu\0Reisen\0Cirno\0Lyrica\0Merlin\0Lunasa\0Mystia\0Tewi\0Aya\0Medicine\0Yuuka\0Komachi\0Eiki\0\0",
-        4,
+        4
     },
     {
         "th095",
         ROLL_SPINOFF_STG,
         nullptr,
-        1,
+        1
     },
     {
         "th10",
         ROLL_MAIN,
         "Reimu A\0Reimu B\0Reimu C\0Marisa A\0Marisa B\0Marisa C\0\0",
-        3,
+        3
     },
     {
         "th105",
         ROLL_SPINOFF_OTHERS,
         nullptr,
-        1,
+        1
     },
     {
         "th11",
         ROLL_MAIN,
         "Reimu A\0Reimu B\0Reimu C\0Marisa A\0Marisa B\0Marisa C\0\0",
-        3,
+        3
     },
     {
         "th12",
         ROLL_MAIN,
         "Reimu A\0Reimu B\0Marisa A\0Marisa B\0Sanae A\0Sanae B\0\0",
-        2,
+        2
     },
     {
         "th123",
         ROLL_SPINOFF_OTHERS,
         nullptr,
-        1,
+        1
     },
     {
         "th125",
         ROLL_SPINOFF_STG,
         "Aya\0Hatate",
-        2,
+        2
     },
     {
         "th128",
         ROLL_SPINOFF_STG,
         nullptr,
-        1,
+        1
     },
     {
         "th13",
         ROLL_MAIN,
         "Reimu\0Marisa\0Sanae\0Youmu\0\0",
-        4,
+        4
     },
     {
         "th135",
         ROLL_SPINOFF_OTHERS,
         nullptr,
-        1,
+        1
     },
     {
         "th14",
         ROLL_MAIN,
         "Reimu A\0Reimu B\0Marisa A\0Marisa B\0Sakuya A\0Sakuya B\0\0",
-        2,
+        2
     },
     {
         "th143",
         ROLL_SPINOFF_STG,
         nullptr,
-        1,
+        1
     },
     {
         "th145",
         ROLL_SPINOFF_OTHERS,
         nullptr,
-        1,
+        1
     },
     {
         "th15",
         ROLL_MAIN,
         "Reimu\0Marisa\0Sanae\0Reisen\0\0",
-        4,
+        4
     },
     {
         "th155",
         ROLL_SPINOFF_OTHERS,
         nullptr,
-        1,
+        1
     },
     {
         "th16",
         ROLL_MAIN,
         "Reimu Spring\0Reimu Summer\0Reimu Autumn\0Reimu Winter\0Marisa Spring\0Marisa Summer\0Marisa Autumn\0Marisa Winter\0Aya Spring\0Aya Summer\0Aya Autumn\0Aya Winter\0Cirno Spring\0Cirno Summer\0Cirno Autumn\0Cirno Winter\0\0",
-        4,
+        4
     },
     {
         "th165",
         ROLL_SPINOFF_STG,
         nullptr,
-        1,
+        1
     },
     {
         "th17",
         ROLL_MAIN,
         "Reimu Wolf\0Reimu Otter\0Reimu Eagle\0Marisa Wolf\0Marisa Otter\0Marisa Eagle\0Youmu Wolf\0Youmu Otter\0Youmu Eagle\0\0",
-        3,
+        3
     },
     {
         "th175",
         ROLL_SPINOFF_OTHERS,
         nullptr,
-        1,
+        1
     },
     {
         "th18",
         ROLL_MAIN,
         "Reimu\0Marisa\0Sanae\0Sakuya\0\0",
-        4,
+        4
     },
     {
         "th185",
         ROLL_SPINOFF_STG,
         nullptr,
-        1,
+        1
     },
     {
         "th19",
         ROLL_MAIN,
         "Reimu\0Marisa\0Sanae\0Ran\0Aunn\0Nazrin\0Seiran\0Orin\0Tsukasa\0Mamizou\0Yachie\0Saki\0Yuuma\0Suika\0Biten\0Enoko\0Chiyari\0Hisami\0Zanmu\0\0",
-        4,
+        4
     }
 };
 #pragma endregion
