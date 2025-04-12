@@ -546,10 +546,12 @@ namespace TH07 {
         EHOOK_ST(th07_all_clear_bonus_1, 0x42b3d2)
         {
             pCtx->Eip = 0x42b3d6;
+            return true;
         }
         EHOOK_ST(th07_all_clear_bonus_2, 0x4280b7)
         {
             pCtx->Eip = 0x4280bf;
+            return true;
         }
     private:
         void FpsInit()
@@ -679,6 +681,7 @@ namespace TH07 {
         th07_rb::GetHook().Disable();
         *(uint32_t*)(pCtx->Ecx + 0x6f0) = 0x1e0;
         pCtx->Eip = 0x41677b;
+        return true;
     }
     void ECLTimeWarp(int count, uint32_t time)
     {
@@ -1682,10 +1685,12 @@ namespace TH07 {
         if (result) {
             pCtx->Eip = 0x44d3ce;
         }
+        return true;
     }
     EHOOK_DY(th07_prac_menu_1, 0x45a214)
     {
         THGuiPrac::singleton().State(1);
+        return true;
     }
     EHOOK_DY(th07_prac_menu_3, 0x45a65d)
     {
@@ -1695,22 +1700,27 @@ namespace TH07 {
             *((int32_t*)0x626280) = 4;
         else if (thPracParam.stage == 7)
             *((int32_t*)0x626280) = 5;
+        return true;
     }
     EHOOK_DY(th07_prac_menu_4, 0x45a6d4)
     {
         THGuiPrac::singleton().State(4);
+        return true;
     }
     EHOOK_DY(th07_rep_menu_1, 0x45ac43)
     {
         THGuiRep::singleton().State(1);
+        return true;
     }
     EHOOK_DY(th07_rep_menu_2, 0x45af96)
     {
         THGuiRep::singleton().State(2);
+        return true;
     }
     EHOOK_DY(th07_rep_menu_3, 0x45b2c1)
     {
         THGuiRep::singleton().State(3);
+        return true;
     }
     EHOOK_DY(th07_patch_main, 0x42f2e3)
     {
@@ -1764,6 +1774,7 @@ namespace TH07 {
             THSectionPatch();
         }
         thPracParam._playLock = true;
+        return true;
     }
     EHOOK_DY(th07_disable_title, 0x42956b)
     {
@@ -1771,6 +1782,7 @@ namespace TH07 {
             pCtx->Esp += 0xC;
             pCtx->Eip = 0x429570;
         }
+        return true;
     }
     EHOOK_DY(th07_fake_shot, 0x40e6ba)
     {
@@ -1778,6 +1790,7 @@ namespace TH07 {
             pCtx->Eax = thFakeShot;
             pCtx->Eip = 0x40eaca;
         }
+        return true;
     }
     EHOOK_DY(th07_bgm, 0x42f206)
     {
@@ -1800,30 +1813,35 @@ namespace TH07 {
             }
 
         }
+        return true;
     }
     EHOOK_DY(th07_bgm_st6_1, 0x427eda)
     {
         if (thPracParam.mode == 1 && thPracParam.section) {
             pCtx->Eip = 0x427efa;
         }
+        return true;
     }
     EHOOK_DY(th07_bgm_st6_2, 0x42d9a5)
     {
         if (thPracParam.mode == 1 && thPracParam.section) {
             pCtx->Eip = 0x42d9b1;
         }
+        return true;
     }
     EHOOK_DY(th07_bgm_st6_3, 0x40348a)
     {
         if (thPracParam.mode == 1 && thPracParam.section) {
             pCtx->Eip = 0x403496;
         }
+        return true;
     }
     EHOOK_DY(th07_save_replay, 0x4443fd)
     {
         char* rep_name = *(char**)(pCtx->Ebp - 0x134);
         if (thPracParam.mode)
             THSaveReplay(rep_name);
+        return true;
     }
     PATCH_DY(th07_disable_prac_menu1, 0x45b9ea, "\x90\x90\x90\x90\x90", 5);
     PATCH_DY(th07_disable_prac_menu2, 0x45bb1c, "\x90\x90\x90\x90\x90", 5);
@@ -1838,12 +1856,14 @@ namespace TH07 {
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
+        return true;
     }
     EHOOK_DY(th07_render, 0x42feb9)
     {
         GameGuiRender(IMPL_WIN32_DX8);
         if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
             THSnapshot::Snapshot(*(IDirect3DDevice8**)0x575958);
+        return true;
     }
     HOOKSET_ENDDEF()
 
@@ -1877,16 +1897,19 @@ namespace TH07 {
     EHOOK_DY(th07_disable_mutex, 0x435bff)
     {
         pCtx->Eip = 0x435c1b;
+        return true;
     }
     EHOOK_DY(th07_gui_init_1, 0x45599d)
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     EHOOK_DY(th07_gui_init_2, 0x4351ac)
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     HOOKSET_ENDDEF()
 }

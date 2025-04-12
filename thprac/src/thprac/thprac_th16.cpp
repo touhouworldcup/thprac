@@ -620,6 +620,7 @@ namespace TH16 {
         EHOOK_ST(th16_all_clear_bonus_1, 0x42e240)
         {
             pCtx->Eip = 0x42e24d;
+            return true;
         }
         EHOOK_ST(th16_all_clear_bonus_2, 0x42e2c0)
         {
@@ -630,6 +631,7 @@ namespace TH16 {
                 a();
                 pCtx->Eip = 0x42e245;
             }
+            return true;
         }
         EHOOK_ST(th16_all_clear_bonus_3, 0x42e39b)
         {
@@ -640,6 +642,7 @@ namespace TH16 {
                 a();
                 pCtx->Eip = 0x42e245;
             }
+            return true;
         }
     private:
         void FpsInit()
@@ -2157,6 +2160,7 @@ namespace TH16 {
                 pCtx->Eip = 0x42159b;
             }
         }
+        return true;
     }
     EHOOK_DY(th16_everlasting_bgm, 0x45ed00)
     {
@@ -2177,27 +2181,33 @@ namespace TH16 {
         if (result) {
             pCtx->Eip = 0x45ed93;
         }
+        return true;
     }
     EHOOK_DY(th16_param_reset, 0x44b610)
     {
         thPracParam.Reset();
         thSubSeasonB = -1;
+        return true;
     }
     EHOOK_DY(th16_prac_menu_1, 0x450f60)
     {
         THGuiPrac::singleton().State(1);
+        return true;
     }
     EHOOK_DY(th16_prac_menu_2, 0x450f83)
     {
         THGuiPrac::singleton().State(2);
+        return true;
     }
     EHOOK_DY(th16_prac_menu_3, 0x4512cc)
     {
         THGuiPrac::singleton().State(3);
+        return true;
     }
     EHOOK_DY(th16_prac_menu_4, 0x45136d)
     {
         THGuiPrac::singleton().State(4);
+        return true;
     }
     PATCH_DY(th16_prac_menu_enter_1, 0x451044, "\xeb", 1);
     EHOOK_DY(th16_prac_menu_enter_2, 0x451327)
@@ -2209,10 +2219,12 @@ namespace TH16 {
         }
 
         pCtx->Ecx = thPracParam.stage;
+        return true;
     }
     EHOOK_DY(th16_disable_prac_menu_1, 0x4514d1)
     {
         pCtx->Eip = 0x45150e;
+        return true;
     }
     EHOOK_DY(th16_menu_rank_fix, 0x44097f)
     {
@@ -2223,6 +2235,7 @@ namespace TH16 {
             *((int32_t*)0x4a57ac) = thSubSeasonB;
             thSubSeasonB = -1;
         }
+        return true;
     }
     EHOOK_DY(th16_patch_main, 0x42d1ec)
     {
@@ -2327,6 +2340,7 @@ namespace TH16 {
             THPatchSP(ecl);
         }
         thPracParam._playLock = true;
+        return true;
     }
     EHOOK_DY(th16_bgm, 0x42de8c)
     {
@@ -2334,6 +2348,7 @@ namespace TH16 {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x42de8e;
         }
+        return true;
     }
     EHOOK_DY(th16_rep_save, 0x448be4)
     {
@@ -2347,52 +2362,64 @@ namespace TH16 {
             if (thPracParam.season_gauge != 3 || thPracParam.phase || thPracParam.bug_fix)
                 THSaveReplay(repName);
         }
+        return true;
     }
     EHOOK_DY(th16_rep_menu_1, 0x4518a6)
     {
         THGuiRep::singleton().State(1);
+        return true;
     }
     EHOOK_DY(th16_rep_menu_2, 0x4519c6)
     {
         THGuiRep::singleton().State(2);
+        return true;
     }
     EHOOK_DY(th16_rep_menu_3, 0x451b86)
     {
         THGuiRep::singleton().State(3);
+        return true;
     }
     EHOOK_DY(th16_spmenu_alt_1, 0x455da6)
     {
         pCtx->Esp += 0x10;
         pCtx->Eip = 0x455dab;
+        return true;
     }
     PATCH_DY(th16_spmenu_alt_2, 0x455e75, "\x90\x90\x90\x90\x90", 5);
     EHOOK_DY(th16_spmenu_alt_3, 0x456b8b)
     {
         pCtx->Eip = 0x456d2a;
+        return true;
     }
     EHOOK_DY(th16_spmenu_alt_4, 0x456bb8)
     {
         pCtx->Eip = 0x456cba;
+        return true;
     }
     EHOOK_DY(th16_sp_menu_1, 0x455dbc)
     {
         THGuiSP::singleton().State(1);
+        return true;
     }
     EHOOK_DY(th16_sp_menu_2, 0x455dff)
     {
         THGuiSP::singleton().State(2);
+        return true;
     }
     EHOOK_DY(th16_sp_menu_3, 0x455eeb)
     {
         THGuiSP::singleton().State(3);
+        return true;
     }
     EHOOK_DY(th16_sp_menu_4, 0x455fee)
     {
         THGuiSP::singleton().State(4);
+        return true;
     }
     EHOOK_DY(th16_sp_menu_5, 0x455fe3)
     {
         THGuiSP::singleton().State(5);
+        return true;
     }
     EHOOK_DY(th16_update, 0x40156f)
     {
@@ -2405,10 +2432,12 @@ namespace TH16 {
         THGuiSP::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
+        return true;
     }
     EHOOK_DY(th16_render, 0x40168a)
     {
         GameGuiRender(IMPL_WIN32_DX9);
+        return true;
     }
     HOOKSET_ENDDEF()
 
@@ -2442,6 +2471,7 @@ namespace TH16 {
     EHOOK_DY(th16_disable_mutex, 0x4598db)
     {
         pCtx->Eip = 0x459aa1;
+        return true;
     }
     PATCH_DY(th16_startup_1, 0x44ac1f, "\x90\x90", 2);
     PATCH_DY(th16_startup_2, 0x44b672, "\xeb", 1);
@@ -2449,11 +2479,13 @@ namespace TH16 {
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     EHOOK_DY(th16_gui_init_2, 0x45b788)
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     HOOKSET_ENDDEF()
 }

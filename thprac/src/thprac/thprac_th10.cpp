@@ -487,18 +487,21 @@ namespace TH10 {
         EHOOK_ST(th10_all_clear_bonus_1, 0x416c3d)
         {
             pCtx->Eip = 0x416c56;
+            return true;
         }
         EHOOK_ST(th10_all_clear_bonus_2, 0x416d6c)
         {
             if (GetMemContent(0x474ca0) & 0x10) {
                 pCtx->Eip = 0x416c46;
             }
+            return true;
         }
         EHOOK_ST(th10_all_clear_bonus_3, 0x416e49)
         {
             if (GetMemContent(0x474ca0) & 0x10) {
                 pCtx->Eip = 0x416c46;
             }
+            return true;
         }
     private:
         void FpsInit()
@@ -800,6 +803,7 @@ namespace TH10 {
     {
         STDSt4SetStatus();
         th10_st4_std::GetHook().Disable();
+        return true;
     }
     void STDSt4Jump(uint32_t pos, uint32_t time, StdStatus& status)
     {
@@ -2162,31 +2166,38 @@ namespace TH10 {
         if (result) {
             pCtx->Eip = 0x43e4c5;
         }
+        return true;
     }
     EHOOK_DY(th10_param_reset, 0x42d436)
     {
         thPracParam.Reset();
+        return true;
     }
     EHOOK_DY(th10_prac_menu_1, 0x431060)
     {
         THGuiPrac::singleton().State(1);
+        return true;
     }
     EHOOK_DY(th10_prac_menu_2, 0x431085)
     {
         THGuiPrac::singleton().State(2);
+        return true;
     }
     EHOOK_DY(th10_prac_menu_3, 0x431320)
     {
         THGuiPrac::singleton().State(3);
+        return true;
     }
     EHOOK_DY(th10_prac_menu_4, 0x4313b4)
     {
         THGuiPrac::singleton().State(4);
+        return true;
     }
     PATCH_DY(th10_prac_menu_enter_1, 0x43115d, "\xeb", 1);
     EHOOK_DY(th10_prac_menu_enter_2, 0x431377)
     {
         pCtx->Eax = thPracParam.stage;
+        return true;
     }
     EHOOK_DY(th10_bgm, 0x4183e0)
     {
@@ -2194,6 +2205,7 @@ namespace TH10 {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x4183e1;
         }
+        return true;
     }
     EHOOK_DY(th10_logo, 0x413e4b)
     {
@@ -2202,18 +2214,22 @@ namespace TH10 {
                 pCtx->Eip = 0x413f87;
             }
         }
+        return true;
     }
     EHOOK_DY(th10_rep_menu_1, 0x4317b1)
     {
         THGuiRep::singleton().State(1);
+        return true;
     }
     EHOOK_DY(th10_rep_menu_2, 0x431869)
     {
         THGuiRep::singleton().State(2);
+        return true;
     }
     EHOOK_DY(th10_rep_menu_3, 0x4319b4)
     {
         THGuiRep::singleton().State(3);
+        return true;
     }
     EHOOK_DY(th10_patch_main, 0x417c5e)
     {
@@ -2249,25 +2265,30 @@ namespace TH10 {
             THSectionPatch();
         }
         thPracParam._playLock = true;
+        return true;
     }
     EHOOK_DY(th10_rep_save, 0x42a1e8)
     {
         char* repName = (char*)(pCtx->Esp + 0x20);
         if (thPracParam.mode)
             THSaveReplay(repName);
+        return true;
     }
     EHOOK_DY(th10_rep_power_fix, 0x42a322)
     {
         uint8_t* repBuffer = (uint8_t*)pCtx->Eax;
         THRepPowerFix(repBuffer);
+        return true;
     }
     EHOOK_DY(th10_disable_prac_menu_1, 0x43154d)
     {
         pCtx->Eip = 0x431576;
+        return true;
     }
     EHOOK_DY(th10_disable_prac_menu_2, 0x43104e)
     {
         pCtx->Eip = 0x431054;
+        return true;
     }
     EHOOK_DY(th10_update, 0x449d0e)
     {
@@ -2280,10 +2301,12 @@ namespace TH10 {
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
+        return true;
     }
     EHOOK_DY(th10_render, 0x4394fa)
     {
         GameGuiRender(IMPL_WIN32_DX9);
+        return true;
     }
     HOOKSET_ENDDEF()
 
@@ -2317,6 +2340,7 @@ namespace TH10 {
     EHOOK_DY(th10_disable_mutex, 0x43a024)
     {
         pCtx->Eip = 0x43a051;
+        return true;
     }
     PATCH_DY(th10_startup_1, 0x42ca31, "\xeb", 1);
     PATCH_DY(th10_startup_2, 0x42d04f, "\xeb\x23", 2);
@@ -2324,11 +2348,13 @@ namespace TH10 {
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     EHOOK_DY(th10_gui_init_2, 0x439d16)
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     HOOKSET_ENDDEF()
 }

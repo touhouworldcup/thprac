@@ -220,10 +220,12 @@ namespace TH095 {
             crosshair_pos[1] = view_pos[1] = boss_pos[1];
             crosshair_pos[2] = view_pos[2] = boss_pos[2];
         }
+        return true;
     }
     EHOOK_DY(th095_render, 0x4208d6)
     {
         THGuiUpdate();
+        return true;
     }
     HOOKSET_ENDDEF()
 
@@ -251,11 +253,13 @@ namespace TH095 {
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     EHOOK_DY(th095_gui_init_2, 0x42137e)
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     HOOKSET_ENDDEF()
 }

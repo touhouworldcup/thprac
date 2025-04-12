@@ -63,7 +63,7 @@ static BOOL IsCodePadding(LPBYTE pInst, UINT size)
 }
 
 //-------------------------------------------------------------------------
-BOOL CreateTrampolineFunctionEx(PTRAMPOLINE ct, UINT8 min_tf_length, BOOL check_jmp)
+DWORD CreateTrampolineFunctionEx(PTRAMPOLINE ct, UINT8 min_tf_length, BOOL check_jmp)
 {
 #if defined(_M_X64) || defined(__x86_64__)
     CALL_ABS call = {
@@ -105,9 +105,8 @@ BOOL CreateTrampolineFunctionEx(PTRAMPOLINE ct, UINT8 min_tf_length, BOOL check_
 
     ct->patchAbove = FALSE;
     ct->nIP = 0;
-
+    DisAsmCtx ctx;
     do {
-        DisAsmCtx ctx;
         UINT copySize;
         LPVOID pCopySrc;
         ULONG_PTR pOldInst = (ULONG_PTR)ct->pTarget + oldPos;
@@ -289,5 +288,5 @@ BOOL CreateTrampolineFunctionEx(PTRAMPOLINE ct, UINT8 min_tf_length, BOOL check_
     memcpy(ct->pRelay, &jmp, sizeof(jmp));
 #endif
 
-    return TRUE;
+    return ctx.insLen;
 }

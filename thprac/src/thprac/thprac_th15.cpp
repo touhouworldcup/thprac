@@ -487,6 +487,7 @@ namespace TH15 {
         EHOOK_ST(th15_all_clear_bonus_1, 0x43d99d)
         {
             pCtx->Eip = 0x43d9aa;
+            return true;
         }
         EHOOK_ST(th15_all_clear_bonus_2, 0x43daac)
         {
@@ -497,6 +498,7 @@ namespace TH15 {
                 a();
                 pCtx->Eip = 0x43d9a2;
             }
+            return true;
         }
         EHOOK_ST(th15_all_clear_bonus_3, 0x43dcb5)
         {
@@ -507,6 +509,7 @@ namespace TH15 {
                 a();
                 pCtx->Eip = 0x43d9a2;
             }
+            return true;
         }
     private:
         void FpsInit()
@@ -661,6 +664,7 @@ namespace TH15 {
             th15_chapter_set::GetData() = -1;
         }
         th15_chapter_set::GetHook().Disable();
+        return true;
     }
     EHOOK_G1(th15_chapter_disable, 0x43d0b5)
     {
@@ -668,11 +672,13 @@ namespace TH15 {
         if (!th15_chapter_disable::GetData())
             th15_chapter_disable::GetHook().Disable();
         pCtx->Eip = 0x43d0d5;
+        return true;
     }
     EHOOK_G1(th15_st7boss1_chapter_bonus, 0x43dece)
     {
         th15_st7boss1_chapter_bonus::GetHook().Disable();
         *(uint32_t*)0x4e7484 = 1;
+        return true;
     }
     EHOOK_G1(th15_stars_bgm_sync, 0x48c294)
     {
@@ -684,6 +690,7 @@ namespace TH15 {
                 th15_stars_bgm_sync::GetHook().Disable();
             }
         }
+        return true;
     }
     void ECLSetChapter(size_t chapter)
     {
@@ -1778,40 +1785,49 @@ namespace TH15 {
         if (result) {
             pCtx->Eip = 0x476fa3;
         }
+        return true;
     }
     EHOOK_DY(th15_param_reset, 0x461070)
     {
         thPracParam.Reset();
+        return true;
     }
     EHOOK_DY(th15_prac_menu_1, 0x4677be)
     {
         THGuiPrac::singleton().State(1);
+        return true;
     }
     EHOOK_DY(th15_prac_menu_2, 0x4677e1)
     {
         THGuiPrac::singleton().State(2);
+        return true;
     }
     EHOOK_DY(th15_prac_menu_3, 0x467b2a)
     {
         THGuiPrac::singleton().State(3);
+        return true;
     }
     EHOOK_DY(th15_prac_menu_4, 0x467bcb)
     {
         THGuiPrac::singleton().State(4);
+        return true;
     }
     PATCH_DY(th15_prac_menu_enter_1, 0x4678a2, "\xeb", 1);
     EHOOK_DY(th15_prac_menu_enter_2, 0x467b85)
     {
         pCtx->Ecx = thPracParam.stage;
+        return true;
     }
     EHOOK_DY(th15_disable_prac_menu_1, 0x467d31)
     {
         pCtx->Eip = 0x467d6e;
+        return true;
     }
     EHOOK_DY(th15_menu_rank_fix, 0x4527be)
     {
         *((int32_t*)0x4e7424) = -1;
         *((int32_t*)0x4e7410) = *((int32_t*)0x4e0ef4);
+        return true;
     }
     EHOOK_DY(th15_patch_main, 0x43c68c)
     {
@@ -1831,6 +1847,7 @@ namespace TH15 {
             THSectionPatch();
         }
         thPracParam._playLock = true;
+        return true;
     }
     EHOOK_DY(th15_bgm, 0x43d5c1)
     {
@@ -1838,24 +1855,29 @@ namespace TH15 {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x43d5c3;
         }
+        return true;
     }
     EHOOK_DY(th15_rep_save, 0x45cc49)
     {
         char* repName = (char*)(pCtx->Esp + 0x38);
         if (thPracParam.mode)
             THSaveReplay(repName);
+        return true;
     }
     EHOOK_DY(th15_rep_menu_1, 0x468197)
     {
         THGuiRep::singleton().State(1);
+        return true;
     }
     EHOOK_DY(th15_rep_menu_2, 0x4682b0)
     {
         THGuiRep::singleton().State(2);
+        return true;
     }
     EHOOK_DY(th15_rep_menu_3, 0x468474)
     {
         THGuiRep::singleton().State(3);
+        return true;
     }
     EHOOK_DY(th15_update, 0x4015fa)
     {
@@ -1867,10 +1889,12 @@ namespace TH15 {
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
+        return true;
     }
     EHOOK_DY(th15_render, 0x40170a)
     {
         GameGuiRender(IMPL_WIN32_DX9);
+        return true;
     }
     HOOKSET_ENDDEF()
 
@@ -1903,6 +1927,7 @@ namespace TH15 {
     EHOOK_DY(th15_disable_mutex, 0x4713ec)
     {
         pCtx->Eip = 0x4715a9;
+        return true;
     }
     PATCH_DY(th15_startup_1, 0x46055f, "\x90\x90", 2);
     PATCH_DY(th15_startup_2, 0x4610c3, "\xeb", 1);
@@ -1910,11 +1935,13 @@ namespace TH15 {
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     EHOOK_DY(th15_gui_init_2, 0x47341b)
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     HOOKSET_ENDDEF()
 }

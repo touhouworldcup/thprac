@@ -488,6 +488,7 @@ namespace TH13 {
         EHOOK_ST(th13_all_clear_bonus_1, 0x42ce28)
         {
             pCtx->Eip = 0x42ce33;
+            return true;
         }
         EHOOK_ST(th13_all_clear_bonus_2, 0x42cf1b)
         {
@@ -498,6 +499,7 @@ namespace TH13 {
                 a();
                 pCtx->Eip = 0x42ce2d;
             }
+            return true;
         }
         EHOOK_ST(th13_all_clear_bonus_3, 0x42d004)
         {
@@ -508,6 +510,7 @@ namespace TH13 {
                 a();
                 pCtx->Eip = 0x42ce2d;
             }
+            return true;
         }
     private:
         void VPResetFPS(int32_t FPS)
@@ -1509,6 +1512,7 @@ namespace TH13 {
         SetEndOfFile(hFile);
         WriteFile(hFile, filePtr, fileSize, &bytesProcessed, NULL);
         CloseHandle(hFile);
+        return true;
     }
     EHOOK_DY(th13_everlasting_bgm_2, 0x42c444)
     {
@@ -1516,6 +1520,7 @@ namespace TH13 {
             th13ElBgmFlag = false;
             pCtx->Eip = 0x42c44b;
         }
+        return true;
     }
     EHOOK_DY(th13_everlasting_bgm, 0x461830)
     {
@@ -1549,44 +1554,54 @@ namespace TH13 {
         if (result) {
             pCtx->Eip = 0x4618c0;
         }
+        return true;
     }
     EHOOK_DY(th13_param_reset, 0x44cd2f)
     {
         thPracParam.Reset();
+        return true;
     }
     EHOOK_DY(th13_prac_menu_1, 0x451d14)
     {
         THGuiPrac::singleton().State(1);
+        return true;
     }
     EHOOK_DY(th13_prac_menu_2, 0x451d39)
     {
         THGuiPrac::singleton().State(2);
+        return true;
     }
     EHOOK_DY(th13_prac_menu_3, 0x452047)
     {
         THGuiPrac::singleton().State(3);
+        return true;
     }
     EHOOK_DY(th13_prac_menu_4, 0x4520f5)
     {
         THGuiPrac::singleton().State(4);
+        return true;
     }
     PATCH_DY(th13_prac_menu_enter_1, 0x451df9, "\xeb", 1);
     EHOOK_DY(th13_prac_menu_enter_2, 0x4520b0)
     {
         pCtx->Eax = thPracParam.stage;
+        return true;
     }
     EHOOK_DY(th13_disable_prac_menu_1, 0x452280)
     {
         pCtx->Eip = 0x4522b9;
+        return true;
     }
     EHOOK_DY(th13_disable_prac_menu_2, 0x451cf2)
     {
         pCtx->Esp += 0x4;
         pCtx->Eip = 0x451cf7;
+        return true;
     }
     EHOOK_DY(th13_menu_rank_fix, 0x43f483)
     {
         *((int32_t*)0x4be7c4) = *((int32_t*)0x4bb4d0);
+        return true;
     }
     EHOOK_DY(th13_patch_main, 0x42bf8e)
     {
@@ -1606,6 +1621,7 @@ namespace TH13 {
 
             THSectionPatch();
         }
+        return true;
     }
     EHOOK_DY(th13_bgm, 0x42c864)
     {
@@ -1613,24 +1629,29 @@ namespace TH13 {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x42c865;
         }
+        return true;
     }
     EHOOK_DY(th13_rep_save, 0x448c05)
     {
         char* repName = (char*)(pCtx->Esp + 0x38);
         if (thPracParam.mode == 1)
             THSaveReplay(repName);
+        return true;
     }
     EHOOK_DY(th13_rep_menu_1, 0x452776)
     {
         THGuiRep::singleton().State(1);
+        return true;
     }
     EHOOK_DY(th13_rep_menu_2, 0x4528a2)
     {
         THGuiRep::singleton().State(2);
+        return true;
     }
     EHOOK_DY(th13_rep_menu_3, 0x452a94)
     {
         THGuiRep::singleton().State(3);
+        return true;
     }
     EHOOK_DY(th13_update, 0x470c04)
     {
@@ -1644,10 +1665,12 @@ namespace TH13 {
 
         THAdvOptWnd::singleton().FpsUpd();
         GameGuiEnd(drawCursor);
+        return true;
     }
     EHOOK_DY(th13_render, 0x470d27)
     {
         GameGuiRender(IMPL_WIN32_DX9);
+        return true;
     }
     HOOKSET_ENDDEF()
 
@@ -1680,6 +1703,7 @@ namespace TH13 {
     EHOOK_DY(th13_disable_mutex, 0x45c1bc)
     {
         pCtx->Eip = 0x45c340;
+        return true;
     }
     PATCH_DY(th13_startup_1, 0x44c107, "\xeb", 1);
     PATCH_DY(th13_startup_2, 0x44cdb7, "\xeb", 1);
@@ -1687,11 +1711,13 @@ namespace TH13 {
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     EHOOK_DY(th13_gui_init_2, 0x45e1d5)
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     HOOKSET_ENDDEF()
 }

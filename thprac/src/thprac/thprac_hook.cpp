@@ -40,6 +40,7 @@ uintptr_t ingame_image_base = 0;
 struct VEHHookCtx {
     uint8_t* m_Src = nullptr;
     CallbackFunc* m_Dest = nullptr;
+    DWORD instrLen = 0;
     uint8_t* m_Trampoline = nullptr;
     uint8_t m_StorageByte = 0;
     bool isActivate = false;
@@ -93,9 +94,15 @@ static std::mutex m_TargetMutex;
 __declspec(noinline) void InvokeCallback(const VEHHookCtx vehHook, PCONTEXT pCtx)
 {
     auto xipBackup = pCtx->XIP;
-    vehHook.m_Dest(pCtx);
+    bool caveExec = vehHook.m_Dest(pCtx);
+    
+    
     if (xipBackup == pCtx->XIP) {
-        pCtx->XIP = (DWORD_PTR)vehHook.m_Trampoline;
+        if (caveExec) {
+            pCtx->XIP = (DWORD_PTR)vehHook.m_Trampoline;
+        } else {
+            pCtx->XIP += vehHook.instrLen;
+        }
     }
 }
 __declspec(noinline) LONG CALLBACK VEHHandler(EXCEPTION_POINTERS* ExceptionInfo)
@@ -157,7 +164,7 @@ void VEHHookDisable(void* target)
 
     ctx->isActivate = false;
 }
-bool VEHHookAdd(void* target, CallbackFunc* detour, void* trampoline)
+bool VEHHookAdd(void* target, CallbackFunc* detour, void* trampoline, DWORD instrLen)
 {
     VEHHookInit();
     if (VEHHookLookUp(target) != g_VEHHookVector->end()) {
@@ -166,6 +173,7 @@ bool VEHHookAdd(void* target, CallbackFunc* detour, void* trampoline)
 
     VEHHookCtx ctx((uint8_t*)target, detour);
     ctx.m_Trampoline = (uint8_t*)trampoline;
+    ctx.instrLen = instrLen;
     g_VEHHookVector->push_back(ctx);
 
     return true;
@@ -231,19 +239,20 @@ bool HookCtx::Setup(void* target, CallbackFunc* detour)
     }
 
     LPVOID buffer = AllocateBuffer((LPVOID)((uintptr_t)target + ingame_image_base));
+    DWORD instrLen = 0;    
     if (buffer) {
         TRAMPOLINE ct;
         ct.pTarget = (LPVOID)((uintptr_t)target + ingame_image_base);
         ct.pDetour = (void*)detour;
         ct.pTrampoline = buffer;
-        if (CreateTrampolineFunctionEx(&ct, 1, FALSE)) {
+        instrLen = CreateTrampolineFunctionEx(&ct, 1, FALSE);
+        if (instrLen) {
             mTrampoline = buffer;
         } else {
             return false;
         }
     }
-
-    if (!VEHHookAdd(target, detour, buffer)) {
+    if (!VEHHookAdd(target, detour, buffer, instrLen)) {
         return false;
     }
 
