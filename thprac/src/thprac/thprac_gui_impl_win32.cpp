@@ -566,6 +566,7 @@ namespace Gui {
     {
         if (g_hWnd != (HWND)hwnd) {
             g_hWnd = (HWND)hwnd;
+            ImplWin32HookWndProc();
         }
     }
     void ImplWin32Shutdown()
