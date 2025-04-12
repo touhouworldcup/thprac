@@ -598,53 +598,34 @@ namespace Gui {
     }
 
     // Added functions used by thprac
-    static void* __thimgui_wp_original = nullptr;
+    static WNDPROC __thimgui_wp_original = nullptr;
     void ImplWin32SetNoClose(bool noClose)
     {
         g_wndNoClose_ = noClose ? 1 : 0;
     }
-    static LRESULT CALLBACK __ThImGui_WndProc_HookFunc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-    {
-        typedef decltype(__ThImGui_WndProc_HookFunc)* PWndProc;
-
+    static LRESULT CALLBACK __ThImGui_WndProc_HookFunc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         if (g_wndNoClose_ && msg == WM_CLOSE) {
             return 1;
         }
         if (ImplWin32WndProcHandler(hwnd, msg, wParam, lParam)) {
             return 1;
         }
-
-        return ((PWndProc)__thimgui_wp_original)(hwnd, msg, wParam, lParam);
+        return CallWindowProcW(__thimgui_wp_original, hwnd, msg, wParam, lParam);
     }
-    bool ImplWin32HookWndProc(void* wndproc_addr)
+    bool ImplWin32HookWndProc()
     {
-        if (__thimgui_wp_original) {
+        __thimgui_wp_original = (WNDPROC)GetWindowLongW(g_hWnd, GWLP_WNDPROC);
+        if (!__thimgui_wp_original) {
             return false;
         }
-        void* target;
-        if (wndproc_addr) {
-            target = wndproc_addr;
-        } else {
-            char str[MAX_PATH];
-            WNDCLASSEXA cinfo;
-            GetClassNameA(g_hWnd, str, MAX_PATH);
-            GetClassInfoExA(GetModuleHandle(NULL), str, &cinfo);
-            void* pWndProc = (void*)cinfo.lpfnWndProc;
-            target = pWndProc;
+        if (!SetWindowLongW(g_hWnd, GWLP_WNDPROC, (LONG)__ThImGui_WndProc_HookFunc)) {
+            return false;
         }
-        MH_Initialize();
-        MH_CreateHook(target, (void*)__ThImGui_WndProc_HookFunc, &__thimgui_wp_original);
-        MH_EnableHook(target);
         return true;
     }
     bool ImplWin32UnHookWndProc()
     {
-        if (__thimgui_wp_original) {
-            MH_RemoveHook(__thimgui_wp_original);
-            __thimgui_wp_original = nullptr;
-            return true;
-        }
-        return false;
+        return SetWindowLongW(g_hWnd, GWLP_WNDPROC, (LONG)__thimgui_wp_original) != 0;
     }
     bool ImplWin32CheckFullScreen()
     {

@@ -16,7 +16,7 @@ DWORD* g_gameGuiDevice = nullptr;
 DWORD* g_gameGuiHwnd = nullptr;
 HIMC g_gameIMCCtx = 0;
 
-void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
+void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3,
     int wnd_size_flag, float x, float y)
 {
@@ -24,8 +24,8 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
     ::ImGui::CreateContext();
     g_gameGuiImpl = impl;
     g_gameGuiDevice = (DWORD*)device;
-    g_gameGuiHwnd = (DWORD*)hwnd;
-    g_gameIMCCtx = ImmAssociateContext(*(HWND*)hwnd, 0);
+    g_gameGuiHwnd = (DWORD*)hwnd_addr;
+    g_gameIMCCtx = ImmAssociateContext(*(HWND*)hwnd_addr, 0);
 
     // Set Locale
     GuiLauncherLocaleInit();
@@ -38,7 +38,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
 
         // Hooks
         Gui::ImplDX8HookReset();
-        Gui::ImplWin32HookWndProc((void*)wndproc_addr);
+        Gui::ImplWin32HookWndProc();
         break;
     case THPrac::IMPL_WIN32_DX9:
         // Impl
@@ -47,7 +47,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
 
         // Hooks
         Gui::ImplDX9HookReset();
-        Gui::ImplWin32HookWndProc((void*)wndproc_addr);
+        Gui::ImplWin32HookWndProc();
         break;
     default:
         break;
@@ -96,12 +96,12 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
         bool resizable_window;
         if (LauncherSettingGet("resizable_window", resizable_window) && resizable_window && !Gui::ImplWin32CheckFullScreen()) {
             RECT wndRect;
-            GetClientRect(*(HWND*)hwnd, &wndRect);
+            GetClientRect(*(HWND*)hwnd_addr, &wndRect);
             auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
             auto captionSize = GetSystemMetrics(SM_CYCAPTION);
-            auto longPtr = GetWindowLongW(*(HWND*)hwnd, GWL_STYLE);
-            SetWindowLongW(*(HWND*)hwnd, GWL_STYLE, longPtr | WS_SIZEBOX);
-            SetWindowPos(*(HWND*)hwnd, HWND_NOTOPMOST,
+            auto longPtr = GetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE);
+            SetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE, longPtr | WS_SIZEBOX);
+            SetWindowPos(*(HWND*)hwnd_addr, HWND_NOTOPMOST,
                 0, 0, wndRect.right + frameSize, wndRect.bottom + frameSize + captionSize,
                 SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
         }

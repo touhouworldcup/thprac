@@ -3539,7 +3539,7 @@ namespace TH185 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4d52c8, 0x571d50, 0x474760,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4d52c8, 0x571d50,
             Gui::INGAGME_INPUT_GEN2, 0x4ce400, 0x4ce3f8, 0,
             -2, *(float*)0x573dc0, 0.0f);
 

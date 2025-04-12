@@ -3093,7 +3093,7 @@ namespace TH18 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4ccdf8, 0x568c30, 0x472280,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4ccdf8, 0x568c30,
             Gui::INGAGME_INPUT_GEN2, 0x4ca21c, 0x4ca218, 0,
             -2, *(float*)0x56aca0, 0.0f);
 

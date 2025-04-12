@@ -274,7 +274,7 @@ namespace TH125 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4d0cd8, 0x4d17d8, 0x44e960,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4d0cd8, 0x4d17d8,
             Gui::INGAGME_INPUT_GEN2, 0x4d8dac, 0x4d8da8, 0,
             -1);
 

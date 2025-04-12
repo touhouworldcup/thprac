@@ -230,7 +230,7 @@ namespace TH165 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4b3b18, 0x507b70, 0x460950,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4b3b18, 0x507b70,
             Gui::INGAGME_INPUT_GEN2, 0x4b0ffc, 0x4b0ff8, 0,
             (*((int32_t*)0x509bac) >> 2) & 0xf);
 

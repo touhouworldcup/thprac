@@ -2041,7 +2041,7 @@ namespace TH17 {
     {
 
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4b5ae8, 0x5226c0, 0x4617d0,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4b5ae8, 0x5226c0,
             Gui::INGAGME_INPUT_GEN2, 0x4b323c, 0x4b3238, 0,
             (*((int32_t*)0x524700) >> 2) & 0xf);
 

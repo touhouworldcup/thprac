@@ -2455,7 +2455,7 @@ namespace TH14 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4d8f68, 0x4f5a18, 0x469eb0,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4d8f68, 0x4f5a18,
             Gui::INGAGME_INPUT_GEN2, 0x4d6884, 0x4d6880, 0,
             (*((int32_t*)0x4f7a54) >> 2) & 0xf);
 
