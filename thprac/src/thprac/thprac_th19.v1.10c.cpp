@@ -22,14 +22,18 @@
 // stack. Trying to do both callee and caller stack cleanup will crash
 //
 // It is impossible to explicitly tell MSVC to generate a function with a
-// calling convention like that. The way I made the build that I sent you is by
-// binary hacking thprac.exe to modify my replacement function to do caller
-// stack cleanup.
+// calling convention like that. Before I found my workaround, the way that
+// builds with these performance improvements were made was by binhacking
+// thprac.exe manually after compilation.
 //
-// To work around this, th19_fast_msvc.obj is precompiled, and binary hacked to
+// The workaround is: th19_fast_msvc.obj is precompiled, and binary hacked to
 // replace all ret 14 instructions with just ret. This is the only way to get
 // a function out of MSVC that takes parameters in XMM registers and does
 // caller stack cleanup.
+//
+// This means that binary hacking a compiled file is still required to perform
+// a full rebuild of that code, however, developers will not need to binhack
+// thprac.exe every time they compile
 
 #ifndef _DEBUG
 extern "C" {
