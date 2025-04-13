@@ -220,10 +220,12 @@ namespace TH095 {
             crosshair_pos[1] = view_pos[1] = boss_pos[1];
             crosshair_pos[2] = view_pos[2] = boss_pos[2];
         }
+        return true;
     }
     EHOOK_DY(th095_render, 0x4208d6)
     {
         THGuiUpdate();
+        return true;
     }
     HOOKSET_ENDDEF()
 
@@ -231,7 +233,7 @@ namespace TH095 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX8, 0x4c4678, 0x4c45e8, 0x420cf0,
+        GameGuiInit(IMPL_WIN32_DX8, 0x4c4678, 0x4c45e8,
             Gui::INGAGME_INPUT_GEN2, 0x4be21e, 0x4be21c, 0,
             -1);
 
@@ -251,11 +253,13 @@ namespace TH095 {
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     EHOOK_DY(th095_gui_init_2, 0x42137e)
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     HOOKSET_ENDDEF()
 }

@@ -19,7 +19,7 @@ namespace THPrac
 		void ImplWin32Shutdown();
 		void ImplWin32NewFrame(bool mouseMapping = true);
 
-		bool ImplWin32HookWndProc(void* wndproc_addr = nullptr);
+		bool ImplWin32HookWndProc();
 		bool ImplWin32UnHookWndProc();
 		bool ImplWin32CheckFullScreen();
 		bool ImplWin32CheckForeground();

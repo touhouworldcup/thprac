@@ -207,18 +207,22 @@ namespace TH165 {
         asm_call<0x415d40, Thiscall>(pCtx->Esi, 0x4);
 
         pCtx->Eip = 0x43cd31;
+        return true;
     }
     EHOOK_DY(th165_render_1, 0x46038d)
     {
         THGuiUpdate();
+        return true;
     }
     EHOOK_DY(th165_render_2, 0x460461)
     {
         THGuiUpdate();
+        return true;
     }
     EHOOK_DY(th165_render_3, 0x4610aa)
     {
         THGuiUpdate();
+        return true;
     }
     HOOKSET_ENDDEF()
 
@@ -226,7 +230,7 @@ namespace TH165 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4b3b18, 0x507b70, 0x460950,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4b3b18, 0x507b70,
             Gui::INGAGME_INPUT_GEN2, 0x4b0ffc, 0x4b0ff8, 0,
             (*((int32_t*)0x509bac) >> 2) & 0xf);
 
@@ -248,11 +252,13 @@ namespace TH165 {
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     EHOOK_DY(th165_gui_init_2, 0x461b27)
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     HOOKSET_ENDDEF()
 }

@@ -108,7 +108,7 @@ extern "C" {
 #endif
 
 	BOOL CreateTrampolineFunction(PTRAMPOLINE ct);
-	BOOL CreateTrampolineFunctionEx(PTRAMPOLINE ct, UINT8 min_tf_length, BOOL check_jmp);
+	DWORD CreateTrampolineFunctionEx(PTRAMPOLINE ct, UINT8 min_tf_length, BOOL check_jmp);
 	BOOL CreateTrampolineFunctionNew(PTRAMPOLINE ct, UINT8 min_tf_length, BOOL check_jmp);
 
 #ifdef __cplusplus

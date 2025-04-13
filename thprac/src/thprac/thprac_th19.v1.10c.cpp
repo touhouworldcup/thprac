@@ -22,14 +22,18 @@
 // stack. Trying to do both callee and caller stack cleanup will crash
 //
 // It is impossible to explicitly tell MSVC to generate a function with a
-// calling convention like that. The way I made the build that I sent you is by
-// binary hacking thprac.exe to modify my replacement function to do caller
-// stack cleanup.
+// calling convention like that. Before I found my workaround, the way that
+// builds with these performance improvements were made was by binhacking
+// thprac.exe manually after compilation.
 //
-// To work around this, th19_fast_msvc.obj is precompiled, and binary hacked to
+// The workaround is: th19_fast_msvc.obj is precompiled, and binary hacked to
 // replace all ret 14 instructions with just ret. This is the only way to get
 // a function out of MSVC that takes parameters in XMM registers and does
 // caller stack cleanup.
+//
+// This means that binary hacking a compiled file is still required to perform
+// a full rebuild of that code, however, developers will not need to binhack
+// thprac.exe every time they compile
 
 #ifndef _DEBUG
 extern "C" {
@@ -68,8 +72,6 @@ namespace V1_10c {
 
         D3D_DEVICE = 0x22BB48,
         HWND_PTR = 0x22BB88,
-        WNDPROC_ADDR = 0xB6A30,
-
     };
         
     #define SCALE (*(float*)RVA(0x22EEB0))
@@ -225,6 +227,7 @@ namespace V1_10c {
         EHOOK_ST(th19_enemy_tick, 0x1089D0)
         {
             drawEnemyHP(pCtx, SCALE);
+            return true;
         }
 
         bool allow = false;
@@ -510,6 +513,7 @@ namespace V1_10c {
         }
 
         t.allow = true;
+        return true;
     }
     
     // When gamemode is changed from 7
@@ -518,6 +522,7 @@ namespace V1_10c {
             TH19Tools::singleton().Close();
             TH19Tools::singleton().allow = false;
         }
+        return true;
     }
 
     EHOOK_DY(th19_invincible, 0x145EE3) {
@@ -527,6 +532,7 @@ namespace V1_10c {
         {
             pCtx->Eip = RVA(0x145EF0);
         }
+        return true;
     }
 
     EHOOK_DY(th19_invincible_barrier, 0x144C90) {
@@ -538,6 +544,7 @@ namespace V1_10c {
             pCtx->Eax = 0;
             pCtx->Eip = PopHelper32(pCtx);
         }
+        return true;
     }
     
     EHOOK_DY(th19_lock_lives, 0x137795) {
@@ -549,6 +556,7 @@ namespace V1_10c {
         {
             pCtx->Eip++;
         }
+        return true;
     }
 
     EHOOK_DY(th19_lock_cpu_next_charge, 0xFA722)
@@ -572,6 +580,7 @@ namespace V1_10c {
         {
             pCtx->Eip = RVA(0xFA728);
         }
+        return true;
     }
 
     HOOKSET_ENDDEF()
@@ -705,6 +714,7 @@ namespace V1_10c {
 
     EHOOK_DY(th19_update_begin, 0xD7000) {
         GameGuiBegin(IMPL_WIN32_DX9);
+        return true;
     }
 
     EHOOK_DY(th19_update_end, 0xD715F) {
@@ -725,25 +735,29 @@ namespace V1_10c {
         }
         #endif
         GameGuiEnd(UpdateAdvOptWindow() || THVSSelect::singleton().IsOpen() || THGuiPrac::singleton().IsOpen() || t.IsOpen());
+        return true;
     }
 
     EHOOK_DY(th19_render, 0xD72C0) {
         GameGuiRender(IMPL_WIN32_DX9);
+        return true;
     }
     EHOOK_DY(th19_draw_slowdown_1, 0x10E972)
     {
         draw_slowdown();
+        return true;
     }
 
     EHOOK_DY(th19_draw_slowdown_2, 0x10EA3F)
     {
         draw_slowdown();
+        return true;
     }
 
     EHOOK_DY(th19_vs_mode_enter, 0x159577)
     {
         if (*(uint32_t*)(pCtx->Edi + 0x2c) > 2) {
-            return;
+            return true;
         }
 
         auto& p = THVSSelect::singleton();
@@ -753,7 +767,7 @@ namespace V1_10c {
             pCtx->Eip = RVA(0x159680);
             th19_vs_mode_disable_movement.Enable();
             TH19PracHook::singleton().DisableAllHooks();
-            return;
+            return true;
         }
 
         p.Close();
@@ -761,25 +775,28 @@ namespace V1_10c {
             TH19PracHook::singleton().EnableAllHooks();
         }
         th19_vs_mode_disable_movement.Disable();
+        return true;
     }
     EHOOK_DY(th19_vs_mode_exit, 0x159532) {
         TH19PracHook::singleton().DisableAllHooks();
         auto& p = THVSSelect::singleton();
         if (p.IsClosed()) {
-            return;
+            return true;
         }
         p.Close();
         th19_vs_mode_disable_movement.Disable();
         pCtx->Eip = RVA(0x15956B);
+        return true;
     }
 
     EHOOK_DY(th19_main_menu_confirm, 0x15A455) {
         storymode = GetMemContent(pCtx->Esi + 0x2C) == 0;
+        return true;
     }
 
     EHOOK_DY(th19_character_select_confirm, 0x157C8A) {
         if (!storymode)
-            return;
+            return true;
         
         auto& g = THGuiPrac::singleton();
 
@@ -788,11 +805,12 @@ namespace V1_10c {
             th19_charsel_disable_movement.Enable();
 
             pCtx->Eip = RVA(0x157D64);
-            return;
+            return true;
         } else {
             g.Close();
             th19_charsel_disable_movement.Disable();
         }
+        return true;
     }
 
     EHOOK_DY(th19_character_select_abort, 0x157D87)
@@ -803,6 +821,7 @@ namespace V1_10c {
             g.Close();
             pCtx->Eip = RVA(0x157E6E);
         }
+        return true;
     }
 
     EHOOK_DY(th19_story_force_stage, 0x158423)
@@ -814,7 +833,7 @@ namespace V1_10c {
             TH19Tools::singleton().allow = false;
             TH19Tools::singleton().Close();
     
-            return;
+            return true;
         }
 
         // Globals::
@@ -828,23 +847,26 @@ namespace V1_10c {
         TH19Tools::singleton().allow = true;
         TH19Tools::singleton().Open();
 
+        return true;
     }
     HOOKSET_ENDDEF()
 
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
+        #ifndef _DEBUG
         *(uintptr_t*)(cpu_check_collider_patch_code + 1) = (uintptr_t)&CPUHitInf_CheckColliders - RVA((uintptr_t)th19_patch_cpu_check_colliders.mTarget + 5);
         *(uintptr_t*)(patch_RxD1E00_code + 1) = (uintptr_t)&_RxD1E00_fast - RVA((uintptr_t)th19_patch_RxD1E00.mTarget + 5);
+
+        th19_patch_cpu_check_colliders.Setup();
+        th19_patch_RxD1E00.Setup();
+        #endif
 
         th19_vs_mode_disable_movement.Setup();
         th19_charsel_disable_movement.Setup();
 
-        th19_patch_cpu_check_colliders.Setup();
-        th19_patch_RxD1E00.Setup();
-
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, RVA(D3D_DEVICE), RVA(HWND_PTR), RVA(WNDPROC_ADDR),
+        GameGuiInit(IMPL_WIN32_DX9, RVA(D3D_DEVICE), RVA(HWND_PTR),
             Gui::INGAGME_INPUT_GEN2, GetMemContent(RVA(0x1D19B0)) + 0x30 + 0x2B0, GetMemContent(RVA(0x1D19B0)) + 0x30 + 0x10, 0,
             -2, SCALE, 0.0f);
 
@@ -869,6 +891,7 @@ namespace V1_10c {
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
 
     // After InputManager is initialized
@@ -876,6 +899,7 @@ namespace V1_10c {
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     HOOKSET_ENDDEF()
 }

@@ -250,19 +250,23 @@ namespace TH125 {
                 crosshair_pos[2] = boss_pos[2];
             }
         }
+        return true;
 
     }
     EHOOK_DY(th125_render_1, 0x44ee42)
     {
         THGuiUpdate();
+        return true;
     }
     EHOOK_DY(th125_render_2, 0x44f255)
     {
         THGuiUpdate();
+        return true;
     }
     EHOOK_DY(th125_render_3, 0x44f3fd)
     {
         THGuiUpdate();
+        return true;
     }
     HOOKSET_ENDDEF()
 
@@ -270,7 +274,7 @@ namespace TH125 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4d0cd8, 0x4d17d8, 0x44e960,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4d0cd8, 0x4d17d8,
             Gui::INGAGME_INPUT_GEN2, 0x4d8dac, 0x4d8da8, 0,
             -1);
 
@@ -293,11 +297,13 @@ namespace TH125 {
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     EHOOK_DY(th125_gui_init_2, 0x44ff39)
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     HOOKSET_ENDDEF()
 }

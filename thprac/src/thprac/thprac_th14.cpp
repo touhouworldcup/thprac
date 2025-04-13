@@ -825,10 +825,12 @@ namespace TH14 {
         EHOOK_ST(th14_marisa_laser, 0x45286f)
         {
             *(uint32_t*)(pCtx->Esp + 0x2c) = THMarisaLaser::singleton().Access(*(uint32_t*)(pCtx->Esp + 0x2c));
+            return true;
         }
         EHOOK_ST(th14_all_clear_bonus_1, 0x43708a)
         {
             pCtx->Eip = 0x437098;
+            return true;
         }
         EHOOK_ST(th14_all_clear_bonus_2, 0x43712c)
         {
@@ -839,6 +841,7 @@ namespace TH14 {
                 a();
                 pCtx->Eip = 0x43708f;
             }
+            return true;
         }
         EHOOK_ST(th14_all_clear_bonus_3, 0x43719f)
         {
@@ -850,6 +853,7 @@ namespace TH14 {
                 a();
                 pCtx->Eip = 0x43708f;
             }
+            return true;
         }
     private:
         // Option Related Functions
@@ -2293,43 +2297,52 @@ namespace TH14 {
         if (result) {
             pCtx->Eip = 0x46f022;
         }
+        return true;
     }
     EHOOK_DY(th14_param_reset, 0x45a111)
     {
         thPracParam.Reset();
         THAdvOptWnd::singleton().ToggleLock(false);
+        return true;
     }
     EHOOK_DY(th14_prac_menu_1, 0x45e768)
     {
         THGuiPrac::singleton().State(1);
         THAdvOptWnd::singleton().ToggleLock(false);
+        return true;
     }
     EHOOK_DY(th14_prac_menu_2, 0x45e787)
     {
         THGuiPrac::singleton().State(2);
+        return true;
     }
     EHOOK_DY(th14_prac_menu_3, 0x45ea9f)
     {
         THGuiPrac::singleton().State(3);
         THAdvOptWnd::singleton().ToggleLock(true);
+        return true;
     }
     EHOOK_DY(th14_prac_menu_4, 0x45eb40)
     {
         THGuiPrac::singleton().State(4);
+        return true;
     }
     PATCH_DY(th14_prac_menu_enter_1, 0x45e847, "\xeb", 1);
     EHOOK_DY(th14_prac_menu_enter_2, 0x45eafc)
     {
         pCtx->Ecx = thPracParam.stage;
+        return true;
     }
     EHOOK_DY(th14_disable_prac_menu_1, 0x45eca7)
     {
         pCtx->Eip = 0x45ece4;
+        return true;
     }
     EHOOK_DY(th14_menu_rank_fix, 0x449c3d)
     {
         *((int32_t*)0x4f5844) = -1;
         *((int32_t*)0x4f5834) = *((int32_t*)0x4d5984);
+        return true;
     }
     EHOOK_DY(th14_patch_main, 0x4360ce)
     {
@@ -2351,6 +2364,7 @@ namespace TH14 {
             THPatchSP(ecl);
         }
         thPracParam._playLock = true;
+        return true;
     }
     EHOOK_DY(th14_bgm, 0x43699a)
     {
@@ -2358,14 +2372,17 @@ namespace TH14 {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x43699c;
         }
+        return true;
     }
     EHOOK_DY(th14_on_restart, 0x447810)
     {
         THAdvOptWnd::singleton().ToggleLock(true);
+        return true;
     }
     EHOOK_DY(th14_normal_game_enter, 0x45e63e)
     {
         THAdvOptWnd::singleton().ToggleLock(true);
+        return true;
     }
     EHOOK_DY(th14_rep_save, 0x455bf2)
     {
@@ -2375,22 +2392,26 @@ namespace TH14 {
         else if (thPracParam.mode == 2 && thPracParam.phase)
             THSaveReplay(repName);
         THAdvOptWnd::singleton().SaveReplay(mb_to_utf16(repName, 932).c_str());
+        return true;
     }
     EHOOK_DY(th14_rep_menu_1, 0x45f10b)
     {
         THGuiRep::singleton().State(1);
         THAdvOptWnd::singleton().ToggleLock(false);
         THAdvOptWnd::singleton().DeselectReplay();
+        return true;
     }
     EHOOK_DY(th14_rep_menu_2, 0x45f216)
     {
         THGuiRep::singleton().State(2);
         THAdvOptWnd::singleton().SelectReplay();
+        return true;
     }
     EHOOK_DY(th14_rep_menu_3, 0x45f3ed)
     {
         THGuiRep::singleton().State(3);
         THAdvOptWnd::singleton().ToggleLock(true);
+        return true;
     }
     EHOOK_DY(th14_sp_menu_1, 0x464068)
     {
@@ -2399,6 +2420,7 @@ namespace TH14 {
         } else {
             pCtx->Eip = 0x46409f;
         }
+        return true;
     }
     EHOOK_DY(th14_sp_menu_2, 0x463fd8)
     {
@@ -2406,6 +2428,7 @@ namespace TH14 {
         if (THGuiSP::singleton().mState) {
             pCtx->Eip = 0x464068;
         }
+        return true;
     }
     EHOOK_DY(th14_update, 0x40138a)
     {
@@ -2419,10 +2442,12 @@ namespace TH14 {
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
+        return true;
     }
     EHOOK_DY(th14_render, 0x40149a)
     {
         GameGuiRender(IMPL_WIN32_DX9);
+        return true;
     }
     HOOKSET_ENDDEF()
 
@@ -2430,7 +2455,7 @@ namespace TH14 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4d8f68, 0x4f5a18, 0x469eb0,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4d8f68, 0x4f5a18,
             Gui::INGAGME_INPUT_GEN2, 0x4d6884, 0x4d6880, 0,
             (*((int32_t*)0x4f7a54) >> 2) & 0xf);
 
@@ -2456,6 +2481,7 @@ namespace TH14 {
     EHOOK_DY(th14_disable_mutex, 0x469387)
     {
         pCtx->Eip = 0x469556;
+        return true;
     }
     PATCH_DY(th14_startup_1, 0x4595a5, "\xeb", 1);
     PATCH_DY(th14_startup_2, 0x45a173, "\xeb", 1);
@@ -2463,11 +2489,13 @@ namespace TH14 {
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     EHOOK_DY(th14_gui_init_2, 0x46b37b)
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     HOOKSET_ENDDEF()
 }

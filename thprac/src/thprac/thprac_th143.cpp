@@ -208,14 +208,17 @@ namespace TH143 {
     EHOOK_DY(th143_render_1, 0x46ed3f)
     {
         THGuiUpdate();
+        return true;
     }
     EHOOK_DY(th143_render_2, 0x46f14f)
     {
         THGuiUpdate();
+        return true;
     }
     EHOOK_DY(th143_render_3, 0x46f2ee)
     {
         THGuiUpdate();
+        return true;
     }
     HOOKSET_ENDDEF()
 
@@ -223,7 +226,7 @@ namespace TH143 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4e47d8, 0x5390a0, 0x46e770,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4e47d8, 0x5390a0,
             Gui::INGAGME_INPUT_GEN2, 0x4e19dc, 0x4e19d8, 0,
             (*((int32_t*)0x53b0dc) >> 2) & 0xf);
 
@@ -245,11 +248,13 @@ namespace TH143 {
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     EHOOK_DY(th143_gui_init_2, 0x46fc6b)
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     HOOKSET_ENDDEF()
 }

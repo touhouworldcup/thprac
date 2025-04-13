@@ -32,8 +32,6 @@ namespace V1_00a {
 
         D3D_DEVICE = 0x208388,
         HWND_PTR = 0x209110,
-        WNDPROC_ADDR = 0xA9EE0,
-
     };
         
     #define SCALE (*(float*)RVA(0x20B1D0))
@@ -158,6 +156,7 @@ namespace V1_00a {
         EHOOK_ST(th19_enemy_tick, 0xf6dd0)
         {
             drawEnemyHP(pCtx, SCALE);
+            return true;
         }
 
         bool allow = false;
@@ -445,12 +444,14 @@ namespace V1_00a {
         }
 
         t.allow = true;
+        return true;
     }
     
     // In the gamemode switching code where the game switches to main menu mode
     EHOOK_DY(th19_prac_uninit, 0x11FA07) {
         TH19Tools::singleton().Close();
         TH19Tools::singleton().allow = false;
+        return true;
     }
 
     EHOOK_DY(th19_invincible, 0x130ACC) {
@@ -460,6 +461,7 @@ namespace V1_00a {
         {
             pCtx->Eip = RVA(0x130AD3);
         }
+        return true;
     }
 
     EHOOK_DY(th19_invincible_barrier, 0x12FBC0)
@@ -472,6 +474,7 @@ namespace V1_00a {
             pCtx->Eax = 0;
             pCtx->Eip = PopHelper32(pCtx);
         }
+        return true;
     }
     
     EHOOK_DY(th19_lock_lives, 0x123EB5)
@@ -484,6 +487,7 @@ namespace V1_00a {
         {
             pCtx->Eip++;
         }
+        return true;
     }
 
     EHOOK_DY(th19_lock_cpu_next_charge, 0xE9D33) {
@@ -506,6 +510,7 @@ namespace V1_00a {
         {
             pCtx->Eip = RVA(0xE9D3E);
         }
+        return true;
     }
 
     HOOKSET_ENDDEF()
@@ -639,6 +644,7 @@ namespace V1_00a {
 
     EHOOK_DY(th19_update_begin, 0xC89E0) {
         GameGuiBegin(IMPL_WIN32_DX9);
+        return true;
     }
 
     EHOOK_DY(th19_update_end, 0xC8B75) {
@@ -658,26 +664,30 @@ namespace V1_00a {
         }
 
         GameGuiEnd(UpdateAdvOptWindow() || THVSSelect::singleton().IsOpen() || THGuiPrac::singleton().IsOpen() || t.IsOpen());
+        return true;
     }
 
     EHOOK_DY(th19_render, 0xC8C8D) {
         GameGuiRender(IMPL_WIN32_DX9);
+        return true;
     }
 
     EHOOK_DY(th19_draw_slowdown_1, 0xFCA02)
     {
         draw_slowdown();
+        return true;
     }
 
     EHOOK_DY(th19_draw_slowdown_2, 0xFCACF)
     {
         draw_slowdown();
+        return true;
     }
 
     EHOOK_DY(th19_vs_mode_enter, 0x14220F)
     {
         if (*(uint32_t*)(pCtx->Edi + 0x2c) > 2) {
-            return;
+            return true;
         }
 
         auto& p = THVSSelect::singleton();
@@ -687,7 +697,7 @@ namespace V1_00a {
             pCtx->Eip = RVA(0x14231C);
             th19_vs_mode_disable_movement.Enable();
             TH19PracHook::singleton().DisableAllHooks();
-            return;
+            return true;
         }
 
         p.Close();
@@ -695,25 +705,28 @@ namespace V1_00a {
             TH19PracHook::singleton().EnableAllHooks();
         }
         th19_vs_mode_disable_movement.Disable();
+        return true;
     }
     EHOOK_DY(th19_vs_mode_exit, 0x1421CB) {
         TH19PracHook::singleton().DisableAllHooks();
         auto& p = THVSSelect::singleton();
         if (p.IsClosed()) {
-            return;
+            return true;
         }
         p.Close();
         th19_vs_mode_disable_movement.Disable();
         pCtx->Eip = RVA(0x142204);
+        return true;
     }
 
     EHOOK_DY(th19_main_menu_confirm, 0x142F7C) {
         storymode = GetMemContent(pCtx->Esi + 0x2c) == 0;
+        return true;
     }
 
     EHOOK_DY(th19_character_select_confirm, 0x14112D) {
         if (!storymode)
-            return;
+            return true;
         
         auto& g = THGuiPrac::singleton();
 
@@ -722,11 +735,12 @@ namespace V1_00a {
             th19_charsel_disable_movement.Enable();
 
             pCtx->Eip = RVA(0x1412AC);
-            return;
+            return true;
         } else {
             g.Close();
             th19_charsel_disable_movement.Disable();
         }
+        return true;
     }
 
     EHOOK_DY(th19_character_select_abort, 0x141239) {
@@ -736,6 +750,7 @@ namespace V1_00a {
             g.Close();
             pCtx->Eip = RVA(0x141301);
         }
+        return true;
     }
 
     EHOOK_DY(th19_story_force_stage, 0x141568)
@@ -747,7 +762,7 @@ namespace V1_00a {
             TH19Tools::singleton().allow = false;
             TH19Tools::singleton().Close();
     
-            return;
+            return true;
         }
 
         // Globals::
@@ -761,6 +776,7 @@ namespace V1_00a {
         TH19Tools::singleton().allow = true;
         TH19Tools::singleton().Open();
 
+        return true;
     }
 
     HOOKSET_ENDDEF()
@@ -772,7 +788,7 @@ namespace V1_00a {
         th19_charsel_disable_movement.Setup();
 
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, RVA(D3D_DEVICE), RVA(HWND_PTR), RVA(WNDPROC_ADDR),
+        GameGuiInit(IMPL_WIN32_DX9, RVA(D3D_DEVICE), RVA(HWND_PTR),
             Gui::INGAGME_INPUT_GEN2, GetMemContent(RVA(0x1AE3A0)) + 0x30 + 0x2B0, GetMemContent(RVA(0x1AE3A0)) + 0x30 + 0x10, 0,
             -2, SCALE, 0.0f);
 
@@ -796,6 +812,7 @@ namespace V1_00a {
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
 
     // After InputManager is initialized
@@ -803,6 +820,7 @@ namespace V1_00a {
     {
         THGuiCreate();
         THInitHookDisable();
+        return true;
     }
     HOOKSET_ENDDEF()
 }
