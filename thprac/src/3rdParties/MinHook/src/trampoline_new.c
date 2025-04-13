@@ -105,15 +105,21 @@ DWORD CreateTrampolineFunctionEx(PTRAMPOLINE ct, UINT8 min_tf_length, BOOL check
 
     ct->patchAbove = FALSE;
     ct->nIP = 0;
-    DisAsmCtx ctx;
+
+    DWORD insLen = 0;
+
     do {
         UINT copySize;
         LPVOID pCopySrc;
         ULONG_PTR pOldInst = (ULONG_PTR)ct->pTarget + oldPos;
         ULONG_PTR pNewInst = (ULONG_PTR)ct->pTrampoline + newPos;
+        DisAsmCtx ctx;
 
         if (!DisAsm((LPVOID)pOldInst, &ctx)) {
             return FALSE;
+        }
+        if (!insLen) {
+            insLen = ctx.insLen;
         }
         copySize = ctx.insLen;
 
@@ -288,5 +294,5 @@ DWORD CreateTrampolineFunctionEx(PTRAMPOLINE ct, UINT8 min_tf_length, BOOL check
     memcpy(ct->pRelay, &jmp, sizeof(jmp));
 #endif
 
-    return ctx.insLen;
+    return insLen;
 }
