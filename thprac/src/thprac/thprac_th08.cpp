@@ -2334,6 +2334,8 @@ namespace TH08 {
         GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700,
             Gui::INGAGME_INPUT_GEN1, 0x164d528, 0x164d530, 0x164d538,
             -1);
+        
+        SetDpadHook(0x43D48B);
 
         // Gui components creation
         THGuiPrac::singleton();

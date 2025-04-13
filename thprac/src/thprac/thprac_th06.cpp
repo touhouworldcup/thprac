@@ -2101,6 +2101,8 @@ namespace TH06 {
             Gui::INGAGME_INPUT_GEN1, 0x69d904, 0x69d908, 0x69d90c,
             -1);
 
+        SetDpadHook(0x41D330);
+
         // Gui components creation
         THGuiPrac::singleton();
         THPauseMenu::singleton();

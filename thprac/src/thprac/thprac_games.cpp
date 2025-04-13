@@ -2,11 +2,15 @@
 #include "thprac_launcher_cfg.h"
 #include "thprac_launcher_main.h"
 #include "thprac_licence.h"
+#include "thprac_load_exe.h"
 #include "thprac_gui_impl_dx8.h"
 #include "thprac_gui_impl_dx9.h"
 #include "thprac_utils.h"
 #include "../3rdParties/d3d8/include/d3d8.h"
 #include <metrohash128.h>
+#include <dinput.h>
+
+#include "utils/wininternal.h"
 
 namespace THPrac {
 #pragma region Gui Wrapper
@@ -16,10 +20,177 @@ DWORD* g_gameGuiDevice = nullptr;
 DWORD* g_gameGuiHwnd = nullptr;
 HIMC g_gameIMCCtx = 0;
 
+HANDLE thcrap_dll;
+HANDLE thcrap_tsa_dll;
+
+// Code from thcrap
+template <typename T>
+struct Ranges {
+    T x_min, x_max;
+    T y_min, y_max;
+};
+
+#define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)
+
+template <typename T>
+bool pov_to_xy(T& x, T& y, Ranges<T>& ranges, DWORD pov)
+{
+    // According to MSDN, some DirectInput drivers report the centered
+    // position of the POV indicator as 65,535. This matches both that
+    // behavior and JOY_POVCENTERED for WinMM.
+    if (LOWORD(pov) == 0xFFFF) {
+        return false;
+    }
+    T x_center = (ranges.x_max - ranges.x_min) / 2;
+    T y_center = (ranges.y_max - ranges.y_min) / 2;
+
+    float angle_deg = pov / 100.0f;
+    float angle_rad = DEG_TO_RAD(angle_deg);
+    // POV values ≠ unit circle angles, so...
+    float angle_sin = 1.0f - cosf(angle_rad);
+    float angle_cos = sinf(angle_rad) + 1.0f;
+    x = (T)(ranges.x_min + (angle_cos * x_center));
+    y = (T)(ranges.y_min + (angle_sin * y_center));
+    return true;
+}
+
+HRESULT IDirectInputDevice8_GetDeviceState_Hook(IDirectInputDevice8A* This, DWORD cbData, void* lpvData) {
+    HRESULT res = This->GetDeviceState(cbData, lpvData);
+    if (FAILED(res) || !(cbData == sizeof(DIJOYSTATE) || cbData == sizeof(DIJOYSTATE2))) {
+        return res;
+    }
+    
+    auto* js = (DIJOYSTATE*)lpvData;
+
+    Ranges<long> di_range = { -1000, 1000, -1000, 1000 };
+
+    bool ret_map = false;
+    for (int i = 0; i < elementsof(js->rgdwPOV) && !ret_map; i++) {
+        ret_map = pov_to_xy(js->lX, js->lY, di_range, js->rgdwPOV[i]);
+    }
+    return res;
+}
+
+bool __stdcall IDirectInputDevice8_GetDeviceState_VEHHook(PCONTEXT pCtx) {
+    pCtx->Eax = IDirectInputDevice8_GetDeviceState_Hook(
+        GetMemContent<IDirectInputDevice8A*>(pCtx->Esp + 0),
+        GetMemContent<DWORD>(pCtx->Esp + 4),
+        GetMemContent<void*>(pCtx->Esp + 8)
+    );
+    pCtx->Esp += 12;
+    return false;
+}
+
+decltype(joyGetPosEx)* orig_joyGetPosEx = nullptr;
+
+// joyGetDevCaps() will necessarily be slower
+struct winmm_joy_caps_t {
+    // joyGetPosEx() will return bogus values on joysticks without a POV, so
+    // we must check if we even have one.
+    bool initialized = false;
+    bool has_pov;
+    Ranges<DWORD> range;
+};
+
+std::vector<winmm_joy_caps_t> joy_info;
+
+MMRESULT WINAPI hook_joyGetPosEx(UINT uJoyID, JOYINFOEX* pji) {
+    if (!pji) {
+        return MMSYSERR_INVALPARAM;
+    }
+    pji->dwFlags |= JOY_RETURNPOV;
+
+    auto ret_pos = orig_joyGetPosEx(uJoyID, pji);
+    if (ret_pos != JOYERR_NOERROR) {
+        return ret_pos;
+    }
+
+    if (uJoyID >= joy_info.size()) {
+        joy_info.resize(uJoyID + 1);
+    }
+
+    auto& jc = joy_info[uJoyID];
+
+    if (!jc.initialized) {
+        JOYCAPSW caps;
+        auto ret_caps = joyGetDevCapsW(uJoyID, &caps, sizeof(caps));
+        assert(ret_caps == JOYERR_NOERROR);
+
+        jc.initialized = true;
+        jc.has_pov = (caps.wCaps & JOYCAPS_HASPOV) != 0;
+        jc.range.x_min = caps.wXmin;
+        jc.range.x_max = caps.wXmax;
+        jc.range.y_min = caps.wYmin;
+        jc.range.y_max = caps.wYmax;
+    } else if (!jc.has_pov) {
+        return ret_pos;
+    }
+    pov_to_xy(pji->dwXpos, pji->dwYpos, jc.range, pji->dwPOV);
+    return ret_pos;
+}
+
+// Replace with centralized IAT hooking once there's a need for that
+void iat_hook_joyGetPosEx() {
+    uintptr_t base = CurrentImageBase;
+
+    auto* pImpDesc = (PIMAGE_IMPORT_DESCRIPTOR)GetNtDataDirectory((HMODULE)base, IMAGE_DIRECTORY_ENTRY_IMPORT);
+
+    for (; pImpDesc->Name; pImpDesc++) {
+        if (_stricmp((char*)(base + pImpDesc->Name), "winmm.dll")) {
+            continue;
+        }
+        auto pOT = (PIMAGE_THUNK_DATA)(base + pImpDesc->OriginalFirstThunk);
+        auto pIT = (PIMAGE_THUNK_DATA)(base + pImpDesc->FirstThunk);
+
+        if (pImpDesc->OriginalFirstThunk) {
+            for (; pOT->u1.Function; pOT++, pIT++) {
+                PIMAGE_IMPORT_BY_NAME pByName;
+                if (!(pOT->u1.Ordinal & IMAGE_ORDINAL_FLAG)) {
+                    pByName = (PIMAGE_IMPORT_BY_NAME)(base + pOT->u1.AddressOfData);
+                    if (pByName->Name[0] == '\0') {
+                        continue;
+                    }
+                    if (!strcmp("joyGetPosEx", (char*)pByName->Name)) {
+                        orig_joyGetPosEx = (decltype(joyGetPosEx)*)pIT->u1.Function;
+                        
+                        DWORD oldProt;
+                        VirtualProtect(&pIT->u1.Function, 4, PAGE_READWRITE, &oldProt);
+                        pIT->u1.Function = (DWORD)hook_joyGetPosEx;
+                        VirtualProtect(&pIT->u1.Function, 4, oldProt, &oldProt);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void SetDpadHook(uintptr_t addr) {
+    if (thcrap_tsa_dll) {
+        return;
+    }
+
+    static HookCtx dpad_hook;
+
+    dpad_hook.Setup((void*)addr, &IDirectInputDevice8_GetDeviceState_VEHHook);
+    dpad_hook.Enable();
+
+    iat_hook_joyGetPosEx();
+}
+
 void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3,
     int wnd_size_flag, float x, float y)
 {
+    thcrap_dll = GetModuleHandleW(L"thcrap.dll");
+    if (!thcrap_dll) {
+        thcrap_dll = GetModuleHandleW(L"thcrap_d.dll");
+    }
+
+    thcrap_tsa_dll = GetModuleHandleW(L"thcrap_tsa.dll");
+    if (!thcrap_tsa_dll) {
+        thcrap_tsa_dll = GetModuleHandleW(L"thcrap_tsa_d.dll");
+    }
+
     ingame_mb_init();
     ::ImGui::CreateContext();
     g_gameGuiImpl = impl;

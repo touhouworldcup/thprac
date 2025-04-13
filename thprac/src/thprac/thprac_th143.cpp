@@ -230,6 +230,8 @@ namespace TH143 {
             Gui::INGAGME_INPUT_GEN2, 0x4e19dc, 0x4e19d8, 0,
             (*((int32_t*)0x53b0dc) >> 2) & 0xf);
 
+        SetDpadHook(0x401D72);
+
         // Gui components creation
         THOverlay::singleton();
 

@@ -1875,6 +1875,8 @@ namespace TH07 {
             Gui::INGAGME_INPUT_GEN1, 0x4b9e4c, 0x4b9e54, 0x4b9e5c,
             -1);
 
+        SetDpadHook(0x430760);
+
         // Gui components creation
         THGuiPrac::singleton();
         THGuiRep::singleton();

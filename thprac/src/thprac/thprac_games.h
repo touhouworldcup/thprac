@@ -10,6 +10,9 @@ struct IDirect3DDevice8;
 
 namespace THPrac {
 
+extern HANDLE thcrap_dll;
+extern HANDLE thcrap_tsa_dll;
+
 struct Float2 {
     float x;
     float y;
@@ -51,6 +54,8 @@ enum game_gui_impl {
     IMPL_WIN32_DX8,
     IMPL_WIN32_DX9
 };
+
+void SetDpadHook(uintptr_t addr);
 
 void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3 = 0,
@@ -423,6 +428,10 @@ static inline constexpr T garbage_value(void)
 #endif
 // ---
 
+#pragma endregion
+
+#pragma region D-Pad Support
+bool __stdcall IDirectInputDevice8_GetDeviceState_VEHHook(PCONTEXT pCtx);
 #pragma endregion
 
 #pragma region ECL Helper

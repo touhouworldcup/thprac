@@ -278,6 +278,8 @@ namespace TH125 {
             Gui::INGAGME_INPUT_GEN2, 0x4d8dac, 0x4d8da8, 0,
             -1);
 
+        SetDpadHook(0x46205F);
+
         // Gui components creation
         THOverlay::singleton();
 

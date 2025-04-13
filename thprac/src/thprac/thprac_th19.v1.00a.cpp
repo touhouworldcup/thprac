@@ -792,6 +792,8 @@ namespace V1_00a {
             Gui::INGAGME_INPUT_GEN2, GetMemContent(RVA(0x1AE3A0)) + 0x30 + 0x2B0, GetMemContent(RVA(0x1AE3A0)) + 0x30 + 0x10, 0,
             -2, SCALE, 0.0f);
 
+        SetDpadHook(0xAB7C1);
+
         //// Gui components creation
         //THOverlay::singleton();
         THVSSelect::singleton();

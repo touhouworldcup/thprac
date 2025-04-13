@@ -3097,6 +3097,8 @@ namespace TH18 {
             Gui::INGAGME_INPUT_GEN2, 0x4ca21c, 0x4ca218, 0,
             -2, *(float*)0x56aca0, 0.0f);
 
+        SetDpadHook(0x4016EF);
+
         // Gui components creation
         THGuiPrac::singleton();
         THGuiPrac::singleton();

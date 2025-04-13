@@ -1682,6 +1682,8 @@ namespace TH13 {
             Gui::INGAGME_INPUT_GEN2, 0x4e49fc, 0x4e49f8, 0,
             -1);
 
+        SetDpadHook(0x4713EF);
+
         // Gui components creation
         THGuiPrac::singleton();
         THGuiRep::singleton();

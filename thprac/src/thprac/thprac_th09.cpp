@@ -643,6 +643,8 @@ namespace TH09 {
             Gui::INGAGME_INPUT_GEN2, 0x4acf3a, 0x4acf38, 0,
             -1);
 
+        SetDpadHook(0x42B823);
+
         // Gui components creation
         TH09Tools::singleton();
 

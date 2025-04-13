@@ -58,6 +58,26 @@ unsigned char INJECT_SHELLCODE[] = {
 
 static_assert(sizeof(INJECT_SHELLCODE) % 16 == 0);
 
+PIMAGE_NT_HEADERS GetNtHeader(HMODULE hMod)
+{
+    if (!hMod) {
+        return 0;
+    }
+    PIMAGE_DOS_HEADER pDosH = (PIMAGE_DOS_HEADER)hMod;
+    PIMAGE_NT_HEADERS pNTH = (PIMAGE_NT_HEADERS)((UINT_PTR)pDosH + pDosH->e_lfanew);
+    return pNTH;
+}
+
+void* GetNtDataDirectory(HMODULE hMod, BYTE directory)
+{
+    if (PIMAGE_NT_HEADERS pNTH = GetNtHeader(hMod)) {
+        if (UINT_PTR DirVA = pNTH->OptionalHeader.DataDirectory[directory].VirtualAddress) {
+            return (BYTE*)hMod + DirVA;
+        }
+    }
+    return NULL;
+}
+
 uintptr_t GetGameModuleBase(HANDLE hProc)
 {
     PROCESS_BASIC_INFORMATION pbi;

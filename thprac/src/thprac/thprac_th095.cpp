@@ -237,6 +237,8 @@ namespace TH095 {
             Gui::INGAGME_INPUT_GEN2, 0x4be21e, 0x4be21c, 0,
             -1);
 
+        SetDpadHook(0x419725);
+
         // Gui components creation
         THOverlay::singleton();
 

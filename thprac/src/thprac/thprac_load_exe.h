@@ -4,6 +4,9 @@
 namespace THPrac
 {
 
+PIMAGE_NT_HEADERS GetNtHeader(HMODULE hMod);
+void* GetNtDataDirectory(HMODULE hMod, BYTE directory);
+
 // DO NOT CHANGE THIS STRUCT WITHOUT RECOMPILING init_shellcode.cpp
 struct remote_param {
     LPVOID pUserData;

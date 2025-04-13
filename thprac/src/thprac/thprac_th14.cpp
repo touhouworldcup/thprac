@@ -2459,6 +2459,8 @@ namespace TH14 {
             Gui::INGAGME_INPUT_GEN2, 0x4d6884, 0x4d6880, 0,
             (*((int32_t*)0x4f7a54) >> 2) & 0xf);
 
+        SetDpadHook(0x401A8E);
+
         // Gui components creation
         THGuiPrac::singleton();
         THGuiRep::singleton();

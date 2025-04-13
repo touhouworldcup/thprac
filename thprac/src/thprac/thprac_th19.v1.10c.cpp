@@ -870,6 +870,8 @@ namespace V1_10c {
             Gui::INGAGME_INPUT_GEN2, GetMemContent(RVA(0x1D19B0)) + 0x30 + 0x2B0, GetMemContent(RVA(0x1D19B0)) + 0x30 + 0x10, 0,
             -2, SCALE, 0.0f);
 
+        SetDpadHook(0xB84A0);
+
         //// Gui components creation
         //THOverlay::singleton();
         THGuiPrac::singleton();
