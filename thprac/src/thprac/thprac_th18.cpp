@@ -1,12 +1,25 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 #include <metrohash128.h>
-#include "..\MinHook\src\buffer.h"
-
 
 namespace THPrac {
 namespace TH18 {
 #define play_sound_centered(id) asm_call<0x476BE0, Stdcall>(id, UNUSED_DWORD)
+
+    // MSVC WILL generate suboptimal code here if I don't hand-write my own assembly here
+    __declspec(naked) void __fastcall globals_assign_hooked(uint32_t* glob1, void*, uint32_t* glob2)
+    {
+        __asm {
+            push esi
+            mov esi, [ecx+0x20]
+            push [esp+0x8]
+            mov eax, 0x417A60
+            call eax
+            mov [eax+0x20], esi
+            pop esi
+            ret 0x4
+        }
+    }
 
     enum sound_id : uint32_t {
         SND_INVALID = 16,
@@ -1590,9 +1603,9 @@ namespace TH18 {
             th18_all_clear_bonus_2.Toggle(mOptCtx.all_clear_bonus);
             th18_all_clear_bonus_3.Toggle(mOptCtx.all_clear_bonus);
         }
+
         void ScoreUncapInit()
         {
-
             for (size_t i = 0; i < elementsof(scoreUncapHooks); i++) {
                 scoreUncapHooks[i].Setup((void*)scoreUncapOffsetNew[i], "\xff\xff\xff\xff", 4);
             }
@@ -1600,24 +1613,11 @@ namespace TH18 {
             th18_score_uncap_replay_fix.Setup();
             th18_score_uncap_replay_disp.Setup();
             th18_score_uncap_replay_factor.Setup();
-
             {
-                LPVOID codecave = AllocateBuffer(0);
-                uint8_t* p = (uint8_t*)codecave;
-
-                uint8_t code_1[] = "\x56\x8B\x71\x20\xFF\x74\x24\x08\xE8";
-                memcpy(p, code_1, sizeof(code_1) - 1);
-                p += sizeof(code_1) - 1;
-                uint32_t func_off = 0x00417A60 - (uint32_t)p - 4;
-                memcpy(p, &func_off, sizeof(func_off));
-                p += sizeof(func_off);
-                uint8_t code_2[] = "\x89\x71\x20\x5E\xC2\x04\x00";
-                memcpy(p, code_2, sizeof(code_2) - 1);
-
                 char patch_1[5] = "\xE8";
                 char patch_2[5] = "\xE8";
-                *(uintptr_t*)(patch_1 + 1) = (uintptr_t)codecave - 0x4179c7;
-                *(uintptr_t*)(patch_2 + 1) = (uintptr_t)codecave - 0x463045;
+                *(uintptr_t*)(patch_1 + 1) = (uintptr_t)&globals_assign_hooked - 0x4179c7;
+                *(uintptr_t*)(patch_2 + 1) = (uintptr_t)&globals_assign_hooked - 0x463045;
                 scoreUncapStageTrFix[0].Setup((void*)0x4179c2, patch_1, sizeof(patch_1));
                 scoreUncapStageTrFix[1].Setup((void*)0x463040, patch_2, sizeof(patch_2));
             }
