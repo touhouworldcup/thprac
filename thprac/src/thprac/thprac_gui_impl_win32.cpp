@@ -20,7 +20,6 @@
 
 #include "thprac_gui_impl_win32.h"
 #include "thprac_hook.h"
-#include <MinHook.h>
 #include <imgui.h>
 #include <string>
 #include <tchar.h>
