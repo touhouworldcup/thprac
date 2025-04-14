@@ -708,6 +708,44 @@ namespace TH08 {
     };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
+        EHOOK_ST(th08_master_disable1, 0x417C6B)
+        {
+            int captured = pCtx->Edx;
+            if (captured <= 999)
+                return;
+            std::string str = std::format("{}", captured);
+
+            DWORD thiz = *(DWORD*)(pCtx->Ebp - 0x28);
+            *(float*)(thiz + 8920) = *(float*)(thiz + 8920) + 28.0;
+
+            float inc = 25.0f / (float)str.size();
+            for (auto ch : str) {
+                *(DWORD*)(thiz + 0x22F4) = asm_call<0x406880, Thiscall, DWORD>(*(DWORD*)(0x4D50A8), ch - '0' + 136);
+                asm_call<0x462FF0, Thiscall>(*(DWORD*)0x018BDC90, thiz + 0x20D0);
+                *(float*)(thiz + 8920) += inc;
+            }
+            *(float*)(thiz + 8920) -= inc;
+            pCtx->Eip = 0x00417DB8;
+        };
+        EHOOK_ST(th08_master_disable2, 0x00417DF6)
+        {
+            int captured = pCtx->Ecx;
+            if (captured <= 999)
+                return;
+            std::string str = std::format("{}", captured);
+
+            DWORD thiz = *(DWORD*)(pCtx->Ebp - 0x28);
+            *(float*)(thiz + 8920) = *(float*)(thiz + 8920) + 7.0;
+
+            float inc = 25.0f / (float)str.size();
+            for (auto ch : str) {
+                *(DWORD*)(thiz + 0x22F4) = asm_call<0x406880, Thiscall, DWORD>(*(DWORD*)(0x4D50A8), ch - '0' + 136);
+                asm_call<0x462FF0, Thiscall>(*(DWORD*)0x018BDC90, thiz + 0x20D0);
+                *(float*)(thiz + 8920) += inc;
+            }
+            pCtx->Eip = 0x417F41;
+        };
+
         EHOOK_ST(th08_all_clear_bonus_1, 0x435f8e)
         {
             pCtx->Eip = 0x435f92;
@@ -723,6 +761,13 @@ namespace TH08 {
         PATCH_ST(th08_DOSWNC_1, 0x415A4E, "\x39\xC0", 2);
         PATCH_ST(th08_DOSWNC_2, 0x416463, "\x39\xC0", 2)
     private:
+        void MasterDisableInit()
+        {
+            th08_master_disable1.Setup();
+            th08_master_disable2.Setup();
+            th08_master_disable1.Toggle(g_adv_igi_options.disable_master_autoly);
+            th08_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
+        }
         void FpsInit()
         {
             mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th08.dll");
@@ -778,6 +823,7 @@ namespace TH08 {
             OnLocaleChange();
             FpsInit();
             GameplayInit();
+            MasterDisableInit();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -852,6 +898,11 @@ namespace TH08 {
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_ONE_KEY_DIE_DESC));
+
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
+                    th08_master_disable1.Toggle(g_adv_igi_options.disable_master_autoly);
+                    th08_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
+                }
 
                 ImGui::Checkbox(S(THPRAC_SHOW_BULLET_HITBOX), &g_show_bullet_hitbox);
 
