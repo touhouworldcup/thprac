@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "thprac_hook.h"
 #include "thprac_gui_components.h"
 
 #include <vector>
@@ -55,7 +56,7 @@ enum game_gui_impl {
     IMPL_WIN32_DX9
 };
 
-void SetDpadHook(uintptr_t addr);
+void SetDpadHook(uintptr_t addr, size_t instr_len);
 
 void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3 = 0,

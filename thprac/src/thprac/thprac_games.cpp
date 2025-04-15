@@ -54,12 +54,13 @@ bool pov_to_xy(T& x, T& y, Ranges<T>& ranges, DWORD pov)
     return true;
 }
 
-HRESULT IDirectInputDevice8_GetDeviceState_Hook(IDirectInputDevice8A* This, DWORD cbData, void* lpvData) {
+HRESULT IDirectInputDevice8_GetDeviceState_Hook(IDirectInputDevice8A* This, DWORD cbData, void* lpvData)
+{
     HRESULT res = This->GetDeviceState(cbData, lpvData);
     if (FAILED(res) || !(cbData == sizeof(DIJOYSTATE) || cbData == sizeof(DIJOYSTATE2))) {
         return res;
     }
-    
+
     auto* js = (DIJOYSTATE*)lpvData;
 
     Ranges<long> di_range = { -1000, 1000, -1000, 1000 };
@@ -71,12 +72,12 @@ HRESULT IDirectInputDevice8_GetDeviceState_Hook(IDirectInputDevice8A* This, DWOR
     return res;
 }
 
-bool __stdcall IDirectInputDevice8_GetDeviceState_VEHHook(PCONTEXT pCtx) {
+bool __fastcall IDirectInputDevice8_GetDeviceState_VEHHook(PCONTEXT pCtx, [[maybe_unused]] HookCtx* self)
+{
     pCtx->Eax = IDirectInputDevice8_GetDeviceState_Hook(
         GetMemContent<IDirectInputDevice8A*>(pCtx->Esp + 0),
         GetMemContent<DWORD>(pCtx->Esp + 4),
-        GetMemContent<void*>(pCtx->Esp + 8)
-    );
+        GetMemContent<void*>(pCtx->Esp + 8));
     pCtx->Esp += 12;
     return false;
 }
@@ -94,7 +95,8 @@ struct winmm_joy_caps_t {
 
 std::vector<winmm_joy_caps_t> joy_info;
 
-MMRESULT WINAPI hook_joyGetPosEx(UINT uJoyID, JOYINFOEX* pji) {
+MMRESULT WINAPI hook_joyGetPosEx(UINT uJoyID, JOYINFOEX* pji)
+{
     if (!pji) {
         return MMSYSERR_INVALPARAM;
     }
@@ -130,7 +132,8 @@ MMRESULT WINAPI hook_joyGetPosEx(UINT uJoyID, JOYINFOEX* pji) {
 }
 
 // Replace with centralized IAT hooking once there's a need for that
-void iat_hook_joyGetPosEx() {
+void iat_hook_joyGetPosEx()
+{
     uintptr_t base = CurrentImageBase;
 
     auto* pImpDesc = (PIMAGE_IMPORT_DESCRIPTOR)GetNtDataDirectory((HMODULE)base, IMAGE_DIRECTORY_ENTRY_IMPORT);
@@ -152,7 +155,7 @@ void iat_hook_joyGetPosEx() {
                     }
                     if (!strcmp("joyGetPosEx", (char*)pByName->Name)) {
                         orig_joyGetPosEx = (decltype(joyGetPosEx)*)pIT->u1.Function;
-                        
+
                         DWORD oldProt;
                         VirtualProtect(&pIT->u1.Function, 4, PAGE_READWRITE, &oldProt);
                         pIT->u1.Function = (DWORD)hook_joyGetPosEx;
@@ -164,14 +167,15 @@ void iat_hook_joyGetPosEx() {
     }
 }
 
-void SetDpadHook(uintptr_t addr) {
-    if (thcrap_tsa_dll) {
-        return;
-    }
+void SetDpadHook(uintptr_t addr, size_t instr_len) {
+    static constinit HookCtx dpad_hook = {
+        .callback = IDirectInputDevice8_GetDeviceState_VEHHook,
+        .data = PatchData()
+    };
 
-    static HookCtx dpad_hook;
-
-    dpad_hook.Setup((void*)addr, &IDirectInputDevice8_GetDeviceState_VEHHook);
+    dpad_hook.addr = addr;
+    dpad_hook.data.hook.instr_len = static_cast<uint8_t>(instr_len);
+    dpad_hook.Setup();
     dpad_hook.Enable();
 
     iat_hook_joyGetPosEx();

@@ -20,15 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
-    <ClInclude Include="src\3rdParties\distorm\src\config.h" />
-    <ClInclude Include="src\3rdParties\distorm\src\decoder.h" />
-    <ClInclude Include="src\3rdParties\distorm\src\instructions.h" />
-    <ClInclude Include="src\3rdParties\distorm\src\insts.h" />
-    <ClInclude Include="src\3rdParties\distorm\src\operands.h" />
-    <ClInclude Include="src\3rdParties\distorm\src\prefix.h" />
-    <ClInclude Include="src\3rdParties\distorm\src\textdefs.h" />
-    <ClInclude Include="src\3rdParties\distorm\src\wstring.h" />
-    <ClInclude Include="src\3rdParties\distorm\src\x86defs.h" />
     <ClInclude Include="src\3rdParties\ImGui\imconfig.h" />
     <ClInclude Include="src\3rdParties\ImGui\imgui.h" />
     <ClInclude Include="src\3rdParties\ImGui\imgui_freetype.h" />
@@ -38,15 +29,6 @@
     <ClInclude Include="src\3rdParties\ImGui\imstb_textedit.h" />
     <ClInclude Include="src\3rdParties\MetroHash\metrohash128.h" />
     <ClInclude Include="src\3rdParties\MetroHash\platform.h" />
-    <ClInclude Include="src\3rdParties\MinHook\include\MinHook.h" />
-    <ClInclude Include="src\3rdParties\MinHook\src\buffer.h" />
-    <ClInclude Include="src\3rdParties\MinHook\src\disassembler.h" />
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\hde32.h" />
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\hde64.h" />
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\pstdint.h" />
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\table32.h" />
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\table64.h" />
-    <ClInclude Include="src\3rdParties\MinHook\src\trampoline.h" />
     <ClInclude Include="src\thprac\thprac_games.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_dx8.h" />
     <ClInclude Include="src\thprac\thprac_gui_components.h" />
@@ -76,14 +58,6 @@
     <ClInclude Include="src\thprac\thprac_log.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\3rdParties\distorm\src\decoder.c" />
-    <ClCompile Include="src\3rdParties\distorm\src\distorm.c" />
-    <ClCompile Include="src\3rdParties\distorm\src\instructions.c" />
-    <ClCompile Include="src\3rdParties\distorm\src\insts.c" />
-    <ClCompile Include="src\3rdParties\distorm\src\mnemonics.c" />
-    <ClCompile Include="src\3rdParties\distorm\src\operands.c" />
-    <ClCompile Include="src\3rdParties\distorm\src\prefix.c" />
-    <ClCompile Include="src\3rdParties\distorm\src\textdefs.c" />
     <ClCompile Include="src\3rdParties\ImGui\imgui.cpp" />
     <ClCompile Include="src\3rdParties\ImGui\imgui_demo.cpp" />
     <ClCompile Include="src\3rdParties\ImGui\imgui_draw.cpp" />
@@ -91,15 +65,7 @@
     <ClCompile Include="src\3rdParties\ImGui\imgui_tables.cpp" />
     <ClCompile Include="src\3rdParties\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="src\3rdParties\MetroHash\metrohash128.cpp" />
-    <ClCompile Include="src\3rdParties\MinHook\src\buffer.c" />
-    <ClCompile Include="src\3rdParties\MinHook\src\disassembler.c" />
-    <ClCompile Include="src\3rdParties\MinHook\src\hde\hde32.c" />
-    <ClCompile Include="src\3rdParties\MinHook\src\hde\hde64.c" />
-    <ClCompile Include="src\3rdParties\MinHook\src\hook.c" />
-    <ClCompile Include="src\3rdParties\MinHook\src\trampoline.c" />
-    <ClCompile Include="src\3rdParties\MinHook\src\trampoline_new.c" />
     <ClCompile Include="src\thprac\main.cpp" />
-    <ClCompile Include="src\thprac\thprac_alcostg.cpp" />
     <ClCompile Include="src\thprac\thprac_games.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_impl_dx8.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_components.cpp" />
@@ -120,6 +86,7 @@
     <ClCompile Include="src\thprac\thprac_gui_locale.cpp" />
     <ClCompile Include="src\thprac\thprac_locale_def.cpp" />
     <ClCompile Include="src\thprac\thprac_main.cpp" />
+    <ClCompile Include="src\thprac\thprac_alcostg.cpp" />
     <ClCompile Include="src\thprac\thprac_th06.cpp" />
     <ClCompile Include="src\thprac\thprac_th07.cpp" />
     <ClCompile Include="src\thprac\thprac_th08.cpp" />
@@ -196,7 +163,7 @@
   <PropertyGroup>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>thprac</TargetName>
-    <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\distorm\include;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(ProjectDir)src\3rdParties\MinHook\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)src\3rdParties\FreeType\win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>

@@ -447,8 +447,6 @@ namespace THPrac
             return pressed;
         }
 
-
-
         bool GuiHotKey::OnWidgetUpdate()
         {
             const char* text = mText ? mText : LocaleGetStr(mTextRef);
@@ -481,17 +479,15 @@ namespace THPrac
             if (flag) {
                 mStatus = !mStatus;
                 if (mStatus) {
-                    for (auto& hook : mHooks) {
-                        hook->Enable();
+                    for (size_t i = 0; i < mHooks.len; i++) {
+                        mHooks.ptr[i].Enable();
                     }
                 } else {
-                    for (auto& hook : mHooks) {
-                        hook->Disable();
+                    for (size_t i = 0; i < mHooks.len; i++) {
+                        mHooks.ptr[i].Disable();
                     }
                 }
-            }
-
-            
+            }       
 
             return flag;
         }

@@ -7,7 +7,6 @@
 #include "thprac_gui_impl_dx8.h"
 #include "thprac_gui_impl_dx9.h"
 #include "thprac_gui_impl_win32.h"
-#include "thprac_hook.h"
 #include "thprac_locale_def.h"
 #include "thprac_gui_locale.h"
 

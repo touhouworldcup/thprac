@@ -6,12 +6,6 @@ namespace Gui {
     void ShowLicenceInfo()
     {
         if (ImGui::BeginTabBar("COPYING_TABS", ImGuiTabBarFlags_None)) {
-            if (ImGui::BeginTabItem("distorm")) {
-                ImGui::BeginChild("COPYING.distorm");
-                ImGui::TextUnformatted(COPYING_distorm);
-                ImGui::EndChild();
-                ImGui::EndTabItem();
-            }
             if (ImGui::BeginTabItem("Freetype")) {
                 ImGui::BeginChild("COPYING.Freetype");
                 ImGui::TextUnformatted(COPYING_FreeType);
