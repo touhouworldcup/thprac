@@ -521,38 +521,48 @@ namespace TH07 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtx(0x43Ee14, "\x03", 1) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x44116B, "\x00", 1) } };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
-            new HookCtx(0x440BC7, "\x00", 1) } };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
-            new HookCtx(0x42F02B, "\xeb\x16", 2),
-            new HookCtx(0x440DD3, "\x00", 1) } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
-            new HookCtx(0x417726, "\xeb", 1),
-            new HookCtx(0x421F91, "\xeb", 1) } };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
-            new HookCtx(0x440D2C, "\xff", 1),
-            new HookCtx(0x440D35, "\x66\xC7\x05\x4C\x9E\x4B\x00\x02", 8),
-            new HookCtx(0x440B8E, "\x54", 1) } };
 
+        HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(0x43Ee14, "03")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
+        PATCH_HK(0x44116B, "00")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
+        PATCH_HK(0x440BC7, "00")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
+        PATCH_HK(0x42F02B, "eb16"),
+        PATCH_HK(0x440DD3, "00")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
+        PATCH_HK(0x417726, "eb"),
+        PATCH_HK(0x421F91, "eb")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
+        PATCH_HK(0x440D2C, "ff"),
+        PATCH_HK(0x440D35, "66C7054C9E4B0002"),
+        PATCH_HK(0x440B8E, "54")
+        HOTKEY_ENDDEF();
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
     };
 
+    EHOOK_ST(th07_all_clear_bonus_1, 0x42b3d2, 2, {
+        pCtx->Eip = 0x42b3d6;
+        return true;
+    });
+    EHOOK_ST(th07_all_clear_bonus_2, 0x4280b7, 2, {
+        pCtx->Eip = 0x4280bf;
+        return true;
+    });
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
-        EHOOK_ST(th07_all_clear_bonus_1, 0x42b3d2)
-        {
-            pCtx->Eip = 0x42b3d6;
-            return true;
-        }
-        EHOOK_ST(th07_all_clear_bonus_2, 0x4280b7)
-        {
-            pCtx->Eip = 0x4280bf;
-            return true;
-        }
     private:
         void FpsInit()
         {
@@ -676,13 +686,12 @@ namespace TH07 {
         adv_opt_ctx mOptCtx;
     };
 
-    EHOOK_G1(th07_rb, 0x4157f3)
-    {
-        th07_rb::GetHook().Disable();
+    EHOOK_ST(th07_rb, 0x4157f3, 7, {
+        self->Disable();
         *(uint32_t*)(pCtx->Ecx + 0x6f0) = 0x1e0;
         pCtx->Eip = 0x41677b;
         return true;
-    }
+    });
     void ECLTimeWarp(int count, uint32_t time)
     {
         uint32_t* addr = (uint32_t*)GetMemAddr(0x9a9af8, 0x9545fc);
@@ -765,10 +774,6 @@ namespace TH07 {
             *((int32_t*)0x9a9ab8) = 9;
             asm_call<0x427d92, Fastcall>(0x61d);
         }
-    }
-    void ECLResButterfly(bool toggle)
-    {
-        th07_rb::GetHook().Toggle(toggle);
     }
     __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
     {
@@ -1302,7 +1307,7 @@ namespace TH07 {
             break;
         case THPrac::TH07::TH07_ST6_BOSS10:
             ECLNameFix();
-            ECLResButterfly(true);
+            th07_rb.Enable();
             ECLTimeWarp(2, 0x9d7);
             ecl << pair{0xe678, (int16_t)0x9d7} << pair{0x30dc, 0x3e}
                 << pair{0xb9f4, (int16_t)0} << pair{0xbab0, 0} << pair{0xc078, (int16_t)0};
@@ -1659,9 +1664,8 @@ namespace TH07 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    PATCH_DY(th07_reacquire_input, 0x430f03, "\x00\x00\x00\x00\x74", 5);
-    EHOOK_DY(th07_everlasting_bgm, 0x44d2f0)
-    {
+    PATCH_DY(th07_reacquire_input, 0x430f03, "0000000074")
+    EHOOK_DY(th07_everlasting_bgm, 0x44d2f0, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -1686,14 +1690,12 @@ namespace TH07 {
             pCtx->Eip = 0x44d3ce;
         }
         return true;
-    }
-    EHOOK_DY(th07_prac_menu_1, 0x45a214)
-    {
+    })
+    EHOOK_DY(th07_prac_menu_1, 0x45a214, 2, {
         THGuiPrac::singleton().State(1);
         return true;
-    }
-    EHOOK_DY(th07_prac_menu_3, 0x45a65d)
-    {
+    })
+    EHOOK_DY(th07_prac_menu_3, 0x45a65d, 10, {
         THGuiPrac::singleton().State(3);
         *((int32_t*)0x62f85c) = thPracParam.stage;
         if (thPracParam.stage == 6)
@@ -1701,30 +1703,25 @@ namespace TH07 {
         else if (thPracParam.stage == 7)
             *((int32_t*)0x626280) = 5;
         return true;
-    }
-    EHOOK_DY(th07_prac_menu_4, 0x45a6d4)
-    {
+    })
+    EHOOK_DY(th07_prac_menu_4, 0x45a6d4, 2, {
         THGuiPrac::singleton().State(4);
         return true;
-    }
-    EHOOK_DY(th07_rep_menu_1, 0x45ac43)
-    {
+    })
+    EHOOK_DY(th07_rep_menu_1, 0x45ac43, 6, {
         THGuiRep::singleton().State(1);
         return true;
-    }
-    EHOOK_DY(th07_rep_menu_2, 0x45af96)
-    {
+    })
+    EHOOK_DY(th07_rep_menu_2, 0x45af96, 5, {
         THGuiRep::singleton().State(2);
         return true;
-    }
-    EHOOK_DY(th07_rep_menu_3, 0x45b2c1)
-    {
+    })
+    EHOOK_DY(th07_rep_menu_3, 0x45b2c1, 2, {
         THGuiRep::singleton().State(3);
         return true;
-    }
-    EHOOK_DY(th07_patch_main, 0x42f2e3)
-    {
-        th07_rb::GetHook().Disable();
+    })
+    EHOOK_DY(th07_patch_main, 0x42f2e3, 2, {
+        th07_rb.Disable();
         if (thPracParam.mode == 1) {
             float* life = (float*)GetMemAddr(0x626278, 0x5c);
             *life = (thPracParam.life);
@@ -1775,25 +1772,22 @@ namespace TH07 {
         }
         thPracParam._playLock = true;
         return true;
-    }
-    EHOOK_DY(th07_disable_title, 0x42956b)
-    {
+    })
+    EHOOK_DY(th07_disable_title, 0x42956b, 5, {
         if (thPracParam.mode == 1 && (thPracParam.section || thPracParam.frame)) {
             pCtx->Esp += 0xC;
             pCtx->Eip = 0x429570;
         }
         return true;
-    }
-    EHOOK_DY(th07_fake_shot, 0x40e6ba)
-    {
+    })
+    EHOOK_DY(th07_fake_shot, 0x40e6ba, 7, {
         if (thFakeShot != -1) {
             pCtx->Eax = thFakeShot;
             pCtx->Eip = 0x40eaca;
         }
         return true;
-    }
-    EHOOK_DY(th07_bgm, 0x42f206)
-    {
+    })
+    EHOOK_DY(th07_bgm, 0x42f206, 7, {
         if (thPracParam.mode == 1 && thPracParam.section) {
             if (thPracParam.stage == 5) {
                 asm_call<0x439dd0, Thiscall>(0x575950, 2, 0x4986b4);
@@ -1814,39 +1808,34 @@ namespace TH07 {
 
         }
         return true;
-    }
-    EHOOK_DY(th07_bgm_st6_1, 0x427eda)
-    {
+    })
+    EHOOK_DY(th07_bgm_st6_1, 0x427eda, 7, {
         if (thPracParam.mode == 1 && thPracParam.section) {
             pCtx->Eip = 0x427efa;
         }
         return true;
-    }
-    EHOOK_DY(th07_bgm_st6_2, 0x42d9a5)
-    {
+    })
+    EHOOK_DY(th07_bgm_st6_2, 0x42d9a5, 10, {
         if (thPracParam.mode == 1 && thPracParam.section) {
             pCtx->Eip = 0x42d9b1;
         }
         return true;
-    }
-    EHOOK_DY(th07_bgm_st6_3, 0x40348a)
-    {
+    })
+    EHOOK_DY(th07_bgm_st6_3, 0x40348a, 10, {
         if (thPracParam.mode == 1 && thPracParam.section) {
             pCtx->Eip = 0x403496;
         }
         return true;
-    }
-    EHOOK_DY(th07_save_replay, 0x4443fd)
-    {
+    })
+    EHOOK_DY(th07_save_replay, 0x4443fd, 3, {
         char* rep_name = *(char**)(pCtx->Ebp - 0x134);
         if (thPracParam.mode)
             THSaveReplay(rep_name);
         return true;
-    }
-    PATCH_DY(th07_disable_prac_menu1, 0x45b9ea, "\x90\x90\x90\x90\x90", 5);
-    PATCH_DY(th07_disable_prac_menu2, 0x45bb1c, "\x90\x90\x90\x90\x90", 5);
-    EHOOK_DY(th07_update, 0x42fdf8)
-    {
+    })
+    PATCH_DY(th07_disable_prac_menu1, 0x45b9ea, "9090909090")
+    PATCH_DY(th07_disable_prac_menu2, 0x45bb1c, "9090909090")
+    EHOOK_DY(th07_update, 0x42fdf8, 1, {
         GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
 
         // Gui components update
@@ -1857,68 +1846,62 @@ namespace TH07 {
 
         GameGuiEnd(drawCursor);
         return true;
-    }
-    EHOOK_DY(th07_render, 0x42feb9)
-    {
+    })
+    EHOOK_DY(th07_render, 0x42feb9, 1, {
         GameGuiRender(IMPL_WIN32_DX8);
         if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
             THSnapshot::Snapshot(*(IDirect3DDevice8**)0x575958);
         return true;
-    }
+    })
     HOOKSET_ENDDEF()
 
-    HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
+        if (ImGui::GetCurrentContext()) {
+            return;
+        }
         // Init
         GameGuiInit(IMPL_WIN32_DX8, 0x575958, 0x575c20,
             Gui::INGAGME_INPUT_GEN1, 0x4b9e4c, 0x4b9e54, 0x4b9e5c,
             -1);
 
-        SetDpadHook(0x430760);
+        SetDpadHook(0x430760, 3);
 
         // Gui components creation
         THGuiPrac::singleton();
         THGuiRep::singleton();
         THOverlay::singleton();
+        th07_rb.Setup();
 
         // Hooks
-        THMainHook::singleton().EnableAllHooks();
+        EnableAllHooks(THMainHook);
 
         // Reset thPracParam
         thPracParam.Reset();
     }
-    static __declspec(noinline) void THInitHookDisable()
-    {
-        auto& s = THInitHook::singleton();
-        s.th07_gui_init_1.Disable();
-        s.th07_gui_init_2.Disable();
-    }
-    PATCH_DY(th07_disable_dataver, 0x404fe0, "\x33\xc0\xc3", 3);
-    PATCH_DY(th07_disable_demo, 0x455a9a, "\xff\xff\xff\x7f", 4);
-    EHOOK_DY(th07_disable_mutex, 0x435bff)
-    {
+    HOOKSET_DEFINE(THInitHook)
+    PATCH_DY(th07_disable_dataver, 0x404fe0, "33c0c3")
+    PATCH_DY(th07_disable_demo, 0x455a9a, "ffffff7f")
+    EHOOK_DY(th07_disable_mutex, 0x435bff, 2, {
         pCtx->Eip = 0x435c1b;
         return true;
-    }
-    EHOOK_DY(th07_gui_init_1, 0x45599d)
-    {
+    })
+    EHOOK_DY(th07_gui_init_1, 0x45599d, 2, {
         THGuiCreate();
-        THInitHookDisable();
+        self->Disable();
         return true;
-    }
-    EHOOK_DY(th07_gui_init_2, 0x4351ac)
-    {
+    })
+    EHOOK_DY(th07_gui_init_2, 0x4351ac, 1, {
         THGuiCreate();
-        THInitHookDisable();
+        self->Disable();
         return true;
-    }
+    })
     HOOKSET_ENDDEF()
 }
 
 void TH07Init()
 {
-    TH07::THInitHook::singleton().EnableAllHooks();
+    EnableAllHooks(TH07::THInitHook);
 }
 
 }
