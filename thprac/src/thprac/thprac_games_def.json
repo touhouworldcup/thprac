@@ -1159,6 +1159,7 @@
       "TH_NA": [ "N/A", "N/A", "N/A" ],
       "TH_TIMELOCK": [ "锁时", "Time Lock", "残り時間減らない" ],
       "TH_MUTEKI": [ "无敌", "Invincible", "無敵" ],
+      "TH_INFSUBP": [ "无限季节槽", "inf subP", "inf subP" ],
       "TH_INFLIVES": [ "锁残", "Inf. Lives", "残機減らない" ],
       "TH_INFLIVES2": [ "锁残/不疮", "Inf. Lives/No Continue", "残機減らない/No Continue" ],
 	  

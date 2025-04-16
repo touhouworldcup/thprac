@@ -450,6 +450,7 @@ namespace TH16 {
             mInfLives.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfBombs.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfPower.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mInfSubPower.SetTextOffsetRel(x_offset_1, x_offset_2);
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
@@ -461,6 +462,7 @@ namespace TH16 {
             mInfLives();
             mInfBombs();
             mInfPower();
+            mInfSubPower();
             mTimeLock();
             mAutoBomb();
             mElBgm();
@@ -484,16 +486,22 @@ namespace TH16 {
             new HookCtx(0x40db83, "\x90\x90\x90", 3) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
             new HookCtx(0x442749, "\x90\x90\x90\x90\x90\x90", 6) } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+        Gui::GuiHotKey mInfSubPower { TH_INFSUBP, "F5", VK_F5, 
+            { new HookCtx(0x40DCA8, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10),
+              new HookCtx(0x40DCCC, "\x90\x90\x90\x90\x90", 5) 
+        }, 
+        };
+
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F6", VK_F6, {
             new HookCtx(0x417965, "\xeb", 1),
             new HookCtx(0x41d4ef, "\x05\x8d", 2) } };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
+        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F7", VK_F7, {
             new HookCtx(0x4427a1, "\xc6", 1) } };
-
+        
     public:
         Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
-        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
-        Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
+        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F8", VK_F8 };
+        Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F9", VK_F9 };
     };
 
     

@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1376] {
+const char* th_glossary_str[3][1377] {
     {
         "",
         "啤酒",
@@ -1291,6 +1291,7 @@ const char* th_glossary_str[3][1376] {
         "锁残/不疮",
         "锁火力",
         "无限蓄力",
+        "无限季节槽",
         "纯狐狂暴",
         "左",
         "残机",
@@ -2669,6 +2670,7 @@ const char* th_glossary_str[3][1376] {
         "Inf. Lives/No Continue",
         "Inf. Power",
         "Inf. Charge",
+        "inf subP",
         "Junko Rage",
         "Left",
         "Life",
@@ -4047,6 +4049,7 @@ const char* th_glossary_str[3][1376] {
         "残機減らない/No Continue",
         "霊力減らない",
         "無限チャージ",
+        "inf subP",
         "純子怒り",
         "左",
         "残機",
