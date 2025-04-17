@@ -472,20 +472,30 @@ namespace TH16 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtx(0x443fe1, "\x01", 1) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x443d39, "\x90", 1) } };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
-            new HookCtx(0x40db83, "\x90\x90\x90", 3) } };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
-            new HookCtx(0x442749, "\x90\x90\x90\x90\x90\x90", 6) } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
-            new HookCtx(0x417965, "\xeb", 1),
-            new HookCtx(0x41d4ef, "\x05\x8d", 2) } };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
-            new HookCtx(0x4427a1, "\xc6", 1) } };
+        HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(0x443fe1, "01")
+        HOTKEY_ENDDEF();
 
+        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
+        PATCH_HK(0x443d39, "90")
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
+        PATCH_HK(0x40db83, "909090")
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
+        PATCH_HK(0x442749, "909090909090")
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
+        PATCH_HK(0x417965, "eb"),
+        PATCH_HK(0x41d4ef, "058d")
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
+        PATCH_HK(0x4427a1, "c6")
+        HOTKEY_ENDDEF();
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
     };
@@ -616,34 +626,28 @@ namespace TH16 {
         Gui::GuiNavFocus mNavFocus { TH16_SUBSEASON, TH16_SEASON_GAUGE_ALT, TH16_BUGFIX, TH_PHASE };
     };
 
+    PATCH_ST(th16_all_clear_bonus_1, 0x42e240, "eb0b909090");
+    EHOOK_ST(th16_all_clear_bonus_2, 0x42e2c0, 7, {
+        *(int32_t*)(GetMemAddr(0x4a6dcc, 0x170)) = *(int32_t*)(0x4a57b0);
+        if (GetMemContent(0x4a5bec) & 0x10) {
+            typedef void (*PScoreFunc)();
+            PScoreFunc a = (PScoreFunc)0x43f500;
+            a();
+            pCtx->Eip = 0x42e245;
+        }
+        return true;
+    });
+    EHOOK_ST(th16_all_clear_bonus_3, 0x42e39b, 7, {
+        *(int32_t*)(GetMemAddr(0x4a6dcc, 0x170)) = *(int32_t*)(0x4a57b0);
+        if (GetMemContent(0x4a5bec) & 0x10) {
+            typedef void (*PScoreFunc)();
+            PScoreFunc a = (PScoreFunc)0x43f500;
+            a();
+            pCtx->Eip = 0x42e245;
+        }
+        return true;
+    });
     class THAdvOptWnd : public Gui::PPGuiWnd {
-        EHOOK_ST(th16_all_clear_bonus_1, 0x42e240)
-        {
-            pCtx->Eip = 0x42e24d;
-            return true;
-        }
-        EHOOK_ST(th16_all_clear_bonus_2, 0x42e2c0)
-        {
-            *(int32_t*)(GetMemAddr(0x4a6dcc, 0x170)) = *(int32_t*)(0x4a57b0);
-            if (GetMemContent(0x4a5bec) & 0x10) {
-                typedef void (*PScoreFunc)();
-                PScoreFunc a = (PScoreFunc)0x43f500;
-                a();
-                pCtx->Eip = 0x42e245;
-            }
-            return true;
-        }
-        EHOOK_ST(th16_all_clear_bonus_3, 0x42e39b)
-        {
-            *(int32_t*)(GetMemAddr(0x4a6dcc, 0x170)) = *(int32_t*)(0x4a57b0);
-            if (GetMemContent(0x4a5bec) & 0x10) {
-                typedef void (*PScoreFunc)();
-                PScoreFunc a = (PScoreFunc)0x43f500;
-                a();
-                pCtx->Eip = 0x42e245;
-            }
-            return true;
-        }
     private:
         void FpsInit()
         {
@@ -2135,8 +2139,7 @@ namespace TH16 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th16_spbugfix, 0x4214fa)
-    {
+    EHOOK_DY(th16_spbugfix, 0x4214fa, 6, {
         char* sub_str;
         int signal;
         sub_str = (char*)pCtx->Esi;
@@ -2161,9 +2164,8 @@ namespace TH16 {
             }
         }
         return true;
-    }
-    EHOOK_DY(th16_everlasting_bgm, 0x45ed00)
-    {
+    })
+    EHOOK_DY(th16_everlasting_bgm, 0x45ed00, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -2182,36 +2184,30 @@ namespace TH16 {
             pCtx->Eip = 0x45ed93;
         }
         return true;
-    }
-    EHOOK_DY(th16_param_reset, 0x44b610)
-    {
+    })
+    EHOOK_DY(th16_param_reset, 0x44b610, 7, {
         thPracParam.Reset();
         thSubSeasonB = -1;
         return true;
-    }
-    EHOOK_DY(th16_prac_menu_1, 0x450f60)
-    {
+    })
+    EHOOK_DY(th16_prac_menu_1, 0x450f60, 5, {
         THGuiPrac::singleton().State(1);
         return true;
-    }
-    EHOOK_DY(th16_prac_menu_2, 0x450f83)
-    {
+    })
+    EHOOK_DY(th16_prac_menu_2, 0x450f83, 3, {
         THGuiPrac::singleton().State(2);
         return true;
-    }
-    EHOOK_DY(th16_prac_menu_3, 0x4512cc)
-    {
+    })
+    EHOOK_DY(th16_prac_menu_3, 0x4512cc, 7, {
         THGuiPrac::singleton().State(3);
         return true;
-    }
-    EHOOK_DY(th16_prac_menu_4, 0x45136d)
-    {
+    })
+    EHOOK_DY(th16_prac_menu_4, 0x45136d, 7, {
         THGuiPrac::singleton().State(4);
         return true;
-    }
-    PATCH_DY(th16_prac_menu_enter_1, 0x451044, "\xeb", 1);
-    EHOOK_DY(th16_prac_menu_enter_2, 0x451327)
-    {
+    })
+    PATCH_DY(th16_prac_menu_enter_1, 0x451044, "eb")
+    EHOOK_DY(th16_prac_menu_enter_2, 0x451327, 5, {
         // Change sub-season to dog days if playing extra
         if (thPracParam.stage == 6) {
             thSubSeasonB = *((int32_t*)0x4a57ac);
@@ -2220,14 +2216,9 @@ namespace TH16 {
 
         pCtx->Ecx = thPracParam.stage;
         return true;
-    }
-    EHOOK_DY(th16_disable_prac_menu_1, 0x4514d1)
-    {
-        pCtx->Eip = 0x45150e;
-        return true;
-    }
-    EHOOK_DY(th16_menu_rank_fix, 0x44097f)
-    {
+    })
+    PATCH_DY(th16_disable_prac_menu_1, 0x4514d1, "eb3b")
+    EHOOK_DY(th16_menu_rank_fix, 0x44097f, 5, {
         *((int32_t*)0x4a57c8) = -1; // Reset spell practice ID
         *((int32_t*)0x4a57b4) = *((int32_t*)0x49f274); // Restore In-game rank to menu rank
         if (thSubSeasonB != -1) // Restore sub-season
@@ -2236,9 +2227,8 @@ namespace TH16 {
             thSubSeasonB = -1;
         }
         return true;
-    }
-    EHOOK_DY(th16_patch_main, 0x42d1ec)
-    {
+    })
+    EHOOK_DY(th16_patch_main, 0x42d1ec, 1, {
         if (thPracParam.mode == 1) {
             *(int32_t*)(0x4a57b0) = (int32_t)(thPracParam.score / 10);
             *(int32_t*)(0x4a57f4) = thPracParam.life;
@@ -2341,17 +2331,15 @@ namespace TH16 {
         }
         thPracParam._playLock = true;
         return true;
-    }
-    EHOOK_DY(th16_bgm, 0x42de8c)
-    {
+    })
+    EHOOK_DY(th16_bgm, 0x42de8c, 2, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x42de8e;
         }
         return true;
-    }
-    EHOOK_DY(th16_rep_save, 0x448be4)
-    {
+    })
+    EHOOK_DY(th16_rep_save, 0x448be4, 5, {
         char* repName = (char*)(pCtx->Esp + 0x38);
         if (thPracParam.mode == 1)
         {
@@ -2363,66 +2351,44 @@ namespace TH16 {
                 THSaveReplay(repName);
         }
         return true;
-    }
-    EHOOK_DY(th16_rep_menu_1, 0x4518a6)
-    {
+    })
+    EHOOK_DY(th16_rep_menu_1, 0x4518a6, 3, {
         THGuiRep::singleton().State(1);
         return true;
-    }
-    EHOOK_DY(th16_rep_menu_2, 0x4519c6)
-    {
+    })
+    EHOOK_DY(th16_rep_menu_2, 0x4519c6, 5, {
         THGuiRep::singleton().State(2);
         return true;
-    }
-    EHOOK_DY(th16_rep_menu_3, 0x451b86)
-    {
+    })
+    EHOOK_DY(th16_rep_menu_3, 0x451b86, 2, {
         THGuiRep::singleton().State(3);
         return true;
-    }
-    EHOOK_DY(th16_spmenu_alt_1, 0x455da6)
-    {
-        pCtx->Esp += 0x10;
-        pCtx->Eip = 0x455dab;
-        return true;
-    }
-    PATCH_DY(th16_spmenu_alt_2, 0x455e75, "\x90\x90\x90\x90\x90", 5);
-    EHOOK_DY(th16_spmenu_alt_3, 0x456b8b)
-    {
-        pCtx->Eip = 0x456d2a;
-        return true;
-    }
-    EHOOK_DY(th16_spmenu_alt_4, 0x456bb8)
-    {
-        pCtx->Eip = 0x456cba;
-        return true;
-    }
-    EHOOK_DY(th16_sp_menu_1, 0x455dbc)
-    {
+    })
+    PATCH_DY(th16_spmenu_alt_1, 0x455da6, "83c4109090")
+    PATCH_DY(th16_spmenu_alt_2, 0x455e75, "9090909090")
+    PATCH_DY(th16_spmenu_alt_3, 0x456b8b, "90e9")
+    PATCH_DY(th16_spmenu_alt_4, 0x456bb8, "90e9")
+    EHOOK_DY(th16_sp_menu_1, 0x455dbc, 7, {
         THGuiSP::singleton().State(1);
         return true;
-    }
-    EHOOK_DY(th16_sp_menu_2, 0x455dff)
-    {
+    })
+    EHOOK_DY(th16_sp_menu_2, 0x455dff, 3, {
         THGuiSP::singleton().State(2);
         return true;
-    }
-    EHOOK_DY(th16_sp_menu_3, 0x455eeb)
-    {
+    })
+    EHOOK_DY(th16_sp_menu_3, 0x455eeb, 7, {
         THGuiSP::singleton().State(3);
         return true;
-    }
-    EHOOK_DY(th16_sp_menu_4, 0x455fee)
-    {
+    })
+    EHOOK_DY(th16_sp_menu_4, 0x455fee, 7, {
         THGuiSP::singleton().State(4);
         return true;
-    }
-    EHOOK_DY(th16_sp_menu_5, 0x455fe3)
-    {
+    })
+    EHOOK_DY(th16_sp_menu_5, 0x455fe3, 5, {
         THGuiSP::singleton().State(5);
         return true;
-    }
-    EHOOK_DY(th16_update, 0x40156f)
-    {
+    })
+    EHOOK_DY(th16_update, 0x40156f, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 
         // Gui components update
@@ -2433,23 +2399,24 @@ namespace TH16 {
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
         return true;
-    }
-    EHOOK_DY(th16_render, 0x40168a)
-    {
+    })
+    EHOOK_DY(th16_render, 0x40168a, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
         return true;
-    }
+    })
     HOOKSET_ENDDEF()
 
-    HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
+        if (ImGui::GetCurrentContext()) {
+            return;
+        }
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4c10d8, 0x4d7ce0,
             Gui::INGAGME_INPUT_GEN2, 0x4a50bc, 0x4a50b8, 0,
             (*((int32_t*)0x4d9d1c) >> 2) & 0xf);
 
-        SetDpadHook(0x401B0A);
+        SetDpadHook(0x401B0A, 3);
 
         // Gui components creation
         THGuiPrac::singleton();
@@ -2458,42 +2425,32 @@ namespace TH16 {
         THGuiSP::singleton();
 
         // Hooks
-        THMainHook::singleton().EnableAllHooks();
+        EnableAllHooks(THMainHook);
 
         // Reset thPracParam
         thPracParam.Reset();
     }
-    static __declspec(noinline) void THInitHookDisable()
-    {
-        auto& s = THInitHook::singleton();
-        s.th16_gui_init_1.Disable();
-        s.th16_gui_init_2.Disable();
-    }
-    PATCH_DY(th16_disable_demo, 0x44afb0, "\xff\xff\xff\x7f", 4);
-    EHOOK_DY(th16_disable_mutex, 0x4598db)
-    {
-        pCtx->Eip = 0x459aa1;
-        return true;
-    }
-    PATCH_DY(th16_startup_1, 0x44ac1f, "\x90\x90", 2);
-    PATCH_DY(th16_startup_2, 0x44b672, "\xeb", 1);
-    EHOOK_DY(th16_gui_init_1, 0x44bdc1)
-    {
+
+    HOOKSET_DEFINE(THInitHook)
+    PATCH_DY(th16_disable_demo, 0x44afb0, "ffffff7f")
+    PATCH_DY(th16_disable_mutex, 0x4598db, "90e9")
+    PATCH_DY(th16_startup_1, 0x44ac1f, "9090")
+    PATCH_DY(th16_startup_2, 0x44b672, "eb")
+    EHOOK_DY(th16_gui_init_1, 0x44bdc1, 3, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
         return true;
-    }
-    EHOOK_DY(th16_gui_init_2, 0x45b788)
-    {
+    })
+    EHOOK_DY(th16_gui_init_2, 0x45b788, 1, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
         return true;
-    }
+    })
     HOOKSET_ENDDEF()
 }
 
 void TH16Init()
 {
-    TH16::THInitHook::singleton().EnableAllHooks();
+    EnableAllHooks(TH16::THInitHook);
 }
 }
