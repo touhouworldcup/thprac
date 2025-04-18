@@ -2014,11 +2014,11 @@ namespace TH06 {
             THSaveReplay(rep_name);
         return true;
     })
-    EHOOK_DY(th06_rep_menu_1, 0x438262, 7, {
+    EHOOK_DY(th06_rep_menu_1, 0x438262, 6, {
         THGuiRep::singleton().State(1);
         return true;
     })
-    EHOOK_DY(th06_rep_menu_2, 0x4385d5, 7, {
+    EHOOK_DY(th06_rep_menu_2, 0x4385d5, 6, {
         THGuiRep::singleton().State(2);
         return true;
     })
