@@ -2103,10 +2103,11 @@ namespace TH06 {
         THGuiRep::singleton();
         THOverlay::singleton();
 
-        th06_result_screen_create.Setup();
-
+        
         // Hooks
         EnableAllHooks(THMainHook);
+        th06_white_screen.Setup();
+        th06_result_screen_create.Setup();
 
         // Reset thPracParam
         thPracParam.Reset();
