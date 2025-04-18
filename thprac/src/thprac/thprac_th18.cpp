@@ -231,6 +231,12 @@ namespace TH18 {
         }
     };
     THPracParam thPracParam {};
+    
+    EHOOK_ST(th18_free_blank, 0x411f4b, 2, {
+        pCtx->Eip = 0x411f52;
+        self->Disable();
+        return true;
+    });
 
     class THGuiPrac : public Gui::GameGuiWnd {
         THGuiPrac() noexcept
@@ -650,17 +656,10 @@ namespace TH18 {
         bool mParamStatus = false;
         THPracParam mRepParam;
     };
-
-    EHOOK_G1(th18_free_blank, 0x411f4b)
-    {
-        pCtx->Eip = 0x411f52;
-        th18_free_blank::GetHook().Disable();
-        return true;
-    }
     void AddIndicateCard()
     {
         if (GetMemContent(0x4ccd00) == 4) {
-            th18_free_blank::GetHook().Enable();
+            th18_free_blank.Enable();
             asm_call<0x411460, Thiscall>(GetMemContent(ABILTIY_MANAGER_PTR), 0, 2);
         } else {
             uint32_t* list = nullptr;
@@ -676,6 +675,19 @@ namespace TH18 {
             }
         }
     }
+    PATCH_ST(th18_pause_skip_1, 0x458692, "E93F010000");
+    PATCH_ST(th18_pause_skip_2, 0x4588e3, "0F1F8000000000");
+    PATCH_ST(th18_shop_disable, 0x4181ff, "00000000");
+    EHOOK_ST(th18_shop_escape_1, 0x4181f9, 10, {
+        pCtx->Eip = 0x4183d9;
+        self->Disable();
+        return true;
+    });
+    EHOOK_ST(th18_shop_escape_2, 0x418402, 6, {
+        pCtx->Eip = 0x4184a0;
+        self->Disable();
+        return true;
+    });
 
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
@@ -697,29 +709,6 @@ namespace TH18 {
         SINGLETON(THOverlay);
 
     protected:
-        EHOOK_ST(th18_pause_skip_1, 0x458692)
-        {
-            pCtx->Eip = 0x4587d6;
-            return true;
-        }
-        EHOOK_ST(th18_pause_skip_2, 0x4588e3)
-        {
-            pCtx->Eip = 0x4588ea;
-            return true;
-        }
-        PATCH_ST(th18_shop_disable, 0x4181ff, "\x0\x0\x0\x0", 4);
-        EHOOK_ST(th18_shop_escape_1, 0x4181f9)
-        {
-            pCtx->Eip = 0x4183d9;
-            THOverlay::singleton().th18_shop_escape_1.Disable();
-            return true;
-        }
-        EHOOK_ST(th18_shop_escape_2, 0x418402)
-        {
-            pCtx->Eip = 0x4184a0;
-            THOverlay::singleton().th18_shop_escape_2.Disable();
-            return true;
-        }
         inline void ResetCardMenu()
         {
             th18_pause_skip_1.Enable();
@@ -880,39 +869,56 @@ namespace TH18 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtx(0x45d4ea, "\x01", 1) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x45d1a2, "\x00", 1) } };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
-            new HookCtx(0x4574d3, "\x90\x90\x90\x90", 4),
-            new HookCtx(0x40a3ed, "\x90\x90\x90\x90\x90\x90", 6),
-            new HookCtx(0x40a42c, "\x90\x90\x90\x90\x90\x90", 6) } };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
-            new HookCtx(0x45748e, "\x90\x90", 2) } };
-        Gui::GuiHotKey mInfFunds { TH18_INFFUNDS, "F5", VK_F5, {
-            new HookCtx(0x45c244, "\x90\x90\x90\x90\x90\x90", 6),
-            new HookCtx(0x40d96f, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10),
-            new HookCtx(0x418496, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10),
-            new HookCtx(0x418465, "\x90\x90", 2) } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F6", VK_F6, {
-            new HookCtx(0x429eef, "\xeb", 1),
-            new HookCtx(0x43021b, "\x05\x8d", 2) } };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F7", VK_F7, {
-            new HookCtx(0x45c2bd, "\x90\x90\x90\x90\x90\x90", 6) } };
-        Gui::GuiHotKey mZeroCD { TH18_ZERO_CD, "F8", VK_F8, {
-            new HookCtx(0x45c0e3, [](PCONTEXT pCtx) -> bool {
-                struct Timer {
-                    int32_t prev;
-                    int32_t cur;
-                    float cur_f;
-                    void* unused;
-                    uint32_t control;
-                };
-                Timer* timer = (Timer*)(pCtx->Ecx + 0x34);
-                *timer = { -1, 0, 0, 0, 0 };
-                return true;
-                }) } };
+
+        HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(0x45d4ea, "01")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
+        PATCH_HK(0x45d1a2, "00")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
+        PATCH_HK(0x4574d3, "90909090"),
+        PATCH_HK(0x40a3ed, "909090909090"),
+        PATCH_HK(0x40a42c, "909090909090")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
+        PATCH_HK(0x45748e, "9090")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mInfFunds, TH18_INFFUNDS, "F5", VK_F5)
+        PATCH_HK(0x45c244, "909090909090"),
+        PATCH_HK(0x40d96f, "90909090909090909090"),
+        PATCH_HK(0x418496, "90909090909090909090"),
+        PATCH_HK(0x418465, "9090")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F6", VK_F6)
+        PATCH_HK(0x429eef, "eb"),
+        PATCH_HK(0x43021b, "058d")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F7", VK_F7)
+        PATCH_HK(0x45c2bd, "909090909090")
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mZeroCD, TH18_ZERO_CD, "F8", VK_F8)
+        EHOOK_HK(0x45c0e3, 2, {
+            struct Timer {
+                int32_t prev;
+                int32_t cur;
+                float cur_f;
+                void* unused;
+                uint32_t control;
+            };
+            Timer* timer = (Timer*)(pCtx->Ecx + 0x34);
+            *timer = { -1, 0, 0, 0, 0 };
+            return true;
+        })
+        HOTKEY_ENDDEF();
+
         Gui::GuiHotKey mMarketManip { TH18_MARKET_MANIP, "F10", VK_F10 };
         bool isInMarket = false;
         bool isManipMarket = false;
@@ -1045,22 +1051,106 @@ namespace TH18 {
 
     static const char* scoreDispFmt = "%s  %.8u%u";
 
-    uint32_t scoreUncapOffsetNew[] = {
-        0x419e70,
-        0x42a7fd, 0x42a80f,
-        0x430eab, 0x430eb6,
-        0x44476b, 0x44477a,
-        0x444ad9, 0x444ade,
-        0x444c00, 0x444c05,
-        0x4462eb, 0x446302,
-        0x4463a1, 0x4463b1,
-        0x44656e, 0x446578,
-        0x446ac6, 0x446ad7,
-        0x446d09, 0x446d1a,
-        0x45f2c4, 0x45f2cf,
+    static constinit HookCtx scoreUncapStageTrFix[2] = {
+        { .addr = 0x4179c2, .data = PatchCode("e800000000") },
+        { .addr = 0x463040, .data = PatchCode("e800000000") },
     };
-    HookCtx scoreUncapStageTrFix[2];
-    HookCtx scoreUncapHooks[elementsof(scoreUncapOffsetNew)];
+    static constinit HookCtx scoreUncapHooks[] = {
+        { .addr = 0x419e70, .data = PatchCode("ffffffff") },
+        { .addr = 0x42a7fd, .data = PatchCode("ffffffff") },
+        { .addr = 0x42a80f, .data = PatchCode("ffffffff") },
+        { .addr = 0x430eab, .data = PatchCode("ffffffff") },
+        { .addr = 0x430eb6, .data = PatchCode("ffffffff") },
+        { .addr = 0x44476b, .data = PatchCode("ffffffff") },
+        { .addr = 0x44477a, .data = PatchCode("ffffffff") },
+        { .addr = 0x444ad9, .data = PatchCode("ffffffff") },
+        { .addr = 0x444ade, .data = PatchCode("ffffffff") },
+        { .addr = 0x444c00, .data = PatchCode("ffffffff") },
+        { .addr = 0x444c05, .data = PatchCode("ffffffff") },
+        { .addr = 0x4462eb, .data = PatchCode("ffffffff") },
+        { .addr = 0x446302, .data = PatchCode("ffffffff") },
+        { .addr = 0x4463a1, .data = PatchCode("ffffffff") },
+        { .addr = 0x4463b1, .data = PatchCode("ffffffff") },
+        { .addr = 0x44656e, .data = PatchCode("ffffffff") },
+        { .addr = 0x446578, .data = PatchCode("ffffffff") },
+        { .addr = 0x446ac6, .data = PatchCode("ffffffff") },
+        { .addr = 0x446ad7, .data = PatchCode("ffffffff") },
+        { .addr = 0x446d09, .data = PatchCode("ffffffff") },
+        { .addr = 0x446d1a, .data = PatchCode("ffffffff") },
+        { .addr = 0x45f2c4, .data = PatchCode("ffffffff") },
+        { .addr = 0x45f2cf, .data = PatchCode("ffffffff") },
+    };
+    EHOOK_ST(th18_st6final_fix, 0x438e47, 8, {
+        static int st6FinalDummy[4] { 0, 0, 0, 0 };
+        if (!pCtx->Ecx) {
+            pCtx->Ecx = (uint32_t)st6FinalDummy - 0x1270;
+        }
+        return true;
+    });
+    EHOOK_ST(th18_scroll_fix, 0x407e05, 10, {
+        if (GetMemContent(GAME_THREAD_PTR) && GetMemContent(GAME_THREAD_PTR, 0xd0) && *(uint32_t*)(pCtx->Esp + 0x18) == 0x417955 && *(uint32_t*)(pCtx->Esp + 0x3c) == 0x417d39) {
+            pCtx->Eip = 0x407e0f;
+        }
+        return true;
+    });
+    EHOOK_ST(th18_mukade_fix, 0x412c76, 10, {
+        auto caller = *(uint32_t*)(pCtx->Esp + 0x20);
+        if (caller == 0x417974) {
+            pCtx->Eip = 0x412c80;
+        } else if (caller == 0x462e2a) {
+            if (*(uint32_t*)0x4cccdc != *(uint32_t*)0x4ccce0) {
+                pCtx->Eip = 0x412c80;
+            }
+        }
+        return true;
+    });
+    EHOOK_ST(th18_active_card_fix, 0x462f33, 3, {
+        if (GetMemContent(GAME_THREAD_PTR) && !GetMemContent(GAME_THREAD_PTR, 0xd0)) {
+            uint32_t activeCardId = GetMemContent(ABILTIY_MANAGER_PTR, 0x38);
+            if (activeCardId) {
+                *(uint32_t*)(pCtx->Esi + 0x964) = GetMemContent(activeCardId + 4);
+            } else {
+                *(uint32_t*)(pCtx->Esi + 0x964) = UINT_MAX;
+            }
+        }
+        return true;
+    });
+    PATCH_ST(th18_all_clear_bonus_1, 0x4448ab, "eb0b909090");
+    EHOOK_ST(th18_all_clear_bonus_2, 0x444afa, 7, {
+        *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(0x4cccfc);
+        if (GetMemContent(0x4cccc8) & 0x10) {
+            typedef void (*PScoreFunc)();
+            PScoreFunc a = (PScoreFunc)0x458bd0;
+            a();
+            pCtx->Eip = 0x4448b0;
+        }
+        return true;
+    });
+    EHOOK_ST(th18_all_clear_bonus_3, 0x444c49, 7, {
+        *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(0x4cccfc);
+        if (GetMemContent(0x4cccc8) & 0x10) {
+            typedef void (*PScoreFunc)();
+            PScoreFunc a = (PScoreFunc)0x458bd0;
+            a();
+            pCtx->Eip = 0x4448b0;
+        }
+        return true;
+    });
+    EHOOK_ST(th18_score_uncap_replay_fix, 0x4620b9, 3, {
+        if (pCtx->Eax >= 0x3b9aca00) {
+            pCtx->Eax = 0x3b9ac9ff;
+        }
+        return true;
+    });
+    EHOOK_ST(th18_score_uncap_replay_disp, 0x468405, 1, {
+        *(const char**)(pCtx->Esp) = scoreDispFmt;
+        return true;
+    });
+    
+    extern HookCtx th18_static_mallet_replay_gold;
+    extern HookCtx th18_static_mallet_replay_green;
+    extern HookCtx th18_score_uncap_replay_factor;
+    extern HookCtx th18_rep_card_fix;
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
     private:
@@ -1090,65 +1180,7 @@ namespace TH18 {
         }
         SINGLETON(THAdvOptWnd);
 
-    private:
-        EHOOK_ST(th18_all_clear_bonus_1, 0x4448ab)
-        {
-            pCtx->Eip = 0x4448b8;
-            return true;
-        }
-        EHOOK_ST(th18_all_clear_bonus_2, 0x444afa)
-        {
-            *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(0x4cccfc);
-            if (GetMemContent(0x4cccc8) & 0x10) {
-                typedef void (*PScoreFunc)();
-                PScoreFunc a = (PScoreFunc)0x458bd0;
-                a();
-                pCtx->Eip = 0x4448b0;
-            }
-            return true;
-        }
-        EHOOK_ST(th18_all_clear_bonus_3, 0x444c49)
-        {
-            *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(0x4cccfc);
-            if (GetMemContent(0x4cccc8) & 0x10) {
-                typedef void (*PScoreFunc)();
-                PScoreFunc a = (PScoreFunc)0x458bd0;
-                a();
-                pCtx->Eip = 0x4448b0;
-            }
-            return true;
-        }
-        EHOOK_ST(th18_score_uncap_replay_fix, 0x4620b9)
-        {
-            if (pCtx->Eax >= 0x3b9aca00) {
-                pCtx->Eax = 0x3b9ac9ff;
-            }
-            return true;
-        }
-        EHOOK_ST(th18_score_uncap_replay_disp, 0x468405)
-        {
-            *(const char**)(pCtx->Esp) = scoreDispFmt;
-            return true;
-        }
-        EHOOK_ST(th18_score_uncap_replay_factor, 0x44480d)
-        {
-            uint32_t* score = (uint32_t*)0x4cccfc;
-            uint32_t* stage_num = (uint32_t*)0x4cccdc;
-            uint32_t* lifes = (uint32_t*)0x4ccd48;
-            uint32_t* bombs = (uint32_t*)0x4ccd58;
-
-            auto stageBonus = 100000 * *stage_num;
-            auto clearBonus = 100000 * (*lifes * 5 + *bombs);
-            if (GetMemContent(GAME_THREAD_PTR, 0xd0)) {
-                uint32_t rpy = *(uint32_t*)(*(uint32_t*)0x4cf418 + 0x18);
-                if (*(uint32_t*)(rpy + 0xb8) == 8 && (*stage_num == 6 || *stage_num == 7))
-                    *score += clearBonus;
-                *score += stageBonus;
-                if (!THAdvOptWnd::singleton().scoreUncapChkbox && *score > 999999999)
-                    *score = 999999999;
-            }
-            return true;
-        }
+    public:
         static void StaticMalletConversion(PCONTEXT pCtx) {
             int32_t mallet_cancel_item_type = GetMemContent(BULLET_MANAGER_PTR, 0x7a41d0) % 30;
             
@@ -1170,62 +1202,10 @@ namespace TH18 {
                     pCtx->Eip = 0x42917b; // green
             }
         }
-        EHOOK_ST(th18_static_mallet_replay_gold, 0x429222)
-        {
-            if (GetMemContent(GAME_THREAD_PTR, 0xd0))
-                StaticMalletConversion(pCtx);
-            return true;
-        }
-        EHOOK_ST(th18_static_mallet_replay_green, 0x42921d)
-        {
-            if (GetMemContent(GAME_THREAD_PTR, 0xd0))
-                StaticMalletConversion(pCtx);
-            return true;
-        }
         bool scoreUncapChkbox = false;
         bool scoreUncapOverwrite = false;
         bool scoreReplayFactor = false;
         bool staticMalletReplay = false;
-
-        EHOOK_ST(th18_st6final_fix, 0x438e47)
-        {
-            static int st6FinalDummy[4] { 0, 0, 0, 0 };
-            if (!pCtx->Ecx) {
-                pCtx->Ecx = (uint32_t)st6FinalDummy - 0x1270;
-            }
-            return true;
-        }
-        EHOOK_ST(th18_scroll_fix, 0x407e05)
-        {
-            if (GetMemContent(GAME_THREAD_PTR) && GetMemContent(GAME_THREAD_PTR, 0xd0) && *(uint32_t*)(pCtx->Esp + 0x18) == 0x417955 && *(uint32_t*)(pCtx->Esp + 0x3c) == 0x417d39) {
-                pCtx->Eip = 0x407e0f;
-            }
-            return true;
-        }
-        EHOOK_ST(th18_mukade_fix, 0x412c76)
-        {
-            auto caller = *(uint32_t*)(pCtx->Esp + 0x20);
-            if (caller == 0x417974) {
-                pCtx->Eip = 0x412c80;
-            } else if (caller == 0x462e2a) {
-                if (*(uint32_t*)0x4cccdc != *(uint32_t*)0x4ccce0) {
-                    pCtx->Eip = 0x412c80;
-                }
-            }
-            return true;
-        }
-        EHOOK_ST(th18_active_card_fix, 0x462f33)
-        {
-            if (GetMemContent(GAME_THREAD_PTR) && !GetMemContent(GAME_THREAD_PTR, 0xd0)) {
-                uint32_t activeCardId = GetMemContent(ABILTIY_MANAGER_PTR, 0x38);
-                if (activeCardId) {
-                    *(uint32_t*)(pCtx->Esi + 0x964) = GetMemContent(activeCardId + 4);
-                } else {
-                    *(uint32_t*)(pCtx->Esi + 0x964) = UINT_MAX;
-                }
-            }
-            return true;
-        }
         bool st6FinalFix = false;
         bool scrollFix = false;
         bool mukadeFix = false;
@@ -1253,19 +1233,6 @@ namespace TH18 {
         const char* mStageStr[9] {
             "?", "1", "2", "3", "4", "5", "6", "Extra", "?"
         };
-        EHOOK_ST(th18_rep_card_fix, 0x462e4b)
-        {
-            if (THAdvOptWnd::singleton().GetAvailability()) {
-                auto& fixVec = THAdvOptWnd::singleton().mFixData;
-                for (auto& fix : fixVec) {
-                    if (fix.stage == *(uint32_t*)0x4CCCDC) {
-                        *(int32_t*)pCtx->Esp = fix.activeCardVec[fix.activeCardComboIdx];
-                        break;
-                    }
-                }
-            }
-            return true;
-        }
         __declspec(noinline) void MsgBox(UINT type, const wchar_t* title, const wchar_t* msg, const wchar_t* msg2 = nullptr)
         {
             std::wstring _msg = msg;
@@ -1549,8 +1516,6 @@ namespace TH18 {
 
             return wndFocus;
         }
-
-    public:
         void RestartFix()
         {
             if (restartFix) {
@@ -1607,19 +1572,17 @@ namespace TH18 {
         void ScoreUncapInit()
         {
             for (size_t i = 0; i < elementsof(scoreUncapHooks); i++) {
-                scoreUncapHooks[i].Setup((void*)scoreUncapOffsetNew[i], "\xff\xff\xff\xff", 4);
+                scoreUncapHooks[i].Setup();
             }
-
+            
             th18_score_uncap_replay_fix.Setup();
             th18_score_uncap_replay_disp.Setup();
             th18_score_uncap_replay_factor.Setup();
             {
-                char patch_1[5] = "\xE8";
-                char patch_2[5] = "\xE8";
-                *(uintptr_t*)(patch_1 + 1) = (uintptr_t)&globals_assign_hooked - 0x4179c7;
-                *(uintptr_t*)(patch_2 + 1) = (uintptr_t)&globals_assign_hooked - 0x463045;
-                scoreUncapStageTrFix[0].Setup((void*)0x4179c2, patch_1, sizeof(patch_1));
-                scoreUncapStageTrFix[1].Setup((void*)0x463040, patch_2, sizeof(patch_2));
+                *(uintptr_t*)((uintptr_t)scoreUncapStageTrFix[0].data.buffer.ptr + 1) = (uintptr_t)&globals_assign_hooked - 0x4179c7;
+                *(uintptr_t*)((uintptr_t)scoreUncapStageTrFix[1].data.buffer.ptr + 1) = (uintptr_t)&globals_assign_hooked - 0x463045;
+                scoreUncapStageTrFix[0].Setup();
+                scoreUncapStageTrFix[1].Setup();
             }
         }
         void ScoreUncapSet()
@@ -1768,7 +1731,46 @@ namespace TH18 {
 
         adv_opt_ctx mOptCtx;
     };
+    EHOOK_ST(th18_rep_card_fix, 0x462e4b, 5, {
+        if (THAdvOptWnd::singleton().GetAvailability()) {
+            auto& fixVec = THAdvOptWnd::singleton().mFixData;
+            for (auto& fix : fixVec) {
+                if (fix.stage == *(uint32_t*)0x4CCCDC) {
+                    *(int32_t*)pCtx->Esp = fix.activeCardVec[fix.activeCardComboIdx];
+                    break;
+                }
+            }
+        }
+        return true;
+    });
+    EHOOK_ST(th18_static_mallet_replay_gold, 0x429222, 6, {
+        if (GetMemContent(GAME_THREAD_PTR, 0xd0))
+            THAdvOptWnd::StaticMalletConversion(pCtx);
+        return true;
+    });
+    EHOOK_ST(th18_static_mallet_replay_green, 0x42921d, 5, {
+        if (GetMemContent(GAME_THREAD_PTR, 0xd0))
+            THAdvOptWnd::StaticMalletConversion(pCtx);
+        return true;
+    });
+    EHOOK_ST(th18_score_uncap_replay_factor, 0x44480d, 5, {
+        uint32_t* score = (uint32_t*)0x4cccfc;
+        uint32_t* stage_num = (uint32_t*)0x4cccdc;
+        uint32_t* lifes = (uint32_t*)0x4ccd48;
+        uint32_t* bombs = (uint32_t*)0x4ccd58;
 
+        auto stageBonus = 100000 * *stage_num;
+        auto clearBonus = 100000 * (*lifes * 5 + *bombs);
+        if (GetMemContent(GAME_THREAD_PTR, 0xd0)) {
+            uint32_t rpy = *(uint32_t*)(*(uint32_t*)0x4cf418 + 0x18);
+            if (*(uint32_t*)(rpy + 0xb8) == 8 && (*stage_num == 6 || *stage_num == 7))
+                *score += clearBonus;
+            *score += stageBonus;
+            if (!THAdvOptWnd::singleton().scoreUncapChkbox && *score > 999999999)
+                *score = 999999999;
+        }
+        return true;
+    });
     void ECLStdExec(ECLHelper& ecl, unsigned int start, int std_id, int ecl_time = 0)
     {
         if (start)
@@ -2805,8 +2807,7 @@ namespace TH18 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th18_everlasting_bgm, 0x477a50)
-    {
+    EHOOK_DY(th18_everlasting_bgm, 0x477a50, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -2825,46 +2826,36 @@ namespace TH18 {
             pCtx->Eip = 0x477ae6;
         }
         return true;
-    }
-    EHOOK_DY(th18_param_reset, 0x465abd)
-    {
+    })
+    EHOOK_DY(th18_param_reset, 0x465abd, 6, {
         thPracParam.Reset();
         *(uint32_t*)GetMemAddr(0x4cf41c, 0x5f680) = 10;
         return true;
-    }
-    EHOOK_DY(th18_prac_menu_1, 0x4673a2)
-    {
+    })
+    EHOOK_DY(th18_prac_menu_1, 0x4673a2, 5, {
         THGuiPrac::singleton().State(1);
         return true;
-    }
-    EHOOK_DY(th18_prac_menu_2, 0x4673c5)
-    {
+    })
+    EHOOK_DY(th18_prac_menu_2, 0x4673c5, 3, {
         THGuiPrac::singleton().State(2);
         return true;
-    }
-    EHOOK_DY(th18_prac_menu_3, 0x4675f6)
-    {
+    })
+    EHOOK_DY(th18_prac_menu_3, 0x4675f6, 5, {
         THGuiPrac::singleton().State(3);
         return true;
-    }
-    EHOOK_DY(th18_prac_menu_4, 0x4676da)
-    {
+    })
+    EHOOK_DY(th18_prac_menu_4, 0x4676da, 7, {
         THGuiPrac::singleton().State(4);
         return true;
-    }
-    PATCH_DY(th18_prac_menu_enter_1, 0x467488, "\xeb", 1);
-    EHOOK_DY(th18_prac_menu_enter_2, 0x46767a)
-    {
+    })
+    PATCH_DY(th18_prac_menu_enter_1, 0x467488, "eb")
+    EHOOK_DY(th18_prac_menu_enter_2, 0x46767a, 1, {
         pCtx->Ecx = thPracParam.stage;
         return true;
-    }
-    EHOOK_DY(th18_disable_prac_menu_1, 0x46789b)
-    {
-        pCtx->Eip = 0x467959;
-        return true;
-    }
-    EHOOK_DY(th18_patch_main, 0x4432a7)
-    {
+    })
+    PATCH_DY(th18_disable_prac_menu_1, 0x46789b, "e9b90000009090")
+    // Specifying the hook struct manually because code passed to a macro can't declare a macro
+    { .addr = 0x4432a7, .name = "th18_patch_main", .callback = []([[maybe_unused]] PCONTEXT pCtx, [[maybe_unused]] HookCtx* self) -> bool {
         defer({
             THAdvOptWnd::singleton().RestartFix();
             thPracParam._playLock = true;
@@ -2873,7 +2864,7 @@ namespace TH18 {
         if (thPracParam.mode != 1)
             return true;
 
-#define R(name) \
+#define R(name)                                                                                                                 \
     card->_recharge_timer.current = static_cast<int32_t>(card->recharge_time * (static_cast<float>(thPracParam.name) / 10000)); \
     card->_recharge_timer.current_f = card->recharge_time * (thPracParam.name / 10000.0f)
 
@@ -2884,14 +2875,14 @@ namespace TH18 {
         *(int32_t*)(0x4ccd5c) = thPracParam.bomb_fragment;
         *(int32_t*)(0x4ccd38) = thPracParam.power;
         *(int32_t*)(0x4ccd30) = *(int32_t*)(0x4ccd34) = thPracParam.funds;
-        
+
         auto* ability_manager = *(AbilityManager**)ABILTIY_MANAGER_PTR;
-        
+
         for (ThList<CardBase>* entry = &ability_manager->card_list_head; entry; entry = entry->next) {
             CardBase* card = entry->entry;
             if (!GameState_Assert(card != nullptr))
                 continue;
-        
+
             switch (card->card_id) {
             case KOZUCHI:
                 R(kozuchi);
@@ -2936,22 +2927,19 @@ namespace TH18 {
 #undef R
         return true;
 
-    }
-    EHOOK_DY(th18_bgm, 0x444370)
-    {
+    }, .data = PatchHookImpl(1) },
+    EHOOK_DY(th18_bgm, 0x444370, 2, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x444372;
         }
         return true;
-    }
-    EHOOK_DY(th18_menu_rank_fix, 0x45a208)
-    {
+    })
+    EHOOK_DY(th18_menu_rank_fix, 0x45a208, 5, {
         *((int32_t*)0x4ccd00) = *((int32_t*)0x4c9ab0); // Restore In-game rank to menu rank
         return true;
-    }
-    EHOOK_DY(th18_restart, 0x4594b7)
-    {
+    })
+    EHOOK_DY(th18_restart, 0x4594b7, 2, {
         auto s1 = pCtx->Esp + 0xc;
         auto s2 = pCtx->Edi + 0x1e4;
         auto s3 = *(DWORD*)(pCtx->Edi + 0x1e8);
@@ -2974,24 +2962,21 @@ namespace TH18 {
         pCtx->Edx = *(DWORD*)0x4ca21c;
         pCtx->Eip = 0x459562;
         return true;
-    }
-    EHOOK_DY(th18_replay_restart, 0x417a70)
-    {
+    })
+    EHOOK_DY(th18_replay_restart, 0x417a70, 3, {
         auto callAddr = *(uint32_t*)(pCtx->Esp + 0x18);
         if (callAddr == 0x4619fe || callAddr == 0x463045) {
             pCtx->Eip = 0x417a73;
         }
         return true;
-    }
-    EHOOK_DY(th18_exit, 0x459562)
-    {
+    })
+    EHOOK_DY(th18_exit, 0x459562, 5, {
         if (Gui::KeyboardInputGetRaw('Q')) {
             pCtx->Eip = 0x459578;
         }
         return true;
-    }
-    EHOOK_DY(th18_add_card, 0x411460)
-    {
+    })
+    EHOOK_DY(th18_add_card, 0x411460, 1, {
         uint32_t* list = nullptr;
         uint32_t sub_count = 0;
         uint32_t cardAddId = *(uint32_t*)(pCtx->Esp + 4);
@@ -3028,38 +3013,32 @@ namespace TH18 {
             }
         }
         return true;
-    }
-    EHOOK_DY(th18_active_buy_swap_fix, 0x412d94)
-    {
+    })
+    EHOOK_DY(th18_active_buy_swap_fix, 0x412d94, 3, {
         asm_call<0x408c30, Fastcall>(*(uint32_t*)ABILTIY_MANAGER_PTR);
         return true;
-    }
-    EHOOK_DY(th18_rep_save, 0x462657)
-    {
+    })
+    EHOOK_DY(th18_rep_save, 0x462657, 5, {
         char* repName = (char*)(pCtx->Esp + 0x30);
         if (thPracParam.mode == 1)
             THSaveReplay(repName);
         else if (thPracParam.mode == 2 && thPracParam.phase)
             THSaveReplay(repName);
         return true;
-    }
-    EHOOK_DY(th18_rep_menu_1, 0x467c67)
-    {
+    })
+    EHOOK_DY(th18_rep_menu_1, 0x467c67, 3, {
         THGuiRep::singleton().State(1);
         return true;
-    }
-    EHOOK_DY(th18_rep_menu_2, 0x467d87)
-    {
+    })
+    EHOOK_DY(th18_rep_menu_2, 0x467d87, 5, {
         THGuiRep::singleton().State(2);
         return true;
-    }
-    EHOOK_DY(th18_rep_menu_3, 0x467f6f)
-    {
+    })
+    EHOOK_DY(th18_rep_menu_3, 0x467f6f, 2, {
         THGuiRep::singleton().State(3);
         return true;
-    }
-    EHOOK_DY(th18_update, 0x4013f5)
-    {
+    })
+    EHOOK_DY(th18_update, 0x4013f5, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 
         // Gui components update
@@ -3081,23 +3060,24 @@ namespace TH18 {
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
         return true;
-    }
-    EHOOK_DY(th18_render, 0x401510)
-    {
+    })
+    EHOOK_DY(th18_render, 0x401510, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
         return true;
-    }
+    })
     HOOKSET_ENDDEF()
 
-    HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
+        if (ImGui::GetCurrentContext()) {
+            return;
+        }
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4ccdf8, 0x568c30,
             Gui::INGAGME_INPUT_GEN2, 0x4ca21c, 0x4ca218, 0,
             -2, *(float*)0x56aca0, 0.0f);
 
-        SetDpadHook(0x4016EF);
+        SetDpadHook(0x4016EF, 3);
 
         // Gui components creation
         THGuiPrac::singleton();
@@ -3106,51 +3086,32 @@ namespace TH18 {
         THGuiPrac::singleton();
 
         // Hooks
-        THMainHook::singleton().EnableAllHooks();
+        EnableAllHooks(THMainHook);
 
         // Reset thPracParam
         thPracParam.Reset();
     }
-    static __declspec(noinline) void THInitHookDisable()
-    {
-        auto& s = THInitHook::singleton();
-        s.th18_gui_init_1.Disable();
-        s.th18_gui_init_2.Disable();
-    }
-    PATCH_DY(th18_disable_demo, 0x464f7e, "\xff\xff\xff\x7f", 4);
-    EHOOK_DY(th18_disable_mutex, 0x474435)
-    {
-        pCtx->Eip = 0x47445d;
-        return true;
-    }
-    EHOOK_DY(th18_disable_topmost, 0x4722c7)
-    {
-        RECT rect;
-        GetWindowRect(*(HWND*)0x568c30, &rect);
-        if (rect.right != GetSystemMetrics(SM_CXSCREEN) || rect.bottom != GetSystemMetrics(SM_CYSCREEN) || rect.left != 0 || rect.top != 0) {
-            pCtx->Eip = 0x4722f2;
-        }
-        return true;
-    }
-    PATCH_DY(th18_startup_1, 0x464c4f, "\x90\x90", 2);
-    PATCH_DY(th18_startup_2, 0x465bb0, "\xeb", 1);
-    EHOOK_DY(th18_gui_init_1, 0x465ce5)
-    {
+    HOOKSET_DEFINE(THInitHook)
+    PATCH_DY(th18_disable_demo, 0x464f7e, "ffffff7f")
+    PATCH_DY(th18_disable_mutex, 0x474435, "eb")
+    PATCH_DY(th18_disable_topmost, 0x4722CC, "00")
+    PATCH_DY(th18_startup_1, 0x464c4f, "9090")
+    PATCH_DY(th18_startup_2, 0x465bb0, "eb")
+    EHOOK_DY(th18_gui_init_1, 0x465ce5, 6, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
         return true;
-    }
-    EHOOK_DY(th18_gui_init_2, 0x4740c0)
-    {
+    })
+    EHOOK_DY(th18_gui_init_2, 0x4740c0, 1, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
         return true;
-    }
+    })
     HOOKSET_ENDDEF()
 }
 
 void TH18Init()
 {
-    TH18::THInitHook::singleton().EnableAllHooks();
+    EnableAllHooks(TH18::THInitHook);
 }
 }
