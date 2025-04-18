@@ -1720,7 +1720,7 @@ namespace TH07 {
         THGuiRep::singleton().State(3);
         return true;
     })
-    EHOOK_DY(th07_patch_main, 0x42f2e3, 2, {
+    EHOOK_DY(th07_patch_main, 0x42f2e3, 1, {
         th07_rb.Disable();
         if (thPracParam.mode == 1) {
             float* life = (float*)GetMemAddr(0x626278, 0x5c);
