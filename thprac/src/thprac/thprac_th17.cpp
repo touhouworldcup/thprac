@@ -563,7 +563,6 @@ namespace TH17 {
             if (roar_meter > 40) {
                 pCtx->Eip = 0x40ef3f;
             }
-            return true;
         })
         HOTKEY_ENDDEF();
 
@@ -696,7 +695,6 @@ namespace TH17 {
     EHOOK_ST(th17_force_goast_angle, 0x4105C9, 7, {
         self->Disable();
         pCtx->Eip = 0x41062E;
-        return true;
     });
     PATCH_ST(th17_all_clear_bonus_1, 0x43229f, "eb0b909090");
     EHOOK_ST(th17_all_clear_bonus_2, 0x4323d5, 7, {
@@ -707,7 +705,6 @@ namespace TH17 {
             a();
             pCtx->Eip = 0x4322a4;
         }
-        return true;
     });
     EHOOK_ST(th17_all_clear_bonus_3, 0x43252e, 7, {
         *(int32_t*)(GetMemAddr(0x4b76ac, 0x168)) = *(int32_t*)(0x4b59fc);
@@ -717,7 +714,6 @@ namespace TH17 {
             a();
             pCtx->Eip = 0x4322a4;
         }
-        return true;
     });
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
@@ -1826,12 +1822,10 @@ namespace TH17 {
                 SpawnToken(adv_opt.mSelectedGoast, stgFramePos, ang);
             }
         }
-        return true;
     })
     EHOOK_DY(th17_goast_bugfix, 0x430080, 1, {
         if (THAdvOptWnd::singleton().mGoastBugfix && *(uint32_t*)0x4b59dc == *(uint32_t*)0x4b59e0 && GetMemContent(0x4b76b0, 0xa8) == 0)
             *(uint32_t*)0x4b5ac4 &= 0xfffffffd;
-        return true;
     })
     EHOOK_DY(th17_goast_repfix, 0x430c97, 2, {
         if (THAdvOptWnd::singleton().mGoastRepfix && *(uint32_t*)0x4b59dc == *(uint32_t*)0x4b59e0 && GetMemContent(0x4b76b0, 0xa8) == 1) {
@@ -1846,7 +1840,6 @@ namespace TH17 {
             if (repStart < 8 && *(uint32_t*)0x4b59dc == repStart)
                 *(uint32_t*)0x4b5ac4 &= 0xfffffffd;
         }
-        return true;
     })
     EHOOK_DY(th17_everlasting_bgm, 0x4662e0, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
@@ -1866,37 +1859,29 @@ namespace TH17 {
         if (result) {
             pCtx->Eip = 0x466376;
         }
-        return true;
     })
     EHOOK_DY(th17_param_reset, 0x451ed0, 7, {
         thPracParam.Reset();
-        return true;
     })
     EHOOK_DY(th17_prac_menu_1, 0x456970, 5, {
         THGuiPrac::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th17_prac_menu_2, 0x456993, 3, {
         THGuiPrac::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th17_prac_menu_3, 0x456bc7, 6, {
         THGuiPrac::singleton().State(3);
-        return true;
     })
     EHOOK_DY(th17_prac_menu_4, 0x456c76, 7, {
         THGuiPrac::singleton().State(4);
-        return true;
     })
     PATCH_DY(th17_prac_menu_enter_1, 0x456a59, "eb")
     EHOOK_DY(th17_prac_menu_enter_2, 0x456C2B, 1, {
         pCtx->Ecx = thPracParam.stage;
-        return true;
     })
     PATCH_DY(th17_disable_prac_menu_1, 0x456de4, "eb2f")
     EHOOK_DY(th17_menu_rank_fix, 0x445ed1, 5, {
         *((int32_t*)0x4b5a00) = *((int32_t*)0x4b2b28); // Restore In-game rank to menu rank
-        return true;
     })
     EHOOK_DY(th17_patch_main, 0x430cb3, 1, {
         if (thPracParam.mode == 1) {
@@ -1932,14 +1917,12 @@ namespace TH17 {
             THPatchSP(ecl);
         }
         thPracParam._playLock = true;
-        return true;
     })
     EHOOK_DY(th17_bgm, 0x431d97, 2, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x431d99;
         }
-        return true;
     })
     EHOOK_DY(th17_restart, 0x4451dc, 2, {
         auto s1 = pCtx->Esp + 0x8;
@@ -1963,7 +1946,6 @@ namespace TH17 {
 
         pCtx->Edx = *(DWORD*)0x4b323c;
         pCtx->Eip = 0x445208;
-        return true;
     })
     EHOOK_DY(th17_rep_save, 0x44eeaa, 5, {
         char* repName = (char*)(pCtx->Esp + 0x28);
@@ -1971,31 +1953,25 @@ namespace TH17 {
             THSaveReplay(repName);
         else if (thPracParam.mode == 2 && thPracParam.phase)
             THSaveReplay(repName);
-        return true;
     })
     EHOOK_DY(th17_rep_menu_1, 0x4570f6, 3, {
         THGuiRep::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th17_rep_menu_2, 0x457216, 5, {
         THGuiRep::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th17_rep_menu_3, 0x4573da, 2, {
         THGuiRep::singleton().State(3);
-        return true;
     })
     EHOOK_DY(th17_sp_menu_1, 0x45c554, 3, {
         if (!THGuiSP::singleton().State()) {
             pCtx->Eip = 0x45c58b;
         }
-        return true;
     })
     EHOOK_DY(th17_sp_menu_2, 0x45c4c4, 6, {
         if (THGuiSP::singleton().mState) {
             pCtx->Eip = 0x45c554;
         }
-        return true;
     })
     EHOOK_DY(th17_update, 0x4013b5, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
@@ -2006,11 +1982,9 @@ namespace TH17 {
         THGuiSP::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
-        return true;
     })
     EHOOK_DY(th17_render, 0x4014d0, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
-        return true;
     })
     HOOKSET_ENDDEF()
 
@@ -2048,12 +2022,10 @@ namespace TH17 {
     EHOOK_DY(th17_gui_init_1, 0x452502, 3, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     EHOOK_DY(th17_gui_init_2, 0x462e17, 1, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     HOOKSET_ENDDEF()
 }

@@ -635,7 +635,6 @@ namespace TH16 {
             a();
             pCtx->Eip = 0x42e245;
         }
-        return true;
     });
     EHOOK_ST(th16_all_clear_bonus_3, 0x42e39b, 7, {
         *(int32_t*)(GetMemAddr(0x4a6dcc, 0x170)) = *(int32_t*)(0x4a57b0);
@@ -645,7 +644,6 @@ namespace TH16 {
             a();
             pCtx->Eip = 0x42e245;
         }
-        return true;
     });
     class THAdvOptWnd : public Gui::PPGuiWnd {
     private:
@@ -2163,7 +2161,6 @@ namespace TH16 {
                 pCtx->Eip = 0x42159b;
             }
         }
-        return true;
     })
     EHOOK_DY(th16_everlasting_bgm, 0x45ed00, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
@@ -2183,28 +2180,22 @@ namespace TH16 {
         if (result) {
             pCtx->Eip = 0x45ed93;
         }
-        return true;
     })
     EHOOK_DY(th16_param_reset, 0x44b610, 7, {
         thPracParam.Reset();
         thSubSeasonB = -1;
-        return true;
     })
     EHOOK_DY(th16_prac_menu_1, 0x450f60, 5, {
         THGuiPrac::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th16_prac_menu_2, 0x450f83, 3, {
         THGuiPrac::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th16_prac_menu_3, 0x4512cc, 7, {
         THGuiPrac::singleton().State(3);
-        return true;
     })
     EHOOK_DY(th16_prac_menu_4, 0x45136d, 7, {
         THGuiPrac::singleton().State(4);
-        return true;
     })
     PATCH_DY(th16_prac_menu_enter_1, 0x451044, "eb")
     EHOOK_DY(th16_prac_menu_enter_2, 0x451327, 5, {
@@ -2215,7 +2206,6 @@ namespace TH16 {
         }
 
         pCtx->Ecx = thPracParam.stage;
-        return true;
     })
     PATCH_DY(th16_disable_prac_menu_1, 0x4514d1, "eb3b")
     EHOOK_DY(th16_menu_rank_fix, 0x44097f, 5, {
@@ -2226,7 +2216,6 @@ namespace TH16 {
             *((int32_t*)0x4a57ac) = thSubSeasonB;
             thSubSeasonB = -1;
         }
-        return true;
     })
     EHOOK_DY(th16_patch_main, 0x42d1ec, 1, {
         if (thPracParam.mode == 1) {
@@ -2330,14 +2319,12 @@ namespace TH16 {
             THPatchSP(ecl);
         }
         thPracParam._playLock = true;
-        return true;
     })
     EHOOK_DY(th16_bgm, 0x42de8c, 2, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x42de8e;
         }
-        return true;
     })
     EHOOK_DY(th16_rep_save, 0x448be4, 5, {
         char* repName = (char*)(pCtx->Esp + 0x38);
@@ -2350,19 +2337,15 @@ namespace TH16 {
             if (thPracParam.season_gauge != 3 || thPracParam.phase || thPracParam.bug_fix)
                 THSaveReplay(repName);
         }
-        return true;
     })
     EHOOK_DY(th16_rep_menu_1, 0x4518a6, 3, {
         THGuiRep::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th16_rep_menu_2, 0x4519c6, 5, {
         THGuiRep::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th16_rep_menu_3, 0x451b86, 2, {
         THGuiRep::singleton().State(3);
-        return true;
     })
     PATCH_DY(th16_spmenu_alt_1, 0x455da6, "83c4109090")
     PATCH_DY(th16_spmenu_alt_2, 0x455e75, "9090909090")
@@ -2370,23 +2353,18 @@ namespace TH16 {
     PATCH_DY(th16_spmenu_alt_4, 0x456bb8, "90e9")
     EHOOK_DY(th16_sp_menu_1, 0x455dbc, 7, {
         THGuiSP::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th16_sp_menu_2, 0x455dff, 3, {
         THGuiSP::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th16_sp_menu_3, 0x455eeb, 7, {
         THGuiSP::singleton().State(3);
-        return true;
     })
     EHOOK_DY(th16_sp_menu_4, 0x455fee, 7, {
         THGuiSP::singleton().State(4);
-        return true;
     })
     EHOOK_DY(th16_sp_menu_5, 0x455fe3, 5, {
         THGuiSP::singleton().State(5);
-        return true;
     })
     EHOOK_DY(th16_update, 0x40156f, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
@@ -2398,11 +2376,9 @@ namespace TH16 {
         THGuiSP::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
-        return true;
     })
     EHOOK_DY(th16_render, 0x40168a, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
-        return true;
     })
     HOOKSET_ENDDEF()
 
@@ -2439,12 +2415,10 @@ namespace TH16 {
     EHOOK_DY(th16_gui_init_1, 0x44bdc1, 3, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     EHOOK_DY(th16_gui_init_2, 0x45b788, 1, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     HOOKSET_ENDDEF()
 }

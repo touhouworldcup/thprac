@@ -247,20 +247,15 @@ namespace TH125 {
                 crosshair_pos[2] = boss_pos[2];
             }
         }
-        return true;
-
     })
     EHOOK_DY(th125_render_1, 0x44ee42, 5, {
         THGuiUpdate();
-        return true;
     })
     EHOOK_DY(th125_render_2, 0x44f255, 5, {
         THGuiUpdate();
-        return true;
     })
     EHOOK_DY(th125_render_3, 0x44f3fd, 5, {
         THGuiUpdate();
-        return true;
     })
     HOOKSET_ENDDEF()
 
@@ -289,12 +284,10 @@ namespace TH125 {
     EHOOK_DY(th125_gui_init_1, 0x441905, 3, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     EHOOK_DY(th125_gui_init_2, 0x44ff39, 1, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     HOOKSET_ENDDEF()
 }

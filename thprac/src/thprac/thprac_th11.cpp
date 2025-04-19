@@ -502,7 +502,6 @@ namespace TH11 {
 
     EHOOK_ST(th11_all_clear_bonus_1, 0x41eb9a, 7, {
         pCtx->Eip = 0x41ebcc;
-        return true;
     });
     EHOOK_ST(th11_all_clear_bonus_2, 0x41eca6, 4, {
         if (GetMemContent(0x4a5758) & 0x10) {
@@ -510,7 +509,6 @@ namespace TH11 {
         } else if (GetMemContent(0x4a8e88, 0x74) && GetMemContent(0x4a8eb8, 0x18, 0xa) & 1) {
             pCtx->Eip = 0x41ebc2;
         }
-        return true;
     });
     EHOOK_ST(th11_all_clear_bonus_3, 0x41ed4a, 4, {
         if (GetMemContent(0x4a5758) & 0x10) {
@@ -518,7 +516,6 @@ namespace TH11 {
         } else if (GetMemContent(0x4a8e88, 0x74) && GetMemContent(0x4a8eb8, 0x18, 0xa) & 1) {
             pCtx->Eip = 0x41ebc2;
         }
-        return true;
     });
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
@@ -1708,34 +1705,27 @@ namespace TH11 {
         if (result) {
             pCtx->Eip = 0x44aa54;
         }
-        return true;
     })
     EHOOK_DY(th11_game_init, 0x43a0bc, 7, {
         thPracParam.Reset();
-        return true;
     })
     PATCH_DY(th11_disable_bg_1, 0x43d715, "83c40c9090") // add esp, 0xc
     PATCH_DY(th11_disable_bg_2, 0x43dbe0, "eb25") // jmp short 0043DC07
     EHOOK_DY(th11_prac_menu_1, 0x43d72f, 7, {
         THGuiPrac::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th11_prac_menu_2, 0x43d752, 3, {
         THGuiPrac::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th11_prac_menu_3, 0x43d9b5, 7, {
         THGuiPrac::singleton().State(3);
-        return true;
     })
     EHOOK_DY(th11_prac_menu_4, 0x43da4c, 7, {
         THGuiPrac::singleton().State(4);
-        return true;
     })
     PATCH_DY(th11_prac_menu_enter_1, 0x43d812, "eb")
     EHOOK_DY(th11_prac_menu_enter_2, 0x43da13, 1, {
         pCtx->Eax = thPracParam.stage;
-        return true;
     })
     EHOOK_DY(th11_patch_main, 0x41fdfb, 1, {
         if (thPracParam.mode == 1) {
@@ -1764,7 +1754,6 @@ namespace TH11 {
             THSectionPatch();
         }
         thPracParam._playLock = true;
-        return true;
     })
     EHOOK_DY(th11_disable_logo, 0x41a7ef, 7, {
         if (thPracParam.mode == 1 && thPracParam.section) {
@@ -1772,62 +1761,51 @@ namespace TH11 {
                 pCtx->Eip = 0x41a8cf;
             }
         }
-        return true;
     })
     EHOOK_DY(th11_rep_save, 0x436b1f, 10, {
         char* repName = (char*)(pCtx->Esp + 0x28);
         if (thPracParam.mode)
             THSaveReplay(repName);
-        return true;
     })
     EHOOK_DY(th11_bgm_1, 0x42053b, 2, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x42053d;
         }
-        return true;
     })
     EHOOK_DY(th11_bgm_2, 0x420529, 2, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x42052b;
         }
-        return true;
     })
     EHOOK_DY(th11_bgm_3, 0x420542, 5, {
         if (*((int32_t*)0x4a5728) == 6 && thPracParam.mode && thPracParam.section) {
             pCtx->Eip = 0x420547;
         }
-        return true;
     })
     EHOOK_DY(th11_bgm_4, 0x42C706, 1, {
         if (*((int32_t*)0x4a5728) == 6 && thPracParam.mode && thPracParam.section) {
             pCtx->EFlags &= ~EFLAGS::ZF;
         }
-        return true;
     })
     EHOOK_DY(th11_bgm_5, 0x42C889, 7, {
         if (*((int32_t*)0x4a5728) == 6 && thPracParam.mode && thPracParam.section) {
             pCtx->EFlags &= ~EFLAGS::ZF;
-            return false;
+            pCtx->Eip += self->data.hook.instr_len;
         }
-        return true;
     })
     EHOOK_DY(th11_rep_menu_0, 0x43ddb2, 5, {
         THGuiRep::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th11_rep_menu_1, 0x43dec7, 3, {
         THGuiRep::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th11_rep_menu_2, 0x43dfdf, 2, {
         THGuiRep::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th11_rep_menu_3, 0x43e147, 5, {
         THGuiRep::singleton().State(3);
-        return true;
     })
     PATCH_DY(th11_prac_menu_key, 0x43d7d7, "01000000")
     EHOOK_DY(th11_update, 0x456deb, 1, {
@@ -1840,11 +1818,9 @@ namespace TH11 {
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
-        return true;
     })
     EHOOK_DY(th11_render, 0x456f12, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
-        return true;
     })
     HOOKSET_ENDDEF()
 
@@ -1876,19 +1852,16 @@ namespace TH11 {
     PATCH_DY(th11_disable_demo, 0x439a7b, "ffffff7f")
     EHOOK_DY(th11_disable_mutex, 0x4455b3, 2, {
         pCtx->Eip = 0x4455cc;
-        return true;
     })
     PATCH_DY(th11_startup_1, 0x439527, "eb")
     PATCH_DY(th11_startup_2, 0x43a12a, "eb")
     EHOOK_DY(th11_gui_init_1, 0x43a299, 3, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     EHOOK_DY(th11_gui_init_2, 0x447269, 1, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     HOOKSET_ENDDEF()
 }

@@ -495,19 +495,16 @@ namespace TH10 {
 
     EHOOK_ST(th10_all_clear_bonus_1, 0x416c3d, 7, {
         pCtx->Eip = 0x416c56;
-        return true;
     });
     EHOOK_ST(th10_all_clear_bonus_2, 0x416d6c, 4, {
         if (GetMemContent(0x474ca0) & 0x10) {
             pCtx->Eip = 0x416c46;
         }
-        return true;
     });
     EHOOK_ST(th10_all_clear_bonus_3, 0x416e49, 4, {
         if (GetMemContent(0x474ca0) & 0x10) {
             pCtx->Eip = 0x416c46;
         }
-        return true;
     });
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
@@ -810,7 +807,6 @@ namespace TH10 {
     EHOOK_ST(th10_st4_std, 0x4042b4, 6, {
         self->Disable();
         STDSt4SetStatus();
-        return true;
     });
     void STDSt4Jump(uint32_t pos, uint32_t time, StdStatus& status)
     {
@@ -2172,39 +2168,31 @@ namespace TH10 {
         if (result) {
             pCtx->Eip = 0x43e4c5;
         }
-        return true;
     })
     EHOOK_DY(th10_param_reset, 0x42d436, 5, {
         thPracParam.Reset();
-        return true;
     })
     EHOOK_DY(th10_prac_menu_1, 0x431060, 7, {
         THGuiPrac::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th10_prac_menu_2, 0x431085, 3, {
         THGuiPrac::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th10_prac_menu_3, 0x431320, 7, {
         THGuiPrac::singleton().State(3);
-        return true;
     })
     EHOOK_DY(th10_prac_menu_4, 0x4313b4, 7, {
         THGuiPrac::singleton().State(4);
-        return true;
     })
     PATCH_DY(th10_prac_menu_enter_1, 0x43115d, "eb")
     EHOOK_DY(th10_prac_menu_enter_2, 0x431377, 1, {
         pCtx->Eax = thPracParam.stage;
-        return true;
     })
     EHOOK_DY(th10_bgm, 0x4183e0, 1, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x4183e1;
         }
-        return true;
     })
     EHOOK_DY(th10_logo, 0x413e4b, 7, {
         if (thPracParam.mode == 1 && thPracParam.section) {
@@ -2212,19 +2200,15 @@ namespace TH10 {
                 pCtx->Eip = 0x413f87;
             }
         }
-        return true;
     })
     EHOOK_DY(th10_rep_menu_1, 0x4317b1, 3, {
         THGuiRep::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th10_rep_menu_2, 0x431869, 5, {
         THGuiRep::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th10_rep_menu_3, 0x4319b4, 6, {
         THGuiRep::singleton().State(3);
-        return true;
     })
     EHOOK_DY(th10_patch_main, 0x417c5e, 3, {
         if (thPracParam.mode == 1) {
@@ -2259,26 +2243,21 @@ namespace TH10 {
             THSectionPatch();
         }
         thPracParam._playLock = true;
-        return true;
     })
     EHOOK_DY(th10_rep_save, 0x42a1e8, 6, {
         char* repName = (char*)(pCtx->Esp + 0x20);
         if (thPracParam.mode)
             THSaveReplay(repName);
-        return true;
     })
     EHOOK_DY(th10_rep_power_fix, 0x42a322, 3, {
         uint8_t* repBuffer = (uint8_t*)pCtx->Eax;
         THRepPowerFix(repBuffer);
-        return true;
     })
     EHOOK_DY(th10_disable_prac_menu_1, 0x431549, 4, {
         pCtx->Eip = 0x431576;
-        return true;
     })
     EHOOK_DY(th10_disable_prac_menu_2, 0x43104e, 1, {
         pCtx->Eip = 0x431054;
-        return true;
     })
     EHOOK_DY(th10_update, 0x449d0e, 3, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
@@ -2290,11 +2269,9 @@ namespace TH10 {
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
-        return true;
     })
     EHOOK_DY(th10_render, 0x4394fa, 5, {
         GameGuiRender(IMPL_WIN32_DX9);
-        return true;
     })
     HOOKSET_ENDDEF()
 
@@ -2327,19 +2304,16 @@ namespace TH10 {
     PATCH_DY(th10_disable_demo, 0x42ce44, "ffffff7f")
     EHOOK_DY(th10_disable_mutex, 0x43A01F, 5, {
         pCtx->Eip = 0x43a051;
-        return true;
     })
     PATCH_DY(th10_startup_1, 0x42ca31, "eb")
     PATCH_DY(th10_startup_2, 0x42d04f, "eb23")
     EHOOK_DY(th10_gui_init_1, 0x42d516, 3, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     EHOOK_DY(th10_gui_init_2, 0x439d16, 1, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     HOOKSET_ENDDEF()
 }

@@ -72,14 +72,14 @@ HRESULT IDirectInputDevice8_GetDeviceState_Hook(IDirectInputDevice8A* This, DWOR
     return res;
 }
 
-bool __fastcall IDirectInputDevice8_GetDeviceState_VEHHook(PCONTEXT pCtx, [[maybe_unused]] HookCtx* self)
+void __fastcall IDirectInputDevice8_GetDeviceState_VEHHook(PCONTEXT pCtx, [[maybe_unused]] HookCtx* self)
 {
     pCtx->Eax = IDirectInputDevice8_GetDeviceState_Hook(
         GetMemContent<IDirectInputDevice8A*>(pCtx->Esp + 0),
         GetMemContent<DWORD>(pCtx->Esp + 4),
         GetMemContent<void*>(pCtx->Esp + 8));
     pCtx->Esp += 12;
-    return false;
+    pCtx->Eip += self->data.hook.instr_len;
 }
 
 decltype(joyGetPosEx)* orig_joyGetPosEx = nullptr;

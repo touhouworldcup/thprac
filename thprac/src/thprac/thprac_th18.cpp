@@ -235,7 +235,6 @@ namespace TH18 {
     EHOOK_ST(th18_free_blank, 0x411f4b, 2, {
         pCtx->Eip = 0x411f52;
         self->Disable();
-        return true;
     });
 
     class THGuiPrac : public Gui::GameGuiWnd {
@@ -681,12 +680,10 @@ namespace TH18 {
     EHOOK_ST(th18_shop_escape_1, 0x4181f9, 10, {
         pCtx->Eip = 0x4183d9;
         self->Disable();
-        return true;
     });
     EHOOK_ST(th18_shop_escape_2, 0x418402, 6, {
         pCtx->Eip = 0x4184a0;
         self->Disable();
-        return true;
     });
 
     class THOverlay : public Gui::GameGuiWnd {
@@ -915,7 +912,6 @@ namespace TH18 {
             };
             Timer* timer = (Timer*)(pCtx->Ecx + 0x34);
             *timer = { -1, 0, 0, 0, 0 };
-            return true;
         })
         HOTKEY_ENDDEF();
 
@@ -1085,13 +1081,11 @@ namespace TH18 {
         if (!pCtx->Ecx) {
             pCtx->Ecx = (uint32_t)st6FinalDummy - 0x1270;
         }
-        return true;
     });
     EHOOK_ST(th18_scroll_fix, 0x407e05, 10, {
         if (GetMemContent(GAME_THREAD_PTR) && GetMemContent(GAME_THREAD_PTR, 0xd0) && *(uint32_t*)(pCtx->Esp + 0x18) == 0x417955 && *(uint32_t*)(pCtx->Esp + 0x3c) == 0x417d39) {
             pCtx->Eip = 0x407e0f;
         }
-        return true;
     });
     EHOOK_ST(th18_mukade_fix, 0x412c76, 10, {
         auto caller = *(uint32_t*)(pCtx->Esp + 0x20);
@@ -1102,7 +1096,6 @@ namespace TH18 {
                 pCtx->Eip = 0x412c80;
             }
         }
-        return true;
     });
     EHOOK_ST(th18_active_card_fix, 0x462f33, 3, {
         if (GetMemContent(GAME_THREAD_PTR) && !GetMemContent(GAME_THREAD_PTR, 0xd0)) {
@@ -1113,7 +1106,6 @@ namespace TH18 {
                 *(uint32_t*)(pCtx->Esi + 0x964) = UINT_MAX;
             }
         }
-        return true;
     });
     PATCH_ST(th18_all_clear_bonus_1, 0x4448ab, "eb0b909090");
     EHOOK_ST(th18_all_clear_bonus_2, 0x444afa, 7, {
@@ -1124,7 +1116,6 @@ namespace TH18 {
             a();
             pCtx->Eip = 0x4448b0;
         }
-        return true;
     });
     EHOOK_ST(th18_all_clear_bonus_3, 0x444c49, 7, {
         *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(0x4cccfc);
@@ -1134,17 +1125,14 @@ namespace TH18 {
             a();
             pCtx->Eip = 0x4448b0;
         }
-        return true;
     });
     EHOOK_ST(th18_score_uncap_replay_fix, 0x4620b9, 3, {
         if (pCtx->Eax >= 0x3b9aca00) {
             pCtx->Eax = 0x3b9ac9ff;
         }
-        return true;
     });
     EHOOK_ST(th18_score_uncap_replay_disp, 0x468405, 1, {
         *(const char**)(pCtx->Esp) = scoreDispFmt;
-        return true;
     });
     
     extern HookCtx th18_static_mallet_replay_gold;
@@ -1741,17 +1729,14 @@ namespace TH18 {
                 }
             }
         }
-        return true;
     });
     EHOOK_ST(th18_static_mallet_replay_gold, 0x429222, 6, {
         if (GetMemContent(GAME_THREAD_PTR, 0xd0))
             THAdvOptWnd::StaticMalletConversion(pCtx);
-        return true;
     });
     EHOOK_ST(th18_static_mallet_replay_green, 0x42921d, 5, {
         if (GetMemContent(GAME_THREAD_PTR, 0xd0))
             THAdvOptWnd::StaticMalletConversion(pCtx);
-        return true;
     });
     EHOOK_ST(th18_score_uncap_replay_factor, 0x44480d, 5, {
         uint32_t* score = (uint32_t*)0x4cccfc;
@@ -1769,7 +1754,6 @@ namespace TH18 {
             if (!THAdvOptWnd::singleton().scoreUncapChkbox && *score > 999999999)
                 *score = 999999999;
         }
-        return true;
     });
     void ECLStdExec(ECLHelper& ecl, unsigned int start, int std_id, int ecl_time = 0)
     {
@@ -2825,44 +2809,37 @@ namespace TH18 {
         if (result) {
             pCtx->Eip = 0x477ae6;
         }
-        return true;
     })
     EHOOK_DY(th18_param_reset, 0x465abd, 6, {
         thPracParam.Reset();
         *(uint32_t*)GetMemAddr(0x4cf41c, 0x5f680) = 10;
-        return true;
     })
     EHOOK_DY(th18_prac_menu_1, 0x4673a2, 5, {
         THGuiPrac::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th18_prac_menu_2, 0x4673c5, 3, {
         THGuiPrac::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th18_prac_menu_3, 0x4675f6, 5, {
         THGuiPrac::singleton().State(3);
-        return true;
     })
     EHOOK_DY(th18_prac_menu_4, 0x4676da, 7, {
         THGuiPrac::singleton().State(4);
-        return true;
     })
     PATCH_DY(th18_prac_menu_enter_1, 0x467488, "eb")
     EHOOK_DY(th18_prac_menu_enter_2, 0x46767a, 1, {
         pCtx->Ecx = thPracParam.stage;
-        return true;
     })
     PATCH_DY(th18_disable_prac_menu_1, 0x46789b, "e9b90000009090")
     // Specifying the hook struct manually because code passed to a macro can't declare a macro
-    { .addr = 0x4432a7, .name = "th18_patch_main", .callback = []([[maybe_unused]] PCONTEXT pCtx, [[maybe_unused]] HookCtx* self) -> bool {
+    { .addr = 0x4432a7, .name = "th18_patch_main", .callback = []([[maybe_unused]] PCONTEXT pCtx, [[maybe_unused]] HookCtx* self) {
         defer({
             THAdvOptWnd::singleton().RestartFix();
             thPracParam._playLock = true;
         });
 
         if (thPracParam.mode != 1)
-            return true;
+            return;
 
 #define R(name)                                                                                                                 \
     card->_recharge_timer.current = static_cast<int32_t>(card->recharge_time * (static_cast<float>(thPracParam.name) / 10000)); \
@@ -2925,19 +2902,15 @@ namespace TH18 {
         }
         THSectionPatch();
 #undef R
-        return true;
-
     }, .data = PatchHookImpl(1) },
     EHOOK_DY(th18_bgm, 0x444370, 2, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x444372;
         }
-        return true;
     })
     EHOOK_DY(th18_menu_rank_fix, 0x45a208, 5, {
         *((int32_t*)0x4ccd00) = *((int32_t*)0x4c9ab0); // Restore In-game rank to menu rank
-        return true;
     })
     EHOOK_DY(th18_restart, 0x4594b7, 2, {
         auto s1 = pCtx->Esp + 0xc;
@@ -2961,20 +2934,17 @@ namespace TH18 {
 
         pCtx->Edx = *(DWORD*)0x4ca21c;
         pCtx->Eip = 0x459562;
-        return true;
     })
     EHOOK_DY(th18_replay_restart, 0x417a70, 3, {
         auto callAddr = *(uint32_t*)(pCtx->Esp + 0x18);
         if (callAddr == 0x4619fe || callAddr == 0x463045) {
             pCtx->Eip = 0x417a73;
         }
-        return true;
     })
     EHOOK_DY(th18_exit, 0x459562, 5, {
         if (Gui::KeyboardInputGetRaw('Q')) {
             pCtx->Eip = 0x459578;
         }
-        return true;
     })
     EHOOK_DY(th18_add_card, 0x411460, 1, {
         uint32_t* list = nullptr;
@@ -3012,11 +2982,9 @@ namespace TH18 {
                 pCtx->Eip = 0x412d29;
             }
         }
-        return true;
     })
     EHOOK_DY(th18_active_buy_swap_fix, 0x412d94, 3, {
         asm_call<0x408c30, Fastcall>(*(uint32_t*)ABILTIY_MANAGER_PTR);
-        return true;
     })
     EHOOK_DY(th18_rep_save, 0x462657, 5, {
         char* repName = (char*)(pCtx->Esp + 0x30);
@@ -3024,19 +2992,15 @@ namespace TH18 {
             THSaveReplay(repName);
         else if (thPracParam.mode == 2 && thPracParam.phase)
             THSaveReplay(repName);
-        return true;
     })
     EHOOK_DY(th18_rep_menu_1, 0x467c67, 3, {
         THGuiRep::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th18_rep_menu_2, 0x467d87, 5, {
         THGuiRep::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th18_rep_menu_3, 0x467f6f, 2, {
         THGuiRep::singleton().State(3);
-        return true;
     })
     EHOOK_DY(th18_update, 0x4013f5, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
@@ -3059,11 +3023,9 @@ namespace TH18 {
         THGuiSP::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
-        return true;
     })
     EHOOK_DY(th18_render, 0x401510, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
-        return true;
     })
     HOOKSET_ENDDEF()
 
@@ -3100,12 +3062,10 @@ namespace TH18 {
     EHOOK_DY(th18_gui_init_1, 0x465ce5, 6, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     EHOOK_DY(th18_gui_init_2, 0x4740c0, 1, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     HOOKSET_ENDDEF()
 }

@@ -2075,7 +2075,6 @@ namespace TH128 {
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th128_on_restart, 0x42657f, 6, {
         thLock = thHardLock;
-        return true;
     })
     EHOOK_DY(th128_everlasting_bgm, 0x458ff0, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
@@ -2103,29 +2102,23 @@ namespace TH128 {
         if (result) {
             pCtx->Eip = 0x45908b;
         }
-        return true;
     })
     EHOOK_DY(th128_param_reset, 0x445e6c, 5, {
         thLock = false;
         thHardLock = false;
         thPracParam.Reset();
-        return true;
     })
     EHOOK_DY(th128_prac_menu_1, 0x44a115, 7, {
         THGuiPrac::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th128_prac_menu_2, 0x44a13a, 6, {
         THGuiPrac::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th128_prac_menu_3, 0x44a2d1, 2, {
         THGuiPrac::singleton().State(3);
-        return true;
     })
     EHOOK_DY(th128_prac_menu_4, 0x44a3a6, 7, {
         THGuiPrac::singleton().State(4);
-        return true;
     })
     EHOOK_DY(th128_prac_menu_move, 0x44a14c, 2, {
         DWORD start;
@@ -2153,11 +2146,9 @@ namespace TH128 {
             pCtx->Eax = pCtx->Esi + 0x28;
             PushHelper32(pCtx, 0x44a1bc);
             pCtx->Eip = 0x46a970;
-            return true;
+        } else {
+            pCtx->Eip = 0x44a1bc;
         }
-
-        pCtx->Eip = 0x44a1bc;
-        return true;
     })
     PATCH_DY(th128_prac_menu_enter_1, 0x44a251, "eb")
     EHOOK_DY(th128_prac_menu_enter_2, 0x44a31b, 2, {
@@ -2200,13 +2191,11 @@ namespace TH128 {
         }
 
         pCtx->Eip = 0x44a329;
-        return true;
     })
     EHOOK_DY(th128_prac_menu_enter_3, 0x44a376, 3, {
         if (thPracParam.mode) {
             pCtx->Eax = thPracParam.stage + 1;
         }
-        return true;
     })
     EHOOK_DY(th128_patch_main, 0x42641a, 1, {
         if (!thLock && thPracParam.mode == 1) {
@@ -2220,7 +2209,6 @@ namespace TH128 {
             THSectionPatch();
         }
         thPracParam._playLock = true;
-        return true;
     })
     EHOOK_DY(th128_disable_logo, 0x4204f6, 7, {
         if (!thLock && thPracParam.mode == 1 && thPracParam.section) {
@@ -2228,20 +2216,17 @@ namespace TH128 {
                 pCtx->Eip = 0x42063b;
             }
         }
-        return true;
     })
     EHOOK_DY(th128_bgm, 0x426bd6, 2, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x426bd8;
         }
-        return true;
     })
     EHOOK_DY(th128_rep_save, 0x441de8, 5, {
         char* repName = (char*)(pCtx->Esp + 0x28);
         if (thPracParam.mode)
             THSaveReplay(repName);
-        return true;
     })
     EHOOK_DY(th128_rep_menu_fix, 0x44b974, 3, {
         uint32_t* path = (uint32_t*)(pCtx->Ecx + 0x5c);
@@ -2268,26 +2253,21 @@ namespace TH128 {
         } else if (testArray[15]) {
             *path = 6;
         }
-        return true;
     })
     EHOOK_DY(th128_rep_menu_1, 0x44b808, 3, {
         THGuiRep::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th128_rep_menu_2, 0x44b934, 5, {
         THGuiRep::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th128_rep_menu_3, 0x44bbfe, 2, {
         THGuiRep::singleton().State(3);
-        return true;
     })
     EHOOK_DY(th128_rep_menu_enter, 0x44bc25, 6, {
         int stage = pCtx->Eax;
         --stage;
         if (stage != thPracParam.stage)
             thHardLock = thLock = true;
-        return true;
     })
     EHOOK_DY(th128_update, 0x468434, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
@@ -2299,11 +2279,9 @@ namespace TH128 {
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
-        return true;
     })
     EHOOK_DY(th128_render, 0x468560, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
-        return true;
     })
     HOOKSET_ENDDEF()
 
@@ -2338,12 +2316,10 @@ namespace TH128 {
     EHOOK_DY(th128_gui_init_1, 0x446273, 3, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     EHOOK_DY(th128_gui_init_2, 0x455a63, 1, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     HOOKSET_ENDDEF()
 }

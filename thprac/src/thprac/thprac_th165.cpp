@@ -211,19 +211,15 @@ namespace TH165 {
         asm_call<0x415d40, Thiscall>(pCtx->Esi, 0x4);
 
         pCtx->Eip = 0x43cd31;
-        return true;
     })
     EHOOK_DY(th165_render_1, 0x46038d, 5, {
         THGuiUpdate();
-        return true;
     })
     EHOOK_DY(th165_render_2, 0x460461, 5, {
         THGuiUpdate();
-        return true;
     })
     EHOOK_DY(th165_render_3, 0x4610aa, 5, {
         THGuiUpdate();
-        return true;
     })
     HOOKSET_ENDDEF()
 
@@ -251,12 +247,10 @@ namespace TH165 {
     EHOOK_DY(th165_gui_init_1, 0x453218, 3, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     EHOOK_DY(th165_gui_init_2, 0x461b27, 1, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     HOOKSET_ENDDEF()
 }

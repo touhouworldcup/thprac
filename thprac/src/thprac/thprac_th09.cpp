@@ -247,17 +247,15 @@ namespace TH09 {
 
     PATCH_ST(th09_disable_map_select, 0x424671, "C20400");
 
-    bool __fastcall th09_chargelock_bomb(PCONTEXT pCtx, [[maybe_unused]] HookCtx* self)
+    void __fastcall th09_chargelock_bomb(PCONTEXT pCtx, [[maybe_unused]] HookCtx* self)
     {
         TH09Tools& t = TH09Tools::singleton();
         uint32_t side = *(uint32_t*)(pCtx->Esi + 0x8);
         if ((side == 0 && t.chargelock_p1) || (side == 1 && t.chargelock_p2))
             pCtx->Eip += 12;
-
-        return true;
     }
 
-    bool __fastcall th09_chargelock_ret(PCONTEXT pCtx, HookCtx* self)
+    void __fastcall th09_chargelock_ret(PCONTEXT pCtx, HookCtx* self)
     {
         TH09Tools& t = TH09Tools::singleton();
         uint32_t side = *(uint32_t*)(pCtx->Ecx + 0x8);
@@ -265,8 +263,6 @@ namespace TH09 {
             pCtx->Eip = PopHelper32(pCtx);
             pCtx->Esp += 4;
         }
-
-        return true;
     }
     void DisablePracHook();
     HOOKSET_DEFINE(TH09PracHook)
@@ -275,91 +271,76 @@ namespace TH09 {
         uint32_t side = *(uint32_t*)(pCtx->Esi + 0x8);
         if ((side == 0 && t.invinc_p1) || (side == 1 && t.invinc_p2))
             pCtx->Eip = 0x41e8f1;
-        return true;
     })
     EHOOK_DY(th09_infhealth, 0x41E5F9, 3, {
         TH09Tools& t = TH09Tools::singleton();
         uint32_t side = *(uint32_t*)(pCtx->Esi + 0x8);
         if ((side == 0 && t.infhealth_p1) || (side == 1 && t.infhealth_p2))
             pCtx->Eip = 0x41e63c;
-        return true;
     })
     EHOOK_DY(th09_cpu_lock_attack, 0x404f80, 6, {
         TH09Tools& t = TH09Tools::singleton();
         uint32_t side = *(uint32_t*)(pCtx->Esi - 0x1c);
         if ((side == 0 && t.cpu_lock_attack_p1) || (side == 1 && t.cpu_lock_attack_p2))
             pCtx->Eip = 0x404fe1;
-        return true;
     })
     EHOOK_DY(th09_o_lily, 0x41AD6C, 5, {
         if (!TH09Tools::singleton().o_lily) {
             pCtx->Eip = 0x41ae30;
         }
-        return true;
     })
     EHOOK_DY(th09_o_fairy, 0x40FD14, 1, {
         if (!TH09Tools::singleton().o_fairy) {
             pCtx->Eip = 0x40ff4d;
         }
-        return true;
     })
     EHOOK_DY(th09_o_pellets_random, 0x41D540, 2, {
         if (!TH09Tools::singleton().o_pellets_random) {
             pCtx->Eip = 0x41d6dd;
         }
-        return true;
     })
     EHOOK_DY(th09_o_pellets_rival, 0x41e1a6, 3, {
         if (!TH09Tools::singleton().o_pellets_rival) {
             pCtx->Eip = 0x41e2c5;
         }
-        return true;
     })
     EHOOK_DY(th09_o_large_bullets, 0x41DD13, 3, {
         if (!TH09Tools::singleton().o_large_bullets) {
             pCtx->Eip = 0x41dea6;
         }
-        return true;
     })
     EHOOK_DY(th09_o_spirits_random, 0x41D3AA, 6, {
         if (!TH09Tools::singleton().o_spirits_random) {
             pCtx->Eip = 0x41d526;
         }
-        return true;
     })
     EHOOK_DY(th09_o_spirits_rival, 0x4105DA, 4, {
         if (!TH09Tools::singleton().o_spirits_rival) {
             pCtx->Eip = 0x41071d;
         }
-        return true;
     })
     EHOOK_DY(th09_o_ex, 0x41d389, 3, {
         if (!TH09Tools::singleton().o_ex) {
             pCtx->Eip = 0x41d38c;
         }
-        return true;
     })
     EHOOK_DY(th09_o_lv2, 0x441350, 1, {
         if (!TH09Tools::singleton().o_lv2) {
             pCtx->Eip = PopHelper32(pCtx);
         }
-        return true;
     })
     EHOOK_DY(th09_o_lv3, 0x4413d0, 1, {
         if (!TH09Tools::singleton().o_lv3) {
             pCtx->Eip = PopHelper32(pCtx);
         }
-        return true;
     })
     EHOOK_DY(th09_o_boss, 0x441420, 1, {
         if (!TH09Tools::singleton().o_boss) {
             pCtx->Eip = PopHelper32(pCtx);
         }
-        return true;
     })
     EHOOK_DY(th09_unpause, 0x434ad8, 7, {
         ImGui::SetWindowFocus(nullptr);
-        return true;
     })
     EHOOK_DY(th09_game_end, 0x41b82a, 1, {
         TH09Tools& t = TH09Tools::singleton();
@@ -389,7 +370,6 @@ namespace TH09 {
         t.o_boss = true;
         t.enabled = false;
         DisablePracHook();
-        return true;
     })
 #define CHARGELOCK_BOMB(addr_) { .addr = addr_, .callback = th09_chargelock_bomb, .data = PatchHookImpl(6) },
     CHARGELOCK_BOMB(0x41ca86)
@@ -555,7 +535,6 @@ namespace TH09 {
             g.allow = true;
             g.Close();
         }
-        return true;
     })
     EHOOK_DY(th09_map_select_cancel, 0x426507, 1, {
         THGuiPrac& g = THGuiPrac::singleton();
@@ -564,7 +543,6 @@ namespace TH09 {
             g.Close();
             pCtx->Eip = 0x4266ad;
         }
-        return true;
     })
     EHOOK_DY(th09_update, 0x42c7b5, 1, {
         GameGuiBegin(IMPL_WIN32_DX8);
@@ -584,11 +562,9 @@ namespace TH09 {
         p.Update();
 
         GameGuiEnd(UpdateAdvOptWindow() || t.IsOpen() || p.IsOpen());
-        return true;
     })
     EHOOK_DY(th09_render, 0x42dd51, 5, {
         GameGuiRender(IMPL_WIN32_DX8);
-        return true;
     })
     EHOOK_DY(th09_game_init, 0x41b5c5, 1, {
         THGuiPrac& g = THGuiPrac::singleton();
@@ -609,13 +585,11 @@ namespace TH09 {
             t.justOpened = 2;
         }
         g.Close();
-        return true;
     })
     EHOOK_DY(th09_gui_reinit, 0x42e50f, 2, {
         GameGuiInit(IMPL_WIN32_DX8, 0x4b3108, 0x4b30b0,
             Gui::INGAGME_INPUT_GEN2, 0x4acf3a, 0x4acf38, 0,
             -1);
-        return true;
     })
     HOOKSET_ENDDEF()
 
@@ -642,12 +616,10 @@ namespace TH09 {
     EHOOK_DY(th09_gui_init_1, 0x42a0c4, 2, {
         THGuiCreate();
         self->Disable();
-        return true;
     })
     EHOOK_DY(th09_gui_init_2, 0x42e627, 6, {
         THGuiCreate();
         self->Disable();
-        return true;
     })
     PATCH_DY(th09_disable_mutex, 0x42d928, "EB")
     HOOKSET_ENDDEF()

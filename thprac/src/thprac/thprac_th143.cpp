@@ -212,15 +212,12 @@ namespace TH143 {
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th143_render_1, 0x46ed3f, 5, {
         THGuiUpdate();
-        return true;
     })
     EHOOK_DY(th143_render_2, 0x46f14f, 5, {
         THGuiUpdate();
-        return true;
     })
     EHOOK_DY(th143_render_3, 0x46f2ee, 5, {
         THGuiUpdate();
-        return true;
     })
     HOOKSET_ENDDEF()
 
@@ -248,12 +245,10 @@ namespace TH143 {
     EHOOK_DY(th143_gui_init_1, 0x45fd77, 3, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     EHOOK_DY(th143_gui_init_2, 0x46fc6b, 1, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     HOOKSET_ENDDEF()
 }

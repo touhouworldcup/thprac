@@ -503,7 +503,6 @@ namespace TH15 {
             a();
             pCtx->Eip = 0x43d9a2;
         }
-        return true;
     });
     EHOOK_ST(th15_all_clear_bonus_3, 0x43dcb5, 7, {
         *(int32_t*)(GetMemAddr(0x4e9a8c, 0x160)) = *(int32_t*)(0x4e740c);
@@ -513,7 +512,6 @@ namespace TH15 {
             a();
             pCtx->Eip = 0x43d9a2;
         }
-        return true;
     });
     class THAdvOptWnd : public Gui::PPGuiWnd {
     private:
@@ -669,7 +667,6 @@ namespace TH15 {
             chapter_set = -1;
         }
         self->Disable();
-        return true;
     });
 
     static int32_t chapter_disable = 1;
@@ -678,12 +675,10 @@ namespace TH15 {
         if (!chapter_disable)
             self->Disable();
         pCtx->Eip = 0x43d0d5;
-        return true;
     });
     EHOOK_ST(th15_st7boss1_chapter_bonus, 0x43dece, 3, {
         self->Disable();
         *(uint32_t*)0x4e7484 = 1;
-        return true;
     });
     EHOOK_ST(th15_stars_bgm_sync, 0x48c294, 2, {
         int32_t call_addr = *(int32_t*)(pCtx->Esp + 0x8);
@@ -694,7 +689,6 @@ namespace TH15 {
                 self->Disable();
             }
         }
-        return true;
     });
     void ECLSetChapter(size_t chapter)
     {
@@ -1788,38 +1782,30 @@ namespace TH15 {
         if (result) {
             pCtx->Eip = 0x476fa3;
         }
-        return true;
     })
     EHOOK_DY(th15_param_reset, 0x461070, 7, {
         thPracParam.Reset();
-        return true;
     })
     EHOOK_DY(th15_prac_menu_1, 0x4677be, 5, {
         THGuiPrac::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th15_prac_menu_2, 0x4677e1, 3, {
         THGuiPrac::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th15_prac_menu_3, 0x467b2a, 7, {
         THGuiPrac::singleton().State(3);
-        return true;
     })
     EHOOK_DY(th15_prac_menu_4, 0x467bcb, 7, {
         THGuiPrac::singleton().State(4);
-        return true;
     })
     PATCH_DY(th15_prac_menu_enter_1, 0x4678a2, "eb")
     EHOOK_DY(th15_prac_menu_enter_2, 0x467b8a, 1, {
         pCtx->Ecx = thPracParam.stage;
-        return true;
     })
     PATCH_DY(th15_disable_prac_menu_1, 0x467d31, "eb3b")
     EHOOK_DY(th15_menu_rank_fix, 0x4527be, 5, {
         *((int32_t*)0x4e7424) = -1;
         *((int32_t*)0x4e7410) = *((int32_t*)0x4e0ef4);
-        return true;
     })
     EHOOK_DY(th15_patch_main, 0x43c68c, 1, {
         th15_chapter_set.Disable();
@@ -1838,32 +1824,26 @@ namespace TH15 {
             THSectionPatch();
         }
         thPracParam._playLock = true;
-        return true;
     })
     EHOOK_DY(th15_bgm, 0x43d5c1, 2, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x43d5c3;
         }
-        return true;
     })
     EHOOK_DY(th15_rep_save, 0x45cc49, 5, {
         char* repName = (char*)(pCtx->Esp + 0x38);
         if (thPracParam.mode)
             THSaveReplay(repName);
-        return true;
     })
     EHOOK_DY(th15_rep_menu_1, 0x468197, 3, {
         THGuiRep::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th15_rep_menu_2, 0x4682b0, 5, {
         THGuiRep::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th15_rep_menu_3, 0x468474, 2, {
         THGuiRep::singleton().State(3);
-        return true;
     })
     EHOOK_DY(th15_update, 0x4015fa, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
@@ -1874,11 +1854,9 @@ namespace TH15 {
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
-        return true;
     })
     EHOOK_DY(th15_render, 0x40170a, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
-        return true;
     })
     HOOKSET_ENDDEF()
 
@@ -1917,12 +1895,10 @@ namespace TH15 {
     EHOOK_DY(th15_gui_init_1, 0x4617ff, 3, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     EHOOK_DY(th15_gui_init_2, 0x47341b, 1, {
         self->Disable();
         THGuiCreate();
-        return true;
     })
     HOOKSET_ENDDEF()
 }

@@ -607,15 +607,12 @@ namespace TH08 {
 
     EHOOK_ST(th08_all_clear_bonus_1, 0x435f8e, 2, {
         pCtx->Eip = 0x435f92;
-        return true;
     });
     EHOOK_ST(th08_all_clear_bonus_2, 0x4384b9, 2, {
         pCtx->Eip = 0x4384c1;
-        return true;
     });
     EHOOK_ST(th08_all_clear_bonus_3, 0x438568, 2, {
         pCtx->Eip = 0x438570;
-        return true;
     });
     PATCH_ST(th08_DOSWNC_1, 0x415A4E, "39C0");
     PATCH_ST(th08_DOSWNC_2, 0x416463, "39C0");
@@ -815,7 +812,6 @@ namespace TH08 {
             }
         }
         self->Disable();
-        return true;
     });
     void ECLWarp(int32_t time1, int32_t offset1,
         int32_t time2 = -1, int32_t offset2 = -1,
@@ -2130,7 +2126,6 @@ namespace TH08 {
             }
             self->Disable();
         }
-        return true;
     });
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th08_everlasting_bgm, 0x45e1e0, 1, {
@@ -2165,16 +2160,13 @@ namespace TH08 {
         if (result) {
             pCtx->Eip = 0x45e2be;
         }
-        return true;
     })
     EHOOK_DY(th08_game_init, 0x4674ed, 1, {
         thPracParam.Reset();
         th08_familiar.Disable();
-        return true;
     })
     EHOOK_DY(th08_prac_menu_1, 0x46AE0D, 7, {
         THGuiPrac::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th08_prac_menu_3, 0x46b0af, 5, {
         THGuiPrac::singleton().State(3);
@@ -2184,37 +2176,30 @@ namespace TH08 {
             *diff = 4;
         }
         pCtx->Eip = 0x46b0b4;
-        return true;
     })
     EHOOK_DY(th08_prac_menu_4, 0x46b117, 5, {
         THGuiPrac::singleton().State(4);
-        return true;
     })
     EHOOK_DY(th08_rep_menu_1, 0x46e453, 6, {
         THGuiRep::singleton().State(1);
-        return true;
     })
     EHOOK_DY(th08_rep_menu_2, 0x46e8d8, 7, {
         THGuiRep::singleton().State(2);
-        return true;
     })
     EHOOK_DY(th08_rep_menu_3, 0x46ec2e, 6, {
         THGuiRep::singleton().State(3);
-        return true;
     })
     EHOOK_DY(th08_disable_title, 0x439568, 5, {
         if (thPracParam.mode == 1 && thPracParam.section) {
             pCtx->Esp += 0xC;
             pCtx->Eip = 0x4395ca;
         }
-        return true;
     })
     EHOOK_DY(th08_disable_muteki, 0x44d886, 3, {
         if (thPracParam.mode == 1 && thPracParam.section) {
             pCtx->Eax &= 0xFFFFFF00;
             pCtx->Eip = 0x44d889;
         }
-        return true;
     })
     EHOOK_DY(th08_patch_main, 0x43b935, 1, {
         th08_familiar.Disable();
@@ -2272,7 +2257,6 @@ namespace TH08 {
             THSectionPatch();
         }
         thPracParam._playLock = true;
-        return true;
     })
     EHOOK_DY(th08_bgm, 0x43a03c, 2, {
         if (THBGMTest()) {
@@ -2283,13 +2267,11 @@ namespace TH08 {
             }
             pCtx->Eip = 0x43a03e;
         }
-        return true;
     })
     EHOOK_DY(th08_save_replay, 0x453acc, 3, {
         char* rep_name = *(char**)(pCtx->Ebp - 0x694);
         if (thPracParam.mode)
             THSaveReplay(rep_name);
-        return true;
     })
     PATCH_DY(th08_disable_prac_menu1, 0x46f47c, "9090909090")
     PATCH_DY(th08_disable_prac_menu2, 0x46f59d, "9090909090")
@@ -2303,18 +2285,15 @@ namespace TH08 {
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
         GameGuiEnd(drawCursor);
-        return true;
     })
     EHOOK_DY(th08_render, 0x43cc45, 1, {
         GameGuiRender(IMPL_WIN32_DX8);
-        return true;
     })
     // Exactly one instruction before th08_gui_create_2
     EHOOK_DY(th08_recreate_device, 0x442A7E, 1, {
         GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700,
             Gui::INGAGME_INPUT_GEN1, 0x164d528, 0x164d530, 0x164d538,
             -1);
-        return true;
     })
     HOOKSET_ENDDEF()
 
@@ -2348,17 +2327,14 @@ namespace TH08 {
     PATCH_DY(th08_disable_demo, 0x467aca, "ffffff7f")
     EHOOK_DY(th08_disable_mutex, 0x44344A, 5, {
         pCtx->Eip = 0x44346b;
-        return true;
     })
     EHOOK_DY(th08_gui_init_1, 0x467960, 2, {
         THGuiCreate();
         self->Disable();
-        return true;
     })
     EHOOK_DY(th08_gui_init_2, 0x442a7f, 1, {
         THGuiCreate();
         self->Disable();
-        return true;
     })
     HOOKSET_ENDDEF()
 }

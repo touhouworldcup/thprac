@@ -135,14 +135,10 @@ LONG NTAPI VEHHandler(EXCEPTION_POINTERS* ExceptionInfo)
     }
 
     auto EipBak = ExceptionInfo->ContextRecord->Eip;
-    bool cave_exec = hook->second->callback(ExceptionInfo->ContextRecord, hook->second);
+    hook->second->callback(ExceptionInfo->ContextRecord, hook->second);
 
     if (ExceptionInfo->ContextRecord->Eip == EipBak) {
-        if (!cave_exec) {
-            ExceptionInfo->ContextRecord->Eip += hook->second->data.hook.instr_len;
-        } else {
-            ExceptionInfo->ContextRecord->Eip = (DWORD)hook->second->data.hook.codecave;
-        }
+        ExceptionInfo->ContextRecord->Eip = (DWORD)hook->second->data.hook.codecave;
     }
     return EXCEPTION_CONTINUE_EXECUTION;
 }

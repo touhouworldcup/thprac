@@ -15,7 +15,7 @@ extern uintptr_t ingame_image_base;
 #define RVA(a) ((uintptr_t)a + ingame_image_base)
 
 struct HookCtx;
-typedef bool __fastcall Callback(PCONTEXT pCtx, HookCtx* self);
+typedef void __fastcall Callback(PCONTEXT pCtx, HookCtx* self);
 
 inline void PushHelper32(CONTEXT* pCtx, DWORD value)
 {
@@ -443,12 +443,12 @@ HookSlice make_hook_array()
 
 #define HOOKSET_DEFINE(name) static constinit HookCtx name[] = {
 
-#define EHOOK_DY(name_, addr_, instr_size_, ...) { .addr = addr_, .name = #name_, .callback = []([[maybe_unused]] PCONTEXT pCtx, [[maybe_unused]] HookCtx * self) -> bool __VA_ARGS__, .data = PatchHookImpl(instr_size_) },
+#define EHOOK_DY(name_, addr_, instr_size_, ...) { .addr = addr_, .name = #name_, .callback = []([[maybe_unused]] PCONTEXT pCtx, [[maybe_unused]] HookCtx * self) __VA_ARGS__, .data = PatchHookImpl(instr_size_) },
 #define PATCH_DY(name_, addr_, ...) { .addr = addr_, .name = #name_, .data = PatchCode(__VA_ARGS__) },
 
 #define HOOKSET_ENDDEF() };
 
-#define EHOOK_ST(name_, addr_, instr_size_, ...) constinit HookCtx name_ { .addr = addr_, .name = #name_, .callback = []([[maybe_unused]] PCONTEXT pCtx, [[maybe_unused]] HookCtx* self) -> bool __VA_ARGS__, .data = PatchHookImpl(instr_size_) }
+#define EHOOK_ST(name_, addr_, instr_size_, ...) constinit HookCtx name_ { .addr = addr_, .name = #name_, .callback = []([[maybe_unused]] PCONTEXT pCtx, [[maybe_unused]] HookCtx* self) __VA_ARGS__, .data = PatchHookImpl(instr_size_) }
 #define PATCH_ST(name_, addr_, ...) constinit HookCtx name_ { .addr = addr_, .name = #name_, .data = PatchCode(__VA_ARGS__)}
 
 
