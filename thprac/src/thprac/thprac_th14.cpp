@@ -23,6 +23,8 @@ namespace TH14 {
         int32_t value;
         int32_t graze;
 
+        int32_t faketype;
+
         bool dlg;
 
         bool _playLock = false;
@@ -50,6 +52,7 @@ namespace TH14 {
             GetJsonValue(power);
             GetJsonValue(value);
             GetJsonValue(graze);
+            GetJsonValue(faketype);
 
             return true;
         }
@@ -78,6 +81,7 @@ namespace TH14 {
                 AddJsonValue(power);
                 AddJsonValue(value);
                 AddJsonValue(graze);
+                AddJsonValue(faketype);
 
                 ReturnJson();
             } else if (mode == 2) {
@@ -149,6 +153,7 @@ namespace TH14 {
                 thPracParam.power = *mPower;
                 thPracParam.value = *mValue;
                 thPracParam.graze = *mGraze;
+                thPracParam.faketype = *mFakeType;
                 break;
             case 4:
                 Close();
@@ -219,7 +224,7 @@ namespace TH14 {
                     SectionWidget();
                     mPhase(TH_PHASE, SpellPhase());
                 }
-
+                
                 mLife();
                 mLifeFragment();
                 mBomb();
@@ -280,7 +285,13 @@ namespace TH14 {
         {
             int st_offset = 0;
             if (*mStage == 3)
-                st_offset = 4 + mShotType;
+            {
+                mFakeType();
+                if (*mFakeType == 0)
+                    st_offset = 4 + mShotType;
+                else
+                    st_offset = 4 + (*mFakeType == 1 ? 0 : 1);
+            }
             static char chapterStr[256] {};
             auto& chapterCounts = mChapterSetup[*mStage];
 
@@ -328,6 +339,7 @@ namespace TH14 {
         Gui::GuiCombo mPhase { TH_PHASE };
         Gui::GuiCheckBox mDlg { TH_DLG };
         Gui::GuiCombo mCycle { TH14_CYCLE, TH14_CYCLE_LIST };
+        Gui::GuiCombo mFakeType { TH14_FAKE_TYPE, TH14_FAKE_TYPE_LIST };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
@@ -342,7 +354,7 @@ namespace TH14 {
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_SCORE, TH_LIFE, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT, TH14_CYCLE,
-            TH_POWER, TH_VALUE, TH_GRAZE };
+            TH_POWER, TH_VALUE, TH_GRAZE, TH14_FAKE_TYPE };
 
         int mChapterSetup[7][2] {
             { 3, 2 },
@@ -2507,6 +2519,12 @@ namespace TH14 {
     {
         *((int32_t*)0x4f5844) = -1;
         *((int32_t*)0x4f5834) = *((int32_t*)0x4d5984);
+    }
+    EHOOK_DY(th14_fake_type, 0x0042ABAF)
+    {
+        if (thPracParam.mode == 1 && thPracParam.faketype != 0 && thPracParam.stage == 3) {
+            pCtx->Eax = thPracParam.faketype == 1?0:1;
+        }
     }
     EHOOK_DY(th14_patch_main, 0x4360ce)
     {

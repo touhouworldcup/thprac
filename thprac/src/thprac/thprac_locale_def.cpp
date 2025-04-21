@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1377] {
+const char* th_glossary_str[3][1381] {
     {
         "",
         "啤酒",
@@ -210,6 +210,10 @@ const char* th_glossary_str[3][1377] {
         "错误",
         "未能写入目标文件。",
         "未能成功读取源Replay。",
+        "伪装",
+        "A线",
+        "B线",
+        "不伪装",
         "从Replay读取",
         "现在无法更改该选项。",
         "辉针城 - 魔理沙激光相关",
@@ -1589,6 +1593,10 @@ const char* th_glossary_str[3][1377] {
         "Error",
         "Failed to write to destination file.",
         "Failed to access source replay.",
+        "fake type",
+        "route A",
+        "route B",
+        "default",
         "Load from replay",
         "You cannot change this option at the moment.",
         "DDC - Marisa Laser Related",
@@ -2968,6 +2976,10 @@ const char* th_glossary_str[3][1377] {
         "エラー",
         "ターゲットファイルに書き込めませんでした。",
         "元のリプレイの読み取りに失敗しました。",
+        "fake type",
+        "route A",
+        "route B",
+        "default",
         "リプレイからロード",
         "このオプションは今は変更できません。",
         "輝針城 - 魔理沙レーザー関連",
@@ -19622,6 +19634,12 @@ namespace TH14 {
                 TH14_ST4B_BOSS6,
             },
         },
+    };
+
+    const th_glossary_t TH14_FAKE_TYPE_LIST[4] {
+        TH14_FAKE_TYPE_NONE,
+        TH14_FAKE_TYPE_A,
+        TH14_FAKE_TYPE_B,
     };
 
     const th_glossary_t TH14_CYCLE_LIST[6] {

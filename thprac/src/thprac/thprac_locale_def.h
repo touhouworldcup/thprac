@@ -210,6 +210,10 @@ enum th_glossary_t {
     TH14_ERROR,
     TH14_ERROR_DEST,
     TH14_ERROR_SRC,
+    TH14_FAKE_TYPE,
+    TH14_FAKE_TYPE_A,
+    TH14_FAKE_TYPE_B,
+    TH14_FAKE_TYPE_NONE,
     TH14_LOAD,
     TH14_LOCKED,
     TH14_MARISA_LASER,
@@ -1388,7 +1392,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1377];
+extern const char* th_glossary_str[3][1381];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2558,6 +2562,8 @@ namespace TH14 {
     extern const th_sections_t th_sections_cba[9][2][19];
 
     extern const th_sections_t th_sections_cbt[9][2][13];
+
+    extern const th_glossary_t TH14_FAKE_TYPE_LIST[4];
 
     extern const th_glossary_t TH14_CYCLE_LIST[6];
 

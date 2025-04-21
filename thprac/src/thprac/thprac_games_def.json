@@ -7058,6 +7058,12 @@
     "namespace": "TH14",
 
     "glossary": {
+      "TH14_FAKE_TYPE": [ "伪装", "fake type", "fake type" ],
+      "TH14_FAKE_TYPE_NONE": [ "不伪装", "default", "default" ],
+      "TH14_FAKE_TYPE_A": [ "A线", "route A", "route A" ],
+      "TH14_FAKE_TYPE_B": [ "B线", "route B", "route B" ],
+	  
+
       "TH14_CYCLE": [ "循环", "Cycle", "サイクル" ],
       "TH14_CYCLE_1": [ "1 (Bomb碎片)", "1 (Bomb Fragment)", "1 (ボムの欠片)" ],
       "TH14_CYCLE_2": [ "2 (Bomb碎片)", "2 (Bomb Fragment)", "2 (ボムの欠片)" ],
@@ -7677,6 +7683,11 @@
     },
 
     "groups": {
+	 "TH14_FAKE_TYPE_LIST": [
+        "TH14_FAKE_TYPE_NONE",
+        "TH14_FAKE_TYPE_A",
+        "TH14_FAKE_TYPE_B"
+      ],
       "TH14_CYCLE_LIST": [
         "TH14_CYCLE_1",
         "TH14_CYCLE_2",
