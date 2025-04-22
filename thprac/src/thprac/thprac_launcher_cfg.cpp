@@ -2279,6 +2279,9 @@ private:
                 PlaySoundW(L"SE.wav", NULL, SND_FILENAME | SND_ASYNC);
             }
             ImGui::Separator();
+            mBackupThpFile.Gui(S(THPRAC_BACKUP_THP_FILE));
+            mBackupAutoly.Gui(S(THPRAC_AUTO_BACKUP_THP_FILE), S(THPRAC_BACKUP_DESC));
+            ImGui::Separator();
 
             int theme_prev = mCfgTheme.Get();
             if (mCfgTheme.Gui("Theme:", "Dark\0Light\0Classic\0Custom\0\0")) {
@@ -2464,6 +2467,9 @@ private:
     THCfgFloat mGameTimeTooLongTime { "gameTimeTooLong_Time", 3.0f, 0.001f,1000.0f };
     THCfgCheckbox mGameTimeTooLongSE { "gameTimeTooLong_SE", false };
     THCfgFloat mGameTimeTooLongSERepeat { "gameTimeTooLong_SE_repeat", 5.0f, 5.0f,100000.0f };
+
+    THCfgCheckbox mBackupThpFile { "backup_thp_file", false };
+    THCfgCheckbox mBackupAutoly { "auto_backup_score_file", false };
 
     THCfgCheckbox mReflectiveLaunch { "reflective_launch", false };
     THCfgCheckbox mForceOnlyRenderTextUsed { "force_only_render_text_used", false };

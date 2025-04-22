@@ -457,6 +457,15 @@
         "既存のゲームが見つかりました: %s。\n「はい」をクリックしてゲームを起動します。\n「いいえ」をクリックしてランチャーを開きます。"
       ],
 
+      "THPRAC_BACKUP_SCORE_FILE": [ "备份存档文件", "backup score file", "backup score file" ],
+      "THPRAC_BACKUP_THP_FILE": [ "备份thp文件", "backup thp file", "backup thp file" ],
+      "THPRAC_AUTO_BACKUP_THP_FILE": [ "自动备份文件", "auto backup score files", "auto backup score files" ],
+      "THPRAC_BACKUP_IMMEDIATELY": [ "立即备份", "backup immediately", "backup immediately" ],
+      "THPRAC_BACKUP_DESC": [ "备份目录为%appdata%\\thprac", "backup path is %appdata%\\thprac", "backup path is %appdata%\\thprac" ],
+      "THPRAC_BACKUP_DESC2": [ "若想要修改thp关闭时的自动备份,进入设置-启动器-自动备份文件", "if you want to backup autoly after thp closed, use settings-launcher-auto backup score files", "if you want to backup autoly after thp closed, use settings-launcher-auto backup score files" ],
+      "THPRAC_BACKUP_FAILED_TITLE": [ "备份失败", "backup failed", "backup failed" ],
+      "THPRAC_BACKUP_FAILED": [ "失败了失败了失败了失败了失败了失败了", "backup failed", "backup failed" ],
+	  
       "THPRAC_GAMES_DETAILS_PAGE": [ "详情页面", "Details page", "詳細ページ" ],
       "THPRAC_GAMES_SELECT_VER": [ "选择游戏：", "Select game:", "ゲームを選択：" ],
       "THPRAC_GAMES_RENAME": [ "重命名", "Rename", "名前を変更" ],

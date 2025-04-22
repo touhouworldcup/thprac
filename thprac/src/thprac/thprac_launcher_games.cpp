@@ -20,9 +20,61 @@
 #include <tlhelp32.h>
 #include <vector>
 #include <unordered_map>
+#include <format>
 
+#define ZLIB_WINAPI
+#include "../3rdParties/minizip/include/unzip.h"
+#include "../3rdParties/minizip/include/zip.h"
+#pragma comment(lib, "Shlwapi.lib")
+#pragma comment(lib, "zlibstat.lib")
+#pragma comment(lib, "zlibwapi.lib")
 
 namespace THPrac {
+
+bool AddfiletoZip(zipFile zfile, const std::string& fileNameinZip, const std::string& srcfile)
+{
+    int nErr = 0;
+    zip_fileinfo zinfo = { 0 };
+    tm_zip tmz = { 0 };
+    zinfo.tmz_date = tmz;
+    zinfo.dosDate = 0;
+    zinfo.internal_fa = 0;
+    zinfo.external_fa = 0;
+    char sznewfileName[MAX_PATH] = { 0 };
+    memset(sznewfileName, 0x00, sizeof(sznewfileName));
+    strcat_s(sznewfileName, fileNameinZip.c_str());
+    if (srcfile.empty()) {
+        strcat_s(sznewfileName, "\\");
+    }
+    nErr = zipOpenNewFileInZip(zfile, sznewfileName, &zinfo, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
+    if (nErr != ZIP_OK) {
+        return false;
+    }
+    if (!srcfile.empty()) {
+        FILE* srcfp = _fsopen(srcfile.c_str(), "rb", _SH_DENYNO);
+        if (NULL == srcfp) {
+            return false;
+        }
+        int numBytes = 0;
+        char* pBuf = new char[1024 * 100];
+        if (NULL == pBuf) {
+            return 0;
+        }
+        while (!feof(srcfp)) {
+            memset(pBuf, 0x00, sizeof(pBuf));
+            numBytes = fread(pBuf, 1, sizeof(pBuf), srcfp);
+            nErr = zipWriteInFileInZip(zfile, pBuf, numBytes);
+            if (ferror(srcfp)) {
+                break;
+            }
+        }
+        delete[] pBuf;
+        fclose(srcfp);
+    }
+    zipCloseFileInZip(zfile);
+    return true;
+}
+
 inline bool HashCompare(uint32_t hash1[4], uint32_t hash2[4])
 {
     for (int i = 0; i < 4; ++i) {
@@ -244,6 +296,7 @@ struct THGameInst {
 
     bool useVpatch = true;
     bool useTHPrac = false;
+    bool autoBackup = false;
 
     THGameInst() = default;
     THGameInst(const char* _name, std::string& _path, THGameType _type)
@@ -345,7 +398,9 @@ private:
                                         }
                                         break;
                                     }
-
+                                    if (game.HasMember("autoBackup") && game["autoBackup"].IsBool()) {
+                                        gameInst.autoBackup = game["autoBackup"].GetBool();
+                                    }
                                     mGames[it->name.GetString()].instances.push_back(gameInst);
                                 } else {
                                     result = false;
@@ -379,7 +434,7 @@ private:
         WriteGameCfg();
         return result;
     }
-    void WriteGameCfg()
+    void WriteGameCfg() 
     {
         rapidjson::Document gameJson;
         auto& alloc = gameJson.GetAllocator();
@@ -390,7 +445,7 @@ private:
             rapidjson::Value gameTitleJson;
             gameTitleJson.SetObject();
             JsonAddMember(gameTitleJson, "default_launch", game.defaultLaunch, alloc);
-
+            
             rapidjson::Value gameInstances;
             gameInstances.SetArray();
             for (auto& inst : game.instances) {
@@ -400,6 +455,7 @@ private:
                 JsonAddMember(gameInst, "type", (int)inst.type, alloc);
                 JsonAddMemberA(gameInst, "path", inst.path.c_str(), alloc);
                 JsonAddMember(gameInst, "apply_thprac", inst.useTHPrac, alloc);
+                JsonAddMember(gameInst, "autoBackup", inst.autoBackup, alloc);
                 gameInstances.PushBack(gameInst, alloc);
             }
             JsonAddMemberA(gameTitleJson, "instances", gameInstances, alloc);
@@ -426,6 +482,133 @@ private:
     SINGLETON(THGameGui);
 
 public:
+    bool BackupScoreFile(bool auto_backup = false) {
+        static char appdata[MAX_PATH];
+        std::string zipfilename = "";
+        bool have_backup = false;
+        if (!auto_backup) {
+            time_t now = time(0);
+            tm* currentDate = localtime(&now);
+            std::wstring filename = LauncherWndFolderSelect(nullptr);
+            if (filename.empty())
+                return true;
+            zipfilename = utf16_to_mb(filename.c_str(), CP_UTF8);
+            zipfilename += std::format("\\backup{:04d}{:02d}{:02d}-{:02d}{:02d}{:02d}.zip",
+                currentDate->tm_year + 1900, currentDate->tm_mon + 1, currentDate->tm_mday,
+                currentDate->tm_hour, currentDate->tm_min, currentDate->tm_sec);
+        } else {
+            time_t now = time(0);
+            tm* currentDate = localtime(&now);
+            GetEnvironmentVariableA("APPDATA", appdata, MAX_PATH);
+            zipfilename = appdata;
+            zipfilename += std::format("\\thprac\\backup-{:04d}{:02d}{:02d}-{:02d}{:02d}{:02d}.zip",
+                currentDate->tm_year + 1900, currentDate->tm_mon + 1, currentDate->tm_mday,
+                currentDate->tm_hour, currentDate->tm_min, currentDate->tm_sec);
+        }
+
+        struct GameBackup {
+            std::vector<std::string> score_paths;
+            std::string score_file_name_in_zip;
+            std::string zip_folder;
+        };
+        std::vector<GameBackup> all_backup;
+
+        for (auto& it : mGames) {
+            auto& game = it.second;
+            if (game.signature.scoreFileStr == nullptr)
+                continue;
+            if (strcmp(game.signature.idStr, "th06") == 0) {
+                GameBackup gamebackup06;
+                gamebackup06.zip_folder = "th06_spells";
+                gamebackup06.score_file_name_in_zip = "score06.dat";
+                for (auto& inst : game.instances) {
+                    if (inst.autoBackup) {
+                        have_backup = true;
+                        std::string scorefilepath;
+                        GetEnvironmentVariableA("APPDATA", appdata, MAX_PATH);
+                        scorefilepath = appdata;
+                        scorefilepath += "\\ShanghaiAlice\\th06\\score06.dat";
+                        gamebackup06.score_paths.push_back(scorefilepath);
+                        break;
+                    }
+                }
+                if (gamebackup06.score_paths.size() != 0)
+                    all_backup.push_back(gamebackup06);
+            }
+            GameBackup gamebackup;
+            gamebackup.zip_folder = game.signature.idStr;
+            gamebackup.score_file_name_in_zip = game.signature.scoreFileStr;
+            for (auto& inst : game.instances) {
+                if (inst.autoBackup) {
+                    have_backup = true;
+                    if (game.signature.appdataStr) {
+                        std::string scorefilepath;
+                        GetEnvironmentVariableA("APPDATA", appdata, MAX_PATH);
+                        scorefilepath = appdata;
+                        scorefilepath += "\\ShanghaiAlice\\";
+                        scorefilepath += game.signature.idStr;
+                        scorefilepath += "\\";
+                        scorefilepath += game.signature.scoreFileStr;
+                        gamebackup.score_paths.push_back(scorefilepath);
+                    } else {
+                        std::string scorefilepath;
+                        scorefilepath = GetDirFromFullPath(inst.path) + game.signature.scoreFileStr;
+                        gamebackup.score_paths.push_back(scorefilepath);
+                    }
+                }
+            }
+            if (gamebackup.score_paths.size() != 0)
+                all_backup.push_back(gamebackup);
+        }
+        bool backup_thp_file = false;
+        LauncherSettingGet("backup_thp_file", backup_thp_file);
+        if (backup_thp_file)
+            have_backup = true;
+
+        if (have_backup){
+            zipFile zf = zipOpen(zipfilename.c_str(), APPEND_STATUS_CREATE);
+
+            for (auto& it : all_backup) {
+                for (int i = 0; i < it.score_paths.size(); i++) {
+                    std::string filename_a;
+                    if (it.score_paths.size() >= 2){
+                        filename_a = "";
+                        for (auto& c : it.score_file_name_in_zip) {
+                            if (c != '.')
+                                filename_a += c;
+                            else
+                                break;
+                        }
+                        filename_a += std::format("_{}.dat", i+1); 
+                    } else {
+                        filename_a = it.score_file_name_in_zip;
+                    }
+                    AddfiletoZip(zf, it.zip_folder + "\\" + filename_a, it.score_paths[i]);
+                }
+            }
+            if (backup_thp_file) {
+                std::string thppath;
+                GetEnvironmentVariableA("APPDATA", appdata, MAX_PATH);
+                thppath = appdata;
+                thppath += "\\thprac\\thprac.json";
+                AddfiletoZip(zf, "thprac\\thprac.json", thppath);
+                thppath = appdata;
+                thppath += "\\thprac\\keng.dat";
+                AddfiletoZip(zf, "thprac\\keng.dat", thppath);
+                thppath = appdata;
+                thppath += "\\thprac\\thprac_configs.db";
+                AddfiletoZip(zf, "thprac\\thprac_configs.db", thppath);
+                have_backup = true;
+            }
+            zipCloseFileInZip(zf);
+            if (zipClose(zf, NULL) != ZIP_OK) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
     static HINSTANCE WINAPI thcrapLaunchGame(std::wstring& cfg, const char* game, const char* append = nullptr)
     {
         wchar_t thcrapDir[MAX_PATH];
@@ -2174,6 +2357,30 @@ public:
             WriteGameCfg();
         }
 
+        if (mCurrentGame->signature.scoreFileStr != nullptr)
+        {
+            if (ImGui::Checkbox(S(THPRAC_BACKUP_SCORE_FILE), &currentInst.autoBackup)) {
+                WriteGameCfg();
+            }
+            ImGui::SameLine();
+            HelpMarker(S(THPRAC_BACKUP_DESC2));
+            ImGui::SameLine();
+            if (ImGui::Button(S(THPRAC_BACKUP_IMMEDIATELY))){
+                if (!BackupScoreFile())
+                    ImGui::OpenPopup(S(THPRAC_BACKUP_FAILED_TITLE));
+            }
+            
+        }
+        if (GuiModal(S(THPRAC_BACKUP_FAILED_TITLE))) {
+            ImGui::PushTextWrapPos(ImGui::GetIO().DisplaySize.x * 0.9f);
+            ImGui::TextWrapped(S(THPRAC_BACKUP_FAILED));
+            ImGui::PopTextWrapPos();
+            if (ImGui::Button("QAQ")) {
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+
         if (GuiButtonRelCentered(S(THPRAC_GAMES_LAUNCH_GAME), 0.85f, ImVec2(1.0f, 0.1f))) {
             GameLaunchModalOpen();
         }
@@ -2402,6 +2609,13 @@ private:
 bool LauncherGamesGuiUpd()
 {
     THGameGui::singleton().GuiUpdate();
+    return true;
+}
+
+bool LauncherGamesDestroy(){
+    bool autobackup = false;
+    if(LauncherSettingGet("auto_backup_score_file", autobackup) &&autobackup)
+        THGameGui::singleton().BackupScoreFile(true);
     return true;
 }
 

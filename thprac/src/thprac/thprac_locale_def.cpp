@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1381] {
+const char* th_glossary_str[3][1389] {
     {
         "",
         "啤酒",
@@ -581,12 +581,20 @@ const char* th_glossary_str[3][1381] {
         "应用",
         "“应用thprac”选项默认状态",
         "之前的状态\0打开\0关闭\0\0",
+        "自动备份文件",
         "自动设置默认启动游戏",
         "勾选后，将游戏列表中的第一个游戏自动作为默认启动游戏。\n手动设置的默认启动游戏覆盖此选项。",
         "机签",
         "红魔乡自动输入机签",
         "使用~代替红斜杠",
         "返回",
+        "备份目录为%appdata%\\thprac",
+        "若想要修改thp关闭时的自动备份,进入设置-启动器-自动备份文件",
+        "失败了失败了失败了失败了失败了失败了",
+        "备份失败",
+        "立即备份",
+        "备份存档文件",
+        "备份thp文件",
         "开始",
         "夜雀视野",
         "娱乐用, 使用blind.png重载",
@@ -1964,12 +1972,20 @@ const char* th_glossary_str[3][1381] {
         "Apply",
         "\"Apply thprac\" option default state",
         "Previous state\0Open\0Close\0\0",
+        "auto backup score files",
         "Auto set default start game",
         "When enabled, the first game in the game list will be automatically used as the default starting game.\nManually set default startup games override this option.",
         "name",
         "auto input name for EoSD",
         "use ~ replace red slash",
         "Back",
+        "backup path is %appdata%\\thprac",
+        "if you want to backup autoly after thp closed, use settings-launcher-auto backup score files",
+        "backup failed",
+        "backup failed",
+        "backup immediately",
+        "backup score file",
+        "backup thp file",
         "Begin",
         "blind view",
         "for fun(use blind.png to reload)",
@@ -3347,12 +3363,20 @@ const char* th_glossary_str[3][1381] {
         "適用する",
         "「thpracを適用する」オプションのデフォルト状態",
         "前の状態\0開く\0閉じる\0\0",
+        "auto backup score files",
         "デフォルトの起動ゲームを自動的に設定します",
         "有効にすると、ゲームリストの最初のゲームがデフォルトの開始ゲームとして自動的に使用されます。\nデフォルトの起動ゲームを手動で設定すると、このオプションが上書きされます。",
         "name",
         "auto input name for EoSD",
         "use ~ replace red slash",
         "戻る",
+        "backup path is %appdata%\\thprac",
+        "if you want to backup autoly after thp closed, use settings-launcher-auto backup score files",
+        "backup failed",
+        "backup failed",
+        "backup immediately",
+        "backup score file",
+        "backup thp file",
         "開始",
         "blind view",
         "for fun(use blind.png to reload)",
@@ -24708,7 +24732,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3361] {
+const wchar_t __thprac_loc_range_zh[3363] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -25535,6 +25559,7 @@ const wchar_t __thprac_loc_range_zh[3361] {
     0x683c, 0x683c,
     0x684c, 0x684c,
     0x6851, 0x6851,
+    0x6863, 0x6863,
     0x6865, 0x6865,
     0x6883, 0x6883,
     0x6885, 0x6885,

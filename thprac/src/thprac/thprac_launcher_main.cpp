@@ -249,6 +249,7 @@ int GuiLauncherMain()
             localeSwitch = -1;
         }
     }
+    LauncherGamesDestroy();
     LauncherOthersDestroy();
     LauncherKengDestroy();
     DisableDisableWinKey();

@@ -18,6 +18,7 @@ bool GetExeInfo(void* exeBuffer, size_t exeSize, ExeSig& exeSigOut);
 bool GetExeInfoEx(uintptr_t hProcess, uintptr_t base, ExeSig& exeSigOut);
 
 bool LauncherGamesGuiUpd();
+bool LauncherGamesDestroy();
 void LauncherGamesGuiSwitch(const char* idStr);
 void LauncherGamesForceReload();
 bool LauncherGamesThcrapTest(std::wstring& dir);

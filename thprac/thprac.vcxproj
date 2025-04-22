@@ -206,7 +206,7 @@
     <LinkIncremental>false</LinkIncremental>
     <TargetName>thprac</TargetName>
     <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\distorm\include;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(ProjectDir)src\3rdParties\MinHook\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)src\3rdParties\FreeType\win32;$(ProjectDir)src\3rdParties\d3d8\lib;$(ProjectDir)src\3rdParties\d3d9\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)src\3rdParties\FreeType\win32;$(ProjectDir)src\3rdParties\d3d8\lib;$(ProjectDir)src\3rdParties\d3d9\lib;$(ProjectDir)src\3rdParties\minizip\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
