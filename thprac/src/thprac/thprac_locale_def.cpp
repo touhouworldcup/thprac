@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1389] {
+const char* th_glossary_str[3][1390] {
     {
         "",
         "啤酒",
@@ -896,6 +896,7 @@ const char* th_glossary_str[3][1389] {
         "删除这个筛选器？\n其中的所有链接都将丢失！",
         "删除筛选器##modal",
         "重置默认",
+        "允许风神录replay记录多一页ud_xxxx.rpy",
         "移动至全局目录",
         "移动至本地目录",
         "继续",
@@ -2287,6 +2288,7 @@ const char* th_glossary_str[3][1389] {
         "Delete this link?\nAll links in it will be lost!",
         "Delete filter##modal",
         "Reset default",
+        "add another page for ud_xxxx.rpy in MoF's replay",
         "Move to global directory",
         "Move to local directory",
         "Next",
@@ -3678,6 +3680,7 @@ const char* th_glossary_str[3][1389] {
         "このフィルタを削除しますか？\nこの中のすべてのリンクは失われます！",
         "フィルタを削除##modal",
         "デフォルトにリセット",
+        "add another page for ud_xxxx.rpy in MoF's replay",
         "グローバルディレクトリに移動",
         "ローカルディレクトリに移動",
         "次へ",

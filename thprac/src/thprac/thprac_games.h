@@ -34,6 +34,7 @@ namespace THPrac {
         bool th14_showDropBar = false;
         bool th15_showShootingDownRate = false;
         bool show_keyboard_monitor = false;
+        bool th10_ud_Replay = false;
         KeyRectStyle keyboard_style;
     };
     extern AdvancedIGI_Options g_adv_igi_options;

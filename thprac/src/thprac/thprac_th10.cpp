@@ -8,6 +8,9 @@ namespace TH10 {
     bool g_mouse_move_hint = false;
     bool g_pl_speed_keep = false;
 
+    int g_rep_page = 0;
+    const char chars_supported[] = "!\"#$%&' ()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -2648,6 +2651,106 @@ namespace TH10 {
         GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
+
+    HOOKSET_DEFINE(TH10_UD_REP)
+    EHOOK_DY(th10_rep_ui0, 0x4315F8)
+    {
+        if (pCtx->Ecx >= 25)
+            g_rep_page = 1, pCtx->Ecx -= 25;
+        else
+            g_rep_page = 0;
+    }
+    EHOOK_DY(th10_rep_ui1, 0x4317BA)
+    {
+        if ((*(DWORD*)0x474E36 & 0x80) != 0 || (*(BYTE*)0x474E34 & 0x80) != 0) { // right
+            g_rep_page = 1;
+        }
+        if ((*(DWORD*)0x474E36 & 0x40) != 0 || (*(BYTE*)0x474E34 & 0x40) != 0) { // left
+            g_rep_page = 0;
+        }
+    }
+    EHOOK_DY(th10_rep_ui2, 0x431844)
+    {
+        if (g_rep_page == 0)
+            return;
+        pCtx->Eax = *(DWORD*)(pCtx->Ebp + pCtx->Ecx * 4 + g_rep_page * 25 * 4 + 0x59E4);
+        pCtx->Eip = 0x0043184B;
+    }
+    EHOOK_DY(th10_rep_ui3, 0x431863)
+    {
+        pCtx->Edx = pCtx->Edx + g_rep_page * 25;
+    }
+    EHOOK_DY(th10_rep_ui4, 0x431DCD)
+    {
+        pCtx->Edx = pCtx->Edx + g_rep_page * 25 * 4;
+    }
+    EHOOK_DY(th10_rep_ui5, 0x00431E70)
+    {
+        if (g_rep_page == 0)
+            return;
+        DWORD a = *(DWORD*)*(DWORD*)(pCtx->Esp + 0x54);
+        if (a) {
+            const char* user_rep = "%s %s %.2d/%.2d/%.2d %.2d:%.2d %s %s %s %2.1f%%";
+            *(DWORD*)(pCtx->Esp) = (DWORD)user_rep;
+
+            static char uds[6] = ".... ";
+            strcpy_s(uds, "     ");
+            int i = 0;
+            for (char* ch = (char*)(a + 0x1DB);; ch++) {
+                if (*ch == '.' || *ch == 0)
+                    break;
+
+                if (strchr(chars_supported, *ch) != NULL)
+                    uds[i] = *ch;
+                else
+                    uds[i] = '?';
+                i++;
+                if (i >= 4)
+                    break;
+            }
+            *(DWORD*)(pCtx->Esp + 4) = (DWORD)uds;
+        }
+    }
+    EHOOK_DY(th10_rep_ui6, 0x00431E82)
+    {
+        if (g_rep_page == 0)
+            return;
+        const char* user_rep = "User  -------- --/--/-- --:-- ------- ------- --- ---%%";
+        *(DWORD*)(pCtx->Esp) = (DWORD)user_rep;
+    }
+    EHOOK_DY(th10_rep_ui7, 0x00431BFD)
+    {
+        if (pCtx->Eax >= 25)
+            pCtx->Eax = pCtx->Eax - 25;
+    }
+    EHOOK_DY(th10_rep_ui8, 0x00431C9B)
+    {
+        if (g_rep_page == 0 || *(DWORD*)(pCtx->Ebp + 0x59DC) < 25)
+            return;
+        DWORD id = *(DWORD*)(pCtx->Ebp + 0x59DC);
+        DWORD a = *(DWORD*)(pCtx->Ebp + 0x59E4 + id * 4);
+        if (a) {
+            const char* user_rep = "%s %s %.2d/%.2d/%.2d %.2d:%.2d %s %s %s %2.1f%%";
+            *(DWORD*)(pCtx->Esp) = (DWORD)user_rep;
+            static char uds[6] = ".... ";
+            strcpy_s(uds, "     ");
+            int i = 0;
+            for (char* ch = (char*)(a + 0x1DB);; ch++) {
+                if (*ch == '.' || *ch == 0)
+                    break;
+                if (strchr(chars_supported, *ch) != NULL)
+                    uds[i] = *ch;
+                else
+                    uds[i] = '?';
+                i++;
+                if (i >= 4)
+                    break;
+            }
+            *(DWORD*)(pCtx->Esp + 4) = (DWORD)uds;
+        }
+    }
+    HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th10_game_start, 0x41798C) // gamestart-bomb set
     {
@@ -2696,6 +2799,9 @@ namespace TH10 {
         // Hooks
         THMainHook::singleton().EnableAllHooks();
         THInGameInfo::singleton().EnableAllHooks();
+
+        if (g_adv_igi_options.th10_ud_Replay)
+            TH10_UD_REP::singleton().EnableAllHooks();
         th10_real_bullet_sprite.Setup();
 
         // Reset thPracParam

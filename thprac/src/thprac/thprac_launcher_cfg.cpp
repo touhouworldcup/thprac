@@ -2139,8 +2139,9 @@ private:
             }
 
             mKeyboardSOCD.Gui(S(THPRAC_KEYBOARD_SOCD), S(THPRAC_KEYBOARD_SOCD_SETTINGS), S(THPRAC_KEYBOARD_SOCD_DESC));
-            mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
 
+            mUD_Replay_10.Gui(S(THPRAC_MOF_UD_REP));
+            mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
             mAutoName_06.Gui(S(THPRAC_AUTO_NAME_TH06), S(THPRAC_AUTO_NAME_TH06_DESC));
 
             if (mAutoName_06.Get())
@@ -2458,6 +2459,7 @@ private:
 
     THCfgCombo mKeyboardSOCD { "keyboard_SOCDv2", 0, 3 };
     THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };
+    THCfgCheckbox mUD_Replay_10 { "th10_ud_Replay", true };
     THCfgCheckbox mDisableWinKey { "disable_win_key", false };
     THCfgCheckbox mPauseBGM_06 { "pauseBGM_06", false };
     THCfgCheckbox mAutoName_06 { "autoInputName_06", false };

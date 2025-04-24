@@ -443,6 +443,8 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
             strcpy_s(g_adv_igi_options.th06_autoname_name, name06.c_str());
         }
 
+        LauncherSettingGet("th10_ud_Replay", g_adv_igi_options.th10_ud_Replay);
+
         LauncherSettingGet("th18_force_card", g_adv_igi_options.th18_force_card);
         LauncherSettingGet("th18_card_st1", g_adv_igi_options.th18_cards[0]);
         LauncherSettingGet("th18_card_st2", g_adv_igi_options.th18_cards[1]);
