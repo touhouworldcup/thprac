@@ -492,7 +492,7 @@ public:
             std::wstring filename = LauncherWndFolderSelect(nullptr);
             if (filename.empty())
                 return true;
-            zipfilename = utf16_to_mb(filename.c_str(), CP_UTF8);
+            zipfilename = utf16_to_mb(filename.c_str(), CP_ACP);
             zipfilename += std::format("\\backup{:04d}{:02d}{:02d}-{:02d}{:02d}{:02d}.zip",
                 currentDate->tm_year + 1900, currentDate->tm_mon + 1, currentDate->tm_mday,
                 currentDate->tm_hour, currentDate->tm_min, currentDate->tm_sec);
