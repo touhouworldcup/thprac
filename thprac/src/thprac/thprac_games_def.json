@@ -934,6 +934,7 @@
        "THPRAC_KENG_NAME":["坑名:","name","name"],
        "THPRAC_KENG_DATE":["创建日期:","date","date"],
        "THPRAC_KENG_DESC":["描述:","description","description"],
+       "THPRAC_KENG_PRESET":["预设:","preset","preset"],
        "THPRAC_KENG_PLAY_TABLE":["记录表##pltb","play table##pltb","play table##pltb"],
        "THPRAC_KENG_PLAY_CNT":["难点计数","difficulties count","difficulties count"],
        "THPRAC_KENG_PLAY_INDEX":["记录编号","play index","play index"],

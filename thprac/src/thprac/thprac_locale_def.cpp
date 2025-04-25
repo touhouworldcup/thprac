@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1390] {
+const char* th_glossary_str[3][1391] {
     {
         "",
         "啤酒",
@@ -846,6 +846,7 @@ const char* th_glossary_str[3][1390] {
         "记录编号",
         "记录名:",
         "记录表##pltb",
+        "预设:",
         "从CSV导入",
         "返回",
         "保存为csv",
@@ -2238,6 +2239,7 @@ const char* th_glossary_str[3][1390] {
         "play index",
         "play name",
         "play table##pltb",
+        "preset",
         "read from csv",
         "return",
         "save as csv",
@@ -3630,6 +3632,7 @@ const char* th_glossary_str[3][1390] {
         "play index",
         "play name",
         "play table##pltb",
+        "preset",
         "read from csv",
         "return",
         "save as csv",
@@ -24735,7 +24738,7 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3363] {
+const wchar_t __thprac_loc_range_zh[3365] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -26348,6 +26351,7 @@ const wchar_t __thprac_loc_range_zh[3363] {
     0x9879, 0x9879,
     0x987a, 0x987a,
     0x987b, 0x987b,
+    0x9884, 0x9884,
     0x9886, 0x9886,
     0x9888, 0x9888,
     0x9897, 0x9897,

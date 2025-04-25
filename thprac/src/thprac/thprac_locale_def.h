@@ -846,6 +846,7 @@ enum th_glossary_t {
     THPRAC_KENG_PLAY_INDEX,
     THPRAC_KENG_PLAY_NAME,
     THPRAC_KENG_PLAY_TABLE,
+    THPRAC_KENG_PRESET,
     THPRAC_KENG_READ_CSV,
     THPRAC_KENG_RETURN,
     THPRAC_KENG_SAVE_CSV,
@@ -1401,7 +1402,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1390];
+extern const char* th_glossary_str[3][1391];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2983,7 +2984,7 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3363];
+extern const wchar_t __thprac_loc_range_zh[3365];
 
 extern const wchar_t __thprac_loc_range_en[61];
 
