@@ -552,7 +552,8 @@ public:
                         gamebackup.score_paths.push_back(scorefilepath);
                     } else {
                         std::string scorefilepath;
-                        scorefilepath = GetDirFromFullPath(inst.path) + game.signature.scoreFileStr;
+                        std::string path_MB = utf16_to_mb(utf8_to_utf16(GetDirFromFullPath(inst.path).c_str()).c_str(), CP_ACP);
+                        scorefilepath = path_MB + game.signature.scoreFileStr;
                         gamebackup.score_paths.push_back(scorefilepath);
                     }
                 }
