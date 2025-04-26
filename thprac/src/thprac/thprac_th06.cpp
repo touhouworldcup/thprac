@@ -23,7 +23,7 @@ namespace TH06 {
     float g_last_boss_x, g_last_boss_y;
 
     static bool is_died = false;
-   
+    int lock_timer = 0;
 
     bool THBGMTest();
     using std::pair;
@@ -280,8 +280,6 @@ namespace TH06 {
             // new HookCtx(0x41BBE9, "\x80", 1),
             new HookCtx(0x428B7D, "\x00", 1),
             new HookCtx(0x428B67,"\x90\x90\x90\x90\x90\x90\x90\x90\x90", 9) } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
-            new HookCtx(0x412DD1, "\xeb", 1) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
             new HookCtx(0x428989, "\xEB\x1D", 2),
             new HookCtx(0x4289B4, "\x85\xD2", 2),
@@ -289,15 +287,17 @@ namespace TH06 {
             new HookCtx(0x428A9D, "\x66\xC7\x05\x04\xD9\x69\x00\x02", 8) } };
 
     public:
-        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2, { 
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2, {
             new HookCtx(0x428DDB, "\xA0\xBA\xD4\x69\x00\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 16), 
             new HookCtx(0x428AC6, "\x90\x90\x90\x90\x90\x90", 6) // do not drop F item
+        } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtx(0x412DD1, "\xeb", 1)
         } };
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mShowSpellCapture { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
 
-    
     class TH06InGameInfo : public Gui::GameGuiWnd {
         TH06InGameInfo() noexcept
         {
@@ -726,7 +726,7 @@ namespace TH06 {
             last_tot_hp = cur_tot_hp;
             last_has_SCB = cur_has_SCB;
 
-             // books time
+            // books time
             DWORD gameState = *(DWORD*)(0x6C6EA4);
             BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
             if (is_magic_book && thPracParam.mode && (thPracParam.phase != 0)) { // books
@@ -1581,6 +1581,7 @@ namespace TH06 {
             TH_LIFE, TH_BOMB, TH_SCORE, TH_POWER, TH_GRAZE, TH_POINT,
             TH06_RANK, TH06_RANKLOCK, TH06_FS };
     };
+
     class THGuiRep : public Gui::GameGuiWnd {
         THGuiRep() noexcept
         {
@@ -3068,13 +3069,13 @@ namespace TH06 {
         if (thPracParam.mode == 1) {
             // TODO: Probably remove this ASM comment?
             /*
-					mov eax,dword ptr [@MENU_RANK]
-					mov dword ptr [69d710],eax
-					cmp dword ptr [@MENU_RANKLOCK],@MENU_ON_STR
-					jnz @f
-					mov dword ptr [69d714],eax
-					mov dword ptr [69d718],eax
-				*/
+                    mov eax,dword ptr [@MENU_RANK]
+                    mov dword ptr [69d710],eax
+                    cmp dword ptr [@MENU_RANKLOCK],@MENU_ON_STR
+                    jnz @f
+                    mov dword ptr [69d714],eax
+                    mov dword ptr [69d718],eax
+                */
             *(int8_t*)(0x69d4ba) = (int8_t)thPracParam.life;
             *(int8_t*)(0x69d4bb) = (int8_t)thPracParam.bomb;
             *(int16_t*)(0x69d4b0) = (int16_t)thPracParam.power;
@@ -3201,7 +3202,6 @@ namespace TH06 {
             pCtx->Eip = 0x40e1d8;
         }
     }
-
 
     EHOOK_DY(th06_wall_prac_boss_pos, 0x40907F)
     {
@@ -3495,6 +3495,17 @@ namespace TH06 {
             }
         }
     }
+    static void RenderLockTimer(ImDrawList* p)
+    {
+        if (*THOverlay::singleton().mTimeLock && lock_timer > 0) {
+            std::string time_text = std::format("{:.2f}", (float)lock_timer / 60.0f);
+            auto f = ImGui::GetFont();
+            auto sz = f->CalcTextSizeA(16, 100, 100, time_text.c_str());
+            ImVec2 p1 = { 110.0f, 16.0f };
+            p->AddRectFilled({ 32.0f, p1.y - sz.y }, p1, 0xFFFFFFFF);
+            p->AddText(f, 16, { p1.x - sz.x, p1.y - sz.y }, 0xFF000000, time_text.c_str());
+        }
+    }
     
     EHOOK_DY(th06_books_position_test, 0x0041188A)
     {
@@ -3529,6 +3540,7 @@ namespace TH06 {
         }
         RenderRepMarker(p);
         RenderBtHitbox(p);
+        RenderLockTimer(p);
         if (g_adv_igi_options.show_keyboard_monitor && (*(DWORD*)(0x6C6EA4) == 2)) {
             g_adv_igi_options.keyboard_style.size = { 48.0f, 48.0f };
             KeysHUD(6, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
@@ -3536,8 +3548,8 @@ namespace TH06 {
         {
             if (THAdvOptWnd::singleton().forceBossMoveDown) {
                 auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
-                p->AddRectFilled({ 60.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
-                p->AddText({ 60.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
+                p->AddRectFilled({ 120.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
+                p->AddText({ 120.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
         
@@ -3587,8 +3599,8 @@ namespace TH06 {
             }
         }
     }
-
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th06_enter_game, 0x41BDE8) // set inner misscount to 0
     {
@@ -3602,6 +3614,23 @@ namespace TH06 {
     EHOOK_DY(th06_miss, 0x428DD9)// dec life
     {
         TH06InGameInfo::singleton().mMissCount++;
+    }
+
+    EHOOK_DY(th06_lock_timer1, 0x41B27C) // initialize
+    {
+        lock_timer = 0;
+    }
+    EHOOK_DY(th06_lock_timer2, 0x409A10) // set timeout
+    {
+        lock_timer = 0;
+    }
+    EHOOK_DY(th06_lock_timer3, 0x408DDA) // set boss mode
+    {
+        lock_timer = 0;
+    }
+    EHOOK_DY(th06_lock_timer4, 0x411F88) // decrease time (update)
+    {
+        lock_timer++;
     }
 
     EHOOK_DY(th06_autoName_score,0x42BE49){
