@@ -8462,6 +8462,18 @@
         "This option needs to be enabled for the entire gaming session for it to work.",
         "このオプションを機能させるには、プレイ中に常にこのオプションを有効にする必要があります。 "
       ],
+      "TH18_EIRIN_EIKI_FIX": [ "", "Fix \"Death Avoidance Elixir\" and \"Money is the Best Lawyer in Hell\"", "" ],
+      "TH18_EIRIN_EIKI_FIX_DESC": [
+        "",
+        "When enabled, buying those cards no longer randomly crashes the game during the stage transition.",
+        ""
+      ],
+      "TH18_FUNC_CALL_FIX": [ "", "Fix \"Shield Method of the Youkai\"", "" ],
+      "TH18_FUNC_CALL_FIX_DESC": [
+        "",
+        "When enabled, \"Shield Method of the Youkai\" will no longer randomly desync by spawning bullets in the wrong position.",
+        ""
+      ],
 
       "TH18_REPLAY_FIX": [ "Replay修复", "Replay fix", "リプレイ修復" ],
       "TH18_REPFIX_SHOW_INS": [ "显示说明##th18", "Show instruction##th18", "指示を表示##th18" ],

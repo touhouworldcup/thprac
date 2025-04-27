@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][863]
+const char* th_glossary_str[3][867]
 {
     {
         "",
@@ -427,6 +427,10 @@ const char* th_glossary_str[3][863]
         "",
         "卡片 %d",
         "瓶子冷却",
+        "",
+        "",
+        "",
+        "",
         "资金力",
         "锁资金",
         "基石冷却",
@@ -1292,6 +1296,10 @@ const char* th_glossary_str[3][863]
         "",
         "Card %d",
         "Bottle CD",
+        "Fix \"Death Avoidance Elixir\" and \"Money is the Best Lawyer in Hell\"",
+        "When enabled, buying those cards no longer randomly crashes the game during the stage transition.",
+        "Fix \"Shield Method of the Youkai\"",
+        "When enabled, \"Shield Method of the Youkai\" will no longer randomly desync by spawning bullets in the wrong position.",
         "Funds",
         "Inf. Funds",
         "Keystone CD",
@@ -2157,6 +2165,10 @@ const char* th_glossary_str[3][863]
         "",
         "カード %d",
         "瓶CD",
+        "",
+        "",
+        "",
+        "",
         "資金力",
         "資金力減らない",
         "要石CD",

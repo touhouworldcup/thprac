@@ -1107,6 +1107,9 @@ namespace TH18 {
             }
         }
     });
+    PATCH_ST(th18_eirin_eiki_card_uninit_fix, 0x411ac2, "54");
+    PATCH_ST(th18_func_call2_uninit_fix, 0x4390ec, "0f1f4000");
+    PATCH_ST(th18_func_call3_uninit_fix, 0x43926c, "0f1f4000");
     PATCH_ST(th18_all_clear_bonus_1, 0x4448ab, "eb0b909090");
     EHOOK_ST(th18_all_clear_bonus_2, 0x444afa, 7, {
         *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(0x4cccfc);
@@ -1162,6 +1165,9 @@ namespace TH18 {
             th18_scroll_fix.Setup();
             th18_st6final_fix.Setup();
             th18_active_card_fix.Setup();
+            th18_eirin_eiki_card_uninit_fix.Setup();
+            th18_func_call2_uninit_fix.Setup();
+            th18_func_call3_uninit_fix.Setup();
             th18_rep_card_fix.Setup();
             th18_static_mallet_replay_gold.Setup();
             th18_static_mallet_replay_green.Setup();
@@ -1199,6 +1205,8 @@ namespace TH18 {
         bool mukadeFix = false;
         bool restartFix = false;
         bool activeCardIdFix = false;
+        bool eirinEikiCardFix = false;
+        bool funcCallFix = false;
 
         struct FixData {
             uint32_t stage;
@@ -1701,6 +1709,19 @@ namespace TH18 {
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH18_AC_FIX_DESC));
+
+                if (ImGui::Checkbox(S(TH18_EIRIN_EIKI_FIX), &eirinEikiCardFix)) {
+                    th18_eirin_eiki_card_uninit_fix.Toggle(eirinEikiCardFix);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH18_EIRIN_EIKI_FIX_DESC));
+
+                if (ImGui::Checkbox(S(TH18_FUNC_CALL_FIX), &funcCallFix)) {
+                    th18_func_call2_uninit_fix.Toggle(funcCallFix);
+                    th18_func_call3_uninit_fix.Toggle(funcCallFix);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH18_FUNC_CALL_FIX_DESC));
 
                 EndOptGroup();
             }
