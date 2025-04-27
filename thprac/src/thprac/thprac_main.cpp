@@ -124,59 +124,7 @@ THGameSig* CheckOngoingGame(PROCESSENTRY32W& proc, uintptr_t* base, HANDLE* pOut
         }
     }
 
-    // Open the related process
-    auto hProc = OpenProcess(
-        //PROCESS_SUSPEND_RESUME |
-        PROCESS_QUERY_INFORMATION | PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE,
-        FALSE,
-        proc.th32ProcessID);
-    if (!hProc)
-        return nullptr;
-
-    *base = GetGameModuleBase(hProc);
-    if (!*base) {
-        return nullptr;
-    }
-
-    // Check THPrac signature
-    DWORD sigAddr = 0;
-    DWORD sigCheck = 0;
-    DWORD bytesReadRPM;
-    ReadProcessMemory(hProc, (void*)(*base + 0x3c), &sigAddr, 4, &bytesReadRPM);
-    if (bytesReadRPM != 4 || !sigAddr) {
-        CloseHandle(hProc);
-        return nullptr;
-    }
-    ReadProcessMemory(hProc, (void*)(*base + sigAddr - 4), &sigCheck, 4, &bytesReadRPM);
-    if (bytesReadRPM != 4 || sigCheck) {
-        CloseHandle(hProc);
-        return nullptr;
-    }
-
-    ExeSig sig;
-    if (GetExeInfoEx((size_t)hProc, *base, sig)) {
-        for (auto& gameDef : gGameDefs) {
-            if (gameDef.catagory != CAT_MAIN && gameDef.catagory != CAT_SPINOFF_STG) {
-                continue;
-            }
-            if (gameDef.exeSig.textSize != sig.textSize || gameDef.exeSig.timeStamp != sig.timeStamp) {
-                continue;
-            }
-            if (pOutHandle) {
-                *pOutHandle = hProc;
-            } else {
-                CloseHandle(hProc);
-            }
-            return &gameDef;
-        }
-    }
-    // I should not have to do this...
-    if (pOutHandle) {
-        *pOutHandle = hProc;
-    } else {
-        CloseHandle(hProc);
-    }
-    return nullptr;
+    return CheckOngoingGameByPID(proc.th32ProcessID, base, pOutHandle);
 }
 
 bool CheckIfGameExistEx(THGameSig& gameSig, const wchar_t* name)
@@ -254,7 +202,7 @@ bool RunGameWithTHPrac(THGameSig& gameSig, const wchar_t* const name, bool withV
     return result;
 }
 
-bool FindOngoingGame(bool prompt)
+bool FindOngoingGame(bool prompt_if_no_game, bool prompt_if_yes_game)
 {
     bool hasPrompted = false;
 
@@ -271,11 +219,13 @@ bool FindOngoingGame(bool prompt)
                     continue;
                 
                 hasPrompted = true;
-                if (!PromptUser(PR_ASK_IF_ATTACH, gameSig))
-                    continue;
-
+                if (prompt_if_yes_game) {
+                    if(!PromptUser(PR_ASK_IF_ATTACH, gameSig)) continue;
+                }
                 if (WriteTHPracSig(hProc, base) && LoadSelf(hProc)) {
-                    PromptUser(PR_INFO_ATTACHED);
+                    if (prompt_if_yes_game) {
+                        PromptUser(PR_INFO_ATTACHED);
+                    }
                     CloseHandle(snapshot);
                     return true;
                 } else {
@@ -288,7 +238,7 @@ bool FindOngoingGame(bool prompt)
         }
     }
 
-    if (prompt && !hasPrompted) {
+    if (prompt_if_no_game && !hasPrompted) {
         PromptUser(PR_INFO_NO_GAME_FOUND);
     }
 
