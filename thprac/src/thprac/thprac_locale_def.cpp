@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][863]
+const char* th_glossary_str[3][867]
 {
     {
         "",
@@ -427,6 +427,10 @@ const char* th_glossary_str[3][863]
         "",
         "卡片 %d",
         "瓶子冷却",
+        "修复「死秽回避之药」和「有钱能使鬼推磨」",
+        "启用时，购买这些卡片不再会导致切换关卡时可能出现的崩溃现象",
+        "修复「妖怪们的盾构法」",
+        "启用时，「妖怪们的盾构法」不会再不时因为生成错子弹的位置而引发 rep 文件损坏。",
         "资金力",
         "锁资金",
         "基石冷却",
@@ -1292,6 +1296,10 @@ const char* th_glossary_str[3][863]
         "",
         "Card %d",
         "Bottle CD",
+        "Fix \"Death Avoidance Elixir\" and \"Money is the Best Lawyer in Hell\"",
+        "When enabled, buying those cards no longer randomly crashes the game during the stage transition.",
+        "Fix \"Shield Method of the Youkai\"",
+        "When enabled, \"Shield Method of the Youkai\" will no longer randomly desync by spawning bullets in the wrong position.",
         "Funds",
         "Inf. Funds",
         "Keystone CD",
@@ -2157,6 +2165,10 @@ const char* th_glossary_str[3][863]
         "",
         "カード %d",
         "瓶CD",
+        "「死穢回避の薬」と「地獄の沙汰も金次第」の修正",
+        "有効化すると、これらのカードを購入しても、ステージ移行時にたまに発生していたクラッシュが起こらなくなります。",
+        "「妖怪達のシールドメソッド」の修正",
+        "有効化すると、「妖怪達のシールドメソッド」が弾の生成位置の誤りによるリプレイバグを引き起こすことはなくなります。",
         "資金力",
         "資金力減らない",
         "要石CD",

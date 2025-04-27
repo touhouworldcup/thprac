@@ -427,6 +427,10 @@ enum th_glossary_t
     TH18_CARD_56,
     TH18_CARD_FORMAT,
     TH18_CYLINDER_CD,
+    TH18_EIRIN_EIKI_FIX,
+    TH18_EIRIN_EIKI_FIX_DESC,
+    TH18_FUNC_CALL_FIX,
+    TH18_FUNC_CALL_FIX_DESC,
     TH18_FUNDS,
     TH18_INFFUNDS,
     TH18_KANAME_CD,
@@ -875,7 +879,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][863];
+extern const char* th_glossary_str[3][867];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
