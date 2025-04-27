@@ -583,7 +583,8 @@ namespace TH08 {
         
         HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
         PATCH_HK(0x44CA78, "00"),
-        PATCH_HK(0x44CAA4, "00")
+        PATCH_HK(0x44CAA4, "00"),
+        PATCH_HK(0x44CA5D, "01")
         HOTKEY_ENDDEF();
         
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
