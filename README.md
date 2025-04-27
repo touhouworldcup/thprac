@@ -38,6 +38,21 @@ You can use this tool in a variety of ways; the main ways to do this are **placi
 This video explains how to use the launcher.
 [![A quick and dirty overview of thprac 2.0](https://i.ytimg.com/vi/sRV4PDQceYo/maxresdefault.jpg)](https://www.youtube.com/watch?v=sRV4PDQceYo)
 
+### Command line
+The following command line options are supported:
+- `<path to game exe>` The command `thprac.exe <path to game exe>` will run a game and attach thprac without any confirmation prompt. This makes it possible to drag a Touhou game executable onto thprac.exe and it will run with thprac.
+- `--attach <pid>` immediately inject thprac into a process with ID `<pid>` without any confirmation prompts
+- `--attach` (without any other flags). The command `thprac.exe --attach` will attach thprac to the first Touhou game process it finds without opening any kind of confirmation prompt.
+- `--without-vpatch` Prevent automatically applying vpatch
+
+Example commands
+```
+thprac.exe --attach 1234
+thprac.exe --attach
+thprac.exe C:\Users\Name\Desktop\Games\Touhou\th17\th17.exe
+thprac.exe --without-vpatch C:\Users\Name\Desktop\Games\Touhou\th17\th17.exe
+```
+
 ## <a name="compatability"></a> **Compatability**
 thprac officially supports every version of Windows starting with **Windows Vista**. Windows XP may work using [One-Core-API](https://github.com/Skulltrail192/One-Core-API-Binaries), but this is **NOT** being actively tested.
 
