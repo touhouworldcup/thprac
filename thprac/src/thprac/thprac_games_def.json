@@ -700,7 +700,6 @@
 
       "TH_ABOUT_THPRAC": [ "关于thprac", "About thprac", "thpracのバージョン情報" ],
       "TH_ABOUT_VERSION": [ "thprac 版本 %s", "thprac version %s", "thprac ver.%s" ],
-      "TH_ABOUT_AUTHOR": [ "作者：Ack", "Author: Ack", "作者：Ack" ],
       "TH_ABOUT_WEBSITE": [ "网站：https://github.com/touhouworldcup/thprac", "Website: https://github.com/touhouworldcup/thprac", "ウェブサイト：https://github.com/touhouworldcup/thprac" ],
       "TH_ABOUT_THANKS": [ "特别感谢：\n%s", "Special thanks: \n%s", "スペシャルサンクス：\n%s" ],
       "TH_ABOUT_SHOW_LICENCE": [ "显示许可信息", "Show license info", "ライセンス情報を表示" ],

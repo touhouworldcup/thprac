@@ -704,7 +704,6 @@ enum th_glossary_t
     THPRAC_USE_BACKUP_DATA,
     THPRAC_USE_REL_PATH,
     THPRAC_YES,
-    TH_ABOUT_AUTHOR,
     TH_ABOUT_HIDE_LICENCE,
     TH_ABOUT_SHOW_LICENCE,
     TH_ABOUT_THANKS,
@@ -879,7 +878,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][867];
+extern const char* th_glossary_str[3][866];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

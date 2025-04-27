@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][867]
+const char* th_glossary_str[3][866]
 {
     {
         "",
@@ -704,7 +704,6 @@ const char* th_glossary_str[3][867]
         "使用\".thprac_data_backup\"",
         "使用相对路径",
         "是",
-        "作者：Ack",
         "隐藏许可信息",
         "显示许可信息",
         "特别感谢：\n%s",
@@ -1573,7 +1572,6 @@ const char* th_glossary_str[3][867]
         "Use \".thprac_data_backup\"",
         "Use relative path",
         "Yes",
-        "Author: Ack",
         "Hide license info",
         "Show license info",
         "Special thanks: \n%s",
@@ -2442,7 +2440,6 @@ const char* th_glossary_str[3][867]
         "「.thprac_data_backup」を使用",
         "相対パスを使う",
         "はい",
-        "作者：Ack",
         "ライセンス情報を非表示",
         "ライセンス情報を表示",
         "スペシャルサンクス：\n%s",

@@ -1802,10 +1802,7 @@ private:
         if (ImGui::Button(S(TH_ABOUT_SHOW_LICENCE))) {
             mGuiUpdFunc = [&]() { GuiLicenceWnd(); };
         }
-        ImGui::NewLine();
-        ImGui::TextUnformatted(S(TH_ABOUT_AUTHOR));
         TextLink(S(TH_ABOUT_WEBSITE), L"https://github.com/touhouworldcup/thprac");
-        ImGui::NewLine();
         ImGui::Text(S(TH_ABOUT_THANKS), "You!");
     }
 
