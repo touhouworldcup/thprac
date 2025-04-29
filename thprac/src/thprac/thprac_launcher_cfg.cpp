@@ -1693,7 +1693,7 @@ private:
         ImGui::TextUnformatted(S(THPRAC_SETTING_LAUNCHER));
         ImGui::Separator();
         int theme_prev = mCfgTheme.Get();
-        if (mCfgTheme.Gui("Theme:", "Dark\0Light\0Classic\0Custom\0\0")) {
+        if (mCfgTheme.Gui(S(THPRAC_THEME), "Dark\0Light\0Classic\0Custom\0\0")) {
             int Sus = 0;
             if (mCfgTheme.Get() > 2) {
                 UpdateThemesList();

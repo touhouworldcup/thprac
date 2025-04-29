@@ -122,6 +122,7 @@
         "When enabled, launching thprac will always open the launcher even if there's a valid game available in the current directory.",
         "有効にすると、現在のディレクトリに有効なゲームが存在する場合でも、thpracを起動すると常にランチャーが開きます。"
       ],
+      "THPRAC_THEME": [ "主题:", "Theme: ", "テーマ:" ],
       "THPRAC_AFTER_LAUNCH": [ "启动游戏后:", "After launching game:", "ゲーム起動後:" ],
       "THPRAC_AFTER_LAUNCH_OPTION": [
         "最小化启动器\\0关闭启动器\\0什么也不做\\0\\0",
@@ -209,7 +210,7 @@
       "THPRAC_TOOLS_APPLY_THPRAC": [ "应用thprac至正在运行的游戏", "Apply thprac to ongoing game", "実行中のゲームにthpracを適用します" ],
       "THPRAC_TOOLS_RND_GAME": [ "随机游戏", "Random game", "ランダムゲーム" ],
       "THPRAC_TOOLS_RND_PLAYER": [ "随机机体", "Random shot type", "ランダム機体" ],
-      "THPRAC_TOOLS_RND_GAME_PC98": [ "PC98", "PC98", "PC98" ],
+      "THPRAC_TOOLS_RND_GAME_PC98": [ "旧作", "PC98", "旧作" ],
       "THPRAC_TOOLS_ROLL": [ "ROLL!", "ROLL!", "ROLL!" ],
       "THPRAC_TOOLS_ROLL_RESULT": [ "你随机到了：%s。（右键查看更多选项）", "You've rolled: %s. (Right click for more options)", "結果：%s。（右クリックで詳細オプションを表示）" ],
       "THPRAC_TOOLS_RND_PLAYER_GAME": [ "游戏", "Game", "ゲーム" ],
@@ -389,6 +390,162 @@
       "THPRAC_GAMES_LAUNCH_ERR": [ "启动游戏时发生了错误。", "An error occurred while starting the game.", "ゲームの開始中にエラーが発生しました。" ],
       "THPRAC_GAMES_MISSING": [ "少女神隐中...", "Girls are now missing...", "少女神隠中..." ],
       "THPRAC_GOTO_STEAM_PAGE": [ "前往Steam页面", "Go to Steam page", "Steamページに移動" ],
+
+      "THPRAC_GAMEROLL_EENY_MEENY": ["伊尼、米尼、迈尼、莫！", "Eeny, meeny, miny, moe!", "いーにー、みーにー、まいにー、もー！"],
+      "THPRAC_GAMEROLL_ROLL": ["抽一个！", "ROLL!", "ロール！"],
+      "THPRAC_GAMEROLL_ALCOSTG": ["黄昏酒场", "alcostg", "黄昏酒場"],
+      "THPRAC_GAMEROLL_TH01": ["灵异传", "th01", "靈異伝"],
+      "THPRAC_GAMEROLL_TH02": ["封魔录", "th02", "封魔録"],
+      "THPRAC_GAMEROLL_TH03": ["梦时空", "th03", "夢時空"],
+      "THPRAC_GAMEROLL_TH04": ["幻想乡", "th04", "幻想郷"],
+      "THPRAC_GAMEROLL_TH05": ["怪绮谈", "th05", "怪綺談"],
+      "THPRAC_GAMEROLL_TH06": ["红魔乡", "th06", "紅魔郷"],
+      "THPRAC_GAMEROLL_TH07": ["妖妖梦", "th07", "妖々夢"],
+      "THPRAC_GAMEROLL_TH075": ["萃梦想", "th075", "萃夢想"],
+      "THPRAC_GAMEROLL_TH08": ["永夜抄", "th08", "永夜抄"],
+      "THPRAC_GAMEROLL_TH09": ["花映冢", "th09", "花映塚"],
+      "THPRAC_GAMEROLL_TH095": ["文花帖", "th095", "文花帖"],
+      "THPRAC_GAMEROLL_TH10": ["风神录", "th10", "風神録"],
+      "THPRAC_GAMEROLL_TH105": ["绯想天", "th105", "緋想天"],
+      "THPRAC_GAMEROLL_TH11": ["地灵殿", "th11", "地霊殿"],
+      "THPRAC_GAMEROLL_TH12": ["星莲船", "th12", "星蓮船"],
+      "THPRAC_GAMEROLL_TH123": ["非想天则", "th123", "非想天則"],
+      "THPRAC_GAMEROLL_TH125": ["文花帖DS", "th125", "ダブルスポイラー"],
+      "THPRAC_GAMEROLL_TH128": ["妖精大战争", "th128", "妖精大戦争"],
+      "THPRAC_GAMEROLL_TH13": ["神灵庙", "th13", "神霊廟"],
+      "THPRAC_GAMEROLL_TH135": ["心绮楼", "th135", "心綺楼"],
+      "THPRAC_GAMEROLL_TH14": ["辉针城", "th14", "輝針城"],
+      "THPRAC_GAMEROLL_TH143": ["天邪鬼", "th143", "弾幕アマノジャク"],
+      "THPRAC_GAMEROLL_TH145": ["深秘录", "th145", "深秘録"],
+      "THPRAC_GAMEROLL_TH15": ["绀珠传", "th15", "紺珠伝"],
+      "THPRAC_GAMEROLL_TH155": ["凭依华", "th155", "憑依華"],
+      "THPRAC_GAMEROLL_TH16": ["天空璋", "th16", "天空璋"],
+      "THPRAC_GAMEROLL_TH165": ["秘封噩梦日记", "th165", "秘封ナイトメアダイアリー"],
+      "THPRAC_GAMEROLL_TH17": ["鬼形兽", "th17", "鬼形獣"],
+      "THPRAC_GAMEROLL_TH175": ["刚欲异闻", "th175", "剛欲異聞"],
+      "THPRAC_GAMEROLL_TH18": ["虹龙洞", "th18", "虹龍洞"],
+      "THPRAC_GAMEROLL_TH185": ["弹幕狂们的黑市", "th185", "バレットフィリア達の闇市場"],
+      "THPRAC_GAMEROLL_TH19": ["兽王园", "th19", "獣王園"],
+
+      "THPRAC_GAMEROLL_EMPTY_SHOTTYPES": ["", "", ""],
+      "THPRAC_GAMEROLL_TH02_SHOTTYPES": ["灵梦A\\0灵梦B\\0灵梦C\\0\\0", "Reimu A\\0Reimu B\\0Reimu C\\0\\0", "靈梦A\\0靈梦B\\0靈梦C\\0\\0"],
+      "THPRAC_GAMEROLL_TH03_SHOTTYPES": [
+        "灵梦\\0魅魔\\0魔理沙\\0爱莲\\0小兔姬\\0卡娜\\0理香子\\0千百合\\0梦美\\0\\0",
+        "Reimu\\0Mima\\0Marisa\\0Ellen\\0Kotohime\\0Kana\\0Rikako\\0Chiyuri\\0Yumemi\\0\\0",
+        "靈夢\\0魅魔\\0魔理沙\\0エレン\\0小兎姫\\0カナ\\0理香子\\0ちゆり\\0夢美\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH04_SHOTTYPES": ["灵梦\\0魔理沙\\0\\0", "Reimu\\0Marisa\\0\\0", "靈夢\\0魔理沙\\0\\0"],
+      "THPRAC_GAMEROLL_TH05_SHOTTYPES": ["灵梦\\0魔理沙\\0魅魔\\0幽香\\0\\0", "Reimu\\0Marisa\\0Mima\\0Yuuka\\0\\0", "靈夢\\0魔理沙\\0魅魔\\0幽香\\0\\0"],
+      "THPRAC_GAMEROLL_TH06_SHOTTYPES": [
+        "灵梦A\\0灵梦B\\0魔理沙A\\0魔理沙B\\0\\0",
+        "Reimu A\\0Reimu B\\0Marisa A\\0Marisa B\\0\\0",
+        "霊夢A\\0霊夢B\\0魔理沙A\\0魔理沙B\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH07_SHOTTYPES": [
+        "灵梦A\\0灵梦B\\0魔理沙A\\0魔理沙B\\0咲夜A\\0咲夜B\\0\\0",
+        "Reimu A\\0Reimu B\\0Marisa A\\0Marisa B\\0Sakuya A\\0Sakuya B\\0\\0",
+        "霊夢A\\0霊夢B\\0魔理沙A\\0魔理沙B\\0咲夜A\\0咲夜B\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH075_SHOTTYPES": [
+        "灵梦\\0魔理沙\\0咲夜\\0爱丽丝\\0帕秋莉\\0妖梦\\0蕾米莉亚\\0幽幽子\\0紫\\0萃香\\0\\0",
+        "Reimu\\0Marisa\\0Sakuya\\0Alice\\0Patchouli\\0Youmu\\0Remilia\\0Yuyuko\\0Yukari\\0Suika\\0\\0",
+        "霊夢\\0魔理沙\\0咲夜\\0アリス\\0パチュリー\\0妖夢\\0レミリア\\0幽々子\\0紫\\0萃香\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH08_SHOTTYPES": [
+        "结界组\\0咏唱组\\0红魔组\\0幽冥组\\0灵梦\\0紫\\0魔理沙\\0爱丽丝\\0咲夜\\0蕾米莉亚\\0妖梦\\0幽幽子\\0\\0",
+        "Reimu&Yukari\\0Marisa&Alice\\0Sakuya&Remilia\\0Youmu&Yuyuko\\0Reimu\\0Yukari\\0Marisa\\0Alice\\0Sakuya\\0Remilia\\0Youmu\\0Yuyuko\\0\\0",
+        "結界組\\0詠唱組\\0紅魔組\\0冥界組\\0霊夢\\0紫\\0魔理沙\\0アリス\\0咲夜\\0レミリア\\0妖夢\\0幽々子\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH09_SHOTTYPES": [
+        "灵梦\\0魔理沙\\0咲夜\\0妖梦\\0铃仙\\0琪露诺\\0莉莉卡\\0梅露兰\\0露娜萨\\0米斯蒂娅\\0天为\\0文\\0梅蒂欣\\0幽香\\0小町\\0映姬\\0\\0",
+        "Reimu\\0Marisa\\0Sakuya\\0Youmu\\0Reisen\\0Cirno\\0Lyrica\\0Merlin\\0Lunasa\\0Mystia\\0Tewi\\0Aya\\0Medicine\\0Yuuka\\0Komachi\\0Eiki\\0\\0",
+        "霊夢\\0魔理沙\\0咲夜\\0妖夢\\0鈴仙\\0チルノ\\0リリカ\\0メルラン\\0ルナサ\\0ミスティア\\0てゐ\\0文\\0メディスン\\0幽香\\0小町\\0映姫\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH10_SHOTTYPES": [
+        "灵梦A\\0灵梦B\\0灵梦C\\0魔理沙A\\0魔理沙B\\0魔理沙C\\0\\0",
+        "Reimu A\\0Reimu B\\0Reimu C\\0Marisa A\\0Marisa B\\0Marisa C\\0\\0",
+        "霊夢A\\0霊夢B\\0霊夢C\\0魔理沙A\\0魔理沙B\\0魔理沙C\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH105_SHOTTYPES": [
+        "灵梦\\0魔理沙\\0咲夜\\0爱丽丝\\0帕秋莉\\0妖梦\\0蕾米莉亚\\0幽幽子\\0紫\\0萃香\\0铃仙\\0文\\0小町\\0衣玖\\0天子\\0\\0",
+        "Reimu\\0Marisa\\0Sakuya\\0Alice\\0Patchouli\\0Youmu\\0Remilia\\0Yuyuko\\0Yukari\\0Suika\\0Reisen\\0Aya\\0Komachi\\0Iku\\0Tenshi\\0\\0",
+        "霊夢\\0魔理沙\\0咲夜\\0アリス\\0パチュリー\\0妖夢\\0レミリア\\0幽々子\\0紫\\0萃香\\0美鈴\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH11_SHOTTYPES": [
+        "灵梦A\\0灵梦B\\0灵梦C\\0魔理沙A\\0魔理沙B\\0魔理沙C\\0\\0",
+        "Reimu A\\0Reimu B\\0Reimu C\\0Marisa A\\0Marisa B\\0Marisa C\\0\\0",
+        "霊夢A\\0霊夢B\\0霊夢C\\0魔理沙A\\0魔理沙B\\0魔理沙C\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH12_SHOTTYPES": [
+        "灵梦A\\0灵梦B\\0魔理沙A\\0魔理沙B\\0早苗A\\0早苗B\\0\\0",
+        "Reimu A\\0Reimu B\\0Marisa A\\0Marisa B\\0Sanae A\\0Sanae B\\0\\0",
+        "霊夢A\\0霊夢B\\0魔理沙A\\0魔理沙B\\0早苗A\\0早苗B\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH123_SHOTTYPES": [
+        "早苗\\0琪露诺\\0美铃\\0\\0",
+        "Sanae\\0Cirno\\0Meiling\\0\\0",
+        "早苗\\0チルノ\\0美鈴\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH125_SHOTTYPES": [
+        "文\\0果\\0\\0",
+        "Aya\\0Hatate\\0\\0",
+        "文\\0はたて\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH13_SHOTTYPES": [
+        "灵梦\\0魔理沙\\0早苗\\0妖梦\\0\\0",
+        "Reimu\\0Marisa\\0Sanae\\0Youmu\\0\\0",
+        "霊梦\\0魔理沙\\0早苗\\0妖梦\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH135_SHOTTYPES": [
+        "灵梦\\0魔理沙\\0一轮\\0白莲\\0布都\\0神子\\0荷取\\0恋\\0猯藏\\0心\\0\\0",
+        "Reimu\\0Marisa\\0Ichirin\\0Byakuren\\0Futo\\0Miko\\0Nitori\\0Koishi\\0Mamizou\\0Kokoro\\0\\0",
+        "霊梦\\0魔理沙\\0一輪\\0白蓮\\0布都\\0神子\\0にとり\\0こいし\\0マミゾウ\\0こころ\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH14_SHOTTYPES": [
+        "灵梦A\\0灵梦B\\0魔理沙A\\0魔理沙B\\0咲夜A\\0咲夜B\\0\\0",
+        "Reimu A\\0Reimu B\\0Marisa A\\0Marisa B\\0Sakuya A\\0Sakuya B\\0\\0",
+        "霊夢A\\0霊夢B\\0魔理沙A\\0魔理沙B\\0咲夜A\\0咲夜B\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH145_SHOTTYPES": [
+        "灵梦\\0魔理沙\\0华扇\\0一轮\\0白莲\\0布都\\0神子\\0猯藏\\0妹红\\0针妙丸\\0荷取\\0恋\\0心\\0堇子\\0铃仙\\0\\0",
+        "Reimu\\0Marisa\\0Kasen\\0Ichirin\\0Byakuren\\0Futo\\0Miko\\0Mamizou\\0Mokou\\0Shinmyoumaru\\0Nitori\\0Koishi\\0Kokoro\\0Sumireko\\0Reisen\\0\\0",
+        "霊梦\\0魔理沙\\0華扇\\0一輪\\0白蓮\\0布都\\0神子\\0マミゾウ\\0妹紅\\0針妙丸\\0にとり\\0こいし\\0こころ\\0菫子\\0鈴仙\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH15_SHOTTYPES": [
+        "灵梦\\0魔理沙\\0早苗\\0铃仙\\0\\0",
+        "Reimu\\0Marisa\\0Sanae\\0Reisen\\0\\0",
+        "霊梦\\0魔理沙\\0早苗\\0鈴仙\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH155_SHOTTYPES": [
+        "灵梦&华扇\\0魔理沙&恋\\0荷取&心\\0猯藏&妹红\\0神子&白莲\\0布都&一轮\\0铃仙&哆来咪\\0堇子&哆来咪\\0天子&针妙丸\\0紫&灵梦\\0女苑&紫苑\\0\\0",
+        "Reimu&Kasen\\0Marisa&Koishi\\0Nitori&Kokoro\\0Mamizou&Mokou\\0Miko&Byakuren\\0Futo&Ichirin\\0Reisen&Doremy\\0Sumireko&Doremy\\0Tenshi&Shinmyoumaru\\0Yukari&Reimu\\0Joon&Shion\\0\\0",
+        "霊夢&華扇\\0魔理沙&こいし\\0にとり&こころ\\0マミゾウ&妹紅\\0神子&白蓮\\0布都&一輪\\0鈴仙&ドレミー\\0菫子&ドレミー\\0紫&霊夢\\0女苑&紫苑\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH16_SHOTTYPES": [
+        "灵梦（春）\\0灵梦（夏）\\0灵梦（秋）\\0灵梦（冬）\\0琪露诺（春）\\0琪露诺（夏）\\0琪露诺（秋）\\0琪露诺（冬）\\0文（春）\\0文（夏）\\0文（秋）\\0文（冬）\\0魔理沙（春）\\0魔理沙（夏）\\0魔理沙（秋）\\0魔理沙（冬）\\0\\0",
+        "Reimu (Spring)\\0Reimu (Summer)\\0Reimu (Autumn)\\0Reimu (Winter)\\0Cirno (Spring)\\0Cirno (Summer)\\0Cirno (Autumn)\\0Cirno (Winter)\\0Aya (Spring)\\Aya (Summer)\\Aya (Autumn)\\Aya (Winter)\\0Marisa (Spring)\\0Marisa (Summer)\\0Marisa (Autumn)\\0Marisa (Winter)\\0\\0",
+        "霊夢（春）\\0霊夢（夏）\\0霊夢（秋）\\0霊夢（冬）\\0チルノ（春）\\0チルノ（夏）\\0チルノ（秋）\\0チルノ（冬）\\0文（春）\\0文（夏）\\0文（秋）\\0文（冬）\\0魔理沙（春）\\0魔理沙（夏）\\0魔理沙（秋）\\0魔理沙（冬）\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH17_SHOTTYPES": [
+        "灵梦+野狼灵\\0灵梦+水獭灵\\0灵梦+大鹫灵\\0魔理沙+野狼灵\\0魔理沙+水獭灵\\0魔理沙+大鹫灵\\0妖梦+野狼灵\\0妖梦+水獭灵\\0妖梦+大鹫灵\\0\\0",
+        "Reimu+Wolf\\0Reimu+Otter\\0Reimu+Eagle\\0Marisa+Wolf\\0Marisa+Otter\\0Marisa+Eagle\\0Youmu+Wolf\\0Youmu+Otter\\0Youmu+Eagle\\0\\0",
+        "霊夢+オオカミ\\0霊夢+カワウソ\\0霊夢+オオワシ\\0魔理沙+オオカミ\\0魔理沙+カワウソ\\0魔理沙+オオワシ\\0妖夢+オオカミ\\0妖夢+カワウソ\\0妖夢+オオワシ\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH175_SHOTTYPES": [
+        "灵梦\\0魔理沙\\0神奈子\\0水蜜\\0女苑&紫苑\\0芙兰朵露\\0尤魔\\0\\0",
+        "Reimu\\0Marisa\\0Kanako\\0Minamitsu\\0Joon&Shion\\0Flandre\\0Yuuma\\0\\0",
+        "霊梦\\0魔理沙\\0神奈子\\0水蜜\\0女苑&紫苑\\0フランドール\\0尤魔\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH18_SHOTTYPES": [
+        "灵梦\\0魔理沙\\0咲夜\\0早苗\\0\\0",
+        "Reimu\\0Marisa\\0Sakuya\\0Sanae\\0\\0",
+        "霊梦\\0魔理沙\\0咲夜\\0早苗\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH19_SHOTTYPES": [
+        "灵梦\\0魔理沙\\0咲夜\\0蓝\\0阿吽\\0娜兹玲\\0清兰\\0燐\\0典\\0猯藏\\0八千慧\\0早鬼\\0尤魔\\0萃香\\0美天\\0慧之子\\0血枪\\0日狭美\\0残无\\0\\0",
+        "Reimu\\0Marisa\\0Sanae\\0Ran\\0Aunn\\0Nazrin\\0Seiran\\0Orin\\0Tsukasa\\0Mamizou\\0Yachie\\0Saki\\0Yuuma\\0Suika\\0Biten\\0Enoko\\0Chiyari\\0Hisami\\0Zanmu\\0\\0",
+        "霊梦\\0魔理沙\\0咲夜\\0藍\\0阿吽\\0ナズーリン\\0清蘭\\0燐\\0典\\0マミゾウ\\0八千慧\\0早鬼\\0尤魔\\0萃香\\0美天\\0慧ノ子\\0ちやり\\0日狭美\\0残無\\0\\0"
+      ],
 
       "THPRAC_UNHANDLED_EXCEPTION": [
         "遇到了未处理的异常，程序可能即将崩溃。\n当程序崩溃时，请通过在启动器中记述的任意联系方式将转储文件发送给我。\n此外，如有留下任何关于崩溃时情况的说明的话，我将不胜感激。\n转储文件储存在thprac的数据目录中。\n(打开启动器 - 设置 - 打开数据目录 - \"crashdump\"文件夹)",
@@ -589,7 +746,7 @@
       "TH_BULLET_RANK": [ "Rank", "Rank", "ランク" ],
       "TH_BULLET_RANKLOCK": [ "锁Rank", "Rank Lock", "ランクをロックする" ],
       "TH_DIFFICULTY": [ "难度", "Difficulty", "難易度" ],
-      "TH_REAL_BULLET_SIZE": [ "真實子彈圖形", "Real bullet sprites", "弾のリアルスプライト" ],
+      "TH_REAL_BULLET_SIZE": [ "真实子弹图形", "Real bullet sprites", "弾のリアルスプライト" ],
       "TH_SHOTS_TAKEN": [ "摄影回数", "Shots Taken", "撮影回数" ],
       "TH_SHOTS_TAKEN_ALT": [ "#__shots_taken", "#__shots_taken", "#__shots_taken" ],
       "TH_ORIGINAL": [ "原版练习", "Original", "オリジナル" ],

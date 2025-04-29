@@ -547,209 +547,277 @@ enum GameRollType {
 
 struct GameRoll {
     const char* name;
+    th_glossary_t title;
     GameRollType type;
+    th_glossary_t shottypes;
     const char* playerSelect;
     int playerColumns;
     bool selected = false;
 };
 
 static GameRoll gGameRoll[] = {
-    {
+    { 
         "alcostg",
+        THPRAC_GAMEROLL_ALCOSTG,
         ROLL_SPINOFF_STG,
+        THPRAC_GAMEROLL_EMPTY_SHOTTYPES,
         nullptr,
         1
     },
     {
         "th01",
+        THPRAC_GAMEROLL_TH01,
         ROLL_PC98,
+        THPRAC_GAMEROLL_EMPTY_SHOTTYPES,
         nullptr,
         1
     },
     {
         "th02",
+        THPRAC_GAMEROLL_TH02,
         ROLL_PC98,
-        "Reimu A\0Reimu B\0Reimu C\0\0",
+        THPRAC_GAMEROLL_TH02_SHOTTYPES,
+        "",
         3
     },
     {
         "th03",
+        THPRAC_GAMEROLL_TH03,
         ROLL_PC98,
-        "Reimu\0Mima\0Marisa\0Ellen\0Kotohime\0Kana\0Rikako\0Chiyuri\0Yumemi\0\0",
+        THPRAC_GAMEROLL_TH03_SHOTTYPES,
+        "",
         3
     },
     {
         "th04",
+        THPRAC_GAMEROLL_TH04,
         ROLL_PC98,
-        "Reimu\0Marisa\0\0",
+        THPRAC_GAMEROLL_TH04_SHOTTYPES,
+        "",
         2
     },
     {
         "th05",
+        THPRAC_GAMEROLL_TH05,
         ROLL_PC98,
-        "Reimu\0Marisa\0Mima\0Yuuka\0\0",
+        THPRAC_GAMEROLL_TH05_SHOTTYPES,
+        "",
         4
     },
     {
         "th06",
+        THPRAC_GAMEROLL_TH06,
         ROLL_MAIN,
-        "Reimu A\0Reimu B\0Marisa A\0Marisa B\0\0",
+        THPRAC_GAMEROLL_TH06_SHOTTYPES,
+        "",
         2
     },
     {
         "th07",
+        THPRAC_GAMEROLL_TH07,
         ROLL_MAIN,
-        "Reimu A\0Reimu B\0Marisa A\0Marisa B\0Sakuya A\0Sakuya B\0\0",
+        THPRAC_GAMEROLL_TH07_SHOTTYPES,
+        "",
         2
     },
     {
         "th075",
+        THPRAC_GAMEROLL_TH075,
         ROLL_SPINOFF_OTHERS,
+        THPRAC_GAMEROLL_TH075_SHOTTYPES,
         nullptr,
-        1
+        4
     },
     {
         "th08",
+        THPRAC_GAMEROLL_TH08,
         ROLL_MAIN,
-        "Reimu&Yukari\0Marisa&Alice\0Sakuya&Remilia\0Youmu&Yuyuko\0Reimu\0Yukari\0Marisa\0Alice\0Sakuya\0Remilia\0Youmu\0Yuyuko\0\0",
+        THPRAC_GAMEROLL_TH08_SHOTTYPES,
+        "",
         4
     },
     {
         "th09",
+        THPRAC_GAMEROLL_TH09,
         ROLL_MAIN,
-        "Reimu\0Marisa\0Sakuya\0Youmu\0Reisen\0Cirno\0Lyrica\0Merlin\0Lunasa\0Mystia\0Tewi\0Aya\0Medicine\0Yuuka\0Komachi\0Eiki\0\0",
+        THPRAC_GAMEROLL_TH09_SHOTTYPES,
+        "",
         4
     },
     {
         "th095",
+        THPRAC_GAMEROLL_TH095,
         ROLL_SPINOFF_STG,
+        THPRAC_GAMEROLL_EMPTY_SHOTTYPES,
         nullptr,
         1
     },
     {
         "th10",
+        THPRAC_GAMEROLL_TH10,
         ROLL_MAIN,
-        "Reimu A\0Reimu B\0Reimu C\0Marisa A\0Marisa B\0Marisa C\0\0",
+        THPRAC_GAMEROLL_TH10_SHOTTYPES,
+        "",
         3
     },
     {
         "th105",
+        THPRAC_GAMEROLL_TH105,
         ROLL_SPINOFF_OTHERS,
-        nullptr,
-        1
+        THPRAC_GAMEROLL_TH105_SHOTTYPES,
+        "",
+        4
     },
     {
         "th11",
+        THPRAC_GAMEROLL_TH11,
         ROLL_MAIN,
-        "Reimu A\0Reimu B\0Reimu C\0Marisa A\0Marisa B\0Marisa C\0\0",
+        THPRAC_GAMEROLL_TH11_SHOTTYPES,
+        "",
         3
     },
     {
         "th12",
+        THPRAC_GAMEROLL_TH12,
         ROLL_MAIN,
-        "Reimu A\0Reimu B\0Marisa A\0Marisa B\0Sanae A\0Sanae B\0\0",
+        THPRAC_GAMEROLL_TH12_SHOTTYPES,
+        "",
         2
     },
     {
         "th123",
+        THPRAC_GAMEROLL_TH123,
         ROLL_SPINOFF_OTHERS,
+        THPRAC_GAMEROLL_TH123_SHOTTYPES,
         nullptr,
-        1
+        3
     },
     {
         "th125",
+        THPRAC_GAMEROLL_TH125,
         ROLL_SPINOFF_STG,
-        "Aya\0Hatate",
+        THPRAC_GAMEROLL_TH125_SHOTTYPES,
+        "",
         2
     },
     {
         "th128",
+        THPRAC_GAMEROLL_TH128,
         ROLL_SPINOFF_STG,
+        THPRAC_GAMEROLL_EMPTY_SHOTTYPES,
         nullptr,
         1
     },
     {
         "th13",
+        THPRAC_GAMEROLL_TH13,
         ROLL_MAIN,
-        "Reimu\0Marisa\0Sanae\0Youmu\0\0",
+        THPRAC_GAMEROLL_TH13_SHOTTYPES,
+        "",
         4
     },
     {
         "th135",
+        THPRAC_GAMEROLL_TH135,
         ROLL_SPINOFF_OTHERS,
+        THPRAC_GAMEROLL_TH135_SHOTTYPES,
         nullptr,
-        1
+        4
     },
     {
         "th14",
+        THPRAC_GAMEROLL_TH14,
         ROLL_MAIN,
-        "Reimu A\0Reimu B\0Marisa A\0Marisa B\0Sakuya A\0Sakuya B\0\0",
+        THPRAC_GAMEROLL_TH14_SHOTTYPES,
+        "",
         2
     },
     {
         "th143",
+        THPRAC_GAMEROLL_TH143,
         ROLL_SPINOFF_STG,
+        THPRAC_GAMEROLL_EMPTY_SHOTTYPES,
         nullptr,
         1
     },
     {
         "th145",
+        THPRAC_GAMEROLL_TH145,
         ROLL_SPINOFF_OTHERS,
-        nullptr,
-        1
+        THPRAC_GAMEROLL_TH145_SHOTTYPES,
+        "",
+        4
     },
     {
         "th15",
+        THPRAC_GAMEROLL_TH15,
         ROLL_MAIN,
-        "Reimu\0Marisa\0Sanae\0Reisen\0\0",
+        THPRAC_GAMEROLL_TH15_SHOTTYPES,
+        "",
         4
     },
     {
         "th155",
+        THPRAC_GAMEROLL_TH155,
         ROLL_SPINOFF_OTHERS,
+        THPRAC_GAMEROLL_TH155_SHOTTYPES,
         nullptr,
-        1
+        4
     },
     {
         "th16",
+        THPRAC_GAMEROLL_TH16,
         ROLL_MAIN,
-        "Reimu Spring\0Reimu Summer\0Reimu Autumn\0Reimu Winter\0Marisa Spring\0Marisa Summer\0Marisa Autumn\0Marisa Winter\0Aya Spring\0Aya Summer\0Aya Autumn\0Aya Winter\0Cirno Spring\0Cirno Summer\0Cirno Autumn\0Cirno Winter\0\0",
+        THPRAC_GAMEROLL_TH16_SHOTTYPES,
+        "",
         4
     },
     {
         "th165",
+        THPRAC_GAMEROLL_TH165,
         ROLL_SPINOFF_STG,
+        THPRAC_GAMEROLL_EMPTY_SHOTTYPES,
         nullptr,
         1
     },
     {
         "th17",
+        THPRAC_GAMEROLL_TH17,
         ROLL_MAIN,
-        "Reimu Wolf\0Reimu Otter\0Reimu Eagle\0Marisa Wolf\0Marisa Otter\0Marisa Eagle\0Youmu Wolf\0Youmu Otter\0Youmu Eagle\0\0",
+        THPRAC_GAMEROLL_TH17_SHOTTYPES,
+        "",
         3
     },
     {
         "th175",
+        THPRAC_GAMEROLL_TH175,
         ROLL_SPINOFF_OTHERS,
+        THPRAC_GAMEROLL_TH175_SHOTTYPES,
         nullptr,
-        1
+        4
     },
     {
         "th18",
+        THPRAC_GAMEROLL_TH18,
         ROLL_MAIN,
-        "Reimu\0Marisa\0Sanae\0Sakuya\0\0",
+        THPRAC_GAMEROLL_TH18_SHOTTYPES,
+        "",
         4
     },
     {
         "th185",
+        THPRAC_GAMEROLL_TH185,
         ROLL_SPINOFF_STG,
+        THPRAC_GAMEROLL_EMPTY_SHOTTYPES,
         nullptr,
         1
     },
     {
         "th19",
+        THPRAC_GAMEROLL_TH19,
         ROLL_MAIN,
-        "Reimu\0Marisa\0Sanae\0Ran\0Aunn\0Nazrin\0Seiran\0Orin\0Tsukasa\0Mamizou\0Yachie\0Saki\0Yuuma\0Suika\0Biten\0Enoko\0Chiyari\0Hisami\0Zanmu\0\0",
+        THPRAC_GAMEROLL_TH19_SHOTTYPES,
+        "",
         4
     }
 };

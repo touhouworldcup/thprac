@@ -1407,7 +1407,7 @@ public:
                 }
                 for (auto& game : gGameDefs) {
                     auto gameType = (GameRollType)((int)game.catagory + 1);
-                    GameRoll roll { game.idStr, gameType, game.steamId ? "STEAM": nullptr, 1, false };
+                    GameRoll roll { game.idStr, THPRAC_GAMEROLL_EMPTY_SHOTTYPES, gameType, THPRAC_GAMEROLL_EMPTY_SHOTTYPES, game.steamId ? "STEAM" : nullptr, 1, false };
 
                     auto it = mGames.find(roll.name);
                     if (it != mGames.end()) {
@@ -2256,7 +2256,6 @@ public:
     void GameTable(const char* title, THGameCatagory catagory)
     {
         int columns = 1;
-        int i = 0;
 
         ImGui::TextUnformatted(title);
         ImGui::Columns(columns);
