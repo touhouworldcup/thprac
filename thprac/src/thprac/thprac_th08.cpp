@@ -922,166 +922,50 @@ namespace TH08 {
     }
     __declspec(noinline) void THStageWarp([[maybe_unused]] ECLHelper& ecl, int stage, int portion)
     {
-        if (stage == 1) {
-            switch (portion) {
-            case 1:
-                ECLWarp(340, 0x9c38, 20, 0xad18);
-                break;
-            case 2:
-                ECLWarp(2875, 0xaba4, 20, 0xad18);
-                break;
-            default:
-                break;
+        struct eclwarp_param_t {
+            int32_t time1, offset1;
+            int32_t time2 = -1, offset2 = -1;
+            int32_t time3 = -1, offset3 = -1;
+            int32_t time4 = -1, offset4 = -1;
+        };
+        static const std::vector<eclwarp_param_t> stage_chapters[9] = {
+            {{340, 0x9c38, 20, 0xad18}, {2875, 0xaba4, 20, 0xad18}},
+            {
+                {400, 0xa194, 20, 0xc0cc}, {990, 0xa8d8, 20, 0xc0cc}, 
+                {2350, 0xb418, 20, 0xc0cc}, {3350, 0xba78, 20, 0xc0cc}
+            },
+            {
+                {340, 0xb258, 20, 0xb91c, 20, 0xbb74, 20, 0xc0ac}, 
+                {1220, 0xb368, 200, 0xba14, 20, 0xbb74, 20, 0xc0ac},
+                {3103, 0xb664, 380, 0xbacc, 20, 0xbb74, 160, 0xc304}
+            },
+            {
+                {340, 0xa2d4, 20, 0xbafc}, {1180, 0xa834, 20, 0xbafc}, {2240, 0xa8ac, 360, 0xbed4}, 
+                {3180, 0xabcc, 360, 0xbed4}, {4903, 0xb2d8, 360, 0xbed4}, {5363, 0xb598, 360, 0xbed4}
+            },
+            {
+                {340, 0xc538, 20, 0xdd80}, {1180, 0xcab8, 20, 0xdd80}, {2240, 0xcb30, 360, 0xe158}, 
+                {3180, 0xce50, 360, 0xe158}, {4903, 0xd55c, 360, 0xe158}, {5363, 0xd81c, 360, 0xe158}
+            },
+            {{200, 0xa674}, {1040, 0xa694}, {2990, 0xafdc}, {4651, 0xb0e8}, {5971, 0xb648}},
+            {{200, 0xc6f4}, {1140, 0xc714}},
+            {{200, 0x10324}, {1140, 0x10364}},
+            {
+                {340, 0x12544, 20, 0x1535c}, {1010, 0x127a8, 210, 0x155c0}, {2900, 0x12b6c, 390, 0x15824}, 
+                {5237, 0x132b8, 810, 0x15d60}, {5947, 0x136b4, 20, 0x1535c}, {6757, 0x13774, 20, 0x1535c}, 
+                {8337, 0x151f4, 20, 0x1535c}
             }
-        } else if (stage == 2) {
-            switch (portion) {
-            case 1:
-                ECLWarp(400, 0xa194, 20, 0xc0cc);
-                break;
-            case 2:
-                ECLWarp(990, 0xa8d8, 20, 0xc0cc);
-                break;
-            case 3:
-                ECLWarp(2350, 0xb418, 20, 0xc0cc);
-                break;
-            case 4:
-                ECLWarp(3350, 0xba78, 20, 0xc0cc);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 3) {
-            switch (portion) {
-            case 1:
-                ECLWarp(340, 0xb258, 20, 0xb91c, 20, 0xbb74, 20, 0xc0ac);
-                break;
-            case 2:
-                ECLWarp(1220, 0xb368, 200, 0xba14, 20, 0xbb74, 20, 0xc0ac);
-                break;
-            case 3:
-                ECLWarp(3103, 0xb664, 380, 0xbacc, 20, 0xbb74, 160, 0xc304);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 4) {
-            switch (portion) {
-            case 1:
-                ECLWarp(340, 0xa2d4, 20, 0xbafc);
-                break;
-            case 2:
-                ECLWarp(1180, 0xa834, 20, 0xbafc);
-                break;
-            case 3:
-                ECLWarp(2240, 0xa8ac, 360, 0xbed4);
-                break;
-            case 4:
-                ECLWarp(3180, 0xabcc, 360, 0xbed4);
-                break;
-            case 5:
-                ECLWarp(4903, 0xb2d8, 360, 0xbed4);
-                STDJump(0xf48, 56, 6558);
-                break;
-            case 6:
-                ECLWarp(5363, 0xb598, 360, 0xbed4);
-                STDJump(0xf48, 56, 6558);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 5) {
-            switch (portion) {
-            case 1:
-                ECLWarp(340, 0xc538, 20, 0xdd80);
-                break;
-            case 2:
-                ECLWarp(1180, 0xcab8, 20, 0xdd80);
-                break;
-            case 3:
-                ECLWarp(2240, 0xcb30, 360, 0xe158);
-                break;
-            case 4:
-                ECLWarp(3180, 0xce50, 360, 0xe158);
-                break;
-            case 5:
-                ECLWarp(4903, 0xd55c, 360, 0xe158);
-                STDJump(0xf48, 56, 6558);
-                break;
-            case 6:
-                ECLWarp(5363, 0xd81c, 360, 0xe158);
-                STDJump(0xf48, 56, 6558);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 6) {
-            switch (portion) {
-            case 1:
-                ECLWarp(200, 0xa674);
-                break;
-            case 2:
-                ECLWarp(1040, 0xa694);
-                break;
-            case 3:
-                ECLWarp(2990, 0xafdc);
-                break;
-            case 4:
-                ECLWarp(4651, 0xb0e8);
-                break;
-            case 5:
-                ECLWarp(5971, 0xb648);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 7) {
-            switch (portion) {
-            case 1:
-                ECLWarp(200, 0xc6f4);
-                break;
-            case 2:
-                ECLWarp(1140, 0xc714);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 8) {
-            switch (portion) {
-            case 1:
-                ECLWarp(200, 0x10324);
-                break;
-            case 2:
-                ECLWarp(1140, 0x10364);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 9) {
-            switch (portion) {
-            case 1:
-                ECLWarp(340, 0x12544, 20, 0x1535c);
-                break;
-            case 2:
-                ECLWarp(1010, 0x127a8, 210, 0x155c0);
-                break;
-            case 3:
-                ECLWarp(2900, 0x12b6c, 390, 0x15824);
-                break;
-            case 4:
-                ECLWarp(5237, 0x132b8, 810, 0x15d60);
-                break;
-            case 5:
-                ECLWarp(5947, 0x136b4, 20, 0x1535c);
-                break;
-            case 6:
-                ECLWarp(6757, 0x13774, 20, 0x1535c);
-                break;
-            case 7:
-                ECLWarp(8337, 0x151f4, 20, 0x1535c);
-                break;
-            default:
-                break;
-            }
+        };
+        if (stage < 1 || stage > 9) {
+            return;
+        }
+        if (portion < 1 || portion > (int)stage_chapters[stage - 1].size()) {
+            return;
+        }
+        auto [time1, offset1, time2, offset2, time3, offset3, time4, offset4] = stage_chapters[stage - 1][portion - 1];
+        ECLWarp(time1, offset1, time2, offset2, time3, offset3, time4, offset4);
+        if ((stage == 4 || stage == 5) && portion >= 5) {
+            STDJump(0xf48, 56, 6558);
         }
     }
     __declspec(noinline) void THPatch(ECLHelper& ecl, th_sections_t section)

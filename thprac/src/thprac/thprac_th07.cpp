@@ -774,161 +774,36 @@ namespace TH07 {
     }
     __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
     {
-        if (stage == 1) {
-            switch (portion) {
-            case 1:
-                ECLTimeWarp(2, 540);
-                break;
-            case 2:
-                ECLTimeWarp(2, 1341);
-                break;
-            case 3:
-                ECLTimeWarp(2, 3107);
-                break;
-            }
-        } else if (stage == 2) {
-            switch (portion) {
-            case 1:
-                ECLTimeWarp(3, 390);
-                break;
-            case 2:
-                ECLTimeWarp(3, 3366); // 1520
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 3) {
+        static const std::vector<pair<int, uint32_t>> stage_chapters[8] = {
+            {{2, 540}, {2, 1341}, {2, 3107}},
+            {{3, 390}, {3, 3360} /* 1520 */},
+            {{2, 390}, {2, 854}, {2, 1805}},
+            {{2, 80}, {2, 1948}, {2, 3028}, {2, 4288}, {2, 7964}, {2, 10136}, {2, 11396}, {2, 13166}},
+            {{2, 440}, {2, 840}, {2, 2550}, {2, 4883}},
+            {{2, 660}, {2, 1180}},
+            {{2, 485}, {2, 1035}, {2, 1955}, {2, 2615}, {2, 3305}, {2, 4028}, {2, 5808}, {2, 7088}},
+            {{2, 485}, {2, 965}, {2, 1595}, {2, 2485}, {2, 3191}, {2, 3928}, {2, 5708}, {2, 6988}}
+        };
+        if (stage < 1 || stage > 8) {
+            return;
+        }
+        if (portion < 1 || portion > (int)stage_chapters[stage - 1].size()) {
+            return;
+        }
+        if (stage == 3) {
             ECLST3BG();
-            switch (portion) {
-            case 1:
-                ECLTimeWarp(2, 390);
-                break;
-            case 2:
-                ECLTimeWarp(2, 854);
-                break;
-            case 3:
-                ECLTimeWarp(2, 1805);
-                ecl << pair{0xbb3c, (int16_t)1559}
-                    << pair{0xbb5c, (int16_t)1560};
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 4) {
-            switch (portion) {
-            case 1:
-                ECLTimeWarp(2, 80);
-                break;
-            case 2:
-                ECLTimeWarp(2, 1948);
-                break;
-            case 3:
-                ECLTimeWarp(2, 3028);
-                break;
-            case 4:
-                ECLTimeWarp(2, 4288);
-                break;
-            case 5:
-                ECLTimeWarp(2, 7964);
-                break;
-            case 6:
-                ECLTimeWarp(2, 10136);
-                break;
-            case 7:
-                ECLTimeWarp(2, 11396);
-                break;
-            case 8:
-                ECLTimeWarp(2, 13166);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 5) {
-            switch (portion) {
-            case 1:
-                ECLTimeWarp(2, 440);
-                break;
-            case 2:
-                ECLTimeWarp(2, 840);
-                break;
-            case 3:
-                ECLTimeWarp(2, 2550);
-                break;
-            case 4:
-                ECLTimeWarp(2, 4883);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 6) {
-            switch (portion) {
-            case 1:
-                ECLTimeWarp(2, 660);
-                break;
-            case 2:
-                ECLTimeWarp(2, 1180);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 7) {
-            switch (portion) {
-            case 1:
-                ECLTimeWarp(2, 485);
-                break;
-            case 2:
-                ECLTimeWarp(2, 1035);
-                break;
-            case 3:
-                ECLTimeWarp(2, 1955);
-                break;
-            case 4:
-                ECLTimeWarp(2, 2615);
-                break;
-            case 5:
-                ECLTimeWarp(2, 3305);
-                break;
-            case 6:
-                ECLTimeWarp(2, 4028);
-                ecl << pair{0xee3e, (int16_t)0x68};
-                break;
-            case 7:
-                ECLTimeWarp(2, 5808);
-                break;
-            case 8:
-                ECLTimeWarp(2, 7088);
-            default:
-                break;
-            }
-        } else if (stage == 8) {
-            switch (portion) {
-            case 1:
-                ECLTimeWarp(2, 485);
-                break;
-            case 2:
-                ECLTimeWarp(2, 965);
-                break;
-            case 3:
-                ECLTimeWarp(2, 1595);
-                break;
-            case 4:
-                ECLTimeWarp(2, 2485);
-                break;
-            case 5:
-                ECLTimeWarp(2, 3191);
-                break;
-            case 6:
-                ECLTimeWarp(2, 3928);
-                ecl << pair{0x1265a, (int16_t)0x68};
-                break;
-            case 7:
-                ECLTimeWarp(2, 5708);
-                break;
-            case 8:
-                ECLTimeWarp(2, 6988);
-            default:
-                break;
-            }
+        }
+        auto [count, time] = stage_chapters[stage - 1][portion - 1];
+        ECLTimeWarp(count, time);
+        if (stage == 3 && portion == 3) {
+            ecl << pair{0xbb3c, (int16_t)1559}
+                << pair{0xbb5c, (int16_t)1560};
+        }
+        if (stage == 7 && portion == 6) {
+            ecl << pair{0xee3e, (int16_t)0x68};
+        }
+        if (stage == 8 && portion == 6) {
+            ecl << pair{0x1265a, (int16_t)0x68};
         }
     }
     __declspec(noinline) void THPatch(ECLHelper& ecl, th_sections_t section)
