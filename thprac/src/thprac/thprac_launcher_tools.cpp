@@ -22,8 +22,7 @@ public:
         mRndTextGen = GetRndGenerator(1u, 20u);
 
         if (mRndSeedGen() % 32 == 0 && strcmp(gGameRoll[32].name, "th19") == 0) {
-            //gGameRoll[32].playerSelect = "Reimu\0Marisa\0Sanae\0Ran\0Aunn\0Nazrin\0Seiran\0Orin\0Tsukasa\0Mamizou\0Yachie\0Saki\0Yuuma\0Suika\0Goku\0Enoko\0Chiyari\0Hisami\0Zanmu\0\0";
-            gGameRoll[32].shottypes = THPRAC_GAMEROLL_TH09_SHOTTYPES;
+            gGameRoll[32].shottypes = THPRAC_GAMEROLL_TH19_EASTER_EGG_SHOTTYPES;
         }
 
         for (auto& game : gGameRoll) {

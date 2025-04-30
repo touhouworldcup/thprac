@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][929]
+const char* th_glossary_str[3][930]
 {
     {
         "",
@@ -587,6 +587,7 @@ const char* th_glossary_str[3][929]
         "弹幕狂们的黑市",
         "灵梦\0魔理沙\0咲夜\0早苗\0\0",
         "兽王园",
+        "灵梦\0魔理沙\0咲夜\0蓝\0阿吽\0娜兹玲\0清兰\0燐\0典\0猯藏\0八千慧\0早鬼\0尤魔\0萃香\0Goku\0慧之子\0血枪\0日狭美\0残无\0\0",
         "灵梦\0魔理沙\0咲夜\0蓝\0阿吽\0娜兹玲\0清兰\0燐\0典\0猯藏\0八千慧\0早鬼\0尤魔\0萃香\0美天\0慧之子\0血枪\0日狭美\0残无\0\0",
         "游戏",
         "应用thprac",
@@ -1518,6 +1519,7 @@ const char* th_glossary_str[3][929]
         "th185",
         "Reimu\0Marisa\0Sakuya\0Sanae\0\0",
         "th19",
+        "Reimu\0Marisa\0Sanae\0Ran\0Aunn\0Nazrin\0Seiran\0Orin\0Tsukasa\0Mamizou\0Yachie\0Saki\0Yuuma\0Suika\0Goku\0Enoko\0Chiyari\0Hisami\0Zanmu\0\0",
         "Reimu\0Marisa\0Sanae\0Ran\0Aunn\0Nazrin\0Seiran\0Orin\0Tsukasa\0Mamizou\0Yachie\0Saki\0Yuuma\0Suika\0Biten\0Enoko\0Chiyari\0Hisami\0Zanmu\0\0",
         "Games",
         "Apply thprac",
@@ -2449,6 +2451,7 @@ const char* th_glossary_str[3][929]
         "バレットフィリア達の闇市場",
         "霊梦\0魔理沙\0咲夜\0早苗\0\0",
         "獣王園",
+        "霊梦\0魔理沙\0咲夜\0藍\0阿吽\0ナズーリン\0清蘭\0燐\0典\0マミゾウ\0八千慧\0早鬼\0尤魔\0萃香\0Goku\0慧ノ子\0ちやり\0日狭美\0残無\0\0",
         "霊梦\0魔理沙\0咲夜\0藍\0阿吽\0ナズーリン\0清蘭\0燐\0典\0マミゾウ\0八千慧\0早鬼\0尤魔\0萃香\0美天\0慧ノ子\0ちやり\0日狭美\0残無\0\0",
         "ゲーム",
         "thpracを適用する",

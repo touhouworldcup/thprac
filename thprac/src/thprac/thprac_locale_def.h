@@ -587,6 +587,7 @@ enum th_glossary_t
     THPRAC_GAMEROLL_TH185,
     THPRAC_GAMEROLL_TH18_SHOTTYPES,
     THPRAC_GAMEROLL_TH19,
+    THPRAC_GAMEROLL_TH19_EASTER_EGG_SHOTTYPES,
     THPRAC_GAMEROLL_TH19_SHOTTYPES,
     THPRAC_GAMES,
     THPRAC_GAMES_APPLY_THPRAC,
@@ -941,7 +942,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][929];
+extern const char* th_glossary_str[3][930];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
