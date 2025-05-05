@@ -572,6 +572,8 @@ enum th_glossary_t {
     TH19_RANK_FORMAT,
     TH19_SHOW_ENEMY_HP,
     TH19_TITLE,
+    TH20_PH,
+    TH20_TITLE,
     THPRAC_ABORT,
     THPRAC_ADMIN_RIGHTS,
     THPRAC_AFTER_LAUNCH,
@@ -1402,7 +1404,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1391];
+extern const char* th_glossary_str[3][1393];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2984,10 +2986,30 @@ namespace TH19 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3365];
+namespace TH20 {
+
+    enum th_sections_t : uint8_t {
+        A0000ERROR,
+        TH20_ST1_MID1,
+        TH20_ST1_BOSS1,
+    };
+
+    extern const char* th_sections_str[3][4][3];
+
+    extern const uint8_t th_sections_bgm[3];
+
+    extern const th_sections_t th_sections_cba[1][1][2];
+
+    extern const th_sections_t th_sections_cbt[1][2][3];
+
+    extern const th_glossary_t TH20_RAGE[3];
+
+}
+
+extern const wchar_t __thprac_loc_range_zh[3367];
 
 extern const wchar_t __thprac_loc_range_en[61];
 
-extern const wchar_t __thprac_loc_range_ja[2707];
+extern const wchar_t __thprac_loc_range_ja[2709];
 
 }

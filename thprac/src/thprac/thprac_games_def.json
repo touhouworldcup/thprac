@@ -660,6 +660,11 @@
         "TH19 东方兽王园 〜 Unfinished Dream of All Living Ghost.",
         "TH19 Unfinished Dream of All Living Ghost",
         "TH19 東方獣王園 〜 Unfinished Dream of All Living Ghost."
+      ],
+	  "TH20_TITLE": [
+        "TH20 东方锦上京 ～ Fossilized Wonders.",
+        "TH20 Fossilized Wonders",
+        "東方錦上京 ～ Fossilized Wonders."
       ]
     },
 
@@ -10093,5 +10098,37 @@
           "TH19_RANK_FORMAT": [ "Rank: %d", "Rank: %d", "ランク: %d" ],
           "TH19_SHOW_ENEMY_HP": [ "显示敌人HP", "Show Enemy HP", "敵のHPを表示する" ]
       }
+  },
+  
+  
+  "th20": {
+
+    "namespace": "TH20",
+
+    "glossary": {
+      "TH20_PH": [ "D", "D", "D" ]
+    },
+
+    "sections": {
+      "TH20_ST1_MID1": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [ 1, 1, 1 ],
+        "!ENHL": "TH_MID_NS1"
+      },
+	  "TH20_ST1_BOSS1": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 1, 1, 1 ],
+        "!ENHL": "TH_END_NS1"
+      }
+    },
+
+    "groups": {
+      "TH20_RAGE": [
+        "TH_NORMAL",
+        "TH_RAGE"
+      ]
+    }
   }
 }

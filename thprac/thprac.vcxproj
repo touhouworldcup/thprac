@@ -151,6 +151,7 @@
     <ClCompile Include="src\thprac\thprac_th18.cpp" />
     <ClCompile Include="src\thprac\thprac_th185.cpp" />
     <ClCompile Include="src\thprac\thprac_th19.cpp" />
+    <ClCompile Include="src\thprac\thprac_th20.cpp" />
     <ClCompile Include="src\thprac\thprac_utils.cpp" />
     <ClCompile Include="src\thprac\thprac_version.cpp" />
     <ClCompile Include="src\thprac\thprac_log.cpp" />

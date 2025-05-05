@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1391] {
+const char* th_glossary_str[3][1393] {
     {
         "",
         "啤酒",
@@ -572,6 +572,8 @@ const char* th_glossary_str[3][1391] {
         "Rank: %d",
         "显示敌人HP",
         "TH19 东方兽王园 〜 Unfinished Dream of All Living Ghost.",
+        "D",
+        "TH20 东方锦上京 ～ Fossilized Wonders.",
         "中止",
         "以管理员身份启动thprac",
         "启动游戏后:",
@@ -1965,6 +1967,8 @@ const char* th_glossary_str[3][1391] {
         "Rank: %d",
         "Show Enemy HP",
         "TH19 Unfinished Dream of All Living Ghost",
+        "D",
+        "TH20 Fossilized Wonders",
         "Abort",
         "Launch thprac with admin rights",
         "After launching game:",
@@ -3358,6 +3362,8 @@ const char* th_glossary_str[3][1391] {
         "ランク: %d",
         "敵のHPを表示する",
         "TH19 東方獣王園 〜 Unfinished Dream of All Living Ghost.",
+        "D",
+        "東方錦上京 ～ Fossilized Wonders.",
         "中止",
         "管理者権限でthpracを起動する",
         "ゲーム起動後:",
@@ -24738,7 +24744,109 @@ namespace TH19 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3365] {
+namespace TH20 {
+
+    const char* th_sections_str[3][4][3] {
+        {
+            {
+                "",
+                "道中一非",
+                "关底一非",
+            },
+            {
+                "",
+                "道中一非",
+                "关底一非",
+            },
+            {
+                "",
+                "道中一非",
+                "关底一非",
+            },
+            {
+                "",
+                "道中一非",
+                "关底一非",
+            },
+        },
+        {
+            {
+                "",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
+            },
+            {
+                "",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
+            },
+            {
+                "",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
+            },
+            {
+                "",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
+            },
+        },
+        {
+            {
+                "",
+                "道中 通常1",
+                "ボス 通常1",
+            },
+            {
+                "",
+                "道中 通常1",
+                "ボス 通常1",
+            },
+            {
+                "",
+                "道中 通常1",
+                "ボス 通常1",
+            },
+            {
+                "",
+                "道中 通常1",
+                "ボス 通常1",
+            },
+        },
+    };
+
+    const uint8_t th_sections_bgm[3] {
+        0,
+        0,
+        1,
+    };
+
+    const th_sections_t th_sections_cba[1][1][2] {
+        {
+            {
+                TH20_ST1_BOSS1,
+            },
+        },
+    };
+
+    const th_sections_t th_sections_cbt[1][2][3] {
+        {
+            {
+                TH20_ST1_MID1,
+                TH20_ST1_BOSS1,
+            },
+            {},
+        },
+    };
+
+    const th_glossary_t TH20_RAGE[3] {
+        TH_NORMAL,
+        TH_RAGE,
+    };
+
+}
+
+const wchar_t __thprac_loc_range_zh[3367] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -26285,6 +26393,7 @@ const wchar_t __thprac_loc_range_zh[3365] {
     0x951a, 0x951a,
     0x9524, 0x9524,
     0x9525, 0x9525,
+    0x9526, 0x9526,
     0x952e, 0x952e,
     0x955c, 0x955c,
     0x956d, 0x956d,
@@ -26458,7 +26567,7 @@ const wchar_t __thprac_loc_range_en[61] {
     0
 };
 
-const wchar_t __thprac_loc_range_ja[2707] {
+const wchar_t __thprac_loc_range_ja[2709] {
     0x0020, 0x00FF,
     0x2026, 0x2026,
     0x2191, 0x2191,
@@ -27685,6 +27794,7 @@ const wchar_t __thprac_loc_range_ja[2707] {
     0x9280, 0x9280,
     0x9283, 0x9283,
     0x92ad, 0x92ad,
+    0x9326, 0x9326,
     0x932f, 0x932f,
     0x9332, 0x9332,
     0x9375, 0x9375,

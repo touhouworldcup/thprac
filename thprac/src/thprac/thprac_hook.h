@@ -18,6 +18,7 @@ BOOL UnhookVTable(void* pInterface, int index, void* oldAddress);
 
 extern uintptr_t ingame_image_base;
 #define RVA(a) ((uintptr_t)a + ingame_image_base)
+#define RVA2(a) ((uintptr_t)a + ingame_image_base - 0x400000)
 typedef void __stdcall CallbackFunc(PCONTEXT);
 class HookCtx {
 public:
