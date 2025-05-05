@@ -1,11 +1,13 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 #include <list>
+#include <format>
 
 
 namespace THPrac {
-
 namespace TH14 {
+    int g_lock_timer = 0;
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -496,15 +498,15 @@ namespace TH14 {
             new HookCtx(0x412173, "\x90", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
             new HookCtx(0x44DDA5, "\x58", 1) } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
-            new HookCtx(0x41C5DD, "\xeb", 1),
-            new HookCtx(0x424ACA, "\x90", 1) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
             new HookCtx(0x44DEC4, "\xE9\x07\x31\x06\x00\x90\x90", 8),
             new HookCtx(0x4b0fd0, "\xA1\x2C\xB5\x4D\x00\x83\xC0\x40\x8B\x00\x85\xC0\x0F\x84\xEF\xCE\xF9\xFF\xE9\xEA\xCF\xF9\xFF\x90", 25) } };
 
     public:
         Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtx(0x41C5DD, "\xeb", 1),
+            new HookCtx(0x424ACA, "\x90", 1) } };
         Gui::GuiHotKey mElBgm {TH_EL_BGM, "F7",  VK_F7,  };
         Gui::GuiHotKey mInGameInfo {  THPRAC_INGAMEINFO, "F8",  VK_F8, };
     };
@@ -2602,6 +2604,17 @@ namespace TH14 {
             pCtx->Eip = 0x464068;
         }
     }
+
+    static void RenderLockTimer(ImDrawList* p)
+    {
+        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
+            std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
+            auto sz = ImGui::CalcTextSize(time_text.c_str());
+            p->AddRectFilled({ 64.0f, 0.0f }, { 220.0f, sz.y }, 0xFFFFFFFF);
+            p->AddText({ 220.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
+        }
+    }
+
     EHOOK_DY(th14_update, 0x40138a)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
@@ -2612,13 +2625,14 @@ namespace TH14 {
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
         TH14InGameInfo::singleton().Update();
+
+        auto p = ImGui::GetOverlayDrawList();
         // in case boss movedown do not disabled when playing normal games
         {
             if (THAdvOptWnd::singleton().forceBossMoveDown) {
-                auto p = ImGui::GetOverlayDrawList();
                 auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
-                p->AddRectFilled({ 120.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
-                p->AddText({ 120.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
+                p->AddRectFilled({ 240.0f, 0.0f }, { sz.x + 240.0f, sz.y }, 0xFFCCCCCC);
+                p->AddText({ 240.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
 
@@ -2626,10 +2640,9 @@ namespace TH14 {
         {
             if (g_adv_igi_options.th14_showDropBar) {
                 int items = *(DWORD*)(0x4F5880);
-                bool border=true;
-                if (items == 0)
-                {
-                    border=false;
+                bool border = true;
+                if (items == 0) {
+                    border = false;
                     DWORD pitems = *(DWORD*)(0x4DB660);
                     if (pitems) {
                         DWORD iter = pitems + 0x14;
@@ -2648,10 +2661,10 @@ namespace TH14 {
                     float num = 0.0f;
                     DWORD col = 0xFFFFFFFF;
                     DWORD col2 = 0xFF000000;
-                    if (items < 20){
+                    if (items < 20) {
                         num = items / 20.0f;
                         col = 0xFF888888;
-                    }else if (items < 30) {
+                    } else if (items < 30) {
                         num = (items - 20.0f) / 10.0f;
                         col = 0xFF0000FF;
                         col2 = 0xFF888888;
@@ -2667,7 +2680,7 @@ namespace TH14 {
                         num = (items - 50.0f) / 10.0f;
                         col = 0xFFFFCC00;
                         col2 = 0xFF00FF00;
-                    }else{
+                    } else {
                         num = 1.0f;
                         col = 0xFFFFFF00;
                         col2 = 0xFFFFCC00;
@@ -2678,14 +2691,13 @@ namespace TH14 {
 
                     float xpos = *(float*)(ppl + 0x5B0) * 2.0f * x_ratio + 448.0f * x_ratio;
                     float ypos = *(float*)(ppl + 0x5B4) * 2.0f * y_ratio + 32.0f * y_ratio;
-                    auto p = ImGui::GetOverlayDrawList();
                     p->PushClipRect({ 64.0f * x_ratio, 32.0f * y_ratio }, { 832.0f * x_ratio, 928.0f * y_ratio });
                     const float bar_xszhalf = 48.0f * x_ratio;
                     const float bar_yszhalf = 4.0f * y_ratio;
                     const float bar_yofs = 48.0f * y_ratio;
                     // st5 rev
                     float stage_y_rev = 1.0f, stage_x_rev = 1.0f, stage_rotate = 0.0f;
-                    if (*(DWORD*)0x4D9128){
+                    if (*(DWORD*)0x4D9128) {
                         stage_y_rev = *(float*)((*(DWORD*)0x4D9128) + 0x64);
                         stage_x_rev = *(float*)((*(DWORD*)0x4D9128) + 0x60);
                         stage_rotate = *(float*)((*(DWORD*)0x4D9128) + 0x50);
@@ -2716,11 +2728,11 @@ namespace TH14 {
                     };
                     // shadow
                     {
-                        ImVec2 pmin,pmax;
+                        ImVec2 pmin, pmax;
                         if (items >= 20) {
                             pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
                             pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f };
-                        }else{
+                        } else {
                             pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
                             pmax = { pmin.x + bar_xszhalf * 2.0f * num, pmin.y + bar_yszhalf * 2.0f };
                         }
@@ -2738,7 +2750,7 @@ namespace TH14 {
                             ImVec2 pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
                             ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f};
                             AddQuad_Revd(pmin, pmax, 0xFFFFFF00);
-                        }else{
+                        } else {
                             ImVec2 pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
                             ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f };
                             AddQuad_Revd(pmin, pmax, 0xFFCCCCCC);
@@ -2748,10 +2760,13 @@ namespace TH14 {
                 }
             }
         }
+
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x04DB67C))
             KeysHUD(14, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
 
+        RenderLockTimer(p);
+
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
     EHOOK_DY(th14_player_state, 0x44DBD0)
@@ -2764,6 +2779,7 @@ namespace TH14 {
         GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th14_game_start, 0x4375BE) // gamestart-bomb set
     {
@@ -2797,7 +2813,24 @@ namespace TH14 {
         else if (item_cnt >= 20)
             TH14InGameInfo::singleton().m05Count++;
     }
+    EHOOK_DY(th14_lock_timer1, 0x42EC6B) // initialize
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th14_lock_timer2, 0x4286BA) // SetNextPattern case 514
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th14_lock_timer3, 0x427888) // set boss mode case 512
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th14_lock_timer4, 0x42C0D4) // decrease time (update)
+    {
+        g_lock_timer++;
+    }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {

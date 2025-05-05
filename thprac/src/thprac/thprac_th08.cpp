@@ -6,6 +6,7 @@ namespace THPrac {
 namespace TH08 {
 
     bool g_show_bullet_hitbox=false;
+    int g_lock_timer = 0;
 
     using std::pair;
     struct THPracParam {
@@ -169,17 +170,17 @@ namespace TH08 {
                 if (mGaugeType != gaugeType) {
                     switch (gaugeType) {
                     case -1: // scarlet team
-						*mGauge = 10000;
-						break;
+                        *mGauge = 10000;
+                        break;
                     case 1: // ghost team
-						*mGauge = -5000;
-						break;
+                        *mGauge = -5000;
+                        break;
                     case 2: // solo youmu
                         *mGauge = -5000;
                         break;
                     default:
                         *mGauge = 0;
-						break;
+                        break;
                     }
                     
                 }
@@ -607,19 +608,21 @@ namespace TH08 {
             new HookCtx(0x44CDB1, "\x00", 1) ,
             new HookCtx(0x44CDA2, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 12) ,
         } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
-            new HookCtx(0x416CBE, "\x2e\xe9", 2),
-            new HookCtx(0x42DDB5, "\xeb", 1) } };
 
     public:
         Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,{
-            new HookCtx(0x44D0EE, "\x90", 1) ,
+            new HookCtx(0x44D0EE, "\x90", 1),
             new HookCtx(0x44CD8D, "\x90\x90\x90\x90\x90\x90", 6),// no F
-        }}; 
+        } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtx(0x416CBE, "\x2e\xe9", 2),
+            new HookCtx(0x42DDB5, "\xeb", 1)
+        } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
             new HookCtx(0x44CC18, "\xff\x89", 2),
             new HookCtx(0x44CC21, "\x66\xC7\x05\x28\xD5\x64\x01\x02", 8),
-            new HookCtx(0x44C85D, "\x30", 1) } };
+            new HookCtx(0x44C85D, "\x30", 1)
+        } };
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
@@ -2340,9 +2343,9 @@ namespace TH08 {
         while (true) {
             __asm
                 {
-					pushad
-					call pPointFunc
-					popad
+                    pushad
+                    call pPointFunc
+                    popad
                 }
             temp = (int32_t)GetMemContent(0x160f510, 0x38);
             if (*point_total_1 < temp)
@@ -2599,31 +2602,15 @@ namespace TH08 {
     }
     PATCH_DY(th08_disable_prac_menu1, 0x46f47c, "\x90\x90\x90\x90\x90", 5);
     PATCH_DY(th08_disable_prac_menu2, 0x46f59d, "\x90\x90\x90\x90\x90", 5);
-    EHOOK_DY(th08_update, 0x43cb37)
+
+    static void RenderBtHitbox(ImDrawList* p)
     {
-        GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
-
-        // Gui components update
-        THGuiPrac::singleton().Update();
-        THGuiRep::singleton().Update();
-        THOverlay::singleton().Update();
-
-        if (g_adv_igi_options.show_keyboard_monitor && (*(DWORD*)(0x17CE8B4) == 2)) {
-            g_adv_igi_options.keyboard_style.size = { 34.0f, 34.0f };
-            KeysHUD(8, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
-        }
-        TH08InGameInfo::singleton().Update();
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
-
         // show bullet hitbox
-        if (g_show_bullet_hitbox)
-        {
+        if (g_show_bullet_hitbox) {
             DWORD mode = *(DWORD*)(0x164D0B4);
             if (((mode & 0x1) || (mode & 0x8)) && (*(DWORD*)(0x17CE8B4) == 2)) {
-                auto dl = ImGui::GetOverlayDrawList();
+                p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
 
-                dl->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
-                
                 ImVec2 plpos1 = *(ImVec2*)(0x017D6284);
                 ImVec2 plpos2 = *(ImVec2*)(0x017D6290);
                 float plhit = plpos2.x - plpos1.x;
@@ -2639,8 +2626,8 @@ namespace TH08 {
 
                     ImVec2 p1 = { pos.x - hit.x * 0.5f - plhit * 0.5f + stage_pos.x, pos.y - hit.y * 0.5f - plhit * 0.5f + stage_pos.y };
                     ImVec2 p2 = { pos.x + hit.x * 0.5f + plhit * 0.5f + stage_pos.x, pos.y + hit.y * 0.5f + plhit * 0.5f + stage_pos.y };
-                    dl->AddRectFilled(p1, p2, 0x88002288);
-                    dl->AddRect(p1, p2, 0xFFFFFFFF, 0.0f);
+                    p->AddRectFilled(p1, p2, 0x88002288);
+                    p->AddRect(p1, p2, 0xFFFFFFFF, 0.0f);
                 }
                 // laser hitbox
                 for (int i = 0; i < 256; i++) {
@@ -2653,8 +2640,7 @@ namespace TH08 {
                         float half_width_pl = plhit * 0.5f;
                         float start_ofs = *(float*)(pls + 0x558);
                         float end_ofs = *(float*)(pls + 0x55C);
-                        if (start_ofs < 0.0f)
-                        {
+                        if (start_ofs < 0.0f) {
                             float mid = (start_ofs + end_ofs) * 0.5f;
                             float l2 = (start_ofs - end_ofs) * 0.7f * 0.5f;
                             start_ofs = mid - l2;
@@ -2705,15 +2691,45 @@ namespace TH08 {
                                 hitpos[j].x += pos.x + stage_pos.x;
                                 hitpos[j].y += pos.y + stage_pos.y;
                             }
-                            dl->AddQuad(hitpos[0], hitpos[1], hitpos[2], hitpos[3], 0xFFFFFF00);
-                            dl->AddQuadFilled(hitpos[0], hitpos[1], hitpos[2], hitpos[3], 0x88002288);
+                            p->AddQuad(hitpos[0], hitpos[1], hitpos[2], hitpos[3], 0xFFFFFF00);
+                            p->AddQuadFilled(hitpos[0], hitpos[1], hitpos[2], hitpos[3], 0x88002288);
                         }
                     }
                 }
-
-                dl->PopClipRect();
+                p->PopClipRect();
             }
         }
+    }
+    static void RenderLockTimer(ImDrawList* p)
+    {
+        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
+            std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
+            auto sz = ImGui::CalcTextSize(time_text.c_str());
+            p->AddRectFilled({ 32.0f, 0.0f }, { 110.0f, sz.y }, 0xFFFFFFFF);
+            p->AddText({ 110.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
+        }
+    }
+
+    EHOOK_DY(th08_update, 0x43cb37)
+    {
+        GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
+
+        // Gui components update
+        THGuiPrac::singleton().Update();
+        THGuiRep::singleton().Update();
+        THOverlay::singleton().Update();
+        TH08InGameInfo::singleton().Update();
+
+        if (g_adv_igi_options.show_keyboard_monitor && (*(DWORD*)(0x17CE8B4) == 2)) {
+            g_adv_igi_options.keyboard_style.size = { 34.0f, 34.0f };
+            KeysHUD(8, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+        }
+        
+        auto p = ImGui::GetOverlayDrawList();
+        RenderBtHitbox(p);
+        RenderLockTimer(p);
+
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
     EHOOK_DY(th08_player_state, 0x44C390){
@@ -2732,6 +2748,7 @@ namespace TH08 {
             -1);
     }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th08_enter_game, 0x43BDD2) // set inner misscount to 0
     {
@@ -2760,7 +2777,24 @@ namespace TH08 {
                 TH08InGameInfo::singleton().mLSCCount++;
         }
     }
+    EHOOK_DY(th08_lock_timer1, 0x437AF3) // initialize
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th08_lock_timer2, 0x41CB32) // set timeout case 132
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th08_lock_timer3, 0x41C44F) // set boss mode case 127
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th08_lock_timer4, 0x42F34D) // decrease time (update)
+    {
+        g_lock_timer++;
+    }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(TH08Checksum)
     EHOOK_DY(th08_checksum1, 0x448679) // checksum read fix
     {
@@ -2774,6 +2808,7 @@ namespace TH08 {
         // 1.00d
     }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
@@ -2830,10 +2865,10 @@ void TH08Init()
 }
 
 /*
-	Memo:
-	0xF54CF0: Timeline Struct
-	0x4ECCB8: ECL Buffer Pointer
-	0x4E4824: STD Buffer
-	0x4E483C & 0x4E4844: STD Time
-	*/
+    Memo:
+    0xF54CF0: Timeline Struct
+    0x4ECCB8: ECL Buffer Pointer
+    0x4E4824: STD Buffer
+    0x4E483C & 0x4E4844: STD Time
+    */
 }

@@ -1,9 +1,12 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
+#include <format>
 
 
 namespace THPrac {
 namespace TH16 {
+    int g_lock_timer = 0;
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -486,25 +489,21 @@ namespace TH16 {
             new HookCtx(0x40db83, "\x90\x90\x90", 3) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
             new HookCtx(0x442749, "\x90\x90\x90\x90\x90\x90", 6) } };
-        Gui::GuiHotKey mInfSubPower { TH_INFSUBP, "F5", VK_F5, 
-            { new HookCtx(0x40DCA8, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10),
-              new HookCtx(0x40DCCC, "\x90\x90\x90\x90\x90", 5) 
-        }, 
-        };
-
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F6", VK_F6, {
-            new HookCtx(0x417965, "\xeb", 1),
-            new HookCtx(0x41d4ef, "\x05\x8d", 2) } };
+        Gui::GuiHotKey mInfSubPower { TH_INFSUBP, "F5", VK_F5, {
+            new HookCtx(0x40DCA8, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10),
+            new HookCtx(0x40DCCC, "\x90\x90\x90\x90\x90", 5) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F7", VK_F7, {
             new HookCtx(0x4427a1, "\xc6", 1) } };
         
     public:
-        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2 };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F6", VK_F6, {
+            new HookCtx(0x417965, "\xeb", 1),
+            new HookCtx(0x41d4ef, "\x05\x8d", 2) } };
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F8", VK_F8 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F9", VK_F9 };
     };
 
-    
     class TH16InGameInfo : public Gui::GameGuiWnd {
         TH16InGameInfo() noexcept
         {
@@ -575,7 +574,6 @@ namespace TH16 {
 
     public:
     };
-
 
     class THGuiSP : public Gui::GameGuiWnd {
         THGuiSP() noexcept
@@ -2554,6 +2552,17 @@ namespace TH16 {
     {
         THGuiSP::singleton().State(5);
     }
+
+    static void RenderLockTimer(ImDrawList* p)
+    {
+        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
+            std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
+            auto sz = ImGui::CalcTextSize(time_text.c_str());
+            p->AddRectFilled({ 64.0f, 0.0f }, { 220.0f, sz.y }, 0xFFFFFFFF);
+            p->AddText({ 220.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
+        }
+    }
+
     EHOOK_DY(th16_update, 0x40156f)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
@@ -2564,17 +2573,22 @@ namespace TH16 {
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
         TH16InGameInfo::singleton().Update();
+
+        auto p = ImGui::GetOverlayDrawList();
         // in case boss movedown do not disabled when playing normal games
         {
             if (THAdvOptWnd::singleton().forceBossMoveDown) {
-                auto p = ImGui::GetOverlayDrawList();
                 auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
-                p->AddRectFilled({ 120.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
-                p->AddText({ 120.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
+                p->AddRectFilled({ 240.0f, 0.0f }, { sz.x + 240.0f, sz.y }, 0xFFCCCCCC);
+                p->AddText({ 240.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
+
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004A6EF8))
             KeysHUD(16, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+        
+        RenderLockTimer(p);
+        
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
@@ -2588,6 +2602,7 @@ namespace TH16 {
         GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th16_game_start, 0x42E5AE) // gamestart-bomb set
     {
@@ -2607,7 +2622,24 @@ namespace TH16 {
     {
         TH16InGameInfo::singleton().mReleaseCount++;
     }
+    EHOOK_DY(th16_lock_timer1, 0x426D4B) // initialize
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th16_lock_timer2, 0x424E40) // SetNextPattern case 514
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th16_lock_timer3, 0x420665) // set boss mode case 512
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th16_lock_timer4, 0x42509A) // decrease time (update)
+    {
+        g_lock_timer++;
+    }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {

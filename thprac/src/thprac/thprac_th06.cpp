@@ -23,7 +23,7 @@ namespace TH06 {
     float g_last_boss_x, g_last_boss_y;
 
     static bool is_died = false;
-    int lock_timer = 0;
+    int g_lock_timer = 0;
 
     bool THBGMTest();
     using std::pair;
@@ -3497,13 +3497,11 @@ namespace TH06 {
     }
     static void RenderLockTimer(ImDrawList* p)
     {
-        if (*THOverlay::singleton().mTimeLock && lock_timer > 0) {
-            std::string time_text = std::format("{:.2f}", (float)lock_timer / 60.0f);
-            auto f = ImGui::GetFont();
-            auto sz = f->CalcTextSizeA(16, 100, 100, time_text.c_str());
-            ImVec2 p1 = { 110.0f, 16.0f };
-            p->AddRectFilled({ 32.0f, p1.y - sz.y }, p1, 0xFFFFFFFF);
-            p->AddText(f, 16, { p1.x - sz.x, p1.y - sz.y }, 0xFF000000, time_text.c_str());
+        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
+            std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
+            auto sz = ImGui::CalcTextSize(time_text.c_str());
+            p->AddRectFilled({ 32.0f, 0.0f }, { 110.0f, sz.y }, 0xFFFFFFFF);
+            p->AddText({ 110.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
         }
     }
     
@@ -3618,19 +3616,19 @@ namespace TH06 {
 
     EHOOK_DY(th06_lock_timer1, 0x41B27C) // initialize
     {
-        lock_timer = 0;
+        g_lock_timer = 0;
     }
-    EHOOK_DY(th06_lock_timer2, 0x409A10) // set timeout
+    EHOOK_DY(th06_lock_timer2, 0x409A10) // set timeout case 115
     {
-        lock_timer = 0;
+        g_lock_timer = 0;
     }
-    EHOOK_DY(th06_lock_timer3, 0x408DDA) // set boss mode
+    EHOOK_DY(th06_lock_timer3, 0x408DDA) // set boss mode case 101
     {
-        lock_timer = 0;
+        g_lock_timer = 0;
     }
     EHOOK_DY(th06_lock_timer4, 0x411F88) // decrease time (update)
     {
-        lock_timer++;
+        g_lock_timer++;
     }
 
     EHOOK_DY(th06_autoName_score,0x42BE49){

@@ -1,10 +1,12 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
+#include <format>
 
 
 namespace THPrac {
-
 namespace TH11 {
+    int g_lock_timer = 0;
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -491,19 +493,17 @@ namespace TH11 {
             new HookCtx(0x4311EB, "\xeb\x0a", 2),
             new HookCtx(0x431298, "\xeb\x09", 2),
             new HookCtx(0x4312E0, "\x0f\x1f\x44\x00", 4) } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4, {
-            new HookCtx(0x40C0DD, "\xeb", 1),
-            new HookCtx(0x41278C, "\x90", 1) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F5", VK_F5, {
             new HookCtx(0x431279, "\xc6", 1) } };
 
     public:
-        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F6", VK_F6 };
         Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4, {
+            new HookCtx(0x40C0DD, "\xeb", 1),
+            new HookCtx(0x41278C, "\x90", 1) } };
+        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F6", VK_F6 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F7", VK_F7 };
     };
-
-
     
     class TH11InGameInfo : public Gui::GameGuiWnd {
 
@@ -2018,6 +2018,17 @@ namespace TH11 {
         THGuiRep::singleton().State(3);
     }
     PATCH_DY(th11_prac_menu_key, 0x43d7d7, "\x01\x00\x00\x00", 4);
+
+    static void RenderLockTimer(ImDrawList* p)
+    {
+        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
+            std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
+            auto sz = ImGui::CalcTextSize(time_text.c_str());
+            p->AddRectFilled({ 32.0f, 0.0f }, { 110.0f, sz.y }, 0xFFFFFFFF);
+            p->AddText({ 110.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
+        }
+    }
+
     EHOOK_DY(th11_update, 0x456deb)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
@@ -2028,13 +2039,13 @@ namespace TH11 {
         THOverlay::singleton().Update();
         TH11InGameInfo::singleton().Update();
 
+        auto p = ImGui::GetOverlayDrawList();
         // in case boss movedown do not disabled when playing normal games
         {
             if (THAdvOptWnd::singleton().forceBossMoveDown) {
-                auto p = ImGui::GetOverlayDrawList();
                 auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
-                p->AddRectFilled({ 60.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
-                p->AddText({ 60.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
+                p->AddRectFilled({ 120.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
+                p->AddText({ 120.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
 
@@ -2042,6 +2053,9 @@ namespace TH11 {
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
             KeysHUD(11, { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }
+
+        RenderLockTimer(p);
+
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
@@ -2055,6 +2069,7 @@ namespace TH11 {
         GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th11_game_start, 0x41FA6D) // gamestart-bomb set
     {
@@ -2073,7 +2088,24 @@ namespace TH11 {
     {
         TH11InGameInfo::singleton().mMissCount++;
     }
+    EHOOK_DY(th11_lock_timer1, 0x41A657) // initialize
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th11_lock_timer2, 0x416722) // set chapter case 344
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th11_lock_timer3, 0x414E94) // set boss mode case 332
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th11_lock_timer4, 0x417C71) // decrease time (update)
+    {
+        g_lock_timer++;
+    }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {

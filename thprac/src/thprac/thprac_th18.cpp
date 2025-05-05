@@ -8,6 +8,8 @@
 
 namespace THPrac {
 namespace TH18 {
+    int g_lock_timer = 0;
+
     enum addrs {
         BULLET_MANAGER_PTR = 0x4cf2bc,
         ITEM_MANAGER_PTR = 0x4cf2ec,
@@ -891,9 +893,6 @@ namespace TH18 {
             new HookCtx(0x40d96f, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10),
             new HookCtx(0x418496, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10),
             new HookCtx(0x418465, "\x90\x90", 2) } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F6", VK_F6, {
-            new HookCtx(0x429eef, "\xeb", 1),
-            new HookCtx(0x43021b, "\x05\x8d", 2) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F7", VK_F7, {
             new HookCtx(0x45c2bd, "\x90\x90\x90\x90\x90\x90", 6) } };
         Gui::GuiHotKey mZeroCD { TH18_ZERO_CD, "F8", VK_F8, {
@@ -914,12 +913,14 @@ namespace TH18 {
         bool popColor = false;
 
     public:
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2 };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F6", VK_F6, {
+            new HookCtx(0x429eef, "\xeb", 1),
+            new HookCtx(0x43021b, "\x05\x8d", 2) } };
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "1", '1' };
     };
 
-    
     class TH18InGameInfo : public Gui::GameGuiWnd {
         TH18InGameInfo() noexcept
         {
@@ -987,7 +988,6 @@ namespace TH18 {
 
     public:
     };
-
 
     class THGuiSP : public Gui::GameGuiWnd {
         THGuiSP() noexcept
@@ -3249,6 +3249,17 @@ namespace TH18 {
     {
         THGuiRep::singleton().State(3);
     }
+
+    static void RenderLockTimer(ImDrawList* p)
+    {
+        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
+            std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
+            auto sz = ImGui::CalcTextSize(time_text.c_str());
+            p->AddRectFilled({ 64.0f, 0.0f }, { 220.0f, sz.y }, 0xFFFFFFFF);
+            p->AddText({ 220.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
+        }
+    }
+
     EHOOK_DY(th18_update, 0x4013f5)
     {
         // static int x = 0;
@@ -3271,18 +3282,21 @@ namespace TH18 {
         THGuiSP::singleton().Update();
         TH18InGameInfo::singleton().Update();
 
+        auto p = ImGui::GetOverlayDrawList();
         // in case boss movedown do not disabled when playing normal games
         {
-            if (THAdvOptWnd::singleton().forceBossMoveDown || THAdvOptWnd::singleton().forceBossMoveDir)
-            {
-                auto p=ImGui::GetOverlayDrawList();
+            if (THAdvOptWnd::singleton().forceBossMoveDown || THAdvOptWnd::singleton().forceBossMoveDir) {
                 auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
-                p->AddRectFilled({ 120.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
-                p->AddText({120.0f,0.0f},0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
+                p->AddRectFilled({ 240.0f, 0.0f }, { sz.x + 240.0f, sz.y }, 0xFFCCCCCC);
+                p->AddText({ 240.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
+
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004CF410))
             KeysHUD(18, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+        
+        RenderLockTimer(p);
+        
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
@@ -3296,8 +3310,9 @@ namespace TH18 {
             RecordKey(18, *(DWORD*)(0x4CA428));
     }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInGameInfo)
-    EHOOK_DY(th16_force_card, 0x00417310)
+    EHOOK_DY(th18_force_card, 0x00417310)
     {
         if (g_adv_igi_options.th18_force_card){
             int stage = *(DWORD*)0x4CCCDC;
@@ -3323,34 +3338,50 @@ namespace TH18 {
             }
         }
     }
-    EHOOK_DY(th16_game_start, 0x44278F) // gamestart-bomb set
+    EHOOK_DY(th18_game_start, 0x44278F) // gamestart-bomb set
     {
         TH18InGameInfo::singleton().mBombCount = 0;
         TH18InGameInfo::singleton().mMissCount = 0;
         TH18InGameInfo::singleton().mDeadBombCount = 0;
     }
-    EHOOK_DY(th16_bomb_dec, 0x4574D3) // bomb dec
+    EHOOK_DY(th18_bomb_dec, 0x4574D3) // bomb dec
     {
         TH18InGameInfo::singleton().mBombCount++;
     }
-    EHOOK_DY(th16_cylinder, 0x410F22) // cylinder
+    EHOOK_DY(th18_cylinder, 0x410F22) // cylinder
     {
         TH18InGameInfo::singleton().mBombCount++;
     }
-    EHOOK_DY(th16_life_dec, 0x45D1A3) // life dec
+    EHOOK_DY(th18_life_dec, 0x45D1A3) // life dec
     {
         TH18InGameInfo::singleton().mMissCount++;
     }
-
-    EHOOK_DY(th16_deadbomb1, 0x40DA1C) // rokumon
+    EHOOK_DY(th18_deadbomb1, 0x40DA1C) // rokumon
     {
         TH18InGameInfo::singleton().mDeadBombCount++;
     }
-    EHOOK_DY(th16_deadbomb2, 0x40A534) // autobomb
+    EHOOK_DY(th18_deadbomb2, 0x40A534) // autobomb
     {
         TH18InGameInfo::singleton().mDeadBombCount++;
+    }
+    EHOOK_DY(th18_lock_timer1, 0x43A836) // initialize
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th18_lock_timer2, 0x4389F0) // SetNextPattern case 514
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th18_lock_timer3, 0x433BA6) // set boss mode case 512
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th18_lock_timer4, 0x42EF1D) // decrease time (update)
+    {
+        g_lock_timer++;
     }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {

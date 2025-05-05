@@ -8,6 +8,8 @@
 
 namespace THPrac {
 namespace TH15 {
+    int g_lock_timer = 0;
+
     using std::pair;
     bool g_blind_view = false;
     float g_blind_size = 150.0f;
@@ -451,9 +453,6 @@ namespace TH15 {
         bool mParamStatus = false;
         THPracParam mRepParam;
     };
-    
-    
-    
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
         {
@@ -529,19 +528,18 @@ namespace TH15 {
             new HookCtx(0x414963, "\x90", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
             new HookCtx(0x4582fa, "\x45", 1) } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
-            new HookCtx(0x41fdf5, "\xeb", 1),
-            new HookCtx(0x428b5d, "\xa7", 1) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
             new HookCtx(0x454cc9, "\xc6", 1) } };
 
     public:
-        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtx(0x41fdf5, "\xeb", 1),
+            new HookCtx(0x428b5d, "\xa7", 1) } };
+        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
 
-    
     class TH15InGameInfo : public Gui::GameGuiWnd {
 
         TH15InGameInfo() noexcept
@@ -2198,6 +2196,15 @@ namespace TH15 {
         THGuiRep::singleton().State(3);
     }
 
+    static void RenderLockTimer(ImDrawList* p)
+    {
+        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
+            std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
+            auto sz = ImGui::CalcTextSize(time_text.c_str());
+            p->AddRectFilled({ 64.0f, 0.0f }, { 220.0f, sz.y }, 0xFFFFFFFF);
+            p->AddText({ 220.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
+        }
+    }
 
     EHOOK_DY(th15_update, 0x4015fa)
     {
@@ -2209,31 +2216,31 @@ namespace TH15 {
         THOverlay::singleton().Update();
         TH15InGameInfo::singleton().Update();
 
+        auto p = ImGui::GetOverlayDrawList();
         // in case boss movedown do not disabled when playing normal games
         {
             if (THAdvOptWnd::singleton().forceBossMoveDown) {
-                auto p = ImGui::GetOverlayDrawList();
                 auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
-                p->AddRectFilled({ 120.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
-                p->AddText({ 120.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
+                p->AddRectFilled({ 240.0f, 0.0f }, { sz.x + 240.0f, sz.y }, 0xFFCCCCCC);
+                p->AddText({ 240.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
+
         // ab test
         {
             if (thPracParam.mode && thPracParam.section == TH15_ST8_AB_TEST) {
-                static int t=0;
+                static int t = 0;
                 DWORD ecl_glob = *(DWORD*)(0x4E9A80);
-                DWORD m9923 = ecl_glob  ? * (DWORD*)(ecl_glob + 0x18) : 0;
-                if (m9923 == 6)
-                {
+                DWORD m9923 = ecl_glob ? *(DWORD*)(ecl_glob + 0x18) : 0;
+                if (m9923 == 6) {
                     t++;
-                    float intp = (t >= 90) ? 1.0f : t/90.0f;
+                    float intp = (t >= 90) ? 1.0f : t / 90.0f;
                     auto &io = ImGui::GetIO();
                     auto szx = io.DisplaySize.x;
                     auto szy = io.DisplaySize.y;
                     ImVec2 mid_st = { 64.0f + 384.0f, 32.0f + 448.0f };
-                    mid_st.x *= szx/1280.0f;
-                    mid_st.y *= szy/960.0f;
+                    mid_st.x *= szx / 1280.0f;
+                    mid_st.y *= szy / 960.0f;
                     ImVec2 sz = { 380.0f * 2.0f, 600.0f * intp };
                     sz.x *= szx / 1280.0f;
                     sz.y *= szy / 960.0f;
@@ -2242,8 +2249,7 @@ namespace TH15 {
                     ImGui::SetNextWindowSize(sz);
                     ImGui::SetNextWindowBgAlpha(0.8f);
                     ImGui::Begin("##res", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
-                    if (t >= 90)
-                    {
+                    if (t >= 90) {
                         float result_origs[5] = {
                             *(float*)(ecl_glob + 0x38),
                             *(float*)(ecl_glob + 0x34),
@@ -2270,7 +2276,7 @@ namespace TH15 {
                                 scores[i] = 1.0f / (1.0f + expf(1.8f - 4.0f * scores[i]));
                             }
                         }
-                        float avg_score=0.0f;
+                        float avg_score = 0.0f;
                         for (int i = 0; i < 6; i++)
                             avg_score += scores[i];
                         avg_score /= 6.0f;
@@ -2278,7 +2284,7 @@ namespace TH15 {
                         const char* abtest_rank;
                         if (avg_score < 0.2f)
                             abtest_rank = S(TH15_AB_TEST_RES_RANK_10);
-                        else if (avg_score<0.36f)
+                        else if (avg_score < 0.36f)
                             abtest_rank = S(TH15_AB_TEST_RES_RANK_9);
                         else if (avg_score < 0.54f)
                             abtest_rank = S(TH15_AB_TEST_RES_RANK_8);
@@ -2346,20 +2352,19 @@ namespace TH15 {
                                 }
                                 return b;
                             };
-                            float t2 = MInterpolation((t-90.0f)/90.0f,0.0f,1.0f);
+                            float t2 = MInterpolation((t - 90.0f) / 90.0f, 0.0f, 1.0f);
                             for (int i = 0; i < 6; i++)
                                 scores[i] *= t2;
                             //animation
                             for (int i = 0; i < 6; i++) {
                                 float radius = scores[i];
-                                if (scores[i] < 0.9f)
-                                {
-                                    radius = scores[i]/0.9f*0.5f;
-                                }else if (scores[i] < 0.95f){
+                                if (scores[i] < 0.9f) {
+                                    radius = scores[i] / 0.9f * 0.5f;
+                                } else if (scores[i] < 0.95f){
                                     radius = scores[i] * 3.0f - 2.2f;
-                                }else if(scores[i] < 0.98f) {
+                                } else if (scores[i] < 0.98f) {
                                     radius = scores[i] * 6.66667f - 5.683333f;
-                                } else{
+                                } else {
                                     radius = scores[i] * 7.5f - 6.5f;
                                 }
                                 points[i] = { cmid.x + hheight * radius * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + hheight * radius * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
@@ -2378,7 +2383,7 @@ namespace TH15 {
                                 S(TH15_AB_TEST_RET),
                                 S(TH15_AB_TEST_HORIZON),
                                 S(TH15_AB_TEST_PREC),
-                                S(TH15_AB_TEST_LUCK), };
+                                S(TH15_AB_TEST_LUCK) };
                             for (int i = 0; i < 6; i++) {
                                 const char* rank = "E";
                                 if (scores[i] < 0.18f)
@@ -2395,15 +2400,15 @@ namespace TH15 {
                                     rank = "A"; // 0.9-0.95
                                 else if (scores[i] < 0.98f)
                                     rank = "S"; // 0.95-0.98
-                                else if (scores[i]<0.99f)
-                                    rank = "SS";// 0.98-0.99
+                                else if (scores[i] < 0.99f)
+                                    rank = "SS"; // 0.98-0.99
                                 else 
                                     rank = "???"; // 0.99+
-                                std::string text = std::format("{}:{}({:>3.1f})", chars[i], rank, scores[i]*100.0f).c_str();
-                                auto sz_text=ImGui::CalcTextSize(text.c_str());
-                                float h2=hheight;
-                                if(i==0 || i==3)h2 = hheight+sz_text.y;
-                                else h2 = hheight+sz_text.x*0.85f;
+                                std::string text = std::format("{}:{}({:>3.1f})", chars[i], rank, scores[i] * 100.0f).c_str();
+                                auto sz_text = ImGui::CalcTextSize(text.c_str());
+                                float h2 = hheight;
+                                if (i == 0 || i == 3) h2 = hheight + sz_text.y;
+                                else h2 = hheight + sz_text.x * 0.85f;
                                 ImVec2 pos = { cmid.x + h2 * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + h2 * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
                                 pos.x -= sz_text.x * 0.5f;
                                 pos.y -= sz_text.y * 0.5f;
@@ -2413,15 +2418,20 @@ namespace TH15 {
                         p->PopClipRect();
                     }
                     ImGui::End();
-                }else{
+                } else {
                     t = 0;
                 }
             }
         }
+
         if (*(DWORD*)0x004E9BB8)
             RenderBlindView(9, *(DWORD*)(0x4e77d8), *(ImVec2*)(*(DWORD*)0x004E9BB8 + 0x618), { 192.0f, 0.0f }, { 32.0f, 16.0f }, ImGui::GetIO().DisplaySize.x / 640.0f);
+        
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004E9BB8))
-            KeysHUD(15, { 1280.0f, 0.0f }, {840.0f,0.0f},g_adv_igi_options.keyboard_style);
+            KeysHUD(15, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+        
+        RenderLockTimer(p);
+        
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
@@ -2434,6 +2444,7 @@ namespace TH15 {
         GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th15_game_start, 0x43E6EE) // gamestart-bomb set
     {
@@ -2448,7 +2459,24 @@ namespace TH15 {
     {
         TH15InGameInfo::singleton().mMissCount++;
     }
+    EHOOK_DY(th15_lock_timer1, 0x43404A) // initialize
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th15_lock_timer2, 0x42C738) // SetNextPattern case 514
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th15_lock_timer3, 0x42B938) // set boss mode case 512
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th15_lock_timer4, 0x4301E8) // decrease time (update)
+    {
+        g_lock_timer++;
+    }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {

@@ -1,5 +1,6 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
+#include <format>
 
 
 namespace THPrac {
@@ -7,6 +8,7 @@ namespace TH07 {
     using std::pair;
 
     bool g_show_bullet_hitbox = false;
+    int g_lock_timer = 0;
 
     struct THPracParam {
         int32_t mode;
@@ -535,9 +537,6 @@ namespace TH07 {
             //new HookCtx(0x42F02B, "\xeb\x16", 2),
             new HookCtx(0x440DD3, "\x00", 1),
             new HookCtx(0x440DBF, "\x90\x90\x90\x90\x90\x90\x90", 7) } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
-            new HookCtx(0x417726, "\xeb", 1),
-            new HookCtx(0x421F91, "\xeb", 1) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
             new HookCtx(0x440D2C, "\xff", 1),
             new HookCtx(0x440D35, "\x66\xC7\x05\x4C\x9E\x4B\x00\x02", 8),
@@ -547,6 +546,10 @@ namespace TH07 {
         Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2, {
             new HookCtx(0x44115F, "\xEB", 1),
             new HookCtx(0x440DA1, "\x90\x90\x90\x90\x90\x90", 6),//no F
+        } };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtx(0x417726, "\xeb", 1),
+            new HookCtx(0x421F91, "\xeb", 1)
         } };
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
@@ -1961,24 +1964,12 @@ namespace TH07 {
     }
     PATCH_DY(th07_disable_prac_menu1, 0x45b9ea, "\x90\x90\x90\x90\x90", 5);
     PATCH_DY(th07_disable_prac_menu2, 0x45bb1c, "\x90\x90\x90\x90\x90", 5);
-    EHOOK_DY(th07_update, 0x42fdf8)
+
+    static void RenderBtHitbox(ImDrawList* p)
     {
-        GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
-
-        // Gui components update
-        THGuiPrac::singleton().Update();
-        THGuiRep::singleton().Update();
-        THOverlay::singleton().Update();
-        TH07InGameInfo::singleton().Update();
-
-        if (g_adv_igi_options.show_keyboard_monitor && (*(DWORD*)(0x575AA8) == 2)) {
-            g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
-            KeysHUD(7, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
-        }
         // show hitbox
         if (g_show_bullet_hitbox) {
             DWORD game_state = *(DWORD*)(0x62F648);
-            auto p = ImGui::GetOverlayDrawList();
             if (((game_state & 0x1) || (game_state & 0x8) || (thPracParam.mode)) && (game_state & 0x4)) {
                 p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
                 ImVec2 stage_pos = { 32.0f, 16.0f };
@@ -2066,6 +2057,35 @@ namespace TH07 {
                 p->PopClipRect();
             }
         }
+    }
+    static void RenderLockTimer(ImDrawList* p)
+    {
+        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
+            std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
+            auto sz = ImGui::CalcTextSize(time_text.c_str());
+            p->AddRectFilled({ 32.0f, 0.0f }, { 110.0f, sz.y }, 0xFFFFFFFF);
+            p->AddText({ 110.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
+        }
+    }
+
+    EHOOK_DY(th07_update, 0x42fdf8)
+    {
+        GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
+
+        // Gui components update
+        THGuiPrac::singleton().Update();
+        THGuiRep::singleton().Update();
+        THOverlay::singleton().Update();
+        TH07InGameInfo::singleton().Update();
+
+        if (g_adv_igi_options.show_keyboard_monitor && (*(DWORD*)(0x575AA8) == 2)) {
+            g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
+            KeysHUD(7, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+        }
+
+        auto p = ImGui::GetOverlayDrawList();
+        RenderBtHitbox(p);
+        RenderLockTimer(p);
 
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
@@ -2082,6 +2102,7 @@ namespace TH07 {
             RecordKey(7, *(WORD*)(0x4B9E50));
     }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th07_enter_game, 0x42EB08) // set inner misscount to 0
     {
@@ -2093,7 +2114,24 @@ namespace TH07 {
     {
         TH07InGameInfo::singleton().mBorderBreakCount++;
     }
+    EHOOK_DY(th07_lock_timer1, 0x42D17E) // initialize
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th07_lock_timer2, 0x414FE6) // set timeout case 114
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th07_lock_timer3, 0x413D06) // set boss mode case 99
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th07_lock_timer4, 0x41FFD5) // decrease time (update)
+    {
+        g_lock_timer++;
+    }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(TH07Checksum)
     EHOOK_DY(th07_checksum1, 0x43A655) // checksum read fix
     {
@@ -2107,6 +2145,7 @@ namespace TH07 {
         // 1.00b
     }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {

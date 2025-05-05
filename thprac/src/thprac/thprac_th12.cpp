@@ -1,9 +1,12 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
+#include <format>
 
 
 namespace THPrac {
 namespace TH12 {
+    int g_lock_timer = 0;
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -499,14 +502,14 @@ namespace TH12 {
             new HookCtx(0x422F27, "\x00", 1) } };
         Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
             new HookCtx(0x43944B, "\x48", 1) } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
-            new HookCtx(0x40DB71, "\xeb", 1),
-            new HookCtx(0x414A9B, "\x90", 1) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
             new HookCtx(0x436D9B, "\xc6", 1) } };
 
     public:
-         Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
+            new HookCtx(0x40DB71, "\xeb", 1),
+            new HookCtx(0x414A9B, "\x90", 1) } };
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
@@ -1766,6 +1769,17 @@ namespace TH12 {
     {
         THGuiRep::singleton().State(3);
     }
+
+    static void RenderLockTimer(ImDrawList* p)
+    {
+        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
+            std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
+            auto sz = ImGui::CalcTextSize(time_text.c_str());
+            p->AddRectFilled({ 32.0f, 0.0f }, { 110.0f, sz.y }, 0xFFFFFFFF);
+            p->AddText({ 110.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
+        }
+    }
+
     EHOOK_DY(th12_update, 0x4625fb)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
@@ -1775,22 +1789,28 @@ namespace TH12 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         TH12InGameInfo::singleton().Update();
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+        
+        auto p = ImGui::GetOverlayDrawList();
         // in case boss movedown do not disabled when playing normal games
         {
             if (THAdvOptWnd::singleton().forceBossMoveDown) {
-                auto p = ImGui::GetOverlayDrawList();
                 auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
-                p->AddRectFilled({ 60.0f, 0.0f }, { sz.x + 60.0f, sz.y }, 0xFFCCCCCC);
-                p->AddText({ 60.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
+                p->AddRectFilled({ 120.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
+                p->AddText({ 120.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
+
         if (*(DWORD*)0x004B4514)
             RenderBlindView(9, *(DWORD*)(0x4ce8f0), *(ImVec2*)(*(DWORD*)0x004B4514 + 0x97C), { 192.0f, 0.0f }, { 32.0f, 16.0f }, ImGui::GetIO().DisplaySize.x / 640.0f);
+        
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004B4514)) {
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
             KeysHUD(12, { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }
+
+        RenderLockTimer(p);
+
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
     EHOOK_DY(th12_player_state, 0x436BA0)
@@ -1803,6 +1823,7 @@ namespace TH12 {
         GameGuiRender(IMPL_WIN32_DX9);
     }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th12_game_start, 0x421DEF) // gamestart-bomb set
     {
@@ -1833,7 +1854,24 @@ namespace TH12 {
         else if (type == 3)
             TH12InGameInfo::singleton().mCUFOCount++;
     }
+    EHOOK_DY(th12_lock_timer1, 0x41D4E5) // initialize
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th12_lock_timer2, 0x418745) // SetNextPattern case 414
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th12_lock_timer3, 0x417AEF) // set boss mode case 412
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th12_lock_timer4, 0x41A821) // decrease time (update)
+    {
+        g_lock_timer++;
+    }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {

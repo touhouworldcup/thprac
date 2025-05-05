@@ -7,6 +7,7 @@ namespace THPrac {
 namespace TH10 {
     bool g_mouse_move_hint = false;
     bool g_pl_speed_keep = false;
+    int g_lock_timer = 0;
 
     int g_rep_page = 0;
     const char chars_supported[] = "!\"#$%&' ()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
@@ -479,9 +480,6 @@ namespace TH10 {
             new HookCtx(0x4259DB, "\x00", 1),
             new HookCtx(0x425C4A, "\x00", 1),
             new HookCtx(0x425ABD, "\x00", 1) } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4, {
-            new HookCtx(0x408D93, "\xeb", 1),
-            new HookCtx(0x40E5B0, "\x90", 1) } };
         Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F5", VK_F5, {
             new HookCtx(0x425C13, "\xc6", 1) } };
         Gui::GuiHotKey mNoFaithLoss { TH10_NO_FAITH_LOSS, "F6", VK_F6, {
@@ -491,7 +489,10 @@ namespace TH10 {
 
 
     public:
-        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2 };
+        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4, {
+            new HookCtx(0x408D93, "\xeb", 1),
+            new HookCtx(0x40E5B0, "\x90", 1) } };
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
@@ -2419,6 +2420,7 @@ namespace TH10 {
         }
     }
     PATCH_ST(th10_real_bullet_sprite, 0x406e03, "\x0F\x84\x13\x05\x00\x00", 6);
+
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th10_inf_lives, 0x00426A15)
     {
@@ -2557,6 +2559,17 @@ namespace TH10 {
     {
         pCtx->Eip = 0x431054;
     }
+
+    static void RenderLockTimer(ImDrawList* p)
+    {
+        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
+            std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
+            auto sz = ImGui::CalcTextSize(time_text.c_str());
+            p->AddRectFilled({ 32.0f, 0.0f }, { 110.0f, sz.y }, 0xFFFFFFFF);
+            p->AddText({ 110.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
+        }
+    }
+
     EHOOK_DY(th10_update, 0x449d0e)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
@@ -2566,21 +2579,20 @@ namespace TH10 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         TH10InGameInfo::singleton().Update();
+
+        auto p = ImGui::GetOverlayDrawList();
         // in case boss movedown do not disabled when playing normal games
         {
             if (THAdvOptWnd::singleton().forceBossMoveDown) {
-                auto p = ImGui::GetOverlayDrawList();
                 auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
-                p->AddRectFilled({ 60.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
-                p->AddText({ 60.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
+                p->AddRectFilled({ 120.0f, 0.0f }, { sz.x + 120.0f, sz.y }, 0xFFCCCCCC);
+                p->AddText({ 120.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
+
         // move hint
-
         auto& adv_opt = THAdvOptWnd::singleton();
-
         if (adv_opt.IsClosed() && g_mouse_move_hint && *(DWORD*)(0x477814)) {
-            auto p = ImGui::GetOverlayDrawList();
             static struct
             {
                 Float2* pANM_pos;
@@ -2631,14 +2643,18 @@ namespace TH10 {
                 }
             }
         }
+        
         if (*(DWORD*)0x00477834)
             RenderBlindView(9, *(DWORD*)(0x491c30), *(ImVec2*)(*(DWORD*)0x00477834 + 0x3C0), { 192.0f, 0.0f }, {32.0f,16.0f}, ImGui::GetIO().DisplaySize.x / 640.0f);
+        
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x0477834)){
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
             KeysHUD(10, { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
+        RenderLockTimer(p);
+
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     }
     EHOOK_DY(th10_player_state, 0x425730)
@@ -2781,7 +2797,24 @@ namespace TH10 {
             pCtx->Edx = *spd2;
         }
     }
+    EHOOK_DY(th10_lock_timer1, 0x413955) // initialize
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th10_lock_timer2, 0x411893) // set chapter case 344
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th10_lock_timer3, 0x40FF99) // set boss mode case 332
+    {
+        g_lock_timer = 0;
+    }
+    EHOOK_DY(th10_lock_timer4, 0x4128B6) // decrease time (update)
+    {
+        g_lock_timer++;
+    }
     HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
