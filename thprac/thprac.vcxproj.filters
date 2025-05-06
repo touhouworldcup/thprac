@@ -447,6 +447,9 @@
     <ClCompile Include="src\thprac\thprac_igi_key_render.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th20.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

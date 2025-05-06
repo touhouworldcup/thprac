@@ -1,10 +1,21 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
+#include "../3rdParties/MinHook/include/MinHook.h"
 #include <format>
 
 namespace THPrac {
 namespace TH20 {
     using std::pair;
+
+    int g_jump_stage=1;
+    int g_life=2;
+    int g_bomb=3;
+    int g_piv=0;//0~1000000
+    int g_power=100;
+    int g_hyper=0;
+    int g_delta=0;
+    bool g_prac_mode = false;
+
     struct THPracParam {
         int32_t mode;
         int32_t stage;
@@ -80,297 +91,298 @@ namespace TH20 {
     };
     THPracParam thPracParam {};
 
-    class THGuiPrac : public Gui::GameGuiWnd {
-        THGuiPrac() noexcept
-        {
-            *mMode = 1;
-            *mLife = 9;
-            *mBomb = 9;
-            *mPower = 400;
-            *mValue = 10000;
+//      class THGuiPrac : public Gui::GameGuiWnd {
+//         THGuiPrac() noexcept
+//         {
+//             *mMode = 1;
+//             *mLife = 9;
+//             *mBomb = 9;
+//             *mPower = 400;
+//             *mValue = 10000;
+// 
+//             SetFade(0.8f, 0.1f);
+//             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
+//             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
+//             OnLocaleChange();
+//         }
+//         SINGLETON(THGuiPrac);
+// 
+//     public:
+//         __declspec(noinline) void State(int state)
+//         {
+//             switch (state) {
+//             case 0:
+//                 break;
+//             case 1:
+//                 mDiffculty = *((int32_t*)0x49f274);
+//                 SetFade(0.8f, 0.1f);
+//                 Open();
+//                 thPracParam.Reset();
+//             case 2:
+//                 break;
+//             case 3:
+//                 SetFade(0.8f, 0.1f);
+//                 Close();
+// 
+//                 // Fill Param
+//                 thPracParam.mode = *mMode;
+//                 thPracParam.stage = *mStage;
+//                 thPracParam.section = CalcSection();
+//                 thPracParam.phase = SpellPhase() ? *mPhase : 0;
+//                 if (SectionHasDlg(thPracParam.section))
+//                     thPracParam.dlg = *mDlg;
+// 
+//                 thPracParam.score = *mScore;
+//                 thPracParam.life = *mLife;
+//                 thPracParam.bomb = *mBomb;
+//                 thPracParam.bomb_fragment = *mBombFragment;
+//                 thPracParam.power = *mPower;
+//                 thPracParam.value = *mValue;
+//                 thPracParam.graze = *mGraze;
+//                 break;
+//             case 4:
+//                 Close();
+//                 *mNavFocus = 0;
+//                 break;
+//             default:
+//                 break;
+//             }
+//         }
+// 
+//     protected:
+//         virtual void OnLocaleChange() override
+//         {
+//             SetTitle(S(TH_MENU));
+//             switch (Gui::LocaleGet()) {
+//             case Gui::LOCALE_ZH_CN:
+//                 SetSizeRel(0.5f, 0.81f);
+//                 SetPosRel(0.27f, 0.18f);
+//                 SetItemWidthRel(-0.100f);
+//                 SetAutoSpacing(true);
+//                 break;
+//             case Gui::LOCALE_EN_US:
+//                 SetSizeRel(0.6f, 0.79f);
+//                 SetPosRel(0.215f, 0.18f);
+//                 SetItemWidthRel(-0.100f);
+//                 SetAutoSpacing(true);
+//                 break;
+//             case Gui::LOCALE_JA_JP:
+//                 SetSizeRel(0.56f, 0.81f);
+//                 SetPosRel(0.230f, 0.18f);
+//                 SetItemWidthRel(-0.105f);
+//                 SetAutoSpacing(true);
+//                 break;
+//             default:
+//                 break;
+//             }
+//         }
+//         virtual void OnContentUpdate() override
+//         {
+//             ImGui::TextUnformatted(S(TH_MENU));
+//             ImGui::Separator();
+// 
+//             PracticeMenu();
+//         }
+//         const th_glossary_t* SpellPhase()
+//         {
+//             auto section = CalcSection();
+//             return nullptr;
+//         }
+//         void PracticeMenu()
+//         {
+//             mMode();
+//             if (mStage())
+//                 *mSection = *mChapter = 0;
+//             if (*mMode == 1) {
+//                 int mbs = -1;
+//                 if (*mStage == 5) { // Counting from 0
+//                     mbs = 2;
+//                     if (*mWarp == 2)
+//                         *mWarp = 0;
+//                 }
+//                 if (mWarp(mbs))
+//                     *mSection = *mChapter = *mPhase = 0;
+//                 if (*mWarp) {
+//                     SectionWidget();
+//                     mPhase(TH_PHASE, SpellPhase());
+//                 }
+// 
+//                 mLife();
+//                 mBomb();
+//                 mBombFragment();
+//                 auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
+//                 mPower(power_str.c_str());
+//                 mValue();
+//                 mValue.RoundDown(10);
+//                 mGraze();
+//                 mScore();
+//                 mScore.RoundDown(10);
+//             }
+// 
+//             mNavFocus();
+//         }
+//         int CalcSection()
+//         {
+//             int chapterId = 0;
+//             switch (*mWarp) {
+//             case 1: // Chapter
+//                 // Chapter Id = 10000 + Stage * 100 + Section
+//                 chapterId += (*mStage + 1) * 100;
+//                 chapterId += *mChapter;
+//                 chapterId += 10000; // Base of chapter ID is 1000.
+//                 return chapterId;
+//                 break;
+//             case 2:
+//             case 3: // Mid boss & End boss
+//                 return th_sections_cba[*mStage][*mWarp - 2][*mSection];
+//                 break;
+//             case 4:
+//             case 5: // Non-spell & Spellcard
+//                 return th_sections_cbt[*mStage][*mWarp - 4][*mSection];
+//                 break;
+//             default:
+//                 return 0;
+//                 break;
+//             }
+//         }
+//         bool SectionHasDlg(int32_t section)
+//         {
+//             switch (section) {
+//             case TH20_ST1_BOSS1:
+//                 return true;
+//             default:
+//                 return false;
+//             }
+//         }
+//         void SectionWidget()
+//         {
+//             static char chapterStr[256] {};
+//             auto& chapterCounts = mChapterSetup[*mStage];
+// 
+//             switch (*mWarp) {
+//             case 1: // Chapter
+//                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
+// 
+//                 if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
+//                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_N), *mChapter);
+//                 } else if (*mChapter <= chapterCounts[0]) {
+//                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_1), *mChapter);
+//                 } else {
+//                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
+//                 };
+// 
+//                 mChapter(chapterStr);
+//                 break;
+//             case 2:
+//             case 3: // Mid boss & End boss
+//                 if (mSection(TH_WARP_SELECT[*mWarp],
+//                         th_sections_cba[*mStage][*mWarp - 2],
+//                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
+//                     *mPhase = 0;
+//                 if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
+//                     mDlg();
+//                 break;
+//             case 4:
+//             case 5: // Non-spell & Spellcard
+//                 if (mSection(TH_WARP_SELECT[*mWarp],
+//                         th_sections_cbt[*mStage][*mWarp - 4],
+//                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
+//                     *mPhase = 0;
+//                 if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
+//                     mDlg();
+//                 break;
+//             default:
+//                 break;
+//             }
+//         }
+// 
+//         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
+//         Gui::GuiCombo mStage { TH_STAGE, TH_STAGE_SELECT };
+//         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
+//         Gui::GuiCombo mSection { TH_MODE };
+//         Gui::GuiCombo mPhase { TH_PHASE };
+//         Gui::GuiCheckBox mDlg { TH_DLG };
+// 
+//         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
+//         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
+//         Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 9 };
+//         Gui::GuiSlider<int, ImGuiDataType_S32> mBomb { TH_BOMB, 0, 9 };
+//         Gui::GuiSlider<int, ImGuiDataType_S32> mBombFragment { TH_BOMB_FRAGMENT, 0, 4 };
+//         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 100, 400 };
+//         Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH_VALUE, 0, 999990, 10, 100000 };
+//         Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, 999999, 1, 100000 };
+// 
+//         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
+//             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
+//             TH_SCORE, TH_LIFE, TH_BOMB, TH_BOMB_FRAGMENT, TH16_SEASON_GAUGE,
+//             TH_POWER, TH_VALUE, TH_GRAZE };
+// 
+//         int mChapterSetup[7][2] {
+//             { 2, 2 },
+//             { 4, 0 },
+//             { 4, 2 },
+//             { 3, 3 },
+//             { 5, 3 },
+//             { 3, 0 },
+//             { 4, 4 },
+//         };
+// 
+//         int mDiffculty = 0;
+//     };
+//      class THGuiRep : public Gui::GameGuiWnd {
+//         THGuiRep() noexcept
+//         {
+//             wchar_t appdata[MAX_PATH];
+//             GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
+//             mAppdataPath = appdata;
+//         }
+//         SINGLETON(THGuiRep);
+// 
+//     public:
+//         void CheckReplay()
+//         {
+//             uint32_t index = GetMemContent(0x4a6f20, 0x5b48);
+//             char* repName = (char*)GetMemAddr(0x4a6f20, index * 4 + 0x5b50, 0x21c);
+//             std::wstring repDir(mAppdataPath);
+//             repDir.append(L"\\ShanghaiAlice\\th16\\replay\\");
+//             repDir.append(mb_to_utf16(repName, 932));
+// 
+//             std::string param;
+//             if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
+//                 mParamStatus = true;
+//             else
+//                 mRepParam.Reset();
+//         }
+// 
+//         bool mRepStatus = false;
+//         void State(int state)
+//         {
+//             switch (state) {
+//             case 1:
+//                 mRepStatus = false;
+//                 mParamStatus = false;
+//                 thPracParam.Reset();
+//                 break;
+//             case 2:
+//                 CheckReplay();
+//                 break;
+//             case 3:
+//                 mRepStatus = true;
+//                 if (mParamStatus)
+//                     memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
+//                 break;
+//             default:
+//                 break;
+//             }
+//         }
+// 
+//     protected:
+//         std::wstring mAppdataPath;
+//         bool mParamStatus = false;
+//         THPracParam mRepParam;
+//     };
 
-            SetFade(0.8f, 0.1f);
-            SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
-            SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
-            OnLocaleChange();
-        }
-        SINGLETON(THGuiPrac);
-
-    public:
-        __declspec(noinline) void State(int state)
-        {
-            switch (state) {
-            case 0:
-                break;
-            case 1:
-                mDiffculty = *((int32_t*)0x49f274);
-                SetFade(0.8f, 0.1f);
-                Open();
-                thPracParam.Reset();
-            case 2:
-                break;
-            case 3:
-                SetFade(0.8f, 0.1f);
-                Close();
-
-                // Fill Param
-                thPracParam.mode = *mMode;
-                thPracParam.stage = *mStage;
-                thPracParam.section = CalcSection();
-                thPracParam.phase = SpellPhase() ? *mPhase : 0;
-                if (SectionHasDlg(thPracParam.section))
-                    thPracParam.dlg = *mDlg;
-
-                thPracParam.score = *mScore;
-                thPracParam.life = *mLife;
-                thPracParam.bomb = *mBomb;
-                thPracParam.bomb_fragment = *mBombFragment;
-                thPracParam.power = *mPower;
-                thPracParam.value = *mValue;
-                thPracParam.graze = *mGraze;
-                break;
-            case 4:
-                Close();
-                *mNavFocus = 0;
-                break;
-            default:
-                break;
-            }
-        }
-
-    protected:
-        virtual void OnLocaleChange() override
-        {
-            SetTitle(S(TH_MENU));
-            switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
-                SetSizeRel(0.5f, 0.81f);
-                SetPosRel(0.27f, 0.18f);
-                SetItemWidthRel(-0.100f);
-                SetAutoSpacing(true);
-                break;
-            case Gui::LOCALE_EN_US:
-                SetSizeRel(0.6f, 0.79f);
-                SetPosRel(0.215f, 0.18f);
-                SetItemWidthRel(-0.100f);
-                SetAutoSpacing(true);
-                break;
-            case Gui::LOCALE_JA_JP:
-                SetSizeRel(0.56f, 0.81f);
-                SetPosRel(0.230f, 0.18f);
-                SetItemWidthRel(-0.105f);
-                SetAutoSpacing(true);
-                break;
-            default:
-                break;
-            }
-        }
-        virtual void OnContentUpdate() override
-        {
-            ImGui::TextUnformatted(S(TH_MENU));
-            ImGui::Separator();
-
-            PracticeMenu();
-        }
-        const th_glossary_t* SpellPhase()
-        {
-            auto section = CalcSection();
-            return nullptr;
-        }
-        void PracticeMenu()
-        {
-            mMode();
-            if (mStage())
-                *mSection = *mChapter = 0;
-            if (*mMode == 1) {
-                int mbs = -1;
-                if (*mStage == 5) { // Counting from 0
-                    mbs = 2;
-                    if (*mWarp == 2)
-                        *mWarp = 0;
-                }
-                if (mWarp(mbs))
-                    *mSection = *mChapter = *mPhase = 0;
-                if (*mWarp) {
-                    SectionWidget();
-                    mPhase(TH_PHASE, SpellPhase());
-                }
-
-                mLife();
-                mBomb();
-                mBombFragment();
-                auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
-                mPower(power_str.c_str());
-                mValue();
-                mValue.RoundDown(10);
-                mGraze();
-                mScore();
-                mScore.RoundDown(10);
-            }
-
-            mNavFocus();
-        }
-        int CalcSection()
-        {
-            int chapterId = 0;
-            switch (*mWarp) {
-            case 1: // Chapter
-                // Chapter Id = 10000 + Stage * 100 + Section
-                chapterId += (*mStage + 1) * 100;
-                chapterId += *mChapter;
-                chapterId += 10000; // Base of chapter ID is 1000.
-                return chapterId;
-                break;
-            case 2:
-            case 3: // Mid boss & End boss
-                return th_sections_cba[*mStage][*mWarp - 2][*mSection];
-                break;
-            case 4:
-            case 5: // Non-spell & Spellcard
-                return th_sections_cbt[*mStage][*mWarp - 4][*mSection];
-                break;
-            default:
-                return 0;
-                break;
-            }
-        }
-        bool SectionHasDlg(int32_t section)
-        {
-            switch (section) {
-            case TH20_ST1_BOSS1:
-                return true;
-            default:
-                return false;
-            }
-        }
-        void SectionWidget()
-        {
-            static char chapterStr[256] {};
-            auto& chapterCounts = mChapterSetup[*mStage];
-
-            switch (*mWarp) {
-            case 1: // Chapter
-                mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
-
-                if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
-                    sprintf_s(chapterStr, S(TH_STAGE_PORTION_N), *mChapter);
-                } else if (*mChapter <= chapterCounts[0]) {
-                    sprintf_s(chapterStr, S(TH_STAGE_PORTION_1), *mChapter);
-                } else {
-                    sprintf_s(chapterStr, S(TH_STAGE_PORTION_2), *mChapter - chapterCounts[0]);
-                };
-
-                mChapter(chapterStr);
-                break;
-            case 2:
-            case 3: // Mid boss & End boss
-                if (mSection(TH_WARP_SELECT[*mWarp],
-                        th_sections_cba[*mStage][*mWarp - 2],
-                        th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
-                    *mPhase = 0;
-                if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
-                    mDlg();
-                break;
-            case 4:
-            case 5: // Non-spell & Spellcard
-                if (mSection(TH_WARP_SELECT[*mWarp],
-                        th_sections_cbt[*mStage][*mWarp - 4],
-                        th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
-                    *mPhase = 0;
-                if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
-                    mDlg();
-                break;
-            default:
-                break;
-            }
-        }
-
-        Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
-        Gui::GuiCombo mStage { TH_STAGE, TH_STAGE_SELECT };
-        Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
-        Gui::GuiCombo mSection { TH_MODE };
-        Gui::GuiCombo mPhase { TH_PHASE };
-        Gui::GuiCheckBox mDlg { TH_DLG };
-
-        Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
-        Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 9 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mBomb { TH_BOMB, 0, 9 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mBombFragment { TH_BOMB_FRAGMENT, 0, 4 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 100, 400 };
-        Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH_VALUE, 0, 999990, 10, 100000 };
-        Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, 999999, 1, 100000 };
-
-        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
-            TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
-            TH_SCORE, TH_LIFE, TH_BOMB, TH_BOMB_FRAGMENT, TH16_SEASON_GAUGE,
-            TH_POWER, TH_VALUE, TH_GRAZE };
-
-        int mChapterSetup[7][2] {
-            { 2, 2 },
-            { 4, 0 },
-            { 4, 2 },
-            { 3, 3 },
-            { 5, 3 },
-            { 3, 0 },
-            { 4, 4 },
-        };
-
-        int mDiffculty = 0;
-    };
-    class THGuiRep : public Gui::GameGuiWnd {
-        THGuiRep() noexcept
-        {
-            wchar_t appdata[MAX_PATH];
-            GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
-            mAppdataPath = appdata;
-        }
-        SINGLETON(THGuiRep);
-
-    public:
-        void CheckReplay()
-        {
-            uint32_t index = GetMemContent(0x4a6f20, 0x5b48);
-            char* repName = (char*)GetMemAddr(0x4a6f20, index * 4 + 0x5b50, 0x21c);
-            std::wstring repDir(mAppdataPath);
-            repDir.append(L"\\ShanghaiAlice\\th16\\replay\\");
-            repDir.append(mb_to_utf16(repName, 932));
-
-            std::string param;
-            if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
-                mParamStatus = true;
-            else
-                mRepParam.Reset();
-        }
-
-        bool mRepStatus = false;
-        void State(int state)
-        {
-            switch (state) {
-            case 1:
-                mRepStatus = false;
-                mParamStatus = false;
-                thPracParam.Reset();
-                break;
-            case 2:
-                CheckReplay();
-                break;
-            case 3:
-                mRepStatus = true;
-                if (mParamStatus)
-                    memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
-                break;
-            default:
-                break;
-            }
-        }
-
-    protected:
-        std::wstring mAppdataPath;
-        bool mParamStatus = false;
-        THPracParam mRepParam;
-    };
-    class THOverlay : public Gui::GameGuiWnd {
+     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
         {
             SetTitle("Mod Menu");
@@ -442,81 +454,80 @@ namespace TH20 {
             VK_F2,
         };
     };
-
-    class TH16InGameInfo : public Gui::GameGuiWnd {
-        TH16InGameInfo() noexcept
-        {
-            SetTitle("igi");
-            SetFade(0.9f, 0.9f);
-            SetPosRel(900.0f / 1280.0f, 500.0f / 960.0f);
-            SetSizeRel(340.0f / 1280.0f, 0.0f);
-            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
-            OnLocaleChange();
-        }
-        SINGLETON(TH16InGameInfo);
-
-    public:
-        int32_t mMissCount;
-        int32_t mBombCount;
-        int32_t mReleaseCount;
-
-    protected:
-        virtual void OnLocaleChange() override
-        {
-            float x_offset_1 = 0.0f;
-            float x_offset_2 = 0.0f;
-            switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
-                x_offset_1 = 0.12f;
-                x_offset_2 = 0.172f;
-                break;
-            case Gui::LOCALE_EN_US:
-                x_offset_1 = 0.12f;
-                x_offset_2 = 0.16f;
-                break;
-            case Gui::LOCALE_JA_JP:
-                x_offset_1 = 0.18f;
-                x_offset_2 = 0.235f;
-                break;
-            default:
-                break;
-            }
-        }
-
-        virtual void OnContentUpdate() override
-        {
-            ImGui::Columns(2);
-            ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
-            ImGui::NextColumn();
-            ImGui::Text("%8d", mMissCount);
-            ImGui::NextColumn();
-            ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
-            ImGui::NextColumn();
-            ImGui::Text("%8d", mBombCount);
-            ImGui::NextColumn();
-            ImGui::Text(S(THPRAC_INGAMEINFO_16_RELEASE_COUNT));
-            ImGui::NextColumn();
-            ImGui::Text("%8d", mReleaseCount);
-        }
-
-        virtual void OnPreUpdate() override
-        {
-            // if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(RVA2(0x5B85EC))) {
-            //     SetPosRel(900.0f / 1280.0f, 500.0f / 960.0f);
-            //     SetSizeRel(340.0f / 1280.0f, 0.0f);
-            //     Open();
-            // } else {
-            //     Close();
-            // }
-        }
-
-    public:
-    };
+     
+//      class TH16InGameInfo : public Gui::GameGuiWnd {
+//         TH16InGameInfo() noexcept
+//         {
+//             SetTitle("igi");
+//             SetFade(0.9f, 0.9f);
+//             SetPosRel(900.0f / 1280.0f, 500.0f / 960.0f);
+//             SetSizeRel(340.0f / 1280.0f, 0.0f);
+//             SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+//             OnLocaleChange();
+//         }
+//         SINGLETON(TH16InGameInfo);
+// 
+//     public:
+//         int32_t mMissCount;
+//         int32_t mBombCount;
+//         int32_t mReleaseCount;
+// 
+//     protected:
+//         virtual void OnLocaleChange() override
+//         {
+//             float x_offset_1 = 0.0f;
+//             float x_offset_2 = 0.0f;
+//             switch (Gui::LocaleGet()) {
+//             case Gui::LOCALE_ZH_CN:
+//                 x_offset_1 = 0.12f;
+//                 x_offset_2 = 0.172f;
+//                 break;
+//             case Gui::LOCALE_EN_US:
+//                 x_offset_1 = 0.12f;
+//                 x_offset_2 = 0.16f;
+//                 break;
+//             case Gui::LOCALE_JA_JP:
+//                 x_offset_1 = 0.18f;
+//                 x_offset_2 = 0.235f;
+//                 break;
+//             default:
+//                 break;
+//             }
+//         }
+// 
+//         virtual void OnContentUpdate() override
+//         {
+//             ImGui::Columns(2);
+//             ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+//             ImGui::NextColumn();
+//             ImGui::Text("%8d", mMissCount);
+//             ImGui::NextColumn();
+//             ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+//             ImGui::NextColumn();
+//             ImGui::Text("%8d", mBombCount);
+//             ImGui::NextColumn();
+//             ImGui::Text(S(THPRAC_INGAMEINFO_16_RELEASE_COUNT));
+//             ImGui::NextColumn();
+//             ImGui::Text("%8d", mReleaseCount);
+//         }
+// 
+//         virtual void OnPreUpdate() override
+//         {
+//             // if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(RVA2(0x5B85EC))) {
+//             //     SetPosRel(900.0f / 1280.0f, 500.0f / 960.0f);
+//             //     SetSizeRel(340.0f / 1280.0f, 0.0f);
+//             //     Open();
+//             // } else {
+//             //     Close();
+//             // }
+//         }
+// 
+//     public:
+//     };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
         SINGLETON(THAdvOptWnd);
         
-
     public:
 
     private:
@@ -634,6 +645,31 @@ namespace TH20 {
                 // InfLifeOpt();
                 ImGui::SetNextItemWidth(180.0f);
                 EndOptGroup();
+            }
+            ImGui::Checkbox("simple prac mode", &g_prac_mode);
+            if (ImGui::DragInt("stage jump", &g_jump_stage, 1.0f, 1, 3))
+                g_jump_stage = std::clamp(g_jump_stage, 1, 3);
+            if (ImGui::DragInt("life", &g_life, 1.0f, 0, 7))
+                g_life = std::clamp(g_life, 0, 7);
+            if (ImGui::DragInt("bomb", &g_bomb, 1.0f, 0, 7))
+                g_bomb = std::clamp(g_bomb, 0, 7);
+            if (ImGui::DragInt("piv", &g_piv, 1000.0f, 0, 1000000))
+                g_piv = std::clamp(g_piv, 0, 1000000);
+            if (ImGui::DragInt("power", &g_power, 1.0f, 0, 400))
+                g_power = std::clamp(g_power, 0, 400);
+            if (ImGui::DragInt("hyper", &g_hyper, 10.0f, 0, 1000))
+                g_hyper = std::clamp(g_hyper, 0, 1000);
+            if (ImGui::DragInt("delta", &g_delta, 10.0f, 0, 5000))
+                g_delta = std::clamp(g_delta, 0, 5000);
+            static bool insult = false;
+            static std::string ins = "";
+            if (ImGui::Button("Insult 2un")){
+                insult = true;
+                ins += "SB 2un SB 2un SB 2un SB 2un SB 2un SB 2un SB 2un\n";
+            }
+            if (insult)
+            {
+                ImGui::TextWrapped(ins.c_str());
             }
 
             AboutOpt();
@@ -870,6 +906,23 @@ namespace TH20 {
     }
 
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th20_jump_stage, 0x0012AB34)
+    {
+        if (g_prac_mode) {
+            *(int*)(pCtx->Esp) = g_jump_stage;
+        }
+    }
+    EHOOK_DY(th20_init_res, 0x00BCF34)
+    {
+        if (g_prac_mode){
+            *(int*)RVA2(0x005B8728) = g_life;
+            *(int*)RVA2(0x005B873C) = g_bomb;
+            *(int*)RVA2(0x005B86B4) = g_piv;
+            *(int*)RVA2(0x005B86A0) = g_power;
+            *(int*)RVA2(0x005B86BC) = g_hyper;
+            *(int*)RVA2(0x005B86CC) = g_delta;
+        }
+    }
     EHOOK_DY(th20_inf_lives, 0x0B90F7)
     {
         if ((*(THOverlay::singleton().mInfLives))) {
@@ -1080,10 +1133,39 @@ namespace TH20 {
     HOOKSET_ENDDEF()
 }
 
+int(__stdcall* g_realMultiByteToWideChar)(UINT CodePage, DWORD dwFlags, LPCCH lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar);
+int __stdcall MultiByteToWideChar_Changed(UINT CodePage, DWORD dwFlags, LPCCH lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar)
+{
+    return g_realMultiByteToWideChar(CP_ACP, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
+}
+
+int(__stdcall* g_reaWideCharToMultiByte)(UINT CodePage, DWORD dwFlags, LPCWCH lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCCH lpDefaultChar, LPBOOL lpUsedDefaultChar);
+int __stdcall WideCharToMultiByte_Changed(UINT CodePage, DWORD dwFlags, LPCWCH lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCCH lpDefaultChar, LPBOOL lpUsedDefaultChar)
+{
+    return g_reaWideCharToMultiByte(CP_ACP, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte,lpDefaultChar,lpUsedDefaultChar);
+}
+
 void TH20Init()
 {
     ingame_image_base = (uintptr_t)GetModuleHandleW(NULL);
+    
+    // 2un used shift-jis encoding for this 2 functions, which can cause problem in no-japanese environment with a no-ascii username...
+    
+    // LPVOID pTarget1;
+    // MH_Initialize();
+    // if (MH_OK == MH_CreateHookApiEx(L"kernel32.dll", "MultiByteToWideChar", MultiByteToWideChar_Changed, (void**)&g_realMultiByteToWideChar, &pTarget1)){
+    //     // MessageBoxA(NULL, std::format("{:x}", (DWORD)pTarget1).c_str(), "", MB_OK);
+    //     MH_EnableHook(pTarget1);
+    // }
+    // LPVOID pTarget2;
+    // if (MH_OK == MH_CreateHookApiEx(L"kernel32.dll", "WideCharToMultiByte", WideCharToMultiByte_Changed, (void**)&g_reaWideCharToMultiByte, &pTarget2))
+    // {
+    //     // MessageBoxA(NULL, std::format("{:x}", (DWORD)pTarget2).c_str(), "", MB_OK);
+    //     MH_EnableHook(pTarget2);
+    // }
+
     TH20::THInitHook::singleton().EnableAllHooks();
+
     // TryKeepUpRefreshRate((void*)0x45b8da, (void*)0x45b6ad);
 }
 }
