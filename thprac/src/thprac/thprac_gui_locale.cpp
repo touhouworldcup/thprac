@@ -427,30 +427,41 @@ static ImWchar baseUnicodeRanges[] =
     }
     ImWchar* GetGlyphRange(int locale)
     {
+        bool renderOnlyUsedGlyphs = false;
+        LauncherSettingGet("render_only_used_glyphs", renderOnlyUsedGlyphs);
+
         auto& io = ImGui::GetIO();
         ImWchar* glyphRange = nullptr;
         switch (locale) {
         case LOCALE_ZH_CN:
-            glyphRange = (ImWchar*)io.Fonts->GetGlyphRangesChineseFull();
+            if (renderOnlyUsedGlyphs) {
+                glyphRange = (ImWchar*)__thprac_loc_range_zh;
+            } else {
+                glyphRange = (ImWchar*)io.Fonts->GetGlyphRangesChineseFull();
+            }
             break;
         case LOCALE_EN_US:
             glyphRange = (ImWchar*)io.Fonts->GetGlyphRangesDefault();
             break;
         case LOCALE_JA_JP: {
-            if (!__glocale_jp_glyphrange) {
-                __glocale_jp_glyphrange = (ImWchar*)malloc((_countof(baseUnicodeRanges) + _countof(offsetsFrom0x4E00) * 2 + 1) * sizeof(ImWchar));
-                // Unpack
-                int codepoint = 0x4e00;
-                memcpy(__glocale_jp_glyphrange, baseUnicodeRanges, sizeof(baseUnicodeRanges));
-                ImWchar* dst = __glocale_jp_glyphrange + _countof(baseUnicodeRanges);
-                for (int n = 0; n < _countof(offsetsFrom0x4E00); n++, dst += 2) {
-                    dst[0] = dst[1] = (ImWchar)(codepoint += (offsetsFrom0x4E00[n] + 1));
+            if (renderOnlyUsedGlyphs) {
+                glyphRange = (ImWchar*)__thprac_loc_range_ja;
+            } else {
+                if (!__glocale_jp_glyphrange) {
+                    __glocale_jp_glyphrange = (ImWchar*)malloc((_countof(baseUnicodeRanges) + _countof(offsetsFrom0x4E00) * 2 + 1) * sizeof(ImWchar));
+                    // Unpack
+                    int codepoint = 0x4e00;
+                    memcpy(__glocale_jp_glyphrange, baseUnicodeRanges, sizeof(baseUnicodeRanges));
+                    ImWchar* dst = __glocale_jp_glyphrange + _countof(baseUnicodeRanges);
+                    for (int n = 0; n < _countof(offsetsFrom0x4E00); n++, dst += 2) {
+                        dst[0] = dst[1] = (ImWchar)(codepoint += (offsetsFrom0x4E00[n] + 1));
+                    }
+                    dst[0] = 0;
                 }
-                dst[0] = 0;
+                glyphRange = (ImWchar*)__glocale_jp_glyphrange;
             }
-        }
-            glyphRange = (ImWchar*)__glocale_jp_glyphrange;
             break;
+        }
         default:
             break;
         }
