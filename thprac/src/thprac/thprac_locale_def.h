@@ -570,6 +570,28 @@ enum th_glossary_t
     TH19_RANK_FORMAT,
     TH19_SHOW_ENEMY_HP,
     TH19_TITLE,
+    TH20_FAKE_UNLOCK_STONES,
+    TH20_FAKE_UNLOCK_STONES_DESC,
+    TH20_FIX_HITBOX,
+    TH20_FIX_HITBOX_DESC,
+    TH20_HYPER,
+    TH20_HYP_LOCK,
+    TH20_INTERNAL_GAUGES,
+    TH20_NEXT_STONE,
+    TH20_PIV_OVERFLOW_FIX,
+    TH20_STONE_GAUGE,
+    TH20_STONE_LEVEL_B,
+    TH20_STONE_LEVEL_G,
+    TH20_STONE_LEVEL_R,
+    TH20_STONE_LEVEL_Y,
+    TH20_STONE_PRIORITY_B,
+    TH20_STONE_PRIORITY_G,
+    TH20_STONE_PRIORITY_R,
+    TH20_STONE_PRIORITY_Y,
+    TH20_TITLE,
+    TH20_UNCAP_PIV,
+    TH20_UNCAP_SCORE,
+    TH20_WST_LOCK,
     THPRAC_ABORT,
     THPRAC_ADMIN_RIGHTS,
     THPRAC_ADVANCED_OPTION,
@@ -1031,13 +1053,15 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1019];
+extern const char* th_glossary_str[3][1041];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
 extern const th_glossary_t TH_STAGE_SELECT[8];
 
 extern const th_glossary_t TH_STAGE_SELECT_NOEX[7];
+
+extern const th_glossary_t TH_STAGE_SELECT_TRIAL[4];
 
 extern const th_glossary_t TH_MODE_SELECT[3];
 
@@ -2565,10 +2589,48 @@ extern const th_sections_t th_sections_cbt[1][2][1];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3237];
+namespace TH20 {
+
+enum th_sections_t : uint8_t
+{
+    A0000ERROR,
+    TH20_ST1_MID1,
+    TH20_ST1_BOSS1,
+    TH20_ST1_BOSS2,
+    TH20_ST1_BOSS3,
+    TH20_ST1_BOSS4,
+    TH20_ST1_BOSS5,
+    TH20_ST2_MID1,
+    TH20_ST2_BOSS1,
+    TH20_ST2_BOSS2,
+    TH20_ST2_BOSS3,
+    TH20_ST2_BOSS4,
+    TH20_ST2_BOSS5,
+    TH20_ST3_BOSS1,
+    TH20_ST3_BOSS2,
+    TH20_ST3_BOSS3,
+    TH20_ST3_BOSS4,
+    TH20_ST3_BOSS5,
+    TH20_ST3_BOSS6,
+    TH20_ST3_BOSS7,
+};
+
+extern const char* th_sections_str[3][4][20];
+
+extern const uint8_t th_sections_bgm[20];
+
+extern const th_sections_t th_sections_cba[3][2][8];
+
+extern const th_sections_t th_sections_cbt[3][2][5];
+
+extern const th_glossary_t TH20_RAGE[3];
+
+}
+
+extern const wchar_t __thprac_loc_range_zh[3255];
 
 extern const wchar_t __thprac_loc_range_en[15];
 
-extern const wchar_t __thprac_loc_range_ja[2737];
+extern const wchar_t __thprac_loc_range_ja[2755];
 
 }
