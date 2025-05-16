@@ -41,11 +41,11 @@ This video explains how to use the launcher.
 ### Command line
 The following command line options are supported:
 - `<path to game exe>` The command `thprac.exe <path to game exe>` will run a game and attach thprac without any confirmation prompt. This makes it possible to drag a Touhou game executable onto thprac.exe and it will run with thprac.
-- `--attach <pid>` immediately inject thprac into a process with ID `<pid>` without any confirmation prompts
+- `--attach <pid>` immediately inject thprac into a process with ID `<pid>` without any confirmation prompts.
 - `--attach` (without any other flags). The command `thprac.exe --attach` will attach thprac to the first Touhou game process it finds without opening any kind of confirmation prompt.
-- `--without-vpatch` Prevent automatically applying vpatch
+- `--without-vpatch` Prevent automatically applying vpatch.
 
-Example commands
+Example commands:
 ```
 thprac.exe --attach 1234
 thprac.exe --attach

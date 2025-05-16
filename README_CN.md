@@ -44,6 +44,24 @@
 下面这个视频说明了如何使用 thprac 自带的启动器。（需要科学上网）
 [![A quick and dirty overview of thprac 2.0](https://i.ytimg.com/vi/sRV4PDQceYo/maxresdefault.jpg)](https://www.youtube.com/watch?v=sRV4PDQceYo)
 
+## 使用命令行参数
+
+thprac 支持以下命令行选项：
+
+- `<path to game exe>` 命令 `thprac.exe <path to game exe>` 将直接运行指定的游戏并附加 thprac，而不会有任何确认提示。这允许你通过将东方游戏的 exe 文件直接拖动到 thprac.exe 上，游戏启动并附加 thprac。
+- `--attach <pid>` 立刻将 thprac 注入到拥有 ID `<PID>` 的进程，不会有任何确认提示。
+- `--attach` （不带其他参数）。命令 `thprac.exe --attach` 将会将 thprac 注入到第一个其找到的 东方游戏进程，不带任何确认提示。
+- `--without-vpatch` 阻止自动应用 vpatch。
+
+示例命令：
+
+```
+thprac.exe --attach 1234
+thprac.exe --attach
+thprac.exe C:\Users\Name\Desktop\Games\Touhou\th17\th17.exe
+thprac.exe --without-vpatch C:\Users\Name\Desktop\Games\Touhou\th17\th17.exe
+```
+
 ## <a name="compatability"></a>兼容性
 
 thprac 正式支持自 **Windows Vista** 以来的所有 Windows 版本。若使用 [One-Core-API](https://github.com/Skulltrail192/One-Core-API-Binaries)，thprac 可能在 Windows XP 下也能工作，但我们**不**常测试 Windows XP 下的兼容性。
@@ -167,11 +185,11 @@ thprac 与 thcrap 兼容。thprac 的启动器也可以启动 thcrap，与 [Univ
 
 ### 技术问题
 
-#### 高级选项显示 “不支持的 VsyncPatch 版本”
+#### 高级选项显示“不支持的 VsyncPatch 版本”
 你可以在 [此处](https://maribelhearn.com/tools#vpatch) 找到我们兼容的 vpatch 版本。如果可以，请尽可能使用 **rev7** 中的 DLL。
 
 #### 使用 vpatch 时似乎无法调整 FPS
-某些工具（例如“DX8 to DX9 转换器”）与 VsyncPatch 冲突。注意 replay 的播放速度调整（加速/减速）仅在神灵庙中得到支持。
+某些工具（例如“DX8 to DX9 Converter”）与 VsyncPatch 冲突。注意 replay 的播放速度调整（加速/减速）仅在神灵庙中得到支持。
 
 #### 什么是“辉针城 - 魔理沙激光相关”？
 这个功能能够修复辉针城里臭名昭著的魔理沙激光炸 replay 的 bug。
