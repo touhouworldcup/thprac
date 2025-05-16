@@ -441,6 +441,7 @@ static ImWchar baseUnicodeRanges[] =
             }
             break;
         case LOCALE_EN_US:
+            // TODO: modify thprac_utils to avoid the occurrence of the out-of-range glyphs
             glyphRange = (ImWchar*)io.Fonts->GetGlyphRangesDefault();
             break;
         case LOCALE_JA_JP: {

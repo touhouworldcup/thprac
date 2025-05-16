@@ -2291,7 +2291,8 @@ namespace TH14 {
         el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode == 1 && thPracParam.section;
         is_practice = (*((int32_t*)0x4f58b8) & 0x1); // is restarting
         result = ElBgmTest<0x445743, 0x436526, 0x448e91, 0x44908a, 0xffffffff>(
-            el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
+            el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff
+        );
 
         if (result) {
             pCtx->Eip = 0x46f022;

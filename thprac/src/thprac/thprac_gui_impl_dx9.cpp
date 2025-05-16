@@ -1,5 +1,5 @@
 ﻿/*
-	This file is a modified copy of imgui's DirectX9 renderer implemention's  source file.
+	This file is a modified copy of imgui's DirectX9 renderer implemention's source file.
 	Changes made:
 
 	1. Includes: Renamed "imgui_impl_dx9.h".

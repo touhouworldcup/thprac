@@ -1326,7 +1326,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 6, 2, 6 ],
-        "!EN": [ "诅咒「Vlad Tepes的诅咒」", "Curse \"Curse of Vlad Țepeș\"", "呪詛「ブラド・ツェペシュの呪い」" ],
+        "!EN": [ "诅咒「Vlad Tepes的诅咒」", "Curse \"Curse of Vlad Tepes\"", "呪詛「ブラド・ツェペシュの呪い」" ],
         "!HL": [ "神术「吸血鬼幻想」", "Divine Art \"Vampire Illusion\"", "神術「吸血鬼幻想」" ]
       },
       "TH06_ST6_BOSS7": {
@@ -2854,7 +2854,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 4 ],
-        "!EN": [ "苏活「生命游戏 -Life Game-」", "Revival \"Seimei Yūgi -Life Game-\"", "蘇活「生命遊戯　-ライフゲーム-」" ],
+        "!EN": [ "苏活「生命游戏 -Life Game-」", "Revival \"Seimei Yugi -Life Game-\"", "蘇活「生命遊戯　-ライフゲーム-」" ],
         "!HL": [ "苏生「Rising Game」", "Resurrection \"Rising Game\"", "蘇生「ライジングゲーム」" ]
       },
       "TH08_ST6A_BOSS5": {
@@ -6081,8 +6081,8 @@
         "bgm": 0,
         "spell": 1,
         "appearance": [ 4, 1, 2 ],
-        "!N": [ "邪符「养小鬼」", "Evil Sign \"Yǎng Xiǎoguǐ\"", "邪符「ヤンシャオグイ」" ],
-        "!HL": [ "邪符「孤魂野鬼」", "Evil Sign \"Gūhún Yěguǐ\"", "邪符「グーフンイエグイ」" ]
+        "!N": [ "邪符「养小鬼」", "Evil Sign \"Yang Xiaogui\"", "邪符「ヤンシャオグイ」" ],
+        "!HL": [ "邪符「孤魂野鬼」", "Evil Sign \"Guhun Yegui\"", "邪符「グーフンイエグイ」" ]
       },
       "TH13_ST4_BOSS1": {
         "bgm": 1,
@@ -6094,7 +6094,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 4, 2, 2 ],
-        "!ENHL": [ "入魔「走火入魔」", "Demonify \"Zǒuhuǒ Rùmó\"", "入魔「ゾウフォルゥモォ」" ]
+        "!ENHL": [ "入魔「走火入魔」", "Demonify \"Zouhuo Rumo\"", "入魔「ゾウフォルゥモォ」" ]
       },
       "TH13_ST4_BOSS3": {
         "bgm": 1,
@@ -6106,8 +6106,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 4, 2, 4 ],
-        "!EN": [ "降灵「死人童乩」", "Possession \"Corpse Tóngjī\"", "降霊「死人タンキー」" ],
-        "!HL": [ "通灵「通灵芳香」", "Spirit Link \"Tōnglíng Yoshika\"", "通霊「トンリン芳香」" ]
+        "!EN": [ "降灵「死人童乩」", "Possession \"Corpse Tongji\"", "降霊「死人タンキー」" ],
+        "!HL": [ "通灵「通灵芳香」", "Spirit Link \"Tongling Yoshika\"", "通霊「トンリン芳香」" ]
       },
       "TH13_ST4_BOSS5": {
         "bgm": 1,
@@ -7428,7 +7428,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 2 ],
-        "!X": [ "异界「逢魔之刻」", "Otherworld \"Ōmagatoki\"", "異界「逢魔ガ刻」" ]
+        "!X": [ "异界「逢魔之刻」", "Otherworld \"Omagatoki\"", "異界「逢魔ガ刻」" ]
       },
       "TH15_ST7_END_NS2": {
         "bgm": 1,
@@ -7763,7 +7763,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 5, 2, 3 ],
-        "!ENHL": [ "茗荷「忘却你的名字」", "Myōga Ginger \"Forget Your Name\"", "茗荷「フォゲットユアネーム」" ]
+        "!ENHL": [ "茗荷「忘却你的名字」", "Myoga Ginger \"Forget Your Name\"", "茗荷「フォゲットユアネーム」" ]
       },
       "TH16_ST5_BOSS3": {
         "bgm": 1,
@@ -7781,7 +7781,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 5, 2, 6 ],
-        "!ENHL": [ "冥加「在你背后」", "Myōga Blessing \"Behind You\"", "冥加「ビハインドユー」" ]
+        "!ENHL": [ "冥加「在你背后」", "Myoga Blessing \"Behind You\"", "冥加「ビハインドユー」" ]
       },
       "TH16_ST5_BOSS5": {
         "bgm": 1,
@@ -7969,7 +7969,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 10 ],
-        "!X": [ "秘仪「后户的狂言」", "Secret Ceremony \"Kyōgen of the Back Door\"", "秘儀「後戸の狂言」" ]
+        "!X": [ "秘仪「后户的狂言」", "Secret Ceremony \"Kyogen of the Back Door\"", "秘儀「後戸の狂言」" ]
       },
       "TH16_ST7_END_NS6": {
         "bgm": 1,
