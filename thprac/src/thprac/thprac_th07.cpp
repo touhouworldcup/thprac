@@ -2150,7 +2150,7 @@ namespace TH07 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX8, 0x575958, 0x575c20, 0x434490,
+        GameGuiInit(IMPL_WIN32_DX8, 0x575958, 0x575c20,
             Gui::INGAGME_INPUT_GEN1, 0x4b9e4c, 0x4b9e54, 0x4b9e5c,
             -1);
 

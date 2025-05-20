@@ -301,7 +301,7 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
 
 
 
-void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
+void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3,
     int wnd_size_flag, float x, float y)
 {
@@ -309,8 +309,8 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
     ::ImGui::CreateContext();
     g_gameGuiImpl = impl;
     g_gameGuiDevice = (DWORD*)device;
-    g_gameGuiHwnd = (DWORD*)hwnd;
-    g_gameIMCCtx = ImmAssociateContext(*(HWND*)hwnd, 0);
+    g_gameGuiHwnd = (DWORD*)hwnd_addr;
+    g_gameIMCCtx = ImmAssociateContext(*(HWND*)hwnd_addr, 0);
 
     // Set Locale
     GuiLauncherLocaleInit();
@@ -323,7 +323,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
 
         // Hooks
         Gui::ImplDX8HookReset();
-        Gui::ImplWin32HookWndProc((void*)wndproc_addr);
+        Gui::ImplWin32HookWndProc();
         break;
     case THPrac::IMPL_WIN32_DX9:
         // Impl
@@ -332,7 +332,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
 
         // Hooks
         Gui::ImplDX9HookReset();
-        Gui::ImplWin32HookWndProc((void*)wndproc_addr);
+        Gui::ImplWin32HookWndProc();
         break;
     default:
         break;
@@ -388,41 +388,41 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
 
             if (g_disable_max_btn || resizable_window)
             {
-                auto longPtr = GetWindowLongW(*(HWND*)hwnd, GWL_STYLE);
+                auto longPtr = GetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE);
                 if (resizable_window)
                     longPtr |= WS_SIZEBOX;
                 if (g_disable_max_btn)
                     longPtr = longPtr & (~WS_MAXIMIZEBOX);
-                SetWindowLongW(*(HWND*)hwnd, GWL_STYLE, longPtr);
+                SetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE, longPtr);
                 if (resizable_window)
                 {
                     RECT wndRect;
-                    GetClientRect(*(HWND*)hwnd, &wndRect);
+                    GetClientRect(*(HWND*)hwnd_addr, &wndRect);
                     auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
                     auto captionSize = GetSystemMetrics(SM_CYCAPTION);
-                    SetWindowPos(*(HWND*)hwnd, HWND_NOTOPMOST,
+                    SetWindowPos(*(HWND*)hwnd_addr, HWND_NOTOPMOST,
                         0, 0, wndRect.right + frameSize, wndRect.bottom + frameSize + captionSize,
                         SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
                 }
             }
             if (init_window_pos) {
                 RECT wndRect;
-                GetWindowRect(*(HWND*)hwnd, &wndRect);
+                GetWindowRect(*(HWND*)hwnd_addr, &wndRect);
                 if (wndRect.left < 0 || wndRect.top < 0 || (wndRect.bottom + wndRect.top) / 2 >= GetSystemMetrics(SM_CYSCREEN) || (wndRect.right + wndRect.left) / 2 >= GetSystemMetrics(SM_CXSCREEN))
-                SetWindowPos(*(HWND*)hwnd, HWND_NOTOPMOST, 0, 0, wndRect.right-wndRect.left, wndRect.bottom-wndRect.top, SWP_NOZORDER | SWP_FRAMECHANGED);
+                    SetWindowPos(*(HWND*)hwnd_addr, HWND_NOTOPMOST, 0, 0, wndRect.right - wndRect.left, wndRect.bottom - wndRect.top, SWP_NOZORDER | SWP_FRAMECHANGED);
             }
             if (change_window_when_open) {
                 std::array<int, 2> windowsz = { 0, 0 };
                 if (LauncherSettingGet("changed_window_size", windowsz) && windowsz[0] > 0 && windowsz[1] > 0) {
                         RECT wndRect;
                         RECT clientRect;
-                        GetClientRect(*(HWND*)hwnd, &clientRect);
-                        GetWindowRect(*(HWND*)hwnd, &wndRect);
+                        GetClientRect(*(HWND*)hwnd_addr, &clientRect);
+                        GetWindowRect(*(HWND*)hwnd_addr, &wndRect);
                         int szx = (wndRect.right - wndRect.left)-(clientRect.right-clientRect.left);
                         int szy = (wndRect.bottom - wndRect.top) - (clientRect.bottom - clientRect.top);
                         auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
                         auto captionSize = GetSystemMetrics(SM_CYCAPTION);
-                        SetWindowPos(*(HWND*)hwnd, HWND_NOTOPMOST,
+                        SetWindowPos(*(HWND*)hwnd_addr, HWND_NOTOPMOST,
                             0, 0, windowsz[0] + szx, windowsz[1] + szy,
                             SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
                 }
@@ -638,11 +638,9 @@ void GameGuiEnd(bool draw_cursor)
 {
     if (GameGuiProgress != 1)
         return;
-    if (draw_cursor){
-        // if (draw_cursor || ImGui::IsAnyItemActive() || ImGui::IsAnyItemHovered() || ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)){
-        // try to re-hook wnd proc
-        Gui::ReHookWndProc();
-    }
+    // try to re-hook wnd proc
+    // now it's no need since win32 hook method is changed
+    
     // Draw cursor if needed
     if (draw_cursor && (g_forceRenderCursor || Gui::ImplWin32CheckFullScreen())) {
         auto& io = ::ImGui::GetIO();

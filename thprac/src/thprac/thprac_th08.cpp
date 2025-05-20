@@ -2743,7 +2743,7 @@ namespace TH08 {
     // Exactly one instruction before th08_gui_create_2
     EHOOK_DY(th08_recreate_device, 0x442A7E)
     {
-        GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700, 0x442390,
+        GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700,
             Gui::INGAGME_INPUT_GEN1, 0x164d528, 0x164d530, 0x164d538,
             -1);
     }
@@ -2813,7 +2813,7 @@ namespace TH08 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700, 0x442390,
+        GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700,
             Gui::INGAGME_INPUT_GEN1, 0x164d528, 0x164d530, 0x164d538,
             -1);
 

@@ -107,8 +107,8 @@ namespace TH16 {
         THGuiPrac() noexcept
         {
             *mMode = 1;
-            *mLife = 9;
-            *mBomb = 9;
+            *mLife = 8;
+            *mBomb = 8;
             *mSeasonGauge = 6;
             *mPower = 400;
             *mValue = 10000;
@@ -334,8 +334,8 @@ namespace TH16 {
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 9 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mBomb { TH_BOMB, 0, 9 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 8 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mBomb { TH_BOMB, 0, 8 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mBombFragment { TH_BOMB_FRAGMENT, 0, 4 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mSeasonGauge { TH16_SEASON_GAUGE, 0, 6 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 100, 400 };
@@ -2644,7 +2644,7 @@ namespace TH16 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4c10d8, 0x4d7ce0, 0x45a450,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4c10d8, 0x4d7ce0,
             Gui::INGAGME_INPUT_GEN2, 0x4a50bc, 0x4a50b8, 0,
             (*((int32_t*)0x4d9d1c) >> 2) & 0xf);
 

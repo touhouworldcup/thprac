@@ -3713,7 +3713,7 @@ namespace TH06 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX8, 0x6c6d20, 0x6c6bd4, 0x420d40,
+        GameGuiInit(IMPL_WIN32_DX8, 0x6c6d20, 0x6c6bd4,
             Gui::INGAGME_INPUT_GEN1, 0x69d904, 0x69d908, 0x69d90c,
             -1);
         // g_adv_igi_options.th06_showHitbox

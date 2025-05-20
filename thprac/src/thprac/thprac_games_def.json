@@ -297,7 +297,7 @@
       "THPRAC_TOOLS_RND_PLAYER": [ "随机机体", "Random shot type", "ランダム機体" ],
       "THPRAC_TOOLS_RND_GAME_PC98": [ "PC98", "PC98", "PC98" ],
       "THPRAC_TOOLS_ROLL": [ "ROLL!", "ROLL!", "ROLL!" ],
-      "THPRAC_TOOLS_ROLL_RESULT": [ "你随机到了：%s。（右键查看更多选项）", "You've rolled: %s. (Right click for more options)", "結果：％s。（右クリックで詳細オプションを表示）" ],
+      "THPRAC_TOOLS_ROLL_RESULT": [ "你随机到了：%s。（右键查看更多选项）", "You've rolled: %s. (Right click for more options)", "結果：%s。（右クリックで詳細オプションを表示）" ],
       "THPRAC_TOOLS_RND_PLAYER_GAME": [ "游戏", "Game", "ゲーム" ],
       "THPRAC_TOOLS_RND_TURNTO_PLAYER": [ "转至随机机体", "Turn to random shot type", "ランダム機体に移動" ],
       "THPRAC_TOOLS_RND_TURNTO_GAME": [ "转至游戏页面", "Turn to game page", "ゲームページに移動" ],
@@ -1406,7 +1406,8 @@
       "TH_EOSD_SAKUYA_DOLLS_HALF_HALF": [ "五五开", "half half", "half half" ],
       "TH_EOSD_SAKUYA_DOLLS_RANDOM": [ "随机", "randomly", "randomly" ],
 
-      "TH_BULLETS": [ "子弹", "Bullets", "弾" ]
+      "TH_BULLETS": [ "子弹", "Bullets", "弾" ],
+      "TH_PERFORMANCE": [ "速度", "Performance", "タースピード" ]
     },
 
     "groups": {
@@ -2604,7 +2605,7 @@
         "appearance": [ 5, 2, 6 ],
         "!EN": [ "天上剑「天人之五衰」", "Heaven Sword \"Five Signs of the Dying Deva\"", "天上剣「天人の五衰」" ],
         "!H": [ "天界剑「七魄忌讳」", "Deva Realm Sword \"Displeasure of the Seven Hakus\"", "天界剣「七魄忌諱」" ],
-        "!L": [ "天神剑「三魂七魄」", "Heaven God Sword \"Three Kons, Seven Hakus\"", "天神剣「叁魂七魄」" ]
+        "!L": [ "天神剑「三魂七魄」", "Heaven God Sword \"Three Kons, Seven Hakus\"", "天神剣「三魂七魄」" ]
       },
 
       "TH07_ST6_CHAOS": {
@@ -3022,7 +3023,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 1, 2, 2 ],
-        "!ENHL": [ "灯符「萤光现象」", "Lamp Sign \"Firefly Phenomenon\"", "灯符「Firefly Phenomemon」" ]
+        "!ENHL": [ "灯符「萤光现象」", "Lamp Sign \"Firefly Phenomenon\"", "灯符「ファイヤフライフェノメノン」" ]
       },
       "TH08_ST1_BOSS3": {
         "bgm": 1,
@@ -3579,7 +3580,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 9, 2, 2 ],
-        "!X": [ "时效「月岩笠的诅咒」", "Limiting Edict \"Curse of Tsuki-no-Iwakasa\"", "时効「月のいはかさの呪い」" ]
+        "!X": [ "时效「月岩笠的诅咒」", "Limiting Edict \"Curse of Tsuki-no-Iwakasa\"", "時効「月のいはかさの呪い」" ]
       },
       "TH08_ST7_END_NS2": {
         "bgm": 1,
@@ -3615,7 +3616,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 9, 2, 8 ],
-        "!X": [ "不死「徐福时空」", "Undying \"Xu Fu's Dimension\"", "不死「徐福时空」" ]
+        "!X": [ "不死「徐福时空」", "Undying \"Xu Fu's Dimension\"", "不死「徐福時空」" ]
       },
       "TH08_ST7_END_NS5": {
         "bgm": 1,
@@ -3835,7 +3836,7 @@
         "TH09_P2_FORMAT_INT": [ "P2: %d", "P2: %d", "P2: %d" ],
         "TH09_P1_FORMAT_FLOAT": [ "P1: %.3f", "P1: %.3f", "P1: %.3f" ],
         "TH09_P2_FORMAT_FLOAT": [ "P2: %.3f", "P2: %.3f", "P2: %.3f" ],
-        "TH09_TOOLS_TITLE": [ "花映塚工具", "TH09 Tools", "花映塚ツール" ],
+        "TH09_TOOLS_TITLE": [ "花映塚工具###_th09_tools", "TH09 Tools###_th09_tools", "花映塚ツール###_th09_tools" ],
         "TH09_STATS": [ "统计数据", "Stats", "ステータス" ],
         "TH09_STAT_B_FAIRY": [ "妖精: %d", "Fairy: %d", "妖精: %d" ],
         "TH09_STAT_B_RIVAL": [ "敌方: %d", "Rival: %d", "敵弾: %d" ],
@@ -4332,7 +4333,7 @@
       "ALCOSTG_BEER": [ "啤酒", "Beer", "ビール" ],
       "ALCOSTG_BEER_MAX": [ "啤酒上限", "Max Beer", "ビール最大値" ],
       "ALCOSTG_ORDER": [ "订单 #%d", "Order #%d", "注文 #%d" ],
-      "ALCOSTG_ORDER_MBOSS": [ "订单 #%d (中Boss）", "Order #%d (Mid Boss)", "注文 #%d (道中ボス)" ],
+      "ALCOSTG_ORDER_MBOSS": [ "订单 #%d (中Boss)", "Order #%d (Mid Boss)", "注文 #%d (道中ボス)" ],
       "ALCOSTG_FREE_MISS": [ "无偿Miss", "Costless Miss", "無償ミス" ],
       "ALCOSTG_FREE_BOMB": [ "无偿Bomb", "Costless Bomb", "無償ボム" ],
       "ALCOSTG_LOCK_TIME_BAR": [ "锁时 (酒场)", "Time Lock (Bar)", "酒場の時間は進みません" ],
@@ -4471,6 +4472,12 @@
 
     "glossary": {
       "TH11_SIGNAL": [ "信号强度", "C. Gauge", "交信強度" ],
+	  "TH11_MARISAB_FORMATION_LABEL": [ "配置", "Formation", "配置" ],
+      "TH11_MARISAB_FIRE":  [ "火符", "Fire",  "火符" ],
+      "TH11_MARISAB_WATER": [ "水符", "Water", "水符" ],
+      "TH11_MARISAB_WOOD":  [ "木符", "Wood",  "木符" ],
+      "TH11_MARISAB_METAL": [ "金符", "Metal", "金符" ],
+      "TH11_MARISAB_EARTH": [ "土符", "Earth", "土符" ],
 	  
 	  "TH_11_DEFAULT_START": [ "默认", "default start", "default start" ],
 	  "TH_11_INIT_POS_CHANGE": [ "修改初始位置", "init pos change", "init pos change" ],
@@ -4906,7 +4913,7 @@
         "spell": 1,
         "appearance": [ 6, 2, 8 ],
         "!EN": [ "「地狱极乐熔毁」", "\"Hell & Heaven Meltdown\"", "「地獄極楽メルトダウン」" ],
-        "!HL": [ "「地狱的托卡马克装置」", "\"Hell's Tokamak\"", "「ヘルズトカマク」 " ]
+        "!HL": [ "「地狱的托卡马克装置」", "\"Hell's Tokamak\"", "「ヘルズトカマク」" ]
       },
       "TH11_ST6_BOSS9": {
         "bgm": 1,
@@ -5064,7 +5071,14 @@
         "TH_11_WAVE2_START",
 		"TH_11_DEFAULT_START_FAST",
         "TH_11_WAVE2_START_FAST"
-      ]
+      ],
+      "TH11_MARISAB_FORMATION": [
+          "TH11_MARISAB_FIRE",
+          "TH11_MARISAB_WATER",
+          "TH11_MARISAB_WOOD",
+          "TH11_MARISAB_METAL",
+          "TH11_MARISAB_EARTH"
+		]
     }
   },
 
@@ -5461,7 +5475,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 4 ],
-        "!X": [ "真相不明「愤怒的红色UFO袭来」", "Unidentified \"Red UFO Invasion of Rage\"", "正体不明「忿怒のレッドUFO襲来」" ]
+        "!X": [ "真相不明「愤怒的红色UFO袭来」", "Unidentified \"Red UFO Invasion of Rage\"", "正体不明「忿怒のレッドＵＦＯ襲来」" ]
       },
       "TH12_ST7_END_NS3": {
         "bgm": 1,
@@ -5485,7 +5499,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 8 ],
-        "!X": [ "真相不明「哀愁的蓝色UFO袭来」", "Unidentified \"Blue UFO Invasion of Grief\"", "正体不明「哀愁のブルーUFO襲来」" ]
+        "!X": [ "真相不明「哀愁的蓝色UFO袭来」", "Unidentified \"Blue UFO Invasion of Grief\"", "正体不明「哀愁のブルーＵＦＯ襲来」" ]
       },
       "TH12_ST7_END_NS5": {
         "bgm": 1,
@@ -5509,7 +5523,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 12 ],
-        "!X": [ "真相不明「忠义的绿色UFO袭来」", "Unidentified \"Green UFO Invasion of Justice\"", "正体不明「義心のグリーンUFO襲来」" ]
+        "!X": [ "真相不明「忠义的绿色UFO袭来」", "Unidentified \"Green UFO Invasion of Justice\"", "正体不明「義心のグリーンＵＦＯ襲来」" ]
       },
       "TH12_ST7_END_NS7": {
         "bgm": 1,
@@ -6491,7 +6505,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 16, 2, 8 ],
-        "!X": [ "闭符「大坍缩」", "Closure Sign \"Big Crunch\"", "闭符「ビッグクランチ」" ]
+        "!X": [ "闭符「大坍缩」", "Closure Sign \"Big Crunch\"", "閉符「ビッグクランチ」" ]
       },
       "TH128_EX_END_NS5": {
         "bgm": 1,
@@ -7271,7 +7285,7 @@
         "spell": 1,
         "appearance": [ 3, 2, 4 ],
         "!EN": [ "咆哮「陌生的咆哮」", "Roar \"Strange Roar\"", "咆哮「ストレンジロア」" ],
-        "!HL": [ "咆哮「満月的远吠」", "Roar \"Full Moon Howling\"", "咆哮「満月の远吠え」" ]
+        "!HL": [ "咆哮「満月的远吠」", "Roar \"Full Moon Howling\"", "咆哮「満月の遠吠え」" ]
       },
       "TH14_ST3_BOSS5": {
         "bgm": 1,
@@ -7284,7 +7298,7 @@
         "spell": 1,
         "appearance": [ 3, 2, 6 ],
         "!EN": [ "狼符「星环猛扑」", "Wolf Sign \"Star Ring Pounce\"", "狼符「スターリングパウンス」" ],
-        "!HL": [ "天狼「高速猛扑」", "Sirius \"High-Speed Pounce\"", "天狼「ハイスピードバウンス」" ]
+        "!HL": [ "天狼「高速猛扑」", "Sirius \"High-Speed Pounce\"", "天狼「ハイスピードパウンス」" ]
       },
 
       "TH14_ST4_MID1": {
@@ -7695,8 +7709,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 9, 2, 6 ],
-        "!EN": [ "筝曲「下克上送筝曲」", "Koto Music \"Social Upheaval Koto Music Complement\"", "筝曲「下克上送筝曲」" ],
-        "!HL": [ "筝曲「下克上安魂曲」", "Koto Music \"Social Upheaval Requiem\"", "筝曲「下克上レクイエム」" ]
+        "!EN": [ "筝曲「下克上送筝曲」", "Koto Music \"Social Upheaval Koto Music Complement\"", "箏曲「下克上送箏曲」" ],
+        "!HL": [ "筝曲「下克上安魂曲」", "Koto Music \"Social Upheaval Requiem\"", "箏曲「下克上レクイエム」" ]
       }
     },
 
@@ -8051,7 +8065,7 @@
         "bgm": 0,
         "spell": 0,
         "appearance": [ 6, 1, 1 ],
-        "!ENHL": [ "流星雨", "#th15_stars", "Stars" ]
+        "!ENHL": [ "流星雨", "Stars", "流星雨" ]
       },
       "TH15_ST6_BOSS1": {
         "bgm": 1,
@@ -8803,18 +8817,28 @@
       "TH17_GOAST_WOLF": [ "狼", "Wolf", "オオカミ" ],
       "TH17_GOAST_OTTER": [ "獭", "Otter", "カワウソ" ],
       "TH17_GOAST_EAGLE": [ "鹰", "Eagle", "オオワシ" ],
-      "TH17_GOAST_WOLF_STATIC": [ "狼 (static)", "Wolf (static)", "オオカミ (static)" ],
-      "TH17_GOAST_OTTER_STATIC": [ "獭 (static)", "Otter (static)", "カワウソ (static)" ],
-      "TH17_GOAST_EAGLE_STATIC": [ "鹰 (static)", "Eagle (static)", "オオワシ (static)" ],
+      "TH17_GOAST_WOLF_STATIC": [ "狼 (固定)", "Wolf (static)", "オオカミ (色変わりしない)" ],
+      "TH17_GOAST_OTTER_STATIC": [ "獭 (固定)", "Otter (static)", "カワウソ (色変わりしない)" ],
+      "TH17_GOAST_EAGLE_STATIC": [ "鹰 (固定)", "Eagle (static)", "オオワシ (色変わりしない)" ],
       "TH17_GOAST_JELLYFISH": [ "水母", "Jellyfish", "クラゲ" ],
       "TH17_GOAST_COW": [ "牛", "Cow", "牛" ],
       "TH17_GOAST_CHICK": [ "小鸡", "Chick", "ひよこ" ],
       "TH17_GOAST_TURTLE": [ "龟", "Turtle", "亀" ],
       "TH17_GOAST_HANIWA": [ "埴轮", "Haniwa", "埴輪" ],
       "TH17_GOAST_HORSE": [ "埴轮（马）", "Haniwa (Horse)", "埴輪（馬）" ],
-      "TH17_GOAST_3CHICK": [ "3只小鸡", "3 Chicks", "三匹のひよこ" ],
+      "TH17_GOAST_3CHICK": [ "三只小鸡", "3 Chicks", "三匹のひよこ" ],
       "TH17_INF_ROARING": [ "无限咆哮", "Inf. Roaring", "無限のロアリング" ],
       "TH17_NO_GOAST": [ "无动物灵", "No Goast", "動物霊を落とさない" ],
+	  "TH17_GOAST_ANGLE": [ "角度", "Angle", "角度" ],
+      "TH17_SPAWN_A_GOAST": [ "生成一只动物灵", "Spawn a Goast", "動物霊アイテムを生成する" ],
+      "TH17_FORCE_ANGLE": [ "角度固定", "Force Angle", "固定角度で生成する" ],
+      "TH17_RANDOM_ANGLE": [ "角度随机", "Random Angle", "ランダムな角度で生成する" ],
+      "TH17_ANGLE_PREVIEW": [ "--预览角度-->", "--angle-preview-->", "--プレビューのアングル-->"],
+      "TH17_FORCE_ANGLE_HELP": [
+        "动物灵在生成时或在墙上反弹时会试图远离彼此。这个选项会保证生成的动物灵总是朝指定的方向移动",
+        "Tokens will try to move away from each other both when spawning and when bouncing from a wall. This will ensure that a token will always go in the direction you specify",
+        "動物霊は生成時や壁で反射する際に互いに遠ざかろうとします。このオプションを有効にすると、生成された動物霊が常に指定された方向に移動するようになります"
+      ],
       "TH17_GOAST_BUGFIX": [
         "修复因在咆哮模式中退出/推把而导致replay爆炸的bug",
         "Fix the replay desync bug that occurs when you exit/retry the game while roaring mode is active",
@@ -9504,8 +9528,8 @@
         "spell": 1,
         "appearance": [ 2, 2, 2 ],
         "!EN": [ "森符「木隐的技术」", "Forest Sign \"Tree-Veiling Technology\"", "森符「木隠れの技術」" ],
-        "!H": [ "森符「极·木隐的技术」", "Forest Sign \"Extreme Tree-Veiling Technology\"", "森符「極·木隠れの技術」" ],
-        "!L": [ "森符「真·木隐的技术」", "Forest Sign \"True Tree-Veiling Technology\"", "森符「真·木隠れの技術」" ]
+        "!H": [ "森符「极·木隐的技术」", "Forest Sign \"Extreme Tree-Veiling Technology\"", "森符「極・木隠れの技術」" ],
+        "!L": [ "森符「真·木隐的技术」", "Forest Sign \"True Tree-Veiling Technology\"", "森符「真・木隠れの技術」" ]
       },
       "TH18_ST2_BOSS3": {
         "bgm": 1,
@@ -9518,8 +9542,8 @@
         "spell": 1,
         "appearance": [ 2, 2, 4 ],
         "!EN": [ "森符「最深的森域」", "Forest Sign \"Innermost Forest Region\"", "森符「最奧の森域」" ],
-        "!H": [ "森符「极·最深的森域」", "Forest Sign \"Extreme Innermost Forest Region\"", "森符「極·最奧の森域」" ],
-        "!L": [ "森符「真·最深的森域」", "Forest Sign \"True Innermost Forest Region\"", "森符「真·最奧の森域」" ]
+        "!H": [ "森符「极·最深的森域」", "Forest Sign \"Extreme Innermost Forest Region\"", "森符「極・最奧の森域」" ],
+        "!L": [ "森符「真·最深的森域」", "Forest Sign \"True Innermost Forest Region\"", "森符「真・最奧の森域」" ]
       },
       "TH18_ST2_BOSS5": {
         "bgm": 1,

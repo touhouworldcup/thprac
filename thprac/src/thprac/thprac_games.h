@@ -81,7 +81,7 @@ enum game_gui_impl {
     IMPL_WIN32_DX9
 };
 
-void GameGuiInit(game_gui_impl impl, int device, int hwnd, int wndproc_addr,
+void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3 = 0,
     int wnd_size_flag = -1, float x = 640.0f, float y = 480.0f);
 extern int GameGuiProgress;
@@ -433,6 +433,35 @@ inline R GetMemAddr(uintptr_t addr, size_t offset, OffsetArgs... remaining_offse
 {
     return GetMemAddr<R>(((uintptr_t) * (R*)addr) + offset, remaining_offsets...);
 }
+
+// Code by zero318 (https://github.com/zero318)
+#if __clang__ && NDEBUG
+// Clang in release mode can optimize uses of this into doing nothing.
+// So something like calling a __fastcall function and passing UNUSED_DWORD
+// for the first parameter will compile into nothing being done with the ecx
+// register at all! Meanwhile, MSVC in release mode will create an actual
+// uninitialized variable on the stack, and move it into ecx. In fact, it will
+// create a new stack variable for *every* use of UNUSED_DWORD and UNUSED_FLOAT
+// So MSVC just gets 0 values for these. Same for debug mode to pass runtime
+// checks, and to avoid actually generating this function even in debug mode.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wuninitialized"
+template <typename T>
+static inline constexpr T garbage_value(void)
+{
+    T garbage;
+    return garbage;
+}
+#define GARBAGE_VALUE(type) garbage_value<type>()
+#define UNUSED_DWORD (GARBAGE_VALUE(int32_t))
+#define UNUSED_FLOAT (GARBAGE_VALUE(float))
+#pragma clang diagnostic pop
+#else
+#define UNUSED_DWORD 0
+#define UNUSED_FLOAT 0.0f
+#endif
+// ---
+
 
 #pragma endregion
 

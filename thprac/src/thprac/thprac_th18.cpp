@@ -1,6 +1,5 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
-#include "thprac_game_data.h"
 #include <metrohash128.h>
 #include "..\MinHook\src\buffer.h"
 #include <format>
@@ -8,9 +7,16 @@
 
 namespace THPrac {
 namespace TH18 {
+#define play_sound_centered(id) asm_call<0x476BE0, Stdcall>(id, UNUSED_DWORD)
+
+    enum sound_id : uint32_t {
+        SND_INVALID = 16,
+    };
+
     int g_lock_timer = 0;
 
     enum addrs {
+        GAME_THREAD_PTR = 0x4cf2e4,
         BULLET_MANAGER_PTR = 0x4cf2bc,
         ITEM_MANAGER_PTR = 0x4cf2ec,
         ABILTIY_MANAGER_PTR = 0x4cf298,
@@ -722,13 +728,9 @@ namespace TH18 {
                 asm_call<0x411460, Thiscall>(*(uint32_t*)ABILTIY_MANAGER_PTR, cardId, 2);
                 asm_call<0x418de0, Fastcall>(cardId, 0);
         }
-        bool IsMarketAvailable()
-        {
-            return !(OffsetValueBase::IsBadPtr((void*)GetMemContent(ABILITY_SHOP_PTR)));
-        }
         void CheckMarket()
         {
-            auto isMarketAvail = IsMarketAvailable();
+            bool isMarketAvail = GetMemContent(ABILITY_SHOP_PTR);
             if (isInMarket != isMarketAvail) {
                 th18_shop_disable.Disable();
                 th18_shop_escape_1.Disable();
@@ -791,16 +793,8 @@ namespace TH18 {
                         AddIndicateCard();
                     }
                 } else {
-                    ImGui::BeginDisabled();
-                    ImGui::Text("%s: %s", "F10", S(TH18_MARKET_MANIP));
-                    ImGui::EndDisabled();
+                    mOpenMarket();
                 }
-                bool f11_enable = !GetMemContent(ABILITY_SHOP_PTR) && GetMemContent(0x4cf2e4);
-                if (!f11_enable)
-                    ImGui::BeginDisabled();
-                ImGui::Text("%s: %s", "F11", S(TH18_OPEN_MARKET));
-                if (!f11_enable)
-                    ImGui::EndDisabled();
             } else {
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC1));
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC2));
@@ -918,6 +912,7 @@ namespace TH18 {
             new HookCtx(0x429eef, "\xeb", 1),
             new HookCtx(0x43021b, "\x05\x8d", 2) } };
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
+        Gui::GuiHotKey mOpenMarket { TH18_OPEN_MARKET, "F10", VK_F10 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "1", '1' };
     };
 
@@ -1111,6 +1106,23 @@ namespace TH18 {
     };
 
     static const char* scoreDispFmt = "%s  %.8u%u";
+     uint32_t scoreUncapOffsetNew[] = {
+        0x419e70,
+        0x42a7fd, 0x42a80f,
+        0x430eab, 0x430eb6,
+        0x44476b, 0x44477a,
+        0x444ad9, 0x444ade,
+        0x444c00, 0x444c05,
+        0x4462eb, 0x446302,
+        0x4463a1, 0x4463b1,
+        0x44656e, 0x446578,
+        0x446ac6, 0x446ad7,
+        0x446d09, 0x446d1a,
+        0x45f2c4, 0x45f2cf,
+    };
+    HookCtx scoreUncapStageTrFix[2];
+    HookCtx scoreUncapHooks[elementsof(scoreUncapOffsetNew)];
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
     private:
         THAdvOptWnd() noexcept
@@ -1186,7 +1198,7 @@ namespace TH18 {
 
             auto stageBonus = 100000 * *stage_num;
             auto clearBonus = 100000 * (*lifes * 5 + *bombs);
-            if (GetMemContent(0x4cf2e4, 0xd0)) {
+            if (GetMemContent(GAME_THREAD_PTR, 0xd0)) {
                 uint32_t rpy = *(uint32_t*)(*(uint32_t*)0x4cf418 + 0x18);
                 if (*(uint32_t*)(rpy + 0xb8) == 8 && (*stage_num == 6 || *stage_num == 7))
                     *score += clearBonus;
@@ -1220,28 +1232,12 @@ namespace TH18 {
 
         EHOOK_ST(th18_static_mallet_replay_gold, 0x429222)
         {
-            if (GetMemContent(0x4cf2e4, 0xd0)) StaticMalletConversion(pCtx);
+            if (GetMemContent(GAME_THREAD_PTR, 0xd0)) StaticMalletConversion(pCtx);
         }
         EHOOK_ST(th18_static_mallet_replay_green, 0x42921d)
         {
-            if (GetMemContent(0x4cf2e4, 0xd0)) StaticMalletConversion(pCtx);
+            if (GetMemContent(GAME_THREAD_PTR, 0xd0)) StaticMalletConversion(pCtx);
         }
-        uint32_t scoreUncapOffsetNew[23] {
-            0x419e70,
-            0x42a7fd, 0x42a80f,
-            0x430eab, 0x430eb6,
-            0x44476b, 0x44477a,
-            0x444ad9, 0x444ade,
-            0x444c00, 0x444c05,
-            0x4462eb, 0x446302,
-            0x4463a1, 0x4463b1,
-            0x44656e, 0x446578,
-            0x446ac6, 0x446ad7,
-            0x446d09, 0x446d1a,
-            0x45f2c4, 0x45f2cf,
-        };
-        HookCtx* scoreUncapStageTrFix[2];
-        std::vector<HookCtx*> scoreUncapHooks;
         bool scoreUncapChkbox = false;
         bool scoreUncapOverwrite = false;
         bool scoreReplayFactor = false;
@@ -1272,7 +1268,7 @@ namespace TH18 {
         }
         EHOOK_ST(th18_scroll_fix, 0x407e05)
         {
-            if (!OffsetValueBase::IsBadPtr((void*)GetMemContent(0x4cf2e4)) && GetMemContent(0x4cf2e4, 0xd0) && *(uint32_t*)(pCtx->Esp + 0x18) == 0x417955 && *(uint32_t*)(pCtx->Esp + 0x3c) == 0x417d39) {
+            if (GetMemContent(GAME_THREAD_PTR) && GetMemContent(GAME_THREAD_PTR, 0xd0) && *(uint32_t*)(pCtx->Esp + 0x18) == 0x417955 && *(uint32_t*)(pCtx->Esp + 0x3c) == 0x417d39) {
                 pCtx->Eip = 0x407e0f;
             }
         }
@@ -1289,7 +1285,7 @@ namespace TH18 {
         }
         EHOOK_ST(th18_active_card_fix, 0x462f33)
         {
-            if (!OffsetValueBase::IsBadPtr((void*)GetMemContent(0x4cf2e4)) && !GetMemContent(0x4cf2e4, 0xd0)) {
+            if (GetMemContent(GAME_THREAD_PTR) && !GetMemContent(GAME_THREAD_PTR, 0xd0)) {
                 uint32_t activeCardId = GetMemContent(ABILTIY_MANAGER_PTR, 0x38);
                 if (activeCardId) {
                     *(uint32_t*)(pCtx->Esi + 0x964) = GetMemContent(activeCardId + 4);
@@ -1533,7 +1529,7 @@ namespace TH18 {
                 return false;
             }
             auto& repMenu = THGuiRep::singleton();
-            if (!OffsetValueBase::IsBadPtr((void*)GetMemContent(0x4cf2e4)) && !GetMemContent(0x4cf2e4, 0xd0)) {
+            if (GetMemContent(GAME_THREAD_PTR) && !GetMemContent(GAME_THREAD_PTR, 0xd0)) {
                 return false;
             }
             if (repMenu.mRepStatus && (repMenu.mRepMetroHash[0] != mRepMetroHash[0] || repMenu.mRepMetroHash[1] != mRepMetroHash[1])) {
@@ -1701,10 +1697,8 @@ namespace TH18 {
 
         void ScoreUncapInit()
         {
-            for (auto addr : scoreUncapOffsetNew) {
-                HookCtx* hook = new HookCtx();
-                hook->Setup((void*)addr, "\xff\xff\xff\xff", 4);
-                scoreUncapHooks.push_back(hook);
+           for (size_t i = 0; i < elementsof(scoreUncapHooks); i++) {
+                scoreUncapHooks[i].Setup((void*)scoreUncapOffsetNew[i], "\xff\xff\xff\xff", 4);
             }
             th18_score_uncap_replay_fix.Setup();
             th18_score_uncap_replay_disp.Setup();
@@ -1727,21 +1721,19 @@ namespace TH18 {
                 char patch_2[5] = "\xE8";
                 *(uintptr_t*)(patch_1 + 1) = (uintptr_t)codecave - 0x4179c7;
                 *(uintptr_t*)(patch_2 + 1) = (uintptr_t)codecave - 0x463045;
-                scoreUncapStageTrFix[0] = new HookCtx(0x4179c2, patch_1, sizeof(patch_1));
-                scoreUncapStageTrFix[0]->Setup();
-                scoreUncapStageTrFix[1] = new HookCtx(0x463040, patch_2, sizeof(patch_2));
-                scoreUncapStageTrFix[1]->Setup();
+                scoreUncapStageTrFix[0].Setup((void*)0x4179c2, patch_1, sizeof(patch_1));
+                scoreUncapStageTrFix[1].Setup((void*)0x463040, patch_2, sizeof(patch_2));
             }
         }
         void ScoreUncapSet()
         {
             for (auto& hook : scoreUncapHooks) {
-                hook->Toggle(scoreUncapChkbox);
+                hook.Toggle(scoreUncapChkbox);
             }
             th18_score_uncap_replay_fix.Toggle(!scoreUncapOverwrite);
             th18_score_uncap_replay_disp.Toggle(scoreUncapChkbox);
-            scoreUncapStageTrFix[0]->Toggle(scoreUncapChkbox);
-            scoreUncapStageTrFix[1]->Toggle(scoreUncapChkbox);
+            scoreUncapStageTrFix[0].Toggle(scoreUncapChkbox);
+            scoreUncapStageTrFix[1].Toggle(scoreUncapChkbox);
         }
 
     public:
@@ -3267,18 +3259,21 @@ namespace TH18 {
         // if (x < 5)
         //     return;
 
-        if (THOverlay::singleton().IsOpen() && Gui::KeyboardInputGetRaw(VK_F11) && GetMemContent(ABILITY_SHOP_PTR) == 0) {
-            if (uint32_t GAME_THREAD_PTR = GetMemContent(0x4cf2e4)) {
-                *(uint32_t*)GetMemAddr(0x4cf2e4, 0xB0) |= 0x20000;
-            }
-        }
-
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 
         // Gui components update
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
-        THOverlay::singleton().Update();
+        auto& o = THOverlay::singleton();
+        o.Update();
+        if (*o.mOpenMarket) {
+            *o.mOpenMarket = false;
+            if (uint32_t game_thread = GetMemContent(GAME_THREAD_PTR)) {
+                *(uint32_t*)(game_thread + 0xB0) |= 0x20000;
+            } else {
+                play_sound_centered(SND_INVALID);
+            }
+        }
         THGuiSP::singleton().Update();
         TH18InGameInfo::singleton().Update();
 
@@ -3386,7 +3381,7 @@ namespace TH18 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4ccdf8, 0x568c30, 0x472280,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4ccdf8, 0x568c30,
             Gui::INGAGME_INPUT_GEN2, 0x4ca21c, 0x4ca218, 0,
             -2, *(float*)0x56aca0, 0.0f);
 

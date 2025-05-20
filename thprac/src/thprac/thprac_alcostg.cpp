@@ -1087,7 +1087,7 @@ namespace Alcostg {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x48e648, 0x48ef20, 0x435230,
+        GameGuiInit(IMPL_WIN32_DX9, 0x48e648, 0x48ef20,
             Gui::INGAGME_INPUT_GEN2, 0x471514, 0x471510, 0,
             -1);
 

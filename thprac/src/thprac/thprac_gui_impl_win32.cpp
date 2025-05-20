@@ -567,6 +567,7 @@ namespace Gui {
     {
         if (g_hWnd != (HWND)hwnd) {
             g_hWnd = (HWND)hwnd;
+            ImplWin32HookWndProc();
         }
     }
     void ImplWin32Shutdown()
@@ -599,14 +600,13 @@ namespace Gui {
     }
 
     // Added functions used by thprac
-    static void* __thimgui_wp_original = nullptr;
+    static WNDPROC __thimgui_wp_original = nullptr;
     void ImplWin32SetNoClose(bool noClose)
     {
         g_wndNoClose_ = noClose ? 1 : 0;
     }
     static LRESULT CALLBACK __ThImGui_WndProc_HookFunc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
-        typedef decltype(__ThImGui_WndProc_HookFunc)* PWndProc;
         if (msg == WM_SIZE && wParam == 2 && g_disable_max_btn){
             return 1;
         }
@@ -619,55 +619,18 @@ namespace Gui {
         if (ImplWin32WndProcHandler(hwnd, msg, wParam, lParam)) {
             return 1;
         }
-        return ((PWndProc)__thimgui_wp_original)(hwnd, msg, wParam, lParam);
+        return CallWindowProcW(__thimgui_wp_original, hwnd, msg, wParam, lParam);
     }
 
-    // some patches like Special K will destroy the win32 hook, so it should be re-hooked
-    DWORD g_wndproc_bytes = { 0 };
-    void* g_wndproc_addr;
-    void ReHookWndProc(){
-        if (g_wndproc_bytes != *(DWORD*)((DWORD)g_wndproc_addr + 1)) {
-            BYTE bytes[5];
-            for (int i = 0; i < 5; i++)
-                bytes[i] = *(BYTE*)((DWORD)g_wndproc_addr + i);
-
-            MH_DisableHook(g_wndproc_addr);
-            MH_RemoveHook(g_wndproc_addr);
-
-            DWORD old_protect;
-            VirtualProtect(g_wndproc_addr, 5, PAGE_EXECUTE_READWRITE, &old_protect);
-            memcpy(g_wndproc_addr, bytes, 5);
-            VirtualProtect(g_wndproc_addr, 5, old_protect, &old_protect);
-            __thimgui_wp_original = nullptr;
-
-            MH_CreateHook(g_wndproc_addr, (void*)__ThImGui_WndProc_HookFunc, &__thimgui_wp_original);
-            MH_EnableHook(g_wndproc_addr);
-            g_wndproc_bytes = *(DWORD*)((DWORD)g_wndproc_addr + 1);
-        }
-    }
-    bool ImplWin32HookWndProc(void* wndproc_addr)
+    bool ImplWin32HookWndProc()
     {
-        if (__thimgui_wp_original) {
+        __thimgui_wp_original = (WNDPROC)GetWindowLongW(g_hWnd, GWLP_WNDPROC);
+        if (!__thimgui_wp_original) {
             return false;
         }
-        void* target;
-        if (wndproc_addr) {
-            target = wndproc_addr;
-        } else {
-            char str[MAX_PATH];
-            WNDCLASSEXA cinfo;
-            GetClassNameA(g_hWnd, str, MAX_PATH);
-            GetClassInfoExA(GetModuleHandle(NULL), str, &cinfo);
-            void* pWndProc = (void*)cinfo.lpfnWndProc;
-            target = pWndProc;
+        if (!SetWindowLongW(g_hWnd, GWLP_WNDPROC, (LONG)__ThImGui_WndProc_HookFunc)) {
+            return false;
         }
-        g_wndproc_addr = target;
-
-        MH_Initialize();
-        MH_CreateHook(target, (void*)__ThImGui_WndProc_HookFunc, &__thimgui_wp_original);
-        MH_EnableHook(target);
-        g_wndproc_bytes = *(DWORD*)((DWORD)g_wndproc_addr + 1);
-
         return true;
     }
     bool ImplWin32UnHookWndProc()

@@ -146,6 +146,12 @@ enum th_glossary_t {
     TH10_HINT_EDIT_SCALE,
     TH10_NO_FAITH_LOSS,
     TH10_TITLE,
+    TH11_MARISAB_EARTH,
+    TH11_MARISAB_FIRE,
+    TH11_MARISAB_FORMATION_LABEL,
+    TH11_MARISAB_METAL,
+    TH11_MARISAB_WATER,
+    TH11_MARISAB_WOOD,
     TH11_SIGNAL,
     TH11_TITLE,
     TH123_TITLE,
@@ -283,6 +289,9 @@ enum th_glossary_t {
     TH16_TITLE,
     TH16_WINTER,
     TH175_TITLE,
+    TH17_ANGLE_PREVIEW,
+    TH17_FORCE_ANGLE,
+    TH17_FORCE_ANGLE_HELP,
     TH17_GOAST,
     TH17_GOAST_1,
     TH17_GOAST_2,
@@ -290,6 +299,7 @@ enum th_glossary_t {
     TH17_GOAST_3CHICK,
     TH17_GOAST_4,
     TH17_GOAST_5,
+    TH17_GOAST_ANGLE,
     TH17_GOAST_BUGFIX,
     TH17_GOAST_CHICK,
     TH17_GOAST_COW,
@@ -308,6 +318,8 @@ enum th_glossary_t {
     TH17_GOAST_WOLF_STATIC,
     TH17_INF_ROARING,
     TH17_NO_GOAST,
+    TH17_RANDOM_ANGLE,
+    TH17_SPAWN_A_GOAST,
     TH17_TITLE,
     TH185_ADDITIONAL_CARDS,
     TH185_AKI_MINORIKO,
@@ -1387,6 +1399,7 @@ enum th_glossary_t {
     TH_P4,
     TH_P5,
     TH_P5_LOCK,
+    TH_PERFORMANCE,
     TH_PHASE,
     TH_POINT,
     TH_POINT_STAGE,
@@ -1451,7 +1464,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1440];
+extern const char* th_glossary_str[3][1453];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2138,6 +2151,8 @@ namespace TH11 {
     extern const th_glossary_t TH11_SPELL_STARTSET[3];
 
     extern const th_glossary_t TH11_WAVE2_START[5];
+
+    extern const th_glossary_t TH11_MARISAB_FORMATION[6];
 
 }
 
@@ -3070,10 +3085,10 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3405];
+extern const wchar_t __thprac_loc_range_zh[3407];
 
 extern const wchar_t __thprac_loc_range_en[61];
 
-extern const wchar_t __thprac_loc_range_ja[2765];
+extern const wchar_t __thprac_loc_range_ja[2763];
 
 }

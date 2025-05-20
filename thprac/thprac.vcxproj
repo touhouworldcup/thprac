@@ -49,7 +49,6 @@
     <ClInclude Include="src\3rdParties\MinHook\src\trampoline.h" />
     <ClInclude Include="src\3rdParties\rapidcsv\rapidcsv.h" />
     <ClInclude Include="src\thprac\thprac_games.h" />
-    <ClInclude Include="src\thprac\thprac_game_data.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_dx8.h" />
     <ClInclude Include="src\thprac\thprac_gui_components.h" />
     <ClInclude Include="src\thprac\thprac_hook.h" />
@@ -223,6 +222,8 @@
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
       <AdditionalManifestDependencies>type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
       <AdditionalOptions Condition="'$(ToolsetType)'=='MSVC'">/IGNORE:4098 /SAFESEH:NO %(AdditionalOptions)</AdditionalOptions>
+	  <AdditionalOptions Condition="'$(Configuration)'=='ReleaseLLVM'">%(AdditionalOptions) $(SolutionDir)\thprac\src\thprac\blobs\th19_fast_llvm.obj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)'=='Release'">%(AdditionalOptions) $(SolutionDir)\thprac\src\thprac\blobs\th19_fast_msvc.obj</AdditionalOptions>
     </Link>
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -234,6 +235,7 @@
       <LanguageStandard Condition="'$(ToolsetType)'=='ClangCL'">stdcpplatest</LanguageStandard>
       <ConformanceMode>true</ConformanceMode>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+	  <FloatingPointModel>Fast</FloatingPointModel>
       <ControlFlowGuard>false</ControlFlowGuard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(ToolsetType)'=='ClangCL'">-Wno-ambiguous-reversed-operator -Wno-unused-function -Wno-unused-const-variable -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-private-field -Wno-unused-label -Wno-unused-local-typedef -Wno-missing-braces %(AdditionalOptions)</AdditionalOptions>

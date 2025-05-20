@@ -12,16 +12,11 @@ BOOL UnhookVTable(void* pInterface, int index, void* oldAddress);
 
 #pragma endregion
 
-
-
-
-
 extern uintptr_t ingame_image_base;
 #define RVA(a) ((uintptr_t)a + ingame_image_base)
 #define RVA2(a) ((uintptr_t)a + ingame_image_base - 0x400000)
 typedef void __stdcall CallbackFunc(PCONTEXT);
-class HookCtx {
-public:
+struct HookCtx {
     HookCtx() = default;
     ~HookCtx();
     HookCtx(uintptr_t target, CallbackFunc* inject)
@@ -62,7 +57,6 @@ public:
 
     static void VEHInit();
 
-private:
     void* mTarget = nullptr;
     CallbackFunc* mDetour = nullptr;
     void* mTrampoline = nullptr;

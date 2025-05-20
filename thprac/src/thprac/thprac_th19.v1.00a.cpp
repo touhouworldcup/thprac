@@ -434,6 +434,19 @@ namespace V1_00a {
     EHOOK_DY(th19_prac_init, 0x106878) {
         TH19Tools::singleton().Open();
         TH19Tools::singleton().allow = true;
+        auto& t = TH19Tools::singleton();
+        t.Open();
+
+        t.SetSizeRel(0.5f, 1.0f);
+        if (GetMemContent(RVA(P1_CPU_PTR)) && !GetMemContent(RVA(P2_CPU_PTR))) {
+            t.SetPosRel(0.0f, 0.0f);
+        } else if (GetMemContent(RVA(P2_CPU_PTR)) && !GetMemContent(RVA(P1_CPU_PTR))) {
+            t.SetPosRel(0.5f, 0.0f);
+        } else {
+            t.SetPosRel(0.25f, 0.0f);
+        }
+
+        t.allow = true;
     }
     
     // In the gamemode switching code where the game switches to main menu mode
@@ -761,7 +774,7 @@ namespace V1_00a {
         th19_charsel_disable_movement.Setup();
 
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, RVA(D3D_DEVICE), RVA(HWND_PTR), RVA(WNDPROC_ADDR),
+        GameGuiInit(IMPL_WIN32_DX9, RVA(D3D_DEVICE), RVA(HWND_PTR),
             Gui::INGAGME_INPUT_GEN2, GetMemContent(RVA(0x1AE3A0)) + 0x30 + 0x2B0, GetMemContent(RVA(0x1AE3A0)) + 0x30 + 0x10, 0,
             -2, SCALE, 0.0f);
 

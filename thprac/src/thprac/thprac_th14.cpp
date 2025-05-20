@@ -108,8 +108,8 @@ namespace TH14 {
         THGuiPrac() noexcept
         {
             *mMode = 1;
-            *mLife = 9;
-            *mBomb = 9;
+            *mLife = 8;
+            *mBomb = 8;
             *mPower = 400;
             *mValue = 10000;
 
@@ -345,9 +345,9 @@ namespace TH14 {
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 9 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 8 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mLifeFragment { TH_LIFE_FRAGMENT, 0, 2 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mBomb { TH_BOMB, 0, 9 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mBomb { TH_BOMB, 0, 8 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mBombFragment { TH_BOMB_FRAGMENT, 0, 7 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 100, 400 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH_VALUE, 0, 999990, 10, 100000 };
@@ -1023,7 +1023,31 @@ namespace TH14 {
         }
         void FpsInit()
         {
-            if (*(uint8_t*)0x4d9159 == 3) {
+            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th14.dll");
+            if (mOptCtx.vpatch_base) {
+                uint64_t hash[2];
+                CalcFileHash(L"vpatch_th14.dll", hash);
+
+                bool vp_valid = hash[0] == 16763243947833835441ll && hash[1] == 14013686233300952408ll;
+                if (hash[0] == 5864489015760801383ll && hash[1] == 8525349857717864816ll) {
+                    vp_valid = true;
+                    if (MessageBoxW(
+                            *(HWND*)0x4f5a18,
+                            L"Old version of vpatch detected. Do you want to download the newest version?",
+                            L"thprac: warning",
+                            MB_ICONWARNING | MB_YESNO)
+                        == IDYES) {
+                        ShellExecuteW(NULL, NULL, L"https://maribelhearn.com/mirror/VsyncPatch.zip", NULL, NULL, SW_SHOW);
+                    }
+                }
+
+                if (vp_valid && *(int32_t*)(mOptCtx.vpatch_base + 0x42fbc) == 0) {
+                    mOptCtx.fps_status = 2;
+                    mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x42fcc);
+                } else if (!vp_valid) {
+                    mOptCtx.fps_status = -1;
+                }
+            } else if (*(uint8_t*)0x4d9159 == 3) {
                 mOptCtx.fps_status = 1;
 
                 DWORD oldProtect;
@@ -1037,6 +1061,9 @@ namespace TH14 {
         {
             if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
+            } else if (mOptCtx.fps_status == 2) {
+                *(int32_t*)(mOptCtx.vpatch_base + 0x40a34) = mOptCtx.fps;
+                *(int32_t*)(mOptCtx.vpatch_base + 0x42fcc) = mOptCtx.fps;
             }
         }
         void GameplayInit()
@@ -2835,7 +2862,7 @@ namespace TH14 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4d8f68, 0x4f5a18, 0x469eb0,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4d8f68, 0x4f5a18,
             Gui::INGAGME_INPUT_GEN2, 0x4d6884, 0x4d6880, 0,
             (*((int32_t*)0x4f7a54) >> 2) & 0xf);
 

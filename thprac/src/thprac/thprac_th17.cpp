@@ -139,8 +139,8 @@ namespace TH17 {
         THGuiPrac() noexcept
         {
             *mMode = 1;
-            *mLife = 9;
-            *mBomb = 9;
+            *mLife = 8;
+            *mBomb = 8;
             *mPower = 400;
             *mValue = 10000;
 
@@ -387,9 +387,9 @@ namespace TH17 {
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 9 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 8 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mLifeFragment { TH_LIFE_FRAGMENT, 0, 2 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mBomb { TH_BOMB, 0, 9 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mBomb { TH_BOMB, 0, 8 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mBombFragment { TH_BOMB_FRAGMENT, 0, 2 };
         Gui::GuiCombo mGoast1 { TH17_GOAST_1, TH17_GOAST_SELECT };
         Gui::GuiCombo mGoast2 { TH17_GOAST_2, TH17_GOAST_SELECT };
@@ -950,15 +950,15 @@ namespace TH17 {
             if (mGoastAngleRandom)
                 ImGui::BeginDisabled();
 
-            ImGui::SliderFloat("Angle", &mGoastAng, -M_PI, M_PI);
-            ImGui::Checkbox("Force angle", &mForceGoastAngle);
+            ImGui::SliderFloat(S(TH17_GOAST_ANGLE), &mGoastAng, -M_PI, M_PI);
+            ImGui::Checkbox(S(TH17_FORCE_ANGLE), &mForceGoastAngle);
             ImGui::SameLine();
-            HelpMarker("Tokens will try to move away from eachother both when spawning and when bouncing from a wall. This will ensure that a token will always go in the direction you specify");
+            HelpMarker(S(TH17_FORCE_ANGLE_HELP));
 
             if (mGoastAngleRandom)
                 ImGui::EndDisabled();
 
-            ImGui::Checkbox("Random angle", &mGoastAngleRandom);
+            ImGui::Checkbox(S(TH17_RANDOM_ANGLE), &mGoastAngleRandom);
 
             ImRotateStart();
             ImGui::NewLine();
@@ -966,7 +966,7 @@ namespace TH17 {
             ImGui::NewLine();
             ImGui::Indent();
             ImGui::Indent();
-            ImGui::TextUnformatted("--angle-preview-->");
+            ImGui::TextUnformatted(S(TH17_ANGLE_PREVIEW));
             ImGui::Unindent();
             ImGui::Unindent();
             constexpr auto HALF_PI = static_cast<float>(std::numbers::pi / 2.0);
@@ -981,7 +981,7 @@ namespace TH17 {
         void ContentUpdate()
         {
             if (mInGoastMenu) {
-                ImGui::TextUnformatted("Spawn a Goast");
+                ImGui::TextUnformatted(S(TH17_SPAWN_A_GOAST));
                 ImGui::Separator();
                 GoastMenu();
                 return;
@@ -1026,7 +1026,7 @@ namespace TH17 {
                 ImGui::SameLine();
                 HelpMarker(S(TH17_GOAST_REPFIX_DESC));
 
-                if (ImGui::Button("Spawn a Goast")) {
+                if (ImGui::Button(S(TH17_SPAWN_A_GOAST))) {
                     mInGoastMenu = true;
                 }
 
@@ -2281,7 +2281,7 @@ namespace TH17 {
     {
 
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4b5ae8, 0x5226c0, 0x4617d0,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4b5ae8, 0x5226c0,
             Gui::INGAGME_INPUT_GEN2, 0x4b323c, 0x4b3238, 0,
             (*((int32_t*)0x524700) >> 2) & 0xf);
 

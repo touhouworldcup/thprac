@@ -1090,7 +1090,7 @@ namespace TH20 {
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, RVA2(0x5C2D58), RVA2(0x5B47D8), RVA2(0x41D650),
+        GameGuiInit(IMPL_WIN32_DX9, RVA2(0x5C2D58), RVA2(0x5B47D8),
             Gui::INGAGME_INPUT_GEN2, GetMemContent(RVA2(0x5B6918)) + 0x30, GetMemContent(RVA2(0x5B6918)) + 0x40, 0,
             -2, *(float*)RVA2(0x5B6898), 0.0f);
 
