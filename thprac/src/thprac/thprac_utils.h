@@ -170,3 +170,25 @@ static std::function<T(void)> GetRndGenerator(T min, T max, std::mt19937::result
 }
 DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName);
 }
+
+
+#define w32u8_alloca(type, size) ((type*)_alloca((size) * sizeof(type)))
+#define w32u8_freea(name) \
+    do                    \
+        ;                 \
+    while (0) /* require a semi-colon */
+
+#if VLA_SUPPORT
+#define VLA(type, name, size) \
+    type name##_vla[(size)];  \
+    type* name = name##_vla /* to ensure that [name] is a modifiable lvalue */
+#define VLA_FREE(name) \
+    do                 \
+        ;              \
+    while (0) /* require a semi-colon */
+#else
+#define VLA(type, name, size) \
+    type* name = w32u8_alloca(type, size)
+#define VLA_FREE(name) \
+    w32u8_freea(name)
+#endif

@@ -20,14 +20,12 @@
 
 #include "thprac_gui_impl_win32.h"
 #include "thprac_hook.h"
-#include <MinHook.h>
 #include <imgui.h>
 #include <string>
 #include <tchar.h>
 #include <windows.h>
 
 namespace THPrac {
-extern bool g_disable_max_btn;
 namespace Gui {
     // Macros
     // Allow compilation with old Windows SDK. MinGW doesn't have default _WIN32_WINNT/WINVER versions.
@@ -282,7 +280,7 @@ namespace Gui {
         // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
         // PS: In this Win32 handler, we use the capture API (GetCapture/SetCapture/ReleaseCapture) to be able to read mouse coordinates when dragging mouse outside of our window bounds.
         // PS: We treat DBLCLK messages as regular mouse down messages, so this code will work on windows classes that have the CS_DBLCLKS flag set. Our own example app code doesn't set this flag.
-        
+
         if (ImGui::GetCurrentContext() == NULL)
             return 0;
 
@@ -605,14 +603,7 @@ namespace Gui {
     {
         g_wndNoClose_ = noClose ? 1 : 0;
     }
-    static LRESULT CALLBACK __ThImGui_WndProc_HookFunc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-    {
-        if (msg == WM_SIZE && wParam == 2 && g_disable_max_btn){
-            return 1;
-        }
-        if (msg == WM_SYSCOMMAND && (wParam & 0xFFF0) == SC_MAXIMIZE && g_disable_max_btn) {
-            return 1;
-        }
+    static LRESULT CALLBACK __ThImGui_WndProc_HookFunc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         if (g_wndNoClose_ && msg == WM_CLOSE) {
             return 1;
         }
@@ -621,7 +612,6 @@ namespace Gui {
         }
         return CallWindowProcW(__thimgui_wp_original, hwnd, msg, wParam, lParam);
     }
-
     bool ImplWin32HookWndProc()
     {
         __thimgui_wp_original = (WNDPROC)GetWindowLongW(g_hWnd, GWLP_WNDPROC);
@@ -635,12 +625,7 @@ namespace Gui {
     }
     bool ImplWin32UnHookWndProc()
     {
-        if (__thimgui_wp_original) {
-            MH_RemoveHook(__thimgui_wp_original);
-            __thimgui_wp_original = nullptr;
-            return true;
-        }
-        return false;
+        return SetWindowLongW(g_hWnd, GWLP_WNDPROC, (LONG)__thimgui_wp_original) != 0;
     }
     bool ImplWin32CheckFullScreen()
     {

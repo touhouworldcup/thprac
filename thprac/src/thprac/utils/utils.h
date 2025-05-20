@@ -77,3 +77,5 @@ privDefer<F> defer_func(F f)
 #define defer(code) auto DEFER_3(_defer_) = defer_func([&]() { code; })
 
 #define elementsof(a) (sizeof(a) / sizeof(a[0]))
+
+#define member_size(type, member) sizeof(((type*)0)->member)

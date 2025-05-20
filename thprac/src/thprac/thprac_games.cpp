@@ -2,6 +2,7 @@
 #include "thprac_launcher_cfg.h"
 #include "thprac_launcher_main.h"
 #include "thprac_licence.h"
+#include "thprac_load_exe.h"
 #include "thprac_gui_impl_dx8.h"
 #include "thprac_gui_impl_dx9.h"
 #include "thprac_utils.h"
@@ -9,6 +10,9 @@
 #include <dinput.h>
 #include "../3rdParties/d3d8/include/d3d8.h"
 #include <metrohash128.h>
+#include <dinput.h>
+
+#include "utils/wininternal.h"
 #include <array>
 
 #include <MinHook.h>
@@ -93,13 +97,13 @@ HFONT WINAPI CreateFontA_Changed
     DWORD bStrikeOut, DWORD iCharSet, DWORD iOutPrecision, DWORD iClipPrecision, DWORD iQuality, DWORD iPitchAndFamily, LPCSTR pszFaceName)
 {
     static std::vector<std::string> fonts = EnumAllFonts();
-    char font_Gothic[] = { 0x82, 0x6C, 0x82, 0x72, 0x20, 0x83, 0x53, 0x83, 0x56, 0x83, 0x62, 0x83, 0x4E, 0x00 }; // ‚l‚r ƒSƒVƒbƒN, MS Gothic
-    char font_Mincho[] = { 0x82, 0x6C, 0x82, 0x72, 0x20, 0x96, 0xBE, 0x92, 0xA9, 0x00 }; // ‚l‚r –¾’©, MS Mincho
+    unsigned char font_Gothic[] = { 0x82, 0x6C, 0x82, 0x72, 0x20, 0x83, 0x53, 0x83, 0x56, 0x83, 0x62, 0x83, 0x4E, 0x00 }; // ä¿µä¿½ åƒ‘åƒ”åƒ¢åƒ‹, MS Gothic
+    unsigned char font_Mincho[] = { 0x82, 0x6C, 0x82, 0x72, 0x20, 0x96, 0xBE, 0x92, 0xA9, 0x00 }; // ä¿µä¿½ æŸ§æŒ¬, MS Mincho
     if (g_useCustomFont)
         return g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, g_customFont.c_str());
-    if (strcmp(font_Gothic, pszFaceName) == 0) {
+    if (strcmp((char*)font_Gothic, pszFaceName) == 0) {
         return g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, "MS Gothic");
-    }else if (strcmp(font_Mincho, pszFaceName) == 0) {
+    } else if (strcmp((char*)font_Mincho, pszFaceName) == 0) {
         // some computer might not have mincho font
         if (std::find(fonts.begin(), fonts.end(), "MS Mincho") == fonts.end())
             return g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, "MS Gothic");
@@ -211,8 +215,6 @@ BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
 }
 
 HookCtx g_dinput8Hook;
-
-
 HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state)
 {
     if (num != 256) {//no keyboard
@@ -299,12 +301,265 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
     return res;
 }
 
+#pragma region dinput/dpad support
+
+HANDLE thcrap_dll;
+HANDLE thcrap_tsa_dll;
+
+// Code from thcrap
+template <typename T>
+struct Ranges {
+    T x_min, x_max;
+    T y_min, y_max;
+};
+
+#define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)
+
+template <typename T>
+bool pov_to_xy(T& x, T& y, Ranges<T>& ranges, DWORD pov)
+{
+    // According to MSDN, some DirectInput drivers report the centered
+    // position of the POV indicator as 65,535. This matches both that
+    // behavior and JOY_POVCENTERED for WinMM.
+    if (LOWORD(pov) == 0xFFFF) {
+        return false;
+    }
+    T x_center = (ranges.x_max - ranges.x_min) / 2;
+    T y_center = (ranges.y_max - ranges.y_min) / 2;
+
+    float angle_deg = pov / 100.0f;
+    float angle_rad = DEG_TO_RAD(angle_deg);
+    // POV values â‰  unit circle angles, so...
+    float angle_sin = 1.0f - cosf(angle_rad);
+    float angle_cos = sinf(angle_rad) + 1.0f;
+    x = (T)(ranges.x_min + (angle_cos * x_center));
+    y = (T)(ranges.y_min + (angle_sin * y_center));
+    return true;
+}
+
+HRESULT IDirectInputDevice8_GetDeviceState_Hook(IDirectInputDevice8A* This, DWORD cbData, void* lpvData)
+{
+    // ---
+    
+    // keyboard support
+    if (cbData == 256) {
+        HRESULT res = This->GetDeviceState(cbData, lpvData);
+        if (g_keybind.size() != 0) {
+            static BYTE new_keyBoardState[256] = { 0 };
+            bool new_keyBoardState_changed[256] = { 0 };
+            memcpy_s(new_keyBoardState, cbData, ((BYTE*)lpvData), cbData);
+            for (auto& bind : g_keybind) {
+                if (IS_KEY_DOWN(((BYTE*)lpvData)[bind.second.dik])) {
+                    new_keyBoardState[bind.first.dik] |= 0x80;
+                    if (!new_keyBoardState_changed[bind.first.dik])
+                        new_keyBoardState[bind.second.dik] &= (~0x80);
+                    new_keyBoardState_changed[bind.first.dik] = true;
+                }
+            }
+            memcpy_s(((BYTE*)lpvData), cbData, new_keyBoardState, cbData);
+        }
+        if (g_disable_xkey) {
+            ((BYTE*)lpvData)[DIK_X] = 0x0;
+        }
+        if (g_disable_shiftkey) {
+            ((BYTE*)lpvData)[DIK_LSHIFT] = 0x0;
+            ((BYTE*)lpvData)[DIK_RSHIFT] = 0x0;
+        }
+        if (g_disable_zkey) {
+            ((BYTE*)lpvData)[DIK_Z] = 0x0;
+        }
+        if (g_disable_f10_11_13) {
+            ((BYTE*)lpvData)[DIK_F10] = 0x0;
+        }
+        if (g_socd_setting == SOCD_Default) {
+            return res;
+        }
+        //SOCD
+        static BYTE last_keyBoardState[256] = { 0 };
+        static uint32_t cur_time = 0;
+        static uint32_t keyBoard_press_time[4] = { 0 };
+
+        BYTE* keyBoardState = (BYTE*)lpvData;
+        cur_time++;
+        if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_LEFTARROW]))
+            keyBoard_press_time[K_LEFT] = cur_time;
+        if (IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_RIGHTARROW]))
+            keyBoard_press_time[K_RIGHT] = cur_time;
+        if (IS_KEY_DOWN(keyBoardState[DIK_UPARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_UPARROW]))
+            keyBoard_press_time[K_UP] = cur_time;
+        if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_DOWNARROW]))
+            keyBoard_press_time[K_DOWN] = cur_time;
+
+        memcpy_s(last_keyBoardState, cbData, keyBoardState, cbData);
+
+        if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW])) {
+            if (g_socd_setting == SOCD_2) {
+                if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]) {
+                    keyBoardState[DIK_RIGHTARROW] = 0;
+                } else {
+                    keyBoardState[DIK_LEFTARROW] = 0;
+                }
+            } else if (g_socd_setting == SOCD_N) {
+                keyBoardState[DIK_RIGHTARROW] = 0;
+                keyBoardState[DIK_LEFTARROW] = 0;
+            }
+        }
+        if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && IS_KEY_DOWN(keyBoardState[DIK_UPARROW])) {
+            if (g_socd_setting == SOCD_2) {
+                if (keyBoard_press_time[K_UP] > keyBoard_press_time[K_DOWN]) {
+                    keyBoardState[DIK_DOWNARROW] = 0;
+                } else {
+                    keyBoardState[DIK_UPARROW] = 0;
+                }
+            } else if (g_socd_setting == SOCD_N) {
+                keyBoardState[DIK_DOWNARROW] = 0;
+                keyBoardState[DIK_UPARROW] = 0;
+            }
+        }
+        return res;
+    }
+    // ---
+    // no keybaord
+
+    if (g_disable_joy)
+        return DIERR_INPUTLOST; // 8007001E
+    HRESULT res = This->GetDeviceState(cbData, lpvData);
+    if (FAILED(res) || !(cbData == sizeof(DIJOYSTATE) || cbData == sizeof(DIJOYSTATE2))) {
+        return res;
+    }
+   
+    auto* js = (DIJOYSTATE*)lpvData;
+
+    Ranges<long> di_range = { -1000, 1000, -1000, 1000 };
+
+    bool ret_map = false;
+    for (int i = 0; i < elementsof(js->rgdwPOV) && !ret_map; i++) {
+        ret_map = pov_to_xy(js->lX, js->lY, di_range, js->rgdwPOV[i]);
+    }
+    return res;
+}
+
+bool __stdcall IDirectInputDevice8_GetDeviceState_VEHHook(PCONTEXT pCtx)
+{
+    pCtx->Eax = IDirectInputDevice8_GetDeviceState_Hook(
+        GetMemContent<IDirectInputDevice8A*>(pCtx->Esp + 0),
+        GetMemContent<DWORD>(pCtx->Esp + 4),
+        GetMemContent<void*>(pCtx->Esp + 8));
+    pCtx->Esp += 12;
+    return false;
+}
+
+decltype(joyGetPosEx)* orig_joyGetPosEx = nullptr;
+
+// joyGetDevCaps() will necessarily be slower
+struct winmm_joy_caps_t {
+    // joyGetPosEx() will return bogus values on joysticks without a POV, so
+    // we must check if we even have one.
+    bool initialized = false;
+    bool has_pov;
+    Ranges<DWORD> range;
+};
+
+std::vector<winmm_joy_caps_t> joy_info;
+
+MMRESULT WINAPI hook_joyGetPosEx(UINT uJoyID, JOYINFOEX* pji)
+{
+    if (!pji) {
+        return MMSYSERR_INVALPARAM;
+    }
+    pji->dwFlags |= JOY_RETURNPOV;
+
+    auto ret_pos = orig_joyGetPosEx(uJoyID, pji);
+    if (ret_pos != JOYERR_NOERROR) {
+        return ret_pos;
+    }
+
+    if (uJoyID >= joy_info.size()) {
+        joy_info.resize(uJoyID + 1);
+    }
+
+    auto& jc = joy_info[uJoyID];
+
+    if (!jc.initialized) {
+        JOYCAPSW caps;
+        auto ret_caps = joyGetDevCapsW(uJoyID, &caps, sizeof(caps));
+        assert(ret_caps == JOYERR_NOERROR);
+
+        jc.initialized = true;
+        jc.has_pov = (caps.wCaps & JOYCAPS_HASPOV) != 0;
+        jc.range.x_min = caps.wXmin;
+        jc.range.x_max = caps.wXmax;
+        jc.range.y_min = caps.wYmin;
+        jc.range.y_max = caps.wYmax;
+    } else if (!jc.has_pov) {
+        return ret_pos;
+    }
+    pov_to_xy(pji->dwXpos, pji->dwYpos, jc.range, pji->dwPOV);
+    return ret_pos;
+}
+
+// Replace with centralized IAT hooking once there's a need for that
+void iat_hook_joyGetPosEx()
+{
+    uintptr_t base = CurrentImageBase;
+
+    auto* pImpDesc = (PIMAGE_IMPORT_DESCRIPTOR)GetNtDataDirectory((HMODULE)base, IMAGE_DIRECTORY_ENTRY_IMPORT);
+
+    for (; pImpDesc->Name; pImpDesc++) {
+        if (_stricmp((char*)(base + pImpDesc->Name), "winmm.dll")) {
+            continue;
+        }
+        auto pOT = (PIMAGE_THUNK_DATA)(base + pImpDesc->OriginalFirstThunk);
+        auto pIT = (PIMAGE_THUNK_DATA)(base + pImpDesc->FirstThunk);
+
+        if (pImpDesc->OriginalFirstThunk) {
+            for (; pOT->u1.Function; pOT++, pIT++) {
+                PIMAGE_IMPORT_BY_NAME pByName;
+                if (!(pOT->u1.Ordinal & IMAGE_ORDINAL_FLAG)) {
+                    pByName = (PIMAGE_IMPORT_BY_NAME)(base + pOT->u1.AddressOfData);
+                    if (pByName->Name[0] == '\0') {
+                        continue;
+                    }
+                    if (!strcmp("joyGetPosEx", (char*)pByName->Name)) {
+                        orig_joyGetPosEx = (decltype(joyGetPosEx)*)pIT->u1.Function;
+
+                        DWORD oldProt;
+                        VirtualProtect(&pIT->u1.Function, 4, PAGE_READWRITE, &oldProt);
+                        pIT->u1.Function = (DWORD)hook_joyGetPosEx;
+                        VirtualProtect(&pIT->u1.Function, 4, oldProt, &oldProt);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void SetDpadHook(uintptr_t addr)
+{
+    if (thcrap_tsa_dll) {
+        return;
+    }
+
+    static HookCtx dpad_hook;
+
+    //dpad_hook.Setup((void*)addr, &IDirectInputDevice8_GetDeviceState_VEHHook);
+    dpad_hook.Enable();
+
+    iat_hook_joyGetPosEx();
+}
+
+#pragma endregion
+
+
+
 
 
 void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3,
     int wnd_size_flag, float x, float y)
 {
+    MH_Initialize();
+
     ingame_mb_init();
     ::ImGui::CreateContext();
     g_gameGuiImpl = impl;
@@ -1455,7 +1710,7 @@ void RenderBlindView(int dx_ver, DWORD device, ImVec2 plpos, ImVec2 plpos_ofs, I
 {
     if (g_blind_view)
     {
-        static const char blind_file[] = {
+        static const unsigned char blind_file[] = {
         0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
         0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x80, 0x08, 0x06, 0x00, 0x00, 0x00, 0xC3, 0x3E, 0x61,
         0xCB, 0x00, 0x00, 0x00, 0x09, 0x70, 0x48, 0x59, 0x73, 0x00, 0x00, 0x16, 0x25, 0x00, 0x00, 0x16,
@@ -1751,7 +2006,7 @@ void RenderBlindView(int dx_ver, DWORD device, ImVec2 plpos, ImVec2 plpos_ofs, I
         ImVec2 texture_size = { 128.0f, 128.0f };
         auto p = ImGui::GetBackgroundDrawList();
         if (!g_blind_texture && !g_is_texture_failed) {
-            g_blind_texture = ReadImage(dx_ver, device, "blind.png", blind_file, sizeof(blind_file));
+            g_blind_texture = ReadImage(dx_ver, device, "blind.png", (char*)blind_file, sizeof(blind_file));
             if (!g_blind_texture)
                 g_is_texture_failed = true;
         }
