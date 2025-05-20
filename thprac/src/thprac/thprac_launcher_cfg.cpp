@@ -23,9 +23,7 @@
 #pragma warning(disable : 26819)
 #include <rapidjson/prettywriter.h>
 #pragma warning(pop)
-#pragma comment(lib, "wininet.lib")
 #include <shlwapi.h>
-#pragma comment(lib, "Shlwapi.lib")
 #include <dinput.h>
 #include <set>
 

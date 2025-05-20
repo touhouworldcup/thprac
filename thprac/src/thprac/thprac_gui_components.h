@@ -220,8 +220,8 @@ namespace Gui {
         }
         inline void SetLabel(const char* label)
         {
-            mLabelRef = 0;
-            mLabel = label;
+            mLabelRef = static_cast<th_glossary_t>(0);
+            mLabel = const_cast<char*>(label);
         }
         inline void SetBound(const T minimum, const T maximum)
         {
@@ -348,8 +348,8 @@ namespace Gui {
         }
         inline void SetLabel(const char* label)
         {
-            mLabelRef = 0;
-            mLabel = label;
+            mLabelRef = static_cast<th_glossary_t>(0);
+            mLabel = const_cast<char*>(label);
         }
         inline void SetBound(const T&& minimum, const T&& maximum)
         {
@@ -764,3 +764,15 @@ namespace Gui {
     void MultiComboSelect(std::vector<size_t>& out, const char* const* choices, const size_t choices_count, const char* format = "%d");
 }
 }
+
+#define HOTKEY_DEFINE(name, txt, keytxt, vkey) ::THPrac::Gui::GuiHotKey name { txt, keytxt, vkey, make_hook_array<
+
+#if __INTELLISENSE__
+#define PATCH_HK(addr_, code_) HookCtx { .data = PatchData() }
+#define EHOOK_HK(addr_, inslen_, ...) HookCtx { .data = PatchData() }
+#else
+#define PATCH_HK(addr_, code_) { .addr = addr_, .data = PatchCode(code_) }
+#define EHOOK_HK(addr_, inslen_, ...) { .addr = addr_, .callback = [](PCONTEXT pCtx, HookCtx * self) __VA_ARGS__, .data = PatchHookImpl(inslen_) }
+#endif
+
+#define HOTKEY_ENDDEF() >()}

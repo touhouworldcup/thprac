@@ -217,6 +217,8 @@ inline DWORD PopHelper32(CONTEXT* pCtx)
 #define EHOOK_ST(name, target)                                \
     HookCtx name { target, __vehf_##name }; \
     static __declspec(noinline) void __stdcall __vehf_##name([[maybe_unused]] PCONTEXT pCtx)
+#define PATCH_ST(name_, addr_, ...) \
+    constinit HookCtx name_ { .addr = addr_, .name = #name_, .data = PatchCode(__VA_ARGS__) }
 
 #define EHOOK_DY(name, target)                                \
     HookCtx name { mHooks, target, __vehf_##name }; \

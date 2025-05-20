@@ -28,6 +28,9 @@ struct InjectResult {
     } error;
     WORD lastError;
 };
+
+uintptr_t GetGameModuleBase(HANDLE hProc);
+bool WriteTHPracSig(HANDLE hProc, uintptr_t base);
 bool LoadSelf(HANDLE hProcess, void* userdata = nullptr, size_t userdataSize = 0);
 void** GetUserData();
 }

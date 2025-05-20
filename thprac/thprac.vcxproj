@@ -151,6 +151,8 @@
     <ClCompile Include="src\thprac\thprac_th18.cpp" />
     <ClCompile Include="src\thprac\thprac_th185.cpp" />
     <ClCompile Include="src\thprac\thprac_th19.cpp" />
+    <ClCompile Include="src\thprac\thprac_th19.v1.00a.cpp" />
+    <ClCompile Include="src\thprac\thprac_th19.v1.00c.cpp" />
     <ClCompile Include="src\thprac\thprac_th20.cpp" />
     <ClCompile Include="src\thprac\thprac_utils.cpp" />
     <ClCompile Include="src\thprac\thprac_version.cpp" />
@@ -213,7 +215,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <FixedBaseAddress>false</FixedBaseAddress>
-      <AdditionalDependencies>kernel32.lib;ntdll.lib;user32.lib;freetype.lib;gdi32.lib;dxguid.lib;d3d9.lib;xinput.lib;winmm.lib;dinput8.lib;ws2_32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;ntdll.lib;user32.lib;freetype.lib;gdi32.lib;dxguid.lib;d3d9.lib;xinput.lib;winmm.lib;dinput8.lib;ws2_32.lib;wininet.lib;Shlwapi.lib;ole32.lib;comdlg32.lib;shell32.lib;advapi32.lib</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <GenerateDebugInformation>true</GenerateDebugInformation>

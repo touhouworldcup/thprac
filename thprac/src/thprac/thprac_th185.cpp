@@ -5,6 +5,276 @@
 
 namespace THPrac {
 namespace TH185 {
+    const char* card_names_en[] = {
+        "None",
+        "Blank Card",
+        "Money Comes and Goes on its Own",
+        "Money Comes and Goes on its Own",
+        "Life Card",
+        "Ringo Brand Dumplings",
+        "Phoenix's Tail",
+        "Yin-Yang Orb",
+        "Yin-Yang Orb (Needle)",
+        "Mini-Hakkero",
+        "Mini-Hakkero (Missile)",
+        "Maid Knife",
+        "Maid Knife (Ricochet)",
+        "Safe Return Amulet",
+        "Shed Snakeskin Amulet",
+        "Half of a Half-Ghost",
+        "Shanghai Doll",
+        "Ice Fairy",
+        "Back Door",
+        "Annoying UFO",
+        "Miser's Advice",
+        "Offerings to the Mountain God",
+        "Life Explosion Elixir",
+        "Fraudster Rabbit's Foot",
+        "Law of the Survival of the Fittest",
+        "Sutra of Dharmatic Power",
+        "Pebble Hat",
+        "Bursting Red Frog",
+        "Gale Geta",
+        "Idol Defense Corps",
+        "Princess Kaguya's Secret Stash",
+        "Reliable Tanuki Apprentice",
+        "Danmaku Ghost",
+        "Kiketsu Matriarch's Threat",
+        "Money is the Best Lawyer in Hell",
+        "Physical Enhancement Jizo",
+        "Magician's Basic Study",
+        "Manekineko with Good Business Skills",
+        "Yamawaro Shopping Technique",
+        "Dragon Pipe",
+        "Screen Border",
+        "Miracle Mallet",
+        "Keystone of Endurance",
+        "Lunatic Moon",
+        "Esteemed Authority",
+        "Vampire Fang",
+        "Subterranean Sun",
+        "Item Season",
+        "Heavy Bass Drum",
+        "Psychokinesis",
+        "Ancient Magatama",
+        "Spirit Power Sample Bottle",
+        "Great Tengu's Barley Rice",
+        "Gluttonous Centipede",
+        "Offensive Jeweled Pagoda",
+        "Peaceful Radiance",
+        "Maddening Stillness",
+        "Lively Powerlessness",
+        "Aesthetics of Destruction",
+        "The Dragon's Path",
+        "Ferocious Komainu",
+        "Irresistible Feathered Fan",
+        "Soot-covered Uchiwa",
+        "No Problem for a Creator!",
+        "The Rabbit Has Landed",
+        "Sheep You Want to Count",
+        "Pristine Self-Confidence",
+        "Capitalist's Dilemma",
+        "Hundredth Black Market",
+        "Bumper Crop of Life",
+        "Stimulating Scales",
+        "Yamanba's Kitchen Knife",
+        "Smelt's Scales",
+        "Freewheeling Severed Head",
+        "Drenched Giant Snake",
+        "Too-Honest Signpost",
+        "Hasty Detour of the Three Crossings",
+        "Laid-Back Invertebrate",
+        "Half-Ghost's Spare Part",
+        "Nimble Fabric",
+        "Keystone Missile",
+        "Life-Burning Torch",
+        "Indominable Meathead",
+        "Drunkenly Whimsical Ibuki Gourd",
+        "Teacup Reimu",
+        "Teacup Marisa",
+    };
+    const char* card_names_cn[] = {
+        "无",
+        "空白卡牌",
+        "财富流至门前来",
+        "财富流至门前来",
+        "生命卡牌",
+        "铃瑚团子",
+        "不死鸟之尾",
+        "阴阳玉",
+        "阴阳玉（针）",
+        "迷你八卦炉",
+        "迷你八卦炉（导弹）",
+        "Maid Knife(女仆飞刀)",
+        "Maid Knife（跳弹）",
+        "平安归来蛙护身符",
+        "放入蛇蜕的护身符",
+        "半灵的一半",
+        "上海人偶",
+        "Ice Fairy(冰之妖精)",
+        "背后之门",
+        "恼人的UFO",
+        "守财奴的教训",
+        "向神山的贡品",
+        "生命爆炸之药",
+        "欺诈兔脚",
+        "弱肉强食之理",
+        "法力经典",
+        "小石子帽子",
+        "爆裂赤蛙",
+        "疾风木屐",
+        "偶像防卫队",
+        "辉夜姬的秘密宝箱",
+        "可靠的弟子狸",
+        "弹幕的亡灵",
+        "鬼杰组长的恐吓",
+        "有钱能使鬼推磨",
+        "肉体强化地藏",
+        "魔法使的基础魔法",
+        "擅长做生意的招财猫",
+        "山童式购物术",
+        "Dragon Khsier(龙之烟管)",
+        "画面的界线",
+        "万宝槌",
+        "忍耐的要石",
+        "狂气之月",
+        "崇高的威光",
+        "Vampire Fang(吸血鬼之牙)",
+        "地底的太阳",
+        "道具的季节",
+        "重低音大太鼓",
+        "Psychokinesis(超能念力)",
+        "太古的勾玉",
+        "灵力的标本瓶",
+        "大天狗的麦饭",
+        "暴食的蜈蚣",
+        "攻击性宝塔",
+        "静谧的闪耀",
+        "疯狂的寂静",
+        "熙攘的无力感",
+        "破坏的美学",
+        "龙脉",
+        "关门放狛犬",
+        "难以抗拒的朱莉安娜羽扇",
+        "烟熏的团扇",
+        "对造形神来说很简单的事",
+        "着陆之兔",
+        "想要去数的羊",
+        "纯粹的自我肯定感",
+        "资本主义的困境",
+        "第一百次黑市",
+        "生命的丰穰",
+        "刺激性的鱗粉",
+        "山姥的菜刀",
+        "若鹭的鱼鳞",
+        "自由自在的飞头",
+        "湿润的巨蛇",
+        "太过正直的路标",
+        "急渡三途路远甚",
+        "任性的无脊椎动物",
+        "备用半灵",
+        "闪避布",
+        "要石导弹",
+        "点燃生命的火把",
+        "不屈的简单头脑",
+        "耍酒疯的伊吹瓢",
+        "茶杯灵梦",
+        "茶杯魔理沙",
+    };
+    const char* card_names_jp[] = {
+        "なし",
+        "空白のカード",
+        "勝手に天下の回り物",
+        "勝手に天下の回り物",
+        "命のカード",
+        "鈴瑚印の団子",
+        "不死鳥の尾",
+        "陰陽玉",
+        "陰陽玉（針）",
+        "ミニ八卦炉",
+        "ミニ八卦炉（ミサイル）",
+        "メイドナイフ",
+        "メイドナイフ（跳弾）",
+        "無事かえるお守り",
+        "蛇の抜け殻入りお守り",
+        "半霊の半分",
+        "上海人形",
+        "アイスフェアリー",
+        "背中の扉",
+        "鬱陶しいＵＦＯ",
+        "守銭奴の教訓",
+        "神山への供物",
+        "生命爆発の薬",
+        "詐欺うさぎの足",
+        "弱肉強食の理",
+        "法力経典",
+        "小石ころ帽子",
+        "はじける赤蛙",
+        "疾風の下駄",
+        "偶像防衛隊",
+        "かぐや姫の隠し箱",
+        "頼りになる弟子狸",
+        "弾幕の亡霊",
+        "鬼傑組長の脅嚇",
+        "地獄の沙汰も金次第",
+        "肉体強化地蔵",
+        "魔法使いの基礎勉強",
+        "商売上手な招き猫",
+        "山童的買い物術",
+        "ドラゴンキセル",
+        "画面の境界",
+        "打ち出の小槌",
+        "忍耐の要石",
+        "狂気の月",
+        "やんごとなき威光",
+        "ヴァンパイアファング",
+        "地底の太陽",
+        "アイテムの季節",
+        "重低音バスドラム",
+        "サイコキネシス",
+        "太古の勾玉",
+        "霊力の標本瓶",
+        "大天狗の麦飯",
+        "暴食のムカデ",
+        "攻撃的な宝塔",
+        "静かなる輝き",
+        "狂おしい静寂",
+        "賑やかな無力",
+        "破壊の美学",
+        "龍の通り道",
+        "けしかける狛犬",
+        "抗いがたきジュリ扇",
+        "煤けた団扇",
+        "クリエイターなら容易な事",
+        "舞い降りた兎",
+        "数えたくなる羊",
+        "純粋な自己肯定感",
+        "資本主義のジレンマ",
+        "百回目のブラックマーケット",
+        "生命の豊穣",
+        "刺激的な鱗粉",
+        "山姥の包丁",
+        "わかさぎの鱗",
+        "自由気ままな生首",
+        "濡れた大蛇",
+        "正直すぎる道しるべ",
+        "急がば三途の回り道",
+        "気ままな無脊椎動物",
+        "半霊のスペア",
+        "ひらり布",
+        "要石ミサイル",
+        "命を焚く松明",
+        "不屈の脳筋",
+        "酔狂の伊吹瓢",
+        "ゆのみ霊夢",
+        "ゆのみ魔理沙",
+    };
+
+    constexpr const size_t card_name_count = elementsof(card_names_en);
+
+    static_assert(elementsof(card_names_cn) == card_name_count);
+    static_assert(elementsof(card_names_jp) == card_name_count);
+
     enum addrs {
         BLACK_MARKET_PTR = 0x4d7ac4,
         CARD_DESC_LIST = 0x4ca370,
@@ -186,15 +456,15 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Mike Goutokuji",
+                        .label = S(TH185_GOUTOKUZI_MIKE),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(0, 2) } }
                             } }
                         }
                     },
-                    {
-                        .label = "Minoriko Aki",
+                    { 
+                        .label = S(TH185_AKI_MINORIKO),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(1, 2) } }
@@ -202,15 +472,15 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Eternity Larva",
+                        .label = S(TH185_ETERNITY_LARVA),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(2, 2) } }
                             } }
                         }
                     },
-                    {
-                        .label = "Nemuno Sakata",
+                    { 
+                        .label = S(TH185_SAKATA_NEMUNO),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(3, 2) } }
@@ -359,8 +629,8 @@ namespace TH185 {
                     {
                         .label = S(TH185_NONE_RANDOM)
                     },
-                    {
-                        .label = "Cirno",
+                    { 
+                        .label = S(TH185_CIRNO),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(0, 6) } }
@@ -368,15 +638,15 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Wakasagihime",
+                        .label = S(TH185_WAKASAGIHIME),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(1, 6) } }
                             } }
                         }
                     },
-                    {
-                        .label = "Sekibanki",
+                    { 
+                        .label = S(TH185_SEKIBANKI),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(2, 6) } }
@@ -384,7 +654,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Urumi Ushizaki",
+                        .label = S(TH185_USHIZAKI_URUMI),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(3, 6) } }
@@ -548,7 +818,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Eika Ebisu",
+                        .label = S(TH185_EBISU_EIKA),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(0, 10) } }
@@ -556,7 +826,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Kutaka Niwatari",
+                        .label = S(TH185_NIWATARI_KUTAKA),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(1, 10) } }
@@ -564,7 +834,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Narumi Yatadera",
+                        .label = S(TH185_YATADERA_NARUMI),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(2, 10) } }
@@ -572,7 +842,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Komachi Onozuka",
+                        .label = S(TH185_ONOZUKA_KOMACHI),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(3, 10) } }
@@ -736,7 +1006,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Sanae Kochiya",
+                        .label = S(TH185_KOCHIYA_SANAE),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(0, 14) } }
@@ -744,7 +1014,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Sakuya Izayoi",
+                        .label = S(TH185_IZAYOI_SAKUYA),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(1, 14) } }
@@ -752,7 +1022,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Youmu Konpaku",
+                        .label = S(TH185_KONPAKU_YOUMU),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(2, 14) } }
@@ -760,7 +1030,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Reimu Hakurei",
+                        .label = S(TH185_HAKUREI_REIMU),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(3, 14) } }
@@ -768,7 +1038,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Nitori Kawashiro",
+                        .label = S(TH185_KAWASIRO_NITORI),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = {
@@ -1008,7 +1278,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Tsukasa Kudamaki",
+                        .label = S(TH185_KUDAMAKI_TSUKASA),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(0, 18) } }
@@ -1016,7 +1286,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Megumu Iizunamaru",
+                        .label = S(TH185_IIZUNAMARU_MEGUMU),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(1, 18) } }
@@ -1024,7 +1294,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Clownpiece",
+                        .label = S(TH185_CLOWNPIECE),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(2, 18) } }
@@ -1032,7 +1302,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Tenshi Hinanawi",
+                        .label = S(TH185_HINANAWI_TENSHI),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(3, 18) } }
@@ -1274,7 +1544,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Suika Ibuki",
+                        .label = S(TH185_IBUKI_SUIKA),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(0, 22) } }
@@ -1282,7 +1552,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Mamizou Futatsuiwa",
+                        .label = S(TH185_FUTATUIWA_MAMIZOU),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(1, 22) } }
@@ -1290,7 +1560,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Saki Kurokoma",
+                        .label = S(TH185_KUROKOMA_SAKI),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(2, 22) } }
@@ -1298,7 +1568,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Momoyo Himemushi",
+                        .label = S(TH185_HIMEMUSHI_MOMOYO),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { FORCE_BOSS(3, 22) } }
@@ -1306,7 +1576,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Takane Yamashiro",
+                        .label = S(TH185_YAMASHIRO_TAKANE),
                         .writes = {
                             { "WorldWaveB00", {
                                 { .off = 0x34, .bytes = { {
@@ -1462,7 +1732,7 @@ namespace TH185 {
                 .type = stage_warps_t::TYPE_COMBO,
                 .section_param = {
                     {
-                        .label = "Dialog"
+                        .label = S(TH_DLG)
                     },
                     {
                         .label = S(TH_NONSPELL),
@@ -1565,7 +1835,7 @@ namespace TH185 {
                     }
                 },
                 {
-                    .label = "Chimata Tenkyuu",
+                    .label = S(TH185_TENKYU_CHIMATA),
                     .jumps = {
                         { "main", {
                             { .off = 0x29c, .dest = 0x67c }
@@ -1772,7 +2042,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM),
                     },
                     {
-                        .label = "Mike Goutokuji",
+                        .label = S(TH185_GOUTOKUZI_MIKE),
                         .writes = {
                             { "WorldWaveB01", {
                                 { .off = 0x34, .bytes = {
@@ -1782,7 +2052,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Minoriko Aki",
+                        .label = S(TH185_AKI_MINORIKO),
                         .writes = {
                             { "WorldWaveB01", {
                                 { .off = 0x34, .bytes = {
@@ -1792,7 +2062,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Eternity Larva",
+                        .label = S(TH185_ETERNITY_LARVA),
                         .writes = {
                             { "WorldWaveB01", {
                                 { .off = 0x34, .bytes = {
@@ -1802,7 +2072,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Nemuno Sakata",
+                        .label = S(TH185_SAKATA_NEMUNO),
                         .writes = {
                             { "WorldWaveB01", {
                                 { .off = 0x34, .bytes = {
@@ -1821,7 +2091,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Cirno",
+                        .label = S(TH185_CIRNO),
                         .writes = {
                             { "WorldWaveB02", {
                                 { .off = 0x34, .bytes = {
@@ -1831,7 +2101,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Wakasagihime",
+                        .label = S(TH185_WAKASAGIHIME),
                         .writes = {
                             { "WorldWaveB02", {
                                 { .off = 0x34, .bytes = {
@@ -1841,7 +2111,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Sekibanki",
+                        .label = S(TH185_SEKIBANKI),
                         .writes = {
                             { "WorldWaveB02", {
                                 { .off = 0x34, .bytes = {
@@ -1851,7 +2121,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Urumi Ushizaki",
+                        .label = S(TH185_USHIZAKI_URUMI),
                         .writes = {
                             { "WorldWaveB02", {
                                 { .off = 0x34, .bytes = {
@@ -1870,7 +2140,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Eika Ebisu",
+                        .label = S(TH185_EBISU_EIKA),
                         .writes = {
                             { "WorldWaveB03", {
                                 { .off = 0x34, .bytes = {
@@ -1880,7 +2150,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Kutaka Niwatari",
+                        .label = S(TH185_NIWATARI_KUTAKA),
                         .writes = {
                             { "WorldWaveB03", {
                                 { .off = 0x34, .bytes = {
@@ -1890,7 +2160,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Narumi Yatadera",
+                        .label = S(TH185_YATADERA_NARUMI),
                         .writes = {
                             { "WorldWaveB03", {
                                 { .off = 0x34, .bytes = {
@@ -1900,7 +2170,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Komachi Onozuka",
+                        .label = S(TH185_ONOZUKA_KOMACHI),
                         .writes = {
                             { "WorldWaveB03", {
                                 { .off = 0x34, .bytes = {
@@ -1919,7 +2189,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Sanae Kochiya",
+                        .label = S(TH185_KOCHIYA_SANAE),
                         .writes = {
                             { "WorldWaveB04", {
                                 { .off = 0x34, .bytes = {
@@ -1929,7 +2199,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Sakuya Izayoi",
+                        .label = S(TH185_IZAYOI_SAKUYA),
                         .writes = {
                             { "WorldWaveB04", {
                                 { .off = 0x34, .bytes = {
@@ -1939,7 +2209,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Youmu Konpaku",
+                        .label = S(TH185_KONPAKU_YOUMU),
                         .writes = {
                             { "WorldWaveB04", {
                                 { .off = 0x34, .bytes = {
@@ -1949,7 +2219,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Reimu Hakurei",
+                        .label = S(TH185_HAKUREI_REIMU),
                         .writes = {
                             { "WorldWaveB04", {
                                 { .off = 0x34, .bytes = {
@@ -1968,7 +2238,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Tsukasa Kudamaki",
+                        .label = S(TH185_KUDAMAKI_TSUKASA),
                         .writes = {
                             { "WorldWaveB05", {
                                 { .off = 0x34, .bytes = {
@@ -1978,7 +2248,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Megumu Iizunamaru",
+                        .label = S(TH185_IIZUNAMARU_MEGUMU),
                         .writes = {
                             { "WorldWaveB05", {
                                 { .off = 0x34, .bytes = {
@@ -1988,7 +2258,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Clownpiece",
+                        .label = S(TH185_CLOWNPIECE),
                         .writes = {
                             { "WorldWaveB05", {
                                 { .off = 0x34, .bytes = {
@@ -1998,7 +2268,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Tenshi Hinanawi",
+                        .label = S(TH185_HINANAWI_TENSHI),
                         .writes = {
                             { "WorldWaveB05", {
                                 { .off = 0x34, .bytes = {
@@ -2017,7 +2287,7 @@ namespace TH185 {
                         .label = S(TH185_NONE_RANDOM)
                     },
                     {
-                        .label = "Suika Ibuki",
+                        .label = S(TH185_IBUKI_SUIKA),
                         .writes = {
                             { "WorldWaveB06", {
                                 { .off = 0x34, .bytes = {
@@ -2027,7 +2297,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Mamizou Futatsuiwa",
+                        .label = S(TH185_FUTATUIWA_MAMIZOU),
                         .writes = {
                             { "WorldWaveB06", {
                                 { .off = 0x34, .bytes = {
@@ -2037,7 +2307,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Saki Kurokoma",
+                        .label = S(TH185_KUROKOMA_SAKI),
                         .writes = {
                             { "WorldWaveB06", {
                                 { .off = 0x34, .bytes = {
@@ -2047,7 +2317,7 @@ namespace TH185 {
                         }
                     },
                     {
-                        .label = "Momoyo Himemushi",
+                        .label = S(TH185_HIMEMUSHI_MOMOYO),
                         .writes = {
                             { "WorldWaveB06", {
                                 { .off = 0x34, .bytes = {
@@ -2888,98 +3158,6 @@ namespace TH185 {
                 break;
             }
 
-            cards = { S(TH_NONE) };
-            const th_glossary_t cardIds[] = {
-                TH185_CARD_0,
-                TH185_CARD_1,
-                TH185_CARD_2,
-                TH185_CARD_3,
-                TH185_CARD_4,
-                TH185_CARD_5,
-                TH185_CARD_6,
-                TH185_CARD_7,
-                TH185_CARD_8,
-                TH185_CARD_9,
-                TH185_CARD_10,
-                TH185_CARD_11,
-                TH185_CARD_12,
-                TH185_CARD_13,
-                TH185_CARD_14,
-                TH185_CARD_15,
-                TH185_CARD_16,
-                TH185_CARD_17,
-                TH185_CARD_18,
-                TH185_CARD_19,
-                TH185_CARD_20,
-                TH185_CARD_21,
-                TH185_CARD_22,
-                TH185_CARD_23,
-                TH185_CARD_24,
-                TH185_CARD_25,
-                TH185_CARD_26,
-                TH185_CARD_27,
-                TH185_CARD_28,
-                TH185_CARD_29,
-                TH185_CARD_30,
-                TH185_CARD_31,
-                TH185_CARD_32,
-                TH185_CARD_33,
-                TH185_CARD_34,
-                TH185_CARD_35,
-                TH185_CARD_36,
-                TH185_CARD_37,
-                TH185_CARD_38,
-                TH185_CARD_39,
-                TH185_CARD_40,
-                TH185_CARD_41,
-                TH185_CARD_42,
-                TH185_CARD_43,
-                TH185_CARD_44,
-                TH185_CARD_45,
-                TH185_CARD_46,
-                TH185_CARD_47,
-                TH185_CARD_48,
-                TH185_CARD_49,
-                TH185_CARD_50,
-                TH185_CARD_51,
-                TH185_CARD_52,
-                TH185_CARD_53,
-                TH185_CARD_54,
-                TH185_CARD_55,
-                TH185_CARD_56,
-                TH185_CARD_57,
-                TH185_CARD_58,
-                TH185_CARD_59,
-                TH185_CARD_60,
-                TH185_CARD_61,
-                TH185_CARD_62,
-                TH185_CARD_63,
-                TH185_CARD_64,
-                TH185_CARD_65,
-                TH185_CARD_66,
-                TH185_CARD_67,
-                TH185_CARD_68,
-                TH185_CARD_69,
-                TH185_CARD_70,
-                TH185_CARD_71,
-                TH185_CARD_72,
-                TH185_CARD_73,
-                TH185_CARD_74,
-                TH185_CARD_75,
-                TH185_CARD_76,
-                TH185_CARD_77,
-                TH185_CARD_78,
-                TH185_CARD_79,
-                TH185_CARD_80,
-                TH185_CARD_81,
-                TH185_CARD_82,
-                TH185_CARD_83,
-                TH185_CARD_84
-            };
-            for (auto cardId : cardIds) {
-                cards.push_back(S(cardId));
-            }
-
             StageWarpsLoad(mStage, warps);
         }
         virtual void OnContentUpdate() override
@@ -2989,8 +3167,6 @@ namespace TH185 {
 
             PracticeMenu();
         }
-
-        std::vector<const char*> cards = { };
 
         const char* difficulties[8] = {
             "Very Easy",
@@ -3016,7 +3192,14 @@ namespace TH185 {
 
                 ImGui::Separator();
                 ImGui::TextUnformatted(S(TH185_ADDITIONAL_CARDS));
-                Gui::MultiComboSelect(mAdditionalCards, cards.data(), cards.size(), S(TH18_CARD_FORMAT));
+                switch (Gui::LocaleGet()) {
+                case Gui::LOCALE_ZH_CN:
+                    return Gui::MultiComboSelect(mAdditionalCards, card_names_cn, card_name_count, S(TH18_CARD_FORMAT));
+                case Gui::LOCALE_JA_JP:
+                    return Gui::MultiComboSelect(mAdditionalCards, card_names_jp, card_name_count, S(TH18_CARD_FORMAT));
+                case Gui::LOCALE_EN_US:
+                    return Gui::MultiComboSelect(mAdditionalCards, card_names_en, card_name_count, S(TH18_CARD_FORMAT));
+                }
             }
         }
 

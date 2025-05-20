@@ -310,6 +310,7 @@ enum th_glossary_t {
     TH17_NO_GOAST,
     TH17_TITLE,
     TH185_ADDITIONAL_CARDS,
+    TH185_AKI_MINORIKO,
     TH185_BULLET_MONEY,
     TH185_CARD_0,
     TH185_CARD_1,
@@ -396,9 +397,30 @@ enum th_glossary_t {
     TH185_CARD_83,
     TH185_CARD_84,
     TH185_CARD_9,
+    TH185_CIRNO,
+    TH185_CLOWNPIECE,
+    TH185_EBISU_EIKA,
+    TH185_ETERNITY_LARVA,
     TH185_FORCE_WAVE,
+    TH185_FUTATUIWA_MAMIZOU,
+    TH185_GOUTOKUZI_MIKE,
+    TH185_HAKUREI_REIMU,
+    TH185_HIMEMUSHI_MOMOYO,
+    TH185_HINANAWI_TENSHI,
+    TH185_IBUKI_SUIKA,
+    TH185_IIZUNAMARU_MEGUMU,
     TH185_INF_BMONEY,
+    TH185_IZAYOI_SAKUYA,
+    TH185_KAWASIRO_NITORI,
+    TH185_KOCHIYA_SANAE,
+    TH185_KONPAKU_YOUMU,
+    TH185_KUDAMAKI_TSUKASA,
+    TH185_KUROKOMA_SAKI,
+    TH185_NIWATARI_KUTAKA,
     TH185_NONE_RANDOM,
+    TH185_ONOZUKA_KOMACHI,
+    TH185_SAKATA_NEMUNO,
+    TH185_SEKIBANKI,
     TH185_SPELL_0_1,
     TH185_SPELL_10_1,
     TH185_SPELL_11_1,
@@ -439,7 +461,10 @@ enum th_glossary_t {
     TH185_SPELL_7_1,
     TH185_SPELL_8_1,
     TH185_SPELL_9_1,
+    TH185_TENKYU_CHIMATA,
     TH185_TITLE,
+    TH185_USHIZAKI_URUMI,
+    TH185_WAKASAGIHIME,
     TH185_WAVE_1,
     TH185_WAVE_10,
     TH185_WAVE_11,
@@ -454,6 +479,8 @@ enum th_glossary_t {
     TH185_WAVE_9,
     TH185_WAVE_FORMAT,
     TH185_WHOLESALE,
+    TH185_YAMASHIRO_TAKANE,
+    TH185_YATADERA_NARUMI,
     TH18_AC_FIX,
     TH18_AC_FIX_DESC,
     TH18_BASSDRUM_CD,
@@ -572,8 +599,28 @@ enum th_glossary_t {
     TH19_RANK_FORMAT,
     TH19_SHOW_ENEMY_HP,
     TH19_TITLE,
-    TH20_PH,
+    TH20_FAKE_UNLOCK_STONES,
+    TH20_FAKE_UNLOCK_STONES_DESC,
+    TH20_FIX_HITBOX,
+    TH20_FIX_HITBOX_DESC,
+    TH20_HYPER,
+    TH20_HYP_LOCK,
+    TH20_INTERNAL_GAUGES,
+    TH20_NEXT_STONE,
+    TH20_PIV_OVERFLOW_FIX,
+    TH20_STONE_GAUGE,
+    TH20_STONE_LEVEL_B,
+    TH20_STONE_LEVEL_G,
+    TH20_STONE_LEVEL_R,
+    TH20_STONE_LEVEL_Y,
+    TH20_STONE_PRIORITY_B,
+    TH20_STONE_PRIORITY_G,
+    TH20_STONE_PRIORITY_R,
+    TH20_STONE_PRIORITY_Y,
     TH20_TITLE,
+    TH20_UNCAP_PIV,
+    TH20_UNCAP_SCORE,
+    TH20_WST_LOCK,
     THPRAC_ABORT,
     THPRAC_ADMIN_RIGHTS,
     THPRAC_AFTER_LAUNCH,
@@ -1404,7 +1451,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1393];
+extern const char* th_glossary_str[3][1440];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2992,24 +3039,41 @@ namespace TH20 {
         A0000ERROR,
         TH20_ST1_MID1,
         TH20_ST1_BOSS1,
+        TH20_ST1_BOSS2,
+        TH20_ST1_BOSS3,
+        TH20_ST1_BOSS4,
+        TH20_ST1_BOSS5,
+        TH20_ST2_MID1,
+        TH20_ST2_BOSS1,
+        TH20_ST2_BOSS2,
+        TH20_ST2_BOSS3,
+        TH20_ST2_BOSS4,
+        TH20_ST2_BOSS5,
+        TH20_ST3_BOSS1,
+        TH20_ST3_BOSS2,
+        TH20_ST3_BOSS3,
+        TH20_ST3_BOSS4,
+        TH20_ST3_BOSS5,
+        TH20_ST3_BOSS6,
+        TH20_ST3_BOSS7,
     };
 
-    extern const char* th_sections_str[3][4][3];
+    extern const char* th_sections_str[3][4][20];
 
-    extern const uint8_t th_sections_bgm[3];
+    extern const uint8_t th_sections_bgm[20];
 
-    extern const th_sections_t th_sections_cba[1][1][2];
+    extern const th_sections_t th_sections_cba[3][2][8];
 
-    extern const th_sections_t th_sections_cbt[1][2][3];
+    extern const th_sections_t th_sections_cbt[3][2][5];
 
     extern const th_glossary_t TH20_RAGE[3];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3367];
+extern const wchar_t __thprac_loc_range_zh[3405];
 
 extern const wchar_t __thprac_loc_range_en[61];
 
-extern const wchar_t __thprac_loc_range_ja[2709];
+extern const wchar_t __thprac_loc_range_ja[2765];
 
 }

@@ -2470,7 +2470,15 @@ public:
 
         ImGui::TextUnformatted(title);
         ImGui::Columns(columns);
-        for (auto& gameRef : gGameDefs) {
+        for (size_t i = 0; i < elementsof(gGameDefs); i++) {
+            // In case I need multiple gameDefs for the same game cause I, let's say
+            // want to support multiple versions of the same game
+            //
+            // Yes I'm comparing string pointers and not actual strings. This is OK here.
+            auto& gameRef = gGameDefs[i];
+            if (i != 0 && gameRef.idStr == gGameDefs[i - 1].idStr) {
+                continue;
+            }
             if (gameRef.catagory == catagory) {
                 auto& game = mGames[gameRef.idStr];
                 if (!(i % columns)) {
