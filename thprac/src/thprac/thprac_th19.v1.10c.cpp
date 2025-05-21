@@ -84,7 +84,7 @@ namespace V1_10c {
         .data = PatchCode("e900000000cccc")
     };
     constinit HookCtx th19_patch_RxD1E00 = {
-        .addr = 0xF8F60,
+        .addr = 0xD1E00,
         .data = PatchCode("e900000000cccc")
     };
 #endif
