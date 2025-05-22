@@ -1431,6 +1431,7 @@ namespace TH20TR {
         if (*(uint32_t*)(*(uintptr_t*)(RVA(0x1B85E8) + 0x88 + 0x238) + 0x108))
             memcpy((void*)(RVA(0x1B85E8) + 0x88 + 0x1C), replayStones, sizeof(replayStones));
     })
+    PATCH_DY(th20_fix_rep_results_skip, 0x1133B1, "5B35FAFF")
     EHOOK_DY(th20_update, 0x12824, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 
