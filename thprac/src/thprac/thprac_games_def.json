@@ -718,6 +718,11 @@
           "TH19 东方兽王园　～ Unfinished Dream of All Living Ghost.",
           "TH19 Unfinished Dream of All Living Ghost",
           "TH19 東方獣王園　～ Unfinished Dream of All Living Ghost."
+      ],
+	  "TH20_TITLE": [
+          "TH20 东方锦上京 ～ Fossilized Wonders.",
+          "TH20 Fossilized Wonders",
+          "東方錦上京 ～ Fossilized Wonders."
       ]
     },
 
@@ -956,6 +961,11 @@
         "TH_STAGE_4",
         "TH_STAGE_5",
         "TH_STAGE_6"
+      ],
+      "TH_STAGE_SELECT_TRIAL": [
+        "TH_STAGE_1",
+        "TH_STAGE_2",
+        "TH_STAGE_3"
       ],
       "TH_MODE_SELECT": [
         "TH_ORIGINAL",
@@ -9487,5 +9497,173 @@
           "TH19_RANK_FORMAT": [ "Rank: %d", "Rank: %d", "ランク: %d" ],
           "TH19_SHOW_ENEMY_HP": [ "显示敌人HP", "Show Enemy HP", "敵のHPを表示する" ]
       }
+  },
+  "th20": {
+    "namespace": "TH20",
+
+    "glossary": {
+      "TH20_HYPER": [ "异变攻击", "Hyper", "異変攻撃" ],
+      "TH20_STONE_GAUGE": [ "异变石", "Summon", "異変石" ],
+      "TH20_STONE_LEVEL_R": [ "红石等级", "LevelR", "レベルR" ],
+      "TH20_STONE_PRIORITY_R": [ "优先红", "PriorityR", "優先R" ],
+      "TH20_STONE_LEVEL_B": [ "蓝石等级", "LevelB", "レベルB" ],
+      "TH20_STONE_PRIORITY_B": [ "优先蓝", "PriorityB", "優先B" ],
+      "TH20_STONE_LEVEL_Y": [ "黄石等级", "LevelY", "レベルY" ],
+      "TH20_STONE_PRIORITY_Y": [ "优先黄", "PriorityY", "優先Y" ],
+      "TH20_STONE_LEVEL_G": [ "绿石等级", "LevelG", "レベルG" ],
+      "TH20_STONE_PRIORITY_G": [ "优先绿", "PriorityG", "優先G" ],
+      "TH20_HYP_LOCK": [ "异变攻击锁计", "Hyper Gauge Lock", "異変攻撃計固定" ],
+      "TH20_WST_LOCK": [ "异变石锁计 ", "Wonder Stone Gauge Lock", "異変石計固定" ],
+      "TH20_INTERNAL_GAUGES": [ "异变石内部状态", "Internal Wonder Stone State", "異変石内部状態" ],
+      "TH20_NEXT_STONE": [ "下一石", "Next Stone", "次の石" ],
+      "TH20_PIV_OVERFLOW_FIX": [ "PIV溢修", "PIV overflow fix", "PIVオーバーフロー修正" ],
+      "TH20_UNCAP_PIV": [ "移除PIV限制", "PIV uncap", "PIVキャップ解放" ],
+      "TH20_UNCAP_SCORE": [ "移除分数限制", "Score uncap", "スコアキャップ解放" ],
+      "TH20_FAKE_UNLOCK_STONES": [ "假解锁宝石", "Fake unlock stones", "未解放ストーン使用" ],
+      "TH20_FAKE_UNLOCK_STONES_DESC": [
+        "侧槽可选未解锁宝石。",
+        "Allows you to select stones you haven't actually unlocked in the side slots.",
+        "未解放ストーンをサイドスロットに設定可能。"
+      ],
+      "TH20_FIX_HITBOX": [ "修复玩家判定点缩放", "Fix player hitbox scale", "プレイヤーの当たり判定のスケールを修正" ],
+      "TH20_FIX_HITBOX_DESC": [
+        "将你的判定点从当前的0%（点状极小）恢复为100%（原始大小）。",
+        "Makes your hitbox 100% scale (original size) instead of 0% (current size, point-like).",
+        " 現在の0%（点のように小さい）から100%（本来のサイズ）に戻します。"
+      ]
+    },
+
+    "sections": {
+        "TH20_ST1_MID1": {
+            "bgm": 0,
+            "spell": 0,
+            "appearance": [ 1, 1, 1 ],
+            "!ENHL": "TH_MID_NS1"
+        },
+        "TH20_ST1_BOSS1": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 1, 2, 1 ],
+            "!ENHL": "TH_END_NS1"
+        },
+        "TH20_ST1_BOSS2": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 1, 2, 2 ],
+            "!EN": [ "尘符「Cosmic Dust」(宇宙灰尘)", "Dust Sign \"Cosmic Dust\"", "塵符「コズミックダスト」" ],
+            "!HL": [ "尘符「宇宙尘埃」", "Dust Sign \"Space Dust\"", "塵符「宇宙塵」" ]
+        },
+        "TH20_ST1_BOSS3": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 1, 2, 3 ],
+            "!ENHL": "TH_END_NS2"
+        },
+        "TH20_ST1_BOSS4": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 1, 2, 4 ],
+            "!EN": [ "尘符「唐柜翻转」", "Dust Sign \"Karabitsu Upheaval\"", "塵符「唐櫃返し」" ],
+            "!HL": [ "尘符「唐柜大翻转」", "Dust Sign \"Great Karabitsu Upheaval\"", "塵符「唐櫃大返し」" ]
+        },
+        "TH20_ST1_BOSS5": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 1, 2, 5 ],
+            "!ENHL": [ "尘符「尘埃栖所」", "Dust Sign \"Dwelling of Dust\"", "塵符「塵のすみか」" ]
+        },
+
+        "TH20_ST2_MID1": {
+            "bgm": 0,
+            "spell": 0,
+            "appearance": [ 2, 1, 1 ],
+            "!ENHL": "TH_MID_NS1"
+        },
+        "TH20_ST2_BOSS1": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 2, 2, 1 ],
+            "!ENHL": "TH_END_NS1"
+        },
+        "TH20_ST2_BOSS2": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 2, 2, 2 ],
+            "!EN": [ "魅符「不羁山涧之气」", "Bewitching Sign \"Qi of an Unruly Swamp\"", "魅符「まつろわぬ沢の気」" ],
+            "!HL": [ "魅符「狂野山涧之气」", "Bewitching Sign \"Qi of an Abusive Swamp\"", "魅符「荒くれる沢の気」" ]
+        },
+        "TH20_ST2_BOSS3": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 2, 2, 3 ],
+            "!ENHL": "TH_END_NS2"
+        },
+        "TH20_ST2_BOSS4": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 2, 2, 4 ],
+            "!EN": [ "魅符「梦呓森林之气」", "Bewitching Sign \"Qi of a Restless Forest\"", "魅符「うなされる森の気」" ],
+            "!HL": [ "魅符「窒息森林之气」", "Bewitching Sign \"Qi of a Suffocating Forest\"", "魅符「息苦しい森の気」" ]
+        },
+        "TH20_ST2_BOSS5": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 2, 2, 5 ],
+            "!EN": [ "魑符「狂暴山岳之气」", "Mountain Spirit Sign \"Qi of a Savage Mountain\"", "魑符「荒ぶる山の気」" ],
+            "!HL": [ "魑符「暴怒山岳之气」", "Mountain Spirit Sign \"Qi of a Furious Mountain\"", "魑符「怒れる山の気」" ]
+        },
+
+        "TH20_ST3_BOSS1": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 3, 2, 1 ],
+            "!ENHL": "TH_END_NS1"
+        },
+        "TH20_ST3_BOSS2": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 3, 2, 2 ],
+            "!EN": [ "谜符「Pyramidal Labyrinth」(锥状迷宫)", "Riddle Sign \"Pyramidal Labyrinth\"", "謎符「ピラミダルラビリンス」" ],
+            "!HL": [ "谜符「Hexagonal Labyrinth」(六角迷宫)", "Riddle Sign \"Hexagonal Labyrinth\"", "謎符「ヘキサゴナルラビリンス」" ]
+        },
+        "TH20_ST3_BOSS3": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 3, 2, 3 ],
+            "!ENHL": "TH_END_NS2"
+        },
+        "TH20_ST3_BOSS4": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 3, 2, 4 ],
+            "!EN": [ "塞符「Logical Wall」(逻辑高墙)", "Obstructing Sign \"Logical Wall\"", "塞符「ロジカルウォール」" ],
+            "!HL": [ "塞符「Logical Great Wall」(逻辑长城)", "Obstructing Sign \"Logical Great Wall\"", "塞符「ロジカルグレートウォール」" ]
+        },
+        "TH20_ST3_BOSS5": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 3, 2, 5 ],
+            "!ENHL": "TH_END_NS3"
+        },
+        "TH20_ST3_BOSS6": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 3, 2, 6 ],
+            "!ENHL": [ "谜符「Enchant Trap」(附魔陷阱)", "Riddle Sign \"Ancient Trap\"", "謎符「エンシャントトラップ」" ]
+        },
+        "TH20_ST3_BOSS7": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 3, 2, 7 ],
+            "!ENHL": [ "金符「弹幕金字塔」", "Gold Sign \"Danmaku Pyramid\"", "金符「弾幕の金字塔」" ]
+        }
+    },
+
+    "groups": {
+      "TH20_RAGE": [
+        "TH_NORMAL",
+        "TH_RAGE"
+      ]
+    }
   }
 }
