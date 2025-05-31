@@ -1,5 +1,4 @@
-## [English](/README.md)
-## [日本語](/README_JP.md)
+## [English](/README.md) [日本語](/README_JP.md)
 # **thprac**
 > thprac 是一个辅助练习东方 Project 的弹幕射击游戏的工具。
 

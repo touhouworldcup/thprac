@@ -1,5 +1,4 @@
-## [English](/README.md)
-## [简体中文](/README_CN.md)
+## [English](/README.md) [简体中文](/README_CN.md)
 
 # **thprac**
 > thpracは東方STGの為の練習ツールです。
@@ -56,7 +55,7 @@ thprac.exe --without-vpatch C:\Users\Name\Desktop\Games\Touhou\th17\th17.exe
 ```
 
 ## <a name="compatability"></a> **互換性**
-thprac は **Windows Vista** 以降の全てのバージョンの Windows に公式にサポートしています。Windows XP であっても [One-Core-API](https://github.com/Skulltrail192/One-Core-API-Binaries)を使うことで動作する可能性はありますが、これは**公式に動作確認されているわけではありません。**
+thprac は **Windows Vista** 以降の全てのバージョンの Windows に公式にサポートしています。Windows XP であっても [One-Core-API](https://github.com/Skulltrail192/One-Core-API-Binaries) を使うことで動作する可能性はありますが、これは**公式に動作確認されているわけではありません。**
 
 thprac は **Wine** や Steam Deck にも対応しています。Backspace メニューは Steam Deck で動作するよう設計されていますが、未検証なことに注意してください。
 
@@ -116,7 +115,7 @@ thprac が『カスタム』モードで動作している場合、ゲームが�
 
 ### ナイトメアダイアリー、鬼形獣、虹龍洞の ESC + R の高速リトライに関する修正
 
-## <a name="credits"></a> **クレジット (2025年6月1日以来)**
+## <a name="credits"></a> **クレジット (2022年5月27日以降)**
 - 開発: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [muter3000](https://github.com/muter3000), [zero318](https://github.com/zero318), [Lmocinemod](https://github.com/Lmocinemod), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 
 - 中国語翻訳: [CrestedPeak9](https://twitter.com/CrestedPeak9), maksim71_doll, DeepL
 - 日本語翻訳: [ゆーみや](https://www.twitch.tv/toho_yumiya), CyrusVorazan, DeepL
