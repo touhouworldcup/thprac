@@ -1,4 +1,5 @@
 ## [简体中文](/README_CN.md)
+## [日本語](/README_JP.md)
 
 # **thprac**
 > thprac is a tool for practicing Touhou shmups.
@@ -121,6 +122,7 @@ Choosing "Exit" will now prompt you to save a replay.
 - Moving all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
 - English README.md: [Galagyy](https://github.com/Galagyy)
 - Chinese README.md translation: [TNT569](https://github.com/TNT569), [H-J-Granger](https://github.com/H-J-Granger)
+- Japanese README.md translation: [wefma](https://github.com/wefma)
 
 ## <a name="faq"></a> **Frequently Asked Questions (FAQ)**
 

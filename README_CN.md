@@ -1,4 +1,5 @@
 ## [English](/README.md)
+## [日本語](/README_JP.md)
 # **thprac**
 > thprac 是一个辅助练习东方 Project 的弹幕射击游戏的工具。
 
@@ -126,6 +127,7 @@ Thprac 会自动将您输入的选项保存到 replay 中，播放 replay 时，
 - 日语翻译: [Yu-miya](https://www.twitch.tv/toho_yumiya), CyrusVorazan, DeepL
 - 将所有 bug 追踪报告从 [旧的 bug 追踪处](https://github.com/ack7139/thprac/issues) 移到 [此处](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
 - 中文 README 翻译：[TNT569](https://github.com/TNT569)、[H-J-Granger](https://github.com/H-J-Granger)
+- 日语版 README.md 翻译：[wefma](https://github.com/wefma)
 
 ## <a name="faq"></a> 常见问题
 
