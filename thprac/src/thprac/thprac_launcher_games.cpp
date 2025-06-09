@@ -2523,9 +2523,7 @@ public:
                     }
                     ImGui::EndPopup();
                 }
-
                 ImGui::NextColumn();
-                i++;
             }
         }
         ImGui::Columns(1);

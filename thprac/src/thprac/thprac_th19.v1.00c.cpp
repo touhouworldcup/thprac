@@ -36,6 +36,12 @@ extern "C" {
 uint32_t* __vectorcall CPUHitInf_CheckColliders(void*, int, uint32_t*, float, float, float);
 bool __vectorcall _RxD1E00_fast(uint32_t, uint32_t, float, float, float, float, float, float, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
 }
+#else
+// why
+extern "C" {
+uint32_t* __vectorcall CPUHitInf_CheckColliders(void*, int, uint32_t*, float, float, float) {return 0;};
+bool __vectorcall _RxD1E00_fast(uint32_t, uint32_t, float, float, float, float, float, float, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t) {return 0;};
+}
 #endif
 
 namespace THPrac {
@@ -84,6 +90,18 @@ namespace V1_10c {
 
     HookCtx th19_patch_cpu_check_colliders(0xF8F60, (char*)cpu_check_collider_patch_code, sizeof(cpu_check_collider_patch_code));
     HookCtx th19_patch_RxD1E00(0xD1E00, (char*)patch_RxD1E00_code, sizeof(patch_RxD1E00_code));
+ #else
+    // why
+        static uint8_t cpu_check_collider_patch_code[] = {
+        0xe9, 0x00, 0x00, 0x00, 0x00, 0xcc, 0xcc, 0xcc,
+    };
+    static uint8_t patch_RxD1E00_code[] = {
+        0xe9, 0x00, 0x00, 0x00, 0x00, 0xcc, 0xcc, 0xcc,
+    };
+
+    HookCtx th19_patch_cpu_check_colliders(0xF8F60, (char*)cpu_check_collider_patch_code, sizeof(cpu_check_collider_patch_code));
+    HookCtx th19_patch_RxD1E00(0xD1E00, (char*)patch_RxD1E00_code, sizeof(patch_RxD1E00_code));
+
 #endif
 
     class THAdvOptWnd : public Gui::GameGuiWnd {
@@ -170,6 +188,20 @@ namespace V1_10c {
             }
 
 #ifndef _DEBUG
+            if (BeginOptGroup<TH_PERFORMANCE>()) {
+                if (ImGui::Checkbox("Replace certain functions with faster variants", &this->perf_fix)) {
+                    if (this->perf_fix) {
+                        th19_patch_cpu_check_colliders.Enable();
+                        th19_patch_RxD1E00.Enable();
+                    } else {
+                        th19_patch_cpu_check_colliders.Disable();
+                        th19_patch_RxD1E00.Disable();
+                    }
+                }
+                EndOptGroup();
+            }
+#else
+            //why
             if (BeginOptGroup<TH_PERFORMANCE>()) {
                 if (ImGui::Checkbox("Replace certain functions with faster variants", &this->perf_fix)) {
                     if (this->perf_fix) {
