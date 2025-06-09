@@ -14,6 +14,15 @@ namespace TH15 {
     bool g_blind_view = false;
     float g_blind_size = 150.0f;
 
+    bool g_show_bullet_hitbox=false;
+    struct laser_hitbox_draw {
+        ImVec2 posA;
+        ImVec2 posB;
+        ImVec2 posC;
+        ImVec2 posD;
+    };
+    std::vector<laser_hitbox_draw> g_th15_laser_hit_draw_vec;
+
     struct THPracParam {
         int32_t mode;
         int32_t stage;
@@ -885,6 +894,8 @@ namespace TH15 {
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));
+
+                ImGui::Checkbox("show laser hitbox(only practice mode)", &g_show_bullet_hitbox);
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
                 EndOptGroup();
@@ -2218,7 +2229,54 @@ namespace TH15 {
             p->AddText({ 220.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
         }
     }
+    
+    EHOOK_DY(th15_laser_hit_test, 0x455E10){
+        int is_practice = (*((int32_t*)0x4e7794) & 0x10);
+        if(!is_practice)
+            return;
+        if (!g_show_bullet_hitbox)
+            return;
+        float height,angle,width;
+        __asm
+        {
+            movss height,xmm3
+            movss angle,xmm2
+        }
+        width = *(float*)(pCtx->Esp + 0x8);
+        ImVec2 pos_tail = *(ImVec2*)(*(DWORD*)(pCtx->Esp + 0x4));
+        auto Multiply = [](ImVec2 a, ImVec2 b) -> ImVec2 {
+            return { a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x };
+        };
+        auto Add = [](ImVec2 a, ImVec2 b) -> ImVec2 {
+            return { a.x + b.x, a.y + b.y };
+        };
+        auto GetClientFromStage = [](ImVec2 stage) -> ImVec2 {
+            float x = stage.x;
+            float y = stage.y;
 
+            y = y * 2.0f + 32.0f;
+            x = x * 2.0f + 448.0f;
+            ImGuiIO& io = ImGui::GetIO();
+            return { x * io.DisplaySize.x / 1280.0f, y * io.DisplaySize.y / 960.0f };
+        };
+        ImVec2 hit_pl = *(ImVec2*)(*(DWORD*)(0x4E9BB8) + 0x2bfc8);
+        ImVec2 hit_pl_conved = { hit_pl.x * 1.0f, hit_pl.y * 1.0f };
+        ImVec2 posA = { width + hit_pl_conved.x, - (height * 0.5f + hit_pl_conved.y) };
+        ImVec2 posB = { width + hit_pl_conved.x, height * 0.5f + hit_pl_conved.y };
+        ImVec2 posC = { -hit_pl_conved.x, -(height * 0.5f + hit_pl_conved.y) };
+        ImVec2 posD = { -hit_pl_conved.x, height * 0.5f + hit_pl_conved.y };
+        ImVec2 rotation = { cosf(angle), sinf(angle) };
+        posA = Multiply(posA, rotation);
+        posB = Multiply(posB, rotation);
+        posC = Multiply(posC, rotation);
+        posD = Multiply(posD, rotation);
+        posA = GetClientFromStage(Add(posA, pos_tail));
+        posB = GetClientFromStage(Add(posB, pos_tail));
+        posC = GetClientFromStage(Add(posC, pos_tail));
+        posD = GetClientFromStage(Add(posD, pos_tail));
+        auto p = ImGui::GetOverlayDrawList();
+        g_th15_laser_hit_draw_vec.push_back({ posA, posB, posD, posC });
+    }
     EHOOK_DY(th15_update, 0x4015fa)
     {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
@@ -2230,6 +2288,23 @@ namespace TH15 {
         TH15InGameInfo::singleton().Update();
 
         auto p = ImGui::GetOverlayDrawList();
+        {
+            ImGuiIO& io = ImGui::GetIO();
+            float x_ratio = io.DisplaySize.x / 1280.0f;
+            float y_ratio = io.DisplaySize.y / 960.0f;
+            p->PushClipRect({ 64.0f * x_ratio, 32.0f * y_ratio }, { 832.0f * x_ratio, 928.0f * y_ratio });
+
+            int is_practice = (*((int32_t*)0x4e7794) & 0x10);
+            if (is_practice && g_show_bullet_hitbox)
+            {
+                for (auto& i : g_th15_laser_hit_draw_vec) {
+                    p->AddQuadFilled(i.posA, i.posB, i.posC, i.posD, 0x88CC0000);
+                    p->AddQuad(i.posA, i.posB, i.posC, i.posD, 0xCCFFFFFF);
+                }
+                g_th15_laser_hit_draw_vec = {};
+            }
+            p->PopClipRect();
+        }
         // in case boss movedown do not disabled when playing normal games
         {
             if (THAdvOptWnd::singleton().forceBossMoveDown) {
