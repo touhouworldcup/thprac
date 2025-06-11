@@ -9,7 +9,13 @@ namespace TH06 {
     bool THBGMTest();
     using std::pair;
 
-    // from https://github.com/happyhavoc/th06/blob/master/src/GameManager.hpp, edited
+    /**
+     * @brief The enum used in th06 for the difficulties of games.
+     * @warning DON'T change the fields unless ZUN changed his corresponding 
+     *          code in th06.
+     * @details The code is from https://github.com/happyhavoc/th06/blob/master/src/GameManager.hpp ,
+     *          edited. 
+     */
     enum Difficulty : int32_t {
         DIFFICULTY_EASY,
         DIFFICULTY_NORMAL,
@@ -17,14 +23,44 @@ namespace TH06 {
         DIFFICULTY_LUNATIC,
         DIFFICULTY_EXTRA
     };
+
+    /**
+     * @brief The enum used in th06 for the characters of games.
+     * @warning DON'T change the fields unless ZUN change his corresponding 
+     *          code in th06.
+     * @details The code is from https://github.com/happyhavoc/th06/blob/master/src/GameManager.hpp ,
+     *          edited. Not sure which number is for Satsuki Rin, maybe 2.
+     */
     enum Character : uint8_t {
         CHARACTER_REIMU,
         CHARACTER_MARISA
     };
+
+    /**
+     * @brief The enum used in th06 for the shottypes of games.
+     * @warning DON'T change the fields unless ZUN change his corresponding 
+     *          code in th06.
+     * @details The code is from https://github.com/happyhavoc/th06/blob/master/src/GameManager.hpp ,
+     *          edited. We use (character * 2 + shottype) to combine the two
+     *          enums into *real* shottypes such as ReimuA.
+     */
     enum ShotType : uint8_t {
         SHOTTYPE_A,
         SHOTTYPE_B
     };
+
+    /**
+     * @brief The struct used in th06 for managing the game.
+     * @warning DON'T change the fields unless ZUN change his corresponding 
+     *          code in th06.
+     * @details The code is from https://github.com/happyhavoc/th06/blob/master/src/GameManager.hpp ,
+     *          edited. We only use a few fields of it in our code.
+     *          The code here is not byte-aligned by itself, and so the offset 
+     *          (which stands for the byte-aligned struct) can be confusing.
+     *          Some fields are still unknown, however one can refer to Happy
+     *          Havoc's Reverse Engineering progress in 
+     *          https://github.com/happyhavoc/th06/ .
+     */
     struct GameManager {
         struct zFloat2 {
             float x, y;
@@ -46,8 +82,8 @@ namespace TH06 {
         int8_t isTimeStopped; // 0x2c
         int8_t offset_2d[3]; // 0x2d
         int8_t offset_catk[0x1000]; // 0x30, it's an array of catk but unused in our code
-        int8_t offset_clrd[0x60]; // 0x1030, same as above
-        int8_t offset_pscr[0x780]; // 0x1090, same as above
+        int8_t offset_clrd[0x60]; // 0x1030, it's an array of clrd but unused in our code
+        int8_t offset_pscr[0x780]; // 0x1090, it's an array of pscr but unused in our code
         uint16_t currentPower; // 0x1810
         int8_t unk_1812; // 0x1812
         int8_t unk_1813; // 0x1813
