@@ -347,7 +347,10 @@ namespace TH06 {
             SetPos(10.0f, 10.0f);
             SetSize(0.0f, 0.0f);
             SetWndFlag(
-                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | 
+                ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | 
+                ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0
+            );
             OnLocaleChange();
         }
         SINGLETON(THOverlay);
@@ -804,7 +807,11 @@ namespace TH06 {
                 auto oldBgmFlag = THBGMTest();
                 thRestartFlag = true;
                 THGuiPrac::singleton().State(5);
-                if (*(THOverlay::singleton().mElBgm) && !el_bgm_changed && oldMode == thPracParam.mode && oldStage == thPracParam.stage && oldBgmFlag == THBGMTest()) {
+                if (
+                    *(THOverlay::singleton().mElBgm) && !el_bgm_changed && 
+                    oldMode == thPracParam.mode && 
+                    oldStage == thPracParam.stage && oldBgmFlag == THBGMTest()
+                ) {
                     el_bgm_signal = true;
                 }
 
@@ -1057,7 +1064,10 @@ namespace TH06 {
 
         THAdvOptWnd() noexcept
         {
-            SetWndFlag(ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
+            SetWndFlag(
+                ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | 
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove
+            );
             SetFade(0.8f, 0.8f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -2108,7 +2118,9 @@ namespace TH06 {
     HOOKSET_DEFINE(THMainHook)
     PATCH_DY(th06_reacquire_input, 0x41dc58, "0000000074")
     EHOOK_DY(th06_activateapp, 0x420D96, 3, {
-        // Wacky hack to disable rendering for one frame to prevent the game from crasing when alt tabbing into it if the pause menu is open and the game is in fullscreen mode
+        // Wacky hack to disable rendering for one frame to prevent the game 
+        // from crasing when alt tabbing into it if the pause menu is open and 
+        // the game is in fullscreen mode
         GameGuiProgress = 1;
     })
     EHOOK_DY(th06_bgm_play, 0x424b5d, 1, {
