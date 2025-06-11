@@ -210,8 +210,12 @@ namespace TH06 {
          * @brief with offset 0x198, unknown field but used several times in 
          *        existing code.
          * @details labeled as __frames_to_disable_something__see_0x419f66 in 
-         *          https://github.com/exphp-share/th-re-data/blob/master/data/th06.v1.02h/type-structs-own.json
-         *          TODO: find out what *exactly* the use of the field.
+         *          https://github.com/exphp-share/th-re-data/blob/master/data/th06.v1.02h/type-structs-own.json .
+         *          This seems to be related to redrawing the background outside 
+         *          of danmaku playing field (the one with nearly pure grey 
+         *          colour). Pressing Escape seems to set it to 3, maybe causing 
+         *          it to redraw for 3 frames. We set it to 3 several times in 
+         *          our code, too.
          */
         int32_t unk198;
 
