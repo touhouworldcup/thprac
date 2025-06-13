@@ -208,4 +208,4 @@ Some tools, like "DX8 to DX9 Converter," conflict with VsyncPatch. Replay speed 
 ### Game-Specific
 
 #### What is "DDC - Marisa Laser Related"?
-This fixes the infamous Marisa laser desync bug in **Double Dealing Character (TH14)**.
+This fixes the infamous Marisa laser desync bug in **Double Dealing Character (TH14)**. Please refer to the original developer, Ack's [demonstration video on Bilibili](https://www.bilibili.com/video/av285566068) (in Chinese, [backup video link on YouTube](https://www.youtube.com/watch?v=Hkh_AEGHLto))

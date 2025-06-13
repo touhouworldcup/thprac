@@ -193,4 +193,4 @@ thprac 与 thcrap 兼容。thprac 的启动器也可以启动 thcrap，与 [Univ
 某些工具（例如“DX8 to DX9 Converter”）与 VsyncPatch 冲突。注意 replay 的播放速度调整（加速/减速）仅在神灵庙中得到支持。
 
 #### 什么是“辉针城 - 魔理沙激光相关”？
-这个功能能够修复辉针城里臭名昭著的魔理沙激光炸 replay 的 bug。
+这个功能能够修复辉针城里臭名昭著的魔理沙激光炸 replay 的 bug。请参见原作者 Ack 的 [视频链接](https://www.bilibili.com/video/av285566068) 或 [YouTube 上的备份视频链接](https://www.youtube.com/watch?v=Hkh_AEGHLto)。
