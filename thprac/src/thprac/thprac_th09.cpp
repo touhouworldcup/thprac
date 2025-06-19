@@ -255,7 +255,7 @@ namespace TH09 {
             pCtx->Eip += 12;
     }
 
-    void __fastcall th09_chargelock_ret(PCONTEXT pCtx, HookCtx* self)
+    void __fastcall th09_chargelock_ret(PCONTEXT pCtx, [[maybe_unused]] HookCtx* self)
     {
         TH09Tools& t = TH09Tools::singleton();
         uint32_t side = *(uint32_t*)(pCtx->Ecx + 0x8);
