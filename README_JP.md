@@ -63,14 +63,13 @@ thprac は **Wine** や Steam Deck にも対応しています。Backspace メ�
 
 thprac は全ての東方ゲームと妖精大戦争及び黄昏酒場に対応した拡張プラクティスモードが搭載されています。
 
-![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174433923-0a6069e7-d10d-4107-8f0d-f4a8a9d56976.png)
-
-![Imperishable Night](https://user-images.githubusercontent.com/23106652/174433975-8f23b0b0-e48e-4be1-8cb7-d8e3e7ab6b8e.png)
+![虹龍洞](https://github.com/user-attachments/assets/6a356fac-6c4c-4e93-b2c9-fdcb7bc0789e)
+![永夜抄](https://github.com/user-attachments/assets/95368c3b-005a-4438-9ed9-d2d1cc4b7cb8)
 
 thprac は元のプラクティス画面を上のような新しいUIに置き換えます。特定のスペルカードの発狂段階の選択や各種パラメータの変更ができます。元々プラクティスモードが存在しないゲーム(黄昏酒場、妖精大戦争など)はゲーム開始時のメニューにプラクティス画面が追加されます。
 
-![Uwabami Breakers](https://user-images.githubusercontent.com/23106652/174434103-5fee7a13-0254-4602-a468-42330b985bb2.png)
-![Great Fairy Wars](https://user-images.githubusercontent.com/23106652/174434121-063142f2-ef3d-4721-ab96-a252343cdb0e.png)
+![黄昏酒場](https://github.com/user-attachments/assets/c2d86630-6d55-4c8c-a67b-620db8cca372)
+![妖精大战争](https://github.com/user-attachments/assets/7389b30a-1695-4bdc-90f5-79fffea03e60)
 
 このメニューはキーボードやコントローラで操作することができます。 **上** キーと **下** キーで項目を選択し、 **左** キーと **右** キーでオプションを変更、 **ショット** キーで決定します。マウスを使用して操作することも可能です。
 
@@ -81,33 +80,36 @@ thprac は選択したオプションを自動的にリプレイファイルに�
 
 これらのオプションは常にクリック可能で、デスクトップPCではマウスで操作可能な他、 Steam Deck では左親指で操作することができます。 Steam Deck でこの機能を使用するには、 Steam Input で Backspace キーを割り当ててください。
 
-![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174434813-73748a66-0f6d-4c6e-9f3a-895a49b93434.png)
-![Wily Beast and Weakest Creature](https://user-images.githubusercontent.com/23106652/174434834-6bd93104-1ed2-48ae-a440-9d9cb871ea03.png)
+![虹龍洞](https://github.com/user-attachments/assets/81abdd34-37ab-45ef-b41a-59c51b76a0b3)
+![鬼形獣](https://github.com/user-attachments/assets/b7c0f227-f14a-47c1-b3ca-97e8e1dc0898)
 
 ## <a name="advanced-options"></a> **拡張オプション**
 対応しているゲームでは F12 キーを押すことで拡張オプションを使用することができます。これらのオプションはゲームに関する修正やパッチ、その他便利な機能が含まれている場合があります。
 
-![Imperishable Night](https://user-images.githubusercontent.com/23106652/174434977-683da583-324b-4bd5-8408-13373dfd5a93.png)
-![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174435006-e906d30d-0ef5-4930-ae57-1f0919beb5af.png)
+![永夜抄](https://github.com/user-attachments/assets/f2678151-90a9-4dd8-9e46-64f2fb9badf0)
+![虹龍洞](https://github.com/user-attachments/assets/205e267b-86ec-4029-80fe-482dd7cb2929)
 
 ## <a name="game-specific-features"></a> **ゲーム個別の機能**
 ### バレットフィリア達の闇市場 - 強行突破
-![100th Black Market](https://github.com/touhouworldcup/thprac/assets/23106652/02c55e5e-5c89-462f-beea-9ab07cbb1051)
+
+![バレットフィリア達の闇市場](https://github.com/user-attachments/assets/9666f371-a663-4b54-8730-366341417479)
 
 thprac が『カスタム』モードで動作している場合、ゲームがウェーブを選択しようとするタイミングで上記ポップアップが表示されます。
 
 ### 花映塚 - ツール
-![Phantasmagoria of Flower View](https://user-images.githubusercontent.com/23106652/174434249-2bf1d70a-101c-4538-a4e6-8eeaf273dd88.png) 
+![花映塚ツール](https://github.com/user-attachments/assets/6fe6ee09-15cc-4694-bbc5-6c5cf77f7fcd)
 
 対戦モードでゲームを開始する場合、『モード』画面で『カスタム』を選択することができます。『カスタム』を選択するとゲーム内にこのウィンドウが表示されます。このウィンドウは自由に移動・調整が可能です。 F11 キーで非表示にすることも可能です。
 
 ### 獣王園 - ツール
-![TH19 Tools](https://github.com/touhouworldcup/thprac/assets/23106652/a2cdb385-b61d-4111-af6b-b195e85bf18a)
+
+![獣王園ツール](https://github.com/user-attachments/assets/64d50121-d715-4340-b166-7a49d8b7204a)
 
 花映塚のようなことが獣王園でも行うことができます。
 
 ### 紅魔郷 - 一時停止画面
-![TH06](https://user-images.githubusercontent.com/23106652/174436027-734d642a-300c-45ab-9591-b6219aca087b.png)
+
+![紅魔郷](https://github.com/user-attachments/assets/11c3a1ec-0ffc-4071-a552-959973fa561e)
 
 『終了』を選択することでリプレイを保存するかどうかの確認メッセージが表示されます。
 
