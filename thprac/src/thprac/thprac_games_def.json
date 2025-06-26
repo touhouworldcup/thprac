@@ -229,6 +229,8 @@
     "THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN":["修改启动时窗口的大小","change window size when open","change window size when open"],
     "THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE":["窗口大小","window size","window size"],
 	
+    "THPRAC_KEYBOARD_HOOK":["启用键盘HOOK","enable keyboard hook","enable keyboard hook"],
+    "THPRAC_KEYBOARD_HOOK_DESC":["影响按键禁用/SOCD/按键修改等功能","relate to key disable, SOCD, keybind change, etc","relate to key disable, SOCD, keybind change, etc"],
     "THPRAC_KEYBOARD_SOCD":["SOCD设置","SOCD setting","SOCD setting"],
     "THPRAC_KEYBOARD_SOCD_SETTINGS":["默认SOCD(zun's)\\0启用SOCD后覆盖功能\\0启用SOCD回中功能\\0\\0","default SOCD(zun's)\\0enable keyboard SOCD (last input priority)\\0enable keyboard SOCD (neutral)\\0\\0","default SOCD(zun's)\\0enable keyboard SOCD (last input priority)\\0enable keyboard SOCD (neutral)\\0\\0"],
     "THPRAC_KEYBOARD_SOCD_DESC":["当同时按下反向方向键时，修改按键逻辑。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。","Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.","Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."],

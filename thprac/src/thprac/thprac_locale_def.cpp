@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1453] {
+const char* th_glossary_str[3][1455] {
     {
         "",
         "啤酒",
@@ -18,7 +18,7 @@ const char* th_glossary_str[3][1453] {
         "锁时 (Boss)",
         "正常游玩",
         "订单 #%d",
-        "订单 #%d (中Boss）",
+        "订单 #%d (中Boss)",
         "练习模式",
         "时间",
         "黄昏酒场",
@@ -922,6 +922,8 @@ const char* th_glossary_str[3][1453] {
         "删除",
         "修改按键",
         "修改按键",
+        "启用键盘HOOK",
+        "影响按键禁用/SOCD/按键修改等功能",
         "SOCD设置",
         "当同时按下反向方向键时，修改按键逻辑。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。",
         "默认SOCD(zun's)\0启用SOCD后覆盖功能\0启用SOCD回中功能\0\0",
@@ -2377,6 +2379,8 @@ const char* th_glossary_str[3][1453] {
         "remove",
         "new key",
         "new key",
+        "enable keyboard hook",
+        "relate to key disable, SOCD, keybind change, etc",
         "SOCD setting",
         "Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.",
         "default SOCD(zun's)\0enable keyboard SOCD (last input priority)\0enable keyboard SOCD (neutral)\0\0",
@@ -3083,7 +3087,7 @@ const char* th_glossary_str[3][1453] {
         "出発点",
         "A (魔法の森)",
         "B (霧の湖)",
-        "C (魔法の森)",
+        "C (春の小径)",
         "Extra (夜桜怪道)",
         "TH12.8 妖精大戦争　～ 東方三月精",
         "TH12 東方星蓮船　～ Undefined Fantastic Object.",
@@ -3832,6 +3836,8 @@ const char* th_glossary_str[3][1453] {
         "remove",
         "new key",
         "new key",
+        "enable keyboard hook",
+        "relate to key disable, SOCD, keybind change, etc",
         "SOCD setting",
         "Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.",
         "default SOCD(zun's)\0enable keyboard SOCD (last input priority)\0enable keyboard SOCD (neutral)\0\0",
@@ -4092,7 +4098,7 @@ const char* th_glossary_str[3][1453] {
         "remove rolled",
         "ROLL",
         "time",
-        "結果：％s。（右クリックで詳細オプションを表示）",
+        "結果：%s。（右クリックで詳細オプションを表示）",
         "未処理の例外が発生しました。これにより、クラッシュが発生する可能性があります。\nクラッシュが発生した場合は、ランチャーに記載されている連絡方法のいずれかを使用して、ダンプファイルを私に送信してください。\nさらに、クラッシュがどのように発生したかを説明するメモをいただければ幸いです。\nダンプファイルはthpracのデータフォルダにあります。\n（ランチャーを開く - 設定 - データディレクトリを開く - \"crashdump\"フォルダー）",
         "Unlock monitor refresh rate",
         "When enabled, applying thprac will prevent the game to lock monitor's refresh rate at 60hz in fullscreen mode.\nThis gives you slightly improved latency and reduced screen tearing when using a high refresh rate monitor and when vertical sync is disabled.\nNote: This only works when using thprac (and its launcher) to open the game. For Steam games, tick \"Ask each startup time/起動時に毎回訊れる\" in custom.exe.",
@@ -27600,6 +27606,7 @@ const wchar_t __thprac_loc_range_ja[2763] {
     0x5f69, 0x5f69,
     0x5f71, 0x5f71,
     0x5f79, 0x5f79,
+    0x5f84, 0x5f84,
     0x5f85, 0x5f85,
     0x5f8b, 0x5f8b,
     0x5f8c, 0x5f8c,
@@ -28420,7 +28427,6 @@ const wchar_t __thprac_loc_range_ja[2763] {
     0x9f8d, 0x9f8d,
     0xff01, 0xff01,
     0xff03, 0xff03,
-    0xff05, 0xff05,
     0xff06, 0xff06,
     0xff08, 0xff08,
     0xff09, 0xff09,

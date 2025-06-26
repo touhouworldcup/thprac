@@ -30,6 +30,8 @@ int g_gameGuiImpl = -1;
 DWORD* g_gameGuiDevice = nullptr;
 DWORD* g_gameGuiHwnd = nullptr;
 HIMC g_gameIMCCtx = 0;
+
+bool g_enable_keyhook;
 bool g_disable_xkey = false;
 bool g_disable_shiftkey = false;
 bool g_disable_zkey = false;
@@ -814,8 +816,9 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         g_adv_igi_options.keyboard_style.padding = { 0.0, 0.0 };
 
     }
-
-     { // hook keyboard to enable SOCD and X-disable
+   
+    if (LauncherSettingGet("enable_keyboard_hook", g_enable_keyhook) && g_enable_keyhook)
+    { // hook keyboard to enable SOCD and X-disable
         LPVOID pTarget;
         if(MH_OK==MH_CreateHookApiEx(L"user32.dll", "GetKeyboardState", GetKeyboardState_Changed, (void**)&g_realGetKeyboardState, &pTarget))
             MH_EnableHook(pTarget);
@@ -1230,27 +1233,29 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
 
 void DisableKeyOpt()
 {
-    ImGui::Checkbox(S(TH_ADV_DISABLE_X_KEY), &g_disable_xkey);
-    ImGui::SameLine();
-    HelpMarker(S(TH_ADV_DISABLE_X_KEY_DESC));
-    ImGui::SameLine();
-    ImGui::Checkbox(S(TH_ADV_DISABLE_SHIFT_KEY), &g_disable_shiftkey);
-    ImGui::SameLine();
-    HelpMarker(S(TH_ADV_DISABLE_SHIFT_KEY_DESC));
-    ImGui::SameLine();
-    ImGui::Checkbox(S(TH_ADV_DISABLE_Z_KEY), &g_disable_zkey);
-    ImGui::SameLine();
-    if (ImGui::IsKeyDown(0x10))//shift
-    {
-        if (ImGui::IsKeyPressed('D'))
-            g_disable_xkey = !g_disable_xkey;
-        if (ImGui::IsKeyPressed('S'))
-            g_disable_zkey = !g_disable_zkey;
-        if (ImGui::IsKeyPressed('A'))
-            g_disable_shiftkey = !g_disable_shiftkey;
+    if (g_enable_keyhook) {
+        ImGui::Checkbox(S(TH_ADV_DISABLE_X_KEY), &g_disable_xkey);
+        ImGui::SameLine();
+        HelpMarker(S(TH_ADV_DISABLE_X_KEY_DESC));
+        ImGui::SameLine();
+        ImGui::Checkbox(S(TH_ADV_DISABLE_SHIFT_KEY), &g_disable_shiftkey);
+        ImGui::SameLine();
+        HelpMarker(S(TH_ADV_DISABLE_SHIFT_KEY_DESC));
+        ImGui::SameLine();
+        ImGui::Checkbox(S(TH_ADV_DISABLE_Z_KEY), &g_disable_zkey);
+        ImGui::SameLine();
+        if (ImGui::IsKeyDown(0x10)) // shift
+        {
+            if (ImGui::IsKeyPressed('D'))
+                g_disable_xkey = !g_disable_xkey;
+            if (ImGui::IsKeyPressed('S'))
+                g_disable_zkey = !g_disable_zkey;
+            if (ImGui::IsKeyPressed('A'))
+                g_disable_shiftkey = !g_disable_shiftkey;
+        }
+
+        HelpMarker(S(TH_ADV_DISABLE_Z_KEY_DESC));
     }
-    
-    HelpMarker(S(TH_ADV_DISABLE_Z_KEY_DESC));
     return;
 }
 

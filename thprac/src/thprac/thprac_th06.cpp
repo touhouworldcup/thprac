@@ -3592,8 +3592,11 @@ namespace TH06 {
     {
         if (g_adv_igi_options.th06_fix_seed)
         {
-            if ((*(DWORD*)(0x69d6d4) == 1 || *(DWORD*)(0x69d6d4) == 7) && !thPracParam.mode) {
-                *(uint16_t*)(0x69D8F8) = (uint16_t)((int32_t)g_adv_igi_options.th06_seed & 0xFFFF);
+            if ((*(DWORD*)(0x69d6d4) == 1 || *(DWORD*)(0x69d6d4) == 7)) {
+                if ((!thPracParam.mode) || thPracParam.section == 10000 + 1 * 100 + 1 || thPracParam.section == 0)
+                {
+                    *(uint16_t*)(0x69D8F8) = (uint16_t)((int32_t)g_adv_igi_options.th06_seed & 0xFFFF);
+                }
             }
         }
     }

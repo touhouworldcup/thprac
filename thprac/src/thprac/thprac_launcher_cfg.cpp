@@ -2129,15 +2129,7 @@ private:
             mWindowSize.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE));
 
             
-            bool enable_SOCD_v1 = false;
-            LauncherSettingGet("keyboard_SOCD", enable_SOCD_v1);
-            if (LauncherSettingRemove("keyboard_SOCD")) {
-                int type = enable_SOCD_v1 ? 1 : 0;
-                mKeyboardSOCD.Set(type);
-            }
-
-            mKeyboardSOCD.Gui(S(THPRAC_KEYBOARD_SOCD), S(THPRAC_KEYBOARD_SOCD_SETTINGS), S(THPRAC_KEYBOARD_SOCD_DESC));
-
+          
             mUD_Replay_10.Gui(S(THPRAC_MOF_UD_REP));
             mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
             mAutoName_06.Gui(S(THPRAC_AUTO_NAME_TH06), S(THPRAC_AUTO_NAME_TH06_DESC));
@@ -2162,7 +2154,20 @@ private:
                 ImGui::SetNextItemWidth(150.0f);
                 mName_06.Gui(S(THPRAC_AUTO_NAME_NAME), nullptr, ImGuiInputTextFlags_::ImGuiInputTextFlags_CallbackCharFilter, charfilter);
             }
-            KeyBindSettings();
+
+            ImGui::Separator();
+            mKeyboardHook.Gui(S(THPRAC_KEYBOARD_HOOK), S(THPRAC_KEYBOARD_HOOK_DESC));
+            if (mKeyboardHook.Get()){
+                bool enable_SOCD_v1 = false;
+                LauncherSettingGet("keyboard_SOCD", enable_SOCD_v1);
+                if (LauncherSettingRemove("keyboard_SOCD")) {
+                    int type = enable_SOCD_v1 ? 1 : 0;
+                    mKeyboardSOCD.Set(type);
+                }
+                mKeyboardSOCD.Gui(S(THPRAC_KEYBOARD_SOCD), S(THPRAC_KEYBOARD_SOCD_SETTINGS), S(THPRAC_KEYBOARD_SOCD_DESC));
+                KeyBindSettings();
+            }
+            ImGui::NewLine();
         }
         ImGui::Separator();
         if (ImGui::CollapsingHeader(S(THPRAC_INGAMEINFO_ADV2))) {
@@ -2455,6 +2460,7 @@ private:
     THCfgCheckbox mWindowSizeChangeWhenOpen { "change_window_size_when_open", false };
     THCfgInt2 mWindowSize { "changed_window_size", {1920,1440},1,8192 };
 
+    THCfgCheckbox mKeyboardHook { "enable_keyboard_hook", true };
     THCfgCombo mKeyboardSOCD { "keyboard_SOCDv2", 0, 3 };
     THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };
     THCfgCheckbox mUD_Replay_10 { "th10_ud_Replay", true };
