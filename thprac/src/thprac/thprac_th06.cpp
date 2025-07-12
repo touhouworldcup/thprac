@@ -269,31 +269,39 @@ namespace TH06 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtx(0x4277c2, "\x03", 1),
-            new HookCtx(0x42779a, "\x83\xc4\x10\x90\x90", 5) } };
         
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
-            new HookCtx(0x4289e3, "\x00", 1) } };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
-            // new HookCtx(0x41BBE2, "\x3E\xC6\x80", 3),
-            // new HookCtx(0x41BBE9, "\x80", 1),
-            new HookCtx(0x428B7D, "\x00", 1),
-            new HookCtx(0x428B67,"\x90\x90\x90\x90\x90\x90\x90\x90\x90", 9) } };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
-            new HookCtx(0x428989, "\xEB\x1D", 2),
-            new HookCtx(0x4289B4, "\x85\xD2", 2),
-            new HookCtx(0x428A94, "\xFF\x89", 2),
-            new HookCtx(0x428A9D, "\x66\xC7\x05\x04\xD9\x69\x00\x02", 8) } };
+        HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(0x4277c2, "03"),
+        PATCH_HK(0x42779a, "83c4109090")
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
+        PATCH_HK(0x4289e3, "00")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
+        PATCH_HK(0x428B7D, "00"),
+        PATCH_HK(0x428B67, "909090909090909090")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
+        PATCH_HK(0x428989, "EB1D"),
+        PATCH_HK(0x4289B4, "85D2"),
+        PATCH_HK(0x428A94, "FF89"),
+        PATCH_HK(0x428A9D, "66C70504D9690002")
+        HOTKEY_ENDDEF();
+        
 
     public:
-        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2, {
-            new HookCtx(0x428DDB, "\xA0\xBA\xD4\x69\x00\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 16), 
-            new HookCtx(0x428AC6, "\x90\x90\x90\x90\x90\x90", 6) // do not drop F item
-        } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
-            new HookCtx(0x412DD1, "\xeb", 1)
-        } };
+        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
+        PATCH_HK(0x428DDB, "a0bad469009090909090909090909090"),
+        PATCH_HK(0x428AC6, "909090909090")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
+        PATCH_HK(0x412DD1, "eb")
+        HOTKEY_ENDDEF();
+
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mShowSpellCapture { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
@@ -1628,23 +1636,26 @@ namespace TH06 {
         THPracParam mRepParam;
     };
 
+    float g_bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
+    EHOOK_ST(th06_bossmovedown, 0x0040917F, 5, {
+        float* left = (float*)(pCtx->Ecx + 0xE60);
+        float* top = (float*)(pCtx->Ecx + 0xE64);
+        float* right = (float*)(pCtx->Ecx + 0xE68);
+        float* bottom = (float*)(pCtx->Ecx + 0xE6C);
+        float range = *bottom - *top;
+        *top = *bottom - range * (1.0f - g_bossMoveDownRange);
+    });
+
+    HOOKSET_DEFINE(th06_rankdown_disable)
+    PATCH_DY(th06_rankdown_disable1, 0x428C34, "909090909090909090909090909090")
+    PATCH_DY(th06_rankdown_disable2, 0x428A55, "909090909090909090909090909090")
+    HOOKSET_ENDDEF()
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
         SINGLETON(THAdvOptWnd);
         // Option Related Functions
+
     private:
-        float bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
-        EHOOK_ST(th06_bossmovedown, 0x0040917F)
-        {
-            float* left = (float*)(pCtx->Ecx + 0xE60);
-            float* top = (float*)(pCtx->Ecx + 0xE64);
-            float* right = (float*)(pCtx->Ecx + 0xE68);
-            float* bottom = (float*)(pCtx->Ecx + 0xE6C);
-            float range = *bottom - *top;
-            *top = *bottom - range * (1.0f - THAdvOptWnd::singleton().bossMoveDownRange);
-        }
-
-        HookCtx* th06_rankdown_disable[2];
-
         void FpsInit()
         {
             mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06.dll");
@@ -1702,12 +1713,11 @@ namespace TH06 {
 
             OnLocaleChange();
             FpsInit();
-            th06_rankdown_disable[0] =  new HookCtx(0x428C34, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 15);
-            th06_rankdown_disable[1] = new HookCtx(0x428A55, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 15);
-            th06_rankdown_disable[0]->Setup();
-            th06_rankdown_disable[1]->Setup();
-            th06_rankdown_disable[0]->Toggle(g_adv_igi_options.th06_disable_drop_rank);
-            th06_rankdown_disable[1]->Toggle(g_adv_igi_options.th06_disable_drop_rank);
+
+            for (int i = 0; i < 2; i++)
+                th06_rankdown_disable[i].Setup();
+            for (int i = 0; i < 2; i++)
+                th06_rankdown_disable[i].Toggle(g_adv_igi_options.disable_master_autoly);
             th06_bossmovedown.Setup();
             th06_bossmovedown.Toggle(false);
             GameplayInit();
@@ -1770,10 +1780,10 @@ namespace TH06 {
                 EndOptGroup();
             }
             {
-                if (ImGui::Checkbox(S(TH06_RANKLOCK_DOWN), &g_adv_igi_options.th06_disable_drop_rank))
-                {
-                    th06_rankdown_disable[0]->Toggle(g_adv_igi_options.th06_disable_drop_rank);
-                    th06_rankdown_disable[1]->Toggle(g_adv_igi_options.th06_disable_drop_rank);
+                if (ImGui::Checkbox(S(TH06_RANKLOCK_DOWN), &g_adv_igi_options.th06_disable_drop_rank)){
+
+                    for (int i = 0; i < 2; i++)
+                        th06_rankdown_disable[i].Toggle(g_adv_igi_options.th06_disable_drop_rank);
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH06_RANKLOCK_DOWN_DESC));
@@ -1782,8 +1792,8 @@ namespace TH06 {
                     if (ImGui::IsKeyPressed('C'))
                     {
                         g_adv_igi_options.th06_disable_drop_rank = !g_adv_igi_options.th06_disable_drop_rank;
-                        th06_rankdown_disable[0]->Toggle(g_adv_igi_options.th06_disable_drop_rank);
-                        th06_rankdown_disable[1]->Toggle(g_adv_igi_options.th06_disable_drop_rank);
+                        for (int i = 0; i < 2; i++)
+                            th06_rankdown_disable[i].Toggle(g_adv_igi_options.th06_disable_drop_rank);
                     }
                 }
             }
@@ -1797,8 +1807,8 @@ namespace TH06 {
             HelpMarker(S(TH_BOSS_FORCE_MOVE_DOWN_DESC));
             ImGui::SameLine();
             ImGui::SetNextItemWidth(180.0f);
-            if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &bossMoveDownRange, 0.002f, 0.0f, 1.0f))
-                bossMoveDownRange = std::clamp(bossMoveDownRange, 0.0f, 1.0f);
+            if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &g_bossMoveDownRange, 0.002f, 0.0f, 1.0f))
+                g_bossMoveDownRange = std::clamp(g_bossMoveDownRange, 0.0f, 1.0f);
 
             ImGui::Checkbox(S(THPRAC_SHOW_BULLET_HITBOX), &g_show_bullet_hitbox);
 
@@ -2930,401 +2940,20 @@ namespace TH06 {
         ReplaySaveParam(mb_to_utf16(rep_name, 932).c_str(), thPracParam.GetJson());
     }
 
-    EHOOK_G1(th06_result_screen_create, 0x42d812)
+    static float MInterpolation(float t, float a, float b)
     {
-        th06_result_screen_create::GetHook().Disable();
-        *(uint32_t*)(*(uint32_t*)(pCtx->Ebp - 0x10) + 0x8) = 0xA;
-        pCtx->Eip = 0x42d839;
-    }
-    HOOKSET_DEFINE(THMainHook)
-    PATCH_DY(th06_reacquire_input, 0x41dc58, "\x00\x00\x00\x00\x74", 5);
-    EHOOK_DY(th06_activateapp, 0x420D96)
-    {
-        // Wacky hack to disable rendering for one frame to prevent the game from crasing when alt tabbing into it if the pause menu is open and the game is in fullscreen mode
-        GameGuiProgress = 1; 
-    }
-    EHOOK_DY(th06_bgm_play, 0x424b5d)
-    {
-        int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
-
-        if (THPauseMenu::singleton().el_bgm_signal) {
-            pCtx->Eip = 0x424d35;
+        if (t < 0.0f) {
+            return a;
+        } else if (t < 0.5) {
+            float k = (b - a) * 2.0f;
+            return k * t * t + a;
+        } else if (t < 1.0f) {
+            float k = (b - a) * 2.0f;
+            t = t - 1.0f;
+            return -k * t * t + b;
         }
-        if (retn_addr == 0x418db4) {
-            THPauseMenu::singleton().el_bgm_changed = true;
-        }
+        return b;
     }
-    EHOOK_DY(th06_bgm_stop, 0x430f80)
-    {
-        if (THPauseMenu::singleton().el_bgm_signal) {
-            pCtx->Eip = 0x43107b;
-        }
-    }
-    EHOOK_DY(th06_prac_menu_1, 0x437179)
-    {
-        THGuiPrac::singleton().State(1);
-    }
-    EHOOK_DY(th06_prac_menu_3, 0x43738c)
-    {
-        THGuiPrac::singleton().State(3);
-    }
-    EHOOK_DY(th06_prac_menu_4, 0x43723f)
-    {
-        THGuiPrac::singleton().State(4);
-    }
-    EHOOK_DY(th06_prac_menu_enter, 0x4373a3)
-    {
-        *(int32_t*)(0x69d6d4) = *(int32_t*)(0x69d6d8) = thPracParam.stage;
-        if (thPracParam.stage == 6)
-            *(int8_t*)(0x69bcb0) = 4;
-        else
-            *(int8_t*)(0x69bcb0) = *(int8_t*)(0x6c6e49);
-    }
-    EHOOK_DY(th06_pause_menu, 0x401b8f)
-    {
-        if (thPracParam.mode && (*((int32_t*)0x69bcbc) == 0)) {
-            auto sig = THPauseMenu::singleton().PMState();
-            if (sig == THPauseMenu::SIGNAL_RESUME) {
-                pCtx->Eip = 0x40223d;
-            } else if (sig == THPauseMenu::SIGNAL_EXIT) {
-                *(uint32_t*)0x6c6ea4 = 7; // Set gamemode to result screen
-                *(uint16_t*)0x69d4bf = 0; // Close pause menu
-                th06_result_screen_create::GetHook().Enable();
-            } else if (sig == THPauseMenu::SIGNAL_RESTART) {
-                pCtx->Eip = 0x40263c;
-            } else if (sig == THPauseMenu::SIGNAL_EXIT2) {
-                *(uint32_t*)0x6c6ea4 = 1; 
-                *(uint16_t*)0x69d4bf = 0;
-                th06_result_screen_create::GetHook().Enable();
-            } else {
-                pCtx->Eip = 0x4026a6;
-            }
-        }
-        // escR patch
-        DWORD thiz = pCtx->Ecx;
-        if (!thPracParam.mode && (*((int32_t*)0x69bcbc) == 0))
-        {
-            if (*(DWORD*)(thiz) != 7) {
-                WORD key = *(WORD*)(0x69D904);
-                WORD key_last = *(WORD*)(0x69D908);
-                if (((key & (292)) == 292 && (key & (292)) != (key_last & (292))) || (GetAsyncKeyState('R')&0x8000) ){ // ctrl+shift+down or R
-                    *(DWORD*)(thiz) = 7;
-                    threstartflag_normalgame = true;
-                }
-            }
-        }
-        if (*(DWORD*)(thiz) == 7) {
-            pCtx->Eip = 0x40263c;
-        }
-    }
-    
-    EHOOK_DY(th06_inf_lives,0x00428DEB)
-    {
-        if ((*(THOverlay::singleton().mInfLives)))
-        {
-            if (!g_adv_igi_options.map_inf_life_to_no_continue){
-                pCtx->Eax += 1;
-            }else{
-                if ((pCtx->Eax & 0xFF) == 0)
-                    pCtx->Eax += 1;
-            }
-        }
-        
-    }
-
-    EHOOK_DY(th06_pause_menu_pauseBGM, 0x402714)
-    {
-        if (g_pauseBGM_06) {
-            DWORD soundstruct = *(DWORD*)(0x6D457C);
-            if (soundstruct)
-            {
-                int32_t n = *(int32_t*)(soundstruct + 0x10);
-                IDirectSound8* d;
-                IDirectSoundBuffer** soundbuffers = *(IDirectSoundBuffer***)(soundstruct + 0x4);
-                if (*(BYTE*)(0x69D4BF) == 0 || (*(THOverlay::singleton().mElBgm) && thPracParam.mode)) // show menu==0
-                {
-                    for (int i = 0; i < n; i++) {
-                        DWORD st = 0;
-                        soundbuffers[i]->GetStatus(&st);
-                        if (!(st & DSBSTATUS_PLAYING)) {
-                            soundbuffers[i]->Play(0, 0, DSBPLAY_LOOPING);
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < n; i++) {
-                        DWORD st = 0;
-                        soundbuffers[i]->GetStatus(&st);
-                        if (st & DSBSTATUS_PLAYING) {
-                            soundbuffers[i]->Stop();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    EHOOK_DY(th06_patch_main, 0x41c17a)
-    {
-        THPauseMenu::singleton().el_bgm_changed = false;
-        if (thPracParam.mode == 1) {
-            // TODO: Probably remove this ASM comment?
-            /*
-                    mov eax,dword ptr [@MENU_RANK]
-                    mov dword ptr [69d710],eax
-                    cmp dword ptr [@MENU_RANKLOCK],@MENU_ON_STR
-                    jnz @f
-                    mov dword ptr [69d714],eax
-                    mov dword ptr [69d718],eax
-                */
-            *(int8_t*)(0x69d4ba) = (int8_t)thPracParam.life;
-            *(int8_t*)(0x69d4bb) = (int8_t)thPracParam.bomb;
-            *(int16_t*)(0x69d4b0) = (int16_t)thPracParam.power;
-            *(int32_t*)(0x69bca0) = *(int32_t*)(0x69bca4) = (int32_t)thPracParam.score;
-            *(int32_t*)(0x69bcb4) = *(int32_t*)(0x69bcb8) = (int32_t)thPracParam.graze;
-            *(int16_t*)(0x69d4b4) = *(int16_t*)(0x69d4b6) = (int16_t)thPracParam.point;
-            *(uint32_t*)0x5a5fb0 = thPracParam.frame;
-
-            if (*(int8_t*)(0x69bcb0) != 4) {
-                if (thPracParam.score >= 60000000)
-                    *(int8_t*)(0x69d4bc) = 4;
-                else if (thPracParam.score >= 40000000)
-                    *(int8_t*)(0x69d4bc) = 3;
-                else if (thPracParam.score >= 20000000)
-                    *(int8_t*)(0x69d4bc) = 2;
-                else if (thPracParam.score >= 10000000)
-                    *(int8_t*)(0x69d4bc) = 1;
-            }
-
-            *(int32_t*)(0x69d710)  = (int32_t)thPracParam.rank;
-            if (thPracParam.rankLock) {
-                *(int32_t*)(0x69d714)  = (int32_t)thPracParam.rank;
-                *(int32_t*)(0x69d718)  = (int32_t)thPracParam.rank;
-            }
-
-            THSectionPatch();
-        }
-        thPracParam._playLock = true;
-
-        if (THPauseMenu::singleton().el_bgm_signal) {
-            THPauseMenu::singleton().el_bgm_signal = false;
-            pCtx->Eip = 0x41c18a;
-        } else if (THBGMTest()) {
-            pCtx->Eax += 0x310;
-            pCtx->Eip = 0x41c17f;
-        }
-    }
-    PATCH_S1(th06_white_screen, 0x42fee0, "\xc3", 1);
-    EHOOK_DY(th06_restart, 0x435901)
-    {
-        if (!threstartflag_normalgame && !thRestartFlag) {
-            th06_white_screen::GetPatch().Disable();
-        }
-        if (threstartflag_normalgame)
-        {
-            th06_white_screen::GetPatch().Enable();
-            threstartflag_normalgame = false;
-            pCtx->Eip = 0x436DCB;
-        }
-        if (thRestartFlag) {
-            th06_white_screen::GetPatch().Enable();
-            thRestartFlag = false;
-            pCtx->Eip = 0x43738c;
-        } else {
-            thPracParam.Reset();
-        }
-    }
-    EHOOK_DY(th06_title, 0x41ae2c)
-    {
-        if (thPracParam.mode != 0 && thPracParam.section) {
-            pCtx->Eip = 0x41af35;
-        }
-    }
-    PATCH_DY(th06_preplay_1, 0x42d835, "\x09", 1);
-    EHOOK_DY(th06_preplay_2, 0x418ef9)
-    {
-        if (thPracParam.mode && !THGuiRep::singleton().mRepStatus) {
-            *(uint32_t*)0x69bca0 = *(uint32_t*)0x69bca4;
-            pCtx->Eip = 0x418f0e;
-        }
-    }
-    EHOOK_DY(th06_save_replay, 0x42b03b)
-    {
-        char* rep_name = *(char**)(pCtx->Ebp + 0x8);
-        if (thPracParam.mode)
-            THSaveReplay(rep_name);
-    }
-    EHOOK_DY(th06_rep_menu_1, 0x438262)
-    {
-        THGuiRep::singleton().State(1);
-    }
-    EHOOK_DY(th06_rep_menu_2, 0x4385d5)
-    {
-        THGuiRep::singleton().State(2);
-    }
-    EHOOK_DY(th06_rep_menu_3, 0x438974)
-    {
-        THGuiRep::singleton().State(3);
-    }
-    EHOOK_DY(th06_fake_shot_type, 0x40b2f9)
-    {
-        if (thPracParam.fakeType) {
-            *((int32_t*)0x487e44) = thPracParam.fakeType - 1;
-            pCtx->Eip = 0x40b2ff;
-        }
-    }
-    EHOOK_DY(th06_patchouli, 0x40c100)
-    {
-        int32_t* var = *(int32_t**)(pCtx->Esp + 4);
-        if (thPracParam.fakeType) {
-            var[618] = ((int32_t*)0x476264)[3 * (thPracParam.fakeType - 1)];
-            var[619] = ((int32_t*)0x476268)[3 * (thPracParam.fakeType - 1)];
-            var[620] = ((int32_t*)0x47626c)[3 * (thPracParam.fakeType - 1)];
-            pCtx->Eip = 0x40c174;
-        }
-    }
-    EHOOK_DY(th06_cancel_muteki, 0x429ec4)
-    {
-        if (thPracParam.mode) {
-            *(uint8_t*)(pCtx->Eax + 0x9e0) = 0;
-            pCtx->Eip = 0x429ecb;
-        }
-    }
-    EHOOK_DY(th06_set_deathbomb_timer, 0x42a09c)
-    {
-        if (thPracParam.mode) {
-            *(uint32_t*)(pCtx->Eax + 0x9d8) = 6;
-            pCtx->Eip = 0x42a0a6;
-        }
-    }
-    EHOOK_DY(th06_hamon_rage, 0x40e1c7)
-    {
-        if (thPracParam.mode && thPracParam.stage == 6 && thPracParam.section == TH06_ST7_END_S10 && thPracParam.phase == 1) {
-            pCtx->Eip = 0x40e1d8;
-        }
-    }
-
-    EHOOK_DY(th06_wall_prac_boss_pos, 0x40907F)
-    {
-        if (thPracParam.mode && thPracParam.stage == 5 && thPracParam.wall_prac_st6 && thPracParam.section == TH06_ST6_BOSS9) {
-            DWORD penm = *(DWORD*)(pCtx->Ebp + 0x8);
-            g_last_boss_x = *(float*)(penm + 0xC6C);
-            g_last_boss_y = *(float*)(penm + 0xC70);
-        }
-    }
-    EHOOK_DY(th06_wall_prac, 0x40D57C)
-    {
-        if (thPracParam.mode && thPracParam.stage == 5  && thPracParam.wall_prac_st6) {
-            auto GetRandF = []() -> float {
-                unsigned int(__fastcall * sb_41E7F0_rand_int)(DWORD thiz);
-                sb_41E7F0_rand_int = (decltype(sb_41E7F0_rand_int))0x41E7F0;
-                unsigned int randi = sb_41E7F0_rand_int(0x69D8F8);
-                return (double)randi / 4294967296.0;
-            }; // rand from 0 to 1
-            if (thPracParam.section == TH06_ST6_BOSS6)
-            {
-                float posb1 = 0.4;
-                float posb2 = 0.9;
-                float posb3 = 0.2;
-               
-                float* wall_angle = (float*)(pCtx->Ebp - 0x68);
-                DWORD penm = *(DWORD*)(pCtx->Ebp + 0x8);
-                float bossx = *(float*)(penm + 0xC6C);
-                float bossy = *(float*)(penm + 0xC70);
-                float plx = *(float*)(0x6CAA68);
-                float ply = *(float*)(0x6CAA6C);
-                float angle_pl = atan2f(ply - bossy, plx - bossx);
-                float dist_pl = hypotf(ply - bossy, plx - bossx);
-                
-                float decision = GetRandF();
-                
-                // - 1.570796f + GetRandF() * 1.745329f
-                if (decision < posb1) {
-                    float min_dist_bt = 99999.0f;
-                    for (int i = 0; i < 640; i++) {
-                        DWORD pbt = 0x005AB5F8 + i * 0x5C4;
-                        if (*(WORD*)(pbt + 0x5BE)
-                            && *(WORD*)(pbt + 0x5BE) != 5
-                            && *(DWORD*)(pbt + 0xC0)
-                            && *(float*)(*(DWORD*)(pbt + 0xC0) + 0x2C) < 30.0
-                            && *(float*)(pbt + 0x584) == 0.0)
-                        {
-                            ImVec2 pos = *(ImVec2*)(pbt + 0x560);
-                            min_dist_bt = std::min(min_dist_bt, hypotf(pos.x - bossx, pos.y - bossy));
-                        }
-                    }
-                    if (decision < posb3)
-                        *wall_angle = angle_pl - min_dist_bt * 3.14159f / 256.0f - 0.5235988f + GetRandF() * 0.5235988f; // -30 deg ~ 0deg
-                    else
-                        *wall_angle = angle_pl - min_dist_bt * 3.14159f / 256.0f - 1.570796f + GetRandF() * 1.745329f; // -90 deg ~ 10deg
-                } else if (decision < posb2) {
-                    // angle = randA + dist*pi/256 = pi
-                    // => randA = pi - dist*pi/256
-                    *wall_angle = 3.14159f - dist_pl * 3.14159f / 256.0f - 0.2617f + GetRandF() * 0.5235988f; //
-                }else {
-                    *wall_angle = GetRandF() * 6.28318f - 3.1415926f;
-                }
-            } else if (thPracParam.section == TH06_ST6_BOSS9) {
-                float* wall_angle = (float*)(pCtx->Ebp - 0x68);
-                DWORD penm = *(DWORD*)(pCtx->Ebp + 0x8);
-                float bossx = *(float*)(penm + 0xC6C);
-                float bossy = *(float*)(penm + 0xC70);
-                float plx = *(float*)(0x6CAA68);
-                float ply = *(float*)(0x6CAA6C);
-                float angle_pl = atan2f(ply - bossy, plx - bossx);
-                float dist_pl = hypotf(ply - bossy, plx - bossx);
-
-                float decision = GetRandF();
-                if (decision < 0.8) {
-                    float min_dist_bt = 99999.0f;
-                    ImVec2 bt_pos = { 0.0f, 0.0f };
-                    for (int i = 0; i < 640; i++) {
-                        DWORD pbt = 0x005AB5F8 + i * 0x5C4;
-                        if (*(WORD*)(pbt + 0x5BE)
-                            && *(WORD*)(pbt + 0x5BE) != 5
-                            && *(DWORD*)(pbt + 0xC0)
-                            && *(float*)(*(DWORD*)(pbt + 0xC0) + 0x2C) < 30.0
-                            && *(float*)(pbt + 0x584) == 0.0) {
-                            ImVec2 pos = *(ImVec2*)(pbt + 0x560);
-                            auto dist = hypotf(pos.x - g_last_boss_x, pos.y - g_last_boss_y);
-                            if (min_dist_bt > dist) {
-                                min_dist_bt = dist;
-                                bt_pos = pos;
-                            }
-                        }
-                    }
-                    *wall_angle = angle_pl - hypotf(bt_pos.x - bossx, bt_pos.y - bossy) * 3.14159f / 256.0f + (GetRandF() - 0.5f) * 2.0f * 0.34f;
-                }else {
-                    *wall_angle = GetRandF() * 6.28318f - 3.1415926f;
-                }
-            }
-        }
-    }
-    EHOOK_DY(th06_wall_prac2, 0x0040D900)
-    {
-        if (thPracParam.mode && thPracParam.stage == 5 && thPracParam.wall_prac_st6 && thPracParam.section == TH06_ST6_BOSS9 
-            && (thPracParam.snipeF > 0 || thPracParam.snipeN > 0)
-            ) {
-                float* angle = (float*)(pCtx->Ebp - 0x70);
-                DWORD pbt = *(DWORD*)(pCtx->Ebp - 0x60);
-                ImVec2 pos = *(ImVec2*)(pbt + 0x560);
-                float plx = *(float*)(0x6CAA68);
-                float ply = *(float*)(0x6CAA6C);
-                float dist_pl = hypotf(plx - pos.x, ply - pos.y);
-                float angle_pl = atan2f(ply - pos.y, plx - pos.x);
-                float random_near = 1.0f - thPracParam.snipeN/100.0f;
-                float random_far = 1.0f - thPracParam.snipeF / 100.0f;
-                if (dist_pl > 400.0f) {
-                    dist_pl = 400.0f;
-                }
-                *angle = *angle * (dist_pl * (random_far - random_near) / 400.0f + random_near) + angle_pl;
-
-        }
-    }
-    PATCH_DY(th06_disable_menu, 0x439ab2, "\x90\x90\x90\x90\x90", 5);
-    // fix igi render problem
-    PATCH_DY(th06_background_fix_1, 0x42073B, "\x90\x90\x90\x90\x90\x90", 6);
-    PATCH_DY(th06_background_fix_2, 0x419F4B, "\x90\x90\x90\x90\x90\x90", 6);
-    PATCH_DY(th06_background_fix_3, 0x419F81, "\x90\x90\x90\x90\x90\x90", 6);
     static void RenderRepMarker(ImDrawList* p)
     {
         if (g_adv_igi_options.th06_showRepMarker) {
@@ -3504,9 +3133,380 @@ namespace TH06 {
             p->AddText({ 110.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
         }
     }
+
+    EHOOK_ST(th06_result_screen_create, 0x42d812, 4, {
+        self->Disable();
+        *(uint32_t*)(*(uint32_t*)(pCtx->Ebp - 0x10) + 0x8) = 0xA;
+        pCtx->Eip = 0x42d839;
+    });
+
+    // It would be good practice to run Setup() on this
+    // But due to the way this new hooking system works
+    // running Setup is only needed for Hooks, not patches
+    PATCH_ST(th06_white_screen, 0x42fee0, "c3");
+    HOOKSET_DEFINE(THMainHook)
+    PATCH_DY(th06_reacquire_input, 0x41dc58, "0000000074")
+    EHOOK_DY(th06_activateapp, 0x420D96, 3, {
+        // Wacky hack to disable rendering for one frame to prevent the game from crasing when alt tabbing into it if the pause menu is open and the game is in fullscreen mode
+        GameGuiProgress = 1;
+    })
+    EHOOK_DY(th06_bgm_play, 0x424b5d, 1, {
+        int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
+
+        if (THPauseMenu::singleton().el_bgm_signal) {
+            pCtx->Eip = 0x424d35;
+        }
+        if (retn_addr == 0x418db4) {
+            THPauseMenu::singleton().el_bgm_changed = true;
+        }
+    })
+    EHOOK_DY(th06_bgm_stop, 0x430f80, 1, {
+        if (THPauseMenu::singleton().el_bgm_signal) {
+            pCtx->Eip = 0x43107b;
+        }
+    })
+    EHOOK_DY(th06_prac_menu_1, 0x437179, 7, {
+        THGuiPrac::singleton().State(1);
+    })
+    EHOOK_DY(th06_prac_menu_3, 0x43738c, 3, {
+        THGuiPrac::singleton().State(3);
+    })
+    EHOOK_DY(th06_prac_menu_4, 0x43723f, 3, {
+        THGuiPrac::singleton().State(4);
+    })
+    EHOOK_DY(th06_prac_menu_enter, 0x4373a3, 5, {
+        *(int32_t*)(0x69d6d4) = *(int32_t*)(0x69d6d8) = thPracParam.stage;
+        if (thPracParam.stage == 6)
+            *(int8_t*)(0x69bcb0) = 4;
+        else
+            *(int8_t*)(0x69bcb0) = *(int8_t*)(0x6c6e49);
+    })
+    EHOOK_DY(th06_pause_menu, 0x401b8f, 2, {
+        if (thPracParam.mode && (*((int32_t*)0x69bcbc) == 0)) {
+            auto sig = THPauseMenu::singleton().PMState();
+            if (sig == THPauseMenu::SIGNAL_RESUME) {
+                pCtx->Eip = 0x40223d;
+            } else if (sig == THPauseMenu::SIGNAL_EXIT) {
+                *(uint32_t*)0x6c6ea4 = 7; // Set gamemode to result screen
+                *(uint16_t*)0x69d4bf = 0; // Close pause menu
+                th06_result_screen_create.Enable();
+            } else if (sig == THPauseMenu::SIGNAL_RESTART) {
+                pCtx->Eip = 0x40263c;
+            } else if (sig == THPauseMenu::SIGNAL_EXIT2) {
+                *(uint32_t*)0x6c6ea4 = 1; 
+                *(uint16_t*)0x69d4bf = 0;
+                th06_result_screen_create.Enable();
+            } else {
+                pCtx->Eip = 0x4026a6;
+            }
+        }
+        // escR patch
+        DWORD thiz = pCtx->Ecx;
+        if (!thPracParam.mode && (*((int32_t*)0x69bcbc) == 0))
+        {
+            if (*(DWORD*)(thiz) != 7) {
+                WORD key = *(WORD*)(0x69D904);
+                WORD key_last = *(WORD*)(0x69D908);
+                if (((key & (292)) == 292 && (key & (292)) != (key_last & (292))) || (GetAsyncKeyState('R')&0x8000) ){ // ctrl+shift+down or R
+                    *(DWORD*)(thiz) = 7;
+                    threstartflag_normalgame = true;
+                }
+            }
+        }
+        if (*(DWORD*)(thiz) == 7) {
+            pCtx->Eip = 0x40263c;
+        }
+    })
     
-    EHOOK_DY(th06_books_position_test, 0x0041188A)
-    {
+    EHOOK_DY(th06_inf_lives,0x00428DEB,2,{
+        if ((*(THOverlay::singleton().mInfLives)))
+        {
+            if (!g_adv_igi_options.map_inf_life_to_no_continue){
+                pCtx->Eax += 1;
+            }else{
+                if ((pCtx->Eax & 0xFF) == 0)
+                    pCtx->Eax += 1;
+            }
+        }  
+    })
+
+    EHOOK_DY(th06_pause_menu_pauseBGM, 0x402714,3,{
+        if (g_pauseBGM_06) {
+            DWORD soundstruct = *(DWORD*)(0x6D457C);
+            if (soundstruct)
+            {
+                int32_t n = *(int32_t*)(soundstruct + 0x10);
+                IDirectSound8* d;
+                IDirectSoundBuffer** soundbuffers = *(IDirectSoundBuffer***)(soundstruct + 0x4);
+                if (*(BYTE*)(0x69D4BF) == 0 || (*(THOverlay::singleton().mElBgm) && thPracParam.mode)) // show menu==0
+                {
+                    for (int i = 0; i < n; i++) {
+                        DWORD st = 0;
+                        soundbuffers[i]->GetStatus(&st);
+                        if (!(st & DSBSTATUS_PLAYING)) {
+                            soundbuffers[i]->Play(0, 0, DSBPLAY_LOOPING);
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < n; i++) {
+                        DWORD st = 0;
+                        soundbuffers[i]->GetStatus(&st);
+                        if (st & DSBSTATUS_PLAYING) {
+                            soundbuffers[i]->Stop();
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+    EHOOK_DY(th06_patch_main, 0x41c17a,5, {
+        THPauseMenu::singleton().el_bgm_changed = false;
+        if (thPracParam.mode == 1) {
+            // TODO: Probably remove this ASM comment?
+            /*
+                    mov eax,dword ptr [@MENU_RANK]
+                    mov dword ptr [69d710],eax
+                    cmp dword ptr [@MENU_RANKLOCK],@MENU_ON_STR
+                    jnz @f
+                    mov dword ptr [69d714],eax
+                    mov dword ptr [69d718],eax
+                */
+            *(int8_t*)(0x69d4ba) = (int8_t)thPracParam.life;
+            *(int8_t*)(0x69d4bb) = (int8_t)thPracParam.bomb;
+            *(int16_t*)(0x69d4b0) = (int16_t)thPracParam.power;
+            *(int32_t*)(0x69bca0) = *(int32_t*)(0x69bca4) = (int32_t)thPracParam.score;
+            *(int32_t*)(0x69bcb4) = *(int32_t*)(0x69bcb8) = (int32_t)thPracParam.graze;
+            *(int16_t*)(0x69d4b4) = *(int16_t*)(0x69d4b6) = (int16_t)thPracParam.point;
+            *(uint32_t*)0x5a5fb0 = thPracParam.frame;
+
+            if (*(int8_t*)(0x69bcb0) != 4) {
+                if (thPracParam.score >= 60000000)
+                    *(int8_t*)(0x69d4bc) = 4;
+                else if (thPracParam.score >= 40000000)
+                    *(int8_t*)(0x69d4bc) = 3;
+                else if (thPracParam.score >= 20000000)
+                    *(int8_t*)(0x69d4bc) = 2;
+                else if (thPracParam.score >= 10000000)
+                    *(int8_t*)(0x69d4bc) = 1;
+            }
+
+            *(int32_t*)(0x69d710)  = (int32_t)thPracParam.rank;
+            if (thPracParam.rankLock) {
+                *(int32_t*)(0x69d714)  = (int32_t)thPracParam.rank;
+                *(int32_t*)(0x69d718)  = (int32_t)thPracParam.rank;
+            }
+
+            THSectionPatch();
+        }
+        thPracParam._playLock = true;
+
+        if (THPauseMenu::singleton().el_bgm_signal) {
+            THPauseMenu::singleton().el_bgm_signal = false;
+            pCtx->Eip = 0x41c18a;
+        } else if (THBGMTest()) {
+            pCtx->Eax += 0x310;
+            pCtx->Eip = 0x41c17f;
+        }
+    })
+    EHOOK_DY(th06_restart, 0x435901, 5, {
+        if (!threstartflag_normalgame && !thRestartFlag) {
+            th06_white_screen.Disable();
+        }
+        if (threstartflag_normalgame)
+        {
+            th06_white_screen.Enable();
+            threstartflag_normalgame = false;
+            pCtx->Eip = 0x436DCB;
+        }
+        if (thRestartFlag) {
+            th06_white_screen.Disable();
+            thRestartFlag = false;
+            pCtx->Eip = 0x43738c;
+        } else {
+            thPracParam.Reset();
+        }
+    })
+    EHOOK_DY(th06_title, 0x41ae2c, 7, {
+        if (thPracParam.mode != 0 && thPracParam.section) {
+            pCtx->Eip = 0x41af35;
+        }
+    })
+    PATCH_DY(th06_preplay_1, 0x42d835, "09")
+    EHOOK_DY(th06_preplay_2, 0x418ef9, 5, {
+        if (thPracParam.mode && !THGuiRep::singleton().mRepStatus) {
+            *(uint32_t*)0x69bca0 = *(uint32_t*)0x69bca4;
+            pCtx->Eip = 0x418f0e;
+        }
+    })
+    EHOOK_DY(th06_save_replay, 0x42b03b, 3, {
+        char* rep_name = *(char**)(pCtx->Ebp + 0x8);
+        if (thPracParam.mode)
+            THSaveReplay(rep_name);
+    })
+    EHOOK_DY(th06_rep_menu_1, 0x438262, 6, {
+        THGuiRep::singleton().State(1);
+    })
+    EHOOK_DY(th06_rep_menu_2, 0x4385d5, 6, {
+        THGuiRep::singleton().State(2);
+    })
+    EHOOK_DY(th06_rep_menu_3, 0x438974, 10, {
+        THGuiRep::singleton().State(3);
+    })
+    EHOOK_DY(th06_fake_shot_type, 0x40b2f9, 6, {
+        if (thPracParam.fakeType) {
+            *((int32_t*)0x487e44) = thPracParam.fakeType - 1;
+            pCtx->Eip = 0x40b2ff;
+        }
+    })
+    EHOOK_DY(th06_patchouli, 0x40c100, 1, {
+        int32_t* var = *(int32_t**)(pCtx->Esp + 4);
+        if (thPracParam.fakeType) {
+            var[618] = ((int32_t*)0x476264)[3 * (thPracParam.fakeType - 1)];
+            var[619] = ((int32_t*)0x476268)[3 * (thPracParam.fakeType - 1)];
+            var[620] = ((int32_t*)0x47626c)[3 * (thPracParam.fakeType - 1)];
+            pCtx->Eip = 0x40c174;
+        }
+    })
+    EHOOK_DY(th06_cancel_muteki, 0x429ec4, 7, {
+        if (thPracParam.mode) {
+            *(uint8_t*)(pCtx->Eax + 0x9e0) = 0;
+            pCtx->Eip = 0x429ecb;
+        }
+    })
+    EHOOK_DY(th06_set_deathbomb_timer, 0x42a09c, 10, {
+        if (thPracParam.mode) {
+            *(uint32_t*)(pCtx->Eax + 0x9d8) = 6;
+            pCtx->Eip = 0x42a0a6;
+        }
+    })
+    EHOOK_DY(th06_hamon_rage, 0x40e1c7, 10, {
+        if (thPracParam.mode && thPracParam.stage == 6 && thPracParam.section == TH06_ST7_END_S10 && thPracParam.phase == 1) {
+            pCtx->Eip = 0x40e1d8;
+        }
+    })
+    EHOOK_DY(th06_wall_prac_boss_pos, 0x40907F,3,{
+        if (thPracParam.mode && thPracParam.stage == 5 && thPracParam.wall_prac_st6 && thPracParam.section == TH06_ST6_BOSS9) {
+            DWORD penm = *(DWORD*)(pCtx->Ebp + 0x8);
+            g_last_boss_x = *(float*)(penm + 0xC6C);
+            g_last_boss_y = *(float*)(penm + 0xC70);
+        }
+    })
+    EHOOK_DY(th06_wall_prac, 0x40D57C,7,{
+        if (thPracParam.mode && thPracParam.stage == 5  && thPracParam.wall_prac_st6) {
+            auto GetRandF = []() -> float {
+                unsigned int(__fastcall * sb_41E7F0_rand_int)(DWORD thiz);
+                sb_41E7F0_rand_int = (decltype(sb_41E7F0_rand_int))0x41E7F0;
+                unsigned int randi = sb_41E7F0_rand_int(0x69D8F8);
+                return (double)randi / 4294967296.0;
+            }; // rand from 0 to 1
+            if (thPracParam.section == TH06_ST6_BOSS6)
+            {
+                float posb1 = 0.4;
+                float posb2 = 0.9;
+                float posb3 = 0.2;
+               
+                float* wall_angle = (float*)(pCtx->Ebp - 0x68);
+                DWORD penm = *(DWORD*)(pCtx->Ebp + 0x8);
+                float bossx = *(float*)(penm + 0xC6C);
+                float bossy = *(float*)(penm + 0xC70);
+                float plx = *(float*)(0x6CAA68);
+                float ply = *(float*)(0x6CAA6C);
+                float angle_pl = atan2f(ply - bossy, plx - bossx);
+                float dist_pl = hypotf(ply - bossy, plx - bossx);
+                
+                float decision = GetRandF();
+                
+                // - 1.570796f + GetRandF() * 1.745329f
+                if (decision < posb1) {
+                    float min_dist_bt = 99999.0f;
+                    for (int i = 0; i < 640; i++) {
+                        DWORD pbt = 0x005AB5F8 + i * 0x5C4;
+                        if (*(WORD*)(pbt + 0x5BE)
+                            && *(WORD*)(pbt + 0x5BE) != 5
+                            && *(DWORD*)(pbt + 0xC0)
+                            && *(float*)(*(DWORD*)(pbt + 0xC0) + 0x2C) < 30.0
+                            && *(float*)(pbt + 0x584) == 0.0)
+                        {
+                            ImVec2 pos = *(ImVec2*)(pbt + 0x560);
+                            min_dist_bt = std::min(min_dist_bt, hypotf(pos.x - bossx, pos.y - bossy));
+                        }
+                    }
+                    if (decision < posb3)
+                        *wall_angle = angle_pl - min_dist_bt * 3.14159f / 256.0f - 0.5235988f + GetRandF() * 0.5235988f; // -30 deg ~ 0deg
+                    else
+                        *wall_angle = angle_pl - min_dist_bt * 3.14159f / 256.0f - 1.570796f + GetRandF() * 1.745329f; // -90 deg ~ 10deg
+                } else if (decision < posb2) {
+                    // angle = randA + dist*pi/256 = pi
+                    // => randA = pi - dist*pi/256
+                    *wall_angle = 3.14159f - dist_pl * 3.14159f / 256.0f - 0.2617f + GetRandF() * 0.5235988f; //
+                }else {
+                    *wall_angle = GetRandF() * 6.28318f - 3.1415926f;
+                }
+            } else if (thPracParam.section == TH06_ST6_BOSS9) {
+                float* wall_angle = (float*)(pCtx->Ebp - 0x68);
+                DWORD penm = *(DWORD*)(pCtx->Ebp + 0x8);
+                float bossx = *(float*)(penm + 0xC6C);
+                float bossy = *(float*)(penm + 0xC70);
+                float plx = *(float*)(0x6CAA68);
+                float ply = *(float*)(0x6CAA6C);
+                float angle_pl = atan2f(ply - bossy, plx - bossx);
+                float dist_pl = hypotf(ply - bossy, plx - bossx);
+
+                float decision = GetRandF();
+                if (decision < 0.8) {
+                    float min_dist_bt = 99999.0f;
+                    ImVec2 bt_pos = { 0.0f, 0.0f };
+                    for (int i = 0; i < 640; i++) {
+                        DWORD pbt = 0x005AB5F8 + i * 0x5C4;
+                        if (*(WORD*)(pbt + 0x5BE)
+                            && *(WORD*)(pbt + 0x5BE) != 5
+                            && *(DWORD*)(pbt + 0xC0)
+                            && *(float*)(*(DWORD*)(pbt + 0xC0) + 0x2C) < 30.0
+                            && *(float*)(pbt + 0x584) == 0.0) {
+                            ImVec2 pos = *(ImVec2*)(pbt + 0x560);
+                            auto dist = hypotf(pos.x - g_last_boss_x, pos.y - g_last_boss_y);
+                            if (min_dist_bt > dist) {
+                                min_dist_bt = dist;
+                                bt_pos = pos;
+                            }
+                        }
+                    }
+                    *wall_angle = angle_pl - hypotf(bt_pos.x - bossx, bt_pos.y - bossy) * 3.14159f / 256.0f + (GetRandF() - 0.5f) * 2.0f * 0.34f;
+                }else {
+                    *wall_angle = GetRandF() * 6.28318f - 3.1415926f;
+                }
+            }
+        }
+    })
+    EHOOK_DY(th06_wall_prac2, 0x0040D900,6,{
+        if (thPracParam.mode && thPracParam.stage == 5 && thPracParam.wall_prac_st6 && thPracParam.section == TH06_ST6_BOSS9 
+            && (thPracParam.snipeF > 0 || thPracParam.snipeN > 0)
+            ) {
+                float* angle = (float*)(pCtx->Ebp - 0x70);
+                DWORD pbt = *(DWORD*)(pCtx->Ebp - 0x60);
+                ImVec2 pos = *(ImVec2*)(pbt + 0x560);
+                float plx = *(float*)(0x6CAA68);
+                float ply = *(float*)(0x6CAA6C);
+                float dist_pl = hypotf(plx - pos.x, ply - pos.y);
+                float angle_pl = atan2f(ply - pos.y, plx - pos.x);
+                float random_near = 1.0f - thPracParam.snipeN/100.0f;
+                float random_far = 1.0f - thPracParam.snipeF / 100.0f;
+                if (dist_pl > 400.0f) {
+                    dist_pl = 400.0f;
+                }
+                *angle = *angle * (dist_pl * (random_far - random_near) / 400.0f + random_near) + angle_pl;
+
+        }
+    })
+    PATCH_DY(th06_disable_menu, 0x439ab2, "9090909090")
+    // fix igi render problem
+    PATCH_DY(th06_background_fix_1, 0x42073B, "909090909090")
+    PATCH_DY(th06_background_fix_2, 0x419F4B, "909090909090")
+    PATCH_DY(th06_background_fix_3, 0x419F81, "909090909090")
+    
+    
+    EHOOK_DY(th06_books_position_test, 0x0041188A,3,{
         if (*(DWORD*)0x69d6d4 == 4){
             DWORD pCode = *(DWORD*)0x487e50;
             DWORD pCodeOfs = *(DWORD*)(pCtx->Ebp - 0x14) - 8;
@@ -3515,11 +3515,9 @@ namespace TH06 {
             int n = (pCodeOfs - pCode - 0xCDD4) / 0x1C;
             g_books_pos[n] = { posx, posy };
         }
-        
-    }
+    })
 
-    EHOOK_DY(th06_update, 0x41caac)
-    {
+    EHOOK_DY(th06_update, 0x41caac, 1, {
         GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
         
         // Gui components update
@@ -3552,44 +3550,27 @@ namespace TH06 {
         }
         
         GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
-    }
-    static float MInterpolation(float t, float a, float b)
-    {
-        if (t < 0.0f) {
-            return a;
-        } else if (t < 0.5) {
-            float k = (b - a) *2.0f;
-            return k*t*t+a;
-        } else if (t <  1.0f) {
-            float k = (b - a) * 2.0f;
-            t = t - 1.0f;
-            return -k * t * t + b;
-        }
-        return b;
-    }
-    EHOOK_DY(th06_render, 0x41cb6d)
-    {
+    })
+    EHOOK_DY(th06_render, 0x41cb6d, 1, {
         GameGuiRender(IMPL_WIN32_DX8);
         if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
             THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);
-    }
-    EHOOK_DY(th06_stage_color_fix, 0x4039E5)
+    })
+    EHOOK_DY(th06_stage_color_fix, 0x4039E5,3,
     {
         if (g_adv_igi_options.th06_bg_fix) {
             pCtx->Edx = 0x00000000;
         }
-    }
-    EHOOK_DY(th06_player_state, 0x4288C0)
+    })
+    EHOOK_DY(th06_player_state, 0x4288C0,1,
     {
         if (g_adv_igi_options.show_keyboard_monitor)
             RecordKey(6, *(WORD*)(0x69D904));
-    }
-    EHOOK_DY(th06_rep_seed,0x42A97E)
-    {
+    })
+    EHOOK_DY(th06_rep_seed,0x42A97E,10,{
        g_last_rep_seed = *(uint16_t*)(0x0069D8F8);
-    }
-    EHOOK_DY(th06_fix_seed, 0x41BE47)
-    {
+    })
+    EHOOK_DY(th06_fix_seed, 0x41BE47,7,{
         if (g_adv_igi_options.th06_fix_seed)
         {
             if ((*(DWORD*)(0x69d6d4) == 1 || *(DWORD*)(0x69d6d4) == 7)) {
@@ -3599,42 +3580,42 @@ namespace TH06 {
                 }
             }
         }
-    }
+    })
     HOOKSET_ENDDEF()
 
     HOOKSET_DEFINE(THInGameInfo)
-    EHOOK_DY(th06_enter_game, 0x41BDE8) // set inner misscount to 0
+    EHOOK_DY(th06_enter_game, 0x41BDE8,4, // set inner misscount to 0
     {
         TH06InGameInfo::singleton().mMissCount = 0;
         TH06InGameInfo::singleton().Retry();
-    }
-    EHOOK_DY(miss_spellcard_get_failed, 0x4277C3)
+    })
+    EHOOK_DY(miss_spellcard_get_failed, 0x4277C3,3,
     {
         is_died = true;
-    }
-    EHOOK_DY(th06_miss, 0x428DD9)// dec life
+    })
+    EHOOK_DY(th06_miss, 0x428DD9,2,// dec life
     {
         TH06InGameInfo::singleton().mMissCount++;
-    }
+    })
 
-    EHOOK_DY(th06_lock_timer1, 0x41B27C) // initialize
+    EHOOK_DY(th06_lock_timer1, 0x41B27C,3, // initialize
     {
         g_lock_timer = 0;
-    }
-    EHOOK_DY(th06_lock_timer2, 0x409A10) // set timeout case 115
+    })
+    EHOOK_DY(th06_lock_timer2, 0x409A10,6, // set timeout case 115
     {
         g_lock_timer = 0;
-    }
-    EHOOK_DY(th06_lock_timer3, 0x408DDA) // set boss mode case 101
+    })
+    EHOOK_DY(th06_lock_timer3, 0x408DDA,2, // set boss mode case 101
     {
         g_lock_timer = 0;
-    }
-    EHOOK_DY(th06_lock_timer4, 0x411F88) // decrease time (update)
+    })
+    EHOOK_DY(th06_lock_timer4, 0x411F88,6, // decrease time (update)
     {
         g_lock_timer++;
-    }
+    })
 
-    EHOOK_DY(th06_autoName_score,0x42BE49){
+    EHOOK_DY(th06_autoName_score,0x42BE49,5,{
         if (g_adv_igi_options.th06_autoname){
             int size = strlen(g_adv_igi_options.th06_autoname_name);
             if (size > 8)
@@ -3646,8 +3627,8 @@ namespace TH06 {
                 }
             }
         }
-    }
-    EHOOK_DY(th06_autoName_rep_overwrite, 0x42D085)
+    })
+    EHOOK_DY(th06_autoName_rep_overwrite, 0x42D085,7,
     {
         if (g_adv_igi_options.th06_autoname) {
             bool set_name = true;
@@ -3676,8 +3657,8 @@ namespace TH06 {
                 *(DWORD*)(pCtx->Eax + 0x10) = name_len;
             }
         }
-    }
-    EHOOK_DY(th06_autoName_rep, 0x42C8A0)
+    })
+    EHOOK_DY(th06_autoName_rep, 0x42C8A0,2,
     {
         if (g_adv_igi_options.th06_autoname) {
             bool set_name = true;
@@ -3709,16 +3690,20 @@ namespace TH06 {
             }
         }
        
-    }
+    })
     HOOKSET_ENDDEF()
 
-    HOOKSET_DEFINE(THInitHook)
-    static __declspec(noinline) void THGuiCreate()
+     static __declspec(noinline) void THGuiCreate()
     {
+         if (ImGui::GetCurrentContext()) {
+             return;
+         }
+
         // Init
         GameGuiInit(IMPL_WIN32_DX8, 0x6c6d20, 0x6c6bd4,
             Gui::INGAGME_INPUT_GEN1, 0x69d904, 0x69d908, 0x69d90c,
             -1);
+         SetDpadHook(0x41D330, 3);
         // g_adv_igi_options.th06_showHitbox
         g_hitbox_textureID = ReadImage(8, *(DWORD*)0x6c6d20, "hitbox.png", hitbox_file, sizeof(hitbox_file));
         D3DSURFACE_DESC desc;
@@ -3733,38 +3718,31 @@ namespace TH06 {
         TH06InGameInfo::singleton();
         TH06InGameInfo::singleton().Init();
         // Hooks
-        THMainHook::singleton().EnableAllHooks();
-        THInGameInfo::singleton().EnableAllHooks();
+        EnableAllHooks(THMainHook);
+        EnableAllHooks(THInGameInfo);
 
         // Reset thPracParam
         thPracParam.Reset();
     }
-    static __declspec(noinline) void THInitHookDisable()
-    {
-        auto& s = THInitHook::singleton();
-        s.th06_gui_init_1.Disable();
-        s.th06_gui_init_2.Disable();
-    }
-    EHOOK_DY(th06_gui_init_1, 0x43596f)
-    {
+
+    HOOKSET_DEFINE(THInitHook)
+    EHOOK_DY(th06_gui_init_1, 0x43596f, 3, {
         THGuiCreate();
-        THInitHookDisable();
-    }
-    EHOOK_DY(th06_gui_init_2, 0x42140c)
-    {
+        self->Disable();
+    })
+    EHOOK_DY(th06_gui_init_2, 0x42140c, 1, {
         THGuiCreate();
-        THInitHookDisable();
-    }
-    EHOOK_DY(th06_close, 0x420669)
-    {
+        self->Disable();
+    })
+    EHOOK_DY(th06_close, 0x420669,2,{
         TH06InGameInfo::singleton().SaveAll();
-    }
+    })
     HOOKSET_ENDDEF()
 }
 #include <d3d9types.h>
 void TH06Init()
 {
-    TH06::THInitHook::singleton().EnableAllHooks();
+    EnableAllHooks(TH06::THInitHook);
     TryKeepUpRefreshRate((void*)0x420f59);
 }
 

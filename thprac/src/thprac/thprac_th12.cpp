@@ -492,24 +492,32 @@ namespace TH12 {
                 }
             }
         }
-
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtx(0x43837F, "\x01", 1),
-            new HookCtx(0x436d2f, "\xeb", 1),
-            new HookCtx(0x4383cb, "\x83\xc4\x10\x90\x90", 5) } };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
-            new HookCtx(0x422F27, "\x00", 1) } };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
-            new HookCtx(0x43944B, "\x48", 1) } };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F6", VK_F6, {
-            new HookCtx(0x436D9B, "\xc6", 1) } };
+        HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(0x43837F, "01"),
+        PATCH_HK(0x436d2f, "eb"),
+        PATCH_HK(0x4383cb, "83c4109090")
+        HOTKEY_ENDDEF();
+        
+        
+        HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
+        PATCH_HK(0x422F27, "00")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
+        PATCH_HK(0x43944B, "48")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
+        PATCH_HK(0x436D9B, "c6")
+        HOTKEY_ENDDEF();
 
     public:
         Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F5", VK_F5, {
-            new HookCtx(0x40DB71, "\xeb", 1),
-            new HookCtx(0x414A9B, "\x90", 1) } };
+        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
+        PATCH_HK(0x40DB71, "eb"),
+        PATCH_HK(0x414A9B, "90")
+        HOTKEY_ENDDEF();
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
@@ -602,47 +610,43 @@ namespace TH12 {
     public:
     };
 
+    
+    EHOOK_ST(th12_all_clear_bonus_1, 0x420a9b, 7, {
+        pCtx->Eip = 0x420acd;
+    });
+    EHOOK_ST(th12_all_clear_bonus_2, 0x420bc2, 4, {
+        if (GetMemContent(0x4b0ce0) & 0x10) {
+            pCtx->Eip = 0x420aa4;
+        } else if (GetMemContent(0x4b44e8, 0x74) && GetMemContent(0x4b4518, 0x1c, 0xa) & 1) {
+            pCtx->Eip = 0x420ac3;
+        }
+    });
+    EHOOK_ST(th12_all_clear_bonus_3, 0x420c6b, 4, {
+        if (GetMemContent(0x4b0ce0) & 0x10) {
+            pCtx->Eip = 0x420aa4;
+        } else if (GetMemContent(0x4b44e8, 0x74) && GetMemContent(0x4b4518, 0x1c, 0xa) & 1) {
+            pCtx->Eip = 0x420ac3;
+        }
+    });
+    EHOOK_ST(th12_master_disable2, 0x40DF33,6,
+    {
+        *(DWORD*)(pCtx->Esi + 0x00018F9C) = 0;
+    });
+
+    float g_bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
+    EHOOK_ST(th12_bossmovedown, 0x00417562, 5, {
+        float* y_pos = (float*)(pCtx->Ebx + 0x15F8);
+        float* y_range = (float*)(pCtx->Ebx + 0x1600);
+        float y_max = (*y_pos) + (*y_range) * 0.5f;
+        float y_min2 = y_max - (*y_range) * (1.0f - g_bossMoveDownRange);
+        *y_pos = (y_max + y_min2) * 0.5f;
+        *y_range = (y_max - y_min2);
+    });
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
-        SINGLETON(THAdvOptWnd);
-        EHOOK_ST(th12_all_clear_bonus_1, 0x420a9b)
-        {
-            pCtx->Eip = 0x420acd;
-        }
-        EHOOK_ST(th12_all_clear_bonus_2, 0x420bc2)
-        {
-            if (GetMemContent(0x4b0ce0) & 0x10) {
-                pCtx->Eip = 0x420aa4;
-            } else if (GetMemContent(0x4b44e8, 0x74) && GetMemContent(0x4b4518, 0x1c, 0xa) & 1) {
-                pCtx->Eip = 0x420ac3;
-            }
-        }
-        EHOOK_ST(th12_all_clear_bonus_3, 0x420c6b)
-        {
-            if (GetMemContent(0x4b0ce0) & 0x10) {
-                pCtx->Eip = 0x420aa4;
-            } else if (GetMemContent(0x4b44e8, 0x74) && GetMemContent(0x4b4518, 0x1c, 0xa) & 1) {
-                pCtx->Eip = 0x420ac3;
-            }
-        }
-        EHOOK_ST(th12_master_disable2, 0x40DF33)
-        {
-            *(DWORD*)(pCtx->Esi + 0x00018F9C) = 0;
-        }
-
-     public:
+        SINGLETON(THAdvOptWnd);    
+    public:
         bool forceBossMoveDown = false;
-    private:
-        float bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
-        EHOOK_ST(th12_bossmovedown, 0x00417562)
-        {
-            float* y_pos = (float*)(pCtx->Ebx + 0x15F8);
-            float* y_range = (float*)(pCtx->Ebx + 0x1600);
-            float y_max = (*y_pos) + (*y_range) * 0.5f;
-            float y_min2 = y_max - (*y_range) * (1.0f - THAdvOptWnd::singleton().bossMoveDownRange);
-            *y_pos = (y_max + y_min2) * 0.5f;
-            *y_range = (y_max - y_min2);
-        }
-
     private:
         void MasterDisableInit()
         {
@@ -777,8 +781,8 @@ namespace TH12 {
                 HelpMarker(S(TH_BOSS_FORCE_MOVE_DOWN_DESC));
                 ImGui::SameLine();
                 ImGui::SetNextItemWidth(180.0f);
-                if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &bossMoveDownRange, 0.002f, 0.0f, 1.0f))
-                    bossMoveDownRange = std::clamp(bossMoveDownRange, 0.0f, 1.0f);
+                if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &g_bossMoveDownRange, 0.002f, 0.0f, 1.0f))
+                    g_bossMoveDownRange = std::clamp(g_bossMoveDownRange, 0.0f, 1.0f);
 
                 if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
                     th12_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
@@ -1651,9 +1655,18 @@ namespace TH12 {
 #endif
     }
 
-    HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th12_inf_lives, 0x4381E7)
+    static void RenderLockTimer(ImDrawList* p)
     {
+        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
+            std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
+            auto sz = ImGui::CalcTextSize(time_text.c_str());
+            p->AddRectFilled({ 32.0f, 0.0f }, { 110.0f, sz.y }, 0xFFFFFFFF);
+            p->AddText({ 110.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
+        }
+    }
+
+    HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th12_inf_lives, 0x4381E7,6,{
         if ((*(THOverlay::singleton().mInfLives))) {
             if (!g_adv_igi_options.map_inf_life_to_no_continue) {
                 *(DWORD*)(0x004B0C98) = *(DWORD*)(0x004B0C98)+1;
@@ -1662,9 +1675,8 @@ namespace TH12 {
                     *(DWORD*)(0x004B0C98) = 1;
             }
         }
-    }
-    EHOOK_DY(th12_everlasting_bgm, 0x454960)
-    {
+    })
+    EHOOK_DY(th12_everlasting_bgm, 0x454960, 10, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -1682,43 +1694,31 @@ namespace TH12 {
         if (result) {
             pCtx->Eip = 0x4549f4;
         }
-    }
-    EHOOK_DY(th12_param_reset, 0x43fdfb)
-    {
+    })
+    EHOOK_DY(th12_param_reset, 0x43fdfb, 7, {
         thPracParam.Reset();
-    }
-    EHOOK_DY(th12_prac_menu_1, 0x446059)
-    {
+    })
+    EHOOK_DY(th12_prac_menu_1, 0x446059, 7, {
         THGuiPrac::singleton().State(1);
-    }
-    EHOOK_DY(th12_prac_menu_2, 0x44607b)
-    {
+    })
+    EHOOK_DY(th12_prac_menu_2, 0x44607b, 3, {
         THGuiPrac::singleton().State(2);
-    }
-    EHOOK_DY(th12_prac_menu_3, 0x4462d3)
-    {
+    })
+    EHOOK_DY(th12_prac_menu_3, 0x4462d3, 7, {
         THGuiPrac::singleton().State(3);
-    }
-    EHOOK_DY(th12_prac_menu_4, 0x44636b)
-    {
+    })
+    EHOOK_DY(th12_prac_menu_4, 0x44636b, 7, {
         THGuiPrac::singleton().State(4);
-    }
-    PATCH_DY(th12_prac_menu_enter_1, 0x446138, "\xeb", 1);
-    EHOOK_DY(th12_prac_menu_enter_2, 0x446333)
-    {
+    })
+    PATCH_DY(th12_prac_menu_enter_1, 0x446138, "eb")
+    EHOOK_DY(th12_prac_menu_enter_2, 0x446333, 1, {
         pCtx->Eax = thPracParam.stage;
-    }
-    EHOOK_DY(th12_disable_prac_menu_1, 0x4464e5)
-    {
+    })
+    EHOOK_DY(th12_disable_prac_menu_1, 0x4464e5, 2, {
         pCtx->Eip = 0x44651a;
-    }
-    EHOOK_DY(th12_disable_prac_menu_2, 0x44603e)
-    {
-        pCtx->Esp += 0x10;
-        pCtx->Eip = 0x446043;
-    }
-    EHOOK_DY(th12_patch_main, 0x40e8df)
-    {
+    })
+    PATCH_DY(th12_disable_prac_menu_2, 0x44603e, "83c4106690")
+    EHOOK_DY(th12_patch_main, 0x40e8df, 1, {
         if (thPracParam.mode == 1) {
             *(int32_t*)(0x4b0c44) = (int32_t)(thPracParam.score / 10);
             *(int32_t*)(0x4b0c98) = thPracParam.life;
@@ -1743,45 +1743,28 @@ namespace TH12 {
             THSectionPatch();
         }
         thPracParam._playLock = true;
-    }
-    EHOOK_DY(th12_bgm, 0x42293a)
-    {
+    })
+    EHOOK_DY(th12_bgm, 0x42293a, 1, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
             pCtx->Eip = 0x42293b;
         }
-    }
-    EHOOK_DY(th12_rep_save, 0x43c32c)
-    {
+    })
+    EHOOK_DY(th12_rep_save, 0x43c32c, 7, {
         char* repName = (char*)(pCtx->Esp + 0x28);
         if (thPracParam.mode)
             THSaveReplay(repName);
-    }
-    EHOOK_DY(th12_rep_menu_1, 0x4467df)
-    {
+    })
+    EHOOK_DY(th12_rep_menu_1, 0x4467df, 3, {
         THGuiRep::singleton().State(1);
-    }
-    EHOOK_DY(th12_rep_menu_2, 0x4468f8)
-    {
+    })
+    EHOOK_DY(th12_rep_menu_2, 0x4468f8, 5, {
         THGuiRep::singleton().State(2);
-    }
-    EHOOK_DY(th12_rep_menu_3, 0x446ab1)
-    {
+    })
+    EHOOK_DY(th12_rep_menu_3, 0x446ab1, 2, {
         THGuiRep::singleton().State(3);
-    }
-
-    static void RenderLockTimer(ImDrawList* p)
-    {
-        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
-            std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
-            auto sz = ImGui::CalcTextSize(time_text.c_str());
-            p->AddRectFilled({ 32.0f, 0.0f }, { 110.0f, sz.y }, 0xFFFFFFFF);
-            p->AddText({ 110.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
-        }
-    }
-
-    EHOOK_DY(th12_update, 0x4625fb)
-    {
+    })
+    EHOOK_DY(th12_update, 0x4625fb, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 
         // Gui components update
@@ -1812,20 +1795,18 @@ namespace TH12 {
 
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
-    }
-    EHOOK_DY(th12_player_state, 0x436BA0)
-    {
+    })
+    EHOOK_DY(th12_player_state, 0x436BA0,1,{
         if (g_adv_igi_options.show_keyboard_monitor)
             RecordKey(12, *(DWORD*)(0x4D49D0));
-    }
-    EHOOK_DY(th12_render, 0x462722)
-    {
+    })
+    EHOOK_DY(th12_render, 0x462722, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
-    }
+    })
     HOOKSET_ENDDEF()
 
     HOOKSET_DEFINE(THInGameInfo)
-    EHOOK_DY(th12_game_start, 0x421DEF) // gamestart-bomb set
+    EHOOK_DY(th12_game_start, 0x421DEF,6,// gamestart-bomb set
     {
         TH12InGameInfo::singleton().mBombCount = 0;
         TH12InGameInfo::singleton().mMissCount = 0;
@@ -1833,16 +1814,16 @@ namespace TH12 {
         TH12InGameInfo::singleton().mGUFOCount = 0;
         TH12InGameInfo::singleton().mBUFOCount = 0;
         TH12InGameInfo::singleton().mCUFOCount = 0;
-    }
-    EHOOK_DY(th12_bomb_dec, 0x422F28) // bomb dec
+    })
+    EHOOK_DY(th12_bomb_dec, 0x422F28,5, // bomb dec
     {
         TH12InGameInfo::singleton().mBombCount++;
-    }
-    EHOOK_DY(th12_life_dec, 0x4381E2) // life dec
+    })
+    EHOOK_DY(th12_life_dec, 0x4381E2,5, // life dec
     {
         TH12InGameInfo::singleton().mMissCount++;
-    }
-    EHOOK_DY(th12_ufo_open, 0x44A909) // open ufo
+    })
+    EHOOK_DY(th12_ufo_spawn, 0x44A909, 7, // spawn ufo
     {
         int32_t type = pCtx->Eax;
         if (type == 0)
@@ -1853,32 +1834,35 @@ namespace TH12 {
             TH12InGameInfo::singleton().mGUFOCount++;
         else if (type == 3)
             TH12InGameInfo::singleton().mCUFOCount++;
-    }
-    EHOOK_DY(th12_lock_timer1, 0x41D4E5) // initialize
+    })
+    EHOOK_DY(th12_lock_timer1, 0x41D4E5,6, // initialize
     {
         g_lock_timer = 0;
-    }
-    EHOOK_DY(th12_lock_timer2, 0x418745) // SetNextPattern case 414
+    })
+    EHOOK_DY(th12_lock_timer2, 0x418745,5, // SetNextPattern case 414
     {
         g_lock_timer = 0;
-    }
-    EHOOK_DY(th12_lock_timer3, 0x417AEF) // set boss mode case 412
+    })
+    EHOOK_DY(th12_lock_timer3, 0x417AEF,2, // set boss mode case 412
     {
         g_lock_timer = 0;
-    }
-    EHOOK_DY(th12_lock_timer4, 0x41A821) // decrease time (update)
+    })
+    EHOOK_DY(th12_lock_timer4, 0x41A821,6, // decrease time (update)
     {
         g_lock_timer++;
-    }
+    })
     HOOKSET_ENDDEF()
 
-    HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
         // Init
+        if (ImGui::GetCurrentContext()) {
+            return;
+        }
         GameGuiInit(IMPL_WIN32_DX9, 0x4ce8f0, 0x4cf3f0,
             Gui::INGAGME_INPUT_GEN2, 0x4d48c4, 0x4d48c0, 0,
             -1);
+        SetDpadHook(0x462CAF, 2);
 
         // Gui components creation
         THGuiPrac::singleton();
@@ -1887,41 +1871,31 @@ namespace TH12 {
         TH12InGameInfo::singleton();
 
         // Hooks
-        THMainHook::singleton().EnableAllHooks();
-        THInGameInfo::singleton().EnableAllHooks();
+        EnableAllHooks(THMainHook);
+        EnableAllHooks(THInGameInfo);
 
         // Reset thPracParam
         thPracParam.Reset();
     }
-    static __declspec(noinline) void THInitHookDisable()
-    {
-        auto& s = THInitHook::singleton();
-        s.th12_gui_init_1.Disable();
-        s.th12_gui_init_2.Disable();
-    }
-    PATCH_DY(th12_disable_demo, 0x43f78f, "\xff\xff\xff\x7f", 4);
-    EHOOK_DY(th12_disable_mutex, 0x44f603)
-    {
-        pCtx->Eip = 0x44f61c;
-    }
-    PATCH_DY(th12_startup_1, 0x43f357, "\xeb", 1);
-    PATCH_DY(th12_startup_2, 0x43fe69, "\xeb", 1);
-    EHOOK_DY(th12_gui_init_1, 0x440808)
-    {
+    HOOKSET_DEFINE(THInitHook)
+    PATCH_DY(th12_disable_demo, 0x43f78f, "ffffff7f")
+    PATCH_DY(th12_disable_mutex, 0x44f603, "eb")
+    PATCH_DY(th12_startup_1, 0x43f357, "eb")
+    PATCH_DY(th12_startup_2, 0x43fe69, "eb")
+    EHOOK_DY(th12_gui_init_1, 0x440808, 3, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
-    }
-    EHOOK_DY(th12_gui_init_2, 0x4511f9)
-    {
+    })
+    EHOOK_DY(th12_gui_init_2, 0x4511f9, 1, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
-    }
+    })
     HOOKSET_ENDDEF()
 }
 
 void TH12Init()
 {
-    TH12::THInitHook::singleton().EnableAllHooks();
+    EnableAllHooks(TH12::THInitHook);
     TryKeepUpRefreshRate((void*)0x450dcc);
     if (GetModuleHandleA("vpatch_th12.dll")) {
         TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th12.dll") + 0x54ce));

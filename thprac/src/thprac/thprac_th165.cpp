@@ -1,7 +1,6 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 
-
 namespace THPrac {
 namespace TH165 {
     class THOverlay : public Gui::GameGuiWnd {
@@ -16,6 +15,7 @@ namespace TH165 {
             OnLocaleChange();
         }
         SINGLETON(THOverlay);
+
     protected:
         virtual void OnLocaleChange() override
         {
@@ -62,13 +62,19 @@ namespace TH165 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtx(0x446a80, "\x01", 1) } };
-        Gui::GuiHotKey mInfCharge { TH_INFCHARGE, "F2", VK_F2, {
-            new HookCtx(0x44c5f8, "\x90\x90", 2) } };
+
+        HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(0x446a80, "01")
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mInfCharge, TH_INFCHARGE, "F2", VK_F2)
+        PATCH_HK(0x44c5f8, "9090")
+        HOTKEY_ENDDEF();
+
     private:
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F3", VK_F3, {
-            new HookCtx(0x419a78, "\xeb\x63", 2) } };
+        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F3", VK_F3)
+        PATCH_HK(0x419a78, "eb63")
+        HOTKEY_ENDDEF();
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
@@ -189,8 +195,7 @@ namespace TH165 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th165_restart, 0x43cd00)
-    {
+    EHOOK_DY(th165_restart, 0x43cd00, 1, {
         auto s1 = pCtx->Esp + 0x14;
         auto s2 = pCtx->Edi + 0x2bc;
         auto s3 = *(DWORD*)(pCtx->Edi + 0x2c0);
@@ -207,59 +212,52 @@ namespace TH165 {
         asm_call<0x415d40, Thiscall>(pCtx->Esi, 0x4);
 
         pCtx->Eip = 0x43cd31;
-    }
-    EHOOK_DY(th165_render_1, 0x46038d)
-    {
+    })
+    EHOOK_DY(th165_render_1, 0x46038d, 5, {
         THGuiUpdate();
-    }
-    EHOOK_DY(th165_render_2, 0x460461)
-    {
+    })
+    EHOOK_DY(th165_render_2, 0x460461, 5, {
         THGuiUpdate();
-    }
-    EHOOK_DY(th165_render_3, 0x4610aa)
-    {
+    })
+    EHOOK_DY(th165_render_3, 0x4610aa, 5, {
         THGuiUpdate();
-    }
+    })
     HOOKSET_ENDDEF()
 
-    HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
+        if (ImGui::GetCurrentContext()) {
+            return;
+        }
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4b3b18, 0x507b70,
             Gui::INGAGME_INPUT_GEN2, 0x4b0ffc, 0x4b0ff8, 0,
             (*((int32_t*)0x509bac) >> 2) & 0xf);
 
+        SetDpadHook(0x40188B, 3);
+
         // Gui components creation
         THOverlay::singleton();
 
         // Hooks
-        THMainHook::singleton().EnableAllHooks();
+        EnableAllHooks(THMainHook);
     }
-    static __declspec(noinline) void THInitHookDisable()
-    {
-        auto& s = THInitHook::singleton();
-        s.th165_gui_init_1.Disable();
-        s.th165_gui_init_2.Disable();
-    }
-    PATCH_DY(th165_startup_1, 0x4520cf, "\x90\x90", 2);
-    PATCH_DY(th165_startup_2, 0x452fd1, "\xeb", 1);
-    EHOOK_DY(th165_gui_init_1, 0x453218)
-    {
+    HOOKSET_DEFINE(THInitHook)
+    PATCH_DY(th165_startup_1, 0x4520cf, "9090")
+    PATCH_DY(th165_startup_2, 0x452fd1, "eb")
+    EHOOK_DY(th165_gui_init_1, 0x453218, 3, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
-    }
-    EHOOK_DY(th165_gui_init_2, 0x461b27)
-    {
+    })
+    EHOOK_DY(th165_gui_init_2, 0x461b27, 1, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
-    }
+    })
     HOOKSET_ENDDEF()
 }
 
 void TH165Init()
 {
-    TH165::THInitHook::singleton().EnableAllHooks();
-    TryKeepUpRefreshRate((void*)0x461c7a, (void*)0x461a4d);
+    EnableAllHooks(TH165::THInitHook);
 }
 }

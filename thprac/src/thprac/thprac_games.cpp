@@ -536,31 +536,26 @@ void iat_hook_joyGetPosEx()
     }
 }
 
-void SetDpadHook(uintptr_t addr)
+void SetDpadHook(uintptr_t addr, size_t instr_len)
 {
-    if (thcrap_tsa_dll) {
-        return;
-    }
-
-    static HookCtx dpad_hook;
-
-    //dpad_hook.Setup((void*)addr, &IDirectInputDevice8_GetDeviceState_VEHHook);
-    dpad_hook.Enable();
-
-    iat_hook_joyGetPosEx();
+    // todo
 }
-
 #pragma endregion
-
-
-
 
 
 void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3,
     int wnd_size_flag, float x, float y)
 {
-    MH_Initialize();
+    thcrap_dll = GetModuleHandleW(L"thcrap.dll");
+    if (!thcrap_dll) {
+        thcrap_dll = GetModuleHandleW(L"thcrap_d.dll");
+    }
+    thcrap_tsa_dll = GetModuleHandleW(L"thcrap_tsa.dll");
+    if (!thcrap_tsa_dll) {
+        thcrap_tsa_dll = GetModuleHandleW(L"thcrap_tsa_d.dll");
+    }
+
 
     ingame_mb_init();
     ::ImGui::CreateContext();

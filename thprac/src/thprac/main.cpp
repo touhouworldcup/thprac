@@ -153,7 +153,7 @@ int WINAPI wWinMain(
     PWSTR pCmdLine,
     [[maybe_unused]] int nCmdShow
 ) {
-    HookCtx::VEHInit();
+    VEHHookInit();
     if (LauncherPreUpdate(pCmdLine)) {
         return 0;
     }

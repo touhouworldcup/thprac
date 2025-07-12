@@ -1,279 +1,22 @@
 #include "thprac_games.h"
 #include "thprac_utils.h"
 #include <queue>
-
+#include <string>
 
 namespace THPrac {
 namespace TH185 {
-    const char* card_names_en[] = {
-        "None",
-        "Blank Card",
-        "Money Comes and Goes on its Own",
-        "Money Comes and Goes on its Own",
-        "Life Card",
-        "Ringo Brand Dumplings",
-        "Phoenix's Tail",
-        "Yin-Yang Orb",
-        "Yin-Yang Orb (Needle)",
-        "Mini-Hakkero",
-        "Mini-Hakkero (Missile)",
-        "Maid Knife",
-        "Maid Knife (Ricochet)",
-        "Safe Return Amulet",
-        "Shed Snakeskin Amulet",
-        "Half of a Half-Ghost",
-        "Shanghai Doll",
-        "Ice Fairy",
-        "Back Door",
-        "Annoying UFO",
-        "Miser's Advice",
-        "Offerings to the Mountain God",
-        "Life Explosion Elixir",
-        "Fraudster Rabbit's Foot",
-        "Law of the Survival of the Fittest",
-        "Sutra of Dharmatic Power",
-        "Pebble Hat",
-        "Bursting Red Frog",
-        "Gale Geta",
-        "Idol Defense Corps",
-        "Princess Kaguya's Secret Stash",
-        "Reliable Tanuki Apprentice",
-        "Danmaku Ghost",
-        "Kiketsu Matriarch's Threat",
-        "Money is the Best Lawyer in Hell",
-        "Physical Enhancement Jizo",
-        "Magician's Basic Study",
-        "Manekineko with Good Business Skills",
-        "Yamawaro Shopping Technique",
-        "Dragon Pipe",
-        "Screen Border",
-        "Miracle Mallet",
-        "Keystone of Endurance",
-        "Lunatic Moon",
-        "Esteemed Authority",
-        "Vampire Fang",
-        "Subterranean Sun",
-        "Item Season",
-        "Heavy Bass Drum",
-        "Psychokinesis",
-        "Ancient Magatama",
-        "Spirit Power Sample Bottle",
-        "Great Tengu's Barley Rice",
-        "Gluttonous Centipede",
-        "Offensive Jeweled Pagoda",
-        "Peaceful Radiance",
-        "Maddening Stillness",
-        "Lively Powerlessness",
-        "Aesthetics of Destruction",
-        "The Dragon's Path",
-        "Ferocious Komainu",
-        "Irresistible Feathered Fan",
-        "Soot-covered Uchiwa",
-        "No Problem for a Creator!",
-        "The Rabbit Has Landed",
-        "Sheep You Want to Count",
-        "Pristine Self-Confidence",
-        "Capitalist's Dilemma",
-        "Hundredth Black Market",
-        "Bumper Crop of Life",
-        "Stimulating Scales",
-        "Yamanba's Kitchen Knife",
-        "Smelt's Scales",
-        "Freewheeling Severed Head",
-        "Drenched Giant Snake",
-        "Too-Honest Signpost",
-        "Hasty Detour of the Three Crossings",
-        "Laid-Back Invertebrate",
-        "Half-Ghost's Spare Part",
-        "Nimble Fabric",
-        "Keystone Missile",
-        "Life-Burning Torch",
-        "Indominable Meathead",
-        "Drunkenly Whimsical Ibuki Gourd",
-        "Teacup Reimu",
-        "Teacup Marisa",
-    };
-    const char* card_names_cn[] = {
-        "无",
-        "空白卡牌",
-        "财富流至门前来",
-        "财富流至门前来",
-        "生命卡牌",
-        "铃瑚团子",
-        "不死鸟之尾",
-        "阴阳玉",
-        "阴阳玉（针）",
-        "迷你八卦炉",
-        "迷你八卦炉（导弹）",
-        "Maid Knife(女仆飞刀)",
-        "Maid Knife（跳弹）",
-        "平安归来蛙护身符",
-        "放入蛇蜕的护身符",
-        "半灵的一半",
-        "上海人偶",
-        "Ice Fairy(冰之妖精)",
-        "背后之门",
-        "恼人的UFO",
-        "守财奴的教训",
-        "向神山的贡品",
-        "生命爆炸之药",
-        "欺诈兔脚",
-        "弱肉强食之理",
-        "法力经典",
-        "小石子帽子",
-        "爆裂赤蛙",
-        "疾风木屐",
-        "偶像防卫队",
-        "辉夜姬的秘密宝箱",
-        "可靠的弟子狸",
-        "弹幕的亡灵",
-        "鬼杰组长的恐吓",
-        "有钱能使鬼推磨",
-        "肉体强化地藏",
-        "魔法使的基础魔法",
-        "擅长做生意的招财猫",
-        "山童式购物术",
-        "Dragon Khsier(龙之烟管)",
-        "画面的界线",
-        "万宝槌",
-        "忍耐的要石",
-        "狂气之月",
-        "崇高的威光",
-        "Vampire Fang(吸血鬼之牙)",
-        "地底的太阳",
-        "道具的季节",
-        "重低音大太鼓",
-        "Psychokinesis(超能念力)",
-        "太古的勾玉",
-        "灵力的标本瓶",
-        "大天狗的麦饭",
-        "暴食的蜈蚣",
-        "攻击性宝塔",
-        "静谧的闪耀",
-        "疯狂的寂静",
-        "熙攘的无力感",
-        "破坏的美学",
-        "龙脉",
-        "关门放狛犬",
-        "难以抗拒的朱莉安娜羽扇",
-        "烟熏的团扇",
-        "对造形神来说很简单的事",
-        "着陆之兔",
-        "想要去数的羊",
-        "纯粹的自我肯定感",
-        "资本主义的困境",
-        "第一百次黑市",
-        "生命的丰穰",
-        "刺激性的鱗粉",
-        "山姥的菜刀",
-        "若鹭的鱼鳞",
-        "自由自在的飞头",
-        "湿润的巨蛇",
-        "太过正直的路标",
-        "急渡三途路远甚",
-        "任性的无脊椎动物",
-        "备用半灵",
-        "闪避布",
-        "要石导弹",
-        "点燃生命的火把",
-        "不屈的简单头脑",
-        "耍酒疯的伊吹瓢",
-        "茶杯灵梦",
-        "茶杯魔理沙",
-    };
-    const char* card_names_jp[] = {
-        "なし",
-        "空白のカード",
-        "勝手に天下の回り物",
-        "勝手に天下の回り物",
-        "命のカード",
-        "鈴瑚印の団子",
-        "不死鳥の尾",
-        "陰陽玉",
-        "陰陽玉（針）",
-        "ミニ八卦炉",
-        "ミニ八卦炉（ミサイル）",
-        "メイドナイフ",
-        "メイドナイフ（跳弾）",
-        "無事かえるお守り",
-        "蛇の抜け殻入りお守り",
-        "半霊の半分",
-        "上海人形",
-        "アイスフェアリー",
-        "背中の扉",
-        "鬱陶しいＵＦＯ",
-        "守銭奴の教訓",
-        "神山への供物",
-        "生命爆発の薬",
-        "詐欺うさぎの足",
-        "弱肉強食の理",
-        "法力経典",
-        "小石ころ帽子",
-        "はじける赤蛙",
-        "疾風の下駄",
-        "偶像防衛隊",
-        "かぐや姫の隠し箱",
-        "頼りになる弟子狸",
-        "弾幕の亡霊",
-        "鬼傑組長の脅嚇",
-        "地獄の沙汰も金次第",
-        "肉体強化地蔵",
-        "魔法使いの基礎勉強",
-        "商売上手な招き猫",
-        "山童的買い物術",
-        "ドラゴンキセル",
-        "画面の境界",
-        "打ち出の小槌",
-        "忍耐の要石",
-        "狂気の月",
-        "やんごとなき威光",
-        "ヴァンパイアファング",
-        "地底の太陽",
-        "アイテムの季節",
-        "重低音バスドラム",
-        "サイコキネシス",
-        "太古の勾玉",
-        "霊力の標本瓶",
-        "大天狗の麦飯",
-        "暴食のムカデ",
-        "攻撃的な宝塔",
-        "静かなる輝き",
-        "狂おしい静寂",
-        "賑やかな無力",
-        "破壊の美学",
-        "龍の通り道",
-        "けしかける狛犬",
-        "抗いがたきジュリ扇",
-        "煤けた団扇",
-        "クリエイターなら容易な事",
-        "舞い降りた兎",
-        "数えたくなる羊",
-        "純粋な自己肯定感",
-        "資本主義のジレンマ",
-        "百回目のブラックマーケット",
-        "生命の豊穣",
-        "刺激的な鱗粉",
-        "山姥の包丁",
-        "わかさぎの鱗",
-        "自由気ままな生首",
-        "濡れた大蛇",
-        "正直すぎる道しるべ",
-        "急がば三途の回り道",
-        "気ままな無脊椎動物",
-        "半霊のスペア",
-        "ひらり布",
-        "要石ミサイル",
-        "命を焚く松明",
-        "不屈の脳筋",
-        "酔狂の伊吹瓢",
-        "ゆのみ霊夢",
-        "ゆのみ魔理沙",
-    };
+    struct card_names_t {
+        static constexpr size_t count = 86;
+        Gui::locale_t locale;
+        char strings[count][50];
+        const char* ptrs[count];
 
-    constexpr const size_t card_name_count = elementsof(card_names_en);
-
-    static_assert(elementsof(card_names_cn) == card_name_count);
-    static_assert(elementsof(card_names_jp) == card_name_count);
+        constexpr card_names_t() : locale(Gui::locale_t::LOCALE_NONE) {
+            for (int i = 0; i < count; ++i) {
+                ptrs[i] = strings[i];
+            }
+        }
+    } card_names;
 
     enum addrs {
         BLACK_MARKET_PTR = 0x4d7ac4,
@@ -2982,39 +2725,52 @@ namespace TH185 {
                 }
             }
         }
-
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtx(0x4635a5, "\x01", 1) } };
-        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2, {
-            new HookCtx(0x40aec3, "\x66\x0f\x1f\x44\x00\x00", 6),
-            new HookCtx(0x463281, "\x00", 1) } };
-        Gui::GuiHotKey mInfBMoney { TH185_INF_BMONEY, "F3", VK_F3, {
-            new HookCtx(0x40ed5f, "\x66\x2e\x0f\x1f\x84\x00\x00\x00\x00\x00\x66\x2e\x0f\x1f\x84\x00\x00\x00\x00\x00", 20),
-            new HookCtx(0x41ee2d, "\x66\x0f\x1f\x44\x00\x00", 6) } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4, {
-            new HookCtx(0x434c85, "\x66\x0f\x1f\x44\x00\x00", 6),
-            new HookCtx(0x436E38, "\x0f\x1f\x84\x00\x00\x00\x00\x00\x0f\x1f\x84\x00\x00\x00\x00\x00\x0f\x1f\x84\x00\x00\x00\x00\x00", 24) } };
-        Gui::GuiHotKey mZeroCD { TH18_ZERO_CD, "F5", VK_F5, {
-            new HookCtx(0x462146, [](PCONTEXT pCtx) {
-                struct Timer {
-                    int32_t prev;
-                    int32_t cur;
-                    float cur_f;
-                    void* unused;
-                    uint32_t control;
-                };
-                Timer* timer = (Timer*)(pCtx->Ecx + 0x34);
-                *timer = { -1, 0, 0, 0, 0 };
-            }) } };
-        Gui::GuiHotKey mWholesale { TH185_WHOLESALE, "F6", VK_F6, {
-            new HookCtx(0x41da02, [](PCONTEXT pCtx) {
-                uint8_t wholesale[] = { 0x53, 0x00, 0x00, 0x00, 0xF8, 0xA3, 0x4C, 0x00, 0x3C, 0xA4, 0x4C, 0x00, 0x80, 0xA4, 0x4C, 0x00, 0xC4, 0xA4, 0x4C, 0x00, 0x08, 0xA5, 0x4C, 0x00, 0x4C, 0xA5, 0x4C, 0x00, 0x90, 0xA5, 0x4C, 0x00, 0xD4, 0xA5, 0x4C, 0x00, 0x18, 0xA6, 0x4C, 0x00, 0x5C, 0xA6, 0x4C, 0x00, 0xA0, 0xA6, 0x4C, 0x00, 0xE4, 0xA6, 0x4C, 0x00, 0x28, 0xA7, 0x4C, 0x00, 0x6C, 0xA7, 0x4C, 0x00, 0xB0, 0xA7, 0x4C, 0x00, 0xF4, 0xA7, 0x4C, 0x00, 0x38, 0xA8, 0x4C, 0x00, 0x7C, 0xA8, 0x4C, 0x00, 0xC0, 0xA8, 0x4C, 0x00, 0x04, 0xA9, 0x4C, 0x00, 0x48, 0xA9, 0x4C, 0x00, 0x8C, 0xA9, 0x4C, 0x00, 0xD0, 0xA9, 0x4C, 0x00, 0x14, 0xAA, 0x4C, 0x00, 0x58, 0xAA, 0x4C, 0x00, 0x9C, 0xAA, 0x4C, 0x00, 0xE0, 0xAA, 0x4C, 0x00, 0x24, 0xAB, 0x4C, 0x00, 0x68, 0xAB, 0x4C, 0x00, 0xAC, 0xAB, 0x4C, 0x00, 0xF0, 0xAB, 0x4C, 0x00, 0x34, 0xAC, 0x4C, 0x00, 0x78, 0xAC, 0x4C, 0x00, 0xBC, 0xAC, 0x4C, 0x00, 0x00, 0xAD, 0x4C, 0x00, 0x44, 0xAD, 0x4C, 0x00, 0x88, 0xAD, 0x4C, 0x00, 0xCC, 0xAD, 0x4C, 0x00, 0x10, 0xAE, 0x4C, 0x00, 0x54, 0xAE, 0x4C, 0x00, 0x98, 0xAE, 0x4C, 0x00, 0xDC, 0xAE, 0x4C, 0x00, 0x20, 0xAF, 0x4C, 0x00, 0x64, 0xAF, 0x4C, 0x00, 0xA8, 0xAF, 0x4C, 0x00, 0xEC, 0xAF, 0x4C, 0x00, 0x30, 0xB0, 0x4C, 0x00, 0x74, 0xB0, 0x4C, 0x00, 0xB8, 0xB0, 0x4C, 0x00, 0xFC, 0xB0, 0x4C, 0x00, 0x40, 0xB1, 0x4C, 0x00, 0x84, 0xB1, 0x4C, 0x00, 0xC8, 0xB1, 0x4C, 0x00, 0x0C, 0xB2, 0x4C, 0x00, 0x50, 0xB2, 0x4C, 0x00, 0x94, 0xB2, 0x4C, 0x00, 0xD8, 0xB2, 0x4C, 0x00, 0x1C, 0xB3, 0x4C, 0x00, 0x60, 0xB3, 0x4C, 0x00, 0xA4, 0xB3, 0x4C, 0x00, 0xE8, 0xB3, 0x4C, 0x00, 0x2C, 0xB4, 0x4C, 0x00, 0x70, 0xB4, 0x4C, 0x00, 0xB4, 0xB4, 0x4C, 0x00, 0xF8, 0xB4, 0x4C, 0x00, 0x3C, 0xB5, 0x4C, 0x00, 0x80, 0xB5, 0x4C, 0x00, 0xC4, 0xB5, 0x4C, 0x00, 0x08, 0xB6, 0x4C, 0x00, 0x4C, 0xB6, 0x4C, 0x00, 0x90, 0xB6, 0x4C, 0x00, 0xD4, 0xB6, 0x4C, 0x00, 0x18, 0xB7, 0x4C, 0x00, 0x5C, 0xB7, 0x4C, 0x00, 0xA0, 0xB7, 0x4C, 0x00, 0xE4, 0xB7, 0x4C, 0x00, 0x28, 0xB8, 0x4C, 0x00, 0x6C, 0xB8, 0x4C, 0x00, 0xB0, 0xB8, 0x4C, 0x00, 0xF4, 0xB8, 0x4C, 0x00, 0x38, 0xB9, 0x4C, 0x00, 0x7C, 0xB9, 0x4C, 0x00, 0xC0, 0xB9, 0x4C, 0x00 };
-                memcpy((void*)(pCtx->Esi + 0xA40), wholesale, sizeof(wholesale));
-            }) } };
+
+        HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(0x4635a5, "01")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
+        PATCH_HK(0x40aec3, "660f1f440000"),
+        PATCH_HK(0x463281, "00")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mInfBMoney, TH185_INF_BMONEY, "F3", VK_F3)
+        PATCH_HK(0x40ed5f, "662e0f1f840000000000662e0f1f840000000000"),
+        PATCH_HK(0x41ee2d, "660f1f440000")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F4", VK_F4)
+        PATCH_HK(0x434c85, "660f1f440000"),
+        PATCH_HK(0x436E38, "0f1f8400000000000f1f8400000000000f1f840000000000")
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mZeroCD, TH18_ZERO_CD, "F5", VK_F5)
+        EHOOK_HK(0x462146, 3, {
+            struct Timer {
+                int32_t prev;
+                int32_t cur;
+                float cur_f;
+                void* unused;
+                uint32_t control;
+            };
+            Timer* timer = (Timer*)(pCtx->Ecx + 0x34);
+            *timer = { -1, 0, 0, 0, 0 };
+        })
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mWholesale, TH185_WHOLESALE, "F6", VK_F6)
+        EHOOK_HK(0x41da02, 6, {
+            uint8_t wholesale[] = { 0x53, 0x00, 0x00, 0x00, 0xF8, 0xA3, 0x4C, 0x00, 0x3C, 0xA4, 0x4C, 0x00, 0x80, 0xA4, 0x4C, 0x00, 0xC4, 0xA4, 0x4C, 0x00, 0x08, 0xA5, 0x4C, 0x00, 0x4C, 0xA5, 0x4C, 0x00, 0x90, 0xA5, 0x4C, 0x00, 0xD4, 0xA5, 0x4C, 0x00, 0x18, 0xA6, 0x4C, 0x00, 0x5C, 0xA6, 0x4C, 0x00, 0xA0, 0xA6, 0x4C, 0x00, 0xE4, 0xA6, 0x4C, 0x00, 0x28, 0xA7, 0x4C, 0x00, 0x6C, 0xA7, 0x4C, 0x00, 0xB0, 0xA7, 0x4C, 0x00, 0xF4, 0xA7, 0x4C, 0x00, 0x38, 0xA8, 0x4C, 0x00, 0x7C, 0xA8, 0x4C, 0x00, 0xC0, 0xA8, 0x4C, 0x00, 0x04, 0xA9, 0x4C, 0x00, 0x48, 0xA9, 0x4C, 0x00, 0x8C, 0xA9, 0x4C, 0x00, 0xD0, 0xA9, 0x4C, 0x00, 0x14, 0xAA, 0x4C, 0x00, 0x58, 0xAA, 0x4C, 0x00, 0x9C, 0xAA, 0x4C, 0x00, 0xE0, 0xAA, 0x4C, 0x00, 0x24, 0xAB, 0x4C, 0x00, 0x68, 0xAB, 0x4C, 0x00, 0xAC, 0xAB, 0x4C, 0x00, 0xF0, 0xAB, 0x4C, 0x00, 0x34, 0xAC, 0x4C, 0x00, 0x78, 0xAC, 0x4C, 0x00, 0xBC, 0xAC, 0x4C, 0x00, 0x00, 0xAD, 0x4C, 0x00, 0x44, 0xAD, 0x4C, 0x00, 0x88, 0xAD, 0x4C, 0x00, 0xCC, 0xAD, 0x4C, 0x00, 0x10, 0xAE, 0x4C, 0x00, 0x54, 0xAE, 0x4C, 0x00, 0x98, 0xAE, 0x4C, 0x00, 0xDC, 0xAE, 0x4C, 0x00, 0x20, 0xAF, 0x4C, 0x00, 0x64, 0xAF, 0x4C, 0x00, 0xA8, 0xAF, 0x4C, 0x00, 0xEC, 0xAF, 0x4C, 0x00, 0x30, 0xB0, 0x4C, 0x00, 0x74, 0xB0, 0x4C, 0x00, 0xB8, 0xB0, 0x4C, 0x00, 0xFC, 0xB0, 0x4C, 0x00, 0x40, 0xB1, 0x4C, 0x00, 0x84, 0xB1, 0x4C, 0x00, 0xC8, 0xB1, 0x4C, 0x00, 0x0C, 0xB2, 0x4C, 0x00, 0x50, 0xB2, 0x4C, 0x00, 0x94, 0xB2, 0x4C, 0x00, 0xD8, 0xB2, 0x4C, 0x00, 0x1C, 0xB3, 0x4C, 0x00, 0x60, 0xB3, 0x4C, 0x00, 0xA4, 0xB3, 0x4C, 0x00, 0xE8, 0xB3, 0x4C, 0x00, 0x2C, 0xB4, 0x4C, 0x00, 0x70, 0xB4, 0x4C, 0x00, 0xB4, 0xB4, 0x4C, 0x00, 0xF8, 0xB4, 0x4C, 0x00, 0x3C, 0xB5, 0x4C, 0x00, 0x80, 0xB5, 0x4C, 0x00, 0xC4, 0xB5, 0x4C, 0x00, 0x08, 0xB6, 0x4C, 0x00, 0x4C, 0xB6, 0x4C, 0x00, 0x90, 0xB6, 0x4C, 0x00, 0xD4, 0xB6, 0x4C, 0x00, 0x18, 0xB7, 0x4C, 0x00, 0x5C, 0xB7, 0x4C, 0x00, 0xA0, 0xB7, 0x4C, 0x00, 0xE4, 0xB7, 0x4C, 0x00, 0x28, 0xB8, 0x4C, 0x00, 0x6C, 0xB8, 0x4C, 0x00, 0xB0, 0xB8, 0x4C, 0x00, 0xF4, 0xB8, 0x4C, 0x00, 0x38, 0xB9, 0x4C, 0x00, 0x7C, 0xB9, 0x4C, 0x00, 0xC0, 0xB9, 0x4C, 0x00 };
+            memcpy((void*)(pCtx->Esi + 0xA40), wholesale, sizeof(wholesale));
+        })
+        HOTKEY_ENDDEF();
     };
 
-    stage_warps_t stages[9] = {};
+    EHOOK_ST(th185_replaymanager_on_tick_cutoff, 0x468764, 1, {
+        pCtx->Eax = 3;
+    });
 
     struct THWaveSelect : public Gui::GameGuiWnd {
         SINGLETON(THWaveSelect);
@@ -3071,12 +2827,7 @@ namespace TH185 {
             }
         }
 
-        public:
-        EHOOK_ST(th185_replaymanager_on_tick_cutoff, 0x468764)
-        {
-            pCtx->Eax = 3;
-        }
-
+    public:
         size_t selectedWave = SIZE_MAX;
         std::vector<std::pair<size_t, const char*>> waveOpts;
     };
@@ -3190,16 +2941,16 @@ namespace TH185 {
                 mBulletMoney();
                 mDifficulty(difficulties[*mDifficulty]);
 
+                if (card_names.locale != Gui::LocaleGet()) {
+                    card_names.locale = Gui::LocaleGet();
+                    for (int i = 0; i < card_names.count; ++i) {
+                        std::strcpy(card_names.strings[i], S(TH185_CARD_LIST[i]));
+                    }
+                }
+
                 ImGui::Separator();
                 ImGui::TextUnformatted(S(TH185_ADDITIONAL_CARDS));
-                switch (Gui::LocaleGet()) {
-                case Gui::LOCALE_ZH_CN:
-                    return Gui::MultiComboSelect(mAdditionalCards, card_names_cn, card_name_count, S(TH18_CARD_FORMAT));
-                case Gui::LOCALE_JA_JP:
-                    return Gui::MultiComboSelect(mAdditionalCards, card_names_jp, card_name_count, S(TH18_CARD_FORMAT));
-                case Gui::LOCALE_EN_US:
-                    return Gui::MultiComboSelect(mAdditionalCards, card_names_en, card_name_count, S(TH18_CARD_FORMAT));
-                }
+                return Gui::MultiComboSelect(mAdditionalCards, card_names.ptrs, card_names.count, S(TH18_CARD_FORMAT));
             }
         }
 
@@ -3327,23 +3078,21 @@ namespace TH185 {
         return advOptWnd->IsOpen();
     }
 
-    PATCH_ST(th185_prac_disable_arrows, 0x46d39f, "\xe9\xcd\x00\x00\x00", 5);
-    EHOOK_G1(th185_prac_leave, 0x46d481)
-    {
+    PATCH_ST(th185_prac_disable_arrows, 0x46d39f, "e9cd000000");
+    EHOOK_ST(th185_prac_leave, 0x46d481, 2, {
         if (isItemEnabled) {
             pCtx->Eip = 0x46d9c0;
-            return;
+        } else {
+            self->Disable();
+            THGuiPrac::singleton().State(2);
+            th185_prac_disable_arrows.Disable();
+            pCtx->Eip = 0x46d9c0;
         }
-        th185_prac_leave::GetHook().Disable();
-        THGuiPrac::singleton().State(2);
-        th185_prac_disable_arrows.Disable();
-        pCtx->Eip = 0x46d9c0;
-    }
-    PATCH_ST(th185_unhardcode_bosses, 0x43d0f6, "\xeb", 1);
+    });
+    PATCH_ST(th185_unhardcode_bosses, 0x43d0f6, "eb");
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th185_wave_fire, 0x43cf47)
-    {
+    EHOOK_DY(th185_wave_fire, 0x43cf47, 2, {
         if (!thPracParam.mode)
             return;
 
@@ -3398,7 +3147,7 @@ namespace TH185 {
 
             pCtx->Eax = ULONG_MAX; // Safe. DWORD == unsigned long
             pCtx->Eip = 0x43d57a;
-            wave_select.th185_replaymanager_on_tick_cutoff.Enable();
+            th185_replaymanager_on_tick_cutoff.Enable();
             wave_select.Open();
         } else {
             wave_select.Close();
@@ -3409,11 +3158,10 @@ namespace TH185 {
             pCtx->Eax = ULONG_MAX; // Safe. DWORD == unsigned long
             pCtx->Eip = 0x43d57a;
         }
-    }
+    })
 
-    PATCH_DY(th185_unblock_all, 0x46d532, "\xeb", 1);
-    EHOOK_DY(th185_gui_update, 0x4013dd)
-    {
+    PATCH_DY(th185_unblock_all, 0x46d532, "eb")
+    EHOOK_DY(th185_gui_update, 0x4013dd, 1, {
         GameGuiBegin(IMPL_WIN32_DX9);
 
         // Gui components update
@@ -3425,14 +3173,11 @@ namespace TH185 {
             THWaveSelect::singleton().Update();
 
         GameGuiEnd(UpdateAdvOptWindow() || isItemEnabled || THGuiPrac::singleton().IsOpen());
-    }
-    EHOOK_DY(th185_gui_render, 0x4014fa)
-    {
+    })
+    EHOOK_DY(th185_gui_render, 0x4014fa, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
-    }
-
-    EHOOK_DY(th185_patch_main, 0x448fb2)
-    {
+    })
+    EHOOK_DY(th185_patch_main, 0x448fb2, 1,{
         // 0x4d1024 = phase
 
         if (thPracParam.mode) {
@@ -3455,9 +3200,8 @@ namespace TH185 {
         } else {
             th185_unhardcode_bosses.Disable();
         }
-    }
-    EHOOK_DY(th185_restart, 0x45f86d)
-    {
+    })
+    EHOOK_DY(th185_restart, 0x45f86d, 2, {
         auto s1 = pCtx->Esp + 0xc;
         auto s2 = pCtx->Edi + 0x1e4;
         auto s3 = *(DWORD*)(pCtx->Edi + 0x1e8);
@@ -3479,30 +3223,25 @@ namespace TH185 {
 
         pCtx->Edx = *(DWORD*)0x4ce400;
         pCtx->Eip = 0x45f918;
-    }
-    EHOOK_DY(th185_exit, 0x45f918)
-    {
+    })
+    EHOOK_DY(th185_exit, 0x45f918, 5, {
         if (Gui::KeyboardInputGetRaw('Q'))
             pCtx->Eip = 0x45f92e;
 
-    }
-    EHOOK_DY(th185_change_gamemode, 0x45b77a)
-    {
-        auto& wave_select = THWaveSelect::singleton();
-        wave_select.Close();
-        wave_select.th185_replaymanager_on_tick_cutoff.Disable();
-    }
-    EHOOK_DY(th185_force_wave, 0x43d156)
-    {
+    })
+    EHOOK_DY(th185_change_gamemode, 0x45b77a, 7, {
+        THWaveSelect::singleton().Close();
+        th185_replaymanager_on_tick_cutoff.Disable();
+    })
+    EHOOK_DY(th185_force_wave, 0x43d156, 7, {
         auto& wave_select = THWaveSelect::singleton();
         if (auto i = wave_select.selectedWave; i != -1 && thPracParam.mode) {
             auto& [id, name] = wave_select.waveOpts[i];
             pCtx->Esi = id;
             wave_forced = true;
         }
-    }
-    EHOOK_DY(th185_prac_confirm, 0x46d523)
-    {
+    })
+    EHOOK_DY(th185_prac_confirm, 0x46d523, 6, {
         if (isItemEnabled) {
             pCtx->Eip = 0x46d9c0;
             return;
@@ -3511,24 +3250,28 @@ namespace TH185 {
         if (p.IsOpen()) {
             p.State(1);
             th185_prac_disable_arrows.Disable();
-            th185_prac_leave::GetHook().Disable();
+            th185_prac_leave.Disable();
         } else {
             p.State(0);
             th185_prac_disable_arrows.Enable();
-            th185_prac_leave::GetHook().Enable();
+            th185_prac_leave.Enable();
             pCtx->Eip = 0x46d9c0;
         }
-    }
-    PATCH_DY(th185_disable_topmost, 0x4747ac, "\x00", 1);
+    })
+    PATCH_DY(th185_disable_topmost, 0x4747ac, "00")
     HOOKSET_ENDDEF()
 
-    HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
+        if (ImGui::GetCurrentContext()) {
+            return;
+        }
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4d52c8, 0x571d50,
             Gui::INGAGME_INPUT_GEN2, 0x4ce400, 0x4ce3f8, 0,
             -2, *(float*)0x573dc0, 0.0f);
+
+        SetDpadHook(0x40175F, 3);
 
         // Gui components creation
         THOverlay::singleton();
@@ -3536,34 +3279,27 @@ namespace TH185 {
         THWaveSelect::singleton();
 
         th185_prac_disable_arrows.Setup();
+        th185_prac_leave.Setup();
         th185_unhardcode_bosses.Setup();
 
         // Hooks
-        THMainHook::singleton().EnableAllHooks();
+        EnableAllHooks(THMainHook);
     }
-    static __declspec(noinline) void THInitHookDisable()
-    {
-        auto& s = THInitHook::singleton();
-        s.th185_gui_init_1.Disable();
-        s.th185_gui_init_2.Disable();
-    }
-
-    EHOOK_DY(th185_gui_init_1, 0x46ce39)
-    {
+    HOOKSET_DEFINE(THInitHook)
+    EHOOK_DY(th185_gui_init_1, 0x46ce39, 2, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
-    }
-    EHOOK_DY(th185_gui_init_2, 0x476580)
-    {
+    })
+    EHOOK_DY(th185_gui_init_2, 0x476580, 1, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
-    }
+    })
     HOOKSET_ENDDEF()
 }
 
 void TH185Init()
 {
-    TH185::THInitHook::singleton().EnableAllHooks();
+    EnableAllHooks(TH185::THInitHook);
 }
 
 }

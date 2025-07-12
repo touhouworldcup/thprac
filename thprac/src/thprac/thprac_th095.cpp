@@ -64,29 +64,29 @@ namespace TH095 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtx(0x4306DE, "\x01", 1),
-            new HookCtx(0x4307BB, "\x80", 1),
-            new HookCtx(0x43070d, "\x83\xc4\x0c\x90\x90", 5) } };
-        Gui::GuiHotKey mInfCharge { TH_INFCHARGE, "F2", VK_F2, {
-            new HookCtx(0x433EE2, "\x00", 1) } };
+        HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(0x4306DE, "01"),
+        PATCH_HK(0x4307BB, "80"),
+        PATCH_HK(0x43070d, "83c40c9090")
+        HOTKEY_ENDDEF();
 
+        HOTKEY_DEFINE(mInfCharge, TH_INFCHARGE, "F2", VK_F2)
+        PATCH_HK(0x433EE2, "00")
+        HOTKEY_ENDDEF();
     public:
-        Gui::GuiHotKey mFocusLockOn { TH_COERCIVE, "F3", VK_F3, {
-            new HookCtx(0x432ee4, "\x90\x90\x90\x90\x90\x90", 6),
-            new HookCtx(0x431cf2, "\x90\x90\x90\x90\x90\x90", 6),
-            new HookCtx(0x432f7e, "\x00", 1) } };
-
+        HOTKEY_DEFINE(mFocusLockOn, TH_COERCIVE, "F3", VK_F3)
+        PATCH_HK(0x432ee4, "909090909090"),
+        PATCH_HK(0x431cf2, "909090909090"),
+        PATCH_HK(0x432f7e, "00")
+        HOTKEY_ENDDEF();
     private:
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4, {
-            new HookCtx(0x418317, "\x2E\xE9", 2) } };
+        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F4", VK_F4)
+        PATCH_HK(0x418317, "2EE9")
+        HOTKEY_ENDDEF();
+
 
     public:
-        Gui::GuiHotKey mElBgm {
-            TH_EL_BGM,
-            "F7",
-            VK_F7,
-        };
+        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
     };
 
     class THAdvOptWnd : public Gui::GameGuiWnd {
@@ -210,8 +210,7 @@ namespace TH095 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th095_homing, 0x40498e)
-    {
+    EHOOK_DY(th095_homing, 0x40498e, 3, {
         float* view_pos = (float*)pCtx->Edx;
         float* crosshair_pos = *(float**)(pCtx->Esp + 0x90);
         float* boss_pos = (float*)GetMemAddr(0x4bddc0, 0x76c4);
@@ -220,52 +219,45 @@ namespace TH095 {
             crosshair_pos[1] = view_pos[1] = boss_pos[1];
             crosshair_pos[2] = view_pos[2] = boss_pos[2];
         }
-    }
-    EHOOK_DY(th095_render, 0x4208d6)
-    {
+    })
+    EHOOK_DY(th095_render, 0x4208d6, 6, {
         THGuiUpdate();
-    }
+    })
     HOOKSET_ENDDEF()
 
-    HOOKSET_DEFINE(THInitHook)
+
     static __declspec(noinline) void THGuiCreate()
     {
+        if (ImGui::GetCurrentContext()) {
+            return;
+        }
         // Init
         GameGuiInit(IMPL_WIN32_DX8, 0x4c4678, 0x4c45e8,
             Gui::INGAGME_INPUT_GEN2, 0x4be21e, 0x4be21c, 0,
             -1);
 
+        SetDpadHook(0x419725, 3);
+
         // Gui components creation
         THOverlay::singleton();
 
         // Hooks
-        THMainHook::singleton().EnableAllHooks();
+        EnableAllHooks(THMainHook);
     }
-    static __declspec(noinline) void THInitHookDisable()
-    {
-        auto& s = THInitHook::singleton();
-        s.th095_gui_init_1.Disable();
-        s.th095_gui_init_2.Disable();
-    }
-    EHOOK_DY(th095_gui_init_1, 0x4470a1)
-    {
+    HOOKSET_DEFINE(THInitHook)
+    EHOOK_DY(th095_gui_init_1, 0x4470a1, 7, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
-    }
-    EHOOK_DY(th095_gui_init_2, 0x42137e)
-    {
+    })
+    EHOOK_DY(th095_gui_init_2, 0x42137e, 1, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
-    }
+    })
     HOOKSET_ENDDEF()
 }
 
 void TH095Init()
 {
-    TH095::THInitHook::singleton().EnableAllHooks();
-    TryKeepUpRefreshRate((void*)0x420ee8);
-    if (GetModuleHandleA("vpatch_th095.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th095.dll") + 0x5424));
-    }
+    EnableAllHooks(TH095::THInitHook);
 }
 }

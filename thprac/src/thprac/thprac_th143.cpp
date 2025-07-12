@@ -62,30 +62,35 @@ namespace TH143 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtx(0x44F272, "\x01", 1) } };
-        Gui::GuiHotKey mInfItems { TH_INFITEMS, "F2", VK_F2, {
-            new HookCtx(0x457860, "\x0F\x1F\x00", 3),
-            new HookCtx(0x457F48, "\x0F\x1F\x00", 3),
-            new HookCtx(0x458FCB, "\x0F\x1F\x00", 3),
-            new HookCtx(0x45946A, "\x0F\x1F\x00", 3),
-            new HookCtx(0x459608, "\x0F\x1F\x00", 3),
-            new HookCtx(0x4597A6, "\x0F\x1F\x00", 3),
-            new HookCtx(0x459950, "\x0F\x1F\x00", 3),
-            new HookCtx(0x459EFF, "\x0F\x1F\x00", 3),
-            new HookCtx(0x459F4A, "\x0F\x1F\x00", 3),
-            new HookCtx(0x459F94, "\x0F\x1F\x00", 3),
-            new HookCtx(0x459FF4, "\x0F\x1F\x00", 3),
-            new HookCtx(0x45A5E3, "\x0F\x1F\x00", 3),
-            new HookCtx(0x45B4EA, "\x0F\x1F\x00", 3),
-            new HookCtx(0x45B9BC, "\x0F\x1F\x00", 3),
-            new HookCtx(0x45BDE8, "\x0F\x1F\x00", 3),
-            new HookCtx(0x45C1AD, "\x0F\x1F\x00", 3),
-            new HookCtx(0x45C7FD, "\x0F\x1F\x00", 3),
-            new HookCtx(0x45CE94, "\x0F\x1F\x00", 3) } };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F3", VK_F3, {
-            new HookCtx(0x41894d, "\xeb", 1),
-            new HookCtx(0x4215C8, "\x90", 1) } };
+        HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(0x44F272, "01")
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mInfItems, TH_INFITEMS, "F2", VK_F2)
+        PATCH_HK(0x457860, "0F1F00"),
+        PATCH_HK(0x457F48, "0F1F00"),
+        PATCH_HK(0x458FCB, "0F1F00"),
+        PATCH_HK(0x45946A, "0F1F00"),
+        PATCH_HK(0x459608, "0F1F00"),
+        PATCH_HK(0x4597A6, "0F1F00"),
+        PATCH_HK(0x459950, "0F1F00"),
+        PATCH_HK(0x459EFF, "0F1F00"),
+        PATCH_HK(0x459F4A, "0F1F00"),
+        PATCH_HK(0x459F94, "0F1F00"),
+        PATCH_HK(0x459FF4, "0F1F00"),
+        PATCH_HK(0x45A5E3, "0F1F00"),
+        PATCH_HK(0x45B4EA, "0F1F00"),
+        PATCH_HK(0x45B9BC, "0F1F00"),
+        PATCH_HK(0x45BDE8, "0F1F00"),
+        PATCH_HK(0x45C1AD, "0F1F00"),
+        PATCH_HK(0x45C7FD, "0F1F00"),
+        PATCH_HK(0x45CE94, "0F1F00")
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F3", VK_F3)
+        PATCH_HK(0x41894d, "eb"),
+        PATCH_HK(0x4215C8, "90")
+        HOTKEY_ENDDEF();
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
     };
@@ -205,58 +210,51 @@ namespace TH143 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th143_render_1, 0x46ed3f)
-    {
+    EHOOK_DY(th143_render_1, 0x46ed3f, 5, {
         THGuiUpdate();
-    }
-    EHOOK_DY(th143_render_2, 0x46f14f)
-    {
+    })
+    EHOOK_DY(th143_render_2, 0x46f14f, 5, {
         THGuiUpdate();
-    }
-    EHOOK_DY(th143_render_3, 0x46f2ee)
-    {
+    })
+    EHOOK_DY(th143_render_3, 0x46f2ee, 5, {
         THGuiUpdate();
-    }
+    })
     HOOKSET_ENDDEF()
 
-    HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
+        if (ImGui::GetCurrentContext()) {
+            return;
+        }
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4e47d8, 0x5390a0,
             Gui::INGAGME_INPUT_GEN2, 0x4e19dc, 0x4e19d8, 0,
             (*((int32_t*)0x53b0dc) >> 2) & 0xf);
 
+        SetDpadHook(0x401D72, 3);
+
         // Gui components creation
         THOverlay::singleton();
 
         // Hooks
-        THMainHook::singleton().EnableAllHooks();
+        EnableAllHooks(THMainHook);
     }
-    static __declspec(noinline) void THInitHookDisable()
-    {
-        auto& s = THInitHook::singleton();
-        s.th143_gui_init_1.Disable();
-        s.th143_gui_init_2.Disable();
-    }
-    PATCH_DY(th143_startup_1, 0x45ef95, "\xeb", 1);
-    PATCH_DY(th143_startup_2, 0x45fbaf, "\xeb", 1);
-    EHOOK_DY(th143_gui_init_1, 0x45fd77)
-    {
+    HOOKSET_DEFINE(THInitHook)
+    PATCH_DY(th143_startup_1, 0x45ef95, "eb")
+    PATCH_DY(th143_startup_2, 0x45fbaf, "eb")
+    EHOOK_DY(th143_gui_init_1, 0x45fd77, 3, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
-    }
-    EHOOK_DY(th143_gui_init_2, 0x46fc6b)
-    {
+    })
+    EHOOK_DY(th143_gui_init_2, 0x46fc6b, 1, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
-    }
+    })
     HOOKSET_ENDDEF()
 }
 
 void TH143Init()
 {
-    TH143::THInitHook::singleton().EnableAllHooks();
-    TryKeepUpRefreshRate((void*)0x46fdbc, (void*)0x46fb8d);
+    EnableAllHooks(TH143::THInitHook);
 }
 }

@@ -64,31 +64,31 @@ namespace TH125 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtx(0x436C2C, "\x01", 1),
-            new HookCtx(0x436DF8, "\xeb\x19", 2),
-            new HookCtx(0x436c76, "\x83\xc4\x10\x90\x90", 5) } };
-        Gui::GuiHotKey mInfCharge { TH_INFCHARGE, "F2", VK_F2, {
-            new HookCtx(0x43A0EA, "\x00", 1) } };
+        HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(0x436C2C, "01"),
+        PATCH_HK(0x436DF8, "eb19"),
+        PATCH_HK(0x436c76, "83c4109090")
+        HOTKEY_ENDDEF();
 
+        HOTKEY_DEFINE(mInfCharge, TH_INFCHARGE, "F2", VK_F2)
+        PATCH_HK(0x43A0EA, "00")
+        HOTKEY_ENDDEF();
     public:
-        Gui::GuiHotKey mFocusLockOn { TH_COERCIVE, "F3", VK_F3, {
-            new HookCtx(0x438eb9, "\x90\x90\x90\x90\x90\x90", 6),
-            new HookCtx(0x438ec9, "\x90\x90\x90\x90\x90\x90", 6),
-            new HookCtx(0x4379c5, "\x90\x90\x90\x90\x90\x90", 6),
-            new HookCtx(0x438f66, "\x00", 1) } };
-
+        HOTKEY_DEFINE(mFocusLockOn, TH_COERCIVE, "F3", VK_F3)
+        PATCH_HK(0x438eb9, "909090909090"),
+        PATCH_HK(0x438ec9, "909090909090"),
+        PATCH_HK(0x4379c5, "909090909090"),
+        PATCH_HK(0x438f66, "00")
+        HOTKEY_ENDDEF();
     private:
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F4", VK_F4, {
-            new HookCtx(0x41DEDA, "\xeb", 1) } };
-
+        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F4", VK_F4)
+        PATCH_HK(0x41DEDA, "eb")
+        HOTKEY_ENDDEF();
     public:
-        Gui::GuiHotKey mElBgm {
-            TH_EL_BGM,
-            "F7",
-            VK_F7,
-        };
+        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
     };
+
+    PATCH_ST(th125_hiscore_fix, 0x42ea14, "90909090909090");
 
     class THAdvOptWnd : public Gui::GameGuiWnd {
         // Option Related Functions
@@ -201,8 +201,6 @@ namespace TH125 {
 
         adv_opt_ctx mOptCtx;
 
-        PATCH_ST(th125_hiscore_fix, 0x42ea14, "\x90\x90\x90\x90\x90\x90\x90", 7);
-
         bool mHiscoreFix = false;
     };
     bool UpdateAdvOptWindow()
@@ -233,8 +231,7 @@ namespace TH125 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th125_homing, 0x438714)
-    {
+    EHOOK_DY(th125_homing, 0x438714, 6, {
         float* crosshair_pos;
         float* boss_pos;
 
@@ -250,61 +247,53 @@ namespace TH125 {
                 crosshair_pos[2] = boss_pos[2];
             }
         }
-
-    }
-    EHOOK_DY(th125_render_1, 0x44ee42)
-    {
+    })
+    EHOOK_DY(th125_render_1, 0x44ee42, 5, {
         THGuiUpdate();
-    }
-    EHOOK_DY(th125_render_2, 0x44f255)
-    {
+    })
+    EHOOK_DY(th125_render_2, 0x44f255, 5, {
         THGuiUpdate();
-    }
-    EHOOK_DY(th125_render_3, 0x44f3fd)
-    {
+    })
+    EHOOK_DY(th125_render_3, 0x44f3fd, 5, {
         THGuiUpdate();
-    }
+    })
     HOOKSET_ENDDEF()
 
-    HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
+        if (ImGui::GetCurrentContext()) {
+            return;
+        }
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4d0cd8, 0x4d17d8,
             Gui::INGAGME_INPUT_GEN2, 0x4d8dac, 0x4d8da8, 0,
             -1);
 
+        SetDpadHook(0x46205F, 2);
+
         // Gui components creation
         THOverlay::singleton();
 
         // Hooks
-        THMainHook::singleton().EnableAllHooks();
+        EnableAllHooks(THMainHook);
 
     }
-    static __declspec(noinline) void THInitHookDisable()
-    {
-        auto& s = THInitHook::singleton();
-        s.th125_gui_init_1.Disable();
-        s.th125_gui_init_2.Disable();
-    }
-    PATCH_DY(th125_startup_1, 0x440657, "\xeb", 1);
-    PATCH_DY(th125_startup_2, 0x4418a6, "\xeb", 1);
-    EHOOK_DY(th125_gui_init_1, 0x441905)
-    {
+    HOOKSET_DEFINE(THInitHook)
+    PATCH_DY(th125_startup_1, 0x440657, "eb")
+    PATCH_DY(th125_startup_2, 0x4418a6, "eb")
+    EHOOK_DY(th125_gui_init_1, 0x441905, 3, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
-    }
-    EHOOK_DY(th125_gui_init_2, 0x44ff39)
-    {
+    })
+    EHOOK_DY(th125_gui_init_2, 0x44ff39, 1, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
-    }
+    })
     HOOKSET_ENDDEF()
 }
 
 void TH125Init()
 {
-    TH125::THInitHook::singleton().EnableAllHooks();
-    TryKeepUpRefreshRate((void*)0x44fb0c);
+    EnableAllHooks(TH125::THInitHook);
 }
 }

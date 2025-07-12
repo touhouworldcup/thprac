@@ -1,10 +1,10 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 
-
 namespace THPrac {
 namespace TH09 {
-    PATCH_ST(th09_ranklock, 0x41ac7f, "\xEB", 1);
+    PATCH_ST(th09_ranklock, 0x41ac7f, "EB");
+
     enum addrs {
         P1_CPU_PTR = 0x4a7db8,
         P2_CPU_PTR = 0x4a7df0,
@@ -155,7 +155,7 @@ namespace TH09 {
             chargegauge(pl2, &chargelock_p2);
             ImGui::PopID();
 
-             if (*(uint32_t*)P1_CPU_PTR || *(uint32_t*)P2_CPU_PTR) {
+            if (*(uint32_t*)P1_CPU_PTR || *(uint32_t*)P2_CPU_PTR) {
                 ImGui::PushID(TH09_CPU_CHARGE);
                 ImGui::TextUnformatted(S(TH09_CPU_CHARGE));
                 if (*(uint32_t*)P1_CPU_PTR) {
@@ -245,9 +245,9 @@ namespace TH09 {
         }
     };
 
-    PATCH_ST(th09_disable_map_select, 0x424671, "\xC2\x04\x00", 3);
+    PATCH_ST(th09_disable_map_select, 0x424671, "C20400");
 
-    void th09_chargelock_bomb(PCONTEXT pCtx)
+    void __fastcall th09_chargelock_bomb(PCONTEXT pCtx, [[maybe_unused]] HookCtx* self)
     {
         TH09Tools& t = TH09Tools::singleton();
         uint32_t side = *(uint32_t*)(pCtx->Esi + 0x8);
@@ -255,7 +255,7 @@ namespace TH09 {
             pCtx->Eip += 12;
     }
 
-    void th09_chargelock_ret(PCONTEXT pCtx)
+    void __fastcall th09_chargelock_ret(PCONTEXT pCtx, HookCtx* self)
     {
         TH09Tools& t = TH09Tools::singleton();
         uint32_t side = *(uint32_t*)(pCtx->Ecx + 0x8);
@@ -264,101 +264,85 @@ namespace TH09 {
             pCtx->Esp += 4;
         }
     }
-
+    void DisablePracHook();
     HOOKSET_DEFINE(TH09PracHook)
-    EHOOK_DY(th09_invincible, 0x41e8ec)
-    {
+    EHOOK_DY(th09_invincible, 0x41e8ec, 5, {
         TH09Tools& t = TH09Tools::singleton();
         uint32_t side = *(uint32_t*)(pCtx->Esi + 0x8);
         if ((side == 0 && t.invinc_p1) || (side == 1 && t.invinc_p2))
             pCtx->Eip = 0x41e8f1;
-    }
-    EHOOK_DY(th09_infhealth, 0x41e5fc)
-    {
+    })
+    EHOOK_DY(th09_infhealth, 0x41E5F9, 3, {
         TH09Tools& t = TH09Tools::singleton();
         uint32_t side = *(uint32_t*)(pCtx->Esi + 0x8);
         if ((side == 0 && t.infhealth_p1) || (side == 1 && t.infhealth_p2))
             pCtx->Eip = 0x41e63c;
-    }
-    EHOOK_DY(th09_cpu_lock_attack, 0x404f80)
-    {
+    })
+    EHOOK_DY(th09_cpu_lock_attack, 0x404f80, 6, {
         TH09Tools& t = TH09Tools::singleton();
         uint32_t side = *(uint32_t*)(pCtx->Esi - 0x1c);
         if ((side == 0 && t.cpu_lock_attack_p1) || (side == 1 && t.cpu_lock_attack_p2))
             pCtx->Eip = 0x404fe1;
-    }
-    EHOOK_DY(th09_o_lily, 0x41ad66)
-    {
+    })
+    EHOOK_DY(th09_o_lily, 0x41AD6C, 5, {
         if (!TH09Tools::singleton().o_lily) {
             pCtx->Eip = 0x41ae30;
         }
-    }
-    EHOOK_DY(th09_o_fairy, 0x40fd0e)
-    {
+    })
+    EHOOK_DY(th09_o_fairy, 0x40FD14, 1, {
         if (!TH09Tools::singleton().o_fairy) {
             pCtx->Eip = 0x40ff4d;
         }
-    }
-    EHOOK_DY(th09_o_pellets_random, 0x41d535)
-    {
+    })
+    EHOOK_DY(th09_o_pellets_random, 0x41D540, 2, {
         if (!TH09Tools::singleton().o_pellets_random) {
             pCtx->Eip = 0x41d6dd;
         }
-    }
-    EHOOK_DY(th09_o_pellets_rival, 0x41e1a6)
-    {
+    })
+    EHOOK_DY(th09_o_pellets_rival, 0x41e1a6, 3, {
         if (!TH09Tools::singleton().o_pellets_rival) {
             pCtx->Eip = 0x41e2c5;
         }
-    }
-    EHOOK_DY(th09_o_large_bullets, 0x41dd0d)
-    {
+    })
+    EHOOK_DY(th09_o_large_bullets, 0x41DD13, 3, {
         if (!TH09Tools::singleton().o_large_bullets) {
             pCtx->Eip = 0x41dea6;
         }
-    }
-    EHOOK_DY(th09_o_spirits_random, 0x41d3a4)
-    {
+    })
+    EHOOK_DY(th09_o_spirits_random, 0x41D3AA, 6, {
         if (!TH09Tools::singleton().o_spirits_random) {
             pCtx->Eip = 0x41d526;
         }
-    }
-    EHOOK_DY(th09_o_spirits_rival, 0x4105d4)
-    {
+    })
+    EHOOK_DY(th09_o_spirits_rival, 0x4105DA, 4, {
         if (!TH09Tools::singleton().o_spirits_rival) {
             pCtx->Eip = 0x41071d;
         }
-    }
-    EHOOK_DY(th09_o_ex, 0x41d389)
-    {
+    })
+    EHOOK_DY(th09_o_ex, 0x41d389, 3, {
         if (!TH09Tools::singleton().o_ex) {
             pCtx->Eip = 0x41d38c;
         }
-    }
-    EHOOK_DY(th09_o_lv2, 0x441350)
-    {
+    })
+    EHOOK_DY(th09_o_lv2, 0x441350, 1, {
         if (!TH09Tools::singleton().o_lv2) {
             pCtx->Eip = PopHelper32(pCtx);
         }
-    }
-    EHOOK_DY(th09_o_lv3, 0x4413d0)
-    {
+    })
+    EHOOK_DY(th09_o_lv3, 0x4413d0, 1, {
         if (!TH09Tools::singleton().o_lv3) {
             pCtx->Eip = PopHelper32(pCtx);
         }
-    }
-    EHOOK_DY(th09_o_boss, 0x441420)
-    {
+    })
+    EHOOK_DY(th09_o_boss, 0x441420, 1, {
         if (!TH09Tools::singleton().o_boss) {
             pCtx->Eip = PopHelper32(pCtx);
         }
-    }
-    EHOOK_DY(th09_unpause, 0x434ad8)
-    {
+    })
+    EHOOK_DY(th09_unpause, 0x434ad8, 7, {
         ImGui::SetWindowFocus(nullptr);
-    }
-    EHOOK_DY(th09_game_end, 0x41b82a)
-    {
+    })
+    EHOOK_DY(th09_game_end, 0x41b82a, 1, {
         TH09Tools& t = TH09Tools::singleton();
         t.Close();
         t.invinc_p1 = false;
@@ -385,23 +369,26 @@ namespace TH09 {
         t.o_lv3 = true;
         t.o_boss = true;
         t.enabled = false;
-        TH09PracHook::singleton().DisableAllHooks();
-    }
-#define CHARGELOCK_BOMB(addr) EHOOK_DY(th09_chargelock_bomb_##addr, addr) { th09_chargelock_bomb(pCtx); }
-    CHARGELOCK_BOMB(0x41ca86);
-    CHARGELOCK_BOMB(0x41cb39);
-    CHARGELOCK_BOMB(0x41cab9);
-    CHARGELOCK_BOMB(0x41cafa);
-    CHARGELOCK_BOMB(0x41e563);
-    CHARGELOCK_BOMB(0x41e4e3);
-    CHARGELOCK_BOMB(0x41e51c);
-    CHARGELOCK_BOMB(0x41e5ac);
+        DisablePracHook();
+    })
+#define CHARGELOCK_BOMB(addr_) { .addr = addr_, .callback = th09_chargelock_bomb, .data = PatchHookImpl(6) },
+    CHARGELOCK_BOMB(0x41ca86)
+    CHARGELOCK_BOMB(0x41cb39)
+    CHARGELOCK_BOMB(0x41cab9)
+    CHARGELOCK_BOMB(0x41cafa)
+    CHARGELOCK_BOMB(0x41e563)
+    CHARGELOCK_BOMB(0x41e4e3)
+    CHARGELOCK_BOMB(0x41e51c)
+    CHARGELOCK_BOMB(0x41e5ac)
 #undef CHARGELOCK_BOMB
-#define CHARGELOCK_RET(addr) EHOOK_DY(th09_chargelock_ret_##addr, addr) { th09_chargelock_ret(pCtx); }
-    CHARGELOCK_RET(0x41f310);
-    CHARGELOCK_RET(0x41bc90);
+#define CHARGELOCK_RET(addr_) { .addr = addr_, .callback = th09_chargelock_ret, .data = PatchHookImpl(1) },
+    CHARGELOCK_RET(0x41f310)
+    CHARGELOCK_RET(0x41bc90)
 #undef CHARGELOCK_RET
     HOOKSET_ENDDEF()
+    void DisablePracHook() {
+        DisableAllHooks(TH09PracHook);
+    }
 
     class THGuiPrac : public Gui::GameGuiWnd {
         THGuiPrac()
@@ -537,8 +524,7 @@ namespace TH09 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th09_map_confirm, 0x4263d5)
-    {
+    EHOOK_DY(th09_map_confirm, 0x4263d5, 1, {
         THGuiPrac& g = THGuiPrac::singleton();
         if (g.IsClosed()) {
             th09_disable_map_select.Enable();
@@ -549,18 +535,16 @@ namespace TH09 {
             g.allow = true;
             g.Close();
         }
-    }
-    EHOOK_DY(th09_map_select_cancel, 0x426507)
-    {
+    })
+    EHOOK_DY(th09_map_select_cancel, 0x426507, 1, {
         THGuiPrac& g = THGuiPrac::singleton();
         if (g.IsOpen()) {
             th09_disable_map_select.Disable();
             g.Close();
             pCtx->Eip = 0x4266ad;
         }
-    }
-    EHOOK_DY(th09_update, 0x42c7b5)
-    {
+    })
+    EHOOK_DY(th09_update, 0x42c7b5, 1, {
         GameGuiBegin(IMPL_WIN32_DX8);
 
         // Gui components update
@@ -578,17 +562,15 @@ namespace TH09 {
         p.Update();
 
         GameGuiEnd(UpdateAdvOptWindow() || t.IsOpen() || p.IsOpen());
-    }
-    EHOOK_DY(th09_render, 0x42dd51)
-    {
+    })
+    EHOOK_DY(th09_render, 0x42dd51, 5, {
         GameGuiRender(IMPL_WIN32_DX8);
-    }
-    EHOOK_DY(th09_game_init, 0x41b5c5)
-    {
+    })
+    EHOOK_DY(th09_game_init, 0x41b5c5, 1, {
         THGuiPrac& g = THGuiPrac::singleton();
         if (g.allow && *g.mMode) {
             g.allow = false;
-            TH09PracHook::singleton().EnableAllHooks();
+            EnableAllHooks(TH09PracHook);
             TH09Tools& t = TH09Tools::singleton();
             t.enabled = true;
             t.SetSizeRel(0.5f, 1.0f);
@@ -603,53 +585,48 @@ namespace TH09 {
             t.justOpened = 2;
         }
         g.Close();
-    }
-    EHOOK_DY(th09_gui_reinit, 0x42e50f)
-    {
+    })
+    EHOOK_DY(th09_gui_reinit, 0x42e50f, 2, {
         GameGuiInit(IMPL_WIN32_DX8, 0x4b3108, 0x4b30b0,
             Gui::INGAGME_INPUT_GEN2, 0x4acf3a, 0x4acf38, 0,
             -1);
-    }
+    })
     HOOKSET_ENDDEF()
 
-    HOOKSET_DEFINE(THInitHook)
-    static __declspec(noinline) void THGuiCreate()
-    {
+    static __declspec(noinline) void THGuiCreate() {
         // Init
+        if (ImGui::GetCurrentContext()) {
+            return;
+        }
         GameGuiInit(IMPL_WIN32_DX8, 0x4b3108, 0x4b30b0,
             Gui::INGAGME_INPUT_GEN2, 0x4acf3a, 0x4acf38, 0,
             -1);
 
+        SetDpadHook(0x42B823, 3);
+
         // Gui components creation
+        THGuiPrac::singleton();
         TH09Tools::singleton();
 
         // Hooks
-        THMainHook::singleton().EnableAllHooks();
+        EnableAllHooks(THMainHook);
         th09_disable_map_select.Setup();
     }
-    static __declspec(noinline) void THInitHookDisable()
-    {
-        auto& s = THInitHook::singleton();
-        s.th09_gui_init_1.Disable();
-        s.th09_gui_init_2.Disable();
-    }
-    EHOOK_DY(th09_gui_init_1, 0x42a0c4)
-    {
+    HOOKSET_DEFINE(THInitHook)
+    EHOOK_DY(th09_gui_init_1, 0x42a0c4, 2, {
         THGuiCreate();
-        THInitHookDisable();
-    }
-    EHOOK_DY(th09_gui_init_2, 0x42e627)
-    {
+        self->Disable();
+    })
+    EHOOK_DY(th09_gui_init_2, 0x42e627, 6, {
         THGuiCreate();
-        THInitHookDisable();
-    }
-    PATCH_DY(th09_disable_mutex, 0x42d928, "\xEB", 1);
+        self->Disable();
+    })
+    PATCH_DY(th09_disable_mutex, 0x42d928, "EB")
     HOOKSET_ENDDEF()
 }
 
 void TH09Init()
 {
-    TH09::THInitHook::singleton().EnableAllHooks();
-    TryKeepUpRefreshRate((void*)0x42de70);
+    EnableAllHooks(TH09::THInitHook);
 }
 }

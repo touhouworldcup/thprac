@@ -600,51 +600,67 @@ namespace Gui {
         const char* mKeyText = nullptr;
         int mKey;
         bool mStatus = false;
-        std::vector<HookCtx*> mHooks;
+        HookSlice mHooks;
         float mXOffset1 = 0.0f;
         float mXOffset2 = 0.0f;
 
     protected:
         bool OnWidgetUpdate();
     public:
-        GuiHotKey(th_glossary_t text_ref, const char* key_text, int vkey, std::initializer_list<HookCtx*> hooks = {})
+        GuiHotKey(th_glossary_t text_ref, const char* key_text, int vkey, HookSlice hooks)
             : mTextRef(text_ref)
             , mKeyText(key_text)
             , mKey(vkey)
+            , mHooks(hooks)
         {
-            for (auto& hook : hooks) {
-                hook->Setup();
-                mHooks.push_back(hook);
+            for (size_t i = 0; i < hooks.len; i++) {
+                hooks.ptr[i].Setup();
             }
         }
 
-        GuiHotKey(const char* text, const char* key_text, int vkey, std::initializer_list<HookCtx*> hooks = {})
+        GuiHotKey(const char* text, const char* key_text, int vkey, HookSlice hooks)
             : mText(text)
             , mKeyText(key_text)
             , mKey(vkey)
+            , mHooks(hooks)
         {
-            for (auto& hook : hooks) {
-                hook->Setup();
-                mHooks.push_back(hook);
+            for (size_t i = 0; i < hooks.len; i++) {
+                hooks.ptr[i].Setup();
             }
         }
 
         GuiHotKey(th_glossary_t text_ref, const char* key_text, int vkey,
             float x_offset_1, float x_offset_2, bool use_rel_offset,
-            std::initializer_list<HookCtx*> hooks = {})
+            HookSlice hooks)
             : mTextRef(text_ref)
             , mKeyText(key_text)
             , mKey(vkey)
+            , mHooks(hooks)
         {
             if (use_rel_offset)
                 SetTextOffsetRel(x_offset_1, x_offset_2);
             else
                 SetTextOffset(x_offset_1, x_offset_2);
 
-            for (auto& hook : hooks) {
-                hook->Setup();
-                mHooks.push_back(hook);
+            for (size_t i = 0; i < hooks.len; i++) {
+                hooks.ptr[i].Setup();
             }
+        }
+
+        GuiHotKey(th_glossary_t text_ref, const char* key_text, int vkey) 
+            : mTextRef(text_ref)
+            , mKeyText(key_text)
+            , mKey(vkey)
+            , mHooks({})
+        {
+        }
+
+        GuiHotKey(const char* text, const char* key_text, int vkey)
+            : mText(text)
+            , mKeyText(key_text)
+            , mKey(vkey)
+            , mHooks({})
+        {
         }
 
         inline void SetText(th_glossary_t ref)
@@ -677,12 +693,12 @@ namespace Gui {
         {
             mStatus = status;
             if (status) {
-                for (auto& hook : mHooks) {
-                    hook->Enable();
+                for (size_t i = 0; i < mHooks.len; i++) {
+                    mHooks.ptr[i].Enable();
                 }
             } else {
-                for (auto& hook : mHooks) {
-                    hook->Disable();
+                for (size_t i = 0; i < mHooks.len; i++) {
+                    mHooks.ptr[i].Disable();
                 }
             }
         }
@@ -771,8 +787,8 @@ namespace Gui {
 #define PATCH_HK(addr_, code_) HookCtx { .data = PatchData() }
 #define EHOOK_HK(addr_, inslen_, ...) HookCtx { .data = PatchData() }
 #else
-#define PATCH_HK(addr_, code_) { .addr = addr_, .data = PatchCode(code_) }
-#define EHOOK_HK(addr_, inslen_, ...) { .addr = addr_, .callback = [](PCONTEXT pCtx, HookCtx * self) __VA_ARGS__, .data = PatchHookImpl(inslen_) }
+#define PATCH_HK(addr_, code_) HookCtx{ .addr = addr_, .data = PatchCode(code_) }
+#define EHOOK_HK(addr_, inslen_, ...) HookCtx{ .addr = addr_, .callback = [](PCONTEXT pCtx, HookCtx * self) __VA_ARGS__, .data = PatchHookImpl(inslen_) }
 #endif
 
 #define HOTKEY_ENDDEF() >()}

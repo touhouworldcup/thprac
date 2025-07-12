@@ -236,6 +236,12 @@ namespace TH18 {
     };
     THPracParam thPracParam {};
 
+    
+    EHOOK_ST(th18_free_blank, 0x411f4b, 2, {
+        pCtx->Eip = 0x411f52;
+        self->Disable();
+    });
+
     class THGuiPrac : public Gui::GameGuiWnd {
         THGuiPrac() noexcept
         {
@@ -662,16 +668,10 @@ namespace TH18 {
         bool mParamStatus = false;
         THPracParam mRepParam;
     };
-
-    EHOOK_G1(th18_free_blank, 0x411f4b)
-    {
-        pCtx->Eip = 0x411f52;
-        th18_free_blank::GetHook().Disable();
-    }
     void AddIndicateCard()
     {
         if (GetMemContent(0x4ccd00) == 4) {
-            th18_free_blank::GetHook().Enable();
+            th18_free_blank.Enable();
             asm_call<0x411460, Thiscall>(GetMemContent(ABILTIY_MANAGER_PTR), 0, 2);
         } else {
             uint32_t* list = nullptr;
@@ -687,6 +687,17 @@ namespace TH18 {
             }
         }
     }
+    PATCH_ST(th18_pause_skip_1, 0x458692, "E93F010000");
+    PATCH_ST(th18_pause_skip_2, 0x4588e3, "0F1F8000000000");
+    PATCH_ST(th18_shop_disable, 0x4181ff, "00000000");
+    EHOOK_ST(th18_shop_escape_1, 0x4181f9, 10, {
+        pCtx->Eip = 0x4183d9;
+        self->Disable();
+    });
+    EHOOK_ST(th18_shop_escape_2, 0x418402, 6, {
+        pCtx->Eip = 0x4184a0;
+        self->Disable();
+    });
 
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
@@ -708,25 +719,6 @@ namespace TH18 {
         SINGLETON(THOverlay);
 
     protected:
-        EHOOK_ST(th18_pause_skip_1, 0x458692)
-        {
-            pCtx->Eip = 0x4587d6;
-        }
-        EHOOK_ST(th18_pause_skip_2, 0x4588e3)
-        {
-            pCtx->Eip = 0x4588ea;
-        }
-        PATCH_ST(th18_shop_disable, 0x4181ff, "\x0\x0\x0\x0", 4);
-        EHOOK_ST(th18_shop_escape_1, 0x4181f9)
-        {
-            pCtx->Eip = 0x4183d9;
-            THOverlay::singleton().th18_shop_escape_1.Disable();
-        }
-        EHOOK_ST(th18_shop_escape_2, 0x418402)
-        {
-            pCtx->Eip = 0x4184a0;
-            THOverlay::singleton().th18_shop_escape_2.Disable();
-        }
         inline void ResetCardMenu()
         {
             th18_pause_skip_1.Enable();
@@ -888,33 +880,47 @@ namespace TH18 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-        Gui::GuiHotKey mMuteki { TH_MUTEKI, "F1", VK_F1, {
-            new HookCtx(0x45d4ea, "\x01", 1) } };
-        Gui::GuiHotKey mInfBombs { TH_INFBOMBS, "F3", VK_F3, {
-            new HookCtx(0x4574d3, "\x90\x90\x90\x90", 4),
-            new HookCtx(0x40a3ed, "\x90\x90\x90\x90\x90\x90", 6),
-            new HookCtx(0x40a42c, "\x90\x90\x90\x90\x90\x90", 6) } };
-        Gui::GuiHotKey mInfPower { TH_INFPOWER, "F4", VK_F4, {
-            new HookCtx(0x45748e, "\x90\x90", 2) } };
-        Gui::GuiHotKey mInfFunds { TH18_INFFUNDS, "F5", VK_F5, {
-            new HookCtx(0x45c244, "\x90\x90\x90\x90\x90\x90", 6),
-            new HookCtx(0x40d96f, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10),
-            new HookCtx(0x418496, "\x90\x90\x90\x90\x90\x90\x90\x90\x90\x90", 10),
-            new HookCtx(0x418465, "\x90\x90", 2) } };
-        Gui::GuiHotKey mAutoBomb { TH_AUTOBOMB, "F7", VK_F7, {
-            new HookCtx(0x45c2bd, "\x90\x90\x90\x90\x90\x90", 6) } };
-        Gui::GuiHotKey mZeroCD { TH18_ZERO_CD, "F8", VK_F8, {
-            new HookCtx(0x45c0e3, [](PCONTEXT pCtx) {
-                struct Timer {
-                    int32_t prev;
-                    int32_t cur;
-                    float cur_f;
-                    void* unused;
-                    uint32_t control;
-                };
-                Timer* timer = (Timer*)(pCtx->Ecx + 0x34);
-                *timer = { -1, 0, 0, 0, 0 };
-                }) } };
+        
+        HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(0x45d4ea, "01")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
+        PATCH_HK(0x4574d3, "90909090"),
+        PATCH_HK(0x40a3ed, "909090909090"),
+        PATCH_HK(0x40a42c, "909090909090")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
+        PATCH_HK(0x45748e, "9090")
+        HOTKEY_ENDDEF();
+        
+        HOTKEY_DEFINE(mInfFunds, TH18_INFFUNDS, "F5", VK_F5)
+        PATCH_HK(0x45c244, "909090909090"),
+        PATCH_HK(0x40d96f, "90909090909090909090"),
+        PATCH_HK(0x418496, "90909090909090909090"),
+        PATCH_HK(0x418465, "9090")
+        HOTKEY_ENDDEF();
+        
+        
+        HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F7", VK_F7)
+        PATCH_HK(0x45c2bd, "909090909090")
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mZeroCD, TH18_ZERO_CD, "F8", VK_F8)
+        EHOOK_HK(0x45c0e3, 2, {
+            struct Timer {
+                int32_t prev;
+                int32_t cur;
+                float cur_f;
+                void* unused;
+                uint32_t control;
+            };
+            Timer* timer = (Timer*)(pCtx->Ecx + 0x34);
+            *timer = { -1, 0, 0, 0, 0 };
+        })
+        HOTKEY_ENDDEF();
+
         Gui::GuiHotKey mMarketManip { TH18_MARKET_MANIP, "F10", VK_F10 };
         bool isInMarket = false;
         bool isManipMarket = false;
@@ -922,9 +928,12 @@ namespace TH18 {
 
     public:
         Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2 };
-        Gui::GuiHotKey mTimeLock { TH_TIMELOCK, "F6", VK_F6, {
-            new HookCtx(0x429eef, "\xeb", 1),
-            new HookCtx(0x43021b, "\x05\x8d", 2) } };
+
+        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F6", VK_F6)
+        PATCH_HK(0x429eef, "eb"),
+        PATCH_HK(0x43021b, "058d")
+        HOTKEY_ENDDEF();
+
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
         Gui::GuiHotKey mOpenMarket { TH18_OPEN_MARKET, "F10", VK_F10 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "1", '1' };
@@ -1120,22 +1129,126 @@ namespace TH18 {
     };
 
     static const char* scoreDispFmt = "%s  %.8u%u";
-     uint32_t scoreUncapOffsetNew[] = {
-        0x419e70,
-        0x42a7fd, 0x42a80f,
-        0x430eab, 0x430eb6,
-        0x44476b, 0x44477a,
-        0x444ad9, 0x444ade,
-        0x444c00, 0x444c05,
-        0x4462eb, 0x446302,
-        0x4463a1, 0x4463b1,
-        0x44656e, 0x446578,
-        0x446ac6, 0x446ad7,
-        0x446d09, 0x446d1a,
-        0x45f2c4, 0x45f2cf,
+
+    static constinit HookCtx scoreUncapStageTrFix[2] = {
+        { .addr = 0x4179c2, .data = PatchCode("e800000000") },
+        { .addr = 0x463040, .data = PatchCode("e800000000") },
     };
-    HookCtx scoreUncapStageTrFix[2];
-    HookCtx scoreUncapHooks[elementsof(scoreUncapOffsetNew)];
+    static constinit HookCtx scoreUncapHooks[] = {
+        { .addr = 0x419e70, .data = PatchCode("ffffffff") },
+        { .addr = 0x42a7fd, .data = PatchCode("ffffffff") },
+        { .addr = 0x42a80f, .data = PatchCode("ffffffff") },
+        { .addr = 0x430eab, .data = PatchCode("ffffffff") },
+        { .addr = 0x430eb6, .data = PatchCode("ffffffff") },
+        { .addr = 0x44476b, .data = PatchCode("ffffffff") },
+        { .addr = 0x44477a, .data = PatchCode("ffffffff") },
+        { .addr = 0x444ad9, .data = PatchCode("ffffffff") },
+        { .addr = 0x444ade, .data = PatchCode("ffffffff") },
+        { .addr = 0x444c00, .data = PatchCode("ffffffff") },
+        { .addr = 0x444c05, .data = PatchCode("ffffffff") },
+        { .addr = 0x4462eb, .data = PatchCode("ffffffff") },
+        { .addr = 0x446302, .data = PatchCode("ffffffff") },
+        { .addr = 0x4463a1, .data = PatchCode("ffffffff") },
+        { .addr = 0x4463b1, .data = PatchCode("ffffffff") },
+        { .addr = 0x44656e, .data = PatchCode("ffffffff") },
+        { .addr = 0x446578, .data = PatchCode("ffffffff") },
+        { .addr = 0x446ac6, .data = PatchCode("ffffffff") },
+        { .addr = 0x446ad7, .data = PatchCode("ffffffff") },
+        { .addr = 0x446d09, .data = PatchCode("ffffffff") },
+        { .addr = 0x446d1a, .data = PatchCode("ffffffff") },
+        { .addr = 0x45f2c4, .data = PatchCode("ffffffff") },
+        { .addr = 0x45f2cf, .data = PatchCode("ffffffff") },
+    };
+    EHOOK_ST(th18_st6final_fix, 0x438e47, 8, {
+        static int st6FinalDummy[4] { 0, 0, 0, 0 };
+        if (!pCtx->Ecx) {
+            pCtx->Ecx = (uint32_t)st6FinalDummy - 0x1270;
+        }
+    });
+    EHOOK_ST(th18_scroll_fix, 0x407e05, 10, {
+        if (GetMemContent(GAME_THREAD_PTR) && GetMemContent(GAME_THREAD_PTR, 0xd0) && *(uint32_t*)(pCtx->Esp + 0x18) == 0x417955 && *(uint32_t*)(pCtx->Esp + 0x3c) == 0x417d39) {
+            pCtx->Eip = 0x407e0f;
+        }
+    });
+    EHOOK_ST(th18_mukade_fix, 0x412c76, 10, {
+        auto caller = *(uint32_t*)(pCtx->Esp + 0x20);
+        if (caller == 0x417974) {
+            pCtx->Eip = 0x412c80;
+        } else if (caller == 0x462e2a) {
+            if (*(uint32_t*)0x4cccdc != *(uint32_t*)0x4ccce0) {
+                pCtx->Eip = 0x412c80;
+            }
+        }
+    });
+    EHOOK_ST(th18_active_card_fix, 0x462f33, 3, {
+        if (GetMemContent(GAME_THREAD_PTR) && !GetMemContent(GAME_THREAD_PTR, 0xd0)) {
+            uint32_t activeCardId = GetMemContent(ABILTIY_MANAGER_PTR, 0x38);
+            if (activeCardId) {
+                *(uint32_t*)(pCtx->Esi + 0x964) = GetMemContent(activeCardId + 4);
+            } else {
+                *(uint32_t*)(pCtx->Esi + 0x964) = UINT_MAX;
+            }
+        }
+    });
+    PATCH_ST(th18_eirin_eiki_card_uninit_fix, 0x411ac2, "54");
+    PATCH_ST(th18_func_call2_uninit_fix, 0x4390ec, "0f1f4000");
+    PATCH_ST(th18_func_call3_uninit_fix, 0x43926c, "0f1f4000");
+    PATCH_ST(th18_all_clear_bonus_1, 0x4448ab, "eb0b909090");
+    EHOOK_ST(th18_all_clear_bonus_2, 0x444afa, 7, {
+        *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(0x4cccfc);
+        if (GetMemContent(0x4cccc8) & 0x10) {
+            typedef void (*PScoreFunc)();
+            PScoreFunc a = (PScoreFunc)0x458bd0;
+            a();
+            pCtx->Eip = 0x4448b0;
+        }
+    });
+    EHOOK_ST(th18_all_clear_bonus_3, 0x444c49, 7, {
+        *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(0x4cccfc);
+        if (GetMemContent(0x4cccc8) & 0x10) {
+            typedef void (*PScoreFunc)();
+            PScoreFunc a = (PScoreFunc)0x458bd0;
+            a();
+            pCtx->Eip = 0x4448b0;
+        }
+    });
+    EHOOK_ST(th18_score_uncap_replay_fix, 0x4620b9, 3, {
+        if (pCtx->Eax >= 0x3b9aca00) {
+            pCtx->Eax = 0x3b9ac9ff;
+        }
+    });
+    EHOOK_ST(th18_score_uncap_replay_disp, 0x468405, 1, {
+        *(const char**)(pCtx->Esp) = scoreDispFmt;
+    });
+
+    float g_bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
+    EHOOK_ST(th18_bossmovedown, 0x00433347, 5, {
+        float* y_pos = (float*)(pCtx->Edi + 0x4FE4);
+        float* y_range = (float*)(pCtx->Edi + 0x4FEC);
+        float y_max = (*y_pos) + (*y_range) * 0.5f;
+        float y_min2 = y_max - (*y_range) * (1.0f - g_bossMoveDownRange);
+        *y_pos = (y_max + y_min2) * 0.5f;
+        *y_range = (y_max - y_min2);
+    });
+    HOOKSET_DEFINE(th18_master_disable)
+    PATCH_DY(th18_master_disable1a, 0x42A26E, "eb")
+    PATCH_DY(th18_master_disable1b, 0x42A2B3, "eb")
+    PATCH_DY(th18_master_disable1c, 0x42A1C6, "03")
+    HOOKSET_ENDDEF()
+
+    HOOKSET_DEFINE(th18_bossmovement)
+    // opposite
+    PATCH_DY(th18_bossmovement0, 0x4334D4, "eb")
+    PATCH_DY(th18_bossmovement1, 0x4334A3, "9090")
+    // samedir
+    PATCH_DY(th18_bossmovement2, 0x4334D4, "9090")
+    PATCH_DY(th18_bossmovement3, 0x4334A3, "eb")
+    HOOKSET_ENDDEF()
+
+    extern HookCtx th18_static_mallet_replay_gold;
+    extern HookCtx th18_static_mallet_replay_green;
+    extern HookCtx th18_score_uncap_replay_factor;
+    extern HookCtx th18_rep_card_fix;
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
     private:
@@ -1161,6 +1274,9 @@ namespace TH18 {
             th18_scroll_fix.Setup();
             th18_st6final_fix.Setup();
             th18_active_card_fix.Setup();
+            th18_eirin_eiki_card_uninit_fix.Setup();
+            th18_func_call2_uninit_fix.Setup();
+            th18_func_call3_uninit_fix.Setup();
             th18_rep_card_fix.Setup();
             th18_static_mallet_replay_gold.Setup();
             th18_static_mallet_replay_green.Setup();
@@ -1168,59 +1284,7 @@ namespace TH18 {
         }
         SINGLETON(THAdvOptWnd);
 
-    private:
-        EHOOK_ST(th18_all_clear_bonus_1, 0x4448ab)
-        {
-            pCtx->Eip = 0x4448b8;
-        }
-        EHOOK_ST(th18_all_clear_bonus_2, 0x444afa)
-        {
-            *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(0x4cccfc);
-            if (GetMemContent(0x4cccc8) & 0x10) {
-                typedef void (*PScoreFunc)();
-                PScoreFunc a = (PScoreFunc)0x458bd0;
-                a();
-                pCtx->Eip = 0x4448b0;
-            }
-        }
-        EHOOK_ST(th18_all_clear_bonus_3, 0x444c49)
-        {
-            *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(0x4cccfc);
-            if (GetMemContent(0x4cccc8) & 0x10) {
-                typedef void (*PScoreFunc)();
-                PScoreFunc a = (PScoreFunc)0x458bd0;
-                a();
-                pCtx->Eip = 0x4448b0;
-            }
-        }
-        EHOOK_ST(th18_score_uncap_replay_fix, 0x4620b9)
-        {
-            if (pCtx->Eax >= 0x3b9aca00) {
-                pCtx->Eax = 0x3b9ac9ff;
-            }
-        }
-        EHOOK_ST(th18_score_uncap_replay_disp, 0x468405)
-        {
-            *(const char**)(pCtx->Esp) = scoreDispFmt;
-        }
-        EHOOK_ST(th18_score_uncap_replay_factor, 0x44480d)
-        {
-            uint32_t* score = (uint32_t*)0x4cccfc;
-            uint32_t* stage_num = (uint32_t*)0x4cccdc;
-            uint32_t* lifes = (uint32_t*)0x4ccd48;
-            uint32_t* bombs = (uint32_t*)0x4ccd58;
-
-            auto stageBonus = 100000 * *stage_num;
-            auto clearBonus = 100000 * (*lifes * 5 + *bombs);
-            if (GetMemContent(GAME_THREAD_PTR, 0xd0)) {
-                uint32_t rpy = *(uint32_t*)(*(uint32_t*)0x4cf418 + 0x18);
-                if (*(uint32_t*)(rpy + 0xb8) == 8 && (*stage_num == 6 || *stage_num == 7))
-                    *score += clearBonus;
-                *score += stageBonus;
-                if (!THAdvOptWnd::singleton().scoreUncapChkbox && *score > 999999999)
-                    *score = 999999999;
-            }
-        }
+    public:
         static void StaticMalletConversion(PCONTEXT pCtx) {
             int32_t mallet_cancel_item_type = GetMemContent(BULLET_MANAGER_PTR, 0x7a41d0) % 30;
             
@@ -1242,72 +1306,16 @@ namespace TH18 {
                     pCtx->Eip = 0x42917b; // green
             }
         }
-        HookCtx* th18_master_disable[3];
 
-        EHOOK_ST(th18_static_mallet_replay_gold, 0x429222)
-        {
-            if (GetMemContent(GAME_THREAD_PTR, 0xd0)) StaticMalletConversion(pCtx);
-        }
-        EHOOK_ST(th18_static_mallet_replay_green, 0x42921d)
-        {
-            if (GetMemContent(GAME_THREAD_PTR, 0xd0)) StaticMalletConversion(pCtx);
-        }
         bool scoreUncapChkbox = false;
         bool scoreUncapOverwrite = false;
         bool scoreReplayFactor = false;
         bool staticMalletReplay = false;
-
-        HookCtx* bossMovementHook[4];
     public:
         int forceBossMoveDir = 0;
         bool forceBossMoveDown = false;
-    private:
-         float bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
-        EHOOK_ST(th18_bossmovedown, 0x00433347)
-        {
-            float* y_pos = (float*)(pCtx->Edi + 0x4FE4);
-            float* y_range = (float*)(pCtx->Edi + 0x4FEC);
-            float y_max = (*y_pos) + (*y_range)*0.5f;
-            float y_min2 = y_max - (*y_range) * (1.0f - THAdvOptWnd::singleton().bossMoveDownRange);
-            *y_pos = (y_max + y_min2) * 0.5f;
-            *y_range = (y_max - y_min2);
-        }
+        
 
-        EHOOK_ST(th18_st6final_fix, 0x438e47)
-        {
-            static int st6FinalDummy[4] { 0, 0, 0, 0 };
-            if (!pCtx->Ecx) {
-                pCtx->Ecx = (uint32_t)st6FinalDummy - 0x1270;
-            }
-        }
-        EHOOK_ST(th18_scroll_fix, 0x407e05)
-        {
-            if (GetMemContent(GAME_THREAD_PTR) && GetMemContent(GAME_THREAD_PTR, 0xd0) && *(uint32_t*)(pCtx->Esp + 0x18) == 0x417955 && *(uint32_t*)(pCtx->Esp + 0x3c) == 0x417d39) {
-                pCtx->Eip = 0x407e0f;
-            }
-        }
-        EHOOK_ST(th18_mukade_fix, 0x412c76)
-        {
-            auto caller = *(uint32_t*)(pCtx->Esp + 0x20);
-            if (caller == 0x417974) {
-                pCtx->Eip = 0x412c80;
-            } else if (caller == 0x462e2a) {
-                if (*(uint32_t*)0x4cccdc != *(uint32_t*)0x4ccce0) {
-                    pCtx->Eip = 0x412c80;
-                }
-            }
-        }
-        EHOOK_ST(th18_active_card_fix, 0x462f33)
-        {
-            if (GetMemContent(GAME_THREAD_PTR) && !GetMemContent(GAME_THREAD_PTR, 0xd0)) {
-                uint32_t activeCardId = GetMemContent(ABILTIY_MANAGER_PTR, 0x38);
-                if (activeCardId) {
-                    *(uint32_t*)(pCtx->Esi + 0x964) = GetMemContent(activeCardId + 4);
-                } else {
-                    *(uint32_t*)(pCtx->Esi + 0x964) = UINT_MAX;
-                }
-            }
-        }
         bool st6FinalFix = false;
         bool scrollFix = false;
         bool mukadeFix = false;
@@ -1335,18 +1343,6 @@ namespace TH18 {
         const char* mStageStr[9] {
             "?", "1", "2", "3", "4", "5", "6", "Extra", "?"
         };
-        EHOOK_ST(th18_rep_card_fix, 0x462e4b)
-        {
-            if (THAdvOptWnd::singleton().GetAvailability()) {
-                auto& fixVec = THAdvOptWnd::singleton().mFixData;
-                for (auto& fix : fixVec) {
-                    if (fix.stage == *(uint32_t*)0x4CCCDC) {
-                        *(int32_t*)pCtx->Esp = fix.activeCardVec[fix.activeCardComboIdx];
-                        break;
-                    }
-                }
-            }
-        }
         __declspec(noinline) void MsgBox(UINT type, const wchar_t* title, const wchar_t* msg, const wchar_t* msg2 = nullptr)
         {
             std::wstring _msg = msg;
@@ -1686,45 +1682,31 @@ namespace TH18 {
         }
         void MasterDisableInit()
         {
-            th18_master_disable[0] = new HookCtx(0x42A26E, "\xEB", 1);
-            th18_master_disable[1] = new HookCtx(0x42A2B3, "\xEB", 1);
-            th18_master_disable[2] = new HookCtx(0x42A1C6, "\x03", 1);
-            th18_master_disable[0]->Setup();
-            th18_master_disable[1]->Setup();
-            th18_master_disable[2]->Setup();
-            th18_master_disable[0]->Toggle(g_adv_igi_options.disable_master_autoly);
-            th18_master_disable[1]->Toggle(g_adv_igi_options.disable_master_autoly);
-            th18_master_disable[2]->Toggle(g_adv_igi_options.disable_master_autoly);
+            for (int i = 0; i < 3; i++)
+                th18_master_disable[i].Setup();
+            for (int i = 0; i < 3; i++)
+                th18_master_disable[i].Toggle(g_adv_igi_options.disable_master_autoly);
         }
 
         void BossMovementInit()
         {
-            // opposite
-            bossMovementHook[0] = new HookCtx(0x4334D4, "\xEB",1);
-            bossMovementHook[1] = new HookCtx(0x4334A3, "\x90\x90",2);
-            // samedir
-            bossMovementHook[2] = new HookCtx(0x4334D4, "\x90\x90", 2);
-            bossMovementHook[3] = new HookCtx(0x4334A3, "\xEB", 1);
-            for (int i=0;i<4;i++)
-                bossMovementHook[i]->Setup();
+            for (int i = 0; i < 4; i++)
+                th18_bossmovement[i].Setup();
         }
-
         void ScoreUncapInit()
         {
-           for (size_t i = 0; i < elementsof(scoreUncapHooks); i++) {
-                scoreUncapHooks[i].Setup((void*)scoreUncapOffsetNew[i], "\xff\xff\xff\xff", 4);
+            for (size_t i = 0; i < elementsof(scoreUncapHooks); i++) {
+                scoreUncapHooks[i].Setup();
             }
+
             th18_score_uncap_replay_fix.Setup();
             th18_score_uncap_replay_disp.Setup();
             th18_score_uncap_replay_factor.Setup();
-
             {
-                char patch_1[5] = "\xE8";
-                char patch_2[5] = "\xE8";
-                *(uintptr_t*)(patch_1 + 1) = (uintptr_t)&globals_assign_hooked - 0x4179c7;
-                *(uintptr_t*)(patch_2 + 1) = (uintptr_t)&globals_assign_hooked - 0x463045;
-                scoreUncapStageTrFix[0].Setup((void*)0x4179c2, patch_1, sizeof(patch_1));
-                scoreUncapStageTrFix[1].Setup((void*)0x463040, patch_2, sizeof(patch_2));
+                *(uintptr_t*)((uintptr_t)scoreUncapStageTrFix[0].data.buffer.ptr + 1) = (uintptr_t)&globals_assign_hooked - 0x4179c7;
+                *(uintptr_t*)((uintptr_t)scoreUncapStageTrFix[1].data.buffer.ptr + 1) = (uintptr_t)&globals_assign_hooked - 0x463045;
+                scoreUncapStageTrFix[0].Setup();
+                scoreUncapStageTrFix[1].Setup();
             }
         }
         void ScoreUncapSet()
@@ -1837,8 +1819,8 @@ namespace TH18 {
                 HelpMarker(S(TH_BOSS_FORCE_MOVE_DOWN_DESC));
                 ImGui::SameLine();
                 ImGui::SetNextItemWidth(150.0f);
-                if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &bossMoveDownRange, 0.002f, 0.0f, 1.0f))
-                    bossMoveDownRange = std::clamp(bossMoveDownRange, 0.0f, 1.0f);
+                if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &g_bossMoveDownRange, 0.002f, 0.0f, 1.0f))
+                    g_bossMoveDownRange = std::clamp(g_bossMoveDownRange, 0.0f, 1.0f);
                 ImGui::SameLine();
                 ImGui::InvisibleButton("##align", { 50.0f, 1.0f });
                 ImGui::SameLine();
@@ -1848,21 +1830,20 @@ namespace TH18 {
                 {
                     forceBossMoveDir = std::clamp(forceBossMoveDir, 0, 2);
                     for(int i=0;i<4;i++)
-                        bossMovementHook[i]->Toggle(false);
+                        th18_bossmovement[i].Toggle(false);
                     if (forceBossMoveDir == 1){
-                        bossMovementHook[0]->Toggle(true);
-                        bossMovementHook[1]->Toggle(true);
+                        th18_bossmovement[0].Toggle(true);
+                        th18_bossmovement[1].Toggle(true);
                     }else if (forceBossMoveDir == 2){
-                        bossMovementHook[2]->Toggle(true);
-                        bossMovementHook[3]->Toggle(true);
+                        th18_bossmovement[2].Toggle(true);
+                        th18_bossmovement[3].Toggle(true);
                     }
                 }
                 
 
                 if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
-                    th18_master_disable[0]->Toggle(g_adv_igi_options.disable_master_autoly);
-                    th18_master_disable[1]->Toggle(g_adv_igi_options.disable_master_autoly);
-                    th18_master_disable[2]->Toggle(g_adv_igi_options.disable_master_autoly);
+                    for (int i = 0; i < 3; i++)
+                        th18_master_disable[i].Toggle(g_adv_igi_options.disable_master_autoly);
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));
@@ -1945,6 +1926,43 @@ namespace TH18 {
 
         adv_opt_ctx mOptCtx;
     };
+
+    EHOOK_ST(th18_rep_card_fix, 0x462e4b, 5, {
+        if (THAdvOptWnd::singleton().GetAvailability()) {
+            auto& fixVec = THAdvOptWnd::singleton().mFixData;
+            for (auto& fix : fixVec) {
+                if (fix.stage == *(uint32_t*)0x4CCCDC) {
+                    *(int32_t*)pCtx->Esp = fix.activeCardVec[fix.activeCardComboIdx];
+                    break;
+                }
+            }
+        }
+    });
+    EHOOK_ST(th18_static_mallet_replay_gold, 0x429222, 6, {
+        if (GetMemContent(GAME_THREAD_PTR, 0xd0))
+            THAdvOptWnd::StaticMalletConversion(pCtx);
+    });
+    EHOOK_ST(th18_static_mallet_replay_green, 0x42921d, 5, {
+        if (GetMemContent(GAME_THREAD_PTR, 0xd0))
+            THAdvOptWnd::StaticMalletConversion(pCtx);
+    });
+    EHOOK_ST(th18_score_uncap_replay_factor, 0x44480d, 5, {
+        uint32_t* score = (uint32_t*)0x4cccfc;
+        uint32_t* stage_num = (uint32_t*)0x4cccdc;
+        uint32_t* lifes = (uint32_t*)0x4ccd48;
+        uint32_t* bombs = (uint32_t*)0x4ccd58;
+
+        auto stageBonus = 100000 * *stage_num;
+        auto clearBonus = 100000 * (*lifes * 5 + *bombs);
+        if (GetMemContent(GAME_THREAD_PTR, 0xd0)) {
+            uint32_t rpy = *(uint32_t*)(*(uint32_t*)0x4cf418 + 0x18);
+            if (*(uint32_t*)(rpy + 0xb8) == 8 && (*stage_num == 6 || *stage_num == 7))
+                *score += clearBonus;
+            *score += stageBonus;
+            if (!THAdvOptWnd::singleton().scoreUncapChkbox && *score > 999999999)
+                *score = 999999999;
+        }
+    });
 
     void ECLStdExec(ECLHelper& ecl, unsigned int start, int std_id, int ecl_time = 0)
     {
@@ -2998,8 +3016,18 @@ namespace TH18 {
         ReplaySaveParam(utf8_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
 
+    static void RenderLockTimer(ImDrawList* p)
+    {
+        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
+            std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
+            auto sz = ImGui::CalcTextSize(time_text.c_str());
+            p->AddRectFilled({ 64.0f, 0.0f }, { 220.0f, sz.y }, 0xFFFFFFFF);
+            p->AddText({ 220.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
+        }
+    }
+
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th18_inf_lives, 0x0045D1A0)
+    EHOOK_DY(th18_inf_lives, 0x0045D1A0,3,
     {
         if ((*(THOverlay::singleton().mInfLives))) {
             if (!g_adv_igi_options.map_inf_life_to_no_continue) {
@@ -3009,9 +3037,8 @@ namespace TH18 {
                     pCtx->Eax++;
             }
         }
-    }
-    EHOOK_DY(th18_everlasting_bgm, 0x477a50)
-    {
+    })
+    EHOOK_DY(th18_everlasting_bgm, 0x477a50, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -3029,123 +3056,111 @@ namespace TH18 {
         if (result) {
             pCtx->Eip = 0x477ae6;
         }
-    }
-    EHOOK_DY(th18_param_reset, 0x465abd)
-    {
+    })
+    EHOOK_DY(th18_param_reset, 0x465abd, 6, {
         thPracParam.Reset();
         *(uint32_t*)GetMemAddr(0x4cf41c, 0x5f680) = 10;
-    }
-    EHOOK_DY(th18_prac_menu_1, 0x4673a2)
-    {
+    })
+    EHOOK_DY(th18_prac_menu_1, 0x4673a2, 5, {
         THGuiPrac::singleton().State(1);
-    }
-    EHOOK_DY(th18_prac_menu_2, 0x4673c5)
-    {
+    })
+    EHOOK_DY(th18_prac_menu_2, 0x4673c5, 3, {
         THGuiPrac::singleton().State(2);
-    }
-    EHOOK_DY(th18_prac_menu_3, 0x4675f6)
-    {
+    })
+    EHOOK_DY(th18_prac_menu_3, 0x4675f6, 5, {
         THGuiPrac::singleton().State(3);
-    }
-    EHOOK_DY(th18_prac_menu_4, 0x4676da)
-    {
+    })
+    EHOOK_DY(th18_prac_menu_4, 0x4676da, 7, {
         THGuiPrac::singleton().State(4);
-    }
-    PATCH_DY(th18_prac_menu_enter_1, 0x467488, "\xeb", 1);
-    EHOOK_DY(th18_prac_menu_enter_2, 0x46767a)
-    {
+    })
+    PATCH_DY(th18_prac_menu_enter_1, 0x467488, "eb")
+    EHOOK_DY(th18_prac_menu_enter_2, 0x46767a, 1, {
         pCtx->Ecx = thPracParam.stage;
-    }
-    EHOOK_DY(th18_disable_prac_menu_1, 0x46789b)
-    {
-        pCtx->Eip = 0x467959;
-    }
-    EHOOK_DY(th18_patch_main, 0x4432a7)
-    {
-        defer({
-            THAdvOptWnd::singleton().RestartFix();
-            thPracParam._playLock = true;
-        });
+    })
+    PATCH_DY(th18_disable_prac_menu_1, 0x46789b, "e9b90000009090")
+    // Specifying the hook struct manually because code passed to a macro can't declare a macro
+    { .addr = 0x4432a7, .name = "th18_patch_main", .callback = []([[maybe_unused]] PCONTEXT pCtx, [[maybe_unused]] HookCtx* self) {
+         defer({
+             THAdvOptWnd::singleton().RestartFix();
+             thPracParam._playLock = true;
+         });
 
-        if (thPracParam.mode != 1)
-            return;
+         if (thPracParam.mode != 1)
+             return;
 
-#define R(name) \
+#define R(name)                                                                                                                 \
     card->_recharge_timer.current = static_cast<int32_t>(card->recharge_time * (static_cast<float>(thPracParam.name) / 10000)); \
     card->_recharge_timer.current_f = card->recharge_time * (thPracParam.name / 10000.0f)
 
-        *(int32_t*)(0x4cccfc) = (int32_t)(thPracParam.score / 10);
-        *(int32_t*)(0x4ccd48) = thPracParam.life;
-        *(int32_t*)(0x4ccd4c) = thPracParam.life_fragment;
-        *(int32_t*)(0x4ccd58) = thPracParam.bomb;
-        *(int32_t*)(0x4ccd5c) = thPracParam.bomb_fragment;
-        *(int32_t*)(0x4ccd38) = thPracParam.power;
-        *(int32_t*)(0x4ccd30) = *(int32_t*)(0x4ccd34) = thPracParam.funds;
-        
-        auto* ability_manager = *(AbilityManager**)ABILTIY_MANAGER_PTR;
-        
-        for (ThList<CardBase>* entry = &ability_manager->card_list_head; entry; entry = entry->next) {
-            CardBase* card = entry->entry;
-            if (!GameState_Assert(card != nullptr))
-                continue;
-        
-            switch (card->card_id) {
-            case KOZUCHI:
-                R(kozuchi);
-                break;
-            case KANAME:
-                R(kaname);
-                break;
-            case MOON:
-                R(moon);
-                break;
-            case MIKOFLASH:
-                R(mikoflash);
-                break;
-            case VAMPIRE:
-                R(vampire);
-                break;
-            case SUN:
-                R(sun);
-                break;
-            case LILY:
-                static_cast<CardLily*>(card)->count = thPracParam.lily_count;
-                R(lily_cd);
-                break;
-            case BASSDRUM:
-                R(bassdrum);
-                break;
-            case PSYCO:
-                R(psyco);
-                break;
-            case CYLINDER:
-                R(cylinder);
-                break;
-            case RICEBALL:
-                R(riceball);
-                break;
-            case MUKADE:
-                *(int32_t*)MUKADE_ADDR = thPracParam.mukade;
-                break;
-            }
-        }
-        THSectionPatch();
-#undef R
+         *(int32_t*)(0x4cccfc) = (int32_t)(thPracParam.score / 10);
+         *(int32_t*)(0x4ccd48) = thPracParam.life;
+         *(int32_t*)(0x4ccd4c) = thPracParam.life_fragment;
+         *(int32_t*)(0x4ccd58) = thPracParam.bomb;
+         *(int32_t*)(0x4ccd5c) = thPracParam.bomb_fragment;
+         *(int32_t*)(0x4ccd38) = thPracParam.power;
+         *(int32_t*)(0x4ccd30) = *(int32_t*)(0x4ccd34) = thPracParam.funds;
 
-    }
-    EHOOK_DY(th18_bgm, 0x444370)
-    {
-        if (THBGMTest()) {
-            PushHelper32(pCtx, 1);
-            pCtx->Eip = 0x444372;
-        }
-    }
-    EHOOK_DY(th18_menu_rank_fix, 0x45a208)
-    {
+         auto* ability_manager = *(AbilityManager**)ABILTIY_MANAGER_PTR;
+
+         for (ThList<CardBase>* entry = &ability_manager->card_list_head; entry; entry = entry->next) {
+             CardBase* card = entry->entry;
+             if (!GameState_Assert(card != nullptr))
+                 continue;
+
+             switch (card->card_id) {
+             case KOZUCHI:
+                 R(kozuchi);
+                 break;
+             case KANAME:
+                 R(kaname);
+                 break;
+             case MOON:
+                 R(moon);
+                 break;
+             case MIKOFLASH:
+                 R(mikoflash);
+                 break;
+             case VAMPIRE:
+                 R(vampire);
+                 break;
+             case SUN:
+                 R(sun);
+                 break;
+             case LILY:
+                 static_cast<CardLily*>(card)->count = thPracParam.lily_count;
+                 R(lily_cd);
+                 break;
+             case BASSDRUM:
+                 R(bassdrum);
+                 break;
+             case PSYCO:
+                 R(psyco);
+                 break;
+             case CYLINDER:
+                 R(cylinder);
+                 break;
+             case RICEBALL:
+                 R(riceball);
+                 break;
+             case MUKADE:
+                 *(int32_t*)MUKADE_ADDR = thPracParam.mukade;
+                 break;
+             }
+         }
+         THSectionPatch();
+#undef R
+     },
+        .data = PatchHookImpl(1) },
+    EHOOK_DY(th18_bgm, 0x444370, 2, {
+            if (THBGMTest()) {
+                PushHelper32(pCtx, 1);
+                pCtx->Eip = 0x444372;
+            }
+        })
+    EHOOK_DY(th18_menu_rank_fix, 0x45a208, 5, {
         *((int32_t*)0x4ccd00) = *((int32_t*)0x4c9ab0); // Restore In-game rank to menu rank
-    }
-    EHOOK_DY(th18_restart, 0x4594b7)
-    {
+    })
+    EHOOK_DY(th18_restart, 0x4594b7, 2, {
         auto s1 = pCtx->Esp + 0xc;
         auto s2 = pCtx->Edi + 0x1e4;
         auto s3 = *(DWORD*)(pCtx->Edi + 0x1e8);
@@ -3167,22 +3182,19 @@ namespace TH18 {
 
         pCtx->Edx = *(DWORD*)0x4ca21c;
         pCtx->Eip = 0x459562;
-    }
-    EHOOK_DY(th18_replay_restart, 0x417a70)
-    {
+    })
+    EHOOK_DY(th18_replay_restart, 0x417a70, 3, {
         auto callAddr = *(uint32_t*)(pCtx->Esp + 0x18);
         if (callAddr == 0x4619fe || callAddr == 0x463045) {
             pCtx->Eip = 0x417a73;
         }
-    }
-    EHOOK_DY(th18_exit, 0x459562)
-    {
+    })
+    EHOOK_DY(th18_exit, 0x459562, 5, {
         if (Gui::KeyboardInputGetRaw('Q')) {
             pCtx->Eip = 0x459578;
         }
-    }
-    EHOOK_DY(th18_add_card, 0x411460)
-    {
+    })
+     EHOOK_DY(th18_add_card, 0x411460, 1, {
         uint32_t* list = nullptr;
         uint32_t sub_count = 0;
         uint32_t cardAddId = *(uint32_t*)(pCtx->Esp + 4);
@@ -3218,49 +3230,28 @@ namespace TH18 {
                 pCtx->Eip = 0x412d29;
             }
         }
-    }
-    EHOOK_DY(th18_active_buy_swap_fix, 0x412d94)
-    {
+    })
+    EHOOK_DY(th18_active_buy_swap_fix, 0x412d94, 3, {
         asm_call<0x408c30, Fastcall>(*(uint32_t*)ABILTIY_MANAGER_PTR);
-    }
-    EHOOK_DY(th18_rep_save, 0x462657)
-    {
+    })
+    EHOOK_DY(th18_rep_save, 0x462657, 5, {
         char* repName = (char*)(pCtx->Esp + 0x30);
         if (thPracParam.mode == 1)
             THSaveReplay(repName);
         else if (thPracParam.mode == 2 && thPracParam.phase)
             THSaveReplay(repName);
-    }
-    EHOOK_DY(th18_rep_menu_1, 0x467c67)
-    {
+    })
+    EHOOK_DY(th18_rep_menu_1, 0x467c67, 3, {
         THGuiRep::singleton().State(1);
-    }
-    EHOOK_DY(th18_rep_menu_2, 0x467d87)
-    {
+    })
+    EHOOK_DY(th18_rep_menu_2, 0x467d87, 5, {
         THGuiRep::singleton().State(2);
-    }
-    EHOOK_DY(th18_rep_menu_3, 0x467f6f)
-    {
+    })
+    EHOOK_DY(th18_rep_menu_3, 0x467f6f, 2, {
         THGuiRep::singleton().State(3);
-    }
+    })
 
-    static void RenderLockTimer(ImDrawList* p)
-    {
-        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
-            std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
-            auto sz = ImGui::CalcTextSize(time_text.c_str());
-            p->AddRectFilled({ 64.0f, 0.0f }, { 220.0f, sz.y }, 0xFFFFFFFF);
-            p->AddText({ 220.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
-        }
-    }
-
-    EHOOK_DY(th18_update, 0x4013f5)
-    {
-        // static int x = 0;
-        // x++;
-        // if (x < 5)
-        //     return;
-
+    EHOOK_DY(th18_update, 0x4013f5, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 
         // Gui components update
@@ -3296,21 +3287,18 @@ namespace TH18 {
         
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
-    }
-    EHOOK_DY(th18_render, 0x401510)
-    {
+    })
+     EHOOK_DY(th18_render, 0x401510, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
-    }
-    EHOOK_DY(th18_player_state, 0x45BE90)
-    {
+    })
+    EHOOK_DY(th18_player_state, 0x45BE90,1,{
         if (g_adv_igi_options.show_keyboard_monitor)
             RecordKey(18, *(DWORD*)(0x4CA428));
-    }
+    })
     HOOKSET_ENDDEF()
 
     HOOKSET_DEFINE(THInGameInfo)
-    EHOOK_DY(th18_force_card, 0x00417310)
-    {
+    EHOOK_DY(th18_force_card, 0x00417310,2,{
         if (g_adv_igi_options.th18_force_card){
             int stage = *(DWORD*)0x4CCCDC;
             if (stage >= 1 && stage <= 7 && stage != 6){
@@ -3334,59 +3322,61 @@ namespace TH18 {
                     
             }
         }
-    }
-    EHOOK_DY(th18_game_start, 0x44278F) // gamestart-bomb set
+    })
+    EHOOK_DY(th18_game_start, 0x44278F,5, // gamestart-bomb set
     {
         TH18InGameInfo::singleton().mBombCount = 0;
         TH18InGameInfo::singleton().mMissCount = 0;
         TH18InGameInfo::singleton().mDeadBombCount = 0;
-    }
-    EHOOK_DY(th18_bomb_dec, 0x4574D3) // bomb dec
+    })
+    EHOOK_DY(th18_bomb_dec, 0x4574D3,4, // bomb dec
     {
         TH18InGameInfo::singleton().mBombCount++;
-    }
-    EHOOK_DY(th18_cylinder, 0x410F22) // cylinder
+    })
+    EHOOK_DY(th18_cylinder, 0x410F22,5, // cylinder
     {
         TH18InGameInfo::singleton().mBombCount++;
-    }
-    EHOOK_DY(th18_life_dec, 0x45D1A3) // life dec
+    })
+    EHOOK_DY(th18_life_dec, 0x45D1A3,5, // life dec
     {
         TH18InGameInfo::singleton().mMissCount++;
-    }
-    EHOOK_DY(th18_deadbomb1, 0x40DA1C) // rokumon
+    })
+    EHOOK_DY(th18_deadbomb1, 0x40DA1C,5, // rokumon
     {
         TH18InGameInfo::singleton().mDeadBombCount++;
-    }
-    EHOOK_DY(th18_deadbomb2, 0x40A534) // autobomb
+    })
+    EHOOK_DY(th18_deadbomb2, 0x40A534,5, // autobomb
     {
         TH18InGameInfo::singleton().mDeadBombCount++;
-    }
-    EHOOK_DY(th18_lock_timer1, 0x43A836) // initialize
+    })
+    EHOOK_DY(th18_lock_timer1, 0x43A836,10, // initialize
     {
         g_lock_timer = 0;
-    }
-    EHOOK_DY(th18_lock_timer2, 0x4389F0) // SetNextPattern case 514
+    })
+    EHOOK_DY(th18_lock_timer2, 0x4389F0,1, // SetNextPattern case 514
     {
         g_lock_timer = 0;
-    }
-    EHOOK_DY(th18_lock_timer3, 0x433BA6) // set boss mode case 512
+    })
+    EHOOK_DY(th18_lock_timer3, 0x433BA6,6, // set boss mode case 512
     {
         g_lock_timer = 0;
-    }
-    EHOOK_DY(th18_lock_timer4, 0x42EF1D) // decrease time (update)
+    })
+    EHOOK_DY(th18_lock_timer4, 0x42EF1D,6, // decrease time (update)
     {
         g_lock_timer++;
-    }
+    })
     HOOKSET_ENDDEF()
 
-    HOOKSET_DEFINE(THInitHook)
     static __declspec(noinline) void THGuiCreate()
     {
+        if (ImGui::GetCurrentContext()) {
+            return;
+        }
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4ccdf8, 0x568c30,
             Gui::INGAGME_INPUT_GEN2, 0x4ca21c, 0x4ca218, 0,
             -2, *(float*)0x56aca0, 0.0f);
-
+        SetDpadHook(0x4016EF, 3);
         // Gui components creation
         THGuiPrac::singleton();
         THGuiPrac::singleton();
@@ -3395,50 +3385,33 @@ namespace TH18 {
         TH18InGameInfo::singleton();
 
         // Hooks
-        THMainHook::singleton().EnableAllHooks();
-        THInGameInfo::singleton().EnableAllHooks();
+        EnableAllHooks(THMainHook);
+        EnableAllHooks(THInGameInfo);
 
         // Reset thPracParam
 
         //Gui::ImplDX9NewFrame();
         thPracParam.Reset();
     }
-    static __declspec(noinline) void THInitHookDisable()
-    {
-        auto& s = THInitHook::singleton();
-        s.th18_gui_init_1.Disable();
-        s.th18_gui_init_2.Disable();
-    }
-    PATCH_DY(th18_disable_demo, 0x464f7e, "\xff\xff\xff\x7f", 4);
-    EHOOK_DY(th18_disable_mutex, 0x474435)
-    {
-        pCtx->Eip = 0x47445d;
-    }
-    EHOOK_DY(th18_disable_topmost, 0x4722c7)
-    {
-        RECT rect;
-        GetWindowRect(*(HWND*)0x568c30, &rect);
-        if (rect.right != GetSystemMetrics(SM_CXSCREEN) || rect.bottom != GetSystemMetrics(SM_CYSCREEN) || rect.left != 0 || rect.top != 0) {
-            pCtx->Eip = 0x4722f2;
-        }
-    }
-    PATCH_DY(th18_startup_1, 0x464c4f, "\x90\x90", 2);
-    PATCH_DY(th18_startup_2, 0x465bb0, "\xeb", 1);
-    EHOOK_DY(th18_gui_init_1, 0x465ce5)
-    {
+    HOOKSET_DEFINE(THInitHook)
+    PATCH_DY(th18_disable_demo, 0x464f7e, "ffffff7f")
+    PATCH_DY(th18_disable_mutex, 0x474435, "eb")
+    PATCH_DY(th18_disable_topmost, 0x4722CC, "00")
+    PATCH_DY(th18_startup_1, 0x464c4f, "9090")
+    PATCH_DY(th18_startup_2, 0x465bb0, "eb")
+    EHOOK_DY(th18_gui_init_1, 0x465ce5, 6, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
-    }
-    EHOOK_DY(th18_gui_init_2, 0x4740c0)
-    {
+    })
+    EHOOK_DY(th18_gui_init_2, 0x4740c0, 1, {
+        self->Disable();
         THGuiCreate();
-        THInitHookDisable();
-    }
+    })
     HOOKSET_ENDDEF()
 }
 
 void TH18Init()
 {
-    TH18::THInitHook::singleton().EnableAllHooks();
+    EnableAllHooks(TH18::THInitHook);
 }
 }

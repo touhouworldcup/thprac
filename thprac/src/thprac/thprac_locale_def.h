@@ -324,8 +324,15 @@ enum th_glossary_t {
     TH185_ADDITIONAL_CARDS,
     TH185_AKI_MINORIKO,
     TH185_BULLET_MONEY,
-    TH185_CARD_0,
-    TH185_CARD_1,
+    TH185_CARD_01,
+    TH185_CARD_02,
+    TH185_CARD_03,
+    TH185_CARD_04,
+    TH185_CARD_05,
+    TH185_CARD_06,
+    TH185_CARD_07,
+    TH185_CARD_08,
+    TH185_CARD_09,
     TH185_CARD_10,
     TH185_CARD_11,
     TH185_CARD_12,
@@ -336,7 +343,6 @@ enum th_glossary_t {
     TH185_CARD_17,
     TH185_CARD_18,
     TH185_CARD_19,
-    TH185_CARD_2,
     TH185_CARD_20,
     TH185_CARD_21,
     TH185_CARD_22,
@@ -347,7 +353,6 @@ enum th_glossary_t {
     TH185_CARD_27,
     TH185_CARD_28,
     TH185_CARD_29,
-    TH185_CARD_3,
     TH185_CARD_30,
     TH185_CARD_31,
     TH185_CARD_32,
@@ -358,7 +363,6 @@ enum th_glossary_t {
     TH185_CARD_37,
     TH185_CARD_38,
     TH185_CARD_39,
-    TH185_CARD_4,
     TH185_CARD_40,
     TH185_CARD_41,
     TH185_CARD_42,
@@ -369,7 +373,6 @@ enum th_glossary_t {
     TH185_CARD_47,
     TH185_CARD_48,
     TH185_CARD_49,
-    TH185_CARD_5,
     TH185_CARD_50,
     TH185_CARD_51,
     TH185_CARD_52,
@@ -380,7 +383,6 @@ enum th_glossary_t {
     TH185_CARD_57,
     TH185_CARD_58,
     TH185_CARD_59,
-    TH185_CARD_6,
     TH185_CARD_60,
     TH185_CARD_61,
     TH185_CARD_62,
@@ -391,7 +393,6 @@ enum th_glossary_t {
     TH185_CARD_67,
     TH185_CARD_68,
     TH185_CARD_69,
-    TH185_CARD_7,
     TH185_CARD_70,
     TH185_CARD_71,
     TH185_CARD_72,
@@ -402,13 +403,13 @@ enum th_glossary_t {
     TH185_CARD_77,
     TH185_CARD_78,
     TH185_CARD_79,
-    TH185_CARD_8,
     TH185_CARD_80,
     TH185_CARD_81,
     TH185_CARD_82,
     TH185_CARD_83,
     TH185_CARD_84,
-    TH185_CARD_9,
+    TH185_CARD_85,
+    TH185_CARD_86,
     TH185_CIRNO,
     TH185_CLOWNPIECE,
     TH185_EBISU_EIKA,
@@ -1466,7 +1467,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1455];
+extern const char* th_glossary_str[3][1456];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3031,6 +3032,8 @@ namespace TH185 {
     extern const th_sections_t th_sections_cba[1][1][2];
 
     extern const th_sections_t th_sections_cbt[1][2][1];
+
+    extern const th_glossary_t TH185_CARD_LIST[87];
 
 }
 
