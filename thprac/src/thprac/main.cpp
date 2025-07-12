@@ -34,23 +34,16 @@ bool PrivilegeCheck()
 }
 
 void ApplyToProcById(DWORD pid) {
-    auto hProc = OpenProcess(
-        // PROCESS_SUSPEND_RESUME |
-        PROCESS_QUERY_INFORMATION | PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE,
-        FALSE,
-        pid);
-    if (!hProc) {
-        fprintf(stderr, "Error: failed to open process %d\n", pid);
-        return;
-    }
 
-    uintptr_t base = GetGameModuleBase(hProc);
-    if (!base) {
-        fprintf(stderr, "Error: failed to determine image base for process %d\n", pid);
-    }
-
-    if (!WriteTHPracSig(hProc, base) || !LoadSelf(hProc)) {
-        fprintf(stderr, "Error: failed to inject into %d\n", pid);
+    uintptr_t base;
+    HANDLE hProc;
+    auto* sig = THPrac::CheckOngoingGameByPID(pid, &base, &hProc);
+    if (sig) {
+        if (!WriteTHPracSig(hProc, base) || !LoadSelf(hProc)) {
+            fprintf(stderr, "Error: failed to inject into PID %d\n", pid);
+        }
+    } else {
+        fprintf(stderr, "Warning: PID %d is invalid. Is it a Touhou game? Is thprac already applied\n", pid);
     }
 }
 
@@ -76,7 +69,17 @@ bool DetectGame(const wchar_t* const exe, THGameSig** sigIn) {
 
 }
 
-bool doCmdLineStuff(PWSTR cmdLine) {
+struct CmdlineRet {
+    bool proceed;
+    bool prompt_yes_game;
+};
+
+inline CmdlineRet doCmdLineStuff(PWSTR cmdLine) {
+    CmdlineRet ret = {
+        .proceed = false,
+        .prompt_yes_game = true,
+    };
+
     int argc;
     LPWSTR* argv = CommandLineToArgvW(cmdLine, &argc);
     defer(LocalFree(argv));
@@ -96,7 +99,8 @@ bool doCmdLineStuff(PWSTR cmdLine) {
             freopen("conout$", "w", stderr);
         }
     } else {
-        return false;    
+        ret.proceed = true;
+        return ret;    
     }
     THGameSig* sig = nullptr;
 
@@ -109,11 +113,17 @@ bool doCmdLineStuff(PWSTR cmdLine) {
                 continue;
             } else {
                 ApplyToProcById(pid);
-                return true;
+                return ret;
             }
         }
 
         if (wcscmp(argv[i], L"--attach") == 0) {
+            if (argc == 1) {
+                ret.prompt_yes_game = false;
+                ret.proceed = true;
+                return ret;
+            }
+
             cur_cmd = CMD_ATTACH;
             i++;
             continue;
@@ -141,9 +151,11 @@ bool doCmdLineStuff(PWSTR cmdLine) {
         PathRemoveFileSpecW(exeDir);
         SetCurrentDirectoryW(exeDir);
         RunGameWithTHPrac(*sig, exeFn, withVpatch);
-        return true;
+        ret.proceed = false;
+        return ret;
     } else {
-        return false;
+        ret.proceed = true;
+        return ret;
     }
 }
 
@@ -160,9 +172,12 @@ int WINAPI wWinMain(
 
     RemoteInit();
     auto thpracMutex = OpenMutexW(SYNCHRONIZE, FALSE, L"thprac - Touhou Practice Tool##mutex");
-    if (doCmdLineStuff(pCmdLine)) {
+
+    CmdlineRet cmd = doCmdLineStuff(pCmdLine);
+    if (!cmd.proceed) {
         return 0;
     }
+
     int launchBehavior = 0;
     bool dontFindOngoingGame = false;
     bool adminRights = false;
@@ -187,14 +202,14 @@ int WINAPI wWinMain(
         ShellExecuteW(nullptr, L"runas", exePath, nullptr, nullptr, SW_SHOW);
         return 0;
     }
-    checkUpdateWhen = 2;// disable auto update
+
     if (checkUpdateWhen == 1) {
         if (LauncherUpdDialog(autoUpdate)) {
             return 0;
         }
     }
 
-    if (!dontFindOngoingGame && FindOngoingGame()) {
+    if (!dontFindOngoingGame && FindOngoingGame(false, cmd.prompt_yes_game)) {
         return 0;
     }
 

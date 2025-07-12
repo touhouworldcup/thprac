@@ -11,6 +11,13 @@
 #include "utils/utils.h"
 
 namespace THPrac {
+
+// hook IAT
+BOOL HookIAT(HANDLE hookModule, LPCSTR moduleName, LPCSTR functionName, void* hookFunction, void** oldAddress);
+BOOL UnhookIAT(HANDLE hookModule, LPCSTR moduleName, LPCSTR functionName);
+BOOL HookVTable(void* pInterface, int index, void* hookFunction, void** oldAddress);
+BOOL UnhookVTable(void* pInterface, int index, void* oldAddress);
+
 extern uintptr_t ingame_image_base;
 #define RVA(a) ((uintptr_t)a + ingame_image_base)
 

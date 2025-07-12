@@ -1321,6 +1321,8 @@ namespace TH18 {
         bool mukadeFix = false;
         bool restartFix = false;
         bool activeCardIdFix = false;
+        bool eirinEikiCardFix = false;
+        bool funcCallFix = false;
 
         struct FixData {
             uint32_t stage;
@@ -1908,6 +1910,18 @@ namespace TH18 {
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH18_AC_FIX_DESC));
+                if (ImGui::Checkbox(S(TH18_EIRIN_EIKI_FIX), &eirinEikiCardFix)) {
+                    th18_eirin_eiki_card_uninit_fix.Toggle(eirinEikiCardFix);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH18_EIRIN_EIKI_FIX_DESC));
+
+                if (ImGui::Checkbox(S(TH18_FUNC_CALL_FIX), &funcCallFix)) {
+                    th18_func_call2_uninit_fix.Toggle(funcCallFix);
+                    th18_func_call3_uninit_fix.Toggle(funcCallFix);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH18_FUNC_CALL_FIX_DESC));
 
                 EndOptGroup();
             }

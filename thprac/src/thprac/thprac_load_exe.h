@@ -1,8 +1,13 @@
 ﻿#pragma once
 #include <Windows.h>
+#include <stdint.h>
+
+#include "thprac_launcher_games.h"
+#include "thprac_launcher_games_def.h"
 
 namespace THPrac
 {
+
 PIMAGE_NT_HEADERS GetNtHeader(HMODULE hMod);
 void* GetNtDataDirectory(HMODULE hMod, BYTE directory);
 
@@ -30,8 +35,8 @@ struct InjectResult {
     } error;
     WORD lastError;
 };
-
 uintptr_t GetGameModuleBase(HANDLE hProc);
+THGameSig* CheckOngoingGameByPID(DWORD pid, uintptr_t* base, HANDLE* pOutHandle = nullptr);
 bool WriteTHPracSig(HANDLE hProc, uintptr_t base);
 bool LoadSelf(HANDLE hProcess, void* userdata = nullptr, size_t userdataSize = 0);
 void** GetUserData();

@@ -14,9 +14,6 @@
     <Filter Include="3rdParties\ImGui">
       <UniqueIdentifier>{8ff51cf4-6d55-4d77-bbdc-2509b2e6cfbb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="3rdParties\MinHook">
-      <UniqueIdentifier>{7578d527-6afa-4ddd-941f-7b862a0b4ef6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="3rdParties\MetroHash">
       <UniqueIdentifier>{e7ddfcbb-ad50-4bb5-a7c9-732ec57b8ac4}</UniqueIdentifier>
     </Filter>
@@ -85,30 +82,6 @@
     <ClInclude Include="src\3rdParties\ImGui\imstb_textedit.h">
       <Filter>3rdParties\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\buffer.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\trampoline.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\hde32.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\hde64.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\pstdint.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\table32.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\table64.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\include\MinHook.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
     <ClInclude Include="src\3rdParties\MetroHash\metrohash128.h">
       <Filter>3rdParties\MetroHash</Filter>
     </ClInclude>
@@ -174,9 +147,6 @@
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_licence.h">
       <Filter>THPrac Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\disassembler.h">
-      <Filter>3rdParties\MinHook</Filter>
     </ClInclude>
     <ClInclude Include="src\3rdParties\distorm\src\config.h">
       <Filter>3rdParties\distorm</Filter>
@@ -276,21 +246,6 @@
     <ClCompile Include="src\3rdParties\ImGui\imgui_widgets.cpp">
       <Filter>3rdParties\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\3rdParties\MinHook\src\buffer.c">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\MinHook\src\hook.c">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\MinHook\src\trampoline.c">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\MinHook\src\hde\hde32.c">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\MinHook\src\hde\hde64.c">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
     <ClCompile Include="src\3rdParties\MetroHash\metrohash128.cpp">
       <Filter>3rdParties\MetroHash</Filter>
     </ClCompile>
@@ -378,12 +333,6 @@
     <ClCompile Include="src\thprac\thprac_licence.cpp">
       <Filter>THPrac Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\3rdParties\MinHook\src\trampoline_new.c">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\MinHook\src\disassembler.c">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
     <ClCompile Include="src\3rdParties\ImGui\imgui_tables.cpp">
       <Filter>3rdParties\ImGui</Filter>
     </ClCompile>
@@ -444,7 +393,7 @@
     <ClCompile Include="src\thprac\thprac_igi_key_render.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th20.cpp">
+    <ClCompile Include="src\thprac\thprac_th20tr.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_th19.v1.00a.cpp">

@@ -75,7 +75,7 @@ extern void TH18Init();
 extern void TH185Init();
 extern void TH19_v1_00a_Init();
 extern void TH19_v1_10c_Init();
-extern void TH20Init();
+extern void TH20TRInit();
 
 static THKnownGame gKnownGames[] {
     { "th06",
@@ -612,7 +612,7 @@ static THGameSig gGameDefs[] {
         L"%APPDATA%\\ShanghaiAlice\\th20",
         nullptr, L"th20 App",
         "scoreth20.dat",
-        TH20Init,
+        TH20TRInit,
         { 0x67ff22f0, 0x169200,
             { 0x71a9, 0x4245, 0xaa43, 0xba3e, 0xbaba, 0x4684, 0xcc47 ,0xbc05 ,0xc02d ,0x4a47 },
             { 0x6378d64, 0x70f6e0ae, 0x4f462058, 0x189ee241 } } },

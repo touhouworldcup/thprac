@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1456] {
+const char* th_glossary_str[3][1460] {
     {
         "",
         "啤酒",
@@ -559,6 +559,10 @@ const char* th_glossary_str[3][1456] {
         "",
         "卡片 %d",
         "瓶子冷却",
+        "修复「死秽回避之药」和「有钱能使鬼推磨」",
+        "启用时，购买这些卡片不再会导致切换关卡时可能出现的崩溃现象",
+        "修复「妖怪们的盾构法」",
+        "启用时，「妖怪们的盾构法」不会再不时因为生成错子弹的位置而引发 rep 文件损坏。",
         "资金力",
         "锁资金",
         "基石冷却",
@@ -2017,6 +2021,10 @@ const char* th_glossary_str[3][1456] {
         "",
         "Card %d",
         "Bottle CD",
+        "Fix \"Death Avoidance Elixir\" and \"Money is the Best Lawyer in Hell\"",
+        "When enabled, buying those cards no longer randomly crashes the game during the stage transition.",
+        "Fix \"Shield Method of the Youkai\"",
+        "When enabled, \"Shield Method of the Youkai\" will no longer randomly desync by spawning bullets in the wrong position.",
         "Funds",
         "Inf. Funds",
         "Keystone CD",
@@ -3475,6 +3483,10 @@ const char* th_glossary_str[3][1456] {
         "",
         "カード %d",
         "瓶CD",
+        "「死穢回避の薬」と「地獄の沙汰も金次第」の修正",
+        "有効化すると、これらのカードを購入しても、ステージ移行時にたまに発生していたクラッシュが起こらなくなります。",
+        "「妖怪達のシールドメソッド」の修正",
+        "有効化すると、「妖怪達のシールドメソッド」が弾の生成位置の誤りによるリプレイバグを引き起こすことはなくなります。",
         "資金力",
         "資金力減らない",
         "要石CD",
@@ -25407,6 +25419,12 @@ namespace TH20 {
         },
     };
 
+    const th_glossary_t TH_STAGE_SELECT_TRIAL[4] {
+        TH_STAGE_1,
+        TH_STAGE_2,
+        TH_STAGE_3,
+    };
+
     const th_glossary_t TH20_RAGE[3] {
         TH_NORMAL,
         TH_RAGE,
@@ -25414,7 +25432,7 @@ namespace TH20 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3407] {
+const wchar_t __thprac_loc_range_zh[3409] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -25469,6 +25487,7 @@ const wchar_t __thprac_loc_range_zh[3407] {
     0x4e61, 0x4e61,
     0x4e66, 0x4e66,
     0x4e69, 0x4e69,
+    0x4e70, 0x4e70,
     0x4e71, 0x4e71,
     0x4e7e, 0x4e7e,
     0x4e86, 0x4e86,
@@ -27155,7 +27174,7 @@ const wchar_t __thprac_loc_range_en[61] {
     0
 };
 
-const wchar_t __thprac_loc_range_ja[2763] {
+const wchar_t __thprac_loc_range_ja[2767] {
     0x0020, 0x00FF,
     0x2026, 0x2026,
     0x2191, 0x2191,
@@ -27684,6 +27703,7 @@ const wchar_t __thprac_loc_range_ja[2763] {
     0x5f0f, 0x5f0f,
     0x5f10, 0x5f10,
     0x5f13, 0x5f13,
+    0x5f15, 0x5f15,
     0x5f1f, 0x5f1f,
     0x5f26, 0x5f26,
     0x5f29, 0x5f29,
@@ -28338,6 +28358,7 @@ const wchar_t __thprac_loc_range_ja[2763] {
     0x8cd1, 0x8cd1,
     0x8ce2, 0x8ce2,
     0x8cea, 0x8cea,
+    0x8cfc, 0x8cfc,
     0x8d04, 0x8d04,
     0x8d16, 0x8d16,
     0x8d64, 0x8d64,

@@ -559,6 +559,10 @@ enum th_glossary_t {
     TH18_CARD_56,
     TH18_CARD_FORMAT,
     TH18_CYLINDER_CD,
+    TH18_EIRIN_EIKI_FIX,
+    TH18_EIRIN_EIKI_FIX_DESC,
+    TH18_FUNC_CALL_FIX,
+    TH18_FUNC_CALL_FIX_DESC,
     TH18_FUNDS,
     TH18_INFFUNDS,
     TH18_KANAME_CD,
@@ -1467,7 +1471,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1456];
+extern const char* th_glossary_str[3][1460];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3086,14 +3090,16 @@ namespace TH20 {
 
     extern const th_sections_t th_sections_cbt[3][2][5];
 
+    extern const th_glossary_t TH_STAGE_SELECT_TRIAL[4];
+
     extern const th_glossary_t TH20_RAGE[3];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3407];
+extern const wchar_t __thprac_loc_range_zh[3409];
 
 extern const wchar_t __thprac_loc_range_en[61];
 
-extern const wchar_t __thprac_loc_range_ja[2763];
+extern const wchar_t __thprac_loc_range_ja[2767];
 
 }

@@ -15,10 +15,10 @@
 #include "utils/wininternal.h"
 #include <array>
 
-#include <MinHook.h>
 #include <format>
 #include <vector>
 
+//#include "MinHook.h"
 
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
@@ -61,12 +61,44 @@ DWORD (WINAPI *g_realXInputGetState)(DWORD dwUserIndex, void* pState);
 HRESULT (WINAPI* g_realEnumDevices)(LPDIRECTINPUT8 thiz, DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef,DWORD dwFlags);
 
 
-// HRESULT (STDMETHODCALLTYPE *g_realPresent)(DWORD* thiz, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion);
-// HRESULT STDMETHODCALLTYPE Present_Changed(DWORD* thiz, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion)
-// {
-//     auto res = g_realPresent(thiz, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-//     return res;
-// }
+
+template <typename T>
+struct Ranges {
+    T x_min, x_max;
+    T y_min, y_max;
+};
+#define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)
+
+template <typename T>
+bool pov_to_xy(T& x, T& y, Ranges<T>& ranges, DWORD pov)
+{
+    // According to MSDN, some DirectInput drivers report the centered
+    // position of the POV indicator as 65,535. This matches both that
+    // behavior and JOY_POVCENTERED for WinMM.
+    if (LOWORD(pov) == 0xFFFF) {
+        return false;
+    }
+    T x_center = (ranges.x_max - ranges.x_min) / 2;
+    T y_center = (ranges.y_max - ranges.y_min) / 2;
+
+    float angle_deg = pov / 100.0f;
+    float angle_rad = DEG_TO_RAD(angle_deg);
+    // POV values ≠ unit circle angles, so...
+    float angle_sin = 1.0f - cosf(angle_rad);
+    float angle_cos = sinf(angle_rad) + 1.0f;
+    x = (T)(ranges.x_min + (angle_cos * x_center));
+    y = (T)(ranges.y_min + (angle_sin * y_center));
+    return true;
+}
+
+struct winmm_joy_caps_t {
+    // joyGetPosEx() will return bogus values on joysticks without a POV, so
+    // we must check if we even have one.
+    bool initialized = false;
+    bool has_pov;
+    Ranges<DWORD> range;
+};
+std::vector<winmm_joy_caps_t> joy_info;
 
 HRESULT WINAPI EnumDevices_Changed(LPDIRECTINPUT8 thiz, DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef, DWORD dwFlags)
 {
@@ -80,11 +112,38 @@ MMRESULT WINAPI joyGetDevCapsA_Changed(UINT uJoyID, LPJOYCAPSA pjc, UINT cbjc) {
         return MMSYSERR_NODRIVER;
     return g_realJoyGetDevCapsA(uJoyID, pjc, cbjc);
 }
-
 MMRESULT WINAPI joyGetPosEx_Changed(UINT uJoyID, LPJOYINFOEX pji) { 
     if (g_disable_joy)
         return MMSYSERR_NODRIVER;
-    return g_realJoyGetPosEx(uJoyID, pji);
+
+    pji->dwFlags |= JOY_RETURNPOV;
+    auto ret_pos = g_realJoyGetPosEx(uJoyID, pji);
+    if (ret_pos != JOYERR_NOERROR) {
+        return ret_pos;
+    }
+
+    if (uJoyID >= joy_info.size()) {
+        joy_info.resize(uJoyID + 1);
+    }
+
+    auto& jc = joy_info[uJoyID];
+
+    if (!jc.initialized) {
+        JOYCAPSW caps;
+        auto ret_caps = joyGetDevCapsW(uJoyID, &caps, sizeof(caps));
+        assert(ret_caps == JOYERR_NOERROR);
+
+        jc.initialized = true;
+        jc.has_pov = (caps.wCaps & JOYCAPS_HASPOV) != 0;
+        jc.range.x_min = caps.wXmin;
+        jc.range.x_max = caps.wXmax;
+        jc.range.y_min = caps.wYmin;
+        jc.range.y_max = caps.wYmax;
+    } else if (!jc.has_pov) {
+        return ret_pos;
+    }
+    pov_to_xy(pji->dwXpos, pji->dwYpos, jc.range, pji->dwPOV);
+    return ret_pos;
 }
 
 DWORD WINAPI XInputGetState_Changed(DWORD dwUserIndex, void* pState)
@@ -216,13 +275,23 @@ BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
     return res;
 }
 
-HookCtx g_dinput8Hook;
+
 HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state)
 {
     if (num != 256) {//no keyboard
         if (g_disable_joy)
-            return DIERR_INPUTLOST;//8007001E   
-        return g_realGetDeviceState(thiz, num, state);
+            return DIERR_INPUTLOST;//8007001E
+
+        auto res = g_realGetDeviceState(thiz, num, state);
+        if (num == sizeof(DIJOYSTATE) || num == sizeof(DIJOYSTATE2)){
+            auto* js = (DIJOYSTATE*)state;
+            Ranges<long> di_range = { -1000, 1000, -1000, 1000 };
+            bool ret_map = false;
+            for (int i = 0; i < elementsof(js->rgdwPOV) && !ret_map; i++) {
+                ret_map = pov_to_xy(js->lX, js->lY, di_range, js->rgdwPOV[i]);
+            }
+        }
+        return res;
     }
     
     HRESULT res = g_realGetDeviceState(thiz, num, state);
@@ -303,242 +372,21 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
     return res;
 }
 
-#pragma region dinput/dpad support
-
 HANDLE thcrap_dll;
 HANDLE thcrap_tsa_dll;
 
-// Code from thcrap
-template <typename T>
-struct Ranges {
-    T x_min, x_max;
-    T y_min, y_max;
-};
-
-#define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)
-
-template <typename T>
-bool pov_to_xy(T& x, T& y, Ranges<T>& ranges, DWORD pov)
-{
-    // According to MSDN, some DirectInput drivers report the centered
-    // position of the POV indicator as 65,535. This matches both that
-    // behavior and JOY_POVCENTERED for WinMM.
-    if (LOWORD(pov) == 0xFFFF) {
-        return false;
-    }
-    T x_center = (ranges.x_max - ranges.x_min) / 2;
-    T y_center = (ranges.y_max - ranges.y_min) / 2;
-
-    float angle_deg = pov / 100.0f;
-    float angle_rad = DEG_TO_RAD(angle_deg);
-    // POV values ≠ unit circle angles, so...
-    float angle_sin = 1.0f - cosf(angle_rad);
-    float angle_cos = sinf(angle_rad) + 1.0f;
-    x = (T)(ranges.x_min + (angle_cos * x_center));
-    y = (T)(ranges.y_min + (angle_sin * y_center));
-    return true;
-}
-
-HRESULT IDirectInputDevice8_GetDeviceState_Hook(IDirectInputDevice8A* This, DWORD cbData, void* lpvData)
-{
-    // ---
-    
-    // keyboard support
-    if (cbData == 256) {
-        HRESULT res = This->GetDeviceState(cbData, lpvData);
-        if (g_keybind.size() != 0) {
-            static BYTE new_keyBoardState[256] = { 0 };
-            bool new_keyBoardState_changed[256] = { 0 };
-            memcpy_s(new_keyBoardState, cbData, ((BYTE*)lpvData), cbData);
-            for (auto& bind : g_keybind) {
-                if (IS_KEY_DOWN(((BYTE*)lpvData)[bind.second.dik])) {
-                    new_keyBoardState[bind.first.dik] |= 0x80;
-                    if (!new_keyBoardState_changed[bind.first.dik])
-                        new_keyBoardState[bind.second.dik] &= (~0x80);
-                    new_keyBoardState_changed[bind.first.dik] = true;
-                }
-            }
-            memcpy_s(((BYTE*)lpvData), cbData, new_keyBoardState, cbData);
-        }
-        if (g_disable_xkey) {
-            ((BYTE*)lpvData)[DIK_X] = 0x0;
-        }
-        if (g_disable_shiftkey) {
-            ((BYTE*)lpvData)[DIK_LSHIFT] = 0x0;
-            ((BYTE*)lpvData)[DIK_RSHIFT] = 0x0;
-        }
-        if (g_disable_zkey) {
-            ((BYTE*)lpvData)[DIK_Z] = 0x0;
-        }
-        if (g_disable_f10_11_13) {
-            ((BYTE*)lpvData)[DIK_F10] = 0x0;
-        }
-        if (g_socd_setting == SOCD_Default) {
-            return res;
-        }
-        //SOCD
-        static BYTE last_keyBoardState[256] = { 0 };
-        static uint32_t cur_time = 0;
-        static uint32_t keyBoard_press_time[4] = { 0 };
-
-        BYTE* keyBoardState = (BYTE*)lpvData;
-        cur_time++;
-        if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_LEFTARROW]))
-            keyBoard_press_time[K_LEFT] = cur_time;
-        if (IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_RIGHTARROW]))
-            keyBoard_press_time[K_RIGHT] = cur_time;
-        if (IS_KEY_DOWN(keyBoardState[DIK_UPARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_UPARROW]))
-            keyBoard_press_time[K_UP] = cur_time;
-        if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_DOWNARROW]))
-            keyBoard_press_time[K_DOWN] = cur_time;
-
-        memcpy_s(last_keyBoardState, cbData, keyBoardState, cbData);
-
-        if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW])) {
-            if (g_socd_setting == SOCD_2) {
-                if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]) {
-                    keyBoardState[DIK_RIGHTARROW] = 0;
-                } else {
-                    keyBoardState[DIK_LEFTARROW] = 0;
-                }
-            } else if (g_socd_setting == SOCD_N) {
-                keyBoardState[DIK_RIGHTARROW] = 0;
-                keyBoardState[DIK_LEFTARROW] = 0;
-            }
-        }
-        if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && IS_KEY_DOWN(keyBoardState[DIK_UPARROW])) {
-            if (g_socd_setting == SOCD_2) {
-                if (keyBoard_press_time[K_UP] > keyBoard_press_time[K_DOWN]) {
-                    keyBoardState[DIK_DOWNARROW] = 0;
-                } else {
-                    keyBoardState[DIK_UPARROW] = 0;
-                }
-            } else if (g_socd_setting == SOCD_N) {
-                keyBoardState[DIK_DOWNARROW] = 0;
-                keyBoardState[DIK_UPARROW] = 0;
-            }
-        }
-        return res;
-    }
-    // ---
-    // no keybaord
-
-    if (g_disable_joy)
-        return DIERR_INPUTLOST; // 8007001E
-    HRESULT res = This->GetDeviceState(cbData, lpvData);
-    if (FAILED(res) || !(cbData == sizeof(DIJOYSTATE) || cbData == sizeof(DIJOYSTATE2))) {
-        return res;
-    }
-   
-    auto* js = (DIJOYSTATE*)lpvData;
-
-    Ranges<long> di_range = { -1000, 1000, -1000, 1000 };
-
-    bool ret_map = false;
-    for (int i = 0; i < elementsof(js->rgdwPOV) && !ret_map; i++) {
-        ret_map = pov_to_xy(js->lX, js->lY, di_range, js->rgdwPOV[i]);
-    }
-    return res;
-}
-
-bool __stdcall IDirectInputDevice8_GetDeviceState_VEHHook(PCONTEXT pCtx)
-{
-    pCtx->Eax = IDirectInputDevice8_GetDeviceState_Hook(
-        GetMemContent<IDirectInputDevice8A*>(pCtx->Esp + 0),
-        GetMemContent<DWORD>(pCtx->Esp + 4),
-        GetMemContent<void*>(pCtx->Esp + 8));
-    pCtx->Esp += 12;
-    return false;
-}
-
-decltype(joyGetPosEx)* orig_joyGetPosEx = nullptr;
-
-// joyGetDevCaps() will necessarily be slower
-struct winmm_joy_caps_t {
-    // joyGetPosEx() will return bogus values on joysticks without a POV, so
-    // we must check if we even have one.
-    bool initialized = false;
-    bool has_pov;
-    Ranges<DWORD> range;
-};
-
-std::vector<winmm_joy_caps_t> joy_info;
-
-MMRESULT WINAPI hook_joyGetPosEx(UINT uJoyID, JOYINFOEX* pji)
-{
-    if (!pji) {
-        return MMSYSERR_INVALPARAM;
-    }
-    pji->dwFlags |= JOY_RETURNPOV;
-
-    auto ret_pos = orig_joyGetPosEx(uJoyID, pji);
-    if (ret_pos != JOYERR_NOERROR) {
-        return ret_pos;
-    }
-
-    if (uJoyID >= joy_info.size()) {
-        joy_info.resize(uJoyID + 1);
-    }
-
-    auto& jc = joy_info[uJoyID];
-
-    if (!jc.initialized) {
-        JOYCAPSW caps;
-        auto ret_caps = joyGetDevCapsW(uJoyID, &caps, sizeof(caps));
-        assert(ret_caps == JOYERR_NOERROR);
-
-        jc.initialized = true;
-        jc.has_pov = (caps.wCaps & JOYCAPS_HASPOV) != 0;
-        jc.range.x_min = caps.wXmin;
-        jc.range.x_max = caps.wXmax;
-        jc.range.y_min = caps.wYmin;
-        jc.range.y_max = caps.wYmax;
-    } else if (!jc.has_pov) {
-        return ret_pos;
-    }
-    pov_to_xy(pji->dwXpos, pji->dwYpos, jc.range, pji->dwPOV);
-    return ret_pos;
-}
-
-// Replace with centralized IAT hooking once there's a need for that
-void iat_hook_joyGetPosEx()
-{
-    uintptr_t base = CurrentImageBase;
-
-    auto* pImpDesc = (PIMAGE_IMPORT_DESCRIPTOR)GetNtDataDirectory((HMODULE)base, IMAGE_DIRECTORY_ENTRY_IMPORT);
-
-    for (; pImpDesc->Name; pImpDesc++) {
-        if (_stricmp((char*)(base + pImpDesc->Name), "winmm.dll")) {
-            continue;
-        }
-        auto pOT = (PIMAGE_THUNK_DATA)(base + pImpDesc->OriginalFirstThunk);
-        auto pIT = (PIMAGE_THUNK_DATA)(base + pImpDesc->FirstThunk);
-
-        if (pImpDesc->OriginalFirstThunk) {
-            for (; pOT->u1.Function; pOT++, pIT++) {
-                PIMAGE_IMPORT_BY_NAME pByName;
-                if (!(pOT->u1.Ordinal & IMAGE_ORDINAL_FLAG)) {
-                    pByName = (PIMAGE_IMPORT_BY_NAME)(base + pOT->u1.AddressOfData);
-                    if (pByName->Name[0] == '\0') {
-                        continue;
-                    }
-                    if (!strcmp("joyGetPosEx", (char*)pByName->Name)) {
-                        orig_joyGetPosEx = (decltype(joyGetPosEx)*)pIT->u1.Function;
-
-                        DWORD oldProt;
-                        VirtualProtect(&pIT->u1.Function, 4, PAGE_READWRITE, &oldProt);
-                        pIT->u1.Function = (DWORD)hook_joyGetPosEx;
-                        VirtualProtect(&pIT->u1.Function, 4, oldProt, &oldProt);
-                    }
-                }
-            }
-        }
-    }
-}
-
 void SetDpadHook(uintptr_t addr, size_t instr_len)
 {
-    // todo
+    // static constinit HookCtx dpad_hook = {
+    //     .callback = IDirectInputDevice8_GetDeviceState_VEHHook,
+    //     .data = PatchData()
+    // };
+    // 
+    // dpad_hook.addr = addr;
+    // dpad_hook.data.hook.instr_len = static_cast<uint8_t>(instr_len);
+    // dpad_hook.Setup();
+    // dpad_hook.Enable();
+
 }
 #pragma endregion
 
@@ -547,6 +395,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3,
     int wnd_size_flag, float x, float y)
 {
+    //MH_Initialize();
     thcrap_dll = GetModuleHandleW(L"thcrap.dll");
     if (!thcrap_dll) {
         thcrap_dll = GetModuleHandleW(L"thcrap_d.dll");
@@ -743,11 +592,8 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         bool useCorrectJaFonts=false;
         LauncherSettingGet("use_custom_fonts", g_useCustomFont);
         LauncherSettingGet("use_correct_ja_fonts", useCorrectJaFonts);
-        if (g_useCustomFont || useCorrectJaFonts)
-        {
-            LPVOID pTarget;
-            MH_CreateHookApiEx(L"GDI32.dll", "CreateFontA", CreateFontA_Changed, (void**)&g_realCreateFontA, &pTarget);
-            MH_EnableHook(pTarget);
+        if (g_useCustomFont || useCorrectJaFonts){
+            HookIAT(GetModuleHandle(NULL), "GDI32.dll", "CreateFontA", CreateFontA_Changed, (void**)&g_realCreateFontA);
         }
         if (g_useCustomFont)
         {
@@ -779,15 +625,11 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
 
         LauncherSettingGet_KeyBind();
 
-        if (LauncherSettingGet("disableJoy", g_disable_joy) && g_disable_joy)
+        // if (LauncherSettingGet("disableJoy", g_disable_joy) && g_disable_joy)
         {
-            LPVOID pTarget;
-            if (MH_OK == MH_CreateHookApiEx(L"winmm.dll", "joyGetPosEx", joyGetPosEx_Changed, (void**)&g_realJoyGetPosEx, &pTarget))
-                MH_EnableHook(pTarget);
-            if(MH_OK == MH_CreateHookApiEx(L"winmm.dll", "joyGetDevCapsA", joyGetDevCapsA_Changed, (void**)&g_realJoyGetDevCapsA, &pTarget))
-                MH_EnableHook(pTarget);
-            if (MH_OK == MH_CreateHookApiEx(L"xinput1_3.dll", "XInputGetState", XInputGetState_Changed, (void**)&g_realXInputGetState, &pTarget))
-                MH_EnableHook(pTarget);
+            HookIAT(GetModuleHandle(NULL), "winmm.dll", "joyGetPosEx", joyGetPosEx_Changed, (void**)&g_realJoyGetPosEx);
+            HookIAT(GetModuleHandle(NULL), "winmm.dll", "joyGetDevCapsA", joyGetDevCapsA_Changed, (void**)&g_realJoyGetDevCapsA);
+            HookIAT(GetModuleHandle(NULL), "xinput1_3.dll", "XInputGetState", XInputGetState_Changed, (void**)&g_realXInputGetState);
         }
         int theme;
         if (LauncherSettingGet("theme", theme)) {
@@ -815,23 +657,20 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     if (LauncherSettingGet("enable_keyboard_hook", g_enable_keyhook) && g_enable_keyhook)
     { // hook keyboard to enable SOCD and X-disable
         LPVOID pTarget;
-        if(MH_OK==MH_CreateHookApiEx(L"user32.dll", "GetKeyboardState", GetKeyboardState_Changed, (void**)&g_realGetKeyboardState, &pTarget))
-            MH_EnableHook(pTarget);
+        HookIAT(GetModuleHandle(NULL), "user32.dll", "GetKeyboardState", GetKeyboardState_Changed, (void**)&g_realGetKeyboardState);
 
         LPDIRECTINPUT8 pdinput;
         DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&pdinput, NULL);
+
         if (FAILED(pdinput)) {
         }
-        void* EnumDeviceAddr = (*(void***)pdinput)[4];
-        if (g_disable_joy){
-            MH_CreateHook(EnumDeviceAddr, EnumDevices_Changed, (LPVOID*)&g_realEnumDevices);
-            MH_EnableHook(EnumDeviceAddr);
+        // if (g_disable_joy)
+        {
+            HookVTable(pdinput, 4, EnumDevices_Changed, (void**)&g_realEnumDevices);
         }
         LPDIRECTINPUTDEVICE8 ddevice;
         pdinput->CreateDevice(GUID_SysKeyboard, &ddevice, NULL);
-        void* GetDeviceStateAddr = (*(void***)ddevice)[9];
-        MH_CreateHook(GetDeviceStateAddr, GetDeviceState_Changed, (LPVOID*)&g_realGetDeviceState);
-        MH_EnableHook(GetDeviceStateAddr);
+        HookVTable(ddevice, 9, GetDeviceState_Changed, (void**)&g_realGetDeviceState);
         pdinput->Release();
         ddevice->Release();
         // dinput8 is inited before GameGuiInit(), so create a new device for hook
