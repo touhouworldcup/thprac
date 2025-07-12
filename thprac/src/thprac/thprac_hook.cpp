@@ -140,10 +140,62 @@ static inline void cave_fix(uint8_t* sourcecave, uint8_t* bp_addr, uint32_t sour
     /// ------------------
 
     // #1: Relative near call / jump at the very beginning
+    // 70 short jo
+    // 71 short jno
+    // 72 short jb
+    // 73 short jae
+    // 74 short je
+    // 75 short jne
+    // 76 short jna
+    // 77 short ja
+    // 78 short js
+    // 79 short jns
+    // 7A short jp
+    // 7B short jnp
+    // 7C short jl
+    // 7D short jnl
+    // 7E short jle
+    // 7F short jg
+    // EB short jmp
+    
+    // E8 call
+    // E9 jmp
+    // 0F80 jo
+    // 0F81 jno
+    // ...
+
+    
     if (sourcecave[0] == 0xE8 || sourcecave[0] == 0xE9) {
+        // call/jmp
         uint32_t offset_old = *(uint32_t*)(sourcecave + 1);
         uint32_t offset_new = offset_old + bp_addr - sourcecave;
 
+        *(uint32_t*)(sourcecave + 1) = offset_new;
+    } else if (sourcecave[0] == 0x0F && sourcecave[1] >= 0x80 && sourcecave[1] <= 0x8F){
+        // long jo~jg
+        uint32_t offset_old = *(uint32_t*)(sourcecave + 2);
+        uint32_t offset_new = offset_old + bp_addr - sourcecave;
+
+        *(uint32_t*)(sourcecave + 2) = offset_new;
+    } else if (sourcecave[0] >= 0x70 && sourcecave[0] <= 0x7F) {
+        // short jo~jg
+        uint32_t offset_old = *(uint8_t*)(sourcecave + 1);
+        uint32_t offset_new = offset_old + bp_addr - sourcecave - 4;
+        // turn into long jmp, notice that it will break the jmp after the code
+        // init +1 first
+        *(uint8_t*)(sourcecave + 1) = sourcecave[0] - 0x70 + 0x80;
+        *(uint8_t*)(sourcecave + 0) = 0x0F;
+        *(uint32_t*)(sourcecave + 2) = offset_new;
+        // long jmp is constant 2 + 4 = 6 bytes
+        *(uint32_t*)(sourcecave + 6) = 0xE9;
+        *(uint32_t*)(sourcecave + 7) = bp_addr - (sourcecave + 5 + 4);
+        // short jmp is 1 + 2 = 3 bytes, so total bytes used more in cave is (6 - 2) + 5 = 9 bytes
+    } else if (sourcecave[0] == 0xEB) {
+        // short jmp
+        uint32_t offset_old = *(uint8_t*)(sourcecave + 1);
+        uint32_t offset_new = offset_old + bp_addr - sourcecave - 3;
+        // turn into long jmp
+        *(uint8_t*)(sourcecave + 0) = 0xE9;
         *(uint32_t*)(sourcecave + 1) = offset_new;
     }
     /// ------------------
@@ -171,7 +223,8 @@ void HookCtx::Setup()
             vehHooks[this->addr] = this;
 
             this->data.hook.codecave = MakeCodecave((uint8_t*)this->addr, this->addr, this->data.hook.instr_len);
-            hook_page_offset += this->data.hook.instr_len + 5;
+            // in case that short jmp turns to long jmps
+            hook_page_offset += this->data.hook.instr_len + 9;
 
             this->data.hook.orig_byte = *(uint8_t*)this->addr;
         }
