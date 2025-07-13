@@ -574,6 +574,17 @@ namespace TH13 {
 
         virtual void OnContentUpdate() override
         {
+            byte cur_player_type = (*(byte*)(0x4BE7B8));
+            int32_t diff = *((int32_t*)0x4BE7C4);
+            if (diff == 5 || (thPracParam.mode && thPracParam.useOD))
+                diff = 6;//OD
+            auto diff_pl = std::format("{}({})", S(IGI_DIFF[diff]), S(IGI_PL_13[cur_player_type]));
+            auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
+
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::Text(diff_pl.c_str());
+
+
             ImGui::Columns(2);
             ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
             ImGui::NextColumn();
@@ -1808,9 +1819,6 @@ namespace TH13 {
     })
     PATCH_DY(th13_disable_prac_menu_1, 0x452280, "eb37")
     PATCH_DY(th13_disable_prac_menu_2, 0x451cf2, "83c4046690")
-    EHOOK_DY(th13_menu_rank_fix, 0x43f483, 5, {
-        *((int32_t*)0x4be7c4) = *((int32_t*)0x4bb4d0);
-    })
     EHOOK_DY(th13_menu_rank_fix, 0x43f483, 5, {
         *((int32_t*)0x4be7c4) = *((int32_t*)0x4bb4d0);
     })

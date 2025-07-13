@@ -528,8 +528,8 @@ namespace TH12 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPosRel(450.0f / 640.0f, 338.0f / 480.0f);
-            SetSizeRel(170.0f / 640.0f, 0.0f);
+            SetPosRel(425.0f / 640.0f, 338.0f / 480.0f);
+            SetSizeRel(210.0f / 640.0f, 0.0f);
             SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
@@ -544,6 +544,15 @@ namespace TH12 {
         int32_t mGUFOCount;
         int32_t mBUFOCount;
         int32_t mCUFOCount;
+
+        int32_t mRVentraCount_Get;
+        int32_t mGVentraCount_Get;
+        int32_t mBVentraCount_Get;
+
+        int32_t mRVentraCount_Drop;
+        int32_t mGVentraCount_Drop;
+        int32_t mBVentraCount_Drop;
+        int32_t mCVentraCount_Drop;
 
     protected:
         virtual void OnLocaleChange() override
@@ -570,7 +579,22 @@ namespace TH12 {
 
         virtual void OnContentUpdate() override
         {
+            int32_t cur_player_type = (*(DWORD*)(0x004B0C90)) * 2 + (*(DWORD*)(0x4B0C94));
+            int32_t diff = *((int32_t*)0x4B0CA8);
+            auto diff_pl = std::format("{}({})", S(IGI_DIFF[diff]), S(IGI_PL_12[cur_player_type]));
+            auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
+
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::Text(diff_pl.c_str());
+
+            auto ufo_cnt = std::format("{}/{}/{}/{}", mRUFOCount, mGUFOCount, mBUFOCount, mCUFOCount);
+            auto ufo_cnt_sz = ImGui::CalcTextSize(ufo_cnt.c_str()).x;
+
             ImGui::Columns(2);
+            auto width1 = ImGui::GetColumnWidth(1);
+            if (width1 < ufo_cnt_sz)
+                ImGui::SetColumnWidth(0, ImGui::GetWindowContentRegionWidth() - ufo_cnt_sz);
+
             ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
             ImGui::NextColumn();
             ImGui::Text("%8d", mMissCount);
@@ -578,29 +602,48 @@ namespace TH12 {
             ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
             ImGui::NextColumn();
             ImGui::Text("%8d", mBombCount);
+
             ImGui::NextColumn();
-            ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_RED_COUNT));
+            ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_COUNT3));
             ImGui::NextColumn();
-            ImGui::Text("%8d", mRUFOCount);
+            ImGui::Text("%8d", mRVentraCount_Drop + mGVentraCount_Drop + mBVentraCount_Drop + mCVentraCount_Drop);
             ImGui::NextColumn();
-            ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_GREEN_COUNT));
+            ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_COUNT2));
             ImGui::NextColumn();
-            ImGui::Text("%8d", mGUFOCount);
+            ImGui::Text("%8d", mRVentraCount_Get + mGVentraCount_Get + mBVentraCount_Get);
+
+            auto last_item_width = ImGui::GetItemRectSize().x;
+
             ImGui::NextColumn();
-            ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_BLUE_COUNT));
+            ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_COUNT1));
             ImGui::NextColumn();
-            ImGui::Text("%8d", mBUFOCount);
-            ImGui::NextColumn();
-            ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_RAINBOW_COUNT));
-            ImGui::NextColumn();
-            ImGui::Text("%8d", mCUFOCount);
+            if (ufo_cnt_sz * 0.5 < last_item_width)
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + last_item_width - ufo_cnt_sz * 0.5);
+            ImGui::Text(ufo_cnt.c_str());
+
+            //ImGui::NextColumn();
+            //ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_RED_COUNT));
+            //ImGui::NextColumn();
+            //ImGui::Text("%8d", mRUFOCount);
+            //ImGui::NextColumn();
+            //ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_GREEN_COUNT));
+            //ImGui::NextColumn();
+            //ImGui::Text("%8d", mGUFOCount);
+            //ImGui::NextColumn();
+            //ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_BLUE_COUNT));
+            //ImGui::NextColumn();
+            //ImGui::Text("%8d", mBUFOCount);
+            //ImGui::NextColumn();
+            //ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_RAINBOW_COUNT));
+            //ImGui::NextColumn();
+            //ImGui::Text("%8d", mCUFOCount);
         }
 
         virtual void OnPreUpdate() override
         {
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004B4514)) {
-                SetPosRel(450.0f / 640.0f, 338.0f / 480.0f);
-                SetSizeRel(170.0f / 640.0f, 0.0f);
+                SetPosRel(425.0f / 640.0f, 338.0f / 480.0f);
+                SetSizeRel(210.0f / 640.0f, 0.0f);
                 Open();
             } else {
                 Close();
@@ -1814,6 +1857,15 @@ namespace TH12 {
         TH12InGameInfo::singleton().mGUFOCount = 0;
         TH12InGameInfo::singleton().mBUFOCount = 0;
         TH12InGameInfo::singleton().mCUFOCount = 0;
+
+        TH12InGameInfo::singleton().mRVentraCount_Get = 0;
+        TH12InGameInfo::singleton().mBVentraCount_Get = 0;
+        TH12InGameInfo::singleton().mGVentraCount_Get = 0;
+
+        TH12InGameInfo::singleton().mRVentraCount_Drop = 0;
+        TH12InGameInfo::singleton().mBVentraCount_Drop = 0;
+        TH12InGameInfo::singleton().mGVentraCount_Drop = 0;
+        TH12InGameInfo::singleton().mCVentraCount_Drop = 0;
     })
     EHOOK_DY(th12_bomb_dec, 0x422F28,5, // bomb dec
     {
@@ -1834,6 +1886,32 @@ namespace TH12 {
             TH12InGameInfo::singleton().mGUFOCount++;
         else if (type == 3)
             TH12InGameInfo::singleton().mCUFOCount++;
+    })
+    EHOOK_DY(th12_ufo_item, 0x4270b0, 3, { // ufo item eat
+        int32_t type = pCtx->Eax;
+        switch (type)
+        {
+            case 0:TH12InGameInfo::singleton().mRVentraCount_Get++;break;
+            case 1:TH12InGameInfo::singleton().mBVentraCount_Get++;break;
+            case 2:TH12InGameInfo::singleton().mGVentraCount_Get++;break;
+            default:
+                break;
+        }
+    })
+    EHOOK_DY(th12_ufo_item2, 0x427411, 6, { // ufo item drop
+        int32_t type = pCtx->Eax;
+        switch (type)
+        {
+            case 0:TH12InGameInfo::singleton().mRVentraCount_Drop++;break;
+            case 1:TH12InGameInfo::singleton().mBVentraCount_Drop++;break;
+            case 2:TH12InGameInfo::singleton().mGVentraCount_Drop++;break;
+
+            case 3:TH12InGameInfo::singleton().mCVentraCount_Drop++;break;
+            case 4:TH12InGameInfo::singleton().mCVentraCount_Drop++;break;
+            case 5:TH12InGameInfo::singleton().mCVentraCount_Drop++;break;
+            default:
+                break;
+        }
     })
     EHOOK_DY(th12_lock_timer1, 0x41D4E5,6, // initialize
     {

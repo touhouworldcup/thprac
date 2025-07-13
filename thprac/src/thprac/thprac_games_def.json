@@ -959,6 +959,62 @@
   
    "inGameInfo": {
       "glossary": {
+	  
+	  "THPRAC_IGI_DIFF_E":["Easy","Easy","Easy"],
+	  "THPRAC_IGI_DIFF_N":["Normal","Normal","Normal"],
+	  "THPRAC_IGI_DIFF_H":["Hard","Hard","Hard"],
+	  "THPRAC_IGI_DIFF_L":["Lunatic","Lunatic","Lunatic"],
+	  "THPRAC_IGI_DIFF_EX":["Extra","Extra","Extra"],
+	  "THPRAC_IGI_DIFF_PH":["Phantasm","Phantasm","Phantasm"],
+	  "THPRAC_IGI_DIFF_OD":["Overdrive","Overdrive","Overdrive"],
+	  "THPRAC_IGI_DIFF_LW":["Lastword","Lastword","Lastword"],
+	  
+	  "THPRAC_IGI_PL_ReimuA":["梦 A","Reimu A","Reimu A"],
+	  "THPRAC_IGI_PL_ReimuB":["梦 B","Reimu B","Reimu B"],
+	  "THPRAC_IGI_PL_ReimuC":["梦 C","Reimu C","Reimu C"],
+	  "THPRAC_IGI_PL_MarisaA":["魔 A","Marisa A","Marisa A"],
+	  "THPRAC_IGI_PL_MarisaB":["魔 B","Marisa B","Marisa B"],
+	  "THPRAC_IGI_PL_MarisaC":["魔 C","Marisa C","Marisa C"],
+	  "THPRAC_IGI_PL_SakuyaA":["咲 A","Sakuya A","Sakuya A"],
+	  "THPRAC_IGI_PL_SakuyaB":["咲 B","Sakuya B","Sakuya B"],
+	  "THPRAC_IGI_PL_SanaeA":["苗 A","Sanae A","Sanae A"],
+	  "THPRAC_IGI_PL_SanaeB":["苗 B","Sanae B","Sanae B"],
+	  
+	  "THPRAC_IGI_PL_Reimu17A":["梦狼","Reimu W","Reimu W"],
+	  "THPRAC_IGI_PL_Reimu17B":["梦獭","Reimu O","Reimu O"],
+	  "THPRAC_IGI_PL_Reimu17C":["梦鹰","Reimu E","Reimu E"],
+	  "THPRAC_IGI_PL_Marisa17A":["魔狼","Marisa W","Marisa W"],
+	  "THPRAC_IGI_PL_Marisa17B":["魔獭","Marisa O","Marisa O"],
+	  "THPRAC_IGI_PL_Marisa17C":["魔鹰","Marisa E","Marisa E"],
+	  "THPRAC_IGI_PL_Youmu17A"  : ["妖狼","Youmu W","Youmu W"],
+	  "THPRAC_IGI_PL_Youmu17B"  : ["妖獭","Youmu O","Youmu O"],
+	  "THPRAC_IGI_PL_Youmu17C"  : ["妖鹰","Youmu E","Youmu E"],
+	  
+	  "THPRAC_IGI_PL_Reimu"  : ["灵梦","Reimu","Reimu"],
+	  "THPRAC_IGI_PL_Yukari" : ["紫","Yukari","Yukari"],
+	  "THPRAC_IGI_PL_Marisa" : ["魔理沙","Marisa","Marisa"],
+	  "THPRAC_IGI_PL_Alice"  : ["爱丽丝","Alice","Alice"],
+	  "THPRAC_IGI_PL_Sakuya" : ["咲夜","Sakuya","Sakuya"],
+	  "THPRAC_IGI_PL_Remilia": ["蕾米","Remilia","Remilia"],
+	  "THPRAC_IGI_PL_Youmu"  : ["妖梦","Youmu","Youmu"],
+	  "THPRAC_IGI_PL_Yuyuko" : ["幽幽子","Yuyuko","Yuyuko"],
+	  "THPRAC_IGI_PL_Sanae"  : ["早苗","Sanae","Sanae"],
+	  "THPRAC_IGI_PL_Reisen" : ["铃仙","Reisen","Reisen"],
+	  "THPRAC_IGI_PL_Aya"    : ["文","Aya","Aya"],
+	  "THPRAC_IGI_PL_Cirno"  : ["琪露诺","Cirno","Cirno"],
+	  
+	  "THPRAC_IGI_PL_16A"  : ["春","Sp.","Sp."],
+	  "THPRAC_IGI_PL_16B"  : ["夏","Su.","Su."],
+	  "THPRAC_IGI_PL_16C"  : ["秋","Fa.","Fa."],
+	  "THPRAC_IGI_PL_16D"  : ["冬","Wi.","Wi."],
+	  "THPRAC_IGI_PL_16E"  : ["土","DD.","DD."],
+	  
+	  "THPRAC_IGI_PL_8A":["结界","R&Y","R&Y"],
+	  "THPRAC_IGI_PL_8B":["咏唱","M&A","M&A"],
+	  "THPRAC_IGI_PL_8C":["红魔","S&R","S&R"],
+	  "THPRAC_IGI_PL_8D":["幽冥","Y&Y","Y&Y"],
+	  
+	  
 	  "THPRAC_BLIND":["夜雀视野","blind view","blind view"],
 	  "THPRAC_BLIND_DESC":["娱乐用, 使用blind.png重载","for fun(use blind.png to reload)","for fun(use blind.png to reload)"],
 	  "THPRAC_BLIND_SZ":["视野大小","view sz","view sz"],
@@ -1058,10 +1114,11 @@
        "THPRAC_INGAMEINFO_MISS_COUNT":["miss:","miss:","miss:"],
        "THPRAC_INGAMEINFO_BOMB_COUNT":["bomb:","bomb:","bomb:"],
        "THPRAC_INGAMEINFO_13_TRANCE_COUNT":["灵界:","trance:","trance:"],
-       "THPRAC_INGAMEINFO_12_UFO_RED_COUNT":["红碟:","R UFO:","R UFO:"],
-       "THPRAC_INGAMEINFO_12_UFO_GREEN_COUNT":["绿碟:","G UFO:","G UFO:"],
-       "THPRAC_INGAMEINFO_12_UFO_BLUE_COUNT":["蓝碟:","B UFO:","B UFO:"],
-       "THPRAC_INGAMEINFO_12_UFO_RAINBOW_COUNT":["彩碟:","Rb UFO:","Rb UFO:"],
+       
+       "THPRAC_INGAMEINFO_12_UFO_COUNT1":["开碟:","UFO spawn","UFO spawn"],
+	   "THPRAC_INGAMEINFO_12_UFO_COUNT2":["吃碟:","UFO item","UFO item"],
+	   "THPRAC_INGAMEINFO_12_UFO_COUNT3":["掉碟:","UFO drop","UFO drop"],
+	   
        "THPRAC_INGAMEINFO_07_BORDER_COUNT":["撞结界:","border:","border:"],
        "THPRAC_INGAMEINFO_07_CHERRY":["Cherry:","Cherry:","Cherry:"],
        "THPRAC_INGAMEINFO_07_CHERRY_PLUS":["CherryP:","CherryP:","CherryP:"],
@@ -1082,15 +1139,6 @@
        "THPRAC_INGAMEINFO_06_SHOWDETAIL_HOTKEY":["详情","Details","Details"],
 	   "THPRAC_INGAMEINFO_06_SHOWDETAIL_PAGE":["游戏详情","Details","Details"],
 	   "THPRAC_INGAMEINFO_06_SHOWDETAIL_COLLAPSE":["游戏详情","Details","Details"],
-       "THPRAC_INGAMEINFO_06_E":["Easy","Easy","Easy"],
-       "THPRAC_INGAMEINFO_06_N":["Normal","Normal","Easy"],
-       "THPRAC_INGAMEINFO_06_H":["Hard","Hard","Hard"],
-       "THPRAC_INGAMEINFO_06_L":["Lunatic","Lunatic","Lunatic"],
-       "THPRAC_INGAMEINFO_06_EX":["Extra","Extra","Extra"],
-       "THPRAC_INGAMEINFO_06_RA":["梦 A","Reimu A","Reimu A"],
-       "THPRAC_INGAMEINFO_06_RB":["梦 B","Reimu B","Reimu B"],
-       "THPRAC_INGAMEINFO_06_MA":["魔 A","Marisa A","Marisa A"],
-       "THPRAC_INGAMEINFO_06_MB":["魔 B","Marisa B","Marisa B"],
 	   
        "THPRAC_INGAMEINFO_06_GAMTIME_TOT":["总游戏时间","game time(total)","game time(total)"],
        "THPRAC_INGAMEINFO_06_GAMTIME_CUR":["本次游戏时间","game time(current)","game time(current)"],
@@ -1112,7 +1160,121 @@
        "THPRAC_INGAMEINFO_06_CAPTURE_CUR":["收率(本次)","capture(current)","capture(current)"],
        "THPRAC_INGAMEINFO_06_TIMEOUT_TOT":["超时(总)","timeout(total)","timeout(total)"],
        "THPRAC_INGAMEINFO_06_TIMEOUT_CUR":["超时(本次)","timeout(current)","timeout(current)"]
-      }
+      },
+	  "groups": {
+		"IGI_DIFF": [
+        "THPRAC_IGI_DIFF_E",
+        "THPRAC_IGI_DIFF_N",
+        "THPRAC_IGI_DIFF_H",
+        "THPRAC_IGI_DIFF_L",
+        "THPRAC_IGI_DIFF_EX",
+        "THPRAC_IGI_DIFF_PH",
+        "THPRAC_IGI_DIFF_OD",
+        "THPRAC_IGI_DIFF_LW"
+      ],
+      "IGI_PL_06": [
+        "THPRAC_IGI_PL_ReimuA",
+        "THPRAC_IGI_PL_ReimuB",
+        "THPRAC_IGI_PL_MarisaA",
+        "THPRAC_IGI_PL_MarisaB"
+      ],
+	  "IGI_PL_07": [
+        "THPRAC_IGI_PL_ReimuA",
+        "THPRAC_IGI_PL_ReimuB",
+        "THPRAC_IGI_PL_MarisaA",
+        "THPRAC_IGI_PL_MarisaB",
+        "THPRAC_IGI_PL_SakuyaA",
+        "THPRAC_IGI_PL_SakuyaB"
+      ],
+	  "IGI_PL_08": [
+        "THPRAC_IGI_PL_8A",
+        "THPRAC_IGI_PL_8B",
+        "THPRAC_IGI_PL_8C",
+        "THPRAC_IGI_PL_8D",
+        "THPRAC_IGI_PL_Reimu",
+        "THPRAC_IGI_PL_Yukari",
+        "THPRAC_IGI_PL_Marisa",
+        "THPRAC_IGI_PL_Alice",
+        "THPRAC_IGI_PL_Sakuya",
+        "THPRAC_IGI_PL_Remilia",
+        "THPRAC_IGI_PL_Youmu",
+        "THPRAC_IGI_PL_Yuyuko"
+      ],
+	   "IGI_PL_10": [
+        "THPRAC_IGI_PL_ReimuA",
+        "THPRAC_IGI_PL_ReimuB",
+        "THPRAC_IGI_PL_ReimuC",
+        "THPRAC_IGI_PL_MarisaA",
+        "THPRAC_IGI_PL_MarisaB",
+        "THPRAC_IGI_PL_MarisaC"
+      ],
+	   "IGI_PL_11": [
+        "THPRAC_IGI_PL_ReimuA",
+        "THPRAC_IGI_PL_ReimuB",
+        "THPRAC_IGI_PL_ReimuC",
+        "THPRAC_IGI_PL_MarisaA",
+        "THPRAC_IGI_PL_MarisaB",
+        "THPRAC_IGI_PL_MarisaC"
+      ],
+	   "IGI_PL_12": [
+        "THPRAC_IGI_PL_ReimuA",
+        "THPRAC_IGI_PL_ReimuB",
+        "THPRAC_IGI_PL_MarisaA",
+        "THPRAC_IGI_PL_MarisaB",
+        "THPRAC_IGI_PL_SanaeA",
+        "THPRAC_IGI_PL_SanaeB"
+      ],
+	   "IGI_PL_13": [
+        "THPRAC_IGI_PL_Reimu",
+        "THPRAC_IGI_PL_Marisa",
+        "THPRAC_IGI_PL_Sanae",
+        "THPRAC_IGI_PL_Youmu"
+      ],
+	   "IGI_PL_14": [
+        "THPRAC_IGI_PL_ReimuA",
+        "THPRAC_IGI_PL_ReimuB",
+        "THPRAC_IGI_PL_MarisaA",
+        "THPRAC_IGI_PL_MarisaB",
+        "THPRAC_IGI_PL_SakuyaA",
+        "THPRAC_IGI_PL_SakuyaB"
+      ],
+	   "IGI_PL_15": [
+        "THPRAC_IGI_PL_Reimu",
+        "THPRAC_IGI_PL_Marisa",
+        "THPRAC_IGI_PL_Sanae",
+        "THPRAC_IGI_PL_Reisen"
+      ],
+	   "IGI_PL_16": [
+        "THPRAC_IGI_PL_Reimu",
+		"THPRAC_IGI_PL_Cirno",
+		"THPRAC_IGI_PL_Aya",
+        "THPRAC_IGI_PL_Marisa"
+      ],
+	   "IGI_PL_16S": [
+        "THPRAC_IGI_PL_16A",
+        "THPRAC_IGI_PL_16B",
+        "THPRAC_IGI_PL_16C",
+        "THPRAC_IGI_PL_16D",
+        "THPRAC_IGI_PL_16E"
+      ],
+	   "IGI_PL_17": [
+        "THPRAC_IGI_PL_Reimu17A",
+        "THPRAC_IGI_PL_Reimu17B",
+        "THPRAC_IGI_PL_Reimu17C",
+		"THPRAC_IGI_PL_Marisa17A",
+        "THPRAC_IGI_PL_Marisa17B",
+        "THPRAC_IGI_PL_Marisa17C",
+		"THPRAC_IGI_PL_Youmu17A",
+        "THPRAC_IGI_PL_Youmu17B",
+        "THPRAC_IGI_PL_Youmu17C"
+      ],
+	   "IGI_PL_18": [
+        "THPRAC_IGI_PL_Reimu",
+		"THPRAC_IGI_PL_Marisa",
+		"THPRAC_IGI_PL_Sakuya",
+		"THPRAC_IGI_PL_Sanae"
+      ]
+    }
   },
   
   "common": {

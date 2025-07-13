@@ -548,6 +548,14 @@ namespace TH10 {
 
         virtual void OnContentUpdate() override
         {
+            byte cur_player_type = (*(byte*)(0x474C68)) * 3 + (*(byte*)(0x474C6C));
+            int32_t diff = *((int32_t*)0x474c74);
+            auto diff_pl = std::format("{}({})", S(IGI_DIFF[diff]), S(IGI_PL_10[cur_player_type]));
+            auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
+
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::Text(diff_pl.c_str());
+
             ImGui::Columns(2);
             ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
             ImGui::NextColumn();

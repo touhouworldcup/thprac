@@ -656,6 +656,7 @@ namespace TH08 {
         int32_t mBombCount;
         int32_t mLSCCount;
         int32_t mSCCount;
+        int32_t mDesolveCount;
 
     protected:
         virtual void OnLocaleChange() override
@@ -685,10 +686,23 @@ namespace TH08 {
             mMissCount = *(int8_t*)(0x0164CFA4);
             mBombCount = *(int8_t*)(0x0164CFA8) + *(int8_t*)(0x0164CFAC);
             
+            byte cur_player_type = *(byte*)(0x164d0b1);
+            int32_t diff = *((int32_t*)0x160f538);
+            if (diff == 1 
+                && (((*(int32_t*)0x164D0B4) & 0x4000) == 0x4000)
+                && *(WORD*)(0x164D0B8) >= 205 
+                && *(WORD*)(0x164D0B8) <= 221)
+                diff = 7;//LW
+            auto diff_pl = std::format("{}({})", S(IGI_DIFF[diff]), S(IGI_PL_08[cur_player_type]));
+            auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
+
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::Text(diff_pl.c_str());
+
             ImGui::Columns(2);
             ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
             ImGui::NextColumn();
-            ImGui::Text("%8d", mMissCount);
+            ImGui::Text("%8d(%d)", mMissCount, mDesolveCount);
             ImGui::NextColumn();
             ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
             ImGui::NextColumn();
@@ -2741,6 +2755,7 @@ namespace TH08 {
         TH08InGameInfo::singleton().mSCCount = 0;
         TH08InGameInfo::singleton().mBombCount = 0;
         TH08InGameInfo::singleton().mMissCount = 0;
+        TH08InGameInfo::singleton().mDesolveCount = 0;
     })
     EHOOK_DY(th08_spell_capture, 0x416265, 3, { // to enable SC count in rep, do not directly read spell capture array
         const static int32_t last_spells[] = {
@@ -2761,20 +2776,20 @@ namespace TH08 {
                 TH08InGameInfo::singleton().mLSCCount++;
         }
     })
-    EHOOK_DY(th08_lock_timer1, 0x437AF3,3, // initialize
-    {
+    EHOOK_DY(th08_desolve, 0x44ABE9,3,{
+        TH08InGameInfo::singleton().mDesolveCount++;
+    })
+    EHOOK_DY(th08_lock_timer1, 0x437AF3,3,{ // initialize
+    
         g_lock_timer = 0;
     })
-    EHOOK_DY(th08_lock_timer2, 0x41CB32,2, // set timeout case 132
-    {
+    EHOOK_DY(th08_lock_timer2, 0x41CB32,2,{ // set timeout case 132
         g_lock_timer = 0;
     })
-    EHOOK_DY(th08_lock_timer3, 0x41C44F,2, // set boss mode case 127
-    {
+    EHOOK_DY(th08_lock_timer3, 0x41C44F, 2, { // set boss mode case 127
         g_lock_timer = 0;
     })
-    EHOOK_DY(th08_lock_timer4, 0x42F34D,3, // decrease time (update)
-    {
+    EHOOK_DY(th08_lock_timer4, 0x42F34D, 3, { // decrease time (update)
         g_lock_timer++;
     })
     HOOKSET_ENDDEF()

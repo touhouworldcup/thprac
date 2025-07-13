@@ -756,14 +756,60 @@ enum th_glossary_t {
     THPRAC_GAME_TIME_RESET,
     THPRAC_GAME_TIME_TOTAL,
     THPRAC_GOTO_STEAM_PAGE,
+    THPRAC_IGI_DIFF_E,
+    THPRAC_IGI_DIFF_EX,
+    THPRAC_IGI_DIFF_H,
+    THPRAC_IGI_DIFF_L,
+    THPRAC_IGI_DIFF_LW,
+    THPRAC_IGI_DIFF_N,
+    THPRAC_IGI_DIFF_OD,
+    THPRAC_IGI_DIFF_PH,
+    THPRAC_IGI_PL_16A,
+    THPRAC_IGI_PL_16B,
+    THPRAC_IGI_PL_16C,
+    THPRAC_IGI_PL_16D,
+    THPRAC_IGI_PL_16E,
+    THPRAC_IGI_PL_8A,
+    THPRAC_IGI_PL_8B,
+    THPRAC_IGI_PL_8C,
+    THPRAC_IGI_PL_8D,
+    THPRAC_IGI_PL_Alice,
+    THPRAC_IGI_PL_Aya,
+    THPRAC_IGI_PL_Cirno,
+    THPRAC_IGI_PL_Marisa,
+    THPRAC_IGI_PL_Marisa17A,
+    THPRAC_IGI_PL_Marisa17B,
+    THPRAC_IGI_PL_Marisa17C,
+    THPRAC_IGI_PL_MarisaA,
+    THPRAC_IGI_PL_MarisaB,
+    THPRAC_IGI_PL_MarisaC,
+    THPRAC_IGI_PL_Reimu,
+    THPRAC_IGI_PL_Reimu17A,
+    THPRAC_IGI_PL_Reimu17B,
+    THPRAC_IGI_PL_Reimu17C,
+    THPRAC_IGI_PL_ReimuA,
+    THPRAC_IGI_PL_ReimuB,
+    THPRAC_IGI_PL_ReimuC,
+    THPRAC_IGI_PL_Reisen,
+    THPRAC_IGI_PL_Remilia,
+    THPRAC_IGI_PL_Sakuya,
+    THPRAC_IGI_PL_SakuyaA,
+    THPRAC_IGI_PL_SakuyaB,
+    THPRAC_IGI_PL_Sanae,
+    THPRAC_IGI_PL_SanaeA,
+    THPRAC_IGI_PL_SanaeB,
+    THPRAC_IGI_PL_Youmu,
+    THPRAC_IGI_PL_Youmu17A,
+    THPRAC_IGI_PL_Youmu17B,
+    THPRAC_IGI_PL_Youmu17C,
+    THPRAC_IGI_PL_Yukari,
+    THPRAC_IGI_PL_Yuyuko,
     THPRAC_IGNORE_GLOBAL_DATA,
     THPRAC_IGNORE_LOCAL_DATA,
     THPRAC_INFLIVES_MAP,
     THPRAC_INGAMEINFO,
     THPRAC_INGAMEINFO_06_CAPTURE_CUR,
     THPRAC_INGAMEINFO_06_CAPTURE_TOT,
-    THPRAC_INGAMEINFO_06_E,
-    THPRAC_INGAMEINFO_06_EX,
     THPRAC_INGAMEINFO_06_GAMTIME_ALL,
     THPRAC_INGAMEINFO_06_GAMTIME_CENTRY,
     THPRAC_INGAMEINFO_06_GAMTIME_CHARACTER_TOT,
@@ -778,13 +824,6 @@ enum th_glossary_t {
     THPRAC_INGAMEINFO_06_GAMTIME_SECOND,
     THPRAC_INGAMEINFO_06_GAMTIME_TOT,
     THPRAC_INGAMEINFO_06_GAMTIME_YEAR,
-    THPRAC_INGAMEINFO_06_H,
-    THPRAC_INGAMEINFO_06_L,
-    THPRAC_INGAMEINFO_06_MA,
-    THPRAC_INGAMEINFO_06_MB,
-    THPRAC_INGAMEINFO_06_N,
-    THPRAC_INGAMEINFO_06_RA,
-    THPRAC_INGAMEINFO_06_RB,
     THPRAC_INGAMEINFO_06_SHOWDETAIL_COLLAPSE,
     THPRAC_INGAMEINFO_06_SHOWDETAIL_HOTKEY,
     THPRAC_INGAMEINFO_06_SHOWDETAIL_PAGE,
@@ -797,10 +836,9 @@ enum th_glossary_t {
     THPRAC_INGAMEINFO_07_CHERRY_PLUS,
     THPRAC_INGAMEINFO_08_LSC_COUNT,
     THPRAC_INGAMEINFO_08_SC_COUNT,
-    THPRAC_INGAMEINFO_12_UFO_BLUE_COUNT,
-    THPRAC_INGAMEINFO_12_UFO_GREEN_COUNT,
-    THPRAC_INGAMEINFO_12_UFO_RAINBOW_COUNT,
-    THPRAC_INGAMEINFO_12_UFO_RED_COUNT,
+    THPRAC_INGAMEINFO_12_UFO_COUNT1,
+    THPRAC_INGAMEINFO_12_UFO_COUNT2,
+    THPRAC_INGAMEINFO_12_UFO_COUNT3,
     THPRAC_INGAMEINFO_13_TRANCE_COUNT,
     THPRAC_INGAMEINFO_15_RE_TIMES_CURRENT,
     THPRAC_INGAMEINFO_15_RE_TIMES_STAGE,
@@ -1471,7 +1509,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1460];
+extern const char* th_glossary_str[3][1498];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1488,6 +1526,34 @@ extern const th_glossary_t LUCK_DESC_2[12];
 extern const th_glossary_t LUCK_DESC_2A[12];
 
 extern const th_glossary_t LUCK_DESC_2B[12];
+
+extern const th_glossary_t IGI_DIFF[9];
+
+extern const th_glossary_t IGI_PL_06[5];
+
+extern const th_glossary_t IGI_PL_07[7];
+
+extern const th_glossary_t IGI_PL_08[13];
+
+extern const th_glossary_t IGI_PL_10[7];
+
+extern const th_glossary_t IGI_PL_11[7];
+
+extern const th_glossary_t IGI_PL_12[7];
+
+extern const th_glossary_t IGI_PL_13[5];
+
+extern const th_glossary_t IGI_PL_14[7];
+
+extern const th_glossary_t IGI_PL_15[5];
+
+extern const th_glossary_t IGI_PL_16[5];
+
+extern const th_glossary_t IGI_PL_16S[6];
+
+extern const th_glossary_t IGI_PL_17[10];
+
+extern const th_glossary_t IGI_PL_18[5];
 
 extern const th_glossary_t TH_TIMEOUT_SETTING[3];
 
@@ -3096,7 +3162,7 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3409];
+extern const wchar_t __thprac_loc_range_zh[3411];
 
 extern const wchar_t __thprac_loc_range_en[61];
 

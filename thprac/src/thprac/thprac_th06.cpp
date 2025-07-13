@@ -447,6 +447,15 @@ namespace TH06 {
                 spell_id = 64;
             int32_t mBombCount = *(int8_t*)(0x0069BCC4);
 
+            byte cur_player_typea = *(byte*)(0x69D4BD);
+            byte cur_player_typeb = *(byte*)(0x69D4BE);
+            byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
+            auto diff_pl = std::format("{}({})", S(IGI_DIFF[*(int8_t*)(0x69bcb0)]), S(IGI_PL_06[cur_player_type]));
+            auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
+
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x*0.5);
+            ImGui::Text(diff_pl.c_str());
+
             ImGui::Columns(2);
             ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
             ImGui::NextColumn();
@@ -512,11 +521,11 @@ namespace TH06 {
             void ShowDetail(bool *isOpen){
                 ImGui::BeginTabBar("Detail Spell");
                 {
-                    const char* tabs_diff[5] = { S(THPRAC_INGAMEINFO_06_E), S(THPRAC_INGAMEINFO_06_N), S(THPRAC_INGAMEINFO_06_H), S(THPRAC_INGAMEINFO_06_L), S(THPRAC_INGAMEINFO_06_EX) };
+                    const char* tabs_diff[5] = { S(THPRAC_IGI_DIFF_E), S(THPRAC_IGI_DIFF_N), S(THPRAC_IGI_DIFF_H), S(THPRAC_IGI_DIFF_L), S(THPRAC_IGI_DIFF_EX) };
                     for (int diff = 0; diff < 5; diff++) {
                         if (ImGui::BeginTabItem(tabs_diff[diff])) {
                             ImGui::BeginTabBar("Player Type");
-                            const char* tabs_player[4] = { S(THPRAC_INGAMEINFO_06_RA), S(THPRAC_INGAMEINFO_06_RB), S(THPRAC_INGAMEINFO_06_MA), S(THPRAC_INGAMEINFO_06_MB) };
+                            const char* tabs_player[4] = { S(THPRAC_IGI_PL_ReimuA), S(THPRAC_IGI_PL_ReimuB), S(THPRAC_IGI_PL_MarisaA), S(THPRAC_IGI_PL_MarisaB) };
                             for (int pl = 0; pl < 4; pl++) {
                                 if (ImGui::BeginTabItem(tabs_player[pl])) {
                                     // time

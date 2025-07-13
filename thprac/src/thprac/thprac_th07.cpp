@@ -621,6 +621,15 @@ namespace TH07 {
             mCherryMax = *(int32_t*)(0x0062F88C) - mCherryBase;
             mCherryPlus = *(int32_t*)(0x0062F890) - mCherryBase;
 
+            byte cur_player_typea = *(byte*)(0x62F645);
+            byte cur_player_typeb = *(byte*)(0x62F646);
+            byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
+            auto diff_pl = std::format("{}({})", S(IGI_DIFF[*(int32_t*)0x626280]), S(IGI_PL_07[cur_player_type]));
+            auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
+
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::Text(diff_pl.c_str());
+
             ImGui::Columns(2);
             ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
             ImGui::NextColumn();
@@ -2124,6 +2133,9 @@ namespace TH07 {
 
     static __declspec(noinline) void THGuiCreate()
     {
+        if (ImGui::GetCurrentContext()) {
+            return;
+        }
         // Init
         GameGuiInit(IMPL_WIN32_DX8, 0x575958, 0x575c20,
             Gui::INGAGME_INPUT_GEN1, 0x4b9e4c, 0x4b9e54, 0x4b9e5c,

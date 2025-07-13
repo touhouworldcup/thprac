@@ -627,6 +627,14 @@ namespace TH15 {
             bool is_in_P_mode = (*(byte*)(0x004E7795)) & 0x1;
             if (is_in_P_mode) // pplayer
             {
+                byte cur_player_type = (*(int32_t*)(0x4E7404));
+                int32_t diff = *((int32_t*)0x4e7410);
+                auto diff_pl = std::format("{}({})", S(IGI_DIFF[diff]), S(IGI_PL_15[cur_player_type]));
+                auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
+
+                ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+                ImGui::Text(diff_pl.c_str());
+
                 int cur_stage = *(int*)(0x004E73F0);
                 int tot_re = *(int*)(0x004E7594);
                 int cur_re = *(int*)(0x004E75B8);
@@ -653,15 +661,30 @@ namespace TH15 {
                 ImGui::NextColumn();
                 ImGui::Text("%8d", cur_re);
                 ImGui::Columns(1);
-                ImGui::NewLine();
+                ImGui::Separator();
                 ImGui::Columns(2);
-                for (int i = 0; i < std::min(7,cur_stage); i++){
-                    ImGui::Text(S(THPRAC_INGAMEINFO_15_RE_TIMES_STAGE), i + 1);
+                if (cur_stage == 7) {
+                    ImGui::Text(S(THPRAC_INGAMEINFO_15_RE_TIMES_STAGE), 7);
                     ImGui::NextColumn();
-                    ImGui::Text("%8d", stage_re[i]);
+                    ImGui::Text("%8d", stage_re[6]);
                     ImGui::NextColumn();
+                } else {
+                    for (int i = 0; i < std::min(6,cur_stage); i++){
+                        ImGui::Text(S(THPRAC_INGAMEINFO_15_RE_TIMES_STAGE), i + 1);
+                        ImGui::NextColumn();
+                        ImGui::Text("%8d", stage_re[i]);
+                        ImGui::NextColumn();
+                    }
                 }
             } else {
+                byte cur_player_type = (*(int32_t*)(0x4E7404));
+                int32_t diff = *((int32_t*)0x4e7410);
+                auto diff_pl = std::format("{}({})", S(IGI_DIFF[diff]), S(IGI_PL_15[cur_player_type]));
+                auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
+
+                ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+                ImGui::Text(diff_pl.c_str());
+
                 ImGui::Columns(2);
                 ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));ImGui::NextColumn();ImGui::Text("%8d",mMissCount);
                 ImGui::NextColumn();
