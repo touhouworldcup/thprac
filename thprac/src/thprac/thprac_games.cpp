@@ -545,6 +545,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         }
 
         LauncherSettingGet("th10_ud_Replay", g_adv_igi_options.th10_ud_Replay);
+        LauncherSettingGet("chromatic_UFO_info", g_adv_igi_options.th12_chromatic_ufo);
 
         LauncherSettingGet("th18_force_card", g_adv_igi_options.th18_force_card);
         LauncherSettingGet("th18_card_st1", g_adv_igi_options.th18_cards[0]);

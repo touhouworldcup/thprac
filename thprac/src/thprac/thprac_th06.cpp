@@ -450,7 +450,7 @@ namespace TH06 {
             byte cur_player_typea = *(byte*)(0x69D4BD);
             byte cur_player_typeb = *(byte*)(0x69D4BE);
             byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
-            auto diff_pl = std::format("{}({})", S(IGI_DIFF[*(int8_t*)(0x69bcb0)]), S(IGI_PL_06[cur_player_type]));
+            auto diff_pl = std::format("{} ({})", S(IGI_DIFF[*(int8_t*)(0x69bcb0)]), S(IGI_PL_06[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
             ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x*0.5);

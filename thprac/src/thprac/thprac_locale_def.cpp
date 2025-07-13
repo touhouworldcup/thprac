@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1498] {
+const char* th_glossary_str[3][1499] {
     {
         "",
         "啤酒",
@@ -839,6 +839,7 @@ const char* th_glossary_str[3][1498] {
         "开碟:",
         "吃碟:",
         "掉碟:",
+        "炫彩UFO信息",
         "灵界:",
         "当前Re数:",
         "第%d面Re数:",
@@ -2339,6 +2340,7 @@ const char* th_glossary_str[3][1498] {
         "UFO spawn",
         "UFO item",
         "UFO drop",
+        "chromatic UFO info",
         "trance:",
         "current Re:",
         "stage %d Re:",
@@ -3839,6 +3841,7 @@ const char* th_glossary_str[3][1498] {
         "UFO spawn",
         "UFO item",
         "UFO drop",
+        "chromatic UFO info",
         "trance:",
         "current Re:",
         "stage %d Re:",
@@ -25672,7 +25675,7 @@ namespace TH20 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3411] {
+const wchar_t __thprac_loc_range_zh[3413] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -26637,6 +26640,7 @@ const wchar_t __thprac_loc_range_zh[3411] {
     0x7089, 0x7089,
     0x708e, 0x708e,
     0x7099, 0x7099,
+    0x70ab, 0x70ab,
     0x70ac, 0x70ac,
     0x70ae, 0x70ae,
     0x70b8, 0x70b8,

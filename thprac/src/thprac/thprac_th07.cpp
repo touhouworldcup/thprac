@@ -554,7 +554,7 @@ namespace TH07 {
         PATCH_HK(0x421F91, "eb")
         HOTKEY_ENDDEF();
 
-        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
+        HOTKEY_DEFINE(mInfLives, TH_INFLIVES2, "F2", VK_F2)
         PATCH_HK(0x44115F, "eb"),
         PATCH_HK(0x440DA1, "909090909090")
         HOTKEY_ENDDEF();
@@ -624,7 +624,7 @@ namespace TH07 {
             byte cur_player_typea = *(byte*)(0x62F645);
             byte cur_player_typeb = *(byte*)(0x62F646);
             byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
-            auto diff_pl = std::format("{}({})", S(IGI_DIFF[*(int32_t*)0x626280]), S(IGI_PL_07[cur_player_type]));
+            auto diff_pl = std::format("{} ({})", S(IGI_DIFF[*(int32_t*)0x626280]), S(IGI_PL_07[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
             ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
@@ -1809,7 +1809,7 @@ namespace TH07 {
 
                 // bullet hitbox
                 for (int i = 0; i < 1024; i++) {
-                    DWORD pbt = 0x0062F958 + 0xB8C0 + 0x35A000 - 0xD68 * i;
+                    DWORD pbt = 0x0062F958 + 0xB8C0 + 0x35A000 - 0xD68 * i - 0xD68;
                     if (*(DWORD*)(pbt + 0xBFC) != 1) {
                         continue;
                     }

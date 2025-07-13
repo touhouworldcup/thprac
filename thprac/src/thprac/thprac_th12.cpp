@@ -581,7 +581,7 @@ namespace TH12 {
         {
             int32_t cur_player_type = (*(DWORD*)(0x004B0C90)) * 2 + (*(DWORD*)(0x4B0C94));
             int32_t diff = *((int32_t*)0x4B0CA8);
-            auto diff_pl = std::format("{}({})", S(IGI_DIFF[diff]), S(IGI_PL_12[cur_player_type]));
+            auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_12[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
             ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
@@ -619,24 +619,30 @@ namespace TH12 {
             ImGui::NextColumn();
             if (ufo_cnt_sz * 0.5 < last_item_width)
                 ImGui::SetCursorPosX(ImGui::GetCursorPosX() + last_item_width - ufo_cnt_sz * 0.5);
-            ImGui::Text(ufo_cnt.c_str());
+            ImGui::TextColored({ 1.0f, 0.5f, 0.5f, 1.0f }, "%d", mRUFOCount);
+            ImGui::SameLine(0.0f,0.0f);
+            ImGui::Text("/");
+            ImGui::SameLine(0.0f,0.0f);
+            ImGui::TextColored({ 0.5f, 1.0f, 0.5f, 1.0f }, "%d", mGUFOCount);
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::Text("/");
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::TextColored({ 0.5f, 0.75f, 1.0f, 1.0f }, "%d", mBUFOCount);
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::Text("/");
+            ImGui::SameLine(0.0f, 0.0f);
+            if (g_adv_igi_options.th12_chromatic_ufo) {
+                float r, g, b;
+                static float h = 0.0f;
+                h += 0.016f;
+                ImGui::ColorConvertHSVtoRGB(h, 0.5f, 1.0f, r, g, b);
+                ImGui::TextColored({ r, g, b, 1.0f }, "%d", mCUFOCount);
+            }else{
+                ImGui::Text("%d", mCUFOCount);
+            }
+            // ImGui::TextColored({ 1.0f, 1.0f, 1.0f, 1.0f }, "%d", mCUFOCount);
+            // ImGui::Text(ufo_cnt.c_str());
 
-            //ImGui::NextColumn();
-            //ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_RED_COUNT));
-            //ImGui::NextColumn();
-            //ImGui::Text("%8d", mRUFOCount);
-            //ImGui::NextColumn();
-            //ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_GREEN_COUNT));
-            //ImGui::NextColumn();
-            //ImGui::Text("%8d", mGUFOCount);
-            //ImGui::NextColumn();
-            //ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_BLUE_COUNT));
-            //ImGui::NextColumn();
-            //ImGui::Text("%8d", mBUFOCount);
-            //ImGui::NextColumn();
-            //ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_RAINBOW_COUNT));
-            //ImGui::NextColumn();
-            //ImGui::Text("%8d", mCUFOCount);
         }
 
         virtual void OnPreUpdate() override
@@ -822,7 +828,7 @@ namespace TH12 {
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_BOSS_FORCE_MOVE_DOWN_DESC));
-                ImGui::SameLine();
+                ImGui::Checkbox(S(THPRAC_INGAMEINFO_12_UFO_SUPER_ULTRA_CHROMATIC_INFO_PRO), &g_adv_igi_options.th12_chromatic_ufo);
                 ImGui::SetNextItemWidth(180.0f);
                 if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &g_bossMoveDownRange, 0.002f, 0.0f, 1.0f))
                     g_bossMoveDownRange = std::clamp(g_bossMoveDownRange, 0.0f, 1.0f);

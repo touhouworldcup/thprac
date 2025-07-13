@@ -577,7 +577,7 @@ namespace TH14 {
         {
             byte cur_player_type = (*(int32_t*)(0x4f5828))*2 + (*(int32_t*)(0x4f582c));
             int32_t diff = *((int32_t*)0x4f5834);
-            auto diff_pl = std::format("{}({})", S(IGI_DIFF[diff]), S(IGI_PL_14[cur_player_type]));
+            auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_14[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
             ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);

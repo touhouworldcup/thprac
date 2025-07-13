@@ -2185,6 +2185,7 @@ private:
             ImGui::SetNextItemWidth(180.0f);
             mCfgTH06_Seed.Gui(S(THPRAC_TH06_RAND_SEED));
             mCfgEnableTH11_ShowHint_autoly.Gui(S(THPRAC_INGAMEINFO_TH11_SHOW_HINT2));
+            mCfgEnableTH12_ChromaticUFO_info.Gui(S(THPRAC_INGAMEINFO_12_UFO_SUPER_ULTRA_CHROMATIC_INFO_PRO));
             mCfgEnableTH13_ShowHits_autoly.Gui(S(THPRAC_INGAMEINFO_TH13_SHOW_HITS2));
             mCfgEnableTH13_ShowHitBar_autoly.Gui(S(THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR2));
             mCfgEnableTH14_ShowBonus_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_BONUS2));
@@ -2424,6 +2425,7 @@ private:
     THCfgCheckbox mCfgTH06_RepMarker { "auto_th06_rep_marker",true };
     THCfgCheckbox mCfgEnableTH06_ShowHitbox_autoly { "auto_th06_show_hitbox", false };
     THCfgCheckbox mCfgEnableTH11_ShowHint_autoly { "auto_th11_show_hint", false };
+    THCfgCheckbox mCfgEnableTH12_ChromaticUFO_info { "chromatic_UFO_info", false };
     THCfgCheckbox mCfgEnableTH13_ShowHits_autoly { "auto_th13_show_hits", false };
     THCfgCheckbox mCfgEnableTH13_ShowHitBar_autoly { "auto_th13_show_hitbar", false };
     THCfgCheckbox mCfgEnableTH14_ShowBonus_autoly { "auto_th14_show_bonus", false };

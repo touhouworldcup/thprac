@@ -563,7 +563,7 @@ namespace TH16 {
             byte cur_player_type = (*(int32_t*)(0x4A57A4));
             byte cur_player_type2 = (*(int32_t*)(0x4A57AC));
             int32_t diff = *((int32_t*)0x4A57B4);
-            auto diff_pl = std::format("{}({}+{})", S(IGI_DIFF[diff]), S(IGI_PL_16[cur_player_type]), S(IGI_PL_16S[cur_player_type2]));
+            auto diff_pl = std::format("{} ({}+{})", S(IGI_DIFF[diff]), S(IGI_PL_16[cur_player_type]), S(IGI_PL_16S[cur_player_type2]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
             ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);

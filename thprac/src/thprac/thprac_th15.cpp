@@ -629,7 +629,7 @@ namespace TH15 {
             {
                 byte cur_player_type = (*(int32_t*)(0x4E7404));
                 int32_t diff = *((int32_t*)0x4e7410);
-                auto diff_pl = std::format("{}({})", S(IGI_DIFF[diff]), S(IGI_PL_15[cur_player_type]));
+                auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_15[cur_player_type]));
                 auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
                 ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
@@ -679,7 +679,7 @@ namespace TH15 {
             } else {
                 byte cur_player_type = (*(int32_t*)(0x4E7404));
                 int32_t diff = *((int32_t*)0x4e7410);
-                auto diff_pl = std::format("{}({})", S(IGI_DIFF[diff]), S(IGI_PL_15[cur_player_type]));
+                auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_15[cur_player_type]));
                 auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
                 ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);

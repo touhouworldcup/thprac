@@ -615,7 +615,7 @@ namespace TH08 {
         HOTKEY_ENDDEF();
 
     public:
-        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
+        HOTKEY_DEFINE(mInfLives, TH_INFLIVES2, "F2", VK_F2)
         PATCH_HK(0x44D0EE, "90"),
         PATCH_HK(0x44CD8D, "909090909090")
         HOTKEY_ENDDEF();
@@ -693,7 +693,7 @@ namespace TH08 {
                 && *(WORD*)(0x164D0B8) >= 205 
                 && *(WORD*)(0x164D0B8) <= 221)
                 diff = 7;//LW
-            auto diff_pl = std::format("{}({})", S(IGI_DIFF[diff]), S(IGI_PL_08[cur_player_type]));
+            auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_08[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
             ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
@@ -702,7 +702,7 @@ namespace TH08 {
             ImGui::Columns(2);
             ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
             ImGui::NextColumn();
-            ImGui::Text("%8d(%d)", mMissCount, mDesolveCount);
+            ImGui::Text("%8d (%d)", mMissCount, mDesolveCount);
             ImGui::NextColumn();
             ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
             ImGui::NextColumn();

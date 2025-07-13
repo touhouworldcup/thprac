@@ -578,7 +578,7 @@ namespace TH13 {
             int32_t diff = *((int32_t*)0x4BE7C4);
             if (diff == 5 || (thPracParam.mode && thPracParam.useOD))
                 diff = 6;//OD
-            auto diff_pl = std::format("{}({})", S(IGI_DIFF[diff]), S(IGI_PL_13[cur_player_type]));
+            auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_13[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
             ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);

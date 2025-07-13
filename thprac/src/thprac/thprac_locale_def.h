@@ -839,6 +839,7 @@ enum th_glossary_t {
     THPRAC_INGAMEINFO_12_UFO_COUNT1,
     THPRAC_INGAMEINFO_12_UFO_COUNT2,
     THPRAC_INGAMEINFO_12_UFO_COUNT3,
+    THPRAC_INGAMEINFO_12_UFO_SUPER_ULTRA_CHROMATIC_INFO_PRO,
     THPRAC_INGAMEINFO_13_TRANCE_COUNT,
     THPRAC_INGAMEINFO_15_RE_TIMES_CURRENT,
     THPRAC_INGAMEINFO_15_RE_TIMES_STAGE,
@@ -1509,7 +1510,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1498];
+extern const char* th_glossary_str[3][1499];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3162,7 +3163,7 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3411];
+extern const wchar_t __thprac_loc_range_zh[3413];
 
 extern const wchar_t __thprac_loc_range_en[61];
 
