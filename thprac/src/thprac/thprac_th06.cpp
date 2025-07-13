@@ -293,7 +293,7 @@ namespace TH06 {
         
 
     public:
-        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
+        HOTKEY_DEFINE(mInfLives, TH_INFLIVES2, "F2", VK_F2)
         PATCH_HK(0x428DDB, "a0bad469009090909090909090909090"),
         PATCH_HK(0x428AC6, "909090909090")
         HOTKEY_ENDDEF();
@@ -3320,7 +3320,7 @@ namespace TH06 {
             pCtx->Eip = 0x436DCB;
         }
         if (thRestartFlag) {
-            th06_white_screen.Disable();
+            th06_white_screen.Enable();
             thRestartFlag = false;
             pCtx->Eip = 0x43738c;
         } else {

@@ -1085,7 +1085,7 @@ namespace TH11 {
     __declspec(noinline) void THPatch(ECLHelper& ecl, th_sections_t section)
     {
         auto st3_boss = [&]() {
-            ECLJump(ecl, 0x14ae8, 0x14ba0);
+            ECLJump(ecl, 0x14ae8, 0x14ba0, 160, 0);
             ECLJump(ecl, 0x14bd0, 0x14c8c);
             ECLJump(ecl, 0xb404, 0xf44);
             ECLVoid(ecl, 0xb34c, 0xb374, 0xb3a0, 0xb3bc);
