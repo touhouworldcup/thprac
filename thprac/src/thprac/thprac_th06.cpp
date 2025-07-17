@@ -1,11 +1,18 @@
-﻿#include "thprac_games.h"
-#include "thprac_utils.h"
+﻿#include "thprac_utils.h"
 #include "../3rdParties/d3d8/include/d3d8.h"
 
+#include "thprac_th06.h"
 
 namespace THPrac {
 
 namespace TH06 {
+    static const GameManager* const GAME_MANAGER = (const GameManager* const)0x69bca0;
+
+    enum ADDRS {
+        INPUT_ADDR = 0x69D904,
+        INPUT_PREV_ADDR = 0x69D908,
+    };
+
     bool THBGMTest();
     using std::pair;
     struct THPracParam {
@@ -2067,7 +2074,7 @@ namespace TH06 {
 
         // Init
         GameGuiInit(IMPL_WIN32_DX8, 0x6c6d20, 0x6c6bd4,
-            Gui::INGAGME_INPUT_GEN1, 0x69d904, 0x69d908, 0x69d90c,
+            Gui::INGAGME_INPUT_GEN1, INPUT_ADDR, INPUT_PREV_ADDR, 0x69d90c,
             -1);
 
         SetDpadHook(0x41D330, 3);

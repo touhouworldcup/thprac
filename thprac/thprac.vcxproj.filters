@@ -172,41 +172,14 @@
     <ClInclude Include="src\thprac\thprac_licence.h">
       <Filter>THPrac Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\disassembler.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\distorm\src\config.h">
-      <Filter>3rdParties\distorm</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\distorm\src\decoder.h">
-      <Filter>3rdParties\distorm</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\distorm\src\instructions.h">
-      <Filter>3rdParties\distorm</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\distorm\src\insts.h">
-      <Filter>3rdParties\distorm</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\distorm\src\operands.h">
-      <Filter>3rdParties\distorm</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\distorm\src\prefix.h">
-      <Filter>3rdParties\distorm</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\distorm\src\textdefs.h">
-      <Filter>3rdParties\distorm</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\distorm\src\wstring.h">
-      <Filter>3rdParties\distorm</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\distorm\src\x86defs.h">
-      <Filter>3rdParties\distorm</Filter>
-    </ClInclude>
     <ClInclude Include="src\thprac\thprac_th19.h">
       <Filter>THPrac Games</Filter>
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_log.h">
       <Filter>THPrac Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_th06.h">
+      <Filter>THPrac Games</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
