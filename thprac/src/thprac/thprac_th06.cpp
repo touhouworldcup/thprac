@@ -107,6 +107,7 @@ namespace TH06 {
         }
     };
     bool thRestartFlag = false;
+    bool thRestartFlag_normalGame = false;
     THPracParam thPracParam {};
 
     class THOverlay : public Gui::GameGuiWnd {
@@ -1929,6 +1930,23 @@ namespace TH06 {
                 pCtx->Eip = 0x4026a6;
             }
         }
+
+        // escR patch
+        DWORD thiz = pCtx->Ecx;
+        if (!thPracParam.mode && GAME_MANAGER->isInReplay == 0) {
+            if (*(DWORD*)(thiz) != 7) {
+                WORD key = *(WORD*)(INPUT_ADDR);
+                WORD key_last = *(WORD*)(INPUT_PREV_ADDR);
+                WORD rising_edge = key ^ key_last & key;
+
+                if (Gui::KeyboardInputGetRaw('R') || (rising_edge & 0x124)) { // ctrl+shift+down or R
+                    *(DWORD*)(thiz) = 7;
+                    thRestartFlag_normalGame = true;
+                    pCtx->Eip = 0x40263c;
+                }
+            }
+        }
+
     })
     EHOOK_DY(th06_patch_main, 0x41c17a, 5, {
         THPauseMenu::singleton().el_bgm_changed = false;
@@ -1980,6 +1998,14 @@ namespace TH06 {
         }
     })
     EHOOK_DY(th06_restart, 0x435901, 5, {
+        if (!thRestartFlag_normalGame && !thRestartFlag) {
+            th06_white_screen.Disable();
+        }
+        if (thRestartFlag_normalGame) {
+            th06_white_screen.Enable();
+            thRestartFlag_normalGame = false;
+            pCtx->Eip = 0x436DCB;
+        }
         if (thRestartFlag) {
             th06_white_screen.Enable();
             thRestartFlag = false;
