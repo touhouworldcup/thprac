@@ -3,6 +3,40 @@
 
 namespace THPrac {
 namespace TH10 {
+    constexpr const char* chars_supported = "!\"#$%&' ()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
+    int g_rep_page = 0;
+
+    enum ADDRS {
+        SOUND_MANAGER_ADDR = 0x492590
+    };
+
+    // Workaround for TH10's calling conventions
+    // ecx: SOUND_MANAGER_PTR
+    // edi: Sound ID
+    // Stack: one 0 value, callee stack cleanup.
+
+#if !defined(__clang__)
+    static __forceinline void play_sound_centered(uint32_t sound) {
+        __asm {
+            mov ecx, SOUND_MANAGER_ADDR
+		    mov edi, sound
+		    push 0
+		    mov eax, 0x43DC90
+		    call eax
+        }
+    }
+#else
+    // Because this function uses callee stack cleanup, a workaround with __regcall is not possible, since __regcall does caller stack cleanup
+    // The codegen with __regcall vs manually spelling out the push 0 instruction with inline assembly isn't that much better anyways.
+    static __forceinline void play_sound_centered(uint32_t sound) {
+        asm volatile("push $0");
+        asm volatile(
+            "call *%[func]"
+            :
+            : [func] "r"(0x43DC90), "c"(SOUND_MANAGER_ADDR), "D"(sound));
+    }
+#endif
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -2272,6 +2306,98 @@ namespace TH10 {
     })
     EHOOK_DY(th10_render, 0x4394fa, 5, {
         GameGuiRender(IMPL_WIN32_DX9);
+    })
+    EHOOK_DY(th10_rep_ui0, 0x4315F8, 3,
+        {
+            if (pCtx->Ecx >= 25)
+                g_rep_page = 1, pCtx->Ecx -= 25;
+            else
+                g_rep_page = 0;
+        })
+    EHOOK_DY(th10_rep_ui1, 0x4317BA, 6,
+        {
+            if ((*(DWORD*)0x474E36 & 0x80) != 0 || (*(BYTE*)0x474E34 & 0x80) != 0) { // right
+                g_rep_page = 1;
+                play_sound_centered(0xC);
+            }
+            if ((*(DWORD*)0x474E36 & 0x40) != 0 || (*(BYTE*)0x474E34 & 0x40) != 0) { // left
+                g_rep_page = 0;
+                play_sound_centered(0xC);
+            }
+        })
+    EHOOK_DY(th10_rep_ui2, 0x431844, 7,
+        {
+            if (g_rep_page == 0)
+                return;
+            pCtx->Eax = *(DWORD*)(pCtx->Ebp + pCtx->Ecx * 4 + g_rep_page * 25 * 4 + 0x59E4);
+            pCtx->Eip = 0x0043184B;
+        })
+    EHOOK_DY(th10_rep_ui3, 0x431863, 6, {
+        pCtx->Edx = pCtx->Edx + g_rep_page * 25;
+    })
+    EHOOK_DY(th10_rep_ui4, 0x431DCD, 4, {
+        pCtx->Edx = pCtx->Edx + g_rep_page * 25 * 4;
+    })
+    EHOOK_DY(th10_rep_ui5, 0x00431E70, 1, {
+        if (g_rep_page == 0)
+            return;
+        DWORD a = *(DWORD*)*(DWORD*)(pCtx->Esp + 0x54);
+        if (a) {
+            const char* user_rep = "%s %s %.2d/%.2d/%.2d %.2d:%.2d %s %s %s %2.1f%%";
+            *(DWORD*)(pCtx->Esp) = (DWORD)user_rep;
+
+            static char uds[6] = ".... ";
+            strcpy_s(uds, "     ");
+            int i = 0;
+            for (char* ch = (char*)(a + 0x1DB);; ch++) {
+                if (*ch == '.' || *ch == 0)
+                    break;
+
+                if (strchr(chars_supported, *ch) != NULL)
+                    uds[i] = *ch;
+                else
+                    uds[i] = '?';
+                i++;
+                if (i >= 4)
+                    break;
+            }
+            *(DWORD*)(pCtx->Esp + 4) = (DWORD)uds;
+        }
+    })
+    EHOOK_DY(th10_rep_ui6, 0x00431E82, 1, {
+        if (g_rep_page == 0)
+            return;
+        const char* user_rep = "User  -------- --/--/-- --:-- ------- ------- --- ---%%";
+        *(DWORD*)(pCtx->Esp) = (DWORD)user_rep;
+    })
+    EHOOK_DY(th10_rep_ui7, 0x00431BFD, 3, {
+        if (pCtx->Eax >= 25)
+            pCtx->Eax = pCtx->Eax - 25;
+    })
+    EHOOK_DY(th10_rep_ui8, 0x00431C9B, 1, {
+        if (g_rep_page == 0 || *(DWORD*)(pCtx->Ebp + 0x59DC) < 25)
+            return;
+        DWORD id = *(DWORD*)(pCtx->Ebp + 0x59DC);
+        DWORD a = *(DWORD*)(pCtx->Ebp + 0x59E4 + id * 4);
+        if (a) {
+            const char* user_rep = "%s %s %.2d/%.2d/%.2d %.2d:%.2d %s %s %s %2.1f%%";
+            *(DWORD*)(pCtx->Esp) = (DWORD)user_rep;
+            static char uds[6] = ".... ";
+            strcpy_s(uds, "     ");
+            int i = 0;
+            for (char* ch = (char*)(a + 0x1DB);; ch++) {
+                if (*ch == '.' || *ch == 0)
+                    break;
+                if (strchr(chars_supported, *ch) != NULL)
+                    uds[i] = *ch;
+                else
+                    uds[i] = '?';
+                i++;
+                if (i >= 4)
+                    break;
+            }
+            *(DWORD*)(pCtx->Esp + 4) = (DWORD)uds;
+        }
     })
     HOOKSET_ENDDEF()
 
