@@ -29,8 +29,8 @@ namespace TH10 {
     // Because this function uses callee stack cleanup, a workaround with __regcall is not possible, since __regcall does caller stack cleanup
     // The codegen with __regcall vs manually spelling out the push 0 instruction with inline assembly isn't that much better anyways.
     static __forceinline void play_sound_centered(uint32_t sound) {
-        asm volatile("push $0");
         asm volatile(
+            "push $0\n"
             "call *%[func]"
             :
             : [func] "r"(0x43DC90), "c"(SOUND_MANAGER_ADDR), "D"(sound));
