@@ -355,7 +355,7 @@ namespace TH13 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 8 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mExtend { TH13_EXTEND, 0, 6 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mLifeFragment { TH_LIFE_FRAGMENT, 0, 7 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mBomb { TH_BOMB, 0, 8 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mBomb { TH_BOMB, 0, 9 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mBombFragment { TH_BOMB_FRAGMENT, 0, 7 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 0, 400 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mTranceMeter { TH13_TRANCE_METER, 0, 600, 2, 2 };
@@ -1732,6 +1732,133 @@ namespace TH13 {
         }
     }
 
+    static void RenderHitBar(ImDrawList* p)
+    {
+        if (g_adv_igi_options.th13_showHitBar) {
+            float hits_time = 0.0f;
+            int hits = 0;
+            if (*(DWORD*)(0x4C22A4)) {
+                hits_time = (float)*(int32_t*)(*(DWORD*)(0x4C22A4) + 0x8828) / 60.0f;
+                hits = *(int32_t*)(*(DWORD*)(0x4C22A4) + 0x8838);
+                hits_time = std::clamp(hits_time, 0.0f, 1.0f);
+                DWORD ppl = *(DWORD*)(0x004C22C4);
+                if (ppl && hits_time > 0.0f) {
+                    float xpos = *(float*)(ppl + 0x5B8) + 224.0f;
+                    float ypos = *(float*)(ppl + 0x5BC) + 16.0f;
+                    p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
+                    const float bar_xszhalf = 24.0f;
+                    const float bar_yszhalf = 1.5f;
+                    ImVec2 pmin = { xpos - bar_xszhalf, ypos - 24.0f - bar_yszhalf };
+                    ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f * hits_time, pmin.y + bar_yszhalf * 2.0f };
+                    DWORD col = hits < 10 ? 0xFF5555FF : 0xFFFFFFFF;
+                    // shadow
+                    pmin.x += 1.0f;
+                    pmin.y += 1.0f;
+                    pmax.x += 1.0f;
+                    pmax.y += 1.0f;
+                    p->AddRectFilled(pmin, pmax, 0xFF000000);
+                    pmin.x -= 1.0f;
+                    pmin.y -= 1.0f;
+                    pmax.x -= 1.0f;
+                    pmax.y -= 1.0f;
+                    p->AddRectFilled(pmin, pmax, col);
+                    p->PopClipRect();
+                }
+            }
+        }
+    }
+
+    static void RenderHitbox(ImDrawList* p)
+    {
+        auto GetClientFromStage = [](ImVec2 client) -> ImVec2 { return { client.x + 32.0f + 192.0f, client.y + 16.0f}; };
+        // enm hits
+        DWORD penm = *(DWORD*)(0x4C2188);
+        if (penm) {
+            DWORD iter = *(DWORD*)(penm + 0xB0);
+            float plhit = 0;
+            DWORD ppl = *(DWORD*)(0x4C22C4);
+            if (ppl) {
+                plhit = *(float*)(*(DWORD*)(ppl + 0x660) + 4);
+            }
+            while (iter) {
+                DWORD penm = *(DWORD*)(iter) + 0x11EC;
+                DWORD flag = *(DWORD*)(penm + 0x4030);
+                bool is_rc = false;
+                ImVec2 pos { *(float*)(penm + 0x44), *(float*)(penm + 0x48) };
+                if (((flag & 0x22) == 0 || ((flag & 0x21) == 0)) && *(int*)(penm + 0x3FE4) <= 0 && (flag & 0x8000000) == 0) {
+                    float radius_kill = 0.0f;
+                    if (!*(DWORD*)(penm + 0x40F4)) {
+                        if ((flag & 0x8000) != 0) {
+                            is_rc = true;
+                        } else {
+                            is_rc = false;
+                            radius_kill = *(float*)(penm + 0x118) * 0.5;
+                        }
+                    }
+                    ImVec2 bt_pos2 = GetClientFromStage(pos);
+                    if (is_rc) {
+
+                    } else {
+                        float enm_hit = sqrt(radius_kill * radius_kill + plhit * plhit);
+                        if ((flag & 0x22) == 0) {
+                            p->AddCircleFilled(bt_pos2, enm_hit, 0x80882200);
+                            p->AddCircle(bt_pos2, enm_hit, 0xFFFFFFFF);
+                        }
+                    }
+                    if ((flag & 0x21) == 0) {
+                        float radius_hit = *(float*)(penm + 0x114) * 0.5f;
+                        p->AddCircleFilled(bt_pos2, radius_hit, 0x80220088);
+                        p->AddCircle(bt_pos2, radius_hit, 0xFFFFFFFF);
+
+                        ImVec2 rc_hit { *(float*)(penm + 0x110), *(float*)(penm + 0x114) };
+                    }
+                }
+                iter = *(DWORD*)(iter + 4);
+            }
+        }
+        DWORD ppl = *(DWORD*)(0x4C22C4);
+        if (ppl) {
+            for (int i = 0; i < 256; i++) {
+                DWORD pAtt = ppl + 0xA9E4 + i * 0x9C;
+                DWORD flag = *(DWORD*)(pAtt + 0x10);
+                if (flag & 1){
+                    if (flag & 2)
+                    {
+                        //circle
+                        float radius = *(float*)(pAtt + 0x14);
+                        ImVec2 pos = GetClientFromStage (* (ImVec2*)(pAtt + 0x2C));
+                        p->AddCircleFilled(pos, radius, 0x11CC0000);
+                        p->AddCircle(pos, radius, 0xFFFFFFFF);
+                    }else{
+                        //rc
+                        auto Multiply = [](ImVec2 a, ImVec2 b) -> ImVec2 {return { a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x }; };
+                        auto Add = [](ImVec2 a, ImVec2 b) -> ImVec2 { return { a.x + b.x, a.y + b.y }; };
+                        float width = *(float*)(pAtt + 0x24);
+                        float height = *(float*)(pAtt + 0x28);
+                        float angle = *(float*)(pAtt + 0x1C);
+                        ImVec2 pos = *(ImVec2*)(pAtt + 0x2C);
+                        ImVec2 posA = { width * 0.5f, -(height * 0.5f) };
+                        ImVec2 posB = { width * 0.5f, height * 0.5f};
+                        ImVec2 posC = { -width * 0.5f, -(height * 0.5f) };
+                        ImVec2 posD = { -width * 0.5f, height * 0.5f };
+                        ImVec2 rotation = { cosf(angle), sinf(angle) };
+                        posA = Multiply(posA, rotation);
+                        posB = Multiply(posB, rotation);
+                        posC = Multiply(posC, rotation);
+                        posD = Multiply(posD, rotation);
+                        posA = GetClientFromStage(Add(posA, pos));
+                        posB = GetClientFromStage(Add(posB, pos));
+                        posC = GetClientFromStage(Add(posC, pos));
+                        posD = GetClientFromStage(Add(posD, pos));
+                        p->AddQuadFilled(posA, posB, posD, posC, 0x11CC0000);
+                        p->AddQuad(posA, posB, posD, posC, 0xCCFFFFFF);
+
+                    }
+                }
+            }
+        }
+    }
+
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th13_inf_lives, 0x00444A52,6,
     {
@@ -1881,41 +2008,8 @@ namespace TH13 {
         }
 
         // hit bar
-        {
-            if (g_adv_igi_options.th13_showHitBar) {
-                float hits_time = 0.0f;
-                int hits = 0;
-                if (*(DWORD*)(0x4C22A4)) {
-                    hits_time = (float)*(int32_t*)(*(DWORD*)(0x4C22A4) + 0x8828) / 60.0f;
-                    hits = *(int32_t*)(*(DWORD*)(0x4C22A4) + 0x8838);
-                    hits_time = std::clamp(hits_time, 0.0f, 1.0f);
-                    DWORD ppl = *(DWORD*)(0x004C22C4);
-                    if (ppl && hits_time>0.0f) {
-                        float xpos = *(float*)(ppl + 0x5B8) + 224.0f;
-                        float ypos = *(float*)(ppl + 0x5BC) + 16.0f;
-                        p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
-                        const float bar_xszhalf = 24.0f;
-                        const float bar_yszhalf = 1.5f;
-                        ImVec2 pmin = { xpos - bar_xszhalf, ypos - 24.0f - bar_yszhalf };
-                        ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f * hits_time, pmin.y + bar_yszhalf*2.0f };
-                        DWORD col = hits < 10 ? 0xFF5555FF : 0xFFFFFFFF;
-                        // shadow
-                        pmin.x += 1.0f;
-                        pmin.y += 1.0f;
-                        pmax.x += 1.0f;
-                        pmax.y += 1.0f;
-                        p->AddRectFilled(pmin, pmax, 0xFF000000);
-                        pmin.x -= 1.0f;
-                        pmin.y -= 1.0f;
-                        pmax.x -= 1.0f;
-                        pmax.y -= 1.0f;
-                        p->AddRectFilled(pmin, pmax, col);
-                        p->PopClipRect();
-                    }
-                }
-            }
-        }
-
+        RenderHitBar(p);
+        // RenderHitbox(p);
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004C22C4)){
             g_adv_igi_options.keyboard_style.size = { 36.0f, 36.0f };
             KeysHUD(13, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);

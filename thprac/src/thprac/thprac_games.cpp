@@ -198,6 +198,26 @@ BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
                 new_keyBoardState[bind.first.vk] |= 0x80;
                 if (!new_keyBoardState_changed[bind.first.vk])
                     new_keyBoardState[bind.second.vk] &= (~0x80);
+                switch (bind.second.vk)
+                {
+                default:
+                    break;
+                case VK_LSHIFT:
+                case VK_RSHIFT:
+                    if (!new_keyBoardState_changed[VK_LSHIFT])
+                        new_keyBoardState[VK_SHIFT] &= (~0x80);
+                    break;
+                case VK_LCONTROL:
+                case VK_RCONTROL:
+                    if (!new_keyBoardState_changed[VK_CONTROL])
+                        new_keyBoardState[VK_CONTROL] &= (~0x80);
+                    break;
+                case VK_LMENU:
+                case VK_RMENU:
+                    if (!new_keyBoardState_changed[VK_MENU])
+                        new_keyBoardState[VK_MENU] &= (~0x80);
+                    break;
+                }
                 new_keyBoardState_changed[bind.first.vk] = true;
             }
         }

@@ -6,6 +6,9 @@
 
 namespace THPrac {
 namespace TH14 {
+    enum addrs {
+        BOMB_PTR = 0x4DB52C,
+    };
     int g_lock_timer = 0;
 
     using std::pair;
@@ -508,7 +511,7 @@ namespace TH14 {
 
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
         EHOOK_HK(0x44DEC4, 7, {
-            if(GetMemContent<uint8_t>(0x4DB52C, 0x40)) {
+            if (GetMemContent(BOMB_PTR, 0x40)) {
                 pCtx->Eip = 0x44DFD1;
             } else {
                 pCtx->Eip = 0x44DED1;

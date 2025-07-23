@@ -11,6 +11,37 @@ namespace TH10 {
 
     int g_rep_page = 0;
     const char chars_supported[] = "!\"#$%&' ()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
+    enum ADDRS {
+        SOUND_MANAGER_ADDR = 0x492590
+    };
+    // Workaround for TH10's calling conventions
+    // ecx: SOUND_MANAGER_PTR
+    // edi: Sound ID
+    // Stack: one 0 value, callee stack cleanup.
+
+#if !defined(__clang__)
+    static __forceinline void play_sound_centered(uint32_t sound)
+    {
+        __asm {
+            mov ecx, SOUND_MANAGER_ADDR
+		    mov edi, sound
+		    push 0
+		    mov eax, 0x43DC90
+		    call eax
+        }
+    }
+#else
+    // Because this function uses callee stack cleanup, a workaround with __regcall is not possible, since __regcall does caller stack cleanup
+    // The codegen with __regcall vs manually spelling out the push 0 instruction with inline assembly isn't that much better anyways.
+    static __forceinline void play_sound_centered(uint32_t sound)
+    {
+        asm volatile(
+            "push $0\n"
+            "call *%[func]"
+            :
+            : [func] "r"(0x43DC90), "c"(SOUND_MANAGER_ADDR), "D"(sound));
+    }
+#endif
 
     using std::pair;
     struct THPracParam {
@@ -2677,9 +2708,11 @@ namespace TH10 {
     {
         if ((*(DWORD*)0x474E36 & 0x80) != 0 || (*(BYTE*)0x474E34 & 0x80) != 0) { // right
             g_rep_page = 1;
+            play_sound_centered(0xC);
         }
         if ((*(DWORD*)0x474E36 & 0x40) != 0 || (*(BYTE*)0x474E34 & 0x40) != 0) { // left
             g_rep_page = 0;
+            play_sound_centered(0xC);
         }
     })
     EHOOK_DY(th10_rep_ui2, 0x431844,7,

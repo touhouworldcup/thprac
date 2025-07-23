@@ -725,6 +725,10 @@ namespace TH20TR {
     PATCH_ST(th20_infinite_stones, 0x11A250, "EB");
     PATCH_ST(th20_hitbox_scale_fix, 0x102280, "B864000000C3");
 
+    PATCH_ST(th20_bullet_hitbox_fix_1, 0x3E7F2, "F30F108080000000F30F5C4224");
+    PATCH_ST(th20_bullet_hitbox_fix_2, 0x3E80A, "F30F108284000000F30F5C4128");
+
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
         SINGLETON(THAdvOptWnd);
 
@@ -736,6 +740,7 @@ namespace TH20TR {
         bool scoreUncap = false;
         bool infiniteStones = false;
         bool plHitboxScaleFix = false;
+        bool bulletHitboxFix = true;
 
         void MasterDisableInit()
         {
@@ -818,6 +823,11 @@ namespace TH20TR {
             th20_score_uncap.Setup();
             th20_infinite_stones.Setup();
             th20_hitbox_scale_fix.Setup();
+            th20_bullet_hitbox_fix_1.Setup();
+            th20_bullet_hitbox_fix_2.Setup();
+
+            th20_bullet_hitbox_fix_1.Enable();
+            th20_bullet_hitbox_fix_2.Enable();
 
             // thcrap base_tsa already patches this to fix the crash, don't try to rehook it if it's being used
             if (*(uint32_t*)RVA(0x11AD0) == 0x51EC8B55) {
@@ -903,6 +913,10 @@ namespace TH20TR {
                 ImGui::SameLine();
                 HelpMarker(S(TH20_FIX_HITBOX_DESC));
 
+                if (ImGui::Checkbox("bullet hitbox fix", &bulletHitboxFix)){
+                    th20_bullet_hitbox_fix_1.Toggle(bulletHitboxFix);
+                    th20_bullet_hitbox_fix_2.Toggle(bulletHitboxFix);
+                }
                 ImGui::SetNextItemWidth(180.0f);
                 EndOptGroup();
             }
