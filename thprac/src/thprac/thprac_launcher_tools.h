@@ -30,6 +30,7 @@ private:
     LARGE_INTEGER mTimeFreq;
     LARGE_INTEGER mPressTime;
     LARGE_INTEGER mWaitTime;
+    int mFrameCount;
 
     TestState mTestState;
     TestType mTestType;
@@ -37,12 +38,9 @@ private:
     bool mShowProgressBar;
 
     int mCurTest;
-    // float mCurTestWaitTimeMs;
-    // float mCurTestWaitTimeTotMs;
-
-    // float mCurTestReactionTimeMs;
     std::function<unsigned int(void)> mRndSeedGen;
     std::vector<float> mResults;
+    std::vector<float> mFrameCounts;
 };
 
 }

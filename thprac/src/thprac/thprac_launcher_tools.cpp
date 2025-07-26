@@ -374,6 +374,7 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
         if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_BEGIN))) {
             mTestState = WAIT_TIME;
             mCurTest = 1;
+            mFrameCount = 0;
             if (mTestType == PRESS) {
                 mWaitTime.QuadPart = mRndSeedGen() / 1000.0 * (double)mTimeFreq.QuadPart;
                 mPressTime.QuadPart = mWaitTime.QuadPart + curTime.QuadPart;
@@ -386,14 +387,15 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
         ImGui::Text(S(THPRAC_TOOLS_REACTION_TEST_TOO_EARLY));
         if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_NEXT_TEST)) || ImGui::IsKeyPressed(90) || ImGui::IsKeyPressed(16)) // press z(90)/shift(16)
         {
+            mFrameCount = 0;
             mTestState = WAIT_TIME;
             mWaitTime.QuadPart = mRndSeedGen() / 1000.0 * (double)mTimeFreq.QuadPart;
             mPressTime.QuadPart = mWaitTime.QuadPart + curTime.QuadPart;
         }
     } break;
     case SHOW_RES: {
-        if (mResults.size() != 0)
-            ImGui::Text("%s(%d): %.1f ms (%.1f frame)", S(THPRAC_TOOLS_REACTION_TEST_RESULT), mCurTest, mResults[mResults.size() - 1], mResults[mResults.size() - 1] / 16.66667f);
+        if (mResults.size() != 0 && mFrameCounts.size() != 0)
+            ImGui::Text("%s(%d): %.1f ms (%.1f frame)(framecount: %d)", S(THPRAC_TOOLS_REACTION_TEST_RESULT), mCurTest, mResults[mResults.size() - 1], mResults[mResults.size() - 1] / 16.66667f,(int)mFrameCounts[mFrameCounts.size()-1]);
         else
             ImGui::Text("%s(%d): ?????", S(THPRAC_TOOLS_REACTION_TEST_RESULT), mCurTest);
         if (mCurTest == mTestTime)
@@ -401,20 +403,31 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
             float avg = 0.0f;
             float maxv = 60.0f;
             float minv = 0.0f;
+            float avg_frameCnt = 0.0f;
+            float maxfcnt = 10.0f;
+            float minfcnt = 0.0f;
             for (auto x : mResults) {
                 avg += fabsf(x);
                 maxv = std::max(x, maxv);
                 minv = std::min(x, minv);
             }
+            for (auto x : mFrameCounts) {
+                avg_frameCnt += fabsf(x);
+                maxfcnt = std::max(x, maxfcnt);
+                minfcnt = std::min(x, minfcnt);
+            }
             avg /= (float)mTestTime;
+            avg_frameCnt /= (float)mTestTime;
             ImGui::Separator();
             ImGui::Text("%s: %s, %s", S(THPRAC_TOOLS_REACTION_MODE), mTestType == PRESS ? S(THPRAC_TOOLS_REACTION_MODE_DOWN) : S(THPRAC_TOOLS_REACTION_MODE_UP), 
                 mShowProgressBar ? S(THPRAC_TOOLS_REACTION_MODE_PROGRESSBAR) : S(THPRAC_TOOLS_REACTION_MODE_NORMAL)
             );
-            ImGui::Text("%s: %.1f ms (%.1f frame)", S(THPRAC_TOOLS_REACTION_TEST_RESULT_AVG), avg, avg / 16.66667f);
+            ImGui::Text("%s: %.1f ms (%.1f frame)(framecount: %.1f)", S(THPRAC_TOOLS_REACTION_TEST_RESULT_AVG), avg, avg / 16.66667f, avg_frameCnt);
             
             ImGui::PlotHistogram(S(THPRAC_TOOLS_REACTION_TEST_RESULT), &mResults[0], mTestTime, 0, S(THPRAC_TOOLS_REACTION_TEST_RESULT), minv-10.0f, maxv+20.0f, ImVec2(0, 200.0));
-    
+
+            ImGui::PlotHistogram(std::format("{}(framecount)", S(THPRAC_TOOLS_REACTION_TEST_RESULT)).c_str(), &mFrameCounts[0], mTestTime, 0, std::format("{}(framecount)", S(THPRAC_TOOLS_REACTION_TEST_RESULT)).c_str(), 0.0f, maxfcnt + 10.0f, ImVec2(0, 200.0));
+
             if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_NEXT_TEST)) || ImGui::IsKeyPressed(90) || ImGui::IsKeyPressed(16)) {
                 mTestState = NOT_BEGIN;
             }
@@ -423,6 +436,7 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
             {
                 mCurTest++;
                 mTestState = WAIT_TIME;
+                mFrameCount = 0;
                 mWaitTime.QuadPart = mRndSeedGen() / 1000.0 * (double)mTimeFreq.QuadPart;
                 mPressTime.QuadPart = mWaitTime.QuadPart + curTime.QuadPart;
             }
@@ -436,10 +450,11 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
         if (mTestType == PRESS)
         {
             if (mTestState == WAIT_TIME && curTime.QuadPart >= mPressTime.QuadPart){
-                    mTestState = REACT_TIME;
+                mTestState = REACT_TIME;
+                mFrameCount = 0;
             }
             ImGui::Text("test %d", mCurTest);
-
+            mFrameCount++;
             if (mTestState == WAIT_TIME) {
                 if (mShowProgressBar) {
                     ImGui::ProgressBar(std::clamp(std::fabsf(((double)(mPressTime.QuadPart - curTime.QuadPart)) / ((double)mWaitTime.QuadPart)), 0.0f, 1.0f), ImVec2(0, 0), "waiting...");
@@ -453,6 +468,7 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
                         // allow negative reaction time
                         auto curTestReactionTimeMs = ((double)(curTime.QuadPart - mPressTime.QuadPart)) / ((double)mTimeFreq.QuadPart) * 1000.0;
                         mResults.push_back(curTestReactionTimeMs);
+                        mFrameCounts.push_back(ceil(fabsf(curTestReactionTimeMs))/16.6667f);
                         mTestState = SHOW_RES;
                     }
                 }
@@ -465,13 +481,16 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
                 if (isKeyPressed){
                     auto curTestReactionTimeMs = ((double)(curTime.QuadPart - mPressTime.QuadPart)) / ((double)mTimeFreq.QuadPart) * 1000.0;
                     mResults.push_back(curTestReactionTimeMs);
+                    mFrameCounts.push_back(mFrameCount);
                     mTestState = SHOW_RES;
                 }
             }
         }else{
             if (mTestState == WAIT_TIME_PRESSED && curTime.QuadPart >= mPressTime.QuadPart) {
                 mTestState = REACT_TIME;
+                mFrameCount = 0;
             }
+            mFrameCount++;
             ImGui::Text("test %d", mCurTest);
             if (mTestState == WAIT_TIME) {
                 if (mShowProgressBar) {
@@ -493,6 +512,7 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
                 if (!isKeyPressed) {
                     auto curTestReactionTimeMs = ((double)(curTime.QuadPart - mPressTime.QuadPart)) / ((double)mTimeFreq.QuadPart) * 1000.0;
                     mResults.push_back(curTestReactionTimeMs);
+                    mFrameCounts.push_back(mFrameCount);
                     mTestState = SHOW_RES;
                 }
             }
@@ -508,6 +528,7 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
                     } else {
                         auto curTestReactionTimeMs = ((double)(curTime.QuadPart - mPressTime.QuadPart)) / ((double)mTimeFreq.QuadPart) * 1000.0;
                         mResults.push_back(curTestReactionTimeMs);
+                        mFrameCounts.push_back(ceil(fabsf(curTestReactionTimeMs)) / 16.6667f);
                         mTestState = SHOW_RES;
                     }
                 }
@@ -528,6 +549,7 @@ void THGuiTestReactionTest::Reset()
     mShowProgressBar = false;
     mCurTest = 0;
     mResults = {};
+    mFrameCounts = {};
 }
 
 
