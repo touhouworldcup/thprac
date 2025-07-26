@@ -937,7 +937,7 @@ namespace TH08 {
                 }
                 EndOptGroup();
             }
-
+            InGameReactionTestOpt();
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();

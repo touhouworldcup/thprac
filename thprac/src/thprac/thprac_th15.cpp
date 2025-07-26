@@ -927,6 +927,7 @@ namespace TH15 {
                 EndOptGroup();
             }
             SSS_UI();
+            InGameReactionTestOpt();
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();

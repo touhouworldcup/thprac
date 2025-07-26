@@ -21,6 +21,8 @@
 //#include "MinHook.h"
 
 #include <dwmapi.h>
+#include "thprac_launcher_tools.h"
+
 #pragma comment(lib, "dwmapi.lib")
 
 namespace THPrac {
@@ -1190,6 +1192,17 @@ void InfLifeOpt()
 {
     ImGui::Checkbox(S(THPRAC_INFLIVES_MAP), &g_adv_igi_options.map_inf_life_to_no_continue);
     return;
+}
+
+void InGameReactionTestOpt()
+{
+    // this tool is used for reaction test, but also can test the game lag, since players' reaction remains almost the same when in game or out of game
+    static THGuiTestReactionTest test;
+    if (ImGui::CollapsingHeader(S(THPRAC_TOOLS_REACTION_TEST))) {
+        test.GuiUpdate(true);
+    } else {
+        test.Reset();
+    }
 }
 
 #pragma endregion

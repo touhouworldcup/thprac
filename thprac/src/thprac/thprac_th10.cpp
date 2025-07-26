@@ -932,6 +932,7 @@ namespace TH10 {
                 EndOptGroup();
             }
             SSS_UI();
+            InGameReactionTestOpt();
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();

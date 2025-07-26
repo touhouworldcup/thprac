@@ -1054,6 +1054,7 @@ namespace TH17 {
 
                 EndOptGroup();
             }
+            InGameReactionTestOpt();
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();

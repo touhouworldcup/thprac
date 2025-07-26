@@ -311,7 +311,7 @@
       "THPRAC_TOOLS_REACTION_TEST_WAIT":["等待红色变绿时弹起或放下方向键","wait for color changes then press or release key","wait for color changes then press or release key"],
       "THPRAC_TOOLS_REACTION_TEST_RESULT":["结果","result","result"],
       "THPRAC_TOOLS_REACTION_TEST_TOO_EARLY":["按太快了","too early","too early"],
-      "THPRAC_TOOLS_REACTION_TEST_NEXT_TEST":["再测一次(快捷键z)","next test(hotkey z)","next test(hotkey z)"],
+      "THPRAC_TOOLS_REACTION_TEST_NEXT_TEST":["再测一次(快捷键z/shift)","next test(hotkey z/shift)","next test(hotkey z/shift)"],
       "THPRAC_TOOLS_REACTION_SHOW_PROC_BAR":["显示等待时间进度条","show wait time progress bar","show wait time progress bar"],
       "THPRAC_TOOLS_REACTION_MODE_DOWN":["按下测试","press time test","press time test"],
       "THPRAC_TOOLS_REACTION_MODE_UP":["弹起测试","release time test","release time test"],

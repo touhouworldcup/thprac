@@ -1927,7 +1927,7 @@ namespace TH18 {
             }
 
             wndFocus &= ReplayMenu();
-
+            InGameReactionTestOpt();
             AboutOpt();
             ImGui::EndChild();
             // if (wndFocus)

@@ -806,6 +806,7 @@ namespace TH11 {
             }
 
             AboutOpt();
+            InGameReactionTestOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
         }

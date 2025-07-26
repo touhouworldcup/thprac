@@ -807,7 +807,7 @@ namespace TH07 {
                     GameplaySet();
                 EndOptGroup();
             }
-
+            InGameReactionTestOpt();
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();

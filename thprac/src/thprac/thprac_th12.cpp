@@ -840,6 +840,7 @@ namespace TH12 {
                 EndOptGroup();
             }
             SSS_UI();
+            InGameReactionTestOpt();
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();

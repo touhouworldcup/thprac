@@ -902,7 +902,7 @@ namespace TH16 {
                     GameplaySet();
                 EndOptGroup();
             }
-
+            InGameReactionTestOpt();
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();

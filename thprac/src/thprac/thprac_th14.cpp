@@ -1515,7 +1515,7 @@ namespace TH14 {
                 wndFocus &= MarisaLaserMenu();
                 EndOptGroup();
             }
-
+            InGameReactionTestOpt();
             AboutOpt("Plus & InceRabbit (for making the video about Marisa's replay desync bug, and for sharing the replay)\n......and you!");
             ImGui::EndChild();
             if (wndFocus)

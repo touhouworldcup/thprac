@@ -1882,7 +1882,7 @@ namespace TH06 {
                         (int)(g_books_pos[5].x - 192.0f), (int)g_books_pos[5].y).c_str());
                 }
             }
-            
+            InGameReactionTestOpt();
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
