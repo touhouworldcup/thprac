@@ -402,6 +402,13 @@ private:
                                     if (game.HasMember("autoBackup") && game["autoBackup"].IsBool()) {
                                         gameInst.autoBackup = game["autoBackup"].GetBool();
                                     }
+
+                                    if (game.HasMember("useVpatch") && game["useVpatch"].IsBool()) {
+                                        gameInst.useVpatch = game["useVpatch"].GetBool();
+                                    }
+                                    if (game.HasMember("useOILP") && game["useOILP"].IsBool()) {
+                                        gameInst.useOILP = game["useOILP"].GetBool();
+                                    }
                                     mGames[it->name.GetString()].instances.push_back(gameInst);
                                 } else {
                                     result = false;
@@ -457,6 +464,8 @@ private:
                 JsonAddMemberA(gameInst, "path", inst.path.c_str(), alloc);
                 JsonAddMember(gameInst, "apply_thprac", inst.useTHPrac, alloc);
                 JsonAddMember(gameInst, "autoBackup", inst.autoBackup, alloc);
+                JsonAddMember(gameInst, "useVpatch", inst.useVpatch, alloc);
+                JsonAddMember(gameInst, "useOILP", inst.useOILP, alloc);
                 gameInstances.PushBack(gameInst, alloc);
             }
             JsonAddMemberA(gameTitleJson, "instances", gameInstances, alloc);
@@ -2055,20 +2064,14 @@ public:
     void GameVpatchSelection(THGameInst& currentInst)
     {
         if (mCurrentGame->signature.vPatchStr) {
-            if (ImGui::RadioButton(S(THPRAC_GAMES_USE_VPATCH), currentInst.useVpatch)) {
+            if (ImGui::Checkbox(S(THPRAC_GAMES_USE_VPATCH), &currentInst.useVpatch)) {
                 if (currentInst.useVpatch) {
-                    currentInst.useVpatch = false;
-                } else {
                     currentInst.useOILP = false;
-                    currentInst.useVpatch = true;
-                }
+                } 
             }
             ImGui::SameLine();
-            if (ImGui::RadioButton(S(THPRAC_GAMES_USE_OILP), currentInst.useOILP)) {
+            if (ImGui::Checkbox(S(THPRAC_GAMES_USE_OILP), &currentInst.useOILP)) {
                 if (currentInst.useOILP) {
-                    currentInst.useOILP = false;
-                } else {
-                    currentInst.useOILP = true;
                     currentInst.useVpatch = false;
                 }
             }
@@ -2076,6 +2079,7 @@ public:
             //currentInst.useVpatch = false;
             ImGui::Checkbox(S(THPRAC_GAMES_USE_OILP), &currentInst.useOILP);
         }
+        WriteGameCfg();
     }
 
     bool IsTHPracApplicable(THGameType type)
