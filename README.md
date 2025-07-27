@@ -1,3 +1,6 @@
+## 25.7.27
+- 对OILP(https://github.com/khang06/OpenInputLagPatch)的支持(/touhouworldcup/thprac/tree/OpenInputLagPatch)
+
 ## 25.7.26
 - 游戏内反应力测试
 

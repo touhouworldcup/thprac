@@ -744,6 +744,7 @@ enum th_glossary_t {
     THPRAC_GAMES_SELECT_VER,
     THPRAC_GAMES_SPINOFF_OTHERS,
     THPRAC_GAMES_SPINOFF_STG,
+    THPRAC_GAMES_USE_OILP,
     THPRAC_GAMES_USE_VPATCH,
     THPRAC_GAME_ADJUSTMENTS,
     THPRAC_GAME_TIME_CURRENT,
@@ -1510,7 +1511,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1499];
+extern const char* th_glossary_str[3][1500];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

@@ -1040,43 +1040,51 @@ namespace TH14 {
         }
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th14.dll");
-            if (mOptCtx.vpatch_base) {
-                uint64_t hash[2];
-                CalcFileHash(L"vpatch_th14.dll", hash);
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                OILPInit(mOptCtx);
+            } else {
+                mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th14.dll");
+                if (mOptCtx.vpatch_base) {
+                    uint64_t hash[2];
+                    CalcFileHash(L"vpatch_th14.dll", hash);
 
-                bool vp_valid = hash[0] == 16763243947833835441ll && hash[1] == 14013686233300952408ll;
-                if (hash[0] == 5864489015760801383ll && hash[1] == 8525349857717864816ll) {
-                    vp_valid = true;
-                    if (MessageBoxW(
-                            *(HWND*)0x4f5a18,
-                            L"Old version of vpatch detected. Do you want to download the newest version?",
-                            L"thprac: warning",
-                            MB_ICONWARNING | MB_YESNO)
-                        == IDYES) {
-                        ShellExecuteW(NULL, NULL, L"https://maribelhearn.com/mirror/VsyncPatch.zip", NULL, NULL, SW_SHOW);
+                    bool vp_valid = hash[0] == 16763243947833835441ll && hash[1] == 14013686233300952408ll;
+                    if (hash[0] == 5864489015760801383ll && hash[1] == 8525349857717864816ll) {
+                        vp_valid = true;
+                        if (MessageBoxW(
+                                *(HWND*)0x4f5a18,
+                                L"Old version of vpatch detected. Do you want to download the newest version?",
+                                L"thprac: warning",
+                                MB_ICONWARNING | MB_YESNO)
+                            == IDYES) {
+                            ShellExecuteW(NULL, NULL, L"https://maribelhearn.com/mirror/VsyncPatch.zip", NULL, NULL, SW_SHOW);
+                        }
                     }
-                }
 
-                if (vp_valid && *(int32_t*)(mOptCtx.vpatch_base + 0x42fbc) == 0) {
-                    mOptCtx.fps_status = 2;
-                    mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x42fcc);
-                } else if (!vp_valid) {
-                    mOptCtx.fps_status = -1;
-                }
-            } else if (*(uint8_t*)0x4d9159 == 3) {
-                mOptCtx.fps_status = 1;
+                    if (vp_valid && *(int32_t*)(mOptCtx.vpatch_base + 0x42fbc) == 0) {
+                        mOptCtx.fps_status = 2;
+                        mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x42fcc);
+                    } else if (!vp_valid) {
+                        mOptCtx.fps_status = -1;
+                    }
+                } else if (*(uint8_t*)0x4d9159 == 3) {
+                    mOptCtx.fps_status = 1;
 
-                DWORD oldProtect;
-                VirtualProtect((void*)0x46a792, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
-                *(double**)0x46a792 = &mOptCtx.fps_dbl;
-                VirtualProtect((void*)0x46a792, 4, oldProtect, &oldProtect);
-            } else
-                mOptCtx.fps_status = 0;
+                    DWORD oldProtect;
+                    VirtualProtect((void*)0x46a792, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+                    *(double**)0x46a792 = &mOptCtx.fps_dbl;
+                    VirtualProtect((void*)0x46a792, 4, oldProtect, &oldProtect);
+                } else
+                    mOptCtx.fps_status = 0;
+            }
         }
         void FpsSet()
         {
-            if (mOptCtx.fps_status == 1) {
+            if (mOptCtx.fps_status == 3) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
+            } else if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
             } else if (mOptCtx.fps_status == 2) {
                 *(int32_t*)(mOptCtx.vpatch_base + 0x40a34) = mOptCtx.fps;

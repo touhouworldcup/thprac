@@ -1667,8 +1667,9 @@ namespace TH06 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06.dll");
-            if (mOptCtx.vpatch_base) {
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                OILPInit(mOptCtx);
+            }else if (mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06.dll")){
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th06.dll", hash);
                 if (hash[0] != 3665784961181135876ll || hash[1] != 9283021252209177490ll)
@@ -1677,20 +1678,17 @@ namespace TH06 {
                     mOptCtx.fps_status = 2;
                     mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x17034);
                 }
-            } else {
-                mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06_unicode.dll");
-                if (mOptCtx.vpatch_base) {
-                    uint64_t hash[2];
-                    CalcFileHash(L"vpatch_th06_unicode.dll", hash);
-                    if (hash[0] != 5021620919341617817ll || hash[1] != 10919509441391235291ll)
-                        mOptCtx.fps_status = -1;
-                    else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
-                        mOptCtx.fps_status = 2;
-                        mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x17034);
-                    }
-                } else
-                    mOptCtx.fps_status = 0;
-            }
+            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th06_unicode.dll")) {
+                uint64_t hash[2];
+                CalcFileHash(L"vpatch_th06_unicode.dll", hash);
+                if (hash[0] != 5021620919341617817ll || hash[1] != 10919509441391235291ll)
+                    mOptCtx.fps_status = -1;
+                else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
+                    mOptCtx.fps_status = 2;
+                    mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x17034);
+                }
+            } else
+                mOptCtx.fps_status = 0;
         }
         void FpsSet()
         {
@@ -1699,7 +1697,11 @@ namespace TH06 {
             } else if (mOptCtx.fps_status == 2) {
                 *(int32_t*)(mOptCtx.vpatch_base + 0x15a4c) = mOptCtx.fps;
                 *(int32_t*)(mOptCtx.vpatch_base + 0x17034) = mOptCtx.fps;
-            }
+            } else if (mOptCtx.fps_status == 3) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
+            } 
         }
         void GameplayInit()
         {

@@ -371,7 +371,7 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
     
         ImGui::DragInt(S(THPRAC_TOOLS_REACTION_TEST_TIME), &mTestTime, 1.0f, 1, 20);
         ImGui::NewLine();
-        if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_BEGIN))) {
+        if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_BEGIN)) || ImGui::IsKeyPressed(90) || ImGui::IsKeyPressed(16)) {
             mTestState = WAIT_TIME;
             mCurTest = 1;
             mFrameCount = 0;
@@ -381,6 +381,7 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
             }
             mResults = {};
         }
+        ImGui::InvisibleButton("inv", colorBtnSz);
     } break;
     
     case TOO_EARLY: {
@@ -392,11 +393,15 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
             mWaitTime.QuadPart = mRndSeedGen() / 1000.0 * (double)mTimeFreq.QuadPart;
             mPressTime.QuadPart = mWaitTime.QuadPart + curTime.QuadPart;
         }
+        ImGui::InvisibleButton("inv", colorBtnSz);
     } break;
     case SHOW_RES: {
         if (mResults.size() != 0 && mFrameCounts.size() != 0)
+        {
             ImGui::Text("%s(%d): %.1f ms (%.1f frame)(framecount: %d)", S(THPRAC_TOOLS_REACTION_TEST_RESULT), mCurTest, mResults[mResults.size() - 1], mResults[mResults.size() - 1] / 16.66667f,(int)mFrameCounts[mFrameCounts.size()-1]);
-        else
+            if (mCurTest < mTestTime)
+                ImGui::InvisibleButton("inv", colorBtnSz);
+        }else
             ImGui::Text("%s(%d): ?????", S(THPRAC_TOOLS_REACTION_TEST_RESULT), mCurTest);
         if (mCurTest == mTestTime)
         {
@@ -425,9 +430,8 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
             ImGui::Text("%s: %.1f ms (%.1f frame)(framecount: %.1f)", S(THPRAC_TOOLS_REACTION_TEST_RESULT_AVG), avg, avg / 16.66667f, avg_frameCnt);
             
             ImGui::PlotHistogram(S(THPRAC_TOOLS_REACTION_TEST_RESULT), &mResults[0], mTestTime, 0, S(THPRAC_TOOLS_REACTION_TEST_RESULT), minv-10.0f, maxv+20.0f, ImVec2(0, 200.0));
-
-            ImGui::PlotHistogram(std::format("{}(framecount)", S(THPRAC_TOOLS_REACTION_TEST_RESULT)).c_str(), &mFrameCounts[0], mTestTime, 0, std::format("{}(framecount)", S(THPRAC_TOOLS_REACTION_TEST_RESULT)).c_str(), 0.0f, maxfcnt + 10.0f, ImVec2(0, 200.0));
-
+            
+            ImGui::PlotHistogram(std::format("{}(framecount)", S(THPRAC_TOOLS_REACTION_TEST_RESULT)).c_str(), &mFrameCounts[0], mTestTime, 0, std::format("{}(framecount)", S(THPRAC_TOOLS_REACTION_TEST_RESULT)).c_str(), minfcnt-1.0f, maxfcnt + 10.0f, ImVec2(0, 200.0));
             if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_NEXT_TEST)) || ImGui::IsKeyPressed(90) || ImGui::IsKeyPressed(16)) {
                 mTestState = NOT_BEGIN;
             }

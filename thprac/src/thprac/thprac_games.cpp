@@ -852,6 +852,25 @@ void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nu
     MessageBoxW(nullptr, _msg, _title, type);
 }
 
+void OILPInit(adv_opt_ctx& ctx)
+{
+    ctx.fps_status = 3;
+    ctx.oilp_set_game_fps = (adv_opt_ctx::oilp_set_fps_t*)GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_set_game_fps");
+    auto oilp_get_game_fps = (int(__stdcall*)())GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_get_game_fps");
+    if (oilp_get_game_fps)
+        ctx.fps = oilp_get_game_fps();
+    else
+        ctx.fps = 60;
+    ctx.oilp_set_replay_skip_fps = (adv_opt_ctx::oilp_set_fps_t*)GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_set_replay_skip_fps");
+    ctx.oilp_set_replay_slow_fps = (adv_opt_ctx::oilp_set_fps_t*)GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_set_replay_slow_fps");
+    auto oilp_get_replay_skip_fps = (int(__stdcall*)())GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_get_replay_skip_fps");
+    auto oilp_get_replay_slow_fps = (int(__stdcall*)())GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_get_replay_slow_fps");
+    if (oilp_get_replay_skip_fps)
+        ctx.fps_replay_fast = oilp_get_replay_skip_fps();
+    if (oilp_get_replay_slow_fps)
+        ctx.fps_replay_slow = oilp_get_replay_slow_fps();
+}
+
 void CenteredText(const char* text, float wndX)
 {
     ImGui::SetCursorPosX((wndX - ImGui::CalcTextSize(text).x) / 2.0f);

@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1499] {
+const char* th_glossary_str[3][1500] {
     {
         "",
         "啤酒",
@@ -744,6 +744,7 @@ const char* th_glossary_str[3][1499] {
         "选择游戏：",
         "小数点作（其他）",
         "小数点作（STG）",
+        "使用OpenInputLagPatch (如果可用）",
         "使用VsyncPatch (如果可用）",
         "thprac - 游戏调整",
         "本次飞行时间",
@@ -1204,7 +1205,7 @@ const char* th_glossary_str[3][1499] {
         "弹起测试",
         "显示等待时间进度条",
         "反应力测试",
-        "开始测试",
+        "开始测试(快捷键z/shift)",
         "按下反应测试(等待变色后按下方向键)",
         "再测一次(快捷键z/shift)",
         "结果",
@@ -2245,6 +2246,7 @@ const char* th_glossary_str[3][1499] {
         "Select game:",
         "Spinoff (Others)",
         "Spinoff (Shmup)",
+        "Use OpenInputLagPatch (if avaliable)",
         "Use VsyncPatch (if avaliable)",
         "thprac - Game adjustments",
         "current game time",
@@ -2705,7 +2707,7 @@ const char* th_glossary_str[3][1499] {
         "release time test",
         "show wait time progress bar",
         "reaction test",
-        "start",
+        "start(hotkey z/shift)",
         "keydown test(wait for color changed then press arrow key)",
         "next test(hotkey z/shift)",
         "result",
@@ -3746,6 +3748,7 @@ const char* th_glossary_str[3][1499] {
         "ゲームを選択：",
         "小数点作（その他）",
         "小数点作（STG）",
+        "OpenInputLagPatch を使用する (利用可能な場合)",
         "VsyncPatch を使用する (利用可能な場合)",
         "thprac - ゲームの調整",
         "current game time",
@@ -4206,7 +4209,7 @@ const char* th_glossary_str[3][1499] {
         "release time test",
         "show wait time progress bar",
         "reaction test",
-        "start",
+        "start(hotkey z/shift)",
         "keydown test(wait for color changed then press arrow key)",
         "next test(hotkey z/shift)",
         "result",

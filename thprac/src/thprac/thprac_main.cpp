@@ -161,18 +161,16 @@ bool CheckIfGameExist(THGameSig& gameSig, std::wstring& name)
     return false;
 }
 
-bool CheckVpatch(THGameSig& gameSig)
-{
-    auto attr = GetFileAttributesW(gameSig.vPatchStr);
-    if (attr == INVALID_FILE_ATTRIBUTES || (attr & FILE_ATTRIBUTE_DIRECTORY))
-        return false;
-    return true;
-}
+// bool CheckVpatch(THGameSig& gameSig)
+// {
+//     auto attr = GetFileAttributesW(gameSig.vPatchStr);
+//     if (attr == INVALID_FILE_ATTRIBUTES || (attr & FILE_ATTRIBUTE_DIRECTORY))
+//         return false;
+//     return true;
+// }
 
-bool RunGameWithTHPrac(THGameSig& gameSig, const wchar_t* const name, bool withVpatch)
+bool RunGameWithTHPrac(THGameSig& gameSig, const wchar_t* const name, bool withVpatchOrOILP)
 {
-    auto isVpatchValid = withVpatch && CheckDLLFunction(gameSig.vPatchStr, "_Initialize@4");
-
     STARTUPINFOW startup_info;
     PROCESS_INFORMATION proc_info;
     memset(&startup_info, 0, sizeof(startup_info));
@@ -180,12 +178,21 @@ bool RunGameWithTHPrac(THGameSig& gameSig, const wchar_t* const name, bool withV
     CreateProcessW(name, nullptr, nullptr, nullptr, false, CREATE_SUSPENDED, nullptr, nullptr, &startup_info, &proc_info);
     uintptr_t base = GetGameModuleBase(proc_info.hProcess);
 
-    if (isVpatchValid) {
+    if (withVpatchOrOILP && CheckDLLFunction(L"openinputlagpatch.dll", "oilp_set_game_fps")) {
+        auto oilpNameLength = (wcslen(L"openinputlagpatch.dll") + 1) * sizeof(wchar_t);
+        auto pLoadLibrary = ::LoadLibraryW;
+        if (auto remoteStr = VirtualAllocEx(proc_info.hProcess, NULL, oilpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) {
+            WriteProcessMemory(proc_info.hProcess, remoteStr, L"openinputlagpatch.dll", oilpNameLength, NULL);
+            if (auto t = CreateRemoteThread(proc_info.hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, remoteStr, 0, NULL))
+                WaitForSingleObject(t, INFINITE);
+            VirtualFreeEx(proc_info.hProcess, remoteStr, 0, MEM_RELEASE);
+        }
+    } else if (withVpatchOrOILP && CheckDLLFunction(gameSig.vPatchStr, "_Initialize@4")) {
         auto vpNameLength = (wcslen(gameSig.vPatchStr) + 1) * sizeof(wchar_t);
         auto pLoadLibrary = ::LoadLibraryW;
-        if (auto remoteStr = VirtualAllocEx(proc_info.hProcess, nullptr, vpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) {
-            WriteProcessMemory(proc_info.hProcess, remoteStr, gameSig.vPatchStr, vpNameLength, nullptr);
-            if (auto t = CreateRemoteThread(proc_info.hProcess, nullptr, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, remoteStr, 0, nullptr))
+        if (auto remoteStr = VirtualAllocEx(proc_info.hProcess, NULL, vpNameLength, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) {
+            WriteProcessMemory(proc_info.hProcess, remoteStr, gameSig.vPatchStr, vpNameLength, NULL);
+            if (auto t = CreateRemoteThread(proc_info.hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)pLoadLibrary, remoteStr, 0, NULL))
                 WaitForSingleObject(t, INFINITE);
             VirtualFreeEx(proc_info.hProcess, remoteStr, 0, MEM_RELEASE);
         }

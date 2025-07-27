@@ -682,8 +682,9 @@ namespace TH07 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th07.dll");
-            if (mOptCtx.vpatch_base) {
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                OILPInit(mOptCtx);
+            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th07.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th07.dll", hash);
                 if (hash[0] != 9678734212472211387ll || hash[1] != 9671871756369193188ll)
@@ -697,7 +698,11 @@ namespace TH07 {
         }
         void FpsSet()
         {
-            if (mOptCtx.fps_status == 1) {
+            if (mOptCtx.fps_status == 3) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
+            }else if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
             } else if (mOptCtx.fps_status == 2) {
                 *(int32_t*)(mOptCtx.vpatch_base + 0x15a4c) = mOptCtx.fps;
