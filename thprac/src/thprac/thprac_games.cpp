@@ -404,6 +404,24 @@ void GameGuiRender(game_gui_impl impl)
 #pragma endregion
 
 #pragma region Advanced Options Menu
+void OILPInit(adv_opt_ctx& ctx)
+{
+    ctx.fps_status = 3;
+    ctx.oilp_set_game_fps = (adv_opt_ctx::oilp_set_fps_t*)GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_set_game_fps");
+    auto oilp_get_game_fps = (int(__stdcall*)())GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_get_game_fps");
+    if (oilp_get_game_fps)
+        ctx.fps = oilp_get_game_fps();
+    else
+        ctx.fps = 60;
+    ctx.oilp_set_replay_skip_fps = (adv_opt_ctx::oilp_set_fps_t*)GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_set_replay_skip_fps");
+    ctx.oilp_set_replay_slow_fps = (adv_opt_ctx::oilp_set_fps_t*)GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_set_replay_slow_fps");
+    auto oilp_get_replay_skip_fps = (int(__stdcall*)())GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_get_replay_skip_fps");
+    auto oilp_get_replay_slow_fps = (int(__stdcall*)())GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_get_replay_slow_fps");
+    if (oilp_get_replay_skip_fps)
+        ctx.fps_replay_fast = oilp_get_replay_skip_fps();
+    if (oilp_get_replay_slow_fps)
+        ctx.fps_replay_slow = oilp_get_replay_slow_fps();
+}
 
 void CalcFileHash(const wchar_t* file_name, uint64_t hash[2])
 {

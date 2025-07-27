@@ -84,13 +84,19 @@ struct adv_opt_ctx {
     int fps_replay_slow = 0;
     int fps_replay_fast = 0;
     int fps_debug_acc = 0;
-    int32_t vpatch_base = 0;
+    uintptr_t vpatch_base = 0;
 
     std::wstring data_rec_dir;
 
     bool all_clear_bonus = false;
+
+    typedef bool __stdcall oilp_set_fps_t(int fps);
+    oilp_set_fps_t* oilp_set_game_fps = NULL;
+    oilp_set_fps_t* oilp_set_replay_skip_fps = NULL;
+    oilp_set_fps_t* oilp_set_replay_slow_fps = NULL;
 };
 
+void OILPInit(adv_opt_ctx& ctx);
 void CalcFileHash(const wchar_t* file_name, uint64_t hash[2]);
 template <th_glossary_t name>
 static bool BeginOptGroup(bool default_status = true)
