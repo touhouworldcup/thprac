@@ -2068,18 +2068,21 @@ public:
                 if (currentInst.useVpatch) {
                     currentInst.useOILP = false;
                 } 
+                WriteGameCfg();
             }
             ImGui::SameLine();
             if (ImGui::Checkbox(S(THPRAC_GAMES_USE_OILP), &currentInst.useOILP)) {
                 if (currentInst.useOILP) {
                     currentInst.useVpatch = false;
                 }
+                WriteGameCfg();
             }
         } else {
             //currentInst.useVpatch = false;
-            ImGui::Checkbox(S(THPRAC_GAMES_USE_OILP), &currentInst.useOILP);
+            if (ImGui::Checkbox(S(THPRAC_GAMES_USE_OILP), &currentInst.useOILP)){
+                WriteGameCfg();
+            }
         }
-        WriteGameCfg();
     }
 
     bool IsTHPracApplicable(THGameType type)
