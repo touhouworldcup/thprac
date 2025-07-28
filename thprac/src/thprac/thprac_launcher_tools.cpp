@@ -338,6 +338,12 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
 {
     LARGE_INTEGER curTime;
     QueryPerformanceCounter(&curTime);
+    Gui::KeyboardInputUpdate(VK_DOWN);
+    Gui::KeyboardInputUpdate(VK_UP);
+    Gui::KeyboardInputUpdate(VK_RIGHT);
+    Gui::KeyboardInputUpdate(VK_LEFT);
+    Gui::KeyboardInputUpdate('Z');
+    Gui::KeyboardInputUpdate(VK_SHIFT);
 
     ImVec2 colorBtnSz = ImVec2(ImGui::GetWindowWidth()*0.5f, ImGui::GetTextLineHeight() * 10.0f);
     ImVec2 colorBtnPos = ImVec2(ImGui::GetWindowWidth()*0.25f, ImGui::GetTextLineHeight() * 2.0f);
@@ -346,7 +352,8 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
     ImVec4 color_AfterTimeReact = ImVec4(0, 1, 0.2, 1);
     ImVec4 color_WaitPress = ImVec4(1, 1, 0.2, 1);
 
-    bool isKeyPressed = ImGui::IsKeyDown(37) || ImGui::IsKeyDown(38) || ImGui::IsKeyDown(39) || ImGui::IsKeyDown(40);
+    bool isKeyPressed = ImGui::IsKeyDown(37) || ImGui::IsKeyDown(38) || ImGui::IsKeyDown(39) || ImGui::IsKeyDown(40)
+        || (GetAsyncKeyState(VK_DOWN) & 0x8000) || (GetAsyncKeyState(VK_UP) & 0x8000) || (GetAsyncKeyState(VK_RIGHT) & 0x8000) || (GetAsyncKeyState(VK_LEFT) & 0x8000);
     if (!ingame){
         if (ImGui::Button(S(THPRAC_BACK))) {
             Reset();
@@ -371,7 +378,10 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
     
         ImGui::DragInt(S(THPRAC_TOOLS_REACTION_TEST_TIME), &mTestTime, 1.0f, 1, 20);
         ImGui::NewLine();
-        if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_BEGIN)) || ImGui::IsKeyPressed(90) || ImGui::IsKeyPressed(16)) {
+        if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_BEGIN)) || ImGui::IsKeyPressed('Z') || ImGui::IsKeyPressed(VK_SHIFT)) {
+            // in win 7, due to the initialize sequence, QueryPerformanceFrequency might get 0 value at the beginning, 
+            // so query it every time before test begin to avoid this problem
+            QueryPerformanceFrequency(&mTimeFreq);
             mTestState = WAIT_TIME;
             mCurTest = 1;
             mFrameCount = 0;
@@ -386,7 +396,7 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
     
     case TOO_EARLY: {
         ImGui::Text(S(THPRAC_TOOLS_REACTION_TEST_TOO_EARLY));
-        if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_NEXT_TEST)) || ImGui::IsKeyPressed(90) || ImGui::IsKeyPressed(16)) // press z(90)/shift(16)
+        if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_NEXT_TEST)) || ImGui::IsKeyPressed('Z') || ImGui::IsKeyPressed(VK_SHIFT)) // press z(90)/shift(16)
         {
             mFrameCount = 0;
             mTestState = WAIT_TIME;
@@ -432,11 +442,11 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
             ImGui::PlotHistogram(S(THPRAC_TOOLS_REACTION_TEST_RESULT), &mResults[0], mTestTime, 0, S(THPRAC_TOOLS_REACTION_TEST_RESULT), minv-10.0f, maxv+20.0f, ImVec2(0, 200.0));
             
             ImGui::PlotHistogram(std::format("{}(framecount)", S(THPRAC_TOOLS_REACTION_TEST_RESULT)).c_str(), &mFrameCounts[0], mTestTime, 0, std::format("{}(framecount)", S(THPRAC_TOOLS_REACTION_TEST_RESULT)).c_str(), minfcnt-1.0f, maxfcnt + 10.0f, ImVec2(0, 200.0));
-            if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_NEXT_TEST)) || ImGui::IsKeyPressed(90) || ImGui::IsKeyPressed(16)) {
+            if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_NEXT_TEST)) || ImGui::IsKeyPressed('Z') || ImGui::IsKeyPressed(VK_SHIFT)) {
                 mTestState = NOT_BEGIN;
             }
         } else {
-            if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_NEXT_TEST)) || ImGui::IsKeyPressed(90) || ImGui::IsKeyPressed(16)) // press z
+            if (ImGui::Button(S(THPRAC_TOOLS_REACTION_TEST_NEXT_TEST)) || ImGui::IsKeyPressed('Z') || ImGui::IsKeyPressed(VK_SHIFT)) // press z
             {
                 mCurTest++;
                 mTestState = WAIT_TIME;
@@ -546,6 +556,7 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
 
 void THGuiTestReactionTest::Reset()
 {
+    QueryPerformanceFrequency(&mTimeFreq);
     mTestState = NOT_BEGIN;
     mTestType = PRESS;
     mTestTime = 5;
