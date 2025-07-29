@@ -482,7 +482,7 @@ namespace TH128 {
         }
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
-         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
+        HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x43D0D5, "01"),
         PATCH_HK(0x43B7FA, "eb"),
         PATCH_HK(0x43d11b, "83c4109090"),

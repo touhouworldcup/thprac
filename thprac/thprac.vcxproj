@@ -142,6 +142,7 @@
     <ClCompile Include="src\thprac\thprac_log.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
     <None Include="packages.config" />
     <None Include="resource.hm" />
     <None Include="src\3rdParties\ImGui\imgui_user.inl" />

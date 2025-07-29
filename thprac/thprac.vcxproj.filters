@@ -416,6 +416,7 @@
     <None Include="resource.hm">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="thprac.rc">

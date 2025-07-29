@@ -300,5 +300,6 @@ namespace TH125 {
 void TH125Init()
 {
     EnableAllHooks(TH125::THInitHook);
+    TryKeepUpRefreshRate((void*)0x44fb0c);
 }
 }

@@ -262,5 +262,6 @@ namespace TH143 {
 void TH143Init()
 {
     EnableAllHooks(TH143::THInitHook);
+    TryKeepUpRefreshRate((void*)0x46fdbc, (void*)0x46fb8d);
 }
 }
