@@ -570,8 +570,8 @@ namespace TH15 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetSizeRel(340.0f / 1280.0f, 0.0f);
-            SetPosRel(900.0f / 1280.0f, 520.0f / 960.0f);
+            SetSizeRel(360.0f / 1280.0f, 0.0f);
+            SetPosRel(890.0f / 1280.0f, 510.0f / 960.0f);
             SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
@@ -653,16 +653,10 @@ namespace TH15 {
                     ImGui::Text("%2.1f", tot_enm == 0 ? 0.0f : (float)cur_killed / (float)tot_enm * (float)graze);
                     ImGui::NextColumn();
                 }
-                ImGui::Text(S(THPRAC_INGAMEINFO_15_RE_TIMES_TOTAL));
+                ImGui::Text(S(THPRAC_INGAMEINFO_15_RE_TIMES));
                 ImGui::NextColumn();
-                ImGui::Text("%8d", tot_re);
+                ImGui::Text("%d / %d", cur_re, tot_re);
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_15_RE_TIMES_CURRENT));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", cur_re);
-                ImGui::Columns(1);
-                ImGui::Separator();
-                ImGui::Columns(2);
                 if (cur_stage == 7) {
                     ImGui::Text(S(THPRAC_INGAMEINFO_15_RE_TIMES_STAGE), 7);
                     ImGui::NextColumn();
@@ -709,8 +703,8 @@ namespace TH15 {
         virtual void OnPreUpdate() override
         {
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004E9BB8)) {
-                SetSizeRel(340.0f / 1280.0f, 0.0f);
-                SetPosRel(900.0f / 1280.0f, 520.0f / 960.0f);
+                SetSizeRel(360.0f / 1280.0f, 0.0f);
+                SetPosRel(890.0f / 1280.0f, 510.0f / 960.0f);
                 Open();
             } else {
                 Close();

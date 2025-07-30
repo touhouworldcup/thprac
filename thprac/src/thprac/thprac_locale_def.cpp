@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1500] {
+const char* th_glossary_str[3][1499] {
     {
         "",
         "啤酒",
@@ -842,9 +842,8 @@ const char* th_glossary_str[3][1500] {
         "掉碟:",
         "炫彩UFO信息",
         "灵界:",
-        "当前Re数:",
+        "Re数:",
         "第%d面Re数:",
-        "总Re数:",
         "季节解放:",
         "鹰:",
         "獭:",
@@ -2344,9 +2343,8 @@ const char* th_glossary_str[3][1500] {
         "UFO drop",
         "chromatic UFO info",
         "trance:",
-        "current Re:",
+        "Retry:",
         "stage %d Re:",
-        "total Re:",
         "release:",
         "eagle:",
         "otter:",
@@ -3846,9 +3844,8 @@ const char* th_glossary_str[3][1500] {
         "UFO drop",
         "chromatic UFO info",
         "trance:",
-        "current Re:",
+        "Retry:",
         "stage %d Re:",
-        "total Re:",
         "release:",
         "eagle:",
         "otter:",

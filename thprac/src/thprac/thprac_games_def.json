@@ -1136,8 +1136,7 @@
        "THPRAC_INGAMEINFO_08_SC_COUNT":["SC:","SC:","SC:"],
        "THPRAC_INGAMEINFO_16_RELEASE_COUNT":["季节解放:","release:","release:"],
        "THPRAC_INGAMEINFO_15_RE_TIMES_STAGE":["第%d面Re数:","stage %d Re:","stage %d Re:"],
-       "THPRAC_INGAMEINFO_15_RE_TIMES_TOTAL":["总Re数:","total Re:","total Re:"],
-       "THPRAC_INGAMEINFO_15_RE_TIMES_CURRENT":["当前Re数:","current Re:","current Re:"],
+       "THPRAC_INGAMEINFO_15_RE_TIMES":["Re数:","Retry:","Retry:"],
 	   
        "THPRAC_INGAMEINFO_06_SHOWDETAIL_HOTKEY":["详情","Details","Details"],
 	   "THPRAC_INGAMEINFO_06_SHOWDETAIL_PAGE":["游戏详情","Details","Details"],
