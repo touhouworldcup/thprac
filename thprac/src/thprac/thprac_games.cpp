@@ -564,6 +564,26 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         LauncherSettingGet("autoName_06", name06);
         if (name06.size() >= 1 && name06.size() <= 9) {
             strcpy_s(g_adv_igi_options.th06_autoname_name, name06.c_str());
+            static std::string allowed = ".,:;~@+-/*=%(){}[]<>#!?'\"$ ";
+            for (int i = 0; i < name06.size(); i++)
+            {
+                auto ch = g_adv_igi_options.th06_autoname_name[i];
+                if (ch == '\0')
+                    break;
+                if ((ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <='z'))
+                    continue;
+                bool is_allowed = false;
+                for (auto allowdch : allowed)
+                {
+                    if (allowdch == ch) {
+                        is_allowed = true;
+                        break;
+                    }
+                }
+                if (is_allowed)
+                    continue;
+                g_adv_igi_options.th06_autoname_name[i] = '?';
+            }
         }
 
         LauncherSettingGet("th10_ud_Replay", g_adv_igi_options.th10_ud_Replay);
@@ -685,18 +705,15 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         LPDIRECTINPUT8 pdinput;
         DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&pdinput, NULL);
 
-        if (FAILED(pdinput)) {
-        }
-        // if (g_disable_joy)
-        {
+        if (SUCCEEDED(pdinput)) {
             HookVTable(pdinput, 4, EnumDevices_Changed, (void**)&g_realEnumDevices);
+            LPDIRECTINPUTDEVICE8 ddevice;
+            pdinput->CreateDevice(GUID_SysKeyboard, &ddevice, NULL);
+            HookVTable(ddevice, 9, GetDeviceState_Changed, (void**)&g_realGetDeviceState);
+            pdinput->Release();
+            ddevice->Release();
+            // dinput8 is inited before GameGuiInit(), so create a new device for hook
         }
-        LPDIRECTINPUTDEVICE8 ddevice;
-        pdinput->CreateDevice(GUID_SysKeyboard, &ddevice, NULL);
-        HookVTable(ddevice, 9, GetDeviceState_Changed, (void**)&g_realGetDeviceState);
-        pdinput->Release();
-        ddevice->Release();
-        // dinput8 is inited before GameGuiInit(), so create a new device for hook
     }
 
      // if(device){
