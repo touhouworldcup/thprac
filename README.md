@@ -1,3 +1,6 @@
+## 25.8.1
+- (84)修一下红魔乡的rank
+
 ## 25.7.27
 - 对OILP(https://github.com/khang06/OpenInputLagPatch)的支持(/touhouworldcup/thprac/tree/OpenInputLagPatch)
 

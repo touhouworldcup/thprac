@@ -1728,7 +1728,7 @@ namespace TH06 {
             for (int i = 0; i < 2; i++)
                 th06_rankdown_disable[i].Setup();
             for (int i = 0; i < 2; i++)
-                th06_rankdown_disable[i].Toggle(g_adv_igi_options.disable_master_autoly);
+                th06_rankdown_disable[i].Toggle(g_adv_igi_options.th06_disable_drop_rank);
             th06_bossmovedown.Setup();
             th06_bossmovedown.Toggle(false);
             GameplayInit();
