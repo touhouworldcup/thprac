@@ -588,8 +588,8 @@ namespace TH08 {
         HOTKEY_ENDDEF();
         
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(0x43B295, "2ee961"),
-        PATCH_HK(0x44CDB1, "00")
+        PATCH_HK(0x44CDB1, "00"),
+        PATCH_HK(0x44CDA2, "909090909090909090909090")
         HOTKEY_ENDDEF();
         
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)

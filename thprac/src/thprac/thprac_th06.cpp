@@ -193,9 +193,8 @@ namespace TH06 {
         HOTKEY_ENDDEF();
         
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(0x41BBE2, "3EC680"),
-        PATCH_HK(0x41BBE9, "80"),
-        PATCH_HK(0x428B7D, "00")
+        PATCH_HK(0x428B7D, "00"),
+        PATCH_HK(0x428B67,"909090909090909090")
         HOTKEY_ENDDEF();
         
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
