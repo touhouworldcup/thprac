@@ -830,10 +830,10 @@ namespace TH12 {
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_BOSS_FORCE_MOVE_DOWN_DESC));
-                ImGui::Checkbox(S(THPRAC_INGAMEINFO_12_UFO_SUPER_ULTRA_CHROMATIC_INFO_PRO), &g_adv_igi_options.th12_chromatic_ufo);
                 ImGui::SetNextItemWidth(180.0f);
                 if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &g_bossMoveDownRange, 0.002f, 0.0f, 1.0f))
                     g_bossMoveDownRange = std::clamp(g_bossMoveDownRange, 0.0f, 1.0f);
+                ImGui::Checkbox(S(THPRAC_INGAMEINFO_12_UFO_SUPER_ULTRA_CHROMATIC_INFO_PRO), &g_adv_igi_options.th12_chromatic_ufo);
 
                 if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
                     th12_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
