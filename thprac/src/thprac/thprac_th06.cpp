@@ -22,11 +22,164 @@ namespace TH06 {
     bool g_show_bullet_hitbox = false;
     float g_last_boss_x, g_last_boss_y;
 
-    static bool is_died = false;
     int g_lock_timer = 0;
 
     bool THBGMTest();
     using std::pair;
+
+    class TH06Save {
+        SINGLETON(TH06Save);
+    public:
+        enum TH06SpellState {
+            Capture = 0,
+            Attempt = 1,
+            Timeout = 2
+        };
+    private:
+        struct Save {
+            int32_t SC_History[65][5][4][3] = { 0 }; // spellid, diff, playertype, [capture/attempt/timeout]
+            int64_t timePlayer[5][4] = { 0 }; // diff/type, precision:ns
+        };
+        Save save_current;
+        Save save_total;
+        bool is_save_loaded;
+        TH06Save()
+        {
+            save_current = { 0 };
+            save_total = { 0 };
+            is_save_loaded = false;
+            LoadSave();
+        }
+    public:
+        const static int spellid_books = 64;
+        void LoadSave()
+        {
+            if (is_save_loaded)
+                return;
+            is_save_loaded = true;
+            PushCurrentDirectory(L"%appdata%\\ShanghaiAlice\\th06");
+            auto fs_new = ::std::fstream("score06.dat", ::std::ios::in | ::std::ios::binary);
+            if (fs_new.is_open()) {
+                int version = 1;
+                fs_new.read((char*)&version, sizeof(version));
+                switch (version) {
+                    default:
+                    case 1: {
+                        fs_new.read((char*)save_total.SC_History, sizeof(save_total.SC_History));
+                        fs_new.read((char*)save_total.timePlayer, sizeof(save_total.timePlayer));
+                    } break;
+                }
+                fs_new.close();
+            } else {
+                // compatible
+                auto fs = ::std::fstream("spell_capture.dat", ::std::ios::in | ::std::ios::binary);
+                if (fs.is_open()) {
+                    is_save_loaded = true;
+                    fs.read((char*)save_total.SC_History, sizeof(save_total.SC_History));
+                    if (!fs.eof())
+                        fs.read((char*)save_total.timePlayer, sizeof(save_total.timePlayer)); // compatible , avoid eof
+
+                    for (int i = 0; i < 5; i++)
+                        for (int j = 0; j < 4; j++)
+                            save_total.timePlayer[i][j] *= 1000000; // make precision to ns
+                }
+                fs.close();
+            }
+            PopCurrentDirectory();
+        }
+
+        void SaveSave()
+        {
+            int version = 1;
+            PushCurrentDirectory(L"%appdata%\\ShanghaiAlice\\th06");
+            auto fs = ::std::fstream("score06.dat", ::std::ios::out | ::std::ios::binary);
+            if (fs.is_open()) {
+                fs.write((char*)(&version), sizeof(version));
+                fs.write((char*)(&save_total), sizeof(save_total));
+                fs.close();
+            }
+            PopCurrentDirectory();
+        }
+
+        void AddAttempt(int spell_id, byte diff, byte player_type)
+        {
+            LoadSave();
+            save_total.SC_History[spell_id][diff][player_type][1]++;
+            save_current.SC_History[spell_id][diff][player_type][1]++;
+            SaveSave();
+        }
+
+        void AddCapture(int spell_id, byte diff, byte player_type)
+        {
+            LoadSave();
+            save_total.SC_History[spell_id][diff][player_type][0]++;
+            save_current.SC_History[spell_id][diff][player_type][0]++;
+            SaveSave();
+        }
+
+        void AddTimeOut(int spell_id, byte diff, byte player_type)
+        {
+            LoadSave();
+            save_total.SC_History[spell_id][diff][player_type][2]++;
+            save_current.SC_History[spell_id][diff][player_type][2]++;
+            SaveSave();
+        }
+
+        void IncreaseGameTime()
+        {
+            static LARGE_INTEGER lastCount = { 0 }, performanceFreq = { 0 };
+            static int64_t timePlayedns;
+            DWORD gameState = *(DWORD*)(0x6C6EA4);
+            BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
+            byte is_rep = *(byte*)(0x69BCBC);
+            if ((!is_rep) && gameState == 2 && pauseMenuState == 0) {
+                byte cur_diff = *(byte*)(0x69BCB0);
+                byte cur_player_typea = *(byte*)(0x69D4BD);
+                byte cur_player_typeb = *(byte*)(0x69D4BE);
+                byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
+
+                LARGE_INTEGER curCount;
+                QueryPerformanceCounter(&curCount);
+                if (lastCount.QuadPart != 0) {
+                    if (performanceFreq.QuadPart == 0) {
+                        QueryPerformanceCounter(&performanceFreq);
+                    }
+                    int64_t time_ns = ((((double)(curCount.QuadPart - lastCount.QuadPart)) / (double)performanceFreq.QuadPart) * 1e9);
+                    save_total.timePlayer[cur_diff][cur_player_type] += time_ns;
+                    save_current.timePlayer[cur_diff][cur_player_type] += time_ns;
+                    timePlayedns += time_ns;
+                    if (timePlayedns >= (1000000000ll * 60 * 3)) { // save every 3 minutes automatically
+                        LoadSave();// if load have failed, it will eat the time, but anyway
+                        timePlayedns = 0;
+                        SaveSave();
+                    }
+                }
+                lastCount = curCount;
+            } else {
+                QueryPerformanceCounter(&lastCount);
+            }
+        }
+        
+        
+        int GetTotalSpellCardCount(int spell_id, int diff, int player_type, TH06SpellState state)
+        {
+            return save_total.SC_History[spell_id][diff][player_type][state];
+        }
+        int GetCurrentSpellCardCount(int spell_id, int diff, int player_type, TH06SpellState state)
+        {
+            return save_current.SC_History[spell_id][diff][player_type][state];
+        }
+        int64_t GetTotalGameTime(int diff, int player_type)
+        {
+            return save_total.timePlayer[diff][player_type];
+        }
+        int64_t GetCurrentGameTime(int diff, int player_type)
+        {
+            return save_current.timePlayer[diff][player_type];
+        }
+    };
+
+
     struct THPracParam {
         int32_t mode;
 
@@ -321,102 +474,25 @@ namespace TH06 {
 
     public:
         int32_t mMissCount;
+        struct BooksInfo
+        {
+            bool is_books;
+            int32_t time_books;
+            bool is_died;
+            int32_t miss_count;
+            int32_t bomb_count;
+        }booksInfo;
+
+        void GameStartInit() {
+            mMissCount = 0;
+            booksInfo.is_books = false;
+            booksInfo.time_books = 0;
+            booksInfo.is_died = false;
+            booksInfo.miss_count = 0;
+            booksInfo.bomb_count = 0;
+        }
     protected:
-        Gui::GuiHotKey mDetails { THPRAC_INGAMEINFO_06_SHOWDETAIL_HOTKEY, "F9", VK_F9 };
-
-        struct
-        {
-            int Power = 0;
-            int Bombs = 0;
-            int EndFrame = 0;
-            byte SCB = 0;
-        } doubleKOFix;
-
-
-        struct TH06Save
-        {
-            int32_t SC_History[65][5][4][3] = { 0 }; // spellid, diff, playertype, [capture/attempt/timeout]
-            int64_t timePlayer[5][4] = { 0 }; // diff/type, precision:ns
-        };
-        TH06Save save_current;
-        TH06Save save_total;
-        bool mIsSaveLoaded = false;
-
-        bool last_is_in_spell = false;
-        byte last_spell_id = 0;
-        byte last_diff = 0;
-        byte last_ingame_flag = 16;
-        byte last_player_typea = 0;
-        byte last_player_typeb = 0;
-        int last_cur_face_time = 0;
-        int last_stage = 0;
-        int last_pl_power = 0;
-        int last_pl_bomb = 0;
-        short last_cur_hp = 0;
-        short last_tot_hp = 0;
-        byte last_has_SCB = 0;
-
-        bool power_decreased = false;
-        bool bomb_decreased = false;
-        bool fin_flag = false;
-        bool is_magic_book = false;
-
         bool detail_open = false;
-
-        int last_spell_id_hist = -1;
-        int last_diff_hist = -1;
-
-        int time_books = 0;
-
-        void LoadSave()
-        {
-            mIsSaveLoaded = true;
-            PushCurrentDirectory(L"%appdata%\\ShanghaiAlice\\th06");
-            auto fs_new = ::std::fstream("score06.dat", ::std::ios::in | ::std::ios::binary);
-            if (fs_new.is_open()){
-                int version = 1;
-                fs_new.read((char*)&version,sizeof(version));
-                switch (version)
-                {
-                default:
-                case 1:
-                {
-                    fs_new.read((char*)save_total.SC_History, sizeof(save_total.SC_History));
-                    fs_new.read((char*)save_total.timePlayer, sizeof(save_total.timePlayer));
-                }
-                    break;
-                }
-                fs_new.close();
-            } else {
-                //compatible
-                auto fs = ::std::fstream("spell_capture.dat", ::std::ios::in | ::std::ios::binary);
-                if (fs.is_open()) {
-                      fs.read((char*)save_total.SC_History, sizeof(save_total.SC_History));
-                      if (!fs.eof())
-                          fs.read((char*)save_total.timePlayer, sizeof(save_total.timePlayer)); // compatible , avoid eof
-
-                      for(int i=0;i<5;i++)
-                          for(int j=0;j<4;j++)
-                              save_total.timePlayer[i][j] *= 1000000;// make precision to ns
-                }
-                fs.close();
-            }
-            PopCurrentDirectory();
-        }
-
-        void SaveSave()
-        {
-            int version = 1;
-            PushCurrentDirectory(L"%appdata%\\ShanghaiAlice\\th06");
-            auto fs = ::std::fstream("score06.dat", ::std::ios::out | ::std::ios::binary);
-            if (fs.is_open()) {
-                fs.write((char*)(&version), sizeof(version));
-                fs.write((char*)(&save_total), sizeof(save_total));
-                fs.close();
-            }
-            PopCurrentDirectory();
-        }
-
         virtual void OnLocaleChange() override
         {
             float x_offset_1 = 0.0f;
@@ -437,20 +513,17 @@ namespace TH06 {
             default:
                 break;
             }
-            mDetails.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
 
         virtual void OnContentUpdate() override
         {
-            int spell_id = last_spell_id;
-            if (is_magic_book)
-                spell_id = 64;
             int32_t mBombCount = *(int8_t*)(0x0069BCC4);
 
             byte cur_player_typea = *(byte*)(0x69D4BD);
             byte cur_player_typeb = *(byte*)(0x69D4BE);
             byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
-            auto diff_pl = std::format("{} ({})", S(IGI_DIFF[*(int8_t*)(0x69bcb0)]), S(IGI_PL_06[cur_player_type]));
+            int8_t diff = *(int8_t*)(0x69bcb0);
+            auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_06[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
             ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x*0.5);
@@ -474,381 +547,36 @@ namespace TH06 {
 
             ImGui::Columns(1);
 
-            if (spell_id != -1 && last_ingame_flag > 0 && (last_is_in_spell || is_magic_book)) {
-                byte last_player_type = (last_player_typea << 1) | last_player_typeb;
-                ImGui::Text("%s", th06_spells_str[Gui::LocaleGet()][spell_id]);
-                int tot_sc_caped = save_total.SC_History[spell_id][last_diff][last_player_type][0];
-                int tot_sc_tot = save_total.SC_History[spell_id][last_diff][last_player_type][1];
-                int tot_sc_to = save_total.SC_History[spell_id][last_diff][last_player_type][2];
-                ImGui::Text("%d/%d(%.1f%%); %d", tot_sc_caped,tot_sc_tot, (float)(tot_sc_caped) / std::fmax(1.0f, tot_sc_tot) * 100.0f,  tot_sc_to);
+            bool cur_is_in_spell = *(bool*)(0x5A5F90);
 
-                int cur_sc_caped = save_current.SC_History[spell_id][last_diff][last_player_type][0];
-                int cur_sc_tot = save_current.SC_History[spell_id][last_diff][last_player_type][1];
-                int cur_sc_to = save_current.SC_History[spell_id][last_diff][last_player_type][2];
+            if (booksInfo.is_books || cur_is_in_spell) {
+                byte cur_spell_id = booksInfo.is_books ? TH06Save::spellid_books :* (byte*)(0x5A5F98);
+
+                ImGui::Text("%s", th06_spells_str[Gui::LocaleGet()][cur_spell_id]);
+                int tot_sc_caped = TH06Save::singleton().GetTotalSpellCardCount(cur_spell_id,diff,cur_player_type,TH06Save::Capture);
+                int tot_sc_tot = TH06Save::singleton().GetTotalSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Attempt);
+                int tot_sc_to = TH06Save::singleton().GetTotalSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Timeout);
+                ImGui::Text("%d/%d(%.1f%%); %d", tot_sc_caped,tot_sc_tot, (float)(tot_sc_caped) / std::fmax(1.0f, tot_sc_tot) * 100.0f,  tot_sc_to);
+                int cur_sc_caped = TH06Save::singleton().GetCurrentSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Capture);
+                int cur_sc_tot = TH06Save::singleton().GetCurrentSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Attempt);
+                int cur_sc_to = TH06Save::singleton().GetCurrentSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Timeout);
                 ImGui::Text("%d/%d(%.1f%%); %d", cur_sc_caped, cur_sc_tot, (float)(cur_sc_caped) / std::fmax(1.0f, cur_sc_tot) * 100.0f, cur_sc_to);
 
-                if (is_magic_book && thPracParam.mode && (thPracParam.phase != 0)) { // books
-                    ImGui::Text("%.1f", (float)time_books / 60.0f);
+                if (booksInfo.is_books && thPracParam.mode && (thPracParam.phase != 0)) { // books
+                    ImGui::Text("%.1f", (float)booksInfo.time_books / 60.0f);
                 }
             }
-            mDetails();
         }
-        void ResetSpell()
-        {
-            memset(save_current.SC_History, 0, sizeof(save_current.SC_History));
-        }
-        void AddAttempt(int spell_id, byte diff, byte player_type)
-        {
-            is_died = false;
-            save_total.SC_History[spell_id][diff][player_type][1]++;
-            save_current.SC_History[spell_id][diff][player_type][1]++;
-            SaveSave();
-        }
-        void AddCapture(int spell_id, byte diff, byte player_type)
-        {
-            save_total.SC_History[spell_id][diff][player_type][0]++;
-            save_current.SC_History[spell_id][diff][player_type][0]++;
-            SaveSave();
-        }
-        void AddTimeOut(int spell_id, byte diff, byte player_type)
-        {
-            save_total.SC_History[spell_id][diff][player_type][2]++;
-            save_current.SC_History[spell_id][diff][player_type][2]++;
-            SaveSave();
-        }
-
-        public:
-            void ShowDetail(bool *isOpen){
-                ImGui::BeginTabBar("Detail Spell");
-                {
-                    const char* tabs_diff[5] = { S(THPRAC_IGI_DIFF_E), S(THPRAC_IGI_DIFF_N), S(THPRAC_IGI_DIFF_H), S(THPRAC_IGI_DIFF_L), S(THPRAC_IGI_DIFF_EX) };
-                    for (int diff = 0; diff < 5; diff++) {
-                        if (ImGui::BeginTabItem(tabs_diff[diff])) {
-                            ImGui::BeginTabBar("Player Type");
-                            const char* tabs_player[4] = { S(THPRAC_IGI_PL_ReimuA), S(THPRAC_IGI_PL_ReimuB), S(THPRAC_IGI_PL_MarisaA), S(THPRAC_IGI_PL_MarisaB) };
-                            for (int pl = 0; pl < 4; pl++) {
-                                if (ImGui::BeginTabItem(tabs_player[pl])) {
-                                    // time
-                                    ImGui::BeginTable(std::format("{}{}timetable", tabs_diff[diff], tabs_player[pl]).c_str(), 4, ImGuiTableFlags_::ImGuiTableFlags_Resizable);
-                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_GAMTIME_TOT));
-                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_GAMTIME_CUR));
-                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_GAMTIME_CHARACTER_TOT));
-                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_GAMTIME_ALL));
-                                    ImGui::TableHeadersRow();
-
-                                    int64_t gametime_tot = save_total.timePlayer[diff][pl];
-                                    int64_t gametime_cur = save_current.timePlayer[diff][pl];
-                                    int64_t gametime_chartot = 0;
-                                    for (int i = 0; i < 5; i++)
-                                        gametime_chartot += save_total.timePlayer[i][pl];
-                                    int64_t gametime_all = 0;
-                                    for (int i = 0; i < 5; i++)
-                                        for (int j = 0; j < 4; j++)
-                                            gametime_all += save_total.timePlayer[i][j];
-
-                                    ImGui::TableNextRow();
-                                    ImGui::TableNextColumn();
-                                    ImGui::TextWrapped(GetTime_HHMMSS(gametime_tot).c_str());
-                                    ImGui::TableNextColumn();
-                                    ImGui::TextWrapped(GetTime_HHMMSS(gametime_cur).c_str());
-                                    ImGui::TableNextColumn();
-                                    ImGui::TextWrapped(GetTime_HHMMSS(gametime_chartot).c_str());
-                                    ImGui::TableNextColumn();
-                                    ImGui::TextWrapped(GetTime_HHMMSS(gametime_all).c_str());
-
-                                    ImGui::TableNextRow();
-                                    ImGui::TableNextColumn();
-                                    ImGui::TextWrapped(GetTime_YYMMDD_HHMMSS(gametime_tot).c_str());
-                                    ImGui::TableNextColumn();
-                                    ImGui::TextWrapped(GetTime_YYMMDD_HHMMSS(gametime_cur).c_str());
-                                    ImGui::TableNextColumn();
-                                    ImGui::TextWrapped(GetTime_YYMMDD_HHMMSS(gametime_chartot).c_str());
-                                    ImGui::TableNextColumn();
-                                    ImGui::TextWrapped(GetTime_YYMMDD_HHMMSS(gametime_all).c_str());
-
-                                    ImGui::TableNextRow();
-                                    ImGui::TableNextColumn();
-                                    ImGui::TextWrapped("(%lld %s)", gametime_tot, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
-                                    ImGui::TableNextColumn();
-                                    ImGui::TextWrapped("(%lld %s)", gametime_cur, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
-                                    ImGui::TableNextColumn();
-                                    ImGui::TextWrapped("(%lld %s)", gametime_chartot, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
-                                    ImGui::TableNextColumn();
-                                    ImGui::TextWrapped("(%lld %s)", gametime_all, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
-
-                                    ImGui::EndTable();
-                                    // spell capture
-                                    ImGui::BeginTable(std::format("{}{}sptable", tabs_diff[diff], tabs_player[pl]).c_str(), 5, ImGuiTableFlags_::ImGuiTableFlags_Resizable);
-                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_SPELL_NAME), 0, 100.0f);
-                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_CAPTURE_TOT), 0, 50.0f);
-                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_TIMEOUT_TOT), 0, 30.0f);
-                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_CAPTURE_CUR), 0, 50.0f);
-                                    ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_TIMEOUT_CUR), 0, 30.0f);
-                                    ImGui::TableHeadersRow();
-
-                                    for (int spell = 0; spell < 65; spell++) {
-                                        if (is_spell_used[diff][spell]) {
-                                            ImGui::TableNextRow();
-                                            ImGui::TableNextColumn();
-                                            ImGui::Text("%s", th06_spells_str[Gui::LocaleGet()][spell]);
-                                            ImGui::TableNextColumn();
-
-                                            ImGui::Text("%d/%d(%.1f%%)",
-                                                save_total.SC_History[spell][diff][pl][0],
-                                                save_total.SC_History[spell][diff][pl][1],
-                                                (float)(save_total.SC_History[spell][diff][pl][0]) / std::fmax(1.0f, save_total.SC_History[spell][diff][pl][1]) * 100);
-                                            ImGui::TableNextColumn();
-
-                                            ImGui::Text("%d", save_total.SC_History[spell][diff][pl][2]);
-                                            ImGui::TableNextColumn();
-
-                                            ImGui::Text("%d/%d(%.1f%%)",
-                                                save_current.SC_History[spell][diff][pl][0],
-                                                save_current.SC_History[spell][diff][pl][1],
-                                                (float)(save_current.SC_History[spell][diff][pl][0]) / std::fmax(1.0f, save_current.SC_History[spell][diff][pl][1]) * 100);
-                                            ImGui::TableNextColumn();
-
-                                            ImGui::Text("%d", save_current.SC_History[spell][diff][pl][2]);
-                                        }
-                                    }
-                                    ImGui::EndTable();
-                                    ImGui::EndTabItem();
-                                }
-                            }
-                            ImGui::EndTabBar();
-                            ImGui::EndTabItem();
-                        }
-                    }
-                }
-                ImGui::EndTabBar();
-                if (isOpen != nullptr && ImGui::Button(S(TH_BACK))){
-                    *isOpen = false;
-                }
-            }
-        private:
-
         virtual void OnPreUpdate() override
         {
-
-            bool cur_is_in_spell = *(bool*)(0x5A5F90);
-            byte cur_spell_id = *(byte*)(0x5A5F98);
-            byte cur_ingame_flag = *(byte*)(0x69BC8C);
-            byte cur_diff = *(byte*)(0x69BCB0);
-            byte cur_player_typea = *(byte*)(0x69D4BD);
-            byte cur_player_typeb = *(byte*)(0x69D4BE);
-            int cur_cur_face_time = *(int*)(0x69BC08);
-            int cur_stage = *(int*)(0x69D6D4);
-            int cur_pl_power = *(int*)(0x69D4B0);
-            int cur_pl_bomb = *(int*)(0x69D4BB);
-            short cur_cur_hp = *(short*)(0x4B957C);
-            short cur_tot_hp = *(short*)(0x4B9580);
-            byte cur_has_SCB = *(byte*)(0x5A5F8C);
-
-            byte is_rep = *(byte*)(0x69BCBC);
-            int time_sec = *(int*)(0x69BC48);
-
-            byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
-            // is_rep = false;
-            if (is_rep == 0) {
-                if (cur_pl_power < last_pl_power) {
-                    power_decreased = true;
-                }
-                if (cur_pl_bomb < last_pl_bomb) {
-                    bomb_decreased = true;
-                }
-                if (cur_stage == 4) {
-                    if (last_cur_hp < 3500 && cur_cur_hp == 3500 && last_tot_hp < 3500 && cur_tot_hp == 3500) // 第一本魔法书的血量
-                    {
-                        if (!(thPracParam.mode && thPracParam.stage == 3 && thPracParam.section == TH06_ST4_BOOKS && thPracParam.phase != 0)) {
-                            AddAttempt(64, cur_diff, cur_player_type);
-                        }
-                        time_books = 0;
-                        power_decreased = false;
-                        bomb_decreased = false;
-                        fin_flag = false;
-                        is_magic_book = true;
-                    }
-                    if (is_magic_book && (time_sec == 40 || time_sec == 39) && cur_ingame_flag > 0) { // 见到小谔魔
-                        if (!fin_flag) {
-                            doubleKOFix.Power = last_pl_power;
-                            doubleKOFix.Bombs = last_pl_bomb;
-                            doubleKOFix.EndFrame = cur_cur_face_time;
-                            fin_flag = true;
-                        }
-                        if (fin_flag && cur_cur_face_time - doubleKOFix.EndFrame >= 8) {
-                            if (cur_pl_power < doubleKOFix.Power) {
-                                power_decreased = true;
-                            }
-                            if (cur_pl_bomb < doubleKOFix.Bombs) {
-                                bomb_decreased = true;
-                            }
-                            if (!power_decreased && !bomb_decreased && is_died == false) {
-                                AddCapture(64, cur_diff, cur_player_type);
-                            }
-                            fin_flag = false;
-                            is_magic_book = false;
-                        }
-                    }
-                    if (((last_ingame_flag > 0 && cur_ingame_flag == 0) && is_magic_book)) {
-                        is_magic_book = false;
-                        fin_flag = false;
-                    }
-                }
-                if ((last_is_in_spell == 1 && cur_is_in_spell == 0 && cur_ingame_flag > 0) || (last_is_in_spell == 1 && cur_is_in_spell == 2 && cur_ingame_flag > 0) || (last_is_in_spell == 1 && cur_is_in_spell == 1 && cur_ingame_flag > 0 && (last_spell_id != cur_spell_id && cur_spell_id != 0 && last_spell_id != 0))) {
-                    if (!fin_flag) {
-                        doubleKOFix.Power = last_pl_power;
-                        doubleKOFix.Bombs = last_pl_bomb;
-                        doubleKOFix.EndFrame = cur_cur_face_time;
-                        fin_flag = true;
-                        doubleKOFix.SCB = last_has_SCB;
-                    }
-                } else if ((last_is_in_spell == 1 && last_ingame_flag > 0 && cur_ingame_flag == 0) || ((last_ingame_flag > 0 && cur_ingame_flag == 0) && fin_flag)) {
-                    fin_flag = false;
-                }
-                if (fin_flag && ((cur_cur_face_time - doubleKOFix.EndFrame >= 8) || (last_spell_id != cur_spell_id && cur_spell_id != 0 && last_spell_id != 0))) {
-                    if (cur_pl_power < doubleKOFix.Power) {
-                        power_decreased = true;
-                    }
-                    if (cur_pl_bomb < doubleKOFix.Bombs) {
-                        bomb_decreased = true;
-                    }
-                    if (doubleKOFix.SCB == 1 && last_has_SCB == 1 && cur_ingame_flag > 0 && is_died == false) {
-                        AddCapture(last_spell_id, cur_diff, cur_player_type);
-                    }
-                    if (last_has_SCB == 0 && cur_ingame_flag > 0 && !power_decreased && !bomb_decreased && is_died == false) {
-                        AddTimeOut(last_spell_id, cur_diff, cur_player_type);
-                    }
-                    fin_flag = false;
-                }
-
-                if ((last_is_in_spell == 0 && cur_is_in_spell == 1) || (last_spell_id != cur_spell_id && cur_spell_id != 0 && last_spell_id != 0)) {
-                    AddAttempt(cur_spell_id, cur_diff, cur_player_type);
-                    power_decreased = false;
-                    bomb_decreased = false;
-                    fin_flag = false;
-                }
-            }
-            last_is_in_spell = cur_is_in_spell;
-            last_spell_id = cur_spell_id;
-            last_ingame_flag = cur_ingame_flag;
-            last_diff = cur_diff;
-            last_player_typea = cur_player_typea;
-            last_player_typeb = cur_player_typeb;
-            last_diff = cur_diff;
-            last_cur_face_time = cur_cur_face_time;
-            last_stage = cur_stage;
-            last_pl_power = cur_pl_power;
-            last_pl_bomb = cur_pl_bomb;
-            last_cur_hp = cur_cur_hp;
-            last_tot_hp = cur_tot_hp;
-            last_has_SCB = cur_has_SCB;
-
-            // books time
             DWORD gameState = *(DWORD*)(0x6C6EA4);
-            BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
-            if (is_magic_book && thPracParam.mode && (thPracParam.phase != 0)) { // books
-                if (gameState == 2 && pauseMenuState == 0) {
-                    time_books++;
-                }
-            } else {
-                time_books = 0;
-            }
-
-            if (*THOverlay::singleton().mShowSpellCapture && (*(DWORD*)(0x6C6EA4) == 2)) {
+            if (*THOverlay::singleton().mShowSpellCapture && (gameState == 2)) {
                 SetPosRel(433.0f / 640.0f, 245.0f / 480.0f);
                 SetSizeRel(180.0f / 640.0f, 0.0f);
-                // DWORD cfg = *(DWORD*)(0x006C6E60);
-                // cfg |= 1 << 3;
-                // *(DWORD*)(0x6C6E60) = cfg;
                 Open();
             } else {
                 Close();
                 *((int32_t*)0x6c6eb0) = 3;
-            }
-
-            if (*THOverlay::singleton().mShowSpellCapture && *mDetails) {
-                detail_open = true;
-                if (ImGui::Begin(S(THPRAC_INGAMEINFO_06_SHOWDETAIL_PAGE), &detail_open,
-                        ImGuiWindowFlags_NoMove)) {
-                    mDetails.Toggle(detail_open);
-                    *((int32_t*)0x6c6eb0) = 3;
-                }
-                ImGui::SetWindowPos(S(THPRAC_INGAMEINFO_06_SHOWDETAIL_PAGE), ImVec2(10.0f, 10.0f));
-                ImGui::SetWindowSize(S(THPRAC_INGAMEINFO_06_SHOWDETAIL_PAGE), ImVec2(620.0f, 460.0f));
-                bool is_close = false;
-                ShowDetail(&detail_open);
-                mDetails.Toggle(detail_open);
-
-                if (g_forceRenderCursor || Gui::ImplWin32CheckFullScreen()) {
-                    auto& io = ::ImGui::GetIO();
-                    io.MouseDrawCursor = true;
-                }
-
-                ImGui::End();
-            }
-        }
-        LARGE_INTEGER mPerformanceFreq = { 0 };
-        LARGE_INTEGER mLastCount = { 0 };
-        int64_t mTimePlayedns = 0;
-    public:
-        void Retry()
-        {
-            last_is_in_spell = false;
-            last_spell_id = 0;
-            last_diff = 0;
-            last_ingame_flag = 16;
-            last_player_typea = 0;
-            last_player_typeb = 0;
-            last_cur_face_time = 0;
-            last_stage = 0;
-            last_pl_power = 0;
-            last_pl_bomb = 0;
-            last_cur_hp = 0;
-            last_tot_hp = 0;
-            last_has_SCB = 0;
-            power_decreased = false;
-            bomb_decreased = false;
-            fin_flag = false;
-            is_magic_book = false;
-            last_spell_id_hist = -1;
-            last_diff_hist = -1;
-            time_books = 0;
-        }
-        void SaveAll(){
-            if (mIsSaveLoaded)
-                SaveSave();
-        }
-        void Init() {
-            QueryPerformanceFrequency(&mPerformanceFreq);
-            mLastCount.QuadPart=0;
-            mTimePlayedns = 0;
-            LoadSave();
-        }
-        void IncreaseGameTime(){
-            DWORD gameState = *(DWORD*)(0x6C6EA4);
-            BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
-            byte is_rep = *(byte*)(0x69BCBC);
-            if ((!is_rep) && gameState==2 && pauseMenuState == 0) {
-                byte cur_diff = *(byte*)(0x69BCB0);
-                byte cur_player_typea = *(byte*)(0x69D4BD);
-                byte cur_player_typeb = *(byte*)(0x69D4BE);
-                byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
-
-                LARGE_INTEGER curCount;
-                QueryPerformanceCounter(&curCount);
-                if (mLastCount.QuadPart != 0) {
-                    int64_t time_ns = ((((double)(curCount.QuadPart - mLastCount.QuadPart)) / (double)mPerformanceFreq.QuadPart) * 1e9);
-                    save_total.timePlayer[cur_diff][cur_player_type] += time_ns;
-                    save_current.timePlayer[cur_diff][cur_player_type] += time_ns;
-                    mTimePlayedns += time_ns;
-                    if (mTimePlayedns >= (1000000000ll*60*3)) { // save every 3 minutes automatically
-                        mTimePlayedns = 0;
-                        SaveSave();
-                    }
-                }
-                mLastCount = curCount;
-            } else {
-                QueryPerformanceCounter(&mLastCount);
             }
         }
     };
@@ -1778,6 +1506,116 @@ namespace TH06 {
                 break;
             }
         }
+        void ShowDetail(bool* isOpen)
+        {
+            ImGui::BeginTabBar("Detail Spell");
+            {
+                const char* tabs_diff[5] = { S(THPRAC_IGI_DIFF_E), S(THPRAC_IGI_DIFF_N), S(THPRAC_IGI_DIFF_H), S(THPRAC_IGI_DIFF_L), S(THPRAC_IGI_DIFF_EX) };
+                for (int diff = 0; diff < 5; diff++) {
+                    if (ImGui::BeginTabItem(tabs_diff[diff])) {
+                        ImGui::BeginTabBar("Player Type");
+                        const char* tabs_player[4] = { S(THPRAC_IGI_PL_ReimuA), S(THPRAC_IGI_PL_ReimuB), S(THPRAC_IGI_PL_MarisaA), S(THPRAC_IGI_PL_MarisaB) };
+                        for (int pl = 0; pl < 4; pl++) {
+                            if (ImGui::BeginTabItem(tabs_player[pl])) {
+                                // time
+                                ImGui::BeginTable(std::format("{}{}timetable", tabs_diff[diff], tabs_player[pl]).c_str(), 4, ImGuiTableFlags_::ImGuiTableFlags_Resizable);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_GAMTIME_TOT));
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_GAMTIME_CUR));
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_GAMTIME_CHARACTER_TOT));
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_GAMTIME_ALL));
+                                ImGui::TableHeadersRow();
+
+                                int64_t gametime_tot = TH06Save::singleton().GetTotalGameTime(diff,pl);
+                                int64_t gametime_cur = TH06Save::singleton().GetCurrentGameTime(diff, pl);
+                                int64_t gametime_chartot = 0;
+                                for (int i = 0; i < 5; i++)
+                                    gametime_chartot += TH06Save::singleton().GetTotalGameTime(i, pl);
+                                int64_t gametime_all = 0;
+                                for (int i = 0; i < 5; i++)
+                                    for (int j = 0; j < 4; j++)
+                                        gametime_all += TH06Save::singleton().GetTotalGameTime(i, j);
+
+                                ImGui::TableNextRow();
+                                ImGui::TableNextColumn();
+                                ImGui::TextWrapped(GetTime_HHMMSS(gametime_tot).c_str());
+                                ImGui::TableNextColumn();
+                                ImGui::TextWrapped(GetTime_HHMMSS(gametime_cur).c_str());
+                                ImGui::TableNextColumn();
+                                ImGui::TextWrapped(GetTime_HHMMSS(gametime_chartot).c_str());
+                                ImGui::TableNextColumn();
+                                ImGui::TextWrapped(GetTime_HHMMSS(gametime_all).c_str());
+
+                                ImGui::TableNextRow();
+                                ImGui::TableNextColumn();
+                                ImGui::TextWrapped(GetTime_YYMMDD_HHMMSS(gametime_tot).c_str());
+                                ImGui::TableNextColumn();
+                                ImGui::TextWrapped(GetTime_YYMMDD_HHMMSS(gametime_cur).c_str());
+                                ImGui::TableNextColumn();
+                                ImGui::TextWrapped(GetTime_YYMMDD_HHMMSS(gametime_chartot).c_str());
+                                ImGui::TableNextColumn();
+                                ImGui::TextWrapped(GetTime_YYMMDD_HHMMSS(gametime_all).c_str());
+
+                                ImGui::TableNextRow();
+                                ImGui::TableNextColumn();
+                                ImGui::TextWrapped("(%lld %s)", gametime_tot, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
+                                ImGui::TableNextColumn();
+                                ImGui::TextWrapped("(%lld %s)", gametime_cur, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
+                                ImGui::TableNextColumn();
+                                ImGui::TextWrapped("(%lld %s)", gametime_chartot, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
+                                ImGui::TableNextColumn();
+                                ImGui::TextWrapped("(%lld %s)", gametime_all, S(THPRAC_INGAMEINFO_06_GAMTIME_NANOSECOND));
+
+                                ImGui::EndTable();
+                                // spell capture
+                                ImGui::BeginTable(std::format("{}{}sptable", tabs_diff[diff], tabs_player[pl]).c_str(), 5, ImGuiTableFlags_::ImGuiTableFlags_Resizable);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_SPELL_NAME), 0, 100.0f);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_CAPTURE_TOT), 0, 50.0f);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_TIMEOUT_TOT), 0, 30.0f);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_CAPTURE_CUR), 0, 50.0f);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_TIMEOUT_CUR), 0, 30.0f);
+                                ImGui::TableHeadersRow();
+
+                                for (int spell = 0; spell < 65; spell++) {
+                                    if (is_spell_used[diff][spell]) {
+                                        ImGui::TableNextRow();
+                                        ImGui::TableNextColumn();
+                                        ImGui::Text("%s", th06_spells_str[Gui::LocaleGet()][spell]);
+                                        ImGui::TableNextColumn();
+
+                                        ImGui::Text("%d/%d(%.1f%%)",
+                                                    TH06Save::singleton().GetTotalSpellCardCount(spell, diff, pl, TH06Save::Capture),
+                                                    TH06Save::singleton().GetTotalSpellCardCount(spell, diff, pl, TH06Save::Attempt),
+                                            ((float)TH06Save::singleton().GetTotalSpellCardCount(spell, diff, pl, TH06Save::Capture)) /
+                                           std::fmax(1.0f,((float)TH06Save::singleton().GetTotalSpellCardCount(spell, diff, pl, TH06Save::Attempt))) * 100.0f);
+                                        ImGui::TableNextColumn();
+
+                                        ImGui::Text("%d", TH06Save::singleton().GetTotalSpellCardCount(spell, diff, pl, TH06Save::Timeout));
+                                        ImGui::TableNextColumn();
+
+                                        ImGui::Text("%d/%d(%.1f%%)",
+                                            TH06Save::singleton().GetCurrentSpellCardCount(spell, diff, pl, TH06Save::Capture),
+                                            TH06Save::singleton().GetCurrentSpellCardCount(spell, diff, pl, TH06Save::Attempt),
+                                            ((float)TH06Save::singleton().GetCurrentSpellCardCount(spell, diff, pl, TH06Save::Capture)) / 
+                                            std::fmax(1.0f, ((float)TH06Save::singleton().GetCurrentSpellCardCount(spell, diff, pl, TH06Save::Attempt))) * 100.0f);
+                                        ImGui::TableNextColumn();
+
+                                        ImGui::Text("%d", TH06Save::singleton().GetCurrentSpellCardCount(spell, diff, pl, TH06Save::Timeout));
+                                    }
+                                }
+                                ImGui::EndTable();
+                                ImGui::EndTabItem();
+                            }
+                        }
+                        ImGui::EndTabBar();
+                        ImGui::EndTabItem();
+                    }
+                }
+            }
+            ImGui::EndTabBar();
+            if (isOpen != nullptr && ImGui::Button(S(TH_BACK))) {
+                *isOpen = false;
+            }
+        }
         void ContentUpdate()
         {
             *((int32_t*)0x6c6eb0) = 3;
@@ -1859,7 +1697,7 @@ namespace TH06 {
                 ImGui::SetNextWindowCollapsed(false);
                 if (ImGui::CollapsingHeader(S(THPRAC_INGAMEINFO_06_SHOWDETAIL_COLLAPSE)))
                 {
-                    TH06InGameInfo::singleton().ShowDetail(nullptr);
+                    ShowDetail(nullptr);
                     ImGui::NewLine();
                     ImGui::Separator();
                     ImGui::Separator();
@@ -3515,19 +3353,6 @@ namespace TH06 {
     PATCH_DY(th06_background_fix_1, 0x42073B, "909090909090")
     PATCH_DY(th06_background_fix_2, 0x419F4B, "909090909090")
     PATCH_DY(th06_background_fix_3, 0x419F81, "909090909090")
-    
-    
-    EHOOK_DY(th06_books_position_test, 0x0041188A,3,{
-        if (*(DWORD*)0x69d6d4 == 4){
-            DWORD pCode = *(DWORD*)0x487e50;
-            DWORD pCodeOfs = *(DWORD*)(pCtx->Ebp - 0x14) - 8;
-            float posx = *(float*)(pCtx->Ebp - 0x20);
-            float posy = *(float*)(pCtx->Ebp - 0x1C);
-            int n = (pCodeOfs - pCode - 0xCDD4) / 0x1C;
-            g_books_pos[n] = { posx, posy };
-        }
-    })
-
     EHOOK_DY(th06_update, 0x41caac, 1, {
         GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
         
@@ -3538,7 +3363,10 @@ namespace TH06 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         TH06InGameInfo::singleton().Update();
-        TH06InGameInfo::singleton().IncreaseGameTime();
+        if (TH06InGameInfo::singleton().booksInfo.is_books) {
+            TH06InGameInfo::singleton().booksInfo.time_books++;
+        }
+        TH06Save::singleton().IncreaseGameTime();
 
         auto p = ImGui::GetOverlayDrawList();
         RenderPlHitbox(ImGui::GetBackgroundDrawList());
@@ -3597,13 +3425,13 @@ namespace TH06 {
     HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th06_enter_game, 0x41BDE8,4, // set inner misscount to 0
     {
-        TH06InGameInfo::singleton().mMissCount = 0;
-        TH06InGameInfo::singleton().Retry();
+        TH06InGameInfo::singleton().GameStartInit();
+        // TH06InGameInfo::singleton().Retry();
     })
-    EHOOK_DY(miss_spellcard_get_failed, 0x4277C3,3,
-    {
-        is_died = true;
-    })
+    // EHOOK_DY(miss_spellcard_get_failed, 0x4277C3,3,
+    // {
+    //     is_died = true;
+    // })
     EHOOK_DY(th06_miss, 0x428DD9,2,// dec life
     {
         TH06InGameInfo::singleton().mMissCount++;
@@ -3704,8 +3532,118 @@ namespace TH06 {
     })
     HOOKSET_ENDDEF()
 
-     static __declspec(noinline) void THGuiCreate()
+    HOOKSET_DEFINE(TH06_SavesHook)
+    EHOOK_DY(th06BooksStart, 0x41188A, 3, {
+        // timeline ins_4
+        // also saves books' pos
+        if (*(DWORD*)0x69d6d4 == 4) { // stage 4
+            DWORD pCode = *(DWORD*)0x487e50;
+            DWORD pCodeOfs = *(DWORD*)(pCtx->Ebp - 0x14) - 8;
+            float posx = *(float*)(pCtx->Ebp - 0x20);
+            float posy = *(float*)(pCtx->Ebp - 0x1C);
+            int n = (pCodeOfs - pCode - 0xCDD4) / 0x1C;
+            g_books_pos[n] = { posx, posy };
+
+            if (n == 0) {//1st book
+                TH06InGameInfo::singleton().booksInfo.is_books = true;
+                TH06InGameInfo::singleton().booksInfo.time_books = 0;
+                TH06InGameInfo::singleton().booksInfo.is_died = false;
+                TH06InGameInfo::singleton().booksInfo.miss_count = TH06InGameInfo::singleton().mMissCount;
+                TH06InGameInfo::singleton().booksInfo.bomb_count = *(int8_t*)(0x0069BCC4);
+                bool is_rep = *(BYTE*)0x69BCBC;
+                if (!is_rep) {
+                    if ( !(thPracParam.mode && thPracParam.stage == 3 && thPracParam.section == TH06_ST4_BOOKS && thPracParam.phase != 0)) {// not in other Tests
+                        byte cur_player_typea = *(byte*)(0x69D4BD);
+                        byte cur_player_typeb = *(byte*)(0x69D4BE);
+                        byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
+                        int8_t diff = *(int8_t*)(0x69bcb0);
+                        int32_t spell_id = TH06Save::spellid_books;
+                        TH06Save::singleton().AddAttempt(spell_id, diff, cur_player_type);
+                    }
+                }
+            }
+        }
+    })
+    EHOOK_DY(th06BooksEnd, 0x411669, 3, {
+        // timeline ins_0
+        // also saves books' pos
+        if (*(DWORD*)0x69d6d4 == 4 && TH06InGameInfo::singleton().booksInfo.is_books == true) { // stage 4
+            DWORD pCode = *(DWORD*)0x487e50;
+            DWORD pCodeOfs = *(DWORD*)(pCtx->Ebp - 0xC) - 8;
+            if (pCodeOfs - pCode == 0xCE7C) { // mid boss
+
+                TH06InGameInfo::singleton().booksInfo.is_books = false;
+                TH06InGameInfo::singleton().booksInfo.time_books = 0;
+                bool is_rep = *(BYTE*)0x69BCBC;
+                if (!is_rep) {
+                    if (!(thPracParam.mode && thPracParam.stage == 3 && thPracParam.section == TH06_ST4_BOOKS && thPracParam.phase != 0)) { // not in other Tests
+
+                        if (TH06InGameInfo::singleton().booksInfo.is_died == false
+                        && TH06InGameInfo::singleton().booksInfo.miss_count == TH06InGameInfo::singleton().mMissCount
+                        && TH06InGameInfo::singleton().booksInfo.bomb_count == *(int8_t*)(0x0069BCC4)) {
+                            byte cur_player_typea = *(byte*)(0x69D4BD);
+                            byte cur_player_typeb = *(byte*)(0x69D4BE);
+                            byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
+                            int8_t diff = *(int8_t*)(0x69bcb0);
+                            int32_t spell_id = TH06Save::spellid_books;
+                            TH06Save::singleton().AddCapture(spell_id, diff, cur_player_type);
+                        }
+                        TH06InGameInfo::singleton().booksInfo.is_died = false;
+                    }
+                }
+            }
+        }
+    })
+    EHOOK_DY(miss_spellcard_get_failed, 0x4277C3, 3,
     {
+        if (TH06InGameInfo::singleton().booksInfo.is_books == true)
+        {
+            TH06InGameInfo::singleton().booksInfo.is_died = true;
+        }
+    })
+    EHOOK_DY(th06_close, 0x420669, 2, {
+        TH06Save::singleton().SaveSave();
+    })
+    EHOOK_DY(th06_spellStart, 0x4096e8, 7,
+        {
+            bool is_rep = *(BYTE*)0x69BCBC;
+            if (!is_rep) {
+                byte cur_player_typea = *(byte*)(0x69D4BD);
+                byte cur_player_typeb = *(byte*)(0x69D4BE);
+                byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
+                int8_t diff = *(int8_t*)(0x69bcb0);
+                int32_t spell_id = *(int8_t*)(0x5A5F98);
+                TH06Save::singleton().AddAttempt(spell_id, diff, cur_player_type);
+            }
+        })
+    EHOOK_DY(th06_spellCapture, 0x409978, 6,
+        {
+            bool is_rep = *(BYTE*)0x69BCBC;
+            if (!is_rep) {
+                byte cur_player_typea = *(byte*)(0x69D4BD);
+                byte cur_player_typeb = *(byte*)(0x69D4BE);
+                byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
+                int8_t diff = *(int8_t*)(0x69bcb0);
+                int32_t spell_id = *(int8_t*)(0x5A5F98);
+                TH06Save::singleton().AddCapture(spell_id, diff, cur_player_type);
+            }
+        })
+    EHOOK_DY(th06_spellTimeout, 0x412056, 10,
+        {
+            bool is_rep = *(BYTE*)0x69BCBC;
+            if (!is_rep) {
+                byte cur_player_typea = *(byte*)(0x69D4BD);
+                byte cur_player_typeb = *(byte*)(0x69D4BE);
+                byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
+                int8_t diff = *(int8_t*)(0x69bcb0);
+                int32_t spell_id = *(int8_t*)(0x5A5F98);
+                TH06Save::singleton().AddTimeOut(spell_id, diff, cur_player_type);
+            }
+        })
+    HOOKSET_ENDDEF()
+
+     static __declspec(noinline) void THGuiCreate()
+     {
          if (ImGui::GetCurrentContext()) {
              return;
          }
@@ -3727,16 +3665,18 @@ namespace TH06 {
         THGuiRep::singleton();
         THOverlay::singleton();
         TH06InGameInfo::singleton();
-        TH06InGameInfo::singleton().Init();
+        TH06Save::singleton();
         // Hooks
         EnableAllHooks(THMainHook);
         EnableAllHooks(THInGameInfo);
+        EnableAllHooks(TH06_SavesHook);
 
         th06_white_screen.Setup();
         th06_result_screen_create.Setup();
 
         // Reset thPracParam
         thPracParam.Reset();
+
     }
 
     HOOKSET_DEFINE(THInitHook)
@@ -3747,9 +3687,6 @@ namespace TH06 {
     EHOOK_DY(th06_gui_init_2, 0x42140c, 1, {
         THGuiCreate();
         self->Disable();
-    })
-    EHOOK_DY(th06_close, 0x420669,2,{
-        TH06InGameInfo::singleton().SaveAll();
     })
     HOOKSET_ENDDEF()
 }
