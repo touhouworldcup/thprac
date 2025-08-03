@@ -20,7 +20,7 @@
 
 ## <a name="downloading"></a>如何下载
 
-点击链接下载 [最新正式版](https://github.com/touhouworldcup/thprac/releases/latest) 或 [最新测试版](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip)。注意测试版只会更新到下一个正式版，而**不**是下一个测试版。
+点击链接下载 [最新正式版](https://github.com/touhouworldcup/thprac/releases/latest) 或 [最新测试版](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip)。注意测试版只会更新到下一个正式版，而 **不** 是下一个测试版。
 
 ## <a name="usage"></a>如何使用
 
@@ -63,7 +63,7 @@ thprac.exe --without-vpatch C:\Users\Name\Desktop\Games\Touhou\th17\th17.exe
 
 ## <a name="compatability"></a>兼容性
 
-thprac 正式支持自 **Windows Vista** 以来的所有 Windows 版本。若使用 [One-Core-API](https://github.com/Skulltrail192/One-Core-API-Binaries)，thprac 可能在 Windows XP 下也能工作，但我们**不**常测试 Windows XP 下的兼容性。
+thprac 正式支持自 **Windows Vista** 以来的所有 Windows 版本。若使用 [One-Core-API](https://github.com/Skulltrail192/One-Core-API-Binaries)，thprac 可能在 Windows XP 下也能工作，但我们 **不** 常测试 Windows XP 下的兼容性。
 
 ## <a name="features"></a>功能介绍
 
