@@ -83,11 +83,7 @@ int GuiLauncherMain()
         ImGui::SetNextWindowSize(ImVec2(960.0f * scale, 720.0f * scale), ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowBgAlpha(0.9f);
 
-        std::string wndTitleText = S(THPRAC_LAUNCHER);
-        if (LauncherIsChkingUpd()) {
-            wndTitleText += " // Checking for updates...";
-        }
-        wndTitleText = LauncherIsChkingUpd() ? S(THPRAC_LAUNCHER_CHECKING_UPDATE) : S(THPRAC_LAUNCHER);
+        std::string wndTitleText = LauncherIsChkingUpd() ? S(THPRAC_LAUNCHER_CHECKING_UPDATE) : S(THPRAC_LAUNCHER);
         wndTitleText += "###thprac_wnd";
         ImGui::Begin(wndTitleText.c_str(), &isOpen, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove, &isMinimize);
         if (!isOpen)
