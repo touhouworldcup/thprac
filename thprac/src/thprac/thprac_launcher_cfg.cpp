@@ -2191,6 +2191,10 @@ private:
             mCfgEnableTH14_ShowBonus_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_BONUS2));
             mCfgEnableTH14_ShowItemsCnt_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_ITEMS2));
             mCfgEnableTH14_ShowDropBar_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR2));
+            mCfgEnableTH14_LaserRepRepair_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_MARISA_LASER_REP));
+            ImGui::SameLine();
+            GuiHelpMarker(S(TH14_MODE_NORMAL_DESC));
+
             mCfgEnableTH15_ShowShootingDownRate_autoly.Gui(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2));
 
             mCfgTH18ForceCard.Gui(S(THPRAC_TH18_FORCE_CARD), S(THPRAC_TH18_FORCE_CARD_DESC));
@@ -2431,6 +2435,7 @@ private:
     THCfgCheckbox mCfgEnableTH14_ShowBonus_autoly { "auto_th14_show_bonus", false };
     THCfgCheckbox mCfgEnableTH14_ShowItemsCnt_autoly { "auto_th14_show_item_cnt", false };
     THCfgCheckbox mCfgEnableTH14_ShowDropBar_autoly { "auto_th14_show_drop_bar", false };
+    THCfgCheckbox mCfgEnableTH14_LaserRepRepair_autoly { "auto_th14_laser_rep_repair", true };
     THCfgCheckbox mCfgEnableTH15_ShowShootingDownRate_autoly { "auto_th15_show_rate", false };
     THCfgCheckbox mCfgEnableMasterDisable_autoly { "auto_disable_master", false };
 

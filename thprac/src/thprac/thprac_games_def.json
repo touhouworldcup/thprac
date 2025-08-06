@@ -1088,6 +1088,7 @@
 	  "THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR2":["神灵庙显示连击条","TD show hit bar","TD show hit bar"],
 	  "THPRAC_INGAMEINFO_TH13_HITS":["连击","hits","hits"],
 	  
+	  "THPRAC_INGAMEINFO_TH14_MARISA_LASER_REP":["辉针城魔理沙自动开启激光修复的rep预防功能","DDC Marisa laser bug rep repair on","DDC Marisa laser bug rep repair on"],
 	  "THPRAC_INGAMEINFO_TH14_SHOW_BONUS":["显示bonus数","show bonuses","show bonuses"],
 	  "THPRAC_INGAMEINFO_TH14_SHOW_BONUS2":["辉针城显示bouns数","DDC show bonuses","DDC show bonuses"],
 	  "THPRAC_INGAMEINFO_TH14_SHOW_ITEMS":["显示道具量","show items","show items"],

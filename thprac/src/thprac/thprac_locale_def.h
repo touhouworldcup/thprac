@@ -880,6 +880,7 @@ enum th_glossary_t {
     THPRAC_INGAMEINFO_TH14_BONUS_LIFE,
     THPRAC_INGAMEINFO_TH14_BONUS_NEXT,
     THPRAC_INGAMEINFO_TH14_ITEMS_CNT,
+    THPRAC_INGAMEINFO_TH14_MARISA_LASER_REP,
     THPRAC_INGAMEINFO_TH14_SHOW_BONUS,
     THPRAC_INGAMEINFO_TH14_SHOW_BONUS2,
     THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR,
@@ -1510,7 +1511,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1499];
+extern const char* th_glossary_str[3][1500];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

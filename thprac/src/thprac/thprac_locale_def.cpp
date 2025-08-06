@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1499] {
+const char* th_glossary_str[3][1500] {
     {
         "",
         "啤酒",
@@ -880,6 +880,7 @@ const char* th_glossary_str[3][1499] {
         "残",
         "下一奖励",
         "道具量",
+        "辉针城魔理沙自动开启激光修复的rep保存功能",
         "显示bonus数",
         "辉针城显示bouns数",
         "显示掉落收集条",
@@ -2381,6 +2382,7 @@ const char* th_glossary_str[3][1499] {
         "L",
         "next bonus",
         "items",
+        "DDC Marisa laser bug rep repair on",
         "show bonuses",
         "DDC show bonuses",
         "show drop bar",
@@ -3882,6 +3884,7 @@ const char* th_glossary_str[3][1499] {
         "L",
         "next bonus",
         "items",
+        "DDC Marisa laser bug rep repair on",
         "show bonuses",
         "DDC show bonuses",
         "show drop bar",

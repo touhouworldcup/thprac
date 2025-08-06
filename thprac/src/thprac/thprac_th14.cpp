@@ -1107,6 +1107,8 @@ namespace TH14 {
         void MarisaLaserInit()
         {
             THMarisaLaser::singleton();
+            THMarisaLaser::singleton().mState = g_adv_igi_options.th14_laserRepRepair ? 1 : 0;
+
             th14_marisa_laser.Setup();
 
             wchar_t appdata[MAX_PATH];
