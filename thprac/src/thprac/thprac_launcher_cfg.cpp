@@ -2435,7 +2435,7 @@ private:
     THCfgCheckbox mCfgEnableTH14_ShowBonus_autoly { "auto_th14_show_bonus", false };
     THCfgCheckbox mCfgEnableTH14_ShowItemsCnt_autoly { "auto_th14_show_item_cnt", false };
     THCfgCheckbox mCfgEnableTH14_ShowDropBar_autoly { "auto_th14_show_drop_bar", false };
-    THCfgCheckbox mCfgEnableTH14_LaserRepRepair_autoly { "auto_th14_laser_rep_repair", true };
+    THCfgCheckbox mCfgEnableTH14_LaserRepRepair_autoly { "auto_th14_laser_rep_repair", false };
     THCfgCheckbox mCfgEnableTH15_ShowShootingDownRate_autoly { "auto_th15_show_rate", false };
     THCfgCheckbox mCfgEnableMasterDisable_autoly { "auto_disable_master", false };
 
