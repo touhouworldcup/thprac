@@ -212,9 +212,6 @@
       ],
       "THPRAC_UPDATE_DIALOG_CHECKING": [ "检查更新中", "Checking for update", "更新を確認しています" ],
       "THPRAC_UPDATE_DIALOG_UPDATING": [ "正在更新thprac", "Updating thprac", "thpracを更新しています" ],
-
-      "THPRAC_UNLOCK_REFRESH_RATE":["解锁屏幕刷新率","Unlock monitor refresh rate","Unlock monitor refresh rate"],
-      "THPRAC_UNLOCK_REFRESH_RATE_DESC":["勾选后，应用thprac会阻止游戏在全屏模式下将屏幕刷新率锁定在60hz。\n在使用高刷新率显示器且关闭垂直同步的情况下，这么做可以稍微改善延迟并减少画面撕裂。\n注：只在使用thprac（或其启动器）启动游戏时有效。对于Steam版游戏和喵玉汉化，请在custom.exe中勾选“每次启动时询问/起動時に毎回訊れる/Ask each startup time”。",	"When enabled, applying thprac will prevent the game to lock monitor's refresh rate at 60hz in fullscreen mode.\nThis gives you slightly improved latency and reduced screen tearing when using a high refresh rate monitor and when vertical sync is disabled.\nNote: This only works when using thprac (and its launcher) to open the game. For Steam games, tick \"Ask each startup time/起動時に毎回訊れる\" in custom.exe.","When enabled, applying thprac will prevent the game to lock monitor's refresh rate at 60hz in fullscreen mode.\nThis gives you slightly improved latency and reduced screen tearing when using a high refresh rate monitor and when vertical sync is disabled.\nNote: This only works when using thprac (and its launcher) to open the game. For Steam games, tick \"Ask each startup time/起動時に毎回訊れる\" in custom.exe."],
     
     "THPRAC_RECORD_GAME_TIME":["记录飞行时间","record game time","record game time"],
     "THPRAC_GAME_TIME_HINT":["飞行时间提示长度(小时)","game time hint(hour)","game time hint(hour)"],
@@ -520,7 +517,7 @@
       "TH_TYPE_NYASAMA": [ "喵玉汉化", "NyaSama", "NyaSama" ],
       "TH_TYPE_STEAM": [ "Steam", "Steam", "Steam" ],
       "TH_TYPE_UNCERTAIN": [ "不确定", "Uncertain", "不確定" ],
-      "TH_TYPE_MALICIOUS": [ "恶意", "Malicious", "悪質" ],
+      "TH_TYPE_MALICIOUS": [ "受恶意篡改", "Malicious", "悪質" ],
       "TH_TYPE_UNKOWN": [ "未知", "Unknown", "不明" ],
 
 
@@ -1066,7 +1063,8 @@
 	  
 	  "THPRAC_TH06_RANKLOCK_DOWN": [ "红魔乡自动miss/bomb后不掉rank", "EoSD no rank drop after miss/bomb", "EoSD no rank drop after miss/bomb" ],
 	  "THPRAC_INFLIVES_MAP": [ "将锁残修改为不疮", "map inf.lives to no continue", "map inf.lives to no continue" ],
-	  "THPRAC_DISABLE_MASTER_AUTO":["自动禁用MASTER","automatically disable master","automatically disable master"],
+    "THPRAC_DISABLE_MASTER_AUTO": [ "自动禁用MASTER", "automatically disable master", "automatically disable master" ],
+    "THPRAC_ENABLE_LOCK_TIMER_AUTO": [ "自动启用锁时计时", "automatically enable lock timer", "automatically enable lock timer" ],
 	  "THPRAC_INGAMEINFO_ADV":["高级IGI功能","advanced igi","advanced igi"],
 	  "THPRAC_INGAMEINFO_ADV_DESC1":["部分功能需要打开更多游戏信息(backspace菜单)中的选项开启","need to enable ingameinfo(in backspace menu) to show","need to enable ingameinfo(in backspace menu) to show"],
 	  "THPRAC_INGAMEINFO_ADV_DESC2":["免责声明: 部分功能可能会被认为是作弊","disclaimer: might be considered as cheating","disclaimer: might be considered as cheating"],
@@ -1296,15 +1294,15 @@
       "TH_POINT_STAGE": [ "本关蓝点", "Point (Stage)", "得点\n(ステージ)" ],
       "TH_VALUE": [ "最大得点", "Value", "最大得点" ],
       "TH_FAITH": [ "信仰", "Faith", "信仰" ],
-	  
+
       "TH_BOSSX": [ "BossX", "BossX", "BossX" ],
       "TH_BOSSY": [ "BossY", "BossY", "BossY" ],
       "TH_BT_PHASE": [ "发弹相位", "bullet phase", "bullet phase" ],
       "TH_TIMEOUT_SPELLCARD1": [ "一般收取", "normal mode", "normal mode" ],
       "TH_TIMEOUT_SPELLCARD2": [ "允许全避收取", "allow timeout", "allow timeout" ],
       "TH_ENHANCEMENT_VALUE": [ "增强程度", "enhancement degree", "enhancement degree" ],
-      
-	  "TH_BULLET_RANK": [ "Rank", "Rank", "ランク" ],
+
+      "TH_BULLET_RANK": [ "Rank", "Rank", "ランク" ],
       "TH_BULLET_RANKLOCK": [ "锁Rank", "Rank Lock", "ランクをロックする" ],
       "TH_DIFFICULTY": [ "难度", "Difficulty", "難易度" ],
       "TH_REAL_BULLET_SIZE": [ "真實子彈圖形", "Real bullet sprites", "弾のリアルスプライト" ],
@@ -1321,11 +1319,11 @@
       "TH_HECATIA_RAGE": [ "赫卡提亚狂暴", "Hecatia Rage", "ヘカティアの怒り" ],
       "TH_JUNKO_RAGE": [ "纯狐狂暴", "Junko Rage", "純子怒り" ],
       "TH_BOTH_RAGE": [ "夫妻双打", "Both Rage", "両方の怒り" ],
-	  "TH15_ST3_NORMAL1_TYPE_NORMAL":["正常","normal","normal"],
-	  "TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2":["强制第二波","force wave2","force wave2"],
-	  "TH15_ST3_NORMAL1_TYPE_NORMAL_PHASE":["正常(强制相位)","normal(force phase)","normal(force phase)"],
-	  "TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2_PHASE":["强制第二波(强制相位)","force wave2(force phase)","force wave2(force phase)"],
-	  
+      "TH15_ST3_NORMAL1_TYPE_NORMAL": [ "正常", "normal", "normal" ],
+      "TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2": [ "强制第二波", "force wave2", "force wave2" ],
+      "TH15_ST3_NORMAL1_TYPE_NORMAL_PHASE": [ "正常(强制相位)", "normal(force phase)", "normal(force phase)" ],
+      "TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2_PHASE": [ "强制第二波(强制相位)", "force wave2(force phase)", "force wave2(force phase)" ],
+
       "TH_NONE": [ "无", "None", "なし" ],
       "TH_NONSPELL": [ "非符", "Non Spell", "通常" ],
       "TH_SPELL": [ "符卡", "Spell Card", "スペカ" ],
@@ -1347,7 +1345,7 @@
       "TH_INFSUBP": [ "无限季节槽", "inf subP", "inf subP" ],
       "TH_INFLIVES": [ "锁残", "Inf. Lives", "残機減らない" ],
       "TH_INFLIVES2": [ "锁残/不疮", "Inf. Lives/No Continue", "残機減らない/No Continue" ],
-	  
+
       "TH_INFBOMBS": [ "锁Bomb", "Inf. Bombs", "ボム減らない" ],
       "TH_INFPOWER": [ "锁火力", "Inf. Power", "霊力減らない" ],
       "TH_AUTOBOMB": [ "自动B", "Auto Bomb", "自動喰らいボム" ],
@@ -1360,8 +1358,9 @@
       "TH_EL_BGM": [ "永续BGM", "Everlasting BGM", "永遠に続くBGM" ],
       "TH_DISABLE_MASTER": [ "符卡收率完整显示", "show complete spellcard capture rate", "show complete spellcard capture rate" ],
       "TH_DISABLE_MASTER_DESC": [ "不显示master 0/99+等", "no master, 0/99+, etc", "no master, 0/99+, etc" ],
-	  
-	  
+      "TH_ENABLE_LOCK_TIMER": [ "启用锁时计时", "enable lock timer", "enable lock timer" ],
+
+
       "TH_ON": [ "开启", "On", "有効" ],
       "TH_OFF": [ "关闭", "Off", "無効" ],
       "TH_NORMAL": [ "正常", "Normal", "普通" ],
@@ -1377,7 +1376,7 @@
       "TH_SPELL_TIME_INF_BOOK5": [ "无限时间(5本)", "Inf time(5 book)", "Inf time(5 book)" ],
       "TH_SPELL_TIME_INF_BOOK5_2": [ "无限时间(13456)", "Inf time(13456)", "Inf time(13456)" ],
       "TH_SPELL_TIME_INF_BOOK_CUSTOM": [ "无限时间(自定义)", "Inf time(custom)", "Inf time(custom)" ],
-	  
+
       "TH_BOOK_X1": [ "x1", "x1", "x1" ],
       "TH_BOOK_Y1": [ "y1", "y1", "y1" ],
       "TH_BOOK_C1": [ "固定1", "fix1", "fix1" ],
@@ -1404,12 +1403,12 @@
       "TH_BOOK_COPY_SETTING": [ "复制配置到剪贴板", "copy setting to clipboard", "copy setting to clipboard" ],
       "TH_BOOK_PASTE_SETTING": [ "粘贴剪贴板配置", "paste setting from clipboard", "paste setting from clipboard" ],
       "TH_BOOK_LAST": [ "上一次魔法书坐标", "last books' pos", "last books' pos" ],
-	  
-	  
+
+
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
       "TH_RAGE_PRO": [ "发狂Pro", "Rage Pro", "発狂 Pro" ],
       "TH_RAGE_PRO_MAX": [ "发狂ProMax", "Rage ProMax", "発狂 ProMax" ],
-	  
+
       "TH_P1": [ "P1", "P1", "P1" ],
       "TH_P2": [ "P2", "P2", "P2" ],
       "TH_P3": [ "P3", "P3", "P3" ],
@@ -1483,27 +1482,27 @@
       "TH_ABOUT_HIDE_LICENCE": [ "隐藏许可信息", "Hide license info", "ライセンス情報を非表示" ],
       "TH_ADV_OPT": [ "高级选项", "Advanced Options", "拡張オプション" ],
       "TH_ADV_OPT_APPLY": [ "应用", "Apply", "変更を適用" ],
-	  
+
       "TH_ONE_KEY_DIE": [ "一键疮痍", "one key DIE", "one key DIE" ],
       "TH_ONE_KEY_DIE_DESC": [ "为了在某些作品的练习模式中快速存rep", "for rep storage in practice mode", "for rep storage in practice mode" ],
       "TH_ADV_DISABLE_X_KEY": [ "禁用X键", "disable X key", "disable X key" ],
-	  "TH_ADV_DISABLE_Z_KEY": [ "禁用Z键", "disable Z key", "disable Z key" ],
+      "TH_ADV_DISABLE_Z_KEY": [ "禁用Z键", "disable Z key", "disable Z key" ],
       "TH_ADV_DISABLE_SHIFT_KEY": [ "禁用Shift键", "disable shift key", "disable shift key" ],
-	  
+
       "TH_ADV_DISABLE_X_KEY_DESC": [ "给打nb的人准备(快捷键 shift+D)", "for who want to play nb neta(hotkey shift+D)", "for who want to play nb neta(hotkey shift+D)" ],
-	  "TH_ADV_DISABLE_Z_KEY_DESC": [ "真假...(快捷键 shift+S)", "really?(hotkey shift+S)", "really?(hotkey shift+S)" ],
-	  "TH_ADV_DISABLE_SHIFT_KEY_DESC": [ "喜欢低封?(快捷键 shift+A)", "like NO FOCUS?(hotkey shift+A)", "like NO FOCUS?(hotkey shift+A)" ],
-	  
-	  "TH_BOSS_FORCE_MOVE_DOWN": [ "完全下压", "force boss region to move down", "force boss region to move down" ],
-	  
-	  "TH_BOSS_HORIZONTAL": [ "水平移动方式", "boss horizontal movement", "boss horizontal movement" ],
-	  "TH_BOSS_MOVE_DEFAULT": [ "正常移动", "move normally", "move normally" ],
-	  "TH_BOSS_FORCE_MOVE_OPPOSITE_DIR": [ "必定反走", "force boss move opposite", "force boss move opposite" ],
-	  "TH_BOSS_FORCE_MOVE_SAME_DIR": [ "必定正走", "force boss move same dir with player", "force boss move same dir with player" ],
-	  
-	  "TH_BOSS_FORCE_MOVE_DOWN_RANGE": [ "下压幅度", "range", "range" ],
+      "TH_ADV_DISABLE_Z_KEY_DESC": [ "真假...(快捷键 shift+S)", "really?(hotkey shift+S)", "really?(hotkey shift+S)" ],
+      "TH_ADV_DISABLE_SHIFT_KEY_DESC": [ "喜欢低封?(快捷键 shift+A)", "like NO FOCUS?(hotkey shift+A)", "like NO FOCUS?(hotkey shift+A)" ],
+
+      "TH_BOSS_FORCE_MOVE_DOWN": [ "完全下压", "force boss region to move down", "force boss region to move down" ],
+
+      "TH_BOSS_HORIZONTAL": [ "水平移动方式", "boss horizontal movement", "boss horizontal movement" ],
+      "TH_BOSS_MOVE_DEFAULT": [ "正常移动", "move normally", "move normally" ],
+      "TH_BOSS_FORCE_MOVE_OPPOSITE_DIR": [ "必定反走", "force boss move opposite", "force boss move opposite" ],
+      "TH_BOSS_FORCE_MOVE_SAME_DIR": [ "必定正走", "force boss move same dir with player", "force boss move same dir with player" ],
+
+      "TH_BOSS_FORCE_MOVE_DOWN_RANGE": [ "下压幅度", "range", "range" ],
       "TH_BOSS_FORCE_MOVE_DOWN_DESC": [ "只给练习用，会对rep造成影响注意，基于原理对部分boss有bug", "for practice, it will affect the rep, buggy for some bosses", "for practice, it will affect the rep, buggy for some bosses" ],
-	  
+
       "TH_GAME_SPEED": [ "游戏速度", "Game Speed", "ゲームの速度" ],
       "TH_DELAY": [ "延迟", "Delay", "ディレイ" ],
       "TH_FPS_ADJ": [ "FPS调整", "FPS Adjustment", "FPS調整" ],
@@ -1517,8 +1516,8 @@
         "Unsupported VsyncPatch version.",
         "このバージョンのVsyncPatchはサポートされていません。"
       ],
-	  "TH_GAME_SPEED_PLSPD_KEEP": [ "保持自机速度不变", "keep player speed", "keep player speed" ],
-	  
+      "TH_GAME_SPEED_PLSPD_KEEP": [ "保持自机速度不变", "keep player speed", "keep player speed" ],
+
       "TH_FPS_LOWERING": [
         "使用VsyncPatch时降低FPS可能会导致游戏冻结一小段时间，请耐心等待。",
         "When using VsyncPatch, lowering FPS may freeze the game for a brief time. Please wait patiently.",
@@ -1565,11 +1564,11 @@
       "TH_DATANLY_NORECORD": [ "没有记录。", "No record.", "記録なし。" ],
       "TH_DATANLY_RECORD": [ "记录 #%d: ", "Record #%d: ", "記録 #%d: " ],
       "TH_DATANLY_RECORD_DELETE": [ "删除##anly_%d", "Delete##anly_%d", "削除##anly_%d" ],
-	  
-	 
-	  
+
+
+
       "TH_EOSD_SAKUYA_DOLLS_MORE_BLUE_TO_GREEN": [ "更多蓝弹变绿", "more blue turn green", "more blue turn green" ],
-      "TH_EOSD_SAKUYA_DOLLS_MORE_RED_TO_GREEN": [ "更多红弹变绿", "more red turn green", "more red turn green"],
+      "TH_EOSD_SAKUYA_DOLLS_MORE_RED_TO_GREEN": [ "更多红弹变绿", "more red turn green", "more red turn green" ],
       "TH_EOSD_SAKUYA_DOLLS_HALF_HALF": [ "五五开", "half half", "half half" ],
       "TH_EOSD_SAKUYA_DOLLS_RANDOM": [ "随机", "randomly", "randomly" ],
 

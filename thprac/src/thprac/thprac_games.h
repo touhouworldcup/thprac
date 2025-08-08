@@ -16,6 +16,7 @@ namespace THPrac {
         int th18_cards[6] = {0}; // card for st1,2,3,4,5,7
         bool th18_force_card = false;
         bool disable_master_autoly = false;
+        bool enable_lock_timer_autoly = false;
         bool map_inf_life_to_no_continue = true;
         bool th06_bg_fix = false;
         bool th06_fix_seed = false;

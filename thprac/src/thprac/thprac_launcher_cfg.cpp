@@ -2175,6 +2175,7 @@ private:
             ImGui::TextWrapped(S(THPRAC_INGAMEINFO_ADV_DESC2));
             mCfgMapInfLifeToNoContinue_autoly.Gui(S(THPRAC_INFLIVES_MAP));
             mCfgEnableMasterDisable_autoly.Gui(S(THPRAC_DISABLE_MASTER_AUTO));
+            mCfgEnableLockTimer_autoly.Gui(S(THPRAC_ENABLE_LOCK_TIMER_AUTO));
             mCfgTH06_RepMarker.Gui(S(THPRAC_TH06_SHOW_REP_MARKER));
             mCfgEnableTH06_ShowRank_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK2));
             mCfgEnableTH06_BgFix_autoly.Gui(S(THPRAC_TH06_BACKGROUND_FIX), S(THPRAC_TH06_BACKGROUND_FIX_DESC));
@@ -2438,6 +2439,7 @@ private:
     THCfgCheckbox mCfgEnableTH14_LaserRepRepair_autoly { "auto_th14_laser_rep_repair", false };
     THCfgCheckbox mCfgEnableTH15_ShowShootingDownRate_autoly { "auto_th15_show_rate", false };
     THCfgCheckbox mCfgEnableMasterDisable_autoly { "auto_disable_master", false };
+    THCfgCheckbox mCfgEnableLockTimer_autoly { "auto_lock_timer", false };
 
     THCfgCheckbox mCfgTH18ForceCard { "th18_force_card", false };
     THCfgCombo mCfgTH18Card_st1 { "th18_card_st1", 0,56 };

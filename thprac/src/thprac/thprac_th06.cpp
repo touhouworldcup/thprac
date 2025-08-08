@@ -1659,6 +1659,8 @@ namespace TH06 {
             if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &g_bossMoveDownRange, 0.002f, 0.0f, 1.0f))
                 g_bossMoveDownRange = std::clamp(g_bossMoveDownRange, 0.0f, 1.0f);
 
+            ImGui::Checkbox(S(TH_ENABLE_LOCK_TIMER), &g_adv_igi_options.enable_lock_timer_autoly);
+
             ImGui::Checkbox(S(THPRAC_SHOW_BULLET_HITBOX), &g_show_bullet_hitbox);
 
             ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK), &g_adv_igi_options.th06_showRank);
@@ -2975,7 +2977,7 @@ namespace TH06 {
     }
     static void RenderLockTimer(ImDrawList* p)
     {
-        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
+        if (g_adv_igi_options.enable_lock_timer_autoly && *THOverlay::singleton().mTimeLock) {
             std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
             auto sz = ImGui::CalcTextSize(time_text.c_str());
             p->AddRectFilled({ 32.0f, 0.0f }, { 110.0f, sz.y }, 0xFFFFFFFF);

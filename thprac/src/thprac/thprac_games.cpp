@@ -598,6 +598,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         LauncherSettingGet("th18_card_st7", g_adv_igi_options.th18_cards[5]);
 
         LauncherSettingGet("auto_disable_master", g_adv_igi_options.disable_master_autoly);
+        LauncherSettingGet("auto_lock_timer", g_adv_igi_options.enable_lock_timer_autoly);
         LauncherSettingGet("auto_map_inf_life_to_no_continue", g_adv_igi_options.map_inf_life_to_no_continue);
         LauncherSettingGet("auto_th06_bg_fix", g_adv_igi_options.th06_bg_fix);
         LauncherSettingGet("auto_th06_fix_seed", g_adv_igi_options.th06_fix_seed);

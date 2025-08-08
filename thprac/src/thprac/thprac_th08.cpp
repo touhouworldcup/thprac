@@ -931,6 +931,8 @@ namespace TH08 {
                     th08_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
                 }
 
+                ImGui::Checkbox(S(TH_ENABLE_LOCK_TIMER), &g_adv_igi_options.enable_lock_timer_autoly);
+
                 ImGui::Checkbox(S(THPRAC_SHOW_BULLET_HITBOX), &g_show_bullet_hitbox);
 
                 if (GameplayOpt(mOptCtx))
@@ -2497,7 +2499,7 @@ namespace TH08 {
     }
     void RenderLockTimer(ImDrawList* p)
     {
-        if (*THOverlay::singleton().mTimeLock && g_lock_timer > 0) {
+        if (g_adv_igi_options.enable_lock_timer_autoly && *THOverlay::singleton().mTimeLock) {
             std::string time_text = std::format("{:.2f}", (float)g_lock_timer / 60.0f);
             auto sz = ImGui::CalcTextSize(time_text.c_str());
             p->AddRectFilled({ 32.0f, 0.0f }, { 110.0f, sz.y }, 0xFFFFFFFF);

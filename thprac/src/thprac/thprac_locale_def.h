@@ -700,6 +700,7 @@ enum th_glossary_t {
     THPRAC_DISABLE_WIN_KEY_DESC,
     THPRAC_DONT_SEARCH_ONGOING,
     THPRAC_ENABLE_GAMETIME_RECORD,
+    THPRAC_ENABLE_LOCK_TIMER_AUTO,
     THPRAC_EXISTING_GAME_ACTION,
     THPRAC_EXISTING_GAME_ACTION_OPTION,
     THPRAC_EXISTING_GAME_CONFIRMATION,
@@ -1362,6 +1363,7 @@ enum th_glossary_t {
     TH_DISABLE_MASTER_DESC,
     TH_DLG,
     TH_EL_BGM,
+    TH_ENABLE_LOCK_TIMER,
     TH_END_NS1,
     TH_END_NS2,
     TH_END_NS3,
@@ -1511,7 +1513,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1500];
+extern const char* th_glossary_str[3][1502];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3164,7 +3166,7 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3413];
+extern const wchar_t __thprac_loc_range_zh[3415];
 
 extern const wchar_t __thprac_loc_range_en[61];
 

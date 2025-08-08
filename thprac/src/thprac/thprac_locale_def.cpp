@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1500] {
+const char* th_glossary_str[3][1502] {
     {
         "",
         "啤酒",
@@ -700,6 +700,7 @@ const char* th_glossary_str[3][1500] {
         "可能引入延迟, 因此不建议通过软件禁用win键",
         "启动thprac时不搜索正在运行的游戏",
         "在设置界面设置「记录飞行时间」以查看(下一次启动生效)",
+        "自动启用锁时计时",
         "启动thprac时，如果同一目录下存在游戏:",
         "启动游戏\0打开启动器\0总是询问\0\0",
         "当前目录下已找到游戏: %s。\n按\"是\"启动游戏。\n按\"否\"打开启动器。",
@@ -880,7 +881,7 @@ const char* th_glossary_str[3][1500] {
         "残",
         "下一奖励",
         "道具量",
-        "辉针城魔理沙自动开启激光修复的rep保存功能",
+        "辉针城魔理沙自动开启激光修复的rep预防功能",
         "显示bonus数",
         "辉针城显示bouns数",
         "显示掉落收集条",
@@ -1362,6 +1363,7 @@ const char* th_glossary_str[3][1500] {
         "不显示master 0/99+等",
         "对话",
         "永续BGM",
+        "启用锁时计时",
         "关底一非",
         "关底二非",
         "关底三非",
@@ -1497,7 +1499,7 @@ const char* th_glossary_str[3][1500] {
         "调整选项",
         "汉化版",
         "错误",
-        "恶意",
+        "受恶意篡改",
         "修改版",
         "喵玉汉化",
         "原版",
@@ -2202,6 +2204,7 @@ const char* th_glossary_str[3][1500] {
         "might cause delay, so it's not recommended to disable win key by software",
         "Do not search for any ongoing game when launching thprac",
         "enable record game time in Settings to check(works when launch next time)",
+        "automatically enable lock timer",
         "When starting thprac, if a game exists under the same directory:",
         "Launch game\0Open launcher\0Always ask\0\0",
         "An existing game was found: %s.\nClick \"Yes\" to launch the game.\nClick \"No\" to open the launcher.",
@@ -2864,6 +2867,7 @@ const char* th_glossary_str[3][1500] {
         "no master, 0/99+, etc",
         "Dialog",
         "Everlasting BGM",
+        "enable lock timer",
         "Boss Nonspell 1",
         "Boss Nonspell 2",
         "Boss Nonspell 3",
@@ -3704,6 +3708,7 @@ const char* th_glossary_str[3][1500] {
         "might cause delay, so it's not recommended to disable win key by software",
         "thpracを起動するときに進行中のゲームを検索しない",
         "enable record game time in Settings to check(works when launch next time)",
+        "automatically enable lock timer",
         "thpracを起動するときに、ゲームが同じディレクトリに存在する場合:",
         "ゲームを起動します\0ランチャーを開く\0常に尋ねる\0\0",
         "既存のゲームが見つかりました: %s。\n「はい」をクリックしてゲームを起動します。\n「いいえ」をクリックしてランチャーを開きます。",
@@ -4235,8 +4240,8 @@ const char* th_glossary_str[3][1500] {
         "time",
         "結果：%s。（右クリックで詳細オプションを表示）",
         "未処理の例外が発生しました。これにより、クラッシュが発生する可能性があります。\nクラッシュが発生した場合は、ランチャーに記載されている連絡方法のいずれかを使用して、ダンプファイルを私に送信してください。\nさらに、クラッシュがどのように発生したかを説明するメモをいただければ幸いです。\nダンプファイルはthpracのデータフォルダにあります。\n（ランチャーを開く - 設定 - データディレクトリを開く - \"crashdump\"フォルダー）",
-        "Unlock monitor refresh rate",
-        "When enabled, applying thprac will prevent the game to lock monitor's refresh rate at 60hz in fullscreen mode.\nThis gives you slightly improved latency and reduced screen tearing when using a high refresh rate monitor and when vertical sync is disabled.\nNote: This only works when using thprac (and its launcher) to open the game. For Steam games, tick \"Ask each startup time/起動時に毎回訊れる\" in custom.exe.",
+        "モニターのリフレッシュレートのロックを解除する",
+        "有効にすると、thpracを適用すると、ゲームがフルスクリーンモードでモニターのリフレッシュレートを60hzにロックできなくなります。\nこれにより、高リフレッシュレートのモニターを使用しているとき、および垂直同期が無効になっているときに、遅延がわずかに改善され、画面のティアリングが減少します。\n注：これは、thprac（およびそのランチャー）を使用してゲームを開く場合にのみ機能します。 Steamゲームの場合は、custom.exeで「起動時に毎回訊れる/Ask each startup time」にチェックを入れてください。",
         "自動更新",
         "自動更新に失敗しました！",
         "利用可能な更新。",
@@ -4366,6 +4371,7 @@ const char* th_glossary_str[3][1500] {
         "no master, 0/99+, etc",
         "ダイアログ",
         "永遠に続くBGM",
+        "enable lock timer",
         "ボス 通常1",
         "ボス 通常2",
         "ボス 通常3",
@@ -25678,7 +25684,7 @@ namespace TH20 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3413] {
+const wchar_t __thprac_loc_range_zh[3415] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -26861,6 +26867,7 @@ const wchar_t __thprac_loc_range_zh[3413] {
     0x7ba1, 0x7ba1,
     0x7bad, 0x7bad,
     0x7bb1, 0x7bb1,
+    0x7be1, 0x7be1,
     0x7c73, 0x7c73,
     0x7c7b, 0x7c7b,
     0x7c89, 0x7c89,
