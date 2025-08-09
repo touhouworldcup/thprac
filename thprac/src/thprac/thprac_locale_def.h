@@ -872,14 +872,12 @@ enum th_glossary_t {
     THPRAC_INGAMEINFO_TH13_SHOW_HITS2,
     THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR,
     THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR2,
-    THPRAC_INGAMEINFO_TH14_BONUS_05,
-    THPRAC_INGAMEINFO_TH14_BONUS_08,
-    THPRAC_INGAMEINFO_TH14_BONUS_12,
-    THPRAC_INGAMEINFO_TH14_BONUS_16,
     THPRAC_INGAMEINFO_TH14_BONUS_20,
     THPRAC_INGAMEINFO_TH14_BONUS_BOMB,
     THPRAC_INGAMEINFO_TH14_BONUS_LIFE,
     THPRAC_INGAMEINFO_TH14_BONUS_NEXT,
+    THPRAC_INGAMEINFO_TH14_BONUS_NORMAL,
+    THPRAC_INGAMEINFO_TH14_BONUS_TOTAL,
     THPRAC_INGAMEINFO_TH14_ITEMS_CNT,
     THPRAC_INGAMEINFO_TH14_MARISA_LASER_REP,
     THPRAC_INGAMEINFO_TH14_SHOW_BONUS,
@@ -1513,7 +1511,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1502];
+extern const char* th_glossary_str[3][1500];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3166,7 +3164,7 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3415];
+extern const wchar_t __thprac_loc_range_zh[3417];
 
 extern const wchar_t __thprac_loc_range_en[61];
 

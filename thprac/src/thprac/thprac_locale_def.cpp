@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1502] {
+const char* th_glossary_str[3][1500] {
     {
         "",
         "啤酒",
@@ -872,14 +872,12 @@ const char* th_glossary_str[3][1502] {
         "神灵庙显示连击",
         "显示连击条",
         "神灵庙显示连击条",
-        "0.5",
-        "0.8",
-        "1.2",
-        "1.6",
-        "2.0",
-        "B",
+        "2.0收点",
+        "雷",
         "残",
         "下一奖励",
+        "普通收点",
+        "总奖励",
         "道具量",
         "辉针城魔理沙自动开启激光修复的rep预防功能",
         "显示bonus数",
@@ -2376,14 +2374,12 @@ const char* th_glossary_str[3][1502] {
         "TD show hits",
         "show hit bar",
         "TD show hit bar",
-        "0.5",
-        "0.8",
-        "1.2",
-        "1.6",
-        "2.0",
+        "2.0 bonus",
         "B",
         "L",
         "next bonus",
+        "normal bonus",
+        "total bonus",
         "items",
         "DDC Marisa laser bug rep repair on",
         "show bonuses",
@@ -3880,14 +3876,12 @@ const char* th_glossary_str[3][1502] {
         "TD show hits",
         "show hit bar",
         "TD show hit bar",
-        "0.5",
-        "0.8",
-        "1.2",
-        "1.6",
-        "2.0",
+        "2.0 bonus",
         "B",
         "L",
         "next bonus",
+        "normal bonus",
+        "total bonus",
         "items",
         "DDC Marisa laser bug rep repair on",
         "show bonuses",
@@ -25684,7 +25678,7 @@ namespace TH20 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3415] {
+const wchar_t __thprac_loc_range_zh[3417] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -26455,6 +26449,7 @@ const wchar_t __thprac_loc_range_zh[3415] {
     0x6655, 0x6655,
     0x665a, 0x665a,
     0x6666, 0x6666,
+    0x666e, 0x666e,
     0x666f, 0x666f,
     0x6674, 0x6674,
     0x6682, 0x6682,

@@ -537,8 +537,8 @@ namespace TH14 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPosRel(900.0f / 1280.0f, 560.0f / 960.0f);
-            SetSizeRel(340.0f / 1280.0f, 0.0f);
+            SetPosRel(890.0f / 1280.0f, 560.0f / 960.0f);
+            SetSizeRel(360.0f / 1280.0f, 0.0f);
             SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
@@ -587,7 +587,29 @@ namespace TH14 {
             ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
             ImGui::Text(diff_pl.c_str());
 
+            
+
             ImGui::Columns(2);
+            float bonus_cnt_space = 0.0f;
+            if (g_adv_igi_options.th14_showBonus){
+                std::string bonus_cnt = std::format("{}/{}/{}/{}", m05Count, m08Count, m12Count, m16Count);
+                float bonus_cnt_sz = ImGui::CalcTextSize(bonus_cnt.c_str()).x;
+                std::string cycle_cnt = S(THPRAC_INGAMEINFO_TH14_BONUS_BOMB);
+                cycle_cnt += ' ';
+                float cycle_cnt_sz = ImGui::CalcTextSize(cycle_cnt.c_str()).x * 5.5;
+                float widthmx = std::max(cycle_cnt_sz, bonus_cnt_sz);
+                float width1 = ImGui::GetColumnWidth(1);
+                if (width1 < widthmx)
+                    ImGui::SetColumnWidth(0, ImGui::GetWindowContentRegionWidth() - widthmx);
+
+                float sz_space = ImGui::CalcTextSize("        ").x;
+                bonus_cnt_space = sz_space - bonus_cnt_sz * 0.5f;
+                if (bonus_cnt_space < 0.0f)
+                    bonus_cnt_space = 0.0f;
+            }
+            
+
+
             ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
             ImGui::NextColumn();
             ImGui::Text("%8d", mMissCount);
@@ -618,40 +640,56 @@ namespace TH14 {
             if (g_adv_igi_options.th14_showBonus)
             {
                 ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_05));
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_NORMAL));
                 ImGui::NextColumn();
-                ImGui::Text("%8d", m05Count);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_08));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", m08Count);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_12));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", m12Count);
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_16));
-                ImGui::NextColumn();
-                ImGui::Text("%8d", m16Count);
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + bonus_cnt_space);
+
+                ImGui::TextColored({ 0.6f, 0.90f, 1.0f, 1.0f }, "%d", m05Count);
+                ImGui::SameLine(0.0f, 0.0f);
+                ImGui::Text("/");
+                ImGui::SameLine(0.0f, 0.0f);
+                ImGui::TextColored({ 0.8f, 1.0f, 0.8f, 1.0f }, "%d", m08Count);
+                ImGui::SameLine(0.0f, 0.0f);
+                ImGui::Text("/");
+                ImGui::SameLine(0.0f, 0.0f);
+                ImGui::TextColored({ 0.7f, 0.9f, 0.40f, 1.0f }, "%d", m12Count);
+                ImGui::SameLine(0.0f, 0.0f);
+                ImGui::Text("/");
+                ImGui::SameLine(0.0f, 0.0f);
+                ImGui::TextColored({ 1.0f, 0.85f, 0.5f, 1.0f }, "%d", m16Count);
+
                 ImGui::NextColumn();
                 ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_20));
                 ImGui::NextColumn();
-                ImGui::Text("%8d", m20Count);
+                ImGui::TextColored({ 1.0f, 0.95f, 0.5f, 1.0f }, "%8d", m20Count);
                 ImGui::NextColumn();
+
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_TOTAL));
+                ImGui::NextColumn();
+                ImGui::Text("%8d", *(DWORD*)(0x4F5894));
+                ImGui::NextColumn();
+
                 ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_NEXT));
                 ImGui::NextColumn();
-                if (*(DWORD*)(0x4F5894) % 5==4)
-                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_LIFE));
-                else
-                    ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_BOMB));
+                const ImVec4 color_life = { 0.4f, 0.2f, 0.2f, 1.0f };
+                const ImVec4 color_bomb = { 0.2f, 0.4f, 0.2f, 1.0f };
+
+                const ImVec4 color_life_next = { 1.0f, 0.6f, 0.6f, 1.0f };
+                const ImVec4 color_bomb_next = { 0.5f, 1.0f, 0.5f, 1.0f };
+                int cycle = *(DWORD*)(0x4F5894) % 5;
+                for (int i = 0; i < 4; i++){
+                    ImGui::TextColored(cycle == i ? color_bomb_next:color_bomb, "%s ", S(THPRAC_INGAMEINFO_TH14_BONUS_BOMB));
+                    ImGui::SameLine(0.0f, 0.0f);
+                }
+                ImGui::TextColored(cycle == 4 ? color_life_next : color_life, "%s", S(THPRAC_INGAMEINFO_TH14_BONUS_LIFE));
             }
         }
 
         virtual void OnPreUpdate() override
         {
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x04DB67C)) {
-                SetPosRel(900.0f / 1280.0f, 560.0f / 960.0f);
-                SetSizeRel(340.0f / 1280.0f, 0.0f);
+                SetPosRel(890.0f / 1280.0f, 560.0f / 960.0f);
+                SetSizeRel(360.0f / 1280.0f, 0.0f);
                 Open();
             } else {
                 Close();

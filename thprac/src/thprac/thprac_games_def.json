@@ -1094,14 +1094,13 @@
 	  "THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR":["显示掉落收集条","show drop bar","show drop bar"],
 	  "THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR2":["辉针城显示掉落收集条","DDC show drop bar","DDC show drop bar"],
 	  
-	  "THPRAC_INGAMEINFO_TH14_BONUS_05":["0.5","0.5","0.5"],
-	  "THPRAC_INGAMEINFO_TH14_BONUS_08":["0.8","0.8","0.8"],
-	  "THPRAC_INGAMEINFO_TH14_BONUS_12":["1.2","1.2","1.2"],
-	  "THPRAC_INGAMEINFO_TH14_BONUS_16":["1.6","1.6","1.6"],
-	  "THPRAC_INGAMEINFO_TH14_BONUS_20":["2.0","2.0","2.0"],
+	  
+	  "THPRAC_INGAMEINFO_TH14_BONUS_NORMAL":["普通收点","normal bonus","normal bonus"],
+	  "THPRAC_INGAMEINFO_TH14_BONUS_20":["2.0收点","2.0 bonus","2.0 bonus"],
+	  "THPRAC_INGAMEINFO_TH14_BONUS_TOTAL":["总奖励","total bonus","total bonus"],
 	  "THPRAC_INGAMEINFO_TH14_BONUS_NEXT":["下一奖励","next bonus","next bonus"],
 	  "THPRAC_INGAMEINFO_TH14_BONUS_LIFE":["残","L","L"],
-	  "THPRAC_INGAMEINFO_TH14_BONUS_BOMB":["B","B","B"],
+	  "THPRAC_INGAMEINFO_TH14_BONUS_BOMB":["雷","B","B"],
 	  "THPRAC_INGAMEINFO_TH14_ITEMS_CNT":["道具量","items","items"],
 	  
 	  "THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE":["显示击破数","show shooting down","show shooting down"],
