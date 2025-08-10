@@ -670,6 +670,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
 
         LauncherSettingGet_KeyBind();
 
+        LauncherSettingGet("disableJoy", g_disable_joy);
         // if (LauncherSettingGet("disableJoy", g_disable_joy) && g_disable_joy)
         {
             HookIAT(GetModuleHandle(NULL), "winmm.dll", "joyGetPosEx", joyGetPosEx_Changed, (void**)&g_realJoyGetPosEx);
