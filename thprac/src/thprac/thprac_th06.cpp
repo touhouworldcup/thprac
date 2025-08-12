@@ -1388,6 +1388,18 @@ namespace TH06 {
     PATCH_DY(th06_rankdown_disable2, 0x428A55, "909090909090909090909090909090")
     HOOKSET_ENDDEF()
 
+    HOOKSET_DEFINE(TH06BgFix)
+    // fix igi render problem
+    PATCH_DY(th06_background_fix_1, 0x42073B, "909090909090")
+    PATCH_DY(th06_background_fix_2, 0x419F4B, "909090909090")
+    PATCH_DY(th06_background_fix_3, 0x419F81, "909090909090")
+    EHOOK_DY(th06_stage_color_fix, 0x4039E5, 3,
+        {
+            pCtx->Edx = 0x00000000;
+        })
+    HOOKSET_ENDDEF()
+
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
         SINGLETON(THAdvOptWnd);
         // Option Related Functions
@@ -1688,7 +1700,13 @@ namespace TH06 {
             }
             ImGui::Text("%s: %d",S(THPRAC_TH06_REP_RAND_SEED),g_last_rep_seed);
 
-            ImGui::Checkbox(S(THPRAC_TH06_BACKGROUND_FIX), &g_adv_igi_options.th06_bg_fix);
+            if (ImGui::Checkbox(S(THPRAC_TH06_BACKGROUND_FIX), &g_adv_igi_options.th06_bg_fix))
+            {
+                if (g_adv_igi_options.th06_bg_fix)
+                    EnableAllHooks(TH06BgFix);
+                else
+                    DisableAllHooks(TH06BgFix);
+            }
             HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC1));
             ImGui::SameLine();
             HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC2));
@@ -2995,6 +3013,7 @@ namespace TH06 {
     // But due to the way this new hooking system works
     // running Setup is only needed for Hooks, not patches
     PATCH_ST(th06_white_screen, 0x42fee0, "c3");
+
     HOOKSET_DEFINE(THMainHook)
     PATCH_DY(th06_reacquire_input, 0x41dc58, "0000000074")
     EHOOK_DY(th06_activateapp, 0x420D96, 3, {
@@ -3351,10 +3370,6 @@ namespace TH06 {
         }
     })
     PATCH_DY(th06_disable_menu, 0x439ab2, "9090909090")
-    // fix igi render problem
-    PATCH_DY(th06_background_fix_1, 0x42073B, "909090909090")
-    PATCH_DY(th06_background_fix_2, 0x419F4B, "909090909090")
-    PATCH_DY(th06_background_fix_3, 0x419F81, "909090909090")
     EHOOK_DY(th06_update, 0x41caac, 1, {
         GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
         
@@ -3396,12 +3411,6 @@ namespace TH06 {
         GameGuiRender(IMPL_WIN32_DX8);
         if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
             THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);
-    })
-    EHOOK_DY(th06_stage_color_fix, 0x4039E5,3,
-    {
-        if (g_adv_igi_options.th06_bg_fix) {
-            pCtx->Edx = 0x00000000;
-        }
     })
     EHOOK_DY(th06_player_state, 0x4288C0,1,
     {
@@ -3675,6 +3684,10 @@ namespace TH06 {
 
         th06_white_screen.Setup();
         th06_result_screen_create.Setup();
+        if (g_adv_igi_options.th06_bg_fix)
+        {
+            EnableAllHooks(TH06BgFix);
+        }
 
         // Reset thPracParam
         thPracParam.Reset();
