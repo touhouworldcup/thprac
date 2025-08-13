@@ -434,7 +434,7 @@ public:
         ImGui::SameLine();
         std::string txtTmp = "##";
         txtTmp += guiTxt;
-        ImGui::PushItemWidth(620.0f - ImGui::GetWindowSize().x);
+        ImGui::PushItemWidth(ImGui::GetFontSize() * 12);
         auto result = ImGui::Combo(txtTmp.c_str(), &value, guiCombo);
         ImGui::PopItemWidth();
         if (result) {
