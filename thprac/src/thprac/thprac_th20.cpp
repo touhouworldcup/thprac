@@ -148,8 +148,7 @@ namespace TH20 {
             case 0:
                 break;
             case 1:
-                // TODO
-                //mDiffculty = *((int32_t*)RVA(0x1AEEC0));
+                mDiffculty = *((int32_t*)RVA(0x1B0A60));
                 SetFade(0.8f, 0.1f);
                 Open();
                 thPracParam.Reset();
@@ -264,7 +263,6 @@ namespace TH20 {
                 mHyper(std::format("{:.2f} %%", (float)(*mHyper) / 100.0f).c_str());
                 mStone(std::format("{:.2f} %%", (float)(*mStone) / 100.0f).c_str());
 
-                // TODO: This is ass
                 ImGui::Columns(2);
                 auto& style = ImGui::GetStyle();
                 auto old_col = style.Colors[ImGuiCol_SliderGrab];
@@ -383,7 +381,7 @@ namespace TH20 {
         }
 
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
-        Gui::GuiCombo mStage { TH_STAGE, TH_STAGE_SELECT_TRIAL };
+        Gui::GuiCombo mStage { TH_STAGE, TH_STAGE_SELECT };
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
@@ -822,6 +820,8 @@ namespace TH20 {
         adv_opt_ctx mOptCtx;
     };
 
+    // TODO
+    /*
     void ECLStdExec(ECLHelper& ecl, unsigned int start, int std_id, int ecl_time = 0)
     {
         if (start)
@@ -1197,6 +1197,7 @@ namespace TH20 {
             THPatch(ecl, (th_sections_t)section);
         }
     }
+    */
 
     int THBGMTest()
     {
@@ -1240,76 +1241,6 @@ namespace TH20 {
             pCtx->Eip = RVA(0x028855);
         }
     })
-    EHOOK_DY(th20_param_reset, 0x1294C6, 3, {
-        thPracParam.Reset();
-    })
-    EHOOK_DY(th20_prac_menu_1, 0x12A92A, 5, {
-        sGameStarted = false;
-        THGuiPrac::singleton().State(1);
-    })
-    EHOOK_DY(th20_prac_menu_2, 0x12A958, 2, {
-        if (!sGameStarted) {
-            if (Gui::InGameInputGetConfirm()) {
-                sGameStarted = true;
-                asm_call_rel<0x238C0, Thiscall>(*(uint32_t*)RVA(0x1C3DB4) + 0x154, 0);
-                THGuiPrac::singleton().State(3);
-            } else if (Gui::InGameInputGet('X')) {
-                THGuiPrac::singleton().State(4);
-                asm_call_rel<0x12B640, Thiscall>(*(uint32_t*)RVA(0x1C3DB4), 2);
-                pCtx->Eip = RVA(0x12AC10);
-            } else {
-                THGuiPrac::singleton().State(2);
-                pCtx->Eip = RVA(0x12AC10);
-            }
-        }
-    })
-    EHOOK_DY(th20_disable_game_start, 0x12AADC, 3, {
-        if (THGuiPrac::singleton().IsOpen())
-            pCtx->Eip = RVA(0x12AC10);
-    })
-    EHOOK_DY(th20_stone_menu_fade, 0x11A740, 6, {
-        if (THGuiPrac::singleton().IsOpen())
-            pCtx->Eip = RVA(0x11A763);
-    })
-    EHOOK_DY(th20_prac_menu_set_stage, 0x12AB34, 5, {
-        *(int*)pCtx->Esp = thPracParam.stage + 1;
-    })
-    PATCH_DY(th20_instant_esc_r, 0xE59C5, "EB")
-    EHOOK_DY(th20_patch_main, 0xBCF34, 1, {
-        if (thPracParam.mode == 1) {
-            *(int32_t*)RVA(0x1B8670) = (int32_t)(thPracParam.score / 10);
-            *(int32_t*)RVA(0x1B8728) = thPracParam.life;
-            *(int32_t*)RVA(0x1B8730) = thPracParam.life_fragment;
-            *(int32_t*)RVA(0x1B873C) = thPracParam.bomb;
-            *(int32_t*)RVA(0x1B8740) = thPracParam.bomb_fragment;
-            *(int32_t*)RVA(0x1B86A0) = thPracParam.power;
-            *(int32_t*)RVA(0x1B86B4) = thPracParam.value;
-
-            THSectionPatch();
-        }
-        thPracParam._playLock = true;
-    })
-    EHOOK_DY(th20_patch_stones, 0x133A21, 1, {
-        if (thPracParam.mode != 1)
-            return;
-
-        uintptr_t player_stats = RVA(0x1B8670);
-        *(int32_t*)(player_stats + 0x4C) = (int32_t)(thPracParam.hyper * *(int32_t*)(player_stats + 0x50));
-        if ((int32_t)thPracParam.hyper == 1) { // call the hyper start method
-            int32_t* gauge_manager_ptr = (int32_t*)RVA(0x1b8614);
-            asm_call_rel<0x134fe0, Fastcall>(*gauge_manager_ptr);
-        }
-
-        *(int32_t*)(player_stats + 0x5C) = (int32_t)(thPracParam.stone * *(int32_t*)(player_stats + 0x60));
-        *(int32_t*)(player_stats + 0x64) = thPracParam.priorityR;
-        *(int32_t*)(player_stats + 0x68) = thPracParam.priorityB;
-        *(int32_t*)(player_stats + 0x6C) = thPracParam.priorityY;
-        *(int32_t*)(player_stats + 0x70) = thPracParam.priorityG;
-        *(int32_t*)(player_stats + 0x74) = thPracParam.levelR;
-        *(int32_t*)(player_stats + 0x78) = thPracParam.levelB;
-        *(int32_t*)(player_stats + 0x7C) = thPracParam.levelY;
-        *(int32_t*)(player_stats + 0x80) = thPracParam.levelG;
-    })
     EHOOK_DY(th20_boss_bgm, 0xBBFC8, 2, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
@@ -1342,6 +1273,63 @@ namespace TH20 {
     })
     PATCH_DY(th20_fix_rep_results_skip, 0x1133B1, "5B35FAFF")
     */
+    EHOOK_DY(th20_patch_main, 0xBBD56, 1, {
+        if (thPracParam.mode == 1) {
+            *(int32_t*)RVA(0x1BA5F0) = (int32_t)(thPracParam.score / 10);
+            *(int32_t*)RVA(0x1BA568 + 0x140) = thPracParam.life;
+            *(int32_t*)RVA(0x1BA568 + 0x148) = thPracParam.life_fragment;
+            *(int32_t*)RVA(0x1BA568 + 0x154) = thPracParam.bomb;
+            *(int32_t*)RVA(0x1BA568 + 0x158) = thPracParam.bomb_fragment;
+            *(int32_t*)RVA(0x1BA568 + 0xB8) = thPracParam.power;
+            *(int32_t*)RVA(0x1BA568 + 0xCC) = thPracParam.value;
+
+            // TODO
+            //THSectionPatch();
+        }
+        thPracParam._playLock = true;
+    })
+    EHOOK_DY(th20_patch_stones, 0x1336F1, 1, {
+        if (thPracParam.mode != 1)
+            return;
+
+        uintptr_t player_stats = RVA(0x1BA5F0);
+        *(int32_t*)(player_stats + 0x4C) = (int32_t)(thPracParam.hyper * *(int32_t*)(player_stats + 0x50));
+        if ((int32_t)thPracParam.hyper == 1) { // call the hyper start method
+            int32_t* gauge_manager_ptr = (int32_t*)RVA(0x1BA568 + 0x2C);
+            asm_call_rel<0x134D00, Fastcall>(*gauge_manager_ptr);
+        }
+
+        *(int32_t*)(player_stats + 0x5C) = (int32_t)(thPracParam.stone * *(int32_t*)(player_stats + 0x60));
+        *(int32_t*)(player_stats + 0x64) = thPracParam.priorityR;
+        *(int32_t*)(player_stats + 0x68) = thPracParam.priorityB;
+        *(int32_t*)(player_stats + 0x6C) = thPracParam.priorityY;
+        *(int32_t*)(player_stats + 0x70) = thPracParam.priorityG;
+        *(int32_t*)(player_stats + 0x74) = thPracParam.levelR;
+        *(int32_t*)(player_stats + 0x78) = thPracParam.levelB;
+        *(int32_t*)(player_stats + 0x7C) = thPracParam.levelY;
+        *(int32_t*)(player_stats + 0x80) = thPracParam.levelG;
+    })
+    EHOOK_DY(th20_param_reset, 0x129EA6, 3, {
+        thPracParam.Reset();
+    })
+    EHOOK_DY(th20_prac_menu_1, 0x1294A3, 3, {
+        THGuiPrac::singleton().State(1);
+    })
+    EHOOK_DY(th20_prac_menu_2, 0x1294D0, 3, {
+        THGuiPrac::singleton().State(2);
+    })
+    EHOOK_DY(th20_prac_menu_3, 0x1299AE, 2, {
+        THGuiPrac::singleton().State(3);
+    })
+    EHOOK_DY(th20_prac_menu_4, 0x129AD8, 3, {
+        THGuiPrac::singleton().State(4);
+    })
+    PATCH_DY(th20_prac_menu_enter_1, 0x129595, "eb")
+    EHOOK_DY(th20_prac_menu_enter_2, 0x129A98, 3, {
+        pCtx->Eax = thPracParam.stage;
+    })
+    PATCH_DY(th20_disable_prac_menu_1, 0x129B40, "c3")
+    PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
     EHOOK_DY(th20_update, 0x12A72, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 
@@ -1385,7 +1373,7 @@ namespace TH20 {
     HOOKSET_DEFINE(THInitHook)
     PATCH_DY(th20_startup_1, 0x11F82C, "EB")
     PATCH_DY(th20_startup_2, 0x11E8C9, "EB")
-    EHOOK_DY(th20_gui_init_1, 0x12967E, 7, {
+    EHOOK_DY(th20_gui_init_1, 0x12A0A3, 7, {
         self->Disable();
         THGuiCreate();
     })
