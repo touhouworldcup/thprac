@@ -577,10 +577,8 @@ namespace TH20 {
 
     // TODO(?)
     //static constinit HookCtx listIterUnlinkFix = { .addr = 0x11AB2, .data = PatchCode("e800000000") };
-    // TODO
-    /*
-    EHOOK_ST(th20_piv_overflow_fix, 0xC5FDB, 2, {
-        uintptr_t stats = RVA(0x1B8670);
+    EHOOK_ST(th20_piv_overflow_fix, 0xC496B, 2, {
+        uintptr_t stats = RVA(0x1BA5F0);
         int32_t piv = *(int32_t*)(stats + 0x44);
         int32_t piv_base = *(int32_t*)(stats + 0x40); // always 10000?
         int32_t piv_divisor = *(int32_t*)(stats + 0x48); // always 5000?
@@ -588,14 +586,13 @@ namespace TH20 {
         int32_t half_piv_base = piv_base / 2;
         int64_t uh_oh = (int64_t)piv_base * piv;
         pCtx->Esi = (int32_t)(uh_oh / piv_divisor) + half_piv_base;
-        pCtx->Eip = RVA(0xC6034);
+        pCtx->Eip = RVA(0xC49C4);
     });
-    PATCH_ST(th20_piv_uncap_1, 0xAA775, "89D00F1F00");
-    PATCH_ST(th20_piv_uncap_2, 0xB9316, "89D00F1F00");
-    PATCH_ST(th20_score_uncap, 0xE3E72, "EB");
-    PATCH_ST(th20_infinite_stones, 0x11A250, "EB");
-    PATCH_ST(th20_hitbox_scale_fix, 0x102280, "B864000000C3");
-    */
+    PATCH_ST(th20_piv_uncap_1, 0xA9FE5, "89D00F1F00");
+    PATCH_ST(th20_piv_uncap_2, 0xB82E6, "89D00F1F00");
+    PATCH_ST(th20_score_uncap, 0xE14F2, "EB");
+    PATCH_ST(th20_infinite_stones, 0x11784B, "EB");
+    PATCH_ST(th20_hitbox_scale_fix, 0xFF490, "B864000000C3");
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
         SINGLETON(THAdvOptWnd);
@@ -683,9 +680,7 @@ namespace TH20 {
             FpsInit();
             GameplayInit();
             MasterDisableInit();
-            
-            // TODO
-            /*
+
             th20_piv_overflow_fix.Setup();
             th20_piv_uncap_1.Setup();
             th20_piv_uncap_2.Setup();
@@ -693,6 +688,8 @@ namespace TH20 {
             th20_infinite_stones.Setup();
             th20_hitbox_scale_fix.Setup();
 
+            // TODO(?)
+            /*
             // thcrap base_tsa already patches this to fix the crash, don't try to rehook it if it's being used
             if (*(uint32_t*)RVA(0x11AD0) == 0x51EC8B55) {
                 *(uintptr_t*)((uintptr_t)listIterUnlinkFix.data.buffer.ptr + 1) = (uintptr_t)&UnlinkNodeHook - RVA(0x11AB2 + 5);
@@ -757,8 +754,6 @@ namespace TH20 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
-                // TODO
-                /*
                 if (ImGui::Checkbox(S(TH20_PIV_OVERFLOW_FIX), &pivOverflowFix))
                     th20_piv_overflow_fix.Toggle(pivOverflowFix);
                 ImGui::SameLine();
@@ -779,7 +774,6 @@ namespace TH20 {
                     th20_hitbox_scale_fix.Toggle(plHitboxScaleFix);
                 ImGui::SameLine();
                 HelpMarker(S(TH20_FIX_HITBOX_DESC));
-                */
 
                 ImGui::SetNextItemWidth(180.0f);
                 EndOptGroup();
