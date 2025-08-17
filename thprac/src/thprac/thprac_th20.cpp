@@ -784,8 +784,6 @@ namespace TH20 {
         adv_opt_ctx mOptCtx;
     };
 
-    // TODO
-    /*
     void ECLStdExec(ECLHelper& ecl, unsigned int start, int std_id, int ecl_time = 0)
     {
         if (start)
@@ -800,7 +798,7 @@ namespace TH20 {
 
     constexpr unsigned int st1PostMaple = 0x7eec;
     constexpr unsigned int st2PostMaple = 0xa45c;
-    constexpr unsigned int st3PostMaple = 0xb3e8;
+    constexpr unsigned int st3PostMaple = 0xb3e8; // TODO
     constexpr unsigned int stdInterruptSize = 0x14;
     __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
     {
@@ -888,6 +886,7 @@ namespace TH20 {
                 break;
             }
         } else if (stage == 3) {
+            // TODO
             constexpr unsigned int st3MainFront = 0xb9e0;
             constexpr unsigned int st3MainSub00 = 0x903c;
 
@@ -965,6 +964,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST1_BOSS1: {
+            // TODO
             constexpr unsigned int st1BossDialogueCall = 0x866c;
             ECLStdExec(ecl, st1PostMaple, 1, 1);
             if (thPracParam.dlg)
@@ -974,6 +974,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST1_BOSS2: {
+            // TODO
             ECLStdExec(ecl, st1PostMaple, 1, 1);
             ECLJump(ecl, st1PostMaple + stdInterruptSize, st1BossCreateCall, 60);
             ecl.SetFile(2);
@@ -981,6 +982,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST1_BOSS3: {
+            // TODO
             constexpr unsigned int st1bsNonSubCallOrd = 0x610;
             constexpr unsigned int st1bsNon2InvulnCallVal = 0x1268;
             constexpr unsigned int st1bsNon2BossItemCallSomething = 0x1344 + 0x4; // 32th cringequit on me when
@@ -999,6 +1001,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST1_BOSS4: {
+            // TODO
             ECLStdExec(ecl, st1PostMaple, 1, 1);
             ECLJump(ecl, st1PostMaple + stdInterruptSize, st1BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1007,6 +1010,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST1_BOSS5: {
+            // TODO
             ECLStdExec(ecl, st1PostMaple, 1, 1);
             ECLJump(ecl, st1PostMaple + stdInterruptSize, st1BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1020,6 +1024,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST2_BOSS1: {
+            // TODO
             constexpr unsigned int st2BossDialogueCall = 0xabdc;
             ECLStdExec(ecl, st2PostMaple, 1, 1);
             if (thPracParam.dlg)
@@ -1029,6 +1034,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST2_BOSS2: {
+            // TODO
             ECLStdExec(ecl, st2PostMaple, 1, 1);
             ECLJump(ecl, st2PostMaple + stdInterruptSize, st2BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1036,6 +1042,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST2_BOSS3: {
+            // TODO
             constexpr unsigned int st2bsNon2InvulnCallVal = 0x11d4;
             constexpr unsigned int st2bsNon2BossItemCallSomething = 0x12b0 + 0x4;
             constexpr unsigned int st2bsNon2PlaySoundSomething = 0x13dc + 0x4;
@@ -1053,6 +1060,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST2_BOSS4: {
+            // TODO
             ECLStdExec(ecl, st2PostMaple, 1, 1);
             ECLJump(ecl, st2PostMaple + stdInterruptSize, st2BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1061,6 +1069,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST2_BOSS5: {
+            // TODO
             ECLStdExec(ecl, st2PostMaple, 1, 1);
             ECLJump(ecl, st2PostMaple + stdInterruptSize, st2BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1070,6 +1079,7 @@ namespace TH20 {
         }
 
         case THPrac::TH20::TH20_ST3_BOSS1: {
+            // TODO
             constexpr unsigned int st3BossDialogueCall = 0xba8c;
             ECLStdExec(ecl, st3PostMaple, 1, 1);
             if (thPracParam.dlg)
@@ -1079,6 +1089,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST3_BOSS2: {
+            // TODO
             ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1086,6 +1097,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST3_BOSS3: {
+            // TODO
             constexpr unsigned int st3bsNon2InvulnCallVal = 0x1074;
             constexpr unsigned int st3bsNon2BossItemCallSomething = 0x1150 + 0x4;
             constexpr unsigned int st3bsNon2PlaySoundSomething = 0x127c + 0x4;
@@ -1103,6 +1115,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST3_BOSS4: {
+            // TODO
             ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1111,6 +1124,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST3_BOSS5: {
+            // TODO
             constexpr unsigned int st3bsNon3InvulnCallVal = 0x1d0c;
             constexpr unsigned int st3bsNon3BossItemCallSomething = 0x1de8 + 0x4;
             constexpr unsigned int st3bsNon3PlaySoundSomething = 0x1f14 + 0x4;
@@ -1128,6 +1142,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST3_BOSS6: {
+            // TODO
             ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1136,6 +1151,7 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST3_BOSS7: {
+            // TODO
             ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1150,7 +1166,7 @@ namespace TH20 {
     __declspec(noinline) void THSectionPatch()
     {
         ECLHelper ecl;
-        ecl.SetBaseAddr((void*)GetMemAddr(RVA(0x1b85f0), 0x104, 0xc));
+        ecl.SetBaseAddr((void*)GetMemAddr(RVA(0x1BA570), 0x104, 0xc));
 
         auto section = thPracParam.section;
         if (section >= 10000 && section < 20000) {
@@ -1161,7 +1177,6 @@ namespace TH20 {
             THPatch(ecl, (th_sections_t)section);
         }
     }
-    */
 
     int THBGMTest()
     {
@@ -1222,8 +1237,7 @@ namespace TH20 {
             *(int32_t*)RVA(0x1BA568 + 0xB8) = thPracParam.power;
             *(int32_t*)RVA(0x1BA568 + 0xCC) = thPracParam.value;
 
-            // TODO
-            //THSectionPatch();
+            THSectionPatch();
         }
         thPracParam._playLock = true;
     })
