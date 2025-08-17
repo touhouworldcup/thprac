@@ -75,7 +75,7 @@ extern void TH18Init();
 extern void TH185Init();
 extern void TH19_v1_00a_Init();
 extern void TH19_v1_10c_Init();
-extern void TH20TRInit();
+extern void TH20Init();
 
 static THKnownGame gKnownGames[] {
     { "th06",
@@ -190,7 +190,7 @@ static THKnownGame gKnownGames[] {
         TYPE_NYASAMA,
         { 0x71115032, 0x3a4d05bd,
             0x8dfc8ba4, 0xa476dc6f } },
-    { "th20tr",
+    { "th20",
         TYPE_ORIGINAL,
         { 0x6378d64, 0x70f6e0ae,
             0x4f462058, 0x189ee241 } },
@@ -604,18 +604,20 @@ static THGameSig gGameDefs[] {
                 0x0e2e, 0x1a4a, 0xb748, 0xad5c, 0x1dfb },
             { 0x4951fa2e, 0x63b2d14d,
                 0x4b3ab26a, 0x3ee8b40d } } },
-    { "th20tr",
-        nullptr,//steam id
+    { "th20",
+        L"3671710",
         TH20_TITLE,
         CAT_MAIN,
         nullptr,
         L"%APPDATA%\\ShanghaiAlice\\th20",
         nullptr, L"th20 App",
         "scoreth20.dat",
-        TH20TRInit,
-        { 0x67ff22f0, 0x169200,
-            { 0x71a9, 0x4245, 0xaa43, 0xba3e, 0xbaba, 0x4684, 0xcc47 ,0xbc05 ,0xc02d ,0x4a47 },
-            { 0x6378d64, 0x70f6e0ae, 0x4f462058, 0x189ee241 } } },
+        TH20Init,
+        { 1753839620, 1484288,
+            { 0xaca9, 0x4244, 0xaa43, 0xba33, 0xbaba,
+                0x4684, 0xcc47, 0xbc05, 0xc02d, 0x4a47 },
+            { 0x6cc723ea, 0xa71db65e,
+                0x3c19f37c, 0x836fb369 } } },
 };
 
 #pragma region Game Roll Def

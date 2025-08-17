@@ -27,9 +27,23 @@ enum thprac_prompt_t {
     PR_ERR_RUN_FAILED,
 };
 
-bool CheckMutex(const char* mutex_name)
+bool CheckMutexA(const char* mutex_name)
 {
+    if (mutex_name == nullptr)
+        return false;
     auto result = OpenMutexA(SYNCHRONIZE, FALSE, mutex_name);
+    if (result) {
+        CloseHandle(result);
+        return true;
+    }
+    return false;
+}
+
+bool CheckMutexW(const WCHAR* mutex_name)
+{
+    if (mutex_name == nullptr)
+        return false;
+    auto result = OpenMutexW(SYNCHRONIZE, FALSE, mutex_name);
     if (result) {
         CloseHandle(result);
         return true;
@@ -39,8 +53,12 @@ bool CheckMutex(const char* mutex_name)
 
 bool CheckIfAnyGame()
 {
-    if (CheckMutex("Touhou Koumakyou App") || CheckMutex("Touhou YouYouMu App") || CheckMutex("Touhou 08 App") || CheckMutex("Touhou 10 App") || CheckMutex("Touhou 11 App") || CheckMutex("Touhou 12 App") || CheckMutex("th17 App") || CheckMutex("th18 App") || CheckMutex("th185 App") || CheckMutex("th19 App"))
-        return true;
+    for (auto i : gGameDefs){
+        if (CheckMutexA(i.mutexStr) || CheckMutexW(i.mutexWStr))
+            return true;
+    }
+    // if (CheckMutex("Touhou Koumakyou App") || CheckMutex("Touhou YouYouMu App") || CheckMutex("Touhou 08 App") || CheckMutex("Touhou 10 App") || CheckMutex("Touhou 11 App") || CheckMutex("Touhou 12 App") || CheckMutex("th17 App") || CheckMutex("th18 App") || CheckMutex("th185 App") || CheckMutex("th19 App")) || CheckMutex("th20 App"))
+    //     return true;
     return false;
 }
 

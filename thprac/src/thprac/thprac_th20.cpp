@@ -8,7 +8,7 @@
 #undef hyper
 
 namespace THPrac {
-namespace TH20TR {
+namespace TH20 {
     using std::pair;
     using namespace TH20;
     struct THPracParam {
@@ -47,7 +47,6 @@ namespace TH20TR {
         {
             ParseJson();
 
-            // Game value is still th20 to maintain compatibility with thprac-th20tr replays
             ForceJsonValue(game, "th20");
             GetJsonValue(mode);
             GetJsonValue(stage);
@@ -149,7 +148,7 @@ namespace TH20TR {
             case 0:
                 break;
             case 1:
-                mDiffculty = *((int32_t*)RVA(0x1AEEC0));
+                mDiffculty = *((int32_t*)RVA(0x1B0A60));
                 SetFade(0.8f, 0.1f);
                 Open();
                 thPracParam.Reset();
@@ -264,7 +263,6 @@ namespace TH20TR {
                 mHyper(std::format("{:.2f} %%", (float)(*mHyper) / 100.0f).c_str());
                 mStone(std::format("{:.2f} %%", (float)(*mStone) / 100.0f).c_str());
 
-                // TODO: This is ass
                 ImGui::Columns(2);
                 auto& style = ImGui::GetStyle();
                 auto old_col = style.Colors[ImGuiCol_SliderGrab];
@@ -383,7 +381,7 @@ namespace TH20TR {
         }
 
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
-        Gui::GuiCombo mStage { TH_STAGE, TH_STAGE_SELECT_TRIAL };
+        Gui::GuiCombo mStage { TH_STAGE, TH_STAGE_SELECT };
         Gui::GuiCombo mWarp { TH_WARP, TH_WARP_SELECT };
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
@@ -429,6 +427,8 @@ namespace TH20TR {
     public:
         void CheckReplay()
         {
+            // TODO
+            /*
             uint32_t index = GetMemContent(RVA(0x1C3DB4), 0x5734);
             char* repName = (char*)GetMemAddr(RVA(0x1C3DB4), index * 4 + 0x573C, 0x150);
             std::wstring repDir(mAppdataPath);
@@ -443,6 +443,7 @@ namespace TH20TR {
 
             uint32_t* savedStones = (uint32_t*)GetMemAddr(RVA(0x1C3DB4), index * 4 + 0x573C, 0x1C, 0xDC);
             memcpy(replayStones, savedStones, sizeof(replayStones));
+            */
         }
 
         bool mRepStatus = false;
@@ -509,27 +510,31 @@ namespace TH20TR {
             }
 
             mMenu.SetTextOffsetRel(x_offset_1, x_offset_2);
+            // TODO
+            
             mMuteki.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfLives.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfBombs.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfPower.SetTextOffsetRel(x_offset_1, x_offset_2);
-            mHyperGLock.SetTextOffsetRel(x_offset_1, x_offset_2);
+            /*mHyperGLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mWonderStGLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
-            mInternalGauges.SetTextOffsetRel(x_offset_1, x_offset_2);
+            */
         }
         virtual void OnContentUpdate() override
         {
+            // TODO
+            
             mMuteki();
             mInfLives();
             mInfBombs();
             mInfPower();
-            mHyperGLock();
+            /*mHyperGLock();
             mWonderStGLock();
             mTimeLock();
             mElBgm();
-            mInternalGauges();
+            */
         }
         virtual void OnPreUpdate() override
         {
@@ -545,169 +550,77 @@ namespace TH20TR {
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
-        PATCH_HK(0xFB5CC, "01")
+        PATCH_HK(0xF87FC, "01")
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
-        PATCH_HK(0xE3C08, "660F1F440000")
+        PATCH_HK(0xE1288, "660F1F440000")
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
-        PATCH_HK(0xE40A2, "0F1F00")
+        PATCH_HK(0xE1722, "0F1F00")
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
+        PATCH_HK(0xE16A2, "0F1F00")
+        HOTKEY_ENDDEF();
+        // TODO
+        /*
+        HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(0xFB5CC, "01")
+        HOTKEY_ENDDEF();
+        */
+
+        // TODO
+        /*
+        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
+        PATCH_HK(0xE3C08, "660F1F440000")
+        HOTKEY_ENDDEF();
+        */
+
+        // TODO
+        /*
+        HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
+        PATCH_HK(0xE40A2, "0F1F00")
+        HOTKEY_ENDDEF();
+        */
+
+        // TODO
+        /*
+        HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
         PATCH_HK(0xE4022, "0F1F00")
         HOTKEY_ENDDEF();
+        */
 
+        // TODO
+        /*
         HOTKEY_DEFINE(mHyperGLock, TH20_HYP_LOCK, "F5", VK_F5)
         PATCH_HK(0x133C15, "0F1F00")
         HOTKEY_ENDDEF();
+        */
 
+        // TODO
+        /*
         HOTKEY_DEFINE(mWonderStGLock, TH20_WST_LOCK, "F6", VK_F6)
         PATCH_HK(0x7AB35, "0F1F00")
         HOTKEY_ENDDEF();
+        */
 
+        // TODO
+        /*
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F7", VK_F7)
         PATCH_HK(0x8A5FD, "EB"),
-            PATCH_HK(0xA8ECE, "21")
-                HOTKEY_ENDDEF();
-
+        PATCH_HK(0xA8ECE, "21")
+        HOTKEY_ENDDEF();
+        */
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F8", VK_F8 };
-        Gui::GuiHotKey mInternalGauges { TH20_INTERNAL_GAUGES, "F9", VK_F9 };
     };
 
-    class TH20TRInternalGauges : public Gui::GameGuiWnd {
-        TH20TRInternalGauges() noexcept
-        {
-            SetTitle("igi");
-            SetFade(0.75f, 0.75f);
-            SetPosRel((1056.0f - 300.0f / 2.0) / 1280.0f, (700.0f - 192.0f / 2.0) / 960.0f);
-            SetSizeRel(300.0f / 1280.0f, 192.0f / 960.0f);
-            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
-            OnLocaleChange();
-        }
-        SINGLETON(TH20TRInternalGauges);
-
-    protected:
-        virtual void OnLocaleChange() override
-        {
-            float x_offset_1 = 0.0f;
-            float x_offset_2 = 0.0f;
-            switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
-                x_offset_1 = 0.12f;
-                x_offset_2 = 0.172f;
-                break;
-            case Gui::LOCALE_EN_US:
-                x_offset_1 = 0.12f;
-                x_offset_2 = 0.16f;
-                break;
-            case Gui::LOCALE_JA_JP:
-                x_offset_1 = 0.18f;
-                x_offset_2 = 0.235f;
-                break;
-            default:
-                break;
-            }
-        }
-
-        virtual void OnContentUpdate() override
-        {
-            static const ImVec4 STONE_COLORS[] = {
-                { 1.0f, 0.25f, 0.25f, 1.0f },
-                { 0.25f, 0.25f, 1.0f, 1.0f },
-                { 1.0f, 1.0f, 0.25f, 1.0f },
-                { 0.0f, 1.0f, 0.25f, 1.0f },
-            };
-            static constexpr const char* STONE_NAMES[] = {
-                "Red",
-                "Blue",
-                "Yellow",
-                "Green",
-            };
-            static constexpr const char* STONE_NAMES_SHORT[] = {
-                "R",
-                "B",
-                "Y",
-                "G",
-            };
-
-            uintptr_t player_stats = RVA(0x1B8670);
-            int32_t red_priority = *(int32_t*)(player_stats + 0x64);
-            int32_t blue_priority = *(int32_t*)(player_stats + 0x68);
-            int32_t yellow_priority = *(int32_t*)(player_stats + 0x6C);
-            int32_t green_priority = *(int32_t*)(player_stats + 0x70);
-
-            int32_t next_stone = *(int32_t*)(player_stats + 0x98);
-            bool locked = true;
-            if (next_stone < 0) {
-                locked = false;
-
-                next_stone = 0;
-                int32_t max_priority = red_priority;
-                if (blue_priority > max_priority) {
-                    next_stone = 1;
-                    max_priority = blue_priority;
-                }
-                if (yellow_priority > max_priority) {
-                    next_stone = 2;
-                    max_priority = yellow_priority;
-                }
-                if (green_priority > max_priority) {
-                    next_stone = 3;
-                    max_priority = green_priority;
-                }
-            }
-
-            auto& style = ImGui::GetStyle();
-            auto old_col = style.Colors[ImGuiCol_Text];
-
-            ImGui::Columns(2);
-            style.Colors[ImGuiCol_Text] = STONE_COLORS[next_stone];
-            ImGui::Text(S(TH20_NEXT_STONE));
-            ImGui::NextColumn();
-            ImGui::Text("%s%s", STONE_NAMES_SHORT[next_stone], locked ? " (LOCKED)" : "");
-            ImGui::NextColumn();
-            style.Colors[ImGuiCol_Text] = STONE_COLORS[0];
-            ImGui::Text(STONE_NAMES[0]);
-            ImGui::NextColumn();
-            ImGui::Text("%d", red_priority);
-            ImGui::NextColumn();
-            style.Colors[ImGuiCol_Text] = STONE_COLORS[1];
-            ImGui::Text(STONE_NAMES[1]);
-            ImGui::NextColumn();
-            ImGui::Text("%d", blue_priority);
-            ImGui::NextColumn();
-            style.Colors[ImGuiCol_Text] = STONE_COLORS[2];
-            ImGui::Text(STONE_NAMES[2]);
-            ImGui::NextColumn();
-            ImGui::Text("%d", yellow_priority);
-            ImGui::NextColumn();
-            style.Colors[ImGuiCol_Text] = STONE_COLORS[3];
-            ImGui::Text(STONE_NAMES[3]);
-            ImGui::NextColumn();
-            ImGui::Text("%d", green_priority);
-
-            style.Colors[ImGuiCol_Text] = old_col;
-        }
-
-        virtual void OnPreUpdate() override
-        {
-            if (*(THOverlay::singleton().mInternalGauges) && *(DWORD*)(RVA(0x1B85EC))) {
-                SetPosRel((1056.0f - 300.0f / 2.0) / 1280.0f, (700.0f - 192.0f / 2.0) / 960.0f);
-                SetSizeRel(300.0f / 1280.0f, 192.0f / 960.0f);
-                Open();
-            } else {
-                Close();
-            }
-        }
-
-    public:
-    };
-
-    static constinit HookCtx listIterUnlinkFix = { .addr = 0x11AB2, .data = PatchCode("e800000000") };
+    // TODO(?)
+    // static constinit HookCtx listIterUnlinkFix = { .addr = 0x11AB2, .data = PatchCode("e800000000") };
+    // TODO
+    /*
     EHOOK_ST(th20_piv_overflow_fix, 0xC5FDB, 2, {
         uintptr_t stats = RVA(0x1B8670);
         int32_t piv = *(int32_t*)(stats + 0x44);
@@ -724,10 +637,7 @@ namespace TH20TR {
     PATCH_ST(th20_score_uncap, 0xE3E72, "EB");
     PATCH_ST(th20_infinite_stones, 0x11A250, "EB");
     PATCH_ST(th20_hitbox_scale_fix, 0x102280, "B864000000C3");
-
-    PATCH_ST(th20_bullet_hitbox_fix_1, 0x3E7F2, "F30F108080000000F30F5C4224");
-    PATCH_ST(th20_bullet_hitbox_fix_2, 0x3E80A, "F30F108284000000F30F5C4128");
-
+    */
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
         SINGLETON(THAdvOptWnd);
@@ -740,7 +650,6 @@ namespace TH20TR {
         bool scoreUncap = false;
         bool infiniteStones = false;
         bool plHitboxScaleFix = false;
-        bool bulletHitboxFix = true;
 
         void MasterDisableInit()
         {
@@ -817,17 +726,14 @@ namespace TH20TR {
             GameplayInit();
             MasterDisableInit();
 
+            // TODO
+            /*
             th20_piv_overflow_fix.Setup();
             th20_piv_uncap_1.Setup();
             th20_piv_uncap_2.Setup();
             th20_score_uncap.Setup();
             th20_infinite_stones.Setup();
             th20_hitbox_scale_fix.Setup();
-            th20_bullet_hitbox_fix_1.Setup();
-            th20_bullet_hitbox_fix_2.Setup();
-
-            th20_bullet_hitbox_fix_1.Enable();
-            th20_bullet_hitbox_fix_2.Enable();
 
             // thcrap base_tsa already patches this to fix the crash, don't try to rehook it if it's being used
             if (*(uint32_t*)RVA(0x11AD0) == 0x51EC8B55) {
@@ -835,6 +741,7 @@ namespace TH20TR {
                 listIterUnlinkFix.Setup();
                 listIterUnlinkFix.Enable();
             }
+            */
         }
 
     public:
@@ -892,6 +799,8 @@ namespace TH20TR {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
+                // TODO
+                /*
                 if (ImGui::Checkbox(S(TH20_PIV_OVERFLOW_FIX), &pivOverflowFix))
                     th20_piv_overflow_fix.Toggle(pivOverflowFix);
                 ImGui::SameLine();
@@ -912,11 +821,8 @@ namespace TH20TR {
                     th20_hitbox_scale_fix.Toggle(plHitboxScaleFix);
                 ImGui::SameLine();
                 HelpMarker(S(TH20_FIX_HITBOX_DESC));
+                */
 
-                if (ImGui::Checkbox("bullet hitbox fix", &bulletHitboxFix)){
-                    th20_bullet_hitbox_fix_1.Toggle(bulletHitboxFix);
-                    th20_bullet_hitbox_fix_2.Toggle(bulletHitboxFix);
-                }
                 ImGui::SetNextItemWidth(180.0f);
                 EndOptGroup();
             }
@@ -929,6 +835,8 @@ namespace TH20TR {
         adv_opt_ctx mOptCtx;
     };
 
+    // TODO
+    
     void ECLStdExec(ECLHelper& ecl, unsigned int start, int std_id, int ecl_time = 0)
     {
         if (start)
@@ -943,8 +851,13 @@ namespace TH20TR {
 
     constexpr unsigned int st1PostMaple = 0x7eec;
     constexpr unsigned int st2PostMaple = 0xa45c;
-    constexpr unsigned int st3PostMaple = 0xb3e8;
+    constexpr unsigned int st3PostMaple = 0xb5bc;
+    constexpr unsigned int st4Main = 0xa740;
+    constexpr unsigned int st5PostMaple = 0x5058;
+    constexpr unsigned int st6PostMaple = 0x4b80;
+    constexpr unsigned int st7PostMaple = 0x6b28;
     constexpr unsigned int stdInterruptSize = 0x14;
+
     __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
     {
         if (stage == 1) {
@@ -1031,46 +944,46 @@ namespace TH20TR {
                 break;
             }
         } else if (stage == 3) {
-            constexpr unsigned int st3MainFront = 0xb9e0;
-            constexpr unsigned int st3MainSub00 = 0x903c;
+            constexpr unsigned int st3MainFront = 0xbbb4;
+            constexpr unsigned int st3MainSub00 = 0x904c;
 
             switch (portion) {
             case 1:
                 break;
             case 2: {
-                constexpr unsigned int mainSub01Call = 0x909c;
+                constexpr unsigned int mainSub01Call = 0x90ac;
                 ECLJump(ecl, st3PostMaple, st3MainFront, 60, 90);
                 ECLJump(ecl, st3MainSub00, mainSub01Call, 0, 0);
                 break;
             }
             case 3: {
-                constexpr unsigned int mainSub03Call = 0x915c;
+                constexpr unsigned int mainSub03Call = 0x910c;
                 ECLJump(ecl, st3PostMaple, st3MainFront, 60, 90);
                 ECLJump(ecl, st3MainSub00, mainSub03Call, 0, 0);
                 break;
             }
             case 4: {
-                constexpr unsigned int mainSub04Call = 0x91bc;
+                constexpr unsigned int mainSub04Call = 0x91cc;
                 ECLJump(ecl, st3PostMaple, st3MainFront, 60, 90);
                 ECLJump(ecl, st3MainSub00, mainSub04Call, 0, 0);
                 break;
             }
             case 5: {
-                constexpr unsigned int mainSub05Call = 0x921c;
+                constexpr unsigned int mainSub05Call = 0x922c;
                 ECLStdExec(ecl, st3PostMaple, 1, 1);
                 ECLJump(ecl, st3PostMaple + stdInterruptSize, st3MainFront, 60, 90);
                 ECLJump(ecl, st3MainSub00, mainSub05Call, 0, 0);
                 break;
             }
             case 6: {
-                constexpr unsigned int mainSub06Call = 0x927c;
+                constexpr unsigned int mainSub06Call = 0x928c;
                 ECLStdExec(ecl, st3PostMaple, 1, 1);
                 ECLJump(ecl, st3PostMaple + stdInterruptSize, st3MainFront, 60, 90);
                 ECLJump(ecl, st3MainSub00, mainSub06Call, 0, 0);
                 break;
             }
             case 7: {
-                constexpr unsigned int mainSub07Call = 0x92dc;
+                constexpr unsigned int mainSub07Call = 0x92ec;
                 ECLStdExec(ecl, st3PostMaple, 1, 1);
                 ECLJump(ecl, st3PostMaple + stdInterruptSize, st3MainFront, 60, 90);
                 ECLJump(ecl, st3MainSub00, mainSub07Call, 0, 0);
@@ -1094,20 +1007,26 @@ namespace TH20TR {
         constexpr unsigned int st2bsSpellSubCallOrd = 0x4e8;
         constexpr unsigned int st2bsNonSubCallOrd = 0x628;
 
-        constexpr unsigned int st3BossCreateCall = 0xbaa0;
+        constexpr unsigned int st3BossCreateCall = 0xbc74;
         constexpr unsigned int st3bsPrePushSpellID = 0x458;
         constexpr unsigned int st3bsPostNotSpellPracCheck = 0x540;
         constexpr unsigned int st3bsSpellSubCallOrd = 0x570;
         constexpr unsigned int st3bsNonSubCallOrd = 0x6d0;
 
+        constexpr unsigned int st4BossCreateCall = 0xaed4;
+        constexpr unsigned int st5BossCreateCall = 0x57ec;
+        constexpr unsigned int st6BossCreateCall = 0x52c4;
+        constexpr unsigned int st7BossCreateCall = 0x7484;
+        
+
         switch (section) {
-        case THPrac::TH20TR::TH20_ST1_MID1: {
+        case THPrac::TH20::TH20_ST1_MID1: {
             constexpr unsigned int st1MBossCreateCall = 0x8568;
             ECLStdExec(ecl, st1PostMaple, 1, 1);
             ECLJump(ecl, st1PostMaple + stdInterruptSize, st1MBossCreateCall, 60, 90);
             break;
         }
-        case THPrac::TH20TR::TH20_ST1_BOSS1: {
+        case THPrac::TH20::TH20_ST1_BOSS1: {
             constexpr unsigned int st1BossDialogueCall = 0x866c;
             ECLStdExec(ecl, st1PostMaple, 1, 1);
             if (thPracParam.dlg)
@@ -1116,14 +1035,14 @@ namespace TH20TR {
                 ECLJump(ecl, st1PostMaple + stdInterruptSize, st1BossCreateCall, 60);
             break;
         }
-        case THPrac::TH20TR::TH20_ST1_BOSS2: {
+        case THPrac::TH20::TH20_ST1_BOSS2: {
             ECLStdExec(ecl, st1PostMaple, 1, 1);
             ECLJump(ecl, st1PostMaple + stdInterruptSize, st1BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st1bsPrePushSpellID, st1bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
             break;
         }
-        case THPrac::TH20TR::TH20_ST1_BOSS3: {
+        case THPrac::TH20::TH20_ST1_BOSS3: {
             constexpr unsigned int st1bsNonSubCallOrd = 0x610;
             constexpr unsigned int st1bsNon2InvulnCallVal = 0x1268;
             constexpr unsigned int st1bsNon2BossItemCallSomething = 0x1344 + 0x4; // 32th cringequit on me when
@@ -1141,7 +1060,7 @@ namespace TH20TR {
             ECLJump(ecl, st1bsNon2PostLifeMarker, st1bsNon2PostWait, 0); // Skip wait
             break;
         }
-        case THPrac::TH20TR::TH20_ST1_BOSS4: {
+        case THPrac::TH20::TH20_ST1_BOSS4: {
             ECLStdExec(ecl, st1PostMaple, 1, 1);
             ECLJump(ecl, st1PostMaple + stdInterruptSize, st1BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1149,7 +1068,7 @@ namespace TH20TR {
             ecl << pair { st1bsSpellSubCallOrd, (int8_t)0x32 }; // Set spell ID in sub call to '2'
             break;
         }
-        case THPrac::TH20TR::TH20_ST1_BOSS5: {
+        case THPrac::TH20::TH20_ST1_BOSS5: {
             ECLStdExec(ecl, st1PostMaple, 1, 1);
             ECLJump(ecl, st1PostMaple + stdInterruptSize, st1BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1157,12 +1076,12 @@ namespace TH20TR {
             ecl << pair { st1bsSpellSubCallOrd, (int8_t)0x33 }; // Set spell ID in sub call to '3'
             break;
         }
-        case THPrac::TH20TR::TH20_ST2_MID1: {
+        case THPrac::TH20::TH20_ST2_MID1: {
             constexpr unsigned int st2MBossCreateCall = 0xaad8;
             ECLJump(ecl, st2PostMaple, st2MBossCreateCall, 60, 90);
             break;
         }
-        case THPrac::TH20TR::TH20_ST2_BOSS1: {
+        case THPrac::TH20::TH20_ST2_BOSS1: {
             constexpr unsigned int st2BossDialogueCall = 0xabdc;
             ECLStdExec(ecl, st2PostMaple, 1, 1);
             if (thPracParam.dlg)
@@ -1171,14 +1090,14 @@ namespace TH20TR {
                 ECLJump(ecl, st2PostMaple + stdInterruptSize, st2BossCreateCall, 60);
             break;
         }
-        case THPrac::TH20TR::TH20_ST2_BOSS2: {
+        case THPrac::TH20::TH20_ST2_BOSS2: {
             ECLStdExec(ecl, st2PostMaple, 1, 1);
             ECLJump(ecl, st2PostMaple + stdInterruptSize, st2BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st2bsPrePushSpellID, st2bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
             break;
         }
-        case THPrac::TH20TR::TH20_ST2_BOSS3: {
+        case THPrac::TH20::TH20_ST2_BOSS3: {
             constexpr unsigned int st2bsNon2InvulnCallVal = 0x11d4;
             constexpr unsigned int st2bsNon2BossItemCallSomething = 0x12b0 + 0x4;
             constexpr unsigned int st2bsNon2PlaySoundSomething = 0x13dc + 0x4;
@@ -1195,7 +1114,7 @@ namespace TH20TR {
             ECLJump(ecl, st2bsNon2PostLifeMarker, st2bsNon2PostWait, 0); // Skip wait
             break;
         }
-        case THPrac::TH20TR::TH20_ST2_BOSS4: {
+        case THPrac::TH20::TH20_ST2_BOSS4: {
             ECLStdExec(ecl, st2PostMaple, 1, 1);
             ECLJump(ecl, st2PostMaple + stdInterruptSize, st2BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1203,7 +1122,7 @@ namespace TH20TR {
             ecl << pair { st2bsSpellSubCallOrd, (int8_t)0x32 }; // Set spell ID in sub call to '2'
             break;
         }
-        case THPrac::TH20TR::TH20_ST2_BOSS5: {
+        case THPrac::TH20::TH20_ST2_BOSS5: {
             ECLStdExec(ecl, st2PostMaple, 1, 1);
             ECLJump(ecl, st2PostMaple + stdInterruptSize, st2BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1212,8 +1131,8 @@ namespace TH20TR {
             break;
         }
 
-        case THPrac::TH20TR::TH20_ST3_BOSS1: {
-            constexpr unsigned int st3BossDialogueCall = 0xba8c;
+        case THPrac::TH20::TH20_ST3_BOSS1: {
+            constexpr unsigned int st3BossDialogueCall = 0xbc60;
             ECLStdExec(ecl, st3PostMaple, 1, 1);
             if (thPracParam.dlg)
                 ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossDialogueCall, 60);
@@ -1221,14 +1140,14 @@ namespace TH20TR {
                 ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossCreateCall, 60);
             break;
         }
-        case THPrac::TH20TR::TH20_ST3_BOSS2: {
+        case THPrac::TH20::TH20_ST3_BOSS2: {
             ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st3bsPrePushSpellID, st3bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
             break;
         }
-        case THPrac::TH20TR::TH20_ST3_BOSS3: {
+        case THPrac::TH20::TH20_ST3_BOSS3: {
             constexpr unsigned int st3bsNon2InvulnCallVal = 0x1074;
             constexpr unsigned int st3bsNon2BossItemCallSomething = 0x1150 + 0x4;
             constexpr unsigned int st3bsNon2PlaySoundSomething = 0x127c + 0x4;
@@ -1245,7 +1164,7 @@ namespace TH20TR {
             ECLJump(ecl, st3bsNon2PostLifeMarker, st3bsNon2PostWait, 0); // Skip wait
             break;
         }
-        case THPrac::TH20TR::TH20_ST3_BOSS4: {
+        case THPrac::TH20::TH20_ST3_BOSS4: {
             ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1253,7 +1172,7 @@ namespace TH20TR {
             ecl << pair { st3bsSpellSubCallOrd, (int8_t)0x32 }; // Set spell ID in sub call to '2'
             break;
         }
-        case THPrac::TH20TR::TH20_ST3_BOSS5: {
+        case THPrac::TH20::TH20_ST3_BOSS5: {
             constexpr unsigned int st3bsNon3InvulnCallVal = 0x1d0c;
             constexpr unsigned int st3bsNon3BossItemCallSomething = 0x1de8 + 0x4;
             constexpr unsigned int st3bsNon3PlaySoundSomething = 0x1f14 + 0x4;
@@ -1270,7 +1189,7 @@ namespace TH20TR {
             ECLJump(ecl, st3bsNon3PostLifeCount, st3bsNon3PostWait, 0); // Skip wait
             break;
         }
-        case THPrac::TH20TR::TH20_ST3_BOSS6: {
+        case THPrac::TH20::TH20_ST3_BOSS6: {
             ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1278,7 +1197,7 @@ namespace TH20TR {
             ecl << pair { st3bsSpellSubCallOrd, (int8_t)0x33 }; // Set spell ID in sub call to '3'
             break;
         }
-        case THPrac::TH20TR::TH20_ST3_BOSS7: {
+        case THPrac::TH20::TH20_ST3_BOSS7: {
             ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossCreateCall, 60);
             ecl.SetFile(2);
@@ -1286,14 +1205,69 @@ namespace TH20TR {
             ecl << pair { st3bsSpellSubCallOrd, (int8_t)0x34 }; // Set spell ID in sub call to '4'
             break;
         }
+        
+        case THPrac::TH20::TH20_ST4_MID1: {
+            constexpr unsigned int st4MBossCreateCall = 0xadbc;
+            ECLJump(ecl, st4Main, st4MBossCreateCall, 60, 90);
+            break;
+        }
+        case THPrac::TH20::TH20_ST4_BOSS1: {
+            constexpr unsigned int st4BossDialogueCall = 0xaec0;
+            if (thPracParam.dlg)
+                ECLJump(ecl, st4Main, st4BossDialogueCall, 60);
+            else
+                ECLJump(ecl, st4Main, st4BossCreateCall, 60);
+            break;
+        }
+
+        case THPrac::TH20::TH20_ST5_MID1: {
+            constexpr unsigned int st5MBossCreateCall = 0x56d4;
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
+            ECLJump(ecl, st5PostMaple + stdInterruptSize, st5MBossCreateCall, 60, 90);
+            break;
+        }
+        case THPrac::TH20::TH20_ST5_BOSS1: {
+            constexpr unsigned int st5BossDialogueCall = 0x57dc;
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
+            if (thPracParam.dlg)
+                ECLJump(ecl, st5PostMaple + stdInterruptSize, st5BossDialogueCall, 60);
+            else
+                ECLJump(ecl, st5PostMaple + stdInterruptSize, st5BossCreateCall, 60);
+            break;
+        }
+        case THPrac::TH20::TH20_ST6_BOSS1: {
+            constexpr unsigned int st6BossDialogueCall = 0x52b0;
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
+            if (thPracParam.dlg)
+                ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossDialogueCall, 60);
+            else
+                ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
+            break;
+        }
+        case THPrac::TH20::TH20_ST7_MID1: {
+            constexpr unsigned int st7MBossCreateCall = 0x7324;
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, st7PostMaple + stdInterruptSize, st7MBossCreateCall, 60, 90);
+            break;
+        }
+        case THPrac::TH20::TH20_ST7_BOSS1: {
+            constexpr unsigned int st7BossDialogueCall = 0x7470;
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            if (thPracParam.dlg)
+                ECLJump(ecl, st7PostMaple + stdInterruptSize, st7BossDialogueCall, 60);
+            else
+                ECLJump(ecl, st7PostMaple + stdInterruptSize, st7BossCreateCall, 60);
+            break;
+        }
         default:
             break;
         }
     }
+    
     __declspec(noinline) void THSectionPatch()
     {
         ECLHelper ecl;
-        ecl.SetBaseAddr((void*)GetMemAddr(RVA(0x1b85f0), 0x104, 0xc));
+        ecl.SetBaseAddr((void*)GetMemAddr(RVA(0x1ba570), 0x104, 0xc));
 
         auto section = thPracParam.section;
         if (section >= 10000 && section < 20000) {
@@ -1304,6 +1278,7 @@ namespace TH20TR {
             THPatch(ecl, (th_sections_t)section);
         }
     }
+    
 
     int THBGMTest()
     {
@@ -1325,6 +1300,8 @@ namespace TH20TR {
     static char* sReplayPath = nullptr;
 
     HOOKSET_DEFINE(THMainHook)
+    // TODO
+    /*
     EHOOK_DY(th20_everlasting_bgm, 0x28710, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0] - ingame_image_base;
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
@@ -1344,76 +1321,6 @@ namespace TH20TR {
         if (result) {
             pCtx->Eip = RVA(0x028855);
         }
-    })
-    EHOOK_DY(th20_param_reset, 0x1294C6, 3, {
-        thPracParam.Reset();
-    })
-    EHOOK_DY(th20_prac_menu_1, 0x12A92A, 5, {
-        sGameStarted = false;
-        THGuiPrac::singleton().State(1);
-    })
-    EHOOK_DY(th20_prac_menu_2, 0x12A958, 2, {
-        if (!sGameStarted) {
-            if (Gui::InGameInputGetConfirm()) {
-                sGameStarted = true;
-                asm_call_rel<0x238C0, Thiscall>(*(uint32_t*)RVA(0x1C3DB4) + 0x154, 0);
-                THGuiPrac::singleton().State(3);
-            } else if (Gui::InGameInputGet('X')) {
-                THGuiPrac::singleton().State(4);
-                asm_call_rel<0x12B640, Thiscall>(*(uint32_t*)RVA(0x1C3DB4), 2);
-                pCtx->Eip = RVA(0x12AC10);
-            } else {
-                THGuiPrac::singleton().State(2);
-                pCtx->Eip = RVA(0x12AC10);
-            }
-        }
-    })
-    EHOOK_DY(th20_disable_game_start, 0x12AADC, 3, {
-        if (THGuiPrac::singleton().IsOpen())
-            pCtx->Eip = RVA(0x12AC10);
-    })
-    EHOOK_DY(th20_stone_menu_fade, 0x11A740, 6, {
-        if (THGuiPrac::singleton().IsOpen())
-            pCtx->Eip = RVA(0x11A763);
-    })
-    EHOOK_DY(th20_prac_menu_set_stage, 0x12AB34, 5, {
-        *(int*)pCtx->Esp = thPracParam.stage + 1;
-    })
-    PATCH_DY(th20_instant_esc_r, 0xE59C5, "EB")
-    EHOOK_DY(th20_patch_main, 0xBCF34, 1, {
-        if (thPracParam.mode == 1) {
-            *(int32_t*)RVA(0x1B8670) = (int32_t)(thPracParam.score / 10);
-            *(int32_t*)RVA(0x1B8728) = thPracParam.life;
-            *(int32_t*)RVA(0x1B8730) = thPracParam.life_fragment;
-            *(int32_t*)RVA(0x1B873C) = thPracParam.bomb;
-            *(int32_t*)RVA(0x1B8740) = thPracParam.bomb_fragment;
-            *(int32_t*)RVA(0x1B86A0) = thPracParam.power;
-            *(int32_t*)RVA(0x1B86B4) = thPracParam.value;
-
-            THSectionPatch();
-        }
-        thPracParam._playLock = true;
-    })
-    EHOOK_DY(th20_patch_stones, 0x133A21, 1, {
-        if (thPracParam.mode != 1)
-            return;
-
-        uintptr_t player_stats = RVA(0x1B8670);
-        *(int32_t*)(player_stats + 0x4C) = (int32_t)(thPracParam.hyper * *(int32_t*)(player_stats + 0x50));
-        if ((int32_t)thPracParam.hyper == 1) { // call the hyper start method
-            int32_t* gauge_manager_ptr = (int32_t*)RVA(0x1b8614);
-            asm_call_rel<0x134fe0, Fastcall>(*gauge_manager_ptr);
-        }
-
-        *(int32_t*)(player_stats + 0x5C) = (int32_t)(thPracParam.stone * *(int32_t*)(player_stats + 0x60));
-        *(int32_t*)(player_stats + 0x64) = thPracParam.priorityR;
-        *(int32_t*)(player_stats + 0x68) = thPracParam.priorityB;
-        *(int32_t*)(player_stats + 0x6C) = thPracParam.priorityY;
-        *(int32_t*)(player_stats + 0x70) = thPracParam.priorityG;
-        *(int32_t*)(player_stats + 0x74) = thPracParam.levelR;
-        *(int32_t*)(player_stats + 0x78) = thPracParam.levelB;
-        *(int32_t*)(player_stats + 0x7C) = thPracParam.levelY;
-        *(int32_t*)(player_stats + 0x80) = thPracParam.levelG;
     })
     EHOOK_DY(th20_boss_bgm, 0xBBFC8, 2, {
         if (THBGMTest()) {
@@ -1446,19 +1353,76 @@ namespace TH20TR {
             memcpy((void*)(RVA(0x1B85E8) + 0x88 + 0x1C), replayStones, sizeof(replayStones));
     })
     PATCH_DY(th20_fix_rep_results_skip, 0x1133B1, "5B35FAFF")
-    EHOOK_DY(th20_update, 0x12824, 1, {
+    */
+    EHOOK_DY(th20_patch_main, 0xBBD56, 1, {
+        if (thPracParam.mode == 1) {
+            *(int32_t*)RVA(0x1BA5F0) = (int32_t)(thPracParam.score / 10);
+            *(int32_t*)RVA(0x1BA568 + 0x140) = thPracParam.life;
+            *(int32_t*)RVA(0x1BA568 + 0x148) = thPracParam.life_fragment;
+            *(int32_t*)RVA(0x1BA568 + 0x154) = thPracParam.bomb;
+            *(int32_t*)RVA(0x1BA568 + 0x158) = thPracParam.bomb_fragment;
+            *(int32_t*)RVA(0x1BA568 + 0xB8) = thPracParam.power;
+            *(int32_t*)RVA(0x1BA568 + 0xCC) = thPracParam.value;
+
+            // TODO
+            THSectionPatch();
+        }
+        thPracParam._playLock = true;
+    })
+    EHOOK_DY(th20_patch_stones, 0x1336F1, 1, {
+        if (thPracParam.mode != 1)
+            return;
+
+        uintptr_t player_stats = RVA(0x1BA5F0);
+        *(int32_t*)(player_stats + 0x4C) = (int32_t)(thPracParam.hyper * *(int32_t*)(player_stats + 0x50));
+        if ((int32_t)thPracParam.hyper == 1) { // call the hyper start method
+            int32_t* gauge_manager_ptr = (int32_t*)RVA(0x1BA568 + 0x2C);
+            asm_call_rel<0x134D00, Fastcall>(*gauge_manager_ptr);
+        }
+
+        *(int32_t*)(player_stats + 0x5C) = (int32_t)(thPracParam.stone * *(int32_t*)(player_stats + 0x60));
+        *(int32_t*)(player_stats + 0x64) = thPracParam.priorityR;
+        *(int32_t*)(player_stats + 0x68) = thPracParam.priorityB;
+        *(int32_t*)(player_stats + 0x6C) = thPracParam.priorityY;
+        *(int32_t*)(player_stats + 0x70) = thPracParam.priorityG;
+        *(int32_t*)(player_stats + 0x74) = thPracParam.levelR;
+        *(int32_t*)(player_stats + 0x78) = thPracParam.levelB;
+        *(int32_t*)(player_stats + 0x7C) = thPracParam.levelY;
+        *(int32_t*)(player_stats + 0x80) = thPracParam.levelG;
+    })
+    EHOOK_DY(th20_param_reset, 0x129EA6, 3, {
+        thPracParam.Reset();
+    })
+    EHOOK_DY(th20_prac_menu_1, 0x1294A3, 3, {
+        THGuiPrac::singleton().State(1);
+    })
+    EHOOK_DY(th20_prac_menu_2, 0x1294D0, 3, {
+        THGuiPrac::singleton().State(2);
+    })
+    EHOOK_DY(th20_prac_menu_3, 0x1299AE, 2, {
+        THGuiPrac::singleton().State(3);
+    })
+    EHOOK_DY(th20_prac_menu_4, 0x129AD8, 3, {
+        THGuiPrac::singleton().State(4);
+    })
+    PATCH_DY(th20_prac_menu_enter_1, 0x129595, "eb")
+    EHOOK_DY(th20_prac_menu_enter_2, 0x129A98, 3, {
+        pCtx->Eax = thPracParam.stage;
+    })
+    PATCH_DY(th20_disable_prac_menu_1, 0x129B40, "c3")
+    PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
+    EHOOK_DY(th20_update, 0x12A72, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 
         // Gui components update
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
-        TH20TRInternalGauges::singleton().Update();
 
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     })
-    EHOOK_DY(th20_render, 0x129C6, 1, {
+    EHOOK_DY(th20_render, 0x12CEA, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
     })
     HOOKSET_ENDDEF()
@@ -1469,9 +1433,9 @@ namespace TH20TR {
             return;
 
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, RVA(0x1C2D58), RVA(0x1B47D8),
-            Gui::INGAGME_INPUT_GEN2, RVA(0x1B6940), RVA(0x1B6938), 0,
-            -2, *(float*)RVA(0x1B6898), 0.0f);
+        GameGuiInit(IMPL_WIN32_DX9, RVA(0x1C4D48), RVA(0x1B6758),
+            Gui::INGAGME_INPUT_GEN2, RVA(0x1B88C0), RVA(0x1B88B8), 0,
+            -2, *(float*)RVA(0x1B8818), 0.0f);
 
         SetDpadHook(0x227B1, 6);
 
@@ -1479,7 +1443,6 @@ namespace TH20TR {
         THGuiPrac::singleton();
         THGuiRep::singleton();
         THOverlay::singleton();
-        TH20TRInternalGauges::singleton();
 
         // Hooks
         EnableAllHooks(THMainHook);
@@ -1489,22 +1452,22 @@ namespace TH20TR {
     }
 
     HOOKSET_DEFINE(THInitHook)
-    PATCH_DY(th20_startup_1, 0x121A0C, "EB")
-    PATCH_DY(th20_startup_2, 0x120BF1, "EB")
-    EHOOK_DY(th20_gui_init_1, 0x12967E, 7, {
+    PATCH_DY(th20_startup_1, 0x11F82C, "EB")
+    PATCH_DY(th20_startup_2, 0x11E8C9, "EB")
+    EHOOK_DY(th20_gui_init_1, 0x12A0A3, 7, {
         self->Disable();
         THGuiCreate();
     })
-    EHOOK_DY(th20_gui_init_2, 0x1CA95, 1, {
+    EHOOK_DY(th20_gui_init_2, 0x1C725, 1, {
         self->Disable();
         THGuiCreate();
     })
     HOOKSET_ENDDEF()
 }
 
-void TH20TRInit()
+void TH20Init()
 {
     ingame_image_base = CurrentImageBase;
-    EnableAllHooks(TH20TR::THInitHook);
+    EnableAllHooks(TH20::THInitHook);
 }
 }

@@ -10579,6 +10579,51 @@
             "spell": 1,
             "appearance": [ 3, 2, 7 ],
             "!ENHL": [ "金符「弹幕金字塔」", "Gold Sign \"Danmaku Pyramid\"", "金符「弾幕の金字塔」" ]
+        },
+		
+		
+		
+		"TH20_ST4_MID1": {
+            "bgm": 0,
+            "spell": 0,
+            "appearance": [ 4, 1, 1 ],
+            "!ENHL": "TH_MID_NS1"
+        },
+		"TH20_ST4_BOSS1": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 4, 2, 1 ],
+            "!ENHL": "TH_END_NS1"
+        },
+		"TH20_ST5_MID1": {
+            "bgm": 0,
+            "spell": 0,
+            "appearance": [ 5, 1, 1 ],
+            "!ENHL": "TH_MID_NS1"
+        },
+		"TH20_ST5_BOSS1": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 5, 2, 1 ],
+            "!ENHL": "TH_END_NS1"
+        },
+		"TH20_ST6_BOSS1": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 6, 2, 1 ],
+            "!ENHL": "TH_END_NS1"
+        },
+		"TH20_ST7_MID1": {
+            "bgm": 0,
+            "spell": 0,
+            "appearance": [ 7, 1, 1 ],
+            "!ENHL": "TH_MID_NS1"
+        },
+		"TH20_ST7_BOSS1": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 7, 2, 1 ],
+            "!ENHL": "TH_END_NS1"
         }
     },
 

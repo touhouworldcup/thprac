@@ -25290,7 +25290,7 @@ namespace TH19 {
 
 namespace TH20 {
 
-    const char* th_sections_str[3][4][20] {
+    const char* th_sections_str[3][4][27] {
         {
             {
                 "",
@@ -25313,6 +25313,13 @@ namespace TH20 {
                 "关底三非",
                 "谜符「Enchant Trap」(附魔陷阱)",
                 "金符「弹幕金字塔」",
+                "道中一非",
+                "关底一非",
+                "道中一非",
+                "关底一非",
+                "关底一非",
+                "道中一非",
+                "关底一非",
             },
             {
                 "",
@@ -25335,6 +25342,13 @@ namespace TH20 {
                 "关底三非",
                 "谜符「Enchant Trap」(附魔陷阱)",
                 "金符「弹幕金字塔」",
+                "道中一非",
+                "关底一非",
+                "道中一非",
+                "关底一非",
+                "关底一非",
+                "道中一非",
+                "关底一非",
             },
             {
                 "",
@@ -25357,6 +25371,13 @@ namespace TH20 {
                 "关底三非",
                 "谜符「Enchant Trap」(附魔陷阱)",
                 "金符「弹幕金字塔」",
+                "道中一非",
+                "关底一非",
+                "道中一非",
+                "关底一非",
+                "关底一非",
+                "道中一非",
+                "关底一非",
             },
             {
                 "",
@@ -25379,6 +25400,13 @@ namespace TH20 {
                 "关底三非",
                 "谜符「Enchant Trap」(附魔陷阱)",
                 "金符「弹幕金字塔」",
+                "道中一非",
+                "关底一非",
+                "道中一非",
+                "关底一非",
+                "关底一非",
+                "道中一非",
+                "关底一非",
             },
         },
         {
@@ -25403,6 +25431,13 @@ namespace TH20 {
                 "Boss Nonspell 3",
                 "Riddle Sign \"Ancient Trap\"",
                 "Gold Sign \"Danmaku Pyramid\"",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
+                "Boss Nonspell 1",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
             },
             {
                 "",
@@ -25425,6 +25460,13 @@ namespace TH20 {
                 "Boss Nonspell 3",
                 "Riddle Sign \"Ancient Trap\"",
                 "Gold Sign \"Danmaku Pyramid\"",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
+                "Boss Nonspell 1",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
             },
             {
                 "",
@@ -25447,6 +25489,13 @@ namespace TH20 {
                 "Boss Nonspell 3",
                 "Riddle Sign \"Ancient Trap\"",
                 "Gold Sign \"Danmaku Pyramid\"",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
+                "Boss Nonspell 1",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
             },
             {
                 "",
@@ -25469,6 +25518,13 @@ namespace TH20 {
                 "Boss Nonspell 3",
                 "Riddle Sign \"Ancient Trap\"",
                 "Gold Sign \"Danmaku Pyramid\"",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
+                "Boss Nonspell 1",
+                "Mid Nonspell 1",
+                "Boss Nonspell 1",
             },
         },
         {
@@ -25493,6 +25549,13 @@ namespace TH20 {
                 "ボス 通常3",
                 "謎符「エンシャントトラップ」",
                 "金符「弾幕の金字塔」",
+                "道中 通常1",
+                "ボス 通常1",
+                "道中 通常1",
+                "ボス 通常1",
+                "ボス 通常1",
+                "道中 通常1",
+                "ボス 通常1",
             },
             {
                 "",
@@ -25515,6 +25578,13 @@ namespace TH20 {
                 "ボス 通常3",
                 "謎符「エンシャントトラップ」",
                 "金符「弾幕の金字塔」",
+                "道中 通常1",
+                "ボス 通常1",
+                "道中 通常1",
+                "ボス 通常1",
+                "ボス 通常1",
+                "道中 通常1",
+                "ボス 通常1",
             },
             {
                 "",
@@ -25537,6 +25607,13 @@ namespace TH20 {
                 "ボス 通常3",
                 "謎符「エンシャントトラップ」",
                 "金符「弾幕の金字塔」",
+                "道中 通常1",
+                "ボス 通常1",
+                "道中 通常1",
+                "ボス 通常1",
+                "ボス 通常1",
+                "道中 通常1",
+                "ボス 通常1",
             },
             {
                 "",
@@ -25559,11 +25636,18 @@ namespace TH20 {
                 "ボス 通常3",
                 "謎符「エンシャントトラップ」",
                 "金符「弾幕の金字塔」",
+                "道中 通常1",
+                "ボス 通常1",
+                "道中 通常1",
+                "ボス 通常1",
+                "ボス 通常1",
+                "道中 通常1",
+                "ボス 通常1",
             },
         },
     };
 
-    const uint8_t th_sections_bgm[20] {
+    const uint8_t th_sections_bgm[27] {
         0,
         0,
         1,
@@ -25583,10 +25667,17 @@ namespace TH20 {
         1,
         1,
         1,
+        1,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
         1,
     };
 
-    const th_sections_t th_sections_cba[3][2][8] {
+    const th_sections_t th_sections_cba[7][2][8] {
         {
             {
                 TH20_ST1_MID1,
@@ -25623,9 +25714,39 @@ namespace TH20 {
                 TH20_ST3_BOSS7,
             },
         },
+        {
+            {
+                TH20_ST4_MID1,
+            },
+            {
+                TH20_ST4_BOSS1,
+            },
+        },
+        {
+            {
+                TH20_ST5_MID1,
+            },
+            {
+                TH20_ST5_BOSS1,
+            },
+        },
+        {
+            {},
+            {
+                TH20_ST6_BOSS1,
+            },
+        },
+        {
+            {
+                TH20_ST7_MID1,
+            },
+            {
+                TH20_ST7_BOSS1,
+            },
+        },
     };
 
-    const th_sections_t th_sections_cbt[3][2][5] {
+    const th_sections_t th_sections_cbt[7][2][5] {
         {
             {
                 TH20_ST1_MID1,
@@ -25662,6 +25783,33 @@ namespace TH20 {
                 TH20_ST3_BOSS6,
                 TH20_ST3_BOSS7,
             },
+        },
+        {
+            {
+                TH20_ST4_MID1,
+                TH20_ST4_BOSS1,
+            },
+            {},
+        },
+        {
+            {
+                TH20_ST5_MID1,
+                TH20_ST5_BOSS1,
+            },
+            {},
+        },
+        {
+            {
+                TH20_ST6_BOSS1,
+            },
+            {},
+        },
+        {
+            {
+                TH20_ST7_MID1,
+                TH20_ST7_BOSS1,
+            },
+            {},
         },
     };
 

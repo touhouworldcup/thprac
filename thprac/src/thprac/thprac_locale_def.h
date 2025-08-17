@@ -3148,15 +3148,22 @@ namespace TH20 {
         TH20_ST3_BOSS5,
         TH20_ST3_BOSS6,
         TH20_ST3_BOSS7,
+        TH20_ST4_MID1,
+        TH20_ST4_BOSS1,
+        TH20_ST5_MID1,
+        TH20_ST5_BOSS1,
+        TH20_ST6_BOSS1,
+        TH20_ST7_MID1,
+        TH20_ST7_BOSS1,
     };
 
-    extern const char* th_sections_str[3][4][20];
+    extern const char* th_sections_str[3][4][27];
 
-    extern const uint8_t th_sections_bgm[20];
+    extern const uint8_t th_sections_bgm[27];
 
-    extern const th_sections_t th_sections_cba[3][2][8];
+    extern const th_sections_t th_sections_cba[7][2][8];
 
-    extern const th_sections_t th_sections_cbt[3][2][5];
+    extern const th_sections_t th_sections_cbt[7][2][5];
 
     extern const th_glossary_t TH_STAGE_SELECT_TRIAL[4];
 

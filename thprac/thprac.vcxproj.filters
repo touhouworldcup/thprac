@@ -393,7 +393,7 @@
     <ClCompile Include="src\thprac\thprac_igi_key_render.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_th20tr.cpp">
+    <ClCompile Include="src\thprac\thprac_th20.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_th19.v1.00a.cpp">
