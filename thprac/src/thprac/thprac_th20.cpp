@@ -427,10 +427,8 @@ namespace TH20 {
     public:
         void CheckReplay()
         {
-            // TODO
-            /*
-            uint32_t index = GetMemContent(RVA(0x1C3DB4), 0x5734);
-            char* repName = (char*)GetMemAddr(RVA(0x1C3DB4), index * 4 + 0x573C, 0x150);
+            uint32_t index = GetMemContent(RVA(0x1C6124), 0x5738);
+            char* repName = (char*)GetMemAddr(RVA(0x1C6124), index * 4 + 0x5740, 0x150);
             std::wstring repDir(mAppdataPath);
             repDir.append(L"\\ShanghaiAlice\\th20tr\\replay\\");
             repDir.append(mb_to_utf16(repName, 932));
@@ -441,9 +439,8 @@ namespace TH20 {
             else
                 mRepParam.Reset();
 
-            uint32_t* savedStones = (uint32_t*)GetMemAddr(RVA(0x1C3DB4), index * 4 + 0x573C, 0x1C, 0xDC);
+            uint32_t* savedStones = (uint32_t*)GetMemAddr(RVA(0x1C6124), index * 4 + 0x5740, 0x1C, 0xDC);
             memcpy(replayStones, savedStones, sizeof(replayStones));
-            */
         }
 
         bool mRepStatus = false;
@@ -1194,31 +1191,6 @@ namespace TH20 {
             pCtx->Eip = RVA(0x0bbfcf);
         }
     })
-    EHOOK_DY(th20_rep_save, 0x10D813, 3, {
-        if (sReplayPath) {
-            if (thPracParam.mode == 1)
-                THSaveReplay(sReplayPath);
-            free(sReplayPath);
-            sReplayPath = nullptr;
-        }
-    })
-    EHOOK_DY(th20_rep_get_path, 0x10D3E1, 5, {
-        sReplayPath = _strdup((char*)pCtx->Edx);
-    })
-    EHOOK_DY(th20_rep_menu_1, 0x124D44, 3, {
-        THGuiRep::singleton().State(1);
-    })
-    EHOOK_DY(th20_rep_menu_2, 0x12504C, 5, {
-        THGuiRep::singleton().State(2);
-    })
-    EHOOK_DY(th20_rep_menu_3, 0x1254DE, 2, {
-        THGuiRep::singleton().State(3);
-    })
-    EHOOK_DY(th20_fix_rep_stone_init, 0xBC3D0, 5, {
-        if (*(uint32_t*)(*(uintptr_t*)(RVA(0x1B85E8) + 0x88 + 0x238) + 0x108))
-            memcpy((void*)(RVA(0x1B85E8) + 0x88 + 0x1C), replayStones, sizeof(replayStones));
-    })
-    PATCH_DY(th20_fix_rep_results_skip, 0x1133B1, "5B35FAFF")
     */
     EHOOK_DY(th20_everlasting_bgm, 0x28C90, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0] - ingame_image_base;
@@ -1297,6 +1269,37 @@ namespace TH20 {
     })
     PATCH_DY(th20_disable_prac_menu_1, 0x129B40, "c3")
     PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
+    EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
+        if (*(uint32_t*)(*(uintptr_t*)(RVA(0x1BA568) + 0x88 + 0x238) + 0x108)) {
+            // Yes, the order really is swapped like this
+            auto selected = (uint32_t*)(RVA(0x1BA568) + 0x88 + 0x1C);
+            selected[0] = replayStones[0];
+            selected[1] = replayStones[2];
+            selected[2] = replayStones[1];
+            selected[3] = replayStones[3];
+        }
+    })
+    PATCH_DY(th20_fix_rep_results_skip, 0x110D61, "7B4BFAFF")
+    EHOOK_DY(th20_rep_save, 0x109D6A, 3, {
+        if (sReplayPath) {
+            if (thPracParam.mode == 1)
+                THSaveReplay(sReplayPath);
+            free(sReplayPath);
+            sReplayPath = nullptr;
+        }
+    })
+    EHOOK_DY(th20_rep_get_path, 0x1098E1, 5, {
+        sReplayPath = _strdup((char*)pCtx->Edx);
+    })
+    EHOOK_DY(th20_rep_menu_1, 0x123614, 3, {
+        THGuiRep::singleton().State(1);
+    })
+    EHOOK_DY(th20_rep_menu_2, 0x12391C, 5, {
+        THGuiRep::singleton().State(2);
+    })
+    EHOOK_DY(th20_rep_menu_3, 0x123DAE, 2, {
+        THGuiRep::singleton().State(3);
+    })
     EHOOK_DY(th20_update, 0x12A72, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 
