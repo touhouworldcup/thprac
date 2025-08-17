@@ -510,8 +510,6 @@ namespace TH20 {
             }
 
             mMenu.SetTextOffsetRel(x_offset_1, x_offset_2);
-            // TODO
-            /*
             mMuteki.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfLives.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfBombs.SetTextOffsetRel(x_offset_1, x_offset_2);
@@ -520,12 +518,9 @@ namespace TH20 {
             mWonderStGLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
-            */
         }
         virtual void OnContentUpdate() override
         {
-            // TODO
-            /*
             mMuteki();
             mInfLives();
             mInfBombs();
@@ -534,7 +529,6 @@ namespace TH20 {
             mWonderStGLock();
             mTimeLock();
             mElBgm();
-            */
         }
         virtual void OnPreUpdate() override
         {
@@ -549,55 +543,34 @@ namespace TH20 {
 
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
 
-        // TODO
-        /*
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
-        PATCH_HK(0xFB5CC, "01")
+        PATCH_HK(0xF87FC, "01")
         HOTKEY_ENDDEF();
-        */
 
-        // TODO
-        /*
         HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
-        PATCH_HK(0xE3C08, "660F1F440000")
+        PATCH_HK(0xE1288, "660F1F440000")
         HOTKEY_ENDDEF();
-        */
 
-        // TODO
-        /*
         HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
-        PATCH_HK(0xE40A2, "0F1F00")
+        PATCH_HK(0xE1722, "0F1F00")
         HOTKEY_ENDDEF();
-        */
 
-        // TODO
-        /*
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(0xE4022, "0F1F00")
+        PATCH_HK(0xE16A2, "0F1F00")
         HOTKEY_ENDDEF();
-        */
 
-        // TODO
-        /*
         HOTKEY_DEFINE(mHyperGLock, TH20_HYP_LOCK, "F5", VK_F5)
-        PATCH_HK(0x133C15, "0F1F00")
+        PATCH_HK(0x133935, "0F1F00")
         HOTKEY_ENDDEF();
-        */
 
-        // TODO
-        /*
         HOTKEY_DEFINE(mWonderStGLock, TH20_WST_LOCK, "F6", VK_F6)
-        PATCH_HK(0x7AB35, "0F1F00")
+        PATCH_HK(0x77F75, "0F1F00")
         HOTKEY_ENDDEF();
-        */
 
-        // TODO
-        /*
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F7", VK_F7)
-        PATCH_HK(0x8A5FD, "EB"),
-        PATCH_HK(0xA8ECE, "21")
+        PATCH_HK(0x86FDD, "EB"),
+        PATCH_HK(0xA871E, "31")
         HOTKEY_ENDDEF();
-        */
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F8", VK_F8 };
     };
@@ -1221,26 +1194,6 @@ namespace TH20 {
     HOOKSET_DEFINE(THMainHook)
     // TODO
     /*
-    EHOOK_DY(th20_everlasting_bgm, 0x28710, 1, {
-        int32_t retn_addr = ((int32_t*)pCtx->Esp)[0] - ingame_image_base;
-        int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
-        int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
-        // 4th stack item = i32 call_addr
-
-        bool el_switch;
-        bool is_practice;
-        bool result;
-
-        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && (thPracParam.mode == 1) && thPracParam.section;
-        is_practice = (*((int32_t*)RVA(0x1b8654)) & 0x1);
-
-        result = ElBgmTest<0xdc6a0, 0xdc70e, 0xe8978, 0xe8d28, 0xffffffff>(
-            el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
-
-        if (result) {
-            pCtx->Eip = RVA(0x028855);
-        }
-    })
     EHOOK_DY(th20_boss_bgm, 0xBBFC8, 2, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
@@ -1273,6 +1226,26 @@ namespace TH20 {
     })
     PATCH_DY(th20_fix_rep_results_skip, 0x1133B1, "5B35FAFF")
     */
+    EHOOK_DY(th20_everlasting_bgm, 0x28C90, 1, {
+        int32_t retn_addr = ((int32_t*)pCtx->Esp)[0] - ingame_image_base;
+        int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
+        int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
+        // 4th stack item = i32 call_addr
+
+        bool el_switch;
+        bool is_practice;
+        bool result;
+
+        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && (thPracParam.mode == 1) && thPracParam.section;
+        is_practice = (*((int32_t*)RVA(0x1ba5d4)) & 0x1);
+
+        result = ElBgmTest<0xD9B90, 0xD9BFE, 0xE60B8, 0xE64B8, 0xffffffff>(
+            el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
+
+        if (result) {
+            pCtx->Eip = RVA(0x28DD5);
+        }
+    })
     EHOOK_DY(th20_patch_main, 0xBBD56, 1, {
         if (thPracParam.mode == 1) {
             *(int32_t*)RVA(0x1BA5F0) = (int32_t)(thPracParam.score / 10);
