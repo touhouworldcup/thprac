@@ -9664,6 +9664,12 @@
             "appearance": [ 4, 1, 1 ],
             "!ENHL": "TH_MID_NS1"
         },
+        "TH20_ST4_MID2": {
+            "bgm": 0,
+            "spell": 0,
+            "appearance": [ 4, 1, 2 ],
+            "!ENHL": "TH_MID_NS2"
+        },
         "TH20_ST4_BOSS1": {
             "bgm": 1,
             "spell": 0,

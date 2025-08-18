@@ -1378,6 +1378,22 @@ namespace TH20 {
             ECLJump(ecl, st4PostMaple, st4MBossCreateCall, 60, 90);
             break;
         }
+        case THPrac::TH20::TH20_ST4_MID2: {
+            constexpr unsigned int st4MBossCreateCall = 0xadbc;
+            constexpr unsigned int st4mbsNonSubCallOrd = 0x4a4 + 0x19;
+            constexpr unsigned int st4mbsNon2BossItemCallSomething = 0xd40 + 0x4;
+            constexpr unsigned int st4mbsNon2PlaySoundSomething = 0xe6c + 0x4;
+            constexpr unsigned int st4mbsNon2PostLifeMarker = 0x1028;
+            constexpr unsigned int st4mbsNon2PostWait = 0x103c;
+
+            ECLJump(ecl, st4PostMaple, st4MBossCreateCall, 60, 90);
+            ecl.SetFile(3);
+            ecl << pair { st4mbsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
+            ecl << pair { st4mbsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
+            ecl << pair { st4mbsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ECLJump(ecl, st4mbsNon2PostLifeMarker, st4mbsNon2PostWait, 0); // Skip wait
+            break;
+        }
         case THPrac::TH20::TH20_ST4_BOSS1: {
             constexpr unsigned int st4BossDialogueCall = 0xaec0;
             ECLStdExec(ecl, st4PostMaple, 1, 1);
