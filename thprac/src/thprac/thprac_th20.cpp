@@ -199,7 +199,7 @@ namespace TH20 {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
-                SetSizeRel(0.5f, 0.81f);
+                SetSizeRel(0.65f, 0.81f);
                 SetPosRel(0.27f, 0.18f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
