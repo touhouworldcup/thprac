@@ -185,10 +185,6 @@ static THKnownGame gKnownGames[] {
         TYPE_NYASAMA,
         { 0x71115032, 0x3a4d05bd,
             0x8dfc8ba4, 0xa476dc6f } },
-    { "th20",
-        TYPE_ORIGINAL,
-        { 0x6378d64, 0x70f6e0ae,
-            0x4f462058, 0x189ee241 } },
 };
 
 static THGameSig gGameDefs[] {
