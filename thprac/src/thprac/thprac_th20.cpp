@@ -1175,7 +1175,7 @@ namespace TH20 {
         constexpr unsigned int st3bsPostNotSpellPracCheck = 0x540;
         constexpr unsigned int st3bsSpellHealthVal = 0x550;
         constexpr unsigned int st3bsSpellSubCallOrd = 0x570;
-        constexpr unsigned int st3bsNonSubCallOrd = 0x6d0;
+        constexpr unsigned int st3bsNonSubCallOrd = 0x880 + 0x18;
 
         constexpr unsigned int st4BossCreateCall = 0xaed4;
         constexpr unsigned int st4bsPrePushSpellID = 0x41c;
