@@ -560,7 +560,7 @@ namespace TH20 {
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
-        PATCH_HK(0xE1288, "660F1F440000")
+        PATCH_HK(0xF849D, "00")
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
@@ -568,7 +568,7 @@ namespace TH20 {
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(0xE16A2, "0F1F00")
+        PATCH_HK(0xE16A2, "0F1F00") //0xE16A8
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mHyperGLock, TH20_HYP_LOCK, "F5", VK_F5)
@@ -585,7 +585,8 @@ namespace TH20 {
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F8", VK_F8)
-        PATCH_HK(0xF79B3, "FF")
+        PATCH_HK(0xF79AC, "0F"),
+        PATCH_HK(0xF79B3, "0F")
         HOTKEY_ENDDEF();
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
