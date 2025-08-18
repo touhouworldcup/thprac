@@ -1580,7 +1580,7 @@ namespace TH20 {
             constexpr unsigned int st6bsNon2InvulnCallVal = 0x1448 + 0x10;
             constexpr unsigned int st6bsNon2BossItemCallSomething = 0x1534 + 0x4;
             constexpr unsigned int st6bsNon2PlaySoundSomething = 0x1660 + 0x4;
-            constexpr unsigned int st6bsNon2PostProtectRange = 0x1688;
+            constexpr unsigned int st6bsNon2PostProtectRange = 0x17e0;
             constexpr unsigned int st6bsNon2PostWait = 0x188c;
 
             ECLStdExec(ecl, st6PostMaple, 1, 1);
