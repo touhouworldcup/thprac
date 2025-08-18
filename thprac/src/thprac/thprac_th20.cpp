@@ -1752,7 +1752,7 @@ namespace TH20 {
             return 0;
         else if (thPracParam.section >= 10000)
             return 0;
-        else if (thPracParam.dlg)
+        else if (thPracParam.dlg && thPracParam.section != TH20_ST6_BOSS5 && thPracParam.section != TH20_ST6_BOSS9)
             return 0;
         else
             return th_sections_bgm[thPracParam.section];
