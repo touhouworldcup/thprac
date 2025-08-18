@@ -9738,7 +9738,8 @@
             "spell": 1,
             "appearance": [ 5, 2, 4 ],
             "!EN": [ "TODO", "Disaster \"Landslide\"", "災禍「山津波」" ],
-            "!HL": [ "TODO", "Disaster \"Lengthy Landslide\"", "災禍「長い山津波」" ]
+            "!H": [ "TODO", "Disaster \"Lengthy Landslide\"", "災禍「長い山津波」" ],
+            "!L": [ "TODO", "Disaster \"Never-ending Landslide\"", "災禍「終わらない山津波」" ]
         },
         "TH20_ST5_BOSS5": {
             "bgm": 1,
@@ -9750,7 +9751,7 @@
             "bgm": 1,
             "spell": 1,
             "appearance": [ 5, 2, 6 ],
-            "!ENHL": [ "TODO", "Jewel \"Receding Tide Jewel\"", "宝珠「潮乾珠」" ]
+            "!ENHL": [ "TODO", "Jewel \"Tide-Ebbing Jewel\"", "宝珠「潮乾珠」" ]
         },
         "TH20_ST5_BOSS7": {
             "bgm": 1,
