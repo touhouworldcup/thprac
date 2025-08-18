@@ -417,6 +417,10 @@ namespace TH20 {
             { 3, 2 },
             { 3, 3 },
             { 4, 3 },
+            { 5, 2 },
+            { 5, 2 },
+            { 4, 1 },
+            { 4, 3 },
         };
 
         int mDiffculty = 0;
@@ -939,6 +943,191 @@ namespace TH20 {
                 ECLStdExec(ecl, st3PostMaple, 1, 1);
                 ECLJump(ecl, st3PostMaple + stdInterruptSize, st3MainFront, 60, 90);
                 ECLJump(ecl, st3MainSub00, mainSub07Call, 0, 0);
+                break;
+            }
+            default:
+                break;
+            }
+        } else if (stage == 4) {
+            constexpr unsigned int st4MainFront = 0xad38;
+            constexpr unsigned int st4MainSub00 = 0x3a5c;
+            constexpr unsigned int st4MainLatter = 0xae00;
+            constexpr unsigned int st4MainLatterWait = 0x3d04;
+
+            switch (portion) {
+            case 1:
+                break;
+            case 2: {
+                constexpr unsigned int mainSub01Call = 0x3abc;
+                ECLJump(ecl, st4PostMaple, st4MainFront, 60, 90);
+                ECLJump(ecl, st4MainSub00, mainSub01Call, 0, 0);
+                break;
+            }
+            case 3: {
+                constexpr unsigned int mainSub02Call = 0x3b1c;
+                ECLJump(ecl, st4PostMaple, st4MainFront, 60, 90);
+                ECLJump(ecl, st4MainSub00, mainSub02Call, 0, 0);
+                break;
+            }
+            case 4: {
+                constexpr unsigned int mainSub04Call = 0x3bdc;
+                ECLJump(ecl, st4PostMaple, st4MainFront, 60, 90);
+                ECLJump(ecl, st4MainSub00, mainSub04Call, 0, 0);
+                break;
+            }
+            case 5: {
+                constexpr unsigned int mainSub05Call = 0x3c3c;
+                ECLJump(ecl, st4PostMaple, st4MainFront, 60, 90);
+                ECLJump(ecl, st4MainSub00, mainSub05Call, 0, 0);
+                break;
+            }
+            case 6: {
+                constexpr unsigned int mainSub07Call = 0x3d18;
+                ECLStdExec(ecl, st4PostMaple, 1, 1);
+                ECLJump(ecl, st4PostMaple + stdInterruptSize, st4MainLatter, 60, 90);
+                ECLJump(ecl, st4MainLatterWait, mainSub07Call, 0, 0);
+                break;
+            }
+            case 7: {
+                constexpr unsigned int mainSub08Call = 0x3d78;
+                ECLStdExec(ecl, st4PostMaple, 1, 1);
+                ECLJump(ecl, st4PostMaple + stdInterruptSize, st4MainLatter, 60, 90);
+                ECLJump(ecl, st4MainLatterWait, mainSub08Call, 0, 0);
+                break;
+            }
+            default:
+                break;
+            }
+        } else if (stage == 5) {
+            constexpr unsigned int st5MainFront = 0x5650;
+            constexpr unsigned int st5MainSub00 = 0x29c0;
+            constexpr unsigned int st5MainLatter = 0x5718;
+            constexpr unsigned int st5MainLatterWait = 0x2c08;
+
+            switch (portion) {
+            case 1:
+                break;
+            case 2: {
+                constexpr unsigned int mainSub01Call = 0x2a20;
+                ECLJump(ecl, st5PostMaple, st5MainFront, 60, 90);
+                ECLJump(ecl, st5MainSub00, mainSub01Call, 0, 0);
+                break;
+            }
+            case 3: {
+                constexpr unsigned int mainSub02Call = 0x2a80;
+                ECLJump(ecl, st5PostMaple, st5MainFront, 60, 90);
+                ECLJump(ecl, st5MainSub00, mainSub02Call, 0, 0);
+                break;
+            }
+            case 4: {
+                constexpr unsigned int mainSub03Call = 0x2ae0;
+                ECLJump(ecl, st5PostMaple, st5MainFront, 60, 90);
+                ECLJump(ecl, st5MainSub00, mainSub03Call, 0, 0);
+                break;
+            }
+            case 5: {
+                constexpr unsigned int mainSub04Call = 0x2b40;
+                ECLJump(ecl, st5PostMaple, st5MainFront, 60, 90);
+                ECLJump(ecl, st5MainSub00, mainSub04Call, 0, 0);
+                break;
+            }
+            case 6: {
+                constexpr unsigned int mainSub06Call = 0x2c1c;
+                ECLJump(ecl, st5PostMaple + stdInterruptSize, st5MainLatter, 60, 90);
+                ECLJump(ecl, st5MainLatterWait, mainSub06Call, 0, 0);
+                break;
+            }
+            case 7: {
+                constexpr unsigned int mainSub07Call = 0x2cb4;
+                ECLStdExec(ecl, st5PostMaple, 1, 1);
+                ECLJump(ecl, st5PostMaple + stdInterruptSize, st5MainLatter, 60, 90);
+                ECLJump(ecl, st5MainLatterWait, mainSub07Call, 0, 0);
+                break;
+            }
+            default:
+                break;
+            }
+        } else if (stage == 6) {
+            constexpr unsigned int st6MainFront = 0x5178;
+            constexpr unsigned int st6MainSub00 = 0x20bc;
+
+            switch (portion) {
+            case 1:
+                break;
+            case 2: {
+                constexpr unsigned int mainSub01Call = 0x211c;
+                ECLJump(ecl, st6PostMaple, st6MainFront, 60, 90);
+                ECLJump(ecl, st6MainSub00, mainSub01Call, 0, 0);
+                break;
+            }
+            case 3: {
+                constexpr unsigned int mainSub02Call = 0x217c;
+                ECLJump(ecl, st6PostMaple, st6MainFront, 60, 90);
+                ECLJump(ecl, st6MainSub00, mainSub02Call, 0, 0);
+                break;
+            }
+            case 4: {
+                constexpr unsigned int mainSub03Call = 0x21dc;
+                ECLJump(ecl, st6PostMaple, st6MainFront, 60, 90);
+                ECLJump(ecl, st6MainSub00, mainSub03Call, 0, 0);
+                break;
+            }
+            case 5: {
+                constexpr unsigned int mainSub05Call = 0x229c;
+                ECLStdExec(ecl, st6PostMaple, 1, 1);
+                ECLJump(ecl, st6PostMaple + stdInterruptSize, st6MainFront, 60, 90);
+                ECLJump(ecl, st6MainSub00, mainSub05Call, 0, 0);
+                break;
+            }
+            default:
+                break;
+            }
+        } else if (stage == 7) {
+            constexpr unsigned int st7MainFront = 0x72b8;
+            constexpr unsigned int st7MainSub00 = 0x3954;
+            constexpr unsigned int st7MainLatter = 0x73b0;
+            constexpr unsigned int st7MainLatterWait = 0x3af4;
+
+            switch (portion) {
+            case 1:
+                break;
+            case 2: {
+                constexpr unsigned int mainSub01Call = 0x39b4;
+                ECLJump(ecl, st7PostMaple, st7MainFront, 60, 90);
+                ECLJump(ecl, st7MainSub00, mainSub01Call, 0, 0);
+                break;
+            }
+            case 3: {
+                constexpr unsigned int mainSub02Call = 0x3a14;
+                ECLJump(ecl, st7PostMaple, st7MainFront, 60, 90);
+                ECLJump(ecl, st7MainSub00, mainSub02Call, 0, 0);
+                break;
+            }
+            case 4: {
+                constexpr unsigned int mainSub03Call = 0x3a74;
+                ECLJump(ecl, st7PostMaple, st7MainFront, 60, 90);
+                ECLJump(ecl, st7MainSub00, mainSub03Call, 0, 0);
+                break;
+            }
+            case 5: {
+                constexpr unsigned int mainSub04Call = 0x3b08;
+                ECLStdExec(ecl, st7PostMaple, 1, 1);
+                ECLJump(ecl, st7PostMaple + stdInterruptSize, st7MainLatter, 60, 90);
+                ECLJump(ecl, st7MainLatterWait, mainSub04Call, 0, 0);
+                break;
+            }
+            case 6: {
+                constexpr unsigned int mainSub05Call = 0x3b68;
+                ECLStdExec(ecl, st7PostMaple, 1, 1);
+                ECLJump(ecl, st7PostMaple + stdInterruptSize, st7MainLatter, 60, 90);
+                ECLJump(ecl, st7MainLatterWait, mainSub05Call, 0, 0);
+                break;
+            }
+            case 7: {
+                constexpr unsigned int mainSub06Call = 0x3bec;
+                ECLStdExec(ecl, st7PostMaple, 1, 1);
+                ECLJump(ecl, st7PostMaple + stdInterruptSize, st7MainLatter, 60, 90);
+                ECLJump(ecl, st7MainLatterWait, mainSub06Call, 0, 0);
                 break;
             }
             default:
