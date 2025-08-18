@@ -618,6 +618,7 @@ enum th_glossary_t {
     TH19_TITLE,
     TH20_FAKE_UNLOCK_STONES,
     TH20_FAKE_UNLOCK_STONES_DESC,
+    TH20_FIX_BULLETHITBOX,
     TH20_FIX_HITBOX,
     TH20_FIX_HITBOX_DESC,
     TH20_HYPER,
@@ -1511,7 +1512,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1500];
+extern const char* th_glossary_str[3][1501];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3164,7 +3165,6 @@ namespace TH20 {
         TH20_ST5_BOSS5,
         TH20_ST5_BOSS6,
         TH20_ST5_BOSS7,
-        TH20_ST6_MID1,
         TH20_ST6_BOSS1,
         TH20_ST6_BOSS2,
         TH20_ST6_BOSS3,
@@ -3200,9 +3200,9 @@ namespace TH20 {
         TH20_ST7_BOSS18,
     };
 
-    extern const char* th_sections_str[3][4][70];
+    extern const char* th_sections_str[3][4][69];
 
-    extern const uint8_t th_sections_bgm[70];
+    extern const uint8_t th_sections_bgm[69];
 
     extern const th_sections_t th_sections_cba[7][2][19];
 
@@ -3214,7 +3214,7 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3433];
+extern const wchar_t __thprac_loc_range_zh[3427];
 
 extern const wchar_t __thprac_loc_range_en[61];
 
