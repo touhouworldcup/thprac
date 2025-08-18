@@ -2629,7 +2629,6 @@ enum th_sections_t : uint8_t
     TH20_ST5_BOSS5,
     TH20_ST5_BOSS6,
     TH20_ST5_BOSS7,
-    TH20_ST6_MID1,
     TH20_ST6_BOSS1,
     TH20_ST6_BOSS2,
     TH20_ST6_BOSS3,
@@ -2665,13 +2664,13 @@ enum th_sections_t : uint8_t
     TH20_ST7_BOSS18,
 };
 
-extern const char* th_sections_str[3][4][70];
+extern const char* th_sections_str[3][4][69];
 
-extern const uint8_t th_sections_bgm[70];
+extern const uint8_t th_sections_bgm[69];
 
-extern const th_sections_t th_sections_cba[6][2][19];
+extern const th_sections_t th_sections_cba[7][2][19];
 
-extern const th_sections_t th_sections_cbt[6][2][21];
+extern const th_sections_t th_sections_cbt[7][2][14];
 
 extern const th_glossary_t TH20_RAGE[3];
 

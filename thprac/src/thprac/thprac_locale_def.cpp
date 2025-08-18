@@ -20653,7 +20653,7 @@ const th_sections_t th_sections_cbt[1][2][1]
 
 namespace TH20 {
 
-const char* th_sections_str[3][4][70]
+const char* th_sections_str[3][4][69]
 {
     {
         {
@@ -20693,7 +20693,6 @@ const char* th_sections_str[3][4][70]
             "关底三非",
             "TODO",
             "TODO",
-            "道中一非",
             "关底一非",
             "TODO",
             "关底二非",
@@ -20765,7 +20764,6 @@ const char* th_sections_str[3][4][70]
             "关底三非",
             "TODO",
             "TODO",
-            "道中一非",
             "关底一非",
             "TODO",
             "关底二非",
@@ -20837,7 +20835,6 @@ const char* th_sections_str[3][4][70]
             "关底三非",
             "TODO",
             "TODO",
-            "道中一非",
             "关底一非",
             "TODO",
             "关底二非",
@@ -20909,7 +20906,6 @@ const char* th_sections_str[3][4][70]
             "关底三非",
             "TODO",
             "TODO",
-            "道中一非",
             "关底一非",
             "TODO",
             "关底二非",
@@ -20983,7 +20979,6 @@ const char* th_sections_str[3][4][70]
             "Boss Nonspell 3",
             "Jewel \"Tide-Ebbing Jewel\"",
             "\"Moon Dragon\"",
-            "Mid Nonspell 1",
             "Boss Nonspell 1",
             "Stone God \"Stones That Become Boulders\"",
             "Boss Nonspell 2",
@@ -21055,7 +21050,6 @@ const char* th_sections_str[3][4][70]
             "Boss Nonspell 3",
             "Jewel \"Tide-Ebbing Jewel\"",
             "\"Moon Dragon\"",
-            "Mid Nonspell 1",
             "Boss Nonspell 1",
             "Stone God \"Stones That Become Boulders\"",
             "Boss Nonspell 2",
@@ -21127,7 +21121,6 @@ const char* th_sections_str[3][4][70]
             "Boss Nonspell 3",
             "Jewel \"Tide-Ebbing Jewel\"",
             "\"Moon Dragon\"",
-            "Mid Nonspell 1",
             "Boss Nonspell 1",
             "Stone God \"Stones That Become Boulders\"",
             "Boss Nonspell 2",
@@ -21199,7 +21192,6 @@ const char* th_sections_str[3][4][70]
             "Boss Nonspell 3",
             "Jewel \"Tide-Ebbing Jewel\"",
             "\"Moon Dragon\"",
-            "Mid Nonspell 1",
             "Boss Nonspell 1",
             "Stone God \"Stones That Become Boulders\"",
             "Boss Nonspell 2",
@@ -21273,7 +21265,6 @@ const char* th_sections_str[3][4][70]
             "ボス 通常3",
             "宝珠「潮乾珠」",
             "「ムーンドラゴン」",
-            "道中 通常1",
             "ボス 通常1",
             "石神「巌となるさざれ石」",
             "ボス 通常2",
@@ -21345,7 +21336,6 @@ const char* th_sections_str[3][4][70]
             "ボス 通常3",
             "宝珠「潮乾珠」",
             "「ムーンドラゴン」",
-            "道中 通常1",
             "ボス 通常1",
             "石神「巌となるさざれ石」",
             "ボス 通常2",
@@ -21417,7 +21407,6 @@ const char* th_sections_str[3][4][70]
             "ボス 通常3",
             "宝珠「潮乾珠」",
             "「ムーンドラゴン」",
-            "道中 通常1",
             "ボス 通常1",
             "石神「巌となるさざれ石」",
             "ボス 通常2",
@@ -21489,7 +21478,6 @@ const char* th_sections_str[3][4][70]
             "ボス 通常3",
             "宝珠「潮乾珠」",
             "「ムーンドラゴン」",
-            "道中 通常1",
             "ボス 通常1",
             "石神「巌となるさざれ石」",
             "ボス 通常2",
@@ -21527,7 +21515,7 @@ const char* th_sections_str[3][4][70]
     },
 };
 
-const uint8_t th_sections_bgm[70]
+const uint8_t th_sections_bgm[69]
 {
     0,
     0,
@@ -21565,7 +21553,6 @@ const uint8_t th_sections_bgm[70]
     1,
     1,
     1,
-    0,
     1,
     1,
     1,
@@ -21601,7 +21588,7 @@ const uint8_t th_sections_bgm[70]
     1,
 };
 
-const th_sections_t th_sections_cba[6][2][19]
+const th_sections_t th_sections_cba[7][2][19]
 {
     {
         { TH20_ST1_MID1, },
@@ -21624,12 +21611,16 @@ const th_sections_t th_sections_cba[6][2][19]
         { TH20_ST5_BOSS1, TH20_ST5_BOSS2, TH20_ST5_BOSS3, TH20_ST5_BOSS4, TH20_ST5_BOSS5, TH20_ST5_BOSS6, TH20_ST5_BOSS7, },
     },
     {
+        { },
+        { TH20_ST6_BOSS1, TH20_ST6_BOSS2, TH20_ST6_BOSS3, TH20_ST6_BOSS4, TH20_ST6_BOSS5, TH20_ST6_BOSS6, TH20_ST6_BOSS7, TH20_ST6_BOSS8, TH20_ST6_BOSS9, TH20_ST6_BOSS10, TH20_ST6_BOSS11, TH20_ST6_BOSS12, },
+    },
+    {
         { TH20_ST7_MID1, TH20_ST7_MID2, TH20_ST7_MID3, },
         { TH20_ST7_BOSS1, TH20_ST7_BOSS2, TH20_ST7_BOSS3, TH20_ST7_BOSS4, TH20_ST7_BOSS5, TH20_ST7_BOSS6, TH20_ST7_BOSS7, TH20_ST7_BOSS8, TH20_ST7_BOSS9, TH20_ST7_BOSS10, TH20_ST7_BOSS11, TH20_ST7_BOSS12, TH20_ST7_BOSS13, TH20_ST7_BOSS14, TH20_ST7_BOSS15, TH20_ST7_BOSS16, TH20_ST7_BOSS17, TH20_ST7_BOSS18, },
     },
 };
 
-const th_sections_t th_sections_cbt[6][2][21]
+const th_sections_t th_sections_cbt[7][2][14]
 {
     {
         { TH20_ST1_MID1, TH20_ST1_BOSS1, TH20_ST1_BOSS3, },
@@ -21652,8 +21643,12 @@ const th_sections_t th_sections_cbt[6][2][21]
         { TH20_ST5_BOSS2, TH20_ST5_BOSS4, TH20_ST5_BOSS6, TH20_ST5_BOSS7, },
     },
     {
-        { TH20_ST6_MID1, TH20_ST6_BOSS1, TH20_ST6_BOSS3, TH20_ST6_BOSS5, TH20_ST6_BOSS7, TH20_ST6_BOSS9, TH20_ST7_BOSS1, TH20_ST7_BOSS3, TH20_ST7_BOSS5, TH20_ST7_BOSS7, TH20_ST7_BOSS9, TH20_ST7_BOSS11, TH20_ST7_BOSS13, TH20_ST7_BOSS15, },
-        { TH20_ST6_BOSS2, TH20_ST6_BOSS4, TH20_ST6_BOSS6, TH20_ST6_BOSS8, TH20_ST6_BOSS10, TH20_ST6_BOSS11, TH20_ST6_BOSS12, TH20_ST7_MID1, TH20_ST7_MID2, TH20_ST7_MID3, TH20_ST7_BOSS2, TH20_ST7_BOSS4, TH20_ST7_BOSS6, TH20_ST7_BOSS8, TH20_ST7_BOSS10, TH20_ST7_BOSS12, TH20_ST7_BOSS14, TH20_ST7_BOSS16, TH20_ST7_BOSS17, TH20_ST7_BOSS18, },
+        { TH20_ST6_BOSS1, TH20_ST6_BOSS3, TH20_ST6_BOSS5, TH20_ST6_BOSS7, TH20_ST6_BOSS9, },
+        { TH20_ST6_BOSS2, TH20_ST6_BOSS4, TH20_ST6_BOSS6, TH20_ST6_BOSS8, TH20_ST6_BOSS10, TH20_ST6_BOSS11, TH20_ST6_BOSS12, },
+    },
+    {
+        { TH20_ST7_BOSS1, TH20_ST7_BOSS3, TH20_ST7_BOSS5, TH20_ST7_BOSS7, TH20_ST7_BOSS9, TH20_ST7_BOSS11, TH20_ST7_BOSS13, TH20_ST7_BOSS15, },
+        { TH20_ST7_MID1, TH20_ST7_MID2, TH20_ST7_MID3, TH20_ST7_BOSS2, TH20_ST7_BOSS4, TH20_ST7_BOSS6, TH20_ST7_BOSS8, TH20_ST7_BOSS10, TH20_ST7_BOSS12, TH20_ST7_BOSS14, TH20_ST7_BOSS16, TH20_ST7_BOSS17, TH20_ST7_BOSS18, },
     },
 };
 

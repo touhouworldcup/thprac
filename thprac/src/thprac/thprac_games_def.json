@@ -9760,12 +9760,6 @@
             "!ENHL": [ "TODO", "\"Moon Dragon\"", "「ムーンドラゴン」" ]
         },
 
-        "TH20_ST6_MID1": {
-            "bgm": 0,
-            "spell": 0,
-            "appearance": [ 6, 1, 1 ],
-            "!ENHL": "TH_MID_NS1"
-        },
         "TH20_ST6_BOSS1": {
             "bgm": 1,
             "spell": 0,
@@ -9844,127 +9838,127 @@
         "TH20_ST7_MID1": {
             "bgm": 0,
             "spell": 1,
-            "appearance": [ 6, 1, 1 ],
+            "appearance": [ 7, 1, 1 ],
             "!X": [ "TODO", "Deer Sign \"Deer Genocider\"", "⿅符「ディアジェノサイダー」" ]
         },
         "TH20_ST7_MID2": {
             "bgm": 0,
             "spell": 1,
-            "appearance": [ 6, 1, 2 ],
+            "appearance": [ 7, 1, 2 ],
             "!X": [ "TODO", "Snake Princess \"Snake Lander\"", "蛇姫「スネークランダー」" ]
         },
         "TH20_ST7_MID3": {
             "bgm": 0,
             "spell": 1,
-            "appearance": [ 6, 1, 3 ],
+            "appearance": [ 7, 1, 3 ],
             "!X": [ "TODO", "\"Zoltax Communication\"", "「ゾルタクスコミュニケーション」" ]
         },
         "TH20_ST7_BOSS1": {
             "bgm": 1,
             "spell": 0,
-            "appearance": [ 6, 2, 1 ],
+            "appearance": [ 7, 2, 1 ],
             "!X": "TH_END_NS1"
         },
         "TH20_ST7_BOSS2": {
             "bgm": 1,
             "spell": 1,
-            "appearance": [ 6, 2, 2 ],
+            "appearance": [ 7, 2, 2 ],
             "!X": [ "TODO", "Truth \"Tetra Monoeye\"", "真実「テトラモノアイ」" ]
         },
         "TH20_ST7_BOSS3": {
             "bgm": 1,
             "spell": 0,
-            "appearance": [ 6, 2, 3 ],
+            "appearance": [ 7, 2, 3 ],
             "!X": "TH_END_NS2"
         },
         "TH20_ST7_BOSS4": {
             "bgm": 1,
             "spell": 1,
-            "appearance": [ 6, 2, 4 ],
+            "appearance": [ 7, 2, 4 ],
             "!X": [ "TODO", "Truth \"Old Illuminati\"", "真実「オールドイルミナティ」" ]
         },
         "TH20_ST7_BOSS5": {
             "bgm": 1,
             "spell": 0,
-            "appearance": [ 6, 2, 5 ],
+            "appearance": [ 7, 2, 5 ],
             "!X": "TH_END_NS3"
         },
         "TH20_ST7_BOSS6": {
             "bgm": 1,
             "spell": 1,
-            "appearance": [ 6, 2, 6 ],
+            "appearance": [ 7, 2, 6 ],
             "!X": [ "TODO", "Truth \"Chemtrail Cloud\"", "真実「ケムトレイルクラウド」" ]
         },
         "TH20_ST7_BOSS7": {
             "bgm": 1,
             "spell": 0,
-            "appearance": [ 6, 2, 7 ],
+            "appearance": [ 7, 2, 7 ],
             "!X": "TH_END_NS4"
         },
         "TH20_ST7_BOSS8": {
             "bgm": 1,
             "spell": 1,
-            "appearance": [ 6, 2, 8 ],
+            "appearance": [ 7, 2, 8 ],
             "!X": [ "TODO", "Truth \"Reptilian Intelligence\"", "真実「レプティリアニンテリジェンス」" ]
         },
         "TH20_ST7_BOSS9": {
             "bgm": 1,
             "spell": 0,
-            "appearance": [ 6, 2, 9 ],
+            "appearance": [ 7, 2, 9 ],
             "!X": "TH_END_NS5"
         },
         "TH20_ST7_BOSS10": {
             "bgm": 1,
             "spell": 1,
-            "appearance": [ 6, 2, 10 ],
+            "appearance": [ 7, 2, 10 ],
             "!X": [ "TODO", "Truth \"Flat Earther\"", "真実「フラットアーサー」" ]
         },
         "TH20_ST7_BOSS11": {
             "bgm": 1,
             "spell": 0,
-            "appearance": [ 6, 2, 11 ],
+            "appearance": [ 7, 2, 11 ],
             "!X": "TH_END_NS6"
         },
         "TH20_ST7_BOSS12": {
             "bgm": 1,
             "spell": 1,
-            "appearance": [ 6, 2, 12 ],
+            "appearance": [ 7, 2, 12 ],
             "!X": [ "TODO", "Truth \"Artificial Disaster\"", "真実「アーティフィシャルディサスター」" ]
         },
         "TH20_ST7_BOSS13": {
             "bgm": 1,
             "spell": 0,
-            "appearance": [ 6, 2, 13 ],
+            "appearance": [ 7, 2, 13 ],
             "!X": "TH_END_NS7"
         },
         "TH20_ST7_BOSS14": {
             "bgm": 1,
             "spell": 1,
-            "appearance": [ 6, 2, 14 ],
+            "appearance": [ 7, 2, 14 ],
             "!X": [ "TODO", "Truth \"New World Order\"", "真実「ニューワールドオーダー」" ]
         },
         "TH20_ST7_BOSS15": {
             "bgm": 1,
             "spell": 0,
-            "appearance": [ 6, 2, 15 ],
+            "appearance": [ 7, 2, 15 ],
             "!X": "TH_END_NS8"
         },
         "TH20_ST7_BOSS16": {
             "bgm": 1,
             "spell": 1,
-            "appearance": [ 6, 2, 16 ],
+            "appearance": [ 7, 2, 16 ],
             "!X": [ "TODO", "Truth \"Tartarian Rhapsody\"", "真実「タルタリアンラプソディ」" ]
         },
         "TH20_ST7_BOSS17": {
             "bgm": 1,
             "spell": 1,
-            "appearance": [ 6, 2, 17 ],
+            "appearance": [ 7, 2, 17 ],
             "!X": [ "TODO", "\"Chocolate River\"", "「チョコレートリバー」" ]
         },
         "TH20_ST7_BOSS18": {
             "bgm": 1,
             "spell": 1,
-            "appearance": [ 6, 2, 18 ],
+            "appearance": [ 7, 2, 18 ],
             "!X": [ "TODO", "\"Great King of Angolmois\"", "「アンゴルモアの大王」" ]
         }
     },
