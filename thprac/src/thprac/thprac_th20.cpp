@@ -1736,12 +1736,28 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST6_BOSS12: {
+            constexpr unsigned int st6bsSpell7HealthVal = 0xa4dc + 0x10;
+            constexpr unsigned int st6bsSpell10SubCallOrd = 0xa9d8 + 0x1e;
+
             ECLStdExec(ecl, st6PostMaple, 1, 1);
             ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st6bsPrePushSpellID, st6bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
-            ecl << pair { st6bsSpellHealthVal, 12000 }; // Set correct health (set in skipped non)
             ecl << pair { st6bsSpellSubCallOrd, (int8_t)0x37 }; // Set spell ID in sub call to '7'
+
+            switch (thPracParam.phase) {
+            case 1: // P2
+                ecl << pair { st6bsSpell7HealthVal, 8000 };
+                break;
+            case 2: // P3
+                ecl << pair { st6bsSpell7HealthVal, 5000 };
+                ecl << pair { st6bsSpell10SubCallOrd, (int8_t)0x32 }; // BossCard7_1 -> BossCard7_2
+                break;
+            case 3: // P4
+                ecl << pair { st6bsSpell7HealthVal, 2000 };
+                ecl << pair { st6bsSpell10SubCallOrd, (int8_t)0x33 }; // BossCard7_1 -> BossCard7_3
+                break;
+            }
             break;
         }
 
