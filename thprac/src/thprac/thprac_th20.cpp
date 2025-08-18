@@ -524,6 +524,7 @@ namespace TH20 {
             mHyperGLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mWonderStGLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
@@ -535,6 +536,7 @@ namespace TH20 {
             mHyperGLock();
             mWonderStGLock();
             mTimeLock();
+            mAutoBomb();
             mElBgm();
         }
         virtual void OnPreUpdate() override
@@ -578,8 +580,12 @@ namespace TH20 {
         PATCH_HK(0x86FDD, "EB"),
         PATCH_HK(0xA871E, "31")
         HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F8", VK_F8)
+        PATCH_HK(0xF79B3, "FF")
+        HOTKEY_ENDDEF();
     public:
-        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F8", VK_F8 };
+        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
     };
 
     // TODO(?)
