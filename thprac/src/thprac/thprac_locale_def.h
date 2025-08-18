@@ -2613,15 +2613,65 @@ enum th_sections_t : uint8_t
     TH20_ST3_BOSS5,
     TH20_ST3_BOSS6,
     TH20_ST3_BOSS7,
+    TH20_ST4_MID1,
+    TH20_ST4_BOSS1,
+    TH20_ST4_BOSS2,
+    TH20_ST4_BOSS3,
+    TH20_ST4_BOSS4,
+    TH20_ST4_BOSS5,
+    TH20_ST4_BOSS6,
+    TH20_ST4_BOSS7,
+    TH20_ST5_MID1,
+    TH20_ST5_BOSS1,
+    TH20_ST5_BOSS2,
+    TH20_ST5_BOSS3,
+    TH20_ST5_BOSS4,
+    TH20_ST5_BOSS5,
+    TH20_ST5_BOSS6,
+    TH20_ST5_BOSS7,
+    TH20_ST6_MID1,
+    TH20_ST6_BOSS1,
+    TH20_ST6_BOSS2,
+    TH20_ST6_BOSS3,
+    TH20_ST6_BOSS4,
+    TH20_ST6_BOSS5,
+    TH20_ST6_BOSS6,
+    TH20_ST6_BOSS7,
+    TH20_ST6_BOSS8,
+    TH20_ST6_BOSS9,
+    TH20_ST6_BOSS10,
+    TH20_ST6_BOSS11,
+    TH20_ST6_BOSS12,
+    TH20_ST7_MID1,
+    TH20_ST7_MID2,
+    TH20_ST7_MID3,
+    TH20_ST7_BOSS1,
+    TH20_ST7_BOSS2,
+    TH20_ST7_BOSS3,
+    TH20_ST7_BOSS4,
+    TH20_ST7_BOSS5,
+    TH20_ST7_BOSS6,
+    TH20_ST7_BOSS7,
+    TH20_ST7_BOSS8,
+    TH20_ST7_BOSS9,
+    TH20_ST7_BOSS10,
+    TH20_ST7_BOSS11,
+    TH20_ST7_BOSS12,
+    TH20_ST7_BOSS13,
+    TH20_ST7_BOSS14,
+    TH20_ST7_BOSS15,
+    TH20_ST7_BOSS16,
+    TH20_ST7_BOSS17,
+    TH20_ST7_BOSS18,
 };
 
-extern const char* th_sections_str[3][4][20];
+extern const char* th_sections_str[3][4][70];
 
-extern const uint8_t th_sections_bgm[20];
+extern const uint8_t th_sections_bgm[70];
 
-extern const th_sections_t th_sections_cba[3][2][8];
+extern const th_sections_t th_sections_cba[6][2][19];
 
-extern const th_sections_t th_sections_cbt[3][2][5];
+extern const th_sections_t th_sections_cbt[6][2][21];
 
 extern const th_glossary_t TH20_RAGE[3];
 
@@ -2631,6 +2681,6 @@ extern const wchar_t __thprac_loc_range_zh[3255];
 
 extern const wchar_t __thprac_loc_range_en[15];
 
-extern const wchar_t __thprac_loc_range_ja[2755];
+extern const wchar_t __thprac_loc_range_ja[2773];
 
 }
