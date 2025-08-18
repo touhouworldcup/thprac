@@ -1052,6 +1052,9 @@ enum th_glossary_t {
     THPRAC_OTHER_LUCK_FTG,
     THPRAC_OTHER_LUCK_FTGA,
     THPRAC_OTHER_LUCK_FTGB,
+    THPRAC_OTHER_LUCK_FW,
+    THPRAC_OTHER_LUCK_FWA,
+    THPRAC_OTHER_LUCK_FWB,
     THPRAC_OTHER_LUCK_GFW,
     THPRAC_OTHER_LUCK_GFWA,
     THPRAC_OTHER_LUCK_GFWB,
@@ -1521,17 +1524,17 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1510];
+extern const char* th_glossary_str[3][1513];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
 extern const th_glossary_t LUCK_RANGE[7];
 
-extern const th_glossary_t LUCK_DESC_1[13];
+extern const th_glossary_t LUCK_DESC_1[14];
 
-extern const th_glossary_t LUCK_DESC_1A[13];
+extern const th_glossary_t LUCK_DESC_1A[14];
 
-extern const th_glossary_t LUCK_DESC_1B[13];
+extern const th_glossary_t LUCK_DESC_1B[14];
 
 extern const th_glossary_t LUCK_DESC_2[12];
 

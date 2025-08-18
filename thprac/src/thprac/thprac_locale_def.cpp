@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1510] {
+const char* th_glossary_str[3][1513] {
     {
         "",
         "啤酒",
@@ -1052,6 +1052,9 @@ const char* th_glossary_str[3][1510] {
         "打FTG",
         "虐虐菜",
         "被虐菜",
+        "打锦上京",
+        "喜欢赤石",
+        "构式游戏",
         "打大战争",
         "俺最强",
         "俺最强?真假...",
@@ -2564,6 +2567,9 @@ const char* th_glossary_str[3][1510] {
         "Play FTG~",
         "Play FTG~",
         "Play FTG~",
+        "Play FW",
+        "Play FW",
+        "Play FW",
         "Play GFW",
         "Play GFW",
         "Play GFW",
@@ -4076,6 +4082,9 @@ const char* th_glossary_str[3][1510] {
         "Play FTG~",
         "Play FTG~",
         "Play FTG~",
+        "Play FW",
+        "Play FW",
+        "Play FW",
         "Play GFW",
         "Play GFW",
         "Play GFW",
@@ -4570,7 +4579,7 @@ const th_glossary_t LUCK_RANGE[7] {
     THPRAC_OTHER_LUCK_F,
 };
 
-const th_glossary_t LUCK_DESC_1[13] {
+const th_glossary_t LUCK_DESC_1[14] {
     THPRAC_OTHER_LUCK_EOSD,
     THPRAC_OTHER_LUCK_PCB,
     THPRAC_OTHER_LUCK_IN,
@@ -4583,9 +4592,10 @@ const th_glossary_t LUCK_DESC_1[13] {
     THPRAC_OTHER_LUCK_HSIFS,
     THPRAC_OTHER_LUCK_WBABC,
     THPRAC_OTHER_LUCK_UM,
+    THPRAC_OTHER_LUCK_FW,
 };
 
-const th_glossary_t LUCK_DESC_1A[13] {
+const th_glossary_t LUCK_DESC_1A[14] {
     THPRAC_OTHER_LUCK_EOSDA,
     THPRAC_OTHER_LUCK_PCBA,
     THPRAC_OTHER_LUCK_INA,
@@ -4598,9 +4608,10 @@ const th_glossary_t LUCK_DESC_1A[13] {
     THPRAC_OTHER_LUCK_HSIFSA,
     THPRAC_OTHER_LUCK_WBABCA,
     THPRAC_OTHER_LUCK_UMA,
+    THPRAC_OTHER_LUCK_FWA,
 };
 
-const th_glossary_t LUCK_DESC_1B[13] {
+const th_glossary_t LUCK_DESC_1B[14] {
     THPRAC_OTHER_LUCK_EOSDB,
     THPRAC_OTHER_LUCK_PCBB,
     THPRAC_OTHER_LUCK_INB,
@@ -4613,6 +4624,7 @@ const th_glossary_t LUCK_DESC_1B[13] {
     THPRAC_OTHER_LUCK_HSIFSB,
     THPRAC_OTHER_LUCK_WBABCB,
     THPRAC_OTHER_LUCK_UMB,
+    THPRAC_OTHER_LUCK_FWB,
 };
 
 const th_glossary_t LUCK_DESC_2[12] {

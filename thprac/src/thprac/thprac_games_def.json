@@ -761,6 +761,10 @@
       "THPRAC_OTHER_LUCK_UM":     [ "打虹龙洞",  "Play UM",    "Play UM"],
       "THPRAC_OTHER_LUCK_UMA":    [ "零元购",  "Play UM",    "Play UM"],
       "THPRAC_OTHER_LUCK_UMB":    [ "P点全无",  "Play UM",    "Play UM"],
+	  
+	  "THPRAC_OTHER_LUCK_FW":     [ "打锦上京",  "Play FW",    "Play FW"],
+      "THPRAC_OTHER_LUCK_FWA":    [ "喜欢赤石",  "Play FW",    "Play FW"],
+      "THPRAC_OTHER_LUCK_FWB":    [ "构式游戏",  "Play FW",    "Play FW"],
       
       "THPRAC_OTHER_LUCK_POFV":   [ "打花映冢", "Play POFV",    "Play POFV"],
       "THPRAC_OTHER_LUCK_POFVA":  [ "无限连击", "Play POFV",    "Play POFV"],
@@ -828,7 +832,8 @@
         "THPRAC_OTHER_LUCK_LOLK",  
         "THPRAC_OTHER_LUCK_HSIFS", 
         "THPRAC_OTHER_LUCK_WBABC", 
-        "THPRAC_OTHER_LUCK_UM"
+        "THPRAC_OTHER_LUCK_UM",
+        "THPRAC_OTHER_LUCK_FW"
       ],
       "LUCK_DESC_1A": [
         "THPRAC_OTHER_LUCK_EOSDA",  
@@ -842,7 +847,8 @@
         "THPRAC_OTHER_LUCK_LOLKA",  
         "THPRAC_OTHER_LUCK_HSIFSA", 
         "THPRAC_OTHER_LUCK_WBABCA", 
-        "THPRAC_OTHER_LUCK_UMA"   
+        "THPRAC_OTHER_LUCK_UMA", 
+        "THPRAC_OTHER_LUCK_FWA" 
       ],
       "LUCK_DESC_1B": [
         "THPRAC_OTHER_LUCK_EOSDB",  
@@ -856,7 +862,8 @@
         "THPRAC_OTHER_LUCK_LOLKB",  
         "THPRAC_OTHER_LUCK_HSIFSB", 
         "THPRAC_OTHER_LUCK_WBABCB", 
-        "THPRAC_OTHER_LUCK_UMB"
+        "THPRAC_OTHER_LUCK_UMB",
+        "THPRAC_OTHER_LUCK_FWB"
       ],
      "LUCK_DESC_2": [
         "THPRAC_OTHER_LUCK_POFV",
