@@ -2674,7 +2674,7 @@ const char* th_glossary_str[3][1041]
         "優先G",
         "優先R",
         "優先Y",
-        "東方錦上京 ～ Fossilized Wonders.",
+        "TH20 東方錦上京 ～ Fossilized Wonders.",
         "PIVキャップ解放",
         "スコアキャップ解放",
         "異変石計固定",
