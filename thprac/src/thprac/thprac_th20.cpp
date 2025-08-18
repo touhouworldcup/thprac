@@ -631,13 +631,13 @@ namespace TH20 {
         {
             mOptCtx.fps_dbl = 60.0;
 
-            if (*(uint8_t*)RVA(0x1C2F99) == 3) {
+            if (*(uint8_t*)RVA(0x1C4F89) == 3) {
                 mOptCtx.fps_status = 1;
 
                 DWORD oldProtect;
-                VirtualProtect((void*)RVA(0x1A22F), 4, PAGE_EXECUTE_READWRITE, &oldProtect);
-                *(double**)RVA(0x1A22F) = &mOptCtx.fps_dbl;
-                VirtualProtect((void*)RVA(0x1A22F), 4, oldProtect, &oldProtect);
+                VirtualProtect((void*)RVA(0x19EAF), 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+                *(double**)RVA(0x19EAF) = &mOptCtx.fps_dbl;
+                VirtualProtect((void*)RVA(0x19EAF), 4, oldProtect, &oldProtect);
             } else
                 mOptCtx.fps_status = 0;
         }
