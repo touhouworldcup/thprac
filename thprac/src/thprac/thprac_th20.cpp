@@ -1625,6 +1625,10 @@ namespace TH20 {
         pCtx->Eax = thPracParam.stage;
     })
     PATCH_DY(th20_disable_prac_menu_1, 0x129B40, "c3")
+    PATCH_DY(th20_prac_menu_ignore_locked, 0x12CA30, "b001c3")
+    EHOOK_DY(th20_extra_prac_fix, 0x11EB3D, 2, {
+        *(uint32_t*)RVA(0x1BA568 + 0x88 + 0x1E0) = *(uint32_t*)RVA(0x1B0A60);
+    })
     PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
     EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
         if (*(uint32_t*)(*(uintptr_t*)(RVA(0x1BA568) + 0x88 + 0x238) + 0x108)) {
