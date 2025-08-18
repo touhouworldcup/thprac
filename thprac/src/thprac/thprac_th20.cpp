@@ -441,9 +441,9 @@ namespace TH20 {
         void CheckReplay()
         {
             uint32_t index = GetMemContent(RVA(0x1C6124), 0x5738);
-            char* repName = (char*)GetMemAddr(RVA(0x1C6124), index * 4 + 0x5740, 0x150);
+            char* repName = (char*)GetMemAddr(RVA(0x1C6124), index * 4 + 0x5740, 0x260);
             std::wstring repDir(mAppdataPath);
-            repDir.append(L"\\ShanghaiAlice\\th20tr\\replay\\");
+            repDir.append(L"\\ShanghaiAlice\\th20\\replay\\");
             repDir.append(mb_to_utf16(repName, 932));
 
             std::string param;
@@ -527,6 +527,7 @@ namespace TH20 {
             mHyperGLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mWonderStGLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
@@ -538,6 +539,7 @@ namespace TH20 {
             mHyperGLock();
             mWonderStGLock();
             mTimeLock();
+            mAutoBomb();
             mElBgm();
         }
         virtual void OnPreUpdate() override
@@ -581,8 +583,12 @@ namespace TH20 {
         PATCH_HK(0x86FDD, "EB"),
         PATCH_HK(0xA871E, "31")
         HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F8", VK_F8)
+        PATCH_HK(0xF79B3, "FF")
+        HOTKEY_ENDDEF();
     public:
-        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F8", VK_F8 };
+        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
     };
 
     // TODO(?)
@@ -601,6 +607,11 @@ namespace TH20 {
     PATCH_ST(th20_piv_uncap_1, 0xA9FE5, "89D00F1F00");
     PATCH_ST(th20_piv_uncap_2, 0xB82E6, "89D00F1F00");
     PATCH_ST(th20_score_uncap, 0xE14F2, "EB");
+    EHOOK_ST(th20_score_uncap_stage_tr, 0x10910F, 2, {
+        pCtx->Esi += 8;
+        pCtx->Edi += 8;
+        pCtx->Ecx -= 2;
+    });
     PATCH_ST(th20_infinite_stones, 0x11784B, "EB");
     PATCH_ST(th20_hitbox_scale_fix, 0xFF490, "B864000000C3");
 
@@ -623,13 +634,13 @@ namespace TH20 {
         {
             mOptCtx.fps_dbl = 60.0;
 
-            if (*(uint8_t*)RVA(0x1C2F99) == 3) {
+            if (*(uint8_t*)RVA(0x1C4F89) == 3) {
                 mOptCtx.fps_status = 1;
 
                 DWORD oldProtect;
-                VirtualProtect((void*)RVA(0x1A22F), 4, PAGE_EXECUTE_READWRITE, &oldProtect);
-                *(double**)RVA(0x1A22F) = &mOptCtx.fps_dbl;
-                VirtualProtect((void*)RVA(0x1A22F), 4, oldProtect, &oldProtect);
+                VirtualProtect((void*)RVA(0x19EAF), 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+                *(double**)RVA(0x19EAF) = &mOptCtx.fps_dbl;
+                VirtualProtect((void*)RVA(0x19EAF), 4, oldProtect, &oldProtect);
             } else
                 mOptCtx.fps_status = 0;
         }
@@ -695,6 +706,7 @@ namespace TH20 {
             th20_piv_uncap_1.Setup();
             th20_piv_uncap_2.Setup();
             th20_score_uncap.Setup();
+            th20_score_uncap_stage_tr.Setup();
             th20_infinite_stones.Setup();
             th20_hitbox_scale_fix.Setup();
 
@@ -764,16 +776,21 @@ namespace TH20 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
-                if (ImGui::Checkbox(S(TH20_PIV_OVERFLOW_FIX), &pivOverflowFix))
+                if (ImGui::Checkbox(S(TH20_PIV_OVERFLOW_FIX), &pivOverflowFix)) {
                     th20_piv_overflow_fix.Toggle(pivOverflowFix);
+                    th20_score_uncap_stage_tr.Toggle(scoreUncap || pivOverflowFix || pivUncap);
+                }
                 ImGui::SameLine();
                 if (ImGui::Checkbox(S(TH20_UNCAP_PIV), &pivUncap)) {
                     th20_piv_uncap_1.Toggle(pivUncap);
                     th20_piv_uncap_2.Toggle(pivUncap);
+                    th20_score_uncap_stage_tr.Toggle(scoreUncap || pivOverflowFix || pivUncap);
                 }
                 ImGui::SameLine();
-                if (ImGui::Checkbox(S(TH20_UNCAP_SCORE), &scoreUncap))
+                if (ImGui::Checkbox(S(TH20_UNCAP_SCORE), &scoreUncap)) {
                     th20_score_uncap.Toggle(scoreUncap);
+                    th20_score_uncap_stage_tr.Toggle(scoreUncap || pivOverflowFix || pivUncap);
+                }
 
                 if (ImGui::Checkbox(S(TH20_FAKE_UNLOCK_STONES), &infiniteStones))
                     th20_infinite_stones.Toggle(infiniteStones);
@@ -1598,7 +1615,7 @@ namespace TH20 {
             constexpr unsigned int st6bsNon2InvulnCallVal = 0x1448 + 0x10;
             constexpr unsigned int st6bsNon2BossItemCallSomething = 0x1534 + 0x4;
             constexpr unsigned int st6bsNon2PlaySoundSomething = 0x1660 + 0x4;
-            constexpr unsigned int st6bsNon2PostProtectRange = 0x1688;
+            constexpr unsigned int st6bsNon2PostProtectRange = 0x17e0;
             constexpr unsigned int st6bsNon2PostWait = 0x188c;
 
             ECLStdExec(ecl, st6PostMaple, 1, 1);
@@ -2005,7 +2022,7 @@ namespace TH20 {
             return 0;
         else if (thPracParam.section >= 10000)
             return 0;
-        else if (thPracParam.dlg)
+        else if (thPracParam.dlg && thPracParam.section != TH20_ST6_BOSS5 && thPracParam.section != TH20_ST6_BOSS9)
             return 0;
         else
             return th_sections_bgm[thPracParam.section];
