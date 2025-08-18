@@ -333,6 +333,10 @@ namespace TH20 {
             case TH20_ST1_BOSS1:
             case TH20_ST2_BOSS1:
             case TH20_ST3_BOSS1:
+            case TH20_ST4_BOSS1:
+            case TH20_ST5_BOSS1:
+            case TH20_ST6_BOSS1:
+            case TH20_ST7_BOSS1:
                 return true;
             default:
                 return false;
@@ -799,6 +803,7 @@ namespace TH20 {
     constexpr unsigned int st1PostMaple = 0x7eec;
     constexpr unsigned int st2PostMaple = 0xa45c;
     constexpr unsigned int st3PostMaple = 0xb5bc;
+    constexpr unsigned int st4PostMaple = 0xa740;
     constexpr unsigned int stdInterruptSize = 0x14;
     __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
     {
@@ -958,6 +963,13 @@ namespace TH20 {
         constexpr unsigned int st3bsSpellSubCallOrd = 0x570;
         constexpr unsigned int st3bsNonSubCallOrd = 0x6d0;
 
+        constexpr unsigned int st4BossCreateCall = 0xaed4;
+        constexpr unsigned int st4bsPrePushSpellID = 0x41c;
+        constexpr unsigned int st4bsPostNotSpellPracCheck = 0x504;
+        constexpr unsigned int st4bsSpellHealthVal = 0x514;
+        constexpr unsigned int st4bsSpellSubCallOrd = 0x534;
+        constexpr unsigned int st4bsNonSubCallOrd = 0x844 + 0x18;
+
         switch (section) {
         case THPrac::TH20::TH20_ST1_MID1: {
             constexpr unsigned int st1MBossCreateCall = 0x8568;
@@ -1017,6 +1029,7 @@ namespace TH20 {
             ecl << pair { st1bsSpellSubCallOrd, (int8_t)0x33 }; // Set spell ID in sub call to '3'
             break;
         }
+
         case THPrac::TH20::TH20_ST2_MID1: {
             constexpr unsigned int st2MBossCreateCall = 0xaad8;
             ECLJump(ecl, st2PostMaple, st2MBossCreateCall, 60, 90);
@@ -1151,6 +1164,95 @@ namespace TH20 {
             ecl << pair { st3bsSpellSubCallOrd, (int8_t)0x34 }; // Set spell ID in sub call to '4'
             break;
         }
+
+        case THPrac::TH20::TH20_ST4_MID1: {
+            constexpr unsigned int st4MBossCreateCall = 0xadbc;
+            ECLJump(ecl, st4PostMaple, st4MBossCreateCall, 60, 90);
+            break;
+        }
+        case THPrac::TH20::TH20_ST4_BOSS1: {
+            constexpr unsigned int st4BossDialogueCall = 0xaec0;
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
+            if (thPracParam.dlg)
+                ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossDialogueCall, 60);
+            else
+                ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossCreateCall, 60);
+            break;
+        }
+        case THPrac::TH20::TH20_ST4_BOSS2: {
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
+            ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st4bsPrePushSpellID, st4bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            break;
+        }
+        case THPrac::TH20::TH20_ST4_BOSS3: {
+            constexpr unsigned int st4bsNon2InvulnCallVal = 0x1540 + 0x10;
+            constexpr unsigned int st4bsNon2BossItemCallSomething = 0x162c + 0x4;
+            constexpr unsigned int st4bsNon2PlaySoundSomething = 0x1758 + 0x4;
+            constexpr unsigned int st4bsNon2PostLifeMarker = 0x18c4;
+            constexpr unsigned int st4bsNon2PostWait1 = 0x1970;
+            constexpr unsigned int st4bsNon2PostInit = 0x19e8;
+            constexpr unsigned int st4bsNon2PostWait2 = 0x1a40;
+
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
+            ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossCreateCall, 60);
+            ecl.SetFile(2);
+            ecl << pair { st4bsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
+            ecl << pair { st4bsNon2InvulnCallVal, (int16_t)0 }; // Disable Invincible
+            ecl << pair { st4bsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
+            ecl << pair { st4bsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ECLJump(ecl, st4bsNon2PostLifeMarker, st4bsNon2PostWait1, 0); // Skip wait 1
+            ECLJump(ecl, st4bsNon2PostInit, st4bsNon2PostWait2, 0); // Skip wait 2
+            break;
+        }
+        case THPrac::TH20::TH20_ST4_BOSS4: {
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
+            ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st4bsPrePushSpellID, st4bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st4bsSpellSubCallOrd, (int8_t)0x32 }; // Set spell ID in sub call to '2'
+            break;
+        }
+        case THPrac::TH20::TH20_ST4_BOSS5: {
+            constexpr unsigned int st4bsNon3InvulnCallVal = 0x2584 + 0x10;
+            constexpr unsigned int st4bsNon3BossItemCallSomething = 0x2670 + 0x4;
+            constexpr unsigned int st4bsNon3PlaySoundSomething = 0x279c + 0x4;
+            constexpr unsigned int st4bsNon3PostLifeCount = 0x291c;
+            constexpr unsigned int st4bsNon3PostWait1 = 0x29c8;
+            constexpr unsigned int st4bsNon3PostInit = 0x2a40;
+            constexpr unsigned int st4bsNon3PostWait2 = 0x2a98;
+
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
+            ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossCreateCall, 60);
+            ecl.SetFile(2);
+            ecl << pair { st4bsNonSubCallOrd, (int8_t)0x33 }; // Set nonspell ID in sub call to '3'
+            ecl << pair { st4bsNon3InvulnCallVal, (int16_t)0 }; // Disable Invincible
+            ecl << pair { st4bsNon3BossItemCallSomething, (int16_t)0 }; // Disable item drops
+            ecl << pair { st4bsNon3PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ECLJump(ecl, st4bsNon3PostLifeCount, st4bsNon3PostWait1, 0); // Skip wait 1
+            ECLJump(ecl, st4bsNon3PostInit, st4bsNon3PostWait2, 0); // Skip wait 2
+            break;
+        }
+        case THPrac::TH20::TH20_ST4_BOSS6: {
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
+            ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st4bsPrePushSpellID, st4bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st4bsSpellHealthVal, 2500 }; // Set correct health (set in skipped non)
+            ecl << pair { st4bsSpellSubCallOrd, (int8_t)0x33 }; // Set spell ID in sub call to '3'
+            break;
+        }
+        case THPrac::TH20::TH20_ST4_BOSS7: {
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
+            ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st4bsPrePushSpellID, st4bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st4bsSpellHealthVal, 4300 }; // Set correct health (set in skipped non)
+            ecl << pair { st4bsSpellSubCallOrd, (int8_t)0x34 }; // Set spell ID in sub call to '4'
+            break;
+        }
+
         default:
             break;
         }
