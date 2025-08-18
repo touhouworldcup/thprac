@@ -2677,7 +2677,7 @@ extern const th_glossary_t TH20_RAGE[3];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3255];
+extern const wchar_t __thprac_loc_range_zh[3265];
 
 extern const wchar_t __thprac_loc_range_en[15];
 
