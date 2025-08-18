@@ -438,9 +438,9 @@ namespace TH20 {
         void CheckReplay()
         {
             uint32_t index = GetMemContent(RVA(0x1C6124), 0x5738);
-            char* repName = (char*)GetMemAddr(RVA(0x1C6124), index * 4 + 0x5740, 0x150);
+            char* repName = (char*)GetMemAddr(RVA(0x1C6124), index * 4 + 0x5740, 0x260);
             std::wstring repDir(mAppdataPath);
-            repDir.append(L"\\ShanghaiAlice\\th20tr\\replay\\");
+            repDir.append(L"\\ShanghaiAlice\\th20\\replay\\");
             repDir.append(mb_to_utf16(repName, 932));
 
             std::string param;
