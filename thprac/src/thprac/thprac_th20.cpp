@@ -230,6 +230,9 @@ namespace TH20 {
         const th_glossary_t* SpellPhase()
         {
             auto section = CalcSection();
+            if (section == TH20_ST6_BOSS12) {
+                return TH_SPELL_PHASE2;
+            }
             return nullptr;
         }
         void PracticeMenu()
@@ -1880,12 +1883,33 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST6_BOSS12: {
+            auto disableWait = [&ecl]() -> void { 
+                ecl << pair { 0x3d4 + 0x4, (int16_t)0 }; 
+            };
             ECLStdExec(ecl, st6PostMaple, 1, 1);
             ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st6bsPrePushSpellID, st6bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
             ecl << pair { st6bsSpellHealthVal, 12000 }; // Set correct health (set in skipped non)
             ecl << pair { st6bsSpellSubCallOrd, (int8_t)0x37 }; // Set spell ID in sub call to '7'
+            disableWait();
+
+            switch (thPracParam.phase) {
+            case 1:
+                ecl << pair { 0xa7b0 + 0x10, 5400 };
+                break;
+            case 2:
+                ecl << pair { 0xa7b0 + 0x10, 5400 };
+                ecl << pair { 0xaac8 + 0x10, 1800 };
+                break;
+            case 3:
+                ecl << pair { 0xa7b0 + 0x10, 5400 };
+                ecl << pair { 0xaac8 + 0x10, 1800 };
+                ecl << pair { 0xae04 + 0x10, 1800 };
+                break;
+            default:
+                break;
+            }
             break;
         }
         case THPrac::TH20::TH20_ST7_MID1: {
