@@ -333,6 +333,10 @@ namespace TH20 {
             case TH20_ST1_BOSS1:
             case TH20_ST2_BOSS1:
             case TH20_ST3_BOSS1:
+            case TH20_ST4_BOSS1:
+            case TH20_ST5_BOSS1:
+            case TH20_ST6_BOSS1:
+            case TH20_ST7_BOSS1:
                 return true;
             default:
                 return false;
@@ -427,10 +431,8 @@ namespace TH20 {
     public:
         void CheckReplay()
         {
-            // TODO
-            /*
-            uint32_t index = GetMemContent(RVA(0x1C3DB4), 0x5734);
-            char* repName = (char*)GetMemAddr(RVA(0x1C3DB4), index * 4 + 0x573C, 0x150);
+            uint32_t index = GetMemContent(RVA(0x1C6124), 0x5738);
+            char* repName = (char*)GetMemAddr(RVA(0x1C6124), index * 4 + 0x5740, 0x150);
             std::wstring repDir(mAppdataPath);
             repDir.append(L"\\ShanghaiAlice\\th20tr\\replay\\");
             repDir.append(mb_to_utf16(repName, 932));
@@ -441,9 +443,8 @@ namespace TH20 {
             else
                 mRepParam.Reset();
 
-            uint32_t* savedStones = (uint32_t*)GetMemAddr(RVA(0x1C3DB4), index * 4 + 0x573C, 0x1C, 0xDC);
+            uint32_t* savedStones = (uint32_t*)GetMemAddr(RVA(0x1C6124), index * 4 + 0x5740, 0x1C, 0xDC);
             memcpy(replayStones, savedStones, sizeof(replayStones));
-            */
         }
 
         bool mRepStatus = false;
@@ -510,31 +511,25 @@ namespace TH20 {
             }
 
             mMenu.SetTextOffsetRel(x_offset_1, x_offset_2);
-            // TODO
-            
             mMuteki.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfLives.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfBombs.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfPower.SetTextOffsetRel(x_offset_1, x_offset_2);
-            /*mHyperGLock.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mHyperGLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mWonderStGLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
-            */
         }
         virtual void OnContentUpdate() override
         {
-            // TODO
-            
             mMuteki();
             mInfLives();
             mInfBombs();
             mInfPower();
-            /*mHyperGLock();
+            mHyperGLock();
             mWonderStGLock();
             mTimeLock();
             mElBgm();
-            */
         }
         virtual void OnPreUpdate() override
         {
@@ -564,65 +559,28 @@ namespace TH20 {
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
         PATCH_HK(0xE16A2, "0F1F00")
         HOTKEY_ENDDEF();
-        // TODO
-        /*
-        HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
-        PATCH_HK(0xFB5CC, "01")
-        HOTKEY_ENDDEF();
-        */
 
-        // TODO
-        /*
-        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
-        PATCH_HK(0xE3C08, "660F1F440000")
-        HOTKEY_ENDDEF();
-        */
-
-        // TODO
-        /*
-        HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
-        PATCH_HK(0xE40A2, "0F1F00")
-        HOTKEY_ENDDEF();
-        */
-
-        // TODO
-        /*
-        HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(0xE4022, "0F1F00")
-        HOTKEY_ENDDEF();
-        */
-
-        // TODO
-        /*
         HOTKEY_DEFINE(mHyperGLock, TH20_HYP_LOCK, "F5", VK_F5)
-        PATCH_HK(0x133C15, "0F1F00")
+        PATCH_HK(0x133935, "0F1F00")
         HOTKEY_ENDDEF();
-        */
 
-        // TODO
-        /*
         HOTKEY_DEFINE(mWonderStGLock, TH20_WST_LOCK, "F6", VK_F6)
-        PATCH_HK(0x7AB35, "0F1F00")
+        PATCH_HK(0x77F75, "0F1F00")
         HOTKEY_ENDDEF();
-        */
 
-        // TODO
-        /*
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F7", VK_F7)
-        PATCH_HK(0x8A5FD, "EB"),
-        PATCH_HK(0xA8ECE, "21")
-        HOTKEY_ENDDEF();
-        */
+        PATCH_HK(0x86FDD, "EB"),
+            PATCH_HK(0xA871E, "31")
+                HOTKEY_ENDDEF();
+
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F8", VK_F8 };
     };
 
     // TODO(?)
     // static constinit HookCtx listIterUnlinkFix = { .addr = 0x11AB2, .data = PatchCode("e800000000") };
-    // TODO
-    /*
-    EHOOK_ST(th20_piv_overflow_fix, 0xC5FDB, 2, {
-        uintptr_t stats = RVA(0x1B8670);
+    EHOOK_ST(th20_piv_overflow_fix, 0xC496B, 2, {
+        uintptr_t stats = RVA(0x1BA5F0);
         int32_t piv = *(int32_t*)(stats + 0x44);
         int32_t piv_base = *(int32_t*)(stats + 0x40); // always 10000?
         int32_t piv_divisor = *(int32_t*)(stats + 0x48); // always 5000?
@@ -630,14 +588,13 @@ namespace TH20 {
         int32_t half_piv_base = piv_base / 2;
         int64_t uh_oh = (int64_t)piv_base * piv;
         pCtx->Esi = (int32_t)(uh_oh / piv_divisor) + half_piv_base;
-        pCtx->Eip = RVA(0xC6034);
+        pCtx->Eip = RVA(0xC49C4);
     });
-    PATCH_ST(th20_piv_uncap_1, 0xAA775, "89D00F1F00");
-    PATCH_ST(th20_piv_uncap_2, 0xB9316, "89D00F1F00");
-    PATCH_ST(th20_score_uncap, 0xE3E72, "EB");
-    PATCH_ST(th20_infinite_stones, 0x11A250, "EB");
-    PATCH_ST(th20_hitbox_scale_fix, 0x102280, "B864000000C3");
-    */
+    PATCH_ST(th20_piv_uncap_1, 0xA9FE5, "89D00F1F00");
+    PATCH_ST(th20_piv_uncap_2, 0xB82E6, "89D00F1F00");
+    PATCH_ST(th20_score_uncap, 0xE14F2, "EB");
+    PATCH_ST(th20_infinite_stones, 0x11784B, "EB");
+    PATCH_ST(th20_hitbox_scale_fix, 0xFF490, "B864000000C3");
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
         SINGLETON(THAdvOptWnd);
@@ -726,8 +683,6 @@ namespace TH20 {
             GameplayInit();
             MasterDisableInit();
 
-            // TODO
-            /*
             th20_piv_overflow_fix.Setup();
             th20_piv_uncap_1.Setup();
             th20_piv_uncap_2.Setup();
@@ -735,6 +690,8 @@ namespace TH20 {
             th20_infinite_stones.Setup();
             th20_hitbox_scale_fix.Setup();
 
+            // TODO(?)
+            /*
             // thcrap base_tsa already patches this to fix the crash, don't try to rehook it if it's being used
             if (*(uint32_t*)RVA(0x11AD0) == 0x51EC8B55) {
                 *(uintptr_t*)((uintptr_t)listIterUnlinkFix.data.buffer.ptr + 1) = (uintptr_t)&UnlinkNodeHook - RVA(0x11AB2 + 5);
@@ -799,8 +756,6 @@ namespace TH20 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
-                // TODO
-                /*
                 if (ImGui::Checkbox(S(TH20_PIV_OVERFLOW_FIX), &pivOverflowFix))
                     th20_piv_overflow_fix.Toggle(pivOverflowFix);
                 ImGui::SameLine();
@@ -821,7 +776,6 @@ namespace TH20 {
                     th20_hitbox_scale_fix.Toggle(plHitboxScaleFix);
                 ImGui::SameLine();
                 HelpMarker(S(TH20_FIX_HITBOX_DESC));
-                */
 
                 ImGui::SetNextItemWidth(180.0f);
                 EndOptGroup();
@@ -835,8 +789,6 @@ namespace TH20 {
         adv_opt_ctx mOptCtx;
     };
 
-    // TODO
-    
     void ECLStdExec(ECLHelper& ecl, unsigned int start, int std_id, int ecl_time = 0)
     {
         if (start)
@@ -852,12 +804,11 @@ namespace TH20 {
     constexpr unsigned int st1PostMaple = 0x7eec;
     constexpr unsigned int st2PostMaple = 0xa45c;
     constexpr unsigned int st3PostMaple = 0xb5bc;
-    constexpr unsigned int st4Main = 0xa740;
+    constexpr unsigned int st4PostMaple = 0xa740;
     constexpr unsigned int st5PostMaple = 0x5058;
     constexpr unsigned int st6PostMaple = 0x4b80;
     constexpr unsigned int st7PostMaple = 0x6b28;
     constexpr unsigned int stdInterruptSize = 0x14;
-
     __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
     {
         if (stage == 1) {
@@ -957,7 +908,7 @@ namespace TH20 {
                 break;
             }
             case 3: {
-                constexpr unsigned int mainSub03Call = 0x910c;
+                constexpr unsigned int mainSub03Call = 0x916c;
                 ECLJump(ecl, st3PostMaple, st3MainFront, 60, 90);
                 ECLJump(ecl, st3MainSub00, mainSub03Call, 0, 0);
                 break;
@@ -999,25 +950,52 @@ namespace TH20 {
         constexpr unsigned int st1BossCreateCall = 0x8680;
         constexpr unsigned int st1bsPrePushSpellID = 0x3b8;
         constexpr unsigned int st1bsPostNotSpellPracCheck = 0x4a0;
+        constexpr unsigned int st1bsSpellHealthVal = 0x4b0;
         constexpr unsigned int st1bsSpellSubCallOrd = 0x4d0;
 
         constexpr unsigned int st2BossCreateCall = 0xabf0;
         constexpr unsigned int st2bsPrePushSpellID = 0x3d0;
         constexpr unsigned int st2bsPostNotSpellPracCheck = 0x4b8;
+        constexpr unsigned int st2bsSpellHealthVal = 0x4c8;
         constexpr unsigned int st2bsSpellSubCallOrd = 0x4e8;
-        constexpr unsigned int st2bsNonSubCallOrd = 0x628;
+        constexpr unsigned int st2bsNonSubCallOrd = 0x6f4 + 0x18;
 
         constexpr unsigned int st3BossCreateCall = 0xbc74;
         constexpr unsigned int st3bsPrePushSpellID = 0x458;
         constexpr unsigned int st3bsPostNotSpellPracCheck = 0x540;
+        constexpr unsigned int st3bsSpellHealthVal = 0x550;
         constexpr unsigned int st3bsSpellSubCallOrd = 0x570;
         constexpr unsigned int st3bsNonSubCallOrd = 0x6d0;
 
         constexpr unsigned int st4BossCreateCall = 0xaed4;
+        constexpr unsigned int st4bsPrePushSpellID = 0x41c;
+        constexpr unsigned int st4bsPostNotSpellPracCheck = 0x504;
+        constexpr unsigned int st4bsSpellHealthVal = 0x514;
+        constexpr unsigned int st4bsSpellSubCallOrd = 0x534;
+        constexpr unsigned int st4bsNonSubCallOrd = 0x844 + 0x18;
+
         constexpr unsigned int st5BossCreateCall = 0x57ec;
-        constexpr unsigned int st6BossCreateCall = 0x52c4;
-        constexpr unsigned int st7BossCreateCall = 0x7484;
+        constexpr unsigned int st5bsPrePushSpellID = 0x424;
+        constexpr unsigned int st5bsPostNotSpellPracCheck = 0x50c;
+        constexpr unsigned int st5bsSpellHealthVal = 0x51c;
+        constexpr unsigned int st5bsSpellSubCallOrd = 0x53c;
+        constexpr unsigned int st5bsNonSubCallOrd = 0x84c + 0x18;
+
         
+        constexpr unsigned int st6BossCreateCall = 0x52c4;
+        constexpr unsigned int st6bsPrePushSpellID = 0x534;
+        constexpr unsigned int st6bsPostNotSpellPracCheck = 0x61c;
+        constexpr unsigned int st6bsSpellHealthVal = 0x62c;
+        constexpr unsigned int st6bsSpellSubCallOrd = 0x64c;
+        constexpr unsigned int st6bsNonSubCallOrd = 0xc88 + 0x18;
+
+        constexpr unsigned int st7BossCreateCall = 0x7484;
+        constexpr unsigned int st7bsPrePushSpellID = 0x5d0;
+        constexpr unsigned int st7bsPostNotSpellPracCheck = 0x6b8;
+        constexpr unsigned int st7bsSpellHealthVal = 0x6c8;
+        constexpr unsigned int st7bsSpellSubCallOrd = 0x6e8;
+        constexpr unsigned int st7bsNonSubCallOrd = 0x1010 + 0x18;
+
 
         switch (section) {
         case THPrac::TH20::TH20_ST1_MID1: {
@@ -1043,12 +1021,12 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST1_BOSS3: {
-            constexpr unsigned int st1bsNonSubCallOrd = 0x610;
-            constexpr unsigned int st1bsNon2InvulnCallVal = 0x1268;
-            constexpr unsigned int st1bsNon2BossItemCallSomething = 0x1344 + 0x4; // 32th cringequit on me when
-            constexpr unsigned int st1bsNon2PlaySoundSomething = 0x1470 + 0x4; // I asked what these were so :shrug:
-            constexpr unsigned int st1bsNon2PostLifeMarker = 0x15c8;
-            constexpr unsigned int st1bsNon2PostWait = 0x16b4; // 0x1608 previously
+            constexpr unsigned int st1bsNonSubCallOrd = 0x6dc + 0x18;
+            constexpr unsigned int st1bsNon2InvulnCallVal = 0x133c + 0x10;
+            constexpr unsigned int st1bsNon2BossItemCallSomething = 0x1428 + 0x4; // 32th cringequit on me when
+            constexpr unsigned int st1bsNon2PlaySoundSomething = 0x1554 + 0x4; // I asked what these were so :shrug:
+            constexpr unsigned int st1bsNon2PostLifeMarker = 0x16c0;
+            constexpr unsigned int st1bsNon2PostWait = 0x17ac; // 0x1608 previously
 
             ECLStdExec(ecl, st1PostMaple, 1, 1);
             ECLJump(ecl, st1PostMaple + stdInterruptSize, st1BossCreateCall, 60);
@@ -1065,6 +1043,7 @@ namespace TH20 {
             ECLJump(ecl, st1PostMaple + stdInterruptSize, st1BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st1bsPrePushSpellID, st1bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st1bsSpellHealthVal, 2000 }; // Set correct health (set in skipped non)
             ecl << pair { st1bsSpellSubCallOrd, (int8_t)0x32 }; // Set spell ID in sub call to '2'
             break;
         }
@@ -1073,9 +1052,11 @@ namespace TH20 {
             ECLJump(ecl, st1PostMaple + stdInterruptSize, st1BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st1bsPrePushSpellID, st1bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st1bsSpellHealthVal, 2500 }; // Set correct health (set in skipped non)
             ecl << pair { st1bsSpellSubCallOrd, (int8_t)0x33 }; // Set spell ID in sub call to '3'
             break;
         }
+
         case THPrac::TH20::TH20_ST2_MID1: {
             constexpr unsigned int st2MBossCreateCall = 0xaad8;
             ECLJump(ecl, st2PostMaple, st2MBossCreateCall, 60, 90);
@@ -1098,11 +1079,11 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST2_BOSS3: {
-            constexpr unsigned int st2bsNon2InvulnCallVal = 0x11d4;
-            constexpr unsigned int st2bsNon2BossItemCallSomething = 0x12b0 + 0x4;
-            constexpr unsigned int st2bsNon2PlaySoundSomething = 0x13dc + 0x4;
-            constexpr unsigned int st2bsNon2PostLifeMarker = 0x1534;
-            constexpr unsigned int st2bsNon2PostWait = 0x1620;
+            constexpr unsigned int st2bsNon2InvulnCallVal = 0x12a8 + 0x10;
+            constexpr unsigned int st2bsNon2BossItemCallSomething = 0x1394 + 0x4;
+            constexpr unsigned int st2bsNon2PlaySoundSomething = 0x14c0 + 0x4;
+            constexpr unsigned int st2bsNon2PostLifeMarker = 0x162c;
+            constexpr unsigned int st2bsNon2PostWait = 0x1718;
 
             ECLStdExec(ecl, st2PostMaple, 1, 1);
             ECLJump(ecl, st2PostMaple + stdInterruptSize, st2BossCreateCall, 60);
@@ -1119,6 +1100,7 @@ namespace TH20 {
             ECLJump(ecl, st2PostMaple + stdInterruptSize, st2BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st2bsPrePushSpellID, st2bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st2bsSpellHealthVal, 2600 }; // Set correct health (set in skipped non)
             ecl << pair { st2bsSpellSubCallOrd, (int8_t)0x32 }; // Set spell ID in sub call to '2'
             break;
         }
@@ -1127,6 +1109,7 @@ namespace TH20 {
             ECLJump(ecl, st2PostMaple + stdInterruptSize, st2BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st2bsPrePushSpellID, st2bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st2bsSpellHealthVal, 3000 }; // Set correct health (set in skipped non)
             ecl << pair { st2bsSpellSubCallOrd, (int8_t)0x33 }; // Set spell ID in sub call to '3'
             break;
         }
@@ -1148,11 +1131,11 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST3_BOSS3: {
-            constexpr unsigned int st3bsNon2InvulnCallVal = 0x1074;
-            constexpr unsigned int st3bsNon2BossItemCallSomething = 0x1150 + 0x4;
-            constexpr unsigned int st3bsNon2PlaySoundSomething = 0x127c + 0x4;
-            constexpr unsigned int st3bsNon2PostLifeMarker = 0x13d4;
-            constexpr unsigned int st3bsNon2PostWait = 0x1500;
+            constexpr unsigned int st3bsNon2InvulnCallVal = 0x127c + 0x10;
+            constexpr unsigned int st3bsNon2BossItemCallSomething = 0x1368 + 0x4;
+            constexpr unsigned int st3bsNon2PlaySoundSomething = 0x1494 + 0x4;
+            constexpr unsigned int st3bsNon2PostLifeMarker = 0x1600;
+            constexpr unsigned int st3bsNon2PostWait = 0x172c;
 
             ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossCreateCall, 60);
@@ -1169,15 +1152,16 @@ namespace TH20 {
             ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st3bsPrePushSpellID, st3bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st3bsSpellHealthVal, 3200 }; // Set correct health (set in skipped non)
             ecl << pair { st3bsSpellSubCallOrd, (int8_t)0x32 }; // Set spell ID in sub call to '2'
             break;
         }
         case THPrac::TH20::TH20_ST3_BOSS5: {
-            constexpr unsigned int st3bsNon3InvulnCallVal = 0x1d0c;
-            constexpr unsigned int st3bsNon3BossItemCallSomething = 0x1de8 + 0x4;
-            constexpr unsigned int st3bsNon3PlaySoundSomething = 0x1f14 + 0x4;
-            constexpr unsigned int st3bsNon3PostLifeCount = 0x2080; // is this right? life count = 0? zun...
-            constexpr unsigned int st3bsNon3PostWait = 0x21ac;
+            constexpr unsigned int st3bsNon3InvulnCallVal = 0x1f28 + 0x10;
+            constexpr unsigned int st3bsNon3BossItemCallSomething = 0x2014 + 0x4;
+            constexpr unsigned int st3bsNon3PlaySoundSomething = 0x2140 + 0x4;
+            constexpr unsigned int st3bsNon3PostLifeCount = 0x22c0; // is this right? life count = 0? zun...
+            constexpr unsigned int st3bsNon3PostWait = 0x23ec;
 
             ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossCreateCall, 60);
@@ -1194,6 +1178,7 @@ namespace TH20 {
             ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st3bsPrePushSpellID, st3bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st3bsSpellHealthVal, 3400 }; // Set correct health (set in skipped non)
             ecl << pair { st3bsSpellSubCallOrd, (int8_t)0x33 }; // Set spell ID in sub call to '3'
             break;
         }
@@ -1202,32 +1187,105 @@ namespace TH20 {
             ECLJump(ecl, st3PostMaple + stdInterruptSize, st3BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st3bsPrePushSpellID, st3bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st3bsSpellHealthVal, 3400 }; // Set correct health (set in skipped non)
             ecl << pair { st3bsSpellSubCallOrd, (int8_t)0x34 }; // Set spell ID in sub call to '4'
             break;
         }
-        
+
         case THPrac::TH20::TH20_ST4_MID1: {
             constexpr unsigned int st4MBossCreateCall = 0xadbc;
-            ECLJump(ecl, st4Main, st4MBossCreateCall, 60, 90);
+            ECLJump(ecl, st4PostMaple, st4MBossCreateCall, 60, 90);
             break;
         }
         case THPrac::TH20::TH20_ST4_BOSS1: {
             constexpr unsigned int st4BossDialogueCall = 0xaec0;
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
             if (thPracParam.dlg)
-                ECLJump(ecl, st4Main, st4BossDialogueCall, 60);
+                ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossDialogueCall, 60);
             else
-                ECLJump(ecl, st4Main, st4BossCreateCall, 60);
+                ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossCreateCall, 60);
             break;
         }
+        case THPrac::TH20::TH20_ST4_BOSS2: {
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
+            ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st4bsPrePushSpellID, st4bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            break;
+        }
+        case THPrac::TH20::TH20_ST4_BOSS3: {
+            constexpr unsigned int st4bsNon2InvulnCallVal = 0x1540 + 0x10;
+            constexpr unsigned int st4bsNon2BossItemCallSomething = 0x162c + 0x4;
+            constexpr unsigned int st4bsNon2PlaySoundSomething = 0x1758 + 0x4;
+            constexpr unsigned int st4bsNon2PostLifeMarker = 0x18c4;
+            constexpr unsigned int st4bsNon2PostWait1 = 0x1970;
+            constexpr unsigned int st4bsNon2PostInit = 0x19e8;
+            constexpr unsigned int st4bsNon2PostWait2 = 0x1a40;
 
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
+            ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossCreateCall, 60);
+            ecl.SetFile(2);
+            ecl << pair { st4bsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
+            ecl << pair { st4bsNon2InvulnCallVal, (int16_t)0 }; // Disable Invincible
+            ecl << pair { st4bsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
+            ecl << pair { st4bsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ECLJump(ecl, st4bsNon2PostLifeMarker, st4bsNon2PostWait1, 0); // Skip wait 1
+            ECLJump(ecl, st4bsNon2PostInit, st4bsNon2PostWait2, 0); // Skip wait 2
+            break;
+        }
+        case THPrac::TH20::TH20_ST4_BOSS4: {
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
+            ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st4bsPrePushSpellID, st4bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st4bsSpellSubCallOrd, (int8_t)0x32 }; // Set spell ID in sub call to '2'
+            break;
+        }
+        case THPrac::TH20::TH20_ST4_BOSS5: {
+            constexpr unsigned int st4bsNon3InvulnCallVal = 0x2584 + 0x10;
+            constexpr unsigned int st4bsNon3BossItemCallSomething = 0x2670 + 0x4;
+            constexpr unsigned int st4bsNon3PlaySoundSomething = 0x279c + 0x4;
+            constexpr unsigned int st4bsNon3PostLifeCount = 0x291c;
+            constexpr unsigned int st4bsNon3PostWait1 = 0x29c8;
+            constexpr unsigned int st4bsNon3PostInit = 0x2a40;
+            constexpr unsigned int st4bsNon3PostWait2 = 0x2a98;
+
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
+            ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossCreateCall, 60);
+            ecl.SetFile(2);
+            ecl << pair { st4bsNonSubCallOrd, (int8_t)0x33 }; // Set nonspell ID in sub call to '3'
+            ecl << pair { st4bsNon3InvulnCallVal, (int16_t)0 }; // Disable Invincible
+            ecl << pair { st4bsNon3BossItemCallSomething, (int16_t)0 }; // Disable item drops
+            ecl << pair { st4bsNon3PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ECLJump(ecl, st4bsNon3PostLifeCount, st4bsNon3PostWait1, 0); // Skip wait 1
+            ECLJump(ecl, st4bsNon3PostInit, st4bsNon3PostWait2, 0); // Skip wait 2
+            break;
+        }
+        case THPrac::TH20::TH20_ST4_BOSS6: {
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
+            ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st4bsPrePushSpellID, st4bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st4bsSpellHealthVal, 2500 }; // Set correct health (set in skipped non)
+            ecl << pair { st4bsSpellSubCallOrd, (int8_t)0x33 }; // Set spell ID in sub call to '3'
+            break;
+        }
+        case THPrac::TH20::TH20_ST4_BOSS7: {
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
+            ECLJump(ecl, st4PostMaple + stdInterruptSize, st4BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st4bsPrePushSpellID, st4bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st4bsSpellHealthVal, 4300 }; // Set correct health (set in skipped non)
+            ecl << pair { st4bsSpellSubCallOrd, (int8_t)0x34 }; // Set spell ID in sub call to '4'
+            break;
+        }
         case THPrac::TH20::TH20_ST5_MID1: {
             constexpr unsigned int st5MBossCreateCall = 0x56d4;
-            ECLStdExec(ecl, st5PostMaple, 1, 1);
-            ECLJump(ecl, st5PostMaple + stdInterruptSize, st5MBossCreateCall, 60, 90);
+            ECLJump(ecl, st5PostMaple, st5MBossCreateCall, 60, 90);
             break;
         }
         case THPrac::TH20::TH20_ST5_BOSS1: {
-            constexpr unsigned int st5BossDialogueCall = 0x57dc;
+            constexpr unsigned int st5BossDialogueCall = 0x57d8;
             ECLStdExec(ecl, st5PostMaple, 1, 1);
             if (thPracParam.dlg)
                 ECLJump(ecl, st5PostMaple + stdInterruptSize, st5BossDialogueCall, 60);
@@ -1235,8 +1293,77 @@ namespace TH20 {
                 ECLJump(ecl, st5PostMaple + stdInterruptSize, st5BossCreateCall, 60);
             break;
         }
+        case THPrac::TH20::TH20_ST5_BOSS2: {
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
+            ECLJump(ecl, st5PostMaple + stdInterruptSize, st5BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st5bsPrePushSpellID, st5bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            break;
+        }
+        case THPrac::TH20::TH20_ST5_BOSS3: {
+            constexpr unsigned int st5bsNon2InvulnCallVal = 0x1470 + 0x10;
+            constexpr unsigned int st5bsNon2BossItemCallSomething = 0x155c + 0x4;
+            constexpr unsigned int st5bsNon2PlaySoundSomething = 0x1688 + 0x4;
+            constexpr unsigned int st5bsNon2PostLifeMarker = 0x17f4;
+            constexpr unsigned int st5bsNon2PostWait = 0x18a0;
+
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
+            ECLJump(ecl, st5PostMaple + stdInterruptSize, st5BossCreateCall, 60);
+            ecl.SetFile(2);
+            ecl << pair { st5bsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
+            ecl << pair { st5bsNon2InvulnCallVal, (int16_t)0 }; // Disable Invincible
+            ecl << pair { st5bsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
+            ecl << pair { st5bsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ECLJump(ecl, st5bsNon2PostLifeMarker, st5bsNon2PostWait, 0); // Skip wait
+            break;
+        }
+        case THPrac::TH20::TH20_ST5_BOSS4: {
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
+            ECLJump(ecl, st5PostMaple + stdInterruptSize, st5BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st5bsPrePushSpellID, st5bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st5bsSpellHealthVal, 3200 }; // Set correct health (set in skipped non)
+            ecl << pair { st5bsSpellSubCallOrd, (int8_t)0x32 }; // Set spell ID in sub call to '2'
+            break;
+        }
+        case THPrac::TH20::TH20_ST5_BOSS5: {
+            constexpr unsigned int st5bsNon3InvulnCallVal = 0x2498 + 0x10;
+            constexpr unsigned int st5bsNon3BossItemCallSomething = 0x2584 + 0x4;
+            constexpr unsigned int st5bsNon3PlaySoundSomething = 0x26b0 + 0x4;
+            constexpr unsigned int st5bsNon3PostLifeCount = 0x2830;
+            constexpr unsigned int st5bsNon3PostWait = 0x28c8;
+
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
+            ECLJump(ecl, st5PostMaple + stdInterruptSize, st5BossCreateCall, 60);
+            ecl.SetFile(2);
+            ecl << pair { st5bsNonSubCallOrd, (int8_t)0x33 }; // Set nonspell ID in sub call to '3'
+            ecl << pair { st5bsNon3InvulnCallVal, (int16_t)0 }; // Disable Invincible
+            ecl << pair { st5bsNon3BossItemCallSomething, (int16_t)0 }; // Disable item drops
+            ecl << pair { st5bsNon3PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ECLJump(ecl, st5bsNon3PostLifeCount, st5bsNon3PostWait, 0); // Skip wait
+            break;
+        }
+        case THPrac::TH20::TH20_ST5_BOSS6: {
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
+            ECLJump(ecl, st5PostMaple + stdInterruptSize, st5BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st5bsPrePushSpellID, st5bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st5bsSpellHealthVal, 3400 }; // Set correct health (set in skipped non)
+            ecl << pair { st5bsSpellSubCallOrd, (int8_t)0x33 }; // Set spell ID in sub call to '3'
+            break;
+        }
+        case THPrac::TH20::TH20_ST5_BOSS7: {
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
+            ECLJump(ecl, st5PostMaple + stdInterruptSize, st5BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st5bsPrePushSpellID, st5bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st5bsSpellHealthVal, 5000 }; // Set correct health (set in skipped non)
+            ecl << pair { st5bsSpellSubCallOrd, (int8_t)0x34 }; // Set spell ID in sub call to '4'
+            break;
+        }
         case THPrac::TH20::TH20_ST6_BOSS1: {
             constexpr unsigned int st6BossDialogueCall = 0x52b0;
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
             ECLStdExec(ecl, st6PostMaple, 1, 1);
             if (thPracParam.dlg)
                 ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossDialogueCall, 60);
@@ -1244,10 +1371,148 @@ namespace TH20 {
                 ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
             break;
         }
+        case THPrac::TH20::TH20_ST6_BOSS2: {
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
+            ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st6bsPrePushSpellID, st6bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            break;
+        }
+        case THPrac::TH20::TH20_ST6_BOSS3: {
+            constexpr unsigned int st6bsNon2InvulnCallVal = 0x1448 + 0x10;
+            constexpr unsigned int st6bsNon2BossItemCallSomething = 0x1534 + 0x4;
+            constexpr unsigned int st6bsNon2PlaySoundSomething = 0x1660 + 0x4;
+            constexpr unsigned int st6bsNon2PostLifeMarker = 0x17e0;
+            constexpr unsigned int st6bsNon2PostWait = 0x188c;
+
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
+            ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
+            ecl.SetFile(2);
+            ecl << pair { st6bsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
+            ecl << pair { st6bsNon2InvulnCallVal, (int16_t)0 }; // Disable Invincible
+            ecl << pair { st6bsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
+            ecl << pair { st6bsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ECLJump(ecl, st6bsNon2PostLifeMarker, st6bsNon2PostWait, 0); // Skip wait
+            break;
+        }
+        case THPrac::TH20::TH20_ST6_BOSS4: {
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
+            ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st6bsPrePushSpellID, st6bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st6bsSpellHealthVal, 3900 }; // Set correct health (set in skipped non)
+            ecl << pair { st6bsSpellSubCallOrd, (int8_t)0x32 }; // Set spell ID in sub call to '2'
+            break;
+        }
+        case THPrac::TH20::TH20_ST6_BOSS5: {
+            constexpr unsigned int st6bsNon3InvulnCallVal = 0x1ec8 + 0x10;
+            constexpr unsigned int st6bsNon3BossItemCallSomething = 0x21f8 + 0x4;
+            constexpr unsigned int st6bsNon3PlaySoundSomething = 0x2d90 + 0x4;
+
+            constexpr unsigned int st6bsNon3PreMsg = 0x225c;
+            constexpr unsigned int st6bsNon3PostMsg = 0x2294;
+
+            constexpr unsigned int st6bsNon3PostLifeCount = 0x2300;
+            constexpr unsigned int st6bsNon3PostWait = 0x2398;
+
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
+            ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
+            ecl.SetFile(2);
+            ecl << pair { st6bsNonSubCallOrd, (int8_t)0x33 }; // Set nonspell ID in sub call to '3'
+            ecl << pair { st6bsNon3InvulnCallVal, (int16_t)0 }; // Disable Invincible
+            ecl << pair { st6bsNon3PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st6bsNon3BossItemCallSomething, (int16_t)0 }; // Disable item drops
+            ECLJump(ecl, st6bsNon3PostLifeCount, st6bsNon3PostWait, 0); // Skip wait
+            ECLJump(ecl, st6bsNon3PreMsg, st6bsNon3PostMsg, 0); // Skip msg
+            break;
+        }
+        case THPrac::TH20::TH20_ST6_BOSS6: {
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
+            ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st6bsPrePushSpellID, st6bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st6bsSpellHealthVal, 4000 }; // Set correct health (set in skipped non)
+            ecl << pair { st6bsSpellSubCallOrd, (int8_t)0x33 }; // Set spell ID in sub call to '3'
+            break;
+        }
+        case THPrac::TH20::TH20_ST6_BOSS7: {
+            constexpr unsigned int st6bsNon4InvulnCallVal = 0x2b78 + 0x10;
+            constexpr unsigned int st6bsNon4BossItemCallSomething = 0x2c64 + 0x4;
+            constexpr unsigned int st6bsNon4PlaySoundSomething = 0x2d90 + 0x4;
+            constexpr unsigned int st6bsNon4PostLifeMarker = 0x2f10;
+            constexpr unsigned int st6bsNon4PostWait = 0x2fbc;
+
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
+            ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
+            ecl.SetFile(2);
+            ecl << pair { st6bsNonSubCallOrd, (int8_t)0x34 }; // Set nonspell ID in sub call to '4'
+            ecl << pair { st6bsNon4InvulnCallVal, (int16_t)0 }; // Disable Invincible
+            ecl << pair { st6bsNon4BossItemCallSomething, (int16_t)0 }; // Disable item drops
+            ecl << pair { st6bsNon4PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ECLJump(ecl, st6bsNon4PostLifeMarker, st6bsNon4PostWait, 0); // Skip wait
+            break;
+        }
+        case THPrac::TH20::TH20_ST6_BOSS8: {
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
+            ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st6bsPrePushSpellID, st6bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st6bsSpellHealthVal, 4000 }; // Set correct health (set in skipped non)
+            ecl << pair { st6bsSpellSubCallOrd, (int8_t)0x34 }; // Set spell ID in sub call to '4'
+            break;
+        }
+        case THPrac::TH20::TH20_ST6_BOSS9: {
+            constexpr unsigned int st6bsNon4InvulnCallVal = 0x38a0 + 0x10;
+            constexpr unsigned int st6bsNon4BossItemCallSomething = 0x39a4 + 0x4;
+            constexpr unsigned int st6bsNon4PlaySoundSomething = 0x3ad0 + 0x4;
+            constexpr unsigned int st6bsNon4PostLifeMarker = 0x3cf8;
+            constexpr unsigned int st6bsNon4PostWait = 0x3db8;
+            constexpr unsigned int st6bsNon3PreMsg = 0x3c14;
+            constexpr unsigned int st6bsNon3PostMsg = 0x3ca0;
+
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
+            ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
+            ecl.SetFile(2);
+            ecl << pair { st6bsNonSubCallOrd, (int8_t)0x35 }; // Set nonspell ID in sub call to '5'
+            ecl << pair { st6bsNon4InvulnCallVal, (int16_t)0 }; // Disable Invincible
+            ecl << pair { st6bsNon4BossItemCallSomething, (int16_t)0 }; // Disable item drops
+            ecl << pair { st6bsNon4PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ECLJump(ecl, st6bsNon4PostLifeMarker, st6bsNon4PostWait, 0); // Skip wait
+            ECLJump(ecl, st6bsNon3PreMsg, st6bsNon3PostMsg, 0); // Skip wait
+            break;
+        }
+        case THPrac::TH20::TH20_ST6_BOSS10: {
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
+            ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st6bsPrePushSpellID, st6bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st6bsSpellHealthVal, 4000 }; // Set correct health (set in skipped non)
+            ecl << pair { st6bsSpellSubCallOrd, (int8_t)0x35 }; // Set spell ID in sub call to '5'
+            break;
+        }
+        case THPrac::TH20::TH20_ST6_BOSS11: {
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
+            ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st6bsPrePushSpellID, st6bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st6bsSpellHealthVal, 4500 }; // Set correct health (set in skipped non)
+            ecl << pair { st6bsSpellSubCallOrd, (int8_t)0x36 }; // Set spell ID in sub call to '6'
+            break;
+        }
+        case THPrac::TH20::TH20_ST6_BOSS12: {
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
+            ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
+            ecl.SetFile(2);
+            ECLJump(ecl, st6bsPrePushSpellID, st6bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
+            ecl << pair { st6bsSpellHealthVal, 4500 }; // Set correct health (set in skipped non)
+            ecl << pair { st6bsSpellSubCallOrd, (int8_t)0x37 }; // Set spell ID in sub call to '7'
+            break;
+        }
         case THPrac::TH20::TH20_ST7_MID1: {
-            constexpr unsigned int st7MBossCreateCall = 0x7324;
-            ECLStdExec(ecl, st7PostMaple, 1, 1);
-            ECLJump(ecl, st7PostMaple + stdInterruptSize, st7MBossCreateCall, 60, 90);
+            constexpr unsigned int st7MidBossCreateCall = 0x7324;
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
+            ECLJump(ecl, st7PostMaple + stdInterruptSize, st7MidBossCreateCall, 60);
             break;
         }
         case THPrac::TH20::TH20_ST7_BOSS1: {
@@ -1263,11 +1528,10 @@ namespace TH20 {
             break;
         }
     }
-    
     __declspec(noinline) void THSectionPatch()
     {
         ECLHelper ecl;
-        ecl.SetBaseAddr((void*)GetMemAddr(RVA(0x1ba570), 0x104, 0xc));
+        ecl.SetBaseAddr((void*)GetMemAddr(RVA(0x1BA570), 0x104, 0xc));
 
         auto section = thPracParam.section;
         if (section >= 10000 && section < 20000) {
@@ -1278,7 +1542,6 @@ namespace TH20 {
             THPatch(ecl, (th_sections_t)section);
         }
     }
-    
 
     int THBGMTest()
     {
@@ -1300,9 +1563,13 @@ namespace TH20 {
     static char* sReplayPath = nullptr;
 
     HOOKSET_DEFINE(THMainHook)
-    // TODO
-    /*
-    EHOOK_DY(th20_everlasting_bgm, 0x28710, 1, {
+    EHOOK_DY(th20_boss_bgm, 0xBAC98, 2, {
+        if (THBGMTest()) {
+            PushHelper32(pCtx, 1);
+            pCtx->Eip = RVA(0xBAC9A);
+        }
+    })
+    EHOOK_DY(th20_everlasting_bgm, 0x28C90, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0] - ingame_image_base;
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -1313,47 +1580,15 @@ namespace TH20 {
         bool result;
 
         el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && (thPracParam.mode == 1) && thPracParam.section;
-        is_practice = (*((int32_t*)RVA(0x1b8654)) & 0x1);
+        is_practice = (*((int32_t*)RVA(0x1ba5d4)) & 0x1);
 
-        result = ElBgmTest<0xdc6a0, 0xdc70e, 0xe8978, 0xe8d28, 0xffffffff>(
+        result = ElBgmTest<0xD9B90, 0xD9BFE, 0xE60B8, 0xE64B8, 0xffffffff>(
             el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
 
         if (result) {
-            pCtx->Eip = RVA(0x028855);
+            pCtx->Eip = RVA(0x28DD5);
         }
     })
-    EHOOK_DY(th20_boss_bgm, 0xBBFC8, 2, {
-        if (THBGMTest()) {
-            PushHelper32(pCtx, 1);
-            pCtx->Eip = RVA(0x0bbfcf);
-        }
-    })
-    EHOOK_DY(th20_rep_save, 0x10D813, 3, {
-        if (sReplayPath) {
-            if (thPracParam.mode == 1)
-                THSaveReplay(sReplayPath);
-            free(sReplayPath);
-            sReplayPath = nullptr;
-        }
-    })
-    EHOOK_DY(th20_rep_get_path, 0x10D3E1, 5, {
-        sReplayPath = _strdup((char*)pCtx->Edx);
-    })
-    EHOOK_DY(th20_rep_menu_1, 0x124D44, 3, {
-        THGuiRep::singleton().State(1);
-    })
-    EHOOK_DY(th20_rep_menu_2, 0x12504C, 5, {
-        THGuiRep::singleton().State(2);
-    })
-    EHOOK_DY(th20_rep_menu_3, 0x1254DE, 2, {
-        THGuiRep::singleton().State(3);
-    })
-    EHOOK_DY(th20_fix_rep_stone_init, 0xBC3D0, 5, {
-        if (*(uint32_t*)(*(uintptr_t*)(RVA(0x1B85E8) + 0x88 + 0x238) + 0x108))
-            memcpy((void*)(RVA(0x1B85E8) + 0x88 + 0x1C), replayStones, sizeof(replayStones));
-    })
-    PATCH_DY(th20_fix_rep_results_skip, 0x1133B1, "5B35FAFF")
-    */
     EHOOK_DY(th20_patch_main, 0xBBD56, 1, {
         if (thPracParam.mode == 1) {
             *(int32_t*)RVA(0x1BA5F0) = (int32_t)(thPracParam.score / 10);
@@ -1364,7 +1599,6 @@ namespace TH20 {
             *(int32_t*)RVA(0x1BA568 + 0xB8) = thPracParam.power;
             *(int32_t*)RVA(0x1BA568 + 0xCC) = thPracParam.value;
 
-            // TODO
             THSectionPatch();
         }
         thPracParam._playLock = true;
@@ -1411,6 +1645,37 @@ namespace TH20 {
     })
     PATCH_DY(th20_disable_prac_menu_1, 0x129B40, "c3")
     PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
+    EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
+        if (*(uint32_t*)(*(uintptr_t*)(RVA(0x1BA568) + 0x88 + 0x238) + 0x108)) {
+            // Yes, the order really is swapped like this
+            auto selected = (uint32_t*)(RVA(0x1BA568) + 0x88 + 0x1C);
+            selected[0] = replayStones[0];
+            selected[1] = replayStones[2];
+            selected[2] = replayStones[1];
+            selected[3] = replayStones[3];
+        }
+    })
+    PATCH_DY(th20_fix_rep_results_skip, 0x110D61, "7B4BFAFF")
+    EHOOK_DY(th20_rep_save, 0x109D6A, 3, {
+        if (sReplayPath) {
+            if (thPracParam.mode == 1)
+                THSaveReplay(sReplayPath);
+            free(sReplayPath);
+            sReplayPath = nullptr;
+        }
+    })
+    EHOOK_DY(th20_rep_get_path, 0x1098E1, 5, {
+        sReplayPath = _strdup((char*)pCtx->Edx);
+    })
+    EHOOK_DY(th20_rep_menu_1, 0x123614, 3, {
+        THGuiRep::singleton().State(1);
+    })
+    EHOOK_DY(th20_rep_menu_2, 0x12391C, 5, {
+        THGuiRep::singleton().State(2);
+    })
+    EHOOK_DY(th20_rep_menu_3, 0x123DAE, 2, {
+        THGuiRep::singleton().State(3);
+    })
     EHOOK_DY(th20_update, 0x12A72, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
 

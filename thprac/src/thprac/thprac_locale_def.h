@@ -3150,20 +3150,63 @@ namespace TH20 {
         TH20_ST3_BOSS7,
         TH20_ST4_MID1,
         TH20_ST4_BOSS1,
+        TH20_ST4_BOSS2,
+        TH20_ST4_BOSS3,
+        TH20_ST4_BOSS4,
+        TH20_ST4_BOSS5,
+        TH20_ST4_BOSS6,
+        TH20_ST4_BOSS7,
         TH20_ST5_MID1,
         TH20_ST5_BOSS1,
+        TH20_ST5_BOSS2,
+        TH20_ST5_BOSS3,
+        TH20_ST5_BOSS4,
+        TH20_ST5_BOSS5,
+        TH20_ST5_BOSS6,
+        TH20_ST5_BOSS7,
+        TH20_ST6_MID1,
         TH20_ST6_BOSS1,
+        TH20_ST6_BOSS2,
+        TH20_ST6_BOSS3,
+        TH20_ST6_BOSS4,
+        TH20_ST6_BOSS5,
+        TH20_ST6_BOSS6,
+        TH20_ST6_BOSS7,
+        TH20_ST6_BOSS8,
+        TH20_ST6_BOSS9,
+        TH20_ST6_BOSS10,
+        TH20_ST6_BOSS11,
+        TH20_ST6_BOSS12,
         TH20_ST7_MID1,
+        TH20_ST7_MID2,
+        TH20_ST7_MID3,
         TH20_ST7_BOSS1,
+        TH20_ST7_BOSS2,
+        TH20_ST7_BOSS3,
+        TH20_ST7_BOSS4,
+        TH20_ST7_BOSS5,
+        TH20_ST7_BOSS6,
+        TH20_ST7_BOSS7,
+        TH20_ST7_BOSS8,
+        TH20_ST7_BOSS9,
+        TH20_ST7_BOSS10,
+        TH20_ST7_BOSS11,
+        TH20_ST7_BOSS12,
+        TH20_ST7_BOSS13,
+        TH20_ST7_BOSS14,
+        TH20_ST7_BOSS15,
+        TH20_ST7_BOSS16,
+        TH20_ST7_BOSS17,
+        TH20_ST7_BOSS18,
     };
 
-    extern const char* th_sections_str[3][4][27];
+    extern const char* th_sections_str[3][4][70];
 
-    extern const uint8_t th_sections_bgm[27];
+    extern const uint8_t th_sections_bgm[70];
 
-    extern const th_sections_t th_sections_cba[7][2][8];
+    extern const th_sections_t th_sections_cba[7][2][19];
 
-    extern const th_sections_t th_sections_cbt[7][2][5];
+    extern const th_sections_t th_sections_cbt[7][2][14];
 
     extern const th_glossary_t TH_STAGE_SELECT_TRIAL[4];
 
@@ -3171,10 +3214,10 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3417];
+extern const wchar_t __thprac_loc_range_zh[3433];
 
 extern const wchar_t __thprac_loc_range_en[61];
 
-extern const wchar_t __thprac_loc_range_ja[2767];
+extern const wchar_t __thprac_loc_range_ja[2785];
 
 }

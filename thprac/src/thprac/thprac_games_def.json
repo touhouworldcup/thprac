@@ -10580,50 +10580,313 @@
             "appearance": [ 3, 2, 7 ],
             "!ENHL": [ "金符「弹幕金字塔」", "Gold Sign \"Danmaku Pyramid\"", "金符「弾幕の金字塔」" ]
         },
-		
-		
-		
-		"TH20_ST4_MID1": {
+        "TH20_ST4_MID1": {
             "bgm": 0,
             "spell": 0,
             "appearance": [ 4, 1, 1 ],
             "!ENHL": "TH_MID_NS1"
         },
-		"TH20_ST4_BOSS1": {
+        "TH20_ST4_BOSS1": {
             "bgm": 1,
             "spell": 0,
             "appearance": [ 4, 2, 1 ],
             "!ENHL": "TH_END_NS1"
         },
-		"TH20_ST5_MID1": {
+        "TH20_ST4_BOSS2": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 4, 2, 2 ],
+            "!EN": [ "虚符TODO", "Void Sign \"Streaming Doll\"", "虚符「ストリーミングドール」" ],
+            "!HL": [ "虚符TODO", "Void Sign \"Streaming Marionette\"", "虚符「ストリーミングマリオネット」" ]
+        },
+        "TH20_ST4_BOSS3": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 4, 2, 3 ],
+            "!ENHL": "TH_END_NS2"
+        },
+        "TH20_ST4_BOSS4": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 4, 2, 4 ],
+            "!EN": [ "群符TODO", "Crowd Sign \"Rabble Data\"", "群符「ラブルデータ」" ],
+            "!HL": [ "群符TODO", "Crowd Sign \"Rabble Big Data\"", "群符「ラブルビッグデータ」" ]
+        },
+        "TH20_ST4_BOSS5": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 4, 2, 5 ],
+            "!ENHL": "TH_END_NS3"
+        },
+        "TH20_ST4_BOSS6": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 4, 2, 6 ],
+            "!ENHL": [ "射鹿TODO", "\"Beautiful Memory of Simply Shooting a Deer\"", "「シカを射るだけの美しい記憶」" ]
+        },
+        "TH20_ST4_BOSS7": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 4, 2, 7 ],
+            "!ENHL": [ "虚構TODO", "Fiction \"Discommunication\"", "虚構「ディスコミュニケーション」" ]
+        },
+
+        "TH20_ST5_MID1": {
             "bgm": 0,
             "spell": 0,
             "appearance": [ 5, 1, 1 ],
             "!ENHL": "TH_MID_NS1"
         },
-		"TH20_ST5_BOSS1": {
+        "TH20_ST5_BOSS1": {
             "bgm": 1,
             "spell": 0,
             "appearance": [ 5, 2, 1 ],
             "!ENHL": "TH_END_NS1"
         },
-		"TH20_ST6_BOSS1": {
+        "TH20_ST5_BOSS2": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 5, 2, 2 ],
+            "!ENHL": [ "潮盈珠TODO", "Jewel \"High Tide Jewel\"", "宝珠「潮盈珠」" ]
+        },
+        "TH20_ST5_BOSS3": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 5, 2, 3 ],
+            "!ENHL": "TH_END_NS2"
+        },
+        "TH20_ST5_BOSS4": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 5, 2, 4 ],
+            "!EN": [ "山津波TODO", "Disaster \"Landslide\"", "災禍「山津波」" ],
+            "!HL": [ "山津波TODO", "Disaster \"Lengthy Landslide\"", "災禍「長い山津波」" ]
+        },
+        "TH20_ST5_BOSS5": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 5, 2, 5 ],
+            "!ENHL": "TH_END_NS3"
+        },
+        "TH20_ST5_BOSS6": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 5, 2, 6 ],
+            "!ENHL": [ "潮乾珠TODO", "Jewel \"Receding Tide Jewel\"", "宝珠「潮乾珠」" ]
+        },
+        "TH20_ST5_BOSS7": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 5, 2, 7 ],
+            "!ENHL": [ "月龙TODO", "\"Moon Dragon\"", "「ムーンドラゴン」" ]
+        },
+
+        "TH20_ST6_MID1": {
+            "bgm": 0,
+            "spell": 0,
+            "appearance": [ 6, 1, 1 ],
+            "!ENHL": "TH_MID_NS1"
+        },
+        "TH20_ST6_BOSS1": {
             "bgm": 1,
             "spell": 0,
             "appearance": [ 6, 2, 1 ],
             "!ENHL": "TH_END_NS1"
         },
-		"TH20_ST7_MID1": {
-            "bgm": 0,
-            "spell": 0,
-            "appearance": [ 7, 1, 1 ],
-            "!ENHL": "TH_MID_NS1"
+        "TH20_ST6_BOSS2": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 6, 2, 2 ],
+            "!ENHL": [ "石神TODO", "Stone God \"Stones That Become Boulders\"", "石神「巌となるさざれ石」" ]
         },
-		"TH20_ST7_BOSS1": {
+        "TH20_ST6_BOSS3": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 6, 2, 3 ],
+            "!ENHL": "TH_END_NS2"
+        },
+        "TH20_ST6_BOSS4": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 6, 2, 4 ],
+            "!EN": [ "死符TODO", "Death Sign \"Eternal Winter\"", "死符「永遠の冬」" ],
+            "!HL": [ "死符TODO", "Death Sign \"Permanent Winter\"", "死符「恒久の冬」" ]
+        },
+        "TH20_ST6_BOSS5": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 6, 2, 5 ],
+            "!ENHL": "TH_END_NS3"
+        },
+        "TH20_ST6_BOSS6": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 6, 2, 6 ],
+            "!ENHL": [ "生符TODO", "Life Sign \"Chaotic Winter\"", "生符「混沌の冬」" ]
+        },
+        "TH20_ST6_BOSS7": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 6, 2, 7 ],
+            "!ENHL": "TH_END_NS4"
+        },
+        "TH20_ST6_BOSS8": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 6, 2, 8 ],
+            "!ENHL": [ "弾幕の化石TODO", "\"Danmaku Fossil\"", "「弾幕の化石」" ]
+        },
+        "TH20_ST6_BOSS9": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 6, 2, 9 ],
+            "!ENHL": "TH_END_NS5"
+        },
+        "TH20_ST6_BOSS10": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 6, 2, 10 ],
+            "!ENHL": [ "地符TODO", "Land Sign \"Liliquid of Illusion\"", "地符「幻想のリリクウィ」" ]
+        },
+        "TH20_ST6_BOSS11": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 6, 2, 11 ],
+            "!ENHL": [ "月符TODO", "Moon Sign \"Imaginary Crowning Glory\"", "月符「錦の上のイマジナリー」" ]
+        },
+        "TH20_ST6_BOSS12": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 6, 2, 12 ],
+            "!EN": [ "不生不滅TODO", "\"Stone Goddess\"", "「ストーンゴッデス」" ],
+            "!HL": [ "不生不滅TODO", "\"Goddess of Stone Without Beginning nor End\"", "「不生不滅の石の女神」" ]
+        },
+
+        "TH20_ST7_MID1": {
+            "bgm": 0,
+            "spell": 1,
+            "appearance": [ 7, 1, 1 ],
+            "!X": [ "鹿符TODO", "Deer Sign \"Deer Genocider\"", "鹿符「ディアジェノサイダー」" ]
+        },
+        "TH20_ST7_MID2": {
+            "bgm": 0,
+            "spell": 1,
+            "appearance": [ 7, 1, 2 ],
+            "!X": [ "蛇姫TODO", "Snake Princess \"Snake Lander\"", "蛇姫「スネークランダー」" ]
+        },
+        "TH20_ST7_MID3": {
+            "bgm": 0,
+            "spell": 1,
+            "appearance": [ 7, 1, 3 ],
+            "!X": [ "Zoltax TODO", "\"Zoltax Communication\"", "「ゾルタクスコミュニケーション」" ]
+        },
+        "TH20_ST7_BOSS1": {
             "bgm": 1,
             "spell": 0,
             "appearance": [ 7, 2, 1 ],
-            "!ENHL": "TH_END_NS1"
+            "!X": "TH_END_NS1"
+        },
+        "TH20_ST7_BOSS2": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 7, 2, 2 ],
+            "!X": [ "反正是一符TODO", "Truth \"Tetra Monoeye\"", "真実「テトラモノアイ」" ]
+        },
+        "TH20_ST7_BOSS3": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 7, 2, 3 ],
+            "!X": "TH_END_NS2"
+        },
+        "TH20_ST7_BOSS4": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 7, 2, 4 ],
+            "!X": [ "反正是二符TODO", "Truth \"Old Illuminati\"", "真実「オールドイルミナティ」" ]
+        },
+        "TH20_ST7_BOSS5": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 7, 2, 5 ],
+            "!X": "TH_END_NS3"
+        },
+        "TH20_ST7_BOSS6": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 7, 2, 6 ],
+            "!X": [ "反正是三符TODO", "Truth \"Chemtrail Cloud\"", "真実「ケムトレイルクラウド」" ]
+        },
+        "TH20_ST7_BOSS7": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 7, 2, 7 ],
+            "!X": "TH_END_NS4"
+        },
+        "TH20_ST7_BOSS8": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 7, 2, 8 ],
+            "!X": [ "反正是四符TODO", "Truth \"Reptilian Intelligence\"", "真実「レプティリアニンテリジェンス」" ]
+        },
+        "TH20_ST7_BOSS9": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 7, 2, 9 ],
+            "!X": "TH_END_NS5"
+        },
+        "TH20_ST7_BOSS10": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 7, 2, 10 ],
+            "!X": [ "反正是五符TODO", "Truth \"Flat Earther\"", "真実「フラットアーサー」" ]
+        },
+        "TH20_ST7_BOSS11": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 7, 2, 11 ],
+            "!X": "TH_END_NS6"
+        },
+        "TH20_ST7_BOSS12": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 7, 2, 12 ],
+            "!X": [ "反正是六符TODO", "Truth \"Artificial Disaster\"", "真実「アーティフィシャルディサスター」" ]
+        },
+        "TH20_ST7_BOSS13": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 7, 2, 13 ],
+            "!X": "TH_END_NS7"
+        },
+        "TH20_ST7_BOSS14": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 7, 2, 14 ],
+            "!X": [ "反正是七符TODO", "Truth \"New World Order\"", "真実「ニューワールドオーダー」" ]
+        },
+        "TH20_ST7_BOSS15": {
+            "bgm": 1,
+            "spell": 0,
+            "appearance": [ 7, 2, 15 ],
+            "!X": "TH_END_NS8"
+        },
+        "TH20_ST7_BOSS16": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 7, 2, 16 ],
+            "!X": [ "反正是八符TODO", "Truth \"Tartarian Rhapsody\"", "真実「タルタリアンラプソディ」" ]
+        },
+        "TH20_ST7_BOSS17": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 7, 2, 17 ],
+            "!X": [ "反正是九符TODO", "\"Chocolate River\"", "「チョコレートリバー」" ]
+        },
+        "TH20_ST7_BOSS18": {
+            "bgm": 1,
+            "spell": 1,
+            "appearance": [ 7, 2, 18 ],
+            "!X": [ "反正是十符TODO", "\"Great King of Angolmois\"", "「アンゴルモアの大王」" ]
         }
     },
 
