@@ -598,6 +598,11 @@ namespace TH20 {
     PATCH_ST(th20_piv_uncap_1, 0xA9FE5, "89D00F1F00");
     PATCH_ST(th20_piv_uncap_2, 0xB82E6, "89D00F1F00");
     PATCH_ST(th20_score_uncap, 0xE14F2, "EB");
+    EHOOK_ST(th20_score_uncap_stage_tr, 0x10910F, 2, {
+        pCtx->Esi += 8;
+        pCtx->Edi += 8;
+        pCtx->Ecx -= 2;
+    });
     PATCH_ST(th20_infinite_stones, 0x11784B, "EB");
     PATCH_ST(th20_hitbox_scale_fix, 0xFF490, "B864000000C3");
 
@@ -692,6 +697,7 @@ namespace TH20 {
             th20_piv_uncap_1.Setup();
             th20_piv_uncap_2.Setup();
             th20_score_uncap.Setup();
+            th20_score_uncap_stage_tr.Setup();
             th20_infinite_stones.Setup();
             th20_hitbox_scale_fix.Setup();
 
@@ -761,16 +767,21 @@ namespace TH20 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
-                if (ImGui::Checkbox(S(TH20_PIV_OVERFLOW_FIX), &pivOverflowFix))
+                if (ImGui::Checkbox(S(TH20_PIV_OVERFLOW_FIX), &pivOverflowFix)) {
                     th20_piv_overflow_fix.Toggle(pivOverflowFix);
+                    th20_score_uncap_stage_tr.Toggle(scoreUncap || pivOverflowFix || pivUncap);
+                }
                 ImGui::SameLine();
                 if (ImGui::Checkbox(S(TH20_UNCAP_PIV), &pivUncap)) {
                     th20_piv_uncap_1.Toggle(pivUncap);
                     th20_piv_uncap_2.Toggle(pivUncap);
+                    th20_score_uncap_stage_tr.Toggle(scoreUncap || pivOverflowFix || pivUncap);
                 }
                 ImGui::SameLine();
-                if (ImGui::Checkbox(S(TH20_UNCAP_SCORE), &scoreUncap))
+                if (ImGui::Checkbox(S(TH20_UNCAP_SCORE), &scoreUncap)) {
                     th20_score_uncap.Toggle(scoreUncap);
+                    th20_score_uncap_stage_tr.Toggle(scoreUncap || pivOverflowFix || pivUncap);
+                }
 
                 if (ImGui::Checkbox(S(TH20_FAKE_UNLOCK_STONES), &infiniteStones))
                     th20_infinite_stones.Toggle(infiniteStones);
