@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1501] {
+const char* th_glossary_str[3][1510] {
     {
         "",
         "啤酒",
@@ -772,6 +772,15 @@ const char* th_glossary_str[3][1501] {
         "秋",
         "冬",
         "土",
+        "红1",
+        "红2",
+        "蓝1",
+        "蓝2",
+        "黄1",
+        "黄2",
+        "绿1",
+        "绿2",
+        "无",
         "结界",
         "咏唱",
         "红魔",
@@ -2275,6 +2284,15 @@ const char* th_glossary_str[3][1501] {
         "Fa.",
         "Wi.",
         "DD.",
+        "R1",
+        "R2",
+        "B1",
+        "B2",
+        "Y1",
+        "Y2",
+        "G1",
+        "G2",
+        "N",
         "R&Y",
         "M&A",
         "S&R",
@@ -3778,6 +3796,15 @@ const char* th_glossary_str[3][1501] {
         "Fa.",
         "Wi.",
         "DD.",
+        "R1",
+        "R2",
+        "B1",
+        "B2",
+        "Y1",
+        "Y2",
+        "G1",
+        "G2",
+        "N",
         "R&Y",
         "M&A",
         "S&R",
@@ -4754,6 +4781,23 @@ const th_glossary_t IGI_PL_18[5] {
     THPRAC_IGI_PL_Marisa,
     THPRAC_IGI_PL_Sakuya,
     THPRAC_IGI_PL_Sanae,
+};
+
+const th_glossary_t IGI_PL_20[3] {
+    THPRAC_IGI_PL_Reimu,
+    THPRAC_IGI_PL_Marisa,
+};
+
+const th_glossary_t IGI_PL_20_SUB[10] {
+    THPRAC_IGI_PL_20A,
+    THPRAC_IGI_PL_20B,
+    THPRAC_IGI_PL_20C,
+    THPRAC_IGI_PL_20D,
+    THPRAC_IGI_PL_20E,
+    THPRAC_IGI_PL_20F,
+    THPRAC_IGI_PL_20G,
+    THPRAC_IGI_PL_20H,
+    THPRAC_IGI_PL_20I,
 };
 
 const th_glossary_t TH_TIMEOUT_SETTING[3] {
@@ -25293,7 +25337,7 @@ namespace TH19 {
 
 namespace TH20 {
 
-    const char* th_sections_str[3][4][69] {
+    const char* th_sections_str[3][4][70] {
         {
             {
                 "",
@@ -25317,6 +25361,7 @@ namespace TH20 {
                 "谜符「Enchant Trap」(附魔陷阱)",
                 "金符「弹幕金字塔」",
                 "道中一非",
+                "道中二非",
                 "关底一非",
                 "虚符「Streaming Doll」",
                 "关底二非",
@@ -25388,6 +25433,7 @@ namespace TH20 {
                 "谜符「Enchant Trap」(附魔陷阱)",
                 "金符「弹幕金字塔」",
                 "道中一非",
+                "道中二非",
                 "关底一非",
                 "虚符「Streaming Doll」",
                 "关底二非",
@@ -25459,6 +25505,7 @@ namespace TH20 {
                 "谜符「Enchant Trap」(附魔陷阱)",
                 "金符「弹幕金字塔」",
                 "道中一非",
+                "道中二非",
                 "关底一非",
                 "虚符「Streaming Marionette」",
                 "关底二非",
@@ -25530,6 +25577,7 @@ namespace TH20 {
                 "谜符「Enchant Trap」(附魔陷阱)",
                 "金符「弹幕金字塔」",
                 "道中一非",
+                "道中二非",
                 "关底一非",
                 "虚符「Streaming Marionette」",
                 "关底二非",
@@ -25603,6 +25651,7 @@ namespace TH20 {
                 "Riddle Sign \"Ancient Trap\"",
                 "Gold Sign \"Danmaku Pyramid\"",
                 "Mid Nonspell 1",
+                "Mid Nonspell 2",
                 "Boss Nonspell 1",
                 "Void Sign \"Streaming Doll\"",
                 "Boss Nonspell 2",
@@ -25674,6 +25723,7 @@ namespace TH20 {
                 "Riddle Sign \"Ancient Trap\"",
                 "Gold Sign \"Danmaku Pyramid\"",
                 "Mid Nonspell 1",
+                "Mid Nonspell 2",
                 "Boss Nonspell 1",
                 "Void Sign \"Streaming Doll\"",
                 "Boss Nonspell 2",
@@ -25745,6 +25795,7 @@ namespace TH20 {
                 "Riddle Sign \"Ancient Trap\"",
                 "Gold Sign \"Danmaku Pyramid\"",
                 "Mid Nonspell 1",
+                "Mid Nonspell 2",
                 "Boss Nonspell 1",
                 "Void Sign \"Streaming Marionette\"",
                 "Boss Nonspell 2",
@@ -25816,6 +25867,7 @@ namespace TH20 {
                 "Riddle Sign \"Ancient Trap\"",
                 "Gold Sign \"Danmaku Pyramid\"",
                 "Mid Nonspell 1",
+                "Mid Nonspell 2",
                 "Boss Nonspell 1",
                 "Void Sign \"Streaming Marionette\"",
                 "Boss Nonspell 2",
@@ -25889,6 +25941,7 @@ namespace TH20 {
                 "謎符「エンシャントトラップ」",
                 "金符「弾幕の金字塔」",
                 "道中 通常1",
+                "道中 通常2",
                 "ボス 通常1",
                 "虚符「ストリーミングドール」",
                 "ボス 通常2",
@@ -25960,6 +26013,7 @@ namespace TH20 {
                 "謎符「エンシャントトラップ」",
                 "金符「弾幕の金字塔」",
                 "道中 通常1",
+                "道中 通常2",
                 "ボス 通常1",
                 "虚符「ストリーミングドール」",
                 "ボス 通常2",
@@ -26031,6 +26085,7 @@ namespace TH20 {
                 "謎符「エンシャントトラップ」",
                 "金符「弾幕の金字塔」",
                 "道中 通常1",
+                "道中 通常2",
                 "ボス 通常1",
                 "虚符「ストリーミングマリオネット」",
                 "ボス 通常2",
@@ -26102,6 +26157,7 @@ namespace TH20 {
                 "謎符「エンシャントトラップ」",
                 "金符「弾幕の金字塔」",
                 "道中 通常1",
+                "道中 通常2",
                 "ボス 通常1",
                 "虚符「ストリーミングマリオネット」",
                 "ボス 通常2",
@@ -26154,7 +26210,7 @@ namespace TH20 {
         },
     };
 
-    const uint8_t th_sections_bgm[69] {
+    const uint8_t th_sections_bgm[70] {
         0,
         0,
         1,
@@ -26175,6 +26231,7 @@ namespace TH20 {
         1,
         1,
         1,
+        0,
         0,
         1,
         1,
@@ -26266,6 +26323,7 @@ namespace TH20 {
         {
             {
                 TH20_ST4_MID1,
+                TH20_ST4_MID2,
             },
             {
                 TH20_ST4_BOSS1,
@@ -26378,6 +26436,7 @@ namespace TH20 {
         {
             {
                 TH20_ST4_MID1,
+                TH20_ST4_MID2,
                 TH20_ST4_BOSS1,
                 TH20_ST4_BOSS3,
                 TH20_ST4_BOSS5,

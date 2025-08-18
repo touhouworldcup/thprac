@@ -772,6 +772,15 @@ enum th_glossary_t {
     THPRAC_IGI_PL_16C,
     THPRAC_IGI_PL_16D,
     THPRAC_IGI_PL_16E,
+    THPRAC_IGI_PL_20A,
+    THPRAC_IGI_PL_20B,
+    THPRAC_IGI_PL_20C,
+    THPRAC_IGI_PL_20D,
+    THPRAC_IGI_PL_20E,
+    THPRAC_IGI_PL_20F,
+    THPRAC_IGI_PL_20G,
+    THPRAC_IGI_PL_20H,
+    THPRAC_IGI_PL_20I,
     THPRAC_IGI_PL_8A,
     THPRAC_IGI_PL_8B,
     THPRAC_IGI_PL_8C,
@@ -1512,7 +1521,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1501];
+extern const char* th_glossary_str[3][1510];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1557,6 +1566,10 @@ extern const th_glossary_t IGI_PL_16S[6];
 extern const th_glossary_t IGI_PL_17[10];
 
 extern const th_glossary_t IGI_PL_18[5];
+
+extern const th_glossary_t IGI_PL_20[3];
+
+extern const th_glossary_t IGI_PL_20_SUB[10];
 
 extern const th_glossary_t TH_TIMEOUT_SETTING[3];
 
@@ -3150,6 +3163,7 @@ namespace TH20 {
         TH20_ST3_BOSS6,
         TH20_ST3_BOSS7,
         TH20_ST4_MID1,
+        TH20_ST4_MID2,
         TH20_ST4_BOSS1,
         TH20_ST4_BOSS2,
         TH20_ST4_BOSS3,
@@ -3200,9 +3214,9 @@ namespace TH20 {
         TH20_ST7_BOSS18,
     };
 
-    extern const char* th_sections_str[3][4][69];
+    extern const char* th_sections_str[3][4][70];
 
-    extern const uint8_t th_sections_bgm[69];
+    extern const uint8_t th_sections_bgm[70];
 
     extern const th_sections_t th_sections_cba[7][2][19];
 

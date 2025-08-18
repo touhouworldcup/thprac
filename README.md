@@ -1,3 +1,6 @@
+## 25.8.18
+- th20部分支持(复制粘贴于 https://github.com/touhouworldcup/thprac/pull/264/commits)
+
 ## 25.8.12
 - 修改了下红魔乡背景修复逻辑
 

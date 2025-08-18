@@ -1013,6 +1013,17 @@
 	  "THPRAC_IGI_PL_8D":["幽冥","Y&Y","Y&Y"],
 	  
 	  
+	  "THPRAC_IGI_PL_20A":["红1","R1","R1"],
+	  "THPRAC_IGI_PL_20B":["红2","R2","R2"],
+	  "THPRAC_IGI_PL_20C":["蓝1","B1","B1"],
+	  "THPRAC_IGI_PL_20D":["蓝2","B2","B2"],
+	  "THPRAC_IGI_PL_20E":["黄1","Y1","Y1"],
+	  "THPRAC_IGI_PL_20F":["黄2","Y2","Y2"],
+	  "THPRAC_IGI_PL_20G":["绿1","G1","G1"],
+	  "THPRAC_IGI_PL_20H":["绿2","G2","G2"],
+	  "THPRAC_IGI_PL_20I":["无", "N","N"],
+	  
+	  
 	  "THPRAC_BLIND":["夜雀视野","blind view","blind view"],
 	  "THPRAC_BLIND_DESC":["娱乐用, 使用blind.png重载","for fun(use blind.png to reload)","for fun(use blind.png to reload)"],
 	  "THPRAC_BLIND_SZ":["视野大小","view sz","view sz"],
@@ -1273,6 +1284,21 @@
 		"THPRAC_IGI_PL_Marisa",
 		"THPRAC_IGI_PL_Sakuya",
 		"THPRAC_IGI_PL_Sanae"
+      ],
+	   "IGI_PL_20": [
+        "THPRAC_IGI_PL_Reimu",
+		"THPRAC_IGI_PL_Marisa"
+      ],
+	   "IGI_PL_20_SUB": [
+        "THPRAC_IGI_PL_20A",
+		"THPRAC_IGI_PL_20B",
+		"THPRAC_IGI_PL_20C",
+		"THPRAC_IGI_PL_20D",
+		"THPRAC_IGI_PL_20E",
+		"THPRAC_IGI_PL_20F",
+		"THPRAC_IGI_PL_20G",
+		"THPRAC_IGI_PL_20H",
+		"THPRAC_IGI_PL_20I"
       ]
     }
   },
@@ -10591,6 +10617,12 @@
             "spell": 0,
             "appearance": [ 4, 1, 1 ],
             "!ENHL": "TH_MID_NS1"
+        },
+        "TH20_ST4_MID2": {
+            "bgm": 0,
+            "spell": 0,
+            "appearance": [ 4, 1, 2 ],
+            "!ENHL": "TH_MID_NS2"
         },
         "TH20_ST4_BOSS1": {
             "bgm": 1,

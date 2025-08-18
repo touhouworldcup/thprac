@@ -205,6 +205,15 @@ void RecordKey(int ver, uint32_t cur_key)
         g_key_mask[Key_Left] = 0x40;
         g_key_mask[Key_Right] = 0x80;
         break;
+    case 20:
+        g_key_mask[Key_Shift] = 0x8;
+        g_key_mask[Key_Z] = 0x1;
+        g_key_mask[Key_X] = 0x4;
+        g_key_mask[Key_Up] = 0x10;
+        g_key_mask[Key_Down] = 0x20;
+        g_key_mask[Key_Left] = 0x40;
+        g_key_mask[Key_Right] = 0x80;
+        break;
     }
     for (int i = 0; i < END; i++) {
         if (g_key_mask[i])

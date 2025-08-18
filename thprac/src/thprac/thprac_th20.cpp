@@ -526,6 +526,7 @@ namespace TH20 {
             mWonderStGLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mInGameInfo.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -537,6 +538,7 @@ namespace TH20 {
             mWonderStGLock();
             mTimeLock();
             mElBgm();
+            mInGameInfo();
         }
         virtual void OnPreUpdate() override
         {
@@ -555,9 +557,9 @@ namespace TH20 {
         PATCH_HK(0xF87FC, "01")
         HOTKEY_ENDDEF();
 
-        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
-        PATCH_HK(0xE1288, "660F1F440000")
-        HOTKEY_ENDDEF();
+        // HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
+        // PATCH_HK(0xE1288, "660F1F440000")
+        // HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
         PATCH_HK(0xE1722, "0F1F00")
@@ -582,6 +584,8 @@ namespace TH20 {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F8", VK_F8 };
+        Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2 };
+        Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F9", VK_F9 };
     };
 
     // TODO(?)
@@ -606,6 +610,131 @@ namespace TH20 {
     PATCH_ST(th20_bullet_hitbox_fix_1, 0x3Efd2, "F30F108080000000F30F5C4224");
     PATCH_ST(th20_bullet_hitbox_fix_2, 0x3EFEA, "F30F108284000000F30F5C4128");
 
+    
+    HOOKSET_DEFINE(th20_master_disable)
+    PATCH_DY(th20_master_disable1a, 0x87736, "eb")
+    PATCH_DY(th20_master_disable1b, 0x8778F, "eb")
+    PATCH_DY(th20_master_disable1c, 0x875E0, "03")
+    HOOKSET_ENDDEF()
+
+        
+    class TH20InGameInfo : public Gui::GameGuiWnd {
+        TH20InGameInfo() noexcept
+        {
+            SetTitle("igi");
+            SetFade(0.9f, 0.9f);
+            SetPosRel(950.0f / 1280.0f, 600.0f / 960.0f);
+            SetSizeRel(240.0f / 1280.0f, 0.0f);
+            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+        }
+        SINGLETON(TH20InGameInfo);
+
+    public:
+        int32_t mMissCount;
+        int32_t mBombCount;
+
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            float x_offset_1 = 0.0f;
+            float x_offset_2 = 0.0f;
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.172f;
+                break;
+            case Gui::LOCALE_EN_US:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.16f;
+                break;
+            case Gui::LOCALE_JA_JP:
+                x_offset_1 = 0.18f;
+                x_offset_2 = 0.235f;
+                break;
+            default:
+                break;
+            }
+        }
+
+        virtual void OnContentUpdate() override
+        {
+           
+            int32_t cur_player_type = (*(int32_t*)(RVA(0x1BA5F8)));
+            int32_t main_stone = (*(int32_t*)(RVA(0x1BA5FC)));
+            int32_t substone_1 = (*(int32_t*)(RVA(0x1BA600)));
+            int32_t substone_3 = (*(int32_t*)(RVA(0x1BA604)));
+            int32_t substone_2 = (*(int32_t*)(RVA(0x1BA608)));
+            int8_t substone_1_same = (*(int8_t*)(RVA(0x1BA61D)));
+            int8_t substone_3_same = (*(int8_t*)(RVA(0x1BA61E)));
+            int8_t substone_2_same = (*(int8_t*)(RVA(0x1BA61F)));
+            if (substone_1_same)
+                substone_1 = 8;
+            if (substone_2_same)
+                substone_2 = 8;
+            if (substone_3_same)
+                substone_3 = 8;
+
+            int32_t diff = *((int32_t*)(RVA(0x1BA7D0)));
+            auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_20[cur_player_type]));
+            auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::Text(diff_pl.c_str());
+
+
+            auto sub_pl = std::format("{}({}/{}/{})", S(IGI_PL_20_SUB[main_stone]), S(IGI_PL_20_SUB[substone_1]), S(IGI_PL_20_SUB[substone_2]), S(IGI_PL_20_SUB[substone_3]));
+
+            auto sub_pl_sz = ImGui::CalcTextSize(sub_pl.c_str());
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - sub_pl_sz.x * 0.5);
+
+            ImVec4 r = {1.0f,0.5f,0.5f,1.0f};
+            ImVec4 g = {0.5f,1.0f,0.5f,1.0f};
+            ImVec4 b = {0.5f,0.75f,1.0f,1.0f};
+            ImVec4 y = {1.0f,1.0f,0.3f,1.0f};
+            ImVec4 w = {1.0f,1.0f,1.0f,1.0f};
+            ImVec4 stone_colors[] = { r, r, b, b, y, y, g, g, w };
+
+            ImGui::TextColored(stone_colors[main_stone], S(IGI_PL_20_SUB[main_stone]));
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::Text("(");
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::TextColored(stone_colors[substone_1], S(IGI_PL_20_SUB[substone_1]));
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::Text("/");
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::TextColored(stone_colors[substone_2], S(IGI_PL_20_SUB[substone_2]));
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::Text("/");
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::TextColored(stone_colors[substone_3], S(IGI_PL_20_SUB[substone_3]));
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::Text(")");
+
+
+            ImGui::Columns(2);
+            ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%9d", mMissCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%9d", mBombCount);
+        }
+
+        virtual void OnPreUpdate() override
+        {
+            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(RVA(0x1ba56c))) {
+                SetPosRel(950.0f / 1280.0f, 600.0f / 960.0f);
+                SetSizeRel(240.0f / 1280.0f, 0.0f);
+                Open();
+            } else {
+                Close();
+            }
+        }
+
+    public:
+    };
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
         SINGLETON(THAdvOptWnd);
 
@@ -621,6 +750,10 @@ namespace TH20 {
 
         void MasterDisableInit()
         {
+            for (int i = 0; i < 3; i++)
+                th20_master_disable[i].Setup();
+            for (int i = 0; i < 3; i++)
+                th20_master_disable[i].Toggle(g_adv_igi_options.disable_master_autoly);
         }
         void FpsInit()
         {
@@ -779,7 +912,18 @@ namespace TH20 {
                     FpsSet();
                 EndOptGroup();
             }
+            if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
+                for (int i = 0; i < 3; i++)
+                    th20_master_disable[i].Toggle(g_adv_igi_options.disable_master_autoly);
+            }
+            ImGui::SameLine();
+            HelpMarker(S(TH_DISABLE_MASTER_DESC));
+
             if (BeginOptGroup<TH_GAMEPLAY>()) {
+                DisableKeyOpt();
+                KeyHUDOpt();
+                InfLifeOpt();
+
                 if (ImGui::Checkbox(S(TH20_PIV_OVERFLOW_FIX), &pivOverflowFix))
                     th20_piv_overflow_fix.Toggle(pivOverflowFix);
                 ImGui::SameLine();
@@ -809,7 +953,7 @@ namespace TH20 {
                 EndOptGroup();
             }
 
-            AboutOpt("Guy, zero318, rue, and you!\nTH20 support from khang06");
+            AboutOpt("Guy, zero318, rue, and you!\nTH20 support from khang06/GuyL/H-J-Granger...");
             ImGui::EndChild();
             ImGui::SetWindowFocus();
         }
@@ -1413,6 +1557,22 @@ namespace TH20 {
         case THPrac::TH20::TH20_ST4_MID1: {
             constexpr unsigned int st4MBossCreateCall = 0xadbc;
             ECLJump(ecl, st4PostMaple, st4MBossCreateCall, 60, 90);
+            break;
+        }
+        case THPrac::TH20::TH20_ST4_MID2: {
+            constexpr unsigned int st4MBossCreateCall = 0xadbc;
+            constexpr unsigned int st4mbsNonSubCallOrd = 0x4a4 + 0x19;
+            constexpr unsigned int st4mbsNon2BossItemCallSomething = 0xd40 + 0x4;
+            constexpr unsigned int st4mbsNon2PlaySoundSomething = 0xe6c + 0x4;
+            constexpr unsigned int st4mbsNon2PostLifeMarker = 0x1028;
+            constexpr unsigned int st4mbsNon2PostWait = 0x103c;
+
+            ECLJump(ecl, st4PostMaple, st4MBossCreateCall, 60, 90);
+            ecl.SetFile(3);
+            ecl << pair { st4mbsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
+            ecl << pair { st4mbsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
+            ecl << pair { st4mbsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ECLJump(ecl, st4mbsNon2PostLifeMarker, st4mbsNon2PostWait, 0); // Skip wait
             break;
         }
         case THPrac::TH20::TH20_ST4_BOSS1: {
@@ -2026,6 +2186,22 @@ namespace TH20 {
     static char* sReplayPath = nullptr;
 
     HOOKSET_DEFINE(THMainHook)
+
+    EHOOK_DY(th20_inf_lives, 0xe1288, 6,
+        {
+            int life_next = pCtx->Ecx;
+            if (life_next >= *(DWORD*)(RVA(0x1BA6A8)))// life increased
+                return;
+            TH20InGameInfo::singleton().mMissCount++;
+            if ((*(THOverlay::singleton().mInfLives))) {
+                if (!g_adv_igi_options.map_inf_life_to_no_continue) {
+                    pCtx->Eip = RVA(0xe128e);
+                } else {
+                    if (*(DWORD*)(RVA(0x1BA6A8)) == 0)
+                        pCtx->Eip = RVA(0xe128e);
+                }
+            }
+        })
     EHOOK_DY(th20_boss_bgm, 0xBAC98, 2, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
@@ -2151,12 +2327,32 @@ namespace TH20 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
 
+        TH20InGameInfo::singleton().Update();
+        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(RVA(0x1ba56c)))
+            KeysHUD(20, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
+    })
+    EHOOK_DY(th20_player_state, 0xf7430, 1, {
+        if (g_adv_igi_options.show_keyboard_monitor)
+            RecordKey(20, *(DWORD*)(RVA(0x1B8B4C)));
     })
     EHOOK_DY(th20_render, 0x12CEA, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
     })
+    HOOKSET_ENDDEF()
+
+    HOOKSET_DEFINE(THInGameInfo)
+    EHOOK_DY(th20_game_start, 0xbded2, 6, // gamestart-life set
+        {
+            TH20InGameInfo::singleton().mBombCount = 0;
+            TH20InGameInfo::singleton().mMissCount = 0;
+        })
+    EHOOK_DY(th20_bomb_dec, 0xe1710, 1, // bomb dec
+        {
+            TH20InGameInfo::singleton().mBombCount++;
+        })
     HOOKSET_ENDDEF()
 
     static __declspec(noinline) void THGuiCreate()
@@ -2178,6 +2374,7 @@ namespace TH20 {
 
         // Hooks
         EnableAllHooks(THMainHook);
+        EnableAllHooks(THInGameInfo);
 
         //  Reset thPracParam
         thPracParam.Reset();
