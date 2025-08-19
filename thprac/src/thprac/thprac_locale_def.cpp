@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1513] {
+const char* th_glossary_str[3][1519] {
     {
         "",
         "啤酒",
@@ -627,6 +627,8 @@ const char* th_glossary_str[3][1513] {
         "下一石",
         "PIV溢修",
         "异变敌",
+        "异变敌槽长度",
+        "等于击破的金字塔数",
         "蓝石等级",
         "绿石等级",
         "红石等级",
@@ -862,6 +864,10 @@ const char* th_glossary_str[3][1513] {
         "咆哮:",
         "隐藏灵:",
         "狼:",
+        "撞hyper:",
+        "hyper:",
+        "金字塔数:",
+        "LV:",
         "高级IGI功能",
         "自动开启高级功能",
         "部分功能需要打开更多游戏信息(backspace菜单)中的选项开启",
@@ -2142,6 +2148,8 @@ const char* th_glossary_str[3][1513] {
         "Next Stone",
         "PIV overflow fix",
         "Summon",
+        "Wonder Stone Gauge Length",
+        "Equal to pyramids killed",
         "LevelB",
         "LevelG",
         "LevelR",
@@ -2377,6 +2385,10 @@ const char* th_glossary_str[3][1513] {
         "roar:",
         "spec goast:",
         "wolf:",
+        "hyper break:",
+        "hyper:",
+        "pyramid:",
+        "lv:",
         "advanced igi",
         "automatically use advanced opts",
         "need to enable ingameinfo(in backspace menu) to show",
@@ -3657,6 +3669,8 @@ const char* th_glossary_str[3][1513] {
         "次の石",
         "PIVオーバーフロー修正",
         "異変石",
+        "異変石計長",
+        "撃破のピラミッド数に相当します",
         "レベルB",
         "レベルG",
         "レベルR",
@@ -3892,6 +3906,10 @@ const char* th_glossary_str[3][1513] {
         "roar:",
         "spec goast:",
         "wolf:",
+        "hyper break:",
+        "hyper:",
+        "pyramid:",
+        "lv:",
         "advanced igi",
         "automatically use advanced opts",
         "need to enable ingameinfo(in backspace menu) to show",

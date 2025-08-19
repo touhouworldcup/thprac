@@ -11,6 +11,8 @@ namespace THPrac {
 namespace TH20 {
     using std::pair;
     using namespace TH20;
+    constexpr int32_t stoneGaugeInitialValue[] = { 1100, 1200, 1300, 1400, 1400, 1400, 1400 }; 
+
     struct THPracParam {
         int32_t mode;
         int32_t stage;
@@ -27,6 +29,7 @@ namespace TH20 {
 
         float hyper;
         float stone;
+        int32_t stone_gauge_initial;
         int32_t levelR;
         int32_t priorityR;
         int32_t levelB;
@@ -64,6 +67,7 @@ namespace TH20 {
 
             GetJsonValue(hyper);
             GetJsonValue(stone);
+            GetJsonValue(stone_gauge_initial);
             GetJsonValue(levelR);
             GetJsonValue(priorityR);
             GetJsonValue(levelB);
@@ -96,6 +100,7 @@ namespace TH20 {
                 AddJsonValue(life_fragment);
                 AddJsonValue(bomb);
                 AddJsonValue(bomb_fragment);
+                AddJsonValue(stone_gauge_initial);
                 AddJsonValue(power);
                 AddJsonValue(value);
 
@@ -171,6 +176,7 @@ namespace TH20 {
                 thPracParam.life_fragment = *mLifeFragment;
                 thPracParam.bomb = *mBomb;
                 thPracParam.bomb_fragment = *mBombFragment;
+                thPracParam.stone_gauge_initial = *mStoneGaugeinitial;
                 thPracParam.power = *mPower;
                 thPracParam.value = *mValue;
 
@@ -199,9 +205,11 @@ namespace TH20 {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
             case Gui::LOCALE_ZH_CN:
-                SetSizeRel(0.65f, 0.81f);
-                SetPosRel(0.20f, 0.1f);
-                SetItemWidthRel(-0.100f);
+                SetSizeRel(0.55f, 0.7f);
+                SetPosRel(0.215f, 0.18f);
+                // SetSizeRel(0.65f, 0.81f);
+                // SetPosRel(0.20f, 0.1f);
+                SetItemWidthRel(-0.15f);
                 SetAutoSpacing(true);
                 break;
             case Gui::LOCALE_EN_US:
@@ -213,7 +221,7 @@ namespace TH20 {
             case Gui::LOCALE_JA_JP:
                 SetSizeRel(0.56f, 0.81f);
                 SetPosRel(0.230f, 0.18f);
-                SetItemWidthRel(-0.105f);
+                SetItemWidthRel(-0.150f);
                 SetAutoSpacing(true);
                 break;
             default:
@@ -265,6 +273,9 @@ namespace TH20 {
                 mValue(value_str.c_str());
                 mHyper(std::format("{:.2f} %%", (float)(*mHyper) / 100.0f).c_str());
                 mStone(std::format("{:.2f} %%", (float)(*mStone) / 100.0f).c_str());
+                mStoneGaugeinitial(std::format("{}", std::min(5000, stoneGaugeInitialValue[*mStage] + *mStoneGaugeinitial * 150)).c_str());
+                ImGui::SameLine();
+                HelpMarker(S(TH20_STONE_GAUGE_INITIAL_DESC));
 
                 ImGui::Columns(2);
                 auto& style = ImGui::GetStyle();
@@ -408,6 +419,7 @@ namespace TH20 {
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mHyper { TH20_HYPER, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mStone { TH20_STONE_GAUGE, 0, 10000, 1, 1000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mStoneGaugeinitial { TH20_STONE_GAUGE_INITIAL, 0, 27 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelR { TH20_STONE_LEVEL_R, 1, 5 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mPriorityR { TH20_STONE_PRIORITY_R, 0, 1000 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelB { TH20_STONE_LEVEL_B, 1, 5 };
@@ -638,8 +650,8 @@ namespace TH20 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPosRel(950.0f / 1280.0f, 600.0f / 960.0f);
-            SetSizeRel(240.0f / 1280.0f, 0.0f);
+            SetPosRel(920.0f / 1280.0f, 600.0f / 960.0f);
+            SetSizeRel(300.0f / 1280.0f, 0.0f);
             SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
@@ -648,6 +660,9 @@ namespace TH20 {
     public:
         int32_t mMissCount;
         int32_t mBombCount;
+        int32_t mHyperCount;
+        int32_t mPyramidShotDownCount;
+        int32_t mHyperBreakCount;
 
     protected:
         virtual void OnLocaleChange() override
@@ -734,13 +749,49 @@ namespace TH20 {
             ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
             ImGui::NextColumn();
             ImGui::Text("%9d", mBombCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_20_HYPER_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%9d", mHyperCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_20_HYPER_BREAK_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%9d", mHyperBreakCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_20_PYRAMID_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%9d", mPyramidShotDownCount);
+
+            
+            uintptr_t player_stats = RVA(0x1BA5F0);
+            auto lvR = *(int32_t*)(player_stats + 0x74);
+            auto lvB = *(int32_t*)(player_stats + 0x78);
+            auto lvY = *(int32_t*)(player_stats + 0x7C);
+            auto lvG = *(int32_t*)(player_stats + 0x80);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_20_PYRAMID_LV));
+            ImGui::NextColumn();
+            ImGui::TextColored(r, "%d", lvR);
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::Text("/");
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::TextColored(b, "%d", lvB);
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::Text("/");
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::TextColored(y, "%d", lvY);
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::Text("/");
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::TextColored(g, "%d", lvG);
+            ImGui::SameLine(0.0f, 0.0f);
         }
 
         virtual void OnPreUpdate() override
         {
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(RVA(0x1ba56c))) {
-                SetPosRel(950.0f / 1280.0f, 600.0f / 960.0f);
-                SetSizeRel(240.0f / 1280.0f, 0.0f);
+                SetPosRel(920.0f / 1280.0f, 600.0f / 960.0f);
+                SetSizeRel(300.0f / 1280.0f, 0.0f);
                 Open();
             } else {
                 Close();
@@ -1375,6 +1426,7 @@ namespace TH20 {
         constexpr unsigned int st6bsSpellHealthVal = 0x62c;
         constexpr unsigned int st6bsSpellSubCallOrd = 0x64c;
         constexpr unsigned int st6bsNonSubCallOrd = 0xc88 + 0x18;
+        constexpr unsigned int st6bsSetYPos = 0x324 + 0x14;
 
         
         constexpr unsigned int st7MBossCreateCall = 0x7324;
@@ -1817,6 +1869,7 @@ namespace TH20 {
             ecl << pair { st6bsNon2InvulnCallVal, (int16_t)0 }; // Disable Invincible
             ecl << pair { st6bsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
             ecl << pair { st6bsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st6bsSetYPos, (float)128.0f }; // Fix boss starting too high
             ECLJump(ecl, st6bsNon2PostProtectRange, st6bsNon2PostWait, 0); // Skip wait
             break;
         }
@@ -1844,6 +1897,7 @@ namespace TH20 {
             ecl << pair { st6bsNonSubCallOrd, (int8_t)0x33 }; // Set nonspell ID in sub call to '3'
             ecl << pair { st6bsNon3BossItemCallSomething, (int16_t)0 }; // Disable item drops
             ecl << pair { st6bsNon3PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st6bsSetYPos, (float)128.0f }; // Fix boss starting too high
             ECLJump(ecl, st6bsNon3PostLifeCount, st6bsNon3PostWait, 0); // Skip wait
             if (!thPracParam.dlg) {
                 ecl << pair { st6bsNon3InvulnCallVal, (int16_t)0 }; // Disable Invincible
@@ -1874,6 +1928,7 @@ namespace TH20 {
             ecl << pair { st6bsNon4InvulnCallVal, (int16_t)0 }; // Disable Invincible
             ecl << pair { st6bsNon4BossItemCallSomething, (int16_t)0 }; // Disable item drops
             ecl << pair { st6bsNon4PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st6bsSetYPos, (float)144.0f }; // Fix boss starting too high
             ECLJump(ecl, st6bsNon4PostProtectRange, st6bsNon4PostWait, 0); // Skip wait
             break;
         }
@@ -1902,6 +1957,7 @@ namespace TH20 {
             ecl << pair { st6bsNonSubCallOrd, (int8_t)0x35 }; // Set nonspell ID in sub call to '5'
             ecl << pair { st6bsNon5BossItemCallSomething, (int16_t)0 }; // Disable item drops
             ecl << pair { st6bsNon5PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st6bsSetYPos, (float)192.0f }; // Fix boss starting too high
             ECLJump(ecl, st6bsNon5PostLifeMarker, st6bsNon5PostWait, 0); // Skip wait
             if (!thPracParam.dlg) {
                 ecl << pair { st6bsNon5InvulnCallVal, (int16_t)0 }; // Disable Invincible
@@ -2325,6 +2381,11 @@ namespace TH20 {
             asm_call_rel<0x134D00, Fastcall>(*gauge_manager_ptr);
         }
 
+        if (thPracParam.stone_gauge_initial != 0)
+        {
+
+            *(int32_t*)(player_stats + 0x60) = std::min(5000,stoneGaugeInitialValue[thPracParam.stage] + thPracParam.stone_gauge_initial * 150);
+        }
         *(int32_t*)(player_stats + 0x5C) = (int32_t)(thPracParam.stone * *(int32_t*)(player_stats + 0x60));
         *(int32_t*)(player_stats + 0x64) = thPracParam.priorityR;
         *(int32_t*)(player_stats + 0x68) = thPracParam.priorityB;
@@ -2418,12 +2479,27 @@ namespace TH20 {
     HOOKSET_DEFINE(THInGameInfo)
     EHOOK_DY(th20_game_start, 0xbded2, 6, // gamestart-life set
         {
-            TH20InGameInfo::singleton().mBombCount = 0;
             TH20InGameInfo::singleton().mMissCount = 0;
+            TH20InGameInfo::singleton().mBombCount = 0;
+            TH20InGameInfo::singleton().mHyperBreakCount = 0;
+            TH20InGameInfo::singleton().mHyperCount = 0;
+            TH20InGameInfo::singleton().mPyramidShotDownCount = 0;
         })
     EHOOK_DY(th20_bomb_dec, 0xe1710, 1, // bomb dec
         {
             TH20InGameInfo::singleton().mBombCount++;
+        })
+    EHOOK_DY(th20_hyper_break, 0x132c4c, 1, 
+        {
+            TH20InGameInfo::singleton().mHyperBreakCount++;
+        })
+    EHOOK_DY(th20_hyper, 0x1338e3, 3,
+        {
+            TH20InGameInfo::singleton().mHyperCount++;
+        })
+    EHOOK_DY(th20_stone, 0x112077, 2,
+        {
+            TH20InGameInfo::singleton().mPyramidShotDownCount++;
         })
     HOOKSET_ENDDEF()
 

@@ -1154,6 +1154,11 @@
        "THPRAC_INGAMEINFO_15_RE_TIMES_STAGE":["第%d面Re数:","stage %d Re:","stage %d Re:"],
        "THPRAC_INGAMEINFO_15_RE_TIMES":["Re数:","Retry:","Retry:"],
 	   
+       "THPRAC_INGAMEINFO_20_HYPER_COUNT":["hyper:","hyper:","hyper:"],
+       "THPRAC_INGAMEINFO_20_HYPER_BREAK_COUNT":["撞hyper:","hyper break:","hyper break:"],
+       "THPRAC_INGAMEINFO_20_PYRAMID_COUNT":["金字塔击破:","pyramid shoot down:","pyramid shoot down:"],
+       "THPRAC_INGAMEINFO_20_PYRAMID_LV":["LV:","lv:","lv:"],
+	   
        "THPRAC_INGAMEINFO_06_SHOWDETAIL_HOTKEY":["详情","Details","Details"],
 	   "THPRAC_INGAMEINFO_06_SHOWDETAIL_PAGE":["游戏详情","Details","Details"],
 	   "THPRAC_INGAMEINFO_06_SHOWDETAIL_COLLAPSE":["游戏详情","Details","Details"],
@@ -10460,6 +10465,8 @@
     "glossary": {
       "TH20_HYPER": [ "异变攻击", "Hyper", "異変攻撃" ],
       "TH20_STONE_GAUGE": [ "异变敌", "Summon", "異変石" ],
+      "TH20_STONE_GAUGE_INITIAL": [ "异变敌槽长度", "Wonder Stone Gauge Length", "異変石計長" ],
+      "TH20_STONE_GAUGE_INITIAL_DESC": [ "等于击破的金字塔数", "Equals to pyramids shot down", "撃破のピラミッド数に相当します" ],
       "TH20_STONE_LEVEL_R": [ "红石等级", "LevelR", "レベルR" ],
       "TH20_STONE_PRIORITY_R": [ "优先红", "PriorityR", "優先R" ],
       "TH20_STONE_LEVEL_B": [ "蓝石等级", "LevelB", "レベルB" ],
