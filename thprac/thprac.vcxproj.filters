@@ -82,30 +82,6 @@
     <ClInclude Include="src\3rdParties\ImGui\imstb_textedit.h">
       <Filter>3rdParties\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\buffer.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\trampoline.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\hde32.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\hde64.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\pstdint.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\table32.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\src\hde\table64.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
-    <ClInclude Include="src\3rdParties\MinHook\include\MinHook.h">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClInclude>
     <ClInclude Include="src\3rdParties\MetroHash\metrohash128.h">
       <Filter>3rdParties\MetroHash</Filter>
     </ClInclude>
@@ -225,21 +201,6 @@
     <ClCompile Include="src\3rdParties\ImGui\imgui_widgets.cpp">
       <Filter>3rdParties\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\3rdParties\MinHook\src\buffer.c">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\MinHook\src\hook.c">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\MinHook\src\trampoline.c">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\MinHook\src\hde\hde32.c">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\MinHook\src\hde\hde64.c">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
     <ClCompile Include="src\3rdParties\MetroHash\metrohash128.cpp">
       <Filter>3rdParties\MetroHash</Filter>
     </ClCompile>
@@ -327,12 +288,6 @@
     <ClCompile Include="src\thprac\thprac_licence.cpp">
       <Filter>THPrac Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\3rdParties\MinHook\src\trampoline_new.c">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\MinHook\src\disassembler.c">
-      <Filter>3rdParties\MinHook</Filter>
-    </ClCompile>
     <ClCompile Include="src\3rdParties\ImGui\imgui_tables.cpp">
       <Filter>3rdParties\ImGui</Filter>
     </ClCompile>
@@ -344,30 +299,6 @@
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_version.cpp">
       <Filter>THPrac Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\distorm\src\decoder.c">
-      <Filter>3rdParties\distorm</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\distorm\src\distorm.c">
-      <Filter>3rdParties\distorm</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\distorm\src\instructions.c">
-      <Filter>3rdParties\distorm</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\distorm\src\insts.c">
-      <Filter>3rdParties\distorm</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\distorm\src\mnemonics.c">
-      <Filter>3rdParties\distorm</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\distorm\src\operands.c">
-      <Filter>3rdParties\distorm</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\distorm\src\prefix.c">
-      <Filter>3rdParties\distorm</Filter>
-    </ClCompile>
-    <ClCompile Include="src\3rdParties\distorm\src\textdefs.c">
-      <Filter>3rdParties\distorm</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_locale_def.cpp">
       <Filter>THPrac Utils</Filter>
@@ -388,6 +319,9 @@
       <Filter>THPrac Games</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_th19.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th20.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
   </ItemGroup>
