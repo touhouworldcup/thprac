@@ -1581,7 +1581,7 @@ namespace TH20 {
             ECLJump(ecl, st5PostMaple + stdInterruptSize, st5BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st5bsPrePushSpellID, st5bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
-            ecl << pair { st5bsSpellHealthVal, 3400 }; // Set correct health (set in skipped non)
+            ecl << pair { st5bsSpellHealthVal, 3200 }; // Set correct health (set in skipped non)
             ecl << pair { st5bsSpellSubCallOrd, (int8_t)0x33 }; // Set spell ID in sub call to '3'
             break;
         }
@@ -1590,7 +1590,7 @@ namespace TH20 {
             ECLJump(ecl, st5PostMaple + stdInterruptSize, st5BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st5bsPrePushSpellID, st5bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
-            ecl << pair { st5bsSpellHealthVal, 5000 }; // Set correct health (set in skipped non)
+            ecl << pair { st5bsSpellHealthVal, 3200 }; // Set correct health (set in skipped non)
             ecl << pair { st5bsSpellSubCallOrd, (int8_t)0x34 }; // Set spell ID in sub call to '4'
             break;
         }
