@@ -10,8 +10,12 @@ struct vec2f {
 
 namespace THPrac {
 namespace TH17 {
-    #define SpawnToken(goast, pos, ang) asm_call<0x00410380, Vectorcall>(GetMemContent<uintptr_t>(0x4B7684), UNUSED_DWORD, &pos, goast, UNUSED_FLOAT, UNUSED_FLOAT, ang)
-    #define AddGoast(goast_id) asm_call<0x40f980, Thiscall>(GetMemContent(0x4b7684), goast_id)
+    enum addrs {
+        GOAST_MANAGER_PTR = 0x4B7684,
+    };
+
+    #define SpawnToken(goast, pos, ang) asm_call<0x00410380, Vectorcall>(GetMemContent<uintptr_t>(GOAST_MANAGER_PTR), UNUSED_DWORD, &pos, goast, UNUSED_FLOAT, UNUSED_FLOAT, ang)
+    #define AddGoast(goast_id) asm_call<0x40f980, Thiscall>(GetMemContent(GOAST_MANAGER_PTR), goast_id)
 
     using std::pair;
     struct THPracParam {
@@ -1797,7 +1801,7 @@ namespace TH17 {
     EHOOK_DY(th17_window_mousedown, 0x46198b, 1, {
         auto& adv_opt = THAdvOptWnd::singleton();
 
-        if (GetMemContent(0x4b7684) && adv_opt.IsClosed() && adv_opt.mSelectedGoast) {
+        if (GetMemContent(GOAST_MANAGER_PTR) && GetMemContent(GOAST_MANAGER_PTR, 0xC) && adv_opt.IsClosed() && adv_opt.mSelectedGoast) {
             LPARAM lParam = GetMemContent(pCtx->Ebp + 0x14);
             HWND hWnd = (HWND)pCtx->Edx;
 

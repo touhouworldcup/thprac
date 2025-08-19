@@ -1,4 +1,4 @@
-## [简体中文](/README_CN.md)
+## [简体中文](/README_CN.md) [日本語](/README_JP.md)
 
 # **thprac**
 > thprac is a tool for practicing Touhou shmups.
@@ -121,6 +121,7 @@ Choosing "Exit" will now prompt you to save a replay.
 - Moving all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
 - English README.md: [Galagyy](https://github.com/Galagyy)
 - Chinese README.md translation: [TNT569](https://github.com/TNT569), [H-J-Granger](https://github.com/H-J-Granger)
+- Japanese README.md translation: [wefma](https://github.com/wefma)
 
 ## <a name="faq"></a> **Frequently Asked Questions (FAQ)**
 
@@ -207,4 +208,4 @@ Some tools, like "DX8 to DX9 Converter," conflict with VsyncPatch. Replay speed 
 ### Game-Specific
 
 #### What is "DDC - Marisa Laser Related"?
-This fixes the infamous Marisa laser desync bug in **Double Dealing Character (TH14)**.
+This fixes the infamous Marisa laser desync bug in **Double Dealing Character (TH14)**. Please refer to the original developer, Ack's [demonstration video on Bilibili](https://www.bilibili.com/video/av285566068) (in Chinese, [backup video link on YouTube](https://www.youtube.com/watch?v=Hkh_AEGHLto))

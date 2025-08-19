@@ -68,29 +68,7 @@ int GuiLauncherMain()
 
     int theme;
     if (LauncherSettingGet("theme", theme)) {
-        // LauncherSettingSet doesn't take int, only int&.
-        // Passing 0 will call the overload with const char*
-        int Sus = 0;
-        const char* theme_user = nullptr;
-        // LauncherSettingGet only accepts signed ints but I want to do an unsigned comparison
-        if ((unsigned int)theme > 2) {
-            if (LauncherSettingGet("theme_user", theme_user) && theme_user) {
-                std::wstring theme_path = LauncherGetDataDir() + L"themes\\" + utf8_to_utf16(theme_user);
-                if (!PathFileExistsW(theme_path.c_str())) {
-                    LauncherSettingSet("theme", Sus);
-                    theme = Sus;
-                }
-            } else {
-                LauncherSettingSet("theme", Sus);
-                theme = Sus;
-            }
-        }
-
-        if (theme_user) {
-            SetTheme(theme, utf8_to_utf16(theme_user).c_str());
-        } else {
-            SetTheme(theme);
-        }
+        SetTheme(theme);
     }
     LauncherPeekUpd();
     auto scale = LauncherWndGetScale();
@@ -105,11 +83,7 @@ int GuiLauncherMain()
         ImGui::SetNextWindowSize(ImVec2(960.0f * scale, 720.0f * scale), ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowBgAlpha(0.9f);
 
-        std::string wndTitleText = S(THPRAC_LAUNCHER);
-        if (LauncherIsChkingUpd()) {
-            wndTitleText += " // Checking for updates...";
-        }
-        wndTitleText = LauncherIsChkingUpd() ? S(THPRAC_LAUNCHER_CHECKING_UPDATE) : S(THPRAC_LAUNCHER);
+        std::string wndTitleText = LauncherIsChkingUpd() ? S(THPRAC_LAUNCHER_CHECKING_UPDATE) : S(THPRAC_LAUNCHER);
         wndTitleText += "###thprac_wnd";
         ImGui::Begin(wndTitleText.c_str(), &isOpen, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove, &isMinimize);
         if (!isOpen)

@@ -283,15 +283,11 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         }
         int theme;
         if (LauncherSettingGet("theme", theme)) {
-            const char* userThemeName;
-            if (LauncherSettingGet("theme_user", userThemeName))
-                SetTheme(theme, utf8_to_utf16(userThemeName).c_str());
-            else
-                SetTheme(theme);
+            SetTheme(theme);
         } else
             ImGui::StyleColorsDark();
     } else
-        ::ImGui::StyleColorsDark();
+        ImGui::StyleColorsDark();
     // Imgui settings
     io.IniFilename = nullptr;
 }
