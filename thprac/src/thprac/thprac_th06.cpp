@@ -9,20 +9,15 @@
 namespace THPrac {
 
 namespace TH06 {
-    static const GameManager* const GAME_MANAGER = (const GameManager* const)0x69bca0;
+    static GameManager* const GAME_MANAGER = (GameManager* const)0x69bca0;
 
-    enum ADDRS {
+    enum addrs {
         INPUT_ADDR = 0x69D904,
         INPUT_PREV_ADDR = 0x69D908,
     };
 
     bool THBGMTest();
     using std::pair;
-
-    /**
-     * @brief The instance of GameManager of th06. Always located in 0x69bca0.
-     */
-    GameManager* gameManager = (GameManager*)(0x69bca0);
     
     /**
      * @brief The enum used in th06 for the states of Supervisors, as used in 
@@ -369,8 +364,8 @@ namespace TH06 {
             case 1:
                 SetFade(0.8f, 0.1f);
                 Open();
-                mDiffculty = (int)(gameManager->difficulty);
-                mShotType = (int)(gameManager->shotType * 2) + gameManager->shotType;
+                mDiffculty = (int)(GAME_MANAGER->difficulty);
+                mShotType = (int)(GAME_MANAGER->shotType * 2) + GAME_MANAGER->shotType;
                 break;
             case 2:
                 break;
@@ -1471,7 +1466,7 @@ namespace TH06 {
             }
             break;
         case THPrac::TH06::TH06_ST6_MID2:
-            shot = (int)(gameManager->character * 2) + gameManager->shotType;
+            shot = (int)(GAME_MANAGER->character * 2) + GAME_MANAGER->shotType;
             if (shot > 1)
                 shot = 1099;
             else if (!shot)
@@ -2046,20 +2041,20 @@ namespace TH06 {
         THGuiPrac::singleton().State(4);
     })
     EHOOK_DY(th06_prac_menu_enter, 0x4373a3, 5, {
-        gameManager->currentStage = gameManager->menuCursorBackup = thPracParam.stage;
+        GAME_MANAGER->currentStage = GAME_MANAGER->menuCursorBackup = thPracParam.stage;
         if (thPracParam.stage == 6)
-            gameManager->difficulty = DIFFICULTY_EXTRA;
+            GAME_MANAGER->difficulty = DIFFICULTY_EXTRA;
         else
-            gameManager->difficulty = (Difficulty)supervisor->cfg.defaultDifficulty;
+            GAME_MANAGER->difficulty = (Difficulty)supervisor->cfg.defaultDifficulty;
     })
     EHOOK_DY(th06_pause_menu, 0x401b8f, 2, {
-        if (thPracParam.mode && (gameManager->isInReplay == 0)) {
+        if (thPracParam.mode && (GAME_MANAGER->isInReplay == 0)) {
             auto sig = THPauseMenu::singleton().PMState();
             if (sig == THPauseMenu::SIGNAL_RESUME) {
                 pCtx->Eip = 0x40223d;
             } else if (sig == THPauseMenu::SIGNAL_EXIT) {
                 supervisor->curState = SUPERVISOR_STATE_RESULTSCREEN_FROMGAME; // Set gamemode to result screen
-                gameManager->isInGameMenu = 0; // Close pause menu
+                GAME_MANAGER->isInGameMenu = 0; // Close pause menu
                 th06_result_screen_create.Enable();
             } else if (sig == THPauseMenu::SIGNAL_RESTART) {
                 pCtx->Eip = 0x40263c;
@@ -2097,29 +2092,29 @@ namespace TH06 {
 					mov dword ptr [69d714],eax
 					mov dword ptr [69d718],eax
 			*/
-            gameManager->livesRemaining = (int8_t)thPracParam.life;
-            gameManager->bombsRemaining = (int8_t)thPracParam.bomb;
-            gameManager->currentPower = (int16_t)thPracParam.power;
-            gameManager->guiScore = gameManager->score = (int32_t)thPracParam.score;
-            gameManager->grazeInStage = gameManager->grazeInTotal = (int32_t)thPracParam.graze;
-            gameManager->pointItemsCollectedInStage = gameManager->pointItemsCollected = (int16_t)thPracParam.point;
+            GAME_MANAGER->livesRemaining = (int8_t)thPracParam.life;
+            GAME_MANAGER->bombsRemaining = (int8_t)thPracParam.bomb;
+            GAME_MANAGER->currentPower = (int16_t)thPracParam.power;
+            GAME_MANAGER->guiScore = GAME_MANAGER->score = (int32_t)thPracParam.score;
+            GAME_MANAGER->grazeInStage = GAME_MANAGER->grazeInTotal = (int32_t)thPracParam.graze;
+            GAME_MANAGER->pointItemsCollectedInStage = GAME_MANAGER->pointItemsCollected = (int16_t)thPracParam.point;
             *(uint32_t*)(0x5a5fb0) = thPracParam.frame;
 
-            if (gameManager->difficulty != DIFFICULTY_EXTRA) {
+            if (GAME_MANAGER->difficulty != DIFFICULTY_EXTRA) {
                 if (thPracParam.score >= 60000000)
-                    gameManager->extraLives = 4;
+                    GAME_MANAGER->extraLives = 4;
                 else if (thPracParam.score >= 40000000)
-                    gameManager->extraLives = 3;
+                    GAME_MANAGER->extraLives = 3;
                 else if (thPracParam.score >= 20000000)
-                    gameManager->extraLives = 2;
+                    GAME_MANAGER->extraLives = 2;
                 else if (thPracParam.score >= 10000000)
-                    gameManager->extraLives = 1;
+                    GAME_MANAGER->extraLives = 1;
             }
 
-            gameManager->rank = (int32_t)thPracParam.rank;
+            GAME_MANAGER->rank = (int32_t)thPracParam.rank;
             if (thPracParam.rankLock) {
-                gameManager->maxRank = (int32_t)thPracParam.rank;
-                gameManager->minRank = (int32_t)thPracParam.rank;
+                GAME_MANAGER->maxRank = (int32_t)thPracParam.rank;
+                GAME_MANAGER->minRank = (int32_t)thPracParam.rank;
             }
 
             THSectionPatch();
@@ -2160,7 +2155,7 @@ namespace TH06 {
     PATCH_DY(th06_preplay_1, 0x42d835, "09")
     EHOOK_DY(th06_preplay_2, 0x418ef9, 5, {
         if (thPracParam.mode && !THGuiRep::singleton().mRepStatus) {
-            gameManager->guiScore = gameManager->score;
+            GAME_MANAGER->guiScore = GAME_MANAGER->score;
             pCtx->Eip = 0x418f0e;
         }
     })
