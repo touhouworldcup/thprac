@@ -1177,6 +1177,14 @@ namespace TH20 {
         constexpr unsigned int st3bsSpellSubCallOrd = 0x570;
         constexpr unsigned int st3bsNonSubCallOrd = 0x6d0;
 
+        constexpr unsigned int st4MBossCreateCall = 0xadbc;
+        constexpr unsigned int st4mbsPreChargeAnim = 0x310;
+        constexpr unsigned int st4mbsPostChargeAnim = 0x3a8;
+        constexpr unsigned int st4mbsPreWait = 0x3c8;
+        constexpr unsigned int st4mbsPostWait = 0x3dc;
+        constexpr unsigned int st4mbsPreWait2 = 0x47c;
+        constexpr unsigned int st4mbsPostWait2 = 0x490;
+
         constexpr unsigned int st4BossCreateCall = 0xaed4;
         constexpr unsigned int st4bsPrePushSpellID = 0x41c;
         constexpr unsigned int st4bsPostNotSpellPracCheck = 0x504;
@@ -1409,12 +1417,14 @@ namespace TH20 {
         }
 
         case THPrac::TH20::TH20_ST4_MID1: {
-            constexpr unsigned int st4MBossCreateCall = 0xadbc;
             ECLJump(ecl, st4PostMaple, st4MBossCreateCall, 60, 90);
+            ecl.SetFile(3);
+            ECLJump(ecl, st4mbsPreChargeAnim, st4mbsPostChargeAnim, 0);
+            ECLJump(ecl, st4mbsPreWait, st4mbsPostWait, 0);
+            ECLJump(ecl, st4mbsPreWait2, st4mbsPostWait2, 0);
             break;
         }
         case THPrac::TH20::TH20_ST4_MID2: {
-            constexpr unsigned int st4MBossCreateCall = 0xadbc;
             constexpr unsigned int st4mbsNonSubCallOrd = 0x4a4 + 0x19;
             constexpr unsigned int st4mbsNon2BossItemCallSomething = 0xd40 + 0x4;
             constexpr unsigned int st4mbsNon2PlaySoundSomething = 0xe6c + 0x4;
@@ -1423,6 +1433,7 @@ namespace TH20 {
 
             ECLJump(ecl, st4PostMaple, st4MBossCreateCall, 60, 90);
             ecl.SetFile(3);
+            ECLJump(ecl, st4mbsPreChargeAnim, st4mbsPostChargeAnim, 0);
             ecl << pair { st4mbsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
             ecl << pair { st4mbsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
             ecl << pair { st4mbsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
@@ -1514,7 +1525,18 @@ namespace TH20 {
 
         case THPrac::TH20::TH20_ST5_MID1: {
             constexpr unsigned int st5MBossCreateCall = 0x56d4;
-            ECLJump(ecl, st5PostMaple, st5MBossCreateCall, 60, 90);
+            constexpr unsigned int st5mbsPreChargeAnim = 0x33c;
+            constexpr unsigned int st5mbsPostChargeAnim = 0x3d4;
+            constexpr unsigned int st5mbsPreWait = 0x3f4;
+            constexpr unsigned int st5mbsPostWait = 0x408;
+            constexpr unsigned int st5mbsPreWait2 = 0x474;
+            constexpr unsigned int st5mbsPostWait2 = 0x488;
+
+            ECLJump(ecl, st5PostMaple, st5MBossCreateCall, 0);
+            ecl.SetFile(3);
+            ECLJump(ecl, st5mbsPreChargeAnim, st5mbsPostChargeAnim, 0);
+            ECLJump(ecl, st5mbsPreWait, st5mbsPostWait, 0);
+            ECLJump(ecl, st5mbsPreWait2, st5mbsPostWait2, 0);
             break;
         }
         case THPrac::TH20::TH20_ST5_BOSS1: {
