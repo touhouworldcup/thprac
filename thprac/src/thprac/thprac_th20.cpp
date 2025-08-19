@@ -2230,7 +2230,7 @@ namespace TH20 {
             Gui::INGAGME_INPUT_GEN2, RVA(0x1B88C0), RVA(0x1B88B8), 0,
             -2, *(float*)RVA(0x1B8818), 0.0f);
 
-        SetDpadHook(0x227B1, 6);
+        SetDpadHook(0x22651, 6);
 
         // Gui components creation
         THGuiPrac::singleton();
