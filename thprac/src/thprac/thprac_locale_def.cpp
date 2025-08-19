@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1041]
+const char* th_glossary_str[3][1043]
 {
     {
         "",
@@ -698,6 +698,8 @@ const char* th_glossary_str[3][1041]
         "兽王园",
         "灵梦\0魔理沙\0咲夜\0蓝\0阿吽\0娜兹玲\0清兰\0燐\0典\0猯藏\0八千慧\0早鬼\0尤魔\0萃香\0悟空\0慧之子\0血枪\0日狭美\0残无\0\0",
         "灵梦\0魔理沙\0咲夜\0蓝\0阿吽\0娜兹玲\0清兰\0燐\0典\0猯藏\0八千慧\0早鬼\0尤魔\0萃香\0美天\0慧之子\0血枪\0日狭美\0残无\0\0",
+        "锦上京",
+        "灵梦+绯红恶魔\0灵梦+生物赤红\0灵梦+冰雪花簇\0灵梦+蓝色季节\0灵梦+黄色地心\0灵梦+不朽明月\0灵梦+兽之冷硬\0灵梦+神道之风\0魔理沙+绯红恶魔\0魔理沙+生物赤红\0魔理沙+冰雪花簇\0魔理沙+蓝色季节\0魔理沙+黄色地心\0魔理沙+不朽明月\0魔理沙+兽之冷硬\0魔理沙+神道之风\0\0",
         "游戏",
         "应用thprac",
         "默认启动此游戏",
@@ -1741,6 +1743,8 @@ const char* th_glossary_str[3][1041]
         "th19",
         "Reimu\0Marisa\0Sanae\0Ran\0Aunn\0Nazrin\0Seiran\0Orin\0Tsukasa\0Mamizou\0Yachie\0Saki\0Yuuma\0Suika\0Goku\0Enoko\0Chiyari\0Hisami\0Zanmu\0\0",
         "Reimu\0Marisa\0Sanae\0Ran\0Aunn\0Nazrin\0Seiran\0Orin\0Tsukasa\0Mamizou\0Yachie\0Saki\0Yuuma\0Suika\0Biten\0Enoko\0Chiyari\0Hisami\0Zanmu\0\0",
+        "th20",
+        "Reimu+Scarlet Devil\0Reimu+Creature Red\0Reimu+Snow Blossom\0Reimu+Blue Season\0Reimu+Yellow Subterranean\0Reimu+Imperishable Moon\0Reimu+Beast Hardness\0Reimu+Shintoism Wind\0Marisa+Scarlet Devil\0Marisa+Creature Red\0Marisa+Snow Blossom\0Marisa+Blue Season\0Marisa+Yellow Subterranean\0Marisa+Imperishable Moon\0Marisa+Beast Hardness\0Marisa+Shintoism Wind\0\0",
         "Games",
         "Apply thprac",
         "Start this game by default",
@@ -2784,6 +2788,8 @@ const char* th_glossary_str[3][1041]
         "獣王園",
         "霊梦\0魔理沙\0咲夜\0藍\0阿吽\0ナズーリン\0清蘭\0燐\0典\0マミゾウ\0八千慧\0早鬼\0尤魔\0萃香\0悟空\0慧ノ子\0ちやり\0日狭美\0残無\0\0",
         "霊梦\0魔理沙\0咲夜\0藍\0阿吽\0ナズーリン\0清蘭\0燐\0典\0マミゾウ\0八千慧\0早鬼\0尤魔\0萃香\0美天\0慧ノ子\0ちやり\0日狭美\0残無\0\0",
+        "錦上京",
+        "霊夢+スカーレットデビル\0霊夢+クリーチャーレッド\0霊夢+スノーブロッサム\0霊夢+ブルーシーズン\0霊夢+イエローサブタレイニアン\0霊夢+インペリシャブルムーン\0霊夢+ビーストハードネス\0霊夢+シントイズムウィンド\0魔理沙+スカーレットデビル\0魔理沙+クリーチャーレッド\0魔理沙+スノーブロッサム\0魔理沙+ブルーシーズン\0魔理沙+イエローサブタレイニアン\0魔理沙+インペリシャブルムーン\0魔理沙+ビーストハードネス\0魔理沙+シントイズムウィンド\0\0",
         "ゲーム",
         "thpracを適用する",
         "デフォルトでこのゲームを開始します",
@@ -21673,7 +21679,7 @@ const th_glossary_t TH20_RAGE[3]
 
 }
 
-const wchar_t __thprac_loc_range_zh[3265] {
+const wchar_t __thprac_loc_range_zh[3269] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -22734,6 +22740,7 @@ const wchar_t __thprac_loc_range_zh[3265] {
     0x7814, 0x7814,
     0x7834, 0x7834,
     0x7840, 0x7840,
+    0x786c, 0x786c,
     0x786e, 0x786e,
     0x788c, 0x788c,
     0x788e, 0x788e,
@@ -22798,6 +22805,7 @@ const wchar_t __thprac_loc_range_zh[3265] {
     0x7ba1, 0x7ba1,
     0x7bad, 0x7bad,
     0x7bb1, 0x7bb1,
+    0x7c07, 0x7c07,
     0x7c73, 0x7c73,
     0x7c7b, 0x7c7b,
     0x7c89, 0x7c89,

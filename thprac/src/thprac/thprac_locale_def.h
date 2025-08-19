@@ -698,6 +698,8 @@ enum th_glossary_t
     THPRAC_GAMEROLL_TH19,
     THPRAC_GAMEROLL_TH19_EASTER_EGG_SHOTTYPES,
     THPRAC_GAMEROLL_TH19_SHOTTYPES,
+    THPRAC_GAMEROLL_TH20,
+    THPRAC_GAMEROLL_TH20_SHOTTYPES,
     THPRAC_GAMES,
     THPRAC_GAMES_APPLY_THPRAC,
     THPRAC_GAMES_DEFAULT_LAUNCH,
@@ -1053,7 +1055,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1041];
+extern const char* th_glossary_str[3][1043];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2677,7 +2679,7 @@ extern const th_glossary_t TH20_RAGE[3];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3265];
+extern const wchar_t __thprac_loc_range_zh[3269];
 
 extern const wchar_t __thprac_loc_range_en[15];
 

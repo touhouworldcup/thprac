@@ -433,6 +433,7 @@
       "THPRAC_GAMEROLL_TH18": ["虹龙洞", "th18", "虹龍洞"],
       "THPRAC_GAMEROLL_TH185": ["弹幕狂们的黑市", "th185", "バレットフィリア達の闇市場"],
       "THPRAC_GAMEROLL_TH19": ["兽王园", "th19", "獣王園"],
+      "THPRAC_GAMEROLL_TH20": ["锦上京", "th20", "錦上京"],
 
       "THPRAC_GAMEROLL_EMPTY_SHOTTYPES": ["", "", ""],
       "THPRAC_GAMEROLL_TH02_SHOTTYPES": ["灵梦A\\0灵梦B\\0灵梦C\\0\\0", "Reimu A\\0Reimu B\\0Reimu C\\0\\0", "靈梦A\\0靈梦B\\0靈梦C\\0\\0"],
@@ -557,6 +558,11 @@
         "灵梦\\0魔理沙\\0咲夜\\0蓝\\0阿吽\\0娜兹玲\\0清兰\\0燐\\0典\\0猯藏\\0八千慧\\0早鬼\\0尤魔\\0萃香\\0悟空\\0慧之子\\0血枪\\0日狭美\\0残无\\0\\0",
         "Reimu\\0Marisa\\0Sanae\\0Ran\\0Aunn\\0Nazrin\\0Seiran\\0Orin\\0Tsukasa\\0Mamizou\\0Yachie\\0Saki\\0Yuuma\\0Suika\\0Goku\\0Enoko\\0Chiyari\\0Hisami\\0Zanmu\\0\\0",
         "霊梦\\0魔理沙\\0咲夜\\0藍\\0阿吽\\0ナズーリン\\0清蘭\\0燐\\0典\\0マミゾウ\\0八千慧\\0早鬼\\0尤魔\\0萃香\\0悟空\\0慧ノ子\\0ちやり\\0日狭美\\0残無\\0\\0"
+      ],
+      "THPRAC_GAMEROLL_TH20_SHOTTYPES": [
+        "灵梦+绯红恶魔\\0灵梦+生物赤红\\0灵梦+冰雪花簇\\0灵梦+蓝色季节\\0灵梦+黄色地心\\0灵梦+不朽明月\\0灵梦+兽之冷硬\\0灵梦+神道之风\\0魔理沙+绯红恶魔\\0魔理沙+生物赤红\\0魔理沙+冰雪花簇\\0魔理沙+蓝色季节\\0魔理沙+黄色地心\\0魔理沙+不朽明月\\0魔理沙+兽之冷硬\\0魔理沙+神道之风\\0\\0",
+        "Reimu+Scarlet Devil\\0Reimu+Creature Red\\0Reimu+Snow Blossom\\0Reimu+Blue Season\\0Reimu+Yellow Subterranean\\0Reimu+Imperishable Moon\\0Reimu+Beast Hardness\\0Reimu+Shintoism Wind\\0Marisa+Scarlet Devil\\0Marisa+Creature Red\\0Marisa+Snow Blossom\\0Marisa+Blue Season\\0Marisa+Yellow Subterranean\\0Marisa+Imperishable Moon\\0Marisa+Beast Hardness\\0Marisa+Shintoism Wind\\0\\0",
+        "霊夢+スカーレットデビル\\0霊夢+クリーチャーレッド\\0霊夢+スノーブロッサム\\0霊夢+ブルーシーズン\\0霊夢+イエローサブタレイニアン\\0霊夢+インペリシャブルムーン\\0霊夢+ビーストハードネス\\0霊夢+シントイズムウィンド\\0魔理沙+スカーレットデビル\\0魔理沙+クリーチャーレッド\\0魔理沙+スノーブロッサム\\0魔理沙+ブルーシーズン\\0魔理沙+イエローサブタレイニアン\\0魔理沙+インペリシャブルムーン\\0魔理沙+ビーストハードネス\\0魔理沙+シントイズムウィンド\\0\\0"
       ],
 
       "THPRAC_UNHANDLED_EXCEPTION": [
