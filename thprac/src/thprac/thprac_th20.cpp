@@ -2262,14 +2262,14 @@ namespace TH20 {
     EHOOK_DY(th20_inf_lives, 0xe1288, 6,
         {
             int life_next = pCtx->Ecx;
-            if (life_next >= *(DWORD*)(RVA(0x1BA6A8)))// life increased
+            if (life_next >= *(int32_t*)(RVA(0x1BA6A8)))// life increased
                 return;
             TH20InGameInfo::singleton().mMissCount++;
             if ((*(THOverlay::singleton().mInfLives))) {
                 if (!g_adv_igi_options.map_inf_life_to_no_continue) {
                     pCtx->Eip = RVA(0xe128e);
                 } else {
-                    if (*(DWORD*)(RVA(0x1BA6A8)) == 0)
+                    if (*(int32_t*)(RVA(0x1BA6A8)) == 0)
                         pCtx->Eip = RVA(0xe128e);
                 }
             }
