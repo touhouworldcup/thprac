@@ -1206,6 +1206,7 @@ namespace TH20 {
         constexpr unsigned int st6bsSpellHealthVal = 0x62c;
         constexpr unsigned int st6bsSpellSubCallOrd = 0x64c;
         constexpr unsigned int st6bsNonSubCallOrd = 0xc88 + 0x18;
+        constexpr unsigned int st6bsSetYPos = 0x324 + 0x14;
 
         constexpr unsigned int st7MBossCreateCall = 0x7324;
         constexpr unsigned int st7MBossPreMsg = 0x7354;
@@ -1220,7 +1221,7 @@ namespace TH20 {
         constexpr unsigned int st7bsSpellHealthVal = 0x6b8 + 0x10;
         constexpr unsigned int st7bsSpellSubCallOrd = 0x6cc + 0x1c;
         constexpr unsigned int st7bsNonSubCallOrd = 0x1010 + 0x18;
-
+        constexpr unsigned int st7bsSetYPos = 0x3c0 + 0x14;
 
         switch (section) {
         case THPrac::TH20::TH20_ST1_MID1: {
@@ -1644,6 +1645,7 @@ namespace TH20 {
             ECLStdExec(ecl, st6PostMaple, 1, 1);
             ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
             ecl.SetFile(2);
+            ecl << pair { st6bsSetYPos, (float)128.0f }; // Fix boss starting too high
             ecl << pair { st6bsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
             ecl << pair { st6bsNon2InvulnCallVal, (int16_t)0 }; // Disable Invincible
             ecl << pair { st6bsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
@@ -1672,6 +1674,7 @@ namespace TH20 {
             ECLStdExec(ecl, st6PostMaple, 1, 1);
             ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
             ecl.SetFile(2);
+            ecl << pair { st6bsSetYPos, (float)128.0f }; // Fix boss starting too high
             ecl << pair { st6bsNonSubCallOrd, (int8_t)0x33 }; // Set nonspell ID in sub call to '3'
             ecl << pair { st6bsNon3BossItemCallSomething, (int16_t)0 }; // Disable item drops
             ecl << pair { st6bsNon3PlaySoundSomething, (int16_t)0 }; // Disable sound effect
@@ -1701,6 +1704,7 @@ namespace TH20 {
             ECLStdExec(ecl, st6PostMaple, 1, 1);
             ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
             ecl.SetFile(2);
+            ecl << pair { st6bsSetYPos, (float)144.0f }; // Fix boss starting too high
             ecl << pair { st6bsNonSubCallOrd, (int8_t)0x34 }; // Set nonspell ID in sub call to '4'
             ecl << pair { st6bsNon4InvulnCallVal, (int16_t)0 }; // Disable Invincible
             ecl << pair { st6bsNon4BossItemCallSomething, (int16_t)0 }; // Disable item drops
@@ -1730,6 +1734,7 @@ namespace TH20 {
             ECLStdExec(ecl, st6PostMaple, 1, 1);
             ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
             ecl.SetFile(2);
+            ecl << pair { st6bsSetYPos, (float)192.0f }; // Fix boss starting too high
             ecl << pair { st6bsNonSubCallOrd, (int8_t)0x35 }; // Set nonspell ID in sub call to '5'
             ecl << pair { st6bsNon5BossItemCallSomething, (int16_t)0 }; // Disable item drops
             ecl << pair { st6bsNon5PlaySoundSomething, (int16_t)0 }; // Disable sound effect
@@ -1835,6 +1840,7 @@ namespace TH20 {
             ECLStdExec(ecl, st7PostMaple, 1, 1);
             ECLJump(ecl, st7PostMaple + stdInterruptSize, st7BossCreateCall, 60);
             ecl.SetFile(2);
+            ecl << pair { st7bsSetYPos, (float)128.0f }; // Fix boss starting too high
             ecl << pair { st7bsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
             ecl << pair { st7bsNon2InvulnCallVal, (int16_t)0 }; // Disable Invincible
             ecl << pair { st7bsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
@@ -1860,6 +1866,7 @@ namespace TH20 {
             ECLStdExec(ecl, st7PostMaple, 1, 1);
             ECLJump(ecl, st7PostMaple + stdInterruptSize, st7BossCreateCall, 60);
             ecl.SetFile(2);
+            ecl << pair { st7bsSetYPos, (float)128.0f }; // Fix boss starting too high
             ecl << pair { st7bsNonSubCallOrd, (int8_t)0x33 }; // Set nonspell ID in sub call to '3'
             ecl << pair { st7bsNon3InvulnCallVal, (int16_t)0 }; // Disable Invincible
             ecl << pair { st7bsNon3BossItemCallSomething, (int16_t)0 }; // Disable item drops
@@ -1885,6 +1892,7 @@ namespace TH20 {
             ECLStdExec(ecl, st7PostMaple, 1, 1);
             ECLJump(ecl, st7PostMaple + stdInterruptSize, st7BossCreateCall, 60);
             ecl.SetFile(2);
+            ecl << pair { st7bsSetYPos, (float)128.0f }; // Fix boss starting too high
             ecl << pair { st7bsNonSubCallOrd, (int8_t)0x34 }; // Set nonspell ID in sub call to '4'
             ecl << pair { st7bsNon4InvulnCallVal, (int16_t)0 }; // Disable Invincible
             ecl << pair { st7bsNon4BossItemCallSomething, (int16_t)0 }; // Disable item drops
@@ -1910,6 +1918,7 @@ namespace TH20 {
             ECLStdExec(ecl, st7PostMaple, 1, 1);
             ECLJump(ecl, st7PostMaple + stdInterruptSize, st7BossCreateCall, 60);
             ecl.SetFile(2);
+            ecl << pair { st7bsSetYPos, (float)128.0f }; // Fix boss starting too high
             ecl << pair { st7bsNonSubCallOrd, (int8_t)0x35 }; // Set nonspell ID in sub call to '5'
             ecl << pair { st7bsNon5InvulnCallVal, (int16_t)0 }; // Disable Invincible
             ecl << pair { st7bsNon5BossItemCallSomething, (int16_t)0 }; // Disable item drops
@@ -1936,6 +1945,7 @@ namespace TH20 {
             ECLStdExec(ecl, st7PostMaple, 1, 1);
             ECLJump(ecl, st7PostMaple + stdInterruptSize, st7BossCreateCall, 60);
             ecl.SetFile(2);
+            ecl << pair { st7bsSetYPos, (float)128.0f }; // Fix boss starting too high
             ecl << pair { st7bsNonSubCallOrd, (int8_t)0x36 }; // Set nonspell ID in sub call to '6'
             ecl << pair { st7bsNon6InvulnCallVal, (int16_t)0 }; // Disable Invincible
             ecl << pair { st7bsNon6BossItemCallSomething, (int16_t)0 }; // Disable item drops
@@ -1962,6 +1972,7 @@ namespace TH20 {
             ECLStdExec(ecl, st7PostMaple, 1, 1);
             ECLJump(ecl, st7PostMaple + stdInterruptSize, st7BossCreateCall, 60);
             ecl.SetFile(2);
+            ecl << pair { st7bsSetYPos, (float)128.0f }; // Fix boss starting too high
             ecl << pair { st7bsNonSubCallOrd, (int8_t)0x37 }; // Set nonspell ID in sub call to '7'
             ecl << pair { st7bsNon7InvulnCallVal, (int16_t)0 }; // Disable Invincible
             ecl << pair { st7bsNon7BossItemCallSomething, (int16_t)0 }; // Disable item drops
@@ -1988,6 +1999,7 @@ namespace TH20 {
             ECLStdExec(ecl, st7PostMaple, 1, 1);
             ECLJump(ecl, st7PostMaple + stdInterruptSize, st7BossCreateCall, 60);
             ecl.SetFile(2);
+            ecl << pair { st7bsSetYPos, (float)128.0f }; // Fix boss starting too high
             ecl << pair { st7bsNonSubCallOrd, (int8_t)0x38 }; // Set nonspell ID in sub call to '8'
             ecl << pair { st7bsNon8InvulnCallVal, (int16_t)0 }; // Disable Invincible
             ecl << pair { st7bsNon8BossItemCallSomething, (int16_t)0 }; // Disable item drops

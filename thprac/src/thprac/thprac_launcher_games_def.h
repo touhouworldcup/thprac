@@ -832,6 +832,14 @@ static GameRoll gGameRoll[] = {
         THPRAC_GAMEROLL_TH19_SHOTTYPES,
         "",
         4
+    },
+    {
+        "th20",
+        THPRAC_GAMEROLL_TH20,
+        ROLL_MAIN,
+        THPRAC_GAMEROLL_TH20_SHOTTYPES,
+        "",
+        4
     }
 };
 #pragma endregion
