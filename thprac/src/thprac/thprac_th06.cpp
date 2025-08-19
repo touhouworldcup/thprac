@@ -20,123 +20,9 @@ namespace TH06 {
     using std::pair;
     
     /**
-     * @brief The enum used in th06 for the states of Supervisors, as used in 
-     *        struct `Supervisor`. 
-     * @warning DON'T change the fields unless ZUN change his corresponding 
-     *          code in th06.
-     * @details The code is from https://github.com/happyhavoc/th06/blob/master/src/GameManager.hpp .
-     */
-    enum SupervisorState : int32_t {
-        SUPERVISOR_STATE_INIT,
-        SUPERVISOR_STATE_MAINMENU,
-        SUPERVISOR_STATE_GAMEMANAGER,
-        SUPERVISOR_STATE_GAMEMANAGER_REINIT,
-        SUPERVISOR_STATE_EXITSUCCESS,
-        SUPERVISOR_STATE_EXITERROR,
-        SUPERVISOR_STATE_RESULTSCREEN,
-        SUPERVISOR_STATE_RESULTSCREEN_FROMGAME,
-        SUPERVISOR_STATE_MAINMENU_REPLAY,
-        SUPERVISOR_STATE_MUSICROOM,
-        SUPERVISOR_STATE_ENDING,
-    };
-    
-    /**
-     * @brief The struct used in th06 for the configuration, as used in 
-     *        struct `Supervisor`. 
-     * @warning DON'T change the fields unless ZUN change his corresponding 
-     *          code in th06.
-     * @details The code is from https://github.com/happyhavoc/th06/blob/master/src/GameManager.hpp .
-     */
-    struct GameConfiguration {
-        int8_t controllerMapping[0x14]; // 0x0, of type ControllerMapping but unused
-        int32_t version; // 0x14, always 0x102 for 1.02
-        uint8_t lifeCount; // 0x18, starting lives
-        uint8_t bombCount; // 0x19, starting bombs
-        uint8_t colorMode16bit; // 0x1a
-        uint8_t musicMode; // 0x1b
-        uint8_t playSounds; // 0x1c
-        uint8_t defaultDifficulty; // 0x1d
-        uint8_t windowed; // 0x1e
-        uint8_t frameskipConfig; // 0x1f, 0 = fullspeed, 1 = 1/2 speed, 2 = 1/4 speed
-        int16_t padXAxis; // 0x20
-        int16_t padYAxis; // 0x22
-        int8_t unk[16]; // 0x24
-        uint32_t opts; // 0x34, GameConfigOpts bitfield
-    };
-
-    /**
-     * @brief The struct used in th06 for supervisoring.
-     * @warning DON'T change the fields unless ZUN change his corresponding 
-     *          code in th06.
-     * @details The code is from https://github.com/happyhavoc/th06/blob/master/src/GameManager.hpp ,
-     *          edited.
-     */
-    struct Supervisor {
-        typedef char Pbg3ArchiveName[32];
-
-        HINSTANCE hInstance; // 0x0
-        PDIRECT3D8 d3dIface; // 0x4
-        PDIRECT3DDEVICE8 d3dDevice; // 0x8
-        LPDIRECTINPUT8 dinputIface; // 0xc
-        LPDIRECTINPUTDEVICE8A keyboard; // 0x10
-        LPDIRECTINPUTDEVICE8A controller; // 0x14
-        DIDEVCAPS controllerCaps; // 0x18
-        HWND hwndGameWindow; // 0x44
-        D3DXMATRIX viewMatrix; // 0x48
-        D3DXMATRIX projectionMatrix; // 0x88
-        D3DVIEWPORT8 viewport; // 0xc8
-        D3DPRESENT_PARAMETERS presentParameters; // 0xe0
-        GameConfiguration cfg; // 0x114
-        GameConfiguration defaultConfig; // 0x14c
-        int32_t calcCount; // 0x184
-        SupervisorState wantedState; // 0x188
-        SupervisorState curState; // 0x18c
-        SupervisorState wantedState2; // 0x190
-
-        int32_t unk194; // 0x194
-
-        /**
-         * @brief with offset 0x198, unknown field but used several times in 
-         *        existing code.
-         * @details labeled as __frames_to_disable_something__see_0x419f66 in 
-         *          https://github.com/exphp-share/th-re-data/blob/master/data/th06.v1.02h/type-structs-own.json .
-         *          This seems to be related to redrawing the background outside 
-         *          of danmaku playing field (the one with nearly pure grey 
-         *          colour). Pressing Escape seems to set it to 3, maybe causing 
-         *          it to redraw for 3 frames. We set it to 3 several times in 
-         *          our code, too.
-         */
-        int32_t unk198;
-
-        int32_t isInEnding; // 0x19c, is a bool
-
-        int32_t vsyncEnabled; // 0x1a0
-        int32_t lastFrameTime; // 0x1a4
-        float effectiveFramerateMultiplier; // 0x1a8
-        float framerateMultiplier; // 0x1ac
-
-        void* midiOutput; // 0x1b0, should be MidiOutput* in happyhavoc/th06
-
-        float unk1b4; // 0x1b4
-        float unk1b8; // 0x1b8
-
-        void* pbg3Archives[16]; // 0x1bc, should be Pbg3Archive* in happyhavoc/th06
-        Pbg3ArchiveName pbg3ArchiveNames[16]; // 0x1fc
-
-        uint8_t hasD3dHardwareVertexProcessing; // 0x3fc
-        uint8_t lockableBackbuffer; // 0x3fd
-        uint8_t colorMode16Bits; // 0x3fe
-        int8_t offset_3ff; // 0x3ff
-
-        uint32_t startupTimeBeforeMenuMusic; // 0x400
-        D3DCAPS8 d3dCaps; // 0x404
-        // 0x4d8
-    };
-    static_assert(sizeof(Supervisor) == 0x4d8);
-    /**
      * @brief The instance of Supervisor of th06. Always located in 0x6c6d18.
      */
-    Supervisor* supervisor = (Supervisor*)(0x6c6d18);
+    Supervisor* const supervisor = (Supervisor* const)(0x6c6d18);
 
     struct THPracParam {
         int32_t mode;
@@ -298,7 +184,7 @@ namespace TH06 {
                     Open();
                 } else {
                     Close();
-                    supervisor->unk198 = 3;
+                    supervisor->RedrawBackground();
                 }
             }
         }
@@ -1021,7 +907,7 @@ namespace TH06 {
         }
         void ContentUpdate()
         {
-            supervisor->unk198 = 3;
+            supervisor->RedrawBackground();
             ImGui::TextUnformatted(S(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
