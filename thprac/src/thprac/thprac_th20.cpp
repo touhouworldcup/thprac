@@ -2113,10 +2113,10 @@ namespace TH20 {
             pCtx->Eip = RVA(0x28DD5);
         }
     })
-    EHOOK_DY(th20_everlasting_bgm_2, 0xE5CD7, 5, {
+    EHOOK_DY(th20_everlasting_bgm_2, 0xE5C91, 5, {
         bool el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && (thPracParam.mode == 1) && thPracParam.section;
         if (el_switch)
-            pCtx->Eip = RVA(0xE5CE8);
+            pCtx->Eip = RVA(0xE5CF7);
     })
     EHOOK_DY(th20_patch_main, 0xBBD56, 1, {
         if (thPracParam.mode == 1) {
