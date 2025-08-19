@@ -663,6 +663,7 @@ namespace TH20 {
         int32_t mHyperCount;
         int32_t mPyramidShotDownCount;
         int32_t mHyperBreakCount;
+        int32_t mHyperBreakCountY1;
 
     protected:
         virtual void OnLocaleChange() override
@@ -756,7 +757,12 @@ namespace TH20 {
             ImGui::NextColumn();
             ImGui::Text(S(THPRAC_INGAMEINFO_20_HYPER_BREAK_COUNT));
             ImGui::NextColumn();
-            ImGui::Text("%9d", mHyperBreakCount);
+            if (main_stone == 4) // yellow 1
+            {
+                ImGui::TextColored(y, "%9d", mHyperBreakCount+mHyperBreakCountY1);
+            }else{
+                ImGui::Text("%9d", mHyperBreakCount);
+            }
             ImGui::NextColumn();
             ImGui::Text(S(THPRAC_INGAMEINFO_20_PYRAMID_COUNT));
             ImGui::NextColumn();
@@ -2383,7 +2389,6 @@ namespace TH20 {
 
         if (thPracParam.stone_gauge_initial != 0)
         {
-
             *(int32_t*)(player_stats + 0x60) = std::min(5000,stoneGaugeInitialValue[thPracParam.stage] + thPracParam.stone_gauge_initial * 150);
         }
         *(int32_t*)(player_stats + 0x5C) = (int32_t)(thPracParam.stone * *(int32_t*)(player_stats + 0x60));
@@ -2484,6 +2489,7 @@ namespace TH20 {
             TH20InGameInfo::singleton().mHyperBreakCount = 0;
             TH20InGameInfo::singleton().mHyperCount = 0;
             TH20InGameInfo::singleton().mPyramidShotDownCount = 0;
+            TH20InGameInfo::singleton().mHyperBreakCountY1 = 0;
         })
     EHOOK_DY(th20_bomb_dec, 0xe1710, 1, // bomb dec
         {
@@ -2493,7 +2499,11 @@ namespace TH20 {
         {
             TH20InGameInfo::singleton().mHyperBreakCount++;
         })
-    EHOOK_DY(th20_hyper, 0x1338e3, 3,
+    EHOOK_DY(th20_hyper_break_y, 0x134fba, 1,
+        {
+            TH20InGameInfo::singleton().mHyperBreakCountY1++;
+        })
+    EHOOK_DY(th20_hyper, 0x134d06, 3,
         {
             TH20InGameInfo::singleton().mHyperCount++;
         })
