@@ -2093,7 +2093,7 @@ namespace TH20 {
             pCtx->Eip = RVA(0xBAC9A);
         }
     })
-    EHOOK_DY(th20_everlasting_bgm, 0x28C90, 1, {
+    EHOOK_DY(th20_everlasting_bgm_1, 0x28C90, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0] - ingame_image_base;
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -2112,6 +2112,11 @@ namespace TH20 {
         if (result) {
             pCtx->Eip = RVA(0x28DD5);
         }
+    })
+    EHOOK_DY(th20_everlasting_bgm_2, 0xE5CD7, 5, {
+        bool el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && (thPracParam.mode == 1) && thPracParam.section;
+        if (el_switch)
+            pCtx->Eip = RVA(0xE5CE8);
     })
     EHOOK_DY(th20_patch_main, 0xBBD56, 1, {
         if (thPracParam.mode == 1) {
@@ -2148,7 +2153,7 @@ namespace TH20 {
         *(int32_t*)(player_stats + 0x7C) = thPracParam.levelY;
         *(int32_t*)(player_stats + 0x80) = thPracParam.levelG;
     })
-    EHOOK_DY(th20_patch_ex_stones_fix, 0x6415d, 2, {
+    EHOOK_DY(th20_patch_ex_stones_fix, 0x6415A, 3, {
         if (thPracParam.mode == 1)
             pCtx->Eip = RVA(0x6417F);
     })
