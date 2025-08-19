@@ -2401,6 +2401,11 @@ namespace TH20 {
         *(int32_t*)(player_stats + 0x7C) = thPracParam.levelY;
         *(int32_t*)(player_stats + 0x80) = thPracParam.levelG;
     })
+    EHOOK_DY(th20_patch_ex_stones_fix, 0x6415d, 2, {
+        if (thPracParam.mode == 1) {
+            pCtx->Eip = RVA(0x6417F);
+        }
+    })
     EHOOK_DY(th20_param_reset, 0x129EA6, 3, {
         thPracParam.Reset();
     })
