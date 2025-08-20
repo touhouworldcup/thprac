@@ -8,6 +8,16 @@ namespace TH12 {
     int g_lock_timer = 0;
     bool g_lock_timer_flag = false;
 
+    bool g_show_bullet_hitbox = false;
+    struct laser_hitbox_draw {
+        ImVec2 posA;
+        ImVec2 posB;
+        ImVec2 posC;
+        ImVec2 posD;
+    };
+    std::vector<laser_hitbox_draw> g_th12_laser_hit_draw_vec;
+
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -689,6 +699,55 @@ namespace TH12 {
         *y_pos = (y_max + y_min2) * 0.5f;
         *y_range = (y_max - y_min2);
     });
+    EHOOK_ST(th12_laser_hit_test, 0x437a80, 1,
+        {
+            if (!g_show_bullet_hitbox)
+                return;
+            bool is_prac = ((*(byte*)(0x4B0CE0) == 0x10));
+            bool is_rep = false;
+            if (*(DWORD*)(0x4B4518)) {
+                is_rep = (*(DWORD*)(*(DWORD*)(0x4B4518) + 0x10) == 1);
+            }
+            if (is_prac || is_rep) {
+                float height, angle, width;
+                width = *(float*)(pCtx->Esp + 0xC);
+                height = *(float*)(pCtx->Esp + 0x8);
+                angle = *(float*)(pCtx->Esp + 0x4);
+                ImVec2 pos_tail = *(ImVec2*)(pCtx->Eax);
+                auto Multiply = [](ImVec2 a, ImVec2 b) -> ImVec2 {
+                    return { a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x };
+                };
+                auto Add = [](ImVec2 a, ImVec2 b) -> ImVec2 {
+                    return { a.x + b.x, a.y + b.y };
+                };
+                auto GetClientFromStage = [](ImVec2 stage) -> ImVec2 {
+                    float x = stage.x;
+                    float y = stage.y;
+
+                    y = y * 2.0f + 32.0f;
+                    x = x * 2.0f + 448.0f;
+                    ImGuiIO& io = ImGui::GetIO();
+                    return { x * io.DisplaySize.x / 1280.0f, y * io.DisplaySize.y / 960.0f };
+                };
+                ImVec2 hit_pl = *(ImVec2*)(*(DWORD*)(0x4B4514) + 0x9E4);
+                ImVec2 hit_pl_conved = { hit_pl.x * 1.0f, hit_pl.y * 1.0f };
+                ImVec2 posA = { width + hit_pl_conved.x, -(height * 0.5f + hit_pl_conved.y) };
+                ImVec2 posB = { width + hit_pl_conved.x, height * 0.5f + hit_pl_conved.y };
+                ImVec2 posC = { -hit_pl_conved.x, -(height * 0.5f + hit_pl_conved.y) };
+                ImVec2 posD = { -hit_pl_conved.x, height * 0.5f + hit_pl_conved.y };
+                ImVec2 rotation = { cosf(angle), sinf(angle) };
+                posA = Multiply(posA, rotation);
+                posB = Multiply(posB, rotation);
+                posC = Multiply(posC, rotation);
+                posD = Multiply(posD, rotation);
+                posA = GetClientFromStage(Add(posA, pos_tail));
+                posB = GetClientFromStage(Add(posB, pos_tail));
+                posC = GetClientFromStage(Add(posC, pos_tail));
+                posD = GetClientFromStage(Add(posD, pos_tail));
+                auto p = ImGui::GetOverlayDrawList();
+                g_th12_laser_hit_draw_vec.push_back({ posA, posB, posD, posC });
+            }
+        });
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
         SINGLETON(THAdvOptWnd);    
@@ -766,6 +825,7 @@ namespace TH12 {
             GameplayInit();
             MasterDisableInit();
             th12_bossmovedown.Setup();
+            th12_laser_hit_test.Setup();
         }
 
     public:
@@ -842,6 +902,11 @@ namespace TH12 {
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));
                 ImGui::Checkbox(S(TH_ENABLE_LOCK_TIMER), &g_adv_igi_options.enable_lock_timer_autoly);
+
+                if (ImGui::Checkbox("show laser hitbox(only practice mode)", &g_show_bullet_hitbox))
+                {
+                    th12_laser_hit_test.Toggle(g_show_bullet_hitbox);
+                }
 
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
@@ -1710,6 +1775,8 @@ namespace TH12 {
 #endif
     }
 
+
+
     static void RenderLockTimer(ImDrawList* p)
     {
         if (g_lock_timer_flag) {
@@ -1849,6 +1916,33 @@ namespace TH12 {
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004B4514)) {
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
             KeysHUD(12, { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+        }
+
+
+        {
+            //0x4B0CE0 prac mode
+            if (g_show_bullet_hitbox) 
+            {
+                bool is_prac = ((*(byte*)(0x4B0CE0) == 0x10));
+                bool is_rep = false;
+                if (*(DWORD*)(0x4B4518))
+                {
+                    is_rep = (*(DWORD*)(*(DWORD*)(0x4B4518) + 0x10) == 1);
+                }
+                if (is_prac || is_rep)
+                {
+                    ImGuiIO& io = ImGui::GetIO();
+                    float x_ratio = io.DisplaySize.x / 1280.0f;
+                    float y_ratio = io.DisplaySize.y / 960.0f;
+                    p->PushClipRect({ 64.0f * x_ratio, 32.0f * y_ratio }, { 832.0f * x_ratio, 928.0f * y_ratio });
+                    for (auto& i : g_th12_laser_hit_draw_vec) {
+                        p->AddQuadFilled(i.posA, i.posB, i.posC, i.posD, 0x88CC0000);
+                        p->AddQuad(i.posA, i.posB, i.posC, i.posD, 0xCCFFFFFF);
+                    }
+                    g_th12_laser_hit_draw_vec = {};
+                    p->PopClipRect();
+                }
+            }
         }
 
         RenderLockTimer(p);

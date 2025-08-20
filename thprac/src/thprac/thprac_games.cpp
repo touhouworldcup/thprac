@@ -57,6 +57,7 @@ std::string g_customFont = "MS Gothic";
 BOOL(WINAPI* g_realGetKeyboardState)(PBYTE lpKeyboardState);
 HRESULT(STDMETHODCALLTYPE* g_realGetDeviceState)(LPDIRECTINPUTDEVICE8 thiz, DWORD, LPVOID);
 HFONT(WINAPI* g_realCreateFontA)(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,DWORD bStrikeOut,DWORD iCharSet,DWORD iOutPrecision,DWORD iClipPrecision,DWORD iQuality,DWORD iPitchAndFamily,LPCSTR pszFaceName);
+HFONT(WINAPI* g_realCreateFontW)(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,DWORD bStrikeOut,DWORD iCharSet,DWORD iOutPrecision,DWORD iClipPrecision,DWORD iQuality,DWORD iPitchAndFamily,LPCWSTR pszFaceName);
 MMRESULT (WINAPI *g_realJoyGetDevCapsA)(UINT uJoyID, LPJOYCAPSA pjc, UINT cbjc);
 MMRESULT (WINAPI *g_realJoyGetPosEx)(UINT uJoyID, LPJOYINFOEX pji);
 DWORD (WINAPI *g_realXInputGetState)(DWORD dwUserIndex, void* pState);
@@ -173,6 +174,53 @@ HFONT WINAPI CreateFontA_Changed
         return g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, "MS Mincho");
     }
     return g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, pszFaceName);
+}
+
+HFONT WINAPI CreateFontW_Changed(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,
+    DWORD bStrikeOut, DWORD iCharSet, DWORD iOutPrecision, DWORD iClipPrecision, DWORD iQuality, DWORD iPitchAndFamily, LPCWSTR pszFaceName)
+{
+    static std::vector<std::string> fonts = EnumAllFonts();
+    wchar_t font_YuGothic[] = { 0x6E38, 0x30B4, 0x30B7, 0x30C3, 0x30AF, 0 };//Yu Gothic...
+    wchar_t font_YuMincho[] = L"Yu Mincho";
+    wchar_t font_YuMeiryo[] = { 0x30E1, 0x30A4, 0x30EA, 0x30AA, 0 }; // Meiryo
+    wchar_t font_MsGothic[] = { 0xFF2D,0xFF33,0x0020,0x30B4,0x30B7,0x30C3,0x30AF ,0x0 }; // MS Gothic
+    if (g_useCustomFont) {
+        // fall back to CreateFontA
+        return CreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, g_customFont.c_str());
+    }
+
+    // Yu Gothic
+    if (wcscmp(font_YuGothic, pszFaceName) == 0)
+    {
+        if (std::find(fonts.begin(), fonts.end(), "Yu Gothic") != fonts.end())
+            return g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"Yu Gothic");
+        if (std::find(fonts.begin(), fonts.end(), "MS Gothic") != fonts.end())
+            return g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"MS Gothic");
+        if (std::find(fonts.begin(), fonts.end(), "MS Mincho") != fonts.end())
+            return g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"MS Mincho");
+    }
+    // Yu Mincho
+    if (wcscmp(font_YuMincho, pszFaceName) == 0)
+    {
+        if (std::find(fonts.begin(), fonts.end(), "Yu Mincho") != fonts.end())
+            return g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"Yu Mincho");
+        if (std::find(fonts.begin(), fonts.end(), "MS Mincho") != fonts.end())
+            return g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"MS Mincho");
+    }
+    // Meiryo
+    if (wcscmp(font_YuMeiryo, pszFaceName) == 0)
+    {
+        if (std::find(fonts.begin(), fonts.end(), "Meiryo") != fonts.end())
+            return g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"Meiryo");
+    }
+    // MS Gothic
+    if (wcscmp(font_MsGothic, pszFaceName) == 0) {
+        if (std::find(fonts.begin(), fonts.end(), "MS Gothic") != fonts.end())
+            return g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"MS Gothic");
+        if (std::find(fonts.begin(), fonts.end(), "MS Mincho") != fonts.end())
+            return g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"MS Mincho");
+    }
+    return g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, pszFaceName);
 }
 
 
@@ -635,10 +683,11 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         LauncherSettingGet("kb_type", g_adv_igi_options.keyboard_style.type);
 
         bool useCorrectJaFonts=false;
-        LauncherSettingGet("use_custom_fonts", g_useCustomFont);
+        LauncherSettingGet("use_custom_font", g_useCustomFont);
         LauncherSettingGet("use_correct_ja_fonts", useCorrectJaFonts);
         if (g_useCustomFont || useCorrectJaFonts){
             HookIAT(GetModuleHandle(NULL), "GDI32.dll", "CreateFontA", CreateFontA_Changed, (void**)&g_realCreateFontA);
+            HookIAT(GetModuleHandle(NULL), "GDI32.dll", "CreateFontW", CreateFontW_Changed, (void**)&g_realCreateFontW);
         }
         if (g_useCustomFont)
         {

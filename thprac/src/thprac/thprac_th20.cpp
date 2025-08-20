@@ -663,7 +663,6 @@ namespace TH20 {
         int32_t mHyperCount;
         int32_t mPyramidShotDownCount;
         int32_t mHyperBreakCount;
-        int32_t mHyperBreakCountY1;
 
     protected:
         virtual void OnLocaleChange() override
@@ -759,7 +758,7 @@ namespace TH20 {
             ImGui::NextColumn();
             if (main_stone == 4) // yellow 1
             {
-                ImGui::TextColored(y, "%9d", mHyperBreakCount+mHyperBreakCountY1);
+                ImGui::TextColored(y, "%9d", mHyperBreakCount);
             }else{
                 ImGui::Text("%9d", mHyperBreakCount);
             }
@@ -2320,7 +2319,6 @@ namespace TH20 {
     static char* sReplayPath = nullptr;
 
     HOOKSET_DEFINE(THMainHook)
-
     EHOOK_DY(th20_inf_lives, 0xe1288, 6,
         {
             int life_next = pCtx->Ecx;
@@ -2494,19 +2492,14 @@ namespace TH20 {
             TH20InGameInfo::singleton().mHyperBreakCount = 0;
             TH20InGameInfo::singleton().mHyperCount = 0;
             TH20InGameInfo::singleton().mPyramidShotDownCount = 0;
-            TH20InGameInfo::singleton().mHyperBreakCountY1 = 0;
         })
     EHOOK_DY(th20_bomb_dec, 0xe1710, 1, // bomb dec
         {
             TH20InGameInfo::singleton().mBombCount++;
         })
-    EHOOK_DY(th20_hyper_break, 0x132c4c, 1, 
+    EHOOK_DY(th20_hyper_break, 0x132c10, 3, 
         {
             TH20InGameInfo::singleton().mHyperBreakCount++;
-        })
-    EHOOK_DY(th20_hyper_break_y, 0x134fba, 1,
-        {
-            TH20InGameInfo::singleton().mHyperBreakCountY1++;
         })
     EHOOK_DY(th20_hyper, 0x134d06, 3,
         {
@@ -2528,6 +2521,11 @@ namespace TH20 {
             Gui::INGAGME_INPUT_GEN2, RVA(0x1B88C0), RVA(0x1B88B8), 0,
             -2, *(float*)RVA(0x1B8818), 0.0f);
 
+        // Init fonts
+        if (*(DWORD*)RVA(0x1B66F8) == 0)  {
+            asm_call_rel<0x16D20, Stdcall>();
+        }
+
         SetDpadHook(0x227B1, 6);
 
         // Gui components creation
@@ -2543,16 +2541,33 @@ namespace TH20 {
         thPracParam.Reset();
     }
 
+    PATCH_ST(TH20FontCreateHook, 0x1e937, "9090909090"); // disable font create before GUI create
+
+    // int(__stdcall* g_realMultiByteToWideChar)(UINT CodePage, DWORD dwFlags, LPCCH lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar);
+    // int __stdcall MultiByteToWideChar_Changed(UINT CodePage, DWORD dwFlags, LPCCH lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar)
+    // {
+    //     return g_realMultiByteToWideChar(CP_ACP, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
+    // }
+    // 
+    // int(__stdcall* g_reaWideCharToMultiByte)(UINT CodePage, DWORD dwFlags, LPCWCH lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCCH lpDefaultChar, LPBOOL lpUsedDefaultChar);
+    // int __stdcall WideCharToMultiByte_Changed(UINT CodePage, DWORD dwFlags, LPCWCH lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCCH lpDefaultChar, LPBOOL lpUsedDefaultChar)
+    // {
+    //     return g_reaWideCharToMultiByte(CP_ACP, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);
+    // }
+
+
     HOOKSET_DEFINE(THInitHook)
     PATCH_DY(th20_startup_1, 0x11F82C, "EB")
     PATCH_DY(th20_startup_2, 0x11E8C9, "EB")
     EHOOK_DY(th20_gui_init_1, 0x12A0A3, 7, {
         self->Disable();
         THGuiCreate();
+        TH20FontCreateHook.Disable();
     })
     EHOOK_DY(th20_gui_init_2, 0x1C725, 1, {
         self->Disable();
         THGuiCreate();
+        TH20FontCreateHook.Disable();
     })
     HOOKSET_ENDDEF()
 }
@@ -2561,5 +2576,8 @@ void TH20Init()
 {
     ingame_image_base = CurrentImageBase;
     EnableAllHooks(TH20::THInitHook);
+
+    TH20::TH20FontCreateHook.Setup();
+    TH20::TH20FontCreateHook.Enable();
 }
 }
