@@ -1136,7 +1136,7 @@
 
       "TH06_ST3_MID1": {
         "bgm": 0,
-        "spell": 1,
+        "spell": 0,
         "appearance": [ 3, 1, 1 ],
         "!ENHL": "TH_MID_NS1"
       },
