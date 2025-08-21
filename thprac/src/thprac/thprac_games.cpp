@@ -1664,6 +1664,8 @@ bool GameState_Assert(bool cond)
 
 #pragma region SSS
 bool g_blind_view = false;
+bool g_change_stone = false;
+
 float g_blind_size = 150.0f;
 ImTextureID g_blind_texture = NULL;
 bool g_is_texture_failed = false;
@@ -2016,21 +2018,129 @@ void RenderBlindView(int dx_ver, DWORD device, ImVec2 plpos, ImVec2 plpos_ofs, I
 //     }
 // }
 
-void SSS_UI()
+void SSS_UI(int version)
 {
     if (ImGui::CollapsingHeader("Super Secret Settings")) {
-        ImGui::Checkbox(S(THPRAC_BLIND), &g_blind_view);
-        ImGui::SameLine();
-        HelpMarker(S(THPRAC_BLIND_DESC));
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(75.0f);
-        ImGui::DragFloat(S(THPRAC_BLIND_SZ), &g_blind_size, 1.0f, 20.0f, 600.0f);
-        ImGui::SameLine();
-        if (ImGui::Button(std::format("{}##blind_reload", S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_RELOAD)).c_str())) {
-            // if (g_blind_texture)
-            //     ((IUnknown*)(g_blind_texture))->Release();
-            g_blind_texture = NULL;
-            g_is_texture_failed = false;
+        if (version == 20) {
+            ImGui::Checkbox(S(THPRAC_CHG_STONE), &g_change_stone);
+            ImGui::SameLine();
+            HelpMarker(S(THPRAC_CHG_STONE_DESC));
+        } else {
+            ImGui::Checkbox(S(THPRAC_BLIND), &g_blind_view);
+            ImGui::SameLine();
+            HelpMarker(S(THPRAC_BLIND_DESC));
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(75.0f);
+            ImGui::DragFloat(S(THPRAC_BLIND_SZ), &g_blind_size, 1.0f, 20.0f, 600.0f);
+            ImGui::SameLine();
+            if (ImGui::Button(std::format("{}##blind_reload", S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_RELOAD)).c_str())) {
+                // if (g_blind_texture)
+                //     ((IUnknown*)(g_blind_texture))->Release();
+                g_blind_texture = NULL;
+                g_is_texture_failed = false;
+            }
+        }
+    }
+}
+
+
+int __stdcall StoneInit1(int a1, int a2)
+{
+    int result;
+    result = a1;
+    *(DWORD*)(a1 + 0x11C) = 0;
+    return result;
+}
+
+void TH20_ChangeStone()
+{
+    {
+        DWORD ppl = *(DWORD*)RVA(0x1ba56c);
+        if (ppl) {
+            bool is_focused = *(bool*)(ppl + 0x204c);
+            int shift_time = *(DWORD*)RVA(0x1B8AD4);
+            int up_time = *(DWORD*)RVA(0x1B8AD8);
+            int down_time = *(DWORD*)RVA(0x1B8ADC);
+            int left_time = *(DWORD*)RVA(0x1B8AE0);
+            int right_time = *(DWORD*)RVA(0x1B8AE4);
+            int z_time = *(DWORD*)RVA(0x1B8AC8);
+
+            bool is_z_down = ((*(DWORD*)(RVA(0x1B8B4C)) & 0x1) == 0x1);
+
+            bool is_l_down = ((*(DWORD*)(RVA(0x1B8B4C)) & 0x40) == 0x40);
+            bool is_r_down = ((*(DWORD*)(RVA(0x1B8B4C)) & 0x80) == 0x80);
+
+            bool changed = false;
+            if (z_time <= 10) {
+                if (is_l_down && is_z_down) {
+                    if (z_time == 1 || left_time == 1 && left_time > right_time) {
+                        if (!is_focused) {
+                            int32_t substone_2 = (*(int32_t*)(RVA(0x1BA604))); // unfocused
+                            substone_2--;
+                            if (substone_2 < 0)
+                                substone_2 += 8;
+                            (*(int32_t*)(RVA(0x1BA604))) = substone_2;
+                        } else {
+                            int32_t substone_1 = (*(int32_t*)(RVA(0x1BA600))); // focused
+                            substone_1--;
+                            if (substone_1 < 0)
+                                substone_1 += 8;
+                            (*(int32_t*)(RVA(0x1BA600))) = substone_1;
+                        }
+
+                        changed = true;
+                    }
+                } else if (is_r_down && is_z_down) {
+                    if (z_time == 1 || right_time == 1 && left_time < right_time) {
+                        if (!is_focused) {
+                            int32_t substone_2 = (*(int32_t*)(RVA(0x1BA604))); // unfocused
+                            substone_2++;
+                            substone_2 = substone_2 % 8;
+                            (*(int32_t*)(RVA(0x1BA604))) = substone_2;
+                        } else {
+                            int32_t substone_1 = (*(int32_t*)(RVA(0x1BA600))); // focused
+                            substone_1++;
+                            substone_1 = substone_1 % 8;
+                            (*(int32_t*)(RVA(0x1BA600))) = substone_1;
+                        }
+                        changed = true;
+                    }
+                }
+            }
+            if (changed) {
+
+                int32_t cur_player_type = (*(int32_t*)(RVA(0x1BA5F8)));
+
+                int32_t substone_1 = (*(int32_t*)(RVA(0x1BA600))); // focused
+                int32_t substone_2 = (*(int32_t*)(RVA(0x1BA604))); // unfocused
+                DWORD thiz = asm_call_rel<0x64230, Cdecl, int32_t>(0);
+
+                if (substone_1 != 7) {
+                    DWORD addr_slow_stone_fix_init = GetMemAddr(RVA(0x1BA56c), 0x14858, 0x2c, 0x2c, 0x0, 0x28);
+                    if (*(DWORD*)addr_slow_stone_fix_init != (DWORD)StoneInit1) {
+                        DWORD oldProtect;
+                        VirtualProtect((LPVOID)addr_slow_stone_fix_init, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+                        *(DWORD*)addr_slow_stone_fix_init = (DWORD)StoneInit1;
+                        VirtualProtect((LPVOID)addr_slow_stone_fix_init, 4, oldProtect, &oldProtect);
+                    }
+                }
+
+                asm_call_rel<0x1344D0, Thiscall>(thiz, cur_player_type, substone_1); // f
+                asm_call_rel<0x1347D0, Thiscall>(thiz, cur_player_type, substone_2); // nf
+
+                int power = *(DWORD*)RVA(0x1BA620);
+                if (power >= 400) {
+                    *(DWORD*)RVA(0x1BA620) = 100;
+                    asm_call_rel<0xFACA0, Thiscall>(ppl, -1);
+                    *(DWORD*)RVA(0x1BA620) = power;
+                    asm_call_rel<0xFACA0, Thiscall>(ppl, -1);
+                } else {
+                    *(DWORD*)RVA(0x1BA620) = 400;
+                    asm_call_rel<0xFACA0, Thiscall>(ppl, -1);
+                    *(DWORD*)RVA(0x1BA620) = power;
+                    asm_call_rel<0xFACA0, Thiscall>(ppl, -1);
+                }
+            }
         }
     }
 }

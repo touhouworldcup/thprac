@@ -8,6 +8,7 @@
 #undef hyper
 
 namespace THPrac {
+    extern bool g_change_stone;
 namespace TH20 {
     using std::pair;
     using namespace TH20;
@@ -708,7 +709,6 @@ namespace TH20 {
 
         virtual void OnContentUpdate() override
         {
-           
             int32_t cur_player_type = (*(int32_t*)(RVA(0x1BA5F8)));
             int32_t main_stone = (*(int32_t*)(RVA(0x1BA5FC)));
             int32_t substone_1 = (*(int32_t*)(RVA(0x1BA600)));
@@ -1063,7 +1063,7 @@ namespace TH20 {
                 ImGui::SetNextItemWidth(180.0f);
                 EndOptGroup();
             }
-
+            SSS_UI(20);
             AboutOpt("Guy, zero318, rue, and you!\nTH20 support from khang06/GuyL/H-J-Granger...");
             ImGui::EndChild();
             ImGui::SetWindowFocus();
@@ -2536,6 +2536,10 @@ namespace TH20 {
 
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(RVA(0x1ba56c)))
             KeysHUD(20, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
+
+        if (g_change_stone){
+            TH20_ChangeStone();
+        }
 
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);

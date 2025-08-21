@@ -1197,6 +1197,8 @@
 	  "THPRAC_IGI_PL_20H":["绿2","G2","G2"],
 	  "THPRAC_IGI_PL_20I":["无", "N","N"],
 	  
+	  "THPRAC_CHG_STONE":["大变石","change stone","change stone"],
+	  "THPRAC_CHG_STONE_DESC":["同时按z和左右键切换携带的高速/低速石","press z and left/right at the same time to switch between stones","press z and left/right at the same time to switch between stones"],
 	  
 	  "THPRAC_BLIND":["夜雀视野","blind view","blind view"],
 	  "THPRAC_BLIND_DESC":["娱乐用, 使用blind.png重载","for fun(use blind.png to reload)","for fun(use blind.png to reload)"],

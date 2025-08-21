@@ -675,6 +675,8 @@ enum th_glossary_t {
     THPRAC_CHECK_UPDATE_WHEN,
     THPRAC_CHECK_UPDATE_WHEN_OPTION,
     THPRAC_CHECK_UPDATE_WHEN_OPTION_2,
+    THPRAC_CHG_STONE,
+    THPRAC_CHG_STONE_DESC,
     THPRAC_CHK_UPDATE_ON_STARTUP,
     THPRAC_CLOSE,
     THPRAC_COMPATIBILITY_SETTINGS,
@@ -1596,7 +1598,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1585];
+extern const char* th_glossary_str[3][1587];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3303,7 +3305,7 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3463];
+extern const wchar_t __thprac_loc_range_zh[3465];
 
 extern const wchar_t __thprac_loc_range_en[61];
 

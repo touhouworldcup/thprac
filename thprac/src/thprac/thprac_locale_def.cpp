@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1585] {
+const char* th_glossary_str[3][1587] {
     {
         "",
         "啤酒",
@@ -675,6 +675,8 @@ const char* th_glossary_str[3][1585] {
         "检查更新的时机:",
         "打开启动器时\0执行thprac时\0从不\0\0",
         "不准QAQ",
+        "大变石",
+        "同时按z和左右键切换携带的高速/低速石",
         "启动时检查更新",
         "关闭",
         "兼容性设置",
@@ -2262,6 +2264,8 @@ const char* th_glossary_str[3][1585] {
         "Check update when:",
         "Opening launcher\0Executing thprac\0Never\0\0",
         "NO QAQ",
+        "change stone",
+        "press z and left/right at the same time to switch between stones",
         "Check for updates at startup",
         "Close",
         "Compatibility Settings",
@@ -3849,6 +3853,8 @@ const char* th_glossary_str[3][1585] {
         "更新を確認するタイミング:",
         "ランチャーを開くとき\0thpracの実行するとき\0なし\0\0",
         "NO QAQ",
+        "change stone",
+        "press z and left/right at the same time to switch between stones",
         "起動時に更新を確認する",
         "閉じる",
         "Compatibility Settings",
@@ -26749,7 +26755,7 @@ namespace TH20 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3463] {
+const wchar_t __thprac_loc_range_zh[3465] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -27471,6 +27477,7 @@ const wchar_t __thprac_loc_range_zh[3463] {
     0x63d0, 0x63d0,
     0x641c, 0x641c,
     0x6426, 0x6426,
+    0x643a, 0x643a,
     0x6444, 0x6444,
     0x6446, 0x6446,
     0x6469, 0x6469,

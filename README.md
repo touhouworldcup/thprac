@@ -2,6 +2,7 @@
 - th20各种支持和bug修复
 - roll游戏
 - 部分主线更新
+- (8A)神秘更新: 石之大变
 
 ## 25.8.18
 - th20部分支持(复制粘贴于 https://github.com/touhouworldcup/thprac/pull/264/commits )
