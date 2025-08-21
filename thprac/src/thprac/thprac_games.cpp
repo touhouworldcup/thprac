@@ -2052,6 +2052,14 @@ int __stdcall StoneInit1(int a1, int a2)
     return result;
 }
 
+int __stdcall StoneInit2(int a1, int a2)
+{
+    int result;
+    result = a1;
+    *(DWORD*)(a1 + 0x120) = 0;
+    return result;
+}
+
 void TH20_ChangeStone()
 {
     {
@@ -2115,44 +2123,29 @@ void TH20_ChangeStone()
                 int32_t substone_2 = (*(int32_t*)(RVA(0x1BA604))); // unfocused
                 DWORD thiz = asm_call_rel<0x64230, Cdecl, int32_t>(0);
 
-                auto change_stone_fix_init = [substone_1]() {
-                    if (substone_1 != 6) {
-                        DWORD addr_slow_stone_fix_init = GetMemAddr(RVA(0x1BA56c), 0x14858, 0x2c, 0x2c, 0x0, 0x28);
-                        if (*(DWORD*)addr_slow_stone_fix_init != (DWORD)StoneInit1) {
-                            DWORD oldProtect;
-                            VirtualProtect((LPVOID)addr_slow_stone_fix_init, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
-                            *(DWORD*)addr_slow_stone_fix_init = (DWORD)StoneInit1;
-                            VirtualProtect((LPVOID)addr_slow_stone_fix_init, 4, oldProtect, &oldProtect);
-                        }
-                    } else {
-                        DWORD addr_slow_stone_fix_init = GetMemAddr(RVA(0x1BA56c), 0x14858, 0x2c, 0x2c, 0x0, 0x28);
-                        if (*(DWORD*)addr_slow_stone_fix_init != RVA(0x1312B0)) {
-                            DWORD oldProtect;
-                            VirtualProtect((LPVOID)addr_slow_stone_fix_init, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
-                            *(DWORD*)addr_slow_stone_fix_init = RVA(0x1312B0);
-                            VirtualProtect((LPVOID)addr_slow_stone_fix_init, 4, oldProtect, &oldProtect);
-                        }
+                 auto change_stone_fix_init = [](DWORD mem,DWORD init) {
+                    if (*(DWORD*)mem == RVA(0x14B60)) {
+                        DWORD oldProtect;
+                        VirtualProtect((LPVOID)mem, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+                        *(DWORD*)mem = init;
+                        VirtualProtect((LPVOID)mem, 4, oldProtect, &oldProtect);
                     }
-                };
-                
+                 };
+
+                int power = *(DWORD*)RVA(0x1BA620);
+                *(DWORD*)RVA(0x1BA620) = 0;
+                asm_call_rel<0xFACA0, Thiscall>(ppl, -1);
+                change_stone_fix_init(GetMemAddr(RVA(0x1BA56c), 0x14858, 0x2c, 0x2c, 0x0, 0x28), (DWORD)StoneInit1);
+                change_stone_fix_init(GetMemAddr(RVA(0x1BA56c), 0x14858, 0x2c, 0x2c, 0x0, 0x2C), (DWORD)StoneInit2);
+                change_stone_fix_init(GetMemAddr(RVA(0x1BA56c), 0x14858, 0x2c, 0x30, 0x0, 0x28), (DWORD)StoneInit1);
+                change_stone_fix_init(GetMemAddr(RVA(0x1BA56c), 0x14858, 0x2c, 0x30, 0x0, 0x2C), (DWORD)StoneInit2);
 
                 asm_call_rel<0x1344D0, Thiscall>(thiz, cur_player_type, substone_1); // f
                 asm_call_rel<0x1347D0, Thiscall>(thiz, cur_player_type, substone_2); // nf
 
-                int power = *(DWORD*)RVA(0x1BA620);
-                if (power >= 400) {
-                    *(DWORD*)RVA(0x1BA620) = 100;
-                    asm_call_rel<0xFACA0, Thiscall>(ppl, -1);
-                    change_stone_fix_init();
-                    *(DWORD*)RVA(0x1BA620) = power;
-                    asm_call_rel<0xFACA0, Thiscall>(ppl, -1);
-                } else {
-                    *(DWORD*)RVA(0x1BA620) = 400;
-                    asm_call_rel<0xFACA0, Thiscall>(ppl, -1);
-                    change_stone_fix_init();
-                    *(DWORD*)RVA(0x1BA620) = power;
-                    asm_call_rel<0xFACA0, Thiscall>(ppl, -1);
-                }
+                
+                *(DWORD*)RVA(0x1BA620) = power;
+                asm_call_rel<0xFACA0, Thiscall>(ppl, -1);
             }
         }
     }
