@@ -238,6 +238,8 @@ namespace TH20 {
         const th_glossary_t* SpellPhase()
         {
             auto section = CalcSection();
+            if (section == TH20_ST7_BOSS17)
+                return TH20_SPELL_PHASE_TIMEOUT;
             if (section == TH20_ST6_BOSS12 || section == TH20_ST7_BOSS18) {
                 return TH_SPELL_PHASE2;
             }
@@ -2283,12 +2285,25 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST7_BOSS17: {
+            constexpr unsigned int st7BossSpell9Duration = 0xdd50 + 0x18;
+            constexpr unsigned int st7BossSpell9ChoccyPostSetup = 0xe150;
+            constexpr unsigned int st7BossSpell9ChoccyPreFinale = 0xedb8;
+            constexpr unsigned int st7BossSpell9BulletsPostSetup = 0xf68c;
+            constexpr unsigned int st7BossSpell9BulletsPreFinale = 0xfccc;
+
             ECLStdExec(ecl, st7PostMaple, 1, 1);
             ECLJump(ecl, st7PostMaple + stdInterruptSize, st7BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st7bsPrePushSpellID, st7bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
             ecl << pair { st7bsSpellSubCallOrd, (int8_t)0x39 }; // Set spell ID in sub call to '9'
             ecl << pair { st7bsSpellHealthVal, 6000 }; // Set correct health (set in skipped non)
+
+            if (thPracParam.phase == 1) { // Finale
+                ecl << pair { st7BossSpell9Duration, 5040 - 3400 + 90 }; // Adjust duration (we skipped 3400f worth of waits in the attacks but the boss waits for 90 before attacking)
+                ECLJump(ecl, st7BossSpell9ChoccyPostSetup, st7BossSpell9ChoccyPreFinale, 0);
+                ECLJump(ecl, st7BossSpell9BulletsPostSetup, st7BossSpell9BulletsPreFinale, 0);
+            }
+
             break;
         }
         case THPrac::TH20::TH20_ST7_BOSS18: {

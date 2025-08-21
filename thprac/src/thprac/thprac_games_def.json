@@ -1612,6 +1612,7 @@
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
       "TH_RAGE_PRO": [ "发狂Pro", "Rage Pro", "発狂 Pro" ],
       "TH_RAGE_PRO_MAX": [ "发狂ProMax", "Rage ProMax", "発狂 ProMax" ],
+	  "TH_FINALE": [ "终幕", "Finale", "終幕" ],
 
       "TH_P1": [ "P1", "P1", "P1" ],
       "TH_P2": [ "P2", "P2", "P2" ],
@@ -11105,10 +11106,9 @@
     },
 
     "groups": {
-		"TH_STAGE_SELECT_TRIAL": [
-        "TH_STAGE_1",
-        "TH_STAGE_2",
-        "TH_STAGE_3"
+		"TH20_SPELL_PHASE_TIMEOUT": [
+        "TH_NORMAL",
+        "TH_FINALE"
       ],
       "TH20_RAGE": [
         "TH_NORMAL",

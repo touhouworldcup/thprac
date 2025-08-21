@@ -1477,6 +1477,7 @@ enum th_glossary_t {
     TH_FACTOR_ACB,
     TH_FACTOR_ACB_DESC,
     TH_FAITH,
+    TH_FINALE,
     TH_FPS_ADJ,
     TH_FPS_ERR,
     TH_FPS_FREE_ADJ,
@@ -1595,7 +1596,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1584];
+extern const char* th_glossary_str[3][1585];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3296,7 +3297,7 @@ namespace TH20 {
 
     extern const th_sections_t th_sections_cbt[7][2][14];
 
-    extern const th_glossary_t TH_STAGE_SELECT_TRIAL[4];
+    extern const th_glossary_t TH20_SPELL_PHASE_TIMEOUT[3];
 
     extern const th_glossary_t TH20_RAGE[3];
 
