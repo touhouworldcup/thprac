@@ -815,6 +815,7 @@
       "TH_OFF": [ "关闭", "Off", "無効" ],
       "TH_NORMAL": [ "正常", "Normal", "普通" ],
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
+      "TH_FINALE": [ "終幕", "Finale", "终幕" ],
       "TH_P1": [ "P1", "P1", "P1" ],
       "TH_P2": [ "P2", "P2", "P2" ],
       "TH_P3": [ "P3", "P3", "P3" ],
@@ -9510,6 +9511,7 @@
     "glossary": {
       "TH20_HYPER": [ "异变攻击", "Hyper", "異変攻撃" ],
       "TH20_STONE_GAUGE": [ "异变敌人", "Summon", "異変石" ],
+      "TH20_STONE_SUMMONED": [ "召喚数", "Summoned", "召喚数" ],
       "TH20_STONE_LEVEL_R": [ "等级(红)", "LevelR", "レベルR" ],
       "TH20_STONE_PRIORITY_R": [ "优先级(红)", "PriorityR", "優先R" ],
       "TH20_STONE_LEVEL_B": [ "等级(蓝)", "LevelB", "レベルB" ],
@@ -9976,9 +9978,9 @@
     },
 
     "groups": {
-      "TH20_RAGE": [
+      "TH20_SPELL_PHASE_TIMEOUT": [
         "TH_NORMAL",
-        "TH_RAGE"
+        "TH_FINALE"
       ]
     }
   }

@@ -27,6 +27,7 @@ namespace TH20 {
 
         float hyper;
         float stone;
+        int32_t stoneMax;
         int32_t levelR;
         int32_t priorityR;
         int32_t levelB;
@@ -64,6 +65,7 @@ namespace TH20 {
 
             GetJsonValue(hyper);
             GetJsonValue(stone);
+            GetJsonValue(stoneMax);
             GetJsonValue(levelR);
             GetJsonValue(priorityR);
             GetJsonValue(levelB);
@@ -101,6 +103,7 @@ namespace TH20 {
 
                 AddJsonValue(hyper);
                 AddJsonValue(stone);
+                AddJsonValue(stoneMax);
                 AddJsonValue(levelR);
                 AddJsonValue(priorityR);
                 AddJsonValue(levelB);
@@ -154,7 +157,7 @@ namespace TH20 {
                 thPracParam.Reset();
             case 2:
                 break;
-            case 3:
+            case 3: {
                 SetFade(0.8f, 0.1f);
                 Close();
 
@@ -174,8 +177,13 @@ namespace TH20 {
                 thPracParam.power = *mPower;
                 thPracParam.value = *mValue;
 
+                int stoneMaxStageDefault = 1100;
+                if (*mStage == 1) stoneMaxStageDefault = 1200;
+                if (*mStage == 2) stoneMaxStageDefault = 1300;
+                if (*mStage >= 3) stoneMaxStageDefault = 1400;
                 thPracParam.hyper = *mHyper / 10000.0f;
                 thPracParam.stone = *mStone / 10000.0f;
+                thPracParam.stoneMax = stoneMaxStageDefault + *mStoneSummoned * 150;
                 thPracParam.levelR = *mLevelR;
                 thPracParam.priorityR = *mLevelR;
                 thPracParam.levelB = *mLevelB;
@@ -185,6 +193,7 @@ namespace TH20 {
                 thPracParam.levelY = *mLevelY;
                 thPracParam.priorityY = *mLevelY;
                 break;
+            }
             case 4:
                 Close();
                 break;
@@ -230,6 +239,8 @@ namespace TH20 {
         const th_glossary_t* SpellPhase()
         {
             auto section = CalcSection();
+            if (section == TH20_ST7_BOSS17)
+                return TH20_SPELL_PHASE_TIMEOUT;
             if (section == TH20_ST6_BOSS12 || section == TH20_ST7_BOSS18)
                 return TH_SPELL_PHASE2;
             return nullptr;
@@ -264,6 +275,7 @@ namespace TH20 {
                 mValue(value_str.c_str());
                 mHyper(std::format("{:.2f} %%", (float)(*mHyper) / 100.0f).c_str());
                 mStone(std::format("{:.2f} %%", (float)(*mStone) / 100.0f).c_str());
+                mStoneSummoned();
 
                 ImGui::Columns(2);
                 auto& style = ImGui::GetStyle();
@@ -407,6 +419,7 @@ namespace TH20 {
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mHyper { TH20_HYPER, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mStone { TH20_STONE_GAUGE, 0, 10000, 1, 1000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mStoneSummoned { TH20_STONE_SUMMONED, 0, 26 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelR { TH20_STONE_LEVEL_R, 1, 5 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mPriorityR { TH20_STONE_PRIORITY_R, 0, 1000 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelB { TH20_STONE_LEVEL_B, 1, 5 };
@@ -1430,8 +1443,11 @@ namespace TH20 {
             constexpr unsigned int st4mbsNonSubCallOrd = 0x4a4 + 0x19;
             constexpr unsigned int st4mbsNon2BossItemCallSomething = 0xd40 + 0x4;
             constexpr unsigned int st4mbsNon2PlaySoundSomething = 0xe6c + 0x4;
-            constexpr unsigned int st4mbsNon2PostLifeMarker = 0x1028;
+            constexpr unsigned int st4mbsNon2PreWait = 0x1028;
             constexpr unsigned int st4mbsNon2PostWait = 0x103c;
+            constexpr unsigned int st4mbsNon2PreWait2 = 0x1028;
+            constexpr unsigned int st4mbsNon2PostWait2 = 0x103c;
+            constexpr unsigned int st4mbsNon2BulletClear = 0x1a8 + 0x4;
 
             ECLJump(ecl, st4PostMaple, st4MBossCreateCall, 60, 90);
             ecl.SetFile(3);
@@ -1439,7 +1455,10 @@ namespace TH20 {
             ecl << pair { st4mbsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
             ecl << pair { st4mbsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
             ecl << pair { st4mbsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
-            ECLJump(ecl, st4mbsNon2PostLifeMarker, st4mbsNon2PostWait, 0); // Skip wait
+            ecl << pair { st4mbsNon2BulletClear, (int16_t)0 }; // Disable bullet clear
+            ECLJump(ecl, st4mbsNon2PreWait, st4mbsNon2PostWait, 0); // Skip wait
+            ECLJump(ecl, st4mbsPreWait, st4mbsPostWait, 0);
+            ECLJump(ecl, st4mbsPreWait2, st4mbsPostWait2, 0);
             break;
         }
         case THPrac::TH20::TH20_ST4_BOSS1: {
@@ -2017,12 +2036,24 @@ namespace TH20 {
             break;
         }
         case THPrac::TH20::TH20_ST7_BOSS17: {
+            constexpr unsigned int st7BossSpell9Duration = 0xdd50 + 0x18;
+            constexpr unsigned int st7BossSpell9ChoccyPostSetup = 0xe150;
+            constexpr unsigned int st7BossSpell9ChoccyPreFinale = 0xedb8;
+            constexpr unsigned int st7BossSpell9BulletsPostSetup = 0xf68c;
+            constexpr unsigned int st7BossSpell9BulletsPreFinale = 0xfccc;
+
             ECLStdExec(ecl, st7PostMaple, 1, 1);
             ECLJump(ecl, st7PostMaple + stdInterruptSize, st7BossCreateCall, 60);
             ecl.SetFile(2);
             ECLJump(ecl, st7bsPrePushSpellID, st7bsPostNotSpellPracCheck, 1); // Utilize Spell Practice Jump
             ecl << pair { st7bsSpellSubCallOrd, (int8_t)0x39 }; // Set spell ID in sub call to '9'
             ecl << pair { st7bsSpellHealthVal, 6000 }; // Set correct health (set in skipped non)
+
+            if (thPracParam.phase == 1) { //Finale
+                ecl << pair { st7BossSpell9Duration, 5040 - 3400 + 90 }; // Adjust duration (we skipped 3400f worth of waits in the attacks but the boss waits for 90 before attacking)
+                ECLJump(ecl, st7BossSpell9ChoccyPostSetup, st7BossSpell9ChoccyPreFinale, 0);
+                ECLJump(ecl, st7BossSpell9BulletsPostSetup, st7BossSpell9BulletsPreFinale, 0);
+            }
             break;
         }
         case THPrac::TH20::TH20_ST7_BOSS18: {
@@ -2143,6 +2174,8 @@ namespace TH20 {
             asm_call_rel<0x134D00, Fastcall>(*gauge_manager_ptr);
         }
 
+        if (thPracParam.stoneMax) //backwards compatibility
+            *(int32_t*)(player_stats + 0x60) = thPracParam.stoneMax;
         *(int32_t*)(player_stats + 0x5C) = (int32_t)(thPracParam.stone * *(int32_t*)(player_stats + 0x60));
         *(int32_t*)(player_stats + 0x64) = thPracParam.priorityR;
         *(int32_t*)(player_stats + 0x68) = thPracParam.priorityB;

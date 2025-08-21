@@ -580,6 +580,7 @@ enum th_glossary_t
     TH20_NEXT_STONE,
     TH20_PIV_OVERFLOW_FIX,
     TH20_STONE_GAUGE,
+    TH20_STONE_SUMMONED,
     TH20_STONE_LEVEL_B,
     TH20_STONE_LEVEL_G,
     TH20_STONE_LEVEL_R,
@@ -959,6 +960,7 @@ enum th_glossary_t
     TH_FACTOR_ACB,
     TH_FACTOR_ACB_DESC,
     TH_FAITH,
+    TH_FINALE,
     TH_FPS_ADJ,
     TH_FPS_ERR,
     TH_FPS_FREE_ADJ,
@@ -1055,7 +1057,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1043];
+extern const char* th_glossary_str[3][1045];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2675,7 +2677,7 @@ extern const th_sections_t th_sections_cba[7][2][19];
 
 extern const th_sections_t th_sections_cbt[7][2][14];
 
-extern const th_glossary_t TH20_RAGE[3];
+extern const th_glossary_t TH20_SPELL_PHASE_TIMEOUT[3];
 
 }
 
