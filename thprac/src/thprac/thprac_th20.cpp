@@ -1443,8 +1443,11 @@ namespace TH20 {
             constexpr unsigned int st4mbsNonSubCallOrd = 0x4a4 + 0x19;
             constexpr unsigned int st4mbsNon2BossItemCallSomething = 0xd40 + 0x4;
             constexpr unsigned int st4mbsNon2PlaySoundSomething = 0xe6c + 0x4;
-            constexpr unsigned int st4mbsNon2PostLifeMarker = 0x1028;
+            constexpr unsigned int st4mbsNon2PreWait = 0x1028;
             constexpr unsigned int st4mbsNon2PostWait = 0x103c;
+            constexpr unsigned int st4mbsNon2PreWait2 = 0x1028;
+            constexpr unsigned int st4mbsNon2PostWait2 = 0x103c;
+            constexpr unsigned int st4mbsNon2BulletClear = 0x1a8 + 0x4;
 
             ECLJump(ecl, st4PostMaple, st4MBossCreateCall, 60, 90);
             ecl.SetFile(3);
@@ -1452,7 +1455,10 @@ namespace TH20 {
             ecl << pair { st4mbsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
             ecl << pair { st4mbsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
             ecl << pair { st4mbsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
-            ECLJump(ecl, st4mbsNon2PostLifeMarker, st4mbsNon2PostWait, 0); // Skip wait
+            ecl << pair { st4mbsNon2BulletClear, (int16_t)0 }; // Disable bullet clear
+            ECLJump(ecl, st4mbsNon2PreWait, st4mbsNon2PostWait, 0); // Skip wait
+            ECLJump(ecl, st4mbsPreWait, st4mbsPostWait, 0);
+            ECLJump(ecl, st4mbsPreWait2, st4mbsPostWait2, 0);
             break;
         }
         case THPrac::TH20::TH20_ST4_BOSS1: {
