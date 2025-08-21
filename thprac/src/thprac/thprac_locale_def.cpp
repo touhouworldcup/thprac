@@ -580,7 +580,6 @@ const char* th_glossary_str[3][1045]
         "下一个石",
         "异变值溢出修复",
         "异变敌人",
-        "召喚数",
         "等级(蓝)",
         "等级(绿)",
         "等级(红)",
@@ -589,6 +588,7 @@ const char* th_glossary_str[3][1045]
         "优先级(绿)",
         "优先级(红)",
         "优先级(黄)",
+        "召唤次数",
         "TH20 东方锦上京　～ Fossilized Wonders.",
         "移除异变值限制",
         "移除分数限制",
@@ -1627,7 +1627,6 @@ const char* th_glossary_str[3][1045]
         "Next Stone",
         "PIV overflow fix",
         "Summon",
-        "Summoned",
         "LevelB",
         "LevelG",
         "LevelR",
@@ -1636,6 +1635,7 @@ const char* th_glossary_str[3][1045]
         "PriorityG",
         "PriorityR",
         "PriorityY",
+        "Summoned",
         "TH20 Fossilized Wonders",
         "PIV uncap",
         "Score uncap",
@@ -2674,7 +2674,6 @@ const char* th_glossary_str[3][1045]
         "次の石",
         "PIVオーバーフロー修正",
         "異変石",
-        "召喚数",
         "レベルB",
         "レベルG",
         "レベルR",
@@ -2683,6 +2682,7 @@ const char* th_glossary_str[3][1045]
         "優先G",
         "優先R",
         "優先Y",
+        "召喚数",
         "TH20 東方錦上京　～ Fossilized Wonders.",
         "PIVキャップ解放",
         "スコアキャップ解放",
@@ -21685,7 +21685,7 @@ const th_glossary_t TH20_SPELL_PHASE_TIMEOUT[3]
 
 }
 
-const wchar_t __thprac_loc_range_zh[2751] {
+const wchar_t __thprac_loc_range_zh[2753] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201d,
@@ -22645,6 +22645,7 @@ const wchar_t __thprac_loc_range_zh[2751] {
     0x7d22, 0x7d22,
     0x7d2b, 0x7d2b,
     0x7d2f, 0x7d2f,
+    0x7d42, 0x7d42,
     0x7d6e, 0x7d6e,
     0x7e41, 0x7e41,
     0x7ea2, 0x7ea2,
@@ -23083,7 +23084,7 @@ const wchar_t __thprac_loc_range_en[31] {
     0
 };
 
-const wchar_t __thprac_loc_range_ja[2237] {
+const wchar_t __thprac_loc_range_ja[2239] {
     0x0020, 0x00FF,
     0x2026, 0x2026,
     0x2fc5, 0x2fc5,
@@ -23866,6 +23867,7 @@ const wchar_t __thprac_loc_range_ja[2237] {
     0x7e1b, 0x7e1b,
     0x7e6d, 0x7e6d,
     0x7e70, 0x7e70,
+    0x7ec8, 0x7ec8,
     0x7f54, 0x7f54,
     0x7f60, 0x7f60,
     0x7f6a, 0x7f6a,

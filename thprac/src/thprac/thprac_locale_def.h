@@ -580,7 +580,6 @@ enum th_glossary_t
     TH20_NEXT_STONE,
     TH20_PIV_OVERFLOW_FIX,
     TH20_STONE_GAUGE,
-    TH20_STONE_SUMMONED,
     TH20_STONE_LEVEL_B,
     TH20_STONE_LEVEL_G,
     TH20_STONE_LEVEL_R,
@@ -589,6 +588,7 @@ enum th_glossary_t
     TH20_STONE_PRIORITY_G,
     TH20_STONE_PRIORITY_R,
     TH20_STONE_PRIORITY_Y,
+    TH20_STONE_SUMMONED,
     TH20_TITLE,
     TH20_UNCAP_PIV,
     TH20_UNCAP_SCORE,
@@ -2681,10 +2681,10 @@ extern const th_glossary_t TH20_SPELL_PHASE_TIMEOUT[3];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[2751];
+extern const wchar_t __thprac_loc_range_zh[2753];
 
 extern const wchar_t __thprac_loc_range_en[31];
 
-extern const wchar_t __thprac_loc_range_ja[2237];
+extern const wchar_t __thprac_loc_range_ja[2239];
 
 }
