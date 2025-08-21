@@ -27,6 +27,7 @@ namespace TH20 {
 
         float hyper;
         float stone;
+        int32_t stoneMax;
         int32_t levelR;
         int32_t priorityR;
         int32_t levelB;
@@ -64,6 +65,7 @@ namespace TH20 {
 
             GetJsonValue(hyper);
             GetJsonValue(stone);
+            GetJsonValue(stoneMax);
             GetJsonValue(levelR);
             GetJsonValue(priorityR);
             GetJsonValue(levelB);
@@ -101,6 +103,7 @@ namespace TH20 {
 
                 AddJsonValue(hyper);
                 AddJsonValue(stone);
+                AddJsonValue(stoneMax);
                 AddJsonValue(levelR);
                 AddJsonValue(priorityR);
                 AddJsonValue(levelB);
@@ -154,7 +157,7 @@ namespace TH20 {
                 thPracParam.Reset();
             case 2:
                 break;
-            case 3:
+            case 3: {
                 SetFade(0.8f, 0.1f);
                 Close();
 
@@ -174,8 +177,13 @@ namespace TH20 {
                 thPracParam.power = *mPower;
                 thPracParam.value = *mValue;
 
+                int stoneMaxStageDefault = 1100;
+                if (*mStage == 1) stoneMaxStageDefault = 1200;
+                if (*mStage == 2) stoneMaxStageDefault = 1300;
+                if (*mStage >= 3) stoneMaxStageDefault = 1400;
                 thPracParam.hyper = *mHyper / 10000.0f;
                 thPracParam.stone = *mStone / 10000.0f;
+                thPracParam.stoneMax = stoneMaxStageDefault + *mStoneSummoned * 150;
                 thPracParam.levelR = *mLevelR;
                 thPracParam.priorityR = *mLevelR;
                 thPracParam.levelB = *mLevelB;
@@ -185,6 +193,7 @@ namespace TH20 {
                 thPracParam.levelY = *mLevelY;
                 thPracParam.priorityY = *mLevelY;
                 break;
+            }
             case 4:
                 Close();
                 break;
@@ -266,6 +275,7 @@ namespace TH20 {
                 mValue(value_str.c_str());
                 mHyper(std::format("{:.2f} %%", (float)(*mHyper) / 100.0f).c_str());
                 mStone(std::format("{:.2f} %%", (float)(*mStone) / 100.0f).c_str());
+                mStoneSummoned();
 
                 ImGui::Columns(2);
                 auto& style = ImGui::GetStyle();
@@ -409,6 +419,7 @@ namespace TH20 {
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mHyper { TH20_HYPER, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mStone { TH20_STONE_GAUGE, 0, 10000, 1, 1000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mStoneSummoned { TH20_STONE_SUMMONED, 0, 26 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelR { TH20_STONE_LEVEL_R, 1, 5 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mPriorityR { TH20_STONE_PRIORITY_R, 0, 1000 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelB { TH20_STONE_LEVEL_B, 1, 5 };
@@ -2157,6 +2168,8 @@ namespace TH20 {
             asm_call_rel<0x134D00, Fastcall>(*gauge_manager_ptr);
         }
 
+        if (thPracParam.stoneMax) //backwards compatibility
+            *(int32_t*)(player_stats + 0x60) = thPracParam.stoneMax;
         *(int32_t*)(player_stats + 0x5C) = (int32_t)(thPracParam.stone * *(int32_t*)(player_stats + 0x60));
         *(int32_t*)(player_stats + 0x64) = thPracParam.priorityR;
         *(int32_t*)(player_stats + 0x68) = thPracParam.priorityB;

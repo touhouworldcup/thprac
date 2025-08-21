@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1044]
+const char* th_glossary_str[3][1045]
 {
     {
         "",
@@ -580,6 +580,7 @@ const char* th_glossary_str[3][1044]
         "下一个石",
         "异变值溢出修复",
         "异变敌人",
+        "召喚数",
         "等级(蓝)",
         "等级(绿)",
         "等级(红)",
@@ -1626,6 +1627,7 @@ const char* th_glossary_str[3][1044]
         "Next Stone",
         "PIV overflow fix",
         "Summon",
+        "Summoned",
         "LevelB",
         "LevelG",
         "LevelR",
@@ -2672,6 +2674,7 @@ const char* th_glossary_str[3][1044]
         "次の石",
         "PIVオーバーフロー修正",
         "異変石",
+        "召喚数",
         "レベルB",
         "レベルG",
         "レベルR",
