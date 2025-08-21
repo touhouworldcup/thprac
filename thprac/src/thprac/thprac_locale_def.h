@@ -2679,10 +2679,10 @@ extern const th_glossary_t TH20_RAGE[3];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3269];
+extern const wchar_t __thprac_loc_range_zh[2751];
 
 extern const wchar_t __thprac_loc_range_en[15];
 
-extern const wchar_t __thprac_loc_range_ja[2773];
+extern const wchar_t __thprac_loc_range_ja[2237];
 
 }
