@@ -1,5 +1,10 @@
+## 25.8.21
+- th20各种支持和bug修复
+- roll游戏
+- 部分主线更新
+
 ## 25.8.18
-- th20部分支持(复制粘贴于 https://github.com/touhouworldcup/thprac/pull/264/commits)
+- th20部分支持(复制粘贴于 https://github.com/touhouworldcup/thprac/pull/264/commits )
 
 ## 25.8.12
 - 修改了下红魔乡背景修复逻辑

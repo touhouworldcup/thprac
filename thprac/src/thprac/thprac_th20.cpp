@@ -638,6 +638,23 @@ namespace TH20 {
     PATCH_ST(th20_bullet_hitbox_fix_2, 0x3EFEA, "F30F108284000000F30F5C4128");
 
     
+    float g_bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
+    EHOOK_ST(th20_bossmovedown, 0x90953, 5, {
+        float* y_pos = (float*)(pCtx->Eax + 0x17C);
+        float* y_range = (float*)(pCtx->Eax + 0x184);
+        if (g_bossMoveDownRange >= 0.0f)
+        {
+            float y_max = (*y_pos) + (*y_range) * 0.5f;
+            float y_min2 = y_max - (*y_range) * (1.0f - g_bossMoveDownRange);
+            *y_pos = (y_max + y_min2) * 0.5f;
+            *y_range = (y_max - y_min2);
+        }else{
+            float y_min = (*y_pos) - (*y_range) * 0.5f;
+            float y_max2 = y_min + (*y_range) * (1.0f - (-g_bossMoveDownRange));
+            *y_pos = (y_min + y_max2) * 0.5f;
+            *y_range = (y_max2 - y_min);
+        }
+    });
     HOOKSET_DEFINE(th20_master_disable)
     PATCH_DY(th20_master_disable1a, 0x87736, "eb")
     PATCH_DY(th20_master_disable1b, 0x8778F, "eb")
@@ -810,6 +827,7 @@ namespace TH20 {
         SINGLETON(THAdvOptWnd);
 
     public:
+        bool forceBossMoveDown = false;
     private:
     private:
         bool pivOverflowFix = false;
@@ -898,6 +916,8 @@ namespace TH20 {
             GameplayInit();
             MasterDisableInit();
 
+            
+            th20_bossmovedown.Setup();
             th20_piv_overflow_fix.Setup();
             th20_piv_uncap_1.Setup();
             th20_piv_uncap_2.Setup();
@@ -984,14 +1004,25 @@ namespace TH20 {
                     FpsSet();
                 EndOptGroup();
             }
-            if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
-                for (int i = 0; i < 3; i++)
-                    th20_master_disable[i].Toggle(g_adv_igi_options.disable_master_autoly);
-            }
-            ImGui::SameLine();
-            HelpMarker(S(TH_DISABLE_MASTER_DESC));
 
             if (BeginOptGroup<TH_GAMEPLAY>()) {
+                if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
+                    th20_bossmovedown.Toggle(forceBossMoveDown);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH_BOSS_FORCE_MOVE_DOWN_DESC));
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(200.0f);
+                if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &g_bossMoveDownRange, 0.004f, -1.0f, 1.0f))
+                    g_bossMoveDownRange = std::clamp(g_bossMoveDownRange, -1.0f, 1.0f);
+
+                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
+                    for (int i = 0; i < 3; i++)
+                        th20_master_disable[i].Toggle(g_adv_igi_options.disable_master_autoly);
+                }
+                ImGui::SameLine();
+                HelpMarker(S(TH_DISABLE_MASTER_DESC));
+
                 DisableKeyOpt();
                 KeyHUDOpt();
                 InfLifeOpt();
@@ -1659,6 +1690,7 @@ namespace TH20 {
             constexpr unsigned int st4mbsNon2PlaySoundSomething = 0xe6c + 0x4;
             constexpr unsigned int st4mbsNon2PostLifeMarker = 0x1028;
             constexpr unsigned int st4mbsNon2PostWait = 0x103c;
+            constexpr unsigned int st4mbsNon2BulletClear = 0x1a8 + 0x4;
 
             ECLJump(ecl, st4PostMaple, st4MBossCreateCall, 60, 90);
             ecl.SetFile(3);
@@ -1666,7 +1698,10 @@ namespace TH20 {
             ecl << pair { st4mbsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
             ecl << pair { st4mbsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
             ecl << pair { st4mbsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st4mbsNon2BulletClear, (int16_t)0 }; // Disable bullet clear
             ECLJump(ecl, st4mbsNon2PostLifeMarker, st4mbsNon2PostWait, 0); // Skip wait
+            ECLJump(ecl, st4mbsPreWait, st4mbsPostWait, 0);// Skip wait 2
+            ECLJump(ecl, st4mbsPreWait2, st4mbsPostWait2, 0);
             break;
         }
         case THPrac::TH20::TH20_ST4_BOSS1: {
@@ -2340,7 +2375,7 @@ namespace TH20 {
             pCtx->Eip = RVA(0xBAC9A);
         }
     })
-    EHOOK_DY(th20_everlasting_bgm, 0x28C90, 1, {
+    EHOOK_DY(th20_everlasting_bgm_1, 0x28C90, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0] - ingame_image_base;
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -2359,6 +2394,11 @@ namespace TH20 {
         if (result) {
             pCtx->Eip = RVA(0x28DD5);
         }
+    })
+    EHOOK_DY(th20_everlasting_bgm_2, 0xE5C91, 5, {
+        bool el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && (thPracParam.mode == 1) && thPracParam.section;
+        if (el_switch)
+            pCtx->Eip = RVA(0xE5CF7);
     })
     EHOOK_DY(th20_patch_main, 0xBBD56, 1, {
         if (thPracParam.mode == 1) {
@@ -2399,7 +2439,7 @@ namespace TH20 {
         *(int32_t*)(player_stats + 0x7C) = thPracParam.levelY;
         *(int32_t*)(player_stats + 0x80) = thPracParam.levelG;
     })
-    EHOOK_DY(th20_patch_ex_stones_fix, 0x6415d, 2, {
+    EHOOK_DY(th20_patch_ex_stones_fix, 0x6415A, 3, {
         if (thPracParam.mode == 1) {
             pCtx->Eip = RVA(0x6417F);
         }
@@ -2469,6 +2509,16 @@ namespace TH20 {
         THOverlay::singleton().Update();
 
         TH20InGameInfo::singleton().Update();
+        auto p = ImGui::GetOverlayDrawList();
+        // in case boss movedown do not disabled when playing normal games
+        {
+            if (THAdvOptWnd::singleton().forceBossMoveDown) {
+                auto sz = ImGui::CalcTextSize(S(TH_BOSS_FORCE_MOVE_DOWN));
+                p->AddRectFilled({ 240.0f, 0.0f }, { sz.x + 240.0f, sz.y }, 0xFFCCCCCC);
+                p->AddText({ 240.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
+            }
+        }
+
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(RVA(0x1ba56c)))
             KeysHUD(20, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
 
@@ -2526,7 +2576,7 @@ namespace TH20 {
             asm_call_rel<0x16D20, Stdcall>();
         }
 
-        SetDpadHook(0x227B1, 6);
+        SetDpadHook(0x22651, 6);
 
         // Gui components creation
         THGuiPrac::singleton();

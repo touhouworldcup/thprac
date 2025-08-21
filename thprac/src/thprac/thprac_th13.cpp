@@ -163,19 +163,19 @@ namespace TH13 {
             case Gui::LOCALE_ZH_CN:
                 AutoSize(ImVec2(0.0f, 0.0f),
                     XSSS(3)[TH13_ST7_END_S1], nullptr, S(TH_BOMB_FRAGMENT), nullptr,
-                    15.5f, ImVec2(-1.0f, 450.0f), ImVec2(370.0f, -1.0f));
+                    15.5f, ImVec2(ImGui::GetMainViewport()->Size.x, 450.0f), ImVec2(370.0f, -1.0f));
                 AutoPos(0.9f, 0.65f);
                 break;
             case Gui::LOCALE_EN_US:
                 AutoSize(ImVec2(0.0f, 0.0f),
                     XSSS(3)[TH13_ST1_BOSS2], nullptr, S(TH13_TRANCE_METER), nullptr,
-                    15.5f, ImVec2(-1.0f, 450.0f), ImVec2(-1.0f, -1.0f));
+                    15.5f, ImVec2(ImGui::GetMainViewport()->Size.x, 450.0f), ImVec2(-1.0f, -1.0f));
                 AutoPos(0.9f, 0.65f);
                 break;
             case Gui::LOCALE_JA_JP:
                 AutoSize(ImVec2(0.0f, 0.0f),
                     XSSS(3)[TH13_ST1_BOSS4], nullptr, S(TH13_EXTEND), nullptr,
-                    15.5f, ImVec2(-1.0f, 450.0f), ImVec2(370.0f, -1.0f));
+                    15.5f, ImVec2(ImGui::GetMainViewport()->Size.x, 450.0f), ImVec2(370.0f, -1.0f));
                 AutoPos(0.9f, 0.65f);
                 break;
             default:

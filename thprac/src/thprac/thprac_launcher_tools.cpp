@@ -576,7 +576,7 @@ public:
         mRndTextGen = GetRndGenerator(1u, 20u);
 
         if (mRndSeedGen() % 32 == 0 && strcmp(gGameRoll[32].name, "th19") == 0) {
-            gGameRoll[32].playerSelect = "Reimu\0Marisa\0Sanae\0Ran\0Aunn\0Nazrin\0Seiran\0Orin\0Tsukasa\0Mamizou\0Yachie\0Saki\0Yuuma\0Suika\0Goku\0Enoko\0Chiyari\0Hisami\0Zanmu\0\0";
+            gGameRoll[32].shottypes = THPRAC_GAMEROLL_TH19_EASTER_EGG_SHOTTYPES;
         }
 
         for (auto& game : gGameRoll) {
@@ -585,9 +585,9 @@ public:
             }
         }
         if (mRndTextGen() == 1) {
-            mRollText = "Eeny, meeny, miny, moe!";
+            mRollText = S(THPRAC_GAMEROLL_EENY_MEENY);
         } else {
-            mRollText = "ROLL!";
+            mRollText = S(THPRAC_GAMEROLL_ROLL);
         }
         SetPlayerOpt();
     }
@@ -617,14 +617,14 @@ public:
             auto result = rndFunc();
             sprintf_s(outputStr, S(THPRAC_TOOLS_ROLL_RESULT), candidate[result].c_str());
             mRollText = outputStr;
-            mRollGame = mGameOption[mGameSelected].name;
+            mRollGame = S(mGameOption[mGameSelected].title);
         }
     }
     void SetPlayerOpt()
     {
         mPlayerOption.clear();
-        mRollText = "ROLL!";
-        auto playerStr = mGameOption[mGameSelected].playerSelect;
+        mRollText = S(THPRAC_GAMEROLL_ROLL);
+        auto playerStr = S(mGameOption[mGameSelected].shottypes);
         while (playerStr[0] != '\0') {
             mPlayerOption.push_back(std::pair<std::string, bool>(playerStr, true));
             for (; playerStr[0] != '\0'; ++playerStr)
@@ -642,11 +642,10 @@ public:
         GuiCenteredText(S(THPRAC_TOOLS_RND_PLAYER));
         ImGui::Separator();
 
-        if (ImGui::BeginCombo(S(THPRAC_TOOLS_RND_PLAYER_GAME), mGameOption[mGameSelected].name, 0)) // The second parameter is the label previewed before opening the combo.
-        {
+        if (ImGui::BeginCombo(S(THPRAC_TOOLS_RND_PLAYER_GAME), S(mGameOption[mGameSelected].title), 0)) { // The second parameter is the label previewed before opening the combo.
             for (size_t n = 0; n < mGameOption.size(); n++) {
                 bool is_selected = (mGameSelected == n);
-                if (ImGui::Selectable(mGameOption[n].name, is_selected)) {
+                if (ImGui::Selectable(S(mGameOption[n].title), is_selected)) {
                     mGameSelected = n;
                     SetPlayerOpt();
                 }
@@ -671,7 +670,7 @@ public:
         if (GuiButtonRelCentered(mRollText.c_str(), 0.9f, ImVec2(1.0f, 0.08f))) {
             RollPlayer();
         }
-        if (mRollText != "ROLL!" && ImGui::BeginPopupContextItem("##roll_player_popup")) {
+        if (mRollText != S(THPRAC_GAMEROLL_ROLL) && ImGui::BeginPopupContextItem("##roll_player_popup")) {
             if (ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_GAME))) {
                 GuiLauncherMainSwitchTab(S(THPRAC_GAMES));
                 LauncherGamesGuiSwitch(mRollGame.c_str());
@@ -681,9 +680,9 @@ public:
 
         if (!result) {
             if (mRndTextGen() == 1) {
-                mRollText = "Eeny, meeny, miny, moe!";
+                mRollText = S(THPRAC_GAMEROLL_EENY_MEENY);
             } else {
-                mRollText = "ROLL!";
+                mRollText = S(THPRAC_GAMEROLL_ROLL);
             }
         }
         return result;
@@ -712,9 +711,9 @@ public:
             mGameOption[game.type].push_back(game);
         }
         if (mRndTextGen() == 1) {
-            mRollText = "Eeny, meeny, miny, moe!";
+            mRollText = S(THPRAC_GAMEROLL_EENY_MEENY);
         } else {
-            mRollText = "ROLL!";
+            mRollText = S(THPRAC_GAMEROLL_ROLL);
         }
     }
 
@@ -732,7 +731,7 @@ public:
         if (candidate.size()) {
             auto rndFunc = GetRndGenerator(0u, candidate.size() - 1, mRndSeedGen());
             auto result = rndFunc();
-            sprintf_s(outputStr, S(THPRAC_TOOLS_ROLL_RESULT), candidate[result].name);
+            sprintf_s(outputStr, S(THPRAC_TOOLS_ROLL_RESULT), S(candidate[result].title));
             mRollText = outputStr;
             mRollResult = candidate[result];
         }
@@ -760,7 +759,7 @@ public:
             bool allSelected = true;
             ImGui::Columns(6, 0, false);
             for (auto& game : gameType) {
-                ImGui::Checkbox(game.name, &game.selected);
+                ImGui::Checkbox(S(game.title), &game.selected);
                 if (!game.selected) {
                     allSelected = false;
                 }
@@ -784,10 +783,10 @@ public:
         if (GuiButtonRelCentered(mRollText.c_str(), 0.9f, ImVec2(1.0f, 0.08f))) {
             RollGame();
         }
-        if (mRollText != "ROLL!" && ImGui::BeginPopupContextItem("##roll_game_popup")) {
+        if (mRollText != S(THPRAC_GAMEROLL_ROLL) && ImGui::BeginPopupContextItem("##roll_game_popup")) {
             if (mRollResult.playerSelect) {
                 if (ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_PLAYER))) {
-                    mRollText = "ROLL!";
+                    mRollText = S(THPRAC_GAMEROLL_ROLL);
                     LauncherToolsGuiSwitch(mRollResult.name);
                 }
             }
@@ -800,9 +799,9 @@ public:
 
         if (!result) {
             if (mRndTextGen() == 1) {
-                mRollText = "Eeny, meeny, miny, moe!";
+                mRollText = S(THPRAC_GAMEROLL_EENY_MEENY);
             } else {
-                mRollText = "ROLL!";
+                mRollText = S(THPRAC_GAMEROLL_ROLL);
             }
         }
         return result;
@@ -816,6 +815,7 @@ private:
     GameRoll mRollResult;
     bool mGameTypeOpt[4];
 };
+
 
 class THToolsGui {
 private:

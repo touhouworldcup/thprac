@@ -1603,7 +1603,7 @@ public:
                 }
                 for (auto& game : gGameDefs) {
                     auto gameType = (GameRollType)((int)game.catagory + 1);
-                    GameRoll roll { game.idStr, gameType, game.steamId ? "STEAM": nullptr, 1, false };
+                    GameRoll roll { game.idStr, THPRAC_GAMEROLL_EMPTY_SHOTTYPES, gameType, THPRAC_GAMEROLL_EMPTY_SHOTTYPES, game.steamId ? "STEAM" : nullptr, 1, false };
 
                     auto it = mGames.find(roll.name);
                     if (it != mGames.end()) {
