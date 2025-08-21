@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1043]
+const char* th_glossary_str[3][1044]
 {
     {
         "",
@@ -959,6 +959,7 @@ const char* th_glossary_str[3][1043]
         "总是计入All Clear Bonus",
         "开启时，单关练习六面结束后将会计入All Clear Bonus。",
         "信仰",
+        "終幕",
         "FPS调整",
         "FPS调整相关的功能已禁用，你必须满足以下条件之一以使用这些功能：\n1. 使用VsyncPatch，且在vpatch.ini中将”Vsync“一项的值设为0。\n2. 在游戏的custom.exe中将输入方式设置为”高速“。（仅限地灵殿及之后的游戏）",
         "自由调整",
@@ -2004,6 +2005,7 @@ const char* th_glossary_str[3][1043]
         "Always factor in the \"All Clear Bonus\"",
         "If enabled, when practicing stage 6, the \"All Clear Bonus\" will be added to the total score at the end.",
         "Faith",
+        "Finale",
         "FPS Adjustment",
         "FPS Adjustment related features has been disabled. To enable them, satisfy either of the following requirements:\n1. Use VsyncPatch, and make sure the \"Vsync\" value in vpatch.ini is set to 0.\n2. In the game's custom.exe, set the input method to \"Fast\". (Only applies to SA and after)",
         "Adjust freely",
@@ -3049,6 +3051,7 @@ const char* th_glossary_str[3][1043]
         "いつもオールクリアボーナスを加算します",
         "有効になっている場合、練習モードのステージ6の終わりに、最終スコアにオールクリアボーナスを加算されます。",
         "信仰",
+        "终幕",
         "FPS調整",
         "FPS調整関連のオプションは無効になっています。 それらを有効にするには、次の要件のいずれかを満たします：\n\n1. VsyncPatchを使用し、vpatch.iniの「Vsync」値を0に設定します。\n2. ゲームのcustom.exeで、入力のレイテンシを「高速」に設定します。 （地霊殿以降のみに適用）",
         "自由調整",
@@ -21671,10 +21674,10 @@ const th_sections_t th_sections_cbt[7][2][14]
     },
 };
 
-const th_glossary_t TH20_RAGE[3]
+const th_glossary_t TH20_SPELL_PHASE_TIMEOUT[3]
 {
     TH_NORMAL,
-    TH_RAGE,
+    TH_FINALE,
 };
 
 }

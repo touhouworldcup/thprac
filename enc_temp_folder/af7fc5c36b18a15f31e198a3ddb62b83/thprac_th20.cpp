@@ -232,7 +232,7 @@ namespace TH20 {
             auto section = CalcSection();
             if (section == TH20_ST7_BOSS17)
                 return TH20_SPELL_PHASE_TIMEOUT;
-            if (section == TH20_ST6_BOSS12 || section == TH20_ST7_BOSS18)
+            if (section == TH20_ST6_BOSS12 || section == TH20_ST7_BOSS18) 
                 return TH_SPELL_PHASE2;
             return nullptr;
         }
@@ -2033,9 +2033,9 @@ namespace TH20 {
             ecl << pair { st7bsSpellHealthVal, 6000 }; // Set correct health (set in skipped non)
 
             if (thPracParam.phase == 1) { //Finale
-                ecl << pair { st7BossSpell9Duration, 5040 - 3400 + 90 }; // Adjust duration (we skipped 3400f worth of waits in the attacks but the boss waits for 90 before attacking)
+                ecl << pair { st7BossSpell9Duration, 5040 - 3400 + 90 }; // Adjust duration (we skipped 3400 frames worth of waits in the attacks but the boss waits for 90 before attacking)
                 ECLJump(ecl, st7BossSpell9ChoccyPostSetup, st7BossSpell9ChoccyPreFinale, 0);
-                ECLJump(ecl, st7BossSpell9BulletsPostSetup, st7BossSpell9BulletsPreFinale, 0);
+                //ECLJump(ecl, st7BossSpell9BulletsPostSetup, st7BossSpell9BulletsPreFinale, 0);
             }
             break;
         }

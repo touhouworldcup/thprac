@@ -815,6 +815,7 @@
       "TH_OFF": [ "关闭", "Off", "無効" ],
       "TH_NORMAL": [ "正常", "Normal", "普通" ],
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
+      "TH_FINALE": [ "終幕", "Finale", "终幕" ],
       "TH_P1": [ "P1", "P1", "P1" ],
       "TH_P2": [ "P2", "P2", "P2" ],
       "TH_P3": [ "P3", "P3", "P3" ],
@@ -9976,9 +9977,9 @@
     },
 
     "groups": {
-      "TH20_RAGE": [
+      "TH20_SPELL_PHASE_TIMEOUT": [
         "TH_NORMAL",
-        "TH_RAGE"
+        "TH_FINALE"
       ]
     }
   }
