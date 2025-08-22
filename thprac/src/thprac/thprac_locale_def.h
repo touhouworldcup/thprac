@@ -2681,7 +2681,7 @@ extern const th_glossary_t TH20_SPELL_PHASE_TIMEOUT[3];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[2753];
+extern const wchar_t __thprac_loc_range_zh[2759];
 
 extern const wchar_t __thprac_loc_range_en[31];
 
