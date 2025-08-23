@@ -640,7 +640,8 @@ namespace TH20 {
     PATCH_ST(th20_bullet_hitbox_fix_1, 0x3Efd2, "F30F108080000000F30F5C4224");
     PATCH_ST(th20_bullet_hitbox_fix_2, 0x3EFEA, "F30F108284000000F30F5C4128");
 
-    
+    PATCH_ST(th20_decrease_graze_effect, 0x9DC60, "C21000");
+
     float g_bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
     EHOOK_ST(th20_bossmovedown, 0x90953, 5, {
         float* y_pos = (float*)(pCtx->Eax + 0x17C);
@@ -833,12 +834,7 @@ namespace TH20 {
         bool forceBossMoveDown = false;
     private:
     private:
-        bool pivOverflowFix = false;
-        bool pivUncap = false;
-        bool scoreUncap = false;
-        bool infiniteStones = true;
         bool plHitboxScaleFix = false;
-        bool bulletHitboxFix = true;
 
         void MasterDisableInit()
         {
@@ -930,18 +926,18 @@ namespace TH20 {
             th20_hitbox_scale_fix.Setup();
             th20_bullet_hitbox_fix_1.Setup();
             th20_bullet_hitbox_fix_2.Setup();
-            if (plHitboxScaleFix)
-            {
-                th20_hitbox_scale_fix.Enable();
-            }
-            if (bulletHitboxFix)
-            {
-                th20_bullet_hitbox_fix_1.Enable();
-                th20_bullet_hitbox_fix_2.Enable();
-            }
-            if (infiniteStones) {
-                th20_infinite_stones.Enable();
-            }
+            th20_decrease_graze_effect.Setup();
+
+            th20_piv_overflow_fix.Toggle(g_adv_igi_options.th20_piv_overflow_fix);
+            th20_piv_uncap_1.Toggle(g_adv_igi_options.th20_piv_uncap);
+            th20_piv_uncap_2.Toggle(g_adv_igi_options.th20_piv_uncap);
+            th20_score_uncap.Toggle(g_adv_igi_options.th20_score_uncap);
+            th20_score_uncap_stage_tr.Toggle(g_adv_igi_options.th20_score_uncap);
+            th20_infinite_stones.Toggle(g_adv_igi_options.th20_fake_unlock_stone);
+            th20_bullet_hitbox_fix_1.Toggle(g_adv_igi_options.th20_fix_bullet_hitbox);
+            th20_bullet_hitbox_fix_2.Toggle(g_adv_igi_options.th20_fix_bullet_hitbox);
+            th20_decrease_graze_effect.Toggle(g_adv_igi_options.th20_decrease_graze_effect);
+            
             // TODO(?)
             /*
             // thcrap base_tsa already patches this to fix the crash, don't try to rehook it if it's being used
@@ -1030,25 +1026,35 @@ namespace TH20 {
                 KeyHUDOpt();
                 InfLifeOpt();
 
-                if (ImGui::Checkbox(S(TH20_PIV_OVERFLOW_FIX), &pivOverflowFix))
+                
+                th20_piv_overflow_fix.Toggle(g_adv_igi_options.th20_piv_overflow_fix);
+                th20_piv_uncap_1.Toggle(g_adv_igi_options.th20_piv_uncap);
+                th20_piv_uncap_2.Toggle(g_adv_igi_options.th20_piv_uncap);
+                th20_score_uncap.Toggle(g_adv_igi_options.th20_score_uncap);
+                th20_score_uncap_stage_tr.Toggle(g_adv_igi_options.th20_score_uncap);
+                th20_infinite_stones.Toggle(g_adv_igi_options.th20_fake_unlock_stone);
+                th20_bullet_hitbox_fix_1.Toggle(g_adv_igi_options.th20_fix_bullet_hitbox);
+                th20_bullet_hitbox_fix_2.Toggle(g_adv_igi_options.th20_fix_bullet_hitbox);
+
+                if (ImGui::Checkbox(S(TH20_PIV_OVERFLOW_FIX), &g_adv_igi_options.th20_piv_overflow_fix))
                 {
-                    th20_piv_overflow_fix.Toggle(pivOverflowFix);
-                    th20_score_uncap_stage_tr.Toggle(scoreUncap || pivOverflowFix || pivUncap);
+                    th20_piv_overflow_fix.Toggle(g_adv_igi_options.th20_piv_overflow_fix);
+                    th20_score_uncap_stage_tr.Toggle(g_adv_igi_options.th20_score_uncap || g_adv_igi_options.th20_piv_overflow_fix || g_adv_igi_options.th20_piv_uncap);
                 }
                 ImGui::SameLine();
-                if (ImGui::Checkbox(S(TH20_UNCAP_PIV), &pivUncap)) {
-                    th20_piv_uncap_1.Toggle(pivUncap);
-                    th20_piv_uncap_2.Toggle(pivUncap);
-                    th20_score_uncap_stage_tr.Toggle(scoreUncap || pivOverflowFix || pivUncap);
+                if (ImGui::Checkbox(S(TH20_UNCAP_PIV), &g_adv_igi_options.th20_piv_uncap)) {
+                    th20_piv_uncap_1.Toggle(g_adv_igi_options.th20_piv_uncap);
+                    th20_piv_uncap_2.Toggle(g_adv_igi_options.th20_piv_uncap);
+                    th20_score_uncap_stage_tr.Toggle(g_adv_igi_options.th20_score_uncap || g_adv_igi_options.th20_piv_overflow_fix || g_adv_igi_options.th20_piv_uncap);
                 }
                 ImGui::SameLine();
-                if (ImGui::Checkbox(S(TH20_UNCAP_SCORE), &scoreUncap))
+                if (ImGui::Checkbox(S(TH20_UNCAP_SCORE), &g_adv_igi_options.th20_score_uncap))
                 {
-                    th20_score_uncap.Toggle(scoreUncap);
-                    th20_score_uncap_stage_tr.Toggle(scoreUncap || pivOverflowFix || pivUncap);
+                    th20_score_uncap.Toggle(g_adv_igi_options.th20_score_uncap);
+                    th20_score_uncap_stage_tr.Toggle(g_adv_igi_options.th20_score_uncap || g_adv_igi_options.th20_piv_overflow_fix || g_adv_igi_options.th20_piv_uncap);
                 }
-                if (ImGui::Checkbox(S(TH20_FAKE_UNLOCK_STONES), &infiniteStones))
-                    th20_infinite_stones.Toggle(infiniteStones);
+                if (ImGui::Checkbox(S(TH20_FAKE_UNLOCK_STONES), &g_adv_igi_options.th20_fake_unlock_stone))
+                    th20_infinite_stones.Toggle(g_adv_igi_options.th20_fake_unlock_stone);
                 ImGui::SameLine();
                 HelpMarker(S(TH20_FAKE_UNLOCK_STONES_DESC));
                 ImGui::SameLine();
@@ -1056,11 +1062,16 @@ namespace TH20 {
                     th20_hitbox_scale_fix.Toggle(plHitboxScaleFix);
                 ImGui::SameLine();
                 HelpMarker(S(TH20_FIX_HITBOX_DESC));
-                if (ImGui::Checkbox(S(TH20_FIX_BULLETHITBOX), &bulletHitboxFix))
+                if (ImGui::Checkbox(S(TH20_FIX_BULLETHITBOX), &g_adv_igi_options.th20_fix_bullet_hitbox))
                 {
-                    th20_bullet_hitbox_fix_1.Toggle(bulletHitboxFix);
-                    th20_bullet_hitbox_fix_2.Toggle(bulletHitboxFix);
+                    th20_bullet_hitbox_fix_1.Toggle(g_adv_igi_options.th20_fix_bullet_hitbox);
+                    th20_bullet_hitbox_fix_2.Toggle(g_adv_igi_options.th20_fix_bullet_hitbox);
                 }
+                ImGui::SameLine();
+                if (ImGui::Checkbox(S(TH20_DECREASE_EFF), &g_adv_igi_options.th20_decrease_graze_effect)) {
+                    th20_decrease_graze_effect.Toggle(g_adv_igi_options.th20_decrease_graze_effect);
+                }
+                
                 ImGui::SetNextItemWidth(180.0f);
                 EndOptGroup();
             }
@@ -2396,17 +2407,17 @@ namespace TH20 {
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
         // 4th stack item = i32 call_addr
-
+    
         bool el_switch;
         bool is_practice;
         bool result;
-
+    
         el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && (thPracParam.mode == 1) && thPracParam.section;
         is_practice = (*((int32_t*)RVA(0x1ba5d4)) & 0x1);
-
+    
         result = ElBgmTest<0xD9B90, 0xD9BFE, 0xE60B8, 0xE64B8, 0xffffffff>(
             el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
-
+    
         if (result) {
             pCtx->Eip = RVA(0x28DD5);
         }
@@ -2425,7 +2436,7 @@ namespace TH20 {
             *(int32_t*)RVA(0x1BA568 + 0x158) = thPracParam.bomb_fragment;
             *(int32_t*)RVA(0x1BA568 + 0xB8) = thPracParam.power;
             *(int32_t*)RVA(0x1BA568 + 0xCC) = thPracParam.value;
-
+    
             THSectionPatch();
         }
         thPracParam._playLock = true;
@@ -2433,14 +2444,14 @@ namespace TH20 {
     EHOOK_DY(th20_patch_stones, 0x1336F1, 1, {
         if (thPracParam.mode != 1)
             return;
-
+    
         uintptr_t player_stats = RVA(0x1BA5F0);
         *(int32_t*)(player_stats + 0x4C) = (int32_t)(thPracParam.hyper * *(int32_t*)(player_stats + 0x50));
         if ((int32_t)thPracParam.hyper == 1) { // call the hyper start method
             int32_t* gauge_manager_ptr = (int32_t*)RVA(0x1BA568 + 0x2C);
             asm_call_rel<0x134D00, Fastcall>(*gauge_manager_ptr);
         }
-
+    
         if (thPracParam.stoneMax)
         {
             *(int32_t*)(player_stats + 0x60) = thPracParam.stoneMax;
@@ -2485,7 +2496,7 @@ namespace TH20 {
         *(uint32_t*)RVA(0x1BA568 + 0x88 + 0x1E0) = *(uint32_t*)RVA(0x1B0A60);
     })
     PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
-
+    
     EHOOK_DY(th20_quit1, 0xe2dc7, 6, {
         if ((GetAsyncKeyState('Q') & 0x8000)) { //Esc+Q
             DWORD t = *(DWORD*)(pCtx->Ebp - 0x94);
@@ -2501,7 +2512,7 @@ namespace TH20 {
             pCtx->Eip = RVA(0xE2BF0);
         }
     })
-
+    
     EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
         if (*(uint32_t*)(*(uintptr_t*)(RVA(0x1BA568) + 0x88 + 0x238) + 0x108)) {
             // Yes, the order really is swapped like this
@@ -2535,12 +2546,12 @@ namespace TH20 {
     })
     EHOOK_DY(th20_update, 0x12A72, 1, {
         GameGuiBegin(IMPL_WIN32_DX9, !THAdvOptWnd::singleton().IsOpen());
-
+    
         // Gui components update
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
-
+    
         TH20InGameInfo::singleton().Update();
         auto p = ImGui::GetOverlayDrawList();
         // in case boss movedown do not disabled when playing normal games
@@ -2551,14 +2562,14 @@ namespace TH20 {
                 p->AddText({ 240.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
-
+    
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(RVA(0x1ba56c)))
             KeysHUD(20, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
-
+    
         if (g_change_stone){
             TH20_ChangeStone();
         }
-
+    
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     })

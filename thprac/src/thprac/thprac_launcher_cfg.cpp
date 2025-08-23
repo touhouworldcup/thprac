@@ -2227,6 +2227,12 @@ private:
                     ImGui::TreePop();
                 }
             }
+            mCfgEnableTH20_PIV_OverflowFix_autoly.Gui(S(THPRAC_TH20_PIV_OVERFLOW_FIX));
+            mCfgEnableTH20_PIV_Uncap_autoly.Gui(S(THPRAC_TH20_UNCAP_PIV));
+            mCfgEnableTH20_Score_Uncap_autoly.Gui(S(THPRAC_TH20_UNCAP_SCORE));
+            mCfgEnableTH20_FakeUnlockStones_autoly.Gui(S(THPRAC_TH20_FAKE_UNLOCK_STONES), S(THPRAC_TH20_UNLOCK_STONES_DESC));
+            mCfgEnableTH20_FixBulletHitbox_autoly.Gui(S(THPRAC_TH20_FIX_BULLETHITBOX), S(THPRAC_TH20_FIX_BULLETHITBOX_DESC));
+            mCfgEnableTH20_DecreaseGrazeEffect_autoly.Gui(S(THPRAC_TH20_DECREASE_EFF));
             ImGui::Separator();
             ImGui::Text(S(THPRAC_KB));
             
@@ -2448,6 +2454,13 @@ private:
     THCfgCombo mCfgTH18Card_st4 { "th18_card_st4", 0,56 };
     THCfgCombo mCfgTH18Card_st5 { "th18_card_st5", 0,56 };
     THCfgCombo mCfgTH18Card_st7 { "th18_card_st7", 0,56 };
+
+    THCfgCheckbox mCfgEnableTH20_PIV_OverflowFix_autoly { "auto_th20_PIV_overflow_fix", true };
+    THCfgCheckbox mCfgEnableTH20_PIV_Uncap_autoly { "auto_th20_PIV_uncap", true };
+    THCfgCheckbox mCfgEnableTH20_Score_Uncap_autoly { "auto_th20_score_uncap",true};
+    THCfgCheckbox mCfgEnableTH20_FakeUnlockStones_autoly { "auto_th20_fake_unlock_stones",true};
+    THCfgCheckbox mCfgEnableTH20_FixBulletHitbox_autoly { "auto_th20_fix_bullet_hitbox",true};
+    THCfgCheckbox mCfgEnableTH20_DecreaseGrazeEffect_autoly { "auto_th20_decrease_graze_effect",false};
     // kbs
     THCfgColor mKb_ColorBorderPress { "kb_border_color_press", 0xFFFFFFFF };
     THCfgColor mKb_ColorBorderRelease { "kb_border_color_release", 0xFFFFFFFF };

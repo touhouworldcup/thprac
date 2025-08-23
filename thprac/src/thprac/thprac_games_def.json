@@ -1240,6 +1240,15 @@
 	  "THPRAC_TH18_CARD_5": [ "stage5 卡牌", "card for stage 5", "card for stage 5" ],
 	  "THPRAC_TH18_CARD_7": [ "stageEX 卡牌", "card for stage EX", "card for stage EX" ],
 	  
+	  "THPRAC_TH20_PIV_OVERFLOW_FIX": [ "锦上京PIV溢出修复", "FW PIV overflow fix", "FW PIVオーバーフロー修正" ],
+      "THPRAC_TH20_UNCAP_PIV": [ "锦上京移除PIV限制", "FW PIV uncap", "FW PIVキャップ解放" ],
+      "THPRAC_TH20_UNCAP_SCORE": [ "锦上京移除分数限制", "FW Score uncap", "FW スコアキャップ解放" ],
+      "THPRAC_TH20_FAKE_UNLOCK_STONES": [ "锦上京解锁未获得的石", "FW Fake unlock stones", "FW 未解放ストーン使用" ],
+      "THPRAC_TH20_UNLOCK_STONES_DESC": ["锦上京侧槽可选未解锁宝石。", "Allows you to select stones you haven't actually unlocked in the side slots.", "未解放ストーンをサイドスロットに設定可能。" ],
+	  "THPRAC_TH20_FIX_BULLETHITBOX": [ "锦上京修复弹幕判定","FW fix bullet hitbox","FW 弾幕判定を修復します"],
+	  "THPRAC_TH20_FIX_BULLETHITBOX_DESC": [ "锦上京游戏", "FW Game", "FW Game" ],
+	  "THPRAC_TH20_DECREASE_EFF": [ "锦上京减少擦弹特效","FW decrease graze effect","FW decrease graze effect"],
+	  
 	  
 	  "THPRAC_TH06_BACKGROUND_FIX": [ "红魔乡背景修复", "EoSD background fix", "EoSD background fix" ],
 	  "THPRAC_TH06_BACKGROUND_FIX_DESC": [ "当关闭弹幕虚影时不让蕾咪变蓝狗\n有可能让背景或UI变奇怪", "let Remilia not be blue when disables bullet shadow\nMight make bg or UI strange", "let Remilia not be blue when disables bullet shadow\nMight make bg or UI strange" ],
@@ -10646,14 +10655,14 @@
       "TH20_STONE_PRIORITY_Y": [ "优先黄", "PriorityY", "優先Y" ],
       "TH20_STONE_LEVEL_G": [ "绿石等级", "LevelG", "レベルG" ],
       "TH20_STONE_PRIORITY_G": [ "优先绿", "PriorityG", "優先G" ],
-      "TH20_HYP_LOCK": [ "异变攻击锁计", "Hyper Gauge Lock", "異変攻撃計固定" ],
-      "TH20_WST_LOCK": [ "异变石锁计 ", "Wonder Stone Gauge Lock", "異変石計固定" ],
+      "TH20_HYP_LOCK": [ "锁异变攻击槽", "Hyper Gauge Lock", "異変攻撃計固定" ],
+      "TH20_WST_LOCK": [ "锁异变石槽", "Wonder Stone Gauge Lock", "異変石計固定" ],
       "TH20_INTERNAL_GAUGES": [ "异变石内部状态", "Internal Wonder Stone State", "異変石内部状態" ],
       "TH20_NEXT_STONE": [ "下一石", "Next Stone", "次の石" ],
-      "TH20_PIV_OVERFLOW_FIX": [ "PIV溢修", "PIV overflow fix", "PIVオーバーフロー修正" ],
+      "TH20_PIV_OVERFLOW_FIX": [ "PIV溢出修复", "PIV overflow fix", "PIVオーバーフロー修正" ],
       "TH20_UNCAP_PIV": [ "移除PIV限制", "PIV uncap", "PIVキャップ解放" ],
       "TH20_UNCAP_SCORE": [ "移除分数限制", "Score uncap", "スコアキャップ解放" ],
-      "TH20_FAKE_UNLOCK_STONES": [ "假解锁宝石", "Fake unlock stones", "未解放ストーン使用" ],
+      "TH20_FAKE_UNLOCK_STONES": [ "解锁未获得的石", "Fake unlock stones", "未解放ストーン使用" ],
       "TH20_FAKE_UNLOCK_STONES_DESC": [
         "侧槽可选未解锁宝石。",
         "Allows you to select stones you haven't actually unlocked in the side slots.",
@@ -10665,6 +10674,8 @@
         "Makes your hitbox 100% scale (original size) instead of 0% (current size, point-like).",
         " 現在の0%（点のように小さい）から100%（本来のサイズ）に戻します。"
       ],
+	  
+	  "TH20_DECREASE_EFF": [ "减少擦弹特效","Decrease graze effect","Decrease graze effect"],
 	  "TH20_FIX_BULLETHITBOX": [
         "修复弹幕判定",
         "fix bullet hitbox",

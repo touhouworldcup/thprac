@@ -38,6 +38,13 @@ namespace THPrac {
         bool show_keyboard_monitor = false;
         bool th10_ud_Replay = false;
         bool th12_chromatic_ufo = false;
+
+        bool th20_piv_overflow_fix = false;
+        bool th20_piv_uncap = false;
+        bool th20_score_uncap = false;
+        bool th20_fake_unlock_stone = false;
+        bool th20_fix_bullet_hitbox = false;
+        bool th20_decrease_graze_effect = false;
         KeyRectStyle keyboard_style;
     };
     extern AdvancedIGI_Options g_adv_igi_options;

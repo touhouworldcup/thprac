@@ -667,6 +667,14 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         LauncherSettingGet("auto_th15_show_rate", g_adv_igi_options.th15_showShootingDownRate);
 
         LauncherSettingGet("auto_keyboard_monitor", g_adv_igi_options.show_keyboard_monitor);
+
+        LauncherSettingGet("auto_th20_PIV_overflow_fix", g_adv_igi_options.th20_piv_overflow_fix);
+        LauncherSettingGet("auto_th20_PIV_uncap", g_adv_igi_options.th20_piv_uncap);
+        LauncherSettingGet("auto_th20_score_uncap", g_adv_igi_options.th20_score_uncap);
+        LauncherSettingGet("auto_th20_fake_unlock_stones", g_adv_igi_options.th20_fake_unlock_stone);
+        LauncherSettingGet("auto_th20_fix_bullet_hitbox", g_adv_igi_options.th20_fix_bullet_hitbox);
+        LauncherSettingGet("auto_th20_decrease_graze_effect", g_adv_igi_options.th20_decrease_graze_effect);
+
         if (!LauncherSettingGet("kb_separated",             g_adv_igi_options.keyboard_style.separated))                g_adv_igi_options.keyboard_style.separated = true;
         if (!LauncherSettingGet("kb_aps",                   g_adv_igi_options.keyboard_style.show_aps))                 g_adv_igi_options.keyboard_style.show_aps = true;
         if (!LauncherSettingGet("kb_border_color_press",    g_adv_igi_options.keyboard_style.border_color_press))       g_adv_igi_options.keyboard_style.border_color_press = 0xFFFFFFFF;
