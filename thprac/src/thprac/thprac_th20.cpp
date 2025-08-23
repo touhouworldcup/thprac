@@ -2498,7 +2498,7 @@ namespace TH20 {
     PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
     
     EHOOK_DY(th20_quit1, 0xe2dc7, 6, {
-        if ((GetAsyncKeyState('Q') & 0x8000)) { //Esc+Q
+        if ((GetAsyncKeyState('Q') & 0x8000) && GetForegroundWindow() == *(HWND*)(RVA(0x1B6758))) { // Esc+Q, foreground
             DWORD t = *(DWORD*)(pCtx->Ebp - 0x94);
             asm_call_rel<0xBED50,Thiscall>(t + 0x30, 1);
             *(DWORD*)(t + 0xD0) = 2;
