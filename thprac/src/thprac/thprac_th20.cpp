@@ -30,7 +30,7 @@ namespace TH20 {
 
         float hyper;
         float stone;
-        int32_t stone_gauge_initial;
+        int32_t stoneMax;
         int32_t levelR;
         int32_t priorityR;
         int32_t levelB;
@@ -68,7 +68,7 @@ namespace TH20 {
 
             GetJsonValue(hyper);
             GetJsonValue(stone);
-            GetJsonValue(stone_gauge_initial);
+            GetJsonValue(stoneMax);
             GetJsonValue(levelR);
             GetJsonValue(priorityR);
             GetJsonValue(levelB);
@@ -101,7 +101,7 @@ namespace TH20 {
                 AddJsonValue(life_fragment);
                 AddJsonValue(bomb);
                 AddJsonValue(bomb_fragment);
-                AddJsonValue(stone_gauge_initial);
+                AddJsonValue(stoneMax);
                 AddJsonValue(power);
                 AddJsonValue(value);
 
@@ -177,7 +177,7 @@ namespace TH20 {
                 thPracParam.life_fragment = *mLifeFragment;
                 thPracParam.bomb = *mBomb;
                 thPracParam.bomb_fragment = *mBombFragment;
-                thPracParam.stone_gauge_initial = *mStoneGaugeinitial;
+                thPracParam.stoneMax = std::min(5000, stoneGaugeInitialValue[*mStage] + *stoneMax * 150);
                 thPracParam.power = *mPower;
                 thPracParam.value = *mValue;
 
@@ -276,7 +276,7 @@ namespace TH20 {
                 mValue(value_str.c_str());
                 mHyper(std::format("{:.2f} %%", (float)(*mHyper) / 100.0f).c_str());
                 mStone(std::format("{:.2f} %%", (float)(*mStone) / 100.0f).c_str());
-                mStoneGaugeinitial(std::format("{}", std::min(5000, stoneGaugeInitialValue[*mStage] + *mStoneGaugeinitial * 150)).c_str());
+                stoneMax(std::format("{}({})", std::min(5000, stoneGaugeInitialValue[*mStage] + *stoneMax * 150), *stoneMax).c_str());
                 ImGui::SameLine();
                 HelpMarker(S(TH20_STONE_GAUGE_INITIAL_DESC));
 
@@ -422,7 +422,7 @@ namespace TH20 {
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mHyper { TH20_HYPER, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mStone { TH20_STONE_GAUGE, 0, 10000, 1, 1000 };
-        Gui::GuiSlider<int, ImGuiDataType_S32> mStoneGaugeinitial { TH20_STONE_GAUGE_INITIAL, 0, 27 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> stoneMax { TH20_STONE_GAUGE_INITIAL, 0, 26 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelR { TH20_STONE_LEVEL_R, 1, 5 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mPriorityR { TH20_STONE_PRIORITY_R, 0, 1000 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelB { TH20_STONE_LEVEL_B, 1, 5 };
@@ -670,7 +670,7 @@ namespace TH20 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPosRel(920.0f / 1280.0f, 600.0f / 960.0f);
+            SetPosRel(920.0f / 1280.0f, 550.0f / 960.0f);
             SetSizeRel(300.0f / 1280.0f, 0.0f);
             SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
@@ -709,20 +709,13 @@ namespace TH20 {
 
         virtual void OnContentUpdate() override
         {
-            int32_t cur_player_type = (*(int32_t*)(RVA(0x1BA5F8)));
-            int32_t main_stone = (*(int32_t*)(RVA(0x1BA5FC)));
-            int32_t substone_1 = (*(int32_t*)(RVA(0x1BA600)));
-            int32_t substone_3 = (*(int32_t*)(RVA(0x1BA604)));
-            int32_t substone_2 = (*(int32_t*)(RVA(0x1BA608)));
-            int8_t substone_1_same = (*(int8_t*)(RVA(0x1BA61D)));
-            int8_t substone_3_same = (*(int8_t*)(RVA(0x1BA61E)));
-            int8_t substone_2_same = (*(int8_t*)(RVA(0x1BA61F)));
-            if (substone_1_same)
-                substone_1 = 8;
-            if (substone_2_same)
-                substone_2 = 8;
-            if (substone_3_same)
-                substone_3 = 8;
+            uintptr_t player_stats = RVA(0x1BA5F0);
+
+            int32_t cur_player_type = (*(int32_t*)(player_stats + 0x8));
+            int32_t main_stone = (*(int32_t*)(player_stats + 0x1C));
+            int32_t substone_1 = (*(int32_t*)(player_stats + 0x20));
+            int32_t substone_2 = (*(int32_t*)(player_stats + 0x24));
+            int32_t substone_3 = (*(int32_t*)(player_stats + 0x28));
 
             int32_t diff = *((int32_t*)(RVA(0x1BA7D0)));
             auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_20[cur_player_type]));
@@ -731,10 +724,10 @@ namespace TH20 {
             ImGui::Text(diff_pl.c_str());
 
 
-            auto sub_pl = std::format("{}({}/{}/{})", S(IGI_PL_20_SUB[main_stone]), S(IGI_PL_20_SUB[substone_1]), S(IGI_PL_20_SUB[substone_2]), S(IGI_PL_20_SUB[substone_3]));
+            auto sub_pl = std::format("{}({}/{}/{})", S(IGI_PL_20_SUB[main_stone]), S(IGI_PL_20_SUB[substone_1]), S(IGI_PL_20_SUB[substone_3]), S(IGI_PL_20_SUB[substone_2]));
 
             auto sub_pl_sz = ImGui::CalcTextSize(sub_pl.c_str());
-            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - sub_pl_sz.x * 0.5);
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + std::max(0.0, ImGui::GetWindowSize().x * 0.5 - sub_pl_sz.x * 0.5));
 
             ImVec4 r = {1.0f,0.5f,0.5f,1.0f};
             ImVec4 g = {0.5f,1.0f,0.5f,1.0f};
@@ -751,11 +744,11 @@ namespace TH20 {
             ImGui::SameLine(0.0f, 0.0f);
             ImGui::Text("/");
             ImGui::SameLine(0.0f, 0.0f);
-            ImGui::TextColored(stone_colors[substone_2], S(IGI_PL_20_SUB[substone_2]));
+            ImGui::TextColored(stone_colors[substone_3], S(IGI_PL_20_SUB[substone_3]));
             ImGui::SameLine(0.0f, 0.0f);
             ImGui::Text("/");
             ImGui::SameLine(0.0f, 0.0f);
-            ImGui::TextColored(stone_colors[substone_3], S(IGI_PL_20_SUB[substone_3]));
+            ImGui::TextColored(stone_colors[substone_2], S(IGI_PL_20_SUB[substone_2]));
             ImGui::SameLine(0.0f, 0.0f);
             ImGui::Text(")");
 
@@ -786,12 +779,20 @@ namespace TH20 {
             ImGui::NextColumn();
             ImGui::Text("%9d", mPyramidShotDownCount);
 
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_20_PYRAMID_SUMMONED_COUNT));
+            ImGui::NextColumn();
+            int32_t pyramids_summoned = *(int32_t*)(player_stats + 0x94);
+            if (pyramids_summoned % 3 == 0)
+                ImGui::TextColored(r, "%9d", pyramids_summoned);
+            else
+                ImGui::TextColored(g, "%9d", pyramids_summoned);
             
-            uintptr_t player_stats = RVA(0x1BA5F0);
             auto lvR = *(int32_t*)(player_stats + 0x74);
             auto lvB = *(int32_t*)(player_stats + 0x78);
             auto lvY = *(int32_t*)(player_stats + 0x7C);
             auto lvG = *(int32_t*)(player_stats + 0x80);
+
             ImGui::NextColumn();
             ImGui::Text(S(THPRAC_INGAMEINFO_20_PYRAMID_LV));
             ImGui::NextColumn();
@@ -814,7 +815,7 @@ namespace TH20 {
         virtual void OnPreUpdate() override
         {
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(RVA(0x1ba56c))) {
-                SetPosRel(920.0f / 1280.0f, 600.0f / 960.0f);
+                SetPosRel(920.0f / 1280.0f, 550.0f / 960.0f);
                 SetSizeRel(300.0f / 1280.0f, 0.0f);
                 Open();
             } else {
@@ -2440,9 +2441,9 @@ namespace TH20 {
             asm_call_rel<0x134D00, Fastcall>(*gauge_manager_ptr);
         }
 
-        if (thPracParam.stone_gauge_initial != 0)
+        if (thPracParam.stoneMax)
         {
-            *(int32_t*)(player_stats + 0x60) = std::min(5000,stoneGaugeInitialValue[thPracParam.stage] + thPracParam.stone_gauge_initial * 150);
+            *(int32_t*)(player_stats + 0x60) = thPracParam.stoneMax;
         }
         *(int32_t*)(player_stats + 0x5C) = (int32_t)(thPracParam.stone * *(int32_t*)(player_stats + 0x60));
         *(int32_t*)(player_stats + 0x64) = thPracParam.priorityR;
@@ -2484,6 +2485,23 @@ namespace TH20 {
         *(uint32_t*)RVA(0x1BA568 + 0x88 + 0x1E0) = *(uint32_t*)RVA(0x1B0A60);
     })
     PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
+
+    EHOOK_DY(th20_quit1, 0xe2dc7, 6, {
+        if ((GetAsyncKeyState('Q') & 0x8000)) { //Esc+Q
+            DWORD t = *(DWORD*)(pCtx->Ebp - 0x94);
+            asm_call_rel<0xBED50,Thiscall>(t + 0x30, 1);
+            *(DWORD*)(t + 0xD0) = 2;
+            pCtx->Eip = RVA(0xe2acb);
+        }
+    })
+    EHOOK_DY(th20_quit2, 0xe2bcd, 2, {
+        DWORD t = *(DWORD*)(pCtx->Ebp - 0x94);
+        if (*(DWORD*)(t + 0xD0) == 2) {
+            *(DWORD*)(t + 0xD0) = 1;
+            pCtx->Eip = RVA(0xE2BF0);
+        }
+    })
+
     EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
         if (*(uint32_t*)(*(uintptr_t*)(RVA(0x1BA568) + 0x88 + 0x238) + 0x108)) {
             // Yes, the order really is swapped like this

@@ -935,6 +935,7 @@ enum th_glossary_t {
     THPRAC_INGAMEINFO_20_HYPER_COUNT,
     THPRAC_INGAMEINFO_20_PYRAMID_COUNT,
     THPRAC_INGAMEINFO_20_PYRAMID_LV,
+    THPRAC_INGAMEINFO_20_PYRAMID_SUMMONED_COUNT,
     THPRAC_INGAMEINFO_ADV,
     THPRAC_INGAMEINFO_ADV2,
     THPRAC_INGAMEINFO_ADV_DESC1,
@@ -1598,7 +1599,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1587];
+extern const char* th_glossary_str[3][1588];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3305,10 +3306,10 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3465];
+extern const wchar_t __thprac_loc_range_zh[3487];
 
-extern const wchar_t __thprac_loc_range_en[61];
+extern const wchar_t __thprac_loc_range_en[63];
 
-extern const wchar_t __thprac_loc_range_ja[2815];
+extern const wchar_t __thprac_loc_range_ja[2817];
 
 }
