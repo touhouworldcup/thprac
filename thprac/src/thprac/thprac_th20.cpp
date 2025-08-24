@@ -586,7 +586,8 @@ namespace TH20 {
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
-        PATCH_HK(0xF87FC, "01")
+        PATCH_HK(0xF87FC, "01"),
+        PATCH_HK(0xF8734, "EB")
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
