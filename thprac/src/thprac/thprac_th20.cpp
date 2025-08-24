@@ -37,6 +37,9 @@ namespace TH20 {
         int32_t levelG;
         int32_t priorityG;
 
+        int32_t reimuR2Timer[7];
+        int32_t passiveMeterTimer[7];
+
         bool dlg;
 
         bool _playLock = false;
@@ -75,11 +78,25 @@ namespace TH20 {
             GetJsonValue(levelG);
             GetJsonValue(priorityG);
 
+            GetJsonArray(reimuR2Timer, elementsof(reimuR2Timer));
+            GetJsonArray(passiveMeterTimer, elementsof(passiveMeterTimer));
+
             return true;
         }
         std::string GetJson()
         {
-            if (mode == 1) {
+            if (mode == 0) {
+                CreateJson();
+
+                AddJsonValueEx(version, GetVersionStr(), jalloc);
+                AddJsonValueEx(game, "th20", jalloc);
+                AddJsonValue(mode);
+
+                AddJsonArray(reimuR2Timer, elementsof(reimuR2Timer));
+                AddJsonArray(passiveMeterTimer, elementsof(passiveMeterTimer));
+
+                ReturnJson();
+            } else if (mode == 1) {
                 CreateJson();
 
                 AddJsonValueEx(version, GetVersionStr(), jalloc);
@@ -2198,7 +2215,7 @@ namespace TH20 {
             asm_call_rel<0x134D00, Fastcall>(*gauge_manager_ptr);
         }
 
-        if (thPracParam.stoneMax) //backwards compatibility
+        if (thPracParam.stoneMax) // backwards compatibility
             *(int32_t*)(player_stats + 0x60) = thPracParam.stoneMax;
         *(int32_t*)(player_stats + 0x5C) = (int32_t)(thPracParam.stone * *(int32_t*)(player_stats + 0x60));
         *(int32_t*)(player_stats + 0x64) = thPracParam.priorityR;
@@ -2239,8 +2256,23 @@ namespace TH20 {
         *(uint32_t*)RVA(0x1BA568 + 0x88 + 0x1E0) = *(uint32_t*)RVA(0x1B0A60);
     })
     PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
+    EHOOK_DY(th20_timer_desync_fix, 0xBA99F, 6, {
+        uint32_t stage = *(uint32_t*)RVA(0x1BA568 + 0x88 + 0x1F4) - 1;
+        if (*(uint32_t*)(*(uintptr_t*)RVA(0x1BA828) + 0x108)) {
+            // Playback
+            int32_t offset = stage != 0 && !*(uint32_t*)RVA(0x1C06A0) ? 30 : 0;
+            if (thPracParam.reimuR2Timer[stage])
+                asm_call_rel<0x23520, Thiscall>(*(uintptr_t*)RVA(0x1BA568 + 4) + 0x22B4 + 0x12580, thPracParam.reimuR2Timer[stage] + offset);
+            if (thPracParam.passiveMeterTimer[stage])
+                asm_call_rel<0x23520, Thiscall>(*(uintptr_t*)RVA(0x1C6118) + 0x28, thPracParam.passiveMeterTimer[stage]);
+        } else {
+            // Recording
+            thPracParam.reimuR2Timer[stage] = *(int32_t*)(*(uintptr_t*)RVA(0x1BA568 + 4) + 0x22B4 + 0x12580 + 4);
+            thPracParam.passiveMeterTimer[stage] = *(int32_t*)(*(uintptr_t*)RVA(0x1C6118) + 0x28 + 4);
+        }
+    })
     EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
-        if (*(uint32_t*)(*(uintptr_t*)(RVA(0x1BA568) + 0x88 + 0x238) + 0x108)) {
+        if (*(uint32_t*)(*(uintptr_t*)RVA(0x1BA828) + 0x108)) {
             // Yes, the order really is swapped like this
             auto selected = (uint32_t*)(RVA(0x1BA568) + 0x88 + 0x1C);
             selected[0] = replayStones[0];
@@ -2252,8 +2284,7 @@ namespace TH20 {
     PATCH_DY(th20_fix_rep_results_skip, 0x110D61, "7B4BFAFF")
     EHOOK_DY(th20_rep_save, 0x109D6A, 3, {
         if (sReplayPath) {
-            if (thPracParam.mode == 1)
-                THSaveReplay(sReplayPath);
+            THSaveReplay(sReplayPath);
             free(sReplayPath);
             sReplayPath = nullptr;
         }
