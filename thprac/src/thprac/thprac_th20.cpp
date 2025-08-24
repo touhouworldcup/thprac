@@ -2114,8 +2114,32 @@ namespace TH20 {
         ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
-    static bool sGameStarted = false;
+    void __fastcall AnmVM_Reset_hook(uintptr_t self)
+    {
+        uint32_t fast_id = *(uint32_t*)(self + 0x4C4);
+        memset((void*)self, 0, 0x5E4);
+        *(uint32_t*)(self + 0x4C4) = fast_id;
+        asm_call_rel<0x299D0, Thiscall>(self);
+    }
+
     static char* sReplayPath = nullptr;
+    static constinit HookCtx anmUninitFixHooks[] = {
+        { .addr = 0x38974, .data = PatchCode("e800000000") },
+        { .addr = 0x48411, .data = PatchCode("e800000000") },
+        { .addr = 0x4CA14, .data = PatchCode("e800000000") },
+        { .addr = 0x4CAB9, .data = PatchCode("e800000000") },
+        { .addr = 0x4E2B3, .data = PatchCode("e800000000") },
+        { .addr = 0x708EA, .data = PatchCode("e800000000") },
+        { .addr = 0x7F1B1, .data = PatchCode("e800000000") },
+        { .addr = 0x7F2F6, .data = PatchCode("e800000000") },
+        { .addr = 0x82252, .data = PatchCode("e800000000") },
+        { .addr = 0xD3208, .data = PatchCode("e800000000") },
+        { .addr = 0xD32D2, .data = PatchCode("e800000000") },
+        { .addr = 0xD3E57, .data = PatchCode("e800000000") },
+        { .addr = 0xD4237, .data = PatchCode("e800000000") },
+    };
+
+
 
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th20_boss_bgm, 0xBAC98, 2, {
@@ -2290,6 +2314,13 @@ namespace TH20 {
         stageStrings[7] = "Ex ";
         stageStrings[8] = "All";
         *(const char**)RVA(0x1B0A7C) = "%s  %s %.2d/%.2d/%.2d %.2d:%.2d %s %s %s %s %2.1f%%";
+
+        // AnmVM reset uninitialized memory fix
+        for (size_t i = 0; i < elementsof(anmUninitFixHooks); i++) {
+            *(uintptr_t*)((uintptr_t)anmUninitFixHooks[i].data.buffer.ptr + 1) = (uintptr_t)&AnmVM_Reset_hook - RVA(anmUninitFixHooks[i].addr) - 5;
+            anmUninitFixHooks[i].Setup();
+            anmUninitFixHooks[i].Enable();
+        }
 
         //  Reset thPracParam
         thPracParam.Reset();
