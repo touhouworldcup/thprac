@@ -2282,6 +2282,15 @@ namespace TH20 {
         // Hooks
         EnableAllHooks(THMainHook);
 
+        // Replay menu string fixes
+        auto stageStrings = (const char**)RVA(0x1AFFD0);
+        stageStrings[4] = "St4";
+        stageStrings[5] = "St5";
+        stageStrings[6] = "St6";
+        stageStrings[7] = "Ex ";
+        stageStrings[8] = "All";
+        *(const char**)RVA(0x1B0A7C) = "%s  %s %.2d/%.2d/%.2d %.2d:%.2d %s %s %s %s %2.1f%%";
+
         //  Reset thPracParam
         thPracParam.Reset();
     }
