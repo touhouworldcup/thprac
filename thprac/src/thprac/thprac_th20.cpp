@@ -153,6 +153,10 @@ namespace TH20 {
             *mLevelB = 0;
             *mLevelY = 0;
             *mLevelG = 0;
+            *mPriorityR = 0;
+            *mPriorityB = 0;
+            *mPriorityY = 0;
+            *mPriorityG = 0;
 
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -202,13 +206,13 @@ namespace TH20 {
                 thPracParam.stone = *mStone / 10000.0f;
                 thPracParam.stoneMax = stoneMaxStageDefault + *mStoneSummoned * 150;
                 thPracParam.levelR = *mLevelR;
-                thPracParam.priorityR = *mLevelR;
+                thPracParam.priorityR = *mPriorityR;
                 thPracParam.levelB = *mLevelB;
-                thPracParam.priorityB = *mLevelB;
+                thPracParam.priorityB = *mPriorityB;
                 thPracParam.levelG = *mLevelG;
-                thPracParam.priorityG = *mLevelG;
+                thPracParam.priorityG = *mPriorityG;
                 thPracParam.levelY = *mLevelY;
-                thPracParam.priorityY = *mLevelY;
+                thPracParam.priorityY = *mPriorityY;
                 break;
             }
             case 4:
