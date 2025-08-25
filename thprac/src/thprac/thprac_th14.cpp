@@ -1309,7 +1309,7 @@ namespace TH14 {
                 EndOptGroup();
             }
 
-            AboutOpt("Plus & InceRabbit (for making the video about Marisa's replay desync bug, and for sharing the replay)\n......and you!");
+            AboutOpt("Nylilsa & InceRabbit (for making the video about Marisa's replay desync bug, and for sharing the replay)\n......and you!");
             ImGui::EndChild();
             if (wndFocus)
                 ImGui::SetWindowFocus();
