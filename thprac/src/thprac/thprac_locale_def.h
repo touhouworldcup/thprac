@@ -2684,7 +2684,7 @@ extern const th_glossary_t TH20_CYCLE_LIST[4];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[2759];
+extern const wchar_t __thprac_loc_range_zh[2765];
 
 extern const wchar_t __thprac_loc_range_en[31];
 
