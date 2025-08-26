@@ -10,7 +10,7 @@
 #ifndef __D3DX8_H__
 #define __D3DX8_H__
 
-#include <d3d8.h>
+#include "d3d8.h"
 #include <limits.h>
 
 #ifndef D3DXINLINE

@@ -511,7 +511,11 @@ namespace TH08 {
             SetPos(10.0f, 10.0f);
             SetSize(0.0f, 0.0f);
             SetWndFlag(
-                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | 
+                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | 
+                ImGuiWindowFlags_NoSavedSettings | 
+                ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0
+            );
             OnLocaleChange();
         }
         SINGLETON(THOverlay);
@@ -661,7 +665,10 @@ namespace TH08 {
 
         THAdvOptWnd() noexcept
         {
-            SetWndFlag(ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
+            SetWndFlag(
+                ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | 
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove
+            );
             SetFade(0.8f, 0.8f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
