@@ -9512,6 +9512,7 @@
       "TH20_HYPER": [ "异变攻击", "Hyper", "異変攻撃" ],
       "TH20_STONE_GAUGE": [ "异变敌人", "Summon", "異変石" ],
       "TH20_STONE_SUMMONED": [ "召唤次数", "Summoned", "召喚数" ],
+      "TH20_CYCLE_3": [ "3 (残机碎片)", "3 (Life Fragment)", "3 (残機の欠片)" ],
       "TH20_STONE_LEVEL_R": [ "等级(红)", "LevelR", "レベルR" ],
       "TH20_STONE_PRIORITY_R": [ "优先级(红)", "PriorityR", "優先R" ],
       "TH20_STONE_LEVEL_B": [ "等级(蓝)", "LevelB", "レベルB" ],
@@ -9981,6 +9982,11 @@
       "TH20_SPELL_PHASE_TIMEOUT": [
         "TH_NORMAL",
         "TH_FINALE"
+      ],
+      "TH20_CYCLE_LIST": [
+        "TH14_CYCLE_1",
+        "TH14_CYCLE_2",
+        "TH20_CYCLE_3"
       ]
     }
   }

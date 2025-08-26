@@ -22,6 +22,7 @@ namespace TH20 {
         int32_t life_fragment;
         int32_t bomb;
         int32_t bomb_fragment;
+        int32_t cycle;
         int32_t power;
         int32_t value;
 
@@ -63,6 +64,7 @@ namespace TH20 {
             GetJsonValue(life_fragment);
             GetJsonValue(bomb);
             GetJsonValue(bomb_fragment);
+            GetJsonValue(cycle);
             GetJsonValue(power);
             GetJsonValue(value);
 
@@ -115,6 +117,7 @@ namespace TH20 {
                 AddJsonValue(life_fragment);
                 AddJsonValue(bomb);
                 AddJsonValue(bomb_fragment);
+                AddJsonValue(cycle);
                 AddJsonValue(power);
                 AddJsonValue(value);
 
@@ -195,6 +198,7 @@ namespace TH20 {
                 thPracParam.life_fragment = *mLifeFragment;
                 thPracParam.bomb = *mBomb;
                 thPracParam.bomb_fragment = *mBombFragment;
+                thPracParam.cycle = *mCycle;
                 thPracParam.power = *mPower;
                 thPracParam.value = *mValue;
 
@@ -297,6 +301,7 @@ namespace TH20 {
                 mHyper(std::format("{:.2f} %%", (float)(*mHyper) / 100.0f).c_str());
                 mStone(std::format("{:.2f} %%", (float)(*mStone) / 100.0f).c_str());
                 mStoneSummoned();
+                mCycle();
 
                 ImGui::Columns(2);
                 auto& style = ImGui::GetStyle();
@@ -428,6 +433,7 @@ namespace TH20 {
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
         Gui::GuiCheckBox mDlg { TH_DLG };
+        Gui::GuiCombo mCycle { TH14_CYCLE, TH20_CYCLE_LIST };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
@@ -2231,6 +2237,7 @@ namespace TH20 {
         *(int32_t*)(player_stats + 0x78) = thPracParam.levelB;
         *(int32_t*)(player_stats + 0x7C) = thPracParam.levelY;
         *(int32_t*)(player_stats + 0x80) = thPracParam.levelG;
+        *(int32_t*)(player_stats + 0x94) = thPracParam.cycle;
     })
     EHOOK_DY(th20_patch_ex_stones_fix, 0x6415A, 3, {
         if (thPracParam.mode == 1)

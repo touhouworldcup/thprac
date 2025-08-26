@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1045]
+const char* th_glossary_str[3][1046]
 {
     {
         "",
@@ -570,6 +570,7 @@ const char* th_glossary_str[3][1045]
         "Rank: %d",
         "显示敌人HP",
         "TH19 东方兽王园　～ Unfinished Dream of All Living Ghost.",
+        "3 (残机碎片)",
         "解锁异变石（伪）",
         "这允许你在副异变石槽位选择未解锁的异变石。",
         "修复玩家判定点缩放",
@@ -1617,6 +1618,7 @@ const char* th_glossary_str[3][1045]
         "Rank: %d",
         "Show Enemy HP",
         "TH19 Unfinished Dream of All Living Ghost",
+        "3 (Life Fragment)",
         "Fake unlock stones",
         "Allows you to select stones you haven't actually unlocked in the side slots.",
         "Fix player hitbox scale",
@@ -2664,6 +2666,7 @@ const char* th_glossary_str[3][1045]
         "ランク: %d",
         "敵のHPを表示する",
         "TH19 東方獣王園　～ Unfinished Dream of All Living Ghost.",
+        "3 (残機の欠片)",
         "未解放ストーン使用",
         "未解放ストーンをサイドスロットに設定可能。",
         "プレイヤーの当たり判定のスケールを修正",
@@ -21681,6 +21684,13 @@ const th_glossary_t TH20_SPELL_PHASE_TIMEOUT[3]
 {
     TH_NORMAL,
     TH_FINALE,
+};
+
+const th_glossary_t TH20_CYCLE_LIST[4]
+{
+    TH14_CYCLE_1,
+    TH14_CYCLE_2,
+    TH20_CYCLE_3,
 };
 
 }

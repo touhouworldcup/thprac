@@ -570,6 +570,7 @@ enum th_glossary_t
     TH19_RANK_FORMAT,
     TH19_SHOW_ENEMY_HP,
     TH19_TITLE,
+    TH20_CYCLE_3,
     TH20_FAKE_UNLOCK_STONES,
     TH20_FAKE_UNLOCK_STONES_DESC,
     TH20_FIX_HITBOX,
@@ -1057,7 +1058,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1045];
+extern const char* th_glossary_str[3][1046];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2678,6 +2679,8 @@ extern const th_sections_t th_sections_cba[7][2][19];
 extern const th_sections_t th_sections_cbt[7][2][14];
 
 extern const th_glossary_t TH20_SPELL_PHASE_TIMEOUT[3];
+
+extern const th_glossary_t TH20_CYCLE_LIST[4];
 
 }
 
