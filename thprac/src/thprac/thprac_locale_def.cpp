@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1597] {
+const char* th_glossary_str[3][1601] {
     {
         "",
         "啤酒",
@@ -616,6 +616,10 @@ const char* th_glossary_str[3][1597] {
         "Rank: %d",
         "显示敌人HP",
         "TH19 东方兽王园 ～ Unfinished Dream of All Living Ghost.",
+        "循环",
+        "1 (Bomb碎片)",
+        "2 (Bomb碎片)",
+        "3 (残机碎片)",
         "减少擦弹特效",
         "解锁未获得的石",
         "侧槽可选未解锁宝石。",
@@ -2215,6 +2219,10 @@ const char* th_glossary_str[3][1597] {
         "Rank: %d",
         "Show Enemy HP",
         "TH19 Unfinished Dream of All Living Ghost",
+        "Cycle",
+        "1 (Bomb Fragment)",
+        "2 (Bomb Fragment)",
+        "3 (Life Fragment)",
         "Decrease graze effect",
         "Fake unlock stones",
         "Allows you to select stones you haven't actually unlocked in the side slots.",
@@ -3814,6 +3822,10 @@ const char* th_glossary_str[3][1597] {
         "ランク: %d",
         "敵のHPを表示する",
         "TH19 東方獣王園 ～ Unfinished Dream of All Living Ghost.",
+        "サイクル",
+        "1 (ボムの欠片)",
+        "2 (ボムの欠片)",
+        "3 (残機の欠片)",
         "Decrease graze effect",
         "未解放ストーン使用",
         "未解放ストーンをサイドスロットに設定可能。",
@@ -26781,6 +26793,12 @@ namespace TH20 {
     const th_glossary_t TH20_RAGE[3] {
         TH_NORMAL,
         TH_RAGE,
+    };
+
+    const th_glossary_t TH20_CYCLE_LIST[4] {
+        TH20_CYCLE_1,
+        TH20_CYCLE_2,
+        TH20_CYCLE_3,
     };
 
 }

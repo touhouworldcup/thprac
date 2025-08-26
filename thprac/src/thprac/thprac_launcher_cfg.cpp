@@ -2500,7 +2500,7 @@ private:
     THCfgCheckbox mBackupAutoly { "auto_backup_score_file", false };
 
     THCfgCheckbox mReflectiveLaunch { "reflective_launch", false };
-    THCfgCheckbox mForceOnlyRenderTextUsed { "force_only_render_text_used", false };
+    THCfgCheckbox mForceOnlyRenderTextUsed { "force_only_render_text_used", true };
     THCfgCheckbox mDisableJoy { "disableJoy", false };
     THCfgCheckbox mForceRenderCursor { "force_render_cursor", false };
     THCfgCheckbox mUseCorrectJaFonts { "use_correct_ja_fonts", false };

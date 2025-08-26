@@ -25,6 +25,7 @@ namespace TH20 {
         int32_t life_fragment;
         int32_t bomb;
         int32_t bomb_fragment;
+        int32_t cycle;
         int32_t power;
         int32_t value;
 
@@ -39,6 +40,9 @@ namespace TH20 {
         int32_t priorityY;
         int32_t levelG;
         int32_t priorityG;
+
+        int32_t reimuR2Timer[7];
+        int32_t passiveMeterTimer[7];
 
         bool dlg;
 
@@ -63,6 +67,7 @@ namespace TH20 {
             GetJsonValue(life_fragment);
             GetJsonValue(bomb);
             GetJsonValue(bomb_fragment);
+            GetJsonValue(cycle);
             GetJsonValue(power);
             GetJsonValue(value);
 
@@ -77,12 +82,25 @@ namespace TH20 {
             GetJsonValue(priorityY);
             GetJsonValue(levelG);
             GetJsonValue(priorityG);
+            GetJsonArray(reimuR2Timer, elementsof(reimuR2Timer));
+            GetJsonArray(passiveMeterTimer, elementsof(passiveMeterTimer));
 
             return true;
         }
         std::string GetJson()
         {
-            if (mode == 1) {
+            if (mode == 0) {
+                CreateJson();
+
+                AddJsonValueEx(version, GetVersionStr(), jalloc);
+                AddJsonValueEx(game, "th20", jalloc);
+                AddJsonValue(mode);
+
+                AddJsonArray(reimuR2Timer, elementsof(reimuR2Timer));
+                AddJsonArray(passiveMeterTimer, elementsof(passiveMeterTimer));
+
+                ReturnJson();
+            } else if (mode == 1) {
                 CreateJson();
 
                 AddJsonValueEx(version, GetVersionStr(), jalloc);
@@ -101,6 +119,7 @@ namespace TH20 {
                 AddJsonValue(life_fragment);
                 AddJsonValue(bomb);
                 AddJsonValue(bomb_fragment);
+                AddJsonValue(cycle);
                 AddJsonValue(stoneMax);
                 AddJsonValue(power);
                 AddJsonValue(value);
@@ -135,10 +154,14 @@ namespace TH20 {
             *mBomb = 7;
             *mPower = 400;
             *mValue = 0;
-            *mLevelR = 1;
-            *mLevelB = 1;
-            *mLevelY = 1;
-            *mLevelG = 1;
+            *mLevelR = 0;
+            *mLevelB = 0;
+            *mLevelY = 0;
+            *mLevelG = 0;
+            *mPriorityR = 0;
+            *mPriorityB = 0;
+            *mPriorityY = 0;
+            *mPriorityG = 0;
 
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -177,6 +200,7 @@ namespace TH20 {
                 thPracParam.life_fragment = *mLifeFragment;
                 thPracParam.bomb = *mBomb;
                 thPracParam.bomb_fragment = *mBombFragment;
+                thPracParam.cycle = *mCycle;
                 thPracParam.stoneMax = std::min(5000, stoneGaugeInitialValue[*mStage] + *stoneMax * 150);
                 thPracParam.power = *mPower;
                 thPracParam.value = *mValue;
@@ -184,13 +208,13 @@ namespace TH20 {
                 thPracParam.hyper = *mHyper / 10000.0f;
                 thPracParam.stone = *mStone / 10000.0f;
                 thPracParam.levelR = *mLevelR;
-                thPracParam.priorityR = *mLevelR;
+                thPracParam.priorityR = *mPriorityR;
                 thPracParam.levelB = *mLevelB;
-                thPracParam.priorityB = *mLevelB;
+                thPracParam.priorityB = *mPriorityB;
                 thPracParam.levelG = *mLevelG;
-                thPracParam.priorityG = *mLevelG;
+                thPracParam.priorityG = *mPriorityG;
                 thPracParam.levelY = *mLevelY;
-                thPracParam.priorityY = *mLevelY;
+                thPracParam.priorityY = *mPriorityY;
                 break;
             case 4:
                 Close();
@@ -279,6 +303,7 @@ namespace TH20 {
                 stoneMax(std::format("{}({})", std::min(5000, stoneGaugeInitialValue[*mStage] + *stoneMax * 150), *stoneMax).c_str());
                 ImGui::SameLine();
                 HelpMarker(S(TH20_STONE_GAUGE_INITIAL_DESC));
+                mCycle();
 
                 ImGui::Columns(2);
                 auto& style = ImGui::GetStyle();
@@ -423,13 +448,14 @@ namespace TH20 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mHyper { TH20_HYPER, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mStone { TH20_STONE_GAUGE, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> stoneMax { TH20_STONE_GAUGE_INITIAL, 0, 26 };
-        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelR { TH20_STONE_LEVEL_R, 1, 5 };
+        Gui::GuiCombo mCycle { TH20_CYCLE, TH20_CYCLE_LIST };
+        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelR { TH20_STONE_LEVEL_R, 0, 5 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mPriorityR { TH20_STONE_PRIORITY_R, 0, 1000 };
-        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelB { TH20_STONE_LEVEL_B, 1, 5 };
+        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelB { TH20_STONE_LEVEL_B, 0, 5 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mPriorityB { TH20_STONE_PRIORITY_B, 0, 1000 };
-        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelY { TH20_STONE_LEVEL_Y, 1, 5 };
+        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelY { TH20_STONE_LEVEL_Y, 0, 5 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mPriorityY { TH20_STONE_PRIORITY_Y, 0, 1000 };
-        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelG { TH20_STONE_LEVEL_G, 1, 5 };
+        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mLevelG { TH20_STONE_LEVEL_G, 0, 5 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mPriorityG { TH20_STONE_PRIORITY_G, 0, 1000 };
 
         int mChapterSetup[7][2] {
@@ -574,7 +600,8 @@ namespace TH20 {
         Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
-        PATCH_HK(0xF87FC, "01")
+        PATCH_HK(0xF87FC, "01"),
+        PATCH_HK(0xF8734, "EB")
         HOTKEY_ENDDEF();
 
         // HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
@@ -2377,8 +2404,29 @@ namespace TH20 {
         ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
-    static bool sGameStarted = false;
+    void __fastcall AnmVM_Reset_hook(uintptr_t self)
+    {
+        uint32_t fast_id = *(uint32_t*)(self + 0x4C4);
+        memset((void*)self, 0, 0x5E4);
+        *(uint32_t*)(self + 0x4C4) = fast_id;
+        asm_call_rel<0x299D0, Thiscall>(self);
+    }
     static char* sReplayPath = nullptr;
+    static constinit HookCtx anmUninitFixHooks[] = {
+        { .addr = 0x38974, .data = PatchCode("e800000000") },
+        { .addr = 0x48411, .data = PatchCode("e800000000") },
+        { .addr = 0x4CA14, .data = PatchCode("e800000000") },
+        { .addr = 0x4CAB9, .data = PatchCode("e800000000") },
+        { .addr = 0x4E2B3, .data = PatchCode("e800000000") },
+        { .addr = 0x708EA, .data = PatchCode("e800000000") },
+        { .addr = 0x7F1B1, .data = PatchCode("e800000000") },
+        { .addr = 0x7F2F6, .data = PatchCode("e800000000") },
+        { .addr = 0x82252, .data = PatchCode("e800000000") },
+        { .addr = 0xD3208, .data = PatchCode("e800000000") },
+        { .addr = 0xD32D2, .data = PatchCode("e800000000") },
+        { .addr = 0xD3E57, .data = PatchCode("e800000000") },
+        { .addr = 0xD4237, .data = PatchCode("e800000000") },
+    };
 
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th20_inf_lives, 0xe1288, 6,
@@ -2465,6 +2513,7 @@ namespace TH20 {
         *(int32_t*)(player_stats + 0x78) = thPracParam.levelB;
         *(int32_t*)(player_stats + 0x7C) = thPracParam.levelY;
         *(int32_t*)(player_stats + 0x80) = thPracParam.levelG;
+        *(int32_t*)(player_stats + 0x94) = thPracParam.cycle;
     })
     EHOOK_DY(th20_patch_ex_stones_fix, 0x6415A, 3, {
         if (thPracParam.mode == 1) {
@@ -2496,6 +2545,21 @@ namespace TH20 {
         *(uint32_t*)RVA(0x1BA568 + 0x88 + 0x1E0) = *(uint32_t*)RVA(0x1B0A60);
     })
     PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
+    EHOOK_DY(th20_timer_desync_fix, 0xBA99F, 6, {
+        uint32_t stage = *(uint32_t*)RVA(0x1BA568 + 0x88 + 0x1F4) - 1;
+        if (*(uint32_t*)(*(uintptr_t*)RVA(0x1BA828) + 0x108)) {
+            // Playback
+            int32_t offset = stage != 0 && !*(uint32_t*)RVA(0x1C06A0) ? 30 : 0;
+            if (thPracParam.reimuR2Timer[stage])
+                asm_call_rel<0x23520, Thiscall>(*(uintptr_t*)RVA(0x1BA568 + 4) + 0x22B4 + 0x12580, thPracParam.reimuR2Timer[stage] + offset);
+            if (thPracParam.passiveMeterTimer[stage])
+                asm_call_rel<0x23520, Thiscall>(*(uintptr_t*)RVA(0x1C6118) + 0x28, thPracParam.passiveMeterTimer[stage]);
+        } else {
+            // Recording
+            thPracParam.reimuR2Timer[stage] = *(int32_t*)(*(uintptr_t*)RVA(0x1BA568 + 4) + 0x22B4 + 0x12580 + 4);
+            thPracParam.passiveMeterTimer[stage] = *(int32_t*)(*(uintptr_t*)RVA(0x1C6118) + 0x28 + 4);
+        }
+    })
     
     EHOOK_DY(th20_quit1, 0xe2dc7, 6, {
         if ((GetAsyncKeyState('Q') & 0x8000) && GetForegroundWindow() == *(HWND*)(RVA(0x1B6758))) { // Esc+Q, foreground
@@ -2514,7 +2578,7 @@ namespace TH20 {
     })
     
     EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
-        if (*(uint32_t*)(*(uintptr_t*)(RVA(0x1BA568) + 0x88 + 0x238) + 0x108)) {
+        if (*(uint32_t*)(*(uintptr_t*)RVA(0x1BA828) + 0x108)) {
             // Yes, the order really is swapped like this
             auto selected = (uint32_t*)(RVA(0x1BA568) + 0x88 + 0x1C);
             selected[0] = replayStones[0];
@@ -2526,8 +2590,7 @@ namespace TH20 {
     PATCH_DY(th20_fix_rep_results_skip, 0x110D61, "7B4BFAFF")
     EHOOK_DY(th20_rep_save, 0x109D6A, 3, {
         if (sReplayPath) {
-            if (thPracParam.mode == 1)
-                THSaveReplay(sReplayPath);
+            THSaveReplay(sReplayPath);
             free(sReplayPath);
             sReplayPath = nullptr;
         }
@@ -2634,6 +2697,24 @@ namespace TH20 {
         // Hooks
         EnableAllHooks(THMainHook);
         EnableAllHooks(THInGameInfo);
+
+        
+        // Replay menu string fixes
+        auto stageStrings = (const char**)RVA(0x1AFFD0);
+        stageStrings[4] = "St4";
+        stageStrings[5] = "St5";
+        stageStrings[6] = "St6";
+        stageStrings[7] = "Ex ";
+        stageStrings[8] = "All";
+        *(const char**)RVA(0x1B0A7C) = "%s  %s %.2d/%.2d/%.2d %.2d:%.2d %s %s %s %s %2.1f%%";
+
+        // AnmVM reset uninitialized memory fix
+        for (size_t i = 0; i < elementsof(anmUninitFixHooks); i++) {
+            *(uintptr_t*)((uintptr_t)anmUninitFixHooks[i].data.buffer.ptr + 1) = (uintptr_t)&AnmVM_Reset_hook - RVA(anmUninitFixHooks[i].addr) - 5;
+            anmUninitFixHooks[i].Setup();
+            anmUninitFixHooks[i].Enable();
+        }
+
 
         //  Reset thPracParam
         thPracParam.Reset();

@@ -616,6 +616,10 @@ enum th_glossary_t {
     TH19_RANK_FORMAT,
     TH19_SHOW_ENEMY_HP,
     TH19_TITLE,
+    TH20_CYCLE,
+    TH20_CYCLE_1,
+    TH20_CYCLE_2,
+    TH20_CYCLE_3,
     TH20_DECREASE_EFF,
     TH20_FAKE_UNLOCK_STONES,
     TH20_FAKE_UNLOCK_STONES_DESC,
@@ -1608,7 +1612,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1597];
+extern const char* th_glossary_str[3][1601];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3312,6 +3316,8 @@ namespace TH20 {
     extern const th_glossary_t TH20_SPELL_PHASE_TIMEOUT[3];
 
     extern const th_glossary_t TH20_RAGE[3];
+
+    extern const th_glossary_t TH20_CYCLE_LIST[4];
 
 }
 

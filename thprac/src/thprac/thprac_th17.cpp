@@ -2025,7 +2025,7 @@ namespace TH17 {
     })
     EHOOK_DY(th17_goast_bugfix, 0x430080, 1, {
         if (THAdvOptWnd::singleton().mGoastBugfix && *(uint32_t*)0x4b59dc == *(uint32_t*)0x4b59e0 && GetMemContent(0x4b76b0, 0xa8) == 0)
-            *(uint32_t*)0x4b5ac4 &= 0xfffffffd;
+            *(uint32_t*)0x4b5ac4 &= 0xfffffff9;
     })
     EHOOK_DY(th17_goast_repfix, 0x430c97, 2, {
         if (THAdvOptWnd::singleton().mGoastRepfix && *(uint32_t*)0x4b59dc == *(uint32_t*)0x4b59e0 && GetMemContent(0x4b76b0, 0xa8) == 1) {
@@ -2038,7 +2038,7 @@ namespace TH17 {
             }
 
             if (repStart < 8 && *(uint32_t*)0x4b59dc == repStart)
-                *(uint32_t*)0x4b5ac4 &= 0xfffffffd;
+                *(uint32_t*)0x4b5ac4 &= 0xfffffff9;
         }
     })
     EHOOK_DY(th17_everlasting_bgm, 0x4662e0, 1, {

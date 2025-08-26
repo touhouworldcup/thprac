@@ -10643,6 +10643,11 @@
     "namespace": "TH20",
 
     "glossary": {
+	  "TH20_CYCLE": [ "循环", "Cycle", "サイクル" ],
+      "TH20_CYCLE_1": [ "1 (Bomb碎片)", "1 (Bomb Fragment)", "1 (ボムの欠片)" ],
+      "TH20_CYCLE_2": [ "2 (Bomb碎片)", "2 (Bomb Fragment)", "2 (ボムの欠片)" ],
+      "TH20_CYCLE_3": [ "3 (残机碎片)", "3 (Life Fragment)", "3 (残機の欠片)" ],
+	  
       "TH20_HYPER": [ "异变攻击", "Hyper", "異変攻撃" ],
       "TH20_STONE_GAUGE": [ "异变敌", "Summon", "異変石" ],
       "TH20_STONE_GAUGE_INITIAL": [ "异变敌槽长度", "Wonder Stone Gauge Length", "異変石計長" ],
@@ -11126,7 +11131,12 @@
       "TH20_RAGE": [
         "TH_NORMAL",
         "TH_RAGE"
-      ]
+      ],
+      "TH20_CYCLE_LIST": [
+        "TH20_CYCLE_1",
+        "TH20_CYCLE_2",
+        "TH20_CYCLE_3"
+	  ]
     }
   }
 }

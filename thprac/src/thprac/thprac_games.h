@@ -343,7 +343,24 @@ bool ReplayLoadParam(const wchar_t* rep_path, std::string& param);
         rapidjson::Value __value_##value_name(__VA_ARGS__);                \
         param.AddMember(__key_##value_name, __value_##value_name, jalloc); \
     }
-
+#define GetJsonArray(value_name, value_len)                                            \
+    {                                                                                  \
+        if (param.HasMember(#value_name) && param[#value_name].IsArray()) {            \
+            for (int i = 0; i < std::min(param[#value_name].Size(), value_len); i++) { \
+                if (param[#value_name][i].IsNumber())                                  \
+                    value_name[i] = param[#value_name][i].GetDouble();                 \
+            }                                                                          \
+        }                                                                              \
+    }
+#define AddJsonArray(value_name, value_len)                                \
+    {                                                                      \
+        rapidjson::Value __key_##value_name(#value_name, jalloc);          \
+        rapidjson::Value __value_##value_name(rapidjson::kArrayType);      \
+        __value_##value_name.SetArray();                                   \
+        for (int i = 0; i < value_len; i++)                                \
+            __value_##value_name.PushBack(value_name[i], jalloc);          \
+        param.AddMember(__key_##value_name, __value_##value_name, jalloc); \
+    }
 #pragma endregion
 
 #pragma region Virtual File System
