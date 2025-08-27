@@ -520,7 +520,11 @@ namespace TH12 {
         HOTKEY_ENDDEF();
         
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
-        PATCH_HK(0x436D9B, "c6")
+        // PATCH_HK(0x436D9B, "c6")
+        EHOOK_HK(0x436d9b, 7, {
+            if (*(int32_t*)(pCtx->Edi + 0xA34) == 7)
+                pCtx->Eip = 0x436da8;
+        })
         HOTKEY_ENDDEF();
 
     public:
