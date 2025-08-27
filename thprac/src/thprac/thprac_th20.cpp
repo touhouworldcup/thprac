@@ -2068,7 +2068,7 @@ namespace TH20 {
             constexpr unsigned int st7BossSpell9ChoccyPostSetup = 0xe150;
             constexpr unsigned int st7BossSpell9ChoccyPreFinale = 0xedb8;
             constexpr unsigned int st7BossSpell9BulletsPostSetup = 0xf68c;
-            constexpr unsigned int st7BossSpell9BulletsPreFinale = 0xfccc;
+            constexpr unsigned int st7BossSpell9BulletsPreFinale = 0xfcb0;
 
             ECLStdExec(ecl, st7PostMaple, 1, 1);
             ECLJump(ecl, st7PostMaple + stdInterruptSize, st7BossCreateCall, 60);
