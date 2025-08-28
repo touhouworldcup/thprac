@@ -1473,8 +1473,8 @@ namespace TH20 {
             constexpr unsigned int st4mbsNon2PlaySoundSomething = 0xe6c + 0x4;
             constexpr unsigned int st4mbsNon2PreWait = 0x1028;
             constexpr unsigned int st4mbsNon2PostWait = 0x103c;
-            constexpr unsigned int st4mbsNon2PreWait2 = 0x1028;
-            constexpr unsigned int st4mbsNon2PostWait2 = 0x103c;
+            constexpr unsigned int st4mbsNon2InvincTime = 0xc54 + 0x10;
+            constexpr unsigned int st4mbsNon2Timer = 0xfc4 + 0x18;
             constexpr unsigned int st4mbsNon2BulletClear = 0x1a8 + 0x4;
 
             ECLJump(ecl, st4PostMaple, st4MBossCreateCall, 60, 90);
@@ -1484,7 +1484,9 @@ namespace TH20 {
             ecl << pair { st4mbsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
             ecl << pair { st4mbsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
             ecl << pair { st4mbsNon2BulletClear, (int16_t)0 }; // Disable bullet clear
-            ECLJump(ecl, st4mbsNon2PreWait, st4mbsNon2PostWait, 0); // Skip wait
+            ECLJump(ecl, st4mbsNon2PreWait, st4mbsNon2PostWait, 0); // Skip wait (100f)
+            ecl << pair { st4mbsNon2InvincTime, (int16_t)20 }; // Reduce invincible timer by time skipped (120f->20f)
+            ecl << pair { st4mbsNon2Timer, (int16_t)380 }; // Reduce boss timer by time skipped (480f->380f)
             ECLJump(ecl, st4mbsPreWait, st4mbsPostWait, 0);
             ECLJump(ecl, st4mbsPreWait2, st4mbsPostWait2, 0);
             break;
