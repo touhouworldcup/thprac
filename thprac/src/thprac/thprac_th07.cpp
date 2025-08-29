@@ -535,8 +535,8 @@ namespace TH07 {
         HOTKEY_ENDDEF();
         
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(0x42F02B, "eb16"),
-        PATCH_HK(0x440DD3, "00")
+        PATCH_HK(0x440DD3, "00"),
+        PATCH_HK(0x440DBF,"90909090909090")
         HOTKEY_ENDDEF();
         
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)

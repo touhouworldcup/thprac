@@ -94,7 +94,7 @@ namespace THPrac
 			case VK_LSHIFT:
 				return __GI_Gen2_Reg2Test1(0x8);
 			case 'X': // Z
-				return __GI_Gen2_Reg2Test1(0x2);
+				return __GI_Gen2_Reg2Test1(0x6);
 			case 'Z': // Z
 				return __GI_Gen2_Reg2Test1(0x1);
 			default:

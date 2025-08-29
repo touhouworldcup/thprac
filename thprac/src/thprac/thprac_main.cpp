@@ -39,7 +39,7 @@ bool CheckMutex(const char* mutex_name)
 
 bool CheckIfAnyGame()
 {
-    if (CheckMutex("Touhou Koumakyou App") || CheckMutex("Touhou YouYouMu App") || CheckMutex("Touhou 08 App") || CheckMutex("Touhou 10 App") || CheckMutex("Touhou 11 App") || CheckMutex("Touhou 12 App") || CheckMutex("th17 App") || CheckMutex("th18 App") || CheckMutex("th185 App") || CheckMutex("th19 App"))
+    if (CheckMutex("Touhou Koumakyou App") || CheckMutex("Touhou YouYouMu App") || CheckMutex("Touhou 08 App") || CheckMutex("Touhou 10 App") || CheckMutex("Touhou 11 App") || CheckMutex("Touhou 12 App") || CheckMutex("th17 App") || CheckMutex("th18 App") || CheckMutex("th185 App") || CheckMutex("th19 App") || CheckMutex("th20 App"))
         return true;
     return false;
 }
@@ -104,7 +104,7 @@ bool PromptUser(thprac_prompt_t info, THGameSig* gameSig = nullptr)
 THGameSig* CheckOngoingGame(PROCESSENTRY32W& proc, uintptr_t* base, HANDLE* pOutHandle = nullptr)
 {
     // Eliminate impossible process
-    if ( wcscmp(L"東方紅魔郷.exe", proc.szExeFile) && wcscmp(L"alcostg.exe", proc.szExeFile)) {
+    if (wcscmp(L"東方紅魔郷.exe", proc.szExeFile) && wcscmp(L"alcostg.exe", proc.szExeFile)) {
         if (proc.szExeFile[0] != L't' || proc.szExeFile[1] != L'h')
             return nullptr;
         if (proc.szExeFile[2] < L'0' || proc.szExeFile[2] > L'9')

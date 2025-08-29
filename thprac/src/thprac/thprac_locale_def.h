@@ -570,6 +570,30 @@ enum th_glossary_t
     TH19_RANK_FORMAT,
     TH19_SHOW_ENEMY_HP,
     TH19_TITLE,
+    TH20_CYCLE_3,
+    TH20_FAKE_UNLOCK_STONES,
+    TH20_FAKE_UNLOCK_STONES_DESC,
+    TH20_FIX_HITBOX,
+    TH20_FIX_HITBOX_DESC,
+    TH20_HYPER,
+    TH20_HYP_LOCK,
+    TH20_INTERNAL_GAUGES,
+    TH20_NEXT_STONE,
+    TH20_PIV_OVERFLOW_FIX,
+    TH20_STONE_GAUGE,
+    TH20_STONE_LEVEL_B,
+    TH20_STONE_LEVEL_G,
+    TH20_STONE_LEVEL_R,
+    TH20_STONE_LEVEL_Y,
+    TH20_STONE_PRIORITY_B,
+    TH20_STONE_PRIORITY_G,
+    TH20_STONE_PRIORITY_R,
+    TH20_STONE_PRIORITY_Y,
+    TH20_STONE_SUMMONED,
+    TH20_TITLE,
+    TH20_UNCAP_PIV,
+    TH20_UNCAP_SCORE,
+    TH20_WST_LOCK,
     THPRAC_ABORT,
     THPRAC_ADMIN_RIGHTS,
     THPRAC_ADVANCED_OPTION,
@@ -676,6 +700,8 @@ enum th_glossary_t
     THPRAC_GAMEROLL_TH19,
     THPRAC_GAMEROLL_TH19_EASTER_EGG_SHOTTYPES,
     THPRAC_GAMEROLL_TH19_SHOTTYPES,
+    THPRAC_GAMEROLL_TH20,
+    THPRAC_GAMEROLL_TH20_SHOTTYPES,
     THPRAC_GAMES,
     THPRAC_GAMES_APPLY_THPRAC,
     THPRAC_GAMES_DEFAULT_LAUNCH,
@@ -935,6 +961,7 @@ enum th_glossary_t
     TH_FACTOR_ACB,
     TH_FACTOR_ACB_DESC,
     TH_FAITH,
+    TH_FINALE,
     TH_FPS_ADJ,
     TH_FPS_ERR,
     TH_FPS_FREE_ADJ,
@@ -1031,13 +1058,15 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1019];
+extern const char* th_glossary_str[3][1046];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
 extern const th_glossary_t TH_STAGE_SELECT[8];
 
 extern const th_glossary_t TH_STAGE_SELECT_NOEX[7];
+
+extern const th_glossary_t TH_STAGE_SELECT_TRIAL[4];
 
 extern const th_glossary_t TH_MODE_SELECT[3];
 
@@ -2565,10 +2594,100 @@ extern const th_sections_t th_sections_cbt[1][2][1];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3237];
+namespace TH20 {
 
-extern const wchar_t __thprac_loc_range_en[15];
+enum th_sections_t : uint8_t
+{
+    A0000ERROR,
+    TH20_ST1_MID1,
+    TH20_ST1_BOSS1,
+    TH20_ST1_BOSS2,
+    TH20_ST1_BOSS3,
+    TH20_ST1_BOSS4,
+    TH20_ST1_BOSS5,
+    TH20_ST2_MID1,
+    TH20_ST2_BOSS1,
+    TH20_ST2_BOSS2,
+    TH20_ST2_BOSS3,
+    TH20_ST2_BOSS4,
+    TH20_ST2_BOSS5,
+    TH20_ST3_BOSS1,
+    TH20_ST3_BOSS2,
+    TH20_ST3_BOSS3,
+    TH20_ST3_BOSS4,
+    TH20_ST3_BOSS5,
+    TH20_ST3_BOSS6,
+    TH20_ST3_BOSS7,
+    TH20_ST4_MID1,
+    TH20_ST4_MID2,
+    TH20_ST4_BOSS1,
+    TH20_ST4_BOSS2,
+    TH20_ST4_BOSS3,
+    TH20_ST4_BOSS4,
+    TH20_ST4_BOSS5,
+    TH20_ST4_BOSS6,
+    TH20_ST4_BOSS7,
+    TH20_ST5_MID1,
+    TH20_ST5_BOSS1,
+    TH20_ST5_BOSS2,
+    TH20_ST5_BOSS3,
+    TH20_ST5_BOSS4,
+    TH20_ST5_BOSS5,
+    TH20_ST5_BOSS6,
+    TH20_ST5_BOSS7,
+    TH20_ST6_BOSS1,
+    TH20_ST6_BOSS2,
+    TH20_ST6_BOSS3,
+    TH20_ST6_BOSS4,
+    TH20_ST6_BOSS5,
+    TH20_ST6_BOSS6,
+    TH20_ST6_BOSS7,
+    TH20_ST6_BOSS8,
+    TH20_ST6_BOSS9,
+    TH20_ST6_BOSS10,
+    TH20_ST6_BOSS11,
+    TH20_ST6_BOSS12,
+    TH20_ST7_MID1,
+    TH20_ST7_MID2,
+    TH20_ST7_MID3,
+    TH20_ST7_BOSS1,
+    TH20_ST7_BOSS2,
+    TH20_ST7_BOSS3,
+    TH20_ST7_BOSS4,
+    TH20_ST7_BOSS5,
+    TH20_ST7_BOSS6,
+    TH20_ST7_BOSS7,
+    TH20_ST7_BOSS8,
+    TH20_ST7_BOSS9,
+    TH20_ST7_BOSS10,
+    TH20_ST7_BOSS11,
+    TH20_ST7_BOSS12,
+    TH20_ST7_BOSS13,
+    TH20_ST7_BOSS14,
+    TH20_ST7_BOSS15,
+    TH20_ST7_BOSS16,
+    TH20_ST7_BOSS17,
+    TH20_ST7_BOSS18,
+};
 
-extern const wchar_t __thprac_loc_range_ja[2737];
+extern const char* th_sections_str[3][4][70];
+
+extern const uint8_t th_sections_bgm[70];
+
+extern const th_sections_t th_sections_cba[7][2][19];
+
+extern const th_sections_t th_sections_cbt[7][2][14];
+
+extern const th_glossary_t TH20_SPELL_PHASE_TIMEOUT[3];
+
+extern const th_glossary_t TH20_CYCLE_LIST[4];
+
+}
+
+extern const wchar_t __thprac_loc_range_zh[2765];
+
+extern const wchar_t __thprac_loc_range_en[31];
+
+extern const wchar_t __thprac_loc_range_ja[2239];
 
 }

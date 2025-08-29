@@ -267,3 +267,6 @@ __pycache__/
 # thprac log file
 thprac_launcher_log.*.txt
 thprac_launcher_log.txt
+
+# Visual Studio cache folder
+enc_temp_folder/

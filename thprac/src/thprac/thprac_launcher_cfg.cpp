@@ -272,131 +272,20 @@ void LauncherSettingSet(const char* name, const std::string& valueIn)
     LauncherSettingSet(name, valueIn.c_str());
 }
 
-bool SetTheme(int themeId, const wchar_t* userThemeName)
+void SetTheme(int themeId)
 {
     switch (themeId) {
+    default:
     case 0:
         ImGui::StyleColorsDark();
-        return false;
+        break;
     case 1:
         ImGui::StyleColorsLight();
-        return false;
+        break;
     case 2:
         ImGui::StyleColorsClassic();
-        return false;
-    default:
-        // Do nothing
         break;
     }
-
-    if (userThemeName == nullptr)
-        return true; // TODO: Should we return false instead?
-
-    std::wstring filename = LauncherGetDataDir() + L"themes\\" + userThemeName;
-    rapidjson::Document theme;
-    auto getColor = [&filename, &theme](const char *const colorName) -> ImVec4 {
-        using std::runtime_error, std::format;
-
-        if (!theme.HasMember(colorName))
-            throw runtime_error(format("Missing element: {}", colorName));
-        if (!theme[colorName].IsArray())
-            throw runtime_error(format("Wrong format for {}", colorName));
-
-        const auto& jsonVec = theme[colorName].GetArray();
-        if (jsonVec.Size() < 4)
-            throw runtime_error(format("Not enough color channels in %s", colorName));
-
-        float channels[4];
-        for (int i = 0; i < 4; i++) {
-            if (jsonVec[i].IsNumber()) {
-                channels[i] = jsonVec[i].GetFloat();
-            } else if (jsonVec[i].IsString()) {
-                channels[i] = std::stof(jsonVec[i].GetString());
-            } else {
-                throw runtime_error(format("%s: wrong format", colorName));
-            }
-        }
-
-        return ImVec4(channels[0], channels[1], channels[2], channels[3]);
-    };
-
-    try {
-        MappedFile file(filename.c_str());
-        if (!file.fileMapView)
-            throw std::runtime_error("File not found");
-        if (theme.Parse((char*)file.fileMapView, file.fileSize).HasParseError())
-            throw std::runtime_error("Invalid JSON (TODO: describe how)");
-
-        ImVec4 colors[ImGuiCol_COUNT];
-        #define GET_COLOR(color) \
-            colors[ImGuiCol_ ## color] = getColor(#color);
-
-        GET_COLOR(Text);
-        GET_COLOR(TextDisabled);
-        GET_COLOR(WindowBg);
-        GET_COLOR(ChildBg);
-        GET_COLOR(PopupBg);
-        GET_COLOR(Border);
-        GET_COLOR(BorderShadow);
-        GET_COLOR(FrameBg);
-        GET_COLOR(FrameBgHovered);
-        GET_COLOR(FrameBgActive);
-        GET_COLOR(TitleBg);
-        GET_COLOR(TitleBgActive);
-        GET_COLOR(TitleBgCollapsed);
-        GET_COLOR(MenuBarBg);
-        GET_COLOR(ScrollbarBg);
-        GET_COLOR(ScrollbarGrab);
-        GET_COLOR(ScrollbarGrabHovered);
-        GET_COLOR(ScrollbarGrabActive);
-        GET_COLOR(CheckMark);
-        GET_COLOR(SliderGrab);
-        GET_COLOR(SliderGrabActive);
-        GET_COLOR(Button);
-        GET_COLOR(ButtonHovered);
-        GET_COLOR(ButtonActive);
-        GET_COLOR(Header);
-        GET_COLOR(HeaderHovered);
-        GET_COLOR(HeaderActive);
-        GET_COLOR(Separator);
-        GET_COLOR(SeparatorHovered);
-        GET_COLOR(SeparatorActive);
-        GET_COLOR(ResizeGrip);
-        GET_COLOR(ResizeGripHovered);
-        GET_COLOR(ResizeGripActive);
-        GET_COLOR(Tab);
-        GET_COLOR(TabHovered);
-        GET_COLOR(TabActive);
-        GET_COLOR(TabUnfocused);
-        GET_COLOR(TabUnfocusedActive);
-        GET_COLOR(PlotLines);
-        GET_COLOR(PlotLinesHovered);
-        GET_COLOR(PlotHistogram);
-        GET_COLOR(PlotHistogramHovered);
-        GET_COLOR(TableHeaderBg);
-        GET_COLOR(TableBorderStrong);
-        GET_COLOR(TableBorderLight);
-        GET_COLOR(TableRowBg);
-        GET_COLOR(TableRowBgAlt);
-        GET_COLOR(TextSelectedBg);
-        GET_COLOR(DragDropTarget);
-        GET_COLOR(NavHighlight);
-        GET_COLOR(NavWindowingHighlight);
-        GET_COLOR(NavWindowingDimBg);
-        GET_COLOR(ModalWindowDimBg);
-
-        #undef GET_COLOR
-        ImGuiStyle& style = ImGui::GetStyle();
-        memcpy(style.Colors, colors, sizeof(colors));
-    } catch (std::runtime_error err) {
-        std::wstring err_desc = L"Failed to load theme ";
-        err_desc.append(filename).append(L"\r\n").append(utf8_to_utf16(err.what()));
-        MessageBoxW(nullptr, err_desc.c_str(), L"Failed to load theme", MB_ICONERROR);
-        ImGui::StyleColorsDark();
-        // TODO: Should we return false at this point?
-    }
-
-    return true;
 }
 
 template <typename T>
@@ -545,7 +434,7 @@ public:
         ImGui::SameLine();
         std::string txtTmp = "##";
         txtTmp += guiTxt;
-        ImGui::PushItemWidth(620.0f - ImGui::GetWindowSize().x);
+        ImGui::PushItemWidth(ImGui::GetFontSize() * 12);
         auto result = ImGui::Combo(txtTmp.c_str(), &value, guiCombo);
         ImGui::PopItemWidth();
         if (result) {
@@ -1247,42 +1136,16 @@ public:
     }
 
 private:
-    bool themeIsUser;
     struct utf8_utf16 {
         const char* utf8;
         const wchar_t* utf16;
     };
-    std::vector<utf8_utf16> userThemes;
-    size_t userThemeIdx = 0;
 
     void CfgInit()
     {
         int language = Gui::LocaleGet();
         mCfgLanguage.Set(language);
         mOriginalLanguage = mCfgLanguage.Get();
-        UpdateThemesList();
-
-        if ((unsigned int)mCfgTheme.Get() > 2) {
-            // I use the fact that THCfgCombo::Set (due to how THSetting::Set works)
-            // only accepts references as an excuse to call this variable a funny
-            int Sus = 0;
-            bool configThemeExists = false;
-            const char* cur_theme = nullptr;
-            if (!LauncherSettingGet("theme_user", cur_theme)) {
-                mCfgTheme.Set(Sus);
-                return;
-            }
-            for (size_t i = 0; i < userThemes.size(); i++) {
-                if (!strcmp(userThemes[i].utf8, cur_theme)) {
-                    userThemeIdx = i;
-                    configThemeExists = true;
-                    break;
-                }
-            }
-            if (!configThemeExists) {
-                mCfgTheme.Set(Sus);
-            }
-        }
     }
 
     void PathAndDirSettings()
@@ -1660,23 +1523,6 @@ private:
         ImGui::EndChild();
     }
 
-    void UpdateThemesList() {
-        for (const auto& file : userThemes) {
-            if (file.utf8)
-                free((void*)file.utf8);
-            if (file.utf16)
-                free((void*)file.utf16);
-        }
-        userThemes = {};
-        WIN32_FIND_DATAW find;
-        HANDLE hFind = FindFirstFileW((LauncherGetDataDir() + L"themes\\*.json").c_str(), &find);
-        if (hFind != INVALID_HANDLE_VALUE) {
-            do {
-                userThemes.push_back({ _strdup(utf16_to_utf8(find.cFileName).c_str()), _wcsdup(find.cFileName) });
-            } while (FindNextFileW(hFind, &find));
-        }
-    }
-
     void GuiMain()
     {
         ImGui::TextUnformatted(S(THPRAC_LAUNCH_BEHAVIOR));
@@ -1692,37 +1538,8 @@ private:
         ImGui::NewLine();
         ImGui::TextUnformatted(S(THPRAC_SETTING_LAUNCHER));
         ImGui::Separator();
-        int theme_prev = mCfgTheme.Get();
-        if (mCfgTheme.Gui(S(THPRAC_THEME), "Dark\0Light\0Classic\0Custom\0\0")) {
-            int Sus = 0;
-            if (mCfgTheme.Get() > 2) {
-                UpdateThemesList();
-                themeIsUser = (unsigned int)theme_prev > 2;
-                if (userThemes.size() == 0) {
-                    mCfgTheme.Set(themeIsUser ? Sus : theme_prev);
-                } else if (!themeIsUser) {
-                    LauncherSettingSet("theme_user", userThemes[0].utf8);
-                    SetTheme(mCfgTheme.Get(), userThemes[userThemeIdx].utf16);
-                    themeIsUser = true;
-                }
-            } else {
-                SetTheme(mCfgTheme.Get());
-                themeIsUser = false;
-            }
-        }
-        if (themeIsUser && userThemes.size() != 0 && ImGui ::BeginCombo("##themes_user", userThemes[userThemeIdx].utf8)) {
-            for (size_t i = 0; i < userThemes.size(); i++) {
-                bool selected = i == userThemeIdx;
-                if (ImGui::Selectable(userThemes[i].utf8, selected)) {
-                    userThemeIdx = i;
-                    SetTheme(mCfgTheme.Get(), userThemes[userThemeIdx].utf16);
-                    LauncherSettingSet("theme_user", userThemes[userThemeIdx].utf8);
-                }
-                if (selected) {
-                    ImGui::SetItemDefaultFocus();
-                }
-            }
-            ImGui::EndCombo();
+        if (mCfgTheme.Gui(S(THPRAC_THEME), "Dark\0Light\0Classic\0\0")) {
+            SetTheme(mCfgTheme.Get());
         }
 
         mCfgAfterLaunch.Gui(S(THPRAC_AFTER_LAUNCH), S(THPRAC_AFTER_LAUNCH_OPTION));
@@ -1818,7 +1635,7 @@ private:
     THCfgCheckbox mAutoDefLaunch { "auto_default_launch", false };
     THCfgCombo mCfgThpracDefault { "apply_thprac_default", 0, 3 };
     THCfgCombo mCfgFilterDefault { "filter_default", 0, 3 };
-    THCfgCombo mCfgTheme { "theme", 0, 4 };
+    THCfgCombo mCfgTheme { "theme", 0, 3 };
     THSetting<bool> mUseRelativePath { "use_relative_path", false };
     THSetting<std::string> mThcrap { "thcrap", "" };
     THCfgCheckbox mCfgCheckUpdate { "check_update", true };
