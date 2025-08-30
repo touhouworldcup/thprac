@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1046]
+const char* th_glossary_str[3][1048]
 {
     {
         "",
@@ -576,10 +576,12 @@ const char* th_glossary_str[3][1046]
         "修复玩家判定点缩放",
         "将你的判定点缩放从当前的0%（点状、极小）恢复为100%（原始大小）。",
         "异变攻击",
+        "异变攻击开",
         "锁异变攻击槽",
         "异变石内部状态",
         "下一个石",
         "异变值溢出修复",
+        "异变敌人开",
         "异变敌人",
         "等级(蓝)",
         "等级(绿)",
@@ -593,7 +595,7 @@ const char* th_glossary_str[3][1046]
         "TH20 东方锦上京　～ Fossilized Wonders.",
         "移除异变值限制",
         "移除分数限制",
-        "锁异变石槽 ",
+        "锁异变石槽",
         "中止",
         "以管理员身份启动thprac",
         "高级选项",
@@ -1624,10 +1626,12 @@ const char* th_glossary_str[3][1046]
         "Fix player hitbox scale",
         "Makes your hitbox 100% scale (original size) instead of 0% (current size, point-like).",
         "Hyper",
+        "Hyper Active",
         "Hyper Gauge Lock",
         "Internal Wonder Stone State",
         "Next Stone",
         "PIV overflow fix",
+        "Summon Active",
         "Summon",
         "LevelB",
         "LevelG",
@@ -2672,10 +2676,12 @@ const char* th_glossary_str[3][1046]
         "プレイヤーの当たり判定のスケールを修正",
         " 現在の0%（点のように小さい）から100%（本来のサイズ）に戻します。",
         "異変攻撃",
+        "異変攻撃作",
         "異変攻撃計固定",
         "異変石内部状態",
         "次の石",
         "PIVオーバーフロー修正",
+        "異変石作",
         "異変石",
         "レベルB",
         "レベルG",
@@ -21695,7 +21701,7 @@ const th_glossary_t TH20_CYCLE_LIST[4]
 
 }
 
-const wchar_t __thprac_loc_range_zh[2765] {
+const wchar_t __thprac_loc_range_zh[2759] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201d,
@@ -21776,7 +21782,6 @@ const wchar_t __thprac_loc_range_zh[2765] {
     0x4f4d, 0x4f50,
     0x4f53, 0x4f53,
     0x4f55, 0x4f55,
-    0x4f59, 0x4f59,
     0x4f5b, 0x4f5c,
     0x4f60, 0x4f60,
     0x4f73, 0x4f73,
@@ -21938,7 +21943,6 @@ const wchar_t __thprac_loc_range_zh[2765] {
     0x54f2, 0x54f2,
     0x5510, 0x5510,
     0x5524, 0x5524,
-    0x552f, 0x552f,
     0x5531, 0x5531,
     0x5546, 0x5546,
     0x5564, 0x5564,
@@ -21988,7 +21992,7 @@ const wchar_t __thprac_loc_range_zh[2765] {
     0x586b, 0x586b,
     0x5883, 0x5883,
     0x5899, 0x5899,
-    0x589e, 0x589e,
+    0x589e, 0x589f,
     0x58a8, 0x58a8,
     0x58c1, 0x58c1,
     0x58e4, 0x58e4,
@@ -22381,7 +22385,6 @@ const wchar_t __thprac_loc_range_zh[2765] {
     0x6bd4, 0x6bd5,
     0x6bd8, 0x6bd8,
     0x6c0f, 0x6c0f,
-    0x6c11, 0x6c11,
     0x6c14, 0x6c14,
     0x6c34, 0x6c34,
     0x6c38, 0x6c38,
@@ -23027,9 +23030,9 @@ const wchar_t __thprac_loc_range_zh[2765] {
     0x997f, 0x997f,
     0x9996, 0x9996,
     0x9999, 0x9999,
-    0x9a6c, 0x9a6c,
-    0x9a6e, 0x9a6e,
+    0x9a6c, 0x9a6e,
     0x9a79, 0x9a79,
+    0x9a7e, 0x9a7e,
     0x9a8a, 0x9a8a,
     0x9a8c, 0x9a8c,
     0x9a91, 0x9a91,

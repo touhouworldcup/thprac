@@ -609,15 +609,24 @@ namespace TH20 {
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(0xE16A2, "0F1F00") //0xE16A8
+        PATCH_HK(0xE16A2, NOP(3)) //0xE16A8
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mHyperGLock, TH20_HYP_LOCK, "F5", VK_F5)
-        PATCH_HK(0x133935, "0F1F00")
+        PATCH_HK(0x133935, NOP(3)),
+        PATCH_HK(0x12FE5B, NOP(19)),
+        PATCH_HK(0x1309A9, NOP(19)),
+        PATCH_HK(0x1313DF, NOP(19)),
+        PATCH_HK(0x1319C7, NOP(19)),
+        PATCH_HK(0x131FFF, NOP(19)),
+        PATCH_HK(0x1352EB, NOP(19)),
+        PATCH_HK(0x13858B, NOP(19)),
+        PATCH_HK(0x13652C, NOP(25)),
+        PATCH_HK(0x1379DC, NOP(25))
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mWonderStGLock, TH20_WST_LOCK, "F6", VK_F6)
-        PATCH_HK(0x77F75, "0F1F00")
+        PATCH_HK(0x77F75, NOP(3)),
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F7", VK_F7)
@@ -848,7 +857,7 @@ namespace TH20 {
                 EndOptGroup();
             }
 
-            AboutOpt("Guy, zero318, rue, and you!");
+            AboutOpt("Khangaroo, Guy, zero318, rue, and you!");
             ImGui::EndChild();
             ImGui::SetWindowFocus();
         }
@@ -2168,8 +2177,6 @@ namespace TH20 {
         { .addr = 0xD3E57, .data = PatchCode("e800000000") },
         { .addr = 0xD4237, .data = PatchCode("e800000000") },
     };
-
-
 
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th20_boss_bgm, 0xBAC98, 2, {

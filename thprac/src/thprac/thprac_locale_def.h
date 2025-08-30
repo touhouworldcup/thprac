@@ -576,10 +576,12 @@ enum th_glossary_t
     TH20_FIX_HITBOX,
     TH20_FIX_HITBOX_DESC,
     TH20_HYPER,
+    TH20_HYPER_ACTIVE,
     TH20_HYP_LOCK,
     TH20_INTERNAL_GAUGES,
     TH20_NEXT_STONE,
     TH20_PIV_OVERFLOW_FIX,
+    TH20_STONE_ACTIVE,
     TH20_STONE_GAUGE,
     TH20_STONE_LEVEL_B,
     TH20_STONE_LEVEL_G,
@@ -1058,7 +1060,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1046];
+extern const char* th_glossary_str[3][1048];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2684,7 +2686,7 @@ extern const th_glossary_t TH20_CYCLE_LIST[4];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[2765];
+extern const wchar_t __thprac_loc_range_zh[2759];
 
 extern const wchar_t __thprac_loc_range_en[31];
 
