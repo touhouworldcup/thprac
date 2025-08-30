@@ -613,15 +613,24 @@ namespace TH20 {
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(0xE16A2, "0F1F00")
+        PATCH_HK(0xE16A2, NOP(3)) // 0xE16A8
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mHyperGLock, TH20_HYP_LOCK, "F5", VK_F5)
-        PATCH_HK(0x133935, "0F1F00")
+        PATCH_HK(0x133935, NOP(3)),
+        PATCH_HK(0x12FE5B, NOP(19)),
+        PATCH_HK(0x1309A9, NOP(19)),
+        PATCH_HK(0x1313DF, NOP(19)),
+        PATCH_HK(0x1319C7, NOP(19)),
+        PATCH_HK(0x131FFF, NOP(19)),
+        PATCH_HK(0x1352EB, NOP(19)),
+        PATCH_HK(0x13858B, NOP(19)),
+        PATCH_HK(0x13652C, NOP(25)),
+        PATCH_HK(0x1379DC, NOP(25))
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mWonderStGLock, TH20_WST_LOCK, "F6", VK_F6)
-        PATCH_HK(0x77F75, "0F1F00")
+        PATCH_HK(0x77F75, NOP(3))
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F7", VK_F7)
@@ -1103,7 +1112,7 @@ namespace TH20 {
                 EndOptGroup();
             }
             SSS_UI(20);
-            AboutOpt("Guy, zero318, rue, and you!\nTH20 support from khang06/GuyL/H-J-Granger...");
+            AboutOpt("Khangaroo, Guy, zero318, rue, and you!\nTH20 support from khang06/GuyL/H-J-Granger...");
             ImGui::EndChild();
             ImGui::SetWindowFocus();
         }
@@ -1729,8 +1738,10 @@ namespace TH20 {
             constexpr unsigned int st4mbsNonSubCallOrd = 0x4a4 + 0x19;
             constexpr unsigned int st4mbsNon2BossItemCallSomething = 0xd40 + 0x4;
             constexpr unsigned int st4mbsNon2PlaySoundSomething = 0xe6c + 0x4;
-            constexpr unsigned int st4mbsNon2PostLifeMarker = 0x1028;
+            constexpr unsigned int st4mbsNon2PreWait = 0x1028;
             constexpr unsigned int st4mbsNon2PostWait = 0x103c;
+            constexpr unsigned int st4mbsNon2InvincTime = 0xc54 + 0x10;
+            constexpr unsigned int st4mbsNon2Timer = 0xfc4 + 0x18;
             constexpr unsigned int st4mbsNon2BulletClear = 0x1a8 + 0x4;
 
             ECLJump(ecl, st4PostMaple, st4MBossCreateCall, 60, 90);
@@ -1740,8 +1751,10 @@ namespace TH20 {
             ecl << pair { st4mbsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
             ecl << pair { st4mbsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
             ecl << pair { st4mbsNon2BulletClear, (int16_t)0 }; // Disable bullet clear
-            ECLJump(ecl, st4mbsNon2PostLifeMarker, st4mbsNon2PostWait, 0); // Skip wait
-            ECLJump(ecl, st4mbsPreWait, st4mbsPostWait, 0);// Skip wait 2
+            ECLJump(ecl, st4mbsNon2PreWait, st4mbsNon2PostWait, 0); // Skip wait (100f)
+            ecl << pair { st4mbsNon2InvincTime, (int16_t)20 }; // Reduce invincible timer by time skipped (120f->20f)
+            ecl << pair { st4mbsNon2Timer, (int16_t)380 }; // Reduce boss timer by time skipped (480f->380f)
+            ECLJump(ecl, st4mbsPreWait, st4mbsPostWait, 0);
             ECLJump(ecl, st4mbsPreWait2, st4mbsPostWait2, 0);
             break;
         }
@@ -2576,7 +2589,7 @@ namespace TH20 {
             pCtx->Eip = RVA(0xE2BF0);
         }
     })
-    
+    PATCH_DY(th20_fix_rep_save_stone_names, 0x127B9F, "8B82D8000000" NOP(22))
     EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
         if (*(uint32_t*)(*(uintptr_t*)RVA(0x1BA828) + 0x108)) {
             // Yes, the order really is swapped like this
