@@ -1,6 +1,7 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 #include <format>
+#include <math.h>
 
 #include "utils/wininternal.h"
 
@@ -31,6 +32,9 @@ namespace TH20 {
 
         float hyper;
         float stone;
+        bool hyperActive;
+        bool stoneActive;
+
         int32_t stoneMax;
         int32_t levelR;
         int32_t priorityR;
@@ -73,6 +77,8 @@ namespace TH20 {
 
             GetJsonValue(hyper);
             GetJsonValue(stone);
+            GetJsonValue(hyperActive);
+            GetJsonValue(stoneActive);
             GetJsonValue(stoneMax);
             GetJsonValue(levelR);
             GetJsonValue(priorityR);
@@ -125,6 +131,8 @@ namespace TH20 {
                 AddJsonValue(value);
 
                 AddJsonValue(hyper);
+                AddJsonValue(hyperActive);
+                AddJsonValue(stoneActive);
                 AddJsonValue(stone);
                 AddJsonValue(levelR);
                 AddJsonValue(priorityR);
@@ -215,6 +223,9 @@ namespace TH20 {
                 thPracParam.priorityG = *mPriorityG;
                 thPracParam.levelY = *mLevelY;
                 thPracParam.priorityY = *mPriorityY;
+
+                thPracParam.hyperActive = *mHyperActive;
+                thPracParam.stoneActive = *mStoneActive;
                 break;
             case 4:
                 Close();
@@ -298,6 +309,16 @@ namespace TH20 {
                 mPower(power_str.c_str());
                 auto value_str = std::format("{:.2f}", (float)(*mValue) / 5000.0f);
                 mValue(value_str.c_str());
+
+                
+                ImGui::Columns(2, 0, false);
+                if (mHyperActive() && *mHyperActive && *mHyper == 0)
+                    *mHyper = 10000;
+                ImGui::NextColumn();
+                if (mStoneActive() && *mStoneActive && *mStone == 0)
+                    *mStone = 10000;
+                ImGui::Columns(1);
+
                 mHyper(std::format("{:.2f} %%", (float)(*mHyper) / 100.0f).c_str());
                 mStone(std::format("{:.2f} %%", (float)(*mStone) / 100.0f).c_str());
                 stoneMax(std::format("{}({})", std::min(5000, stoneGaugeInitialValue[*mStage] + *stoneMax * 150), *stoneMax).c_str());
@@ -445,6 +466,8 @@ namespace TH20 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 100, 400 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mValue { TH_VALUE, 0, 1000000 };
 
+        Gui::GuiCheckBox mHyperActive { TH20_HYPER_ACTIVE };
+        Gui::GuiCheckBox mStoneActive { TH20_STONE_ACTIVE };
         Gui::GuiSlider<int, ImGuiDataType_S32> mHyper { TH20_HYPER, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mStone { TH20_STONE_GAUGE, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> stoneMax { TH20_STONE_GAUGE_INITIAL, 0, 26 };
@@ -630,7 +653,9 @@ namespace TH20 {
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mWonderStGLock, TH20_WST_LOCK, "F6", VK_F6)
-        PATCH_HK(0x77F75, NOP(3))
+        PATCH_HK(0x77F75, NOP(3)),
+        PATCH_HK(0x1127AC, "E9AA000000CCCC"),
+        PATCH_HK(0x112AA0, "C3CCCC")
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F7", VK_F7)
@@ -672,6 +697,21 @@ namespace TH20 {
     });
     PATCH_ST(th20_infinite_stones, 0x11784B, "EB");
     PATCH_ST(th20_hitbox_scale_fix, 0xFF490, "B864000000C3");
+    EHOOK_ST(th20_cleanup_stone_active, 0x11269f, 1, {
+        // to make stoneActive work, we set the meter to max in init, let the game do its thing & adjust the meter/timer to the specified value
+        uintptr_t game_side = RVA(0x1BA568);
+        uintptr_t player_stats = game_side + 0x88;
+        *(int32_t*)(player_stats + 0x5C) = thPracParam.stone * thPracParam.stoneMax;
+
+        uintptr_t enemy_stone_manager = *(uintptr_t*)RVA(0x1c6118);
+        Timer20* stone_interp_timer = (Timer20*)(enemy_stone_manager + 0x84 + 0x14);
+
+        // stone_interp_timer->cur = 1320 - (1320 * thPracParam.stone);                         // option A: duration-accurate (50% stone = 50% of the duration)
+        stone_interp_timer->cur = 1320.0f * (1.0f - cbrtf(fmaxf(0.0001f, thPracParam.stone))); // option B: visuals-accurate (the drain meter is cubicly interpolated) (dont let it be 0) (just dont)
+        stone_interp_timer->cur_f = (float)stone_interp_timer->cur;
+
+        th20_cleanup_stone_active.Toggle(false);
+    });
 
     PATCH_ST(th20_bullet_hitbox_fix_1, 0x3Efd2, "F30F108080000000F30F5C4224");
     PATCH_ST(th20_bullet_hitbox_fix_2, 0x3EFEA, "F30F108284000000F30F5C4128");
@@ -960,6 +1000,7 @@ namespace TH20 {
             th20_score_uncap_stage_tr.Setup();
             th20_infinite_stones.Setup();
             th20_hitbox_scale_fix.Setup();
+            th20_cleanup_stone_active.Setup();
             th20_bullet_hitbox_fix_1.Setup();
             th20_bullet_hitbox_fix_2.Setup();
             th20_decrease_graze_effect.Setup();
@@ -2506,18 +2547,39 @@ namespace TH20 {
         if (thPracParam.mode != 1)
             return;
     
-        uintptr_t player_stats = RVA(0x1BA5F0);
-        *(int32_t*)(player_stats + 0x4C) = (int32_t)(thPracParam.hyper * *(int32_t*)(player_stats + 0x50));
-        if ((int32_t)thPracParam.hyper == 1) { // call the hyper start method
-            int32_t* gauge_manager_ptr = (int32_t*)RVA(0x1BA568 + 0x2C);
-            asm_call_rel<0x134D00, Fastcall>(*gauge_manager_ptr);
+        uintptr_t game_side = RVA(0x1BA568);
+        uintptr_t player_stats = game_side + 0x88;
+        int32_t hyperMax = *(int32_t*)(player_stats + 0x50);
+
+        struct Timer { // essentials
+            int32_t prev;
+            int32_t cur;
+            float cur_f;
+        };
+
+        if ((int32_t)thPracParam.hyper == 1 || thPracParam.hyperActive) { // call the hyper start method
+            uintptr_t player_stone_manager = *(uintptr_t*)(game_side + 0x2c);
+            asm_call_rel<0x133780, Thiscall>(player_stone_manager, hyperMax);
+
+            if (thPracParam.hyperActive) { // set hyper drain timer correctly
+                int32_t hyper_base_duration = *(int32_t*)(player_stats + 0x54) * 12;
+                int32_t g2_passive_factor = *(int32_t*)(player_stats + 0xa8);
+                int32_t hyper_duration = hyper_base_duration + (hyper_base_duration * g2_passive_factor) / 100;
+
+                uintptr_t story_stone = *(uintptr_t*)(player_stone_manager + 0x28);
+                Timer20* hyper_timer = (Timer20*)(story_stone + 0x14);
+                hyper_timer->prev = -999999; // zero318 & KSS say: safety first!
+                hyper_timer->cur = thPracParam.hyper * hyper_duration;
+                hyper_timer->cur_f = (float)hyper_timer->cur;
+            }
         }
-    
+        *(int32_t*)(player_stats + 0x4C) = thPracParam.hyper * hyperMax; // set hyper value
+
         if (thPracParam.stoneMax)
-        {
-            *(int32_t*)(player_stats + 0x60) = thPracParam.stoneMax;
-        }
-        *(int32_t*)(player_stats + 0x5C) = (int32_t)(thPracParam.stone * *(int32_t*)(player_stats + 0x60));
+            *(int32_t*)(player_stats + 0x60) = thPracParam.stoneMax; // check is for backwards compatibility
+        *(int32_t*)(player_stats + 0x5C) = thPracParam.stoneActive ? thPracParam.stoneMax : thPracParam.stone * thPracParam.stoneMax;
+        th20_cleanup_stone_active.Toggle(thPracParam.stoneActive || thPracParam.stone == 1.0f);
+
         *(int32_t*)(player_stats + 0x64) = thPracParam.priorityR;
         *(int32_t*)(player_stats + 0x68) = thPracParam.priorityB;
         *(int32_t*)(player_stats + 0x6C) = thPracParam.priorityY;
