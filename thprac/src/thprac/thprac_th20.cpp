@@ -2354,6 +2354,7 @@ namespace TH20 {
             thPracParam.passiveMeterTimer[stage] = *(int32_t*)(*(uintptr_t*)RVA(0x1C6118) + 0x28 + 4);
         }
     })
+    PATCH_DY(th20_fix_rep_save_stone_names, 0x127B9F, "8B82D8000000" NOP(22))
     EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
         if (*(uint32_t*)(*(uintptr_t*)RVA(0x1BA828) + 0x108)) {
             // Yes, the order really is swapped like this
