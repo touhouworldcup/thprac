@@ -2335,6 +2335,10 @@ namespace TH20 {
         *(uint32_t*)RVA(0x1BA568 + 0x88 + 0x1E0) = *(uint32_t*)RVA(0x1B0A60);
     })
     PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
+    EHOOK_DY(th20_esc_q, 0xe2f45 , 7 , {
+        if (Gui::KeyboardInputGetRaw('Q'))
+            pCtx->Eip = RVA(0xe2fe7);
+    })
     EHOOK_DY(th20_timer_desync_fix, 0xBA99F, 6, {
         uint32_t stage = *(uint32_t*)RVA(0x1BA568 + 0x88 + 0x1F4) - 1;
         if (*(uint32_t*)(*(uintptr_t*)RVA(0x1BA828) + 0x108)) {
