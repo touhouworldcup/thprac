@@ -2283,6 +2283,35 @@ namespace TH10 {
         if (thPracParam.mode)
             THSaveReplay(repName);
     })
+    EHOOK_DY(th10_rep_st4bg_fix, 0x4040cd, 5, {
+        //full run replays need to skip the BG forward 29 frames on st4 to sync if started there
+        //needs to execute once after the first STD ins_3 (camera_position_interp)
+
+        uint32_t transition_stage_ptr = *(uint32_t*)0x4776e4;
+        if (transition_stage_ptr) return;
+
+        uint32_t stage_num = *(uint32_t*)0x474c7c;
+        if (stage_num != 4) return;
+
+        uint32_t replay_mode = *(uint32_t*)0x491c00;
+        if (replay_mode != 2) return;
+
+        uint32_t replay_manager = *(uint32_t*)0x477838;
+        uint32_t replay_data_st3 = *(uint32_t*)(replay_manager + 0xa0 + 0x24 * 3);
+        if (!replay_data_st3) return;
+
+        uint32_t stage = *(uint32_t*)0x4776e8;
+        Timer* stage_std_timer = (Timer*)(stage + 0x38);
+
+        if (!stage_std_timer->current) { // start of stage
+            stage_std_timer->current = 29;
+            stage_std_timer->current_f = 29.0f;
+
+            Timer* camera_pos_interp_timer = (Timer*)(stage + 0x9c + 0x30);
+            camera_pos_interp_timer->current = 29;
+            camera_pos_interp_timer->current_f = 29.0f;
+        }
+    })
     EHOOK_DY(th10_rep_power_fix, 0x42a322, 3, {
         uint8_t* repBuffer = (uint8_t*)pCtx->Eax;
         THRepPowerFix(repBuffer);
