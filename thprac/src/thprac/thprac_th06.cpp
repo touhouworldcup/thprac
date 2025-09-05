@@ -1935,10 +1935,10 @@ namespace TH06 {
         if (!thPracParam.mode && GAME_MANAGER->isInReplay == 0) {
             if (*(DWORD*)(thiz) != 7) {
                 WORD key = *(WORD*)(INPUT_ADDR);
-                WORD key_last = *(WORD*)(INPUT_PREV_ADDR);
-                WORD rising_edge = key ^ key_last & key;
+                //WORD key_last = *(WORD*)(INPUT_PREV_ADDR);
+                //WORD rising_edge = key ^ key_last & key;
 
-                if (Gui::KeyboardInputGetRaw('R') || (rising_edge & 0x124)) { // ctrl+shift+down or R
+                if (Gui::KeyboardInputGetRaw('R') || (key & 0x124) == 0x124) { // ctrl+shift+down or R
                     *(DWORD*)(thiz) = 7;
                     thRestartFlag_normalGame = true;
                     pCtx->Eip = 0x40263c;
