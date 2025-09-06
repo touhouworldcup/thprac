@@ -1767,13 +1767,12 @@ namespace TH11 {
         if (thPracParam.mode)
             THSaveReplay(repName);
     })
-    EHOOK_DY(th11_rep_st4bg_fix, 0x404663, 5, {
+    EHOOK_DY(th11_rep_st6bg_fix, 0x404663, 5, {
         // full run replays need to skip the BG... backwards by 1f on st6 to sync if started there
                                              //... forwards by 5f on st6 to sync if transitioning to it w/ fast-forward
         // needs to execute once after the first STD ins_3 (camera_position_interp)
 
-        uint32_t replay_mode = *(uint32_t*)0x4c3250;
-        if (replay_mode != 2) return;
+        if (!THGuiRep::singleton().mRepStatus) return;
 
         uint32_t stage_num = *(uint32_t*)0x4a5728;
         if (stage_num != 6) return;

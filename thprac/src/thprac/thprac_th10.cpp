@@ -2287,14 +2287,13 @@ namespace TH10 {
         //full run replays need to skip the BG forward 29 frames on st4 to sync if started there
         //needs to execute once after the first STD ins_3 (camera_position_interp)
 
+        if (!THGuiRep::singleton().mRepStatus) return;
+
         uint32_t transition_stage_ptr = *(uint32_t*)0x4776e4;
         if (transition_stage_ptr) return;
 
         uint32_t stage_num = *(uint32_t*)0x474c7c;
         if (stage_num != 4) return;
-
-        uint32_t replay_mode = *(uint32_t*)0x491c00;
-        if (replay_mode != 2) return;
 
         uint32_t replay_manager = *(uint32_t*)0x477838;
         uint32_t replay_data_st3 = *(uint32_t*)(replay_manager + 0xa0 + 0x24 * 3);

@@ -5,6 +5,11 @@
 namespace THPrac {
 namespace TH07 {
     using std::pair;
+
+    enum ADDRS {
+        INPUT_ADDR = 0x4B9E4C,
+    };
+
     struct THPracParam {
         int32_t mode;
         int32_t stage;
@@ -1709,6 +1714,13 @@ namespace TH07 {
     })
     EHOOK_DY(th07_rep_menu_3, 0x45b2c1, 2, {
         THGuiRep::singleton().State(3);
+    })
+    EHOOK_DY(th07_unpause_prevent_desync, 0x403481, 7, {
+        if (THGuiRep::singleton().mRepStatus) return;
+
+        uint32_t GUI_impl = *(uint32_t*)(0x49fbf0 + 0x8);
+        if (*(int32_t*)(GUI_impl + 0x209b0) == 1) //skippable dialogue
+            *(WORD*)(INPUT_ADDR) &= ~0x1; // clear shoot bit from input
     })
     EHOOK_DY(th07_patch_main, 0x42f2e3, 1, {
         th07_rb.Disable();
