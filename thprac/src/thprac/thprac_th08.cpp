@@ -5,6 +5,12 @@
 namespace THPrac {
 namespace TH08 {
     using std::pair;
+
+    enum ADDRS {
+        INPUT_ADDR = 0x164d528,
+        GUI_ADDR = 0x160f428,
+    };
+
     struct THPracParam {
         int32_t mode;
         int32_t stage;
@@ -2189,6 +2195,14 @@ namespace TH08 {
     })
     EHOOK_DY(th08_rep_menu_3, 0x46ec2e, 6, {
         THGuiRep::singleton().State(3);
+    })
+    EHOOK_DY(th08_unpause_prevent_desync, 0x40421a, 5, {
+        if (THGuiRep::singleton().mRepStatus) return;
+
+        uint32_t GUI_impl = *(uint32_t*)(GUI_ADDR + 0x8);
+        int32_t dialog_index_maybe = *(int32_t*)(GUI_impl + 0x21814 + 0x8);
+        if (dialog_index_maybe >= 0 || dialog_index_maybe == -2) //same check the game performs (cf. 0x4358bb)
+            *(WORD*)(INPUT_ADDR) &= ~0x1; // clear shoot bit from input
     })
     EHOOK_DY(th08_disable_title, 0x439568, 5, {
         if (thPracParam.mode == 1 && thPracParam.section) {

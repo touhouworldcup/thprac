@@ -8,6 +8,7 @@ namespace TH07 {
 
     enum ADDRS {
         INPUT_ADDR = 0x4B9E4C,
+        GUI_ADDR = 0x49fbf0,
     };
 
     struct THPracParam {
@@ -1718,7 +1719,7 @@ namespace TH07 {
     EHOOK_DY(th07_unpause_prevent_desync, 0x403481, 7, {
         if (THGuiRep::singleton().mRepStatus) return;
 
-        uint32_t GUI_impl = *(uint32_t*)(0x49fbf0 + 0x8);
+        uint32_t GUI_impl = *(uint32_t*)(GUI_ADDR + 0x8);
         if (*(int32_t*)(GUI_impl + 0x209b0) == 1) //skippable dialogue
             *(WORD*)(INPUT_ADDR) &= ~0x1; // clear shoot bit from input
     })
