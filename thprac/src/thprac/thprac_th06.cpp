@@ -1945,7 +1945,15 @@ namespace TH06 {
                 }
             }
         }
+    })
+    EHOOK_DY(th06_unpause_prevent_desyncs, 0x40223d, 6, {
+        if (!GAME_MANAGER->isInReplay) {
+            *(WORD*)(INPUT_ADDR) &= ~0x2; // clear bomb bit from input
 
+            uint32_t GUI_impl = *(uint32_t*)(0x69bc30 + 0x4);
+            if (*(int32_t*)(GUI_impl + 0x253c) >= 0) //in dialogue
+                *(WORD*)(INPUT_ADDR) &= ~0x1; // clear shoot bit from input
+        }
     })
     EHOOK_DY(th06_patch_main, 0x41c17a, 5, {
         THPauseMenu::singleton().el_bgm_changed = false;
