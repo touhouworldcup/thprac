@@ -1741,7 +1741,7 @@ const char* th_glossary_str[3][1048]
         "Reimu\0Marisa\0Sanae\0Reisen\0\0",
         "th16",
         "th165",
-        "Reimu (Spring)\0Reimu (Summer)\0Reimu (Autumn)\0Reimu (Winter)\0Cirno (Spring)\0Cirno (Summer)\0Cirno (Autumn)\0Cirno (Winter)\0Aya (Spring)\\Aya (Summer)\\Aya (Autumn)\\Aya (Winter)\0Marisa (Spring)\0Marisa (Summer)\0Marisa (Autumn)\0Marisa (Winter)\0\0",
+        "Reimu (Spring)\0Reimu (Summer)\0Reimu (Autumn)\0Reimu (Winter)\0Cirno (Spring)\0Cirno (Summer)\0Cirno (Autumn)\0Cirno (Winter)\0Aya (Spring)\0Aya (Summer)\0Aya (Autumn)\0Aya (Winter)\0Marisa (Spring)\0Marisa (Summer)\0Marisa (Autumn)\0Marisa (Winter)\0\0",
         "th17",
         "th175",
         "Reimu\0Marisa\0Kanako\0Minamitsu\0Joon&Shion\0Flandre\0Yuuma\0\0",
@@ -21701,7 +21701,7 @@ const th_glossary_t TH20_CYCLE_LIST[4]
 
 }
 
-const wchar_t __thprac_loc_range_zh[2759] {
+const wchar_t __thprac_loc_range_zh[2765] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201d,
@@ -21782,6 +21782,7 @@ const wchar_t __thprac_loc_range_zh[2759] {
     0x4f4d, 0x4f50,
     0x4f53, 0x4f53,
     0x4f55, 0x4f55,
+    0x4f59, 0x4f59,
     0x4f5b, 0x4f5c,
     0x4f60, 0x4f60,
     0x4f73, 0x4f73,
@@ -21943,6 +21944,7 @@ const wchar_t __thprac_loc_range_zh[2759] {
     0x54f2, 0x54f2,
     0x5510, 0x5510,
     0x5524, 0x5524,
+    0x552f, 0x552f,
     0x5531, 0x5531,
     0x5546, 0x5546,
     0x5564, 0x5564,
@@ -21992,7 +21994,7 @@ const wchar_t __thprac_loc_range_zh[2759] {
     0x586b, 0x586b,
     0x5883, 0x5883,
     0x5899, 0x5899,
-    0x589e, 0x589f,
+    0x589e, 0x589e,
     0x58a8, 0x58a8,
     0x58c1, 0x58c1,
     0x58e4, 0x58e4,
@@ -22385,6 +22387,7 @@ const wchar_t __thprac_loc_range_zh[2759] {
     0x6bd4, 0x6bd5,
     0x6bd8, 0x6bd8,
     0x6c0f, 0x6c0f,
+    0x6c11, 0x6c11,
     0x6c14, 0x6c14,
     0x6c34, 0x6c34,
     0x6c38, 0x6c38,
@@ -23030,9 +23033,9 @@ const wchar_t __thprac_loc_range_zh[2759] {
     0x997f, 0x997f,
     0x9996, 0x9996,
     0x9999, 0x9999,
-    0x9a6c, 0x9a6e,
+    0x9a6c, 0x9a6c,
+    0x9a6e, 0x9a6e,
     0x9a79, 0x9a79,
-    0x9a7e, 0x9a7e,
     0x9a8a, 0x9a8a,
     0x9a8c, 0x9a8c,
     0x9a91, 0x9a91,
