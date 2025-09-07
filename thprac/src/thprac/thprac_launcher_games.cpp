@@ -1583,10 +1583,12 @@ public:
     {
         // TODO: THPRAC SIG CHECK & EXE TIME STAMP CHECK
         int result = 0;
-        auto currentGame = THGameGui::singleton().mCurrentGame;
+        // does not seem like a required check? breaks launching steam games via "Start game by default"
+        // (this check passes at start of LaunchThreadFunc but not here for some reason)
+        /*auto currentGame = THGameGui::singleton().mCurrentGame;
         if (!currentGame) {
             return 0;
-        }
+        }*/
         auto exePathU16 = exePath;
 
         HANDLE hModuleSnap = INVALID_HANDLE_VALUE;
@@ -1597,6 +1599,7 @@ public:
             auto modulePath = GetUnifiedPath(std::wstring(me32.szExePath));
             if (exePathU16 == modulePath) {
                 result = 1;
+                base = (uintptr_t)me32.modBaseAddr;
             } else {
                 while (Module32NextW(hModuleSnap, &me32)) {
                     modulePath = GetUnifiedPath(std::wstring(me32.szExePath));
@@ -1653,9 +1656,12 @@ public:
                 HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
                 if (Process32FirstW(snapshot, &procEntry)) {
                     do {
-                        uintptr_t base;
+                        uintptr_t base = 0;
                         bool test = isOmni ? CheckProcessOmni(procEntry, base) : CheckProcess(procEntry.th32ProcessID, exePath, base);
+
                         if (test) {
+                            if (!base) return 0;
+
                             auto hProc = OpenProcess(
                                 PROCESS_QUERY_INFORMATION | PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE,
                                 FALSE,
@@ -1824,12 +1830,12 @@ public:
             }
             std::wstring steamURL = L"steam://rungameid/";
             steamURL += currentGame->signature.steamId;
-            ShellExecuteW(nullptr, L"open", L"steam://open/games", nullptr, nullptr, SW_SHOW);
+            // ShellExecuteW(nullptr, L"open", L"steam://open/games", nullptr, nullptr, SW_SHOW);
             ShellExecuteW(nullptr, L"open", steamURL.c_str(), nullptr, nullptr, SW_SHOW);
             currentInstExePath = GetUnifiedPath(currentInstExePath);
             executeResult = (HINSTANCE)64;
-        }
             break;
+        }
         default:
             executeResult = ShellExecuteW(nullptr, L"open", currentInstPath.c_str(), nullptr, currentInstDir.c_str(), SW_SHOW);
             break;
