@@ -130,7 +130,7 @@ namespace V1_00a {
         static THAdvOptWnd* advOptWnd = nullptr;
         if (!advOptWnd)
             advOptWnd = new THAdvOptWnd();
-        if (Gui::KeyboardInputUpdate(VK_F12) == 1) {
+        if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
             if (advOptWnd->IsOpen())
                 advOptWnd->Close();
             else
@@ -644,7 +644,7 @@ namespace V1_00a {
 
         auto& t = TH19Tools::singleton();
         if (t.allow) {
-            if (Gui::KeyboardInputUpdate(VK_F11) == 1) {
+            if (Gui::GetChordPressed(Gui::GetSpecialMenuChord())) {
                 if (t.IsOpen()) {
                     t.Close();
                 } else {

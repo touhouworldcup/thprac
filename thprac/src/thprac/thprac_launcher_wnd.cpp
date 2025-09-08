@@ -260,7 +260,13 @@ int LauncherWndInit(unsigned int width, unsigned int height, unsigned int maxWid
     io.KeyMap[ImGuiKey_Space] = VK_SPACE;
     io.KeyMap[ImGuiKey_Enter] = VK_RETURN;
     io.KeyMap[ImGuiKey_Escape] = VK_ESCAPE;
+    io.KeyMap[ImGuiKey_Ctrl] = VK_CONTROL;
     io.KeyMap[ImGuiKey_KeyPadEnter] = VK_RETURN;
+    io.KeyMap[ImGuiKey_Alt] = VK_MENU;
+    io.KeyMap[ImGuiKey_Shift] = VK_SHIFT;
+    io.KeyMap[ImGuiKey_Caps] = VK_CAPITAL;
+    io.KeyMap[ImGuiKey_F11] = VK_F11;
+    io.KeyMap[ImGuiKey_F12] = VK_F12;
     io.KeyMap[ImGuiKey_A] = 'A';
     io.KeyMap[ImGuiKey_C] = 'C';
     io.KeyMap[ImGuiKey_V] = 'V';

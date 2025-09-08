@@ -43,6 +43,10 @@ void GuiLauncherLocaleInit()
         if (!Gui::LocaleInitFromCfg()) {
             Gui::LocaleAutoSet();
         }
+        // Load menu open key chords
+        if (!Gui::MenuChordInitFromCfg()) {
+            Gui::MenuChordAutoSet();
+        }
         LauncherCfgClose();
     }
 }
@@ -100,18 +104,21 @@ int GuiLauncherMain()
                 LauncherGamesGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
+                LauncherCloseHotkeyRebindListeners();
             }
             if (GuiTabItem(S(THPRAC_LINKS))) {
                 ImGui::BeginChild("##links");
                 LauncherLinksGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
+                LauncherCloseHotkeyRebindListeners();
             }
             if (GuiTabItem(S(THPRAC_TOOLS))) {
                 ImGui::BeginChild("##tools");
                 LauncherToolsGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
+                LauncherCloseHotkeyRebindListeners();
             }
             if (GuiTabItem(S(THPRAC_SETTINGS))) {
                 ImGui::BeginChild("##settings");

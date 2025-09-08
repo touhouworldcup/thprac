@@ -38,4 +38,6 @@ bool LauncherPreUpdate(wchar_t* pCmdLine);
 
 void SetTheme(int theme);
 
+void LauncherCloseHotkeyRebindListeners();
+
 }

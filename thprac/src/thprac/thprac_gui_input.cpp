@@ -1,5 +1,8 @@
 ﻿#include "thprac_gui_input.h"
+#include "thprac_gui_locale.h"
 #include "thprac_gui_impl_win32.h"
+#include "thprac_launcher_cfg.h"
+#include <imgui.h>
 #define NOMINMAX
 #include <Windows.h>
 #include <cstdint>
@@ -170,5 +173,165 @@ namespace THPrac
 		{
 			return Gui::InGameInputGet('Z') || KeyboardInputGetRaw(VK_RETURN);
 		}
+
+		
+		/***                      Menu Chords                        ***/
+
+		
+        int __gbackspace_menu_chord_current;
+        int __gadvanced_menu_chord_current;
+        int __gspecial_menu_chord_current;
+        int __gscreenshot_chord_current;
+
+
+		bool MenuChordInitFromCfg() {
+            int backspace_menu_chord = 0;
+            int advanced_menu_chord = 0;
+            int special_menu_chord = 0;
+            int screenshot_chord = 0;
+            if (
+				!LauncherSettingGet("backspace_menu_chord", backspace_menu_chord) ||
+				!LauncherSettingGet("advanced_menu_chord", advanced_menu_chord) || 
+				!LauncherSettingGet("special_menu_chord", special_menu_chord) || 
+				!LauncherSettingGet("screenshot_chord", screenshot_chord)
+			) {
+                return false;
+            }
+            __gbackspace_menu_chord_current = backspace_menu_chord;
+            __gadvanced_menu_chord_current = advanced_menu_chord;
+            __gspecial_menu_chord_current = special_menu_chord;
+            __gscreenshot_chord_current = screenshot_chord;
+            return true;
+		}
+
+		void MenuChordAutoSet() {
+			__gbackspace_menu_chord_current = 1 << ImGuiKey_Backspace;
+			__gadvanced_menu_chord_current = 1 << ImGuiKey_F12;
+			__gspecial_menu_chord_current = 1 << ImGuiKey_F11;
+			__gscreenshot_chord_current = 1 << ImGuiKey_Home;
+		}
+
+
+		// Returns the time the desired chord has been pressed for.
+		int GetChordPressedDuration(int target_chord) {
+			// Very bad copy paste...
+			const int KeyMap[] = {
+				VK_TAB,
+				VK_LEFT,
+				VK_RIGHT,
+				VK_UP,
+				VK_DOWN,
+				VK_PRIOR,
+				VK_NEXT,
+				VK_HOME,
+				VK_END,
+				VK_INSERT,
+				VK_DELETE,
+				VK_BACK,
+				VK_SPACE,
+				VK_RETURN,
+                VK_ESCAPE,
+                VK_RETURN,
+				VK_CONTROL,
+				VK_MENU,
+				VK_SHIFT,
+				VK_CAPITAL,
+				VK_F11,
+				VK_F12
+			};
+
+            int min_held = 2;
+
+            // Scan for keys until the keyboard keys which are not supported.
+            for (int key = 0; key <= ImGuiKey_F12; ++key) {
+                // If the key is in the target chord, check for duration that key was held.
+                if (target_chord & (1 << key)) {
+                    int held = KeyboardInputUpdate(KeyMap[key]);
+					// If one of the required keys is not pressed, set held time to 0 and break out early.
+                    if (held == 0) {
+                        min_held = 0;
+                        break;
+					// If it is held, update the least key held duration
+                    } else if (held < min_held) {
+                        min_held = held;
+					}
+                }
+            }
+
+			return min_held;
+		}
+
+		bool GetChordPressed(int chord) {
+			return GetChordPressedDuration(chord) == 1;
+		}
+		
+		int GetBackspaceMenuChord() { return __gbackspace_menu_chord_current; }
+		int GetAdvancedMenuChord() { return __gadvanced_menu_chord_current; }
+		int GetSpecialMenuChord() { return __gspecial_menu_chord_current; }
+		int GetScreenshotChord() { return __gspecial_menu_chord_current; }
+
+		// Convert ImGui Chords to user-readable string.
+        std::string HotkeyChordToLabel(int chord) {
+            // Dirty hardcoded
+            const char* KEY_NAMES[] = {
+                "Tab",
+                "If you see this, I messed up",
+                "If you see this, I messed up",
+                "If you see this, I messed up",
+                "If you see this, I messed up",
+                "PageUp",
+                "PageDown",
+                "Home",
+                "End",
+                "Insert",
+                "Delete",
+                "Backspace",
+                S(THPRAC_HOTKEY_SPACEBAR),
+                "If you see this, I messed up",
+                "Esc",
+                "If you see this, I messed up",
+                "Ctrl",
+                "Alt",
+                "Shift",
+                "Caps",
+                "F11",
+                "F12"
+            };
+
+            // Special case for if no keys are pressed at all
+            if (chord == 0)
+                return std::string(S(THPRAC_HOTKEY_UNASSIGNED));
+
+            std::string s;
+
+            // Ctrl Alt Shift are always first.
+            if (chord & (1 << ImGuiKey_Ctrl))
+                s += std::string("Ctrl + ");
+            if (chord & (1 << ImGuiKey_Alt))
+                s += std::string("Alt + ");
+            if (chord & (1 << ImGuiKey_Shift))
+                s += std::string("Shift + ");
+
+            // Add the rest of the keys in the chord to the text.
+            for (int key = 0; key <= ImGuiKey_F12; ++key) {
+                // We've already added these texts first, no need to do it again.
+                if (key == ImGuiKey_Ctrl || key == ImGuiKey_Alt || key == ImGuiKey_Shift)
+                    continue;
+                // Idk why this entry exists when its just the same as Enter.
+                if (key == ImGuiKey_KeyPadEnter)
+                    continue;
+
+                // See if the key is present in the chord and add it to the string if so.
+                if (chord & (1 << key)) {
+                    s += KEY_NAMES[key];
+                    s += std::string(" + ");
+                }
+            }
+
+            // Cut off last " + " and return our label string.
+            s.resize(s.length() - 3);
+            return s;
+        }
+
 	}
 }

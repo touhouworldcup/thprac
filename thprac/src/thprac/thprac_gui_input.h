@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <string>
 
 namespace THPrac
 {
@@ -25,5 +26,19 @@ namespace THPrac
 		bool KeyboardInputGetRaw(int v_key);
 
 		bool InGameInputGetConfirm();
+
+		// Menu Chords
+;
+        bool MenuChordInitFromCfg();
+        void MenuChordAutoSet();
+        bool GetChordPressed(int chord);
+
+        int GetBackspaceMenuChord();
+        int GetAdvancedMenuChord();
+        int GetSpecialMenuChord();
+        int GetScreenshotChord();
+
+		std::string HotkeyChordToLabel(int chord);
 	}
 }
+

@@ -171,6 +171,7 @@ int WINAPI wWinMain(
     }
 
     RemoteInit();
+
     auto thpracMutex = OpenMutexW(SYNCHRONIZE, FALSE, L"thprac - Touhou Practice Tool##mutex");
 
     CmdlineRet cmd = doCmdLineStuff(pCmdLine);
@@ -183,10 +184,16 @@ int WINAPI wWinMain(
     bool adminRights = false;
     int checkUpdateWhen = 0;
     bool autoUpdate = false;
+
     if (LauncherCfgInit(true)) {
         if (!Gui::LocaleInitFromCfg()) {
             Gui::LocaleAutoSet();
         }
+        // Load menu open key chords
+        if (!Gui::MenuChordInitFromCfg()) {
+            Gui::MenuChordAutoSet();
+        }
+
         LauncherSettingGet("existing_game_launch_action", launchBehavior);
         LauncherSettingGet("dont_search_ongoing_game", dontFindOngoingGame);
         LauncherSettingGet("thprac_admin_rights", adminRights);
