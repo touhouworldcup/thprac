@@ -29,6 +29,7 @@ struct ExeSig {
     uint32_t textSize;
     uint32_t oepCode[10];
     uint32_t metroHash[4];
+    uint32_t steamMetroHash[4];
 };
 
 struct THGameSig {
@@ -259,7 +260,10 @@ static THGameSig gGameDefs[] {
             { 0x212b, 0xea2a, 0x0a16, 0xac44, 0x5900,
                 0x4646, 0xd3f8, 0x4848, 0xc249, 0xa28d },
             { 0xdc63c169, 0x2c975430,
-                0xbc21df80, 0x26937f9e } } },
+                0xbc21df80, 0x26937f9e },
+            { 0xdc63c169, 0x2c975430,
+                0xbc21df80, 0x26937f9e }
+        } },
     { "th095",
         L"1420650",
         TH095_TITLE,
@@ -271,7 +275,10 @@ static THGameSig gGameDefs[] {
             { 0x212b, 0x122a, 0x0af8, 0xac44, 0x5ce2,
                 0x4646, 0xd3f8, 0x4848, 0xc249, 0xa28d },
             { 0x46eaf90e, 0x2a24f234,
-                0x74b70f03, 0xbd59c6e5 } } },
+                0x74b70f03, 0xbd59c6e5 },
+            { 0x9e7883da, 0x3e8a7a62,
+                0x333fa441, 0x9e4a5077 }
+        } },
     { "th10",
         L"1100140",
         TH10_TITLE,
@@ -283,7 +290,10 @@ static THGameSig gGameDefs[] {
             { 0x212b, 0x322a, 0x05e4, 0xac44, 0x5691,
                 0x4646, 0xd3f8, 0x4848, 0xc249, 0xa28d },
             { 0x11c73117, 0x422a725f,
-                0xc0639015, 0x06050767 } } },
+                0xc0639015, 0x06050767 },
+            { 0x4771b7b2, 0x61a9b6ff,
+                0x77b2d73c, 0xb05af556 }
+        } },
     { "th105",
         nullptr,
         TH105_TITLE,
@@ -307,7 +317,10 @@ static THGameSig gGameDefs[] {
             { 0x06a9, 0x4289, 0xaa43, 0xba3c, 0xbaba,
                 0xb9cd, 0xcc12, 0xc9a4, 0x61a5, 0x4a49 },
             { 0x4e4ad931, 0xa91dc711,
-                0x720e5db7, 0x57a14232 } } },
+                0x720e5db7, 0x57a14232 },
+            { 0xa6c81bda, 0xab6fea4b,
+                0xb9708f50, 0x31242cdd }
+        } },
     { "th12",
         L"1100160",
         TH12_TITLE,
@@ -319,7 +332,10 @@ static THGameSig gGameDefs[] {
             { 0x06a9, 0x4289, 0xaa43, 0xba3c, 0xbaba,
                 0xb9cd, 0xcc12, 0xc9a4, 0x61a5, 0x4a49 },
             { 0xd4d81259, 0xce424514,
-                0x6e7e6326, 0x8b4c0990 } } },
+                0x6e7e6326, 0x8b4c0990 },
+            { 0x36865d01, 0x4402f03e,
+                0x8d44dabd, 0x65281618 }
+        } },
     { "th123",
         nullptr,
         TH123_TITLE,
@@ -343,7 +359,10 @@ static THGameSig gGameDefs[] {
             { 0xf8a9, 0x42f9, 0xaa43, 0xba3c, 0xbaba,
                 0xb9cd, 0xcc12, 0xc9a4, 0x61a5, 0x4a49 },
             { 0x0e1b7b17, 0x473f857e,
-                0x3fe6360f, 0x40de70d3 } } },
+                0x3fe6360f, 0x40de70d3 },
+            { 0x88d8f1d8, 0x4820a04b,
+                0x4414c45d, 0xcfaa2117 }
+        } },
     { "th128",
         L"1100180",
         TH128_TITLE,
@@ -355,7 +374,10 @@ static THGameSig gGameDefs[] {
             { 0x03a9, 0x42dd, 0xaa43, 0xbacd, 0xbaba,
                 0xb9cd, 0xcc12, 0xcba4, 0x69a5, 0x0fc1 },
             { 0x948a4e8a, 0x665d6cd0,
-                0x25fc26f7, 0xcba8f1e3 } } },
+                0x25fc26f7, 0xcba8f1e3 },
+            { 0x48b1d757, 0x29766b53,
+                0xc07d3645, 0x7d535f20 }
+        } },
     { "th13",
         L"1043230",
         TH13_TITLE,
@@ -367,7 +389,10 @@ static THGameSig gGameDefs[] {
             { 0xb6a9, 0x42dc, 0xaa43, 0xbacd, 0xbaba,
                 0xb9cd, 0xcc12, 0xcba4, 0x69a5, 0x0fc1 },
             { 0x4619502d, 0xe94742fc,
-                0x13537c7d, 0x7212f384 } } },
+                0x13537c7d, 0x7212f384 },
+            { 0xd60fa763, 0x380673c1,
+                0x3a3f6475, 0x11dc1f00 }
+        } },
     { "th135",
         nullptr,
         TH135_TITLE,
@@ -391,7 +416,10 @@ static THGameSig gGameDefs[] {
             { 0xafa9, 0x42f5, 0xaa43, 0x4444, 0x4545,
                 0x522c, 0x1f2f, 0x0486, 0xa149, 0x511d },
             { 0x08a6fde4, 0xb4344a4a,
-                0xa3636647, 0x387d4253 } } },
+                0xa3636647, 0x387d4253 },
+            { 0x5edd7a93, 0x774d84b,
+                0x5df1b298, 0x210f5fc8 }
+        } },
     { "th143",
         L"937570",
         TH143_TITLE,
@@ -403,7 +431,10 @@ static THGameSig gGameDefs[] {
             { 0x6aa9, 0x428b, 0xaa43, 0x4444, 0x4545,
                 0x522c, 0xdf2f, 0x0511, 0xa149, 0x56f7 },
             { 0x2549f2c0, 0x1121c489,
-                0x9aaf6330, 0x75ade252 } } },
+                0x9aaf6330, 0x75ade252 },
+            { 0x227e06a2, 0x722509d9,
+                0x01718a61, 0xad905c25 }
+            } },
     { "th145",
         nullptr,
         TH145_TITLE,
@@ -427,7 +458,10 @@ static THGameSig gGameDefs[] {
             { 0x1aa9, 0x428b, 0xaa43, 0x4444, 0x4545,
                 0x522c, 0x872f, 0x05f1, 0xa149, 0x56f7 },
             { 0xed3ac6ec, 0x21bc473c,
-                0x186edbb4, 0x9ebd98cf } } },
+                0x186edbb4, 0x9ebd98cf },
+            { 0x75871bd4, 0x0adeb360,
+                0xf429659d, 0x931922e2 }
+            } },
     { "th155",
         L"716710",
         TH155_TITLE,
@@ -451,7 +485,10 @@ static THGameSig gGameDefs[] {
             { 0xeaa9, 0x4246, 0xaa43, 0xbaca, 0xbaba,
                 0xcd13, 0x11ab, 0x3db7, 0xc241, 0xa2bb },
             { 0x4dae29e4, 0xa1af84f8,
-                0xc6d1d694, 0x8cb29894 } } },
+                0xc6d1d694, 0x8cb29894 },
+            { 0x60ebdd82, 0xc012c21a,
+                0x9d875c04, 0x6c1f7fef }
+        } },
     { "th165",
         L"924650",
         TH165_TITLE,
@@ -463,7 +500,10 @@ static THGameSig gGameDefs[] {
             { 0xb9a9, 0x4246, 0xaa43, 0xbac0, 0xbaba,
                 0xcd13, 0x11ab, 0x3db7, 0xc241, 0xa2bb },
             { 0x550d4b1c, 0x805408e3,
-                0x1ef2ca25, 0xa257adb3 } } },
+                0x1ef2ca25, 0xa257adb3 },
+            { 0x886148be, 0x11ed264e,
+                0x369d5e4b, 0x16045490 }
+        } },
     { "th17",
         L"1079160",
         TH17_TITLE,
@@ -475,7 +515,10 @@ static THGameSig gGameDefs[] {
             { 0xb2a9, 0x4246, 0xaa43, 0xba3e, 0xbaba,
                 0xcd13, 0x11ab, 0x3db7, 0xc241, 0xa2bb },
             { 0x3b46eeb2, 0xcd3b5634,
-                0x3e1032a2, 0x22cac0c5 } } },
+                0x3e1032a2, 0x22cac0c5 },
+            { 0x9fb6f999, 0xcc31ff48,
+                0x57271b1f, 0x82db4030 }
+        } },
     { "th175",
         L"1440500",
         TH175_TITLE,
@@ -499,7 +542,10 @@ static THGameSig gGameDefs[] {
             { 0x9ba9, 0x4246, 0xaa43, 0xba3e, 0xbaba,
                 0xcd13, 0xc4ab, 0x44a4, 0x04c4, 0xa2be },
             { 0x06c9eac8, 0x6b941c66,
-                0x2ea3c134, 0xf44fc808 } } },
+                0x2ea3c134, 0xf44fc808 },
+            { 0x7b13a1f3, 0x3eb0e397,
+                0xa6f5b6ec, 0xcbf302ce }
+        } },
     { "th185",
         L"2097720",
         TH185_TITLE,
@@ -511,8 +557,11 @@ static THGameSig gGameDefs[] {
             { 0x84a9, 0x4246, 0xaa43, 0xba3e, 0xbaba,
                 0xcd13, 0xc4ab, 0x44a4, 0x04c4, 0xa2be },
             { 0xeff8426f, 0xa6522a33,
-                0xdc04050e, 0xc99233fe } } },
-    { "th19",
+                0xdc04050e, 0xc99233fe },
+            { 0xcd1d1ad0, 0x34cf8cc1,
+                0x32af8b3a, 0xcb07b8dc }
+        } },
+    { "th19", // v1.00a
         L"2400340",
         TH19_TITLE,
         CAT_MAIN,
@@ -523,8 +572,11 @@ static THGameSig gGameDefs[] {
             { 0xdfa9, 0x4247, 0xaa43, 0xba3e, 0xbaba,
                 0x0e2e, 0x1d90, 0xb748, 0x8d5c, 0x1fbb },
             { 0x1ef2d050, 0xbddd8da2,
-                0x56cedb87, 0xe674cd2c } } },
-    { "th19",
+                0x56cedb87, 0xe674cd2c },
+            { 0xfeac2cc1, 0xff97767b,
+                0x7760eca9, 0xa7f85003 }
+        } },
+    { "th19", //v1.10c
         L"2400340",
         TH19_TITLE,
         CAT_MAIN,
@@ -535,7 +587,10 @@ static THGameSig gGameDefs[] {
             { 0xb3a9, 0x4245, 0xaa43, 0xba3e, 0xbaba,
                 0x0e2e, 0x1a4a, 0xb748, 0xad5c, 0x1dfb },
             { 0x4951fa2e, 0x63b2d14d,
-                0x4b3ab26a, 0x3ee8b40d } } },
+                0x4b3ab26a, 0x3ee8b40d },
+            { 0x4bb3eeda, 0xdb1651f5,
+                0xf670bb28, 0x8aea075e }
+        } },
     { "th20",
         L"3671710",
         TH20_TITLE,
@@ -547,7 +602,10 @@ static THGameSig gGameDefs[] {
             { 0xaca9, 0x4244, 0xaa43, 0xba33, 0xbaba,
                 0x4684, 0xcc47, 0xbc05, 0xc02d, 0x4a47 },
             { 0x6cc723ea, 0xa71db65e,
-                0x3c19f37c, 0x836fb369 } } },
+                0x3c19f37c, 0x836fb369 },
+            { 0xc0744bc1, 0x3c2aea32,
+                0x9241a33e, 0xc467ae44 }
+        } }
 };
 
 #pragma region Game Roll Def

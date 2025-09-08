@@ -1825,13 +1825,9 @@ public:
             currentInstExePath = L"";
             break;
         case TYPE_STEAM: {
-            if (!currentGame->signature.steamId) {
+            if (!RunSteamGame(currentGame->signature))
                 return 0;
-            }
-            std::wstring steamURL = L"steam://rungameid/";
-            steamURL += currentGame->signature.steamId;
-            // ShellExecuteW(nullptr, L"open", L"steam://open/games", nullptr, nullptr, SW_SHOW);
-            ShellExecuteW(nullptr, L"open", steamURL.c_str(), nullptr, nullptr, SW_SHOW);
+
             currentInstExePath = GetUnifiedPath(currentInstExePath);
             executeResult = (HINSTANCE)64;
             break;
