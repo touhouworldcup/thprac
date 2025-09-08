@@ -1050,7 +1050,8 @@ public:
             }
             std::wstring checkPath = path + L"\\appmanifest_" + gameDef.steamId + L".acf";
             if (GetFileAttributesW(checkPath.c_str()) != INVALID_FILE_ATTRIBUTES) {
-                ScanAddGame(TYPE_STEAM, "", utf16_to_utf8(path.c_str()) + "\\common\\" + gameDef.idStr + '\\' + gameDef.idStr + ".exe", gameDef);
+                const char* steamFolder = (strcmp(gameDef.idStr, "th095") == 0) ? "th95" : gameDef.idStr; //StB: folder name diff from exe name
+                ScanAddGame(TYPE_STEAM, "", utf16_to_utf8(path.c_str()) + "\\common\\" + steamFolder + '\\' + gameDef.idStr + ".exe", gameDef);
             }
         }
         return 0;

@@ -250,7 +250,7 @@ static THGameSig gGameDefs[] {
             { 0xc1f84aea, 0xfad04d3b,
                 0xf28642e5, 0x7fe28f3b } } },
     { "th09",
-        nullptr,
+        L"1420810",
         TH09_TITLE,
         CAT_MAIN,
         L"vpatch_th09.dll",
