@@ -535,7 +535,6 @@ namespace TH13 {
         }
         void FpsInit()
         {
-            mOptCtx.fps_debug_acc = 1;
             mOptCtx.fps_replay_fast = 600;
 
             mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th13.dll");
