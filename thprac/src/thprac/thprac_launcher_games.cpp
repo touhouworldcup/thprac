@@ -1527,7 +1527,7 @@ public:
     }
     static bool WINAPI CheckProcessOmni(PROCESSENTRY32W& proc, uintptr_t& base)
     {
-        if (wcscmp(L"東方紅魔郷.exe", proc.szExeFile)) {
+        if (wcscmp(L"東方紅魔郷.exe", proc.szExeFile) && wcscmp(L"alcostg.exe", proc.szExeFile)) {
             if (proc.szExeFile[0] != L't' || proc.szExeFile[1] != L'h')
                 return false;
             if (proc.szExeFile[2] < 0x30 || proc.szExeFile[2] > 0x39)
