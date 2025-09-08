@@ -1624,12 +1624,12 @@ public:
                 DWORD sigAddr = 0;
                 DWORD sigCheck = 0;
                 DWORD bytesReadRPM;
-                ReadProcessMemory(hProc, (void*)0x40003c, &sigAddr, 4, &bytesReadRPM);
+                ReadProcessMemory(hProc, (void*)(base + 0x3c), &sigAddr, 4, &bytesReadRPM);
                 if (bytesReadRPM != 4 || !sigAddr) {
                     CloseHandle(hProc);
                     return 0;
                 }
-                ReadProcessMemory(hProc, (void*)(0x400000 + sigAddr - 4), &sigCheck, 4, &bytesReadRPM);
+                ReadProcessMemory(hProc, (void*)(base + sigAddr - 4), &sigCheck, 4, &bytesReadRPM);
                 if (bytesReadRPM != 4 || sigCheck) {
                     CloseHandle(hProc);
                     return 0;
