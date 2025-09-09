@@ -171,6 +171,7 @@ enum th_glossary_t
     TH13_EXTEND,
     TH13_SPIRIT_SIDE,
     TH13_TITLE,
+    TH13_TRANCE_LOCK,
     TH13_TRANCE_METER,
     TH143_TITLE,
     TH145_TITLE,
@@ -1060,7 +1061,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1048];
+extern const char* th_glossary_str[3][1049];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2686,10 +2687,10 @@ extern const th_glossary_t TH20_CYCLE_LIST[4];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[2765];
+extern const wchar_t __thprac_loc_range_zh[3289];
 
-extern const wchar_t __thprac_loc_range_en[31];
+extern const wchar_t __thprac_loc_range_en[35];
 
-extern const wchar_t __thprac_loc_range_ja[2239];
+extern const wchar_t __thprac_loc_range_ja[2775];
 
 }
