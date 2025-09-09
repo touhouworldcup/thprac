@@ -1050,7 +1050,8 @@ public:
             }
             std::wstring checkPath = path + L"\\appmanifest_" + gameDef.steamId + L".acf";
             if (GetFileAttributesW(checkPath.c_str()) != INVALID_FILE_ATTRIBUTES) {
-                ScanAddGame(TYPE_STEAM, "", utf16_to_utf8(path.c_str()) + "\\common\\" + gameDef.idStr + '\\' + gameDef.idStr + ".exe", gameDef);
+                const char* steamFolder = (strcmp(gameDef.idStr, "th095") == 0) ? "th95" : gameDef.idStr; //StB: folder name diff from exe name
+                ScanAddGame(TYPE_STEAM, "", utf16_to_utf8(path.c_str()) + "\\common\\" + steamFolder + '\\' + gameDef.idStr + ".exe", gameDef);
             }
         }
         return 0;
@@ -1526,7 +1527,7 @@ public:
     }
     static bool WINAPI CheckProcessOmni(PROCESSENTRY32W& proc, uintptr_t& base)
     {
-        if (wcscmp(L"東方紅魔郷.exe", proc.szExeFile)) {
+        if (wcscmp(L"東方紅魔郷.exe", proc.szExeFile) && wcscmp(L"alcostg.exe", proc.szExeFile)) {
             if (proc.szExeFile[0] != L't' || proc.szExeFile[1] != L'h')
                 return false;
             if (proc.szExeFile[2] < 0x30 || proc.szExeFile[2] > 0x39)
@@ -1623,12 +1624,12 @@ public:
                 DWORD sigAddr = 0;
                 DWORD sigCheck = 0;
                 DWORD bytesReadRPM;
-                ReadProcessMemory(hProc, (void*)0x40003c, &sigAddr, 4, &bytesReadRPM);
+                ReadProcessMemory(hProc, (void*)(base + 0x3c), &sigAddr, 4, &bytesReadRPM);
                 if (bytesReadRPM != 4 || !sigAddr) {
                     CloseHandle(hProc);
                     return 0;
                 }
-                ReadProcessMemory(hProc, (void*)(0x400000 + sigAddr - 4), &sigCheck, 4, &bytesReadRPM);
+                ReadProcessMemory(hProc, (void*)(base + sigAddr - 4), &sigCheck, 4, &bytesReadRPM);
                 if (bytesReadRPM != 4 || sigCheck) {
                     CloseHandle(hProc);
                     return 0;
@@ -1825,13 +1826,9 @@ public:
             currentInstExePath = L"";
             break;
         case TYPE_STEAM: {
-            if (!currentGame->signature.steamId) {
+            if (!RunSteamGame(currentGame->signature))
                 return 0;
-            }
-            std::wstring steamURL = L"steam://rungameid/";
-            steamURL += currentGame->signature.steamId;
-            // ShellExecuteW(nullptr, L"open", L"steam://open/games", nullptr, nullptr, SW_SHOW);
-            ShellExecuteW(nullptr, L"open", steamURL.c_str(), nullptr, nullptr, SW_SHOW);
+
             currentInstExePath = GetUnifiedPath(currentInstExePath);
             executeResult = (HINSTANCE)64;
             break;
