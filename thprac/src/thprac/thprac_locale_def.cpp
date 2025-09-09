@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1049]
+const char* th_glossary_str[3][1051]
 {
     {
         "",
@@ -171,7 +171,7 @@ const char* th_glossary_str[3][1049]
         "奖残次数",
         "灵方向",
         "TH13 东方神灵庙　～ Ten Desires.",
-        "锁灵界槽槽",
+        "锁灵界槽",
         "灵界槽",
         "TH14.3 弹幕天邪鬼　～ Impossible Spell Card.",
         "TH14.5 东方深秘录　～ Urban Legend in Limbo.",
@@ -1016,6 +1016,8 @@ const char* th_glossary_str[3][1049]
         "蓝点",
         "本关蓝点",
         "总计蓝点",
+        "Start X Pos (TL Needed)",
+        "Start Y Pos (TL Needed)",
         "火力",
         "进度",
         "发狂",
@@ -2067,6 +2069,8 @@ const char* th_glossary_str[3][1049]
         "Point",
         "Point (Stage)",
         "Point (Total)",
+        "Start X Pos",
+        "Start Y Pos",
         "Power",
         "Progress",
         "Rage",
@@ -3118,6 +3122,8 @@ const char* th_glossary_str[3][1049]
         "得点",
         "得点\n(ステージ)",
         "得点(合計)",
+        "Start X Pos (TL Needed)",
+        "Start Y Pos (TL Needed)",
         "霊力",
         "進行度",
         "発狂",
