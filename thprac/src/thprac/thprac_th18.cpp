@@ -7,7 +7,7 @@ namespace TH18 {
 #define play_sound_centered(id) asm_call<0x476BE0, Stdcall>(id, UNUSED_DWORD)
 
     // MSVC WILL generate suboptimal code here if I don't hand-write my own assembly here
-    __declspec(naked) void __fastcall globals_assign_hooked(uint32_t* glob1, void*, uint32_t* glob2)
+    __declspec(naked) void __fastcall globals_assign_hooked([[maybe_unused]] uint32_t* glob1, void*, [[maybe_unused]] uint32_t* glob2)
     {
         __asm {
             push esi

@@ -1,20 +1,29 @@
-﻿#include "thprac_utils.h"
-#include "../3rdParties/d3d8/include/d3d8.h"
+﻿#include "thprac_th06.h"
 
-#include "thprac_th06.h"
+#include "thprac_utils.h"
+#include "../3rdParties/d3d8/include/d3d8.h"
+#include "../3rdParties/d3d8/include/dinput.h"
+#include "../3rdParties/d3d8/include/d3dx8math.h"
+
 
 namespace THPrac {
 
 namespace TH06 {
-    static const GameManager* const GAME_MANAGER = (const GameManager* const)0x69bca0;
+    static GameManager* const GAME_MANAGER = (GameManager* const)0x69bca0;
 
-    enum ADDRS {
+    enum addrs {
         INPUT_ADDR = 0x69D904,
         INPUT_PREV_ADDR = 0x69D908,
     };
 
     bool THBGMTest();
     using std::pair;
+    
+    /**
+     * @brief The instance of Supervisor of th06. Always located in 0x6c6d18.
+     */
+    Supervisor* const supervisor = (Supervisor* const)(0x6c6d18);
+
     struct THPracParam {
         int32_t mode;
 
@@ -118,7 +127,10 @@ namespace TH06 {
             SetPos(10.0f, 10.0f);
             SetSize(0.0f, 0.0f);
             SetWndFlag(
-                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | 
+                ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | 
+                ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0
+            );
             OnLocaleChange();
         }
         SINGLETON(THOverlay);
@@ -172,7 +184,7 @@ namespace TH06 {
                     Open();
                 } else {
                     Close();
-                    *((int32_t*)0x6c6eb0) = 3;
+                    supervisor->RedrawBackground();
                 }
             }
         }
@@ -238,8 +250,8 @@ namespace TH06 {
             case 1:
                 SetFade(0.8f, 0.1f);
                 Open();
-                mDiffculty = (int)(*((int8_t*)0x69bcb0));
-                mShotType = (int)(*((int8_t*)0x69d4bd) * 2) + *((int8_t*)0x69d4be);
+                mDiffculty = (int)(GAME_MANAGER->difficulty);
+                mShotType = (int)(GAME_MANAGER->shotType * 2) + GAME_MANAGER->shotType;
                 break;
             case 2:
                 break;
@@ -574,7 +586,11 @@ namespace TH06 {
                 auto oldBgmFlag = THBGMTest();
                 thRestartFlag = true;
                 THGuiPrac::singleton().State(5);
-                if (*(THOverlay::singleton().mElBgm) && !el_bgm_changed && oldMode == thPracParam.mode && oldStage == thPracParam.stage && oldBgmFlag == THBGMTest()) {
+                if (
+                    *(THOverlay::singleton().mElBgm) && !el_bgm_changed && 
+                    oldMode == thPracParam.mode && 
+                    oldStage == thPracParam.stage && oldBgmFlag == THBGMTest()
+                ) {
                     el_bgm_signal = true;
                 }
 
@@ -827,7 +843,10 @@ namespace TH06 {
 
         THAdvOptWnd() noexcept
         {
-            SetWndFlag(ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
+            SetWndFlag(
+                ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | 
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove
+            );
             SetFade(0.8f, 0.8f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -888,7 +907,7 @@ namespace TH06 {
         }
         void ContentUpdate()
         {
-            *((int32_t*)0x6c6eb0) = 3;
+            supervisor->RedrawBackground();
             ImGui::TextUnformatted(S(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
@@ -905,8 +924,6 @@ namespace TH06 {
         }
 
         adv_opt_ctx mOptCtx;
-
-
     };
 
     // ECL Patch Helper
@@ -1335,7 +1352,7 @@ namespace TH06 {
             }
             break;
         case THPrac::TH06::TH06_ST6_MID2:
-            shot = (int)(*((int8_t*)0x69d4bd) * 2) + *((int8_t*)0x69d4be);
+            shot = (int)(GAME_MANAGER->character * 2) + GAME_MANAGER->shotType;
             if (shot > 1)
                 shot = 1099;
             else if (!shot)
@@ -1880,7 +1897,9 @@ namespace TH06 {
     HOOKSET_DEFINE(THMainHook)
     PATCH_DY(th06_reacquire_input, 0x41dc58, "0000000074")
     EHOOK_DY(th06_activateapp, 0x420D96, 3, {
-        // Wacky hack to disable rendering for one frame to prevent the game from crasing when alt tabbing into it if the pause menu is open and the game is in fullscreen mode
+        // Wacky hack to disable rendering for one frame to prevent the game 
+        // from crasing when alt tabbing into it if the pause menu is open and 
+        // the game is in fullscreen mode
         GameGuiProgress = 1;
     })
     EHOOK_DY(th06_bgm_play, 0x424b5d, 1, {
@@ -1908,20 +1927,20 @@ namespace TH06 {
         THGuiPrac::singleton().State(4);
     })
     EHOOK_DY(th06_prac_menu_enter, 0x4373a3, 5, {
-        *(int32_t*)(0x69d6d4) = *(int32_t*)(0x69d6d8) = thPracParam.stage;
+        GAME_MANAGER->currentStage = GAME_MANAGER->menuCursorBackup = thPracParam.stage;
         if (thPracParam.stage == 6)
-            *(int8_t*)(0x69bcb0) = 4;
+            GAME_MANAGER->difficulty = DIFFICULTY_EXTRA;
         else
-            *(int8_t*)(0x69bcb0) = *(int8_t*)(0x6c6e49);
+            GAME_MANAGER->difficulty = (Difficulty)supervisor->cfg.defaultDifficulty;
     })
     EHOOK_DY(th06_pause_menu, 0x401b8f, 2, {
-        if (thPracParam.mode && (*((int32_t*)0x69bcbc) == 0)) {
+        if (thPracParam.mode && (GAME_MANAGER->isInReplay == 0)) {
             auto sig = THPauseMenu::singleton().PMState();
             if (sig == THPauseMenu::SIGNAL_RESUME) {
                 pCtx->Eip = 0x40223d;
             } else if (sig == THPauseMenu::SIGNAL_EXIT) {
-                *(uint32_t*)0x6c6ea4 = 7; // Set gamemode to result screen
-                *(uint16_t*)0x69d4bf = 0; // Close pause menu
+                supervisor->curState = SUPERVISOR_STATE_RESULTSCREEN_FROMGAME; // Set gamemode to result screen
+                GAME_MANAGER->isInGameMenu = 0; // Close pause menu
                 th06_result_screen_create.Enable();
             } else if (sig == THPauseMenu::SIGNAL_RESTART) {
                 pCtx->Eip = 0x40263c;
@@ -1966,30 +1985,30 @@ namespace TH06 {
 					jnz @f
 					mov dword ptr [69d714],eax
 					mov dword ptr [69d718],eax
-				*/
-            *(int8_t*)(0x69d4ba) = (int8_t)thPracParam.life;
-            *(int8_t*)(0x69d4bb) = (int8_t)thPracParam.bomb;
-            *(int16_t*)(0x69d4b0) = (int16_t)thPracParam.power;
-            *(int32_t*)(0x69bca0) = *(int32_t*)(0x69bca4) = (int32_t)thPracParam.score;
-            *(int32_t*)(0x69bcb4) = *(int32_t*)(0x69bcb8) = (int32_t)thPracParam.graze;
-            *(int16_t*)(0x69d4b4) = *(int16_t*)(0x69d4b6) = (int16_t)thPracParam.point;
-            *(uint32_t*)0x5a5fb0 = thPracParam.frame;
+			*/
+            GAME_MANAGER->livesRemaining = (int8_t)thPracParam.life;
+            GAME_MANAGER->bombsRemaining = (int8_t)thPracParam.bomb;
+            GAME_MANAGER->currentPower = (int16_t)thPracParam.power;
+            GAME_MANAGER->guiScore = GAME_MANAGER->score = (int32_t)thPracParam.score;
+            GAME_MANAGER->grazeInStage = GAME_MANAGER->grazeInTotal = (int32_t)thPracParam.graze;
+            GAME_MANAGER->pointItemsCollectedInStage = GAME_MANAGER->pointItemsCollected = (int16_t)thPracParam.point;
+            *(uint32_t*)(0x5a5fb0) = thPracParam.frame;
 
-            if (*(int8_t*)(0x69bcb0) != 4) {
+            if (GAME_MANAGER->difficulty != DIFFICULTY_EXTRA) {
                 if (thPracParam.score >= 60000000)
-                    *(int8_t*)(0x69d4bc) = 4;
+                    GAME_MANAGER->extraLives = 4;
                 else if (thPracParam.score >= 40000000)
-                    *(int8_t*)(0x69d4bc) = 3;
+                    GAME_MANAGER->extraLives = 3;
                 else if (thPracParam.score >= 20000000)
-                    *(int8_t*)(0x69d4bc) = 2;
+                    GAME_MANAGER->extraLives = 2;
                 else if (thPracParam.score >= 10000000)
-                    *(int8_t*)(0x69d4bc) = 1;
+                    GAME_MANAGER->extraLives = 1;
             }
 
-            *(int32_t*)(0x69d710) = *(int32_t*)(0x69d710) = (int32_t)thPracParam.rank;
+            GAME_MANAGER->rank = (int32_t)thPracParam.rank;
             if (thPracParam.rankLock) {
-                *(int32_t*)(0x69d714) = *(int32_t*)(0x69d714) = (int32_t)thPracParam.rank;
-                *(int32_t*)(0x69d718) = *(int32_t*)(0x69d718) = (int32_t)thPracParam.rank;
+                GAME_MANAGER->maxRank = (int32_t)thPracParam.rank;
+                GAME_MANAGER->minRank = (int32_t)thPracParam.rank;
             }
 
             THSectionPatch();
@@ -2030,7 +2049,7 @@ namespace TH06 {
     PATCH_DY(th06_preplay_1, 0x42d835, "09")
     EHOOK_DY(th06_preplay_2, 0x418ef9, 5, {
         if (thPracParam.mode && !THGuiRep::singleton().mRepStatus) {
-            *(uint32_t*)0x69bca0 = *(uint32_t*)0x69bca4;
+            GAME_MANAGER->guiScore = GAME_MANAGER->score;
             pCtx->Eip = 0x418f0e;
         }
     })
@@ -2096,7 +2115,7 @@ namespace TH06 {
     EHOOK_DY(th06_render, 0x41cb6d, 1, {
         GameGuiRender(IMPL_WIN32_DX8);
         if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
-            THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);
+            THSnapshot::Snapshot(supervisor->d3dDevice);
     })
     HOOKSET_ENDDEF()
 
@@ -2106,8 +2125,8 @@ namespace TH06 {
         }
 
         // Init
-        GameGuiInit(IMPL_WIN32_DX8, 0x6c6d20, 0x6c6bd4,
-            Gui::INGAGME_INPUT_GEN1, INPUT_ADDR, INPUT_PREV_ADDR, 0x69d90c,
+        GameGuiInit(IMPL_WIN32_DX8, (int) & (supervisor->d3dDevice), 0x6c6bd4,
+            Gui::INGAGME_INPUT_GEN1, 0x69d904, 0x69d908, 0x69d90c,
             -1);
 
         SetDpadHook(0x41D330, 3);

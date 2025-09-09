@@ -116,6 +116,7 @@ MMRESULT WINAPI hook_joyGetPosEx(UINT uJoyID, JOYINFOEX* pji)
     if (!jc.initialized) {
         JOYCAPSW caps;
         auto ret_caps = joyGetDevCapsW(uJoyID, &caps, sizeof(caps));
+        std::ignore = ret_caps;  // suppress C4189
         assert(ret_caps == JOYERR_NOERROR);
 
         jc.initialized = true;
