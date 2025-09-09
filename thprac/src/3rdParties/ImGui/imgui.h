@@ -1291,8 +1291,9 @@ enum ImGuiSortDirection_
     ImGuiSortDirection_Descending   = 2     // Descending = 9->0, Z->A etc.
 };
 
-// User fill ImGuiIO.KeyMap[] array with indices into the ImGuiIO.KeysDown[512] array.
-enum ImGuiKey_ {
+// User fill ImGuiIO.KeyMap[] array with indices into the ImGuiIO.KeysDown[512] array
+enum ImGuiKey_
+{
     ImGuiKey_Tab,
     ImGuiKey_LeftArrow,
     ImGuiKey_RightArrow,
@@ -1309,12 +1310,6 @@ enum ImGuiKey_ {
     ImGuiKey_Enter,
     ImGuiKey_Escape,
     ImGuiKey_KeyPadEnter,
-    ImGuiKey_Ctrl,
-    ImGuiKey_Alt,
-    ImGuiKey_Shift,
-    ImGuiKey_Caps,
-    ImGuiKey_F11,
-    ImGuiKey_F12,
     ImGuiKey_A,                 // for text edit CTRL+A: select all
     ImGuiKey_C,                 // for text edit CTRL+C: copy
     ImGuiKey_V,                 // for text edit CTRL+V: paste

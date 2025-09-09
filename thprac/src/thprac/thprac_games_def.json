@@ -180,6 +180,8 @@
       "THPRAC_HOTKEY_SPACEBAR": [ "空格", "Space", "スペース" ],
       "THPRAC_HOTKEY_MODIFIER_WARNING": [ "这些按键可能会与某些游戏发生冲突。", "These keys may interfere with some games.", "これらのキーは一部のゲームと干渉する可能性があります。" ],
       "THPRAC_HOTKEY_UM_WARNING": [ "在 东方虹龙洞 中，Backspace 键仅在快速菜单中可以正常使用。", "Backspace only works without issue in UM with the Quick Menu.", "東方虹龍洞では、クイックメニュー内でのみBackspaceキーが問題なく動作します。" ],
+      "THPRAC_HOTKEY_RESET": [ "将热键重置为默认", "Reset hotkeys to default", "ホットキーをデフォルトにリセット" ],
+      "THPRAC_HOTKEY_SPECIAL_SETTINGS_TOOLTIP": [ "东方花映塚，东方兽王园，弹幕狂们的黑市", "TH09 (PoFV), TH19 (UDoALG), TH185 (100BM)", "東方花映塚，東方獣王園，バレットフィリア達の闇市場" ],
 
       "THPRAC_CHK_UPDATE_ON_STARTUP": [ "启动时检查更新", "Check for updates at startup", "起動時に更新を確認する" ],
       "THPRAC_CHECK_UPDATE_NOW": [ "检查更新", "Check for updates", "更新を確認する" ],

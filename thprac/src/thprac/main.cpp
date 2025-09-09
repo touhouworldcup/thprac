@@ -185,6 +185,7 @@ int WINAPI wWinMain(
     int checkUpdateWhen = 0;
     bool autoUpdate = false;
 
+
     if (LauncherCfgInit(true)) {
         if (!Gui::LocaleInitFromCfg()) {
             Gui::LocaleAutoSet();
@@ -201,6 +202,9 @@ int WINAPI wWinMain(
         LauncherSettingGet("update_without_confirmation", autoUpdate);
         LauncherCfgClose();
     }
+
+    // Done after loading language as entries rely on it.
+    Gui::MenuChordInitArrays();
 
     if (adminRights && !PrivilegeCheck()) {
         wchar_t exePath[MAX_PATH];

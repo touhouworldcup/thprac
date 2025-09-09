@@ -177,23 +177,94 @@ namespace THPrac
 		
 		/***                      Menu Chords                        ***/
 
-		
         int __gbackspace_menu_chord_current;
         int __gadvanced_menu_chord_current;
         int __gspecial_menu_chord_current;
         int __gscreenshot_chord_current;
+        bool __gvs_game_quick_special_menu;
 
+        const char* ChordKeyStrings[ChordKey_COUNT];
+
+        int ChordKeyVKs[ChordKey_COUNT];
+
+		void MenuChordInitArrays() {
+            ChordKeyStrings[ChordKey_Ctrl] =		"Ctrl";
+            ChordKeyStrings[ChordKey_Shift] =		"Shift";
+            ChordKeyStrings[ChordKey_Alt] =			"Alt";
+            ChordKeyStrings[ChordKey_Caps] =		"Caps";
+            ChordKeyStrings[ChordKey_Tab] =			"Tab";
+            ChordKeyStrings[ChordKey_Space] =		S(THPRAC_HOTKEY_SPACEBAR);            
+			ChordKeyStrings[ChordKey_Backspace] =	"Backspace";
+            ChordKeyStrings[ChordKey_F11] =			"F11";
+            ChordKeyStrings[ChordKey_F12] =			"F12";
+            ChordKeyStrings[ChordKey_Insert] =		"Insert";
+            ChordKeyStrings[ChordKey_Home] =		"Home";
+            ChordKeyStrings[ChordKey_PgUp] =		"PgUp";
+            ChordKeyStrings[ChordKey_Delete] =		"Delete";
+            ChordKeyStrings[ChordKey_End] =			"End";
+            ChordKeyStrings[ChordKey_PgDn] =		"PgDn";
+            ChordKeyStrings[ChordKey_DPad_Up] =		"Up";
+            ChordKeyStrings[ChordKey_DPad_Down] =	"Down";
+            ChordKeyStrings[ChordKey_DPad_Left] =	"Left";
+            ChordKeyStrings[ChordKey_DPad_Right] =	"Right";
+            ChordKeyStrings[ChordKey_A] =			"A";
+            ChordKeyStrings[ChordKey_B] =			"B";
+            ChordKeyStrings[ChordKey_X] =			"X";
+            ChordKeyStrings[ChordKey_Y] =			"Y";
+            ChordKeyStrings[ChordKey_L1] =			"L1";
+            ChordKeyStrings[ChordKey_L2] =			"L2";
+            ChordKeyStrings[ChordKey_R1] =			"R1";
+            ChordKeyStrings[ChordKey_R2] =			"R2";
+            ChordKeyStrings[ChordKey_Start] =		"Start";
+            ChordKeyStrings[ChordKey_Select] =		"Select";
+            ChordKeyStrings[ChordKey_HomeMenu] =	"HomeMenu";
+
+			
+            ChordKeyVKs[ChordKey_Ctrl] =        VK_CONTROL;
+            ChordKeyVKs[ChordKey_Shift] =       VK_SHIFT;
+            ChordKeyVKs[ChordKey_Alt] =		    VK_MENU;
+            ChordKeyVKs[ChordKey_Caps] =		VK_CAPITAL;
+            ChordKeyVKs[ChordKey_Tab] =         VK_TAB;
+            ChordKeyVKs[ChordKey_Space] = 		VK_SPACE;
+            ChordKeyVKs[ChordKey_Backspace] =   VK_BACK;
+            ChordKeyVKs[ChordKey_F11] =         VK_F11;
+            ChordKeyVKs[ChordKey_F12] =         VK_F12;
+            ChordKeyVKs[ChordKey_Insert] =      VK_INSERT;
+            ChordKeyVKs[ChordKey_Home] =        VK_HOME;
+            ChordKeyVKs[ChordKey_PgUp] =        VK_PRIOR;
+            ChordKeyVKs[ChordKey_Delete] =      VK_DELETE;
+            ChordKeyVKs[ChordKey_End] =         VK_END;
+            ChordKeyVKs[ChordKey_PgDn] =        VK_NEXT;
+            ChordKeyVKs[ChordKey_DPad_Up] =     0, // Currently no controller support
+            ChordKeyVKs[ChordKey_DPad_Down] =   0;
+            ChordKeyVKs[ChordKey_DPad_Left] =	0;
+            ChordKeyVKs[ChordKey_DPad_Right] =	0;
+            ChordKeyVKs[ChordKey_A] =			0;
+            ChordKeyVKs[ChordKey_B] =			0;
+            ChordKeyVKs[ChordKey_X] =           0;
+            ChordKeyVKs[ChordKey_Y] =           0;
+            ChordKeyVKs[ChordKey_L1] =          0;
+            ChordKeyVKs[ChordKey_L2] =          0;
+            ChordKeyVKs[ChordKey_R1] =          0;
+            ChordKeyVKs[ChordKey_R2] =          0;
+            ChordKeyVKs[ChordKey_Start] =       0;
+            ChordKeyVKs[ChordKey_Select] =      0;
+            ChordKeyVKs[ChordKey_HomeMenu] =    0;
+
+		}
 
 		bool MenuChordInitFromCfg() {
             int backspace_menu_chord = 0;
             int advanced_menu_chord = 0;
             int special_menu_chord = 0;
             int screenshot_chord = 0;
+            bool vs_game_quick_special_menu = false;
             if (
 				!LauncherSettingGet("backspace_menu_chord", backspace_menu_chord) ||
 				!LauncherSettingGet("advanced_menu_chord", advanced_menu_chord) || 
 				!LauncherSettingGet("special_menu_chord", special_menu_chord) || 
-				!LauncherSettingGet("screenshot_chord", screenshot_chord)
+				!LauncherSettingGet("screenshot_chord", screenshot_chord) ||
+				!LauncherSettingGet("vs_game_quick_special_menu", vs_game_quick_special_menu)
 			) {
                 return false;
             }
@@ -201,52 +272,29 @@ namespace THPrac
             __gadvanced_menu_chord_current = advanced_menu_chord;
             __gspecial_menu_chord_current = special_menu_chord;
             __gscreenshot_chord_current = screenshot_chord;
+            __gvs_game_quick_special_menu = vs_game_quick_special_menu;
             return true;
 		}
 
 		void MenuChordAutoSet() {
-			__gbackspace_menu_chord_current = 1 << ImGuiKey_Backspace;
-			__gadvanced_menu_chord_current = 1 << ImGuiKey_F12;
-			__gspecial_menu_chord_current = 1 << ImGuiKey_F11;
-			__gscreenshot_chord_current = 1 << ImGuiKey_Home;
+			__gbackspace_menu_chord_current = 1 << ChordKey_Backspace;
+			__gadvanced_menu_chord_current = 1 << ChordKey_F12;
+			__gspecial_menu_chord_current = 1 << ChordKey_F11;
+			__gscreenshot_chord_current = 1 << ChordKey_Home;
+			__gvs_game_quick_special_menu = false;
 		}
 
 
 		// Returns the time the desired chord has been pressed for.
 		int GetChordPressedDuration(int target_chord) {
-			// Very bad copy paste...
-			const int KeyMap[] = {
-				VK_TAB,
-				VK_LEFT,
-				VK_RIGHT,
-				VK_UP,
-				VK_DOWN,
-				VK_PRIOR,
-				VK_NEXT,
-				VK_HOME,
-				VK_END,
-				VK_INSERT,
-				VK_DELETE,
-				VK_BACK,
-				VK_SPACE,
-				VK_RETURN,
-                VK_ESCAPE,
-                VK_RETURN,
-				VK_CONTROL,
-				VK_MENU,
-				VK_SHIFT,
-				VK_CAPITAL,
-				VK_F11,
-				VK_F12
-			};
 
             int min_held = 2;
 
             // Scan for keys until the keyboard keys which are not supported.
-            for (int key = 0; key <= ImGuiKey_F12; ++key) {
+            for (int key = 0; key < ChordKey_KEYBOARD_COUNT; ++key) {
                 // If the key is in the target chord, check for duration that key was held.
                 if (target_chord & (1 << key)) {
-                    int held = KeyboardInputUpdate(KeyMap[key]);
+                    int held = KeyboardInputUpdate(HotkeyChordToVK(key));
 					// If one of the required keys is not pressed, set held time to 0 and break out early.
                     if (held == 0) {
                         min_held = 0;
@@ -267,36 +315,13 @@ namespace THPrac
 		
 		int GetBackspaceMenuChord() { return __gbackspace_menu_chord_current; }
 		int GetAdvancedMenuChord() { return __gadvanced_menu_chord_current; }
-		int GetSpecialMenuChord() { return __gspecial_menu_chord_current; }
-		int GetScreenshotChord() { return __gspecial_menu_chord_current; }
+		int GetSpecialMenuChord() { 
+			return __gspecial_menu_chord_current; 
+		}
+		int GetScreenshotChord() { return __gscreenshot_chord_current; }
 
-		// Convert ImGui Chords to user-readable string.
+		// Convert chords to user-readable string.
         std::string HotkeyChordToLabel(int chord) {
-            // Dirty hardcoded
-            const char* KEY_NAMES[] = {
-                "Tab",
-                "If you see this, I messed up",
-                "If you see this, I messed up",
-                "If you see this, I messed up",
-                "If you see this, I messed up",
-                "PageUp",
-                "PageDown",
-                "Home",
-                "End",
-                "Insert",
-                "Delete",
-                "Backspace",
-                S(THPRAC_HOTKEY_SPACEBAR),
-                "If you see this, I messed up",
-                "Esc",
-                "If you see this, I messed up",
-                "Ctrl",
-                "Alt",
-                "Shift",
-                "Caps",
-                "F11",
-                "F12"
-            };
 
             // Special case for if no keys are pressed at all
             if (chord == 0)
@@ -304,34 +329,26 @@ namespace THPrac
 
             std::string s;
 
-            // Ctrl Alt Shift are always first.
-            if (chord & (1 << ImGuiKey_Ctrl))
-                s += std::string("Ctrl + ");
-            if (chord & (1 << ImGuiKey_Alt))
-                s += std::string("Alt + ");
-            if (chord & (1 << ImGuiKey_Shift))
-                s += std::string("Shift + ");
-
-            // Add the rest of the keys in the chord to the text.
-            for (int key = 0; key <= ImGuiKey_F12; ++key) {
-                // We've already added these texts first, no need to do it again.
-                if (key == ImGuiKey_Ctrl || key == ImGuiKey_Alt || key == ImGuiKey_Shift)
-                    continue;
-                // Idk why this entry exists when its just the same as Enter.
-                if (key == ImGuiKey_KeyPadEnter)
-                    continue;
-
-                // See if the key is present in the chord and add it to the string if so.
+            // See if the key is present in the chord and add it to the string if so.
+            for (int key = 0; key < ChordKey_COUNT; ++key) {
                 if (chord & (1 << key)) {
-                    s += KEY_NAMES[key];
+                    s += ChordKeyStrings[key];
                     s += std::string(" + ");
                 }
             }
-
             // Cut off last " + " and return our label string.
             s.resize(s.length() - 3);
             return s;
         }
+
+		// Convert chords to usable VKs
+		int HotkeyChordToVK(int chord) {
+			if (chord < 0 || chord >= ChordKey_COUNT) {
+				return 0;
+            } else {
+				return ChordKeyVKs[chord];
+			}
+		}
 
 	}
 }

@@ -1501,15 +1501,23 @@ private:
         }
     }
 
-
-    bool GuiHotkeyEdit(const char* label, const char* binding, bool* listening, bool block_input, bool identical_binding, bool conflicts_with_um=false)
+    // Function for displaying a row for the rebind and also rebinding it
+    bool GuiHotkeyEdit(const char* label, const char* binding, bool* listening, bool block_input, bool identical_binding, bool conflicts_with_um = false, const char* tooltip = "")
     {
         ImGuiIO& io = ImGui::GetIO();
 
         ImGui::AlignTextToFramePadding();
         ImGui::TextUnformatted(label);
         ImGui::SameLine();
-
+        if (tooltip[0] != '\0') {
+            ImGui::TextUnformatted("(?)");
+            if (ImGui::IsItemHovered()) {
+                ImGui::BeginTooltip();
+                ImGui::TextUnformatted(tooltip);
+                ImGui::EndTooltip();
+            }
+            ImGui::SameLine();
+        }
         // Visual button that toggles listening
         ImGui::PushID(label);
         int current_chord = 0;
@@ -1524,8 +1532,8 @@ private:
                 *listening = false; // cancel on click
         }
 
-        // Show warning if Ctrl or Shift is used as they can interfere with other functionality or the game itself.
-        if (current_chord & ((1 << ImGuiKey_Ctrl) + (1 << ImGuiKey_Shift))) {
+        // Show warning if Ctrl or Shift is used as they can interfere with other functionality or the game itself
+        if (current_chord & ((1 << Gui::ChordKey_Ctrl) + (1 << Gui::ChordKey_Shift))) {
             ImGui::SameLine();
             ImGui::TextUnformatted("(*)");
             if (ImGui::IsItemHovered()) {
@@ -1535,7 +1543,7 @@ private:
             }
         }
         // Show backspace warning if it would conflict with UM
-        if (current_chord & (1 << ImGuiKey_Backspace) && conflicts_with_um) {
+        if (current_chord & (1 << Gui::ChordKey_Backspace) && conflicts_with_um) {
             ImGui::SameLine();
             ImGui::TextUnformatted("(**)");
             if (ImGui::IsItemHovered()) {
@@ -1546,7 +1554,7 @@ private:
         }
 
 
-        // Show warning if there's overlap in bindings.
+        // Show warning if there's overlap in bindings
         if (identical_binding) {
             ImGui::SameLine();
             ImGui::TextUnformatted("(!)");
@@ -1565,25 +1573,23 @@ private:
 
             int chord = 0;
 
-            // Scan for keys until the keyboard keys which are not supported.
-            for (int key = 0; key <= ImGuiKey_F12; ++key) {
-                // Skip over arrow keys, Enter and ESC for fairly obvious reasons. 
-                if (
-                    key == ImGuiKey_LeftArrow ||
-                    key == ImGuiKey_RightArrow ||
-                    key == ImGuiKey_UpArrow ||
-                    key == ImGuiKey_DownArrow ||
-                    key == ImGuiKey_Escape ||
-                    key == ImGuiKey_KeyPadEnter ||
-                    key == ImGuiKey_Enter) 
-                {
-                    continue;
-                }
-
-                // Register key if held or released.  If released, end the combo.
-                if (ImGui::IsKeyDown(io.KeyMap[key])) {
+            // Scan for keys until the keyboard keys which are not supported
+            // Keyboard
+            for (int key = 0; key < Gui::ChordKey_KEYBOARD_COUNT; ++key) {
+                // Register key if held or released.  If released, end the combo
+                if (ImGui::IsKeyDown(Gui::HotkeyChordToVK(key))) {
                     chord |= 1 << key;
-                } else if (ImGui::IsKeyReleased(io.KeyMap[key])) {
+                } else if (ImGui::IsKeyReleased(Gui::HotkeyChordToVK(key))) {
+                    chord |= 1 << key;
+                    changed = true;
+                }
+            }
+            // Controller
+            for (int key = Gui::ChordKey_KEYBOARD_COUNT; key < Gui::ChordKey_COUNT; ++key) {
+                // Register key if held or released.  If released, end the combo
+                if (ImGui::IsKeyDown(Gui::HotkeyChordToVK(key))) {
+                    chord |= 1 << key;
+                } else if (ImGui::IsKeyReleased(Gui::HotkeyChordToVK(key))) {
                     chord |= 1 << key;
                     changed = true;
                 }
@@ -1599,7 +1605,7 @@ private:
         return changed;
     }
 
-        
+    // Function for drawing the entire submenu
     void GuiHotkeySettings()
     {
         ImGui::TextUnformatted(S(THPRAC_SETTING_HOTKEYS));
@@ -1665,17 +1671,28 @@ private:
         // Add the buttons to the UI and update data if sucessfully updated.
         GuiHotkeyEdit(S(THPRAC_HOTKEY_QUICK_SETTINGS), "backspace_menu_chord", &mHotkeyBackspaceMenuListening, block_backspace_menu, quick_menu_binding_shared);
         GuiHotkeyEdit(S(THPRAC_HOTKEY_ADVANCED_SETTINGS), "advanced_menu_chord", &mHotkeyF12MenuListening, block_advanced_menu, advanced_menu_binding_shared, true);
-        GuiHotkeyEdit(S(THPRAC_HOTKEY_SPECIAL_SETTINGS), "special_menu_chord", &mHotkeyF11MenuListening, block_special_menu, special_menu_binding_shared);
+        // The F11 menu is deprecated and the hotkey merged with the Backspace menu.  Keeping this around in case we need it in the future.
+        // GuiHotkeyEdit(S(THPRAC_HOTKEY_SPECIAL_SETTINGS), "special_menu_chord", &mHotkeyF11MenuListening, block_special_menu, special_menu_binding_shared, false, S(THPRAC_HOTKEY_SPECIAL_SETTINGS_TOOLTIP));
         GuiHotkeyEdit(S(THPRAC_HOTKEY_SCREENSHOT), "screenshot_chord", &mHotkeyScreenshotListening, block_screenshot, screenshot_binding_shared);
 
+        // Reset button
+        if (ImGui::Button(S(THPRAC_HOTKEY_RESET))) {
+            mHotkeyBackspaceMenuListening = false;
+            mHotkeyF12MenuListening = false;
+            mHotkeyF11MenuListening = false;
+            mHotkeyScreenshotListening = false;
+            int backspace_menu_chord = 1 << Gui::ChordKey_Backspace;
+            int advanced_menu_chord = 1 << Gui::ChordKey_F12;
+            int special_menu_chord = 1 << Gui::ChordKey_F11;
+            int screenshot_chord = 1 << Gui::ChordKey_Home;
+            LauncherSettingSet("backspace_menu_chord", backspace_menu_chord);
+            LauncherSettingSet("advanced_menu_chord", advanced_menu_chord);
+            LauncherSettingSet("special_menu_chord", special_menu_chord);
+            LauncherSettingSet("screenshot_chord", screenshot_chord);
+        }
     }
 
-<<<<<<< HEAD
-=======
-    
-    
 
->>>>>>> origin/rebind-hotkeys
     void TextLink(const char* text, const wchar_t* link)
     {
         ImGui::TextUnformatted(text);
@@ -1832,10 +1849,12 @@ private:
     THCfgCombo mFilenameAfterUpdate { "filename_after_update", 0, 3 };
     int mOriginalLanguage;
 
-    THCfgCombo mHotkeyBackspaceMenu { "backspace_menu_chord", 1 << ImGuiKey_Backspace, 1 << ImGuiKey_F12 };
-    THCfgCombo mHotkeyF12Menu { "advanced_menu_chord", 1 << ImGuiKey_F12, 1 << ImGuiKey_F12 };
-    THCfgCombo mHotkeyF11Menu { "special_menu_chord", 1 << ImGuiKey_F11, 1 << ImGuiKey_F12 };
-    THCfgCombo mHotkeyScreenshot { "screenshot_chord", 1 << ImGuiKey_Home, 1 << ImGuiKey_F12 };
+    THCfgCombo mHotkeyBackspaceMenu { "backspace_menu_chord", 1 << Gui::ChordKey_Backspace, 1 << Gui::ChordKey_COUNT };
+    THCfgCombo mHotkeyF12Menu { "advanced_menu_chord", 1 << Gui::ChordKey_F12, 1 << Gui::ChordKey_COUNT };
+    THCfgCombo mHotkeyF11Menu { "special_menu_chord", 1 << Gui::ChordKey_F11, 1 << Gui::ChordKey_COUNT };
+    THCfgCombo mHotkeyScreenshot { "screenshot_chord", 1 << Gui::ChordKey_Home, 1 << Gui::ChordKey_COUNT };
+    THCfgCheckbox mHotkeyVSGameSpecialIsQuick { "vs_game_quick_special_menu", false };
+
     bool mHotkeyBackspaceMenuListening = false;
     bool mHotkeyF12MenuListening = false;
     bool mHotkeyF11MenuListening = false;

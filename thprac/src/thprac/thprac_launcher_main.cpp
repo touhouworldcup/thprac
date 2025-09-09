@@ -43,13 +43,21 @@ void GuiLauncherLocaleInit()
         if (!Gui::LocaleInitFromCfg()) {
             Gui::LocaleAutoSet();
         }
-        // Load menu open key chords
+        LauncherCfgClose();
+    }
+}
+
+void GuiLauncherHotkeyInit()
+{
+    if (LauncherCfgInit(true)) {
         if (!Gui::MenuChordInitFromCfg()) {
             Gui::MenuChordAutoSet();
         }
         LauncherCfgClose();
     }
 }
+
+
 void GuiLauncherMainTrigger(LauncherTrigger trigger)
 {
     gLauncherTrigger = trigger;

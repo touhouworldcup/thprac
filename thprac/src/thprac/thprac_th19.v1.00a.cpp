@@ -644,7 +644,7 @@ namespace V1_00a {
 
         auto& t = TH19Tools::singleton();
         if (t.allow) {
-            if (Gui::GetChordPressed(Gui::GetSpecialMenuChord())) {
+            if (Gui::GetChordPressed(Gui::GetBackspaceMenuChord())) {
                 if (t.IsOpen()) {
                     t.Close();
                 } else {

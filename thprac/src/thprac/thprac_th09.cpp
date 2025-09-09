@@ -551,7 +551,7 @@ namespace TH09 {
         TH09Tools& t = TH09Tools::singleton();
         THGuiPrac& p = THGuiPrac::singleton();
         if (t.enabled) {
-            if (Gui::GetChordPressed(Gui::GetSpecialMenuChord())) {
+            if (Gui::GetChordPressed(Gui::GetBackspaceMenuChord())) {
                 if (t.IsOpen())
                     t.Close();
                 else
