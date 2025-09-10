@@ -5936,7 +5936,8 @@
     "glossary": {
       "TH13_TRANCE_METER": [ "灵界槽", "Trance Meter", "霊界ゲージ" ],
       "TH13_EXTEND": [ "奖残次数", "Times extended", "エクステンド回数" ],
-      "TH13_SPIRIT_SIDE": [ "灵方向", "Spirit side", "霊ー方向" ]
+      "TH13_SPIRIT_SIDE": [ "灵方向", "Spirit side", "霊ー方向" ],
+      "TH13_TRANCE_LOCK": [ "锁灵界槽", "Trance Meter Lock", "霊界ゲージ計固定" ]
     },
 
     "sections": {
