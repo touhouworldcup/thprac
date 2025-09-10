@@ -1579,16 +1579,33 @@ namespace TH17 {
             ECLJump(ecl, 0x800, 0x8a0, 3); // Utilize Spell Practice Jump
             ecl << pair{0x6354, (int16_t)0}; // Disable Item Drops
             break;
-        case THPrac::TH17::TH17_ST7_END_NS2:
+        case THPrac::TH17::TH17_ST7_END_NS2: {
+            constexpr unsigned int st7BossCall = 0xa7d8;
+            constexpr unsigned int st7BossNonSubCallOrd = 0x1168 + 0x18;
+            constexpr unsigned int st7BossSpell1MoveLimit = 0x6600;
+            constexpr unsigned int st7BossSpell1PostMoveLimit = 0x6620;
+
+            constexpr unsigned int st7BossNon2ItemDrop1 = 0x1cec;
+            constexpr unsigned int st7BossNon2ItemDrop2 = 0x1d24;
+            constexpr unsigned int st7BossNon2ItemDrop3Enable = 0x1d5c + 0x4;
+            constexpr unsigned int st7BossNon2ItemDrop4Enable = 0x1d94 + 0x4;
+            constexpr unsigned int st7BossNon2ItemDrop5Enable = 0x1dcc + 0x4;
+            constexpr unsigned int st7BossNon2ItemDropSFXEnable = 0x1ef8 + 0x4;
+
             ECLStdExec(ecl, 0xa208, 1, 1);
-            ECLJump(ecl, 0, 0xa7d8, 60);
+            ECLJump(ecl, 0, st7BossCall, 60);
             ecl.SetFile(2);
-            ecl << pair{0x1180, (int8_t)0x32}; // Change Nonspell
-            ecl << pair{0x1cf0, (int16_t)0} << pair{0x1d28, (int16_t)0} << pair{0x1d60, (int16_t)0}
-                << pair{0x1d98, (int16_t)0} << pair{0x1dd0, (int16_t)0}; // Disable Item Drops
-            ecl << pair{0x1efc, (int16_t)0}; // Disable Item Drops & SE
+            ecl << pair { st7BossNonSubCallOrd, (int8_t)0x32 } // Change Nonspell
+                << pair { st7BossNon2ItemDrop1 + 0x4, (int16_t)0 }
+                << pair { st7BossNon2ItemDrop2 + 0x4, (int16_t)0 }
+                << pair { st7BossNon2ItemDrop3Enable, (int16_t)0 }
+                << pair { st7BossNon2ItemDrop4Enable, (int16_t)0 }
+                << pair { st7BossNon2ItemDrop5Enable, (int16_t)0 } // Disable Item Drops
+                << pair { st7BossNon2ItemDropSFXEnable, (int16_t)0 }; // Disable Item Drops & SE
+            ECLJump(ecl, st7BossNon2ItemDrop1, st7BossSpell1MoveLimit, 0);
+            ECLJump(ecl, st7BossSpell1PostMoveLimit, st7BossNon2ItemDrop2, 0);
             break;
-        case THPrac::TH17::TH17_ST7_END_S2:
+        } case THPrac::TH17::TH17_ST7_END_S2:
             ECLStdExec(ecl, 0xa208, 1, 1);
             ECLJump(ecl, 0, 0xa7d8, 60);
             ecl.SetFile(2);
