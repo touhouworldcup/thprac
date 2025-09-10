@@ -327,6 +327,7 @@ namespace TH17 {
             case TH17_ST4_BOSS1:
             case TH17_ST5_BOSS1:
             case TH17_ST6_BOSS1:
+            case TH17_ST6_BOSS10:
             case TH17_ST7_END_NS1:
             case TH17_ST7_MID1:
                 return true;
@@ -1466,16 +1467,38 @@ namespace TH17 {
             ecl << pair{0x640, 3500}; // Set Health
             ecl << pair{0x660, (int8_t)0x35}; // Set Spell Ordinal
             break;
-        case THPrac::TH17::TH17_ST6_BOSS10:
+        case THPrac::TH17::TH17_ST6_BOSS10: {
+            constexpr unsigned int st6BossCall = 0x7634;
+            constexpr unsigned int st6BossInvulnVal = 0x2c4 + 0x10;
+            constexpr unsigned int st6BossSTDCall = 0x450 + 04;
+            constexpr unsigned int st6BossPostFog = 0x548;
+            constexpr unsigned int st6BossLifeSet = 0x630;
+            constexpr unsigned int st6BossHealthVal = st6BossLifeSet + 0x10;
+            constexpr unsigned int st6BossSpellSubCallOrd = 0x644 + 0x1c;
+
+            constexpr unsigned int st6BossNonSubCallOrd = 0xd8c + 0x18;
+            constexpr unsigned int st6BossNon6ItemDrop1Enable = 0x5d14 + 0x4;
+            constexpr unsigned int st6BossNon6ItemDrop2Enable = 0x5d4c + 0x4;
+            constexpr unsigned int st6BossNon6ItemDropSFXEnable = 0x5e8c + 0x4;
+
             ECLStdExec(ecl, 0x71bc, 5, 1);
-            ECLJump(ecl, 0, 0x7634, 60);
+            ECLJump(ecl, 0, st6BossCall, 60);
             ecl.SetFile(2);
-            ecl << pair{0x454, (int16_t)0};
-            ECLJump(ecl, 0x548, 0x630, 2); // Utilize Spell Practice Jump
-            ecl << pair{0x640, 5000}; // Set Health
-            ecl << pair{0x660, (int8_t)0x36}; // Set Spell Ordinal
+            ecl << pair { st6BossSTDCall, (int16_t)0 };
+
+            if (thPracParam.dlg) {
+                ecl << pair { st6BossNonSubCallOrd, (int8_t)0x36 } // Change Nonspell (6)
+                    << pair { st6BossNon6ItemDrop1Enable, (int16_t)0 }
+                    << pair { st6BossNon6ItemDrop2Enable, (int16_t)0 } // Disable Item Drops
+                    << pair { st6BossNon6ItemDropSFXEnable, (int16_t)0 }; // Disable Item Drops SFX
+            } else {
+                ECLJump(ecl, st6BossPostFog, st6BossLifeSet, 2); // Utilize Spell Practice Jump
+                ecl << pair { st6BossInvulnVal, 180 - 120 - 40 } // Invuln timer: account for waits (20f)
+                    << pair { st6BossHealthVal, 5000 } // Set Health
+                    << pair { st6BossSpellSubCallOrd, (int8_t)0x36 }; // Set Spell Ordinal (6)
+            }
             break;
-        case THPrac::TH17::TH17_ST6_BOSS11:
+        } case THPrac::TH17::TH17_ST6_BOSS11:
             ECLStdExec(ecl, 0x71bc, 5, 1);
             ECLJump(ecl, 0, 0x7634, 60);
             ecl.SetFile(2);
