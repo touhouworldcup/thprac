@@ -309,9 +309,15 @@ namespace TH20 {
                 mValue(value_str.c_str());
 
                 ImGui::Columns(2, 0, false);
-                if (mHyperActive() && *mHyperActive && *mHyper == 0) *mHyper = 10000;
+                if (mHyperActive()) {
+                    if (*mHyperActive && *mHyper == 0) *mHyper = 10000;
+                    if (!*mHyperActive && *mHyper == 10000) *mHyper = 0;
+                }
                 ImGui::NextColumn();
-                if (mStoneActive() && *mStoneActive && *mStone == 0) *mStone = 10000;
+                if (mStoneActive()) {
+                    if (*mStoneActive && *mStone == 0) *mStone = 10000;
+                    if (!*mStoneActive && *mStone == 10000) *mStone = 0;
+                }
                 ImGui::Columns(1);
 
                 mHyper(std::format("{:.2f} %%", (float)(*mHyper) / 100.0f).c_str());
@@ -555,6 +561,18 @@ namespace TH20 {
         SINGLETON(THOverlay);
 
     public:
+        HOTKEY_DEFINE(mHyperGLock, TH20_HYP_LOCK, "F5", VK_F5)
+        PATCH_HK(0x133935, NOP(3)),
+        PATCH_HK(0x12FE5B, NOP(19)),
+        PATCH_HK(0x1309A9, NOP(19)),
+        PATCH_HK(0x1313DF, NOP(19)),
+        PATCH_HK(0x1319C7, NOP(19)),
+        PATCH_HK(0x131FFF, NOP(19)),
+        PATCH_HK(0x1352EB, NOP(19)),
+        PATCH_HK(0x13858B, NOP(19)),
+        PATCH_HK(0x13652C, NOP(25)),
+        PATCH_HK(0x1379DC, NOP(25))
+        HOTKEY_ENDDEF();
     protected:
         virtual void OnLocaleChange() override
         {
@@ -628,19 +646,6 @@ namespace TH20 {
 
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
         PATCH_HK(0xE16A2, NOP(3)) //0xE16A8
-        HOTKEY_ENDDEF();
-
-        HOTKEY_DEFINE(mHyperGLock, TH20_HYP_LOCK, "F5", VK_F5)
-        PATCH_HK(0x133935, NOP(3)),
-        PATCH_HK(0x12FE5B, NOP(19)),
-        PATCH_HK(0x1309A9, NOP(19)),
-        PATCH_HK(0x1313DF, NOP(19)),
-        PATCH_HK(0x1319C7, NOP(19)),
-        PATCH_HK(0x131FFF, NOP(19)),
-        PATCH_HK(0x1352EB, NOP(19)),
-        PATCH_HK(0x13858B, NOP(19)),
-        PATCH_HK(0x13652C, NOP(25)),
-        PATCH_HK(0x1379DC, NOP(25))
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mWonderStGLock, TH20_WST_LOCK, "F6", VK_F6)
@@ -2275,9 +2280,14 @@ namespace TH20 {
             float cur_f;
         };
 
-        if ((int32_t)thPracParam.hyper == 1 || thPracParam.hyperActive) { // call the hyper start method
+        if ((int32_t)thPracParam.hyper == 1 || thPracParam.hyperActive) {
             uintptr_t player_stone_manager = *(uintptr_t*)(game_side + 0x2c);
+            bool hyperGLockEnabled = *(THOverlay::singleton().mHyperGLock);
+
+            // call the hyper start method
+            if (hyperGLockEnabled) THOverlay::singleton().mHyperGLock.Toggle(false); // if you know a less stupid way to prevent
             asm_call_rel<0x133780, Thiscall>(player_stone_manager, hyperMax);
+            if (hyperGLockEnabled) THOverlay::singleton().mHyperGLock.Toggle(true); // gauge lock from interfering plz do lol
 
             if (thPracParam.hyperActive) { // set hyper drain timer correctly
                 int32_t hyper_base_duration = *(int32_t*)(player_stats + 0x54) * 12;
