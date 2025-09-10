@@ -1477,9 +1477,11 @@ namespace TH17 {
             constexpr unsigned int st6BossSpellSubCallOrd = 0x644 + 0x1c;
 
             constexpr unsigned int st6BossNonSubCallOrd = 0xd8c + 0x18;
+            constexpr unsigned int st6BossNon6InvulnVal = 0x5c3c + 0x10;
             constexpr unsigned int st6BossNon6ItemDrop1Enable = 0x5d14 + 0x4;
             constexpr unsigned int st6BossNon6ItemDrop2Enable = 0x5d4c + 0x4;
             constexpr unsigned int st6BossNon6ItemDropSFXEnable = 0x5e8c + 0x4;
+            constexpr unsigned int st6BossNon6MainWaitEnable = 0x5fec + 0x4;
 
             ECLStdExec(ecl, 0x71bc, 5, 1);
             ECLJump(ecl, 0, st6BossCall, 60);
@@ -1488,9 +1490,11 @@ namespace TH17 {
 
             if (thPracParam.dlg) {
                 ecl << pair { st6BossNonSubCallOrd, (int8_t)0x36 } // Change Nonspell (6)
+                    << pair { st6BossNon6InvulnVal, 180 - 120 } // Invuln timer: account for waits (60f)
                     << pair { st6BossNon6ItemDrop1Enable, (int16_t)0 }
                     << pair { st6BossNon6ItemDrop2Enable, (int16_t)0 } // Disable Item Drops
-                    << pair { st6BossNon6ItemDropSFXEnable, (int16_t)0 }; // Disable Item Drops SFX
+                    << pair { st6BossNon6ItemDropSFXEnable, (int16_t)0 } // Disable Item Drops SFX
+                    << pair { st6BossNon6MainWaitEnable, (int16_t)0 }; // Disable main wait (120f)
             } else {
                 ECLJump(ecl, st6BossPostFog, st6BossLifeSet, 2); // Utilize Spell Practice Jump
                 ecl << pair { st6BossInvulnVal, 180 - 120 - 40 } // Invuln timer: account for waits (20f)
@@ -1810,7 +1814,7 @@ namespace TH17 {
             return 0;
         else if (thPracParam.section >= 10000)
             return 0;
-        else if (thPracParam.dlg)
+        else if (thPracParam.dlg && thPracParam.section != TH17_ST6_BOSS10)
             return 0;
         else
             return th_sections_bgm[thPracParam.section];
