@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1063]
+const char* th_glossary_str[3][1064]
 {
     {
         "",
@@ -171,6 +171,7 @@ const char* th_glossary_str[3][1063]
         "奖残次数",
         "灵方向",
         "TH13 东方神灵庙　～ Ten Desires.",
+        "锁灵界槽",
         "灵界槽",
         "TH14.3 弹幕天邪鬼　～ Impossible Spell Card.",
         "TH14.5 东方深秘录　～ Urban Legend in Limbo.",
@@ -1236,6 +1237,7 @@ const char* th_glossary_str[3][1063]
         "Times extended",
         "Spirit side",
         "TH13 Ten Desires",
+        "Trance Meter Lock",
         "Trance Meter",
         "TH14.3 Impossible Spell Card",
         "TH14.5 Urban Legend in Limbo",
@@ -2301,6 +2303,7 @@ const char* th_glossary_str[3][1063]
         "エクステンド回数",
         "霊ー方向",
         "TH13 東方神霊廟　～ Ten Desires.",
+        "霊界ゲージ計固定",
         "霊界ゲージ",
         "TH14.3 弾幕アマノジャク　～ Impossible Spell Card.",
         "TH14.5 東方深秘録　～ Urban Legend in Limbo.",

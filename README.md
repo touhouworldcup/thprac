@@ -66,7 +66,7 @@ thprac features an enhanced practice mode that supports all main games along wit
 
 ![Imperishable Night](https://user-images.githubusercontent.com/23106652/174433975-8f23b0b0-e48e-4be1-8cb7-d8e3e7ab6b8e.png)
 
-thprac replaces the original practice menu with a new UI shown in the image above; certain spells allow you to select phases or change certain parameters. For the games without an original practise mode (Uwabami Breakers, Great Fairy War, etc.), a practise menu is added to the "Start Game" menu.
+thprac replaces the original practice menu with a new UI shown in the image above; certain spells allow you to select phases or change certain parameters. For the games without an original practice mode (Uwabami Breakers, Great Fairy War, etc.), a practice menu is added to the "Start Game" menu.
 
 ![Uwabami Breakers](https://user-images.githubusercontent.com/23106652/174434103-5fee7a13-0254-4602-a468-42330b985bb2.png)
 ![Great Fairy Wars](https://user-images.githubusercontent.com/23106652/174434121-063142f2-ef3d-4721-ab96-a252343cdb0e.png)
@@ -112,7 +112,7 @@ Choosing "Exit" will now prompt you to save a replay.
 
 **Warning**: replays saved like this will continue after the point you chose to save the replay. The player character will stand still and not shoot.
 
-### ESC + R fix for Violet Detector, Wily Beast and Weakest Creature and Unconnected Marketeers
+### ESC + R fix for EoSD, VD and beyond
 
 ## <a name="credits"></a> **Credits (post May 27th, 2022)**
 - Development: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [muter3000](https://github.com/muter3000), [zero318](https://github.com/zero318), [Lmocinemod](https://github.com/Lmocinemod), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 

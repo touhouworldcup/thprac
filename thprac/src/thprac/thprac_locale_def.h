@@ -171,6 +171,7 @@ enum th_glossary_t
     TH13_EXTEND,
     TH13_SPIRIT_SIDE,
     TH13_TITLE,
+    TH13_TRANCE_LOCK,
     TH13_TRANCE_METER,
     TH143_TITLE,
     TH145_TITLE,
@@ -1075,7 +1076,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1063];
+extern const char* th_glossary_str[3][1064];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
