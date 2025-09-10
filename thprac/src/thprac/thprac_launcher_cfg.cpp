@@ -1620,7 +1620,6 @@ private:
         // Check for submasks
         bool quick_menu_binding_shared = false;
         bool advanced_menu_binding_shared = false;
-        bool special_menu_binding_shared = false;
         bool screenshot_binding_shared = false;
         int backspace_chord = 0;
         int advanced_chord = 0;
@@ -1628,66 +1627,45 @@ private:
         int screenshot_chord = 0;
         LauncherSettingGet("backspace_menu_chord", backspace_chord);
         LauncherSettingGet("advanced_menu_chord", advanced_chord);
-        LauncherSettingGet("special_menu_chord", special_chord);
         LauncherSettingGet("screenshot_chord", screenshot_chord);
         // Backspace and F12 menu shared
         if ((advanced_chord & backspace_chord) == advanced_chord || (advanced_chord & backspace_chord) == backspace_chord) {
             quick_menu_binding_shared = true;
             advanced_menu_binding_shared = true;
         }
-        // Backspace and F11 menu shared
-        if ((special_chord & backspace_chord) == special_chord || (special_chord & backspace_chord) == backspace_chord) {
-            quick_menu_binding_shared = true;
-            special_menu_binding_shared = true;
-        }
         // Backspace menu and Screenshot shared
         if ((screenshot_chord & backspace_chord) == screenshot_chord || (screenshot_chord & backspace_chord) == backspace_chord) {
             quick_menu_binding_shared = true;
             screenshot_binding_shared = true;
-        }
-        // F11 and F12 menu shared
-        if ((special_chord & advanced_chord) == special_chord || (special_chord & advanced_chord) == advanced_chord) {
-            advanced_menu_binding_shared = true;
-            special_menu_binding_shared = true;
         }
         // F12 menu and Screenshot shared
         if ((advanced_chord & screenshot_chord) == advanced_chord || (advanced_chord & screenshot_chord) == screenshot_chord) {
             advanced_menu_binding_shared = true;
             screenshot_binding_shared = true;
         }
-        // // F11 menu and Screenshot are not in any two same games.
-        // if ((special_chord & screenshot_chord) == special_chord || (special_chord & screenshot_chord) == screenshot_chord) {
-        //     screenshot_binding_shared = true;
-        //     special_menu_binding_shared = true;
-        // }
-      
+    
+
         // Check if other inputs are listening and block if so.
-        bool block_backspace_menu = mHotkeyF12MenuListening || mHotkeyF11MenuListening || mHotkeyScreenshotListening;
-        bool block_advanced_menu = mHotkeyBackspaceMenuListening || mHotkeyF11MenuListening || mHotkeyScreenshotListening;
-        bool block_special_menu = mHotkeyBackspaceMenuListening || mHotkeyF12MenuListening || mHotkeyScreenshotListening;
-        bool block_screenshot = mHotkeyBackspaceMenuListening || mHotkeyF12MenuListening || mHotkeyF11MenuListening;
+        bool block_backspace_menu = mHotkeyF12MenuListening || mHotkeyScreenshotListening;
+        bool block_advanced_menu = mHotkeyBackspaceMenuListening || mHotkeyScreenshotListening;
+        bool block_screenshot = mHotkeyBackspaceMenuListening || mHotkeyF12MenuListening;
 
         
         // Add the buttons to the UI and update data if sucessfully updated.
         GuiHotkeyEdit(S(THPRAC_HOTKEY_QUICK_SETTINGS), "backspace_menu_chord", &mHotkeyBackspaceMenuListening, block_backspace_menu, quick_menu_binding_shared);
         GuiHotkeyEdit(S(THPRAC_HOTKEY_ADVANCED_SETTINGS), "advanced_menu_chord", &mHotkeyF12MenuListening, block_advanced_menu, advanced_menu_binding_shared, true);
-        // The F11 menu is deprecated and the hotkey merged with the Backspace menu.  Keeping this around in case we need it in the future.
-        // GuiHotkeyEdit(S(THPRAC_HOTKEY_SPECIAL_SETTINGS), "special_menu_chord", &mHotkeyF11MenuListening, block_special_menu, special_menu_binding_shared, false, S(THPRAC_HOTKEY_SPECIAL_SETTINGS_TOOLTIP));
         GuiHotkeyEdit(S(THPRAC_HOTKEY_SCREENSHOT), "screenshot_chord", &mHotkeyScreenshotListening, block_screenshot, screenshot_binding_shared);
 
         // Reset button
         if (ImGui::Button(S(THPRAC_HOTKEY_RESET))) {
             mHotkeyBackspaceMenuListening = false;
             mHotkeyF12MenuListening = false;
-            mHotkeyF11MenuListening = false;
             mHotkeyScreenshotListening = false;
             int backspace_menu_chord = 1 << Gui::ChordKey_Backspace;
             int advanced_menu_chord = 1 << Gui::ChordKey_F12;
-            int special_menu_chord = 1 << Gui::ChordKey_F11;
             int screenshot_chord = 1 << Gui::ChordKey_Home;
             LauncherSettingSet("backspace_menu_chord", backspace_menu_chord);
             LauncherSettingSet("advanced_menu_chord", advanced_menu_chord);
-            LauncherSettingSet("special_menu_chord", special_menu_chord);
             LauncherSettingSet("screenshot_chord", screenshot_chord);
         }
     }
@@ -1851,13 +1829,10 @@ private:
 
     THCfgCombo mHotkeyBackspaceMenu { "backspace_menu_chord", 1 << Gui::ChordKey_Backspace, 1 << Gui::ChordKey_COUNT };
     THCfgCombo mHotkeyF12Menu { "advanced_menu_chord", 1 << Gui::ChordKey_F12, 1 << Gui::ChordKey_COUNT };
-    THCfgCombo mHotkeyF11Menu { "special_menu_chord", 1 << Gui::ChordKey_F11, 1 << Gui::ChordKey_COUNT };
     THCfgCombo mHotkeyScreenshot { "screenshot_chord", 1 << Gui::ChordKey_Home, 1 << Gui::ChordKey_COUNT };
-    THCfgCheckbox mHotkeyVSGameSpecialIsQuick { "vs_game_quick_special_menu", false };
 
     bool mHotkeyBackspaceMenuListening = false;
     bool mHotkeyF12MenuListening = false;
-    bool mHotkeyF11MenuListening = false;
     bool mHotkeyScreenshotListening = false;
 
     std::string mThcrapHintStr;

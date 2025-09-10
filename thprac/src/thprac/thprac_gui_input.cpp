@@ -175,17 +175,46 @@ namespace THPrac
 		}
 
 		
-		/***                      Menu Chords                        ***/
+		/***                    Menu Chords                          ***/
 
-        int __gbackspace_menu_chord_current;
-        int __gadvanced_menu_chord_current;
-        int __gspecial_menu_chord_current;
-        int __gscreenshot_chord_current;
-        bool __gvs_game_quick_special_menu;
+        int __gbackspace_menu_chord_current = 1 << ChordKey_Backspace;
+        int __gadvanced_menu_chord_current = 1 << ChordKey_F12;
+        int __gscreenshot_chord_current = 1 << ChordKey_Home;
 
         const char* ChordKeyStrings[ChordKey_COUNT];
 
-        int ChordKeyVKs[ChordKey_COUNT];
+		int ChordKeyVKs[ChordKey_COUNT] = {
+            VK_CONTROL,
+			VK_SHIFT,
+			VK_MENU,
+			VK_CAPITAL,
+			VK_TAB,
+			VK_SPACE,
+			VK_BACK,
+			VK_F11,
+			VK_F12,
+			VK_INSERT,
+			VK_HOME,
+			VK_PRIOR,
+			VK_DELETE,
+			VK_END,
+			VK_NEXT,
+			0, // Currently no controller support
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+        };
 
 		void MenuChordInitArrays() {
             ChordKeyStrings[ChordKey_Ctrl] =		"Ctrl";
@@ -219,7 +248,8 @@ namespace THPrac
             ChordKeyStrings[ChordKey_Select] =		"Select";
             ChordKeyStrings[ChordKey_HomeMenu] =	"HomeMenu";
 
-			
+			// This doesn't seem to run in-game? The above strings don't matter that it doesn't but strange this has issue.
+			/*
             ChordKeyVKs[ChordKey_Ctrl] =        VK_CONTROL;
             ChordKeyVKs[ChordKey_Shift] =       VK_SHIFT;
             ChordKeyVKs[ChordKey_Alt] =		    VK_MENU;
@@ -250,50 +280,41 @@ namespace THPrac
             ChordKeyVKs[ChordKey_Start] =       0;
             ChordKeyVKs[ChordKey_Select] =      0;
             ChordKeyVKs[ChordKey_HomeMenu] =    0;
-
+            */
 		}
 
 		bool MenuChordInitFromCfg() {
             int backspace_menu_chord = 0;
             int advanced_menu_chord = 0;
-            int special_menu_chord = 0;
             int screenshot_chord = 0;
-            bool vs_game_quick_special_menu = false;
             if (
 				!LauncherSettingGet("backspace_menu_chord", backspace_menu_chord) ||
 				!LauncherSettingGet("advanced_menu_chord", advanced_menu_chord) || 
-				!LauncherSettingGet("special_menu_chord", special_menu_chord) || 
-				!LauncherSettingGet("screenshot_chord", screenshot_chord) ||
-				!LauncherSettingGet("vs_game_quick_special_menu", vs_game_quick_special_menu)
+				!LauncherSettingGet("screenshot_chord", screenshot_chord)
 			) {
                 return false;
             }
             __gbackspace_menu_chord_current = backspace_menu_chord;
             __gadvanced_menu_chord_current = advanced_menu_chord;
-            __gspecial_menu_chord_current = special_menu_chord;
             __gscreenshot_chord_current = screenshot_chord;
-            __gvs_game_quick_special_menu = vs_game_quick_special_menu;
             return true;
 		}
 
 		void MenuChordAutoSet() {
 			__gbackspace_menu_chord_current = 1 << ChordKey_Backspace;
 			__gadvanced_menu_chord_current = 1 << ChordKey_F12;
-			__gspecial_menu_chord_current = 1 << ChordKey_F11;
 			__gscreenshot_chord_current = 1 << ChordKey_Home;
-			__gvs_game_quick_special_menu = false;
 		}
 
 
 		// Returns the time the desired chord has been pressed for.
 		int GetChordPressedDuration(int target_chord) {
-
-            int min_held = 2;
-
+            int min_held = 1 << 30;
             // Scan for keys until the keyboard keys which are not supported.
             for (int key = 0; key < ChordKey_KEYBOARD_COUNT; ++key) {
                 // If the key is in the target chord, check for duration that key was held.
                 if (target_chord & (1 << key)) {
+                    //int held = KeyboardInputUpdate(HotkeyChordToVK(key));
                     int held = KeyboardInputUpdate(HotkeyChordToVK(key));
 					// If one of the required keys is not pressed, set held time to 0 and break out early.
                     if (held == 0) {
@@ -315,9 +336,6 @@ namespace THPrac
 		
 		int GetBackspaceMenuChord() { return __gbackspace_menu_chord_current; }
 		int GetAdvancedMenuChord() { return __gadvanced_menu_chord_current; }
-		int GetSpecialMenuChord() { 
-			return __gspecial_menu_chord_current; 
-		}
 		int GetScreenshotChord() { return __gscreenshot_chord_current; }
 
 		// Convert chords to user-readable string.
