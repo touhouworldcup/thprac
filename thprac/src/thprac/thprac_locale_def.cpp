@@ -1839,7 +1839,7 @@ const char* th_glossary_str[3][1049]
         "Fatal error occurred while initializing thprac.",
         "No valid game was found.",
         "Failed to run game.",
-        "Applied thprac.\nIf nothing happend, return to main menu in game once.",
+        "Applied thprac.\nIf nothing happened, return to main menu in game once.",
         "Purge",
         "Reflective launch",
         "Enable if the game behaves abnormally when launched by thprac but not when launched directly.\nThis will nullify any functionality that requires a direct game launch from thprac.",
