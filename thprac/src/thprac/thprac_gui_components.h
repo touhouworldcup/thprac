@@ -589,7 +589,9 @@ namespace Gui {
     };
 
     class GuiHotKey {
-    private:
+    // private:
+    protected:
+        // Moved from private to protected to give access to GuiHotKeyChord
         th_glossary_t mTextRef = A0000ERROR_C;
         const char* mText = nullptr;
         const char* mKeyText = nullptr;
@@ -599,8 +601,8 @@ namespace Gui {
         float mXOffset1 = 0.0f;
         float mXOffset2 = 0.0f;
 
-    protected:
         bool OnWidgetUpdate();
+
     public:
         GuiHotKey(th_glossary_t text_ref, const char* key_text, int vkey, HookSlice hooks)
             : mTextRef(text_ref)
@@ -701,6 +703,20 @@ namespace Gui {
         {
             return mStatus;
         }
+        bool operator()(bool use_widget = true);
+    };
+
+
+    class GuiHotKeyChord : GuiHotKey {
+    public:
+        // Copy over constructors and inlines
+        using GuiHotKey::GuiHotKey;
+        using GuiHotKey::SetText;
+        using GuiHotKey::SetKey;
+        using GuiHotKey::SetTextOffset;
+        using GuiHotKey::SetTextOffsetRel;
+        using GuiHotKey::Toggle;
+        using GuiHotKey::operator*;
         bool operator()(bool use_widget = true);
     };
 
