@@ -182,7 +182,7 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
       <AdditionalManifestDependencies>type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
-      <AdditionalOptions Condition="'$(ToolsetType)'=='MSVC'">/IGNORE:4098 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(ToolsetType)'=='MSVC'">/IGNORE:4098 /STUB:..\thprac98\thprac98.exe %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)'=='ReleaseLLVM'">%(AdditionalOptions) $(SolutionDir)\thprac\src\thprac\blobs\th19_fast_llvm.obj</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)'=='Release'">%(AdditionalOptions) $(SolutionDir)\thprac\src\thprac\blobs\th19_fast_msvc.obj</AdditionalOptions>
     </Link>
