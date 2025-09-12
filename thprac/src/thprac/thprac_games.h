@@ -41,6 +41,13 @@ struct Timer19 {
     uint32_t flags;
 };
 
+struct Timer20 {
+    int32_t prev;
+    int32_t cur;
+    float cur_f;
+    uint32_t control;
+};
+
 template<typename T>
 struct ThList {
     T* entry;

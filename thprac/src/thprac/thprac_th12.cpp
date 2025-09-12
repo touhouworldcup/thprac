@@ -1,10 +1,30 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 
-
 namespace THPrac {
 namespace TH12 {
     using std::pair;
+
+    enum addrs {
+        CHARA = 0x4b0c90,
+        SUBSHOT = 0x4b0c94,
+        PLAYER_PTR = 0x4b4514,
+        MODEFLAGS = 0x4b0ce0,
+        STAGE_NUM = 0x4b0cb0,
+    };
+
+    constexpr uint32_t playerDmgSrcCnt = 0x81;
+
+    struct PlayerDamageSource {
+        char gap0[0x70];
+        uint32_t flags; //0x70
+    };
+
+    struct Player {
+        char gap0[0x8988];
+        PlayerDamageSource damage_sources[playerDmgSrcCnt]; // 0x8988
+    };
+
     struct THPracParam {
         int32_t mode;
         int32_t stage;
@@ -22,6 +42,8 @@ namespace TH12 {
         int32_t ventra_1;
         int32_t ventra_2;
         int32_t ventra_3;
+
+        std::vector<PlayerDamageSource> reimuADmgSrcs[5];
 
         bool dlg;
 
@@ -54,44 +76,97 @@ namespace TH12 {
             GetJsonValue(ventra_2);
             GetJsonValue(ventra_3);
 
-            return true;
-        }
-        std::string GetJson()
-        {
-            CreateJson();
+            // deserializing damage source data (for ReimuA bomb desync fix)
+            if (param.HasMember("reimuADmgSrcs") && param["reimuADmgSrcs"].IsArray()) {
+                for (rapidjson::SizeType stage = 0; stage < param["reimuADmgSrcs"].Size(); stage++) {
+                    const rapidjson::Value& stageDmgSrcs = param["reimuADmgSrcs"][stage];
 
-            AddJsonValueEx(version, GetVersionStr(), jalloc);
-            AddJsonValueEx(game, "th12", jalloc);
-            AddJsonValue(mode);
-            AddJsonValue(stage);
-            if (section)
-                AddJsonValue(section);
-            if (phase)
-                AddJsonValue(phase);
-            if (dlg)
-                AddJsonValue(dlg);
+                    if (stageDmgSrcs.IsArray()) {
+                        for (auto& dmgSrcArr : stageDmgSrcs.GetArray()) {
+                            if (dmgSrcArr.IsArray() && dmgSrcArr.Size() * sizeof(int32_t) == sizeof(PlayerDamageSource)) {
+                                PlayerDamageSource dmgSrc {};
 
-            AddJsonValue(score);
-            AddJsonValue(life);
-            AddJsonValue(life_fragment);
-            AddJsonValue(bomb);
-            AddJsonValue(bomb_fragment);
-            AddJsonValue(power);
-            AddJsonValue(value);
-            AddJsonValue(graze);
-            AddJsonValue(ufo_side);
-            if (ventra_1) {
-                AddJsonValue(ventra_1);
-                if (ventra_2) {
-                    AddJsonValue(ventra_2);
-                    if (ventra_3) {
-                        AddJsonValue(ventra_3);
+                                int32_t* p = reinterpret_cast<int32_t*>(&dmgSrc);
+                                for (rapidjson::SizeType i = 0; i < dmgSrcArr.Size(); i++) {
+                                    assert(dmgSrcArr[i].IsInt());
+                                    p[i] = dmgSrcArr[i].GetInt();
+                                }
+
+                                reimuADmgSrcs[stage].push_back(dmgSrc);
+                            }
+                        }
                     }
                 }
             }
 
+            return true;
+        }
+        std::string GetJson()
+        {
+            if (mode == 0) {
+                CreateJson();
 
-            ReturnJson();
+                AddJsonValueEx(version, GetVersionStr(), jalloc);
+                AddJsonValueEx(game, "th12", jalloc);
+                AddJsonValue(mode);
+
+                // serializing damage source data (for ReimuA bomb desync fix)
+                rapidjson::Value json_reimuADmgSrcs(rapidjson::kArrayType);
+                for (size_t stage = 0; stage < elementsof(reimuADmgSrcs); ++stage) {
+                    rapidjson::Value stageArray(rapidjson::kArrayType);
+
+                    for (auto& dmgSrc : reimuADmgSrcs[stage]) {
+                        rapidjson::Value dmgSrcArray(rapidjson::kArrayType);
+
+                        int32_t* p = reinterpret_cast<int32_t*>(&dmgSrc);
+                        size_t count = sizeof(PlayerDamageSource) / sizeof(int32_t);
+
+                        for (size_t i = 0; i < count; ++i)
+                            dmgSrcArray.PushBack(p[i], jalloc);
+
+                        stageArray.PushBack(dmgSrcArray, jalloc);
+                    }
+
+                    json_reimuADmgSrcs.PushBack(stageArray, jalloc);
+                }
+                param.AddMember(rapidjson::Value("reimuADmgSrcs", jalloc), json_reimuADmgSrcs, jalloc);
+
+                ReturnJson();
+            } else if (mode == 1) {
+                CreateJson();
+
+                AddJsonValueEx(version, GetVersionStr(), jalloc);
+                AddJsonValueEx(game, "th12", jalloc);
+                AddJsonValue(mode);
+                AddJsonValue(stage);
+                if (section)
+                    AddJsonValue(section);
+                if (phase)
+                    AddJsonValue(phase);
+                if (dlg)
+                    AddJsonValue(dlg);
+
+                AddJsonValue(score);
+                AddJsonValue(life);
+                AddJsonValue(life_fragment);
+                AddJsonValue(bomb);
+                AddJsonValue(bomb_fragment);
+                AddJsonValue(power);
+                AddJsonValue(value);
+                AddJsonValue(graze);
+                AddJsonValue(ufo_side);
+                if (ventra_1) {
+                    AddJsonValue(ventra_1);
+                    if (ventra_2) {
+                        AddJsonValue(ventra_2);
+                        if (ventra_3) {
+                            AddJsonValue(ventra_3);
+                        }
+                    }
+                }
+
+                ReturnJson();
+            }
         }
     };
     THPracParam thPracParam {};
@@ -516,19 +591,20 @@ namespace TH12 {
         pCtx->Eip = 0x420acd;
     });
     EHOOK_ST(th12_all_clear_bonus_2, 0x420bc2, 4, {
-        if (GetMemContent(0x4b0ce0) & 0x10) {
+        if (GetMemContent(MODEFLAGS) & 0x10) {
             pCtx->Eip = 0x420aa4;
         } else if (GetMemContent(0x4b44e8, 0x74) && GetMemContent(0x4b4518, 0x1c, 0xa) & 1) {
             pCtx->Eip = 0x420ac3;
         }
     });
     EHOOK_ST(th12_all_clear_bonus_3, 0x420c6b, 4, {
-        if (GetMemContent(0x4b0ce0) & 0x10) {
+        if (GetMemContent(MODEFLAGS) & 0x10) {
             pCtx->Eip = 0x420aa4;
         } else if (GetMemContent(0x4b44e8, 0x74) && GetMemContent(0x4b4518, 0x1c, 0xa) & 1) {
             pCtx->Eip = 0x420ac3;
         }
     });
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
     private:
         void FpsInit()
@@ -650,6 +726,7 @@ namespace TH12 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
+
                 EndOptGroup();
             }
 
@@ -1458,7 +1535,7 @@ namespace TH12 {
         bool result;
 
         el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode && thPracParam.section;
-        is_practice = (*((int32_t*)0x4b0ce0) & 0x1);
+        is_practice = (*((int32_t*)MODEFLAGS) & 0x1);
         result = ElBgmTest<0x430183, 0x4226c7, 0x432820, 0x432982, 0xffffffff>(
             el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
 
@@ -1490,6 +1567,10 @@ namespace TH12 {
     })
     PATCH_DY(th12_disable_prac_menu_2, 0x44603e, "83c4106690")
     EHOOK_DY(th12_patch_main, 0x40e8df, 1, {
+        if (GetMemContent(STAGE_NUM) == 1)
+            for (size_t stage = 0; stage < elementsof(thPracParam.reimuADmgSrcs); ++stage)
+                thPracParam.reimuADmgSrcs[stage].clear();
+
         if (thPracParam.mode == 1) {
             *(int32_t*)(0x4b0c44) = (int32_t)(thPracParam.score / 10);
             *(int32_t*)(0x4b0c98) = thPracParam.life;
@@ -1523,8 +1604,8 @@ namespace TH12 {
     })
     EHOOK_DY(th12_rep_save, 0x43c32c, 7, {
         char* repName = (char*)(pCtx->Esp + 0x28);
-        if (thPracParam.mode)
-            THSaveReplay(repName);
+        if (thPracParam.mode || !(GetMemContent(CHARA) || GetMemContent(SUBSHOT)))
+            THSaveReplay(repName); //thprac mode or ReimuA
     })
     EHOOK_DY(th12_rep_menu_1, 0x4467df, 3, {
         THGuiRep::singleton().State(1);
@@ -1548,6 +1629,33 @@ namespace TH12 {
     })
     EHOOK_DY(th12_render, 0x462722, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
+    })
+    EHOOK_DY(th12_prevent_reiA_desync, 0x42227b, 1, { // hooks after game thread creation
+        Player* player = GetMemContent<Player*>(PLAYER_PTR);
+        uint32_t stageNum = GetMemContent(STAGE_NUM);
+
+        if (player == nullptr) return;
+        if (GetMemContent(CHARA) || GetMemContent(SUBSHOT)) return; // not reiA
+        if (GetMemContent(MODEFLAGS) & 0b10000) return; // in practice (note: wont filter prac mode replays)
+        if (stageNum < 2 || stageNum > 6) return; //stage 1 or extra
+
+        if (THGuiRep::singleton().mRepStatus) { // Playback
+            for (int i = 0; i < 0x81; i++) // if there are already active sources, its a transition - skip
+                if (player->damage_sources[i].flags & 1) return;
+
+            const auto& stageSrcs = thPracParam.reimuADmgSrcs[stageNum-2];
+
+            if (stageSrcs.size() > 0) {
+                uint32_t curSrcIndex = 0;
+
+                for (size_t i = 0; i < stageSrcs.size() && i < 0x81; i++)
+                    player->damage_sources[curSrcIndex++] = stageSrcs[i];
+            }
+        } else { // Recording
+            for (int i = 0; i < 0x81; i++)
+                if (player->damage_sources[i].flags & 1) // (erroneously) active damage source
+                    thPracParam.reimuADmgSrcs[stageNum-2].push_back(player->damage_sources[i]);
+        }
     })
     HOOKSET_ENDDEF()
 

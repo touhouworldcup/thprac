@@ -171,6 +171,7 @@ enum th_glossary_t
     TH13_EXTEND,
     TH13_SPIRIT_SIDE,
     TH13_TITLE,
+    TH13_TRANCE_LOCK,
     TH13_TRANCE_METER,
     TH143_TITLE,
     TH145_TITLE,
@@ -576,10 +577,12 @@ enum th_glossary_t
     TH20_FIX_HITBOX,
     TH20_FIX_HITBOX_DESC,
     TH20_HYPER,
+    TH20_HYPER_ACTIVE,
     TH20_HYP_LOCK,
     TH20_INTERNAL_GAUGES,
     TH20_NEXT_STONE,
     TH20_PIV_OVERFLOW_FIX,
+    TH20_STONE_ACTIVE,
     TH20_STONE_GAUGE,
     TH20_STONE_LEVEL_B,
     TH20_STONE_LEVEL_G,
@@ -1058,7 +1061,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1046];
+extern const char* th_glossary_str[3][1049];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

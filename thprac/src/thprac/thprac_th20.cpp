@@ -1,6 +1,7 @@
 #include "thprac_games.h"
 #include "thprac_utils.h"
 #include <format>
+#include <math.h>
 
 #include "utils/wininternal.h"
 
@@ -28,6 +29,8 @@ namespace TH20 {
 
         float hyper;
         float stone;
+        bool hyperActive;
+        bool stoneActive;
         int32_t stoneMax;
         int32_t levelR;
         int32_t priorityR;
@@ -70,6 +73,8 @@ namespace TH20 {
 
             GetJsonValue(hyper);
             GetJsonValue(stone);
+            GetJsonValue(hyperActive);
+            GetJsonValue(stoneActive);
             GetJsonValue(stoneMax);
             GetJsonValue(levelR);
             GetJsonValue(priorityR);
@@ -123,6 +128,8 @@ namespace TH20 {
 
                 AddJsonValue(hyper);
                 AddJsonValue(stone);
+                AddJsonValue(hyperActive);
+                AddJsonValue(stoneActive);
                 AddJsonValue(stoneMax);
                 AddJsonValue(levelR);
                 AddJsonValue(priorityR);
@@ -202,6 +209,8 @@ namespace TH20 {
                 thPracParam.power = *mPower;
                 thPracParam.value = *mValue;
 
+                thPracParam.hyperActive = *mHyperActive;
+                thPracParam.stoneActive = *mStoneActive;
                 int stoneMaxStageDefault = 1100;
                 if (*mStage == 1) stoneMaxStageDefault = 1200;
                 if (*mStage == 2) stoneMaxStageDefault = 1300;
@@ -298,6 +307,19 @@ namespace TH20 {
                 mPower(power_str.c_str());
                 auto value_str = std::format("{:.2f}", (float)(*mValue) / 5000.0f);
                 mValue(value_str.c_str());
+
+                ImGui::Columns(2, 0, false);
+                if (mHyperActive()) {
+                    if (*mHyperActive && *mHyper == 0) *mHyper = 10000;
+                    if (!*mHyperActive && *mHyper == 10000) *mHyper = 0;
+                }
+                ImGui::NextColumn();
+                if (mStoneActive()) {
+                    if (*mStoneActive && *mStone == 0) *mStone = 10000;
+                    if (!*mStoneActive && *mStone == 10000) *mStone = 0;
+                }
+                ImGui::Columns(1);
+
                 mHyper(std::format("{:.2f} %%", (float)(*mHyper) / 100.0f).c_str());
                 mStone(std::format("{:.2f} %%", (float)(*mStone) / 100.0f).c_str());
                 mStoneSummoned();
@@ -444,6 +466,8 @@ namespace TH20 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 100, 400 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mValue { TH_VALUE, 0, 1000000 };
 
+        Gui::GuiCheckBox mHyperActive { TH20_HYPER_ACTIVE };
+        Gui::GuiCheckBox mStoneActive { TH20_STONE_ACTIVE };
         Gui::GuiSlider<int, ImGuiDataType_S32> mHyper { TH20_HYPER, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mStone { TH20_STONE_GAUGE, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mStoneSummoned { TH20_STONE_SUMMONED, 0, 26 };
@@ -537,6 +561,18 @@ namespace TH20 {
         SINGLETON(THOverlay);
 
     public:
+        HOTKEY_DEFINE(mHyperGLock, TH20_HYP_LOCK, "F5", VK_F5)
+        PATCH_HK(0x133935, NOP(3)),
+        PATCH_HK(0x12FE5B, NOP(19)),
+        PATCH_HK(0x1309A9, NOP(19)),
+        PATCH_HK(0x1313DF, NOP(19)),
+        PATCH_HK(0x1319C7, NOP(19)),
+        PATCH_HK(0x131FFF, NOP(19)),
+        PATCH_HK(0x1352EB, NOP(19)),
+        PATCH_HK(0x13858B, NOP(19)),
+        PATCH_HK(0x13652C, NOP(25)),
+        PATCH_HK(0x1379DC, NOP(25))
+        HOTKEY_ENDDEF();
     protected:
         virtual void OnLocaleChange() override
         {
@@ -609,15 +645,13 @@ namespace TH20 {
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(0xE16A2, "0F1F00") //0xE16A8
-        HOTKEY_ENDDEF();
-
-        HOTKEY_DEFINE(mHyperGLock, TH20_HYP_LOCK, "F5", VK_F5)
-        PATCH_HK(0x133935, "0F1F00")
+        PATCH_HK(0xE16A2, NOP(3)) //0xE16A8
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mWonderStGLock, TH20_WST_LOCK, "F6", VK_F6)
-        PATCH_HK(0x77F75, "0F1F00")
+        PATCH_HK(0x77F75, NOP(3)),
+        PATCH_HK(0x1127AC, "E9AA000000CCCC"),
+        PATCH_HK(0x112AA0 , "C3CCCC")
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F7", VK_F7)
@@ -656,6 +690,22 @@ namespace TH20 {
     });
     PATCH_ST(th20_infinite_stones, 0x11784B, "EB");
     PATCH_ST(th20_hitbox_scale_fix, 0xFF490, "B864000000C3");
+
+    EHOOK_ST(th20_cleanup_stone_active, 0x11269f, 1, {
+        // to make stoneActive work, we set the meter to max in init, let the game do its thing & adjust the meter/timer to the specified value
+        uintptr_t game_side = RVA(0x1BA568);
+        uintptr_t player_stats = game_side + 0x88;
+        *(int32_t*)(player_stats + 0x5C) = thPracParam.stone * thPracParam.stoneMax;
+
+        uintptr_t enemy_stone_manager = *(uintptr_t*)RVA(0x1c6118);
+        Timer20* stone_interp_timer = (Timer20*)(enemy_stone_manager + 0x84 + 0x14);
+
+        //stone_interp_timer->cur = 1320 - (1320 * thPracParam.stone);                         // option A: duration-accurate (50% stone = 50% of the duration)
+        stone_interp_timer->cur = 1320.0f * (1.0f - cbrtf(fmaxf(0.0001f, thPracParam.stone))); // option B: visuals-accurate (the drain meter is cubicly interpolated) (dont let it be 0) (just dont)
+        stone_interp_timer->cur_f = (float)stone_interp_timer->cur;
+
+        th20_cleanup_stone_active.Toggle(false);
+    });
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
         SINGLETON(THAdvOptWnd);
@@ -751,6 +801,7 @@ namespace TH20 {
             th20_score_uncap_stage_tr.Setup();
             th20_infinite_stones.Setup();
             th20_hitbox_scale_fix.Setup();
+            th20_cleanup_stone_active.Setup();
 
             // TODO(?)
             /*
@@ -848,7 +899,7 @@ namespace TH20 {
                 EndOptGroup();
             }
 
-            AboutOpt("Guy, zero318, rue, and you!");
+            AboutOpt("Khangaroo, Guy, zero318, rue, and you!");
             ImGui::EndChild();
             ImGui::SetWindowFocus();
         }
@@ -1473,8 +1524,8 @@ namespace TH20 {
             constexpr unsigned int st4mbsNon2PlaySoundSomething = 0xe6c + 0x4;
             constexpr unsigned int st4mbsNon2PreWait = 0x1028;
             constexpr unsigned int st4mbsNon2PostWait = 0x103c;
-            constexpr unsigned int st4mbsNon2PreWait2 = 0x1028;
-            constexpr unsigned int st4mbsNon2PostWait2 = 0x103c;
+            constexpr unsigned int st4mbsNon2InvincTime = 0xc54 + 0x10;
+            constexpr unsigned int st4mbsNon2Timer = 0xfc4 + 0x18;
             constexpr unsigned int st4mbsNon2BulletClear = 0x1a8 + 0x4;
 
             ECLJump(ecl, st4PostMaple, st4MBossCreateCall, 60, 90);
@@ -1484,7 +1535,9 @@ namespace TH20 {
             ecl << pair { st4mbsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
             ecl << pair { st4mbsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
             ecl << pair { st4mbsNon2BulletClear, (int16_t)0 }; // Disable bullet clear
-            ECLJump(ecl, st4mbsNon2PreWait, st4mbsNon2PostWait, 0); // Skip wait
+            ECLJump(ecl, st4mbsNon2PreWait, st4mbsNon2PostWait, 0); // Skip wait (100f)
+            ecl << pair { st4mbsNon2InvincTime, (int16_t)20 }; // Reduce invincible timer by time skipped (120f->20f)
+            ecl << pair { st4mbsNon2Timer, (int16_t)380 }; // Reduce boss timer by time skipped (480f->380f)
             ECLJump(ecl, st4mbsPreWait, st4mbsPostWait, 0);
             ECLJump(ecl, st4mbsPreWait2, st4mbsPostWait2, 0);
             break;
@@ -2068,7 +2121,7 @@ namespace TH20 {
             constexpr unsigned int st7BossSpell9ChoccyPostSetup = 0xe150;
             constexpr unsigned int st7BossSpell9ChoccyPreFinale = 0xedb8;
             constexpr unsigned int st7BossSpell9BulletsPostSetup = 0xf68c;
-            constexpr unsigned int st7BossSpell9BulletsPreFinale = 0xfccc;
+            constexpr unsigned int st7BossSpell9BulletsPreFinale = 0xfcb0;
 
             ECLStdExec(ecl, st7PostMaple, 1, 1);
             ECLJump(ecl, st7PostMaple + stdInterruptSize, st7BossCreateCall, 60);
@@ -2167,8 +2220,6 @@ namespace TH20 {
         { .addr = 0xD4237, .data = PatchCode("e800000000") },
     };
 
-
-
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th20_boss_bgm, 0xBAC98, 2, {
         if (THBGMTest()) {
@@ -2219,16 +2270,42 @@ namespace TH20 {
         if (thPracParam.mode != 1)
             return;
 
-        uintptr_t player_stats = RVA(0x1BA5F0);
-        *(int32_t*)(player_stats + 0x4C) = (int32_t)(thPracParam.hyper * *(int32_t*)(player_stats + 0x50));
-        if ((int32_t)thPracParam.hyper == 1) { // call the hyper start method
-            int32_t* gauge_manager_ptr = (int32_t*)RVA(0x1BA568 + 0x2C);
-            asm_call_rel<0x134D00, Fastcall>(*gauge_manager_ptr);
-        }
+        uintptr_t game_side = RVA(0x1BA568);
+        uintptr_t player_stats = game_side + 0x88;
+        int32_t hyperMax = *(int32_t*)(player_stats + 0x50);
 
-        if (thPracParam.stoneMax) // backwards compatibility
-            *(int32_t*)(player_stats + 0x60) = thPracParam.stoneMax;
-        *(int32_t*)(player_stats + 0x5C) = (int32_t)(thPracParam.stone * *(int32_t*)(player_stats + 0x60));
+        struct Timer { //essentials
+            int32_t prev;
+            int32_t cur;
+            float cur_f;
+        };
+
+        if ((int32_t)thPracParam.hyper == 1 || thPracParam.hyperActive) {
+            uintptr_t player_stone_manager = *(uintptr_t*)(game_side + 0x2c);
+            bool hyperGLockEnabled = *(THOverlay::singleton().mHyperGLock);
+
+            // call the hyper start method
+            if (hyperGLockEnabled) THOverlay::singleton().mHyperGLock.Toggle(false); // if you know a less stupid way to prevent
+            asm_call_rel<0x133780, Thiscall>(player_stone_manager, hyperMax);
+            if (hyperGLockEnabled) THOverlay::singleton().mHyperGLock.Toggle(true); // gauge lock from interfering plz do lol
+
+            if (thPracParam.hyperActive) { // set hyper drain timer correctly
+                int32_t hyper_base_duration = *(int32_t*)(player_stats + 0x54) * 12;
+                int32_t g2_passive_factor = *(int32_t*)(player_stats + 0xa8);
+                int32_t hyper_duration = hyper_base_duration + (hyper_base_duration * g2_passive_factor) / 100;
+
+                uintptr_t story_stone = *(uintptr_t*)(player_stone_manager + 0x28);
+                Timer20* hyper_timer = (Timer20*)(story_stone + 0x14);
+                hyper_timer->prev = -999999; //zero318 & KSS say: safety first!
+                hyper_timer->cur = thPracParam.hyper * hyper_duration;
+                hyper_timer->cur_f = (float)hyper_timer->cur;
+            }
+        }
+        *(int32_t*)(player_stats + 0x4C) = thPracParam.hyper * hyperMax; // set hyper value
+
+        if (thPracParam.stoneMax) *(int32_t*)(player_stats + 0x60) = thPracParam.stoneMax; // check is for backwards compatibility
+        *(int32_t*)(player_stats + 0x5C) = thPracParam.stoneActive ? thPracParam.stoneMax : thPracParam.stone * thPracParam.stoneMax;
+        th20_cleanup_stone_active.Toggle(thPracParam.stoneActive || thPracParam.stone == 1.0f);
         *(int32_t*)(player_stats + 0x64) = thPracParam.priorityR;
         *(int32_t*)(player_stats + 0x68) = thPracParam.priorityB;
         *(int32_t*)(player_stats + 0x6C) = thPracParam.priorityY;
@@ -2268,6 +2345,10 @@ namespace TH20 {
         *(uint32_t*)RVA(0x1BA568 + 0x88 + 0x1E0) = *(uint32_t*)RVA(0x1B0A60);
     })
     PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
+    EHOOK_DY(th20_esc_q, 0xe2f45 , 7 , {
+        if (Gui::KeyboardInputGetRaw('Q'))
+            pCtx->Eip = RVA(0xe2fe7);
+    })
     EHOOK_DY(th20_timer_desync_fix, 0xBA99F, 6, {
         uint32_t stage = *(uint32_t*)RVA(0x1BA568 + 0x88 + 0x1F4) - 1;
         if (*(uint32_t*)(*(uintptr_t*)RVA(0x1BA828) + 0x108)) {
@@ -2283,6 +2364,7 @@ namespace TH20 {
             thPracParam.passiveMeterTimer[stage] = *(int32_t*)(*(uintptr_t*)RVA(0x1C6118) + 0x28 + 4);
         }
     })
+    PATCH_DY(th20_fix_rep_save_stone_names, 0x127B9F, "8B82D8000000" NOP(22))
     EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
         if (*(uint32_t*)(*(uintptr_t*)RVA(0x1BA828) + 0x108)) {
             // Yes, the order really is swapped like this

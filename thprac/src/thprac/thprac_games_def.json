@@ -531,7 +531,7 @@
       ],
       "THPRAC_GAMEROLL_TH16_SHOTTYPES": [
         "灵梦（春）\\0灵梦（夏）\\0灵梦（秋）\\0灵梦（冬）\\0琪露诺（春）\\0琪露诺（夏）\\0琪露诺（秋）\\0琪露诺（冬）\\0文（春）\\0文（夏）\\0文（秋）\\0文（冬）\\0魔理沙（春）\\0魔理沙（夏）\\0魔理沙（秋）\\0魔理沙（冬）\\0\\0",
-        "Reimu (Spring)\\0Reimu (Summer)\\0Reimu (Autumn)\\0Reimu (Winter)\\0Cirno (Spring)\\0Cirno (Summer)\\0Cirno (Autumn)\\0Cirno (Winter)\\0Aya (Spring)\\Aya (Summer)\\Aya (Autumn)\\Aya (Winter)\\0Marisa (Spring)\\0Marisa (Summer)\\0Marisa (Autumn)\\0Marisa (Winter)\\0\\0",
+        "Reimu (Spring)\\0Reimu (Summer)\\0Reimu (Autumn)\\0Reimu (Winter)\\0Cirno (Spring)\\0Cirno (Summer)\\0Cirno (Autumn)\\0Cirno (Winter)\\0Aya (Spring)\\0Aya (Summer)\\0Aya (Autumn)\\0Aya (Winter)\\0Marisa (Spring)\\0Marisa (Summer)\\0Marisa (Autumn)\\0Marisa (Winter)\\0\\0",
         "霊夢（春）\\0霊夢（夏）\\0霊夢（秋）\\0霊夢（冬）\\0チルノ（春）\\0チルノ（夏）\\0チルノ（秋）\\0チルノ（冬）\\0文（春）\\0文（夏）\\0文（秋）\\0文（冬）\\0魔理沙（春）\\0魔理沙（夏）\\0魔理沙（秋）\\0魔理沙（冬）\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH17_SHOTTYPES": [
@@ -5936,7 +5936,8 @@
     "glossary": {
       "TH13_TRANCE_METER": [ "灵界槽", "Trance Meter", "霊界ゲージ" ],
       "TH13_EXTEND": [ "奖残次数", "Times extended", "エクステンド回数" ],
-      "TH13_SPIRIT_SIDE": [ "灵方向", "Spirit side", "霊ー方向" ]
+      "TH13_SPIRIT_SIDE": [ "灵方向", "Spirit side", "霊ー方向" ],
+      "TH13_TRANCE_LOCK": [ "锁灵界槽", "Trance Meter Lock", "霊界ゲージ計固定" ]
     },
 
     "sections": {
@@ -9521,8 +9522,10 @@
       "TH20_STONE_PRIORITY_Y": [ "优先级(黄)", "PriorityY", "優先Y" ],
       "TH20_STONE_LEVEL_G": [ "等级(绿)", "LevelG", "レベルG" ],
       "TH20_STONE_PRIORITY_G": [ "优先级(绿)", "PriorityG", "優先G" ],
+      "TH20_HYPER_ACTIVE": [ "异变攻击开", "Hyper Active", "異変攻撃作" ],
+      "TH20_STONE_ACTIVE": [ "异变敌人开", "Summon Active", "異変石作" ],
       "TH20_HYP_LOCK": [ "锁异变攻击槽", "Hyper Gauge Lock", "異変攻撃計固定" ],
-      "TH20_WST_LOCK": [ "锁异变石槽 ", "Wonder Stone Gauge Lock", "異変石計固定" ],
+      "TH20_WST_LOCK": [ "锁异变石槽", "Wonder Stone Gauge Lock", "異変石計固定" ],
       "TH20_INTERNAL_GAUGES": [ "异变石内部状态", "Internal Wonder Stone State", "異変石内部状態" ],
       "TH20_NEXT_STONE": [ "下一个石", "Next Stone", "次の石" ],
       "TH20_PIV_OVERFLOW_FIX": [ "异变值溢出修复", "PIV overflow fix", "PIVオーバーフロー修正" ],

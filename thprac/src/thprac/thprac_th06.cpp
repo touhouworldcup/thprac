@@ -1935,17 +1935,25 @@ namespace TH06 {
         if (!thPracParam.mode && GAME_MANAGER->isInReplay == 0) {
             if (*(DWORD*)(thiz) != 7) {
                 WORD key = *(WORD*)(INPUT_ADDR);
-                WORD key_last = *(WORD*)(INPUT_PREV_ADDR);
-                WORD rising_edge = key ^ key_last & key;
+                //WORD key_last = *(WORD*)(INPUT_PREV_ADDR);
+                //WORD rising_edge = key ^ key_last & key;
 
-                if (Gui::KeyboardInputGetRaw('R') || (rising_edge & 0x124)) { // ctrl+shift+down or R
+                if (Gui::KeyboardInputGetRaw('R') || (key & 0x124) == 0x124) { // ctrl+shift+down or R
                     *(DWORD*)(thiz) = 7;
                     thRestartFlag_normalGame = true;
                     pCtx->Eip = 0x40263c;
                 }
             }
         }
+    })
+    EHOOK_DY(th06_unpause_prevent_desyncs, 0x40223d, 6, {
+        if (!GAME_MANAGER->isInReplay) {
+            *(WORD*)(INPUT_ADDR) &= ~0x2; // clear bomb bit from input
 
+            uint32_t GUI_impl = *(uint32_t*)(0x69bc30 + 0x4);
+            if (*(int32_t*)(GUI_impl + 0x253c) >= 0) //in dialogue
+                *(WORD*)(INPUT_ADDR) &= ~0x1; // clear shoot bit from input
+        }
     })
     EHOOK_DY(th06_patch_main, 0x41c17a, 5, {
         THPauseMenu::singleton().el_bgm_changed = false;

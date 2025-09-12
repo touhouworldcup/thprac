@@ -1357,19 +1357,35 @@ namespace TH10 {
 
             ecl << pair{0x47e8, 99999999};
             break;
-        case THPrac::TH10::TH10_ST4_BOSS7:
+        case THPrac::TH10::TH10_ST4_BOSS7: {
+            constexpr unsigned int st4PreMainSub = 0x14a64;
+            constexpr unsigned int st4BossCreate = 0x14aa4;
+            constexpr unsigned int st4BossDialogRead = 0x14ae4;
+            constexpr unsigned int st4BossDeathWait = 0x14b08;
+
+            constexpr unsigned int st4BossNonSubCallOrd = 0x928;
+            constexpr unsigned int st4Boss3DropStart = 0x2628;
+            constexpr unsigned int st4Boss3DropEnd = 0x2694;
+
+            constexpr unsigned int st4Boss3LifeSetE = 0x242c;
+            constexpr unsigned int st4Boss3LifeSetNHL = 0x2440;
+            constexpr unsigned int st4Boss3InterruptNHL = 0x2498;
+
+            constexpr unsigned int st4BossSp4MovePos = 0x6b28;
+            constexpr unsigned int st4BossSp4PostMove = 0x6b74;
+
             THStage4ANM(8688);
             THStage4STD(8688);
-            ECLJump(ecl, 0x14a64, 0x14aa4, 8600);
-            ECLJump(ecl, 0x14ae4, 0x14b08, 8601);
-            ecl << pair{0x928, (int8_t)0x33};
-            ECLJump(ecl, 0x2628, 0x2694, 120);
-            ecl << pair{0x242c, 2300} << pair{0x2440, 0}
-                << pair{0x2498, (int8_t)0x34};
-            ecl.SetPos(0x6bc4);
-            ECLJump(ecl, 0x6b28, 0x6b74, 0);
+            ECLJump(ecl, st4PreMainSub, st4BossCreate, 8600); //skip stage
+            ECLJump(ecl, st4BossDialogRead, st4BossDeathWait, 8601); //skip dialogue
+            ecl << pair { st4BossNonSubCallOrd, (int8_t)0x33 }; // set to non 3
+            ECLJump(ecl, st4Boss3DropStart, st4Boss3DropEnd, 120); //skip non drops
+            ecl << pair { st4Boss3LifeSetE, 2300 } // set health to spell transition amt
+                << pair { st4Boss3LifeSetNHL, 0 } //set health to spell transition amt
+                << pair { st4Boss3InterruptNHL, (int8_t)0x34 }; // set to sp4
+            ECLJump(ecl, st4BossSp4MovePos, st4BossSp4PostMove, 0);
             break;
-        case THPrac::TH10::TH10_ST5_MID1:
+        } case THPrac::TH10::TH10_ST5_MID1:
             ECLJump(ecl, 0x14ba0, 0x14bc0, 3800);
             ECLJump(ecl, 0x143d0, 0x143e4, 3800);
             break;
@@ -2282,6 +2298,34 @@ namespace TH10 {
         char* repName = (char*)(pCtx->Esp + 0x20);
         if (thPracParam.mode)
             THSaveReplay(repName);
+    })
+    EHOOK_DY(th10_rep_st4bg_fix, 0x4040cd, 5, {
+        //full run replays need to skip the BG forward 29 frames on st4 to sync if started there
+        //needs to execute once after the first STD ins_3 (camera_position_interp)
+
+        if (!THGuiRep::singleton().mRepStatus) return;
+
+        uint32_t transition_stage_ptr = *(uint32_t*)0x4776e4;
+        if (transition_stage_ptr) return;
+
+        uint32_t stage_num = *(uint32_t*)0x474c7c;
+        if (stage_num != 4) return;
+
+        uint32_t replay_manager = *(uint32_t*)0x477838;
+        uint32_t replay_data_st3 = *(uint32_t*)(replay_manager + 0xa0 + 0x24 * 3);
+        if (!replay_data_st3) return;
+
+        uint32_t stage = *(uint32_t*)0x4776e8;
+        Timer* stage_std_timer = (Timer*)(stage + 0x38);
+
+        if (!stage_std_timer->current) { // start of stage
+            stage_std_timer->current = 29;
+            stage_std_timer->current_f = 29.0f;
+
+            Timer* camera_pos_interp_timer = (Timer*)(stage + 0x9c + 0x30);
+            camera_pos_interp_timer->current = 29;
+            camera_pos_interp_timer->current_f = 29.0f;
+        }
     })
     EHOOK_DY(th10_rep_power_fix, 0x42a322, 3, {
         uint8_t* repBuffer = (uint8_t*)pCtx->Eax;

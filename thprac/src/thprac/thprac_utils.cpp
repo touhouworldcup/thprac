@@ -274,3 +274,21 @@ void memswap(void* buf1_, void* buf2_, unsigned int len)
         buf2[i] = temp;
     }
 }
+
+void debug_msg(const char* title, const char* format, ...)
+{
+    va_list va;
+    va_start(va, format);
+    int length = vsnprintf(nullptr, 0, format, va);
+    va_end(va);
+
+    if (length < 0) return;
+    char* buffer = new char[length + 1];
+
+    va_start(va, format);
+    vsnprintf(buffer, length + 1, format, va);
+    va_end(va);
+
+    MessageBoxA(nullptr, buffer, title, 0);
+    delete[] buffer;
+}

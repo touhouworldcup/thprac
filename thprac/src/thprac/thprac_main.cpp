@@ -127,7 +127,7 @@ THGameSig* CheckOngoingGame(PROCESSENTRY32W& proc, uintptr_t* base, HANDLE* pOut
     return CheckOngoingGameByPID(proc.th32ProcessID, base, pOutHandle);
 }
 
-bool CheckIfGameExistEx(THGameSig& gameSig, const wchar_t* name)
+bool CheckIfGameExistEx(THGameSig& gameSig, const wchar_t* name, bool& isSteamExe)
 {
     MappedFile file(name);
     if (!file.fileMapView)
@@ -135,29 +135,39 @@ bool CheckIfGameExistEx(THGameSig& gameSig, const wchar_t* name)
 
     ExeSig exeSig;
     GetExeInfo(file.fileMapView, file.fileSize, exeSig);
-    for (int i = 0; i < 4; ++i) {
-        if (exeSig.metroHash[i] != gameSig.exeSig.metroHash[i]) {
-            return false;
-        }
-    }
+    for (int i = 0; i < 4; ++i)
+        if (exeSig.metroHash[i] != gameSig.exeSig.metroHash[i])
+            goto check_steam_match;
 
+    isSteamExe = false;
+    return true;
+
+check_steam_match:
+    for (int i = 0; i < 4; ++i)
+        if (exeSig.metroHash[i] != gameSig.exeSig.steamMetroHash[i])
+            return false;
+
+    isSteamExe = true;
     return true;
 }
 
-bool CheckIfGameExist(THGameSig& gameSig, std::wstring& name)
+bool CheckIfGameExist(THGameSig& gameSig, std::wstring& name, bool& isSteamExe)
 {
     if (!strcmp(gameSig.idStr, "th06")) {
-        if (CheckIfGameExistEx(gameSig, L"東方紅魔郷.exe")) {
+        if (CheckIfGameExistEx(gameSig, L"東方紅魔郷.exe", isSteamExe)) {
             name = L"東方紅魔郷.exe";
             return true;
         }
     }
     std::wstring n = utf8_to_utf16(gameSig.idStr);
     n += L".exe";
-    if (CheckIfGameExistEx(gameSig, n.c_str())) {
+
+    if (CheckIfGameExistEx(gameSig, n.c_str(), isSteamExe)) {
         name = n;
         return true;
     }
+
+    isSteamExe = false;
     return false;
 }
 
@@ -200,6 +210,32 @@ bool RunGameWithTHPrac(THGameSig& gameSig, const wchar_t* const name, bool withV
     CloseHandle(proc_info.hThread);
     CloseHandle(proc_info.hProcess);
     return result;
+}
+
+bool RunSteamGame(THGameSig& gameSig)
+{
+    if (!gameSig.steamId) return false;
+    std::wstring steamURL = L"steam://rungameid/";
+    steamURL += gameSig.steamId;
+
+    // ShellExecuteW(nullptr, L"open", L"steam://open/games", nullptr, nullptr, SW_SHOW);
+    ShellExecuteW(nullptr, L"open", steamURL.c_str(), nullptr, nullptr, SW_SHOW);
+    return true;
+}
+
+bool RunSteamGameWithTHPrac(THGameSig& gameSig)
+{
+    if(!RunSteamGame(gameSig)) return false;
+    int timeout_cnt = 30; //15s from launch
+
+    do {
+        if (FindOngoingGame(false, false))
+            return true;
+
+        Sleep(500);
+        timeout_cnt--;
+    } while (timeout_cnt);
+    return false;
 }
 
 bool FindOngoingGame(bool prompt_if_no_game, bool prompt_if_yes_game)
@@ -248,8 +284,9 @@ bool FindOngoingGame(bool prompt_if_no_game, bool prompt_if_yes_game)
 bool FindAndRunGame(bool prompt)
 {
     std::wstring name;
+    bool isSteamExe;
     for (auto& sig : gGameDefs) {
-        if (CheckIfGameExist(sig, name)) {
+        if (CheckIfGameExist(sig, name, isSteamExe)) {
             if (prompt) {
                 char gameExeStr[256];
                 sprintf_s(gameExeStr, S(THPRAC_EXISTING_GAME_CONFIRMATION), sig.idStr);
@@ -261,11 +298,12 @@ bool FindAndRunGame(bool prompt)
                 }
             }
             if (CheckIfAnyGame()) {
-                if (!PromptUser(PR_ASK_IF_CONTINUE))
-                    return true;
+                if (!PromptUser(PR_ASK_IF_CONTINUE)) return true;
+                else if (isSteamExe) return false; //dont run the same game twice, go to launcher
             }
 
-            if (RunGameWithTHPrac(sig, name.c_str())) {
+            if ((!isSteamExe && RunGameWithTHPrac(sig, name.c_str(), true))
+                || (isSteamExe && RunSteamGameWithTHPrac(sig))) {
                 return true;
             } else {
                 PromptUser(PR_FAILED);

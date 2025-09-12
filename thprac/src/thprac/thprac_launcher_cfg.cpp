@@ -25,6 +25,7 @@
 
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+extern HMODULE hWininet;
 
 namespace THPrac {
 std::wstring* gCfgPath = nullptr;
@@ -480,6 +481,10 @@ public:
     }
     void CheckUpdate()
     {
+        if (!hWininet) {
+            LauncherWndMsgBox(L"Error", L"Cannot update: wininet.dll not found", MB_ICONERROR | MB_OK);
+            return;
+        }
         mUpdateThread.Stop();
         mUpdateThread.Start();
     }
