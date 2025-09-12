@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "thprac_Launcher_games_def.h"
 
 namespace THPrac {
 enum LauncherTrigger {
@@ -15,4 +16,5 @@ void GuiLauncherMainTrigger(LauncherTrigger trigger);
 void GuiLauncherLocaleInit();
 void DisableWinKey();
 void DisableDisableWinKey();
+bool RunSteamGame(THGameSig& gameSig);
 }

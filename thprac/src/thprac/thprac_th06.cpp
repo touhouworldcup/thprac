@@ -8,11 +8,20 @@
 
 
 #include "thprac_res.h"
+#include "thprac_th06.h"
+
 namespace THPrac {
 extern bool g_pauseBGM_06;
 extern bool g_forceRenderCursor;
 
 namespace TH06 {
+    static const GameManager* const GAME_MANAGER = (const GameManager* const)0x69bca0;
+
+    enum ADDRS {
+        INPUT_ADDR = 0x69D904,
+        INPUT_PREV_ADDR = 0x69D908,
+    };
+
     ImTextureID g_hitbox_textureID = NULL;
     ImVec2 g_hitbox_sz = { 32.0f, 32.0f };
 
@@ -3077,7 +3086,7 @@ namespace TH06 {
             if (*(DWORD*)(thiz) != 7) {
                 WORD key = *(WORD*)(0x69D904);
                 WORD key_last = *(WORD*)(0x69D908);
-                if (((key & (292)) == 292 && (key & (292)) != (key_last & (292))) || (GetAsyncKeyState('R')&0x8000) ){ // ctrl+shift+down or R
+                if (Gui::KeyboardInputGetRaw('R') || (key & 0x124) == 0x124) { // ctrl+shift+down or R
                     *(DWORD*)(thiz) = 7;
                     threstartflag_normalgame = true;
                 }
@@ -3129,7 +3138,15 @@ namespace TH06 {
             }
         }
     })
+    EHOOK_DY(th06_unpause_prevent_desyncs, 0x40223d, 6, {
+        if (!GAME_MANAGER->isInReplay) {
+            *(WORD*)(INPUT_ADDR) &= ~0x2; // clear bomb bit from input
 
+            uint32_t GUI_impl = *(uint32_t*)(0x69bc30 + 0x4);
+            if (*(int32_t*)(GUI_impl + 0x253c) >= 0) // in dialogue
+                *(WORD*)(INPUT_ADDR) &= ~0x1; // clear shoot bit from input
+        }
+    })
     EHOOK_DY(th06_patch_main, 0x41c17a,5, {
         THPauseMenu::singleton().el_bgm_changed = false;
         if (thPracParam.mode == 1) {

@@ -14,6 +14,10 @@ namespace TH11 {
         CHARA = 0x4a5710,
         SUBSHOT = 0x4a5714,
         PLAYER_PTR = 0x4a8eb4,
+        STAGE_NUM = 0x4a5728,
+        STAGE_PTR = 0x4a8d60,
+        REPLAY_MGR_PTR = 0x4a8eb8,
+        GAME_THREAD_PTR = 0x4a8e88,
     };
 
     int g_lock_timer = 0;
@@ -613,14 +617,14 @@ namespace TH11 {
     EHOOK_ST(th11_all_clear_bonus_2, 0x41eca6, 4, {
         if (GetMemContent(0x4a5758) & 0x10) {
             pCtx->Eip = 0x41eba3;
-        } else if (GetMemContent(0x4a8e88, 0x74) && GetMemContent(0x4a8eb8, 0x18, 0xa) & 1) {
+        } else if (GetMemContent(GAME_THREAD_PTR, 0x74) && GetMemContent(REPLAY_MGR_PTR, 0x18, 0xa) & 1) {
             pCtx->Eip = 0x41ebc2;
         }
     });
     EHOOK_ST(th11_all_clear_bonus_3, 0x41ed4a, 4, {
         if (GetMemContent(0x4a5758) & 0x10) {
             pCtx->Eip = 0x41eba3;
-        } else if (GetMemContent(0x4a8e88, 0x74) && GetMemContent(0x4a8eb8, 0x18, 0xa) & 1) {
+        } else if (GetMemContent(GAME_THREAD_PTR, 0x74) && GetMemContent(REPLAY_MGR_PTR, 0x18, 0xa) & 1) {
             pCtx->Eip = 0x41ebc2;
         }
     });
@@ -823,7 +827,7 @@ namespace TH11 {
 
     void* THStage6STD()
     {
-        void* buffer = (void*)GetMemContent(0x4a8d60, 0x10);
+        void* buffer = (void*)GetMemContent(STAGE_PTR, 0x10);
 
         VFile std;
         std.SetFile(buffer, 999999);
@@ -839,7 +843,7 @@ namespace TH11 {
     }
     void* THStage6ANM()
     {
-        void* buffer = (void*)GetMemContent(0x4a8d60, 0x178, 0x108);
+        void* buffer = (void*)GetMemContent(STAGE_PTR, 0x178, 0x108);
 
         VFile anm;
         anm.SetFile(buffer, 999999);
@@ -1101,10 +1105,23 @@ namespace TH11 {
     __declspec(noinline) void THPatch(ECLHelper& ecl, th_sections_t section)
     {
         auto st3_boss = [&]() {
-            ECLJump(ecl, 0x14ae8, 0x14ba0, 160, 0);
-            ECLJump(ecl, 0x14bd0, 0x14c8c);
-            ECLJump(ecl, 0xb404, 0xf44);
-            ECLVoid(ecl, 0xb34c, 0xb374, 0xb3a0, 0xb3bc);
+            constexpr unsigned int st3PreMainSub = 0x14ae8;
+            constexpr unsigned int st3MidBossCreate = 0x14ba0;
+            constexpr unsigned int st3MidBossDeathWait = 0x14bd0;
+            constexpr unsigned int st3BossDeathWait = 0x14c8c;
+
+            constexpr unsigned int st3MidBossTimeoutInterrupt = 0xb34c;
+            constexpr unsigned int st3MidBossKillInterrupt = 0xb374;
+            constexpr unsigned int st3MidBossLifeMarker1 = 0xb3a0;
+            constexpr unsigned int st3MidBossLifeMarker2 = 0xb3bc;
+            constexpr unsigned int st3MidBossMovePosTime = 0xb404;
+            constexpr unsigned int st3BossStart = 0xf44;
+
+            ECLJump(ecl, st3PreMainSub, st3MidBossCreate, 160);
+            ECLJump(ecl, st3MidBossDeathWait, st3BossDeathWait);
+            ECLJump(ecl, st3MidBossMovePosTime, st3BossStart);
+            ECLVoid(ecl, st3MidBossTimeoutInterrupt, st3MidBossKillInterrupt);
+            ECLVoid(ecl, st3MidBossLifeMarker1, st3MidBossLifeMarker2);
         };
         switch (section) {
         case THPrac::TH11::TH11_ST1_MID1:
@@ -1311,17 +1328,22 @@ namespace TH11 {
             ECLSatoriJump(ecl, 1);
             ecl.SetFile(3);
             ECLJump(ecl, 0x24c, 0x1bd0);
-            ecl << pair{0x170, 3000};
+            ecl << pair { 0x170, 4000 };
             ECLVoid(ecl, 0x174, 0x1f8, 0x1e20, 0x1e58, 0x1e6c);
             break;
-        case THPrac::TH11::TH11_ST4_RB3:
+        case THPrac::TH11::TH11_ST4_RB3: 
+            {
+            constexpr unsigned int st4BossRB3InvulnVal = 0x30fc + 0x10;
+
             ECLSatoriJump(ecl, 1);
             ecl.SetFile(3);
             ECLJump(ecl, 0x24c, 0x30e8);
-            ecl << pair{0x170, 1500};
+            ecl << pair { 0x170, 1500 };
             ECLVoid(ecl, 0x174, 0x1f8, 0x3334, 0x3344, 0x33b0);
-            ecl << pair{0x3390, 0x3c} << pair{0x33c0, 0x3c};
+            ecl << pair { 0x3390, 0x3c } << pair { 0x33c0, 0x3c }
+                << pair { st4BossRB3InvulnVal, 0 }; // note: we skip a bunch of waits that normally elapse the invuln timer before the spell even begins
             break;
+        } 
         case THPrac::TH11::TH11_ST4_RC1:
             ECLSatoriJump(ecl, 2);
             break;
@@ -1495,7 +1517,9 @@ namespace TH11 {
             ECLSetHealth(ecl, 0x3eb4, 2300);
             ECLVoid(ecl, 0x62f4);
             break;
-        case THPrac::TH11::TH11_ST5_BOSS7:
+        case THPrac::TH11::TH11_ST5_BOSS7: {
+            constexpr unsigned int st5BossSp4InvulnVal = 0x7478 + 0x10;
+
             ECLJump(ecl, 0x674c, 0x696c);
             ecl.SetFile(3);
             ECLVoid(ecl, 0xb64);
@@ -1504,7 +1528,9 @@ namespace TH11 {
             ECLJump(ecl, 0xbec, 0x72ac);
             ECLVoid(ecl, 0x7548, 0x7580);
             ECLTimeFix(ecl, 0x75e8, -60);
+            ecl << pair { st5BossSp4InvulnVal, 0 }; // note: invuln timer normally elapses before the spell even begins
             break;
+        } 
         case THPrac::TH11::TH11_ST6_MID1:
             THStage6STD();
             THStage6ANM();
@@ -1582,18 +1608,21 @@ namespace TH11 {
             ECLTimeFix(ecl, 0x450, -60);
             ECLVoid(ecl, 0x48c, 0x24f8, 0x2530);
             break;
-        case THPrac::TH11::TH11_ST6_BOSS8:
+        case THPrac::TH11::TH11_ST6_BOSS8: {
+            constexpr unsigned int st6BossSp4InvulnVal = 0x769c + 0x10;
             THStage6STD();
             THStage6ANM();
             ECLVoid(ecl, 0x460);
             ECLJump(ecl, 0x40b8, 0x42b8);
             ecl.SetFile(3);
             ECLSetHealth(ecl, 0x5f0, 3500);
-            ecl << pair{0x5a4, (int8_t)0x34} << pair{0x590, 3500};
+            ecl << pair { 0x5a4, (int8_t)0x34 } << pair { 0x590, 3500 };
             ECLVoid(ecl, 0x77dc, 0x787c, 0x78d0, 0x78fc, 0x7928);
             ecl.SetPos(0x785c);
             ecl << 0 << 0x00200118 << 0x02ff0000 << 0 << 0 << 0x43600000;
+            ecl << pair { st6BossSp4InvulnVal, 260 - 60 * 4 }; // accounting for skipped waits (=20f)
             break;
+        } 
         case THPrac::TH11::TH11_ST6_BOSS9:
             THStage6STD();
             THStage6ANM();
@@ -2012,6 +2041,40 @@ namespace TH11 {
          if (thPracParam.mode)
              THSaveReplay(repName);
      })
+    EHOOK_DY(th11_rep_st6bg_fix, 0x404663, 5, {
+        // full run replays need to skip the BG... backwards by 1f on st6 to sync if started there
+        //... forwards by 5f on st6 to sync if transitioning to it w/ fast-forward
+        // needs to execute once after the first STD ins_3 (camera_position_interp)
+
+        if (!THGuiRep::singleton().mRepStatus)
+            return;
+
+        uint32_t stage_num = *(uint32_t*)STAGE_NUM;
+        if (stage_num != 6)
+            return;
+
+        uint32_t stage = *(uint32_t*)STAGE_PTR;
+        Timer* stage_std_timer = (Timer*)(stage + 0x38);
+        if (stage_std_timer->current)
+            return; // must be stage start
+
+        uint32_t replay_manager = *(uint32_t*)REPLAY_MGR_PTR;
+        if (!*(uint32_t*)(replay_manager + 0xa4 + 0x24 * 5))
+            return; // must have st5 in replay
+
+        int32_t game_thread = *(uint32_t*)GAME_THREAD_PTR;
+        Timer* game_thread_stg_timer = (Timer*)(game_thread + 0x10);
+        int std_time_offset = game_thread_stg_timer->current - 2; // bg gets loaded on thread frame #2 for some reason
+
+        if (std_time_offset) {
+            stage_std_timer->current = std_time_offset;
+            stage_std_timer->current_f = (float)std_time_offset;
+
+            Timer* camera_pos_interp_timer = (Timer*)(stage + 0x9c + 0x30);
+            camera_pos_interp_timer->current = std_time_offset;
+            camera_pos_interp_timer->current_f = (float)std_time_offset;
+        }
+    })
      EHOOK_DY(th11_bgm_1, 0x42053b, 2, {
          if (THBGMTest()) {
              PushHelper32(pCtx, 1);
@@ -2025,17 +2088,17 @@ namespace TH11 {
          }
      })
      EHOOK_DY(th11_bgm_3, 0x420542, 5, {
-         if (*((int32_t*)0x4a5728) == 6 && thPracParam.mode && thPracParam.section) {
+         if (*((int32_t*)STAGE_NUM) == 6 && thPracParam.mode && thPracParam.section) {
              pCtx->Eip = 0x420547;
          }
      })
      EHOOK_DY(th11_bgm_4, 0x42C706, 1, {
-         if (*((int32_t*)0x4a5728) == 6 && thPracParam.mode && thPracParam.section) {
+         if (*((int32_t*)STAGE_NUM) == 6 && thPracParam.mode && thPracParam.section) {
              pCtx->EFlags &= ~EFLAGS::ZF;
          }
      })
      EHOOK_DY(th11_bgm_5, 0x42C889, 7, {
-         if (*((int32_t*)0x4a5728) == 6 && thPracParam.mode && thPracParam.section) {
+         if (*((int32_t*)STAGE_NUM) == 6 && thPracParam.mode && thPracParam.section) {
              pCtx->EFlags &= ~EFLAGS::ZF;
              pCtx->Eip += self->data.hook.instr_len;
          }

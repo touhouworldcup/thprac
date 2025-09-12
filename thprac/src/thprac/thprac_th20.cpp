@@ -10,6 +10,7 @@
 
 namespace THPrac {
     extern bool g_change_stone;
+    bool g_show_att_hitbox = false;
 namespace TH20 {
     using std::pair;
     using namespace TH20;
@@ -312,11 +313,19 @@ namespace TH20 {
 
                 
                 ImGui::Columns(2, 0, false);
-                if (mHyperActive() && *mHyperActive && *mHyper == 0)
-                    *mHyper = 10000;
+                if (mHyperActive()) {
+                    if (*mHyperActive && *mHyper == 0)
+                        *mHyper = 10000;
+                    if (!*mHyperActive && *mHyper == 10000)
+                        *mHyper = 0;
+                }
                 ImGui::NextColumn();
-                if (mStoneActive() && *mStoneActive && *mStone == 0)
-                    *mStone = 10000;
+                if (mStoneActive()) {
+                    if (*mStoneActive && *mStone == 0)
+                        *mStone = 10000;
+                    if (!*mStoneActive && *mStone == 10000)
+                        *mStone = 0;
+                }
                 ImGui::Columns(1);
 
                 mHyper(std::format("{:.2f} %%", (float)(*mHyper) / 100.0f).c_str());
@@ -639,19 +648,6 @@ namespace TH20 {
         PATCH_HK(0xE16A2, NOP(3)) // 0xE16A8
         HOTKEY_ENDDEF();
 
-        HOTKEY_DEFINE(mHyperGLock, TH20_HYP_LOCK, "F5", VK_F5)
-        PATCH_HK(0x133935, NOP(3)),
-        PATCH_HK(0x12FE5B, NOP(19)),
-        PATCH_HK(0x1309A9, NOP(19)),
-        PATCH_HK(0x1313DF, NOP(19)),
-        PATCH_HK(0x1319C7, NOP(19)),
-        PATCH_HK(0x131FFF, NOP(19)),
-        PATCH_HK(0x1352EB, NOP(19)),
-        PATCH_HK(0x13858B, NOP(19)),
-        PATCH_HK(0x13652C, NOP(25)),
-        PATCH_HK(0x1379DC, NOP(25))
-        HOTKEY_ENDDEF();
-
         HOTKEY_DEFINE(mWonderStGLock, TH20_WST_LOCK, "F6", VK_F6)
         PATCH_HK(0x77F75, NOP(3)),
         PATCH_HK(0x1127AC, "E9AA000000CCCC"),
@@ -669,6 +665,19 @@ namespace TH20 {
                 HOTKEY_ENDDEF();
 
     public:
+        HOTKEY_DEFINE(mHyperGLock, TH20_HYP_LOCK, "F5", VK_F5)
+        PATCH_HK(0x133935, NOP(3)),
+        PATCH_HK(0x12FE5B, NOP(19)),
+        PATCH_HK(0x1309A9, NOP(19)),
+        PATCH_HK(0x1313DF, NOP(19)),
+        PATCH_HK(0x1319C7, NOP(19)),
+        PATCH_HK(0x131FFF, NOP(19)),
+        PATCH_HK(0x1352EB, NOP(19)),
+        PATCH_HK(0x13858B, NOP(19)),
+        PATCH_HK(0x13652C, NOP(25)),
+        PATCH_HK(0x1379DC, NOP(25))
+        HOTKEY_ENDDEF();
+
         Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2 };
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F10", VK_F10 };
@@ -1082,6 +1091,8 @@ namespace TH20 {
             }
 
             if (BeginOptGroup<TH_GAMEPLAY>()) {
+                ImGui::Checkbox("show att hitbox", &g_show_att_hitbox);
+
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th20_bossmovedown.Toggle(forceBossMoveDown);
                 }
@@ -2482,6 +2493,78 @@ namespace TH20 {
         { .addr = 0xD4237, .data = PatchCode("e800000000") },
     };
 
+    static void RenderHits()
+    {
+        auto RotateVec = [](ImVec2 pt, ImVec2 mid, ImVec2 angle) -> ImVec2 {
+            ImVec2 dif { pt.x - mid.x, pt.y - mid.y };
+            float& cost = angle.x;
+            float& sint = angle.y;
+            return { mid.x + dif.x * cost - dif.y * sint, mid.y + dif.y * cost + dif.x * sint };
+        };
+        auto GetClientFromStage = [](ImVec2 stage) -> ImVec2 {
+            float x = stage.x;
+            float y = stage.y;
+            
+            y = y * 2.0f + 32.0f;
+            x = x * 2.0f + 448.0f;
+            ImGuiIO& io = ImGui::GetIO();
+            return { x * io.DisplaySize.x / 1280.0f, y * io.DisplaySize.y / 960.0f };
+        };
+        auto GetClientFromStage2 = [](float f) -> float {
+            ImGuiIO& io = ImGui::GetIO();
+            return f * 2.0f * io.DisplaySize.x / 1280.0f;
+        };
+
+        auto p = ImGui::GetOverlayDrawList();
+        DWORD patts = *(DWORD*)(RVA(0x1BA590));
+        if (!patts)
+            return;
+        DWORD iter = *(DWORD*)(patts + 0xC414 + 0x4);
+        while (iter) {
+            DWORD patt = *(DWORD*)(iter);
+            if(patt){
+                if ((*(DWORD*)(patt + 0x14)) & 1) {
+                   
+                    if ((*(DWORD*)(patt + 0x14)) & 0x2) // round
+                    {
+                        float x = *(float*)(patt + 0x34);
+                        float y = *(float*)(patt + 0x38);
+                        ImVec2 cen = GetClientFromStage({ x, y });
+                        float r = *(float*)(patt + 0x18);
+                        p->AddCircleFilled(cen, GetClientFromStage2(r), 0x33FF0000);
+                        p->AddCircle(cen, GetClientFromStage2(r), 0xFFFF0000);
+                    } else {
+                        float x = *(float*)(patt + 0x34);
+                        float y = *(float*)(patt + 0x38);
+
+                        float a = *(float*)(patt + 0x24);
+                        float w = *(float*)(patt + 0x2C);
+                        float h = *(float*)(patt + 0x30);
+
+                        ImVec2 p1 { x - w / 2, y - h / 2 };
+                        ImVec2 p2 { x + w / 2, y - h / 2 };
+                        ImVec2 p3 { x + w / 2, y + h / 2 };
+                        ImVec2 p4 { x - w / 2, y + h / 2 };
+
+                        ImVec2 pm { x, y };
+                        ImVec2 ang { cosf(a), sinf(a) };
+                        p1 = RotateVec(p1, pm, ang);
+                        p2 = RotateVec(p2, pm, ang);
+                        p3 = RotateVec(p3, pm, ang);
+                        p4 = RotateVec(p4, pm, ang);
+                        p1 = GetClientFromStage(p1);
+                        p2 = GetClientFromStage(p2);
+                        p3 = GetClientFromStage(p3);
+                        p4 = GetClientFromStage(p4);
+                        p->AddQuadFilled(p1, p2, p3, p4, 0x33FF0000);
+                        p->AddQuad(p1, p2, p3, p4, 0xFFFF0000);
+                    }
+                }
+            }
+            iter = *(DWORD*)(iter + 4);
+        }
+    }
+
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th20_inf_lives, 0xe1288, 6,
         {
@@ -2557,9 +2640,16 @@ namespace TH20 {
             float cur_f;
         };
 
-        if ((int32_t)thPracParam.hyper == 1 || thPracParam.hyperActive) { // call the hyper start method
+        if ((int32_t)thPracParam.hyper == 1 || thPracParam.hyperActive) {
             uintptr_t player_stone_manager = *(uintptr_t*)(game_side + 0x2c);
+            bool hyperGLockEnabled = *(THOverlay::singleton().mHyperGLock);
+
+            // call the hyper start method
+            if (hyperGLockEnabled)
+                THOverlay::singleton().mHyperGLock.Toggle(false); // if you know a less stupid way to prevent
             asm_call_rel<0x133780, Thiscall>(player_stone_manager, hyperMax);
+            if (hyperGLockEnabled)
+                THOverlay::singleton().mHyperGLock.Toggle(true); // gauge lock from interfering plz do lol
 
             if (thPracParam.hyperActive) { // set hyper drain timer correctly
                 int32_t hyper_base_duration = *(int32_t*)(player_stats + 0x54) * 12;
@@ -2636,20 +2726,9 @@ namespace TH20 {
         }
     })
     
-    EHOOK_DY(th20_quit1, 0xe2dc7, 6, {
-        if ((GetAsyncKeyState('Q') & 0x8000) && GetForegroundWindow() == *(HWND*)(RVA(0x1B6758))) { // Esc+Q, foreground
-            DWORD t = *(DWORD*)(pCtx->Ebp - 0x94);
-            asm_call_rel<0xBED50,Thiscall>(t + 0x30, 1);
-            *(DWORD*)(t + 0xD0) = 2;
-            pCtx->Eip = RVA(0xe2acb);
-        }
-    })
-    EHOOK_DY(th20_quit2, 0xe2bcd, 2, {
-        DWORD t = *(DWORD*)(pCtx->Ebp - 0x94);
-        if (*(DWORD*)(t + 0xD0) == 2) {
-            *(DWORD*)(t + 0xD0) = 1;
-            pCtx->Eip = RVA(0xE2BF0);
-        }
+    EHOOK_DY(th20_esc_q, 0xe2f45, 7, {
+        if (Gui::KeyboardInputGetRaw('Q'))
+            pCtx->Eip = RVA(0xe2fe7);
     })
     PATCH_DY(th20_fix_rep_save_stone_names, 0x127B9F, "8B82D8000000" NOP(22))
     EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
@@ -2707,6 +2786,8 @@ namespace TH20 {
         if (g_change_stone){
             TH20_ChangeStone();
         }
+        if (g_show_att_hitbox)
+            RenderHits();
     
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);

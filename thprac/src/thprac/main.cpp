@@ -14,6 +14,8 @@
 #include <shlwapi.h>
 #include <tlhelp32.h>
 
+HMODULE hWininet;
+
 using namespace THPrac;
 
 bool PrivilegeCheck()
@@ -171,6 +173,7 @@ int WINAPI wWinMain(
     }
 
     RemoteInit();
+    hWininet = LoadLibraryW(L"wininet.dll");
     auto thpracMutex = OpenMutexW(SYNCHRONIZE, FALSE, L"thprac - Touhou Practice Tool##mutex");
 
     CmdlineRet cmd = doCmdLineStuff(pCmdLine);
@@ -186,6 +189,12 @@ int WINAPI wWinMain(
     if (LauncherCfgInit(true)) {
         if (!Gui::LocaleInitFromCfg()) {
             Gui::LocaleAutoSet();
+        }
+        if (!hWininet) {
+            int oh_my_god_bruh = 2;
+            bool oh_my_god_bruh_2 = false;
+            LauncherSettingSet("check_update_timing", oh_my_god_bruh);
+            LauncherSettingSet("update_without_confirmation", oh_my_god_bruh_2);
         }
         LauncherSettingGet("existing_game_launch_action", launchBehavior);
         LauncherSettingGet("dont_search_ongoing_game", dontFindOngoingGame);

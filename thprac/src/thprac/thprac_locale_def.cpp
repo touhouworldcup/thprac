@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1603] {
+const char* th_glossary_str[3][1604] {
     {
         "",
         "啤酒",
@@ -190,6 +190,7 @@ const char* th_glossary_str[3][1603] {
         "启用OD",
         "灵方向",
         "TH13 东方神灵庙　～ Ten Desires.",
+        "锁灵界槽",
         "灵界槽",
         "TH14.3 弹幕天邪鬼　～ Impossible Spell Card.",
         "TH14.5 东方深秘录　～ Urban Legend in Limbo.",
@@ -1795,6 +1796,7 @@ const char* th_glossary_str[3][1603] {
         "use overdrive",
         "Spirit side",
         "TH13 Ten Desires",
+        "Trance Meter Lock",
         "Trance Meter",
         "TH14.3 Impossible Spell Card",
         "TH14.5 Urban Legend in Limbo",
@@ -2386,7 +2388,7 @@ const char* th_glossary_str[3][1603] {
         "Reimu\0Marisa\0Sanae\0Reisen\0\0",
         "th16",
         "th165",
-        "Reimu (Spring)\0Reimu (Summer)\0Reimu (Autumn)\0Reimu (Winter)\0Cirno (Spring)\0Cirno (Summer)\0Cirno (Autumn)\0Cirno (Winter)\0Aya (Spring)\\Aya (Summer)\\Aya (Autumn)\\Aya (Winter)\0Marisa (Spring)\0Marisa (Summer)\0Marisa (Autumn)\0Marisa (Winter)\0\0",
+        "Reimu (Spring)\0Reimu (Summer)\0Reimu (Autumn)\0Reimu (Winter)\0Cirno (Spring)\0Cirno (Summer)\0Cirno (Autumn)\0Cirno (Winter)\0Aya (Spring)\0Aya (Summer)\0Aya (Autumn)\0Aya (Winter)\0Marisa (Spring)\0Marisa (Summer)\0Marisa (Autumn)\0Marisa (Winter)\0\0",
         "th17",
         "th175",
         "Reimu\0Marisa\0Kanako\0Minamitsu\0Joon&Shion\0Flandre\0Yuuma\0\0",
@@ -3400,6 +3402,7 @@ const char* th_glossary_str[3][1603] {
         "use overdrive",
         "霊ー方向",
         "TH13 東方神霊廟　～ Ten Desires.",
+        "霊界ゲージ計固定",
         "霊界ゲージ",
         "TH14.3 弾幕アマノジャク　～ Impossible Spell Card.",
         "TH14.5 東方深秘録　～ Urban Legend in Limbo.",

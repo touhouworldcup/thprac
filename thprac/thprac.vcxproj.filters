@@ -202,6 +202,9 @@
     <ClInclude Include="src\thprac\thprac_igi_key_render.h">
       <Filter>THPrac Games</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac\thprac_th06.h">
+      <Filter>THPrac Games</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\thprac\thprac_utils.cpp">

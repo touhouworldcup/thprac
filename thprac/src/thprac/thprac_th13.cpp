@@ -474,6 +474,7 @@ namespace TH13 {
             mInfLives.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfBombs.SetTextOffsetRel(x_offset_1, x_offset_2);
             mInfPower.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mTranceGLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mTimeLock.SetTextOffsetRel(x_offset_1, x_offset_2);
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
@@ -485,6 +486,7 @@ namespace TH13 {
             mInfLives();
             mInfBombs();
             mInfPower();
+            mTranceGLock();
             mTimeLock();
             mAutoBomb();
             mElBgm();
@@ -515,20 +517,28 @@ namespace TH13 {
         HOTKEY_ENDDEF();
 
        
-        HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
+        HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F7", VK_F7)
         PATCH_HK(0x443525, "c6")
         HOTKEY_ENDDEF();
+
+        
+        HOTKEY_DEFINE(mTranceGLock, TH13_TRANCE_LOCK, "F5", VK_F5)
+        PATCH_HK(0x43D53D, "6690"), // Prevent trance gain by skipping (mov [esi],eax) which skips the operation for updating the trance gauge.
+            PATCH_HK(0x43D507, "6690") // Prevent drain during trance by skipping (dec [esi]) which skips decrementing the trance gauge.
+            HOTKEY_ENDDEF();
+        // 0x405A40 Check for minimum power for trance on death, prob not gonna be useful
+
 
 
     public:
         Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2,};
-        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
+        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F6", VK_F6)
         PATCH_HK(0x412D36, "eb"),
         PATCH_HK(0x41AABF, "0F1F440000")
         HOTKEY_ENDDEF();
 
-        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
-        Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
+        Gui::GuiHotKey mElBgm { TH_EL_BGM, "F8", VK_F8 };
+        Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F9", VK_F9 };
     };
 
     class TH13InGameInfo : public Gui::GameGuiWnd {
@@ -707,7 +717,6 @@ namespace TH13 {
         }
         void FpsInit()
         {
-            mOptCtx.fps_debug_acc = 1;
             mOptCtx.fps_replay_fast = 600;
 
             if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
