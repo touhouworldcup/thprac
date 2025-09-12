@@ -5,6 +5,23 @@
 namespace THPrac {
 namespace TH12 {
     using std::pair;
+
+    enum addrs {
+        CHARA = 0x4b0c90,
+        SUBSHOT = 0x4b0c94,
+        PLAYER_PTR = 0x4b4514,
+    };
+
+    struct PlayerDamageSource {
+        char gap0[0x70];
+        uint32_t flags; //0x70
+    };
+
+    struct Player {
+        char gap0[0x8988];
+        PlayerDamageSource damage_sources[0x81]; //0x8988
+    };
+
     struct THPracParam {
         int32_t mode;
         int32_t stage;
@@ -529,8 +546,22 @@ namespace TH12 {
             pCtx->Eip = 0x420ac3;
         }
     });
+
+    EHOOK_ST(th12_prevent_reiA_desync, 0x4225c8, 5, { //hooks on stage transition bomb destructor
+        Player* player = GetMemContent<Player*>(PLAYER_PTR);
+
+        if (player == nullptr) return; //i.e. return to menu
+        if (GetMemContent(CHARA) || GetMemContent(SUBSHOT)) return; //not reiA
+
+        //iterate player damage areas & disable them
+        for (int i = 0; i < 0x81; i++)
+            player->damage_sources[i].flags &= ~1;
+    });
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
     private:
+        bool reimuADesyncPrevent = false;
+
         void FpsInit()
         {
             mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th12.dll");
@@ -586,6 +617,8 @@ namespace TH12 {
                 [&]() { LocaleUpdate(); },
                 [&]() {},
                 []() {});
+
+            th12_prevent_reiA_desync.Setup();
 
             OnLocaleChange();
             FpsInit();
@@ -650,6 +683,12 @@ namespace TH12 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
+
+                if (ImGui::Checkbox(S(TH12_PREVENT_REIA_DESYNC), &reimuADesyncPrevent))
+                    th12_prevent_reiA_desync.Toggle(reimuADesyncPrevent);
+                ImGui::SameLine();
+                HelpMarker(S(TH12_PREVENT_REIA_DESYNC_DESC));
+
                 EndOptGroup();
             }
 
