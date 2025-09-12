@@ -1091,7 +1091,7 @@ namespace TH20 {
             }
 
             if (BeginOptGroup<TH_GAMEPLAY>()) {
-                ImGui::Checkbox("show att hitbox", &g_show_att_hitbox);
+                // ImGui::Checkbox("show att hitbox", &g_show_att_hitbox);
 
                 if (ImGui::Checkbox(S(TH_BOSS_FORCE_MOVE_DOWN), &forceBossMoveDown)) {
                     th20_bossmovedown.Toggle(forceBossMoveDown);
@@ -2786,8 +2786,8 @@ namespace TH20 {
         if (g_change_stone){
             TH20_ChangeStone();
         }
-        if (g_show_att_hitbox)
-            RenderHits();
+        // if (g_show_att_hitbox)
+        //     RenderHits();
     
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
