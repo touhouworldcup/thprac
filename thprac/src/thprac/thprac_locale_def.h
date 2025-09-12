@@ -158,8 +158,6 @@ enum th_glossary_t
     TH128_START_C,
     TH128_START_EX,
     TH128_TITLE,
-    TH12_PREVENT_REIA_DESYNC,
-    TH12_PREVENT_REIA_DESYNC_DESC,
     TH12_TITLE,
     TH12_UFO_SIDE,
     TH12_VENTRA_1,
@@ -1063,7 +1061,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1051];
+extern const char* th_glossary_str[3][1049];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2689,10 +2687,10 @@ extern const th_glossary_t TH20_CYCLE_LIST[4];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[2767];
+extern const wchar_t __thprac_loc_range_zh[2765];
 
 extern const wchar_t __thprac_loc_range_en[31];
 
-extern const wchar_t __thprac_loc_range_ja[2243];
+extern const wchar_t __thprac_loc_range_ja[2239];
 
 }
