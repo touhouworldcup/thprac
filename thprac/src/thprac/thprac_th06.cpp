@@ -3660,12 +3660,20 @@ namespace TH06 {
         {
             bool is_rep = *(BYTE*)0x69BCBC;
             if (!is_rep) {
-                byte cur_player_typea = *(byte*)(0x69D4BD);
-                byte cur_player_typeb = *(byte*)(0x69D4BE);
-                byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
-                int8_t diff = *(int8_t*)(0x69bcb0);
-                int32_t spell_id = *(int8_t*)(0x5A5F98);
-                TH06Save::singleton().AddTimeOut(spell_id, diff, cur_player_type);
+                DWORD is_capture = *(DWORD*)(0x5A5F8C);
+                if (is_capture)
+                {
+                    byte cur_player_typea = *(byte*)(0x69D4BD);
+                    byte cur_player_typeb = *(byte*)(0x69D4BE);
+                    byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
+                    int8_t diff = *(int8_t*)(0x69bcb0);
+                    int32_t spell_id = *(int8_t*)(0x5A5F98);
+                    int32_t stage = *(DWORD*)0x69d6d4;
+                    if (! (spell_id == 1 && stage != 1))// to avoid spell record bug
+                    {
+                        TH06Save::singleton().AddTimeOut(spell_id, diff, cur_player_type);
+                    }
+                }
             }
         })
     HOOKSET_ENDDEF()
