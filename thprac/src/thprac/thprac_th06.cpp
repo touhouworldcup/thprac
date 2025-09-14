@@ -151,9 +151,9 @@ namespace TH06 {
                 QueryPerformanceCounter(&curCount);
                 if (lastCount.QuadPart != 0) {
                     if (performanceFreq.QuadPart == 0) {
-                        QueryPerformanceCounter(&performanceFreq);
+                        QueryPerformanceFrequency(&performanceFreq);
                     }
-                    int64_t time_ns = ((((double)(curCount.QuadPart - lastCount.QuadPart)) / (double)performanceFreq.QuadPart) * 1e9);
+                    int64_t time_ns = ((((double)(curCount.QuadPart - lastCount.QuadPart)) * 1e9 / (double)performanceFreq.QuadPart));
                     save_total.timePlayer[cur_diff][cur_player_type] += time_ns;
                     save_current.timePlayer[cur_diff][cur_player_type] += time_ns;
                     timePlayedns += time_ns;
