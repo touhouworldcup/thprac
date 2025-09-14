@@ -467,7 +467,11 @@ namespace TH07 {
             SetPos(10.0f, 10.0f);
             SetSize(0.0f, 0.0f);
             SetWndFlag(
-                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | 
+                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | 
+                ImGuiWindowFlags_NoSavedSettings | 
+                ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0
+            );
             OnLocaleChange();
         }
         SINGLETON(THOverlay);
@@ -605,7 +609,10 @@ namespace TH07 {
 
         THAdvOptWnd() noexcept
         {
-            SetWndFlag(ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
+            SetWndFlag(
+                ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | 
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove
+            );
             SetFade(0.8f, 0.8f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -728,7 +735,9 @@ namespace TH07 {
         ecl << ecl_time << 0x00100029 << 0x0000ff00 << sub_id;
         ecl << 0x100000 << 0x000c0000 << 0x0000ff00;
     }
-    void ECLForceSpell(ECLHelper& ecl, int offset, int32_t ecl_time, int32_t param110, int32_t param112, int32_t param113, int32_t param114, int32_t param115)
+    void ECLForceSpell(ECLHelper& ecl, int offset, int32_t ecl_time, 
+                       int32_t param110, int32_t param112, int32_t param113, 
+                       int32_t param114, int32_t param115)
     {
         ecl.SetPos(offset);
 
@@ -1678,7 +1687,9 @@ namespace TH07 {
         bool is_practice;
         bool result;
 
-        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode && thPracParam.section;
+        el_switch = *(THOverlay::singleton().mElBgm) && 
+                    !THGuiRep::singleton().mRepStatus && thPracParam.mode && 
+                    thPracParam.section;
         if (thPracParam.mode && thPracParam.section == TH07_ST6_BOSS10)
             el_switch = false;
         is_practice = *((int32_t*)0x575aa8) == 10;

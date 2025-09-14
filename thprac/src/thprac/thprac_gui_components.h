@@ -783,7 +783,7 @@ namespace Gui {
 #define EHOOK_HK(addr_, inslen_, ...) HookCtx { .data = PatchData() }
 #else
 #define PATCH_HK(addr_, code_) { .addr = addr_, .data = PatchCode(code_) }
-#define EHOOK_HK(addr_, inslen_, ...) { .addr = addr_, .callback = [](PCONTEXT pCtx, HookCtx * self) __VA_ARGS__, .data = PatchHookImpl(inslen_) }
+#define EHOOK_HK(addr_, inslen_, ...) { .addr = addr_, .callback = [](PCONTEXT pCtx, [[maybe_unused]] HookCtx * self) __VA_ARGS__, .data = PatchHookImpl(inslen_) }
 #endif
 
 #define HOTKEY_ENDDEF() >()}

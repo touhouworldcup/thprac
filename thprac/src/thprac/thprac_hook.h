@@ -443,13 +443,30 @@ HookSlice make_hook_array()
 
 #define HOOKSET_DEFINE(name) static constinit HookCtx name[] = {
 
-#define EHOOK_DY(name_, addr_, instr_size_, ...) { .addr = addr_, .name = #name_, .callback = []([[maybe_unused]] PCONTEXT pCtx, [[maybe_unused]] HookCtx * self) __VA_ARGS__, .data = PatchHookImpl(instr_size_) },
+#define EHOOK_DY(name_, addr_, instr_size_, ...)                                                      \
+    {                                                                                                 \
+        .addr = addr_,                                                                                \
+        .name = #name_,                                                                               \
+        .callback = []([[maybe_unused]] PCONTEXT pCtx, [[maybe_unused]] HookCtx * self) __VA_ARGS__,  \
+        .data = PatchHookImpl(instr_size_)                                                            \
+    },
 #define PATCH_DY(name_, addr_, ...) { .addr = addr_, .name = #name_, .data = PatchCode(__VA_ARGS__) },
 
 #define HOOKSET_ENDDEF() };
 
-#define EHOOK_ST(name_, addr_, instr_size_, ...) constinit HookCtx name_ { .addr = addr_, .name = #name_, .callback = []([[maybe_unused]] PCONTEXT pCtx, [[maybe_unused]] HookCtx* self) __VA_ARGS__, .data = PatchHookImpl(instr_size_) }
-#define PATCH_ST(name_, addr_, ...) constinit HookCtx name_ { .addr = addr_, .name = #name_, .data = PatchCode(__VA_ARGS__)}
+#define EHOOK_ST(name_, addr_, instr_size_, ...)                                                      \
+    constinit HookCtx name_ {                                                                         \
+        .addr = addr_,                                                                                \
+        .name = #name_,                                                                               \
+        .callback = []([[maybe_unused]] PCONTEXT pCtx, [[maybe_unused]] HookCtx* self) __VA_ARGS__,   \
+        .data = PatchHookImpl(instr_size_)                                                            \
+    }
+#define PATCH_ST(name_, addr_, ...)     \
+    constinit HookCtx name_ {           \
+        .addr = addr_,                  \
+        .name = #name_,                 \
+        .data = PatchCode(__VA_ARGS__)  \
+    }
 
 
 void EnableAllHooksImpl(HookCtx* hooks, size_t num);
