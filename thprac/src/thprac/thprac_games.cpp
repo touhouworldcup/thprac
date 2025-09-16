@@ -42,6 +42,10 @@ bool g_disable_locale_change_hotkey = true;
 
 enum SOCD_Setting {SOCD_Default,SOCD_2,SOCD_N};
 SOCD_Setting g_socd_setting = SOCD_Default;
+
+enum KeyboardAPI { Default_API,Force_win32KeyAPI,Force_dinput8KeyAPI};
+KeyboardAPI g_keyboardAPI = Default_API;
+
 bool g_disable_f10_11_13 = false;
 bool g_pauseBGM_06 = false;
 std::string g_name_06;
@@ -54,13 +58,16 @@ AdvancedIGI_Options g_adv_igi_options;
 bool g_useCustomFont = false;
 std::string g_customFont = "MS Gothic";
 
+
 BOOL(WINAPI* g_realGetKeyboardState)(PBYTE lpKeyboardState);
 HRESULT(STDMETHODCALLTYPE* g_realGetDeviceState)(LPDIRECTINPUTDEVICE8 thiz, DWORD, LPVOID);
+HRESULT(STDMETHODCALLTYPE* g_realSetCooperativeLevel)(LPDIRECTINPUTDEVICE8 thiz, HWND,DWORD);
 HFONT(WINAPI* g_realCreateFontA)(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,DWORD bStrikeOut,DWORD iCharSet,DWORD iOutPrecision,DWORD iClipPrecision,DWORD iQuality,DWORD iPitchAndFamily,LPCSTR pszFaceName);
 HFONT(WINAPI* g_realCreateFontW)(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,DWORD bStrikeOut,DWORD iCharSet,DWORD iOutPrecision,DWORD iClipPrecision,DWORD iQuality,DWORD iPitchAndFamily,LPCWSTR pszFaceName);
 MMRESULT (WINAPI *g_realJoyGetDevCapsA)(UINT uJoyID, LPJOYCAPSA pjc, UINT cbjc);
 MMRESULT (WINAPI *g_realJoyGetPosEx)(UINT uJoyID, LPJOYINFOEX pji);
-DWORD (WINAPI *g_realXInputGetState)(DWORD dwUserIndex, void* pState);
+DWORD (WINAPI *g_realXInputGetState3)(DWORD dwUserIndex, void* pState);
+DWORD (WINAPI *g_realXInputGetState4)(DWORD dwUserIndex, void* pState);
 HRESULT (WINAPI* g_realEnumDevices)(LPDIRECTINPUT8 thiz, DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef,DWORD dwFlags);
 
 
@@ -149,11 +156,18 @@ MMRESULT WINAPI joyGetPosEx_Changed(UINT uJoyID, LPJOYINFOEX pji) {
     return ret_pos;
 }
 
-DWORD WINAPI XInputGetState_Changed(DWORD dwUserIndex, void* pState)
+DWORD WINAPI XInputGetState_Changed3(DWORD dwUserIndex, void* pState)
 {
     if (g_disable_joy)
         return ERROR_DEVICE_NOT_CONNECTED;
-    return g_realXInputGetState(dwUserIndex, pState);
+    return g_realXInputGetState3(dwUserIndex, pState);
+}
+
+DWORD WINAPI XInputGetState_Changed4(DWORD dwUserIndex, void* pState)
+{
+    if (g_disable_joy)
+        return ERROR_DEVICE_NOT_CONNECTED;
+    return g_realXInputGetState4(dwUserIndex, pState);
 }
 
 HFONT WINAPI CreateFontA_Changed
@@ -237,7 +251,60 @@ extern std::unordered_map<KeyDefine, KeyDefine, KeyDefineHashFunction> g_keybind
 
 BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
 {
-    bool res = g_realGetKeyboardState(keyBoardState);
+    bool res = true; 
+    static bool is_failed_dinput8 = false;
+    if (g_keyboardAPI == Force_dinput8KeyAPI && is_failed_dinput8 == false) {
+         static LPDIRECTINPUT8 pdinput = NULL;
+         static LPDIRECTINPUTDEVICE8 pKeyboardDevice = NULL;
+         if (!pKeyboardDevice) {
+            if (FAILED(DirectInput8Create(GetModuleHandle(0), 0x800, IID_IDirectInput8, (void**)&pdinput, NULL))) {
+                is_failed_dinput8 = true;
+            } else {
+                if (FAILED(pdinput->CreateDevice(GUID_SysKeyboard, &pKeyboardDevice, NULL))) {
+                    is_failed_dinput8 = true;
+                } else {
+                    is_failed_dinput8 |= FAILED(pKeyboardDevice->SetDataFormat(&c_dfDIKeyboard));
+                    is_failed_dinput8 |= FAILED(pKeyboardDevice->SetCooperativeLevel((HWND)*g_gameGuiHwnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND | DISCL_NOWINKEY));
+                    is_failed_dinput8 |= FAILED(pKeyboardDevice->Acquire());
+                }
+            }
+            if (is_failed_dinput8) {
+                res = !FAILED(g_realGetKeyboardState(keyBoardState));
+                goto LB_FINAL;
+            }
+         }
+         BYTE keyboardState_dinput8[256] = { 0 };
+         if (FAILED(pKeyboardDevice->Poll()))
+         {
+             pKeyboardDevice->Acquire();
+             pKeyboardDevice->Poll();
+         }
+         memset(keyBoardState, 0, 256);
+         HRESULT res_dinpu8getState = S_OK;
+         if (g_realGetDeviceState!=nullptr) {
+             res_dinpu8getState = g_realGetDeviceState(pKeyboardDevice, 256, keyboardState_dinput8);
+         } else {
+             res_dinpu8getState = pKeyboardDevice->GetDeviceState(256, keyboardState_dinput8);
+         }
+         
+         if (res_dinpu8getState == DI_OK) {
+             for (auto keydef : keyBindDefine) {
+                 keyBoardState[keydef.vk] = keyboardState_dinput8[keydef.dik];
+             }
+             if ((keyboardState_dinput8[DIK_LSHIFT] & 0x80) || (keyboardState_dinput8[DIK_RSHIFT] & 0x80))
+                 keyBoardState[VK_SHIFT] = 0x80;
+             if ((keyboardState_dinput8[DIK_LCONTROL] & 0x80) || (keyboardState_dinput8[DIK_RCONTROL] & 0x80))
+                 keyBoardState[VK_CONTROL] = 0x80;
+             if ((keyboardState_dinput8[DIK_LMENU] & 0x80) || (keyboardState_dinput8[DIK_RMENU] & 0x80))
+                 keyBoardState[VK_MENU] = 0x80;
+         } else {
+             res = g_realGetKeyboardState(keyBoardState);
+         }
+    } else {
+         res = g_realGetKeyboardState(keyBoardState);
+    }
+
+LB_FINAL:
     if (g_keybind.size() != 0)
     {
         static BYTE new_keyBoardState[256] = { 0 };
@@ -345,7 +412,6 @@ BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
     return res;
 }
 
-
 HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state)
 {
     if (num != 256) {//no keyboard
@@ -363,8 +429,21 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
         }
         return res;
     }
-    
-    HRESULT res = g_realGetDeviceState(thiz, num, state);
+
+    HRESULT res = S_OK;
+    if (g_keyboardAPI == Force_win32KeyAPI){
+        // BYTE state_win32[256];
+        // res = g_realGetKeyboardState(state_win32);
+        memset(state, 0, 256);
+        for (auto keydef : keyBindDefine) {
+            // ((BYTE*)state)[keydef.dik] = state_win32[keydef.vk]&0x80;
+            ((BYTE*)state)[keydef.dik] = (GetAsyncKeyState(keydef.vk)&0x8000) ? 0x80 : 0;
+            // though a bit slower ,,, 
+        }
+    }else{
+        res = g_realGetDeviceState(thiz, num, state);
+    }
+
     if (g_keybind.size() != 0) {
         static BYTE new_keyBoardState[256] = { 0 };
         bool new_keyBoardState_changed[256] = { 0 };
@@ -602,6 +681,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         }
         LauncherSettingGet("disable_locale_change_hotkey", g_disable_locale_change_hotkey);
         LauncherSettingGet("keyboard_SOCDv2", (int &)g_socd_setting);
+        LauncherSettingGet("keyboard_API", (int &)g_keyboardAPI);
         LauncherSettingGet("force_render_cursor", g_forceRenderCursor);
         LauncherSettingGet("pauseBGM_06", g_pauseBGM_06);
         
@@ -732,7 +812,8 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         {
             HookIAT(GetModuleHandle(NULL), "winmm.dll", "joyGetPosEx", joyGetPosEx_Changed, (void**)&g_realJoyGetPosEx);
             HookIAT(GetModuleHandle(NULL), "winmm.dll", "joyGetDevCapsA", joyGetDevCapsA_Changed, (void**)&g_realJoyGetDevCapsA);
-            HookIAT(GetModuleHandle(NULL), "xinput1_3.dll", "XInputGetState", XInputGetState_Changed, (void**)&g_realXInputGetState);
+            HookIAT(GetModuleHandle(NULL), "xinput1_3.dll", "XInputGetState", XInputGetState_Changed3, (void**)&g_realXInputGetState3);// th18
+            HookIAT(GetModuleHandle(NULL), "xinput1_4.dll", "XInputGetState", XInputGetState_Changed4, (void**)&g_realXInputGetState4);// th19+
         }
         int theme;
         if (LauncherSettingGet("theme", theme)) {
@@ -762,6 +843,9 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         LPVOID pTarget;
         HookIAT(GetModuleHandle(NULL), "user32.dll", "GetKeyboardState", GetKeyboardState_Changed, (void**)&g_realGetKeyboardState);
 
+        // th06/th07 VP has its own GetKeyboardState
+
+
         LPDIRECTINPUT8 pdinput;
         DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&pdinput, NULL);
 
@@ -770,6 +854,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
             LPDIRECTINPUTDEVICE8 ddevice;
             pdinput->CreateDevice(GUID_SysKeyboard, &ddevice, NULL);
             HookVTable(ddevice, 9, GetDeviceState_Changed, (void**)&g_realGetDeviceState);
+            // HookVTable(ddevice, 13, SetCooperativeLevel_Changed, (void**)&g_realSetCooperativeLevel);
             pdinput->Release();
             ddevice->Release();
             // dinput8 is inited before GameGuiInit(), so create a new device for hook

@@ -230,7 +230,12 @@
     "THPRAC_KEYBOARD_HOOK_DESC":["影响按键禁用/SOCD/按键修改等功能","relate to key disable, SOCD, keybind change, etc","relate to key disable, SOCD, keybind change, etc"],
     "THPRAC_KEYBOARD_SOCD":["SOCD设置","SOCD setting","SOCD setting"],
     "THPRAC_KEYBOARD_SOCD_SETTINGS":["默认SOCD(zun's)\\0启用SOCD后覆盖功能\\0启用SOCD回中功能\\0\\0","default SOCD(zun's)\\0enable keyboard SOCD (last input priority)\\0enable keyboard SOCD (neutral)\\0\\0","default SOCD(zun's)\\0enable keyboard SOCD (last input priority)\\0enable keyboard SOCD (neutral)\\0\\0"],
+	
     "THPRAC_KEYBOARD_SOCD_DESC":["当同时按下反向方向键时，修改按键逻辑。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。","Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.","Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."],
+	
+	"THPRAC_KEYBOARD_API":["键盘API设置","keyboard API setting","keyboard API setting"],
+	"THPRAC_KEYBOARD_API_SETTINGS":["默认\\0强制Win32 API\\0强制 Dinput8\\0\\0","default\\0force Win32 API\\0force Dinput8\\0\\0","default\\0force Win32 API\\0force Dinput8\\0\\0"],
+	"THPRAC_KEYBOARD_API_SETTINGS_DESC":["默认情况下在地灵殿等游戏使用小键盘可能卡键, \n换用强制dinput8可修复(建议?), \n不建议强制win32模式","By default, using numpad will cause bugs in games like SA,\n which can be fixed by forcing to use dinput8(which is recommended?),\n force win32 API is not recommended","By default, using numpad will cause bugs in games like SA,\n which can be fixed by forcing to use dinput8(which is recommended?),\n force win32 API is not recommended"],
     
     "THPRAC_COMPATIBILITY_SETTINGS":["兼容性设置","Compatibility Settings","Compatibility Settings"],
 	

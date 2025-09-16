@@ -1058,6 +1058,9 @@ enum th_glossary_t {
     THPRAC_KEYBIND_REMOVE,
     THPRAC_KEYBIND_TO,
     THPRAC_KEYBIND_TO_COMBO,
+    THPRAC_KEYBOARD_API,
+    THPRAC_KEYBOARD_API_SETTINGS,
+    THPRAC_KEYBOARD_API_SETTINGS_DESC,
     THPRAC_KEYBOARD_HOOK,
     THPRAC_KEYBOARD_HOOK_DESC,
     THPRAC_KEYBOARD_SOCD,
@@ -1615,7 +1618,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1604];
+extern const char* th_glossary_str[3][1607];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

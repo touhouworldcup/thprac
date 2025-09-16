@@ -2170,6 +2170,7 @@ private:
                     mKeyboardSOCD.Set(type);
                 }
                 mKeyboardSOCD.Gui(S(THPRAC_KEYBOARD_SOCD), S(THPRAC_KEYBOARD_SOCD_SETTINGS), S(THPRAC_KEYBOARD_SOCD_DESC));
+                mKeyboardAPISetting.Gui(S(THPRAC_KEYBOARD_API), S(THPRAC_KEYBOARD_API_SETTINGS), S(THPRAC_KEYBOARD_API_SETTINGS_DESC));
                 KeyBindSettings();
             }
             ImGui::NewLine();
@@ -2489,6 +2490,7 @@ private:
 
     THCfgCheckbox mKeyboardHook { "enable_keyboard_hook", true };
     THCfgCombo mKeyboardSOCD { "keyboard_SOCDv2", 0, 3 };
+    THCfgCombo mKeyboardAPISetting { "keyboard_API", 0, 3 };
     THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };
     THCfgCheckbox mUD_Replay_10 { "th10_ud_Replay", true };
     THCfgCheckbox mDisableWinKey { "disable_win_key", false };

@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1604] {
+const char* th_glossary_str[3][1607] {
     {
         "",
         "啤酒",
@@ -1058,6 +1058,9 @@ const char* th_glossary_str[3][1604] {
         "删除",
         "修改按键",
         "修改按键",
+        "键盘API设置",
+        "默认\0强制Win32 API\0强制 Dinput8\0\0",
+        "默认情况下在地灵殿等游戏使用小键盘可能卡键, \n换用强制dinput8可修复(建议?), \n不建议强制win32模式",
         "启用键盘HOOK",
         "影响按键禁用/SOCD/按键修改等功能",
         "SOCD设置",
@@ -2664,6 +2667,9 @@ const char* th_glossary_str[3][1604] {
         "remove",
         "new key",
         "new key",
+        "keyboard API setting",
+        "default\0force Win32 API\0force Dinput8\0\0",
+        "By default, using numpad will cause bugs in games like SA,\n which can be fixed by forcing to use dinput8(which is recommended?),\n force win32 API is not recommended",
         "enable keyboard hook",
         "relate to key disable, SOCD, keybind change, etc",
         "SOCD setting",
@@ -4270,6 +4276,9 @@ const char* th_glossary_str[3][1604] {
         "remove",
         "new key",
         "new key",
+        "keyboard API setting",
+        "default\0force Win32 API\0force Dinput8\0\0",
+        "By default, using numpad will cause bugs in games like SA,\n which can be fixed by forcing to use dinput8(which is recommended?),\n force win32 API is not recommended",
         "enable keyboard hook",
         "relate to key disable, SOCD, keybind change, etc",
         "SOCD setting",
