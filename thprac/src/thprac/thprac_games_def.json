@@ -1233,7 +1233,9 @@
       
 	  
 	  "THPRAC_INGAMEINFO_ADV2":["自动开启高级功能","automatically use advanced opts","automatically use advanced opts"],
-	   "THPRAC_TH06_SHOW_REP_MARKER":["红魔乡显示是否为rep","show rep marker in EoSD","show rep marker in EoSD"],
+	  "THPRAC_TH06_SHOW_REP_MARKER":["红魔乡显示是否为rep","show rep marker in EoSD","show rep marker in EoSD"],
+	  "THPRAC_TH08_FORCE_LS":["永夜抄强制总是开启LSC","force LS in IN","force LS in IN"],
+	   
 	  "THPRAC_TH18_FORCE_CARD": [ "虹龙洞强制卡牌", "UM force card", "UM force card" ],
 	  "THPRAC_TH18_FORCE_CARD_DESC": [ "强制让商店内第一张卡牌为想要的卡牌", "force the first card in market", "force the first card in market" ],
 	  "THPRAC_TH18_FORCE_CARD_DESC2": [ "作者认为作为一个游戏就不应该用一个纯随机要素限制打分玩家, 如果你觉得是作弊, 那你说得对.jpg", "the author believes that as a game, it shouldn't rely on a purely random element to restrict players' ability to rate the game. If you think that's cheating, then you're right.jpg", "the author believes that as a game, it shouldn't rely on a purely random element to restrict players' ability to rate the game. If you think that's cheating, then you're right.jpg" ],
@@ -1264,8 +1266,8 @@
 	  
 	  "THPRAC_TH06_RANKLOCK_DOWN": [ "红魔乡自动miss/bomb后不掉rank", "EoSD no rank drop after miss/bomb", "EoSD no rank drop after miss/bomb" ],
 	  "THPRAC_INFLIVES_MAP": [ "将锁残修改为不疮", "map inf.lives to no continue", "map inf.lives to no continue" ],
-    "THPRAC_DISABLE_MASTER_AUTO": [ "自动禁用MASTER", "automatically disable master", "automatically disable master" ],
-    "THPRAC_ENABLE_LOCK_TIMER_AUTO": [ "自动启用锁时计时", "automatically enable lock timer", "automatically enable lock timer" ],
+      "THPRAC_DISABLE_MASTER_AUTO": [ "自动禁用MASTER", "automatically disable master", "automatically disable master" ],
+      "THPRAC_ENABLE_LOCK_TIMER_AUTO": [ "自动启用锁时计时", "automatically enable lock timer", "automatically enable lock timer" ],
 	  "THPRAC_INGAMEINFO_ADV":["高级IGI功能","advanced igi","advanced igi"],
 	  "THPRAC_INGAMEINFO_ADV_DESC1":["部分功能需要打开更多游戏信息(backspace菜单)中的选项开启","need to enable ingameinfo(in backspace menu) to show","need to enable ingameinfo(in backspace menu) to show"],
 	  "THPRAC_INGAMEINFO_ADV_DESC2":["免责声明: 部分功能可能会被认为是作弊","disclaimer: might be considered as cheating","disclaimer: might be considered as cheating"],

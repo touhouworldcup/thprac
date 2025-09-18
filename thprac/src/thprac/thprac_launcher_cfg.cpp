@@ -2191,6 +2191,7 @@ private:
             ImGui::SameLine();
             ImGui::SetNextItemWidth(180.0f);
             mCfgTH06_Seed.Gui(S(THPRAC_TH06_RAND_SEED));
+            mForceLS_08.Gui(S(THPRAC_TH08_FORCE_LS));
             mCfgEnableTH11_ShowHint_autoly.Gui(S(THPRAC_INGAMEINFO_TH11_SHOW_HINT2));
             mCfgEnableTH12_ChromaticUFO_info.Gui(S(THPRAC_INGAMEINFO_12_UFO_SUPER_ULTRA_CHROMATIC_INFO_PRO));
             mCfgEnableTH13_ShowHits_autoly.Gui(S(THPRAC_INGAMEINFO_TH13_SHOW_HITS2));
@@ -2496,6 +2497,7 @@ private:
     THCfgCheckbox mDisableWinKey { "disable_win_key", false };
     THCfgCheckbox mPauseBGM_06 { "pauseBGM_06", false };
     THCfgCheckbox mAutoName_06 { "autoInputName_06", false };
+    THCfgCheckbox mForceLS_08 { "forceLS_08", false };
     THCfgText mName_06 { "autoName_06", "", 9};
     
     THCfgCheckbox mRecordGameTime { "recordGameTime", false };

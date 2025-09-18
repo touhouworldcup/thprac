@@ -748,6 +748,9 @@ namespace TH08 {
     PATCH_ST(th08_DOSWNC_1, 0x415A4E, "39C0");
     PATCH_ST(th08_DOSWNC_2, 0x416463, "39C0");
 
+    EHOOK_ST(th08_forceLS, 0x41FB44, 2, {
+        pCtx->Edx = 2;
+    });
     EHOOK_ST(th08_master_disable1, 0x417C6B, 3 ,{
             int captured = pCtx->Edx;
             if (captured <= 999)
@@ -855,6 +858,9 @@ namespace TH08 {
             FpsInit();
             GameplayInit();
             MasterDisableInit();
+
+            th08_forceLS.Setup();
+            th08_forceLS.Toggle(g_adv_igi_options.th08_forceLS);
         }
         SINGLETON(THAdvOptWnd);
 
@@ -933,6 +939,9 @@ namespace TH08 {
                 if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
                     th08_master_disable1.Toggle(g_adv_igi_options.disable_master_autoly);
                     th08_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
+                }
+                if (ImGui::Checkbox(S(THPRAC_TH08_FORCE_LS), &g_adv_igi_options.th08_forceLS)) {
+                    th08_forceLS.Toggle(g_adv_igi_options.th08_forceLS);
                 }
 
                 ImGui::Checkbox(S(TH_ENABLE_LOCK_TIMER), &g_adv_igi_options.enable_lock_timer_autoly);

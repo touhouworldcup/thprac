@@ -27,6 +27,7 @@ namespace THPrac {
         bool th06_showRepMarker = false;
         bool th06_autoname = false;
         char th06_autoname_name[12] = {0};
+        bool th08_forceLS = false;
         bool th11_showHint = false;
         bool th13_showHits = false;
         bool th13_showHitBar = false;

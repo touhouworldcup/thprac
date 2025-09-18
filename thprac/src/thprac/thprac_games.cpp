@@ -714,6 +714,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
             }
         }
 
+        LauncherSettingGet("forceLS_08", g_adv_igi_options.th08_forceLS);
         LauncherSettingGet("th10_ud_Replay", g_adv_igi_options.th10_ud_Replay);
         LauncherSettingGet("chromatic_UFO_info", g_adv_igi_options.th12_chromatic_ufo);
 
