@@ -165,8 +165,8 @@ int WINAPI wWinMain(
     [[maybe_unused]] HINSTANCE hInstance,
     [[maybe_unused]] HINSTANCE hPrevInstance,
     PWSTR pCmdLine,
-    [[maybe_unused]] int nCmdShow
-) {
+    [[maybe_unused]] int nCmdShow)
+{
     VEHHookInit();
     if (LauncherPreUpdate(pCmdLine)) {
         return 0;
@@ -187,7 +187,6 @@ int WINAPI wWinMain(
     int checkUpdateWhen = 0;
     bool autoUpdate = false;
 
-
     if (LauncherCfgInit(true)) {
         if (!Gui::LocaleInitFromCfg()) {
             Gui::LocaleAutoSet();
@@ -195,52 +194,53 @@ int WINAPI wWinMain(
         // Load menu open key chords
         if (!Gui::MenuChordInitFromCfg()) {
             Gui::MenuChordAutoSet();
-            
-        if (!hWininet) {
-            int oh_my_god_bruh = 2;
-            bool oh_my_god_bruh_2 = false;
-            LauncherSettingSet("check_update_timing", oh_my_god_bruh);
-            LauncherSettingSet("update_without_confirmation", oh_my_god_bruh_2);
+
+            if (!hWininet) {
+                int oh_my_god_bruh = 2;
+                bool oh_my_god_bruh_2 = false;
+                LauncherSettingSet("check_update_timing", oh_my_god_bruh);
+                LauncherSettingSet("update_without_confirmation", oh_my_god_bruh_2);
+            }
+
+            LauncherSettingGet("existing_game_launch_action", launchBehavior);
+            LauncherSettingGet("dont_search_ongoing_game", dontFindOngoingGame);
+            LauncherSettingGet("thprac_admin_rights", adminRights);
+            LauncherSettingGet("check_update_timing", checkUpdateWhen);
+            LauncherSettingGet("update_without_confirmation", autoUpdate);
+            LauncherCfgClose();
         }
 
-        LauncherSettingGet("existing_game_launch_action", launchBehavior);
-        LauncherSettingGet("dont_search_ongoing_game", dontFindOngoingGame);
-        LauncherSettingGet("thprac_admin_rights", adminRights);
-        LauncherSettingGet("check_update_timing", checkUpdateWhen);
-        LauncherSettingGet("update_without_confirmation", autoUpdate);
-        LauncherCfgClose();
-    }
+        // Done after loading language as entries rely on it.
+        Gui::MenuChordInitArrays();
 
-    // Done after loading language as entries rely on it.
-    Gui::MenuChordInitArrays();
-
-    if (adminRights && !PrivilegeCheck()) {
-        wchar_t exePath[MAX_PATH];
-        GetModuleFileNameW(nullptr, exePath, MAX_PATH);
-        CloseHandle(thpracMutex);
-        ShellExecuteW(nullptr, L"runas", exePath, nullptr, nullptr, SW_SHOW);
-        return 0;
-    }
-
-    if (checkUpdateWhen == 1) {
-        if (LauncherUpdDialog(autoUpdate)) {
+        if (adminRights && !PrivilegeCheck()) {
+            wchar_t exePath[MAX_PATH];
+            GetModuleFileNameW(nullptr, exePath, MAX_PATH);
+            CloseHandle(thpracMutex);
+            ShellExecuteW(nullptr, L"runas", exePath, nullptr, nullptr, SW_SHOW);
             return 0;
         }
-    }
 
-    if (!dontFindOngoingGame && FindOngoingGame(false, cmd.prompt_yes_game)) {
-        return 0;
-    }
+        if (checkUpdateWhen == 1) {
+            if (LauncherUpdDialog(autoUpdate)) {
+                return 0;
+            }
+        }
 
-    if (launchBehavior != 1 && FindAndRunGame(launchBehavior == 2)) {
-        return 0;
-    }
-
-    if (checkUpdateWhen == 0 && autoUpdate) {
-        if (LauncherUpdDialog(autoUpdate)) {
+        if (!dontFindOngoingGame && FindOngoingGame(false, cmd.prompt_yes_game)) {
             return 0;
         }
-    }
 
-    return GuiLauncherMain();
+        if (launchBehavior != 1 && FindAndRunGame(launchBehavior == 2)) {
+            return 0;
+        }
+
+        if (checkUpdateWhen == 0 && autoUpdate) {
+            if (LauncherUpdDialog(autoUpdate)) {
+                return 0;
+            }
+        }
+
+        return GuiLauncherMain();
+    }
 }
