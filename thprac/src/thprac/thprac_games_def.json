@@ -8614,7 +8614,7 @@
       "TH18_MARKET_MANIP_DESC1": [ "1-8: 顺序展示卡片", "1-8: Display cards in order", "1-8: カードを順番に表示する " ],
       "TH18_MARKET_MANIP_DESC2": [ "0: 获取选中卡片", "0: Acquire selected card", "0: 選択したカードを取得する" ],
       "TH18_MARKET_MANIP_DESC3": [ "Ctrl+0: 获取所有卡片", "Ctrl+0: Acquire all cards", "Ctrl+0: すべてのカードを取得する " ],
-      "TH18_MARKET_MANIP_DESC4": [ "Backspace: 退出市场", "Backspace: Leave the market", "Backspace: 市場を出る" ],
+      "TH18_MARKET_MANIP_DESC4": [ ": 退出市场", ": Leave the market", ": 市場を出る" ],
       "TH18_MUKADE": [ "蜈蚣", "Centipede", "ムカデ" ],
       "TH18_KOZUCHI_CD": [ "锤子冷却", "Mallet CD", "槌CD" ],
       "TH18_KANAME_CD": [ "基石冷却", "Keystone CD", "要石CD" ],

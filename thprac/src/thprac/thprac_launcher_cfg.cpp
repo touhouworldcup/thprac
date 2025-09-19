@@ -1507,7 +1507,7 @@ private:
     }
 
     // Function for displaying a row for the rebind and also rebinding it
-    bool GuiHotkeyEdit(const char* label, const char* binding, bool* listening, bool block_input, bool identical_binding, bool conflicts_with_um = false, const char* tooltip = "")
+    bool GuiHotkeyEdit(const char* label, const char* binding, bool* listening, bool block_input, bool identical_binding, const char* tooltip = "")
     {
         ImGuiIO& io = ImGui::GetIO();
 
@@ -1544,16 +1544,6 @@ private:
             if (ImGui::IsItemHovered()) {
                 ImGui::BeginTooltip();
                 ImGui::TextUnformatted(S(THPRAC_HOTKEY_MODIFIER_WARNING));
-                ImGui::EndTooltip();
-            }
-        }
-        // Show backspace warning if it would conflict with UM
-        if (current_chord & (1 << Gui::ChordKey_Backspace) && conflicts_with_um) {
-            ImGui::SameLine();
-            ImGui::TextUnformatted("(**)");
-            if (ImGui::IsItemHovered()) {
-                ImGui::BeginTooltip();
-                ImGui::TextUnformatted(S(THPRAC_HOTKEY_UM_WARNING));
                 ImGui::EndTooltip();
             }
         }
@@ -1658,7 +1648,7 @@ private:
         
         // Add the buttons to the UI and update data if sucessfully updated.
         GuiHotkeyEdit(S(THPRAC_HOTKEY_QUICK_SETTINGS), "backspace_menu_chord", &mHotkeyBackspaceMenuListening, block_backspace_menu, quick_menu_binding_shared);
-        GuiHotkeyEdit(S(THPRAC_HOTKEY_ADVANCED_SETTINGS), "advanced_menu_chord", &mHotkeyF12MenuListening, block_advanced_menu, advanced_menu_binding_shared, true);
+        GuiHotkeyEdit(S(THPRAC_HOTKEY_ADVANCED_SETTINGS), "advanced_menu_chord", &mHotkeyF12MenuListening, block_advanced_menu, advanced_menu_binding_shared);
         GuiHotkeyEdit(S(THPRAC_HOTKEY_SCREENSHOT), "screenshot_chord", &mHotkeyScreenshotListening, block_screenshot, screenshot_binding_shared);
 
         // Reset button

@@ -194,24 +194,23 @@ int WINAPI wWinMain(
         // Load menu open key chords
         if (!Gui::MenuChordInitFromCfg()) {
             Gui::MenuChordAutoSet();
-
-            if (!hWininet) {
-                int oh_my_god_bruh = 2;
-                bool oh_my_god_bruh_2 = false;
-                LauncherSettingSet("check_update_timing", oh_my_god_bruh);
-                LauncherSettingSet("update_without_confirmation", oh_my_god_bruh_2);
-            }
-
-            LauncherSettingGet("existing_game_launch_action", launchBehavior);
-            LauncherSettingGet("dont_search_ongoing_game", dontFindOngoingGame);
-            LauncherSettingGet("thprac_admin_rights", adminRights);
-            LauncherSettingGet("check_update_timing", checkUpdateWhen);
-            LauncherSettingGet("update_without_confirmation", autoUpdate);
-            LauncherCfgClose();
         }
 
-        // Done after loading language as entries rely on it.
-        Gui::MenuChordInitArrays();
+
+        if (!hWininet) {
+            int oh_my_god_bruh = 2;
+            bool oh_my_god_bruh_2 = false;
+            LauncherSettingSet("check_update_timing", oh_my_god_bruh);
+            LauncherSettingSet("update_without_confirmation", oh_my_god_bruh_2);
+        }
+
+        LauncherSettingGet("existing_game_launch_action", launchBehavior);
+        LauncherSettingGet("dont_search_ongoing_game", dontFindOngoingGame);
+        LauncherSettingGet("thprac_admin_rights", adminRights);
+        LauncherSettingGet("check_update_timing", checkUpdateWhen);
+        LauncherSettingGet("update_without_confirmation", autoUpdate);
+        LauncherCfgClose();
+
 
         if (adminRights && !PrivilegeCheck()) {
             wchar_t exePath[MAX_PATH];

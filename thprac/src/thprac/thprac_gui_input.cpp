@@ -183,38 +183,7 @@ namespace THPrac
 
         const char* ChordKeyStrings[ChordKey_COUNT];
 
-		int ChordKeyVKs[ChordKey_COUNT] = {
-            VK_CONTROL,
-			VK_SHIFT,
-			VK_MENU,
-			VK_CAPITAL,
-			VK_TAB,
-			VK_SPACE,
-			VK_BACK,
-			VK_F11,
-			VK_F12,
-			VK_INSERT,
-			VK_HOME,
-			VK_PRIOR,
-			VK_DELETE,
-			VK_END,
-			VK_NEXT,
-			0, // Currently no controller support
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-        };
+		int ChordKeyVKs[ChordKey_COUNT];
 
 		void MenuChordInitArrays() {
             ChordKeyStrings[ChordKey_Ctrl] =		"Ctrl";
@@ -248,8 +217,6 @@ namespace THPrac
             ChordKeyStrings[ChordKey_Select] =		"Select";
             ChordKeyStrings[ChordKey_HomeMenu] =	"HomeMenu";
 
-			// This doesn't seem to run in-game? The above strings don't matter that it doesn't but strange this has issue.
-			/*
             ChordKeyVKs[ChordKey_Ctrl] =        VK_CONTROL;
             ChordKeyVKs[ChordKey_Shift] =       VK_SHIFT;
             ChordKeyVKs[ChordKey_Alt] =		    VK_MENU;
@@ -280,7 +247,7 @@ namespace THPrac
             ChordKeyVKs[ChordKey_Start] =       0;
             ChordKeyVKs[ChordKey_Select] =      0;
             ChordKeyVKs[ChordKey_HomeMenu] =    0;
-            */
+            
 		}
 
 		bool MenuChordInitFromCfg() {

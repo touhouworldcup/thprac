@@ -792,6 +792,8 @@ namespace TH18 {
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC1));
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC2));
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC3));
+                ImGui::TextUnformatted(Gui::HotkeyChordToLabel(Gui::GetBackspaceMenuChord()).c_str());
+                ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC4));
             }
         }
@@ -803,7 +805,7 @@ namespace TH18 {
                 ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(255.0f, 0.0f, 0.0f, 255.0f));
                 popColor = true;
 
-                if (Gui::KeyboardInputGetRaw(VK_BACK)) {
+                if (Gui::GetChordPressed(Gui::GetBackspaceMenuChord())) {
                     th18_shop_escape_1.Enable();
                     th18_shop_escape_2.Enable();
                 } else {
