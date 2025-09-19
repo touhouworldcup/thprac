@@ -4446,13 +4446,7 @@
       "TH12_VENTRA_NONE": [ "无", "None", "なし" ],
       "TH12_VENTRA_RED": [ "红", "Red", "赤" ],
       "TH12_VENTRA_BLUE": [ "蓝", "Blue", "青" ],
-      "TH12_VENTRA_GREEN": [ "绿", "Green", "緑" ],
-      "TH12_PREVENT_REIA_DESYNC": [ "防止灵梦A炸弹回放不同步", "Prevent ReimuA bomb desync", "霊夢Aボムのデシンク防止" ],
-      "TH12_PREVENT_REIA_DESYNC_DESC": [
-        "修复了博丽灵梦A式炸弹的效果范围可能会从一个关卡延续到下一个关卡的问题。如果从后续关卡开始回放，可能会导致不同步。如果未启用此选项，则使用该选项启用时记录的回放（在出现该问题的情况下）可能会出现不同步（除非回放从受影响的关卡过渡之后开始）。",
-        "Fixes bug where the area of effect of ReimuA's bomb can persist from one stage to the next, causing a desync if replay started from latter stage. If this option is not enabled, replays that were recorded with it enabled in which the bug occurred may desync (unless replay started after the affected transition).",
-        "霊夢Aのボムの範囲効果が次のステージに引き継がれるバグを修正しました。このバグにより、リプレイを後半のステージから再生すると同期ずれが発生する場合がありました。このオプションを有効にしていない場合、以前にこのバグが発生した状態でオプションを有効にして録画されたリプレイは、（影響を受けたステージ遷移以降から再生しない限り）同期ずれが発生する可能性があります。"
-      ]
+      "TH12_VENTRA_GREEN": [ "绿", "Green", "緑" ]
     },
 
     "sections": {
@@ -5959,8 +5953,8 @@
 
     "glossary": {
       "TH13_TRANCE_METER": [ "灵界槽", "Trance Meter", "霊界ゲージ" ],
-      "TH13_EXTEND": [ "奖残次数", "Times extended", "エクステンド回数" ],
-      "TH13_SPIRIT_SIDE": [ "灵方向", "Spirit side", "霊ー方向" ],
+      "TH13_EXTEND": [ "奖残次数", "Extends", "エクステンド回数" ],
+      "TH13_SPIRIT_SIDE": [ "灵方向", "Spirit Side", "霊ー方向" ],
       "TH13_TRANCE_LOCK": [ "锁灵界槽", "Trance Meter Lock", "霊界ゲージ計固定" ]
     },
 
