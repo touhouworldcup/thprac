@@ -27,7 +27,7 @@ namespace TH13 {
         int32_t value;
         int32_t graze;
         int32_t trance_meter;
-        int32_t spirit_side;
+        bool spirit_start_left;
 
         bool dlg;
 
@@ -56,6 +56,7 @@ namespace TH13 {
             GetJsonValue(value);
             GetJsonValue(graze);
             GetJsonValue(trance_meter);
+            GetJsonValueEx(spirit_start_left, Bool);
 
             return true;
         }
@@ -84,6 +85,7 @@ namespace TH13 {
             AddJsonValue(value);
             AddJsonValue(graze);
             AddJsonValue(trance_meter);
+            AddJsonValue(spirit_start_left);
 
             ReturnJson();
         }
@@ -99,6 +101,7 @@ namespace TH13 {
             *mPower = 400;
             *mValue = 10000;
             *mTranceMeter = 200;
+            *mSpiritSide = 1;
 
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -141,7 +144,7 @@ namespace TH13 {
                 thPracParam.value = *mValue;
                 thPracParam.graze = *mGraze;
                 thPracParam.trance_meter = *mTranceMeter;
-                thPracParam.spirit_side = *mSpiritSide;
+                thPracParam.spirit_start_left = !*mSpiritSide;
 
                 break;
             case 4:
@@ -551,7 +554,7 @@ namespace TH13 {
         }
         void FpsInit()
         {
-            //mOptCtx.fps_replay_fast = 600;
+            mOptCtx.fps_replay_fast = 10;
 
             mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th13.dll");
             if (mOptCtx.vpatch_base) {
@@ -1592,7 +1595,7 @@ namespace TH13 {
             *(int32_t*)(0x4be7d0) = thPracParam.graze;
             *(int32_t*)(0x4be808) = thPracParam.trance_meter;
 
-            *(uint32_t*)GetMemAddr(0x4c22a4, 0x8820) = !thPracParam.spirit_side;
+            *(uint32_t*)GetMemAddr(0x4c22a4, 0x8820) = thPracParam.spirit_start_left;
 
             THSectionPatch();
         }
