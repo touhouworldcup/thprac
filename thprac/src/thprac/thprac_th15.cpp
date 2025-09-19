@@ -267,10 +267,13 @@ namespace TH15 {
         {
             static int Morbius = 0;
             const char _MorbStr[] = "MORBIUS";
-            if (Morbius < 7 && Gui::KeyboardInputUpdate(_MorbStr[Morbius]))
-                Morbius++;
-            else
+
+            if (Morbius < 7) {
+                if (Gui::KeyboardInputUpdate(_MorbStr[Morbius]))
+                    Morbius++;
+            } else {
                 th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty][TH15_ST5_MID1] = "it's morbin time";
+            }
 
             static char chapterStr[256] {};
             auto& chapterCounts = mChapterSetup[*mStage];
