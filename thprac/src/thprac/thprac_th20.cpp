@@ -73,8 +73,8 @@ namespace TH20 {
 
             GetJsonValue(hyper);
             GetJsonValue(stone);
-            GetJsonValue(hyperActive);
-            GetJsonValue(stoneActive);
+            GetJsonValueEx(hyperActive, Bool);
+            GetJsonValueEx(stoneActive, Bool);
             GetJsonValue(stoneMax);
             GetJsonValue(levelR);
             GetJsonValue(priorityR);
