@@ -10,6 +10,8 @@ namespace TH13 {
         PLAYER_PTR = 0x4c22c4,
         STAGE_NUM = 0x4be81c,
         REPLAY_MGR_PTR = 0x4c22c8,
+        CHARA = 0x4be7b8,
+        MODEFLAGS = 0x4be830,
     };
 
     struct THPracParam {
@@ -28,6 +30,8 @@ namespace TH13 {
         int32_t graze;
         int32_t trance_meter;
         bool spirit_start_left;
+
+        uint32_t lastSrcIdx[5]; //marisa desync fix related
 
         bool dlg;
 
@@ -57,37 +61,50 @@ namespace TH13 {
             GetJsonValue(graze);
             GetJsonValue(trance_meter);
             GetJsonValueEx(spirit_start_left, Bool);
+            GetJsonArray(lastSrcIdx, elementsof(lastSrcIdx));
 
             return true;
         }
         std::string GetJson()
         {
-            CreateJson();
+            if (mode == 0) {
+                CreateJson();
 
-            AddJsonValueEx(version, GetVersionStr(), jalloc);
-            AddJsonValueEx(game, "th13", jalloc);
-            AddJsonValue(mode);
-            AddJsonValue(stage);
-            if (section)
-                AddJsonValue(section);
-            if (phase)
-                AddJsonValue(phase);
-            if (dlg)
-                AddJsonValue(dlg);
+                AddJsonValueEx(version, GetVersionStr(), jalloc);
+                AddJsonValueEx(game, "th13", jalloc);
+                AddJsonValue(mode);
+                AddJsonArray(lastSrcIdx, elementsof(lastSrcIdx));
 
-            AddJsonValue(score);
-            AddJsonValue(life);
-            AddJsonValue(extend);
-            AddJsonValue(life_fragment);
-            AddJsonValue(bomb);
-            AddJsonValue(bomb_fragment);
-            AddJsonValue(power);
-            AddJsonValue(value);
-            AddJsonValue(graze);
-            AddJsonValue(trance_meter);
-            AddJsonValue(spirit_start_left);
+                ReturnJson();
 
-            ReturnJson();
+            } else if (mode == 1) {
+                CreateJson();
+
+                AddJsonValueEx(version, GetVersionStr(), jalloc);
+                AddJsonValueEx(game, "th13", jalloc);
+                AddJsonValue(mode);
+                AddJsonValue(stage);
+                if (section)
+                    AddJsonValue(section);
+                if (phase)
+                    AddJsonValue(phase);
+                if (dlg)
+                    AddJsonValue(dlg);
+
+                AddJsonValue(score);
+                AddJsonValue(life);
+                AddJsonValue(extend);
+                AddJsonValue(life_fragment);
+                AddJsonValue(bomb);
+                AddJsonValue(bomb_fragment);
+                AddJsonValue(power);
+                AddJsonValue(value);
+                AddJsonValue(graze);
+                AddJsonValue(trance_meter);
+                AddJsonValue(spirit_start_left);
+
+                ReturnJson();
+            }
         }
     };
     THPracParam thPracParam {};
@@ -519,7 +536,7 @@ namespace TH13 {
     });
     EHOOK_ST(th13_all_clear_bonus_2, 0x42cf1b, 4, {
         *(int32_t*)(GetMemAddr(0x4c2190, 0x144)) = *(int32_t*)(0x4be7c0);
-        if (GetMemContent(0x4be830) & 0x10) {
+        if (GetMemContent(MODEFLAGS) & 0x10) {
             typedef void (*PScoreFunc)();
             PScoreFunc a = (PScoreFunc)0x43f720;
             a();
@@ -528,7 +545,7 @@ namespace TH13 {
     });
     EHOOK_ST(th13_all_clear_bonus_3, 0x42d004, 4, {
         *(int32_t*)(GetMemAddr(0x4c2190, 0x144)) = *(int32_t*)(0x4be7c0);
-        if (GetMemContent(0x4be830) & 0x10) {
+        if (GetMemContent(MODEFLAGS) & 0x10) {
             typedef void (*PScoreFunc)();
             PScoreFunc a = (PScoreFunc)0x43f720;
             a();
@@ -1540,7 +1557,7 @@ namespace TH13 {
             th13ElBgmTranceFlag = !th13ElBgmTranceFlag;
 
         el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode == 1 && thPracParam.section && !th13ElBgmTranceFlag;
-        is_practice = (*((int32_t*)0x4be830) & 0x1);
+        is_practice = (*((int32_t*)MODEFLAGS) & 0x1);
 
         if (th13ElBgmTranceFlag && bgm_cmd == 3) {
             th13ElBgmTranceFlag = false;
@@ -1600,16 +1617,36 @@ namespace TH13 {
             THSectionPatch();
         }
 
-        // fix potential desync w/ iframes being given to player
-        // when starting replay on non-st1
-        if (!THGuiRep::singleton().mRepStatus) return; //must be in replay
-        if ((GetMemContent(STAGE_NUM) - 1) % 6 == 0) return; //must not be st1/7
-        if (!GetMemContent(REPLAY_MGR_PTR, 0xc8 + 0x28*1)) return; // must have st1 in replay
 
-        Timer* iframes_timer = (Timer*)GetMemAddr(PLAYER_PTR, 0x14684);
-        iframes_timer->previous = 1;
-        iframes_timer->current = 0;
-        iframes_timer->current_f = 0.0f;
+        //transition-related desync fixes
+        uint32_t stageNum = GetMemContent(STAGE_NUM) - 1;
+        if (stageNum % 6 == 0) return; // must not be st1/7
+
+        // if marisa & not in practice (note: wont catch practice replays)
+        // -> fix desync related to damage source iteration around missiles
+        if (GetMemContent(CHARA) == 1 && (GetMemContent(MODEFLAGS) & 0b110000) == 0) {
+            uintptr_t lastSrcIdxAddr = GetMemAddr(PLAYER_PTR, 0xa9e0);
+
+            if (THGuiRep::singleton().mRepStatus) { // Playback
+                if (thPracParam.lastSrcIdx[stageNum - 1])
+                    *(uint32_t*)(lastSrcIdxAddr) = thPracParam.lastSrcIdx[stageNum - 1];
+
+            } else { // Recording
+                thPracParam.lastSrcIdx[stageNum - 1] = GetMemContent(lastSrcIdxAddr);
+            }
+        }
+
+        // if in replay & replay has st1 data
+        // -> fix potential desync w/ iframes being given to player
+        // when starting replay on non-st1
+        if (THGuiRep::singleton().mRepStatus
+            && GetMemContent(REPLAY_MGR_PTR, 0xc8 + 0x28 * 1)) {
+
+            Timer* iframes_timer = (Timer*)GetMemAddr(PLAYER_PTR, 0x14684);
+            iframes_timer->previous = 1;
+            iframes_timer->current = 0;
+            iframes_timer->current_f = 0.0f;
+        }
     })
     EHOOK_DY(th13_bgm, 0x42c864, 1, {
         if (THBGMTest()) {
@@ -1619,8 +1656,8 @@ namespace TH13 {
     })
     EHOOK_DY(th13_rep_save, 0x448c05, 5, {
         char* repName = (char*)(pCtx->Esp + 0x38);
-        if (thPracParam.mode == 1)
-            THSaveReplay(repName);
+        if (thPracParam.mode || GetMemContent(CHARA) == 1)
+            THSaveReplay(repName); //thprac mode or Marisa
     })
     EHOOK_DY(th13_rep_menu_1, 0x452776, 3, {
         THGuiRep::singleton().State(1);
