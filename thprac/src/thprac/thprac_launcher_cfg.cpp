@@ -1609,9 +1609,6 @@ private:
         ImGui::TextUnformatted("*");
         ImGui::SameLine();
         ImGui::TextUnformatted(S(THPRAC_HOTKEY_MODIFIER_WARNING));
-        ImGui::TextUnformatted("**");
-        ImGui::SameLine();
-        ImGui::TextUnformatted(S(THPRAC_HOTKEY_UM_WARNING));
         // Check for submasks
         bool quick_menu_binding_shared = false;
         bool advanced_menu_binding_shared = false;
