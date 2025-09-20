@@ -2309,12 +2309,6 @@ private:
                 };
                 ImGui::SetNextItemWidth(150.0f);
                 mName_06.Gui(S(THPRAC_AUTO_NAME_NAME), nullptr, ImGuiInputTextFlags_::ImGuiInputTextFlags_CallbackCharFilter, charfilter);
-
-                ImGui::Separator();
-                if (ImGui::TreeNode(S(THPRAC_SETTING_HOTKEYS))) {
-                    GuiHotkeySettings();
-                    ImGui::TreePop();
-                }
             }
 
             ImGui::Separator();
@@ -2329,6 +2323,11 @@ private:
                 mKeyboardSOCD.Gui(S(THPRAC_KEYBOARD_SOCD), S(THPRAC_KEYBOARD_SOCD_SETTINGS), S(THPRAC_KEYBOARD_SOCD_DESC));
                 mKeyboardAPISetting.Gui(S(THPRAC_KEYBOARD_API), S(THPRAC_KEYBOARD_API_SETTINGS), S(THPRAC_KEYBOARD_API_SETTINGS_DESC));
                 KeyBindSettings();
+            }
+            ImGui::Separator();
+            if (ImGui::TreeNode(S(THPRAC_SETTING_HOTKEYS))) {
+                GuiHotkeySettings();
+                ImGui::TreePop();
             }
             ImGui::NewLine();
         }
