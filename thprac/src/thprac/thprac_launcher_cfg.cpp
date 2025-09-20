@@ -2329,7 +2329,6 @@ private:
                 GuiHotkeySettings();
                 ImGui::TreePop();
             }
-            ImGui::NewLine();
         }
         ImGui::Separator();
         if (ImGui::CollapsingHeader(S(THPRAC_INGAMEINFO_ADV2))) {
