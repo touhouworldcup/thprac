@@ -532,7 +532,7 @@ namespace TH07 {
             }
         }
 
-        Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x43Ee14, "03")
         HOTKEY_ENDDEF();
@@ -748,7 +748,7 @@ namespace TH07 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::KeyboardInputUpdate(VK_F12) == 1) {
+            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else
@@ -2105,7 +2105,7 @@ namespace TH07 {
     })
     EHOOK_DY(th07_render, 0x42feb9, 1, {
         GameGuiRender(IMPL_WIN32_DX8);
-        if (Gui::KeyboardInputUpdate(VK_HOME) == 1)
+        if (Gui::GetChordPressed(Gui::GetScreenshotChord()))
             THSnapshot::Snapshot(*(IDirect3DDevice8**)0x575958);
     })
     EHOOK_DY(th07_player_state, 0x441FB0, 1, {

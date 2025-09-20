@@ -1993,6 +1993,159 @@ private:
         }
     }
 
+    // Function for displaying a row for the rebind and also rebinding it
+    bool GuiHotkeyEdit(const char* label, const char* binding, bool* listening, bool block_input, bool identical_binding, const char* tooltip = "")
+    {
+        ImGuiIO& io = ImGui::GetIO();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted(label);
+        ImGui::SameLine();
+        if (tooltip[0] != '\0') {
+            ImGui::TextUnformatted("(?)");
+            if (ImGui::IsItemHovered()) {
+                ImGui::BeginTooltip();
+                ImGui::TextUnformatted(tooltip);
+                ImGui::EndTooltip();
+            }
+            ImGui::SameLine();
+        }
+        // Visual button that toggles listening
+        ImGui::PushID(label);
+        int current_chord = 0;
+        LauncherSettingGet(binding, current_chord);
+        std::string current_string = Gui::HotkeyChordToLabel(current_chord);
+        if (!*listening) {
+            if (ImGui::Button(current_string.c_str()) && !block_input)
+                *listening = true;
+        } else {
+            // Show recording state
+            if (ImGui::Button(S(THPRAC_HOTKEY_CANCEL)))
+                *listening = false; // cancel on click
+        }
+
+        // Show warning if Ctrl or Shift is used as they can interfere with other functionality or the game itself
+        if (current_chord & ((1 << Gui::ChordKey_Ctrl) + (1 << Gui::ChordKey_Shift))) {
+            ImGui::SameLine();
+            ImGui::TextUnformatted("(*)");
+            if (ImGui::IsItemHovered()) {
+                ImGui::BeginTooltip();
+                ImGui::TextUnformatted(S(THPRAC_HOTKEY_MODIFIER_WARNING));
+                ImGui::EndTooltip();
+            }
+        }
+
+        // Show warning if there's overlap in bindings
+        if (identical_binding) {
+            ImGui::SameLine();
+            ImGui::TextUnformatted("(!)");
+            if (ImGui::IsItemHovered()) {
+                ImGui::BeginTooltip();
+                ImGui::TextUnformatted(S(THPRAC_HOTKEY_SUBMASK_WARNING));
+                ImGui::EndTooltip();
+            }
+        }
+
+        bool changed = false;
+
+        if (*listening) {
+            ImGui::SetItemDefaultFocus();
+
+            int chord = 0;
+
+            // Scan for keys until the keyboard keys which are not supported
+            // Keyboard
+            for (int key = 0; key < Gui::ChordKey_KEYBOARD_COUNT; ++key) {
+                // Register key if held or released.  If released, end the combo
+                if (ImGui::IsKeyDown(Gui::HotkeyChordToVK(key))) {
+                    chord |= 1 << key;
+                } else if (ImGui::IsKeyReleased(Gui::HotkeyChordToVK(key))) {
+                    chord |= 1 << key;
+                    changed = true;
+                }
+            }
+            // Controller
+            for (int key = Gui::ChordKey_KEYBOARD_COUNT; key < Gui::ChordKey_COUNT; ++key) {
+                // Register key if held or released.  If released, end the combo
+                if (ImGui::IsKeyDown(Gui::HotkeyChordToVK(key))) {
+                    chord |= 1 << key;
+                } else if (ImGui::IsKeyReleased(Gui::HotkeyChordToVK(key))) {
+                    chord |= 1 << key;
+                    changed = true;
+                }
+            }
+
+            // Update
+            if (changed) {
+                LauncherSettingSet(binding, chord);
+                *listening = false;
+            }
+        }
+        ImGui::PopID();
+        return changed;
+    }
+
+    // Function for drawing the entire submenu
+    void GuiHotkeySettings()
+    {
+        // ImGui::TextUnformatted(S(THPRAC_SETTING_HOTKEYS));
+        // ImGui::Separator();
+        ImGui::TextUnformatted(S(THPRAC_HOTKEY_TOOLTIP));
+        ImGui::TextUnformatted("*");
+        ImGui::SameLine();
+        ImGui::TextUnformatted(S(THPRAC_HOTKEY_MODIFIER_WARNING));
+        // Check for submasks
+        bool quick_menu_binding_shared = false;
+        bool advanced_menu_binding_shared = false;
+        bool screenshot_binding_shared = false;
+        int backspace_chord = 0;
+        int advanced_chord = 0;
+        int special_chord = 0;
+        int screenshot_chord = 0;
+        LauncherSettingGet("backspace_menu_chord", backspace_chord);
+        LauncherSettingGet("advanced_menu_chord", advanced_chord);
+        LauncherSettingGet("screenshot_chord", screenshot_chord);
+        // Backspace and F12 menu shared
+        if ((advanced_chord & backspace_chord) == advanced_chord || (advanced_chord & backspace_chord) == backspace_chord) {
+            quick_menu_binding_shared = true;
+            advanced_menu_binding_shared = true;
+        }
+        // Backspace menu and Screenshot shared
+        if ((screenshot_chord & backspace_chord) == screenshot_chord || (screenshot_chord & backspace_chord) == backspace_chord) {
+            quick_menu_binding_shared = true;
+            screenshot_binding_shared = true;
+        }
+        // F12 menu and Screenshot shared
+        if ((advanced_chord & screenshot_chord) == advanced_chord || (advanced_chord & screenshot_chord) == screenshot_chord) {
+            advanced_menu_binding_shared = true;
+            screenshot_binding_shared = true;
+        }
+
+        // Check if other inputs are listening and block if so.
+        bool block_backspace_menu = mHotkeyF12MenuListening || mHotkeyScreenshotListening;
+        bool block_advanced_menu = mHotkeyBackspaceMenuListening || mHotkeyScreenshotListening;
+        bool block_screenshot = mHotkeyBackspaceMenuListening || mHotkeyF12MenuListening;
+
+        // Add the buttons to the UI and update data if sucessfully updated.
+        GuiHotkeyEdit(S(THPRAC_HOTKEY_QUICK_SETTINGS), "backspace_menu_chord", &mHotkeyBackspaceMenuListening, block_backspace_menu, quick_menu_binding_shared);
+        GuiHotkeyEdit(S(THPRAC_HOTKEY_ADVANCED_SETTINGS), "advanced_menu_chord", &mHotkeyF12MenuListening, block_advanced_menu, advanced_menu_binding_shared);
+        GuiHotkeyEdit(S(THPRAC_HOTKEY_SCREENSHOT), "screenshot_chord", &mHotkeyScreenshotListening, block_screenshot, screenshot_binding_shared);
+
+        // Reset button
+        if (ImGui::Button(S(THPRAC_HOTKEY_RESET))) {
+            mHotkeyBackspaceMenuListening = false;
+            mHotkeyF12MenuListening = false;
+            mHotkeyScreenshotListening = false;
+            int backspace_menu_chord = 1 << Gui::ChordKey_Backspace;
+            int advanced_menu_chord = 1 << Gui::ChordKey_F12;
+            int screenshot_chord = 1 << Gui::ChordKey_Home;
+            LauncherSettingSet("backspace_menu_chord", backspace_menu_chord);
+            LauncherSettingSet("advanced_menu_chord", advanced_menu_chord);
+            LauncherSettingSet("screenshot_chord", screenshot_chord);
+        }
+    }
+
+
     void TextLink(const char* text, const wchar_t* link)
     {
         ImGui::TextUnformatted(text);
@@ -2133,8 +2286,6 @@ private:
             ImGui::SetNextItemWidth(75.0f + ImGui::CalcTextSize(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE)).x);
             mWindowSize.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE));
 
-            
-          
             mUD_Replay_10.Gui(S(THPRAC_MOF_UD_REP));
             mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
             mAutoName_06.Gui(S(THPRAC_AUTO_NAME_TH06), S(THPRAC_AUTO_NAME_TH06_DESC));
@@ -2158,6 +2309,12 @@ private:
                 };
                 ImGui::SetNextItemWidth(150.0f);
                 mName_06.Gui(S(THPRAC_AUTO_NAME_NAME), nullptr, ImGuiInputTextFlags_::ImGuiInputTextFlags_CallbackCharFilter, charfilter);
+
+                ImGui::Separator();
+                if (ImGui::TreeNode(S(THPRAC_SETTING_HOTKEYS))) {
+                    GuiHotkeySettings();
+                    ImGui::TreePop();
+                }
             }
 
             ImGui::Separator();
@@ -2524,6 +2681,16 @@ private:
     THCfgCombo mFilenameAfterUpdate { "filename_after_update", 0, 3 };
     int mOriginalLanguage;
 
+    THCfgCombo mHotkeyBackspaceMenu { "backspace_menu_chord", 1 << Gui::ChordKey_Backspace, 1 << Gui::ChordKey_COUNT };
+    THCfgCombo mHotkeyF12Menu { "advanced_menu_chord", 1 << Gui::ChordKey_F12, 1 << Gui::ChordKey_COUNT };
+    THCfgCombo mHotkeyScreenshot { "screenshot_chord", 1 << Gui::ChordKey_Home, 1 << Gui::ChordKey_COUNT };
+
+    bool mHotkeyBackspaceMenuListening = false;
+    bool mHotkeyF12MenuListening = false;
+    bool mHotkeyScreenshotListening = false;
+
+
+
     std::string mThcrapHintStr;
     float mThcrapHintTime = 0.0f;
     int mThcrapHintTimeBuffer = false;
@@ -2541,6 +2708,15 @@ private:
     bool mCfgRelativePath = false;
 
     std::function<void(void)> mGuiUpdFunc = []() {};
+
+public:
+    void CloseHotkeyRebindListeners()
+    {
+        mHotkeyBackspaceMenuListening = false;
+        mHotkeyF12MenuListening = false;
+        mHotkeyF12MenuListening = false;
+        mHotkeyScreenshotListening = false;
+    }
 };
 
 int64_t LauncherGetGameTime()
@@ -2673,5 +2849,11 @@ bool LauncherPreUpdate(wchar_t* pCmdLine)
 
     return false;
 }
+
+void LauncherCloseHotkeyRebindListeners()
+{
+    THCfgGui::singleton().CloseHotkeyRebindListeners();
+}
+
 
 }

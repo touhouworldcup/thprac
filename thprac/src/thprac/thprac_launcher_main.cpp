@@ -179,30 +179,35 @@ int GuiLauncherMain()
                 LauncherGamesGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
+                LauncherCloseHotkeyRebindListeners();
             }
             if (GuiTabItem(S(THPRAC_OTHERS))) {
                 ImGui::BeginChild("##others");
                 LauncherOthersGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
+                LauncherCloseHotkeyRebindListeners();
             }
             if (GuiTabItem(S(THPRAC_LINKS))) {
                 ImGui::BeginChild("##links");
                 LauncherLinksGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
+                LauncherCloseHotkeyRebindListeners();
             }
             if (GuiTabItem(S(THPRAC_TOOLS))) {
                 ImGui::BeginChild("##tools");
                 LauncherToolsGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
+                LauncherCloseHotkeyRebindListeners();
             }
             if (GuiTabItem(S(THPRAC_KENG))) {
                 ImGui::BeginChild("##keng");
                 LauncherKengGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
+                LauncherCloseHotkeyRebindListeners();
             }
             if (GuiTabItem(S(THPRAC_SETTINGS))) {
                 ImGui::BeginChild("##settings");
@@ -262,5 +267,18 @@ int GuiLauncherMain()
     
     return 0;
 }
+
+void GuiLauncherHotkeyInit()
+{
+    if (LauncherCfgInit(true)) {
+        if (!Gui::MenuChordInitFromCfg()) {
+            Gui::MenuChordAutoSet();
+        }
+        LauncherCfgClose();
+    }
+
+    Gui::MenuChordInitArrays();
+}
+
 
 }

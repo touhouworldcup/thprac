@@ -78,8 +78,8 @@ namespace TH20 {
 
             GetJsonValue(hyper);
             GetJsonValue(stone);
-            GetJsonValue(hyperActive);
-            GetJsonValue(stoneActive);
+            GetJsonValueEx(hyperActive, Bool);
+            GetJsonValueEx(stoneActive, Bool);
             GetJsonValue(stoneMax);
             GetJsonValue(levelR);
             GetJsonValue(priorityR);
@@ -629,7 +629,7 @@ namespace TH20 {
             }
         }
 
-        Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0xF87FC, "01"),
@@ -1040,7 +1040,7 @@ namespace TH20 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::KeyboardInputUpdate(VK_F12) == 1) {
+            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else

@@ -520,6 +520,29 @@ namespace THPrac
             return flag;
         }
 
+         // Almost the same as normal but checks for chord pressed instead of the key itself.
+        bool GuiHotKeyChord::operator()(bool use_widget)
+        {
+            bool flag = Gui::GetChordPressed(mKey);
+            if (use_widget)
+                flag |= OnWidgetUpdate();
+
+            if (flag) {
+                mStatus = !mStatus;
+                if (mStatus) {
+                    for (size_t i = 0; i < mHooks.len; i++) {
+                        mHooks.ptr[i].Enable();
+                    }
+                } else {
+                    for (size_t i = 0; i < mHooks.len; i++) {
+                        mHooks.ptr[i].Disable();
+                    }
+                }
+            }
+
+            return flag;
+        }
+
         void GuiTimer::Start()
         {
             if (!mIsTiming) {

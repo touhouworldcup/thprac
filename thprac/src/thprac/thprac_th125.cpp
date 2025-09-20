@@ -63,7 +63,7 @@ namespace TH125 {
             }
         }
 
-        Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
+         Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x436C2C, "01"),
         PATCH_HK(0x436DF8, "eb19"),
@@ -213,7 +213,7 @@ namespace TH125 {
         static THAdvOptWnd* advOptWnd = nullptr;
         if (!advOptWnd)
             advOptWnd = new THAdvOptWnd();
-        if (Gui::KeyboardInputUpdate(VK_F12) == 1) {
+        if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
             if (advOptWnd->IsOpen())
                 advOptWnd->Close();
             else

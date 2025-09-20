@@ -329,10 +329,12 @@ namespace TH15 {
         {
             static int Morbius = 0;
             const char _MorbStr[] = "MORBIUS";
-            if (Gui::KeyboardInputUpdate(_MorbStr[Morbius]))
-                Morbius++;
-            if (Morbius == 7)
+            if (Morbius < 7) {
+                if (Gui::KeyboardInputUpdate(_MorbStr[Morbius]))
+                    Morbius++;
+            } else {
                 th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty][TH15_ST5_MID1] = "it's morbin time";
+            }
 
             static char chapterStr[256] {};
             auto& chapterCounts = mChapterSetup[*mStage];
@@ -531,7 +533,7 @@ namespace TH15 {
             }
         }
 
-        Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
         
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x4566a5, "01")
@@ -849,7 +851,7 @@ namespace TH15 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::KeyboardInputUpdate(VK_F12) == 1) {
+            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else

@@ -165,8 +165,8 @@ int WINAPI wWinMain(
     [[maybe_unused]] HINSTANCE hInstance,
     [[maybe_unused]] HINSTANCE hPrevInstance,
     PWSTR pCmdLine,
-    [[maybe_unused]] int nCmdShow
-) {
+    [[maybe_unused]] int nCmdShow) 
+{
     VEHHookInit();
     if (LauncherPreUpdate(pCmdLine)) {
         return 0;
@@ -190,18 +190,27 @@ int WINAPI wWinMain(
         if (!Gui::LocaleInitFromCfg()) {
             Gui::LocaleAutoSet();
         }
-        if (!hWininet) {
-            int oh_my_god_bruh = 2;
-            bool oh_my_god_bruh_2 = false;
-            LauncherSettingSet("check_update_timing", oh_my_god_bruh);
-            LauncherSettingSet("update_without_confirmation", oh_my_god_bruh_2);
+        // Load menu open key chords
+        if (!Gui::MenuChordInitFromCfg()) {
+            Gui::MenuChordAutoSet();
+
+            if (!hWininet) {
+                int oh_my_god_bruh = 2;
+                bool oh_my_god_bruh_2 = false;
+                LauncherSettingSet("check_update_timing", oh_my_god_bruh);
+                LauncherSettingSet("update_without_confirmation", oh_my_god_bruh_2);
+            }
+
+            LauncherSettingGet("existing_game_launch_action", launchBehavior);
+            LauncherSettingGet("dont_search_ongoing_game", dontFindOngoingGame);
+            LauncherSettingGet("thprac_admin_rights", adminRights);
+            LauncherSettingGet("check_update_timing", checkUpdateWhen);
+            LauncherSettingGet("update_without_confirmation", autoUpdate);
+            LauncherCfgClose();
         }
-        LauncherSettingGet("existing_game_launch_action", launchBehavior);
-        LauncherSettingGet("dont_search_ongoing_game", dontFindOngoingGame);
-        LauncherSettingGet("thprac_admin_rights", adminRights);
-        LauncherSettingGet("check_update_timing", checkUpdateWhen);
-        LauncherSettingGet("update_without_confirmation", autoUpdate);
-        LauncherCfgClose();
+
+        // Done after loading language as entries rely on it.
+        Gui::MenuChordInitArrays();
     }
 
     if (adminRights && !PrivilegeCheck()) {

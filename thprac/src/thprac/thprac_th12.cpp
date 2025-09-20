@@ -24,6 +24,7 @@ namespace TH12 {
         PLAYER_PTR = 0x4b4514,
         MODEFLAGS = 0x4b0ce0,
         STAGE_NUM = 0x4b0cb0,
+        REPLAY_MGR_PTR = 0x4b4518,
     };
 
     constexpr uint32_t playerDmgSrcCnt = 0x81;
@@ -577,7 +578,7 @@ namespace TH12 {
                 }
             }
         }
-        Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x43837F, "01"),
         PATCH_HK(0x436d2f, "eb"),
@@ -752,14 +753,14 @@ namespace TH12 {
     EHOOK_ST(th12_all_clear_bonus_2, 0x420bc2, 4, {
         if (GetMemContent(MODEFLAGS) & 0x10) {
             pCtx->Eip = 0x420aa4;
-        } else if (GetMemContent(0x4b44e8, 0x74) && GetMemContent(0x4b4518, 0x1c, 0xa) & 1) {
+        } else if (GetMemContent(0x4b44e8, 0x74) && GetMemContent(REPLAY_MGR_PTR, 0x1c, 0xa) & 1) {
             pCtx->Eip = 0x420ac3;
         }
     });
     EHOOK_ST(th12_all_clear_bonus_3, 0x420c6b, 4, {
         if (GetMemContent(MODEFLAGS) & 0x10) {
             pCtx->Eip = 0x420aa4;
-        } else if (GetMemContent(0x4b44e8, 0x74) && GetMemContent(0x4b4518, 0x1c, 0xa) & 1) {
+        } else if (GetMemContent(0x4b44e8, 0x74) && GetMemContent(REPLAY_MGR_PTR, 0x1c, 0xa) & 1) {
             pCtx->Eip = 0x420ac3;
         }
     });
@@ -912,7 +913,7 @@ namespace TH12 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::KeyboardInputUpdate(VK_F12) == 1) {
+            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else
@@ -1952,6 +1953,20 @@ namespace TH12 {
             THSectionPatch();
         }
         thPracParam._playLock = true;
+
+        // fix potential desync w/ iframes being given to player
+        // when starting replay on non-st1
+        if (!THGuiRep::singleton().mRepStatus)
+            return; // must be in replay
+        if ((GetMemContent(STAGE_NUM) - 1) % 6 == 0)
+            return; // must not be st1/7
+        if (!GetMemContent(REPLAY_MGR_PTR, 0xa8 + 0x24 * 1))
+            return; // must have st1 in replay
+
+        Timer* iframes_timer = (Timer*)GetMemAddr(PLAYER_PTR, 0xc400);
+        iframes_timer->previous = 1;
+        iframes_timer->current = 0;
+        iframes_timer->current_f = 0.0f;
     })
     EHOOK_DY(th12_bgm, 0x42293a, 1, {
         if (THBGMTest()) {

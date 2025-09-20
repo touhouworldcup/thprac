@@ -564,6 +564,8 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
 
     // Set Locale
     GuiLauncherLocaleInit();
+    // Set Hotkeys
+    GuiLauncherHotkeyInit();
 
     switch (impl) {
     case THPrac::IMPL_WIN32_DX8:
