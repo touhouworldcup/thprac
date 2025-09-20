@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1063]
+const char* th_glossary_str[3][1065]
 {
     {
         "",
@@ -75,6 +75,8 @@ const char* th_glossary_str[3][1063]
         "符卡名不一致时不重置符卡历史",
         "使魔",
         "人妖槽",
+        "旋转后阶段",
+        "减速阶段",
         "Last Spell",
         "夜晚",
         "4A",
@@ -1140,6 +1142,8 @@ const char* th_glossary_str[3][1063]
         "Don't overwrite scores when spell name changes",
         "Familiar",
         "Gauge",
+        "Post-Spin",
+        "Slowdown Phase",
         "Last Spell",
         "Night",
         "4A",
@@ -2205,6 +2209,8 @@ const char* th_glossary_str[3][1063]
         "言語切替時にスペルカード履歴を上書きしない",
         "使い魔",
         "妖率ゲージ",
+        "回転後フェーズ",
+        "減速フェーズ",
         "ラストスペル",
         "ナイト",
         "4A",
@@ -3305,6 +3311,12 @@ const th_glossary_t TH_SPELL_PHASE3[6]
     TH_P3,
     TH_P4,
     TH_RAGE,
+};
+
+const th_glossary_t TH_SPELL_PHASE_TIMEOUT[3]
+{
+    TH_NORMAL,
+    TH_FINALE,
 };
 
 const th_glossary_t TH_SIDE_SELECT[3]
@@ -7825,6 +7837,13 @@ const th_glossary_t TH08_STAGE_SELECT[10]
     TH08_STAGE_6A,
     TH08_STAGE_6B,
     TH_STAGE_EXTRA,
+};
+
+const th_glossary_t TH08_SPELL_PHASE_HOURAI_ELIXIR[4]
+{
+    TH_NORMAL,
+    TH08_HE_POST_SPIN,
+    TH08_HE_SLOWDOWN,
 };
 
 }
@@ -21731,12 +21750,6 @@ const th_sections_t th_sections_cbt[7][2][14]
     },
 };
 
-const th_glossary_t TH20_SPELL_PHASE_TIMEOUT[3]
-{
-    TH_NORMAL,
-    TH_FINALE,
-};
-
 const th_glossary_t TH20_CYCLE_LIST[4]
 {
     TH14_CYCLE_1,
@@ -21746,7 +21759,7 @@ const th_glossary_t TH20_CYCLE_LIST[4]
 
 }
 
-const wchar_t __thprac_loc_range_zh[2773] {
+const wchar_t __thprac_loc_range_zh[2775] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201d,
@@ -21886,6 +21899,7 @@ const wchar_t __thprac_loc_range_zh[2773] {
     0x51c0, 0x51c0,
     0x51c6, 0x51c6,
     0x51cb, 0x51cc,
+    0x51cf, 0x51cf,
     0x51e0, 0x51e0,
     0x51e4, 0x51e4,
     0x51ed, 0x51ed,

@@ -75,6 +75,8 @@ enum th_glossary_t
     TH08_DOSWNC,
     TH08_FAMILIAR,
     TH08_GAUGE,
+    TH08_HE_POST_SPIN,
+    TH08_HE_SLOWDOWN,
     TH08_LASTSPELL,
     TH08_NIGHT,
     TH08_STAGE_4A,
@@ -1075,7 +1077,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1063];
+extern const char* th_glossary_str[3][1065];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1098,6 +1100,8 @@ extern const th_glossary_t TH_SPELL_PHASE1[3];
 extern const th_glossary_t TH_SPELL_PHASE2[5];
 
 extern const th_glossary_t TH_SPELL_PHASE3[6];
+
+extern const th_glossary_t TH_SPELL_PHASE_TIMEOUT[3];
 
 extern const th_glossary_t TH_SIDE_SELECT[3];
 
@@ -1468,6 +1472,8 @@ extern const th_sections_t th_sections_cba[9][2][20];
 extern const th_sections_t th_sections_cbt[9][2][15];
 
 extern const th_glossary_t TH08_STAGE_SELECT[10];
+
+extern const th_glossary_t TH08_SPELL_PHASE_HOURAI_ELIXIR[4];
 
 }
 
@@ -2695,13 +2701,11 @@ extern const th_sections_t th_sections_cba[7][2][19];
 
 extern const th_sections_t th_sections_cbt[7][2][14];
 
-extern const th_glossary_t TH20_SPELL_PHASE_TIMEOUT[3];
-
 extern const th_glossary_t TH20_CYCLE_LIST[4];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[2773];
+extern const wchar_t __thprac_loc_range_zh[2775];
 
 extern const wchar_t __thprac_loc_range_en[31];
 

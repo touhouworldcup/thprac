@@ -1034,9 +1034,13 @@
         "TH_P4",
         "TH_RAGE"
       ],
+      "TH_SPELL_PHASE_TIMEOUT": [
+        "TH_NORMAL",
+        "TH_FINALE"
+      ],
       "TH_SIDE_SELECT": [
-          "TH_LEFT",
-          "TH_RIGHT"
+        "TH_LEFT",
+        "TH_RIGHT"
       ]
     }
   },
@@ -2490,7 +2494,9 @@
       "TH08_STAGE_4B": [ "4B", "4B", "4B" ],
       "TH08_STAGE_6A": [ "6A", "6A", "6A" ],
       "TH08_STAGE_6B": [ "6B", "6B", "6B" ],
-      "TH08_DOSWNC": [ "符卡名不一致时不重置符卡历史", "Don't overwrite scores when spell name changes", "言語切替時にスペルカード履歴を上書きしない" ]
+      "TH08_DOSWNC": [ "符卡名不一致时不重置符卡历史", "Don't overwrite scores when spell name changes", "言語切替時にスペルカード履歴を上書きしない" ],
+      "TH08_HE_POST_SPIN": [ "旋转后阶段", "Post-Spin", "回転後フェーズ" ],
+      "TH08_HE_SLOWDOWN": [ "减速阶段", "Slowdown Phase", "減速フェーズ" ]
     },
 
     "sections": {
@@ -3191,6 +3197,11 @@
         "TH08_STAGE_6A",
         "TH08_STAGE_6B",
         "TH_STAGE_EXTRA"
+      ],
+      "TH08_SPELL_PHASE_HOURAI_ELIXIR": [
+        "TH_NORMAL",
+        "TH08_HE_POST_SPIN",
+        "TH08_HE_SLOWDOWN"
       ]
     }
   },
@@ -9999,10 +10010,6 @@
     },
 
     "groups": {
-      "TH20_SPELL_PHASE_TIMEOUT": [
-        "TH_NORMAL",
-        "TH_FINALE"
-      ],
       "TH20_CYCLE_LIST": [
         "TH14_CYCLE_1",
         "TH14_CYCLE_2",

@@ -9,6 +9,16 @@ namespace TH08 {
     enum ADDRS {
         INPUT_ADDR = 0x164d528,
         GUI_ADDR = 0x160f428,
+        STAGE_PENDING_INTERRUPT = 0x4ea290
+    };
+
+    enum ECL_OFFSETS { //should probably organize these better
+        ECL_TL_TIME = 0x0,
+        ECL_TL_OPCODE = 0x4,
+        ECL_TL_OFFNEXT = 0x6,
+        ECL_INS_TIME = 0x0,
+        ECL_INS_OPCODE = 0x4,
+        ECL_INS_ARG1 = 0xc,
     };
 
     struct THPracParam {
@@ -198,6 +208,7 @@ namespace TH08 {
                 thPracParam.mode = *mMode;
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
+                thPracParam.phase = SpellPhase() ? *mPhase : 0;
                 thPracParam.frame = *mFrame;
                 if (SectionHasDlg(thPracParam.section))
                     thPracParam.dlg = *mDlg;
@@ -257,6 +268,13 @@ namespace TH08 {
 
             PracticeMenu();
         }
+        const th_glossary_t* SpellPhase()
+        {
+            auto section = CalcSection();
+            if (section == TH08_ST6A_LS)
+                return TH08_SPELL_PHASE_HOURAI_ELIXIR;
+            return nullptr;
+        }
 
         void PracticeMenu()
         {
@@ -274,6 +292,7 @@ namespace TH08 {
                     *mSection = *mChapter = *mPhase = *mFrame = 0;
                 if (*mWarp) {
                     SectionWidget();
+                    mPhase(TH_PHASE, SpellPhase());
                 }
 
                 mLife();
@@ -351,6 +370,7 @@ namespace TH08 {
             case TH08_ST5_BOSS1:
             case TH08_ST6A_BOSS1:
             case TH08_ST6A_MID1:
+            case TH08_ST6A_LS:
             case TH08_ST6B_BOSS1:
             case TH08_ST6B_MID1:
             case TH08_ST7_END_NS1:
@@ -883,6 +903,12 @@ namespace TH08 {
         if (stall)
             ecl << 0x999999 << 0x000C0000 << 0x0000ff00;
     }
+    /*void ECLSetTimer(ECLHelper& ecl, int offset, int32_t timer_val, int ecl_time = -1)
+    {
+        ecl.SetPos(offset);
+        ecl << (ecl_time == -1 ? 0 : ecl_time) << (int16_t)132 << (int16_t)0x10 << 0xff00 << timer_val;
+
+    }*/
     void ECLSetHealth(ECLHelper& ecl, int offset, int32_t health, int ecl_time = -1, bool stall = true)
     {
         ecl.SetPos(offset);
@@ -1663,28 +1689,105 @@ namespace TH08 {
 
             ECLSetTime(ecl, 0x55e8, 0, 68, 60);
             break;
-        case THPrac::TH08::TH08_ST6A_BOSS9:
+        case THPrac::TH08::TH08_ST6A_BOSS9: {
+            constexpr unsigned int st6AFirstBossCreateTime = 4022;
+            constexpr unsigned int st6AFirstBossCreate = 0xc838;
+            constexpr unsigned int st6AFirstBossCreateNextInstOffset = 0xc838 + 0x6;
+            constexpr unsigned int st6AFirstBossFirstSubEnd = 0x367c;
+            constexpr unsigned int st6AFirstBossSecondSubSetLifeThresholdIns = 0x3cd8;
+            constexpr unsigned int st6AFirstBossSecondSubMoveLimits = 0x3dc8;
+            constexpr unsigned int st6AFirstBossSecondSubSecondCardEffect = 0x3d28; //why
+            constexpr unsigned int st6ABossPreSp9SubMoveLimits = 0x9a44;
+            constexpr unsigned int st6ABossPreSp9DropItemsIns = 0x99f8;
+            constexpr unsigned int st6ABossPreSp9DropPointItemsIns = 0x9a08;
+
             MSGNameFix();
-            ECLWarp(4022, 0xc838);
-            ecl << pair{0xc83e, (int8_t)0x38};
-            ECLCallSub(ecl, 0x367c, 33);
-            ECLCallSub(ecl, 0x3dc8, 72);
-            ECLTimeFix(0x3d28, 0, 6);
-            ECLTimeFix(0x9a44, 60, 6);
-            ecl << pair{0x3cd8, (int16_t)0}
-                << pair{0x99f8, (int16_t)0} << pair{0x9a08, (int16_t)0};
+            ECLWarp(st6AFirstBossCreateTime, st6AFirstBossCreate); // main timeline warp (NOTE: using SecondBossCreateTime here leads to LS warp + dialogue)
+            ecl << pair { st6AFirstBossCreateNextInstOffset, (int8_t)(0x20 + 0x18) }; // skips ahead 24 bytes more than usual, skipping dialogue wait & event
+
+            ECLCallSub(ecl, st6AFirstBossFirstSubEnd, 33);         // forces the next sub to trigger without waiting for ecl time (i think?)
+            ECLCallSub(ecl, st6AFirstBossSecondSubMoveLimits, 72); // call pre-Spell 9 sub
+            ECLTimeFix(st6AFirstBossSecondSubSecondCardEffect, 0, 6); // removes time offsets set in next 6 instructions
+            ECLTimeFix(st6ABossPreSp9SubMoveLimits, 60, 6);           // adds the removed time offset to the next 6 instructions?
+
+            ecl << pair { st6AFirstBossSecondSubSetLifeThresholdIns, (int16_t)0 } // NOPs setting the life threshold
+                << pair { st6ABossPreSp9DropItemsIns, (int16_t)0 }                // NOPs dropping items from (fake) non
+                << pair { st6ABossPreSp9DropPointItemsIns, (int16_t)0 };          // NOPs dropping point items from (fake) non
             break;
-        case THPrac::TH08::TH08_ST6A_LS:
+
+        } case THPrac::TH08::TH08_ST6A_LS: {
+            constexpr unsigned int st6ATLPreKaguyaDlgTime = 4023;
+            constexpr unsigned int st6ATLPreKaguyaDlg = 0xc87c;
+            constexpr unsigned int st6ATLKaguyaCreateTime = 4083;
+            constexpr unsigned int st6ATLKaguyaCreate = 0xc89c;
+
+            constexpr unsigned int st6ATLEirinCreate = 0xc8e0;
+            constexpr unsigned int st6ATLPostEirinCreateWaitEnemy = 0xc900;
+            constexpr unsigned int st6ATLPostEirinCreateReadMsg = 0xc90c;
+            constexpr unsigned int st6ATLPostEirinCreateWaitMsg = 0xc918;
+
+            //note: Kaguya prepares stuff in Sub29/30
+            constexpr unsigned int st6AKaguyaFirstSubEffectCall = 0x375c;
+            constexpr unsigned int st6AKaguyaSecondSubEffectCall = 0x3914;
+            constexpr unsigned int st6AKaguyaPreEirinCreationTimedInstr = 0x3844;
+            constexpr unsigned int st6AKaguyaScreenFlashFuncCall = 0x3934;
+            constexpr unsigned int st6AKaguyaPostEirinCreationTimedInstr = 0x3948;
+
+            //note: HE is Sub78
+            constexpr unsigned int st6BossSp10TimerThreshold = 0xac60;
+            constexpr unsigned int st6BossSp10FirstAttackNOP = 0xb244;
+            constexpr unsigned int st6BossSp10FirstAttack = 0xb250;
+            constexpr unsigned int st6BossSp10PostSpin = 0xb2bc;
+            constexpr unsigned int st6BossSp10PostSpinEtCancel = 0xb2f8;
+
+            //note: HE post-spin is async Sub84
+            constexpr unsigned int st6BossSp10FinalPhasePostSetup = 0xbf68;
+            constexpr unsigned int st6BossSp10FinalPhaseEtEx1 = 0xc078;
+            constexpr unsigned int st6BossSp10FinalPhasePostEtEx1 = 0xc0a0;
+            constexpr unsigned int st6BossSp10FinalPhaseSlowdownStart = 0xc228;
+
             MSGNameFix();
-            ECLWarp(4083, 0xc89c);
-            ecl << pair{0xc8a2, (int8_t)0x44};
-            ECLCallSub(ecl, 0x376c, 30);
-            ecl << pair{0x3760, (int16_t)0} << pair{0x3918, (int16_t)0}
-                << pair{0x3938, (int16_t)0};
-            ecl << pair{0xc8e0, 4084} << pair{0xc900, 4084}
-                << pair{0xc90c, 4084} << pair{0xc918, 4084};
+            *(uint32_t*)STAGE_PENDING_INTERRUPT = 5; // manually set correct STD interrupt
+            ecl << pair { st6AKaguyaFirstSubEffectCall + ECL_INS_OPCODE, (int16_t)0 }; // NOPs a pre-existing effect sub call (when Kaguya spawns)
+
+            if (thPracParam.dlg) {
+                ECLWarp(st6ATLPreKaguyaDlgTime, st6ATLPreKaguyaDlg); // main timeline warp (to pre-Kaguya dialogue)
+            } else {
+                ECLWarp(st6ATLKaguyaCreateTime, st6ATLKaguyaCreate); // main timeline warp (to Kaguya creation)
+                ECLTimeFix(st6AKaguyaPreEirinCreationTimedInstr, 0, 10); // all these need to happen before Eirin is created, but we skip timeline wait that ensures it
+                ECLTimeFix(st6AKaguyaPostEirinCreationTimedInstr, 1, 2); // done to prevent a crash if the spell is cancelled while Kaguya isn't boss
+
+                ecl << pair { st6ATLKaguyaCreate + ECL_TL_OFFNEXT, (int8_t)(0x20 + 0x8) } // skips ahead 0xc bytes more than usual, skipping dialogue wait
+                    << pair { st6AKaguyaSecondSubEffectCall + 0x4, (int16_t)0 } // NOPs a pre-existing effect sub call (timed w/ music start)
+                    << pair { st6AKaguyaScreenFlashFuncCall + 0x4, (int16_t)0 } // NOPs calling hardcoded function 17 which does a white flash
+                    << pair { st6ATLEirinCreate + ECL_TL_TIME,              st6ATLKaguyaCreateTime + 1 } // lowers timeline instruction's time offset to run immediately
+                    << pair { st6ATLPostEirinCreateWaitEnemy + ECL_TL_TIME, st6ATLKaguyaCreateTime + 1 }  // lowers timeline instruction's time offset to run immediately
+                    << pair { st6ATLPostEirinCreateReadMsg + ECL_TL_TIME,   st6ATLKaguyaCreateTime + 1 }  // lowers timeline instruction's time offset to run immediately
+                    << pair { st6ATLPostEirinCreateWaitMsg + ECL_TL_TIME,   st6ATLKaguyaCreateTime + 1 }; // lowers timeline instruction's time offset to run immediately
+            }
+
+            if (thPracParam.phase) {
+                // remove skipped time from spell duration: 5940 (original) minus 2920-200 (skipped time in Sub78) = 3220
+                ecl << pair { st6BossSp10TimerThreshold + ECL_INS_ARG1, (int16_t)3220 };
+                ECLTimeFix(st6BossSp10FirstAttackNOP, 200, 1); // make NOP run without waiting in order to trigger jump
+                ECLJump(ecl, st6BossSp10FirstAttack, st6BossSp10PostSpin, 2920, 200); // jump to post-spin logic
+
+                if (thPracParam.phase == 2) {
+                    // remove skipped time & waits from spell duration: 5940 - (2920 - 200) = 3220 (cf. above), minus...
+                    // post spin parts force a repeated wait: wait = sum_{i=0}^{cnt-1} (start - i * sub) = cnt*start - sub*(cnt*(cnt-1))/2
+                    // first post spin part has cnt = 13 (12 + 1 loops), start = 60, sub = 2   => wait1 = 624
+                    // second post spin part has cnt = 11 (10 + 1 loops), start = 80, sub = 6  => wait2 = 550
+                    // we also have instruction time waits between each part which amount to 460 - 36 - 20 (considering the spell time value which is reset on each loop, then incremented by wait)
+                    // spell duration accounting for skips: 5940 - (2920 - 200) - (550 + 624) - (460 - 36 - 20) = 3220 - 1578 = 1642 frames
+                    ecl << pair { st6BossSp10TimerThreshold + ECL_INS_ARG1, (int16_t)1642 }
+                        << pair { st6BossSp10PostSpinEtCancel + ECL_INS_OPCODE, (int16_t)0 }; // NOP etCancel
+                    ECLJump(ecl, st6BossSp10FinalPhasePostSetup, st6BossSp10FinalPhaseEtEx1, 260); // jump to otherwise missed etEx
+                    ECLJump(ecl, st6BossSp10FinalPhasePostEtEx1, st6BossSp10FinalPhaseSlowdownStart, 460, 260); // jump to slowdown phase
+                }
+            }
             break;
-        case THPrac::TH08::TH08_ST6B_MID1:
+
+        } case THPrac::TH08::TH08_ST6B_MID1:
             ECLWarp(3490, 0x104e4);
             if (!thPracParam.dlg) {
                 ecl << pair{0x104ea, (int8_t)0x44};
@@ -2307,7 +2410,7 @@ namespace TH08 {
     // Exactly one instruction before th08_gui_create_2
     EHOOK_DY(th08_recreate_device, 0x442A7E, 1, {
         GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700,
-            Gui::INGAGME_INPUT_GEN1, 0x164d528, 0x164d530, 0x164d538,
+            Gui::INGAGME_INPUT_GEN1, INPUT_ADDR, 0x164d530, 0x164d538,
             -1);
     })
     HOOKSET_ENDDEF()
@@ -2319,7 +2422,7 @@ namespace TH08 {
 
         // Init
         GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700,
-            Gui::INGAGME_INPUT_GEN1, 0x164d528, 0x164d530, 0x164d538,
+            Gui::INGAGME_INPUT_GEN1, INPUT_ADDR, 0x164d530, 0x164d538,
             -1);
 
         SetDpadHook(0x43D48B, 3);
