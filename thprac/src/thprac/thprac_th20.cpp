@@ -2383,6 +2383,7 @@ namespace TH20 {
             sReplayPath = nullptr;
         }
     })
+    PATCH_DY(th20_fix_rep_restart_stage, 0xdd8e3, NOP(6))
     EHOOK_DY(th20_rep_get_path, 0x1098E1, 5, {
         sReplayPath = _strdup((char*)pCtx->Edx);
     })
