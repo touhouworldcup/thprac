@@ -1551,12 +1551,12 @@ namespace TH13 {
 
         bool el_switch;
         bool is_practice;
-        bool result;
+        bool result = false;
 
         if (bgm_cmd == 9)
             th13ElBgmTranceFlag = !th13ElBgmTranceFlag;
 
-        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode == 1 && thPracParam.section && !th13ElBgmTranceFlag;
+        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode == 1 && thPracParam.section;
         is_practice = (*((int32_t*)MODEFLAGS) & 0x1);
 
         if (th13ElBgmTranceFlag && bgm_cmd == 3) {
@@ -1564,8 +1564,10 @@ namespace TH13 {
             el_switch = false;
         }
 
-        result = ElBgmTest<0x43ae75, 0x42c444, 0x43e555, 0x43e738, 0xffffffff>(
-            el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
+        if (bgm_cmd != 9) { //elBgmTest will not return 0 in the bgm_cmd == 9 (trance-related) case if is_practice==true since it's not recognized
+            result = ElBgmTest<0x43ae75, 0x42c444, 0x43e555, 0x43e738, 0xffffffff>(
+                el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
+        }
 
         if (result && retn_addr == 0x42c444) {
             th13ElBgmFlag = true;
