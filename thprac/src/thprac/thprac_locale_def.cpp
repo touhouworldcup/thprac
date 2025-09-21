@@ -17388,7 +17388,7 @@ const th_glossary_t TH15_SPELL_PHASE_EXTRA_LAST[5]
 
 namespace TH16 {
 
-const char* th_sections_str[3][4][73]
+const char* th_sections_str[3][4][72]
 {
     {
         {
@@ -17413,7 +17413,6 @@ const char* th_sections_str[3][4][73]
             "关底三非",
             "狛符「单人式阿吽的呼吸」",
             "道中一非",
-            "道中结尾",
             "关底一非",
             "魔符「顷刻菩提」",
             "关底二非",
@@ -17488,7 +17487,6 @@ const char* th_sections_str[3][4][73]
             "关底三非",
             "狛符「单人式阿吽的呼吸」",
             "道中一非",
-            "道中结尾",
             "关底一非",
             "魔符「顷刻菩提」",
             "关底二非",
@@ -17563,7 +17561,6 @@ const char* th_sections_str[3][4][73]
             "关底三非",
             "狛符「单人式阿吽的呼吸」",
             "道中一非",
-            "道中结尾",
             "关底一非",
             "魔符「即席菩提」",
             "关底二非",
@@ -17638,7 +17635,6 @@ const char* th_sections_str[3][4][73]
             "关底三非",
             "狛符「单人式阿吽的呼吸」",
             "道中一非",
-            "道中结尾",
             "关底一非",
             "魔符「即席菩提」",
             "关底二非",
@@ -17715,7 +17711,6 @@ const char* th_sections_str[3][4][73]
             "Boss Nonspell 3",
             "Koma Sign \"Solitary A-Um Breathing\"",
             "Mid Nonspell 1",
-            "-",
             "Boss Nonspell 1",
             "Magic Sign \"Instant Bodhi\"",
             "Boss Nonspell 2",
@@ -17790,7 +17785,6 @@ const char* th_sections_str[3][4][73]
             "Boss Nonspell 3",
             "Koma Sign \"Solitary A-Um Breathing\"",
             "Mid Nonspell 1",
-            "-",
             "Boss Nonspell 1",
             "Magic Sign \"Instant Bodhi\"",
             "Boss Nonspell 2",
@@ -17865,7 +17859,6 @@ const char* th_sections_str[3][4][73]
             "Boss Nonspell 3",
             "Koma Sign \"Solitary A-Um Breathing\"",
             "Mid Nonspell 1",
-            "-",
             "Boss Nonspell 1",
             "Magic Sign \"Instant Bodhi\"",
             "Boss Nonspell 2",
@@ -17940,7 +17933,6 @@ const char* th_sections_str[3][4][73]
             "Boss Nonspell 3",
             "Koma Sign \"Solitary A-Um Breathing\"",
             "Mid Nonspell 1",
-            "-",
             "Boss Nonspell 1",
             "Magic Sign \"Instant Bodhi\"",
             "Boss Nonspell 2",
@@ -18017,7 +18009,6 @@ const char* th_sections_str[3][4][73]
             "ボス 通常3",
             "狛符「独り阿吽の呼吸」",
             "道中 通常1",
-            "-",
             "ボス 通常1",
             "魔符「インスタントボーディ」",
             "ボス 通常2",
@@ -18092,7 +18083,6 @@ const char* th_sections_str[3][4][73]
             "ボス 通常3",
             "狛符「独り阿吽の呼吸」",
             "道中 通常1",
-            "-",
             "ボス 通常1",
             "魔符「インスタントボーディ」",
             "ボス 通常2",
@@ -18167,7 +18157,6 @@ const char* th_sections_str[3][4][73]
             "ボス 通常3",
             "狛符「独り阿吽の呼吸」",
             "道中 通常1",
-            "-",
             "ボス 通常1",
             "魔符「即席菩提」",
             "ボス 通常2",
@@ -18242,7 +18231,6 @@ const char* th_sections_str[3][4][73]
             "ボス 通常3",
             "狛符「独り阿吽の呼吸」",
             "道中 通常1",
-            "-",
             "ボス 通常1",
             "魔符「即席菩提」",
             "ボス 通常2",
@@ -18298,7 +18286,7 @@ const char* th_sections_str[3][4][73]
     },
 };
 
-const uint8_t th_sections_bgm[73]
+const uint8_t th_sections_bgm[72]
 {
     0,
     0,
@@ -18320,7 +18308,6 @@ const uint8_t th_sections_bgm[73]
     1,
     1,
     1,
-    0,
     0,
     1,
     1,
@@ -18390,7 +18377,7 @@ const th_sections_t th_sections_cba[7][2][19]
         { TH16_ST3_BOSS1, TH16_ST3_BOSS2, TH16_ST3_BOSS3, TH16_ST3_BOSS4, TH16_ST3_BOSS5, TH16_ST3_BOSS6, },
     },
     {
-        { TH16_ST4_MID1, TH16_ST4_MID2, },
+        { TH16_ST4_MID1, },
         { TH16_ST4_BOSS1, TH16_ST4_BOSS2, TH16_ST4_BOSS3, TH16_ST4_BOSS4, TH16_ST4_BOSS5, TH16_ST4_BOSS6, },
     },
     {
@@ -18422,7 +18409,7 @@ const th_sections_t th_sections_cbt[7][2][14]
         { TH16_ST3_MID2, TH16_ST3_BOSS2, TH16_ST3_BOSS4, TH16_ST3_BOSS6, },
     },
     {
-        { TH16_ST4_MID1, TH16_ST4_MID2, TH16_ST4_BOSS1, TH16_ST4_BOSS3, TH16_ST4_BOSS5, },
+        { TH16_ST4_MID1, TH16_ST4_BOSS1, TH16_ST4_BOSS3, TH16_ST4_BOSS5, },
         { TH16_ST4_BOSS2, TH16_ST4_BOSS4, TH16_ST4_BOSS6, },
     },
     {
