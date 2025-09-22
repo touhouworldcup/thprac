@@ -12,6 +12,23 @@ namespace THPrac {
 namespace TH20 {
     using std::pair;
     using namespace TH20;
+
+    enum rel_addrs {
+        STAGE_NUM = 0x1ba7e4,
+        GAME_SIDE0 = 0x1BA568,
+        GAME_THREAD_PTR = 0x1BA828,
+    };
+
+    struct AnmVM {
+        char gap0[0x20];
+        uint32_t sprite_id; // 0x20
+        uint32_t script_id; // 0x24
+        char gap1[0x48];
+        Float2 sprite_dims; // 0x70
+        char gap2[0x420];
+        uint16_t anm_draw_mode; // 0x498, contains both render & blend mode
+    };
+
     struct THPracParam {
         int32_t mode;
         int32_t stage;
@@ -43,6 +60,7 @@ namespace TH20 {
 
         int32_t reimuR2Timer[7];
         int32_t passiveMeterTimer[7];
+        float resolutionSpriteHeight;
 
         bool dlg;
 
@@ -87,6 +105,7 @@ namespace TH20 {
 
             GetJsonArray(reimuR2Timer, elementsof(reimuR2Timer));
             GetJsonArray(passiveMeterTimer, elementsof(passiveMeterTimer));
+            GetJsonValue(resolutionSpriteHeight);
 
             return true;
         }
@@ -101,6 +120,7 @@ namespace TH20 {
 
                 AddJsonArray(reimuR2Timer, elementsof(reimuR2Timer));
                 AddJsonArray(passiveMeterTimer, elementsof(passiveMeterTimer));
+                AddJsonValue(resolutionSpriteHeight);
 
                 ReturnJson();
             } else if (mode == 1) {
@@ -693,7 +713,7 @@ namespace TH20 {
 
     EHOOK_ST(th20_cleanup_stone_active, 0x11269f, 1, {
         // to make stoneActive work, we set the meter to max in init, let the game do its thing & adjust the meter/timer to the specified value
-        uintptr_t game_side = RVA(0x1BA568);
+        uintptr_t game_side = RVA(GAME_SIDE0);
         uintptr_t player_stats = game_side + 0x88;
         *(int32_t*)(player_stats + 0x5C) = thPracParam.stone * thPracParam.stoneMax;
 
@@ -2255,12 +2275,12 @@ namespace TH20 {
     EHOOK_DY(th20_patch_main, 0xBBD56, 1, {
         if (thPracParam.mode == 1) {
             *(int32_t*)RVA(0x1BA5F0) = (int32_t)(thPracParam.score / 10);
-            *(int32_t*)RVA(0x1BA568 + 0x140) = thPracParam.life;
-            *(int32_t*)RVA(0x1BA568 + 0x148) = thPracParam.life_fragment;
-            *(int32_t*)RVA(0x1BA568 + 0x154) = thPracParam.bomb;
-            *(int32_t*)RVA(0x1BA568 + 0x158) = thPracParam.bomb_fragment;
-            *(int32_t*)RVA(0x1BA568 + 0xB8) = thPracParam.power;
-            *(int32_t*)RVA(0x1BA568 + 0xCC) = thPracParam.value;
+            *(int32_t*)RVA(GAME_SIDE0 + 0x140) = thPracParam.life;
+            *(int32_t*)RVA(GAME_SIDE0 + 0x148) = thPracParam.life_fragment;
+            *(int32_t*)RVA(GAME_SIDE0 + 0x154) = thPracParam.bomb;
+            *(int32_t*)RVA(GAME_SIDE0 + 0x158) = thPracParam.bomb_fragment;
+            *(int32_t*)RVA(GAME_SIDE0 + 0xB8) = thPracParam.power;
+            *(int32_t*)RVA(GAME_SIDE0 + 0xCC) = thPracParam.value;
 
             THSectionPatch();
         }
@@ -2270,7 +2290,7 @@ namespace TH20 {
         if (thPracParam.mode != 1)
             return;
 
-        uintptr_t game_side = RVA(0x1BA568);
+        uintptr_t game_side = RVA(GAME_SIDE0);
         uintptr_t player_stats = game_side + 0x88;
         int32_t hyperMax = *(int32_t*)(player_stats + 0x50);
 
@@ -2342,7 +2362,7 @@ namespace TH20 {
     PATCH_DY(th20_disable_prac_menu_1, 0x129B40, "c3")
     PATCH_DY(th20_prac_menu_ignore_locked, 0x12CA30, "b001c3")
     EHOOK_DY(th20_extra_prac_fix, 0x11EB3D, 2, {
-        *(uint32_t*)RVA(0x1BA568 + 0x88 + 0x1E0) = *(uint32_t*)RVA(0x1B0A60);
+        *(uint32_t*)RVA(GAME_SIDE0 + 0x88 + 0x1E0) = *(uint32_t*)RVA(0x1B0A60);
     })
     PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
     EHOOK_DY(th20_esc_q, 0xe2f45 , 7 , {
@@ -2350,29 +2370,42 @@ namespace TH20 {
             pCtx->Eip = RVA(0xe2fe7);
     })
     EHOOK_DY(th20_timer_desync_fix, 0xBA99F, 6, {
-        uint32_t stage = *(uint32_t*)RVA(0x1BA568 + 0x88 + 0x1F4) - 1;
-        if (*(uint32_t*)(*(uintptr_t*)RVA(0x1BA828) + 0x108)) {
+        uint32_t stage = *(uint32_t*)RVA(GAME_SIDE0 + 0x88 + 0x1F4) - 1;
+        if (*(uint32_t*)(*(uintptr_t*)RVA(GAME_THREAD_PTR) + 0x108)) {
             // Playback
             int32_t offset = stage != 0 && !*(uint32_t*)RVA(0x1C06A0) ? 30 : 0;
             if (thPracParam.reimuR2Timer[stage])
-                asm_call_rel<0x23520, Thiscall>(*(uintptr_t*)RVA(0x1BA568 + 4) + 0x22B4 + 0x12580, thPracParam.reimuR2Timer[stage] + offset);
+                asm_call_rel<0x23520, Thiscall>(*(uintptr_t*)RVA(GAME_SIDE0 + 4) + 0x22B4 + 0x12580, thPracParam.reimuR2Timer[stage] + offset);
             if (thPracParam.passiveMeterTimer[stage])
                 asm_call_rel<0x23520, Thiscall>(*(uintptr_t*)RVA(0x1C6118) + 0x28, thPracParam.passiveMeterTimer[stage]);
         } else {
             // Recording
-            thPracParam.reimuR2Timer[stage] = *(int32_t*)(*(uintptr_t*)RVA(0x1BA568 + 4) + 0x22B4 + 0x12580 + 4);
+            thPracParam.reimuR2Timer[stage] = *(int32_t*)(*(uintptr_t*)RVA(GAME_SIDE0 + 4) + 0x22B4 + 0x12580 + 4);
             thPracParam.passiveMeterTimer[stage] = *(int32_t*)(*(uintptr_t*)RVA(0x1C6118) + 0x28 + 4);
         }
     })
     PATCH_DY(th20_fix_rep_save_stone_names, 0x127B9F, "8B82D8000000" NOP(22))
     EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
-        if (*(uint32_t*)(*(uintptr_t*)RVA(0x1BA828) + 0x108)) {
+        if (*(uint32_t*)(*(uintptr_t*)RVA(GAME_THREAD_PTR) + 0x108)) {
             // Yes, the order really is swapped like this
-            auto selected = (uint32_t*)(RVA(0x1BA568) + 0x88 + 0x1C);
+            auto selected = (uint32_t*)(RVA(GAME_SIDE0) + 0x88 + 0x1C);
             selected[0] = replayStones[0];
             selected[1] = replayStones[2];
             selected[2] = replayStones[1];
             selected[3] = replayStones[3];
+        }
+    })
+    EHOOK_DY(th20_fix_ex_rep_resolution, 0x2c719, 1, { //hooks post setting ANM sprite info from sprite_id -1 (-> ASCII sprite 288)
+        if (GetMemContent(RVA(STAGE_NUM)) == 7) {
+            AnmVM* vm = GetMemContent<AnmVM*>((uintptr_t)pCtx->Ebp - 0xc4);
+
+            if (vm->sprite_id == 288 && vm->script_id == 33) { // reptilian circle (set-up once during stage load)
+                if (!THGuiRep::singleton().mRepStatus) // Recording
+                    thPracParam.resolutionSpriteHeight = vm->sprite_dims.y;
+
+                else if (thPracParam.resolutionSpriteHeight) //Playback
+                    vm->sprite_dims.y = thPracParam.resolutionSpriteHeight;
+            }
         }
     })
     PATCH_DY(th20_fix_rep_results_skip, 0x110D61, "7B4BFAFF")
