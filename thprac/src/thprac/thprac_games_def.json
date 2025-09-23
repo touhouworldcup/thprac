@@ -123,6 +123,11 @@
         "有効にすると、現在のディレクトリに有効なゲームが存在する場合でも、thpracを起動すると常にランチャーが開きます。"
       ],
       "THPRAC_THEME": [ "主题:", "Theme: ", "テーマ:" ],
+      "THPRAC_THEME_OPTION": [
+        "黑暗\\0光明\\0经典\\0\\0",
+        "Dark\\0Light\\0Classic\\0\\0",
+        "ダーク\\0ライト\\0クラシック\\0\\0"
+      ],
       "THPRAC_AFTER_LAUNCH": [ "启动游戏后:", "After launching game:", "ゲーム起動後:" ],
       "THPRAC_AFTER_LAUNCH_OPTION": [
         "最小化启动器\\0关闭启动器\\0什么也不做\\0\\0",
@@ -225,9 +230,9 @@
       "THPRAC_ADVANCED_OPTION": [ "高级选项", "Advanced option", "高度なオプション" ],
       "THPRAC_RENDER_ONLY_USED_GLYPHS": [ "只渲染用到的字形", "Render only used glyphs", "使用する文字だけを描画" ],
       "THPRAC_RENDER_ONLY_USED_GLYPHS_DESC": [
-        "若游戏内的所有文字都无法正常显示（譬如显示为白色实心方框），请打开此选项。", 
-        "If all text in the game fails to display properly (e.g., appears as white solid squares), please enable this option.", 
-        "ゲーム内のすべての文字が正常に表示されない場合（白い四角で表示されるなど）、このオプションを有効にしてください。" 
+        "若游戏内的所有文字都无法正常显示（譬如显示为白色实心方框），请打开此选项。",
+        "If all text in the game fails to display properly (e.g., appears as white solid squares), please enable this option.",
+        "ゲーム内のすべての文字が正常に表示されない場合（白い四角で表示されるなど）、このオプションを有効にしてください。"
       ],
 
       "THPRAC_TOOLS": [ "工具", "Tools", "ツール" ],
@@ -415,52 +420,52 @@
       "THPRAC_GAMES_MISSING": [ "少女神隐中...", "Girls are now missing...", "少女神隠中..." ],
       "THPRAC_GOTO_STEAM_PAGE": [ "前往Steam页面", "Go to Steam page", "Steamページに移動" ],
 
-      "THPRAC_GAMEROLL_EENY_MEENY": ["伊尼、米尼、迈尼、莫！", "Eeny, meeny, miny, moe!", "いーにー、みーにー、まいにー、もー！"],
-      "THPRAC_GAMEROLL_ROLL": ["抽一个！", "ROLL!", "ロール！"],
-      "THPRAC_GAMEROLL_ALCOSTG": ["黄昏酒场", "alcostg", "黄昏酒場"],
-      "THPRAC_GAMEROLL_TH01": ["灵异传", "th01", "靈異伝"],
-      "THPRAC_GAMEROLL_TH02": ["封魔录", "th02", "封魔録"],
-      "THPRAC_GAMEROLL_TH03": ["梦时空", "th03", "夢時空"],
-      "THPRAC_GAMEROLL_TH04": ["幻想乡", "th04", "幻想郷"],
-      "THPRAC_GAMEROLL_TH05": ["怪绮谈", "th05", "怪綺談"],
-      "THPRAC_GAMEROLL_TH06": ["红魔乡", "th06", "紅魔郷"],
-      "THPRAC_GAMEROLL_TH07": ["妖妖梦", "th07", "妖々夢"],
-      "THPRAC_GAMEROLL_TH075": ["萃梦想", "th075", "萃夢想"],
-      "THPRAC_GAMEROLL_TH08": ["永夜抄", "th08", "永夜抄"],
-      "THPRAC_GAMEROLL_TH09": ["花映冢", "th09", "花映塚"],
-      "THPRAC_GAMEROLL_TH095": ["文花帖", "th095", "文花帖"],
-      "THPRAC_GAMEROLL_TH10": ["风神录", "th10", "風神録"],
-      "THPRAC_GAMEROLL_TH105": ["绯想天", "th105", "緋想天"],
-      "THPRAC_GAMEROLL_TH11": ["地灵殿", "th11", "地霊殿"],
-      "THPRAC_GAMEROLL_TH12": ["星莲船", "th12", "星蓮船"],
-      "THPRAC_GAMEROLL_TH123": ["非想天则", "th123", "非想天則"],
-      "THPRAC_GAMEROLL_TH125": ["文花帖DS", "th125", "ダブルスポイラー"],
-      "THPRAC_GAMEROLL_TH128": ["妖精大战争", "th128", "妖精大戦争"],
-      "THPRAC_GAMEROLL_TH13": ["神灵庙", "th13", "神霊廟"],
-      "THPRAC_GAMEROLL_TH135": ["心绮楼", "th135", "心綺楼"],
-      "THPRAC_GAMEROLL_TH14": ["辉针城", "th14", "輝針城"],
-      "THPRAC_GAMEROLL_TH143": ["天邪鬼", "th143", "弾幕アマノジャク"],
-      "THPRAC_GAMEROLL_TH145": ["深秘录", "th145", "深秘録"],
-      "THPRAC_GAMEROLL_TH15": ["绀珠传", "th15", "紺珠伝"],
-      "THPRAC_GAMEROLL_TH155": ["凭依华", "th155", "憑依華"],
-      "THPRAC_GAMEROLL_TH16": ["天空璋", "th16", "天空璋"],
-      "THPRAC_GAMEROLL_TH165": ["秘封噩梦日记", "th165", "秘封ナイトメアダイアリー"],
-      "THPRAC_GAMEROLL_TH17": ["鬼形兽", "th17", "鬼形獣"],
-      "THPRAC_GAMEROLL_TH175": ["刚欲异闻", "th175", "剛欲異聞"],
-      "THPRAC_GAMEROLL_TH18": ["虹龙洞", "th18", "虹龍洞"],
-      "THPRAC_GAMEROLL_TH185": ["弹幕狂们的黑市", "th185", "バレットフィリア達の闇市場"],
-      "THPRAC_GAMEROLL_TH19": ["兽王园", "th19", "獣王園"],
-      "THPRAC_GAMEROLL_TH20": ["锦上京", "th20", "錦上京"],
+      "THPRAC_GAMEROLL_EENY_MEENY": [ "伊尼、米尼、迈尼、莫！", "Eeny, meeny, miny, moe!", "いーにー、みーにー、まいにー、もー！" ],
+      "THPRAC_GAMEROLL_ROLL": [ "抽一个！", "ROLL!", "ロール！" ],
+      "THPRAC_GAMEROLL_ALCOSTG": [ "黄昏酒场", "alcostg", "黄昏酒場" ],
+      "THPRAC_GAMEROLL_TH01": [ "灵异传", "th01", "靈異伝" ],
+      "THPRAC_GAMEROLL_TH02": [ "封魔录", "th02", "封魔録" ],
+      "THPRAC_GAMEROLL_TH03": [ "梦时空", "th03", "夢時空" ],
+      "THPRAC_GAMEROLL_TH04": [ "幻想乡", "th04", "幻想郷" ],
+      "THPRAC_GAMEROLL_TH05": [ "怪绮谈", "th05", "怪綺談" ],
+      "THPRAC_GAMEROLL_TH06": [ "红魔乡", "th06", "紅魔郷" ],
+      "THPRAC_GAMEROLL_TH07": [ "妖妖梦", "th07", "妖々夢" ],
+      "THPRAC_GAMEROLL_TH075": [ "萃梦想", "th075", "萃夢想" ],
+      "THPRAC_GAMEROLL_TH08": [ "永夜抄", "th08", "永夜抄" ],
+      "THPRAC_GAMEROLL_TH09": [ "花映冢", "th09", "花映塚" ],
+      "THPRAC_GAMEROLL_TH095": [ "文花帖", "th095", "文花帖" ],
+      "THPRAC_GAMEROLL_TH10": [ "风神录", "th10", "風神録" ],
+      "THPRAC_GAMEROLL_TH105": [ "绯想天", "th105", "緋想天" ],
+      "THPRAC_GAMEROLL_TH11": [ "地灵殿", "th11", "地霊殿" ],
+      "THPRAC_GAMEROLL_TH12": [ "星莲船", "th12", "星蓮船" ],
+      "THPRAC_GAMEROLL_TH123": [ "非想天则", "th123", "非想天則" ],
+      "THPRAC_GAMEROLL_TH125": [ "文花帖DS", "th125", "ダブルスポイラー" ],
+      "THPRAC_GAMEROLL_TH128": [ "妖精大战争", "th128", "妖精大戦争" ],
+      "THPRAC_GAMEROLL_TH13": [ "神灵庙", "th13", "神霊廟" ],
+      "THPRAC_GAMEROLL_TH135": [ "心绮楼", "th135", "心綺楼" ],
+      "THPRAC_GAMEROLL_TH14": [ "辉针城", "th14", "輝針城" ],
+      "THPRAC_GAMEROLL_TH143": [ "天邪鬼", "th143", "弾幕アマノジャク" ],
+      "THPRAC_GAMEROLL_TH145": [ "深秘录", "th145", "深秘録" ],
+      "THPRAC_GAMEROLL_TH15": [ "绀珠传", "th15", "紺珠伝" ],
+      "THPRAC_GAMEROLL_TH155": [ "凭依华", "th155", "憑依華" ],
+      "THPRAC_GAMEROLL_TH16": [ "天空璋", "th16", "天空璋" ],
+      "THPRAC_GAMEROLL_TH165": [ "秘封噩梦日记", "th165", "秘封ナイトメアダイアリー" ],
+      "THPRAC_GAMEROLL_TH17": [ "鬼形兽", "th17", "鬼形獣" ],
+      "THPRAC_GAMEROLL_TH175": [ "刚欲异闻", "th175", "剛欲異聞" ],
+      "THPRAC_GAMEROLL_TH18": [ "虹龙洞", "th18", "虹龍洞" ],
+      "THPRAC_GAMEROLL_TH185": [ "弹幕狂们的黑市", "th185", "バレットフィリア達の闇市場" ],
+      "THPRAC_GAMEROLL_TH19": [ "兽王园", "th19", "獣王園" ],
+      "THPRAC_GAMEROLL_TH20": [ "锦上京", "th20", "錦上京" ],
 
-      "THPRAC_GAMEROLL_EMPTY_SHOTTYPES": ["", "", ""],
-      "THPRAC_GAMEROLL_TH02_SHOTTYPES": ["灵梦A\\0灵梦B\\0灵梦C\\0\\0", "Reimu A\\0Reimu B\\0Reimu C\\0\\0", "靈梦A\\0靈梦B\\0靈梦C\\0\\0"],
+      "THPRAC_GAMEROLL_EMPTY_SHOTTYPES": [ "", "", "" ],
+      "THPRAC_GAMEROLL_TH02_SHOTTYPES": [ "灵梦A\\0灵梦B\\0灵梦C\\0\\0", "Reimu A\\0Reimu B\\0Reimu C\\0\\0", "靈梦A\\0靈梦B\\0靈梦C\\0\\0" ],
       "THPRAC_GAMEROLL_TH03_SHOTTYPES": [
         "灵梦\\0魅魔\\0魔理沙\\0爱莲\\0小兔姬\\0卡娜\\0理香子\\0千百合\\0梦美\\0\\0",
         "Reimu\\0Mima\\0Marisa\\0Ellen\\0Kotohime\\0Kana\\0Rikako\\0Chiyuri\\0Yumemi\\0\\0",
         "靈夢\\0魅魔\\0魔理沙\\0エレン\\0小兎姫\\0カナ\\0理香子\\0ちゆり\\0夢美\\0\\0"
       ],
-      "THPRAC_GAMEROLL_TH04_SHOTTYPES": ["灵梦\\0魔理沙\\0\\0", "Reimu\\0Marisa\\0\\0", "靈夢\\0魔理沙\\0\\0"],
-      "THPRAC_GAMEROLL_TH05_SHOTTYPES": ["灵梦\\0魔理沙\\0魅魔\\0幽香\\0\\0", "Reimu\\0Marisa\\0Mima\\0Yuuka\\0\\0", "靈夢\\0魔理沙\\0魅魔\\0幽香\\0\\0"],
+      "THPRAC_GAMEROLL_TH04_SHOTTYPES": [ "灵梦\\0魔理沙\\0\\0", "Reimu\\0Marisa\\0\\0", "靈夢\\0魔理沙\\0\\0" ],
+      "THPRAC_GAMEROLL_TH05_SHOTTYPES": [ "灵梦\\0魔理沙\\0魅魔\\0幽香\\0\\0", "Reimu\\0Marisa\\0Mima\\0Yuuka\\0\\0", "靈夢\\0魔理沙\\0魅魔\\0幽香\\0\\0" ],
       "THPRAC_GAMEROLL_TH06_SHOTTYPES": [
         "灵梦A\\0灵梦B\\0魔理沙A\\0魔理沙B\\0\\0",
         "Reimu A\\0Reimu B\\0Marisa A\\0Marisa B\\0\\0",
@@ -733,19 +738,19 @@
         "TH18 東方虹龍洞　～ Unconnected Marketeers."
       ],
       "TH185_TITLE": [
-          "TH18.5 弹幕狂们的黑市　～ 100th Black Market.",
-          "TH18.5 100th Black Market",
-          "TH18.5 バレットフィリア達の闇市場　～ 100th Black Market."
+        "TH18.5 弹幕狂们的黑市　～ 100th Black Market.",
+        "TH18.5 100th Black Market",
+        "TH18.5 バレットフィリア達の闇市場　～ 100th Black Market."
       ],
       "TH19_TITLE": [
-          "TH19 东方兽王园　～ Unfinished Dream of All Living Ghost.",
-          "TH19 Unfinished Dream of All Living Ghost",
-          "TH19 東方獣王園　～ Unfinished Dream of All Living Ghost."
+        "TH19 东方兽王园　～ Unfinished Dream of All Living Ghost.",
+        "TH19 Unfinished Dream of All Living Ghost",
+        "TH19 東方獣王園　～ Unfinished Dream of All Living Ghost."
       ],
-	  "TH20_TITLE": [
-          "TH20 东方锦上京　～ Fossilized Wonders.",
-          "TH20 Fossilized Wonders",
-          "TH20 東方錦上京　～ Fossilized Wonders."
+      "TH20_TITLE": [
+        "TH20 东方锦上京　～ Fossilized Wonders.",
+        "TH20 Fossilized Wonders",
+        "TH20 東方錦上京　～ Fossilized Wonders."
       ]
     },
 

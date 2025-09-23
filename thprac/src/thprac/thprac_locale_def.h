@@ -218,9 +218,6 @@ enum th_glossary_t
     TH14_RECORDING_WAITING,
     TH14_RECORD_E,
     TH14_REPLAY_NO_RECORDS,
-    TH14_SAVE,
-    TH14_SELECTED_NONE,
-    TH14_SELECTED_REPLAY,
     TH14_START_RECORDING,
     TH14_SUCCESS,
     TH14_SUCCESS_SAVED,
@@ -546,12 +543,9 @@ enum th_glossary_t
     TH18_REPFIX_LOCKED,
     TH18_REPFIX_MISMATCH,
     TH18_REPFIX_NOTHING,
-    TH18_REPFIX_SAVEAS,
-    TH18_REPFIX_SELECTED,
     TH18_REPFIX_SHOW_INS,
     TH18_REPFIX_UNLOCK,
     TH18_REPLAY_BONUS,
-    TH18_REPLAY_FIX,
     TH18_RESTART_FIX,
     TH18_RESTART_FIX_DESC,
     TH18_RICEBALL_CD,
@@ -574,6 +568,9 @@ enum th_glossary_t
     TH19_SHOW_ENEMY_HP,
     TH19_TITLE,
     TH20_CYCLE_3,
+    TH20_EXTRA_RESOLUTION_FIX,
+    TH20_EXTRA_RESOLUTION_FIX_DESC,
+    TH20_EXRESFIX_SELECTED_NONE,
     TH20_FAKE_UNLOCK_STONES,
     TH20_FAKE_UNLOCK_STONES_DESC,
     TH20_FIX_HITBOX,
@@ -871,6 +868,7 @@ enum th_glossary_t
     THPRAC_THCRAP_UNSET_MODAL,
     THPRAC_THCRAP_UNSET_TXT,
     THPRAC_THEME,
+    THPRAC_THEME_OPTION,
     THPRAC_TOOLS,
     THPRAC_TOOLS_APPLY_THPRAC,
     THPRAC_TOOLS_RND_GAME,
@@ -1036,6 +1034,11 @@ enum th_glossary_t
     TH_PROGRESS,
     TH_RAGE,
     TH_REAL_BULLET_SIZE,
+    TH_REPFIX_NEED_THPRAC_DESC,
+    TH_REPFIX_SAVE,
+    TH_REPFIX_SELECTED,
+    TH_REPFIX_SELECTED_NONE,
+    TH_REPLAY_FIX,
     TH_RESTART,
     TH_RESUME,
     TH_RIGHT,
@@ -1077,7 +1080,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1065];
+extern const char* th_glossary_str[3][1068];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2704,10 +2707,10 @@ extern const th_glossary_t TH20_CYCLE_LIST[4];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[2775];
+extern const wchar_t __thprac_loc_range_zh[2777];
 
 extern const wchar_t __thprac_loc_range_en[31];
 
-extern const wchar_t __thprac_loc_range_ja[2241];
+extern const wchar_t __thprac_loc_range_ja[2245];
 
 }
