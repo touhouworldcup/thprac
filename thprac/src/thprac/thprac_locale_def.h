@@ -75,6 +75,8 @@ enum th_glossary_t
     TH08_DOSWNC,
     TH08_FAMILIAR,
     TH08_GAUGE,
+    TH08_HE_POST_SPIN,
+    TH08_HE_SLOWDOWN,
     TH08_LASTSPELL,
     TH08_NIGHT,
     TH08_STAGE_4A,
@@ -158,8 +160,6 @@ enum th_glossary_t
     TH128_START_C,
     TH128_START_EX,
     TH128_TITLE,
-    TH12_PREVENT_REIA_DESYNC,
-    TH12_PREVENT_REIA_DESYNC_DESC,
     TH12_TITLE,
     TH12_UFO_SIDE,
     TH12_VENTRA_1,
@@ -197,9 +197,6 @@ enum th_glossary_t
     TH14_CYCLE_4,
     TH14_CYCLE_5,
     TH14_DELETE,
-    TH14_ERROR,
-    TH14_ERROR_DEST,
-    TH14_ERROR_SRC,
     TH14_LOAD,
     TH14_LOCKED,
     TH14_MARISA_LASER,
@@ -218,12 +215,7 @@ enum th_glossary_t
     TH14_RECORDING_WAITING,
     TH14_RECORD_E,
     TH14_REPLAY_NO_RECORDS,
-    TH14_SAVE,
-    TH14_SELECTED_NONE,
-    TH14_SELECTED_REPLAY,
     TH14_START_RECORDING,
-    TH14_SUCCESS,
-    TH14_SUCCESS_SAVED,
     TH14_TITLE,
     TH155_TITLE,
     TH15_ILT_0,
@@ -546,12 +538,9 @@ enum th_glossary_t
     TH18_REPFIX_LOCKED,
     TH18_REPFIX_MISMATCH,
     TH18_REPFIX_NOTHING,
-    TH18_REPFIX_SAVEAS,
-    TH18_REPFIX_SELECTED,
     TH18_REPFIX_SHOW_INS,
     TH18_REPFIX_UNLOCK,
     TH18_REPLAY_BONUS,
-    TH18_REPLAY_FIX,
     TH18_RESTART_FIX,
     TH18_RESTART_FIX_DESC,
     TH18_RICEBALL_CD,
@@ -574,6 +563,13 @@ enum th_glossary_t
     TH19_SHOW_ENEMY_HP,
     TH19_TITLE,
     TH20_CYCLE_3,
+    TH20_EXRESFIX_RESET_DATA,
+    TH20_EXRESFIX_RESOLUTION,
+    TH20_EXRESFIX_RESOLUTION_DISABLE_HINT,
+    TH20_EXRESFIX_SAVE_DISABLE_HINT,
+    TH20_EXRESFIX_SELECTED_NONE,
+    TH20_EXTRA_RESOLUTION_FIX,
+    TH20_EXTRA_RESOLUTION_FIX_DESC,
     TH20_FAKE_UNLOCK_STONES,
     TH20_FAKE_UNLOCK_STONES_DESC,
     TH20_FIX_HITBOX,
@@ -584,6 +580,10 @@ enum th_glossary_t
     TH20_INTERNAL_GAUGES,
     TH20_NEXT_STONE,
     TH20_PIV_OVERFLOW_FIX,
+    TH20_RESOLUTION_1280_960_PLUS,
+    TH20_RESOLUTION_640_480,
+    TH20_RESOLUTION_960_720,
+    TH20_RESOLUTION_UNSPECIFIED,
     TH20_STONE_ACTIVE,
     TH20_STONE_GAUGE,
     TH20_STONE_LEVEL_B,
@@ -749,7 +749,6 @@ enum th_glossary_t
     THPRAC_HOTKEY_SPECIAL_SETTINGS_TOOLTIP,
     THPRAC_HOTKEY_SUBMASK_WARNING,
     THPRAC_HOTKEY_TOOLTIP,
-    THPRAC_HOTKEY_UM_WARNING,
     THPRAC_HOTKEY_UNASSIGNED,
     THPRAC_IGNORE_GLOBAL_DATA,
     THPRAC_IGNORE_LOCAL_DATA,
@@ -872,6 +871,7 @@ enum th_glossary_t
     THPRAC_THCRAP_UNSET_MODAL,
     THPRAC_THCRAP_UNSET_TXT,
     THPRAC_THEME,
+    THPRAC_THEME_OPTION,
     THPRAC_TOOLS,
     THPRAC_TOOLS_APPLY_THPRAC,
     THPRAC_TOOLS_RND_GAME,
@@ -976,6 +976,7 @@ enum th_glossary_t
     TH_END_S9,
     TH_END_STAGE,
     TH_ENHANCED,
+    TH_ERROR,
     TH_EXIT,
     TH_EXTRA,
     TH_FACTOR_ACB,
@@ -1037,6 +1038,19 @@ enum th_glossary_t
     TH_PROGRESS,
     TH_RAGE,
     TH_REAL_BULLET_SIZE,
+    TH_REPFIX_NEED_THPRAC,
+    TH_REPFIX_NEED_THPRAC_DESC,
+    TH_REPFIX_SAVE,
+    TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS,
+    TH_REPFIX_SAVE_ERROR_DEST,
+    TH_REPFIX_SAVE_ERROR_PARAMS,
+    TH_REPFIX_SAVE_ERROR_SRC,
+    TH_REPFIX_SAVE_SUCCESS,
+    TH_REPFIX_SAVE_SUCCESS_DESC,
+    TH_REPFIX_SELECTED,
+    TH_REPFIX_SELECTED_ALREADY_FIXED,
+    TH_REPFIX_SELECTED_NONE,
+    TH_REPLAY_FIX,
     TH_RESTART,
     TH_RESUME,
     TH_RIGHT,
@@ -1078,7 +1092,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1066];
+extern const char* th_glossary_str[3][1080];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1101,6 +1115,8 @@ extern const th_glossary_t TH_SPELL_PHASE1[3];
 extern const th_glossary_t TH_SPELL_PHASE2[5];
 
 extern const th_glossary_t TH_SPELL_PHASE3[6];
+
+extern const th_glossary_t TH_SPELL_PHASE_TIMEOUT[3];
 
 extern const th_glossary_t TH_SIDE_SELECT[3];
 
@@ -1471,6 +1487,8 @@ extern const th_sections_t th_sections_cba[9][2][20];
 extern const th_sections_t th_sections_cbt[9][2][15];
 
 extern const th_glossary_t TH08_STAGE_SELECT[10];
+
+extern const th_glossary_t TH08_SPELL_PHASE_HOURAI_ELIXIR[4];
 
 }
 
@@ -2337,7 +2355,6 @@ enum th_sections_t : uint8_t
     TH16_ST3_BOSS5,
     TH16_ST3_BOSS6,
     TH16_ST4_MID1,
-    TH16_ST4_MID2,
     TH16_ST4_BOSS1,
     TH16_ST4_BOSS2,
     TH16_ST4_BOSS3,
@@ -2391,9 +2408,9 @@ enum th_sections_t : uint8_t
     TH16_ST7_END_S10,
 };
 
-extern const char* th_sections_str[3][4][73];
+extern const char* th_sections_str[3][4][72];
 
-extern const uint8_t th_sections_bgm[73];
+extern const uint8_t th_sections_bgm[72];
 
 extern const th_sections_t th_sections_cba[7][2][19];
 
@@ -2698,16 +2715,16 @@ extern const th_sections_t th_sections_cba[7][2][19];
 
 extern const th_sections_t th_sections_cbt[7][2][14];
 
-extern const th_glossary_t TH20_SPELL_PHASE_TIMEOUT[3];
-
 extern const th_glossary_t TH20_CYCLE_LIST[4];
+
+extern const th_glossary_t TH20_EXRESFIX_RESOLUTION_OPT[5];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3303];
+extern const wchar_t __thprac_loc_range_zh[2779];
 
-extern const wchar_t __thprac_loc_range_en[35];
+extern const wchar_t __thprac_loc_range_en[31];
 
-extern const wchar_t __thprac_loc_range_ja[2789];
+extern const wchar_t __thprac_loc_range_ja[2245];
 
 }

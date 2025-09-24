@@ -7,7 +7,7 @@ If you have been sending a lot of pull requests, congratulations, you might have
 
 According to Section "6.1.2. Allowed Game Modifications" in the [official handbook](https://docs.google.com/document/d/e/2PACX-1vQrmgcwhgKARoUnk5BPE0Oyv4fAgHilZs1pUa1RQJtm0X_z93L8eI0lNt1Y-iZQK3v4_Ab9vx1HzpkN/pub#h.9j7h74u3d3zf) all GitHub Actions builds created from a commit on the `master` branch** are allowed.
 
-What this means in detail is that players are allowed to keep thprac injected into their game while attempting a credit, as long as all features from the backspace menu are disabled. This is because thprac gets out of the way and does not allow for any of it's features to activate during a full game run.
+What this means in detail is that players are allowed to keep thprac injected into their game while attempting a credit, as long as all features from the backspace menu are disabled. This is because thprac gets out of the way and does not allow for any of its features to activate during a full game run.
 
 To clarify: players are allowed to show themselves use other mods during TWC, but they must restart restart their games before attempting credits, otherwise these credits are not counted. If a player shows themselves using thprac on the other hand, they do **NOT** need to restart the game for credits to be considered valid.
 

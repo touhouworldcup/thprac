@@ -934,10 +934,16 @@ namespace TH16 {
                 ECLJump(ecl, 0x9bb0, 0x9ec0, 60, 90);
                 ECLJump(ecl, 0x6314, 0x6348, 0, 0);
                 break;
-            case 6:
-                ECLJump(ecl, 0x9bb0, 0x9ec0, 60, 90);
-                ECLJump(ecl, 0x6314, 0x63a8, 0, 0);
+            case 6: {
+                constexpr uint32_t st4PostMaple = 0x9bb0;
+                constexpr uint32_t st4MainLatterCall = 0x9ec0;
+                constexpr uint32_t st4MainLatterSub3 = 0x6314;
+                constexpr uint32_t st4MainLatterSub5 = 0x63a8;
+
+                ECLJump(ecl, st4PostMaple, st4MainLatterCall, 60, 90);
+                ECLJump(ecl, st4MainLatterSub3, st4MainLatterSub5, 0, 0);
                 break;
+            }
             default:
                 break;
             }
@@ -1175,11 +1181,6 @@ namespace TH16 {
             break;
         case THPrac::TH16::TH16_ST4_MID1:
             ECLJump(ecl, 0x9bb0, 0x9e7c, 60);
-            break;
-        case THPrac::TH16::TH16_ST4_MID2:
-            ECLJump(ecl, 0x9bb0, 0x9ec0, 60);
-            ECLJump(ecl, 0x6314, 0x6368, 0);
-            ecl << pair{0x6378, 60};
             break;
         case THPrac::TH16::TH16_ST4_BOSS1:
             if (thPracParam.dlg)
@@ -2402,6 +2403,12 @@ namespace TH16 {
 
         // Hooks
         EnableAllHooks(THMainHook);
+
+        // Replay user menu (null) fix
+        DWORD oldProtect;
+        VirtualProtect((void*)0x493708, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+        *(const char**)(0x493708) = "%s  %s %.2d/%.2d/%.2d %.2d:%.2d %s %s %s %s %2.1f%%";
+        VirtualProtect((void*)0x493708, 4, oldProtect, &oldProtect); 
 
         // Reset thPracParam
         thPracParam.Reset();

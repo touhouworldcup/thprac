@@ -90,11 +90,13 @@ struct adv_opt_ctx {
     bool all_clear_bonus = false;
 };
 
+void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nullptr, HWND owner = nullptr);
 void CenteredText(const char* text, float wndX);
 float GetRelWidth(float rel);
 float GetRelHeight(float rel);
 void CalcFileHash(const wchar_t* file_name, uint64_t hash[2]);
 void HelpMarker(const char* desc);
+void CustomMarker(const char* text, const char* desc);
 template <th_glossary_t name>
 static bool BeginOptGroup()
 {
@@ -257,8 +259,11 @@ static bool ElBgmTestTemp(bool hotkey_status, bool practice_status,
 
 typedef void*(__cdecl* p_malloc)(size_t size);
 
+enum class ReplayClearResult { Cleared, NoParams, Error };
 bool ReplaySaveParam(const wchar_t* rep_path, const std::string& param);
 bool ReplayLoadParam(const wchar_t* rep_path, std::string& param);
+ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
+
 
 #pragma endregion
 

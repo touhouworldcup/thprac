@@ -1701,7 +1701,7 @@ private:
         ImGui::NewLine();
         ImGui::TextUnformatted(S(THPRAC_SETTING_LAUNCHER));
         ImGui::Separator();
-        if (mCfgTheme.Gui(S(THPRAC_THEME), "Dark\0Light\0Classic\0\0")) {
+        if (mCfgTheme.Gui(S(THPRAC_THEME), S(THPRAC_THEME_OPTION))) {
             SetTheme(mCfgTheme.Get());
         }
 

@@ -7,6 +7,7 @@ namespace THPrac {
 namespace TH14 {
     enum addrs {
         BOMB_PTR = 0x4DB52C,
+        WINDOW_PTR = 0x4f5a18,
     };
 
     using std::pair;
@@ -872,7 +873,7 @@ namespace TH14 {
                 if (hash[0] == 5864489015760801383ll && hash[1] == 8525349857717864816ll) {
                     vp_valid = true;
                     if (MessageBoxW(
-                            *(HWND*)0x4f5a18,
+                            *(HWND*)WINDOW_PTR,
                             L"Old version of vpatch detected. Do you want to download the newest version?",
                             L"thprac: warning",
                             MB_ICONWARNING | MB_YESNO)
@@ -955,7 +956,7 @@ namespace TH14 {
             } else if (thMarisaLaser->mState == 2) {
                 ImGui::TextUnformatted(S(TH14_MODE_PLAYBACK_DESC));
                 if (mRepName[0]) {
-                    ImGui::Text(S(TH14_SELECTED_REPLAY), mRepName);
+                    ImGui::Text(S(TH_REPFIX_SELECTED), mRepName);
                     if (thMarisaLaser->mRecordsPlayback.size()) {
                         int i = 1;
                         for (auto& record : thMarisaLaser->mRecordsPlayback) {
@@ -975,13 +976,13 @@ namespace TH14 {
                         ImGui::TextUnformatted(S(TH14_REPLAY_NO_RECORDS));
                     }
                 } else {
-                    ImGui::TextUnformatted(S(TH14_SELECTED_NONE));
+                    ImGui::TextUnformatted(S(TH_REPFIX_SELECTED_NONE));
                 }
                 // TODO: Replay info
             } else if (thMarisaLaser->mState == 3) {
                 ImGui::TextUnformatted(S(TH14_MODE_RECOVER_DESC));
 
-                if (ImGui::Button(S(TH14_SAVE))) {
+                if (ImGui::Button(S(TH_REPFIX_SAVE))) {
                     if (mRepName[0]) {
                         std::wstring rep;
                         rep = mRepDir;
@@ -997,9 +998,9 @@ namespace TH14 {
                     thMarisaLaser->mRecordsRecover.clear();
                 ImGui::SameLine();
                 if (mRepName[0])
-                    ImGui::Text(S(TH14_SELECTED_REPLAY), mRepName);
+                    ImGui::Text(S(TH_REPFIX_SELECTED), mRepName);
                 else
-                    ImGui::TextUnformatted(S(TH14_SELECTED_NONE));
+                    ImGui::TextUnformatted(S(TH_REPFIX_SELECTED_NONE));
 
                 ImGui::Separator();
                 auto it = thMarisaLaser->mRecordsRecover.begin();
@@ -1048,29 +1049,6 @@ namespace TH14 {
             ImGui::PopTextWrapPos();
 
             return wndFocus;
-        }
-        // TODO: Remove title parameter?
-        // TODO: Use utf8_to_utf16() instead?
-        void MsgBox(UINT type, [[maybe_unused]] const wchar_t* title, const wchar_t* msg, const wchar_t* msg2 = nullptr)
-        {
-            std::wstring finalMessage = msg;
-            if (msg2) {
-                finalMessage += msg2;
-            }
-            MessageBoxW(nullptr, finalMessage.c_str(), _title, type);
-        }
-        void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nullptr)
-        {
-            wchar_t title_wchar[256];
-            wchar_t msg_wchar[256];
-            wchar_t msg2_wchar[256];
-            MultiByteToWideChar(CP_UTF8, 0, title, -1, title_wchar, 256);
-            MultiByteToWideChar(CP_UTF8, 0, msg, -1, msg_wchar, 256);
-            if (msg2) {
-                MultiByteToWideChar(CP_UTF8, 0, msg2, -1, msg2_wchar, 256);
-            }
-            MsgBox(type, title_wchar, msg_wchar, msg2 ? msg2_wchar : nullptr);
-
         }
         bool LoadReplayInternal(const wchar_t* rep_path)
         {
@@ -1127,7 +1105,7 @@ namespace TH14 {
             DWORD bytesProcessed;
             auto repFile = CreateFileW(rep_path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (repFile == INVALID_HANDLE_VALUE) {
-                MsgBox(MB_ICONERROR | MB_OK, S(TH14_ERROR), S(TH14_ERROR_SRC));
+                MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_SRC), nullptr, *(HWND*)WINDOW_PTR);
                 return false;
             }
             auto repSize = GetFileSize(repFile, nullptr);
@@ -1162,7 +1140,7 @@ namespace TH14 {
             wchar_t szFile[MAX_PATH] = L"th14_ud----.rpy";
             ZeroMemory(&ofn, sizeof(ofn));
             ofn.lStructSize = sizeof(ofn);
-            ofn.hwndOwner = nullptr;
+            ofn.hwndOwner = *(HWND*)WINDOW_PTR;
             ofn.lpstrFile = szFile;
             ofn.nMaxFile = MAX_PATH;
             ofn.lpstrFilter = L"Replay File\0*.rpy\0";
@@ -1171,11 +1149,11 @@ namespace TH14 {
             ofn.nMaxFileTitle = 0;
             ofn.lpstrInitialDir = mRepDir.c_str();
             ofn.lpstrDefExt = L".rpy";
-            ofn.Flags = OFN_OVERWRITEPROMPT;
+            ofn.Flags = OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
             if (GetSaveFileNameW(&ofn)) {
                 auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {
-                    MsgBox(MB_ICONERROR | MB_OK, S(TH14_ERROR), S(TH14_ERROR_DEST));
+                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST), nullptr, ofn.hwndOwner);
                     return false;
                 }
                 SetFilePointer(outputFile, 0, nullptr, FILE_BEGIN);
@@ -1185,7 +1163,7 @@ namespace TH14 {
                     WriteFile(outputFile, dataBuffer, dataSize, &bytesProcessed, nullptr);
                 CloseHandle(outputFile);
 
-                MsgBox(MB_ICONINFORMATION | MB_OK, utf8_to_utf16(S(TH14_SUCCESS)).c_str(), utf8_to_utf16(S(TH14_SUCCESS_SAVED)).c_str(), szFile);
+                MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
             }
 
             return true;
@@ -2418,7 +2396,7 @@ namespace TH14 {
             return;
         }
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4d8f68, 0x4f5a18,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4d8f68, WINDOW_PTR,
             Gui::INGAGME_INPUT_GEN2, 0x4d6884, 0x4d6880, 0,
             (*((int32_t*)0x4f7a54) >> 2) & 0xf);
 
