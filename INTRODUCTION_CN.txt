@@ -1,0 +1,224 @@
+<!-- This is the text of the  -->
+
+大家吼啊，我是栗山みらぃ，是 thprac (v2.0.8.4+) 现维护者之一。
+
+[h1]thprac 是什么？[/h1]
+
+thprac 是一个非官方的东方原作 STG 练习工具。thprac 原作者为 Ack，现在由
+[thprac 维护组](https://github.com/touhouworldcup/thprac/graphs/contributors)
+维护。
+
+[h1]关于 thprac 的建议[/h1]
+
+自从 thprac 的原开发者 Ack 推出 v2.0.8.3 后归隐后，似乎大家与现在的开发者
+（今年主要是 32th-System、疯受鶸、Guy_L 等人）交流并不多，很多时候遇到 thprac 的 bug
+也会误以为是 ZUN 写的然后把 ZUN 批判一番。其实，由于 thprac 的开发者也没有
+ZUN 的代码，很多时候我们也只能靠猜，故难免会写出 bug，或者在试图修复原作的 bug 的时候
+写出新的 bug（（
+
+前些天就遇到一位 Mac 玩家，排查了半天发现最后是 thprac 没打开某个我们新加入的优化选项。
+我想，要是玩家与开发者之间的联系再紧密一些，说不定这种情况就会变少吧……
+
+[h1]bug 反馈[/h1]
+
+最近发现大家在打东方官作 STG 时很多时候都打着各种补丁，比方说 vpatch 啦，thcrap 啦；
+或者，很多时候大家习惯玩非日文版，比方说渔场汉化、喵玉汉化。在游戏的过程中，
+各个补丁/翻译可能会互相打架，中间说不定就会产生 bug，像是 replay 的列表里
+多了一行 (null) 啊，机签的后面多了一个「Ai」啊（我真的不是TAS，QAQ!），某人发蛇的星弹
+变成了奇怪的动画啊……
+
+这其实核心原因是 ZUN 没有公开他的代码，所以我们很多时候只能靠猜：
+「这个函数是不是干这个用的？那个结构体是不是这个构造？」
+倘若猜错了而没发现，可能就会引起 bug。
+
+有时候遇到了奇怪的现象不知道该找谁时，无论 bug 发生是你有没有用 thprac，
+都可以在本帖求助。楼主看到了都会尽力帮忙。
+
+[h1]thprac 版本发布[/h1]
+
+thprac 自 v2.0.8.4 以来的新版本都发布在 GitHub Release 上面，但是很多人可能不太方便
+下载来自 GitHub 的附件。每次有新版本的时候我也会第一时间在这里发布新的版本，
+欢迎大家收藏本帖（
+
+[h1]常见问题与解答 Q&A[/h1]
+
+综合
+====
+
+[h2]哪里能下载 thprac？[/h2]
+
+参考 [这个介绍最新版 thprac 的帖子](https://bbs.nyasama.com//thread-1867261-1-1.html)。
+等锦上京的支持稳定后，最新版 thprac 的发布会转移到本帖。
+
+也可以从 [GitHub 仓库](https://github.com/touhouworldcup/thprac) 处下载。
+
+[h2]我下载了 thprac，但是怎么有些东方官方 STG 玩不了？[/h2]
+
+请右键点击灰色的图标，并单击【扫描游戏】或【重新扫描】。
+
+thprac 作为一个大小两三 MB 的小工具，没有空间容纳上万 MB 的东方原作 STG。对于红魔乡，
+请参见下条 Q&A；对于妖妖梦及以后的作品，请从 Steam 购置，或购买正版光盘；
+对于怪奇谈及以前的作品，请先检查软盘/CD 是否正常，或考虑联系原发布者
+Amusement Makers（东京电机大学非官方社团）。
+
+[h2]怎么反馈 bug？[/h2]
+
+请在本帖回复。回复请以如下格式，否则恕不回复：
+```
+操作系统：[你的操作系统，譬如 Windows 11。若是通过虚拟机运行 Windows，请附注虚拟机信息]
+游戏标题：[请回到游戏主界面，检查游戏标题是什么。譬如東方紅魔郷]
+版本：[请检查 thprac 版本。若 F12 菜单可用（花映冢、兽王园不可用），请按在游戏内按 F12（一些键盘需要按 Fn+F12），并检查版本信息；若无法游戏，请启动thprac启动器，并点击「设置」，然后寻找「关于」一节下以「v2.」开头的一段版本号]。
+图标：[蓝色？紫色？还是其他颜色？甚至根本不是一个阴阳玉？]
+具体问题：[请尽可能地详细描述问题，参考《提问的智慧》（中文版见 https://zhuanlan.zhihu.com/p/664680014 ，值得注意的是该文章(或其译者)不提供 thprac 的服务支持）]
+附图：[可选。如果可能，配上问题的图片链接。请优先考虑截屏，不方便截屏则拍屏亦可。]
+视频/动图：[可选。如果有视频或动图就再好不过了。]
+```
+
+如果长期（一个月以上）没有收到回复，请检查格式是否正确，或问题描述是否完整。
+
+[h2]为什么 thprac 项目移动了？[/h2]
+
+原本的开发者 Ack 已经无限期停止了 thprac 或 Marketeer 的开发。这是他的声明：
+> I will indefinitely cease all future development on thprac/Marketeer, you are free to continue working on it, granting that you follow the license's terms.  
+> Due to my insufficient skill, the code is glutted with obscure writings and terrible logic, turning the whole thing into a complete mess. I'm sorry if that disturbs you.  
+
+[h2]为什么本帖还残留着很多排版代码？[/h2]
+
+因为楼主还没来得及在喵玉殿排版。
+
+[h2]为什么我的 thprac 图标是紫色的？[/h2]
+
+你正在使用疯受鶸/RUEEE 维护的 thprac 版本。据称，这个版本更加的有用，但
+bug 也可能更多。本帖所提及的 thprac，不加以说明均指蓝色图标的、版本号大于或等于
+v2.0.8.4 的 thprac。
+
+[h2]thprac 的说明书在哪里？[/h2]
+
+最新英文版请见 GitHub 仓库的链接。中文版请参见本帖第二页。
+
+[h2]本帖更新频率？[/h2]
+
+楼主会尽量月更，以免此帖变成坟贴。如果你的回复一直（三个月以上）没有得到回应，请考虑邮件联系楼主：
+kuriyama [dot] mirai [at] mail [dot] ustc [dot] edu [dot] cn 。
+
+[h2]Are there other supporting language? thpracの他の対応言語はありますか？[/h2]
+
+Please refer to the [English manual]() or [日本語マニュアル]() (Japanese manual).
+
+
+常见 bug
+===
+
+[h2]我试图启动游戏，但卡在【少女祈祷中】界面。我该怎么办？[/h2]
+
+请右键游戏名，并单击【详情页面】，并通过【开始游戏】按钮重试。若问题仍然出现，请通过
+文件资源管理器（Win+R 输入 explorer）检查高亮的路径下是否存在你的游戏。
+
+如果你正在启动的游戏是最新作锦上京，也有可能是 ZUN 发布了更新补丁而我们还在开发中。
+
+功能相关
+===
+
+[h2]怎么在红魔乡/妖妖梦/永夜抄/风神录的游戏进行到半时保存 replay？[/h2]
+
+起初，在游戏途中保存 replay 由于技术限制而暂不支持。原作者 Ack 的说明是：
+
+> Because of how these games were programmed, adding this feature would be quite
+> troublesome, so currently there's no direct solution to this.
+
+然而，目前红魔乡支持在游戏进行到一半时保存 replay。这种 replay 在记录的操作结束后
+不会回到自动标题页面，而是令主人公站在原地并停止射击。
+
+#### “永续BGM” 是什么意思？
+当你重新开始游戏时，其可以防止 BGM 重置。
+
+#### “暴力取材” 是什么意思？(文花帖/文花帖DS)
+始终将相机锁定在 boss 身上并消除相机的装填时间。
+
+#### 如何切换语言？
+
+- thprac 启动器的语言会根据你的 Windows 显示语言自动选择。
+- 若要修改游戏中界面的语言，请使用快捷键：
+  - **ALT + 1**：日语
+  - **ALT + 2**：中文
+  - **ALT + 3**：英语
+
+上述快捷键不能在启动器本身使用。请查看“如何使用”里的视频，其内有更详细的说明。
+
+技术问题
+===
+
+#### 高级选项显示“不支持的 VsyncPatch 版本”
+你可以在 [此处](https://maribelhearn.com/tools#vpatch) 找到我们兼容的 vpatch 版本。如果可以，请尽可能使用 **rev7** 中的 DLL。
+
+#### 使用 vpatch 时似乎无法调整 FPS
+某些工具（例如“DX8 to DX9 Converter”）与 VsyncPatch 冲突。注意 replay 的播放速度调整（加速/减速）仅在神灵庙中得到支持。
+
+#### 什么是“辉针城 - 魔理沙激光相关”？
+这个功能能够修复辉针城里臭名昭著的魔理沙激光炸 replay 的 bug。请参见原作者 Ack 的 [视频链接](https://www.bilibili.com/video/av285566068) 
+
+兼容相关
+===
+
+[h2]我的杀毒软件报毒了。这个工具安全吗？[/h2]
+
+thprac 不含有恶意代码，但由于其工作方式的特殊性，杀毒软件可能会报毒。如果出现了这种情况，你可以选择将 thprac 添加到杀毒软件的例外区（或信任区）。你也可以尝试使用 [这个版本](https://github.com/touhouworldcup/thprac/issues/112)，或者改用 v2.2.2.2 版，并确保 SHA256 签名为如果仍然报毒，请向我们报告。
+
+[h2]我的 thprac 为什么一直显示「检查更新中...」？[/h2]
+
+有可能是你当前的网络环境难以解析域名 raw.githubusercontent.com。
+请考虑适当调整 hosts 文件并重试。
+
+[h2]为什么 thprac 识别不了我的游戏？[/h2]
+
+第一次运行前，thprac 需要玩家手动扫描游戏路径。请右键游戏名，并点击【扫描游戏】或
+【Steam游戏...】。若之前曾经正常启动过，请检查是否有移动游戏所在的目录。
+
+[h2]thprac 找不到我的红魔乡。我该怎么办？[/h2]
+
+首先请确保你的 EXE 文件名为【搶曽峠杺嫿.exe】或【th06.exe】。若你的 Windows 显示语言
+为日文，EXE 文件名也可以为【東方紅魔郷.exe】。如果仍然找不到，你可以尝试将这个 .EXE
+文件图标拖动到 thprac.[版本号].exe 的文件图标上运行。
+
+[h2]thprac 支持旧作吗？[/h2]
+
+暂不支持。然而，对灵异传的支持正在开发，敬请期待。
+
+[h2]thprac 和汉化版游戏兼容吗？[/h2]
+
+目前稳定兼容喵玉汉化和 thcrap 汉化。
+不建议同时使用 thprac 和其他汉化版，否则可能会导致游戏数据永久丢失！！！
+
+[h2]thprac 支持哪些游戏/操作系统版本？[/h2]
+
+请注意，thprac 不支持试玩版游戏（锦上京除外）。
+
+稳定支持的游戏：
+- 红魔乡、妖妖梦、永夜抄、花映塚、风神录、地灵殿、星莲船、神灵庙、辉针城、绀珠传、天空璋、鬼形兽、虹龙洞、兽王园；
+- 上述游戏的 thcrap 汉化/英化、或者他们的喵玉汉化（如果有）；
+- 文花帖、文花帖DS、妖精大战争、弹幕天邪鬼、秘封噩梦日记、弹幕狂们的黑市；
+- 黄昏酒场。
+
+不稳定支持的游戏：
+- 锦上京。
+
+仅支持启动的游戏：
+- 萃梦想、绯想天、非想天则、心绮楼、深秘录、凭依华、刚欲异闻。
+
+稳定支持的操作系统：
+- Windows Vista/7/8/10/11；
+- NEC PC-98 系统上的 DOS（仅限 thprac98 分支的开发版）
+
+不稳定支持的操作系统：
+- Windows XP，配合补丁 [One-Core-API]()。请参见本帖第二页的文档。
+
+[h1]特别感谢（敬称略）[/h1]
+
+- 东方 STG 原作者 ZUNSoft & 上海アリス幻樂団 及原发布者 Amusement Makers
+- thprac 原作者 Ack
+- Nmlgc，他开发的 ReC98 让我受益匪浅；
+- Ethy1ene，他带我走入了 PC98 的世界；
+- hicode002，他陪我彻夜捣鼓硬件；
+- 还有你！
+
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　Next Dream...
