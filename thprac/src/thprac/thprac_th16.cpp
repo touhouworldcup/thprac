@@ -2404,6 +2404,12 @@ namespace TH16 {
         // Hooks
         EnableAllHooks(THMainHook);
 
+        // Replay user menu (null) fix
+        DWORD oldProtect;
+        VirtualProtect((void*)0x493708, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+        *(const char**)(0x493708) = "%s  %s %.2d/%.2d/%.2d %.2d:%.2d %s %s %s %s %2.1f%%";
+        VirtualProtect((void*)0x493708, 4, oldProtect, &oldProtect); 
+
         // Reset thPracParam
         thPracParam.Reset();
     }
