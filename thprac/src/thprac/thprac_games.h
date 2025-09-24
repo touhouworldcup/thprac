@@ -90,6 +90,7 @@ struct adv_opt_ctx {
     bool all_clear_bonus = false;
 };
 
+void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nullptr, HWND owner = nullptr);
 void CenteredText(const char* text, float wndX);
 float GetRelWidth(float rel);
 float GetRelHeight(float rel);

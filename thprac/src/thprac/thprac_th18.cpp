@@ -33,6 +33,7 @@ namespace TH18 {
         ABILITY_SHOP_PTR = 0x4cf2a4,
         CARD_DESC_LIST = 0x4c53c0,
         MUKADE_ADDR = 0x4cf2d4,
+        WINDOW_PTR = 0x568c30,
     };
     
     enum cards {
@@ -1231,27 +1232,6 @@ namespace TH18 {
         const char* mStageStr[9] {
             "?", "1", "2", "3", "4", "5", "6", "Extra", "?"
         };
-        __declspec(noinline) void MsgBox(UINT type, const wchar_t* title, const wchar_t* msg, const wchar_t* msg2 = nullptr)
-        {
-            std::wstring _msg = msg;
-            if (msg2) {
-                _msg += msg2;
-            }
-            MessageBoxW(*(HWND*)0x568c30, _msg.c_str(), title, type);
-        }
-        __declspec(noinline) void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nullptr)
-        {
-            wchar_t _title[256];
-            wchar_t _msg[256];
-            wchar_t _msg2[256];
-            MultiByteToWideChar(CP_UTF8, 0, title, -1, _title, 256);
-            MultiByteToWideChar(CP_UTF8, 0, msg, -1, _msg, 256);
-            if (msg2) {
-                MultiByteToWideChar(CP_UTF8, 0, msg2, -1, _msg2, 256);
-            }
-            MsgBox(type, _title, _msg, msg2 ? _msg2 : nullptr);
-
-        }
         __declspec(noinline) uint32_t* FindCardDesc(uint32_t id)
         {
             for (uint32_t i = CARD_DESC_LIST; true; i += 0x34) {
@@ -1358,7 +1338,7 @@ namespace TH18 {
             wcscpy_s(szFile, L"th18_ud----.rpy");
             ZeroMemory(&ofn, sizeof(ofn));
             ofn.lStructSize = sizeof(ofn);
-            ofn.hwndOwner = *(HWND*)0x568c30;
+            ofn.hwndOwner = *(HWND*)WINDOW_PTR;
             ofn.lpstrFile = szFile;
             ofn.nMaxFile = sizeof(szFile);
             ofn.lpstrFilter = L"Replay File\0*.rpy\0";
@@ -1371,7 +1351,7 @@ namespace TH18 {
             if (GetSaveFileNameW(&ofn)) {
                 auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {
-                    MsgBox(MB_ICONERROR | MB_OK, S(TH14_ERROR), S(TH14_ERROR_DEST));
+                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST), nullptr, ofn.hwndOwner);
                     goto end;
                 }
                 SetFilePointer(outputFile, 0, nullptr, FILE_BEGIN);
@@ -1381,7 +1361,7 @@ namespace TH18 {
                 WriteFile(outputFile, mRepExtraData, mRepExtraDataSize, &bytesProcessed, nullptr);
                 CloseHandle(outputFile);
 
-                MsgBox(MB_ICONINFORMATION | MB_OK, utf8_to_utf16(S(TH14_SUCCESS)).c_str(), utf8_to_utf16(S(TH14_SUCCESS_SAVED)).c_str(), szFile);
+                MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
             }
 
             end:
@@ -3058,7 +3038,7 @@ namespace TH18 {
             return;
         }
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4ccdf8, 0x568c30,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4ccdf8, WINDOW_PTR,
             Gui::INGAGME_INPUT_GEN2, 0x4ca21c, 0x4ca218, 0,
             -2, *(float*)0x56aca0, 0.0f);
 

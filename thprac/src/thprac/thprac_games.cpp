@@ -378,7 +378,7 @@ void GameGuiRender(game_gui_impl impl)
 
 #pragma region Advanced Options Menu
 
-void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nullptr)
+void MsgBox(UINT type, const char* title, const char* msg, const char* msg2, HWND owner)
 {
     static wchar_t _title[256];
     static wchar_t _msg[256];
@@ -389,7 +389,7 @@ void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nu
         MultiByteToWideChar(CP_UTF8, 0, msg2, -1, _msg2, 256);
         wcscat_s(_msg, _msg2);
     }
-    MessageBoxW(nullptr, _msg, _title, type);
+    MessageBoxW(owner, _msg, _title, type);
 }
 
 void CenteredText(const char* text, float wndX)
