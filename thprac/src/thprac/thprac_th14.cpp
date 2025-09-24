@@ -1149,7 +1149,7 @@ namespace TH14 {
             ofn.nMaxFileTitle = 0;
             ofn.lpstrInitialDir = mRepDir.c_str();
             ofn.lpstrDefExt = L".rpy";
-            ofn.Flags = OFN_OVERWRITEPROMPT;
+            ofn.Flags = OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
             if (GetSaveFileNameW(&ofn)) {
                 auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {

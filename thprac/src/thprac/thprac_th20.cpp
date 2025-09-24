@@ -919,7 +919,7 @@ namespace TH20 {
             ofn.nMaxFileTitle = 0;
             ofn.lpstrInitialDir = THGuiRep::singleton().mSelectedRepDir.c_str();
             ofn.lpstrDefExt = L".rpy";
-            ofn.Flags = OFN_OVERWRITEPROMPT;
+            ofn.Flags = OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
 
             if (GetSaveFileNameW(&ofn)) {
                 bool existingFile = (GetFileAttributesW(szFile) != INVALID_FILE_ATTRIBUTES);
@@ -934,6 +934,7 @@ namespace TH20 {
                 // clear thprac params if present (no impact otherwise)
                 if (ReplayClearParam(szFile) == ReplayClearResult::Error) {
                     MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS), nullptr, ofn.hwndOwner);
+                    if (!existingFile) DeleteFileW(szFile);
                     return false;
                 }
 
