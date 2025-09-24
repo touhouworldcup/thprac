@@ -1,0 +1,660 @@
+<!-- This is the text of the nyasama forum: -->
+<!--         URL: https://bbs.nyasama.com/thread-1867488-1-1.html .          -->
+<!-- There's currently no plan to translate this introduction to English. -->
+<!-- Please consider using translation machines such as Google Translate. -->
+
+大家吼啊，我是栗山みらぃ，是 thprac (v2.0.8.4+) 现维护者之一。
+
+=====================================第一页开始==================================
+
+[h1]thprac 是什么？[/h1]
+
+thprac 是一个非官方的东方原作 STG 练习工具。thprac 原作者为 Ack，现在由
+[thprac 维护组](https://github.com/touhouworldcup/thprac/graphs/contributors)
+维护。
+
+[h1]关于 thprac 的建议[/h1]
+
+自从 thprac 的原开发者 Ack 推出 v2.0.8.3 后归隐后，似乎大家与现在的开发者
+（今年主要是 32th-System、疯受鶸、Guy_L 等人）交流并不多，很多时候遇到 thprac 的 bug
+也会误以为是 ZUN 写的然后把 ZUN 批判一番。其实，由于 thprac 的开发者也没有
+ZUN 的代码，很多时候我们也只能靠猜，故难免会写出 bug，或者在试图修复原作的 bug 的时候
+写出新的 bug（（
+
+前些天就遇到一位 Mac 玩家，排查了半天发现最后是 thprac 没打开某个我们新加入的优化选项。
+我想，要是玩家与开发者之间的联系再紧密一些，说不定这种情况就会变少吧……
+
+[h1]bug 反馈[/h1]
+
+最近发现大家在打东方官作 STG 时很多时候都打着各种补丁，比方说 vpatch 啦，thcrap 啦；
+或者，很多时候大家习惯玩非日文版，比方说渔场汉化、喵玉汉化。在游戏的过程中，
+各个补丁/翻译可能会互相打架，中间说不定就会产生 bug，像是 replay 的列表里
+多了一行 (null) 啊，机签的后面多了一个「Ai」啊（我真的不是TAS，QAQ!），某人发蛇的星弹
+变成了奇怪的动画啊……
+
+这其实核心原因是 ZUN 没有公开他的代码，所以我们很多时候只能靠猜：
+「这个函数是不是干这个用的？那个结构体是不是这个构造？」
+倘若猜错了而没发现，可能就会引起 bug。
+
+有时候遇到了奇怪的现象不知道该找谁时，无论 bug 发生是你有没有用 thprac，
+都可以在本帖求助。楼主看到了都会尽力帮忙。
+
+[h1]thprac 版本发布[/h1]
+
+thprac 自 v2.0.8.4 以来的新版本都发布在 GitHub Release 上面，但是很多人可能不太方便
+下载来自 GitHub 的附件。每次有新版本的时候我也会第一时间在这里发布新的版本，
+欢迎大家收藏本帖（
+
+[h1]常见问题与解答 Q&A[/h1]
+
+综合
+====
+
+[h2]哪里能下载 thprac？[/h2]
+
+参考 [这个介绍最新版 thprac 的帖子](https://bbs.nyasama.com//thread-1867261-1-1.html)。
+等锦上京的支持稳定后，最新版 thprac 的发布会转移到本帖。
+
+也可以从 [GitHub 仓库](https://github.com/touhouworldcup/thprac) 处下载。
+
+[h2]我下载了 thprac，但是怎么有些东方官方 STG 玩不了？[/h2]
+
+请右键点击灰色的图标，并单击【扫描游戏】或【重新扫描】。
+
+thprac 作为一个大小两三 MB 的小工具，没有空间容纳上万 MB 的东方原作 STG。对于红魔乡，
+请参见下条 Q&A；对于妖妖梦及以后的作品，请从 Steam 购置，或购买正版光盘；
+对于怪奇谈及以前的作品，请先检查软盘/CD 是否正常，或考虑联系原发布者
+Amusement Makers（东京电机大学非官方社团）。
+
+[h2]怎么反馈 bug？[/h2]
+
+请在本帖回复。回复请以如下格式，否则恕不回复：
+```
+操作系统：[你的操作系统，譬如 Windows 11。若是通过虚拟机运行 Windows，请附注虚拟机信息]
+游戏标题：[请回到游戏主界面，检查游戏标题是什么。譬如東方紅魔郷]
+版本：[请检查 thprac 版本。若 F12 菜单可用（花映冢、兽王园不可用），请按在游戏内按 F12（一些键盘需要按 Fn+F12），并检查版本信息；若无法游戏，请启动thprac启动器，并点击「设置」，然后寻找「关于」一节下以「v2.」开头的一段版本号]。
+图标：[蓝色？紫色？还是其他颜色？甚至根本不是一个阴阳玉？]
+具体问题：[请尽可能地详细描述问题，参考《提问的智慧》（中文版见 https://zhuanlan.zhihu.com/p/664680014 ，值得注意的是该文章(或其译者)不提供 thprac 的服务支持）]
+附图：[可选。如果可能，配上问题的图片链接。请优先考虑截屏，不方便截屏则拍屏亦可。]
+视频/动图：[可选。如果有视频或动图就再好不过了。]
+```
+
+如果长期（一个月以上）没有收到回复，请检查格式是否正确，或问题描述是否完整。
+
+[h2]为什么 thprac 项目移动了？[/h2]
+
+原本的开发者 Ack 已经无限期停止了 thprac 或 Marketeer 的开发。这是他的声明：
+> I will indefinitely cease all future development on thprac/Marketeer, you are free to continue working on it, granting that you follow the license's terms.  
+> Due to my insufficient skill, the code is glutted with obscure writings and terrible logic, turning the whole thing into a complete mess. I'm sorry if that disturbs you.  
+
+[h2]为什么本帖还残留着很多排版代码？[/h2]
+
+因为楼主还没来得及在喵玉殿排版。
+
+[h2]为什么我的 thprac 图标是紫色的？[/h2]
+
+你正在使用疯受鶸/RUEEE 维护的 thprac 版本。据称，这个版本更加的有用，但
+bug 也可能更多。本帖所提及的 thprac，不加以说明均指蓝色图标的、版本号大于或等于
+v2.0.8.4 的 thprac。
+
+[h2]thprac 的说明书在哪里？[/h2]
+
+最新英文版请见 GitHub 仓库的链接。中文版请参见本帖第二页。
+
+[h2]本帖更新频率？[/h2]
+
+楼主会尽量月更，以免此帖变成坟贴。如果你的回复一直（三个月以上）没有得到回应，请考虑邮件联系楼主：
+kuriyama [dot] mirai [at] mail [dot] ustc [dot] edu [dot] cn 。
+
+[h2]Are there other supporting language? thpracの他の対応言語はありますか？[/h2]
+
+Please refer to the [English manual]() or [日本語マニュアル]() (Japanese manual).
+
+
+常见 bug
+===
+
+[h2]我试图启动游戏，但卡在【少女祈祷中】界面。我该怎么办？[/h2]
+
+请右键游戏名，并单击【详情页面】，并通过【开始游戏】按钮重试。若问题仍然出现，请通过
+文件资源管理器（Win+R 输入 explorer）检查高亮的路径下是否存在你的游戏。
+
+如果你正在启动的游戏是最新作锦上京，也有可能是 ZUN 发布了更新补丁而我们还在开发中。
+
+功能相关
+===
+
+[h2]怎么在红魔乡/妖妖梦/永夜抄/风神录的游戏进行到半时保存 replay？[/h2]
+
+起初，在游戏途中保存 replay 由于技术限制而暂不支持。原作者 Ack 的说明是：
+
+> Because of how these games were programmed, adding this feature would be quite
+> troublesome, so currently there's no direct solution to this.
+
+然而，目前红魔乡支持在游戏进行到一半时保存 replay。这种 replay 在记录的操作结束后
+不会回到自动标题页面，而是令主人公站在原地并停止射击。
+
+#### “永续BGM” 是什么意思？
+当你重新开始游戏时，其可以防止 BGM 重置。
+
+#### “暴力取材” 是什么意思？(文花帖/文花帖DS)
+始终将相机锁定在 boss 身上并消除相机的装填时间。
+
+#### 如何切换语言？
+
+- thprac 启动器的语言会根据你的 Windows 显示语言自动选择。
+- 若要修改游戏中界面的语言，请使用快捷键：
+  - **ALT + 1**：日语
+  - **ALT + 2**：中文
+  - **ALT + 3**：英语
+
+上述快捷键不能在启动器本身使用。请查看“如何使用”里的视频，其内有更详细的说明。
+
+技术问题
+===
+
+#### 高级选项显示“不支持的 VsyncPatch 版本”
+你可以在 [此处](https://maribelhearn.com/tools#vpatch) 找到我们兼容的 vpatch 版本。如果可以，请尽可能使用 **rev7** 中的 DLL。
+
+#### 使用 vpatch 时似乎无法调整 FPS
+某些工具（例如“DX8 to DX9 Converter”）与 VsyncPatch 冲突。注意 replay 的播放速度调整（加速/减速）仅在神灵庙中得到支持。
+
+#### 什么是“辉针城 - 魔理沙激光相关”？
+这个功能能够修复辉针城里臭名昭著的魔理沙激光炸 replay 的 bug。请参见原作者 Ack 的 [视频链接](https://www.bilibili.com/video/av285566068) 
+
+兼容相关
+===
+
+[h2]我的杀毒软件报毒了。这个工具安全吗？[/h2]
+
+thprac 不含有恶意代码，但由于其工作方式的特殊性，杀毒软件可能会报毒。如果出现了这种情况，你可以选择将 thprac 添加到杀毒软件的例外区（或信任区）。你也可以尝试使用 [这个版本](https://github.com/touhouworldcup/thprac/issues/112)，或者改用 v2.2.2.2 版，并确保 SHA256 签名为如果仍然报毒，请向我们报告。
+
+[h2]我的 thprac 为什么一直显示「检查更新中...」？[/h2]
+
+有可能是你当前的网络环境难以解析域名 raw.githubusercontent.com。
+请考虑适当调整 hosts 文件并重试。
+
+[h2]为什么 thprac 识别不了我的游戏？[/h2]
+
+第一次运行前，thprac 需要玩家手动扫描游戏路径。请右键游戏名，并点击【扫描游戏】或
+【Steam游戏...】。若之前曾经正常启动过，请检查是否有移动游戏所在的目录。
+
+[h2]thprac 找不到我的红魔乡。我该怎么办？[/h2]
+
+首先请确保你的 EXE 文件名为【搶曽峠杺嫿.exe】或【th06.exe】。若你的 Windows 显示语言
+为日文，EXE 文件名也可以为【東方紅魔郷.exe】。如果仍然找不到，你可以尝试将这个 .EXE
+文件图标拖动到 thprac.[版本号].exe 的文件图标上运行。
+
+[h2]thprac 支持旧作吗？[/h2]
+
+暂不支持。然而，对灵异传的支持正在开发，敬请期待。
+
+[h2]thprac 和汉化版游戏兼容吗？[/h2]
+
+目前稳定兼容喵玉汉化和 thcrap 汉化。
+不建议同时使用 thprac 和其他汉化版，否则可能会导致游戏数据永久丢失！！！
+
+[h2]thprac 支持哪些游戏/操作系统版本？[/h2]
+
+请注意，thprac 不支持试玩版游戏（锦上京除外）。
+
+稳定支持的游戏：
+- 红魔乡、妖妖梦、永夜抄、花映塚、风神录、地灵殿、星莲船、神灵庙、辉针城、绀珠传、天空璋、鬼形兽、虹龙洞、兽王园；
+- 上述游戏的 thcrap 汉化/英化、或者他们的喵玉汉化（如果有）；
+- 文花帖、文花帖DS、妖精大战争、弹幕天邪鬼、秘封噩梦日记、弹幕狂们的黑市；
+- 黄昏酒场。
+
+不稳定支持的游戏：
+- 锦上京。
+
+仅支持启动的游戏：
+- 萃梦想、绯想天、非想天则、心绮楼、深秘录、凭依华、刚欲异闻。
+
+稳定支持的操作系统：
+- Windows Vista/7/8/10/11；
+- NEC PC-98 系统上的 DOS（仅限 thprac98 分支的开发版）
+
+不稳定支持的操作系统：
+- Windows XP，配合补丁 [One-Core-API]()。请参见本帖第二页的文档。
+
+[h1]特别感谢（敬称略）[/h1]
+
+- 东方 STG 原作者 ZUNSoft & 上海アリス幻樂団 及原发布者 Amusement Makers
+- thprac 原作者 Ack
+- Nmlgc，他开发的 ReC98 让我受益匪浅；
+- Ethy1ene，他带我走入了 PC98 的世界；
+- hicode002，他陪我彻夜捣鼓硬件；
+- 还有你！
+
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　Next Dream...
+
+（第一页结束，第二页为中文版「请先读我」）
+
+=====================================第一页结束==================================
+[page]
+=====================================第二页开始==================================
+
+## [English](/README.md) [日本語](/README_JP.md)
+# **thprac**
+> thprac 是一个辅助练习东方 Project 的弹幕射击游戏的工具。
+
+# [下载](https://github.com/touhouworldcup/thprac/releases/latest) - [下载测试版](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip)
+
+> 注意测试版只会更新到下一个正式版，而不是下一个测试版。
+
+## **目录**
+
+* [如何下载](#downloading)
+* [如何使用](#usage)
+* [兼容性](#compatability)
+* [功能介绍](#features)
+* [退格键菜单](#backspace-menu)
+* [高级选项](#advanced-options)
+* [某些游戏的专属功能](#game-specific-features)
+* [贡献者名单](#credits)
+* [常见问题](#faq)
+
+## <a name="downloading"></a>如何下载
+
+点击链接下载 [最新正式版](https://github.com/touhouworldcup/thprac/releases/latest) 或 [最新测试版](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip)。注意测试版只会更新到下一个正式版，而**不**是下一个测试版。
+
+## <a name="usage"></a>如何使用
+
+此工具有多种启动方式：最常用的一种是将此工具的可执行文件放在游戏的文件夹下，并在启动游戏后启动此工具。还有一种方式是使用 thprac 自带的游戏启动器。
+
+### 在游戏文件夹内启动 thprac
+
+**此方法不适用于 Steam 版游戏。** 你可以将 `thprac.exe` 放到游戏的文件夹下。若使用此方法，thprac 会自动检查是否有 vpatch。你需要确保游戏已更新到最新版，且游戏的可执行文件名符合下述规则：
+
+- thXX.exe（大多数游戏）
+- 東方紅魔郷.exe（红魔乡）
+- alcostg.exe（黄昏酒场）
+
+### 启动游戏后再启动 thprac
+
+**大多数情况下此方法都适用。** 首先，以任意方式运行游戏（通过 thcrap、vpatch、Steam、等等），然后启动 `thprac.exe`。thprac 会检查目前正在运行的游戏并尝试对其应用 thprac。你可能需要返回一次主菜单才能使 thprac 生效。
+
+### 使用 thprac 自带的启动器
+
+下面这个视频说明了如何使用 thprac 自带的启动器。（需要科学上网）
+[![A quick and dirty overview of thprac 2.0](https://i.ytimg.com/vi/sRV4PDQceYo/maxresdefault.jpg)](https://www.youtube.com/watch?v=sRV4PDQceYo)
+
+## 使用命令行参数
+
+thprac 支持以下命令行选项：
+
+- `<path to game exe>` 命令 `thprac.exe <path to game exe>` 将直接运行指定的游戏并附加 thprac，而不会有任何确认提示。这允许你通过将东方游戏的 exe 文件直接拖动到 thprac.exe 上，游戏启动并附加 thprac。
+- `--attach <pid>` 立刻将 thprac 注入到拥有 ID `<PID>` 的进程，不会有任何确认提示。
+- `--attach` （不带其他参数）。命令 `thprac.exe --attach` 将会将 thprac 注入到第一个其找到的 东方游戏进程，不带任何确认提示。
+- `--without-vpatch` 阻止自动应用 vpatch。
+
+示例命令：
+
+```
+thprac.exe --attach 1234
+thprac.exe --attach
+thprac.exe C:\Users\Name\Desktop\Games\Touhou\th17\th17.exe
+thprac.exe --without-vpatch C:\Users\Name\Desktop\Games\Touhou\th17\th17.exe
+```
+
+## <a name="compatability"></a>兼容性
+
+thprac 正式支持自 **Windows Vista** 以来的所有 Windows 版本。若使用 [One-Core-API](https://github.com/Skulltrail192/One-Core-API-Binaries)，thprac 可能在 Windows XP 下也能工作，但我们**不**常测试 Windows XP 下的兼容性。
+
+## <a name="features"></a>功能介绍
+
+thprac 为所有主要游戏（包括妖精大战争和黄昏酒场）提供了一个增强的练习模式。
+
+![虹龙洞](https://github.com/user-attachments/assets/6dd2a366-1cf0-4447-9346-343877c99551)
+![永夜抄](https://github.com/user-attachments/assets/156f5515-04b2-4795-8275-410a27a3a9b2)
+
+thprac 使用上图中的 UI 替代了原版的练习菜单。对于一些特定的符卡，你还可以选择符卡的阶段，或修改符卡参数。另外，对于那些没有官方练习界面的游戏（黄昏酒场、妖精大战争等），thprac 在“开始游戏”界面添加了练习界面。
+
+![黄昏酒场](https://github.com/user-attachments/assets/f1a81abe-62dd-42df-a554-4d76f4623b64)
+![妖精大战争](https://github.com/user-attachments/assets/ea904230-55e1-444b-a63c-a3fb8a6f6e0c)
+
+您可以用键盘或手柄控制练习菜单。在此菜单中，可以用 UP 或 DOWN 选择选项，并用 LEFT 或 RIGHT 更改选项。您也可以用鼠标操作菜单。最后按下 SHOT 确认。
+
+thprac 会自动将您输入的选项保存到 replay 中，播放 replay 时，thcrap 会自动应用这些选项。 **使用 thcrap 游玩和“自定义”模式练习的 replay 不适用于原版游戏**。
+
+## <a name="backspace-menu"></a> 退格键菜单
+
+在任意一款 thprac 支持的游戏里（花映冢、兽王园除外），你都可以通过按下退格键（Backspace）以显示“退格键菜单”。此菜单显示了一系列可以通过功能键（F1 等）打开的功能。
+
+![虹龙洞](https://github.com/user-attachments/assets/16b8d46d-ef80-4abb-8794-35216d0de3b0)
+![兽王园](https://github.com/user-attachments/assets/1c8a0c1a-77c9-43de-95b3-41eb6a85977b)
+
+## <a name="advanced-options"></a>高级选项
+在任意一款 thprac 支持的游戏里，你都可以通过按下 F12 键来打开高级选项菜单；这些选项提供了和游戏内容相关的 bug 修复、补丁，或一些生活质量（QoL）功能。
+
+![永夜抄](https://github.com/user-attachments/assets/9a124f0f-e271-4fa9-8ad4-8442e962705d)
+![虹龙洞](https://github.com/user-attachments/assets/8c334200-64d4-418c-af58-e59757071568)
+
+
+## <a name="game-specific-features"></a>游戏特定功能
+### 弹幕狂们的黑市：指定波次
+
+![弹幕狂们的黑市](https://github.com/user-attachments/assets/0f8dae33-e50f-481f-8669-b46a64d1a662)
+
+如果在 thprac 提供的界面中使用“自定义练习”模式，则每次游戏将要选择一个波次的敌人时，上述界面就会出现并允许玩家选择某个特定的波次。
+
+### 花映冢：实用工具
+
+![花映冢工具](https://github.com/user-attachments/assets/ab420252-7113-45d4-bbaa-0c1011a0c63f)
+
+在对战模式开启游戏时，你可以在“模式”选项中选择“自定义练习”。如果这么做，上图中的窗口会出现在游戏中。它可以根据需要移动和调整窗口大小，并且可以按 F11 完全隐藏。
+
+### 兽王园：实用工具
+
+![兽王园工具](https://github.com/user-attachments/assets/2e86ae11-2dce-4070-b11d-5357f7d8a2af)
+
+### 红魔乡：暂停菜单
+
+![红魔乡](https://github.com/user-attachments/assets/11f11106-406c-4646-8e77-458ef794df23)
+
+
+选择“退出游戏”时，游戏将提示您保存 replay。
+
+**警告：** 这样保存的 replay 在您选择保存的时间点后还会继续播放。在此之后自机会停止不动并且停止射击。
+
+### 秘封噩梦日记、鬼形兽、虹龙洞：为 ESC + R 提供 bug 修复
+
+## <a name="credits"></a> 贡献者名单（2022 年 5 月 27 日及之后）
+- 开发: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [muter3000](https://github.com/muter3000), [zero318](https://github.com/zero318), [Lmocinemod](https://github.com/Lmocinemod), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 
+- 中文翻译: [CrestedPeak9](https://twitter.com/CrestedPeak9), maksim71_doll, DeepL
+- 日语翻译: [Yu-miya](https://www.twitch.tv/toho_yumiya), CyrusVorazan, DeepL
+- 将所有 bug 追踪报告从 [旧的 bug 追踪处](https://github.com/ack7139/thprac/issues) 移到 [此处](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
+- 中文 README 翻译：[TNT569](https://github.com/TNT569)、[H-J-Granger](https://github.com/H-J-Granger)
+- 日语版 README.md 翻译：[wefma](https://github.com/wefma)
+
+## <a name="faq"></a> 常见问题
+
+### 综合
+
+#### 为什么 thprac 项目移动了?
+原本的开发者 Ack 已经无限期停止了 thprac 或 Marketeer 的开发。这是他的声明：
+> 我将无限期停止未来 thprac 和 Marketeer 的所有开发，您可以自由地继续开发它，只要您遵守许可条款。
+> 由于我的技术不足，代码中充斥着晦涩难懂的文字和糟糕的逻辑，把所有事搞得一团糟。如果对你造成困扰，我很抱歉。
+
+我们目前不能联系到 Ack，且目前 thprac 的开发已被其他人接手。
+
+#### 我的杀毒软件报毒了。这个工具安全吗?
+thprac 不含有恶意代码，但由于其工作方式的特殊性，杀毒软件可能会报毒。如果出现了这种情况，你可以选择将 thprac 添加到杀毒软件的例外区（或信任区）。你也可以尝试使用 [这个版本](https://github.com/touhouworldcup/thprac/issues/112)。如果仍然报毒，请向我们报告。
+
+### 兼容性
+
+#### thprac 和翻译补丁兼容吗？
+thprac 与 thcrap 兼容。thprac 的启动器也可以启动 thcrap，与 [Universal THCRAP Launcher](https://github.com/thpatch/Universal-THCRAP-Launcher/) 相似。使用 thcrap 启动游戏时，也可以应用 thprac。thprac 与静态英文补丁不兼容，例如 gensokyo.org 制作的补丁。
+
+#### thprac 找不到红魔乡。我该怎么办？
+确保你的 exe 文件名为 "東方紅魔郷.exe" 或 "th06.exe"。如果 thprac 仍然找不到，你可以手动启动具有任何文件名的红魔乡 exe 并应用 thprac。
+
+### 关于功能
+
+#### 怎么在 TH06/TH07/TH08/TH10 的游戏进行到半时保存 replay？
+
+在游戏中途保存 replay 由于技术限制而暂不支持。thprac 2.0.8.3 的说明中说：
+
+> 因为这些游戏的编程方式，添加这个功能会十分麻烦，所以目前没有直接的解决方案。
+
+然而，目前已经支持在红魔乡游戏进行到半时保存 replay。
+
+注：在游戏中途保存的 replay 不会在保存的时刻后回到标题界面。
+
+#### “永续BGM” 是什么意思？
+当你重新开始游戏时，其可以防止 BGM 重置。
+
+#### “暴力取材” 是什么意思？(文花帖/文花帖DS)
+始终将相机锁定在 boss 身上并消除相机的装填时间。
+
+#### 如何切换语言？
+
+- thprac 启动器的语言会根据你的 Windows 显示语言自动选择。
+- 若要修改游戏中界面的语言，请使用快捷键：
+  - **ALT + 1**：日语
+  - **ALT + 2**：中文
+  - **ALT + 3**：英语
+
+上述快捷键不能在启动器本身使用。请查看“如何使用”里的视频，其内有更详细的说明。
+
+### Bug 报告
+
+#### 在哪里报告 bug？
+
+请在 GitHub 中的 [Issues 标签栏](https://github.com/touhouworldcup/thprac/issues) 反馈 bug 或建议。
+
+### 技术问题
+
+#### 高级选项显示“不支持的 VsyncPatch 版本”
+你可以在 [此处](https://maribelhearn.com/tools#vpatch) 找到我们兼容的 vpatch 版本。如果可以，请尽可能使用 **rev7** 中的 DLL。
+
+#### 使用 vpatch 时似乎无法调整 FPS
+某些工具（例如“DX8 to DX9 Converter”）与 VsyncPatch 冲突。注意 replay 的播放速度调整（加速/减速）仅在神灵庙中得到支持。
+
+#### 什么是“辉针城 - 魔理沙激光相关”？
+这个功能能够修复辉针城里臭名昭著的魔理沙激光炸 replay 的 bug。请参见原作者 Ack 的 [视频链接](https://www.bilibili.com/video/av285566068) 或 [YouTube 上的备份视频链接](https://www.youtube.com/watch?v=Hkh_AEGHLto)。
+
+（第二页结束，第一页为本帖一楼，第三页为英文版 README）
+(The second page has ended, the next page will be the English README file)
+(The fourth page will be the Japanese README file)
+
+=====================================第二页结束==================================
+[page]
+=====================================第三页开始==================================
+
+## [简体中文](/README_CN.md) [日本語](/README_JP.md)
+
+# **thprac**
+> thprac is a tool for practicing Touhou shmups.
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V7O03J4)
+
+## [Download](https://github.com/touhouworldcup/thprac/releases/latest) - [Download Beta](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip)
+> Note that beta versions will only update to the next stable version, not the next beta version.
+
+## **Table of Contents**
+* [Downloading](#downloading)
+* [Usage](#usage)
+* [Compatability](#compatability)
+* [Features](#-features)
+* [Backspace Menu](#backspace-menu)
+* [Advanced Options](#advanced-options)
+* [Game Specific Features](#game-specific-features)
+* [Credits](#credits)
+* [FAQ](#faq)
+
+## <a name="downloading"></a> **Downloading**
+If you want to download the tool, you can download the [latest release](https://github.com/touhouworldcup/thprac/releases/latest) here and the [latest beta](https://nightly.link/touhouworldcup/thprac/workflows/main/master/thprac.zip) here. Do note that the latest beta will update into the next stable release and NOT the next beta release.
+
+## <a name="usage"></a> **Usage**
+You can use this tool in a variety of ways; the main ways to do this are **placing the executable in the same folder as your game**, **running the executable after running your game**, or **using thprac's launcher**.
+
+### **thprac in the Game Folder**
+**This method will NOT work with Steam games.** You can run thprac by placing the `thprac.exe` file in the same folder as your game. This method will also automatically detect vpatch. You must ensure that the game is updated to the latest version and follows one of the following naming schemes. This method also works with vpatch.
+- thXX.exe (most games)
+- 東方紅魔郷.exe (Embodiment of Scarlet Devil)
+- alcostg.exe (Uwabami Breakers)
+
+### **thprac after Running the Game**
+**This method will work for most methods.** First, run the game in whichever method you want (whether it's thcrap, using vpatch, Steam, etc.) and then run `thprac.exe`. thprac will then detect the running game and attempt to attach itself to it. You may have to return to the menu screen to see thprac take effect.
+
+### **thprac Using the Launcher**
+This video explains how to use the launcher.
+[![A quick and dirty overview of thprac 2.0](https://i.ytimg.com/vi/sRV4PDQceYo/maxresdefault.jpg)](https://www.youtube.com/watch?v=sRV4PDQceYo)
+
+### Command line
+The following command line options are supported:
+- `<path to game exe>` The command `thprac.exe <path to game exe>` will run a game and attach thprac without any confirmation prompt. This makes it possible to drag a Touhou game executable onto thprac.exe and it will run with thprac.
+- `--attach <pid>` immediately inject thprac into a process with ID `<pid>` without any confirmation prompts.
+- `--attach` (without any other flags). The command `thprac.exe --attach` will attach thprac to the first Touhou game process it finds without opening any kind of confirmation prompt.
+- `--without-vpatch` Prevent automatically applying vpatch.
+
+Example commands:
+```
+thprac.exe --attach 1234
+thprac.exe --attach
+thprac.exe C:\Users\Name\Desktop\Games\Touhou\th17\th17.exe
+thprac.exe --without-vpatch C:\Users\Name\Desktop\Games\Touhou\th17\th17.exe
+```
+
+## <a name="compatability"></a> **Compatability**
+thprac officially supports every version of Windows starting with **Windows Vista**. Windows XP may work using [One-Core-API](https://github.com/Skulltrail192/One-Core-API-Binaries), but this is **NOT** being actively tested.
+
+thprac is also compatible with **Wine** and the Steam Deck. Do note that the backspace menu is tailored to work well with the Steam Deck, although this is untested.
+
+## <a name="features"></a> **Features**
+
+thprac features an enhanced practice mode that supports all main games along with Great Fairy Wars and Uwabami Breakers.
+
+![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174433923-0a6069e7-d10d-4107-8f0d-f4a8a9d56976.png)
+
+![Imperishable Night](https://user-images.githubusercontent.com/23106652/174433975-8f23b0b0-e48e-4be1-8cb7-d8e3e7ab6b8e.png)
+
+thprac replaces the original practice menu with a new UI shown in the image above; certain spells allow you to select phases or change certain parameters. For the games without an original practice mode (Uwabami Breakers, Great Fairy War, etc.), a practice menu is added to the "Start Game" menu.
+
+![Uwabami Breakers](https://user-images.githubusercontent.com/23106652/174434103-5fee7a13-0254-4602-a468-42330b985bb2.png)
+![Great Fairy Wars](https://user-images.githubusercontent.com/23106652/174434121-063142f2-ef3d-4721-ab96-a252343cdb0e.png)
+
+This menu can be controlled using your keyboard or your controller. Using this, you can select options using the **UP** and **DOWN** keys and change the option using the **LEFT** and **RIGHT** keys and the **SHOT** key to select. You can also use your mouse to interact with the menu.
+
+thprac will also automatically save the options you selected into any replay saved. When playing back the replay, thprac will automatically apply said options. **Replays saved while thprac is active using "Custom" mode will NOT work with the unmodified game.**
+
+## <a name="backspace-menu"></a> **Backspace Menu**
+In any supported game **(except Touhou 9 and 19)**, you can press the **backspace** key to enter the backspace menu. This menu shows a variety of options that can be activated using the function (F) keys.
+
+These options are always clickable, meaning you can interact with them using a mouse on a desktop computer or by tapping on them with your left thumb when using a Steam Deck. To use this feature on the Steam Deck, map the backspace key in Steam Input.
+
+![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174434813-73748a66-0f6d-4c6e-9f3a-895a49b93434.png)
+![Wily Beast and Weakest Creature](https://user-images.githubusercontent.com/23106652/174434834-6bd93104-1ed2-48ae-a440-9d9cb871ea03.png)
+
+## <a name="advanced-options"></a> **Advanced Options**
+In any supported game, you may use the F12 key to access the advanced options; these options may offer fixes or patches related to the game or other quality of life features.
+
+![Imperishable Night](https://user-images.githubusercontent.com/23106652/174434977-683da583-324b-4bd5-8408-13373dfd5a93.png)
+![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174435006-e906d30d-0ef5-4930-ae57-1f0919beb5af.png)
+
+## <a name="game-specific-features"></a> **Game-specific Features**
+### 100th BM - Force Wave
+![100th Black Market](https://github.com/touhouworldcup/thprac/assets/23106652/02c55e5e-5c89-462f-beea-9ab07cbb1051)
+
+If thprac is enabled using "Custom" mode, the popup above will appear when the game is about to choose a wave.
+
+### PoFV - Tools
+![Phantasmagoria of Flower View](https://user-images.githubusercontent.com/23106652/174434249-2bf1d70a-101c-4538-a4e6-8eeaf273dd88.png) 
+
+When starting a game in Match Mode, you can select "Custom" in a "Mode" prompt. If you do that, this window will appear in your game. You can move and adjust this window as much as you want. This window can be hidden by pressing the "F11" key.
+
+### UDoALG - Tools
+![TH19 Tools](https://github.com/touhouworldcup/thprac/assets/23106652/a2cdb385-b61d-4111-af6b-b195e85bf18a)
+
+It's just like PoFV Tools, but for UDoALG.
+
+### EoSD - Pause Menu
+![TH06](https://user-images.githubusercontent.com/23106652/174436027-734d642a-300c-45ab-9591-b6219aca087b.png)
+
+Choosing "Exit" will now prompt you to save a replay. 
+
+**Warning**: replays saved like this will continue after the point you chose to save the replay. The player character will stand still and not shoot.
+
+### ESC + R fix for EoSD, VD and beyond
+
+## <a name="credits"></a> **Credits (post May 27th, 2022)**
+- Development: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [muter3000](https://github.com/muter3000), [zero318](https://github.com/zero318), [Lmocinemod](https://github.com/Lmocinemod), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 
+- Chinese translations: [CrestedPeak9](https://twitter.com/CrestedPeak9), maksim71_doll, DeepL
+- Japanese translations: [Yu-miya](https://www.twitch.tv/toho_yumiya), CyrusVorazan, DeepL
+- Moving all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
+- English README.md: [Galagyy](https://github.com/Galagyy)
+- Chinese README.md translation: [TNT569](https://github.com/TNT569), [H-J-Granger](https://github.com/H-J-Granger)
+- Japanese README.md translation: [wefma](https://github.com/wefma)
+
+## <a name="faq"></a> **Frequently Asked Questions (FAQ)**
+
+### General
+
+#### Why did thprac move?
+The original developer, Ack, has indefinitely ceased all future development of thprac/Marketeer. Below is their statement:
+> I will indefinitely cease all future development on thprac/Marketeer, you are free to continue working on it, granting that you follow the license's terms.  
+> Due to my insufficient skill, the code is glutted with obscure writings and terrible logic, turning the whole thing into a complete mess. I'm sorry if that disturbs you.  
+
+Ack cannot be contacted at this time, and development has been taken over by others.
+
+#### My antivirus says thprac is malware. Is it safe?
+Thprac contains no malicious code, but its behavior may trigger your antivirus. If flagged, add an exception or trust rule in your antivirus to allow thprac to work. Alternatively, you can try [this version](https://github.com/touhouworldcup/thprac/issues/112) and report back if the issue persists.
+
+---
+
+### Compatibility
+
+#### Does thprac work with English patches?
+Thprac is compatible with **thcrap** and can function as a thcrap launcher, similar to the [Universal THCRAP Launcher](https://github.com/thpatch/Universal-THCRAP-Launcher/). It does not support static English patches, like those created by gensokyo.org.
+
+---
+
+#### thprac cannot find Embodiment of Scarlet Devil. What should I do?
+
+Ensure your executable is named either `東方紅魔郷.exe` or `th06.exe`. If thprac still fails to detect it, you can manually launch the game with any filename through the launcher, which will attach thprac to the game.
+
+---
+
+### Features
+
+#### How do I save a replay mid-game in TH06-10?
+Saving replays mid-game is not supported due to technical limitations. As per the thprac 2.0.8.3 manual:
+> Because of how these games were programmed, adding this feature would be quite troublesome, so currently there's no direct solution to this.  
+
+However, EoSD now supports this functionality.
+
+Note: replays saved mid-game do not return to the title screen after the save point.
+
+---
+
+#### What does "Everlasting BGM" mean?
+This option prevents the background music (BGM) from resetting when you restart the game.
+
+---
+
+#### What does "Coercive Reporting" mean? (Shoot the Bullet/Double Spoiler)
+This feature locks the camera onto the boss at all times and eliminates the camera's recharge time.
+
+---
+
+#### How do I switch languages?
+- The launcher automatically selects its language based on your Windows settings.  
+- To change the language in-game, use the shortcuts:  
+  - **ALT + 1**: Japanese 
+  - **ALT + 2**: Chinese 
+  - **ALT + 3**: English 
+
+These shortcuts do not work in the launcher itself. Refer to the video in the **"How to Use"** section for detailed instructions.
+
+---
+
+### Bug Reporting
+
+#### Where can I report bugs?
+Visit the [Issues tab on GitHub](https://github.com/touhouworldcup/thprac/issues) to report bugs or suggest improvements.
+
+---
+
+### Technical Issues
+
+#### Unsupported VsyncPatch version in advanced options
+Ensure you're using a compatible version of VsyncPatch. You can download it from [here](https://maribelhearn.com/tools#vpatch). Use DLLs from **rev7** whenever possible.
+
+---
+
+#### FPS adjustment seems to be broken when using vpatch
+
+Some tools, like "DX8 to DX9 Converter," conflict with VsyncPatch. Replay speed adjustment (slowdown/speedup) is only supported in **TH13**.
+
+---
+
+### Game-Specific
+
+#### What is "DDC - Marisa Laser Related"?
+This fixes the infamous Marisa laser desync bug in **Double Dealing Character (TH14)**. Please refer to the original developer, Ack's [demonstration video on Bilibili](https://www.bilibili.com/video/av285566068) (in Chinese, [backup video link on YouTube](https://www.youtube.com/watch?v=Hkh_AEGHLto))
+
+
+（第三页结束，第一页为中文版 README，第四页(见二楼)为日文版 README）
+（次のページに日本語マニュアルがであります）
+=====================================第三页结束==================================
