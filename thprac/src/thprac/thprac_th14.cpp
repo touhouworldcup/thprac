@@ -956,7 +956,7 @@ namespace TH14 {
             } else if (thMarisaLaser->mState == 2) {
                 ImGui::TextUnformatted(S(TH14_MODE_PLAYBACK_DESC));
                 if (mRepName[0]) {
-                    ImGui::Text(S(TH14_SELECTED_REPLAY), mRepName);
+                    ImGui::Text(S(TH_REPFIX_SELECTED), mRepName);
                     if (thMarisaLaser->mRecordsPlayback.size()) {
                         int i = 1;
                         for (auto& record : thMarisaLaser->mRecordsPlayback) {
@@ -976,13 +976,13 @@ namespace TH14 {
                         ImGui::TextUnformatted(S(TH14_REPLAY_NO_RECORDS));
                     }
                 } else {
-                    ImGui::TextUnformatted(S(TH14_SELECTED_NONE));
+                    ImGui::TextUnformatted(S(TH_REPFIX_SELECTED_NONE));
                 }
                 // TODO: Replay info
             } else if (thMarisaLaser->mState == 3) {
                 ImGui::TextUnformatted(S(TH14_MODE_RECOVER_DESC));
 
-                if (ImGui::Button(S(TH14_SAVE))) {
+                if (ImGui::Button(S(TH_REPFIX_SAVE))) {
                     if (mRepName[0]) {
                         std::wstring rep;
                         rep = mRepDir;
@@ -998,9 +998,9 @@ namespace TH14 {
                     thMarisaLaser->mRecordsRecover.clear();
                 ImGui::SameLine();
                 if (mRepName[0])
-                    ImGui::Text(S(TH14_SELECTED_REPLAY), mRepName);
+                    ImGui::Text(S(TH_REPFIX_SELECTED), mRepName);
                 else
-                    ImGui::TextUnformatted(S(TH14_SELECTED_NONE));
+                    ImGui::TextUnformatted(S(TH_REPFIX_SELECTED_NONE));
 
                 ImGui::Separator();
                 auto it = thMarisaLaser->mRecordsRecover.begin();

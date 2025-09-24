@@ -197,9 +197,6 @@ enum th_glossary_t
     TH14_CYCLE_4,
     TH14_CYCLE_5,
     TH14_DELETE,
-    TH14_ERROR,
-    TH14_ERROR_DEST,
-    TH14_ERROR_SRC,
     TH14_LOAD,
     TH14_LOCKED,
     TH14_MARISA_LASER,
@@ -219,8 +216,6 @@ enum th_glossary_t
     TH14_RECORD_E,
     TH14_REPLAY_NO_RECORDS,
     TH14_START_RECORDING,
-    TH14_SUCCESS,
-    TH14_SUCCESS_SAVED,
     TH14_TITLE,
     TH155_TITLE,
     TH15_ILT_0,
@@ -568,9 +563,13 @@ enum th_glossary_t
     TH19_SHOW_ENEMY_HP,
     TH19_TITLE,
     TH20_CYCLE_3,
+    TH20_EXRESFIX_RESET_DATA,
+    TH20_EXRESFIX_RESOLUTION,
+    TH20_EXRESFIX_RESOLUTION_DISABLE_HINT,
+    TH20_EXRESFIX_SAVE_DISABLE_HINT,
+    TH20_EXRESFIX_SELECTED_NONE,
     TH20_EXTRA_RESOLUTION_FIX,
     TH20_EXTRA_RESOLUTION_FIX_DESC,
-    TH20_EXRESFIX_SELECTED_NONE,
     TH20_FAKE_UNLOCK_STONES,
     TH20_FAKE_UNLOCK_STONES_DESC,
     TH20_FIX_HITBOX,
@@ -581,6 +580,10 @@ enum th_glossary_t
     TH20_INTERNAL_GAUGES,
     TH20_NEXT_STONE,
     TH20_PIV_OVERFLOW_FIX,
+    TH20_RESOLUTION_1280_960_PLUS,
+    TH20_RESOLUTION_640_480,
+    TH20_RESOLUTION_960_720,
+    TH20_RESOLUTION_UNSPECIFIED,
     TH20_STONE_ACTIVE,
     TH20_STONE_GAUGE,
     TH20_STONE_LEVEL_B,
@@ -973,6 +976,7 @@ enum th_glossary_t
     TH_END_S9,
     TH_END_STAGE,
     TH_ENHANCED,
+    TH_ERROR,
     TH_EXIT,
     TH_EXTRA,
     TH_FACTOR_ACB,
@@ -1034,9 +1038,17 @@ enum th_glossary_t
     TH_PROGRESS,
     TH_RAGE,
     TH_REAL_BULLET_SIZE,
+    TH_REPFIX_NEED_THPRAC,
     TH_REPFIX_NEED_THPRAC_DESC,
     TH_REPFIX_SAVE,
+    TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS,
+    TH_REPFIX_SAVE_ERROR_DEST,
+    TH_REPFIX_SAVE_ERROR_PARAMS,
+    TH_REPFIX_SAVE_ERROR_SRC,
+    TH_REPFIX_SAVE_SUCCESS,
+    TH_REPFIX_SAVE_SUCCESS_DESC,
     TH_REPFIX_SELECTED,
+    TH_REPFIX_SELECTED_ALREADY_FIXED,
     TH_REPFIX_SELECTED_NONE,
     TH_REPLAY_FIX,
     TH_RESTART,
@@ -1080,7 +1092,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1068];
+extern const char* th_glossary_str[3][1080];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2705,9 +2717,11 @@ extern const th_sections_t th_sections_cbt[7][2][14];
 
 extern const th_glossary_t TH20_CYCLE_LIST[4];
 
+extern const th_glossary_t TH20_EXRESFIX_RESOLUTION_OPT[5];
+
 }
 
-extern const wchar_t __thprac_loc_range_zh[2777];
+extern const wchar_t __thprac_loc_range_zh[2779];
 
 extern const wchar_t __thprac_loc_range_en[31];
 

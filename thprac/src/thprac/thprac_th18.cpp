@@ -1419,7 +1419,7 @@ namespace TH18 {
         {
             bool wndFocus = true;
 
-            if (BeginOptGroup<TH18_REPLAY_FIX>()) {
+            if (BeginOptGroup<TH_REPLAY_FIX>()) {
                 ImGui::TextUnformatted(S(TH18_REPFIX_DESC));
                 if (mShowFixInstruction) {
                     if (ImGui::Button(S(TH18_REPFIX_HIDE_INS)))
@@ -1437,7 +1437,7 @@ namespace TH18 {
 
                 if (!mRepDataDecoded) {
                     if (THGuiRep::singleton().mRepSelected) {
-                        ImGui::Text(S(TH18_REPFIX_SELECTED), THGuiRep::singleton().mRepName.c_str());
+                        ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mRepName.c_str());
 
                         if (!mRepDataDecoded) {
                             ImGui::SameLine();
@@ -1455,7 +1455,7 @@ namespace TH18 {
                         UnloadReplay();
                     }
                     ImGui::SameLine();
-                    if (ImGui::Button(S(TH18_REPFIX_SAVEAS))) {
+                    if (ImGui::Button(S(TH_REPFIX_SAVE))) {
                         SaveReplay();
                     }
 

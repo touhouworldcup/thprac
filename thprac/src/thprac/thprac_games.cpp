@@ -430,6 +430,18 @@ void HelpMarker(const char* desc)
     }
 }
 
+void CustomMarker(const char* text, const char* desc)
+{
+    ImGui::TextDisabled(text);
+    if (ImGui::IsItemHovered()) {
+        ImGui::BeginTooltip();
+        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+        ImGui::TextUnformatted(desc);
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
+    }
+}
+
 int FPSHelper(adv_opt_ctx& ctx, bool repStatus, bool vpFast, bool vpSlow, FPSHelperCallback* callback)
 {
     static bool isDebugAccActive = false;
@@ -808,6 +820,68 @@ bool ReplayLoadParam(const wchar_t* rep_path, std::string& param)
     }
     return false;
 }
+
+ReplayClearResult ReplayClearParam(const wchar_t* rep_path)
+{
+    DWORD repMagic = 0, bytesRead = 0;
+
+    HANDLE repFile = CreateFileW(rep_path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (repFile == INVALID_HANDLE_VALUE)
+        return ReplayClearResult::Error;
+    defer(CloseHandle(repFile));
+
+    // read the magic
+    SetFilePointer(repFile, 0, nullptr, FILE_BEGIN);
+    if (!ReadFile(repFile, &repMagic, 4, &bytesRead, nullptr) || bytesRead != 4)
+        return ReplayClearResult::Error;
+
+    // find thprac param headers based off magic
+    if (repMagic == 'PR6T' || repMagic == 'PR7T') {
+        DWORD magic = 0, paramLength = 0;
+        DWORD repSize = GetFileSize(repFile, nullptr);
+
+        SetFilePointer(repFile, -4, nullptr, FILE_END);
+        if (ReadFile(repFile, &magic, 4, &bytesRead, nullptr) && bytesRead == 4 && magic == 'CARP') {
+            // read param length
+            SetFilePointer(repFile, -8, nullptr, FILE_CURRENT);
+            if (!ReadFile(repFile, &paramLength, 4, &bytesRead, nullptr) || bytesRead != 4)
+                return ReplayClearResult::Error;
+
+            // truncate file before thprac data
+            if (repSize < paramLength + 8) return ReplayClearResult::Error;
+            SetFilePointer(repFile, repSize - (paramLength + 8), nullptr, FILE_BEGIN);
+            return SetEndOfFile(repFile) ? ReplayClearResult::Cleared : ReplayClearResult::Error;
+        }
+    } else {
+        DWORD userPtr = 0, userMagic = 0, userLength = 0, userNo = 0;
+
+        SetFilePointer(repFile, 12, nullptr, FILE_BEGIN);
+        if (ReadFile(repFile, &userPtr, 4, &bytesRead, nullptr) && bytesRead == 4) {
+            SetFilePointer(repFile, userPtr, nullptr, FILE_BEGIN);
+
+            while (true) {
+                if (!ReadFile(repFile, &userMagic, 4, &bytesRead, nullptr) || bytesRead != 4 || userMagic != 'RESU')
+                    break;
+                if (!ReadFile(repFile, &userLength, 4, &bytesRead, nullptr) || bytesRead != 4)
+                    break;
+                if (!ReadFile(repFile, &userNo, 4, &bytesRead, nullptr) || bytesRead != 4)
+                    break;
+
+                if (userNo == 'CARP') {
+                    // truncate before this user param
+                    SetFilePointer(repFile, -12, nullptr, FILE_CURRENT);
+                    return SetEndOfFile(repFile) ? ReplayClearResult::Cleared : ReplayClearResult::Error;
+                } else {
+                    SetFilePointer(repFile, userLength - 12, nullptr, FILE_CURRENT);
+                }
+            }
+
+        }
+    }
+
+    return ReplayClearResult::NoParams;
+}
+
 
 #pragma endregion
 

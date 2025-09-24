@@ -15,8 +15,11 @@ namespace TH20 {
 
     enum rel_addrs {
         STAGE_NUM = 0x1ba7e4,
-        GAME_SIDE0 = 0x1BA568,
-        GAME_THREAD_PTR = 0x1BA828,
+        GAME_SIDE0 = 0x1ba568,
+        GAME_THREAD_PTR = 0x1ba828,
+        REPLAY_MGR_PTR = 0x1c60fc,
+        MAIN_MENU_PTR = 0x1c6124,
+        WINDOW_PTR = 0x1B6758,
     };
 
     struct AnmVM {
@@ -28,6 +31,10 @@ namespace TH20 {
         char gap2[0x420];
         uint16_t anm_draw_mode; // 0x498, contains both render & blend mode
     };
+
+    // maps original resolution option id to the corresponding height of the default (sprite -1) anm sprite
+    // used for Nina Sp4 desync fix
+    float defaultSpriteHeights[4] = { 0.0f, 6.0f, 10.0f, 14.0f };
 
     struct THPracParam {
         int32_t mode;
@@ -160,6 +167,8 @@ namespace TH20 {
                 AddJsonValue(levelG);
                 AddJsonValue(priorityG);
 
+                AddJsonValue(resolutionSpriteHeight);
+
                 ReturnJson();
             }
 
@@ -170,6 +179,7 @@ namespace TH20 {
     };
     THPracParam thPracParam {};
     uint32_t replayStones[4] {};
+    size_t advExtraFixResOpt = 0;
 
     class THGuiPrac : public Gui::GameGuiWnd {
         THGuiPrac() noexcept
@@ -522,21 +532,31 @@ namespace TH20 {
         SINGLETON(THGuiRep);
 
     public:
+        THPracParam mRepParam;
+        bool mRepSelected = false;
+        bool mSelectedRepExtra = false;
+        std::wstring mSelectedRepName;
+        std::wstring mSelectedRepDir;
+        std::wstring mSelectedRepPath;
+
         void CheckReplay()
         {
-            uint32_t index = GetMemContent(RVA(0x1C6124), 0x5738);
-            char* repName = (char*)GetMemAddr(RVA(0x1C6124), index * 4 + 0x5740, 0x260);
+            uint32_t rep_offset = 0x5740 + 0x4 * GetMemContent(RVA(MAIN_MENU_PTR), 0x5738);
+            std::wstring repName = mb_to_utf16(GetMemAddr<char*>(RVA(MAIN_MENU_PTR), rep_offset, 0x260), 932);
             std::wstring repDir(mAppdataPath);
             repDir.append(L"\\ShanghaiAlice\\th20\\replay\\");
-            repDir.append(mb_to_utf16(repName, 932));
+            mSelectedRepName = repName;
+            mSelectedRepDir = repDir;
+            mSelectedRepPath = repDir + repName;
 
             std::string param;
-            if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
+            if (ReplayLoadParam(mSelectedRepPath.c_str(), param) && mRepParam.ReadJson(param))
                 mParamStatus = true;
             else
                 mRepParam.Reset();
 
-            uint32_t* savedStones = (uint32_t*)GetMemAddr(RVA(0x1C6124), index * 4 + 0x5740, 0x1C, 0xDC);
+            mSelectedRepExtra = (GetMemContent(RVA(MAIN_MENU_PTR), rep_offset, 0x1c, 0xf0) == 4); // difficulty == extra (4)
+            uint32_t* savedStones = (uint32_t*)GetMemAddr(RVA(MAIN_MENU_PTR), rep_offset, 0x1C, 0xDC);
             memcpy(replayStones, savedStones, sizeof(replayStones));
         }
 
@@ -547,15 +567,22 @@ namespace TH20 {
             case 1:
                 mRepStatus = false;
                 mParamStatus = false;
+                mRepSelected = false;
+                mSelectedRepExtra = false;
+                advExtraFixResOpt = 0;
                 thPracParam.Reset();
                 break;
             case 2:
                 CheckReplay();
+                mRepSelected = true;
                 break;
             case 3:
                 mRepStatus = true;
                 if (mParamStatus)
                     memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
+
+                if (advExtraFixResOpt && !thPracParam.resolutionSpriteHeight)
+                    thPracParam.resolutionSpriteHeight = defaultSpriteHeights[advExtraFixResOpt];
                 break;
             default:
                 break;
@@ -565,7 +592,6 @@ namespace TH20 {
     protected:
         std::wstring mAppdataPath;
         bool mParamStatus = false;
-        THPracParam mRepParam;
     };
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
@@ -877,8 +903,57 @@ namespace TH20 {
                 break;
             }
         }
+        bool CloneSelectedReplayWithParams(THPracParam repParams) {
+            //setup open file prompt
+            OPENFILENAMEW ofn;
+            wchar_t szFile[512];
+            wcscpy_s(szFile, L"th20_ud----.rpy");
+            ZeroMemory(&ofn, sizeof(ofn));
+            ofn.lStructSize = sizeof(ofn);
+            ofn.hwndOwner = *(HWND*)RVA(WINDOW_PTR);
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = sizeof(szFile);
+            ofn.lpstrFilter = L"Replay File\0*.rpy\0";
+            ofn.nFilterIndex = 1;
+            ofn.lpstrFileTitle = nullptr;
+            ofn.nMaxFileTitle = 0;
+            ofn.lpstrInitialDir = THGuiRep::singleton().mSelectedRepDir.c_str();
+            ofn.lpstrDefExt = L".rpy";
+            ofn.Flags = OFN_OVERWRITEPROMPT;
+
+            if (GetSaveFileNameW(&ofn)) {
+                bool existingFile = (GetFileAttributesW(szFile) != INVALID_FILE_ATTRIBUTES);
+                bool samePath = (GetUnifiedPath(szFile) == GetUnifiedPath(THGuiRep::singleton().mSelectedRepPath));
+
+                // copy original replay to the selected path, overwriting if existing (unless same path)
+                if (!samePath && !CopyFileW(THGuiRep::singleton().mSelectedRepPath.c_str(), szFile, FALSE)) {
+                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST), nullptr, ofn.hwndOwner);
+                    return false;
+                }
+
+                // clear thprac params if present (no impact otherwise)
+                if (ReplayClearParam(szFile) == ReplayClearResult::Error) {
+                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS), nullptr, ofn.hwndOwner);
+                    return false;
+                }
+
+                // save params & notify
+                if (!ReplaySaveParam(szFile, repParams.GetJson())) {
+                    MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
+                    return true;
+
+                } else { //delete copy if params didn't save
+                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_PARAMS), nullptr, ofn.hwndOwner);
+                    if (!existingFile) DeleteFileW(szFile);
+                }
+            }
+
+            return false;
+        }
+
         void ContentUpdate()
         {
+            bool wndFocus = true;
             ImGui::TextUnformatted(S(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
@@ -918,10 +993,70 @@ namespace TH20 {
                 ImGui::SetNextItemWidth(180.0f);
                 EndOptGroup();
             }
+            if (BeginOptGroup<TH_REPLAY_FIX>()) {
+                CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
+                ImGui::SameLine();
+                ImGui::TextUnformatted(S(TH20_EXTRA_RESOLUTION_FIX));
+                ImGui::SameLine();
+                HelpMarker(S(TH20_EXTRA_RESOLUTION_FIX_DESC));
+
+                if (THGuiRep::singleton().mSelectedRepExtra && !THGuiRep::singleton().mRepParam.resolutionSpriteHeight) {
+                    ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mSelectedRepName.c_str());
+
+                    // don't allow changing the resolution fix option while playing the replay (would be confusing)
+                    bool disableSelection = (bool)THGuiRep::singleton().mRepStatus;
+                    ImGui::BeginDisabled(disableSelection);
+                    ImGui::TextUnformatted(S(TH20_EXRESFIX_RESOLUTION));
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(200);
+                    Gui::ComboSelect(advExtraFixResOpt, (th_glossary_t*)TH20_EXRESFIX_RESOLUTION_OPT, elementsof(TH20_EXRESFIX_RESOLUTION_OPT) - 1, "##exresfix_res");
+                    if (disableSelection) {
+                        ImGui::EndDisabled();
+                        if (ImGui::IsItemHovered())
+                            ImGui::SetTooltip(S(TH20_EXRESFIX_RESOLUTION_DISABLE_HINT));
+                    }
+
+                    if (ImGui::IsPopupOpen("##exresfix_res") && !disableSelection)
+                        wndFocus = false;
+
+                    ImGui::SameLine();
+
+                    // don't allow saving without specifying a resolution
+                    bool disableSaving = !advExtraFixResOpt;
+                    ImGui::BeginDisabled(disableSaving);
+                    bool saveClicked = ImGui::Button(S(TH_REPFIX_SAVE));
+                    if (disableSaving) {
+                        ImGui::EndDisabled();
+                        if (ImGui::IsItemHovered())
+                            ImGui::SetTooltip(S(TH20_EXRESFIX_SAVE_DISABLE_HINT));
+                    } else if (saveClicked) {
+                        THPracParam newRepParam;
+                        memcpy(&newRepParam, &THGuiRep::singleton().mRepParam, sizeof(THPracParam));
+                        newRepParam.resolutionSpriteHeight = defaultSpriteHeights[advExtraFixResOpt];
+                        CloneSelectedReplayWithParams(newRepParam);
+                        if (!THGuiRep::singleton().mRepStatus) THGuiRep::singleton().CheckReplay(); //refresh for if user overwrote og file in menu
+                    }
+                } else if (THGuiRep::singleton().mSelectedRepExtra) {
+                    ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                    ImGui::SameLine();
+                    if (ImGui::Button(S(TH20_EXRESFIX_RESET_DATA))) {
+                        THPracParam newRepParam;
+                        memcpy(&newRepParam, &THGuiRep::singleton().mRepParam, sizeof(THPracParam));
+                        newRepParam.resolutionSpriteHeight = 0;
+                        CloneSelectedReplayWithParams(newRepParam);
+
+                        if (!THGuiRep::singleton().mRepStatus) THGuiRep::singleton().CheckReplay();
+                    }
+                } else {
+                    ImGui::TextDisabled(S(TH20_EXRESFIX_SELECTED_NONE));
+                }
+
+                EndOptGroup();
+            }
 
             AboutOpt("Khangaroo, Guy, zero318, rue, and you!");
             ImGui::EndChild();
-            ImGui::SetWindowFocus();
+            if(wndFocus) ImGui::SetWindowFocus();
         }
 
         adv_opt_ctx mOptCtx;
@@ -2454,7 +2589,7 @@ namespace TH20 {
             return;
 
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, RVA(0x1C4D48), RVA(0x1B6758),
+        GameGuiInit(IMPL_WIN32_DX9, RVA(0x1C4D48), RVA(WINDOW_PTR),
             Gui::INGAGME_INPUT_GEN2, RVA(0x1B88C0), RVA(0x1B88B8), 0,
             -2, *(float*)RVA(0x1B8818), 0.0f);
 
