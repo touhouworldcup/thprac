@@ -78,27 +78,18 @@ namespace TH12 {
             GetJsonValue(ventra_3);
 
             // deserializing damage source data (for ReimuA bomb desync fix)
-            if (param.HasMember("reimuADmgSrcs") && param["reimuADmgSrcs"].IsArray()) {
-                for (rapidjson::SizeType stage = 0; stage < param["reimuADmgSrcs"].Size(); stage++) {
-                    const rapidjson::Value& stageDmgSrcs = param["reimuADmgSrcs"][stage];
+            GetJsonVectorArray(reimuADmgSrcs, {
+                if (!el.IsArray() || el.Size() * sizeof(int32_t) != sizeof(PlayerDamageSource))
+                    return std::nullopt;
 
-                    if (stageDmgSrcs.IsArray()) {
-                        for (auto& dmgSrcArr : stageDmgSrcs.GetArray()) {
-                            if (dmgSrcArr.IsArray() && dmgSrcArr.Size() * sizeof(int32_t) == sizeof(PlayerDamageSource)) {
-                                PlayerDamageSource dmgSrc {};
-
-                                int32_t* p = reinterpret_cast<int32_t*>(&dmgSrc);
-                                for (rapidjson::SizeType i = 0; i < dmgSrcArr.Size(); i++) {
-                                    assert(dmgSrcArr[i].IsInt());
-                                    p[i] = dmgSrcArr[i].GetInt();
-                                }
-
-                                reimuADmgSrcs[stage].push_back(dmgSrc);
-                            }
-                        }
-                    }
+                PlayerDamageSource dmgSrc {};
+                int32_t* p = reinterpret_cast<int32_t*>(&dmgSrc);
+                for (rapidjson::SizeType i = 0; i < el.Size(); i++) {
+                    p[i] = el[i].GetInt();
                 }
-            }
+
+                return dmgSrc;
+            });
 
             return true;
         }
@@ -112,25 +103,16 @@ namespace TH12 {
                 AddJsonValue(mode);
 
                 // serializing damage source data (for ReimuA bomb desync fix)
-                rapidjson::Value json_reimuADmgSrcs(rapidjson::kArrayType);
-                for (size_t stage = 0; stage < elementsof(reimuADmgSrcs); ++stage) {
-                    rapidjson::Value stageArray(rapidjson::kArrayType);
+                AddJsonVectorArray(reimuADmgSrcs, {
+                    rapidjson::Value dmgSrcArray(rapidjson::kArrayType);
 
-                    for (auto& dmgSrc : reimuADmgSrcs[stage]) {
-                        rapidjson::Value dmgSrcArray(rapidjson::kArrayType);
+                    int32_t* p = reinterpret_cast<int32_t*>(&el);
+                    size_t count = sizeof(PlayerDamageSource) / sizeof(int32_t);
+                    for (size_t i = 0; i < count; ++i)
+                        dmgSrcArray.PushBack(p[i], jalloc);
 
-                        int32_t* p = reinterpret_cast<int32_t*>(&dmgSrc);
-                        size_t count = sizeof(PlayerDamageSource) / sizeof(int32_t);
-
-                        for (size_t i = 0; i < count; ++i)
-                            dmgSrcArray.PushBack(p[i], jalloc);
-
-                        stageArray.PushBack(dmgSrcArray, jalloc);
-                    }
-
-                    json_reimuADmgSrcs.PushBack(stageArray, jalloc);
-                }
-                param.AddMember(rapidjson::Value("reimuADmgSrcs", jalloc), json_reimuADmgSrcs, jalloc);
+                    return dmgSrcArray;
+                });
 
                 ReturnJson();
             } else if (mode == 1) {
@@ -1568,9 +1550,33 @@ namespace TH12 {
     })
     PATCH_DY(th12_disable_prac_menu_2, 0x44603e, "83c4106690")
     EHOOK_DY(th12_patch_main, 0x40e8df, 1, {
-        if (GetMemContent(STAGE_NUM) == 1)
+        uint32_t stageNum = GetMemContent(STAGE_NUM);
+
+        if (stageNum == 1)
             for (size_t stage = 0; stage < elementsof(thPracParam.reimuADmgSrcs); ++stage)
                 thPracParam.reimuADmgSrcs[stage].clear();
+        else if (stageNum < 6 && !(GetMemContent(MODEFLAGS) & 0b10000)) {
+            Player* player = GetMemContent<Player*>(PLAYER_PTR);
+
+            if (THGuiRep::singleton().mRepStatus) { // Playback
+                for (int i = 0; i < playerDmgSrcCnt; i++) // if there are already active sources, its a transition - skip
+                    if (player->damage_sources[i].flags & 1)
+                        return;
+
+                const auto& stageSrcs = thPracParam.reimuADmgSrcs[stageNum - 2];
+
+                if (stageSrcs.size() > 0) {
+                    uint32_t curSrcIndex = 0;
+
+                    for (size_t i = 0; i < stageSrcs.size() && i < playerDmgSrcCnt; i++)
+                        player->damage_sources[curSrcIndex++] = stageSrcs[i];
+                }
+            } else { // Recording
+                for (int i = 0; i < playerDmgSrcCnt; i++)
+                    if (player->damage_sources[i].flags & 1) // (erroneously) active damage source
+                        thPracParam.reimuADmgSrcs[stageNum - 2].push_back(player->damage_sources[i]);
+            }
+        }
 
         if (thPracParam.mode == 1) {
             *(int32_t*)(0x4b0c44) = (int32_t)(thPracParam.score / 10);
@@ -1641,33 +1647,6 @@ namespace TH12 {
     })
     EHOOK_DY(th12_render, 0x462722, 1, {
         GameGuiRender(IMPL_WIN32_DX9);
-    })
-    EHOOK_DY(th12_prevent_reiA_desync, 0x42227b, 1, { // hooks after game thread creation
-        Player* player = GetMemContent<Player*>(PLAYER_PTR);
-        uint32_t stageNum = GetMemContent(STAGE_NUM);
-
-        if (player == nullptr) return;
-        if (GetMemContent(CHARA) || GetMemContent(SUBSHOT)) return; // not reiA
-        if (GetMemContent(MODEFLAGS) & 0b10000) return; // in practice (note: wont filter prac mode replays)
-        if (stageNum < 2 || stageNum > 6) return; //stage 1 or extra
-
-        if (THGuiRep::singleton().mRepStatus) { // Playback
-            for (int i = 0; i < 0x81; i++) // if there are already active sources, its a transition - skip
-                if (player->damage_sources[i].flags & 1) return;
-
-            const auto& stageSrcs = thPracParam.reimuADmgSrcs[stageNum-2];
-
-            if (stageSrcs.size() > 0) {
-                uint32_t curSrcIndex = 0;
-
-                for (size_t i = 0; i < stageSrcs.size() && i < 0x81; i++)
-                    player->damage_sources[curSrcIndex++] = stageSrcs[i];
-            }
-        } else { // Recording
-            for (int i = 0; i < 0x81; i++)
-                if (player->damage_sources[i].flags & 1) // (erroneously) active damage source
-                    thPracParam.reimuADmgSrcs[stageNum-2].push_back(player->damage_sources[i]);
-        }
     })
     HOOKSET_ENDDEF()
 

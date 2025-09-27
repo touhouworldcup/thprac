@@ -328,6 +328,24 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
         }                                                                                              \
     }
 
+#define GetJsonVectorArray(value_name, processor)                                                                                  \
+    {                                                                                                                              \
+        if (param.HasMember(#value_name) && param[#value_name].IsArray()) {                                                        \
+            for (rapidjson::SizeType arr_i = 0; arr_i < param[#value_name].Size(); arr_i++) {                                      \
+                const rapidjson::Value& vector = param[#value_name][arr_i];                                                        \
+                if (vector.IsArray()) {                                                                                            \
+                    for (auto& e : vector.GetArray()) {                                                                            \
+                        auto __processor = [&](const rapidjson::Value& el)                                                         \
+                            -> std::optional<typename std::remove_reference_t<decltype(value_name[arr_i])>::value_type> processor; \
+                        auto __result = __processor(e);                                                                            \
+                        if (__result.has_value())                                                                                  \
+                            value_name[arr_i].push_back(*__result);                                                                \
+                    }                                                                                                              \
+                }                                                                                                                  \
+            }                                                                                                                      \
+        }                                                                                                                          \
+    }
+
 #define AddJsonArray(value_name, value_len)                                \
     {                                                                      \
         rapidjson::Value __key_##value_name(#value_name, jalloc);          \
@@ -351,6 +369,22 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
         }                                                                  \
         param.AddMember(__key_##value_name, __outer_##value_name, jalloc); \
     }
+
+#define AddJsonVectorArray(value_name, processor)                                          \
+    {                                                                                      \
+        rapidjson::Value json_##value_name(rapidjson::kArrayType);                         \
+        for (size_t arr_i = 0; arr_i < elementsof(value_name); ++arr_i) {                  \
+            rapidjson::Value vectorArray(rapidjson::kArrayType);                           \
+            for (auto& e : value_name[arr_i]) {                                            \
+                rapidjson::Value elArray(rapidjson::kArrayType);                           \
+                auto __processor = [&](auto& el) -> rapidjson::Value processor;            \
+                vectorArray.PushBack(__processor(e), jalloc);                              \
+            }                                                                              \
+            json_##value_name.PushBack(vectorArray, jalloc);                               \
+        }                                                                                  \
+        param.AddMember(rapidjson::Value(#value_name, jalloc), json_##value_name, jalloc); \
+    }
+
 
 #pragma endregion
 
