@@ -313,6 +313,21 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
             }                                                                          \
         }                                                                              \
     }
+
+#define GetJsonArray2D(value_name, outer_len, inner_len)                                               \
+    {                                                                                                  \
+        if (param.HasMember(#value_name) && param[#value_name].IsArray()) {                            \
+            for (int i = 0; i < std::min<int>(param[#value_name].Size(), outer_len); i++) {            \
+                if (param[#value_name][i].IsArray()) {                                                 \
+                    for (int j = 0; j < std::min<int>(param[#value_name][i].Size(), inner_len); j++) { \
+                        if (param[#value_name][i][j].IsNumber())                                       \
+                            value_name[i][j] = param[#value_name][i][j].GetDouble();                   \
+                    }                                                                                  \
+                }                                                                                      \
+            }                                                                                          \
+        }                                                                                              \
+    }
+
 #define AddJsonArray(value_name, value_len)                                \
     {                                                                      \
         rapidjson::Value __key_##value_name(#value_name, jalloc);          \
@@ -321,6 +336,20 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
         for (int i = 0; i < value_len; i++)                                \
             __value_##value_name.PushBack(value_name[i], jalloc);            \
         param.AddMember(__key_##value_name, __value_##value_name, jalloc); \
+    }
+
+#define AddJsonArray2D(value_name, outer_len, inner_len)                   \
+    {                                                                      \
+        rapidjson::Value __key_##value_name(#value_name, jalloc);          \
+        rapidjson::Value __outer_##value_name(rapidjson::kArrayType);      \
+        for (int i = 0; i < outer_len; i++) {                              \
+            rapidjson::Value __inner_##value_name(rapidjson::kArrayType);  \
+            for (int j = 0; j < inner_len; j++) {                          \
+                __inner_##value_name.PushBack(value_name[i][j], jalloc);   \
+            }                                                              \
+            __outer_##value_name.PushBack(__inner_##value_name, jalloc);   \
+        }                                                                  \
+        param.AddMember(__key_##value_name, __outer_##value_name, jalloc); \
     }
 
 #pragma endregion

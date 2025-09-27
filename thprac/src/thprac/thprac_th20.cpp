@@ -20,6 +20,7 @@ namespace TH20 {
         REPLAY_MGR_PTR = 0x1c60fc,
         MAIN_MENU_PTR = 0x1c6124,
         WINDOW_PTR = 0x1B6758,
+        SET_TIMER_FUNC = 0x23520
     };
 
     struct AnmVM {
@@ -67,6 +68,8 @@ namespace TH20 {
 
         int32_t reimuR2Timer[7];
         int32_t passiveMeterTimer[7];
+        int32_t yellow2CycleAngle[7][4];
+        int32_t yellow2CycleTimer[7][4];
         float resolutionSpriteHeight;
 
         bool dlg;
@@ -112,6 +115,8 @@ namespace TH20 {
 
             GetJsonArray(reimuR2Timer, elementsof(reimuR2Timer));
             GetJsonArray(passiveMeterTimer, elementsof(passiveMeterTimer));
+            GetJsonArray2D(yellow2CycleAngle, elementsof(yellow2CycleAngle), elementsof(yellow2CycleAngle[0]));
+            GetJsonArray2D(yellow2CycleTimer, elementsof(yellow2CycleTimer), elementsof(yellow2CycleTimer[0]));
             GetJsonValue(resolutionSpriteHeight);
 
             return true;
@@ -127,6 +132,13 @@ namespace TH20 {
 
                 AddJsonArray(reimuR2Timer, elementsof(reimuR2Timer));
                 AddJsonArray(passiveMeterTimer, elementsof(passiveMeterTimer));
+
+                auto selected = (uint32_t*)(RVA(GAME_SIDE0) + 0x88 + 0x1C);
+                if (selected[1] == 5 || selected[2] == 5) { //lotta zeros we don't need to store
+                    AddJsonArray2D(yellow2CycleAngle, elementsof(yellow2CycleAngle), elementsof(yellow2CycleAngle[0]));
+                    AddJsonArray2D(yellow2CycleTimer, elementsof(yellow2CycleTimer), elementsof(yellow2CycleTimer[0]));
+                }
+
                 AddJsonValue(resolutionSpriteHeight);
 
                 ReturnJson();
@@ -2430,12 +2442,6 @@ namespace TH20 {
         uintptr_t player_stats = game_side + 0x88;
         int32_t hyperMax = *(int32_t*)(player_stats + 0x50);
 
-        struct Timer { //essentials
-            int32_t prev;
-            int32_t cur;
-            float cur_f;
-        };
-
         if ((int32_t)thPracParam.hyper == 1 || thPracParam.hyperActive) {
             uintptr_t player_stone_manager = *(uintptr_t*)(game_side + 0x2c);
             bool hyperGLockEnabled = *(THOverlay::singleton().mHyperGLock);
@@ -2506,18 +2512,41 @@ namespace TH20 {
             pCtx->Eip = RVA(0xe2fe7);
     })
     EHOOK_DY(th20_timer_desync_fix, 0xBA99F, 6, {
-        uint32_t stage = *(uint32_t*)RVA(GAME_SIDE0 + 0x88 + 0x1F4) - 1;
-        if (*(uint32_t*)(*(uintptr_t*)RVA(GAME_THREAD_PTR) + 0x108)) {
+        uint32_t stage = GetMemContent(RVA(GAME_SIDE0 + 0x88 + 0x1F4)) - 1;
+        uintptr_t player_ptr = GetMemContent(RVA(GAME_SIDE0 + 4));
+
+        if (THGuiRep::singleton().mRepStatus) {
             // Playback
-            int32_t offset = stage != 0 && !*(uint32_t*)RVA(0x1C06A0) ? 30 : 0;
-            if (thPracParam.reimuR2Timer[stage])
-                asm_call_rel<0x23520, Thiscall>(*(uintptr_t*)RVA(GAME_SIDE0 + 4) + 0x22B4 + 0x12580, thPracParam.reimuR2Timer[stage] + offset);
+            if (thPracParam.reimuR2Timer[stage]) {
+                int32_t offset = stage != 0 && !GetMemContent(RVA(0x1C06A0)) ? 30 : 0;
+                asm_call_rel<SET_TIMER_FUNC, Thiscall>(player_ptr + 0x22B4 + 0x12580, thPracParam.reimuR2Timer[stage] + offset);
+            }
+
             if (thPracParam.passiveMeterTimer[stage])
-                asm_call_rel<0x23520, Thiscall>(*(uintptr_t*)RVA(0x1C6118) + 0x28, thPracParam.passiveMeterTimer[stage]);
+                asm_call_rel<SET_TIMER_FUNC, Thiscall>(GetMemContent(RVA(0x1C6118)) + 0x28, thPracParam.passiveMeterTimer[stage]);
+
+            for (int i = 0; i < 4; i++) {
+                uint32_t y2timer = thPracParam.yellow2CycleTimer[stage][i];
+
+                if (y2timer) {
+                    *(float*)(player_ptr + 0x684 + 0x12c * i + 0xd4) = *(float*)(&thPracParam.yellow2CycleAngle[stage][i]);
+                    asm_call_rel<SET_TIMER_FUNC, Thiscall>(player_ptr + 0x684 + 0x12c * i + 0xe4, y2timer);
+                }
+            }
+
         } else {
             // Recording
-            thPracParam.reimuR2Timer[stage] = *(int32_t*)(*(uintptr_t*)RVA(GAME_SIDE0 + 4) + 0x22B4 + 0x12580 + 4);
-            thPracParam.passiveMeterTimer[stage] = *(int32_t*)(*(uintptr_t*)RVA(0x1C6118) + 0x28 + 4);
+            thPracParam.reimuR2Timer[stage] = GetMemContent<int32_t>(player_ptr + 0x22B4 + 0x12580 + 4);
+            thPracParam.passiveMeterTimer[stage] = GetMemContent<int32_t>(RVA(0x1C6118), 0x28 + 4);
+
+            for (int i = 0; i < 4; i++) {
+                uint32_t y2timer = GetMemContent(player_ptr + 0x684 + 0x12c * i + 0xe8);
+
+                if (y2timer) { // save float angle as int to not lose precision
+                    thPracParam.yellow2CycleAngle[stage][i] = GetMemContent(player_ptr + 0x684 + 0x12c * i + 0xd4);
+                    thPracParam.yellow2CycleTimer[stage][i] = y2timer;
+                }
+            }
         }
     })
     PATCH_DY(th20_fix_rep_save_stone_names, 0x127B9F, "8B82D8000000" NOP(22))
