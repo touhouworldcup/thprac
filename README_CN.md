@@ -121,7 +121,7 @@ thprac 会自动将您输入的选项保存到 replay 中，播放 replay 时，
 
 **警告：** 这样保存的 replay 在您选择保存的时间点后还会继续播放。在此之后自机会停止不动并且停止射击。
 
-### 秘封噩梦日记、鬼形兽、虹龙洞：为 ESC + R 提供 bug 修复
+### 红魔乡，以及秘封噩梦日记以来的游戏：为 ESC + R 提供 bug 修复
 
 ## <a name="credits"></a> 贡献者名单（2022 年 5 月 27 日及之后）
 - 开发: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [muter3000](https://github.com/muter3000), [zero318](https://github.com/zero318), [Lmocinemod](https://github.com/Lmocinemod), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 
