@@ -115,7 +115,7 @@ thprac が『カスタム』モードで動作している場合、ゲームが�
 
 **注意**: この方法で保存されたリプレイは保存されたフレーム以降も再生されます。自機はその場に停止し、ショットを撃たなくなります。
 
-### ナイトメアダイアリー、鬼形獣、虹龍洞の ESC + R の高速リトライに関する修正
+### 紅魔郷、秘封ナイトメアダイアリー、バレットフィリア達の闇市場、鬼形獣からのゲーム(Esc+R fix for all games that need it, to be short)：ESC + R の高速リトライに関する修正
 
 ## <a name="credits"></a> **クレジット (2022年5月27日以降)**
 - 開発: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [muter3000](https://github.com/muter3000), [zero318](https://github.com/zero318), [Lmocinemod](https://github.com/Lmocinemod), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 
