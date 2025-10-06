@@ -14,7 +14,7 @@ namespace TH12 {
         REPLAY_MGR_PTR = 0x4b4518,
     };
 
-    constexpr uint32_t playerDmgSrcCnt = 0x81;
+    constexpr uint32_t playerDmgSrcCnt = 0x80;
 
     struct PlayerDamageSource {
         char gap0[0x70];
@@ -51,6 +51,9 @@ namespace TH12 {
         bool _playLock = false;
         void Reset()
         {
+            for (size_t stage = 0; stage < elementsof(reimuADmgSrcs); ++stage)
+                reimuADmgSrcs[stage].clear();
+
             memset(this, 0, sizeof(THPracParam));
         }
         bool ReadJson(std::string& json)
@@ -84,9 +87,8 @@ namespace TH12 {
 
                 PlayerDamageSource dmgSrc {};
                 int32_t* p = reinterpret_cast<int32_t*>(&dmgSrc);
-                for (rapidjson::SizeType i = 0; i < el.Size(); i++) {
+                for (rapidjson::SizeType i = 0; i < el.Size(); i++)
                     p[i] = el[i].GetInt();
-                }
 
                 return dmgSrc;
             });
@@ -1552,10 +1554,10 @@ namespace TH12 {
     EHOOK_DY(th12_patch_main, 0x40e8df, 1, {
         uint32_t stageNum = GetMemContent(STAGE_NUM);
 
-        if (stageNum == 1)
-            for (size_t stage = 0; stage < elementsof(thPracParam.reimuADmgSrcs); ++stage)
-                thPracParam.reimuADmgSrcs[stage].clear();
-        else if (stageNum < 6 && !(GetMemContent(MODEFLAGS) & 0b10000)) {
+        if (stageNum == 1 && !THGuiRep::singleton().mRepStatus && !thPracParam.mode)
+            thPracParam.Reset();
+
+        else if (stageNum > 1 && stageNum <= 6 && !(GetMemContent(MODEFLAGS) & 0b10000)) {
             Player* player = GetMemContent<Player*>(PLAYER_PTR);
 
             if (THGuiRep::singleton().mRepStatus) { // Playback
