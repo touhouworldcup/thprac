@@ -14,13 +14,17 @@ namespace TH20 {
     using namespace TH20;
 
     enum rel_addrs {
-        STAGE_NUM = 0x1ba7e4,
+        WINDOW_PTR = 0x1b6758,
         GAME_SIDE0 = 0x1ba568,
+        DMG_SRC_MGR_PTR = GAME_SIDE0 + 0x28,
+        MODEFLAGS = 0x1ba5d8,
+        STAGE_NUM = GAME_SIDE0 + 0x88 + 0x1f4,
         GAME_THREAD_PTR = 0x1ba828,
         REPLAY_MGR_PTR = 0x1c60fc,
         MAIN_MENU_PTR = 0x1c6124,
-        WINDOW_PTR = 0x1B6758,
-        SET_TIMER_FUNC = 0x23520
+        SET_TIMER_FUNC = 0x23520,
+        ALLOCATE_DMG_SRC_FUNC = 0xc0e60,
+        DELETE_DMG_SRC_FUNC = 0xc1f30
     };
 
     struct AnmVM {
@@ -31,6 +35,33 @@ namespace TH20 {
         Float2 sprite_dims; // 0x70
         char gap2[0x420];
         uint16_t anm_draw_mode; // 0x498, contains both render & blend mode
+    };
+
+    struct PlayerDamageSource {
+        PlayerDamageSource* self_ptr; // 0x0
+        PlayerDamageSource* list_next; // 0x4
+        PlayerDamageSource* list_prev; // 0x8
+        void* iterable_list; // 0xc
+        void* cur_iterator; // 0x10
+        uint32_t flags; // 0x14
+        float radius; // 0x18
+        float unknown_float_1c; // 0x1c
+        float radius_delta; // 0x20
+        float angle; // 0x24
+        float angular_velocity; // 0x28
+        Float2 size; // 0x2c
+        Float2 position; // 0x34
+        char otherMotionData[0x40]; // 0x3c
+        Timer20 duration; // 0x7c
+        uint32_t id; // 0x8c
+        uint32_t player_bullet_id; // 0x90
+        int32_t damage; // 0x94
+        int32_t damage_dealt; // 0x98
+        int32_t damage_cap; // 0x9c
+        int32_t hit_freq; // 0xa0
+        char variousUnknowns[0x18]; // 0xa4
+        uint32_t side_index; // 0xbc
+        void* game_side; // 0xc0
     };
 
     // maps original resolution option id to the corresponding height of the default (sprite -1) anm sprite
@@ -71,12 +102,17 @@ namespace TH20 {
         int32_t yellow2CycleAngle[7][4];
         int32_t yellow2CycleTimer[7][4];
         float resolutionSpriteHeight;
+        std::vector<PlayerDamageSource> rogueDmgSrcs[7];
+        uint32_t nextDmgID[7];
 
         bool dlg;
 
         bool _playLock = false;
         void Reset()
         {
+            for (size_t st = 0; st < elementsof(rogueDmgSrcs); ++st)
+                rogueDmgSrcs[st].clear();
+
             memset(this, 0, sizeof(THPracParam));
         }
         bool ReadJson(std::string& json)
@@ -119,6 +155,20 @@ namespace TH20 {
             GetJsonArray2D(yellow2CycleTimer, elementsof(yellow2CycleTimer), elementsof(yellow2CycleTimer[0]));
             GetJsonValue(resolutionSpriteHeight);
 
+            // deserializing damage source data (for Y1 lingering hitbox desync fix)
+            GetJsonVectorArray(rogueDmgSrcs, {
+                if (!el.IsArray() || el.Size() * sizeof(int32_t) != sizeof(PlayerDamageSource))
+                    return std::nullopt;
+
+                PlayerDamageSource dmgSrc {};
+                int32_t* p = reinterpret_cast<int32_t*>(&dmgSrc);
+                for (rapidjson::SizeType i = 0; i < el.Size(); i++)
+                    p[i] = el[i].GetInt();
+
+                return dmgSrc;
+            });
+            GetJsonArray(nextDmgID, elementsof(nextDmgID));
+
             return true;
         }
         std::string GetJson()
@@ -138,6 +188,18 @@ namespace TH20 {
                     AddJsonArray2D(yellow2CycleAngle, elementsof(yellow2CycleAngle), elementsof(yellow2CycleAngle[0]));
                     AddJsonArray2D(yellow2CycleTimer, elementsof(yellow2CycleTimer), elementsof(yellow2CycleTimer[0]));
                 }
+
+                AddJsonVectorArray(rogueDmgSrcs, {
+                    rapidjson::Value dmgSrcArray(rapidjson::kArrayType);
+
+                    int32_t* p = reinterpret_cast<int32_t*>(&el);
+                    size_t count = sizeof(PlayerDamageSource) / sizeof(int32_t);
+                    for (size_t i = 0; i < count; ++i)
+                        dmgSrcArray.PushBack(p[i], jalloc);
+
+                    return dmgSrcArray;
+                });
+                AddJsonArray(nextDmgID, elementsof(nextDmgID));
 
                 AddJsonValue(resolutionSpriteHeight);
 
@@ -2511,21 +2573,22 @@ namespace TH20 {
         if (Gui::KeyboardInputGetRaw('Q'))
             pCtx->Eip = RVA(0xe2fe7);
     })
-    EHOOK_DY(th20_timer_desync_fix, 0xBA99F, 6, {
-        uint32_t stage = GetMemContent(RVA(GAME_SIDE0 + 0x88 + 0x1F4)) - 1;
+    EHOOK_DY(th20_desync_fixes, 0xBA99F, 6, {
         uintptr_t player_ptr = GetMemContent(RVA(GAME_SIDE0 + 4));
+        uint32_t stage = GetMemContent(RVA(STAGE_NUM)) - 1;
+        uintptr_t dmgSrcManager = GetMemContent(RVA(DMG_SRC_MGR_PTR));
 
         if (THGuiRep::singleton().mRepStatus) {
             // Playback
-            if (thPracParam.reimuR2Timer[stage]) {
+            if (thPracParam.reimuR2Timer[stage]) { // ReimuR2 desync fix
                 int32_t offset = stage != 0 && !GetMemContent(RVA(0x1C06A0)) ? 30 : 0;
                 asm_call_rel<SET_TIMER_FUNC, Thiscall>(player_ptr + 0x22B4 + 0x12580, thPracParam.reimuR2Timer[stage] + offset);
             }
 
-            if (thPracParam.passiveMeterTimer[stage])
+            if (thPracParam.passiveMeterTimer[stage]) // passive summon gauge meter desync fix
                 asm_call_rel<SET_TIMER_FUNC, Thiscall>(GetMemContent(RVA(0x1C6118)) + 0x28, thPracParam.passiveMeterTimer[stage]);
 
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 4; i++) { // y2 option transition skip desync fix
                 uint32_t y2timer = thPracParam.yellow2CycleTimer[stage][i];
 
                 if (y2timer) {
@@ -2534,12 +2597,34 @@ namespace TH20 {
                 }
             }
 
+            // y1 lingering hitbox desync fix
+            // if there are active sources, delete them (they won't sync due to inconsistent stage loading time)
+            while (auto activeSrc = GetMemContent<PlayerDamageSource*>(dmgSrcManager + 0xc414 + 0x4))
+                asm_call_rel<DELETE_DMG_SRC_FUNC, Fastcall>(activeSrc);
+
+            const auto& stageSrcs = thPracParam.rogueDmgSrcs[stage];
+
+            if (stageSrcs.size()) {
+                for (size_t i = 0; i < stageSrcs.size(); i++) {
+                    PlayerDamageSource* newSrc = asm_call_rel<ALLOCATE_DMG_SRC_FUNC, Fastcall,
+                        PlayerDamageSource*>(dmgSrcManager);
+
+                    // copy everything from stageSrcs[i] to newSrc except ZUNList/game side stuff
+                    std::memcpy(reinterpret_cast<char*>(newSrc) + 0x14,
+                                reinterpret_cast<const char*>(&stageSrcs[i]) + 0x14,
+                                0xc0 - 0x14);
+                    newSrc->game_side = (void*)RVA(GAME_SIDE0);
+                }
+
+                *(uint32_t*)(dmgSrcManager + 0xc410) = thPracParam.nextDmgID[stage];
+            }
+
         } else {
             // Recording
-            thPracParam.reimuR2Timer[stage] = GetMemContent<int32_t>(player_ptr + 0x22B4 + 0x12580 + 4);
-            thPracParam.passiveMeterTimer[stage] = GetMemContent<int32_t>(RVA(0x1C6118), 0x28 + 4);
+            thPracParam.reimuR2Timer[stage] = GetMemContent<int32_t>(player_ptr + 0x22B4 + 0x12580 + 4); // ReimuR2 desync fix
+            thPracParam.passiveMeterTimer[stage] = GetMemContent<int32_t>(RVA(0x1C6118), 0x28 + 4); // passive summon gauge meter desync fix
 
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 4; i++) { // y2 option transition skip desync fix
                 uint32_t y2timer = GetMemContent(player_ptr + 0x684 + 0x12c * i + 0xe8);
 
                 if (y2timer) { // save float angle as int to not lose precision
@@ -2547,6 +2632,15 @@ namespace TH20 {
                     thPracParam.yellow2CycleTimer[stage][i] = y2timer;
                 }
             }
+
+            // y1 lingering hitbox desync fix
+            if (!stage && !thPracParam.mode)
+                thPracParam.Reset(); //clear vectors on restart
+
+            PlayerDamageSource* node = GetMemAddr<PlayerDamageSource*>(dmgSrcManager + 0xc414);
+            while (node = node->list_next) // (erroneously) active damage source
+                thPracParam.rogueDmgSrcs[stage].push_back(*node);
+            thPracParam.nextDmgID[stage] = GetMemContent(dmgSrcManager + 0xc410);
         }
     })
     PATCH_DY(th20_fix_rep_save_stone_names, 0x127B9F, "8B82D8000000" NOP(22))
