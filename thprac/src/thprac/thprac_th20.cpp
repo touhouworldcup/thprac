@@ -2599,8 +2599,13 @@ namespace TH20 {
 
             // y1 lingering hitbox desync fix
             // if there are active sources, delete them (they won't sync due to inconsistent stage loading time)
-            while (auto activeSrc = GetMemContent<PlayerDamageSource*>(dmgSrcManager + 0xc414 + 0x4))
-                asm_call_rel<DELETE_DMG_SRC_FUNC, Fastcall>(activeSrc);
+            bool isTransition = false;
+
+            if (auto activeSrc = GetMemContent<PlayerDamageSource*>(dmgSrcManager + 0xc414 + 0x4)) { //hitbox manager -> next player dmg src in tick list
+                isTransition = true;
+                do asm_call_rel<DELETE_DMG_SRC_FUNC, Fastcall>(activeSrc);
+                while (activeSrc = GetMemContent<PlayerDamageSource*>(dmgSrcManager + 0xc414 + 0x4));
+            }
 
             const auto& stageSrcs = thPracParam.rogueDmgSrcs[stage];
 
@@ -2614,6 +2619,11 @@ namespace TH20 {
                                 reinterpret_cast<const char*>(&stageSrcs[i]) + 0x14,
                                 0xc0 - 0x14);
                     newSrc->game_side = (void*)RVA(GAME_SIDE0);
+                    if (!isTransition) { //adjusted since 30f transition stage is skipped
+                        newSrc->duration.prev -= 30;
+                        newSrc->duration.cur -= 30;
+                        newSrc->duration.cur_f -= 30.0f;
+                    }
                 }
 
                 *(uint32_t*)(dmgSrcManager + 0xc410) = thPracParam.nextDmgID[stage];
