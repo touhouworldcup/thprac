@@ -17,10 +17,11 @@ namespace TH20 {
         WINDOW_PTR = 0x1b6758,
         GAME_SIDE0 = 0x1ba568,
         DMG_SRC_MGR_PTR = GAME_SIDE0 + 0x28,
-        MODEFLAGS = 0x1ba5d8,
+        MODEFLAGS = GAME_SIDE0 + 0x70,
         STAGE_NUM = GAME_SIDE0 + 0x88 + 0x1f4,
         GAME_THREAD_PTR = 0x1ba828,
         REPLAY_MGR_PTR = 0x1c60fc,
+        ENM_STONE_MGR_PTR = 0x1c6118,
         MAIN_MENU_PTR = 0x1c6124,
         SET_TIMER_FUNC = 0x23520,
         ALLOCATE_DMG_SRC_FUNC = 0xc0e60,
@@ -161,7 +162,7 @@ namespace TH20 {
                     return std::nullopt;
 
                 PlayerDamageSource dmgSrc {};
-                int32_t* p = reinterpret_cast<int32_t*>(&dmgSrc);
+                int32_t* p = (int32_t*)&dmgSrc;
                 for (rapidjson::SizeType i = 0; i < el.Size(); i++)
                     p[i] = el[i].GetInt();
 
@@ -192,7 +193,7 @@ namespace TH20 {
                 AddJsonVectorArray(rogueDmgSrcs, {
                     rapidjson::Value dmgSrcArray(rapidjson::kArrayType);
 
-                    int32_t* p = reinterpret_cast<int32_t*>(&el);
+                    int32_t* p = (int32_t*)&el;
                     size_t count = sizeof(PlayerDamageSource) / sizeof(int32_t);
                     for (size_t i = 0; i < count; ++i)
                         dmgSrcArray.PushBack(p[i], jalloc);
@@ -817,7 +818,7 @@ namespace TH20 {
         uintptr_t player_stats = game_side + 0x88;
         *(int32_t*)(player_stats + 0x5C) = thPracParam.stone * thPracParam.stoneMax;
 
-        uintptr_t enemy_stone_manager = *(uintptr_t*)RVA(0x1c6118);
+        uintptr_t enemy_stone_manager = *(uintptr_t*)RVA(ENM_STONE_MGR_PTR);
         Timer20* stone_interp_timer = (Timer20*)(enemy_stone_manager + 0x84 + 0x14);
 
         //stone_interp_timer->cur = 1320 - (1320 * thPracParam.stone);                         // option A: duration-accurate (50% stone = 50% of the duration)
@@ -2615,9 +2616,7 @@ namespace TH20 {
                         PlayerDamageSource*>(dmgSrcManager);
 
                     // copy everything from stageSrcs[i] to newSrc except ZUNList/game side stuff
-                    std::memcpy(reinterpret_cast<char*>(newSrc) + 0x14,
-                                reinterpret_cast<const char*>(&stageSrcs[i]) + 0x14,
-                                0xc0 - 0x14);
+                    std::memcpy((char*)newSrc + 0x14, (const char*)&stageSrcs[i] + 0x14, 0xc0 - 0x14);
                     newSrc->game_side = (void*)RVA(GAME_SIDE0);
                     if (!isTransition) { //adjusted since 30f transition stage is skipped
                         newSrc->duration.prev -= 30;
