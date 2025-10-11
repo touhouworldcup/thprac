@@ -22,6 +22,7 @@ namespace TH11 {
 
     int g_lock_timer = 0;
     bool g_lock_timer_flag = false;
+    bool g_fix_rep = false;
 
     using std::pair;
     struct THPracParam {
@@ -783,6 +784,7 @@ namespace TH11 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
+                ImGui::Checkbox("fix stage 6 replay", &g_fix_rep);
                 DisableKeyOpt();
                 KeyHUDOpt();
                 InfLifeOpt();
@@ -2045,35 +2047,37 @@ namespace TH11 {
         // full run replays need to skip the BG... backwards by 1f on st6 to sync if started there
         //... forwards by 5f on st6 to sync if transitioning to it w/ fast-forward
         // needs to execute once after the first STD ins_3 (camera_position_interp)
+         if (g_fix_rep)
+         {
+            if (!THGuiRep::singleton().mRepStatus)
+                return;
 
-        if (!THGuiRep::singleton().mRepStatus)
-            return;
+            uint32_t stage_num = *(uint32_t*)STAGE_NUM;
+            if (stage_num != 6)
+                return;
 
-        uint32_t stage_num = *(uint32_t*)STAGE_NUM;
-        if (stage_num != 6)
-            return;
+            uint32_t stage = *(uint32_t*)STAGE_PTR;
+            Timer* stage_std_timer = (Timer*)(stage + 0x38);
+            if (stage_std_timer->current)
+                return; // must be stage start
 
-        uint32_t stage = *(uint32_t*)STAGE_PTR;
-        Timer* stage_std_timer = (Timer*)(stage + 0x38);
-        if (stage_std_timer->current)
-            return; // must be stage start
+            uint32_t replay_manager = *(uint32_t*)REPLAY_MGR_PTR;
+            if (!*(uint32_t*)(replay_manager + 0xa4 + 0x24 * 5))
+                return; // must have st5 in replay
 
-        uint32_t replay_manager = *(uint32_t*)REPLAY_MGR_PTR;
-        if (!*(uint32_t*)(replay_manager + 0xa4 + 0x24 * 5))
-            return; // must have st5 in replay
+            int32_t game_thread = *(uint32_t*)GAME_THREAD_PTR;
+            Timer* game_thread_stg_timer = (Timer*)(game_thread + 0x10);
+            int std_time_offset = game_thread_stg_timer->current - 2; // bg gets loaded on thread frame #2 for some reason
 
-        int32_t game_thread = *(uint32_t*)GAME_THREAD_PTR;
-        Timer* game_thread_stg_timer = (Timer*)(game_thread + 0x10);
-        int std_time_offset = game_thread_stg_timer->current - 2; // bg gets loaded on thread frame #2 for some reason
+            if (std_time_offset) {
+                stage_std_timer->current = std_time_offset;
+                stage_std_timer->current_f = (float)std_time_offset;
 
-        if (std_time_offset) {
-            stage_std_timer->current = std_time_offset;
-            stage_std_timer->current_f = (float)std_time_offset;
-
-            Timer* camera_pos_interp_timer = (Timer*)(stage + 0x9c + 0x30);
-            camera_pos_interp_timer->current = std_time_offset;
-            camera_pos_interp_timer->current_f = (float)std_time_offset;
-        }
+                Timer* camera_pos_interp_timer = (Timer*)(stage + 0x9c + 0x30);
+                camera_pos_interp_timer->current = std_time_offset;
+                camera_pos_interp_timer->current_f = (float)std_time_offset;
+            }
+         }
     })
      EHOOK_DY(th11_bgm_1, 0x42053b, 2, {
          if (THBGMTest()) {

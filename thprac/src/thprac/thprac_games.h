@@ -129,12 +129,14 @@ struct adv_opt_ctx {
     oilp_set_fps_t* oilp_set_replay_slow_fps = NULL;
 };
 
+void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nullptr, HWND owner = nullptr);
 void OILPInit(adv_opt_ctx& ctx);
 void CenteredText(const char* text, float wndX);
 float GetRelWidth(float rel);
 float GetRelHeight(float rel);
 void CalcFileHash(const wchar_t* file_name, uint64_t hash[2]);
 void HelpMarker(const char* desc);
+void CustomMarker(const char* text, const char* desc);
 template <th_glossary_t name>
 static bool BeginOptGroup()
 {
@@ -309,8 +311,10 @@ static bool ElBgmTestTemp(bool hotkey_status, bool practice_status,
 
 typedef void*(__cdecl* p_malloc)(size_t size);
 
+enum class ReplayClearResult { Cleared, NoParams, Error };
 bool ReplaySaveParam(const wchar_t* rep_path, const std::string& param);
 bool ReplayLoadParam(const wchar_t* rep_path, std::string& param);
+ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
 
 #pragma endregion
 
@@ -360,6 +364,39 @@ bool ReplayLoadParam(const wchar_t* rep_path, std::string& param);
             }                                                                          \
         }                                                                              \
     }
+
+#define GetJsonArray2D(value_name, outer_len, inner_len)                                               \
+    {                                                                                                  \
+        if (param.HasMember(#value_name) && param[#value_name].IsArray()) {                            \
+            for (int i = 0; i < std::min<int>(param[#value_name].Size(), outer_len); i++) {            \
+                if (param[#value_name][i].IsArray()) {                                                 \
+                    for (int j = 0; j < std::min<int>(param[#value_name][i].Size(), inner_len); j++) { \
+                        if (param[#value_name][i][j].IsNumber())                                       \
+                            value_name[i][j] = param[#value_name][i][j].GetDouble();                   \
+                    }                                                                                  \
+                }                                                                                      \
+            }                                                                                          \
+        }                                                                                              \
+    }
+#define GetJsonVectorArray(value_name, processor)                                                                       \
+    {                                                                                                                   \
+        if (param.HasMember(#value_name) && param[#value_name].IsArray()) {                                             \
+            for (rapidjson::SizeType arr_i = 0; arr_i < param[#value_name].Size(); arr_i++) {                           \
+                const rapidjson::Value& vector = param[#value_name][arr_i];                                             \
+                if (vector.IsArray()) {                                                                                 \
+                    for (auto& e : vector.GetArray()) {                                                                 \
+                        auto __processor = [&](const rapidjson::Value& el)                                              \
+                            -> std::optional<typename std::remove_reference_t<decltype(value_name[arr_i])>::value_type> \
+                                processor;                                                                              \
+                        auto __result = __processor(e);                                                                 \
+                        if (__result.has_value())                                                                       \
+                            value_name[arr_i].push_back(*__result);                                                     \
+                    }                                                                                                   \
+                }                                                                                                       \
+            }                                                                                                           \
+        }                                                                                                               \
+    }
+
 #define AddJsonArray(value_name, value_len)                                \
     {                                                                      \
         rapidjson::Value __key_##value_name(#value_name, jalloc);          \
@@ -369,6 +406,35 @@ bool ReplayLoadParam(const wchar_t* rep_path, std::string& param);
             __value_##value_name.PushBack(value_name[i], jalloc);          \
         param.AddMember(__key_##value_name, __value_##value_name, jalloc); \
     }
+
+#define AddJsonArray2D(value_name, outer_len, inner_len)                   \
+    {                                                                      \
+        rapidjson::Value __key_##value_name(#value_name, jalloc);          \
+        rapidjson::Value __outer_##value_name(rapidjson::kArrayType);      \
+        for (int i = 0; i < outer_len; i++) {                              \
+            rapidjson::Value __inner_##value_name(rapidjson::kArrayType);  \
+            for (int j = 0; j < inner_len; j++) {                          \
+                __inner_##value_name.PushBack(value_name[i][j], jalloc);   \
+            }                                                              \
+            __outer_##value_name.PushBack(__inner_##value_name, jalloc);   \
+        }                                                                  \
+        param.AddMember(__key_##value_name, __outer_##value_name, jalloc); \
+    }
+#define AddJsonVectorArray(value_name, processor)                                          \
+    {                                                                                      \
+        rapidjson::Value json_##value_name(rapidjson::kArrayType);                         \
+        for (size_t arr_i = 0; arr_i < elementsof(value_name); ++arr_i) {                  \
+            rapidjson::Value vectorArray(rapidjson::kArrayType);                           \
+            for (auto& e : value_name[arr_i]) {                                            \
+                rapidjson::Value elArray(rapidjson::kArrayType);                           \
+                auto __processor = [&](auto& el) -> rapidjson::Value processor;            \
+                vectorArray.PushBack(__processor(e), jalloc);                              \
+            }                                                                              \
+            json_##value_name.PushBack(vectorArray, jalloc);                               \
+        }                                                                                  \
+        param.AddMember(rapidjson::Value(#value_name, jalloc), json_##value_name, jalloc); \
+    }
+
 #pragma endregion
 
 #pragma region Virtual File System

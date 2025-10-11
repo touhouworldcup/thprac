@@ -2346,6 +2346,12 @@ namespace TH17 {
         EnableAllHooks(THInGameInfo);
         th17_force_goast_angle.Setup();
 
+         // Replay user menu (null) fix
+        DWORD oldProtect;
+        VirtualProtect((void*)0x4a2cb8, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+        *(const char**)(0x4a2cb8) = "%s  %s %.2d/%.2d/%.2d %.2d:%.2d %s %s %s %2.1f%%";
+        VirtualProtect((void*)0x4a2cb8, 4, oldProtect, &oldProtect); 
+
         // Gui::ImplDX9NewFrame();
         // Reset thPracParam
         thPracParam.Reset();

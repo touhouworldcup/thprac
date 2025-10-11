@@ -8,7 +8,7 @@
 
       "THPRAC_PR_INFO_ATTACHED": [
         "已应用thprac。\n如无事发生，请在游戏中回到主菜单一次。",
-        "Applied thprac.\nIf nothing happend, return to main menu in game once.",
+        "Applied thprac.\nIf nothing happened, return to main menu in game once.",
         "thpracが適用されました。\n何も起こらない場合は、一度、ゲームのメインメニューに戻ってください。"
       ],
       "THPRAC_PR_ASK_ATTACH": [
@@ -121,6 +121,12 @@
         "勾选后，运行thprac时，即便当前目录下存在有效的游戏，也仍然打开启动器。",
         "When enabled, launching thprac will always open the launcher even if there's a valid game available in the current directory.",
         "有効にすると、現在のディレクトリに有効なゲームが存在する場合でも、thpracを起動すると常にランチャーが開きます。"
+      ],
+	  "THPRAC_THEME": [ "主题:", "Theme: ", "テーマ:" ],
+      "THPRAC_THEME_OPTION": [
+        "深色\\0亮色\\0经典\\0自定义\\0\\0",
+        "Dark\\0Light\\0Classic\\0Custom\\0\\0",
+        "ダーク\\0ライト\\0クラシック\\0カスタム\\0\\0"
       ],
       "THPRAC_AFTER_LAUNCH": [ "启动游戏后:", "After launching game:", "ゲーム起動後:" ],
       "THPRAC_AFTER_LAUNCH_OPTION": [
@@ -1599,8 +1605,28 @@
       "TH_DISABLE_MASTER": [ "符卡收率完整显示", "show complete spellcard capture rate", "show complete spellcard capture rate" ],
       "TH_DISABLE_MASTER_DESC": [ "不显示master 0/99+等", "no master, 0/99+, etc", "no master, 0/99+, etc" ],
       "TH_ENABLE_LOCK_TIMER": [ "启用锁时计时", "enable lock timer", "enable lock timer" ],
-
-
+	  
+	  "TH_ERROR": [ "错误", "Error", "エラー" ],
+	  "TH_REPLAY_FIX": [ "Replay修复", "Replay Fixing", "リプレイ修復" ],
+      "TH_REPFIX_SELECTED": [ "已选择重放：%ls", "Replay selected: %ls", "選択したリプレイ: %ls" ],
+      "TH_REPFIX_SELECTED_NONE": [ "未选择重放。", "No replay selected.", "リプレイが選択されていません。" ],
+      "TH_REPFIX_SELECTED_ALREADY_FIXED": [ "已修复所选重放。", "Selected replay is already fixed.", "選択したリプレイはすでに修正されています。" ],
+      "TH_REPFIX_SAVE": [ "保存Replay", "Save replay", "リプレイをセーブ" ],
+      "TH_REPFIX_NEED_THPRAC": [ "(thprac)", "(thprac)", "(thprac)" ],
+      "TH_REPFIX_NEED_THPRAC_DESC": [
+        "修复后的重放还需要 thprac 才能正常回放；没有它时将保持与之前相同的行为。\n使用 thprac 录制的重放无需修复。",
+        "Fixed replay also requires thprac to play back properly; will behave the same as before without it.\nReplays recorded with thprac applied do not need to be fixed.",
+        "修正されたリプレイは、正しく再生するために thprac が必要です；それがない場合、以前と同じ動作になります。\nthprac を適用して録画されたリプレイは修正する必要はありません。"
+      ],
+      "TH_REPFIX_SAVE_SUCCESS": [ "保存成功", "Successfully saved", "保存しました" ],
+      "TH_REPFIX_SAVE_SUCCESS_DESC": [ "成功保存Replay至：", "Successfully saved replay to: ", "リプレイは正常に保存されました：" ],
+      "TH_REPFIX_SAVE_ERROR_SRC": [ "未能成功读取源Replay。", "Failed to access source replay.", "元のリプレイの読み取りに失敗しました。" ],
+      "TH_REPFIX_SAVE_ERROR_DEST": [ "未能写入目标文件。", "Failed to write to destination file.", "ターゲットファイルに書き込めませんでした。" ],
+      "TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS": [ "重置文件的 thprac 数据失败。", "Failed to reset file's thprac data.", "ファイルの thprac データのリセットに失敗しました。" ],
+      "TH_REPFIX_SAVE_ERROR_PARAMS": [ "无法将 thprac 数据写入重放文件。", "Failed to add thprac data to replay file.", "thprac のデータをリプレイファイルに書き込めませんでした。" ],
+	  
+      
+      
       "TH_ON": [ "开启", "On", "有効" ],
       "TH_OFF": [ "关闭", "Off", "無効" ],
       "TH_NORMAL": [ "正常", "Normal", "普通" ],
@@ -7536,12 +7562,9 @@
       "TH14_START_RECORDING": [ "开始记录", "Start recording", "記録を開始" ],
       "TH14_RECORDING_WAITING": [ "等待游戏中……", "Waiting for game start...... ", "ゲーム開始を待っています……" ],
       "TH14_RECORDING_ONGOING": [ "正在记录", "Recording ongoing", "記録中" ],
-      "TH14_SELECTED_REPLAY": [ "已选择的Replay：%s", "Selected replay: %s", "選択したリプレイ：%s" ],
-      "TH14_SELECTED_NONE": [ "没有选择Replay。", "No replay selected.", "リプレイが選択されていません。" ],
       "TH14_REPLAY_NO_RECORDS": [ "此Replay没有修复数据。", "This replay contains no repair data.", "このリプレイには修復データが含まれていません。" ],
       "TH14_DELETE": [ "删除", "Delete", "削除" ],
       "TH14_CLEAR_RECORDS": [ "清除所有记录", "Clear all records", "すべての記録を削除する" ],
-      "TH14_SAVE": [ "保存Replay", "Save replay", "リプレイをセーブ" ],
       "TH14_LOAD": [ "从Replay读取", "Load from replay", "リプレイからロード" ],
       "TH14_NO_RECORDS": [ "没有记录。", "No record.", "記録なし。" ],
       "TH14_RECORD": [ "记录#%d: %d面, %d帧, 值：0x%08x, 代替值：", "Record #%d: Stage %d, frame %d, value: 0x%08x, subsitute: ", "レコード＃%d：ステージ%d、フレーム%d, 値：0x%08x、代替値：" ],
@@ -7557,12 +7580,7 @@
       "TH14_CORRECTION_SN_SIGNED": [ "非规格 (负)", "Subnormal (neg.)", "非正規 (負)" ],
       "TH14_CORRECTION_E_POSITIVE": [ "1.0eX", "1.0eX", "1eX" ],
       "TH14_CORRECTION_E_NEGATIVE": [ "-1.0eX", "-1.0eX", "-1.0eX" ],
-      "TH14_CORRECTION_NONE": [ "无", "None", "なし" ],
-      "TH14_SUCCESS": [ "保存成功", "Successfully saved", "保存しました" ],
-      "TH14_SUCCESS_SAVED": [ "成功保存Replay至：", "Successfully saved replay to: ", "リプレイは正常に保存されました：" ],
-      "TH14_ERROR": [ "错误", "Error", "エラー" ],
-      "TH14_ERROR_SRC": [ "未能成功读取源Replay。", "Failed to access source replay.", "元のリプレイの読み取りに失敗しました。" ],
-      "TH14_ERROR_DEST": [ "未能写入目标文件。", "Failed to write to destination file.", "ターゲットファイルに書き込めませんでした。" ]
+      "TH14_CORRECTION_NONE": [ "无", "None", "なし" ]
     },
 
     "sections": {
@@ -9818,7 +9836,6 @@
         "When enabled, \"Shield Method of the Youkai\" will no longer randomly desync by spawning bullets in the wrong position.",
         "有効化すると、「妖怪達のシールドメソッド」が弾の生成位置の誤りによるリプレイバグを引き起こすことはなくなります。"
       ],
-      "TH18_REPLAY_FIX": [ "Replay修复", "Replay fix", "リプレイ修復" ],
       "TH18_REPFIX_SHOW_INS": [ "显示说明##th18", "Show instruction##th18", "指示を表示##th18" ],
       "TH18_REPFIX_HIDE_INS": [ "隐藏说明##th18", "Hide instruction##th18", "指示を非表示##th18" ],
       "TH18_REPFIX_NOTHING": [ "没有选择或锁定任何replay。", "No replay is selected nor locked.", "リプレイは選択もロックもされていません。" ],
@@ -10712,7 +10729,21 @@
         "修复弹幕判定",
         "fix bullet hitbox",
         "弾幕判定を修復します"
-      ]
+      ],
+      "TH20_EXTRA_RESOLUTION_FIX": [ "Extra关卡分辨率修复", "Extra Stage resolution fix", "Extraステージ解像度修正" ],
+      "TH20_EXTRA_RESOLUTION_FIX_DESC": ["如果游戏分辨率与录制时不同，Extra关卡重放在渡里妮娜的符卡4可能会不同步。选择一个Extra关卡重放和可能的原始分辨率，然后检查是否同步，如果同步则保存已修复的副本。\n注意：您可以在不保存文件的情况下预览是否同步。\n已修复的重放将无论分辨率如何都保持同步。",
+        "Extra Stage replays may desync on Nina Spell 4 if your game's resolution is different from when they were recorded. Select an Extra Stage replay and one of the possible original resolutions, then check if it syncs & save a fixed copy if so.\nNote: You can preview whether it syncs without first saving the file.\nFixed replays will sync regardless of resolution.",
+        "ゲームの解像度が録画時と異なる場合、Extraステージのリプレイは渡里ニナのスペルカード4で同期ずれが発生する可能性があります。Extraステージのリプレイと元の解像度の候補を選択し、同期を確認して、問題なければ修正済みのコピーを保存してください。\n注意：ファイルを保存せずに同期状況をプレビューできます。\n修正済みのリプレイは、解像度に関係なく同期します。"
+      ],
+      "TH20_EXRESFIX_SELECTED_NONE": [ "未选择 Extra 关卡重放。", "No Extra Stage replay selected.", "Extraステージのリプレイが選択されていません。" ],
+      "TH20_EXRESFIX_RESOLUTION": [ "原始分辨率：", "Original resolution:", "元の解像度：" ],
+      "TH20_EXRESFIX_RESOLUTION_DISABLE_HINT": [ "播放中无法更改原始分辨率。", "Can't change original resolution during playback.", "再生中は元の解像度を変更できません。" ],
+      "TH20_EXRESFIX_SAVE_DISABLE_HINT": [ "未指定原始分辨率。", "Original resolution not specified.", "元の解像度が指定されていません。" ],
+      "TH20_RESOLUTION_UNSPECIFIED": [ "未指定", "Unspecified", "未指定" ],
+      "TH20_RESOLUTION_640_480": [ "640×480", "640×480", "640×480" ],
+      "TH20_RESOLUTION_960_720": [ "960×720", "960×720", "960×720" ],
+      "TH20_RESOLUTION_1280_960_PLUS": [ ">= 1280×960", ">= 1280×960", ">= 1280×960" ],
+      "TH20_EXRESFIX_RESET_DATA": [ "重置同步数据", "Reset sync data", "同期データをリセット" ]
     },
 	"sections": {
         "TH20_ST1_MID1": {
@@ -11163,6 +11194,12 @@
         "TH20_CYCLE_1",
         "TH20_CYCLE_2",
         "TH20_CYCLE_3"
+	  ],
+      "TH20_EXRESFIX_RESOLUTION_OPT": [
+        "TH20_RESOLUTION_UNSPECIFIED",
+        "TH20_RESOLUTION_640_480",
+        "TH20_RESOLUTION_960_720",
+        "TH20_RESOLUTION_1280_960_PLUS"
 	  ]
     }
   }
