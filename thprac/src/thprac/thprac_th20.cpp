@@ -2652,6 +2652,10 @@ namespace TH20 {
             thPracParam.nextDmgID[stage] = GetMemContent(dmgSrcManager + 0xc410);
         }
     })
+
+    PATCH_DY(th20_fix_stone_timeout_use_after_freeA, 0x1136AF, "8B4D0C" NOP(3))
+    PATCH_DY(th20_fix_stone_timeout_use_after_freeB, 0x111F7F, "8B0A83E103")
+
     PATCH_DY(th20_fix_rep_save_stone_names, 0x127B9F, "8B82D8000000" NOP(22))
     EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
         if (*(uint32_t*)(*(uintptr_t*)RVA(GAME_THREAD_PTR) + 0x108)) {
