@@ -1101,6 +1101,7 @@ namespace TH20 {
         void ContentUpdate()
         {
             bool wndFocus = true;
+            float dpiScale = ImGui::GetFrameHeight() / 22.0f;
             ImGui::TextUnformatted(S(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
@@ -1180,20 +1181,22 @@ namespace TH20 {
                             bool mined = !*advFixedTimerOffsets[i];
 
                             ImGui::BeginDisabled(disabled);
-                            ImGui::SetNextItemWidth(175);
+                            ImGui::SetNextItemWidth(175 * dpiScale);
                             advFixedTimerOffsets[i]("%df");
                             TimerOffsetTooltip(disabled);
                             ImGui::PushID(i);
 
                             ImGui::SameLine();
                             ImGui::BeginDisabled(!disabled && maxed);
-                            if(ImGui::Button("+", ImVec2(20, 20))) *advFixedTimerOffsets[i] += 1;
+                            if (ImGui::Button("+", ImVec2(20 * dpiScale, 20 * dpiScale)))
+                                *advFixedTimerOffsets[i] += 1;
                             ImGui::EndDisabled(!disabled && maxed);
                             TimerOffsetTooltip(disabled);
 
                             ImGui::SameLine();
                             ImGui::BeginDisabled(!disabled && mined);
-                            if (ImGui::Button("-", ImVec2(20, 20))) *advFixedTimerOffsets[i] -= 1;
+                            if (ImGui::Button("-", ImVec2(20 * dpiScale, 20 * dpiScale)))
+                                *advFixedTimerOffsets[i] -= 1;
                             ImGui::EndDisabled(!disabled && mined);
                             TimerOffsetTooltip(disabled);
 
@@ -1294,7 +1297,7 @@ namespace TH20 {
                     ImGui::BeginDisabled(disableSelection);
                     ImGui::TextUnformatted(S(TH20_EXRESFIX_RESOLUTION));
                     ImGui::SameLine();
-                    ImGui::SetNextItemWidth(200);
+                    ImGui::SetNextItemWidth(200 * dpiScale);
                     Gui::ComboSelect(advExtraFixResOpt, (th_glossary_t*)TH20_EXRESFIX_RESOLUTION_OPT, elementsof(TH20_EXRESFIX_RESOLUTION_OPT) - 1, "##exresfix_res");
                     if (disableSelection) {
                         ImGui::EndDisabled();
