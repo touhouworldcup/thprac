@@ -830,7 +830,10 @@ namespace TH20 {
         HOTKEY_DEFINE(mWonderStGLock, TH20_WST_LOCK, "F6", VK_F6)
         PATCH_HK(0x77F75, NOP(3)),
         PATCH_HK(0x1127AC, "E9AA000000CCCC"),
-        PATCH_HK(0x112AA0 , "C3CCCC")
+        PATCH_HK(0x112028, "EB"),
+        PATCH_HK(0x112072, NOP(5)),
+        PATCH_HK(0x1125c6, NOP(5)),
+        PATCH_HK(0x112AA0, "C3CCCC")
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F7", VK_F7)
