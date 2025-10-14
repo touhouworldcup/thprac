@@ -1166,6 +1166,10 @@ namespace TH20 {
                     HelpMarker(S(TH20_MAINRPYFIX_TIMERS_FIX_DESC));
                     ImGui::SameLine();
                     CustomMarker(S(TH20_MAINRPYFIX_TIPS), S(TH20_MAINRPYFIX_TIMERS_FIX_TIPS_DESC));
+                    if (Gui::LocaleGet() != Gui::LOCALE_ZH_CN) {
+                        ImGui::SameLine();
+                        CustomMarker(S(TH20_MAINRPYFIX_TIPS2), S(TH20_MAINRPYFIX_TIMERS_FIX_TIPS2_DESC));
+                    }
 
                     int32_t stage = THGuiRep::singleton().mRepStatus ? (GetMemContent(RVA(STAGE_NUM)) - 1) : -1;
                     uint32_t totalTransitions = THGuiRep::singleton().mSelectedRepEndStage - 1;
@@ -1237,7 +1241,7 @@ namespace TH20 {
                         ImGui::EndDisabled();
                         if (ImGui::IsItemHovered()) {
                             if (!startedOnSt1) ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_NO_ST1_HINT));
-                            else if(remainingTransitions) ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_PROGRESS_HINT), remainingTransitions);
+                            else if (remainingTransitions) ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_PROGRESS_HINT), remainingTransitions, remainingTransitions > 1 ? "s" : "");
                             else ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_SKIPPED_STAGE_HINT));
                         }
                     } else if (saveClicked) {
@@ -1282,6 +1286,7 @@ namespace TH20 {
                     else ImGui::TextDisabled(S(TH_REPFIX_MAIN_SELECTED_NONE));
                 }
 
+                ImGui::Separator();
                 CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH20_EXTRA_RESOLUTION_FIX));

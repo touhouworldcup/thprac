@@ -587,8 +587,10 @@ enum th_glossary_t
     TH20_MAINRPYFIX_STAGE_TIMER_STAGE,
     TH20_MAINRPYFIX_TIMERS_FIX_DESC,
     TH20_MAINRPYFIX_TIMERS_FIX_DISABLE_HINT,
+    TH20_MAINRPYFIX_TIMERS_FIX_TIPS2_DESC,
     TH20_MAINRPYFIX_TIMERS_FIX_TIPS_DESC,
     TH20_MAINRPYFIX_TIPS,
+    TH20_MAINRPYFIX_TIPS2,
     TH20_MAIN_STORY_FIXES,
     TH20_MAIN_STORY_FIXES_DESC,
     TH20_NEXT_STONE,
@@ -1108,7 +1110,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1096];
+extern const char* th_glossary_str[3][1098];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
