@@ -652,14 +652,16 @@ namespace TH20 {
         bool mRepSelected = false;
         uint32_t mSelectedRepStartStage;
         uint32_t mSelectedRepEndStage;
+        uint32_t mSelectedRepPlaybackStartStage;
         std::wstring mSelectedRepName;
         std::wstring mSelectedRepDir;
         std::wstring mSelectedRepPath;
 
         void CheckReplay()
         {
-            uint32_t rep_offset = GetMemContent(RVA(MAIN_MENU_PTR), 0x5738) * 0x4 + 0x5740;
-            std::wstring repName = mb_to_utf16(GetMemAddr<char*>(RVA(MAIN_MENU_PTR), rep_offset, 0x260), 932);
+            uintptr_t main_menu_ptr = GetMemContent(RVA(MAIN_MENU_PTR));
+            uint32_t rep_offset = GetMemContent(main_menu_ptr + 0x5738) * 0x4 + 0x5740;
+            std::wstring repName = mb_to_utf16(GetMemAddr<char*>(main_menu_ptr + rep_offset, 0x260), 932);
             std::wstring repDir(mAppdataPath);
             repDir.append(L"\\ShanghaiAlice\\th20\\replay\\");
 
@@ -668,6 +670,7 @@ namespace TH20 {
             if (mSelectedRepPath != repDir + repName) {
                 mSelectedRepPath = repDir + repName;
                 ResetFixToolsSharedState();
+                mSelectedRepPlaybackStartStage = 0;
             }
 
             std::string param;
@@ -676,15 +679,19 @@ namespace TH20 {
             else
                 mRepParam.Reset();
 
-            uint32_t* savedStones = (uint32_t*)GetMemAddr(RVA(MAIN_MENU_PTR), rep_offset, 0x1C, 0xDC);
+            uint32_t* savedStones = (uint32_t*)GetMemAddr(main_menu_ptr + rep_offset, 0x1C, 0xDC);
             memcpy(replayStones, savedStones, sizeof(replayStones));
 
             for (int st = 1; st <= 7; ++st) {
-                if (GetMemContent(RVA(MAIN_MENU_PTR), rep_offset, 0xf8 + 0x2c * st)) {
+                if (GetMemContent(main_menu_ptr + rep_offset, 0xf8 + 0x2c * st)) {
                     if (!mSelectedRepStartStage) mSelectedRepStartStage = st;
                     mSelectedRepEndStage = st;
                 }
             }
+
+            if (advFixTimerOffsets && mSelectedRepPlaybackStartStage
+                && repFixParamCopy.HasTransitionSyncData(mSelectedRepPlaybackStartStage))
+                *(uint32_t*)(main_menu_ptr + 0x24) = mSelectedRepPlaybackStartStage;
         }
 
         bool mRepStatus = false;
@@ -708,14 +715,18 @@ namespace TH20 {
                 break;
             case 3:
                 mRepStatus = true;
-                if (mParamStatus)
-                    memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
+                mSelectedRepPlaybackStartStage = GetMemContent(RVA(MAIN_MENU_PTR), 0x24);
 
-                if (advExtraFixResOpt && !thPracParam.resolutionSpriteHeight)
-                    thPracParam.resolutionSpriteHeight = defaultSpriteHeights[advExtraFixResOpt];
-
-                if (advFixTimerOffsets && repFixParamCopy.HasTransitionSyncData())
+                if (advFixTimerOffsets && repFixParamCopy.HasTransitionSyncData()) {
                     thPracParam = repFixParamCopy;
+
+                } else if (mParamStatus) {
+                    thPracParam = mRepParam;
+
+                    if (advExtraFixResOpt && !thPracParam.resolutionSpriteHeight)
+                        thPracParam.resolutionSpriteHeight = defaultSpriteHeights[advExtraFixResOpt];
+                }
+
                 break;
             default:
                 break;
@@ -2927,7 +2938,7 @@ namespace TH20 {
     EHOOK_DY(th20_rep_menu_1, 0x123614, 3, {
         THGuiRep::singleton().State(1);
     })
-    EHOOK_DY(th20_rep_menu_2, 0x12391C, 5, {
+    EHOOK_DY(th20_rep_menu_2, 0x123955, 1, {
         THGuiRep::singleton().State(2);
     })
     EHOOK_DY(th20_rep_menu_3, 0x123DAE, 2, {
