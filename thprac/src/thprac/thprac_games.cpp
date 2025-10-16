@@ -116,6 +116,7 @@ MMRESULT WINAPI hook_joyGetPosEx(UINT uJoyID, JOYINFOEX* pji)
     if (!jc.initialized) {
         JOYCAPSW caps;
         auto ret_caps = joyGetDevCapsW(uJoyID, &caps, sizeof(caps));
+        (void)ret_caps; // suppress "unused variable" warning
         assert(ret_caps == JOYERR_NOERROR);
 
         jc.initialized = true;

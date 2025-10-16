@@ -51,8 +51,8 @@ namespace TH12 {
         bool _playLock = false;
         void Reset()
         {
-            for (size_t stage = 0; stage < elementsof(reimuADmgSrcs); ++stage)
-                reimuADmgSrcs[stage].clear();
+            for (size_t st = 0; st < elementsof(reimuADmgSrcs); ++st)
+                reimuADmgSrcs[st].clear();
 
             memset(this, 0, sizeof(THPracParam));
         }
@@ -97,7 +97,7 @@ namespace TH12 {
         }
         std::string GetJson()
         {
-            if (mode == 0) {
+            if (mode == 0) { //vanilla run mode
                 CreateJson();
 
                 AddJsonValueEx(version, GetVersionStr(), jalloc);
@@ -117,7 +117,7 @@ namespace TH12 {
                 });
 
                 ReturnJson();
-            } else if (mode == 1) {
+            } else { //thprac mode
                 CreateJson();
 
                 AddJsonValueEx(version, GetVersionStr(), jalloc);

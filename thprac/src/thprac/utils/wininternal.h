@@ -8,6 +8,7 @@
 #define write_fs_dword(offset, data) __writefsdword(offset, data)
 
 #include <Windows.h>
+#pragma warning(disable : 4201)
 
 /// Internal Windows Structs
 /// Copied from thcrap

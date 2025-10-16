@@ -244,4 +244,6 @@ int WINAPI wWinMain(
 
         return GuiLauncherMain();
     }
+
+    return 0;
 }

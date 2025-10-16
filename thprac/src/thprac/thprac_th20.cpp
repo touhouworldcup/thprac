@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include "utils/wininternal.h"
+#pragma warning(disable : 4706)
 
 // WTF Microsoft
 #undef hyper
@@ -11,7 +12,6 @@
 namespace THPrac {
 namespace TH20 {
     using std::pair;
-    using namespace TH20;
 
     enum rel_addrs {
         WINDOW_PTR = 0x1b6758,
@@ -66,6 +66,67 @@ namespace TH20 {
         char variousUnknowns[0x18]; // 0xa4
         uint32_t side_index; // 0xbc
         void* game_side; // 0xc0
+    };
+
+    struct GlobalsSide {
+        uint64_t score; // 0x0
+        int32_t character; // 0x8
+        int32_t story_stone; // 0xc
+        int32_t narrow_shot_stone; // 0x10
+        int32_t wide_shot_stone; // 0x14
+        int32_t assist_stone; // 0x18
+        int32_t story_stone_raw; // 0x1c
+        int32_t narrow_shot_stone_raw; // 0x20
+        int32_t wide_shot_stone_raw; // 0x24
+        int32_t assist_stone_raw; // 0x28
+        uint8_t story_stone_copy; // 0x2c
+        uint8_t narrow_shot_stone_copy; // 0x2d
+        uint8_t wide_shot_stone_copy; // 0x2e
+        uint8_t assist_stone_copy; // 0x2f
+        int32_t current_power; // 0x30
+        int32_t max_power; // 0x34
+        int32_t power_per_level; // 0x38
+        int32_t __int_3C; // 0x3c
+        int32_t piv_base; // 0x40
+        int32_t piv; // 0x44
+        int32_t piv_divisor; // 0x48
+        int32_t hyper_meter; // 0x4c
+        int32_t hyper_meter_max; // 0x50
+        int32_t hyper_duration; // 0x54
+        int32_t __dword_58; // 0x58
+        int32_t summon_meter; // 0x5c
+        int32_t summon_meter_max; // 0x60
+        int32_t stone_priority_red; // 0x64
+        int32_t stone_priority_blue; // 0x68
+        int32_t stone_priority_yellow; // 0x6c
+        int32_t stone_priority_green; // 0x70
+        int32_t stone_level_red; // 0x74
+        int32_t stone_level_blue; // 0x78
+        int32_t stone_level_yellow; // 0x7c
+        int32_t stone_level_green; // 0x80
+        int32_t stone_enemy_count_red; // 0x84
+        int32_t stone_enemy_count_blue; // 0x88
+        int32_t stone_enemy_count_yellow; // 0x8c
+        int32_t stone_enemy_count_green;  // 0x90
+        int32_t stone_enemy_count_total;  // 0x94
+        int32_t next_stone_enemy_type; // 0x98
+        char unknowns_9c[0xc]; // 0x9c
+        int32_t g2_passive_factor; // 0xa8
+        char unknowns_ac[0xc]; // 0xac
+        int32_t life_stocks; // 0xb8
+        int32_t life_stock_max; // 0xbc
+        int32_t life_fragments; // 0xc0
+        int32_t lives_added; // 0xc4
+        int32_t __int_C8; // 0xc8
+        int32_t bomb_stocks; // 0xcc
+        int32_t bomb_fragments; // 0xd0
+        int32_t bomb_stocks_for_new_life; // 0xd4
+        int32_t bomb_stock_max; // 0xd8
+        int32_t __chapter_total; // 0xdc
+        int32_t __chapter_destroy; // 0xe0
+        int32_t graze; // 0xe4
+        int32_t hitbox_scale; // 0xe8
+        uint32_t side_index; // 0xec
     };
 
     // maps original resolution option id to the corresponding height of the default (sprite -1) anm sprite
@@ -177,7 +238,7 @@ namespace TH20 {
         }
         std::string GetJson()
         {
-            if (mode == 0) {
+            if (mode == 0) { //vanilla run mode
                 CreateJson();
 
                 AddJsonValueEx(version, GetVersionStr(), jalloc);
@@ -187,8 +248,10 @@ namespace TH20 {
                 AddJsonArray(reimuR2Timer, elementsof(reimuR2Timer));
                 AddJsonArray(passiveMeterTimer, elementsof(passiveMeterTimer));
 
-                auto selected = (uint32_t*)(RVA(GAME_SIDE0) + 0x88 + 0x1C);
-                if (selected[1] == 5 || selected[2] == 5) { //lotta zeros we don't need to store
+                // lotta zeros we don't always need to store
+                GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
+                if (globals->narrow_shot_stone_raw == 5 || globals->wide_shot_stone_raw == 5 ||
+                    (globals->story_stone_raw == 5 && (globals->narrow_shot_stone_copy || globals->wide_shot_stone_copy))) {
                     AddJsonArray2D(yellow2CycleAngle, elementsof(yellow2CycleAngle), elementsof(yellow2CycleAngle[0]));
                     AddJsonArray2D(yellow2CycleTimer, elementsof(yellow2CycleTimer), elementsof(yellow2CycleTimer[0]));
                 }
@@ -208,7 +271,7 @@ namespace TH20 {
                 AddJsonValue(resolutionSpriteHeight);
 
                 ReturnJson();
-            } else if (mode == 1) {
+            } else { //thprac mode
                 CreateJson();
 
                 AddJsonValueEx(version, GetVersionStr(), jalloc);
@@ -863,14 +926,11 @@ namespace TH20 {
     // TODO(?)
     //static constinit HookCtx listIterUnlinkFix = { .addr = 0x11AB2, .data = PatchCode("e800000000") };
     EHOOK_ST(th20_piv_overflow_fix, 0xC496B, 2, {
-        uintptr_t stats = RVA(0x1BA5F0);
-        int32_t piv = *(int32_t*)(stats + 0x44);
-        int32_t piv_base = *(int32_t*)(stats + 0x40); // always 10000?
-        int32_t piv_divisor = *(int32_t*)(stats + 0x48); // always 5000?
+        GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
 
-        int32_t half_piv_base = piv_base / 2;
-        int64_t uh_oh = (int64_t)piv_base * piv;
-        pCtx->Esi = (int32_t)(uh_oh / piv_divisor) + half_piv_base;
+        int32_t half_piv_base = globals->piv_base / 2;
+        int64_t uh_oh = (int64_t)globals->piv_base * globals->piv;
+        pCtx->Esi = (int32_t)(uh_oh / globals->piv_divisor) + half_piv_base;
         pCtx->Eip = RVA(0xC49C4);
     });
     PATCH_ST(th20_piv_uncap_1, 0xA9FE5, "89D00F1F00");
@@ -886,16 +946,15 @@ namespace TH20 {
 
     EHOOK_ST(th20_cleanup_stone_active, 0x11269f, 1, {
         // to make stoneActive work, we set the meter to max in init, let the game do its thing & adjust the meter/timer to the specified value
-        uintptr_t game_side = RVA(GAME_SIDE0);
-        uintptr_t player_stats = game_side + 0x88;
-        *(int32_t*)(player_stats + 0x5C) = thPracParam.stone * thPracParam.stoneMax;
+        GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
+        globals->summon_meter = (int32_t)(thPracParam.stone * thPracParam.stoneMax);
 
         uintptr_t enemy_stone_manager = *(uintptr_t*)RVA(ENM_STONE_MGR_PTR);
         Timer20* stone_interp_timer = (Timer20*)(enemy_stone_manager + 0x84 + 0x14);
 
-        //stone_interp_timer->cur = 1320 - (1320 * thPracParam.stone);                         // option A: duration-accurate (50% stone = 50% of the duration)
-        stone_interp_timer->cur = 1320.0f * (1.0f - cbrtf(fmaxf(0.0001f, thPracParam.stone))); // option B: visuals-accurate (the drain meter is cubicly interpolated) (dont let it be 0) (just dont)
-        stone_interp_timer->cur_f = (float)stone_interp_timer->cur;
+        //float interp_timer_val = 1320 - (1320 * thPracParam.stone);                         // option A: duration-accurate (50% stone = 50% of the duration)
+        float interp_timer_val = 1320.0f * (1.0f - cbrtf(fmaxf(0.0001f, thPracParam.stone))); // option B: visuals-accurate (the drain meter is cubicly interpolated) (dont let it be 0) (just dont)
+        asm_call_rel<SET_TIMER_FUNC, Thiscall>(stone_interp_timer, (int32_t)interp_timer_val);
 
         th20_cleanup_stone_active.Toggle(false);
     });
@@ -1229,7 +1288,7 @@ namespace TH20 {
 
                     // checking no stage was skipped for stage timer fix mode (where s1 may have data from param copy mechanic)
                     if (!disableSave) {
-                        for (int s = 2; s < THGuiRep::singleton().mSelectedRepEndStage; s++) {
+                        for (size_t s = 2; s < THGuiRep::singleton().mSelectedRepEndStage; s++) {
                             if (!thPracParam.HasTransitionSyncData(s)) {
                                 disableSave = true;
                                 break;
@@ -2716,13 +2775,14 @@ namespace TH20 {
     })
     EHOOK_DY(th20_patch_main, 0xBBD56, 1, {
         if (thPracParam.mode == 1) {
-            *(int32_t*)RVA(0x1BA5F0) = (int32_t)(thPracParam.score / 10);
-            *(int32_t*)RVA(GAME_SIDE0 + 0x140) = thPracParam.life;
-            *(int32_t*)RVA(GAME_SIDE0 + 0x148) = thPracParam.life_fragment;
-            *(int32_t*)RVA(GAME_SIDE0 + 0x154) = thPracParam.bomb;
-            *(int32_t*)RVA(GAME_SIDE0 + 0x158) = thPracParam.bomb_fragment;
-            *(int32_t*)RVA(GAME_SIDE0 + 0xB8) = thPracParam.power;
-            *(int32_t*)RVA(GAME_SIDE0 + 0xCC) = thPracParam.value;
+            GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
+            globals->score = (int32_t)(thPracParam.score / 10);
+            globals->life_stocks = thPracParam.life;
+            globals->life_fragments = thPracParam.life_fragment;
+            globals->bomb_stocks = thPracParam.bomb;
+            globals->bomb_fragments = thPracParam.bomb_fragment;
+            globals->current_power = thPracParam.power;
+            globals->piv = thPracParam.value;
 
             THSectionPatch();
         }
@@ -2732,12 +2792,12 @@ namespace TH20 {
         if (thPracParam.mode != 1)
             return;
 
-        uintptr_t game_side = RVA(GAME_SIDE0);
-        uintptr_t player_stats = game_side + 0x88;
-        int32_t hyperMax = *(int32_t*)(player_stats + 0x50);
+        uintptr_t game_side_main = RVA(GAME_SIDE0);
+        GlobalsSide* globals = (GlobalsSide*)(game_side_main + 0x88);
+        int32_t hyperMax = globals->hyper_meter_max;
 
         if ((int32_t)thPracParam.hyper == 1 || thPracParam.hyperActive) {
-            uintptr_t player_stone_manager = *(uintptr_t*)(game_side + 0x2c);
+            uintptr_t player_stone_manager = *(uintptr_t*)(game_side_main + 0x2c);
             bool hyperGLockEnabled = *(THOverlay::singleton().mHyperGLock);
 
             // call the hyper start method
@@ -2746,31 +2806,31 @@ namespace TH20 {
             if (hyperGLockEnabled) THOverlay::singleton().mHyperGLock.Toggle(true); // gauge lock from interfering plz do lol
 
             if (thPracParam.hyperActive) { // set hyper drain timer correctly
-                int32_t hyper_base_duration = *(int32_t*)(player_stats + 0x54) * 12;
-                int32_t g2_passive_factor = *(int32_t*)(player_stats + 0xa8);
-                int32_t hyper_duration = hyper_base_duration + (hyper_base_duration * g2_passive_factor) / 100;
+                int32_t hyper_base_duration = globals->hyper_duration * 12;
+                int32_t hyper_duration = hyper_base_duration + (hyper_base_duration * globals->g2_passive_factor) / 100;
 
                 uintptr_t story_stone = *(uintptr_t*)(player_stone_manager + 0x28);
                 Timer20* hyper_timer = (Timer20*)(story_stone + 0x14);
-                hyper_timer->prev = -999999; // zero318 & KSS say: safety first!
-                hyper_timer->cur = thPracParam.hyper * hyper_duration;
-                hyper_timer->cur_f = (float)hyper_timer->cur;
+                asm_call_rel<SET_TIMER_FUNC, Thiscall>(hyper_timer, (int32_t)(thPracParam.hyper * hyper_duration));
             }
         }
-        *(int32_t*)(player_stats + 0x4C) = thPracParam.hyper * hyperMax; // set hyper value
+        globals->hyper_meter = (int32_t)(thPracParam.hyper * hyperMax); // set hyper value
 
-        if (thPracParam.stoneMax) *(int32_t*)(player_stats + 0x60) = thPracParam.stoneMax; // check is for backwards compatibility
-        *(int32_t*)(player_stats + 0x5C) = thPracParam.stoneActive ? thPracParam.stoneMax : thPracParam.stone * thPracParam.stoneMax;
+        if (thPracParam.stoneMax)
+            globals->summon_meter_max = thPracParam.stoneMax; // check is for backwards compatibility
+        globals->summon_meter = thPracParam.stoneActive ? thPracParam.stoneMax
+                              : (int32_t)(thPracParam.stone * thPracParam.stoneMax);
         th20_cleanup_stone_active.Toggle(thPracParam.stoneActive || thPracParam.stone == 1.0f);
-        *(int32_t*)(player_stats + 0x64) = thPracParam.priorityR;
-        *(int32_t*)(player_stats + 0x68) = thPracParam.priorityB;
-        *(int32_t*)(player_stats + 0x6C) = thPracParam.priorityY;
-        *(int32_t*)(player_stats + 0x70) = thPracParam.priorityG;
-        *(int32_t*)(player_stats + 0x74) = thPracParam.levelR;
-        *(int32_t*)(player_stats + 0x78) = thPracParam.levelB;
-        *(int32_t*)(player_stats + 0x7C) = thPracParam.levelY;
-        *(int32_t*)(player_stats + 0x80) = thPracParam.levelG;
-        *(int32_t*)(player_stats + 0x94) = thPracParam.cycle;
+
+        globals->stone_priority_red = thPracParam.priorityR;
+        globals->stone_priority_blue = thPracParam.priorityB;
+        globals->stone_priority_yellow = thPracParam.priorityY;
+        globals->stone_priority_green = thPracParam.priorityG;
+        globals->stone_level_red = thPracParam.levelR;
+        globals->stone_level_blue = thPracParam.levelB;
+        globals->stone_level_yellow = thPracParam.levelY;
+        globals->stone_level_green = thPracParam.levelG;
+        globals->stone_enemy_count_total = thPracParam.cycle;
     })
     EHOOK_DY(th20_patch_ex_stones_fix, 0x6415A, 3, {
         if (thPracParam.mode == 1)
@@ -2807,7 +2867,7 @@ namespace TH20 {
             pCtx->Eip = RVA(0xe2fe7);
     })
 
-    EHOOK_DY(th20_transition_pre_non_deterministic_delay, 0xda801, 5, {
+    EHOOK_DY(th20_transition_pre_loading, 0xda801, 5, {
         deterministicTransitionR2TimerVal = GetMemContent(RVA(PLAYER_PTR), 0x22B4 + 0x12580 + 0x4);
     })
 
@@ -2895,16 +2955,34 @@ namespace TH20 {
 
     PATCH_DY(th20_fix_stone_timeout_use_after_freeA, 0x1136AF, "8B4D0C" NOP(3))
     PATCH_DY(th20_fix_stone_timeout_use_after_freeB, 0x111F7F, "8B0A83E103")
+    EHOOK_DY(th20_expired_summon_kill_desync_fix, 0x111f84, 3, {
+        if (!GetMemContent(RVA(ENM_STONE_MGR_PTR), 0x4)) { //summon object was deallocated
+            //debug_msg("!", "color: %d", *(int32_t*)pCtx->Edx);
+            //WIP
+        }
+    })
+
+    /*EHOOK_DY(th20_skip_results_screen, 0x110d75, 2, {
+        if (advStageClearSkipTimes()) {
+            Timer20* const stageClearTimer = GetMemAddr<Timer20*>(pCtx->Ebp - 0x4, 0x2c);
+            const uint32_t stage = GetMemContent(RVA(STAGE_NUM)) - 1;
+
+            if (stageClearTimer->cur >= (int32_t)advStageClearSkipTimes[stage]) {
+                debug_msg("!", "performed skip @ %d, stage %d", stageClearTimer->cur, stage);
+                pCtx->Eip = RVA(0x110d94);
+            }
+        }
+    })*/
 
     PATCH_DY(th20_fix_rep_save_stone_names, 0x127B9F, "8B82D8000000" NOP(22))
     EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
         if (*(uint32_t*)(*(uintptr_t*)RVA(GAME_THREAD_PTR) + 0x108)) {
             // Yes, the order really is swapped like this
-            auto selected = (uint32_t*)(RVA(GAME_SIDE0) + 0x88 + 0x1C);
-            selected[0] = replayStones[0];
-            selected[1] = replayStones[2];
-            selected[2] = replayStones[1];
-            selected[3] = replayStones[3];
+            GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
+            globals->story_stone_raw       = replayStones[0];
+            globals->narrow_shot_stone_raw = replayStones[2];
+            globals->wide_shot_stone_raw   = replayStones[1];
+            globals->assist_stone_raw      = replayStones[3];
         }
     })
     EHOOK_DY(th20_fix_ex_rep_resolution, 0x2c719, 1, { //hooks post setting ANM sprite info from sprite_id -1 (-> ASCII sprite 288)

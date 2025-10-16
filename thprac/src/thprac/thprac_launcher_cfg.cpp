@@ -1509,7 +1509,7 @@ private:
     // Function for displaying a row for the rebind and also rebinding it
     bool GuiHotkeyEdit(const char* label, const char* binding, bool* listening, bool block_input, bool identical_binding, const char* tooltip = "")
     {
-        ImGuiIO& io = ImGui::GetIO();
+        //ImGuiIO& io = ImGui::GetIO(); //unused?
 
         ImGui::AlignTextToFramePadding();
         ImGui::TextUnformatted(label);
@@ -1615,7 +1615,6 @@ private:
         bool screenshot_binding_shared = false;
         int backspace_chord = 0;
         int advanced_chord = 0;
-        int special_chord = 0;
         int screenshot_chord = 0;
         LauncherSettingGet("backspace_menu_chord", backspace_chord);
         LauncherSettingGet("advanced_menu_chord", advanced_chord);
@@ -1655,10 +1654,10 @@ private:
             mHotkeyScreenshotListening = false;
             int backspace_menu_chord = 1 << Gui::ChordKey_Backspace;
             int advanced_menu_chord = 1 << Gui::ChordKey_F12;
-            int screenshot_chord = 1 << Gui::ChordKey_Home;
+            int reset_screenshot_chord = 1 << Gui::ChordKey_Home;
             LauncherSettingSet("backspace_menu_chord", backspace_menu_chord);
             LauncherSettingSet("advanced_menu_chord", advanced_menu_chord);
-            LauncherSettingSet("screenshot_chord", screenshot_chord);
+            LauncherSettingSet("screenshot_chord", reset_screenshot_chord);
         }
     }
 
