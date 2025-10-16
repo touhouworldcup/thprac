@@ -1246,37 +1246,37 @@ namespace TH20 {
 
                     if (advFixTimerOffsets) {
                         ImGui::Columns(2, 0, false);
-                        for (int i = 0; i < totalTransitions; i++) {
-                            ImGui::Text(S(TH20_MAINRPYFIX_STAGE_TIMER_STAGE), i+2);
+                        for (size_t s = 0; s < totalTransitions; s++) {
+                            ImGui::Text(S(TH20_MAINRPYFIX_STAGE_TIMER_STAGE), s+2);
                             ImGui::SameLine();
 
-                            bool disabled = (i < stage);
-                            bool maxed = *advFixedTimerOffsets[i] == TIMER_OFFSET_MAX;
-                            bool mined = !*advFixedTimerOffsets[i];
+                            bool disabled = ((int32_t)s < stage);
+                            bool maxed = *advFixedTimerOffsets[s] == TIMER_OFFSET_MAX;
+                            bool mined = !*advFixedTimerOffsets[s];
 
                             ImGui::BeginDisabled(disabled);
                             ImGui::SetNextItemWidth(175 * dpiScale);
-                            advFixedTimerOffsets[i]("%df");
+                            advFixedTimerOffsets[s]("%df");
                             TimerOffsetTooltip(disabled);
-                            ImGui::PushID(i);
+                            ImGui::PushID(s);
 
                             ImGui::SameLine();
                             ImGui::BeginDisabled(!disabled && maxed);
                             if (ImGui::Button("+", ImVec2(20 * dpiScale, 20 * dpiScale)))
-                                *advFixedTimerOffsets[i] += 1;
+                                *advFixedTimerOffsets[s] += 1;
                             ImGui::EndDisabled(!disabled && maxed);
                             TimerOffsetTooltip(disabled);
 
                             ImGui::SameLine();
                             ImGui::BeginDisabled(!disabled && mined);
                             if (ImGui::Button("-", ImVec2(20 * dpiScale, 20 * dpiScale)))
-                                *advFixedTimerOffsets[i] -= 1;
+                                *advFixedTimerOffsets[s] -= 1;
                             ImGui::EndDisabled(!disabled && mined);
                             TimerOffsetTooltip(disabled);
 
                             ImGui::PopID();
                             ImGui::EndDisabled(disabled);
-                            if (i == 2) ImGui::NextColumn();
+                            if (s == 2) ImGui::NextColumn();
                         }
                     }
 
@@ -2890,7 +2890,7 @@ namespace TH20 {
             if (thPracParam.passiveMeterTimer[stage]) // passive summon gauge meter desync fix
                 asm_call_rel<SET_TIMER_FUNC, Thiscall>(GetMemContent(RVA(ENM_STONE_MGR_PTR)) + 0x28, thPracParam.passiveMeterTimer[stage]);
 
-            for (int i = 0; i < 4; i++) { // y2 option transition skip desync fix
+            for (int i = 0; i < 4; i++) { // y2 option desync fix
                 const uint32_t y2timer = thPracParam.yellow2CycleTimer[stage][i];
 
                 if (y2timer) {
@@ -2935,7 +2935,7 @@ namespace TH20 {
             // passive summon gauge meter desync fix
             thPracParam.passiveMeterTimer[stage] = GetMemContent<int32_t>(RVA(ENM_STONE_MGR_PTR), 0x28 + 4);
 
-            // y2 option transition skip desync fix
+            // y2 option desync fix
             for (int i = 0; i < 4; i++) {
                 thPracParam.yellow2CycleAngle[stage][i] = GetMemContent(player_ptr + 0x684 + 0x12c * i + 0xd4); // save float angle as int to not lose precision
                 thPracParam.yellow2CycleTimer[stage][i] = GetMemContent(player_ptr + 0x684 + 0x12c * i + 0xe4 + 0x4);
@@ -2961,18 +2961,6 @@ namespace TH20 {
             //WIP
         }
     })
-
-    /*EHOOK_DY(th20_skip_results_screen, 0x110d75, 2, {
-        if (advStageClearSkipTimes()) {
-            Timer20* const stageClearTimer = GetMemAddr<Timer20*>(pCtx->Ebp - 0x4, 0x2c);
-            const uint32_t stage = GetMemContent(RVA(STAGE_NUM)) - 1;
-
-            if (stageClearTimer->cur >= (int32_t)advStageClearSkipTimes[stage]) {
-                debug_msg("!", "performed skip @ %d, stage %d", stageClearTimer->cur, stage);
-                pCtx->Eip = RVA(0x110d94);
-            }
-        }
-    })*/
 
     PATCH_DY(th20_fix_rep_save_stone_names, 0x127B9F, "8B82D8000000" NOP(22))
     EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
