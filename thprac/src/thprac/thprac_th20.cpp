@@ -14,11 +14,12 @@ namespace TH20 {
     using std::pair;
 
     enum rel_addrs {
+        DIFFICULTY = 0x1b0a60,
         WINDOW_PTR = 0x1b6758,
         GAME_SIDE0 = 0x1ba568,
         PLAYER_PTR = GAME_SIDE0 + 0x4,
         DMG_SRC_MGR_PTR = GAME_SIDE0 + 0x28,
-        MODEFLAGS = GAME_SIDE0 + 0x70,
+        MODEFLAGS = GAME_SIDE0 + 0x6c,
         STAGE_NUM = GAME_SIDE0 + 0x88 + 0x1f4,
         GAME_THREAD_PTR = 0x1ba828,
         TRANSITION_STG_PTR = 0x1c06a0,
@@ -28,7 +29,7 @@ namespace TH20 {
         SET_TIMER_FUNC = 0x23520,
         ADD_TIMER_FUNC = 0x297A0,
         ALLOCATE_DMG_SRC_FUNC = 0xc0e60,
-        DELETE_DMG_SRC_FUNC = 0xc1f30
+        DELETE_DMG_SRC_FUNC = 0xc1f30,
     };
 
     struct AnmVM {
@@ -169,6 +170,7 @@ namespace TH20 {
         float resolutionSpriteHeight;
         std::vector<PlayerDamageSource> rogueDmgSrcs[7];
         uint32_t nextDmgID[7];
+        std::vector<uint32_t> expStoneColors[7];
 
         bool dlg;
 
@@ -234,6 +236,11 @@ namespace TH20 {
             });
             GetJsonArray(nextDmgID, elementsof(nextDmgID));
 
+            GetJsonVectorArray(expStoneColors, {
+                if (el.IsArray()) return std::nullopt;
+                return (uint32_t)el.GetInt();
+            });
+
             return true;
         }
         std::string GetJson()
@@ -247,6 +254,7 @@ namespace TH20 {
 
                 AddJsonArray(reimuR2Timer, elementsof(reimuR2Timer));
                 AddJsonArray(passiveMeterTimer, elementsof(passiveMeterTimer));
+                AddJsonValue(resolutionSpriteHeight);
 
                 // lotta zeros we don't always need to store
                 GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
@@ -268,7 +276,9 @@ namespace TH20 {
                 });
                 AddJsonArray(nextDmgID, elementsof(nextDmgID));
 
-                AddJsonValue(resolutionSpriteHeight);
+                AddJsonVectorArray(expStoneColors, {
+                    return rapidjson::Value(el);
+                });
 
                 ReturnJson();
             } else { //thprac mode
@@ -330,13 +340,27 @@ namespace TH20 {
             //y2 opt timer checked per stage because you could otherwise make an adversarial replay (dont bring out y2 options until later stage)
             return reimuR2Timer[st] || passiveMeterTimer[st] || yellow2CycleTimer[st][0] || rogueDmgSrcs[st].size();
         }
+
+        bool HasExpStoneData() {
+            for (auto& stgData : expStoneColors)
+                if (stgData.size())
+                    return true;
+
+            return false;
+        }
+
+        void MarkExpStoneFixed(bool extra) {
+            if (HasExpStoneData()) return;
+            expStoneColors[extra ? 0 : 6].push_back(999999);
+        }
     };
 
     THPracParam thPracParam {};
     uint32_t replayStones[4] {};
+    size_t stage_expired_summon_cnt = 0;
 
     constexpr uint32_t minTimerOffsets[5] = { 39, 40, 49, 43, 44 }; // # of anm entries loaded on transition (max 1 per frame)
-    constexpr uint32_t TIMER_OFFSET_MAX = 200;
+    constexpr uint32_t TIMER_OFFSET_MAX = 300;
 
     size_t advExtraFixResOpt = 0;
     bool advFixTimerOffsets = false;
@@ -348,6 +372,7 @@ namespace TH20 {
         Gui::GuiDrag<uint32_t, ImGuiDataType_S32> { "##mainrpyfix_st5", 0, (uint32_t)TIMER_OFFSET_MAX, 1, 100 },
         Gui::GuiDrag<uint32_t, ImGuiDataType_S32> { "##mainrpyfix_st6", 0, (uint32_t)TIMER_OFFSET_MAX, 1, 100 }
     };
+    std::vector<uint32_t> advExpStoneColors[7];
     THPracParam repFixParamCopy {};
 
     void ResetFixToolsSharedState() {
@@ -357,6 +382,7 @@ namespace TH20 {
         advFixTimerOffsets = false;
         deterministicTransitionR2TimerVal = 0;
         for (auto& off : advFixedTimerOffsets) *off = 0;
+        for (auto& c : advExpStoneColors) c.clear();
         repFixParamCopy.Reset();
     }
 
@@ -391,7 +417,7 @@ namespace TH20 {
             case 0:
                 break;
             case 1:
-                mDiffculty = *((int32_t*)RVA(0x1B0A60));
+                mDifficulty = GetMemContent(RVA(DIFFICULTY));
                 SetFade(0.8f, 0.1f);
                 Open();
                 thPracParam.Reset();
@@ -639,7 +665,7 @@ namespace TH20 {
             case 3: // Mid boss & End boss
                 if (mSection(TH_WARP_SELECT[*mWarp],
                         th_sections_cba[*mStage][*mWarp - 2],
-                        th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
+                        th_sections_str[::THPrac::Gui::LocaleGet()][mDifficulty]))
                     *mPhase = 0;
                 if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
                     mDlg();
@@ -648,7 +674,7 @@ namespace TH20 {
             case 5: // Non-spell & Spellcard
                 if (mSection(TH_WARP_SELECT[*mWarp],
                         th_sections_cbt[*mStage][*mWarp - 4],
-                        th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
+                        th_sections_str[::THPrac::Gui::LocaleGet()][mDifficulty]))
                     *mPhase = 0;
                 if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
                     mDlg();
@@ -699,7 +725,7 @@ namespace TH20 {
             { 4, 3 },
         };
 
-        int mDiffculty = 0;
+        int mDifficulty = 0;
     };
     class THGuiRep : public Gui::GameGuiWnd {
         THGuiRep() noexcept
@@ -742,7 +768,7 @@ namespace TH20 {
             else
                 mRepParam.Reset();
 
-            uint32_t* savedStones = (uint32_t*)GetMemAddr(main_menu_ptr + rep_offset, 0x1C, 0xDC);
+            uint32_t* savedStones = GetMemAddr<uint32_t*>(main_menu_ptr + rep_offset, 0x1C, 0xDC);
             memcpy(replayStones, savedStones, sizeof(replayStones));
 
             for (int st = 1; st <= 7; ++st) {
@@ -779,6 +805,7 @@ namespace TH20 {
             case 3:
                 mRepStatus = true;
                 mSelectedRepPlaybackStartStage = GetMemContent(RVA(MAIN_MENU_PTR), 0x24);
+                stage_expired_summon_cnt = 0;
 
                 if (advFixTimerOffsets && repFixParamCopy.HasTransitionSyncData()) {
                     thPracParam = repFixParamCopy;
@@ -789,6 +816,10 @@ namespace TH20 {
                     if (advExtraFixResOpt && !thPracParam.resolutionSpriteHeight)
                         thPracParam.resolutionSpriteHeight = defaultSpriteHeights[advExtraFixResOpt];
                 }
+
+                if (!mRepParam.HasExpStoneData())
+                    for (size_t s = 0; s < elementsof(advExpStoneColors); ++s)
+                        thPracParam.expStoneColors[s] = advExpStoneColors[s];
 
                 break;
             default:
@@ -949,11 +980,10 @@ namespace TH20 {
         GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
         globals->summon_meter = (int32_t)(thPracParam.stone * thPracParam.stoneMax);
 
-        uintptr_t enemy_stone_manager = *(uintptr_t*)RVA(ENM_STONE_MGR_PTR);
-        Timer20* stone_interp_timer = (Timer20*)(enemy_stone_manager + 0x84 + 0x14);
-
         //float interp_timer_val = 1320 - (1320 * thPracParam.stone);                         // option A: duration-accurate (50% stone = 50% of the duration)
         float interp_timer_val = 1320.0f * (1.0f - cbrtf(fmaxf(0.0001f, thPracParam.stone))); // option B: visuals-accurate (the drain meter is cubicly interpolated) (dont let it be 0) (just dont)
+
+        Timer20* stone_interp_timer = GetMemAddr<Timer20*>(RVA(ENM_STONE_MGR_PTR), 0x84 + 0x14);
         asm_call_rel<SET_TIMER_FUNC, Thiscall>(stone_interp_timer, (int32_t)interp_timer_val);
 
         th20_cleanup_stone_active.Toggle(false);
@@ -970,6 +1000,7 @@ namespace TH20 {
         bool scoreUncap = false;
         bool infiniteStones = false;
         bool plHitboxScaleFix = false;
+        bool showExpiredPyramidFixTool = false;
 
         void MasterDisableInit()
         {
@@ -978,7 +1009,7 @@ namespace TH20 {
         {
             mOptCtx.fps_dbl = 60.0;
 
-            if (*(uint8_t*)RVA(0x1C4F89) == 3) {
+            if (GetMemContent<uint8_t>(RVA(0x1C4F89)) == 3) {
                 mOptCtx.fps_status = 1;
 
                 DWORD oldProtect;
@@ -1158,13 +1189,18 @@ namespace TH20 {
             return false;
         }
 
-        void TimerOffsetTooltip(bool disabled)
+        void CloneWithParamsAndRefresh(THPracParam newRepParam) {
+            if (CloneSelectedReplayWithParams(newRepParam) && !THGuiRep::singleton().mRepStatus)
+                THGuiRep::singleton().CheckReplay(); // refresh for if user overwrote og file in menu
+        }
+
+        void DisableTooltip(bool disabled, th_glossary_t hint, bool keepDisabled = true)
         {
             if (disabled) {
                 ImGui::EndDisabled();
                 if (ImGui::IsItemHovered())
-                    ImGui::SetTooltip(S(TH20_MAINRPYFIX_STAGE_TIMER_DISABLE_HINT));
-                ImGui::BeginDisabled();
+                    ImGui::SetTooltip(S(hint));
+                if (keepDisabled) ImGui::BeginDisabled();
             }
         }
 
@@ -1212,143 +1248,145 @@ namespace TH20 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_REPLAY_FIX>()) {
+
+                // Main story replay fixes
                 CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH20_MAIN_STORY_FIXES));
                 ImGui::SameLine();
                 HelpMarker(S(TH20_MAIN_STORY_FIXES_DESC));
 
-                // Main story replay fixes
                 bool hasTransitions = THGuiRep::singleton().mSelectedRepStartStage != THGuiRep::singleton().mSelectedRepEndStage;
-                if (hasTransitions && !THGuiRep::singleton().mRepParam.HasTransitionSyncData()) {
-                    ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mSelectedRepName.c_str());
+                bool hasTransitionSyncData = THGuiRep::singleton().mRepParam.HasTransitionSyncData();
 
-                    ImGui::BeginDisabled(THGuiRep::singleton().mRepStatus);
-                    if(ImGui::Button(S(advFixTimerOffsets ? TH20_MAINRPYFIX_DISABLE_TIMERS_FIX : TH20_MAINRPYFIX_ENABLE_TIMERS_FIX)))
-                        advFixTimerOffsets = !advFixTimerOffsets;
-                    if (THGuiRep::singleton().mRepStatus) {
-                        ImGui::EndDisabled();
-                        if (ImGui::IsItemHovered())
-                            ImGui::SetTooltip(S(TH20_MAINRPYFIX_TIMERS_FIX_DISABLE_HINT));
-                    }
+                if (hasTransitions) {
+                    if (!hasTransitionSyncData) {
+                        ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mSelectedRepName.c_str());
 
-                    ImGui::SameLine();
-                    HelpMarker(S(TH20_MAINRPYFIX_TIMERS_FIX_DESC));
-                    ImGui::SameLine();
-                    CustomMarker(S(TH20_MAINRPYFIX_TIPS), S(TH20_MAINRPYFIX_TIMERS_FIX_TIPS_DESC));
-                    if (Gui::LocaleGet() != Gui::LOCALE_ZH_CN) {
+                        ImGui::BeginDisabled(THGuiRep::singleton().mRepStatus);
+                        if(ImGui::Button(S(advFixTimerOffsets ? TH20_MAINRPYFIX_DISABLE_TIMERS_FIX : TH20_MAINRPYFIX_ENABLE_TIMERS_FIX)))
+                            advFixTimerOffsets = !advFixTimerOffsets;
+                        if (THGuiRep::singleton().mRepStatus) {
+                            ImGui::EndDisabled();
+                            if (ImGui::IsItemHovered())
+                                ImGui::SetTooltip(S(TH20_MAINRPYFIX_TIMERS_FIX_DISABLE_HINT));
+                        }
+
+                        ImGui::SameLine();
+                        HelpMarker(S(TH20_MAINRPYFIX_TIMERS_FIX_DESC));
+                        ImGui::SameLine();
+                        CustomMarker(S(TH20_MAINRPYFIX_TIPS), S(TH20_MAINRPYFIX_TIMERS_FIX_TIPS_DESC));
                         ImGui::SameLine();
                         CustomMarker(S(TH20_MAINRPYFIX_TIPS2), S(TH20_MAINRPYFIX_TIMERS_FIX_TIPS2_DESC));
-                    }
 
-                    int32_t stage = THGuiRep::singleton().mRepStatus ? (GetMemContent(RVA(STAGE_NUM)) - 1) : -1;
-                    uint32_t totalTransitions = THGuiRep::singleton().mSelectedRepEndStage - 1;
+                        int32_t stage = THGuiRep::singleton().mRepStatus ? (GetMemContent(RVA(STAGE_NUM)) - 1) : -1;
+                        uint32_t totalTransitions = THGuiRep::singleton().mSelectedRepEndStage - 1;
 
-                    if (advFixTimerOffsets) {
-                        ImGui::Columns(2, 0, false);
-                        for (size_t s = 0; s < totalTransitions; s++) {
-                            ImGui::Text(S(TH20_MAINRPYFIX_STAGE_TIMER_STAGE), s+2);
-                            ImGui::SameLine();
+                        if (advFixTimerOffsets) {
+                            ImGui::Columns(2, 0, false);
+                            for (size_t s = 0; s < totalTransitions; s++) {
+                                ImGui::Text(S(TH20_RPYFIX_STAGE_NUM), s + 2);
+                                ImGui::SameLine();
 
-                            bool disabled = ((int32_t)s < stage);
-                            bool maxed = *advFixedTimerOffsets[s] == TIMER_OFFSET_MAX;
-                            bool mined = !*advFixedTimerOffsets[s];
+                                bool disabled = ((int32_t)s < stage);
+                                bool maxed = *advFixedTimerOffsets[s] == TIMER_OFFSET_MAX;
+                                bool mined = !*advFixedTimerOffsets[s];
 
-                            ImGui::BeginDisabled(disabled);
-                            ImGui::SetNextItemWidth(175 * dpiScale);
-                            advFixedTimerOffsets[s]("%df");
-                            TimerOffsetTooltip(disabled);
-                            ImGui::PushID(s);
+                                ImGui::BeginDisabled(disabled);
+                                ImGui::SetNextItemWidth(175 * dpiScale);
+                                advFixedTimerOffsets[s]("%df");
+                                DisableTooltip(disabled, TH20_MAINRPYFIX_STAGE_TIMER_DISABLE_HINT);
+                                ImGui::PushID(s);
 
-                            ImGui::SameLine();
-                            ImGui::BeginDisabled(!disabled && maxed);
-                            if (ImGui::Button("+", ImVec2(20 * dpiScale, 20 * dpiScale)))
-                                *advFixedTimerOffsets[s] += 1;
-                            ImGui::EndDisabled(!disabled && maxed);
-                            TimerOffsetTooltip(disabled);
+                                ImGui::SameLine();
+                                ImGui::BeginDisabled(!disabled && maxed);
+                                if (ImGui::Button("+", ImVec2(20 * dpiScale, 20 * dpiScale)))
+                                    *advFixedTimerOffsets[s] += 1;
+                                ImGui::EndDisabled(!disabled && maxed);
+                                DisableTooltip(disabled, TH20_MAINRPYFIX_STAGE_TIMER_DISABLE_HINT);
 
-                            ImGui::SameLine();
-                            ImGui::BeginDisabled(!disabled && mined);
-                            if (ImGui::Button("-", ImVec2(20 * dpiScale, 20 * dpiScale)))
-                                *advFixedTimerOffsets[s] -= 1;
-                            ImGui::EndDisabled(!disabled && mined);
-                            TimerOffsetTooltip(disabled);
+                                ImGui::SameLine();
+                                ImGui::BeginDisabled(!disabled && mined);
+                                if (ImGui::Button("-", ImVec2(20 * dpiScale, 20 * dpiScale)))
+                                    *advFixedTimerOffsets[s] -= 1;
+                                ImGui::EndDisabled(!disabled && mined);
+                                DisableTooltip(disabled, TH20_MAINRPYFIX_STAGE_TIMER_DISABLE_HINT);
 
-                            ImGui::PopID();
-                            ImGui::EndDisabled(disabled);
-                            if (s == 2) ImGui::NextColumn();
-                        }
-                    }
-
-                    bool startedOnSt1 = (!stage || thPracParam.HasTransitionSyncData(1)); // either on st1 or recorded 1st transition
-                    if (!startedOnSt1 && stage == 1 && GetMemContent(RVA(TRANSITION_STG_PTR))) startedOnSt1 = true; //(or in s1->2 transition)
-
-                    uint32_t remainingTransitions = totalTransitions - stage;
-                    bool disableSave = (!startedOnSt1 || remainingTransitions);
-
-                    // checking no stage was skipped for stage timer fix mode (where s1 may have data from param copy mechanic)
-                    if (!disableSave) {
-                        for (size_t s = 2; s < THGuiRep::singleton().mSelectedRepEndStage; s++) {
-                            if (!thPracParam.HasTransitionSyncData(s)) {
-                                disableSave = true;
-                                break;
+                                ImGui::PopID();
+                                ImGui::EndDisabled(disabled);
+                                if (s == 2) ImGui::NextColumn();
                             }
                         }
-                    }
 
-                    std::string buttonLabelStr; // storage for formatted string
-                    const char* buttonLabel = S(TH_REPFIX_SAVE);
+                        bool startedOnSt1 = (!stage || thPracParam.HasTransitionSyncData(1)); // either on st1 or recorded 1st transition
+                        if (!startedOnSt1 && stage == 1 && GetMemContent(RVA(TRANSITION_STG_PTR))) startedOnSt1 = true; //(or in s1->2 transition)
 
-                    if (remainingTransitions && startedOnSt1) {
-                        buttonLabelStr = std::vformat(S(TH20_MAINRPYFIX_SAVE_PROGRESS),
-                            std::make_format_args(stage, totalTransitions));
-                        buttonLabel = buttonLabelStr.c_str();
-                    }
+                        uint32_t remainingTransitions = totalTransitions - stage;
+                        bool mainRpyFixDisableSave = (!startedOnSt1 || remainingTransitions);
 
-                    ImGui::BeginDisabled(disableSave);
-                    bool saveClicked = ImGui::Button(buttonLabel);
-                    if (disableSave) {
-                        ImGui::EndDisabled();
-                        if (ImGui::IsItemHovered()) {
-                            if (!startedOnSt1) ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_NO_ST1_HINT));
-                            else if (remainingTransitions) ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_PROGRESS_HINT), remainingTransitions, remainingTransitions > 1 ? "s" : "");
-                            else ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_SKIPPED_STAGE_HINT));
+                        // checking no stage was skipped for stage timer fix mode (where s1 may have data from param copy mechanic)
+                        if (!mainRpyFixDisableSave) {
+                            for (size_t s = 2; s < THGuiRep::singleton().mSelectedRepEndStage; s++) {
+                                if (!thPracParam.HasTransitionSyncData(s)) {
+                                    mainRpyFixDisableSave = true;
+                                    break;
+                                }
+                            }
                         }
-                    } else if (saveClicked) {
-                        THPracParam newRepParam = THGuiRep::singleton().mRepParam;
-                        memcpy(newRepParam.reimuR2Timer, thPracParam.reimuR2Timer, sizeof(newRepParam.reimuR2Timer));
-                        memcpy(newRepParam.passiveMeterTimer, thPracParam.passiveMeterTimer, sizeof(newRepParam.passiveMeterTimer));
-                        memcpy(newRepParam.yellow2CycleAngle, thPracParam.yellow2CycleAngle, sizeof(newRepParam.yellow2CycleAngle));
-                        memcpy(newRepParam.yellow2CycleTimer, thPracParam.yellow2CycleTimer, sizeof(newRepParam.yellow2CycleTimer));
-                        memcpy(newRepParam.nextDmgID, thPracParam.nextDmgID, sizeof(newRepParam.nextDmgID));
-                        for (size_t i = 0; i < elementsof(newRepParam.rogueDmgSrcs); ++i)
-                            newRepParam.rogueDmgSrcs[i] = thPracParam.rogueDmgSrcs[i];
 
-                        CloneSelectedReplayWithParams(newRepParam);
-                        //can't save in menu, thPracParam is reset
-                        //if (!THGuiRep::singleton().mRepStatus)
-                        //    THGuiRep::singleton().CheckReplay();
-                    }
+                        std::string buttonLabelStr; // storage for formatted string
+                        const char* buttonLabel = S(TH_REPFIX_SAVE);
 
-                    if (advFixTimerOffsets) ImGui::Columns(1);
+                        if (remainingTransitions && startedOnSt1) {
+                            buttonLabelStr = std::vformat(S(TH20_MAINRPYFIX_SAVE_PROGRESS),
+                                std::make_format_args(stage, totalTransitions));
+                            buttonLabel = buttonLabelStr.c_str();
+                        }
 
-                } else if (hasTransitions) {
-                    ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
-                    ImGui::SameLine();
+                        ImGui::BeginDisabled(mainRpyFixDisableSave);
+                        bool saveClicked = ImGui::Button(buttonLabel);
+                        if (mainRpyFixDisableSave) {
+                            ImGui::EndDisabled();
+                            if (ImGui::IsItemHovered()) {
+                                if (!startedOnSt1) ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_NO_ST1_HINT));
+                                else if (remainingTransitions) ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_PROGRESS_HINT), remainingTransitions, remainingTransitions > 1 ? "s" : "");
+                                else ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_SKIPPED_STAGE_HINT));
+                            }
+                        } else if (saveClicked) {
+                            THPracParam newRepParam = THGuiRep::singleton().mRepParam;
+                            memcpy(newRepParam.reimuR2Timer, thPracParam.reimuR2Timer, sizeof(newRepParam.reimuR2Timer));
+                            memcpy(newRepParam.passiveMeterTimer, thPracParam.passiveMeterTimer, sizeof(newRepParam.passiveMeterTimer));
+                            memcpy(newRepParam.yellow2CycleAngle, thPracParam.yellow2CycleAngle, sizeof(newRepParam.yellow2CycleAngle));
+                            memcpy(newRepParam.yellow2CycleTimer, thPracParam.yellow2CycleTimer, sizeof(newRepParam.yellow2CycleTimer));
+                            memcpy(newRepParam.nextDmgID, thPracParam.nextDmgID, sizeof(newRepParam.nextDmgID));
+                            for (size_t i = 0; i < elementsof(newRepParam.rogueDmgSrcs); ++i)
+                                newRepParam.rogueDmgSrcs[i] = thPracParam.rogueDmgSrcs[i];
+                            for (size_t s = 0; s < elementsof(advExpStoneColors); ++s)
+                                newRepParam.expStoneColors[s] = advExpStoneColors[s];
+                            newRepParam.MarkExpStoneFixed(false);
 
-                    if (ImGui::Button(S(TH_REPFIX_RESET_DATA))) {
-                        THPracParam newRepParam = THGuiRep::singleton().mRepParam;
-                        memset(newRepParam.reimuR2Timer, 0, sizeof(newRepParam.reimuR2Timer));
-                        memset(newRepParam.passiveMeterTimer, 0, sizeof(newRepParam.passiveMeterTimer));
-                        memset(newRepParam.yellow2CycleAngle, 0, sizeof(newRepParam.yellow2CycleAngle));
-                        memset(newRepParam.yellow2CycleTimer, 0, sizeof(newRepParam.yellow2CycleTimer));
-                        memset(newRepParam.nextDmgID, 0, sizeof(newRepParam.nextDmgID));
-                        for (size_t st = 0; st < elementsof(newRepParam.rogueDmgSrcs); ++st)
-                            newRepParam.rogueDmgSrcs[st].clear();
+                            CloneSelectedReplayWithParams(newRepParam);
+                            //can't save in menu, thPracParam is reset
+                        }
 
-                        CloneSelectedReplayWithParams(newRepParam);
-                        if (!THGuiRep::singleton().mRepStatus)
-                            THGuiRep::singleton().CheckReplay(); //refresh for if user overwrote og file in menu
+                        if (advFixTimerOffsets) ImGui::Columns(1);
+
+                    } else {
+                        ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                        ImGui::SameLine();
+
+                        if (ImGui::Button(S(TH_REPFIX_RESET_DATA))) {
+                            THPracParam newRepParam = THGuiRep::singleton().mRepParam;
+                            memset(newRepParam.reimuR2Timer, 0, sizeof(newRepParam.reimuR2Timer));
+                            memset(newRepParam.passiveMeterTimer, 0, sizeof(newRepParam.passiveMeterTimer));
+                            memset(newRepParam.yellow2CycleAngle, 0, sizeof(newRepParam.yellow2CycleAngle));
+                            memset(newRepParam.yellow2CycleTimer, 0, sizeof(newRepParam.yellow2CycleTimer));
+                            memset(newRepParam.nextDmgID, 0, sizeof(newRepParam.nextDmgID));
+                            for (size_t st = 0; st < elementsof(newRepParam.rogueDmgSrcs); ++st)
+                                newRepParam.rogueDmgSrcs[st].clear();
+
+                            CloneWithParamsAndRefresh(newRepParam);
+                        }
                     }
                 } else {
                     if (THGuiRep::singleton().mSelectedRepStartStage >= 1 && THGuiRep::singleton().mSelectedRepEndStage <= 6)
@@ -1356,71 +1394,180 @@ namespace TH20 {
                     else ImGui::TextDisabled(S(TH_REPFIX_MAIN_SELECTED_NONE));
                 }
 
+                // Extra replay fix
                 ImGui::Separator();
                 CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH20_EXTRA_RESOLUTION_FIX));
                 ImGui::SameLine();
                 HelpMarker(S(TH20_EXTRA_RESOLUTION_FIX_DESC));
+                bool extraResFixDisableSave = true;
 
-                // Extra replay fix
-                if (THGuiRep::singleton().mSelectedRepEndStage == 7 && !THGuiRep::singleton().mRepParam.resolutionSpriteHeight) {
-                    ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mSelectedRepName.c_str());
+                if (THGuiRep::singleton().mSelectedRepEndStage == 7) {
+                    if (!THGuiRep::singleton().mRepParam.resolutionSpriteHeight) {
+                        ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mSelectedRepName.c_str());
 
-                    // don't allow changing the resolution fix option while playing the replay (would be confusing)
-                    bool disableSelection = (bool)THGuiRep::singleton().mRepStatus;
-                    ImGui::BeginDisabled(disableSelection);
-                    ImGui::TextUnformatted(S(TH20_EXRESFIX_RESOLUTION));
-                    ImGui::SameLine();
-                    ImGui::SetNextItemWidth(200 * dpiScale);
-                    Gui::ComboSelect(advExtraFixResOpt, (th_glossary_t*)TH20_EXRESFIX_RESOLUTION_OPT, elementsof(TH20_EXRESFIX_RESOLUTION_OPT) - 1, "##exresfix_res");
-                    if (disableSelection) {
-                        ImGui::EndDisabled();
-                        if (ImGui::IsItemHovered())
-                            ImGui::SetTooltip(S(TH20_EXRESFIX_RESOLUTION_DISABLE_HINT));
+                        // don't allow changing the resolution fix option while playing the replay (would be confusing)
+                        bool disableSelection = (bool)THGuiRep::singleton().mRepStatus;
+                        ImGui::BeginDisabled(disableSelection);
+                        ImGui::TextUnformatted(S(TH20_EXRESFIX_RESOLUTION));
+                        ImGui::SameLine();
+                        ImGui::SetNextItemWidth(200 * dpiScale);
+                        Gui::ComboSelect(advExtraFixResOpt, (th_glossary_t*)TH20_EXRESFIX_RESOLUTION_OPT, elementsof(TH20_EXRESFIX_RESOLUTION_OPT) - 1, "##exresfix_res");
+                        DisableTooltip(disableSelection, TH20_EXRESFIX_RESOLUTION_DISABLE_HINT, false);
+
+                        if (ImGui::IsPopupOpen("##exresfix_res") && !disableSelection)
+                            wndFocus = false;
+
+                        ImGui::SameLine();
+
+                        // don't allow saving without specifying a resolution
+                        extraResFixDisableSave = !advExtraFixResOpt;
+                        ImGui::BeginDisabled(extraResFixDisableSave);
+                        if (ImGui::Button(S(TH_REPFIX_SAVE))) {
+                            THPracParam newRepParam = THGuiRep::singleton().mRepParam;
+                            newRepParam.resolutionSpriteHeight = defaultSpriteHeights[advExtraFixResOpt];
+
+                            for (size_t s = 0; s < elementsof(advExpStoneColors); ++s)
+                                newRepParam.expStoneColors[s] = advExpStoneColors[s];
+                            newRepParam.MarkExpStoneFixed(true);
+
+                            CloneWithParamsAndRefresh(newRepParam);
+                        };
+                        DisableTooltip(extraResFixDisableSave, TH20_EXRESFIX_SAVE_DISABLE_HINT, false);
+
+                    } else {
+                        ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                        ImGui::SameLine();
+                        if (ImGui::Button(S(TH_REPFIX_RESET_DATA))) {
+                            THPracParam newRepParam = THGuiRep::singleton().mRepParam;
+                            newRepParam.resolutionSpriteHeight = 0;
+
+                            CloneWithParamsAndRefresh(newRepParam);
+                        }
                     }
+                }
+                else ImGui::TextDisabled(S(TH_REPFIX_EXTRA_SELECTED_NONE));
 
-                    if (ImGui::IsPopupOpen("##exresfix_res") && !disableSelection)
-                        wndFocus = false;
+                // Expired pyramid bug replay fix
+                ImGui::Separator();
+                CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
+                ImGui::SameLine();
+                ImGui::TextUnformatted(S(TH20_EXPIRED_STONE_FIX));
+                ImGui::SameLine();
+                HelpMarker(S(TH20_EXPIRED_STONE_FIX_DESC));
+                ImGui::SameLine();
+                ImGui::Checkbox(S(TH20_EXPSTONEFIX_SHOW_TOGGLE), &showExpiredPyramidFixTool);
 
-                    ImGui::SameLine();
+                if (showExpiredPyramidFixTool) {
+                    if (THGuiRep::singleton().mRepSelected) {
+                        if (!THGuiRep::singleton().mRepParam.HasExpStoneData()) {
+                            ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mSelectedRepName.c_str());
 
-                    // don't allow saving without specifying a resolution
-                    bool disableSaving = !advExtraFixResOpt;
-                    ImGui::BeginDisabled(disableSaving);
-                    bool saveClicked = ImGui::Button(S(TH_REPFIX_SAVE));
-                    if (disableSaving) {
-                        ImGui::EndDisabled();
-                        if (ImGui::IsItemHovered())
-                            ImGui::SetTooltip(S(TH20_EXRESFIX_SAVE_DISABLE_HINT));
+                            uint32_t maxCtrlsPerLine = (THGuiRep::singleton().mSelectedRepEndStage - THGuiRep::singleton().mSelectedRepStartStage > 2) ? 3 : 6;
+                            float leftPad = (THGuiRep::singleton().mSelectedRepEndStage == 7) ? 58.0f : 38.0f;
+                            bool disableChangingExpStoneData = THGuiRep::singleton().mRepStatus;
 
-                    } else if (saveClicked) {
-                        THPracParam newRepParam = THGuiRep::singleton().mRepParam;
-                        newRepParam.resolutionSpriteHeight = defaultSpriteHeights[advExtraFixResOpt];
+                            if (disableChangingExpStoneData)
+                                ImGui::Text(S(TH20_EXPSTONEFIX_STAGE_COUNTER), stage_expired_summon_cnt);
 
-                        CloneSelectedReplayWithParams(newRepParam);
-                        if (!THGuiRep::singleton().mRepStatus)
-                            THGuiRep::singleton().CheckReplay();
-                    }
-                } else if (THGuiRep::singleton().mSelectedRepEndStage == 7) {
-                    ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
-                    ImGui::SameLine();
-                    if (ImGui::Button(S(TH_REPFIX_RESET_DATA))) {
-                        THPracParam newRepParam;
-                        memcpy(&newRepParam, &THGuiRep::singleton().mRepParam, sizeof(THPracParam));
-                        newRepParam.resolutionSpriteHeight = 0;
-                        CloneSelectedReplayWithParams(newRepParam);
+                            ImGui::BeginDisabled(disableChangingExpStoneData);
+                            ImGui::Columns(2, 0, false);
 
-                        if (!THGuiRep::singleton().mRepStatus) THGuiRep::singleton().CheckReplay();
-                    }
-                } else {
-                    ImGui::TextDisabled(S(TH_REPFIX_EXTRA_SELECTED_NONE));
+                            for (size_t s = THGuiRep::singleton().mSelectedRepStartStage;
+                                s <= THGuiRep::singleton().mSelectedRepEndStage; ++s) {
+                                ImGui::EndDisabled(disableChangingExpStoneData);
+                                ImGui::Text(S(s == 7 ? TH20_RPYFIX_EXTRA_STAGE : TH20_RPYFIX_STAGE_NUM), s);
+                                ImGui::BeginDisabled(disableChangingExpStoneData);
+                                ImGui::SameLine();
+
+                                std::vector<uint32_t>& stageVec = advExpStoneColors[s - 1];
+
+                                for (size_t i = 0; i < stageVec.size(); i++) {
+                                    char label[32];
+                                    snprintf(label, sizeof(label), "##epc_st%zu_%d", s, i);
+
+                                    ImGui::SetNextItemWidth(70 * dpiScale);
+                                    Gui::ComboSelect(stageVec[i], (th_glossary_t*)TH20_EXPIRED_PYRAMID_FIX_OPT, elementsof(TH20_EXPIRED_PYRAMID_FIX_OPT) - 1, label);
+                                    DisableTooltip(disableChangingExpStoneData, TH20_EXPSTONEFIX_DISABLE_HINT);
+
+                                    if (ImGui::IsPopupOpen(label) && !THGuiRep::singleton().mRepStatus)
+                                        wndFocus = false;
+
+                                    if (i % maxCtrlsPerLine == maxCtrlsPerLine - 1)
+                                        ImGui::Dummy(ImVec2(leftPad * dpiScale, 0));
+                                    ImGui::SameLine();
+                                }
+
+                                ImGui::PushID(s+10);
+                                if (ImGui::Button("+", ImVec2(20 * dpiScale, 20 * dpiScale)))
+                                    stageVec.push_back(0);
+                                DisableTooltip(disableChangingExpStoneData, TH20_EXPSTONEFIX_DISABLE_HINT);
+
+                                if (stageVec.size()) {
+                                    ImGui::SameLine();
+                                    if (ImGui::Button("-", ImVec2(20 * dpiScale, 20 * dpiScale)))
+                                        stageVec.pop_back();
+                                    DisableTooltip(disableChangingExpStoneData, TH20_EXPSTONEFIX_DISABLE_HINT);
+                                }
+                                ImGui::PopID();
+                                if (s == 3) ImGui::NextColumn();
+                            }
+                            ImGui::Columns(1);
+                            ImGui::EndDisabled(disableChangingExpStoneData);
+
+                            bool expStoneDataSet = false;
+                            for (auto& stgData : advExpStoneColors) {
+                                if (stgData.size()) {
+                                    expStoneDataSet = true;
+                                    break;
+                                }
+                            }
+
+                            // disable if can save with exfix tool OR need to use mainrpyfix
+                            ImGui::BeginDisabled(!extraResFixDisableSave || (hasTransitions && !hasTransitionSyncData));
+
+                            if (expStoneDataSet) {
+                                if (ImGui::Button(S(TH_REPFIX_SAVE))) {
+                                    THPracParam newRepParam = THGuiRep::singleton().mRepParam;
+                                    for (size_t s = 0; s < elementsof(advExpStoneColors); ++s)
+                                        newRepParam.expStoneColors[s] = advExpStoneColors[s];
+
+                                    CloneWithParamsAndRefresh(newRepParam);
+                                }
+                            }
+                            else {
+                                if (ImGui::Button(S(TH20_EXPSTONEFIX_MARK_FIXED))) {
+                                    THPracParam newRepParam = THGuiRep::singleton().mRepParam;
+                                    newRepParam.MarkExpStoneFixed(THGuiRep::singleton().mSelectedRepEndStage == 7);
+
+                                    CloneWithParamsAndRefresh(newRepParam);
+                                }
+                            }
+
+                            if (!extraResFixDisableSave)
+                                DisableTooltip(true, TH20_EXPSTONEFIX_SAVE_USE_EXRESFIX_HINT, false);
+                            else if (hasTransitions && !hasTransitionSyncData)
+                                DisableTooltip(true, TH20_EXPSTONEFIX_SAVE_USE_MAINRPYFIX_HINT, false);
+
+                        } else {
+                            ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                            ImGui::SameLine();
+                            if (ImGui::Button(S(TH_REPFIX_RESET_DATA2))) {
+                                THPracParam newRepParam = THGuiRep::singleton().mRepParam;
+                                for (auto& stgData : newRepParam.expStoneColors)
+                                    stgData.clear();
+
+                                CloneWithParamsAndRefresh(newRepParam);
+                            }
+                        }
+                    } else ImGui::TextDisabled(S(TH_REPFIX_SELECTED_NONE));
                 }
 
                 EndOptGroup();
             }
 
-            AboutOpt("Khangaroo, Guy, zero318, rue, and you!");
+            AboutOpt(S(TH20_CREDITS));
             ImGui::EndChild();
             if(wndFocus) ImGui::SetWindowFocus();
         }
@@ -2688,7 +2835,7 @@ namespace TH20 {
     __declspec(noinline) void THSectionPatch()
     {
         ECLHelper ecl;
-        ecl.SetBaseAddr((void*)GetMemAddr(RVA(0x1BA570), 0x104, 0xc));
+        ecl.SetBaseAddr(GetMemAddr<void*>(RVA(0x1BA570), 0x104, 0xc));
 
         auto section = thPracParam.section;
         if (section >= 10000 && section < 20000) {
@@ -2713,12 +2860,13 @@ namespace TH20 {
     }
     void THSaveReplay(char* repName)
     {
+        thPracParam.MarkExpStoneFixed(GetMemContent(RVA(STAGE_NUM)) == 7); // consistent behavior guaranteed for new replays
         ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
     void __fastcall AnmVM_Reset_hook(uintptr_t self)
     {
-        uint32_t fast_id = *(uint32_t*)(self + 0x4C4);
+        uint32_t fast_id = GetMemContent<uint32_t>(self + 0x4C4);
         memset((void*)self, 0, 0x5E4);
         *(uint32_t*)(self + 0x4C4) = fast_id;
         asm_call_rel<0x299D0, Thiscall>(self);
@@ -2754,22 +2902,21 @@ namespace TH20 {
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
         // 4th stack item = i32 call_addr
 
-        bool el_switch;
-        bool is_practice;
-        bool result;
+        bool el_switch = *(THOverlay::singleton().mElBgm)
+            && !THGuiRep::singleton().mRepStatus && (thPracParam.mode == 1)
+            && thPracParam.section;
+        bool is_practice = (GetMemContent(RVA(MODEFLAGS)) & 0x1);
 
-        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && (thPracParam.mode == 1) && thPracParam.section;
-        is_practice = (*((int32_t*)RVA(0x1ba5d4)) & 0x1);
-
-        result = ElBgmTest<0xD9B90, 0xD9BFE, 0xE60B8, 0xE64B8, 0xffffffff>(
+        bool result = ElBgmTest<0xD9B90, 0xD9BFE, 0xE60B8, 0xE64B8, 0xffffffff>(
             el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
 
-        if (result) {
+        if (result)
             pCtx->Eip = RVA(0x28DD5);
-        }
     })
     EHOOK_DY(th20_everlasting_bgm_2, 0xE5C91, 5, {
-        bool el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && (thPracParam.mode == 1) && thPracParam.section;
+        bool el_switch = *(THOverlay::singleton().mElBgm)
+            && !THGuiRep::singleton().mRepStatus && (thPracParam.mode == 1)
+            && thPracParam.section;
         if (el_switch)
             pCtx->Eip = RVA(0xE5CF7);
     })
@@ -2797,7 +2944,7 @@ namespace TH20 {
         int32_t hyperMax = globals->hyper_meter_max;
 
         if ((int32_t)thPracParam.hyper == 1 || thPracParam.hyperActive) {
-            uintptr_t player_stone_manager = *(uintptr_t*)(game_side_main + 0x2c);
+            uintptr_t player_stone_manager = GetMemContent<uintptr_t>(game_side_main + 0x2c);
             bool hyperGLockEnabled = *(THOverlay::singleton().mHyperGLock);
 
             // call the hyper start method
@@ -2809,8 +2956,7 @@ namespace TH20 {
                 int32_t hyper_base_duration = globals->hyper_duration * 12;
                 int32_t hyper_duration = hyper_base_duration + (hyper_base_duration * globals->g2_passive_factor) / 100;
 
-                uintptr_t story_stone = *(uintptr_t*)(player_stone_manager + 0x28);
-                Timer20* hyper_timer = (Timer20*)(story_stone + 0x14);
+                Timer20* hyper_timer = GetMemAddr<Timer20*>(player_stone_manager + 0x28, 0x14);
                 asm_call_rel<SET_TIMER_FUNC, Thiscall>(hyper_timer, (int32_t)(thPracParam.hyper * hyper_duration));
             }
         }
@@ -2859,7 +3005,7 @@ namespace TH20 {
     PATCH_DY(th20_disable_prac_menu_1, 0x129B40, "c3")
     PATCH_DY(th20_prac_menu_ignore_locked, 0x12CA30, "b001c3")
     EHOOK_DY(th20_extra_prac_fix, 0x11EB3D, 2, {
-        *(uint32_t*)RVA(GAME_SIDE0 + 0x88 + 0x1E0) = *(uint32_t*)RVA(0x1B0A60);
+        *(uint32_t*)RVA(GAME_SIDE0 + 0x88 + 0x1E0) = GetMemContent(RVA(DIFFICULTY));
     })
     PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
     EHOOK_DY(th20_esc_q, 0xe2f45 , 7 , {
@@ -2876,6 +3022,7 @@ namespace TH20 {
         const uint32_t stage = GetMemContent(RVA(STAGE_NUM)) - 1;
         const uintptr_t dmgSrcManager = GetMemContent(RVA(DMG_SRC_MGR_PTR));
         const bool isTransition = GetMemContent(RVA(TRANSITION_STG_PTR));
+        stage_expired_summon_cnt = 0;
 
         // only do playback on starting stage when using copy data, record the rest
         const bool applyCopyData = !isTransition && advFixTimerOffsets && repFixParamCopy.HasTransitionSyncData(stage);
@@ -2929,7 +3076,8 @@ namespace TH20 {
             const int32_t timer_offset = deterministicTransitionR2TimerVal + fixed_offset_target - reimuR2Timer->cur;
 
             // ReimuR2 desync fix
-            if (enable_offset && timer_offset) asm_call_rel<ADD_TIMER_FUNC, Thiscall>(reimuR2Timer, timer_offset);
+            if (enable_offset && timer_offset)
+                asm_call_rel<ADD_TIMER_FUNC, Thiscall>(reimuR2Timer, timer_offset);
             thPracParam.reimuR2Timer[stage] = reimuR2Timer->cur;
 
             // passive summon gauge meter desync fix
@@ -2947,7 +3095,8 @@ namespace TH20 {
             PlayerDamageSource* node = GetMemAddr<PlayerDamageSource*>(dmgSrcManager + 0xc414);
 
             while (node = node->list_next) { // (erroneously) active damage source
-                if (enable_offset && timer_offset) asm_call_rel<ADD_TIMER_FUNC, Thiscall>(&node->duration, -timer_offset);
+                if (enable_offset && timer_offset)
+                    asm_call_rel<ADD_TIMER_FUNC, Thiscall>(&node->duration, -timer_offset);
                 thPracParam.rogueDmgSrcs[stage].push_back(*node);
             }
         }
@@ -2956,15 +3105,23 @@ namespace TH20 {
     PATCH_DY(th20_fix_stone_timeout_use_after_freeA, 0x1136AF, "8B4D0C" NOP(3))
     PATCH_DY(th20_fix_stone_timeout_use_after_freeB, 0x111F7F, "8B0A83E103")
     EHOOK_DY(th20_expired_summon_kill_desync_fix, 0x111f84, 3, {
-        if (!GetMemContent(RVA(ENM_STONE_MGR_PTR), 0x4)) { //summon object was deallocated
-            //debug_msg("!", "color: %d", *(int32_t*)pCtx->Edx);
-            //WIP
+        if (!THGuiRep::singleton().mRepStatus) return; // liveplay is fixed (cf above)
+
+        if (!GetMemContent(RVA(ENM_STONE_MGR_PTR), 0x4)) { // summon object was deallocated
+            const uint32_t stage = GetMemContent(RVA(STAGE_NUM)) - 1;
+
+            if (stage_expired_summon_cnt < thPracParam.expStoneColors[stage].size())
+                pCtx->Ecx = thPracParam.expStoneColors[stage][stage_expired_summon_cnt];
+            else
+                advExpStoneColors[stage].push_back(pCtx->Ecx);
+
+            stage_expired_summon_cnt++;
         }
     })
 
     PATCH_DY(th20_fix_rep_save_stone_names, 0x127B9F, "8B82D8000000" NOP(22))
     EHOOK_DY(th20_fix_rep_stone_init, 0xBB0A0, 5, {
-        if (*(uint32_t*)(*(uintptr_t*)RVA(GAME_THREAD_PTR) + 0x108)) {
+        if (GetMemContent(RVA(GAME_THREAD_PTR), 0x108)) {
             // Yes, the order really is swapped like this
             GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
             globals->story_stone_raw       = replayStones[0];
