@@ -51,8 +51,8 @@ namespace TH12 {
         bool _playLock = false;
         void Reset()
         {
-            for (size_t stage = 0; stage < elementsof(reimuADmgSrcs); ++stage)
-                reimuADmgSrcs[stage].clear();
+            for (size_t st = 0; st < elementsof(reimuADmgSrcs); ++st)
+                reimuADmgSrcs[st].clear();
 
             memset(this, 0, sizeof(THPracParam));
         }
@@ -86,7 +86,7 @@ namespace TH12 {
                     return std::nullopt;
 
                 PlayerDamageSource dmgSrc {};
-                int32_t* p = reinterpret_cast<int32_t*>(&dmgSrc);
+                int32_t* p = (int32_t*)&dmgSrc;
                 for (rapidjson::SizeType i = 0; i < el.Size(); i++)
                     p[i] = el[i].GetInt();
 
@@ -97,7 +97,7 @@ namespace TH12 {
         }
         std::string GetJson()
         {
-            if (mode == 0) {
+            if (mode == 0) { //vanilla run mode
                 CreateJson();
 
                 AddJsonValueEx(version, GetVersionStr(), jalloc);
@@ -108,7 +108,7 @@ namespace TH12 {
                 AddJsonVectorArray(reimuADmgSrcs, {
                     rapidjson::Value dmgSrcArray(rapidjson::kArrayType);
 
-                    int32_t* p = reinterpret_cast<int32_t*>(&el);
+                    int32_t* p = (int32_t*)&el;
                     size_t count = sizeof(PlayerDamageSource) / sizeof(int32_t);
                     for (size_t i = 0; i < count; ++i)
                         dmgSrcArray.PushBack(p[i], jalloc);
@@ -117,7 +117,7 @@ namespace TH12 {
                 });
 
                 ReturnJson();
-            } else if (mode == 1) {
+            } else { //thprac mode
                 CreateJson();
 
                 AddJsonValueEx(version, GetVersionStr(), jalloc);

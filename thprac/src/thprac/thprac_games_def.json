@@ -913,8 +913,12 @@
       "TH_REPLAY_FIX": [ "Replay修复", "Replay Fixing", "リプレイ修復" ],
       "TH_REPFIX_SELECTED": [ "已选择重放：%ls", "Replay selected: %ls", "選択したリプレイ: %ls" ],
       "TH_REPFIX_SELECTED_NONE": [ "未选择重放。", "No replay selected.", "リプレイが選択されていません。" ],
+      "TH_REPFIX_MAIN_SELECTED_NONE": [ "未选择主线剧情重放", "No main story replay selected.", "メインストーリーのリプレイが選択されていません。" ],
+      "TH_REPFIX_EXTRA_SELECTED_NONE": [ "未选择 Extra 关卡重放。", "No Extra Stage replay selected.", "Extraステージのリプレイが選択されていません。" ],
       "TH_REPFIX_SELECTED_ALREADY_FIXED": [ "已修复所选重放。", "Selected replay is already fixed.", "選択したリプレイはすでに修正されています。" ],
-      "TH_REPFIX_SAVE": [ "保存Replay", "Save replay", "リプレイをセーブ" ],
+      "TH_REPFIX_SAVE": [ "保存修复副本", "Save fixed copy", "修正版を保存" ],
+      "TH_REPFIX_RESET_DATA": [ "重置此同步数据", "Reset this sync data", "この同期データをリセット" ],
+      "TH_REPFIX_RESET_DATA2": [ "重置此同步数据##2", "Reset this sync data##2", "この同期データをリセット##2" ],
       "TH_REPFIX_NEED_THPRAC": [ "(thprac)", "(thprac)", "(thprac)" ],
       "TH_REPFIX_NEED_THPRAC_DESC": [
         "修复后的重放还需要 thprac 才能正常回放；没有它时将保持与之前相同的行为。\n使用 thprac 录制的重放无需修复。",
@@ -9577,13 +9581,46 @@
         "Makes your hitbox 100% scale (original size) instead of 0% (current size, point-like).",
         " 現在の0%（点のように小さい）から100%（本来のサイズ）に戻します。"
       ],
+      "TH20_MAIN_STORY_FIXES": [ "主线重放不同步修复", "Main story desyncs fix", "メインストーリーの同期ずれ修正" ],
+      "TH20_MAIN_STORY_FIXES_DESC": [
+        "选择一个出现不同步问题的主线重放，从第 1 关开始播放，并在最后一关切换后（如果已同步）保存修复后的副本。此功能可自然修复最常见的不同步问题，并允许你从任意关卡播放修复后的重放。\n\n在少数特定情况下，由于关卡切换时计时器仍在运行，你的重放可能无法从第 1 关开始同步。这时需要在每次切换时测试不同的计时器偏移值，直到重放能够同步（见下方按钮）。\n\n如果重放因为致命的 ANM 复用错误而不同步（此错误是随机的，会造成画面损坏，并可能在任意时刻发生），则无法修复。该错误已由 thprac 修复。",
+        "Select a main story replay that desyncs and play it back from stage 1, then save a fixed copy after the final stage transition (assuming it synced). This will naturally work for the most common desyncs and will allow you to play the fixed replay back from any stage.\n\nIn a few specific cases, your replay may not sync from stage 1 due to a timer ticking during stage transitions, and you will need to test possible timer offsets at each transition until it syncs (see below button).\n\nIf your replay desyncs due to the fatal ANM reuse bug (which is random, causes visual corruptions & can happen any time), it cannot be repaired. This bug is fixed by thprac.",
+        "同期ずれするメインストーリーリプレイを選択し、ステージ1から再生して、最終ステージのトランジション後に修正版を保存してください（同期していれば）。これは一般的な同期ずれに対して自然に機能し、修正版リプレイを任意のステージから再生できます。\n\n特定のケースでは、ステージ間のタイマーの影響でステージ1から同期しない場合があり、その場合は各トランジションでタイマーオフセットを試して同期を確認する必要があります（下のボタン参照）。\n\n致命的なANM再利用バグにより同期ずれが発生したリプレイ（ランダム発生、表示の破損、いつでも起こり得る）は修復できません。このバグはthpracで修正済みです。"
+      ],
+      "TH20_MAINRPYFIX_ENABLE_TIMERS_FIX": [ "调整计时偏移", "Adjust timer offsets", "タイマーオフセットを調整" ],
+      "TH20_MAINRPYFIX_DISABLE_TIMERS_FIX": [ "禁用计时器偏移修复", "Disable timer offset fix", "タイマーオフセット修正を無効化" ],
+      "TH20_MAINRPYFIX_TIMERS_FIX_DISABLE_HINT": [ "播放重放时无法切换计时器修复状态。", "Can't toggle fixing timers during playback.", "再生中はタイマー修正を切り替えられません。" ],
+      "TH20_MAINRPYFIX_TIMERS_FIX_DESC": [
+        "如果你的重放使用了灵梦的 R2 为广域射击石，或者利用了一个可以让灵梦的炸弹和 Y1 选项的伤害光环在关卡切换后持续存在的漏洞，那么在第 1 关之后很可能会出现不同步，这是由于加载时间差异造成的。\n\n请在出现不同步的关卡调整计时器偏移，然后从前一关重新开始重放（尝试多种可能的偏移值，直到同步），重复此操作直至所有关卡同步，然后保存修复后的重放。",
+        "If your replay uses Reimu with R2 as a Wide Shot Stone or makes use of a glitch which allows damage auras from Reimu's bomb or Y1's options to persist through a stage transition, it will likely desync after Stage 1 due to a difference in loading times.\n\nAdjust the timer offset for the stage where a desync occurs and restart the replay on the previous stage (try various possible values until it syncs), then repeat until all stages sync & save a fixed copy.",
+        "リプレイで霊夢がR2としてワイドショットストーンを使用している場合、または霊夢のボムまたはY1のオプションによるダメージオーラがステージトランジションを跨いで残るグリッチを利用している場合、ロード時間の差によってステージ1の後で同期が崩れる可能性があります。\n\n同期が崩れるステージのタイマーオフセットを調整し、前のステージからリプレイを 再起動 してください（同期するまでさまざまな値を試します）。これをすべてのステージで同期するまで繰り返し、修正済みリプレイを保存してください。"
+      ],
+      "TH20_MAINRPYFIX_TIPS": [ "（建议 1）", "(tips 1)", "(コツ1)" ],
+      "TH20_MAINRPYFIX_TIMERS_FIX_TIPS_DESC": [
+        "这个过程可能耗时较长，因此建议在更高帧率下进行游戏。\n你实际上需要通过穷举可能的值来猜测每个关卡切换时在玩家端发生的延迟。对于第一次关卡切换，推荐检查的范围是 10 到 35 帧（但正确偏移值不一定落在此范围内）。\n一旦找到正确的偏移值，下一个偏移通常不会偏离太远（即在 ±10 帧以内），虽然某些关卡可能会出现偏差*。\n\n在此模式下，每次经过关卡切换时都会保存同步数据。例如，如果你找到第 1->2 关的正确偏移并完成游戏内的切换，你可以从第 2 关开始继续播放重放并继续工作。你也可以返回第 1 关覆盖这条数据（如果之前的数据不正确）。你可能需要把找到的正确数值记到别处，以防数据丢失。一旦所有关卡切换都有同步数据，你就可以保存修复后的重放副本。",
+        "This process can take a long time, so playing on higher FPS is recommended.\n\nYou effectively need to guess the amount of lag that occured on the runner's PC at each stage transition by checking possible values exhaustively. For the first transition, the recommended range to check is 10 to 35 frames (though the correct offset is not guaranteed to fall in this range).\nOnce you've found a correct offset, the following offset usually doesn't fall too far from it (i.e. within ±10 frames), though there may be spikes on specific stages*.\n\nWhile in this mode, sync data is saved every time you go through a stage transition. For example, if you find the correct offset for the Stage 1→2 transition and perform this transition in-game, you can then start playing the replay from Stage 2 and continue your work from there. You can also go back to Stage 1 to overwrite this data if it turned out to be incorrect. You may want to write down the correct values you find to prevent data loss. Once all transitions have sync data, you can save a fixed copy.",
+        "この作業には時間がかかる場合があるため、高FPSでのプレイが推奨されます。\n各ステージトランジションでランナーのPCに発生したラグの量を、可能な値を念入りに確認することで推測する必要があります。最初のトランジションについては、チェックする推奨範囲は10〜35フレームですが（正しいオフセットがこの範囲内にある保証はありません）。\n正しいオフセットを見つけたら、次のオフセットは通常、それほど離れていません（±10フレーム以内）が、特定のステージでは急激にずれる場合もあります*。\n\nこのモードでは、ステージトランジションを通過するたびに同期データが保存されます。例えば、ステージ1->2の正しいオフセットを見つけてゲーム内でそのトランジションを行った場合、その後ステージ2からリプレイを再開して作業を続けることができます。また、間違っていた場合はステージ1に戻ってデータを上書きすることも可能です。見つけた正しい値は、データを失わないように別の場所にメモしておくと良いでしょう。すべてのステージ間遷移に同期データが揃ったら、修正版を保存できます。"
+      ],
+      "TH20_MAINRPYFIX_TIPS2": [ "（建议 2）", "(tips 2)", "(コツ2)" ],
+      "TH20_MAINRPYFIX_TIMERS_FIX_TIPS2_DESC": [
+        "• Y1 光环不同步：只需在 3 帧周期内找到一个可行偏移（即所有关卡切换可以使用 0、1 或 2 帧的偏移）。\n• 灵梦 R2 不同步：需要在 120 帧周期内找到一个可行偏移。\n• 灵梦炸弹光环不同步：必须找到精确的偏移值。注意，不同步通常只在 Boss 战中途左右才会明显出现（当光环停止作用时）。\n\n* 注意：第 4 关需要加载更多资源，因此正确值可能会出现跳变（例如 +[10f, 40f]，不保证）。如果原始玩家使用了 thcrap，加载延迟可能会显著增加 ，具体取决于所使用的补丁们 （例如语言补丁 +[90f, 120f]），关卡间的变化可能更大。可以问一下原来的玩家他们是否使用了 thcrap。 需要注意的是，像 thprac 一样，thcrap 会防止 ANM 重用错误。",
+        "• Y1 aura desync: You only need to find a working offset within a 3-frame cycle (i.e. all stage transitions can be made to work with an offset of 0, 1 or 2 frames).\n• ReimuR2 desync: You need to find a working offset wihin a 120-frame cycle, which means you'll effectively have to find the correct value.\n• Reimu bomb aura desync: You must find the exact correct offset value. Note that the desync usually only becomes noticeable around halfway through bossfights (when the aura stops being active).\n\n* Note: Stage 4 requires loading more resources, so you may see a spike in the correct value there (e.g. +[10f, 40f]; not guaranteed). If the runner used thcrap, loading lag can be significantly higher depending on the patches used (e.g. +[90f, 120f] for a language patch), and variations from stage to stage can be larger. It's worth noting that like thprac, thcrap prevents the ANM reuse bug.",
+        "- Y1オーラの同期ズレ: 3フレーム周期内で有効なオフセットを見つければ十分です（つまり、すべてのステージトランジションは0、1、2フレームのいずれかのオフセットで調整可能です）。\n- 霊夢R2の同期ズレ: 120フレーム周期内で動作するオフセットを見つける必要があります。\n- 霊夢ボムオーラの同期ズレ: 正確なオフセット値を見つける必要があります。なお、この同期ズレは通常、ボス戦の中盤あたりで目立つようになります（オーラが停止するタイミング）。\n\n* 注意: ステージ4ではより多くのリソースをロードする必要があるため、正しい値にピークが生じることがあります（例: +[10f, 40f]、保証なし）。もしランナーが thcrap を使用した場合、ロードラグは使用したパッチによって大きく変化する可能性があります（例: 言語パッチ +[90f, 120f]）、ステージ間の差も大きくなることがあります。元のランナーに、thcrap を使用したかどうか尋ねてみる価値があるかもしれません。 thprac と同様に、thcrap では ANM 再利用バグを防止する。"
+      ],
+      "TH20_RPYFIX_STAGE_NUM": [ "关卡 %d", "Stage %d", "ステージ %d" ],
+      "TH20_RPYFIX_EXTRA_STAGE": [ "Extra关卡", "Extra Stage", "Extraステージ" ],
+      "TH20_MAINRPYFIX_STAGE_TIMER_DISABLE_HINT": [ "播放重放时无法修改已过去关卡的计时器偏移。", "Can't change past stage timer offset during playback.", "再生中は過去ステージのタイマーオフセットを変更できません。" ],
+      "TH20_MAINRPYFIX_SAVE_PROGRESS": [ "保存Replay ({}/{})", "Save replay ({}/{})", "リプレイをセーブ ({}/{})" ],
+      "TH20_MAINRPYFIX_SAVE_PROGRESS_HINT": [ "剩余 %d 次关卡切换。", "%d stage transition%s remaining.", "残り %d ステージのトランジション" ],
+      "TH20_MAINRPYFIX_SAVE_NO_ST1_HINT": [ "重放未从第 1 关开始。", "Replay was not started from stage 1.", "リプレイはステージ1から開始されていません。" ],
+      "TH20_MAINRPYFIX_SAVE_SKIPPED_STAGE_HINT": [ "重放中至少有一个关卡缺少同步数据。", "Replay is missing sync data on at least one stage.", "リプレイに少なくとも1つのステージで同期データが欠けています。" ],
+      "TH20_MAINRPYFIX_SELECTED_NO_TRANSITIONS": [ "所选重放没有关卡切换。", "Selected replay has no stage transitions.", "選択したリプレイにはステージトランジションがありません。" ],
       "TH20_EXTRA_RESOLUTION_FIX": [ "Extra关卡分辨率修复", "Extra Stage resolution fix", "Extraステージ解像度修正" ],
       "TH20_EXTRA_RESOLUTION_FIX_DESC": [
         "如果游戏分辨率与录制replay时不同，Extra关卡的replay在渡里妮娜的四符（古老的光明会）处可能会爆炸（即与录制时不同步）。选择一个ex关卡的replay和可能的原始分辨率，然后检查replay是否同步，如果同步则保存已修复的副本。\n注意：无需保存文件也可以预览是否同步。\n修复好的重放将无论分辨率如何都保持同步。",
         "Extra Stage replays may desync on Nina Spell 4 if your game's resolution is different from when they were recorded. Select an Extra Stage replay and one of the possible original resolutions, then check if it syncs & save a fixed copy if so.\nNote: You can preview whether it syncs without first saving the file.\nFixed replays will sync regardless of resolution.",
         "ゲームの解像度が録画時と異なる場合、Extraステージのリプレイは渡里ニナのスペルカード4で同期ずれが発生する可能性があります。Extraステージのリプレイと元の解像度の候補を選択し、同期を確認して、問題なければ修正済みのコピーを保存してください。\n注意：ファイルを保存せずに同期状況をプレビューできます。\n修正済みのリプレイは、解像度に関係なく同期します。"
       ],
-      "TH20_EXRESFIX_SELECTED_NONE": [ "未选择 Extra 关卡重放。", "No Extra Stage replay selected.", "Extraステージのリプレイが選択されていません。" ],
       "TH20_EXRESFIX_RESOLUTION": [ "原始分辨率：", "Original resolution:", "元の解像度：" ],
       "TH20_EXRESFIX_RESOLUTION_DISABLE_HINT": [ "播放中无法更改原始分辨率。", "Can't change original resolution during playback.", "再生中は元の解像度を変更できません。" ],
       "TH20_EXRESFIX_SAVE_DISABLE_HINT": [ "未指定原始分辨率。", "Original resolution not specified.", "元の解像度が指定されていません。" ],
@@ -9591,7 +9628,24 @@
       "TH20_RESOLUTION_640_480": [ "640×480", "640×480", "640×480" ],
       "TH20_RESOLUTION_960_720": [ "960×720", "960×720", "960×720" ],
       "TH20_RESOLUTION_1280_960_PLUS": [ ">= 1280×960", ">= 1280×960", ">= 1280×960" ],
-      "TH20_EXRESFIX_RESET_DATA": [ "重置同步数据", "Reset sync data", "同期データをリセット" ]
+      "TH20_EXPIRED_STONE_FIX": [ "过期异变石不同步修复", "Expired summon desync fix", "期限切れの異変石同期ずれ修正" ],
+      "TH20_EXPIRED_STONE_FIX_DESC": [
+        "如果你在召唤计量条耗尽且异变石周围的光环消失后击败了一个召唤出的异变石敌人，随机会发生 5 种情况中的一种。虽然这种情况出乎意料地罕见，但相关不同步问题尤其微妙，因为重放在原始玩家的电脑上通常能同步，但在其他玩家电脑上可能不同步。\n\n你可以使用此工具检查重放是否受到此问题影响，如果是，则保存修复后的副本。计数器会显示在某一关中发生的次数（但仅在重放保持同步时准确）。控件允许你指定每次击杀的结果，并可以通过手动输入或播放重放自动记录。最常见的结果是提升正确奇迹石颜色的等级。如果重放因此错误不同步（通常在另一次召唤刚开始后），你可以测试其他可能的结果（最常见的是\"无\"和\"+红\"）。\n\n此工具可与上述两个工具一起使用，它们的保存按钮也会保存此工具的数据。",
+        "If you kill a summoned Wonder Stone enemy after the summon gauge fully depletes and the visual aura around it disappears, one of 5 scenarios can happen at random. While this situation is surprisingly rare, the related desync is particularly subtle as the replay will often sync on the original runner's computer but may not for others.\n\nYou can use this tool to check whether a replay is impacted by this issue, and if so, save a fixed copy. A counter will show you how many times it happens on a given stage (though this counter is only accurate for as long as the replay syncs). Controls allow you to specify what the outcome of each kill was, and you can add them manually or automatically by playing the replay. The most common outcome is raising the level of the correct Wonder Stone color. If the replay desyncs due to this bug (often directly after another summon starts), you can test other outcomes (the most common being \"None\" and \"+Red\").\n\nThis tool can be used alongside the above two tools, and their save buttons will save its data too.",
+        "召喚ゲージが完全に減少し、周囲のオーラが消えた後に異変石の敵を撃破すると、ランダムで5つのシナリオのいずれかが発生します。この状況は意外と稀ですが、関連する同期ずれは特に微妙で、元のランナーの環境ではリプレイが同期しても、他の環境では同期しないことがあります。\n\nこのツールを使用すると、リプレイがこの問題の影響を受けているかどうかを確認でき、影響がある場合は修正版を保存できます。カウンターは、特定のステージで何回発生したかを表示します（ただし、このカウンターはリプレイが同期している間のみ正確です）。操作により、各撃破の結果を指定でき、手動で追加することも、リプレイを再生して自動で追加することも可能です。最も一般的な結果は、正しい異変石の色のレベルを上げることです。このバグによってリプレイが同期ずれした場合（多くは別の召喚が始まった直後）、他の結果をテストできます（最も一般的なのは「なし」と「+赤」）。\n\nこのツールは上記2つのツールと併用でき、それらの保存ボタンでもこのツールのデータを保存できます。"
+      ],
+      "TH20_EXPSTONEFIX_SHOW_TOGGLE": [ "显示工具", "Show tool", "ツールを表示" ],
+      "TH20_EXPSTONEFIX_PLUS_RED": [ "+红", "+Red", "+赤" ],
+      "TH20_EXPSTONEFIX_PLUS_BLUE": [ "+蓝", "+Blue", "+青" ],
+      "TH20_EXPSTONEFIX_PLUS_YELLOW": [ "+黄", "+Yellow", "+黄" ],
+      "TH20_EXPSTONEFIX_PLUS_GREEN": [ "+绿", "+Green", "+緑" ],
+      "TH20_EXPSTONEFIX_STAGE_COUNTER": [ "本关卡中已击破的过期异变石：%d", "Expired summon kills this stage: %d", "このステージで撃破した期限切れの異変石：%d" ],
+      "TH20_EXPSTONEFIX_DISABLE_HINT": [ "播放过程中无法修改过期异变石数据。", "Can't change expired summon data during playback.", "再生中は期限切れの異変石データを変更できません。" ],
+      "TH20_EXPSTONEFIX_MARK_FIXED": [ "标记为已修复", "Mark as fixed", "修正済みにする" ],
+      "TH20_EXPSTONEFIX_SAVE_NO_DATA_HINT": [ "未设置任何过期异变石数据。", "No expired summon data set.", "期限切れの異変石データが設定されていません。" ],
+      "TH20_EXPSTONEFIX_SAVE_USE_MAINRPYFIX_HINT": [ "请使用主线重放不同步修复的保存按钮。", "Use Main story desyncs fix's save button instead.", "メインストーリーの同期ずれ修正の保存ボタンを使用してください。" ],
+      "TH20_EXPSTONEFIX_SAVE_USE_EXRESFIX_HINT": [ "请使用Extra关卡分辨率修复的保存按钮。", "Use Extra Resolution fix's save button instead.", "Extraステージ解像度修正の保存ボタンを使用してください。" ],
+      "TH20_CREDITS": [ "Khangaroo、Guy、zero318、rue，以及你！", "Khangaroo, Guy, zero318, rue, and you!", "Khangaroo、Guy、zero318、rue、そしてあなた！" ]
     },
 
     "sections": {
@@ -10041,6 +10095,13 @@
         "TH20_RESOLUTION_640_480",
         "TH20_RESOLUTION_960_720",
         "TH20_RESOLUTION_1280_960_PLUS"
+      ],
+      "TH20_EXPIRED_PYRAMID_FIX_OPT": [
+        "TH20_EXPSTONEFIX_PLUS_RED",
+        "TH20_EXPSTONEFIX_PLUS_BLUE",
+        "TH20_EXPSTONEFIX_PLUS_YELLOW",
+        "TH20_EXPSTONEFIX_PLUS_GREEN",
+        "TH_NONE"
       ]
     }
   }
