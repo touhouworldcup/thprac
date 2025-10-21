@@ -807,17 +807,15 @@ namespace TH20 {
                 mSelectedRepPlaybackStartStage = GetMemContent(RVA(MAIN_MENU_PTR), 0x24);
                 stage_expired_summon_cnt = 0;
 
-                if (advFixTimerOffsets && repFixParamCopy.HasTransitionSyncData()) {
+                if (advFixTimerOffsets && repFixParamCopy.HasTransitionSyncData())
                     thPracParam = repFixParamCopy;
-
-                } else if (mParamStatus) {
+                else if (mParamStatus)
                     thPracParam = mRepParam;
 
-                    if (advExtraFixResOpt && !thPracParam.resolutionSpriteHeight)
-                        thPracParam.resolutionSpriteHeight = defaultSpriteHeights[advExtraFixResOpt];
-                }
+                if (advExtraFixResOpt && !thPracParam.resolutionSpriteHeight)
+                    thPracParam.resolutionSpriteHeight = defaultSpriteHeights[advExtraFixResOpt];
 
-                if (!mRepParam.HasExpStoneData())
+                if (!mRepParam.HasExpStoneData()) //overwrite cached vectors from repFixParamCopy
                     for (size_t s = 0; s < elementsof(advExpStoneColors); ++s)
                         thPracParam.expStoneColors[s] = advExpStoneColors[s];
 
