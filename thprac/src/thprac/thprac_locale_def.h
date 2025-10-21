@@ -2721,7 +2721,7 @@ extern const th_glossary_t TH20_EXRESFIX_RESOLUTION_OPT[5];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[2779];
+extern const wchar_t __thprac_loc_range_zh[2777];
 
 extern const wchar_t __thprac_loc_range_en[31];
 

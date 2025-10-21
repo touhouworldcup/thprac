@@ -9579,7 +9579,7 @@
       ],
       "TH20_EXTRA_RESOLUTION_FIX": [ "Extra关卡分辨率修复", "Extra Stage resolution fix", "Extraステージ解像度修正" ],
       "TH20_EXTRA_RESOLUTION_FIX_DESC": [
-        "如果游戏分辨率与录制时不同，Extra关卡重放在渡里妮娜的符卡4可能会不同步。选择一个Extra关卡重放和可能的原始分辨率，然后检查是否同步，如果同步则保存已修复的副本。\n注意：您可以在不保存文件的情况下预览是否同步。\n已修复的重放将无论分辨率如何都保持同步。",
+        "如果游戏分辨率与录制replay时不同，Extra关卡的replay在渡里妮娜的四符（古老的光明会）处可能会爆炸（即与录制时不同步）。选择一个ex关卡的replay和可能的原始分辨率，然后检查replay是否同步，如果同步则保存已修复的副本。\n注意：无需保存文件也可以预览是否同步。\n修复好的重放将无论分辨率如何都保持同步。",
         "Extra Stage replays may desync on Nina Spell 4 if your game's resolution is different from when they were recorded. Select an Extra Stage replay and one of the possible original resolutions, then check if it syncs & save a fixed copy if so.\nNote: You can preview whether it syncs without first saving the file.\nFixed replays will sync regardless of resolution.",
         "ゲームの解像度が録画時と異なる場合、Extraステージのリプレイは渡里ニナのスペルカード4で同期ずれが発生する可能性があります。Extraステージのリプレイと元の解像度の候補を選択し、同期を確認して、問題なければ修正済みのコピーを保存してください。\n注意：ファイルを保存せずに同期状況をプレビューできます。\n修正済みのリプレイは、解像度に関係なく同期します。"
       ],
