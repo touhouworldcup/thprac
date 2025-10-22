@@ -770,6 +770,8 @@ enum th_glossary_t
     THPRAC_GOTO_STEAM_PAGE,
     THPRAC_HOTKEY_ADVANCED_SETTINGS,
     THPRAC_HOTKEY_CANCEL,
+    THPRAC_HOTKEY_LANGUAGE_SETTINGS,
+    THPRAC_HOTKEY_LANGUAGE_TOOLTIP,
     THPRAC_HOTKEY_MODIFIER_WARNING,
     THPRAC_HOTKEY_QUICK_SETTINGS,
     THPRAC_HOTKEY_RESET,
@@ -1126,7 +1128,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1114];
+extern const char* th_glossary_str[3][1116];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2757,10 +2759,10 @@ extern const th_glossary_t TH20_EXPIRED_PYRAMID_FIX_OPT[6];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[2803];
+extern const wchar_t __thprac_loc_range_zh[3357];
 
-extern const wchar_t __thprac_loc_range_en[35];
+extern const wchar_t __thprac_loc_range_en[39];
 
-extern const wchar_t __thprac_loc_range_ja[2281];
+extern const wchar_t __thprac_loc_range_ja[2839];
 
 }

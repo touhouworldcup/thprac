@@ -339,12 +339,14 @@ void GameGuiEnd(bool draw_cursor)
 
     // Locale Change
     if (!ImGui::IsAnyItemActive()) {
-        if (Gui::ImplWin32CheckHotkey(0x00010031)) {
-            Gui::LocaleSet(Gui::LOCALE_JA_JP);
-        } else if (Gui::ImplWin32CheckHotkey(0x00010032)) {
-            Gui::LocaleSet(Gui::LOCALE_ZH_CN);
-        } else if (Gui::ImplWin32CheckHotkey(0x00010033)) {
-            Gui::LocaleSet(Gui::LOCALE_EN_US);
+        if (Gui::GetChordPressedDuration(Gui::GetLanguageChord()) > 0) {
+            if (Gui::KeyboardInputUpdate('1') == 1) {
+                Gui::LocaleSet(Gui::LOCALE_JA_JP);
+            } else if (Gui::KeyboardInputUpdate('2') == 1) {
+                Gui::LocaleSet(Gui::LOCALE_ZH_CN);
+            } else if (Gui::KeyboardInputUpdate('3') == 1) {
+                Gui::LocaleSet(Gui::LOCALE_EN_US);
+            }
         }
     }
     ::ImGui::EndFrame();

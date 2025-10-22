@@ -177,6 +177,8 @@
       "THPRAC_HOTKEY_QUICK_SETTINGS": [ "快速设置", "Quick Settings", "クイック設定" ],
       "THPRAC_HOTKEY_ADVANCED_SETTINGS": [ "高级设置", "Advanced Settings", "詳細設定" ],
       "THPRAC_HOTKEY_SPECIAL_SETTINGS": [ "特殊设置", "Special Settings", "特別設定" ],
+      "THPRAC_HOTKEY_LANGUAGE_SETTINGS": [ "语言更改", "Language Change", "言語変更" ],
+      "THPRAC_HOTKEY_LANGUAGE_TOOLTIP": [ "按住此键并按 1/2/3 可切换为日语／中文／英语", "Hold and press 1 = Japanese, 2 = Chinese, 3 = English.", "このキーを押したまま、1/2/3を押すと日本語／中国語／英語に切り替わります" ],
       "THPRAC_HOTKEY_SCREENSHOT": [ "截图（红魔乡和妖妖梦）", "Screenshot (EoSD and PCB)", "スクリーンショット（東方紅魔郷・東方妖々夢）" ],
       "THPRAC_HOTKEY_SUBMASK_WARNING": [ "警告：所选按键已被其他快捷键使用或需要。", "Warning: Chosen keys contains or are required for a different hotkey.", "警告: 選択したキーは、別のホットキーで使用されているか、必要とされています。" ],
       "THPRAC_HOTKEY_TOOLTIP": [ "允许的按键: *Ctrl, Alt, *Shift, Caps Lock, Tab, 空格, Backspace, F11, F12, Ins, Del, Home, End, PgUp, PgDn。", "Allowed Keys: *Ctrl, Alt, *Shift, Caps Lock, Tab, Space, Backspace, F11, F12, Ins, Del, Home, End, PgUp, PgDn.", "許可されたキー: *Ctrl, Alt, *Shift, Caps Lock, Tab, スペース, Backspace, F11, F12, Ins, Del, Home, End, PgUp, PgDn。" ],
