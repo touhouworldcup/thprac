@@ -13,7 +13,7 @@
 * [Usage](#usage)
 * [Compatability](#compatability)
 * [Features](#-features)
-* [Backspace Menu](#backspace-menu)
+* [Quick Menu](#quick-menu)
 * [Advanced Options](#advanced-options)
 * [Game Specific Features](#game-specific-features)
 * [Credits](#credits)
@@ -56,7 +56,7 @@ thprac.exe --without-vpatch C:\Users\Name\Desktop\Games\Touhou\th17\th17.exe
 ## <a name="compatability"></a> **Compatability**
 thprac officially supports every version of Windows starting with **Windows Vista**. Windows XP may work using [One-Core-API](https://github.com/Skulltrail192/One-Core-API-Binaries), but this is **NOT** being actively tested.
 
-thprac is also compatible with **Wine** and the Steam Deck. Do note that the backspace menu is tailored to work well with the Steam Deck, although this is untested.
+thprac is also compatible with **Wine** and the Steam Deck. Do note that the Quick Menu is tailored to work well with the Steam Deck, although this is untested.
 
 ## <a name="features"></a> **Features**
 
@@ -75,7 +75,7 @@ This menu can be controlled using your keyboard or your controller. Using this, 
 
 thprac will also automatically save the options you selected into any replay saved. When playing back the replay, thprac will automatically apply said options. **Replays saved while thprac is active using "Custom" mode will NOT work with the unmodified game.**
 
-## <a name="backspace-menu"></a> **Quick Menu**
+## <a name="quick-menu"></a> **Quick Menu**
 In any supported game **(except Touhou 9 and 19)**, you can press the **`Backspace`** key to enter the Quick Menu. This menu shows a variety of options that can be activated using the function (F) keys.
 
 These options are always clickable, meaning you can interact with them using a mouse on a desktop computer or by tapping on them with your left thumb when using a Steam Deck. To use this feature on the Steam Deck, map the **`Backspace`** key in Steam Input.
