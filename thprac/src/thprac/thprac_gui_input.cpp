@@ -180,6 +180,7 @@ namespace THPrac
         int __gbackspace_menu_chord_current = 1 << ChordKey_Backspace;
         int __gadvanced_menu_chord_current = 1 << ChordKey_F12;
         int __gscreenshot_chord_current = 1 << ChordKey_Home;
+        int __glanguage_chord_current = 1 << ChordKey_Alt;
 
         const char* ChordKeyStrings[ChordKey_COUNT];
 
@@ -254,16 +255,19 @@ namespace THPrac
             int backspace_menu_chord = 0;
             int advanced_menu_chord = 0;
             int screenshot_chord = 0;
+            int language_chord = 0;
             if (
 				!LauncherSettingGet("backspace_menu_chord", backspace_menu_chord) ||
 				!LauncherSettingGet("advanced_menu_chord", advanced_menu_chord) || 
-				!LauncherSettingGet("screenshot_chord", screenshot_chord)
+				!LauncherSettingGet("screenshot_chord", screenshot_chord) || 
+				!LauncherSettingGet("language_chord", language_chord)
 			) {
                 return false;
             }
             __gbackspace_menu_chord_current = backspace_menu_chord;
             __gadvanced_menu_chord_current = advanced_menu_chord;
             __gscreenshot_chord_current = screenshot_chord;
+            __glanguage_chord_current = language_chord;
             return true;
 		}
 
@@ -271,6 +275,7 @@ namespace THPrac
 			__gbackspace_menu_chord_current = 1 << ChordKey_Backspace;
 			__gadvanced_menu_chord_current = 1 << ChordKey_F12;
 			__gscreenshot_chord_current = 1 << ChordKey_Home;
+			__glanguage_chord_current = 1 << ChordKey_Alt;
 		}
 
 
@@ -304,6 +309,7 @@ namespace THPrac
 		int GetBackspaceMenuChord() { return __gbackspace_menu_chord_current; }
 		int GetAdvancedMenuChord() { return __gadvanced_menu_chord_current; }
 		int GetScreenshotChord() { return __gscreenshot_chord_current; }
+		int GetLanguageChord() { return __glanguage_chord_current; }
 
 		// Convert chords to user-readable string.
         std::string HotkeyChordToLabel(int chord) {
