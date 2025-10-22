@@ -75,16 +75,20 @@ This menu can be controlled using your keyboard or your controller. Using this, 
 
 thprac will also automatically save the options you selected into any replay saved. When playing back the replay, thprac will automatically apply said options. **Replays saved while thprac is active using "Custom" mode will NOT work with the unmodified game.**
 
-## <a name="backspace-menu"></a> **Backspace Menu**
-In any supported game **(except Touhou 9 and 19)**, you can press the **backspace** key to enter the backspace menu. This menu shows a variety of options that can be activated using the function (F) keys.
+## <a name="backspace-menu"></a> **Quick Menu**
+In any supported game **(except Touhou 9 and 19)**, you can press the **`Backspace`** key to enter the Quick Menu. This menu shows a variety of options that can be activated using the function (F) keys.
 
-These options are always clickable, meaning you can interact with them using a mouse on a desktop computer or by tapping on them with your left thumb when using a Steam Deck. To use this feature on the Steam Deck, map the backspace key in Steam Input.
+These options are always clickable, meaning you can interact with them using a mouse on a desktop computer or by tapping on them with your left thumb when using a Steam Deck. To use this feature on the Steam Deck, map the **`Backspace`** key in Steam Input.
+
+The hotkey for this menu can be changed from the launcher's settings tab to a different key or combination of keys if you want it bound to something else.
 
 ![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174434813-73748a66-0f6d-4c6e-9f3a-895a49b93434.png)
 ![Wily Beast and Weakest Creature](https://user-images.githubusercontent.com/23106652/174434834-6bd93104-1ed2-48ae-a440-9d9cb871ea03.png)
 
 ## <a name="advanced-options"></a> **Advanced Options**
-In any supported game, you may use the F12 key to access the advanced options; these options may offer fixes or patches related to the game or other quality of life features.
+In any supported game **(except Touhou 9 and 19)**, you may use the **`F12`** key to access the Advanced Options; these options may offer fixes or patches related to the game or other quality of life features.
+
+Like the Quick Menu, the hotkey for this can also be changed from the launcher's settings tab.
 
 ![Imperishable Night](https://user-images.githubusercontent.com/23106652/174434977-683da583-324b-4bd5-8408-13373dfd5a93.png)
 ![Unconnected Marketeers](https://user-images.githubusercontent.com/23106652/174435006-e906d30d-0ef5-4930-ae57-1f0919beb5af.png)
@@ -98,7 +102,7 @@ If thprac is enabled using "Custom" mode, the popup above will appear when the g
 ### PoFV - Tools
 ![Phantasmagoria of Flower View](https://user-images.githubusercontent.com/23106652/174434249-2bf1d70a-101c-4538-a4e6-8eeaf273dd88.png) 
 
-When starting a game in Match Mode, you can select "Custom" in a "Mode" prompt. If you do that, this window will appear in your game. You can move and adjust this window as much as you want. This window can be hidden by pressing the "F11" key.
+When starting a game in Match Mode, you can select "Custom" in a "Mode" prompt. If you do that, this window will appear in your game. You can move and adjust this window as much as you want. This replaces Advanced Options and can be opened with **`F12`**. 
 
 ### UDoALG - Tools
 ![TH19 Tools](https://github.com/touhouworldcup/thprac/assets/23106652/a2cdb385-b61d-4111-af6b-b195e85bf18a)
@@ -177,9 +181,11 @@ This feature locks the camera onto the boss at all times and eliminates the came
 #### How do I switch languages?
 - The launcher automatically selects its language based on your Windows settings.  
 - To change the language in-game, use the shortcuts:  
-  - **ALT + 1**: Japanese 
-  - **ALT + 2**: Chinese 
-  - **ALT + 3**: English 
+  - **`ALT + 1`**: Japanese 
+  - **`ALT + 2`**: Chinese 
+  - **`ALT + 3`**: English 
+
+The hotkey for changing languages can be changed from the launcher's settings tab.
 
 These shortcuts do not work in the launcher itself. Refer to the video in the **"How to Use"** section for detailed instructions.
 
