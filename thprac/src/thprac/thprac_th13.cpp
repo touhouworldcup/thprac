@@ -73,7 +73,7 @@ namespace TH13 {
         }
         std::string GetJson()
         {
-            if (mode == 0) {
+            if (mode == 0) { // vanilla run mode
                 CreateJson();
 
                 AddJsonValueEx(version, GetVersionStr(), jalloc);
@@ -83,7 +83,7 @@ namespace TH13 {
 
                 ReturnJson();
 
-            } else if (mode == 1) {
+             } else { // thprac mode
                 CreateJson();
 
                 AddJsonValueEx(version, GetVersionStr(), jalloc);

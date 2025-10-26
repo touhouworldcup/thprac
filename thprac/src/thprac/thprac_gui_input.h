@@ -67,12 +67,14 @@ namespace THPrac
 		void MenuChordInitArrays();
         bool MenuChordInitFromCfg();
         void MenuChordAutoSet();
+        int GetChordPressedDuration(int chord);
         bool GetChordPressed(int chord);
 
         int GetBackspaceMenuChord();
         int GetAdvancedMenuChord();
         int GetSpecialMenuChord();
         int GetScreenshotChord();
+        int GetLanguageChord();
 
 		std::string HotkeyChordToLabel(int chord);
         int HotkeyChordToVK(int chord);

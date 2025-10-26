@@ -355,29 +355,26 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
         rapidjson::Value __value_##value_name(__VA_ARGS__);                \
         param.AddMember(__key_##value_name, __value_##value_name, jalloc); \
     }
-#define GetJsonArray(value_name, value_len)                                            \
-    {                                                                                  \
-        if (param.HasMember(#value_name) && param[#value_name].IsArray()) {            \
-            for (int i = 0; i < std::min(param[#value_name].Size(), value_len); i++) { \
-                if (param[#value_name][i].IsNumber())                                  \
-                    value_name[i] = param[#value_name][i].GetDouble();                 \
-            }                                                                          \
-        }                                                                              \
+
+#define GetJsonArray(value_name, value_len)                                                        \
+    {                                                                                              \
+        if (param.HasMember(#value_name) && param[#value_name].IsArray())                          \
+            for (size_t i = 0; i < std::min(param[#value_name].Size(), value_len); i++)            \
+                if (param[#value_name][i].IsNumber())                                              \
+                    value_name[i] = (decltype(+value_name[i]))(param[#value_name][i].GetDouble()); \
     }
 
 #define GetJsonArray2D(value_name, outer_len, inner_len)                                               \
     {                                                                                                  \
-        if (param.HasMember(#value_name) && param[#value_name].IsArray()) {                            \
-            for (int i = 0; i < std::min<int>(param[#value_name].Size(), outer_len); i++) {            \
-                if (param[#value_name][i].IsArray()) {                                                 \
-                    for (int j = 0; j < std::min<int>(param[#value_name][i].Size(), inner_len); j++) { \
+        if (param.HasMember(#value_name) && param[#value_name].IsArray())                              \
+            for (size_t i = 0; i < std::min(param[#value_name].Size(), outer_len); i++)                \
+                if (param[#value_name][i].IsArray())                                                   \
+                    for (size_t j = 0; j < std::min(param[#value_name][i].Size(), inner_len); j++)     \
                         if (param[#value_name][i][j].IsNumber())                                       \
-                            value_name[i][j] = param[#value_name][i][j].GetDouble();                   \
-                    }                                                                                  \
-                }                                                                                      \
-            }                                                                                          \
-        }                                                                                              \
+                            value_name[i][j] = (decltype(+value_name[i][j]))                           \
+                                (param[#value_name][i][j].GetDouble());                                \
     }
+
 #define GetJsonVectorArray(value_name, processor)                                                                       \
     {                                                                                                                   \
         if (param.HasMember(#value_name) && param[#value_name].IsArray()) {                                             \
