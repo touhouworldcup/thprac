@@ -188,16 +188,7 @@ int WINAPI wWinMain(
     bool autoUpdate = false;
 
     if (LauncherCfgInit(true)) {
-        if (!Gui::LocaleInitFromCfg()) {
-            Gui::LocaleAutoSet();
-        }
-        // Load menu open key chords
-        if (!Gui::MenuChordInitFromCfg()) {
-            Gui::MenuChordAutoSet();
-        }
-
-        // Done after loading language as its string entries rely on it.
-        Gui::MenuChordInitArrays();
+        InitLocaleAndChore();
 
         if (!hWininet) {
             int oh_my_god_bruh = 2;
@@ -212,38 +203,35 @@ int WINAPI wWinMain(
         LauncherSettingGet("check_update_timing", checkUpdateWhen);
         LauncherSettingGet("update_without_confirmation", autoUpdate);
         LauncherCfgClose();
-
-
-        if (adminRights && !PrivilegeCheck()) {
-            wchar_t exePath[MAX_PATH];
-            GetModuleFileNameW(nullptr, exePath, MAX_PATH);
-            CloseHandle(thpracMutex);
-            ShellExecuteW(nullptr, L"runas", exePath, nullptr, nullptr, SW_SHOW);
-            return 0;
-        }
-
-        if (checkUpdateWhen == 1) {
-            if (LauncherUpdDialog(autoUpdate)) {
-                return 0;
-            }
-        }
-
-        if (!dontFindOngoingGame && FindOngoingGame(false, cmd.prompt_yes_game)) {
-            return 0;
-        }
-
-        if (launchBehavior != 1 && FindAndRunGame(launchBehavior == 2)) {
-            return 0;
-        }
-
-        if (checkUpdateWhen == 0 && autoUpdate) {
-            if (LauncherUpdDialog(autoUpdate)) {
-                return 0;
-            }
-        }
-
-        return GuiLauncherMain();
     }
 
-    return 0;
+    if (adminRights && !PrivilegeCheck()) {
+        wchar_t exePath[MAX_PATH];
+        GetModuleFileNameW(nullptr, exePath, MAX_PATH);
+        CloseHandle(thpracMutex);
+        ShellExecuteW(nullptr, L"runas", exePath, nullptr, nullptr, SW_SHOW);
+        return 0;
+    }
+
+    if (checkUpdateWhen == 1) {
+        if (LauncherUpdDialog(autoUpdate)) {
+            return 0;
+        }
+    }
+
+    if (!dontFindOngoingGame && FindOngoingGame(false, cmd.prompt_yes_game)) {
+        return 0;
+    }
+
+    if (launchBehavior != 1 && FindAndRunGame(launchBehavior == 2)) {
+        return 0;
+    }
+
+    if (checkUpdateWhen == 0 && autoUpdate) {
+        if (LauncherUpdDialog(autoUpdate)) {
+            return 0;
+        }
+    }
+
+    return GuiLauncherMain();
 }

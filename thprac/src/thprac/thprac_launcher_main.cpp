@@ -59,6 +59,18 @@ void GuiLauncherHotkeyInit()
     Gui::MenuChordInitArrays();
 }
 
+void InitLocaleAndChore() {
+    if (!Gui::LocaleInitFromCfg()) {
+        Gui::LocaleAutoSet();
+    }
+    // Load menu open key chords
+    if (!Gui::MenuChordInitFromCfg()) {
+        Gui::MenuChordAutoSet();
+    }
+
+    // Done after loading language as its string entries rely on it.
+    Gui::MenuChordInitArrays();
+}
 
 void GuiLauncherMainTrigger(LauncherTrigger trigger)
 {
@@ -79,6 +91,7 @@ int GuiLauncherMain()
         ErrorMsgBox(THPRAC_PR_ERR_LAUNCHER_CFG);
         return -1;
     }
+    InitLocaleAndChore();
 
     int theme;
     if (LauncherSettingGet("theme", theme)) {

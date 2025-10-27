@@ -16,4 +16,5 @@ void GuiLauncherMainTrigger(LauncherTrigger trigger);
 void GuiLauncherLocaleInit();
 void GuiLauncherHotkeyInit();
 bool RunSteamGame(THGameSig& gameSig);
+void InitLocaleAndChore();
 }

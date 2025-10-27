@@ -161,7 +161,7 @@ rapidjson::Value& GetCfgSettingsJson()
 }
 bool LauncherSettingGet(const char* name, int& valueOut)
 {
-    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+    if (gCfgJson.IsObject() && gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
         auto& settingsJson = gCfgJson["settings"];
         if (settingsJson.HasMember(name) && settingsJson[name].IsInt()) {
             valueOut = settingsJson[name].GetInt();
@@ -172,7 +172,7 @@ bool LauncherSettingGet(const char* name, int& valueOut)
 }
 bool LauncherSettingGet(const char* name, unsigned int& valueOut)
 {
-    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+    if (gCfgJson.IsObject() && gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
         auto& settingsJson = gCfgJson["settings"];
         if (settingsJson.HasMember(name) && settingsJson[name].IsUint()) {
             valueOut = settingsJson[name].GetUint();
@@ -183,7 +183,7 @@ bool LauncherSettingGet(const char* name, unsigned int& valueOut)
 }
 bool LauncherSettingGet(const char* name, bool& valueOut)
 {
-    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+    if (gCfgJson.IsObject() && gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
         auto& settingsJson = gCfgJson["settings"];
         if (settingsJson.HasMember(name) && settingsJson[name].IsBool()) {
             valueOut = settingsJson[name].GetBool();
@@ -194,7 +194,7 @@ bool LauncherSettingGet(const char* name, bool& valueOut)
 }
 bool LauncherSettingGet(const char* name, float& valueOut)
 {
-    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+    if (gCfgJson.IsObject() && gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
         auto& settingsJson = gCfgJson["settings"];
         if (settingsJson.HasMember(name) && settingsJson[name].IsFloat()) {
             valueOut = settingsJson[name].GetFloat();
@@ -205,7 +205,7 @@ bool LauncherSettingGet(const char* name, float& valueOut)
 }
 bool LauncherSettingGet(const char* name, const char*& valueOut)
 {
-    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+    if (gCfgJson.IsObject() && gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
         auto& settingsJson = gCfgJson["settings"];
         if (settingsJson.HasMember(name) && settingsJson[name].IsString()) {
             valueOut = settingsJson[name].GetString();
