@@ -66,9 +66,9 @@
       "THPRAC_DATADIR_OPEN": [ "打开数据目录", "Open data directory", "データディレクトリを開く" ],
       "THPRAC_DIRECTORY_SETTING_MODAL": [ "数据目录##modal", "Data directory##modal", "データディレクトリ##modal" ],
       "THPRAC_DIRECTORY_SETTING_DESC": [
-        "thprac默认将数据储存在“%%APPDATA%%/thprac”，这意味着无论thprac的执行程序在何处，都可以使用这个“全局目录”存储数据。\n额外的，你也可以使用一个名为“.thprac_data”的本地目录来存储数据，不过在一般的使用情景下并不推荐使用。\n你可以使用以下的设置在全局/本地目录间切换。请注意这将需要thprac的重启。",
-        "By default, thprac stores its data in \"%%APPDATA%%/thprac\", which is considered to be a \"global directory\" that thprac can access regarding its location.\nAdditionally, you can also opt to use a local data directory, which is a folder named \".thprac_data\" in the same place as thprac. \nThis may be helpful in certain situation but is generally not recommended for normal use.\nYou can you the settings below to convert between global/local directory. Note that they will require a restart of thprac.",
-        "デフォルトでは、thpracはそのデータを「%%APPDATA%%/thprac」に保存します。thpracがどの位置にあっても、この「グローバルディレクトリ」にアクセスできます。\nさらに、ローカルデータディレクトリを使用することもできます。 これは、thpracと同じ場所にある「.thprac_data」という名前のフォルダーです。\nこれは特定の状況で役立つ場合がありますが、通常の使用にはお勧めしません。\n以下の設定で、グローバル/ローカルディレクトリ間で変換できます。 thpracを再起動する必要があることに注意してください。"
+        "thprac默认将数据储存在“%APPDATA%/thprac”，这意味着无论thprac的执行程序在何处，都可以使用这个“全局目录”存储数据。\n额外的，你也可以使用一个名为“.thprac_data”的本地目录来存储数据，不过在一般的使用情景下并不推荐使用。\n你可以使用以下的设置在全局/本地目录间切换。请注意这将需要thprac的重启。",
+        "By default, thprac stores its data in \"%APPDATA%/thprac\", which is considered to be a \"global directory\" that thprac can access regarding its location.\nAdditionally, you can also opt to use a local data directory, which is a folder named \".thprac_data\" in the same place as thprac. \nThis may be helpful in certain situation but is generally not recommended for normal use.\nYou can you the settings below to convert between global/local directory. Note that they will require a restart of thprac.",
+        "デフォルトでは、thpracはそのデータを「%APPDATA%/thprac」に保存します。thpracがどの位置にあっても、この「グローバルディレクトリ」にアクセスできます。\nさらに、ローカルデータディレクトリを使用することもできます。 これは、thpracと同じ場所にある「.thprac_data」という名前のフォルダーです。\nこれは特定の状況で役立つ場合がありますが、通常の使用にはお勧めしません。\n以下の設定で、グローバル/ローカルディレクトリ間で変換できます。 thpracを再起動する必要があることに注意してください。"
       ],
       "THPRAC_DIR_GLOBAL": [ "全局目录", "Global directory", "グローバルディレクトリ" ],
       "THPRAC_DIR_LOCAL": [ "本地目录", "Local directory", "ローカルディレクトリ " ],
