@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1677] {
+const char* th_glossary_str[3][1678] {
     {
         "",
         "啤酒",
@@ -88,6 +88,7 @@ const char* th_glossary_str[3][1677] {
         "人妖槽",
         "Last Spell",
         "夜晚",
+        "掉毒额的点",
         "4A",
         "4B",
         "6A",
@@ -1767,6 +1768,7 @@ const char* th_glossary_str[3][1677] {
         "Gauge",
         "Last Spell",
         "Night",
+        "Drop Points from Poisonous Moth",
         "4A",
         "4B",
         "6A",
@@ -3446,6 +3448,7 @@ const char* th_glossary_str[3][1677] {
         "妖率ゲージ",
         "ラストスペル",
         "ナイト",
+        "Drop Points from Poisonous Moth",
         "4A",
         "4B",
         "6A",

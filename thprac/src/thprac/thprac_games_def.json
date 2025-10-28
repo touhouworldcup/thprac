@@ -3435,6 +3435,7 @@
       "TH08_STAGE_6A": [ "6A", "6A", "6A" ],
       "TH08_STAGE_6B": [ "6B", "6B", "6B" ],
       "TH08_STAGE_LW": [ "LW", "LW", "LW" ],
+      "TH08_ST2N2_POINTS": [ "掉毒额的点", "Drop Points from Poisonous Moth", "Drop Points from Poisonous Moth" ],
       "TH08_DOSWNC": [ "符卡名不一致时不重置符卡历史", "Don't overwrite scores when spell name changes", "言語切替時にスペルカード履歴を上書きしない" ]
     },
 

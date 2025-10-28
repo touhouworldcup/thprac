@@ -88,6 +88,7 @@ enum th_glossary_t {
     TH08_GAUGE,
     TH08_LASTSPELL,
     TH08_NIGHT,
+    TH08_ST2N2_POINTS,
     TH08_STAGE_4A,
     TH08_STAGE_4B,
     TH08_STAGE_6A,
@@ -1688,7 +1689,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1677];
+extern const char* th_glossary_str[3][1678];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

@@ -39,6 +39,10 @@ namespace TH08 {
 
         bool dlg;
 
+        bool sp1_pts; // Mystia normal 2
+        int bsX;
+        int bsY;
+
         bool _playLock = false;
         void Reset()
         {
@@ -72,6 +76,10 @@ namespace TH08 {
             GetJsonValue(rank);
             GetJsonValueEx(rankLock, Bool);
 
+            GetJsonValueEx(sp1_pts, Bool);
+            GetJsonValue(bsX);
+            GetJsonValue(bsY);
+
             return true;
         }
         std::string GetJson()
@@ -90,7 +98,12 @@ namespace TH08 {
                 AddJsonValue(frame);
             if (dlg)
                 AddJsonValue(dlg);
-
+            if (sp1_pts)
+            {
+                AddJsonValue(sp1_pts);
+                AddJsonValue(bsX);
+                AddJsonValue(bsY);
+            }
             AddJsonValueEx(life, (int)life);
             AddJsonValueEx(bomb, (int)bomb);
             AddJsonValueEx(power, (int)power);
@@ -204,6 +217,11 @@ namespace TH08 {
                 thPracParam.frame = *mFrame;
                 if (SectionHasDlg(thPracParam.section))
                     thPracParam.dlg = *mDlg;
+
+                thPracParam.bsX = *mBossX;
+                thPracParam.bsY = *mBossY;
+                thPracParam.sp1_pts = *mDropPoints;
+
                 thPracParam.life = (float)*mLife;
                 thPracParam.bomb = (float)*mBomb;
                 thPracParam.power = (float)*mPower;
@@ -287,6 +305,22 @@ namespace TH08 {
                     if (*mWarp) {
                         SectionWidget();
                         mPhase(TH_PHASE, SpellPhase());
+
+                        // Mystia normal 2
+                        auto section = CalcSection();
+                        if (section == TH08_ST2_BOSS3) {
+                            if (mDropPoints()){
+                                // set some default
+                                *mBossX = 48.0f;
+                                *mBossY = 96.0f;
+                                *mPower = 127;
+                            }
+                            ImGui::SetNextItemWidth(100.0f);
+                            mBossX("%d");
+                            ImGui::SetNextItemWidth(128.0f);
+                            ImGui::SameLine();
+                            mBossY("%d");
+                        }
                     }
                 }else{
                     *mWarp = 5;
@@ -446,6 +480,10 @@ namespace TH08 {
         Gui::GuiCombo mPhase { TH_PHASE };
         Gui::GuiCheckBox mDlg { TH_DLG };
 
+        Gui::GuiCheckBox mDropPoints { TH08_ST2N2_POINTS };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mBossX { TH_BOSSX,-160,160 };
+        Gui::GuiDrag<int, ImGuiDataType_S32> mBossY { TH_BOSSY,48,128 };
+
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mFrame { TH_FRAME, 0, INT_MAX };
         Gui::GuiSlider<int, ImGuiDataType_S32> mLife { TH_LIFE, 0, 8 };
@@ -465,6 +503,7 @@ namespace TH08 {
         Gui::GuiCheckBox mRankLock { TH_BULLET_RANKLOCK };
 
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_FRAME, TH_DLG,
+            TH08_ST2N2_POINTS, TH_BOSSX, TH_BOSSY,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_LIFE, TH_BOMB, TH_POWER, TH08_GAUGE, TH_SCORE, TH_GRAZE, TH_POINT, TH_POINT_TOTAL, TH_POINT_STAGE,
             TH08_TIME, TH08_VALUE,  TH08_NIGHT, TH_BULLET_RANK, TH_BULLET_RANKLOCK };
@@ -1400,10 +1439,55 @@ namespace TH08 {
             ECLSetTime(ecl, 0x389c, 0, (diff <= 1) ? 33 : 38, 60);
             break;
         case THPrac::TH08::TH08_ST2_BOSS3:
-            ECLWarp(4870, 0xc020, 0, -1);
-            ECLTimeFix(0x1ed8, 0, 7);
-            ECLTimeFix(0x1f98, 0, 3);
+            if (thPracParam.sp1_pts){
+                // ECLCallSub(ecl, 0x3d68, 51, 0);
+                ecl << std::pair { 0x1ebc+0x14, (float)thPracParam.bsX+192.0f };
+                ecl << std::pair { 0x1ebc+0x18, (float)thPracParam.bsY };
+                static DWORD code_cave[]  = {
+                          0x10, 0x00140007, 0x0003FF00, 0x461C8800,0x461CE800,// fset(%F2, %SELF_X);
+                          0x10, 0x00140007, 0x0003FF00, 0x461C8C00,0x461CEC00,// fset(%F3, %SELF_Y);
+
+                          0x10, 0x0018001B, 0x0003FF00, 0x461C8000, 0x461CCC00, 0x42700000, // fset_mul(%F0, %RANDF2, 60.0f);
+                          0x10, 0x0018001B, 0x0003FF00, 0x461C8400, 0x461CCC00, 0x42700000, // fset_mul(%F1, %RANDF2, 60.0f);
+                          0x10, 0x00180019, 0x0007FF00, 0x461C8000, 0x461C8000, 0x461C8800, // fset_add(%F0,%F0,%F2);
+                          0x10, 0x00180019, 0x0007FF00, 0x461C8400, 0x461C8400, 0x461C8C00, // fset_add(%F1,%F1,%F3);
+                          0x10, 0x0014003F, 0x0003FF00, 0x461C8000, 0x461C8400, // movePos(%F0,%F1);
+                          0x10, 0x0010008D, 0x0000FF00, 0x00000000, // dropItemId(0);
+
+                          0x10, 0x0018001B, 0x0003FF00, 0x461C8000, 0x461CCC00, 0x42700000, // fset_mul(%F0, %RANDF2, 60.0f);
+                          0x10, 0x0018001B, 0x0003FF00, 0x461C8400, 0x461CCC00, 0x42700000, // fset_mul(%F1, %RANDF2, 60.0f);
+                          0x10, 0x00180019, 0x0007FF00, 0x461C8000, 0x461C8000, 0x461C8800, // fset_add(%F0,%F0,%F2);
+                          0x10, 0x00180019, 0x0007FF00, 0x461C8400, 0x461C8400, 0x461C8C00, // fset_add(%F1,%F1,%F3);
+                          0x10, 0x0014003F, 0x0003FF00, 0x461C8000, 0x461C8400, // movePos(%F0,%F1);
+                          0x10, 0x0010008D, 0x0000FF00, 0x00000000, // dropItemId(0);
+
+                          0x10, 0x0018001B, 0x0003FF00, 0x461C8000, 0x461CCC00, 0x42700000, // fset_mul(%F0, %RANDF2, 60.0f);
+                          0x10, 0x0018001B, 0x0003FF00, 0x461C8400, 0x461CCC00, 0x42700000, // fset_mul(%F1, %RANDF2, 60.0f);
+                          0x10, 0x00180019, 0x0007FF00, 0x461C8000, 0x461C8000, 0x461C8800, // fset_add(%F0,%F0,%F2);
+                          0x10, 0x00180019, 0x0007FF00, 0x461C8400, 0x461C8400, 0x461C8C00, // fset_add(%F1,%F1,%F3);
+                          0x10, 0x0014003F, 0x0003FF00, 0x461C8000, 0x461C8400, // movePos(%F0,%F1);
+                          0x10, 0x0010008D, 0x0000FF00, 0x00000000, // dropItemId(0);
+
+                          0x10, 0x0014003F, 0x0003FF00, 0x461C8800,0x461C8C00, // movePos(%F2,%F3);
+                          
+                          0x10, 0x001000A8, 0x0000FF00, 5,//dropPointItems(5);
+                          //0x10, 0x00140086, 0x0000FF00, 0x000008E8,0x0000002C, //	timerThreshold(2280, 44);
+                          0x10, 0x001C004B, 0x0000FF00,0x42000000,0x42400000,0x43B00000,0x43000000,//moveLimit(32.0f, 48.0f, 352.0f, 128.0f);
+                          0x10, 0x00140004, 0x0000FF00, 10,0xABCD,              //	jmp(10, 0xABCD)
+                };
+                
+                ecl.SetPos(0x3E14);
+                __th08_ins_header* ins = (__th08_ins_header*)GetMemAddr(0x4ECCB8, 0x3E14);
+                ecl << 0x10 << 0x00140004 << 0x0000FF00 << 10 << ((DWORD)code_cave - (DWORD)ins);
+
+                int32_t t1 = (int32_t) & (code_cave[125]);
+                int32_t t2 = GetMemAddr(0x4ECCB8, 0x3e30);
+                *(int32_t*)(code_cave + 129) = t2 - t1;
+            }
             ECLCallSub(ecl, 0x1ed8, 27, 0);
+            ECLTimeFix(0x1ed8, 0, 7);
+            ECLWarp(4870, 0xc020, 0, -1);
+            ECLTimeFix(0x1f98, 0, 3);
             ecl << ECLX(0xc026, (int8_t)0x50) << ECLX(0x1f9c, (int16_t)0);
 
             ECLTimeFix(0x37e0, 0, 5);
