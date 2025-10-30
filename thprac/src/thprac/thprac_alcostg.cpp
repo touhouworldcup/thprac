@@ -1,6 +1,6 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
-
+#include <format>
 
 namespace THPrac {
 namespace Alcostg {
@@ -406,6 +406,7 @@ namespace Alcostg {
             mLockTimeBar.SetTextOffsetRel(x_offset_1, x_offset_2);
             mLockTimeBoss.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
+            mInGameInfo.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
         virtual void OnContentUpdate() override
         {
@@ -416,6 +417,7 @@ namespace Alcostg {
             mLockTimeBar();
             mLockTimeBoss();
             mElBgm();
+            mInGameInfo();
         }
         virtual void OnPreUpdate() override
         {
@@ -460,7 +462,76 @@ namespace Alcostg {
 
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
+        Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
     };
+
+    
+    class AlcoInGameInfo : public Gui::GameGuiWnd {
+        AlcoInGameInfo() noexcept
+        {
+            SetTitle("igi");
+            SetFade(0.9f, 0.9f);
+            SetPosRel(517.0f / 640.0f, 150.0f / 480.0f);
+            SetSizeRel(120.0f / 640.0f, 0.0f);
+            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+        }
+        SINGLETON(AlcoInGameInfo);
+
+    public:
+        int32_t mMissCount;
+        int32_t mBombCount;
+
+    protected:
+        virtual void OnLocaleChange() override
+        {
+            float x_offset_1 = 0.0f;
+            float x_offset_2 = 0.0f;
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.172f;
+                break;
+            case Gui::LOCALE_EN_US:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.16f;
+                break;
+            case Gui::LOCALE_JA_JP:
+                x_offset_1 = 0.18f;
+                x_offset_2 = 0.235f;
+                break;
+            default:
+                break;
+            }
+        }
+
+        virtual void OnContentUpdate() override
+        {
+            ImGui::Columns(2);
+            ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mMissCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mBombCount);
+        }
+
+        virtual void OnPreUpdate() override
+        {
+            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x474194)) {
+                //[474194]+3CC player pos X
+                SetPosRel(517.0f / 640.0f, 150.0f / 480.0f);
+                SetSizeRel(120.0f / 640.0f, 0.0f);
+                Open();
+            } else {
+                Close();
+            }
+        }
+
+    public:
+    };
+
 
     class THAdvOptWnd : public Gui::GameGuiWnd {
         // Option Related Functions
@@ -1015,6 +1086,19 @@ namespace Alcostg {
             pCtx->Edx = thPracParam.stage + 1;
         }
     })
+    EHOOK_DY(alcostg_game_start, 0x418402, 6, {
+        AlcoInGameInfo::singleton().mMissCount = 0;
+        AlcoInGameInfo::singleton().mBombCount = 0;
+    })
+    EHOOK_DY(alcostg_bomb, 0x425e1d, 5, {
+        AlcoInGameInfo::singleton().mBombCount++;
+    })
+    EHOOK_DY(alcostg_bomb2, 0x425cb6, 5, {
+        AlcoInGameInfo::singleton().mBombCount++;
+    })
+    EHOOK_DY(alcostg_miss, 0x427231, 6, {
+        AlcoInGameInfo::singleton().mMissCount++;
+    })
     EHOOK_DY(alcostg_patch_main, 0x4186ff, 3, {
         AlcostgBeer::Reset();
         if (!thLock && thPracParam.mode == 1) {
@@ -1073,6 +1157,7 @@ namespace Alcostg {
         // Gui components update
         THGuiPrac::singleton().Update();
         THOverlay::singleton().Update();
+        AlcoInGameInfo::singleton().Update();
 
         GameGuiEnd(UpdateAdvOptWindow() || THGuiPrac::singleton().IsOpen());
     })
@@ -1095,6 +1180,8 @@ namespace Alcostg {
         THGuiPrac::singleton();
         THGuiRep::singleton();
         THOverlay::singleton();
+
+        AlcoInGameInfo::singleton();
 
         // Hooks
         EnableAllHooks(THMainHook);
