@@ -46,6 +46,32 @@ void GuiLauncherLocaleInit()
         LauncherCfgClose();
     }
 }
+
+void GuiLauncherHotkeyInit()
+{
+    if (LauncherCfgInit(true)) {
+        if (!Gui::MenuChordInitFromCfg()) {
+            Gui::MenuChordAutoSet();
+        }
+        LauncherCfgClose();
+    }
+
+    Gui::MenuChordInitArrays();
+}
+
+void InitLocaleAndChore() {
+    if (!Gui::LocaleInitFromCfg()) {
+        Gui::LocaleAutoSet();
+    }
+    // Load menu open key chords
+    if (!Gui::MenuChordInitFromCfg()) {
+        Gui::MenuChordAutoSet();
+    }
+
+    // Done after loading language as its string entries rely on it.
+    Gui::MenuChordInitArrays();
+}
+
 void GuiLauncherMainTrigger(LauncherTrigger trigger)
 {
     gLauncherTrigger = trigger;
@@ -65,6 +91,7 @@ int GuiLauncherMain()
         ErrorMsgBox(THPRAC_PR_ERR_LAUNCHER_CFG);
         return -1;
     }
+    InitLocaleAndChore();
 
     int theme;
     if (LauncherSettingGet("theme", theme)) {
@@ -100,18 +127,21 @@ int GuiLauncherMain()
                 LauncherGamesGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
+                LauncherCloseHotkeyRebindListeners();
             }
             if (GuiTabItem(S(THPRAC_LINKS))) {
                 ImGui::BeginChild("##links");
                 LauncherLinksGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
+                LauncherCloseHotkeyRebindListeners();
             }
             if (GuiTabItem(S(THPRAC_TOOLS))) {
                 ImGui::BeginChild("##tools");
                 LauncherToolsGuiUpd();
                 ImGui::EndChild();
                 ImGui::EndTabItem();
+                LauncherCloseHotkeyRebindListeners();
             }
             if (GuiTabItem(S(THPRAC_SETTINGS))) {
                 ImGui::BeginChild("##settings");

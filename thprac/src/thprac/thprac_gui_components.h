@@ -218,6 +218,10 @@ namespace Gui {
             mLabelRef = static_cast<th_glossary_t>(0);
             mLabel = const_cast<char*>(label);
         }
+        inline char* GetLabel()
+        {
+            return mLabel;
+        }
         inline void SetBound(const T minimum, const T maximum)
         {
             mValueMin = minimum;
@@ -345,6 +349,10 @@ namespace Gui {
         {
             mLabelRef = static_cast<th_glossary_t>(0);
             mLabel = const_cast<char*>(label);
+        }
+        inline char* GetLabel()
+        {
+            return mLabel;
         }
         inline void SetBound(const T&& minimum, const T&& maximum)
         {
@@ -589,7 +597,9 @@ namespace Gui {
     };
 
     class GuiHotKey {
-    private:
+    // private:
+    protected:
+        // Moved from private to protected to give access to GuiHotKeyChord
         th_glossary_t mTextRef = A0000ERROR_C;
         const char* mText = nullptr;
         const char* mKeyText = nullptr;
@@ -599,8 +609,8 @@ namespace Gui {
         float mXOffset1 = 0.0f;
         float mXOffset2 = 0.0f;
 
-    protected:
         bool OnWidgetUpdate();
+
     public:
         GuiHotKey(th_glossary_t text_ref, const char* key_text, int vkey, HookSlice hooks)
             : mTextRef(text_ref)
@@ -704,6 +714,20 @@ namespace Gui {
         bool operator()(bool use_widget = true);
     };
 
+
+    class GuiHotKeyChord : GuiHotKey {
+    public:
+        // Copy over constructors and inlines
+        using GuiHotKey::GuiHotKey;
+        using GuiHotKey::SetText;
+        using GuiHotKey::SetKey;
+        using GuiHotKey::SetTextOffset;
+        using GuiHotKey::SetTextOffsetRel;
+        using GuiHotKey::Toggle;
+        using GuiHotKey::operator*;
+        bool operator()(bool use_widget = true);
+    };
+
     class GuiTimer {
     public:
         GuiTimer()
@@ -783,7 +807,7 @@ namespace Gui {
 #define EHOOK_HK(addr_, inslen_, ...) HookCtx { .data = PatchData() }
 #else
 #define PATCH_HK(addr_, code_) { .addr = addr_, .data = PatchCode(code_) }
-#define EHOOK_HK(addr_, inslen_, ...) { .addr = addr_, .callback = [](PCONTEXT pCtx, HookCtx * self) __VA_ARGS__, .data = PatchHookImpl(inslen_) }
+#define EHOOK_HK(addr_, inslen_, ...) { .addr = addr_, .callback = [](PCONTEXT pCtx, [[maybe_unused]] HookCtx * self) __VA_ARGS__, .data = PatchHookImpl(inslen_) }
 #endif
 
 #define HOTKEY_ENDDEF() >()}

@@ -165,8 +165,8 @@ int WINAPI wWinMain(
     [[maybe_unused]] HINSTANCE hInstance,
     [[maybe_unused]] HINSTANCE hPrevInstance,
     PWSTR pCmdLine,
-    [[maybe_unused]] int nCmdShow
-) {
+    [[maybe_unused]] int nCmdShow)
+{
     VEHHookInit();
     if (LauncherPreUpdate(pCmdLine)) {
         return 0;
@@ -186,10 +186,10 @@ int WINAPI wWinMain(
     bool adminRights = false;
     int checkUpdateWhen = 0;
     bool autoUpdate = false;
+
     if (LauncherCfgInit(true)) {
-        if (!Gui::LocaleInitFromCfg()) {
-            Gui::LocaleAutoSet();
-        }
+        InitLocaleAndChore();
+
         if (!hWininet) {
             int oh_my_god_bruh = 2;
             bool oh_my_god_bruh_2 = false;

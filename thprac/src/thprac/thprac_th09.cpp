@@ -255,7 +255,7 @@ namespace TH09 {
             pCtx->Eip += 12;
     }
 
-    void __fastcall th09_chargelock_ret(PCONTEXT pCtx, HookCtx* self)
+    void __fastcall th09_chargelock_ret(PCONTEXT pCtx, [[maybe_unused]] HookCtx* self)
     {
         TH09Tools& t = TH09Tools::singleton();
         uint32_t side = *(uint32_t*)(pCtx->Ecx + 0x8);
@@ -512,7 +512,7 @@ namespace TH09 {
         static THAdvOptWnd* advOptWnd = nullptr;
         if (!advOptWnd)
             advOptWnd = new THAdvOptWnd();
-        if (Gui::KeyboardInputUpdate(VK_F12) == 1) {
+        if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
             if (advOptWnd->IsOpen())
                 advOptWnd->Close();
             else
@@ -551,7 +551,7 @@ namespace TH09 {
         TH09Tools& t = TH09Tools::singleton();
         THGuiPrac& p = THGuiPrac::singleton();
         if (t.enabled) {
-            if (Gui::KeyboardInputUpdate(VK_F11) == 1) {
+            if (Gui::GetChordPressed(Gui::GetBackspaceMenuChord())) {
                 if (t.IsOpen())
                     t.Close();
                 else

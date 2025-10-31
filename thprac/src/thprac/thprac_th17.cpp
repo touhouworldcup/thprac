@@ -534,7 +534,7 @@ namespace TH17 {
             }
         }
 
-        Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x44956a, "01")
@@ -779,7 +779,7 @@ namespace TH17 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::KeyboardInputUpdate(VK_F12) == 1) {
+            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else
@@ -2057,6 +2057,12 @@ namespace TH17 {
         // Hooks
         EnableAllHooks(THMainHook);
         th17_force_goast_angle.Setup();
+
+        // Replay user menu (null) fix
+        DWORD oldProtect;
+        VirtualProtect((void*)0x4a2cb8, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+        *(const char**)(0x4a2cb8) = "%s  %s %.2d/%.2d/%.2d %.2d:%.2d %s %s %s %2.1f%%";
+        VirtualProtect((void*)0x4a2cb8, 4, oldProtect, &oldProtect); 
 
         // Reset thPracParam
         thPracParam.Reset();

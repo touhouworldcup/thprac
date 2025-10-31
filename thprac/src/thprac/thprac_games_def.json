@@ -8,7 +8,7 @@
 
       "THPRAC_PR_INFO_ATTACHED": [
         "已应用thprac。\n如无事发生，请在游戏中回到主菜单一次。",
-        "Applied thprac.\nIf nothing happend, return to main menu in game once.",
+        "Applied thprac.\nIf nothing happened, return to main menu in game once.",
         "thpracが適用されました。\n何も起こらない場合は、一度、ゲームのメインメニューに戻ってください。"
       ],
       "THPRAC_PR_ASK_ATTACH": [
@@ -66,9 +66,9 @@
       "THPRAC_DATADIR_OPEN": [ "打开数据目录", "Open data directory", "データディレクトリを開く" ],
       "THPRAC_DIRECTORY_SETTING_MODAL": [ "数据目录##modal", "Data directory##modal", "データディレクトリ##modal" ],
       "THPRAC_DIRECTORY_SETTING_DESC": [
-        "thprac默认将数据储存在“%%APPDATA%%/thprac”，这意味着无论thprac的执行程序在何处，都可以使用这个“全局目录”存储数据。\n额外的，你也可以使用一个名为“.thprac_data”的本地目录来存储数据，不过在一般的使用情景下并不推荐使用。\n你可以使用以下的设置在全局/本地目录间切换。请注意这将需要thprac的重启。",
-        "By default, thprac stores its data in \"%%APPDATA%%/thprac\", which is considered to be a \"global directory\" that thprac can access regarding its location.\nAdditionally, you can also opt to use a local data directory, which is a folder named \".thprac_data\" in the same place as thprac. \nThis may be helpful in certain situation but is generally not recommended for normal use.\nYou can you the settings below to convert between global/local directory. Note that they will require a restart of thprac.",
-        "デフォルトでは、thpracはそのデータを「%%APPDATA%%/thprac」に保存します。thpracがどの位置にあっても、この「グローバルディレクトリ」にアクセスできます。\nさらに、ローカルデータディレクトリを使用することもできます。 これは、thpracと同じ場所にある「.thprac_data」という名前のフォルダーです。\nこれは特定の状況で役立つ場合がありますが、通常の使用にはお勧めしません。\n以下の設定で、グローバル/ローカルディレクトリ間で変換できます。 thpracを再起動する必要があることに注意してください。"
+        "thprac默认将数据储存在“%APPDATA%/thprac”，这意味着无论thprac的执行程序在何处，都可以使用这个“全局目录”存储数据。\n额外的，你也可以使用一个名为“.thprac_data”的本地目录来存储数据，不过在一般的使用情景下并不推荐使用。\n你可以使用以下的设置在全局/本地目录间切换。请注意这将需要thprac的重启。",
+        "By default, thprac stores its data in \"%APPDATA%/thprac\", which is considered to be a \"global directory\" that thprac can access regarding its location.\nAdditionally, you can also opt to use a local data directory, which is a folder named \".thprac_data\" in the same place as thprac. \nThis may be helpful in certain situation but is generally not recommended for normal use.\nYou can you the settings below to convert between global/local directory. Note that they will require a restart of thprac.",
+        "デフォルトでは、thpracはそのデータを「%APPDATA%/thprac」に保存します。thpracがどの位置にあっても、この「グローバルディレクトリ」にアクセスできます。\nさらに、ローカルデータディレクトリを使用することもできます。 これは、thpracと同じ場所にある「.thprac_data」という名前のフォルダーです。\nこれは特定の状況で役立つ場合がありますが、通常の使用にはお勧めしません。\n以下の設定で、グローバル/ローカルディレクトリ間で変換できます。 thpracを再起動する必要があることに注意してください。"
       ],
       "THPRAC_DIR_GLOBAL": [ "全局目录", "Global directory", "グローバルディレクトリ" ],
       "THPRAC_DIR_LOCAL": [ "本地目录", "Local directory", "ローカルディレクトリ " ],
@@ -123,6 +123,11 @@
         "有効にすると、現在のディレクトリに有効なゲームが存在する場合でも、thpracを起動すると常にランチャーが開きます。"
       ],
       "THPRAC_THEME": [ "主题:", "Theme: ", "テーマ:" ],
+      "THPRAC_THEME_OPTION": [
+        "黑暗\\0光明\\0经典\\0\\0",
+        "Dark\\0Light\\0Classic\\0\\0",
+        "ダーク\\0ライト\\0クラシック\\0\\0"
+      ],
       "THPRAC_AFTER_LAUNCH": [ "启动游戏后:", "After launching game:", "ゲーム起動後:" ],
       "THPRAC_AFTER_LAUNCH_OPTION": [
         "最小化启动器\\0关闭启动器\\0什么也不做\\0\\0",
@@ -165,6 +170,25 @@
         "Restart thprac for changes to take effect.",
         "変更を有効にするためにthpracを再起動してください。"
       ],
+
+      "THPRAC_SETTING_HOTKEYS": [ "thprac - 重新绑定快捷键", "thprac - Rebind Hotkeys", "thprac - ホットキーを再割り当て" ],
+      "THPRAC_REBIND_HOTKEYS": [ "重新绑定快捷键", "Rebind Hotkeys", "ホットキーを再割り当て" ],
+
+      "THPRAC_HOTKEY_QUICK_SETTINGS": [ "快速设置", "Quick Settings", "クイック設定" ],
+      "THPRAC_HOTKEY_ADVANCED_SETTINGS": [ "高级设置", "Advanced Settings", "詳細設定" ],
+      "THPRAC_HOTKEY_SPECIAL_SETTINGS": [ "特殊设置", "Special Settings", "特別設定" ],
+      "THPRAC_HOTKEY_LANGUAGE_SETTINGS": [ "语言更改", "Language Change", "言語変更" ],
+      "THPRAC_HOTKEY_LANGUAGE_TOOLTIP": [ "按住此键并按 1/2/3 可切换为日语／中文／英语", "Hold and press 1 = Japanese, 2 = Chinese, 3 = English.", "このキーを押したまま、1/2/3を押すと日本語／中国語／英語に切り替わります" ],
+      "THPRAC_HOTKEY_SCREENSHOT": [ "截图（红魔乡和妖妖梦）", "Screenshot (EoSD and PCB)", "スクリーンショット（東方紅魔郷・東方妖々夢）" ],
+      "THPRAC_HOTKEY_SUBMASK_WARNING": [ "警告：所选按键已被其他快捷键使用或需要。", "Warning: Chosen keys contains or are required for a different hotkey.", "警告: 選択したキーは、別のホットキーで使用されているか、必要とされています。" ],
+      "THPRAC_HOTKEY_TOOLTIP": [ "允许的按键: *Ctrl, Alt, *Shift, Caps Lock, Tab, 空格, Backspace, F11, F12, Ins, Del, Home, End, PgUp, PgDn。", "Allowed Keys: *Ctrl, Alt, *Shift, Caps Lock, Tab, Space, Backspace, F11, F12, Ins, Del, Home, End, PgUp, PgDn.", "許可されたキー: *Ctrl, Alt, *Shift, Caps Lock, Tab, スペース, Backspace, F11, F12, Ins, Del, Home, End, PgUp, PgDn。" ],
+      "THPRAC_HOTKEY_CANCEL": [ "正在监听…（点击取消）", "Listening... (Click to cancel)", "入力待ち…（クリックでキャンセル）" ],
+      "THPRAC_HOTKEY_UNASSIGNED": [ "未分配", "Unassigned", "未割り当て" ],
+      "THPRAC_HOTKEY_SPACEBAR": [ "空格", "Space", "スペース" ],
+      "THPRAC_HOTKEY_MODIFIER_WARNING": [ "这些按键可能会与某些游戏发生冲突。", "These keys may interfere with some games.", "これらのキーは一部のゲームと干渉する可能性があります。" ],
+      "THPRAC_HOTKEY_RESET": [ "重置到默认快捷键", "Reset hotkeys to default", "ホットキーをデフォルトにリセット" ],
+      "THPRAC_HOTKEY_SPECIAL_SETTINGS_TOOLTIP": [ "花映冢、兽王园、弹幕狂们的黑市", "TH09 (PoFV), TH19 (UDoALG), TH185 (100BM)", "東方花映塚，東方獣王園，バレットフィリア達の闇市場" ],
+
       "THPRAC_CHK_UPDATE_ON_STARTUP": [ "启动时检查更新", "Check for updates at startup", "起動時に更新を確認する" ],
       "THPRAC_CHECK_UPDATE_NOW": [ "检查更新", "Check for updates", "更新を確認する" ],
       "THPRAC_UPDATE_CHECKING": [ "检查中…", "Checking..", "検査中…" ],
@@ -208,9 +232,9 @@
       "THPRAC_ADVANCED_OPTION": [ "高级选项", "Advanced option", "高度なオプション" ],
       "THPRAC_RENDER_ONLY_USED_GLYPHS": [ "只渲染用到的字形", "Render only used glyphs", "使用する文字だけを描画" ],
       "THPRAC_RENDER_ONLY_USED_GLYPHS_DESC": [
-        "若游戏内的所有文字都无法正常显示（譬如显示为白色实心方框），请打开此选项。", 
-        "If all text in the game fails to display properly (e.g., appears as white solid squares), please enable this option.", 
-        "ゲーム内のすべての文字が正常に表示されない場合（白い四角で表示されるなど）、このオプションを有効にしてください。" 
+        "若游戏内的所有文字都无法正常显示（譬如显示为白色实心方框），请打开此选项。",
+        "If all text in the game fails to display properly (e.g., appears as white solid squares), please enable this option.",
+        "ゲーム内のすべての文字が正常に表示されない場合（白い四角で表示されるなど）、このオプションを有効にしてください。"
       ],
 
       "THPRAC_TOOLS": [ "工具", "Tools", "ツール" ],
@@ -398,52 +422,52 @@
       "THPRAC_GAMES_MISSING": [ "少女神隐中...", "Girls are now missing...", "少女神隠中..." ],
       "THPRAC_GOTO_STEAM_PAGE": [ "前往Steam页面", "Go to Steam page", "Steamページに移動" ],
 
-      "THPRAC_GAMEROLL_EENY_MEENY": ["伊尼、米尼、迈尼、莫！", "Eeny, meeny, miny, moe!", "いーにー、みーにー、まいにー、もー！"],
-      "THPRAC_GAMEROLL_ROLL": ["抽一个！", "ROLL!", "ロール！"],
-      "THPRAC_GAMEROLL_ALCOSTG": ["黄昏酒场", "alcostg", "黄昏酒場"],
-      "THPRAC_GAMEROLL_TH01": ["灵异传", "th01", "靈異伝"],
-      "THPRAC_GAMEROLL_TH02": ["封魔录", "th02", "封魔録"],
-      "THPRAC_GAMEROLL_TH03": ["梦时空", "th03", "夢時空"],
-      "THPRAC_GAMEROLL_TH04": ["幻想乡", "th04", "幻想郷"],
-      "THPRAC_GAMEROLL_TH05": ["怪绮谈", "th05", "怪綺談"],
-      "THPRAC_GAMEROLL_TH06": ["红魔乡", "th06", "紅魔郷"],
-      "THPRAC_GAMEROLL_TH07": ["妖妖梦", "th07", "妖々夢"],
-      "THPRAC_GAMEROLL_TH075": ["萃梦想", "th075", "萃夢想"],
-      "THPRAC_GAMEROLL_TH08": ["永夜抄", "th08", "永夜抄"],
-      "THPRAC_GAMEROLL_TH09": ["花映冢", "th09", "花映塚"],
-      "THPRAC_GAMEROLL_TH095": ["文花帖", "th095", "文花帖"],
-      "THPRAC_GAMEROLL_TH10": ["风神录", "th10", "風神録"],
-      "THPRAC_GAMEROLL_TH105": ["绯想天", "th105", "緋想天"],
-      "THPRAC_GAMEROLL_TH11": ["地灵殿", "th11", "地霊殿"],
-      "THPRAC_GAMEROLL_TH12": ["星莲船", "th12", "星蓮船"],
-      "THPRAC_GAMEROLL_TH123": ["非想天则", "th123", "非想天則"],
-      "THPRAC_GAMEROLL_TH125": ["文花帖DS", "th125", "ダブルスポイラー"],
-      "THPRAC_GAMEROLL_TH128": ["妖精大战争", "th128", "妖精大戦争"],
-      "THPRAC_GAMEROLL_TH13": ["神灵庙", "th13", "神霊廟"],
-      "THPRAC_GAMEROLL_TH135": ["心绮楼", "th135", "心綺楼"],
-      "THPRAC_GAMEROLL_TH14": ["辉针城", "th14", "輝針城"],
-      "THPRAC_GAMEROLL_TH143": ["天邪鬼", "th143", "弾幕アマノジャク"],
-      "THPRAC_GAMEROLL_TH145": ["深秘录", "th145", "深秘録"],
-      "THPRAC_GAMEROLL_TH15": ["绀珠传", "th15", "紺珠伝"],
-      "THPRAC_GAMEROLL_TH155": ["凭依华", "th155", "憑依華"],
-      "THPRAC_GAMEROLL_TH16": ["天空璋", "th16", "天空璋"],
-      "THPRAC_GAMEROLL_TH165": ["秘封噩梦日记", "th165", "秘封ナイトメアダイアリー"],
-      "THPRAC_GAMEROLL_TH17": ["鬼形兽", "th17", "鬼形獣"],
-      "THPRAC_GAMEROLL_TH175": ["刚欲异闻", "th175", "剛欲異聞"],
-      "THPRAC_GAMEROLL_TH18": ["虹龙洞", "th18", "虹龍洞"],
-      "THPRAC_GAMEROLL_TH185": ["弹幕狂们的黑市", "th185", "バレットフィリア達の闇市場"],
-      "THPRAC_GAMEROLL_TH19": ["兽王园", "th19", "獣王園"],
-      "THPRAC_GAMEROLL_TH20": ["锦上京", "th20", "錦上京"],
+      "THPRAC_GAMEROLL_EENY_MEENY": [ "伊尼、米尼、迈尼、莫！", "Eeny, meeny, miny, moe!", "いーにー、みーにー、まいにー、もー！" ],
+      "THPRAC_GAMEROLL_ROLL": [ "抽一个！", "ROLL!", "ロール！" ],
+      "THPRAC_GAMEROLL_ALCOSTG": [ "黄昏酒场", "alcostg", "黄昏酒場" ],
+      "THPRAC_GAMEROLL_TH01": [ "灵异传", "th01", "靈異伝" ],
+      "THPRAC_GAMEROLL_TH02": [ "封魔录", "th02", "封魔録" ],
+      "THPRAC_GAMEROLL_TH03": [ "梦时空", "th03", "夢時空" ],
+      "THPRAC_GAMEROLL_TH04": [ "幻想乡", "th04", "幻想郷" ],
+      "THPRAC_GAMEROLL_TH05": [ "怪绮谈", "th05", "怪綺談" ],
+      "THPRAC_GAMEROLL_TH06": [ "红魔乡", "th06", "紅魔郷" ],
+      "THPRAC_GAMEROLL_TH07": [ "妖妖梦", "th07", "妖々夢" ],
+      "THPRAC_GAMEROLL_TH075": [ "萃梦想", "th075", "萃夢想" ],
+      "THPRAC_GAMEROLL_TH08": [ "永夜抄", "th08", "永夜抄" ],
+      "THPRAC_GAMEROLL_TH09": [ "花映冢", "th09", "花映塚" ],
+      "THPRAC_GAMEROLL_TH095": [ "文花帖", "th095", "文花帖" ],
+      "THPRAC_GAMEROLL_TH10": [ "风神录", "th10", "風神録" ],
+      "THPRAC_GAMEROLL_TH105": [ "绯想天", "th105", "緋想天" ],
+      "THPRAC_GAMEROLL_TH11": [ "地灵殿", "th11", "地霊殿" ],
+      "THPRAC_GAMEROLL_TH12": [ "星莲船", "th12", "星蓮船" ],
+      "THPRAC_GAMEROLL_TH123": [ "非想天则", "th123", "非想天則" ],
+      "THPRAC_GAMEROLL_TH125": [ "文花帖DS", "th125", "ダブルスポイラー" ],
+      "THPRAC_GAMEROLL_TH128": [ "妖精大战争", "th128", "妖精大戦争" ],
+      "THPRAC_GAMEROLL_TH13": [ "神灵庙", "th13", "神霊廟" ],
+      "THPRAC_GAMEROLL_TH135": [ "心绮楼", "th135", "心綺楼" ],
+      "THPRAC_GAMEROLL_TH14": [ "辉针城", "th14", "輝針城" ],
+      "THPRAC_GAMEROLL_TH143": [ "天邪鬼", "th143", "弾幕アマノジャク" ],
+      "THPRAC_GAMEROLL_TH145": [ "深秘录", "th145", "深秘録" ],
+      "THPRAC_GAMEROLL_TH15": [ "绀珠传", "th15", "紺珠伝" ],
+      "THPRAC_GAMEROLL_TH155": [ "凭依华", "th155", "憑依華" ],
+      "THPRAC_GAMEROLL_TH16": [ "天空璋", "th16", "天空璋" ],
+      "THPRAC_GAMEROLL_TH165": [ "秘封噩梦日记", "th165", "秘封ナイトメアダイアリー" ],
+      "THPRAC_GAMEROLL_TH17": [ "鬼形兽", "th17", "鬼形獣" ],
+      "THPRAC_GAMEROLL_TH175": [ "刚欲异闻", "th175", "剛欲異聞" ],
+      "THPRAC_GAMEROLL_TH18": [ "虹龙洞", "th18", "虹龍洞" ],
+      "THPRAC_GAMEROLL_TH185": [ "弹幕狂们的黑市", "th185", "バレットフィリア達の闇市場" ],
+      "THPRAC_GAMEROLL_TH19": [ "兽王园", "th19", "獣王園" ],
+      "THPRAC_GAMEROLL_TH20": [ "锦上京", "th20", "錦上京" ],
 
-      "THPRAC_GAMEROLL_EMPTY_SHOTTYPES": ["", "", ""],
-      "THPRAC_GAMEROLL_TH02_SHOTTYPES": ["灵梦A\\0灵梦B\\0灵梦C\\0\\0", "Reimu A\\0Reimu B\\0Reimu C\\0\\0", "靈梦A\\0靈梦B\\0靈梦C\\0\\0"],
+      "THPRAC_GAMEROLL_EMPTY_SHOTTYPES": [ "", "", "" ],
+      "THPRAC_GAMEROLL_TH02_SHOTTYPES": [ "灵梦A\\0灵梦B\\0灵梦C\\0\\0", "Reimu A\\0Reimu B\\0Reimu C\\0\\0", "靈梦A\\0靈梦B\\0靈梦C\\0\\0" ],
       "THPRAC_GAMEROLL_TH03_SHOTTYPES": [
         "灵梦\\0魅魔\\0魔理沙\\0爱莲\\0小兔姬\\0卡娜\\0理香子\\0千百合\\0梦美\\0\\0",
         "Reimu\\0Mima\\0Marisa\\0Ellen\\0Kotohime\\0Kana\\0Rikako\\0Chiyuri\\0Yumemi\\0\\0",
         "靈夢\\0魅魔\\0魔理沙\\0エレン\\0小兎姫\\0カナ\\0理香子\\0ちゆり\\0夢美\\0\\0"
       ],
-      "THPRAC_GAMEROLL_TH04_SHOTTYPES": ["灵梦\\0魔理沙\\0\\0", "Reimu\\0Marisa\\0\\0", "靈夢\\0魔理沙\\0\\0"],
-      "THPRAC_GAMEROLL_TH05_SHOTTYPES": ["灵梦\\0魔理沙\\0魅魔\\0幽香\\0\\0", "Reimu\\0Marisa\\0Mima\\0Yuuka\\0\\0", "靈夢\\0魔理沙\\0魅魔\\0幽香\\0\\0"],
+      "THPRAC_GAMEROLL_TH04_SHOTTYPES": [ "灵梦\\0魔理沙\\0\\0", "Reimu\\0Marisa\\0\\0", "靈夢\\0魔理沙\\0\\0" ],
+      "THPRAC_GAMEROLL_TH05_SHOTTYPES": [ "灵梦\\0魔理沙\\0魅魔\\0幽香\\0\\0", "Reimu\\0Marisa\\0Mima\\0Yuuka\\0\\0", "靈夢\\0魔理沙\\0魅魔\\0幽香\\0\\0" ],
       "THPRAC_GAMEROLL_TH06_SHOTTYPES": [
         "灵梦A\\0灵梦B\\0魔理沙A\\0魔理沙B\\0\\0",
         "Reimu A\\0Reimu B\\0Marisa A\\0Marisa B\\0\\0",
@@ -716,19 +740,19 @@
         "TH18 東方虹龍洞　～ Unconnected Marketeers."
       ],
       "TH185_TITLE": [
-          "TH18.5 弹幕狂们的黑市　～ 100th Black Market.",
-          "TH18.5 100th Black Market",
-          "TH18.5 バレットフィリア達の闇市場　～ 100th Black Market."
+        "TH18.5 弹幕狂们的黑市　～ 100th Black Market.",
+        "TH18.5 100th Black Market",
+        "TH18.5 バレットフィリア達の闇市場　～ 100th Black Market."
       ],
       "TH19_TITLE": [
-          "TH19 东方兽王园　～ Unfinished Dream of All Living Ghost.",
-          "TH19 Unfinished Dream of All Living Ghost",
-          "TH19 東方獣王園　～ Unfinished Dream of All Living Ghost."
+        "TH19 东方兽王园　～ Unfinished Dream of All Living Ghost.",
+        "TH19 Unfinished Dream of All Living Ghost",
+        "TH19 東方獣王園　～ Unfinished Dream of All Living Ghost."
       ],
-	  "TH20_TITLE": [
-          "TH20 东方锦上京　～ Fossilized Wonders.",
-          "TH20 Fossilized Wonders",
-          "TH20 東方錦上京　～ Fossilized Wonders."
+      "TH20_TITLE": [
+        "TH20 东方锦上京　～ Fossilized Wonders.",
+        "TH20 Fossilized Wonders",
+        "TH20 東方錦上京　～ Fossilized Wonders."
       ]
     },
 
@@ -888,6 +912,27 @@
       "TH_ADV_OPT": [ "高级选项", "Advanced Options", "拡張オプション" ],
       "TH_ADV_OPT_APPLY": [ "应用", "Apply", "変更を適用" ],
       "TH_GAME_SPEED": [ "游戏速度", "Game Speed", "ゲームの速度" ],
+      "TH_REPLAY_FIX": [ "Replay修复", "Replay Fixing", "リプレイ修復" ],
+      "TH_REPFIX_SELECTED": [ "已选择重放：%ls", "Replay selected: %ls", "選択したリプレイ: %ls" ],
+      "TH_REPFIX_SELECTED_NONE": [ "未选择重放。", "No replay selected.", "リプレイが選択されていません。" ],
+      "TH_REPFIX_MAIN_SELECTED_NONE": [ "未选择主线剧情重放", "No main story replay selected.", "メインストーリーのリプレイが選択されていません。" ],
+      "TH_REPFIX_EXTRA_SELECTED_NONE": [ "未选择 Extra 关卡重放。", "No Extra Stage replay selected.", "Extraステージのリプレイが選択されていません。" ],
+      "TH_REPFIX_SELECTED_ALREADY_FIXED": [ "已修复所选重放。", "Selected replay is already fixed.", "選択したリプレイはすでに修正されています。" ],
+      "TH_REPFIX_SAVE": [ "保存修复副本", "Save fixed copy", "修正版を保存" ],
+      "TH_REPFIX_RESET_DATA": [ "重置此同步数据", "Reset this sync data", "この同期データをリセット" ],
+      "TH_REPFIX_RESET_DATA2": [ "重置此同步数据##2", "Reset this sync data##2", "この同期データをリセット##2" ],
+      "TH_REPFIX_NEED_THPRAC": [ "(thprac)", "(thprac)", "(thprac)" ],
+      "TH_REPFIX_NEED_THPRAC_DESC": [
+        "修复后的重放还需要 thprac 才能正常回放；没有它时将保持与之前相同的行为。\n使用 thprac 录制的重放无需修复。",
+        "Fixed replay also requires thprac to play back properly; will behave the same as before without it.\nReplays recorded with thprac applied do not need to be fixed.",
+        "修正されたリプレイは、正しく再生するために thprac が必要です；それがない場合、以前と同じ動作になります。\nthprac を適用して録画されたリプレイは修正する必要はありません。"
+      ],
+      "TH_REPFIX_SAVE_SUCCESS": [ "保存成功", "Successfully saved", "保存しました" ],
+      "TH_REPFIX_SAVE_SUCCESS_DESC": [ "成功保存Replay至：", "Successfully saved replay to: ", "リプレイは正常に保存されました：" ],
+      "TH_REPFIX_SAVE_ERROR_SRC": [ "未能成功读取源Replay。", "Failed to access source replay.", "元のリプレイの読み取りに失敗しました。" ],
+      "TH_REPFIX_SAVE_ERROR_DEST": [ "未能写入目标文件。", "Failed to write to destination file.", "ターゲットファイルに書き込めませんでした。" ],
+      "TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS": [ "重置文件的 thprac 数据失败。", "Failed to reset file's thprac data.", "ファイルの thprac データのリセットに失敗しました。" ],
+      "TH_REPFIX_SAVE_ERROR_PARAMS": [ "无法将 thprac 数据写入重放文件。", "Failed to add thprac data to replay file.", "thprac のデータをリプレイファイルに書き込めませんでした。" ],
       "TH_DELAY": [ "延迟", "Delay", "ディレイ" ],
       "TH_FPS_ADJ": [ "FPS调整", "FPS Adjustment", "FPS調整" ],
       "TH_FPS_ERR": [
@@ -918,6 +963,7 @@
       "TH_BACK": [ "返回", "Back", "戻る" ],
       "TH_OK": [ "确认", "OK", "OK" ],
       "TH_CANCEL": [ "取消", "OK", "キャンセル" ],
+      "TH_ERROR": [ "错误", "Error", "エラー" ],
       "TH_DATANLY_NEW": [ "新建", "New", "新規作成" ],
       "TH_DATANLY_NEW_POPUP": [ "新建##popup", "New##popup", "新規作成##popup" ],
       "TH_DATANLY_NEW_NAME": [ "名字", "Name", "名前" ],
@@ -1017,9 +1063,13 @@
         "TH_P4",
         "TH_RAGE"
       ],
+      "TH_SPELL_PHASE_TIMEOUT": [
+        "TH_NORMAL",
+        "TH_FINALE"
+      ],
       "TH_SIDE_SELECT": [
-          "TH_LEFT",
-          "TH_RIGHT"
+        "TH_LEFT",
+        "TH_RIGHT"
       ]
     }
   },
@@ -2473,7 +2523,9 @@
       "TH08_STAGE_4B": [ "4B", "4B", "4B" ],
       "TH08_STAGE_6A": [ "6A", "6A", "6A" ],
       "TH08_STAGE_6B": [ "6B", "6B", "6B" ],
-      "TH08_DOSWNC": [ "符卡名不一致时不重置符卡历史", "Don't overwrite scores when spell name changes", "言語切替時にスペルカード履歴を上書きしない" ]
+      "TH08_DOSWNC": [ "符卡名不一致时不重置符卡历史", "Don't overwrite scores when spell name changes", "言語切替時にスペルカード履歴を上書きしない" ],
+      "TH08_HE_POST_SPIN": [ "旋转后阶段", "Post-Spin", "回転後フェーズ" ],
+      "TH08_HE_SLOWDOWN": [ "减速阶段", "Slowdown Phase", "減速フェーズ" ]
     },
 
     "sections": {
@@ -3174,6 +3226,11 @@
         "TH08_STAGE_6A",
         "TH08_STAGE_6B",
         "TH_STAGE_EXTRA"
+      ],
+      "TH08_SPELL_PHASE_HOURAI_ELIXIR": [
+        "TH_NORMAL",
+        "TH08_HE_POST_SPIN",
+        "TH08_HE_SLOWDOWN"
       ]
     }
   },
@@ -5935,8 +5992,8 @@
 
     "glossary": {
       "TH13_TRANCE_METER": [ "灵界槽", "Trance Meter", "霊界ゲージ" ],
-      "TH13_EXTEND": [ "奖残次数", "Times extended", "エクステンド回数" ],
-      "TH13_SPIRIT_SIDE": [ "灵方向", "Spirit side", "霊ー方向" ],
+      "TH13_EXTEND": [ "奖残次数", "Extends", "エクステンド回数" ],
+      "TH13_SPIRIT_SIDE": [ "灵方向", "Spirit Side", "霊ー方向" ],
       "TH13_TRANCE_LOCK": [ "锁灵界槽", "Trance Meter Lock", "霊界ゲージ計固定" ]
     },
 
@@ -6437,12 +6494,9 @@
       "TH14_START_RECORDING": [ "开始记录", "Start recording", "記録を開始" ],
       "TH14_RECORDING_WAITING": [ "等待游戏中……", "Waiting for game start...... ", "ゲーム開始を待っています……" ],
       "TH14_RECORDING_ONGOING": [ "正在记录", "Recording ongoing", "記録中" ],
-      "TH14_SELECTED_REPLAY": [ "已选择的Replay：%s", "Selected replay: %s", "選択したリプレイ：%s" ],
-      "TH14_SELECTED_NONE": [ "没有选择Replay。", "No replay selected.", "リプレイが選択されていません。" ],
       "TH14_REPLAY_NO_RECORDS": [ "此Replay没有修复数据。", "This replay contains no repair data.", "このリプレイには修復データが含まれていません。" ],
       "TH14_DELETE": [ "删除", "Delete", "削除" ],
       "TH14_CLEAR_RECORDS": [ "清除所有记录", "Clear all records", "すべての記録を削除する" ],
-      "TH14_SAVE": [ "保存Replay", "Save replay", "リプレイをセーブ" ],
       "TH14_LOAD": [ "从Replay读取", "Load from replay", "リプレイからロード" ],
       "TH14_NO_RECORDS": [ "没有记录。", "No record.", "記録なし。" ],
       "TH14_RECORD": [ "记录#%d: %d面, %d帧, 值：0x%08x, 代替值：", "Record #%d: Stage %d, frame %d, value: 0x%08x, subsitute: ", "レコード＃%d：ステージ%d、フレーム%d, 値：0x%08x、代替値：" ],
@@ -6458,12 +6512,7 @@
       "TH14_CORRECTION_SN_SIGNED": [ "非规格 (负)", "Subnormal (neg.)", "非正規 (負)" ],
       "TH14_CORRECTION_E_POSITIVE": [ "1.0eX", "1.0eX", "1eX" ],
       "TH14_CORRECTION_E_NEGATIVE": [ "-1.0eX", "-1.0eX", "-1.0eX" ],
-      "TH14_CORRECTION_NONE": [ "无", "None", "なし" ],
-      "TH14_SUCCESS": [ "保存成功", "Successfully saved", "保存しました" ],
-      "TH14_SUCCESS_SAVED": [ "成功保存Replay至：", "Successfully saved replay to: ", "リプレイは正常に保存されました：" ],
-      "TH14_ERROR": [ "错误", "Error", "エラー" ],
-      "TH14_ERROR_SRC": [ "未能成功读取源Replay。", "Failed to access source replay.", "元のリプレイの読み取りに失敗しました。" ],
-      "TH14_ERROR_DEST": [ "未能写入目标文件。", "Failed to write to destination file.", "ターゲットファイルに書き込めませんでした。" ]
+      "TH14_CORRECTION_NONE": [ "无", "None", "なし" ]
     },
 
     "sections": {
@@ -7712,12 +7761,6 @@
         "appearance": [ 4, 1, 1 ],
         "!ENHL": "TH_MID_NS1"
       },
-      "TH16_ST4_MID2": {
-        "bgm": 0,
-        "spell": 0,
-        "appearance": [ 4, 1, 2 ],
-        "!ENHL": [ "道中结尾", "-", "-" ]
-      },
       "TH16_ST4_BOSS1": {
         "bgm": 1,
         "spell": 0,
@@ -8596,7 +8639,7 @@
       "TH18_MARKET_MANIP_DESC1": [ "1-8: 顺序展示卡片", "1-8: Display cards in order", "1-8: カードを順番に表示する " ],
       "TH18_MARKET_MANIP_DESC2": [ "0: 获取选中卡片", "0: Acquire selected card", "0: 選択したカードを取得する" ],
       "TH18_MARKET_MANIP_DESC3": [ "Ctrl+0: 获取所有卡片", "Ctrl+0: Acquire all cards", "Ctrl+0: すべてのカードを取得する " ],
-      "TH18_MARKET_MANIP_DESC4": [ "Backspace: 退出市场", "Backspace: Leave the market", "Backspace: 市場を出る" ],
+      "TH18_MARKET_MANIP_DESC4": [ ": 退出市场", ": Leave the market", ": 市場を出る" ],
       "TH18_MUKADE": [ "蜈蚣", "Centipede", "ムカデ" ],
       "TH18_KOZUCHI_CD": [ "锤子冷却", "Mallet CD", "槌CD" ],
       "TH18_KANAME_CD": [ "基石冷却", "Keystone CD", "要石CD" ],
@@ -8661,15 +8704,12 @@
         "有効化すると、「妖怪達のシールドメソッド」が弾の生成位置の誤りによるリプレイバグを引き起こすことはなくなります。"
       ],
 
-      "TH18_REPLAY_FIX": [ "Replay修复", "Replay fix", "リプレイ修復" ],
       "TH18_REPFIX_SHOW_INS": [ "显示说明##th18", "Show instruction##th18", "指示を表示##th18" ],
       "TH18_REPFIX_HIDE_INS": [ "隐藏说明##th18", "Hide instruction##th18", "指示を非表示##th18" ],
       "TH18_REPFIX_NOTHING": [ "没有选择或锁定任何replay。", "No replay is selected nor locked.", "リプレイは選択もロックもされていません。" ],
-      "TH18_REPFIX_SELECTED": [ "已选择Replay: %s", "Replay selected: %s", "選択したリプレイ: %s" ],
       "TH18_REPFIX_LOCKED": [ "已锁定Replay: %s", "Replay locked: %s", "ロックされたリプレイ: %s" ],
       "TH18_REPFIX_LOCK": [ "锁定", "Lock", "ロック" ],
       "TH18_REPFIX_UNLOCK": [ "解锁", "Unlock", "ロック解除" ],
-      "TH18_REPFIX_SAVEAS": [ "另存为...", "Save as...", "名前を付けて保存..." ],
       "TH18_REPFIX_MISMATCH": [ "目标不一致。", "Target mismatch.", "目標不一致。" ],
       "TH18_REPFIX_INITIAL_CARD": [ "选择的卡牌: ", "Selected card: ", "選択したカード: " ],
       "TH18_REPFIX_DESC": [
@@ -9542,454 +9582,528 @@
         "将你的判定点缩放从当前的0%（点状、极小）恢复为100%（原始大小）。",
         "Makes your hitbox 100% scale (original size) instead of 0% (current size, point-like).",
         " 現在の0%（点のように小さい）から100%（本来のサイズ）に戻します。"
-      ]
+      ],
+      "TH20_MAIN_STORY_FIXES": [ "主线爆炸replay修复", "Main story desyncs fix", "メインストーリーの同期ずれ修正" ],
+      "TH20_MAIN_STORY_FIXES_DESC": [
+        "选择一个爆炸的主线replay，从第一面开始播放，并在最后一面结束后保存修复后的副本（倘若已经修好）。此功能可自然地修复最常见的replay爆炸问题，并允许你从任意面开始播放修复后的replay。\n\n在少数特定情况下，你的replay文件可能从第一面起就不正常。这是因为一个内部计时器在切换到下一面的过程中仍在走时。如果出现这种情况，你需要对每次关卡切换测试可能的计时器偏移量，直到replay的行为与录制时同步（见下方按钮）。\n\n如果replay因为致命的ANM复用bug而不同步（此bug随机发生并可能在任意时刻发生，且会造成画面损坏），则无法修复。此bug在使用thprac的情况下不会发生。",
+        "Select a main story replay that desyncs and play it back from stage 1, then save a fixed copy after the final stage transition (assuming it synced). This will naturally work for the most common desyncs and will allow you to play the fixed replay back from any stage.\n\nIn a few specific cases, your replay may not sync from stage 1 due to a timer ticking during stage transitions, and you will need to test possible timer offsets at each transition until it syncs (see below button).\n\nIf your replay desyncs due to the fatal ANM reuse bug (which is random, causes visual corruptions & can happen any time), it cannot be repaired. This bug is fixed by thprac.",
+        "同期ずれするメインストーリーリプレイを選択し、ステージ1から再生して、最終ステージのトランジション後に修正版を保存してください（同期していれば）。これは一般的な同期ずれに対して自然に機能し、修正版リプレイを任意のステージから再生できます。\n\n特定のケースでは、ステージ間のタイマーの影響でステージ1から同期しない場合があり、その場合は各トランジションでタイマーオフセットを試して同期を確認する必要があります（下のボタン参照）。\n\n致命的なANM再利用バグにより同期ずれが発生したリプレイ（ランダム発生、表示の破損、いつでも起こり得る）は修復できません。このバグはthpracで修正済みです。"
+      ],
+      "TH20_MAINRPYFIX_ENABLE_TIMERS_FIX": [ "调整计时偏移量", "Adjust timer offsets", "タイマーオフセットを調整" ],
+      "TH20_MAINRPYFIX_DISABLE_TIMERS_FIX": [ "禁用计时器偏移量修复", "Disable timer offset fix", "タイマーオフセット修正を無効化" ],
+      "TH20_MAINRPYFIX_TIMERS_FIX_DISABLE_HINT": [ "播放replay时无法切换是否启用计时器偏移量修复。", "Can't toggle fixing timers during playback.", "再生中はタイマー修正を切り替えられません。" ],
+      "TH20_MAINRPYFIX_TIMERS_FIX_DESC": [
+        "如果你的replay使用了灵梦机体且在扩散石使用了生物赤红（即鬼形兽石头），或者是利用了“关卡切换时灵梦的bomb和黄色地心（即地灵殿石头）子机的伤害光环不会消失”的bug，那么在第一面结束之后replay很可能会爆炸，这是由于关卡加载时间与录制时不同导致的。\n\n请在出现问题的关卡调整计时器偏移量，然后从前一关重新开始播放replay（请尝试多种可能的偏移量，直到问题消失为止）。重复此操作直至所有关卡同步，然后保存修复后的replay。",
+        "If your replay uses Reimu with R2 as a Wide Shot Stone or makes use of a glitch which allows damage auras from Reimu's bomb or Y1's options to persist through a stage transition, it will likely desync after Stage 1 due to a difference in loading times.\n\nAdjust the timer offset for the stage where a desync occurs and restart the replay on the previous stage (try various possible values until it syncs), then repeat until all stages sync & save a fixed copy.",
+        "リプレイで霊夢がR2としてワイドショットストーンを使用している場合、または霊夢のボムまたはY1のオプションによるダメージオーラがステージトランジションを跨いで残るグリッチを利用している場合、ロード時間の差によってステージ1の後で同期が崩れる可能性があります。\n\n同期が崩れるステージのタイマーオフセットを調整し、前のステージからリプレイを\u00a0再起動\u00a0してください（同期するまでさまざまな値を試します）。これをすべてのステージで同期するまで繰り返し、修正済みリプレイを保存してください。"
+      ],
+      "TH20_MAINRPYFIX_TIPS": [ "（建议1）", "(tips 1)", "(コツ1)" ],
+      "TH20_MAINRPYFIX_TIMERS_FIX_TIPS_DESC": [
+        "这个过程可能耗时较长，因此建议将游戏调整到更高的帧率。\n你实际上需要通过穷举可能的帧数来猜测每个关卡切换时在录制时发生的延迟。对于第一次关卡切换，推荐检查的范围是\u00a010\u00a0到\u00a035\u00a0帧之间（尽管正确偏移量不能保证落在此范围内）。\n一旦找到正确的偏移量，下一个偏移量通常不会差太远（即在\u00a0±10\u00a0帧以内），虽然某些特定的关卡的偏移量可能会出现跳变（详见“建议2”中的“*注意”一段）。\n\n在此模式下，每次切换关卡时都会保存同步数据。例如，如果你找到第\u00a01->2\u00a0面的正确偏移量并在游戏内执行了此偏移量，你就可以接着从第\u00a02\u00a0关开始继续播放replay并继续工作。你也可以返回第\u00a01\u00a0面并覆盖这条数据（如果发现之前的偏移量数据不正确）。你可能需要把找到的正确数值记到别处，以防数据丢失。一旦所有关卡切换都有使replay正常的偏移量数据，你就可以保存修复后的replay副本。",
+        "This process can take a long time, so playing on higher FPS is recommended.\n\nYou effectively need to guess the amount of lag that occured on the runner's PC at each stage transition by checking possible values exhaustively. For the first transition, the recommended range to check is 10 to 35 frames (though the correct offset is not guaranteed to fall in this range).\nOnce you've found a correct offset, the following offset usually doesn't fall too far from it (i.e. within ±10 frames), though there may be spikes on specific stages*.\n\nWhile in this mode, sync data is saved every time you go through a stage transition. For example, if you find the correct offset for the Stage 1→2 transition and perform this transition in-game, you can then start playing the replay from Stage 2 and continue your work from there. You can also go back to Stage 1 to overwrite this data if it turned out to be incorrect. You may want to write down the correct values you find to prevent data loss. Once all transitions have sync data, you can save a fixed copy.",
+        "この作業には時間がかかる場合があるため、高FPSでのプレイが推奨されます。\n各ステージトランジションでランナーのPCに発生したラグの量を、可能な値を念入りに確認することで推測する必要があります。最初のトランジションについては、チェックする推奨範囲は10〜35フレームですが（正しいオフセットがこの範囲内にある保証はありません）。\n正しいオフセットを見つけたら、次のオフセットは通常、それほど離れていません（±10フレーム以内）が、特定のステージでは急激にずれる場合もあります*。\n\nこのモードでは、ステージトランジションを通過するたびに同期データが保存されます。例えば、ステージ1->2の正しいオフセットを見つけてゲーム内でそのトランジションを行った場合、その後ステージ2からリプレイを再開して作業を続けることができます。また、間違っていた場合はステージ1に戻ってデータを上書きすることも可能です。見つけた正しい値は、データを失わないように別の場所にメモしておくと良いでしょう。すべてのステージ間遷移に同期データが揃ったら、修正版を保存できます。"
+      ],
+      "TH20_MAINRPYFIX_TIPS2": [ "（建议2）", "(tips 2)", "(コツ2)" ],
+      "TH20_MAINRPYFIX_TIMERS_FIX_TIPS2_DESC": [
+        "•\u00a0黄色地心（即地灵殿石头）子机光环导致爆炸：只需以\u00a03\u00a0帧为一个周期，找到一个可行偏移量（即所有关卡切换可以使用\u00a00、1\u00a0或\u00a02\u00a0帧三者之一的偏移量修复）。\n•\u00a0灵梦生物赤红（即鬼形兽石头）导致爆炸：需要以\u00a0120\u00a0帧为一个周期，找到一个可行偏移量。\n•\u00a0灵梦炸弹光环导致爆炸：必须找到精确的偏移值。注意，不同步通常只在\u00a0Boss\u00a0战中途左右才会明显出现（当光环停止作用时）。\n\n*\u00a0注意：第\u00a04\u00a0面需要加载更多资源，因此正确值可能会出现跳变（例如\u00a0+[10f,\u00a040f]，不保证）。如果机师使用了\u00a0thcrap，加载延迟可能会显著增加\u00a0，具体取决于所使用的补丁\u00a0（例如语言补丁，\u00a0+[90f,\u00a0120f]），关卡间的变化可能更大。可以问一下机师他们是否使用了\u00a0thcrap。\u00a0需要注意的是，像\u00a0thprac\u00a0一样，thcrap\u00a0也会防止\u00a0ANM\u00a0重用bug出现。",
+        "•\u00a0Y1 aura desync: You only need to find a working offset within a 3-frame cycle (i.e. all stage transitions can be made to work with an offset of 0, 1 or 2 frames).\n•\u00a0ReimuR2 desync: You need to find a working offset wihin a 120-frame cycle, which means you'll effectively have to find the correct value.\n•\u00a0Reimu bomb aura desync: You must find the exact correct offset value. Note that the desync usually only becomes noticeable around halfway through bossfights (when the aura stops being active).\n\n* Note: Stage 4 requires loading more resources, so you may see a spike in the correct value there (e.g. +[10f, 40f]; not guaranteed). If the runner used thcrap, loading lag can be significantly higher depending on the patches used (e.g. +[90f, 120f] for a language patch), and variations from stage to stage can be larger. It's worth noting that like thprac, thcrap prevents the ANM reuse bug.",
+        "-\u00a0Y1オーラの同期ズレ:\u00a03フレーム周期内で有効なオフセットを見つければ十分です（つまり、すべてのステージトランジションは0、1、2フレームのいずれかのオフセットで調整可能です）。\n-\u00a0霊夢R2の同期ズレ:\u00a0120フレーム周期内で動作するオフセットを見つける必要があります。\n-\u00a0霊夢ボムオーラの同期ズレ:\u00a0正確なオフセット値を見つける必要があります。なお、この同期ズレは通常、ボス戦の中盤あたりで目立つようになります（オーラが停止するタイミング）。\n\n*\u00a0注意:\u00a0ステージ4ではより多くのリソースをロードする必要があるため、正しい値にピークが生じることがあります（例:\u00a0+[10f,\u00a040f]、保証なし）。もしランナーが\u00a0thcrap\u00a0を使用した場合、ロードラグは使用したパッチによって大きく変化する可能性があります（例:\u00a0言語パッチ\u00a0+[90f,\u00a0120f]）、ステージ間の差も大きくなることがあります。元のランナーに、thcrap\u00a0を使用したかどうか尋ねてみる価値があるかもしれません。\u00a0thprac\u00a0と同様に、thcrap\u00a0では\u00a0ANM\u00a0再利用バグを防止する。"
+      ],
+      "TH20_RPYFIX_STAGE_NUM": [ "关卡 %d", "Stage %d", "ステージ %d" ],
+      "TH20_RPYFIX_EXTRA_STAGE": [ "Extra关卡", "Extra Stage", "Extraステージ" ],
+      "TH20_MAINRPYFIX_STAGE_TIMER_DISABLE_HINT": [ "播放replay时无法修改已经过去的关卡的计时器偏移量。", "Can't change past stage timer offset during playback.", "再生中は過去ステージのタイマーオフセットを変更できません。" ],
+      "TH20_MAINRPYFIX_SAVE_PROGRESS": [ "保存replay ({}/{})", "Save replay ({}/{})", "リプレイをセーブ ({}/{})" ],
+      "TH20_MAINRPYFIX_SAVE_PROGRESS_HINT": [ "剩余 %d 次关卡切换。", "%d stage transition%s remaining.", "残り %d ステージのトランジション" ],
+      "TH20_MAINRPYFIX_SAVE_NO_ST1_HINT": [ "replay未从第 1 面开始。", "Replay was not started from stage 1.", "リプレイはステージ1から開始されていません。" ],
+      "TH20_MAINRPYFIX_SAVE_SKIPPED_STAGE_HINT": [ "replay中至少有一个关卡缺少同步数据。", "Replay is missing sync data on at least one stage.", "リプレイに少なくとも1つのステージで同期データが欠けています。" ],
+      "TH20_MAINRPYFIX_SELECTED_NO_TRANSITIONS": [ "所选replay没有关卡切换。", "Selected replay has no stage transitions.", "選択したリプレイにはステージトランジションがありません。" ],
+      "TH20_EXTRA_RESOLUTION_FIX": [ "Extra面分辨率修复", "Extra Stage resolution fix", "Extraステージ解像度修正" ],
+      "TH20_EXTRA_RESOLUTION_FIX_DESC": [
+        "如果游戏分辨率与录制replay时不同，ex面的replay在渡里妮娜的四符（古老的光明会）处可能会爆炸（即与录制时不同步）。选择一个ex面的replay和可能的原始分辨率，然后检查replay是否与录制时同步，如果同步则保存已修复的副本。\n注意：无需保存文件也可以预览是否同步。\n修复好的replay将无论分辨率如何都保持同步。",
+        "Extra Stage replays may desync on Nina Spell 4 if your game's resolution is different from when they were recorded. Select an Extra Stage replay and one of the possible original resolutions, then check if it syncs & save a fixed copy if so.\nNote: You can preview whether it syncs without first saving the file.\nFixed replays will sync regardless of resolution.",
+        "ゲームの解像度が録画時と異なる場合、Extraステージのリプレイは渡里ニナのスペルカード4で同期ずれが発生する可能性があります。Extraステージのリプレイと元の解像度の候補を選択し、同期を確認して、問題なければ修正済みのコピーを保存してください。\n注意：ファイルを保存せずに同期状況をプレビューできます。\n修正済みのリプレイは、解像度に関係なく同期します。"
+      ],
+      "TH20_EXRESFIX_RESOLUTION": [ "原始分辨率：", "Original resolution:", "元の解像度：" ],
+      "TH20_EXRESFIX_RESOLUTION_DISABLE_HINT": [ "播放中无法更改原始分辨率。", "Can't change original resolution during playback.", "再生中は元の解像度を変更できません。" ],
+      "TH20_EXRESFIX_SAVE_DISABLE_HINT": [ "未指定原始分辨率。", "Original resolution not specified.", "元の解像度が指定されていません。" ],
+      "TH20_RESOLUTION_UNSPECIFIED": [ "未指定", "Unspecified", "未指定" ],
+      "TH20_RESOLUTION_640_480": [ "640×480", "640×480", "640×480" ],
+      "TH20_RESOLUTION_960_720": [ "960×720", "960×720", "960×720" ],
+      "TH20_RESOLUTION_1280_960_PLUS": [ ">= 1280×960", ">= 1280×960", ">= 1280×960" ],
+      "TH20_EXPIRED_STONE_FIX": [ "超时异变敌有关的replay爆炸修复", "Expired summon desync fix", "期限切れの異変石同期ずれ修正" ],
+      "TH20_EXPIRED_STONE_FIX_DESC": [
+        "如果你在异变敌召唤槽耗尽后，击败了一个光环已经消失的异变敌，接下来可能随机地发生\u00a05\u00a0种结果之一。虽然这种现象出乎意料地罕见，但相关的replay爆炸问题尤其微妙，因为replay在机师的电脑上通常没有问题，但在其他玩家电脑上可能有问题。\n\n你可以使用此工具检查replay是否受到此问题影响，如果是，则保存修复后的副本。我们会用一个计数器统计显示在某一关中发生此现象的次数（但仅在replay保持同步时准确）。工具的控件允许你指定每次击杀的结果，并可以通过手动输入或播放replay自动记录。最常见的结果是提升对应颜色异变敌的等级。如果replay因此bug不同步（通常在另一次召唤刚开始后），你可以测试其他可能的结果（最常见的是\"无\"和\"+红\"）。\n\n此工具可与上述两个工具一起使用，它们的保存按钮也会保存此工具的数据。",
+        "If you kill a summoned Wonder Stone enemy after the summon gauge fully depletes and the visual aura around it disappears, one of 5 scenarios can happen at random. While this situation is surprisingly rare, the related desync is particularly subtle as the replay will often sync on the original runner's computer but may not for others.\n\nYou can use this tool to check whether a replay is impacted by this issue, and if so, save a fixed copy. A counter will show you how many times it happens on a given stage (though this counter is only accurate for as long as the replay syncs). Controls allow you to specify what the outcome of each kill was, and you can add them manually or automatically by playing the replay. The most common outcome is raising the level of the correct Wonder Stone color. If the replay desyncs due to this bug (often directly after another summon starts), you can test other outcomes (the most common being \"None\" and \"+Red\").\n\nThis tool can be used alongside the above two tools, and their save buttons will save its data too.",
+        "召喚ゲージが完全に減少し、周囲のオーラが消えた後に異変石の敵を撃破すると、ランダムで5つのシナリオのいずれかが発生します。この状況は意外と稀ですが、関連する同期ずれは特に微妙で、元のランナーの環境ではリプレイが同期しても、他の環境では同期しないことがあります。\n\nこのツールを使用すると、リプレイがこの問題の影響を受けているかどうかを確認でき、影響がある場合は修正版を保存できます。カウンターは、特定のステージで何回発生したかを表示します（ただし、このカウンターはリプレイが同期している間のみ正確です）。操作により、各撃破の結果を指定でき、手動で追加することも、リプレイを再生して自動で追加することも可能です。最も一般的な結果は、正しい異変石の色のレベルを上げることです。このバグによってリプレイが同期ずれした場合（多くは別の召喚が始まった直後）、他の結果をテストできます（最も一般的なのは「なし」と「+赤」）。\n\nこのツールは上記2つのツールと併用でき、それらの保存ボタンでもこのツールのデータを保存できます。"
+      ],
+      "TH20_EXPSTONEFIX_SHOW_TOGGLE": [ "显示工具", "Show tool", "ツールを表示" ],
+      "TH20_EXPSTONEFIX_PLUS_RED": [ "+红", "+Red", "+赤" ],
+      "TH20_EXPSTONEFIX_PLUS_BLUE": [ "+蓝", "+Blue", "+青" ],
+      "TH20_EXPSTONEFIX_PLUS_YELLOW": [ "+黄", "+Yellow", "+黄" ],
+      "TH20_EXPSTONEFIX_PLUS_GREEN": [ "+绿", "+Green", "+緑" ],
+      "TH20_EXPSTONEFIX_STAGE_COUNTER": [ "本关卡中已击破的超时异变敌：%d", "Expired summon kills this stage: %d", "このステージで撃破した期限切れの異変石：%d" ],
+      "TH20_EXPSTONEFIX_DISABLE_HINT": [ "播放过程中无法修改超时异变敌数据。", "Can't change expired summon data during playback.", "再生中は期限切れの異変石データを変更できません。" ],
+      "TH20_EXPSTONEFIX_MARK_FIXED": [ "标记为已修复", "Mark as fixed", "修正済みにする" ],
+      "TH20_EXPSTONEFIX_SAVE_NO_DATA_HINT": [ "未设置任何超时异变敌数据。", "No expired summon data set.", "期限切れの異変石データが設定されていません。" ],
+      "TH20_EXPSTONEFIX_SAVE_USE_MAINRPYFIX_HINT": [ "请使用主线爆炸replay修复的保存按钮。", "Use Main story desyncs fix's save button instead.", "メインストーリーの同期ずれ修正の保存ボタンを使用してください。" ],
+      "TH20_EXPSTONEFIX_SAVE_USE_EXRESFIX_HINT": [ "请使用Extra关卡分辨率修复的保存按钮。", "Use Extra Resolution fix's save button instead.", "Extraステージ解像度修正の保存ボタンを使用してください。" ],
+      "TH20_CREDITS": [ "Khangaroo、Guy、zero318、rue，以及你！", "Khangaroo, Guy, zero318, rue, and you!", "Khangaroo、Guy、zero318、rue、そしてあなた！" ]
     },
 
     "sections": {
-        "TH20_ST1_MID1": {
-            "bgm": 0,
-            "spell": 0,
-            "appearance": [ 1, 1, 1 ],
-            "!ENHL": "TH_MID_NS1"
-        },
-        "TH20_ST1_BOSS1": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 1, 2, 1 ],
-            "!ENHL": "TH_END_NS1"
-        },
-        "TH20_ST1_BOSS2": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 1, 2, 2 ],
-            "!EN": [ "尘符「Cosmic Dust」(宇宙灰尘)", "Dust Sign \"Cosmic Dust\"", "塵符「コズミックダスト」" ],
-            "!HL": [ "尘符「宇宙尘埃」", "Dust Sign \"Space Dust\"", "塵符「宇宙塵」" ]
-        },
-        "TH20_ST1_BOSS3": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 1, 2, 3 ],
-            "!ENHL": "TH_END_NS2"
-        },
-        "TH20_ST1_BOSS4": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 1, 2, 4 ],
-            "!EN": [ "尘符「唐柜翻转」", "Dust Sign \"Karabitsu Upheaval\"", "塵符「唐櫃返し」" ],
-            "!HL": [ "尘符「唐柜大翻转」", "Dust Sign \"Great Karabitsu Upheaval\"", "塵符「唐櫃大返し」" ]
-        },
-        "TH20_ST1_BOSS5": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 1, 2, 5 ],
-            "!ENHL": [ "尘符「尘埃栖所」", "Dust Sign \"Dwelling of Dust\"", "塵符「塵のすみか」" ]
-        },
+      "TH20_ST1_MID1": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [ 1, 1, 1 ],
+        "!ENHL": "TH_MID_NS1"
+      },
+      "TH20_ST1_BOSS1": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 1, 2, 1 ],
+        "!ENHL": "TH_END_NS1"
+      },
+      "TH20_ST1_BOSS2": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 1, 2, 2 ],
+        "!EN": [ "尘符「Cosmic Dust」(宇宙灰尘)", "Dust Sign \"Cosmic Dust\"", "塵符「コズミックダスト」" ],
+        "!HL": [ "尘符「宇宙尘埃」", "Dust Sign \"Space Dust\"", "塵符「宇宙塵」" ]
+      },
+      "TH20_ST1_BOSS3": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 1, 2, 3 ],
+        "!ENHL": "TH_END_NS2"
+      },
+      "TH20_ST1_BOSS4": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 1, 2, 4 ],
+        "!EN": [ "尘符「唐柜翻转」", "Dust Sign \"Karabitsu Upheaval\"", "塵符「唐櫃返し」" ],
+        "!HL": [ "尘符「唐柜大翻转」", "Dust Sign \"Great Karabitsu Upheaval\"", "塵符「唐櫃大返し」" ]
+      },
+      "TH20_ST1_BOSS5": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 1, 2, 5 ],
+        "!ENHL": [ "尘符「尘埃栖所」", "Dust Sign \"Dwelling of Dust\"", "塵符「塵のすみか」" ]
+      },
 
-        "TH20_ST2_MID1": {
-            "bgm": 0,
-            "spell": 0,
-            "appearance": [ 2, 1, 1 ],
-            "!ENHL": "TH_MID_NS1"
-        },
-        "TH20_ST2_BOSS1": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 2, 2, 1 ],
-            "!ENHL": "TH_END_NS1"
-        },
-        "TH20_ST2_BOSS2": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 2, 2, 2 ],
-            "!EN": [ "魅符「不羁山涧之气」", "Bewitching Sign \"Qi of an Unruly Swamp\"", "魅符「まつろわぬ沢の気」" ],
-            "!HL": [ "魅符「狂野山涧之气」", "Bewitching Sign \"Qi of an Abusive Swamp\"", "魅符「荒くれる沢の気」" ]
-        },
-        "TH20_ST2_BOSS3": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 2, 2, 3 ],
-            "!ENHL": "TH_END_NS2"
-        },
-        "TH20_ST2_BOSS4": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 2, 2, 4 ],
-            "!EN": [ "魅符「梦呓森林之气」", "Bewitching Sign \"Qi of a Restless Forest\"", "魅符「うなされる森の気」" ],
-            "!HL": [ "魅符「窒息森林之气」", "Bewitching Sign \"Qi of a Suffocating Forest\"", "魅符「息苦しい森の気」" ]
-        },
-        "TH20_ST2_BOSS5": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 2, 2, 5 ],
-            "!EN": [ "魑符「狂暴山岳之气」", "Mountain Spirit Sign \"Qi of a Savage Mountain\"", "魑符「荒ぶる山の気」" ],
-            "!HL": [ "魑符「暴怒山岳之气」", "Mountain Spirit Sign \"Qi of a Furious Mountain\"", "魑符「怒れる山の気」" ]
-        },
+      "TH20_ST2_MID1": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [ 2, 1, 1 ],
+        "!ENHL": "TH_MID_NS1"
+      },
+      "TH20_ST2_BOSS1": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 2, 2, 1 ],
+        "!ENHL": "TH_END_NS1"
+      },
+      "TH20_ST2_BOSS2": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 2, 2, 2 ],
+        "!EN": [ "魅符「不羁山涧之气」", "Bewitching Sign \"Qi of an Unruly Swamp\"", "魅符「まつろわぬ沢の気」" ],
+        "!HL": [ "魅符「狂野山涧之气」", "Bewitching Sign \"Qi of an Abusive Swamp\"", "魅符「荒くれる沢の気」" ]
+      },
+      "TH20_ST2_BOSS3": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 2, 2, 3 ],
+        "!ENHL": "TH_END_NS2"
+      },
+      "TH20_ST2_BOSS4": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 2, 2, 4 ],
+        "!EN": [ "魅符「梦呓森林之气」", "Bewitching Sign \"Qi of a Restless Forest\"", "魅符「うなされる森の気」" ],
+        "!HL": [ "魅符「窒息森林之气」", "Bewitching Sign \"Qi of a Suffocating Forest\"", "魅符「息苦しい森の気」" ]
+      },
+      "TH20_ST2_BOSS5": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 2, 2, 5 ],
+        "!EN": [ "魑符「狂暴山岳之气」", "Mountain Spirit Sign \"Qi of a Savage Mountain\"", "魑符「荒ぶる山の気」" ],
+        "!HL": [ "魑符「暴怒山岳之气」", "Mountain Spirit Sign \"Qi of a Furious Mountain\"", "魑符「怒れる山の気」" ]
+      },
 
-        "TH20_ST3_BOSS1": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 3, 2, 1 ],
-            "!ENHL": "TH_END_NS1"
-        },
-        "TH20_ST3_BOSS2": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 3, 2, 2 ],
-            "!EN": [ "谜符「Pyramidal Labyrinth」(锥状迷宫)", "Riddle Sign \"Pyramidal Labyrinth\"", "謎符「ピラミダルラビリンス」" ],
-            "!HL": [ "谜符「Hexagonal Labyrinth」(六角迷宫)", "Riddle Sign \"Hexagonal Labyrinth\"", "謎符「ヘキサゴナルラビリンス」" ]
-        },
-        "TH20_ST3_BOSS3": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 3, 2, 3 ],
-            "!ENHL": "TH_END_NS2"
-        },
-        "TH20_ST3_BOSS4": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 3, 2, 4 ],
-            "!EN": [ "塞符「Logical Wall」(逻辑高墙)", "Obstructing Sign \"Logical Wall\"", "塞符「ロジカルウォール」" ],
-            "!HL": [ "塞符「Logical Great Wall」(逻辑长城)", "Obstructing Sign \"Logical Great Wall\"", "塞符「ロジカルグレートウォール」" ]
-        },
-        "TH20_ST3_BOSS5": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 3, 2, 5 ],
-            "!ENHL": "TH_END_NS3"
-        },
-        "TH20_ST3_BOSS6": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 3, 2, 6 ],
-            "!ENHL": [ "谜符「Ancient Trap」(远古陷阱)", "Riddle Sign \"Ancient Trap\"", "謎符「エンシャントトラップ」" ]
-        },
-        "TH20_ST3_BOSS7": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 3, 2, 7 ],
-            "!ENHL": [ "金符「弹幕金字塔」", "Gold Sign \"Danmaku Pyramid\"", "金符「弾幕の金字塔」" ]
-        },
+      "TH20_ST3_BOSS1": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 3, 2, 1 ],
+        "!ENHL": "TH_END_NS1"
+      },
+      "TH20_ST3_BOSS2": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 3, 2, 2 ],
+        "!EN": [ "谜符「Pyramidal Labyrinth」(锥状迷宫)", "Riddle Sign \"Pyramidal Labyrinth\"", "謎符「ピラミダルラビリンス」" ],
+        "!HL": [ "谜符「Hexagonal Labyrinth」(六角迷宫)", "Riddle Sign \"Hexagonal Labyrinth\"", "謎符「ヘキサゴナルラビリンス」" ]
+      },
+      "TH20_ST3_BOSS3": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 3, 2, 3 ],
+        "!ENHL": "TH_END_NS2"
+      },
+      "TH20_ST3_BOSS4": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 3, 2, 4 ],
+        "!EN": [ "塞符「Logical Wall」(逻辑高墙)", "Obstructing Sign \"Logical Wall\"", "塞符「ロジカルウォール」" ],
+        "!HL": [ "塞符「Logical Great Wall」(逻辑长城)", "Obstructing Sign \"Logical Great Wall\"", "塞符「ロジカルグレートウォール」" ]
+      },
+      "TH20_ST3_BOSS5": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 3, 2, 5 ],
+        "!ENHL": "TH_END_NS3"
+      },
+      "TH20_ST3_BOSS6": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 3, 2, 6 ],
+        "!ENHL": [ "谜符「Ancient Trap」(远古陷阱)", "Riddle Sign \"Ancient Trap\"", "謎符「エンシャントトラップ」" ]
+      },
+      "TH20_ST3_BOSS7": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 3, 2, 7 ],
+        "!ENHL": [ "金符「弹幕金字塔」", "Gold Sign \"Danmaku Pyramid\"", "金符「弾幕の金字塔」" ]
+      },
 
-        "TH20_ST4_MID1": {
-            "bgm": 0,
-            "spell": 0,
-            "appearance": [ 4, 1, 1 ],
-            "!ENHL": "TH_MID_NS1"
-        },
-        "TH20_ST4_MID2": {
-            "bgm": 0,
-            "spell": 0,
-            "appearance": [ 4, 1, 2 ],
-            "!ENHL": "TH_MID_NS2"
-        },
-        "TH20_ST4_BOSS1": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 4, 2, 1 ],
-            "!ENHL": "TH_END_NS1"
-        },
-        "TH20_ST4_BOSS2": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 4, 2, 2 ],
-            "!EN": [ "虚符「Streaming Doll」(推流人偶)", "Void Sign \"Streaming Doll\"", "虚符「ストリーミングドール」" ],
-            "!HL": [ "虚符「Streaming Marionette」(推流提线木偶)", "Void Sign \"Streaming Marionette\"", "虚符「ストリーミングマリオネット」" ]
-        },
-        "TH20_ST4_BOSS3": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 4, 2, 3 ],
-            "!ENHL": "TH_END_NS2"
-        },
-        "TH20_ST4_BOSS4": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 4, 2, 4 ],
-            "!EN": [ "群符「Rubble Data」(碎片数据)", "Crowd Sign \"Rabble Data\"", "群符「ラブルデータ」" ],
-            "!HL": [ "群符「Rubble Big Data」(碎片大数据)", "Crowd Sign \"Rabble Big Data\"", "群符「ラブルビッグデータ」" ]
-        },
-        "TH20_ST4_BOSS5": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 4, 2, 5 ],
-            "!ENHL": "TH_END_NS3"
-        },
-        "TH20_ST4_BOSS6": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 4, 2, 6 ],
-            "!ENHL": [ "「唯余猎鹿的美好记忆」", "\"Beautiful Memories of Just Hunting Deer\"", "「シカを射るだけの美しい記憶」" ]
-        },
-        "TH20_ST4_BOSS7": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 4, 2, 7 ],
-            "!ENHL": [ "虚构「Discommunication」(无效交流)", "Fiction \"Discommunication\"", "虚構「ディスコミュニケーション」" ]
-        },
+      "TH20_ST4_MID1": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [ 4, 1, 1 ],
+        "!ENHL": "TH_MID_NS1"
+      },
+      "TH20_ST4_MID2": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [ 4, 1, 2 ],
+        "!ENHL": "TH_MID_NS2"
+      },
+      "TH20_ST4_BOSS1": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 4, 2, 1 ],
+        "!ENHL": "TH_END_NS1"
+      },
+      "TH20_ST4_BOSS2": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 4, 2, 2 ],
+        "!EN": [ "虚符「Streaming Doll」(推流人偶)", "Void Sign \"Streaming Doll\"", "虚符「ストリーミングドール」" ],
+        "!HL": [ "虚符「Streaming Marionette」(推流提线木偶)", "Void Sign \"Streaming Marionette\"", "虚符「ストリーミングマリオネット」" ]
+      },
+      "TH20_ST4_BOSS3": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 4, 2, 3 ],
+        "!ENHL": "TH_END_NS2"
+      },
+      "TH20_ST4_BOSS4": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 4, 2, 4 ],
+        "!EN": [ "群符「Rubble Data」(碎片数据)", "Crowd Sign \"Rabble Data\"", "群符「ラブルデータ」" ],
+        "!HL": [ "群符「Rubble Big Data」(碎片大数据)", "Crowd Sign \"Rabble Big Data\"", "群符「ラブルビッグデータ」" ]
+      },
+      "TH20_ST4_BOSS5": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 4, 2, 5 ],
+        "!ENHL": "TH_END_NS3"
+      },
+      "TH20_ST4_BOSS6": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 4, 2, 6 ],
+        "!ENHL": [ "「唯余猎鹿的美好记忆」", "\"Beautiful Memories of Just Hunting Deer\"", "「シカを射るだけの美しい記憶」" ]
+      },
+      "TH20_ST4_BOSS7": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 4, 2, 7 ],
+        "!ENHL": [ "虚构「Discommunication」(无效交流)", "Fiction \"Discommunication\"", "虚構「ディスコミュニケーション」" ]
+      },
 
-        "TH20_ST5_MID1": {
-            "bgm": 0,
-            "spell": 0,
-            "appearance": [ 5, 1, 1 ],
-            "!ENHL": "TH_MID_NS1"
-        },
-        "TH20_ST5_BOSS1": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 5, 2, 1 ],
-            "!ENHL": "TH_END_NS1"
-        },
-        "TH20_ST5_BOSS2": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 5, 2, 2 ],
-            "!ENHL": [ "宝珠「潮盈珠」", "Precious Gem \"Tide-Flowing Jewel\"", "宝珠「潮盈珠」" ]
-        },
-        "TH20_ST5_BOSS3": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 5, 2, 3 ],
-            "!ENHL": "TH_END_NS2"
-        },
-        "TH20_ST5_BOSS4": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 5, 2, 4 ],
-            "!EN": [ "灾祸「山洪」", "Disaster \"Landslide\"", "災禍「山津波」" ],
-            "!H": [ "灾祸「漫长的山洪」", "Disaster \"Lengthy Landslide\"", "災禍「長い山津波」" ],
-            "!L": [ "灾祸「无尽的山洪」", "Disaster \"Never-ending Landslide\"", "災禍「終わらない山津波」" ]
-        },
-        "TH20_ST5_BOSS5": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 5, 2, 5 ],
-            "!ENHL": "TH_END_NS3"
-        },
-        "TH20_ST5_BOSS6": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 5, 2, 6 ],
-            "!ENHL": [ "宝珠「潮干珠」", "Precious Gem \"Tide-Ebbing Jewel\"", "宝珠「潮乾珠」" ]
-        },
-        "TH20_ST5_BOSS7": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 5, 2, 7 ],
-            "!ENHL": [ "「Moon Dragon」(月龙)", "\"Moon Dragon\"", "「ムーンドラゴン」" ]
-        },
+      "TH20_ST5_MID1": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [ 5, 1, 1 ],
+        "!ENHL": "TH_MID_NS1"
+      },
+      "TH20_ST5_BOSS1": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 5, 2, 1 ],
+        "!ENHL": "TH_END_NS1"
+      },
+      "TH20_ST5_BOSS2": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 5, 2, 2 ],
+        "!ENHL": [ "宝珠「潮盈珠」", "Precious Gem \"Tide-Flowing Jewel\"", "宝珠「潮盈珠」" ]
+      },
+      "TH20_ST5_BOSS3": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 5, 2, 3 ],
+        "!ENHL": "TH_END_NS2"
+      },
+      "TH20_ST5_BOSS4": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 5, 2, 4 ],
+        "!EN": [ "灾祸「山洪」", "Disaster \"Landslide\"", "災禍「山津波」" ],
+        "!H": [ "灾祸「漫长的山洪」", "Disaster \"Lengthy Landslide\"", "災禍「長い山津波」" ],
+        "!L": [ "灾祸「无尽的山洪」", "Disaster \"Never-ending Landslide\"", "災禍「終わらない山津波」" ]
+      },
+      "TH20_ST5_BOSS5": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 5, 2, 5 ],
+        "!ENHL": "TH_END_NS3"
+      },
+      "TH20_ST5_BOSS6": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 5, 2, 6 ],
+        "!ENHL": [ "宝珠「潮干珠」", "Precious Gem \"Tide-Ebbing Jewel\"", "宝珠「潮乾珠」" ]
+      },
+      "TH20_ST5_BOSS7": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 5, 2, 7 ],
+        "!ENHL": [ "「Moon Dragon」(月龙)", "\"Moon Dragon\"", "「ムーンドラゴン」" ]
+      },
 
-        "TH20_ST6_BOSS1": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 6, 2, 1 ],
-            "!ENHL": "TH_END_NS1"
-        },
-        "TH20_ST6_BOSS2": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 6, 2, 2 ],
-            "!ENHL": [ "石神「汇作巨岩的碎石」", "Stone God \"Small Pebbles Forming a Boulder\"", "石神「巌となるさざれ石」" ]
-        },
-        "TH20_ST6_BOSS3": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 6, 2, 3 ],
-            "!ENHL": "TH_END_NS2"
-        },
-        "TH20_ST6_BOSS4": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 6, 2, 4 ],
-            "!EN": [ "死符「永远之冬」", "Death Sign \"Eternal Winter\"", "死符「永遠の冬」" ],
-            "!HL": [ "死符「恒久之冬」", "Death Sign \"Permanent Winter\"", "死符「恒久の冬」" ]
-        },
-        "TH20_ST6_BOSS5": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 6, 2, 5 ],
-            "!ENHL": "TH_END_NS3"
-        },
-        "TH20_ST6_BOSS6": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 6, 2, 6 ],
-            "!ENHL": [ "生符「混沌之冬」", "Life Sign \"Chaotic Winter\"", "生符「混沌の冬」" ]
-        },
-        "TH20_ST6_BOSS7": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 6, 2, 7 ],
-            "!ENHL": "TH_END_NS4"
-        },
-        "TH20_ST6_BOSS8": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 6, 2, 8 ],
-            "!ENHL": [ "「弹幕的化石」", "\"Danmaku Fossil\"", "「弾幕の化石」" ]
-        },
-        "TH20_ST6_BOSS9": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 6, 2, 9 ],
-            "!ENHL": "TH_END_NS5"
-        },
-        "TH20_ST6_BOSS10": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 6, 2, 10 ],
-            "!ENHL": [ "地符「幻想的遗骸」", "Land Sign \"Illusionary Reliquae\"", "地符「幻想のリリクウィ」" ]
-        },
-        "TH20_ST6_BOSS11": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 6, 2, 11 ],
-            "!ENHL": [ "月符「锦上的虚像」", "Moon Sign \"Imaginary Atop the Brocade\"", "月符「錦の上のイマジナリー」" ]
-        },
-        "TH20_ST6_BOSS12": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 6, 2, 12 ],
-            "!EN": [ "「Stone Goddess」(石之女神)", "\"Stone Goddess\"", "「ストーンゴッデス」" ],
-            "!HL": [ "「不生不灭的石之女神」", "\"Goddess of Unliving, Undying Stone\"", "「不生不滅の石の女神」" ]
-        },
+      "TH20_ST6_BOSS1": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 6, 2, 1 ],
+        "!ENHL": "TH_END_NS1"
+      },
+      "TH20_ST6_BOSS2": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 6, 2, 2 ],
+        "!ENHL": [ "石神「汇作巨岩的碎石」", "Stone God \"Small Pebbles Forming a Boulder\"", "石神「巌となるさざれ石」" ]
+      },
+      "TH20_ST6_BOSS3": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 6, 2, 3 ],
+        "!ENHL": "TH_END_NS2"
+      },
+      "TH20_ST6_BOSS4": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 6, 2, 4 ],
+        "!EN": [ "死符「永远之冬」", "Death Sign \"Eternal Winter\"", "死符「永遠の冬」" ],
+        "!HL": [ "死符「恒久之冬」", "Death Sign \"Permanent Winter\"", "死符「恒久の冬」" ]
+      },
+      "TH20_ST6_BOSS5": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 6, 2, 5 ],
+        "!ENHL": "TH_END_NS3"
+      },
+      "TH20_ST6_BOSS6": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 6, 2, 6 ],
+        "!ENHL": [ "生符「混沌之冬」", "Life Sign \"Chaotic Winter\"", "生符「混沌の冬」" ]
+      },
+      "TH20_ST6_BOSS7": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 6, 2, 7 ],
+        "!ENHL": "TH_END_NS4"
+      },
+      "TH20_ST6_BOSS8": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 6, 2, 8 ],
+        "!ENHL": [ "「弹幕的化石」", "\"Danmaku Fossil\"", "「弾幕の化石」" ]
+      },
+      "TH20_ST6_BOSS9": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 6, 2, 9 ],
+        "!ENHL": "TH_END_NS5"
+      },
+      "TH20_ST6_BOSS10": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 6, 2, 10 ],
+        "!ENHL": [ "地符「幻想的遗骸」", "Land Sign \"Illusionary Reliquae\"", "地符「幻想のリリクウィ」" ]
+      },
+      "TH20_ST6_BOSS11": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 6, 2, 11 ],
+        "!ENHL": [ "月符「锦上的虚像」", "Moon Sign \"Imaginary Atop the Brocade\"", "月符「錦の上のイマジナリー」" ]
+      },
+      "TH20_ST6_BOSS12": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 6, 2, 12 ],
+        "!EN": [ "「Stone Goddess」(石之女神)", "\"Stone Goddess\"", "「ストーンゴッデス」" ],
+        "!HL": [ "「不生不灭的石之女神」", "\"Goddess of Unliving, Undying Stone\"", "「不生不滅の石の女神」" ]
+      },
 
-        "TH20_ST7_MID1": {
-            "bgm": 0,
-            "spell": 1,
-            "appearance": [ 7, 1, 1 ],
-            "!X": [ "鹿符「Deer Genocider」(鹿之灭族者)", "Deer Sign \"Deer Genocider\"", "⿅符「ディアジェノサイダー」" ]
-        },
-        "TH20_ST7_MID2": {
-            "bgm": 0,
-            "spell": 1,
-            "appearance": [ 7, 1, 2 ],
-            "!X": [ "蛇姬「Snakelander」(蛇国之民)", "Snake Princess \"Snakelander\"", "蛇姫「スネークランダー」" ]
-        },
-        "TH20_ST7_MID3": {
-            "bgm": 0,
-            "spell": 1,
-            "appearance": [ 7, 1, 3 ],
-            "!X": [ "「Zoltax Communication」(佐塔克斯交流)", "\"Zoltax Communication\"", "「ゾルタクスコミュニケーション」" ]
-        },
-        "TH20_ST7_BOSS1": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 7, 2, 1 ],
-            "!X": "TH_END_NS1"
-        },
-        "TH20_ST7_BOSS2": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 7, 2, 2 ],
-            "!X": [ "真相「Tetra Monoeye」(三角锥独眼)", "Truth \"Tetra Mono-Eye\"", "真実「テトラモノアイ」" ]
-        },
-        "TH20_ST7_BOSS3": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 7, 2, 3 ],
-            "!X": "TH_END_NS2"
-        },
-        "TH20_ST7_BOSS4": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 7, 2, 4 ],
-            "!X": [ "真相「Old Illuminati」(古老的光明会)", "Truth \"Old Illuminati\"", "真実「オールドイルミナティ」" ]
-        },
-        "TH20_ST7_BOSS5": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 7, 2, 5 ],
-            "!X": "TH_END_NS3"
-        },
-        "TH20_ST7_BOSS6": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 7, 2, 6 ],
-            "!X": [ "真相「Chemtrail Cloud」(化学尾迹云)", "Truth \"Chemtrail Cloud\"", "真実「ケムトレイルクラウド」" ]
-        },
-        "TH20_ST7_BOSS7": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 7, 2, 7 ],
-            "!X": "TH_END_NS4"
-        },
-        "TH20_ST7_BOSS8": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 7, 2, 8 ],
-            "!X": [ "真相「Reptilian Intelligence」(爬虫人智能)", "Truth \"Reptilian Intelligence\"", "真実「レプティリアニンテリジェンス」" ]
-        },
-        "TH20_ST7_BOSS9": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 7, 2, 9 ],
-            "!X": "TH_END_NS5"
-        },
-        "TH20_ST7_BOSS10": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 7, 2, 10 ],
-            "!X": [ "真相「Flat Earther」(地平论者)", "Truth \"Flat Earther\"", "真実「フラットアーサー」" ]
-        },
-        "TH20_ST7_BOSS11": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 7, 2, 11 ],
-            "!X": "TH_END_NS6"
-        },
-        "TH20_ST7_BOSS12": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 7, 2, 12 ],
-            "!X": [ "真相「Artificial Disaster」(人工灾害)", "Truth \"Artificial Disaster\"", "真実「アーティフィシャルディサスター」" ]
-        },
-        "TH20_ST7_BOSS13": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 7, 2, 13 ],
-            "!X": "TH_END_NS7"
-        },
-        "TH20_ST7_BOSS14": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 7, 2, 14 ],
-            "!X": [ "真相「New World Order」(新世界秩序)", "Truth \"New World Order\"", "真実「ニューワールドオーダー」" ]
-        },
-        "TH20_ST7_BOSS15": {
-            "bgm": 1,
-            "spell": 0,
-            "appearance": [ 7, 2, 15 ],
-            "!X": "TH_END_NS8"
-        },
-        "TH20_ST7_BOSS16": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 7, 2, 16 ],
-            "!X": [ "真相「Tartarian Rhapsody」(鞑靼利亚狂想曲)", "Truth \"Tartarian Rhapsody\"", "真実「タルタリアンラプソディ」" ]
-        },
-        "TH20_ST7_BOSS17": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 7, 2, 17 ],
-            "!X": [ "「Chocolate River」(巧克力河)", "\"Chocolate River\"", "「チョコレートリバー」" ]
-        },
-        "TH20_ST7_BOSS18": {
-            "bgm": 1,
-            "spell": 1,
-            "appearance": [ 7, 2, 18 ],
-            "!X": [ "「安哥鲁莫亚王」", "\"Great King of Angolmois\"", "「アンゴルモアの大王」" ]
-        }
+      "TH20_ST7_MID1": {
+        "bgm": 0,
+        "spell": 1,
+        "appearance": [ 7, 1, 1 ],
+        "!X": [ "鹿符「Deer Genocider」(鹿之灭族者)", "Deer Sign \"Deer Genocider\"", "⿅符「ディアジェノサイダー」" ]
+      },
+      "TH20_ST7_MID2": {
+        "bgm": 0,
+        "spell": 1,
+        "appearance": [ 7, 1, 2 ],
+        "!X": [ "蛇姬「Snakelander」(蛇国之民)", "Snake Princess \"Snakelander\"", "蛇姫「スネークランダー」" ]
+      },
+      "TH20_ST7_MID3": {
+        "bgm": 0,
+        "spell": 1,
+        "appearance": [ 7, 1, 3 ],
+        "!X": [ "「Zoltax Communication」(佐塔克斯交流)", "\"Zoltax Communication\"", "「ゾルタクスコミュニケーション」" ]
+      },
+      "TH20_ST7_BOSS1": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 7, 2, 1 ],
+        "!X": "TH_END_NS1"
+      },
+      "TH20_ST7_BOSS2": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 7, 2, 2 ],
+        "!X": [ "真相「Tetra Monoeye」(三角锥独眼)", "Truth \"Tetra Mono-Eye\"", "真実「テトラモノアイ」" ]
+      },
+      "TH20_ST7_BOSS3": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 7, 2, 3 ],
+        "!X": "TH_END_NS2"
+      },
+      "TH20_ST7_BOSS4": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 7, 2, 4 ],
+        "!X": [ "真相「Old Illuminati」(古老的光明会)", "Truth \"Old Illuminati\"", "真実「オールドイルミナティ」" ]
+      },
+      "TH20_ST7_BOSS5": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 7, 2, 5 ],
+        "!X": "TH_END_NS3"
+      },
+      "TH20_ST7_BOSS6": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 7, 2, 6 ],
+        "!X": [ "真相「Chemtrail Cloud」(化学尾迹云)", "Truth \"Chemtrail Cloud\"", "真実「ケムトレイルクラウド」" ]
+      },
+      "TH20_ST7_BOSS7": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 7, 2, 7 ],
+        "!X": "TH_END_NS4"
+      },
+      "TH20_ST7_BOSS8": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 7, 2, 8 ],
+        "!X": [ "真相「Reptilian Intelligence」(爬虫人智能)", "Truth \"Reptilian Intelligence\"", "真実「レプティリアニンテリジェンス」" ]
+      },
+      "TH20_ST7_BOSS9": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 7, 2, 9 ],
+        "!X": "TH_END_NS5"
+      },
+      "TH20_ST7_BOSS10": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 7, 2, 10 ],
+        "!X": [ "真相「Flat Earther」(地平论者)", "Truth \"Flat Earther\"", "真実「フラットアーサー」" ]
+      },
+      "TH20_ST7_BOSS11": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 7, 2, 11 ],
+        "!X": "TH_END_NS6"
+      },
+      "TH20_ST7_BOSS12": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 7, 2, 12 ],
+        "!X": [ "真相「Artificial Disaster」(人工灾害)", "Truth \"Artificial Disaster\"", "真実「アーティフィシャルディサスター」" ]
+      },
+      "TH20_ST7_BOSS13": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 7, 2, 13 ],
+        "!X": "TH_END_NS7"
+      },
+      "TH20_ST7_BOSS14": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 7, 2, 14 ],
+        "!X": [ "真相「New World Order」(新世界秩序)", "Truth \"New World Order\"", "真実「ニューワールドオーダー」" ]
+      },
+      "TH20_ST7_BOSS15": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [ 7, 2, 15 ],
+        "!X": "TH_END_NS8"
+      },
+      "TH20_ST7_BOSS16": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 7, 2, 16 ],
+        "!X": [ "真相「Tartarian Rhapsody」(鞑靼利亚狂想曲)", "Truth \"Tartarian Rhapsody\"", "真実「タルタリアンラプソディ」" ]
+      },
+      "TH20_ST7_BOSS17": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 7, 2, 17 ],
+        "!X": [ "「Chocolate River」(巧克力河)", "\"Chocolate River\"", "「チョコレートリバー」" ]
+      },
+      "TH20_ST7_BOSS18": {
+        "bgm": 1,
+        "spell": 1,
+        "appearance": [ 7, 2, 18 ],
+        "!X": [ "「安哥鲁莫亚王」", "\"Great King of Angolmois\"", "「アンゴルモアの大王」" ]
+      }
     },
 
     "groups": {
-      "TH20_SPELL_PHASE_TIMEOUT": [
-        "TH_NORMAL",
-        "TH_FINALE"
-      ],
       "TH20_CYCLE_LIST": [
         "TH14_CYCLE_1",
         "TH14_CYCLE_2",
         "TH20_CYCLE_3"
+      ],
+      "TH20_EXRESFIX_RESOLUTION_OPT": [
+        "TH20_RESOLUTION_UNSPECIFIED",
+        "TH20_RESOLUTION_640_480",
+        "TH20_RESOLUTION_960_720",
+        "TH20_RESOLUTION_1280_960_PLUS"
+      ],
+      "TH20_EXPIRED_PYRAMID_FIX_OPT": [
+        "TH20_EXPSTONEFIX_PLUS_RED",
+        "TH20_EXPSTONEFIX_PLUS_BLUE",
+        "TH20_EXPSTONEFIX_PLUS_YELLOW",
+        "TH20_EXPSTONEFIX_PLUS_GREEN",
+        "TH_NONE"
       ]
     }
   }

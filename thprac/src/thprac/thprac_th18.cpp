@@ -7,6 +7,8 @@ namespace TH18 {
 #define play_sound_centered(id) asm_call<0x476BE0, Stdcall>(id, UNUSED_DWORD)
 
     // MSVC WILL generate suboptimal code here if I don't hand-write my own assembly here
+#pragma warning(push)
+#pragma warning(disable : 4100)
     __declspec(naked) void __fastcall globals_assign_hooked(uint32_t* glob1, void*, uint32_t* glob2)
     {
         __asm {
@@ -20,6 +22,7 @@ namespace TH18 {
             ret 0x4
         }
     }
+#pragma warning(pop)
 
     enum sound_id : uint32_t {
         SND_INVALID = 16,
@@ -33,6 +36,7 @@ namespace TH18 {
         ABILITY_SHOP_PTR = 0x4cf2a4,
         CARD_DESC_LIST = 0x4c53c0,
         MUKADE_ADDR = 0x4cf2d4,
+        WINDOW_PTR = 0x568c30,
     };
     
     enum cards {
@@ -792,6 +796,8 @@ namespace TH18 {
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC1));
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC2));
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC3));
+                ImGui::TextUnformatted(Gui::HotkeyChordToLabel(Gui::GetBackspaceMenuChord()).c_str());
+                ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC4));
             }
         }
@@ -803,7 +809,7 @@ namespace TH18 {
                 ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(255.0f, 0.0f, 0.0f, 255.0f));
                 popColor = true;
 
-                if (Gui::KeyboardInputGetRaw(VK_BACK)) {
+                if (Gui::GetChordPressed(Gui::GetBackspaceMenuChord())) {
                     th18_shop_escape_1.Enable();
                     th18_shop_escape_2.Enable();
                 } else {
@@ -865,7 +871,7 @@ namespace TH18 {
             }
         }
 
-        Gui::GuiHotKey mMenu { "ModMenuToggle", "BACKSPACE", VK_BACK };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x45d4ea, "01")
@@ -1229,27 +1235,6 @@ namespace TH18 {
         const char* mStageStr[9] {
             "?", "1", "2", "3", "4", "5", "6", "Extra", "?"
         };
-        __declspec(noinline) void MsgBox(UINT type, const wchar_t* title, const wchar_t* msg, const wchar_t* msg2 = nullptr)
-        {
-            std::wstring _msg = msg;
-            if (msg2) {
-                _msg += msg2;
-            }
-            MessageBoxW(*(HWND*)0x568c30, _msg.c_str(), title, type);
-        }
-        __declspec(noinline) void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nullptr)
-        {
-            wchar_t _title[256];
-            wchar_t _msg[256];
-            wchar_t _msg2[256];
-            MultiByteToWideChar(CP_UTF8, 0, title, -1, _title, 256);
-            MultiByteToWideChar(CP_UTF8, 0, msg, -1, _msg, 256);
-            if (msg2) {
-                MultiByteToWideChar(CP_UTF8, 0, msg2, -1, _msg2, 256);
-            }
-            MsgBox(type, _title, _msg, msg2 ? _msg2 : nullptr);
-
-        }
         __declspec(noinline) uint32_t* FindCardDesc(uint32_t id)
         {
             for (uint32_t i = CARD_DESC_LIST; true; i += 0x34) {
@@ -1356,7 +1341,7 @@ namespace TH18 {
             wcscpy_s(szFile, L"th18_ud----.rpy");
             ZeroMemory(&ofn, sizeof(ofn));
             ofn.lStructSize = sizeof(ofn);
-            ofn.hwndOwner = *(HWND*)0x568c30;
+            ofn.hwndOwner = *(HWND*)WINDOW_PTR;
             ofn.lpstrFile = szFile;
             ofn.nMaxFile = sizeof(szFile);
             ofn.lpstrFilter = L"Replay File\0*.rpy\0";
@@ -1365,11 +1350,11 @@ namespace TH18 {
             ofn.nMaxFileTitle = 0;
             ofn.lpstrInitialDir = repDir.c_str();
             ofn.lpstrDefExt = L".rpy";
-            ofn.Flags = OFN_OVERWRITEPROMPT;
+            ofn.Flags = OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
             if (GetSaveFileNameW(&ofn)) {
                 auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {
-                    MsgBox(MB_ICONERROR | MB_OK, S(TH14_ERROR), S(TH14_ERROR_DEST));
+                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST), nullptr, ofn.hwndOwner);
                     goto end;
                 }
                 SetFilePointer(outputFile, 0, nullptr, FILE_BEGIN);
@@ -1379,7 +1364,7 @@ namespace TH18 {
                 WriteFile(outputFile, mRepExtraData, mRepExtraDataSize, &bytesProcessed, nullptr);
                 CloseHandle(outputFile);
 
-                MsgBox(MB_ICONINFORMATION | MB_OK, utf8_to_utf16(S(TH14_SUCCESS)).c_str(), utf8_to_utf16(S(TH14_SUCCESS_SAVED)).c_str(), szFile);
+                MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
             }
 
             end:
@@ -1437,7 +1422,7 @@ namespace TH18 {
         {
             bool wndFocus = true;
 
-            if (BeginOptGroup<TH18_REPLAY_FIX>()) {
+            if (BeginOptGroup<TH_REPLAY_FIX>()) {
                 ImGui::TextUnformatted(S(TH18_REPFIX_DESC));
                 if (mShowFixInstruction) {
                     if (ImGui::Button(S(TH18_REPFIX_HIDE_INS)))
@@ -1455,7 +1440,7 @@ namespace TH18 {
 
                 if (!mRepDataDecoded) {
                     if (THGuiRep::singleton().mRepSelected) {
-                        ImGui::Text(S(TH18_REPFIX_SELECTED), THGuiRep::singleton().mRepName.c_str());
+                        ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mRepName.c_str());
 
                         if (!mRepDataDecoded) {
                             ImGui::SameLine();
@@ -1473,7 +1458,7 @@ namespace TH18 {
                         UnloadReplay();
                     }
                     ImGui::SameLine();
-                    if (ImGui::Button(S(TH18_REPFIX_SAVEAS))) {
+                    if (ImGui::Button(S(TH_REPFIX_SAVE))) {
                         SaveReplay();
                     }
 
@@ -1597,7 +1582,7 @@ namespace TH18 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::KeyboardInputUpdate(VK_F12) == 1) {
+            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else
@@ -3056,7 +3041,7 @@ namespace TH18 {
             return;
         }
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x4ccdf8, 0x568c30,
+        GameGuiInit(IMPL_WIN32_DX9, 0x4ccdf8, WINDOW_PTR,
             Gui::INGAGME_INPUT_GEN2, 0x4ca21c, 0x4ca218, 0,
             -2, *(float*)0x56aca0, 0.0f);
 
@@ -3070,6 +3055,12 @@ namespace TH18 {
 
         // Hooks
         EnableAllHooks(THMainHook);
+
+        // Replay user menu (null) fix
+        DWORD oldProtect;
+        VirtualProtect((void*)0x4b7ad8, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+        *(const char**)(0x4b7ad8) = "%s  %s %.2d/%.2d/%.2d %.2d:%.2d %s %s %s %2.1f%%";
+        VirtualProtect((void*)0x4b7ad8, 4, oldProtect, &oldProtect); 
 
         // Reset thPracParam
         thPracParam.Reset();
