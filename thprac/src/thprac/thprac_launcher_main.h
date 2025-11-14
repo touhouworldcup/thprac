@@ -18,4 +18,5 @@ void DisableWinKey();
 void DisableDisableWinKey();
 bool RunSteamGame(THGameSig& gameSig);
 void GuiLauncherHotkeyInit();
+void InitLocaleAndChore();
 }

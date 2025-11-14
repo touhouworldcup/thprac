@@ -109,7 +109,7 @@ int GuiLauncherMain()
         }
         return -1;
     }
-    
+    InitLocaleAndChore();
 
     int theme;
     if (LauncherSettingGet("theme", theme)) {
@@ -280,5 +280,18 @@ void GuiLauncherHotkeyInit()
     Gui::MenuChordInitArrays();
 }
 
+void InitLocaleAndChore()
+{
+    if (!Gui::LocaleInitFromCfg()) {
+        Gui::LocaleAutoSet();
+    }
+    // Load menu open key chords
+    if (!Gui::MenuChordInitFromCfg()) {
+        Gui::MenuChordAutoSet();
+    }
+
+    // Done after loading language as its string entries rely on it.
+    Gui::MenuChordInitArrays();
+}
 
 }

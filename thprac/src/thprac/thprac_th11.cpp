@@ -1,6 +1,7 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 #include <format>
+#include "thprac_res.h"
 
 
 namespace THPrac {
@@ -238,12 +239,31 @@ namespace TH11 {
         }
         void PracticeMenu()
         {
+            static int32_t last_player_type = 0;
+            int32_t player_type = (*(byte*)(CHARA)) * 3 + (*(byte*)(SUBSHOT));
             mMode();
+            if (player_type != last_player_type) {
+                last_player_type = player_type;
+                if(*mMode==1 && *mStage==3 && *mWarp==5){
+                    *mSection = player_type * 3 + 1;
+                }
+            }
+             
             if (mStage())
+            {
                 *mSection = *mChapter = 0;
+                if (*mStage == 3 && *mWarp == 5) {
+                    *mSection = player_type * 3 + 1;
+                }
+            }
             if (*mMode == 1) {
-                if (mWarp())
+                if (mWarp()){
                     *mSection = *mChapter = *mPhase = 0;
+                    if (*mStage == 3 && *mWarp == 5)
+                    {
+                        *mSection = player_type * 3 + 1;
+                    }
+                }
                 if (*mWarp) {
                     SectionWidget();
                     mPhase(TH_PHASE, SpellPhase());
@@ -1440,17 +1460,27 @@ namespace TH11 {
                 ECLJump(ecl, 0x3194, 0x3BC8, 90, 90);
                 break;
             case 2:
-                ecl << pair { 0x4808, 24 };
-                // ecl << pair { 0x4920, 0 };
-                // ecl << pair { 0x4958, 0 };
+                {
+                static char MBossCardECLData1[12040];
+                static bool is_inited = false;
+                if (!is_inited)
+                {
+                    is_inited = true;
+                    memcpy(MBossCardECLData1, MBossCardECLData, 12040);
+                    MBossCardECLData1[16] = 0;
+                }
+                DWORD pECL = GetMemAddr(0x4a8d7c, 0x64, 0x14, 0x20f0);
+                ecl.SetPos(0x20f0);
+                ecl << 0x0 << 0x0018000C << 0x02ff0000 << 0x00000000 << ((DWORD)MBossCardECLData1 - pECL) << 0;
+            }
                 break;
             case 3:
-                ecl << pair { 0x4808, 24 };
-                // ecl << pair { 0x4920, 0 };
-                // ecl << pair { 0x4958, 0 };
-                ECLJump(ecl, 0x239C, 0x2A60, 90, 90);
-                ECLJump(ecl, 0x3194, 0x3BC8, 90, 90);
-                break;
+            {
+                DWORD pECL = GetMemAddr(0x4a8d7c, 0x64, 0x14, 0x20f0);
+                ecl.SetPos(0x20f0);
+                ecl << 0x0 << 0x0018000C << 0x02ff0000 << 0x00000000 << ((DWORD)MBossCardECLData - pECL) << 0;
+            }
+            break;
             }
             ecl << pair{0x1b8, 1500} << pair{0x1f8, 1500};
             ecl.SetPos(0x1284);

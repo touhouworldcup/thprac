@@ -167,7 +167,7 @@ rapidjson::Value& GetCfgSettingsJson()
 }
 bool LauncherSettingGet(const char* name, int& valueOut)
 {
-    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+    if (gCfgJson.IsObject() && gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
         auto& settingsJson = gCfgJson["settings"];
         if (settingsJson.HasMember(name) && settingsJson[name].IsInt()) {
             valueOut = settingsJson[name].GetInt();
@@ -189,7 +189,7 @@ bool LauncherSettingRemove(const char* name)
 }
 bool LauncherSettingGet(const char* name, unsigned int& valueOut)
 {
-    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+    if (gCfgJson.IsObject() && gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
         auto& settingsJson = gCfgJson["settings"];
         if (settingsJson.HasMember(name) && settingsJson[name].IsUint()) {
             valueOut = settingsJson[name].GetUint();
@@ -200,7 +200,7 @@ bool LauncherSettingGet(const char* name, unsigned int& valueOut)
 }
 bool LauncherSettingGet(const char* name, bool& valueOut)
 {
-    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+    if (gCfgJson.IsObject() && gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
         auto& settingsJson = gCfgJson["settings"];
         if (settingsJson.HasMember(name) && settingsJson[name].IsBool()) {
             valueOut = settingsJson[name].GetBool();
@@ -211,7 +211,7 @@ bool LauncherSettingGet(const char* name, bool& valueOut)
 }
 bool LauncherSettingGet(const char* name, float& valueOut)
 {
-    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+    if (gCfgJson.IsObject() && gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
         auto& settingsJson = gCfgJson["settings"];
         if (settingsJson.HasMember(name) && settingsJson[name].IsFloat()) {
             valueOut = settingsJson[name].GetFloat();
@@ -222,7 +222,7 @@ bool LauncherSettingGet(const char* name, float& valueOut)
 }
 bool LauncherSettingGet(const char* name, const char*& valueOut)
 {
-    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+    if (gCfgJson.IsObject() && gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
         auto& settingsJson = gCfgJson["settings"];
         if (settingsJson.HasMember(name) && settingsJson[name].IsString()) {
             valueOut = settingsJson[name].GetString();
@@ -279,7 +279,7 @@ void LauncherSettingSet(const char* name, float& valueIn)
 }
 bool LauncherSettingGet(const char* name, std::array<int, 2>& valueOut)
 {
-    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+    if (gCfgJson.IsObject() && gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
         auto& settingsJson = gCfgJson["settings"];
         char name2[256] = { 0 };
         sprintf_s(name2, "%s_1", name);
@@ -334,7 +334,7 @@ void LauncherSettingSet(const char* name, const std::string& valueIn)
 std::unordered_map<KeyDefine, KeyDefine, KeyDefineHashFunction> g_keybind;
 void LauncherSettingGet_KeyBind()
 {
-    if (gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
+    if (gCfgJson.IsObject() && gCfgJson.HasMember("settings") && gCfgJson["settings"].IsObject()) {
         auto& settingsJson = gCfgJson["settings"];
         if (settingsJson.HasMember("keybind") && settingsJson["keybind"].IsArray())
         {
