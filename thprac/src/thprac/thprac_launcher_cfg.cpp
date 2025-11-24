@@ -2317,6 +2317,7 @@ private:
 
             mUD_Replay_10.Gui(S(THPRAC_MOF_UD_REP));
             mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
+            mSpeedupBGM.Gui(S(THPRAC_MAKE_BGM_FASTER_WHEN_SPEEDUP));
             mAutoName_06.Gui(S(THPRAC_AUTO_NAME_TH06), S(THPRAC_AUTO_NAME_TH06_DESC));
 
             if (mAutoName_06.Get())
@@ -2679,7 +2680,8 @@ private:
     THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };
     THCfgCheckbox mUD_Replay_10 { "th10_ud_Replay", true };
     THCfgCheckbox mDisableWinKey { "disable_win_key", false };
-    THCfgCheckbox mPauseBGM_06 { "pauseBGM_06", false };
+    THCfgCheckbox mSpeedupBGM { "fast_BGM_when_spdup", true };
+    THCfgCheckbox mPauseBGM_06 { "pauseBGM_06", true };
     THCfgCheckbox mAutoName_06 { "autoInputName_06", false };
     THCfgCheckbox mForceLS_08 { "forceLS_08", false };
     THCfgText mName_06 { "autoName_06", "", 9};

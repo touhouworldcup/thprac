@@ -9,6 +9,8 @@
 #include "thprac_hook.h"
 #include <dinput.h>
 #include "../3rdParties/d3d8/include/d3d8.h"
+#include "../3rdParties/d3d8/include/dsound.h"
+
 #include <metrohash128.h>
 #include <dinput.h>
 
@@ -34,6 +36,16 @@ DWORD* g_gameGuiHwnd = nullptr;
 HIMC g_gameIMCCtx = 0;
 
 bool g_enable_keyhook;
+
+bool g_enable_fasterBGM;
+struct SB_Struct
+{
+    LPDIRECTSOUNDBUFFER p_sb;
+    WAVEFORMATEX orig_format;
+};
+float g_bgm_speed = 1.0f;
+std::vector<SB_Struct> g_soundbuffers;
+
 bool g_disable_xkey = false;
 bool g_disable_shiftkey = false;
 bool g_disable_zkey = false;
@@ -70,6 +82,11 @@ DWORD (WINAPI *g_realXInputGetState3)(DWORD dwUserIndex, void* pState);
 DWORD (WINAPI *g_realXInputGetState4)(DWORD dwUserIndex, void* pState);
 HRESULT (WINAPI* g_realEnumDevices)(LPDIRECTINPUT8 thiz, DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef,DWORD dwFlags);
 
+HRESULT(STDMETHODCALLTYPE* g_realCreateSoundBuffer)(IDirectSound8* thiz, LPCDSBUFFERDESC pcDSBufferDesc, LPDIRECTSOUNDBUFFER* ppDSBuffer, LPUNKNOWN pUnkOuter);
+HRESULT(STDMETHODCALLTYPE* g_realSetFormat)(LPDIRECTSOUNDBUFFER thiz,LPCWAVEFORMATEX pcfxFormat);
+HRESULT(STDMETHODCALLTYPE* g_realSoundBuffer_Release)(LPDIRECTSOUNDBUFFER thiz);
+HRESULT(STDMETHODCALLTYPE* g_realDuplicateSoundBuffer)(IDirectSound8* thiz, LPDIRECTSOUNDBUFFER pDSBufferOriginal, LPDIRECTSOUNDBUFFER* ppDSBufferDuplicate);
+HRESULT(STDMETHODCALLTYPE* g_realSoundBuffer_Initialize)(LPDIRECTSOUNDBUFFER thiz, LPDIRECTSOUND pDirectSound, LPCDSBUFFERDESC pcDSBufferDesc);
 
 
 template <typename T>
@@ -539,7 +556,106 @@ void SetDpadHook(uintptr_t addr, size_t instr_len)
 
 }
 #pragma endregion
+void ChangeBGMSpeed()
+{
+    for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end();i++) {
+        if (i->orig_format.nChannels != 0)
+        {
+            WAVEFORMATEX fmt = i->orig_format;
+            DWORD status;
+            i->p_sb->GetStatus(&status);
+            if (status & DSBSTATUS_PLAYING)
+                i->p_sb->Stop();
+            i->p_sb->SetFrequency(fmt.nSamplesPerSec * g_bgm_speed);
+            if (status & DSBSTATUS_PLAYING)
+                i->p_sb->Play(0, 0, DSBPLAY_LOOPING);
+        }
+    }
+}
 
+HRESULT (STDMETHODCALLTYPE SetFormat_Changed) (LPDIRECTSOUNDBUFFER thiz, LPCWAVEFORMATEX pcfxFormat)
+{
+    for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end();i++) {
+        if (i->p_sb == thiz) {
+            i->orig_format = *pcfxFormat;
+            break;
+        }
+    }
+    auto res = g_realSetFormat(thiz, pcfxFormat);
+    return res;
+}
+
+HRESULT (STDMETHODCALLTYPE SoundBuffer_Release_Changed)(LPDIRECTSOUNDBUFFER thiz)
+{
+    for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end();) {
+        if (i->p_sb == thiz) {
+            i = g_soundbuffers.erase(i);
+        } else {
+            i++;
+        }
+    }
+    return g_realSoundBuffer_Release(thiz);
+}
+
+HRESULT STDMETHODCALLTYPE DuplicateSoundBuffer_Changed(IDirectSound8* thiz, LPDIRECTSOUNDBUFFER pDSBufferOriginal, LPDIRECTSOUNDBUFFER* ppDSBufferDuplicate)
+{
+    auto res = g_realDuplicateSoundBuffer(thiz, pDSBufferOriginal, ppDSBufferDuplicate);
+    if (SUCCEEDED(res))
+    {
+        int idx = -1;
+        for (int i = 0; i < g_soundbuffers.size();i++) {
+            if (g_soundbuffers[i].p_sb == pDSBufferOriginal) {
+                idx = i;
+                break;
+            }
+        }
+        if (idx!=-1)
+        {
+            SB_Struct sb;
+            memset(&sb, 0, sizeof(sb));
+            sb.orig_format = g_soundbuffers[idx].orig_format;
+            sb.p_sb = *ppDSBufferDuplicate;
+            sb.p_sb->AddRef();
+            g_soundbuffers.push_back(sb);
+        }
+    }
+    return res;
+}
+
+HRESULT STDMETHODCALLTYPE SoundBuffer_Initialize_Changed(LPDIRECTSOUNDBUFFER thiz, LPDIRECTSOUND pDirectSound, LPCDSBUFFERDESC pcDSBufferDesc)
+{
+    DSBUFFERDESC desc = *pcDSBufferDesc;
+    desc.dwFlags |= DSBCAPS_CTRLFREQUENCY;
+    auto res = g_realSoundBuffer_Initialize(thiz,pDirectSound,&desc);
+    return res;
+}
+
+HRESULT STDMETHODCALLTYPE CreateSoundBuffer_Changed(IDirectSound8* thiz, LPCDSBUFFERDESC pcDSBufferDesc, LPDIRECTSOUNDBUFFER* ppDSBuffer,LPUNKNOWN pUnkOuter)
+{
+    HRESULT res;
+    DSBUFFERDESC desc = *pcDSBufferDesc;
+    desc.dwFlags |= DSBCAPS_CTRLFREQUENCY;
+
+    SB_Struct sb;
+    memset(&sb, 0, sizeof(sb));
+    if (desc.lpwfxFormat)
+        sb.orig_format = *desc.lpwfxFormat;
+    res = g_realCreateSoundBuffer(thiz, &desc, ppDSBuffer, pUnkOuter);
+    
+    if (SUCCEEDED(res))
+    {
+        sb.p_sb = *ppDSBuffer;
+        if (desc.dwFlags & DSBCAPS_CTRLPOSITIONNOTIFY) { // only BGM
+            g_soundbuffers.push_back(sb);
+        }
+        if (g_realSetFormat == NULL) {
+            HookVTable(*ppDSBuffer, 14, SetFormat_Changed, (void**)&g_realSetFormat);
+            HookVTable(*ppDSBuffer, 2, SoundBuffer_Release_Changed, (void**)&g_realSoundBuffer_Release);
+            HookVTable(*ppDSBuffer, 10, SoundBuffer_Initialize_Changed, (void**)&g_realSoundBuffer_Initialize);
+        }
+    }
+    return res;
+}
 
 void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3,
@@ -848,12 +964,9 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         HookIAT(GetModuleHandle(NULL), "user32.dll", "GetKeyboardState", GetKeyboardState_Changed, (void**)&g_realGetKeyboardState);
 
         // th06/th07 VP has its own GetKeyboardState
-
-
         LPDIRECTINPUT8 pdinput;
-        DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&pdinput, NULL);
-
-        if (SUCCEEDED(pdinput)) {
+        auto hr = DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&pdinput, NULL);
+        if (SUCCEEDED(hr)) {
             HookVTable(pdinput, 4, EnumDevices_Changed, (void**)&g_realEnumDevices);
             LPDIRECTINPUTDEVICE8 ddevice;
             pdinput->CreateDevice(GUID_SysKeyboard, &ddevice, NULL);
@@ -864,6 +977,17 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
             // dinput8 is inited before GameGuiInit(), so create a new device for hook
         }
     }
+
+    if (LauncherSettingGet("fast_BGM_when_spdup", g_enable_fasterBGM) && g_enable_fasterBGM) {
+        IDirectSound8* pdirectsound;
+        HRESULT hr = DirectSoundCreate8(NULL, &pdirectsound, NULL);
+        if (SUCCEEDED(hr)) {
+            HookVTable(pdirectsound, 3, CreateSoundBuffer_Changed,(void**)&g_realCreateSoundBuffer);
+            HookVTable(pdirectsound, 5, DuplicateSoundBuffer_Changed, (void**)&g_realDuplicateSoundBuffer);
+            pdirectsound->Release();
+        }
+    }
+    
 
      // if(device){
      //    void* pInterface = (void*)(*(int*)device);
@@ -1283,6 +1407,12 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
         ImGui::EndDisabled();
 
     ctx.fps = fpsStatic;
+    if (clickedApply)
+    {
+        g_bgm_speed = ctx.fps / 60.0f;
+        ChangeBGMSpeed();
+    }
+
     return clickedApply;
 }
 

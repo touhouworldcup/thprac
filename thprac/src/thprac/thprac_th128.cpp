@@ -1506,10 +1506,10 @@ namespace TH128 {
             break;
         case THPrac::TH128::TH128_A23_BOSS5:
             ECL3Boss(ecl, 0x7ce4, false);
+            ecl.SetFile(2);
             ecl << pair{0x62c8, (int8_t)0x33};
             ecl << pair{0x64a0, (int8_t)0x33};
             ecl << pair{0x6678, (int8_t)0x33};
-            ecl.SetFile(2);
             break;
         case THPrac::TH128::TH128_A23_BOSS6:
             ECL3Boss(ecl, 0x7ce4, false);
@@ -1518,10 +1518,10 @@ namespace TH128 {
             break;
         case THPrac::TH128::TH128_A23_BOSS7:
             ECL3Boss(ecl, 0x7ce4, false);
+            ecl.SetFile(2);
             ecl << pair{0x62c8, (int8_t)0x34};
             ecl << pair{0x64a0, (int8_t)0x34};
             ecl << pair{0x6678, (int8_t)0x34};
-            ecl.SetFile(2);
             break;
         case THPrac::TH128::TH128_A23_BOSS8:
             ECL3Boss(ecl, 0x7ce4, false);

@@ -203,14 +203,14 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <FixedBaseAddress>false</FixedBaseAddress>
-      <AdditionalDependencies>kernel32.lib;ntdll.lib;user32.lib;freetype.lib;gdi32.lib;dxguid.lib;d3d9.lib;xinput.lib;winmm.lib;dinput8.lib;ws2_32.lib;wininet.lib;Shlwapi.lib;ole32.lib;comdlg32.lib;shell32.lib;advapi32.lib;delayimp.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;ntdll.lib;user32.lib;freetype.lib;gdi32.lib;dxguid.lib;d3d9.lib;xinput.lib;winmm.lib;dinput8.lib;ws2_32.lib;wininet.lib;Shlwapi.lib;ole32.lib;comdlg32.lib;shell32.lib;advapi32.lib;delayimp.lib;dsound.lib</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
       <AdditionalManifestDependencies>type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
-	  <AdditionalOptions>/DELAYLOAD:wininet.dll %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/DELAYLOAD:wininet.dll %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(ToolsetType)'=='MSVC'">/IGNORE:4098 /SAFESEH:NO %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)'=='ReleaseLLVM'">%(AdditionalOptions) $(SolutionDir)\thprac\src\thprac\blobs\th19_fast_llvm.obj</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)'=='Release'">%(AdditionalOptions) $(SolutionDir)\thprac\src\thprac\blobs\th19_fast_msvc.obj</AdditionalOptions>

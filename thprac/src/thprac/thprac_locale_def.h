@@ -1147,6 +1147,7 @@ enum th_glossary_t {
     THPRAC_LINKS_FILTER_DELETE_WARNING,
     THPRAC_LINKS_FILTER_DEL_MODAL,
     THPRAC_LINKS_RESET,
+    THPRAC_MAKE_BGM_FASTER_WHEN_SPEEDUP,
     THPRAC_MOF_UD_REP,
     THPRAC_MOVE_TO_GLOBAL,
     THPRAC_MOVE_TO_LOCAL,
@@ -1689,7 +1690,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1678];
+extern const char* th_glossary_str[3][1679];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

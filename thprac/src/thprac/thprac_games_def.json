@@ -266,6 +266,8 @@
 	
 	"THPRAC_MOF_UD_REP": [ "允许风神录replay记录多一页ud_xxxx.rpy", "add another page for ud_xxxx.rpy in MoF's replay", "add another page for ud_xxxx.rpy in MoF's replay" ],
 	
+	"THPRAC_MAKE_BGM_FASTER_WHEN_SPEEDUP": [ "游戏变速时加速bgm(测试中)", "make bgm faster when speed up(testing)", "make bgm faster when speed up(testing)" ],
+	
     "THPRAC_DISABLE_F10_11_13":["在th11到th13靳用F10键","disable f10 for th11-13","disable f10 for th11-13"],
 	
     "THPRAC_DISABLE_F10_11_13_DESC":["该按键用于切换全屏","which is used for toggle fullscreen","which is used for toggle fullscreen"],
