@@ -57,7 +57,7 @@ BOOL HookVTable(void* pInterface, int index, void* hookFunction, void** oldAddre
     void** address = &(*(void***)pInterface)[index];
     if (address == NULL)
         return FALSE;
-    if (oldAddress != NULL)
+    if (oldAddress != NULL && *oldAddress==NULL)
         *oldAddress = *address;
     DWORD oldProtect, oldProtect2;
     VirtualProtect(address, sizeof(DWORD), PAGE_READWRITE, &oldProtect);

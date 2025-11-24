@@ -42,6 +42,8 @@ struct SB_Struct
 {
     LPDIRECTSOUNDBUFFER p_sb;
     WAVEFORMATEX orig_format;
+    DWORD* vtbl_orig;
+    DWORD* vtbl_changed;
 };
 float g_bgm_speed = 1.0f;
 std::vector<SB_Struct> g_soundbuffers;
@@ -82,12 +84,15 @@ DWORD (WINAPI *g_realXInputGetState3)(DWORD dwUserIndex, void* pState);
 DWORD (WINAPI *g_realXInputGetState4)(DWORD dwUserIndex, void* pState);
 HRESULT (WINAPI* g_realEnumDevices)(LPDIRECTINPUT8 thiz, DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef,DWORD dwFlags);
 
-HRESULT(STDMETHODCALLTYPE* g_realCreateSoundBuffer)(IDirectSound8* thiz, LPCDSBUFFERDESC pcDSBufferDesc, LPDIRECTSOUNDBUFFER* ppDSBuffer, LPUNKNOWN pUnkOuter);
-HRESULT(STDMETHODCALLTYPE* g_realSetFormat)(LPDIRECTSOUNDBUFFER thiz,LPCWAVEFORMATEX pcfxFormat);
-HRESULT(STDMETHODCALLTYPE* g_realSoundBuffer_Release)(LPDIRECTSOUNDBUFFER thiz);
-HRESULT(STDMETHODCALLTYPE* g_realDuplicateSoundBuffer)(IDirectSound8* thiz, LPDIRECTSOUNDBUFFER pDSBufferOriginal, LPDIRECTSOUNDBUFFER* ppDSBufferDuplicate);
-HRESULT(STDMETHODCALLTYPE* g_realSoundBuffer_Initialize)(LPDIRECTSOUNDBUFFER thiz, LPDIRECTSOUND pDirectSound, LPCDSBUFFERDESC pcDSBufferDesc);
 
+HRESULT(STDMETHODCALLTYPE* g_realCreateSoundBuffer)(IDirectSound8* thiz, LPCDSBUFFERDESC pcDSBufferDesc, LPDIRECTSOUNDBUFFER* ppDSBuffer, LPUNKNOWN pUnkOuter);
+HRESULT(STDMETHODCALLTYPE* g_realDuplicateSoundBuffer)(IDirectSound8* thiz, LPDIRECTSOUNDBUFFER pDSBufferOriginal, LPDIRECTSOUNDBUFFER* ppDSBufferDuplicate);
+
+// HRESULT(STDMETHODCALLTYPE* g_realSetFormat)(LPDIRECTSOUNDBUFFER thiz,LPCWAVEFORMATEX pcfxFormat);
+// HRESULT(STDMETHODCALLTYPE* g_realSoundBuffer_Release)(LPDIRECTSOUNDBUFFER thiz);
+// HRESULT(STDMETHODCALLTYPE* g_realSoundBuffer_Initialize)(LPDIRECTSOUNDBUFFER thiz, LPDIRECTSOUND pDirectSound, LPCDSBUFFERDESC pcDSBufferDesc);
+// HRESULT(STDMETHODCALLTYPE* g_realPlay)(LPDIRECTSOUNDBUFFER thiz, DWORD dwReserved1, DWORD dwPriority, DWORD dwFlags);
+// HRESULT(STDMETHODCALLTYPE* g_realUnlock)(LPDIRECTSOUNDBUFFER thiz, LPVOID pvAudioPtr1, DWORD dwAudioBytes1, LPVOID pvAudioPtr2, DWORD dwAudioBytes2);
 
 template <typename T>
 struct Ranges {
@@ -556,45 +561,101 @@ void SetDpadHook(uintptr_t addr, size_t instr_len)
 
 }
 #pragma endregion
-void ChangeBGMSpeed()
+
+void ChangeBGMSpeed(LPDIRECTSOUNDBUFFER thiz = nullptr)
 {
-    for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end();i++) {
-        if (i->orig_format.nChannels != 0)
-        {
-            WAVEFORMATEX fmt = i->orig_format;
-            DWORD status;
-            i->p_sb->GetStatus(&status);
-            if (status & DSBSTATUS_PLAYING)
-                i->p_sb->Stop();
-            i->p_sb->SetFrequency(fmt.nSamplesPerSec * g_bgm_speed);
-            if (status & DSBSTATUS_PLAYING)
-                i->p_sb->Play(0, 0, DSBPLAY_LOOPING);
+    if (thiz == nullptr)
+    {
+        for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end(); i++) {
+            if (i->orig_format.nChannels != 0) {
+                WAVEFORMATEX fmt = i->orig_format;
+                DWORD status;
+                i->p_sb->GetStatus(&status);
+                if (status & DSBSTATUS_PLAYING)
+                {
+                    i->p_sb->SetFrequency(fmt.nSamplesPerSec * g_bgm_speed);
+                }
+            }
         }
     }
+    else
+    {
+        for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end(); i++) {
+            if (i->orig_format.nChannels != 0 && i->p_sb == thiz) {
+                WAVEFORMATEX fmt = i->orig_format;
+                DWORD status;
+                i->p_sb->SetFrequency(fmt.nSamplesPerSec * g_bgm_speed);
+                break;
+            }
+        }
+    }
+    
 }
 
-HRESULT (STDMETHODCALLTYPE SetFormat_Changed) (LPDIRECTSOUNDBUFFER thiz, LPCWAVEFORMATEX pcfxFormat)
+HRESULT STDMETHODCALLTYPE SetFormat_Changed (LPDIRECTSOUNDBUFFER thiz, LPCWAVEFORMATEX pcfxFormat)
 {
     for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end();i++) {
         if (i->p_sb == thiz) {
             i->orig_format = *pcfxFormat;
-            break;
+            HRESULT(STDMETHODCALLTYPE * realSetFormat) (LPDIRECTSOUNDBUFFER thiz, LPCWAVEFORMATEX pcfxFormat);
+            realSetFormat = (decltype(realSetFormat))(i->vtbl_orig[14]);
+            HRESULT res = realSetFormat(thiz, pcfxFormat);
+            i = g_soundbuffers.erase(i);
+            return res;
         }
     }
-    auto res = g_realSetFormat(thiz, pcfxFormat);
-    return res;
+    return -1;
 }
 
 HRESULT (STDMETHODCALLTYPE SoundBuffer_Release_Changed)(LPDIRECTSOUNDBUFFER thiz)
 {
     for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end();) {
         if (i->p_sb == thiz) {
+            HRESULT(STDMETHODCALLTYPE * realSoundBuffer_Release) (LPDIRECTSOUNDBUFFER thiz);
+            realSoundBuffer_Release = (decltype(realSoundBuffer_Release))(i->vtbl_orig[2]);
+            HRESULT res = realSoundBuffer_Release(thiz);
+            delete i->vtbl_changed;
+            delete i->vtbl_orig;
             i = g_soundbuffers.erase(i);
+            return res;
         } else {
             i++;
         }
     }
-    return g_realSoundBuffer_Release(thiz);
+    return -1;
+}
+
+
+HRESULT STDMETHODCALLTYPE SoundBuffer_Initialize_Changed(LPDIRECTSOUNDBUFFER thiz, LPDIRECTSOUND pDirectSound, LPCDSBUFFERDESC pcDSBufferDesc)
+{
+    for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end(); i++) {
+        if (i->p_sb == thiz) {
+
+            DSBUFFERDESC desc = *pcDSBufferDesc;
+            desc.dwFlags |= DSBCAPS_CTRLFREQUENCY;
+
+            HRESULT(STDMETHODCALLTYPE * realSoundBuffer_Initialize) (LPDIRECTSOUNDBUFFER thiz, LPDIRECTSOUND pDirectSound, LPCDSBUFFERDESC pcDSBufferDesc);
+            realSoundBuffer_Initialize = (decltype(realSoundBuffer_Initialize))(i->vtbl_orig[10]);
+            HRESULT res = realSoundBuffer_Initialize(thiz, pDirectSound, &desc);
+            return res;
+        }
+    }
+    return -1;
+}
+
+HRESULT STDMETHODCALLTYPE Play_Changed(LPDIRECTSOUNDBUFFER thiz, DWORD dwReserved1, DWORD dwPriority, DWORD dwFlags)
+{
+    for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end(); i++) {
+        if (i->p_sb == thiz) {
+            HRESULT(STDMETHODCALLTYPE * realPlay)
+            (LPDIRECTSOUNDBUFFER thiz, DWORD dwReserved1, DWORD dwPriority, DWORD dwFlags);
+            realPlay = (decltype(realPlay))(i->vtbl_orig[12]);
+            HRESULT res = realPlay(thiz, dwReserved1, dwPriority, dwFlags);
+            ChangeBGMSpeed(thiz);
+            return res;
+        }
+    }
+    return -1;
 }
 
 HRESULT STDMETHODCALLTYPE DuplicateSoundBuffer_Changed(IDirectSound8* thiz, LPDIRECTSOUNDBUFFER pDSBufferOriginal, LPDIRECTSOUNDBUFFER* ppDSBufferDuplicate)
@@ -613,20 +674,21 @@ HRESULT STDMETHODCALLTYPE DuplicateSoundBuffer_Changed(IDirectSound8* thiz, LPDI
         {
             SB_Struct sb;
             memset(&sb, 0, sizeof(sb));
-            sb.orig_format = g_soundbuffers[idx].orig_format;
-            sb.p_sb = *ppDSBufferDuplicate;
-            sb.p_sb->AddRef();
+            sb.vtbl_orig = new DWORD[21];
+            sb.vtbl_changed = new DWORD[21];
+            DWORD* address = (DWORD*)(*(DWORD*)*ppDSBufferDuplicate);
+            for (int i = 0; i < 21; i++) {
+                sb.vtbl_orig[i] = (DWORD)address[i];
+                sb.vtbl_changed[i] = (DWORD)address[i];
+            }
+            sb.vtbl_changed[14] = (DWORD)SetFormat_Changed;
+            sb.vtbl_changed[2] = (DWORD)SoundBuffer_Release_Changed;
+            sb.vtbl_changed[10] = (DWORD)SoundBuffer_Initialize_Changed;
+            sb.vtbl_changed[12] = (DWORD)Play_Changed;
+            (*(DWORD*)*ppDSBufferDuplicate) = (DWORD)sb.vtbl_changed;
             g_soundbuffers.push_back(sb);
         }
     }
-    return res;
-}
-
-HRESULT STDMETHODCALLTYPE SoundBuffer_Initialize_Changed(LPDIRECTSOUNDBUFFER thiz, LPDIRECTSOUND pDirectSound, LPCDSBUFFERDESC pcDSBufferDesc)
-{
-    DSBUFFERDESC desc = *pcDSBufferDesc;
-    desc.dwFlags |= DSBCAPS_CTRLFREQUENCY;
-    auto res = g_realSoundBuffer_Initialize(thiz,pDirectSound,&desc);
     return res;
 }
 
@@ -634,24 +696,33 @@ HRESULT STDMETHODCALLTYPE CreateSoundBuffer_Changed(IDirectSound8* thiz, LPCDSBU
 {
     HRESULT res;
     DSBUFFERDESC desc = *pcDSBufferDesc;
-    desc.dwFlags |= DSBCAPS_CTRLFREQUENCY;
+    if (desc.dwFlags & DSBCAPS_CTRLPOSITIONNOTIFY) { // only BGM
+        desc.dwFlags |= DSBCAPS_CTRLFREQUENCY;
+    }
 
     SB_Struct sb;
     memset(&sb, 0, sizeof(sb));
     if (desc.lpwfxFormat)
         sb.orig_format = *desc.lpwfxFormat;
     res = g_realCreateSoundBuffer(thiz, &desc, ppDSBuffer, pUnkOuter);
-    
     if (SUCCEEDED(res))
     {
         sb.p_sb = *ppDSBuffer;
         if (desc.dwFlags & DSBCAPS_CTRLPOSITIONNOTIFY) { // only BGM
+            sb.vtbl_orig = new DWORD[21];
+            sb.vtbl_changed = new DWORD[21];
+            DWORD* address = (DWORD*)(*(DWORD*)*ppDSBuffer);
+            for (int i = 0; i < 21; i++)
+            {
+                sb.vtbl_orig[i] = (DWORD)address[i];
+                sb.vtbl_changed[i] = (DWORD)address[i];
+            }
+            sb.vtbl_changed[14] = (DWORD)SetFormat_Changed;
+            sb.vtbl_changed[2] = (DWORD)SoundBuffer_Release_Changed;
+            sb.vtbl_changed[10] = (DWORD)SoundBuffer_Initialize_Changed;
+            sb.vtbl_changed[12] = (DWORD)Play_Changed;
+            (*(DWORD*)*ppDSBuffer) = (DWORD)sb.vtbl_changed;
             g_soundbuffers.push_back(sb);
-        }
-        if (g_realSetFormat == NULL) {
-            HookVTable(*ppDSBuffer, 14, SetFormat_Changed, (void**)&g_realSetFormat);
-            HookVTable(*ppDSBuffer, 2, SoundBuffer_Release_Changed, (void**)&g_realSoundBuffer_Release);
-            HookVTable(*ppDSBuffer, 10, SoundBuffer_Initialize_Changed, (void**)&g_realSoundBuffer_Initialize);
         }
     }
     return res;
@@ -983,7 +1054,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         HRESULT hr = DirectSoundCreate8(NULL, &pdirectsound, NULL);
         if (SUCCEEDED(hr)) {
             HookVTable(pdirectsound, 3, CreateSoundBuffer_Changed,(void**)&g_realCreateSoundBuffer);
-            HookVTable(pdirectsound, 5, DuplicateSoundBuffer_Changed, (void**)&g_realDuplicateSoundBuffer);
+            // HookVTable(pdirectsound, 5, DuplicateSoundBuffer_Changed, (void**)&g_realDuplicateSoundBuffer);
             pdirectsound->Release();
         }
     }
