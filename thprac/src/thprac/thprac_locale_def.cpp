@@ -1019,7 +1019,7 @@ const char* th_glossary_str[3][1679] {
         "普通收点",
         "总奖励",
         "道具量",
-        "辉针城魔理沙自动开启激光修复的rep预防功能",
+        "辉针城魔理沙自动开启激光修复的rep预防功能 (独占全屏不建议)",
         "显示bonus数",
         "辉针城显示bouns数",
         "显示掉落收集条",
@@ -2700,7 +2700,7 @@ const char* th_glossary_str[3][1679] {
         "normal bonus",
         "total bonus",
         "items",
-        "DDC Marisa laser bug rep repair on",
+        "DDC Marisa laser bug rep repair on (not recommended in fullscreen)",
         "show bonuses",
         "DDC show bonuses",
         "show drop bar",
@@ -4381,7 +4381,7 @@ const char* th_glossary_str[3][1679] {
         "normal bonus",
         "total bonus",
         "items",
-        "DDC Marisa laser bug rep repair on",
+        "DDC Marisa laser bug rep repair on (not recommended in fullscreen)",
         "show bonuses",
         "DDC show bonuses",
         "show drop bar",
@@ -27052,7 +27052,7 @@ namespace TH20 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3541] {
+const wchar_t __thprac_loc_range_zh[3543] {
     0x0020, 0x00FF,
     0x394, 0x394,
     0x2014, 0x2014,
@@ -27313,6 +27313,7 @@ const wchar_t __thprac_loc_range_zh[3541] {
     0x534f, 0x534f,
     0x5355, 0x5355,
     0x535a, 0x535a,
+    0x5360, 0x5360,
     0x5361, 0x5361,
     0x5366, 0x5366,
     0x536b, 0x536b,

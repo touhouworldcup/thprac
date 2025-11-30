@@ -2680,7 +2680,7 @@ private:
     THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };
     THCfgCheckbox mUD_Replay_10 { "th10_ud_Replay", true };
     THCfgCheckbox mDisableWinKey { "disable_win_key", false };
-    THCfgCheckbox mSpeedupBGM { "fast_BGM_when_spdup", true };
+    THCfgCheckbox mSpeedupBGM { "fast_BGM_when_spdup", false };
     THCfgCheckbox mPauseBGM_06 { "pauseBGM_06", true };
     THCfgCheckbox mAutoName_06 { "autoInputName_06", false };
     THCfgCheckbox mForceLS_08 { "forceLS_08", false };
