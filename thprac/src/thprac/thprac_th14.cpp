@@ -12,7 +12,7 @@ namespace TH14 {
     };
     int g_lock_timer = 0;
     bool g_lock_timer_flag = false;
-
+    
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -688,6 +688,13 @@ namespace TH14 {
 
         virtual void OnPreUpdate() override
         {
+            if (*(DWORD*)(0x04DB67C)) {
+                Live2D_Update(*(int32_t*)(0x4f5864), THGuiRep::singleton().mRepStatus);
+                UpdateGame(14);
+            } else {
+                Live2D_ChangeState(Live2D_InputType::L2D_RESET);
+                Live2D_Update(1, false);
+            }
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x04DB67C)) {
                 SetPosRel(890.0f / 1280.0f, 560.0f / 960.0f);
                 SetSizeRel(360.0f / 1280.0f, 0.0f);
@@ -2837,14 +2844,18 @@ namespace TH14 {
         TH14InGameInfo::singleton().m12Count = 0;
         TH14InGameInfo::singleton().m16Count = 0;
         TH14InGameInfo::singleton().m20Count = 0;
+        Live2D_ChangeState(Live2D_InputType::L2D_RESET);
     })
     EHOOK_DY(th14_bomb_dec, 0x41218A,5, // bomb dec
     {
         TH14InGameInfo::singleton().mBombCount++;
+        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th14_life_dec, 0x44F618,5, // life dec
     {
         TH14InGameInfo::singleton().mMissCount++;
+        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
+        FastRetry(thPracParam.mode);
     })
     EHOOK_DY(th14_get_item, 0x438DF8,6,
     {

@@ -1181,6 +1181,13 @@ namespace TH20 {
 
         virtual void OnPreUpdate() override
         {
+            if (*(DWORD*)(RVA(0x1ba56c))) {
+                UpdateGame(20);
+                Live2D_Update(*(int32_t*)(RVA(0x1BA6A8)), THGuiRep::singleton().mRepStatus);
+            } else {
+                Live2D_ChangeState(Live2D_InputType::L2D_RESET);
+                Live2D_Update(1, false);
+            }
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(RVA(0x1ba56c))) {
                 SetPosRel(920.0f / 1280.0f, 550.0f / 960.0f);
                 SetSizeRel(300.0f / 1280.0f, 0.0f);
@@ -3244,6 +3251,9 @@ namespace TH20 {
             if (life_next >= *(int32_t*)(RVA(0x1BA6A8)))// life increased
                 return;
             TH20InGameInfo::singleton().mMissCount++;
+            Live2D_ChangeState(Live2D_InputType::L2D_MISS);
+            FastRetry(thPracParam.mode);
+
             if ((*(THOverlay::singleton().mInfLives))) {
                 if (!g_adv_igi_options.map_inf_life_to_no_continue) {
                     pCtx->Eip = RVA(0xe128e);
@@ -3576,18 +3586,22 @@ namespace TH20 {
             TH20InGameInfo::singleton().mHyperBreakCount = 0;
             TH20InGameInfo::singleton().mHyperCount = 0;
             TH20InGameInfo::singleton().mPyramidShotDownCount = 0;
+            Live2D_ChangeState(Live2D_InputType::L2D_RESET);
         })
     EHOOK_DY(th20_bomb_dec, 0xe1710, 1, // bomb dec
         {
             TH20InGameInfo::singleton().mBombCount++;
+            Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
         })
     EHOOK_DY(th20_hyper_break, 0x132c10, 3, 
         {
             TH20InGameInfo::singleton().mHyperBreakCount++;
+            Live2D_ChangeState(Live2D_InputType::L2D_BORDER_BREAK);
         })
     EHOOK_DY(th20_hyper, 0x134d06, 3,
         {
             TH20InGameInfo::singleton().mHyperCount++;
+            Live2D_ChangeState(Live2D_InputType::L2D_HYPER);
         })
     EHOOK_DY(th20_stone, 0x112077, 2,
         {

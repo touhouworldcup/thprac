@@ -49,4 +49,24 @@ int64_t LauncherGetGameTime();
 void LauncherSetGameTime(int64_t timens);
 void LauncherCloseHotkeyRebindListeners();
 
+ enum Live2D_State {
+    Normal = 0,
+    Miss,
+    Bomb,
+    Hyper,
+    BorderBreak,
+    Dying, // life < life_cap
+    Release,
+    N_Live2D_State
+};
+
+struct Live2DOption {
+    int show_time_ms = 5000;
+    int life_cap = 0;
+    Live2D_State curr_state = Live2D_State::Normal;
+    Live2D_State next_state = Live2D_State::Normal;
+    uint32_t last_time_ms = 1e9;
+    int32_t VKs[Live2D_State::N_Live2D_State];
+};
+
 }

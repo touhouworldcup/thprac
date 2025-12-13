@@ -40,6 +40,7 @@ bool gCfgReadOnly = false;
 HANDLE gCfgHnd = INVALID_HANDLE_VALUE;
 rapidjson::Document gCfgJson;
 
+extern Live2DOption g_l2dState;
 
 void LauncherAquireDataDirVar()
 {
@@ -2174,6 +2175,132 @@ private:
         }
     }
 
+     bool GuiLive2DHotkeyEdit(const char* label, const char* binding, bool* listening, bool block_input, const char* tooltip = "")
+    {
+        // ImGuiIO& io = ImGui::GetIO();
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted(label);
+        ImGui::SameLine();
+        if (tooltip[0] != '\0') {
+            ImGui::TextUnformatted("(?)");
+            if (ImGui::IsItemHovered()) {
+                ImGui::BeginTooltip();
+                ImGui::TextUnformatted(tooltip);
+                ImGui::EndTooltip();
+            }
+            ImGui::SameLine();
+        }
+        // Visual button that toggles listening
+        ImGui::PushID(label);
+
+        int current_vk = -1;
+        LauncherSettingGet(binding, current_vk);
+
+        std::string current_string = "None";
+        for (int i = 0; i < ARRAYSIZE(keyBindDefine); i++)
+        {
+            if (keyBindDefine[i].vk == current_vk) {
+                current_string = keyBindDefine[i].keyname;
+                break;
+            }
+        }
+        
+        if (!*listening) {
+            if (ImGui::Button(current_string.c_str()) && !block_input)
+                *listening = true;
+        } else {
+            // Show recording state
+            if (ImGui::Button(S(THPRAC_HOTKEY_CANCEL)))
+                *listening = false; // cancel on click
+        }
+        
+        bool changed = false;
+        if (*listening) {
+            ImGui::SetItemDefaultFocus();
+
+            int vk = 0;
+
+            // Scan for keys until the keyboard keys which are not supported
+            // Keyboard
+            for (int key = 0; key < ARRAYSIZE(keyBindDefine); ++key) {
+                // Register key if held or released.  If released, end the combo
+                if (ImGui::IsKeyDown(keyBindDefine[key].vk)) {
+                    vk = keyBindDefine[key].vk;
+                    changed = true;
+                }
+            }
+
+            // Update
+            if (changed) {
+                if (vk == VK_ESCAPE)
+                {
+                    int invalid = -1;
+                    LauncherSettingSet(binding, invalid); // set to NONE
+                }
+                else
+                    LauncherSettingSet(binding, vk);
+                *listening = false;
+            }
+        }
+        ImGui::PopID();
+        return changed;
+    }
+
+    void Live2DHotkeySettings()
+    {
+        ImGui::Text(S(THPRAC_L2D_KEYBIND));
+        ImGui::TextUnformatted("*");
+        ImGui::SameLine();
+        ImGui::Text(S(THPRAC_L2D_KEYBIND_DESC));
+        mEnableL2DKey.Gui(S(THPRAC_L2D_ENABLE));
+    //Normal
+    //Miss,
+    //Bomb,
+    //Hyper,
+    //BorderBreak,
+    //Dying, // life < life_cap
+    //Release,
+        int normal_key          = '0', 
+            miss_key            = '1', 
+            borderBreak_key     = '1', 
+            releasing_key       = '2',
+            bomb_key            = '2', 
+            hyper_key           = '2',
+            dying_key           = '3'; 
+        LauncherSettingGet("l2d_normal_key"     , normal_key     );
+        LauncherSettingGet("l2d_miss_key"       , miss_key       );
+        LauncherSettingGet("l2d_borderBreak_key", borderBreak_key);
+        LauncherSettingGet("l2d_releasing_key"  , releasing_key  );
+        LauncherSettingGet("l2d_bomb_key"       , bomb_key       );
+        LauncherSettingGet("l2d_hyper_key"      , hyper_key      );
+        LauncherSettingGet("l2d_dying_key"      , dying_key      );
+
+
+        // Add the buttons to the UI and update data if sucessfully updated.
+
+        static bool listeningKeys[Live2D_State::N_Live2D_State]   = {0};
+        static bool blockKeys[Live2D_State::N_Live2D_State]     = {0};
+
+        for (int i = 0; i < Live2D_State::N_Live2D_State; i++)
+        {
+            blockKeys[i] = 0;
+            for (int j = 0; j < Live2D_State::N_Live2D_State; j++)
+                if (i!=j)
+                    blockKeys[i] |= listeningKeys[j];
+        }
+
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_NORMAL)        , "l2d_normal_key"      , &listeningKeys[0],   blockKeys[0]);
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_MISS)          , "l2d_miss_key"        , &listeningKeys[1],   blockKeys[1]);
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_BORDER_BREAK)  , "l2d_borderBreak_key" , &listeningKeys[2],   blockKeys[2],S(THPRAC_L2D_KEYBIND_BORDER_BREAK_DESC));
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_RELEASING)     , "l2d_releasing_key"   , &listeningKeys[3],   blockKeys[3]);
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_BOMB)          , "l2d_bomb_key"        , &listeningKeys[4],   blockKeys[4]);
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_HYPER)                 , "l2d_hyper_key"       , &listeningKeys[5],   blockKeys[5],S(THPRAC_L2D_KEYBIND_HYPER_DESC));
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_DYING)                 , "l2d_dying_key"       , &listeningKeys[6],   blockKeys[6],S(THPRAC_L2D_DYING_DESC));
+
+        mLive2DExpressionTime.Gui(S(THPRAC_L2D_SHOW_TIME), S(THPRAC_L2D_SHOW_TIME_DESC));
+    }
+
+
 
     void TextLink(const char* text, const wchar_t* link)
     {
@@ -2318,6 +2445,9 @@ private:
             mUD_Replay_10.Gui(S(THPRAC_MOF_UD_REP));
             mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
             mSpeedupBGM.Gui(S(THPRAC_MAKE_BGM_FASTER_WHEN_SPEEDUP));
+            mCfgEnableLockTimer_autoly.Gui(S(THPRAC_ENABLE_LOCK_TIMER_AUTO));
+            mCfgEnableFastRetry_autoly.Gui(S(THPRAC_FAST_RETRY),S(THPRAC_FAST_RETRY_DESC));
+
             mAutoName_06.Gui(S(THPRAC_AUTO_NAME_TH06), S(THPRAC_AUTO_NAME_TH06_DESC));
 
             if (mAutoName_06.Get())
@@ -2353,6 +2483,19 @@ private:
                 mKeyboardSOCD.Gui(S(THPRAC_KEYBOARD_SOCD), S(THPRAC_KEYBOARD_SOCD_SETTINGS), S(THPRAC_KEYBOARD_SOCD_DESC));
                 mKeyboardAPISetting.Gui(S(THPRAC_KEYBOARD_API), S(THPRAC_KEYBOARD_API_SETTINGS), S(THPRAC_KEYBOARD_API_SETTINGS_DESC));
                 KeyBindSettings();
+
+                
+            }
+            if (mKeyboardAPISetting.Get() == 2 && mKeyboardHook.Get())
+            {
+                ImGui::Separator();
+                if (ImGui::TreeNode(S(THPRAC_L2D_KEYBIND_TITLE))) {
+                    // l2d settings
+                    Live2DHotkeySettings();
+                }
+            }else{
+                ImGui::Separator();
+                ImGui::Text(S(THPRAC_L2D_KEYBIND_TITLE2));
             }
             ImGui::Separator();
             if (ImGui::TreeNode(S(THPRAC_SETTING_HOTKEYS))) {
@@ -2366,7 +2509,6 @@ private:
             ImGui::TextWrapped(S(THPRAC_INGAMEINFO_ADV_DESC2));
             mCfgMapInfLifeToNoContinue_autoly.Gui(S(THPRAC_INFLIVES_MAP));
             mCfgEnableMasterDisable_autoly.Gui(S(THPRAC_DISABLE_MASTER_AUTO));
-            mCfgEnableLockTimer_autoly.Gui(S(THPRAC_ENABLE_LOCK_TIMER_AUTO));
             mCfgTH06_RepMarker.Gui(S(THPRAC_TH06_SHOW_REP_MARKER));
             mCfgEnableTH06_ShowRank_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_RANK2));
             mCfgEnableTH06_BgFix_autoly.Gui(S(THPRAC_TH06_BACKGROUND_FIX), S(THPRAC_TH06_BACKGROUND_FIX_DESC));
@@ -2637,7 +2779,9 @@ private:
     THCfgCheckbox mCfgEnableTH14_LaserRepRepair_autoly { "auto_th14_laser_rep_repair", false };
     THCfgCheckbox mCfgEnableTH15_ShowShootingDownRate_autoly { "auto_th15_show_rate", false };
     THCfgCheckbox mCfgEnableMasterDisable_autoly { "auto_disable_master", false };
+
     THCfgCheckbox mCfgEnableLockTimer_autoly { "auto_lock_timer", false };
+    THCfgCheckbox mCfgEnableFastRetry_autoly { "auto_fast_retry", false };
 
     THCfgCheckbox mCfgTH18ForceCard { "th18_force_card", false };
     THCfgCombo mCfgTH18Card_st1 { "th18_card_st1", 0,56 };
@@ -2654,6 +2798,7 @@ private:
     THCfgCheckbox mCfgEnableTH20_FixBulletHitbox_autoly { "auto_th20_fix_bullet_hitbox",true};
     THCfgCheckbox mCfgEnableTH20_DecreaseGrazeEffect_autoly { "auto_th20_decrease_graze_effect",false};
     // kbs
+    THCfgInt mLive2DExpressionTime { "expression_time", 5000, 0, 99999999 };
     THCfgColor mKb_ColorBorderPress { "kb_border_color_press", 0xFFFFFFFF };
     THCfgColor mKb_ColorBorderRelease { "kb_border_color_release", 0xFFFFFFFF };
     THCfgColor mKb_ColorFillPress { "kb_fill_color_press", 0xFFFF4444 };
@@ -2677,6 +2822,7 @@ private:
     THCfgCheckbox mKeyboardHook { "enable_keyboard_hook", true };
     THCfgCombo mKeyboardSOCD { "keyboard_SOCDv2", 0, 3 };
     THCfgCombo mKeyboardAPISetting { "keyboard_API", 0, 3 };
+    THCfgCheckbox mEnableL2DKey { "enable_l2d_key", true };
     THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };
     THCfgCheckbox mUD_Replay_10 { "th10_ud_Replay", true };
     THCfgCheckbox mDisableWinKey { "disable_win_key", false };

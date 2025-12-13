@@ -38,6 +38,12 @@ HIMC g_gameIMCCtx = 0;
 bool g_enable_keyhook;
 
 bool g_enable_fasterBGM;
+
+bool g_hook_keyboard_dinput8;
+bool g_enable_fast_retry;
+constexpr int g_fast_retry_cout_down_max = 15;
+int g_fast_retry_count_down = 0;
+
 struct SB_Struct
 {
     LPDIRECTSOUNDBUFFER p_sb;
@@ -272,6 +278,129 @@ enum Key {
 
 extern std::unordered_map<KeyDefine, KeyDefine, KeyDefineHashFunction> g_keybind;
 
+Live2DOption g_l2dState;
+bool g_enable_l2d = false;
+
+void UpdateGame(int gamever)
+{
+    if (g_fast_retry_count_down)
+        g_fast_retry_count_down--;
+}
+
+void FastRetry(int thprac_mode)
+{
+    if (thprac_mode && g_enable_fast_retry) {
+        g_fast_retry_count_down = g_fast_retry_cout_down_max;
+    }
+}
+
+void Live2D_SimuKeyboard(DWORD VK, uint32_t time)
+{
+    static uint32_t last_time = 0;
+    if (time - last_time < 16)
+        return;
+    last_time = time; 
+    if (!Gui::ImplWin32CheckForeground()){
+        return;
+    }
+    // avoid too many inputs
+
+    if (VK <= 0 || VK >= 0xDD)
+        return;
+    INPUT input[2] = {};
+    input[0].type = INPUT_KEYBOARD;
+    input[0].ki.wVk = VK;
+    input[1].type = INPUT_KEYBOARD;
+    input[1].ki.wVk = VK;
+    input[1].ki.dwFlags = KEYEVENTF_KEYUP;
+    SendInput(2, input, sizeof(INPUT));
+}
+
+void Live2D_Update(int life, bool is_rep)
+{
+    // auto p = ImGui::GetOverlayDrawList();
+    // p->AddText({ 200, 0 }, 0xFFFFFFFF, std::format("{}", g_l2dState.last_time_ms).c_str());
+    // p->AddText({ 100, 0 }, 0xFFFFFFFF, std::format("{}", (int)g_l2dState.curr_state).c_str());
+    if (!g_enable_l2d)
+        return;
+    static uint32_t last_time = timeGetTime();
+    static uint32_t dying_time = 0;
+
+    uint32_t cur_time = timeGetTime();
+    uint32_t step = cur_time - last_time;
+    last_time = cur_time;
+    if (is_rep){
+        if (g_l2dState.curr_state != Normal) {
+            g_l2dState.next_state = g_l2dState.curr_state = Normal;
+            Live2D_SimuKeyboard(g_l2dState.VKs[g_l2dState.next_state], cur_time);
+            g_l2dState.last_time_ms = 1e9;
+        }
+    } else {
+        if (g_l2dState.curr_state != Dying && life <= g_l2dState.life_cap) {
+            g_l2dState.next_state = Dying;
+            g_l2dState.last_time_ms = 1e9;
+            dying_time = g_l2dState.show_time_ms;
+        }
+        if (g_l2dState.curr_state == Dying && life > g_l2dState.life_cap) {
+            if (dying_time <= step) {
+                g_l2dState.next_state = Normal;
+                g_l2dState.last_time_ms = 1e9;
+                dying_time = 0;
+            } else {
+                dying_time -= step;
+            }
+        }
+        if (g_l2dState.curr_state != g_l2dState.next_state) {
+            g_l2dState.curr_state = g_l2dState.next_state;
+            Live2D_SimuKeyboard(g_l2dState.VKs[g_l2dState.next_state], cur_time);
+        } else {
+            if (g_l2dState.last_time_ms <= step) {
+                g_l2dState.next_state = Normal;
+                g_l2dState.last_time_ms = 1e9;
+            } else {
+                g_l2dState.last_time_ms -= step;
+            }
+        }
+    }
+}
+
+void Live2D_ChangeState(Live2D_InputType l2dInput)
+{
+    if (!g_enable_l2d)
+        return;
+    switch (l2dInput)
+    {
+    default:
+    case Live2D_InputType::L2D_RESET:
+        if (g_l2dState.last_time_ms > g_l2dState.show_time_ms)
+            g_l2dState.last_time_ms = g_l2dState.show_time_ms;
+        // g_l2dState.next_state = Live2D_State::Normal;
+        // g_l2dState.last_time_ms = 1e9;
+        break;
+    case Live2D_InputType::L2D_MISS:
+        g_l2dState.last_time_ms = g_l2dState.show_time_ms;
+        g_l2dState.next_state = Live2D_State::Miss;
+        break;
+    case Live2D_InputType::L2D_BOMB:
+        g_l2dState.last_time_ms = g_l2dState.show_time_ms;
+        g_l2dState.next_state = Live2D_State::Bomb;
+        break;
+    case Live2D_InputType::L2D_HYPER:
+        g_l2dState.last_time_ms = g_l2dState.show_time_ms;
+        g_l2dState.next_state = Live2D_State::Hyper;
+        break;
+    case Live2D_InputType::L2D_BORDER_BREAK:
+        g_l2dState.last_time_ms = g_l2dState.show_time_ms;
+        g_l2dState.next_state = Live2D_State::BorderBreak;
+        break;
+    case Live2D_InputType::L2D_RELEASE:
+        g_l2dState.last_time_ms = g_l2dState.show_time_ms;
+        g_l2dState.next_state = Live2D_State::Release;
+        break;
+    }
+
+}
+
 BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
 {
     bool res = true; 
@@ -437,12 +566,12 @@ LB_FINAL:
 
 HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state)
 {
-    if (num != 256) {//no keyboard
+    if (num != 256) { // no keyboard
         if (g_disable_joy)
-            return DIERR_INPUTLOST;//8007001E
+            return DIERR_INPUTLOST; // 8007001E
 
         auto res = g_realGetDeviceState(thiz, num, state);
-        if (num == sizeof(DIJOYSTATE) || num == sizeof(DIJOYSTATE2)){
+        if (num == sizeof(DIJOYSTATE) || num == sizeof(DIJOYSTATE2)) {
             auto* js = (DIJOYSTATE*)state;
             Ranges<long> di_range = { -1000, 1000, -1000, 1000 };
             bool ret_map = false;
@@ -454,16 +583,16 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
     }
 
     HRESULT res = S_OK;
-    if (g_keyboardAPI == Force_win32KeyAPI){
+    if (g_keyboardAPI == Force_win32KeyAPI) {
         // BYTE state_win32[256];
         // res = g_realGetKeyboardState(state_win32);
         memset(state, 0, 256);
         for (auto keydef : keyBindDefine) {
             // ((BYTE*)state)[keydef.dik] = state_win32[keydef.vk]&0x80;
-            ((BYTE*)state)[keydef.dik] = (GetAsyncKeyState(keydef.vk)&0x8000) ? 0x80 : 0;
-            // though a bit slower ,,, 
+            ((BYTE*)state)[keydef.dik] = (GetAsyncKeyState(keydef.vk) & 0x8000) ? 0x80 : 0;
+            // though a bit slower ,,,
         }
-    }else{
+    } else {
         res = g_realGetDeviceState(thiz, num, state);
     }
 
@@ -516,18 +645,16 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
     memcpy_s(last_keyBoardState, num, keyBoardState, num);
 
     if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW])) {
-        if (g_socd_setting == SOCD_2)
-        {
+        if (g_socd_setting == SOCD_2) {
             if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]) {
                 keyBoardState[DIK_RIGHTARROW] = 0;
             } else {
                 keyBoardState[DIK_LEFTARROW] = 0;
             }
-        }else if (g_socd_setting == SOCD_N){
+        } else if (g_socd_setting == SOCD_N) {
             keyBoardState[DIK_RIGHTARROW] = 0;
             keyBoardState[DIK_LEFTARROW] = 0;
         }
-        
     }
     if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && IS_KEY_DOWN(keyBoardState[DIK_UPARROW])) {
         if (g_socd_setting == SOCD_2) {
@@ -540,6 +667,13 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
             keyBoardState[DIK_DOWNARROW] = 0;
             keyBoardState[DIK_UPARROW] = 0;
         }
+    }
+    if (g_fast_retry_count_down)
+    {
+        if (g_fast_retry_count_down <= g_fast_retry_cout_down_max)
+            keyBoardState[DIK_ESCAPE] = 0x80;
+        if (g_fast_retry_count_down <= 1)
+            keyBoardState[DIK_R] = 0x80;
     }
     return res;
 }
@@ -918,6 +1052,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
 
         LauncherSettingGet("auto_disable_master", g_adv_igi_options.disable_master_autoly);
         LauncherSettingGet("auto_lock_timer", g_adv_igi_options.enable_lock_timer_autoly);
+        
         LauncherSettingGet("auto_map_inf_life_to_no_continue", g_adv_igi_options.map_inf_life_to_no_continue);
         LauncherSettingGet("auto_th06_bg_fix", g_adv_igi_options.th06_bg_fix);
         LauncherSettingGet("auto_th06_fix_seed", g_adv_igi_options.th06_fix_seed);
@@ -1029,6 +1164,9 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
 
     }
    
+    g_enable_l2d = false;
+    g_hook_keyboard_dinput8 = false;
+    g_enable_fast_retry = false;
     if (LauncherSettingGet("enable_keyboard_hook", g_enable_keyhook) && g_enable_keyhook)
     { // hook keyboard to enable SOCD and X-disable
         LPVOID pTarget;
@@ -1047,6 +1185,38 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
             ddevice->Release();
             // dinput8 is inited before GameGuiInit(), so create a new device for hook
         }
+        if (g_keyboardAPI == KeyboardAPI::Force_dinput8KeyAPI){
+            // keyboard hook + force dinput8
+            g_hook_keyboard_dinput8 = true;
+            LauncherSettingGet("auto_fast_retry", g_enable_fast_retry);
+            LauncherSettingGet("enable_l2d_key", g_enable_l2d);
+            if (g_enable_l2d)
+            {
+                LauncherSettingGet("mLive2DExpressionTime", g_l2dState.show_time_ms);
+                int normal_key = -1,
+                    miss_key = -1,
+                    borderBreak_key = -1,
+                    releasing_key = -1,
+                    bomb_key = -1,
+                    hyper_key = -1,
+                    dying_key = -1;
+                LauncherSettingGet("l2d_normal_key", normal_key);
+                LauncherSettingGet("l2d_miss_key", miss_key);
+                LauncherSettingGet("l2d_borderBreak_key", borderBreak_key);
+                LauncherSettingGet("l2d_releasing_key", releasing_key);
+                LauncherSettingGet("l2d_bomb_key", bomb_key);
+                LauncherSettingGet("l2d_hyper_key", hyper_key);
+                LauncherSettingGet("l2d_dying_key", dying_key);
+                g_l2dState.VKs[Live2D_State::Normal]        = normal_key;
+                g_l2dState.VKs[Live2D_State::Miss]          = miss_key;
+                g_l2dState.VKs[Live2D_State::BorderBreak]   = borderBreak_key;
+                g_l2dState.VKs[Live2D_State::Release]       = releasing_key;
+                g_l2dState.VKs[Live2D_State::Bomb]          = bomb_key;
+                g_l2dState.VKs[Live2D_State::Hyper]         = hyper_key;
+                g_l2dState.VKs[Live2D_State::Dying]         = dying_key;
+            }
+        }
+
     }
 
     if (LauncherSettingGet("fast_BGM_when_spdup", g_enable_fasterBGM) && g_enable_fasterBGM) {
@@ -1500,6 +1670,7 @@ void DisableKeyOpt()
         ImGui::SameLine();
         ImGui::Checkbox(S(TH_ADV_DISABLE_Z_KEY), &g_disable_zkey);
         ImGui::SameLine();
+        HelpMarker(S(TH_ADV_DISABLE_Z_KEY_DESC));
         if (ImGui::IsKeyDown(0x10)) // shift
         {
             if (ImGui::IsKeyPressed('D'))
@@ -1509,8 +1680,8 @@ void DisableKeyOpt()
             if (ImGui::IsKeyPressed('A'))
                 g_disable_shiftkey = !g_disable_shiftkey;
         }
-
-        HelpMarker(S(TH_ADV_DISABLE_Z_KEY_DESC));
+        if (g_hook_keyboard_dinput8)
+            ImGui::Checkbox(S(THPRAC_FAST_RETRY), &g_enable_fast_retry);
     }
     return;
 }

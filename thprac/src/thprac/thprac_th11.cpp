@@ -620,6 +620,15 @@ namespace TH11 {
 
         virtual void OnPreUpdate() override
         {
+            if (*(DWORD*)(0x4A8EB4))
+            {
+                UpdateGame(11);
+                Live2D_Update(*(int32_t*)(0x4a5718), THGuiRep::singleton().mRepStatus);
+            } else {
+                Live2D_ChangeState(Live2D_InputType::L2D_RESET);
+                Live2D_Update(1, false);
+            }
+
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x4A8EB4)) {
                 SetPosRel(450.0f / 640.0f, 175.0f / 480.0f);
                 SetSizeRel(170.0f / 640.0f, 0.0f);
@@ -2195,18 +2204,23 @@ namespace TH11 {
     {
         TH11InGameInfo::singleton().mBombCount = 0;
         TH11InGameInfo::singleton().mMissCount = 0;
+        Live2D_ChangeState(Live2D_InputType::L2D_RESET);
     })
     EHOOK_DY(th11_bomb_dec, 0x4311E6,5, // bomb dec
     {
         TH11InGameInfo::singleton().mBombCount++;
+        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th11_bomb_dec2, 0x431293,5, // dead bomb
     {
         TH11InGameInfo::singleton().mBombCount++;
+        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th11_life_dec, 0x4327F0,6, // life dec
     {
         TH11InGameInfo::singleton().mMissCount++;
+        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
+        FastRetry(thPracParam.mode);
     })
     EHOOK_DY(th11_lock_timer1, 0x41A657,6, // initialize
     {

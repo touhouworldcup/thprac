@@ -11,6 +11,20 @@
 struct IDirect3DDevice8;
 
 namespace THPrac {
+    enum Live2D_InputType
+    {
+        L2D_RESET,
+        L2D_MISS,
+        L2D_BOMB,
+        L2D_HYPER,
+        L2D_BORDER_BREAK,
+        L2D_RELEASE
+    };
+    void UpdateGame(int gamever);
+    void FastRetry(int thprac_mode);
+    void Live2D_Update(int life,bool is_rep);
+    void Live2D_ChangeState(Live2D_InputType l2dInput);
+
     struct AdvancedIGI_Options
     {
         int th18_cards[6] = {0}; // card for st1,2,3,4,5,7

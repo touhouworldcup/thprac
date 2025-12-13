@@ -310,6 +310,26 @@
     "THPRAC_KEYBIND_TO_COMBO":["修改按键","new key","new key"],
     "THPRAC_KEYBIND_PRESS_A_KEY":["请按下一个按键","please press a key","please press a key"],
     "THPRAC_KEYBIND_ENTER":["按键名","key name","key name"],
+	
+	"THPRAC_L2D_KEYBIND_TITLE":["Live2D的按键映射","l2d keybind","l2d keybind"],
+	"THPRAC_L2D_KEYBIND_TITLE2":["启用键盘HOOK并设置键盘API为强制dinput8以启用l2d按键","use keyboard hook and set keyboardAPI as dinput8 to enable l2d keys","use keyboard hook and set keyboardAPI as dinput8 to enable l2d keys"],
+	"THPRAC_L2D_ENABLE":["启用L2D按键","enable L2D keys","enable L2D keys"],
+	"THPRAC_L2D_KEYBIND":["修改用于Live2D的按键映射","set keybind for l2d","set keybind for l2d"],
+	"THPRAC_L2D_KEYBIND_DESC":["将会在特定时刻自动模拟按下对应键(使用win32 API),绑定时按ESC取消","it will simulate key input for some specific moment(using win32 API), press esc to cancel the key","it will simulate key input for some specific moment(using win32 API), press esc to cancel the key"],
+
+	"THPRAC_L2D_KEYBIND_NORMAL":		["一般表情","normal expression","normal expression"],
+	"THPRAC_L2D_KEYBIND_MISS":			["MISS表情","miss expression","miss expression"],
+	"THPRAC_L2D_KEYBIND_BORDER_BREAK":	["撞结界表情","border break expression","border break expression"],
+	"THPRAC_L2D_KEYBIND_BORDER_BREAK_DESC":	["也适用于鬼","also for WBaBC hyper break","also for WBaBC hyper break"],
+	"THPRAC_L2D_KEYBIND_RELEASING":	["季节解放表情","releasing expression","releasing expression"],
+	"THPRAC_L2D_KEYBIND_HYPER_DESC":	["也适用于庙","also for TD trance","also for TD trance"],
+	"THPRAC_L2D_KEYBIND_BOMB":	["丢B表情","bomb expression","bomb expression"],
+	"THPRAC_L2D_HYPER":	["hyper表情","hyper expression","hyper expression"],
+	"THPRAC_L2D_DYING":	["将死之人表情","dying expression","dying expression"],
+	"THPRAC_L2D_DYING_DESC":	["残机为0触发","trigger when life=0","trigger when life=0"],
+	
+	"THPRAC_L2D_SHOW_TIME":	["表情时间(ms)","expression time(ms)","expression time(ms)"],
+	"THPRAC_L2D_SHOW_TIME_DESC":	["到时间自动切换为一般表情","auto trigger to normal expression after this time","auto trigger to normal expression after this time"],
     
       "THPRAC_TOOLS": [ "工具", "Tools", "ツール" ],
       
@@ -1283,6 +1303,9 @@
 	  "THPRAC_TH20_FIX_BULLETHITBOX_DESC": [ "锦上京游戏", "FW Game", "FW Game" ],
 	  "THPRAC_TH20_DECREASE_EFF": [ "锦上京减少擦弹特效","FW decrease graze effect","FW decrease graze effect"],
 	  
+	  
+	  "THPRAC_FAST_RETRY": [ "练习模式快速re", "fast retry for prac mode", "fast retry for prac mode" ],
+	  "THPRAC_FAST_RETRY_DESC": [ "需要启用键盘Hook与强制dinput8输入", "need enable keyboard hook & force dinput8", "need enable keyboard hook & force dinput8" ],
 	  
 	  "THPRAC_TH06_BACKGROUND_FIX": [ "红魔乡背景修复", "EoSD background fix", "EoSD background fix" ],
 	  "THPRAC_TH06_BACKGROUND_FIX_DESC": [ "当关闭弹幕虚影时不让蕾咪变蓝狗\n有可能让背景或UI变奇怪", "let Remilia not be blue when disables bullet shadow\nMight make bg or UI strange", "let Remilia not be blue when disables bullet shadow\nMight make bg or UI strange" ],

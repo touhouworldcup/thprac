@@ -13,6 +13,7 @@
 namespace THPrac {
 extern bool g_pauseBGM_06;
 extern bool g_forceRenderCursor;
+extern int g_fast_retry_count_down;
 
 namespace TH06 {
     static const GameManager* const GAME_MANAGER = (const GameManager* const)0x69bca0;
@@ -466,128 +467,6 @@ namespace TH06 {
 
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mShowSpellCapture { THPRAC_INGAMEINFO, "F8", VK_F8 };
-    };
-
-    class TH06InGameInfo : public Gui::GameGuiWnd {
-        TH06InGameInfo() noexcept
-        {
-            SetTitle("igi");
-            SetFade(0.9f, 0.9f);
-            SetSizeRel(180.0f/640.0f, 0.0f);
-            SetPosRel(433.0f / 640.0f, 245.0f / 480.0f);
-            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
-                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
-            OnLocaleChange();
-        }
-        SINGLETON(TH06InGameInfo);
-
-    public:
-        int32_t mMissCount;
-        struct BooksInfo
-        {
-            bool is_books;
-            int32_t time_books;
-            bool is_died;
-            int32_t miss_count;
-            int32_t bomb_count;
-        }booksInfo;
-
-        void GameStartInit() {
-            mMissCount = 0;
-            booksInfo.is_books = false;
-            booksInfo.time_books = 0;
-            booksInfo.is_died = false;
-            booksInfo.miss_count = 0;
-            booksInfo.bomb_count = 0;
-        }
-    protected:
-        bool detail_open = false;
-        virtual void OnLocaleChange() override
-        {
-            float x_offset_1 = 0.0f;
-            float x_offset_2 = 0.0f;
-            switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
-                x_offset_1 = 0.12f;
-                x_offset_2 = 0.172f;
-                break;
-            case Gui::LOCALE_EN_US:
-                x_offset_1 = 0.12f;
-                x_offset_2 = 0.16f;
-                break;
-            case Gui::LOCALE_JA_JP:
-                x_offset_1 = 0.18f;
-                x_offset_2 = 0.235f;
-                break;
-            default:
-                break;
-            }
-        }
-
-        virtual void OnContentUpdate() override
-        {
-            int32_t mBombCount = *(int8_t*)(0x0069BCC4);
-
-            byte cur_player_typea = *(byte*)(0x69D4BD);
-            byte cur_player_typeb = *(byte*)(0x69D4BE);
-            byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
-            int8_t diff = *(int8_t*)(0x69bcb0);
-            auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_06[cur_player_type]));
-            auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
-
-            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x*0.5);
-            ImGui::Text(diff_pl.c_str());
-
-            ImGui::Columns(2);
-            ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
-            ImGui::NextColumn();
-            ImGui::Text("%8d", mMissCount);
-            ImGui::NextColumn();
-            ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
-            ImGui::NextColumn();
-            ImGui::Text("%8d", mBombCount);
-
-            if (g_adv_igi_options.th06_showRank) {
-                ImGui::NextColumn();
-                ImGui::Text(S(THPRAC_INGAMEINFO_TH06_RANK));
-                ImGui::NextColumn();
-                ImGui::Text("%8d.%02d", *(int32_t*)(0x69d710), *(int32_t*)(0x69d71C));
-            }
-
-            ImGui::Columns(1);
-
-            bool cur_is_in_spell = *(bool*)(0x5A5F90);
-
-            if (booksInfo.is_books || cur_is_in_spell) {
-                byte cur_spell_id = booksInfo.is_books ? TH06Save::spellid_books :* (byte*)(0x5A5F98);
-
-                ImGui::Text("%s", th06_spells_str[Gui::LocaleGet()][cur_spell_id]);
-                int tot_sc_caped = TH06Save::singleton().GetTotalSpellCardCount(cur_spell_id,diff,cur_player_type,TH06Save::Capture);
-                int tot_sc_tot = TH06Save::singleton().GetTotalSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Attempt);
-                int tot_sc_to = TH06Save::singleton().GetTotalSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Timeout);
-                ImGui::Text("%d/%d(%.1f%%); %d", tot_sc_caped,tot_sc_tot, (float)(tot_sc_caped) / std::fmax(1.0f, tot_sc_tot) * 100.0f,  tot_sc_to);
-                int cur_sc_caped = TH06Save::singleton().GetCurrentSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Capture);
-                int cur_sc_tot = TH06Save::singleton().GetCurrentSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Attempt);
-                int cur_sc_to = TH06Save::singleton().GetCurrentSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Timeout);
-                ImGui::Text("%d/%d(%.1f%%); %d", cur_sc_caped, cur_sc_tot, (float)(cur_sc_caped) / std::fmax(1.0f, cur_sc_tot) * 100.0f, cur_sc_to);
-
-                if (booksInfo.is_books && thPracParam.mode && (thPracParam.phase != 0)) { // books
-                    ImGui::Text("%.1f", (float)booksInfo.time_books / 60.0f);
-                }
-            }
-        }
-        virtual void OnPreUpdate() override
-        {
-            DWORD gameState = *(DWORD*)(0x6C6EA4);
-            if (*THOverlay::singleton().mShowSpellCapture && (gameState == 2)) {
-                SetPosRel(433.0f / 640.0f, 245.0f / 480.0f);
-                SetSizeRel(180.0f / 640.0f, 0.0f);
-                Open();
-            } else {
-                Close();
-                *((int32_t*)0x6c6eb0) = 3;
-            }
-        }
     };
 
     class THGuiPrac : public Gui::GameGuiWnd {
@@ -1229,11 +1108,13 @@ namespace TH06 {
             if (mFrameCounter > 10) {
                 if (Gui::KeyboardInputGetSingle(VK_ESCAPE))
                     StateResume();
-                else if (Gui::KeyboardInputGetRaw(0x51))
+                else if (Gui::KeyboardInputGetRaw('Q'))
                     StateExit2();
-                else if (Gui::KeyboardInputGetRaw(0x52))
+                else if (Gui::KeyboardInputGetRaw('R'))
                     StateRestart();
             }
+            if (g_fast_retry_count_down && g_fast_retry_count_down <= 1)
+                StateRestart();
 
             return SIGNAL_NONE;
         }
@@ -1381,6 +1262,141 @@ namespace TH06 {
         bool mParamStatus = false;
         THPracParam mRepParam;
     };
+
+    
+    class TH06InGameInfo : public Gui::GameGuiWnd {
+        TH06InGameInfo() noexcept
+        {
+            SetTitle("igi");
+            SetFade(0.9f, 0.9f);
+            SetSizeRel(180.0f / 640.0f, 0.0f);
+            SetPosRel(433.0f / 640.0f, 245.0f / 480.0f);
+            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+        }
+        SINGLETON(TH06InGameInfo);
+
+    public:
+        int32_t mMissCount;
+        struct BooksInfo {
+            bool is_books;
+            int32_t time_books;
+            bool is_died;
+            int32_t miss_count;
+            int32_t bomb_count;
+        } booksInfo;
+
+        void GameStartInit()
+        {
+            mMissCount = 0;
+            booksInfo.is_books = false;
+            booksInfo.time_books = 0;
+            booksInfo.is_died = false;
+            booksInfo.miss_count = 0;
+            booksInfo.bomb_count = 0;
+            Live2D_ChangeState(Live2D_InputType::L2D_RESET);
+        }
+
+    protected:
+        bool detail_open = false;
+        virtual void OnLocaleChange() override
+        {
+            float x_offset_1 = 0.0f;
+            float x_offset_2 = 0.0f;
+            switch (Gui::LocaleGet()) {
+            case Gui::LOCALE_ZH_CN:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.172f;
+                break;
+            case Gui::LOCALE_EN_US:
+                x_offset_1 = 0.12f;
+                x_offset_2 = 0.16f;
+                break;
+            case Gui::LOCALE_JA_JP:
+                x_offset_1 = 0.18f;
+                x_offset_2 = 0.235f;
+                break;
+            default:
+                break;
+            }
+        }
+
+        virtual void OnContentUpdate() override
+        {
+            int32_t mBombCount = *(int8_t*)(0x0069BCC4);
+
+            byte cur_player_typea = *(byte*)(0x69D4BD);
+            byte cur_player_typeb = *(byte*)(0x69D4BE);
+            byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
+            int8_t diff = *(int8_t*)(0x69bcb0);
+            auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_06[cur_player_type]));
+            auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
+
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::Text(diff_pl.c_str());
+
+            ImGui::Columns(2);
+            ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mMissCount);
+            ImGui::NextColumn();
+            ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
+            ImGui::NextColumn();
+            ImGui::Text("%8d", mBombCount);
+
+            if (g_adv_igi_options.th06_showRank) {
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH06_RANK));
+                ImGui::NextColumn();
+                ImGui::Text("%8d.%02d", *(int32_t*)(0x69d710), *(int32_t*)(0x69d71C));
+            }
+
+            ImGui::Columns(1);
+
+            bool cur_is_in_spell = *(bool*)(0x5A5F90);
+
+            if (booksInfo.is_books || cur_is_in_spell) {
+                byte cur_spell_id = booksInfo.is_books ? TH06Save::spellid_books : *(byte*)(0x5A5F98);
+
+                ImGui::Text("%s", th06_spells_str[Gui::LocaleGet()][cur_spell_id]);
+                int tot_sc_caped = TH06Save::singleton().GetTotalSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Capture);
+                int tot_sc_tot = TH06Save::singleton().GetTotalSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Attempt);
+                int tot_sc_to = TH06Save::singleton().GetTotalSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Timeout);
+                ImGui::Text("%d/%d(%.1f%%); %d", tot_sc_caped, tot_sc_tot, (float)(tot_sc_caped) / std::fmax(1.0f, tot_sc_tot) * 100.0f, tot_sc_to);
+                int cur_sc_caped = TH06Save::singleton().GetCurrentSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Capture);
+                int cur_sc_tot = TH06Save::singleton().GetCurrentSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Attempt);
+                int cur_sc_to = TH06Save::singleton().GetCurrentSpellCardCount(cur_spell_id, diff, cur_player_type, TH06Save::Timeout);
+                ImGui::Text("%d/%d(%.1f%%); %d", cur_sc_caped, cur_sc_tot, (float)(cur_sc_caped) / std::fmax(1.0f, cur_sc_tot) * 100.0f, cur_sc_to);
+
+                if (booksInfo.is_books && thPracParam.mode && (thPracParam.phase != 0)) { // books
+                    ImGui::Text("%.1f", (float)booksInfo.time_books / 60.0f);
+                }
+            }
+        }
+        virtual void OnPreUpdate() override
+        {
+            DWORD gameState = *(DWORD*)(0x6C6EA4);
+            if (gameState == 2)
+            {
+                UpdateGame(6);
+                Live2D_Update(*(int8_t*)(0x69d4ba), THGuiRep::singleton().mRepStatus);
+            }
+            else
+            {
+                Live2D_ChangeState(Live2D_InputType::L2D_RESET);
+                Live2D_Update(1, false);
+            }
+            if (*THOverlay::singleton().mShowSpellCapture && (gameState == 2)) {
+                SetPosRel(433.0f / 640.0f, 245.0f / 480.0f);
+                SetSizeRel(180.0f / 640.0f, 0.0f);
+                Open();
+            } else {
+                Close();
+                *((int32_t*)0x6c6eb0) = 3;
+            }
+        }
+    };
+
 
     float g_bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
     EHOOK_ST(th06_bossmovedown, 0x0040917F, 5, {
@@ -3464,8 +3480,12 @@ namespace TH06 {
     EHOOK_DY(th06_miss, 0x428DD9,2,// dec life
     {
         TH06InGameInfo::singleton().mMissCount++;
+        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
+        FastRetry(thPracParam.mode);
     })
-
+    EHOOK_DY(th06_bomb, 0x4289CC, 6, {
+        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
+    })
     EHOOK_DY(th06_lock_timer1, 0x41B27C,3, // initialize
     {
         g_lock_timer = 0;

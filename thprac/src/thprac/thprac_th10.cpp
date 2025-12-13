@@ -600,6 +600,13 @@ namespace TH10 {
 
         virtual void OnPreUpdate() override
         {
+            if (*(DWORD*)(0x0477834)){
+                UpdateGame(10);
+                Live2D_Update(*(int32_t*)(0x474c70), THGuiRep::singleton().mRepStatus);
+            } else {
+                Live2D_ChangeState(Live2D_InputType::L2D_RESET);
+                Live2D_Update(1, false);
+            }
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x0477834)) {
                 SetPosRel(450.0f / 640.0f, 150.0f / 480.0f);
                 SetSizeRel(170.0f / 640.0f, 0.0f);
@@ -2745,7 +2752,7 @@ namespace TH10 {
         }
 
         RenderLockTimer(p);
-
+       
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     })
@@ -2859,18 +2866,23 @@ namespace TH10 {
     {
         TH10InGameInfo::singleton().mBombCount = 0;
         TH10InGameInfo::singleton().mMissCount = 0;
+        Live2D_ChangeState(Live2D_InputType::L2D_RESET);
     })
     EHOOK_DY(th10_bomb_dec, 0x4259CF,5, // bomb dec
     {
         TH10InGameInfo::singleton().mBombCount++;
+        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th10_bomb_dec2, 0x425C3E,5, // bomb dec
     {
         TH10InGameInfo::singleton().mBombCount++;
+        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th10_life_dec, 0x426A1C,6, // life dec
     {
         TH10InGameInfo::singleton().mMissCount++;
+        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
+        FastRetry(thPracParam.mode);
     })
     EHOOK_DY(th10_move, 0x425442,2,
     {

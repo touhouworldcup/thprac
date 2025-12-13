@@ -3,8 +3,11 @@
 #include <format>
 
 namespace THPrac {
-namespace TH08 {
+    extern bool g_enable_l2d;
+    
 
+namespace TH08 {
+    int g_gamefence = 0;
     bool g_show_bullet_hitbox=false;
     int g_lock_timer = 0;
 
@@ -762,7 +765,22 @@ namespace TH08 {
 
         virtual void OnPreUpdate() override
         {
-            if (*(THOverlay::singleton().mInGameInfo) && (*(DWORD*)(0x17CE8B4) == 2)) {
+            DWORD gameState = *(DWORD*)(0x17CE8B4);
+            if (g_enable_l2d) {
+                if (gameState == 2) {
+                    UpdateGame(8);
+                    float life = *(float*)GetMemAddr(0x160f510, 0x74);
+                    if (g_gamefence == 1 && !isnan(life) && life >= 0.0f && life == ceilf(life))
+                    {
+                        Live2D_Update(ceilf(life), THGuiRep::singleton().mRepStatus);
+                    }
+                } else {
+                    g_gamefence = 0;
+                    Live2D_ChangeState(Live2D_InputType::L2D_RESET);
+                    Live2D_Update(1, false);
+                }
+            }
+            if (*(THOverlay::singleton().mInGameInfo) && (gameState == 2)) {
                 SetPosRel(450.0f / 640.0f, 220.0f / 480.0f);
                 SetSizeRel(170.0f / 640.0f, 0.0f);
                 Open();
@@ -2618,6 +2636,9 @@ namespace TH08 {
 
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th08_inf_lives, 0x0044D0FB,5, {
+        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
+        FastRetry(thPracParam.mode);
+
         if ((*(THOverlay::singleton().mInfLives))) {
             if (!g_adv_igi_options.map_inf_life_to_no_continue) {
                 *(DWORD*)(pCtx->Esp) = 0;
@@ -2805,6 +2826,7 @@ namespace TH08 {
             // ECL Patch
             THSectionPatch();
         }
+        g_gamefence = 1;
         thPracParam._playLock = true;
     })
     EHOOK_DY(th08_bgm, 0x43a03c, 2, {
@@ -2842,7 +2864,7 @@ namespace TH08 {
         auto p = ImGui::GetOverlayDrawList();
         RenderBtHitbox(p);
         RenderLockTimer(p);
-
+        
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     })
@@ -2869,6 +2891,7 @@ namespace TH08 {
         TH08InGameInfo::singleton().mBombCount = 0;
         TH08InGameInfo::singleton().mMissCount = 0;
         TH08InGameInfo::singleton().mDesolveCount = 0;
+        Live2D_ChangeState(Live2D_InputType::L2D_RESET);
     })
     EHOOK_DY(th08_spell_capture, 0x416265, 3, { // to enable SC count in rep, do not directly read spell capture array
         const static int32_t last_spells[] = {
@@ -2889,8 +2912,15 @@ namespace TH08 {
                 TH08InGameInfo::singleton().mLSCCount++;
         }
     })
+    EHOOK_DY(th08_player_bomb, 0x44CA94, 6, {
+        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
+    })
+    EHOOK_DY(th08_player_bomb, 0x44CA6A, 3, {//deadbomb
+        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
+    })
     EHOOK_DY(th08_desolve, 0x44ABE9,3,{
         TH08InGameInfo::singleton().mDesolveCount++;
+        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
     })
     EHOOK_DY(th08_lock_timer1, 0x437AF3,3,{ // initialize
     
