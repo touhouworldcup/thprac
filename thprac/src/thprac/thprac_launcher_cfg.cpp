@@ -40,8 +40,6 @@ bool gCfgReadOnly = false;
 HANDLE gCfgHnd = INVALID_HANDLE_VALUE;
 rapidjson::Document gCfgJson;
 
-extern Live2DOption g_l2dState;
-
 void LauncherAquireDataDirVar()
 {
     if (gCfgPath) {
@@ -2267,7 +2265,7 @@ private:
             bomb_key            = '2', 
             hyper_key           = '2',
             dying_key           = '3'; 
-        LauncherSettingGet("l2d_normal_key"     , normal_key     );
+        LauncherSettingGet("l2d_reset_key"     , normal_key     );
         LauncherSettingGet("l2d_miss_key"       , miss_key       );
         LauncherSettingGet("l2d_borderBreak_key", borderBreak_key);
         LauncherSettingGet("l2d_releasing_key"  , releasing_key  );
@@ -2289,15 +2287,16 @@ private:
                     blockKeys[i] |= listeningKeys[j];
         }
 
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_NORMAL)        , "l2d_normal_key"      , &listeningKeys[0],   blockKeys[0]);
         GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_MISS)          , "l2d_miss_key"        , &listeningKeys[1],   blockKeys[1]);
         GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_BORDER_BREAK)  , "l2d_borderBreak_key" , &listeningKeys[2],   blockKeys[2],S(THPRAC_L2D_KEYBIND_BORDER_BREAK_DESC));
         GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_RELEASING)     , "l2d_releasing_key"   , &listeningKeys[3],   blockKeys[3]);
         GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_BOMB)          , "l2d_bomb_key"        , &listeningKeys[4],   blockKeys[4]);
         GuiLive2DHotkeyEdit(S(THPRAC_L2D_HYPER)                 , "l2d_hyper_key"       , &listeningKeys[5],   blockKeys[5],S(THPRAC_L2D_KEYBIND_HYPER_DESC));
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_DYING)                 , "l2d_dying_key"       , &listeningKeys[6],   blockKeys[6],S(THPRAC_L2D_DYING_DESC));
+        
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_RESET)         , "l2d_reset_key", &listeningKeys[0], blockKeys[0]);
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_DYING)         , "l2d_dying_key"       , &listeningKeys[6],   blockKeys[6],S(THPRAC_L2D_KEYBIND_DYING_DESC));
 
-        mLive2DExpressionTime.Gui(S(THPRAC_L2D_SHOW_TIME), S(THPRAC_L2D_SHOW_TIME_DESC));
+        mLive2DMotionTime.Gui(S(THPRAC_L2D_SHOW_TIME), S(THPRAC_L2D_SHOW_TIME_DESC));
     }
 
 
@@ -2798,7 +2797,7 @@ private:
     THCfgCheckbox mCfgEnableTH20_FixBulletHitbox_autoly { "auto_th20_fix_bullet_hitbox",true};
     THCfgCheckbox mCfgEnableTH20_DecreaseGrazeEffect_autoly { "auto_th20_decrease_graze_effect",false};
     // kbs
-    THCfgInt mLive2DExpressionTime { "expression_time", 5000, 0, 99999999 };
+    THCfgInt mLive2DMotionTime { "l2d_motion_time", 1000, 0, 99999999 };
     THCfgColor mKb_ColorBorderPress { "kb_border_color_press", 0xFFFFFFFF };
     THCfgColor mKb_ColorBorderRelease { "kb_border_color_release", 0xFFFFFFFF };
     THCfgColor mKb_ColorFillPress { "kb_fill_color_press", 0xFFFF4444 };

@@ -317,19 +317,20 @@
 	"THPRAC_L2D_KEYBIND":["修改用于Live2D的按键映射","set keybind for l2d","set keybind for l2d"],
 	"THPRAC_L2D_KEYBIND_DESC":["将会在特定时刻自动模拟按下对应键(使用win32 API),绑定时按ESC取消","it will simulate key input for some specific moment(using win32 API), press esc to cancel the key","it will simulate key input for some specific moment(using win32 API), press esc to cancel the key"],
 
-	"THPRAC_L2D_KEYBIND_NORMAL":		["一般表情","normal expression","normal expression"],
-	"THPRAC_L2D_KEYBIND_MISS":			["MISS表情","miss expression","miss expression"],
-	"THPRAC_L2D_KEYBIND_BORDER_BREAK":	["撞结界表情","border break expression","border break expression"],
+	"THPRAC_L2D_KEYBIND_MISS":			["MISS动作","miss motion","miss motion"],
+	"THPRAC_L2D_KEYBIND_BORDER_BREAK":	["撞结界动作","border break motion","border break motion"],
 	"THPRAC_L2D_KEYBIND_BORDER_BREAK_DESC":	["也适用于鬼","also for WBaBC hyper break","also for WBaBC hyper break"],
-	"THPRAC_L2D_KEYBIND_RELEASING":	["季节解放表情","releasing expression","releasing expression"],
+	"THPRAC_L2D_KEYBIND_RELEASING":	["季节解放动作","releasing motion","releasing motion"],
 	"THPRAC_L2D_KEYBIND_HYPER_DESC":	["也适用于庙","also for TD trance","also for TD trance"],
-	"THPRAC_L2D_KEYBIND_BOMB":	["丢B表情","bomb expression","bomb expression"],
-	"THPRAC_L2D_HYPER":	["hyper表情","hyper expression","hyper expression"],
-	"THPRAC_L2D_DYING":	["将死之人表情","dying expression","dying expression"],
-	"THPRAC_L2D_DYING_DESC":	["残机为0触发","trigger when life=0","trigger when life=0"],
+	"THPRAC_L2D_KEYBIND_BOMB":	["丢B动作","bomb motion","bomb motion"],
+	"THPRAC_L2D_HYPER":	["hyper动作","hyper motion","hyper motion"],
+	"THPRAC_L2D_KEYBIND_RESET":		["重置动作","reset motion","reset motion"],
 	
-	"THPRAC_L2D_SHOW_TIME":	["表情时间(ms)","expression time(ms)","expression time(ms)"],
-	"THPRAC_L2D_SHOW_TIME_DESC":	["到时间自动切换为一般表情","auto trigger to normal expression after this time","auto trigger to normal expression after this time"],
+	"THPRAC_L2D_KEYBIND_DYING":		["将死之人表情","dying expression","dying expression"],
+	"THPRAC_L2D_KEYBIND_DYING_DESC":	["残机为0触发, 为 expression(按一下切换, 第二下切回)","trigger when life=0, which is expression","trigger when life=0, which is expression"],
+	
+	"THPRAC_L2D_SHOW_TIME":	["动作时间(ms)","expression time(ms)","expression time(ms)"],
+	"THPRAC_L2D_SHOW_TIME_DESC":	["到时间自动切换为重置动作","auto trigger to reset motion after this time","auto trigger to reset motion after this time"],
     
       "THPRAC_TOOLS": [ "工具", "Tools", "ツール" ],
       
@@ -1306,6 +1307,7 @@
 	  
 	  "THPRAC_FAST_RETRY": [ "练习模式快速re", "fast retry for prac mode", "fast retry for prac mode" ],
 	  "THPRAC_FAST_RETRY_DESC": [ "需要启用键盘Hook与强制dinput8输入", "need enable keyboard hook & force dinput8", "need enable keyboard hook & force dinput8" ],
+	  "THPRAC_FAST_RETRY_DESC2": [ "快捷键: shift+F", "hotkey shift+F", "hotkey shift+F" ],
 	  
 	  "THPRAC_TH06_BACKGROUND_FIX": [ "红魔乡背景修复", "EoSD background fix", "EoSD background fix" ],
 	  "THPRAC_TH06_BACKGROUND_FIX_DESC": [ "当关闭弹幕虚影时不让蕾咪变蓝狗\n有可能让背景或UI变奇怪", "let Remilia not be blue when disables bullet shadow\nMight make bg or UI strange", "let Remilia not be blue when disables bullet shadow\nMight make bg or UI strange" ],

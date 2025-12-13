@@ -17,6 +17,7 @@
 #include "utils/wininternal.h"
 #include <array>
 
+#include <queue>
 #include <format>
 #include <vector>
 
@@ -278,7 +279,7 @@ enum Key {
 
 extern std::unordered_map<KeyDefine, KeyDefine, KeyDefineHashFunction> g_keybind;
 
-Live2DOption g_l2dState;
+
 bool g_enable_l2d = false;
 
 void UpdateGame(int gamever)
@@ -293,112 +294,158 @@ void FastRetry(int thprac_mode)
         g_fast_retry_count_down = g_fast_retry_cout_down_max;
     }
 }
+struct Live2DOption {
+    int motion_time;
 
-void Live2D_SimuKeyboard(DWORD VK, uint32_t time)
+    Live2D_State curr_state;
+    int32_t VKs[Live2D_State::N_Live2D_State];
+
+    int expression_num;
+    bool is_dying_expression;
+    
+    uint32_t last_time_ms;
+    uint32_t dying_expression_last_time_ms;
+}g_l2dState;
+
+inline void Live2D_SetMotion(Live2D_State motion)
 {
-    static uint32_t last_time = 0;
-    if (time - last_time < 16)
-        return;
-    last_time = time; 
-    if (!Gui::ImplWin32CheckForeground()){
+    if (!Gui::ImplWin32CheckForeground()) {
         return;
     }
-    // avoid too many inputs
+    auto VK = g_l2dState.VKs[motion];
+    if (VK > 0 && VK <= 0xDD) {
+        //MessageBoxA(NULL, std::format("--M{}", VK - '0').c_str(), "", MB_OK);
+        INPUT input[2] = {};
+        input[0].type = INPUT_KEYBOARD;
+        input[0].ki.wVk = VK;
+        input[1].type = INPUT_KEYBOARD;
+        input[1].ki.wVk = VK;
+        input[1].ki.dwFlags = KEYEVENTF_KEYUP;
+        SendInput(2, input, sizeof(INPUT));
+    }
+}
 
-    if (VK <= 0 || VK >= 0xDD)
+inline void Live2D_SetExpressionTot()
+{
+    if (!Gui::ImplWin32CheckForeground()) {
         return;
-    INPUT input[2] = {};
-    input[0].type = INPUT_KEYBOARD;
-    input[0].ki.wVk = VK;
-    input[1].type = INPUT_KEYBOARD;
-    input[1].ki.wVk = VK;
-    input[1].ki.dwFlags = KEYEVENTF_KEYUP;
-    SendInput(2, input, sizeof(INPUT));
+    }
+    if (g_l2dState.expression_num == 0)
+        return;
+    if (g_l2dState.expression_num >= 3)
+        g_l2dState.expression_num = (g_l2dState.expression_num % 2==0) ? 2 : 1;
+
+    auto VK = g_l2dState.VKs[Dying];
+    if (VK > 0 && VK <= 0xDD) {
+        // MessageBoxA(NULL, std::format("--E").c_str(), "", MB_OK);
+        INPUT input[2] = {};
+        input[0].type = INPUT_KEYBOARD;
+        input[0].ki.wVk = g_l2dState.VKs[Dying];
+        input[1].type = INPUT_KEYBOARD;
+        input[1].ki.wVk = g_l2dState.VKs[Dying];
+        input[1].ki.dwFlags = KEYEVENTF_KEYUP;
+        SendInput(2, input, sizeof(INPUT));
+        g_l2dState.expression_num--;
+    }
+}
+
+inline void Live2D_ToggleExpression()
+{
+    g_l2dState.is_dying_expression = !g_l2dState.is_dying_expression;
+    g_l2dState.expression_num++;
 }
 
 void Live2D_Update(int life, bool is_rep)
 {
-    // auto p = ImGui::GetOverlayDrawList();
-    // p->AddText({ 200, 0 }, 0xFFFFFFFF, std::format("{}", g_l2dState.last_time_ms).c_str());
-    // p->AddText({ 100, 0 }, 0xFFFFFFFF, std::format("{}", (int)g_l2dState.curr_state).c_str());
     if (!g_enable_l2d)
         return;
     static uint32_t last_time = timeGetTime();
-    static uint32_t dying_time = 0;
-
     uint32_t cur_time = timeGetTime();
     uint32_t step = cur_time - last_time;
     last_time = cur_time;
-    if (is_rep){
-        if (g_l2dState.curr_state != Normal) {
-            g_l2dState.next_state = g_l2dState.curr_state = Normal;
-            Live2D_SimuKeyboard(g_l2dState.VKs[g_l2dState.next_state], cur_time);
+    // auto p = ImGui::GetOverlayDrawList();
+    // p->AddText({ 200, 0 }, 0xFFFFFFFF, std::format("{},{},{},{}", (int)g_l2dState.curr_state, g_l2dState.last_time_ms, g_l2dState.dying_expression_last_time_ms, g_l2dState.is_dying_expression).c_str());
+    if (is_rep) {
+        if (g_l2dState.curr_state != Reset)
+        {
+            g_l2dState.curr_state = Reset;
+            Live2D_SetMotion(Reset);
             g_l2dState.last_time_ms = 1e9;
+        }
+        if (g_l2dState.is_dying_expression) {
+            Live2D_ToggleExpression();
         }
     } else {
-        if (g_l2dState.curr_state != Dying && life <= g_l2dState.life_cap) {
-            g_l2dState.next_state = Dying;
-            g_l2dState.last_time_ms = 1e9;
-            dying_time = g_l2dState.show_time_ms;
-        }
-        if (g_l2dState.curr_state == Dying && life > g_l2dState.life_cap) {
-            if (dying_time <= step) {
-                g_l2dState.next_state = Normal;
-                g_l2dState.last_time_ms = 1e9;
-                dying_time = 0;
+        if (g_l2dState.is_dying_expression && life > 0)
+        {
+            if (g_l2dState.dying_expression_last_time_ms <= step) {
+                Live2D_ToggleExpression();
+                g_l2dState.dying_expression_last_time_ms = 0;
             } else {
-                dying_time -= step;
+                g_l2dState.dying_expression_last_time_ms -= step;
             }
         }
-        if (g_l2dState.curr_state != g_l2dState.next_state) {
-            g_l2dState.curr_state = g_l2dState.next_state;
-            Live2D_SimuKeyboard(g_l2dState.VKs[g_l2dState.next_state], cur_time);
-        } else {
+        if (!g_l2dState.is_dying_expression && life <= 0) {
+            Live2D_ToggleExpression();
+            g_l2dState.dying_expression_last_time_ms = g_l2dState.motion_time;
+        }
+        if (g_l2dState.curr_state != Reset) {
             if (g_l2dState.last_time_ms <= step) {
-                g_l2dState.next_state = Normal;
+                g_l2dState.curr_state = Reset;
+                Live2D_SetMotion(Reset);
+                Live2D_ToggleExpression();
+                Live2D_ToggleExpression();
                 g_l2dState.last_time_ms = 1e9;
             } else {
                 g_l2dState.last_time_ms -= step;
             }
         }
     }
+    Live2D_SetExpressionTot();
 }
 
 void Live2D_ChangeState(Live2D_InputType l2dInput)
 {
     if (!g_enable_l2d)
         return;
+    uint32_t cur_time = timeGetTime();
     switch (l2dInput)
     {
     default:
     case Live2D_InputType::L2D_RESET:
-        if (g_l2dState.last_time_ms > g_l2dState.show_time_ms)
-            g_l2dState.last_time_ms = g_l2dState.show_time_ms;
-        // g_l2dState.next_state = Live2D_State::Normal;
-        // g_l2dState.last_time_ms = 1e9;
+        g_l2dState.last_time_ms = 1;
+        g_l2dState.dying_expression_last_time_ms = 1;
+        if (g_l2dState.is_dying_expression){
+            Live2D_ToggleExpression();
+            g_l2dState.is_dying_expression = false;
+        }
         break;
     case Live2D_InputType::L2D_MISS:
-        g_l2dState.last_time_ms = g_l2dState.show_time_ms;
-        g_l2dState.next_state = Live2D_State::Miss;
+        g_l2dState.last_time_ms = g_l2dState.motion_time;
+        g_l2dState.curr_state = Live2D_State::Miss;
+        Live2D_SetMotion(g_l2dState.curr_state);
         break;
     case Live2D_InputType::L2D_BOMB:
-        g_l2dState.last_time_ms = g_l2dState.show_time_ms;
-        g_l2dState.next_state = Live2D_State::Bomb;
+        g_l2dState.last_time_ms = g_l2dState.motion_time;
+        g_l2dState.curr_state = Live2D_State::Bomb;
+        Live2D_SetMotion(g_l2dState.curr_state);
         break;
     case Live2D_InputType::L2D_HYPER:
-        g_l2dState.last_time_ms = g_l2dState.show_time_ms;
-        g_l2dState.next_state = Live2D_State::Hyper;
+        g_l2dState.last_time_ms = g_l2dState.motion_time;
+        g_l2dState.curr_state = Live2D_State::Hyper;
+        Live2D_SetMotion(g_l2dState.curr_state);
         break;
     case Live2D_InputType::L2D_BORDER_BREAK:
-        g_l2dState.last_time_ms = g_l2dState.show_time_ms;
-        g_l2dState.next_state = Live2D_State::BorderBreak;
+        g_l2dState.last_time_ms = g_l2dState.motion_time;
+        g_l2dState.curr_state = Live2D_State::BorderBreak;
+        Live2D_SetMotion(g_l2dState.curr_state);
         break;
     case Live2D_InputType::L2D_RELEASE:
-        g_l2dState.last_time_ms = g_l2dState.show_time_ms;
-        g_l2dState.next_state = Live2D_State::Release;
+        g_l2dState.last_time_ms = g_l2dState.motion_time;
+        g_l2dState.curr_state = Live2D_State::Release;
+        Live2D_SetMotion(g_l2dState.curr_state);
         break;
     }
-
 }
 
 BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
@@ -623,53 +670,53 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
     if (g_disable_f10_11_13) {
         ((BYTE*)state)[DIK_F10] = 0x0;
     }
-    if (g_socd_setting == SOCD_Default) {
-        return res;
-    }
-    static BYTE last_keyBoardState[256] = { 0 };
-    static uint32_t cur_time = 0;
-    static uint32_t keyBoard_press_time[4] = { 0 };
+    if (g_socd_setting != SOCD_Default) {
+        static BYTE last_keyBoardState[256] = { 0 };
+        static uint32_t cur_time = 0;
+        static uint32_t keyBoard_press_time[4] = { 0 };
 
-    BYTE* keyBoardState = (BYTE*)state;
-    cur_time++;
+        BYTE* keyBoardState = (BYTE*)state;
+        cur_time++;
 
-    if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_LEFTARROW]))
-        keyBoard_press_time[K_LEFT] = cur_time;
-    if (IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_RIGHTARROW]))
-        keyBoard_press_time[K_RIGHT] = cur_time;
-    if (IS_KEY_DOWN(keyBoardState[DIK_UPARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_UPARROW]))
-        keyBoard_press_time[K_UP] = cur_time;
-    if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_DOWNARROW]))
-        keyBoard_press_time[K_DOWN] = cur_time;
+        if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_LEFTARROW]))
+            keyBoard_press_time[K_LEFT] = cur_time;
+        if (IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_RIGHTARROW]))
+            keyBoard_press_time[K_RIGHT] = cur_time;
+        if (IS_KEY_DOWN(keyBoardState[DIK_UPARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_UPARROW]))
+            keyBoard_press_time[K_UP] = cur_time;
+        if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_DOWNARROW]))
+            keyBoard_press_time[K_DOWN] = cur_time;
 
-    memcpy_s(last_keyBoardState, num, keyBoardState, num);
+        memcpy_s(last_keyBoardState, num, keyBoardState, num);
 
-    if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW])) {
-        if (g_socd_setting == SOCD_2) {
-            if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]) {
+        if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW])) {
+            if (g_socd_setting == SOCD_2) {
+                if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]) {
+                    keyBoardState[DIK_RIGHTARROW] = 0;
+                } else {
+                    keyBoardState[DIK_LEFTARROW] = 0;
+                }
+            } else if (g_socd_setting == SOCD_N) {
                 keyBoardState[DIK_RIGHTARROW] = 0;
-            } else {
                 keyBoardState[DIK_LEFTARROW] = 0;
             }
-        } else if (g_socd_setting == SOCD_N) {
-            keyBoardState[DIK_RIGHTARROW] = 0;
-            keyBoardState[DIK_LEFTARROW] = 0;
         }
-    }
-    if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && IS_KEY_DOWN(keyBoardState[DIK_UPARROW])) {
-        if (g_socd_setting == SOCD_2) {
-            if (keyBoard_press_time[K_UP] > keyBoard_press_time[K_DOWN]) {
+        if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && IS_KEY_DOWN(keyBoardState[DIK_UPARROW])) {
+            if (g_socd_setting == SOCD_2) {
+                if (keyBoard_press_time[K_UP] > keyBoard_press_time[K_DOWN]) {
+                    keyBoardState[DIK_DOWNARROW] = 0;
+                } else {
+                    keyBoardState[DIK_UPARROW] = 0;
+                }
+            } else if (g_socd_setting == SOCD_N) {
                 keyBoardState[DIK_DOWNARROW] = 0;
-            } else {
                 keyBoardState[DIK_UPARROW] = 0;
             }
-        } else if (g_socd_setting == SOCD_N) {
-            keyBoardState[DIK_DOWNARROW] = 0;
-            keyBoardState[DIK_UPARROW] = 0;
         }
     }
     if (g_fast_retry_count_down)
     {
+        BYTE* keyBoardState = (BYTE*)state;
         if (g_fast_retry_count_down <= g_fast_retry_cout_down_max)
             keyBoardState[DIK_ESCAPE] = 0x80;
         if (g_fast_retry_count_down <= 1)
@@ -1190,29 +1237,38 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
             g_hook_keyboard_dinput8 = true;
             LauncherSettingGet("auto_fast_retry", g_enable_fast_retry);
             LauncherSettingGet("enable_l2d_key", g_enable_l2d);
-            if (g_enable_l2d)
-            {
-                LauncherSettingGet("mLive2DExpressionTime", g_l2dState.show_time_ms);
-                int normal_key = -1,
+            if (g_enable_l2d) {
+                memset(&g_l2dState,0,sizeof(g_l2dState));
+                g_l2dState.curr_state = Reset;
+                g_l2dState.dying_expression_last_time_ms = 1e9;
+                g_l2dState.is_dying_expression = false;
+                g_l2dState.last_time_ms = 1e9;
+                g_l2dState.motion_time = 2000;
+
+                int32_t motion_time = 3000;
+                LauncherSettingGet("l2d_motion_time",motion_time);
+                g_l2dState.motion_time = motion_time;
+                int reset_key = -1,
                     miss_key = -1,
                     borderBreak_key = -1,
                     releasing_key = -1,
                     bomb_key = -1,
                     hyper_key = -1,
                     dying_key = -1;
-                LauncherSettingGet("l2d_normal_key", normal_key);
+                LauncherSettingGet("l2d_reset_key", reset_key);
                 LauncherSettingGet("l2d_miss_key", miss_key);
                 LauncherSettingGet("l2d_borderBreak_key", borderBreak_key);
                 LauncherSettingGet("l2d_releasing_key", releasing_key);
                 LauncherSettingGet("l2d_bomb_key", bomb_key);
                 LauncherSettingGet("l2d_hyper_key", hyper_key);
                 LauncherSettingGet("l2d_dying_key", dying_key);
-                g_l2dState.VKs[Live2D_State::Normal]        = normal_key;
                 g_l2dState.VKs[Live2D_State::Miss]          = miss_key;
                 g_l2dState.VKs[Live2D_State::BorderBreak]   = borderBreak_key;
                 g_l2dState.VKs[Live2D_State::Release]       = releasing_key;
                 g_l2dState.VKs[Live2D_State::Bomb]          = bomb_key;
                 g_l2dState.VKs[Live2D_State::Hyper]         = hyper_key;
+
+                g_l2dState.VKs[Live2D_State::Reset]        = reset_key;
                 g_l2dState.VKs[Live2D_State::Dying]         = dying_key;
             }
         }
@@ -1671,8 +1727,20 @@ void DisableKeyOpt()
         ImGui::Checkbox(S(TH_ADV_DISABLE_Z_KEY), &g_disable_zkey);
         ImGui::SameLine();
         HelpMarker(S(TH_ADV_DISABLE_Z_KEY_DESC));
+
+        if (g_hook_keyboard_dinput8)
+        {
+            ImGui::Checkbox(S(THPRAC_FAST_RETRY), &g_enable_fast_retry);
+            ImGui::SameLine();
+            HelpMarker(S(THPRAC_FAST_RETRY_DESC2));
+        }
         if (ImGui::IsKeyDown(0x10)) // shift
         {
+            if (g_hook_keyboard_dinput8)
+            {
+                if (ImGui::IsKeyPressed('F'))
+                    g_enable_fast_retry = !g_enable_fast_retry;
+            }
             if (ImGui::IsKeyPressed('D'))
                 g_disable_xkey = !g_disable_xkey;
             if (ImGui::IsKeyPressed('S'))
@@ -1680,8 +1748,7 @@ void DisableKeyOpt()
             if (ImGui::IsKeyPressed('A'))
                 g_disable_shiftkey = !g_disable_shiftkey;
         }
-        if (g_hook_keyboard_dinput8)
-            ImGui::Checkbox(S(THPRAC_FAST_RETRY), &g_enable_fast_retry);
+        
     }
     return;
 }
