@@ -393,8 +393,10 @@ void Live2D_Update(int life, bool is_rep)
             if (g_l2dState.last_time_ms <= step) {
                 g_l2dState.curr_state = Reset;
                 Live2D_SetMotion(Reset);
-                Live2D_ToggleExpression();
-                Live2D_ToggleExpression();
+                if (g_l2dState.is_dying_expression){
+                    Live2D_ToggleExpression();
+                    Live2D_ToggleExpression();
+                }
                 g_l2dState.last_time_ms = 1e9;
             } else {
                 g_l2dState.last_time_ms -= step;
