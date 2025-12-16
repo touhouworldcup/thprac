@@ -2921,6 +2921,7 @@ namespace TH08 {
     EHOOK_DY(th08_desolve, 0x44ABE9,3,{
         TH08InGameInfo::singleton().mDesolveCount++;
         Live2D_ChangeState(Live2D_InputType::L2D_MISS);
+        FastRetry(thPracParam.mode);
     })
     EHOOK_DY(th08_lock_timer1, 0x437AF3,3,{ // initialize
     
