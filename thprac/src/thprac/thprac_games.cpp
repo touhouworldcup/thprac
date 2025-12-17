@@ -37,29 +37,45 @@ DWORD* g_gameGuiHwnd = nullptr;
 HIMC g_gameIMCCtx = 0;
 
 bool g_enable_keyhook;
-
-bool g_enable_fasterBGM;
-
 bool g_hook_keyboard_dinput8;
-bool g_enable_fast_retry;
-constexpr int g_fast_retry_cout_down_max = 15;
-int g_fast_retry_count_down = 0;
 
-struct SB_Struct
+struct FastRetryOpt {
+    static constexpr int fast_retry_cout_down_max = 15;
+    bool enable_fast_retry;
+    int fast_retry_count_down = 0;
+} g_fast_retry_opt;
+
+struct AutoShootOpt
 {
-    LPDIRECTSOUNDBUFFER p_sb;
-    WAVEFORMATEX orig_format;
-    DWORD* vtbl_orig;
-    DWORD* vtbl_changed;
-};
-float g_bgm_speed = 1.0f;
-std::vector<SB_Struct> g_soundbuffers;
+    bool enable_auto_shoot;
+    int shoot_key_DIK;
+    bool last_is_auto_shoot_key_down;
+    bool is_auto_shooting;
+    bool is_th128;
+}g_auto_shoot_opt;
 
-bool g_disable_xkey = false;
-bool g_disable_shiftkey = false;
-bool g_disable_zkey = false;
+struct SoundOpt
+{
+    bool enable_fasterBGM;
+    struct SB_Struct {
+        LPDIRECTSOUNDBUFFER p_sb;
+        WAVEFORMATEX orig_format;
+        DWORD* vtbl_orig;
+        DWORD* vtbl_changed;
+    };
+    float bgm_speed = 1.0f;
+    std::vector<SB_Struct> soundbuffers;
+}g_sound_opt;
 
-bool g_disable_locale_change_hotkey = true;
+
+struct DisableKeyOpt
+{
+    bool disable_xkey = false;
+    bool disable_shiftkey = false;
+    bool disable_zkey = false;
+    bool disable_f10_11_13 = false;
+    bool disable_locale_change_hotkey = true;
+}g_disable_key_opt;
 
 enum SOCD_Setting {SOCD_Default,SOCD_2,SOCD_N};
 SOCD_Setting g_socd_setting = SOCD_Default;
@@ -67,7 +83,6 @@ SOCD_Setting g_socd_setting = SOCD_Default;
 enum KeyboardAPI { Default_API,Force_win32KeyAPI,Force_dinput8KeyAPI};
 KeyboardAPI g_keyboardAPI = Default_API;
 
-bool g_disable_f10_11_13 = false;
 bool g_pauseBGM_06 = false;
 std::string g_name_06;
 bool g_forceRenderCursor=false;
@@ -282,16 +297,31 @@ extern std::unordered_map<KeyDefine, KeyDefine, KeyDefineHashFunction> g_keybind
 
 bool g_enable_l2d = false;
 
-void UpdateGame(int gamever)
+void GameUpdateInner(int gamever)
 {
-    if (g_fast_retry_count_down)
-        g_fast_retry_count_down--;
+    if (g_fast_retry_opt.fast_retry_count_down)
+        g_fast_retry_opt.fast_retry_count_down--;
 }
+
+
+void GameUpdateOuter(ImDrawList* p, int ver)
+{
+    if (g_auto_shoot_opt.enable_auto_shoot && g_auto_shoot_opt.is_auto_shooting) {
+        ImGuiIO& io = ImGui::GetIO();
+        float sz = 32.0f * io.DisplaySize.x / 1280.0f;
+        p->AddRectFilled({ 0, 0 }, { sz, sz }, 0xFFFFDDDD); // pink
+        p->PushClipRect({ 0, 0 }, { sz, sz });
+        auto textSz = ImGui::CalcTextSize("A");
+        p->AddText({ sz * 0.5f - textSz.x * 0.5f, sz * 0.5f - textSz.y * 0.5f }, 0xFFCC2222, "A");
+        p->PopClipRect();
+    }
+}
+
 
 void FastRetry(int thprac_mode)
 {
-    if (thprac_mode && g_enable_fast_retry) {
-        g_fast_retry_count_down = g_fast_retry_cout_down_max;
+    if (thprac_mode && g_fast_retry_opt.enable_fast_retry) {
+        g_fast_retry_opt.fast_retry_count_down = g_fast_retry_opt.fast_retry_cout_down_max;
     }
 }
 struct Live2DOption {
@@ -551,16 +581,16 @@ LB_FINAL:
         }
         memcpy_s(keyBoardState, 256, new_keyBoardState, 256);
     }
-    if (g_disable_xkey) {
+    if (g_disable_key_opt.disable_xkey) {
         keyBoardState['X'] = 0x0;
     }
-    if (g_disable_shiftkey) {
+    if (g_disable_key_opt.disable_shiftkey) {
         keyBoardState[VK_LSHIFT] = keyBoardState[VK_LSHIFT] = keyBoardState[VK_SHIFT] = 0x0;
     }
-    if (g_disable_zkey) {
+    if (g_disable_key_opt.disable_zkey) {
         keyBoardState['Z']= 0x0;
     }
-    if (g_disable_f10_11_13){
+    if (g_disable_key_opt.disable_f10_11_13) {
         keyBoardState[VK_F10] = 0x0;
     }
     if (g_socd_setting == SOCD_Default) {
@@ -659,17 +689,49 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
         }
         memcpy_s(((BYTE*)state), num, new_keyBoardState, num);
     }
-    if (g_disable_xkey) {
+    if (g_auto_shoot_opt.enable_auto_shoot)
+    {
+        bool cur_isdown = IS_KEY_DOWN(((BYTE*)state)[g_auto_shoot_opt.shoot_key_DIK]);
+        bool last_isdown = g_auto_shoot_opt.last_is_auto_shoot_key_down;
+        g_auto_shoot_opt.last_is_auto_shoot_key_down = cur_isdown;
+        if (cur_isdown && !last_isdown)
+        {
+            g_auto_shoot_opt.is_auto_shooting = !g_auto_shoot_opt.is_auto_shooting;
+        }
+        if (g_auto_shoot_opt.is_auto_shooting)
+        {
+            bool is_other_down = false;
+            is_other_down |= IS_KEY_DOWN(((BYTE*)state)[DIK_Z]);
+            is_other_down |= IS_KEY_DOWN(((BYTE*)state)[DIK_X]);
+            is_other_down |= IS_KEY_DOWN(((BYTE*)state)[DIK_C]);
+            is_other_down |= IS_KEY_DOWN(((BYTE*)state)[DIK_D]);
+            is_other_down |= IS_KEY_DOWN(((BYTE*)state)[DIK_ESCAPE]);
+            is_other_down |= IS_KEY_DOWN(((BYTE*)state)[DIK_R]);
+            is_other_down |= IS_KEY_DOWN(((BYTE*)state)[DIK_Q]);
+            if (is_other_down){
+                g_auto_shoot_opt.is_auto_shooting = false;
+            }else{
+                if (g_auto_shoot_opt.is_th128)
+                {
+                    ((BYTE*)state)[DIK_C] = 0x80;
+                } else {
+                    ((BYTE*)state)[DIK_Z] = 0x80;
+                }
+            }
+        }
+    }
+
+    if (g_disable_key_opt.disable_xkey) {
         ((BYTE*)state)[DIK_X] = 0x0;
     }
-    if (g_disable_shiftkey) {
+    if (g_disable_key_opt.disable_shiftkey) {
         ((BYTE*)state)[DIK_LSHIFT] = 0x0;
         ((BYTE*)state)[DIK_RSHIFT] = 0x0;
     }
-    if (g_disable_zkey) {
+    if (g_disable_key_opt.disable_zkey) {
         ((BYTE*)state)[DIK_Z] = 0x0;
     }
-    if (g_disable_f10_11_13) {
+    if (g_disable_key_opt.disable_f10_11_13) {
         ((BYTE*)state)[DIK_F10] = 0x0;
     }
     if (g_socd_setting != SOCD_Default) {
@@ -716,12 +778,12 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
             }
         }
     }
-    if (g_fast_retry_count_down)
+    if (g_fast_retry_opt.fast_retry_count_down)
     {
         BYTE* keyBoardState = (BYTE*)state;
-        if (g_fast_retry_count_down <= g_fast_retry_cout_down_max)
+        if (g_fast_retry_opt.fast_retry_count_down <= g_fast_retry_opt.fast_retry_cout_down_max)
             keyBoardState[DIK_ESCAPE] = 0x80;
-        if (g_fast_retry_count_down <= 1)
+        if (g_fast_retry_opt.fast_retry_count_down <= 1)
             keyBoardState[DIK_R] = 0x80;
     }
     return res;
@@ -749,25 +811,25 @@ void ChangeBGMSpeed(LPDIRECTSOUNDBUFFER thiz = nullptr)
 {
     if (thiz == nullptr)
     {
-        for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end(); i++) {
+        for (auto i = g_sound_opt.soundbuffers.begin(); i != g_sound_opt.soundbuffers.end(); i++) {
             if (i->orig_format.nChannels != 0) {
                 WAVEFORMATEX fmt = i->orig_format;
                 DWORD status;
                 i->p_sb->GetStatus(&status);
                 if (status & DSBSTATUS_PLAYING)
                 {
-                    i->p_sb->SetFrequency(fmt.nSamplesPerSec * g_bgm_speed);
+                    i->p_sb->SetFrequency(fmt.nSamplesPerSec * g_sound_opt.bgm_speed);
                 }
             }
         }
     }
     else
     {
-        for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end(); i++) {
+        for (auto i = g_sound_opt.soundbuffers.begin(); i != g_sound_opt.soundbuffers.end(); i++) {
             if (i->orig_format.nChannels != 0 && i->p_sb == thiz) {
                 WAVEFORMATEX fmt = i->orig_format;
                 DWORD status;
-                i->p_sb->SetFrequency(fmt.nSamplesPerSec * g_bgm_speed);
+                i->p_sb->SetFrequency(fmt.nSamplesPerSec * g_sound_opt.bgm_speed);
                 break;
             }
         }
@@ -777,13 +839,13 @@ void ChangeBGMSpeed(LPDIRECTSOUNDBUFFER thiz = nullptr)
 
 HRESULT STDMETHODCALLTYPE SetFormat_Changed (LPDIRECTSOUNDBUFFER thiz, LPCWAVEFORMATEX pcfxFormat)
 {
-    for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end();i++) {
+    for (auto i = g_sound_opt.soundbuffers.begin(); i != g_sound_opt.soundbuffers.end(); i++) {
         if (i->p_sb == thiz) {
             i->orig_format = *pcfxFormat;
             HRESULT(STDMETHODCALLTYPE * realSetFormat) (LPDIRECTSOUNDBUFFER thiz, LPCWAVEFORMATEX pcfxFormat);
             realSetFormat = (decltype(realSetFormat))(i->vtbl_orig[14]);
             HRESULT res = realSetFormat(thiz, pcfxFormat);
-            i = g_soundbuffers.erase(i);
+            i = g_sound_opt.soundbuffers.erase(i);
             return res;
         }
     }
@@ -792,14 +854,14 @@ HRESULT STDMETHODCALLTYPE SetFormat_Changed (LPDIRECTSOUNDBUFFER thiz, LPCWAVEFO
 
 HRESULT (STDMETHODCALLTYPE SoundBuffer_Release_Changed)(LPDIRECTSOUNDBUFFER thiz)
 {
-    for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end();) {
+    for (auto i = g_sound_opt.soundbuffers.begin(); i != g_sound_opt.soundbuffers.end();) {
         if (i->p_sb == thiz) {
             HRESULT(STDMETHODCALLTYPE * realSoundBuffer_Release) (LPDIRECTSOUNDBUFFER thiz);
             realSoundBuffer_Release = (decltype(realSoundBuffer_Release))(i->vtbl_orig[2]);
             HRESULT res = realSoundBuffer_Release(thiz);
             delete i->vtbl_changed;
             delete i->vtbl_orig;
-            i = g_soundbuffers.erase(i);
+            i = g_sound_opt.soundbuffers.erase(i);
             return res;
         } else {
             i++;
@@ -811,7 +873,7 @@ HRESULT (STDMETHODCALLTYPE SoundBuffer_Release_Changed)(LPDIRECTSOUNDBUFFER thiz
 
 HRESULT STDMETHODCALLTYPE SoundBuffer_Initialize_Changed(LPDIRECTSOUNDBUFFER thiz, LPDIRECTSOUND pDirectSound, LPCDSBUFFERDESC pcDSBufferDesc)
 {
-    for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end(); i++) {
+    for (auto i = g_sound_opt.soundbuffers.begin(); i != g_sound_opt.soundbuffers.end(); i++) {
         if (i->p_sb == thiz) {
 
             DSBUFFERDESC desc = *pcDSBufferDesc;
@@ -828,7 +890,7 @@ HRESULT STDMETHODCALLTYPE SoundBuffer_Initialize_Changed(LPDIRECTSOUNDBUFFER thi
 
 HRESULT STDMETHODCALLTYPE Play_Changed(LPDIRECTSOUNDBUFFER thiz, DWORD dwReserved1, DWORD dwPriority, DWORD dwFlags)
 {
-    for (auto i = g_soundbuffers.begin(); i != g_soundbuffers.end(); i++) {
+    for (auto i = g_sound_opt.soundbuffers.begin(); i != g_sound_opt.soundbuffers.end(); i++) {
         if (i->p_sb == thiz) {
             HRESULT(STDMETHODCALLTYPE * realPlay)
             (LPDIRECTSOUNDBUFFER thiz, DWORD dwReserved1, DWORD dwPriority, DWORD dwFlags);
@@ -847,15 +909,15 @@ HRESULT STDMETHODCALLTYPE DuplicateSoundBuffer_Changed(IDirectSound8* thiz, LPDI
     if (SUCCEEDED(res))
     {
         int idx = -1;
-        for (int i = 0; i < g_soundbuffers.size();i++) {
-            if (g_soundbuffers[i].p_sb == pDSBufferOriginal) {
+        for (int i = 0; i < g_sound_opt.soundbuffers.size(); i++) {
+            if (g_sound_opt.soundbuffers[i].p_sb == pDSBufferOriginal) {
                 idx = i;
                 break;
             }
         }
         if (idx!=-1)
         {
-            SB_Struct sb;
+            SoundOpt::SB_Struct sb;
             memset(&sb, 0, sizeof(sb));
             sb.vtbl_orig = new DWORD[21];
             sb.vtbl_changed = new DWORD[21];
@@ -869,7 +931,7 @@ HRESULT STDMETHODCALLTYPE DuplicateSoundBuffer_Changed(IDirectSound8* thiz, LPDI
             sb.vtbl_changed[10] = (DWORD)SoundBuffer_Initialize_Changed;
             sb.vtbl_changed[12] = (DWORD)Play_Changed;
             (*(DWORD*)*ppDSBufferDuplicate) = (DWORD)sb.vtbl_changed;
-            g_soundbuffers.push_back(sb);
+            g_sound_opt.soundbuffers.push_back(sb);
         }
     }
     return res;
@@ -883,7 +945,7 @@ HRESULT STDMETHODCALLTYPE CreateSoundBuffer_Changed(IDirectSound8* thiz, LPCDSBU
         desc.dwFlags |= DSBCAPS_CTRLFREQUENCY;
     }
 
-    SB_Struct sb;
+    SoundOpt::SB_Struct sb;
     memset(&sb, 0, sizeof(sb));
     if (desc.lpwfxFormat)
         sb.orig_format = *desc.lpwfxFormat;
@@ -905,7 +967,7 @@ HRESULT STDMETHODCALLTYPE CreateSoundBuffer_Changed(IDirectSound8* thiz, LPCDSBU
             sb.vtbl_changed[10] = (DWORD)SoundBuffer_Initialize_Changed;
             sb.vtbl_changed[12] = (DWORD)Play_Changed;
             (*(DWORD*)*ppDSBuffer) = (DWORD)sb.vtbl_changed;
-            g_soundbuffers.push_back(sb);
+            g_sound_opt.soundbuffers.push_back(sb);
         }
     }
     return res;
@@ -1052,7 +1114,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
             }
            
         }
-        LauncherSettingGet("disable_locale_change_hotkey", g_disable_locale_change_hotkey);
+        LauncherSettingGet("disable_locale_change_hotkey", g_disable_key_opt.disable_locale_change_hotkey);
         LauncherSettingGet("keyboard_SOCDv2", (int &)g_socd_setting);
         LauncherSettingGet("keyboard_API", (int &)g_keyboardAPI);
         LauncherSettingGet("force_render_cursor", g_forceRenderCursor);
@@ -1171,13 +1233,13 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
                 || device == 0x4dc6a8 // 13
                 )
             {
-                g_disable_f10_11_13 = true;
+                g_disable_key_opt.disable_f10_11_13 = true;
             }else{
-                g_disable_f10_11_13 = false;
+                g_disable_key_opt.disable_f10_11_13 = false;
             }
             
         } else {
-            g_disable_f10_11_13 = false;
+            g_disable_key_opt.disable_f10_11_13 = false;
         }
 
         LauncherSettingGet_KeyBind();
@@ -1215,7 +1277,9 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
    
     g_enable_l2d = false;
     g_hook_keyboard_dinput8 = false;
-    g_enable_fast_retry = false;
+    g_fast_retry_opt.enable_fast_retry = false;
+    g_auto_shoot_opt.enable_auto_shoot = false;
+    g_auto_shoot_opt.shoot_key_DIK = -1;
     if (LauncherSettingGet("enable_keyboard_hook", g_enable_keyhook) && g_enable_keyhook)
     { // hook keyboard to enable SOCD and X-disable
         LPVOID pTarget;
@@ -1237,8 +1301,25 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         if (g_keyboardAPI == KeyboardAPI::Force_dinput8KeyAPI){
             // keyboard hook + force dinput8
             g_hook_keyboard_dinput8 = true;
-            LauncherSettingGet("auto_fast_retry", g_enable_fast_retry);
+            LauncherSettingGet("auto_fast_retry", g_fast_retry_opt.enable_fast_retry);
+            LauncherSettingGet("auto_auto_shoot", g_auto_shoot_opt.enable_auto_shoot);
+
             LauncherSettingGet("enable_l2d_key", g_enable_l2d);
+            {
+                g_auto_shoot_opt.is_th128 = (device == 0x4d2e70);
+                LauncherSettingGet("auto_shoot_key", g_auto_shoot_opt.shoot_key_DIK);
+                bool has_this_key = false;
+                for (int i = 0; i < ARRAYSIZE(keyBindDefine); i++) {
+                    if (keyBindDefine[i].dik == g_auto_shoot_opt.shoot_key_DIK) {
+                        has_this_key = true;
+                        break;
+                    }
+                }
+                if (!has_this_key)
+                    g_auto_shoot_opt.shoot_key_DIK = -1;
+            }
+           
+
             if (g_enable_l2d) {
                 memset(&g_l2dState,0,sizeof(g_l2dState));
                 g_l2dState.curr_state = Reset;
@@ -1277,7 +1358,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
 
     }
 
-    if (LauncherSettingGet("fast_BGM_when_spdup", g_enable_fasterBGM) && g_enable_fasterBGM) {
+    if (LauncherSettingGet("fast_BGM_when_spdup", g_sound_opt.enable_fasterBGM) && g_sound_opt.enable_fasterBGM) {
         IDirectSound8* pdirectsound;
         HRESULT hr = DirectSoundCreate8(NULL, &pdirectsound, NULL);
         if (SUCCEEDED(hr)) {
@@ -1353,7 +1434,7 @@ void GameGuiEnd(bool draw_cursor)
 
     // Locale Change
     if (!ImGui::IsAnyItemActive()) {
-        if (!g_disable_locale_change_hotkey) {
+        if (!g_disable_key_opt.disable_locale_change_hotkey) {
             if (Gui::GetChordPressedDuration(Gui::GetLanguageChord()) > 0) {
                 if (Gui::KeyboardInputUpdate('1') == 1) {
                     Gui::LocaleSet(Gui::LOCALE_JA_JP);
@@ -1708,7 +1789,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
     ctx.fps = fpsStatic;
     if (clickedApply)
     {
-        g_bgm_speed = ctx.fps / 60.0f;
+        g_sound_opt.bgm_speed = ctx.fps / 60.0f;
         ChangeBGMSpeed();
     }
 
@@ -1718,37 +1799,41 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
 void DisableKeyOpt()
 {
     if (g_enable_keyhook) {
-        ImGui::Checkbox(S(TH_ADV_DISABLE_X_KEY), &g_disable_xkey);
+        ImGui::Checkbox(S(TH_ADV_DISABLE_X_KEY), &g_disable_key_opt.disable_xkey);
         ImGui::SameLine();
         HelpMarker(S(TH_ADV_DISABLE_X_KEY_DESC));
         ImGui::SameLine();
-        ImGui::Checkbox(S(TH_ADV_DISABLE_SHIFT_KEY), &g_disable_shiftkey);
+        ImGui::Checkbox(S(TH_ADV_DISABLE_SHIFT_KEY), &g_disable_key_opt.disable_shiftkey);
         ImGui::SameLine();
         HelpMarker(S(TH_ADV_DISABLE_SHIFT_KEY_DESC));
         ImGui::SameLine();
-        ImGui::Checkbox(S(TH_ADV_DISABLE_Z_KEY), &g_disable_zkey);
+        ImGui::Checkbox(S(TH_ADV_DISABLE_Z_KEY), &g_disable_key_opt.disable_zkey);
         ImGui::SameLine();
         HelpMarker(S(TH_ADV_DISABLE_Z_KEY_DESC));
 
         if (g_hook_keyboard_dinput8)
         {
-            ImGui::Checkbox(S(THPRAC_FAST_RETRY), &g_enable_fast_retry);
+            ImGui::Checkbox(S(THPRAC_FAST_RETRY), &g_fast_retry_opt.enable_fast_retry);
             ImGui::SameLine();
             HelpMarker(S(THPRAC_FAST_RETRY_DESC2));
+            if (g_auto_shoot_opt.shoot_key_DIK != -1) {
+                ImGui::SameLine();
+                ImGui::Checkbox(S(THPRAC_AUTO_SHOOT), &g_auto_shoot_opt.enable_auto_shoot);
+            }
         }
         if (ImGui::IsKeyDown(0x10)) // shift
         {
             if (g_hook_keyboard_dinput8)
             {
                 if (ImGui::IsKeyPressed('F'))
-                    g_enable_fast_retry = !g_enable_fast_retry;
+                    g_fast_retry_opt.enable_fast_retry = !g_fast_retry_opt.enable_fast_retry;
             }
             if (ImGui::IsKeyPressed('D'))
-                g_disable_xkey = !g_disable_xkey;
+                g_disable_key_opt.disable_xkey = !g_disable_key_opt.disable_xkey;
             if (ImGui::IsKeyPressed('S'))
-                g_disable_zkey = !g_disable_zkey;
+                g_disable_key_opt.disable_zkey = !g_disable_key_opt.disable_zkey;
             if (ImGui::IsKeyPressed('A'))
-                g_disable_shiftkey = !g_disable_shiftkey;
+                g_disable_key_opt.disable_shiftkey = !g_disable_key_opt.disable_shiftkey;
         }
         
     }

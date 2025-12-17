@@ -698,6 +698,9 @@ enum th_glossary_t {
     THPRAC_AUTO_NAME_NAME,
     THPRAC_AUTO_NAME_TH06,
     THPRAC_AUTO_NAME_TH06_DESC,
+    THPRAC_AUTO_SHOOT,
+    THPRAC_AUTO_SHOOT_DESC,
+    THPRAC_AUTO_SHOOT_KEY,
     THPRAC_BACK,
     THPRAC_BACKUP_DESC,
     THPRAC_BACKUP_DESC2,
@@ -1710,7 +1713,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1699];
+extern const char* th_glossary_str[3][1702];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

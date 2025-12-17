@@ -719,7 +719,7 @@ namespace TH12 {
         virtual void OnPreUpdate() override
         {
             if (*(DWORD*)(0x004B4514)) {
-                UpdateGame(12);
+                GameUpdateInner(12);
                 Live2D_Update(*(int32_t*)(0x4b0c98), THGuiRep::singleton().mRepStatus);
             } else {
                 Live2D_ChangeState(Live2D_InputType::L2D_RESET);
@@ -2055,8 +2055,8 @@ namespace TH12 {
                 }
             }
         }
-
         RenderLockTimer(p);
+        GameUpdateOuter(p, 12);
 
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);

@@ -2173,7 +2173,7 @@ private:
         }
     }
 
-     bool GuiLive2DHotkeyEdit(const char* label, const char* binding, bool* listening, bool block_input, const char* tooltip = "")
+     bool GuiLive2DHotkeyEdit(const char* label, const char* binding,bool is_vk, bool* listening, bool block_input, const char* tooltip = "")
     {
         // ImGuiIO& io = ImGui::GetIO();
         ImGui::AlignTextToFramePadding();
@@ -2191,15 +2191,25 @@ private:
         // Visual button that toggles listening
         ImGui::PushID(label);
 
-        int current_vk = -1;
-        LauncherSettingGet(binding, current_vk);
+        int current_key_id = -1;
+        LauncherSettingGet(binding, current_key_id);
 
         std::string current_string = "None";
         for (int i = 0; i < ARRAYSIZE(keyBindDefine); i++)
         {
-            if (keyBindDefine[i].vk == current_vk) {
-                current_string = keyBindDefine[i].keyname;
-                break;
+            if (is_vk)
+            {
+                if (keyBindDefine[i].vk == current_key_id) {
+                    current_string = keyBindDefine[i].keyname;
+                    break;
+                }
+            }
+            else
+            {
+                if (keyBindDefine[i].dik == current_key_id) {
+                    current_string = keyBindDefine[i].keyname;
+                    break;
+                }
             }
         }
         
@@ -2217,11 +2227,7 @@ private:
             ImGui::SetItemDefaultFocus();
 
             int vk = 0;
-
-            // Scan for keys until the keyboard keys which are not supported
-            // Keyboard
             for (int key = 0; key < ARRAYSIZE(keyBindDefine); ++key) {
-                // Register key if held or released.  If released, end the combo
                 if (ImGui::IsKeyDown(keyBindDefine[key].vk)) {
                     vk = keyBindDefine[key].vk;
                     changed = true;
@@ -2236,7 +2242,23 @@ private:
                     LauncherSettingSet(binding, invalid); // set to NONE
                 }
                 else
-                    LauncherSettingSet(binding, vk);
+                {
+                    if (is_vk)
+                    {
+                        LauncherSettingSet(binding, vk);
+                    }
+                    else
+                    {
+                        int dik = -1;
+                        for (int i = 0; i < ARRAYSIZE(keyBindDefine); i++) {
+                             if (keyBindDefine[i].vk == vk) {
+                                 dik = keyBindDefine[i].dik;
+                                 break;
+                             }
+                        }
+                        LauncherSettingSet(binding, dik);
+                    }
+                }
                 *listening = false;
             }
         }
@@ -2287,14 +2309,14 @@ private:
                     blockKeys[i] |= listeningKeys[j];
         }
 
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_MISS)          , "l2d_miss_key"        , &listeningKeys[1],   blockKeys[1]);
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_BORDER_BREAK)  , "l2d_borderBreak_key" , &listeningKeys[2],   blockKeys[2],S(THPRAC_L2D_KEYBIND_BORDER_BREAK_DESC));
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_RELEASING)     , "l2d_releasing_key"   , &listeningKeys[3],   blockKeys[3]);
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_BOMB)          , "l2d_bomb_key"        , &listeningKeys[4],   blockKeys[4]);
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_HYPER)                 , "l2d_hyper_key"       , &listeningKeys[5],   blockKeys[5],S(THPRAC_L2D_KEYBIND_HYPER_DESC));
-        
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_RESET)         , "l2d_reset_key", &listeningKeys[0], blockKeys[0]);
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_DYING)         , "l2d_dying_key"       , &listeningKeys[6],   blockKeys[6],S(THPRAC_L2D_KEYBIND_DYING_DESC));
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_MISS)          , "l2d_miss_key"        ,true   , &listeningKeys[1],   blockKeys[1]);
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_BORDER_BREAK)  , "l2d_borderBreak_key" ,true   , &listeningKeys[2],   blockKeys[2],S(THPRAC_L2D_KEYBIND_BORDER_BREAK_DESC));
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_RELEASING)     , "l2d_releasing_key"   ,true   , &listeningKeys[3],   blockKeys[3]);
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_BOMB)          , "l2d_bomb_key"        ,true   , &listeningKeys[4],   blockKeys[4]);
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_HYPER)                 , "l2d_hyper_key"       ,true   , &listeningKeys[5],   blockKeys[5],S(THPRAC_L2D_KEYBIND_HYPER_DESC));
+                                                                                                               
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_RESET)         , "l2d_reset_key"       ,true   , &listeningKeys[0],   blockKeys[0]);
+        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_DYING)         , "l2d_dying_key"       ,true   , &listeningKeys[6],   blockKeys[6],S(THPRAC_L2D_KEYBIND_DYING_DESC));
 
         mLive2DMotionTime.Gui(S(THPRAC_L2D_SHOW_TIME), S(THPRAC_L2D_SHOW_TIME_DESC));
     }
@@ -2446,6 +2468,12 @@ private:
             mSpeedupBGM.Gui(S(THPRAC_MAKE_BGM_FASTER_WHEN_SPEEDUP));
             mCfgEnableLockTimer_autoly.Gui(S(THPRAC_ENABLE_LOCK_TIMER_AUTO));
             mCfgEnableFastRetry_autoly.Gui(S(THPRAC_FAST_RETRY),S(THPRAC_FAST_RETRY_DESC));
+            mCfgEnableAutoShoot_autoly.Gui(S(THPRAC_AUTO_SHOOT_KEY), S(THPRAC_AUTO_SHOOT_DESC));
+            if (mCfgEnableAutoShoot_autoly.Get())
+            {
+                static bool auto_shoot_key_listening = false;
+                GuiLive2DHotkeyEdit(S(THPRAC_AUTO_SHOOT_KEY), "auto_shoot_key",false , &auto_shoot_key_listening, false);
+            }
 
             mAutoName_06.Gui(S(THPRAC_AUTO_NAME_TH06), S(THPRAC_AUTO_NAME_TH06_DESC));
 
@@ -2781,6 +2809,7 @@ private:
 
     THCfgCheckbox mCfgEnableLockTimer_autoly { "auto_lock_timer", false };
     THCfgCheckbox mCfgEnableFastRetry_autoly { "auto_fast_retry", false };
+    THCfgCheckbox mCfgEnableAutoShoot_autoly { "auto_auto_shoot", false };
 
     THCfgCheckbox mCfgTH18ForceCard { "th18_force_card", false };
     THCfgCombo mCfgTH18Card_st1 { "th18_card_st1", 0,56 };

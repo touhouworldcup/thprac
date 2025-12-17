@@ -690,7 +690,7 @@ namespace TH14 {
         {
             if (*(DWORD*)(0x04DB67C)) {
                 Live2D_Update(*(int32_t*)(0x4f5864), THGuiRep::singleton().mRepStatus);
-                UpdateGame(14);
+                GameUpdateInner(14);
             } else {
                 Live2D_ChangeState(Live2D_InputType::L2D_RESET);
                 Live2D_Update(1, false);
@@ -2820,6 +2820,7 @@ namespace TH14 {
             KeysHUD(14, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
 
         RenderLockTimer(p);
+        GameUpdateOuter(p, 14);
 
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);

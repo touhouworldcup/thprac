@@ -670,7 +670,7 @@ namespace TH07 {
             if (g_enable_l2d) {
                 if (gameState == 2)
                 {
-                    UpdateGame(7);
+                    GameUpdateInner(7);
                     float life = *(float*)GetMemAddr(0x626278, 0x5c);
                     if (g_gamefence == 1 && !isnan(life) && life >= 0.0f && life == ceilf(life))
                         Live2D_Update(ceilf(life), THGuiRep::singleton().mRepStatus);
@@ -2120,6 +2120,7 @@ namespace TH07 {
         auto p = ImGui::GetOverlayDrawList();
         RenderBtHitbox(p);
         RenderLockTimer(p);
+        GameUpdateOuter(p, 7);
 
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);

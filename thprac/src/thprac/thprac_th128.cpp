@@ -573,7 +573,7 @@ namespace TH128 {
         virtual void OnPreUpdate() override
         {
             if (*(DWORD*)(0x004B8A80)) {
-                UpdateGame(128);
+                GameUpdateInner(128);
                 Live2D_Update(*(int32_t*)(0x4B4D64)/10000, THGuiRep::singleton().mRepStatus);
             } else {
                 Live2D_ChangeState(Live2D_InputType::L2D_RESET);
@@ -2369,6 +2369,10 @@ namespace TH128 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         TH128InGameInfo::singleton().Update();
+        
+        auto p = ImGui::GetOverlayDrawList();
+        GameUpdateOuter(p, 128);
+
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004B8A80))
             KeysHUD(128, { 256.0f, 0.0f }, { 0.0f, 0.0f }, g_adv_igi_options.keyboard_style);

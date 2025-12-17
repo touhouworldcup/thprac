@@ -13,7 +13,13 @@
 namespace THPrac {
 extern bool g_pauseBGM_06;
 extern bool g_forceRenderCursor;
-extern int g_fast_retry_count_down;
+
+struct FastRetryOpt {
+    static constexpr int fast_retry_cout_down_max = 15;
+    bool enable_fast_retry;
+    int fast_retry_count_down = 0;
+};
+extern FastRetryOpt g_fast_retry_opt;
 
 namespace TH06 {
     static const GameManager* const GAME_MANAGER = (const GameManager* const)0x69bca0;
@@ -1113,7 +1119,7 @@ namespace TH06 {
                 else if (Gui::KeyboardInputGetRaw('R'))
                     StateRestart();
             }
-            if (g_fast_retry_count_down && g_fast_retry_count_down <= 1)
+            if (g_fast_retry_opt.fast_retry_count_down && g_fast_retry_opt.fast_retry_count_down <= 1)
                 StateRestart();
 
             return SIGNAL_NONE;
@@ -1378,7 +1384,7 @@ namespace TH06 {
             DWORD gameState = *(DWORD*)(0x6C6EA4);
             if (gameState == 2)
             {
-                UpdateGame(6);
+                GameUpdateInner(6);
                 Live2D_Update(*(int8_t*)(0x69d4ba), THGuiRep::singleton().mRepStatus);
             }
             else
@@ -3426,6 +3432,7 @@ namespace TH06 {
         RenderRepMarker(p);
         RenderBtHitbox(p);
         RenderLockTimer(p);
+        GameUpdateOuter(p, 6);
         if (g_adv_igi_options.show_keyboard_monitor && (*(DWORD*)(0x6C6EA4) == 2)) {
             g_adv_igi_options.keyboard_style.size = { 48.0f, 48.0f };
             KeysHUD(6, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);

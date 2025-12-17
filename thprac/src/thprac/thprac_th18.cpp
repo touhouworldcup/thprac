@@ -1001,7 +1001,7 @@ namespace TH18 {
         virtual void OnPreUpdate() override
         {
             if (*(DWORD*)(0x004CF410)) {
-                UpdateGame(18);
+                GameUpdateInner(18);
                 Live2D_Update(*(int32_t*)(0x4ccd48), THGuiRep::singleton().mRepStatus);
             } else {
                 Live2D_ChangeState(Live2D_InputType::L2D_RESET);
@@ -3300,6 +3300,7 @@ namespace TH18 {
             KeysHUD(18, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         
         RenderLockTimer(p);
+        GameUpdateOuter(p, 18);
         
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);

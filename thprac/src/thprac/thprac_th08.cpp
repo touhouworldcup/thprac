@@ -768,7 +768,7 @@ namespace TH08 {
             DWORD gameState = *(DWORD*)(0x17CE8B4);
             if (g_enable_l2d) {
                 if (gameState == 2) {
-                    UpdateGame(8);
+                    GameUpdateInner(8);
                     float life = *(float*)GetMemAddr(0x160f510, 0x74);
                     if (g_gamefence == 1 && !isnan(life) && life >= 0.0f && life == ceilf(life))
                     {
@@ -2864,6 +2864,7 @@ namespace TH08 {
         auto p = ImGui::GetOverlayDrawList();
         RenderBtHitbox(p);
         RenderLockTimer(p);
+        GameUpdateOuter(p, 8);
         
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);

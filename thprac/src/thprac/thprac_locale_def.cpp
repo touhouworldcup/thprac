@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1699] {
+const char* th_glossary_str[3][1702] {
     {
         "",
         "啤酒",
@@ -698,6 +698,9 @@ const char* th_glossary_str[3][1699] {
         "机签",
         "红魔乡自动输入机签",
         "使用~代替红斜杠",
+        "自动射击",
+        "按下按键后等于自动连续按Z, 按除方向键和低速键之外的键停止, 需要启用键盘HOOK并设置键盘API为强制dinput8, 绑定为Z/X/C/D/ESC/R/Q则无效",
+        "自动射击按键",
         "返回",
         "备份目录为%appdata%\\thprac",
         "若想要修改thp关闭时的自动备份,进入设置-启动器-自动备份文件",
@@ -2399,6 +2402,9 @@ const char* th_glossary_str[3][1699] {
         "name",
         "auto input name for EoSD",
         "use ~ replace red slash",
+        "auto shoot",
+        "automatically shoot(press z) after press this key, stop when keys except arrow/focus pressed, use keyboard hook and set keyboardAPI as dinput8 to enable, cannot be bind to Z/X/C/D/ESC/R/Q",
+        "shoot key",
         "Back",
         "backup path is %appdata%\\thprac",
         "if you want to backup autoly after thp closed, use settings-launcher-auto backup score files",
@@ -4100,6 +4106,9 @@ const char* th_glossary_str[3][1699] {
         "name",
         "auto input name for EoSD",
         "use ~ replace red slash",
+        "auto shoot",
+        "automatically shoot(press z) after press this key, stop when keys except arrow/focus pressed, use keyboard hook and set keyboardAPI as dinput8 to enable, cannot be bind to Z/X/C/D/ESC/R/Q",
+        "shoot key",
         "戻る",
         "backup path is %appdata%\\thprac",
         "if you want to backup autoly after thp closed, use settings-launcher-auto backup score files",

@@ -622,7 +622,7 @@ namespace TH11 {
         {
             if (*(DWORD*)(0x4A8EB4))
             {
-                UpdateGame(11);
+                GameUpdateInner(11);
                 Live2D_Update(*(int32_t*)(0x4a5718), THGuiRep::singleton().mRepStatus);
             } else {
                 Live2D_ChangeState(Live2D_InputType::L2D_RESET);
@@ -2184,8 +2184,8 @@ namespace TH11 {
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
             KeysHUD(11, { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }
-
         RenderLockTimer(p);
+        GameUpdateOuter(p, 11);
 
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
          GameGuiEnd(drawCursor);

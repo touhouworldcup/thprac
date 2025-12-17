@@ -20,7 +20,8 @@ namespace THPrac {
         L2D_BORDER_BREAK,
         L2D_RELEASE
     };
-    void UpdateGame(int gamever);
+    void GameUpdateInner(int gamever);
+    void GameUpdateOuter(ImDrawList* p, int ver);
     void FastRetry(int thprac_mode);
     void Live2D_Update(int life,bool is_rep);
     void Live2D_ChangeState(Live2D_InputType l2dInput);

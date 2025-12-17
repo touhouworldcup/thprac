@@ -1182,7 +1182,7 @@ namespace TH20 {
         virtual void OnPreUpdate() override
         {
             if (*(DWORD*)(RVA(0x1ba56c))) {
-                UpdateGame(20);
+                GameUpdateInner(20);
                 Live2D_Update(*(int32_t*)(RVA(0x1BA6A8)), THGuiRep::singleton().mRepStatus);
             } else {
                 Live2D_ChangeState(Live2D_InputType::L2D_RESET);
@@ -3565,6 +3565,7 @@ namespace TH20 {
         }
         // if (g_show_att_hitbox)
         //     RenderHits();
+        GameUpdateOuter(p, 20);
     
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);

@@ -316,6 +316,10 @@
 	"THPRAC_L2D_ENABLE":["启用L2D按键","enable L2D keys","enable L2D keys"],
 	"THPRAC_L2D_KEYBIND":["修改用于Live2D的按键映射","set keybind for l2d","set keybind for l2d"],
 	"THPRAC_L2D_KEYBIND_DESC":["将会在特定时刻自动模拟按下对应键(使用win32 API),绑定时按ESC取消","it will simulate key input for some specific moment(using win32 API), press esc to cancel the key","it will simulate key input for some specific moment(using win32 API), press esc to cancel the key"],
+	
+	"THPRAC_AUTO_SHOOT":["自动射击","auto shoot","auto shoot"],
+	"THPRAC_AUTO_SHOOT_KEY":["自动射击按键","shoot key","shoot key"],
+	"THPRAC_AUTO_SHOOT_DESC":["按下按键后等于自动连续按Z, 按除方向键和低速键之外的键停止, 需要启用键盘HOOK并设置键盘API为强制dinput8, 绑定为Z/X/C/D/ESC/R/Q则无效","automatically shoot(press z) after press this key, stop when keys except arrow/focus pressed, use keyboard hook and set keyboardAPI as dinput8 to enable, cannot be bind to Z/X/C/D/ESC/R/Q","automatically shoot(press z) after press this key, stop when keys except arrow/focus pressed, use keyboard hook and set keyboardAPI as dinput8 to enable, cannot be bind to Z/X/C/D/ESC/R/Q"],
 
 	"THPRAC_L2D_KEYBIND_MISS":			["MISS动作","miss motion","miss motion"],
 	"THPRAC_L2D_KEYBIND_BORDER_BREAK":	["撞结界动作","border break motion","border break motion"],
