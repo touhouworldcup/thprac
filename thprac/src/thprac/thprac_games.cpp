@@ -83,13 +83,11 @@ SOCD_Setting g_socd_setting = SOCD_Default;
 enum KeyboardAPI { Default_API,Force_win32KeyAPI,Force_dinput8KeyAPI};
 KeyboardAPI g_keyboardAPI = Default_API;
 
-bool g_pauseBGM_06 = false;
-std::string g_name_06;
 bool g_forceRenderCursor=false;
 bool g_disable_max_btn = true;
 bool g_disable_joy = false;
 bool g_record_key_aps = false;
-AdvancedIGI_Options g_adv_igi_options;
+AdvancedGameOptions g_adv_igi_options;
 
 bool g_useCustomFont = false;
 std::string g_customFont = "MS Gothic";
@@ -1122,10 +1120,10 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         LauncherSettingGet("keyboard_SOCDv2", (int &)g_socd_setting);
         LauncherSettingGet("keyboard_API", (int &)g_keyboardAPI);
         LauncherSettingGet("force_render_cursor", g_forceRenderCursor);
-        LauncherSettingGet("pauseBGM_06", g_pauseBGM_06);
         
         memset(&g_adv_igi_options, 0, sizeof(g_adv_igi_options));
 
+        LauncherSettingGet("pauseBGM_06", g_adv_igi_options.th06_pauseBGM);
         LauncherSettingGet("autoInputName_06", g_adv_igi_options.th06_autoname);
         std::string name06 = "";
         LauncherSettingGet("autoName_06", name06);
@@ -1152,6 +1150,8 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
                 g_adv_igi_options.th06_autoname_name[i] = '?';
             }
         }
+
+        LauncherSettingGet("always_save_score_hist_07", g_adv_igi_options.th07_save_score_always);
 
         LauncherSettingGet("forceLS_08", g_adv_igi_options.th08_forceLS);
         LauncherSettingGet("th10_ud_Replay", g_adv_igi_options.th10_ud_Replay);

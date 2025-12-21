@@ -831,6 +831,10 @@ namespace TH07 {
                 ImGui::SameLine();
                 HelpMarker(S(TH_ONE_KEY_DIE_DESC));
 
+                ImGui::Checkbox(S(THPRAC_TH07_ALWAYS_SAVE_SCORE_SPELL_HIST), &g_adv_igi_options.th07_save_score_always);
+                ImGui::SameLine();
+                HelpMarker(S(THPRAC_TH07_ALWAYS_SAVE_SCORE_SPELL_HIST_DESC));
+
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
                 EndOptGroup();
@@ -2162,6 +2166,40 @@ namespace TH07 {
     })
     EHOOK_DY(th07_lock_timer4, 0x41FFD5, 6, { // decrease time (update)
         g_lock_timer++;
+    })
+    EHOOK_DY(th07_save_data1, 0x43805F, 5, { // esc+r
+        if (g_adv_igi_options.th07_save_score_always)
+        {
+            if ((*(DWORD*)(0x62F648) & 8) == 0) // not in rep
+            {
+                DWORD res_screen = (DWORD) new BYTE[0xCE6C];
+                if (res_screen) {
+                    asm_call<0x444A5B, Thiscall>(res_screen); // init
+                    *(DWORD*)(res_screen + 0x8) = 18; // exit
+                    asm_call<0x449B05, Thiscall>(res_screen); // AddedCallback
+                    asm_call<0x44552C, Thiscall>(res_screen); // WriteScore
+                    asm_call<0x4454FC, Thiscall>(*(DWORD*)res_screen); // ReleaseScoreDat
+                    delete[] (BYTE*)res_screen;
+                }
+            }
+        }
+    })
+    EHOOK_DY(th07_save_data2, 0x438024, 3, { // esc+q
+        if (g_adv_igi_options.th07_save_score_always)
+        {
+            if ((*(DWORD*)(0x62F648) & 8) == 0) // not in rep
+            {
+                DWORD res_screen = (DWORD) new BYTE[0xCE6C];
+                if (res_screen) {
+                    asm_call<0x444A5B, Thiscall>(res_screen); // init
+                    *(DWORD*)(res_screen + 0x8) = 18; // exit
+                    asm_call<0x449B05, Thiscall>(res_screen); // AddedCallback
+                    asm_call<0x44552C, Thiscall>(res_screen); // WriteScore
+                    asm_call<0x4454FC, Thiscall>(*(DWORD*)res_screen); // ReleaseScoreDat
+                    delete[] (BYTE*)res_screen;
+                }
+            }
+        }
     })
     HOOKSET_ENDDEF()
         

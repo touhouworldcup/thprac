@@ -11,7 +11,6 @@
 #include "thprac_th06.h"
 
 namespace THPrac {
-extern bool g_pauseBGM_06;
 extern bool g_forceRenderCursor;
 
 struct FastRetryOpt {
@@ -3132,7 +3131,7 @@ namespace TH06 {
     })
 
     EHOOK_DY(th06_pause_menu_pauseBGM, 0x402714,3,{
-        if (g_pauseBGM_06) {
+        if (g_adv_igi_options.th06_pauseBGM) {
             DWORD soundstruct = *(DWORD*)(0x6D457C);
             if (soundstruct)
             {

@@ -26,7 +26,7 @@ namespace THPrac {
     void Live2D_Update(int life,bool is_rep);
     void Live2D_ChangeState(Live2D_InputType l2dInput);
 
-    struct AdvancedIGI_Options
+    struct AdvancedGameOptions
     {
         int th18_cards[6] = {0}; // card for st1,2,3,4,5,7
         bool th18_force_card = false;
@@ -36,12 +36,14 @@ namespace THPrac {
         bool th06_bg_fix = false;
         bool th06_fix_seed = false;
         int32_t th06_seed = 0; // to match imgui
+        bool th06_pauseBGM = false;
         bool th06_disable_drop_rank = false;
         bool th06_showRank = false;
         bool th06_show_hitbox = false;
         bool th06_showRepMarker = false;
         bool th06_autoname = false;
         char th06_autoname_name[12] = {0};
+        bool th07_save_score_always = false;
         bool th08_forceLS = false;
         bool th11_showHint = false;
         bool th13_showHits = false;
@@ -63,7 +65,7 @@ namespace THPrac {
         bool th20_decrease_graze_effect = false;
         KeyRectStyle keyboard_style;
     };
-    extern AdvancedIGI_Options g_adv_igi_options;
+    extern AdvancedGameOptions g_adv_igi_options;
 
 struct Float2 {
     float x;

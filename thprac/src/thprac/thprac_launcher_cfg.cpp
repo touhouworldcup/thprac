@@ -2481,6 +2481,7 @@ private:
 
             mUD_Replay_10.Gui(S(THPRAC_MOF_UD_REP));
             mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
+            mAlwaysSave_07.Gui(S(THPRAC_TH07_ALWAYS_SAVE_SCORE_SPELL_HIST), S(THPRAC_TH07_ALWAYS_SAVE_SCORE_SPELL_HIST_DESC));
             mSpeedupBGM.Gui(S(THPRAC_MAKE_BGM_FASTER_WHEN_SPEEDUP));
             mCfgEnableLockTimer_autoly.Gui(S(THPRAC_ENABLE_LOCK_TIMER_AUTO));
             mCfgEnableFastRetry_autoly.Gui(S(THPRAC_FAST_RETRY),S(THPRAC_FAST_RETRY_DESC));
@@ -2873,6 +2874,7 @@ private:
     THCfgCheckbox mSpeedupBGM { "fast_BGM_when_spdup", false };
     THCfgCheckbox mPauseBGM_06 { "pauseBGM_06", true };
     THCfgCheckbox mAutoName_06 { "autoInputName_06", false };
+    THCfgCheckbox mAlwaysSave_07 { "always_save_score_hist_07", false };
     THCfgCheckbox mForceLS_08 { "forceLS_08", false };
     THCfgText mName_06 { "autoName_06", "", 9};
     

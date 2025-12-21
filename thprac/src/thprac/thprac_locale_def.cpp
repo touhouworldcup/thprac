@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1702] {
+const char* th_glossary_str[3][1704] {
     {
         "",
         "啤酒",
@@ -1338,6 +1338,8 @@ const char* th_glossary_str[3][1702] {
         "红魔乡自动miss/bomb后不掉rank",
         "当前打开rep的初始种子",
         "红魔乡显示是否为rep",
+        "妖妖梦始终保存存档",
+        "例如练习模式re时",
         "永夜抄强制总是开启LSC",
         "想要的卡牌",
         "stage1 卡牌",
@@ -3042,6 +3044,8 @@ const char* th_glossary_str[3][1702] {
         "EoSD no rank drop after miss/bomb",
         "rand seed for current rep",
         "show rep marker in EoSD",
+        "always save score/spell history in PCB",
+        "e.g. retry in practice",
         "force LS in IN",
         "cards you want",
         "card for stage 1",
@@ -4746,6 +4750,8 @@ const char* th_glossary_str[3][1702] {
         "EoSD no rank drop after miss/bomb",
         "rand seed for current rep",
         "show rep marker in EoSD",
+        "always save score/spell history in PCB",
+        "e.g. retry in practice",
         "force LS in IN",
         "cards you want",
         "card for stage 1",

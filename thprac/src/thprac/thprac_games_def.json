@@ -279,6 +279,9 @@
     "THPRAC_AUTO_NAME_TH06_DESC":["使用~代替红斜杠","use ~ replace red slash","use ~ replace red slash"],
     "THPRAC_AUTO_NAME_NAME":["机签","name","name"],
 	
+    "THPRAC_TH07_ALWAYS_SAVE_SCORE_SPELL_HIST":["妖妖梦始终保存存档","always save score/spell history in PCB","always save score/spell history in PCB"],
+    "THPRAC_TH07_ALWAYS_SAVE_SCORE_SPELL_HIST_DESC":["例如练习模式re时","e.g. retry in practice","e.g. retry in practice"],
+	
     "THPRAC_DISABLE_LOCALE_CHANGE_HOTKEY":["禁用游戏内语言切换快捷键","disable in-game locale change hotkey","disable in-game locale change hotkey"],
     "THPRAC_DISABLE_LOCALE_CHANGE_HOTKEY_DESC":["快捷键:alt+1/2/3","hotkey: alt+1/2/3","hotkey: alt+1/2/3"],
     
