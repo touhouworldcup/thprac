@@ -482,13 +482,14 @@ void Live2D_ChangeState(Live2D_InputType l2dInput)
 
 BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
 {
+    bool handled_by_dinput8 = false;
     bool res = true; 
     static bool is_failed_dinput8 = false;
     if (g_keyboardAPI == Force_dinput8KeyAPI && is_failed_dinput8 == false) {
          static LPDIRECTINPUT8 pdinput = NULL;
          static LPDIRECTINPUTDEVICE8 pKeyboardDevice = NULL;
          if (!pKeyboardDevice) {
-            if (FAILED(DirectInput8Create(GetModuleHandle(0), 0x800, IID_IDirectInput8, (void**)&pdinput, NULL))) {
+            if (FAILED(DirectInput8Create(GetModuleHandle(0), 0x800, IID_IDirectInput8A, (void**)&pdinput, NULL))) {
                 is_failed_dinput8 = true;
             } else {
                 if (FAILED(pdinput->CreateDevice(GUID_SysKeyboard, &pKeyboardDevice, NULL))) {
@@ -512,11 +513,10 @@ BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
          }
          memset(keyBoardState, 0, 256);
          HRESULT res_dinpu8getState = S_OK;
-         if (g_realGetDeviceState!=nullptr) {
-             res_dinpu8getState = g_realGetDeviceState(pKeyboardDevice, 256, keyboardState_dinput8);
-         } else {
-             res_dinpu8getState = pKeyboardDevice->GetDeviceState(256, keyboardState_dinput8);
+         if (g_realGetDeviceState != nullptr) {
+             handled_by_dinput8 = true;
          }
+         res_dinpu8getState = pKeyboardDevice->GetDeviceState(256, keyboardState_dinput8);
          
          if (res_dinpu8getState == DI_OK) {
              for (auto keydef : keyBindDefine) {
@@ -528,6 +528,10 @@ BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
                  keyBoardState[VK_CONTROL] = 0x80;
              if ((keyboardState_dinput8[DIK_LMENU] & 0x80) || (keyboardState_dinput8[DIK_RMENU] & 0x80))
                  keyBoardState[VK_MENU] = 0x80;
+             if (handled_by_dinput8)
+             {
+                 return S_OK;
+             }
          } else {
              res = g_realGetKeyboardState(keyBoardState);
          }

@@ -604,10 +604,13 @@ public:
                 thppath += "\\thprac\\thprac.json";
                 AddfiletoZip(zf, "thprac\\thprac.json", thppath);
                 thppath = appdata;
+                thppath += "\\thprac\\thpracP.json";
+                AddfiletoZip(zf, "thprac\\thpracP.json", thppath);
+                thppath = appdata;
                 thppath += "\\thprac\\keng.dat";
                 AddfiletoZip(zf, "thprac\\keng.dat", thppath);
                 thppath = appdata;
-                thppath += "\\thprac\\thprac_configs.db";
+                thppath += "\\thprac\\thprac_configs.db";//marketeer version
                 AddfiletoZip(zf, "thprac\\thprac_configs.db", thppath);
                 have_backup = true;
             }

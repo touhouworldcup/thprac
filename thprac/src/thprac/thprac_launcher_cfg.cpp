@@ -104,6 +104,21 @@ rapidjson::Document& LauncherCfgGet()
 {
     return gCfgJson;
 }
+
+void CreateNewSettingFile(const std::wstring& newVerFile, const std::wstring& oldVerFile)
+{
+    DWORD attr = GetFileAttributesW(newVerFile.c_str());
+    if (attr != INVALID_FILE_ATTRIBUTES && !(attr & FILE_ATTRIBUTE_DIRECTORY)) {
+        return ;
+    }
+    attr = GetFileAttributesW(oldVerFile.c_str());
+    if (attr == INVALID_FILE_ATTRIBUTES || (attr & FILE_ATTRIBUTE_DIRECTORY)) {
+        return ;
+    }
+    CopyFileW(oldVerFile.c_str(), newVerFile.c_str(), TRUE);
+    return;
+}
+
 bool LauncherCfgInit(bool noCreate)
 {
     if (gCfgHnd != INVALID_HANDLE_VALUE) {
@@ -112,8 +127,9 @@ bool LauncherCfgInit(bool noCreate)
 
     std::wstring dataDir = LauncherGetDataDir();
     CreateDirectoryW(dataDir.c_str(), nullptr);
-    std::wstring jsonPath = dataDir + L"thprac.json";
+    std::wstring jsonPath = dataDir + L"thpracP.json";
 
+    CreateNewSettingFile(jsonPath, dataDir + L"thprac.json");// copy from old version THP
     DWORD openFlag = noCreate ? OPEN_EXISTING : OPEN_ALWAYS;
     DWORD openAccess = noCreate ? GENERIC_READ : GENERIC_READ | GENERIC_WRITE;
     gCfgHnd = CreateFileW(jsonPath.c_str(), openAccess, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, openFlag, FILE_ATTRIBUTE_NORMAL, nullptr);
@@ -1425,7 +1441,7 @@ public:
             if (SHGetFolderPathW(nullptr, CSIDL_APPDATA, nullptr, SHGFP_TYPE_CURRENT, appDataPath) == S_OK) {
                 std::wstring jsonPath = appDataPath;
                 jsonPath += L"\\thprac";
-                jsonPath += L"\\thprac.json";
+                jsonPath += L"\\thpracP.json";
                 DeleteFileW(jsonPath.c_str());
             }
         } else if (mCfgResetFlag == 2) {
