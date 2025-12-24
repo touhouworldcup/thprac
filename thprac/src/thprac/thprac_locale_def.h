@@ -150,6 +150,8 @@ enum th_glossary_t {
     TH11_MARISAB_EARTH,
     TH11_MARISAB_FIRE,
     TH11_MARISAB_FORMATION_LABEL,
+    TH11_MARISAB_LOCK,
+    TH11_MARISAB_LOCK_DESC,
     TH11_MARISAB_METAL,
     TH11_MARISAB_WATER,
     TH11_MARISAB_WOOD,
@@ -1455,6 +1457,7 @@ enum th_glossary_t {
     TH_ABOUT_THPRAC,
     TH_ABOUT_VERSION,
     TH_ABOUT_WEBSITE,
+    TH_ADV_DISABLE_C_KEY_SAMETIME,
     TH_ADV_DISABLE_SHIFT_KEY,
     TH_ADV_DISABLE_SHIFT_KEY_DESC,
     TH_ADV_DISABLE_X_KEY,
@@ -1715,7 +1718,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1704];
+extern const char* th_glossary_str[3][1707];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

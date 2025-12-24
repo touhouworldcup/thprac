@@ -663,6 +663,16 @@ namespace TH11 {
         *(DWORD*)(pCtx->Ecx + 0x1849c) = 0;
     });
 
+    int g_marisaB_lock_type = 0;
+    bool g_marisaB_lock = false;
+    EHOOK_ST(marisaB_lock, 0x430921, 6, {
+        byte cur_player_type = (*(byte*)(CHARA)) * 3 + (*(byte*)(SUBSHOT));
+        if (cur_player_type == 4) {
+            pCtx->Edx = g_marisaB_lock_type % 5;
+        }
+        
+    });
+
     float g_bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
     EHOOK_ST(th11_bossmovedown, 0x0041497C, 5, {
         float* y_pos = (float*)(pCtx->Ebx + 0x14E0);
@@ -748,6 +758,8 @@ namespace TH11 {
             GameplayInit();
             MasterDisableInit();
             th11_bossmovedown.Setup();
+            marisaB_lock.Setup();
+            marisaB_lock.Toggle(false);
         }
         
 
@@ -840,6 +852,26 @@ namespace TH11 {
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));
+
+                { // marisaB
+                    if (ImGui::Checkbox(S(TH11_MARISAB_LOCK), &g_marisaB_lock)) {
+                        marisaB_lock.Toggle(g_marisaB_lock);
+                    }
+                    ImGui::SameLine();
+                    HelpMarker(S(TH11_MARISAB_LOCK_DESC));
+                    if (g_marisaB_lock) {
+                        ImGui::SameLine();
+                        ImGui::SetNextItemWidth(180.0f);
+                        ImGui::Combo(
+                            S(TH11_MARISAB_FORMATION_LABEL), &g_marisaB_lock_type,
+                            [](void* data, int idx, const char** out_text) -> bool {
+                                *out_text = S(TH11_MARISAB_FORMATION[idx]);
+                                return true;
+                            },
+                            nullptr,
+                            5);
+                    }
+                }
                 ImGui::Checkbox(S(TH_ENABLE_LOCK_TIMER), &g_adv_igi_options.enable_lock_timer_autoly);
 
                 if (GameplayOpt(mOptCtx))
@@ -850,7 +882,7 @@ namespace TH11 {
             InGameReactionTestOpt();
             AboutOpt();
             ImGui::EndChild();
-            ImGui::SetWindowFocus();
+            // ImGui::SetWindowFocus();
         }
 
         adv_opt_ctx mOptCtx;
@@ -2067,6 +2099,15 @@ namespace TH11 {
             player->marisa_b_formation = thPracParam.marisa_b_formation;
 
             THSectionPatch();
+        }
+        if (g_marisaB_lock)
+        {
+            byte cur_player_type = (*(byte*)(CHARA)) * 3 + (*(byte*)(SUBSHOT));
+            if (cur_player_type == 4)
+            {
+                Player* player = GetMemContent<Player*>(PLAYER_PTR);
+                player->marisa_b_formation = g_marisaB_lock_type % 5;
+            }
         }
         thPracParam._playLock = true;
     })

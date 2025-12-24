@@ -1793,6 +1793,7 @@
       "TH_ONE_KEY_DIE": [ "一键疮痍", "one key DIE", "one key DIE" ],
       "TH_ONE_KEY_DIE_DESC": [ "为了在某些作品的练习模式中快速存rep", "for rep storage in practice mode", "for rep storage in practice mode" ],
       "TH_ADV_DISABLE_X_KEY": [ "禁用X键", "disable X key", "disable X key" ],
+      "TH_ADV_DISABLE_C_KEY_SAMETIME": [ "禁用X同时禁用C键", "disable C key at the same time when disable X", "disable C key at the same time when disable X" ],
       "TH_ADV_DISABLE_Z_KEY": [ "禁用Z键", "disable Z key", "disable Z key" ],
       "TH_ADV_DISABLE_SHIFT_KEY": [ "禁用Shift键", "disable shift key", "disable shift key" ],
 
@@ -4947,6 +4948,9 @@
     "glossary": {
       "TH11_SIGNAL": [ "信号强度", "C. Gauge", "交信強度" ],
 	  "TH11_MARISAB_FORMATION_LABEL": [ "配置", "Formation", "配置" ],
+	  
+	  "TH11_MARISAB_LOCK": [ "锁定魔B配置", "Lock Marisa B Formation", "Lock Marisa B Formation" ],
+	  "TH11_MARISAB_LOCK_DESC": [ "如果游戏中使用了，则播放rep时也需要打开", "Need to toggle on when playing rep if used", "Need to toggle on when playing rep if used" ],
       "TH11_MARISAB_FIRE":  [ "火符", "Fire",  "火符" ],
       "TH11_MARISAB_WATER": [ "水符", "Water", "水符" ],
       "TH11_MARISAB_WOOD":  [ "木符", "Wood",  "木符" ],

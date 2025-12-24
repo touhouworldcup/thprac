@@ -2483,6 +2483,7 @@ private:
             mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
             mAlwaysSave_07.Gui(S(THPRAC_TH07_ALWAYS_SAVE_SCORE_SPELL_HIST), S(THPRAC_TH07_ALWAYS_SAVE_SCORE_SPELL_HIST_DESC));
             mSpeedupBGM.Gui(S(THPRAC_MAKE_BGM_FASTER_WHEN_SPEEDUP));
+            mCfgDisableCAtSameTime_autoly.Gui(S(TH_ADV_DISABLE_C_KEY_SAMETIME));
             mCfgEnableLockTimer_autoly.Gui(S(THPRAC_ENABLE_LOCK_TIMER_AUTO));
             mCfgEnableFastRetry_autoly.Gui(S(THPRAC_FAST_RETRY),S(THPRAC_FAST_RETRY_DESC));
             mCfgEnableAutoShoot_autoly.Gui(S(THPRAC_AUTO_SHOOT_KEY), S(THPRAC_AUTO_SHOOT_DESC));
@@ -2825,6 +2826,7 @@ private:
     THCfgCheckbox mCfgEnableMasterDisable_autoly { "auto_disable_master", false };
 
     THCfgCheckbox mCfgEnableLockTimer_autoly { "auto_lock_timer", false };
+    THCfgCheckbox mCfgDisableCAtSameTime_autoly { "auto_disable_C", true };
     THCfgCheckbox mCfgEnableFastRetry_autoly { "auto_fast_retry", false };
     THCfgCheckbox mCfgEnableAutoShoot_autoly { "auto_auto_shoot", false };
 

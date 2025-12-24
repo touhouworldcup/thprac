@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1704] {
+const char* th_glossary_str[3][1707] {
     {
         "",
         "啤酒",
@@ -150,6 +150,8 @@ const char* th_glossary_str[3][1704] {
         "土符",
         "火符",
         "配置",
+        "锁定魔B配置",
+        "如果游戏中使用了，则播放rep时也需要打开",
         "金符",
         "水符",
         "木符",
@@ -1455,6 +1457,7 @@ const char* th_glossary_str[3][1704] {
         "关于thprac",
         "thprac 版本 %s",
         "网站：https://github.com/RUEEE/thprac",
+        "禁用X同时禁用C键",
         "禁用Shift键",
         "喜欢低封?(快捷键 shift+A)",
         "禁用X键",
@@ -1856,6 +1859,8 @@ const char* th_glossary_str[3][1704] {
         "Earth",
         "Fire",
         "Formation",
+        "Lock Marisa B Formation",
+        "Need to toggle on when playing rep if used",
         "Metal",
         "Water",
         "Wood",
@@ -3161,6 +3166,7 @@ const char* th_glossary_str[3][1704] {
         "About thprac",
         "thprac version %s",
         "Website: https://github.com/RUEEE/thprac",
+        "disable C key at the same time when disable X",
         "disable shift key",
         "like NO FOCUS?(hotkey shift+A)",
         "disable X key",
@@ -3562,6 +3568,8 @@ const char* th_glossary_str[3][1704] {
         "土符",
         "火符",
         "配置",
+        "Lock Marisa B Formation",
+        "Need to toggle on when playing rep if used",
         "金符",
         "水符",
         "木符",
@@ -4867,6 +4875,7 @@ const char* th_glossary_str[3][1704] {
         "thpracのバージョン情報",
         "thprac ver.%s",
         "ウェブサイト：https://github.com/RUEEE/thprac",
+        "disable C key at the same time when disable X",
         "disable shift key",
         "like NO FOCUS?(hotkey shift+A)",
         "disable X key",

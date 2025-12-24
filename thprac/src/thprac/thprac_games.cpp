@@ -71,6 +71,7 @@ struct SoundOpt
 struct DisableKeyOpt
 {
     bool disable_xkey = false;
+    bool disable_Ckey_at_same_time = true;
     bool disable_shiftkey = false;
     bool disable_zkey = false;
     bool disable_f10_11_13 = false;
@@ -586,6 +587,9 @@ LB_FINAL:
     if (g_disable_key_opt.disable_xkey) {
         keyBoardState['X'] = 0x0;
     }
+    if (g_disable_key_opt.disable_xkey && g_disable_key_opt.disable_Ckey_at_same_time) {
+        keyBoardState['C'] = 0x0;
+    }
     if (g_disable_key_opt.disable_shiftkey) {
         keyBoardState[VK_LSHIFT] = keyBoardState[VK_LSHIFT] = keyBoardState[VK_SHIFT] = 0x0;
     }
@@ -725,6 +729,9 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
 
     if (g_disable_key_opt.disable_xkey) {
         ((BYTE*)state)[DIK_X] = 0x0;
+    }
+    if (g_disable_key_opt.disable_xkey && g_disable_key_opt.disable_Ckey_at_same_time) {
+        ((BYTE*)state)[DIK_C] = 0x0;
     }
     if (g_disable_key_opt.disable_shiftkey) {
         ((BYTE*)state)[DIK_LSHIFT] = 0x0;
@@ -1116,7 +1123,11 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
             }
            
         }
+
+        memset(&g_disable_key_opt, 0, sizeof(g_disable_key_opt));
+        LauncherSettingGet("auto_disable_C", g_disable_key_opt.disable_Ckey_at_same_time);
         LauncherSettingGet("disable_locale_change_hotkey", g_disable_key_opt.disable_locale_change_hotkey);
+
         LauncherSettingGet("keyboard_SOCDv2", (int &)g_socd_setting);
         LauncherSettingGet("keyboard_API", (int &)g_keyboardAPI);
         LauncherSettingGet("force_render_cursor", g_forceRenderCursor);
@@ -1814,6 +1825,8 @@ void DisableKeyOpt()
         ImGui::Checkbox(S(TH_ADV_DISABLE_Z_KEY), &g_disable_key_opt.disable_zkey);
         ImGui::SameLine();
         HelpMarker(S(TH_ADV_DISABLE_Z_KEY_DESC));
+        ImGui::SameLine();
+        ImGui::Checkbox(S(TH_ADV_DISABLE_C_KEY_SAMETIME), &g_disable_key_opt.disable_Ckey_at_same_time);
 
         if (g_hook_keyboard_dinput8)
         {
