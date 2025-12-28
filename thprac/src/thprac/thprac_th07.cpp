@@ -2261,7 +2261,7 @@ namespace TH07 {
 void TH07Init()
 {
     EnableAllHooks(TH07::THInitHook);
-    TryKeepUpRefreshRate((void*)0x434ca2);
+    InitHook(7,(void*)0x434ca2);
 }
 
 }

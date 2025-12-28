@@ -1207,5 +1207,6 @@ namespace Alcostg {
 void AlcostgInit()
 {
     EnableAllHooks(Alcostg::THInitHook);
+    InitHook(-10);
 }
 }

@@ -2997,7 +2997,7 @@ namespace TH08 {
 void TH08Init()
 {
     EnableAllHooks(TH08::THInitHook);
-    TryKeepUpRefreshRate((void*)0x442591);
+    InitHook(8,(void*)0x442591);
 
     //VFSHook(VFS_TH08, (void*)0x43e660);
     //VFSAddListener("stg4abg.anm", nullptr, TH08::THStage4ANM);

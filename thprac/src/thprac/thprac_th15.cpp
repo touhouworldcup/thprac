@@ -2641,9 +2641,9 @@ namespace TH15 {
 void TH15Init()
 {
     EnableAllHooks(TH15::THInitHook);
-    TryKeepUpRefreshRate((void*)0x47356c, (void*)0x47333d);
+    InitHook(15,(void*)0x47356c, (void*)0x47333d);
     if (GetModuleHandleA("vpatch_th15.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th15.dll") + 0x6bd9));
+        InitHook(15,(void*)((DWORD)GetModuleHandleA("vpatch_th15.dll") + 0x6bd9));
     }
 }
 }

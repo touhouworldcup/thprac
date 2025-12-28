@@ -633,5 +633,6 @@ namespace TH09 {
 void TH09Init()
 {
     EnableAllHooks(TH09::THInitHook);
+    InitHook(9);
 }
 }

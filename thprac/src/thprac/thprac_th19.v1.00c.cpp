@@ -875,5 +875,6 @@ void TH19_v1_10c_Init()
 {
     ingame_image_base = CurrentImageBase;
     EnableAllHooks(TH19::V1_10c::THInitHook);
+    InitHook(19);
 }
 }

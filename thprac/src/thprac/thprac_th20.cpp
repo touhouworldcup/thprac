@@ -3693,7 +3693,7 @@ void TH20Init()
 {
     ingame_image_base = CurrentImageBase;
     EnableAllHooks(TH20::THInitHook);
-
+    InitHook(20);
     TH20::TH20FontCreateHook.Setup();
     TH20::TH20FontCreateHook.Enable();
 }

@@ -314,8 +314,14 @@
     "THPRAC_KEYBIND_PRESS_A_KEY":["请按下一个按键","please press a key","please press a key"],
     "THPRAC_KEYBIND_ENTER":["按键名","key name","key name"],
 	
+	"THPRAC_DISABLE_WIN_KEY_DINPUT":["使用dinput禁用win键","use dinput to disable win key","use dinput to disable win key"],
+	"THPRAC_DISABLE_WIN_KEY_DINPUT_DESC":["似乎没用...都怪巨硬","seems useless, blame to Macrohard","seems useless, blame to Macrohard"],
+	
+	"THPRAC_ESC_WHEN_DEACTIVE":["窗口失焦时自动按esc","automatically press Esc when the window loses focus","automatically press Esc when the window loses focus"],
+	"THPRAC_ESC_WHEN_DEACTIVE_DESC":["测试功能","for testing","for testing"],
+	
 	"THPRAC_L2D_KEYBIND_TITLE":["Live2D的按键映射","l2d keybind","l2d keybind"],
-	"THPRAC_L2D_KEYBIND_TITLE2":["启用键盘HOOK并设置键盘API为强制dinput8以启用l2d按键","use keyboard hook and set keyboardAPI as dinput8 to enable l2d keys","use keyboard hook and set keyboardAPI as dinput8 to enable l2d keys"],
+	"THPRAC_L2D_KEYBIND_TITLE2":["启用键盘HOOK并设置键盘API为强制dinput8以启用l2d按键/自动射击等功能","use keyboard hook and set keyboardAPI as dinput8 to enable l2d keys/auto shoot/...","use keyboard hook and set keyboardAPI as dinput8 to enable l2d keys/auto shoot/..."],
 	"THPRAC_L2D_ENABLE":["启用L2D按键","enable L2D keys","enable L2D keys"],
 	"THPRAC_L2D_KEYBIND":["修改用于Live2D的按键映射","set keybind for l2d","set keybind for l2d"],
 	"THPRAC_L2D_KEYBIND_DESC":["将会在特定时刻自动模拟按下对应键(使用win32 API),绑定时按ESC取消","it will simulate key input for some specific moment(using win32 API), press esc to cancel the key","it will simulate key input for some specific moment(using win32 API), press esc to cancel the key"],

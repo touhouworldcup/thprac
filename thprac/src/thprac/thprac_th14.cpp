@@ -2933,6 +2933,6 @@ namespace TH14 {
 void TH14Init()
 {
     EnableAllHooks(TH14::THInitHook);
-    TryKeepUpRefreshRate((void*)0x46b4b3, (void*)0x46b2de);
+    InitHook(14,(void*)0x46b4b3, (void*)0x46b2de);
 }
 }

@@ -2452,6 +2452,6 @@ namespace TH128 {
 void TH128Init()
 {
     EnableAllHooks(TH128::THInitHook);
-    TryKeepUpRefreshRate((void*)0x455669);
+    InitHook(128,(void*)0x455669);
 }
 }

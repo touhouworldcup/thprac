@@ -3442,5 +3442,6 @@ namespace TH18 {
 void TH18Init()
 {
     EnableAllHooks(TH18::THInitHook);
+    InitHook(18);
 }
 }

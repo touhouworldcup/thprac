@@ -265,6 +265,6 @@ namespace TH165 {
 void TH165Init()
 {
     EnableAllHooks(TH165::THInitHook);
-    TryKeepUpRefreshRate((void*)0x461c7a, (void*)0x461a4d);
+    InitHook(165,(void*)0x461c7a, (void*)0x461a4d);
 }
 }

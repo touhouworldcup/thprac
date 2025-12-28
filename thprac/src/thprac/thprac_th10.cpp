@@ -2971,9 +2971,9 @@ namespace TH10 {
 void TH10Init()
 {
     EnableAllHooks(TH10::THInitHook);
-    TryKeepUpRefreshRate((void*)0x439950);
+    InitHook(10,(void*)0x439950);
     if (GetModuleHandleA("vpatch_th10.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th10.dll") + 0x553b));
+        InitHook(10,(void*)((DWORD)GetModuleHandleA("vpatch_th10.dll") + 0x553b));
     }
 }
 }

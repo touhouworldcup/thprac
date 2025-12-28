@@ -2325,6 +2325,6 @@ namespace TH11 {
 void TH11Init()
 {
     EnableAllHooks(TH11::THInitHook);
-    TryKeepUpRefreshRate((void*)0x446e3c);
+    InitHook(11,(void*)0x446e3c);
 }
 }

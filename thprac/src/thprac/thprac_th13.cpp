@@ -2200,9 +2200,9 @@ namespace TH13 {
 void TH13Init()
 {
     EnableAllHooks(TH13::THInitHook);
-    TryKeepUpRefreshRate((void*)0x45dd99);
+    InitHook(13,(void*)0x45dd99);
     if (GetModuleHandleA("vpatch_th13.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th13.dll") + 0x5cc7));
+        InitHook(13,(void*)((DWORD)GetModuleHandleA("vpatch_th13.dll") + 0x5cc7));
     }
 }
 }

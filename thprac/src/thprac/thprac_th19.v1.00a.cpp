@@ -800,5 +800,6 @@ void TH19_v1_00a_Init()
 {
     ingame_image_base = CurrentImageBase;
     EnableAllHooks(TH19::V1_00a::THInitHook);
+    InitHook(19);
 }
 }

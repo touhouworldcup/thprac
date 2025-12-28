@@ -2391,6 +2391,6 @@ namespace TH17 {
 void TH17Init()
 {
     EnableAllHooks(TH17::THInitHook);
-    TryKeepUpRefreshRate((void*)0x462f7a, (void*)0x462d3d);
+    InitHook(17,(void*)0x462f7a, (void*)0x462d3d);
 }
 }

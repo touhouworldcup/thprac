@@ -264,9 +264,9 @@ namespace TH095 {
 void TH095Init()
 {
     EnableAllHooks(TH095::THInitHook);
-    TryKeepUpRefreshRate((void*)0x420ee8);
+    InitHook(95,(void*)0x420ee8);
     if (GetModuleHandleA("vpatch_th095.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th095.dll") + 0x5424));
+        InitHook(95,(void*)((DWORD)GetModuleHandleA("vpatch_th095.dll") + 0x5424));
     }
 }
 }

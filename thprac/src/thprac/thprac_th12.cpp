@@ -2200,9 +2200,9 @@ namespace TH12 {
 void TH12Init()
 {
     EnableAllHooks(TH12::THInitHook);
-    TryKeepUpRefreshRate((void*)0x450dcc);
+    InitHook(12,(void*)0x450dcc);
     if (GetModuleHandleA("vpatch_th12.dll")) {
-        TryKeepUpRefreshRate((void*)((DWORD)GetModuleHandleA("vpatch_th12.dll") + 0x54ce));
+        InitHook(12,(void*)((DWORD)GetModuleHandleA("vpatch_th12.dll") + 0x54ce));
     }
 }
 }

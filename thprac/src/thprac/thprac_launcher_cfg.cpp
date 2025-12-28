@@ -2486,12 +2486,6 @@ private:
             mCfgDisableCAtSameTime_autoly.Gui(S(TH_ADV_DISABLE_C_KEY_SAMETIME));
             mCfgEnableLockTimer_autoly.Gui(S(THPRAC_ENABLE_LOCK_TIMER_AUTO));
             mCfgEnableFastRetry_autoly.Gui(S(THPRAC_FAST_RETRY),S(THPRAC_FAST_RETRY_DESC));
-            mCfgEnableAutoShoot_autoly.Gui(S(THPRAC_AUTO_SHOOT_KEY), S(THPRAC_AUTO_SHOOT_DESC));
-            if (mCfgEnableAutoShoot_autoly.Get())
-            {
-                static bool auto_shoot_key_listening = false;
-                GuiLive2DHotkeyEdit(S(THPRAC_AUTO_SHOOT_KEY), "auto_shoot_key",false , &auto_shoot_key_listening, false);
-            }
 
             mAutoName_06.Gui(S(THPRAC_AUTO_NAME_TH06), S(THPRAC_AUTO_NAME_TH06_DESC));
 
@@ -2533,13 +2527,23 @@ private:
             }
             if (mKeyboardAPISetting.Get() == 2 && mKeyboardHook.Get())
             {
+                // mCfgEnableAutoEsc_autoly.Gui(S(THPRAC_ESC_WHEN_DEACTIVE), S(THPRAC_ESC_WHEN_DEACTIVE_DESC));
+                mDisableWinKey.Gui(S(THPRAC_DISABLE_WIN_KEY_DINPUT), S(THPRAC_DISABLE_WIN_KEY_DINPUT_DESC));
+                mCfgEnableAutoShoot_autoly.Gui(S(THPRAC_AUTO_SHOOT_KEY), S(THPRAC_AUTO_SHOOT_DESC));
+                if (mCfgEnableAutoShoot_autoly.Get()) {
+                    static bool auto_shoot_key_listening = false;
+                    GuiLive2DHotkeyEdit(S(THPRAC_AUTO_SHOOT_KEY), "auto_shoot_key", false, &auto_shoot_key_listening, false);
+                }
                 ImGui::Separator();
                 if (ImGui::TreeNode(S(THPRAC_L2D_KEYBIND_TITLE))) {
                     // l2d settings
                     Live2DHotkeySettings();
                 }
+                ImGui::NewLine();
             }else{
                 ImGui::Separator();
+                ImGui::NewLine();
+                ImGui::NewLine();
                 ImGui::Text(S(THPRAC_L2D_KEYBIND_TITLE2));
             }
             ImGui::Separator();
@@ -2829,6 +2833,7 @@ private:
     THCfgCheckbox mCfgDisableCAtSameTime_autoly { "auto_disable_C", true };
     THCfgCheckbox mCfgEnableFastRetry_autoly { "auto_fast_retry", false };
     THCfgCheckbox mCfgEnableAutoShoot_autoly { "auto_auto_shoot", false };
+    // THCfgCheckbox mCfgEnableAutoEsc_autoly { "auto_esc_when_loss_focus", false };
 
     THCfgCheckbox mCfgTH18ForceCard { "th18_force_card", false };
     THCfgCombo mCfgTH18Card_st1 { "th18_card_st1", 0,56 };
@@ -2891,6 +2896,7 @@ private:
     THCfgCheckbox mReflectiveLaunch { "reflective_launch", false };
     THCfgCheckbox mForceOnlyRenderTextUsed { "force_only_render_text_used", true };
     THCfgCheckbox mDisableJoy { "disableJoy", false };
+    THCfgCheckbox mDisableWin { "disableWinDinput8", false };
     THCfgCheckbox mForceRenderCursor { "force_render_cursor", false };
     THCfgCheckbox mUseCorrectJaFonts { "use_correct_ja_fonts", false };
     THCfgCheckbox mUseCustomFont { "use_custom_font", false };

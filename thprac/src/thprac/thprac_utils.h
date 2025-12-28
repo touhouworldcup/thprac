@@ -30,8 +30,7 @@
 #include <vector>
 
 namespace THPrac {
-void TryKeepUpRefreshRate(void* address);
-void TryKeepUpRefreshRate(void* address, void* address2);
+void InitHook(int ver,void* refreshRateAddr1 = nullptr, void* refreshRateAddr2 = nullptr);
 ImTextureID ReadImage(DWORD dxVer, DWORD device, LPCSTR name, LPCSTR srcData, size_t srcSz);
 
 struct KeyDefine {
