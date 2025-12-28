@@ -53,6 +53,10 @@ struct SoundOpt
 
 struct InputOpt
 {
+    // raw input
+    BYTE fake_di_State[256] = { 0 };
+    bool is_ri_inited = false;
+
     // fast re
     static constexpr int fast_retry_cout_down_max = 15;
     bool enable_fast_retry = false;
@@ -75,14 +79,11 @@ struct InputOpt
     bool disable_win_key = false;
 
     bool g_disable_joy = false;
-}g_input_opt;
 
-struct InputHooks
-{
-    enum class SOCD_Setting {SOCD_Default = 0,SOCD_2,SOCD_N};
+        enum class SOCD_Setting {SOCD_Default = 0,SOCD_2,SOCD_N};
     SOCD_Setting g_socd_setting;
     
-    enum class KeyboardAPI { Default_API = 0,Force_win32KeyAPI,Force_dinput8KeyAPI};
+    enum class KeyboardAPI { Default_API = 0,Force_win32KeyAPI,Force_dinput8KeyAPI,Force_RawInput};
     KeyboardAPI g_keyboardAPI;
 
     bool g_enable_keyhook;
@@ -93,6 +94,8 @@ struct InputHooks
     HRESULT(STDMETHODCALLTYPE* realCreateDevice) (LPDIRECTINPUT8 thiz, const GUID& guid, LPDIRECTINPUTDEVICE8W* lpddevice, LPUNKNOWN lpunk);
     
     LPDIRECTINPUTDEVICE8 ddevice;
+    HRESULT(STDMETHODCALLTYPE* realAcquire)(LPDIRECTINPUTDEVICE8 thiz);
+    HRESULT(STDMETHODCALLTYPE* realPoll)(LPDIRECTINPUTDEVICE8 thiz);
     HRESULT(STDMETHODCALLTYPE* realDDRelease)(LPDIRECTINPUTDEVICE8 thiz);
     HRESULT(STDMETHODCALLTYPE* realSetDataFormat)(LPDIRECTINPUTDEVICE8 thiz, LPCDIDATAFORMAT);
     HRESULT(STDMETHODCALLTYPE* realGetDeviceState)(LPDIRECTINPUTDEVICE8 thiz, DWORD, LPVOID);
@@ -105,7 +108,7 @@ struct InputHooks
     MMRESULT (WINAPI *g_realJoyGetPosEx)(UINT uJoyID, LPJOYINFOEX pji);
     DWORD (WINAPI *g_realXInputGetState3)(DWORD dwUserIndex, void* pState);
     DWORD (WINAPI *g_realXInputGetState4)(DWORD dwUserIndex, void* pState);
-}g_input_hooks;
+}g_input_opt;
 
 bool g_forceRenderCursor=false;
 bool g_disable_max_btn = true;
@@ -165,102 +168,124 @@ HRESULT STDMETHODCALLTYPE SetCooperativeLevel_Changed(LPDIRECTINPUTDEVICE8 thiz,
 HRESULT WINAPI EnumDevices_Changed(LPDIRECTINPUT8 thiz, DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef, DWORD dwFlags);
 HRESULT WINAPI DDevice_Release_Changed(LPDIRECTINPUTDEVICE8 thiz)
 {
-    if (g_input_hooks.ddevice == thiz) {
+    if (g_input_opt.ddevice == thiz) {
         return DI_OK;
     }
-    return g_input_hooks.realDDRelease(thiz);
+    return g_input_opt.realDDRelease(thiz);
 }
 HRESULT WINAPI Dinput_Release_Changed(LPDIRECTINPUT8 thiz)
 {
-    if (g_input_hooks.dinput == thiz) {
+    if (g_input_opt.dinput == thiz) {
         return DI_OK;
     }
-    return g_input_hooks.realDIRelease(thiz);
+    return g_input_opt.realDIRelease(thiz);
 }
 
 HRESULT STDMETHODCALLTYPE SetDataFormat_Changed(LPDIRECTINPUTDEVICE8 thiz, LPCDIDATAFORMAT fmt)
 {
-    if (g_input_hooks.ddevice == thiz) {
-        auto res = g_input_hooks.realSetDataFormat(thiz, fmt);
+    if (g_input_opt.ddevice == thiz) {
+        auto res = g_input_opt.realSetDataFormat(thiz, fmt);
         if (res == DIERR_ACQUIRED) {
             thiz->Unacquire();
-            res = g_input_hooks.realSetDataFormat(thiz, fmt);
+            res = g_input_opt.realSetDataFormat(thiz, fmt);
         }
         return res;
     }
-    return g_input_hooks.realSetDataFormat(thiz, fmt);
+    return g_input_opt.realSetDataFormat(thiz, fmt);
+}
+HRESULT WINAPI Poll_Changed(LPDIRECTINPUTDEVICE8 thiz)
+{
+    if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {
+        return DI_OK;
+    }
+    auto res = g_input_opt.realPoll(thiz);
+    return res;
+}
+HRESULT WINAPI Acquire_Changed(LPDIRECTINPUTDEVICE8 thiz)
+{
+    if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {
+        return DI_OK;
+    }
+    auto res = g_input_opt.realAcquire(thiz);
+    return res;
 }
 HRESULT STDMETHODCALLTYPE CreateDevice_Changed(LPDIRECTINPUT8 thiz, const GUID& guid, LPDIRECTINPUTDEVICE8W* lpddevice, LPUNKNOWN lpunk)
 {
-    if (g_input_hooks.dinput == thiz && guid == GUID_SysKeyboard) {
-        if (g_input_hooks.ddevice != nullptr) {
-            *lpddevice = g_input_hooks.ddevice;
+    if (g_input_opt.dinput == thiz && guid == GUID_SysKeyboard) {
+        if (g_input_opt.ddevice != nullptr) {
+            *lpddevice = g_input_opt.ddevice;
+            (*lpddevice)->Unacquire();
             return DI_OK;
         }
-        auto res = g_input_hooks.realCreateDevice(thiz, guid, lpddevice, lpunk);
+        auto res = g_input_opt.realCreateDevice(thiz, guid, lpddevice, lpunk);
         if (res == DI_OK)
         {
-            HookVTable(*lpddevice, 2, DDevice_Release_Changed, (void**)&(g_input_hooks.realDDRelease));
-            HookVTable(*lpddevice, 9, GetDeviceState_Changed, (void**)&(g_input_hooks.realGetDeviceState));
-            HookVTable(*lpddevice, 11, SetDataFormat_Changed, (void**)&(g_input_hooks.realSetDataFormat));
-            HookVTable(*lpddevice, 13, SetCooperativeLevel_Changed, (void**)&(g_input_hooks.realSetCooperativeLevel));
-            g_input_hooks.ddevice = *lpddevice;
+            HookVTable(*lpddevice, 2, DDevice_Release_Changed, (void**)&(g_input_opt.realDDRelease));
+            HookVTable(*lpddevice, 7, Acquire_Changed, (void**)&(g_input_opt.realAcquire));
+            HookVTable(*lpddevice, 9, GetDeviceState_Changed, (void**)&(g_input_opt.realGetDeviceState));
+            HookVTable(*lpddevice, 11, SetDataFormat_Changed, (void**)&(g_input_opt.realSetDataFormat));
+            HookVTable(*lpddevice, 13, SetCooperativeLevel_Changed, (void**)&(g_input_opt.realSetCooperativeLevel));
+            HookVTable(*lpddevice, 25, Poll_Changed, (void**)&(g_input_opt.realPoll));
+            g_input_opt.ddevice = *lpddevice;
+            g_input_opt.ddevice = *lpddevice;
         }
         return res;
     }
-    return g_input_hooks.realCreateDevice(thiz, guid, lpddevice, lpunk);
+    return g_input_opt.realCreateDevice(thiz, guid, lpddevice, lpunk);
 }
 
 HRESULT WINAPI DirectInput8Create_Changed(HINSTANCE hinst, DWORD dwVersion, const IID& riidltf, LPVOID* ppvOut, LPUNKNOWN punkOuter)
 {
-    if (g_input_hooks.dinput != nullptr) {
-        *ppvOut = g_input_hooks.dinput;
+    if (g_input_opt.dinput != nullptr) {
+        *ppvOut = g_input_opt.dinput;
         return DI_OK;
     }
-    auto res = g_input_hooks.g_realDirectInput8Create(hinst, dwVersion, riidltf, ppvOut, punkOuter);
+    auto res = g_input_opt.g_realDirectInput8Create(hinst, dwVersion, riidltf, ppvOut, punkOuter);
     if (res == DI_OK){
-        HookVTable(*ppvOut, 2, Dinput_Release_Changed, (void**)&(g_input_hooks.realDIRelease));
-        HookVTable(*ppvOut, 3, CreateDevice_Changed, (void**)&(g_input_hooks.realCreateDevice));
-        HookVTable(*ppvOut, 4, EnumDevices_Changed, (void**)&(g_input_hooks.realEnumDevices));
-        g_input_hooks.dinput = *(LPDIRECTINPUT8*)ppvOut;
+        HookVTable(*ppvOut, 2, Dinput_Release_Changed, (void**)&(g_input_opt.realDIRelease));
+        HookVTable(*ppvOut, 3, CreateDevice_Changed, (void**)&(g_input_opt.realCreateDevice));
+        HookVTable(*ppvOut, 4, EnumDevices_Changed, (void**)&(g_input_opt.realEnumDevices));
+        g_input_opt.dinput = *(LPDIRECTINPUT8*)ppvOut;
     }
     return res;
 }
 
 HRESULT STDMETHODCALLTYPE SetCooperativeLevel_Changed(LPDIRECTINPUTDEVICE8 thiz, HWND hwnd, DWORD flag)
 {
-    if(g_input_hooks.ddevice == thiz) {
+    if(g_input_opt.ddevice == thiz) {
         if (g_input_opt.disable_win_key) {
             flag = DISCL_NONEXCLUSIVE | DISCL_FOREGROUND | DISCL_NOWINKEY;
+        }else{
+            flag = DISCL_NONEXCLUSIVE | DISCL_FOREGROUND;
         }
-        auto res = g_input_hooks.realSetCooperativeLevel(thiz, hwnd, flag);
+        auto res = g_input_opt.realSetCooperativeLevel(thiz, hwnd, flag);
         if (res == DIERR_ACQUIRED){
             thiz->Unacquire();
-            res = g_input_hooks.realSetCooperativeLevel(thiz, hwnd, flag);
+            res = g_input_opt.realSetCooperativeLevel(thiz, hwnd, flag);
         }
         return res;
     }
-    return g_input_hooks.realSetCooperativeLevel(thiz, hwnd, flag);
+    return g_input_opt.realSetCooperativeLevel(thiz, hwnd, flag);
 }
 
 HRESULT WINAPI EnumDevices_Changed(LPDIRECTINPUT8 thiz, DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef, DWORD dwFlags)
 {
     if (g_input_opt.g_disable_joy && dwDevType == DI8DEVCLASS_GAMECTRL)
         return DI_OK;
-    return g_input_hooks.realEnumDevices(thiz, dwDevType, lpCallback, pvRef, dwFlags);
+    return g_input_opt.realEnumDevices(thiz, dwDevType, lpCallback, pvRef, dwFlags);
 }
 
 MMRESULT WINAPI joyGetDevCapsA_Changed(UINT uJoyID, LPJOYCAPSA pjc, UINT cbjc) {
     if (g_input_opt.g_disable_joy)
         return MMSYSERR_NODRIVER;
-    return g_input_hooks.g_realJoyGetDevCapsA(uJoyID, pjc, cbjc);
+    return g_input_opt.g_realJoyGetDevCapsA(uJoyID, pjc, cbjc);
 }
 MMRESULT WINAPI joyGetPosEx_Changed(UINT uJoyID, LPJOYINFOEX pji) { 
     if (g_input_opt.g_disable_joy)
         return MMSYSERR_NODRIVER;
 
     pji->dwFlags |= JOY_RETURNPOV;
-    auto ret_pos = g_input_hooks.g_realJoyGetPosEx(uJoyID, pji);
+    auto ret_pos = g_input_opt.g_realJoyGetPosEx(uJoyID, pji);
     if (ret_pos != JOYERR_NOERROR) {
         return ret_pos;
     }
@@ -294,14 +319,14 @@ DWORD WINAPI XInputGetState_Changed3(DWORD dwUserIndex, void* pState)
 {
     if (g_input_opt.g_disable_joy)
         return ERROR_DEVICE_NOT_CONNECTED;
-    return g_input_hooks.g_realXInputGetState3(dwUserIndex, pState);
+    return g_input_opt.g_realXInputGetState3(dwUserIndex, pState);
 }
 
 DWORD WINAPI XInputGetState_Changed4(DWORD dwUserIndex, void* pState)
 {
     if (g_input_opt.g_disable_joy)
         return ERROR_DEVICE_NOT_CONNECTED;
-    return g_input_hooks.g_realXInputGetState4(dwUserIndex, pState);
+    return g_input_opt.g_realXInputGetState4(dwUserIndex, pState);
 }
 
 HFONT WINAPI CreateFontA_Changed
@@ -432,7 +457,6 @@ inline void Live2D_SetMotion(Live2D_State motion)
     }
     auto VK = g_l2dState.VKs[motion];
     if (VK > 0 && VK <= 0xDD) {
-        //MessageBoxA(NULL, std::format("--M{}", VK - '0').c_str(), "", MB_OK);
         INPUT input[2] = {};
         input[0].type = INPUT_KEYBOARD;
         input[0].ki.wVk = VK;
@@ -455,7 +479,6 @@ inline void Live2D_SetExpressionTot()
 
     auto VK = g_l2dState.VKs[Dying];
     if (VK > 0 && VK <= 0xDD) {
-        // MessageBoxA(NULL, std::format("--E").c_str(), "", MB_OK);
         INPUT input[2] = {};
         input[0].type = INPUT_KEYBOARD;
         input[0].ki.wVk = g_l2dState.VKs[Dying];
@@ -568,77 +591,170 @@ void Live2D_ChangeState(Live2D_InputType l2dInput)
     }
 }
 
-void InitMyDDevice()
+LRESULT CALLBACK GameExternWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    if (g_input_hooks.ddevice != nullptr)
-        return;
-    if (g_gameGuiHwnd == nullptr)
-        return;
-        bool last_dinput_state_is_null = false;
+    switch (uMsg)
+    {
+    default:
+        break;
+    case WM_ACTIVATE:
+        if (LOWORD(wParam) == WA_INACTIVE) {
+            memset(g_input_opt.fake_di_State, 0, 256);
+        }
+        break;
+    case WM_INPUT: 
+        if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {
+            
+            static BYTE lpb[1024];
+            UINT dwSize = 1024;
+            if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != -1) {
+                RAWINPUT* raw = (RAWINPUT*)lpb;
+                if (raw->header.dwType == RIM_TYPEKEYBOARD) {
+                    UINT scanCode = raw->data.keyboard.MakeCode;
+                    bool isUp = (raw->data.keyboard.Flags & RI_KEY_BREAK);
 
-    static bool is_failed_dinput8 = false;
-    if (is_failed_dinput8)
-        return;
+                    if (raw->data.keyboard.Flags & RI_KEY_E0) {
+                        scanCode |= 0x80;
+                    }
+                    if (scanCode < 256) {
+                        g_input_opt.fake_di_State[scanCode] = isUp ? 0x00 : 0x80;
+                    }
+                }
+            }
+        }
+    }
+    return 0;// return 0: pass to other proc
+}
 
-    if (g_input_hooks.dinput == nullptr) {
-        if (g_input_hooks.g_realDirectInput8Create)
+void InitInput()
+{
+    if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {
+        if (g_gameGuiHwnd == nullptr)
+            return;
+        if (g_input_opt.ddevice != nullptr) {
+            g_input_opt.ddevice->Unacquire();
+        }
+        if (g_input_opt.is_ri_inited) {
+            RAWINPUTDEVICE Rid;
+            Rid.usUsagePage = 0x01;
+            Rid.usUsage = 0x06;
+            Rid.dwFlags = RIDEV_REMOVE;
+            Rid.hwndTarget = NULL;
+            auto res = RegisterRawInputDevices(&Rid, 1, sizeof(Rid));
+            if (res) {
+                g_input_opt.is_ri_inited = false;
+            } else {
+                return;
+            }
+        }
+        RAWINPUTDEVICE Rid;
+        Rid.usUsagePage = 0x01;
+        Rid.usUsage = 0x06;//HID_USAGE_GENERIC_KEYBOARD
+        Rid.dwFlags = 0;
+        Rid.hwndTarget = (HWND)*g_gameGuiHwnd;
+
+        if (!RegisterRawInputDevices(&Rid, 1, sizeof(Rid))) {
+            return;
+        }
+        g_input_opt.is_ri_inited = true;
+        memset(g_input_opt.fake_di_State, 0, 256);
+        return;
+    }else if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI) {
+        if (g_gameGuiHwnd == nullptr)
+            return;
+        if (g_input_opt.is_ri_inited)
         {
-            DWORD d;
-            auto res = DirectInput8Create_Changed(GetModuleHandle(0), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&d, NULL);
-            if (res != DI_OK || g_input_hooks.dinput == nullptr) {
+            RAWINPUTDEVICE Rid;
+            Rid.usUsagePage = 0x01; 
+            Rid.usUsage = 0x06;
+            Rid.dwFlags = RIDEV_REMOVE;
+            Rid.hwndTarget = NULL;
+            auto res = RegisterRawInputDevices(&Rid, 1, sizeof(Rid));
+            if (res) {
+                g_input_opt.is_ri_inited = false;
+            }
+        }
+        if (g_input_opt.ddevice != nullptr) {
+            g_input_opt.ddevice->Unacquire();
+            g_input_opt.ddevice->Acquire();
+            return;
+        }
+        bool is_failed_dinput8 = false;
+        // if (is_failed_dinput8)
+        //     return;
+
+        if (g_input_opt.dinput == nullptr) {
+            if (g_input_opt.g_realDirectInput8Create) {
+                DWORD d;
+                auto res = DirectInput8Create_Changed(GetModuleHandle(0), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&d, NULL);
+                if (res != DI_OK || g_input_opt.dinput == nullptr) {
+                    is_failed_dinput8 = true;
+                    return;
+                }
+            } else {
                 is_failed_dinput8 = true;
                 return;
             }
-        }else{
+        }
+        DWORD dev;
+        auto res1 = g_input_opt.dinput->CreateDevice(GUID_SysKeyboard, (LPDIRECTINPUTDEVICE8*)&dev, NULL);
+        if (res1 != DI_OK || g_input_opt.ddevice == nullptr) {
             is_failed_dinput8 = true;
             return;
         }
-    }
-    DWORD dev;
-    auto res1 = g_input_hooks.dinput->CreateDevice(GUID_SysKeyboard, (LPDIRECTINPUTDEVICE8*)&dev, NULL);
-    if (res1 != DI_OK || g_input_hooks.ddevice == nullptr) {
-        is_failed_dinput8 = true;
+        is_failed_dinput8 |= FAILED(g_input_opt.ddevice->SetDataFormat(&c_dfDIKeyboard));
+        is_failed_dinput8 |= FAILED(g_input_opt.ddevice->SetCooperativeLevel((HWND)*g_gameGuiHwnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND));
+        is_failed_dinput8 |= FAILED(g_input_opt.ddevice->Acquire());
         return;
     }
-    is_failed_dinput8 |= FAILED(g_input_hooks.ddevice->SetDataFormat(&c_dfDIKeyboard));
-    is_failed_dinput8 |= FAILED(g_input_hooks.ddevice->SetCooperativeLevel((HWND)*g_gameGuiHwnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND));
-    is_failed_dinput8 |= FAILED(g_input_hooks.ddevice->Acquire());
-    return;
 }
 
 BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
 {
     HRESULT res;
-    if (g_input_hooks.g_keyboardAPI == InputHooks::KeyboardAPI::Force_dinput8KeyAPI && g_input_hooks.ddevice) {
-        auto pres = g_input_hooks.ddevice->Poll();
-        if (FAILED(pres)) {
-            if (FAILED(g_input_hooks.ddevice->Acquire())) {
-                goto LB_FINAL;
-            }
-            if (FAILED(g_input_hooks.ddevice->Poll())) {
-                goto LB_FINAL;
-            }
-        }
+    if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI || g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {
+        HRESULT res_dinpu8getState = DI_OK;
         BYTE keyboardState_dinput8[256];
-        HRESULT res_dinpu8getState = S_OK;
-
-        res_dinpu8getState = g_input_hooks.ddevice->GetDeviceState(256, keyboardState_dinput8);
+        BYTE* keyboardState = keyboardState_dinput8;
+        if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI)
+        {
+            if (g_input_opt.ddevice)
+            {
+                auto pres = g_input_opt.ddevice->Poll();
+                if (FAILED(pres)) {
+                    if (FAILED(g_input_opt.ddevice->Acquire())) {
+                        goto LB_FINAL;
+                    }
+                    if (FAILED(g_input_opt.ddevice->Poll())) {
+                        goto LB_FINAL;
+                    }
+                }
+                res_dinpu8getState = g_input_opt.ddevice->GetDeviceState(256, keyboardState_dinput8);
+            }
+            else
+                goto LB_FINAL;
+        }else{
+            if (g_input_opt.is_ri_inited)
+                keyboardState = g_input_opt.fake_di_State;
+            else
+                goto LB_FINAL;
+        }
         if (res_dinpu8getState == DI_OK) {
             memset(keyBoardState, 0, 256);
             for (auto keydef : keyBindDefine) {
-                keyBoardState[keydef.vk] = keyboardState_dinput8[keydef.dik];
+                keyBoardState[keydef.vk] = keyboardState[keydef.dik];
             }
-            if ((keyboardState_dinput8[DIK_LSHIFT] & 0x80) || (keyboardState_dinput8[DIK_RSHIFT] & 0x80))
+            if ((keyboardState[DIK_LSHIFT] & 0x80) || (keyboardState[DIK_RSHIFT] & 0x80))
                 keyBoardState[VK_SHIFT] = 0x80;
-            if ((keyboardState_dinput8[DIK_LCONTROL] & 0x80) || (keyboardState_dinput8[DIK_RCONTROL] & 0x80))
+            if ((keyboardState[DIK_LCONTROL] & 0x80) || (keyboardState[DIK_RCONTROL] & 0x80))
                 keyBoardState[VK_CONTROL] = 0x80;
-            if ((keyboardState_dinput8[DIK_LMENU] & 0x80) || (keyboardState_dinput8[DIK_RMENU] & 0x80))
+            if ((keyboardState[DIK_LMENU] & 0x80) || (keyboardState[DIK_RMENU] & 0x80))
                 keyBoardState[VK_MENU] = 0x80;
             return TRUE;
         }
     }
 LB_FINAL:
-    res = g_input_hooks.g_realGetKeyboardState(keyBoardState);
+    res = g_input_opt.g_realGetKeyboardState(keyBoardState);
     if (g_keybind.size() != 0)
     {
         static BYTE new_keyBoardState[256] = { 0 };
@@ -699,7 +815,7 @@ LB_FINAL:
     if (g_input_opt.disable_f10_11_13) {
         keyBoardState[VK_F10] = 0x0;
     }
-    if (g_input_hooks.g_socd_setting == InputHooks::SOCD_Setting::SOCD_Default) {
+    if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_Default) {
         return res;
     }
     static BYTE last_keyBoardState[256] = { 0 };
@@ -721,27 +837,27 @@ LB_FINAL:
     
     
     if (IS_KEY_DOWN(keyBoardState[VK_LEFT]) && IS_KEY_DOWN(keyBoardState[VK_RIGHT])){
-        if (g_input_hooks.g_socd_setting == InputHooks::SOCD_Setting::SOCD_2)
+        if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_2)
         {
             if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]) {
                 keyBoardState[VK_RIGHT] = 0;
             } else {
                 keyBoardState[VK_LEFT] = 0;
             }
-        } else if (g_input_hooks.g_socd_setting == InputHooks::SOCD_Setting::SOCD_N) {
+        } else if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_N) {
             keyBoardState[VK_RIGHT] = 0;
             keyBoardState[VK_LEFT] = 0;
         }
        
     }
     if (IS_KEY_DOWN(keyBoardState[VK_DOWN]) && IS_KEY_DOWN(keyBoardState[VK_UP])) {
-        if (g_input_hooks.g_socd_setting == InputHooks::SOCD_Setting::SOCD_2) {
+        if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_2) {
             if (keyBoard_press_time[K_UP] > keyBoard_press_time[K_DOWN]) {
                 keyBoardState[VK_DOWN] = 0;
             } else {
                 keyBoardState[VK_UP] = 0;
             }
-        } else if (g_input_hooks.g_socd_setting == InputHooks::SOCD_Setting::SOCD_N) {
+        } else if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_N) {
             keyBoardState[VK_DOWN] = 0;
             keyBoardState[VK_UP] = 0;
         }
@@ -756,7 +872,7 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
             return DIERR_INPUTLOST; // 8007001E
         
         HRESULT res = -1;
-        res = g_input_hooks.realGetDeviceState(thiz, num, state);
+        res = g_input_opt.realGetDeviceState(thiz, num, state);
 
         if (num == sizeof(DIJOYSTATE) || num == sizeof(DIJOYSTATE2)) {
             auto* js = (DIJOYSTATE*)state;
@@ -768,18 +884,24 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
         }
         return res;
     }
-    memset(state, 0, 256);
     HRESULT res = DI_OK;
-    if (g_input_hooks.g_keyboardAPI == InputHooks::KeyboardAPI::Force_win32KeyAPI) {
-        // BYTE state_win32[256];
-        // res = g_realGetKeyboardState(state_win32);
+    if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_win32KeyAPI) {
+        memset(state, 0, 256);
         for (auto keydef : keyBindDefine) {
-            // ((BYTE*)state)[keydef.dik] = state_win32[keydef.vk]&0x80;
             ((BYTE*)state)[keydef.dik] = (GetAsyncKeyState(keydef.vk) & 0x8000) ? 0x80 : 0;
             // though a bit slower ,,,
         }
-    } else {
-        res = g_input_hooks.realGetDeviceState(thiz, num, state);
+    }
+    else if(g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput)
+    {
+        if (g_input_opt.is_ri_inited)
+        {
+            memcpy(state, g_input_opt.fake_di_State, 256);
+            res = DI_OK;
+        }
+    }else{
+        memset(state, 0, 256);
+        res = g_input_opt.realGetDeviceState(thiz, num, state);
     }
 
     if (g_keybind.size() != 0) {
@@ -844,7 +966,7 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
     if (g_input_opt.disable_f10_11_13) {
         ((BYTE*)state)[DIK_F10] = 0x0;
     }
-    if (g_input_hooks.g_socd_setting != InputHooks::SOCD_Setting::SOCD_Default) {
+    if (g_input_opt.g_socd_setting != InputOpt::SOCD_Setting::SOCD_Default) {
         static BYTE last_keyBoardState[256] = { 0 };
         static uint32_t cur_time = 0;
         static uint32_t keyBoard_press_time[4] = { 0 };
@@ -864,25 +986,25 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
         memcpy_s(last_keyBoardState, num, keyBoardState, num);
 
         if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW])) {
-            if (g_input_hooks.g_socd_setting == InputHooks::SOCD_Setting::SOCD_2) {
+            if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_2) {
                 if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]) {
                     keyBoardState[DIK_RIGHTARROW] = 0;
                 } else {
                     keyBoardState[DIK_LEFTARROW] = 0;
                 }
-            } else if (g_input_hooks.g_socd_setting == InputHooks::SOCD_Setting::SOCD_N) {
+            } else if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_N) {
                 keyBoardState[DIK_RIGHTARROW] = 0;
                 keyBoardState[DIK_LEFTARROW] = 0;
             }
         }
         if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && IS_KEY_DOWN(keyBoardState[DIK_UPARROW])) {
-            if (g_input_hooks.g_socd_setting == InputHooks::SOCD_Setting::SOCD_2) {
+            if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_2) {
                 if (keyBoard_press_time[K_UP] > keyBoard_press_time[K_DOWN]) {
                     keyBoardState[DIK_DOWNARROW] = 0;
                 } else {
                     keyBoardState[DIK_UPARROW] = 0;
                 }
-            } else if (g_input_hooks.g_socd_setting == InputHooks::SOCD_Setting::SOCD_N) {
+            } else if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_N) {
                 keyBoardState[DIK_DOWNARROW] = 0;
                 keyBoardState[DIK_UPARROW] = 0;
             }
@@ -1351,9 +1473,19 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
                 pdirectsound->Release();
             }
         }
-        if (g_input_hooks.g_keyboardAPI == InputHooks::KeyboardAPI::Force_dinput8KeyAPI) {
-            InitMyDDevice();
-        }
+        InitInput();
+        // if(device){
+        //     IDirect3DDevice8* d;
+        //    switch (impl) {
+        //    case THPrac::IMPL_WIN32_DX8:
+        //        HookVTable(*(void**)device, 15, Presnet_Changed8, (void**)&g_renderHooks.real_Present8);
+        //        break;
+        //    default:
+        //    case THPrac::IMPL_WIN32_DX9:
+        //        HookVTable(*(void**)device, 17, Presnet_Changed9, (void**)&g_renderHooks.real_Present9);
+        //        break;
+        //    }
+        // }
     }else{
         ::ImGui::StyleColorsDark();
         g_adv_igi_options.keyboard_style.separated = true;
@@ -1506,8 +1638,9 @@ void InitHook(int ver,void* addr1, void* addr2)
         LauncherSettingGet("disable_locale_change_hotkey", g_input_opt.disable_locale_change_hotkey);
         LauncherSettingGet("disable_win_key", g_input_opt.disable_win_key);
 
-        LauncherSettingGet("keyboard_SOCDv2", (int&)g_input_hooks.g_socd_setting);
-        LauncherSettingGet("keyboard_API", (int&)g_input_hooks.g_keyboardAPI);
+        LauncherSettingGet("keyboard_SOCDv2", (int&)g_input_opt.g_socd_setting);
+        LauncherSettingGet("keyboard_API", (int&)g_input_opt.g_keyboardAPI);
+
         LauncherSettingGet("force_render_cursor", g_forceRenderCursor);
 
         bool disable_f10 = false;
@@ -1530,40 +1663,39 @@ void InitHook(int ver,void* addr1, void* addr2)
         LauncherSettingGet("disableJoy", g_input_opt.g_disable_joy);
         // if (LauncherSettingGet("disableJoy", g_disable_joy) && g_disable_joy)
         {
-            HookIAT(GetModuleHandle(NULL), "winmm.dll", "joyGetPosEx", joyGetPosEx_Changed, (void**)&g_input_hooks.g_realJoyGetPosEx);
-            HookIAT(GetModuleHandle(NULL), "winmm.dll", "joyGetDevCapsA", joyGetDevCapsA_Changed, (void**)&g_input_hooks.g_realJoyGetDevCapsA);
-            HookIAT(GetModuleHandle(NULL), "xinput1_3.dll", "XInputGetState", XInputGetState_Changed3, (void**)&g_input_hooks.g_realXInputGetState3); // th18
-            HookIAT(GetModuleHandle(NULL), "xinput1_4.dll", "XInputGetState", XInputGetState_Changed4, (void**)&g_input_hooks.g_realXInputGetState4); // th19+
+            HookIAT(GetModuleHandle(NULL), "winmm.dll", "joyGetPosEx", joyGetPosEx_Changed, (void**)&g_input_opt.g_realJoyGetPosEx);
+            HookIAT(GetModuleHandle(NULL), "winmm.dll", "joyGetDevCapsA", joyGetDevCapsA_Changed, (void**)&g_input_opt.g_realJoyGetDevCapsA);
+            HookIAT(GetModuleHandle(NULL), "xinput1_3.dll", "XInputGetState", XInputGetState_Changed3, (void**)&g_input_opt.g_realXInputGetState3); // th18
+            HookIAT(GetModuleHandle(NULL), "xinput1_4.dll", "XInputGetState", XInputGetState_Changed4, (void**)&g_input_opt.g_realXInputGetState4); // th19+
         }
        
         g_enable_l2d = false;
         g_input_opt.enable_fast_retry = false;
         g_input_opt.enable_auto_shoot = false;
         g_input_opt.shoot_key_DIK = -1;
-        if (LauncherSettingGet("enable_keyboard_hook", g_input_hooks.g_enable_keyhook) && g_input_hooks.g_enable_keyhook) { // hook keyboard to enable SOCD and X-disable
+        if (LauncherSettingGet("enable_keyboard_hook", g_input_opt.g_enable_keyhook) && g_input_opt.g_enable_keyhook) { // hook keyboard to enable SOCD and X-disable
             LPVOID pTarget;
-            HookIAT(GetModuleHandle(NULL), "user32.dll", "GetKeyboardState", GetKeyboardState_Changed, (void**)&g_input_hooks.g_realGetKeyboardState);
-            HookIAT(GetModuleHandle(NULL), "dinput8.dll", "DirectInput8Create", DirectInput8Create_Changed, (void**)&g_input_hooks.g_realDirectInput8Create);
-
-            if (g_input_hooks.g_keyboardAPI == InputHooks::KeyboardAPI::Force_dinput8KeyAPI) {
-                // keyboard hook + force dinput8
+            HookIAT(GetModuleHandle(NULL), "user32.dll", "GetKeyboardState", GetKeyboardState_Changed, (void**)&g_input_opt.g_realGetKeyboardState);
+            HookIAT(GetModuleHandle(NULL), "dinput8.dll", "DirectInput8Create", DirectInput8Create_Changed, (void**)&g_input_opt.g_realDirectInput8Create);
+            
+            if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput || g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI) {
                 LauncherSettingGet("auto_fast_retry", g_input_opt.enable_fast_retry);
                 LauncherSettingGet("auto_auto_shoot", g_input_opt.enable_auto_shoot);
-                LauncherSettingGet("enable_l2d_key", g_enable_l2d);
-                {
-                    g_input_opt.is_th128 = (ver == 128);
-                    LauncherSettingGet("auto_shoot_key", g_input_opt.shoot_key_DIK);
-                    bool has_this_key = false;
-                    for (int i = 0; i < ARRAYSIZE(keyBindDefine); i++) {
-                        if (keyBindDefine[i].dik == g_input_opt.shoot_key_DIK) {
-                            has_this_key = true;
-                            break;
-                        }
+                g_input_opt.is_th128 = (ver == 128);
+                LauncherSettingGet("auto_shoot_key", g_input_opt.shoot_key_DIK);
+                bool has_this_key = false;
+                for (int i = 0; i < ARRAYSIZE(keyBindDefine); i++) {
+                    if (keyBindDefine[i].dik == g_input_opt.shoot_key_DIK) {
+                        has_this_key = true;
+                        break;
                     }
-                    if (!has_this_key)
-                        g_input_opt.shoot_key_DIK = -1;
                 }
-
+                if (!has_this_key)
+                    g_input_opt.shoot_key_DIK = -1;
+            }
+            if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI) {
+                // keyboard hook + force dinput8
+                LauncherSettingGet("enable_l2d_key", g_enable_l2d);
                 if (g_enable_l2d) {
                     memset(&g_l2dState, 0, sizeof(g_l2dState));
                     g_l2dState.curr_state = Reset;
@@ -1896,7 +2028,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
 
 void DisableKeyOpt()
 {
-    if (g_input_hooks.g_enable_keyhook) {
+    if (g_input_opt.g_enable_keyhook) {
         ImGui::Checkbox(S(TH_ADV_DISABLE_X_KEY), &g_input_opt.disable_xkey);
         ImGui::SameLine();
         HelpMarker(S(TH_ADV_DISABLE_X_KEY_DESC));
@@ -1911,7 +2043,11 @@ void DisableKeyOpt()
         ImGui::SameLine();
         ImGui::Checkbox(S(TH_ADV_DISABLE_C_KEY_SAMETIME), &g_input_opt.disable_Ckey_at_same_time);
 
-        if (g_input_hooks.g_keyboardAPI == InputHooks::KeyboardAPI::Force_dinput8KeyAPI)
+        static bool test_opt = false;
+        ImGui::SameLine();
+        ImGui::Checkbox("Hook Opt.(test)", &test_opt);
+
+        if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI || g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput)
         {
             ImGui::Checkbox(S(THPRAC_FAST_RETRY), &g_input_opt.enable_fast_retry);
             ImGui::SameLine();
@@ -1921,10 +2057,43 @@ void DisableKeyOpt()
                 ImGui::Checkbox(S(THPRAC_AUTO_SHOOT), &g_input_opt.enable_auto_shoot);
             }
         }
+        if (test_opt)
+        {
+            std::string str;
+            switch (g_input_opt.g_keyboardAPI)
+            {
+            default: str = "unknown";break;
+            case InputOpt::KeyboardAPI::Default_API:str = "default";break;
+            case InputOpt::KeyboardAPI::Force_dinput8KeyAPI:str = "force dinput8"; break;
+            case InputOpt::KeyboardAPI::Force_win32KeyAPI:str = "force win32";break;
+            case InputOpt::KeyboardAPI::Force_RawInput:str = "force raw input";break;
+            }
+            ImGui::Text("current API: %s", str.c_str());
+            ImGui::Text("dinput_init: %s, ri_init: %s, gamepad disable: %s", (g_input_opt.ddevice == nullptr) ? "F" : "T", (g_input_opt.is_ri_inited) ? "T" : "F", (g_input_opt.g_disable_joy) ? "T" : "F");
+
+            if (ImGui::Button("switch to Dinput")){
+                g_input_opt.g_keyboardAPI = InputOpt::KeyboardAPI::Force_dinput8KeyAPI;
+                InitInput();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("switch to RawInput")) {
+                g_input_opt.g_keyboardAPI = InputOpt::KeyboardAPI::Force_RawInput;
+                InitInput();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("switch to Win32")) {
+                g_input_opt.g_keyboardAPI = InputOpt::KeyboardAPI::Force_win32KeyAPI;
+                InitInput();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("switch to Default")) {
+                g_input_opt.g_keyboardAPI = InputOpt::KeyboardAPI::Default_API;
+                InitInput();
+            }
+        }
         if (ImGui::IsKeyDown(0x10)) // shift
         {
-            if (g_input_hooks.g_keyboardAPI == InputHooks::KeyboardAPI::Force_dinput8KeyAPI)
-            {
+            if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI || g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {
                 if (ImGui::IsKeyPressed('F'))
                     g_input_opt.enable_fast_retry = !g_input_opt.enable_fast_retry;
             }
@@ -1935,7 +2104,6 @@ void DisableKeyOpt()
             if (ImGui::IsKeyPressed('A'))
                 g_input_opt.disable_shiftkey = !g_input_opt.disable_shiftkey;
         }
-        
     }
     return;
 }

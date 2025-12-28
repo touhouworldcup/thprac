@@ -259,7 +259,7 @@
     "THPRAC_KEYBOARD_SOCD_DESC":["当同时按下反向方向键时，修改按键逻辑。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。","Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.","Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."],
 	
 	"THPRAC_KEYBOARD_API":["键盘API设置","keyboard API setting","keyboard API setting"],
-	"THPRAC_KEYBOARD_API_SETTINGS":["默认\\0强制Win32 API\\0强制 Dinput8\\0\\0","default\\0force Win32 API\\0force Dinput8\\0\\0","default\\0force Win32 API\\0force Dinput8\\0\\0"],
+	"THPRAC_KEYBOARD_API_SETTINGS":["默认\\0强制Win32 API\\0强制 Dinput8\\0强制RawInput\\0\\0","default\\0force Win32 API\\0force Dinput8\\0force RawInput\\0\\0","default\\0force Win32 API\\0force Dinput8\\0force RawInput\\0\\0"],
 	"THPRAC_KEYBOARD_API_SETTINGS_DESC":["默认情况下在地灵殿等游戏使用小键盘可能卡键, \n换用强制dinput8可修复(建议?), \n不建议强制win32模式","By default, using numpad will cause bugs in games like SA,\n which can be fixed by forcing to use dinput8(which is recommended?),\n force win32 API is not recommended","By default, using numpad will cause bugs in games like SA,\n which can be fixed by forcing to use dinput8(which is recommended?),\n force win32 API is not recommended"],
     
     "THPRAC_COMPATIBILITY_SETTINGS":["兼容性设置","Compatibility Settings","Compatibility Settings"],
@@ -328,7 +328,7 @@
 	
 	"THPRAC_AUTO_SHOOT":["自动射击","auto shoot","auto shoot"],
 	"THPRAC_AUTO_SHOOT_KEY":["自动射击按键","shoot key","shoot key"],
-	"THPRAC_AUTO_SHOOT_DESC":["按下按键后等于自动连续按Z, 按除方向键和低速键之外的键停止, 需要启用键盘HOOK并设置键盘API为强制dinput8, 绑定为Z/X/C/D/ESC/R/Q则无效","automatically shoot(press z) after press this key, stop when keys except arrow/focus pressed, use keyboard hook and set keyboardAPI as dinput8 to enable, cannot be bind to Z/X/C/D/ESC/R/Q","automatically shoot(press z) after press this key, stop when keys except arrow/focus pressed, use keyboard hook and set keyboardAPI as dinput8 to enable, cannot be bind to Z/X/C/D/ESC/R/Q"],
+	"THPRAC_AUTO_SHOOT_DESC":["按下按键后等于自动连续按Z, 按除方向键和低速键之外的键停止, 需要启用键盘HOOK并设置键盘API为强制dinput8或RawInput, 绑定为Z/X/C/D/ESC/R/Q则无效","automatically shoot(press z) after press this key, stop when keys except arrow/focus pressed, use keyboard hook and set keyboardAPI as dinput8 or RawInput to enable, cannot be bind to Z/X/C/D/ESC/R/Q","automatically shoot(press z) after press this key, stop when keys except arrow/focus pressed, use keyboard hook and set keyboardAPI as dinput8 or RawInput to enable, cannot be bind to Z/X/C/D/ESC/R/Q"],
 
 	"THPRAC_L2D_KEYBIND_MISS":			["MISS动作","miss motion","miss motion"],
 	"THPRAC_L2D_KEYBIND_BORDER_BREAK":	["撞结界动作","border break motion","border break motion"],
@@ -1319,7 +1319,7 @@
 	  
 	  
 	  "THPRAC_FAST_RETRY": [ "练习模式快速re", "fast retry for prac mode", "fast retry for prac mode" ],
-	  "THPRAC_FAST_RETRY_DESC": [ "需要启用键盘Hook与强制dinput8输入", "need enable keyboard hook & force dinput8", "need enable keyboard hook & force dinput8" ],
+	  "THPRAC_FAST_RETRY_DESC": [ "需要启用键盘Hook与强制dinput8/RawInput输入", "need enable keyboard hook & force dinput8/RawInput", "need enable keyboard hook & force dinput8/RawInput" ],
 	  "THPRAC_FAST_RETRY_DESC2": [ "快捷键: shift+F", "hotkey shift+F", "hotkey shift+F" ],
 	  
 	  "THPRAC_TH06_BACKGROUND_FIX": [ "红魔乡背景修复", "EoSD background fix", "EoSD background fix" ],

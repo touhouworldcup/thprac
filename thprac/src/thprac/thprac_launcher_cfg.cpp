@@ -2525,7 +2525,7 @@ private:
 
                 
             }
-            if (mKeyboardAPISetting.Get() == 2 && mKeyboardHook.Get())
+            if ((mKeyboardAPISetting.Get() == 2 || mKeyboardAPISetting.Get() == 3) && mKeyboardHook.Get())
             {
                 // mCfgEnableAutoEsc_autoly.Gui(S(THPRAC_ESC_WHEN_DEACTIVE), S(THPRAC_ESC_WHEN_DEACTIVE_DESC));
                 mDisableWinKey.Gui(S(THPRAC_DISABLE_WIN_KEY_DINPUT), S(THPRAC_DISABLE_WIN_KEY_DINPUT_DESC));
@@ -2534,10 +2534,13 @@ private:
                     static bool auto_shoot_key_listening = false;
                     GuiLive2DHotkeyEdit(S(THPRAC_AUTO_SHOOT_KEY), "auto_shoot_key", false, &auto_shoot_key_listening, false);
                 }
-                ImGui::Separator();
-                if (ImGui::TreeNode(S(THPRAC_L2D_KEYBIND_TITLE))) {
-                    // l2d settings
-                    Live2DHotkeySettings();
+                if (mKeyboardAPISetting.Get() == 2)
+                {
+                    ImGui::Separator();
+                    if (ImGui::TreeNode(S(THPRAC_L2D_KEYBIND_TITLE))) {
+                        // l2d settings
+                        Live2DHotkeySettings();
+                    }
                 }
                 ImGui::NewLine();
             }else{

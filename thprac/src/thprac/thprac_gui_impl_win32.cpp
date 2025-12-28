@@ -26,6 +26,7 @@
 #include <windows.h>
 
 namespace THPrac {
+LRESULT CALLBACK GameExternWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 namespace Gui {
     // Macros
     // Allow compilation with old Windows SDK. MinGW doesn't have default _WIN32_WINNT/WINVER versions.
@@ -605,6 +606,9 @@ namespace Gui {
     }
     static LRESULT CALLBACK __ThImGui_WndProc_HookFunc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         if (g_wndNoClose_ && msg == WM_CLOSE) {
+            return 1;
+        }
+        if (GameExternWndProc(hwnd, msg, wParam, lParam)) {
             return 1;
         }
         if (ImplWin32WndProcHandler(hwnd, msg, wParam, lParam)) {
