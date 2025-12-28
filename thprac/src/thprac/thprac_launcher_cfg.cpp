@@ -2876,7 +2876,7 @@ private:
 
     THCfgCheckbox mKeyboardHook { "enable_keyboard_hook", true };
     THCfgCombo mKeyboardSOCD { "keyboard_SOCDv2", 0, 3 };
-    THCfgCombo mKeyboardAPISetting { "keyboard_API", 0, 3 };
+    THCfgCombo mKeyboardAPISetting { "keyboard_API", 0, 4 };
     THCfgCheckbox mEnableL2DKey { "enable_l2d_key", true };
     THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };
     THCfgCheckbox mUD_Replay_10 { "th10_ud_Replay", true };

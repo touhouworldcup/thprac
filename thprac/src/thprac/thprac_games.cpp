@@ -708,7 +708,7 @@ void InitInput()
         return;
     }
 }
-
+HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state);
 BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
 {
     HRESULT res;
@@ -734,8 +734,9 @@ BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
             else
                 goto LB_FINAL;
         }else{
-            if (g_input_opt.is_ri_inited)
-                keyboardState = g_input_opt.fake_di_State;
+            if (g_input_opt.is_ri_inited) {
+                GetDeviceState_Changed(nullptr, 256, keyboardState);
+            }
             else
                 goto LB_FINAL;
         }
@@ -891,13 +892,18 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
             ((BYTE*)state)[keydef.dik] = (GetAsyncKeyState(keydef.vk) & 0x8000) ? 0x80 : 0;
             // though a bit slower ,,,
         }
-    }
-    else if(g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput)
-    {
-        if (g_input_opt.is_ri_inited)
-        {
-            memcpy(state, g_input_opt.fake_di_State, 256);
+    } else if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {
+        memcpy(state, g_input_opt.fake_di_State, 256);
+        if (g_input_opt.is_ri_inited) {
             res = DI_OK;
+        } else {
+            if (thiz == nullptr) {
+                for (auto keydef : keyBindDefine) {
+                    ((BYTE*)state)[keydef.dik] = (GetAsyncKeyState(keydef.vk) & 0x8000) ? 0x80 : 0;
+                }
+            } else  {
+                res = g_input_opt.realGetDeviceState(thiz, num, state);
+            }
         }
     }else{
         memset(state, 0, 256);
@@ -918,8 +924,7 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
         }
         memcpy_s(((BYTE*)state), num, new_keyBoardState, num);
     }
-    if (g_input_opt.enable_auto_shoot)
-    {
+    if (g_input_opt.enable_auto_shoot) {
         bool cur_isdown = IS_KEY_DOWN(((BYTE*)state)[g_input_opt.shoot_key_DIK]);
         bool last_isdown = g_input_opt.last_is_auto_shoot_key_down;
         g_input_opt.last_is_auto_shoot_key_down = cur_isdown;
