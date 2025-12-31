@@ -1626,6 +1626,14 @@ void TryKeepUpRefreshRate(void* address)
     }
 }
 
+HRESULT (WINAPI *real_MessageBoxA)(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
+HRESULT WINAPI MessageBoxA_Changed(HWND hWnd,LPCSTR lpText,LPCSTR lpCaption,UINT uType)
+{
+    auto a = mb_to_utf16(lpText, 932);
+    auto b = mb_to_utf16(lpCaption, 932);
+    return MessageBoxW(hWnd, a.c_str(), b.c_str(), uType);
+}
+
 void InitHook(int ver,void* addr1, void* addr2)
 {
     static bool is_inited = false;
@@ -1638,6 +1646,46 @@ void InitHook(int ver,void* addr1, void* addr2)
         } else if (addr1 != nullptr) {
             TryKeepUpRefreshRate(addr1);
         }
+
+        bool msg_box_a2w = false;
+        if (LauncherSettingGet("msg_box_a2w", msg_box_a2w) && msg_box_a2w)
+        {
+            const WCHAR* name_vp_module = NULL;
+            switch (ver)
+            {
+            case -10: name_vp_module = L"vpatch_alcostg.dll";break;
+            case 6: name_vp_module = L"vpatch_th06.dll";break;
+            case 7: name_vp_module = L"vpatch_th07.dll";break;
+            case 8: name_vp_module = L"vpatch_th08.dll";break;
+            case 9: name_vp_module = L"vpatch_th09.dll";break;
+            case 95: name_vp_module = L"vpatch_th095.dll";break;
+            case 10: name_vp_module = L"vpatch_th10.dll";break;
+            case 11: name_vp_module = L"vpatch_th11.dll";break;
+            case 12: name_vp_module = L"vpatch_th12.dll";break;
+            case 125: name_vp_module = L"vpatch_th125.dll";break;
+            case 128: name_vp_module = L"vpatch_th128.dll";break;
+            case 13: name_vp_module = L"vpatch_th13.dll";break;
+            case 14: name_vp_module = L"vpatch_th14.dll";break;
+            case 15: name_vp_module = L"vpatch_th15.dll";break;
+            default:
+                break;
+            }
+            real_MessageBoxA = (decltype(real_MessageBoxA))GetProcAddress(GetModuleHandleW(L"user32.dll"), "MessageBoxA");
+            HookIAT(GetModuleHandleW(NULL), "user32.dll", "MessageBoxA", MessageBoxA_Changed, nullptr);
+            if (name_vp_module != NULL)
+            {
+                auto module_vp = GetModuleHandleW(name_vp_module);
+                if (module_vp)
+                    HookIAT(module_vp, "user32.dll", "MessageBoxA", MessageBoxA_Changed, nullptr);
+            }
+            if (ver == 6)
+            {
+                auto module_vp = GetModuleHandleW(L"vpatch_th06_unicode.dll");
+                if (module_vp)
+                    HookIAT(module_vp, "user32.dll", "MessageBoxA", MessageBoxA_Changed, nullptr);
+            }
+        }
+
 
         LauncherSettingGet("auto_disable_C", g_input_opt.disable_Ckey_at_same_time);
         LauncherSettingGet("disable_locale_change_hotkey", g_input_opt.disable_locale_change_hotkey);

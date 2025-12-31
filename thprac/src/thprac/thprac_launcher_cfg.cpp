@@ -2460,6 +2460,7 @@ private:
             mCfgUnlockRefreshRate.Gui(S(THPRAC_UNLOCK_REFRESH_RATE), S(THPRAC_UNLOCK_REFRESH_RATE_DESC));
             mForceOnlyRenderTextUsed.Gui(S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED), S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC));
             mForceRenderCursor.Gui(S(THPRAC_FORCE_RENDER_CURSOR), S(THPRAC_FORCE_RENDER_CURSOR_DESC));
+            mMsgBoxA2W.Gui(S(THPRAC_HOOK_MSG_BOX_A2W), S(THPRAC_HOOK_MSG_BOX_A2W_DESC));
             mUseCorrectJaFonts.Gui(S(THPRAC_RENDER_CORRECT_FONT), S(THPRAC_RENDER_CORRECT_FONT_DESC));
             ImGui::SameLine();
             GuiHelpMarker(S(THPRAC_RENDER_CORRECT_FONT_DESC2));
@@ -2901,6 +2902,7 @@ private:
     THCfgCheckbox mDisableJoy { "disableJoy", false };
     THCfgCheckbox mDisableWin { "disableWinDinput8", false };
     THCfgCheckbox mForceRenderCursor { "force_render_cursor", false };
+    THCfgCheckbox mMsgBoxA2W { "msg_box_a2w", true};
     THCfgCheckbox mUseCorrectJaFonts { "use_correct_ja_fonts", false };
     THCfgCheckbox mUseCustomFont { "use_custom_font", false };
     THCfgCombo mCustomFont { "custom_font", 0, 999 };

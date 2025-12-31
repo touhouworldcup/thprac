@@ -287,6 +287,9 @@
     
     "THPRAC_FORCE_ONLY_RENDER_TEXT_USED":["只渲染用到的字体","only render used font","only render used font"],
     "THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC":["游戏启动时如果爆显存，导致字体显示全为白块或透明等错误，则需要设置此项","if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it","if the VRAM is overflow, the text might shown as a white rectangle(or transparent and so on), use this setting to avoid it"],
+	
+	 "THPRAC_HOOK_MSG_BOX_A2W":["将弹窗提示修改为宽字节","use MessageBoxW instead of MessageBoxA","use MessageBoxW instead of MessageBoxA"],
+	 "THPRAC_HOOK_MSG_BOX_A2W_DESC":["可以防止某些弹窗乱码, 仅在使用thprac启动游戏时生效","might prevents possible garbled characters from msg box, only works when launch game by thprac","might prevents possible garbled characters from msg box, only works when launch game by thprac"],
     
     "THPRAC_RENDER_CORRECT_FONT":["渲染正确的日文字体","render correct ja fonts","render correct ja fonts"],
     "THPRAC_RENDER_CORRECT_FONT_DESC":["当游戏字体(对话/符卡)渲染错误时尝试开启本选项, 仅在使用thprac启动游戏时生效","use this option when game fonts are wrong(msg/spell), only works when launch game by thprac","use this option when game fonts are wrong(msg/spell), only works when launch game by thprac"],
@@ -346,6 +349,10 @@
 	"THPRAC_L2D_SHOW_TIME_DESC":	["到时间自动切换为重置动作","auto trigger to reset motion after this time","auto trigger to reset motion after this time"],
     
       "THPRAC_TOOLS": [ "工具", "Tools", "ツール" ],
+	  
+      "THPRAC_KILL_ALL_GAME": [ "清理游戏程序", "clear game programs", "clear game programs" ],
+      "THPRAC_KILL_ALL_GAME_ALERT": [ "请确保你现在不在游戏中", "please make sure you are not currently in the game", "please make sure you are not currently in the game" ],
+      "THPRAC_KILL_ALL_GAME_DONE": [ "完成，共清除了 %d 个游戏程序", "done, cleared %d background game programs", "done, cleared %d background game programs" ],
       
 	  "THPRAC_TOOLS_ROLLF_CSV": [ "读取CSV文件", "read csv file", "read csv file" ],
 	  "THPRAC_TOOLS_ROLLF_CSV_DESC": [ "需要为utf-8格式, 共两列, 分别为名称和权重", "need to be utf-8, has a name column and a weight column", "need to be utf-8, has a name column and a weight column" ],
@@ -1316,7 +1323,6 @@
 	  "THPRAC_TH20_FIX_BULLETHITBOX": [ "锦上京修复弹幕判定","FW fix bullet hitbox","FW 弾幕判定を修復します"],
 	  "THPRAC_TH20_FIX_BULLETHITBOX_DESC": [ "锦上京游戏", "FW Game", "FW Game" ],
 	  "THPRAC_TH20_DECREASE_EFF": [ "锦上京减少擦弹特效","FW decrease graze effect","FW decrease graze effect"],
-	  
 	  
 	  "THPRAC_FAST_RETRY": [ "练习模式快速re", "fast retry for prac mode", "fast retry for prac mode" ],
 	  "THPRAC_FAST_RETRY_DESC": [ "需要启用键盘Hook与强制dinput8/RawInput输入", "need enable keyboard hook & force dinput8/RawInput", "need enable keyboard hook & force dinput8/RawInput" ],

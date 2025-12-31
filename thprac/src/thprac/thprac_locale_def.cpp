@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1711] {
+const char* th_glossary_str[3][1716] {
     {
         "",
         "啤酒",
@@ -882,6 +882,8 @@ const char* th_glossary_str[3][1711] {
         "重置时间",
         "总飞行时间",
         "前往Steam页面",
+        "将弹窗提示修改为宽字节",
+        "可以防止某些弹窗乱码, 仅在使用thprac启动游戏时生效",
         "高级设置",
         "正在监听…（点击取消）",
         "语言更改",
@@ -1126,6 +1128,9 @@ const char* th_glossary_str[3][1711] {
         "SOCD设置",
         "当同时按下反向方向键时，修改按键逻辑。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。",
         "默认SOCD(zun's)\0启用SOCD后覆盖功能\0启用SOCD回中功能\0\0",
+        "清理游戏程序",
+        "请确保你现在不在游戏中",
+        "完成，共清除了 %d 个游戏程序",
         "启用L2D按键",
         "hyper动作",
         "修改用于Live2D的按键映射",
@@ -2595,6 +2600,8 @@ const char* th_glossary_str[3][1711] {
         "reset",
         "total game time",
         "Go to Steam page",
+        "use MessageBoxW instead of MessageBoxA",
+        "might prevents possible garbled characters from msg box, only works when launch game by thprac",
         "Advanced Settings",
         "Listening... (Click to cancel)",
         "Language Change",
@@ -2839,6 +2846,9 @@ const char* th_glossary_str[3][1711] {
         "SOCD setting",
         "Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.",
         "default SOCD(zun's)\0enable keyboard SOCD (last input priority)\0enable keyboard SOCD (neutral)\0\0",
+        "clear game programs",
+        "please make sure you are not currently in the game",
+        "done, cleared %d background game programs",
         "enable L2D keys",
         "hyper motion",
         "set keybind for l2d",
@@ -4308,6 +4318,8 @@ const char* th_glossary_str[3][1711] {
         "reset",
         "total game time",
         "Steamページに移動",
+        "use MessageBoxW instead of MessageBoxA",
+        "might prevents possible garbled characters from msg box, only works when launch game by thprac",
         "詳細設定",
         "入力待ち…（クリックでキャンセル）",
         "言語変更",
@@ -4552,6 +4564,9 @@ const char* th_glossary_str[3][1711] {
         "SOCD setting",
         "Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.",
         "default SOCD(zun's)\0enable keyboard SOCD (last input priority)\0enable keyboard SOCD (neutral)\0\0",
+        "clear game programs",
+        "please make sure you are not currently in the game",
+        "done, cleared %d background game programs",
         "enable L2D keys",
         "hyper motion",
         "set keybind for l2d",
@@ -27148,7 +27163,7 @@ namespace TH20 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3547] {
+const wchar_t __thprac_loc_range_zh[3551] {
     0x0020, 0x00FF,
     0x394, 0x394,
     0x2014, 0x2014,
@@ -27635,6 +27650,7 @@ const wchar_t __thprac_loc_range_zh[3547] {
     0x5bb5, 0x5bb5,
     0x5bb6, 0x5bb6,
     0x5bb9, 0x5bb9,
+    0x5bbd, 0x5bbd,
     0x5bbf, 0x5bbf,
     0x5bc2, 0x5bc2,
     0x5bc5, 0x5bc5,
@@ -28299,6 +28315,7 @@ const wchar_t __thprac_loc_range_zh[3547] {
     0x77ed, 0x77ed,
     0x77f3, 0x77f3,
     0x77ff, 0x77ff,
+    0x7801, 0x7801,
     0x780c, 0x780c,
     0x7814, 0x7814,
     0x7834, 0x7834,

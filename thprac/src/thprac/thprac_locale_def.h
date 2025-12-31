@@ -882,6 +882,8 @@ enum th_glossary_t {
     THPRAC_GAME_TIME_RESET,
     THPRAC_GAME_TIME_TOTAL,
     THPRAC_GOTO_STEAM_PAGE,
+    THPRAC_HOOK_MSG_BOX_A2W,
+    THPRAC_HOOK_MSG_BOX_A2W_DESC,
     THPRAC_HOTKEY_ADVANCED_SETTINGS,
     THPRAC_HOTKEY_CANCEL,
     THPRAC_HOTKEY_LANGUAGE_SETTINGS,
@@ -1126,6 +1128,9 @@ enum th_glossary_t {
     THPRAC_KEYBOARD_SOCD,
     THPRAC_KEYBOARD_SOCD_DESC,
     THPRAC_KEYBOARD_SOCD_SETTINGS,
+    THPRAC_KILL_ALL_GAME,
+    THPRAC_KILL_ALL_GAME_ALERT,
+    THPRAC_KILL_ALL_GAME_DONE,
     THPRAC_L2D_ENABLE,
     THPRAC_L2D_HYPER,
     THPRAC_L2D_KEYBIND,
@@ -1722,7 +1727,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1711];
+extern const char* th_glossary_str[3][1716];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3435,7 +3440,7 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3547];
+extern const wchar_t __thprac_loc_range_zh[3551];
 
 extern const wchar_t __thprac_loc_range_en[67];
 

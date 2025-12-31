@@ -2629,7 +2629,17 @@ public:
     {
         mGuiUpdFunc();
     }
-
+    std::vector<std::wstring> GetAllGamePaths()
+    {
+        std::vector<std::wstring> paths; 
+        for (auto& ig : mGames){
+            for (auto& inst : ig.second.instances)
+            {
+                paths.push_back(utf8_to_utf16(inst.path.c_str()));
+            }
+        }
+        return paths;
+    }
 private:
     std::function<void(void)> mGuiUpdFunc = []() {};
     std::unordered_map<std::string, THGame> mGames;
@@ -2714,5 +2724,9 @@ void LauncherGamesThcrapAdd(const char* gameId, const std::string& cfg, bool use
 bool LauncherGamesThcrapLaunch()
 {
     return THGameGui::singleton().thcrapLaunch();
+}
+std::vector<std::wstring> GetAllGamePaths()
+{
+    return THGameGui::singleton().GetAllGamePaths();
 }
 }
