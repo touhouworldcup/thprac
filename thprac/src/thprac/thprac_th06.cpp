@@ -13,12 +13,13 @@
 namespace THPrac {
 extern bool g_forceRenderCursor;
 
-struct InputOpt {
+struct FastRetryOpt {
+    // fast re
     static constexpr int fast_retry_cout_down_max = 15;
-    bool enable_fast_retry;
+    bool enable_fast_retry = false;
     int fast_retry_count_down = 0;
 };
-extern InputOpt g_input_opt;
+extern FastRetryOpt g_fast_re_opt;
 
 namespace TH06 {
     static const GameManager* const GAME_MANAGER = (const GameManager* const)0x69bca0;
@@ -1118,7 +1119,7 @@ namespace TH06 {
                 else if (Gui::KeyboardInputGetRaw('R'))
                     StateRestart();
             }
-            if (g_input_opt.fast_retry_count_down && g_input_opt.fast_retry_count_down <= 1)
+            if (g_fast_re_opt.fast_retry_count_down && g_fast_re_opt.fast_retry_count_down <= 1)
                 StateRestart();
 
             return SIGNAL_NONE;

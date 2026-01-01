@@ -51,16 +51,19 @@ struct SoundOpt
     std::vector<SB_Struct> soundbuffers;
 }g_sound_opt;
 
+struct FastRetryOpt
+{
+    // fast re
+    static constexpr int fast_retry_cout_down_max = 15;
+    bool enable_fast_retry = false;
+    int fast_retry_count_down = 0;
+}g_fast_re_opt;
+
 struct InputOpt
 {
     // raw input
     BYTE fake_di_State[256] = { 0 };
     bool is_ri_inited = false;
-
-    // fast re
-    static constexpr int fast_retry_cout_down_max = 15;
-    bool enable_fast_retry = false;
-    int fast_retry_count_down = 0;
 
     // auto shoot
     bool enable_auto_shoot = false;
@@ -413,8 +416,8 @@ bool g_enable_l2d = false;
 
 void GameUpdateInner(int gamever)
 {
-    if (g_input_opt.fast_retry_count_down)
-        g_input_opt.fast_retry_count_down--;
+    if (g_fast_re_opt.fast_retry_count_down)
+        g_fast_re_opt.fast_retry_count_down--;
 }
 
 void GameUpdateOuter(ImDrawList* p, int ver)
@@ -433,8 +436,8 @@ void GameUpdateOuter(ImDrawList* p, int ver)
 
 void FastRetry(int thprac_mode)
 {
-    if (thprac_mode && g_input_opt.enable_fast_retry) {
-        g_input_opt.fast_retry_count_down = g_input_opt.fast_retry_cout_down_max;
+    if (thprac_mode && g_fast_re_opt.enable_fast_retry) {
+        g_fast_re_opt.fast_retry_count_down = g_fast_re_opt.fast_retry_cout_down_max;
     }
 }
 struct Live2DOption {
@@ -1015,12 +1018,12 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
             }
         }
     }
-    if (g_input_opt.fast_retry_count_down)
+    if (g_fast_re_opt.fast_retry_count_down)
     {
         BYTE* keyBoardState = (BYTE*)state;
-        if (g_input_opt.fast_retry_count_down <= g_input_opt.fast_retry_cout_down_max)
+        if (g_fast_re_opt.fast_retry_count_down <= g_fast_re_opt.fast_retry_cout_down_max)
             keyBoardState[DIK_ESCAPE] = 0x80;
-        if (g_input_opt.fast_retry_count_down <= 1)
+        if (g_fast_re_opt.fast_retry_count_down <= 1)
             keyBoardState[DIK_R] = 0x80;
     }
     return res;
@@ -1723,7 +1726,7 @@ void InitHook(int ver,void* addr1, void* addr2)
         }
        
         g_enable_l2d = false;
-        g_input_opt.enable_fast_retry = false;
+        g_fast_re_opt.enable_fast_retry = false;
         g_input_opt.enable_auto_shoot = false;
         g_input_opt.shoot_key_DIK = -1;
         if (LauncherSettingGet("enable_keyboard_hook", g_input_opt.g_enable_keyhook) && g_input_opt.g_enable_keyhook) { // hook keyboard to enable SOCD and X-disable
@@ -1732,7 +1735,7 @@ void InitHook(int ver,void* addr1, void* addr2)
             HookIAT(GetModuleHandle(NULL), "dinput8.dll", "DirectInput8Create", DirectInput8Create_Changed, (void**)&g_input_opt.g_realDirectInput8Create);
             
             if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput || g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI) {
-                LauncherSettingGet("auto_fast_retry", g_input_opt.enable_fast_retry);
+                LauncherSettingGet("auto_fast_retry", g_fast_re_opt.enable_fast_retry);
                 LauncherSettingGet("auto_auto_shoot", g_input_opt.enable_auto_shoot);
                 g_input_opt.is_th128 = (ver == 128);
                 LauncherSettingGet("auto_shoot_key", g_input_opt.shoot_key_DIK);
@@ -2102,7 +2105,7 @@ void DisableKeyOpt()
 
         if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI || g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput)
         {
-            ImGui::Checkbox(S(THPRAC_FAST_RETRY), &g_input_opt.enable_fast_retry);
+            ImGui::Checkbox(S(THPRAC_FAST_RETRY), &g_fast_re_opt.enable_fast_retry);
             ImGui::SameLine();
             HelpMarker(S(THPRAC_FAST_RETRY_DESC2));
             if (g_input_opt.shoot_key_DIK != -1) {
@@ -2148,7 +2151,7 @@ void DisableKeyOpt()
         {
             if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI || g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {
                 if (ImGui::IsKeyPressed('F'))
-                    g_input_opt.enable_fast_retry = !g_input_opt.enable_fast_retry;
+                    g_fast_re_opt.enable_fast_retry = !g_fast_re_opt.enable_fast_retry;
             }
             if (ImGui::IsKeyPressed('D'))
                 g_input_opt.disable_xkey = !g_input_opt.disable_xkey;
