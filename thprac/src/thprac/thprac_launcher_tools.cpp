@@ -81,9 +81,10 @@ public:
 
     Dice()
     {
+        static auto distYaw = GetRndGenerator(DirectX::XM_2PI / 4.0f-0.2f, DirectX::XM_2PI / 4.0f+0.2f);
         size = 12.0f;
         pos = DirectX::XMFLOAT3(0, 0, 0);
-        rot = DirectX::XMMatrixRotationY(DirectX::XM_PIDIV2 / 2.0f);
+        rot = DirectX::XMMatrixRotationY(distYaw());
     }
     ~Dice() = default;
     int GetResult(){
@@ -186,7 +187,7 @@ public:
         using namespace DirectX;
         points.clear();
         dice_num.clear();
-        auto eye_f = XMFLOAT3(30, 30, 0);
+        auto eye_f = XMFLOAT3(18, 35, 0);
         XMVECTOR vEye = XMLoadFloat3(&eye_f);
 
         auto at_f = XMFLOAT3(0, 0, 0);
@@ -222,7 +223,7 @@ public:
         faces[4] = { 3, { 0, 0, 1 }, { { s, s, s }, { -s, s, s }, { -s, -s, s }, { s, -s, s } } };
         faces[5] = { 4, { 0, 0, -1 }, { { -s, s, -s }, { s, s, -s }, { s, -s, -s }, { -s, -s, -s } } };
 
-        auto viewDir_f = XMFLOAT3(-0.7071f, -0.7071f, 0);
+        auto viewDir_f = XMFLOAT3(-eye_f.x,-eye_f.y,-eye_f.z);
         XMVECTOR viewDir = XMLoadFloat3(&viewDir_f);
         // dice_num.push_back(7);
         // for (int k = 0; k < 4; k++) {
@@ -257,20 +258,22 @@ private:
 
 class THGuiDice {
 public:
-    std::vector<Dice> dices;
-    int max_dice = 9;
-    bool is_playing;
-    float t;
+    struct DiceT
+    {
+        Dice dice;
+        bool is_playing;
+        float t;
+    };
+    std::vector<DiceT> dices;
+    int max_dice = 16;
 
     ImTextureID texes[6];
 
     THGuiDice()
         : dices()
     {
-        dices.push_back(Dice());
+        dices.push_back({ Dice(),false,0.0f });
         InitImage();
-        is_playing = false;
-        t = 0.0f;
     }
 
     void InitImage()
@@ -592,14 +595,20 @@ public:
         GuiCenteredText(S(THPRAC_TOOLS_DICE));
         ImGui::Separator();
 
-        if (ImGui::Button(S(THPRAC_TOOLS_DICE_DROP), ImVec2(160.0f,0.0f)))
-        {
-            for (auto&d:dices)
-                d.Drop();
-            is_playing = true;
-            t = 0.0f;
+        if (ImGui::Button(S(THPRAC_TOOLS_DICE_DROP), ImVec2(160.0f,0.0f))){
+            for (auto& d : dices)
+            {
+                d.dice.Drop();
+                d.is_playing = true;
+                d.t = 0.0f;
+            }
         }
-        if (!is_playing)
+
+        bool is_all_playing = false;
+        for (auto& d : dices) {
+            is_all_playing |= d.is_playing;
+        }
+        if (!is_all_playing)
         {
             static int n_dice = 1;
             ImGui::SameLine();
@@ -609,21 +618,28 @@ public:
                     n_dice = max_dice;
                 else if (n_dice<=0)
                     n_dice = 1;
-                dices = {};
-                for (int i = 0; i < n_dice; i++) {
-                    dices.push_back(Dice());
+                if (n_dice > dices.size())
+                {
+                    int sz = dices.size();
+                    for (int i = 0; i < n_dice - sz;i++)
+                        dices.push_back({ Dice(), false, 0.0f });
+                } else if (n_dice < dices.size()) {
+                    dices.resize(n_dice);
                 }
             }
         }
-        if (is_playing){
-            t += 0.008f;
-            if (t >= 1.0f){
-                t = 1.0f;
-                is_playing = false;
+        for (auto& d : dices)
+        {
+            if (d.is_playing) {
+                d.t += 0.008f;
+                if (d.t >= 1.0f) {
+                    d.t = 1.0f;
+                    d.is_playing = false;
+                }
+                d.dice.Update(d.t);
             }
-            for (auto& d : dices)
-                d.Update(t);
         }
+        
         ImVec2 p0 = ImGui::GetCursorScreenPos();
         ImVec2 csz = ImGui::GetContentRegionAvail();
         if (csz.y < 0)
@@ -653,8 +669,8 @@ public:
                 colors[i] = ImGui::ColorConvertFloat4ToU32(colors_f[i]);
             }
         }
-        int cutX[] = { 1, 1, 2, 2, 2, 3, 3, 3, 3, 3 };
-        int cutY[] = { 1, 1, 1, 2, 2, 2, 2, 3, 3, 3 };
+        int cutX[] = { 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4 };
+        int cutY[] = { 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4 };
         if (csz.y > 0.0f) {
             p->AddRectFilled(p0, p1, IM_COL32(50, 50, 50, 100));
             p->AddRect(p0, p1, IM_COL32(255, 255, 255, 100));
@@ -663,42 +679,54 @@ public:
             p1.y = p1.y - ImGui::GetTextLineHeight() * 2.0f;
             int cur_cutx = cutX[dices.size()];
             int cur_cuty = cutY[dices.size()];
-            float width = (p1.x - p0.x) / cur_cutx;
+            float width2 = (p1.x - p0.x) / cur_cutx;
             float height = (p1.y - p0.y) / cur_cuty;
-            width = std::min(width, height);
+            float width = std::min(width, height);
             height = width;
 
-            for (int i = 0; i < dices.size();i++) {
+            for (int i = 0; i < dices.size();i++)  {
                 auto& d = dices[i];
 
                 int idx_x = i % cur_cutx;
                 int idx_y = i / cur_cutx;
-                ImVec2 cur_p0 = { p0.x + width * idx_x, p0.y + height * idx_y };
+                ImVec2 cur_p0 = { p0.x + width2 * idx_x, p0.y + height * idx_y };
                 ImVec2 cur_p1 = { cur_p0.x + width, cur_p0.y + height};
+
+                float hover_sz = 0.7f;
+                ImVec2 hover_p0 = { cur_p1.x * (1.0f - hover_sz) + cur_p0.x * hover_sz, cur_p1.y * (1.0f - hover_sz) + cur_p0.y * hover_sz };
+                ImVec2 hover_p1 = { cur_p1.x * hover_sz + cur_p0.x * (1.0f - hover_sz), cur_p1.y * hover_sz + cur_p0.y * (1.0f - hover_sz) };
+                bool is_hovered = false;
+                if (ImGui::IsMouseHoveringRect(hover_p0, hover_p1)){
+                    is_hovered = true;
+                }
 
                 std::vector<ImVec2> points;
                 std::vector<int> dice_num;
-                d.Render(points, dice_num);
+                d.dice.Render(points, dice_num);
+                for (auto& p : points)
+                    p = CvtPts(p, cur_p0, cur_p1);
+
                 for (int i = 0; i < points.size(); i += 4) {
-                    ImVec2 pts[4];
-                    for (int j = 0; j < 4; j++)
-                        pts[j] = CvtPts(points[i + j], cur_p0, cur_p1);
                     auto diceidx = dice_num[i / 4] - 1;
                     if (texes[diceidx]) {
-                        p->AddImageQuad(texes[diceidx], pts[0], pts[1], pts[2], pts[3]);
+                        p->AddImageQuad(texes[diceidx], points[i + 0], points[i + 1], points[i + 2], points[i + 3]);
                     } else {
-                        p->AddQuadFilled(pts[0], pts[1], pts[2], pts[3], colors[diceidx]);
+                        p->AddQuadFilled(points[i + 0], points[i + 1], points[i + 2], points[i + 3], colors[diceidx]);
                     }
                 }
                 for (int i = 0; i < points.size(); i += 4) {
-                    ImVec2 pts[4];
-                    for (int j = 0; j < 4; j++)
-                        pts[j] = CvtPts(points[i + j], cur_p0, cur_p1);
-                    p->AddQuad(pts[0], pts[1], pts[2], pts[3], IM_COL32(0, 0, 0, 255), 3.0f);
+                    if (is_hovered)
+                        p->AddQuad(points[i + 0], points[i + 1], points[i + 2], points[i + 3], IM_COL32(255, 128, 0, 255), 4.0f);
+                    else
+                        p->AddQuad(points[i + 0], points[i + 1], points[i + 2], points[i + 3], IM_COL32(0, 0, 0, 255), 3.0f);
                 }
-                p->AddText(ImGui::GetFont(),64.0, { cur_p0.x * 0.5f + cur_p1.x * 0.5f, cur_p1.y - ImGui::GetTextLineHeight() * 2.0f },
-                    0xFFFFFFFF, std::format("{}",d.GetResult()).c_str());
-               
+                p->AddText(ImGui::GetFont(),64.0, { cur_p0.x * 0.5f + cur_p1.x * 0.5f, cur_p1.y - ImGui::GetTextLineHeight() * 1.6f },
+                    0xFFFFFFFF, std::format("{}", d.dice.GetResult()).c_str());
+                if (is_hovered&& ImGui::IsMouseClicked(ImGuiMouseButton_Left)){
+                    dices[i].dice.Drop();
+                    dices[i].t = 0;
+                    dices[i].is_playing = true;
+                }
             }
             p->PopClipRect();
         }
