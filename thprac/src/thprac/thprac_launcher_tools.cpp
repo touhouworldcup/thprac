@@ -531,7 +531,7 @@ public:
     THGuiDice()
         : dices()
     {
-        dices.push_back({ std::make_unique<Dice12>(), false, 0.0f});
+        dices.push_back({ std::make_unique<Dice6>(), false, 0.0f});
         InitImage();
     }
 
