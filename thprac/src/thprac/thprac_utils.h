@@ -161,11 +161,22 @@ std::wstring GetUnifiedPath(const std::wstring& path);
 template <typename T>
 static std::function<T(void)> GetRndGenerator(T min, T max, std::mt19937::result_type seed = 0)
 {
+    if (!seed)
+        seed = (std::mt19937::result_type)time(0);
+    std::mt19937 engine(seed);
+    if constexpr (std::is_floating_point_v<T>) {
+        return std::bind(std::uniform_real_distribution<T>(min, max), engine);
+    } else {
+        return std::bind(std::uniform_int_distribution<T>(min, max), engine);
+    }
+}
+template <typename T>
+static std::function<T(void)> GetRndGeneratorNormal(T mean, T sigma, std::mt19937::result_type seed = 0)
+{
     if (!seed) {
         seed = (std::mt19937::result_type)time(0);
     }
-    auto dice_rand = std::bind(std::uniform_int_distribution<T>(min, max), std::mt19937(seed));
-    return dice_rand;
+    return std::bind(std::normal_distribution<T>(mean, sigma), std::mt19937(seed));
 }
 DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName);
 }

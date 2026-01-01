@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1716] {
+const char* th_glossary_str[3][1719] {
     {
         "",
         "啤酒",
@@ -1393,6 +1393,9 @@ const char* th_glossary_str[3][1716] {
         "深色\0亮色\0经典\0自定义\0\0",
         "工具",
         "应用thprac至正在运行的游戏",
+        "杰哥不要啊",
+        "丢",
+        "丢几次",
         "模式",
         "按下测试",
         "不显示进度条",
@@ -3111,6 +3114,9 @@ const char* th_glossary_str[3][1716] {
         "Dark\0Light\0Classic\0Custom\0\0",
         "Tools",
         "Apply thprac to ongoing game",
+        "Xeno aaaaaa",
+        "drop",
+        "dice num",
         "mode",
         "press time test",
         "no progress bar",
@@ -4829,6 +4835,9 @@ const char* th_glossary_str[3][1716] {
         "ダーク\0ライト\0クラシック\0カスタム\0\0",
         "ツール",
         "実行中のゲームにthpracを適用します",
+        "Xeno aaaaaa",
+        "drop",
+        "dice num",
         "mode",
         "press time test",
         "no progress bar",
@@ -27163,7 +27172,7 @@ namespace TH20 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3551] {
+const wchar_t __thprac_loc_range_zh[3553] {
     0x0020, 0x00FF,
     0x394, 0x394,
     0x2014, 0x2014,
@@ -27512,6 +27521,7 @@ const wchar_t __thprac_loc_range_zh[3551] {
     0x5524, 0x5524,
     0x5531, 0x5531,
     0x5546, 0x5546,
+    0x554a, 0x554a,
     0x5564, 0x5564,
     0x5584, 0x5584,
     0x558a, 0x558a,

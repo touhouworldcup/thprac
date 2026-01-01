@@ -30,7 +30,7 @@ static HANDLE __thprac_lc_mutex;
 static MSG __thprac_lc_msg;
 static WNDCLASSEX __thprac_lc_wc;
 static LPDIRECT3D9 g_pD3D = nullptr;
-static LPDIRECT3DDEVICE9 g_pd3dDevice = nullptr;
+LPDIRECT3DDEVICE9 g_pd3dDevice = nullptr;
 static D3DPRESENT_PARAMETERS g_d3dpp = {};
 
 // D3D Functions

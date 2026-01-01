@@ -1393,6 +1393,9 @@ enum th_glossary_t {
     THPRAC_THEME_OPTION,
     THPRAC_TOOLS,
     THPRAC_TOOLS_APPLY_THPRAC,
+    THPRAC_TOOLS_DICE,
+    THPRAC_TOOLS_DICE_DROP,
+    THPRAC_TOOLS_DICE_NUM,
     THPRAC_TOOLS_REACTION_MODE,
     THPRAC_TOOLS_REACTION_MODE_DOWN,
     THPRAC_TOOLS_REACTION_MODE_NORMAL,
@@ -1727,7 +1730,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1716];
+extern const char* th_glossary_str[3][1719];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3440,7 +3443,7 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3551];
+extern const wchar_t __thprac_loc_range_zh[3553];
 
 extern const wchar_t __thprac_loc_range_en[67];
 
