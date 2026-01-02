@@ -17,10 +17,352 @@
 #include <DirectXMath.h>
 #include <d3d9.h>
 
+#include <dinput.h>
+#include <deque>
+
 namespace THPrac {
 
 extern LPDIRECT3DDEVICE9 g_pd3dDevice;
 void LauncherToolsGuiSwitch(const char* gameStr);
+
+
+
+class THGuiInputTest {
+public:
+   
+    THGuiInputTest()
+    {
+       
+    }
+    std::string GetKeyName(int dik)
+    {
+        for (auto& kb : keyBindDefine) {
+            if (kb.dik == dik) {
+                return std::format("{}(DIK_{})", kb.keyname, dik);
+            }
+        }
+        return std::string("DIK_") + std::to_string(dik);
+    }
+    bool GuiUpdate()
+    {
+        static IDirectInput8* dinput8 = []() -> auto { 
+            static IDirectInput8* dinput8;
+            DirectInput8Create(GetModuleHandle(0), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&dinput8, NULL);
+            return dinput8;
+        }();
+        static LARGE_INTEGER freq = { 0 };
+        static LARGE_INTEGER last_time = { 0 };
+        static double time = 0;
+        LARGE_INTEGER cur_time;
+        if (freq.QuadPart == 0)
+        {
+            QueryPerformanceFrequency(&freq);
+            QueryPerformanceCounter(&last_time);
+        }
+
+        QueryPerformanceCounter(&cur_time);
+        double delta_time = (double)(cur_time.QuadPart - last_time.QuadPart) / ((double)(freq.QuadPart));
+        time += delta_time;
+        last_time = cur_time;
+
+        bool result = true;
+        if (ImGui::Button(S(THPRAC_BACK))) {
+            result = false;
+        }
+        ImGui::SameLine();
+        GuiCenteredText(S(THPRAC_TOOLS_INPUT_TEST));
+        ImGui::Separator();
+
+        if (!dinput8) {
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), S(THPRAC_TOOLS_INPUT_TEST_DINPUT8_FAILED));
+            return result;
+        }
+        static IDirectInputDevice8* pMouse = nullptr;
+        static IDirectInputDevice8* pKeyboard = nullptr;
+        static IDirectInputDevice8* pGamepad = nullptr;
+
+        if (ImGui::CollapsingHeader(S(THPRAC_TOOLS_INPUT_TEST_MOUSE))) {
+            if (!pMouse) {
+                if (SUCCEEDED(dinput8->CreateDevice(GUID_SysMouse, &pMouse, NULL))) {
+                    pMouse->SetDataFormat(&c_dfDIMouse2);
+                    pMouse->SetCooperativeLevel(GetActiveWindow(), DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
+                    pMouse->Acquire();
+                }
+            }
+            if (pMouse) {
+                DIMOUSESTATE2 mouseState;
+                HRESULT hr = pMouse->GetDeviceState(sizeof(DIMOUSESTATE2), &mouseState);
+
+                static double mouse_time[8] = { 0.0f };
+                if (FAILED(hr)) {
+                    pMouse->Acquire();
+                    ImGui::TextColored(ImVec4(1, 1, 0, 1), S(THPRAC_TOOLS_INPUT_TEST_ACQUIRING));
+                } else {
+                    ImGui::TextColored(ImVec4(0, 1, 0, 1), S(THPRAC_TOOLS_INPUT_TEST_OK));
+
+                    ImGui::Columns(2, S(THPRAC_TOOLS_INPUT_TEST_MOUSE_DELTA));
+                    ImGui::Text("Delta X : %ld", mouseState.lX);
+                    ImGui::Text("Delta Y : %ld", mouseState.lY);
+                    ImGui::Text("Delta Z : %ld", mouseState.lZ);
+                    
+                    ImGui::NextColumn();
+                    ImGui::Text(S(THPRAC_TOOLS_INPUT_TEST_BUTTONS));
+                    for (int i = 0; i < 8; i++) {
+                        if (mouseState.rgbButtons[i] & 0x80) {
+                            ImGui::TextColored(ImVec4(1, 0.5f, 0, 1), "[%d]: frame %d", i, (int)(mouse_time[i]*60.0f));
+                            mouse_time[i] += delta_time;
+                        } else {
+                            mouse_time[i] = 0;
+                        }
+                    }
+                    ImGui::Columns(1);
+
+                    const char* mbtn_strs[] = { "[L]", "[R]", "[M]"};
+                    for (int i = 0; i < 3; i++) {
+                        if (mouseState.rgbButtons[i] & 0x80) {
+                            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5, 0.3, 0.3, 1));
+                            ImGui::Button(mbtn_strs[i]);
+                            ImGui::PopStyleColor(1);
+                        } else {
+                            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3, 0.5, 0.3, 1));
+                            ImGui::Button(mbtn_strs[i]);
+                            ImGui::PopStyleColor(1);
+                        }
+                        if(i!=2)
+                            ImGui::SameLine();
+                    }
+                }
+            } else {
+                ImGui::TextColored(ImVec4(1, 0, 0, 1), S(THPRAC_TOOLS_INPUT_MOUSE_FAILED));
+            }
+        }
+        if (ImGui::CollapsingHeader(S(THPRAC_TOOLS_INPUT_KEYBOARD))) {
+            if (!pKeyboard) {
+                if (SUCCEEDED(dinput8->CreateDevice(GUID_SysKeyboard, &pKeyboard, NULL))) {
+                    pKeyboard->SetDataFormat(&c_dfDIKeyboard);
+                    pKeyboard->SetCooperativeLevel(GetActiveWindow(), DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
+                    pKeyboard->Acquire();
+                }
+            }
+            if (pKeyboard) {
+                static char keyBuffer_last[256] = { 0 };
+                static char keyBuffer[256] = { 0 };
+                static double key_time[256] = { 0 };
+                struct KeyEvent
+                {
+                    int dik;
+                    int type;
+                    double time;
+                };
+                static std::deque<KeyEvent> keys_event;
+
+                HRESULT hr = pKeyboard->GetDeviceState(sizeof(keyBuffer), (LPVOID)&keyBuffer);
+                if (FAILED(hr)) {
+                    pKeyboard->Acquire();
+                    ImGui::TextColored(ImVec4(1, 1, 0, 1), S(THPRAC_TOOLS_INPUT_TEST_ACQUIRING));
+                } else {
+                    ImGui::TextColored(ImVec4(0, 1, 0, 1), S(THPRAC_TOOLS_INPUT_TEST_OK));
+                    ImGui::Text(S(THPRAC_TOOLS_INPUT_TEST_BUTTONS));
+                    ImGui::Columns(2);
+                    bool anyPressed = false;
+                    for (int i = 0; i < 256; i++) {
+                        if (keyBuffer[i] & 0x80) {
+                            anyPressed = true;
+                            ImGui::Button(std::format("{}: {} frame  ({:.3f} ms)", GetKeyName(i), (int)(key_time[i]*60.0f), key_time[i] * 1000.0f).c_str());
+                            key_time[i] += delta_time;
+                            if (!keyBuffer_last[i]){
+                                keys_event.push_back({i,1,time});
+                            }
+                        } else {
+                            if (keyBuffer_last[i]) {
+                                keys_event.push_back({ i, 0, key_time[i] });
+                            }
+                            key_time[i] = 0.0f;
+                        }
+                    }
+                    while (keys_event.size() >= 10)
+                        keys_event.pop_front();
+                    memcpy(keyBuffer_last, keyBuffer, 256);
+
+                    if (!anyPressed)
+                        ImGui::TextDisabled("(None)");
+                    ImGui::NextColumn();
+                    for (auto& i : keys_event)
+                    {
+                        if (i.type == 1)
+                        {
+                            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5,0.3,0.3,1));
+                            ImGui::Button(std::format("[D]  {}", GetKeyName(i.dik)).c_str());
+                            ImGui::PopStyleColor(1);
+                        }
+                        else
+                        {
+                            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3, 0.5, 0.3, 1));
+                            ImGui::Button(std::format("[U]  {}:  {:.3f} ms", GetKeyName(i.dik), i.time * 1000.0f).c_str());
+                            ImGui::PopStyleColor(1);
+                        }
+                    }
+                    ImGui::Columns(1);
+                }
+            }
+        }
+
+        if (ImGui::CollapsingHeader(S(THPRAC_TOOLS_INPUT_GAMEPAD))) {
+
+            static bool s_gamepadFound = false;
+            if (ImGui::Button(S(THPRAC_TOOLS_INPUT_GAMEPAD_CONNECT))) {
+                if (pGamepad) {
+                    pGamepad->Release();
+                    pGamepad = NULL;
+                    s_gamepadFound = false;
+                }
+                static GUID targetGuid = GUID_NULL;
+                targetGuid = GUID_NULL;
+
+                dinput8->EnumDevices(
+                    DI8DEVCLASS_GAMECTRL,
+                    [](const DIDEVICEINSTANCE* pdidInstance, VOID* pRefGuid) -> BOOL {
+                        *(GUID*)pRefGuid = pdidInstance->guidInstance;
+                        return DIENUM_STOP;
+                    },
+                    &targetGuid, DIEDFL_ATTACHEDONLY);
+
+                if (targetGuid != GUID_NULL) {
+                    if (SUCCEEDED(dinput8->CreateDevice(targetGuid, &pGamepad, NULL))) {
+                        pGamepad->SetDataFormat(&c_dfDIJoystick2);
+                        pGamepad->SetCooperativeLevel(GetActiveWindow(), DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
+                        DIPROPRANGE diprg;
+                        diprg.diph.dwSize = sizeof(DIPROPRANGE);
+                        diprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
+                        diprg.diph.dwHow = DIPH_DEVICE;
+                        diprg.diph.dwObj = 0;
+                        diprg.lMin = -65535;
+                        diprg.lMax = +65535;
+                        pGamepad->SetProperty(DIPROP_RANGE, &diprg.diph);
+
+                        pGamepad->Acquire();
+                        s_gamepadFound = true;
+                    }
+                }
+            }
+            if (pGamepad && s_gamepadFound) {
+                DIJOYSTATE2 joyState;
+                HRESULT hr = pGamepad->GetDeviceState(sizeof(DIJOYSTATE2), &joyState);
+                if (FAILED(hr)) {
+                    pGamepad->Acquire();
+                    ImGui::TextColored(ImVec4(1, 1, 0, 1), S(THPRAC_TOOLS_INPUT_TEST_ACQUIRING_GAMEPAD));
+                } else {
+                    ImGui::TextColored(ImVec4(0, 1, 0, 1), S(THPRAC_TOOLS_INPUT_TEST_OK));
+                    // axes
+                    ImGui::Text(S(THPRAC_TOOLS_INPUT_GAMEPAD_AXES));
+
+                    float alx = joyState.lX;
+                    float aly = joyState.lY;
+
+                    float arx = joyState.lRx;
+                    float ary = joyState.lRy;
+                    float az = joyState.lZ;
+
+                    float s1 = joyState.rglSlider[0];
+                    float s2 = joyState.rglSlider[1];
+
+                    float circle_radius = 100.0f;
+                    float space = 0.25f * circle_radius;
+                    ImVec2 axes_area = { circle_radius * 6.0f + space * 5.0f, circle_radius * 2.0f + space * 2.0f };
+                    
+                    auto p0 = ImGui::GetCursorScreenPos();
+                    ImGui::InvisibleButton("x-y", axes_area);
+                    ImVec2 p1 = { p0.x + axes_area.x, p0.y + axes_area.y };
+                    {
+                        auto p = ImGui::GetWindowDrawList();
+                        p->AddRectFilled(p0, p1, IM_COL32(0,0,0,255));
+                        ImVec2 circle_1_cen = { p0.x + circle_radius + space, p0.y+circle_radius + space };
+                        ImVec2 circle_2_cen = { p0.x + circle_radius*3.0f + space*2.0f, p0.y+circle_radius + space };
+                        ImVec2 circle_3_cen = { p0.x + circle_radius*5.0f + space*4.0f, p0.y+circle_radius + space };
+
+                        p->AddCircleFilled(circle_1_cen, circle_radius, IM_COL32(60, 60, 60, 255));
+                        p->AddCircleFilled(circle_2_cen, circle_radius, IM_COL32(60, 60, 60, 255));
+                        p->AddCircleFilled(circle_3_cen, circle_radius, IM_COL32(60, 60, 60, 255));
+
+                        p->AddRect({ circle_1_cen.x - circle_radius, circle_1_cen.y - circle_radius }, { circle_1_cen.x + circle_radius, circle_1_cen.y + circle_radius }, IM_COL32(255, 255, 255, 255), 6.0f);
+                        p->AddRect({ circle_2_cen.x - circle_radius, circle_2_cen.y - circle_radius }, { circle_2_cen.x + circle_radius, circle_2_cen.y + circle_radius }, IM_COL32(255, 255, 255, 255), 6.0f);
+                        p->AddRect({ circle_3_cen.x - circle_radius, circle_3_cen.y - circle_radius }, { circle_3_cen.x + circle_radius, circle_3_cen.y + circle_radius }, IM_COL32(255, 255, 255, 255), 6.0f);
+
+                        ImVec2 circle_1 = { circle_1_cen.x + circle_radius * alx / 65535.0f, circle_1_cen.y + circle_radius * aly / 65535.0f };
+                        p->AddCircleFilled(circle_1, circle_radius * 0.1f, IM_COL32(250, 150, 150, 255));
+
+                        ImVec2 circle_2 = { circle_2_cen.x + circle_radius * arx / 65535.0f, circle_2_cen.y + circle_radius * ary / 65535.0f };
+                        p->AddCircleFilled(circle_2, circle_radius*0.1f, IM_COL32(150, 250, 150, 255));
+                        ImVec2 circle_3 = { 0, 0 };
+                        if (joyState.rgdwPOV[0] == 0xFFFFFFFF)
+                            circle_3 = { circle_3_cen.x , circle_3_cen.y};
+                        else
+                        {
+                            float deg = joyState.rgdwPOV[0] / 100.0f;
+                            float angle = deg * DirectX::XM_PI / 180.0f - DirectX::XM_PIDIV2;
+                            circle_3 = { circle_3_cen.x + circle_radius * cosf(angle), circle_3_cen.y + circle_radius * sinf(angle) };
+                        }
+                        p->AddCircleFilled(circle_3, circle_radius * 0.1f, IM_COL32(150, 150, 250, 255));
+
+                        p->AddText({ circle_1_cen.x - circle_radius, circle_1_cen.y + circle_radius }, 0xFFFFFFFF, S(THPRAC_TOOLS_INPUT_GAMEPAD_L_STICK));
+                        p->AddText({ circle_2_cen.x - circle_radius, circle_2_cen.y + circle_radius }, 0xFFFFFFFF, S(THPRAC_TOOLS_INPUT_GAMEPAD_R_STICK));
+                        p->AddText({ circle_3_cen.x - circle_radius, circle_3_cen.y + circle_radius }, 0xFFFFFFFF, S(THPRAC_TOOLS_INPUT_GAMEPAD_D_PAD));
+                    }
+                    ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_TRIGGER), &az, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                    if (ImGui::CollapsingHeader("Data")) {
+                        float width_slider = ImGui::GetTextLineHeight();
+                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_L_STICK_X), &alx, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_L_STICK_Y), &aly, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_R_STICK_X), &arx, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_R_STICK_Y), &ary, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_TRIGGER), &az, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_S1), &s1, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_S2), &s2, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                        ImGui::Separator();
+                        ImGui::Text(S(THPRAC_TOOLS_INPUT_GAMEPAD_D_PAD));
+                        ImGui::SameLine();
+                        if (joyState.rgdwPOV[0] == 0xFFFFFFFF)
+                            ImGui::Text(S(THPRAC_TOOLS_INPUT_GAMEPAD_D_PAD_CENTER));
+                        else
+                            ImGui::Text("%s: %lu deg", S(THPRAC_TOOLS_INPUT_GAMEPAD_D_PAD_DEG),joyState.rgdwPOV[0] / 100);
+                    }
+                    
+                    // Buttons
+                    ImGui::Separator();
+                    ImGui::Text(S(THPRAC_TOOLS_INPUT_TEST_BUTTONS));
+                    ImGui::Columns(2);
+                    for (int i = 0; i < 128; i++) {
+                        if (joyState.rgbButtons[i] & 0x80) {
+                            ImGui::Button((std::string("B") + std::to_string(i)).c_str());
+                        }
+                    }
+                    ImGui::NextColumn();
+                    const char* btn_strs[] = { "[A]", "[B]", "[X]", "[Y]", "[LB]", "[RB]" };
+                    for (int i = 0; i < 6; i++)
+                    {
+                        if (joyState.rgbButtons[i] & 0x80) {
+                            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5, 0.3, 0.3, 1));
+                            ImGui::Button(btn_strs[i]);
+                            ImGui::PopStyleColor(1);
+                        } else {
+                            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3, 0.5, 0.3, 1));
+                            ImGui::Button(btn_strs[i]);
+                            ImGui::PopStyleColor(1);
+                        }
+                        if (i % 2 == 0)
+                            ImGui::SameLine();
+                    }
+                    ImGui::Columns(1);
+                }
+            } else {
+                ImGui::TextDisabled(S(THPRAC_TOOLS_INPUT_GAMEPAD_NO_GAMEPAD));
+            }
+        }
+        return result;
+    }
+
+private:
+};
 
 std::wstring NormalizePath(std::wstring path)
 {
@@ -709,17 +1051,24 @@ public:
             if (ImGui::Button("D12", ImVec2(160.0f, 0.0f)))
             {
                 if (dices.size() < max_dice)
+                {
                     dices.push_back({ std::make_unique<Dice12>(), false, 0.0f });
+                    n_dice = dices.size();
+                }
             }
             ImGui::SameLine();
             if (ImGui::Button("D6", ImVec2(160.0f, 0.0f))) {
                 if (dices.size() < max_dice)
+                {
                     dices.push_back({ std::make_unique<Dice6>(), false, 0.0f });
+                    n_dice = dices.size();
+                }
             }
 
             ImGui::SameLine();
             if (ImGui::Button("Del", ImVec2(160.0f, 0.0f))) {
                 dices.resize(dices.size()-1);
+                n_dice = dices.size();
             }
         }
         for (auto& d : dices)
@@ -1682,6 +2031,7 @@ public:
             auto real_drag = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
             ImGui::ResetMouseDragDelta();
             if (fabsf(drag_dist) >= 0.1f && hypotf(real_drag.x,real_drag.y)>=5.0f) {
+                first_roll = false;
                 is_rolling = true;
                 time = 0;
                 angle_last = angle_cur - floorf(angle_fin / (2.0f * std::numbers::pi)) * 2.0f * std::numbers::pi;
@@ -1873,6 +2223,7 @@ public:
             auto real_drag = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
             ImGui::ResetMouseDragDelta();
             if (fabsf(drag_dist) >= 0.1f && hypotf(real_drag.x, real_drag.y) >= 5.0f) {
+                first_roll = false;
                 is_rolling = true;
                 time = 0;
                 angle_last = angle_cur - floorf(angle_fin / (2.0f * std::numbers::pi)) * 2.0f * std::numbers::pi;
@@ -1955,70 +2306,85 @@ private:
         auto offset = ImGui::GetFontSize() * rsv;
         return ImGui::GetStyle().FramePadding.x * 2 + ImGui::CalcTextSize(text).x + offset;
     }
-    bool CenteredButton(const char* text, float posYRel, float width)
+    bool CenteredButton(const char* text, float posYRel, float width, int xIdx = 0,int xTotalColumn = 1,const char* helper = nullptr)
     {
         auto columnWidth = ImGui::GetColumnWidth();
         auto columnOffset = ImGui::GetColumnOffset();
 
-        float cursorX = (columnWidth - width) / 2.0f + columnOffset;
+        float xOfs = columnWidth / (xTotalColumn + 1.0f) * (xIdx+1.0f);
+        float cursorX = xOfs - width / 2.0f + columnOffset;
         ImGui::SetCursorPosX(cursorX);
         GuiSetPosYRel(posYRel);
-        return ImGui::Button(text, ImVec2(width, 0.0f));
+        bool btn = ImGui::Button(text, ImVec2(width, 0.0f));
+        if (helper){
+            ImGui::SameLine();
+            HelpMarker(helper);
+        }
+        return btn;
+    }
+
+    void ClearGame()
+    {
+        auto game_killed = THClearGame();
+        static char chs[256];
+        sprintf_s(chs, S(THPRAC_KILL_ALL_GAME_DONE), game_killed.size());
+        std::wstringstream ss;
+        ss << utf8_to_utf16(chs) << L"\n";
+        int n = 0;
+        for (const auto& path : game_killed) {
+            auto path_a = path;
+            if (path_a.length() > 60) {
+                path_a = path_a.substr(0, 57) + L"...";
+            }
+            ss << L" - " << path_a << L"\n";
+            n++;
+            if (n > 32) {
+                //???
+                ss << "...";
+                break;
+            }
+        }
+        MessageBoxW(NULL, ss.str().c_str(), L"done", MB_OK);
     }
     bool GuiContent()
     {
-        float y = 0.1f;
-        float y_inc = 0.1f;
+        
+        float y_inc = 0.2f,y_init=0.16f;
         auto width = GetWidthRel(S(THPRAC_TOOLS_APPLY_THPRAC), 2.0f);
-        if (CenteredButton(S(THPRAC_TOOLS_APPLY_THPRAC), y, width)) {
+
+        float y = y_init;
+        if (CenteredButton(S(THPRAC_TOOLS_APPLY_THPRAC), y, width, 0 , 2)) {
             FindOngoingGame(true);
         }
         y += y_inc;
-        if (CenteredButton(S(THPRAC_TOOLS_RND_GAME), y, width)) {
+        if (CenteredButton(S(THPRAC_KILL_ALL_GAME), y, width, 0, 2, S(THPRAC_KILL_ALL_GAME_ALERT))) {
+            ClearGame();
+        }
+        y += y_inc;
+        if (CenteredButton(S(THPRAC_TOOLS_INPUT_TEST), y, width, 0, 2)) {
+            mGuiUpdFunc = [&]() { return mInputTest.GuiUpdate(); };
+        }
+        y += y_inc;
+        if (CenteredButton(S(THPRAC_TOOLS_REACTION_TEST), y, width, 0, 2)) {
+            mGuiUpdFunc = [&]() { return mGuiReactionTest.GuiUpdate(); };
+        }
+        y = y_init;
+        if (CenteredButton(S(THPRAC_TOOLS_RND_GAME), y, width,1,2)) {
             mGuiUpdFunc = [&]() { return mGuiRollGame.GuiUpdate(); };
         }
         y += y_inc;
-        if (CenteredButton(S(THPRAC_TOOLS_RND_PLAYER), y, width)) {
+        if (CenteredButton(S(THPRAC_TOOLS_RND_PLAYER), y, width, 1, 2)) {
             mGuiUpdFunc = [&]() { return mGuiRollPlayer.GuiUpdate(); };
         }
+        
         y += y_inc;
-        if (CenteredButton(S(THPRAC_TOOLS_REACTION_TEST), y, width)) {
-            mGuiUpdFunc = [&]() { return mGuiReactionTest.GuiUpdate(); };
-        }
-        y += y_inc;
-        if (CenteredButton(S(THPRAC_TOOLS_ROLLF_FROM_FILE), y, width)) {
+        if (CenteredButton(S(THPRAC_TOOLS_ROLLF_FROM_FILE), y, width, 1, 2)) {
             mGuiUpdFunc = [&]() { return mGuiRollAll.GuiUpdate(); };
         }
         y += y_inc;
-        if (CenteredButton(S(THPRAC_TOOLS_DICE), y, width)) {
+        if (CenteredButton(S(THPRAC_TOOLS_DICE), y, width, 1, 2)) {
             mGuiUpdFunc = [&]() { return mGuiDice.GuiUpdate(); };
         }
-        y += y_inc;
-        if (CenteredButton(S(THPRAC_KILL_ALL_GAME), y, width)) {
-            auto game_killed = THClearGame();
-            static char chs[256];
-            sprintf_s(chs, S(THPRAC_KILL_ALL_GAME_DONE), game_killed.size());
-            std::wstringstream ss;
-            ss << utf8_to_utf16(chs) << L"\n";
-            int n = 0;
-            for (const auto& path : game_killed) {
-                auto path_a = path;
-                if (path_a.length() > 60) {
-                    path_a = path_a.substr(0, 57) + L"...";
-                }
-                ss << L" - " << path_a << L"\n";
-                n++;
-                if (n > 32) {
-                    //???
-                    ss << "...";
-                    break;
-                }
-            }
-            MessageBoxW(NULL, ss.str().c_str(), L"done", MB_OK);
-        }
-        y += y_inc;
-        ImGui::SameLine();
-        HelpMarker(S(THPRAC_KILL_ALL_GAME_ALERT));
         return true;
     }
     void GuiMain()
@@ -2032,6 +2398,7 @@ private:
     THGuiRollGame mGuiRollGame;
     THGuiRollPlayer mGuiRollPlayer;
     THGuiTestReactionTest mGuiReactionTest;
+    THGuiInputTest mInputTest;
     THGuiRollAll mGuiRollAll;
     THGuiDice mGuiDice;
 };

@@ -59,21 +59,40 @@ private:
         TRIGGER_ERR_REPETED,
         TRIGGER_ERR_EXEC,
     };
-    void WriteLinksCfgDefault()
-    {
-        const char* linksJsonStr = R"123({
-            "Default":{
-                "__is_open__" : true,
-                "Royalflare Archive":"https://maribelhearn.com/royalflare",
-                "Lunarcast":"http://replay.lunarcast.net/",
-                "PND's Scoreboard":"https://thscore.pndsng.com/index.php",
-                "Maribel Hearn's Touhou Portal":"https://maribelhearn.com/",
-                "Touhou Patch Center":"https://www.thpatch.net/",
-                "Touhou Replay Showcase:"https://twitch.tv/touhou_replay_showcase",
-                "甜品站 (isndes)":"https://www.isndes.com/",
-                "THBWiki":"https://thwiki.cc/"
-            }
-        })123";
+
+    
+#define DEFAULT_KEY "Default##1"
+#define DEFAULT_LINKS R"123({
+"__is_open__" : true,
+"Royalflare Archive"                          :"https://maribelhearn.com/royalflare",
+"Maribel Hearn's Touhou Portal"               :"https://maribelhearn.com/",
+"PND"                                         :"https://thscore.pndsng.com/index.php",
+"KG"                                          :"https://wikiwiki.jp/thscorekg/",
+"Lunarcast"                                   :"http://replay.lunarcast.net/",
+"silentselene"                                :"https://www.silentselene.net/",
+"fan games LNN"                               :"https://touhoufangames.blogspot.com/2025/07/LNNlist.html",
+"--------------------------------"            :" ",
+"Touhou Patch Center"                         :"https://www.thpatch.net/",
+"Touhou Replay Showcase"                      :"https://twitch.tv/touhou_replay_showcase",
+"--------------------------------"            :" ",
+"甜品站 (isndes)"                             :"https://www.isndes.com/",
+"THBWiki"                                     :"https://thwiki.cc/",
+"莉莉云"                                      :"https://cn.thdog.moe/",
+"从夯到拉排行制作器"                          :"https://maribelhearn.com/tiers",
+"--------------------------------"            :" ",
+"github(TWC)"                                 :"https://github.com/touhouworldcup/thprac/",
+"github(R)"                                   :"https://github.com/RUEEE/thprac",
+"--------------------------------"            :" ",
+"东方正作STG的各种设置和插件指南"             :"https://www.bilibili.com/opus/974491967425609731",
+"东方STG常用工具、网址等资源汇总"             :"https://www.bilibili.com/opus/411007775865615066",
+"东方STG软件优化&外设参考"                    :"https://www.bilibili.com/opus/124761180679223092"
+})123"
+    const char* default_name = DEFAULT_KEY;
+    const char* default_links = DEFAULT_LINKS;
+
+    const char* linksJsonStr = "{\"" DEFAULT_KEY "\":" DEFAULT_LINKS "}";
+
+    void WriteLinksCfgDefault() {
         rapidjson::Document linksJson;
         linksJson.Parse(linksJsonStr);
 
@@ -82,6 +101,44 @@ private:
             cfg.RemoveMember("links");
         }
         JsonAddMemberA(cfg, "links", linksJson, cfg.GetAllocator());
+        LauncherCfgWrite();
+    }
+    void UpdateLinksCfgDefault()
+    {
+        auto& cfg = LauncherCfgGet();
+        bool has_default = false;
+        bool has_old_default = false;
+        if (cfg.HasMember("links") && cfg["links"].IsObject()) {
+            std::vector<std::string> default_members;
+            for (auto i = cfg["links"].MemberBegin(); i != cfg["links"].MemberEnd(); i++)
+            {
+                std::string p = i->name.GetString();
+                if (p == default_name) {
+                    has_default = true;
+                    continue;
+                }
+                if (p == "Default")
+                {
+                    default_members.push_back(p);
+                    has_old_default = true;
+                }
+                else if (p.starts_with("Default##")){
+                    default_members.push_back(p);
+                    has_old_default = true;
+                }
+            }
+            for (auto &s:default_members)
+            {
+                cfg["links"].EraseMember(s.c_str());
+            }
+            if (!has_default && has_old_default) {
+                rapidjson::Document linksJson;
+                linksJson.Parse(default_links);
+                cfg["links"].AddMember(rapidjson::Value(default_name, cfg.GetAllocator()).Move(),
+                    rapidjson::Value(linksJson,cfg.GetAllocator()).Move(),cfg.GetAllocator());
+                ;
+            }
+        }
         LauncherCfgWrite();
     }
     void WriteLinksCfg()
@@ -117,6 +174,8 @@ private:
         if (!cfg.HasMember("links")) {
             WriteLinksCfgDefault();
         }
+        UpdateLinksCfgDefault();
+
         if (cfg.HasMember("links") && cfg["links"].IsObject()) {
             auto& linkRoot = cfg["links"];
             for (auto it = linkRoot.MemberBegin(); it != linkRoot.MemberEnd(); ++it) {
@@ -553,6 +612,11 @@ private:
             ImGui::NextColumn();
             ImGui::NextColumn();
 
+            auto is_whitespace = [](std::string_view s) -> bool {
+                return std::all_of(s.begin(), s.end(), [](unsigned char ch) {
+                    return std::isspace(ch);
+                });
+            };
             if (isNodeOpen) {
                 int j = 0;
                 for (auto& leaf : node.leaves) {
@@ -566,8 +630,10 @@ private:
                             mLinkSelected = &leaf;
                             mCurrentNode = i;
                             mCurrentLeaf = j;
-                            if (!ExecLink(leaf.link)) {
-                                mTrigger = TRIGGER_ERR_EXEC;
+                            if (!is_whitespace(leaf.link)){
+                                if (!ExecLink(leaf.link)) {
+                                    mTrigger = TRIGGER_ERR_EXEC;
+                                }
                             }
                         } else if (ImGui::IsMouseClicked(0)) {
                             mLinkSelected = &leaf;
@@ -597,7 +663,24 @@ private:
                     }
 
                     ImGui::NextColumn();
-                    GuiColumnText(leaf.link.c_str());
+                    ImGui::TreeNodeEx((void*)(intptr_t)j, nodeFlag, "%s", leaf.link.c_str());
+                    if (ImGui::IsItemHovered()) {
+                        if (ImGui::IsMouseDoubleClicked(0)) {
+                            mLinkSelected = &leaf;
+                            mCurrentNode = i;
+                            mCurrentLeaf = j;
+                            if (!is_whitespace(leaf.link)) {
+                                if (!ExecLink(leaf.link)) {
+                                    mTrigger = TRIGGER_ERR_EXEC;
+                                }
+                            }
+                        } else if (ImGui::IsMouseClicked(0)) {
+                            mLinkSelected = &leaf;
+                            mCurrentNode = i;
+                            mCurrentLeaf = j;
+                            ImGui::SetClipboardText(leaf.link.c_str());
+                        }
+                    }
                     ImGui::NextColumn();
                     j++;
                 }
