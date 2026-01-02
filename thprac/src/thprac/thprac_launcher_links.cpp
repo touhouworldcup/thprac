@@ -69,7 +69,7 @@ private:
                 "PND's Scoreboard":"https://thscore.pndsng.com/index.php",
                 "Maribel Hearn's Touhou Portal":"https://maribelhearn.com/",
                 "Touhou Patch Center":"https://www.thpatch.net/",
-                "Touhou Replay Showcase:"https://twitch.tv/touhou_replay_showcase",
+                "Touhou Replay Showcase":"https://twitch.tv/touhou_replay_showcase",
                 "甜品站 (isndes)":"https://www.isndes.com/",
                 "THBWiki":"https://thwiki.cc/"
             }
