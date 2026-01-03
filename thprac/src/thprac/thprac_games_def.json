@@ -260,6 +260,8 @@
 	
 	"THPRAC_KEYBOARD_API":["键盘API设置","keyboard API setting","keyboard API setting"],
 	"THPRAC_KEYBOARD_API_SETTINGS":["默认\\0强制Win32 API\\0强制 Dinput8\\0强制RawInput\\0\\0","default\\0force Win32 API\\0force Dinput8\\0force RawInput\\0\\0","default\\0force Win32 API\\0force Dinput8\\0force RawInput\\0\\0"],
+	"THPRAC_KEYBOARD_API_USE_GET_DEVICE_DATA":["使用GetDeviceData","Use GetDeviceData","Use GetDeviceData"],
+	"THPRAC_KEYBOARD_API_USE_GET_DEVICE_DATA_DESC":["可能带来更好的单帧性能或延迟?","Might make delay less?","Might make delay less?"],
 	"THPRAC_KEYBOARD_API_SETTINGS_DESC":["默认情况下在地灵殿等游戏使用小键盘可能卡键, \n换用强制dinput8可修复(建议?), \n不建议强制win32模式","By default, using numpad will cause bugs in games like SA,\n which can be fixed by forcing to use dinput8(which is recommended?),\n force win32 API is not recommended","By default, using numpad will cause bugs in games like SA,\n which can be fixed by forcing to use dinput8(which is recommended?),\n force win32 API is not recommended"],
     
     "THPRAC_COMPATIBILITY_SETTINGS":["兼容性设置","Compatibility Settings","Compatibility Settings"],
@@ -395,6 +397,7 @@
 	  
 	  
       "THPRAC_TOOLS_APPLY_THPRAC": [ "应用thprac至正在运行的游戏", "Apply thprac to ongoing game", "実行中のゲームにthpracを適用します" ],
+      "THPRAC_TOOLS_APPLY_THPRAC_DESC": [ "建议在选择分辨率/全屏的窗口上使用", "Suggest using this on the resolution/fullscreen selection window", "Suggest using this on the resolution/fullscreen selection window" ],
       "THPRAC_TOOLS_RND_GAME": [ "随机游戏", "Random game", "ランダムゲーム" ],
       "THPRAC_TOOLS_RND_PLAYER": [ "随机机体", "Random shot type", "ランダム機体" ],
       "THPRAC_TOOLS_RND_GAME_PC98": [ "PC98", "PC98", "PC98" ],

@@ -80,18 +80,20 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
     else
         return CallNextHookEx(g_hKeyboardHook, nCode, wParam, lParam);
 }
-void DisableWinKey(){
-    if (!g_hKeyboardHook)
-        g_hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, GetModuleHandle(nullptr), 0);
-}
 
-void DisableDisableWinKey()
-{
-    if (g_hKeyboardHook){
-        UnhookWindowsHookEx(g_hKeyboardHook);
-        g_hKeyboardHook = nullptr;
-    }
-}
+// void DisableWinKey(){
+//     if (!g_hKeyboardHook)
+//         g_hKeyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, GetModuleHandle(nullptr), 0);
+// }
+// 
+// void DisableDisableWinKey()
+// {
+//     if (g_hKeyboardHook){
+//         UnhookWindowsHookEx(g_hKeyboardHook);
+//         g_hKeyboardHook = nullptr;
+//     }
+// }
+// 
 
 int GuiLauncherMain()
 {
@@ -144,9 +146,9 @@ int GuiLauncherMain()
 
     g_hKeyboardHook = nullptr;
     bool disable_win;
-    if (LauncherSettingGet("disable_win_key", disable_win) && disable_win) {
-        DisableWinKey();
-    }
+    // if (LauncherSettingGet("disable_win_key", disable_win) && disable_win) {
+    //     DisableWinKey();
+    // }
     while (LauncherWndNewFrame()) {
         static bool isOpen = true;
         static bool isMinimize = false;
@@ -257,7 +259,7 @@ int GuiLauncherMain()
     LauncherGamesDestroy();
     LauncherOthersDestroy();
     LauncherKengDestroy();
-    DisableDisableWinKey();
+    // DisableDisableWinKey();
 
     LauncherCfgClose();
     LauncherWndShutdown();

@@ -236,8 +236,8 @@ public:
                         diprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
                         diprg.diph.dwHow = DIPH_DEVICE;
                         diprg.diph.dwObj = 0;
-                        diprg.lMin = -65535;
-                        diprg.lMax = +65535;
+                        diprg.lMin = -10000.0f;
+                        diprg.lMax = +10000.0f;
                         pGamepad->SetProperty(DIPROP_RANGE, &diprg.diph);
 
                         pGamepad->Acquire();
@@ -288,10 +288,10 @@ public:
                         p->AddRect({ circle_2_cen.x - circle_radius, circle_2_cen.y - circle_radius }, { circle_2_cen.x + circle_radius, circle_2_cen.y + circle_radius }, IM_COL32(255, 255, 255, 255), 6.0f);
                         p->AddRect({ circle_3_cen.x - circle_radius, circle_3_cen.y - circle_radius }, { circle_3_cen.x + circle_radius, circle_3_cen.y + circle_radius }, IM_COL32(255, 255, 255, 255), 6.0f);
 
-                        ImVec2 circle_1 = { circle_1_cen.x + circle_radius * alx / 65535.0f, circle_1_cen.y + circle_radius * aly / 65535.0f };
+                        ImVec2 circle_1 = { circle_1_cen.x + circle_radius * alx / 10000.0f, circle_1_cen.y + circle_radius * aly / 10000.0f };
                         p->AddCircleFilled(circle_1, circle_radius * 0.1f, IM_COL32(250, 150, 150, 255));
 
-                        ImVec2 circle_2 = { circle_2_cen.x + circle_radius * arx / 65535.0f, circle_2_cen.y + circle_radius * ary / 65535.0f };
+                        ImVec2 circle_2 = { circle_2_cen.x + circle_radius * arx / 10000.0f, circle_2_cen.y + circle_radius * ary / 10000.0f };
                         p->AddCircleFilled(circle_2, circle_radius*0.1f, IM_COL32(150, 250, 150, 255));
                         ImVec2 circle_3 = { 0, 0 };
                         if (joyState.rgdwPOV[0] == 0xFFFFFFFF)
@@ -308,16 +308,16 @@ public:
                         p->AddText({ circle_2_cen.x - circle_radius, circle_2_cen.y + circle_radius }, 0xFFFFFFFF, S(THPRAC_TOOLS_INPUT_GAMEPAD_R_STICK));
                         p->AddText({ circle_3_cen.x - circle_radius, circle_3_cen.y + circle_radius }, 0xFFFFFFFF, S(THPRAC_TOOLS_INPUT_GAMEPAD_D_PAD));
                     }
-                    ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_TRIGGER), &az, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                    ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_TRIGGER), &az, -10000.0f, 10000.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
                     if (ImGui::CollapsingHeader("Data")) {
                         float width_slider = ImGui::GetTextLineHeight();
-                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_L_STICK_X), &alx, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
-                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_L_STICK_Y), &aly, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
-                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_R_STICK_X), &arx, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
-                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_R_STICK_Y), &ary, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
-                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_TRIGGER), &az, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
-                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_S1), &s1, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
-                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_S2), &s2, -65535.0f, 65535.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_L_STICK_X), &alx, -10000.0f, 10000.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_L_STICK_Y), &aly, -10000.0f, 10000.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_R_STICK_X), &arx, -10000.0f, 10000.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_R_STICK_Y), &ary, -10000.0f, 10000.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_TRIGGER), &az, -10000.0f, 10000.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_S1), &s1, -10000.0f, 10000.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
+                        ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_S2), &s2, -10000.0f, 10000.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
                         ImGui::Separator();
                         ImGui::Text(S(THPRAC_TOOLS_INPUT_GAMEPAD_D_PAD));
                         ImGui::SameLine();
@@ -1066,7 +1066,7 @@ public:
             }
 
             ImGui::SameLine();
-            if (ImGui::Button("Del", ImVec2(160.0f, 0.0f))) {
+            if (ImGui::Button("Del", ImVec2(160.0f, 0.0f)) && dices.size()>=1) {
                 dices.resize(dices.size()-1);
                 n_dice = dices.size();
             }
@@ -2353,7 +2353,7 @@ private:
         auto width = GetWidthRel(S(THPRAC_TOOLS_APPLY_THPRAC), 2.0f);
 
         float y = y_init;
-        if (CenteredButton(S(THPRAC_TOOLS_APPLY_THPRAC), y, width, 0 , 2)) {
+        if (CenteredButton(S(THPRAC_TOOLS_APPLY_THPRAC), y, width, 0, 2, S(THPRAC_TOOLS_APPLY_THPRAC_DESC))) {
             FindOngoingGame(true);
         }
         y += y_inc;

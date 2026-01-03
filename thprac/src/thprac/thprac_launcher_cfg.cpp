@@ -2386,74 +2386,74 @@ private:
             mInitWindowPos.Gui(S(THPRAC_INIT_WINDOW_POS), S(THPRAC_INIT_WINDOW_POS_DESC));
             mDisableMaximizeBtn.Gui(S(THPRAC_DISABLE_MAXIMIZE_BTN));
 
-            {
-                mDisableWinKey.Gui(S(THPRAC_DISABLE_WIN_KEY_CHECKBOX), S(THPRAC_DISABLE_WIN_KEY_DESC));
-                ImGui::SameLine();
-                ImGui::Text(S(THPRAC_WIN_KEY_STATE));
-                ImGui::SameLine();
-                {
-                    ImVec4 toggle_bg_disabled = ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled);
-                    ImVec4 toggle_bg_enabled = ImGui::GetStyleColorVec4(ImGuiCol_FrameBgActive);
-                    // ImVec4 toggle_btn = ImGui::GetStyleColorVec4(ImGuiCol_Text);
-                    ImVec4 toggle_btn = { 1.0f, 1.0f, 1.0f, 1.0f }; // force this to be white
-                    float btn_sz = 0.75f;
-                    float height = 0.9f;
-                    float width = 1.5f;
-                    float diameter = ImGui::GetFrameHeight() * height;
-                    float alpha = ImGui::GetStyle().Alpha;
-
-                    static float slider_f = g_hKeyboardHook == nullptr ? 1 : 0;
-                    float slider_target = g_hKeyboardHook == nullptr ? 1 : 0;
-                    slider_f = slider_f * 0.75f + slider_target * 0.25f;
-                    if (slider_f > 0.98f)
-                        slider_f = 1.0f;
-                    if (slider_f < 0.02f)
-                        slider_f = 0.0f;
-
-                    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 100.0f);
-                    ImGui::PushStyleVar(ImGuiStyleVar_GrabRounding, 100.0f);
-
-                    ImVec2 cursor_pos = ImGui::GetCursorPos();
-                    ImGui::SetNextItemWidth(1.8f * ImGui::GetFrameHeight());
-
-                    ImVec4 toggle_bg;
-                    toggle_bg.x = toggle_bg_enabled.x * slider_f + (1.0f - slider_f) * toggle_bg_disabled.x;
-                    toggle_bg.y = toggle_bg_enabled.y * slider_f + (1.0f - slider_f) * toggle_bg_disabled.y;
-                    toggle_bg.z = toggle_bg_enabled.z * slider_f + (1.0f - slider_f) * toggle_bg_disabled.z;
-                    toggle_bg.w = toggle_bg_enabled.w * slider_f + (1.0f - slider_f) * toggle_bg_disabled.w;
-
-                    ImVec2 pos_bg = { cursor_pos.x, cursor_pos.y + ImGui::GetFrameHeight() * 0.5f * (1.0f - height) };
-                    ImVec2 pos_btn = { pos_bg.x + slider_f * diameter * (width - 1.0f) + 0.5f * diameter * (1.0f - btn_sz), pos_bg.y + 0.5f * diameter * (1.0f - btn_sz) };
-                    ImVec2 sz_bg = { diameter * width, diameter };
-                    ImVec2 sz_btn = { diameter * btn_sz, diameter * btn_sz };
-
-                    ImGui::BeginDisabled();
-                    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-
-                    ImGui::SetCursorPos(pos_bg);
-                    ImGui::PushStyleColor(ImGuiCol_Button, toggle_bg);
-                    ImGui::Button(" ##wtoggle_bk", sz_bg);
-                    ImGui::PopStyleColor();
-
-                    ImGui::SetCursorPos(pos_btn);
-                    ImGui::PushStyleColor(ImGuiCol_Button, toggle_btn);
-                    ImGui::Button(" ##wtoggle_bt", sz_btn);
-                    ImGui::PopStyleColor();
-
-                    ImGui::PopStyleVar();
-                    ImGui::EndDisabled();
-
-                    ImGui::SetCursorPos(pos_bg);
-                    if (ImGui::InvisibleButton("##win_key_btn", sz_bg)) {
-                        if (g_hKeyboardHook) {
-                            DisableDisableWinKey();
-                        } else {
-                            DisableWinKey();
-                        }
-                    }
-                    ImGui::PopStyleVar(2);
-                }
-            }
+            // {
+            //     // mDisableWinKey.Gui(S(THPRAC_DISABLE_WIN_KEY_CHECKBOX), S(THPRAC_DISABLE_WIN_KEY_DESC));
+            //     // ImGui::SameLine();
+            //     // ImGui::Text(S(THPRAC_WIN_KEY_STATE));
+            //     ImGui::SameLine();
+            //     {
+            //         ImVec4 toggle_bg_disabled = ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled);
+            //         ImVec4 toggle_bg_enabled = ImGui::GetStyleColorVec4(ImGuiCol_FrameBgActive);
+            //         // ImVec4 toggle_btn = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+            //         ImVec4 toggle_btn = { 1.0f, 1.0f, 1.0f, 1.0f }; // force this to be white
+            //         float btn_sz = 0.75f;
+            //         float height = 0.9f;
+            //         float width = 1.5f;
+            //         float diameter = ImGui::GetFrameHeight() * height;
+            //         float alpha = ImGui::GetStyle().Alpha;
+            // 
+            //         static float slider_f = g_hKeyboardHook == nullptr ? 1 : 0;
+            //         float slider_target = g_hKeyboardHook == nullptr ? 1 : 0;
+            //         slider_f = slider_f * 0.75f + slider_target * 0.25f;
+            //         if (slider_f > 0.98f)
+            //             slider_f = 1.0f;
+            //         if (slider_f < 0.02f)
+            //             slider_f = 0.0f;
+            // 
+            //         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 100.0f);
+            //         ImGui::PushStyleVar(ImGuiStyleVar_GrabRounding, 100.0f);
+            // 
+            //         ImVec2 cursor_pos = ImGui::GetCursorPos();
+            //         ImGui::SetNextItemWidth(1.8f * ImGui::GetFrameHeight());
+            // 
+            //         ImVec4 toggle_bg;
+            //         toggle_bg.x = toggle_bg_enabled.x * slider_f + (1.0f - slider_f) * toggle_bg_disabled.x;
+            //         toggle_bg.y = toggle_bg_enabled.y * slider_f + (1.0f - slider_f) * toggle_bg_disabled.y;
+            //         toggle_bg.z = toggle_bg_enabled.z * slider_f + (1.0f - slider_f) * toggle_bg_disabled.z;
+            //         toggle_bg.w = toggle_bg_enabled.w * slider_f + (1.0f - slider_f) * toggle_bg_disabled.w;
+            // 
+            //         ImVec2 pos_bg = { cursor_pos.x, cursor_pos.y + ImGui::GetFrameHeight() * 0.5f * (1.0f - height) };
+            //         ImVec2 pos_btn = { pos_bg.x + slider_f * diameter * (width - 1.0f) + 0.5f * diameter * (1.0f - btn_sz), pos_bg.y + 0.5f * diameter * (1.0f - btn_sz) };
+            //         ImVec2 sz_bg = { diameter * width, diameter };
+            //         ImVec2 sz_btn = { diameter * btn_sz, diameter * btn_sz };
+            // 
+            //         ImGui::BeginDisabled();
+            //         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
+            // 
+            //         ImGui::SetCursorPos(pos_bg);
+            //         ImGui::PushStyleColor(ImGuiCol_Button, toggle_bg);
+            //         ImGui::Button(" ##wtoggle_bk", sz_bg);
+            //         ImGui::PopStyleColor();
+            // 
+            //         ImGui::SetCursorPos(pos_btn);
+            //         ImGui::PushStyleColor(ImGuiCol_Button, toggle_btn);
+            //         ImGui::Button(" ##wtoggle_bt", sz_btn);
+            //         ImGui::PopStyleColor();
+            // 
+            //         ImGui::PopStyleVar();
+            //         ImGui::EndDisabled();
+            // 
+            //         ImGui::SetCursorPos(pos_bg);
+            //         if (ImGui::InvisibleButton("##win_key_btn", sz_bg)) {
+            //             if (g_hKeyboardHook) {
+            //                 DisableDisableWinKey();
+            //             } else {
+            //                 DisableWinKey();
+            //             }
+            //         }
+            //         ImGui::PopStyleVar(2);
+            //     }
+            // }
 
             mDisableF10_11_13.Gui(S(THPRAC_DISABLE_F10_11_13), S(THPRAC_DISABLE_F10_11_13_DESC));
             mDisableJoy.Gui(S(THPRAC_DISABLE_JOY), S(THPRAC_DISABLE_JOY_DESC));
@@ -2529,7 +2529,7 @@ private:
             if ((mKeyboardAPISetting.Get() == 2 || mKeyboardAPISetting.Get() == 3) && mKeyboardHook.Get())
             {
                 // mCfgEnableAutoEsc_autoly.Gui(S(THPRAC_ESC_WHEN_DEACTIVE), S(THPRAC_ESC_WHEN_DEACTIVE_DESC));
-                mDisableWinKey.Gui(S(THPRAC_DISABLE_WIN_KEY_DINPUT), S(THPRAC_DISABLE_WIN_KEY_DINPUT_DESC));
+                mDisableWin.Gui(S(THPRAC_DISABLE_WIN_KEY_DINPUT), S(THPRAC_DISABLE_WIN_KEY_DINPUT_DESC));
                 mCfgEnableAutoShoot_autoly.Gui(S(THPRAC_AUTO_SHOOT_KEY), S(THPRAC_AUTO_SHOOT_DESC));
                 if (mCfgEnableAutoShoot_autoly.Get()) {
                     static bool auto_shoot_key_listening = false;
@@ -2537,6 +2537,7 @@ private:
                 }
                 if (mKeyboardAPISetting.Get() == 2)
                 {
+                    mDinputUseGetDeviceData.Gui(S(THPRAC_KEYBOARD_API_USE_GET_DEVICE_DATA), S(THPRAC_KEYBOARD_API_USE_GET_DEVICE_DATA_DESC));
                     ImGui::Separator();
                     if (ImGui::TreeNode(S(THPRAC_L2D_KEYBIND_TITLE))) {
                         // l2d settings
@@ -2878,10 +2879,12 @@ private:
     THCfgCheckbox mKeyboardHook { "enable_keyboard_hook", true };
     THCfgCombo mKeyboardSOCD { "keyboard_SOCDv2", 0, 3 };
     THCfgCombo mKeyboardAPISetting { "keyboard_API", 0, 4 };
+    THCfgCheckbox mDinputUseGetDeviceData { "use_get_device_data", false };
+
     THCfgCheckbox mEnableL2DKey { "enable_l2d_key", true };
     THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };
     THCfgCheckbox mUD_Replay_10 { "th10_ud_Replay", true };
-    THCfgCheckbox mDisableWinKey { "disable_win_key", false };
+    // THCfgCheckbox mDisableWinKey { "disable_win_key", false };
     THCfgCheckbox mSpeedupBGM { "fast_BGM_when_spdup", false };
     THCfgCheckbox mPauseBGM_06 { "pauseBGM_06", true };
     THCfgCheckbox mAutoName_06 { "autoInputName_06", false };

@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1745] {
+const char* th_glossary_str[3][1748] {
     {
         "",
         "啤酒",
@@ -1123,6 +1123,8 @@ const char* th_glossary_str[3][1745] {
         "键盘API设置",
         "默认\0强制Win32 API\0强制 Dinput8\0强制RawInput\0\0",
         "默认情况下在地灵殿等游戏使用小键盘可能卡键, \n换用强制dinput8可修复(建议?), \n不建议强制win32模式",
+        "使用GetDeviceData",
+        "可能带来更好的单帧性能或延迟?",
         "启用键盘HOOK",
         "影响按键禁用/SOCD/按键修改等功能",
         "SOCD设置",
@@ -1393,6 +1395,7 @@ const char* th_glossary_str[3][1745] {
         "深色\0亮色\0经典\0自定义\0\0",
         "工具",
         "应用thprac至正在运行的游戏",
+        "建议在选择分辨率/全屏的窗口上使用",
         "杰哥不要啊",
         "丢",
         "丢几次",
@@ -2870,6 +2873,8 @@ const char* th_glossary_str[3][1745] {
         "keyboard API setting",
         "default\0force Win32 API\0force Dinput8\0force RawInput\0\0",
         "By default, using numpad will cause bugs in games like SA,\n which can be fixed by forcing to use dinput8(which is recommended?),\n force win32 API is not recommended",
+        "Use GetDeviceData",
+        "Might make delay less?",
         "enable keyboard hook",
         "relate to key disable, SOCD, keybind change, etc",
         "SOCD setting",
@@ -3140,6 +3145,7 @@ const char* th_glossary_str[3][1745] {
         "Dark\0Light\0Classic\0Custom\0\0",
         "Tools",
         "Apply thprac to ongoing game",
+        "Suggest using this on the resolution/fullscreen selection window",
         "Xeno aaaaaa",
         "drop",
         "dice num",
@@ -4617,6 +4623,8 @@ const char* th_glossary_str[3][1745] {
         "keyboard API setting",
         "default\0force Win32 API\0force Dinput8\0force RawInput\0\0",
         "By default, using numpad will cause bugs in games like SA,\n which can be fixed by forcing to use dinput8(which is recommended?),\n force win32 API is not recommended",
+        "Use GetDeviceData",
+        "Might make delay less?",
         "enable keyboard hook",
         "relate to key disable, SOCD, keybind change, etc",
         "SOCD setting",
@@ -4887,6 +4895,7 @@ const char* th_glossary_str[3][1745] {
         "ダーク\0ライト\0クラシック\0カスタム\0\0",
         "ツール",
         "実行中のゲームにthpracを適用します",
+        "Suggest using this on the resolution/fullscreen selection window",
         "Xeno aaaaaa",
         "drop",
         "dice num",
