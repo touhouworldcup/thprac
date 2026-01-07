@@ -706,6 +706,7 @@ namespace TH18 {
             th18_shop_disable.Setup();
             th18_shop_escape_1.Setup();
             th18_shop_escape_2.Setup();
+            th18_free_blank.Setup();
         }
         SINGLETON(THOverlay);
 
