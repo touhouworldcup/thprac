@@ -543,26 +543,26 @@ namespace THPrac
             return flag;
         }
 
-        void GuiTimer::Start()
-        {
-            if (!mIsTiming) {
-                QueryPerformanceCounter(&mStart);
-                mIsTiming = true;
-            }
-        }
-        void GuiTimer::End()
-        {
-            if (mIsTiming) {
-                LARGE_INTEGER end;
-                QueryPerformanceCounter(&end);
-                mElapsed.QuadPart = end.QuadPart - mStart.QuadPart;
-                mIsTiming = false;
-            }
-        }
-        long long GuiTimer::GetElapsedUs()
-        {
-            return (mElapsed.QuadPart * 1000000 / mFreq.QuadPart);
-        }
+        // void GuiTimer::Start()
+        // {
+        //     if (!mIsTiming) {
+        //         QueryPerformanceCounter(&mStart);
+        //         mIsTiming = true;
+        //     }
+        // }
+        // void GuiTimer::End()
+        // {
+        //     if (mIsTiming) {
+        //         LARGE_INTEGER end;
+        //         QueryPerformanceCounter(&end);
+        //         mElapsed.QuadPart = end.QuadPart - mStart.QuadPart;
+        //         mIsTiming = false;
+        //     }
+        // }
+        // long long GuiTimer::GetElapsedUs()
+        // {
+        //     return (mElapsed.QuadPart * 1000000 / mFreq.QuadPart);
+        // }
 
         void GuiNavFocus::operator()()
         {

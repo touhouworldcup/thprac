@@ -330,8 +330,7 @@ private:
     int64_t mGameTimeTooLongSE_ns = -1;
     bool mUpdateGameTime = true;
 
-    LARGE_INTEGER mLastTime;
-    LARGE_INTEGER mFreq;
+    int clock_id;
 
     float mTooLongGamePlay_hour = 3.0f;
     float mTooLongGamePlaySE_sec = 10.0f;
@@ -357,16 +356,14 @@ public:
                 is_game_open = CheckIfAnyGame2();
                 thiz.mGameTimeTestGameOpen_ns = 0;
             }
-            LARGE_INTEGER cur_time;
-            QueryPerformanceCounter(&cur_time);
-            int64_t passed_time = (((double)(cur_time.QuadPart - thiz.mLastTime.QuadPart)) / (double)(thiz.mFreq.QuadPart)) * 1e9;
+            double passed_time = ResetClock(thiz.clock_id)*1e9;
+
             if (is_game_open) {
                 thiz.mGameTime_ns += passed_time;
                 thiz.mGameTimeCur_ns += passed_time;
             }
             thiz.mGameTimeTestGameOpen_ns += passed_time;
             thiz.mGameTimeTooLongSE_ns += passed_time;
-            thiz.mLastTime = cur_time;
         }
         LauncherSetGameTime(thiz.mGameTime_ns);
     }
@@ -392,8 +389,8 @@ public:
             mGameTimeTestGameOpen_ns = 0;
             mGameTimeTooLongSE_ns = 0;
             mUpdateGameTime = true;
-            QueryPerformanceFrequency(&mFreq);
-            QueryPerformanceCounter(&mLastTime);
+
+            clock_id = SetUpClock();
             mUpdateThread = std::thread(UpdateGameTime);
         }
     }

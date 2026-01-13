@@ -143,7 +143,7 @@ namespace TH06 {
 
         void IncreaseGameTime()
         {
-            static LARGE_INTEGER lastCount = { 0 }, performanceFreq = { 0 };
+            static int clockid = SetUpClock();
             static int64_t timePlayedns;
             DWORD gameState = *(DWORD*)(0x6C6EA4);
             BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
@@ -154,25 +154,17 @@ namespace TH06 {
                 byte cur_player_typeb = *(byte*)(0x69D4BE);
                 byte cur_player_type = (cur_player_typea << 1) | cur_player_typeb;
 
-                LARGE_INTEGER curCount;
-                QueryPerformanceCounter(&curCount);
-                if (lastCount.QuadPart != 0) {
-                    if (performanceFreq.QuadPart == 0) {
-                        QueryPerformanceFrequency(&performanceFreq);
-                    }
-                    int64_t time_ns = ((((double)(curCount.QuadPart - lastCount.QuadPart)) * 1e9 / (double)performanceFreq.QuadPart));
-                    save_total.timePlayer[cur_diff][cur_player_type] += time_ns;
-                    save_current.timePlayer[cur_diff][cur_player_type] += time_ns;
-                    timePlayedns += time_ns;
-                    if (timePlayedns >= (1000000000ll * 60 * 3)) { // save every 3 minutes automatically
-                        LoadSave();// if load have failed, it will eat the time, but anyway
-                        timePlayedns = 0;
-                        SaveSave();
-                    }
+                int64_t time_ns = ResetClock(clockid) * 1e9;
+                save_total.timePlayer[cur_diff][cur_player_type] += time_ns;
+                save_current.timePlayer[cur_diff][cur_player_type] += time_ns;
+                timePlayedns += time_ns;
+                if (timePlayedns >= (1000000000ll * 60 * 3)) { // save every 3 minutes automatically
+                    LoadSave();// if load have failed, it will eat the time, but anyway
+                    timePlayedns = 0;
+                    SaveSave();
                 }
-                lastCount = curCount;
             } else {
-                QueryPerformanceCounter(&lastCount);
+                ResetClock(clockid);
             }
         }
         

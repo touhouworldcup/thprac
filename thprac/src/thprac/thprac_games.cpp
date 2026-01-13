@@ -122,6 +122,65 @@ bool g_disable_max_btn = true;
 bool g_record_key_aps = false;
 AdvancedGameOptions g_adv_igi_options;
 
+
+
+HRESULT WINAPI Present_Changed8(DWORD thiz, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
+HRESULT WINAPI Present_Changed9(DWORD thiz, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
+struct InputLatencyTestOpt {
+    bool test_input_latency;
+    int clockid;
+    HRESULT(WINAPI *real_Present8) (DWORD thiz,CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
+    HRESULT(WINAPI *real_Present9) (DWORD thiz,CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
+    double last_input_latency;
+    void Init(DWORD device, game_gui_impl impl)
+    {
+        if (device) {
+            IDirect3DDevice8* d;
+            switch (impl) {
+            case THPrac::IMPL_WIN32_DX8:
+                HookVTable(*(void**)device, 15, Present_Changed8, (void**)&real_Present8);
+                break;
+            default:
+            case THPrac::IMPL_WIN32_DX9:
+                HookVTable(*(void**)device, 17, Present_Changed9, (void**)&real_Present9);
+                break;
+            }
+        }
+        clockid = SetUpClock();
+    }
+    void Input(){
+        if (test_input_latency){
+            ResetClock(clockid);
+        }
+    }
+    void Present()
+    {
+        if (test_input_latency) {
+            last_input_latency = ResetClock(clockid);
+        }
+    }
+    double GetLatency()
+    {
+        return last_input_latency;
+    }
+} g_input_latency_test;
+
+
+
+HRESULT WINAPI Present_Changed8(DWORD thiz, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion)
+{
+    auto res = g_input_latency_test.real_Present8(thiz, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+    g_input_latency_test.Present();
+    return res;
+}
+
+HRESULT WINAPI Present_Changed9(DWORD thiz, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion)
+{
+    auto res = g_input_latency_test.real_Present9(thiz, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+    g_input_latency_test.Present();
+    return res;
+}
+
 struct FontOpt
 {
     bool g_useCustomFont = false;
@@ -193,7 +252,7 @@ HRESULT STDMETHODCALLTYPE SetCooperativeLevel_Changed(LPDIRECTINPUTDEVICE8 thiz,
             dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
             dipdw.diph.dwObj = 0;
             dipdw.diph.dwHow = DIPH_DEVICE;
-            dipdw.dwData = 512;
+            dipdw.dwData = 64;
             SetProperty_Changed(thiz,DIPROP_BUFFERSIZE, &dipdw.diph);
         }
         if (re_acquire) {
@@ -261,7 +320,7 @@ HRESULT STDMETHODCALLTYPE SetProperty_Changed(LPDIRECTINPUTDEVICE8 thiz, REFGUID
         dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
         dipdw.diph.dwObj = 0;
         dipdw.diph.dwHow = DIPH_DEVICE;
-        dipdw.dwData = 512;
+        dipdw.dwData = 64;
         auto res = g_input_opt.realSetProperty(thiz,DIPROP_BUFFERSIZE, &dipdw.diph);
         if (res == DIERR_ACQUIRED) {
             thiz->Unacquire();
@@ -642,13 +701,10 @@ void ClearDinputData(bool inactivate) {
                 break;
             }
         }
-        if (inactivate) {
+        if (inactivate) 
             g_input_opt.ddevice->Unacquire();
-        }
         else
-        {
             g_input_opt.ddevice->Acquire();
-        }
     }
 }
 
@@ -657,6 +713,8 @@ LRESULT CALLBACK GameExternWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     switch (uMsg) {
     default:
         break;
+
+    case WM_ACTIVATEAPP:
     case WM_ACTIVATE:
         memset(g_input_opt.fake_di_State, 0, 256);
         ClearDinputData(LOWORD(wParam) == WA_INACTIVE);
@@ -921,6 +979,7 @@ LB_FINAL:
         keyBoardState[VK_F10] = 0x0;
     }
     if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_Default) {
+        g_input_latency_test.Input();
         return res;
     }
     static BYTE last_keyBoardState[256] = { 0 };
@@ -967,6 +1026,7 @@ LB_FINAL:
             keyBoardState[VK_UP] = 0;
         }
     }
+    g_input_latency_test.Input();
     return res;
 }
 
@@ -1016,8 +1076,9 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
             res = g_input_opt.realGetDeviceState(thiz, num, state);
         } else {
             BYTE last_state[256];
-            BYTE is_down[256] = { 0 };
             memcpy(last_state, g_input_opt.fake_di_State, 256);
+
+            res = g_input_opt.realGetDeviceState(thiz, num, state);
 
             DIDEVICEOBJECTDATA rgdod[32];
             while (true) {
@@ -1036,15 +1097,17 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
                     DWORD scanCode = rgdod[i].dwOfs;
                     if (rgdod[i].dwData & 0x80) {
                         g_input_opt.fake_di_State[scanCode] = 0x80;
-                        if (last_state[scanCode] == 0)
-                            is_down[scanCode] = 0x80;
+                        if (last_state[scanCode] == 0){
+                            ((BYTE*)state)[scanCode] = 0x80;
+                            // is_down[scanCode] = 0x80;
+                        }
                     } else {
+                        if (last_state[scanCode] == 0x80) {
+                            ((BYTE*)state)[scanCode] = 0;
+                        }
                         g_input_opt.fake_di_State[scanCode] = 0x00;
                     }
                 }
-            }
-            for (int i = 0; i < 256; i++) {
-                ((BYTE*)state)[i] = g_input_opt.fake_di_State[i] | is_down[i];
             }
         }
     }
@@ -1162,6 +1225,8 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
         if (g_fast_re_opt.fast_retry_count_down <= 1)
             keyBoardState[DIK_R] = 0x80;
     }
+    
+    g_input_latency_test.Input();
     return res;
 }
 
@@ -1437,7 +1502,18 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         }
         Gui::LocaleCreateFont(io.DisplaySize.x * 0.025f);
     }
-    
+
+    ::ImGui::StyleColorsDark();
+    g_adv_igi_options.keyboard_style.separated = true;
+    g_adv_igi_options.keyboard_style.border_color_press = 0xFFFFFFFF;
+    g_adv_igi_options.keyboard_style.border_color_release = 0xFFFFFFFF;
+    g_adv_igi_options.keyboard_style.fill_color_press = 0xFFFF4444;
+    g_adv_igi_options.keyboard_style.fill_color_release = 0xFFFFCCCC;
+    g_adv_igi_options.keyboard_style.text_color_press = 0xFFFFFFFF;
+    g_adv_igi_options.keyboard_style.text_color_release = 0xFFFFFFFF;
+    g_adv_igi_options.keyboard_style.type = 2;
+    g_adv_igi_options.keyboard_style.padding = { 0.0, 0.0 };
+
     if (LauncherCfgInit(true)) {
         if (!Gui::ImplWin32CheckFullScreen())
         {
@@ -1617,34 +1693,16 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
                 pdirectsound->Release();
             }
         }
-        InitInput();
-        
-        // if(device){
-        //     IDirect3DDevice8* d;
-        //    switch (impl) {
-        //    case THPrac::IMPL_WIN32_DX8:
-        //        HookVTable(*(void**)device, 15, Presnet_Changed8, (void**)&g_renderHooks.real_Present8);
-        //        break;
-        //    default:
-        //    case THPrac::IMPL_WIN32_DX9:
-        //        HookVTable(*(void**)device, 17, Presnet_Changed9, (void**)&g_renderHooks.real_Present9);
-        //        break;
-        //    }
-        // }
+        if (g_input_opt.g_enable_keyhook){
+            InitInput();
+           
+            if (LauncherSettingGet("test_input_latency", g_input_latency_test.test_input_latency) && g_input_latency_test.test_input_latency) {
+                g_input_latency_test.Init(device,impl);
+            }
+        }
     }else{
-        ::ImGui::StyleColorsDark();
-        g_adv_igi_options.keyboard_style.separated = true;
-        g_adv_igi_options.keyboard_style.border_color_press = 0xFFFFFFFF;
-        g_adv_igi_options.keyboard_style.border_color_release = 0xFFFFFFFF;
-        g_adv_igi_options.keyboard_style.fill_color_press = 0xFFFF4444;
-        g_adv_igi_options.keyboard_style.fill_color_release = 0xFFFFCCCC;
-        g_adv_igi_options.keyboard_style.text_color_press = 0xFFFFFFFF;
-        g_adv_igi_options.keyboard_style.text_color_release = 0xFFFFFFFF;
-        g_adv_igi_options.keyboard_style.type = 2;
-        g_adv_igi_options.keyboard_style.padding = { 0.0, 0.0 };
-
+        
     }
-
     io.IniFilename = nullptr;
 }
 
@@ -2295,7 +2353,7 @@ void DisableKeyOpt()
                             dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
                             dipdw.diph.dwObj = 0;
                             dipdw.diph.dwHow = DIPH_DEVICE;
-                            dipdw.dwData = 512;
+                            dipdw.dwData = 64;
                             SetProperty_Changed(g_input_opt.ddevice,DIPROP_BUFFERSIZE, &dipdw.diph);
                         } else {
                             DIPROPDWORD dipdw;
@@ -2312,6 +2370,20 @@ void DisableKeyOpt()
                 }
             }
         }
+        if (g_input_latency_test.test_input_latency)
+        {
+            static std::deque<double> times;
+            double t = g_input_latency_test.GetLatency();
+            times.push_back(t);
+            double avg = 0;
+            for (auto& i : times)
+                avg += i;
+            avg /= times.size();
+            while (times.size() > 60)
+                times.pop_front();
+            ImGui::Text("InputA->Present: %lf(%lf)", avg * 1000.0, t * 1000.0);
+        }
+
         if (ImGui::IsKeyDown(0x10)) // shift
         {
             if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI || g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {

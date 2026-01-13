@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1748] {
+const char* th_glossary_str[3][1749] {
     {
         "",
         "啤酒",
@@ -1344,6 +1344,7 @@ const char* th_glossary_str[3][1748] {
         "勾选你想要添加进thprac的游戏并点击\"应用\"",
         "Steam游戏 - 手动选取",
         "或",
+        "测试键盘输入延迟(从Input到Present)",
         "红魔乡背景修复",
         "当关闭弹幕虚影时不让蕾咪变蓝狗\n有可能让背景或UI变奇怪",
         "红魔乡固定初始种子",
@@ -3094,6 +3095,7 @@ const char* th_glossary_str[3][1748] {
         "Tick the games you wish to add into thprac and click \"Apply\".",
         "Steam games - Manual select",
         "or",
+        "test keyboard input latency(from Input to Present)",
         "EoSD background fix",
         "let Remilia not be blue when disables bullet shadow\nMight make bg or UI strange",
         "fix EoSD rand seed when begin",
@@ -4844,6 +4846,7 @@ const char* th_glossary_str[3][1748] {
         "thpracに追加したいゲームにチェックを入れ、「適用する」をクリックします。",
         "Steamゲーム - 手動選択",
         "または",
+        "test keyboard input latency(from Input to Present)",
         "EoSD background fix",
         "let Remilia not be blue when disables bullet shadow\nMight make bg or UI strange",
         "fix EoSD rand seed when begin",

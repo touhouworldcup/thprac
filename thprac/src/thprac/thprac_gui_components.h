@@ -733,24 +733,24 @@ namespace Gui {
         bool operator()(bool use_widget = true);
     };
 
-    class GuiTimer {
-    public:
-        GuiTimer()
-        {
-            QueryPerformanceFrequency(&mFreq);
-            mElapsed.QuadPart = 0;
-        }
-
-        void Start();
-        void End();
-        long long GetElapsedUs();
-
-    private:
-        LARGE_INTEGER mStart = {};
-        LARGE_INTEGER mElapsed = {};
-        LARGE_INTEGER mFreq = {};
-        bool mIsTiming = false;
-    };
+    // class GuiTimer {
+    // public:
+    //     GuiTimer()
+    //     {
+    //         QueryPerformanceFrequency(&mFreq);
+    //         mElapsed.QuadPart = 0;
+    //     }
+    // 
+    //     void Start();
+    //     void End();
+    //     long long GetElapsedUs();
+    // 
+    // private:
+    //     LARGE_INTEGER mStart = {};
+    //     LARGE_INTEGER mElapsed = {};
+    //     LARGE_INTEGER mFreq = {};
+    //     bool mIsTiming = false;
+    // };
 
     class GuiNavFocus {
     public:

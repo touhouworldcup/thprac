@@ -258,6 +258,8 @@
 	
     "THPRAC_KEYBOARD_SOCD_DESC":["当同时按下反向方向键时，修改按键逻辑。\n尽管在某些游戏里认为是作弊行为，但考虑到一些高端键盘本身具有该功能，因此此处提供此功能。","Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating.","Opposite arrow key press logic is changed by this function.\nSince some high-end keyboard provides SOCD, here the program provides this function despite the fact that some online game consider SOCD as cheating."],
 	
+	"THPRAC_TEST_INPUT_LATENCY":["测试键盘输入延迟(从Input到Present)","test keyboard input latency(from Input to Present)","test keyboard input latency(from Input to Present)"],
+	
 	"THPRAC_KEYBOARD_API":["键盘API设置","keyboard API setting","keyboard API setting"],
 	"THPRAC_KEYBOARD_API_SETTINGS":["默认\\0强制Win32 API\\0强制 Dinput8\\0强制RawInput\\0\\0","default\\0force Win32 API\\0force Dinput8\\0force RawInput\\0\\0","default\\0force Win32 API\\0force Dinput8\\0force RawInput\\0\\0"],
 	"THPRAC_KEYBOARD_API_USE_GET_DEVICE_DATA":["使用GetDeviceData","Use GetDeviceData","Use GetDeviceData"],

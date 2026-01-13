@@ -13,7 +13,56 @@
 
 namespace THPrac {
 
-    
+static double g_performance_freq = []() -> double {LARGE_INTEGER f; QueryPerformanceFrequency(&f); return f.QuadPart; }();
+static std::vector<int64_t> g_clocks_start;
+
+int SetUpClock()
+{
+    LARGE_INTEGER t;
+    QueryPerformanceCounter(&t);
+    g_clocks_start.push_back(t.QuadPart);
+    if (g_performance_freq == 0)
+    {
+        LARGE_INTEGER f;
+        QueryPerformanceFrequency(&f);
+        g_performance_freq = f.QuadPart;
+    }
+    return g_clocks_start.size() - 1;
+}
+
+double ResetClock(int id)
+{
+    if (id < g_clocks_start.size() && id >= 0){
+        if (g_performance_freq == 0) {
+            //win7 has some problem with static performance_freq
+            LARGE_INTEGER f;
+            QueryPerformanceFrequency(&f);
+            g_performance_freq = f.QuadPart;
+        }
+        LARGE_INTEGER t;
+        QueryPerformanceCounter(&t);
+        double time_passed = ((double)(t.QuadPart - g_clocks_start[id])) / g_performance_freq;
+        g_clocks_start[id] = t.QuadPart;
+        if (time_passed < 0)
+            return 0;
+        return time_passed;
+    }
+    return 0;
+}
+
+double CheckTimePassed(int id)
+{
+    if (id < g_clocks_start.size() && id >= 0) {
+        LARGE_INTEGER t;
+        QueryPerformanceCounter(&t);
+        double time_passed = ((double)(t.QuadPart - g_clocks_start[id])) / g_performance_freq;
+        if (time_passed < 0)
+            return 0;
+        return time_passed;
+    }
+    return 0;
+}
+
 
 ImTextureID ReadImage9(DWORD device, LPCSTR fileName, LPCSTR srcData, size_t srcSz)
 {

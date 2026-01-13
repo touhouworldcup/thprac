@@ -28,11 +28,13 @@ void LauncherToolsGuiSwitch(const char* gameStr);
 
 
 class THGuiInputTest {
+    int clockid = -1;
+
 public:
-   
+    
     THGuiInputTest()
     {
-       
+        clockid = SetUpClock();
     }
     std::string GetKeyName(int dik)
     {
@@ -50,20 +52,7 @@ public:
             DirectInput8Create(GetModuleHandle(0), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&dinput8, NULL);
             return dinput8;
         }();
-        static LARGE_INTEGER freq = { 0 };
-        static LARGE_INTEGER last_time = { 0 };
-        static double time = 0;
-        LARGE_INTEGER cur_time;
-        if (freq.QuadPart == 0)
-        {
-            QueryPerformanceFrequency(&freq);
-            QueryPerformanceCounter(&last_time);
-        }
-
-        QueryPerformanceCounter(&cur_time);
-        double delta_time = (double)(cur_time.QuadPart - last_time.QuadPart) / ((double)(freq.QuadPart));
-        time += delta_time;
-        last_time = cur_time;
+        double delta_time = ResetClock(clockid);
 
         bool result = true;
         if (ImGui::Button(S(THPRAC_BACK))) {
@@ -171,7 +160,7 @@ public:
                             ImGui::Button(std::format("{}: {} frame  ({:.3f} ms)", GetKeyName(i), (int)(key_time[i]*60.0f), key_time[i] * 1000.0f).c_str());
                             key_time[i] += delta_time;
                             if (!keyBuffer_last[i]){
-                                keys_event.push_back({i,1,time});
+                                keys_event.push_back({ i, 1, 0 });
                             }
                         } else {
                             if (keyBuffer_last[i]) {

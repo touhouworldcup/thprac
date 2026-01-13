@@ -2513,6 +2513,7 @@ private:
 
             ImGui::Separator();
             mKeyboardHook.Gui(S(THPRAC_KEYBOARD_HOOK), S(THPRAC_KEYBOARD_HOOK_DESC));
+            mTestInputLatency.Gui(S(THPRAC_TEST_INPUT_LATENCY));
             if (mKeyboardHook.Get()){
                 bool enable_SOCD_v1 = false;
                 LauncherSettingGet("keyboard_SOCD", enable_SOCD_v1);
@@ -2875,6 +2876,8 @@ private:
 
     THCfgCheckbox mWindowSizeChangeWhenOpen { "change_window_size_when_open", false };
     THCfgInt2 mWindowSize { "changed_window_size", {1920,1440},1,8192 };
+
+    THCfgCheckbox mTestInputLatency { "test_input_latency", false};
 
     THCfgCheckbox mKeyboardHook { "enable_keyboard_hook", true };
     THCfgCombo mKeyboardSOCD { "keyboard_SOCDv2", 0, 3 };
