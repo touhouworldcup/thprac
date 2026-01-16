@@ -13,8 +13,8 @@
 
 namespace THPrac {
 
-static double g_performance_freq = []() -> double {LARGE_INTEGER f; QueryPerformanceFrequency(&f); return f.QuadPart; }();
-static std::vector<int64_t> g_clocks_start;
+double g_performance_freq = []() -> double {LARGE_INTEGER f; QueryPerformanceFrequency(&f); return f.QuadPart; }();
+std::vector<int64_t> g_clocks_start;
 
 int SetUpClock()
 {
@@ -34,7 +34,6 @@ double ResetClock(int id)
 {
     if (id < g_clocks_start.size() && id >= 0){
         if (g_performance_freq == 0) {
-            //win7 has some problem with static performance_freq
             LARGE_INTEGER f;
             QueryPerformanceFrequency(&f);
             g_performance_freq = f.QuadPart;

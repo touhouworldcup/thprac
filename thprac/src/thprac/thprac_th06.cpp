@@ -143,12 +143,16 @@ namespace TH06 {
 
         void IncreaseGameTime()
         {
-            static int clockid = SetUpClock();
+            static int clockid = -1;
             static int64_t timePlayedns;
             DWORD gameState = *(DWORD*)(0x6C6EA4);
             BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
             byte is_rep = *(byte*)(0x69BCBC);
             if ((!is_rep) && gameState == 2 && pauseMenuState == 0) {
+                if (clockid == -1)
+                    clockid = SetUpClock();
+                // SetThreadAffinityMask(GetCurrentThread(), 1);
+                // win7 has some problem with static performance counter when use full screen
                 byte cur_diff = *(byte*)(0x69BCB0);
                 byte cur_player_typea = *(byte*)(0x69D4BD);
                 byte cur_player_typeb = *(byte*)(0x69D4BE);
