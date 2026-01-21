@@ -49,18 +49,5 @@ int64_t LauncherGetGameTime();
 void LauncherSetGameTime(int64_t timens);
 void LauncherCloseHotkeyRebindListeners();
 
- enum Live2D_State {
-    Reset = 0,
-
-    Miss,
-    Bomb,
-    Hyper,
-    BorderBreak,
-    Release,
-
-    Dying, // life < life_cap
-    N_Live2D_State
-};
-
 
 }

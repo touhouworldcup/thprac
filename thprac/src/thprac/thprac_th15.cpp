@@ -706,11 +706,8 @@ namespace TH15 {
         virtual void OnPreUpdate() override
         {
             if (*(DWORD*)(0x004E9BB8)) {
-                Live2D_Update(*(int32_t*)(0x4E7450), THGuiRep::singleton().mRepStatus);
                 GameUpdateInner(15);
             } else {
-                Live2D_ChangeState(Live2D_InputType::L2D_RESET);
-                Live2D_Update(1, false);
             }
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004E9BB8)) {
                 SetSizeRel(360.0f / 1280.0f, 0.0f);
@@ -936,7 +933,7 @@ namespace TH15 {
                     GameplaySet();
                 EndOptGroup();
             }
-            SSS_UI();
+            SSS::SSS_UI(15);
             InGameReactionTestOpt();
             AboutOpt();
             ImGui::EndChild();
@@ -2538,10 +2535,7 @@ namespace TH15 {
                 }
             }
         }
-
-        if (*(DWORD*)0x004E9BB8)
-            RenderBlindView(9, *(DWORD*)(0x4e77d8), *(ImVec2*)(*(DWORD*)0x004E9BB8 + 0x618), { 192.0f, 0.0f }, { 32.0f, 16.0f }, ImGui::GetIO().DisplaySize.x / 640.0f);
-        
+        SSS::SSS_Update(15);
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004E9BB8))
             KeysHUD(15, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         
@@ -2565,17 +2559,14 @@ namespace TH15 {
     {
         TH15InGameInfo::singleton().mBombCount = 0;
         TH15InGameInfo::singleton().mMissCount = 0;
-        Live2D_ChangeState(Live2D_InputType::L2D_RESET);
     })
     EHOOK_DY(th15_bomb_dec, 0x41497A,5, // bomb dec
     {
         TH15InGameInfo::singleton().mBombCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th15_life_dec, 0x456398,5, // life dec
     {
        TH15InGameInfo::singleton().mMissCount++;
-       Live2D_ChangeState(Live2D_InputType::L2D_MISS);
        FastRetry(thPracParam.mode);
     })
     EHOOK_DY(th15_lock_timer1, 0x43404A,10, // initialize

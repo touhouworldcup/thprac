@@ -2189,7 +2189,7 @@ private:
         }
     }
 
-     bool GuiLive2DHotkeyEdit(const char* label, const char* binding,bool is_vk, bool* listening, bool block_input, const char* tooltip = "")
+    bool GuiLive2DHotkeyEdit(const char* label, const char* binding,bool is_vk, bool* listening, bool block_input, const char* tooltip = "")
     {
         // ImGuiIO& io = ImGui::GetIO();
         ImGui::AlignTextToFramePadding();
@@ -2281,62 +2281,6 @@ private:
         ImGui::PopID();
         return changed;
     }
-
-    void Live2DHotkeySettings()
-    {
-        ImGui::Text(S(THPRAC_L2D_KEYBIND));
-        ImGui::TextUnformatted("*");
-        ImGui::SameLine();
-        ImGui::Text(S(THPRAC_L2D_KEYBIND_DESC));
-        mEnableL2DKey.Gui(S(THPRAC_L2D_ENABLE));
-    //Normal
-    //Miss,
-    //Bomb,
-    //Hyper,
-    //BorderBreak,
-    //Dying, // life < life_cap
-    //Release,
-        int normal_key          = '0', 
-            miss_key            = '1', 
-            borderBreak_key     = '1', 
-            releasing_key       = '2',
-            bomb_key            = '2', 
-            hyper_key           = '2',
-            dying_key           = '3'; 
-        LauncherSettingGet("l2d_reset_key"     , normal_key     );
-        LauncherSettingGet("l2d_miss_key"       , miss_key       );
-        LauncherSettingGet("l2d_borderBreak_key", borderBreak_key);
-        LauncherSettingGet("l2d_releasing_key"  , releasing_key  );
-        LauncherSettingGet("l2d_bomb_key"       , bomb_key       );
-        LauncherSettingGet("l2d_hyper_key"      , hyper_key      );
-        LauncherSettingGet("l2d_dying_key"      , dying_key      );
-
-
-        // Add the buttons to the UI and update data if sucessfully updated.
-
-        static bool listeningKeys[Live2D_State::N_Live2D_State]   = {0};
-        static bool blockKeys[Live2D_State::N_Live2D_State]     = {0};
-
-        for (int i = 0; i < Live2D_State::N_Live2D_State; i++)
-        {
-            blockKeys[i] = 0;
-            for (int j = 0; j < Live2D_State::N_Live2D_State; j++)
-                if (i!=j)
-                    blockKeys[i] |= listeningKeys[j];
-        }
-
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_MISS)          , "l2d_miss_key"        ,true   , &listeningKeys[1],   blockKeys[1]);
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_BORDER_BREAK)  , "l2d_borderBreak_key" ,true   , &listeningKeys[2],   blockKeys[2],S(THPRAC_L2D_KEYBIND_BORDER_BREAK_DESC));
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_RELEASING)     , "l2d_releasing_key"   ,true   , &listeningKeys[3],   blockKeys[3]);
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_BOMB)          , "l2d_bomb_key"        ,true   , &listeningKeys[4],   blockKeys[4]);
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_HYPER)                 , "l2d_hyper_key"       ,true   , &listeningKeys[5],   blockKeys[5],S(THPRAC_L2D_KEYBIND_HYPER_DESC));
-                                                                                                               
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_RESET)         , "l2d_reset_key"       ,true   , &listeningKeys[0],   blockKeys[0]);
-        GuiLive2DHotkeyEdit(S(THPRAC_L2D_KEYBIND_DYING)         , "l2d_dying_key"       ,true   , &listeningKeys[6],   blockKeys[6],S(THPRAC_L2D_KEYBIND_DYING_DESC));
-
-        mLive2DMotionTime.Gui(S(THPRAC_L2D_SHOW_TIME), S(THPRAC_L2D_SHOW_TIME_DESC));
-    }
-
 
 
     void TextLink(const char* text, const wchar_t* link)
@@ -2460,6 +2404,11 @@ private:
             mCfgUnlockRefreshRate.Gui(S(THPRAC_UNLOCK_REFRESH_RATE), S(THPRAC_UNLOCK_REFRESH_RATE_DESC));
             mForceOnlyRenderTextUsed.Gui(S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED), S(THPRAC_FORCE_ONLY_RENDER_TEXT_USED_DESC));
             mForceRenderCursor.Gui(S(THPRAC_FORCE_RENDER_CURSOR), S(THPRAC_FORCE_RENDER_CURSOR_DESC));
+            if (mForceRenderCursor.Get()) {
+                ImGui::Text("     ");
+                ImGui::SameLine();
+                mAlwaysRenderCursor.Gui(S(THPRAC_FORCE_RENDER_CURSOR_ALWAYS), S(THPRAC_FORCE_RENDER_CURSOR_ALWAYS_DESC));
+            }
             mMsgBoxA2W.Gui(S(THPRAC_HOOK_MSG_BOX_A2W), S(THPRAC_HOOK_MSG_BOX_A2W_DESC));
             mUseCorrectJaFonts.Gui(S(THPRAC_RENDER_CORRECT_FONT), S(THPRAC_RENDER_CORRECT_FONT_DESC));
             ImGui::SameLine();
@@ -2512,8 +2461,11 @@ private:
             }
 
             ImGui::Separator();
+            mPresentHook.Gui(S(THPRAC_PRESENT_HOOK), S(THPRAC_PRESENT_HOOK_DESC));
             mKeyboardHook.Gui(S(THPRAC_KEYBOARD_HOOK), S(THPRAC_KEYBOARD_HOOK_DESC));
-            mTestInputLatency.Gui(S(THPRAC_TEST_INPUT_LATENCY));
+
+            if (mPresentHook.Get() && mKeyboardHook.Get())
+                mTestInputLatency.Gui(S(THPRAC_TEST_INPUT_LATENCY));
             if (mKeyboardHook.Get()){
                 bool enable_SOCD_v1 = false;
                 LauncherSettingGet("keyboard_SOCD", enable_SOCD_v1);
@@ -2536,21 +2488,14 @@ private:
                     static bool auto_shoot_key_listening = false;
                     GuiLive2DHotkeyEdit(S(THPRAC_AUTO_SHOOT_KEY), "auto_shoot_key", false, &auto_shoot_key_listening, false);
                 }
-                if (mKeyboardAPISetting.Get() == 2)
-                {
+                if (mKeyboardAPISetting.Get() == 2) {
                     mDinputUseGetDeviceData.Gui(S(THPRAC_KEYBOARD_API_USE_GET_DEVICE_DATA), S(THPRAC_KEYBOARD_API_USE_GET_DEVICE_DATA_DESC));
-                    ImGui::Separator();
-                    if (ImGui::TreeNode(S(THPRAC_L2D_KEYBIND_TITLE))) {
-                        // l2d settings
-                        Live2DHotkeySettings();
-                    }
                 }
                 ImGui::NewLine();
             }else{
                 ImGui::Separator();
                 ImGui::NewLine();
-                ImGui::NewLine();
-                ImGui::Text(S(THPRAC_L2D_KEYBIND_TITLE2));
+                ImGui::Text(S(THPRAC_KEYBIND_TITLE2));
             }
             ImGui::Separator();
             if (ImGui::TreeNode(S(THPRAC_SETTING_HOTKEYS))) {
@@ -2675,14 +2620,6 @@ private:
             ImGui::SetNextItemWidth(50.0f + ImGui::CalcTextSize(S(THPRAC_GAME_TIME_HINT)).x);
             mGameTimeTooLongTime.Gui(S(THPRAC_GAME_TIME_HINT));
 
-            mGameTimeTooLongSE.Gui(S(THPRAC_GAME_TIME_HINT_SE), S(THPRAC_GAME_TIME_HINT_SE_DESC));
-            ImGui::SameLine();
-            ImGui::SetNextItemWidth(50.0f + ImGui::CalcTextSize(S(THPRAC_GAME_TIME_HINT)).x);
-            mGameTimeTooLongSERepeat.Gui(S(THPRAC_GAME_TIME_HINT_SE_STOP));
-            ImGui::SameLine();
-            if (ImGui::Button(S(THPRAC_GAME_TIME_HINT_SE_TEST))) {
-                PlaySoundW(L"SE.wav", NULL, SND_FILENAME | SND_ASYNC);
-            }
             ImGui::Separator();
             mBackupThpFile.Gui(S(THPRAC_BACKUP_THP_FILE));
             mBackupAutoly.Gui(S(THPRAC_AUTO_BACKUP_THP_FILE), S(THPRAC_BACKUP_DESC));
@@ -2856,7 +2793,6 @@ private:
     THCfgCheckbox mCfgEnableTH20_FixBulletHitbox_autoly { "auto_th20_fix_bullet_hitbox",true};
     THCfgCheckbox mCfgEnableTH20_DecreaseGrazeEffect_autoly { "auto_th20_decrease_graze_effect",false};
     // kbs
-    THCfgInt mLive2DMotionTime { "l2d_motion_time", 1000, 0, 99999999 };
     THCfgColor mKb_ColorBorderPress { "kb_border_color_press", 0xFFFFFFFF };
     THCfgColor mKb_ColorBorderRelease { "kb_border_color_release", 0xFFFFFFFF };
     THCfgColor mKb_ColorFillPress { "kb_fill_color_press", 0xFFFF4444 };
@@ -2879,12 +2815,12 @@ private:
 
     THCfgCheckbox mTestInputLatency { "test_input_latency", false};
 
+    THCfgCheckbox mPresentHook { "enable_present_hook", false };
     THCfgCheckbox mKeyboardHook { "enable_keyboard_hook", true };
     THCfgCombo mKeyboardSOCD { "keyboard_SOCDv2", 0, 3 };
     THCfgCombo mKeyboardAPISetting { "keyboard_API", 0, 4 };
     THCfgCheckbox mDinputUseGetDeviceData { "use_get_device_data", false };
 
-    THCfgCheckbox mEnableL2DKey { "enable_l2d_key", true };
     THCfgCheckbox mDisableF10_11_13 { "disable_F10_11_13", false };
     THCfgCheckbox mUD_Replay_10 { "th10_ud_Replay", true };
     // THCfgCheckbox mDisableWinKey { "disable_win_key", false };
@@ -2908,6 +2844,7 @@ private:
     THCfgCheckbox mDisableJoy { "disableJoy", false };
     THCfgCheckbox mDisableWin { "disableWinDinput8", false };
     THCfgCheckbox mForceRenderCursor { "force_render_cursor", false };
+    THCfgCheckbox mAlwaysRenderCursor { "always_render_cursor", false };
     THCfgCheckbox mMsgBoxA2W { "msg_box_a2w", true};
     THCfgCheckbox mUseCorrectJaFonts { "use_correct_ja_fonts", false };
     THCfgCheckbox mUseCustomFont { "use_custom_font", false };

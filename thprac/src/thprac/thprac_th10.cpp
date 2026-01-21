@@ -602,10 +602,6 @@ namespace TH10 {
         {
             if (*(DWORD*)(0x0477834)){
                 GameUpdateInner(10);
-                Live2D_Update(*(int32_t*)(0x474c70), THGuiRep::singleton().mRepStatus);
-            } else {
-                Live2D_ChangeState(Live2D_InputType::L2D_RESET);
-                Live2D_Update(1, false);
             }
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x0477834)) {
                 SetPosRel(450.0f / 640.0f, 150.0f / 480.0f);
@@ -946,7 +942,7 @@ namespace TH10 {
                     GameplaySet();
                 EndOptGroup();
             }
-            SSS_UI();
+            SSS::SSS_UI(10);
             InGameReactionTestOpt();
             AboutOpt();
             ImGui::EndChild();
@@ -2742,10 +2738,7 @@ namespace TH10 {
                 }
             }
         }
-        
-        if (*(DWORD*)0x00477834)
-            RenderBlindView(9, *(DWORD*)(0x491c30), *(ImVec2*)(*(DWORD*)0x00477834 + 0x3C0), { 192.0f, 0.0f }, {32.0f,16.0f}, ImGui::GetIO().DisplaySize.x / 640.0f);
-        
+        SSS::SSS_Update(10);
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x0477834)){
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
             KeysHUD(10, { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
@@ -2867,22 +2860,18 @@ namespace TH10 {
     {
         TH10InGameInfo::singleton().mBombCount = 0;
         TH10InGameInfo::singleton().mMissCount = 0;
-        Live2D_ChangeState(Live2D_InputType::L2D_RESET);
     })
     EHOOK_DY(th10_bomb_dec, 0x4259CF,5, // bomb dec
     {
         TH10InGameInfo::singleton().mBombCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th10_bomb_dec2, 0x425C3E,5, // bomb dec
     {
         TH10InGameInfo::singleton().mBombCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th10_life_dec, 0x426A1C,6, // life dec
     {
         TH10InGameInfo::singleton().mMissCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
         FastRetry(thPracParam.mode);
     })
     EHOOK_DY(th10_move, 0x425442,2,

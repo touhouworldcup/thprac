@@ -1,4 +1,6 @@
 ﻿#include "thprac_games.h"
+#include "thprac_games_dx8.h"
+
 #include "thprac_utils.h"
 #include "../3rdParties/d3d8/include/d3d8.h"
 #include <fstream>
@@ -1296,7 +1298,6 @@ namespace TH06 {
             booksInfo.is_died = false;
             booksInfo.miss_count = 0;
             booksInfo.bomb_count = 0;
-            Live2D_ChangeState(Live2D_InputType::L2D_RESET);
         }
 
     protected:
@@ -1381,12 +1382,6 @@ namespace TH06 {
             if (gameState == 2)
             {
                 GameUpdateInner(6);
-                Live2D_Update(*(int8_t*)(0x69d4ba), THGuiRep::singleton().mRepStatus);
-            }
-            else
-            {
-                Live2D_ChangeState(Live2D_InputType::L2D_RESET);
-                Live2D_Update(1, false);
             }
             if (*THOverlay::singleton().mShowSpellCapture && (gameState == 2)) {
                 SetPosRel(433.0f / 640.0f, 245.0f / 480.0f);
@@ -1738,7 +1733,7 @@ namespace TH06 {
             ImGui::SameLine();
             HelpMarker(S(THPRAC_INGAMEINFO_ADV_DESC2));
 
-            SSS_UI();
+            SSS::SSS_UI(6);
 
             {
                 ImGui::SetNextWindowCollapsed(false);
@@ -3422,9 +3417,8 @@ namespace TH06 {
 
         auto p = ImGui::GetOverlayDrawList();
         RenderPlHitbox(ImGui::GetBackgroundDrawList());
-        if (*(DWORD*)(0x6C6EA4) == 2) {
-            RenderBlindView(8, *(DWORD*)0x6c6d20, *(ImVec2*)(0x6CAA68), { 0.0f, 0.0f }, { 32.0f, 16.0f }, 1.0f);
-        }
+        SSS::SSS_Update(6);
+
         RenderRepMarker(p);
         RenderBtHitbox(p);
         RenderLockTimer(p);
@@ -3483,11 +3477,9 @@ namespace TH06 {
     EHOOK_DY(th06_miss, 0x428DD9,2,// dec life
     {
         TH06InGameInfo::singleton().mMissCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
         FastRetry(thPracParam.mode);
     })
     EHOOK_DY(th06_bomb, 0x4289CC, 6, {
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th06_lock_timer1, 0x41B27C,3, // initialize
     {

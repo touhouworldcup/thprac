@@ -40,6 +40,10 @@
     <ClInclude Include="src\3rdParties\MetroHash\platform.h" />
     <ClInclude Include="src\3rdParties\rapidcsv\rapidcsv.h" />
     <ClInclude Include="src\thprac\thprac_games.h" />
+    <ClInclude Include="src\thprac\thprac_games_dx8.h" />
+    <ClInclude Include="src\thprac\thprac_games_dx9.h" />
+    <ClInclude Include="src\thprac\thprac_games_hooks.h" />
+    <ClInclude Include="src\thprac\thprac_games_SSS.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_dx8.h" />
     <ClInclude Include="src\thprac\thprac_gui_components.h" />
     <ClInclude Include="src\thprac\thprac_hook.h" />
@@ -93,6 +97,10 @@
     <ClCompile Include="src\thprac\main.cpp" />
     <ClCompile Include="src\thprac\thprac_alcostg.cpp" />
     <ClCompile Include="src\thprac\thprac_games.cpp" />
+    <ClCompile Include="src\thprac\thprac_games_dx8.cpp" />
+    <ClCompile Include="src\thprac\thprac_games_dx9.cpp" />
+    <ClCompile Include="src\thprac\thprac_games_hooks.cpp" />
+    <ClCompile Include="src\thprac\thprac_games_SSS.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_impl_dx8.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_components.cpp" />
     <ClCompile Include="src\thprac\thprac_hook.cpp" />

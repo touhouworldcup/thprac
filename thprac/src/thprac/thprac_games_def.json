@@ -240,16 +240,16 @@
     
     "THPRAC_RECORD_GAME_TIME":["记录飞行时间","record game time","record game time"],
     "THPRAC_GAME_TIME_HINT":["飞行时间提示长度(小时)","game time hint(hour)","game time hint(hour)"],
-    "THPRAC_GAME_TIME_HINT_SE":["飞行时间过长音效提示","game time too long SE","game time too long SE"],
-    "THPRAC_GAME_TIME_HINT_SE_STOP":["音效重复间隔秒数","SE repeat interval(second)","SE repeat interval(second)"],
-    "THPRAC_GAME_TIME_HINT_SE_TEST":["测试音效","SE test","SE test"],
-    "THPRAC_GAME_TIME_HINT_SE_DESC":["将音效文件放在thprac同目录下, 名称为SE.wav","put SE file in thprac folder with name SE.wav","put SE file in thprac folder with name SE.wav"],
+ 
     
 	"THPRAC_DISABLE_MAXIMIZE_BTN":["靳止最大化窗口按钮的全屏切换","disable maximizebox to toggle full screen","disable maximizebox to toggle full screen"],
 	"THPRAC_INIT_WINDOW_POS":["初始化窗口位置","init window pos","init window pos"],
 	"THPRAC_INIT_WINDOW_POS_DESC":["如果遇到游戏启动后没窗口可尝试开启此选项","try this option when game is invisible after opened","try this option when game is invisible after opened"],
     "THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN":["修改启动时窗口的大小","change window size when open","change window size when open"],
     "THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE":["窗口大小","window size","window size"],
+	
+    "THPRAC_PRESENT_HOOK":["启用DX HOOK","enable DX hook","enable DX hook"],
+    "THPRAC_PRESENT_HOOK_DESC":["可以提供显示操作到渲染的延迟等功能(还需启用按键hook)","Can provide features such as displaying the latency from input to rendering (requires key hook to be enabled)","Can provide features such as displaying the latency from input to rendering (requires key hook to be enabled)"],
 	
     "THPRAC_KEYBOARD_HOOK":["启用键盘HOOK","enable keyboard hook","enable keyboard hook"],
     "THPRAC_KEYBOARD_HOOK_DESC":["影响按键禁用/SOCD/按键修改等功能","relate to key disable, SOCD, keybind change, etc","relate to key disable, SOCD, keybind change, etc"],
@@ -304,6 +304,9 @@
     "THPRAC_CUSTOM_FONT":["字体","font","font"],
     
     "THPRAC_FORCE_RENDER_CURSOR":["强制渲染鼠标","force render cursor","force render cursor"],
+    "THPRAC_FORCE_RENDER_CURSOR_ALWAYS":["总是使用IMGUI渲染鼠标","always render cursor using IMGUI","always render cursor using IMGUI"],
+    "THPRAC_FORCE_RENDER_CURSOR_ALWAYS_DESC":["支持使用 cursor.png 自定义光标(将文件放置于'游戏文件夹'下(不是启动器文件夹)),详见更新日志","Support for custom cursors using cursor.png (place the file in the 'game folder' (not the launcher folder)), see the changelog for details","Support for custom cursors using cursor.png (place the file in the 'game folder' (not the launcher folder)), see the changelog for details"],
+	
     "THPRAC_FORCE_RENDER_CURSOR_DESC":["全屏时无法看见鼠标则设置此项，将会导致窗口时出现两个重叠的鼠标","set this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode","set this setting to true when cannot see cursor fullscreen, it will made 2 overlapped cursor in window mode"],
     "THPRAC_WIN_KEY_STATE":["win键状态","win key state","win key state"],
 	"THPRAC_DISABLE_WIN_KEY_CHECKBOX":["thp启动后自动禁用win键","disable win key when thprac.exe launches","disable win key when thprac.exe launches"],
@@ -327,30 +330,12 @@
 	"THPRAC_ESC_WHEN_DEACTIVE":["窗口失焦时自动按esc","automatically press Esc when the window loses focus","automatically press Esc when the window loses focus"],
 	"THPRAC_ESC_WHEN_DEACTIVE_DESC":["测试功能","for testing","for testing"],
 	
-	"THPRAC_L2D_KEYBIND_TITLE":["Live2D的按键映射","l2d keybind","l2d keybind"],
-	"THPRAC_L2D_KEYBIND_TITLE2":["启用键盘HOOK并设置键盘API为强制dinput8以启用l2d按键/自动射击等功能","use keyboard hook and set keyboardAPI as dinput8 to enable l2d keys/auto shoot/...","use keyboard hook and set keyboardAPI as dinput8 to enable l2d keys/auto shoot/..."],
-	"THPRAC_L2D_ENABLE":["启用L2D按键","enable L2D keys","enable L2D keys"],
-	"THPRAC_L2D_KEYBIND":["修改用于Live2D的按键映射","set keybind for l2d","set keybind for l2d"],
-	"THPRAC_L2D_KEYBIND_DESC":["将会在特定时刻自动模拟按下对应键(使用win32 API),绑定时按ESC取消","it will simulate key input for some specific moment(using win32 API), press esc to cancel the key","it will simulate key input for some specific moment(using win32 API), press esc to cancel the key"],
+	"THPRAC_KEYBIND_TITLE2":["启用键盘HOOK并设置键盘API为强制dinput8以启用自动射击等功能","use keyboard hook and set keyboardAPI as dinput8 to enable features like auto shoot...","use keyboard hook and set keyboardAPI as dinput8 to enable features like auto shoot..."],
 	
 	"THPRAC_AUTO_SHOOT":["自动射击","auto shoot","auto shoot"],
 	"THPRAC_AUTO_SHOOT_KEY":["自动射击按键","shoot key","shoot key"],
 	"THPRAC_AUTO_SHOOT_DESC":["按下按键后等于自动连续按Z, 按除方向键和低速键之外的键停止, 需要启用键盘HOOK并设置键盘API为强制dinput8或RawInput, 绑定为Z/X/C/D/ESC/R/Q则无效","automatically shoot(press z) after press this key, stop when keys except arrow/focus pressed, use keyboard hook and set keyboardAPI as dinput8 or RawInput to enable, cannot be bind to Z/X/C/D/ESC/R/Q","automatically shoot(press z) after press this key, stop when keys except arrow/focus pressed, use keyboard hook and set keyboardAPI as dinput8 or RawInput to enable, cannot be bind to Z/X/C/D/ESC/R/Q"],
 
-	"THPRAC_L2D_KEYBIND_MISS":			["MISS动作","miss motion","miss motion"],
-	"THPRAC_L2D_KEYBIND_BORDER_BREAK":	["撞结界动作","border break motion","border break motion"],
-	"THPRAC_L2D_KEYBIND_BORDER_BREAK_DESC":	["也适用于鬼","also for WBaBC hyper break","also for WBaBC hyper break"],
-	"THPRAC_L2D_KEYBIND_RELEASING":	["季节解放动作","releasing motion","releasing motion"],
-	"THPRAC_L2D_KEYBIND_HYPER_DESC":	["也适用于庙","also for TD trance","also for TD trance"],
-	"THPRAC_L2D_KEYBIND_BOMB":	["丢B动作","bomb motion","bomb motion"],
-	"THPRAC_L2D_HYPER":	["hyper动作","hyper motion","hyper motion"],
-	"THPRAC_L2D_KEYBIND_RESET":		["重置动作","reset motion","reset motion"],
-	
-	"THPRAC_L2D_KEYBIND_DYING":		["将死之人表情","dying expression","dying expression"],
-	"THPRAC_L2D_KEYBIND_DYING_DESC":	["残机为0触发, 为 expression(按一下切换, 第二下切回)","trigger when life=0, which is expression","trigger when life=0, which is expression"],
-	
-	"THPRAC_L2D_SHOW_TIME":	["动作时间(ms)","expression time(ms)","expression time(ms)"],
-	"THPRAC_L2D_SHOW_TIME_DESC":	["到时间自动切换为重置动作","auto trigger to reset motion after this time","auto trigger to reset motion after this time"],
     
       "THPRAC_TOOLS": [ "工具", "Tools", "ツール" ],
 	  

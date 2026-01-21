@@ -8,9 +8,6 @@
 #include <set>
 #include <format>
 
-#include "../3rdParties/d3d8/include/d3dx8tex.h"
-#pragma comment(lib, "d3dx8.lib")
-
 namespace THPrac {
 
 double g_performance_freq = []() -> double {LARGE_INTEGER f; QueryPerformanceFrequency(&f); return f.QuadPart; }();
@@ -60,48 +57,6 @@ double CheckTimePassed(int id)
         return time_passed;
     }
     return 0;
-}
-
-
-ImTextureID ReadImage9(DWORD device, LPCSTR fileName, LPCSTR srcData, size_t srcSz)
-{
-    ImTextureID tex = nullptr;
-    static auto hd3dx9 = LoadLibraryA("d3dx9_43.dll"); // d3d8.lib is used...
-    if (hd3dx9) {
-        auto pCreateTexture = (HRESULT(WINAPI*)(DWORD, LPCSTR, DWORD))GetProcAddress(hd3dx9, "D3DXCreateTextureFromFileA");
-        if (fileName && GetFileAttributesA(fileName) != INVALID_FILE_ATTRIBUTES) {
-            if (pCreateTexture && pCreateTexture(device, fileName, (DWORD)&tex) != D3D_OK)
-                tex = nullptr;
-        }
-        if (!tex && srcData) {
-            auto pCreateTextureFromMemory = (HRESULT(WINAPI*)(DWORD, LPCSTR, DWORD, DWORD))GetProcAddress(hd3dx9, "D3DXCreateTextureFromFileInMemory");
-            if (pCreateTextureFromMemory && pCreateTextureFromMemory(device, srcData, srcSz, (DWORD)&tex) != D3D_OK)
-                tex = nullptr;
-        }
-    }
-    return tex;
-}
-
-ImTextureID ReadImage8(DWORD device, LPCSTR fileName, LPCSTR srcData, size_t srcSz)
-{
-    ImTextureID tex = nullptr;
-    if (fileName && GetFileAttributesA(fileName) != INVALID_FILE_ATTRIBUTES) {
-        if (D3DXCreateTextureFromFileA((IDirect3DDevice8*)device, fileName, (LPDIRECT3DTEXTURE8*)&tex) != D3D_OK)
-            tex = nullptr;
-    }
-    if (!tex && srcData) {
-        if (D3DXCreateTextureFromFileInMemory((IDirect3DDevice8*)device, srcData, srcSz, (LPDIRECT3DTEXTURE8*)&tex) != D3D_OK)
-            tex = nullptr;
-    }
-    return tex;
-}
-
-ImTextureID ReadImage(DWORD dxVer, DWORD device, LPCSTR fileName, LPCSTR srcData, size_t srcSz)
-{
-    if (dxVer == 8)
-        return ReadImage8(device, fileName, srcData, srcSz);
-    else
-        return ReadImage9(device, fileName, srcData, srcSz);
 }
 
 #pragma region Key

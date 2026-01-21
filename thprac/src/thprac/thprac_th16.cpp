@@ -589,10 +589,7 @@ namespace TH16 {
         {
             if (*(DWORD*)(0x004A6EF8)) {
                 GameUpdateInner(16);
-                Live2D_Update(*(int32_t*)(0x4a57f4), THGuiRep::singleton().mRepStatus);
             } else {
-                Live2D_ChangeState(Live2D_InputType::L2D_RESET);
-                Live2D_Update(1, false);
             }
 
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004A6EF8)) {
@@ -2604,23 +2601,19 @@ namespace TH16 {
         TH16InGameInfo::singleton().mBombCount = 0;
         TH16InGameInfo::singleton().mMissCount = 0;
         TH16InGameInfo::singleton().mReleaseCount = 0;
-        Live2D_ChangeState(Live2D_InputType::L2D_RESET);
     })
     EHOOK_DY(th16_bomb_dec, 0x40DB9C,5, // bomb dec
     {
         TH16InGameInfo::singleton().mBombCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th16_life_dec, 0x443D3A,5, // life dec
     {
         TH16InGameInfo::singleton().mMissCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
         FastRetry(thPracParam.mode);
     })
     EHOOK_DY(th16_release, 0x40DC8A,10,
     {
         TH16InGameInfo::singleton().mReleaseCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_RELEASE);
     })
     EHOOK_DY(th16_lock_timer1, 0x426D4B,10, // initialize
     {

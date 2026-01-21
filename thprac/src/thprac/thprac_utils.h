@@ -36,8 +36,6 @@ int SetUpClock();
 double ResetClock(int id);
 double CheckTimePassed(int id);
 
-ImTextureID ReadImage(DWORD dxVer, DWORD device, LPCSTR name, LPCSTR srcData, size_t srcSz);
-
 struct KeyDefine {
     uint16_t dik;
     uint16_t vk;

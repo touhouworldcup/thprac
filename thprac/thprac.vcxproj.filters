@@ -205,6 +205,18 @@
     <ClInclude Include="src\thprac\thprac_th06.h">
       <Filter>THPrac Games</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac\thprac_games_dx8.h">
+      <Filter>THPrac Games</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_games_dx9.h">
+      <Filter>THPrac Games</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_games_hooks.h">
+      <Filter>THPrac Games</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_games_SSS.h">
+      <Filter>THPrac Games</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\thprac\thprac_utils.cpp">
@@ -403,6 +415,18 @@
       <Filter>THPrac Games</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_th19.v1.00c.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_games_dx8.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_games_dx9.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_games_hooks.cpp">
+      <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_games_SSS.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
   </ItemGroup>

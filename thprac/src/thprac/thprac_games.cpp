@@ -8,8 +8,10 @@
 #include "thprac_utils.h"
 #include "thprac_hook.h"
 #include <dinput.h>
-#include "../3rdParties/d3d8/include/d3d8.h"
-#include "../3rdParties/d3d8/include/dsound.h"
+
+#include "thprac_games_dx8.h"
+#include "thprac_games_dx9.h"
+#include "thprac_games_hooks.h"
 
 #include <metrohash128.h>
 #include <dinput.h>
@@ -20,8 +22,6 @@
 #include <queue>
 #include <format>
 #include <vector>
-
-//#include "MinHook.h"
 
 #include <dwmapi.h>
 #include "thprac_launcher_tools.h"
@@ -36,479 +36,22 @@ DWORD* g_gameGuiDevice = nullptr;
 DWORD* g_gameGuiHwnd = nullptr;
 HIMC g_gameIMCCtx = 0;
 
-struct SoundOpt
+FastRetryOpt g_fast_re_opt;
+InputOpt g_input_opt;
+
+struct CursorOpt
 {
-    HRESULT(STDMETHODCALLTYPE* g_realCreateSoundBuffer)(IDirectSound8* thiz, LPCDSBUFFERDESC pcDSBufferDesc, LPDIRECTSOUNDBUFFER* ppDSBuffer, LPUNKNOWN pUnkOuter);
-    HRESULT(STDMETHODCALLTYPE* g_realDuplicateSoundBuffer)(IDirectSound8* thiz, LPDIRECTSOUNDBUFFER pDSBufferOriginal, LPDIRECTSOUNDBUFFER* ppDSBufferDuplicate);
-    bool enable_fasterBGM;
-    struct SB_Struct {
-        LPDIRECTSOUNDBUFFER p_sb;
-        WAVEFORMATEX orig_format;
-        DWORD* vtbl_orig;
-        DWORD* vtbl_changed;
-    };
-    float bgm_speed = 1.0f;
-    std::vector<SB_Struct> soundbuffers;
-}g_sound_opt;
+    ImTextureID customCursor;
+    ImVec2 textureSize;
+    bool forceRenderCursor = false;
+    bool alwaysRenderCursor = false;
+}g_cursor_opt;
 
-struct FastRetryOpt
-{
-    // fast re
-    static constexpr int fast_retry_cout_down_max = 15;
-    bool enable_fast_retry = false;
-    int fast_retry_count_down = 0;
-}g_fast_re_opt;
-
-struct InputOpt
-{
-    // raw input
-    BYTE fake_di_State[256] = { 0 };
-    bool is_ri_inited = false;
-
-    // auto shoot
-    bool enable_auto_shoot = false;
-    int shoot_key_DIK = -1;
-    bool last_is_auto_shoot_key_down = false;
-    bool is_auto_shooting = false;
-    bool is_th128 = false;
-
-    // disable key
-    bool disable_xkey = false;
-    bool disable_Ckey_at_same_time = true;
-    bool disable_shiftkey = false;
-    bool disable_zkey = false;
-    bool disable_f10_11_13 = false;
-    bool disable_locale_change_hotkey = true;
-    bool disable_win_key = false;
-
-    bool g_disable_joy = false;
-
-        enum class SOCD_Setting {SOCD_Default = 0,SOCD_2,SOCD_N};
-    SOCD_Setting g_socd_setting;
-
-    bool use_get_device_data = false;
-    
-    enum class KeyboardAPI { Default_API = 0,Force_win32KeyAPI,Force_dinput8KeyAPI,Force_RawInput};
-    KeyboardAPI g_keyboardAPI;
-
-    bool g_enable_keyhook;
-
-    LPDIRECTINPUT8 dinput;
-    HRESULT(STDMETHODCALLTYPE* realDIRelease)(LPDIRECTINPUT8 thiz);
-    HRESULT(STDMETHODCALLTYPE* realEnumDevices) (LPDIRECTINPUT8 thiz, DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef, DWORD dwFlags);
-    HRESULT(STDMETHODCALLTYPE* realCreateDevice) (LPDIRECTINPUT8 thiz, const GUID& guid, LPDIRECTINPUTDEVICE8W* lpddevice, LPUNKNOWN lpunk);
-    
-    LPDIRECTINPUTDEVICE8 ddevice;
-    HRESULT(STDMETHODCALLTYPE* realAcquire)(LPDIRECTINPUTDEVICE8 thiz);
-    HRESULT(STDMETHODCALLTYPE* realPoll)(LPDIRECTINPUTDEVICE8 thiz);
-    HRESULT(STDMETHODCALLTYPE* realDDRelease)(LPDIRECTINPUTDEVICE8 thiz);
-    HRESULT(STDMETHODCALLTYPE* realSetDataFormat)(LPDIRECTINPUTDEVICE8 thiz, LPCDIDATAFORMAT);
-    HRESULT(STDMETHODCALLTYPE* realGetDeviceState)(LPDIRECTINPUTDEVICE8 thiz, DWORD, LPVOID);
-    HRESULT(STDMETHODCALLTYPE* realSetCooperativeLevel) (LPDIRECTINPUTDEVICE8 thiz, HWND, DWORD);
-    HRESULT(STDMETHODCALLTYPE* realSetProperty)(LPDIRECTINPUTDEVICE8 thiz, REFGUID guid, LPCDIPROPHEADER header);
-
-    HRESULT(WINAPI* g_realDirectInput8Create)(HINSTANCE hinst, DWORD dwVersion, const IID& riidltf, LPVOID* ppvOut, LPUNKNOWN punkOuter);
-    BOOL(WINAPI* g_realGetKeyboardState)(PBYTE lpKeyboardState);
-
-    MMRESULT (WINAPI *g_realJoyGetDevCapsA)(UINT uJoyID, LPJOYCAPSA pjc, UINT cbjc);
-    MMRESULT (WINAPI *g_realJoyGetPosEx)(UINT uJoyID, LPJOYINFOEX pji);
-    DWORD (WINAPI *g_realXInputGetState3)(DWORD dwUserIndex, void* pState);
-    DWORD (WINAPI *g_realXInputGetState4)(DWORD dwUserIndex, void* pState);
-}g_input_opt;
-
-bool g_forceRenderCursor=false;
 bool g_disable_max_btn = true;
 
 bool g_record_key_aps = false;
 AdvancedGameOptions g_adv_igi_options;
 
-
-
-HRESULT WINAPI Present_Changed8(DWORD thiz, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
-HRESULT WINAPI Present_Changed9(DWORD thiz, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
-struct InputLatencyTestOpt {
-    bool test_input_latency;
-    int clockid;
-    HRESULT(WINAPI *real_Present8) (DWORD thiz,CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
-    HRESULT(WINAPI *real_Present9) (DWORD thiz,CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion);
-    double last_input_latency;
-    void Init(DWORD device, game_gui_impl impl)
-    {
-        if (device) {
-            IDirect3DDevice8* d;
-            switch (impl) {
-            case THPrac::IMPL_WIN32_DX8:
-                HookVTable(*(void**)device, 15, Present_Changed8, (void**)&real_Present8);
-                break;
-            default:
-            case THPrac::IMPL_WIN32_DX9:
-                HookVTable(*(void**)device, 17, Present_Changed9, (void**)&real_Present9);
-                break;
-            }
-        }
-        clockid = SetUpClock();
-    }
-    void Input(){
-        if (test_input_latency){
-            ResetClock(clockid);
-        }
-    }
-    void Present()
-    {
-        if (test_input_latency) {
-            last_input_latency = ResetClock(clockid);
-        }
-    }
-    double GetLatency()
-    {
-        return last_input_latency;
-    }
-} g_input_latency_test;
-
-
-
-HRESULT WINAPI Present_Changed8(DWORD thiz, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion)
-{
-    auto res = g_input_latency_test.real_Present8(thiz, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-    g_input_latency_test.Present();
-    return res;
-}
-
-HRESULT WINAPI Present_Changed9(DWORD thiz, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion)
-{
-    auto res = g_input_latency_test.real_Present9(thiz, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-    g_input_latency_test.Present();
-    return res;
-}
-
-struct FontOpt
-{
-    bool g_useCustomFont = false;
-    std::string g_customFont = "MS Gothic";
-    HFONT(WINAPI* g_realCreateFontA)(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,DWORD bStrikeOut,DWORD iCharSet,DWORD iOutPrecision,DWORD iClipPrecision,DWORD iQuality,DWORD iPitchAndFamily,LPCSTR pszFaceName);
-    HFONT(WINAPI* g_realCreateFontW)(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,DWORD bStrikeOut,DWORD iCharSet,DWORD iOutPrecision,DWORD iClipPrecision,DWORD iQuality,DWORD iPitchAndFamily,LPCWSTR pszFaceName);
-}g_font_opt;
-
-template <typename T>
-struct Ranges {
-    T x_min, x_max;
-    T y_min, y_max;
-};
-#define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)
-
-template <typename T>
-bool pov_to_xy(T& x, T& y, Ranges<T>& ranges, DWORD pov)
-{
-    // According to MSDN, some DirectInput drivers report the centered
-    // position of the POV indicator as 65,535. This matches both that
-    // behavior and JOY_POVCENTERED for WinMM.
-    if (LOWORD(pov) == 0xFFFF) {
-        return false;
-    }
-    T x_center = (ranges.x_max - ranges.x_min) / 2;
-    T y_center = (ranges.y_max - ranges.y_min) / 2;
-
-    float angle_deg = pov / 100.0f;
-    float angle_rad = DEG_TO_RAD(angle_deg);
-    // POV values ≠ unit circle angles, so...
-    float angle_sin = 1.0f - cosf(angle_rad);
-    float angle_cos = sinf(angle_rad) + 1.0f;
-    x = (T)(ranges.x_min + (angle_cos * x_center));
-    y = (T)(ranges.y_min + (angle_sin * y_center));
-    return true;
-}
-
-struct winmm_joy_caps_t {
-    // joyGetPosEx() will return bogus values on joysticks without a POV, so
-    // we must check if we even have one.
-    bool initialized = false;
-    bool has_pov;
-    Ranges<DWORD> range;
-};
-std::vector<winmm_joy_caps_t> joy_info;
-
-
-HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state);
-HRESULT STDMETHODCALLTYPE SetProperty_Changed(LPDIRECTINPUTDEVICE8 thiz, REFGUID guid, LPCDIPROPHEADER header);
-HRESULT STDMETHODCALLTYPE SetCooperativeLevel_Changed(LPDIRECTINPUTDEVICE8 thiz, HWND hwnd, DWORD flag)
-{
-    if (g_input_opt.ddevice == thiz) {
-        if (g_input_opt.disable_win_key) {
-            flag = DISCL_NONEXCLUSIVE | DISCL_FOREGROUND | DISCL_NOWINKEY;
-        } else {
-            flag = DISCL_NONEXCLUSIVE | DISCL_FOREGROUND;
-        }
-        auto res = g_input_opt.realSetCooperativeLevel(thiz, hwnd, flag);
-        bool re_acquire = false;
-        if (res == DIERR_ACQUIRED) {
-            thiz->Unacquire();
-            re_acquire = true;
-            res = g_input_opt.realSetCooperativeLevel(thiz, hwnd, flag);
-        }
-        if (g_input_opt.use_get_device_data)
-        {
-            DIPROPDWORD dipdw;
-            dipdw.diph.dwSize = sizeof(DIPROPDWORD);
-            dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-            dipdw.diph.dwObj = 0;
-            dipdw.diph.dwHow = DIPH_DEVICE;
-            dipdw.dwData = 64;
-            SetProperty_Changed(thiz,DIPROP_BUFFERSIZE, &dipdw.diph);
-        }
-        if (re_acquire) {
-            thiz->Acquire();
-        }
-        return res;
-    }
-    return g_input_opt.realSetCooperativeLevel(thiz, hwnd, flag);
-}
-
-HRESULT WINAPI EnumDevices_Changed(LPDIRECTINPUT8 thiz, DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef, DWORD dwFlags)
-{
-    if (g_input_opt.g_disable_joy && dwDevType == DI8DEVCLASS_GAMECTRL)
-        return DI_OK;
-    return g_input_opt.realEnumDevices(thiz, dwDevType, lpCallback, pvRef, dwFlags);
-}
-HRESULT WINAPI DDevice_Release_Changed(LPDIRECTINPUTDEVICE8 thiz)
-{
-    if (g_input_opt.ddevice == thiz) {
-        return DI_OK;
-    }
-    return g_input_opt.realDDRelease(thiz);
-}
-HRESULT WINAPI Dinput_Release_Changed(LPDIRECTINPUT8 thiz)
-{
-    if (g_input_opt.dinput == thiz) {
-        return DI_OK;
-    }
-    return g_input_opt.realDIRelease(thiz);
-}
-
-HRESULT STDMETHODCALLTYPE SetDataFormat_Changed(LPDIRECTINPUTDEVICE8 thiz, LPCDIDATAFORMAT fmt)
-{
-    if (g_input_opt.ddevice == thiz) {
-        auto res = g_input_opt.realSetDataFormat(thiz, fmt);
-        if (res == DIERR_ACQUIRED) {
-            thiz->Unacquire();
-            res = g_input_opt.realSetDataFormat(thiz, fmt);
-        }
-        return res;
-    }
-    return g_input_opt.realSetDataFormat(thiz, fmt);
-}
-HRESULT WINAPI Poll_Changed(LPDIRECTINPUTDEVICE8 thiz)
-{
-    if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {
-        return DI_OK;
-    }
-    auto res = g_input_opt.realPoll(thiz);
-    return res;
-}
-HRESULT WINAPI Acquire_Changed(LPDIRECTINPUTDEVICE8 thiz)
-{
-    if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {
-        return DI_OK;
-    }
-    auto res = g_input_opt.realAcquire(thiz);
-    return res;
-}
-HRESULT STDMETHODCALLTYPE SetProperty_Changed(LPDIRECTINPUTDEVICE8 thiz, REFGUID guid, LPCDIPROPHEADER header)
-{
-    if (g_input_opt.ddevice == thiz && g_input_opt.use_get_device_data) {
-        DIPROPDWORD dipdw;
-        dipdw.diph.dwSize = sizeof(DIPROPDWORD);
-        dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-        dipdw.diph.dwObj = 0;
-        dipdw.diph.dwHow = DIPH_DEVICE;
-        dipdw.dwData = 64;
-        auto res = g_input_opt.realSetProperty(thiz,DIPROP_BUFFERSIZE, &dipdw.diph);
-        if (res == DIERR_ACQUIRED) {
-            thiz->Unacquire();
-            res = g_input_opt.realSetProperty(thiz, DIPROP_BUFFERSIZE, &dipdw.diph);
-        }
-        return res;
-    }
-    return g_input_opt.realSetProperty(thiz, guid,header);
-}
-
-HRESULT STDMETHODCALLTYPE CreateDevice_Changed(LPDIRECTINPUT8 thiz, const GUID& guid, LPDIRECTINPUTDEVICE8W* lpddevice, LPUNKNOWN lpunk)
-{
-    if (g_input_opt.dinput == thiz && guid == GUID_SysKeyboard) {
-        if (g_input_opt.ddevice != nullptr) {
-            *lpddevice = g_input_opt.ddevice;
-            (*lpddevice)->Unacquire();
-            return DI_OK;
-        }
-        auto res = g_input_opt.realCreateDevice(thiz, guid, lpddevice, lpunk);
-        if (res == DI_OK)
-        {
-            HookVTable(*lpddevice, 2, DDevice_Release_Changed, (void**)&(g_input_opt.realDDRelease));
-            HookVTable(*lpddevice, 7, Acquire_Changed, (void**)&(g_input_opt.realAcquire));
-            HookVTable(*lpddevice, 9, GetDeviceState_Changed, (void**)&(g_input_opt.realGetDeviceState));
-            HookVTable(*lpddevice, 11, SetDataFormat_Changed, (void**)&(g_input_opt.realSetDataFormat));
-            HookVTable(*lpddevice, 13, SetCooperativeLevel_Changed, (void**)&(g_input_opt.realSetCooperativeLevel));
-            HookVTable(*lpddevice, 6, SetProperty_Changed, (void**)&(g_input_opt.realSetProperty));
-            HookVTable(*lpddevice, 25, Poll_Changed, (void**)&(g_input_opt.realPoll));
-            g_input_opt.ddevice = *lpddevice;
-            g_input_opt.ddevice = *lpddevice;
-        }
-        return res;
-    }
-    return g_input_opt.realCreateDevice(thiz, guid, lpddevice, lpunk);
-}
-
-HRESULT WINAPI DirectInput8Create_Changed(HINSTANCE hinst, DWORD dwVersion, const IID& riidltf, LPVOID* ppvOut, LPUNKNOWN punkOuter)
-{
-    if (g_input_opt.dinput != nullptr) {
-        *ppvOut = g_input_opt.dinput;
-        return DI_OK;
-    }
-    auto res = g_input_opt.g_realDirectInput8Create(hinst, dwVersion, riidltf, ppvOut, punkOuter);
-    if (res == DI_OK){
-        HookVTable(*ppvOut, 2, Dinput_Release_Changed, (void**)&(g_input_opt.realDIRelease));
-        HookVTable(*ppvOut, 3, CreateDevice_Changed, (void**)&(g_input_opt.realCreateDevice));
-        HookVTable(*ppvOut, 4, EnumDevices_Changed, (void**)&(g_input_opt.realEnumDevices));
-        g_input_opt.dinput = *(LPDIRECTINPUT8*)ppvOut;
-    }
-    return res;
-}
-
-
-MMRESULT WINAPI joyGetDevCapsA_Changed(UINT uJoyID, LPJOYCAPSA pjc, UINT cbjc) {
-    if (g_input_opt.g_disable_joy)
-        return MMSYSERR_NODRIVER;
-    return g_input_opt.g_realJoyGetDevCapsA(uJoyID, pjc, cbjc);
-}
-MMRESULT WINAPI joyGetPosEx_Changed(UINT uJoyID, LPJOYINFOEX pji) { 
-    if (g_input_opt.g_disable_joy)
-        return MMSYSERR_NODRIVER;
-
-    pji->dwFlags |= JOY_RETURNPOV;
-    auto ret_pos = g_input_opt.g_realJoyGetPosEx(uJoyID, pji);
-    if (ret_pos != JOYERR_NOERROR) {
-        return ret_pos;
-    }
-
-    if (uJoyID >= joy_info.size()) {
-        joy_info.resize(uJoyID + 1);
-    }
-
-    auto& jc = joy_info[uJoyID];
-
-    if (!jc.initialized) {
-        JOYCAPSW caps;
-        auto ret_caps = joyGetDevCapsW(uJoyID, &caps, sizeof(caps));
-        (void)ret_caps; // suppress "unused variable" warning
-        assert(ret_caps == JOYERR_NOERROR);
-
-        jc.initialized = true;
-        jc.has_pov = (caps.wCaps & JOYCAPS_HASPOV) != 0;
-        jc.range.x_min = caps.wXmin;
-        jc.range.x_max = caps.wXmax;
-        jc.range.y_min = caps.wYmin;
-        jc.range.y_max = caps.wYmax;
-    } else if (!jc.has_pov) {
-        return ret_pos;
-    }
-    pov_to_xy(pji->dwXpos, pji->dwYpos, jc.range, pji->dwPOV);
-    return ret_pos;
-}
-
-DWORD WINAPI XInputGetState_Changed3(DWORD dwUserIndex, void* pState)
-{
-    if (g_input_opt.g_disable_joy)
-        return ERROR_DEVICE_NOT_CONNECTED;
-    return g_input_opt.g_realXInputGetState3(dwUserIndex, pState);
-}
-
-DWORD WINAPI XInputGetState_Changed4(DWORD dwUserIndex, void* pState)
-{
-    if (g_input_opt.g_disable_joy)
-        return ERROR_DEVICE_NOT_CONNECTED;
-    return g_input_opt.g_realXInputGetState4(dwUserIndex, pState);
-}
-
-HFONT WINAPI CreateFontA_Changed
-(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,
-    DWORD bStrikeOut, DWORD iCharSet, DWORD iOutPrecision, DWORD iClipPrecision, DWORD iQuality, DWORD iPitchAndFamily, LPCSTR pszFaceName)
-{
-    static std::vector<std::string> fonts = EnumAllFonts();
-    unsigned char font_Gothic[] = { 0x82, 0x6C, 0x82, 0x72, 0x20, 0x83, 0x53, 0x83, 0x56, 0x83, 0x62, 0x83, 0x4E, 0x00 }; // 俵俽 僑僔僢僋, MS Gothic
-    unsigned char font_Mincho[] = { 0x82, 0x6C, 0x82, 0x72, 0x20, 0x96, 0xBE, 0x92, 0xA9, 0x00 }; // 俵俽 柧挬, MS Mincho
-    if (g_font_opt.g_useCustomFont)
-        return g_font_opt.g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, g_font_opt.g_customFont.c_str());
-    if (strcmp((char*)font_Gothic, pszFaceName) == 0) {
-        return g_font_opt.g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, "MS Gothic");
-    } else if (strcmp((char*)font_Mincho, pszFaceName) == 0) {
-        // some computer might not have mincho font
-        if (std::find(fonts.begin(), fonts.end(), "MS Mincho") == fonts.end())
-            return g_font_opt.g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, "MS Gothic");
-        return g_font_opt.g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, "MS Mincho");
-    }
-    return g_font_opt.g_realCreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, pszFaceName);
-}
-
-HFONT WINAPI CreateFontW_Changed(int cHeight, int cWidth, int cEscapement, int cOrientation, int cWeight, DWORD bItalic, DWORD bUnderline,
-    DWORD bStrikeOut, DWORD iCharSet, DWORD iOutPrecision, DWORD iClipPrecision, DWORD iQuality, DWORD iPitchAndFamily, LPCWSTR pszFaceName)
-{
-    static std::vector<std::string> fonts = EnumAllFonts();
-    wchar_t font_YuGothic[] = { 0x6E38, 0x30B4, 0x30B7, 0x30C3, 0x30AF, 0 };//Yu Gothic...
-    wchar_t font_YuMincho[] = L"Yu Mincho";
-    wchar_t font_YuMeiryo[] = { 0x30E1, 0x30A4, 0x30EA, 0x30AA, 0 }; // Meiryo
-    wchar_t font_MsGothic[] = { 0xFF2D,0xFF33,0x0020,0x30B4,0x30B7,0x30C3,0x30AF ,0x0 }; // MS Gothic
-    if (g_font_opt.g_useCustomFont) {
-        // fall back to CreateFontA
-        return CreateFontA(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, g_font_opt.g_customFont.c_str());
-    }
-
-    // Yu Gothic
-    if (wcscmp(font_YuGothic, pszFaceName) == 0)
-    {
-        if (std::find(fonts.begin(), fonts.end(), "Yu Gothic") != fonts.end())
-            return g_font_opt.g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"Yu Gothic");
-        if (std::find(fonts.begin(), fonts.end(), "MS Gothic") != fonts.end())
-            return g_font_opt.g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"MS Gothic");
-        if (std::find(fonts.begin(), fonts.end(), "MS Mincho") != fonts.end())
-            return g_font_opt.g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"MS Mincho");
-    }
-    // Yu Mincho
-    if (wcscmp(font_YuMincho, pszFaceName) == 0)
-    {
-        if (std::find(fonts.begin(), fonts.end(), "Yu Mincho") != fonts.end())
-            return g_font_opt.g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"Yu Mincho");
-        if (std::find(fonts.begin(), fonts.end(), "MS Mincho") != fonts.end())
-            return g_font_opt.g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"MS Mincho");
-    }
-    // Meiryo
-    if (wcscmp(font_YuMeiryo, pszFaceName) == 0)
-    {
-        if (std::find(fonts.begin(), fonts.end(), "Meiryo") != fonts.end())
-            return g_font_opt.g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"Meiryo");
-    }
-    // MS Gothic
-    if (wcscmp(font_MsGothic, pszFaceName) == 0) {
-        if (std::find(fonts.begin(), fonts.end(), "MS Gothic") != fonts.end())
-            return g_font_opt.g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"MS Gothic");
-        if (std::find(fonts.begin(), fonts.end(), "MS Mincho") != fonts.end())
-            return g_font_opt.g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, L"MS Mincho");
-    }
-    return g_font_opt.g_realCreateFontW(cHeight, cWidth, cEscapement, cOrientation, cWeight, bItalic, bUnderline, bStrikeOut, iCharSet, iOutPrecision, iClipPrecision, iQuality, iPitchAndFamily, pszFaceName);
-}
-
-
-#define IS_KEY_DOWN(x) (((x)&0x80)==0x80)
-
-enum Key {
-    K_LEFT,
-    K_RIGHT,
-    K_UP,
-    K_DOWN
-};
-
-extern std::unordered_map<KeyDefine, KeyDefine, KeyDefineHashFunction> g_keybind;
-
-
-bool g_enable_l2d = false;
 
 void GameUpdateInner(int gamever)
 {
@@ -529,182 +72,10 @@ void GameUpdateOuter(ImDrawList* p, int ver)
     }
 }
 
-
 void FastRetry(int thprac_mode)
 {
     if (thprac_mode && g_fast_re_opt.enable_fast_retry) {
         g_fast_re_opt.fast_retry_count_down = g_fast_re_opt.fast_retry_cout_down_max;
-    }
-}
-struct Live2DOption {
-    int motion_time;
-
-    Live2D_State curr_state;
-    int32_t VKs[Live2D_State::N_Live2D_State];
-
-    int expression_num;
-    bool is_dying_expression;
-    
-    uint32_t last_time_ms;
-    uint32_t dying_expression_last_time_ms;
-}g_l2dState;
-
-inline void Live2D_SetMotion(Live2D_State motion)
-{
-    if (!Gui::ImplWin32CheckForeground()) {
-        return;
-    }
-    auto VK = g_l2dState.VKs[motion];
-    if (VK > 0 && VK <= 0xDD) {
-        INPUT input[2] = {};
-        input[0].type = INPUT_KEYBOARD;
-        input[0].ki.wVk = VK;
-        input[1].type = INPUT_KEYBOARD;
-        input[1].ki.wVk = VK;
-        input[1].ki.dwFlags = KEYEVENTF_KEYUP;
-        SendInput(2, input, sizeof(INPUT));
-    }
-}
-
-inline void Live2D_SetExpressionTot()
-{
-    if (!Gui::ImplWin32CheckForeground()) {
-        return;
-    }
-    if (g_l2dState.expression_num == 0)
-        return;
-    if (g_l2dState.expression_num >= 3)
-        g_l2dState.expression_num = (g_l2dState.expression_num % 2==0) ? 2 : 1;
-
-    auto VK = g_l2dState.VKs[Dying];
-    if (VK > 0 && VK <= 0xDD) {
-        INPUT input[2] = {};
-        input[0].type = INPUT_KEYBOARD;
-        input[0].ki.wVk = g_l2dState.VKs[Dying];
-        input[1].type = INPUT_KEYBOARD;
-        input[1].ki.wVk = g_l2dState.VKs[Dying];
-        input[1].ki.dwFlags = KEYEVENTF_KEYUP;
-        SendInput(2, input, sizeof(INPUT));
-        g_l2dState.expression_num--;
-    }
-}
-
-inline void Live2D_ToggleExpression()
-{
-    g_l2dState.is_dying_expression = !g_l2dState.is_dying_expression;
-    g_l2dState.expression_num++;
-}
-
-void Live2D_Update(int life, bool is_rep)
-{
-    if (!g_enable_l2d)
-        return;
-    static uint32_t last_time = timeGetTime();
-    uint32_t cur_time = timeGetTime();
-    uint32_t step = cur_time - last_time;
-    last_time = cur_time;
-    // auto p = ImGui::GetOverlayDrawList();
-    // p->AddText({ 200, 0 }, 0xFFFFFFFF, std::format("{},{},{},{}", (int)g_l2dState.curr_state, g_l2dState.last_time_ms, g_l2dState.dying_expression_last_time_ms, g_l2dState.is_dying_expression).c_str());
-    if (is_rep) {
-        if (g_l2dState.curr_state != Reset)
-        {
-            g_l2dState.curr_state = Reset;
-            Live2D_SetMotion(Reset);
-            g_l2dState.last_time_ms = 1e9;
-        }
-        if (g_l2dState.is_dying_expression) {
-            Live2D_ToggleExpression();
-        }
-    } else {
-        if (g_l2dState.is_dying_expression && life > 0)
-        {
-            if (g_l2dState.dying_expression_last_time_ms <= step) {
-                Live2D_ToggleExpression();
-                g_l2dState.dying_expression_last_time_ms = 0;
-            } else {
-                g_l2dState.dying_expression_last_time_ms -= step;
-            }
-        }
-        if (!g_l2dState.is_dying_expression && life <= 0) {
-            Live2D_ToggleExpression();
-            g_l2dState.dying_expression_last_time_ms = g_l2dState.motion_time;
-        }
-        if (g_l2dState.curr_state != Reset) {
-            if (g_l2dState.last_time_ms <= step) {
-                g_l2dState.curr_state = Reset;
-                Live2D_SetMotion(Reset);
-                if (g_l2dState.is_dying_expression){
-                    Live2D_ToggleExpression();
-                    Live2D_ToggleExpression();
-                }
-                g_l2dState.last_time_ms = 1e9;
-            } else {
-                g_l2dState.last_time_ms -= step;
-            }
-        }
-    }
-    Live2D_SetExpressionTot();
-}
-
-void Live2D_ChangeState(Live2D_InputType l2dInput)
-{
-    if (!g_enable_l2d)
-        return;
-    uint32_t cur_time = timeGetTime();
-    switch (l2dInput)
-    {
-    default:
-    case Live2D_InputType::L2D_RESET:
-        g_l2dState.last_time_ms = 1;
-        g_l2dState.dying_expression_last_time_ms = 1;
-        if (g_l2dState.is_dying_expression){
-            Live2D_ToggleExpression();
-            g_l2dState.is_dying_expression = false;
-        }
-        break;
-    case Live2D_InputType::L2D_MISS:
-        g_l2dState.last_time_ms = g_l2dState.motion_time;
-        g_l2dState.curr_state = Live2D_State::Miss;
-        Live2D_SetMotion(g_l2dState.curr_state);
-        break;
-    case Live2D_InputType::L2D_BOMB:
-        g_l2dState.last_time_ms = g_l2dState.motion_time;
-        g_l2dState.curr_state = Live2D_State::Bomb;
-        Live2D_SetMotion(g_l2dState.curr_state);
-        break;
-    case Live2D_InputType::L2D_HYPER:
-        g_l2dState.last_time_ms = g_l2dState.motion_time;
-        g_l2dState.curr_state = Live2D_State::Hyper;
-        Live2D_SetMotion(g_l2dState.curr_state);
-        break;
-    case Live2D_InputType::L2D_BORDER_BREAK:
-        g_l2dState.last_time_ms = g_l2dState.motion_time;
-        g_l2dState.curr_state = Live2D_State::BorderBreak;
-        Live2D_SetMotion(g_l2dState.curr_state);
-        break;
-    case Live2D_InputType::L2D_RELEASE:
-        g_l2dState.last_time_ms = g_l2dState.motion_time;
-        g_l2dState.curr_state = Live2D_State::Release;
-        Live2D_SetMotion(g_l2dState.curr_state);
-        break;
-    }
-}
-
-void ClearDinputData(bool inactivate) {
-    if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI && g_input_opt.ddevice) {
-       
-        while (true) {
-            DWORD dwItems = 32;
-            DIDEVICEOBJECTDATA rgdod[32];
-            auto res = g_input_opt.ddevice->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), rgdod, &dwItems, 0);
-            if (FAILED(res) || dwItems == 0) {
-                break;
-            }
-        }
-        if (inactivate) 
-            g_input_opt.ddevice->Unacquire();
-        else
-            g_input_opt.ddevice->Acquire();
     }
 }
 
@@ -713,525 +84,30 @@ LRESULT CALLBACK GameExternWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     switch (uMsg) {
     default:
         break;
-
     case WM_ACTIVATEAPP:
     case WM_ACTIVATE:
-        memset(g_input_opt.fake_di_State, 0, 256);
-        ClearDinputData(LOWORD(wParam) == WA_INACTIVE);
+        ClearInputData(LOWORD(wParam) == WA_INACTIVE);
         break;
     case WM_INPUT:
-        if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {
-            static BYTE lpb[1024];
-            UINT dwSize = 1024;
-            if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != -1) {
-                RAWINPUT* raw = (RAWINPUT*)lpb;
-                if (raw->header.dwType == RIM_TYPEKEYBOARD) {
-                    UINT scanCode = raw->data.keyboard.MakeCode;
-                    bool isUp = (raw->data.keyboard.Flags & RI_KEY_BREAK);
-
-                    if (raw->data.keyboard.Flags & RI_KEY_E0) {
-                        scanCode |= 0x80;
-                    }
-                    if (scanCode < 256) {
-                        g_input_opt.fake_di_State[scanCode] = isUp ? 0x00 : 0x80;
-                    }
-                }
-            }
-        }
+        GetRawInput(lParam);
+        break;
     }
     return 0; // return 0: pass to other proc
 }
 
-void ProcessRawInput(BYTE state[256])
-{
-    static char alignas(8) buffer[2048];
-    UINT bufferSize = sizeof(buffer);
-    UINT count = GetRawInputBuffer((PRAWINPUT)buffer, &bufferSize, sizeof(RAWINPUTHEADER));
-    if (count == 0 || count == (UINT)-1) {
-        memcpy(state, g_input_opt.fake_di_State, 256);
-        return;
-    }
-    BYTE kb_is_down[256] = { 0 };
-    BYTE kb_is_down_last[256] = { 0 };
-    while(count > 0){
-        RAWINPUT* pRaw = (RAWINPUT*)buffer;
-        memcpy(kb_is_down_last, g_input_opt.fake_di_State, 256);
-        for (int i = 0; i < count; ++i) {
-            if (pRaw->header.dwType == RIM_TYPEKEYBOARD) {
-                RAWKEYBOARD* pKb = &pRaw->data.keyboard;
-                if (pKb->MakeCode == 0 && pKb->Flags == 0 && pRaw->header.dwSize > 32) {
-                    pKb = (RAWKEYBOARD*)((LPBYTE)pRaw + 24);//WoW64 fix
-                }
-                UINT scanCode = pKb->MakeCode;
-                bool isUp = (pKb->Flags & RI_KEY_BREAK);
-                if (pKb->Flags & RI_KEY_E0) {
-                    scanCode |= 0x80;
-                }
-                if (scanCode < 256) {
-                    BYTE curstate = isUp ? 0x00 : 0x80;
-                    g_input_opt.fake_di_State[scanCode] = curstate;
-                    if (kb_is_down_last[scanCode] == 0x0 && !isUp)
-                        kb_is_down[scanCode] = 0x80;
-                }
-            }
-            pRaw = NEXTRAWINPUTBLOCK((PRAWINPUT)pRaw);
-        }
-        bufferSize = sizeof(buffer);
-        count = GetRawInputBuffer((PRAWINPUT)buffer, &bufferSize, sizeof(RAWINPUTHEADER));
-        if (count == 0 || count == (UINT)-1) {
-            break;
-        }
-    }
-    for (int i = 0; i < 256; i++) {
-        state[i] = kb_is_down[i] | g_input_opt.fake_di_State[i];
-    }
-}
-
-void InitInput()
-{
-    if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {
-        if (g_gameGuiHwnd == nullptr)
-            return;
-        if (g_input_opt.ddevice != nullptr) {
-            g_input_opt.ddevice->Unacquire();
-        }
-        if (g_input_opt.is_ri_inited) {
-            RAWINPUTDEVICE Rid;
-            Rid.usUsagePage = 0x01;
-            Rid.usUsage = 0x06;
-            Rid.dwFlags = RIDEV_REMOVE;
-            Rid.hwndTarget = NULL;
-            auto res = RegisterRawInputDevices(&Rid, 1, sizeof(Rid));
-            if (res) {
-                g_input_opt.is_ri_inited = false;
-            } else {
-                return;
-            }
-        }
-        RAWINPUTDEVICE Rid;
-        Rid.usUsagePage = 0x01;
-        Rid.usUsage = 0x06;//HID_USAGE_GENERIC_KEYBOARD
-        Rid.dwFlags = 0;
-        Rid.hwndTarget = (HWND)*g_gameGuiHwnd;
-
-        if (!RegisterRawInputDevices(&Rid, 1, sizeof(Rid))) {
-            return;
-        }
-        g_input_opt.is_ri_inited = true;
-        memset(g_input_opt.fake_di_State, 0, 256);
-        return;
-    }else if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI) {
-        if (g_gameGuiHwnd == nullptr)
-            return;
-        if (g_input_opt.is_ri_inited)
-        {
-            RAWINPUTDEVICE Rid;
-            Rid.usUsagePage = 0x01; 
-            Rid.usUsage = 0x06;
-            Rid.dwFlags = RIDEV_REMOVE;
-            Rid.hwndTarget = NULL;
-            auto res = RegisterRawInputDevices(&Rid, 1, sizeof(Rid));
-            if (res) {
-                g_input_opt.is_ri_inited = false;
-            }
-        }
-        if (g_input_opt.ddevice != nullptr) {
-            g_input_opt.ddevice->Unacquire();
-            g_input_opt.ddevice->Acquire();
-            return;
-        }
-        bool is_failed_dinput8 = false;
-        // if (is_failed_dinput8)
-        //     return;
-
-        if (g_input_opt.dinput == nullptr) {
-            if (g_input_opt.g_realDirectInput8Create) {
-                DWORD d;
-                auto res = DirectInput8Create_Changed(GetModuleHandle(0), DIRECTINPUT_VERSION, IID_IDirectInput8A, (void**)&d, NULL);
-                if (res != DI_OK || g_input_opt.dinput == nullptr) {
-                    is_failed_dinput8 = true;
-                    return;
-                }
-            } else {
-                is_failed_dinput8 = true;
-                return;
-            }
-        }
-        DWORD dev;
-        auto res1 = g_input_opt.dinput->CreateDevice(GUID_SysKeyboard, (LPDIRECTINPUTDEVICE8*)&dev, NULL);
-        if (res1 != DI_OK || g_input_opt.ddevice == nullptr) {
-            is_failed_dinput8 = true;
-            return;
-        }
-        is_failed_dinput8 |= FAILED(g_input_opt.ddevice->SetDataFormat(&c_dfDIKeyboard));
-        is_failed_dinput8 |= FAILED(g_input_opt.ddevice->SetCooperativeLevel((HWND)*g_gameGuiHwnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND));
-        is_failed_dinput8 |= FAILED(g_input_opt.ddevice->Acquire());
-        memset(g_input_opt.fake_di_State, 0, 256);
-        return;
-    }
-}
-HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state);
-BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
-{
-    HRESULT res;
-    if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI || g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {
-        HRESULT res_dinpu8getState = DI_OK;
-        BYTE keyboardState_dinput8[256];
-        BYTE* keyboardState = keyboardState_dinput8;
-        if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI)
-        {
-            if (g_input_opt.ddevice)
-            {
-                auto pres = g_input_opt.ddevice->Poll();
-                if (FAILED(pres)) {
-                    if (FAILED(g_input_opt.ddevice->Acquire())) {
-                        goto LB_FINAL;
-                    }
-                    if (FAILED(g_input_opt.ddevice->Poll())) {
-                        goto LB_FINAL;
-                    }
-                }
-                res_dinpu8getState = g_input_opt.ddevice->GetDeviceState(256, keyboardState_dinput8);
-            }
-            else
-                goto LB_FINAL;
-        }else{
-            if (g_input_opt.is_ri_inited) {
-                GetDeviceState_Changed(nullptr, 256, keyboardState);
-            }
-            else
-                goto LB_FINAL;
-        }
-        if (res_dinpu8getState == DI_OK) {
-            memset(keyBoardState, 0, 256);
-            for (auto keydef : keyBindDefine) {
-                keyBoardState[keydef.vk] = keyboardState[keydef.dik];
-            }
-            if ((keyboardState[DIK_LSHIFT] & 0x80) || (keyboardState[DIK_RSHIFT] & 0x80))
-                keyBoardState[VK_SHIFT] = 0x80;
-            if ((keyboardState[DIK_LCONTROL] & 0x80) || (keyboardState[DIK_RCONTROL] & 0x80))
-                keyBoardState[VK_CONTROL] = 0x80;
-            if ((keyboardState[DIK_LMENU] & 0x80) || (keyboardState[DIK_RMENU] & 0x80))
-                keyBoardState[VK_MENU] = 0x80;
-            return TRUE;
-        }
-    }
-LB_FINAL:
-    res = g_input_opt.g_realGetKeyboardState(keyBoardState);
-    if (g_keybind.size() != 0)
-    {
-        static BYTE new_keyBoardState[256] = { 0 };
-        bool new_keyBoardState_changed[256] = { 0 };
-        memcpy_s(new_keyBoardState,256, keyBoardState, 256);
-        for (auto& bind : g_keybind) {
-            if (IS_KEY_DOWN(keyBoardState[bind.second.vk])) {
-                new_keyBoardState[bind.first.vk] |= 0x80;
-                if (!new_keyBoardState_changed[bind.first.vk])
-                    new_keyBoardState[bind.second.vk] &= (~0x80);
-                switch (bind.second.vk)
-                {
-                default:
-                    break;
-                case VK_LSHIFT:
-                case VK_RSHIFT:
-                    if (!new_keyBoardState_changed[VK_LSHIFT])
-                        new_keyBoardState[VK_SHIFT] &= (~0x80);
-                    break;
-                case VK_LCONTROL:
-                case VK_RCONTROL:
-                    if (!new_keyBoardState_changed[VK_CONTROL])
-                        new_keyBoardState[VK_CONTROL] &= (~0x80);
-                    break;
-                case VK_LMENU:
-                case VK_RMENU:
-                    if (!new_keyBoardState_changed[VK_MENU])
-                        new_keyBoardState[VK_MENU] &= (~0x80);
-                    break;
-                }
-                new_keyBoardState_changed[bind.first.vk] = true;
-            }
-        }
-        if (IS_KEY_DOWN(new_keyBoardState[VK_LSHIFT]) || IS_KEY_DOWN(new_keyBoardState[VK_RSHIFT]))
-        {
-            new_keyBoardState[VK_SHIFT] |= 0x80;
-        }
-        if (IS_KEY_DOWN(new_keyBoardState[VK_LCONTROL]) || IS_KEY_DOWN(new_keyBoardState[VK_RCONTROL])) {
-            new_keyBoardState[VK_CONTROL] |= 0x80;
-        }
-        if (IS_KEY_DOWN(new_keyBoardState[VK_LMENU]) || IS_KEY_DOWN(new_keyBoardState[VK_RMENU])) {
-            new_keyBoardState[VK_MENU] |= 0x80;
-        }
-        memcpy_s(keyBoardState, 256, new_keyBoardState, 256);
-    }
-    if (g_input_opt.disable_xkey) {
-        keyBoardState['X'] = 0x0;
-    }
-    if (g_input_opt.disable_xkey && g_input_opt.disable_Ckey_at_same_time) {
-        keyBoardState['C'] = 0x0;
-    }
-    if (g_input_opt.disable_shiftkey) {
-        keyBoardState[VK_LSHIFT] = keyBoardState[VK_LSHIFT] = keyBoardState[VK_SHIFT] = 0x0;
-    }
-    if (g_input_opt.disable_zkey) {
-        keyBoardState['Z']= 0x0;
-    }
-    if (g_input_opt.disable_f10_11_13) {
-        keyBoardState[VK_F10] = 0x0;
-    }
-    if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_Default) {
-        g_input_latency_test.Input();
-        return res;
-    }
-    static BYTE last_keyBoardState[256] = { 0 };
-    static uint32_t cur_time = 0;
-    static uint32_t keyBoard_press_time[4] = { 0 };
-
-    cur_time++;
-    
-    if (IS_KEY_DOWN(keyBoardState[VK_LEFT]) && !IS_KEY_DOWN(last_keyBoardState[VK_LEFT]))
-        keyBoard_press_time[K_LEFT] = cur_time;
-    if (IS_KEY_DOWN(keyBoardState[VK_RIGHT]) && !IS_KEY_DOWN(last_keyBoardState[VK_RIGHT]))
-        keyBoard_press_time[K_RIGHT] = cur_time;
-    if (IS_KEY_DOWN(keyBoardState[VK_UP]) && !IS_KEY_DOWN(last_keyBoardState[VK_UP]))
-        keyBoard_press_time[K_UP] = cur_time;
-    if (IS_KEY_DOWN(keyBoardState[VK_DOWN]) && !IS_KEY_DOWN(last_keyBoardState[VK_DOWN]))
-        keyBoard_press_time[K_DOWN] = cur_time;
-
-    memcpy_s(last_keyBoardState, 256, keyBoardState, 256);
-    
-    
-    if (IS_KEY_DOWN(keyBoardState[VK_LEFT]) && IS_KEY_DOWN(keyBoardState[VK_RIGHT])){
-        if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_2)
-        {
-            if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]) {
-                keyBoardState[VK_RIGHT] = 0;
-            } else {
-                keyBoardState[VK_LEFT] = 0;
-            }
-        } else if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_N) {
-            keyBoardState[VK_RIGHT] = 0;
-            keyBoardState[VK_LEFT] = 0;
-        }
-       
-    }
-    if (IS_KEY_DOWN(keyBoardState[VK_DOWN]) && IS_KEY_DOWN(keyBoardState[VK_UP])) {
-        if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_2) {
-            if (keyBoard_press_time[K_UP] > keyBoard_press_time[K_DOWN]) {
-                keyBoardState[VK_DOWN] = 0;
-            } else {
-                keyBoardState[VK_UP] = 0;
-            }
-        } else if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_N) {
-            keyBoardState[VK_DOWN] = 0;
-            keyBoardState[VK_UP] = 0;
-        }
-    }
-    g_input_latency_test.Input();
-    return res;
-}
-
-HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWORD num, LPVOID state)
-{
-    if (num != 256) { // no keyboard
-        if (g_input_opt.g_disable_joy)
-            return DIERR_INPUTLOST; // 8007001E
-        
-        HRESULT res = -1;
-        res = g_input_opt.realGetDeviceState(thiz, num, state);
-
-        if (num == sizeof(DIJOYSTATE) || num == sizeof(DIJOYSTATE2)) {
-            auto* js = (DIJOYSTATE*)state;
-            Ranges<long> di_range = { -1000, 1000, -1000, 1000 };
-            bool ret_map = false;
-            for (int i = 0; i < elementsof(js->rgdwPOV) && !ret_map; i++) {
-                ret_map = pov_to_xy(js->lX, js->lY, di_range, js->rgdwPOV[i]);
-            }
-        }
-        return res;
-    }
-    HRESULT res = DI_OK;
-    if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_win32KeyAPI) {
-        memset(state, 0, 256);
-        for (auto keydef : keyBindDefine) {
-            ((BYTE*)state)[keydef.dik] = (GetAsyncKeyState(keydef.vk) & 0x8000) ? 0x80 : 0;
-            // though a bit slower ,,,
-        }
-    } else if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput) {
-        memset(state, 0, 256);
-        ProcessRawInput((BYTE*)state);
-        if (g_input_opt.is_ri_inited) {
-            res = DI_OK;
-        } else {
-            if (thiz == nullptr) {
-                for (auto keydef : keyBindDefine) {
-                    ((BYTE*)state)[keydef.dik] = (GetAsyncKeyState(keydef.vk) & 0x8000) ? 0x80 : 0;
-                }
-            } else  {
-                res = g_input_opt.realGetDeviceState(thiz, num, state);
-            }
-        }
-    }else{
-        if (!g_input_opt.use_get_device_data) {
-            memset(state, 0, 256);
-            res = g_input_opt.realGetDeviceState(thiz, num, state);
-        } else {
-            BYTE last_state[256];
-            memcpy(last_state, g_input_opt.fake_di_State, 256);
-
-            res = g_input_opt.realGetDeviceState(thiz, num, state);
-
-            DIDEVICEOBJECTDATA rgdod[32];
-            while (true) {
-                DWORD dwItems = 32;
-                res = thiz->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), rgdod, &dwItems, 0);
-                if (FAILED(res) || dwItems == 0) {
-                    if (res == DIERR_INPUTLOST) {
-                        res = thiz->Acquire();
-                        if (FAILED(res))
-                            break;
-                    } else {
-                        break;
-                    }
-                }
-                for (DWORD i = 0; i < dwItems; i++) {
-                    DWORD scanCode = rgdod[i].dwOfs;
-                    if (rgdod[i].dwData & 0x80) {
-                        g_input_opt.fake_di_State[scanCode] = 0x80;
-                        if (last_state[scanCode] == 0){
-                            ((BYTE*)state)[scanCode] = 0x80;
-                            // is_down[scanCode] = 0x80;
-                        }
-                    } else {
-                        if (last_state[scanCode] == 0x80) {
-                            ((BYTE*)state)[scanCode] = 0;
-                        }
-                        g_input_opt.fake_di_State[scanCode] = 0x00;
-                    }
-                }
-            }
-        }
-    }
-
-    if (g_keybind.size() != 0) {
-        static BYTE new_keyBoardState[256] = { 0 };
-        bool new_keyBoardState_changed[256] = { 0 };
-        memcpy_s(new_keyBoardState, num, ((BYTE*)state), num);
-        for (auto& bind : g_keybind) {
-            if (IS_KEY_DOWN(((BYTE*)state)[bind.second.dik])) {
-                new_keyBoardState[bind.first.dik] |= 0x80;
-                if (!new_keyBoardState_changed[bind.first.dik])
-                    new_keyBoardState[bind.second.dik] &= (~0x80);
-                new_keyBoardState_changed[bind.first.dik] = true;
-            }
-        }
-        memcpy_s(((BYTE*)state), num, new_keyBoardState, num);
-    }
-    if (g_input_opt.enable_auto_shoot) {
-        bool cur_isdown = IS_KEY_DOWN(((BYTE*)state)[g_input_opt.shoot_key_DIK]);
-        bool last_isdown = g_input_opt.last_is_auto_shoot_key_down;
-        g_input_opt.last_is_auto_shoot_key_down = cur_isdown;
-        if (cur_isdown && !last_isdown)
-        {
-            g_input_opt.is_auto_shooting = !g_input_opt.is_auto_shooting;
-        }
-        if (g_input_opt.is_auto_shooting)
-        {
-            bool is_other_down = false;
-            is_other_down |= IS_KEY_DOWN(((BYTE*)state)[DIK_Z]);
-            is_other_down |= IS_KEY_DOWN(((BYTE*)state)[DIK_X]);
-            is_other_down |= IS_KEY_DOWN(((BYTE*)state)[DIK_C]);
-            is_other_down |= IS_KEY_DOWN(((BYTE*)state)[DIK_D]);
-            is_other_down |= IS_KEY_DOWN(((BYTE*)state)[DIK_ESCAPE]);
-            is_other_down |= IS_KEY_DOWN(((BYTE*)state)[DIK_R]);
-            is_other_down |= IS_KEY_DOWN(((BYTE*)state)[DIK_Q]);
-            if (is_other_down){
-                g_input_opt.is_auto_shooting = false;
-            }else{
-                if (g_input_opt.is_th128)
-                {
-                    ((BYTE*)state)[DIK_C] = 0x80;
-                } else {
-                    ((BYTE*)state)[DIK_Z] = 0x80;
-                }
-            }
-        }
-    }
-
-    if (g_input_opt.disable_xkey) {
-        ((BYTE*)state)[DIK_X] = 0x0;
-    }
-    if (g_input_opt.disable_xkey && g_input_opt.disable_Ckey_at_same_time) {
-        ((BYTE*)state)[DIK_C] = 0x0;
-    }
-    if (g_input_opt.disable_shiftkey) {
-        ((BYTE*)state)[DIK_LSHIFT] = 0x0;
-        ((BYTE*)state)[DIK_RSHIFT] = 0x0;
-    }
-    if (g_input_opt.disable_zkey) {
-        ((BYTE*)state)[DIK_Z] = 0x0;
-    }
-    if (g_input_opt.disable_f10_11_13) {
-        ((BYTE*)state)[DIK_F10] = 0x0;
-    }
-    if (g_input_opt.g_socd_setting != InputOpt::SOCD_Setting::SOCD_Default) {
-        static BYTE last_keyBoardState[256] = { 0 };
-        static uint32_t cur_time = 0;
-        static uint32_t keyBoard_press_time[4] = { 0 };
-
-        BYTE* keyBoardState = (BYTE*)state;
-        cur_time++;
-
-        if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_LEFTARROW]))
-            keyBoard_press_time[K_LEFT] = cur_time;
-        if (IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_RIGHTARROW]))
-            keyBoard_press_time[K_RIGHT] = cur_time;
-        if (IS_KEY_DOWN(keyBoardState[DIK_UPARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_UPARROW]))
-            keyBoard_press_time[K_UP] = cur_time;
-        if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && !IS_KEY_DOWN(last_keyBoardState[DIK_DOWNARROW]))
-            keyBoard_press_time[K_DOWN] = cur_time;
-
-        memcpy_s(last_keyBoardState, num, keyBoardState, num);
-
-        if (IS_KEY_DOWN(keyBoardState[DIK_LEFTARROW]) && IS_KEY_DOWN(keyBoardState[DIK_RIGHTARROW])) {
-            if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_2) {
-                if (keyBoard_press_time[K_LEFT] > keyBoard_press_time[K_RIGHT]) {
-                    keyBoardState[DIK_RIGHTARROW] = 0;
-                } else {
-                    keyBoardState[DIK_LEFTARROW] = 0;
-                }
-            } else if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_N) {
-                keyBoardState[DIK_RIGHTARROW] = 0;
-                keyBoardState[DIK_LEFTARROW] = 0;
-            }
-        }
-        if (IS_KEY_DOWN(keyBoardState[DIK_DOWNARROW]) && IS_KEY_DOWN(keyBoardState[DIK_UPARROW])) {
-            if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_2) {
-                if (keyBoard_press_time[K_UP] > keyBoard_press_time[K_DOWN]) {
-                    keyBoardState[DIK_DOWNARROW] = 0;
-                } else {
-                    keyBoardState[DIK_UPARROW] = 0;
-                }
-            } else if (g_input_opt.g_socd_setting == InputOpt::SOCD_Setting::SOCD_N) {
-                keyBoardState[DIK_DOWNARROW] = 0;
-                keyBoardState[DIK_UPARROW] = 0;
-            }
-        }
-    }
-    if (g_fast_re_opt.fast_retry_count_down)
-    {
-        BYTE* keyBoardState = (BYTE*)state;
-        if (g_fast_re_opt.fast_retry_count_down <= g_fast_re_opt.fast_retry_cout_down_max)
-            keyBoardState[DIK_ESCAPE] = 0x80;
-        if (g_fast_re_opt.fast_retry_count_down <= 1)
-            keyBoardState[DIK_R] = 0x80;
-    }
-    
-    g_input_latency_test.Input();
-    return res;
-}
 
 HANDLE thcrap_dll;
 HANDLE thcrap_tsa_dll;
+
+#pragma endregion
+
+ImTextureID ReadImage(DWORD dxVer, DWORD device, LPCSTR fileName, LPCSTR srcData, size_t srcSz)
+{
+    if (dxVer == 8)
+        return ReadImage8(device, fileName, srcData, srcSz);
+    else
+        return ReadImage9(device, fileName, srcData, srcSz);
+}
 
 void SetDpadHook(uintptr_t addr, size_t instr_len)
 {
@@ -1239,179 +115,11 @@ void SetDpadHook(uintptr_t addr, size_t instr_len)
     //     .callback = IDirectInputDevice8_GetDeviceState_VEHHook,
     //     .data = PatchData()
     // };
-    // 
+    //
     // dpad_hook.addr = addr;
     // dpad_hook.data.hook.instr_len = static_cast<uint8_t>(instr_len);
     // dpad_hook.Setup();
     // dpad_hook.Enable();
-
-}
-#pragma endregion
-
-void ChangeBGMSpeed(LPDIRECTSOUNDBUFFER thiz = nullptr)
-{
-    if (thiz == nullptr)
-    {
-        for (auto i = g_sound_opt.soundbuffers.begin(); i != g_sound_opt.soundbuffers.end(); i++) {
-            if (i->orig_format.nChannels != 0) {
-                WAVEFORMATEX fmt = i->orig_format;
-                DWORD status;
-                i->p_sb->GetStatus(&status);
-                if (status & DSBSTATUS_PLAYING)
-                {
-                    i->p_sb->SetFrequency(fmt.nSamplesPerSec * g_sound_opt.bgm_speed);
-                }
-            }
-        }
-    }
-    else
-    {
-        for (auto i = g_sound_opt.soundbuffers.begin(); i != g_sound_opt.soundbuffers.end(); i++) {
-            if (i->orig_format.nChannels != 0 && i->p_sb == thiz) {
-                WAVEFORMATEX fmt = i->orig_format;
-                DWORD status;
-                i->p_sb->SetFrequency(fmt.nSamplesPerSec * g_sound_opt.bgm_speed);
-                break;
-            }
-        }
-    }
-    
-}
-
-HRESULT STDMETHODCALLTYPE SetFormat_Changed (LPDIRECTSOUNDBUFFER thiz, LPCWAVEFORMATEX pcfxFormat)
-{
-    for (auto i = g_sound_opt.soundbuffers.begin(); i != g_sound_opt.soundbuffers.end(); i++) {
-        if (i->p_sb == thiz) {
-            i->orig_format = *pcfxFormat;
-            HRESULT(STDMETHODCALLTYPE * realSetFormat) (LPDIRECTSOUNDBUFFER thiz, LPCWAVEFORMATEX pcfxFormat);
-            realSetFormat = (decltype(realSetFormat))(i->vtbl_orig[14]);
-            HRESULT res = realSetFormat(thiz, pcfxFormat);
-            i = g_sound_opt.soundbuffers.erase(i);
-            return res;
-        }
-    }
-    return -1;
-}
-
-HRESULT (STDMETHODCALLTYPE SoundBuffer_Release_Changed)(LPDIRECTSOUNDBUFFER thiz)
-{
-    for (auto i = g_sound_opt.soundbuffers.begin(); i != g_sound_opt.soundbuffers.end();) {
-        if (i->p_sb == thiz) {
-            HRESULT(STDMETHODCALLTYPE * realSoundBuffer_Release) (LPDIRECTSOUNDBUFFER thiz);
-            realSoundBuffer_Release = (decltype(realSoundBuffer_Release))(i->vtbl_orig[2]);
-            HRESULT res = realSoundBuffer_Release(thiz);
-            delete i->vtbl_changed;
-            delete i->vtbl_orig;
-            i = g_sound_opt.soundbuffers.erase(i);
-            return res;
-        } else {
-            i++;
-        }
-    }
-    return -1;
-}
-
-
-HRESULT STDMETHODCALLTYPE SoundBuffer_Initialize_Changed(LPDIRECTSOUNDBUFFER thiz, LPDIRECTSOUND pDirectSound, LPCDSBUFFERDESC pcDSBufferDesc)
-{
-    for (auto i = g_sound_opt.soundbuffers.begin(); i != g_sound_opt.soundbuffers.end(); i++) {
-        if (i->p_sb == thiz) {
-
-            DSBUFFERDESC desc = *pcDSBufferDesc;
-            desc.dwFlags |= DSBCAPS_CTRLFREQUENCY;
-
-            HRESULT(STDMETHODCALLTYPE * realSoundBuffer_Initialize) (LPDIRECTSOUNDBUFFER thiz, LPDIRECTSOUND pDirectSound, LPCDSBUFFERDESC pcDSBufferDesc);
-            realSoundBuffer_Initialize = (decltype(realSoundBuffer_Initialize))(i->vtbl_orig[10]);
-            HRESULT res = realSoundBuffer_Initialize(thiz, pDirectSound, &desc);
-            return res;
-        }
-    }
-    return -1;
-}
-
-HRESULT STDMETHODCALLTYPE Play_Changed(LPDIRECTSOUNDBUFFER thiz, DWORD dwReserved1, DWORD dwPriority, DWORD dwFlags)
-{
-    for (auto i = g_sound_opt.soundbuffers.begin(); i != g_sound_opt.soundbuffers.end(); i++) {
-        if (i->p_sb == thiz) {
-            HRESULT(STDMETHODCALLTYPE * realPlay)
-            (LPDIRECTSOUNDBUFFER thiz, DWORD dwReserved1, DWORD dwPriority, DWORD dwFlags);
-            realPlay = (decltype(realPlay))(i->vtbl_orig[12]);
-            HRESULT res = realPlay(thiz, dwReserved1, dwPriority, dwFlags);
-            ChangeBGMSpeed(thiz);
-            return res;
-        }
-    }
-    return -1;
-}
-
-HRESULT STDMETHODCALLTYPE DuplicateSoundBuffer_Changed(IDirectSound8* thiz, LPDIRECTSOUNDBUFFER pDSBufferOriginal, LPDIRECTSOUNDBUFFER* ppDSBufferDuplicate)
-{
-    auto res = g_sound_opt.g_realDuplicateSoundBuffer(thiz, pDSBufferOriginal, ppDSBufferDuplicate);
-    if (SUCCEEDED(res))
-    {
-        int idx = -1;
-        for (int i = 0; i < g_sound_opt.soundbuffers.size(); i++) {
-            if (g_sound_opt.soundbuffers[i].p_sb == pDSBufferOriginal) {
-                idx = i;
-                break;
-            }
-        }
-        if (idx!=-1)
-        {
-            SoundOpt::SB_Struct sb;
-            memset(&sb, 0, sizeof(sb));
-            sb.vtbl_orig = new DWORD[21];
-            sb.vtbl_changed = new DWORD[21];
-            DWORD* address = (DWORD*)(*(DWORD*)*ppDSBufferDuplicate);
-            for (int i = 0; i < 21; i++) {
-                sb.vtbl_orig[i] = (DWORD)address[i];
-                sb.vtbl_changed[i] = (DWORD)address[i];
-            }
-            sb.vtbl_changed[14] = (DWORD)SetFormat_Changed;
-            sb.vtbl_changed[2] = (DWORD)SoundBuffer_Release_Changed;
-            sb.vtbl_changed[10] = (DWORD)SoundBuffer_Initialize_Changed;
-            sb.vtbl_changed[12] = (DWORD)Play_Changed;
-            (*(DWORD*)*ppDSBufferDuplicate) = (DWORD)sb.vtbl_changed;
-            g_sound_opt.soundbuffers.push_back(sb);
-        }
-    }
-    return res;
-}
-
-HRESULT STDMETHODCALLTYPE CreateSoundBuffer_Changed(IDirectSound8* thiz, LPCDSBUFFERDESC pcDSBufferDesc, LPDIRECTSOUNDBUFFER* ppDSBuffer,LPUNKNOWN pUnkOuter)
-{
-    HRESULT res;
-    DSBUFFERDESC desc = *pcDSBufferDesc;
-    if (desc.dwFlags & DSBCAPS_CTRLPOSITIONNOTIFY) { // only BGM
-        desc.dwFlags |= DSBCAPS_CTRLFREQUENCY;
-    }
-
-    SoundOpt::SB_Struct sb;
-    memset(&sb, 0, sizeof(sb));
-    if (desc.lpwfxFormat)
-        sb.orig_format = *desc.lpwfxFormat;
-    res = g_sound_opt.g_realCreateSoundBuffer(thiz, &desc, ppDSBuffer, pUnkOuter);
-    if (SUCCEEDED(res))
-    {
-        sb.p_sb = *ppDSBuffer;
-        if (desc.dwFlags & DSBCAPS_CTRLPOSITIONNOTIFY) { // only BGM
-            sb.vtbl_orig = new DWORD[21];
-            sb.vtbl_changed = new DWORD[21];
-            DWORD* address = (DWORD*)(*(DWORD*)*ppDSBuffer);
-            for (int i = 0; i < 21; i++)
-            {
-                sb.vtbl_orig[i] = (DWORD)address[i];
-                sb.vtbl_changed[i] = (DWORD)address[i];
-            }
-            sb.vtbl_changed[14] = (DWORD)SetFormat_Changed;
-            sb.vtbl_changed[2] = (DWORD)SoundBuffer_Release_Changed;
-            sb.vtbl_changed[10] = (DWORD)SoundBuffer_Initialize_Changed;
-            sb.vtbl_changed[12] = (DWORD)Play_Changed;
-            (*(DWORD*)*ppDSBuffer) = (DWORD)sb.vtbl_changed;
-            g_sound_opt.soundbuffers.push_back(sb);
-        }
-    }
-    return res;
 }
 
 void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
@@ -1504,6 +212,25 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     }
 
     ::ImGui::StyleColorsDark();
+
+    LauncherSettingGet("force_render_cursor", g_cursor_opt.forceRenderCursor);
+    g_cursor_opt.alwaysRenderCursor = false;
+    if (g_cursor_opt.forceRenderCursor) {
+        LauncherSettingGet("always_render_cursor", g_cursor_opt.alwaysRenderCursor);
+        g_cursor_opt.customCursor = ReadImage(impl==IMPL_WIN32_DX8?8:9, *(DWORD*)g_gameGuiDevice, "cursor.png", NULL, 0);
+        if (g_cursor_opt.customCursor){
+            g_cursor_opt.textureSize = (impl == IMPL_WIN32_DX8) ? GetImageInfo8(g_cursor_opt.customCursor) : GetImageInfo9(g_cursor_opt.customCursor);
+        } else {
+            g_cursor_opt.textureSize = { 32.0f, 32.0f };
+        }
+
+    }
+
+    if (g_cursor_opt.forceRenderCursor && g_cursor_opt.alwaysRenderCursor) {
+        io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+        ShowCursor(FALSE);
+    }
+
     g_adv_igi_options.keyboard_style.separated = true;
     g_adv_igi_options.keyboard_style.border_color_press = 0xFFFFFFFF;
     g_adv_igi_options.keyboard_style.border_color_release = 0xFFFFFFFF;
@@ -1566,8 +293,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
             }
            
         }
-
-       
         
         memset(&g_adv_igi_options, 0, sizeof(g_adv_igi_options));
 
@@ -1659,21 +384,14 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         g_adv_igi_options.keyboard_style.size = { 34.0f, 34.0f };
         LauncherSettingGet("kb_type", g_adv_igi_options.keyboard_style.type);
 
-        bool useCorrectJaFonts=false;
-        LauncherSettingGet("use_custom_font", g_font_opt.g_useCustomFont);
-        LauncherSettingGet("use_correct_ja_fonts", useCorrectJaFonts);
-        if (g_font_opt.g_useCustomFont || useCorrectJaFonts) {
-            HookIAT(GetModuleHandle(NULL), "GDI32.dll", "CreateFontA", CreateFontA_Changed, (void**)&g_font_opt.g_realCreateFontA);
-            HookIAT(GetModuleHandle(NULL), "GDI32.dll", "CreateFontW", CreateFontW_Changed, (void**)&g_font_opt.g_realCreateFontW);
+        bool use_custom_font = false, use_correct_ja_font = false;
+        int custom_font_idx = 0;
+        LauncherSettingGet("use_custom_font", use_custom_font);
+        LauncherSettingGet("use_correct_ja_fonts", use_correct_ja_font);
+        if (use_custom_font) {
+            LauncherSettingGet("custom_font", custom_font_idx);
         }
-        if (g_font_opt.g_useCustomFont)
-        {
-            int font = 0;
-            LauncherSettingGet("custom_font", font);
-            auto &all_fonts = EnumAllFonts();
-            if (font >= 0 && font < all_fonts.size())
-                g_font_opt.g_customFont = all_fonts[font];
-        }
+        HookCreateFont(use_correct_ja_font, use_custom_font, custom_font_idx);
 
         int theme;
         if (LauncherSettingGet("theme", theme)) {
@@ -1684,20 +402,27 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
                 SetTheme(theme);
         } else
             ImGui::StyleColorsDark();
-        if (LauncherSettingGet("fast_BGM_when_spdup", g_sound_opt.enable_fasterBGM) && g_sound_opt.enable_fasterBGM) {
-            IDirectSound8* pdirectsound;
-            HRESULT hr = DirectSoundCreate8(NULL, &pdirectsound, NULL);
-            if (SUCCEEDED(hr)) {
-                HookVTable(pdirectsound, 3, CreateSoundBuffer_Changed, (void**)&g_sound_opt.g_realCreateSoundBuffer);
-                // HookVTable(pdirectsound, 5, DuplicateSoundBuffer_Changed, (void**)&g_realDuplicateSoundBuffer);
-                pdirectsound->Release();
+
+        bool is_hook_bgm = false;
+        LauncherSettingGet("fast_BGM_when_spdup", is_hook_bgm);
+        HookBGMSpeed(is_hook_bgm);
+
+        bool enable_present_hook = false;
+        if (LauncherSettingGet("enable_present_hook", enable_present_hook) && enable_present_hook) {
+            if (impl == IMPL_WIN32_DX8)
+            {
+                HookDx8(device);
+            }else {
+                HookDx9(device);
             }
         }
+
         if (g_input_opt.g_enable_keyhook){
             InitInput();
-           
-            if (LauncherSettingGet("test_input_latency", g_input_latency_test.test_input_latency) && g_input_latency_test.test_input_latency) {
-                g_input_latency_test.Init(device,impl);
+            if (enable_present_hook) {
+                bool test_input_latency = false;
+                LauncherSettingGet("test_input_latency", test_input_latency);
+                EnableInputLatencyTest(test_input_latency);
             }
         }
     }else{
@@ -1737,6 +462,35 @@ void GameGuiBegin(game_gui_impl impl, bool game_nav)
     GameGuiProgress = 1;
 }
 
+bool RenderCustomCursor()
+{
+    if (g_cursor_opt.customCursor == 0)
+        return false;
+   
+    auto& io = ImGui::GetIO();
+    io.MouseDrawCursor = false;
+
+    float cursorSize = g_cursor_opt.textureSize.y/128.0f*32.0f;
+    const static std::pair<ImVec2,ImVec2> uvs[8] = {
+        { { 0,    0 },   {0.25,0.5} },
+        { { 0.25, 0 },   {0.5, 0.5} },
+        { { 0.5,  0 },   {0.75,0.5} },
+        { { 0.75, 0 },   {1.0, 0.5} },
+        { { 0,    0.5 }, {0.25,1.0} },
+        { { 0.25, 0.5 }, {0.5, 1.0} },
+        { { 0.5,  0.5 }, {0.75,1.0} },
+        { { 0.75, 0.5 }, {1.0, 1.0} },
+    };
+    //ImGuiMouseCursor_NotAllowed is not included
+    ImGuiMouseCursor cursor = ImGui::GetMouseCursor();
+    if (cursor >= 8 || cursor<0) {
+        return false;
+    }
+    ImDrawList* foreground = ImGui::GetForegroundDrawList();
+    foreground->AddImage(g_cursor_opt.customCursor, io.MousePos, ImVec2(io.MousePos.x + cursorSize, io.MousePos.y + cursorSize), uvs[cursor].first, uvs[cursor].second);
+    return true;
+}
+
 void GameGuiEnd(bool draw_cursor)
 {
     if (GameGuiProgress != 1)
@@ -1745,9 +499,11 @@ void GameGuiEnd(bool draw_cursor)
     // now it's no need since win32 hook method is changed
     
     // Draw cursor if needed
-    if (draw_cursor && (g_forceRenderCursor || Gui::ImplWin32CheckFullScreen())) {
-        auto& io = ::ImGui::GetIO();
-        io.MouseDrawCursor = true;
+    if ((draw_cursor && (g_cursor_opt.forceRenderCursor || Gui::ImplWin32CheckFullScreen())) || g_cursor_opt.alwaysRenderCursor) {
+        if (!RenderCustomCursor()) {
+            auto& io = ::ImGui::GetIO();
+            io.MouseDrawCursor = true;
+        }
     }
 
     // Locale Change
@@ -1893,8 +649,6 @@ void InitHook(int ver,void* addr1, void* addr2)
         LauncherSettingGet("keyboard_SOCDv2", (int&)g_input_opt.g_socd_setting);
         LauncherSettingGet("keyboard_API", (int&)g_input_opt.g_keyboardAPI);
 
-        LauncherSettingGet("force_render_cursor", g_forceRenderCursor);
-
         bool disable_f10 = false;
         if (LauncherSettingGet("disable_F10_11_13", disable_f10) && disable_f10) {
             if (ver == 11 // 11
@@ -1914,21 +668,15 @@ void InitHook(int ver,void* addr1, void* addr2)
         LauncherSettingGet_KeyBind();
         LauncherSettingGet("disableJoy", g_input_opt.g_disable_joy);
         // if (LauncherSettingGet("disableJoy", g_disable_joy) && g_disable_joy)
-        {
-            HookIAT(GetModuleHandle(NULL), "winmm.dll", "joyGetPosEx", joyGetPosEx_Changed, (void**)&g_input_opt.g_realJoyGetPosEx);
-            HookIAT(GetModuleHandle(NULL), "winmm.dll", "joyGetDevCapsA", joyGetDevCapsA_Changed, (void**)&g_input_opt.g_realJoyGetDevCapsA);
-            HookIAT(GetModuleHandle(NULL), "xinput1_3.dll", "XInputGetState", XInputGetState_Changed3, (void**)&g_input_opt.g_realXInputGetState3); // th18
-            HookIAT(GetModuleHandle(NULL), "xinput1_4.dll", "XInputGetState", XInputGetState_Changed4, (void**)&g_input_opt.g_realXInputGetState4); // th19+
-        }
        
-        g_enable_l2d = false;
+        HookJoyInput();
+
         g_fast_re_opt.enable_fast_retry = false;
         g_input_opt.enable_auto_shoot = false;
         g_input_opt.shoot_key_DIK = -1;
         if (LauncherSettingGet("enable_keyboard_hook", g_input_opt.g_enable_keyhook) && g_input_opt.g_enable_keyhook) { // hook keyboard to enable SOCD and X-disable
             LPVOID pTarget;
-            HookIAT(GetModuleHandle(NULL), "user32.dll", "GetKeyboardState", GetKeyboardState_Changed, (void**)&g_input_opt.g_realGetKeyboardState);
-            HookIAT(GetModuleHandle(NULL), "dinput8.dll", "DirectInput8Create", DirectInput8Create_Changed, (void**)&g_input_opt.g_realDirectInput8Create);
+            HookKeyboardInput();
             
             if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput || g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI) {
                 LauncherSettingGet("auto_fast_retry", g_fast_re_opt.enable_fast_retry);
@@ -1948,41 +696,6 @@ void InitHook(int ver,void* addr1, void* addr2)
             if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI) {
                 // keyboard hook + force dinput8
                 LauncherSettingGet("use_get_device_data", g_input_opt.use_get_device_data);
-                LauncherSettingGet("enable_l2d_key", g_enable_l2d);
-                if (g_enable_l2d) {
-                    memset(&g_l2dState, 0, sizeof(g_l2dState));
-                    g_l2dState.curr_state = Reset;
-                    g_l2dState.dying_expression_last_time_ms = 1e9;
-                    g_l2dState.is_dying_expression = false;
-                    g_l2dState.last_time_ms = 1e9;
-                    g_l2dState.motion_time = 2000;
-
-                    int32_t motion_time = 3000;
-                    LauncherSettingGet("l2d_motion_time", motion_time);
-                    g_l2dState.motion_time = motion_time;
-                    int reset_key = -1,
-                        miss_key = -1,
-                        borderBreak_key = -1,
-                        releasing_key = -1,
-                        bomb_key = -1,
-                        hyper_key = -1,
-                        dying_key = -1;
-                    LauncherSettingGet("l2d_reset_key", reset_key);
-                    LauncherSettingGet("l2d_miss_key", miss_key);
-                    LauncherSettingGet("l2d_borderBreak_key", borderBreak_key);
-                    LauncherSettingGet("l2d_releasing_key", releasing_key);
-                    LauncherSettingGet("l2d_bomb_key", bomb_key);
-                    LauncherSettingGet("l2d_hyper_key", hyper_key);
-                    LauncherSettingGet("l2d_dying_key", dying_key);
-                    g_l2dState.VKs[Live2D_State::Miss] = miss_key;
-                    g_l2dState.VKs[Live2D_State::BorderBreak] = borderBreak_key;
-                    g_l2dState.VKs[Live2D_State::Release] = releasing_key;
-                    g_l2dState.VKs[Live2D_State::Bomb] = bomb_key;
-                    g_l2dState.VKs[Live2D_State::Hyper] = hyper_key;
-
-                    g_l2dState.VKs[Live2D_State::Reset] = reset_key;
-                    g_l2dState.VKs[Live2D_State::Dying] = dying_key;
-                }
             }
         }
     }
@@ -2272,7 +985,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
     ctx.fps = fpsStatic;
     if (clickedApply)
     {
-        g_sound_opt.bgm_speed = ctx.fps / 60.0f;
+        SetBGMSpeed(ctx.fps / 60.0f);
         ChangeBGMSpeed();
     }
 
@@ -2345,43 +1058,23 @@ void DisableKeyOpt()
             }
             if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI ){
                 if (ImGui::Checkbox("use GetDeviceData", &g_input_opt.use_get_device_data)){
-                    if (g_input_opt.use_get_device_data)
-                    {
-                        if (g_input_opt.use_get_device_data && g_input_opt.ddevice) {
-                            DIPROPDWORD dipdw;
-                            dipdw.diph.dwSize = sizeof(DIPROPDWORD);
-                            dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-                            dipdw.diph.dwObj = 0;
-                            dipdw.diph.dwHow = DIPH_DEVICE;
-                            dipdw.dwData = 64;
-                            SetProperty_Changed(g_input_opt.ddevice,DIPROP_BUFFERSIZE, &dipdw.diph);
-                        } else {
-                            DIPROPDWORD dipdw;
-                            dipdw.diph.dwSize = sizeof(DIPROPDWORD);
-                            dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-                            dipdw.diph.dwObj = 0;
-                            dipdw.diph.dwHow = DIPH_DEVICE;
-                            dipdw.dwData = 0;
-                            SetProperty_Changed(g_input_opt.ddevice, DIPROP_BUFFERSIZE, &dipdw.diph);
-                        }
-                    }
-                    memset(g_input_opt.fake_di_State, 0, 256);
-                    ClearDinputData(false);
+                    SetDinput8DeviceData();
+                    ClearInputData(false);
                 }
             }
         }
-        if (g_input_latency_test.test_input_latency)
+        double cur_latency;
+        if (GetLatency(&cur_latency))
         {
             static std::deque<double> times;
-            double t = g_input_latency_test.GetLatency();
-            times.push_back(t);
+            times.push_back(cur_latency);
             double avg = 0;
             for (auto& i : times)
                 avg += i;
             avg /= times.size();
             while (times.size() > 60)
                 times.pop_front();
-            ImGui::Text("InputA->Present: %lf(%lf)", avg * 1000.0, t * 1000.0);
+            ImGui::Text("InputA->Present: %lf(%lf)", avg * 1000.0, cur_latency * 1000.0);
         }
 
         if (ImGui::IsKeyDown(0x10)) // shift
@@ -2730,58 +1423,6 @@ void VFile::Read(void* buffer, unsigned int length)
 }
 #pragma endregion
 
-#pragma region Snapshot
-namespace THSnapshot {
-    void* GetSnapshotData(IDirect3DDevice8* d3d8)
-    {
-        IDirect3DSurface8* surface = nullptr;
-        d3d8->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &surface);
-        D3DLOCKED_RECT rect = {};
-        surface->LockRect(&rect, nullptr, 0);
-
-        void* bmp = malloc(0xE2000);
-        uint8_t* bmp_write = (uint8_t*)bmp;
-        for (int32_t i = 0x1DF; i >= 0; --i) {
-            uint8_t* bmp_bits = ((uint8_t*)rect.pBits) + i * rect.Pitch;
-            for (size_t j = 0; j < 0x280; ++j) {
-                memcpy(bmp_write, bmp_bits, 3); // This *should* get optimized to byte/word MOVs
-                bmp_bits += 4;
-                bmp_write += 3;
-            }
-        }
-
-        surface->UnlockRect();
-        surface->Release();
-
-        return bmp;
-    }
-    void Snapshot(IDirect3DDevice8* d3d8)
-    {
-        wchar_t dir[] = L"snapshot/th000.bmp";
-        HANDLE hFile;
-        CreateDirectoryW(L"snapshot", nullptr);
-        for (int i = 0; i < 1000; i++) {
-            dir[13] = static_cast<wchar_t>(i % 10) + L'0';
-            dir[12] = static_cast<wchar_t>((i % 100 - i % 10) / 10) + L'0';
-            dir[11] = static_cast<wchar_t>((i - i % 100) / 100) + L'0';
-            hFile = CreateFileW(dir, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
-            if (hFile != INVALID_HANDLE_VALUE)
-                break;
-        }
-        if (hFile == INVALID_HANDLE_VALUE)
-            return;
-
-        auto header = "\x42\x4d\x36\x10\x0e\x00\x00\x00\x00\x00\x36\x00\x00\x00\x28\x00\x00\x00\x80\x02\x00\x00\xe0\x01\x00\x00\x01\x00\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-        void* bmp = GetSnapshotData(d3d8);
-        DWORD bytesRead;
-        WriteFile(hFile, header, 0x36, &bytesRead, nullptr);
-        WriteFile(hFile, bmp, 0xE2000, &bytesRead, nullptr);
-        free(bmp);
-
-        CloseHandle(hFile);
-    }
-};
-#pragma endregion
 
 #pragma region ECL Warp
 void StageWarpsRender(stage_warps_t& warps, std::vector<unsigned int>& out_warp, size_t level)
@@ -2920,496 +1561,5 @@ bool GameState_Assert(bool cond)
     else
         ExitProcess(UINT_MAX);
 }
-#pragma endregion
-
-#pragma region SSS
-bool g_blind_view = false;
-bool g_change_stone = false;
-
-float g_blind_size = 150.0f;
-ImTextureID g_blind_texture = NULL;
-bool g_is_texture_failed = false;
-void RenderBlindView(int dx_ver, DWORD device, ImVec2 plpos, ImVec2 plpos_ofs, ImVec2 stagepos, float zoom)
-{
-    if (g_blind_view)
-    {
-        static const unsigned char blind_file[] = {
-        0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
-        0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x80, 0x08, 0x06, 0x00, 0x00, 0x00, 0xC3, 0x3E, 0x61,
-        0xCB, 0x00, 0x00, 0x00, 0x09, 0x70, 0x48, 0x59, 0x73, 0x00, 0x00, 0x16, 0x25, 0x00, 0x00, 0x16,
-        0x25, 0x01, 0x49, 0x52, 0x24, 0xF0, 0x00, 0x00, 0x04, 0xEE, 0x69, 0x54, 0x58, 0x74, 0x58, 0x4D,
-        0x4C, 0x3A, 0x63, 0x6F, 0x6D, 0x2E, 0x61, 0x64, 0x6F, 0x62, 0x65, 0x2E, 0x78, 0x6D, 0x70, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x3C, 0x3F, 0x78, 0x70, 0x61, 0x63, 0x6B, 0x65, 0x74, 0x20, 0x62, 0x65,
-        0x67, 0x69, 0x6E, 0x3D, 0x22, 0xEF, 0xBB, 0xBF, 0x22, 0x20, 0x69, 0x64, 0x3D, 0x22, 0x57, 0x35,
-        0x4D, 0x30, 0x4D, 0x70, 0x43, 0x65, 0x68, 0x69, 0x48, 0x7A, 0x72, 0x65, 0x53, 0x7A, 0x4E, 0x54,
-        0x63, 0x7A, 0x6B, 0x63, 0x39, 0x64, 0x22, 0x3F, 0x3E, 0x20, 0x3C, 0x78, 0x3A, 0x78, 0x6D, 0x70,
-        0x6D, 0x65, 0x74, 0x61, 0x20, 0x78, 0x6D, 0x6C, 0x6E, 0x73, 0x3A, 0x78, 0x3D, 0x22, 0x61, 0x64,
-        0x6F, 0x62, 0x65, 0x3A, 0x6E, 0x73, 0x3A, 0x6D, 0x65, 0x74, 0x61, 0x2F, 0x22, 0x20, 0x78, 0x3A,
-        0x78, 0x6D, 0x70, 0x74, 0x6B, 0x3D, 0x22, 0x41, 0x64, 0x6F, 0x62, 0x65, 0x20, 0x58, 0x4D, 0x50,
-        0x20, 0x43, 0x6F, 0x72, 0x65, 0x20, 0x39, 0x2E, 0x31, 0x2D, 0x63, 0x30, 0x30, 0x31, 0x20, 0x37,
-        0x39, 0x2E, 0x61, 0x38, 0x64, 0x34, 0x37, 0x35, 0x33, 0x2C, 0x20, 0x32, 0x30, 0x32, 0x33, 0x2F,
-        0x30, 0x33, 0x2F, 0x32, 0x33, 0x2D, 0x30, 0x38, 0x3A, 0x35, 0x36, 0x3A, 0x33, 0x37, 0x20, 0x20,
-        0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x22, 0x3E, 0x20, 0x3C, 0x72, 0x64, 0x66, 0x3A, 0x52, 0x44,
-        0x46, 0x20, 0x78, 0x6D, 0x6C, 0x6E, 0x73, 0x3A, 0x72, 0x64, 0x66, 0x3D, 0x22, 0x68, 0x74, 0x74,
-        0x70, 0x3A, 0x2F, 0x2F, 0x77, 0x77, 0x77, 0x2E, 0x77, 0x33, 0x2E, 0x6F, 0x72, 0x67, 0x2F, 0x31,
-        0x39, 0x39, 0x39, 0x2F, 0x30, 0x32, 0x2F, 0x32, 0x32, 0x2D, 0x72, 0x64, 0x66, 0x2D, 0x73, 0x79,
-        0x6E, 0x74, 0x61, 0x78, 0x2D, 0x6E, 0x73, 0x23, 0x22, 0x3E, 0x20, 0x3C, 0x72, 0x64, 0x66, 0x3A,
-        0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6F, 0x6E, 0x20, 0x72, 0x64, 0x66, 0x3A,
-        0x61, 0x62, 0x6F, 0x75, 0x74, 0x3D, 0x22, 0x22, 0x20, 0x78, 0x6D, 0x6C, 0x6E, 0x73, 0x3A, 0x78,
-        0x6D, 0x70, 0x3D, 0x22, 0x68, 0x74, 0x74, 0x70, 0x3A, 0x2F, 0x2F, 0x6E, 0x73, 0x2E, 0x61, 0x64,
-        0x6F, 0x62, 0x65, 0x2E, 0x63, 0x6F, 0x6D, 0x2F, 0x78, 0x61, 0x70, 0x2F, 0x31, 0x2E, 0x30, 0x2F,
-        0x22, 0x20, 0x78, 0x6D, 0x6C, 0x6E, 0x73, 0x3A, 0x64, 0x63, 0x3D, 0x22, 0x68, 0x74, 0x74, 0x70,
-        0x3A, 0x2F, 0x2F, 0x70, 0x75, 0x72, 0x6C, 0x2E, 0x6F, 0x72, 0x67, 0x2F, 0x64, 0x63, 0x2F, 0x65,
-        0x6C, 0x65, 0x6D, 0x65, 0x6E, 0x74, 0x73, 0x2F, 0x31, 0x2E, 0x31, 0x2F, 0x22, 0x20, 0x78, 0x6D,
-        0x6C, 0x6E, 0x73, 0x3A, 0x78, 0x6D, 0x70, 0x4D, 0x4D, 0x3D, 0x22, 0x68, 0x74, 0x74, 0x70, 0x3A,
-        0x2F, 0x2F, 0x6E, 0x73, 0x2E, 0x61, 0x64, 0x6F, 0x62, 0x65, 0x2E, 0x63, 0x6F, 0x6D, 0x2F, 0x78,
-        0x61, 0x70, 0x2F, 0x31, 0x2E, 0x30, 0x2F, 0x6D, 0x6D, 0x2F, 0x22, 0x20, 0x78, 0x6D, 0x6C, 0x6E,
-        0x73, 0x3A, 0x73, 0x74, 0x45, 0x76, 0x74, 0x3D, 0x22, 0x68, 0x74, 0x74, 0x70, 0x3A, 0x2F, 0x2F,
-        0x6E, 0x73, 0x2E, 0x61, 0x64, 0x6F, 0x62, 0x65, 0x2E, 0x63, 0x6F, 0x6D, 0x2F, 0x78, 0x61, 0x70,
-        0x2F, 0x31, 0x2E, 0x30, 0x2F, 0x73, 0x54, 0x79, 0x70, 0x65, 0x2F, 0x52, 0x65, 0x73, 0x6F, 0x75,
-        0x72, 0x63, 0x65, 0x45, 0x76, 0x65, 0x6E, 0x74, 0x23, 0x22, 0x20, 0x78, 0x6D, 0x6C, 0x6E, 0x73,
-        0x3A, 0x70, 0x68, 0x6F, 0x74, 0x6F, 0x73, 0x68, 0x6F, 0x70, 0x3D, 0x22, 0x68, 0x74, 0x74, 0x70,
-        0x3A, 0x2F, 0x2F, 0x6E, 0x73, 0x2E, 0x61, 0x64, 0x6F, 0x62, 0x65, 0x2E, 0x63, 0x6F, 0x6D, 0x2F,
-        0x70, 0x68, 0x6F, 0x74, 0x6F, 0x73, 0x68, 0x6F, 0x70, 0x2F, 0x31, 0x2E, 0x30, 0x2F, 0x22, 0x20,
-        0x78, 0x6D, 0x70, 0x3A, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6F, 0x72, 0x54, 0x6F, 0x6F, 0x6C, 0x3D,
-        0x22, 0x41, 0x64, 0x6F, 0x62, 0x65, 0x20, 0x50, 0x68, 0x6F, 0x74, 0x6F, 0x73, 0x68, 0x6F, 0x70,
-        0x20, 0x32, 0x34, 0x2E, 0x37, 0x20, 0x28, 0x57, 0x69, 0x6E, 0x64, 0x6F, 0x77, 0x73, 0x29, 0x22,
-        0x20, 0x78, 0x6D, 0x70, 0x3A, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x44, 0x61, 0x74, 0x65, 0x3D,
-        0x22, 0x32, 0x30, 0x32, 0x35, 0x2D, 0x30, 0x33, 0x2D, 0x32, 0x33, 0x54, 0x31, 0x37, 0x3A, 0x35,
-        0x33, 0x3A, 0x31, 0x30, 0x2B, 0x30, 0x38, 0x3A, 0x30, 0x30, 0x22, 0x20, 0x78, 0x6D, 0x70, 0x3A,
-        0x4D, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x44, 0x61, 0x74, 0x65, 0x3D, 0x22, 0x32, 0x30,
-        0x32, 0x35, 0x2D, 0x30, 0x33, 0x2D, 0x32, 0x33, 0x54, 0x31, 0x37, 0x3A, 0x35, 0x33, 0x3A, 0x31,
-        0x30, 0x2B, 0x30, 0x38, 0x3A, 0x30, 0x30, 0x22, 0x20, 0x78, 0x6D, 0x70, 0x3A, 0x4D, 0x6F, 0x64,
-        0x69, 0x66, 0x79, 0x44, 0x61, 0x74, 0x65, 0x3D, 0x22, 0x32, 0x30, 0x32, 0x35, 0x2D, 0x30, 0x33,
-        0x2D, 0x32, 0x33, 0x54, 0x31, 0x37, 0x3A, 0x35, 0x33, 0x3A, 0x31, 0x30, 0x2B, 0x30, 0x38, 0x3A,
-        0x30, 0x30, 0x22, 0x20, 0x64, 0x63, 0x3A, 0x66, 0x6F, 0x72, 0x6D, 0x61, 0x74, 0x3D, 0x22, 0x69,
-        0x6D, 0x61, 0x67, 0x65, 0x2F, 0x70, 0x6E, 0x67, 0x22, 0x20, 0x78, 0x6D, 0x70, 0x4D, 0x4D, 0x3A,
-        0x49, 0x6E, 0x73, 0x74, 0x61, 0x6E, 0x63, 0x65, 0x49, 0x44, 0x3D, 0x22, 0x78, 0x6D, 0x70, 0x2E,
-        0x69, 0x69, 0x64, 0x3A, 0x65, 0x63, 0x34, 0x31, 0x65, 0x65, 0x30, 0x63, 0x2D, 0x36, 0x30, 0x38,
-        0x39, 0x2D, 0x63, 0x37, 0x34, 0x31, 0x2D, 0x62, 0x30, 0x64, 0x37, 0x2D, 0x35, 0x61, 0x33, 0x34,
-        0x31, 0x66, 0x32, 0x35, 0x37, 0x34, 0x36, 0x63, 0x22, 0x20, 0x78, 0x6D, 0x70, 0x4D, 0x4D, 0x3A,
-        0x44, 0x6F, 0x63, 0x75, 0x6D, 0x65, 0x6E, 0x74, 0x49, 0x44, 0x3D, 0x22, 0x78, 0x6D, 0x70, 0x2E,
-        0x64, 0x69, 0x64, 0x3A, 0x65, 0x63, 0x34, 0x31, 0x65, 0x65, 0x30, 0x63, 0x2D, 0x36, 0x30, 0x38,
-        0x39, 0x2D, 0x63, 0x37, 0x34, 0x31, 0x2D, 0x62, 0x30, 0x64, 0x37, 0x2D, 0x35, 0x61, 0x33, 0x34,
-        0x31, 0x66, 0x32, 0x35, 0x37, 0x34, 0x36, 0x63, 0x22, 0x20, 0x78, 0x6D, 0x70, 0x4D, 0x4D, 0x3A,
-        0x4F, 0x72, 0x69, 0x67, 0x69, 0x6E, 0x61, 0x6C, 0x44, 0x6F, 0x63, 0x75, 0x6D, 0x65, 0x6E, 0x74,
-        0x49, 0x44, 0x3D, 0x22, 0x78, 0x6D, 0x70, 0x2E, 0x64, 0x69, 0x64, 0x3A, 0x65, 0x63, 0x34, 0x31,
-        0x65, 0x65, 0x30, 0x63, 0x2D, 0x36, 0x30, 0x38, 0x39, 0x2D, 0x63, 0x37, 0x34, 0x31, 0x2D, 0x62,
-        0x30, 0x64, 0x37, 0x2D, 0x35, 0x61, 0x33, 0x34, 0x31, 0x66, 0x32, 0x35, 0x37, 0x34, 0x36, 0x63,
-        0x22, 0x20, 0x70, 0x68, 0x6F, 0x74, 0x6F, 0x73, 0x68, 0x6F, 0x70, 0x3A, 0x43, 0x6F, 0x6C, 0x6F,
-        0x72, 0x4D, 0x6F, 0x64, 0x65, 0x3D, 0x22, 0x33, 0x22, 0x3E, 0x20, 0x3C, 0x78, 0x6D, 0x70, 0x4D,
-        0x4D, 0x3A, 0x48, 0x69, 0x73, 0x74, 0x6F, 0x72, 0x79, 0x3E, 0x20, 0x3C, 0x72, 0x64, 0x66, 0x3A,
-        0x53, 0x65, 0x71, 0x3E, 0x20, 0x3C, 0x72, 0x64, 0x66, 0x3A, 0x6C, 0x69, 0x20, 0x73, 0x74, 0x45,
-        0x76, 0x74, 0x3A, 0x61, 0x63, 0x74, 0x69, 0x6F, 0x6E, 0x3D, 0x22, 0x63, 0x72, 0x65, 0x61, 0x74,
-        0x65, 0x64, 0x22, 0x20, 0x73, 0x74, 0x45, 0x76, 0x74, 0x3A, 0x69, 0x6E, 0x73, 0x74, 0x61, 0x6E,
-        0x63, 0x65, 0x49, 0x44, 0x3D, 0x22, 0x78, 0x6D, 0x70, 0x2E, 0x69, 0x69, 0x64, 0x3A, 0x65, 0x63,
-        0x34, 0x31, 0x65, 0x65, 0x30, 0x63, 0x2D, 0x36, 0x30, 0x38, 0x39, 0x2D, 0x63, 0x37, 0x34, 0x31,
-        0x2D, 0x62, 0x30, 0x64, 0x37, 0x2D, 0x35, 0x61, 0x33, 0x34, 0x31, 0x66, 0x32, 0x35, 0x37, 0x34,
-        0x36, 0x63, 0x22, 0x20, 0x73, 0x74, 0x45, 0x76, 0x74, 0x3A, 0x77, 0x68, 0x65, 0x6E, 0x3D, 0x22,
-        0x32, 0x30, 0x32, 0x35, 0x2D, 0x30, 0x33, 0x2D, 0x32, 0x33, 0x54, 0x31, 0x37, 0x3A, 0x35, 0x33,
-        0x3A, 0x31, 0x30, 0x2B, 0x30, 0x38, 0x3A, 0x30, 0x30, 0x22, 0x20, 0x73, 0x74, 0x45, 0x76, 0x74,
-        0x3A, 0x73, 0x6F, 0x66, 0x74, 0x77, 0x61, 0x72, 0x65, 0x41, 0x67, 0x65, 0x6E, 0x74, 0x3D, 0x22,
-        0x41, 0x64, 0x6F, 0x62, 0x65, 0x20, 0x50, 0x68, 0x6F, 0x74, 0x6F, 0x73, 0x68, 0x6F, 0x70, 0x20,
-        0x32, 0x34, 0x2E, 0x37, 0x20, 0x28, 0x57, 0x69, 0x6E, 0x64, 0x6F, 0x77, 0x73, 0x29, 0x22, 0x2F,
-        0x3E, 0x20, 0x3C, 0x2F, 0x72, 0x64, 0x66, 0x3A, 0x53, 0x65, 0x71, 0x3E, 0x20, 0x3C, 0x2F, 0x78,
-        0x6D, 0x70, 0x4D, 0x4D, 0x3A, 0x48, 0x69, 0x73, 0x74, 0x6F, 0x72, 0x79, 0x3E, 0x20, 0x3C, 0x2F,
-        0x72, 0x64, 0x66, 0x3A, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6F, 0x6E, 0x3E,
-        0x20, 0x3C, 0x2F, 0x72, 0x64, 0x66, 0x3A, 0x52, 0x44, 0x46, 0x3E, 0x20, 0x3C, 0x2F, 0x78, 0x3A,
-        0x78, 0x6D, 0x70, 0x6D, 0x65, 0x74, 0x61, 0x3E, 0x20, 0x3C, 0x3F, 0x78, 0x70, 0x61, 0x63, 0x6B,
-        0x65, 0x74, 0x20, 0x65, 0x6E, 0x64, 0x3D, 0x22, 0x72, 0x22, 0x3F, 0x3E, 0xF4, 0x5F, 0x3E, 0x70,
-        0x00, 0x00, 0x0C, 0xDD, 0x49, 0x44, 0x41, 0x54, 0x78, 0xDA, 0xED, 0x9D, 0x89, 0x72, 0xDA, 0xCC,
-        0x16, 0x84, 0x25, 0x56, 0x1B, 0x3B, 0xC6, 0x76, 0xEE, 0xFB, 0x3F, 0xE1, 0xF5, 0x8E, 0xB1, 0x31,
-        0x8B, 0xFE, 0xA4, 0x2A, 0x93, 0xEA, 0xB4, 0xFB, 0xCC, 0x48, 0x62, 0x24, 0x24, 0x34, 0xAA, 0x9A,
-        0x12, 0x60, 0xEC, 0x54, 0xE8, 0xEF, 0xF4, 0x59, 0x46, 0x40, 0x9E, 0x65, 0x59, 0x91, 0xA5, 0x63,
-        0xB0, 0x47, 0x9E, 0x00, 0x48, 0x00, 0x24, 0x00, 0x12, 0x00, 0xE9, 0x48, 0x00, 0xA4, 0x23, 0x01,
-        0x90, 0x8E, 0x04, 0x40, 0x3A, 0x12, 0x00, 0xE9, 0x48, 0x00, 0xA4, 0x23, 0x01, 0x70, 0x46, 0x47,
-        0x11, 0xE1, 0x35, 0x4A, 0x00, 0xF4, 0x54, 0xE8, 0xA2, 0x06, 0x10, 0xF9, 0x11, 0x8F, 0x25, 0x00,
-        0x4E, 0x28, 0x78, 0x21, 0x1E, 0x2F, 0x4A, 0x3C, 0xDF, 0x12, 0x34, 0x0F, 0xDC, 0xCE, 0xCF, 0x01,
-        0x88, 0xBE, 0x01, 0x50, 0x78, 0x04, 0xC7, 0x73, 0x11, 0x78, 0x4E, 0x08, 0x80, 0xDC, 0x73, 0xCE,
-        0x03, 0xCF, 0xE9, 0x15, 0x0C, 0x7D, 0x01, 0x20, 0x24, 0xB6, 0xBA, 0xAF, 0x56, 0x95, 0x14, 0x90,
-        0x07, 0x56, 0x66, 0xDC, 0xF7, 0xB9, 0x44, 0x02, 0x20, 0x42, 0xB4, 0x5B, 0xEB, 0x60, 0xDC, 0x2E,
-        0x0B, 0x42, 0x19, 0xE1, 0x47, 0xC6, 0x6D, 0x1F, 0x20, 0x9D, 0x76, 0x85, 0x2E, 0x02, 0x10, 0x12,
-        0x9E, 0x85, 0x3E, 0xC0, 0x63, 0x07, 0xE3, 0x31, 0x7C, 0xBE, 0x72, 0x12, 0x16, 0x4C, 0x09, 0x3D,
-        0xA2, 0x95, 0x8B, 0xFB, 0x0A, 0x8C, 0x4E, 0x83, 0xD0, 0x35, 0x00, 0x2C, 0x8B, 0x3F, 0x88, 0xF3,
-        0x1E, 0x84, 0xF6, 0xDD, 0x2E, 0x08, 0x88, 0x22, 0x00, 0x40, 0x4E, 0xE2, 0xFE, 0xBE, 0x3D, 0x86,
-        0xFB, 0xA1, 0xDB, 0xB9, 0x38, 0x77, 0x36, 0x35, 0x74, 0x05, 0x80, 0x32, 0xC2, 0xB3, 0xC0, 0xFB,
-        0x92, 0x4B, 0xB9, 0x42, 0x61, 0xA4, 0x80, 0xDC, 0x88, 0xF6, 0x71, 0xC9, 0xC5, 0x50, 0x74, 0x1E,
-        0x84, 0x53, 0x03, 0xC0, 0x76, 0x5F, 0x18, 0xF6, 0x8E, 0xA2, 0xEF, 0xE0, 0xBC, 0x13, 0xF7, 0xF1,
-        0x39, 0x0A, 0x84, 0x2A, 0x00, 0xB0, 0xC0, 0x13, 0x38, 0xF3, 0xED, 0x09, 0x3D, 0xC7, 0x82, 0x81,
-        0xD3, 0xC3, 0x49, 0x41, 0x38, 0x25, 0x00, 0x85, 0x47, 0xF8, 0xC2, 0x88, 0xE6, 0xDF, 0xC2, 0x6E,
-        0x41, 0xEC, 0x2D, 0xDC, 0xDF, 0x12, 0x14, 0x08, 0xC4, 0xC1, 0x80, 0x40, 0x01, 0xC0, 0x96, 0xCE,
-        0x22, 0xBB, 0x35, 0x85, 0xF3, 0x54, 0x3C, 0xAE, 0x1C, 0x22, 0xF7, 0x80, 0x90, 0x0F, 0x09, 0x00,
-        0xAB, 0xB8, 0x3B, 0x08, 0x7B, 0x67, 0xB1, 0xDD, 0xFA, 0xA2, 0xF3, 0x96, 0x80, 0xB0, 0x20, 0x40,
-        0xC8, 0xF8, 0xB5, 0xE0, 0x9C, 0x3F, 0x36, 0x84, 0xC7, 0x35, 0xA3, 0xF3, 0x54, 0x40, 0xC1, 0x69,
-        0x62, 0x54, 0xA2, 0x58, 0x3C, 0x4B, 0x00, 0x94, 0xE5, 0x73, 0x8E, 0xDE, 0x51, 0xB4, 0xB3, 0xE8,
-        0x9B, 0x3F, 0x67, 0x6B, 0x29, 0x08, 0x62, 0x01, 0x80, 0xA2, 0x5B, 0x6B, 0xEE, 0x81, 0xC1, 0xFD,
-        0xBD, 0x91, 0x01, 0x42, 0xEB, 0x29, 0xA1, 0x4D, 0x00, 0x7C, 0x96, 0xAF, 0x6C, 0x7E, 0x4B, 0xC2,
-        0x6E, 0x8C, 0xC5, 0x50, 0x28, 0x27, 0xD8, 0xD7, 0x4C, 0x01, 0x63, 0x23, 0xF2, 0x59, 0xEC, 0xB9,
-        0xB1, 0x10, 0x8C, 0xA9, 0x91, 0x1E, 0x4E, 0x9A, 0x12, 0xDA, 0x02, 0xC0, 0x67, 0xF9, 0x6C, 0xF5,
-        0x4E, 0x44, 0x14, 0xF7, 0x13, 0xCE, 0xB8, 0x18, 0x04, 0x84, 0xC0, 0x81, 0xE4, 0xFE, 0xB6, 0xAF,
-        0x13, 0xB0, 0x3A, 0x00, 0x27, 0x16, 0xE6, 0x7B, 0x8E, 0x76, 0xB7, 0x2E, 0x68, 0xCD, 0xE1, 0xEC,
-        0x9E, 0xEB, 0x7E, 0x9F, 0x53, 0xC3, 0xC9, 0x52, 0x42, 0x1B, 0x00, 0x58, 0xE2, 0xAB, 0xA8, 0xFF,
-        0x12, 0xA2, 0x7F, 0xFC, 0xB9, 0xCD, 0x67, 0x0B, 0x02, 0x2B, 0x05, 0xEC, 0xA9, 0xAD, 0x54, 0x73,
-        0x00, 0x6C, 0xDB, 0xC6, 0x81, 0x14, 0x60, 0x89, 0x7F, 0x29, 0xCE, 0x0C, 0xC3, 0xAC, 0xA4, 0x1B,
-        0x34, 0x0E, 0x41, 0xD3, 0x00, 0x84, 0xC4, 0xDF, 0x89, 0xFC, 0xBE, 0x01, 0xA1, 0xDD, 0x5A, 0xD3,
-        0x7D, 0x86, 0xC0, 0xFD, 0xAE, 0xFB, 0x3B, 0x4A, 0xFC, 0x7D, 0xC5, 0x36, 0x70, 0x6C, 0x40, 0xE0,
-        0xC4, 0x73, 0x62, 0xB2, 0xF8, 0xB8, 0x16, 0x74, 0xFF, 0x82, 0xD2, 0x83, 0x4A, 0x0B, 0xAD, 0x42,
-        0xD0, 0x24, 0x00, 0x4A, 0xFC, 0x3D, 0x14, 0x7A, 0x28, 0xBE, 0x12, 0x7E, 0x2D, 0x96, 0x82, 0xC0,
-        0xB2, 0xFF, 0x5D, 0xE4, 0x39, 0xC0, 0xC4, 0x93, 0x06, 0x2C, 0xF1, 0x79, 0x29, 0x10, 0xB8, 0x63,
-        0x18, 0x41, 0xCB, 0xD8, 0x38, 0x04, 0x4D, 0x01, 0x50, 0x56, 0xFC, 0xAF, 0x80, 0xF0, 0xEF, 0xB0,
-        0xD6, 0xF0, 0x73, 0x4E, 0x01, 0x75, 0xC4, 0xF7, 0x01, 0x50, 0x05, 0x02, 0x4E, 0x01, 0x0B, 0x00,
-        0xE0, 0x0A, 0x96, 0x0F, 0x84, 0xD9, 0xA9, 0x20, 0x68, 0x12, 0x00, 0x65, 0xFB, 0xCA, 0xF2, 0x3F,
-        0x41, 0x58, 0x27, 0xF4, 0x8A, 0xC4, 0x77, 0x8B, 0xED, 0x7F, 0x03, 0xD6, 0xBF, 0xA5, 0xA2, 0x6F,
-        0xEF, 0x29, 0xFC, 0xCA, 0x00, 0x90, 0x8B, 0x71, 0x30, 0x16, 0x85, 0x53, 0x48, 0x05, 0x73, 0x91,
-        0x06, 0xAE, 0xC4, 0xBA, 0x06, 0x30, 0x16, 0x06, 0x04, 0x53, 0x9A, 0x26, 0x5A, 0xD3, 0xC3, 0xCE,
-        0x02, 0xE0, 0xFE, 0xDE, 0x41, 0x88, 0xBF, 0x83, 0x68, 0x75, 0x22, 0x72, 0xB4, 0xAF, 0x60, 0xB9,
-        0xFB, 0x6B, 0x00, 0x20, 0x86, 0xF8, 0x99, 0x51, 0x04, 0x66, 0x11, 0x21, 0x70, 0x22, 0x5F, 0x83,
-        0xF8, 0xD7, 0x70, 0x1F, 0x5D, 0xC1, 0xFD, 0xDE, 0x4C, 0x74, 0x09, 0x58, 0x98, 0x46, 0x77, 0x81,
-        0xD8, 0x00, 0xA0, 0xF5, 0x73, 0x9B, 0x87, 0xF9, 0x1E, 0x2D, 0x1F, 0x85, 0x7F, 0xA3, 0xB3, 0x15,
-        0xFD, 0x2C, 0xBE, 0xD5, 0xEF, 0xFB, 0x76, 0x00, 0x7D, 0x00, 0x64, 0x01, 0x08, 0xD4, 0x7C, 0x60,
-        0x2E, 0xEA, 0x01, 0x8E, 0xFE, 0x1F, 0x74, 0x76, 0x3F, 0xE3, 0x94, 0xE0, 0xFE, 0xA6, 0x6A, 0x13,
-        0xA3, 0x42, 0x10, 0x13, 0x00, 0xB5, 0x93, 0x67, 0x45, 0xFE, 0x07, 0x59, 0xBD, 0x13, 0xFC, 0x95,
-        0x00, 0x58, 0x51, 0x01, 0x68, 0x89, 0x5F, 0x26, 0xDF, 0xC7, 0xB8, 0x22, 0xC8, 0xAA, 0x0B, 0x2C,
-        0x08, 0x16, 0xE0, 0x02, 0x28, 0xFC, 0x0D, 0xDC, 0xC7, 0xD4, 0x70, 0x59, 0xC2, 0x09, 0xA2, 0x42,
-        0x10, 0x1B, 0x00, 0x1E, 0xF2, 0x58, 0xE2, 0x73, 0xD4, 0xBF, 0xFD, 0x11, 0xFF, 0x0D, 0xD6, 0x8A,
-        0x8A, 0x3F, 0x6C, 0xF9, 0x94, 0xF8, 0xA1, 0xA8, 0xF7, 0x5D, 0x21, 0x6C, 0x5D, 0xF5, 0x5B, 0xC5,
-        0x0D, 0x70, 0x46, 0x70, 0x41, 0x10, 0xA0, 0x03, 0xB8, 0x75, 0x03, 0xB7, 0xD9, 0x0D, 0x14, 0x04,
-        0xD6, 0xB0, 0xA8, 0x13, 0x00, 0x70, 0xDE, 0xE7, 0x3E, 0x7F, 0x23, 0x22, 0x7F, 0x05, 0xA2, 0xBF,
-        0xC2, 0xE2, 0xE8, 0x77, 0xD6, 0x8F, 0xD5, 0xBE, 0x6F, 0xC0, 0x53, 0xF6, 0xA2, 0xD0, 0xB2, 0x2E,
-        0xA0, 0x5C, 0xC1, 0x37, 0x30, 0xC2, 0xEE, 0x00, 0x5B, 0x42, 0x74, 0x81, 0x1B, 0x58, 0x3F, 0xC0,
-        0x11, 0xAE, 0x45, 0x71, 0xC8, 0x73, 0x82, 0xA8, 0xF5, 0x40, 0x4C, 0x00, 0x38, 0xEF, 0x63, 0xAB,
-        0xC7, 0x91, 0x8F, 0x51, 0xFF, 0x42, 0x00, 0xAC, 0x28, 0xFA, 0xD9, 0xF6, 0x59, 0xFC, 0x22, 0x90,
-        0xEB, 0xFF, 0xFE, 0xFF, 0x8A, 0x5F, 0x47, 0xA9, 0x17, 0xE5, 0xD7, 0x11, 0x80, 0x21, 0x17, 0x9B,
-        0x47, 0x5C, 0x17, 0x60, 0x3A, 0x58, 0x50, 0x21, 0x88, 0x00, 0x2C, 0xC9, 0x0D, 0x94, 0x13, 0x70,
-        0x67, 0x30, 0x8A, 0xE5, 0x02, 0x31, 0x00, 0xB0, 0xA6, 0x7C, 0x5B, 0x23, 0xE7, 0x3B, 0xF1, 0x5F,
-        0x40, 0xFC, 0x17, 0x8A, 0x7E, 0xB4, 0x7E, 0x4B, 0x7C, 0x5F, 0x85, 0x5F, 0x59, 0xF4, 0x1A, 0x30,
-        0x58, 0xB5, 0x81, 0x82, 0x40, 0xA5, 0x02, 0x14, 0x7F, 0xF9, 0x67, 0x61, 0x4A, 0x58, 0x08, 0x08,
-        0x7C, 0xD3, 0xC2, 0x93, 0x00, 0xC0, 0x55, 0x3F, 0x57, 0xFC, 0xD8, 0xEA, 0x29, 0xF1, 0x71, 0x61,
-        0xEE, 0x57, 0xE2, 0x6F, 0x4B, 0x4C, 0xF5, 0xA2, 0x09, 0x5F, 0x03, 0x04, 0xAE, 0x0B, 0xA6, 0x06,
-        0x04, 0x58, 0x0B, 0x2C, 0xC5, 0x62, 0x08, 0x5C, 0x3D, 0x31, 0x35, 0x20, 0x38, 0x2A, 0x15, 0xC4,
-        0x00, 0x80, 0xA3, 0x9F, 0xDB, 0xBD, 0x35, 0xD8, 0xFE, 0x2B, 0x08, 0xFE, 0x4C, 0x2E, 0x80, 0xD1,
-        0x8F, 0x15, 0x7F, 0x48, 0xFC, 0x46, 0x85, 0xAF, 0x08, 0x82, 0x0F, 0x02, 0x9C, 0x0F, 0xB0, 0x0B,
-        0xFC, 0x5E, 0xB7, 0x70, 0xFB, 0x06, 0xD2, 0xC1, 0xC2, 0x68, 0x0F, 0xA3, 0xB8, 0xC0, 0x31, 0x00,
-        0xA8, 0xE8, 0xE7, 0xBC, 0xBF, 0x86, 0x6A, 0xDF, 0xE5, 0xF8, 0x67, 0x58, 0x08, 0x80, 0xCA, 0xFB,
-        0x58, 0xF0, 0xE1, 0x05, 0x1D, 0xDF, 0x86, 0x3A, 0x4D, 0x0B, 0x5F, 0x02, 0x04, 0x5C, 0x4E, 0x20,
-        0x2C, 0x0C, 0x55, 0x3D, 0xC0, 0x00, 0xB8, 0x75, 0x03, 0x85, 0x21, 0x42, 0x30, 0x33, 0x26, 0x85,
-        0xB5, 0x5D, 0xE0, 0x58, 0x00, 0x0A, 0xAA, 0xFA, 0xD1, 0xFA, 0x31, 0xEF, 0x73, 0xE4, 0xE3, 0x7A,
-        0x25, 0xEB, 0xC7, 0x76, 0x8F, 0x73, 0xFE, 0xB7, 0xAD, 0xDC, 0xB6, 0x85, 0xF7, 0x80, 0x60, 0x6D,
-        0x29, 0x23, 0x04, 0xB8, 0x5F, 0x80, 0x2E, 0x70, 0x4B, 0x0B, 0x9D, 0x80, 0xEB, 0x01, 0x4E, 0x05,
-        0x47, 0xB9, 0x40, 0x0C, 0x00, 0x30, 0xFA, 0x5D, 0x9B, 0x86, 0xB3, 0x7D, 0x15, 0xF9, 0x4F, 0x46,
-        0xF4, 0x7F, 0x50, 0xAF, 0xBF, 0x33, 0xDA, 0xBC, 0xAC, 0x0B, 0xE2, 0x7B, 0xDC, 0x40, 0x41, 0x80,
-        0x33, 0x82, 0x4B, 0xC3, 0x05, 0xEE, 0x0C, 0x27, 0xC0, 0xBD, 0x03, 0x9C, 0x0F, 0x8C, 0x8F, 0xED,
-        0x08, 0xEA, 0x02, 0x60, 0x45, 0xBF, 0xDB, 0xE0, 0xE1, 0xBC, 0x8F, 0xC2, 0x5B, 0xD1, 0xEF, 0xFA,
-        0x7D, 0xEC, 0xF5, 0xA5, 0xF8, 0x5D, 0x11, 0x3E, 0xE0, 0x06, 0x0A, 0x02, 0x27, 0x9E, 0x9B, 0x0F,
-        0x58, 0x2E, 0x70, 0x47, 0x10, 0x60, 0x3D, 0x30, 0x17, 0x5D, 0x41, 0x6D, 0x17, 0x38, 0x16, 0x80,
-        0x83, 0x18, 0xF8, 0xB8, 0xE8, 0x77, 0x55, 0x3D, 0x8A, 0xFF, 0x04, 0x10, 0xBC, 0x8A, 0xE8, 0xDF,
-        0x90, 0xF8, 0xFB, 0xBE, 0x88, 0x1F, 0x80, 0x60, 0x4C, 0x10, 0xCC, 0x85, 0x0B, 0xDC, 0x80, 0xF8,
-        0x77, 0x04, 0x81, 0xEB, 0x0C, 0x9C, 0x0B, 0xCC, 0x3D, 0xBB, 0x86, 0x8D, 0x03, 0xC0, 0x95, 0x3F,
-        0x8E, 0x7B, 0x3F, 0x0D, 0xEB, 0x7F, 0x32, 0x00, 0xC0, 0xE8, 0x57, 0xD6, 0xDF, 0x2B, 0xF1, 0x4B,
-        0x40, 0xA0, 0x52, 0x01, 0xBB, 0xC0, 0x9D, 0x80, 0x80, 0x53, 0xC1, 0x85, 0x18, 0x13, 0xD7, 0x72,
-        0x81, 0x63, 0x00, 0xC0, 0xBE, 0xFF, 0x4B, 0x44, 0xBF, 0x2B, 0xFC, 0x50, 0xF8, 0x47, 0xA8, 0xFE,
-        0x39, 0xFA, 0x95, 0xF5, 0xF7, 0x4E, 0x7C, 0x0F, 0x04, 0x56, 0x2A, 0xE0, 0x5A, 0xE0, 0xB7, 0xE0,
-        0xF7, 0x04, 0x01, 0xB6, 0x86, 0xE8, 0x02, 0x33, 0x63, 0x38, 0xD4, 0x38, 0x00, 0x07, 0x51, 0xFC,
-        0x71, 0xF4, 0xBF, 0x40, 0xF4, 0x3F, 0x52, 0xF4, 0xBF, 0x78, 0xA2, 0x7F, 0xCF, 0xED, 0x5E, 0xDF,
-        0xC4, 0x27, 0x08, 0xB8, 0x3D, 0x1C, 0x7B, 0x5C, 0x60, 0x49, 0x2E, 0x70, 0x0F, 0x2E, 0xB0, 0xF4,
-        0xB8, 0x80, 0xDA, 0x32, 0x6E, 0x04, 0x00, 0x55, 0xFC, 0x71, 0xE5, 0xFF, 0x26, 0xAC, 0xFF, 0x11,
-        0xA2, 0x1F, 0xED, 0x1F, 0x27, 0x7E, 0xAA, 0xEA, 0xEF, 0x65, 0xF4, 0x1B, 0x2E, 0xA0, 0xBA, 0x02,
-        0x9C, 0x10, 0x72, 0x31, 0x78, 0x4F, 0x4E, 0x70, 0x2B, 0x5C, 0x60, 0x46, 0x2E, 0x50, 0x39, 0x0D,
-        0xD4, 0x05, 0x80, 0xA3, 0x9F, 0x2B, 0xFF, 0x17, 0x21, 0x3E, 0xDB, 0x3F, 0x0E, 0x7D, 0x30, 0xFA,
-        0x7B, 0x6D, 0xFD, 0x15, 0x52, 0x01, 0xBA, 0x80, 0x1B, 0x0E, 0x71, 0x1A, 0x60, 0x08, 0x96, 0x46,
-        0x47, 0x50, 0xBB, 0x18, 0xAC, 0x03, 0xC0, 0x81, 0xC6, 0xBE, 0xCE, 0xFE, 0xDF, 0x69, 0xE8, 0x83,
-        0xE2, 0x3F, 0x90, 0xFD, 0xAB, 0xCA, 0xFF, 0xDB, 0xA5, 0xDB, 0x7D, 0x17, 0xDF, 0x48, 0x05, 0x38,
-        0x2A, 0x56, 0x1D, 0x01, 0xA6, 0x81, 0x9F, 0x04, 0xC1, 0x92, 0x26, 0x84, 0xBC, 0x51, 0x54, 0x39,
-        0x0D, 0xD4, 0x05, 0x80, 0x8B, 0xBF, 0x4F, 0x8A, 0xFE, 0x67, 0x8A, 0xFC, 0x47, 0xAA, 0xFE, 0x57,
-        0x34, 0xF2, 0x3D, 0xCB, 0xE8, 0x2F, 0xE9, 0x02, 0x73, 0x9A, 0x0E, 0x62, 0x37, 0x70, 0x4F, 0xEB,
-        0x96, 0x5C, 0xE0, 0xC2, 0x53, 0x0C, 0x46, 0x07, 0x80, 0xF7, 0xFC, 0x79, 0xEC, 0xEB, 0x8B, 0x7E,
-        0xCC, 0xFF, 0x58, 0xFC, 0x6D, 0x8C, 0xA1, 0xCF, 0xD9, 0x44, 0x7F, 0xC0, 0x05, 0x78, 0x2E, 0xE0,
-        0x8A, 0x41, 0xAC, 0x03, 0x7C, 0x2E, 0xC0, 0xE3, 0xE1, 0xCA, 0xD7, 0x0A, 0xD4, 0x05, 0x80, 0xED,
-        0x9F, 0x8B, 0xBF, 0x47, 0x61, 0xFF, 0x4F, 0x50, 0xFD, 0xAB, 0xE2, 0xEF, 0x2C, 0xA3, 0x3F, 0xE0,
-        0x02, 0x56, 0x31, 0xB8, 0x84, 0xBC, 0xFF, 0x53, 0xB8, 0x00, 0x16, 0x83, 0x2A, 0x0D, 0x34, 0x06,
-        0x00, 0xE7, 0x7F, 0xEE, 0xFD, 0xAD, 0xE8, 0x7F, 0x24, 0xFB, 0x7F, 0x37, 0x8A, 0xBF, 0xB3, 0x8C,
-        0xFE, 0x80, 0x0B, 0x60, 0x31, 0x78, 0x45, 0x69, 0xE0, 0xDE, 0xE3, 0x02, 0x6A, 0x32, 0x58, 0xB9,
-        0x0E, 0xA8, 0x03, 0x80, 0x1A, 0xFE, 0xBC, 0x93, 0xFD, 0x3F, 0x10, 0x00, 0x2A, 0xFF, 0xB3, 0xFD,
-        0xFF, 0xDD, 0xE9, 0x3B, 0x73, 0x00, 0x32, 0x31, 0x1D, 0x74, 0x69, 0xC0, 0xAA, 0x03, 0x7E, 0xC2,
-        0xF9, 0x8E, 0x66, 0x02, 0x97, 0xC7, 0xD4, 0x01, 0x75, 0x01, 0xC0, 0xE1, 0x0F, 0xE6, 0xFF, 0x67,
-        0x00, 0xE0, 0x41, 0x14, 0x80, 0x9C, 0xFF, 0xBF, 0xD9, 0xFF, 0xB9, 0x8A, 0x2F, 0x5C, 0xC0, 0x4A,
-        0x03, 0x58, 0x07, 0xDC, 0x91, 0x0B, 0xFC, 0xA4, 0x99, 0x00, 0xD6, 0x01, 0xAA, 0x1D, 0x8C, 0x0A,
-        0x80, 0x35, 0xFD, 0xC3, 0xF6, 0xEF, 0x89, 0x00, 0x50, 0xF9, 0x1F, 0xDB, 0x3F, 0xBC, 0xD8, 0xA3,
-        0x18, 0x18, 0x00, 0x79, 0xF6, 0xEF, 0x45, 0x23, 0xD8, 0x0E, 0xAA, 0x3A, 0x00, 0x01, 0xB8, 0x33,
-        0xDA, 0x41, 0x9E, 0x0A, 0x46, 0x03, 0xC0, 0x2A, 0x00, 0xAD, 0xFC, 0xFF, 0x20, 0xF2, 0x3F, 0x17,
-        0x80, 0xDF, 0xE6, 0xFE, 0xE7, 0x2E, 0x3E, 0x41, 0xA0, 0xF6, 0x07, 0xB8, 0x10, 0xBC, 0x15, 0x0E,
-        0x60, 0xD5, 0x01, 0xB5, 0x0A, 0xC1, 0x3A, 0x00, 0xEC, 0x08, 0x00, 0xD7, 0xFF, 0xBB, 0x36, 0xEF,
-        0x41, 0x38, 0x00, 0x0E, 0x80, 0x70, 0xFA, 0xF7, 0x4F, 0xFB, 0x37, 0x30, 0x00, 0x54, 0x3B, 0x88,
-        0xF3, 0x00, 0x1E, 0x08, 0xE1, 0x72, 0x6D, 0xE2, 0x0F, 0xA8, 0x03, 0xF0, 0x72, 0xB1, 0xC6, 0x00,
-        0x50, 0xF3, 0xFF, 0x15, 0x00, 0x80, 0x0E, 0xF0, 0x7F, 0xA3, 0x03, 0xF8, 0x10, 0x00, 0x14, 0x03,
-        0x05, 0x20, 0x17, 0x00, 0x5C, 0x1A, 0x9D, 0xC0, 0xFF, 0xC8, 0x01, 0x1C, 0x00, 0xD7, 0x81, 0x7D,
-        0x81, 0xE8, 0x00, 0xE0, 0xC5, 0x1F, 0xB8, 0xFB, 0xF7, 0x2C, 0xF2, 0x3F, 0x03, 0x80, 0x97, 0x7D,
-        0xFD, 0xB3, 0xF9, 0x33, 0x14, 0xF1, 0x45, 0x1A, 0xC0, 0xCD, 0x21, 0xBC, 0x5C, 0xEC, 0xC6, 0x48,
-        0x01, 0x5C, 0x08, 0xE2, 0xBE, 0x00, 0x5E, 0x24, 0x12, 0x1D, 0x00, 0x7C, 0xBF, 0x1F, 0xB6, 0x80,
-        0x2B, 0x31, 0x00, 0x42, 0x07, 0x78, 0x0A, 0x00, 0x70, 0x18, 0x38, 0x00, 0xA3, 0x00, 0x00, 0x77,
-        0xC2, 0x01, 0xEE, 0x45, 0x27, 0x80, 0x1B, 0x43, 0xA5, 0x67, 0x01, 0xC7, 0x02, 0xB0, 0x16, 0x00,
-        0x28, 0x07, 0x78, 0x21, 0x00, 0x36, 0x09, 0x80, 0xDC, 0xD7, 0x0A, 0xE2, 0xCE, 0xA0, 0x72, 0x00,
-        0x06, 0x60, 0xD1, 0x16, 0x00, 0x98, 0x02, 0x70, 0x06, 0xF0, 0xE2, 0x01, 0x40, 0x39, 0xC0, 0x57,
-        0x02, 0x40, 0x02, 0x30, 0xF3, 0x38, 0x80, 0x02, 0x60, 0x99, 0x7D, 0xDF, 0x13, 0xA8, 0x34, 0x0B,
-        0x38, 0x16, 0x80, 0x90, 0x03, 0x3C, 0xC0, 0x0C, 0x40, 0x39, 0xC0, 0xDF, 0xAB, 0x7F, 0x06, 0x0A,
-        0x00, 0x5F, 0x25, 0xA4, 0x1C, 0x40, 0x75, 0x01, 0xCA, 0x01, 0x12, 0x00, 0x09, 0x80, 0xF6, 0x01,
-        0x48, 0x29, 0x60, 0x60, 0x29, 0x20, 0x15, 0x81, 0x03, 0x2F, 0x02, 0x53, 0x1B, 0x38, 0xE0, 0x36,
-        0x30, 0x0D, 0x82, 0x06, 0x3E, 0x08, 0x4A, 0xA3, 0xE0, 0x34, 0x0A, 0x4E, 0x9B, 0x41, 0x91, 0x01,
-        0xE8, 0xDD, 0x66, 0x50, 0xDA, 0x0E, 0x8E, 0x9F, 0xFF, 0x7B, 0xB1, 0x1D, 0x9C, 0x65, 0xE9, 0x82,
-        0x90, 0x26, 0xEC, 0xBF, 0x37, 0x17, 0x84, 0xA8, 0x59, 0x40, 0xBA, 0x24, 0xEC, 0x78, 0xFB, 0xEF,
-        0xD5, 0x25, 0x61, 0xE9, 0xA2, 0xD0, 0x38, 0xE2, 0x67, 0x59, 0xCF, 0x2F, 0x0A, 0x4D, 0x97, 0x85,
-        0xC7, 0xB3, 0xFF, 0xDE, 0x5D, 0x16, 0x9E, 0xDE, 0x18, 0x72, 0x7C, 0xF4, 0xF7, 0xFA, 0x8D, 0x21,
-        0xE9, 0xAD, 0x61, 0x71, 0xA3, 0xBF, 0x57, 0x6F, 0x0D, 0xF3, 0xD5, 0x01, 0xE9, 0xCD, 0xA1, 0xD5,
-        0xA3, 0xBF, 0x77, 0x6F, 0x0E, 0xB5, 0xEA, 0x80, 0xF4, 0xF6, 0xF0, 0x7A, 0xD1, 0xDF, 0xDB, 0xB7,
-        0x87, 0xA7, 0x0F, 0x88, 0x88, 0x17, 0xFD, 0xBD, 0xFC, 0x80, 0x88, 0xF4, 0x11, 0x31, 0xF5, 0xC4,
-        0x3F, 0x8B, 0x8F, 0x88, 0x51, 0x69, 0x20, 0x7D, 0x48, 0x54, 0x39, 0xEB, 0x3F, 0x8B, 0x0F, 0x89,
-        0x52, 0x69, 0x20, 0x7D, 0x4C, 0x5C, 0x35, 0xEB, 0x3F, 0x8B, 0x8F, 0x89, 0x4B, 0x1F, 0x14, 0x59,
-        0x4D, 0xFC, 0xB3, 0xFA, 0xA0, 0x48, 0xAB, 0x18, 0x4C, 0x1F, 0x15, 0x9B, 0x0D, 0xE3, 0xA3, 0x62,
-        0xAD, 0x62, 0x30, 0x7D, 0x58, 0xF4, 0x80, 0x3E, 0x2C, 0xDA, 0xD7, 0x12, 0xA6, 0x8F, 0x8B, 0x1F,
-        0xC0, 0xC7, 0xC5, 0xFB, 0x5C, 0x20, 0x7D, 0x61, 0xC4, 0x80, 0xBE, 0x30, 0x22, 0xCB, 0xD2, 0x57,
-        0xC6, 0x64, 0xD9, 0x40, 0xBF, 0x32, 0x46, 0x75, 0x04, 0xE9, 0x4B, 0xA3, 0x06, 0xF4, 0xA5, 0x51,
-        0x96, 0x0B, 0xA4, 0xAF, 0x8D, 0x1B, 0xD0, 0xD7, 0xC6, 0x59, 0x2E, 0x90, 0xBE, 0x38, 0x72, 0x20,
-        0x5F, 0x1C, 0xA9, 0x3A, 0x82, 0xF4, 0xD5, 0xB1, 0x03, 0xFB, 0xEA, 0x58, 0x7C, 0x91, 0xD3, 0x97,
-        0x47, 0x0F, 0xF4, 0xCB, 0xA3, 0x55, 0x2A, 0x48, 0x5F, 0x1F, 0x3F, 0xA0, 0xAF, 0x8F, 0xCF, 0xC4,
-        0x8B, 0x8D, 0xA9, 0x40, 0x41, 0xB0, 0x06, 0x91, 0xDF, 0xC0, 0x11, 0x56, 0xC2, 0x05, 0xD6, 0xD4,
-        0x19, 0x6C, 0x0C, 0x08, 0x7C, 0xB5, 0x41, 0x59, 0x17, 0xB0, 0xF2, 0xBC, 0x2A, 0xF4, 0x58, 0xFC,
-        0x39, 0x55, 0xFC, 0x0B, 0x11, 0xFD, 0xD7, 0x10, 0xF1, 0x3F, 0x00, 0x8E, 0x85, 0x47, 0x7C, 0x35,
-        0xF0, 0xE9, 0x1C, 0x00, 0xAA, 0x2B, 0x50, 0x9D, 0x01, 0xA6, 0x03, 0xE5, 0x06, 0x2B, 0x72, 0x80,
-        0x77, 0x68, 0x0D, 0x7D, 0x10, 0x54, 0x71, 0x03, 0x9F, 0x03, 0x54, 0x89, 0x7A, 0x9F, 0xF8, 0x97,
-        0x10, 0xD5, 0x57, 0x04, 0x80, 0x8A, 0xFA, 0x4B, 0xA3, 0xDD, 0x53, 0x5B, 0xBD, 0x79, 0x2C, 0xC1,
-        0x62, 0x03, 0xA0, 0xEA, 0x01, 0x9F, 0x13, 0x7C, 0x42, 0x84, 0x23, 0x08, 0x58, 0x08, 0xAE, 0xE0,
-        0xE7, 0x98, 0x0A, 0x18, 0x82, 0x2D, 0xFC, 0x3B, 0x3E, 0x08, 0xCA, 0x00, 0xE0, 0x13, 0x7F, 0x42,
-        0x6D, 0x1E, 0x8B, 0x8F, 0xFD, 0xFE, 0x02, 0x84, 0xBE, 0x86, 0x75, 0x05, 0x3F, 0xC7, 0x56, 0xCF,
-        0x17, 0xF9, 0xA3, 0xD8, 0xE2, 0x37, 0x05, 0x40, 0x26, 0x5E, 0x70, 0xEE, 0x0C, 0x70, 0xE3, 0xE8,
-        0x93, 0xF6, 0x0E, 0xD6, 0x22, 0xFA, 0x95, 0x0B, 0x1C, 0x0B, 0x41, 0x61, 0xE4, 0xFC, 0x18, 0xE2,
-        0x73, 0xF4, 0x5F, 0x91, 0xD5, 0x5F, 0x89, 0x62, 0x6F, 0x06, 0x7F, 0x73, 0x62, 0xB4, 0x7B, 0x79,
-        0x6C, 0xA1, 0x9A, 0x04, 0x40, 0xED, 0x17, 0x60, 0x61, 0xA8, 0x20, 0xF8, 0x00, 0x47, 0x58, 0x93,
-        0xF8, 0x6B, 0xF8, 0xF9, 0x27, 0x41, 0xF0, 0x45, 0x1B, 0x48, 0x65, 0xEB, 0x82, 0xAC, 0x44, 0xE4,
-        0x8F, 0x0D, 0xDB, 0x9F, 0xD1, 0x88, 0x17, 0xE7, 0xFC, 0x58, 0xFC, 0x71, 0xB4, 0x2F, 0x84, 0xE5,
-        0x63, 0xAB, 0x37, 0x81, 0x7F, 0x37, 0x6F, 0x22, 0xEF, 0xB7, 0x01, 0x40, 0x15, 0x08, 0xB6, 0x10,
-        0xC9, 0x16, 0x08, 0x6B, 0x6A, 0x09, 0xB9, 0x1E, 0xF8, 0xAA, 0x09, 0x81, 0x05, 0x40, 0x59, 0xF1,
-        0x67, 0x22, 0xEF, 0x5F, 0x52, 0x01, 0xE8, 0x13, 0x7E, 0x4E, 0x51, 0xDF, 0xAA, 0xF8, 0x4D, 0x03,
-        0x60, 0x41, 0x70, 0x10, 0x73, 0x02, 0x74, 0x03, 0x06, 0xE1, 0xC3, 0x23, 0x3E, 0xB6, 0x86, 0x1B,
-        0xF8, 0x3B, 0x3B, 0x0F, 0x04, 0x65, 0x01, 0x50, 0xE2, 0x4F, 0x20, 0x5A, 0xE7, 0xD4, 0xF2, 0x59,
-        0x10, 0x5C, 0x1A, 0xC2, 0x2B, 0xCB, 0xB7, 0xA6, 0x7C, 0x79, 0x53, 0x02, 0x35, 0x0D, 0x40, 0x19,
-        0x08, 0x78, 0x6A, 0x88, 0x69, 0x61, 0x03, 0x62, 0xF3, 0x99, 0xEB, 0x80, 0x8D, 0x98, 0x11, 0xF8,
-        0x06, 0x46, 0xAA, 0x08, 0xF4, 0x0D, 0x78, 0xB8, 0xD7, 0x9F, 0x8B, 0xFC, 0x7F, 0x01, 0x42, 0xE3,
-        0x79, 0x4E, 0x76, 0x3F, 0x13, 0xC2, 0xB7, 0x2E, 0x7E, 0x5B, 0x00, 0xF8, 0x20, 0x60, 0x37, 0xD8,
-        0x81, 0x88, 0x1B, 0x01, 0xC3, 0x67, 0x40, 0x7C, 0x4E, 0x03, 0x58, 0x14, 0xFA, 0x5A, 0x43, 0xAB,
-        0xF0, 0xC3, 0xA2, 0xCF, 0xB2, 0x7F, 0x05, 0xC1, 0x85, 0x10, 0x7D, 0x0E, 0xBF, 0x3F, 0x11, 0x51,
-        0xDF, 0xBA, 0xF8, 0x6D, 0x02, 0x60, 0x41, 0xE0, 0x73, 0x83, 0x2D, 0x89, 0xBA, 0x31, 0xD6, 0x97,
-        0x28, 0x04, 0x43, 0xF3, 0x01, 0x5F, 0x0A, 0x08, 0xF5, 0xFB, 0x5C, 0x00, 0x32, 0x08, 0x73, 0xB2,
-        0xF9, 0x99, 0xC7, 0xEE, 0x7D, 0x95, 0x7E, 0xDE, 0x86, 0x28, 0x6D, 0x02, 0xA0, 0x86, 0x30, 0x05,
-        0x45, 0xE6, 0x01, 0x04, 0xDB, 0x91, 0x98, 0x5B, 0x21, 0xB6, 0x5A, 0x56, 0x0A, 0x38, 0x88, 0xCD,
-        0x23, 0x7E, 0x2D, 0x70, 0x73, 0x67, 0x14, 0x48, 0x01, 0xD6, 0xE2, 0xFC, 0xCE, 0xC2, 0x4F, 0xC8,
-        0x65, 0xD4, 0xC6, 0x4E, 0xDE, 0x96, 0x20, 0x6D, 0x03, 0x50, 0x26, 0x25, 0x28, 0x47, 0xB0, 0x60,
-        0xD8, 0x8A, 0xA8, 0x67, 0xF1, 0x63, 0x02, 0x30, 0x11, 0xC2, 0xCE, 0xE8, 0x3C, 0x15, 0x95, 0xFD,
-        0x58, 0xD8, 0xFD, 0xE8, 0x54, 0x51, 0xDF, 0x05, 0x00, 0x42, 0x29, 0xA1, 0x20, 0x08, 0x38, 0x3D,
-        0x30, 0x14, 0x3B, 0x43, 0x78, 0x16, 0xBF, 0x6A, 0x0A, 0xB0, 0x20, 0x98, 0x50, 0x5D, 0x30, 0x15,
-        0x8F, 0x8F, 0xC5, 0xCA, 0x4F, 0x6D, 0xF9, 0x5D, 0x02, 0xC0, 0x4A, 0x09, 0x96, 0x23, 0x1C, 0x68,
-        0xCA, 0xC7, 0x22, 0xF3, 0xED, 0x7D, 0xE4, 0x39, 0xC0, 0x98, 0x6C, 0x7C, 0x22, 0xE0, 0x18, 0xD3,
-        0x14, 0xCF, 0x17, 0xF1, 0x27, 0xB1, 0xFC, 0xAE, 0x01, 0xA0, 0xDC, 0x20, 0x13, 0x6E, 0x60, 0xC1,
-        0x50, 0x66, 0x1D, 0x02, 0x1D, 0x40, 0x16, 0xE8, 0x04, 0x46, 0x46, 0x34, 0xAB, 0x65, 0x89, 0x6E,
-        0xED, 0xE4, 0xE5, 0xA7, 0x7E, 0xE1, 0xBB, 0x02, 0x40, 0x15, 0x10, 0x0A, 0x61, 0xE9, 0xBE, 0xDB,
-        0x45, 0x89, 0x9D, 0x41, 0xDF, 0x0E, 0x60, 0x4E, 0xA2, 0x86, 0x6E, 0xE7, 0x7D, 0x10, 0xBE, 0xAB,
-        0x00, 0xA8, 0xB4, 0x90, 0x19, 0x35, 0x42, 0x21, 0x22, 0xFB, 0x60, 0x3C, 0x56, 0x18, 0x03, 0xA0,
-        0xC2, 0x10, 0x66, 0x94, 0xE9, 0xAB, 0x7F, 0x54, 0x64, 0x8F, 0x8C, 0xE7, 0x5B, 0xF9, 0x3D, 0xEF,
-        0xD2, 0x8B, 0xDD, 0x45, 0x00, 0xCA, 0x82, 0x50, 0x04, 0xC0, 0xF0, 0x3D, 0x37, 0x33, 0x52, 0x80,
-        0xDA, 0x14, 0xCA, 0x0D, 0x71, 0x47, 0x81, 0xE7, 0x76, 0x5A, 0xF8, 0x3E, 0x00, 0x10, 0x4A, 0x0D,
-        0x59, 0x66, 0x5F, 0xFA, 0x55, 0x45, 0xF8, 0xAC, 0x06, 0x08, 0xEA, 0x39, 0x59, 0x97, 0xAD, 0xBE,
-        0xEF, 0x00, 0x84, 0x5C, 0x41, 0x41, 0xE1, 0x7B, 0x8E, 0xCF, 0x01, 0xB2, 0x2C, 0x7C, 0x51, 0x68,
-        0x48, 0xEC, 0xBC, 0x2F, 0x2F, 0x68, 0xDF, 0x00, 0xC8, 0x3C, 0x02, 0x86, 0x44, 0x2E, 0x02, 0xBF,
-        0x9F, 0x97, 0x00, 0xC2, 0x17, 0xDD, 0x79, 0x1F, 0x5F, 0xC4, 0x3E, 0x03, 0x10, 0x02, 0xA2, 0xCA,
-        0x63, 0x21, 0x21, 0xCB, 0x3E, 0x96, 0x00, 0xE8, 0x09, 0x18, 0x55, 0x5F, 0xA3, 0xB3, 0x3D, 0x86,
-        0x00, 0x40, 0x3A, 0x12, 0x00, 0xE9, 0x48, 0x00, 0xA4, 0x23, 0x01, 0x90, 0x8E, 0x04, 0x40, 0x3A,
-        0x12, 0x00, 0xE9, 0x48, 0x00, 0xA4, 0x23, 0x01, 0x90, 0x8E, 0x04, 0x40, 0x3A, 0x7E, 0x1D, 0xFF,
-        0x01, 0xCC, 0x38, 0xF6, 0xC4, 0xD5, 0xBD, 0x3A, 0x4F, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E,
-        0x44, 0xAE, 0x42, 0x60, 0x82
-    };
-        ImVec2 texture_size = { 128.0f, 128.0f };
-        auto p = ImGui::GetBackgroundDrawList();
-        if (!g_blind_texture && !g_is_texture_failed) {
-            g_blind_texture = ReadImage(dx_ver, device, "blind.png", (char*)blind_file, sizeof(blind_file));
-            if (!g_blind_texture)
-                g_is_texture_failed = true;
-        }
-        plpos.x += plpos_ofs.x;
-        plpos.y += plpos_ofs.y;
-        if (g_blind_texture) {
-            p->PushClipRect({ 32.0f * zoom, 16.0f * zoom }, { 416.0f * zoom, 464.0f * zoom });
-            float szy = g_blind_size / 80.0f * texture_size.y * 0.5f * 2.0f;
-            float szx = g_blind_size / 80.0f * texture_size.x * 0.5f * 2.0f;
-            ImVec2 p1 = { (plpos.x + stagepos.x - szx) * zoom, (plpos.y + stagepos.y - szy) * zoom };
-            ImVec2 p2 = { (plpos.x + stagepos.x + szx) * zoom, (plpos.y + stagepos.y + szy) * zoom };
-            p->AddImage((ImTextureID)g_blind_texture, p1, p2);
-            p->AddRectFilled({ -1000.0f, -1000.0f }, { 1000.0f, p1.y }, 0xFF000000);
-            p->AddRectFilled({ -1000.0f, -1000.0f }, { p1.x, 1000.0f }, 0xFF000000);
-            p->AddRectFilled({ p2.x, -1000.0f }, { 1000.0f, 1000.0f }, 0xFF000000);
-            p->AddRectFilled({ -1000.0f, p2.y }, { 1000.0f, 1000.0f }, 0xFF000000);
-            p->PopClipRect();
-        }
-    }
-}
-// void RenderBlindView(int ver, unsigned int device, float zoom)
-// {
-//     if (SSS::g_blind_view) {
-//         switch (ver) {
-//         case 10:
-//             if (*(DWORD*)(0x00477834)) {
-//                 SSS::RenderBlindView(9, *(ImVec2*)(*(DWORD*)0x00477834 + 0x3C0), { 192.0f, 0.0f }, device, zoom);
-//             }
-//             break;
-//         case 12:
-//             if (*(DWORD*)(0x004B4514)) {
-//                 SSS::RenderBlindView(9, *(ImVec2*)(*(DWORD*)0x004B4514 + 0x97C), { 192.0f, 0.0f }, device, zoom);
-//             }
-//             break;
-//         case 15:
-//             if (*(DWORD*)(0x004E9BB8)) {
-//                 SSS::RenderBlindView(9, *(ImVec2*)(*(DWORD*)0x004E9BB8 + 0x618), { 192.0f, 0.0f }, device, zoom);
-//             }
-//             break;
-//         case 6:
-//             if (*(DWORD*)(0x6C6EA4) == 2) {
-//                 SSS::RenderBlindView(8, *(ImVec2*)(0x6CAA68), { 0.0f, 0.0f }, device, 1.0f);
-//             }
-//             break;
-//         }
-//     }
-// }
-
-void SSS_UI(int version)
-{
-    if (ImGui::CollapsingHeader("Super Secret Settings")) {
-        if (version == 20) {
-            ImGui::Checkbox(S(THPRAC_CHG_STONE), &g_change_stone);
-            ImGui::SameLine();
-            HelpMarker(S(THPRAC_CHG_STONE_DESC));
-        } else {
-            ImGui::Checkbox(S(THPRAC_BLIND), &g_blind_view);
-            ImGui::SameLine();
-            HelpMarker(S(THPRAC_BLIND_DESC));
-            ImGui::SameLine();
-            ImGui::SetNextItemWidth(75.0f);
-            ImGui::DragFloat(S(THPRAC_BLIND_SZ), &g_blind_size, 1.0f, 20.0f, 600.0f);
-            ImGui::SameLine();
-            if (ImGui::Button(std::format("{}##blind_reload", S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_RELOAD)).c_str())) {
-                // if (g_blind_texture)
-                //     ((IUnknown*)(g_blind_texture))->Release();
-                g_blind_texture = NULL;
-                g_is_texture_failed = false;
-            }
-        }
-    }
-}
-
-
-int __stdcall StoneInit1(int a1, int a2)
-{
-    int result;
-    result = a1;
-    *(DWORD*)(a1 + 0x11C) = 0;
-    return result;
-}
-
-int __stdcall StoneInit2(int a1, int a2)
-{
-    int result;
-    result = a1;
-    *(DWORD*)(a1 + 0x120) = 0;
-    return result;
-}
-
-void TH20_ChangeStone()
-{
-    {
-        DWORD ppl = *(DWORD*)RVA(0x1ba56c);
-        if (ppl) {
-            bool is_focused = *(bool*)(ppl + 0x204c);
-            int shift_time = *(DWORD*)RVA(0x1B8AD4);
-            int up_time = *(DWORD*)RVA(0x1B8AD8);
-            int down_time = *(DWORD*)RVA(0x1B8ADC);
-            int left_time = *(DWORD*)RVA(0x1B8AE0);
-            int right_time = *(DWORD*)RVA(0x1B8AE4);
-            int z_time = *(DWORD*)RVA(0x1B8AC8);
-
-            bool is_z_down = ((*(DWORD*)(RVA(0x1B8B4C)) & 0x1) == 0x1);
-
-            bool is_l_down = ((*(DWORD*)(RVA(0x1B8B4C)) & 0x40) == 0x40);
-            bool is_r_down = ((*(DWORD*)(RVA(0x1B8B4C)) & 0x80) == 0x80);
-
-            bool changed = false;
-            if (z_time <= 10) {
-                if (is_l_down && is_z_down) {
-                    if (z_time == 1 || left_time == 1 && left_time > right_time) {
-                        if (!is_focused) {
-                            int32_t substone_2 = (*(int32_t*)(RVA(0x1BA604))); // unfocused
-                            substone_2--;
-                            if (substone_2 < 0)
-                                substone_2 += 8;
-                            (*(int32_t*)(RVA(0x1BA604))) = substone_2;
-                        } else {
-                            int32_t substone_1 = (*(int32_t*)(RVA(0x1BA600))); // focused
-                            substone_1--;
-                            if (substone_1 < 0)
-                                substone_1 += 8;
-                            (*(int32_t*)(RVA(0x1BA600))) = substone_1;
-                        }
-
-                        changed = true;
-                    }
-                } else if (is_r_down && is_z_down) {
-                    if (z_time == 1 || right_time == 1 && left_time < right_time) {
-                        if (!is_focused) {
-                            int32_t substone_2 = (*(int32_t*)(RVA(0x1BA604))); // unfocused
-                            substone_2++;
-                            substone_2 = substone_2 % 8;
-                            (*(int32_t*)(RVA(0x1BA604))) = substone_2;
-                        } else {
-                            int32_t substone_1 = (*(int32_t*)(RVA(0x1BA600))); // focused
-                            substone_1++;
-                            substone_1 = substone_1 % 8;
-                            (*(int32_t*)(RVA(0x1BA600))) = substone_1;
-                        }
-                        changed = true;
-                    }
-                }
-            }
-            if (changed) {
-
-                int32_t cur_player_type = (*(int32_t*)(RVA(0x1BA5F8)));
-
-                int32_t substone_1 = (*(int32_t*)(RVA(0x1BA600))); // focused
-                int32_t substone_2 = (*(int32_t*)(RVA(0x1BA604))); // unfocused
-                DWORD thiz = asm_call_rel<0x64230, Cdecl, int32_t>(0);
-
-                 auto change_stone_fix_init = [](DWORD mem,DWORD init) {
-                    if (*(DWORD*)mem == RVA(0x14B60)) {
-                        DWORD oldProtect;
-                        VirtualProtect((LPVOID)mem, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
-                        *(DWORD*)mem = init;
-                        VirtualProtect((LPVOID)mem, 4, oldProtect, &oldProtect);
-                    }
-                 };
-
-                int power = *(DWORD*)RVA(0x1BA620);
-                *(DWORD*)RVA(0x1BA620) = 0;
-                asm_call_rel<0xFACA0, Thiscall>(ppl, -1);
-                change_stone_fix_init(GetMemAddr(RVA(0x1BA56c), 0x14858, 0x2c, 0x2c, 0x0, 0x28), (DWORD)StoneInit1);
-                change_stone_fix_init(GetMemAddr(RVA(0x1BA56c), 0x14858, 0x2c, 0x2c, 0x0, 0x2C), (DWORD)StoneInit2);
-                change_stone_fix_init(GetMemAddr(RVA(0x1BA56c), 0x14858, 0x2c, 0x30, 0x0, 0x28), (DWORD)StoneInit1);
-                change_stone_fix_init(GetMemAddr(RVA(0x1BA56c), 0x14858, 0x2c, 0x30, 0x0, 0x2C), (DWORD)StoneInit2);
-
-                asm_call_rel<0x1344D0, Thiscall>(thiz, cur_player_type, substone_1); // f
-                asm_call_rel<0x1347D0, Thiscall>(thiz, cur_player_type, substone_2); // nf
-
-                
-                *(DWORD*)RVA(0x1BA620) = power;
-                asm_call_rel<0xFACA0, Thiscall>(ppl, -1);
-            }
-        }
-    }
-}
-
 #pragma endregion
 }

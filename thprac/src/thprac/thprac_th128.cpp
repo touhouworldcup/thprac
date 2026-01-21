@@ -574,10 +574,7 @@ namespace TH128 {
         {
             if (*(DWORD*)(0x004B8A80)) {
                 GameUpdateInner(128);
-                Live2D_Update(*(int32_t*)(0x4B4D64)/10000, THGuiRep::singleton().mRepStatus);
             } else {
-                Live2D_ChangeState(Live2D_InputType::L2D_RESET);
-                Live2D_Update(1, false);
             }
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004B8A80)) {
                 SetPos(516.0f, 226.0f);
@@ -2396,17 +2393,14 @@ namespace TH128 {
     EHOOK_DY(th128_bomb_dec, 0x43B7DB,5, // bomb dec
     {
         TH128InGameInfo::singleton().mBombCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th128_bomb_dec2, 0x43B911,5,// deadbomb
     {
         TH128InGameInfo::singleton().mBombCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th128_life_dec, 0x43CDDF,5, // life dec
     {
         TH128InGameInfo::singleton().mMissCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
         FastRetry(thPracParam.mode);
     })
     HOOKSET_ENDDEF()

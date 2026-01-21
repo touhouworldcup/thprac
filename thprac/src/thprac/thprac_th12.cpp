@@ -720,10 +720,7 @@ namespace TH12 {
         {
             if (*(DWORD*)(0x004B4514)) {
                 GameUpdateInner(12);
-                Live2D_Update(*(int32_t*)(0x4b0c98), THGuiRep::singleton().mRepStatus);
             } else {
-                Live2D_ChangeState(Live2D_InputType::L2D_RESET);
-                Live2D_Update(1, false);
             }
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004B4514)) {
                 SetPosRel(425.0f / 640.0f, 338.0f / 480.0f);
@@ -983,7 +980,7 @@ namespace TH12 {
                     GameplaySet();
                 EndOptGroup();
             }
-            SSS_UI();
+            SSS::SSS_UI(12);
             InGameReactionTestOpt();
             AboutOpt();
             ImGui::EndChild();
@@ -2020,9 +2017,7 @@ namespace TH12 {
                 p->AddText({ 120.0f, 0.0f }, 0xFFFF0000, S(TH_BOSS_FORCE_MOVE_DOWN));
             }
         }
-
-        if (*(DWORD*)0x004B4514)
-            RenderBlindView(9, *(DWORD*)(0x4ce8f0), *(ImVec2*)(*(DWORD*)0x004B4514 + 0x97C), { 192.0f, 0.0f }, { 32.0f, 16.0f }, ImGui::GetIO().DisplaySize.x / 640.0f);
+        SSS::SSS_Update(12);
         
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004B4514)) {
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
@@ -2088,17 +2083,14 @@ namespace TH12 {
         TH12InGameInfo::singleton().mBVentraCount_Drop = 0;
         TH12InGameInfo::singleton().mGVentraCount_Drop = 0;
         TH12InGameInfo::singleton().mCVentraCount_Drop = 0;
-        Live2D_ChangeState(Live2D_InputType::L2D_RESET);
     })
     EHOOK_DY(th12_bomb_dec, 0x422F28,5, // bomb dec
     {
         TH12InGameInfo::singleton().mBombCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th12_life_dec, 0x4381E2,5, // life dec
     {
         TH12InGameInfo::singleton().mMissCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
         FastRetry(thPracParam.mode);
     })
     EHOOK_DY(th12_ufo_spawn, 0x44A909, 7, // spawn ufo

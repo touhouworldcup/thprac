@@ -333,9 +333,7 @@ private:
     int clock_id;
 
     float mTooLongGamePlay_hour = 3.0f;
-    float mTooLongGamePlaySE_sec = 10.0f;
     bool mEnableRecordGameTime = false;
-    bool mEnableTooLongGamePlaySE = false;
     std::thread mUpdateThread;
 
 private:
@@ -343,13 +341,6 @@ public:
     static void UpdateGameTime(){
         THGameTimeRecorder& thiz = THGameTimeRecorder::singleton();
         while (thiz.mUpdateGameTime) {
-            if (thiz.mGameTimeCur_ns >= 1000000000ll * 3600 * (double)thiz.mTooLongGamePlay_hour) {
-                if (thiz.mEnableTooLongGamePlaySE && thiz.mGameTimeTooLongSE_ns >= thiz.mTooLongGamePlaySE_sec * 1000000000ll && thiz.mGameTimeTooLongSE_ns >= 5 * 1000000000ll && // mintime: 5sec
-                    CheckIfAnyGame2()) {
-                    PlaySoundW(L"SE.wav", NULL, SND_FILENAME | SND_ASYNC);
-                    thiz.mGameTimeTooLongSE_ns = 0;
-                }
-            }
             static bool is_game_open = false;
             Sleep(16);
             if (thiz.mGameTimeTestGameOpen_ns > 1000000000) { // test every second
@@ -374,8 +365,6 @@ public:
     void UpdateGameTimeRecord()
     {
         LauncherSettingGet("gameTimeTooLong_Time", mTooLongGamePlay_hour);
-        LauncherSettingGet("gameTimeTooLong_SE", mEnableTooLongGamePlaySE);
-        LauncherSettingGet("gameTimeTooLong_SE_repeat", mTooLongGamePlaySE_sec);
     }
     void StartGameTimeRecord()
     {

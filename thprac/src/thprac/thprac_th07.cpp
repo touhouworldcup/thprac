@@ -1,10 +1,10 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
+#include "thprac_games_dx8.h"
 #include <format>
 
 
 namespace THPrac {
-extern bool g_enable_l2d;
 
 namespace TH07 {
     int g_gamefence = 0;
@@ -667,18 +667,11 @@ namespace TH07 {
         virtual void OnPreUpdate() override
         {
             DWORD gameState = *(DWORD*)(0x575AA8);
-            if (g_enable_l2d) {
-                if (gameState == 2)
-                {
-                    GameUpdateInner(7);
-                    float life = *(float*)GetMemAddr(0x626278, 0x5c);
-                    if (g_gamefence == 1 && !isnan(life) && life >= 0.0f && life == ceilf(life))
-                        Live2D_Update(ceilf(life), THGuiRep::singleton().mRepStatus);
-                } else {
-                    g_gamefence = 0;
-                    Live2D_ChangeState(Live2D_InputType::L2D_RESET);
-                    Live2D_Update(1, false);
-                }
+            if (gameState == 2)
+            {
+                GameUpdateInner(7);
+            } else {
+                g_gamefence = 0;
             }
             if (*(THOverlay::singleton().mInGameInfo) && (gameState == 2)) {
                 SetPosRel(450.0f / 640.0f, 193.0f / 480.0f);
@@ -1932,7 +1925,6 @@ namespace TH07 {
     HOOKSET_DEFINE(THMainHook)
     PATCH_DY(th07_reacquire_input, 0x430f03, "0000000074")
     EHOOK_DY(th07_inf_lives, 0x00441171,5,{
-        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
         FastRetry(thPracParam.mode);
 
         if ((*(THOverlay::singleton().mInfLives))) {
@@ -2145,14 +2137,11 @@ namespace TH07 {
         TH07InGameInfo::singleton().mBombCount = 0;
         TH07InGameInfo::singleton().mMissCount = 0;
         TH07InGameInfo::singleton().mBorderBreakCount = 0;
-        Live2D_ChangeState(Live2D_InputType::L2D_RESET);
     })
     EHOOK_DY(th07_bomb, 0x440B9D, 6, {
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th07_border_break, 0x441DA4,5,{
         TH07InGameInfo::singleton().mBorderBreakCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_BORDER_BREAK);
     })
     EHOOK_DY(th07_lock_timer1, 0x42D17E,3,{ // initialize
         g_lock_timer = 0;

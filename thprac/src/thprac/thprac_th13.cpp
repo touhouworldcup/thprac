@@ -656,10 +656,7 @@ namespace TH13 {
         {
             if (*(DWORD*)(0x004C22C4)) {
                 GameUpdateInner(13);
-                Live2D_Update(*(int32_t*)(0x4be7f4), THGuiRep::singleton().mRepStatus);
             } else {
-                Live2D_ChangeState(Live2D_InputType::L2D_RESET);
-                Live2D_Update(1, false);
             }
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004C22C4)) {
                 SetPosRel(450.0f / 640.0f, 280.0f / 480.0f);
@@ -2124,23 +2121,19 @@ namespace TH13 {
         TH13InGameInfo::singleton().mBombCount = 0;
         TH13InGameInfo::singleton().mMissCount = 0;
         TH13InGameInfo::singleton().mTranceCount = 0;
-        Live2D_ChangeState(Live2D_InputType::L2D_RESET);
     })
     EHOOK_DY(th13_bomb_dec, 0x40A404,5, // bomb dec
     {
         TH13InGameInfo::singleton().mBombCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th13_life_dec, 0x444A75,10, // life dec
     {
         TH13InGameInfo::singleton().mMissCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
         FastRetry(thPracParam.mode);
     })
     EHOOK_DY(th13_trance, 0x40587a,5,
     {
         TH13InGameInfo::singleton().mTranceCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_HYPER);
     })
     EHOOK_DY(th13_lock_timer1, 0x4250EA,6, // initialize
     {

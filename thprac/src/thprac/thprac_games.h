@@ -2,6 +2,7 @@
 
 #include "thprac_gui_components.h"
 #include "thprac_igi_key_render.h"
+#include "thprac_games_SSS.h"
 
 #include <vector>
 #include <unordered_map>
@@ -11,20 +12,11 @@
 struct IDirect3DDevice8;
 
 namespace THPrac {
-    enum Live2D_InputType
-    {
-        L2D_RESET,
-        L2D_MISS,
-        L2D_BOMB,
-        L2D_HYPER,
-        L2D_BORDER_BREAK,
-        L2D_RELEASE
-    };
     void GameUpdateInner(int gamever);
     void GameUpdateOuter(ImDrawList* p, int ver);
     void FastRetry(int thprac_mode);
-    void Live2D_Update(int life,bool is_rep);
-    void Live2D_ChangeState(Live2D_InputType l2dInput);
+
+    ImTextureID ReadImage(DWORD dxVer, DWORD device, LPCSTR name, LPCSTR srcData, size_t srcSz);
 
     struct AdvancedGameOptions
     {
@@ -177,14 +169,6 @@ void InGameReactionTestOpt();
 void InfLifeOpt();
 void DisableKeyOpt();
 void KeyHUDOpt();
-
-#pragma endregion
-
-#pragma region SSS
-
-void RenderBlindView(int dx_ver, DWORD device, ImVec2 plpos, ImVec2 plpos_ofs,ImVec2 stagepos, float zoom);
-void SSS_UI(int version = -1);
-void TH20_ChangeStone();
 
 #pragma endregion
 
@@ -640,13 +624,6 @@ inline long RoundUp(long n, long m)
     return n >= 0 ? ((n + m - 1) / m) * m : (n / m) * m;
 }
 
-#pragma endregion
-
-#pragma region Snapshot
-namespace THSnapshot {
-    void* GetSnapshotData(IDirect3DDevice8* d3d8);
-    void Snapshot(IDirect3DDevice8* d3d8);
-}
 #pragma endregion
 
 #pragma region ECL Warp

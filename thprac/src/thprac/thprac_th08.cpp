@@ -3,7 +3,6 @@
 #include <format>
 
 namespace THPrac {
-    extern bool g_enable_l2d;
     
 
 namespace TH08 {
@@ -766,19 +765,10 @@ namespace TH08 {
         virtual void OnPreUpdate() override
         {
             DWORD gameState = *(DWORD*)(0x17CE8B4);
-            if (g_enable_l2d) {
-                if (gameState == 2) {
-                    GameUpdateInner(8);
-                    float life = *(float*)GetMemAddr(0x160f510, 0x74);
-                    if (g_gamefence == 1 && !isnan(life) && life >= 0.0f && life == ceilf(life))
-                    {
-                        Live2D_Update(ceilf(life), THGuiRep::singleton().mRepStatus);
-                    }
-                } else {
-                    g_gamefence = 0;
-                    Live2D_ChangeState(Live2D_InputType::L2D_RESET);
-                    Live2D_Update(1, false);
-                }
+            if (gameState == 2) {
+                GameUpdateInner(8);
+            } else {
+                g_gamefence = 0;
             }
             if (*(THOverlay::singleton().mInGameInfo) && (gameState == 2)) {
                 SetPosRel(450.0f / 640.0f, 220.0f / 480.0f);
@@ -2636,7 +2626,6 @@ namespace TH08 {
 
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th08_inf_lives, 0x0044D0FB,5, {
-        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
         FastRetry(thPracParam.mode);
 
         if ((*(THOverlay::singleton().mInfLives))) {
@@ -2892,7 +2881,6 @@ namespace TH08 {
         TH08InGameInfo::singleton().mBombCount = 0;
         TH08InGameInfo::singleton().mMissCount = 0;
         TH08InGameInfo::singleton().mDesolveCount = 0;
-        Live2D_ChangeState(Live2D_InputType::L2D_RESET);
     })
     EHOOK_DY(th08_spell_capture, 0x416265, 3, { // to enable SC count in rep, do not directly read spell capture array
         const static int32_t last_spells[] = {
@@ -2914,14 +2902,11 @@ namespace TH08 {
         }
     })
     EHOOK_DY(th08_player_bomb, 0x44CA94, 6, {
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th08_player_bomb, 0x44CA6A, 3, {//deadbomb
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th08_desolve, 0x44ABE9,3,{
         TH08InGameInfo::singleton().mDesolveCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
         FastRetry(thPracParam.mode);
     })
     EHOOK_DY(th08_lock_timer1, 0x437AF3,3,{ // initialize

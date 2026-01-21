@@ -1002,10 +1002,7 @@ namespace TH18 {
         {
             if (*(DWORD*)(0x004CF410)) {
                 GameUpdateInner(18);
-                Live2D_Update(*(int32_t*)(0x4ccd48), THGuiRep::singleton().mRepStatus);
             } else {
-                Live2D_ChangeState(Live2D_InputType::L2D_RESET);
-                Live2D_Update(1, false);
             }
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004CF410)) {
                 SetPosRel(900.0f / 1280.0f, 840.0f / 960.0f);
@@ -3345,22 +3342,18 @@ namespace TH18 {
         TH18InGameInfo::singleton().mBombCount = 0;
         TH18InGameInfo::singleton().mMissCount = 0;
         TH18InGameInfo::singleton().mDeadBombCount = 0;
-         Live2D_ChangeState(Live2D_InputType::L2D_RESET);
     })
     EHOOK_DY(th18_bomb_dec, 0x4574D3,4, // bomb dec
     {
         TH18InGameInfo::singleton().mBombCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th18_cylinder, 0x410F22,5, // cylinder
     {
         TH18InGameInfo::singleton().mBombCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th18_life_dec, 0x45D1A3,5, // life dec
     {
         TH18InGameInfo::singleton().mMissCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
         FastRetry(thPracParam.mode);
     })
     EHOOK_DY(th18_deadbomb1, 0x40DA1C,5, // rokumon

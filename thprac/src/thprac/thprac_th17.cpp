@@ -683,10 +683,7 @@ namespace TH17 {
         {
             if (*(DWORD*)(0x004B77D0)) {
                 GameUpdateInner(17);
-                Live2D_Update(*(int32_t*)(0x4b5a40), THGuiRep::singleton().mRepStatus);
             } else {
-                Live2D_ChangeState(Live2D_InputType::L2D_RESET);
-                Live2D_Update(1, false);
             }
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004B77D0)) {
                 SetPosRel(900.0f / 1280.0f, 500.0f / 960.0f);
@@ -2275,12 +2272,10 @@ namespace TH17 {
         TH17InGameInfo::singleton().mWolfCount = 0;
         TH17InGameInfo::singleton().mOtterCount = 0;
         TH17InGameInfo::singleton().mEagerCount = 0;
-        Live2D_ChangeState(Live2D_InputType::L2D_RESET);
     })
     EHOOK_DY(th17_roar_break, 0x40F880,10,
     {
         TH17InGameInfo::singleton().mRoarBreakCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_BORDER_BREAK);
     })
     EHOOK_DY(th17_roar, 0x40FC8A,7,
     {
@@ -2289,15 +2284,12 @@ namespace TH17 {
         switch (cur_roar) {
         case 1:
             TH17InGameInfo::singleton().mWolfCount++;
-            Live2D_ChangeState(Live2D_InputType::L2D_HYPER);
             break;
         case 2:
             TH17InGameInfo::singleton().mOtterCount++;
-            Live2D_ChangeState(Live2D_InputType::L2D_HYPER);
             break;
         case 3:
             TH17InGameInfo::singleton().mEagerCount++;
-            Live2D_ChangeState(Live2D_InputType::L2D_HYPER);
             break;
         default:
             break;
@@ -2312,13 +2304,11 @@ namespace TH17 {
     EHOOK_DY(th17_life_dec, 0x44921B,6,
     {
         TH17InGameInfo::singleton().mMissCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_MISS);
         FastRetry(thPracParam.mode);
     })
     EHOOK_DY(th17_bomb_dec, 0x411CAB,6,
     {
         TH17InGameInfo::singleton().mBombCount++;
-        Live2D_ChangeState(Live2D_InputType::L2D_BOMB);
     })
     EHOOK_DY(th17_lock_timer1, 0x42A3CA,10, // initialize
     {
