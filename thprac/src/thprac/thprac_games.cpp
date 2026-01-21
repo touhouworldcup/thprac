@@ -25,6 +25,7 @@
 
 #include <dwmapi.h>
 #include "thprac_launcher_tools.h"
+#include <ShlObj.h>
 
 #pragma comment(lib, "dwmapi.lib")
 
@@ -218,6 +219,15 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     if (g_cursor_opt.forceRenderCursor) {
         LauncherSettingGet("always_render_cursor", g_cursor_opt.alwaysRenderCursor);
         g_cursor_opt.customCursor = ReadImage(impl==IMPL_WIN32_DX8?8:9, *(DWORD*)g_gameGuiDevice, "cursor.png", NULL, 0);
+        if (!g_cursor_opt.customCursor){
+            char appDataPath[MAX_PATH];
+            std::string path;
+            if (SHGetFolderPathA(nullptr, CSIDL_APPDATA, nullptr, SHGFP_TYPE_CURRENT, appDataPath) == S_OK) {
+                path = appDataPath;
+                path += "\\thprac\\cursor.png";
+                g_cursor_opt.customCursor = ReadImage(impl == IMPL_WIN32_DX8 ? 8 : 9, *(DWORD*)g_gameGuiDevice, path.c_str(), NULL, 0);
+            }
+        }
         if (g_cursor_opt.customCursor){
             g_cursor_opt.textureSize = (impl == IMPL_WIN32_DX8) ? GetImageInfo8(g_cursor_opt.customCursor) : GetImageInfo9(g_cursor_opt.customCursor);
         } else {
