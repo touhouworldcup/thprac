@@ -4,10 +4,9 @@
 #include <dinput.h>
 
 namespace THPrac {
-    void ChangeBGMSpeed(DWORD thiz = 0);
-    void SetBGMSpeed(float speed);
-    void HookBGMSpeed(bool is_hook);
-
+    bool BGMPitchChanger();
+    void ChangeBGMSpeed(float speed, float pitch_ofs);
+    void HookBGMSpeed(bool is_hook, bool no_change_pitch);
 
     void HookCreateFont(bool useCorrectJaFont, bool useCustomFont,int fontidx);
 

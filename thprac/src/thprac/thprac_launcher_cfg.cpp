@@ -2433,6 +2433,12 @@ private:
             mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
             mAlwaysSave_07.Gui(S(THPRAC_TH07_ALWAYS_SAVE_SCORE_SPELL_HIST), S(THPRAC_TH07_ALWAYS_SAVE_SCORE_SPELL_HIST_DESC));
             mSpeedupBGM.Gui(S(THPRAC_MAKE_BGM_FASTER_WHEN_SPEEDUP));
+            if (mSpeedupBGM.Get())
+            {
+                ImGui::Text("     ");
+                ImGui::SameLine();
+                mSpeedupBGM2.Gui(S(THPRAC_MAKE_BGM_FASTER_WHEN_SPEEDUP_NO_PITCH));
+            }
             mCfgDisableCAtSameTime_autoly.Gui(S(TH_ADV_DISABLE_C_KEY_SAMETIME));
             mCfgEnableLockTimer_autoly.Gui(S(THPRAC_ENABLE_LOCK_TIMER_AUTO));
             mCfgEnableFastRetry_autoly.Gui(S(THPRAC_FAST_RETRY),S(THPRAC_FAST_RETRY_DESC));
@@ -2825,6 +2831,7 @@ private:
     THCfgCheckbox mUD_Replay_10 { "th10_ud_Replay", true };
     // THCfgCheckbox mDisableWinKey { "disable_win_key", false };
     THCfgCheckbox mSpeedupBGM { "fast_BGM_when_spdup", false };
+    THCfgCheckbox mSpeedupBGM2 { "fast_BGM_when_spdup_no_pitch", false };
     THCfgCheckbox mPauseBGM_06 { "pauseBGM_06", true };
     THCfgCheckbox mAutoName_06 { "autoInputName_06", false };
     THCfgCheckbox mAlwaysSave_07 { "always_save_score_hist_07", false };

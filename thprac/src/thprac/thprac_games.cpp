@@ -413,9 +413,10 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         } else
             ImGui::StyleColorsDark();
 
-        bool is_hook_bgm = false;
+        bool is_hook_bgm = false, no_change_pitch = false;
         LauncherSettingGet("fast_BGM_when_spdup", is_hook_bgm);
-        HookBGMSpeed(is_hook_bgm);
+        LauncherSettingGet("fast_BGM_when_spdup_no_pitch", no_change_pitch);
+        HookBGMSpeed(is_hook_bgm, no_change_pitch);
 
         bool enable_present_hook = false;
         if (LauncherSettingGet("enable_present_hook", enable_present_hook) && enable_present_hook) {
@@ -993,11 +994,13 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
         ImGui::EndDisabled();
 
     ctx.fps = fpsStatic;
-    if (clickedApply)
-    {
-        SetBGMSpeed(ctx.fps / 60.0f);
-        ChangeBGMSpeed();
+
+    
+
+    if (clickedApply)  {
+        ChangeBGMSpeed(ctx.fps / 60.0f, -1.0f);
     }
+    BGMPitchChanger();
 
     return clickedApply;
 }

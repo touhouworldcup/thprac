@@ -36,6 +36,24 @@ namespace Gui {
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }
+            if (ImGui::BeginTabItem("rapidcsv")) {
+                ImGui::BeginChild("COPYING.rapidcsv");
+                ImGui::TextUnformatted(COPYING_rapidcsv);
+                ImGui::EndChild();
+                ImGui::EndTabItem();
+            }
+            if (ImGui::BeginTabItem("minizip")) {
+                ImGui::BeginChild("COPYING.minizip");
+                ImGui::TextUnformatted(COPYING_minizip);
+                ImGui::EndChild();
+                ImGui::EndTabItem();
+            }
+            if (ImGui::BeginTabItem("smbPitchShift")) {
+                ImGui::BeginChild("COPYING.smbPitchShift");
+                ImGui::TextUnformatted(COPYING_smbPitchShift);
+                ImGui::EndChild();
+                ImGui::EndTabItem();
+            }
             if (ImGui::BeginTabItem("thprac")) {
                 ImGui::BeginChild("COPYING.thprac");
                 ImGui::TextUnformatted(COPYING_thprac);

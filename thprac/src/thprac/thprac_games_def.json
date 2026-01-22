@@ -271,6 +271,7 @@
 	"THPRAC_MOF_UD_REP": [ "允许风神录replay记录多一页ud_xxxx.rpy", "add another page for ud_xxxx.rpy in MoF's replay", "add another page for ud_xxxx.rpy in MoF's replay" ],
 	
 	"THPRAC_MAKE_BGM_FASTER_WHEN_SPEEDUP": [ "游戏变速时加速bgm(测试中)", "make bgm faster when speed up(testing)", "make bgm faster when speed up(testing)" ],
+	"THPRAC_MAKE_BGM_FASTER_WHEN_SPEEDUP_NO_PITCH": [ "变速不变调(可能造成音频错乱，，？)", "no changing pitch(might cause BGM data wrong,,?)", "no changing pitch(might cause BGM data wrong,,?)" ],
 	
     "THPRAC_DISABLE_F10_11_13":["在th11到th13靳用F10键","disable f10 for th11-13","disable f10 for th11-13"],
 	

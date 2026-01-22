@@ -438,6 +438,92 @@ subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all copies or substantial 
 portions of the Software.
 )COPYING";
+static constexpr const char COPYING_rapidcsv[] = R"COPYING(Copyright (C) 2015 THL A29 Limited, a Tencent company, and Milo Yip.  All rights reserved.
+
+BSD 3-Clause License
+
+Copyright (c) 2017, Kristofer Berggren
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.)COPYING";
+
+static constexpr const char COPYING_minizip[] = R"COPYING(Condition of use and distribution are the same as zlib:
+
+This software is provided 'as-is', without any express or implied
+warranty.  In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgement in the product documentation would be
+   appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.)COPYING";
+
+
+static constexpr const char COPYING_smbPitchShift[] = R"COPYING( * NAME: smbPitchShift.cpp
+ * VERSION: 1.2
+ * HOME URL: http://blogs.zynaptiq.com/bernsee
+ * KNOWN BUGS: none
+ *
+ * SYNOPSIS: Routine for doing pitch shifting while maintaining
+ * duration using the Short Time Fourier Transform.
+ *
+ * DESCRIPTION: The routine takes a pitchShift factor value which is between 0.5
+ * (one octave down) and 2. (one octave up). A value of exactly 1 does not change
+ * the pitch. numSampsToProcess tells the routine how many samples in indata[0...
+ * numSampsToProcess-1] should be pitch shifted and moved to outdata[0 ...
+ * numSampsToProcess-1]. The two buffers can be identical (ie. it can process the
+ * data in-place). fftFrameSize defines the FFT frame size used for the
+ * processing. Typical values are 1024, 2048 and 4096. It may be any value <=
+ * MAX_FRAME_LENGTH but it MUST be a power of 2. osamp is the STFT
+ * oversampling factor which also determines the overlap between adjacent STFT
+ * frames. It should at least be 4 for moderate scaling ratios. A value of 32 is
+ * recommended for best quality. sampleRate takes the sample rate for the signal
+ * in unit Hz, ie. 44100 for 44.1 kHz audio. The data passed to the routine in
+ * indata[] should be in the range [-1.0, 1.0), which is also the output range
+ * for the data, make sure you scale the data accordingly (for 16bit signed integers
+ * you would have to divide (and multiply) by 32768).
+ *
+ * COPYRIGHT 1999-2015 Stephan M. Bernsee <s.bernsee [AT] zynaptiq [DOT] com>
+ *
+ * 						The Wide Open License (WOL)
+ *
+ * Permission to use, copy, modify, distribute and sell this software and its
+ * documentation for any purpose is hereby granted without fee, provided that
+ * the above copyright notice and this license appear in all source copies.
+ * THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY OF
+ * ANY KIND. See http://www.dspguru.com/wol.htm for more information.)COPYING";
+
+
 static constexpr const char COPYING_thprac[] = R"COPYING(MIT License
 Copyright (c) All thprac contributors
 

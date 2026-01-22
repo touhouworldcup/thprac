@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1733] {
+const char* th_glossary_str[3][1734] {
     {
         "",
         "啤酒",
@@ -1166,6 +1166,7 @@ const char* th_glossary_str[3][1733] {
         "删除筛选器##modal",
         "重置默认",
         "游戏变速时加速bgm(测试中)",
+        "变速不变调(可能造成音频错乱，，？)",
         "允许风神录replay记录多一页ud_xxxx.rpy",
         "移动至全局目录",
         "移动至本地目录",
@@ -2901,6 +2902,7 @@ const char* th_glossary_str[3][1733] {
         "Delete filter##modal",
         "Reset default",
         "make bgm faster when speed up(testing)",
+        "no changing pitch(might cause BGM data wrong,,?)",
         "add another page for ud_xxxx.rpy in MoF's replay",
         "Move to global directory",
         "Move to local directory",
@@ -4636,6 +4638,7 @@ const char* th_glossary_str[3][1733] {
         "フィルタを削除##modal",
         "デフォルトにリセット",
         "make bgm faster when speed up(testing)",
+        "no changing pitch(might cause BGM data wrong,,?)",
         "add another page for ud_xxxx.rpy in MoF's replay",
         "グローバルディレクトリに移動",
         "ローカルディレクトリに移動",
@@ -27214,7 +27217,7 @@ namespace TH20 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3557] {
+const wchar_t __thprac_loc_range_zh[3559] {
     0x0020, 0x00FF,
     0x394, 0x394,
     0x2014, 0x2014,
@@ -28917,6 +28920,7 @@ const wchar_t __thprac_loc_range_zh[3557] {
     0x9884, 0x9884,
     0x9886, 0x9886,
     0x9888, 0x9888,
+    0x9891, 0x9891,
     0x9897, 0x9897,
     0x9898, 0x9898,
     0x989c, 0x989c,

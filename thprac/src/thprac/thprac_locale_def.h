@@ -1166,6 +1166,7 @@ enum th_glossary_t {
     THPRAC_LINKS_FILTER_DEL_MODAL,
     THPRAC_LINKS_RESET,
     THPRAC_MAKE_BGM_FASTER_WHEN_SPEEDUP,
+    THPRAC_MAKE_BGM_FASTER_WHEN_SPEEDUP_NO_PITCH,
     THPRAC_MOF_UD_REP,
     THPRAC_MOVE_TO_GLOBAL,
     THPRAC_MOVE_TO_LOCAL,
@@ -1744,7 +1745,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1733];
+extern const char* th_glossary_str[3][1734];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3457,7 +3458,7 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3557];
+extern const wchar_t __thprac_loc_range_zh[3559];
 
 extern const wchar_t __thprac_loc_range_en[67];
 
