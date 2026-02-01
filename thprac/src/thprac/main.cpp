@@ -141,7 +141,7 @@ inline CmdlineRet doCmdLineStuff(PWSTR cmdLine) {
         if (DetectGame(argv[i], &sig)) {
             exeFn = argv[i];
         } else {
-            fwprintf(stderr, L"Warning: invalid filename %s\n", argv[i]);
+            fwprintf(stderr, L"Warning: %s is not a valid Touhou game executable. If you're having issues, consider using command line arguments to pass the filename to thprac. More at https://github.com/touhouworldcup/thprac\n", argv[i]);
         }
         i++;
     }
