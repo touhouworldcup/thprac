@@ -4,6 +4,7 @@
 
 
 namespace THPrac {
+ extern bool g_try_inner_patch;
 namespace TH10 {
     bool g_mouse_move_hint = false;
     bool g_pl_speed_keep = false;
@@ -703,6 +704,12 @@ namespace TH10 {
                     mOptCtx.fps_status = 2;
                     mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x1b034);
                 }
+            } else if (g_try_inner_patch) { // correspond to TH10_NO_VP_PATCH
+                mOptCtx.fps_status = 1;
+                DWORD oldProtect;
+                VirtualProtect((void*)0x4393D5, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+                *(double**)0x4393D5 = &mOptCtx.fps_dbl;
+                VirtualProtect((void*)0x4393D5, 4, oldProtect, &oldProtect);
             } else
                 mOptCtx.fps_status = 0;
         }
@@ -2955,6 +2962,52 @@ namespace TH10 {
         THGuiCreate();
     })
     HOOKSET_ENDDEF()
+
+    HOOKSET_DEFINE(TH10_NO_VP_PATCH)
+    EHOOK_DY(th10_disable_vsync, 0x4399B3, 8,
+    {
+        *(DWORD*)(pCtx->Esp + 0x48 + 0x34) = 0x80000000;
+    })
+    EHOOK_DY(th10_wait, 0x439397, 5,
+    {
+        double cur_time = asm_call<0x439540, Stdcall, double>();
+        auto p_cur_time = (double*)(pCtx->Ebp + 0x38);
+
+        auto p_last_frame_time = (double*)(pCtx->Ebp + 0x40);
+        auto p_target_time = (double*)(pCtx->Ebp + 0x48);
+
+        *p_cur_time = cur_time;
+        if (cur_time < *p_last_frame_time)
+            *p_target_time = cur_time;
+        *p_last_frame_time = cur_time;
+        if ((*p_target_time - cur_time) * 1000.0 >= 5) {
+            Sleep(1);
+        }
+        if (cur_time > *p_target_time) {
+            pCtx->Eip = 0x4393D0;
+        } else {
+            // spin wait
+            do {
+                if ((*p_target_time - cur_time) * 1000.0 >= 5)
+                    Sleep(1);
+                cur_time = asm_call<0x439540, Stdcall, double>();
+                *p_cur_time = cur_time;
+                if (cur_time < *p_last_frame_time)
+                    *p_target_time = cur_time;
+                *p_last_frame_time = cur_time;
+            } while (cur_time < *p_target_time);
+            pCtx->Eip = 0x4393D0;
+            //end
+            pCtx->Eip = 0x439531;//return
+        }
+    })// change original wait func, using the same code as th11
+    EHOOK_DY(th10_get_time, 0x4395DF, 2,
+        {
+            QueryPerformanceFrequency((LARGE_INTEGER*)0x492508);
+            pCtx->Eip = 0x43956B;
+        })// disable timeGetTime, use QPC instead
+    PATCH_DY(th10_disable_sync, 0x413516, "EB50")// when fps > 65, th10 will force sync frame, which cause fps=0
+    HOOKSET_ENDDEF()
 }
 
 void TH10Init()
@@ -2963,6 +3016,11 @@ void TH10Init()
     InitHook(10,(void*)0x439950);
     if (GetModuleHandleA("vpatch_th10.dll")) {
         InitHook(10,(void*)((DWORD)GetModuleHandleA("vpatch_th10.dll") + 0x553b));
+    }else{
+        if (!GetModuleHandleA("openinputlagpatch.dll") && g_try_inner_patch) {
+            EnableAllHooks(TH10::TH10_NO_VP_PATCH);
+        }
+
     }
 }
 }

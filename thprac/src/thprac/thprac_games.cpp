@@ -40,6 +40,8 @@ HIMC g_gameIMCCtx = 0;
 FastRetryOpt g_fast_re_opt;
 InputOpt g_input_opt;
 
+bool g_try_inner_patch = false;
+
 struct CursorOpt
 {
     ImTextureID customCursor;
@@ -482,19 +484,20 @@ bool RenderCustomCursor()
     io.MouseDrawCursor = false;
 
     float cursorSize = g_cursor_opt.textureSize.y/128.0f*32.0f;
-    const static std::pair<ImVec2,ImVec2> uvs[8] = {
-        { { 0,    0 },   {0.25,0.5} },
-        { { 0.25, 0 },   {0.5, 0.5} },
-        { { 0.5,  0 },   {0.75,0.5} },
-        { { 0.75, 0 },   {1.0, 0.5} },
-        { { 0,    0.5 }, {0.25,1.0} },
-        { { 0.25, 0.5 }, {0.5, 1.0} },
-        { { 0.5,  0.5 }, {0.75,1.0} },
-        { { 0.75, 0.5 }, {1.0, 1.0} },
+    float eps = 0.5f / g_cursor_opt.textureSize.y;
+    std::pair<ImVec2,ImVec2> uvs[8] = {
+        { { 0.00f + eps, 0.0f + eps }, { 0.25f,       0.5f } },
+        { { 0.25f,       0.0f + eps }, { 0.50f,       0.5f } },
+        { { 0.50f,       0.0f + eps }, { 0.75f,       0.5f } },
+        { { 0.75f,       0.0f + eps }, { 1.00f - eps, 0.5f } },
+        { { 0 + eps,     0.5f },       { 0.25f,       1.0f - eps } },
+        { { 0.25f,       0.5f },       { 0.50f,       1.0f - eps} },
+        { { 0.50f,       0.5f },       { 0.75f,       1.0f - eps} },
+        { { 0.75f,       0.5f },       { 1.00f,       1.0f - eps} },
     };
     //ImGuiMouseCursor_NotAllowed is not included
     ImGuiMouseCursor cursor = ImGui::GetMouseCursor();
-    if (cursor >= 8 || cursor<0) {
+    if (cursor >= 8 || cursor < 0) {
         return false;
     }
     ImDrawList* foreground = ImGui::GetForegroundDrawList();
@@ -614,6 +617,8 @@ void InitHook(int ver,void* addr1, void* addr2)
     is_inited = true;
     if (LauncherCfgInit(true)) {
         bool msg_box_a2w = false;
+        LauncherSettingGet("tryInnerPatch", g_try_inner_patch);
+        
         if (LauncherSettingGet("msg_box_a2w", msg_box_a2w) && msg_box_a2w)
         {
             const WCHAR* name_vp_module = NULL;

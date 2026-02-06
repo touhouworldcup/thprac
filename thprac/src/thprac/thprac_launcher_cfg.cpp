@@ -2423,6 +2423,7 @@ private:
         }
         ImGui::Separator();
         if (ImGui::CollapsingHeader(S(THPRAC_GAME_ADJUSTMENTS))) {
+            mTryInnerPatch.Gui(S(THPRAC_GAMES_USE_INNER_PATCH), S(THPRAC_GAMES_USE_INNER_PATCH_DESC));
             mResizableWindow.Gui(S(THPRAC_RESIZABLE_WINDOW), S(THPRAC_RESIZABLE_WINDOW_DESC));
             mWindowSizeChangeWhenOpen.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN));
             ImGui::SameLine();
@@ -2812,6 +2813,7 @@ private:
     THCfgFloat mKb_Padding  { "kb_padding",0.05f,0.0f,0.1f};
 
     THCfgCheckbox mResizableWindow { "resizable_window", false };
+    THCfgCheckbox mTryInnerPatch { "tryInnerPatch", true };
     THCfgCheckbox mDisableMaximizeBtn { "disableMax_btn", false };
     THCfgCheckbox mInitWindowPos { "init_window_pos", true };
     THCfgCheckbox mDisableLocaleChangeHotkey { "disable_locale_change_hotkey", true };

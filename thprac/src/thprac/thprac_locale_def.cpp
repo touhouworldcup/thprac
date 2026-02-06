@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1734] {
+const char* th_glossary_str[3][1736] {
     {
         "",
         "啤酒",
@@ -871,6 +871,8 @@ const char* th_glossary_str[3][1734] {
         "选择游戏：",
         "小数点作（其他）",
         "小数点作（STG）",
+        "当VP/OILP均不可用时尝试使用内置VP",
+        "当前只支持风神录...",
         "使用OpenInputLagPatch (如果可用）",
         "使用VsyncPatch (如果可用）",
         "thprac - 游戏调整",
@@ -2607,6 +2609,8 @@ const char* th_glossary_str[3][1734] {
         "Select game:",
         "Spinoff (Others)",
         "Spinoff (Shmup)",
+        "Use Inner LagPatch when VP/OILP is not available",
+        "Only available for MoF currently...",
         "Use OpenInputLagPatch (if avaliable)",
         "Use VsyncPatch (if avaliable)",
         "thprac - Game adjustments",
@@ -4343,6 +4347,8 @@ const char* th_glossary_str[3][1734] {
         "ゲームを選択：",
         "小数点作（その他）",
         "小数点作（STG）",
+        "Use Inner LagPatch when VP/OILP is not available",
+        "Only available for MoF currently...",
         "OpenInputLagPatch を使用する (利用可能な場合)",
         "VsyncPatch を使用する (利用可能な場合)",
         "thprac - ゲームの調整",
