@@ -5,7 +5,7 @@ namespace THPrac {
 #define THPRAC_VERSION_0 2
 #define THPRAC_VERSION_1 2
 #define THPRAC_VERSION_2 2
-#define THPRAC_VERSION_3 3
+#define THPRAC_VERSION_3 4
 
 #define STRR(X) #X
 #define STR(X) STRR(X) 
