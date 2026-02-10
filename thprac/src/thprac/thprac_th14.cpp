@@ -6,6 +6,7 @@
 
 namespace THPrac {
 namespace TH14 {
+    bool g_show_bullet_hitbox = false;
     enum addrs {
         BOMB_PTR = 0x4DB52C,
         WINDOW_PTR = 0x4f5a18,
@@ -1530,6 +1531,8 @@ namespace TH14 {
                 ImGui::SetNextItemWidth(180.0f);
                 if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &g_bossMoveDownRange, 0.002f, 0.0f, 1.0f))
                     g_bossMoveDownRange = std::clamp(g_bossMoveDownRange, 0.0f, 1.0f);
+                ImGui::Checkbox(S(THPRAC_SHOW_BULLET_HITBOX), &g_show_bullet_hitbox);
+                
 
                 if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
                     for (int i = 0; i < 3; i++)
@@ -2543,6 +2546,213 @@ namespace TH14 {
         }
     }
 
+    void RenderBtHitbox(ImDrawList* p)
+    {
+        // show bullet hitbox
+        if (g_show_bullet_hitbox) {
+            DWORD ppl = *(DWORD*)0x4DB67C;
+            if ((thPracParam.mode == 1 || THGuiRep::singleton().mRepStatus) && ppl) {
+                ImGuiIO& io = ImGui::GetIO();
+                float x_ratio = io.DisplaySize.x / 1280.0f;
+                float y_ratio = io.DisplaySize.y / 960.0f;
+                p->PushClipRect({ 64.0f * x_ratio, 32.0f * y_ratio }, { 832.0f * x_ratio, 928.0f * y_ratio });
+                auto Multiply = [](ImVec2 a, ImVec2 b) -> ImVec2 {
+                    return { a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x };
+                };
+                auto Add = [](ImVec2 a, ImVec2 b) -> ImVec2 {
+                    return { a.x + b.x, a.y + b.y };
+                };
+                auto GetClientFromStage = [&](ImVec2 stage) -> ImVec2 {
+                    float x = stage.x;
+                    float y = stage.y;
+
+                    y = y * 2.0f + 32.0f;
+                    x = x * 2.0f + 448.0f;
+                    ImGuiIO& io = ImGui::GetIO();
+                    return { x * x_ratio, y * y_ratio };
+                };
+
+                // bts
+                DWORD psht = *(DWORD*)(ppl + 0x688);
+                if (psht) {
+                    float plhit = *(float*)(*(DWORD*)(ppl + 0x688) + 4);
+                    if ((*(BYTE*)(*(DWORD*)(0x4DB67C) + 0x182D4) & 0x10) != 0) // bigger
+                        plhit = (float)(*(float*)(*(DWORD*)(0x4DB67C) + 0x18308) * 3.5999999) * plhit;
+                    DWORD pbtx = *(DWORD*)(0x4DB530);
+                    if (pbtx) {
+                        DWORD iter = *(DWORD*)(pbtx + 0x80);
+                        while (iter) {
+                            DWORD pbt = *(DWORD*)(iter);
+                            ImVec2 pos = *(ImVec2*)(pbt + 0xBC0);
+				            DWORD v3 = *(DWORD*)(pbt + 0x20);
+                            if ((v3 & 2) != 0) {
+                                if ((v3 & 0x40) != 0) {
+                                    if ((v3 & 0x10) == 0) {
+                                        //rc
+                                    } else {
+                                        float radius = *(float*)(pbt + 0x13BC) * *(float*)(pbt + 0xBE0);
+                                        float bt_hit2 = sqrt(radius * radius + plhit * plhit);
+                                        auto pos2 = GetClientFromStage(pos);
+                                        p->AddCircleFilled(pos2, bt_hit2 * x_ratio*2.0f, 0x6622DDCC); // AGBR
+                                        p->AddCircle(pos2, bt_hit2 * x_ratio * 2.0f, 0xCCFF00FF); // AGBR
+                                        iter = *(DWORD*)(iter + 4);
+                                    }
+                                } else if ((v3 & 0x10) != 0) {
+                                    float radius = *(float*)(pbt + 0xBE0);
+                                    float bt_hit2 = sqrt(radius * radius + plhit * plhit);
+                                    auto pos2 = GetClientFromStage(pos);
+                                    p->AddCircleFilled(pos2, bt_hit2 * x_ratio * 2.0f, 0x6622DDCC); // AGBR
+                                    p->AddCircle(pos2, bt_hit2 * x_ratio * 2.0f, 0xCCFF00FF); // AGBR
+                                    iter = *(DWORD*)(iter + 4);
+                                } else {
+                                    //rc
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+                // atts
+                DWORD p_arr = ppl + 0xDE18;
+                for (int i = 0; i < 256; i++)
+                {
+                    DWORD p_att = p_arr + 0xA4 * i;
+                    DWORD flag = *(DWORD*)(p_att + 0x10);
+                    if (flag & 1)
+                    {
+                        if (flag & 2)
+                        {//circle
+                            float radius = *(float*)(p_att + 0x14);
+                            ImVec2 pos = *(ImVec2*)(p_att + 0x2C);
+                            auto pos2 = GetClientFromStage(pos);
+                            p->AddCircleFilled(pos2, radius * x_ratio * 2.0f, 0x5522DD55); // AGBR
+                            p->AddCircle(pos2, radius * x_ratio * 2.0f, 0xCCFFFFFF);
+                        }
+                        else
+                        {//rect
+                            float width = *(float*)(p_att + 0x24);
+                            float height = *(float*)(p_att + 0x28);
+                            float angle = *(float*)(p_att + 0x1C);
+                            ImVec2 pos = *(ImVec2*)(p_att + 0x2C);
+
+                            ImVec2 posA = { width * 0.5f, -height * 0.5f };
+                            ImVec2 posB = { width * 0.5f, height * 0.5f };
+                            ImVec2 posC = { -width * 0.5f, -height * 0.5f };
+                            ImVec2 posD = { -width * 0.5f, height * 0.5f };
+                            ImVec2 rotation = { cosf(angle), sinf(angle) };
+                            posA = Multiply(posA, rotation);
+                            posB = Multiply(posB, rotation);
+                            posC = Multiply(posC, rotation);
+                            posD = Multiply(posD, rotation);
+                            posA = GetClientFromStage(Add(posA, pos));
+                            posB = GetClientFromStage(Add(posB, pos));
+                            posC = GetClientFromStage(Add(posC, pos));
+                            posD = GetClientFromStage(Add(posD, pos));
+                            p->AddQuadFilled(posA, posB, posD, posC, 0x5522DD55);
+                            p->AddQuad(posA, posB, posD, posC, 0xCCFFFFFF);
+                        }
+                    }
+                }
+
+                //enms
+                DWORD enmBase = *(DWORD*)(0x4DB544);
+                if (enmBase) {
+                    DWORD iter = *(DWORD*)(enmBase + 0xD0);
+                    while (iter) {
+                        DWORD pEnm = *(DWORD*)(iter);
+                        {
+                            //+4054
+                            DWORD flag = *(DWORD*)(pEnm + 0x11f0 + 0x4054);
+                            ImVec2 pos = *(ImVec2*)(pEnm + 0x11f0 + 0x44);
+                            if (*(DWORD*)(pEnm + 0x11f0 + 0x4114) == 0x42C9C0)
+                            //cup
+                            {
+                                DWORD anm = *(DWORD*)(pEnm + 0x11f0 + 0x128);
+                                DWORD pTex = asm_call<0x47F0A0, Thiscall, DWORD>(*(DWORD*)0x4F56CC, anm);
+                                if (pTex)
+                                {
+                                    ImVec2 sz = *(ImVec2*)(pTex + 0x60);
+                                    sz.x *= 32.0f;
+                                    sz.y *= 192.0f;
+
+                                    ImVec2 pos2 = { pos.x, pos.y + 24.0f };
+                                    ImVec2 p1 { pos2.x - sz.y * 0.5f, pos2.y - sz.x * 0.5f };
+                                    ImVec2 p2 { pos2.x + sz.y * 0.5f, pos2.y - sz.x * 0.5f };
+                                    ImVec2 p3 { pos2.x + sz.y * 0.5f, pos2.y + sz.x * 0.5f };
+                                    ImVec2 p4 { pos2.x - sz.y * 0.5f, pos2.y + sz.x * 0.5f };
+                                    p1 = GetClientFromStage(p1);
+                                    p2 = GetClientFromStage(p2);
+                                    p3 = GetClientFromStage(p3);
+                                    p4 = GetClientFromStage(p4);
+                                    p->AddQuad(p1, p2, p3, p4, 0xFF00FF00);
+                                    p->AddQuadFilled(p1, p2, p3, p4, 0x44FF00FF);
+
+                                    pos2 = { pos2.x, pos2.y + 32.0f };
+                                    float radius = 48.0f;
+                                    p->AddCircle(GetClientFromStage(pos2), radius * x_ratio * 2.0f, 0xFF00FF00);
+                                    p->AddCircleFilled(GetClientFromStage(pos2), radius * x_ratio * 2.0f, 0x44FF00FF);
+
+                                }
+                            }
+                            if ((flag & 0x20) == 0)
+                            {
+                                if ((flag & 0x1000)){
+                                    // rc
+                                    ImVec2 hit = *(ImVec2*)(pEnm + 0x11f0 + 0x110);// bei dan
+                                    ImVec2 att = *(ImVec2*)(pEnm + 0x11f0 + 0x118);// ti shu
+                                    float angle = *(float*)(pEnm + 0x11f0 + 0x120);
+
+                                    ImVec2 p1 { - att.y * 0.5f, - att.x * 0.5f };
+                                    ImVec2 p2 { + att.y * 0.5f, - att.x * 0.5f };
+                                    ImVec2 p3 { + att.y * 0.5f, + att.x * 0.5f };
+                                    ImVec2 p4 { - att.y * 0.5f, + att.x * 0.5f };
+                                    ImVec2 A { cosf(angle), sinf(angle) };
+                                    p1 = GetClientFromStage(Add(Multiply(p1, A),pos));
+                                    p2 = GetClientFromStage(Add(Multiply(p2, A),pos));
+                                    p3 = GetClientFromStage(Add(Multiply(p3, A),pos));
+                                    p4 = GetClientFromStage(Add(Multiply(p4, A),pos));
+                                    if ((flag & 0x2) == 0) {
+                                        p->AddQuad(p1, p2, p3, p4, 0xFF00FF00);
+                                        p->AddQuadFilled(p1, p2, p3, p4, 0x44FF00FF);
+                                    }
+                                    p1 = { - hit.y * 0.5f, - hit.x * 0.5f };
+                                    p2 = { + hit.y * 0.5f, - hit.x * 0.5f };
+                                    p3 = { + hit.y * 0.5f, + hit.x * 0.5f };
+                                    p4 = { - hit.y * 0.5f, + hit.x * 0.5f };
+                                    p1 = GetClientFromStage(Add(Multiply(p1, A), pos));
+                                    p2 = GetClientFromStage(Add(Multiply(p2, A), pos));
+                                    p3 = GetClientFromStage(Add(Multiply(p3, A), pos));
+                                    p4 = GetClientFromStage(Add(Multiply(p4, A), pos));
+                                    if ((flag & 0x1) == 0) {
+                                        p->AddQuad(p1, p2, p3, p4, 0xFFFF00FF);
+                                        p->AddQuadFilled(p1, p2, p3, p4, 0x44FF00FF);
+                                    }
+                                }
+                                else
+                                {
+                                    float radius = *(float*)(pEnm + 0x11f0 + 0x110)*0.5f;
+                                    float radius2 = *(float*)(pEnm + 0x11f0 + 0x118) * 0.5f;
+                                    if ((flag & 0x1) == 0) {
+                                        p->AddCircle(GetClientFromStage(pos), radius * x_ratio * 2.0f, 0xFF00FF00);
+                                        p->AddCircleFilled(GetClientFromStage(pos), radius * x_ratio * 2.0f, 0x4400FF00);
+                                    }
+                                    if ((flag & 0x2) == 0) {
+                                        p->AddCircle(GetClientFromStage(pos), radius2 * x_ratio * 2.0f, 0xFFFF00FF);
+                                        p->AddCircleFilled(GetClientFromStage(pos), radius2 * x_ratio * 2.0f, 0x44FF00FF);
+                                    }
+                                }
+                            }
+                        }
+                        iter = *(DWORD*)(iter + 0x4);
+                    }
+                }
+
+                p->PopClipRect();
+            }
+        }
+    }
+
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th14_inf_lives, 0x0044F617,1,
     {
@@ -2679,6 +2889,8 @@ namespace TH14 {
         TH14InGameInfo::singleton().Update();
 
         auto p = ImGui::GetOverlayDrawList();
+
+        RenderBtHitbox(p);
         // in case boss movedown do not disabled when playing normal games
         {
             if (THAdvOptWnd::singleton().forceBossMoveDown) {

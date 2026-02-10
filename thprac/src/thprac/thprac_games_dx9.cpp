@@ -126,9 +126,10 @@ HRESULT(WINAPI Reset_Changed9)(IDirect3DDevice9* thiz, D3DPRESENT_PARAMETERS* pP
 {
    
     g_flip_render.resourcesInit = false;
-    g_flip_render.pScreenSurface->Release();
-    g_flip_render.pScreenSurface->Release();
-
+    if (g_flip_render.pScreenSurface){
+        g_flip_render.pScreenSurface->Release();
+        g_flip_render.pScreenSurface = nullptr;
+    }
     return g_hook_dx9.real_Reset9(thiz, pPresentationParameters);
 }
 
