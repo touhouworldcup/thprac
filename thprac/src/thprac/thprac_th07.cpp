@@ -1668,7 +1668,64 @@ namespace TH07 {
         ReplaySaveParam(mb_to_utf16(rep_name, 932).c_str(), thPracParam.GetJson());
     }
 
+    const char* SHOTNAMES[] = {
+        "ReimuA", "ReimuB",
+        "MarisaA", "MarisaB",
+        "SakuyaA", "SakuyaB"
+    };
+
+    const char* const DIFFNAMES_TH07[] = {
+        "Easy", "Normal", "Hard", "Lunatic", "Extra", "Phantasm"
+    };
+
+    void THTrackerUpdate()
+    {
+        ImGui::SetNextWindowSize({ 180.0f, 0.0f });
+        ImGui::SetNextWindowPos({ 433.0f, 245.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        char buf[32] = {};
+        snprintf(buf, sizeof(buf), "%s (%s)", DIFFNAMES_TH07[GAME_MANAGER->difficulty], SHOTNAMES[GAME_MANAGER->full_shottype]);
+        auto textSize = ImGui::CalcTextSize(buf);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - textSize.x * 0.5);
+        ImGui::TextUnformatted(buf);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Miss");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", (int)globals->miss_count);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Bomb");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", (int)globals->bombs_used);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Border Breaks");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th07.border_break);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th07_enter, 0x42EB08, 3, { // set inner misscount to 0
+        tracker_info.th07 = {};
+    })
+    EHOOK_DY(th07_border_break, 0x441DA4, 5, {
+        tracker_info.th07.border_break++;
+    })
     PATCH_DY(th07_reacquire_input, 0x430f03, "0000000074")
     EHOOK_DY(th07_everlasting_bgm, 0x44d2f0, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
@@ -1825,6 +1882,10 @@ namespace TH07 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+
+        if (tracker_open && SUPERVISOR->gamemode == 2) {
+            THTrackerUpdate();
+        }
 
         GameGuiEnd(drawCursor);
     })
