@@ -1609,70 +1609,80 @@ private:
         ImGui::TextUnformatted("*");
         ImGui::SameLine();
         ImGui::TextUnformatted(S(THPRAC_HOTKEY_MODIFIER_WARNING));
-        // Check for submasks
-        bool quick_menu_binding_shared = false;
-        bool advanced_menu_binding_shared = false;
-        bool screenshot_binding_shared = false;
-        bool language_binding_shared = false;
-        int backspace_chord = 0;
-        int advanced_chord = 0;
-        int screenshot_chord = 0;
-        int language_chord = 0;
-        LauncherSettingGet("backspace_menu_chord", backspace_chord);
-        LauncherSettingGet("advanced_menu_chord", advanced_chord);
-        LauncherSettingGet("screenshot_chord", screenshot_chord);
-        LauncherSettingGet("language_chord", language_chord);
 
-        // Checks if any chord is a sub-chord of another to throw a warning to the user
-        // Backspace and F12 menu shared
-        if ((advanced_chord & backspace_chord) == advanced_chord || (advanced_chord & backspace_chord) == backspace_chord) {
-            quick_menu_binding_shared = true;
-            advanced_menu_binding_shared = true;
+        struct GuiHotkeyOption {
+            const char* setting_name;
+            const char* label;
+            bool& listening;
+            int bitflags = 0;
+            bool has_conflict = false;
+            bool block;
+
+            inline bool conflicts(GuiHotkeyOption* other) {
+                return ((this->bitflags & other->bitflags) == this->bitflags);
+            }
+        };
+
+        GuiHotkeyOption key_backspace = {
+            .setting_name = "backspace_menu_chord",
+            .label = S(THPRAC_HOTKEY_QUICK_SETTINGS),
+            .listening = mHotkeyBackspaceMenuListening,
+        };
+
+        GuiHotkeyOption key_advanced = {
+            .setting_name = "advanced_menu_chord",
+            .label = S(THPRAC_HOTKEY_ADVANCED_SETTINGS),
+            .listening = mHotkeyF12MenuListening,
+        };
+
+        GuiHotkeyOption key_screenshot = {
+            .setting_name = "screenshot_menu_chord",
+            .label = S(THPRAC_HOTKEY_SCREENSHOT),
+            .listening = mHotkeyScreenshotListening,
+        };
+
+        GuiHotkeyOption key_language = {
+            .setting_name = "language_chord",
+            .label = S(THPRAC_HOTKEY_LANGUAGE_SETTINGS),
+            .listening = mHotkeyLanguageListening,
+        };
+
+        GuiHotkeyOption keys[] = { key_backspace, key_advanced, key_screenshot };
+
+        for (auto& key : keys) {
+            LauncherSettingGet(key.setting_name, key.bitflags);
         }
-        // Backspace menu and Screenshot shared
-        if ((screenshot_chord & backspace_chord) == screenshot_chord || (screenshot_chord & backspace_chord) == backspace_chord) {
-            quick_menu_binding_shared = true;
-            screenshot_binding_shared = true;
-        }
-        // F12 menu and Screenshot shared
-        if ((advanced_chord & screenshot_chord) == advanced_chord || (advanced_chord & screenshot_chord) == screenshot_chord) {
-            advanced_menu_binding_shared = true;
-            screenshot_binding_shared = true;
+        LauncherSettingGet(key_language.setting_name, key_language.bitflags);
+
+        for (size_t i = 0; i < elementsof(keys); i++) {
+            for (size_t j = 0; j < elementsof(keys); j++) {
+                if (i == j) continue;
+                if (keys[i].conflicts(&keys[j])) {
+                    keys[i].has_conflict = true;
+                    keys[j].has_conflict = true;
+                }
+            }
         }
 
         // Because Language also requires pressing a number key, it being a sub-chord of another chord
         // does not matter, unless it is the same value in which case the other chord would be the
-        // sub-chord of the Language chord.
+        // sub-chord of the Language chord. This exception is why key_language is not in the keys array.
+        for (auto& key : keys) {
+            if (key_language.conflicts(&key)) {
+                key.has_conflict = true;
+                key_language.has_conflict = true;
+            }
+        }
 
-        // Backspace menu and Language shared
-        if ((language_chord & backspace_chord) == backspace_chord) {
-            quick_menu_binding_shared = true;
-            language_binding_shared = true;
-        }
-        // F12 menu and Language shared
-        if ((language_chord & advanced_chord) == advanced_chord) {
-            advanced_menu_binding_shared = true;
-            language_binding_shared = true;
-        }
-        // Screenshot menu and Language shared
-        if ((language_chord & screenshot_chord) == screenshot_chord) {
-            screenshot_binding_shared = true;
-            language_binding_shared = true;
-        }
- 
+        key_backspace.block = key_advanced.listening || key_screenshot.listening || key_language.listening;
+        key_advanced.block = key_backspace.listening || key_screenshot.listening || key_language.listening;
+        key_screenshot.block  = key_backspace.listening || key_advanced.listening || key_language.listening;
+        key_language.block = key_advanced.listening || key_screenshot.listening || key_backspace.listening;
 
-        // Check if other inputs are listening and block if so.
-        // This is kinda getting out of hand, best hope not many more hotkeys are needed anymore.
-        bool block_backspace_menu = mHotkeyF12MenuListening || mHotkeyScreenshotListening || mHotkeyLanguageListening;
-        bool block_advanced_menu = mHotkeyBackspaceMenuListening || mHotkeyScreenshotListening || mHotkeyLanguageListening;
-        bool block_screenshot = mHotkeyBackspaceMenuListening || mHotkeyF12MenuListening || mHotkeyLanguageListening;
-        bool block_language = mHotkeyBackspaceMenuListening || mHotkeyF12MenuListening || mHotkeyScreenshotListening;
-  
-        // Add the buttons to the UI and update data if sucessfully updated.
-        GuiHotkeyEdit(S(THPRAC_HOTKEY_QUICK_SETTINGS), "backspace_menu_chord", &mHotkeyBackspaceMenuListening, block_backspace_menu, quick_menu_binding_shared);
-        GuiHotkeyEdit(S(THPRAC_HOTKEY_ADVANCED_SETTINGS), "advanced_menu_chord", &mHotkeyF12MenuListening, block_advanced_menu, advanced_menu_binding_shared);
-        GuiHotkeyEdit(S(THPRAC_HOTKEY_SCREENSHOT), "screenshot_chord", &mHotkeyScreenshotListening, block_screenshot, screenshot_binding_shared);
-        GuiHotkeyEdit(S(THPRAC_HOTKEY_LANGUAGE_SETTINGS), "language_chord", &mHotkeyLanguageListening, block_language, language_binding_shared, S(THPRAC_HOTKEY_LANGUAGE_TOOLTIP));
+        for (const auto& key : keys) {
+            GuiHotkeyEdit(key.label, key.setting_name, &key.listening, key.block, key.has_conflict);
+        }
+        GuiHotkeyEdit(key_language.label, key_language.setting_name, &key_language.listening, key_language.block, key_language.has_conflict);
 
         // Reset button
         if (ImGui::Button(S(THPRAC_HOTKEY_RESET))) {
@@ -1680,14 +1690,11 @@ private:
             mHotkeyF12MenuListening = false;
             mHotkeyScreenshotListening = false;
             mHotkeyLanguageListening = false;
-            int backspace_menu_chord = 1 << Gui::ChordKey_Backspace;
-            int advanced_menu_chord = 1 << Gui::ChordKey_F12;
-            int screenshot_chord = 1 << Gui::ChordKey_Home;
-            int language_chord = 1 << Gui::ChordKey_Alt;
-            LauncherSettingSet("backspace_menu_chord", backspace_menu_chord);
-            LauncherSettingSet("advanced_menu_chord", advanced_menu_chord);
-            LauncherSettingSet("screenshot_chord", screenshot_chord);
-            LauncherSettingSet("language_chord", language_chord);
+
+            LauncherSettingSet("backspace_menu_chord", 1 << Gui::ChordKey_Backspace);
+            LauncherSettingSet("advanced_menu_chord", 1 << Gui::ChordKey_F12);
+            LauncherSettingSet("screenshot_menu_chord", 1 << Gui::ChordKey_Home);
+            LauncherSettingSet("language_chord", 1 << Gui::ChordKey_Alt);
         }
     }
 
