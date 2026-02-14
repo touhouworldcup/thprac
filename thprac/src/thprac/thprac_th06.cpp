@@ -1924,6 +1924,9 @@ namespace TH06 {
     // running Setup is only needed for Hooks, not patches
     PATCH_ST(th06_white_screen, 0x42fee0, "c3");
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th06_enter_game, 0x41BDE8, 4, {
+        tracker_info.th06 = {};
+    })
     EHOOK_DY(th06_track_miss, 0x428DD9, 2, {
         // Built in miss counter also counts a miss when using a deathbomb, which is undesirable. To work around this, we count misses ourselves.
         tracker_info.th06.misses++;
@@ -2053,8 +2056,6 @@ namespace TH06 {
             pCtx->Eax += 0x310;
             pCtx->Eip = 0x41c17f;
         }
-
-        tracker_info.th06 = {};
     })
     EHOOK_DY(th06_restart, 0x435901, 5, {
         if (!thRestartFlag_normalGame && !thRestartFlag) {
