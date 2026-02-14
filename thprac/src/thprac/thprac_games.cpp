@@ -40,7 +40,6 @@ HIMC g_gameIMCCtx = 0;
 FastRetryOpt g_fast_re_opt;
 InputOpt g_input_opt;
 
-bool g_try_inner_patch = false;
 
 struct CursorOpt
 {
@@ -305,8 +304,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
             }
            
         }
-        
-        memset(&g_adv_igi_options, 0, sizeof(g_adv_igi_options));
 
         LauncherSettingGet("pauseBGM_06", g_adv_igi_options.th06_pauseBGM);
         LauncherSettingGet("autoInputName_06", g_adv_igi_options.th06_autoname);
@@ -437,6 +434,11 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
                 LauncherSettingGet("test_input_latency", test_input_latency);
                 EnableInputLatencyTest(test_input_latency);
             }
+        }
+
+        bool fix_esc_lag = false;
+        if (impl == IMPL_WIN32_DX9 && LauncherSettingGet("fixEscLag", fix_esc_lag) && fix_esc_lag) {
+            ESC_Fix();
         }
     }else{
         
@@ -617,7 +619,7 @@ void InitHook(int ver,void* addr1, void* addr2)
     is_inited = true;
     if (LauncherCfgInit(true)) {
         bool msg_box_a2w = false;
-        LauncherSettingGet("tryInnerPatch", g_try_inner_patch);
+        LauncherSettingGet("tryInnerPatch", g_adv_igi_options.try_inner_patch);
         
         if (LauncherSettingGet("msg_box_a2w", msg_box_a2w) && msg_box_a2w)
         {

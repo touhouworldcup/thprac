@@ -2,6 +2,7 @@
 #include "thprac_utils.h"
 #include <list>
 #include <format>
+#include <d3d9.h>
 
 
 namespace THPrac {

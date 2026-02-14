@@ -851,6 +851,8 @@ enum th_glossary_t {
     THPRAC_GAMES_DELETE_CONFIRM,
     THPRAC_GAMES_DELETE_MODAL,
     THPRAC_GAMES_DETAILS_PAGE,
+    THPRAC_GAMES_FIX_ESC_LAG,
+    THPRAC_GAMES_FIX_ESC_LAG_DESC,
     THPRAC_GAMES_FORCE_THPRAC,
     THPRAC_GAMES_FORCE_THPRAC_CONFIRM,
     THPRAC_GAMES_FORCE_THPRAC_MODAL,
@@ -1747,7 +1749,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1736];
+extern const char* th_glossary_str[3][1738];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

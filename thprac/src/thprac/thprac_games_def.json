@@ -577,6 +577,8 @@
 	  "THPRAC_GAMES_USE_OILP": [ "使用OpenInputLagPatch (如果可用）", "Use OpenInputLagPatch (if avaliable)", "OpenInputLagPatch を使用する (利用可能な場合)" ],
 	  "THPRAC_GAMES_USE_INNER_PATCH": [ "当VP/OILP均不可用时尝试使用内置VP", "Use Inner LagPatch when VP/OILP is not available", "Use Inner LagPatch when VP/OILP is not available" ],
 	  "THPRAC_GAMES_USE_INNER_PATCH_DESC": [ "当前只支持风神录...", "Only available for MoF currently...", "Only available for MoF currently..." ],
+	  "THPRAC_GAMES_FIX_ESC_LAG": [ "修复部分游戏由于 D3DXLoadSurfaceFromSurface 导致的ESC掉帧", "Fix frame drops when ESC in some games due to D3DXLoadSurfaceFromSurface", "Fix frame drops when ESC in some games due to D3DXLoadSurfaceFromSurface" ],
+	  "THPRAC_GAMES_FIX_ESC_LAG_DESC": [ "目前似乎只有辉针城可能有这个问题", "Seems only DDC might have this problem...", "Seems only DDC might have this problem..." ],
 	  
       "THPRAC_GAMES_APPLY_THPRAC": [ "应用thprac", "Apply thprac", "thpracを適用する" ],
       "THPRAC_GAMES_FORCE_THPRAC": [ "强制应用thprac", "Force thprac to apply", "thpracを強制的に適用する" ],

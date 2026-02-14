@@ -8,5 +8,6 @@ ImTextureID ReadImage9(DWORD device, LPCSTR fileName, LPCSTR srcData, size_t src
 ImVec2 GetImageInfo9(ImTextureID textureID);
 void HookDx9(DWORD device);
 void FlipRender(IDirect3DDevice9* thiz);
+void ESC_Fix();
 
 }

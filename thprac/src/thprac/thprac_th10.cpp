@@ -4,7 +4,6 @@
 
 
 namespace THPrac {
- extern bool g_try_inner_patch;
 namespace TH10 {
     bool g_mouse_move_hint = false;
     bool g_pl_speed_keep = false;
@@ -704,7 +703,7 @@ namespace TH10 {
                     mOptCtx.fps_status = 2;
                     mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x1b034);
                 }
-            } else if (g_try_inner_patch) { // correspond to TH10_NO_VP_PATCH
+            } else if (g_adv_igi_options.try_inner_patch) { // correspond to TH10_NO_VP_PATCH
                 mOptCtx.fps_status = 1;
                 DWORD oldProtect;
                 VirtualProtect((void*)0x4393D5, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
@@ -3017,7 +3016,7 @@ void TH10Init()
     if (GetModuleHandleA("vpatch_th10.dll")) {
         InitHook(10,(void*)((DWORD)GetModuleHandleA("vpatch_th10.dll") + 0x553b));
     }else{
-        if (!GetModuleHandleA("openinputlagpatch.dll") && g_try_inner_patch) {
+        if (!GetModuleHandleA("openinputlagpatch.dll") && g_adv_igi_options.try_inner_patch) {
             EnableAllHooks(TH10::TH10_NO_VP_PATCH);
         }
 

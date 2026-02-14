@@ -8,6 +8,8 @@
 
 namespace THPrac {
 extern bool g_is_d3d_hooked;
+extern DWORD* g_gameGuiDevice;
+
 namespace SSS {
     extern bool g_flip_screen_y;
  }
@@ -168,6 +170,49 @@ ImTextureID ReadImage9(DWORD device, LPCSTR fileName, LPCSTR srcData, size_t src
     }
     return tex;
 }
+
+int(__stdcall* g_orig_D3DXLoadSurfaceFromSurface)(
+    LPDIRECT3DSURFACE9 pDestSurface,
+    const PALETTEENTRY* pDestPalette,
+    const RECT* pDestRect,
+    LPDIRECT3DSURFACE9 pSrcSurface,
+    const PALETTEENTRY* pSrcPalette,
+    const RECT* pSrcRect,
+    DWORD Filter,
+    D3DCOLOR ColorKey);
+int __stdcall D3DXLoadSurfaceFromSurface_Changed(
+    LPDIRECT3DSURFACE9 pDestSurface,
+    const PALETTEENTRY* pDestPalette,
+    const RECT* pDestRect,
+    LPDIRECT3DSURFACE9 pSrcSurface,
+    const PALETTEENTRY* pSrcPalette,
+    const RECT* pSrcRect,
+    DWORD Filter,
+    D3DCOLOR ColorKey)
+{
+  
+    int res;
+    D3DSURFACE_DESC desc;
+    LPDIRECT3DSURFACE9 surface2;
+
+    if (FAILED(pSrcSurface->GetDesc(&desc)))
+        return g_orig_D3DXLoadSurfaceFromSurface(pDestSurface, pDestPalette, pDestRect, pSrcSurface, pSrcPalette, pSrcRect, Filter, ColorKey);
+    surface2 = nullptr;
+    IDirect3DDevice9* device = *(IDirect3DDevice9**)g_gameGuiDevice;
+    if (FAILED(device->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &surface2, NULL))) {
+        return g_orig_D3DXLoadSurfaceFromSurface(pDestSurface, pDestPalette, pDestRect, pSrcSurface, pSrcPalette, pSrcRect, Filter, ColorKey);
+    }
+    device->GetRenderTargetData(pSrcSurface, surface2);
+    res = g_orig_D3DXLoadSurfaceFromSurface(pDestSurface, pDestPalette, pDestRect, surface2, pSrcPalette, pSrcRect, Filter, ColorKey);
+    surface2->Release();
+    return res;
+}
+
+void ESC_Fix()
+{
+    HookIAT(GetModuleHandle(NULL), "d3dx9_43.dll", "D3DXLoadSurfaceFromSurface", D3DXLoadSurfaceFromSurface_Changed, (void**)&g_orig_D3DXLoadSurfaceFromSurface);
+}
+
 
 
 }

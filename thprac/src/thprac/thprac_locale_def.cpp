@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1736] {
+const char* th_glossary_str[3][1738] {
     {
         "",
         "啤酒",
@@ -851,6 +851,8 @@ const char* th_glossary_str[3][1736] {
         "删除这个游戏？",
         "删除##modal",
         "详情页面",
+        "修复部分游戏由于 D3DXLoadSurfaceFromSurface 导致的ESC掉帧",
+        "目前似乎只有辉针城可能有这个问题",
         "强制应用thprac",
         "在一个修改版游戏上使用thprac将无法保证其正常的工作，且特定的功能（如道中跳转）将导致游戏的出错及崩溃。\n仍然继续？",
         "警告：强制应用thprac##modal",
@@ -2589,6 +2591,8 @@ const char* th_glossary_str[3][1736] {
         "Delete this game?",
         "Delete##modal",
         "Details page",
+        "Fix frame drops when ESC in some games due to D3DXLoadSurfaceFromSurface",
+        "Seems only DDC might have this problem...",
         "Force thprac to apply",
         "Using thprac on a modded game may cause it to not work properly, making certain functionalities (stage warp for example) to crash the game.\nStill proceed?",
         "Warning: Force thprac to apply##modal",
@@ -4327,6 +4331,8 @@ const char* th_glossary_str[3][1736] {
         "このゲームを削除しますか？",
         "削除##modal",
         "詳細ページ",
+        "Fix frame drops when ESC in some games due to D3DXLoadSurfaceFromSurface",
+        "Seems only DDC might have this problem...",
         "thpracを強制的に適用する",
         "改造されたゲームでthpracを使用すると、thpracが正しく機能せず、特定の機能（ステージワープなど）がゲームをクラッシュさせる可能性があります。\nまだ続行しますか？",
         "警告：thpracを強制的に適用する##modal",
