@@ -13,6 +13,12 @@
 #include "utils/wininternal.h"
 
 namespace THPrac {
+
+#pragma region Ingame Tracking
+TrackerInfo tracker_info = {};
+bool tracker_open = false;
+#pragma endregion
+
 #pragma region Gui Wrapper
 
 int g_gameGuiImpl = -1;
@@ -325,6 +331,14 @@ void GameGuiBegin(game_gui_impl impl, bool game_nav)
         break;
     }
     GameGuiProgress = 1;
+       
+    if (Gui::GetChordPressed(Gui::GetTrackerChord())) {
+        if (tracker_open) {
+            tracker_open = false;
+        } else {
+            tracker_open = true;
+        }
+    }
 }
 
 void GameGuiEnd(bool draw_cursor)
@@ -1111,10 +1125,6 @@ bool GameState_Assert(bool cond)
     else
         ExitProcess(UINT_MAX);
 }
-#pragma endregion
-
-#pragma region Ingame Tracking
-TrackerInfo tracker_info = {};
 #pragma endregion
 
 const char* const DIFFNAMES[] = {

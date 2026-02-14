@@ -781,6 +781,7 @@ enum th_glossary_t
     THPRAC_HOTKEY_SPECIAL_SETTINGS_TOOLTIP,
     THPRAC_HOTKEY_SUBMASK_WARNING,
     THPRAC_HOTKEY_TOOLTIP,
+    THPRAC_HOTKEY_TRACKER,
     THPRAC_HOTKEY_UNASSIGNED,
     THPRAC_IGNORE_GLOBAL_DATA,
     THPRAC_IGNORE_LOCAL_DATA,
@@ -1128,7 +1129,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1116];
+extern const char* th_glossary_str[3][1117];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2759,10 +2760,10 @@ extern const th_glossary_t TH20_EXPIRED_PYRAMID_FIX_OPT[6];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[2803];
+extern const wchar_t __thprac_loc_range_zh[3355];
 
-extern const wchar_t __thprac_loc_range_en[35];
+extern const wchar_t __thprac_loc_range_en[39];
 
-extern const wchar_t __thprac_loc_range_ja[2283];
+extern const wchar_t __thprac_loc_range_ja[2839];
 
 }

@@ -2145,7 +2145,7 @@ namespace TH06 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
 
-        if (GAME_MANAGER->isInGame || GAME_MANAGER->isInGameMenu || GAME_MANAGER->isInRetryMenu) {
+        if (tracker_open && (GAME_MANAGER->isInGame || GAME_MANAGER->isInGameMenu || GAME_MANAGER->isInRetryMenu)) {
             THTrackerUpdate();
         }
 

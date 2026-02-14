@@ -655,6 +655,7 @@ union TrackerInfo {
 };
 
 extern TrackerInfo tracker_info;
+extern bool tracker_open;
 
 #pragma endregion
 

@@ -74,6 +74,7 @@ namespace THPrac
         int GetAdvancedMenuChord();
         int GetSpecialMenuChord();
         int GetScreenshotChord();
+        int GetTrackerChord();
         int GetLanguageChord();
 
 		std::string HotkeyChordToLabel(int chord);

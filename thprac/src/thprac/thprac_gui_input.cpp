@@ -180,6 +180,7 @@ namespace THPrac
         int __gbackspace_menu_chord_current = 1 << ChordKey_Backspace;
         int __gadvanced_menu_chord_current = 1 << ChordKey_F12;
         int __gscreenshot_chord_current = 1 << ChordKey_Home;
+        int __gtracker_chord_current = 1 << ChordKey_End;
         int __glanguage_chord_current = 1 << ChordKey_Alt;
 
         const char* ChordKeyStrings[ChordKey_COUNT];
@@ -255,11 +256,13 @@ namespace THPrac
             int backspace_menu_chord = 0;
             int advanced_menu_chord = 0;
             int screenshot_chord = 0;
+            int tracker_chord = 0;
             int language_chord = 0;
             if (
 				!LauncherSettingGet("backspace_menu_chord", backspace_menu_chord) ||
 				!LauncherSettingGet("advanced_menu_chord", advanced_menu_chord) || 
 				!LauncherSettingGet("screenshot_chord", screenshot_chord) || 
+				!LauncherSettingGet("tracker_chord", tracker_chord) || 
 				!LauncherSettingGet("language_chord", language_chord)
 			) {
                 return false;
@@ -267,6 +270,7 @@ namespace THPrac
             __gbackspace_menu_chord_current = backspace_menu_chord;
             __gadvanced_menu_chord_current = advanced_menu_chord;
             __gscreenshot_chord_current = screenshot_chord;
+            __gtracker_chord_current = tracker_chord;
             __glanguage_chord_current = language_chord;
             return true;
 		}
@@ -309,6 +313,7 @@ namespace THPrac
 		int GetBackspaceMenuChord() { return __gbackspace_menu_chord_current; }
 		int GetAdvancedMenuChord() { return __gadvanced_menu_chord_current; }
 		int GetScreenshotChord() { return __gscreenshot_chord_current; }
+		int GetTrackerChord() { return __gtracker_chord_current; }
 		int GetLanguageChord() { return __glanguage_chord_current; }
 
 		// Convert chords to user-readable string.
