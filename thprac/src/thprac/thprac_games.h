@@ -650,8 +650,13 @@ struct TH06Info {
     uint32_t misses = 0;
 };
 
+struct TH07Info {
+    uint32_t border_break = 0;
+};
+
 union TrackerInfo {
     TH06Info th06;
+    TH07Info th07;
 };
 
 extern TrackerInfo tracker_info;
