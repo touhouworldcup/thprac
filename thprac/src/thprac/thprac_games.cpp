@@ -1112,4 +1112,13 @@ bool GameState_Assert(bool cond)
         ExitProcess(UINT_MAX);
 }
 #pragma endregion
+
+#pragma region Ingame Tracking
+TrackerInfo tracker_info = {};
+#pragma endregion
+
+const char* const DIFFNAMES[] = {
+    "Easy", "Normal", "Hard", "Lunatic", "Extra", "Overdrive"
+};
+
 }

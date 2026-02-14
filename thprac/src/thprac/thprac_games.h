@@ -642,4 +642,21 @@ void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, e
 bool GameState_Assert(bool cond);
 
 #pragma endregion
+
+#pragma region Ingame Tracking
+
+
+struct TH06Info {
+    uint32_t misses = 0;
+};
+
+union TrackerInfo {
+    TH06Info th06;
+};
+
+extern TrackerInfo tracker_info;
+
+#pragma endregion
+
+extern const char* const DIFFNAMES[];
 }

@@ -6,6 +6,10 @@
 namespace THPrac {
 
 namespace TH06 {
+    const char* const SHOTNAMES[4] = {
+        "ReimuA", "ReimuB", "MarisaA", "MarisaB"
+    };
+    
     static const GameManager* const GAME_MANAGER = (const GameManager* const)0x69bca0;
 
     enum ADDRS {
@@ -1867,6 +1871,48 @@ namespace TH06 {
         ReplaySaveParam(mb_to_utf16(rep_name, 932).c_str(), thPracParam.GetJson());
     }
 
+    void THTrackerUpdate() {
+        ImGui::SetNextWindowSize({ 180.0f, 0.0f });
+        ImGui::SetNextWindowPos({ 433.0f, 245.0f });
+        ImGui::Begin("Tracker", nullptr, 
+            ImGuiWindowFlags_NoScrollbar | 
+            ImGuiWindowFlags_NoScrollWithMouse | 
+            ImGuiWindowFlags_NoTitleBar | 
+            ImGuiWindowFlags_NoResize | 
+            ImGuiWindowFlags_NoMove | 
+            ImGuiWindowFlags_NoSavedSettings | 
+            ImGuiWindowFlags_NoInputs | 
+            ImGuiWindowFlags_NoFocusOnAppearing | 
+            ImGuiWindowFlags_NoNav
+        );
+
+        char buf[32] = {};
+        snprintf(buf, sizeof(buf), "%s (%s)", DIFFNAMES[GAME_MANAGER->difficulty], SHOTNAMES[GAME_MANAGER->character * 2 + GAME_MANAGER->shotType]);
+        auto textSize = ImGui::CalcTextSize(buf);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - textSize.x * 0.5);
+        ImGui::TextUnformatted(buf);        
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Miss");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th06.misses);
+        
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Bomb");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", GAME_MANAGER->bombsUsed);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+
     EHOOK_ST(th06_result_screen_create, 0x42d812, 4, {
         self->Disable();
         *(uint32_t*)(*(uint32_t*)(pCtx->Ebp - 0x10) + 0x8) = 0xA;
@@ -1878,6 +1924,10 @@ namespace TH06 {
     // running Setup is only needed for Hooks, not patches
     PATCH_ST(th06_white_screen, 0x42fee0, "c3");
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th06_track_miss, 0x428DD9, 2, {
+        // Built in miss counter also counts a miss when using a deathbomb, which is undesirable. To work around this, we count misses ourselves.
+        tracker_info.th06.misses++;
+    })
     PATCH_DY(th06_reacquire_input, 0x41dc58, "0000000074")
     EHOOK_DY(th06_activateapp, 0x420D96, 3, {
         // Wacky hack to disable rendering for one frame to prevent the game from crasing when alt tabbing into it if the pause menu is open and the game is in fullscreen mode
@@ -2003,6 +2053,8 @@ namespace TH06 {
             pCtx->Eax += 0x310;
             pCtx->Eip = 0x41c17f;
         }
+
+        tracker_info.th06 = {};
     })
     EHOOK_DY(th06_restart, 0x435901, 5, {
         if (!thRestartFlag_normalGame && !thRestartFlag) {
@@ -2021,6 +2073,8 @@ namespace TH06 {
             thPracParam.Reset();
             th06_white_screen.Disable();
         }
+
+        tracker_info.th06 = {};
     })
     EHOOK_DY(th06_title, 0x41ae2c, 7, {
         if (thPracParam.mode != 0 && thPracParam.section) {
@@ -2091,11 +2145,14 @@ namespace TH06 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
 
+        if (GAME_MANAGER->isInGame || GAME_MANAGER->isInGameMenu || GAME_MANAGER->isInRetryMenu) {
+            THTrackerUpdate();
+        }
+
         GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
     })
     EHOOK_DY(th06_render, 0x41cb6d, 1, {
         GameGuiRender(IMPL_WIN32_DX8);
-        // TODO: Add this as well
         if (Gui::GetChordPressed(Gui::GetScreenshotChord()))
             THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);
     })
