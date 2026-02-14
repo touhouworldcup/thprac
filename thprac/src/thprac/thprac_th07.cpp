@@ -1680,8 +1680,8 @@ namespace TH07 {
 
     void THTrackerUpdate()
     {
-        ImGui::SetNextWindowSize({ 180.0f, 0.0f });
-        ImGui::SetNextWindowPos({ 433.0f, 245.0f });
+        ImGui::SetNextWindowSize({ 170.0f, 0.0f });
+        ImGui::SetNextWindowPos({ 450.0f, 193.0f });
         ImGui::Begin("Tracker", nullptr,
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 
