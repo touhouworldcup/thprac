@@ -66,7 +66,7 @@
       "THPRAC_DATADIR_OPEN": [ "打开数据目录", "Open data directory", "データディレクトリを開く" ],
       "THPRAC_DIRECTORY_SETTING_MODAL": [ "数据目录##modal", "Data directory##modal", "データディレクトリ##modal" ],
       "THPRAC_DIRECTORY_SETTING_DESC": [
-        "thprac默认将数据储存在“%APPDATA%/thprac”，这意味着无论thprac的执行程序在何处，都可以使用这个“全局目录”存储数据。\n额外的，你也可以使用一个名为“.thprac_data”的本地目录来存储数据，不过在一般的使用情景下并不推荐使用。\n你可以使用以下的设置在全局/本地目录间切换。请注意这将需要thprac的重启。",
+        "thprac默认将数据储存在“%APPDATA%/thprac”内，这意味着无论thprac的执行程序在何处，都可以使用这个“全局目录”存储数据。\n另外，你也可以使用一个名为“.thprac_data”的本地目录来存储数据，不过在一般的使用情景下并不推荐使用。\n你可以使用以下的设置在全局/本地目录间切换。请注意，切换在重启后才生效。",
         "By default, thprac stores its data in \"%APPDATA%/thprac\", which is considered to be a \"global directory\" that thprac can access regarding its location.\nAdditionally, you can also opt to use a local data directory, which is a folder named \".thprac_data\" in the same place as thprac. \nThis may be helpful in certain situation but is generally not recommended for normal use.\nYou can you the settings below to convert between global/local directory. Note that they will require a restart of thprac.",
         "デフォルトでは、thpracはそのデータを「%APPDATA%/thprac」に保存します。thpracがどの位置にあっても、この「グローバルディレクトリ」にアクセスできます。\nさらに、ローカルデータディレクトリを使用することもできます。 これは、thpracと同じ場所にある「.thprac_data」という名前のフォルダーです。\nこれは特定の状況で役立つ場合がありますが、通常の使用にはお勧めしません。\n以下の設定で、グローバル/ローカルディレクトリ間で変換できます。 thpracを再起動する必要があることに注意してください。"
       ],
@@ -92,10 +92,10 @@
       ],
 
       "THPRAC_THCRAP": [ "thcrap", "thcrap", "thcrap" ],
-      "THPRAC_THCRAP_NOTYET": [ "尚未设置thcrap位置。", "thcrap location not yet specified.", "thcrapの場所はまだ指定されていません。" ],
-      "THPRAC_THCRAP_SET": [ "设置位置", "Set location", "場所を設定する" ],
+      "THPRAC_THCRAP_NOTYET": [ "尚未设置thcrap的路径。", "thcrap location not yet specified.", "thcrapの場所はまだ指定されていません。" ],
+      "THPRAC_THCRAP_SET": [ "设置路径", "Set location", "場所を設定する" ],
       "THPRAC_THCRAP_LOCATION": [ "thcrap已设置: %s", "thcrap set to: %s", "thpracが設定されました: %s" ],
-      "THPRAC_THCRAP_INVALID": [ "无效的thcrap位置！", "Invalid thcrap location!", "無効なthcrapの場所！" ],
+      "THPRAC_THCRAP_INVALID": [ "无效的thcrap路径！", "Invalid thcrap location!", "無効なthcrapの場所！" ],
       "THPRAC_THCRAP_ADDCFG": [ "添加thcrap配置...", "Add thcrap configs...", "thcrapコンフィグを追加..." ],
       "THPRAC_THCRAP_LAUNCH_CONFIGURE": [ "启动thcrap_configure", "Launch thcrap_configure", "thcrap_configureを起動します" ],
       "THPRAC_THCRAP_LAUNCH_FAILED": [ "未能启动thcrap_configure！", "Failed to launch thcrap_configure!", "thcrapを起動できませんでした！" ],
@@ -124,7 +124,7 @@
       ],
       "THPRAC_THEME": [ "主题:", "Theme: ", "テーマ:" ],
       "THPRAC_THEME_OPTION": [
-        "黑暗\\0光明\\0经典\\0\\0",
+        "暗黑\\0明亮\\0经典\\0\\0",
         "Dark\\0Light\\0Classic\\0\\0",
         "ダーク\\0ライト\\0クラシック\\0\\0"
       ],
@@ -136,7 +136,7 @@
       ],
       "THPRAC_AUTO_DEFAULT_LAUNCH": [ "自动设置默认启动游戏", "Auto set default start game", "デフォルトの起動ゲームを自動的に設定します" ],
       "THPRAC_AUTO_DEFAULT_LAUNCH_DESC": [
-        "勾选后，将游戏列表中的第一个游戏自动作为默认启动游戏。\n手动设置的默认启动游戏覆盖此选项。",
+        "勾选后，游戏列表中的第一个游戏将自动作为默认启动游戏。\n手动设置的默认启动游戏覆盖此选项。",
         "When enabled, the first game in the game list will be automatically used as the default starting game.\nManually set default startup games override this option.",
         "有効にすると、ゲームリストの最初のゲームがデフォルトの開始ゲームとして自動的に使用されます。\nデフォルトの起動ゲームを手動で設定すると、このオプションが上書きされます。"
       ],
@@ -178,7 +178,7 @@
       "THPRAC_HOTKEY_ADVANCED_SETTINGS": [ "高级设置", "Advanced Settings", "詳細設定" ],
       "THPRAC_HOTKEY_SPECIAL_SETTINGS": [ "特殊设置", "Special Settings", "特別設定" ],
       "THPRAC_HOTKEY_LANGUAGE_SETTINGS": [ "语言更改", "Language Change", "言語変更" ],
-      "THPRAC_HOTKEY_LANGUAGE_TOOLTIP": [ "按住此键并按 1/2/3 可切换为日语／中文／英语", "Hold and press 1 = Japanese, 2 = Chinese, 3 = English.", "このキーを押したまま、1/2/3を押すと日本語／中国語／英語に切り替わります" ],
+      "THPRAC_HOTKEY_LANGUAGE_TOOLTIP": [ "按住此键并按 1/2/3 可切换为日语/中文/英语", "Hold and press 1 = Japanese, 2 = Chinese, 3 = English.", "このキーを押したまま、1/2/3を押すと日本語／中国語／英語に切り替わります" ],
       "THPRAC_HOTKEY_SCREENSHOT": [ "截图（红魔乡和妖妖梦）", "Screenshot (EoSD and PCB)", "スクリーンショット（東方紅魔郷・東方妖々夢）" ],
       "THPRAC_HOTKEY_SUBMASK_WARNING": [ "警告：所选按键已被其他快捷键使用或需要。", "Warning: Chosen keys contains or are required for a different hotkey.", "警告: 選択したキーは、別のホットキーで使用されているか、必要とされています。" ],
       "THPRAC_HOTKEY_TOOLTIP": [ "允许的按键: *Ctrl, Alt, *Shift, Caps Lock, Tab, 空格, Backspace, F11, F12, Ins, Del, Home, End, PgUp, PgDn。", "Allowed Keys: *Ctrl, Alt, *Shift, Caps Lock, Tab, Space, Backspace, F11, F12, Ins, Del, Home, End, PgUp, PgDn.", "許可されたキー: *Ctrl, Alt, *Shift, Caps Lock, Tab, スペース, Backspace, F11, F12, Ins, Del, Home, End, PgUp, PgDn。" ],
@@ -284,16 +284,16 @@
         "リンクを開くときにエラーが発生しました。\nこのリンクが有効か確認してください。"
       ],
 
-      "THPRAC_LINKS_EDIT_NAME": [ "名字：", "Name:", "名前：" ],
+      "THPRAC_LINKS_EDIT_NAME": [ "名称：", "Name:", "名前：" ],
       "THPRAC_LINKS_EDIT_LINK": [ "链接：", "Link:", "リンク：" ],
       "THPRAC_LINKS_EDIT_PARAM": [ "参数（可选）：", "Parameters (Optional):", "パラメータ(オプション)：" ],
       "THPRAC_LINKS_EDIT_FILE": [ "选择文件", "Select file", "ファイルを選択" ],
       "THPRAC_LINKS_EDIT_FOLDER": [ "选择文件夹", "Select folder", "フォルダーを選択" ],
       "THPRAC_LINKS_EDIT_INPUT": [ "手动键入", "Manual input", "手動入力" ],
-      "THPRAC_LINKS_EDIT_ERR_NAME": [ "你必须键入一个名字。", "You must enter a name.", "名前を入力する必要があります。" ],
+      "THPRAC_LINKS_EDIT_ERR_NAME": [ "你必须键入一个名称。", "You must enter a name.", "名前を入力する必要があります。" ],
       "THPRAC_LINKS_EDIT_ERR_LINK": [ "你必须键入/选择一个链接。", "You must enter/select a link.", "リンクを入力/選択する必要があります。" ],
-      "THPRAC_LINKS_EDIT_ERR_REPEATED": [ "你无法使用重复的名字。", "Repeated names are not allowed.", "重複した名前は使えません。" ],
-      "THPRAC_LINKS_EDIT_ERR_RSV": [ "你不能使用这个名字。", "You can not use this name.", "この名前は使用できません。" ],
+      "THPRAC_LINKS_EDIT_ERR_REPEATED": [ "你无法使用重复的名称。", "Repeated names are not allowed.", "重複した名前は使えません。" ],
+      "THPRAC_LINKS_EDIT_ERR_RSV": [ "你不能使用这个名称。", "You can not use this name.", "この名前は使用できません。" ],
 
       "THPRAC_GAMES": [ "游戏", "Games", "ゲーム" ],
       "THPRAC_GAMES_MAIN_SERIES": [ "整数作", "Main Series", "整数作" ],
@@ -328,9 +328,9 @@
         "!悪質なゲームプログラム!"
       ],
       "THPRAC_SCAN_CONFIRM_MALICIOUS": [
-        "thprac查找到了以下游戏，但它们似乎被恶意地修改过了。\n这可能是某种蠕虫型病毒/木马的所为，亦或是游戏程序的来源本身就是有问题的。\n请使用杀毒软件对列出的游戏程序进行扫描，以确保不会有任何恶意程序对你的电脑造成危害。\n如果你确信这是一起误报，请送信至ack7139@outlook.com，并在信中附上被误报的游戏程序。",
-        "thprac has found the following games, but they seem to have been maliciously modified.\nThis may be caused by some kind of worm virus/trojan, or that the source of the game program is malicious at the first place.\nPlease use an anti-virus software to scan the listed game programs to ensure that no malicious program will harm your computer.\nIf you are sure that this is a false positive, please send to ack7139@outlook.com, along with the game program that was misreported.",
-        "thpracは以下のゲームを発見しましたが、悪意を持って変更されたようです。\nこれは、何らかのワームウイルス/トロイの木馬が原因であるか、ゲームプログラムのソースがそもそも悪意のあるものである可能性があります。\n悪意のあるプログラムがコンピュータに害を及ぼさないようにするには、リストされているゲームプログラムをアンチウイルスプログラムでスキャンしてください。\nこれが誤検知であると確信している場合は、誤って報告されたゲームプログラムと一緒にack7139@outlook.comに送信してください。"
+        "thprac查找到了以下游戏，但它们似乎被恶意地修改过了。\n这可能是某种蠕虫型病毒/木马的所为，亦或是游戏程序的来源本身就是有问题的。\n请使用杀毒软件对列出的游戏程序进行扫描，以确保不会有任何恶意程序对你的电脑造成危害。\n如果你确信这是一起误报，请在 https://github.com/touhouworldcup/thprac/issues 上反馈此问题，并在 issue 中附上被误报的游戏程序。",
+        "thprac has found the following games, but they seem to have been maliciously modified.\nThis may be caused by some kind of worm virus/trojan, or that the source of the game program is malicious at the first place.\nPlease use an anti-virus software to scan the listed game programs to ensure that no malicious program will harm your computer.\nIf you are sure that this is a false positive, please send your feedback to https://github.com/touhouworldcup/thprac/issues, along with the game program that was misreported.",
+        "thpracは以下のゲームを発見しましたが、悪意を持って変更されたようです。\nこれは、何らかのワームウイルス/トロイの木馬が原因であるか、ゲームプログラムのソースがそもそも悪意のあるものである可能性があります。\n悪意のあるプログラムがコンピュータに害を及ぼさないようにするには、リストされているゲームプログラムをアンチウイルスプログラムでスキャンしてください。\nこれが誤検知であると確信している場合は、誤って報告されたゲームプログラムと一緒に https://github.com/touhouworldcup/thprac/issues にフィードバックをお送りください。"
       ],
       "THPRAC_SCAN_CONFIRM_VALID": [
         "thprac查找到了以下有效的游戏。\n你可以在下方进行确认并取消勾选你不想加入的游戏。",
@@ -590,9 +590,9 @@
       ],
 
       "THPRAC_UNHANDLED_EXCEPTION": [
-        "遇到了未处理的异常，程序可能即将崩溃。\n当程序崩溃时，请通过在启动器中记述的任意联系方式将转储文件发送给我。\n此外，如有留下任何关于崩溃时情况的说明的话，我将不胜感激。\n转储文件储存在thprac的数据目录中。\n(打开启动器 - 设置 - 打开数据目录 - \"crashdump\"文件夹)",
-        "An unhandled exception was encountered, this will most likely result in a crash.\nIf you experience a crash, please send the dump files to me with any of the contact methods described in the launcher.\nAdditionally, any notes describing how the crash has happened would be appreciated.\nYou can find the dump files in thprac's data folder.\n(Open launcher - Settings - Open data directory - \"crashdump\" folder)",
-        "未処理の例外が発生しました。これにより、クラッシュが発生する可能性があります。\nクラッシュが発生した場合は、ランチャーに記載されている連絡方法のいずれかを使用して、ダンプファイルを私に送信してください。\nさらに、クラッシュがどのように発生したかを説明するメモをいただければ幸いです。\nダンプファイルはthpracのデータフォルダにあります。\n（ランチャーを開く - 設定 - データディレクトリを開く - \"crashdump\"フォルダー）"
+        "遇到了未处理的异常，程序可能即将崩溃。\n当程序崩溃时，请通过在启动器中记述的任意联系方式将转储文件发送给我们。\n此外，如有留下任何关于崩溃时情况的说明的话，我们将不胜感激。\n转储文件储存在thprac的数据目录中。\n(打开启动器 - 设置 - 打开数据目录 - \"crashdump\"文件夹)",
+        "An unhandled exception was encountered, this will most likely result in a crash.\nIf you experience a crash, please send the dump files to us with any of the contact methods described in the launcher.\nAdditionally, any notes describing how the crash has happened would be appreciated.\nYou can find the dump files in thprac's data folder.\n(Open launcher - Settings - Open data directory - \"crashdump\" folder)",
+        "未処理の例外が発生しました。これにより、クラッシュが発生する可能性があります。\nクラッシュが発生した場合は、ランチャーに記載されている連絡方法のいずれかを使用して、ダンプファイルを私たちに送信してください。\nさらに、クラッシュがどのように発生したかを説明するメモをいただければ幸いです。\nダンプファイルはthpracのデータフォルダにあります。\n（ランチャーを開く - 設定 - データディレクトリを開く - \"crashdump\"フォルダー）"
       ],
 
       "TH_TYPE_ERROR": [ "错误", "ERROR", "エラー" ],
@@ -793,7 +793,7 @@
       "TH_BULLET_RANK": [ "Rank", "Rank", "ランク" ],
       "TH_BULLET_RANKLOCK": [ "锁Rank", "Rank Lock", "ランクをロックする" ],
       "TH_DIFFICULTY": [ "难度", "Difficulty", "難易度" ],
-      "TH_REAL_BULLET_SIZE": [ "真实子弹图形", "Real bullet sprites", "弾のリアルスプライト" ],
+      "TH_REAL_BULLET_SIZE": [ "真实子弹贴图", "Real bullet sprites", "弾のリアルスプライト" ],
       "TH_SHOTS_TAKEN": [ "摄影回数", "Shots Taken", "撮影回数" ],
       "TH_SHOTS_TAKEN_ALT": [ "#__shots_taken", "#__shots_taken", "#__shots_taken" ],
       "TH_ORIGINAL": [ "原版练习", "Original", "オリジナル" ],
@@ -804,9 +804,9 @@
       "TH_ATTACK": [ "攻击", "Attack", "弾幕" ],
       "TH_PROGRESS": [ "进度", "Progress", "進行度" ],
       "TH_BOTH_NORMAL": [ "都正常", "Both Normal", "両方とも正常" ],
-      "TH_HECATIA_RAGE": [ "赫卡提亚之怒", "Hecatia Rage", "ヘカティアの怒り" ],
-      "TH_JUNKO_RAGE": [ "纯狐愤怒", "Junko Rage", "純狐怒り" ],
-      "TH_BOTH_RAGE": [ "双方愤怒", "Both Rage", "両方の怒り" ],
+      "TH_HECATIA_RAGE": [ "赫卡提亚发狂", "Hecatia Rage", "ヘカティアの怒り" ],
+      "TH_JUNKO_RAGE": [ "纯狐发狂", "Junko Rage", "純狐怒り" ],
+      "TH_BOTH_RAGE": [ "都发狂", "Both Rage", "両方の怒り" ],
       "TH_NONE": [ "无", "None", "なし" ],
       "TH_NONSPELL": [ "非符", "Non Spell", "通常" ],
       "TH_SPELL": [ "符卡", "Spell Card", "スペカ" ],
@@ -828,7 +828,7 @@
       "TH_INFBOMBS": [ "锁Bomb", "Inf. Bombs", "ボム減らない" ],
       "TH_INFPOWER": [ "锁火力", "Inf. Power", "霊力減らない" ],
       "TH_AUTOBOMB": [ "自动B", "Auto Bomb", "自動喰らいボム" ],
-      "TH_INFHEALTH": [ "锁生命", "Inf. Health", "ライフ減らない" ],
+      "TH_INFHEALTH": [ "锁血量", "Inf. Health", "ライフ減らない" ],
       "TH_HEALTH": [ "血量", "Health", "ライフ" ],
       "TH_INFSPELLCHARGE": [ "无限蓄力", "Inf. Charge", "無限チャージ" ],
       "TH_INFCHARGE": [ "无限装填率", "Inf. Charge", "無限装填率" ],
@@ -839,7 +839,7 @@
       "TH_OFF": [ "关闭", "Off", "無効" ],
       "TH_NORMAL": [ "正常", "Normal", "普通" ],
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
-      "TH_FINALE": [ "終幕", "Finale", "终幕" ],
+      "TH_FINALE": [ "终幕", "Finale", "終幕" ],
       "TH_P1": [ "P1", "P1", "P1" ],
       "TH_P2": [ "P2", "P2", "P2" ],
       "TH_P3": [ "P3", "P3", "P3" ],
@@ -936,7 +936,7 @@
       "TH_DELAY": [ "延迟", "Delay", "ディレイ" ],
       "TH_FPS_ADJ": [ "FPS调整", "FPS Adjustment", "FPS調整" ],
       "TH_FPS_ERR": [
-        "FPS调整相关的功能已禁用，你必须满足以下条件之一以使用这些功能：\n1. 使用VsyncPatch，且在vpatch.ini中将”Vsync“一项的值设为0。\n2. 在游戏的custom.exe中将输入方式设置为”高速“。（仅限地灵殿及之后的游戏）",
+        "FPS调整相关的功能已禁用，你必须满足以下条件之一以使用这些功能：\n1. 使用VsyncPatch，且在vpatch.ini中将“Vsync”一项的值设为0。\n2. 在游戏的custom.exe中将输入方式设置为“高速”。（仅限地灵殿及之后的游戏）",
         "FPS Adjustment related features has been disabled. To enable them, satisfy either of the following requirements:\n1. Use VsyncPatch, and make sure the \"Vsync\" value in vpatch.ini is set to 0.\n2. In the game's custom.exe, set the input method to \"Fast\". (Only applies to SA and after)",
         "FPS調整関連のオプションは無効になっています。 それらを有効にするには、次の要件のいずれかを満たします：\n\n1. VsyncPatchを使用し、vpatch.iniの「Vsync」値を0に設定します。\n2. ゲームのcustom.exeで、入力のレイテンシを「高速」に設定します。 （地霊殿以降のみに適用）"
       ],
@@ -1079,10 +1079,10 @@
     "namespace": "TH06",
 
     "glossary": {
-      "TH06_FS": [ "伪装", "Fake Shot", "機体偽装" ],
+      "TH06_FS": [ "机体伪装", "Fake Shot", "機体偽装" ],
       "TH06_NONE": [ "无", "None", "なし" ],
-      "TH06_REIMU_A": [ "灵A", "Reimu A", "霊符" ],
-      "TH06_REIMU_B": [ "灵B", "Reimu B", "夢符" ],
+      "TH06_REIMU_A": [ "梦A", "Reimu A", "霊符" ],
+      "TH06_REIMU_B": [ "梦B", "Reimu B", "夢符" ],
       "TH06_MARISA_A": [ "魔A", "Marisa A", "魔符" ],
       "TH06_MARISA_B": [ "魔B", "Marisa B", "恋符" ],
       "TH06_RANK": [ "Rank", "Rank", "ランク" ],
@@ -1811,9 +1811,9 @@
       "TH07_NS3_LUNASA": [ "露娜萨三非", "Lunasa Nonspell 3", "ルナサ 通常3" ],
       "TH07_NS3_MERLIN": [ "梅露兰三非", "Merlin Nonspell 3", "メルラン 通常3" ],
       "TH07_NS3_LYRICA": [ "莉莉卡三非", "Lyrica Nonspell 3", "リリカ 通常3" ],
-      "TH07_S2_LUNASA": [ "露娜萨二符", "Lunasa Spell 3", "ルナサ 通常3" ],
-      "TH07_S2_MERLIN": [ "梅露兰二符", "Merlin Spell 3", "メルラン 通常3" ],
-      "TH07_S2_LYRICA": [ "莉莉卡二符", "Lyrica Spell 3", "ルナサ 通常3" ]
+      "TH07_S2_LUNASA": [ "露娜萨二符", "Lunasa Spell 2", "ルナサ スペル2" ],
+      "TH07_S2_MERLIN": [ "梅露兰二符", "Merlin Spell 2", "メルラン スペル2" ],
+      "TH07_S2_LYRICA": [ "莉莉卡二符", "Lyrica Spell 2", "ルナサ スペル2" ]
     },
 
     "sections": {
@@ -3240,7 +3240,7 @@
     "glossary": {
         "TH09_LOCK": [ "锁定", "Lock", "ロック" ],
         "TH09_INSTANT_DEATH": [ "清零血条", "Instant death", "即死" ],
-        "TH09_CHARGE_GAUGE": [ "Charge Gauge", "Charge Gauge", "チャージゲージ" ],
+        "TH09_CHARGE_GAUGE": [ "蓄力槽", "Charge Gauge", "チャージゲージ" ],
         "TH09_CPU_CHARGE": [ "AI下回蓄力攻击", "AI next charge attack", "AI次回チャージ攻撃" ],
         "TH09_RANK": [ "Rank", "Rank", "ランク"  ],
         "TH09_RANK_MAX": [ "最大值", "Max", "最大" ],
@@ -3254,7 +3254,7 @@
         "TH09_PLAYER_2": [ "P2", "Player 2", "プレイヤー2" ],
         "TH09_P1": [ "P1", "P1", "P1" ],
         "TH09_P2": [ "P2", "P2", "P2" ],
-        "TH09_BOTH": [ "Both", "Both", "Both" ],
+        "TH09_BOTH": [ "双方", "Both", "Both" ],
         "TH09_P1_FORMAT_INT": [ "P1: %d", "P1: %d", "P1: %d" ],
         "TH09_P2_FORMAT_INT": [ "P2: %d", "P2: %d", "P2: %d" ],
         "TH09_P1_FORMAT_FLOAT": [ "P1: %.3f", "P1: %.3f", "P1: %.3f" ],
@@ -4478,7 +4478,7 @@
     "namespace": "TH12",
 
     "glossary": {
-      "TH12_UFO_SIDE": [ "碎片方向", "UFO Side", "ベントラー方向" ],
+      "TH12_UFO_SIDE": [ "飞碟方向", "UFO Side", "ベントラー方向" ],
       "TH12_VENTRA_1": [ "飞碟1", "Ventra 1", "ベントラー1" ],
       "TH12_VENTRA_2": [ "飞碟2", "Ventra 2", "ベントラー2" ],
       "TH12_VENTRA_3": [ "飞碟3", "Ventra 3", "ベントラー3" ],
@@ -5993,7 +5993,7 @@
     "glossary": {
       "TH13_TRANCE_METER": [ "灵界槽", "Trance Meter", "霊界ゲージ" ],
       "TH13_EXTEND": [ "奖残次数", "Extends", "エクステンド回数" ],
-      "TH13_SPIRIT_SIDE": [ "灵方向", "Spirit Side", "霊ー方向" ],
+      "TH13_SPIRIT_SIDE": [ "灵方向", "Spirit Side", "霊方向" ],
       "TH13_TRANCE_LOCK": [ "锁灵界槽", "Trance Meter Lock", "霊界ゲージ計固定" ]
     },
 
@@ -6508,8 +6508,8 @@
       "TH14_CORRECTION_NAN_SIGNED": [ "-NaN", "-NaN", "-NaN" ],
       "TH14_CORRECTION_INF": [ "Inf", "Inf", "Inf" ],
       "TH14_CORRECTION_NINF": [ "-Inf", "-Inf", "-Inf" ],
-      "TH14_CORRECTION_SN": [ "非规格", "Subnormal", "非正規" ],
-      "TH14_CORRECTION_SN_SIGNED": [ "非规格 (负)", "Subnormal (neg.)", "非正規 (負)" ],
+      "TH14_CORRECTION_SN": [ "次正规范数", "Subnormal", "非正規" ],
+      "TH14_CORRECTION_SN_SIGNED": [ "次正规范数 (负)", "Subnormal (neg.)", "非正規 (負)" ],
       "TH14_CORRECTION_E_POSITIVE": [ "1.0eX", "1.0eX", "1eX" ],
       "TH14_CORRECTION_E_NEGATIVE": [ "-1.0eX", "-1.0eX", "-1.0eX" ],
       "TH14_CORRECTION_NONE": [ "无", "None", "なし" ]
@@ -8636,13 +8636,13 @@
       "TH18_ZERO_CD": [ "无冷却", "No cooldown", "クールタイムがない" ],
       "TH18_MARKET_MANIP": [ "市场操纵", "Market Manip.", "市場操作" ],
       "TH18_OPEN_MARKET": [ "打开市场", "Open shop", "市場に入る" ],
-      "TH18_MARKET_MANIP_DESC1": [ "1-8: 顺序展示卡片", "1-8: Display cards in order", "1-8: カードを順番に表示する " ],
+      "TH18_MARKET_MANIP_DESC1": [ "1-8: 按顺序展示卡片", "1-8: Display cards in order", "1-8: カードを順番に表示する " ],
       "TH18_MARKET_MANIP_DESC2": [ "0: 获取选中卡片", "0: Acquire selected card", "0: 選択したカードを取得する" ],
       "TH18_MARKET_MANIP_DESC3": [ "Ctrl+0: 获取所有卡片", "Ctrl+0: Acquire all cards", "Ctrl+0: すべてのカードを取得する " ],
       "TH18_MARKET_MANIP_DESC4": [ ": 退出市场", ": Leave the market", ": 市場を出る" ],
       "TH18_MUKADE": [ "蜈蚣", "Centipede", "ムカデ" ],
-      "TH18_KOZUCHI_CD": [ "锤子冷却", "Mallet CD", "槌CD" ],
-      "TH18_KANAME_CD": [ "基石冷却", "Keystone CD", "要石CD" ],
+      "TH18_KOZUCHI_CD": [ "万宝槌冷却", "Mallet CD", "槌CD" ],
+      "TH18_KANAME_CD": [ "要石冷却", "Keystone CD", "要石CD" ],
       "TH18_MOON_CD": [ "月亮冷却", "Moon CD", "月CD" ],
       "TH18_MIKOFLASH_CD": [ "神子冷却", "Miko CD", "神子CD" ],
       "TH18_VAMPIRE_CD": [ "牙冷却", "Fang CD", "牙CD" ],
