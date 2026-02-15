@@ -660,10 +660,16 @@ struct TH08Info {
     uint32_t disslove_count = 0;
 };
 
+struct TH10Info {
+    uint32_t misses = 0;
+    uint32_t bombs = 0;
+};
+
 union TrackerInfo {
     TH06Info th06;
     TH07Info th07;
     TH08Info th08;
+    TH10Info th10;
 };
 
 extern TrackerInfo tracker_info;
