@@ -9,12 +9,41 @@ namespace TH11 {
         int32_t marisa_b_formation;
     };
     static_assert(offsetof(Player, marisa_b_formation) == 0x8bac);
+    
+    struct Globals {
+        int32_t __field_0;
+        int32_t score;
+        int32_t power;
+        int32_t __field_c;
+        int32_t piv;
+        int32_t __field_14;
+        int32_t __field_18;
+        Timer __timer_1c;
+        int32_t chara;
+        int32_t subshot;
+        int32_t lives;
+        int32_t life_pieces;
+        int32_t difficulty;
+        int32_t __field_44;
+        int32_t stage;
+        int32_t _stage_2;
+        int32_t __field_50;
+        int32_t __field_54;
+        int32_t __field_58;
+        int32_t continues;
+        int32_t __field_60;
+        int32_t rank;
+        int32_t max_power;
+        int32_t power_per_level;
+        int32_t __field_70;
+        int32_t graze;
+    };
+    static_assert(sizeof(Globals) == 0x78);
+       
+    #define player (*(Player**)0x4a8eb4)
+    Globals* globals = (Globals*)0x4a56e0;
 
     enum addrs {
-        CHARA = 0x4a5710,
-        SUBSHOT = 0x4a5714,
-        PLAYER_PTR = 0x4a8eb4,
-        STAGE_NUM = 0x4a5728,
         STAGE_PTR = 0x4a8d60,
         REPLAY_MGR_PTR = 0x4a8eb8,
         GAME_THREAD_PTR = 0x4a8e88,
@@ -239,7 +268,7 @@ namespace TH11 {
                 mScore();
                 mScore.RoundDown(10);
 
-                if (GetMemContent<uint32_t>(CHARA) == 1 && GetMemContent(SUBSHOT) == 1) {
+                if (globals->chara == 1 && globals->subshot == 1) {
                     mMarisaBFormation();
                 }
             }
@@ -1773,7 +1802,6 @@ namespace TH11 {
             score /= 10;
             *target = *((uint32_t*)&score);
 
-            Player* player = GetMemContent<Player*>(PLAYER_PTR);
             player->marisa_b_formation = thPracParam.marisa_b_formation;
 
             THSectionPatch();
@@ -1799,8 +1827,7 @@ namespace TH11 {
 
         if (!THGuiRep::singleton().mRepStatus) return;
 
-        uint32_t stage_num = *(uint32_t*)STAGE_NUM;
-        if (stage_num != 6) return;
+        if (globals->stage != 6) return;
 
         uint32_t stage = *(uint32_t*)STAGE_PTR;
         Timer* stage_std_timer = (Timer*)(stage + 0x38);
@@ -1835,17 +1862,17 @@ namespace TH11 {
         }
     })
     EHOOK_DY(th11_bgm_3, 0x420542, 5, {
-        if (*((int32_t*)STAGE_NUM) == 6 && thPracParam.mode && thPracParam.section) {
+        if (globals->stage == 6 && thPracParam.mode && thPracParam.section) {
             pCtx->Eip = 0x420547;
         }
     })
     EHOOK_DY(th11_bgm_4, 0x42C706, 1, {
-        if (*((int32_t*)STAGE_NUM) == 6 && thPracParam.mode && thPracParam.section) {
+        if (globals->stage == 6 && thPracParam.mode && thPracParam.section) {
             pCtx->EFlags &= ~EFLAGS::ZF;
         }
     })
     EHOOK_DY(th11_bgm_5, 0x42C889, 7, {
-        if (*((int32_t*)STAGE_NUM) == 6 && thPracParam.mode && thPracParam.section) {
+        if (globals->stage == 6 && thPracParam.mode && thPracParam.section) {
             pCtx->EFlags &= ~EFLAGS::ZF;
             pCtx->Eip += self->data.hook.instr_len;
         }
