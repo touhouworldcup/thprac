@@ -665,11 +665,21 @@ struct TH10Info {
     uint32_t bombs = 0;
 };
 
+struct TH12Info {
+    uint32_t misses = 0;
+    uint32_t bombs = 0;
+
+    uint32_t ufos_summoned[4] = {};
+    uint32_t ufos_collected[3] = {};
+    uint32_t ufos_dropped[4] = {};
+};
+
 union TrackerInfo {
     TH06Info th06;
     TH07Info th07;
     TH08Info th08;
-    TH10Info th10;
+    TH10Info th10; // TH11 reuses TH10
+    TH12Info th12;
 };
 
 extern TrackerInfo tracker_info;
