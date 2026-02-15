@@ -1740,7 +1740,57 @@ namespace TH11 {
         ReplaySaveParam(mb_to_utf16(rep_name, 932).c_str(), thPracParam.GetJson());
     }
 
+    const char* SHOTTYPE_NAMES[] = {
+        "Reimu + Yukari", "Reimu + Suika", "Reimu + Aya",
+        "Marisa + Alice", "Marisa + Patchouli", "Marisa + Nitori"
+    };
+    void THTrackerUpdate()
+    {
+        ImGui::SetNextWindowSize({ 170.0f, 0.0f });
+        ImGui::SetNextWindowPos({ 450.0f, 175.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+        
+        auto shottype = globals->chara * 3 + globals->subshot;
+
+        char buf[32] = {};
+        snprintf(buf, sizeof(buf), "%s", SHOTTYPE_NAMES[shottype]);
+        auto textSize = ImGui::CalcTextSize(buf);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - textSize.x * 0.5);
+        ImGui::TextUnformatted(buf);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Miss");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th10.misses);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Bomb");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th10.bombs);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+    void __fastcall th10_count_bomb(PCONTEXT, HookCtx*) {
+        tracker_info.th10.bombs++;
+    }
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th11_enter, 0x41FA6D, 3, {
+        tracker_info.th10 = {};
+    })
+    { .addr = 0x4311E6, .name = "th10_count_bomb_1", .callback = th10_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x431293, .name = "th10_count_bomb_2", .callback = th10_count_bomb, .data = PatchHookImpl(5) },
+    EHOOK_DY(th10_count_miss, 0x4327F0, 6, {
+        tracker_info.th10.misses++;  
+    })
     EHOOK_DY(th11_everlasting_bgm, 0x44a9c0, 10, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
@@ -1898,6 +1948,10 @@ namespace TH11 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+        
+        if (tracker_open && player) {
+            THTrackerUpdate();
+        }
 
         GameGuiEnd(drawCursor);
     })
