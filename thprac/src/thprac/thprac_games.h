@@ -654,9 +654,16 @@ struct TH07Info {
     uint32_t border_break = 0;
 };
 
+struct TH08Info {
+    uint32_t spells_captured = 0;
+    uint32_t last_spells_captured = 0;
+    uint32_t disslove_count = 0;
+};
+
 union TrackerInfo {
     TH06Info th06;
     TH07Info th07;
+    TH08Info th08;
 };
 
 extern TrackerInfo tracker_info;

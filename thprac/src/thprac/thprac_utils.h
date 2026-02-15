@@ -133,6 +133,32 @@ static std::function<T(void)> GetRndGenerator(T min, T max, std::mt19937::result
 DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName);
 }
 
+template <typename T>
+unsigned int binary_search(const T* arr, size_t len, T needle) {
+    size_t low = 0;
+    size_t high = len - 1;
+
+    while (low <= high) {
+        // Prevents potential (low + high) overflow
+        size_t mid = low + (high - low) / 2;
+
+        if (arr[mid] == needle) {
+            return (unsigned int)mid;
+        }
+
+        if (arr[mid] < needle) {
+            low = mid + 1;
+        } else {
+            // Handle high underflow if high is 0
+            if (mid == 0)
+                break;
+            high = mid - 1;
+        }
+    }
+
+    return (unsigned int)-1;
+}
+
 #define w32u8_alloca(type, size) ((type*)_alloca((size) * sizeof(type)))
 #define w32u8_freea(name) do; while(0) /* require a semi-colon */
 
