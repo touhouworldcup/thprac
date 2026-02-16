@@ -69,6 +69,7 @@ namespace TH17 {
 
     enum addrs {
         GOAST_MANAGER_PTR = 0x4B7684,
+        PLAYER_PTR = 0x4b77d0,
     };
 
     #define SpawnToken(goast, pos, ang) asm_call<0x00410380, Vectorcall>(GetMemContent<uintptr_t>(GOAST_MANAGER_PTR), UNUSED_DWORD, &pos, goast, UNUSED_FLOAT, UNUSED_FLOAT, ang)
@@ -1898,7 +1899,111 @@ namespace TH17 {
         ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
+    const char* CHARNAMES[] = {
+        "Reimu", "Marisa", "Youmu"
+    };
+    const char* GOASTNAMES[] = {
+        "Wolf", "Otter", "Eagle"
+    };
+
+    void draw_roaring_info() {
+        #define NEXT ;ImGui::SameLine(0.0f, 0.0f)
+
+        ImVec4 wolf  = { 1.0f, 0.07f, 0.0f, 1.0f };
+        ImVec4 otter = { 0.13f, 0.73f, 0.07f, 1.0f };
+        ImVec4 eagle = { 0.2f, 0.27f, 0.93f, 1.0f };
+
+        ImGui::Text("%d (", tracker_info.th17.roaring_total) NEXT;
+
+        ImGui::TextColored(wolf, "%d", tracker_info.th17.roaring[0]) NEXT;
+        ImGui::TextUnformatted("/") NEXT;
+        ImGui::TextColored(otter, "%d", tracker_info.th17.roaring[1]) NEXT;
+        ImGui::TextUnformatted("/") NEXT;
+        ImGui::TextColored(eagle, "%d", tracker_info.th17.roaring[2]) NEXT;
+    
+        ImGui::TextUnformatted(")");
+
+        #undef NEXT
+    }
+
+    void THTrackerUpdate() {
+        Gui::SetNextWindowSizeRel({ 340.0f / 1280.0f, 0.0f });
+        Gui::SetNextWindowPosRel({ 900.0f / 1280.0f, 500.0f / 960.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        char buf[32] = {};
+        snprintf(buf, sizeof(buf), "%s %s", CHARNAMES[globals->rpy.chara], GOASTNAMES[globals->rpy.goast]);
+        auto textSize = ImGui::CalcTextSize(buf);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - textSize.x * 0.5f);
+        ImGui::TextUnformatted(buf);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Miss");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th17.misses);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Bomb");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th17.bombs);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Roaring");
+        ImGui::TableNextColumn();
+        draw_roaring_info();
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Spirit Strikes");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th17.spirit_strikes);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Spec. Used");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th17.roaring_with_special);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+    
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th17_enter, 0x4302E6, 6, {
+        tracker_info.th17 = {};
+    })
+    EHOOK_DY(th17_life_dec, 0x44921B, 6, {
+        tracker_info.th17.misses++;
+    })
+    EHOOK_DY(th17_bomb_dec, 0x411CAB, 6, {
+        tracker_info.th17.bombs++;
+    })
+    EHOOK_DY(th17_spirit_strike, 0x40F880, 10, {
+        tracker_info.th17.spirit_strikes++;
+    })
+    EHOOK_DY(th17_roaring, 0x40FC8A, 7, {
+        tracker_info.th17.roaring_total++;
+        if (globals->rpy.current_hyper && globals->rpy.current_hyper <= 3) {
+            tracker_info.th17.roaring[globals->rpy.current_hyper - 1]++;
+        }
+        for (const auto tok : globals->rpy.tokens) {
+            if (tok >= 8 && tok <= 14) {
+                tracker_info.th17.roaring_with_special++;
+            }
+        }
+    })
     EHOOK_DY(th17_window_mousedown, 0x46198b, 1, {
         auto& adv_opt = THAdvOptWnd::singleton();
 
@@ -2085,6 +2190,11 @@ namespace TH17 {
         THGuiPrac::singleton().Update();
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
+
+        if (tracker_open && GetMemContent(PLAYER_PTR)) {
+            THTrackerUpdate();
+        }
+
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     })

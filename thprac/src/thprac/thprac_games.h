@@ -680,6 +680,15 @@ struct TH13Info {
     uint32_t trance;
 };
 
+struct TH17Info {
+    uint32_t misses;
+    uint32_t bombs;
+    uint32_t spirit_strikes;
+    uint32_t roaring_with_special;
+    uint32_t roaring_total;
+    uint32_t roaring[3];
+};
+
 union TrackerInfo {
     TH06Info th06;
     TH07Info th07;
@@ -687,6 +696,7 @@ union TrackerInfo {
     TH10Info th10; // TH11, TH14 and TH15 reuse this
     TH12Info th12;
     TH13Info th13; // TH16 reuses this
+    TH17Info th17;
 };
 
 extern TrackerInfo tracker_info;
