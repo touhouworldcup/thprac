@@ -5,6 +5,11 @@
 namespace THPrac {
 namespace TH128 {
     using std::pair;
+
+    enum addr {
+        PLAYER_PTR = 0x4B8A80,
+    };
+
     struct THPracParam {
         int32_t mode;
         int32_t stage;
@@ -2072,7 +2077,45 @@ namespace TH128 {
         ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
+    void THTrackerUpdate() {
+        ImGui::SetNextWindowSize({ 120.0f, 0.0f });
+        ImGui::SetNextWindowPos({ 516.0f, 226.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Miss");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th10.misses);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Bomb");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th10.bombs);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th128_enter, 0x426009, 6, {
+        tracker_info.th10 = {};
+    })
+    EHOOK_DY(th128_bomb_dec, 0x43B7DB, 5, {
+        tracker_info.th10.bombs++;
+    })
+    EHOOK_DY(th128_bomb_dec2, 0x43B911, 5, {
+        tracker_info.th10.bombs++;
+    })
+    EHOOK_DY(th128_life_dec, 0x43CDDF, 5, {
+        tracker_info.th10.misses++;
+    })
     EHOOK_DY(th128_on_restart, 0x42657f, 6, {
         thLock = thHardLock;
     })
@@ -2277,6 +2320,10 @@ namespace TH128 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+
+        if (tracker_open && GetMemContent(PLAYER_PTR)) {
+            THTrackerUpdate();
+        }
 
         GameGuiEnd(drawCursor);
     })
