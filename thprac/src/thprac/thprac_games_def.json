@@ -9551,6 +9551,8 @@
     "namespace": "TH20",
 
     "glossary": {
+      "TH20_TRACKER_STONE_SUMMONED": [ "Δ生成:", "Δ Appeared", "Δ Appeared" ],
+      "TH20_TRACKER_STONE_KILLED": [ "Δ击破", "Δ Killed", "Δ Killed" ],
       "TH20_HYPER": [ "异变攻击", "Hyper", "異変攻撃" ],
       "TH20_STONE_GAUGE": [ "异变敌人", "Summon", "異変石" ],
       "TH20_STONE_SUMMONED": [ "召唤次数", "Summoned", "召喚数" ],

@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1117]
+const char* th_glossary_str[3][1119]
 {
     {
         "",
@@ -626,6 +626,8 @@ const char* th_glossary_str[3][1117]
         "优先级(黄)",
         "召唤次数",
         "TH20 东方锦上京　～ Fossilized Wonders.",
+        "Δ击破",
+        "Δ生成:",
         "移除异变值限制",
         "移除分数限制",
         "锁异变石槽",
@@ -1745,6 +1747,8 @@ const char* th_glossary_str[3][1117]
         "PriorityY",
         "Summoned",
         "TH20 Fossilized Wonders",
+        "Δ Killed",
+        "Δ Appeared",
         "PIV uncap",
         "Score uncap",
         "Wonder Stone Gauge Lock",
@@ -2864,6 +2868,8 @@ const char* th_glossary_str[3][1117]
         "優先Y",
         "召喚数",
         "TH20 東方錦上京　～ Fossilized Wonders.",
+        "Δ Killed",
+        "Δ Appeared",
         "PIVキャップ解放",
         "スコアキャップ解放",
         "異変石計固定",
@@ -21919,8 +21925,9 @@ const th_glossary_t TH20_EXPIRED_PYRAMID_FIX_OPT[6]
 
 }
 
-const wchar_t __thprac_loc_range_zh[3355] {
+const wchar_t __thprac_loc_range_zh[3357] {
     0x0020, 0x00FF,
+    0x394, 0x394,
     0x2014, 0x2014,
     0x201c, 0x201c,
     0x201d, 0x201d,
@@ -23600,7 +23607,7 @@ const wchar_t __thprac_loc_range_zh[3355] {
     0
 };
 
-const wchar_t __thprac_loc_range_en[39] {
+const wchar_t __thprac_loc_range_en[41] {
     0x0020, 0x00FF,
     0x11b, 0x11b,
     0x12b, 0x12b,
@@ -23612,6 +23619,7 @@ const wchar_t __thprac_loc_range_en[39] {
     0x1d2, 0x1d2,
     0x219, 0x219,
     0x21a, 0x21a,
+    0x394, 0x394,
     0x2022, 0x2022,
     0x2192, 0x2192,
     0x786e, 0x786e,
@@ -23623,8 +23631,9 @@ const wchar_t __thprac_loc_range_en[39] {
     0
 };
 
-const wchar_t __thprac_loc_range_ja[2839] {
+const wchar_t __thprac_loc_range_ja[2841] {
     0x0020, 0x00FF,
+    0x394, 0x394,
     0x2026, 0x2026,
     0x2fc5, 0x2fc5,
     0x3000, 0x3000,

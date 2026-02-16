@@ -695,6 +695,15 @@ struct TH18Info {
     uint32_t not_misses;
 };
 
+struct TH20Info {
+    uint32_t misses;
+    uint32_t bombs;
+    uint32_t hypers;
+    uint32_t hyper_breaks;
+    uint32_t delta_killed;
+    uint32_t stone_lv[4];
+};
+
 union TrackerInfo {
     TH06Info th06;
     TH07Info th07;
@@ -704,6 +713,7 @@ union TrackerInfo {
     TH13Info th13; // TH16 reuses this
     TH17Info th17;
     TH18Info th18;
+    TH20Info th20;
 };
 
 extern TrackerInfo tracker_info;
