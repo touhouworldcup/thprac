@@ -4,6 +4,69 @@
 
 namespace THPrac {
 namespace TH17 {
+    struct __declspec(align(4)) GlobalsReplay {
+        int32_t stage;
+        int32_t stage_start;
+        int32_t chapter;
+        int32_t time_in_stage;
+        int32_t time_in_chapter;
+        int32_t time_in_music;
+        int32_t chara;
+        int32_t goast;
+        int32_t score;
+        int32_t difficulty;
+        int32_t continues;
+        int32_t rank;
+        int32_t graze;
+        int32_t graze_in_chapter;
+        int32_t spell_id;
+        int32_t misses;
+        int32_t continues_2;
+        int32_t piv;
+        int32_t piv_min;
+        int32_t piv_max;
+        int32_t power;
+        int32_t power_per_level;
+        int32_t field_58;
+        int32_t lives;
+        int32_t life_pieces;
+        int32_t field_64;
+        int32_t bombs;
+        int32_t bomb_pieces;
+        int32_t field_70;
+        int32_t field_74;
+        int32_t field_78;
+        int32_t hyper_fill;
+        int32_t tokens[5];
+        int32_t field_94;
+        int32_t field_98;
+        int32_t field_9C;
+        int32_t field_A0;
+        int32_t field_A4;
+        int32_t field_A8;
+        int32_t field_AC;
+        int32_t field_B0;
+        Timer field_B4;
+        Timer hyper_time;
+        int32_t field_DC;
+        uint32_t current_hyper;
+        int32_t field_E4;
+        uint32_t hyper_flags;
+    };
+
+    struct Globals {
+        int32_t high_score;
+        int32_t field_4;
+        uint32_t flags;
+        int32_t field_C;
+        int32_t field_10;
+        int32_t demoplay_timer;
+        int32_t field_18;
+        GlobalsReplay rpy;
+    };
+
+    Globals* globals = (Globals*)0x4b59c0;
+
     enum addrs {
         GOAST_MANAGER_PTR = 0x4B7684,
     };
@@ -1927,14 +1990,14 @@ namespace TH17 {
     })
     EHOOK_DY(th17_patch_main, 0x430cb3, 1, {
         if (thPracParam.mode == 1) {
-            *(int32_t*)(0x4b59fc) = (int32_t)(thPracParam.score / 10);
-            *(int32_t*)(0x4b5a40) = thPracParam.life;
-            *(int32_t*)(0x4b5a44) = thPracParam.life_fragment;
-            *(int32_t*)(0x4b5a4c) = thPracParam.bomb;
-            *(int32_t*)(0x4b5a50) = thPracParam.bomb_fragment;
-            *(int32_t*)(0x4b5a30) = thPracParam.power;
-            *(int32_t*)(0x4b5a24) = thPracParam.value * 100;
-            *(int32_t*)(0x4b5a0c) = thPracParam.graze;
+            globals->rpy.score = (int32_t)(thPracParam.score / 10);
+            globals->rpy.lives = thPracParam.life;
+            globals->rpy.life_pieces = thPracParam.life_fragment;
+            globals->rpy.bombs = thPracParam.bomb;
+            globals->rpy.bomb_pieces = thPracParam.bomb_fragment;
+            globals->rpy.power = thPracParam.power;
+            globals->rpy.piv = thPracParam.value * 100;
+            globals->rpy.graze = thPracParam.graze;
 
             if (thPracParam.goast_1) {
                 AddGoast(thPracParam.goast_1);
