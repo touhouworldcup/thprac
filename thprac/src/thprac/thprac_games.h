@@ -684,7 +684,7 @@ union TrackerInfo {
     TH06Info th06;
     TH07Info th07;
     TH08Info th08;
-    TH10Info th10; // TH11 reuses TH10
+    TH10Info th10; // TH11 and TH14 reuse TH10
     TH12Info th12;
     TH13Info th13;
 };

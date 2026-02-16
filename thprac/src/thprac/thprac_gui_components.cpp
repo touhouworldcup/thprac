@@ -662,9 +662,18 @@ namespace THPrac
             delete[] labelStr;
         }
 
-        void MultiComboSelect(std::vector<size_t>& out, const char* const* choices, const size_t choices_count, const char* format)
-        {
+        void MultiComboSelect(std::vector<size_t>& out, const char* const* choices, const size_t choices_count, const char* format) {
             MultiComboSelectImpl(out, choices, choices_count, format, 0);
+        }
+        void SetNextWindowSizeRel(const ImVec2& size, ImGuiCond cond) {
+            ImGuiIO& io = ImGui::GetIO();
+            ImVec2 sizeReal = { size.x * io.DisplaySize.x, size.y * io.DisplaySize.y };
+            return ImGui::SetNextWindowSize(sizeReal, cond);
+        }
+        void SetNextWindowPosRel(const ImVec2& pos, ImGuiCond cond, const ImVec2& pivot) {
+            ImGuiIO& io = ImGui::GetIO();
+            ImVec2 posReal = { pos.x * io.DisplaySize.x, pos.y * io.DisplaySize.y };
+            return ImGui::SetNextWindowPos(posReal, cond, pivot);
         }
     }
 }

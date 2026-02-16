@@ -797,6 +797,9 @@ namespace Gui {
     void ComboSelect(size_t& out, const char* const* choices, const size_t choices_count, const char* label);
 
     void MultiComboSelect(std::vector<size_t>& out, const char* const* choices, const size_t choices_count, const char* format = "%d");
+
+    void SetNextWindowSizeRel(const ImVec2& size, ImGuiCond cond = 0);
+    void SetNextWindowPosRel(const ImVec2& pos, ImGuiCond cond = 0, const ImVec2& pivot = ImVec2(0, 0));
 }
 }
 
