@@ -984,6 +984,10 @@ namespace Alcostg {
     }
     
     HOOKSET_DEFINE(THMainHook)
+    { .addr = 0x418402, .name = "alcostg_game_start", .callback = tracker_reset, .data = PatchHookImpl(6) },
+    { .addr = 0x425e1d, .name = "alcostg_bomb",       .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x425cb6, .name = "alcostg_bomb2",      .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x427231, .name = "alcostg_miss",       .callback = th10_tracker_count_miss, .data = PatchHookImpl(6) },
     EHOOK_DY(alcostg_on_restart, 0x4187a8, 6, {
         thRestart = true;
         thLock = thHardLock;

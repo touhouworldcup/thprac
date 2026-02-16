@@ -2187,18 +2187,11 @@ namespace TH16 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th16_enter, 0x42E5AE, 7, {
-        tracker_info.th13 = {};
-    })
-    EHOOK_DY(th16_bomb_dec, 0x40DB9C, 5, {
-        tracker_info.th13.bombs++;
-    })
-    EHOOK_DY(th16_life_dec, 0x443D3A, 5, {
-        tracker_info.th13.misses++;
-    })
-    EHOOK_DY(th16_release, 0x40DC8A, 10, {
-        tracker_info.th13.trance++;
-    })
+    { .addr = 0x42E5AE, .name = "th16_enter", .callback = tracker_reset, .data = PatchHookImpl(7) },
+    { .addr = 0x40DB9C, .name = "th16_bomb_dec", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x443D3A, .name = "th16_life_dec", .callback = th10_tracker_count_miss, .data = PatchHookImpl(5) },
+    { .addr = 0x40DC8A, .name = "th16_release", .callback = th13_tracker_count_trance, .data = PatchHookImpl(10) },
+    
     EHOOK_DY(th16_spbugfix, 0x4214fa, 6, {
         char* sub_str;
         int signal;

@@ -1871,6 +1871,10 @@ namespace TH06 {
         ReplaySaveParam(mb_to_utf16(rep_name, 932).c_str(), thPracParam.GetJson());
     }
 
+    const char* DIFFNAMES[] = {
+        "Easy", "Normal", "Hard", "Lunatic", "Extra"
+    };
+
     void THTrackerUpdate() {
         ImGui::SetNextWindowSize({ 180.0f, 0.0f });
         ImGui::SetNextWindowPos({ 433.0f, 245.0f });

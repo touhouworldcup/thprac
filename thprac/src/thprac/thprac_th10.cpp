@@ -2243,18 +2243,11 @@ namespace TH10 {
 
         ImGui::End();
     }
-    void __fastcall th10_count_bomb(PCONTEXT, HookCtx*) {
-        tracker_info.th10.bombs++;
-    }
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th10_enter, 0x41798C, 6, {
-        tracker_info.th10 = {};
-    })
-    { .addr = 0x4259CF, .name = "th10_count_bomb_1", .callback = th10_count_bomb, .data = PatchHookImpl(5) },
-    { .addr = 0x425C3E, .name = "th10_count_bomb_2", .callback = th10_count_bomb, .data = PatchHookImpl(5) },
-    EHOOK_DY(th10_count_miss, 0x426A1C, 6, {
-        tracker_info.th10.misses++;  
-    })
+    { .addr = 0x41798C, .name = "th10_enter", .callback = tracker_reset, .data = PatchHookImpl(6) },
+    { .addr = 0x4259CF, .name = "th10_count_bomb_1", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x425C3E, .name = "th10_count_bomb_2", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x426A1C, .name = "th10_count_miss", .callback = th10_tracker_count_miss, .data = PatchHookImpl(6) },
     EHOOK_DY(th10_everlasting_bgm, 0x43e460, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];

@@ -719,7 +719,13 @@ union TrackerInfo {
 extern TrackerInfo tracker_info;
 extern bool tracker_open;
 
+void __fastcall th10_tracker_count_miss(PCONTEXT, HookCtx*);
+void __fastcall th10_tracker_count_bomb(PCONTEXT, HookCtx*);
+void __fastcall th13_tracker_count_trance(PCONTEXT, HookCtx*);
+void __fastcall tracker_reset(PCONTEXT, HookCtx*);
+
 #pragma endregion
 
-extern const char* const DIFFNAMES[];
+
+
 }

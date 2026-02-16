@@ -1628,15 +1628,9 @@ namespace TH12 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th12_enter, 0x421DEF, 6, {
-        tracker_info.th12 = {};   
-    })
-    EHOOK_DY(th12_bomb_dec, 0x422F28, 5, {
-        tracker_info.th12.bombs++;
-    })
-    EHOOK_DY(th12_life_dec, 0x4381E2, 5, {
-        tracker_info.th12.bombs++;
-    })
+    { .addr = 0x421DEF, .name = "th12_enter", .callback = tracker_reset, .data = PatchHookImpl(6) },
+    { .addr = 0x422F28, .name = "th12_bomb_dec", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x4381E2, .name = "th12_life_dec", .callback = th10_tracker_count_miss, .data = PatchHookImpl(5) },
     EHOOK_DY(th12_ufo_spawn, 0x44A909, 7, {
         uint32_t type = pCtx->Eax;
         GameState_Assert(type < 4);

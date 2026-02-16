@@ -1981,18 +1981,10 @@ namespace TH17 {
     }
     
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th17_enter, 0x4302E6, 6, {
-        tracker_info.th17 = {};
-    })
-    EHOOK_DY(th17_life_dec, 0x44921B, 6, {
-        tracker_info.th17.misses++;
-    })
-    EHOOK_DY(th17_bomb_dec, 0x411CAB, 6, {
-        tracker_info.th17.bombs++;
-    })
-    EHOOK_DY(th17_spirit_strike, 0x40F880, 10, {
-        tracker_info.th17.spirit_strikes++;
-    })
+    { .addr = 0x4302E6, .name = "th17_enter", .callback = tracker_reset, .data = PatchHookImpl(6) },
+    { .addr = 0x44921B, .name = "th17_life_dec", .callback = th10_tracker_count_miss, .data = PatchHookImpl(6) },
+    { .addr = 0x411CAB, .name = "th17_bomb_dec", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(6) },
+    { .addr = 0x40F880, .name = "th17_spirit_strike", .callback = th13_tracker_count_trance, .data = PatchHookImpl(10) },
     EHOOK_DY(th17_roaring, 0x40FC8A, 7, {
         tracker_info.th17.roaring_total++;
         if (globals->rpy.current_hyper && globals->rpy.current_hyper <= 3) {

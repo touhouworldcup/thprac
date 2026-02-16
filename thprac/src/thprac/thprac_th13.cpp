@@ -1570,18 +1570,10 @@ namespace TH13 {
     }
     
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th13_enter, 0x42D3D7, 7, {
-        tracker_info.th13 = {};    
-    })
-    EHOOK_DY(th13_bomb_dec, 0x40A404, 5, {
-        tracker_info.th13.bombs++;
-    })
-    EHOOK_DY(th13_life_dec, 0x444A75, 10, {
-        tracker_info.th13.misses++;
-    })
-    EHOOK_DY(th13_trance, 0x40587a, 5, {
-        tracker_info.th13.trance++;
-    })
+    { .addr = 0x42D3D7, .name = "th13_enter", .callback = tracker_reset, .data = PatchHookImpl(7) },
+    { .addr = 0x40A404, .name = "th13_bomb_dec", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x444A75, .name = "th13_life_dec", .callback = th10_tracker_count_miss, .data = PatchHookImpl(10) },
+    { .addr = 0x40587a, .name = "th13_trance", .callback = th13_tracker_count_trance, .data = PatchHookImpl(5) },
     EHOOK_DY(th13_everlasting_bgm_2, 0x42c444, 7, {
         if (th13ElBgmFlag) {
             th13ElBgmFlag = false;

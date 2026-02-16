@@ -2303,15 +2303,9 @@ namespace TH14 {
         ImGui::End();
     }
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th14_enter, 0x4375BE, 7, {
-        tracker_info.th10 = {};
-    })
-    EHOOK_DY(th14_bomb_dec, 0x41218A, 5, {
-        tracker_info.th10.bombs++;
-    })
-    EHOOK_DY(th14_life_dec, 0x44F618, 5, {
-        tracker_info.th10.misses++;
-    })
+    { .addr = 0x4375BE, .name = "th14_enter", .callback = tracker_reset, .data = PatchHookImpl(7) },
+    { .addr = 0x41218A, .name = "th14_bomb_dec", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x44F618, .name = "th14_life_dec", .callback = th10_tracker_count_miss, .data = PatchHookImpl(5) },
     EHOOK_DY(th14_everlasting_bgm, 0x46ef90, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];

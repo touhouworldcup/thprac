@@ -2826,24 +2826,12 @@ namespace TH18 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th18_game_start, 0x44278F, 5, {
-        tracker_info.th18 = {};
-    })
-    EHOOK_DY(th18_bomb_dec, 0x4574D3, 4, {
-        tracker_info.th18.bombs++;
-    })
-    EHOOK_DY(th18_cylinder, 0x410F22, 5, {
-        tracker_info.th18.bombs++;
-    })
-    EHOOK_DY(th18_life_dec, 0x45D1A3, 5, {
-        tracker_info.th18.misses++;
-    })
-    EHOOK_DY(th18_notmiss_1, 0x40DA1C, 5, { // Money is the Best Lawyer in Hell
-        tracker_info.th18.not_misses++;
-    })
-    EHOOK_DY(th18_notmiss_2, 0x40A534,5, { // Death Avoidance Elixir
-        tracker_info.th18.not_misses++;
-    })
+    { .addr = 0x44278F, .name = "th18_game_start", .callback = tracker_reset, .data = PatchHookImpl(5) },
+    { .addr = 0x4574D3, .name = "th18_bomb_dec",   .callback = th10_tracker_count_bomb, .data = PatchHookImpl(4) },
+    { .addr = 0x410F22, .name = "th18_cylinder",   .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x45D1A3, .name = "th18_life_dec",   .callback = th10_tracker_count_miss, .data = PatchHookImpl(5) },
+    { .addr = 0x40DA1C, .name = "th18_notmiss_1",  .callback = th13_tracker_count_trance, .data = PatchHookImpl(5) },
+    { .addr = 0x40A534, .name = "th18_notmiss_2",  .callback = th13_tracker_count_trance, .data = PatchHookImpl(5) },
 
     EHOOK_DY(th18_everlasting_bgm, 0x477a50, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];

@@ -918,10 +918,6 @@ namespace TH20 {
         PATCH_HK(0xF8734, "EB")
         HOTKEY_ENDDEF();
 
-        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
-        PATCH_HK(0xF849D, "00")
-        HOTKEY_ENDDEF();
-
         HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
         PATCH_HK(0xE1722, "0F1F00")
         HOTKEY_ENDDEF();
@@ -949,6 +945,7 @@ namespace TH20 {
         PATCH_HK(0xF79B3, "0F")
         HOTKEY_ENDDEF();
     public:
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2 };
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
     };
 
@@ -3006,11 +3003,20 @@ namespace TH20 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th20_enter, 0xbded2, 6, {
-        tracker_info.th20 = {};
-    })
-    EHOOK_DY(th20_bomb_dec, 0xe1710, 1, {
-        tracker_info.th20.bombs++;
+    { .addr = 0xbded2, .name = "th20_enter",    .callback = tracker_reset, .data = PatchHookImpl(6) },
+    { .addr = 0xe1710, .name = "th20_bomb_dec", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(1) },
+    EHOOK_DY(th20_inf_lives, 0xe1288, 6, {
+        GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
+        
+        int life_next = pCtx->Ecx;
+        if (life_next >= globals->life_stocks) {
+            return;
+        }
+        tracker_info.th20.misses++;
+
+        if (*THOverlay::singleton().mInfLives) {
+            pCtx->Eip = RVA(0xe128e);
+        }
     })
     EHOOK_DY(th20_hyper_break, 0x132c10, 3, {
         tracker_info.th20.hyper_breaks++;

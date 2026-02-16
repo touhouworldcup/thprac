@@ -2104,18 +2104,10 @@ namespace TH128 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th128_enter, 0x426009, 6, {
-        tracker_info.th10 = {};
-    })
-    EHOOK_DY(th128_bomb_dec, 0x43B7DB, 5, {
-        tracker_info.th10.bombs++;
-    })
-    EHOOK_DY(th128_bomb_dec2, 0x43B911, 5, {
-        tracker_info.th10.bombs++;
-    })
-    EHOOK_DY(th128_life_dec, 0x43CDDF, 5, {
-        tracker_info.th10.misses++;
-    })
+    { .addr = 0x426009, .name = "th128_enter",     .callback = tracker_reset, .data = PatchHookImpl(6) },
+    { .addr = 0x43B7DB, .name = "th128_bomb_dec",  .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x43B911, .name = "th128_bomb_dec2", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x43CDDF, .name = "th128_life_dec",  .callback = th10_tracker_count_miss, .data = PatchHookImpl(5) },
     EHOOK_DY(th128_on_restart, 0x42657f, 6, {
         thLock = thHardLock;
     })
