@@ -131,7 +131,7 @@ namespace TH13 {
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
         }
-        SINGLETON(THGuiPrac);
+        SINGLETON(THGuiPrac)
     public:
 
         __declspec(noinline) void State(int state)
@@ -332,7 +332,7 @@ namespace TH13 {
             case 1: // Chapter
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
-                if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
+                if (chapterCounts[1] == 0 && chapterCounts[0] != 0) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_1), *mChapter);
@@ -415,7 +415,7 @@ namespace TH13 {
             GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mAppdataPath = appdata;
         }
-        SINGLETON(THGuiRep);
+        SINGLETON(THGuiRep)
     public:
 
         void CheckReplay()
@@ -471,7 +471,7 @@ namespace TH13 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(THOverlay);
+        SINGLETON(THOverlay)
     public:
 
     protected:
@@ -580,7 +580,7 @@ namespace TH13 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(TH13InGameInfo);
+        SINGLETON(TH13InGameInfo)
 
     public:
         int32_t mMissCount;
@@ -619,7 +619,7 @@ namespace TH13 {
             auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_13[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
-            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - diff_pl_sz.x * 0.5f);
             ImGui::Text(diff_pl.c_str());
 
 
@@ -715,7 +715,7 @@ namespace TH13 {
         *y_range = (y_max - y_min2);
     });
     class THAdvOptWnd : public Gui::PPGuiWnd {
-        SINGLETON(THAdvOptWnd);
+        SINGLETON(THAdvOptWnd)
        
     public:
         bool forceBossMoveDown = false;
@@ -750,9 +750,9 @@ namespace TH13 {
         {
             mOptCtx.fps_replay_fast = 10;
 
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) != NULL) {
                 OILPInit(mOptCtx);
-            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th13.dll")) {
+            } else if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th13.dll")) != NULL) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th13.dll", hash);
                 if (hash[0] != 6450385832836080372ll || hash[1] != 579365625616419970ll)
@@ -1821,13 +1821,13 @@ namespace TH13 {
         }
     }
 
-    static void RenderHitbox(ImDrawList* p)
+    void RenderHitbox(ImDrawList* p)
     {
         auto GetClientFromStage = [](ImVec2 client) -> ImVec2 { return { client.x + 32.0f + 192.0f, client.y + 16.0f}; };
         // enm hits
-        DWORD penm = *(DWORD*)(0x4C2188);
-        if (penm) {
-            DWORD iter = *(DWORD*)(penm + 0xB0);
+        DWORD penml = *(DWORD*)(0x4C2188);
+        if (penml) {
+            DWORD iter = *(DWORD*)(penml + 0xB0);
             float plhit = 0;
             DWORD ppl = *(DWORD*)(0x4C22C4);
             if (ppl) {
@@ -1845,7 +1845,7 @@ namespace TH13 {
                             is_rc = true;
                         } else {
                             is_rc = false;
-                            radius_kill = *(float*)(penm + 0x118) * 0.5;
+                            radius_kill = *(float*)(penm + 0x118) * 0.5f;
                         }
                     }
                     ImVec2 bt_pos2 = GetClientFromStage(pos);

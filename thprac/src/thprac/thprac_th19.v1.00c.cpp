@@ -486,7 +486,7 @@ namespace V1_10c {
         {
             SetTitle("TH19 Tools###_th19_tools");
         }
-        SINGLETON(TH19Tools);
+        SINGLETON(TH19Tools)
     };
 
 
@@ -584,7 +584,7 @@ namespace V1_10c {
 
     public:
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
-        SINGLETON(THVSSelect);
+        SINGLETON(THVSSelect)
 
     protected:
         virtual void OnLocaleChange() override
@@ -656,7 +656,7 @@ namespace V1_10c {
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
         Gui::GuiCombo mStage { TH_STAGE, TH_STAGE_SELECT_NOEX };
         std::vector<unsigned int> mAdditionalCards = { 0 };
-        SINGLETON(THGuiPrac);
+        SINGLETON(THGuiPrac)
     
     protected:
         virtual void OnLocaleChange() override

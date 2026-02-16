@@ -55,13 +55,13 @@ bool g_record_key_aps = false;
 AdvancedGameOptions g_adv_igi_options;
 
 
-void GameUpdateInner(int gamever)
+void GameUpdateInner([[maybe_unused]]int gamever)
 {
     if (g_fast_re_opt.fast_retry_count_down)
         g_fast_re_opt.fast_retry_count_down--;
 }
 
-void GameUpdateOuter(ImDrawList* p, int ver)
+void GameUpdateOuter(ImDrawList* p, [[maybe_unused]] int ver)
 {
     if (g_input_opt.enable_auto_shoot && g_input_opt.is_auto_shooting) {
         ImGuiIO& io = ImGui::GetIO();
@@ -81,7 +81,7 @@ void FastRetry(int thprac_mode)
     }
 }
 
-LRESULT CALLBACK GameExternWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK GameExternWndProc([[maybe_unused]] HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
     default:
@@ -111,7 +111,7 @@ ImTextureID ReadImage(DWORD dxVer, DWORD device, LPCSTR fileName, LPCSTR srcData
         return ReadImage9(device, fileName, srcData, srcSz);
 }
 
-void SetDpadHook(uintptr_t addr, size_t instr_len)
+void SetDpadHook([[maybe_unused]] uintptr_t addr, [[maybe_unused]] size_t instr_len)
 {
     // static constinit HookCtx dpad_hook = {
     //     .callback = IDirectInputDevice8_GetDeviceState_VEHHook,
@@ -295,8 +295,8 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
                         GetWindowRect(*(HWND*)hwnd_addr, &wndRect);
                         int szx = (wndRect.right - wndRect.left)-(clientRect.right-clientRect.left);
                         int szy = (wndRect.bottom - wndRect.top) - (clientRect.bottom - clientRect.top);
-                        auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
-                        auto captionSize = GetSystemMetrics(SM_CYCAPTION);
+                        // auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
+                        // auto captionSize = GetSystemMetrics(SM_CYCAPTION);
                         SetWindowPos(*(HWND*)hwnd_addr, HWND_NOTOPMOST,
                             0, 0, windowsz[0] + szx, windowsz[1] + szy,
                             SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
@@ -312,7 +312,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         if (name06.size() >= 1 && name06.size() <= 9) {
             strcpy_s(g_adv_igi_options.th06_autoname_name, name06.c_str());
             static std::string allowed = ".,:;~@+-/*=%(){}[]<>#!?'\"$ ";
-            for (int i = 0; i < name06.size(); i++)
+            for (int i = 0; i < std::ssize(name06); i++)
             {
                 auto ch = g_adv_igi_options.th06_autoname_name[i];
                 if (ch == '\0')
@@ -693,7 +693,6 @@ void InitHook(int ver,void* addr1, void* addr2)
         g_input_opt.enable_auto_shoot = false;
         g_input_opt.shoot_key_DIK = -1;
         if (LauncherSettingGet("enable_keyboard_hook", g_input_opt.g_enable_keyhook) && g_input_opt.g_enable_keyhook) { // hook keyboard to enable SOCD and X-disable
-            LPVOID pTarget;
             HookKeyboardInput();
             
             if (g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_RawInput || g_input_opt.g_keyboardAPI == InputOpt::KeyboardAPI::Force_dinput8KeyAPI) {

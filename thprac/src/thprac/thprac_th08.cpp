@@ -142,7 +142,7 @@ namespace TH08 {
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
             OnLocaleChange();
         }
-        SINGLETON(THGuiPrac);
+        SINGLETON(THGuiPrac)
     public:
 
         __declspec(noinline) void State(int state)
@@ -313,8 +313,8 @@ namespace TH08 {
                         if (section == TH08_ST2_BOSS3) {
                             if (mDropPoints()){
                                 // set some default
-                                *mBossX = 48.0f;
-                                *mBossY = 96.0f;
+                                *mBossX = 48;
+                                *mBossY = 96;
                                 *mPower = 127;
                             }
                             ImGui::SetNextItemWidth(100.0f);
@@ -530,7 +530,7 @@ namespace TH08 {
         THGuiRep() noexcept
         {
         }
-        SINGLETON(THGuiRep);
+        SINGLETON(THGuiRep)
     public:
 
         void CheckReplay()
@@ -583,7 +583,7 @@ namespace TH08 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(THOverlay);
+        SINGLETON(THOverlay)
     public:
 
     protected:
@@ -694,7 +694,7 @@ namespace TH08 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(TH08InGameInfo);
+        SINGLETON(TH08InGameInfo)
 
     public:
         int32_t mMissCount;
@@ -741,7 +741,7 @@ namespace TH08 {
             auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_08[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
-            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - diff_pl_sz.x * 0.5f);
             ImGui::Text(diff_pl.c_str());
 
             ImGui::Columns(2);
@@ -805,7 +805,7 @@ namespace TH08 {
             std::string str = std::format("{}", captured);
 
             DWORD thiz = *(DWORD*)(pCtx->Ebp - 0x28);
-            *(float*)(thiz + 8920) = *(float*)(thiz + 8920) + 28.0;
+            *(float*)(thiz + 8920) = *(float*)(thiz + 8920) + 28.0f;
 
             float inc = 25.0f / (float)str.size();
             for (auto ch : str) {
@@ -823,7 +823,7 @@ namespace TH08 {
             std::string str = std::format("{}", captured);
 
             DWORD thiz = *(DWORD*)(pCtx->Ebp - 0x28);
-            *(float*)(thiz + 8920) = *(float*)(thiz + 8920) + 7.0;
+            *(float*)(thiz + 8920) = *(float*)(thiz + 8920) + 7.0f;
 
             float inc = 25.0f / (float)str.size();
             for (auto ch : str) {
@@ -846,9 +846,9 @@ namespace TH08 {
         }
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) != NULL) {
                 OILPInit(mOptCtx);
-            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th08.dll")) {
+            } else if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th08.dll")) != NULL) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th08.dll", hash);
                 if (hash[0] != 14324321420199198230ll || hash[1] != 10561235471127337137ll)
@@ -909,7 +909,7 @@ namespace TH08 {
             th08_forceLS.Setup();
             th08_forceLS.Toggle(g_adv_igi_options.th08_forceLS);
         }
-        SINGLETON(THAdvOptWnd);
+        SINGLETON(THAdvOptWnd)
 
     public:
         __declspec(noinline) static bool StaticUpdate()
@@ -2699,7 +2699,7 @@ namespace TH08 {
 
             int32_t* sp = (int32_t*)0x164D0B4;
              *sp |= 0x4000;
-            int16_t sp_idx = thPracParam.section - TH08_LW_1 + 205; // sp index
+            int16_t sp_idx = static_cast<int16_t>(thPracParam.section - TH08_LW_1 + 205); // sp index
             *(WORD*)(0x164D0B8) = sp_idx;
             int stage = 3;
             switch (sp_idx)

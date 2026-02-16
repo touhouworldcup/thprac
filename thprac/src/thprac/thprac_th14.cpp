@@ -125,7 +125,7 @@ namespace TH14 {
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
             OnLocaleChange();
         }
-        SINGLETON(THGuiPrac);
+        SINGLETON(THGuiPrac)
     public:
 
         __declspec(noinline) void State(int state)
@@ -308,7 +308,7 @@ namespace TH14 {
             case 1: // Chapter
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
-                if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
+                if (chapterCounts[1] == 0 && chapterCounts[0] != 0) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_1), *mChapter);
@@ -385,7 +385,7 @@ namespace TH14 {
             GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mAppdataPath = appdata;
         }
-        SINGLETON(THGuiRep);
+        SINGLETON(THGuiRep)
     public:
 
         void CheckReplay()
@@ -441,7 +441,7 @@ namespace TH14 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(THOverlay);
+        SINGLETON(THOverlay)
     public:
 
     protected:
@@ -535,7 +535,7 @@ namespace TH14 {
     };
 
     class TH14InGameInfo : public Gui::GameGuiWnd {
-
+        SINGLETON(TH14InGameInfo)
         TH14InGameInfo() noexcept
         {
             SetTitle("igi");
@@ -546,8 +546,6 @@ namespace TH14 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(TH14InGameInfo);
-
     public:
         int32_t mMissCount;
         int32_t mBombCount;
@@ -582,12 +580,12 @@ namespace TH14 {
 
         virtual void OnContentUpdate() override
         {
-            byte cur_player_type = (*(int32_t*)(0x4f5828))*2 + (*(int32_t*)(0x4f582c));
+            byte cur_player_type = static_cast<byte>((*(int32_t*)(0x4f5828))*2 + (*(int32_t*)(0x4f582c)));
             int32_t diff = *((int32_t*)0x4f5834);
             auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_14[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
-            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - diff_pl_sz.x * 0.5f);
             ImGui::Text(diff_pl.c_str());
 
             
@@ -599,7 +597,7 @@ namespace TH14 {
                 float bonus_cnt_sz = ImGui::CalcTextSize(bonus_cnt.c_str()).x;
                 std::string cycle_cnt = S(THPRAC_INGAMEINFO_TH14_BONUS_BOMB);
                 cycle_cnt += ' ';
-                float cycle_cnt_sz = ImGui::CalcTextSize(cycle_cnt.c_str()).x * 5.5;
+                float cycle_cnt_sz = ImGui::CalcTextSize(cycle_cnt.c_str()).x * 5.5f;
                 float widthmx = std::max(cycle_cnt_sz, bonus_cnt_sz);
                 float width1 = ImGui::GetColumnWidth(1);
                 if (width1 < widthmx)
@@ -716,7 +714,7 @@ namespace TH14 {
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
             OnLocaleChange();
         }
-        SINGLETON(THGuiSP);
+        SINGLETON(THGuiSP)
     public:
 
         int mState = 0;
@@ -832,7 +830,7 @@ namespace TH14 {
     class THMarisaLaser {
         friend class THAdvOptWnd;
         THMarisaLaser() = default;
-        SINGLETON(THMarisaLaser);
+        SINGLETON(THMarisaLaser)
 
     public:
         struct record_t {
@@ -1072,7 +1070,7 @@ namespace TH14 {
     });
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
-        SINGLETON(THAdvOptWnd);
+        SINGLETON(THAdvOptWnd)
     public:
         bool forceBossMoveDown = false;
     private:
@@ -1086,7 +1084,7 @@ namespace TH14 {
         }
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) != NULL) {
                 OILPInit(mOptCtx);
             } else {
                 mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th14.dll");
@@ -2569,7 +2567,6 @@ namespace TH14 {
 
                     y = y * 2.0f + 32.0f;
                     x = x * 2.0f + 448.0f;
-                    ImGuiIO& io = ImGui::GetIO();
                     return { x * x_ratio, y * y_ratio };
                 };
 
@@ -2754,6 +2751,132 @@ namespace TH14 {
         }
     }
 
+#pragma warning(push)
+#pragma warning(disable : 4456)
+    void RenderHitBar(ImDrawList* p)
+    {
+        int items = *(DWORD*)(0x4F5880);
+        bool border = true;
+        if (items == 0) {
+            border = false;
+            DWORD pitems = *(DWORD*)(0x4DB660);
+            if (pitems) {
+                DWORD iter = pitems + 0x14;
+                for (int i = 0; i < 0x1258; i++) {
+                    int type = *(DWORD*)(iter + 0xBF4);
+                    int movement = *(DWORD*)(iter + 0xBF0);
+                    if (movement != 0)
+                        if (type == 1 || type == 2 || type == 3)
+                            items++;
+                    iter += 0xC18;
+                }
+            }
+        }
+        DWORD ppl = *(DWORD*)(0x004DB67C);
+        if (ppl) {
+            float num = 0.0f;
+            DWORD col = 0xFFFFFFFF;
+            DWORD col2 = 0xFF000000;
+            if (items < 20) {
+                num = items / 20.0f;
+                col = 0xFF888888;
+            } else if (items < 30) {
+                num = (items - 20.0f) / 10.0f;
+                col = 0xFF0000FF;
+                col2 = 0xFF888888;
+            } else if (items < 40) {
+                num = (items - 30.0f) / 10.0f;
+                col = 0xFF00FFCC;
+                col2 = 0xFF0000FF;
+            } else if (items < 50) {
+                num = (items - 40.0f) / 10.0f;
+                col = 0xFF00FF00;
+                col2 = 0xFF00FFCC;
+            } else if (items < 60) {
+                num = (items - 50.0f) / 10.0f;
+                col = 0xFFFFCC00;
+                col2 = 0xFF00FF00;
+            } else {
+                num = 1.0f;
+                col = 0xFFFFFF00;
+                col2 = 0xFFFFCC00;
+            }
+            ImGuiIO& io = ImGui::GetIO();
+            float x_ratio = io.DisplaySize.x / 1280.0f;
+            float y_ratio = io.DisplaySize.y / 960.0f;
+
+            float xpos = *(float*)(ppl + 0x5B0) * 2.0f * x_ratio + 448.0f * x_ratio;
+            float ypos = *(float*)(ppl + 0x5B4) * 2.0f * y_ratio + 32.0f * y_ratio;
+            p->PushClipRect({ 64.0f * x_ratio, 32.0f * y_ratio }, { 832.0f * x_ratio, 928.0f * y_ratio });
+            const float bar_xszhalf = 48.0f * x_ratio;
+            const float bar_yszhalf = 4.0f * y_ratio;
+            const float bar_yofs = 48.0f * y_ratio;
+            // st5 rev
+            float stage_y_rev = 1.0f, stage_x_rev = 1.0f, stage_rotate = 0.0f;
+            if (*(DWORD*)0x4D9128) {
+                stage_y_rev = *(float*)((*(DWORD*)0x4D9128) + 0x64);
+                stage_x_rev = *(float*)((*(DWORD*)0x4D9128) + 0x60);
+                stage_rotate = *(float*)((*(DWORD*)0x4D9128) + 0x50);
+            }
+            auto GetXY_Revd = [stage_y_rev, stage_x_rev, stage_rotate, y_ratio, x_ratio](ImVec2 pos) -> ImVec2 {
+                float &x = pos.x, &y = pos.y;
+                float dx = x - 448.0f * x_ratio, dy = y - 480.0f * y_ratio;
+                if (stage_rotate != 0.0f) {
+
+                    float c = cosf(stage_rotate);
+                    float s = sinf(stage_rotate);
+                    float a = dx * c - dy * s;
+                    float b = dx * s + dy * c;
+                    dx = a;
+                    dy = b;
+                }
+                dx *= stage_x_rev;
+                dy *= stage_y_rev;
+                return { dx + 448.0f * x_ratio, dy + 480.0f * y_ratio };
+            };
+            auto AddQuadFilled_Revd = [stage_y_rev, stage_x_rev, stage_rotate, y_ratio, x_ratio, p, GetXY_Revd](ImVec2 pmin, ImVec2 pmax, DWORD col) -> void {
+                ImVec2 p3 = { pmax.x, pmin.y }, p4 = { pmin.x, pmax.y };
+                p->AddQuadFilled(GetXY_Revd(pmin), GetXY_Revd(p3), GetXY_Revd(pmax), GetXY_Revd(p4), col);
+            };
+            auto AddQuad_Revd = [stage_y_rev, stage_x_rev, stage_rotate, y_ratio, x_ratio, p, GetXY_Revd](ImVec2 pmin, ImVec2 pmax, DWORD col) -> void {
+                ImVec2 p3 = { pmax.x, pmin.y }, p4 = { pmin.x, pmax.y };
+                p->AddQuad(GetXY_Revd(pmin), GetXY_Revd(p3), GetXY_Revd(pmax), GetXY_Revd(p4), col);
+            };
+            // shadow
+            {
+                ImVec2 pmin, pmax;
+                if (items >= 20) {
+                    pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
+                    pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f };
+                } else {
+                    pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
+                    pmax = { pmin.x + bar_xszhalf * 2.0f * num, pmin.y + bar_yszhalf * 2.0f };
+                }
+                pmin.x += 1.0f;
+                pmin.y += 1.0f;
+                pmax.x += 1.0f;
+                pmax.y += 1.0f;
+                AddQuadFilled_Revd(pmin, pmax, col2);
+            }
+            {
+                ImVec2 pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
+                ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f * num, pmin.y + bar_yszhalf * 2.0f };
+                AddQuadFilled_Revd(pmin, pmax, col);
+                if (border) {
+                    ImVec2 pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
+                    ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f };
+                    AddQuad_Revd(pmin, pmax, 0xFFFFFF00);
+                } else {
+                    ImVec2 pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
+                    ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f };
+                    AddQuad_Revd(pmin, pmax, 0xFFCCCCCC);
+                }
+            }
+            p->PopClipRect();
+        }
+    }
+#pragma warning(pop)
+
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th14_inf_lives, 0x0044F617,1,
     {
@@ -2902,129 +3025,9 @@ namespace TH14 {
         }
 
         // hit bar
-        {
-            if (g_adv_igi_options.th14_showDropBar) {
-                int items = *(DWORD*)(0x4F5880);
-                bool border = true;
-                if (items == 0) {
-                    border = false;
-                    DWORD pitems = *(DWORD*)(0x4DB660);
-                    if (pitems) {
-                        DWORD iter = pitems + 0x14;
-                        for (int i = 0; i < 0x1258; i++) {
-                            int type = *(DWORD*)(iter + 0xBF4);
-                            int movement = *(DWORD*)(iter + 0xBF0);
-                            if (movement != 0)
-                                if (type == 1 || type == 2 || type == 3)
-                                    items++;
-                            iter += 0xC18;
-                        }
-                    }
-                }
-                DWORD ppl = *(DWORD*)(0x004DB67C);
-                if (ppl) {
-                    float num = 0.0f;
-                    DWORD col = 0xFFFFFFFF;
-                    DWORD col2 = 0xFF000000;
-                    if (items < 20) {
-                        num = items / 20.0f;
-                        col = 0xFF888888;
-                    } else if (items < 30) {
-                        num = (items - 20.0f) / 10.0f;
-                        col = 0xFF0000FF;
-                        col2 = 0xFF888888;
-                    } else if (items < 40) {
-                        num = (items - 30.0f) / 10.0f;
-                        col = 0xFF00FFCC;
-                        col2 = 0xFF0000FF;
-                    } else if (items < 50) {
-                        num = (items - 40.0f) / 10.0f;
-                        col = 0xFF00FF00;
-                        col2 = 0xFF00FFCC;
-                    } else if (items < 60) {
-                        num = (items - 50.0f) / 10.0f;
-                        col = 0xFFFFCC00;
-                        col2 = 0xFF00FF00;
-                    } else {
-                        num = 1.0f;
-                        col = 0xFFFFFF00;
-                        col2 = 0xFFFFCC00;
-                    }
-                    ImGuiIO& io = ImGui::GetIO();
-                    float x_ratio = io.DisplaySize.x / 1280.0f;
-                    float y_ratio = io.DisplaySize.y / 960.0f;
 
-                    float xpos = *(float*)(ppl + 0x5B0) * 2.0f * x_ratio + 448.0f * x_ratio;
-                    float ypos = *(float*)(ppl + 0x5B4) * 2.0f * y_ratio + 32.0f * y_ratio;
-                    p->PushClipRect({ 64.0f * x_ratio, 32.0f * y_ratio }, { 832.0f * x_ratio, 928.0f * y_ratio });
-                    const float bar_xszhalf = 48.0f * x_ratio;
-                    const float bar_yszhalf = 4.0f * y_ratio;
-                    const float bar_yofs = 48.0f * y_ratio;
-                    // st5 rev
-                    float stage_y_rev = 1.0f, stage_x_rev = 1.0f, stage_rotate = 0.0f;
-                    if (*(DWORD*)0x4D9128) {
-                        stage_y_rev = *(float*)((*(DWORD*)0x4D9128) + 0x64);
-                        stage_x_rev = *(float*)((*(DWORD*)0x4D9128) + 0x60);
-                        stage_rotate = *(float*)((*(DWORD*)0x4D9128) + 0x50);
-                    }
-                    auto GetXY_Revd = [stage_y_rev, stage_x_rev, stage_rotate, y_ratio, x_ratio](ImVec2 pos) -> ImVec2 {
-                        float &x = pos.x, &y = pos.y;
-                        float dx = x - 448.0f * x_ratio, dy = y - 480.0f * y_ratio;
-                        if (stage_rotate != 0.0f){
-                            
-                            float c = cosf(stage_rotate);
-                            float s = sinf(stage_rotate);
-                            float a = dx * c - dy * s;
-                            float b = dx * s + dy * c;
-                            dx = a;
-                            dy = b;
-                        }
-                        dx *= stage_x_rev;
-                        dy *= stage_y_rev;
-                        return { dx + 448.0f * x_ratio, dy + 480.0f * y_ratio };
-                    };
-                    auto AddQuadFilled_Revd = [stage_y_rev, stage_x_rev, stage_rotate, y_ratio, x_ratio, p, GetXY_Revd](ImVec2 pmin, ImVec2 pmax, DWORD col) -> void {
-                        ImVec2 p3 = { pmax.x, pmin.y }, p4 = {pmin.x,pmax.y};
-                        p->AddQuadFilled(GetXY_Revd(pmin), GetXY_Revd(p3), GetXY_Revd(pmax), GetXY_Revd(p4), col);
-                    };
-                    auto AddQuad_Revd = [stage_y_rev, stage_x_rev, stage_rotate, y_ratio, x_ratio, p, GetXY_Revd](ImVec2 pmin, ImVec2 pmax, DWORD col) -> void {
-                        ImVec2 p3 = { pmax.x, pmin.y }, p4 = { pmin.x, pmax.y };
-                        p->AddQuad(GetXY_Revd(pmin), GetXY_Revd(p3), GetXY_Revd(pmax), GetXY_Revd(p4), col);
-                    };
-                    // shadow
-                    {
-                        ImVec2 pmin, pmax;
-                        if (items >= 20) {
-                            pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
-                            pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f };
-                        } else {
-                            pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
-                            pmax = { pmin.x + bar_xszhalf * 2.0f * num, pmin.y + bar_yszhalf * 2.0f };
-                        }
-                        pmin.x += 1.0f;
-                        pmin.y += 1.0f;
-                        pmax.x += 1.0f;
-                        pmax.y += 1.0f;
-                        AddQuadFilled_Revd(pmin, pmax, col2);
-                    }
-                    {
-                        ImVec2 pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
-                        ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f * num, pmin.y + bar_yszhalf * 2.0f };
-                        AddQuadFilled_Revd(pmin, pmax, col);
-                        if (border){
-                            ImVec2 pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
-                            ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f};
-                            AddQuad_Revd(pmin, pmax, 0xFFFFFF00);
-                        } else {
-                            ImVec2 pmin = { xpos - bar_xszhalf, ypos - bar_yofs - bar_yszhalf };
-                            ImVec2 pmax = { pmin.x + bar_xszhalf * 2.0f, pmin.y + bar_yszhalf * 2.0f };
-                            AddQuad_Revd(pmin, pmax, 0xFFCCCCCC);
-                        }
-                    }
-                    p->PopClipRect();
-                }
-            }
-        }
+        if (g_adv_igi_options.th14_showDropBar)
+            RenderHitBar(p);
 
         if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x04DB67C))
             KeysHUD(14, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);

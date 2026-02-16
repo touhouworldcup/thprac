@@ -423,7 +423,7 @@ namespace V1_00a {
             SetSizeRel(0.5, 1);
             SetPosRel(0.5, 0);
         }
-        SINGLETON(TH19Tools);
+        SINGLETON(TH19Tools)
     };
 
 
@@ -519,7 +519,7 @@ namespace V1_00a {
 
     public:
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
-        SINGLETON(THVSSelect);
+        SINGLETON(THVSSelect)
 
     protected:
         virtual void OnLocaleChange() override
@@ -591,7 +591,7 @@ namespace V1_00a {
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
         Gui::GuiCombo mStage { TH_STAGE, TH_STAGE_SELECT_NOEX };
         std::vector<unsigned int> mAdditionalCards = { 0 };
-        SINGLETON(THGuiPrac);
+        SINGLETON(THGuiPrac)
     
     protected:
         virtual void OnLocaleChange() override

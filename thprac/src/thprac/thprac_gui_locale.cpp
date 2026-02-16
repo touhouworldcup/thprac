@@ -445,7 +445,6 @@ static const ImWchar __thprac_loc_range_ChineseFull[] = {
         if (g_isLauncher)
             onlyRenderUsedFont = false;
 
-        auto& io = ImGui::GetIO();
         ImWchar* glyphRange = nullptr;
         switch (locale) {
         case LOCALE_ZH_CN:

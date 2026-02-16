@@ -135,7 +135,7 @@ namespace TH07 {
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
             OnLocaleChange();
         }
-        SINGLETON(THGuiPrac);
+        SINGLETON(THGuiPrac)
     public:
 
         __declspec(noinline) void State(int state)
@@ -414,7 +414,7 @@ namespace TH07 {
         THGuiRep() noexcept
         {
         }
-        SINGLETON(THGuiRep);
+        SINGLETON(THGuiRep)
     public:
 
         void CheckReplay()
@@ -477,7 +477,7 @@ namespace TH07 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(THOverlay);
+        SINGLETON(THOverlay)
     public:
 
     protected:
@@ -583,7 +583,7 @@ namespace TH07 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(TH07InGameInfo);
+        SINGLETON(TH07InGameInfo)
 
     public:
         int32_t mMissCount;
@@ -622,8 +622,8 @@ namespace TH07 {
 
             DWORD p = *(DWORD*)(0x00626278);
             mCherryBase = *(int32_t*)(p+0x88);
-            mMissCount = *(float*)(p+0x50);
-            mBombCount = *(float*)(p+0x6C);
+            mMissCount = static_cast<int32_t>(*(float*)(p+0x50));
+            mBombCount = static_cast<int32_t>(*(float*)(p+0x6C));
 
             mCherry = *(int32_t*)(0x0062F888) - mCherryBase;
             mCherryMax = *(int32_t*)(0x0062F88C) - mCherryBase;
@@ -635,7 +635,7 @@ namespace TH07 {
             auto diff_pl = std::format("{} ({})", S(IGI_DIFF[*(int32_t*)0x626280]), S(IGI_PL_07[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
-            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - diff_pl_sz.x * 0.5f);
             ImGui::Text(diff_pl.c_str());
 
             ImGui::Columns(2);
@@ -697,9 +697,9 @@ namespace TH07 {
     private:
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) != NULL) {
                 OILPInit(mOptCtx);
-            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th07.dll")) {
+            } else if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th07.dll")) != NULL) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th07.dll", hash);
                 if (hash[0] != 9678734212472211387ll || hash[1] != 9671871756369193188ll)
@@ -751,7 +751,7 @@ namespace TH07 {
             FpsInit();
             GameplayInit();
         }
-        SINGLETON(THAdvOptWnd);
+        SINGLETON(THAdvOptWnd)
 
     public:
         __declspec(noinline) static bool StaticUpdate()

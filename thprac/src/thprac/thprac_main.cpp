@@ -280,7 +280,7 @@ bool FindOngoingGame(bool prompt_if_no_game, bool prompt_if_yes_game)
             do {
                 uintptr_t base;
                 HANDLE hProc = 0;
-                if (!(gameSig = CheckOngoingGame(entry, &base, &hProc)))
+                if ((gameSig = CheckOngoingGame(entry, &base, &hProc)) == nullptr)
                     continue;
                 
                 hasPrompted = true;

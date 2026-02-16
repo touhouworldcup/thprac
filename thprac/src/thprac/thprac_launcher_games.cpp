@@ -489,7 +489,7 @@ private:
         thcrapSetup();
         mGuiUpdFunc = [&]() { GuiMain(); };
     }
-    SINGLETON(THGameGui);
+    SINGLETON(THGameGui)
 
 public:
     bool BackupScoreFile(bool auto_backup = false) {
@@ -580,7 +580,7 @@ public:
             zipFile zf = zipOpen(zipfilename.c_str(), APPEND_STATUS_CREATE);
 
             for (auto& it : all_backup) {
-                for (int i = 0; i < it.score_paths.size(); i++) {
+                for (int i = 0; i < std::ssize(it.score_paths); i++) {
                     std::string filename_a;
                     if (it.score_paths.size() >= 2){
                         filename_a = "";
@@ -2521,8 +2521,6 @@ public:
     void GameTable(const char* title, THGameCatagory catagory)
     {
         int columns = 1;
-        int i = 0;
-
         ImGui::TextUnformatted(title);
         ImGui::Columns(columns);
         for (size_t i = 0; i < elementsof(gGameDefs); i++) {

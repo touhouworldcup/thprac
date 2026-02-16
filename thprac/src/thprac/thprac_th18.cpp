@@ -272,7 +272,7 @@ namespace TH18 {
             SetViewport((void*)0x4cd420);
             OnLocaleChange();
         }
-        SINGLETON(THGuiPrac);
+        SINGLETON(THGuiPrac)
 
     public:
 
@@ -503,7 +503,7 @@ namespace TH18 {
             case 1: // Chapter
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
-                if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
+                if (chapterCounts[1] == 0 && chapterCounts[0] != 0) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_1), *mChapter);
@@ -612,7 +612,7 @@ namespace TH18 {
             GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mAppdataPath = appdata;
         }
-        SINGLETON(THGuiRep);
+        SINGLETON(THGuiRep)
 
     public:
         std::wstring mRepDir;
@@ -720,7 +720,7 @@ namespace TH18 {
             th18_shop_escape_2.Setup();
             th18_free_blank.Setup();
         }
-        SINGLETON(THOverlay);
+        SINGLETON(THOverlay)
 
     protected:
         inline void ResetCardMenu()
@@ -956,7 +956,7 @@ namespace TH18 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(TH18InGameInfo);
+        SINGLETON(TH18InGameInfo)
 
     public:
         int32_t mMissCount;
@@ -1027,7 +1027,7 @@ namespace TH18 {
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
             OnLocaleChange();
         }
-        SINGLETON(THGuiSP);
+        SINGLETON(THGuiSP)
 
     public:
         int mState = 0;
@@ -1292,7 +1292,7 @@ namespace TH18 {
             th18_static_mallet_replay_green.Setup();
             th18_bossmovedown.Setup();
         }
-        SINGLETON(THAdvOptWnd);
+        SINGLETON(THAdvOptWnd)
 
     public:
         static void StaticMalletConversion(PCONTEXT pCtx) {
@@ -1643,7 +1643,7 @@ namespace TH18 {
     private:
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) != NULL) {
                 OILPInit(mOptCtx);
             } else if (*(uint8_t*)0x4cd011 == 3) {
                 mOptCtx.fps_status = 1;
@@ -3323,7 +3323,7 @@ namespace TH18 {
                     stage = stage - 1;
                 int card_id2 = -1;
                 for (int i = 0; i < 56; i++) { 
-                    if (g_adv_igi_options.th18_cards[stage] == *(DWORD*)(CARD_DESC_LIST + 0x34 * i + 4)){
+                    if (g_adv_igi_options.th18_cards[stage] == *(int32_t*)(CARD_DESC_LIST + 0x34 * i + 4)){
                         card_id2 = i;
                         break;
                     }

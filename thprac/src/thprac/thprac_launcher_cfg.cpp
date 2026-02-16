@@ -812,7 +812,7 @@ private:
     {
 
     }
-    SINGLETON(THUpdate);
+    SINGLETON(THUpdate)
 
 public:
     enum ChkUpdateStatus {
@@ -1415,7 +1415,7 @@ private:
             mThcrapGames[game.type].push_back(game);
         }
     }
-    SINGLETON(THCfgGui);
+    SINGLETON(THCfgGui)
 
 public:
     void GuiUpdate()
@@ -1535,7 +1535,6 @@ private:
     }
     void KeyBindSettings()
     {
-        bool dirSettingModalFlag = false;
         bool confirmModalFlag = false;
         LauncherSettingGet_KeyBind();
 
@@ -2178,14 +2177,14 @@ private:
             mHotkeyF12MenuListening = false;
             mHotkeyScreenshotListening = false;
             mHotkeyLanguageListening = false;
-            int backspace_menu_chord = 1 << Gui::ChordKey_Backspace;
-            int advanced_menu_chord = 1 << Gui::ChordKey_F12;
-            int screenshot_chord = 1 << Gui::ChordKey_Home;
-            int language_chord = 1 << Gui::ChordKey_Alt;
-            LauncherSettingSet("backspace_menu_chord", backspace_menu_chord);
-            LauncherSettingSet("advanced_menu_chord", advanced_menu_chord);
-            LauncherSettingSet("screenshot_chord", screenshot_chord);
-            LauncherSettingSet("language_chord", language_chord);
+            int backspace_menu_chord_r = 1 << Gui::ChordKey_Backspace;
+            int advanced_menu_chord_r = 1 << Gui::ChordKey_F12;
+            int screenshot_chord_r = 1 << Gui::ChordKey_Home;
+            int language_chord_r = 1 << Gui::ChordKey_Alt;
+            LauncherSettingSet("backspace_menu_chord", backspace_menu_chord_r);
+            LauncherSettingSet("advanced_menu_chord", advanced_menu_chord_r);
+            LauncherSettingSet("screenshot_chord", screenshot_chord_r);
+            LauncherSettingSet("language_chord", language_chord_r);
         }
     }
 

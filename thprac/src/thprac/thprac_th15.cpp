@@ -207,7 +207,7 @@ namespace TH15 {
             switch (section)
             {
             default:
-                return nullptr;
+                break;
             case TH15_ST6_BOSS11:
                 return TH_SPELL_PHASE2;
             case TH15_ST7_END_S10:
@@ -343,7 +343,7 @@ namespace TH15 {
             case 1: // Chapter
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
-                if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
+                if (chapterCounts[1] == 0 && chapterCounts[0] != 0) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_1), *mChapter);
@@ -420,7 +420,7 @@ namespace TH15 {
             GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mAppdataPath = appdata;
         }
-        SINGLETON(THGuiRep);
+        SINGLETON(THGuiRep)
     public:
 
         void CheckReplay()
@@ -476,7 +476,7 @@ namespace TH15 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(THOverlay);
+        SINGLETON(THOverlay)
     public:
 
     protected:
@@ -579,7 +579,7 @@ namespace TH15 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(TH15InGameInfo);
+        SINGLETON(TH15InGameInfo)
 
     public:
         int32_t mMissCount;
@@ -630,12 +630,12 @@ namespace TH15 {
             bool is_in_P_mode = (*(byte*)(0x004E7795)) & 0x1;
             if (is_in_P_mode) // pplayer
             {
-                byte cur_player_type = (*(int32_t*)(0x4E7404));
+                byte cur_player_type = static_cast<byte>((*(int32_t*)(0x4E7404)));
                 int32_t diff = *((int32_t*)0x4e7410);
                 auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_15[cur_player_type]));
                 auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
-                ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+                ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - diff_pl_sz.x * 0.5f);
                 ImGui::Text(diff_pl.c_str());
 
                 int cur_stage = *(int*)(0x004E73F0);
@@ -674,12 +674,12 @@ namespace TH15 {
                     }
                 }
             } else {
-                byte cur_player_type = (*(int32_t*)(0x4E7404));
+                byte cur_player_type = static_cast<byte>((*(int32_t*)(0x4E7404)));
                 int32_t diff = *((int32_t*)0x4e7410);
                 auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_15[cur_player_type]));
                 auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
-                ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+                ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - diff_pl_sz.x * 0.5f);
                 ImGui::Text(diff_pl.c_str());
 
                 ImGui::Columns(2);
@@ -757,7 +757,7 @@ namespace TH15 {
     });
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
-        SINGLETON(THAdvOptWnd);
+        SINGLETON(THAdvOptWnd)
     public:
         bool forceBossMoveDown = false;
     private:
@@ -770,9 +770,9 @@ namespace TH15 {
         }
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) != NULL) {
                 OILPInit(mOptCtx);
-            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th15.dll")) {
+            } else if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th15.dll")) != NULL) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th15.dll", hash);
                 
@@ -2157,6 +2157,206 @@ namespace TH15 {
         }
     }
 
+    void ABTestRender()
+    {
+        static int t = 0;
+        DWORD ecl_glob = *(DWORD*)(0x4E9A80);
+        DWORD m9923 = ecl_glob ? *(DWORD*)(ecl_glob + 0x18) : 0;
+        if (m9923 == 6) {
+            t++;
+            float intp = (t >= 90) ? 1.0f : t / 90.0f;
+            auto& io = ImGui::GetIO();
+            auto szx = io.DisplaySize.x;
+            auto szy = io.DisplaySize.y;
+            ImVec2 mid_st = { 64.0f + 384.0f, 32.0f + 448.0f };
+            mid_st.x *= szx / 1280.0f;
+            mid_st.y *= szy / 960.0f;
+            ImVec2 sz = { 380.0f * 2.0f, 600.0f * intp };
+            sz.x *= szx / 1280.0f;
+            sz.y *= szy / 960.0f;
+
+            ImGui::SetNextWindowPos({ mid_st.x - sz.x * 0.5f, mid_st.y - sz.y * 0.5f });
+            ImGui::SetNextWindowSize(sz);
+            ImGui::SetNextWindowBgAlpha(0.8f);
+            ImGui::Begin("##res", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+            if (t >= 90) {
+                float result_origs[5] = {
+                    *(float*)(ecl_glob + 0x38),
+                    *(float*)(ecl_glob + 0x34),
+                    *(float*)(ecl_glob + 0x30),
+                    *(float*)(ecl_glob + 0x2C),
+                    *(float*)(ecl_glob + 0x28)
+                };
+                float scores[6] = { 0, 0.1, 0.5, 0.6, 0.9, 1.0 };
+                // calculates
+                {
+                    float div[5] = { 3.5f, 4.8f, 4.0f, 3.1f, 3.0f };
+                    float pows[5] = { 1.2, 1.1, 1.1, 1.2, 2.05 };
+                    for (int i = 0; i < 5; i++) {
+                        result_origs[i] = (result_origs[i] - 3.0f) / div[i];
+                        result_origs[i] = powf(result_origs[i], pows[i]);
+                    }
+                    scores[0] = 0.6f * result_origs[0] + 0.15f * result_origs[1] + 0.05f * result_origs[2] + 0.15f * result_origs[3] + 0.05f * result_origs[4];
+                    scores[1] = 0.0f * result_origs[0] + 0.5f * result_origs[1] + 0.2f * result_origs[2] + 0.15f * result_origs[3] + 0.15f * result_origs[4];
+                    scores[2] = 0.0f * result_origs[0] + 0.1f * result_origs[1] + 0.75f * result_origs[2] + 0.05f * result_origs[3] + 0.1f * result_origs[4];
+                    scores[3] = 0.1f * result_origs[0] + 0.4f * result_origs[1] + 0.0f * result_origs[2] + 0.5f * result_origs[3] + 0.0f * result_origs[4];
+                    scores[4] = 0.05f * result_origs[0] + 0.05f * result_origs[1] + 0.0f * result_origs[2] + 0.1f * result_origs[3] + 0.8f * result_origs[4];
+                    scores[5] = 0.1f * result_origs[0] + 0.3f * result_origs[1] + 0.3f * result_origs[2] + 0.2f * result_origs[3] + 0.1f * result_origs[4];
+                    for (int i = 0; i < 6; i++) {
+                        scores[i] = 1.0f / (1.0f + expf(1.8f - 4.0f * scores[i]));
+                    }
+                }
+                float avg_score = 0.0f;
+                for (int i = 0; i < 6; i++)
+                    avg_score += scores[i];
+                avg_score /= 6.0f;
+
+                const char* abtest_rank;
+                if (avg_score < 0.2f)
+                    abtest_rank = S(TH15_AB_TEST_RES_RANK_10);
+                else if (avg_score < 0.36f)
+                    abtest_rank = S(TH15_AB_TEST_RES_RANK_9);
+                else if (avg_score < 0.54f)
+                    abtest_rank = S(TH15_AB_TEST_RES_RANK_8);
+                else if (avg_score < 0.72f)
+                    abtest_rank = S(TH15_AB_TEST_RES_RANK_7);
+                else if (avg_score < 0.9f)
+                    abtest_rank = S(TH15_AB_TEST_RES_RANK_6);
+                else if (avg_score < 0.95f)
+                    abtest_rank = S(TH15_AB_TEST_RES_RANK_5);
+                else if (avg_score < 0.98f)
+                    abtest_rank = S(TH15_AB_TEST_RES_RANK_4);
+                else if (avg_score < 0.985f)
+                    abtest_rank = S(TH15_AB_TEST_RES_RANK_3);
+                else if (avg_score < 0.99f)
+                    abtest_rank = S(TH15_AB_TEST_RES_RANK_2);
+                else
+                    abtest_rank = S(TH15_AB_TEST_RES_RANK_1);
+
+                ImGui::Text("%s %s", S(TH15_AB_TEST_RES), abtest_rank);
+                ImGui::Text(S(TH15_AB_TEST_RES_DESC));
+
+                ImVec2 p0 = ImGui::GetCursorScreenPos();
+                ImVec2 csz = ImGui::GetContentRegionAvail();
+                ImVec2 cmid = { p0.x + csz.x * 0.5f, p0.y + csz.y * 0.5f };
+                ImVec2 p1 = { cmid.x + csz.x * 0.5f, cmid.y + csz.y * 0.5f };
+                float hheight = csz.y * 0.75f * 0.5f;
+
+                ImDrawList* pw = ImGui::GetWindowDrawList();
+                ImVec4 color1 = ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_ChildBg);
+                color1.w = 0.1f;
+                pw->AddRectFilled(p0, p1, ImGui::ColorConvertFloat4ToU32(color1));
+                pw->AddRect(p0, p1, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_Text)));
+                pw->PushClipRect(p0, p1);
+                {
+                    ImVec2 points[6];
+                    // radar
+                    for (int i = 0; i < 6; i++) {
+                        pw->AddLine(cmid, { cmid.x + hheight * cosf(i * std::numbers::pi_v<float> * 2.0f / 6.0f - 1.57079f), cmid.y + hheight * sinf(i * std::numbers::pi_v<float> * 2.0f / 6.0f - 1.57079f) }, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_Text)), 2.0f);
+                    }
+                    // lines
+                    constexpr float radiuses_ranks[] = {
+                        0.18f / 0.9f * 0.5f,
+                        0.36f / 0.9f * 0.5f,
+                        0.54f / 0.9f * 0.5f,
+                        0.72f / 0.9f * 0.5f,
+                        0.5f, 0.65f, 0.85f, 1.0f
+                    };
+                    for (int i = 0; i < 8; i++) {
+                        float ra = radiuses_ranks[i] * hheight;
+                        for (int j = 0; j < 6; j++) {
+                            points[j] = { cmid.x + ra * cosf(j * std::numbers::pi_v<float> * 2.0f / 6.0f - 1.57079f), cmid.y + ra * sinf(j * std::numbers::pi_v<float> * 2.0f / 6.0f - 1.57079f) };
+                        }
+                        pw->AddPolyline(points, 6, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_Text)), ImDrawFlags_::ImDrawFlags_Closed, i == 7 ? 2.0f : 1.0f);
+                    }
+                    // scores
+                    auto MInterpolation = [](float t, float a, float b) {
+                        if (t < 0.0f) {
+                            return a;
+                        } else if (t < 0.5) {
+                            float k = (b - a) * 2.0f;
+                            return k * t * t + a;
+                        } else if (t < 1.0f) {
+                            float k = (b - a) * 2.0f;
+                            t = t - 1.0f;
+                            return -k * t * t + b;
+                        }
+                        return b;
+                    };
+                    float t2 = MInterpolation((t - 90.0f) / 90.0f, 0.0f, 1.0f);
+                    for (int i = 0; i < 6; i++)
+                        scores[i] *= t2;
+                    // animation
+                    for (int i = 0; i < 6; i++) {
+                        float radius = scores[i];
+                        if (scores[i] < 0.9f) {
+                            radius = scores[i] / 0.9f * 0.5f;
+                        } else if (scores[i] < 0.95f) {
+                            radius = scores[i] * 3.0f - 2.2f;
+                        } else if (scores[i] < 0.98f) {
+                            radius = scores[i] * 6.66667f - 5.683333f;
+                        } else {
+                            radius = scores[i] * 7.5f - 6.5f;
+                        }
+                        points[i] = { cmid.x + hheight * radius * cosf(i * std::numbers::pi_v<float> * 2.0f / 6.0f - 1.57079f), cmid.y + hheight * radius * sinf(i * std::numbers::pi_v<float> * 2.0f / 6.0f - 1.57079f) };
+                    }
+                    for (int i = 0; i < 6; i++) {
+                        auto col = ImGui::GetStyleColorVec4(ImGuiCol_PlotHistogram);
+                        col.w = 0.75f;
+                        pw->AddTriangleFilled(points[i], points[(i + 1) % 6], cmid, ImGui::ColorConvertFloat4ToU32(col));
+                    }
+                    pw->AddPolyline(points, 6, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_PlotLines)), ImDrawFlags_::ImDrawFlags_Closed, 1.0f);
+
+                    // text
+                    const char* chars[] = {
+                        S(TH15_AB_TEST_REACTION),
+                        S(TH15_AB_TEST_MOV),
+                        S(TH15_AB_TEST_RET),
+                        S(TH15_AB_TEST_HORIZON),
+                        S(TH15_AB_TEST_PREC),
+                        S(TH15_AB_TEST_LUCK)
+                    };
+                    for (int i = 0; i < 6; i++) {
+                        const char* rank = "E";
+                        if (scores[i] < 0.18f)
+                            rank = "F";
+                        else if (scores[i] < 0.36f)
+                            rank = "E";
+                        else if (scores[i] < 0.54f)
+                            rank = "D";
+                        else if (scores[i] < 0.72f)
+                            rank = "C";
+                        else if (scores[i] < 0.9f)
+                            rank = "B";
+                        else if (scores[i] < 0.95f)
+                            rank = "A"; // 0.9-0.95
+                        else if (scores[i] < 0.98f)
+                            rank = "S"; // 0.95-0.98
+                        else if (scores[i] < 0.99f)
+                            rank = "SS"; // 0.98-0.99
+                        else
+                            rank = "???"; // 0.99+
+                        std::string text = std::format("{}:{}({:>3.1f})", chars[i], rank, scores[i] * 100.0f).c_str();
+                        auto sz_text = ImGui::CalcTextSize(text.c_str());
+                        float h2 = hheight;
+                        if (i == 0 || i == 3)
+                            h2 = hheight + sz_text.y;
+                        else
+                            h2 = hheight + sz_text.x * 0.85f;
+                        ImVec2 pos = { cmid.x + h2 * cosf(i * std::numbers::pi_v<float> * 2.0f / 6.0f - 1.57079f), cmid.y + h2 * sinf(i * std::numbers::pi_v<float> * 2.0f / 6.0f - 1.57079f) };
+                        pos.x -= sz_text.x * 0.5f;
+                        pos.y -= sz_text.y * 0.5f;
+                        pw->AddText(pos, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_Text)), text.c_str());
+                    }
+                }
+                pw->PopClipRect();
+            }
+            ImGui::End();
+        } else {
+            t = 0;
+        }
+    }
+
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th15_inf_lives, 0x456397,1,
     {
@@ -2341,198 +2541,7 @@ namespace TH15 {
         // ab test
         {
             if (thPracParam.mode && thPracParam.section == TH15_ST8_AB_TEST) {
-                static int t = 0;
-                DWORD ecl_glob = *(DWORD*)(0x4E9A80);
-                DWORD m9923 = ecl_glob ? *(DWORD*)(ecl_glob + 0x18) : 0;
-                if (m9923 == 6) {
-                    t++;
-                    float intp = (t >= 90) ? 1.0f : t / 90.0f;
-                    auto &io = ImGui::GetIO();
-                    auto szx = io.DisplaySize.x;
-                    auto szy = io.DisplaySize.y;
-                    ImVec2 mid_st = { 64.0f + 384.0f, 32.0f + 448.0f };
-                    mid_st.x *= szx / 1280.0f;
-                    mid_st.y *= szy / 960.0f;
-                    ImVec2 sz = { 380.0f * 2.0f, 600.0f * intp };
-                    sz.x *= szx / 1280.0f;
-                    sz.y *= szy / 960.0f;
-                    
-                    ImGui::SetNextWindowPos({ mid_st.x - sz.x * 0.5f, mid_st.y - sz.y * 0.5f });
-                    ImGui::SetNextWindowSize(sz);
-                    ImGui::SetNextWindowBgAlpha(0.8f);
-                    ImGui::Begin("##res", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
-                    if (t >= 90) {
-                        float result_origs[5] = {
-                            *(float*)(ecl_glob + 0x38),
-                            *(float*)(ecl_glob + 0x34),
-                            *(float*)(ecl_glob + 0x30),
-                            *(float*)(ecl_glob + 0x2C),
-                            *(float*)(ecl_glob + 0x28)
-                        };
-                        float scores[6] = { 0, 0.1, 0.5, 0.6, 0.9, 1.0 };
-                        // calculates
-                        {
-                            float div[5] = { 3.5f, 4.8f, 4.0f, 3.1f, 3.0f };
-                            float pows[5] = { 1.2, 1.1, 1.1, 1.2, 2.05 };
-                            for (int i = 0; i < 5; i++) {
-                                result_origs[i] = (result_origs[i] - 3.0f) / div[i];
-                                result_origs[i] = powf(result_origs[i], pows[i]);
-                            }
-                            scores[0] = 0.6f * result_origs[0] + 0.15f * result_origs[1] + 0.05f * result_origs[2] + 0.15f * result_origs[3] + 0.05f * result_origs[4];
-                            scores[1] = 0.0f * result_origs[0] + 0.5f * result_origs[1] + 0.2f * result_origs[2] + 0.15f * result_origs[3] + 0.15f * result_origs[4];
-                            scores[2] = 0.0f * result_origs[0] + 0.1f * result_origs[1] + 0.75f * result_origs[2] + 0.05f * result_origs[3] + 0.1f * result_origs[4];
-                            scores[3] = 0.1f * result_origs[0] + 0.4f * result_origs[1] + 0.0f * result_origs[2] + 0.5f * result_origs[3] + 0.0f * result_origs[4];
-                            scores[4] = 0.05f * result_origs[0] + 0.05f * result_origs[1] + 0.0f * result_origs[2] + 0.1f * result_origs[3] + 0.8f * result_origs[4];
-                            scores[5] = 0.1f * result_origs[0] + 0.3f * result_origs[1] + 0.3f * result_origs[2] + 0.2f * result_origs[3] + 0.1f * result_origs[4];
-                            for (int i = 0; i < 6; i++) {
-                                scores[i] = 1.0f / (1.0f + expf(1.8f - 4.0f * scores[i]));
-                            }
-                        }
-                        float avg_score = 0.0f;
-                        for (int i = 0; i < 6; i++)
-                            avg_score += scores[i];
-                        avg_score /= 6.0f;
-
-                        const char* abtest_rank;
-                        if (avg_score < 0.2f)
-                            abtest_rank = S(TH15_AB_TEST_RES_RANK_10);
-                        else if (avg_score < 0.36f)
-                            abtest_rank = S(TH15_AB_TEST_RES_RANK_9);
-                        else if (avg_score < 0.54f)
-                            abtest_rank = S(TH15_AB_TEST_RES_RANK_8);
-                        else if (avg_score < 0.72f)
-                            abtest_rank = S(TH15_AB_TEST_RES_RANK_7);
-                        else if (avg_score < 0.9f)
-                            abtest_rank = S(TH15_AB_TEST_RES_RANK_6);
-                        else if (avg_score < 0.95f)
-                            abtest_rank = S(TH15_AB_TEST_RES_RANK_5);
-                        else if (avg_score < 0.98f)
-                            abtest_rank = S(TH15_AB_TEST_RES_RANK_4);
-                        else if (avg_score < 0.985f)
-                            abtest_rank = S(TH15_AB_TEST_RES_RANK_3);
-                        else if (avg_score < 0.99f)
-                            abtest_rank = S(TH15_AB_TEST_RES_RANK_2);
-                        else
-                            abtest_rank = S(TH15_AB_TEST_RES_RANK_1);
-
-                        ImGui::Text("%s %s", S(TH15_AB_TEST_RES), abtest_rank);
-                        ImGui::Text(S(TH15_AB_TEST_RES_DESC));
-
-                        ImVec2 p0 = ImGui::GetCursorScreenPos();
-                        ImVec2 csz = ImGui::GetContentRegionAvail();
-                        ImVec2 cmid = { p0.x + csz.x * 0.5f, p0.y + csz.y * 0.5f };
-                        ImVec2 p1 = { cmid.x + csz.x * 0.5f, cmid.y + csz.y * 0.5f };
-                        float hheight = csz.y * 0.75f * 0.5f;
-
-                        ImDrawList* p = ImGui::GetWindowDrawList();
-                        ImVec4 color1 = ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_ChildBg);
-                        color1.w = 0.1f;
-                        p->AddRectFilled(p0, p1, ImGui::ColorConvertFloat4ToU32(color1));
-                        p->AddRect(p0, p1, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_Text)));
-                        p->PushClipRect(p0, p1);
-                        {
-                            ImVec2 points[6];
-                            //radar
-                            for (int i = 0; i < 6; i++) {
-                                p->AddLine(cmid, { cmid.x + hheight * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + hheight * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) }, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_Text)), 2.0f);
-                            }
-                            // lines
-                            constexpr float radiuses_ranks[] = { 
-                                0.18f / 0.9f * 0.5f, 
-                                0.36f / 0.9f * 0.5f, 
-                                0.54f / 0.9f * 0.5f, 
-                                0.72f / 0.9f * 0.5f, 
-                                0.5f, 0.65f, 0.85f, 1.0f };
-                            for (int i = 0; i < 8; i++) {
-                                float ra = radiuses_ranks[i] * hheight;
-                                for (int i = 0; i < 6; i++) {
-                                    points[i] = { cmid.x + ra * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + ra * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
-                                }
-                                p->AddPolyline(points, 6, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_Text)), ImDrawFlags_::ImDrawFlags_Closed, i == 7 ? 2.0f : 1.0f);
-                            }
-                            //scores
-                            auto MInterpolation = [](float t, float a, float b) {
-                                if (t < 0.0f) {
-                                    return a;
-                                } else if (t < 0.5) {
-                                    float k = (b - a) * 2.0f;
-                                    return k * t * t + a;
-                                } else if (t < 1.0f) {
-                                    float k = (b - a) * 2.0f;
-                                    t = t - 1.0f;
-                                    return -k * t * t + b;
-                                }
-                                return b;
-                            };
-                            float t2 = MInterpolation((t - 90.0f) / 90.0f, 0.0f, 1.0f);
-                            for (int i = 0; i < 6; i++)
-                                scores[i] *= t2;
-                            //animation
-                            for (int i = 0; i < 6; i++) {
-                                float radius = scores[i];
-                                if (scores[i] < 0.9f) {
-                                    radius = scores[i] / 0.9f * 0.5f;
-                                } else if (scores[i] < 0.95f){
-                                    radius = scores[i] * 3.0f - 2.2f;
-                                } else if (scores[i] < 0.98f) {
-                                    radius = scores[i] * 6.66667f - 5.683333f;
-                                } else {
-                                    radius = scores[i] * 7.5f - 6.5f;
-                                }
-                                points[i] = { cmid.x + hheight * radius * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + hheight * radius * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
-                            }
-                            for (int i = 0; i < 6; i++) {
-                                auto col = ImGui::GetStyleColorVec4(ImGuiCol_PlotHistogram); col.w = 0.75f;
-                                p->AddTriangleFilled(points[i], points[(i + 1) % 6], cmid, ImGui::ColorConvertFloat4ToU32(col));
-                            }
-                            p->AddPolyline(points, 6, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_PlotLines)), ImDrawFlags_::ImDrawFlags_Closed, 1.0f);
-
-                            
-                            //text
-                            const char* chars[] = {
-                                S(TH15_AB_TEST_REACTION),
-                                S(TH15_AB_TEST_MOV),
-                                S(TH15_AB_TEST_RET),
-                                S(TH15_AB_TEST_HORIZON),
-                                S(TH15_AB_TEST_PREC),
-                                S(TH15_AB_TEST_LUCK) };
-                            for (int i = 0; i < 6; i++) {
-                                const char* rank = "E";
-                                if (scores[i] < 0.18f)
-                                    rank = "F"; 
-                                else if (scores[i] < 0.36f)
-                                    rank = "E"; 
-                                else if (scores[i] < 0.54f)
-                                    rank = "D"; 
-                                else if (scores[i] < 0.72f)
-                                    rank = "C"; 
-                                else if (scores[i] < 0.9f)
-                                    rank = "B"; 
-                                else if (scores[i] < 0.95f)
-                                    rank = "A"; // 0.9-0.95
-                                else if (scores[i] < 0.98f)
-                                    rank = "S"; // 0.95-0.98
-                                else if (scores[i] < 0.99f)
-                                    rank = "SS"; // 0.98-0.99
-                                else 
-                                    rank = "???"; // 0.99+
-                                std::string text = std::format("{}:{}({:>3.1f})", chars[i], rank, scores[i] * 100.0f).c_str();
-                                auto sz_text = ImGui::CalcTextSize(text.c_str());
-                                float h2 = hheight;
-                                if (i == 0 || i == 3) h2 = hheight + sz_text.y;
-                                else h2 = hheight + sz_text.x * 0.85f;
-                                ImVec2 pos = { cmid.x + h2 * cosf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f), cmid.y + h2 * sinf(i * std::numbers::pi * 2.0f / 6.0f - 1.57079f) };
-                                pos.x -= sz_text.x * 0.5f;
-                                pos.y -= sz_text.y * 0.5f;
-                                p->AddText(pos, ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_::ImGuiCol_Text)), text.c_str());
-                            }
-                        }
-                        p->PopClipRect();
-                    }
-                    ImGui::End();
-                } else {
-                    t = 0;
-                }
+                ABTestRender();
             }
         }
         SSS::SSS_Update(15);

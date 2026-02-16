@@ -10,7 +10,7 @@
 
 namespace THPrac {
 
-double g_performance_freq = []() -> double {LARGE_INTEGER f; QueryPerformanceFrequency(&f); return f.QuadPart; }();
+double g_performance_freq = []() -> double {LARGE_INTEGER f; QueryPerformanceFrequency(&f); return static_cast<double>(f.QuadPart); }();
 std::vector<int64_t> g_clocks_start;
 
 int SetUpClock()
@@ -22,18 +22,18 @@ int SetUpClock()
     {
         LARGE_INTEGER f;
         QueryPerformanceFrequency(&f);
-        g_performance_freq = f.QuadPart;
+        g_performance_freq = static_cast<double>(f.QuadPart);
     }
     return g_clocks_start.size() - 1;
 }
 
 double ResetClock(int id)
 {
-    if (id < g_clocks_start.size() && id >= 0){
+    if (id < std::ssize(g_clocks_start) && id >= 0){
         if (g_performance_freq == 0) {
             LARGE_INTEGER f;
             QueryPerformanceFrequency(&f);
-            g_performance_freq = f.QuadPart;
+            g_performance_freq = static_cast<double>(f.QuadPart);
         }
         LARGE_INTEGER t;
         QueryPerformanceCounter(&t);
@@ -48,7 +48,7 @@ double ResetClock(int id)
 
 double CheckTimePassed(int id)
 {
-    if (id < g_clocks_start.size() && id >= 0) {
+    if (id < std::ssize(g_clocks_start) && id >= 0) {
         LARGE_INTEGER t;
         QueryPerformanceCounter(&t);
         double time_passed = ((double)(t.QuadPart - g_clocks_start[id])) / g_performance_freq;
@@ -181,8 +181,8 @@ std::string GetTime_HHMMSS(int64_t ns)
     int64_t t_us = ns / 1000ll;
     int64_t t_ms = t_us / 1000ll;
     int64_t t_s = t_ms / 1000ll;
-    int t_min = t_s / 60ll; // t_min = ns/60e9 < INT_MAX
-    int t_h = t_min / 60ll;
+    int t_min = static_cast<int>(t_s / 60ll); // t_min = ns/60e9 < INT_MAX
+    int t_h = static_cast<int>(t_min / 60ll);
 
     int t_ns = ns % 1000ll;
     t_us = t_us % 1000ll;
@@ -196,8 +196,8 @@ std::string GetTime_YYMMDD_HHMMSS(int64_t ns)
     int64_t t_us = ns / 1000ll;
     int64_t t_ms = t_us / 1000ll;
     int64_t t_s = t_ms / 1000ll;
-    int t_min = t_s / 60ll;
-    int t_h = t_min / 60ll;
+    int t_min = static_cast<int>(t_s / 60ll);
+    int t_h = static_cast<int>(t_min / 60ll);
     
     int t_day = t_h / 24;
     int t_month = t_day / 30;
@@ -300,7 +300,7 @@ void PushCurrentDirectory(LPCWSTR new_dictionary)
 {
     WCHAR buffer[MAX_PATH] = { 0 };
     GetCurrentDirectoryW(MAX_PATH, buffer);
-    if (g_directory.size() <= g_count_directory)
+    if (std::ssize(g_directory) <= g_count_directory)
         g_directory.push_back(std::wstring(buffer));
     else
         g_directory[g_count_directory] = std::wstring(buffer);
@@ -324,7 +324,7 @@ void PopCurrentDirectory()
 
 #pragma region FontsEnum
 std::set<std::string> g_fonts; //make sure fonts are arranged
-int CALLBACK EnumFontFamExProc(ENUMLOGFONTEXA* lpelfe, const TEXTMETRICA* lpntme, DWORD FontType, LPARAM lParam)
+int CALLBACK EnumFontFamExProc(ENUMLOGFONTEXA* lpelfe, [[maybe_unused]] const TEXTMETRICA* lpntme, [[maybe_unused]] DWORD FontType, [[maybe_unused]] LPARAM lParam)
 {
     if (lpelfe == NULL)
         return 0;
@@ -345,7 +345,7 @@ std::vector<std::string>& EnumAllFonts()
         res.push_back(i);
     return res;
 }
-std::string GetComboStr(std::vector<std::string>& str_lst)
+std::string GetComboStr([[maybe_unused]]std::vector<std::string>& str_lst)
 {
     std::string res;
     for (auto& i : g_fonts) {

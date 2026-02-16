@@ -40,7 +40,7 @@ private:
         mGuiUpdFunc = [&]() { GuiMain(); };
         LoadLinksCfg();
     }
-    SINGLETON(THLinksGui);
+    SINGLETON(THLinksGui)
 
 public:
     void GuiUpdate()

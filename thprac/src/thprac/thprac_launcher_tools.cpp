@@ -48,9 +48,9 @@ public:
     bool GuiUpdate()
     {
         static IDirectInput8* dinput8 = []() -> auto { 
-            static IDirectInput8* dinput8;
-            DirectInput8Create(GetModuleHandle(0), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&dinput8, NULL);
-            return dinput8;
+            static IDirectInput8* dinput8_s;
+            DirectInput8Create(GetModuleHandle(0), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&dinput8_s, NULL);
+            return dinput8_s;
         }();
         double delta_time = ResetClock(clockid);
 
@@ -225,8 +225,8 @@ public:
                         diprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
                         diprg.diph.dwHow = DIPH_DEVICE;
                         diprg.diph.dwObj = 0;
-                        diprg.lMin = -10000.0f;
-                        diprg.lMax = +10000.0f;
+                        diprg.lMin = -10000;
+                        diprg.lMax = +10000;
                         pGamepad->SetProperty(DIPROP_RANGE, &diprg.diph);
 
                         pGamepad->Acquire();
@@ -245,15 +245,15 @@ public:
                     // axes
                     ImGui::Text(S(THPRAC_TOOLS_INPUT_GAMEPAD_AXES));
 
-                    float alx = joyState.lX;
-                    float aly = joyState.lY;
+                    float alx = static_cast<float>(joyState.lX);
+                    float aly = static_cast<float>(joyState.lY);
 
-                    float arx = joyState.lRx;
-                    float ary = joyState.lRy;
-                    float az = joyState.lZ;
+                    float arx = static_cast<float>(joyState.lRx);
+                    float ary = static_cast<float>(joyState.lRy);
+                    float az =  static_cast<float>(joyState.lZ);
 
-                    float s1 = joyState.rglSlider[0];
-                    float s2 = joyState.rglSlider[1];
+                    float s1 = static_cast<float>(joyState.rglSlider[0]);
+                    float s2 = static_cast<float>(joyState.rglSlider[1]);
 
                     float circle_radius = 100.0f;
                     float space = 0.25f * circle_radius;
@@ -299,7 +299,6 @@ public:
                     }
                     ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_TRIGGER), &az, -10000.0f, 10000.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
                     if (ImGui::CollapsingHeader("Data")) {
-                        float width_slider = ImGui::GetTextLineHeight();
                         ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_L_STICK_X), &alx, -10000.0f, 10000.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
                         ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_L_STICK_Y), &aly, -10000.0f, 10000.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
                         ImGui::SliderFloat(S(THPRAC_TOOLS_INPUT_GAMEPAD_R_STICK_X), &arx, -10000.0f, 10000.0f, "%.0f", ImGuiSliderFlags_::ImGuiSliderFlags_NoInput);
@@ -497,7 +496,7 @@ public:
         XMVECTOR vUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
         int bestFaceIdx = -1;
         float max_dot = -2.0f;
-        for (int i = 0; i < m_faces.size(); i++) {
+        for (int i = 0; i < std::ssize(m_faces); i++) {
             XMVECTOR localNorm = XMLoadFloat3(&m_faces[i].norm);
             XMVECTOR worldNorm = XMVector3TransformNormal(localNorm, mPredicted);
             float dotVal = XMVectorGetX(XMVector3Dot(worldNorm, vUp));
@@ -546,8 +545,8 @@ public:
         static auto distAxis = GetRndGeneratorNormal(-1.0f, 1.0f);
         static auto distSpin = GetRndGenerator(XM_2PI * 5.0f, XM_2PI * 8.0f);
         
-        int rndIdx = floorf(distFaceIdx() * (int)m_faces.size());
-        if (rndIdx == m_faces.size())
+        int rndIdx = (int)floorf(distFaceIdx() * (int)m_faces.size());
+        if (rndIdx == std::ssize(m_faces))
             rndIdx = m_faces.size()-1;
 
         XMVECTOR vFaceNorm = XMLoadFloat3(&m_faces[rndIdx].norm);
@@ -1022,8 +1021,8 @@ public:
                     n_dice = max_dice;
                 else if (n_dice <= 0)
                     n_dice = 1;
-                if (n_dice > dices.size()) {
-                    int sz = dices.size();
+                if (n_dice > std::ssize(dices)) {
+                    int sz = std::ssize(dices);
                     for (int i = 0; i < n_dice - sz; i++)
                     {
                         if (dices.size()==0 || dices[dices.size() - 1].dice->GetType() == 6)
@@ -1031,7 +1030,7 @@ public:
                         else
                             dices.push_back({ std::make_unique<Dice12>(), false, 0.0f });
                     }
-                } else if (n_dice < dices.size()) {
+                } else if (n_dice < std::ssize(dices)) {
                     dices.resize(n_dice);
                 }
             }
@@ -1039,7 +1038,7 @@ public:
             ImGui::SetNextItemWidth(240.0f);
             if (ImGui::Button("D12", ImVec2(160.0f, 0.0f)))
             {
-                if (dices.size() < max_dice)
+                if (std::ssize(dices) < max_dice)
                 {
                     dices.push_back({ std::make_unique<Dice12>(), false, 0.0f });
                     n_dice = dices.size();
@@ -1047,7 +1046,7 @@ public:
             }
             ImGui::SameLine();
             if (ImGui::Button("D6", ImVec2(160.0f, 0.0f))) {
-                if (dices.size() < max_dice)
+                if (std::ssize(dices) < max_dice)
                 {
                     dices.push_back({ std::make_unique<Dice6>(), false, 0.0f });
                     n_dice = dices.size();
@@ -1088,7 +1087,7 @@ public:
         static UINT32 colors[6];
         static int last_hover_idx = -1;
 
-        if (last_hover_idx >= 0 && last_hover_idx < dices.size()) {
+        if (last_hover_idx >= 0 && last_hover_idx < std::ssize(dices)) {
             if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
             {
                 dices[last_hover_idx].dice = dices[last_hover_idx].dice->GetType() == 6 ? (std::unique_ptr<DiceBase>)std::make_unique<Dice12>() : (std::unique_ptr<DiceBase>)std::make_unique<Dice6>();
@@ -1135,7 +1134,7 @@ public:
             float width = std::min(width2, height);
             height = width;
 
-            for (int idxd = 0; idxd < dices.size(); idxd++) {
+            for (int idxd = 0; idxd < std::ssize(dices); idxd++) {
                 auto& d = dices[idxd];
 
                 int idx_x = idxd % cur_cutx;
@@ -1155,11 +1154,11 @@ public:
                 std::vector<ImVec2> uvs;
                 std::vector<int> dice_num;
                 d.dice->Render(points,uvs, dice_num);
-                for (auto& p : points)
-                    p = CvtPts(p, cur_p0, cur_p1);
+                for (auto& pts : points)
+                    pts = CvtPts(pts, cur_p0, cur_p1);
                 if (d.dice->GetType() == 6)
                 {
-                    for (int i = 0; i < points.size(); i += 4) {
+                    for (int i = 0; i < std::ssize(points); i += 4) {
                         auto diceidx = dice_num[i / 4] - 1;
                         if (tex6) {
                             p->AddImageQuad(tex6, points[i + 0], points[i + 1], points[i + 2], points[i + 3], uvs[i + 0], uvs[i + 1], uvs[i + 2], uvs[i + 3]);
@@ -1167,7 +1166,7 @@ public:
                             p->AddQuadFilled(points[i + 0], points[i + 1], points[i + 2], points[i + 3], colors[diceidx]);
                         }
                     }
-                    for (int i = 0; i < points.size(); i += 4) {
+                    for (int i = 0; i < std::ssize(points); i += 4) {
                         if (last_hover_idx == idxd)
                             p->AddPolyline(points.data() + i, 4, IM_COL32(255, 128, 0, 255), ImDrawFlags_Closed, 4.0f);
                         else
@@ -1177,7 +1176,7 @@ public:
                 else
                 {
                     //12
-                    for (int i = 0; i < points.size(); i += 5) {
+                    for (int i = 0; i < std::ssize(points); i += 5) {
                         auto diceidx = dice_num[i / 5] - 1;
                         if (tex12) {
                             p->AddImageQuad(tex12, points[i + 0], points[i + 1], points[i + 2], points[i + 3], uvs[i + 0], uvs[i + 1], uvs[i + 2], uvs[i + 3]);
@@ -1186,7 +1185,7 @@ public:
                             p->AddQuadFilled(points[i + 0], points[i + 1], points[i + 2], points[i + 3], colors[diceidx]);
                         }
                     }
-                    for (int i = 0; i < points.size(); i += 5) {
+                    for (int i = 0; i < std::ssize(points); i += 5) {
                         if (last_hover_idx == idxd)
                             p->AddPolyline(points.data() + i, 5, IM_COL32(255, 128, 0, 255), ImDrawFlags_Closed, 4.0f);
                         else
@@ -1255,8 +1254,8 @@ private:
 
         auto mp = ImGui::GetMousePos();
         if (hypotf(mp.y - mid.y, mp.x - mid.x) < radius) {
-            float mangle = atan2(mp.y - mid.y, mp.x - mid.x);
-            mangle += (2.0f * std::numbers::pi) * ceilf((angle1 - mangle) / (2.0f * std::numbers::pi));
+            float mangle = atan2f(mp.y - mid.y, mp.x - mid.x);
+            mangle += (2.0f * std::numbers::pi_v<float>)*ceilf((angle1 - mangle) / (2.0f * std::numbers::pi_v<float>));
             res = mangle < angle2;
         }
         uint32_t col_fill2 = 0;
@@ -1269,7 +1268,7 @@ private:
                                                                 color.w });
         }
         
-        for (int i = 0; i < points.size() - 1; i++) {
+        for (int i = 0; i < std::ssize(points) - 1; i++) {
             ImVec2 p2 = { mid.x + points[i].x * radius, mid.y + points[i].y * radius };
             ImVec2 p3 = { mid.x + points[i + 1].x * radius, mid.y + points[i + 1].y * radius };
             p->AddTriangleFilled(mid, p2, p3, res ? col_fill2 : col_fill);
@@ -1297,7 +1296,7 @@ private:
     void InitColors(bool rand_color = true)
     {
         if (rand_color) {
-            for (int i = 0; i < selections.size(); i++) {
+            for (int i = 0; i < std::ssize(selections); i++) {
                 float r, g, b, h, s, v;
                 h = GetRandomFloat();
                 s = GetRandomFloat() * 0.4f + 0.6f;
@@ -1307,7 +1306,7 @@ private:
             }
         } else {
             int hi = 0, si = 255, vi = 255;
-            for (int i = 0; i < selections.size(); i++) {
+            for (int i = 0; i < std::ssize(selections); i++) {
                 float r, g, b, h, s, v;
                 if (selections.size() > 100)
                     hi += 7;
@@ -1350,7 +1349,7 @@ public:
 
     void RemoveSelection(int idx)
     {
-        if (idx < selections.size()) {
+        if (idx < std::ssize(selections)) {
             selections.erase(selections.begin() + idx);
         }
         InitWeight();
@@ -1418,11 +1417,11 @@ public:
     int CalcIdx(float angle)
     {
         angle = -angle;
-        angle = angle - floorf(angle / (2.0f * std::numbers::pi)) * 2.0f * std::numbers::pi;
+        angle = angle - floorf(angle / (2.0f * std::numbers::pi_v<float>)) * 2.0f * std::numbers::pi_v<float>;
         int idx = -1;
-        float res = angle / (2.0f * std::numbers::pi);
+        float res = angle / (2.0f * std::numbers::pi_v<float>);
         float weight_cur = 0;
-        for (int i = 0; i < selections.size(); i++) {
+        for (int i = 0; i < std::ssize(selections); i++) {
             float weight_next = weight_cur + selections[i].weight;
             if (weight_cur / weight_sum <= res && weight_next / weight_sum > res) {
                 idx = i;
@@ -1436,7 +1435,7 @@ public:
     ImVec2 GuiDraw(float& angle, int selection_idx, float height_rem = 0.0f,bool* p_is_hovered = nullptr)
     {
         ImVec2 mousePosRel = { 0.0f, 0.0f };
-        angle = angle - floorf(angle / (2.0f * std::numbers::pi)) * 2.0f * std::numbers::pi;
+        angle = angle - floorf(angle / (2.0f * std::numbers::pi_v<float>)) * 2.0f * std::numbers::pi_v<float>;
         {
             ImVec2 p0 = ImGui::GetCursorScreenPos();
             ImVec2 csz = ImGui::GetContentRegionAvail();
@@ -1460,8 +1459,8 @@ public:
                 {
                     p->AddCircle(cir_cen, hheight, 0xFFFFFFFF);
                     float pie_angle_start = angle;
-                    for (int i = 0; i < selections.size(); i++) {
-                        float pie_angle_delta = selections[i].weight / weight_sum * 2.0f * std::numbers::pi;
+                    for (int i = 0; i < std::ssize(selections); i++) {
+                        float pie_angle_delta = selections[i].weight / weight_sum * 2.0f * std::numbers::pi_v<float>;
 
                         auto col1 = ImGui::ColorConvertFloat4ToU32(selections[i].color);
                         bool hovered = false;
@@ -1483,7 +1482,7 @@ public:
                 ImVec2 tri_pos3 = { cir_cen.x + hheight * 1.45f, cir_cen.y + hheight * 0.05f };
                 p->AddTriangleFilled(tri_pos1, tri_pos2, tri_pos3, 0xFFFFCCCC);
                 p->AddTriangle(tri_pos1, tri_pos2, tri_pos3, 0xFFFFFFFF, 1.5f);
-                if (selection_idx >= 0 && selection_idx < selections.size())
+                if (selection_idx >= 0 && selection_idx < std::ssize(selections))
                     p->AddText({ cir_cen.x + hheight * 1.5f, cir_cen.y - ImGui::GetTextLineHeight() * 0.5f }, 0xFFFFFFFF, std::format("{}", selections[selection_idx].name).c_str());
                 p->PopClipRect();
             }
@@ -1562,8 +1561,8 @@ public:
         {
             is_rolling = true;
             time = 0;
-            angle_last = angle_fin - floorf(angle_fin / (2.0f * std::numbers::pi)) * 2.0f * std::numbers::pi;
-            angle_fin = (mRoll.GetRandomFloat() * 2.0f * std::numbers::pi) + 30.0f * std::numbers::pi;
+            angle_last = angle_fin - floorf(angle_fin / (2.0f * std::numbers::pi_v<float>)) * 2.0f * std::numbers::pi_v<float>;
+            angle_fin = (mRoll.GetRandomFloat() * 2.0f * std::numbers::pi_v<float>)+30.0f * std::numbers::pi_v<float>;
         }
         float angle_cur;
         if (is_rolling) {
@@ -1612,7 +1611,7 @@ public:
             if (fabsf(drag_dist) >= 0.1f && hypotf(real_drag.x, real_drag.y) >= 5.0f) {
                 is_rolling = true;
                 time = 0;
-                angle_last = angle_cur - floorf(angle_fin / (2.0f * std::numbers::pi)) * 2.0f * std::numbers::pi;
+                angle_last = angle_cur - floorf(angle_fin / (2.0f * std::numbers::pi_v<float>)) * 2.0f * std::numbers::pi_v<float>;
                 angle_fin = angle_last + drag_force * drag_dist;
             }
         }
@@ -1685,7 +1684,7 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
             mCurTest = 1;
             mFrameCount = 0;
             if (mTestType == PRESS) {
-                mWaitTime.QuadPart = mRndSeedGen() / 1000.0 * (double)mTimeFreq.QuadPart;
+                mWaitTime.QuadPart = static_cast<int64_t>(mRndSeedGen() / 1000.0 * (double)mTimeFreq.QuadPart);
                 mPressTime.QuadPart = mWaitTime.QuadPart + curTime.QuadPart;
             }
             mResults = {};
@@ -1699,7 +1698,7 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
         {
             mFrameCount = 0;
             mTestState = WAIT_TIME;
-            mWaitTime.QuadPart = mRndSeedGen() / 1000.0 * (double)mTimeFreq.QuadPart;
+            mWaitTime.QuadPart = static_cast<int64_t>(mRndSeedGen() / 1000.0 * (double)mTimeFreq.QuadPart);
             mPressTime.QuadPart = mWaitTime.QuadPart + curTime.QuadPart;
         }
         ImGui::InvisibleButton("inv", colorBtnSz);
@@ -1750,7 +1749,7 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
                 mCurTest++;
                 mTestState = WAIT_TIME;
                 mFrameCount = 0;
-                mWaitTime.QuadPart = mRndSeedGen() / 1000.0 * (double)mTimeFreq.QuadPart;
+                mWaitTime.QuadPart = static_cast<int64_t>(mRndSeedGen() / 1000.0 * (double)mTimeFreq.QuadPart);
                 mPressTime.QuadPart = mWaitTime.QuadPart + curTime.QuadPart;
             }
         }
@@ -1770,7 +1769,7 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
             mFrameCount++;
             if (mTestState == WAIT_TIME) {
                 if (mShowProgressBar) {
-                    ImGui::ProgressBar(std::clamp(std::fabsf(((double)(mPressTime.QuadPart - curTime.QuadPart)) / ((double)mWaitTime.QuadPart)), 0.0f, 1.0f), ImVec2(0, 0), "waiting...");
+                    ImGui::ProgressBar(std::clamp(std::fabsf(static_cast<float>(((double)(mPressTime.QuadPart - curTime.QuadPart)) / ((double)mWaitTime.QuadPart))), 0.0f, 1.0f), ImVec2(0, 0), "waiting...");
                 }
                 ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + colorBtnPos.x, ImGui::GetCursorPosY() + colorBtnPos.y));
                 ImGui::ColorButton("color", color_BeforeTimeReact, colorBtnFlag, colorBtnSz);
@@ -1779,9 +1778,9 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
                         mTestState = TOO_EARLY;
                     } else {
                         // allow negative reaction time
-                        auto curTestReactionTimeMs = ((double)(curTime.QuadPart - mPressTime.QuadPart)) / ((double)mTimeFreq.QuadPart) * 1000.0;
+                        float curTestReactionTimeMs = static_cast<float>(((double)(curTime.QuadPart - mPressTime.QuadPart)) / ((double)mTimeFreq.QuadPart) * 1000.0);
                         mResults.push_back(curTestReactionTimeMs);
-                        mFrameCounts.push_back(ceil(fabsf(curTestReactionTimeMs))/16.6667f);
+                        mFrameCounts.push_back(ceilf(fabsf(curTestReactionTimeMs))/16.6667f);
                         mTestState = SHOW_RES;
                     }
                 }
@@ -1792,9 +1791,9 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
                 ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + colorBtnPos.x, ImGui::GetCursorPosY() + colorBtnPos.y));
                 ImGui::ColorButton("color", color_AfterTimeReact, colorBtnFlag, colorBtnSz);
                 if (isKeyPressed){
-                    auto curTestReactionTimeMs = ((double)(curTime.QuadPart - mPressTime.QuadPart)) / ((double)mTimeFreq.QuadPart) * 1000.0;
+                    float curTestReactionTimeMs = static_cast<float>(((double)(curTime.QuadPart - mPressTime.QuadPart)) / ((double)mTimeFreq.QuadPart) * 1000.0);
                     mResults.push_back(curTestReactionTimeMs);
-                    mFrameCounts.push_back(mFrameCount);
+                    mFrameCounts.push_back(static_cast<float>(mFrameCount));
                     mTestState = SHOW_RES;
                 }
             }
@@ -1812,7 +1811,7 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
                 ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + colorBtnPos.x, ImGui::GetCursorPosY() + colorBtnPos.y));
                 ImGui::ColorButton("color", color_WaitPress, colorBtnFlag, colorBtnSz);
                 if (isKeyPressed) {
-                    mWaitTime.QuadPart = mRndSeedGen() / 1000.0 * (double)mTimeFreq.QuadPart;
+                    mWaitTime.QuadPart = static_cast<int64_t>(mRndSeedGen() / 1000.0 * (double)mTimeFreq.QuadPart);
                     mPressTime.QuadPart = mWaitTime.QuadPart + curTime.QuadPart;
                     mTestState = WAIT_TIME_PRESSED;
                 }
@@ -1823,15 +1822,15 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
                 ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + colorBtnPos.x, ImGui::GetCursorPosY() + colorBtnPos.y));
                 ImGui::ColorButton("color", color_AfterTimeReact, colorBtnFlag, colorBtnSz);
                 if (!isKeyPressed) {
-                    auto curTestReactionTimeMs = ((double)(curTime.QuadPart - mPressTime.QuadPart)) / ((double)mTimeFreq.QuadPart) * 1000.0;
+                    float curTestReactionTimeMs = static_cast<float>(((double)(curTime.QuadPart - mPressTime.QuadPart)) / ((double)mTimeFreq.QuadPart) * 1000.0);
                     mResults.push_back(curTestReactionTimeMs);
-                    mFrameCounts.push_back(mFrameCount);
+                    mFrameCounts.push_back(static_cast<float>(mFrameCount));
                     mTestState = SHOW_RES;
                 }
             }
             else if (mTestState == WAIT_TIME_PRESSED){
                 if (mShowProgressBar) {
-                    ImGui::ProgressBar(std::clamp(std::fabsf(((double)(mPressTime.QuadPart - curTime.QuadPart)) / ((double)mWaitTime.QuadPart)), 0.0f, 1.0f), ImVec2(0, 0), "waiting...");
+                    ImGui::ProgressBar(std::clamp(static_cast<float>(std::abs(((double)(mPressTime.QuadPart - curTime.QuadPart)) / ((double)mWaitTime.QuadPart))), 0.0f, 1.0f), ImVec2(0, 0), "waiting...");
                 }
                 ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + colorBtnPos.x, ImGui::GetCursorPosY() + colorBtnPos.y));
                 ImGui::ColorButton("color", color_BeforeTimeReact, colorBtnFlag, colorBtnSz);
@@ -1839,9 +1838,9 @@ bool THGuiTestReactionTest::GuiUpdate(bool ingame)
                     if (!mShowProgressBar) {
                         mTestState = TOO_EARLY;
                     } else {
-                        auto curTestReactionTimeMs = ((double)(curTime.QuadPart - mPressTime.QuadPart)) / ((double)mTimeFreq.QuadPart) * 1000.0;
+                        float curTestReactionTimeMs =  static_cast<float>(((double)(curTime.QuadPart - mPressTime.QuadPart)) / ((double)mTimeFreq.QuadPart) * 1000.0);
                         mResults.push_back(curTestReactionTimeMs);
-                        mFrameCounts.push_back(ceil(fabsf(curTestReactionTimeMs)) / 16.6667f);
+                        mFrameCounts.push_back(ceilf(fabsf(curTestReactionTimeMs)) / 16.6667f);
                         mTestState = SHOW_RES;
                     }
                 }
@@ -2023,16 +2022,15 @@ public:
                 first_roll = false;
                 is_rolling = true;
                 time = 0;
-                angle_last = angle_cur - floorf(angle_fin / (2.0f * std::numbers::pi)) * 2.0f * std::numbers::pi;
+                angle_last = angle_cur - floorf(angle_fin / (2.0f * std::numbers::pi_v<float>)) * 2.0f * std::numbers::pi_v<float>;
                 angle_fin = angle_last + drag_force * drag_dist;
             }
         }
 
         if (!first_roll && !is_rolling) {
-            auto result = roll_result;
-            if (result != -1 && result < candidate.size()) {
+            if (roll_result != -1 && roll_result < std::ssize(candidate)) {
                 char outputStr[256];
-                sprintf_s(outputStr, S(THPRAC_TOOLS_ROLL_RESULT), candidate[result].c_str());
+                sprintf_s(outputStr, S(THPRAC_TOOLS_ROLL_RESULT), candidate[roll_result].c_str());
                 mRollText = outputStr;
                 mRollGame = S(mGameOption[mGameSelected].title);
             }
@@ -2042,8 +2040,8 @@ public:
             first_roll = false;
             is_rolling = true;
             time = 0;
-            angle_last = angle_fin - floorf(angle_fin / (2.0f * std::numbers::pi)) * 2.0f * std::numbers::pi;
-            angle_fin = (mRoll.GetRandomFloat() * 2.0f * std::numbers::pi) + 30.0f * std::numbers::pi;
+            angle_last = angle_fin - floorf(angle_fin / (2.0f * std::numbers::pi_v<float>)) * 2.0f * std::numbers::pi_v<float>;
+            angle_fin = (mRoll.GetRandomFloat() * 2.0f * std::numbers::pi_v<float>)+30.0f * std::numbers::pi_v<float>;
         }
 
         if (mRollText != S(THPRAC_GAMEROLL_ROLL) && ImGui::BeginPopupContextItem("##roll_player_popup")) {
@@ -2215,18 +2213,17 @@ public:
                 first_roll = false;
                 is_rolling = true;
                 time = 0;
-                angle_last = angle_cur - floorf(angle_fin / (2.0f * std::numbers::pi)) * 2.0f * std::numbers::pi;
+                angle_last = angle_cur - floorf(angle_fin / (2.0f * std::numbers::pi_v<float>)) * 2.0f * std::numbers::pi_v<float>;
                 angle_fin = angle_last + drag_force * drag_dist;
             }
         }
 
         if (!first_roll && !is_rolling) {
-            auto result = roll_result;
-            if (result != -1 && result < candidate.size()){
+            if (roll_result != -1 && roll_result < std::ssize(candidate)) {
                 char outputStr[256];
-                sprintf_s(outputStr, S(THPRAC_TOOLS_ROLL_RESULT), S(candidate[result].title));
+                sprintf_s(outputStr, S(THPRAC_TOOLS_ROLL_RESULT), S(candidate[roll_result].title));
                 mRollText = outputStr;
-                mRollResult = candidate[result];
+                mRollResult = candidate[roll_result];
             }
         }
 
@@ -2234,8 +2231,8 @@ public:
             first_roll = false;
             is_rolling = true;
             time = 0;
-            angle_last = angle_fin - floorf(angle_fin / (2.0f * std::numbers::pi)) * 2.0f * std::numbers::pi;
-            angle_fin = (mRoll.GetRandomFloat() * 2.0f * std::numbers::pi) + 30.0f * std::numbers::pi;
+            angle_last = angle_fin - floorf(angle_fin / (2.0f * std::numbers::pi_v<float>)) * 2.0f * std::numbers::pi_v<float>;
+            angle_fin = (mRoll.GetRandomFloat() * 2.0f * std::numbers::pi_v<float>)+30.0f * std::numbers::pi_v<float>;
         }
         if (mRollText != S(THPRAC_GAMEROLL_ROLL) && ImGui::BeginPopupContextItem("##roll_game_popup")) {
             if (mRollResult.playerSelect) {
@@ -2276,7 +2273,7 @@ private:
     {
         mGuiUpdFunc = [&]() { return GuiContent(); };
     }
-    SINGLETON(THToolsGui);
+    SINGLETON(THToolsGui)
 
 public:
     void GuiUpdate()

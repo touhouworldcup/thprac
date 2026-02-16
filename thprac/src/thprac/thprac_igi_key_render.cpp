@@ -8,9 +8,9 @@
 
 namespace THPrac {
 extern bool g_record_key_aps;
-std::vector<uint8_t> g_recorded_aps;
+std::vector<int> g_recorded_aps;
 std::vector<uint16_t> g_recorded_keys;//has 10 keys
-uint32_t g_aps_cur = 0;
+int g_aps_cur = 0;
 
 
 enum THKey { 
@@ -29,7 +29,7 @@ enum THKey {
 
 const std::string THKeyNames[] = { "up", "down", "left", "right", "Z", "X", "C", "D", "Ctrl", "Shift" };
 bool g_keys_down[END] = { 0 };
-int g_key_mask[END] = { 0 };
+uint32_t g_key_mask[END] = { 0 };
 
 
 
@@ -335,10 +335,10 @@ void SaveKeyRecorded()
     doc.SetColumnName(1, "aps");
     for (int i = 0; i < END; i++)
         doc.SetColumnName(2 + i, THKeyNames[i]);
-    for (int j = 0; j < g_recorded_aps.size(); j++) {
+    for (int j = 0; j < std::ssize(g_recorded_aps); j++) {
         std::vector<std::string> row;
         row.push_back(std::format("{}", j + 1));
-        row.push_back(std::format("{}", (uint32_t)g_recorded_aps[j]));
+        row.push_back(std::format("{}", g_recorded_aps[j]));
         for (int i = 0; i < END; i++)
             row.push_back((g_recorded_keys[j] & (1 << i)) ? "O" : "-");
         doc.SetRow(j, row);
@@ -346,11 +346,11 @@ void SaveKeyRecorded()
     try {
         doc.Save(utf16_to_mb(L"APS.csv", CP_ACP));
     }catch (std::exception& e){
-
+        MessageBoxA(NULL, e.what(),"err", MB_OK);
     }
 }
 
-std::vector<uint8_t>& GetKeyAPS()
+std::vector<int>& GetKeyAPS()
 {
     return g_recorded_aps;
 }

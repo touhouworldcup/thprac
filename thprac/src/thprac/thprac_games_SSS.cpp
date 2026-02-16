@@ -437,7 +437,7 @@ namespace SSS {
             }
         }
     }
-    void BlindViewUI(int ver)
+    void BlindViewUI([[maybe_unused]] int ver)
     {
         ImGui::Checkbox(S(THPRAC_BLIND), &g_blind_view_opt.blind_view);
         ImGui::SameLine();
@@ -503,7 +503,7 @@ void SSS_Update(int ver)
 
 
 
-int __stdcall StoneInit1(int a1, int a2)
+int __stdcall StoneInit1(int a1, [[maybe_unused]] int a2)
 {
     int result;
     result = a1;
@@ -511,7 +511,7 @@ int __stdcall StoneInit1(int a1, int a2)
     return result;
 }
 
-int __stdcall StoneInit2(int a1, int a2)
+int __stdcall StoneInit2(int a1, [[maybe_unused]] int a2)
 {
     int result;
     result = a1;
@@ -525,9 +525,9 @@ void TH20_ChangeStone()
         DWORD ppl = *(DWORD*)RVA(0x1ba56c);
         if (ppl) {
             bool is_focused = *(bool*)(ppl + 0x204c);
-            int shift_time = *(DWORD*)RVA(0x1B8AD4);
-            int up_time = *(DWORD*)RVA(0x1B8AD8);
-            int down_time = *(DWORD*)RVA(0x1B8ADC);
+            //int shift_time = *(DWORD*)RVA(0x1B8AD4);
+            //int up_time = *(DWORD*)RVA(0x1B8AD8);
+            //int down_time = *(DWORD*)RVA(0x1B8ADC);
             int left_time = *(DWORD*)RVA(0x1B8AE0);
             int right_time = *(DWORD*)RVA(0x1B8AE4);
             int z_time = *(DWORD*)RVA(0x1B8AC8);

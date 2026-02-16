@@ -128,7 +128,7 @@ namespace TH10 {
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
         }
-        SINGLETON(THGuiPrac);
+        SINGLETON(THGuiPrac)
     public:
 
         __declspec(noinline) void State(int state)
@@ -392,7 +392,7 @@ namespace TH10 {
         THGuiRep() noexcept
         {
         }
-       SINGLETON(THGuiRep);
+       SINGLETON(THGuiRep)
     public:
 
         void CheckReplay()
@@ -446,7 +446,7 @@ namespace TH10 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(THOverlay);
+        SINGLETON(THOverlay)
     public:
 
     protected:
@@ -549,7 +549,7 @@ namespace TH10 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(TH10InGameInfo);
+        SINGLETON(TH10InGameInfo)
 
     public:
         int32_t mMissCount;
@@ -585,7 +585,7 @@ namespace TH10 {
             auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_10[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
-            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - diff_pl_sz.x * 0.5f);
             ImGui::Text(diff_pl.c_str());
 
             ImGui::Columns(2);
@@ -681,7 +681,7 @@ namespace TH10 {
     });
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
-        SINGLETON(THAdvOptWnd);
+        SINGLETON(THAdvOptWnd)
     public:
         bool forceBossMoveDown = false;
     private:
@@ -692,9 +692,9 @@ namespace TH10 {
         }
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) != NULL) {
                 OILPInit(mOptCtx);
-            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th10.dll")) {
+            } else if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th10.dll")) != NULL) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th10.dll", hash);
                 if (hash[0] != 9704945468076323108ll || hash[1] != 99312983382598050ll)
@@ -929,7 +929,7 @@ namespace TH10 {
 
                 if (ImGui::Button(S(TH_ONE_KEY_DIE))) {
                     if (*(DWORD*)(0x477834)) {
-                        *(DWORD*)(0x474C70) = -1;
+                        *(int32_t*)(0x474C70) = -1;
                         *(DWORD*)(0x474C48) = 0; // prevent autobomb
                         *(BYTE*)(*(DWORD*)(0x477834) + 0x458) = 4;
                     }
@@ -2886,8 +2886,8 @@ namespace TH10 {
             auto spd1 = (int32_t*)(pCtx->Edi + 0x3F0);
             auto spd2 = (int32_t*)(pCtx->Edi + 0x3F4);
             float inv_spd = 60.0f / (float)THAdvOptWnd::singleton().GetFps();
-            *spd1 = (*spd1) * inv_spd;
-            *spd2 = (*spd2) * inv_spd;
+            *spd1 = static_cast<int32_t>((*spd1) * inv_spd);
+            *spd2 = static_cast<int32_t>((*spd2) * inv_spd);
             pCtx->Ecx = *spd1;
             pCtx->Edx = *spd2;
         }

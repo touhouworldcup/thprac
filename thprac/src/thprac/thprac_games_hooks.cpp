@@ -97,7 +97,7 @@ HRESULT STDMETHODCALLTYPE Play_Changed(LPDIRECTSOUNDBUFFER thiz, DWORD dwReserve
 
             if (i->orig_format.nChannels != 0) {
                 WAVEFORMATEX fmt = i->orig_format;
-                i->p_sb->SetFrequency(fmt.nSamplesPerSec * g_sound_opt.bgm_speed);
+                i->p_sb->SetFrequency((DWORD)floorf(fmt.nSamplesPerSec * g_sound_opt.bgm_speed));
             }
 
             HRESULT res = realPlay(thiz, dwReserved1, dwPriority, dwFlags);
@@ -176,7 +176,7 @@ void smbFft(float* fftBuffer, long fftFrameSize, long sign)
         le2 = le >> 1;
         ur = 1.0;
         ui = 0.0;
-        arg = M_PI / (le2 >> 1);
+        arg = static_cast<float>(M_PI / (le2 >> 1));
         wr = cos(arg);
         wi = sign * sin(arg);
         for (j = 0; j < le2; j += 2) {
@@ -257,7 +257,7 @@ void smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, 
             /* do windowing and re,im interleave */
             for (k = 0; k < fftFrameSize; k++) {
                 window = -.5 * cos(2. * M_PI * (double)k / (double)fftFrameSize) + .5;
-                gFFTworksp[2 * k] = gInFIFO[k] * window;
+                gFFTworksp[2 * k] = static_cast<float>(gInFIFO[k] * window);
                 gFFTworksp[2 * k + 1] = 0.;
             }
 
@@ -278,13 +278,13 @@ void smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, 
 
                 /* compute phase difference */
                 tmp = phase - gLastPhase[k];
-                gLastPhase[k] = phase;
+                gLastPhase[k] = static_cast<float>(phase);
 
                 /* subtract expected phase difference */
                 tmp -= (double)k * expct;
 
                 /* map delta phase into +/- Pi interval */
-                qpd = tmp / M_PI;
+                qpd = static_cast<long>(tmp / M_PI);
                 if (qpd >= 0)
                     qpd += qpd & 1;
                 else
@@ -298,8 +298,8 @@ void smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, 
                 tmp = (double)k * freqPerBin + tmp * freqPerBin;
 
                 /* store magnitude and true frequency in analysis arrays */
-                gAnaMagn[k] = magn;
-                gAnaFreq[k] = tmp;
+                gAnaMagn[k] = static_cast<float>(magn);
+                gAnaFreq[k] = static_cast<float>(tmp);
             }
 
             /* ***************** PROCESSING ******************* */
@@ -307,7 +307,7 @@ void smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, 
             memset(gSynMagn, 0, fftFrameSize * sizeof(float));
             memset(gSynFreq, 0, fftFrameSize * sizeof(float));
             for (k = 0; k <= fftFrameSize2; k++) {
-                index = k * pitchShift;
+                index = static_cast<long>(k * pitchShift);
                 if (index <= fftFrameSize2) {
                     gSynMagn[index] += gAnaMagn[k];
                     gSynFreq[index] = gAnaFreq[k] * pitchShift;
@@ -335,12 +335,12 @@ void smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, 
                 tmp += (double)k * expct;
 
                 /* accumulate delta phase to get bin phase */
-                gSumPhase[k] += tmp;
+                gSumPhase[k] += static_cast<float>(tmp);
                 phase = gSumPhase[k];
 
                 /* get real and imag part and re-interleave */
-                gFFTworksp[2 * k] = magn * cos(phase);
-                gFFTworksp[2 * k + 1] = magn * sin(phase);
+                gFFTworksp[2 * k] = static_cast<float>(magn) * cosf(static_cast<float>(phase));
+                gFFTworksp[2 * k + 1] = static_cast<float>(magn) * sinf(static_cast<float>(phase));
             }
 
             /* zero negative frequencies */
@@ -353,7 +353,7 @@ void smbPitchShift(float pitchShift, long numSampsToProcess, long fftFrameSize, 
             /* do windowing and add to output accumulator */
             for (k = 0; k < fftFrameSize; k++) {
                 window = -.5 * cos(2. * M_PI * (double)k / (double)fftFrameSize) + .5;
-                gOutputAccum[k] += 2. * window * gFFTworksp[2 * k] / (fftFrameSize2 * osamp);
+                gOutputAccum[k] += static_cast<float>(2. * window * gFFTworksp[2 * k] / (fftFrameSize2 * osamp));
             }
             for (k = 0; k < stepSize; k++)
                 gOutFIFO[k] = gOutputAccum[k];
@@ -423,7 +423,7 @@ void smbPitchShift2(float pitchShift, long numSampsToProcess, long fftFrameSize,
             /* do windowing and re,im interleave */
             for (k = 0; k < fftFrameSize; k++) {
                 window = -.5 * cos(2. * M_PI * (double)k / (double)fftFrameSize) + .5;
-                gFFTworksp[2 * k] = gInFIFO[k] * window;
+                gFFTworksp[2 * k] = static_cast<float>(gInFIFO[k] * window);
                 gFFTworksp[2 * k + 1] = 0.;
             }
 
@@ -444,13 +444,13 @@ void smbPitchShift2(float pitchShift, long numSampsToProcess, long fftFrameSize,
 
                 /* compute phase difference */
                 tmp = phase - gLastPhase[k];
-                gLastPhase[k] = phase;
+                gLastPhase[k] = static_cast<float>(phase);
 
                 /* subtract expected phase difference */
                 tmp -= (double)k * expct;
 
                 /* map delta phase into +/- Pi interval */
-                qpd = tmp / M_PI;
+                qpd = static_cast<long>(tmp / M_PI);
                 if (qpd >= 0)
                     qpd += qpd & 1;
                 else
@@ -464,8 +464,8 @@ void smbPitchShift2(float pitchShift, long numSampsToProcess, long fftFrameSize,
                 tmp = (double)k * freqPerBin + tmp * freqPerBin;
 
                 /* store magnitude and true frequency in analysis arrays */
-                gAnaMagn[k] = magn;
-                gAnaFreq[k] = tmp;
+                gAnaMagn[k] = static_cast<float> (magn);
+                gAnaFreq[k] = static_cast<float> (tmp);
             }
 
             /* ***************** PROCESSING ******************* */
@@ -473,7 +473,7 @@ void smbPitchShift2(float pitchShift, long numSampsToProcess, long fftFrameSize,
             memset(gSynMagn, 0, fftFrameSize * sizeof(float));
             memset(gSynFreq, 0, fftFrameSize * sizeof(float));
             for (k = 0; k <= fftFrameSize2; k++) {
-                index = k * pitchShift;
+                index = static_cast<long> (k * pitchShift);
                 if (index <= fftFrameSize2) {
                     gSynMagn[index] += gAnaMagn[k];
                     gSynFreq[index] = gAnaFreq[k] * pitchShift;
@@ -501,12 +501,12 @@ void smbPitchShift2(float pitchShift, long numSampsToProcess, long fftFrameSize,
                 tmp += (double)k * expct;
 
                 /* accumulate delta phase to get bin phase */
-                gSumPhase[k] += tmp;
+                gSumPhase[k] += static_cast<float>(tmp);
                 phase = gSumPhase[k];
 
                 /* get real and imag part and re-interleave */
-                gFFTworksp[2 * k] = magn * cos(phase);
-                gFFTworksp[2 * k + 1] = magn * sin(phase);
+                gFFTworksp[2 * k] = static_cast<float> (magn) * cosf(static_cast<float>(phase));
+                gFFTworksp[2 * k + 1] = static_cast<float> (magn) * sinf(static_cast<float>(phase));
             }
 
             /* zero negative frequencies */
@@ -519,7 +519,7 @@ void smbPitchShift2(float pitchShift, long numSampsToProcess, long fftFrameSize,
             /* do windowing and add to output accumulator */
             for (k = 0; k < fftFrameSize; k++) {
                 window = -.5 * cos(2. * M_PI * (double)k / (double)fftFrameSize) + .5;
-                gOutputAccum[k] += 2. * window * gFFTworksp[2 * k] / (fftFrameSize2 * osamp);
+                gOutputAccum[k] +=  static_cast<float>(2. * window * gFFTworksp[2 * k] / (fftFrameSize2 * osamp));
             }
             for (k = 0; k < stepSize; k++)
                 gOutFIFO[k] = gOutputAccum[k];
@@ -575,9 +575,9 @@ HRESULT STDMETHODCALLTYPE Unlock_Changed(LPDIRECTSOUNDBUFFER thiz, LPVOID pvAudi
             if (g_sound_opt.no_change_pitch){
                 if (g_sound_opt.pitch_ofs / g_sound_opt.bgm_speed != 1.0f) {
                     if (pvAudioPtr1)
-                        ChangePitch((char*)pvAudioPtr1, (char*)pvAudioPtr1, dwAudioBytes1, g_sound_opt.pitch_ofs / g_sound_opt.bgm_speed, wavf.nSamplesPerSec);
+                        ChangePitch((char*)pvAudioPtr1, (char*)pvAudioPtr1, dwAudioBytes1, g_sound_opt.pitch_ofs / g_sound_opt.bgm_speed, static_cast<float>(wavf.nSamplesPerSec));
                     if (pvAudioPtr2)
-                        ChangePitch((char*)pvAudioPtr2, (char*)pvAudioPtr2, dwAudioBytes2, g_sound_opt.pitch_ofs / g_sound_opt.bgm_speed, wavf.nSamplesPerSec);
+                        ChangePitch((char*)pvAudioPtr2, (char*)pvAudioPtr2, dwAudioBytes2, g_sound_opt.pitch_ofs / g_sound_opt.bgm_speed, static_cast<float>(wavf.nSamplesPerSec));
                 }
             }
             HRESULT(STDMETHODCALLTYPE * realUnlock)
@@ -597,7 +597,7 @@ HRESULT STDMETHODCALLTYPE DuplicateSoundBuffer_Changed(IDirectSound8* thiz, LPDI
     auto res = g_sound_opt.g_realDuplicateSoundBuffer(thiz, pDSBufferOriginal, ppDSBufferDuplicate);
     if (SUCCEEDED(res)) {
         int idx = -1;
-        for (int i = 0; i < g_sound_opt.soundbuffers.size(); i++) {
+        for (int i = 0; i < std::ssize(g_sound_opt.soundbuffers); i++) {
             if (g_sound_opt.soundbuffers[i].p_sb == pDSBufferOriginal) {
                 idx = i;
                 break;
@@ -702,7 +702,7 @@ void ChangeBGMSpeed(float speed,float pitch_ofs)
 
                     g_sound_opt.bgm_speed = new_speed;
                     g_sound_opt.pitch_ofs = new_pitch;
-                    i->p_sb->SetFrequency(fmt.nSamplesPerSec * g_sound_opt.bgm_speed);
+                    i->p_sb->SetFrequency(static_cast<DWORD>(fmt.nSamplesPerSec * g_sound_opt.bgm_speed));
                     i->p_sb->Play(0, 0, DSBPLAY_LOOPING);
                 }
             }
@@ -825,7 +825,7 @@ void HookCreateFont(bool useCorrectJaFont, bool useCustomFont, int fontidx)
     }
     if (useCustomFont) {
         auto& all_fonts = EnumAllFonts();
-        if (fontidx >= 0 && fontidx < all_fonts.size())
+        if (fontidx >= 0 && fontidx < std::ssize(all_fonts))
             g_font_opt.g_customFont = all_fonts[fontidx];
     }
 }
@@ -1050,7 +1050,7 @@ void ProcessRawInput(BYTE state[256])
     while (count > 0) {
         RAWINPUT* pRaw = (RAWINPUT*)buffer;
         memcpy(kb_is_down_last, g_input_opt.fake_di_State, 256);
-        for (int i = 0; i < count; ++i) {
+        for (int i = 0; i < (int)count; ++i) {
             if (pRaw->header.dwType == RIM_TYPEKEYBOARD) {
                 RAWKEYBOARD* pKb = &pRaw->data.keyboard;
                 if (pKb->MakeCode == 0 && pKb->Flags == 0 && pRaw->header.dwSize > 32) {

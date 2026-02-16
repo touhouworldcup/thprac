@@ -63,7 +63,7 @@ bool CheckIfAnyGame2() // = THPrac_main.cpp: CheckIfAnyGame()
 
 class THDrawLuck {
     THDrawLuck() { memset(name, 0, sizeof(name)); }
-    SINGLETON(THDrawLuck);
+    SINGLETON(THDrawLuck)
 
 private:
     int cur_year;
@@ -101,7 +101,7 @@ private:
         memset(name_orig, 0, sizeof(name_orig));
         memset(name, 0, sizeof(name));
         if (LauncherSettingGet("luck_name", namestr)) {
-            for (int i = 0; i < sizeof(name) - 1 && i < namestr.size(); i++)
+            for (int i = 0; i < ((int)sizeof(name)) - 1 && i < std::ssize(namestr); i++)
             {
                 name[i] = namestr[i];
                 name_orig[i] = namestr[i];
@@ -321,7 +321,7 @@ public:
 
 class THGameTimeRecorder {
     THGameTimeRecorder() { }
-    SINGLETON(THGameTimeRecorder);
+    SINGLETON(THGameTimeRecorder)
 
 private:
     int64_t mGameTime_ns = -1;
@@ -350,11 +350,11 @@ public:
             double passed_time = ResetClock(thiz.clock_id)*1e9;
 
             if (is_game_open) {
-                thiz.mGameTime_ns += passed_time;
-                thiz.mGameTimeCur_ns += passed_time;
+                thiz.mGameTime_ns += static_cast<int64_t>(passed_time);
+                thiz.mGameTimeCur_ns += static_cast<int64_t>(passed_time);
             }
-            thiz.mGameTimeTestGameOpen_ns += passed_time;
-            thiz.mGameTimeTooLongSE_ns += passed_time;
+            thiz.mGameTimeTestGameOpen_ns += static_cast<int64_t>(passed_time);
+            thiz.mGameTimeTooLongSE_ns += static_cast<int64_t>(passed_time);
         }
         LauncherSetGameTime(thiz.mGameTime_ns);
     }
@@ -469,7 +469,7 @@ private:
     {
 
     }
-    SINGLETON(THOthersGui);
+    SINGLETON(THOthersGui)
 
 public:
     void GuiUpdate(){

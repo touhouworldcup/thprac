@@ -121,7 +121,7 @@ namespace TH11 {
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
             OnLocaleChange();
         }
-        SINGLETON(THGuiPrac);
+        SINGLETON(THGuiPrac)
     public:
 
         __declspec(noinline) void State(int state)
@@ -420,7 +420,7 @@ namespace TH11 {
         THGuiRep() noexcept
         {
         }
-        SINGLETON(THGuiRep);
+        SINGLETON(THGuiRep)
     public:
 
         void CheckReplay()
@@ -474,7 +474,7 @@ namespace TH11 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(THOverlay);
+        SINGLETON(THOverlay)
     public:
 
     protected:
@@ -569,7 +569,7 @@ namespace TH11 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(TH11InGameInfo);
+        SINGLETON(TH11InGameInfo)
 
     public:
         int32_t mMissCount;
@@ -605,7 +605,7 @@ namespace TH11 {
             auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_11[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
-            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - diff_pl_sz.x * 0.5f);
             ImGui::Text(diff_pl.c_str());
 
             ImGui::Columns(2);
@@ -679,7 +679,7 @@ namespace TH11 {
     });
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
-        SINGLETON(THAdvOptWnd);    
+        SINGLETON(THAdvOptWnd)    
     public:
         bool forceBossMoveDown = false;
     private:
@@ -690,9 +690,9 @@ namespace TH11 {
         }
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) != NULL) {
                 OILPInit(mOptCtx);
-            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th11.dll")) {
+            } else if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th11.dll")) != NULL) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th11.dll", hash);
                 if (hash[0] != 5913416708557704950ll || hash[1] != 10824003281749047314ll)
@@ -859,7 +859,7 @@ namespace TH11 {
                         ImGui::SetNextItemWidth(180.0f);
                         ImGui::Combo(
                             S(TH11_MARISAB_FORMATION_LABEL), &g_marisaB_lock_type,
-                            [](void* data, int idx, const char** out_text) -> bool {
+                            []([[maybe_unused]]void* data, int idx, const char** out_text) -> bool {
                                 *out_text = S(TH11_MARISAB_FORMATION[idx]);
                                 return true;
                             },

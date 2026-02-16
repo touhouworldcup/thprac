@@ -23,7 +23,7 @@ namespace TH09 {
 
             th09_ranklock.Setup();
         }
-        SINGLETON(TH09Tools);
+        SINGLETON(TH09Tools)
     public:
         bool enabled = false;
 
@@ -402,7 +402,7 @@ namespace TH09 {
     public:
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
         bool allow = false;
-        SINGLETON(THGuiPrac);
+        SINGLETON(THGuiPrac)
     protected:
         virtual void OnLocaleChange() override
         {
@@ -419,9 +419,9 @@ namespace TH09 {
     private:
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) != NULL) {
                 OILPInit(mOptCtx);
-            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th09.dll")) {
+            } else if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th09.dll")) != NULL) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th09.dll", hash);
                 if (hash[0] != 8777309807944811310ll || hash[1] != 16244273824227920047ll)

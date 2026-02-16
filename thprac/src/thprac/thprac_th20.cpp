@@ -414,7 +414,7 @@ namespace TH20 {
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
             OnLocaleChange();
         }
-        SINGLETON(THGuiPrac);
+        SINGLETON(THGuiPrac)
 
     public:
         __declspec(noinline) void State(int state)
@@ -663,7 +663,7 @@ namespace TH20 {
             case 1: // Chapter
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
-                if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
+                if (chapterCounts[1] == 0 && chapterCounts[0] != 0) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_1), *mChapter);
@@ -746,7 +746,7 @@ namespace TH20 {
             GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mAppdataPath = appdata;
         }
-        SINGLETON(THGuiRep);
+        SINGLETON(THGuiRep)
 
     public:
         THPracParam mRepParam;
@@ -850,7 +850,7 @@ namespace TH20 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(THOverlay);
+        SINGLETON(THOverlay)
 
     public:
     protected:
@@ -1041,7 +1041,7 @@ namespace TH20 {
             SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(TH20InGameInfo);
+        SINGLETON(TH20InGameInfo)
 
     public:
         int32_t mMissCount;
@@ -1086,14 +1086,14 @@ namespace TH20 {
             int32_t diff = *((int32_t*)(RVA(0x1BA7D0)));
             auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_20[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
-            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - diff_pl_sz.x * 0.5f);
             ImGui::Text(diff_pl.c_str());
 
 
             auto sub_pl = std::format("{}({}/{}/{})", S(IGI_PL_20_SUB[main_stone]), S(IGI_PL_20_SUB[substone_1]), S(IGI_PL_20_SUB[substone_3]), S(IGI_PL_20_SUB[substone_2]));
 
             auto sub_pl_sz = ImGui::CalcTextSize(sub_pl.c_str());
-            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + std::max(0.0, ImGui::GetWindowSize().x * 0.5 - sub_pl_sz.x * 0.5));
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + std::max(0.0f, ImGui::GetWindowSize().x * 0.5f - sub_pl_sz.x * 0.5f));
 
             ImVec4 r = {1.0f,0.5f,0.5f,1.0f};
             ImVec4 g = {0.5f,1.0f,0.5f,1.0f};
@@ -1197,7 +1197,7 @@ namespace TH20 {
     };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
-        SINGLETON(THAdvOptWnd);
+        SINGLETON(THAdvOptWnd)
 
     public:
         bool forceBossMoveDown = false;
@@ -3168,7 +3168,7 @@ namespace TH20 {
         { .addr = 0xD4237, .data = PatchCode("e800000000") },
     };
 
-    static void RenderHits()
+    void RenderHits()
     {
         auto RotateVec = [](ImVec2 pt, ImVec2 mid, ImVec2 angle) -> ImVec2 {
             ImVec2 dif { pt.x - mid.x, pt.y - mid.y };
@@ -3412,7 +3412,7 @@ namespace TH20 {
             }
             // y1 lingering hitbox desync fix
             // if there are active sources, delete them (they won't sync due to inconsistent stage loading time)
-            bool isTransition = false;
+            bool isTransition1 = false;
 
              while (auto activeSrc = GetMemContent<PlayerDamageSource*>(dmgSrcManager + 0xc414 + 0x4))
                 asm_call_rel<DELETE_DMG_SRC_FUNC, Fastcall>(activeSrc);
@@ -3427,7 +3427,7 @@ namespace TH20 {
                     // copy everything from stageSrcs[i] to newSrc except ZUNList/game side stuff
                     std::memcpy((char*)newSrc + 0x14, (const char*)&stageSrcs[i] + 0x14, 0xc0 - 0x14);
                     newSrc->game_side = (void*)RVA(GAME_SIDE0);
-                    if (!isTransition) // adjusted since 30f transition stage is skipped
+                    if (!isTransition1) // adjusted since 30f transition stage is skipped
                         asm_call_rel<ADD_TIMER_FUNC, Thiscall>(&newSrc->duration, -30);
                 }
 

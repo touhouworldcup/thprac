@@ -152,7 +152,7 @@ namespace TH17 {
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
             OnLocaleChange();
         }
-        SINGLETON(THGuiPrac);
+        SINGLETON(THGuiPrac)
     public:
 
         __declspec(noinline) void State(int state)
@@ -349,7 +349,7 @@ namespace TH17 {
             case 1: // Chapter
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
-                if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
+                if (chapterCounts[1] == 0 && chapterCounts[0] != 0) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_1), *mChapter);
@@ -429,7 +429,7 @@ namespace TH17 {
             GetEnvironmentVariableW(L"APPDATA", appdata, MAX_PATH);
             mAppdataPath = appdata;
         }
-        SINGLETON(THGuiRep);
+        SINGLETON(THGuiRep)
     public:
         void CheckReplay()
         {
@@ -484,7 +484,7 @@ namespace TH17 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(THOverlay);
+        SINGLETON(THOverlay)
     protected:
         virtual void OnLocaleChange() override
         {
@@ -598,7 +598,7 @@ namespace TH17 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(TH17InGameInfo);
+        SINGLETON(TH17InGameInfo)
 
     public:
         int32_t mMissCount;
@@ -635,12 +635,12 @@ namespace TH17 {
 
         virtual void OnContentUpdate() override
         {
-            byte cur_player_type = (*(int32_t*)(0x4B59F4)) * 3 + (*(int32_t*)(0x4B59F8));
+            int32_t cur_player_type = (*(int32_t*)(0x4B59F4)) * 3 + (*(int32_t*)(0x4B59F8));
             int32_t diff = *((int32_t*)0x4B5A00);
             auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_17[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
-            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - diff_pl_sz.x * 0.5f);
             ImGui::Text(diff_pl.c_str());
 
             ImGui::Columns(2);
@@ -707,7 +707,7 @@ namespace TH17 {
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
             OnLocaleChange();
         }
-        SINGLETON(THGuiSP);
+        SINGLETON(THGuiSP)
     public:
         int mState = 0;
         __declspec(noinline) int State()
@@ -858,7 +858,7 @@ namespace TH17 {
 
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
-        SINGLETON(THAdvOptWnd);
+        SINGLETON(THAdvOptWnd)
     public:
         bool forceBossMoveDown = false;
     private:
@@ -872,7 +872,7 @@ namespace TH17 {
         }
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) != NULL) {
                 OILPInit(mOptCtx);
             } else if (*(uint8_t*)0x4b5cd9 == 3) {
                 mOptCtx.fps_status = 1;

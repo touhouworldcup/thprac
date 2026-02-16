@@ -145,7 +145,6 @@ int GuiLauncherMain()
     LauncherKengInit();
 
     g_hKeyboardHook = nullptr;
-    bool disable_win;
     // if (LauncherSettingGet("disable_win_key", disable_win) && disable_win) {
     //     DisableWinKey();
     // }

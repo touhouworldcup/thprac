@@ -183,7 +183,7 @@ namespace TH12 {
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
             OnLocaleChange();
         }
-        SINGLETON(THGuiPrac);
+        SINGLETON(THGuiPrac)
     public:
 
         __declspec(noinline) void State(int state)
@@ -377,7 +377,7 @@ namespace TH12 {
             case 1: // Chapter
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
-                if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
+                if (chapterCounts[1] == 0 && chapterCounts[0] != 0) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_1), *mChapter);
@@ -452,7 +452,7 @@ namespace TH12 {
         THGuiRep() noexcept
         {
         }
-        SINGLETON(THGuiRep);
+        SINGLETON(THGuiRep)
     public:
 
         void CheckReplay()
@@ -506,7 +506,7 @@ namespace TH12 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(THOverlay);
+        SINGLETON(THOverlay)
     public:
 
     protected:
@@ -608,7 +608,7 @@ namespace TH12 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(TH12InGameInfo);
+        SINGLETON(TH12InGameInfo)
 
     public:
         int32_t mMissCount;
@@ -658,7 +658,7 @@ namespace TH12 {
             auto diff_pl = std::format("{} ({})", S(IGI_DIFF[diff]), S(IGI_PL_12[cur_player_type]));
             auto diff_pl_sz = ImGui::CalcTextSize(diff_pl.c_str());
 
-            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - diff_pl_sz.x * 0.5);
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - diff_pl_sz.x * 0.5f);
             ImGui::Text(diff_pl.c_str());
 
             auto ufo_cnt = std::format("{}/{}/{}/{}", mRUFOCount, mGUFOCount, mBUFOCount, mCUFOCount);
@@ -692,7 +692,7 @@ namespace TH12 {
             ImGui::Text(S(THPRAC_INGAMEINFO_12_UFO_COUNT1));
             ImGui::NextColumn();
             if (ufo_cnt_sz * 0.5 < last_item_width)
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + last_item_width - ufo_cnt_sz * 0.5);
+                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + last_item_width - ufo_cnt_sz * 0.5f);
             ImGui::TextColored({ 1.0f, 0.5f, 0.5f, 1.0f }, "%d", mRUFOCount);
             ImGui::SameLine(0.0f,0.0f);
             ImGui::Text("/");
@@ -811,14 +811,13 @@ namespace TH12 {
                 posB = GetClientFromStage(Add(posB, pos_tail));
                 posC = GetClientFromStage(Add(posC, pos_tail));
                 posD = GetClientFromStage(Add(posD, pos_tail));
-                auto p = ImGui::GetOverlayDrawList();
                 g_th12_laser_hit_draw_vec.push_back({ posA, posB, posD, posC });
             }
         });
 
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
-        SINGLETON(THAdvOptWnd);    
+        SINGLETON(THAdvOptWnd)    
     public:
         bool forceBossMoveDown = false;
     private:
@@ -829,9 +828,9 @@ namespace TH12 {
         }
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) != NULL) {
                 OILPInit(mOptCtx);
-            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th12.dll")) {
+            } else if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th12.dll")) != NULL) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th12.dll", hash);
                 if (hash[0] != 666604866657820391ll || hash[1] != 18391463919001639953ll)
