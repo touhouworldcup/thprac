@@ -1,12 +1,6 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 #include <numbers>
-#define M_PI 3.14159265358979323846f
-
-struct vec2f {
-    float x;
-    float y;
-};
 
 namespace THPrac {
 namespace TH17 {
@@ -833,7 +827,7 @@ namespace TH17 {
             if (mGoastAngleRandom)
                 ImGui::BeginDisabled();
 
-            ImGui::SliderFloat(S(TH17_GOAST_ANGLE), &mGoastAng, -M_PI, M_PI);
+            ImGui::SliderFloat(S(TH17_GOAST_ANGLE), &mGoastAng, -std::numbers::pi, std::numbers::pi);
             ImGui::Checkbox(S(TH17_FORCE_ANGLE), &mForceGoastAngle);
             ImGui::SameLine();
             HelpMarker(S(TH17_FORCE_ANGLE_HELP));
@@ -1859,12 +1853,12 @@ namespace TH17 {
             if (adv_opt.mForceGoastAngle && !adv_opt.mGoastAngleRandom) {
                 th17_force_goast_angle.Enable();
             }
-            vec2f stgFramePos { gameX - 224.0f, gameY - 16.0f };
+            Float2 stgFramePos { gameX - 224.0f, gameY - 16.0f };
             if (stgFramePos.y > 128 && stgFramePos.y < 448
                 && abs(stgFramePos.x) < 192) {
                 float ang = adv_opt.mGoastAng;
                 if (adv_opt.mGoastAngleRandom) {
-                    ang = asm_call<0x402880, Thiscall, float>(0x4B7668) * M_PI;
+                    ang = asm_call<0x402880, Thiscall, float>(0x4B7668) * std::numbers::pi;
                 }
 
                 SpawnToken(adv_opt.mSelectedGoast, stgFramePos, ang);
