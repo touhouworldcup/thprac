@@ -37,6 +37,7 @@ namespace TH18 {
         CARD_DESC_LIST = 0x4c53c0,
         MUKADE_ADDR = 0x4cf2d4,
         WINDOW_PTR = 0x568c30,
+        PLAYER_PTR = 0x4cf410,
     };
     
     enum cards {
@@ -2797,7 +2798,53 @@ namespace TH18 {
         ReplaySaveParam(utf8_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
 
+    void THTrackerUpdate()
+    {
+        Gui::SetNextWindowSizeRel({ 340.0f / 1280, 0.0f });
+        Gui::SetNextWindowPosRel({ 900.0f / 1280.0f, 840.0f / 960.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Miss");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d (%d)", tracker_info.th18.misses, tracker_info.th18.not_misses);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Bomb");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th18.bombs);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th18_game_start, 0x44278F, 5, {
+        tracker_info.th18 = {};
+    })
+    EHOOK_DY(th18_bomb_dec, 0x4574D3, 4, {
+        tracker_info.th18.bombs++;
+    })
+    EHOOK_DY(th18_cylinder, 0x410F22, 5, {
+        tracker_info.th18.bombs++;
+    })
+    EHOOK_DY(th18_life_dec, 0x45D1A3, 5, {
+        tracker_info.th18.misses++;
+    })
+    EHOOK_DY(th18_notmiss_1, 0x40DA1C, 5, { // Money is the Best Lawyer in Hell
+        tracker_info.th18.not_misses++;
+    })
+    EHOOK_DY(th18_notmiss_2, 0x40A534,5, { // Death Avoidance Elixir
+        tracker_info.th18.not_misses++;
+    })
+
     EHOOK_DY(th18_everlasting_bgm, 0x477a50, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
@@ -3028,6 +3075,11 @@ namespace TH18 {
         }
 
         THGuiSP::singleton().Update();
+
+        if (tracker_open && GetMemContent(PLAYER_PTR)) {
+            THTrackerUpdate();
+        }
+
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     })
