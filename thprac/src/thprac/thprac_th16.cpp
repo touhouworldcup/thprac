@@ -4,6 +4,12 @@
 
 namespace THPrac {
 namespace TH16 {
+    enum addrs {
+        CHARA_ADDR = 0x4A57A4,
+        SEASON_ADDR = 0x4A57AC,
+        PLAYER_PTR = 0x4a6ef8,
+    };
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -2137,7 +2143,62 @@ namespace TH16 {
         return signal;
     }
 
+    const char* CHARNAMES[] = { "Reimu", "Cirno", "Aya", "Marisa" };
+    const char* SEASONNAMES[] = { "Spring", "Summer", "Autumn", "Winter", "Dog" };
+
+    void THTrackerUpdate() {
+        Gui::SetNextWindowSizeRel({ 340.0f / 1280, 0.0f });
+        Gui::SetNextWindowPosRel({ 900.0f / 1280.0f, 500.0f / 960.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        char buf[32] = {};
+        snprintf(buf, sizeof(buf), "%s+%s", CHARNAMES[GetMemContent(CHARA_ADDR)], SEASONNAMES[GetMemContent(SEASON_ADDR)]);
+        auto textSize = ImGui::CalcTextSize(buf);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - textSize.x * 0.5f);
+        ImGui::TextUnformatted(buf);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Miss");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th13.misses);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Bomb");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th13.bombs);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Release");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th13.trance);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th16_enter, 0x42E5AE, 7, {
+        tracker_info.th13 = {};
+    })
+    EHOOK_DY(th16_bomb_dec, 0x40DB9C, 5, {
+        tracker_info.th13.bombs++;
+    })
+    EHOOK_DY(th16_life_dec, 0x443D3A, 5, {
+        tracker_info.th13.misses++;
+    })
+    EHOOK_DY(th16_release, 0x40DC8A, 10, {
+        tracker_info.th13.trance++;
+    })
     EHOOK_DY(th16_spbugfix, 0x4214fa, 6, {
         char* sub_str;
         int signal;
@@ -2375,7 +2436,12 @@ namespace TH16 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
-        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
+        
+        if (tracker_open && GetMemContent(PLAYER_PTR)) {
+            THTrackerUpdate();
+        }
+
+        bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();      
         GameGuiEnd(drawCursor);
     })
     EHOOK_DY(th16_render, 0x40168a, 1, {

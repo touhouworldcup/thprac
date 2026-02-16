@@ -686,7 +686,7 @@ union TrackerInfo {
     TH08Info th08;
     TH10Info th10; // TH11, TH14 and TH15 reuse this
     TH12Info th12;
-    TH13Info th13;
+    TH13Info th13; // TH16 reuses this
 };
 
 extern TrackerInfo tracker_info;
