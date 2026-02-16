@@ -4,6 +4,10 @@
 
 namespace THPrac {
 namespace TH15 {
+    enum addrs {
+        PLAYER_PTR = 0x4e9bb8,
+    };
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -1764,7 +1768,41 @@ namespace TH15 {
 
     static bool frameStarted = false;
 
+    void THTrackerUpdate() {
+        Gui::SetNextWindowSizeRel({ 360.0f / 1280.0f, 0.0f });
+        Gui::SetNextWindowPosRel({ 890.0f / 1280.0f, 510.0f / 960.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Miss");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th10.misses);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Bomb");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th10.bombs);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th15_enter, 0x43E6EE, 7, {
+        tracker_info.th10 = {};
+    })
+    EHOOK_DY(th15_bomb_dec, 0x41497A, 5, {
+        tracker_info.th10.bombs++;
+    })
+    EHOOK_DY(th15_life_dec, 0x456398, 5, {
+        tracker_info.th10.misses++;
+    })
     EHOOK_DY(th15_everlasting_bgm, 0x476f10, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
@@ -1856,6 +1894,11 @@ namespace TH15 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+
+        if (tracker_open && GetMemContent(PLAYER_PTR)) {
+            THTrackerUpdate();
+        }
+
         GameGuiEnd(drawCursor);
     })
     EHOOK_DY(th15_render, 0x40170a, 1, {
