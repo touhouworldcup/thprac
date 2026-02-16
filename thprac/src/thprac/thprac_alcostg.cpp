@@ -4,6 +4,9 @@
 
 namespace THPrac {
 namespace Alcostg {
+    enum addrs {
+        PLAYER_PTR = 0x474194,
+    };
 
     static __forceinline void call_0x413ef0(uint16_t beer) {
 #ifndef __clang__
@@ -953,7 +956,33 @@ namespace Alcostg {
     {
         ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
+    void THTrackerUpdate()
+    {
+        ImGui::SetNextWindowSize({ 120.0f, 0.0f });
+        ImGui::SetNextWindowPos({ 517.0f, 150.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Miss");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th10.misses);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted("Bomb");
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th10.bombs);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+    
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(alcostg_on_restart, 0x4187a8, 6, {
         thRestart = true;
@@ -1073,6 +1102,10 @@ namespace Alcostg {
         // Gui components update
         THGuiPrac::singleton().Update();
         THOverlay::singleton().Update();
+
+        if (tracker_open && GetMemContent(PLAYER_PTR)) {
+            THTrackerUpdate();
+        }
 
         GameGuiEnd(UpdateAdvOptWindow() || THGuiPrac::singleton().IsOpen());
     })
