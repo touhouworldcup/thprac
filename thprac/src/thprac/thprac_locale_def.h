@@ -626,8 +626,6 @@ enum th_glossary_t
     TH20_STONE_PRIORITY_Y,
     TH20_STONE_SUMMONED,
     TH20_TITLE,
-    TH20_TRACKER_STONE_KILLED,
-    TH20_TRACKER_STONE_SUMMONED,
     TH20_UNCAP_PIV,
     TH20_UNCAP_SCORE,
     TH20_WST_LOCK,
@@ -1203,7 +1201,7 @@ enum th_glossary_t
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1191];
+extern const char* th_glossary_str[3][1189];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2834,10 +2832,10 @@ extern const th_glossary_t TH20_EXPIRED_PYRAMID_FIX_OPT[6];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[2807];
+extern const wchar_t __thprac_loc_range_zh[3363];
 
-extern const wchar_t __thprac_loc_range_en[37];
+extern const wchar_t __thprac_loc_range_en[41];
 
-extern const wchar_t __thprac_loc_range_ja[2295];
+extern const wchar_t __thprac_loc_range_ja[2845];
 
 }
