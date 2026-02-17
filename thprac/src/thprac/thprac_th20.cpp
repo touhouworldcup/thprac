@@ -2966,7 +2966,7 @@ namespace TH20 {
         StoneText(globals->assist_stone_raw) NEXT;
         TextUnformatted(")");
 
-        BeginTable(S(TH_TRACKER_TITLE), 2);
+        BeginTable("Tracker table", 2);
         ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 2);
         ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
         TableNextRow();

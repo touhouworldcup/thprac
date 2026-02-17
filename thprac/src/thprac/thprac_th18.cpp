@@ -2805,7 +2805,7 @@ namespace TH18 {
         ImGui::Begin("Tracker", nullptr,
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 
-        ImGui::BeginTable(S(TH_TRACKER_TITLE), 2);
+        ImGui::BeginTable("Tracker table", 2);
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();

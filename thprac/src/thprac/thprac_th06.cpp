@@ -1899,7 +1899,7 @@ namespace TH06 {
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - textSize.x * 0.5);
         ImGui::TextUnformatted(buf);        
 
-        ImGui::BeginTable(S(TH_TRACKER_TITLE), 2);
+        ImGui::BeginTable("Tracker table", 2);
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
