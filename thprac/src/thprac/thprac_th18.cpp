@@ -37,6 +37,7 @@ namespace TH18 {
         CARD_DESC_LIST = 0x4c53c0,
         MUKADE_ADDR = 0x4cf2d4,
         WINDOW_PTR = 0x568c30,
+        PLAYER_PTR = 0x4cf410,
     };
     
     enum cards {
@@ -2797,7 +2798,41 @@ namespace TH18 {
         ReplaySaveParam(utf8_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
 
+    void THTrackerUpdate()
+    {
+        Gui::SetNextWindowSizeRel({ 340.0f / 1280, 0.0f });
+        Gui::SetNextWindowPosRel({ 900.0f / 1280.0f, 840.0f / 960.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d (%d)", tracker_info.th18.misses, tracker_info.th18.not_misses);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th18.bombs);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+
     HOOKSET_DEFINE(THMainHook)
+    { .addr = 0x44278F, .name = "th18_game_start", .callback = tracker_reset, .data = PatchHookImpl(5) },
+    { .addr = 0x4574D3, .name = "th18_bomb_dec",   .callback = th10_tracker_count_bomb, .data = PatchHookImpl(4) },
+    { .addr = 0x410F22, .name = "th18_cylinder",   .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x45D1A3, .name = "th18_life_dec",   .callback = th10_tracker_count_miss, .data = PatchHookImpl(5) },
+    { .addr = 0x40DA1C, .name = "th18_notmiss_1",  .callback = th13_tracker_count_trance, .data = PatchHookImpl(5) },
+    { .addr = 0x40A534, .name = "th18_notmiss_2",  .callback = th13_tracker_count_trance, .data = PatchHookImpl(5) },
+
     EHOOK_DY(th18_everlasting_bgm, 0x477a50, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
@@ -3028,6 +3063,11 @@ namespace TH18 {
         }
 
         THGuiSP::singleton().Update();
+
+        if (tracker_open && GetMemContent(PLAYER_PTR)) {
+            THTrackerUpdate();
+        }
+
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     })

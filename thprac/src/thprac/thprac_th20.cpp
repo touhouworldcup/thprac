@@ -918,10 +918,6 @@ namespace TH20 {
         PATCH_HK(0xF8734, "EB")
         HOTKEY_ENDDEF();
 
-        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
-        PATCH_HK(0xF849D, "00")
-        HOTKEY_ENDDEF();
-
         HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
         PATCH_HK(0xE1722, "0F1F00")
         HOTKEY_ENDDEF();
@@ -949,6 +945,7 @@ namespace TH20 {
         PATCH_HK(0xF79B3, "0F")
         HOTKEY_ENDDEF();
     public:
+        Gui::GuiHotKey mInfLives { TH_INFLIVES, "F2", VK_F2 };
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
     };
 
@@ -2887,7 +2884,176 @@ namespace TH20 {
         { .addr = 0xD4237, .data = PatchCode("e800000000") },
     };
 
+    const ImVec4 red = { 1.0f, 0.0f, 0.0f, 1.0f };
+    const ImVec4 blue = { 0.3f, 0.3f, 1.0f, 1.0f };
+    const ImVec4 yellow = { 1.0f, 1.0f, 0.0f, 1.0f };
+    const ImVec4 green = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+    const ImVec4 stone_colors[] = { red, blue, yellow, green };
+
+    constexpr th_glossary_t stone_names[] = {
+        TH_TRACKER_STONE_R1,
+        TH_TRACKER_STONE_R2,
+        TH_TRACKER_STONE_B1,
+        TH_TRACKER_STONE_B2,
+        TH_TRACKER_STONE_Y1,
+        TH_TRACKER_STONE_Y2,
+        TH_TRACKER_STONE_G1,
+        TH_TRACKER_STONE_G2
+    };
+
+    const char* StoneName(uint32_t stone) {
+        if (stone >= elementsof(stone_names)) {
+            return S(TH_TRACKER_STONE_N);
+        } else {
+            return S(stone_names[stone]);
+        }
+    }
+
+    void StoneText(uint32_t stone) {
+        if (stone >= elementsof(stone_names)) {
+            ImGui::TextUnformatted(StoneName(stone));
+        } else {
+            ImGui::TextColored(stone_colors[stone / 2], "%s", StoneName(stone));
+        }
+    }
+
+    void PrintStoneLv() {
+        using namespace ImGui;
+        GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
+
+        #define NEXT ;SameLine(0.0f, 0.0f)
+
+        TextColored(red, "%d", globals->stone_level_red) NEXT;
+        TextUnformatted("/") NEXT;
+        TextColored(blue, "%d", globals->stone_level_blue) NEXT;
+        TextUnformatted("/") NEXT;
+        TextColored(yellow, "%d", globals->stone_level_yellow) NEXT;
+        TextUnformatted("/") NEXT;
+        TextColored(green, "%d", globals->stone_level_green) NEXT;
+
+        #undef NEXT
+    }
+
+    void THTrackerUpdate() {
+        using namespace ImGui;
+
+        GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
+
+        Gui::SetNextWindowSizeRel({300.0f / 1280.0f, 0.0f});
+        Gui::SetNextWindowPosRel({920.0f / 1280.0f, 550.0f / 960.0f});
+        Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        #define NEXT ;SameLine(0.0f, 0.0f)
+
+        char buf[32] = {};
+        snprintf(buf, sizeof(buf), "%s (%s/%s/%s)", 
+                 StoneName(globals->story_stone_raw), 
+                 StoneName(globals->narrow_shot_stone_raw),
+                 StoneName(globals->wide_shot_stone_raw), 
+                 StoneName(globals->assist_stone_raw));
+        auto textSize = ImGui::CalcTextSize(buf);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - 
+                             textSize.x * 0.5f);
+        StoneText(globals->story_stone_raw) NEXT;
+        TextUnformatted(" (") NEXT; 
+        StoneText(globals->narrow_shot_stone_raw) NEXT;
+        TextUnformatted("/") NEXT;
+        StoneText(globals->wide_shot_stone_raw) NEXT;
+        TextUnformatted("/") NEXT;
+        StoneText(globals->assist_stone_raw) NEXT;
+        TextUnformatted(")");
+
+        BeginTable("Tracker table", 2);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 2);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+        TableNextRow();
+
+        TableNextColumn();
+        TextUnformatted(S(TH_TRACKER_MISS));
+        TableNextColumn();
+        Text("%d", tracker_info.th20.misses);
+
+        TableNextRow();
+
+        TableNextColumn();
+        TextUnformatted(S(TH_TRACKER_BOMB));
+        TableNextColumn();
+        Text("%d", tracker_info.th20.bombs);
+
+        TableNextRow();
+
+        TableNextColumn();
+        TextUnformatted(S(TH_TRACKER_HYPER));
+        TableNextColumn();
+        Text("%d", tracker_info.th20.hypers);
+
+        TableNextRow();
+
+        TableNextColumn();
+        TextUnformatted(S(TH_TRACKER_HYPER_BREAK));
+        TableNextColumn();
+        Text("%d", tracker_info.th20.hyper_breaks);
+
+        TableNextRow();
+
+        TableNextColumn();
+        TextUnformatted(S(TH_TRACKER_STONE_SUMMONED));
+        TableNextColumn();
+        auto summoned = globals->stone_enemy_count_total;
+        if (summoned % 3 == 0) {
+            TextColored(red, "%d", summoned);
+        } else {
+            TextColored(green, "%d", summoned);
+        }
+
+        TableNextRow();
+
+        TableNextColumn();
+        TextUnformatted(S(TH_TRACKER_STONE_KILLED));
+        TableNextColumn();
+        Text("%d", tracker_info.th20.delta_killed);
+
+        TableNextRow();
+
+        TableNextColumn();
+        TextUnformatted(S(TH_TRACKER_STONE_LEVEL));
+        TableNextColumn();
+        PrintStoneLv();        
+
+        EndTable();
+
+        #undef NEXT
+        End();
+    }
+
     HOOKSET_DEFINE(THMainHook)
+    { .addr = 0xbded2, .name = "th20_enter",    .callback = tracker_reset, .data = PatchHookImpl(6) },
+    { .addr = 0xe1710, .name = "th20_bomb_dec", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(1) },
+    EHOOK_DY(th20_inf_lives, 0xe1288, 6, {
+        GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
+        
+        int life_next = pCtx->Ecx;
+        if (life_next >= globals->life_stocks) {
+            return;
+        }
+        tracker_info.th20.misses++;
+
+        if (*THOverlay::singleton().mInfLives) {
+            pCtx->Eip = RVA(0xe128e);
+        }
+    })
+    EHOOK_DY(th20_hyper_break, 0x132c10, 3, {
+        tracker_info.th20.hyper_breaks++;
+    })
+    EHOOK_DY(th20_hyper, 0x134d06, 3, {
+        tracker_info.th20.hypers++;
+    })
+    EHOOK_DY(th20_stone, 0x112077, 2, {
+        tracker_info.th20.delta_killed++;
+    })
     EHOOK_DY(th20_boss_bgm, 0xBAC98, 2, {
         if (THBGMTest()) {
             PushHelper32(pCtx, 1);
@@ -3172,6 +3338,10 @@ namespace TH20 {
         THGuiPrac::singleton().Update();
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
+
+        if (tracker_open && GetMemContent(RVA(PLAYER_PTR))) {
+            THTrackerUpdate();
+        }
 
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
         GameGuiEnd(drawCursor);

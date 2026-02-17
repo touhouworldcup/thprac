@@ -1641,13 +1641,19 @@ private:
             .listening = mHotkeyScreenshotListening,
         };
 
+        GuiHotkeyOption key_tracker = {
+            .setting_name = "tracker_chord",
+            .label = S(THPRAC_HOTKEY_TRACKER),
+            .listening = mHotkeyTrackerListening,
+        };
+
         GuiHotkeyOption key_language = {
             .setting_name = "language_chord",
             .label = S(THPRAC_HOTKEY_LANGUAGE_SETTINGS),
             .listening = mHotkeyLanguageListening,
         };
 
-        GuiHotkeyOption keys[] = { key_backspace, key_advanced, key_screenshot };
+        GuiHotkeyOption keys[] = { key_backspace, key_advanced, key_screenshot, key_tracker };
 
         for (auto& key : keys) {
             LauncherSettingGet(key.setting_name, key.bitflags);
@@ -1674,10 +1680,11 @@ private:
             }
         }
 
-        key_backspace.block = key_advanced.listening || key_screenshot.listening || key_language.listening;
-        key_advanced.block = key_backspace.listening || key_screenshot.listening || key_language.listening;
-        key_screenshot.block  = key_backspace.listening || key_advanced.listening || key_language.listening;
-        key_language.block = key_advanced.listening || key_screenshot.listening || key_backspace.listening;
+        key_backspace.block = key_advanced.listening || key_screenshot.listening || key_language.listening || key_tracker.listening;
+        key_advanced.block = key_backspace.listening || key_screenshot.listening || key_language.listening || key_tracker.listening;
+        key_screenshot.block = key_backspace.listening || key_advanced.listening || key_language.listening || key_tracker.listening;
+        key_tracker.block = key_backspace.listening || key_advanced.listening || key_language.listening || key_screenshot.listening;
+        key_language.block = key_advanced.listening || key_screenshot.listening || key_backspace.listening || key_tracker.listening;
 
         for (const auto& key : keys) {
             GuiHotkeyEdit(key.label, key.setting_name, &key.listening, key.block, key.has_conflict);
@@ -1690,10 +1697,12 @@ private:
             mHotkeyF12MenuListening = false;
             mHotkeyScreenshotListening = false;
             mHotkeyLanguageListening = false;
+            mHotkeyTrackerListening = false;
 
             LauncherSettingSet("backspace_menu_chord", 1 << Gui::ChordKey_Backspace);
             LauncherSettingSet("advanced_menu_chord", 1 << Gui::ChordKey_F12);
             LauncherSettingSet("screenshot_menu_chord", 1 << Gui::ChordKey_Home);
+            LauncherSettingSet("tracker_chord", 1 << Gui::ChordKey_End);
             LauncherSettingSet("language_chord", 1 << Gui::ChordKey_Alt);
         }
     }
@@ -1862,6 +1871,7 @@ private:
     bool mHotkeyBackspaceMenuListening = false;
     bool mHotkeyF12MenuListening = false;
     bool mHotkeyScreenshotListening = false;
+    bool mHotkeyTrackerListening = false;
     bool mHotkeyLanguageListening = false;
 
     std::string mThcrapHintStr;

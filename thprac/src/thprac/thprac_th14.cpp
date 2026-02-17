@@ -8,6 +8,9 @@ namespace TH14 {
     enum addrs {
         BOMB_PTR = 0x4DB52C,
         WINDOW_PTR = 0x4f5a18,
+        CHARA_ADDR = 0x4f5828,
+        SUBSHOT_ADDR = 0x4f582c,
+        PLAYER_PTR = 0x4db67c,
     };
 
     using std::pair;
@@ -2259,7 +2262,50 @@ namespace TH14 {
         ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
+    constexpr th_glossary_t SHOTTYPE_NAMES[] = {
+        TH_TRACKER_REIMU_A, TH_TRACKER_REIMU_B,
+        TH_TRACKER_MARISA_A, TH_TRACKER_MARISA_B,
+        TH_TRACKER_SAKUYA_A, TH_TRACKER_SAKUYA_B
+    };
+
+    void THTrackerUpdate() {
+        Gui::SetNextWindowSizeRel({ 360.0f / 1280.0f, 0.0f });
+        Gui::SetNextWindowPosRel({ 890.0f / 1280.0f, 560.0f / 960.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        auto shottype = GetMemContent(CHARA_ADDR) * 2 + GetMemContent(SUBSHOT_ADDR);
+
+        char buf[32] = {};
+        snprintf(buf, sizeof(buf), "%s", S(SHOTTYPE_NAMES[shottype]));
+        auto textSize = ImGui::CalcTextSize(buf);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - textSize.x * 0.5f);
+        ImGui::TextUnformatted(buf);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th10.misses);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th10.bombs);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
     HOOKSET_DEFINE(THMainHook)
+    { .addr = 0x4375BE, .name = "th14_enter", .callback = tracker_reset, .data = PatchHookImpl(7) },
+    { .addr = 0x41218A, .name = "th14_bomb_dec", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x44F618, .name = "th14_life_dec", .callback = th10_tracker_count_miss, .data = PatchHookImpl(5) },
     EHOOK_DY(th14_everlasting_bgm, 0x46ef90, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
@@ -2382,6 +2428,10 @@ namespace TH14 {
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
+
+        if (tracker_open && GetMemContent(PLAYER_PTR)) {
+            THTrackerUpdate();
+        }
 
         GameGuiEnd(drawCursor);
     })

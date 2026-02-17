@@ -1,15 +1,25 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 
+#include <algorithm>
 
 namespace THPrac {
 namespace TH08 {
     using std::pair;
 
     enum ADDRS {
+        SHOTTYPE_ADDR = 0x164d0b1,
+        DIFF_ADDR = 0x160f538,
         INPUT_ADDR = 0x164d528,
         GUI_ADDR = 0x160f428,
-        STAGE_PENDING_INTERRUPT = 0x4ea290
+        STAGE_PENDING_INTERRUPT = 0x4ea290,
+        SPELLCARD_ID_ADDR = 0x4EA678,
+        MISS_COUNT_ADDR = 0x0164CFA4,
+        BOMB_COUNT_ADDR = 0x0164CFA8,
+        DEATHBOMB_COUNT_ADDR = 0x0164CFAC,
+        GAMEMODE_ADDR = 0x17CE8B0,
+        GAMEMODE_NEXT_ADDR = 0x17CE8B4,
+        GAMEMODE_PREV_ADDR = 0x17CE8B8,
     };
 
     enum ECL_OFFSETS { //should probably organize these better
@@ -2237,7 +2247,91 @@ namespace TH08 {
             self->Disable();
         }
     });
+
+    constexpr th_glossary_t SHOTNAMES[] = {
+        TH_TRACKER_BORDER_TEAM, TH_TRACKER_MAGIC_TEAM,
+        TH_TRACKER_SCARLET_TEAM, TH_TRACKER_NETHERWORLD_TEAM,
+        TH_TRACKER_REIMU, TH_TRACKER_YUKARI,
+        TH_TRACKER_MARISA, TH_TRACKER_ALICE,
+        TH_TRACKER_SAKUYA, TH_TRACKER_REMILIA,
+        TH_TRACKER_YOUMU, TH_TRACKER_YUYUKO
+    };
+
+    void THTrackerUpdate()
+    {
+        ImGui::SetNextWindowSize({ 170.0f, 0.0f });
+        ImGui::SetNextWindowPos({ 450.0f, 220.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        char buf[32] = {};
+        snprintf(buf, sizeof(buf), "%s", S(SHOTNAMES[GetMemContent<uint8_t>(SHOTTYPE_ADDR)]));
+        auto textSize = ImGui::CalcTextSize(buf);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - textSize.x * 0.5);
+        ImGui::TextUnformatted(buf);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d (%d)", GetMemContent(MISS_COUNT_ADDR), tracker_info.th08.disslove_count);
+
+        ImGui::TableNextRow();
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 2);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", GetMemContent(BOMB_COUNT_ADDR) + GetMemContent(DEATHBOMB_COUNT_ADDR));
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_SPELLS_CAPTURED));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th08.spells_captured);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_LAST_SPELLS));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th08.last_spells_captured);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th08_enter_game, 0x43BDD2, 5, { // set inner misscount to 0
+        tracker_info.th08 = {};
+    })
+    EHOOK_DY(th08_spell_capture, 0x416265, 3, {
+        const static uint32_t last_spells[] = {
+            10, 11, 12,
+            29, 30, 31,
+            51, 52, 53,
+            74, 75, 76,
+            97, 98, 99,
+            116, 117, 118,
+            143, 144, 145, 146,
+            171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190,
+            204
+        };
+        tracker_info.th08.spells_captured++;
+
+        if (binary_search(last_spells, elementsof(last_spells), GetMemContent<uint32_t>(SPELLCARD_ID_ADDR)) != -1) {
+            tracker_info.th08.last_spells_captured++;
+        }
+    })
+    EHOOK_DY(th08_dissolve, 0x44ABE9, 3, {
+        tracker_info.th08.disslove_count++;
+    })
     EHOOK_DY(th08_everlasting_bgm, 0x45e1e0, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
@@ -2401,6 +2495,10 @@ namespace TH08 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+
+        if (tracker_open && (GetMemContent(GAMEMODE_ADDR) == 2)) {
+            THTrackerUpdate();
+        }
 
         GameGuiEnd(drawCursor);
     })

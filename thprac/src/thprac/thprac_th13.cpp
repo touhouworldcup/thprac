@@ -1536,7 +1536,44 @@ namespace TH13 {
     bool th13ElBgmTranceFlag = false;
     bool th13ElBgmFlag = false;
 
+    void THTrackerUpdate() {
+        ImGui::SetNextWindowSize({ 170.0f, 0.0f });
+        ImGui::SetNextWindowPos({ 450.0f, 280.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th13.misses);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th13.bombs);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_TRANCE));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th13.trance);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+    
     HOOKSET_DEFINE(THMainHook)
+    { .addr = 0x42D3D7, .name = "th13_enter", .callback = tracker_reset, .data = PatchHookImpl(7) },
+    { .addr = 0x40A404, .name = "th13_bomb_dec", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x444A75, .name = "th13_life_dec", .callback = th10_tracker_count_miss, .data = PatchHookImpl(10) },
+    { .addr = 0x40587a, .name = "th13_trance", .callback = th13_tracker_count_trance, .data = PatchHookImpl(5) },
     EHOOK_DY(th13_everlasting_bgm_2, 0x42c444, 7, {
         if (th13ElBgmFlag) {
             th13ElBgmFlag = false;
@@ -1678,6 +1715,10 @@ namespace TH13 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+
+        if (tracker_open && GetMemContent(PLAYER_PTR)) {
+            THTrackerUpdate();
+        }
 
         THAdvOptWnd::singleton().FpsUpd();
         GameGuiEnd(drawCursor);

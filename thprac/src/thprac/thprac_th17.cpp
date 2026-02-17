@@ -1,17 +1,77 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 #include <numbers>
-#define M_PI 3.14159265358979323846f
-
-struct vec2f {
-    float x;
-    float y;
-};
 
 namespace THPrac {
 namespace TH17 {
+    struct __declspec(align(4)) GlobalsReplay {
+        int32_t stage;
+        int32_t stage_start;
+        int32_t chapter;
+        int32_t time_in_stage;
+        int32_t time_in_chapter;
+        int32_t time_in_music;
+        int32_t chara;
+        int32_t goast;
+        int32_t score;
+        int32_t difficulty;
+        int32_t continues;
+        int32_t rank;
+        int32_t graze;
+        int32_t graze_in_chapter;
+        int32_t spell_id;
+        int32_t misses;
+        int32_t continues_2;
+        int32_t num_point_items_collected;
+        int32_t piv;
+        int32_t piv_min;
+        int32_t piv_max;
+        int32_t power;
+        int32_t maximum_power;
+        int32_t power_per_level;
+        int32_t field_60;
+        int32_t lives;
+        int32_t life_pieces;
+        int32_t field_6C;
+        int32_t bombs;
+        int32_t bomb_pieces;
+        int32_t field_70;
+        int32_t field_74;
+        int32_t field_78;
+        int32_t hyper_fill;
+        int32_t tokens[5];
+        int32_t field_94;
+        int32_t field_98;
+        int32_t field_9C;
+        int32_t field_A0;
+        int32_t field_A4;
+        int32_t field_A8;
+        int32_t field_AC;
+        int32_t field_B0;
+        Timer field_B4;
+        Timer hyper_time;
+        int32_t field_DC;
+        uint32_t current_hyper;
+        int32_t field_E4;
+        uint32_t hyper_flags;
+    };
+
+    struct Globals {
+        int32_t high_score;
+        int32_t field_4;
+        uint32_t flags;
+        int32_t field_C;
+        int32_t field_10;
+        int32_t demoplay_timer;
+        int32_t field_18;
+        GlobalsReplay rpy;
+    };
+
+    Globals* globals = (Globals*)0x4b59c0;
+
     enum addrs {
         GOAST_MANAGER_PTR = 0x4B7684,
+        PLAYER_PTR = 0x4b77d0,
     };
 
     #define SpawnToken(goast, pos, ang) asm_call<0x00410380, Vectorcall>(GetMemContent<uintptr_t>(GOAST_MANAGER_PTR), UNUSED_DWORD, &pos, goast, UNUSED_FLOAT, UNUSED_FLOAT, ang)
@@ -833,7 +893,7 @@ namespace TH17 {
             if (mGoastAngleRandom)
                 ImGui::BeginDisabled();
 
-            ImGui::SliderFloat(S(TH17_GOAST_ANGLE), &mGoastAng, -M_PI, M_PI);
+            ImGui::SliderFloat(S(TH17_GOAST_ANGLE), &mGoastAng, -std::numbers::pi, std::numbers::pi);
             ImGui::Checkbox(S(TH17_FORCE_ANGLE), &mForceGoastAngle);
             ImGui::SameLine();
             HelpMarker(S(TH17_FORCE_ANGLE_HELP));
@@ -1841,7 +1901,109 @@ namespace TH17 {
         ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
+    constexpr th_glossary_t CHARNAMES[] = {
+        TH_TRACKER_REIMU,
+        TH_TRACKER_MARISA,
+        TH_TRACKER_YOUMU
+    };
+    constexpr th_glossary_t GOASTNAMES[] = {
+        TH_TRACKER_WOLF,
+        TH_TRACKER_OTTER,
+        TH_TRACKER_EAGLE
+    };
+
+    void draw_roaring_info() {
+        #define NEXT ;ImGui::SameLine(0.0f, 0.0f)
+
+        ImVec4 wolf  = { 1.0f, 0.07f, 0.0f, 1.0f };
+        ImVec4 otter = { 0.13f, 0.73f, 0.07f, 1.0f };
+        ImVec4 eagle = { 0.2f, 0.27f, 0.93f, 1.0f };
+
+        ImGui::Text("%d (", tracker_info.th17.roaring_total) NEXT;
+
+        ImGui::TextColored(wolf, "%d", tracker_info.th17.roaring[0]) NEXT;
+        ImGui::TextUnformatted("/") NEXT;
+        ImGui::TextColored(otter, "%d", tracker_info.th17.roaring[1]) NEXT;
+        ImGui::TextUnformatted("/") NEXT;
+        ImGui::TextColored(eagle, "%d", tracker_info.th17.roaring[2]) NEXT;
+    
+        ImGui::TextUnformatted(")");
+
+        #undef NEXT
+    }
+
+    void THTrackerUpdate() {
+        Gui::SetNextWindowSizeRel({ 340.0f / 1280.0f, 0.0f });
+        Gui::SetNextWindowPosRel({ 900.0f / 1280.0f, 500.0f / 960.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        char buf[32] = {};
+        snprintf(buf, sizeof(buf), "%s %s", S(CHARNAMES[globals->rpy.chara]), S(GOASTNAMES[globals->rpy.goast]));
+        auto textSize = ImGui::CalcTextSize(buf);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - textSize.x * 0.5f);
+        ImGui::TextUnformatted(buf);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 2);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th17.misses);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th17.bombs);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_ROARING));
+        ImGui::TableNextColumn();
+        draw_roaring_info();
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_SPIRIT_STRIKE));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th17.spirit_strikes);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_SPECIAL_SPIRIT_USED));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th17.roaring_with_special);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+    
     HOOKSET_DEFINE(THMainHook)
+    { .addr = 0x4302E6, .name = "th17_enter", .callback = tracker_reset, .data = PatchHookImpl(6) },
+    { .addr = 0x44921B, .name = "th17_life_dec", .callback = th10_tracker_count_miss, .data = PatchHookImpl(6) },
+    { .addr = 0x411CAB, .name = "th17_bomb_dec", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(6) },
+    { .addr = 0x40F880, .name = "th17_spirit_strike", .callback = th13_tracker_count_trance, .data = PatchHookImpl(10) },
+    EHOOK_DY(th17_roaring, 0x40FC8A, 7, {
+        tracker_info.th17.roaring_total++;
+        if (globals->rpy.current_hyper && globals->rpy.current_hyper <= 3) {
+            tracker_info.th17.roaring[globals->rpy.current_hyper - 1]++;
+        }
+        for (const auto tok : globals->rpy.tokens) {
+            if (tok >= 8 && tok <= 14) {
+                tracker_info.th17.roaring_with_special++;
+            }
+        }
+    })
     EHOOK_DY(th17_window_mousedown, 0x46198b, 1, {
         auto& adv_opt = THAdvOptWnd::singleton();
 
@@ -1859,12 +2021,12 @@ namespace TH17 {
             if (adv_opt.mForceGoastAngle && !adv_opt.mGoastAngleRandom) {
                 th17_force_goast_angle.Enable();
             }
-            vec2f stgFramePos { gameX - 224.0f, gameY - 16.0f };
+            Float2 stgFramePos { gameX - 224.0f, gameY - 16.0f };
             if (stgFramePos.y > 128 && stgFramePos.y < 448
                 && abs(stgFramePos.x) < 192) {
                 float ang = adv_opt.mGoastAng;
                 if (adv_opt.mGoastAngleRandom) {
-                    ang = asm_call<0x402880, Thiscall, float>(0x4B7668) * M_PI;
+                    ang = asm_call<0x402880, Thiscall, float>(0x4B7668) * std::numbers::pi;
                 }
 
                 SpawnToken(adv_opt.mSelectedGoast, stgFramePos, ang);
@@ -1933,14 +2095,14 @@ namespace TH17 {
     })
     EHOOK_DY(th17_patch_main, 0x430cb3, 1, {
         if (thPracParam.mode == 1) {
-            *(int32_t*)(0x4b59fc) = (int32_t)(thPracParam.score / 10);
-            *(int32_t*)(0x4b5a40) = thPracParam.life;
-            *(int32_t*)(0x4b5a44) = thPracParam.life_fragment;
-            *(int32_t*)(0x4b5a4c) = thPracParam.bomb;
-            *(int32_t*)(0x4b5a50) = thPracParam.bomb_fragment;
-            *(int32_t*)(0x4b5a30) = thPracParam.power;
-            *(int32_t*)(0x4b5a24) = thPracParam.value * 100;
-            *(int32_t*)(0x4b5a0c) = thPracParam.graze;
+            globals->rpy.score = (int32_t)(thPracParam.score / 10);
+            globals->rpy.lives = thPracParam.life;
+            globals->rpy.life_pieces = thPracParam.life_fragment;
+            globals->rpy.bombs = thPracParam.bomb;
+            globals->rpy.bomb_pieces = thPracParam.bomb_fragment;
+            globals->rpy.power = thPracParam.power;
+            globals->rpy.piv = thPracParam.value * 100;
+            globals->rpy.graze = thPracParam.graze;
 
             if (thPracParam.goast_1) {
                 AddGoast(thPracParam.goast_1);
@@ -2028,6 +2190,11 @@ namespace TH17 {
         THGuiPrac::singleton().Update();
         THOverlay::singleton().Update();
         THGuiSP::singleton().Update();
+
+        if (tracker_open && GetMemContent(PLAYER_PTR)) {
+            THTrackerUpdate();
+        }
+
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THGuiSP::singleton().IsOpen();
         GameGuiEnd(drawCursor);
     })

@@ -4,6 +4,9 @@
 
 namespace THPrac {
 namespace Alcostg {
+    enum addrs {
+        PLAYER_PTR = 0x474194,
+    };
 
     static __forceinline void call_0x413ef0(uint16_t beer) {
 #ifndef __clang__
@@ -953,8 +956,38 @@ namespace Alcostg {
     {
         ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
+    void THTrackerUpdate()
+    {
+        ImGui::SetNextWindowSize({ 120.0f, 0.0f });
+        ImGui::SetNextWindowPos({ 517.0f, 150.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th10.misses);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th10.bombs);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+    
     HOOKSET_DEFINE(THMainHook)
+    { .addr = 0x418402, .name = "alcostg_game_start", .callback = tracker_reset, .data = PatchHookImpl(6) },
+    { .addr = 0x425e1d, .name = "alcostg_bomb",       .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x425cb6, .name = "alcostg_bomb2",      .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x427231, .name = "alcostg_miss",       .callback = th10_tracker_count_miss, .data = PatchHookImpl(6) },
     EHOOK_DY(alcostg_on_restart, 0x4187a8, 6, {
         thRestart = true;
         thLock = thHardLock;
@@ -1073,6 +1106,10 @@ namespace Alcostg {
         // Gui components update
         THGuiPrac::singleton().Update();
         THOverlay::singleton().Update();
+
+        if (tracker_open && GetMemContent(PLAYER_PTR)) {
+            THTrackerUpdate();
+        }
 
         GameGuiEnd(UpdateAdvOptWindow() || THGuiPrac::singleton().IsOpen());
     })

@@ -7,7 +7,11 @@ namespace TH10 {
     int g_rep_page = 0;
 
     enum ADDRS {
-        SOUND_MANAGER_ADDR = 0x492590
+        SOUND_MANAGER_ADDR = 0x492590,
+        DIFF_ADDR = 0x474C74,
+        CHARA_ADDR = 0x474C68,
+        SUBSHOT_ADDR = 0x474C6C,
+        PLAYER_PTR = 0x477834,
     };
 
     // Workaround for TH10's calling conventions
@@ -2199,7 +2203,51 @@ namespace TH10 {
         }
     }
     PATCH_ST(th10_real_bullet_sprite, 0x406e03, "0F8413050000");
+
+    constexpr th_glossary_t SHOTTYPE_NAMES[] = {
+        TH_TRACKER_REIMU_A, TH_TRACKER_REIMU_B, TH_TRACKER_REIMU_C, 
+        TH_TRACKER_MARISA_A, TH_TRACKER_MARISA_B, TH_TRACKER_MARISA_C 
+    };
+    void THTrackerUpdate()
+    {
+        ImGui::SetNextWindowSize({ 170.0f, 0.0f });
+        ImGui::SetNextWindowPos({ 450.0f, 150.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        auto shottype = GetMemContent(CHARA_ADDR) * 3 + GetMemContent(SUBSHOT_ADDR);
+
+        char buf[32] = {};
+        snprintf(buf, sizeof(buf), "%s", S(SHOTTYPE_NAMES[shottype]));
+        auto textSize = ImGui::CalcTextSize(buf);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - textSize.x * 0.5);
+        ImGui::TextUnformatted(buf);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th10.misses);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th10.bombs);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
     HOOKSET_DEFINE(THMainHook)
+    { .addr = 0x41798C, .name = "th10_enter", .callback = tracker_reset, .data = PatchHookImpl(6) },
+    { .addr = 0x4259CF, .name = "th10_count_bomb_1", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x425C3E, .name = "th10_count_bomb_2", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x426A1C, .name = "th10_count_miss", .callback = th10_tracker_count_miss, .data = PatchHookImpl(6) },
     EHOOK_DY(th10_everlasting_bgm, 0x43e460, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
@@ -2345,6 +2393,10 @@ namespace TH10 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+
+        if (tracker_open && GetMemContent(PLAYER_PTR)) {
+            THTrackerUpdate();
+        }
 
         GameGuiEnd(drawCursor);
     })

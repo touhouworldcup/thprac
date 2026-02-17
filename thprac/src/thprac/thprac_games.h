@@ -642,4 +642,90 @@ void StageWarpsApply(stage_warps_t& warps, std::vector<unsigned int>& in_warp, e
 bool GameState_Assert(bool cond);
 
 #pragma endregion
+
+#pragma region Ingame Tracking
+
+
+struct TH06Info {
+    uint32_t misses = 0;
+};
+
+struct TH07Info {
+    uint32_t border_break = 0;
+};
+
+struct TH08Info {
+    uint32_t spells_captured = 0;
+    uint32_t last_spells_captured = 0;
+    uint32_t disslove_count = 0;
+};
+
+struct TH10Info {
+    uint32_t misses = 0;
+    uint32_t bombs = 0;
+};
+
+struct TH12Info {
+    uint32_t misses = 0;
+    uint32_t bombs = 0;
+
+    uint32_t ufos_summoned[4] = {};
+    uint32_t ufos_collected[3] = {};
+    uint32_t ufos_dropped[4] = {};
+};
+
+struct TH13Info {
+    uint32_t misses;
+    uint32_t bombs;
+    uint32_t trance;
+};
+
+struct TH17Info {
+    uint32_t misses;
+    uint32_t bombs;
+    uint32_t spirit_strikes;
+    uint32_t roaring_with_special;
+    uint32_t roaring_total;
+    uint32_t roaring[3];
+};
+
+struct TH18Info {
+    uint32_t misses;
+    uint32_t bombs;
+    uint32_t not_misses;
+};
+
+struct TH20Info {
+    uint32_t misses;
+    uint32_t bombs;
+    uint32_t hypers;
+    uint32_t hyper_breaks;
+    uint32_t delta_killed;
+    uint32_t stone_lv[4];
+};
+
+union TrackerInfo {
+    TH06Info th06;
+    TH07Info th07;
+    TH08Info th08;
+    TH10Info th10; // alcostg, TH11, TH128, TH14 and TH15 reuse this
+    TH12Info th12;
+    TH13Info th13; // TH16 reuses this
+    TH17Info th17;
+    TH18Info th18;
+    TH20Info th20;
+};
+
+extern TrackerInfo tracker_info;
+extern bool tracker_open;
+
+void __fastcall th10_tracker_count_miss(PCONTEXT, HookCtx*);
+void __fastcall th10_tracker_count_bomb(PCONTEXT, HookCtx*);
+void __fastcall th13_tracker_count_trance(PCONTEXT, HookCtx*);
+void __fastcall tracker_reset(PCONTEXT, HookCtx*);
+
+#pragma endregion
+
+
+
 }

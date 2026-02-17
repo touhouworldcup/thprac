@@ -80,7 +80,7 @@ struct GameManager {
     uint8_t shotType;
     uint8_t isInGameMenu;
     uint8_t isInRetryMenu;
-    uint8_t isInMenu;
+    uint8_t isInGame;
     uint8_t isGameCompleted;
     uint8_t isInPracticeMode;
     uint8_t demoMode;

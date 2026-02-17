@@ -1,14 +1,20 @@
-﻿#include "thprac_games.h"
-#include "thprac_utils.h"
+﻿#include "thprac_th07.h"
 
 
 namespace THPrac {
 namespace TH07 {
     using std::pair;
 
+    GameManager* GAME_MANAGER = (GameManager*)0x00626270;
+    Supervisor* SUPERVISOR = (Supervisor*)0x575950;
+
+#define globals (GAME_MANAGER->globals)
+
     enum ADDRS {
         INPUT_ADDR = 0x4B9E4C,
         GUI_ADDR = 0x49fbf0,
+        // TODO: figure out what this address is
+        UNKNOWN_ADDR_1 = 0x575ab4,
     };
 
     struct THPracParam {
@@ -141,7 +147,7 @@ namespace TH07 {
                 SetFade(0.8f, 0.1f);
                 Open();
                 THReset();
-                mDiffculty = (int)(*((int8_t*)0x575a89));
+                mDiffculty = SUPERVISOR->config.last_selected_diff;
                 if (mDiffculty != oldRank) {
                     if (mDiffculty == 0) {
                         mRank.SetBound(12, *mRankLock ? 99 : 20);
@@ -521,7 +527,7 @@ namespace TH07 {
                     Open();
                 } else {
                     Close();
-                    *((int32_t*)0x575ab4) = 2;
+                    *((int32_t*)UNKNOWN_ADDR_1) = 2;
                 }
             }
         }
@@ -666,7 +672,7 @@ namespace TH07 {
         }
         void ContentUpdate()
         {
-            *((int32_t*)0x575ab4) = 2;
+            *((int32_t*)UNKNOWN_ADDR_1) = 2;
             ImGui::TextUnformatted(S(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
@@ -1621,33 +1627,29 @@ namespace TH07 {
 
     void THSetPoint()
     {
-        int32_t* point_stage = (int32_t*)GetMemAddr(0x626278, 0x24);
-        int32_t* point_total = (int32_t*)GetMemAddr(0x626278, 0x28);
         if (thPracParam.point) {
-            *point_stage = *point_total = thPracParam.point;
+            globals->point_stage = globals->point_total = thPracParam.point;
         } else {
-            *point_stage = thPracParam.point_stage;
-            *point_total = thPracParam.point_total;
+            globals->point_stage = thPracParam.point_stage;
+            globals->point_total = thPracParam.point_total;
         }
 
         // Recreation of the original code.
         int32_t* diffculty = (int32_t*)0x626280;
-        int32_t* awardLevel = (int32_t*)GetMemAddr(0x626278, 0x2c);
-        int32_t* awardReq = (int32_t*)GetMemAddr(0x626278, 0x30);
         while (true) {
             if (*diffculty >= 4) {
-                if (*awardLevel)
-                    *awardReq = (*awardLevel == 1) ? 500 : 500 * (*awardLevel - 2) + 800;
+                if (globals->point_extends)
+                    globals->next_extend_at = (globals->point_extends == 1) ? 500 : 500 * (globals->point_extends - 2) + 800;
                 else
-                    *awardReq = 200;
-            } else if (*awardLevel >= 3) {
-                *awardReq = (*awardLevel >= 5) ? 200 * (*awardLevel - 5) + 800 : 150 * (*awardLevel - 3) + 300;
+                    globals->next_extend_at = 200;
+            } else if (globals->point_extends >= 3) {
+                globals->next_extend_at = (globals->point_extends >= 5) ? 200 * (globals->point_extends - 5) + 800 : 150 * (globals->point_extends - 3) + 300;
             } else {
-                *awardReq = 75 * (*awardLevel) + 50;
+                globals->next_extend_at = 75 * (globals->point_extends) + 50;
             }
-            if (*point_total < *awardReq)
+            if (globals->point_total < globals->next_extend_at)
                 break;
-            ++(*awardLevel);
+            ++(globals->point_extends);
         }
     }
     bool THBGMTest()
@@ -1666,7 +1668,65 @@ namespace TH07 {
         ReplaySaveParam(mb_to_utf16(rep_name, 932).c_str(), thPracParam.GetJson());
     }
 
+    constexpr th_glossary_t SHOTNAMES[] = {
+        TH_TRACKER_REIMU_A, TH_TRACKER_REIMU_B,
+        TH_TRACKER_MARISA_A, TH_TRACKER_MARISA_B,
+        TH_TRACKER_SAKUYA_A, TH_TRACKER_SAKUYA_B
+    };
+
+    constexpr th_glossary_t DIFFNAMES_TH07[] = {
+        TH_TRACKER_EASY, TH_TRACKER_NORMAL, TH_TRACKER_HARD, TH_TRACKER_LUNATIC,
+        TH_TRACKER_EXTRA, TH_TRACKER_PHANTASM
+    };
+
+    void THTrackerUpdate()
+    {
+        ImGui::SetNextWindowSize({ 170.0f, 0.0f });
+        ImGui::SetNextWindowPos({ 450.0f, 193.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        char buf[32] = {};
+        snprintf(buf, sizeof(buf), "%s (%s)", S(DIFFNAMES_TH07[GAME_MANAGER->difficulty]), S(SHOTNAMES[GAME_MANAGER->full_shottype]));
+        auto textSize = ImGui::CalcTextSize(buf);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - textSize.x * 0.5);
+        ImGui::TextUnformatted(buf);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", (int)globals->miss_count);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", (int)globals->bombs_used);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_BORDER_BREAK));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th07.border_break);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+
     HOOKSET_DEFINE(THMainHook)
+    EHOOK_DY(th07_enter, 0x42EB08, 3, { // set inner misscount to 0
+        tracker_info.th07 = {};
+    })
+    EHOOK_DY(th07_border_break, 0x441DA4, 5, {
+        tracker_info.th07.border_break++;
+    })
     PATCH_DY(th07_reacquire_input, 0x430f03, "0000000074")
     EHOOK_DY(th07_everlasting_bgm, 0x44d2f0, 1, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
@@ -1681,7 +1741,7 @@ namespace TH07 {
         el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode && thPracParam.section;
         if (thPracParam.mode && thPracParam.section == TH07_ST6_BOSS10)
             el_switch = false;
-        is_practice = *((int32_t*)0x575aa8) == 10;
+        is_practice = SUPERVISOR->gamemode == 10;
         if (retn_addr == 0x43a180)
             result = ElBgmTest<0x439f47, 0x43a0cb, 0x42d9c4, 0x4034a9, 0x42f21b>(
                 el_switch, is_practice, 0x439f47, 2, 2, call_addr);
@@ -1726,23 +1786,13 @@ namespace TH07 {
     EHOOK_DY(th07_patch_main, 0x42f2e3, 1, {
         th07_rb.Disable();
         if (thPracParam.mode == 1) {
-            float* life = (float*)GetMemAddr(0x626278, 0x5c);
-            *life = (thPracParam.life);
-
-            float* bomb = (float*)GetMemAddr(0x626278, 0x68);
-            *bomb = (thPracParam.bomb);
-
-            float* power = (float*)GetMemAddr(0x626278, 0x7c);
-            *power = thPracParam.power;
+            globals->life_count = thPracParam.life;
+            globals->bomb_count = thPracParam.bomb;
+            globals->power = thPracParam.power;
+            globals->_other_graze = globals->graze = thPracParam.graze;
 
             int32_t real_score = (int32_t)(thPracParam.score / 10);
-            int32_t* score1 = (int32_t*)GetMemAddr(0x626278, 0x0);
-            int32_t* score2 = (int32_t*)GetMemAddr(0x626278, 0x4);
-            *score1 = *score2 = real_score;
-
-            int32_t* graze1 = (int32_t*)GetMemAddr(0x626278, 0x14);
-            int32_t* graze2 = (int32_t*)GetMemAddr(0x626278, 0x18);
-            *graze1 = *graze2 = thPracParam.graze;
+            globals->true_score = globals->displayed_score = real_score;
 
             if (thPracParam.frame) {
                 ECLST3BG();
@@ -1751,22 +1801,17 @@ namespace TH07 {
 
             THSetPoint();
 
-            int32_t* cherry = (int32_t*)0x62f88c;
-            int32_t* cherryMax = (int32_t*)0x62f888;
-            int32_t* cherryPlus = (int32_t*)0x62f890;
-            int32_t cherryBase = (int32_t)GetMemContent(0x626278, 0x88);
-            *cherry = cherryBase + thPracParam.cherry;
-            *cherryMax = cherryBase + thPracParam.cherryMax;
-            *cherryPlus = cherryBase + thPracParam.cherryPlus;
+            GAME_MANAGER->cherry = globals->cherry_base + thPracParam.cherry;
+            GAME_MANAGER->cherry_max = globals->cherry_base + thPracParam.cherryMax;
+            GAME_MANAGER->cherry_plus = globals->cherry_base + thPracParam.cherryPlus;
 
-            int32_t* spellBonus = (int32_t*)GetMemAddr(0x626278, 0x1C);
-            *spellBonus = thPracParam.spellBonus;
+            globals->spell_bonus = thPracParam.spellBonus;
 
             if (thPracParam.rank) {
-                *(int32_t*)(0x62f8a4) = (int32_t)thPracParam.rank;
+                GAME_MANAGER->rank = thPracParam.rank;
                 if (thPracParam.rankLock) {
-                    *(int32_t*)(0x62f8a8) = (int32_t)thPracParam.rank;
-                    *(int32_t*)(0x62f8ac) = (int32_t)thPracParam.rank;
+                    GAME_MANAGER->rank_min = thPracParam.rank;
+                    GAME_MANAGER->rank_max = thPracParam.rank;
                 }
             }
 
@@ -1790,7 +1835,7 @@ namespace TH07 {
     EHOOK_DY(th07_bgm, 0x42f206, 7, {
         if (thPracParam.mode == 1 && thPracParam.section) {
             if (thPracParam.stage == 5) {
-                asm_call<0x439dd0, Thiscall>(0x575950, 2, 0x4986b4);
+                asm_call<0x439dd0, Thiscall>(SUPERVISOR, 2, 0x4986b4);
             }
 
             if (THBGMTest()) {
@@ -1839,13 +1884,17 @@ namespace TH07 {
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
 
+        if (tracker_open && SUPERVISOR->gamemode == 2) {
+            THTrackerUpdate();
+        }
+
         GameGuiEnd(drawCursor);
     })
     EHOOK_DY(th07_render, 0x42feb9, 1, {
         GameGuiRender(IMPL_WIN32_DX8);
         // TODO: Yah
         if (Gui::GetChordPressed(Gui::GetScreenshotChord()))
-            THSnapshot::Snapshot(*(IDirect3DDevice8**)0x575958);
+            THSnapshot::Snapshot(SUPERVISOR->d3d_device);
     })
     HOOKSET_ENDDEF()
 
@@ -1855,7 +1904,7 @@ namespace TH07 {
             return;
         }
         // Init
-        GameGuiInit(IMPL_WIN32_DX8, 0x575958, 0x575c20,
+        GameGuiInit(IMPL_WIN32_DX8, (int)&SUPERVISOR->d3d_device, 0x575c20,
             Gui::INGAGME_INPUT_GEN1, 0x4b9e4c, 0x4b9e54, 0x4b9e5c,
             -1);
 

@@ -1,18 +1,11 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 
+#include <numeric>
+
 namespace THPrac {
 namespace TH12 {
     using std::pair;
-
-    enum addrs {
-        CHARA = 0x4b0c90,
-        SUBSHOT = 0x4b0c94,
-        PLAYER_PTR = 0x4b4514,
-        MODEFLAGS = 0x4b0ce0,
-        STAGE_NUM = 0x4b0cb0,
-        REPLAY_MGR_PTR = 0x4b4518,
-    };
 
     constexpr uint32_t playerDmgSrcCnt = 0x80;
 
@@ -22,8 +15,23 @@ namespace TH12 {
     };
 
     struct Player {
-        char gap0[0x8988];
-        PlayerDamageSource damage_sources[playerDmgSrcCnt]; // 0x8988
+        char gap0[35208];
+        PlayerDamageSource damage_sources[129];
+        char gapC3FC[4];
+        Timer iframes;
+        char gapC414[388];
+        int32_t field_C598;
+    };
+
+    static_assert(offsetof(Player, iframes) == 0xc400);
+
+    #define player (*(Player**)0x4b4514)
+    enum addrs {
+        CHARA = 0x4b0c90,
+        SUBSHOT = 0x4b0c94,
+        MODEFLAGS = 0x4b0ce0,
+        STAGE_NUM = 0x4b0cb0,
+        REPLAY_MGR_PTR = 0x4b4518,
     };
 
     struct THPracParam {
@@ -1508,7 +1516,139 @@ namespace TH12 {
 #endif
     }
 
+    constexpr th_glossary_t SHOTTYPE_NAMES[] = {
+        TH_TRACKER_REIMU_A, TH_TRACKER_REIMU_B,
+        TH_TRACKER_MARISA_A, TH_TRACKER_MARISA_B,
+        TH_TRACKER_SANAE_A, TH_TRACKER_SANAE_B
+    };
+
+    void draw_3ufo_info(uint32_t* ufo) {
+        auto total = std::accumulate(ufo, ufo + 3, 0u);
+
+        ImVec4 red = { 1.0f, 0.5f, 0.5f, 1.0f };
+        ImVec4 green = { 0.5f, 1.0f, 0.5f, 1.0f };
+        ImVec4 blue = { 0.5f, 0.5f, 1.0f, 1.0f };
+
+        #define NEXT ;ImGui::SameLine(0.0f, 0.0f);
+
+        ImGui::Text("%d", total) NEXT;
+        ImGui::TextUnformatted(" (") NEXT;
+
+        ImGui::TextColored(red, "%d", ufo[0]) NEXT;
+        ImGui::TextUnformatted("/") NEXT;
+        ImGui::TextColored(green, "%d", ufo[1]) NEXT;
+        ImGui::TextUnformatted("/") NEXT;
+        ImGui::TextColored(blue, "%d", ufo[2]) NEXT;
+
+        ImGui::TextUnformatted(")");
+
+        #undef NEXT
+    }
+    
+    void draw_4ufo_info(uint32_t* ufo) {
+        auto total = std::accumulate(ufo, ufo + 4, 0u);
+
+        ImVec4 red = { 1.0f, 0.5f, 0.5f, 1.0f };
+        ImVec4 green = { 0.5f, 1.0f, 0.5f, 1.0f };
+        ImVec4 blue = { 0.5f, 0.5f, 1.0f, 1.0f };
+
+        #define NEXT ;ImGui::SameLine(0.0f, 0.0f);
+
+        ImGui::Text("%d", total) NEXT;
+        ImGui::TextUnformatted(" (") NEXT;
+
+        ImGui::TextColored(red, "%d", ufo[0]) NEXT;
+        ImGui::TextUnformatted("/") NEXT;
+        ImGui::TextColored(green, "%d", ufo[1]) NEXT;
+        ImGui::TextUnformatted("/") NEXT;
+        ImGui::TextColored(blue, "%d", ufo[2]) NEXT;
+        ImGui::TextUnformatted("/") NEXT;
+        ImGui::Text("%d", ufo[3]) NEXT;
+
+        ImGui::TextUnformatted(")");
+
+        #undef NEXT
+    }
+
+    void THTrackerUpdate()
+    {
+        ImGui::SetNextWindowSize({ 210.0f, 0.0f });
+        ImGui::SetNextWindowPos({ 425.0f, 333.0f });
+        ImGui::Begin("Tracker", nullptr,
+            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+        auto shottype = GetMemContent(CHARA) * 2 + GetMemContent(SUBSHOT);
+
+        char buf[32] = {};
+        snprintf(buf, sizeof(buf), "%s", S(SHOTTYPE_NAMES[shottype]));
+        auto textSize = ImGui::CalcTextSize(buf);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - textSize.x * 0.5f);
+        ImGui::TextUnformatted(buf);
+
+        ImGui::BeginTable("Tracker table", 2);
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th12.misses);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
+        ImGui::TableNextColumn();
+        ImGui::Text("%d", tracker_info.th12.bombs);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_UFO_COLLECTED));
+        ImGui::TableNextColumn();
+        draw_3ufo_info(tracker_info.th12.ufos_collected);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_UFO_DROPPED));
+        ImGui::TableNextColumn();
+        draw_4ufo_info(tracker_info.th12.ufos_dropped);
+
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TRACKER_UFO_SUMMONED));
+        ImGui::TableNextColumn();
+        draw_4ufo_info(tracker_info.th12.ufos_summoned);
+
+        ImGui::EndTable();
+
+        ImGui::End();
+    }
+
     HOOKSET_DEFINE(THMainHook)
+    { .addr = 0x421DEF, .name = "th12_enter", .callback = tracker_reset, .data = PatchHookImpl(6) },
+    { .addr = 0x422F28, .name = "th12_bomb_dec", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
+    { .addr = 0x4381E2, .name = "th12_life_dec", .callback = th10_tracker_count_miss, .data = PatchHookImpl(5) },
+    EHOOK_DY(th12_ufo_spawn, 0x44A909, 7, {
+        uint32_t type = pCtx->Eax;
+        GameState_Assert(type < 4);
+        tracker_info.th12.ufos_summoned[type]++;
+    })
+    EHOOK_DY(th12_ufo_item, 0x4270b0, 3, { 
+        uint32_t type = pCtx->Eax;
+        GameState_Assert(type < 3);
+        tracker_info.th12.ufos_collected[type]++;
+    })
+    EHOOK_DY(th12_ufo_item2, 0x427411, 6, {
+        uint32_t type = pCtx->Eax;
+        GameState_Assert(type < 6);
+        if (type > 3) { 
+            type = 3;
+        }
+        tracker_info.th12.ufos_dropped[type]++;
+    })
     EHOOK_DY(th12_everlasting_bgm, 0x454960, 10, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
@@ -1558,8 +1698,6 @@ namespace TH12 {
             thPracParam.Reset();
 
         else if (stageNum > 1 && stageNum <= 6 && !(GetMemContent(MODEFLAGS) & 0b10000)) {
-            Player* player = GetMemContent<Player*>(PLAYER_PTR);
-
             if (THGuiRep::singleton().mRepStatus) { // Playback
                 for (int i = 0; i < playerDmgSrcCnt; i++) // if there are already active sources, its a transition - skip
                     if (player->damage_sources[i].flags & 1)
@@ -1611,10 +1749,9 @@ namespace TH12 {
         if ((GetMemContent(STAGE_NUM) - 1) % 6 == 0) return; // must not be st1/7
         if (!GetMemContent(REPLAY_MGR_PTR, 0xa8 + 0x24 * 1))  return; // must have st1 in replay
 
-        Timer* iframes_timer = (Timer*)GetMemAddr(PLAYER_PTR, 0xc400);
-        iframes_timer->previous = 1;
-        iframes_timer->current = 0;
-        iframes_timer->current_f = 0.0f;
+        player->iframes.previous = 1;
+        player->iframes.current = 0;
+        player->iframes.current_f = 0.0f;
     })
     EHOOK_DY(th12_bgm, 0x42293a, 1, {
         if (THBGMTest()) {
@@ -1644,6 +1781,10 @@ namespace TH12 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
+
+        if (tracker_open && player) {
+            THTrackerUpdate();
+        }
 
         GameGuiEnd(drawCursor);
     })
