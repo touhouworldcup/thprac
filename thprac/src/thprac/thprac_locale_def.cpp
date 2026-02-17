@@ -1166,12 +1166,12 @@ const char* th_glossary_str[3][1191]
         "蓝2",
         "绿1",
         "绿2",
-        "Δ击破",
+        "异变敌击破",
         "异变石等级",
         "普通",
         "红1",
         "红2",
-        "Δ生成",
+        "异变敌生成",
         "黄1",
         "黄2",
         "夏",
@@ -3552,12 +3552,12 @@ const char* th_glossary_str[3][1191]
         "青2",
         "緑1",
         "緑2",
-        "撃破されたΔ",
+        "撃破された異変敵",
         "異変敵レベル",
         "コモン",
         "紅1",
         "紅2",
-        "召喚されたΔ",
+        "召喚された異変敵",
         "黄1",
         "黄2",
         "夏",
@@ -22141,13 +22141,14 @@ const th_glossary_t TH20_EXPIRED_PYRAMID_FIX_OPT[6]
 
 }
 
-const wchar_t __thprac_loc_range_zh[2805] {
+const wchar_t __thprac_loc_range_zh[2807] {
     0x0020, 0x00FF,
     0x394, 0x394,
     0x2014, 0x2014,
     0x201c, 0x201d,
     0x2022, 0x2022,
     0x2026, 0x2026,
+    0x25b3, 0x25b3,
     0x3000, 0x3002,
     0x300c, 0x300d,
     0x30b9, 0x30b9,
@@ -23569,10 +23570,11 @@ const wchar_t __thprac_loc_range_en[37] {
     0
 };
 
-const wchar_t __thprac_loc_range_ja[2293] {
+const wchar_t __thprac_loc_range_ja[2295] {
     0x0020, 0x00FF,
     0x394, 0x394,
     0x2026, 0x2026,
+    0x25b3, 0x25b3,
     0x2fc5, 0x2fc5,
     0x3000, 0x3002,
     0x3005, 0x3006,

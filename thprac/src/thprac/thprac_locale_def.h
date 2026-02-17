@@ -2834,10 +2834,10 @@ extern const th_glossary_t TH20_EXPIRED_PYRAMID_FIX_OPT[6];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[2805];
+extern const wchar_t __thprac_loc_range_zh[2807];
 
 extern const wchar_t __thprac_loc_range_en[37];
 
-extern const wchar_t __thprac_loc_range_ja[2293];
+extern const wchar_t __thprac_loc_range_ja[2295];
 
 }
