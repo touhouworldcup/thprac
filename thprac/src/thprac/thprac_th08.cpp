@@ -2280,6 +2280,8 @@ namespace TH08 {
         ImGui::Text("%d (%d)", GetMemContent(MISS_COUNT_ADDR), tracker_info.th08.disslove_count);
 
         ImGui::TableNextRow();
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 2);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
 
         ImGui::TableNextColumn();
         ImGui::TextUnformatted(S(TH_TRACKER_BOMB));

@@ -2902,11 +2902,19 @@ namespace TH20 {
         TH_TRACKER_STONE_G2
     };
 
+    const char* StoneName(uint32_t stone) {
+        if (stone >= elementsof(stone_names)) {
+            return S(TH_TRACKER_STONE_N);
+        } else {
+            return S(stone_names[stone]);
+        }
+    }
+
     void StoneText(uint32_t stone) {
         if (stone >= elementsof(stone_names)) {
-            ImGui::TextUnformatted(S(TH_TRACKER_STONE_N));
+            ImGui::TextUnformatted(StoneName(stone));
         } else {
-            ImGui::TextColored(stone_colors[stone / 2], "%s", S(stone_names[stone]));
+            ImGui::TextColored(stone_colors[stone / 2], "%s", StoneName(stone));
         }
     }
 
@@ -2939,6 +2947,16 @@ namespace TH20 {
 
         #define NEXT ;SameLine(0.0f, 0.0f)
 
+        char buf[32] = {};
+        snprintf(buf, sizeof(buf), "%s (%s/%s/%s)", 
+                 StoneName(globals->story_stone_raw), 
+                 StoneName(globals->narrow_shot_stone_raw),
+                 StoneName(globals->wide_shot_stone_raw), 
+                 StoneName(globals->assist_stone_raw));
+        auto textSize = ImGui::CalcTextSize(buf);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - 
+                             textSize.x * 0.5f);
         StoneText(globals->story_stone_raw) NEXT;
         TextUnformatted(" (") NEXT; 
         StoneText(globals->narrow_shot_stone_raw) NEXT;
@@ -2949,6 +2967,8 @@ namespace TH20 {
         TextUnformatted(")");
 
         BeginTable(S(TH_TRACKER_TITLE), 2);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 2);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
         TableNextRow();
 
         TableNextColumn();

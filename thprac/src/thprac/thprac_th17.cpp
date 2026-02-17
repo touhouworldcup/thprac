@@ -1944,6 +1944,8 @@ namespace TH17 {
         ImGui::TextUnformatted(buf);
 
         ImGui::BeginTable(S(TH_TRACKER_TITLE), 2);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 2);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
