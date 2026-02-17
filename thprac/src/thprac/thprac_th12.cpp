@@ -1516,10 +1516,10 @@ namespace TH12 {
 #endif
     }
 
-    const char* SHOTTYPE_NAMES[] = {
-        "ReimuA", "ReimuB",
-        "MarisaA", "MarisaB",
-        "SanaeA", "SanaeB",
+    constexpr th_glossary_t SHOTTYPE_NAMES[] = {
+        TH_TRACKER_REIMU_A, TH_TRACKER_REIMU_B,
+        TH_TRACKER_MARISA_A, TH_TRACKER_MARISA_B,
+        TH_TRACKER_SANAE_A, TH_TRACKER_SANAE_B
     };
 
     void draw_3ufo_info(uint32_t* ufo) {
@@ -1580,45 +1580,45 @@ namespace TH12 {
         auto shottype = GetMemContent(CHARA) * 2 + GetMemContent(SUBSHOT);
 
         char buf[32] = {};
-        snprintf(buf, sizeof(buf), "%s", SHOTTYPE_NAMES[shottype]);
+        snprintf(buf, sizeof(buf), "%s", S(SHOTTYPE_NAMES[shottype]));
         auto textSize = ImGui::CalcTextSize(buf);
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - textSize.x * 0.5f);
         ImGui::TextUnformatted(buf);
 
-        ImGui::BeginTable("Tracker table", 2);
+        ImGui::BeginTable(S(TH_TRACKER_TITLE), 2);
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Miss");
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th12.misses);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Bomb");
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th12.bombs);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("UFO collected");
+        ImGui::TextUnformatted(S(TH_TRACKER_UFO_COLLECTED));
         ImGui::TableNextColumn();
         draw_3ufo_info(tracker_info.th12.ufos_collected);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("UFO dropped");
+        ImGui::TextUnformatted(S(TH_TRACKER_UFO_DROPPED));
         ImGui::TableNextColumn();
         draw_4ufo_info(tracker_info.th12.ufos_dropped);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("UFO summoned");
+        ImGui::TextUnformatted(S(TH_TRACKER_UFO_SUMMONED));
         ImGui::TableNextColumn();
         draw_4ufo_info(tracker_info.th12.ufos_summoned);
 

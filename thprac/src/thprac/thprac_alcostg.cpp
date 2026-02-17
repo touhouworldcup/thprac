@@ -963,18 +963,18 @@ namespace Alcostg {
         ImGui::Begin("Tracker", nullptr,
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 
-        ImGui::BeginTable("Tracker table", 2);
+        ImGui::BeginTable(S(TH_TRACKER_TITLE), 2);
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Miss");
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th10.misses);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Bomb");
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th10.bombs);
 

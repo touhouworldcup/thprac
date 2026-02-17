@@ -6,8 +6,9 @@
 namespace THPrac {
 
 namespace TH06 {
-    const char* const SHOTNAMES[4] = {
-        "ReimuA", "ReimuB", "MarisaA", "MarisaB"
+    constexpr th_glossary_t SHOTNAMES[4] = {
+        TH_TRACKER_REIMU_A, TH_TRACKER_REIMU_B,
+        TH_TRACKER_MARISA_A, TH_TRACKER_MARISA_B
     };
     
     static const GameManager* const GAME_MANAGER = (const GameManager* const)0x69bca0;
@@ -1871,8 +1872,9 @@ namespace TH06 {
         ReplaySaveParam(mb_to_utf16(rep_name, 932).c_str(), thPracParam.GetJson());
     }
 
-    const char* DIFFNAMES[] = {
-        "Easy", "Normal", "Hard", "Lunatic", "Extra"
+    constexpr th_glossary_t DIFFNAMES[] = {
+        TH_TRACKER_EASY, TH_TRACKER_NORMAL, TH_TRACKER_HARD, TH_TRACKER_LUNATIC,
+        TH_TRACKER_EXTRA
     };
 
     void THTrackerUpdate() {
@@ -1891,24 +1893,24 @@ namespace TH06 {
         );
 
         char buf[32] = {};
-        snprintf(buf, sizeof(buf), "%s (%s)", DIFFNAMES[GAME_MANAGER->difficulty], SHOTNAMES[GAME_MANAGER->character * 2 + GAME_MANAGER->shotType]);
+        snprintf(buf, sizeof(buf), "%s (%s)", S(DIFFNAMES[GAME_MANAGER->difficulty]), S(SHOTNAMES[GAME_MANAGER->character * 2 + GAME_MANAGER->shotType]));
         auto textSize = ImGui::CalcTextSize(buf);
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - textSize.x * 0.5);
         ImGui::TextUnformatted(buf);        
 
-        ImGui::BeginTable("Tracker table", 2);
+        ImGui::BeginTable(S(TH_TRACKER_TITLE), 2);
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Miss");
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th06.misses);
         
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Bomb");
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
         ImGui::TableNextColumn();
         ImGui::Text("%d", GAME_MANAGER->bombsUsed);
 

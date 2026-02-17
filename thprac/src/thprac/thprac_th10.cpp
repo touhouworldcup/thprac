@@ -2204,9 +2204,9 @@ namespace TH10 {
     }
     PATCH_ST(th10_real_bullet_sprite, 0x406e03, "0F8413050000");
 
-    const char* SHOTTYPE_NAMES[] = {
-        "ReimuA", "ReimuB", "ReimuC",
-        "MarisaA", "MarisaB", "MarisaC",
+    constexpr th_glossary_t SHOTTYPE_NAMES[] = {
+        TH_TRACKER_REIMU_A, TH_TRACKER_REIMU_B, TH_TRACKER_REIMU_C, 
+        TH_TRACKER_MARISA_A, TH_TRACKER_MARISA_B, TH_TRACKER_MARISA_C 
     };
     void THTrackerUpdate()
     {
@@ -2218,24 +2218,24 @@ namespace TH10 {
         auto shottype = GetMemContent(CHARA_ADDR) * 3 + GetMemContent(SUBSHOT_ADDR);
 
         char buf[32] = {};
-        snprintf(buf, sizeof(buf), "%s", SHOTTYPE_NAMES[shottype]);
+        snprintf(buf, sizeof(buf), "%s", S(SHOTTYPE_NAMES[shottype]));
         auto textSize = ImGui::CalcTextSize(buf);
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - textSize.x * 0.5);
         ImGui::TextUnformatted(buf);
 
-        ImGui::BeginTable("Tracker table", 2);
+        ImGui::BeginTable(S(TH_TRACKER_TITLE), 2);
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Miss");
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th10.misses);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Bomb");
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th10.bombs);
 

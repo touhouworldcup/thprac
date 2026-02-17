@@ -1668,14 +1668,15 @@ namespace TH07 {
         ReplaySaveParam(mb_to_utf16(rep_name, 932).c_str(), thPracParam.GetJson());
     }
 
-    const char* SHOTNAMES[] = {
-        "ReimuA", "ReimuB",
-        "MarisaA", "MarisaB",
-        "SakuyaA", "SakuyaB"
+    constexpr th_glossary_t SHOTNAMES[] = {
+        TH_TRACKER_REIMU_A, TH_TRACKER_REIMU_B,
+        TH_TRACKER_MARISA_A, TH_TRACKER_MARISA_B,
+        TH_TRACKER_SAKUYA_A, TH_TRACKER_SAKUYA_B
     };
 
-    const char* const DIFFNAMES_TH07[] = {
-        "Easy", "Normal", "Hard", "Lunatic", "Extra", "Phantasm"
+    constexpr th_glossary_t DIFFNAMES_TH07[] = {
+        TH_TRACKER_EASY, TH_TRACKER_NORMAL, TH_TRACKER_HARD, TH_TRACKER_LUNATIC,
+        TH_TRACKER_EXTRA, TH_TRACKER_PHANTASM
     };
 
     void THTrackerUpdate()
@@ -1686,31 +1687,31 @@ namespace TH07 {
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 
         char buf[32] = {};
-        snprintf(buf, sizeof(buf), "%s (%s)", DIFFNAMES_TH07[GAME_MANAGER->difficulty], SHOTNAMES[GAME_MANAGER->full_shottype]);
+        snprintf(buf, sizeof(buf), "%s (%s)", S(DIFFNAMES_TH07[GAME_MANAGER->difficulty]), S(SHOTNAMES[GAME_MANAGER->full_shottype]));
         auto textSize = ImGui::CalcTextSize(buf);
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - textSize.x * 0.5);
         ImGui::TextUnformatted(buf);
 
-        ImGui::BeginTable("Tracker table", 2);
+        ImGui::BeginTable(S(TH_TRACKER_TITLE), 2);
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Miss");
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
         ImGui::TableNextColumn();
         ImGui::Text("%d", (int)globals->miss_count);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Bomb");
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
         ImGui::TableNextColumn();
         ImGui::Text("%d", (int)globals->bombs_used);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Border Breaks");
+        ImGui::TextUnformatted(S(TH_TRACKER_BORDER_BREAK));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th07.border_break);
 

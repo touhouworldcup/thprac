@@ -1899,11 +1899,15 @@ namespace TH17 {
         ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
 
-    const char* CHARNAMES[] = {
-        "Reimu", "Marisa", "Youmu"
+    constexpr th_glossary_t CHARNAMES[] = {
+        TH_TRACKER_REIMU,
+        TH_TRACKER_MARISA,
+        TH_TRACKER_YOUMU
     };
-    const char* GOASTNAMES[] = {
-        "Wolf", "Otter", "Eagle"
+    constexpr th_glossary_t GOASTNAMES[] = {
+        TH_TRACKER_WOLF,
+        TH_TRACKER_OTTER,
+        TH_TRACKER_EAGLE
     };
 
     void draw_roaring_info() {
@@ -1933,45 +1937,45 @@ namespace TH17 {
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 
         char buf[32] = {};
-        snprintf(buf, sizeof(buf), "%s %s", CHARNAMES[globals->rpy.chara], GOASTNAMES[globals->rpy.goast]);
+        snprintf(buf, sizeof(buf), "%s %s", S(CHARNAMES[globals->rpy.chara]), S(GOASTNAMES[globals->rpy.goast]));
         auto textSize = ImGui::CalcTextSize(buf);
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - textSize.x * 0.5f);
         ImGui::TextUnformatted(buf);
 
-        ImGui::BeginTable("Tracker table", 2);
+        ImGui::BeginTable(S(TH_TRACKER_TITLE), 2);
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Miss");
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th17.misses);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Bomb");
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th17.bombs);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Roaring");
+        ImGui::TextUnformatted(S(TH_TRACKER_ROARING));
         ImGui::TableNextColumn();
         draw_roaring_info();
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Spirit Strikes");
+        ImGui::TextUnformatted(S(TH_TRACKER_SPIRIT_STRIKE));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th17.spirit_strikes);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Spec. Used");
+        ImGui::TextUnformatted(S(TH_TRACKER_SPECIAL_SPIRIT_USED));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th17.roaring_with_special);
 

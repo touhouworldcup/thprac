@@ -2143,8 +2143,16 @@ namespace TH16 {
         return signal;
     }
 
-    const char* CHARNAMES[] = { "Reimu", "Cirno", "Aya", "Marisa" };
-    const char* SEASONNAMES[] = { "Spring", "Summer", "Autumn", "Winter", "Dog" };
+    constexpr th_glossary_t CHARNAMES[] = { 
+        TH_TRACKER_REIMU,
+        TH_TRACKER_CIRNO,
+        TH_TRACKER_AYA,
+        TH_TRACKER_MARISA
+    };
+    constexpr th_glossary_t SEASONNAMES[] = {
+        TH_TRACKER_SPRING, TH_TRACKER_SUMMER, TH_TRACKER_AUTUMN, 
+        TH_TRACKER_WINTER, TH_TRACKER_DOG
+    };
 
     void THTrackerUpdate() {
         Gui::SetNextWindowSizeRel({ 340.0f / 1280, 0.0f });
@@ -2153,31 +2161,31 @@ namespace TH16 {
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 
         char buf[32] = {};
-        snprintf(buf, sizeof(buf), "%s+%s", CHARNAMES[GetMemContent(CHARA_ADDR)], SEASONNAMES[GetMemContent(SEASON_ADDR)]);
+        snprintf(buf, sizeof(buf), "%s+%s", S(CHARNAMES[GetMemContent(CHARA_ADDR)]), S(SEASONNAMES[GetMemContent(SEASON_ADDR)]));
         auto textSize = ImGui::CalcTextSize(buf);
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - textSize.x * 0.5f);
         ImGui::TextUnformatted(buf);
 
-        ImGui::BeginTable("Tracker table", 2);
+        ImGui::BeginTable(S(TH_TRACKER_TITLE), 2);
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Miss");
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th13.misses);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Bomb");
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th13.bombs);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Release");
+        ImGui::TextUnformatted(S(TH_TRACKER_RELEASE));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th13.trance);
 

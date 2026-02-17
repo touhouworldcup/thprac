@@ -2891,15 +2891,22 @@ namespace TH20 {
 
     const ImVec4 stone_colors[] = { red, blue, yellow, green };
 
-    const char* stone_names[] = {
-        "R1", "R2", "B1", "B2", "Y1", "Y2", "G1", "G2"
+    constexpr th_glossary_t stone_names[] = {
+        TH_TRACKER_STONE_R1,
+        TH_TRACKER_STONE_R2,
+        TH_TRACKER_STONE_B1,
+        TH_TRACKER_STONE_B2,
+        TH_TRACKER_STONE_Y1,
+        TH_TRACKER_STONE_Y2,
+        TH_TRACKER_STONE_G1,
+        TH_TRACKER_STONE_G2
     };
 
     void StoneText(uint32_t stone) {
         if (stone >= elementsof(stone_names)) {
-            ImGui::TextUnformatted("N");
+            ImGui::TextUnformatted(S(TH_TRACKER_STONE_N));
         } else {
-            ImGui::TextColored(stone_colors[stone / 2], "%s", stone_names[stone]);
+            ImGui::TextColored(stone_colors[stone / 2], "%s", S(stone_names[stone]));
         }
     }
 
@@ -2941,39 +2948,39 @@ namespace TH20 {
         StoneText(globals->assist_stone_raw) NEXT;
         TextUnformatted(")");
 
-        BeginTable("Tracker table", 2);
+        BeginTable(S(TH_TRACKER_TITLE), 2);
         TableNextRow();
 
         TableNextColumn();
-        TextUnformatted("Miss");
+        TextUnformatted(S(TH_TRACKER_MISS));
         TableNextColumn();
         Text("%d", tracker_info.th20.misses);
 
         TableNextRow();
 
         TableNextColumn();
-        TextUnformatted("Bomb");
+        TextUnformatted(S(TH_TRACKER_BOMB));
         TableNextColumn();
         Text("%d", tracker_info.th20.bombs);
 
         TableNextRow();
 
         TableNextColumn();
-        TextUnformatted("Hyper");
+        TextUnformatted(S(TH_TRACKER_HYPER));
         TableNextColumn();
         Text("%d", tracker_info.th20.hypers);
 
         TableNextRow();
 
         TableNextColumn();
-        TextUnformatted("Hyper Break");
+        TextUnformatted(S(TH_TRACKER_HYPER_BREAK));
         TableNextColumn();
         Text("%d", tracker_info.th20.hyper_breaks);
 
         TableNextRow();
 
         TableNextColumn();
-        TextUnformatted(S(TH20_TRACKER_STONE_SUMMONED));
+        TextUnformatted(S(TH_TRACKER_STONE_SUMMONED));
         TableNextColumn();
         auto summoned = globals->stone_enemy_count_total;
         if (summoned % 3 == 0) {
@@ -2985,14 +2992,14 @@ namespace TH20 {
         TableNextRow();
 
         TableNextColumn();
-        TextUnformatted(S(TH20_TRACKER_STONE_KILLED));
+        TextUnformatted(S(TH_TRACKER_STONE_KILLED));
         TableNextColumn();
         Text("%d", tracker_info.th20.delta_killed);
 
         TableNextRow();
 
         TableNextColumn();
-        TextUnformatted("Stone Lv.");
+        TextUnformatted(S(TH_TRACKER_STONE_LEVEL));
         TableNextColumn();
         PrintStoneLv();        
 

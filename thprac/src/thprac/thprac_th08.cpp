@@ -2248,13 +2248,13 @@ namespace TH08 {
         }
     });
 
-    const char* SHOTNAMES[] = {
-        "Border Team", "Magic Team",
-        "Scarlet Team", "Netherworld Team",
-        "Reimu", "Yukari",
-        "Marisa", "Alice",
-        "Sakuya", "Remilia",
-        "Youmu", "Yuyuko"
+    constexpr th_glossary_t SHOTNAMES[] = {
+        TH_TRACKER_BORDER_TEAM, TH_TRACKER_MAGIC_TEAM,
+        TH_TRACKER_SCARLET_TEAM, TH_TRACKER_NETHERWORLD_TEAM,
+        TH_TRACKER_REIMU, TH_TRACKER_YUKARI,
+        TH_TRACKER_MARISA, TH_TRACKER_ALICE,
+        TH_TRACKER_SAKUYA, TH_TRACKER_REMILIA,
+        TH_TRACKER_YOUMU, TH_TRACKER_YUYUKO
     };
 
     void THTrackerUpdate()
@@ -2265,38 +2265,38 @@ namespace TH08 {
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 
         char buf[32] = {};
-        snprintf(buf, sizeof(buf), "%s", SHOTNAMES[GetMemContent<uint8_t>(SHOTTYPE_ADDR)]);
+        snprintf(buf, sizeof(buf), "%s", S(SHOTNAMES[GetMemContent<uint8_t>(SHOTTYPE_ADDR)]));
         auto textSize = ImGui::CalcTextSize(buf);
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - textSize.x * 0.5);
         ImGui::TextUnformatted(buf);
 
-        ImGui::BeginTable("Tracker table", 2);
+        ImGui::BeginTable(S(TH_TRACKER_TITLE), 2);
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Miss");
+        ImGui::TextUnformatted(S(TH_TRACKER_MISS));
         ImGui::TableNextColumn();
         ImGui::Text("%d (%d)", GetMemContent(MISS_COUNT_ADDR), tracker_info.th08.disslove_count);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Bomb");
+        ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
         ImGui::TableNextColumn();
         ImGui::Text("%d", GetMemContent(BOMB_COUNT_ADDR) + GetMemContent(DEATHBOMB_COUNT_ADDR));
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Spells Captured");
+        ImGui::TextUnformatted(S(TH_TRACKER_SPELLS_CAPTURED));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th08.spells_captured);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted("Last Spells");
+        ImGui::TextUnformatted(S(TH_TRACKER_LAST_SPELLS));
         ImGui::TableNextColumn();
         ImGui::Text("%d", tracker_info.th08.last_spells_captured);
 
