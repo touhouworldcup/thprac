@@ -168,6 +168,7 @@
     <TargetName>thprac</TargetName>
     <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)src\3rdParties\FreeType\win32;$(LibraryPath)</LibraryPath>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnabled>false</VcpkgEnabled>
@@ -203,6 +204,11 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(ToolsetType)'=='ClangCL'">-Wno-ambiguous-reversed-operator -Wno-unused-function -Wno-unused-const-variable -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-private-field -Wno-unused-label -Wno-unused-local-typedef -Wno-missing-braces %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <CustomBuildStep>
+      <Command>loc_json.exe src\thprac</Command>
+      <Inputs>src\thprac\thprac_games_def.h</Inputs>
+      <Outputs>nonexistent</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(BuildType)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -234,21 +240,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <Target
-	Name="loc_json_build"
-	Inputs="loc_json.cpp"
-	Outputs="loc_json.exe"
-	BeforeTargets="ClCompile">
-	<Exec Command="cl.exe /nologo /EHsc /O2 /std:c++20 loc_json.cpp /Fe:loc_json.exe" />
-  </Target>
-  <Target
-	Name="loc_json_generate"
-	Inputs="$(ProjectDir)\src\thprac\thprac_games_def.json;$(ProjectDir)\loc_json.exe"
-	Outputs="$(ProjectDir)\src\thprac\thprac_locale_def.cpp;$(ProjectDir)\src\thprac\thprac_locale_def.h"
-	BeforeTargets="ClCompile"
-	AfterTargets="loc_json_build" >
-  	<Exec Command="loc_json.exe $(ProjectDir)\src\thprac" />
-  </Target>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ProjectExtensions>
     <VisualStudio>
