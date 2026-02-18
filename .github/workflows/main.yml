@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - loc_json_buildtime
 
 jobs:
   build:
@@ -14,9 +13,6 @@ jobs:
       uses: microsoft/setup-msbuild@v2
       with:
           msbuild-architecture: x86
-    - name: Build loc_json
-      working-directory: ./thprac
-      run: cl /nologo /EHsc /O2 /std:c++20 loc_json.cpp /Fe:loc_json.exe
     - name: Build thprac
       run: msbuild thprac.sln -t:restore,build -p:RestorePackagesConfig=true,Configuration=Release
     - name: Upload artifacts
