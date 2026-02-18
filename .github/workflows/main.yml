@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - loc_json_buildtime
 
 jobs:
   build:
