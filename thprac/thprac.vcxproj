@@ -168,6 +168,7 @@
     <TargetName>thprac</TargetName>
     <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)src\3rdParties\FreeType\win32;$(LibraryPath)</LibraryPath>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnabled>false</VcpkgEnabled>
@@ -203,6 +204,11 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(ToolsetType)'=='ClangCL'">-Wno-ambiguous-reversed-operator -Wno-unused-function -Wno-unused-const-variable -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-private-field -Wno-unused-label -Wno-unused-local-typedef -Wno-missing-braces %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <CustomBuildStep>
+      <Command>loc_json.exe src\thprac</Command>
+      <Inputs>src\thprac\thprac_games_def.h</Inputs>
+      <Outputs>nonexistent</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(BuildType)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

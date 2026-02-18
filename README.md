@@ -17,6 +17,7 @@
 * [Advanced Options](#advanced-options)
 * [Game Specific Features](#game-specific-features)
 * [Credits](#credits)
+* [Building from Source](#building-from-source)
 * [FAQ](#faq)
 
 ## <a name="downloading"></a> **Downloading**
@@ -126,6 +127,22 @@ Choosing "Exit" will now prompt you to save a replay.
 - English README.md: [Galagyy](https://github.com/Galagyy)
 - Chinese README.md translation: [TNT569](https://github.com/TNT569), [H-J-Granger](https://github.com/H-J-Granger)
 - Japanese README.md translation: [wefma](https://github.com/wefma)
+
+## <a name="building-from-source"></a> **Building from Source**
+### First time setup (only needs to be performed once)
+Inside the folder named thprac, compile loc_json.cpp into loc_json.exe in whatever way you like most. I recommend this command
+```
+cl.exe /Isrc\3rdparties\rapidjson\include /nologo /EHsc /O2 /std:c++20 loc_json.cpp /Fe:loc_json.exe"
+```
+
+### Building on the command line
+In a Visual Studio Developer Command Prompt, run the following command
+```
+msbuild thprac.sln -t:restore,build -p:RestorePackagesConfig=true,Configuration=Release
+```
+
+### Building from the Visual Studio GUI
+Open `thprac.sln` click on "Build", then "Build solution"
 
 ## <a name="faq"></a> **Frequently Asked Questions (FAQ)**
 
