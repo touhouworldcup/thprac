@@ -12,12 +12,15 @@ jobs:
     - uses: actions/checkout@v4
     - name: Setup MSBuild environment
       uses: microsoft/setup-msbuild@v2
-      uses: ilammy/msvc-dev-cmd@v1
       with:
           msbuild-architecture: x86
+    - name: Setup Visual Studio shell
+      uses: egor-tensin/vs-shell@v2
+      with:
+          arch: x86
     - name: Build loc_json
       working-directory: ./thprac
-      run: cl /Isrc\3rdparties\rapidjson\include /nologo /EHsc /O2 /std:c++20 loc_json.cpp /Fe:loc_json.exe"
+      run: cl /Isrc\3rdparties\rapidjson\include /nologo /EHsc /O2 /std:c++20 loc_json.cpp /Fe:loc_json.exe
     - name: Build thprac
       run: msbuild thprac.sln -t:restore,build -p:RestorePackagesConfig=true,Configuration=Release
     - name: Upload artifacts
