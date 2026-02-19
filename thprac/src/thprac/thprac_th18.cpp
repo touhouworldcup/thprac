@@ -2801,7 +2801,7 @@ namespace TH18 {
     void THTrackerUpdate()
     {
         Gui::SetNextWindowSizeRel({ 340.0f / 1280, 0.0f });
-        Gui::SetNextWindowPosRel({ 900.0f / 1280.0f, 840.0f / 960.0f });
+        Gui::SetNextWindowPosRel({ 900.0f / 1280.0f, 830.0f / 960.0f });
         ImGui::Begin("Tracker", nullptr,
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 
