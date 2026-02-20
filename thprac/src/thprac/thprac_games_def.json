@@ -805,8 +805,6 @@
       "TH_ATTACK": [ "攻击", "Attack", "弾幕" ],
       "TH_PROGRESS": [ "进度", "Progress", "進行度" ],
       "TH_BOTH_NORMAL": [ "都正常", "Both Normal", "両方とも正常" ],
-      "TH_HECATIA_RAGE": [ "赫卡提亚发狂", "Hecatia Rage", "ヘカティアの怒り" ],
-      "TH_JUNKO_RAGE": [ "纯狐发狂", "Junko Rage", "純狐怒り" ],
       "TH_BOTH_RAGE": [ "都发狂", "Both Rage", "両方の怒り" ],
       "TH_NONE": [ "无", "None", "なし" ],
       "TH_NONSPELL": [ "非符", "Non Spell", "通常" ],
@@ -7204,7 +7202,12 @@
       "TH15_ILT_3": [ "章节六（三吴克）", "Chapter 6", "チャプター 6" ],
       "TH15_ILT_4": [ "章节七（激光阵）", "Chapter 7", "チャプター 7" ],
       "TH15_ILT_5": [ "章节八（太田飞行阵）", "Chapter 8", "チャプター 8" ],
-      "TH15_ILT_6": [ "章节九", "Chapter 9", "チャプター 9" ]
+      "TH15_ILT_6": [ "章节九", "Chapter 9", "チャプター 9" ],
+      "TH15_HECATIA_RAGE": [ "赫卡提亚发狂", "Hecatia Rage", "ヘカティアの怒り" ],
+      "TH15_JUNKO_RAGE": [ "纯狐发狂", "Junko Rage", "純狐怒り" ],
+      "TH15_PH_BLUE": [ "蓝阶段", "Blue Phase", "青段階" ],
+      "TH15_PH_GREEN": [ "绿阶段", "Green Phase", "緑段階" ],
+      "TH15_PH_RED": [ "红阶段", "Red Phase", "赤段階" ]
     },
 
     "sections": {
@@ -7687,8 +7690,13 @@
       "TH15_SPELL_PHASE_EXTRA_LAST": [
         "TH_BOTH_NORMAL",
         "TH_BOTH_RAGE",
-        "TH_HECATIA_RAGE",
-        "TH_JUNKO_RAGE"
+        "TH15_HECATIA_RAGE",
+        "TH15_JUNKO_RAGE"
+      ],
+      "TH15_SPELL_PHASE_EXTRA_TIMEOUT": [
+        "TH15_PH_BLUE",
+        "TH15_PH_GREEN",
+        "TH15_PH_RED"
       ]
     }
   },

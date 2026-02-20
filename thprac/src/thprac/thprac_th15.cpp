@@ -180,6 +180,8 @@ namespace TH15 {
             auto section = CalcSection();
             if (section == TH15_ST6_BOSS11) {
                 return TH_SPELL_PHASE2;
+            } else if (section == TH15_ST7_END_S9) {
+                return TH15_SPELL_PHASE_EXTRA_TIMEOUT;
             } else if (section == TH15_ST7_END_S10) {
                 return TH15_SPELL_PHASE_EXTRA_LAST;
             } else if (section == TH15_ST5_MID1) {
@@ -716,6 +718,9 @@ namespace TH15 {
         ecl.SetPos(start);
         ecl << ecl_time << 0x0018000C << 0x02ff0000 << 0x00000000 << dest - start << at_frame;
     }
+
+    constexpr unsigned int st7Start = 0x8f6c;
+
     __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
     {
         if (stage == 1) {
@@ -965,6 +970,16 @@ namespace TH15 {
             ecl << 0 << 0x0020000b << 0x01ff0000 << 0 << 0xc
                 << 0x73736f42 << 0x64726143 << ordinal;
         };
+
+        constexpr unsigned int st7BossCreateCall = 0x93cc;
+        constexpr unsigned int st7bsMovePosX = 0x498 + 0x10; //0x4a8
+        constexpr unsigned int st7bsMovePosY = 0x498 + 0x14; //0x4ac
+        constexpr unsigned int st7bsANMSelect = 0x56c + 0x10; // 0x57c
+        constexpr unsigned int st7bsANMSetMainArg2 = 0x580 + 0x14; // 0x594
+        constexpr unsigned int st7bsSetSpriteIns = 0x5d4 + 0x4; // 0x5d8
+        constexpr unsigned int st7bsANMSetSprite1Arg2 = 0x674 + 0x14; // 0x688
+        constexpr unsigned int st7bsANMSetSprite2Arg2 = 0x68c + 0x14; // 0x6a0
+        constexpr unsigned int st7bsMoveLimitIns = 0x640 + 0x4; // 0x644
 
         switch (section) {
         case THPrac::TH15::TH15_ST1_MID1:
@@ -1415,9 +1430,9 @@ namespace TH15 {
             break;
         case THPrac::TH15::TH15_ST7_MID1:
             if (thPracParam.dlg)
-                ECLJump(ecl, 0x8f6c, 0x9270, 60);
+                ECLJump(ecl, st7Start, 0x9270, 60);
             else {
-                ECLJump(ecl, 0x8f6c, 0x92a8, 60);
+                ECLJump(ecl, st7Start, 0x92a8, 60);
                 ECLSkipChapter(1);
                 ecl.SetFile(2);
 
@@ -1433,7 +1448,7 @@ namespace TH15 {
             }
             break;
         case THPrac::TH15::TH15_ST7_MID2:
-            ECLJump(ecl, 0x8f6c, 0x92a8, 60);
+            ECLJump(ecl, st7Start, 0x92a8, 60);
             ECLSkipChapter(1);
             ecl.SetFile(2);
 
@@ -1448,7 +1463,7 @@ namespace TH15 {
             ecl << pair{0x2fc, 2200} << pair{0x525, (int8_t)0x32}; // Spell Health & Spell Ordinal
             break;
         case THPrac::TH15::TH15_ST7_MID3:
-            ECLJump(ecl, 0x8f6c, 0x92a8, 60);
+            ECLJump(ecl, st7Start, 0x92a8, 60);
             ECLSkipChapter(1);
             ecl.SetFile(2);
 
@@ -1464,22 +1479,22 @@ namespace TH15 {
             break;
         case THPrac::TH15::TH15_ST7_END_NS1:
             if (thPracParam.dlg)
-                ECLJump(ecl, 0x8f6c, 0x93b8, 60);
+                ECLJump(ecl, st7Start, 0x93b8, 60);
             else {
                 th15_st7boss1_chapter_bonus.Enable();
-                ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+                ECLJump(ecl, st7Start, st7BossCreateCall, 60);
                 st7_hide_subboss();
             }
             ECLSkipChapter(1);
             break;
         case THPrac::TH15::TH15_ST7_END_S1:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
             st7_enter_spell(0x31, 3000);
             break;
         case THPrac::TH15::TH15_ST7_END_NS2:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
 
@@ -1489,22 +1504,22 @@ namespace TH15 {
             ecl << pair{0x199c, 59} << pair{0x19bc, 0} << pair{0x15dc, 0}; // Change Move Time, Wait Time & Inv. Time
 
             ecl.SetFile(3);
-            ecl << pair{0x5d8, (int16_t)0} << pair{0x191c, (int16_t)0}; // Void 303-0 & 306-0
-            ecl << pair{0x594, 14} << pair{0x6a0, 120}; // Change 306-0 & 303-2
+            ecl << pair{st7bsSetSpriteIns, (int16_t)0} << pair{0x191c, (int16_t)0}; // Void 303-0 & 306-0
+            ecl << pair{st7bsANMSetMainArg2, 14} << pair{st7bsANMSetSprite2Arg2, 120}; // Change 306-0 & 303-2
             ECLJump(ecl, 0x1a90, 0x1ae8, 24); // Jump Over Sprite Change
             break;
         case THPrac::TH15::TH15_ST7_END_S2:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
             st7_enter_spell(0x32, 3400);
 
             ecl.SetFile(3);
-            ecl << pair{0x5d8, (int16_t)0}; // Void 303-0
-            ecl << pair{0x594, 14} << pair{0x6a0, 120}; // Change 306-0 & 303-2
+            ecl << pair{st7bsSetSpriteIns, (int16_t)0}; // Void 303-0
+            ecl << pair{st7bsANMSetMainArg2, 14} << pair{st7bsANMSetSprite2Arg2, 120}; // Change 306-0 & 303-2
             break;
         case THPrac::TH15::TH15_ST7_END_NS3:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
 
@@ -1514,22 +1529,22 @@ namespace TH15 {
             ecl << pair{0x26d8, 59} << pair{0x26f8, 0} << pair{0x2318, 0}; // Change Move Time, Wait Time & Inv. Time
 
             ecl.SetFile(3);
-            ecl << pair{0x5d8, (int16_t)0} << pair{0x2658, (int16_t)0}; // Void 303-0 & 306-0
-            ecl << pair{0x594, 7} << pair{0x6a0, 132}; // Change 306-0 & 303-2
+            ecl << pair{st7bsSetSpriteIns, (int16_t)0} << pair{0x2658, (int16_t)0}; // Void 303-0 & 306-0
+            ecl << pair{st7bsANMSetMainArg2, 7} << pair{st7bsANMSetSprite2Arg2, 132}; // Change 306-0 & 303-2
             ECLJump(ecl, 0x276c, 0x2798, 24); // Jump Over Sprite Change
             break;
         case THPrac::TH15::TH15_ST7_END_S3:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
             st7_enter_spell(0x33, 3000);
 
             ecl.SetFile(3);
-            ecl << pair{0x5d8, (int16_t)0}; // Void 303-0
-            ecl << pair{0x594, 7} << pair{0x6a0, 132}; // Change 306-0 & 303-2
+            ecl << pair{st7bsSetSpriteIns, (int16_t)0}; // Void 303-0
+            ecl << pair{st7bsANMSetMainArg2, 7} << pair{st7bsANMSetSprite2Arg2, 132}; // Change 306-0 & 303-2
             break;
         case THPrac::TH15::TH15_ST7_END_NS4:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
 
@@ -1541,23 +1556,23 @@ namespace TH15 {
             ecl << pair{0x31c4, 10}; // Inv. Time
 
             ecl.SetFile(3);
-            ecl << pair{0x5d8, (int16_t)0} << pair{0x3510, (int16_t)0}; // Void 303-0 & 306-0
-            ecl << pair{0x594, 0} << pair{0x6a0, 116}; // Change 306-0 & 303-2
-            ecl << pair{0x57c, 5}; // Change 302
+            ecl << pair{st7bsSetSpriteIns, (int16_t)0} << pair{0x3510, (int16_t)0}; // Void 303-0 & 306-0
+            ecl << pair{st7bsANMSetMainArg2, 0} << pair{st7bsANMSetSprite2Arg2, 116}; // Change 306-0 & 303-2
+            ecl << pair{st7bsANMSelect, 5}; // Change 302
             break;
         case THPrac::TH15::TH15_ST7_END_S4:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
             st7_enter_spell(0x34, 2000, true);
 
             ecl.SetFile(3);
-            ecl << pair{0x5d8, (int16_t)0}; // Void 303-0
-            ecl << pair{0x594, 0} << pair{0x6a0, 116}; // Change 306-0 & 303-2
-            ecl << pair{0x57c, 5}; // Change 302
+            ecl << pair{st7bsSetSpriteIns, (int16_t)0}; // Void 303-0
+            ecl << pair{st7bsANMSetMainArg2, 0} << pair{st7bsANMSetSprite2Arg2, 116}; // Change 306-0 & 303-2
+            ecl << pair{st7bsANMSelect, 5}; // Change 302
             break;
         case THPrac::TH15::TH15_ST7_END_NS5:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
 
@@ -1572,13 +1587,13 @@ namespace TH15 {
             ecl << pair{0x46e8, (int16_t)0}; // Void 306-0
             break;
         case THPrac::TH15::TH15_ST7_END_S5:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
             st7_enter_spell(0x35, 3500);
             break;
         case THPrac::TH15::TH15_ST7_END_NS6:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
 
@@ -1588,23 +1603,23 @@ namespace TH15 {
             ecl << pair{0x5610, 59} << pair{0x5630, 0} << pair{0x5250, 0}; // Change Move Time, Wait Time & Inv. Time
 
             ecl.SetFile(3);
-            ecl << pair{0x5d8, (int16_t)0} << pair{0x5590, (int16_t)0}; // Void 303-0 & 306-0
-            ecl << pair{0x594, 14} << pair{0x6a0, 120}; // Change 306-0 & 303-2
+            ecl << pair{st7bsSetSpriteIns, (int16_t)0} << pair{0x5590, (int16_t)0}; // Void 303-0 & 306-0
+            ecl << pair{st7bsANMSetMainArg2, 14} << pair{st7bsANMSetSprite2Arg2, 120}; // Change 306-0 & 303-2
             ECLJump(ecl, 0x5694, 0x56ec, 24); // Jump Over Sprite Change
             break;
         case THPrac::TH15::TH15_ST7_END_S6:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
             st7_enter_spell(0x36, 3500);
             ecl << pair{0xd898, (int16_t)0}; // Void 316
 
             ecl.SetFile(3);
-            ecl << pair{0x5d8, (int16_t)0}; // Void 303-0
-            ecl << pair{0x594, 14} << pair{0x6a0, 120}; // Change 306-0 & 303-2
+            ecl << pair{st7bsSetSpriteIns, (int16_t)0}; // Void 303-0
+            ecl << pair{st7bsANMSetMainArg2, 14} << pair{st7bsANMSetSprite2Arg2, 120}; // Change 306-0 & 303-2
             break;
         case THPrac::TH15::TH15_ST7_END_NS7:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
 
@@ -1614,22 +1629,22 @@ namespace TH15 {
             ecl << pair{0x6440, 59} << pair{0x6460, 0} << pair{0x6080, 0}; // Change Move Time, Wait Time & Inv. Time
 
             ecl.SetFile(3);
-            ecl << pair{0x5d8, (int16_t)0} << pair{0x63c0, (int16_t)0}; // Void 303-0 & 306-0
-            ecl << pair{0x594, 7} << pair{0x6a0, 132}; // Change 306-0 & 303-2
+            ecl << pair{st7bsSetSpriteIns, (int16_t)0} << pair{0x63c0, (int16_t)0}; // Void 303-0 & 306-0
+            ecl << pair{st7bsANMSetMainArg2, 7} << pair{st7bsANMSetSprite2Arg2, 132}; // Change 306-0 & 303-2
             ECLJump(ecl, 0x64d4, 0x652c, 24); // Jump Over Sprite Change
             break;
         case THPrac::TH15::TH15_ST7_END_S7:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
             st7_enter_spell(0x37, 3000);
 
             ecl.SetFile(3);
-            ecl << pair{0x5d8, (int16_t)0}; // Void 303-0
-            ecl << pair{0x594, 7} << pair{0x6a0, 132}; // Change 306-0 & 303-2
+            ecl << pair{st7bsSetSpriteIns, (int16_t)0}; // Void 303-0
+            ecl << pair{st7bsANMSetMainArg2, 7} << pair{st7bsANMSetSprite2Arg2, 132}; // Change 306-0 & 303-2
             break;
         case THPrac::TH15::TH15_ST7_END_NS8:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
 
@@ -1641,34 +1656,44 @@ namespace TH15 {
             ecl << pair{0x6f54, 0}; // Inv. Time
 
             ecl.SetFile(3);
-            ecl << pair{0x5d8, (int16_t)0} << pair{0x72b4, (int16_t)0}; // Void 303-0 & 306-0
-            ecl << pair{0x594, 0} << pair{0x6a0, 116}; // Change 306-0 & 303-2
-            ecl << pair{0x57c, 5}; // Change 302
+            ecl << pair{st7bsSetSpriteIns, (int16_t)0} << pair{0x72b4, (int16_t)0}; // Void 303-0 & 306-0
+            ecl << pair{st7bsANMSetMainArg2, 0} << pair{st7bsANMSetSprite2Arg2, 116}; // Change 306-0 & 303-2
+            ecl << pair{st7bsANMSelect, 5}; // Change 302
             break;
         case THPrac::TH15::TH15_ST7_END_S8:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
             st7_enter_spell(0x38, 3000, true);
 
             ecl.SetFile(3);
-            ecl << pair{0x5d8, (int16_t)0}; // Void 303-0
-            ecl << pair{0x594, 0} << pair{0x6a0, 116}; // Change 306-0 & 303-2
-            ecl << pair{0x57c, 5}; // Change 302
+            ecl << pair{st7bsSetSpriteIns, (int16_t)0}; // Void 303-0
+            ecl << pair{st7bsANMSetMainArg2, 0} << pair{st7bsANMSetSprite2Arg2, 116}; // Change 306-0 & 303-2
+            ecl << pair{st7bsANMSelect, 5}; // Change 302
             break;
-        case THPrac::TH15::TH15_ST7_END_S9:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+
+        case THPrac::TH15::TH15_ST7_END_S9: { // Trinitarian Rhapsody
+            constexpr unsigned int st7bsANMSelect2 = 0x6a4 + 0x10; // 0x6b4
+            constexpr unsigned int st7bsANMSetMainIns = 0x580 + 0x4; // 0x584
+
+            constexpr unsigned int st7BossSpell9Duration = 0x10408 + 0x18;
+            constexpr unsigned int st7BossSpell9TRStart = 0x104b8;
+            constexpr unsigned int st7BossSpell9TRBluePhaseTime = 120 * 3 + 180 * 5 + 280;
+
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
             st7_hide_subboss();
 
             ecl.SetFile(3);
-            ecl << pair{0x4a8, 0} << pair{0x4ac, 0x43600000}; // Pos
-            ecl << pair{0x5d8, (int16_t)0}; // Void 303-0
-            ecl << pair{0x57c, 5} << pair{0x6b4, 5}; // Change 302
-            ecl << pair{0x594, 0} << pair(0x688, -1) << pair(0x6a0, -1); // Change 306-0, 303-1 & 303-2
-            ecl << pair{0x644, (int16_t)0} << pair{0x584, (int16_t)0}; // Void 504, 303
+            ecl << pair { st7bsMovePosX, 0 } << pair { st7bsMovePosY, 0x43600000 }; // Center pos
+            ecl << pair { st7bsSetSpriteIns, (int16_t)0 }; // Cancel changing boss sprite
+            ecl << pair { st7bsANMSelect, 5 } << pair { st7bsANMSelect2, 5 }; // Change selected anim
+            ecl << pair { st7bsANMSetMainIns, (int16_t)0 }
+                << pair(st7bsANMSetSprite1Arg2, -1)
+                << pair(st7bsANMSetSprite2Arg2, -1); // More ANM fixing
+            ecl << pair { st7bsMoveLimitIns, (int16_t)0 }; // Remove move limits
 
-            ecl.SetFile(3);
+            // i give up parsing this
             ecl.SetPos(0x6d0);
             // 306
             ecl << 0 << 0x00180132 << 0x02ff0000 << 0 << 0 << 0;
@@ -1679,16 +1704,38 @@ namespace TH15 {
             // Card
             ecl << 0 << 0x0020000b << 0x01ff0000 << 0 << 0xc
                 << 0x73736f42 << 0x64726143 << 0x39;
+
+            switch (thPracParam.phase) {
+            case 1: {
+                constexpr unsigned int st7BossSpell9TRGreenPhase = 0x10a50;
+
+                ecl << pair { st7BossSpell9Duration, 5400 - st7BossSpell9TRBluePhaseTime + 90 }; // Adjust duration (removing waits)
+                ecl << pair { 0x10bb0 + 0x10, 55 - (st7BossSpell9TRBluePhaseTime-90) / 60 }; // Also adjust p2->p3 transition condition
+                ECLJump(ecl, st7BossSpell9TRStart, st7BossSpell9TRGreenPhase, 0);
+                break;
+            }
+            case 2: {
+                constexpr unsigned int st7BossSpell9TRRedPhase = 0x10c7c;
+
+                ecl << pair { st7BossSpell9Duration, 5400 - (55 * 60) - (90+18) }; // Adjust duration (hardcoded time threshold for p3 start, + wait)
+                ECLJump(ecl, st7BossSpell9TRStart, st7BossSpell9TRRedPhase, 0);
+                break;
+            }
+            default:
+                break;
+            }
             break;
+        }
+
         case THPrac::TH15::TH15_ST7_END_S10:
-            ECLJump(ecl, 0x8f6c, 0x93cc, 60);
+            ECLJump(ecl, st7Start, st7BossCreateCall, 60);
             ECLSkipChapter(2);
 
             // Hecatia
             ecl.SetFile(3);
-            ecl << pair{0x4a8, 0xc2800000} << pair{0x4ac, 0x43000000}; // Pos
-            ecl << pair{0x644, (int16_t)0}; // Void 504
-            ecl << pair(0x688, -1) << pair(0x6a0, -1); // Change 303-1 & 303-2
+            ecl << pair { st7bsMovePosX, 0xc2800000 } << pair { st7bsMovePosY, 0x43000000 }; // Pos
+            ecl << pair{st7bsMoveLimitIns, (int16_t)0}; // Void 504
+            ecl << pair(st7bsANMSetSprite1Arg2, -1) << pair(st7bsANMSetSprite2Arg2, -1); // Change 303-1 & 303-2
             ecl.SetPos(0x6d0);
             // Effect
             ecl << 5 << 0x0014012e << 0x01ff0000 << 0 << 5
