@@ -1,3 +1,6 @@
+## 26.2.19
+- (B1)修复更新到平台工具集v145导致的win7兼容性(GetSystemTimePreciseAsFileTime)问题(使用链接器"/FORCE:MULTIPLE"+手动版_Xtime_get_ticks，不过有点弱，，)反正应该能用
+
 ## 26.2.16
 - (B0)将VS版本更新到2026, 大幅修改代码以去除 WARNINGS
 - 修正了填坑器的年月日的显示问题（虽然之前没有但是其实代码是错的，，）

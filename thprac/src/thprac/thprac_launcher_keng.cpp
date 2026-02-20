@@ -18,6 +18,7 @@
 #include <chrono>
 #include <map>
 #include "..\3rdParties\rapidcsv\rapidcsv.h"
+#include "thprac_compatible.h"
 
 namespace THPrac {
     #define DIFF_NAME_SIZE 256
@@ -431,7 +432,7 @@ namespace THPrac {
 
         char* GetTimeDesc(){
             static char chs[256] = { 0 };
-            sprintf_s(chs, S(THPRAC_OTHER_TODAY), static_cast<int>(mTimeCreate.year()),static_cast<unsigned>(mTimeCreate.month()), static_cast<unsigned>(mTimeCreate.day()));
+            sprintf_s(chs, S(THPRAC_OTHER_TODAY), static_cast<int>(mTimeCreate.year()), static_cast<unsigned int>(mTimeCreate.month()), static_cast<unsigned int>(mTimeCreate.day()));
             return chs;
         }
 
@@ -717,7 +718,7 @@ namespace THPrac {
         char* GetTimeDesc()
         {
             static char chs[256] = { 0 };
-            sprintf_s(chs, S(THPRAC_OTHER_TODAY), mTimeCreate.year(), mTimeCreate.month(), mTimeCreate.day());
+            sprintf_s(chs, S(THPRAC_OTHER_TODAY), static_cast<int>(mTimeCreate.year()), static_cast<unsigned int>(mTimeCreate.month()), static_cast<unsigned int>(mTimeCreate.day()));
             return chs;
         }
 

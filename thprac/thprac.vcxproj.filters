@@ -217,6 +217,9 @@
     <ClInclude Include="src\thprac\thprac_games_SSS.h">
       <Filter>THPrac Games</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac\thprac_compatible.h">
+      <Filter>THPrac Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\thprac\thprac_utils.cpp">
@@ -428,6 +431,9 @@
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_games_SSS.cpp">
       <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_compatible.cpp">
+      <Filter>THPrac Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
