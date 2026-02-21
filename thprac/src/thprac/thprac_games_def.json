@@ -8747,7 +8747,48 @@
       "TH18_STATIC_MALLET_DESC": [
         "启用后，在回放中，万宝槌的物品转换将不再受到RNG影响（每30颗子弹变为11个金钱道具和19个得分道具；接近原版游戏的比率）。",
         "When enabled, RNG will no longer play a part in the Miracle Mallet's item conversion during replays (11 gold items and 19 green items for every 30 bullets; close to vanilla rate).",
-        "有効にすると、リプレイ中の打ち出の小槌のアイテム変換においてRNGは影響しません（30弾毎に11の金アイテムと19の緑アイテム；ほぼバニラゲームのレートに近い）。" ],
+        "有効にすると、リプレイ中の打ち出の小槌のアイテム変換においてRNGは影響しません（30弾毎に11の金アイテムと19の緑アイテム；ほぼバニラゲームのレートに近い）。"
+      ],
+      "TH18_MARKET_MANIP_LOADOUT": [ "对市场操纵使用预设购买策略", "Use preset purchasing strategy for Market Manip.", "市場操作にプリセット購入戦略を使用" ],
+      "TH18_MARKET_MANIP_LOADOUT_DESC": [
+        "启用后，使用市场操纵时会自动购买所有标记为“买”的卡牌，然后关闭商店。标记为“留”的卡牌不会被购买，且之后的商店中，高 / 中 / 低价位槽位只会出现这些卡牌。",
+        "When enabled, using Market Manip. will automatically buy every card you've marked as \"Buy\", then close the shop. Cards marked as \"Keep\" will not be bought and only these cards can appear in the High / Medium / Low Cost slots of future shops.",
+        "有効にすると、市場操作を使用した際に「購入」とマークしたカードをすべて自動購入し、その後ショップを閉じます。「保持」とマークしたカードは購入されず、以降のショップでは高 / 中 / 低コスト枠にこれらのカードのみが出現します。"
+      ],
+      "TH18_MARKET_MANIP_CARD_HINT": [ "切换 %s", "Toggle %s", "%s を切り替え" ],
+      "TH18_MARKET_MANIP_BUY": [ "买", "Buy", "購入" ],
+      "TH18_MARKET_MANIP_KEEP": [ "留", "Keep", "保持" ],
+      "TH18_MARKET_MANIP_BUY_HINT": [ "在使用市场操纵后不会出现在商店中", "Can't appear in shops after Market Manip.", "市場操作後のショップには出現しません" ],
+      "TH18_MARKET_MANIP_KEEP_HINT": [ "在使用市场操纵后可出现在商店中", "Can appear in shops after Market Manip.", "市場操作後のショップに出現します" ],
+      "TH18_MARKET_MANIP_ODD_HINT": [ "%s 在商店中出现的概率使用市场操纵后", "Chance for %s to appear in shops after Market Manip.", "市場操作後のショップで %s が出現する確率" ],
+      "TH18_MARKET_MANIP_ODD_BOOST_HINT": [ "%s 在商店中出现的概率使用市场操纵后\n（受新奖励加成影响）", "Chance for %s to appear in shops after Market Manip.\n(boosted by New bonus)", "市場操作後のショップで %s が出現する確率\n（新ボーナスで増加）" ],
+      "TH18_MARKET_MANIP_HIGH_COSTS": [ "高价位栏位卡牌", "High Cost Slot Cards", "高コスト枠カード" ],
+      "TH18_MARKET_MANIP_MID_COSTS": [ "中价位栏位卡牌", "Medium Cost Slot Cards", "中コスト枠カード" ],
+      "TH18_MARKET_MANIP_LOW_COSTS": [ "低价位栏位卡牌", "Low Cost Slot Cards", "低コスト枠カード" ],
+      "TH18_MARKET_MANIP_SLOT_REMOVED": [ "（无保留卡牌，栏位移除）", "(no cards kept, slot will be removed)", "（保持カードなし、枠が削除されます）" ],
+      "TH18_MARKET_MANIP_HAS_RNG": [ "（存在随机性）", "(has randomness)", "（ランダム枠）" ],
+      "TH18_MARKET_MANIP_ALL_KEEP": [ "全部标记为留", "Mark all Keep", "全て保持に設定" ],
+      "TH18_MARKET_MANIP_ALL_BUY": [ "全部标记为买", "Mark all Buy", "全て購入に設定" ],
+      "TH18_MARKET_MANIP_COPY_CODE": [ "复制当前配置", "Copy current config", "現在の設定をコピー" ],
+      "TH18_MARKET_MANIP_COPY_CODE_HINT": [
+        "将此配置的唯一代码复制到剪贴板。",
+        "Copies the unique code for this configuration to your clipboard.",
+        "この設定の固有コードをクリップボードにコピーします。"
+      ],
+      "TH18_MARKET_MANIP_PASTE_CODE": [ "粘贴配置", "Paste config", "設定を貼り付け" ],
+      "TH18_MARKET_MANIP_PASTE_CODE_HINT": [ "从剪贴板应用配置。", "Applies config from clipboard.", "クリップボードから設定を適用します。" ],
+      "TH18_MARKET_MANIP_PASTE_ERROR_TITLE": [ "卡牌配置验证错误", "Card config validation error", "カード設定の検証エラー" ],
+      "TH18_MARKET_MANIP_PASTE_ERROR": [
+        "剪贴板中没有有效的市场操纵配置代码（12位十六进制字符串）。请检查剪贴板后重试。",
+        "Your clipboard does not contain a valid Market Manip. config code (12-character hexadecimal string). Please check your clipboard and try again.",
+        "クリップボードに有効な市場操作設定コード（12桁の16進文字列）がありません。確認して再試行してください。"
+      ],
+      "TH18_MARKET_MANIP_AUTO_RESTART": [ "自动重开", "Auto-restart run", "自動リスタート" ],
+      "TH18_MARKET_MANIP_AUTO_RESTART_DESC": [
+        "启用后，通过市场操纵购买所有“买”卡牌时，也会自动重开本局。",
+        "When enabled, buying all Buy cards via Market Manip. also restarts the run.",
+        "有効時、市場操作で「購入」カードをすべて買うと自動的にリスタートします。"
+      ],
       "TH18_MUKADE_FIX": [ "蜈蚣卡牌修复", "Centipede card fix", "ムカデカード修復" ],
       "TH18_MUKADE_FIX_DESC": [
         "开启时，能够从一面开始正常播放含有蜈蚣卡牌的replay。",

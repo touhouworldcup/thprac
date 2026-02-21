@@ -2,6 +2,8 @@
 #include "thprac_utils.h"
 #include <metrohash128.h>
 
+#include <d3d9.h> // for rendering cards in AdvOpt
+
 namespace THPrac {
 namespace TH18 {
 #define play_sound_centered(id) asm_call<0x476BE0, Stdcall>(id, UNUSED_DWORD)
@@ -29,15 +31,19 @@ namespace TH18 {
     };
 
     enum addrs {
-        GAME_THREAD_PTR = 0x4cf2e4,
-        BULLET_MANAGER_PTR = 0x4cf2bc,
-        ITEM_MANAGER_PTR = 0x4cf2ec,
-        ABILTIY_MANAGER_PTR = 0x4cf298,
-        ABILITY_SHOP_PTR = 0x4cf2a4,
         CARD_DESC_LIST = 0x4c53c0,
+        MENU_INPUT = 0x4ca21c,
+        ABILITY_MANAGER_PTR = 0x4cf298,
+        ABILITY_SHOP_PTR = 0x4cf2a4,
+        BULLET_MANAGER_PTR = 0x4cf2bc,
         MUKADE_ADDR = 0x4cf2d4,
-        WINDOW_PTR = 0x568c30,
+        GAME_THREAD_PTR = 0x4cf2e4,
+        ITEM_MANAGER_PTR = 0x4cf2ec,
+        PAUSE_MENU_PTR = 0x4cf40c,
         PLAYER_PTR = 0x4cf410,
+        SCOREFILE_MANAGER_PTR = 0x4cf41c,
+        ANM_MANAGER_PTR = 0x51f65c,
+        WINDOW_PTR = 0x568c30,
     };
     
     enum cards {
@@ -56,13 +62,13 @@ namespace TH18 {
     };
 
     struct Thread {
-        void* vtable;
-        void* thread;
-        uint32_t tid;
-        int32_t __bool_c;
-        int32_t __bool_10;
-        HINSTANCE* phModule;
-        char filler_24[0x4];
+        void* vtable; //0x0
+        void* thread; //0x4
+        uint32_t tid; //0x8
+        int32_t __bool_c; //0xc
+        int32_t __bool_10; //0x10
+        HINSTANCE* phModule; //0x14
+        char filler_24[0x4]; //0x18
     };
 
     struct CardBase {
@@ -82,31 +88,71 @@ namespace TH18 {
         int32_t count;
     };
 
+    struct TableCardData {
+        char* internal_name;
+        uint32_t card_id;
+        uint32_t in_trial;
+        uint32_t category;
+        uint32_t price;
+        uint32_t weight;
+        uint32_t appearance_condition;
+        uint32_t allow_duplicates;
+        uint32_t menu_equippable;
+        uint32_t default_unlock;
+        uint32_t __not_basic_resource;
+        uint32_t sprite_large;
+        uint32_t sprite_small;
+    };
+
     struct AbilityManager {
-        char filler_0[0x4];
-        struct UpdateFunc* on_tick;
-        struct UpdateFunc* on_draw;
-        struct AnmLoaded* ability_anm;
-        struct AnmLoaded* abcard_anm;
-        struct AnmLoaded* abmenu_anm;
-        ThList<CardBase> card_list_head;
-        int32_t num_total_cards;
-        int32_t num_active_cards;
-        int32_t num_equipment_cards;
-        int32_t num_passive_cards;
-        CardBase* selected_active_card;
-        int32_t __id_3c;
-        char filler_64[0xc];
-        int32_t __id_4c;
-        char filler_80[0x4];
-        int32_t flags;
-        int32_t __array_1[0x100];
-        int32_t __array_2[0x100];
-        int32_t __array_3[0x100];
-        char filler_3160[0xc];
-        int32_t __created_ability_txt;
-        struct Thread __thread;
-        char filler_3208[0xe8];
+        char filler_0[0x4]; //0x0
+        struct UpdateFunc* on_tick; //0x4
+        struct UpdateFunc* on_draw; //0x8
+        struct AnmLoaded* ability_anm; //0xc
+        struct AnmLoaded* abcard_anm; //0x10
+        struct AnmLoaded* abmenu_anm; //0x14
+        ThList<CardBase> card_list_head; //0x18
+        int32_t num_total_cards; //0x28
+        int32_t num_active_cards; //0x2c
+        int32_t num_equipment_cards; //0x30
+        int32_t num_passive_cards; //0x34
+        CardBase* selected_active_card; //0x38
+        int32_t __id_3c; //0x3c
+        char filler_64[0xc]; //0x40 - 0x48
+        int32_t __id_4c; //0x4c
+        char filler_80[0x4]; //0x50
+        int32_t flags; //0x54
+        int32_t __array_1[0x100]; //0x58
+        int32_t __array_2[0x100]; //0x458
+        int32_t __array_3[0x100]; //0x858
+        char filler_3160[0xc]; //0xc58
+        int32_t __created_ability_txt; //0xc64
+        struct Thread __thread; //0xc68
+        int32_t bought_flags[0x40]; //0xc84
+    };
+
+    struct AnmSprite { //size 0x44
+        char _pad0[0x8];
+        int32_t __index_8; // 0x8
+        char _pad1[0x38];
+    };
+
+    struct AnmImage { //size 0x18
+        LPDIRECT3DTEXTURE9 d3d_texture; //0x0
+        char _pad0[0x14];
+    };
+
+    struct AnmLoaded { //size 0x13c
+        char _pad0[0x11c];
+        AnmSprite* sprites; //0x11c
+        char _pad1[0x4];
+        AnmImage* images; //0x124
+        char _pad2[0x14];
+    };
+
+    struct AnmManager {
+        char _pad0[0x312072c];
+        AnmLoaded* loaded_anm_files[33]; //0x312072c
     };
 
     using std::pair;
@@ -337,7 +383,7 @@ namespace TH18 {
                 pair.second.second = false;
 
             uint32_t* list = nullptr;
-            for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
+            for (uint32_t* i = (uint32_t*)GetMemContent(ABILITY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
                 list = i;
                 auto cardId = ((uint32_t**)list)[0][1];
 
@@ -664,18 +710,18 @@ namespace TH18 {
     {
         if (GetMemContent(0x4ccd00) == 4) {
             th18_free_blank.Enable();
-            asm_call<0x411460, Thiscall>(GetMemContent(ABILTIY_MANAGER_PTR), 0, 2);
+            asm_call<0x411460, Thiscall>(GetMemContent(ABILITY_MANAGER_PTR), 0, 2);
         } else {
             uint32_t* list = nullptr;
             uint8_t cardIdArray[64];
             memset(cardIdArray, 0, 64);
-            for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
+            for (uint32_t* i = (uint32_t*)GetMemContent(ABILITY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
                 list = i;
                 auto cardId = ((uint32_t**)list)[0][1];
                 cardIdArray[cardId] += 1;
             }
             if (!cardIdArray[55]) {
-                asm_call<0x411460, Thiscall>(*(uint32_t*)ABILTIY_MANAGER_PTR, 55, 2);
+                asm_call<0x411460, Thiscall>(*(uint32_t*)ABILITY_MANAGER_PTR, 55, 2);
             }
         }
     }
@@ -689,6 +735,14 @@ namespace TH18 {
     EHOOK_ST(th18_shop_escape_2, 0x418402, 6, {
         pCtx->Eip = 0x4184a0;
         self->Disable();
+    });
+
+    EHOOK_ST(th18_auto_restart, 0x458e40, 1, {
+        // simulate an R press as soon as pause menu starts taking input
+        if (GetMemContent(pCtx->Esi + 0x1f4) == 6) {
+            *((int32_t*)0x4ca21c) = 0x200000;
+            self->Disable();
+        }
     });
 
     class THOverlay : public Gui::GameGuiWnd {
@@ -707,6 +761,7 @@ namespace TH18 {
             th18_shop_disable.Setup();
             th18_shop_escape_1.Setup();
             th18_shop_escape_2.Setup();
+            th18_auto_restart.Setup();
             th18_free_blank.Setup();
         }
         SINGLETON(THOverlay);
@@ -723,9 +778,10 @@ namespace TH18 {
         }
         inline void AddCard(uint32_t cardId)
         {
-            if (cardId < 55)
-                asm_call<0x411460, Thiscall>(*(uint32_t*)ABILTIY_MANAGER_PTR, cardId, 2);
+            if (cardId < 55) {
+                asm_call<0x411460, Thiscall>(*(uint32_t*)ABILITY_MANAGER_PTR, cardId, 2);
                 asm_call<0x418de0, Fastcall>(cardId, 0);
+            }
         }
         void CheckMarket()
         {
@@ -771,6 +827,8 @@ namespace TH18 {
             mAutoBomb.SetTextOffsetRel(x_offset_1, x_offset_2);
             mElBgm.SetTextOffsetRel(x_offset_1, x_offset_2);
         }
+
+        bool TryManipLoadout();
         virtual void OnContentUpdate() override
         {
             if (!isManipMarket) {
@@ -787,9 +845,12 @@ namespace TH18 {
                 if (isInMarket && GetMemContent(ABILITY_SHOP_PTR, 0xe38) == 2) {
                     if (mMarketManip()) {
                         *mMarketManip = false;
-                        isManipMarket = true;
-                        th18_shop_disable.Enable();
                         AddIndicateCard();
+
+                        if (!TryManipLoadout()) {
+                            isManipMarket = true;
+                            th18_shop_disable.Enable();
+                        }
                     }
                 } else {
                     mOpenMarket();
@@ -1107,7 +1168,7 @@ namespace TH18 {
     });
     EHOOK_ST(th18_active_card_fix, 0x462f33, 3, {
         if (GetMemContent(GAME_THREAD_PTR) && !GetMemContent(GAME_THREAD_PTR, 0xd0)) {
-            uint32_t activeCardId = GetMemContent(ABILTIY_MANAGER_PTR, 0x38);
+            uint32_t activeCardId = GetMemContent(ABILITY_MANAGER_PTR, 0x38);
             if (activeCardId) {
                 *(uint32_t*)(pCtx->Esi + 0x964) = GetMemContent(activeCardId + 4);
             } else {
@@ -1179,6 +1240,25 @@ namespace TH18 {
             th18_rep_card_fix.Setup();
             th18_static_mallet_replay_gold.Setup();
             th18_static_mallet_replay_green.Setup();
+
+            // Init loadout card data
+            for (size_t s = CARD_DESC_LIST; s < CARD_DESC_LIST + 0x34 * 58; s += 0x34) {
+                TableCardData* cardData = (TableCardData*)s;
+
+                if (cardData->weight > 0 && cardData->weight < 6) { //randomly appearing cards only
+                    int32_t price = cardData->price;
+                    if (price >= 10)     loadoutHighCostCards.emplace_back(cardData, true);
+                    else if (price >= 7) loadoutMidCostCards.emplace_back(cardData, true);
+                    else if (price >= 2) loadoutLowCostCards.emplace_back(cardData, true);
+                }
+            }
+
+            // Apply loadout code from clipboard if there is one
+            const char* clipboardText = ImGui::GetClipboardText();
+            if (ValidateLoadoutCode(clipboardText)) {
+                ApplyLoadoutCode(clipboardText);
+                useManipLoadout = true;
+            }
         }
         SINGLETON(THAdvOptWnd);
 
@@ -1208,6 +1288,8 @@ namespace TH18 {
         bool scoreUncapOverwrite = false;
         bool scoreReplayFactor = false;
         bool staticMalletReplay = false;
+        bool useManipLoadout = false;
+        bool manipAutoRestart = false;
         bool st6FinalFix = false;
         bool scrollFix = false;
         bool mukadeFix = false;
@@ -1225,6 +1307,7 @@ namespace TH18 {
             int32_t activeCardId;
             uint32_t activeCardIdPtr;
         };
+
         bool mShowFixInstruction = false;
         std::vector<FixData> mFixData;
         std::wstring mRepOriginalName;
@@ -1237,6 +1320,10 @@ namespace TH18 {
         const char* mStageStr[9] {
             "?", "1", "2", "3", "4", "5", "6", "Extra", "?"
         };
+        std::vector<std::pair<TableCardData*, bool>> loadoutHighCostCards;
+        std::vector<std::pair<TableCardData*, bool>> loadoutMidCostCards;
+        std::vector<std::pair<TableCardData*, bool>> loadoutLowCostCards;
+
         __declspec(noinline) uint32_t* FindCardDesc(uint32_t id)
         {
             for (uint32_t i = CARD_DESC_LIST; true; i += 0x34) {
@@ -1506,14 +1593,14 @@ namespace TH18 {
                     uint32_t* list = nullptr;
                     uint8_t cardIdArray[64];
                     memset(cardIdArray, 0, 64);
-                    for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
+                    for (uint32_t* i = (uint32_t*)GetMemContent(ABILITY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
                         list = i;
                         auto cardId = ((uint32_t**)list)[0][1];
                         cardIdArray[cardId] += 1;
                     }
 
                     for (int i = 0; i < 56; ++i) {
-                        *(uint32_t*)GetMemAddr(ABILTIY_MANAGER_PTR, 0xc84 + i * 4) = cardIdArray[i] ? 1 : 0;
+                        *(uint32_t*)GetMemAddr(ABILITY_MANAGER_PTR, 0xc84 + i * 4) = cardIdArray[i] ? 1 : 0;
                     }
                 }
             }
@@ -1622,6 +1709,223 @@ namespace TH18 {
                 break;
             }
         }
+
+        //code credit: zero318
+        LPDIRECT3DTEXTURE9 get_sprite_d3d_texture(int32_t anm_loaded_index, int32_t sprite_id)
+        {
+            AnmManager* anm_manager = GetMemContent<AnmManager*>(ANM_MANAGER_PTR);
+            AnmLoaded* anm_loaded = anm_manager->loaded_anm_files[anm_loaded_index];
+
+            if (anm_loaded) {
+                // zero note: UV data and other stuff is in this type if needed
+                AnmSprite* sprite = &anm_loaded->sprites[sprite_id];
+                int32_t sprite_index = sprite->__index_8;
+                return anm_loaded->images[(uint8_t)sprite_index].d3d_texture;
+            }
+            return NULL;
+        }
+
+        void CenteredText(const char* text, float parentWidth, int trim = 0, float size = 1.0f)
+        {
+            float textWidth = ImGui::CalcTextSize(text, text + strlen(text) - trim).x;
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (parentWidth - size * textWidth) * 0.5f);
+
+            if (size != 1.0f) ResizedText(text, size);
+            else ImGui::Text(text);
+        }
+
+        void ResizedText(const char* text, float size = 1.0f)
+        {
+            const float lineHeight = ImGui::GetTextLineHeightWithSpacing();
+            const ImVec2 cursorPos = ImGui::GetCursorPos();
+
+            if (size != 1.0f) {
+                float scaledTextHeight = ImGui::CalcTextSize(text).y * size;
+                float offsetY = (lineHeight - scaledTextHeight) * 0.25f;
+                ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
+                ImGui::SetWindowFontScale(size);
+            }
+
+            ImGui::Text(text);
+
+            if (size != 1.0f)
+                ImGui::SetWindowFontScale(1.0f);
+
+            ImGui::SetCursorPosY(cursorPos.y + lineHeight);
+        }
+
+        void DrawManipCardGrid(
+            std::vector<std::pair<TableCardData*, bool>>& cardGroup,
+            th_glossary_t header_tag,
+            ImU32 header_color,
+            const uint32_t cardsPerRow = 11,
+            const float hPadding = 22.0f)
+        {
+            // Calculate total weight for group & buy count
+            uint32_t totalWeight = 0;
+            uint32_t buyCount = 0;
+            for (auto& [cd, shouldBuy] : cardGroup) {
+                if (!shouldBuy) {
+                    const uint8_t boughtBefore = *(uint8_t*)GetMemAddr(SCOREFILE_MANAGER_PTR, 0x5F4B8 + 0xD0 + cd->card_id);
+                    totalWeight += cd->weight + (boughtBefore ? 0 : 5);
+                }
+                else buyCount++;
+            }
+
+            // Grid drawing constants & utils
+            ImDrawList* draw = ImGui::GetWindowDrawList();
+            ImGuiStyle& style = ImGui::GetStyle();
+            const float oldItemSpacingX = style.ItemSpacing.x;
+            const float oldItemSpacingY = style.ItemSpacing.y;
+
+            const float cardScale = 0.25;
+            const float cardWidth = 256 * cardScale;
+            const float cardHeight = 320 * cardScale;
+            const float vPadding = 0.25f;
+            const float cellTextHeight = 77.0f; // to tweak when cell text is changed
+            uint32_t index = 0;
+
+            // Draw header (+ background)
+            const uint32_t cardCount = cardGroup.size();
+            const ImVec2 headerStart = ImGui::GetCursorScreenPos();
+
+            draw->AddRectFilled(
+                ImVec2(headerStart.x, headerStart.y - 5.0f),
+                ImVec2(headerStart.x + cardsPerRow * (cardWidth + 2 * hPadding), headerStart.y + 42.0f),
+                header_color, 5.0f);
+
+            ImGui::Dummy(ImVec2(20.0f, 0));
+            ImGui::SameLine();
+            ImGui::Text(S(header_tag));
+            if (buyCount < cardCount - 1) {
+                ImGui::SameLine();
+                ResizedText(S(TH18_MARKET_MANIP_HAS_RNG), 0.8);
+            } else if (buyCount == cardCount) {
+                ImGui::SameLine();
+                ResizedText(S(TH18_MARKET_MANIP_SLOT_REMOVED), 0.8);
+            }
+
+            // Dark background(s) for grid
+            const ImVec2 gridStart = ImGui::GetCursorScreenPos();
+            const uint32_t rows = 1 + (cardCount - 1) / cardsPerRow;
+            const float rowHeight = cardHeight + 2 * vPadding + cellTextHeight;
+
+            for (size_t r = 0; r < rows; r++) {
+                const uint32_t cardsLeft = cardCount - (r * cardsPerRow);
+                const uint32_t rowCardCount = (cardsLeft > cardsPerRow) ? cardsPerRow : cardsLeft;
+                const float rowWidth = rowCardCount * (cardWidth + 2 * hPadding);
+
+                draw->AddRectFilled(
+                    ImVec2(gridStart.x, gridStart.y + rowHeight * r),
+                    ImVec2(gridStart.x + rowWidth, gridStart.y + rowHeight * (r + 1)),
+                    IM_COL32(0, 0, 0, 128), 2.0f);
+            }
+
+            style.ItemSpacing.x = 0.0f;
+
+            for (auto& [cd, shouldBuy] : cardGroup) {
+                ImVec2 cellMin = ImGui::GetCursorScreenPos();
+                ImGui::Dummy(ImVec2(hPadding, 0));
+                style.ItemSpacing.y = oldItemSpacingY;
+                ImGui::SameLine();
+
+                ImGui::BeginGroup();
+                ImGui::Dummy(ImVec2(0, vPadding));
+                ImTextureID tex = (ImTextureID)get_sprite_d3d_texture(31, cd->sprite_large);
+
+                ImVec4 tint = shouldBuy ? ImVec4(1, 1, 1, 0.35f) : ImVec4(1, 1, 1, 1.0f);
+                if (ImGui::ImageButton(tex, ImVec2(cardWidth, cardHeight), ImVec2(0, 0), ImVec2(1, 0.625f), 0, ImVec4(0, 0, 0, 0), tint))
+                    shouldBuy = !shouldBuy;
+                if (ImGui::IsItemHovered())
+                    ImGui::SetTooltip(S(TH18_MARKET_MANIP_CARD_HINT), cd->internal_name);
+
+                // Percent & policy text
+                char percentText[16] = "0%%";
+                const uint8_t boughtBefore = *(uint8_t*)GetMemAddr(SCOREFILE_MANAGER_PTR, 0x5F4B8 + 0xD0 + cd->card_id);
+                if (!shouldBuy) {
+                    const float spawnChance = (cd->weight + (boughtBefore ? 0 : 5)) / (float)totalWeight;
+                    snprintf(percentText, sizeof(percentText), "%.3g%%%%", spawnChance * 100.0f);
+                }
+
+                style.ItemSpacing.y = -8.0f;
+                if (shouldBuy) ImGui::BeginDisabled();
+                else if(!boughtBefore) ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.9f, 0.3f, 1.0f));
+
+                CenteredText(percentText, cardWidth, 1, 0.8);
+
+                if (shouldBuy) ImGui::EndDisabled();
+                else if(!boughtBefore) ImGui::PopStyleColor();
+
+                if (ImGui::IsItemHovered())
+                    ImGui::SetTooltip(S(!(boughtBefore || shouldBuy)
+                        ? TH18_MARKET_MANIP_ODD_BOOST_HINT
+                        : TH18_MARKET_MANIP_ODD_HINT), cd->internal_name);
+                style.ItemSpacing.y = oldItemSpacingY;
+
+                CenteredText(shouldBuy ? S(TH18_MARKET_MANIP_BUY) : S(TH18_MARKET_MANIP_KEEP), cardWidth);
+                if (ImGui::IsItemHovered())
+                    ImGui::SetTooltip(S(shouldBuy ? TH18_MARKET_MANIP_BUY_HINT : TH18_MARKET_MANIP_KEEP_HINT));
+
+                // Padding & border math
+                ImGui::Dummy(ImVec2(0, vPadding));
+                ImGui::EndGroup();
+                const float cellBottom = ImGui::GetItemRectMax().y;
+
+                ImGui::SameLine();
+                style.ItemSpacing.y = 0.0f;
+                ImGui::Dummy(ImVec2(hPadding, 0));
+                const float cellRight = ImGui::GetItemRectMax().x;
+
+                draw->AddRect(
+                    cellMin,
+                    ImVec2(cellRight, cellBottom),
+                    IM_COL32(128, 128, 128, 255),
+                    1.0f, 0, 2.0f);
+
+                // Grid logic
+                index++;
+                if (index % cardsPerRow != 0 && index != cardCount)
+                    ImGui::SameLine();
+            }
+
+            style.ItemSpacing.x = oldItemSpacingX;
+            style.ItemSpacing.y = oldItemSpacingY;
+            ImGui::NewLine();
+        }
+
+        bool ValidateLoadoutCode(const char* input) {
+            // Must be length 12
+            if (!input || strlen(input) != 12)
+                return false;
+
+            // Must be hex
+            for (int i = 0; i < 12; i++) {
+                char c = input[i];
+
+                if ((c < '0' || c > '9') && (c < 'a' || c > 'f') && (c < 'A' || c > 'F'))
+                    return false;
+            }
+
+            return true;
+        }
+
+        void ApplyLoadoutCode(const char* codeText) {
+            uint64_t code = 0;
+            sscanf(codeText, "%llx", &code);
+            int bitIndex = 0;
+
+            auto unpackVec = [&](auto& vec) {
+                for (auto& [cd, shouldBuy] : vec) {
+                    shouldBuy = (code & (1ULL << bitIndex)) != 0;
+                    bitIndex++;
+                }
+            };
+
+            unpackVec(loadoutHighCostCards);
+            unpackVec(loadoutMidCostCards);
+            unpackVec(loadoutLowCostCards);
+        }
+
         void ContentUpdate()
         {
             bool wndFocus = true;
@@ -1658,14 +1962,79 @@ namespace TH18 {
                 if (ImGui::Checkbox(S(TH18_REPLAY_BONUS), &scoreReplayFactor)) {
                     th18_score_uncap_replay_factor.Toggle(scoreReplayFactor);
                 }
-                
+
                 if (ImGui::Checkbox(S(TH18_STATIC_MALLET), &staticMalletReplay)) {
                     th18_static_mallet_replay_gold.Toggle(staticMalletReplay);
                     th18_static_mallet_replay_green.Toggle(staticMalletReplay);
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH18_STATIC_MALLET_DESC));
-                
+
+                ImGui::Checkbox(S(TH18_MARKET_MANIP_LOADOUT), &useManipLoadout);
+                ImGui::SameLine();
+                HelpMarker(S(TH18_MARKET_MANIP_LOADOUT_DESC));
+
+                if (useManipLoadout) {
+                    if (ImGui::Button(S(TH18_MARKET_MANIP_ALL_KEEP))) {
+                        for (auto& [cd, shouldBuy] : loadoutHighCostCards) shouldBuy = false;
+                        for (auto& [cd, shouldBuy] : loadoutMidCostCards) shouldBuy = false;
+                        for (auto& [cd, shouldBuy] : loadoutLowCostCards) shouldBuy = false;
+                    }
+
+                    ImGui::SameLine();
+                    if (ImGui::Button(S(TH18_MARKET_MANIP_ALL_BUY))) {
+                        for (auto& [cd, shouldBuy] : loadoutHighCostCards) shouldBuy = true;
+                        for (auto& [cd, shouldBuy] : loadoutMidCostCards) shouldBuy = true;
+                        for (auto& [cd, shouldBuy] : loadoutLowCostCards) shouldBuy = true;
+                    }
+
+                    ImGui::SameLine();
+                    if (ImGui::Button(S(TH18_MARKET_MANIP_COPY_CODE))) {
+                        uint64_t code = 0;
+                        int bitIndex = 0;
+
+                        auto packVec = [&](auto& vec) {
+                            for (auto& [cd, shouldBuy] : vec) {
+                                if (shouldBuy) code |= (1ULL << bitIndex);
+
+                                bitIndex++;
+                            }
+                        };
+
+                        packVec(loadoutHighCostCards);
+                        packVec(loadoutMidCostCards);
+                        packVec(loadoutLowCostCards);
+
+                        char buffer[32];
+                        snprintf(buffer, sizeof(buffer), "%012llX", code);
+                        ImGui::SetClipboardText(buffer);
+                    }
+                    if (ImGui::IsItemHovered())
+                        ImGui::SetTooltip(S(TH18_MARKET_MANIP_COPY_CODE_HINT));
+
+                    ImGui::SameLine();
+                    if (ImGui::Button(S(TH18_MARKET_MANIP_PASTE_CODE))) {
+                        const char* clipboardText = ImGui::GetClipboardText();
+
+                        if (ValidateLoadoutCode(clipboardText))
+                            ApplyLoadoutCode(clipboardText);
+                        else
+                            MsgBox(MB_ICONERROR | MB_OK, S(TH18_MARKET_MANIP_PASTE_ERROR_TITLE), S(TH18_MARKET_MANIP_PASTE_ERROR), nullptr, *(HWND*)WINDOW_PTR);
+                    }
+                    if (ImGui::IsItemHovered())
+                        ImGui::SetTooltip(S(TH18_MARKET_MANIP_PASTE_CODE_HINT));
+
+                    ImGui::SameLine();
+                    ImGui::Checkbox(S(TH18_MARKET_MANIP_AUTO_RESTART), &manipAutoRestart);
+                    ImGui::SameLine();
+                    HelpMarker(S(TH18_MARKET_MANIP_AUTO_RESTART_DESC));
+
+                    ImGui::NewLine();
+                    DrawManipCardGrid(loadoutHighCostCards, TH18_MARKET_MANIP_HIGH_COSTS, IM_COL32(195, 160, 160, 200));
+                    DrawManipCardGrid(loadoutMidCostCards, TH18_MARKET_MANIP_MID_COSTS, IM_COL32(160, 160, 180, 200));
+                    DrawManipCardGrid(loadoutLowCostCards, TH18_MARKET_MANIP_LOW_COSTS, IM_COL32(160, 180, 150, 200));
+                }
+
                 EndOptGroup();
             }
             if (BeginOptGroup<TH18_BUG_FIX>()) {
@@ -1727,6 +2096,36 @@ namespace TH18 {
 
         adv_opt_ctx mOptCtx;
     };
+
+    bool THOverlay::TryManipLoadout()
+    {
+        auto& advOptWnd = THAdvOptWnd::singleton();
+        if (!advOptWnd.useManipLoadout)
+            return false;
+
+        // Add all selected cards
+        for (const auto& [cd, buyFlag] : advOptWnd.loadoutHighCostCards)
+            if (buyFlag) AddCard(cd->card_id);
+
+        for (const auto& [cd, buyFlag] : advOptWnd.loadoutMidCostCards)
+            if (buyFlag) AddCard(cd->card_id);
+
+        for (const auto& [cd, buyFlag] : advOptWnd.loadoutLowCostCards)
+            if (buyFlag) AddCard(cd->card_id);
+
+        if (advOptWnd.manipAutoRestart) {
+            // Restart run (via pause menu for simplicity)
+            asm_call<0x458680, Thiscall>(*(uint32_t*)PAUSE_MENU_PTR); //pause
+            th18_auto_restart.Enable();
+
+        } else {
+            // Close shop
+            th18_shop_escape_1.Enable();
+            th18_shop_escape_2.Enable();
+        }
+        return true;
+    }
+
     EHOOK_ST(th18_rep_card_fix, 0x462e4b, 5, {
         if (THAdvOptWnd::singleton().GetAvailability()) {
             auto& fixVec = THAdvOptWnd::singleton().mFixData;
@@ -2854,7 +3253,7 @@ namespace TH18 {
     })
     EHOOK_DY(th18_param_reset, 0x465abd, 6, {
         thPracParam.Reset();
-        *(uint32_t*)GetMemAddr(0x4cf41c, 0x5f680) = 10;
+        *(uint32_t*)GetMemAddr(SCOREFILE_MANAGER_PTR, 0x5f680) = 10;
     })
     EHOOK_DY(th18_prac_menu_1, 0x4673a2, 5, {
         THGuiPrac::singleton().State(1);
@@ -2895,7 +3294,7 @@ namespace TH18 {
         *(int32_t*)(0x4ccd38) = thPracParam.power;
         *(int32_t*)(0x4ccd30) = *(int32_t*)(0x4ccd34) = thPracParam.funds;
 
-        auto* ability_manager = *(AbilityManager**)ABILTIY_MANAGER_PTR;
+        auto* ability_manager = *(AbilityManager**)ABILITY_MANAGER_PTR;
 
         for (ThList<CardBase>* entry = &ability_manager->card_list_head; entry; entry = entry->next) {
             CardBase* card = entry->entry;
@@ -2974,7 +3373,7 @@ namespace TH18 {
         // Switch menu state to close
         asm_call<0x4577d0, Thiscall>(pCtx->Edi, 18);
 
-        pCtx->Edx = *(DWORD*)0x4ca21c;
+        pCtx->Edx = *(DWORD*)MENU_INPUT;
         pCtx->Eip = 0x459562;
     })
     EHOOK_DY(th18_replay_restart, 0x417a70, 3, {
@@ -2995,7 +3394,7 @@ namespace TH18 {
         uint32_t cardAddType = 0;
         uint8_t cardIdArray[64] = {};
 
-        for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
+        for (uint32_t* i = (uint32_t*)GetMemContent(ABILITY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
             list = i;
             auto cardId = ((uint32_t**)list)[0][1];
             cardIdArray[cardId] += 1;
@@ -3017,8 +3416,10 @@ namespace TH18 {
         if (op != 3) {
             if (cardAddType == 1) {
                 sub_count += (cardAddId == 51 ? 2 : 1);
-                if (sub_count > 12) {
-                    pCtx->Eip = 0x412d29;
+                if (sub_count > 12) { // more option cards would crash the game
+                    // mark it as bought anyway for manip purposes
+                    GetMemContent<AbilityManager*>(ABILITY_MANAGER_PTR)->bought_flags[cardAddId] = 1;
+                    pCtx->Eip = 0x412d29; //skip
                 }
             } else if (cardAddId == 54 && cardIdArray[54]) {
                 pCtx->Eip = 0x412d29;
@@ -3026,7 +3427,7 @@ namespace TH18 {
         }
     })
     EHOOK_DY(th18_active_buy_swap_fix, 0x412d94, 3, {
-        asm_call<0x408c30, Fastcall>(*(uint32_t*)ABILTIY_MANAGER_PTR);
+        asm_call<0x408c30, Fastcall>(*(uint32_t*)ABILITY_MANAGER_PTR);
     })
     EHOOK_DY(th18_rep_save, 0x462657, 5, {
         char* repName = (char*)(pCtx->Esp + 0x30);
@@ -3083,7 +3484,7 @@ namespace TH18 {
         }
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4ccdf8, WINDOW_PTR,
-            Gui::INGAGME_INPUT_GEN2, 0x4ca21c, 0x4ca218, 0,
+            Gui::INGAGME_INPUT_GEN2, MENU_INPUT, 0x4ca218, 0,
             -2, *(float*)0x56aca0, 0.0f);
 
         SetDpadHook(0x4016EF, 3);
