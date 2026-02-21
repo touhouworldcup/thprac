@@ -2026,7 +2026,7 @@ namespace TH17 {
                 && abs(stgFramePos.x) < 192) {
                 float ang = adv_opt.mGoastAng;
                 if (adv_opt.mGoastAngleRandom) {
-                    ang = asm_call<0x402880, Thiscall, float>(0x4B7668) * std::numbers::pi;
+                    ang = asm_call<0x402880, Thiscall, float>(0x4B7668) * std::numbers::pi_v<float>;
                 }
 
                 SpawnToken(adv_opt.mSelectedGoast, stgFramePos, ang);
