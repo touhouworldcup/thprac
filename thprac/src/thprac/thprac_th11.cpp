@@ -348,7 +348,7 @@ namespace TH11 {
                 break;
             case 2:
             case 3: // Mid boss & End boss
-                if (mSection.operator()(TH_WARP_SELECT[*mWarp],
+                if (mSection(TH_WARP_SELECT[*mWarp],
                         th_sections_cba[*mStage + st][*mWarp - 2],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
