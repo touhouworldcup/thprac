@@ -9776,8 +9776,8 @@
 
           "TH185_CARD_01": [ "无", "None", "なし" ],
           "TH185_CARD_02": [ "空白卡牌", "Blank Card", "空白のカード" ],
-          "TH185_CARD_03": [ "财富流至门前来", "Money Comes and Goes on its Own", "勝手に天下の回り物" ],
-          "TH185_CARD_04": [ "财富流至门前来", "Money Comes and Goes on its Own", "勝手に天下の回り物" ],
+          "TH185_CARD_03": [ "财富流至门前来（资金力）", "Money Comes and Goes on its Own (Funds)", "勝手に天下の回り物（資金力）" ],
+          "TH185_CARD_04": [ "财富流至门前来（弹币）", "Money Comes and Goes on its Own (BMoney)", "勝手に天下の回り物（弾貨）" ],
           "TH185_CARD_05": [ "生命卡牌", "Life Card", "命のカード" ],
           "TH185_CARD_06": [ "铃瑚团子", "Ringo Brand Dumplings", "鈴瑚印の団子" ],
           "TH185_CARD_07": [ "不死鸟之尾", "Phoenix's Tail", "不死鳥の尾" ],
