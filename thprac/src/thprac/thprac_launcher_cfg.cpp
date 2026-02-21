@@ -1619,6 +1619,9 @@ private:
             bool block;
 
             inline bool conflicts(GuiHotkeyOption* other) {
+                if (this->bitflags == 0 || other->bitflags == 0) {
+                    return false;
+                }
                 return ((this->bitflags & other->bitflags) == this->bitflags);
             }
         };
