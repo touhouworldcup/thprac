@@ -993,7 +993,7 @@
       "TH_DATANLY_RECORD_DELETE": [ "删除##anly_%d", "Delete##anly_%d", "削除##anly_%d" ],
 
       "TH_BULLETS": [ "子弹", "Bullets", "弾" ],
-      "TH_PERFORMANCE": [ "タースピード", "Performance", "速度" ],
+      "TH_PERFORMANCE": [ "性能", "Performance", "性能" ],
 
       "TH_TRACKER_TITLE": [ "跟踪表", "Tracker Table", "トラッカー" ],
       "TH_TRACKER_MISS": [ "Miss", "Miss", "ミス" ],
@@ -9690,7 +9690,7 @@
           "TH185_ADDITIONAL_CARDS": [ "额外卡牌", "Additional Cards", "追加カード" ],
           "TH185_FORCE_WAVE": [ "指定波次", "Force Wave", "強行突破 " ],
           "TH185_WAVE_FORMAT": [ "第%d波", "Wave %d", "Wave %d" ],
-          "TH185_NONE_RANDOM": [ "传送", "None (Random)", "なし (ランダム)" ],
+          "TH185_NONE_RANDOM": [ "无（随机）", "None (Random)", "なし (ランダム)" ],
 
           "TH185_WAVE_1":  [ "第1波",  "Wave 1",  "Wave 1"  ],
           "TH185_WAVE_2":  [ "第2波",  "Wave 2",  "Wave 2"  ],
