@@ -323,10 +323,8 @@ namespace TH06 {
                 if (mWarp())
                     *mSection = *mChapter = *mPhase = *mFrame = 0;
                 if (*mWarp) {
-                    int st = 0;
                     if (*mStage == 3) {
                         mFakeShot();
-                        st = (*mFakeShot ? *mFakeShot - 1 : mShotType) + 4;
                     }
 
                     SectionWidget();
@@ -1896,7 +1894,7 @@ namespace TH06 {
         snprintf(buf, sizeof(buf), "%s (%s)", S(DIFFNAMES[GAME_MANAGER->difficulty]), S(SHOTNAMES[GAME_MANAGER->character * 2 + GAME_MANAGER->shotType]));
         auto textSize = ImGui::CalcTextSize(buf);
 
-        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - textSize.x * 0.5);
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - textSize.x * 0.5f);
         ImGui::TextUnformatted(buf);        
 
         ImGui::BeginTable("Tracker table", 2);

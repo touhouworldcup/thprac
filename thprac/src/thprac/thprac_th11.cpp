@@ -128,6 +128,7 @@ namespace TH11 {
             *mPower = 80;
             *mMode = 1;
             *mValue = 50000;
+            *mSpellCategory = globals->chara * 3 + globals->subshot;
 
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -249,6 +250,9 @@ namespace TH11 {
                 if (mWarp())
                     *mSection = *mChapter = *mPhase = 0;
                 if (*mWarp) {
+                    if (*mStage == 3) {
+                        mSpellCategory();
+                    }
                     SectionWidget();
                     mPhase(TH_PHASE, SpellPhase());
                 }
@@ -320,6 +324,13 @@ namespace TH11 {
         {
             static char chapterStr[256] {};
             auto& chapterCounts = mChapterSetup[*mStage];
+            
+            int st = 0;
+            if (*mStage == 3) {
+                st = (*mSpellCategory 
+                      ? *mSpellCategory - 1 
+                      : (globals->chara * 3 + globals->subshot)) + 4;
+            }
 
             switch (*mWarp) {
             case 1: // Chapter
@@ -338,7 +349,7 @@ namespace TH11 {
             case 2:
             case 3: // Mid boss & End boss
                 if (mSection(TH_WARP_SELECT[*mWarp],
-                        th_sections_cba[*mStage][*mWarp - 2],
+                        th_sections_cba[*mStage + st][*mWarp - 2],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
                 if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
@@ -347,7 +358,7 @@ namespace TH11 {
             case 4:
             case 5: // Non-spell & Spellcard
                 if (mSection(TH_WARP_SELECT[*mWarp],
-                        th_sections_cbt[*mStage][*mWarp - 4],
+                        th_sections_cbt[*mStage + st][*mWarp - 4],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
                 if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
@@ -374,6 +385,7 @@ namespace TH11 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 0, 80 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH_FAITH, 0, 999990, 10, 100000 };
+        Gui::GuiCombo mSpellCategory { TH11_SPELL_CATEGORY, TH11_TYPE_SELECT };
 
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
@@ -1761,7 +1773,7 @@ namespace TH11 {
         snprintf(buf, sizeof(buf), "%s", S(SHOTTYPE_NAMES[shottype]));
         auto textSize = ImGui::CalcTextSize(buf);
 
-        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - textSize.x * 0.5);
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - textSize.x * 0.5f);
         ImGui::TextUnformatted(buf);
 
         ImGui::BeginTable("Tracker table", 2);

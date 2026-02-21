@@ -322,10 +322,6 @@ namespace TH20 {
 
                 ReturnJson();
             }
-
-            CreateJson();
-            jalloc; // Dummy usage to silence C4189
-            ReturnJson();
         }
 
         bool HasTransitionSyncData(int st = 0) {

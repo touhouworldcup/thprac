@@ -2221,7 +2221,7 @@ namespace TH10 {
         snprintf(buf, sizeof(buf), "%s", S(SHOTTYPE_NAMES[shottype]));
         auto textSize = ImGui::CalcTextSize(buf);
 
-        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5 - textSize.x * 0.5);
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - textSize.x * 0.5f);
         ImGui::TextUnformatted(buf);
 
         ImGui::BeginTable("Tracker table", 2);

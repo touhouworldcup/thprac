@@ -80,5 +80,8 @@ privDefer<F> defer_func(F f)
 
 #define member_size(type, member) sizeof(((type*)0)->member)
 
+#define _MACRO_CAT(arg1, arg2) arg1##arg2
+#define MACRO_CAT(arg1, arg2) _MACRO_CAT(arg1, arg2)
+
 void memswap(void* buf1_, void* buf2_, unsigned int len);
 void debug_msg(const char* title, const char* format, ...);
