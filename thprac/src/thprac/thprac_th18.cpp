@@ -3456,7 +3456,10 @@ namespace TH18 {
 
         if (*o.mOpenMarket) {
             *o.mOpenMarket = false;
-            if (uint32_t game_thread = GetMemContent(GAME_THREAD_PTR)) {
+            uint32_t game_thread = GetMemContent(GAME_THREAD_PTR);
+            uint32_t ability_shop = GetMemContent(ABILITY_SHOP_PTR);
+
+            if (game_thread && !ability_shop) {
                 *(uint32_t*)(game_thread + 0xB0) |= 0x20000;
             } else {
                 play_sound_centered(SND_INVALID);
