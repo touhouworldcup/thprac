@@ -1884,7 +1884,7 @@ namespace TH18 {
                 ImGui::PopID();
                 if (ImGui::IsItemHovered()) {
                     if (saveManip && game_thread) ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_RUN));
-                    else ImGui::SetTooltip(S(TH18_MARKET_MANIP_CARD_HINT), cd->internal_name);
+                    else ImGui::SetTooltip(S(TH18_MARKET_MANIP_CARD_HINT), S(TH18_CARD_LIST[cd->card_id]));
                 }
 
                 if (saveManip) {
@@ -1923,9 +1923,9 @@ namespace TH18 {
                         ImGui::PopStyleColor();
 
                     if (ImGui::IsItemHovered()) {
-                        if (cd->appearance_condition && !boughtBefore) ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_LOCKED_HINT), cd->internal_name);
-                        else if (!boughtBefore && !shouldBuy) ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_BOOST_HINT), cd->internal_name);
-                        else ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_HINT), cd->internal_name);
+                        if (cd->appearance_condition && !boughtBefore) ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_LOCKED_HINT), S(TH18_CARD_LIST[cd->card_id]));
+                        else if (!boughtBefore && !shouldBuy) ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_BOOST_HINT), S(TH18_CARD_LIST[cd->card_id]));
+                        else ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_HINT), S(TH18_CARD_LIST[cd->card_id]));
                     }
                     style.ItemSpacing.y = oldItemSpacingY;
 
