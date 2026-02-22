@@ -98,9 +98,9 @@ void CalcFileHash(const wchar_t* file_name, uint64_t hash[2]);
 void HelpMarker(const char* desc);
 void CustomMarker(const char* text, const char* desc);
 template <th_glossary_t name>
-static bool BeginOptGroup()
+static bool BeginOptGroup(bool default_status = true)
 {
-    static bool group_status = true;
+    static bool group_status = default_status;
     ImGui::SetNextItemOpen(group_status);
     group_status = ImGui::CollapsingHeader(Gui::LocaleGetStr(name), ImGuiTreeNodeFlags_None);
     if (group_status)

@@ -9094,13 +9094,14 @@
       "TH18_MARKET_MANIP_KEEP_HINT": [ "在使用市场操纵后可出现在商店中", "Can appear in shops after Market Manip.", "市場操作後のショップに出現します" ],
       "TH18_MARKET_MANIP_ODD_HINT": [ "%s 在商店中出现的概率使用市场操纵后", "Chance for %s to appear in shops after Market Manip.", "市場操作後のショップで %s が出現する確率" ],
       "TH18_MARKET_MANIP_ODD_BOOST_HINT": [ "%s 在商店中出现的概率使用市场操纵后\n（受新奖励加成影响）", "Chance for %s to appear in shops after Market Manip.\n(boosted by New bonus)", "市場操作後のショップで %s が出現する確率\n（新ボーナスで増加）" ],
+      "TH18_MARKET_MANIP_ODD_LOCKED_HINT": [ "%s 在商店中出现的概率使用市场操纵后\n（尚未解锁）", "Chance for %s to appear in shops after Market Manip.\n(not yet unlocked)", "市場操作後のショップで %s が出現する確率\n（未解放）" ],
       "TH18_MARKET_MANIP_HIGH_COSTS": [ "高价位栏位卡牌", "High Cost Slot Cards", "高コスト枠カード" ],
       "TH18_MARKET_MANIP_MID_COSTS": [ "中价位栏位卡牌", "Medium Cost Slot Cards", "中コスト枠カード" ],
       "TH18_MARKET_MANIP_LOW_COSTS": [ "低价位栏位卡牌", "Low Cost Slot Cards", "低コスト枠カード" ],
-      "TH18_MARKET_MANIP_SLOT_REMOVED": [ "（无保留卡牌，栏位移除）", "(no cards kept, slot will be removed)", "（保持カードなし、枠が削除されます）" ],
+      "TH18_MARKET_MANIP_SLOT_REMOVED": [ "（市场操纵后无可出现的卡牌）", "(no cards can appear after Market Manip.)", "（市場操作後に出現するカードなし）" ],
       "TH18_MARKET_MANIP_HAS_RNG": [ "（存在随机性）", "(has randomness)", "（ランダム枠）" ],
-      "TH18_MARKET_MANIP_ALL_KEEP": [ "全部标记为留", "Mark all Keep", "全て保持に設定" ],
       "TH18_MARKET_MANIP_ALL_BUY": [ "全部标记为买", "Mark all Buy", "全て購入に設定" ],
+      "TH18_MARKET_MANIP_ALL_KEEP": [ "全部标记为留", "Mark all Keep", "全て保持に設定" ],
       "TH18_MARKET_MANIP_COPY_CODE": [ "复制当前配置", "Copy current config", "現在の設定をコピー" ],
       "TH18_MARKET_MANIP_COPY_CODE_HINT": [
         "将此配置的唯一代码复制到剪贴板。",
@@ -9182,6 +9183,29 @@
         "1. Select the target replay in the game and open the advance options menu. Click the appeared \"Lock\" button.\n2. The initially selected card of each stage will be listed. Adjust the value as needed and start replaying. Repeat until no desync occurs.\n3. Click the \"Save as\" button to save the repaired replay. After everything's done, click the \"Unlock\" button.\nWarning: if the replay contains either \"Ancient Magatama\" or \"Gluttonous Centipede\", make sure you always start replaying from stage one, otherwise desync will almost be guaranteed to happen.",
         "1．ゲームで目標のリプレイを選択し、拡張オプションメニューを開きます。表示された「ロック」ボタンをクリックします。\n2．各ステージで最初に選択されたカードが一覧表示されます。必要に応じて値を調整し、再生を開始します。ズレが発生しなくなるまで繰り返します。\n3．[名前を付けて保存]ボタンをクリックして、修復されたリプレイを保存します。すべてが完了したら、[ロック解除]ボタンをクリックします。 \n警告：リプレイに「太古の勾玉」または「暴食のムカデ」のいずれかが含まれている場合は、必ず一面からリプレイを再生開始してください。そうしないと、リプレイがほぼ確実にズレします。"
       ],
+      "TH18_SAVEFILE_MANIP": [ "存档文件操纵", "Scorefile Manip.", "スコアファイル操作" ],
+      "TH18_SAVEFILE_MANIP_DESC": [
+        "点击卡牌以切换游戏是否将其视为“新”（从未购买）。\n此工具旨在供计分玩家使用，以在路线需要时影响商店随机结果。\n注意：该功能也可锁定或解锁具有特殊解锁条件的卡牌。",
+        "Click cards to toggle whether the game considers them New (never bought before).\nThis tool is intended to be used by scorerunners to influence shop RNG if it is present in their route.\nNote that it can also lock/unlock cards with special unlock conditions.",
+        "カードをクリックして、そのカードをゲームが「新規」（未購入）として扱うか切り替えます。\nこのツールは、スコアラーランナーがルートに組み込んだ場合に、ショップのランダム性に影響を与えることを目的としています。\n注：特殊な解放条件を持つカードのロック／アンロックにも影響します。"
+      ],
+      "TH18_SAVEFILE_MANIP_CARDS": [ "全部非默认随机卡牌", "All Non-Default Random Cards", "全ての非デフォルトランダムカード" ],
+      "TH18_SAVEFILE_MANIP_NEW": [ "新", "New", "新規" ],
+      "TH18_SAVEFILE_MANIP_BOUGHT": [ "已售", "Sold", "購入" ],
+      "TH18_SAVEFILE_MANIP_NEW_HINT": [ "提升商店概率", "Boosted shop odds", "店出現率上昇" ],
+      "TH18_SAVEFILE_MANIP_BOUGHT_HINT": [ "普通商店概率", "Non-boosted shop odds", "通常店出現率" ],
+      "TH18_SAVEFILE_MANIP_LOCKED_HINT": [ "无法在商店出现（未解锁）", "Can't appear in shops (locked)", "ショップに出現しません（未解放）" ],
+      "TH18_SAVEFILE_MANIP_ALL_NEW": [ "全部标记为新", "Mark all New", "全て新規に設定" ],
+      "TH18_SAVEFILE_MANIP_ALL_BOUGHT": [ "全部标记为已售", "Mark all Sold", "全て購入に設定" ],
+      "TH18_SAVEFILE_MANIP_CHIMATA": [ "一切尽归于无吧！", "Let all return to nothing!", "すべて無に返そう！" ],
+      "TH18_SAVEFILE_MANIP_FREEZE": [ "冻结", "Freeze", "固定" ],
+      "TH18_SAVEFILE_MANIP_FREEZE_DESC": [
+        "启用后，返回主菜单时将恢复先前的卡牌购买状态。",
+        "When enabled, returning to the main menu resets card bought flags to what they were before.",
+        "有効時、メインメニューへ戻るとカード購入状態が元に戻ります。"
+      ],
+      "TH18_SAVEFILE_MANIP_RUN": [ "无法在主菜单外操纵存档文件。", "Can't manipulate scorefile outside main menu.", "メインメニュー外ではスコアファイル操作不可。" ],
+      "TH18_SAVEFILE_MANIP_FREEZE_RUN": [ "无法在主菜单外切换冻结。", "Can't toggle freeze outside main menu.", "メインメニュー外では固定切替不可。" ],
 
       "TH18_CARD_00": [ "", "", "空白のカード" ],
       "TH18_CARD_01": [ "", "", "命のカード" ],
