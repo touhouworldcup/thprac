@@ -141,7 +141,11 @@ namespace TH18 {
 
     struct AnmImage { //size 0x18
         LPDIRECT3DTEXTURE9 d3d_texture; //0x0
-        char _pad0[0x14];
+        void* file; // 0x4
+        int32_t file_size; // 0x8
+        uint32_t bytes_per_pixel; // 0xC
+        void* entry; // 0x10
+        uint32_t flags; // 0x14
     };
 
     struct AnmLoaded { //size 0x13c
@@ -1728,8 +1732,20 @@ namespace TH18 {
             if (anm_loaded) {
                 // zero note: UV data and other stuff is in this type if needed
                 AnmSprite* sprite = &anm_loaded->sprites[sprite_id];
+                if ((uint32_t)sprite <= 0x400000) return NULL; //likely garbage
+
                 int32_t sprite_index = sprite->__index_8;
-                return anm_loaded->images[(uint8_t)sprite_index].d3d_texture;
+                AnmImage image = anm_loaded->images[(uint8_t)sprite_index];
+                if (!image.d3d_texture || image.file || image.file_size
+                  || image.bytes_per_pixel != 4 || image.flags)
+                    return NULL;
+
+                D3DSURFACE_DESC desc;
+                HRESULT hr = image.d3d_texture->GetLevelDesc(0, &desc);
+
+                // note: may still sometimes crash when called in initial loading screen.
+                //       are there any more validity checks we need to do?
+                if (SUCCEEDED(hr)) return image.d3d_texture;
             }
             return NULL;
         }
