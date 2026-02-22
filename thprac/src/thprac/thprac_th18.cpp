@@ -1881,6 +1881,7 @@ namespace TH18 {
                     else shouldBuy = !shouldBuy;
                 }
                 ImGui::EndDisabled(saveManip && game_thread);
+                ImGui::PopID();
                 if (ImGui::IsItemHovered()) {
                     if (saveManip && game_thread) ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_RUN));
                     else ImGui::SetTooltip(S(TH18_MARKET_MANIP_CARD_HINT), cd->internal_name);
