@@ -29,6 +29,7 @@
     <ClInclude Include="src\3rdParties\ImGui\imstb_textedit.h" />
     <ClInclude Include="src\3rdParties\MetroHash\metrohash128.h" />
     <ClInclude Include="src\3rdParties\MetroHash\platform.h" />
+    <ClInclude Include="src\3rdParties\yyjson\yyjson.h" />
     <ClInclude Include="src\thprac\thprac_cfg.h" />
     <ClInclude Include="src\thprac\thprac_games.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_dx8.h" />
@@ -60,6 +61,7 @@
     <ClCompile Include="src\3rdParties\ImGui\imgui_tables.cpp" />
     <ClCompile Include="src\3rdParties\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="src\3rdParties\MetroHash\metrohash128.cpp" />
+    <ClCompile Include="src\3rdParties\yyjson\yyjson.c" />
     <ClCompile Include="src\thprac\main.cpp" />
     <ClCompile Include="src\thprac\thprac_cfg.cpp" />
     <ClCompile Include="src\thprac\thprac_games.cpp" />
@@ -153,7 +155,7 @@
   <PropertyGroup>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>thprac</TargetName>
-    <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\yyjson;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)src\3rdParties;$(ProjectDir)src\3rdParties\FreeType\win32;$(LibraryPath)</LibraryPath>
     <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>

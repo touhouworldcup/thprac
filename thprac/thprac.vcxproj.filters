@@ -14,9 +14,6 @@
     <Filter Include="3rdParties\ImGui">
       <UniqueIdentifier>{8ff51cf4-6d55-4d77-bbdc-2509b2e6cfbb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="3rdParties\MinHook">
-      <UniqueIdentifier>{7578d527-6afa-4ddd-941f-7b862a0b4ef6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="3rdParties\MetroHash">
       <UniqueIdentifier>{e7ddfcbb-ad50-4bb5-a7c9-732ec57b8ac4}</UniqueIdentifier>
     </Filter>
@@ -32,11 +29,11 @@
     <Filter Include="THPrac Games">
       <UniqueIdentifier>{4b6df0ca-a900-42f7-acc7-0d426c23cb66}</UniqueIdentifier>
     </Filter>
-    <Filter Include="3rdParties\distorm">
-      <UniqueIdentifier>{653ef50e-68b6-4a06-8e84-3ddf50867dfe}</UniqueIdentifier>
-    </Filter>
     <Filter Include="THPrac Log">
       <UniqueIdentifier>{16c57099-363c-403f-9df9-34b742d1e48c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rdParties\yyjson">
+      <UniqueIdentifier>{d15c246f-476f-491c-9dd2-c94f9188f69d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +132,9 @@
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_log.h">
       <Filter>THPrac Log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\yyjson\yyjson.h">
+      <Filter>3rdParties\yyjson</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -284,6 +284,9 @@
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_log.cpp">
       <Filter>THPrac Log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\yyjson\yyjson.c">
+      <Filter>3rdParties\yyjson</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
