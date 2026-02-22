@@ -1809,50 +1809,54 @@ namespace TH18 {
 
             const float oldItemSpacingX = style.ItemSpacing.x;
             const float oldItemSpacingY = style.ItemSpacing.y;
+            const ImVec2 display = ImGui::GetIO().DisplaySize;
+
+            const float scaleX = display.x / 1280.0f;
+            const float scaleY = display.y / 960.0f;
 
             const uint32_t cardCount = cardGroup.size();
-            const float cardScale = 0.25;
-            const float cardWidth = 256 * cardScale;
-            const float cardHeight = 320 * cardScale;
-            const float vPadding = 0.25f;
+            const float cardScale = 0.25f;
+            const float cardWidth = 256.0f * cardScale * scaleX;
+            const float cardHeight = 320.0f * cardScale * scaleY;
+            const float vPadding = 0.25f * scaleY;
 
             // to tweak when cell text is changed
-            const float cellTextHeight = saveManip ? 54.0f : 77.0f;
+            const float cellTextHeight = (saveManip ? 53.5f : 76.0f) * scaleY;
 
             // Draw header (+ background)
             const ImVec2 headerStart = ImGui::GetCursorScreenPos();
 
             draw->AddRectFilled(
                 ImVec2(headerStart.x, headerStart.y - 5.0f),
-                ImVec2(headerStart.x + cardsPerRow * (cardWidth + 2 * hPadding), headerStart.y + 42.0f),
+                ImVec2(headerStart.x + cardsPerRow * (cardWidth + 2.0f * hPadding * scaleX), headerStart.y + 42.0f * scaleY),
                 header_color, 5.0f);
 
-            ImGui::Dummy(ImVec2(20.0f, 0));
+            ImGui::Dummy(ImVec2(20.0f * scaleX, 0));
             ImGui::SameLine();
             ImGui::Text(S(header_tag));
             if (!saveManip) {
                 if (buyCount < cardCount - 1) {
                     ImGui::SameLine();
-                    ResizedText(S(TH18_MARKET_MANIP_HAS_RNG), 0.8);
+                    ResizedText(S(TH18_MARKET_MANIP_HAS_RNG), 0.8f);
                 } else if (buyCount == cardCount) {
                     ImGui::SameLine();
-                    ResizedText(S(TH18_MARKET_MANIP_SLOT_REMOVED), 0.8);
+                    ResizedText(S(TH18_MARKET_MANIP_SLOT_REMOVED), 0.8f);
                 }
             }
 
             // Dark background(s) for grid
             const ImVec2 gridStart = ImGui::GetCursorScreenPos();
             const uint32_t rows = 1 + (cardCount - 1) / cardsPerRow;
-            const float rowHeight = cardHeight + 2 * vPadding + cellTextHeight;
+            const float rowHeight = cardHeight + 2.0f * vPadding + cellTextHeight;
 
             for (size_t r = 0; r < rows; r++) {
                 const uint32_t cardsLeft = cardCount - (r * cardsPerRow);
                 const uint32_t rowCardCount = (cardsLeft > cardsPerRow) ? cardsPerRow : cardsLeft;
-                const float rowWidth = rowCardCount * (cardWidth + 2 * hPadding);
+                const float rowWidth = rowCardCount * (cardWidth + 2.0f * hPadding * scaleX);
 
                 draw->AddRectFilled(
                     ImVec2(gridStart.x, gridStart.y + rowHeight * r),
-                    ImVec2(gridStart.x + rowWidth, gridStart.y + rowHeight * (r + 1)),
+                    ImVec2(gridStart.x + rowWidth, gridStart.y + rowHeight * (float)(r + 1)),
                     IM_COL32(0, 0, 0, 128), 2.0f);
             }
 
@@ -1861,7 +1865,7 @@ namespace TH18 {
 
             for (auto& [cd, shouldBuy] : cardGroup) {
                 ImVec2 cellMin = ImGui::GetCursorScreenPos();
-                ImGui::Dummy(ImVec2(hPadding, 0));
+                ImGui::Dummy(ImVec2(hPadding * scaleX, 0));
                 style.ItemSpacing.y = oldItemSpacingY;
                 ImGui::SameLine();
 
@@ -1942,7 +1946,7 @@ namespace TH18 {
 
                 ImGui::SameLine();
                 style.ItemSpacing.y = 0.0f;
-                ImGui::Dummy(ImVec2(hPadding, 0));
+                ImGui::Dummy(ImVec2(hPadding * scaleX, 0));
                 const float cellRight = ImGui::GetItemRectMax().x;
 
                 draw->AddRect(
@@ -2210,7 +2214,7 @@ namespace TH18 {
                 HelpMarker(S(TH18_SAVEFILE_MANIP_FREEZE_DESC));
 
                 ImGui::NewLine();
-                DrawManipCardGrid(allCostCards, TH18_SAVEFILE_MANIP_CARDS, IM_COL32(40, 75, 120, 200), 10, 26.5f, true);
+                DrawManipCardGrid(allCostCards, TH18_SAVEFILE_MANIP_CARDS, IM_COL32(40, 75, 120, 200), 10, 27.5f, true);
                 EndOptGroup();
             }
             wndFocus &= ReplayMenu();
