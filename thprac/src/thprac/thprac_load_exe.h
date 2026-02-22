@@ -2,8 +2,7 @@
 #include <Windows.h>
 #include <stdint.h>
 
-#include "thprac_launcher_games.h"
-#include "thprac_launcher_games_def.h"
+#include "thprac_identify.h"
 
 namespace THPrac
 {
@@ -35,9 +34,13 @@ struct InjectResult {
     } error;
     WORD lastError;
 };
-uintptr_t GetGameModuleBase(HANDLE hProc);
-THGameSig* CheckOngoingGameByPID(DWORD pid, uintptr_t* base, HANDLE* pOutHandle = nullptr);
+uintptr_t GetProcessModuleBase(HANDLE hProc);
+const THGameVersion* CheckOngoingGameByPID(DWORD pid, uintptr_t* base, HANDLE* pOutHandle);
+bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game);
 bool WriteTHPracSig(HANDLE hProc, uintptr_t base);
 bool LoadSelf(HANDLE hProcess, void* userdata = nullptr, size_t userdataSize = 0);
+bool ApplyToProcById(DWORD pid);
+void RunGameWithTHPrac(const wchar_t* exeFn, wchar_t* cmdLine);
+
 void** GetUserData();
 }

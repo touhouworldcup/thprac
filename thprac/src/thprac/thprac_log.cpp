@@ -1,7 +1,6 @@
 #include <Windows.h>
 #include <Shlwapi.h>
 #include "thprac_log.h"
-#include "thprac_launcher_cfg.h"
 
 namespace THPrac {
 

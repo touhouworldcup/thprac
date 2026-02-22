@@ -1,6 +1,4 @@
 #include "thprac_games.h"
-#include "thprac_launcher_cfg.h"
-#include "thprac_launcher_main.h"
 #include "thprac_licence.h"
 #include "thprac_load_exe.h"
 #include "thprac_gui_impl_dx8.h"
@@ -228,9 +226,9 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     g_gameIMCCtx = ImmAssociateContext(*(HWND*)hwnd_addr, 0);
 
     // Set Locale
-    GuiLauncherLocaleInit();
+    Gui::LocaleInit();
     // Set Hotkeys
-    GuiLauncherHotkeyInit();
+    Gui::HotkeyInit();
 
     switch (impl) {
     case THPrac::IMPL_WIN32_DX8:
@@ -294,9 +292,11 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         Gui::LocaleCreateFont(io.DisplaySize.x * 0.025f);
     }
 
-    if (LauncherCfgInit(true)) {
+    MessageBoxW(NULL, L"TODO: implement settings JSON", NULL, 0);
+    if (false) {
         bool resizable_window;
-        if (LauncherSettingGet("resizable_window", resizable_window) && resizable_window && !Gui::ImplWin32CheckFullScreen()) {
+        MessageBoxW(NULL, L"TODO: implement settings JSON", NULL, 0);
+        if (false) {
             RECT wndRect;
             GetClientRect(*(HWND*)hwnd_addr, &wndRect);
             auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
@@ -308,8 +308,9 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
                 SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
         }
         int theme;
-        if (LauncherSettingGet("theme", theme)) {
-            SetTheme(theme);
+        MessageBoxW(NULL, L"TODO: implement settings JSON", NULL, 0);
+        if (false) {
+            //SetTheme(theme);
         } else
             ImGui::StyleColorsDark();
     } else

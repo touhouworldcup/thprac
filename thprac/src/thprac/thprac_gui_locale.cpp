@@ -1,5 +1,4 @@
 ﻿#include "thprac_gui_locale.h"
-#include "thprac_launcher_cfg.h"
 #include <imgui.h>
 #include <imgui_freetype.h>
 
@@ -165,11 +164,7 @@ static ImWchar baseUnicodeRanges[] =
     }
     bool LocaleInitFromCfg()
     {
-        int language = 0;
-        if (LauncherSettingGet("language", language) && language >= 0 && language <= 2) {
-            __glocale_current = (Gui::locale_t)language;
-            return true;
-        }
+        MessageBoxW(NULL, L"TODO: implement JSON settings", NULL, NULL);
         return false;
     }
 
@@ -257,9 +252,7 @@ static ImWchar baseUnicodeRanges[] =
             }
         }
 
-        auto& outFontFamily = *reinterpret_cast<std::wstring*>(lParam);
-
-        outFontFamily = logicalFont->lfFaceName;
+        memcpy((void*)lParam, logicalFont->lfFaceName, sizeof(logicalFont->lfFaceName));
 
         return FALSE;
     }
@@ -315,10 +308,7 @@ static ImWchar baseUnicodeRanges[] =
             }
         }
 
-        auto& outFontFamily = *reinterpret_cast<std::wstring*>(lParam);
-
-        outFontFamily = logicalFont->lfFaceName;
-
+        memcpy((void*)lParam, logicalFont->lfFaceName, sizeof(logicalFont->lfFaceName));
         return FALSE;
     }
     HFONT CALLBACK CheckFontZh(HDC hdc, font_info& info)
@@ -339,17 +329,15 @@ static ImWchar baseUnicodeRanges[] =
         }
 
         if (!signal) {
-            std::wstring fontFamilyName;
-            auto enumFontFamUserData = reinterpret_cast<LPARAM>(&fontFamilyName);
-            EnumFontFamiliesExW(hdc, nullptr, (FONTENUMPROCW)&FindFirstChineseFontProc, enumFontFamUserData, 0);
-            if (fontFamilyName.empty()) {
+            wchar_t fontFamilyName[32] = {};
+            EnumFontFamiliesExW(hdc, nullptr, (FONTENUMPROCW)&FindFirstChineseFontProc, (LPARAM)fontFamilyName, 0);
+            if (!*fontFamilyName) {
                 return nullptr;
             }
             info.font_name = L"";
             info.font_index = 0;
             info.font_scale = 1.0f;
-            return CreateFontW(0, 0, 0, 0, 0, 0, 0, 0, GB2312_CHARSET, 0, 0, 0, 0,
-                fontFamilyName.c_str());
+            return CreateFontW(0, 0, 0, 0, 0, 0, 0, 0, GB2312_CHARSET, 0, 0, 0, 0, fontFamilyName);
         }
 
         return CreateFontW(
@@ -406,17 +394,15 @@ static ImWchar baseUnicodeRanges[] =
         }
 
         if (!signal) {
-            std::wstring fontFamilyName;
-            auto enumFontFamUserData = reinterpret_cast<LPARAM>(&fontFamilyName);
-            EnumFontFamiliesExW(hdc, nullptr, (FONTENUMPROCW)&FindFirstJapaneseFontProc, enumFontFamUserData, 0);
-            if (fontFamilyName.empty()) {
+            wchar_t fontFamilyName[32] = {};
+            EnumFontFamiliesExW(hdc, nullptr, (FONTENUMPROCW)&FindFirstJapaneseFontProc, (LPARAM)fontFamilyName, 0);
+            if (!*fontFamilyName) {
                 return nullptr;
             }
             info.font_name = L"";
             info.font_index = 0;
             info.font_scale = 1.0f;
-            return CreateFontW(0, 0, 0, 0, 0, 0, 0, 0, SHIFTJIS_CHARSET, 0, 0, 0, 0,
-                fontFamilyName.c_str());
+            return CreateFontW(0, 0, 0, 0, 0, 0, 0, 0, SHIFTJIS_CHARSET, 0, 0, 0, 0, fontFamilyName);
         }
 
         return CreateFontW(
@@ -428,8 +414,8 @@ static ImWchar baseUnicodeRanges[] =
     ImWchar* GetGlyphRange(int locale)
     {
         bool renderOnlyUsedGlyphs = false;
-        LauncherSettingGet("render_only_used_glyphs", renderOnlyUsedGlyphs);
-
+        MessageBoxW(NULL, L"TODO: implement settings JSON", NULL, 0);
+        
         auto& io = ImGui::GetIO();
         ImWchar* glyphRange = nullptr;
         switch (locale) {
@@ -631,5 +617,11 @@ static ImWchar baseUnicodeRanges[] =
         io.Fonts->Clear();
         return LocaleCreateMergeFont(locale, font_size);
     }
+
+    void LocaleInit() {
+        MessageBoxW(NULL, L"TODO: implement settings JSON", NULL, MB_OK);
+        LocaleAutoSet();
+    }
+
 }
 }

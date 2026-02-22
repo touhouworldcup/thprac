@@ -1,20 +1,16 @@
 ﻿#define NOMINMAX
 
 #include "thprac_init.h"
-#include "thprac_launcher_main.h"
-#include "thprac_launcher_cfg.h"
-#include "thprac_launcher_games.h"
-#include "thprac_main.h"
 #include "thprac_gui_locale.h"
 #include "thprac_hook.h"
 #include "thprac_load_exe.h"
 #include "thprac_utils.h"
-#include <Windows.h>
+
+#include "utils/wininternal.h"
+
 #include <psapi.h>
 #include <shlwapi.h>
 #include <tlhelp32.h>
-
-HMODULE hWininet;
 
 using namespace THPrac;
 
@@ -35,203 +31,122 @@ bool PrivilegeCheck()
     return fRet;
 }
 
-void ApplyToProcById(DWORD pid) {
 
-    uintptr_t base;
-    HANDLE hProc;
-    auto* sig = THPrac::CheckOngoingGameByPID(pid, &base, &hProc);
-    if (sig) {
-        if (!WriteTHPracSig(hProc, base) || !LoadSelf(hProc)) {
-            fprintf(stderr, "Error: failed to inject into PID %d\n", pid);
-        }
-    } else {
-        fprintf(stderr, "Warning: PID %d is invalid. Is it a Touhou game? Is thprac already applied\n", pid);
-    }
-}
-
-bool DetectGame(const wchar_t* const exe, THGameSig** sigIn) {
-    MappedFile f(exe);
-    if(!f.fileMapView) {
-        return false;
-    }
-
-    ExeSig exeSig;
-    if (!GetExeInfo(f.fileMapView, f.fileSize, exeSig)) {
-        return false;
-    }
-
-    for (auto& sig : gGameDefs) {
-        if (sig.exeSig.textSize == exeSig.textSize && sig.exeSig.timeStamp == exeSig.timeStamp) {
-            *sigIn = &sig;
-            return true;
-        }
-    }
-
-    return false;
-
-}
-
-struct CmdlineRet {
-    bool proceed;
-    bool prompt_yes_game;
+enum ExistingGameLaunchAction {
+    LAUNCH_ACTION_LAUNCH_GAME = 0,
+    LAUNCH_ACTION_OPEN_LAUNCHER = 1,
+    LAUNCH_ACTION_ALWAYS_ASK = 2,
 };
 
-inline CmdlineRet doCmdLineStuff(PWSTR cmdLine) {
-    CmdlineRet ret = {
-        .proceed = false,
-        .prompt_yes_game = true,
-    };
+int WINAPI wWinMain(
+    _In_ HINSTANCE hInstance,
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ PWSTR pCmdLine,
+    _In_ int nCmdShow)
+{
+    // TODO: get rid of these and reimplement the settings system
 
-    int argc;
-    LPWSTR* argv = CommandLineToArgvW(cmdLine, &argc);
+    ExistingGameLaunchAction existing_game_launch_action = LAUNCH_ACTION_LAUNCH_GAME;
+    bool dont_search_ongoing_game = false;
+    bool thprac_admin_rights = false;
+
+
+    RemoteInit();
+
+    // TODO: read config file
+#if 0
+    if (thprac_admin_rights && !PrivilegeCheck()) {
+        ShellExecuteW(NULL, L"runas", CurrentPeb()->ProcessParameters->ImagePathName.Buffer, nullptr, nullptr, nCmdShow);        
+    }
+#endif
+
+    int argc = 0;
+    wchar_t** argv = CommandLineToArgvW(pCmdLine, &argc);
     defer(LocalFree(argv));
 
-    enum CURRENT_CMD {
+    enum CurrentCmd {
         CMD_NONE,
-        CMD_ATTACH,
-    } cur_cmd = CMD_NONE;
+        CMD_ATTACH
+    };
 
-    bool withVpatch = true;
-    const wchar_t* exeFn = nullptr;
+    CurrentCmd curCmd = CMD_NONE;
 
-    if (argc > 0) {
-        if (AttachConsole(ATTACH_PARENT_PROCESS)) {
-            freopen("conin$", "r", stdin);
-            freopen("conout$", "w", stdout);
-            freopen("conout$", "w", stderr);
-        }
-    } else {
-        ret.proceed = true;
-        return ret;    
-    }
-    THGameSig* sig = nullptr;
+    for (int i = 0; i < argc; i++) {
+        if (curCmd == CMD_ATTACH) {
+            curCmd = CMD_NONE;
 
-    for (int i = 0; i < argc;) {
-        if (cur_cmd == CMD_ATTACH) {
-            DWORD pid = wcstoul(argv[i], nullptr, 10);
-            if (!pid) {
-                cur_cmd = CMD_NONE;
-                fwprintf(stderr, L"Warning: failed to detect %s as process ID\n", argv[i]);
-                continue;
+            int pid = _wtoi(argv[i]);
+            if (ApplyToProcById(pid)) {
+                return 0;
             } else {
-                ApplyToProcById(pid);
-                return ret;
+                fprintf(stderr, "Warning: invalid PID: %d\n", pid);
+                continue;
             }
         }
 
         if (wcscmp(argv[i], L"--attach") == 0) {
-            if (argc == 1) {
-                ret.prompt_yes_game = false;
-                ret.proceed = true;
-                return ret;
+            curCmd = CMD_ATTACH;
+            continue;
+        }
+
+        if (GetFileAttributesW(argv[i]) != INVALID_FILE_ATTRIBUTES) {
+            if (!IdentifyExe(argv[i])) {
+                continue;
+            }
+            
+            wchar_t* launch_cmdline = wcsstr(pCmdLine, argv[i]) + wcslen(argv[i]);
+
+            RunGameWithTHPrac(argv[i], launch_cmdline);
+            return 0;
+        }
+    }
+
+    if (curCmd == CMD_ATTACH) {
+        FindAndAttach(false, false);
+        return 0;
+    } else if (!dont_search_ongoing_game && FindAndAttach(false, true)) {
+        return 0;        
+    }
+
+    // I already need all of this to have it's own scope.
+    if (existing_game_launch_action != LAUNCH_ACTION_OPEN_LAUNCHER) {
+        WIN32_FIND_DATAW find = {};
+        HANDLE hFind = FindFirstFileW(L"*.exe", &find);
+        if (!hFind) {
+            return false;
+        }
+        do {
+            const auto* ver = IdentifyExe(find.cFileName);
+            if (!ver) {
+                continue;
             }
 
-            cur_cmd = CMD_ATTACH;
-            i++;
-            continue;
-        }
+            if (existing_game_launch_action == LAUNCH_ACTION_ALWAYS_ASK) {
+                const char* gameStr = gThGameStrs[ver->gameId];
+                wchar_t gameWcs[8] = {};
+                for (size_t i = 0; gameStr[i]; i++) {
+                    gameWcs[i] = gameStr[i];
+                }
 
-        if (wcscmp(argv[i], L"--without-vpatch") == 0) {
-            withVpatch = false;
-            i++;
-            continue;
-        }
+                wchar_t buf[64] = {};
+                swprintf(buf, 63, L"An existing game was found: %s.\nClick \"Yes\" to launch the game.\nClick \"No\" to open the launcher.", gameWcs);
+                int choice = MessageBoxW(NULL, buf, L"TODO: add translation support", MB_YESNOCANCEL);
 
-        // No actual command line parameter detected, so let's see if it's an exe name
-        if (DetectGame(argv[i], &sig)) {
-            exeFn = argv[i];
-        } else {
-            fwprintf(stderr, L"Warning: %s is not a valid Touhou game executable. If you're having issues, consider using command line arguments to pass the filename to thprac. More at https://github.com/touhouworldcup/thprac\n", argv[i]);
-        }
-        i++;
+                if (choice == IDYES || choice == IDCANCEL) {
+                    goto run_this_game;
+                } else {
+                    continue;
+                }
+            } else {
+            run_this_game:
+                FindClose(hFind);
+                RunGameWithTHPrac(find.cFileName, nullptr);
+                return 0;
+            }
+        } while (FindNextFileW(hFind, &find));
+        FindClose(hFind);
     }
 
-    if (exeFn) {
-        __assume(sig);
-        wchar_t exeDir[MAX_PATH + 1] = {};
-        wcsncpy(exeDir, exeFn, MAX_PATH);
-        PathRemoveFileSpecW(exeDir);
-        SetCurrentDirectoryW(exeDir);
-        RunGameWithTHPrac(*sig, exeFn, withVpatch);
-        ret.proceed = false;
-        return ret;
-    } else {
-        ret.proceed = true;
-        return ret;
-    }
-}
-
-int WINAPI wWinMain(
-    [[maybe_unused]] HINSTANCE hInstance,
-    [[maybe_unused]] HINSTANCE hPrevInstance,
-    PWSTR pCmdLine,
-    [[maybe_unused]] int nCmdShow)
-{
-    VEHHookInit();
-    if (LauncherPreUpdate(pCmdLine)) {
-        return 0;
-    }
-
-    RemoteInit();
-    hWininet = LoadLibraryW(L"wininet.dll");
-    auto thpracMutex = OpenMutexW(SYNCHRONIZE, FALSE, L"thprac - Touhou Practice Tool##mutex");
-
-    CmdlineRet cmd = doCmdLineStuff(pCmdLine);
-    if (!cmd.proceed) {
-        return 0;
-    }
-
-    int launchBehavior = 0;
-    bool dontFindOngoingGame = false;
-    bool adminRights = false;
-    int checkUpdateWhen = 0;
-    bool autoUpdate = false;
-
-    if (LauncherCfgInit(true)) {
-        InitLocaleAndChore();
-
-        if (!hWininet) {
-            int oh_my_god_bruh = 2;
-            bool oh_my_god_bruh_2 = false;
-            LauncherSettingSet("check_update_timing", oh_my_god_bruh);
-            LauncherSettingSet("update_without_confirmation", oh_my_god_bruh_2);
-        }
-
-        LauncherSettingGet("existing_game_launch_action", launchBehavior);
-        LauncherSettingGet("dont_search_ongoing_game", dontFindOngoingGame);
-        LauncherSettingGet("thprac_admin_rights", adminRights);
-        LauncherSettingGet("check_update_timing", checkUpdateWhen);
-        LauncherSettingGet("update_without_confirmation", autoUpdate);
-        LauncherCfgClose();
-    }
-
-    if (adminRights && !PrivilegeCheck()) {
-        wchar_t exePath[MAX_PATH];
-        GetModuleFileNameW(nullptr, exePath, MAX_PATH);
-        CloseHandle(thpracMutex);
-        ShellExecuteW(nullptr, L"runas", exePath, nullptr, nullptr, SW_SHOW);
-        return 0;
-    }
-
-    if (checkUpdateWhen == 1) {
-        if (LauncherUpdDialog(autoUpdate)) {
-            return 0;
-        }
-    }
-
-    if (!dontFindOngoingGame && FindOngoingGame(false, cmd.prompt_yes_game)) {
-        return 0;
-    }
-
-    if (launchBehavior != 1 && FindAndRunGame(launchBehavior == 2)) {
-        return 0;
-    }
-
-    if (checkUpdateWhen == 0 && autoUpdate) {
-        if (LauncherUpdDialog(autoUpdate)) {
-            return 0;
-        }
-    }
-
-    return GuiLauncherMain();
+    MessageBoxW(NULL, L"TODO: implement launcher", L"", MB_ICONINFORMATION | MB_OK);
+    return 0;
 }

@@ -8,6 +8,8 @@
 #define write_fs_dword(offset, data) __writefsdword(offset, data)
 
 #include <Windows.h>
+typedef LONG NTSTATUS;
+
 #pragma warning(disable : 4201)
 
 /// Internal Windows Structs
@@ -22,6 +24,50 @@ Rest in Peace:
 Geoff Chappell
 */
 
+typedef struct _UNICODE_STRING {
+    USHORT Length;
+    USHORT MaximumLength;
+    PWSTR Buffer;
+} UNICODE_STRING, *PUNICODE_STRING;
+
+typedef struct _CURDIR {
+    UNICODE_STRING DosPath;
+    HANDLE Handle;
+} CURDIR;
+
+typedef struct _RTL_USER_PROCESS_PARAMETERS RTL_USER_PROCESS_PARAMETERS;
+struct _RTL_USER_PROCESS_PARAMETERS {
+    ULONG MaximumLength;
+    ULONG Length;
+    ULONG Flags;
+    ULONG DebugFlags;
+    HANDLE ConsoleHandle;
+    ULONG ConsoleFlags;
+    // 4 bytes of padding
+    HANDLE StandardInput;
+    HANDLE StandardOutput;
+    HANDLE StandardError;
+    CURDIR CurrentDirectory;
+    UNICODE_STRING DllPath;
+    UNICODE_STRING ImagePathName;
+    UNICODE_STRING CommandLine;
+    PVOID Environment;
+    ULONG StartingX;
+    ULONG StartingY;
+    ULONG CountX;
+    ULONG CountY;
+    ULONG CountCharsX;
+    ULONG CountCharsY;
+    ULONG FillAttribute;
+    ULONG WindowFlags;
+    ULONG ShowWindowFlags;
+    // 4 bytes of padding
+    UNICODE_STRING WindowTitle;
+    UNICODE_STRING DesktopInfo;
+    UNICODE_STRING ShellInfo;
+    UNICODE_STRING RuntimeData;
+};
+
 typedef struct _PEB PEB;
 struct _PEB {
     BOOLEAN InheritedAddressSpace;
@@ -34,7 +80,7 @@ struct _PEB {
     HANDLE Mutant;
     PVOID ImageBaseAddress;
     PVOID Ldr; // PEB_LDR_DATA*
-    PVOID ProcessParameters; // RTL_USER_PROCESS_PARAMETERS*
+    RTL_USER_PROCESS_PARAMETERS* ProcessParameters; // RTL_USER_PROCESS_PARAMETERS*
     PVOID SubSystemData;
     HANDLE ProcessHeap;
     RTL_CRITICAL_SECTION* FastPebLock;
@@ -117,11 +163,6 @@ typedef struct _GDI_TEB_BATCH {
     ULONG_PTR HDC;
     ULONG Buffer[310];
 } GDI_TEB_BATCH, *PGDI_TEB_BATCH;
-typedef struct _UNICODE_STRING {
-    USHORT Length;
-    USHORT MaximumLength;
-    PWSTR Buffer;
-} UNICODE_STRING, *PUNICODE_STRING;
 typedef struct _TEB TEB;
 struct _TEB {
     // NT_TIB NtTib;
@@ -225,14 +266,13 @@ typedef enum _PROCESSINFOCLASS {
     ProcessBreakOnTermination = 29
 } PROCESSINFOCLASS;
 
-extern "C" __kernel_entry NTSTATUS
-    NTAPI
-    NtQueryInformationProcess(
-        IN HANDLE ProcessHandle,
-        IN PROCESSINFOCLASS ProcessInformationClass,
-        OUT PVOID ProcessInformation,
-        IN ULONG ProcessInformationLength,
-        OUT PULONG ReturnLength OPTIONAL);
+extern "C" NTSTATUS NTAPI NtQueryInformationProcess(
+    HANDLE ProcessHandle,
+    PROCESSINFOCLASS ProcessInformationClass,
+    PVOID ProcessInformation,
+    ULONG ProcessInformationLength,
+    PULONG ReturnLength
+);
 
 // KUSER_SHARED_DATA struct definition so that we don't have to depend on the WDK just for ntddk.h
 // KUSER_SHARED_DATA itself comes from MSDN https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/ns-ntddk-kuser_shared_data
@@ -391,3 +431,5 @@ struct KUSER_SHARED_DATA {
 };
 
 #define Kuser_Shared_Data ((KUSER_SHARED_DATA*)0x7FFE0000)
+
+extern "C" ULONG RtlNtStatusToDosError(NTSTATUS Status);

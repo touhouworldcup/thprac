@@ -1,6 +1,15 @@
-﻿#include "thprac_load_exe.h"
+﻿#define NOMINMAX
+
+#include "thprac_load_exe.h"
+#include "thprac_identify.h"
 #include "utils/utils.h"
 #include "utils/wininternal.h"
+
+#include <tlhelp32.h>
+#include <wchar.h>
+
+#include <algorithm>
+#include <string>
 
 namespace THPrac {
 
@@ -78,79 +87,29 @@ void* GetNtDataDirectory(HMODULE hMod, BYTE directory)
     return NULL;
 }
 
-uintptr_t GetGameModuleBase(HANDLE hProc)
+uintptr_t GetProcessModuleBase(HANDLE hProc)
 {
     PROCESS_BASIC_INFORMATION pbi;
-    NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi, sizeof(pbi), nullptr);
+    if (NTSTATUS err = NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi, sizeof(pbi), nullptr)) {
+        //SetLastError(RtlNtStatusToDosError(err));
+        return 0;
+    }
 
     LPVOID based = (LPVOID)((uintptr_t)pbi.PebBaseAddress + offsetof(PEB, ImageBaseAddress));
 
     uintptr_t ret = 0;
     DWORD byteRet;
+    
+    // If this fails, it'll return 0 and GetLastError will already be set.
     ReadProcessMemory(hProc, based, &ret, sizeof(ret), &byteRet);
 
     return ret;
 }
 
-THGameSig* CheckOngoingGameByPID(DWORD pid, uintptr_t* base, HANDLE* pOutHandle)
-{
-    // Open the related process
-    auto hProc = OpenProcess(
-        // PROCESS_SUSPEND_RESUME |
-        PROCESS_QUERY_INFORMATION | PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE,
-        FALSE,
-        pid);
-    if (!hProc)
-        return nullptr;
 
-    *base = GetGameModuleBase(hProc);
-    if (!*base) {
-        return nullptr;
-    }
+constexpr DWORD thpracSig = 'CARP'; // 🐟
 
-    // Check THPrac signature
-    DWORD sigAddr = 0;
-    DWORD sigCheck = 0;
-    DWORD bytesReadRPM;
-    ReadProcessMemory(hProc, (void*)(*base + 0x3c), &sigAddr, 4, &bytesReadRPM);
-    if (bytesReadRPM != 4 || !sigAddr) {
-        CloseHandle(hProc);
-        return nullptr;
-    }
-    ReadProcessMemory(hProc, (void*)(*base + sigAddr - 4), &sigCheck, 4, &bytesReadRPM);
-    if (bytesReadRPM != 4 || sigCheck) {
-        CloseHandle(hProc);
-        return nullptr;
-    }
-
-    ExeSig sig;
-    if (GetExeInfoEx((size_t)hProc, *base, sig)) {
-        for (auto& gameDef : gGameDefs) {
-            if (gameDef.catagory != CAT_MAIN && gameDef.catagory != CAT_SPINOFF_STG) {
-                continue;
-            }
-            if (gameDef.exeSig.textSize != sig.textSize || gameDef.exeSig.timeStamp != sig.timeStamp) {
-                continue;
-            }
-            if (pOutHandle) {
-                *pOutHandle = hProc;
-            } else {
-                CloseHandle(hProc);
-            }
-            return &gameDef;
-        }
-    }
-    // I should not have to do this...
-    if (pOutHandle) {
-        *pOutHandle = hProc;
-    } else {
-        CloseHandle(hProc);
-    }
-    return nullptr;
-}
-
-bool WriteTHPracSig(HANDLE hProc, uintptr_t base)
-{
+bool WriteTHPracSig(HANDLE hProc, uintptr_t base) {
     DWORD sigAddr = 0;
     DWORD bytesReadRPM;
     ReadProcessMemory(hProc, (void*)(base + 0x3c), &sigAddr, 4, &bytesReadRPM);
@@ -159,17 +118,99 @@ bool WriteTHPracSig(HANDLE hProc, uintptr_t base)
     sigAddr += base;
     sigAddr -= 4;
 
-    constexpr DWORD thpracSig = 'CARP';
     DWORD bytesWrote;
     DWORD oldProtect;
-    if (!VirtualProtectEx(hProc, (void*)sigAddr, 4, PAGE_EXECUTE_READWRITE, &oldProtect))
+    if (!VirtualProtectEx(hProc, (void*)sigAddr, 4, PAGE_EXECUTE_READWRITE, &oldProtect)) {
         return false;
-    if (!WriteProcessMemory(hProc, (void*)sigAddr, &thpracSig, 4, &bytesWrote))
+    }
+    if (!WriteProcessMemory(hProc, (void*)sigAddr, &thpracSig, 4, &bytesWrote)) {
         return false;
-    if (!VirtualProtectEx(hProc, (void*)sigAddr, 4, oldProtect, &oldProtect))
+    }
+    if (!VirtualProtectEx(hProc, (void*)sigAddr, 4, oldProtect, &oldProtect)) {
         return false;
-
+    }
     return true;
+}
+
+bool CheckTHPracSig(HANDLE hProc, uintptr_t base) {
+    DWORD sigAddr;
+    DWORD bytesReadRPM;
+    if (!ReadProcessMemory(hProc, (void*)(base + 0x3c), &sigAddr, 4, &bytesReadRPM)) {
+        return false;
+    }
+    sigAddr += base;
+    sigAddr -= 4;
+
+    DWORD sig;
+    if (!ReadProcessMemory(hProc, (void*)sigAddr, &sig, 4, &bytesReadRPM)) {
+        return false;
+    }
+    return sig == thpracSig;
+}
+
+
+const THGameVersion* CheckOngoingGameByPID(DWORD pid, uintptr_t* pOutBase, HANDLE* pOutHandle) {
+    auto hProc = OpenProcess(
+        PROCESS_QUERY_INFORMATION | PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE,
+        FALSE, pid);
+    if (!hProc)
+        return nullptr;
+
+    defer({
+        if (pOutHandle) {
+            *pOutHandle = hProc;
+        } else {
+            CloseHandle(hProc);
+        }
+    });
+
+    uintptr_t base = GetProcessModuleBase(hProc);
+    if (!base) {
+        return nullptr;
+    }
+    if (pOutBase) {
+        *pOutBase = base;
+    }
+
+    // Check THPrac signature
+    // If an error happens here, return early
+    if (CheckTHPracSig(hProc, base)) {
+        return nullptr;
+    }
+
+    auto exeSig = GetRemoteExeInfo(hProc, base);
+    for (size_t i = 0; i < gGameVersionsCount; i++) {
+        uint64_t info_packed = (uint64_t)gGameVersions[i].textSize << 32 | gGameVersions[i].timeStamp;
+        if (info_packed == exeSig) {
+            return gGameVersions + i;
+        }
+    }
+    return nullptr;
+}
+
+const wchar_t* mutexNames[] = {
+    L"Touhou Koumakyou App",
+    L"Touhou YouYouMu App",
+    L"Touhou 08 App",
+    L"Touhou 10 App",
+    L"Touhou 11 App",
+    L"Touhou 12 App",
+    L"th17 App",
+    L"th18 App",
+    L"th185 App",
+    L"th19 App",
+    L"th20 App",
+};
+
+bool CheckIfAnyGame() {
+    for (const wchar_t* mutexName : mutexNames) {
+        HANDLE hMutex = OpenMutexW(SYNCHRONIZE, FALSE, mutexName);
+        if (hMutex) {
+            CloseHandle(hMutex);
+            return true;
+        }
+    }
+    return false;
 }
 
 bool LoadSelf(HANDLE hProcess, void* userdata, size_t userdataSize)
@@ -220,6 +261,124 @@ bool LoadSelf(HANDLE hProcess, void* userdata, size_t userdataSize)
 
     return true;
 }
+
+bool ApplyToProcById(DWORD pid) {
+
+    uintptr_t base;
+    HANDLE hProc;
+    auto* sig = THPrac::CheckOngoingGameByPID(pid, &base, &hProc);
+    if (sig) {
+        if (!WriteTHPracSig(hProc, base) || !LoadSelf(hProc)) {
+            //fprintf(stderr, "Error: failed to inject into PID %d\n", pid);
+            return false;
+        }
+    } else {
+        //fprintf(stderr, "Warning: PID %d is invalid. Is it a Touhou game? Is thprac already applied\n", pid);
+        return false;
+    }
+
+    if (hProc) {
+        CloseHandle(hProc);
+    }
+    return true;
+}
+
+enum thprac_prompt_t {
+    PR_FAILED,
+    PR_INFO_ATTACHED,
+    PR_INFO_NO_GAME_FOUND,
+    PR_ASK_IF_ATTACH,
+    PR_ASK_IF_CONTINUE,
+    PR_ASK_USE_VPATCH,
+    PR_ERR_NO_GAME_FOUND,
+    PR_ERR_ATTACH_FAILED,
+    PR_ERR_RUN_FAILED,
+};
+
+bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game) {
+    bool hasPrompted = false;
+
+    if (CheckIfAnyGame()) {
+        const THGameVersion* gameSig = nullptr;
+        PROCESSENTRY32W entry = {};
+        entry.dwSize = sizeof(PROCESSENTRY32W);
+        HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+        if (Process32FirstW(snapshot, &entry)) {
+            do {
+                uintptr_t base;
+                HANDLE hProc = 0;
+                if (!(gameSig = CheckOngoingGameByPID(entry.th32ProcessID, &base, &hProc)))
+                    continue;
+
+                hasPrompted = true;
+                if (prompt_if_yes_game) {
+                    wchar_t gameWcs[8] = {};
+                    {
+                        const char* gameStr = gThGameStrs[gameSig->gameId];
+                        for (size_t i = 0; gameStr[i]; i++) {
+                            gameWcs[i] = gameStr[i];
+                        }
+                    }
+
+                    wchar_t buf[64] = {};
+                    _snwprintf(buf, 63, L"Fount game %s\nAttach thprac?", gameWcs);
+
+                    int choice = MessageBoxW(NULL, buf, L"TODO: add translation support here", MB_YESNO);
+
+                    if (choice != IDYES)
+                        continue;
+                }
+                if (WriteTHPracSig(hProc, base) && LoadSelf(hProc)) {
+                    if (prompt_if_yes_game) {
+                        MessageBoxW(NULL, L"Applied thprac.\nIf nothing happened, return to main menu in game once.", L"TODO: add translation support here", MB_OK);
+                    }
+                    CloseHandle(snapshot);
+                    return true;
+                } else {
+                    MessageBoxW(NULL, L"Failed to apply thprac", L"TODO: add translation support here", MB_ICONERROR | MB_OK);
+                    CloseHandle(snapshot);
+                    return true;
+                }
+
+            } while (Process32NextW(snapshot, &entry));
+        }
+    }
+
+    if (prompt_if_no_game && !hasPrompted) {
+        MessageBoxW(NULL, L"No valid game was found.", L"TODO: add translation support here", MB_ICONERROR | MB_OK);
+    }
+
+    return false;
+}
+
+void RunGameWithTHPrac(const wchar_t* exeFn, wchar_t* cmdLine) {
+    STARTUPINFOW si = {
+        .cb = sizeof(si),
+    };
+    PROCESS_INFORMATION pi = {};
+
+    const wchar_t* file_spec = std::max(wcsrchr(exeFn, L'\\'), wcsrchr(exeFn, L'/'));
+    BOOL ret;
+    if (file_spec) {
+        std::wstring exeDir(exeFn, file_spec);
+        ret = CreateProcessW(exeFn, cmdLine, nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, exeDir.c_str(), &si, &pi);
+    } else {
+        ret = CreateProcessW(exeFn, cmdLine, nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, nullptr, &si, &pi);
+    }
+
+    if (!ret) {
+        return;
+    }
+    
+    LoadSelf(pi.hProcess, nullptr, 0);
+    ResumeThread(pi.hThread);
+
+    // TODO: determine if these should be returned
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+}
+
+
 
 void** GetUserData()
 {

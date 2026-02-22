@@ -1,7 +1,6 @@
 ﻿#include "thprac_gui_input.h"
 #include "thprac_gui_locale.h"
 #include "thprac_gui_impl_win32.h"
-#include "thprac_launcher_cfg.h"
 #include <imgui.h>
 #define NOMINMAX
 #include <Windows.h>
@@ -258,30 +257,18 @@ namespace THPrac
             int screenshot_chord = 0;
             int tracker_chord = 0;
             int language_chord = 0;
-            if (
-				!LauncherSettingGet("backspace_menu_chord", backspace_menu_chord) ||
-				!LauncherSettingGet("advanced_menu_chord", advanced_menu_chord) || 
-				!LauncherSettingGet("screenshot_chord", screenshot_chord) || 
-				!LauncherSettingGet("tracker_chord", tracker_chord) || 
-				!LauncherSettingGet("language_chord", language_chord)
-			) {
-                return false;
-            }
+            
+			MessageBoxW(NULL, L"TODO: implement settings JSON", NULL, 0);
+            return false;
+			#if 0
             __gbackspace_menu_chord_current = backspace_menu_chord;
             __gadvanced_menu_chord_current = advanced_menu_chord;
             __gscreenshot_chord_current = screenshot_chord;
             __gtracker_chord_current = tracker_chord;
             __glanguage_chord_current = language_chord;
             return true;
+			#endif
 		}
-
-		void MenuChordAutoSet() {
-			__gbackspace_menu_chord_current = 1 << ChordKey_Backspace;
-			__gadvanced_menu_chord_current = 1 << ChordKey_F12;
-			__gscreenshot_chord_current = 1 << ChordKey_Home;
-			__glanguage_chord_current = 1 << ChordKey_Alt;
-		}
-
 
 		// Returns the time the desired chord has been pressed for.
 		int GetChordPressedDuration(int target_chord) {
@@ -346,5 +333,9 @@ namespace THPrac
 			}
 		}
 
+		void HotkeyInit() {
+			MessageBoxW(NULL, L"TODO: implement settings JSON", NULL, MB_OK);
+			MenuChordInitArrays();
+		}
 	}
 }
