@@ -9116,11 +9116,17 @@
         "Your clipboard does not contain a valid Market Manip. config code (12-character hexadecimal string). Please check your clipboard and try again.",
         "クリップボードに有効な市場操作設定コード（12桁の16進文字列）がありません。確認して再試行してください。"
       ],
-      "TH18_MARKET_MANIP_AUTO_RESTART": [ "自动重开", "Auto-restart run", "自動リスタート" ],
+      "TH18_MARKET_MANIP_AUTO_RESTART": [ "自动重开", "Auto-restart", "自動リスタート" ],
       "TH18_MARKET_MANIP_AUTO_RESTART_DESC": [
         "启用后，通过市场操纵购买所有“买”卡牌时，也会自动重开本局。",
         "When enabled, buying all Buy cards via Market Manip. also restarts the run.",
         "有効時、市場操作で「購入」カードをすべて買うと自動的にリスタートします。"
+      ],
+      "TH18_MARKET_MANIP_OSCAR": [ "保险", "Safety", "保険" ],
+      "TH18_MARKET_MANIP_OSCAR_DESC": [
+        "启用后，如果购买了标记为“留”的卡牌，重开时将改为返回主菜单。",
+        "When enabled, restarting a run will quit to the main menu instead if a card you've marked as \"Keep\" can no longer appear.",
+        "有効時、「保持」に設定したカードを購入していた場合、リスタート時にメインメニューへ戻ります。"
       ],
       "TH18_MUKADE_FIX": [ "蜈蚣卡牌修复", "Centipede card fix", "ムカデカード修復" ],
       "TH18_MUKADE_FIX_DESC": [
@@ -9141,11 +9147,6 @@
         "有効にすると、スペルプラクティスで「弾幕のアジール」をタイムアウトしても、ゲームがクラッシュしなくなります。 "
       ],
       "TH18_RESTART_FIX": [ "重开游戏时重置商店", "Reset market on restart", "ゲームを再開するときに市場をリセットする" ],
-      "TH18_RESTART_FIX_DESC": [
-        "",
-        "",
-        ""
-      ],
       "TH18_AC_FIX": [ "正确记录关卡开始时所选择的主动卡片", "Correctly record the selected active card on stage beginning.", "ステージ開始時に選択した使用カードを正しく記録します" ],
       "TH18_AC_FIX_DESC": [
         "如果要使这个选项生效，你必须在游戏时保持此选项开启。",

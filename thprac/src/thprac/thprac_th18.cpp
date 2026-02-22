@@ -1301,6 +1301,7 @@ namespace TH18 {
         bool staticMalletReplay = false;
         bool useManipLoadout = false;
         bool manipAutoRestart = false;
+        bool manipSafetyMode = false;
         bool saveManipFreeze = false;
         bool st6FinalFix = false;
         bool scrollFix = false;
@@ -2095,6 +2096,11 @@ namespace TH18 {
                     ImGui::Checkbox(S(TH18_MARKET_MANIP_AUTO_RESTART), &manipAutoRestart);
                     ImGui::SameLine();
                     HelpMarker(S(TH18_MARKET_MANIP_AUTO_RESTART_DESC));
+
+                    ImGui::SameLine();
+                    ImGui::Checkbox(S(TH18_MARKET_MANIP_OSCAR), &manipSafetyMode);
+                    ImGui::SameLine();
+                    HelpMarker(S(TH18_MARKET_MANIP_OSCAR_DESC));
 
                     ImGui::NewLine();
                     DrawManipCardGrid(loadoutHighCostCards, TH18_MARKET_MANIP_HIGH_COSTS, IM_COL32(195, 160, 160, 200));
@@ -3359,6 +3365,25 @@ namespace TH18 {
         ImGui::End();
     }
 
+    bool CheckSafetyRestartOverride() {
+        auto& advOptWnd = THAdvOptWnd::singleton();
+        if (!advOptWnd.useManipLoadout) return false;
+        if (!advOptWnd.manipSafetyMode) return false;
+
+        auto keptCardsBought = [&](auto& vec) -> bool {
+            for (auto& [cd, shouldBuy] : vec)
+                if (!shouldBuy && GetMemContent<AbilityManager*>(ABILITY_MANAGER_PTR)->bought_flags[cd->card_id])
+                    return true;
+
+            return false;
+        };
+
+        if(keptCardsBought(advOptWnd.loadoutHighCostCards)) return true;
+        if(keptCardsBought(advOptWnd.loadoutMidCostCards))  return true;
+        if(keptCardsBought(advOptWnd.loadoutLowCostCards))  return true;
+        return false;
+    }
+
     HOOKSET_DEFINE(THMainHook)
     { .addr = 0x44278F, .name = "th18_game_start", .callback = tracker_reset, .data = PatchHookImpl(5) },
     { .addr = 0x4574D3, .name = "th18_bomb_dec",   .callback = th10_tracker_count_bomb, .data = PatchHookImpl(4) },
@@ -3489,27 +3514,36 @@ namespace TH18 {
         *((int32_t*)0x4ccd00) = *((int32_t*)0x4c9ab0); // Restore In-game rank to menu rank
     })
     EHOOK_DY(th18_restart, 0x4594b7, 2, {
+        if(CheckSafetyRestartOverride()) {
+            pCtx->Eip = 0x459578;
+            return;
+        }
+
         auto s1 = pCtx->Esp + 0xc;
         auto s2 = pCtx->Edi + 0x1e4;
         auto s3 = *(DWORD*)(pCtx->Edi + 0x1e8);
 
-        asm_call<0x476be0, Stdcall>(0x7, pCtx->Ecx);
+        asm_call<0x476be0, Stdcall>(0x7, pCtx->Ecx); // play sound
 
-        uint32_t* ret = asm_call<0x489140, Thiscall, uint32_t*>(s2, s1, 125, pCtx->Ecx);
+        uint32_t* ret = asm_call<0x489140, Thiscall, uint32_t*>(s2, s1, 125, pCtx->Ecx); // anm-related
 
-        asm_call<0x488be0, Stdcall>(*ret, 0x6);
+        asm_call<0x488be0, Stdcall>(*ret, 0x6); // anm interrupt
 
         // Restart New 1
-        asm_call<0x488be0, Stdcall>(s3, 0x1);
+        asm_call<0x488be0, Stdcall>(s3, 0x1);  // anm interrupt
 
         // Set restart flag, same under replay save status
-        asm_call<0x416ba0, Thiscall>(pCtx->Esi, 0x6);
+        asm_call<0x416ba0, Thiscall>(pCtx->Esi, 0x6); // menu: set selection
 
         // Switch menu state to close
-        asm_call<0x4577d0, Thiscall>(pCtx->Edi, 18);
+        asm_call<0x4577d0, Thiscall>(pCtx->Edi, 18); // pause-menu related
 
         pCtx->Edx = *(DWORD*)MENU_INPUT;
         pCtx->Eip = 0x459562;
+    })
+    EHOOK_DY(th18_restart_manual, 0x45969f, 1, {
+        if(CheckSafetyRestartOverride())
+            pCtx->Eip = 0x459578;
     })
     EHOOK_DY(th18_replay_restart, 0x417a70, 3, {
         auto callAddr = *(uint32_t*)(pCtx->Esp + 0x18);
