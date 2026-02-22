@@ -6,6 +6,7 @@
 
 #include "thprac_identify.h"
 #include "thprac_hook.h"
+#include "thprac_log.h"
 
 #pragma intrinsic(strcmp)
 
@@ -21,6 +22,8 @@ void RemoteInit() {
     }
     
     if (const auto* ver = IdentifyExe((uint8_t*)image_base)) {
+        log_init(false, true);
+
         VEHHookInit();
         ver->initFunc();
         ExitThread(0);

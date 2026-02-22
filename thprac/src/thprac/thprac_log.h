@@ -1,22 +1,21 @@
 #pragma once
-#include <cstring>
-#include <format>
-
+#include <stdint.h>
+#include <string>
 
 namespace THPrac {
 
 void log_print(const char* const msg, size_t len);
+void log_vprintf(const char* format, va_list va);
+void log_printf(const char* format, ...);
+
+int log_mbox(uintptr_t hwnd, unsigned int type, const char* caption, const char* text);
+int log_vmboxf(uintptr_t hwnd, unsigned int type, const char* caption, const char* format, va_list va);
+int log_mboxf(uintptr_t hwnd, unsigned int type, const char* caption, const char* format, ...);
+
+void log_init(bool launcher, bool console);
 
 inline void log_print(const char* const null_terminated) {
     return log_print(null_terminated, strlen(null_terminated));
 }
-
-template <typename... Args>
-inline void log_printf(const std::format_string<Args...> fmt, Args&&... args) {
-    auto str = std::vformat(fmt.get(), std::make_format_args(args...));
-    return log_print(str.data(), str.length());
-}
-
-void log_init(bool launcher, bool console);
 
 }

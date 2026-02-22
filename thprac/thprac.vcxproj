@@ -29,6 +29,7 @@
     <ClInclude Include="src\3rdParties\ImGui\imstb_textedit.h" />
     <ClInclude Include="src\3rdParties\MetroHash\metrohash128.h" />
     <ClInclude Include="src\3rdParties\MetroHash\platform.h" />
+    <ClInclude Include="src\thprac\thprac_cfg.h" />
     <ClInclude Include="src\thprac\thprac_games.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_dx8.h" />
     <ClInclude Include="src\thprac\thprac_gui_components.h" />
@@ -42,6 +43,7 @@
     <ClInclude Include="src\thprac\thprac_load_exe.h" />
     <ClInclude Include="src\thprac\thprac_gui_locale.h" />
     <ClInclude Include="src\thprac\thprac_locale_def.h" />
+    <ClInclude Include="src\thprac\thprac_log.h" />
     <ClInclude Include="src\thprac\thprac_th06.h" />
     <ClInclude Include="src\thprac\thprac_th07.h" />
     <ClInclude Include="src\thprac\thprac_th19.h" />
@@ -59,6 +61,7 @@
     <ClCompile Include="src\3rdParties\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="src\3rdParties\MetroHash\metrohash128.cpp" />
     <ClCompile Include="src\thprac\main.cpp" />
+    <ClCompile Include="src\thprac\thprac_cfg.cpp" />
     <ClCompile Include="src\thprac\thprac_games.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_impl_dx8.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_components.cpp" />
@@ -73,6 +76,7 @@
     <ClCompile Include="src\thprac\thprac_gui_locale.cpp" />
     <ClCompile Include="src\thprac\thprac_locale_def.cpp" />
     <ClCompile Include="src\thprac\thprac_alcostg.cpp" />
+    <ClCompile Include="src\thprac\thprac_log.cpp" />
     <ClCompile Include="src\thprac\thprac_th06.cpp" />
     <ClCompile Include="src\thprac\thprac_th07.cpp" />
     <ClCompile Include="src\thprac\thprac_th08.cpp" />

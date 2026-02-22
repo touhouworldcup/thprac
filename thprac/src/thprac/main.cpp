@@ -4,6 +4,7 @@
 #include "thprac_gui_locale.h"
 #include "thprac_hook.h"
 #include "thprac_load_exe.h"
+#include "thprac_log.h"
 #include "thprac_utils.h"
 
 #include "utils/wininternal.h"
@@ -49,9 +50,10 @@ int WINAPI wWinMain(
     ExistingGameLaunchAction existing_game_launch_action = LAUNCH_ACTION_LAUNCH_GAME;
     bool dont_search_ongoing_game = false;
     bool thprac_admin_rights = false;
-
-
+    
     RemoteInit();
+
+    log_init(false, true);
 
     // TODO: read config file
 #if 0
@@ -122,16 +124,7 @@ int WINAPI wWinMain(
             }
 
             if (existing_game_launch_action == LAUNCH_ACTION_ALWAYS_ASK) {
-                const char* gameStr = gThGameStrs[ver->gameId];
-                wchar_t gameWcs[8] = {};
-                for (size_t i = 0; gameStr[i]; i++) {
-                    gameWcs[i] = gameStr[i];
-                }
-
-                wchar_t buf[64] = {};
-                swprintf(buf, 63, L"An existing game was found: %s.\nClick \"Yes\" to launch the game.\nClick \"No\" to open the launcher.", gameWcs);
-                int choice = MessageBoxW(NULL, buf, L"TODO: add translation support", MB_YESNOCANCEL);
-
+                int choice = log_mboxf(0, MB_YESNOCANCEL, S(THPRAC_EXISTING_GAME_CONFIRMATION_TITLE), S(THPRAC_EXISTING_GAME_CONFIRMATION), gThGameStrs[ver->gameId]);
                 if (choice == IDYES || choice == IDCANCEL) {
                     goto run_this_game;
                 } else {

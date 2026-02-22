@@ -35,6 +35,9 @@
     <Filter Include="3rdParties\distorm">
       <UniqueIdentifier>{653ef50e-68b6-4a06-8e84-3ddf50867dfe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="THPrac Log">
+      <UniqueIdentifier>{16c57099-363c-403f-9df9-34b742d1e48c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -126,6 +129,12 @@
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_identify.h">
       <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_cfg.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_log.h">
+      <Filter>THPrac Log</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -269,6 +278,12 @@
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_identify.cpp">
       <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_cfg.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_log.cpp">
+      <Filter>THPrac Log</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

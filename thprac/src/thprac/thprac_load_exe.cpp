@@ -2,6 +2,8 @@
 
 #include "thprac_load_exe.h"
 #include "thprac_identify.h"
+#include "thprac_log.h"
+#include "thprac_gui_locale.h"
 #include "utils/utils.h"
 #include "utils/wininternal.h"
 
@@ -312,30 +314,18 @@ bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game) {
 
                 hasPrompted = true;
                 if (prompt_if_yes_game) {
-                    wchar_t gameWcs[8] = {};
-                    {
-                        const char* gameStr = gThGameStrs[gameSig->gameId];
-                        for (size_t i = 0; gameStr[i]; i++) {
-                            gameWcs[i] = gameStr[i];
-                        }
-                    }
-
-                    wchar_t buf[64] = {};
-                    _snwprintf(buf, 63, L"Fount game %s\nAttach thprac?", gameWcs);
-
-                    int choice = MessageBoxW(NULL, buf, L"TODO: add translation support here", MB_YESNO);
-
+                    int choice = log_mboxf(0, MB_YESNO, S(THPRAC_PR_APPLY), S(THPRAC_PR_ASK_ATTACH), gThGameStrs[gameSig->gameId]);
                     if (choice != IDYES)
                         continue;
                 }
                 if (WriteTHPracSig(hProc, base) && LoadSelf(hProc)) {
                     if (prompt_if_yes_game) {
-                        MessageBoxW(NULL, L"Applied thprac.\nIf nothing happened, return to main menu in game once.", L"TODO: add translation support here", MB_OK);
+                        log_mbox(0, MB_ICONASTERISK | MB_OK, S(THPRAC_PR_COMPLETE), S(THPRAC_PR_INFO_ATTACHED));
                     }
                     CloseHandle(snapshot);
                     return true;
                 } else {
-                    MessageBoxW(NULL, L"Failed to apply thprac", L"TODO: add translation support here", MB_ICONERROR | MB_OK);
+                    log_mbox(0, MB_ICONERROR | MB_OK, S(THPRAC_PR_ERROR), S(THPRAC_PR_ERR_ATTACH));
                     CloseHandle(snapshot);
                     return true;
                 }
@@ -345,7 +335,7 @@ bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game) {
     }
 
     if (prompt_if_no_game && !hasPrompted) {
-        MessageBoxW(NULL, L"No valid game was found.", L"TODO: add translation support here", MB_ICONERROR | MB_OK);
+        log_mbox(0, MB_ICONERROR | MB_OK, S(THPRAC_PR_ERROR), S(THPRAC_PR_ERR_NO_GAME));
     }
 
     return false;
