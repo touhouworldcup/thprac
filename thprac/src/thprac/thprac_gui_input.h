@@ -77,7 +77,6 @@ namespace THPrac
 
 		std::string HotkeyChordToLabel(int chord);
         int HotkeyChordToVK(int chord);
-		void HotkeyInit();
 	}
 }
 

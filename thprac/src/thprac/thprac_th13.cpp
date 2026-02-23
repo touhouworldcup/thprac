@@ -177,19 +177,19 @@ namespace TH13 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 AutoSize(ImVec2(0.0f, 0.0f),
                     XSSS(3)[TH13_ST7_END_S1], nullptr, S(TH_BOMB_FRAGMENT), nullptr,
                     15.5f, ImVec2(ImGui::GetMainViewport()->Size.x, 450.0f), ImVec2(370.0f, -1.0f));
                 AutoPos(0.9f, 0.65f);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 AutoSize(ImVec2(0.0f, 0.0f),
                     XSSS(3)[TH13_ST1_BOSS2], nullptr, S(TH13_TRANCE_METER), nullptr,
                     15.5f, ImVec2(ImGui::GetMainViewport()->Size.x, 450.0f), ImVec2(-1.0f, -1.0f));
                 AutoPos(0.9f, 0.65f);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 AutoSize(ImVec2(0.0f, 0.0f),
                     XSSS(3)[TH13_ST1_BOSS4], nullptr, S(TH13_EXTEND), nullptr,
                     15.5f, ImVec2(ImGui::GetMainViewport()->Size.x, 450.0f), ImVec2(370.0f, -1.0f));
@@ -446,15 +446,15 @@ namespace TH13 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
@@ -664,19 +664,19 @@ namespace TH13 {
         {
             SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);

@@ -171,19 +171,19 @@ namespace TH14 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(0.5f, 0.81f);
                 SetPosRel(0.4f, 0.14f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(0.6f, 0.75f);
                 SetPosRel(0.35f, 0.165f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(0.56f, 0.81f);
                 SetPosRel(0.37f, 0.14f);
                 SetItemWidthRel(-0.105f);
@@ -436,15 +436,15 @@ namespace TH14 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
@@ -587,19 +587,19 @@ namespace TH14 {
         {
             SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
@@ -1247,19 +1247,19 @@ namespace TH14 {
         {
             SetTitle("AdvOptMenu");
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);

@@ -32,35 +32,23 @@ bool PrivilegeCheck()
     return fRet;
 }
 
-
-enum ExistingGameLaunchAction {
-    LAUNCH_ACTION_LAUNCH_GAME = 0,
-    LAUNCH_ACTION_OPEN_LAUNCHER = 1,
-    LAUNCH_ACTION_ALWAYS_ASK = 2,
-};
-
 int WINAPI wWinMain(
     _In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ PWSTR pCmdLine,
     _In_ int nCmdShow)
 {
-    // TODO: get rid of these and reimplement the settings system
+    InitConfigDir();
+    LoadSettingsGlobal();
 
-    ExistingGameLaunchAction existing_game_launch_action = LAUNCH_ACTION_LAUNCH_GAME;
-    bool dont_search_ongoing_game = false;
-    bool thprac_admin_rights = false;
-    
     RemoteInit();
+    LoadSettingsStartup();
 
     log_init(false, true);
 
-    // TODO: read config file
-#if 0
-    if (thprac_admin_rights && !PrivilegeCheck()) {
+    if (gSettingsStartup.thprac_admin_rights && !PrivilegeCheck()) {
         ShellExecuteW(NULL, L"runas", CurrentPeb()->ProcessParameters->ImagePathName.Buffer, nullptr, nullptr, nCmdShow);        
     }
-#endif
 
     int argc = 0;
     wchar_t** argv = CommandLineToArgvW(pCmdLine, &argc);
@@ -106,12 +94,12 @@ int WINAPI wWinMain(
     if (curCmd == CMD_ATTACH) {
         FindAndAttach(false, false);
         return 0;
-    } else if (!dont_search_ongoing_game && FindAndAttach(false, true)) {
+    } else if (!gSettingsStartup.dont_search_ongoing_game && FindAndAttach(false, true)) {
         return 0;        
     }
 
     // I already need all of this to have it's own scope.
-    if (existing_game_launch_action != LAUNCH_ACTION_OPEN_LAUNCHER) {
+    if (gSettingsStartup.existing_game_launch_action != LAUNCH_ACTION_OPEN_LAUNCHER) {
         WIN32_FIND_DATAW find = {};
         HANDLE hFind = FindFirstFileW(L"*.exe", &find);
         if (!hFind) {
@@ -123,7 +111,7 @@ int WINAPI wWinMain(
                 continue;
             }
 
-            if (existing_game_launch_action == LAUNCH_ACTION_ALWAYS_ASK) {
+            if (gSettingsStartup.existing_game_launch_action == LAUNCH_ACTION_ALWAYS_ASK) {
                 int choice = log_mboxf(0, MB_YESNOCANCEL, S(THPRAC_EXISTING_GAME_CONFIRMATION_TITLE), S(THPRAC_EXISTING_GAME_CONFIRMATION), gThGameStrs[ver->gameId]);
                 if (choice == IDYES || choice == IDCANCEL) {
                     goto run_this_game;

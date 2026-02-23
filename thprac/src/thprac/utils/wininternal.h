@@ -6,7 +6,7 @@
 #define write_fs_byte(offset, data) __writefsbyte(offset, data)
 #define write_fs_word(offset, data) __writefsword(offset, data)
 #define write_fs_dword(offset, data) __writefsdword(offset, data)
-
+#include "utils.h"
 #include <Windows.h>
 typedef LONG NTSTATUS;
 

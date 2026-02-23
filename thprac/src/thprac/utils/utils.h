@@ -90,3 +90,5 @@ template<typename T, unsigned N>
 constexpr unsigned constexpr_strlen(const T(&str)[N]) {
     return N - 1;
 }
+
+#define SIZED(a) a, sizeof(a)

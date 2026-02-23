@@ -7,11 +7,13 @@ namespace THPrac {
 namespace TH185 {
     struct card_names_t {
         static constexpr size_t count = 86;
-        Gui::locale_t locale;
+        Locale locale;
         char strings[count][50];
         const char* ptrs[count];
 
-        constexpr card_names_t() : locale(Gui::locale_t::LOCALE_NONE) {
+        constexpr card_names_t()
+            : locale(Locale::LOCALE_NONE)
+        {
             for (int i = 0; i < count; ++i) {
                 ptrs[i] = strings[i];
             }
@@ -2689,15 +2691,15 @@ namespace TH185 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
@@ -2887,19 +2889,19 @@ namespace TH185 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(0.5f, 0.81f);
                 SetPosRel(0.4f, 0.14f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(0.6f, 0.75f);
                 SetPosRel(0.35f, 0.165f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(0.56f, 0.81f);
                 SetPosRel(0.37f, 0.14f);
                 SetItemWidthRel(-0.105f);
@@ -3021,19 +3023,19 @@ namespace TH185 {
         {
             SetTitle(S(TH_ADV_OPT));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.075f);

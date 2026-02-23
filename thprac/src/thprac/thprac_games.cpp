@@ -219,16 +219,15 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     }
 
     ingame_mb_init();
-    ::ImGui::CreateContext();
+    ImGui::CreateContext();
+
     g_gameGuiImpl = impl;
     g_gameGuiDevice = (DWORD*)device;
     g_gameGuiHwnd = (DWORD*)hwnd_addr;
     g_gameIMCCtx = ImmAssociateContext(*(HWND*)hwnd_addr, 0);
 
-    // Set Locale
-    Gui::LocaleInit();
     // Set Hotkeys
-    Gui::HotkeyInit();
+    Gui::MenuChordInitArrays();
 
     switch (impl) {
     case THPrac::IMPL_WIN32_DX8:
@@ -292,29 +291,21 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         Gui::LocaleCreateFont(io.DisplaySize.x * 0.025f);
     }
 
-    MessageBoxW(NULL, L"TODO: implement settings JSON", NULL, 0);
-    if (false) {
-        bool resizable_window;
-        MessageBoxW(NULL, L"TODO: implement settings JSON", NULL, 0);
-        if (false) {
-            RECT wndRect;
-            GetClientRect(*(HWND*)hwnd_addr, &wndRect);
-            auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
-            auto captionSize = GetSystemMetrics(SM_CYCAPTION);
-            auto longPtr = GetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE);
-            SetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE, longPtr | WS_SIZEBOX);
-            SetWindowPos(*(HWND*)hwnd_addr, HWND_NOTOPMOST,
-                0, 0, wndRect.right + frameSize, wndRect.bottom + frameSize + captionSize,
-                SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
-        }
-        int theme;
-        MessageBoxW(NULL, L"TODO: implement settings JSON", NULL, 0);
-        if (false) {
-            //SetTheme(theme);
-        } else
-            ImGui::StyleColorsDark();
-    } else
-        ImGui::StyleColorsDark();
+
+    if (gSettingsGlobal.resizable_window) {
+        RECT wndRect;
+        GetClientRect(*(HWND*)hwnd_addr, &wndRect);
+        auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
+        auto captionSize = GetSystemMetrics(SM_CYCAPTION);
+        auto longPtr = GetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE);
+        SetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE, longPtr | WS_SIZEBOX);
+        SetWindowPos(*(HWND*)hwnd_addr, HWND_NOTOPMOST,
+            0, 0, wndRect.right + frameSize, wndRect.bottom + frameSize + captionSize,
+            SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    }
+
+    SetTheme(gSettingsGlobal.theme);
+
     // Imgui settings
     io.IniFilename = nullptr;
 }
@@ -374,11 +365,11 @@ void GameGuiEnd(bool draw_cursor)
     if (!ImGui::IsAnyItemActive()) {
         if (Gui::GetChordPressedDuration(Gui::GetLanguageChord()) > 0) {
             if (Gui::KeyboardInputUpdate('1') == 1) {
-                Gui::LocaleSet(Gui::LOCALE_JA_JP);
+                Gui::LocaleSet(LOCALE_JA_JP);
             } else if (Gui::KeyboardInputUpdate('2') == 1) {
-                Gui::LocaleSet(Gui::LOCALE_ZH_CN);
+                Gui::LocaleSet(LOCALE_ZH_CN);
             } else if (Gui::KeyboardInputUpdate('3') == 1) {
-                Gui::LocaleSet(Gui::LOCALE_EN_US);
+                Gui::LocaleSet(LOCALE_EN_US);
             }
         }
     }

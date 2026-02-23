@@ -176,12 +176,6 @@ namespace THPrac
 		
 		/***                    Menu Chords                          ***/
 
-        int __gbackspace_menu_chord_current = 1 << ChordKey_Backspace;
-        int __gadvanced_menu_chord_current = 1 << ChordKey_F12;
-        int __gscreenshot_chord_current = 1 << ChordKey_Home;
-        int __gtracker_chord_current = 1 << ChordKey_End;
-        int __glanguage_chord_current = 1 << ChordKey_Alt;
-
         const char* ChordKeyStrings[ChordKey_COUNT];
 
 		int ChordKeyVKs[ChordKey_COUNT];
@@ -251,25 +245,6 @@ namespace THPrac
             
 		}
 
-		bool MenuChordInitFromCfg() {
-            int backspace_menu_chord = 0;
-            int advanced_menu_chord = 0;
-            int screenshot_chord = 0;
-            int tracker_chord = 0;
-            int language_chord = 0;
-            
-			MessageBoxW(NULL, L"TODO: implement settings JSON", NULL, 0);
-            return false;
-			#if 0
-            __gbackspace_menu_chord_current = backspace_menu_chord;
-            __gadvanced_menu_chord_current = advanced_menu_chord;
-            __gscreenshot_chord_current = screenshot_chord;
-            __gtracker_chord_current = tracker_chord;
-            __glanguage_chord_current = language_chord;
-            return true;
-			#endif
-		}
-
 		// Returns the time the desired chord has been pressed for.
 		int GetChordPressedDuration(int target_chord) {
             int min_held = 1 << 30;
@@ -297,11 +272,11 @@ namespace THPrac
 			return GetChordPressedDuration(chord) == 1;
 		}
 		
-		int GetBackspaceMenuChord() { return __gbackspace_menu_chord_current; }
-		int GetAdvancedMenuChord() { return __gadvanced_menu_chord_current; }
-		int GetScreenshotChord() { return __gscreenshot_chord_current; }
-		int GetTrackerChord() { return __gtracker_chord_current; }
-		int GetLanguageChord() { return __glanguage_chord_current; }
+        int GetBackspaceMenuChord() { return hotkeys.backspace_menu; }
+        int GetAdvancedMenuChord() { return hotkeys.advanced_menu; }
+        int GetScreenshotChord() { return hotkeys.screenshot; }
+        int GetTrackerChord() { return hotkeys.tracker; }
+        int GetLanguageChord() { return hotkeys.language; }
 
 		// Convert chords to user-readable string.
         std::string HotkeyChordToLabel(int chord) {
@@ -331,11 +306,6 @@ namespace THPrac
             } else {
 				return ChordKeyVKs[chord];
 			}
-		}
-
-		void HotkeyInit() {
-			MessageBoxW(NULL, L"TODO: implement settings JSON", NULL, MB_OK);
-			MenuChordInitArrays();
 		}
 	}
 }

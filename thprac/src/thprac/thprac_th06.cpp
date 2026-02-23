@@ -135,15 +135,15 @@ namespace TH06 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.12f;
                 x_offset_2 = 0.172f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.12f;
                 x_offset_2 = 0.16f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.18f;
                 x_offset_2 = 0.235f;
                 break;
@@ -355,17 +355,17 @@ namespace TH06 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSize(330.f, 390.f);
                 SetPos(260.f, 65.f);
                 SetItemWidth(-60.0f);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSize(370.f, 375.f);
                 SetPos(240.f, 75.f);
                 SetItemWidth(-60.0f);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSize(330.f, 390.f);
                 SetPos(260.f, 65.f);
                 SetItemWidth(-65.0f);
@@ -668,13 +668,13 @@ namespace TH06 {
         virtual void OnLocaleChange() override
         {
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetItemWidth(-60.0f);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetItemWidth(-60.0f);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetItemWidth(-65.0f);
                 break;
             default:
@@ -867,19 +867,19 @@ namespace TH06 {
         {
             SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);

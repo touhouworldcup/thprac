@@ -113,34 +113,33 @@ static ImWchar baseUnicodeRanges[] =
 };
 #pragma endregion
 
-    locale_t __glocale_current = LOCALE_EN_US;
     bool __glocale_merge = false;
     unsigned int __glocale_disabled = 0;
     ImWchar* __glocale_jp_glyphrange = nullptr;
 
-    void LocaleSet(locale_t locale)
+    void LocaleSet(Locale locale)
     {
-        __glocale_current = locale;
+        gSettingsGlobal.language = locale;
         if (!__glocale_merge) {
             ImGuiIO& io = ImGui::GetIO();
-            io.FontDefault = io.Fonts->Fonts[__glocale_current];
+            io.FontDefault = io.Fonts->Fonts[gSettingsGlobal.language];
         }
     }
-    void LocaleAutoSet()
+    void LocaleSetFromSysLang()
     {
         auto lang_id = GetUserDefaultUILanguage();
         switch (lang_id & 0x03ff) {
         case 0x4:
-            __glocale_current = LOCALE_ZH_CN;
+            gSettingsGlobal.language = LOCALE_ZH_CN;
             break;
         case 0x9:
-            __glocale_current = LOCALE_EN_US;
+            gSettingsGlobal.language = LOCALE_EN_US;
             break;
         case 0x11:
-            __glocale_current = LOCALE_JA_JP;
+            gSettingsGlobal.language = LOCALE_JA_JP;
             break;
         default:
-            __glocale_current = LOCALE_EN_US;
+            gSettingsGlobal.language = LOCALE_EN_US;
             break;
         }
     }
@@ -148,7 +147,7 @@ static ImWchar baseUnicodeRanges[] =
     inline const char* LocaleGetStr(th_glossary_t name);
     void LocaleRotate()
     {
-        switch (__glocale_current) {
+        switch (gSettingsGlobal.language) {
         case LOCALE_ZH_CN:
             LocaleSet(LOCALE_EN_US);
             break;
@@ -161,11 +160,6 @@ static ImWchar baseUnicodeRanges[] =
         default:
             break;
         }
-    }
-    bool LocaleInitFromCfg()
-    {
-        MessageBoxW(NULL, L"TODO: implement JSON settings", NULL, NULL);
-        return false;
     }
 
     struct font_info {
@@ -413,14 +407,11 @@ static ImWchar baseUnicodeRanges[] =
     }
     ImWchar* GetGlyphRange(int locale)
     {
-        bool renderOnlyUsedGlyphs = false;
-        MessageBoxW(NULL, L"TODO: implement settings JSON", NULL, 0);
-        
         auto& io = ImGui::GetIO();
         ImWchar* glyphRange = nullptr;
         switch (locale) {
         case LOCALE_ZH_CN:
-            if (renderOnlyUsedGlyphs) {
+            if (gSettingsGlobal.render_only_used_glyphs) {
                 glyphRange = (ImWchar*)__thprac_loc_range_zh;
             } else {
                 glyphRange = (ImWchar*)io.Fonts->GetGlyphRangesChineseFull();
@@ -430,7 +421,7 @@ static ImWchar baseUnicodeRanges[] =
             glyphRange = (ImWchar*)__thprac_loc_range_en;
             break;
         case LOCALE_JA_JP: {
-            if (renderOnlyUsedGlyphs) {
+            if (gSettingsGlobal.render_only_used_glyphs) {
                 glyphRange = (ImWchar*)__thprac_loc_range_ja;
             } else {
                 if (!__glocale_jp_glyphrange) {
@@ -530,98 +521,5 @@ static ImWchar baseUnicodeRanges[] =
 
         return true;
     }
-    bool LocalAddMergeFont(float font_size, int locale, bool merge)
-    {
-        auto& io = ImGui::GetIO();
-
-        // Var Definition
-        void* fontData = nullptr;
-        DWORD fontDataSize = 0;
-
-        // Create Font and Device Context
-        font_info info = {};
-        auto hdc = CreateCompatibleDC(nullptr);
-        auto font = fontCheckers[locale](hdc, info);
-        if (font == nullptr) {
-            __glocale_disabled |= 1 << locale;
-            return false;
-        }
-        SelectObject(hdc, font);
-
-        // Aquiring Font Data
-        fontDataSize = GetFontData(hdc, 0x66637474, 0, nullptr, 0);
-        if (fontDataSize == GDI_ERROR) {
-            fontDataSize = GetFontData(hdc, 0, 0, nullptr, 0);
-            if (fontDataSize == GDI_ERROR) {
-                DeleteObject(font);
-                DeleteDC(hdc);
-                __glocale_disabled |= 1 << locale;
-                return false;
-            }
-            fontData = ImGui::MemAlloc(fontDataSize);
-            GetFontData(hdc, 0, 0, fontData, fontDataSize);
-        } else {
-            fontData = ImGui::MemAlloc(fontDataSize);
-            GetFontData(hdc, 0x66637474, 0, fontData, fontDataSize);
-        }
-
-        DeleteObject(font);
-        DeleteDC(hdc);
-
-        // Add Font
-        ImFontConfig fontConfig;
-        fontConfig.MergeMode = merge;
-        fontConfig.FontNo = info.font_index;
-        fontConfig.RasterizerMultiply = 1.25;
-
-        ImWchar* glyphRange = GetGlyphRange(locale);
-        float fontFinalSize = font_size * info.font_scale;
-
-        io.Fonts->AddFontFromMemoryTTF(fontData, fontDataSize, fontFinalSize, &fontConfig, glyphRange);
-        return true;
-    }
-    bool LocaleCreateMergeFont(locale_t locale, float font_size)
-    {
-        auto& io = ImGui::GetIO();
-        __glocale_current = locale;
-
-        switch (locale) {
-        case LOCALE_ZH_CN:
-            LocalAddMergeFont(font_size, LOCALE_ZH_CN, false);
-            LocalAddMergeFont(font_size, LOCALE_JA_JP, true);
-            LocalAddMergeFont(font_size, LOCALE_EN_US, true);
-            break;
-        case LOCALE_EN_US:
-            LocalAddMergeFont(font_size, LOCALE_EN_US, false);
-            LocalAddMergeFont(font_size, LOCALE_JA_JP, true);
-            LocalAddMergeFont(font_size, LOCALE_ZH_CN, true);
-            break;
-        case LOCALE_JA_JP:
-            LocalAddMergeFont(font_size, LOCALE_JA_JP, false);
-            LocalAddMergeFont(font_size, LOCALE_ZH_CN, true);
-            LocalAddMergeFont(font_size, LOCALE_EN_US, true);
-            break;
-        default:
-            return false;
-        }
-
-        ImGuiFreeType::BuildFontAtlas(io.Fonts, 0);
-        __glocale_merge = true;
-        LocaleFontWarning();
-
-        return true;
-    }
-    bool LocaleRecreateMergeFont(locale_t locale, float font_size)
-    {
-        auto& io = ImGui::GetIO();
-        io.Fonts->Clear();
-        return LocaleCreateMergeFont(locale, font_size);
-    }
-
-    void LocaleInit() {
-        MessageBoxW(NULL, L"TODO: implement settings JSON", NULL, MB_OK);
-        LocaleAutoSet();
-    }
-
 }
 }

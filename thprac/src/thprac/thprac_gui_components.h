@@ -35,7 +35,7 @@ namespace Gui {
             ImGuiIO& io = ImGui::GetIO();
             io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
-            mLocale = (locale_t)-1;
+            mLocale = LOCALE_NONE;
         }
 
         static constexpr ImGuiWindowFlags STYLE_DEFAULT = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | 0;
@@ -97,7 +97,7 @@ namespace Gui {
         Viewport* mViewport = nullptr;
 
     private:
-        locale_t mLocale;
+        Locale mLocale;
     };
 
     class PPGuiWnd : public GameGuiWnd {
@@ -775,7 +775,7 @@ namespace Gui {
     private:
         static bool mGlobalDisable;
         std::vector<int> mNavId;
-        locale_t mLocale;
+        Locale mLocale;
         int mFocusId = 0;
         int mForceFocusId = 0;
     };

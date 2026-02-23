@@ -204,17 +204,17 @@ namespace TH11 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSize(320.f, 335.f);
                 SetPos(150.f, 80.f);
                 SetItemWidth(-56.0f);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSize(440.f, 325.f);
                 SetPos(100.f, 90.f);
                 SetItemWidth(-58.0f);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSize(340.f, 335.f);
                 SetPos(130.f, 80.f);
                 SetItemWidth(-66.0f);
@@ -472,15 +472,15 @@ namespace TH11 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
@@ -649,19 +649,19 @@ namespace TH11 {
         {
             SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
