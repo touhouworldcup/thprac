@@ -1798,11 +1798,13 @@ namespace TH18 {
             const bool saveManip = false)
         {
             // Calculate total weight for group & buy count
+            const uint32_t scorefile_manager = GetMemContent(SCOREFILE_MANAGER_PTR);
             uint32_t totalWeight = 0;
             uint32_t buyCount = 0;
+
             if (!saveManip) {
                 for (auto& [cd, shouldBuy] : cardGroup) {
-                    const uint8_t boughtBefore = *(uint8_t*)GetMemAddr(SCOREFILE_MANAGER_PTR, 0x5F4B8 + 0xD0 + cd->card_id);
+                    const uint8_t boughtBefore = scorefile_manager ? *(uint8_t*)(scorefile_manager + 0x5F4B8 + 0xD0 + cd->card_id) : 0;
 
                     if (!shouldBuy && !(cd->appearance_condition && !boughtBefore))
                         totalWeight += cd->weight + (boughtBefore ? 0 : 5);
@@ -1814,7 +1816,7 @@ namespace TH18 {
             // Grid drawing constants & utils
             ImDrawList* draw = ImGui::GetWindowDrawList();
             ImGuiStyle& style = ImGui::GetStyle();
-            uint32_t game_thread = GetMemContent(GAME_THREAD_PTR);
+            const uint32_t game_thread = GetMemContent(GAME_THREAD_PTR);
 
             const float oldItemSpacingX = style.ItemSpacing.x;
             const float oldItemSpacingY = style.ItemSpacing.y;
@@ -1882,8 +1884,8 @@ namespace TH18 {
                 ImGui::Dummy(ImVec2(0, vPadding));
                 ImTextureID tex = (ImTextureID)get_sprite_d3d_texture(31, cd->sprite_large);
 
-                const uint8_t* boughtBeforeAddr = (uint8_t*)GetMemAddr(SCOREFILE_MANAGER_PTR, 0x5F4B8 + 0xD0 + cd->card_id);
-                const uint8_t boughtBefore = *boughtBeforeAddr;
+                const uint8_t* boughtBeforeAddr = scorefile_manager ? (uint8_t*)(scorefile_manager + 0x5F4B8 + 0xD0 + cd->card_id) : nullptr;
+                const uint8_t boughtBefore = boughtBeforeAddr ? *boughtBeforeAddr : 0;
 
                 const bool dimCard = (saveManip && boughtBefore) || (!saveManip && shouldBuy);
                 ImVec4 tint = dimCard ? ImVec4(1, 1, 1, 0.35f) : ImVec4(1, 1, 1, 1.0f);
@@ -1891,7 +1893,7 @@ namespace TH18 {
                 ImGui::PushID(cd->card_id * (saveManip ? -1 : 1));
                 ImGui::BeginDisabled(saveManip && game_thread);
                 if (ImGui::ImageButton(tex, ImVec2(cardWidth, cardHeight), ImVec2(0, 0), ImVec2(1, 0.625f), 0, ImVec4(0, 0, 0, 0), tint)) {
-                    if (saveManip) *(uint8_t*)boughtBeforeAddr = !boughtBefore;
+                    if (saveManip && boughtBeforeAddr) *(uint8_t*)boughtBeforeAddr = !boughtBefore;
                     else shouldBuy = !shouldBuy;
                 }
                 ImGui::EndDisabled(saveManip && game_thread);
