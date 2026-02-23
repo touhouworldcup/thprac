@@ -848,6 +848,7 @@
       "TH_MID_STAGE": [ "道中Boss", "Mid Boss", "道中ボス" ],
       "TH_END_STAGE": [ "关底Boss", "End Boss", "ボス" ],
       "TH_CHAPTER": [ "章节", "Chapter", "チャプター" ],
+      "TH_CYCLE": [ "循环", "Cycle", "サイクル" ],
       "TH_STAGE_PORTION": [ "道中", "Stage Portion", "道中" ],
       "TH_STAGE_PORTION_N": [ "#%d", "#%d", "#%d" ],
       "TH_STAGE_PORTION_1": [ "前半 #%d", "First Half #%d", "前半 #%d" ],
@@ -6866,7 +6867,6 @@
     "namespace": "TH14",
 
     "glossary": {
-      "TH14_CYCLE": [ "循环", "Cycle", "サイクル" ],
       "TH14_CYCLE_1": [ "1 (Bomb碎片)", "1 (Bomb Fragment)", "1 (ボムの欠片)" ],
       "TH14_CYCLE_2": [ "2 (Bomb碎片)", "2 (Bomb Fragment)", "2 (ボムの欠片)" ],
       "TH14_CYCLE_3": [ "3 (Bomb碎片)", "3 (Bomb Fragment)", "3 (ボムの欠片)" ],
@@ -9066,7 +9066,8 @@
       "TH18_MIKOFLASH_CD": [ "神子冷却", "Miko CD", "神子CD" ],
       "TH18_VAMPIRE_CD": [ "牙冷却", "Fang CD", "牙CD" ],
       "TH18_SUN_CD": [ "太阳冷却", "Sun CD", "太陽CD" ],
-      "TH18_LILY_COUNT": [ "莉莉使用数", "Lily Count", "リリ使回数" ],
+      "TH18_LILY_COUNT": [ "莉莉等级", "Lily Level", "リリレベル" ],
+      "TH18_LILY_CYCLE": [ "莉莉循环", "Lily Cycle", "リリサイクル" ],
       "TH18_LILY_CD": [ "莉莉冷却", "Lily CD", "リリCD" ],
       "TH18_BASSDRUM_CD": [ "鼓冷却", "Drum CD", "低音鼓CD" ],
       "TH18_PSYCO_CD": [ "菫子冷却", "Sumi CD", "菫子CD" ],
@@ -9685,6 +9686,11 @@
     },
 
     "groups": {
+      "TH18_LILY_CYCLE_LIST": [
+        "TH14_CYCLE_1",
+        "TH14_CYCLE_2",
+        "TH20_CYCLE_3"
+      ],
       "TH18_CARD_LIST": [
         "TH18_CARD_00",
         "TH18_CARD_01",

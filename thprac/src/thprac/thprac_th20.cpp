@@ -686,7 +686,7 @@ namespace TH20 {
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
         Gui::GuiCheckBox mDlg { TH_DLG };
-        Gui::GuiCombo mCycle { TH14_CYCLE, TH20_CYCLE_LIST };
+        Gui::GuiCombo mCycle { TH_CYCLE, TH20_CYCLE_LIST };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 42949672950, 10, 10000000000 };

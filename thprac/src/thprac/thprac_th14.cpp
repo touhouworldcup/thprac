@@ -334,7 +334,7 @@ namespace TH14 {
         Gui::GuiCombo mSection { TH_MODE };
         Gui::GuiCombo mPhase { TH_PHASE };
         Gui::GuiCheckBox mDlg { TH_DLG };
-        Gui::GuiCombo mCycle { TH14_CYCLE, TH14_CYCLE_LIST };
+        Gui::GuiCombo mCycle { TH_CYCLE, TH14_CYCLE_LIST };
 
         Gui::GuiSlider<int, ImGuiDataType_S32> mChapter { TH_CHAPTER, 0, 0 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
@@ -348,7 +348,7 @@ namespace TH14 {
 
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
-            TH_SCORE, TH_LIFE, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT, TH14_CYCLE,
+            TH_SCORE, TH_LIFE, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT, TH_CYCLE,
             TH_POWER, TH_VALUE, TH_GRAZE };
 
         int mChapterSetup[7][2] {

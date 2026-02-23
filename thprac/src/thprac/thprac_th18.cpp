@@ -74,20 +74,20 @@ namespace TH18 {
     };
 
     struct CardBase {
-        struct VTableCard* vtable;
-        int32_t card_id;
-        int32_t array_index___plus_1_i_think;
-        ThList<CardBase> list_node;
-        int32_t anm_id_for_ingame_effect;
-        Timer recharge_timer;
-        Timer _recharge_timer;
-        int32_t recharge_time;
-        struct TableCardData* table_entry;
-        int32_t flags;
+        struct VTableCard* vtable; //0x0
+        int32_t card_id; //0x4
+        int32_t array_index___plus_1_i_think; //0x8
+        ThList<CardBase> list_node; //0xc
+        int32_t anm_id_for_ingame_effect; //0x1c
+        Timer recharge_timer; //0x20
+        Timer _recharge_timer; //0x34
+        int32_t recharge_time; //0x48
+        struct TableCardData* table_entry; //0x4c
+        int32_t flags; //0x50
     };
 
     struct CardLily : public CardBase {
-        int32_t count;
+        int32_t count; //0x54
     };
 
     struct TableCardData {
@@ -183,6 +183,7 @@ namespace TH18 {
         int32_t vampire;
         int32_t sun;
         int32_t lily_count;
+        int32_t lily_cycle;
         int32_t lily_cd;
         int32_t bassdrum;
         int32_t psyco;
@@ -196,6 +197,7 @@ namespace TH18 {
         void Reset()
         {
             memset(this, 0, sizeof(THPracParam));
+            lily_cycle = -1; //to detect older replays not having it
         }
         bool ReadJson(std::string& json)
         {
@@ -222,6 +224,7 @@ namespace TH18 {
             GetJsonValue(vampire);
             GetJsonValue(sun);
             GetJsonValue(lily_count);
+            GetJsonValue(lily_cycle);
             GetJsonValue(lily_cd);
             GetJsonValue(bassdrum);
             GetJsonValue(psyco);
@@ -261,6 +264,7 @@ namespace TH18 {
                 AddJsonValue(vampire);
                 AddJsonValue(sun);
                 AddJsonValue(lily_count);
+                AddJsonValue(lily_cycle);
                 AddJsonValue(lily_cd);
                 AddJsonValue(bassdrum);
                 AddJsonValue(psyco);
@@ -314,6 +318,7 @@ namespace TH18 {
 
             mMukade.SetCurrentStep(100);
             *mMukade = 800;
+            *mLilyCycle = 1; //match vanilla behavior for counter=10 by default
 
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -365,7 +370,8 @@ namespace TH18 {
                 thPracParam.mikoflash = 10000 - *mMikoflash;
                 thPracParam.vampire = 10000 - *mVampire;
                 thPracParam.sun = 10000 - *mSun;
-                thPracParam.lily_count = 10000 - *mLilyCount;
+                thPracParam.lily_count = *mLilyCount;
+                thPracParam.lily_cycle = *mLilyCycle;
                 thPracParam.lily_cd = 10000 - *mLilyCD;
                 thPracParam.bassdrum = 10000 - *mBassdrum;
                 thPracParam.psyco = 10000 - *mPsyco;
@@ -482,16 +488,18 @@ namespace TH18 {
                         if (card.first == MUKADE)
                             continue;
 
-                        if (card.first == LILY)
+                        if (card.first == LILY) {
                             mLilyCount();
+
+                            if (*mLilyCount >= 10)
+                                mLilyCycle();
+                        }
 
                         char str[20];
                         sprintf(str, "%.2f %%%%", **slider * 0.01f);
                         (*slider)(str);
                     }
                 }
-
-                
             }
 
             mNavFocus();
@@ -604,6 +612,7 @@ namespace TH18 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mVampire { TH18_VAMPIRE_CD, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mSun { TH18_SUN_CD, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mLilyCount { TH18_LILY_COUNT, 0, 10, 1, 1, 1 };
+        Gui::GuiCombo mLilyCycle { TH18_LILY_CYCLE, TH18_LILY_CYCLE_LIST };
         Gui::GuiSlider<int, ImGuiDataType_S32> mLilyCD { TH18_LILY_CD, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mBassdrum { TH18_BASSDRUM_CD, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mPsyco { TH18_PSYCO_CD, 0, 10000, 1, 1000 };
@@ -631,8 +640,8 @@ namespace TH18 {
             TH_SCORE, TH_LIFE, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT,
             TH_POWER, TH18_FUNDS, TH18_MUKADE, TH18_KOZUCHI_CD, TH18_KANAME_CD,
             TH18_MOON_CD, TH18_MIKOFLASH_CD, TH18_VAMPIRE_CD, TH18_SUN_CD,
-            TH18_LILY_COUNT, TH18_LILY_CD, TH18_BASSDRUM_CD, TH18_PSYCO_CD,
-            TH18_CYLINDER_CD, TH18_RICEBALL_CD };
+            TH18_LILY_COUNT, TH18_LILY_CYCLE, TH18_LILY_CD, TH18_BASSDRUM_CD,
+            TH18_PSYCO_CD, TH18_CYLINDER_CD, TH18_RICEBALL_CD };
 
         int mChapterSetup[7][2] {
             { 3, 2 },
@@ -3486,7 +3495,15 @@ namespace TH18 {
                 R(sun);
                 break;
             case LILY:
-                static_cast<CardLily*>(card)->count = thPracParam.lily_count;
+                if (thPracParam.lily_cycle == -1) { // backwards compatibility with old buggy behavior
+                    ((CardLily*)card)->count = 10000 - thPracParam.lily_count;
+                } else {
+                    ((CardLily*)card)->count = thPracParam.lily_count;
+
+                    if (thPracParam.lily_count >= 10)
+                        ((CardLily*)card)->count += thPracParam.lily_cycle + 2;
+                }
+
                 R(lily_cd);
                 break;
             case BASSDRUM:
