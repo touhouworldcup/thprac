@@ -7,7 +7,7 @@ namespace THPrac {
 namespace TH13 {
     int g_lock_timer = 0;
     bool g_lock_timer_flag = false;
-
+    bool g_is_music_room_trance = false;
     using std::pair;
 
     enum addrs {
@@ -1821,6 +1821,52 @@ namespace TH13 {
         }
     }
 
+    void SetBGM(int a1, const char* src, int a3, int a4)
+    {
+        int n31 = 0;
+        DWORD* v6 = (DWORD*)(a1 + 8992);
+        while (*v6) {
+            ++n31;
+            v6 += 67;
+            if (n31 >= 31)
+                return;
+        }
+        int v7 = 268 * n31 + a1;
+        *(DWORD*)(v7 + 8992) = a3;
+        *(DWORD*)(v7 + 8996) = a4;
+        strcpy((char*)(v7 + 9004), src);
+        *(DWORD*)(v7 + 9000) = 0;
+    }
+
+    void PlaySE(int e1, DWORD a2 = 0x4DF1A0, float a3 = 0.0f)
+    {
+        int v3 = (int)(a3 * 1000.0 / 192.0);
+        int v4 = 0;
+        int v7 = *(int16_t*)(0x4BAD9A + 20 * e1);
+        unsigned int e5 = 0;
+        for (unsigned int* i = (unsigned int*)(a2 + 32);; ++i) {
+            e5 = *i;
+            if ((*i & 0x80000000) != 0) {
+                *(DWORD*)(a2 + 4 * v4 + 32) = e1;
+                e5 = v4 << 9;
+                *(DWORD*)((v4 << 9) + a2 + 128) = v3;
+                *(DWORD*)(a2 + 4 * v4 + 80) = 1;
+                *(DWORD*)(a2 + 24 * e1 + 6796) = v7;
+                return;
+            }
+            if (e5 == e1)
+                break;
+            if (++v4 >= 12)
+                return;
+        }
+        e5 = *(DWORD*)(a2 + 4 * v4 + 80);
+        if (e5 < 0x3C) {
+            *(DWORD*)(a2 + 4 * (e5 + (v4 << 7)) + 128) = v3;
+            ++*(DWORD*)(a2 + 4 * v4 + 80);
+        }
+        return;
+    }
+
     void RenderHitbox(ImDrawList* p)
     {
         auto GetClientFromStage = [](ImVec2 client) -> ImVec2 { return { client.x + 32.0f + 192.0f, client.y + 16.0f}; };
@@ -1913,26 +1959,26 @@ namespace TH13 {
     }
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th13_inf_lives, 0x00444A52,6,
-    {
-        if ((*(THOverlay::singleton().mInfLives))) {
-            if (!g_adv_igi_options.map_inf_life_to_no_continue) {
-                *(DWORD*)(0x4BE7F4) = *(DWORD*)(0x4BE7F4) + 1;
-            } else {
-                if (*(DWORD*)(0x4BE7F4) == 0)
-                    *(DWORD*)(0x4BE7F4) = 1;
+    EHOOK_DY(th13_inf_lives, 0x00444A52, 6,
+        {
+            if ((*(THOverlay::singleton().mInfLives))) {
+                if (!g_adv_igi_options.map_inf_life_to_no_continue) {
+                    *(DWORD*)(0x4BE7F4) = *(DWORD*)(0x4BE7F4) + 1;
+                } else {
+                    if (*(DWORD*)(0x4BE7F4) == 0)
+                        *(DWORD*)(0x4BE7F4) = 1;
+                }
             }
-        }
-    })
+        })
     // EHOOK_DY(th13_dump_rep, 0x448d8c, 3,
     // {
     //     auto filePtr = (void*)pCtx->Eax;
     //     auto fileSize = *(uint32_t*)(*(uint32_t*)(pCtx->Ebx + 0x18) + 0x20);
     //     auto fileName = (char*)(pCtx->Esp + 0xC);
-    // 
+    //
     //     std::wstring fileNameDump = mb_to_utf16(fileName, 932);
     //     fileNameDump += L".dump";
-    // 
+    //
     //     DWORD bytesProcessed;
     //     auto hFile = CreateFileW(fileNameDump.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     //     SetFilePointer(hFile, 0, NULL, FILE_BEGIN);
@@ -1947,6 +1993,8 @@ namespace TH13 {
         }
     })
     EHOOK_DY(th13_everlasting_bgm, 0x461830, 1, {
+        g_is_music_room_trance = false;
+
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
         int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
         int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
@@ -2186,6 +2234,41 @@ namespace TH13 {
     EHOOK_DY(th13_gui_init_2, 0x45e1d5, 1, {
         self->Disable();
         THGuiCreate();
+    })
+    EHOOK_DY(th13_trance_musicroom1, 0x455D8E, 5, {
+        if (pCtx->Eax & 0x800)// press C
+        {
+            int32_t cur_sel = *(int32_t*)(pCtx->Esi + 1872);
+            const char* cur_sel_str = (const char*)((cur_sel * 64) + pCtx->Esi + 1880);
+            int32_t bgm_id;
+            sscanf_s(cur_sel_str, "bgm/th13_%02d", &bgm_id);
+            if ((bgm_id >= 1 && bgm_id<=16) || bgm_id==20 || bgm_id==22) // Miko's BGM do not have trance ver.
+            {
+                if (g_is_music_room_trance == false)
+                {
+                    char bgm_str2[20];
+                    sprintf_s(bgm_str2, "th13_%02db.wav", bgm_id);
+                    PlaySE(52);
+                    SetBGM(0x4DF1A0, bgm_str2, 9, 0);
+                    g_is_music_room_trance = true;
+                    *(int32_t*)(pCtx->Esi + 1868) = 0;// refresh text
+                }
+                else
+                {
+                    char bgm_str2[20];
+                    sprintf_s(bgm_str2, "th13_%02d.wav", bgm_id);
+                    PlaySE(66);
+                    SetBGM(0x4DF1A0, bgm_str2, 9, 0);
+                    g_is_music_room_trance = false;
+                    *(int32_t*)(pCtx->Esi + 1868) = 0;// refresh text
+                }
+            }
+        }
+    })
+    EHOOK_DY(th13_trance_musicroom2, 0x455BB5, 5, {// not care 0x455AB6 since BGM 0 have no trance ver
+        if (g_is_music_room_trance){
+            *(DWORD*)(pCtx->Esp) = 0x00EE7788; //ABGR
+        }
     })
     HOOKSET_ENDDEF()
 }
