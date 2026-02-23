@@ -5,24 +5,61 @@
 #include "utils/wininternal.h"
 
 #include "thprac_identify.h"
+#include "thprac_load_exe.h"
 #include "thprac_hook.h"
 #include "thprac_log.h"
 
 #pragma intrinsic(strcmp)
 
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-
 namespace THPrac {
-void RemoteInit() {
-    uintptr_t image_base = (uintptr_t)CurrentPeb()->ImageBaseAddress;
 
-    // thprac is running in it's own process, proceed to WinMain
-    if ((uintptr_t)&__ImageBase == image_base) {
+bool TryLoadOILP() {
+    return LoadLibraryW(L"openinputlagpatch.dll");
+}
+
+bool TryLoadVpatch() {
+    WIN32_FIND_DATAW find = {};
+    HANDLE hFind = FindFirstFileW(L"vpatch*.dll", &find);
+    if (!hFind) {
+        return false;
+    }
+    do {
+        if (LoadLibraryW(find.cFileName)) {
+            goto vpatch_loaded;
+        }   
+    } while (FindNextFileW(hFind, &find));
+    FindClose(hFind);
+    return false;
+vpatch_loaded:
+    FindClose(hFind);
+    return true;
+}
+
+inline void LoadVpatchOrOILP(remote_init_config* conf) {
+    if (!conf->newProcess) {
         return;
     }
-    
-    if (const auto* ver = IdentifyExe((uint8_t*)image_base)) {
+
+    if (!conf->forbidOILP && TryLoadOILP()) {
+        return;
+    }
+
+    if (!conf->forbidVpatch && TryLoadVpatch()) {
+        return;
+    }
+}
+
+
+void RemoteInit() {
+    auto* conf = RemoteGetConfig();
+    // No remote shellcode buffer, no remote init config, we are not being injected
+    if (!conf) {
+        return;
+    }
+    if (const auto* ver = IdentifyExe((uint8_t*)CurrentPeb()->ImageBaseAddress)) {
         log_init(false, true);
+
+        LoadVpatchOrOILP(conf);
 
         VEHHookInit();
         ver->initFunc();

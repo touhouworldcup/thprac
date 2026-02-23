@@ -61,6 +61,8 @@ int WINAPI wWinMain(
 
     CurrentCmd curCmd = CMD_NONE;
 
+    remote_init_config rInitConf = {};
+
     for (int i = 0; i < argc; i++) {
         if (curCmd == CMD_ATTACH) {
             curCmd = CMD_NONE;
@@ -79,6 +81,16 @@ int WINAPI wWinMain(
             continue;
         }
 
+        if (wcscmp(argv[i], L"--without-vpatch") == 0) {
+            rInitConf.forbidVpatch = true;
+            continue;
+        }
+
+        if (wcscmp(argv[i], L"--without-oilp") == 0) {
+            rInitConf.forbidOILP = true;
+            continue;
+        }
+
         if (GetFileAttributesW(argv[i]) != INVALID_FILE_ATTRIBUTES) {
             if (!IdentifyExe(argv[i])) {
                 continue;
@@ -86,7 +98,7 @@ int WINAPI wWinMain(
             
             wchar_t* launch_cmdline = wcsstr(pCmdLine, argv[i]) + wcslen(argv[i]);
 
-            RunGameWithTHPrac(argv[i], launch_cmdline);
+            RunGameWithTHPrac(argv[i], launch_cmdline, &rInitConf);
             return 0;
         }
     }

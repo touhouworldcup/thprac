@@ -10,37 +10,33 @@ namespace THPrac
 PIMAGE_NT_HEADERS GetNtHeader(HMODULE hMod);
 void* GetNtDataDirectory(HMODULE hMod, BYTE directory);
 
+
 // DO NOT CHANGE THIS STRUCT WITHOUT RECOMPILING init_shellcode.cpp
-struct remote_param {
-    LPVOID pUserData;
-    PUINT8 pAddrOfUserData;
+__declspec(align(16)) struct remote_param {
+    UINT_PTR pRemoteParamAddr;
     decltype(LoadLibraryW)* pLoadLibraryW;
     decltype(LoadLibraryA)* pLoadLibraryA;
     decltype(VirtualProtect)* pVirtualProtect;
     decltype(GetProcAddress)* pGetProcAddress;
-    decltype(GetLastError)* pGetLastError;
     wchar_t sExePath[MAX_PATH];
     char sLoadErrDllName[MAX_PATH];
 };
 
-// GetLastError return value + an additional error code packed in a 32 bit integer
-// Return value of InjectShellcode in inject_shellcode.cpp
-struct InjectResult {
-    // Appending to this enum is fine, but if you reorder any of the fields, recompile inject_shellcode.cpp
-    enum : WORD {
-        Ok = 0,
-        LoadError,
-        RelocationError,
-    } error;
-    WORD lastError;
+__declspec(align(16)) struct remote_init_config {
+    bool newProcess = true;
+    bool forbidVpatch = false;
+    bool forbidOILP = false;
 };
+
 uintptr_t GetProcessModuleBase(HANDLE hProc);
 const THGameVersion* CheckOngoingGameByPID(DWORD pid, uintptr_t* base, HANDLE* pOutHandle);
 bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game);
 bool WriteTHPracSig(HANDLE hProc, uintptr_t base);
-bool LoadSelf(HANDLE hProcess, void* userdata = nullptr, size_t userdataSize = 0);
+bool LoadSelf(HANDLE hProcess, remote_init_config* conf = nullptr);
 bool ApplyToProcById(DWORD pid);
-void RunGameWithTHPrac(const wchar_t* exeFn, wchar_t* cmdLine);
+void RunGameWithTHPrac(const wchar_t* exeFn, wchar_t* cmdLine, remote_init_config* conf = nullptr);
+remote_init_config* RemoteGetConfig();
 
-void** GetUserData();
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+
 }
