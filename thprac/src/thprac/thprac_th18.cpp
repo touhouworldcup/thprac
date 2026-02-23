@@ -2228,7 +2228,7 @@ namespace TH18 {
             }
             wndFocus &= ReplayMenu();
 
-            AboutOpt();
+            AboutOpt("• Altair357 for the idea of adding configurable Market Manip. loadouts (& srn_ity for the motivation)\n• zero318 for the card image rendering logic and his extensive th18 reverse engineering work\n...and you!");
             ImGui::EndChild();
             if (wndFocus)
                 ImGui::SetWindowFocus();

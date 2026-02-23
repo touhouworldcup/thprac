@@ -854,6 +854,7 @@
       "TH_STAGE_PORTION_1": [ "前半 #%d", "First Half #%d", "前半 #%d" ],
       "TH_STAGE_PORTION_2": [ "后半 #%d", "Second Half #%d", "後半 #%d" ],
       "TH_DLG": [ "对话", "Dialog", "ダイアログ" ],
+      "TH_DROP_ITEMS": [ "掉落道具", "Drop items", "道具掉落" ],
 
       "TH_LEFT": [ "左", "Left", "左" ],
       "TH_RIGHT": [ "右", "Right", "右" ],
