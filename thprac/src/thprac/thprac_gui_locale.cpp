@@ -138,9 +138,6 @@ static ImWchar baseUnicodeRanges[] =
         case 0x11:
             gSettingsGlobal.language = LOCALE_JA_JP;
             break;
-        default:
-            gSettingsGlobal.language = LOCALE_EN_US;
-            break;
         }
     }
     inline const char** LocaleGetCurrentGlossary();

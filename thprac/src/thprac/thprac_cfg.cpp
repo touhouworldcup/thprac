@@ -271,7 +271,6 @@ bool LoadSettingsStartup() {
 
     yyjson_doc* doc = yyjson_read_file_report(settingsStartupPath);
     if (!doc) {
-        Gui::LocaleSetFromSysLang();
         return false;
     }
 
