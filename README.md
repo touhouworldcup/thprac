@@ -1,5 +1,6 @@
 ## 26.2.23
 - (B2)给th13加入MUSIC ROOM灵界版（MUSIC ROOM中按C键进入灵界）
+- (B2.5)给红妖永的MIDI加入暂停功能，但是妖永的MIDI没法永续BGM
 
 ## 26.2.19
 - (B1)修复更新到平台工具集v145导致的win7兼容性(GetSystemTimePreciseAsFileTime)问题(使用链接器"/FORCE:MULTIPLE"+手动版_Xtime_get_ticks，不过有点弱，，)反正应该能用

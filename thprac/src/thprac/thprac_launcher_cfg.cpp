@@ -2363,7 +2363,7 @@ private:
             mWindowSize.Gui(S(THPRAC_CHANGE_WINDOW_SZ_WHEN_OPEN_SIZE));
 
             mUD_Replay_10.Gui(S(THPRAC_MOF_UD_REP));
-            mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH06));
+            mPauseBGM_06.Gui(S(THPRAC_PAUSE_BGM_TH678), S(THPRAC_PAUSE_BGM_TH678_DESC));
             mAlwaysSave_07.Gui(S(THPRAC_TH07_ALWAYS_SAVE_SCORE_SPELL_HIST), S(THPRAC_TH07_ALWAYS_SAVE_SCORE_SPELL_HIST_DESC));
             mSpeedupBGM.Gui(S(THPRAC_MAKE_BGM_FASTER_WHEN_SPEEDUP));
             if (mSpeedupBGM.Get())

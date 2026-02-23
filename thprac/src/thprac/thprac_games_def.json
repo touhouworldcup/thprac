@@ -279,7 +279,8 @@
     "THPRAC_DISABLE_JOY":["禁用手柄","disable joystick","disable joystick"],
     "THPRAC_DISABLE_JOY_DESC":["对部分作有效, 禁用有关手柄的部分函数以减少掉帧","works for some games, disables functions for joystick to avoid lags","works for some games, disables functions for joystick to avoid lags"],
     
-    "THPRAC_PAUSE_BGM_TH06":["红魔乡在3036时暂停bgm(仅wav)","pause bgm when esc in EoSD(wav only)","pause bgm when esc in EoSD(wav only)"],
+    "THPRAC_PAUSE_BGM_TH678":["红妖永在3036时暂停bgm","pause bgm when esc in EoSD/PCB/IN","pause bgm when esc in EoSD/PCB/IN"],
+    "THPRAC_PAUSE_BGM_TH678_DESC":["红WAV/MIDI可暂停\n妖永MIDI可暂停，但是MIDI没法永续BGM","WAV/MIDI for EoSD\nMIDI for PCB/IN(but cannot use ElBGM for MIDI","WAV/MIDI for EoSD\n MIDI for PCB/IN(but cannot use ElBGM for MIDI"],
     "THPRAC_AUTO_NAME_TH06":["红魔乡自动输入机签","auto input name for EoSD","auto input name for EoSD"],
     "THPRAC_AUTO_NAME_TH06_DESC":["使用~代替红斜杠","use ~ replace red slash","use ~ replace red slash"],
     "THPRAC_AUTO_NAME_NAME":["机签","name","name"],

@@ -12,6 +12,8 @@
 #include "thprac_res.h"
 #include "thprac_th06.h"
 
+#include <mmeapi.h>
+
 namespace THPrac {
 extern bool g_forceRenderCursor;
 
@@ -3052,9 +3054,14 @@ namespace TH06 {
             THPauseMenu::singleton().el_bgm_changed = true;
         }
     })
-    EHOOK_DY(th06_bgm_stop, 0x430f80, 1, {
+    EHOOK_DY(th06_bgm_stop, 0x424D3B, 1, {
         if (THPauseMenu::singleton().el_bgm_signal) {
-            pCtx->Eip = 0x43107b;
+            pCtx->Eip = 0x424D7E;
+        }
+    })
+    EHOOK_DY(th06_midi_read, 0x421FF0, 1, {
+        if (THPauseMenu::singleton().el_bgm_signal) {
+            pCtx->Eip = 0x422066;
         }
     })
     EHOOK_DY(th06_prac_menu_1, 0x437179, 7, {
@@ -3124,12 +3131,13 @@ namespace TH06 {
 
     EHOOK_DY(th06_pause_menu_pauseBGM, 0x402714,3,{
         if (g_adv_igi_options.th06_pauseBGM) {
+            BYTE pauseMenuState = *(BYTE*)(0x69D4BF);
             DWORD soundstruct = *(DWORD*)(0x6D457C);
             if (soundstruct)
             {
                 int32_t n = *(int32_t*)(soundstruct + 0x10);
                 IDirectSoundBuffer** soundbuffers = *(IDirectSoundBuffer***)(soundstruct + 0x4);
-                if (*(BYTE*)(0x69D4BF) == 0 || (*(THOverlay::singleton().mElBgm) && thPracParam.mode)) // show menu==0
+                if (pauseMenuState == 0 || (*(THOverlay::singleton().mElBgm) && thPracParam.mode)) // show menu==0
                 {
                     for (int i = 0; i < n; i++) {
                         DWORD st = 0;
@@ -3147,6 +3155,22 @@ namespace TH06 {
                         }
                     }
                 }
+            } else if (*(BYTE*)(0x6C6E44 + 3) == 2 && *(DWORD*)0x6C6EC8) // Cfg.Midi
+            {
+                if (pauseMenuState == 0 || (*(THOverlay::singleton().mElBgm) && thPracParam.mode)) // show menu==0
+                {
+                    // play
+                    asm_call<0x421C90, Thiscall>(*(DWORD*)0x6C6EC8,1, 0, 0); 
+                } else {
+                    // stop
+                    asm_call<0x421D10, Thiscall>(*(DWORD*)0x6C6EC8); // StopTimer
+                    HMIDIOUT hmid = *(HMIDIOUT*)(*(DWORD*)(0x6C6EC8)+0x13C);
+                    for (int i = 0; i < 16; i++) {
+                        midiOutShortMsg(hmid, (0xB0 | i) | (0x7B << 8) | (0x0 << 16));
+                        midiOutShortMsg(hmid, (0xB0 | i) | (0x79 << 8) | (0x0 << 16));
+                    }
+                }
+
             }
         }
     })

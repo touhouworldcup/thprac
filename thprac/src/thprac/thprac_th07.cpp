@@ -1921,7 +1921,7 @@ namespace TH07 {
             p->AddText({ 110.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
         }
     }
-
+    bool g_read_midi = 0;
     HOOKSET_DEFINE(THMainHook)
     PATCH_DY(th07_reacquire_input, 0x430f03, "0000000074")
     EHOOK_DY(th07_inf_lives, 0x00441171,5,{
@@ -1959,6 +1959,36 @@ namespace TH07 {
 
         if (result) {
             pCtx->Eip = 0x44d3ce;
+        }
+    })
+   
+    // TODO: elBGM restart(difficult,,,)
+    EHOOK_DY(th07_midi_pause, 0x44CA0C, 3, {
+        if (g_adv_igi_options.th06_pauseBGM && *(BYTE*)(0x575a87) == 2) { // 0x575a87: bgm type
+
+            // mid BGM uses a different method, so everlasting_bgm hook cannot set BGM playing correctly
+            bool el_switch;
+            el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode && thPracParam.section;
+            if (thPracParam.mode && thPracParam.section == TH07_ST6_BOSS10)
+                el_switch = false;
+
+            if (el_switch) {
+                return;
+            }else{
+                int cmd = *(int*)(pCtx->Ebp - 0x4C);
+                if (cmd == 5) // stop
+                {
+                    asm_call<0x436380, Thiscall>(*(DWORD*)0x575ACC); // StopTimer
+                    HMIDIOUT hmid = *(HMIDIOUT*)(*(DWORD*)(0x575ACC) + 0x13C);
+                    for (int i = 0; i < 16; i++) {
+                        midiOutShortMsg(hmid, (0xB0 | i) | (0x7B << 8) | (0x0 << 16));
+                        midiOutShortMsg(hmid, (0xB0 | i) | (0x79 << 8) | (0x0 << 16));
+                    }
+                } else if (cmd == 6) // play
+                {
+                    asm_call<0x436300, Thiscall>(*(DWORD*)0x575ACC, 1, 0, 0); // find from midiOutOpen
+                }
+            }
         }
     })
     EHOOK_DY(th07_prac_menu_1, 0x45a214, 2, {

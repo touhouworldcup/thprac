@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1738] {
+const char* th_glossary_str[3][1739] {
     {
         "",
         "啤酒",
@@ -1266,7 +1266,8 @@ const char* th_glossary_str[3][1738] {
         "机签",
         "%d年%d月%d日",
         "覆盖",
-        "红魔乡在3036时暂停bgm(仅wav)",
+        "红妖永在3036时暂停bgm",
+        "红WAV/MIDI可暂停\n妖永MIDI可暂停，但是MIDI没法永续BGM",
         "启用DX HOOK",
         "可以提供显示操作到渲染的延迟等功能(还需启用按键hook)",
         "应用thprac？",
@@ -3006,7 +3007,8 @@ const char* th_glossary_str[3][1738] {
         "name",
         "%d-%d-%d",
         "Overwrite",
-        "pause bgm when esc in EoSD(wav only)",
+        "pause bgm when esc in EoSD/PCB/IN",
+        "WAV/MIDI for EoSD\nMIDI for PCB/IN(but cannot use ElBGM for MIDI",
         "enable DX hook",
         "Can provide features such as displaying the latency from input to rendering (requires key hook to be enabled)",
         "Apply thprac?",
@@ -4746,7 +4748,8 @@ const char* th_glossary_str[3][1738] {
         "name",
         "%d-%d-%d",
         "上書き",
-        "pause bgm when esc in EoSD(wav only)",
+        "pause bgm when esc in EoSD/PCB/IN",
+        "WAV/MIDI for EoSD\n MIDI for PCB/IN(but cannot use ElBGM for MIDI",
         "enable DX hook",
         "Can provide features such as displaying the latency from input to rendering (requires key hook to be enabled)",
         "thpracを適用しますか？",

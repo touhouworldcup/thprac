@@ -1266,7 +1266,8 @@ enum th_glossary_t {
     THPRAC_OTHER_NAME,
     THPRAC_OTHER_TODAY,
     THPRAC_OVERWRTITE_DATA,
-    THPRAC_PAUSE_BGM_TH06,
+    THPRAC_PAUSE_BGM_TH678,
+    THPRAC_PAUSE_BGM_TH678_DESC,
     THPRAC_PRESENT_HOOK,
     THPRAC_PRESENT_HOOK_DESC,
     THPRAC_PR_APPLY,
@@ -1749,7 +1750,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1738];
+extern const char* th_glossary_str[3][1739];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

@@ -2670,6 +2670,42 @@ namespace TH08 {
             pCtx->Eip = 0x45e2be;
         }
     })
+    // TODO: elBGM restart(difficult,,,)
+    EHOOK_DY(th08_midi_pause, 0x45D7DC, 3, {
+        if (g_adv_igi_options.th06_pauseBGM && *(BYTE*)(0x17CE88F) == 2) {
+
+            // mid BGM uses a different method, so everlasting_bgm hook cannot set BGM playing correctly
+            bool el_switch;
+            el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode;
+            switch (thPracParam.section) {
+            case TH08_ST6A_LS:
+            case TH08_ST6B_LS1:
+            case TH08_ST6B_LS2:
+            case TH08_ST6B_LS3:
+            case TH08_ST6B_LS4:
+            case TH08_ST6B_LS5:
+                el_switch = false;
+            }
+
+            if (el_switch) {
+                return;
+            } else {
+                int cmd = *(int*)(pCtx->Ebp - 0x3C);
+                if (cmd == 5) // stop
+                {
+                    asm_call<0x443ED0, Thiscall>(*(DWORD*)0x17CE8E4); // StopTimer
+                    HMIDIOUT hmid = *(HMIDIOUT*)(*(DWORD*)(0x17CE8E4) + 0x13C);
+                    for (int i = 0; i < 16; i++) {
+                        midiOutShortMsg(hmid, (0xB0 | i) | (0x7B << 8) | (0x0 << 16));
+                        midiOutShortMsg(hmid, (0xB0 | i) | (0x79 << 8) | (0x0 << 16));
+                    }
+                } else if (cmd == 6) // play
+                {
+                    asm_call<0x443E50, Thiscall>(*(DWORD*)0x17CE8E4, 1, 0, 0); // find from midiOutOpen
+                }
+            }
+        }
+    })
      EHOOK_DY(th08_game_init, 0x4674ed, 1, {
         if (thPracParam.mode == 1 && thPracParam.stage == 9) {
             *(DWORD*)(pCtx->Ebp - 0x40) = 8;
