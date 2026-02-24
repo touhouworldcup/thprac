@@ -9190,7 +9190,7 @@
       "TH18_SAVEFILE_MANIP_DESC": [
         "点击卡牌以切换游戏是否将其视为“新”（从未购买）。\n此工具旨在供计分玩家使用，以在路线需要时影响商店随机结果。\n注意：该功能也可锁定或解锁具有特殊解锁条件的卡牌。",
         "Click cards to toggle whether the game considers them New (never bought before).\nThis tool is intended to be used by scorerunners to influence shop RNG if it is present in their route.\nNote that it can also lock/unlock cards with special unlock conditions.",
-        "カードをクリックして、そのカードをゲームが「新規」（未購入）として扱うか切り替えます。\nこのツールは、スコアラーランナーがルートに組み込んだ場合に、ショップのランダム性に影響を与えることを目的としています。\n注：特殊な解放条件を持つカードのロック／アンロックにも影響します。"
+        "カードをクリックして、そのカードをゲームが「新規」（未購入）として扱うか切り替えます。\nこのツールは、スコアラーランナーがルートに組み込んだ場合に、ショップのランダム性に影響を与えることを目的としています。\n注：特殊な解放条件を持つカードの施錠／解除にも影響します。"
       ],
       "TH18_SAVEFILE_MANIP_CARDS": [ "全部非默认随机卡牌", "All Non-Default Random Cards", "全ての非デフォルトランダムカード" ],
       "TH18_SAVEFILE_MANIP_NEW": [ "新", "New", "新規" ],
