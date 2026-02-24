@@ -293,7 +293,7 @@ namespace TH20 {
                                         ImGui::TextColored(stone_color, "%d/%d(%.1f%%)",
                                             schistory_cur[spell][diff][plstone_type][TH20Save::Capture] + schistory_cur[spell][diff][plstone_type][TH20Save::Timeout],
                                             schistory_cur[spell][diff][plstone_type][TH20Save::Attempt],
-                                            ((float)(schistory_cur[spell][diff][plstone_type][TH20Save::Capture] + schistory_cur[spell][diff][plstone_type][TH20Save::Timeout]) / std::fmaxf(1.0f, ((float)schistory_tot[spell][diff][plstone_type][TH20Save::Attempt])) * 100.0f));
+                                            ((float)(schistory_cur[spell][diff][plstone_type][TH20Save::Capture] + schistory_cur[spell][diff][plstone_type][TH20Save::Timeout]) / std::fmaxf(1.0f, ((float)schistory_cur[spell][diff][plstone_type][TH20Save::Attempt])) * 100.0f));
                                         ImGui::TableNextColumn();
 
                                         ImGui::TextColored(stone_color, "%d", schistory_cur[spell][diff][plstone_type][TH20Save::Timeout]);
