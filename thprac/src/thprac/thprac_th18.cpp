@@ -1274,7 +1274,8 @@ namespace TH18 {
             }
 
             // Apply loadout code from clipboard if there is one
-            const char* clipboardText = ImGui::GetClipboardText();
+            const char* clipboardText = GetTrimmedClipboardText();
+
             if (ValidateLoadoutCode(clipboardText)) {
                 ApplyLoadoutCode(clipboardText);
                 useManipLoadout = true;
@@ -1977,7 +1978,25 @@ namespace TH18 {
             ImGui::NewLine();
         }
 
-        bool ValidateLoadoutCode(const char* input) {
+        const char* GetTrimmedClipboardText()
+        {
+            const char* clipboardText = ImGui::GetClipboardText();
+            static char trimmed[13];
+
+            const char* start = clipboardText;
+            while (*start == ' ')
+                ++start;
+
+            const size_t len = strlen(start);
+            const size_t copyLen = len > 12 ? 12 : len;
+            memcpy(trimmed, start, copyLen);
+            trimmed[copyLen] = '\0';
+
+            return trimmed;
+        }
+
+        bool ValidateLoadoutCode(const char* input)
+        {
             // Must be length 12
             if (!input || strlen(input) != 12)
                 return false;
@@ -1993,7 +2012,8 @@ namespace TH18 {
             return true;
         }
 
-        void ApplyLoadoutCode(const char* codeText) {
+        void ApplyLoadoutCode(const char* codeText)
+        {
             uint64_t code = 0;
             sscanf(codeText, "%llx", &code);
             int bitIndex = 0;
@@ -2098,7 +2118,7 @@ namespace TH18 {
 
                     ImGui::SameLine();
                     if (ImGui::Button(S(TH18_MARKET_MANIP_PASTE_CODE))) {
-                        const char* clipboardText = ImGui::GetClipboardText();
+                        const char* clipboardText = GetTrimmedClipboardText();
 
                         if (ValidateLoadoutCode(clipboardText))
                             ApplyLoadoutCode(clipboardText);
