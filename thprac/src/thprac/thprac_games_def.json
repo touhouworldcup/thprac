@@ -1466,7 +1466,21 @@
        "THPRAC_INGAMEINFO_06_CAPTURE_TOT":["收率(总)","capture(total)","capture(total)"],
        "THPRAC_INGAMEINFO_06_CAPTURE_CUR":["收率(本次)","capture(current)","capture(current)"],
        "THPRAC_INGAMEINFO_06_TIMEOUT_TOT":["超时(总)","timeout(total)","timeout(total)"],
-       "THPRAC_INGAMEINFO_06_TIMEOUT_CUR":["超时(本次)","timeout(current)","timeout(current)"]
+       "THPRAC_INGAMEINFO_06_TIMEOUT_CUR":["超时(本次)","timeout(current)","timeout(current)"],
+	   
+       "THPRAC_INGAMEINFO_20_COMBAT_CAPTURE_RATE":["查看实战收率",     "view real combat capture rate",   "view real combat capture rate"  ],
+       "THPRAC_INGAMEINFO_20_PRAC_CAPTURE_RATE":["查看练习模式收率",     "view prac mode capture rate",   "view prac mode capture rate"  ],
+       "THPRAC_INGAMEINFO_20_TOTAL_CAPTURE_RATE":["查看总收率",     "view total capture rate",   "view total capture rate"  ],
+       "THPRAC_INGAMEINFO_20_STONE_NAME":["主石",     "Stone",   "Stone"  ],
+	   
+       "THPRAC_INGAMEINFO_20_PASS_TOT":["通过率(总)","passed(total)","passed(total)"],
+       "THPRAC_INGAMEINFO_20_PASS_CUR":["通过率(本次)","passed(current)","passed(current)"],
+       "THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID1": ["原初金字塔", "PRIMITIVE Pyramid",     "PRIMITIVE Pyramid"  ],
+       "THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID2R":["红金字塔"  , "RED Pyramid"      ,     "RED Pyramid"        ],
+       "THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID2B":["蓝金字塔"  , "BLUE Pyramid"     ,     "BLUE Pyramid"       ],
+       "THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID2Y":["黄金字塔"  , "YELLOW Pyramid"   ,     "YELLOW Pyramid"     ],
+       "THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID2G":["绿金字塔"  , "GREEN Pyramid"    ,     "GREEN Pyramid"      ],
+       "THPRAC_INGAMEINFO_20_PYRAMID_ST5_MID1": ["大金字塔"  , "GREAT Pyramid"    ,     "GREAT Pyramid"      ]
       },
 	  "groups": {
 		"IGI_DIFF": [

@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include "utils/wininternal.h"
+#include <fstream>
 
 #pragma warning(disable : 4706)
 // WTF Microsoft
@@ -14,8 +15,308 @@ namespace THPrac {
 namespace TH20 {
     using std::pair;
     constexpr int32_t stoneGaugeInitialValue[] = { 1100, 1200, 1300, 1400, 1400, 1400, 1400 }; 
-
     
+    class TH20Save {
+        SINGLETON(TH20Save)
+    public:
+        enum TH20SpellState {
+            Capture = 0,
+            Attempt = 1,
+            Timeout = 2
+        };
+        const int cSaveVersion = 1;
+        const char* cSaveFile = "score20pyra.dat";
+        struct PyraState
+        {
+            DWORD lastPyraAddr = 0;
+            bool isInPyra = false;
+            int lastPyraSpellId = 0;
+            bool isPyraFailed = false;
+            bool isPyraTimeout = false;
+            void Reset()
+            {
+                lastPyraAddr = 0;
+                isInPyra = false;
+                lastPyraSpellId = 0;
+                isPyraFailed = false;
+                isPyraTimeout = false;
+            }
+        }pyraState;
+    static int32_t GetPyraSpellId(int stage, int is_stage4_mid_1,int stone1)
+    {
+        if (is_stage4_mid_1)
+            return 0;
+        if (stage == 4)
+            if (stone1 >= 0 && stone1 < 8)//stone1 = 01234567
+                return stone1 / 2 + 1; //1 2 3 4
+        return 5;
+    }
+    static int32_t GetPlayerType(int main_player_type, int stone1)
+    {
+        return main_player_type * 8 + stone1;
+    }
+    public:
+        struct Save {
+            int32_t ScHistory[6][5][16][3] = { 0 }; // (st4 0 A B C D /st5 pyra), diff, playertype, [capture/attempt/timeout]
+            int32_t ScHistoryPrac[6][5][16][3] = { 0 };
+        };
+        Save saveCurrent;
+        Save saveTotal;
+        bool isSaveLoaded;
+        TH20Save()
+        {
+            saveCurrent = { 0 };
+            saveTotal = { 0 };
+            isSaveLoaded = false;
+            LoadSave();
+        }
+
+    public:
+        void LoadSave()
+        {
+            if (isSaveLoaded)
+                return;
+            PushCurrentDirectory(L"%appdata%\\ShanghaiAlice\\th20");
+            auto fs_new = ::std::fstream(cSaveFile, ::std::ios::in | ::std::ios::binary);
+            if (fs_new.is_open()) {
+                isSaveLoaded = true;
+                int version = 1;
+                fs_new.read((char*)&version, sizeof(version));
+                switch (version) {
+                default:
+                case 1:
+                    fs_new.read((char*)(&saveTotal), sizeof(saveTotal));
+                    break;
+                }
+                fs_new.close();
+            }
+            PopCurrentDirectory();
+        }
+
+        void SaveSave()
+        {
+            PushCurrentDirectory(L"%appdata%\\ShanghaiAlice\\th20");
+            auto fs = ::std::fstream(cSaveFile, ::std::ios::out | ::std::ios::binary);
+            if (fs.is_open()) {
+                fs.write((char*)(&cSaveVersion), sizeof(cSaveVersion));
+                fs.write((char*)(&saveTotal), sizeof(saveTotal));
+                fs.close();
+            }
+            PopCurrentDirectory();
+        }
+
+         void AddTimeout(int spell_id, byte diff, byte player_type,bool isPrac)
+        {
+            LoadSave();
+            if (isPrac)
+            {
+                saveTotal.ScHistoryPrac[spell_id][diff][player_type][2]++;
+                saveCurrent.ScHistoryPrac[spell_id][diff][player_type][2]++;
+            }
+            else
+            {
+                saveTotal.ScHistory[spell_id][diff][player_type][2]++;
+                saveCurrent.ScHistory[spell_id][diff][player_type][2]++;
+            }
+            SaveSave();
+        }
+
+        void AddAttempt(int spell_id, int diff, int player_type, bool isPrac)
+        {
+            LoadSave();
+            if (isPrac) {
+                saveTotal.ScHistoryPrac[spell_id][diff][player_type][1]++;
+                saveCurrent.ScHistoryPrac[spell_id][diff][player_type][1]++;
+            } else {
+                saveTotal.ScHistory[spell_id][diff][player_type][1]++;
+                saveCurrent.ScHistory[spell_id][diff][player_type][1]++;
+            }
+            SaveSave();
+        }
+
+        void AddCapture(int spell_id, int diff, int player_type, bool isPrac)
+        {
+            LoadSave();
+            if (isPrac) {
+                saveTotal.ScHistoryPrac[spell_id][diff][player_type][0]++;
+                saveCurrent.ScHistoryPrac[spell_id][diff][player_type][0]++;
+            } else {
+                saveTotal.ScHistory[spell_id][diff][player_type][0]++;
+                saveCurrent.ScHistory[spell_id][diff][player_type][0]++;
+            }
+            SaveSave();
+        }
+
+        int GetTotalSpellCardCount(int spell_id, int diff, int player_type, TH20SpellState state)
+        {
+            return saveTotal.ScHistory[spell_id][diff][player_type][state];
+        }
+        int GetCurrentSpellCardCount(int spell_id, int diff, int player_type, TH20SpellState state)
+        {
+            return saveCurrent.ScHistory[spell_id][diff][player_type][state];
+        }
+
+        void ShowDetail()
+        {
+            static bool is_comb = false;
+            static bool is_prac = false;
+            static bool is_total = true;
+            static int32_t schistory_tot[6][5][16][3]; 
+            static int32_t schistory_cur[6][5][16][3]; 
+
+            const char* players_strs[2] = { S(THPRAC_IGI_PL_Reimu), S(THPRAC_IGI_PL_Marisa) };
+            const char* stones_strs[8] = {
+                S(THPRAC_IGI_PL_20A),
+                S(THPRAC_IGI_PL_20B),
+                S(THPRAC_IGI_PL_20C),
+                S(THPRAC_IGI_PL_20D),
+                S(THPRAC_IGI_PL_20E),
+                S(THPRAC_IGI_PL_20F),
+                S(THPRAC_IGI_PL_20G),
+                S(THPRAC_IGI_PL_20H),
+            };
+            const char* spells_str[6] = {
+                S(THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID1),
+                S(THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID2R),
+                S(THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID2B),
+                S(THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID2Y),
+                S(THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID2G),
+                S(THPRAC_INGAMEINFO_20_PYRAMID_ST5_MID1),
+            };
+            const ImVec4 r = { 1.0f, 0.5f, 0.5f, 1.0f };
+            const ImVec4 g = { 0.5f, 1.0f, 0.5f, 1.0f };
+            const ImVec4 b = { 0.5f, 0.75f, 1.0f, 1.0f };
+            const ImVec4 y = { 1.0f, 1.0f, 0.3f, 1.0f };
+            const ImVec4 w = { 1.0f, 1.0f, 1.0f, 1.0f };
+            const ImVec4 p = { 1.0f, 0.5f, 1.0f, 1.0f };
+            const ImVec4 rk = { 0.9f, 0.2f, 0.2f, 1.0f };
+            const ImVec4 gk = { 0.2f, 0.7f, 0.2f, 1.0f };
+            const ImVec4 bk = { 0.1f, 0.5f, 1.0f, 1.0f };
+            const ImVec4 yk = { 0.8f, 0.8f, 0.2f, 1.0f };
+            const ImVec4 spells_colors[] = { p, r, b, y, g, w };
+            const ImVec4 stones_colors[] = { r, rk, b, bk, y, yk, g, gk, w };
+
+            if (ImGui::Checkbox(S(THPRAC_INGAMEINFO_20_TOTAL_CAPTURE_RATE), &is_total)) {
+                is_comb = is_prac = false;
+            }
+            ImGui::SameLine();
+            if (ImGui::Checkbox(S(THPRAC_INGAMEINFO_20_COMBAT_CAPTURE_RATE), &is_comb))
+            {
+                is_prac = is_total = false;
+            }
+            ImGui::SameLine();
+            if (ImGui::Checkbox(S(THPRAC_INGAMEINFO_20_PRAC_CAPTURE_RATE), &is_prac)) {
+                is_comb = is_total = false;
+            }
+            for (int i = 0; i < 6; i++)
+                for (int j = 0; j < 5; j++)
+                    for (int k = 0; k < 16; k++)
+                        for (int l = 0; l < 3; l++) {
+                            if (is_comb)
+                            {
+                                schistory_tot[i][j][k][l] = saveTotal.ScHistory[i][j][k][l];
+                                schistory_cur[i][j][k][l] = saveCurrent.ScHistory[i][j][k][l];
+                            } else if (is_prac)
+                            {
+                                schistory_tot[i][j][k][l] = saveTotal.ScHistoryPrac[i][j][k][l];
+                                schistory_cur[i][j][k][l] = saveCurrent.ScHistoryPrac[i][j][k][l];
+                            }
+                            else
+                            {
+                                schistory_tot[i][j][k][l] = saveTotal.ScHistory[i][j][k][l] + saveTotal.ScHistoryPrac[i][j][k][l];
+                                schistory_cur[i][j][k][l] = saveCurrent.ScHistory[i][j][k][l] + saveCurrent.ScHistoryPrac[i][j][k][l];
+                            }
+                        }
+            
+            ImGui::BeginTabBar("Detail Spell");
+            {
+                const char* tabs_diff_strs[4] = { S(THPRAC_IGI_DIFF_E), S(THPRAC_IGI_DIFF_N), S(THPRAC_IGI_DIFF_H), S(THPRAC_IGI_DIFF_L)};
+                for (int diff = 0; diff < 4; diff++) {
+                    if (ImGui::BeginTabItem(tabs_diff_strs[diff])) {
+                        ImGui::BeginTabBar("Player Type");
+                        for (int pl = 0; pl < 2; pl++) {
+                            if (ImGui::BeginTabItem(players_strs[pl])) {
+                                // spell capture
+                                ImGui::BeginTable(std::format("{}{}sptable", tabs_diff_strs[diff], players_strs[pl]).c_str(), 6, ImGuiTableFlags_::ImGuiTableFlags_Resizable);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_SPELL_NAME), 0, 45.0f);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_20_STONE_NAME), 0, 15.0f);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_20_PASS_TOT), 0, 50.0f);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_TIMEOUT_TOT), 0, 50.0f);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_20_PASS_CUR), 0, 50.0f);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_TIMEOUT_CUR), 0, 50.0f);
+                                ImGui::TableHeadersRow();
+
+                                for (int stone = 0; stone < 8; stone++)
+                                {
+                                    for (int spell = 0; spell < 6; spell++) {
+                                        int plstone_type = GetPlayerType(pl, stone);
+                                        if (schistory_tot[spell][diff][plstone_type][TH20Save::Attempt] == 0)
+                                        {
+                                            if ((spell >= 1 && spell <= 4) && (stone / 2 != spell - 1)) // mismatched spell/stone
+                                                continue;
+                                        }
+                                        ImVec4 spell_color = spells_colors[spell];
+                                        ImVec4 stone_color = stones_colors[stone];
+                                        if (spell == 5)// st5 pyra
+                                        {
+                                            static float t = 0;
+                                            t += 0.003f;
+                                            if (t >= 1.0f)
+                                                t = 0.0f;
+                                            float rr, gg, bb;
+                                            ImGui::ColorConvertHSVtoRGB(fmodf(t, 1.0f), 0.4f, 1.0f, rr, gg, bb);
+                                            spell_color = { rr, gg, bb, 1.0f };
+                                            stone_color.x = rr * 0.6f + stone_color.x * 0.4f;
+                                            stone_color.y = gg * 0.6f + stone_color.y * 0.4f;
+                                            stone_color.z = bb * 0.6f + stone_color.z * 0.4f;
+                                        }
+
+                                        ImGui::TableNextRow();
+                                        ImGui::TableNextColumn();
+
+                                        ImGui::TextColored(spell_color, "%s", spells_str[spell]);
+                                        ImGui::TableNextColumn();
+
+                                        ImGui::TextColored(stone_color, "%s", stones_strs[stone]);
+                                        ImGui::TableNextColumn();
+                                        
+                                        // (st4 0 A B C D /st5 pyra), diff, playertype, [capture/attempt/timeout]
+                                        ImGui::TextColored(stone_color, "%d/%d(%.1f%%)", 
+                                            schistory_tot[spell][diff][plstone_type][TH20Save::Capture] + schistory_tot[spell][diff][plstone_type][TH20Save::Timeout],
+                                            schistory_tot[spell][diff][plstone_type][TH20Save::Attempt],
+                                            ((float)(schistory_tot[spell][diff][plstone_type][TH20Save::Capture] + schistory_tot[spell][diff][plstone_type][TH20Save::Timeout]) / std::fmaxf(1.0f, ((float)schistory_tot[spell][diff][plstone_type][TH20Save::Attempt]) * 100.0f)));
+                                        ImGui::TableNextColumn();
+
+                                        ImGui::TextColored(stone_color, "%d", schistory_tot[spell][diff][plstone_type][TH20Save::Timeout]);
+                                        ImGui::TableNextColumn();
+
+                                        ImGui::TextColored(stone_color, "%d/%d(%.1f%%)",
+                                            schistory_cur[spell][diff][plstone_type][TH20Save::Capture] + schistory_cur[spell][diff][plstone_type][TH20Save::Timeout],
+                                            schistory_cur[spell][diff][plstone_type][TH20Save::Attempt],
+                                            ((float)(schistory_cur[spell][diff][plstone_type][TH20Save::Capture] + schistory_cur[spell][diff][plstone_type][TH20Save::Timeout]) / std::fmaxf(1.0f, ((float)schistory_tot[spell][diff][plstone_type][TH20Save::Attempt]) * 100.0f)));
+                                        ImGui::TableNextColumn();
+
+                                        ImGui::TextColored(stone_color, "%d", schistory_cur[spell][diff][plstone_type][TH20Save::Timeout]);
+                                        ImGui::TableNextColumn();
+                                    }
+                                    ImGui::TableNextRow();
+                                    ImGui::TableNextColumn();
+                                    ImGui::NewLine();
+                                }
+                                ImGui::EndTable();
+                                ImGui::EndTabItem();
+                            }
+                        }
+                        ImGui::EndTabBar();
+                        ImGui::EndTabItem();
+                    }
+                }
+            }
+            ImGui::EndTabBar();
+        }
+    };
+
+
     enum rel_addrs {
         DIFFICULTY = 0x1b0a60,
         WINDOW_PTR = 0x1b6758,
@@ -1036,8 +1337,8 @@ namespace TH20 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPosRel(920.0f / 1280.0f, 550.0f / 960.0f);
-            SetSizeRel(300.0f / 1280.0f, 0.0f);
+            SetPosRel(890.0f / 1280.0f, 450.0f / 960.0f);
+            SetSizeRel(360.0f / 1280.0f, 0.0f);
             SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
@@ -1095,26 +1396,32 @@ namespace TH20 {
             auto sub_pl_sz = ImGui::CalcTextSize(sub_pl.c_str());
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + std::max(0.0f, ImGui::GetWindowSize().x * 0.5f - sub_pl_sz.x * 0.5f));
 
-            ImVec4 r = {1.0f,0.5f,0.5f,1.0f};
-            ImVec4 g = {0.5f,1.0f,0.5f,1.0f};
-            ImVec4 b = {0.5f,0.75f,1.0f,1.0f};
-            ImVec4 y = {1.0f,1.0f,0.3f,1.0f};
-            ImVec4 w = {1.0f,1.0f,1.0f,1.0f};
-            ImVec4 stone_colors[] = { r, r, b, b, y, y, g, g, w };
+            const ImVec4 r = { 1.0f, 0.5f, 0.5f, 1.0f };
+            const ImVec4 g = { 0.5f, 1.0f, 0.5f, 1.0f };
+            const ImVec4 b = { 0.5f, 0.75f, 1.0f, 1.0f };
+            const ImVec4 y = { 1.0f, 1.0f, 0.3f, 1.0f };
+            const ImVec4 w = { 1.0f, 1.0f, 1.0f, 1.0f };
+            const ImVec4 p = { 1.0f, 0.5f, 1.0f, 1.0f };
+            const ImVec4 rk = { 0.9f, 0.2f, 0.2f, 1.0f };
+            const ImVec4 gk = { 0.2f, 0.7f, 0.2f, 1.0f };
+            const ImVec4 bk = { 0.1f, 0.5f, 1.0f, 1.0f };
+            const ImVec4 yk = { 0.8f, 0.8f, 0.2f, 1.0f };
+            const ImVec4 spells_colors[] = { p, r, b, y, g, w };
+            const ImVec4 stones_colors[] = { r, rk, b, bk, y, yk, g, gk, w };
 
-            ImGui::TextColored(stone_colors[main_stone], S(IGI_PL_20_SUB[main_stone]));
+            ImGui::TextColored(stones_colors[main_stone], S(IGI_PL_20_SUB[main_stone]));
             ImGui::SameLine(0.0f, 0.0f);
             ImGui::Text("(");
             ImGui::SameLine(0.0f, 0.0f);
-            ImGui::TextColored(stone_colors[substone_1], S(IGI_PL_20_SUB[substone_1]));
+            ImGui::TextColored(stones_colors[substone_1], S(IGI_PL_20_SUB[substone_1]));
             ImGui::SameLine(0.0f, 0.0f);
             ImGui::Text("/");
             ImGui::SameLine(0.0f, 0.0f);
-            ImGui::TextColored(stone_colors[substone_3], S(IGI_PL_20_SUB[substone_3]));
+            ImGui::TextColored(stones_colors[substone_3], S(IGI_PL_20_SUB[substone_3]));
             ImGui::SameLine(0.0f, 0.0f);
             ImGui::Text("/");
             ImGui::SameLine(0.0f, 0.0f);
-            ImGui::TextColored(stone_colors[substone_2], S(IGI_PL_20_SUB[substone_2]));
+            ImGui::TextColored(stones_colors[substone_2], S(IGI_PL_20_SUB[substone_2]));
             ImGui::SameLine(0.0f, 0.0f);
             ImGui::Text(")");
 
@@ -1162,20 +1469,88 @@ namespace TH20 {
             ImGui::NextColumn();
             ImGui::Text(S(THPRAC_INGAMEINFO_20_PYRAMID_LV));
             ImGui::NextColumn();
-            ImGui::TextColored(r, "%d", lvR);
+            ImGui::TextColored(r, "%d", lvR+1);
             ImGui::SameLine(0.0f, 0.0f);
             ImGui::Text("/");
             ImGui::SameLine(0.0f, 0.0f);
-            ImGui::TextColored(b, "%d", lvB);
+            ImGui::TextColored(b, "%d", lvB+1);
             ImGui::SameLine(0.0f, 0.0f);
             ImGui::Text("/");
             ImGui::SameLine(0.0f, 0.0f);
-            ImGui::TextColored(y, "%d", lvY);
+            ImGui::TextColored(y, "%d", lvY+1);
             ImGui::SameLine(0.0f, 0.0f);
             ImGui::Text("/");
             ImGui::SameLine(0.0f, 0.0f);
-            ImGui::TextColored(g, "%d", lvG);
+            ImGui::TextColored(g, "%d", lvG+1);
             ImGui::SameLine(0.0f, 0.0f);
+
+            int32_t stage = GetMemContent(RVA(STAGE_NUM));
+            if ((stage == 4 || stage == 5)
+                && TH20Save::singleton().pyraState.isInPyra) {
+                ImGui::Columns(1);
+                const char* spells_str[6] = {
+                    S(THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID1),
+                    S(THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID2R),
+                    S(THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID2B),
+                    S(THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID2Y),
+                    S(THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID2G),
+                    S(THPRAC_INGAMEINFO_20_PYRAMID_ST5_MID1),
+                };
+                int spid = TH20Save::singleton().pyraState.lastPyraSpellId;
+                int plstone_type = TH20Save::GetPlayerType(cur_player_type, main_stone);
+                ImGui::NewLine();
+                ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - ImGui::CalcTextSize(spells_str[spid]).x * 0.5f);
+
+                ImVec4 spell_color = spells_colors[spid];
+                if (spid == 5) // st5 pyra
+                {
+                    static float t = 0;
+                    t += 0.003f;
+                    if (t >= 1.0f)
+                        t = 0.0f;
+                    float rr, gg, bb;
+                    ImGui::ColorConvertHSVtoRGB(fmodf(t, 1.0f), 0.4f, 1.0f, rr, gg, bb);
+                    spell_color = { rr, gg, bb, 1.0f };
+                }
+
+                ImGui::TextColored(spell_color, spells_str[spid]);
+                ImGui::Columns(2);
+                if (thPracParam.mode) {
+                    ImGui::TextColored(spell_color, S(THPRAC_INGAMEINFO_20_PASS_CUR));
+                    ImGui::NextColumn();
+                    ImGui::TextColored(spell_color, "%4d/%d(%.1f%%)",
+                        TH20Save::singleton().saveCurrent.ScHistoryPrac[spid][diff][plstone_type][TH20Save::Capture] + TH20Save::singleton().saveCurrent.ScHistoryPrac[spid][diff][plstone_type][TH20Save::Timeout],
+                        TH20Save::singleton().saveCurrent.ScHistoryPrac[spid][diff][plstone_type][TH20Save::Attempt],
+                        ((float)(TH20Save::singleton().saveCurrent.ScHistoryPrac[spid][diff][plstone_type][TH20Save::Capture] + TH20Save::singleton().saveCurrent.ScHistoryPrac[spid][diff][plstone_type][TH20Save::Timeout])
+                            / std::fmaxf(1.0f, ((float)TH20Save::singleton().saveCurrent.ScHistoryPrac[spid][diff][plstone_type][TH20Save::Attempt])) * 100.0f));
+                    ImGui::NextColumn();
+                    ImGui::TextColored(spell_color, S(THPRAC_INGAMEINFO_20_PASS_TOT));
+                    ImGui::NextColumn();
+                    ImGui::TextColored(spell_color, "%4d/%d(%.1f%%)",
+                        TH20Save::singleton().saveTotal.ScHistoryPrac[spid][diff][plstone_type][TH20Save::Capture] + TH20Save::singleton().saveTotal.ScHistoryPrac[spid][diff][plstone_type][TH20Save::Timeout],
+                        TH20Save::singleton().saveTotal.ScHistoryPrac[spid][diff][plstone_type][TH20Save::Attempt],
+                        ((float)(TH20Save::singleton().saveTotal.ScHistoryPrac[spid][diff][plstone_type][TH20Save::Capture] + TH20Save::singleton().saveTotal.ScHistoryPrac[spid][diff][plstone_type][TH20Save::Timeout])
+                            / std::fmaxf(1.0f, ((float)TH20Save::singleton().saveTotal.ScHistoryPrac[spid][diff][plstone_type][TH20Save::Attempt])) * 100.0f));
+                }
+                else
+                {
+                    ImGui::TextColored(spell_color, S(THPRAC_INGAMEINFO_20_PASS_CUR));
+                    ImGui::NextColumn();
+                    ImGui::TextColored(spell_color, "%4d/%d(%.1f%%)",
+                        TH20Save::singleton().saveCurrent.ScHistory[spid][diff][plstone_type][TH20Save::Capture] + TH20Save::singleton().saveCurrent.ScHistory[spid][diff][plstone_type][TH20Save::Timeout],
+                        TH20Save::singleton().saveCurrent.ScHistory[spid][diff][plstone_type][TH20Save::Attempt],
+                        ((float)(TH20Save::singleton().saveCurrent.ScHistory[spid][diff][plstone_type][TH20Save::Capture] + TH20Save::singleton().saveCurrent.ScHistory[spid][diff][plstone_type][TH20Save::Timeout])
+                            / std::fmaxf(1.0f, ((float)TH20Save::singleton().saveCurrent.ScHistory[spid][diff][plstone_type][TH20Save::Attempt])) * 100.0f));
+                    ImGui::NextColumn();
+                    ImGui::TextColored(spell_color, S(THPRAC_INGAMEINFO_20_PASS_TOT));
+                    ImGui::NextColumn();
+                    ImGui::TextColored(spell_color, "%4d/%d(%.1f%%)",
+                        TH20Save::singleton().saveTotal.ScHistory[spid][diff][plstone_type][TH20Save::Capture] + TH20Save::singleton().saveTotal.ScHistory[spid][diff][plstone_type][TH20Save::Timeout],
+                        TH20Save::singleton().saveTotal.ScHistory[spid][diff][plstone_type][TH20Save::Attempt],
+                        ((float)(TH20Save::singleton().saveTotal.ScHistory[spid][diff][plstone_type][TH20Save::Capture] + TH20Save::singleton().saveTotal.ScHistory[spid][diff][plstone_type][TH20Save::Timeout])
+                            / std::fmaxf(1.0f, ((float)TH20Save::singleton().saveTotal.ScHistory[spid][diff][plstone_type][TH20Save::Attempt])) * 100.0f));
+                }
+            }
         }
 
         virtual void OnPreUpdate() override
@@ -1185,8 +1560,8 @@ namespace TH20 {
             } else {
             }
             if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(RVA(0x1ba56c))) {
-                SetPosRel(920.0f / 1280.0f, 550.0f / 960.0f);
-                SetSizeRel(300.0f / 1280.0f, 0.0f);
+                SetPosRel(890.0f / 1280.0f, 450.0f / 960.0f);
+                SetSizeRel(360.0f / 1280.0f, 0.0f);
                 Open();
             } else {
                 Close();
@@ -1518,6 +1893,17 @@ namespace TH20 {
                 
                 ImGui::SetNextItemWidth(180.0f);
                 EndOptGroup();
+            }
+            {
+                ImGui::SetNextWindowCollapsed(false);
+                if (ImGui::CollapsingHeader(S(THPRAC_INGAMEINFO_06_SHOWDETAIL_COLLAPSE))) {
+                    TH20Save::singleton().ShowDetail();
+                    ImGui::NewLine();
+                    ImGui::Separator();
+                    ImGui::Separator();
+                    ImGui::Separator();
+                    ImGui::NewLine();
+                }
             }
              if (BeginOptGroup<TH_REPLAY_FIX>()) {
 
@@ -3247,6 +3633,7 @@ namespace TH20 {
             if (life_next >= *(int32_t*)(RVA(0x1BA6A8)))// life increased
                 return;
             TH20InGameInfo::singleton().mMissCount++;
+            TH20Save::singleton().pyraState.isPyraFailed = true;
             FastRetry(thPracParam.mode);
 
             if ((*(THOverlay::singleton().mInfLives))) {
@@ -3579,14 +3966,17 @@ namespace TH20 {
             TH20InGameInfo::singleton().mHyperBreakCount = 0;
             TH20InGameInfo::singleton().mHyperCount = 0;
             TH20InGameInfo::singleton().mPyramidShotDownCount = 0;
+            TH20Save::singleton().pyraState.Reset();
         })
     EHOOK_DY(th20_bomb_dec, 0xe1710, 1, // bomb dec
         {
             TH20InGameInfo::singleton().mBombCount++;
+            TH20Save::singleton().pyraState.isPyraFailed = true;
         })
     EHOOK_DY(th20_hyper_break, 0x132c10, 3, 
         {
             TH20InGameInfo::singleton().mHyperBreakCount++;
+            TH20Save::singleton().pyraState.isPyraFailed = true;
         })
     EHOOK_DY(th20_hyper, 0x134d06, 3,
         {
@@ -3595,6 +3985,110 @@ namespace TH20 {
     EHOOK_DY(th20_stone, 0x112077, 2,
         {
             TH20InGameInfo::singleton().mPyramidShotDownCount++;
+        })
+    
+    EHOOK_DY(th20_ins_534, 0x95780, 6,
+        {
+            int32_t stage = GetMemContent(RVA(STAGE_NUM));
+            if (stage == 4 || stage == 5)
+            {
+                DWORD p_enmA = *(DWORD*)(pCtx->Ebp - 0x3F4);
+
+                int32_t p_ins = *(int32_t*)(pCtx->Ebp - 0x3F8);
+                int32_t* ecl_addrs = GetMemAddr<int32_t*>(RVA(0x1BA570), 0x104, 0xc);
+
+                uintptr_t player_stats = RVA(0x1BA5F0);
+                int32_t cur_player_type = (*(int32_t*)(player_stats + 0x8));
+                int32_t main_stone = (*(int32_t*)(player_stats + 0x1C));
+                int32_t diff = *((int32_t*)(RVA(0x1BA7D0)));
+
+                int32_t spellid = -1;
+                bool is_pyra = false;
+                if (stage == 4 && p_ins - ecl_addrs[3] == 0x5C0)
+                {
+                    spellid = TH20Save::GetPyraSpellId(stage, true, main_stone);
+                    is_pyra = true;
+                } else if (stage == 4 && p_ins - ecl_addrs[3] == 0x1014) {
+                    spellid = TH20Save::GetPyraSpellId(stage, false, main_stone);
+                    is_pyra = true;
+                } else if (stage == 5 && p_ins - ecl_addrs[3] == 0x5E0) {
+                    spellid = TH20Save::GetPyraSpellId(stage, false, main_stone);
+                    is_pyra = true;
+                }
+                if (is_pyra) {
+                    TH20Save::singleton().pyraState.lastPyraAddr = p_enmA;
+                    TH20Save::singleton().pyraState.isInPyra = true;
+                    TH20Save::singleton().pyraState.lastPyraSpellId = spellid;
+                    TH20Save::singleton().pyraState.isPyraFailed = false;
+                    TH20Save::singleton().AddAttempt(spellid, diff, TH20Save::GetPlayerType(cur_player_type, main_stone), thPracParam.mode);
+                }
+            }
+            
+        })
+    EHOOK_DY(th20_KilledCallback, 0xA6866, 3,
+        {
+            int32_t stage = GetMemContent(RVA(STAGE_NUM));
+            if ((stage == 4 || stage == 5) 
+                && TH20Save::singleton().pyraState.isInPyra
+                && pCtx->Eax == TH20Save::singleton().pyraState.lastPyraAddr
+                && TH20Save::singleton().pyraState.lastPyraSpellId == 0 // st4 mid 1 pyra
+                ) {
+                if (TH20Save::singleton().pyraState.isPyraFailed == false) {
+                    uintptr_t player_stats = RVA(0x1BA5F0);
+                    int32_t cur_player_type = (*(int32_t*)(player_stats + 0x8));
+                    int32_t main_stone = (*(int32_t*)(player_stats + 0x1C));
+                    int32_t diff = *((int32_t*)(RVA(0x1BA7D0)));
+                    TH20Save::singleton().AddCapture(TH20Save::singleton().pyraState.lastPyraSpellId, diff, TH20Save::GetPlayerType(cur_player_type, main_stone),thPracParam.mode);
+                    }
+                TH20Save::singleton().pyraState.Reset();
+                }
+        })
+    EHOOK_DY(th20_TimeoutCallback, 0xA624E, 3,
+        {
+
+            int32_t stage = GetMemContent(RVA(STAGE_NUM));
+            if ((stage == 4 || stage == 5)
+                && TH20Save::singleton().pyraState.isInPyra
+                && pCtx->Eax == TH20Save::singleton().pyraState.lastPyraAddr) {
+                if (TH20Save::singleton().pyraState.lastPyraSpellId == 0)
+                {
+                    if (TH20Save::singleton().pyraState.isPyraFailed == false) {
+                        uintptr_t player_stats = RVA(0x1BA5F0);
+                        int32_t cur_player_type = (*(int32_t*)(player_stats + 0x8));
+                        int32_t main_stone = (*(int32_t*)(player_stats + 0x1C));
+                        int32_t diff = *((int32_t*)(RVA(0x1BA7D0)));
+                        TH20Save::singleton().AddTimeout(TH20Save::singleton().pyraState.lastPyraSpellId, diff, TH20Save::GetPlayerType(cur_player_type, main_stone), thPracParam.mode);
+                    }
+                    TH20Save::singleton().pyraState.Reset();
+                } else {
+                    TH20Save::singleton().pyraState.isPyraTimeout = true;
+                }
+            }
+        })
+    EHOOK_DY(th20_ins_517, 0x93F8E, 2, // shake screen effect
+        {
+            int32_t stage = GetMemContent(RVA(STAGE_NUM));
+            if (stage == 4 || stage == 5) {
+                DWORD p_enmA = *(DWORD*)(pCtx->Ebp - 0x3F4);
+                if (p_enmA == TH20Save::singleton().pyraState.lastPyraAddr){
+                    int32_t p_ins = *(int32_t*)(pCtx->Ebp - 0x3F8);
+                    int32_t* ecl_addrs = GetMemAddr<int32_t*>(RVA(0x1BA570), 0x104, 0xc);
+                    if ((stage == 4 && p_ins - ecl_addrs[3] == 0x2cb8) || (stage == 5 && p_ins - ecl_addrs[3] == 0x32d0)) {
+                        if (TH20Save::singleton().pyraState.isPyraFailed == false)
+                        {
+                            uintptr_t player_stats = RVA(0x1BA5F0);
+                            int32_t cur_player_type = (*(int32_t*)(player_stats + 0x8));
+                            int32_t main_stone = (*(int32_t*)(player_stats + 0x1C));
+                            int32_t diff = *((int32_t*)(RVA(0x1BA7D0)));
+                            if (TH20Save::singleton().pyraState.isPyraTimeout)
+                                TH20Save::singleton().AddTimeout(TH20Save::singleton().pyraState.lastPyraSpellId, diff, TH20Save::GetPlayerType(cur_player_type, main_stone), thPracParam.mode);
+                            else
+                                TH20Save::singleton().AddCapture(TH20Save::singleton().pyraState.lastPyraSpellId, diff, TH20Save::GetPlayerType(cur_player_type, main_stone), thPracParam.mode);
+                        }
+                        TH20Save::singleton().pyraState.Reset();
+                    }
+                }
+            }
         })
     HOOKSET_ENDDEF()
 
@@ -3623,6 +4117,10 @@ namespace TH20 {
         // Hooks
         EnableAllHooks(THMainHook);
         EnableAllHooks(THInGameInfo);
+
+        TH20InGameInfo::singleton();
+        TH20Save::singleton();
+        TH20Save::singleton().LoadSave();
 
         
         // Replay menu string fixes
