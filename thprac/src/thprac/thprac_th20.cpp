@@ -1151,7 +1151,7 @@ namespace TH20 {
 
             if (GetSaveFileNameW(&ofn)) {
                 bool existingFile = (GetFileAttributesW(szFile) != INVALID_FILE_ATTRIBUTES);
-                bool samePath = (GetUnifiedPath(szFile) == GetUnifiedPath(THGuiRep::singleton().mSelectedRepPath));
+                bool samePath = PathsCompare(szFile, t_strlen(szFile), THGuiRep::singleton().mSelectedRepPath.data(), THGuiRep::singleton().mSelectedRepPath.size());
 
                 // copy original replay to the selected path, overwriting if existing (unless same path)
                 if (!samePath && !CopyFileW(THGuiRep::singleton().mSelectedRepPath.c_str(), szFile, FALSE)) {

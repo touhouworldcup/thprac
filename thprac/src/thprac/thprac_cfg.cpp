@@ -42,10 +42,10 @@ void InitConfigDir() {
         
         if (_gConfigDir[endPos - 1] == L'\\') {
             memcpy(_gConfigDir + endPos, SIZED(L"thprac\\"));
-            _gConfigDirLen = endPos + constexpr_strlen(L"thprac\\");
+            _gConfigDirLen = endPos + t_strlen(L"thprac\\");
         } else {
             memcpy(_gConfigDir + endPos, SIZED(L"\\thprac\\"));
-            _gConfigDirLen = endPos + constexpr_strlen(L"\\thprac\\");
+            _gConfigDirLen = endPos + t_strlen(L"\\thprac\\");
         }
 
 

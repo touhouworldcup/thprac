@@ -2,6 +2,8 @@
 
 #define NOMINMAX
 
+#include "utils/utils.h"
+
 #include "thprac_version.h"
 #include "thprac_gui_components.h"
 #include "thprac_gui_impl_dx8.h"
@@ -79,16 +81,47 @@ void ingame_mb_init();
 #pragma endregion
 
 #pragma region Path
-std::string GetSuffixFromPath(const char* pathC);
-std::string GetSuffixFromPath(const std::string& path);
-std::string GetDirFromFullPath(const std::string& dir);
-std::wstring GetDirFromFullPath(const std::wstring& dir);
-std::string GetNameFromFullPath(const std::string& dir);
-std::wstring GetNameFromFullPath(const std::wstring& dir);
-std::string GetCleanedPath(const std::string& path);
-std::wstring GetCleanedPath(const std::wstring& path);
-std::string GetUnifiedPath(const std::string& path);
-std::wstring GetUnifiedPath(const std::wstring& path);
+template <typename T>
+constexpr bool PathsCompare(const T* a, size_t a_len, const T* b, size_t b_len) {
+    size_t i = 0, j = 0;
+
+    while (i < a_len && j < b_len) {
+        bool a_is_sep = (a[i] == '/' || a[i] == '\\');
+        bool b_is_sep = (b[j] == '/' || b[j] == '\\');
+
+        if (a_is_sep && b_is_sep) {
+            while (i < a_len && (a[i] == '/' || a[i] == '\\'))
+                i++;
+            while (j < b_len && (b[j] == '/' || b[j] == '\\'))
+                j++;
+            continue;
+        }
+
+        if (a_is_sep || b_is_sep)
+            return 0;
+
+        if (t_tolower(a[i]) != t_tolower(b[j])) {
+            return 0;
+        }
+
+        i++;
+        j++;
+    }
+
+    // Skip any trailing separators on both paths
+    while (i < a_len && (a[i] == '/' || a[i] == '\\'))
+        i++;
+    while (j < b_len && (b[j] == '/' || b[j] == '\\'))
+        j++;
+
+    // Both must be fully consumed.
+    return i == a_len && j == b_len;
+}
+
+template <typename T>
+constexpr bool PathsCompare(const T* a, const T* b) {
+    return PathsCompare(a, t_strlen(a), b, t_strlen(b));
+}
 #pragma endregion
 
 template <typename T>

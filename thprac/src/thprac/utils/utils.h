@@ -86,9 +86,21 @@ privDefer<F> defer_func(F f)
 void memswap(void* buf1_, void* buf2_, unsigned int len);
 void debug_msg(const char* title, const char* format, ...);
 
-template<typename T, unsigned N>
-constexpr unsigned constexpr_strlen(const T(&str)[N]) {
-    return N - 1;
+template <typename T>
+constexpr T t_tolower(T c) {
+    if (c >= 'A' && c <= 'Z') {
+        return c | 0x20;
+    }
+    else {
+        return c;
+    }
+}
+
+template<typename T>
+constexpr unsigned t_strlen(const T* str) {
+    unsigned int i = 0;
+    for (; str[i]; i++);
+    return i;
 }
 
 #define SIZED(a) a, sizeof(a)
