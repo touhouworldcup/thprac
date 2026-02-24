@@ -1762,7 +1762,7 @@ namespace TH18 {
 
         void CenteredText(const char* text, float parentWidth, int trim = 0, float size = 1.0f)
         {
-            float textWidth = ImGui::CalcTextSize(text, text + strlen(text) - trim).x;
+            float textWidth = ImGui::CalcTextSize(text, text + t_strlen(text) - trim).x;
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (parentWidth - size * textWidth) * 0.5f);
 
             if (size != 1.0f) ResizedText(text, size);
@@ -1977,7 +1977,7 @@ namespace TH18 {
 
         bool ValidateLoadoutCode(const char* input) {
             // Must be length 12
-            if (!input || strlen(input) != 12)
+            if (!input || t_strlen(input) != 12)
                 return false;
 
             // Must be hex

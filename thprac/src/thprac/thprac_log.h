@@ -1,4 +1,5 @@
 #pragma once
+#include "utils/utils.h"
 #include <stdint.h>
 #include <string>
 
@@ -15,7 +16,7 @@ int log_mboxf(uintptr_t hwnd, unsigned int type, const char* caption, const char
 void log_init(bool launcher, bool console);
 
 inline void log_print(const char* const null_terminated) {
-    return log_print(null_terminated, strlen(null_terminated));
+    return log_print(null_terminated, t_strlen(null_terminated));
 }
 
 }

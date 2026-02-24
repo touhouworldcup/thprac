@@ -96,7 +96,7 @@ int WINAPI wWinMain(
                 continue;
             }
             
-            wchar_t* launch_cmdline = wcsstr(pCmdLine, argv[i]) + wcslen(argv[i]);
+            wchar_t* launch_cmdline = wcsstr(pCmdLine, argv[i]) + t_strlen(argv[i]);
 
             RunGameWithTHPrac(argv[i], launch_cmdline, &rInitConf);
             return 0;

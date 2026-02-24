@@ -95,9 +95,9 @@ void log_init(bool launcher, bool console) {
     const wchar_t* const fn_rot_ingame = L"thprac_log.9.txt";
 
     if (launcher) {
-        memcpy(fn_rot_temp_1, fn_rot_launcher, wcslen(fn_rot_launcher) * sizeof(wchar_t));
+        memcpy(fn_rot_temp_1, fn_rot_launcher, t_strlen(fn_rot_launcher) * sizeof(wchar_t));
     } else {
-        memcpy(fn_rot_temp_1, fn_rot_ingame, wcslen(fn_rot_ingame) * sizeof(wchar_t)); 
+        memcpy(fn_rot_temp_1, fn_rot_ingame, t_strlen(fn_rot_ingame) * sizeof(wchar_t)); 
     }
 
     const unsigned int rot_num_off = launcher ? 20 : 11;
