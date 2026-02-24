@@ -67,6 +67,7 @@ struct THPracSettingsGlobal {
     Locale language = LOCALE_EN_US;
     bool render_only_used_glyphs = false;
     bool resizable_window = false;
+    bool console = false;
 };
 
 struct HotkeyChords {
@@ -98,5 +99,8 @@ bool SaveSettingsStartup();
 void InitConfigDir();
 
 void SetTheme(int theme);
+
+extern wchar_t _gConfigDir[];
+extern unsigned int _gConfigDirLen;
 
 }

@@ -1,4 +1,6 @@
-#include <Windows.h>
+#include "utils/wininternal.h"
+
+#include "thprac_cfg.h"
 #include "thprac_log.h"
 #include "thprac_utils.h"
 
@@ -74,6 +76,13 @@ int log_mboxf(uintptr_t hwnd, unsigned int type, const char* caption, const char
 }
 
 void log_init(bool launcher, bool console) {
+    UNICODE_STRING& cur_dir = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
+    wchar_t cur_dir_backup[MAX_PATH + 1] = {};
+    memcpy(cur_dir_backup, cur_dir.Buffer, cur_dir.Length);
+    SetCurrentDirectoryW(_gConfigDir);
+    CreateDirectoryW(L"logs", nullptr);
+    SetCurrentDirectoryW(L"logs");
+
     constexpr unsigned int rot_max = 9;
     constexpr unsigned int scratch_size = 32;
     wchar_t fn_rot_temp_1[scratch_size] = {};
@@ -106,14 +115,16 @@ void log_init(bool launcher, bool console) {
 
     MoveFileW(fn, fn_rot_temp_1);
     hLog = CreateFileW(fn, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    SetCurrentDirectoryW(cur_dir_backup);
     
-    if (!AttachConsole(ATTACH_PARENT_PROCESS) && console) {
+    if (!AttachConsole(GetCurrentProcessId()) && !AttachConsole(ATTACH_PARENT_PROCESS) && console) {
         console = AllocConsole();
-    } else {
-        console = true;
     }
     
     if (console) {
+        SetConsoleOutputCP(CP_UTF8);
+        SetConsoleCP(CP_UTF8);
+
         freopen("conin$", "r+b", stdin);
         freopen("conout$", "w+b", stdout);
         freopen("conerr$", "w+b", stderr);

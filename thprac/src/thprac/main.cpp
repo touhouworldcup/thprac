@@ -44,7 +44,7 @@ int WINAPI wWinMain(
     RemoteInit();
     LoadSettingsStartup();
 
-    log_init(false, true);
+    log_init(true, gSettingsGlobal.console);
 
     if (gSettingsStartup.thprac_admin_rights && !PrivilegeCheck()) {
         ShellExecuteW(NULL, L"runas", CurrentPeb()->ProcessParameters->ImagePathName.Buffer, nullptr, nullptr, nCmdShow);        

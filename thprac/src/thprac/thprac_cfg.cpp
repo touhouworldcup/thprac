@@ -10,7 +10,7 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 namespace THPrac {
 
 wchar_t _gConfigDir[MAX_PATH + 1] = {};
-DWORD _gConfigDirLen = 0;
+unsigned int _gConfigDirLen = 0;
 
 constinit THPracSettingsStartup gSettingsStartup;
 constinit THPracSettingsGlobal gSettingsGlobal;
@@ -193,6 +193,10 @@ bool LoadSettingsGlobal() {
             yyjson_parse_bool(val, &gSettingsGlobal.resizable_window);
             continue;
         }
+        if (unsafe_yyjson_equals_str(key, "console")) {
+            yyjson_parse_bool(val, &gSettingsGlobal.console);
+            continue;
+        }
         if (unsafe_yyjson_equals_str(key, "backspace_menu_chord")) {
             yyjson_parse_uint(val, &hotkeys.backspace_menu);
             continue;
@@ -221,7 +225,7 @@ bool LoadSettingsGlobal() {
 }
 
 // Raw strings can't use escape sequences, but they can still be concatenated with other string literals
-static const char* settingsGlobalTemplate = 
+static const char settingsGlobalTemplate[] = 
     "{\n"
     "\t" R"("backspace_menu_chord": %d,)" "\n"
     "\t" R"("advanced_menu_chord": %d,)" "\n"
@@ -232,6 +236,7 @@ static const char* settingsGlobalTemplate =
     "\t" R"("language": %d,)" "\n"
     "\t" R"("render_only_used_glyphs": %s,)" "\n"
     "\t" R"("resizable_window": %s,)" "\n"
+    "\t" R"("console": %s,)" "\n"
     "}";
 
 bool SaveSettingsGlobal() {
@@ -244,8 +249,8 @@ bool SaveSettingsGlobal() {
         return false;
     }
 
-    char buf[256] = {};
-    int len = snprintf(buf, 255, settingsGlobalTemplate,
+    char buf[512] = {};
+    int len = snprintf(buf, 512, settingsGlobalTemplate,
         hotkeys.backspace_menu,
         hotkeys.advanced_menu,
         hotkeys.screenshot,
@@ -254,7 +259,8 @@ bool SaveSettingsGlobal() {
         gSettingsGlobal.theme,
         gSettingsGlobal.language,
         gSettingsGlobal.render_only_used_glyphs ? "true" : "false",
-        gSettingsGlobal.resizable_window ? "true" : "false"
+        gSettingsGlobal.resizable_window ? "true" : "false",
+        gSettingsGlobal.console ? "true" : "false"
     );
 
     DWORD byteRet;

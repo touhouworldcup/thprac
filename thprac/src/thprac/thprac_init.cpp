@@ -7,6 +7,7 @@
 #include "thprac_identify.h"
 #include "thprac_load_exe.h"
 #include "thprac_hook.h"
+#include "thprac_cfg.h"
 #include "thprac_log.h"
 
 #pragma intrinsic(strcmp)
@@ -57,7 +58,7 @@ void RemoteInit() {
         return;
     }
     if (const auto* ver = IdentifyExe((uint8_t*)CurrentPeb()->ImageBaseAddress)) {
-        log_init(false, true);
+        log_init(false, gSettingsGlobal.console);
 
         LoadVpatchOrOILP(conf);
 
