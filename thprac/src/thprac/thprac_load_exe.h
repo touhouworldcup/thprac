@@ -36,6 +36,7 @@ bool LoadSelf(HANDLE hProcess, remote_init_config* conf = nullptr);
 bool ApplyToProcById(DWORD pid);
 void RunGameWithTHPrac(const wchar_t* exeFn, wchar_t* cmdLine, remote_init_config* conf = nullptr);
 remote_init_config* RemoteGetConfig();
+bool CheckDLLFunction(const wchar_t* path, const char* funcName);
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 

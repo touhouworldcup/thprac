@@ -130,7 +130,6 @@ static std::function<T(void)> GetRndGenerator(T min, T max, std::mt19937::result
     auto dice_rand = std::bind(std::uniform_int_distribution<T>(min, max), std::mt19937(seed));
     return dice_rand;
 }
-DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName);
 }
 
 template <typename T>

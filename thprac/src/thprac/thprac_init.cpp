@@ -25,7 +25,7 @@ bool TryLoadVpatch() {
         return false;
     }
     do {
-        if (LoadLibraryW(find.cFileName)) {
+        if (CheckDLLFunction(find.cFileName, "_Initialize@4") && LoadLibraryW(find.cFileName)) {
             goto vpatch_loaded;
         }   
     } while (FindNextFileW(hFind, &find));

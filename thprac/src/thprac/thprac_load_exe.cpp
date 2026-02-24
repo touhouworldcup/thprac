@@ -4,6 +4,7 @@
 #include "thprac_identify.h"
 #include "thprac_log.h"
 #include "thprac_gui_locale.h"
+#include "thprac_utils.h"
 #include "utils/utils.h"
 #include "utils/wininternal.h"
 
@@ -76,6 +77,43 @@ remote_init_config* RemoteGetConfig() {
     } else {
         return (remote_init_config*)(gRemoteParamAddr + sizeof(remote_param) + sizeof(INJECT_SHELLCODE));
     }
+}
+
+bool CheckDLLFunction(const wchar_t* path, const char* funcName) {
+    MappedFile file(path);
+
+    auto exeSize = file.fileSize;
+    auto exeBuffer = file.fileMapView;
+    if (exeSize < 128)
+        return 0;
+    PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)exeBuffer;
+    if (!pDosHeader || pDosHeader->e_magic != 0x5a4d || (size_t)pDosHeader->e_lfanew + 512 >= exeSize)
+        return 0;
+    PIMAGE_NT_HEADERS pNtHeader = (PIMAGE_NT_HEADERS)((DWORD)exeBuffer + pDosHeader->e_lfanew);
+    if (!pNtHeader || pNtHeader->Signature != 0x00004550)
+        return 0;
+    PIMAGE_SECTION_HEADER pSection = IMAGE_FIRST_SECTION(pNtHeader);
+    if (!pSection)
+        return 0;
+
+    if (pNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress != 0 && pNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].Size != 0) {
+        auto pExportSectionVA = pNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress;
+        for (DWORD i = 0; i < pNtHeader->FileHeader.NumberOfSections; i++, pSection++) {
+            if (pSection->VirtualAddress <= pExportSectionVA && pSection->VirtualAddress + pSection->SizeOfRawData > pExportSectionVA) {
+                auto pSectionBase = (DWORD)exeBuffer - pSection->VirtualAddress + pSection->PointerToRawData;
+                PIMAGE_EXPORT_DIRECTORY pExportDirectory = (PIMAGE_EXPORT_DIRECTORY)(pSectionBase + pExportSectionVA);
+                char** pExportNames = (char**)(pSectionBase + pExportDirectory->AddressOfNames);
+                for (DWORD j = 0; j < pExportDirectory->NumberOfNames; ++j) {
+                    auto pFunctionName = (char*)(pSectionBase + pExportNames[j]);
+                    if (!strcmp(pFunctionName, funcName)) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
 }
 
 PIMAGE_NT_HEADERS GetNtHeader(HMODULE hMod)
