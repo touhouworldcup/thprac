@@ -1799,25 +1799,27 @@ namespace TH18 {
             const bool saveManip = false)
         {
             // Calculate total weight for group & buy count
-            const uint32_t scorefile_manager = GetMemContent(SCOREFILE_MANAGER_PTR);
+            const uint32_t scorefileManager = GetMemContent(SCOREFILE_MANAGER_PTR);
+            const AbilityManager* abilityManager = GetMemContent<AbilityManager*>(ABILITY_MANAGER_PTR);
+            const uint32_t game_thread = GetMemContent(GAME_THREAD_PTR);
             uint32_t totalWeight = 0;
             uint32_t buyCount = 0;
 
             if (!saveManip) {
                 for (auto& [cd, shouldBuy] : cardGroup) {
-                    const uint8_t boughtBefore = scorefile_manager ? *(uint8_t*)(scorefile_manager + 0x5F4B8 + 0xD0 + cd->card_id) : 0;
+                    const bool boughtBefore = scorefileManager ? *(uint8_t*)(scorefileManager + 0x5F4B8 + 0xD0 + cd->card_id) : false;
+                    const bool boughtCurrent = game_thread && (abilityManager ? abilityManager->bought_flags[cd->card_id] : false);
 
-                    if (!shouldBuy && !(cd->appearance_condition && !boughtBefore))
-                        totalWeight += cd->weight + (boughtBefore ? 0 : 5);
-                    else
-                        buyCount++;
+                    if (!shouldBuy && !(cd->appearance_condition && !boughtBefore)) {
+                        if (!boughtCurrent) totalWeight += cd->weight + (boughtBefore ? 0 : 5);
+
+                    } else buyCount++;
                 }
             }
 
             // Grid drawing constants & utils
             ImDrawList* draw = ImGui::GetWindowDrawList();
             ImGuiStyle& style = ImGui::GetStyle();
-            const uint32_t game_thread = GetMemContent(GAME_THREAD_PTR);
 
             const float oldItemSpacingX = style.ItemSpacing.x;
             const float oldItemSpacingY = style.ItemSpacing.y;
@@ -1885,8 +1887,9 @@ namespace TH18 {
                 ImGui::Dummy(ImVec2(0, vPadding));
                 ImTextureID tex = (ImTextureID)get_sprite_d3d_texture(31, cd->sprite_large);
 
-                const uint8_t* boughtBeforeAddr = scorefile_manager ? (uint8_t*)(scorefile_manager + 0x5F4B8 + 0xD0 + cd->card_id) : nullptr;
-                const uint8_t boughtBefore = boughtBeforeAddr ? *boughtBeforeAddr : 0;
+                const uint8_t* boughtBeforeAddr = scorefileManager ? (uint8_t*)(scorefileManager + 0x5F4B8 + 0xD0 + cd->card_id) : nullptr;
+                const bool boughtBefore = boughtBeforeAddr ? *boughtBeforeAddr : 0;
+                const bool boughtCurrent = game_thread && (abilityManager ? abilityManager->bought_flags[cd->card_id] : false);
 
                 const bool dimCard = (saveManip && boughtBefore) || (!saveManip && shouldBuy);
                 ImVec4 tint = dimCard ? ImVec4(1, 1, 1, 0.35f) : ImVec4(1, 1, 1, 1.0f);
@@ -1926,36 +1929,45 @@ namespace TH18 {
                     }
 
                 } else {
-                    // Percent & policy text
-                    char percentText[16] = "0%%";
+                    // Availability & policy text
+                    char oddText[16] = "0%%";
+                    bool usePercent = true;
                     const bool isStageUnlock = cd->appearance_condition && cd->appearance_condition <= 5;
 
-                    if (!shouldBuy) {
+                    if (boughtCurrent) {
+                        strcpy(oddText, S(TH18_SAVEFILE_MANIP_BOUGHT));
+                        usePercent = false;
+
+                    } else if (!shouldBuy) {
                         if (cd->appearance_condition && !boughtBefore) { // locked special cards
-                            if (isStageUnlock) snprintf(percentText, sizeof(percentText), S(TH18_MARKET_MANIP_LOCKED_STG), cd->appearance_condition);
-                            else strcpy(percentText, S(TH_NA));
+                            if (isStageUnlock) snprintf(oddText, sizeof(oddText), S(TH18_MARKET_MANIP_LOCKED_STG), cd->appearance_condition);
+                            else strcpy(oddText, S(TH_NA));
+                            usePercent = false;
 
                         } else {  // normal random cards
                             const float spawnChance = (cd->weight + (boughtBefore ? 0 : 5)) / (float)totalWeight;
-                            snprintf(percentText, sizeof(percentText), "%.3g%%%%", spawnChance * 100.0f);
+                            snprintf(oddText, sizeof(oddText), "%.3g%%%%", spawnChance * 100.0f);
                         }
                     }
 
                     style.ItemSpacing.y = -8.0f;
-                    if (shouldBuy || (cd->appearance_condition > 5 && !boughtBefore))
+                    if (shouldBuy || (cd->appearance_condition > 5 && !boughtBefore) || boughtCurrent)
                         ImGui::BeginDisabled();
                     else if (!boughtBefore && !cd->appearance_condition)
                         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.9f, 0.3f, 1.0f));
 
-                    CenteredText(percentText, cardWidth, (shouldBuy || !cd->appearance_condition || boughtBefore), 0.8);
+                    CenteredText(oddText, cardWidth, usePercent, 0.8);
 
-                    if (shouldBuy || (cd->appearance_condition > 5 && !boughtBefore))
+                    if (shouldBuy || (cd->appearance_condition > 5 && !boughtBefore) || boughtCurrent)
                         ImGui::EndDisabled();
                     else if (!boughtBefore && !cd->appearance_condition)
                         ImGui::PopStyleColor();
 
                     if (ImGui::IsItemHovered()) {
-                        if (!boughtBefore && !cd->appearance_condition && !shouldBuy)
+                        if (boughtCurrent)
+                            ImGui::SetTooltip(S(TH18_MARKET_MANIP_BOUGHT_FLAG_HINT));
+
+                        else if (!boughtBefore && !cd->appearance_condition && !shouldBuy)
                             ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_BOOST_HINT), S(TH18_CARD_LIST[cd->card_id]));
 
                         else if (cd->appearance_condition && !shouldBuy && !(boughtBefore && !isStageUnlock)) {
