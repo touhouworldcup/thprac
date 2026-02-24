@@ -9085,9 +9085,9 @@
       ],
       "TH18_MARKET_MANIP_LOADOUT": [ "对市场操纵使用预设购买策略", "Use preset purchasing strategy for Market Manip.", "市場操作にプリセット購入戦略を使用" ],
       "TH18_MARKET_MANIP_LOADOUT_DESC": [
-        "启用后，使用市场操纵时会自动购买所有标记为“买”的卡牌，然后关闭商店。标记为“留”的卡牌不会被购买，且之后的商店中，高/中/低价位槽位只会出现这些卡牌。",
-        "When enabled, using Market Manip. will automatically buy every card you've marked as \"Buy\", then close the shop. Cards marked as \"Keep\" will not be bought and only these cards can appear in the High / Medium / Low Cost slots of future shops.",
-        "有効にすると、市場操作を使用した際に「購入」とマークしたカードをすべて自動購入し、その後ショップを閉じます。「保持」とマークしたカードは購入されず、以降のショップでは高 / 中 / 低コスト枠にこれらのカードのみが出現します。"
+        "启用后，使用市场操纵时会自动购买所有标记为“买”的卡牌，然后关闭商店。标记为“留”的卡牌不会被购买，且之后的商店中，随机槽位和阶段槽位只会出现这些卡牌。",
+        "When enabled, using Market Manip. will automatically buy every card you've marked as \"Buy\", then close the shop. Cards marked as \"Keep\" will not be bought and only these cards can appear in the random and stage-based slots of future shops.",
+        "有効にすると、市場操作を使用した際に「購入」とマークしたカードをすべて自動購入し、その後ショップを閉じます。「保持」とマークしたカードは購入されず、以降のショップではランダム枠およびステージ枠にこれらのカードのみが出現します。"
       ],
       "TH18_MARKET_MANIP_CARD_HINT": [ "切换 %s", "Toggle %s", "%s を切り替え" ],
       "TH18_MARKET_MANIP_BUY": [ "买", "Buy", "購入" ],
@@ -9096,7 +9096,10 @@
       "TH18_MARKET_MANIP_KEEP_HINT": [ "在使用市场操纵后可以出现在商店中", "Can appear in shops after Market Manip.", "市場操作後のショップに出現します" ],
       "TH18_MARKET_MANIP_ODD_HINT": [ "使用市场操纵后，%s 在商店中出现的概率", "Chance for %s to appear in shops after Market Manip.", "市場操作後のショップで %s が出現する確率" ],
       "TH18_MARKET_MANIP_ODD_BOOST_HINT": [ "使用市场操纵后，%s 在商店中出现的概率\n（受新卡牌加成影响）", "Chance for %s to appear in shops after Market Manip.\n(boosted by New bonus)", "市場操作後のショップで %s が出現する確率\n（新ボーナスで増加）" ],
-      "TH18_MARKET_MANIP_ODD_LOCKED_HINT": [ "使用市场操纵后，%s 在商店中出现的概率\n（尚未解锁）", "Chance for %s to appear in shops after Market Manip.\n(not yet unlocked)", "市場操作後のショップで %s が出現する確率\n（未解放）" ],
+      "TH18_MARKET_MANIP_ODD_STG_HINT": [ "使用市场操纵后，%s 在商店中出现的概率\n在第%d面商店中必定可见", "Chance for %s to appear in shops after Market Manip.\nAlways available in the stage %d shop", "市場操作後のショップで %s が出現する確率\n%d面のショップで必ず出現" ],
+      "TH18_MARKET_MANIP_LOCKED_HINT": [ "无法在商店出现（未解锁）", "Can't appear in shops (locked)", "ショップに出現しません（未解放）" ],
+      "TH18_MARKET_MANIP_LOCKED_STG_HINT": [ "无法随机出现在商店中（未解锁）\n在第%d面商店中必定可见", "Can't randomly appear in shops (locked)\nAvailable in the stage %d shop", "ショップにランダムに出現しません（未解放）\n%d面のショップで必ず出現" ],
+      "TH18_MARKET_MANIP_LOCKED_STG": [ "%d面", "st%d", "%d面" ],
       "TH18_MARKET_MANIP_HIGH_COSTS": [ "高价位卡牌", "High Cost Slot Cards", "高コスト枠カード" ],
       "TH18_MARKET_MANIP_MID_COSTS": [ "中价位卡牌", "Medium Cost Slot Cards", "中コスト枠カード" ],
       "TH18_MARKET_MANIP_LOW_COSTS": [ "低价位卡牌", "Low Cost Slot Cards", "低コスト枠カード" ],
@@ -9197,7 +9200,6 @@
       "TH18_SAVEFILE_MANIP_BOUGHT": [ "已售", "Sold", "購入" ],
       "TH18_SAVEFILE_MANIP_NEW_HINT": [ "提升商店概率", "Boosted shop odds", "店出現率上昇" ],
       "TH18_SAVEFILE_MANIP_BOUGHT_HINT": [ "普通商店概率", "Non-boosted shop odds", "通常店出現率" ],
-      "TH18_SAVEFILE_MANIP_LOCKED_HINT": [ "无法在商店出现（未解锁）", "Can't appear in shops (locked)", "ショップに出現しません（未解放）" ],
       "TH18_SAVEFILE_MANIP_ALL_NEW": [ "全部标记为新", "Mark all New", "全て新規に設定" ],
       "TH18_SAVEFILE_MANIP_ALL_BOUGHT": [ "全部标记为已售", "Mark all Sold", "全て購入に設定" ],
       "TH18_SAVEFILE_MANIP_CHIMATA": [ "一切尽归于无吧！", "Let all return to nothing!", "すべて無に返そう！" ],

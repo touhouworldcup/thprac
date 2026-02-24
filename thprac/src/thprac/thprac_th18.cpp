@@ -1916,32 +1916,53 @@ namespace TH18 {
 
                     if (ImGui::IsItemHovered()) {
                         if (boughtBefore) ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_BOUGHT_HINT));
-                        else if (cd->appearance_condition) ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_LOCKED_HINT));
+                        else if (cd->appearance_condition) {
+                            if (cd->appearance_condition <= 5)
+                                ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_STG_HINT), cd->appearance_condition);
+                            else
+                                ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_HINT));
+                        }
                         else ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_NEW_HINT));
                     }
 
                 } else {
                     // Percent & policy text
                     char percentText[16] = "0%%";
-                    if (!shouldBuy && !(cd->appearance_condition && !boughtBefore)) {
-                        const float spawnChance = (cd->weight + (boughtBefore ? 0 : 5)) / (float)totalWeight;
-                        snprintf(percentText, sizeof(percentText), "%.3g%%%%", spawnChance * 100.0f);
+                    const bool isStageUnlock = cd->appearance_condition && cd->appearance_condition <= 5;
+
+                    if (!shouldBuy) {
+                        if (cd->appearance_condition && !boughtBefore) { // locked special cards
+                            if (isStageUnlock) snprintf(percentText, sizeof(percentText), S(TH18_MARKET_MANIP_LOCKED_STG), cd->appearance_condition);
+                            else strcpy(percentText, S(TH_NA));
+
+                        } else {  // normal random cards
+                            const float spawnChance = (cd->weight + (boughtBefore ? 0 : 5)) / (float)totalWeight;
+                            snprintf(percentText, sizeof(percentText), "%.3g%%%%", spawnChance * 100.0f);
+                        }
                     }
 
                     style.ItemSpacing.y = -8.0f;
-                    if (shouldBuy) ImGui::BeginDisabled();
+                    if (shouldBuy || (cd->appearance_condition > 5 && !boughtBefore))
+                        ImGui::BeginDisabled();
                     else if (!boughtBefore && !cd->appearance_condition)
                         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.9f, 0.3f, 1.0f));
 
-                    CenteredText(percentText, cardWidth, 1, 0.8);
+                    CenteredText(percentText, cardWidth, (shouldBuy || !cd->appearance_condition || boughtBefore), 0.8);
 
-                    if (shouldBuy) ImGui::EndDisabled();
+                    if (shouldBuy || (cd->appearance_condition > 5 && !boughtBefore))
+                        ImGui::EndDisabled();
                     else if (!boughtBefore && !cd->appearance_condition)
                         ImGui::PopStyleColor();
 
                     if (ImGui::IsItemHovered()) {
-                        if (cd->appearance_condition && !boughtBefore) ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_LOCKED_HINT), S(TH18_CARD_LIST[cd->card_id]));
-                        else if (!boughtBefore && !shouldBuy) ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_BOOST_HINT), S(TH18_CARD_LIST[cd->card_id]));
+                        if (!boughtBefore && !cd->appearance_condition && !shouldBuy)
+                            ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_BOOST_HINT), S(TH18_CARD_LIST[cd->card_id]));
+
+                        else if (cd->appearance_condition && !shouldBuy && !(boughtBefore && !isStageUnlock)) {
+                            if (boughtBefore) ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_STG_HINT), S(TH18_CARD_LIST[cd->card_id]), cd->appearance_condition);
+                            else if (isStageUnlock) ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_STG_HINT), cd->appearance_condition);
+                            else ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_HINT));
+                        }
                         else ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_HINT), S(TH18_CARD_LIST[cd->card_id]));
                     }
                     style.ItemSpacing.y = oldItemSpacingY;
