@@ -543,6 +543,42 @@ inline R GetMemAddr(uintptr_t addr, size_t offset, OffsetArgs... remaining_offse
     return GetMemAddr<R>(((uintptr_t) * (R*)addr) + offset, remaining_offsets...);
 }
 
+template <typename R = size_t>
+inline std::pair<R, bool> GetMemContent_s(uintptr_t addr)
+{
+    if (addr == 0)
+        return { R {}, false  };
+    return *(R*)addr;
+}
+template <typename R = size_t, typename... OffsetArgs>
+inline std::pair<R,bool> GetMemContent_s(uintptr_t addr, size_t offset, OffsetArgs... remaining_offsets)
+{
+    if (addr==0)
+        return { R {}, false };
+    uintptr_t next_ptr = (uintptr_t)*(R*)addr;
+    if (next_ptr == 0)
+        return { R {}, false };
+    return GetMemContent_s<R>(next_ptr + offset, remaining_offsets...);
+}
+
+template <typename R = uintptr_t>
+inline std::pair<R, bool> GetMemAddr_s(uintptr_t addr)
+{
+    if (addr == 0)
+        return { 0, false };
+    return { (R) addr, true };
+}
+template <typename R = uintptr_t, typename... OffsetArgs>
+inline std::pair<R,bool> GetMemAddr_s(uintptr_t addr, size_t offset, OffsetArgs... remaining_offsets)
+{
+    if (addr == 0)
+        return {0,false};
+    uintptr_t next_ptr = (uintptr_t)*(R*)addr;
+    if (next_ptr == 0)
+        return { 0, false };
+    return GetMemAddr_s<R>(next_ptr + offset, remaining_offsets...);
+}
+
 // Code by zero318 (https://github.com/zero318)
 #if __clang__ && NDEBUG
 // Clang in release mode can optimize uses of this into doing nothing.

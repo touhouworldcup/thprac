@@ -284,7 +284,7 @@ namespace TH20 {
                                         ImGui::TextColored(stone_color, "%d/%d(%.1f%%)", 
                                             schistory_tot[spell][diff][plstone_type][TH20Save::Capture] + schistory_tot[spell][diff][plstone_type][TH20Save::Timeout],
                                             schistory_tot[spell][diff][plstone_type][TH20Save::Attempt],
-                                            ((float)(schistory_tot[spell][diff][plstone_type][TH20Save::Capture] + schistory_tot[spell][diff][plstone_type][TH20Save::Timeout]) / std::fmaxf(1.0f, ((float)schistory_tot[spell][diff][plstone_type][TH20Save::Attempt]) * 100.0f)));
+                                            ((float)(schistory_tot[spell][diff][plstone_type][TH20Save::Capture] + schistory_tot[spell][diff][plstone_type][TH20Save::Timeout]) / std::fmaxf(1.0f, ((float)schistory_tot[spell][diff][plstone_type][TH20Save::Attempt])) * 100.0f));
                                         ImGui::TableNextColumn();
 
                                         ImGui::TextColored(stone_color, "%d", schistory_tot[spell][diff][plstone_type][TH20Save::Timeout]);
@@ -293,7 +293,7 @@ namespace TH20 {
                                         ImGui::TextColored(stone_color, "%d/%d(%.1f%%)",
                                             schistory_cur[spell][diff][plstone_type][TH20Save::Capture] + schistory_cur[spell][diff][plstone_type][TH20Save::Timeout],
                                             schistory_cur[spell][diff][plstone_type][TH20Save::Attempt],
-                                            ((float)(schistory_cur[spell][diff][plstone_type][TH20Save::Capture] + schistory_cur[spell][diff][plstone_type][TH20Save::Timeout]) / std::fmaxf(1.0f, ((float)schistory_tot[spell][diff][plstone_type][TH20Save::Attempt]) * 100.0f)));
+                                            ((float)(schistory_cur[spell][diff][plstone_type][TH20Save::Capture] + schistory_cur[spell][diff][plstone_type][TH20Save::Timeout]) / std::fmaxf(1.0f, ((float)schistory_tot[spell][diff][plstone_type][TH20Save::Attempt])) * 100.0f));
                                         ImGui::TableNextColumn();
 
                                         ImGui::TextColored(stone_color, "%d", schistory_cur[spell][diff][plstone_type][TH20Save::Timeout]);
@@ -1499,7 +1499,7 @@ namespace TH20 {
                 int spid = TH20Save::singleton().pyraState.lastPyraSpellId;
                 int plstone_type = TH20Save::GetPlayerType(cur_player_type, main_stone);
                 ImGui::NewLine();
-                ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - ImGui::CalcTextSize(spells_str[spid]).x * 0.5f);
+                
 
                 ImVec4 spell_color = spells_colors[spid];
                 if (spid == 5) // st5 pyra
@@ -1512,8 +1512,23 @@ namespace TH20 {
                     ImGui::ColorConvertHSVtoRGB(fmodf(t, 1.0f), 0.4f, 1.0f, rr, gg, bb);
                     spell_color = { rr, gg, bb, 1.0f };
                 }
+                if (TH20Save::singleton().pyraState.isPyraFailed)
+                {
+                    float rr, gg, bb, hh, ss, vv;
+                    ImGui::ColorConvertRGBtoHSV(spell_color.x, spell_color.y, spell_color.z, hh, ss, vv);
+                    ImGui::ColorConvertHSVtoRGB(hh, ss * 0.5f, 0.5f, rr, gg, bb);
+                    spell_color = { rr, gg, bb, 1.0f };
+                }
 
+                ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - ImGui::CalcTextSize(spells_str[spid]).x * 0.5f);
+                auto cpos = ImGui::GetCursorScreenPos();
                 ImGui::TextColored(spell_color, spells_str[spid]);
+                auto cpos2 = ImGui::GetCursorScreenPos();
+                if (TH20Save::singleton().pyraState.isPyraFailed) {
+                    auto textsz = ImGui::CalcTextSize(spells_str[spid]);
+                    auto p = ImGui::GetWindowDrawList();
+                    p->AddLine({ cpos.x, (cpos.y + cpos2.y) * 0.5f }, { cpos.x + textsz.x, (cpos.y + cpos2.y) * 0.5f },ImGui::ColorConvertFloat4ToU32(spell_color), 1.0f);
+                }
                 ImGui::Columns(2);
                 if (thPracParam.mode) {
                     ImGui::TextColored(spell_color, S(THPRAC_INGAMEINFO_20_PASS_CUR));
@@ -3990,12 +4005,15 @@ namespace TH20 {
     EHOOK_DY(th20_ins_534, 0x95780, 6,
         {
             int32_t stage = GetMemContent(RVA(STAGE_NUM));
-            if (stage == 4 || stage == 5)
+            if ((stage == 4 || stage == 5) &&(!THGuiRep::singleton().mRepStatus))
             {
                 DWORD p_enmA = *(DWORD*)(pCtx->Ebp - 0x3F4);
 
                 int32_t p_ins = *(int32_t*)(pCtx->Ebp - 0x3F8);
-                int32_t* ecl_addrs = GetMemAddr<int32_t*>(RVA(0x1BA570), 0x104, 0xc);
+                std::pair<int32_t*, bool> ecl_addrs_s = GetMemAddr_s<int32_t*>(RVA(0x1BA570), 0x104, 0xc);
+                if (!ecl_addrs_s.second)
+                    return;
+                int32_t* ecl_addrs = ecl_addrs_s.first;
 
                 uintptr_t player_stats = RVA(0x1BA5F0);
                 int32_t cur_player_type = (*(int32_t*)(player_stats + 0x8));
@@ -4025,6 +4043,10 @@ namespace TH20 {
             }
             
         })
+    EHOOK_DY(th20_hit_bullet, 0xF8805, 2,//set state=4
+        {
+            TH20Save::singleton().pyraState.isPyraFailed = true;
+        })
     EHOOK_DY(th20_KilledCallback, 0xA6866, 3,
         {
             int32_t stage = GetMemContent(RVA(STAGE_NUM));
@@ -4032,6 +4054,7 @@ namespace TH20 {
                 && TH20Save::singleton().pyraState.isInPyra
                 && pCtx->Eax == TH20Save::singleton().pyraState.lastPyraAddr
                 && TH20Save::singleton().pyraState.lastPyraSpellId == 0 // st4 mid 1 pyra
+                && (!THGuiRep::singleton().mRepStatus)
                 ) {
                 if (TH20Save::singleton().pyraState.isPyraFailed == false) {
                     uintptr_t player_stats = RVA(0x1BA5F0);
@@ -4045,11 +4068,12 @@ namespace TH20 {
         })
     EHOOK_DY(th20_TimeoutCallback, 0xA624E, 3,
         {
-
             int32_t stage = GetMemContent(RVA(STAGE_NUM));
             if ((stage == 4 || stage == 5)
                 && TH20Save::singleton().pyraState.isInPyra
-                && pCtx->Eax == TH20Save::singleton().pyraState.lastPyraAddr) {
+                && pCtx->Eax == TH20Save::singleton().pyraState.lastPyraAddr
+                && (!THGuiRep::singleton().mRepStatus)
+                ) {
                 if (TH20Save::singleton().pyraState.lastPyraSpellId == 0)
                 {
                     if (TH20Save::singleton().pyraState.isPyraFailed == false) {
@@ -4068,11 +4092,14 @@ namespace TH20 {
     EHOOK_DY(th20_ins_517, 0x93F8E, 2, // shake screen effect
         {
             int32_t stage = GetMemContent(RVA(STAGE_NUM));
-            if (stage == 4 || stage == 5) {
+            if ((stage == 4 || stage == 5) && (!THGuiRep::singleton().mRepStatus)) {
                 DWORD p_enmA = *(DWORD*)(pCtx->Ebp - 0x3F4);
                 if (p_enmA == TH20Save::singleton().pyraState.lastPyraAddr){
                     int32_t p_ins = *(int32_t*)(pCtx->Ebp - 0x3F8);
-                    int32_t* ecl_addrs = GetMemAddr<int32_t*>(RVA(0x1BA570), 0x104, 0xc);
+                    std::pair<int32_t*, bool> ecl_addrs_s = GetMemAddr_s<int32_t*>(RVA(0x1BA570), 0x104, 0xc);
+                    if (!ecl_addrs_s.second)
+                        return;
+                    int32_t* ecl_addrs = ecl_addrs_s.first;
                     if ((stage == 4 && p_ins - ecl_addrs[3] == 0x2cb8) || (stage == 5 && p_ins - ecl_addrs[3] == 0x32d0)) {
                         if (TH20Save::singleton().pyraState.isPyraFailed == false)
                         {
