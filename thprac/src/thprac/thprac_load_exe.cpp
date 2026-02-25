@@ -229,8 +229,7 @@ const THGameVersion* CheckOngoingGameByPID(DWORD pid, uintptr_t* pOutBase, HANDL
 
     auto exeSig = GetRemoteExeInfo(hProc, base);
     for (size_t i = 0; i < gGameVersionsCount; i++) {
-        uint64_t info_packed = (uint64_t)gGameVersions[i].textSize << 32 | gGameVersions[i].timeStamp;
-        if (info_packed == exeSig) {
+        if (exeSig == gGameVersions[i].exeInfo) {
             return gGameVersions + i;
         }
     }

@@ -35,211 +35,271 @@ extern void TH20Init();
 const THGameVersion alcostg = {
     .gameId = ID_ALCOSTG,
     .initFunc = AlcostgInit,
-    .timeStamp = 1198873702,
-    .textSize = 397312,
+    .exeInfo = {
+        .timeStamp = 1198873702,
+        .textSize = 397312,
+    },
     .oepCode = { 0x212b, 0x322a, 0x0524, 0xac44, 0x5691, 0x4646, 0xd3f8, 0x4848, 0xc249, 0xa28d }
 };
 const THGameVersion th06 = {
     .gameId = ID_TH06,
     .initFunc = TH06Init,
-    .timeStamp = 1038721275,
-    .textSize = 430080,
+    .exeInfo = {
+        .timeStamp = 1038721275,
+        .textSize = 430080,
+    },
     .oepCode = { 0x212b, 0xe22a, 0x05bc, 0xac44, 0x4867, 0x4646, 0xd3f8, 0x4848, 0xc249, 0xa28d }
 };
 const THGameVersion th07 = {
     .gameId = ID_TH07,
     .initFunc = TH07Init,
-    .timeStamp = 1066942337,
-    .textSize = 572928,
+    .exeInfo = {
+        .timeStamp = 1066942337,
+        .textSize = 572928,
+    },
     .oepCode = { 0x212b, 0xe22a, 0x0a45, 0xac44, 0x5ede, 0x4646, 0xd3f8, 0x4848, 0xc249, 0xa28d }
 };
 const THGameVersion th075 = {
     .gameId = ID_TH075,
     .initFunc = nullptr,
-    .timeStamp = 1120788294,
-    .textSize = 2449408,
+    .exeInfo = {
+        .timeStamp = 1120788294,
+        .textSize = 2449408,
+    },
     .oepCode = { 0x212b, 0x3a2a, 0x254c, 0xac44, 0x7599, 0x4646, 0xd3f8, 0x4848, 0xc249, 0xa28d }
 };
 const THGameVersion th08 = {
     .gameId = ID_TH08,
     .initFunc = TH08Init,
-    .timeStamp = 1095610188,
-    .textSize = 728064,
+    .exeInfo = {
+        .timeStamp = 1095610188,
+        .textSize = 728064,
+    },
     .oepCode = { 0x212b, 0xf22a, 0x089b, 0xac44, 0x498b, 0x4646, 0xd3f8, 0x4848, 0xc249, 0xa28d }
 };
 const THGameVersion th09 = {
     .gameId = ID_TH09,
     .initFunc = TH09Init,
-    .timeStamp = 1128708539,
-    .textSize = 576512,
+    .exeInfo = {
+        .timeStamp = 1128708539,
+        .textSize = 576512,
+    },
     .oepCode = { 0x212b, 0xea2a, 0x0a16, 0xac44, 0x5900, 0x4646, 0xd3f8, 0x4848, 0xc249, 0xa28d }
 };
 const THGameVersion th095 = {
     .gameId = ID_TH095,
     .initFunc = TH095Init,
-    .timeStamp = 1137085759,
-    .textSize = 603136,
+    .exeInfo = {
+        .timeStamp = 1137085759,
+        .textSize = 603136,
+    },
     .oepCode = { 0x212b, 0x122a, 0x0af8, 0xac44, 0x5ce2, 0x4646, 0xd3f8, 0x4848, 0xc249, 0xa28d }
 };
 const THGameVersion th10 = {
     .gameId = ID_TH10,
     .initFunc = TH10Init,
-    .timeStamp = 1186086096,
-    .textSize = 412672,
+    .exeInfo = {
+        .timeStamp = 1186086096,
+        .textSize = 412672,
+    },
     .oepCode = { 0x212b, 0x322a, 0x05e4, 0xac44, 0x5691, 0x4646, 0xd3f8, 0x4848, 0xc249, 0xa28d }
 };
 const THGameVersion th105 = {
     .gameId = ID_TH105,
     .initFunc = nullptr,
-    .timeStamp = 1319458676,
-    .textSize = 2879488,
+    .exeInfo = {
+        .timeStamp = 1319458676,
+        .textSize = 2879488,
+    },
     .oepCode = { 0x8ba9, 0x42dd, 0xaa43, 0xba52, 0xbaba, 0x8a8a, 0x8b8b, 0x0ac5, 0x12b6, 0xc789 }
 };
 const THGameVersion th11 = {
     .gameId = ID_TH11,
     .initFunc = TH11Init,
-    .timeStamp = 1217734394,
-    .textSize = 565248,
+    .exeInfo = {
+        .timeStamp = 1217734394,
+        .textSize = 565248,
+    },
     .oepCode = { 0x06a9, 0x4289, 0xaa43, 0xba3c, 0xbaba, 0xb9cd, 0xcc12, 0xc9a4, 0x61a5, 0x4a49 }
 };
 const THGameVersion th12 = {
     .gameId = ID_TH12,
     .initFunc = TH12Init,
-    .timeStamp = 1251344348,
-    .textSize = 617472,
+    .exeInfo = {
+        .timeStamp = 1251344348,
+        .textSize = 617472,
+    },
     .oepCode = { 0x06a9, 0x4289, 0xaa43, 0xba3c, 0xbaba, 0xb9cd, 0xcc12, 0xc9a4, 0x61a5, 0x4a49 }
 };
 const THGameVersion th123 = {
     .gameId = ID_TH123,
     .initFunc = nullptr,
-    .timeStamp = 1316148875,
-    .textSize = 4546560,
+    .exeInfo = {
+        .timeStamp = 1316148875,
+        .textSize = 4546560,
+    },
     .oepCode = { 0xa8a9, 0x42ec, 0xaa43, 0xba52, 0xbaba, 0x8a8a, 0x8b8b, 0x0ac5, 0x12b6, 0xc789 }
 };
 const THGameVersion th125 = {
     .gameId = ID_TH125,
     .initFunc = TH125Init,
-    .timeStamp = 1267822137,
-    .textSize = 611328,
+    .exeInfo = {
+        .timeStamp = 1267822137,
+        .textSize = 611328,
+    },
     .oepCode = { 0xf8a9, 0x42f9, 0xaa43, 0xba3c, 0xbaba, 0xb9cd, 0xcc12, 0xc9a4, 0x61a5, 0x4a49 }
 };
 const THGameVersion th128 = {
     .gameId = ID_TH128,
     .initFunc = TH128Init,
-    .timeStamp = 1280811414,
-    .textSize = 626176,
+    .exeInfo = {
+        .timeStamp = 1280811414,
+        .textSize = 626176,
+    },
     .oepCode = { 0x03a9, 0x42dd, 0xaa43, 0xbacd, 0xbaba, 0xb9cd, 0xcc12, 0xcba4, 0x69a5, 0x0fc1 }
 };
 const THGameVersion th13 = {
     .gameId = ID_TH13,
     .initFunc = TH13Init,
-    .timeStamp = 1313589413,
-    .textSize = 656384,
+    .exeInfo = {
+        .timeStamp = 1313589413,
+        .textSize = 656384,
+    },
     .oepCode = { 0xb6a9, 0x42dc, 0xaa43, 0xbacd, 0xbaba, 0xb9cd, 0xcc12, 0xcba4, 0x69a5, 0x0fc1 }
 };
 const THGameVersion th135 = {
     .gameId = ID_TH135,
     .initFunc = nullptr,
-    .timeStamp = 1381475275,
-    .textSize = 3928064,
+    .exeInfo = {
+        .timeStamp = 1381475275,
+        .textSize = 3928064,
+    },
     .oepCode = { 0xd7a9, 0x4340, 0xaa43, 0xbacd, 0xbaba, 0xb9cd, 0xcc12, 0xc3a4, 0x410c, 0x16e9 }
 };
 const THGameVersion th14 = {
     .gameId = ID_TH14,
     .initFunc = TH14Init,
-    .timeStamp = 1376634201,
-    .textSize = 720896,
+    .exeInfo = {
+        .timeStamp = 1376634201,
+        .textSize = 720896,
+    },
     .oepCode = { 0xafa9, 0x42f5, 0xaa43, 0x4444, 0x4545, 0x522c, 0x1f2f, 0x0486, 0xa149, 0x511d }
 };
 const THGameVersion th143 = {
     .gameId = ID_TH143,
     .initFunc = TH143Init,
-    .timeStamp = 1398039605,
-    .textSize = 748032,
+    .exeInfo = {
+        .timeStamp = 1398039605,
+        .textSize = 748032,
+    },
     .oepCode = { 0x6aa9, 0x428b, 0xaa43, 0x4444, 0x4545, 0x522c, 0xdf2f, 0x0511, 0xa149, 0x56f7 }
 };
 const THGameVersion th145 = {
     .gameId = ID_TH145,
     .initFunc = nullptr,
-    .timeStamp = 1492674616,
-    .textSize = 3516928,
+    .exeInfo = {
+        .timeStamp = 1492674616,
+        .textSize = 3516928,
+    },
     .oepCode = { 0x83a9, 0x424d, 0xaa43, 0xbaca, 0xbaba, 0x562c, 0x772f, 0xcb28, 0xa149, 0x4500 }
 };
 const THGameVersion th15 = {
     .gameId = ID_TH15,
     .initFunc = TH15Init,
-    .timeStamp = 1444028071,
-    .textSize = 772608,
+    .exeInfo = {
+        .timeStamp = 1444028071,
+        .textSize = 772608,
+    },
     .oepCode = { 0x1aa9, 0x428b, 0xaa43, 0x4444, 0x4545, 0x522c, 0x872f, 0x05f1, 0xa149, 0x56f7 }
 };
 const THGameVersion th155 = {
     .gameId = ID_TH155,
     .initFunc = nullptr,
-    .timeStamp = 1524477382,
-    .textSize = 3695616,
+    .exeInfo = {
+        .timeStamp = 1524477382,
+        .textSize = 3695616,
+    },
     .oepCode = { 0x37a9, 0x424c, 0xaa43, 0xbaca, 0xbaba, 0x562c, 0xb72f, 0xc163, 0xa149, 0x47b4 }
 };
 const THGameVersion th16 = {
     .gameId = ID_TH16,
     .initFunc = TH16Init,
-    .timeStamp = 1501534029,
-    .textSize = 564736,
+    .exeInfo = {
+        .timeStamp = 1501534029,
+        .textSize = 564736,
+    },
     .oepCode = { 0xeaa9, 0x4246, 0xaa43, 0xbaca, 0xbaba, 0xcd13, 0x11ab, 0x3db7, 0xc241, 0xa2bb }
 };
 const THGameVersion th165 = {
     .gameId = ID_TH165,
     .initFunc = TH165Init,
-    .timeStamp = 1532998383,
-    .textSize = 607232,
+    .exeInfo = {
+        .timeStamp = 1532998383,
+        .textSize = 607232,
+    },
     .oepCode = { 0xb9a9, 0x4246, 0xaa43, 0xbac0, 0xbaba, 0xcd13, 0x11ab, 0x3db7, 0xc241, 0xa2bb }
 };
 const THGameVersion th17 = {
     .gameId = ID_TH17,
     .initFunc = TH17Init,
-    .timeStamp = 1565429804,
-    .textSize = 626688,
+    .exeInfo = {
+        .timeStamp = 1565429804,
+        .textSize = 626688,
+    },
     .oepCode = { 0xb2a9, 0x4246, 0xaa43, 0xba3e, 0xbaba, 0xcd13, 0x11ab, 0x3db7, 0xc241, 0xa2bb }
 };
 const THGameVersion th175 = {
     .gameId = ID_TH175,
     .initFunc = nullptr,
-    .timeStamp = 1635319660,
-    .textSize = 375296,
+    .exeInfo = {
+        .timeStamp = 1635319660,
+        .textSize = 375296,
+    },
     .oepCode = { 0x31a9, 0x4244, 0xaa43, 0xbaca, 0xbaba, 0xcd13, 0x11ab, 0x3db7, 0xc241, 0xa2bb }
 };
 const THGameVersion th18 = {
     .gameId = ID_TH18,
     .initFunc = TH18Init,
-    .timeStamp = 1618619144,
-    .textSize = 702464,
+    .exeInfo = {
+        .timeStamp = 1618619144,
+        .textSize = 702464,
+    },
     .oepCode = { 0x9ba9, 0x4246, 0xaa43, 0xba3e, 0xbaba, 0xcd13, 0xc4ab, 0x44a4, 0x04c4, 0xa2be }
 };
 const THGameVersion th185 = {
     .gameId = ID_TH185,
     .initFunc = TH185Init,
-    .timeStamp = 1659144319,
-    .textSize = 711168,
+    .exeInfo = {
+        .timeStamp = 1659144319,
+        .textSize = 711168,
+    },
     .oepCode = { 0x84a9, 0x4246, 0xaa43, 0xba3e, 0xbaba, 0xcd13, 0xc4ab, 0x44a4, 0x04c4, 0xa2be }
 };
 const THGameVersion th19_v1_00a = {
     .gameId = ID_TH19,
     .initFunc = TH19_v1_00a_Init,
-    .timeStamp = 1690598468,
-    .textSize = 1433600,
+    .exeInfo = {
+        .timeStamp = 1690598468,
+        .textSize = 1433600,
+    },
     .oepCode = { 0xdfa9, 0x4247, 0xaa43, 0xba3e, 0xbaba, 0x0e2e, 0x1d90, 0xb748, 0x8d5c, 0x1fbb }
 };
 const THGameVersion th19_v1_10c = {
     .gameId = ID_TH19,
     .initFunc = TH19_v1_10c_Init,
-    .timeStamp = 1720429610,
-    .textSize = 1544704,
+    .exeInfo = {
+        .timeStamp = 1720429610,
+        .textSize = 1544704,
+    },
     .oepCode = { 0xb3a9, 0x4245, 0xaa43, 0xba3e, 0xbaba, 0x0e2e, 0x1a4a, 0xb748, 0xad5c, 0x1dfb }
 };
 const THGameVersion th20 = {
     .gameId = ID_TH20,
     .initFunc = TH20Init,
-    .timeStamp = 1753839620,
-    .textSize = 1484288,
+    .exeInfo = {
+        .timeStamp = 1753839620,
+        .textSize = 1484288,
+    },
     .oepCode = { 0xaca9, 0x4244, 0xaa43, 0xba33, 0xbaba, 0x4684, 0xcc47, 0xbc05, 0xc02d, 0x4a47 }
 };
 
@@ -614,29 +674,27 @@ const char* gThGameStrs[] = {
     "th20",
 };
 
-uint64_t GetExeInfo(uint8_t* mod) {
-    uint32_t out_text_size = 0;
-    uint32_t out_timestamp = 0;
+ExeInfo GetExeInfo(uint8_t* mod) {
+    ExeInfo out = {};    
 
     auto* dosHeader = (IMAGE_DOS_HEADER*)mod;
     auto* ntHeader = (IMAGE_NT_HEADERS*)(mod + dosHeader->e_lfanew);
     auto* section = (IMAGE_SECTION_HEADER*)((uintptr_t)&ntHeader->OptionalHeader + ntHeader->FileHeader.SizeOfOptionalHeader);
 
-    out_timestamp = ntHeader->FileHeader.TimeDateStamp;
+    out.timeStamp = ntHeader->FileHeader.TimeDateStamp;
 
     for (unsigned i = 0; i < ntHeader->FileHeader.NumberOfSections; i++) {
         if (!_stricmp(".text", (char*)section[i].Name)) {
-            out_text_size = section[i].SizeOfRawData;
+            out.textSize = section[i].SizeOfRawData;
             break;
         }
     }
 
-    return (uint64_t)out_text_size << 32 | out_timestamp;
+    return out;
 }
 
-uint64_t GetRemoteExeInfo(HANDLE hProc, uintptr_t mod) {
-    uint32_t out_text_size = 0;
-    uint32_t out_timestamp = 0;
+ExeInfo GetRemoteExeInfo(HANDLE hProc, uintptr_t mod) {
+    ExeInfo out = {};
 
     DWORD byteRet;
 
@@ -655,7 +713,7 @@ uint64_t GetRemoteExeInfo(HANDLE hProc, uintptr_t mod) {
     ReadProcessMemory(
         hProc,
         (void*)(addr_fileHeader + offsetof(IMAGE_FILE_HEADER, TimeDateStamp)),
-        &out_timestamp, sizeof(out_timestamp),
+        &out.timeStamp, sizeof(out.timeStamp),
         &byteRet
     );
 
@@ -685,20 +743,18 @@ uint64_t GetRemoteExeInfo(HANDLE hProc, uintptr_t mod) {
         );
 
         if (!_stricmp((char*)section.Name, ".text")) {
-            out_text_size = section.SizeOfRawData;
+            out.textSize = section.SizeOfRawData;
             break;
         }
     }
-
-    return (uint64_t)out_text_size << 32 | out_timestamp;
+    return out;
 }
 
 const THGameVersion* IdentifyExe(uint8_t* buf) {
     auto exe_info = GetExeInfo(buf);
 
     for (const auto& i : gGameVersions) {
-        auto info_packed = (uint64_t)i.textSize << 32 | i.timeStamp;
-        if (info_packed == exe_info) {
+        if (exe_info == i.exeInfo) {
             return &i;
         }
     }

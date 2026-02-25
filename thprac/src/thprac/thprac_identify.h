@@ -52,6 +52,19 @@ enum THGameID {
     ID_TH20,
 };
 
+struct ExeInfo {
+    uint32_t timeStamp;
+    uint32_t textSize;
+
+    operator bool() {
+        return timeStamp && textSize;
+    }
+
+    bool operator==(const ExeInfo& rhs) {
+        return timeStamp == rhs.timeStamp && textSize == rhs.textSize;
+    }
+};
+
 struct THGameInfo {
     uint32_t steamId;
 };
@@ -59,8 +72,7 @@ struct THGameInfo {
 struct THGameVersion {
     THGameID gameId;
     void (*initFunc)();
-    uint32_t timeStamp;
-    uint32_t textSize;
+    ExeInfo exeInfo;
     uint32_t oepCode[10];
 };
 
@@ -77,9 +89,8 @@ extern const char* gThGameStrs[];
 extern const unsigned int gGameVersionsCount;
 extern const unsigned int gKnownGamesCount;
 
-uint64_t GetExeInfo(uint8_t* mod);
-uint64_t GetExeInfo(const wchar_t* path);
-uint64_t GetRemoteExeInfo(HANDLE hProc, uintptr_t mod);
+ExeInfo GetExeInfo(uint8_t* mod);
+ExeInfo GetRemoteExeInfo(HANDLE hProc, uintptr_t mod);
 
 const THGameVersion* IdentifyExe(uint8_t* buf);
 const THGameVersion* IdentifyExe(const wchar_t* path);
