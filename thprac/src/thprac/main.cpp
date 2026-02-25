@@ -92,14 +92,35 @@ int WINAPI wWinMain(
         }
 
         if (GetFileAttributesW(argv[i]) != INVALID_FILE_ATTRIBUTES) {
-            if (!IdentifyExe(argv[i])) {
+            auto& self_exe = CurrentPeb()->ProcessParameters->ImagePathName;
+            if (memcmp(argv[i], self_exe.Buffer, self_exe.Length) == 0) {
                 continue;
             }
-            
-            wchar_t* launch_cmdline = wcsstr(pCmdLine, argv[i]) + t_strlen(argv[i]);
 
-            RunGameWithTHPrac(argv[i], launch_cmdline, &rInitConf);
-            return 0;
+            MappedFile f(argv[i]);
+            if (!f.fileMapView) {
+                continue;
+            }
+            uint64_t exe_info = GetExeInfo((uint8_t*)f.fileMapView);
+            if (!exe_info) {
+                continue;
+            }
+
+            for (size_t j = 0; j < gGameVersionsCount; j++) {
+                uint64_t ver_info_packed = (uint64_t)gGameVersions[j].textSize << 32 | gGameVersions[j].timeStamp;
+
+                if (ver_info_packed == exe_info) {
+                    wchar_t* launch_cmdline = wcsstr(pCmdLine, argv[i]) + t_strlen(argv[i]);
+
+                    RunGameWithTHPrac(argv[i], launch_cmdline, &rInitConf);
+                    return 0;
+                }
+            }
+            uint32_t timestamp = (uint32_t)exe_info;
+            uint32_t text_size = (uint32_t)(exe_info >> 32);
+
+            log_mboxf(0, MB_ICONERROR | MB_OK, "Unknown executable", "timestamp = %d\ntext size = %d", timestamp, text_size);
+            return 1;
         }
     }
 
