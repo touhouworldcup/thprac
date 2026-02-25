@@ -31,9 +31,12 @@ namespace TH18 {
     };
 
     enum addrs {
+        CARD_PRICE_TABLE = 0x4b35c4,
         CARD_DESC_LIST = 0x4c53c0,
         MENU_INPUT = 0x4ca21c,
         STAGE_NUM = 0x4cccdc,
+        FUNDS = 0x4ccd34,
+        POWER = 0x4ccd38,
         ABILITY_MANAGER_PTR = 0x4cf298,
         ABILITY_SHOP_PTR = 0x4cf2a4,
         ASCII_MANAGER_PTR = 0x4cf2ac,
@@ -954,33 +957,45 @@ namespace TH18 {
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x45d4ea, "01")
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
         PATCH_HK(0x45d1a2, "00")
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
         PATCH_HK(0x4574d3, "90909090"),
         PATCH_HK(0x40a3ed, "909090909090"),
         PATCH_HK(0x40a42c, "909090909090")
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(0x45748e, "9090")
+        PATCH_HK(0x45748e, NOP(2)),
+        PATCH_HK(0x418283, NOP(2)),
+        EHOOK_HK(0x418427, 3, { // add indicator card for fraudulent purchases
+            uint32_t price = GetMemContent(CARD_PRICE_TABLE + 0x4 * ((TableCardData*)pCtx->Eax)->price);
+            if (price > GetMemContent(FUNDS) + GetMemContent(POWER) - 100)
+                AddIndicateCard();
+        })
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mInfFunds, TH18_INFFUNDS, "F5", VK_F5)
         PATCH_HK(0x45c244, "909090909090"),
         PATCH_HK(0x40d96f, "90909090909090909090"),
         PATCH_HK(0x418496, "90909090909090909090"),
-        PATCH_HK(0x418465, "9090")
+        PATCH_HK(0x418465, NOP(2)),
+        PATCH_HK(0x418225, NOP(2)),
+        EHOOK_HK(0x41842a, 5, { // add indicator card for fraudulent purchases
+            uint32_t price = GetMemContent(CARD_PRICE_TABLE + 0x4 * ((TableCardData*)pCtx->Eax)->price);
+            if (price > GetMemContent(FUNDS) + GetMemContent(POWER) - 100)
+                AddIndicateCard();
+        })
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F6", VK_F6)
         PATCH_HK(0x429eef, "eb"),
         PATCH_HK(0x43021b, "058d")
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F7", VK_F7)
         PATCH_HK(0x45c2bd, "909090909090")
         HOTKEY_ENDDEF();
