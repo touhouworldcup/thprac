@@ -157,7 +157,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset Condition="'$(ToolsetType)'=='MSVC'">v143</PlatformToolset>
+    <PlatformToolset Condition="'$(ToolsetType)'=='MSVC'">v145</PlatformToolset>
     <PlatformToolset Condition="'$(ToolsetType)'=='ClangCL'">ClangCL</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
