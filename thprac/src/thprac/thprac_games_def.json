@@ -9085,7 +9085,7 @@
       ],
       "TH18_MARKET_MANIP_LOADOUT": [ "对市场操纵使用预设购买策略", "Use preset purchasing strategy for Market Manip.", "市場操作にプリセット購入戦略を使用" ],
       "TH18_MARKET_MANIP_LOADOUT_DESC": [
-        "启用后，使用市场操纵时会自动购买所有标记为“买”的卡牌，然后关闭商店。标记为“留”的卡牌不会被购买，且之后的商店中，随机槽位和阶段槽位只会出现这些卡牌。",
+        "启用后，使用市场操纵时会自动购买所有标记为“买”的卡牌，然后关闭商店。标记为“留”的卡牌不会被购买，且之后的商店中，这些卡牌只会出现在随机槽位和关卡特定槽位里。",
         "When enabled, using Market Manip. will automatically buy every card you've marked as \"Buy\", then close the shop. Cards marked as \"Keep\" will not be bought and only these cards can appear in the random and stage-based slots of future shops.",
         "有効にすると、市場操作を使用した際に「購入」とマークしたカードをすべて自動購入し、その後ショップを閉じます。「保持」とマークしたカードは購入されず、以降のショップではランダム枠およびステージ枠にこれらのカードのみが出現します。"
       ],
