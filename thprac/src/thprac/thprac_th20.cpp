@@ -257,7 +257,7 @@ namespace TH20 {
                                         }
                                         ImVec4 spell_color = spells_colors[spell];
                                         ImVec4 stone_color = stones_colors[stone];
-                                        if (spell == 5)// st5 pyra
+                                        if (spell == 5 && g_adv_igi_options.th12_chromatic_ufo) // st5 pyra
                                         {
                                             static float t = 0;
                                             t += 0.003f;
@@ -1502,7 +1502,7 @@ namespace TH20 {
                 
 
                 ImVec4 spell_color = spells_colors[spid];
-                if (spid == 5) // st5 pyra
+                if (spid == 5 && g_adv_igi_options.th12_chromatic_ufo) // st5 pyra
                 {
                     static float t = 0;
                     t += 0.003f;
