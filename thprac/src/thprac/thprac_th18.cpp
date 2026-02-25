@@ -724,23 +724,29 @@ namespace TH18 {
         bool mParamStatus = false;
         THPracParam mRepParam;
     };
+
+    const uint8_t* GetEquippedCardCounts()
+    {
+        uint32_t* list = nullptr;
+        uint8_t cardIdArray[64];
+        memset(cardIdArray, 0, 64);
+
+        for (uint32_t* i = (uint32_t*)GetMemContent(ABILITY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
+            list = i;
+            auto cardId = ((uint32_t**)list)[0][1];
+            cardIdArray[cardId] += 1;
+        }
+
+        return cardIdArray;
+    }
+
     void AddIndicateCard()
     {
         if (GetMemContent(0x4ccd00) == 4) {
             th18_free_blank.Enable();
             asm_call<0x411460, Thiscall>(GetMemContent(ABILITY_MANAGER_PTR), 0, 2);
-        } else {
-            uint32_t* list = nullptr;
-            uint8_t cardIdArray[64];
-            memset(cardIdArray, 0, 64);
-            for (uint32_t* i = (uint32_t*)GetMemContent(ABILITY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
-                list = i;
-                auto cardId = ((uint32_t**)list)[0][1];
-                cardIdArray[cardId] += 1;
-            }
-            if (!cardIdArray[55]) {
-                asm_call<0x411460, Thiscall>(*(uint32_t*)ABILITY_MANAGER_PTR, 55, 2);
-            }
+        } else if (!GetEquippedCardCounts()[55]) {
+            asm_call<0x411460, Thiscall>(*(uint32_t*)ABILITY_MANAGER_PTR, 55, 2);
         }
     }
     PATCH_ST(th18_pause_skip_1, 0x458692, "E93F010000");
@@ -2318,14 +2324,16 @@ namespace TH18 {
             return false;
 
         // Add all selected cards
+        const uint8_t* equippedCardCounts = GetEquippedCardCounts();
+
         for (const auto& [cd, buyFlag] : advOptWnd.loadoutHighCostCards)
-            if (buyFlag) AddCard(cd->card_id);
+            if (buyFlag && !equippedCardCounts[cd->card_id]) AddCard(cd->card_id);
 
         for (const auto& [cd, buyFlag] : advOptWnd.loadoutMidCostCards)
-            if (buyFlag) AddCard(cd->card_id);
+            if (buyFlag && !equippedCardCounts[cd->card_id]) AddCard(cd->card_id);
 
         for (const auto& [cd, buyFlag] : advOptWnd.loadoutLowCostCards)
-            if (buyFlag) AddCard(cd->card_id);
+            if (buyFlag && !equippedCardCounts[cd->card_id]) AddCard(cd->card_id);
 
         if (advOptWnd.manipAutoRestart) {
             // Restart run (via pause menu for simplicity)
