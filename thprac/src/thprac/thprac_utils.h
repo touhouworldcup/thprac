@@ -124,16 +124,6 @@ constexpr bool PathsCompare(const T* a, const T* b) {
 }
 #pragma endregion
 
-template <typename T>
-static std::function<T(void)> GetRndGenerator(T min, T max, std::mt19937::result_type seed = 0)
-{
-    if (!seed) {
-        seed = (std::mt19937::result_type)time(0);
-    }
-    auto dice_rand = std::bind(std::uniform_int_distribution<T>(min, max), std::mt19937(seed));
-    return dice_rand;
-}
-}
 
 template <typename T>
 unsigned int binary_search(const T* arr, size_t len, T needle) {
@@ -159,6 +149,8 @@ unsigned int binary_search(const T* arr, size_t len, T needle) {
     }
 
     return (unsigned int)-1;
+}
+
 }
 
 #define w32u8_alloca(type, size) ((type*)_alloca((size) * sizeof(type)))
