@@ -108,6 +108,15 @@
     <ClCompile Include="src\thprac\thprac_th17.cpp" />
     <ClCompile Include="src\thprac\thprac_th18.cpp" />
     <ClCompile Include="src\thprac\thprac_th185.cpp" />
+    <ClCompile Include="src\thprac\thprac_th185_warps0.cpp" />
+    <ClCompile Include="src\thprac\thprac_th185_warps1.cpp" />
+    <ClCompile Include="src\thprac\thprac_th185_warps2.cpp" />
+    <ClCompile Include="src\thprac\thprac_th185_warps3.cpp" />
+    <ClCompile Include="src\thprac\thprac_th185_warps4.cpp" />
+    <ClCompile Include="src\thprac\thprac_th185_warps5.cpp" />
+    <ClCompile Include="src\thprac\thprac_th185_warps6.cpp" />
+    <ClCompile Include="src\thprac\thprac_th185_warps7.cpp" />
+    <ClCompile Include="src\thprac\thprac_th185_warps8.cpp" />
     <ClCompile Include="src\thprac\thprac_th19.cpp" />
     <ClCompile Include="src\thprac\thprac_th19.v1.00a.cpp" />
     <ClCompile Include="src\thprac\thprac_th19.v1.10c.cpp" />
