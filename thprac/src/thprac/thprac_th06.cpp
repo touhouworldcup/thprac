@@ -730,10 +730,8 @@ namespace TH06 {
                     *mBookC6 = true,*mBookX6 = 180, *mBookY6 = 96;
                 }
                 if (*mWarp) {
-                    int st = 0;
                     if (*mStage == 3) {
                         mFakeShot();
-                        st = (*mFakeShot ? *mFakeShot - 1 : mShotType) + 4;
                     }
                     SectionWidget();
                     SpellPhase();

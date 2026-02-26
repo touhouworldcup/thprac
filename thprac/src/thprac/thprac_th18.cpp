@@ -3,6 +3,7 @@
 #include <metrohash128.h>
 #include <format>
 
+#include <d3d9.h>
 
 namespace THPrac {
 namespace TH18 {
@@ -32,18 +33,22 @@ namespace TH18 {
     bool g_lock_timer_flag = false;
 
     enum addrs {
-        GAME_THREAD_PTR = 0x4cf2e4,
-        BULLET_MANAGER_PTR = 0x4cf2bc,
-        ITEM_MANAGER_PTR = 0x4cf2ec,
-        ABILTIY_MANAGER_PTR = 0x4cf298,
-        ABILITY_SHOP_PTR = 0x4cf2a4,
         CARD_DESC_LIST = 0x4c53c0,
+        MENU_INPUT = 0x4ca21c,
+        ABILITY_MANAGER_PTR = 0x4cf298,
+        ABILITY_SHOP_PTR = 0x4cf2a4,
+        BULLET_MANAGER_PTR = 0x4cf2bc,
         MUKADE_ADDR = 0x4cf2d4,
-        WINDOW_PTR = 0x568c30,
+        GAME_THREAD_PTR = 0x4cf2e4,
+        ITEM_MANAGER_PTR = 0x4cf2ec,
+        PAUSE_MENU_PTR = 0x4cf40c,
         PLAYER_PTR = 0x4cf410,
+        SCOREFILE_MANAGER_PTR = 0x4cf41c,
+        ANM_MANAGER_PTR = 0x51f65c,
+        WINDOW_PTR = 0x568c30,
     };
     
-    enum cards {
+   enum cards {
         KOZUCHI = 42,
         KANAME,
         MOON,
@@ -58,58 +63,98 @@ namespace TH18 {
         MUKADE
     };
 
-    struct Thread {
-        void* vtable;
-        void* thread;
-        uint32_t tid;
-        int32_t __bool_c;
-        int32_t __bool_10;
-        HINSTANCE* phModule;
-        char filler_24[0x4];
-    };
+ struct Thread {
+       void* vtable; // 0x0
+       void* thread; // 0x4
+       uint32_t tid; // 0x8
+       int32_t __bool_c; // 0xc
+       int32_t __bool_10; // 0x10
+       HINSTANCE* phModule; // 0x14
+       char filler_24[0x4]; // 0x18
+   };
 
     struct CardBase {
-        struct VTableCard* vtable;
-        int32_t card_id;
-        int32_t array_index___plus_1_i_think;
-        ThList<CardBase> list_node;
-        int32_t anm_id_for_ingame_effect;
-        Timer recharge_timer;
-        Timer _recharge_timer;
-        int32_t recharge_time;
-        struct TableCardData* table_entry;
-        int32_t flags;
+       struct VTableCard* vtable; // 0x0
+       int32_t card_id; // 0x4
+       int32_t array_index___plus_1_i_think; // 0x8
+       ThList<CardBase> list_node; // 0xc
+       int32_t anm_id_for_ingame_effect; // 0x1c
+       Timer recharge_timer; // 0x20
+       Timer _recharge_timer; // 0x34
+       int32_t recharge_time; // 0x48
+       struct TableCardData* table_entry; // 0x4c
+       int32_t flags; // 0x50
     };
 
     struct CardLily : public CardBase {
-        int32_t count;
+        int32_t count; // 0x54
+    };
+
+    struct TableCardData {
+        char* internal_name;
+        uint32_t card_id;
+        uint32_t in_trial;
+        uint32_t category;
+        uint32_t price;
+        uint32_t weight;
+        uint32_t appearance_condition;
+        uint32_t allow_duplicates;
+        uint32_t menu_equippable;
+        uint32_t default_unlock;
+        uint32_t __not_basic_resource;
+        uint32_t sprite_large;
+        uint32_t sprite_small;
     };
 
     struct AbilityManager {
-        char filler_0[0x4];
-        struct UpdateFunc* on_tick;
-        struct UpdateFunc* on_draw;
-        struct AnmLoaded* ability_anm;
-        struct AnmLoaded* abcard_anm;
-        struct AnmLoaded* abmenu_anm;
-        ThList<CardBase> card_list_head;
-        int32_t num_total_cards;
-        int32_t num_active_cards;
-        int32_t num_equipment_cards;
-        int32_t num_passive_cards;
-        CardBase* selected_active_card;
-        int32_t __id_3c;
-        char filler_64[0xc];
-        int32_t __id_4c;
-        char filler_80[0x4];
-        int32_t flags;
-        int32_t __array_1[0x100];
-        int32_t __array_2[0x100];
-        int32_t __array_3[0x100];
-        char filler_3160[0xc];
-        int32_t __created_ability_txt;
-        struct Thread __thread;
-        char filler_3208[0xe8];
+        char filler_0[0x4]; // 0x0
+        struct UpdateFunc* on_tick; // 0x4
+        struct UpdateFunc* on_draw; // 0x8
+        struct AnmLoaded* ability_anm; // 0xc
+        struct AnmLoaded* abcard_anm; // 0x10
+        struct AnmLoaded* abmenu_anm; // 0x14
+        ThList<CardBase> card_list_head; // 0x18
+        int32_t num_total_cards; // 0x28
+        int32_t num_active_cards; // 0x2c
+        int32_t num_equipment_cards; // 0x30
+        int32_t num_passive_cards; // 0x34
+        CardBase* selected_active_card; // 0x38
+        int32_t __id_3c; // 0x3c
+        char filler_64[0xc]; // 0x40 - 0x48
+        int32_t __id_4c; // 0x4c
+        char filler_80[0x4]; // 0x50
+        int32_t flags; // 0x54
+        int32_t __array_1[0x100]; // 0x58
+        int32_t __array_2[0x100]; // 0x458
+        int32_t __array_3[0x100]; // 0x858
+        char filler_3160[0xc]; // 0xc58
+        int32_t __created_ability_txt; // 0xc64
+        struct Thread __thread; // 0xc68
+        int32_t bought_flags[0x40]; // 0xc84
+    };
+
+    struct AnmSprite { // size 0x44
+        char _pad0[0x8];
+        int32_t __index_8; // 0x8
+        char _pad1[0x38];
+    };
+
+    struct AnmImage { // size 0x18
+        LPDIRECT3DTEXTURE9 d3d_texture; // 0x0
+        char _pad0[0x14];
+    };
+
+    struct AnmLoaded { // size 0x13c
+        char _pad0[0x11c];
+        AnmSprite* sprites; // 0x11c
+        char _pad1[0x4];
+        AnmImage* images; // 0x124
+        char _pad2[0x14];
+    };
+
+    struct AnmManager {
+        char _pad0[0x312072c];
+        AnmLoaded* loaded_anm_files[33]; // 0x312072c
     };
 
     using std::pair;
@@ -134,6 +179,7 @@ namespace TH18 {
         int32_t vampire;
         int32_t sun;
         int32_t lily_count;
+        int32_t lily_cycle;
         int32_t lily_cd;
         int32_t bassdrum;
         int32_t psyco;
@@ -147,6 +193,7 @@ namespace TH18 {
         void Reset()
         {
             memset(this, 0, sizeof(THPracParam));
+            lily_cycle = -1; // to detect older replays not having it
         }
         bool ReadJson(std::string& json)
         {
@@ -173,6 +220,7 @@ namespace TH18 {
             GetJsonValue(vampire);
             GetJsonValue(sun);
             GetJsonValue(lily_count);
+            GetJsonValue(lily_cycle);
             GetJsonValue(lily_cd);
             GetJsonValue(bassdrum);
             GetJsonValue(psyco);
@@ -212,6 +260,7 @@ namespace TH18 {
                 AddJsonValue(vampire);
                 AddJsonValue(sun);
                 AddJsonValue(lily_count);
+                AddJsonValue(lily_cycle);
                 AddJsonValue(lily_cd);
                 AddJsonValue(bassdrum);
                 AddJsonValue(psyco);
@@ -266,6 +315,7 @@ namespace TH18 {
 
             mMukade.SetCurrentStep(100);
             *mMukade = 800;
+            *mLilyCycle = 1; // match vanilla behavior for counter=10 by default
 
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -317,7 +367,8 @@ namespace TH18 {
                 thPracParam.mikoflash = 10000 - *mMikoflash;
                 thPracParam.vampire = 10000 - *mVampire;
                 thPracParam.sun = 10000 - *mSun;
-                thPracParam.lily_count = 10000 - *mLilyCount;
+                thPracParam.lily_count = *mLilyCount;
+                thPracParam.lily_cycle = *mLilyCycle;
                 thPracParam.lily_cd = 10000 - *mLilyCD;
                 thPracParam.bassdrum = 10000 - *mBassdrum;
                 thPracParam.psyco = 10000 - *mPsyco;
@@ -341,7 +392,7 @@ namespace TH18 {
                 pair.second.second = false;
 
             uint32_t* list = nullptr;
-            for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
+            for (uint32_t* i = (uint32_t*)GetMemContent(ABILITY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
                 list = i;
                 auto cardId = ((uint32_t**)list)[0][1];
 
@@ -442,16 +493,18 @@ namespace TH18 {
                         if (card.first == MUKADE)
                             continue;
 
-                        if (card.first == LILY)
+                       if (card.first == LILY) {
                             mLilyCount();
+
+                            if (*mLilyCount >= 10)
+                                mLilyCycle();
+                        }
 
                         char str[20];
                         sprintf(str, "%.2f %%%%", **slider * 0.01f);
                         (*slider)(str);
                     }
                 }
-
-                
             }
 
             mNavFocus();
@@ -564,6 +617,7 @@ namespace TH18 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mVampire { TH18_VAMPIRE_CD, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mSun { TH18_SUN_CD, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mLilyCount { TH18_LILY_COUNT, 0, 10, 1, 1, 1 };
+        Gui::GuiCombo mLilyCycle { TH18_LILY_CYCLE, TH18_LILY_CYCLE_LIST };
         Gui::GuiSlider<int, ImGuiDataType_S32> mLilyCD { TH18_LILY_CD, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mBassdrum { TH18_BASSDRUM_CD, 0, 10000, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mPsyco { TH18_PSYCO_CD, 0, 10000, 1, 1000 };
@@ -591,8 +645,8 @@ namespace TH18 {
             TH_SCORE, TH_LIFE, TH_LIFE_FRAGMENT, TH_BOMB, TH_BOMB_FRAGMENT,
             TH_POWER, TH18_FUNDS, TH18_MUKADE, TH18_KOZUCHI_CD, TH18_KANAME_CD,
             TH18_MOON_CD, TH18_MIKOFLASH_CD, TH18_VAMPIRE_CD, TH18_SUN_CD,
-            TH18_LILY_COUNT, TH18_LILY_CD, TH18_BASSDRUM_CD, TH18_PSYCO_CD,
-            TH18_CYLINDER_CD, TH18_RICEBALL_CD };
+            TH18_LILY_COUNT, TH18_LILY_CYCLE, TH18_LILY_CD, TH18_BASSDRUM_CD,
+            TH18_PSYCO_CD,TH18_CYLINDER_CD, TH18_RICEBALL_CD };
 
         int mChapterSetup[7][2] {
             { 3, 2 },
@@ -676,18 +730,18 @@ namespace TH18 {
     {
         if (GetMemContent(0x4ccd00) == 4) {
             th18_free_blank.Enable();
-            asm_call<0x411460, Thiscall>(GetMemContent(ABILTIY_MANAGER_PTR), 0, 2);
+            asm_call<0x411460, Thiscall>(GetMemContent(ABILITY_MANAGER_PTR), 0, 2);
         } else {
             uint32_t* list = nullptr;
             uint8_t cardIdArray[64];
             memset(cardIdArray, 0, 64);
-            for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
+            for (uint32_t* i = (uint32_t*)GetMemContent(ABILITY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
                 list = i;
                 auto cardId = ((uint32_t**)list)[0][1];
                 cardIdArray[cardId] += 1;
             }
             if (!cardIdArray[55]) {
-                asm_call<0x411460, Thiscall>(*(uint32_t*)ABILTIY_MANAGER_PTR, 55, 2);
+                asm_call<0x411460, Thiscall>(*(uint32_t*)ABILITY_MANAGER_PTR, 55, 2);
             }
         }
     }
@@ -736,7 +790,7 @@ namespace TH18 {
         inline void AddCard(uint32_t cardId)
         {
             if (cardId < 55)
-                asm_call<0x411460, Thiscall>(*(uint32_t*)ABILTIY_MANAGER_PTR, cardId, 2);
+                asm_call<0x411460, Thiscall>(*(uint32_t*)ABILITY_MANAGER_PTR, cardId, 2);
                 asm_call<0x418de0, Fastcall>(cardId, 0);
         }
         void CheckMarket()
@@ -1193,7 +1247,7 @@ namespace TH18 {
     });
     EHOOK_ST(th18_active_card_fix, 0x462f33, 3, {
         if (GetMemContent(GAME_THREAD_PTR) && !GetMemContent(GAME_THREAD_PTR, 0xd0)) {
-            uint32_t activeCardId = GetMemContent(ABILTIY_MANAGER_PTR, 0x38);
+            uint32_t activeCardId = GetMemContent(ABILITY_MANAGER_PTR, 0x38);
             if (activeCardId) {
                 *(uint32_t*)(pCtx->Esi + 0x964) = GetMemContent(activeCardId + 4);
             } else {
@@ -1628,14 +1682,14 @@ namespace TH18 {
                     uint32_t* list = nullptr;
                     uint8_t cardIdArray[64];
                     memset(cardIdArray, 0, 64);
-                    for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
+                    for (uint32_t* i = (uint32_t*)GetMemContent(ABILITY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
                         list = i;
                         auto cardId = ((uint32_t**)list)[0][1];
                         cardIdArray[cardId] += 1;
                     }
 
                     for (int i = 0; i < 56; ++i) {
-                        *(uint32_t*)GetMemAddr(ABILTIY_MANAGER_PTR, 0xc84 + i * 4) = cardIdArray[i] ? 1 : 0;
+                        *(uint32_t*)GetMemAddr(ABILITY_MANAGER_PTR, 0xc84 + i * 4) = cardIdArray[i] ? 1 : 0;
                     }
                 }
             }
@@ -3115,7 +3169,7 @@ namespace TH18 {
          *(int32_t*)(0x4ccd38) = thPracParam.power;
          *(int32_t*)(0x4ccd30) = *(int32_t*)(0x4ccd34) = thPracParam.funds;
 
-         auto* ability_manager = *(AbilityManager**)ABILTIY_MANAGER_PTR;
+         auto* ability_manager = *(AbilityManager**)ABILITY_MANAGER_PTR;
 
          for (ThList<CardBase>* entry = &ability_manager->card_list_head; entry; entry = entry->next) {
              CardBase* card = entry->entry;
@@ -3142,7 +3196,14 @@ namespace TH18 {
                  R(sun);
                  break;
              case LILY:
-                 static_cast<CardLily*>(card)->count = thPracParam.lily_count;
+                 if (thPracParam.lily_cycle == -1) { // backwards compatibility with old buggy behavior
+                     ((CardLily*)card)->count = 10000 - thPracParam.lily_count;
+                 } else {
+                     ((CardLily*)card)->count = thPracParam.lily_count;
+
+                     if (thPracParam.lily_count >= 10)
+                         ((CardLily*)card)->count += thPracParam.lily_cycle + 2;
+                 }
                  R(lily_cd);
                  break;
              case BASSDRUM:
@@ -3216,7 +3277,7 @@ namespace TH18 {
         uint32_t cardAddType = 0;
         uint8_t cardIdArray[64] = {};
 
-        for (uint32_t* i = (uint32_t*)GetMemContent(ABILTIY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
+        for (uint32_t* i = (uint32_t*)GetMemContent(ABILITY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
             list = i;
             auto cardId = ((uint32_t**)list)[0][1];
             cardIdArray[cardId] += 1;
@@ -3247,7 +3308,7 @@ namespace TH18 {
         }
     })
     EHOOK_DY(th18_active_buy_swap_fix, 0x412d94, 3, {
-        asm_call<0x408c30, Fastcall>(*(uint32_t*)ABILTIY_MANAGER_PTR);
+        asm_call<0x408c30, Fastcall>(*(uint32_t*)ABILITY_MANAGER_PTR);
     })
     EHOOK_DY(th18_rep_save, 0x462657, 5, {
         char* repName = (char*)(pCtx->Esp + 0x30);

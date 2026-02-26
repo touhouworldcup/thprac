@@ -238,7 +238,6 @@ enum th_glossary_t {
     TH14_CORRECTION_SN_SIGNED,
     TH14_CORRECTION_VALUE,
     TH14_CORRECTION_ZERO,
-    TH14_CYCLE,
     TH14_CYCLE_1,
     TH14_CYCLE_2,
     TH14_CYCLE_3,
@@ -598,6 +597,7 @@ enum th_glossary_t {
     TH18_KOZUCHI_CD,
     TH18_LILY_CD,
     TH18_LILY_COUNT,
+    TH18_LILY_CYCLE,
     TH18_MARKET_MANIP,
     TH18_MARKET_MANIP_DESC1,
     TH18_MARKET_MANIP_DESC2,
@@ -947,13 +947,21 @@ enum th_glossary_t {
     THPRAC_IGI_PL_16D,
     THPRAC_IGI_PL_16E,
     THPRAC_IGI_PL_20A,
+    THPRAC_IGI_PL_20A_FULL,
     THPRAC_IGI_PL_20B,
+    THPRAC_IGI_PL_20B_FULL,
     THPRAC_IGI_PL_20C,
+    THPRAC_IGI_PL_20C_FULL,
     THPRAC_IGI_PL_20D,
+    THPRAC_IGI_PL_20D_FULL,
     THPRAC_IGI_PL_20E,
+    THPRAC_IGI_PL_20E_FULL,
     THPRAC_IGI_PL_20F,
+    THPRAC_IGI_PL_20F_FULL,
     THPRAC_IGI_PL_20G,
+    THPRAC_IGI_PL_20G_FULL,
     THPRAC_IGI_PL_20H,
+    THPRAC_IGI_PL_20H_FULL,
     THPRAC_IGI_PL_20I,
     THPRAC_IGI_PL_8A,
     THPRAC_IGI_PL_8B,
@@ -1602,6 +1610,7 @@ enum th_glossary_t {
     TH_CHAPTER_MIDBOSS,
     TH_CHAPTER_STAGE,
     TH_COERCIVE,
+    TH_CYCLE,
     TH_DATANLY,
     TH_DATANLY_BUTTON,
     TH_DATANLY_DELETE,
@@ -1625,6 +1634,7 @@ enum th_glossary_t {
     TH_DISABLE_MASTER,
     TH_DISABLE_MASTER_DESC,
     TH_DLG,
+    TH_DROP_ITEMS,
     TH_EL_BGM,
     TH_ENABLE_LOCK_TIMER,
     TH_END_NS1,
@@ -1793,7 +1803,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1782];
+extern const char* th_glossary_str[3][1792];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1842,6 +1852,8 @@ extern const th_glossary_t IGI_PL_18[5];
 extern const th_glossary_t IGI_PL_20[3];
 
 extern const th_glossary_t IGI_PL_20_SUB[10];
+
+extern const th_glossary_t IGI_PL_20_SUB_FULL[10];
 
 extern const th_glossary_t TH_TIMEOUT_SETTING[3];
 
@@ -3427,6 +3439,8 @@ namespace TH18 {
 
     extern const th_sections_t th_sections_cbt[7][2][14];
 
+    extern const th_glossary_t TH18_LILY_CYCLE_LIST[4];
+
     extern const th_glossary_t TH18_CARD_LIST[58];
 
 }
@@ -3564,6 +3578,6 @@ extern const wchar_t __thprac_loc_range_zh[3559];
 
 extern const wchar_t __thprac_loc_range_en[67];
 
-extern const wchar_t __thprac_loc_range_ja[2881];
+extern const wchar_t __thprac_loc_range_ja[2883];
 
 }

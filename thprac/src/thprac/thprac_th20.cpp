@@ -165,16 +165,6 @@ namespace TH20 {
             static int32_t schistory_cur[6][5][16][3]; 
 
             const char* players_strs[2] = { S(THPRAC_IGI_PL_Reimu), S(THPRAC_IGI_PL_Marisa) };
-            const char* stones_strs[8] = {
-                S(THPRAC_IGI_PL_20A),
-                S(THPRAC_IGI_PL_20B),
-                S(THPRAC_IGI_PL_20C),
-                S(THPRAC_IGI_PL_20D),
-                S(THPRAC_IGI_PL_20E),
-                S(THPRAC_IGI_PL_20F),
-                S(THPRAC_IGI_PL_20G),
-                S(THPRAC_IGI_PL_20H),
-            };
             const char* spells_str[6] = {
                 S(THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID1),
                 S(THPRAC_INGAMEINFO_20_PYRAMID_ST4_MID2R),
@@ -239,11 +229,11 @@ namespace TH20 {
                                 // spell capture
                                 ImGui::BeginTable(std::format("{}{}sptable", tabs_diff_strs[diff], players_strs[pl]).c_str(), 6, ImGuiTableFlags_::ImGuiTableFlags_Resizable);
                                 ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_SPELL_NAME), 0, 45.0f);
-                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_20_STONE_NAME), 0, 15.0f);
-                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_20_PASS_TOT), 0, 50.0f);
-                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_TIMEOUT_TOT), 0, 50.0f);
-                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_20_PASS_CUR), 0, 50.0f);
-                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_TIMEOUT_CUR), 0, 50.0f);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_20_STONE_NAME), 0, 50.0f);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_20_PASS_TOT), 0, 30.0f);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_TIMEOUT_TOT), 0, 24.0f);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_20_PASS_CUR), 0, 30.0f);
+                                ImGui::TableSetupColumn(S(THPRAC_INGAMEINFO_06_TIMEOUT_CUR), 0, 24.0f);
                                 ImGui::TableHeadersRow();
 
                                 for (int stone = 0; stone < 8; stone++)
@@ -277,7 +267,10 @@ namespace TH20 {
                                         ImGui::TextColored(spell_color, "%s", spells_str[spell]);
                                         ImGui::TableNextColumn();
 
-                                        ImGui::TextColored(stone_color, "%s", stones_strs[stone]);
+                                        if (Gui::LocaleGet() == Gui::LOCALE_EN_US)
+                                            ImGui::TextColored(stone_color, "%s\"%s\"", S(IGI_PL_20_SUB[stone]), S(IGI_PL_20_SUB_FULL[stone]));
+                                        else
+                                            ImGui::TextColored(stone_color, "%s「%s」", S(IGI_PL_20_SUB[stone]), S(IGI_PL_20_SUB_FULL[stone]));
                                         ImGui::TableNextColumn();
                                         
                                         // (st4 0 A B C D /st5 pyra), diff, playertype, [capture/attempt/timeout]

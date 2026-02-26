@@ -1297,6 +1297,15 @@
 	  "THPRAC_IGI_PL_20H":["绿2","G2","G2"],
 	  "THPRAC_IGI_PL_20I":["无", "N","N"],
 	  
+	  "THPRAC_IGI_PL_20A_FULL":["绯红恶魔","Scarlet Devil"      ,"スカーレットデビル"       ],
+	  "THPRAC_IGI_PL_20B_FULL":["生物赤红","Creature Red"       ,"クリーチャーレッド"       ],
+	  "THPRAC_IGI_PL_20C_FULL":["冰雪花簇","Snow Blossom"       ,"スノーブロッサム"         ],
+	  "THPRAC_IGI_PL_20D_FULL":["蓝色季节","Blue Season"        ,"ブルーシーズン"           ],
+	  "THPRAC_IGI_PL_20E_FULL":["黄色地心","Yellow Subterranean","イエローサブタレイニアン" ],
+	  "THPRAC_IGI_PL_20F_FULL":["不朽明月","Imperishable Moon"  ,"インペリシャブルムーン"   ],
+	  "THPRAC_IGI_PL_20G_FULL":["兽之冷硬","Beast Heardness"    ,"ビーストハードネス"       ],
+	  "THPRAC_IGI_PL_20H_FULL":["神道之风","Shintoism Wind"     ,"シントイズムウィンド"     ],
+	  
 	  "THPRAC_CHG_STONE":["大变石","change stone","change stone"],
 	  "THPRAC_CHG_STONE_DESC":["同时按z和左右键切换携带的高速/低速石","press z and left/right at the same time to switch between stones","press z and left/right at the same time to switch between stones"],
 	  
@@ -1609,6 +1618,17 @@
 		"THPRAC_IGI_PL_20G",
 		"THPRAC_IGI_PL_20H",
 		"THPRAC_IGI_PL_20I"
+      ],
+	  "IGI_PL_20_SUB_FULL": [
+        "THPRAC_IGI_PL_20A_FULL",
+		"THPRAC_IGI_PL_20B_FULL",
+		"THPRAC_IGI_PL_20C_FULL",
+		"THPRAC_IGI_PL_20D_FULL",
+		"THPRAC_IGI_PL_20E_FULL",
+		"THPRAC_IGI_PL_20F_FULL",
+		"THPRAC_IGI_PL_20G_FULL",
+		"THPRAC_IGI_PL_20H_FULL",
+		"THPRAC_IGI_PL_20I"
       ]
     }
   },
@@ -1776,11 +1796,13 @@
       "TH_MID_STAGE": [ "道中Boss", "Mid Boss", "道中ボス" ],
       "TH_END_STAGE": [ "关底Boss", "End Boss", "ボス" ],
       "TH_CHAPTER": [ "章节", "Chapter", "チャプター" ],
+	  "TH_CYCLE": [ "循环", "Cycle", "サイクル" ],
       "TH_STAGE_PORTION": [ "道中", "Stage Portion", "道中" ],
       "TH_STAGE_PORTION_N": [ "#%d", "#%d", "#%d" ],
       "TH_STAGE_PORTION_1": [ "前半 #%d", "First Half #%d", "前半 #%d" ],
       "TH_STAGE_PORTION_2": [ "后半 #%d", "Second Half #%d", "後半 #%d" ],
       "TH_DLG": [ "对话", "Dialog", "ダイアログ" ],
+	  "TH_DROP_ITEMS": [ "掉落道具", "Drop items", "道具掉落" ],
 
       "TH_LEFT": [ "左", "Left", "左" ],
       "TH_RIGHT": [ "右", "Right", "右" ],
@@ -7957,8 +7979,6 @@
       "TH14_FAKE_TYPE_A": [ "A线", "route A", "route A" ],
       "TH14_FAKE_TYPE_B": [ "B线", "route B", "route B" ],
 	  
-
-      "TH14_CYCLE": [ "循环", "Cycle", "サイクル" ],
       "TH14_CYCLE_1": [ "1 (Bomb碎片)", "1 (Bomb Fragment)", "1 (ボムの欠片)" ],
       "TH14_CYCLE_2": [ "2 (Bomb碎片)", "2 (Bomb Fragment)", "2 (ボムの欠片)" ],
       "TH14_CYCLE_3": [ "3 (Bomb碎片)", "3 (Bomb Fragment)", "3 (ボムの欠片)" ],
@@ -10223,7 +10243,8 @@
       "TH18_MIKOFLASH_CD": [ "神子冷却", "Miko CD", "神子CD" ],
       "TH18_VAMPIRE_CD": [ "牙冷却", "Fang CD", "牙CD" ],
       "TH18_SUN_CD": [ "太阳冷却", "Sun CD", "太陽CD" ],
-      "TH18_LILY_COUNT": [ "莉莉使用数", "Lily Count", "リリ使回数" ],
+      "TH18_LILY_COUNT": [ "莉莉等级", "Lily Level", "リリレベル" ],
+	  "TH18_LILY_CYCLE": [ "莉莉循环", "Lily Cycle", "リリサイクル" ],
       "TH18_LILY_CD": [ "莉莉冷却", "Lily CD", "リリCD" ],
       "TH18_BASSDRUM_CD": [ "鼓冷却", "Drum CD", "低音鼓CD" ],
       "TH18_PSYCO_CD": [ "菫子冷却", "Sumi CD", "菫子CD" ],
@@ -10776,6 +10797,11 @@
     },
 
     "groups": {
+	  "TH18_LILY_CYCLE_LIST": [
+        "TH14_CYCLE_1",
+        "TH14_CYCLE_2",
+        "TH20_CYCLE_3"
+      ],
       "TH18_CARD_LIST": [
         "TH18_CARD_00",
         "TH18_CARD_01",
@@ -10847,7 +10873,7 @@
           "TH185_ADDITIONAL_CARDS": [ "额外卡牌", "Additional Cards", "追加カード" ],
           "TH185_FORCE_WAVE": [ "指定波次", "Force Wave", "強行突破 " ],
           "TH185_WAVE_FORMAT": [ "第%d波", "Wave %d", "Wave %d" ],
-          "TH185_NONE_RANDOM": [ "传送", "None (Random)", "なし (ランダム)" ],
+          "TH185_NONE_RANDOM": [ "无（随机）", "None (Random)", "なし (ランダム)" ],
 
           "TH185_WAVE_1":  [ "第1波",  "Wave 1",  "Wave 1"  ],
           "TH185_WAVE_2":  [ "第2波",  "Wave 2",  "Wave 2"  ],
@@ -10864,8 +10890,8 @@
 
           "TH185_CARD_01": [ "无", "None", "なし" ],
           "TH185_CARD_02": [ "空白卡牌", "Blank Card", "空白のカード" ],
-          "TH185_CARD_03": [ "财富流至门前来", "Money Comes and Goes on its Own", "勝手に天下の回り物" ],
-          "TH185_CARD_04": [ "财富流至门前来", "Money Comes and Goes on its Own", "勝手に天下の回り物" ],
+          "TH185_CARD_03": [ "财富流至门前来（资金力）", "Money Comes and Goes on its Own (Funds)", "勝手に天下の回り物" ],
+          "TH185_CARD_04": [ "财富流至门前来（弹币）", "Money Comes and Goes on its Own (BMoney)", "勝手に天下の回り物" ],
           "TH185_CARD_05": [ "生命卡牌", "Life Card", "命のカード" ],
           "TH185_CARD_06": [ "铃瑚团子", "Ringo Brand Dumplings", "鈴瑚印の団子" ],
           "TH185_CARD_07": [ "不死鸟之尾", "Phoenix's Tail", "不死鳥の尾" ],
