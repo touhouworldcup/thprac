@@ -220,7 +220,7 @@ struct game_t {
 	string name;
 	string namespace_;
 	vector<section_t> sections;
-	vector<pair<string, rapidjson::Value>> groups;
+	vector<pair<string, vector<string>>> groups;
 
 	static map<string, loc_str_t> glossary;
 	static set<uint16_t> glyph_range_zh;
@@ -258,11 +258,11 @@ void AppendGlyphs(set<uint16_t>& glyphs, std::string& str) {
 		uint32_t codepoint = 0;
 		int bytes = 0;
 
-		if (c <= 0x7F) {                   
+		if (c <= 0x7F) {
 			codepoint = c;
 			bytes = 1;
 		}
-		else if ((c & 0xE0) == 0xC0) { 
+		else if ((c & 0xE0) == 0xC0) {
 			codepoint = c & 0x1F;
 			bytes = 2;
 		}
@@ -303,53 +303,29 @@ void AddGlyphRange(loc_str_t& str) {
 	AppendGlyphs(game_t::glyph_range_en, str.en_str);
 }
 
-bool ValidateGroup(rapidjson::GenericValue<rapidjson::UTF8<>>& value) {
-	if (!value.IsArray()) return true;
-
+bool ValidateGroupJSON(rapidjson::GenericValue<rapidjson::UTF8<>>& value) {
+	if (!value.IsArray()) {
+		return false;
+	}
 	for (auto& sub_value : value.GetArray()) {
-		if (sub_value.IsArray() && ValidateGroup(sub_value)) return false;
-		else if (!sub_value.IsString()) return false;
+		if (!sub_value.IsString()) {
+			return false;
+		}
 	}
 
 	return true;
 }
 
-void PrintGroupSize(std::string& output, rapidjson::Value& value) {
-	vector<rapidjson::SizeType> result;
-	function<void(rapidjson::Value&, unsigned int)> getSizeLimit = [&](
-		rapidjson::Value& value, unsigned int dim
-		) {
-			if (value.IsArray()) {
-				if (result.size() < dim + 1) result.resize(dim + 1);
-				for (auto it = value.Begin(); it != value.End(); ++it)
-					getSizeLimit(*it, dim + 1);
-				if (result[dim] < value.Size()) result[dim] = value.Size();
-			}
-		};
-
-	getSizeLimit(value, 0);
-	if (result.size() > 0) result.back()++;
-	for (auto dim : result)
-		sprintf_append(output, "[%d]", dim);
-
+void PrintGroupSize(std::string& output, vector<string>& value) {
+	sprintf_append(output, "[%d]", value.size());
 }
 
-void PrintGroup(std::string& output, rapidjson::Value& value, int tab = 0) {
-	if (value.IsArray()) {
-		for (int i = tab; i > 0; --i) output.push_back(' ');
-		sprintf_append(output, "{" ENDL);
-		for (auto v_itr = value.Begin(); v_itr != value.End(); ++v_itr)
-			PrintGroup(output, *v_itr, tab + 4);
-		for (int i = tab; i > 0; --i) output.push_back(' ');
-		sprintf_append(output, "}%c" ENDL, !tab ? ';' : ',');
+void PrintGroup(std::string& output, vector<string>& value) {
+	output.append("{\n");
+	for (const auto& str : value) {
+		sprintf_append(output, "    %s,\n", str.c_str());
 	}
-	else {
-		for (int i = tab; i > 0; --i) output.push_back(' ');
-		if (!tab)
-			sprintf_append(output, "= %s;" ENDL, value.GetString());
-		else
-			sprintf_append(output, "%s," ENDL, value.GetString());
-	}
+	output.append("};\n");
 }
 
 std::string EscapeString(std::string& str) {
@@ -1095,11 +1071,17 @@ vector<game_t> loc_json_parse(rapidjson::Document& doc) {
 					++group_itr
 					) {
 					// Validate group
-					if (ValidateGroup(group_itr->value)) {
+					if (ValidateGroupJSON(group_itr->value)) {
 						game_obj.groups.emplace_back();
-						game_obj.groups.back().first =
+						auto& back = game_obj.groups.back();
+
+						back.first =
 							group_itr->name.GetString();
-						game_obj.groups.back().second = group_itr->value;
+
+						back.second.reserve(group_itr->value.GetArray().Size());
+						for (auto& v : group_itr->value.GetArray()) {
+							back.second.push_back(v.GetString());
+						}
 					}
 					else {
 						SKIP_IF(
