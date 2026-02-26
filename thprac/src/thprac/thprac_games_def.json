@@ -5029,8 +5029,8 @@
       "TH11_MARISAB_WOOD":  [ "木符", "Wood",  "木符" ],
       "TH11_MARISAB_METAL": [ "金符", "Metal", "金符" ],
       "TH11_MARISAB_EARTH": [ "土符", "Earth", "土符" ],
-	  "TH11_SPELL_CATEGORY": [ "想起", "Spell Cat.", "スペルカテゴリー" ], 
-      "TH11_SELECTED_SHOTTYPE": [ "当前机体", "Selected Shottype", "選択した機体" ],
+	  "TH11_SPELL_CATEGORY": [ "想起", "Spell Cat.", "スペル種類" ], 
+      "TH11_ALL": [ "全部符卡", "All Spells", "すべてのスペル" ],
       "TH11_RA": [ "梦A", "Yakumo Yukari", "八云　紫" ],
       "TH11_RB": [ "梦B", "Ibuki Suika", "伊吹　萃香" ],
       "TH11_RC": [ "梦C", "Shameimaru Aya", "射命丸　文" ],
@@ -5954,7 +5954,7 @@
           "TH11_MARISAB_EARTH"
 		],
       "TH11_TYPE_SELECT": [
-        "TH11_SELECTED_SHOTTYPE",
+        "TH11_ALL",
         "TH11_RA",
         "TH11_RB",
         "TH11_RC",

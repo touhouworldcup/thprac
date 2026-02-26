@@ -275,16 +275,15 @@ namespace TH11 {
             mMode();
             if (player_type != last_player_type) {
                 last_player_type = player_type;
-                if(*mMode==1 && *mStage==3 && *mWarp==5){
-                    *mSection = player_type * 3 + 1;
+                if(*mMode==1 && *mStage==3){
+                    *mSpellCategory = player_type + 1;
                 }
             }
              
-            if (mStage())
-            {
+            if (mStage()){
                 *mSection = *mChapter = 0;
-                if (*mStage == 3 && *mWarp == 5) {
-                    *mSection = player_type * 3 + 1;
+                if (*mMode == 1 && *mStage == 3) {
+                    *mSpellCategory = player_type + 1;
                 }
             }
             if (*mMode == 1) {
@@ -329,7 +328,7 @@ namespace TH11 {
         {
             int st = 0;
             if (*mStage == 3) {
-                st = (*mSpellCategory ? *mSpellCategory - 1 : (globals->chara * 3 + globals->subshot)) + 4;
+                st = *mSpellCategory ? (*mSpellCategory + 3) : 0;
             }
             int chapterId = 0;
             switch (*mWarp) {
@@ -376,7 +375,7 @@ namespace TH11 {
             auto& chapterCounts = mChapterSetup[*mStage];
             int st = 0;
             if (*mStage == 3) {
-                st = (*mSpellCategory ? *mSpellCategory - 1 : (globals->chara * 3 + globals->subshot))  + 4;
+                st = *mSpellCategory ? (*mSpellCategory + 3) : 0 ;
             }
 
             switch (*mWarp) {
