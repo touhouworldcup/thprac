@@ -1155,24 +1155,25 @@ namespace TH20 {
 
                 // copy original replay to the selected path, overwriting if existing (unless same path)
                 if (!samePath && !CopyFileW(THGuiRep::singleton().mSelectedRepPath.c_str(), szFile, FALSE)) {
-                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST), nullptr, ofn.hwndOwner);
+                    log_mbox((uintptr_t)ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST));
                     return false;
                 }
 
                 // clear thprac params if present (no impact otherwise)
                 if (ReplayClearParam(szFile) == ReplayClearResult::Error) {
-                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS), nullptr, ofn.hwndOwner);
-                    if (!existingFile) DeleteFileW(szFile);
+                    log_mbox((uintptr_t)ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS));
+                    if (!existingFile)
+                        DeleteFileW(szFile);
                     return false;
                 }
 
                 // save params & notify
                 if (!ReplaySaveParam(szFile, repParams.GetJson())) {
-                    MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
+                    log_mboxf((uintptr_t)ofn.hwndOwner, MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str());
                     return true;
 
-                } else { //delete copy if params didn't save
-                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_PARAMS), nullptr, ofn.hwndOwner);
+                } else { // delete copy if params didn't save
+                    log_mbox((uintptr_t)ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_PARAMS));
                     if (!existingFile) DeleteFileW(szFile);
                 }
             }
@@ -1228,12 +1229,12 @@ namespace TH20 {
                 if (ImGui::Checkbox(S(TH20_FAKE_UNLOCK_STONES), &infiniteStones))
                     th20_infinite_stones.Toggle(infiniteStones);
                 ImGui::SameLine();
-                HelpMarker(S(TH20_FAKE_UNLOCK_STONES_DESC));
+                Gui::HelpMarker(S(TH20_FAKE_UNLOCK_STONES_DESC));
                 ImGui::SameLine();
                 if (ImGui::Checkbox(S(TH20_FIX_HITBOX), &plHitboxScaleFix))
                     th20_hitbox_scale_fix.Toggle(plHitboxScaleFix);
                 ImGui::SameLine();
-                HelpMarker(S(TH20_FIX_HITBOX_DESC));
+                Gui::HelpMarker(S(TH20_FIX_HITBOX_DESC));
 
                 ImGui::SetNextItemWidth(180.0f);
                 EndOptGroup();
@@ -1241,11 +1242,11 @@ namespace TH20 {
             if (BeginOptGroup<TH_REPLAY_FIX>()) {
 
                 // Main story replay fixes
-                CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
+                Gui::CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH20_MAIN_STORY_FIXES));
                 ImGui::SameLine();
-                HelpMarker(S(TH20_MAIN_STORY_FIXES_DESC));
+                Gui::HelpMarker(S(TH20_MAIN_STORY_FIXES_DESC));
 
                 bool hasTransitions = THGuiRep::singleton().mSelectedRepStartStage != THGuiRep::singleton().mSelectedRepEndStage;
                 bool hasTransitionSyncData = THGuiRep::singleton().mRepParam.HasTransitionSyncData();
@@ -1264,11 +1265,11 @@ namespace TH20 {
                         }
 
                         ImGui::SameLine();
-                        HelpMarker(S(TH20_MAINRPYFIX_TIMERS_FIX_DESC));
+                        Gui::HelpMarker(S(TH20_MAINRPYFIX_TIMERS_FIX_DESC));
                         ImGui::SameLine();
-                        CustomMarker(S(TH20_MAINRPYFIX_TIPS), S(TH20_MAINRPYFIX_TIMERS_FIX_TIPS_DESC));
+                        Gui::CustomMarker(S(TH20_MAINRPYFIX_TIPS), S(TH20_MAINRPYFIX_TIMERS_FIX_TIPS_DESC));
                         ImGui::SameLine();
-                        CustomMarker(S(TH20_MAINRPYFIX_TIPS2), S(TH20_MAINRPYFIX_TIMERS_FIX_TIPS2_DESC));
+                        Gui::CustomMarker(S(TH20_MAINRPYFIX_TIPS2), S(TH20_MAINRPYFIX_TIMERS_FIX_TIPS2_DESC));
 
                         int32_t stage = THGuiRep::singleton().mRepStatus ? (GetMemContent(RVA(STAGE_NUM)) - 1) : -1;
                         uint32_t totalTransitions = THGuiRep::singleton().mSelectedRepEndStage - 1;
@@ -1387,11 +1388,11 @@ namespace TH20 {
 
                 // Extra replay fix
                 ImGui::Separator();
-                CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
+                Gui::CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH20_EXTRA_RESOLUTION_FIX));
                 ImGui::SameLine();
-                HelpMarker(S(TH20_EXTRA_RESOLUTION_FIX_DESC));
+                Gui::HelpMarker(S(TH20_EXTRA_RESOLUTION_FIX_DESC));
                 bool extraResFixDisableSave = true;
 
                 if (THGuiRep::singleton().mSelectedRepEndStage == 7) {
@@ -1442,11 +1443,11 @@ namespace TH20 {
 
                 // Expired pyramid bug replay fix
                 ImGui::Separator();
-                CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
+                Gui::CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH20_EXPIRED_STONE_FIX));
                 ImGui::SameLine();
-                HelpMarker(S(TH20_EXPIRED_STONE_FIX_DESC));
+                Gui::HelpMarker(S(TH20_EXPIRED_STONE_FIX_DESC));
                 ImGui::SameLine();
                 ImGui::Checkbox(S(TH20_EXPSTONEFIX_SHOW_TOGGLE), &showExpiredPyramidFixTool);
 

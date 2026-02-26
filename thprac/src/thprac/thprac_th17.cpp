@@ -896,7 +896,7 @@ namespace TH17 {
             ImGui::SliderFloat(S(TH17_GOAST_ANGLE), &mGoastAng, -std::numbers::pi, std::numbers::pi);
             ImGui::Checkbox(S(TH17_FORCE_ANGLE), &mForceGoastAngle);
             ImGui::SameLine();
-            HelpMarker(S(TH17_FORCE_ANGLE_HELP));
+            Gui::HelpMarker(S(TH17_FORCE_ANGLE_HELP));
 
             if (mGoastAngleRandom)
                 ImGui::EndDisabled();
@@ -947,7 +947,7 @@ namespace TH17 {
                 ImGui::Checkbox(S(TH17_GOAST_BUGFIX), &mGoastBugfix);
                 ImGui::Checkbox(S(TH17_GOAST_REPFIX), &mGoastRepfix);
                 ImGui::SameLine();
-                HelpMarker(S(TH17_GOAST_REPFIX_DESC));
+                Gui::HelpMarker(S(TH17_GOAST_REPFIX_DESC));
 
                 if (ImGui::Button(S(TH17_SPAWN_A_GOAST))) {
                     mInGoastMenu = true;

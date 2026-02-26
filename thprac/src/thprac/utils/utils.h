@@ -104,3 +104,14 @@ constexpr unsigned t_strlen(const T* str) {
 }
 
 #define SIZED(a) a, sizeof(a)
+
+
+/** round n down to nearest multiple of m */
+inline long RoundDown(long n, long m) {
+    return n >= 0 ? (n / m) * m : ((n - m + 1) / m) * m;
+}
+
+/** round n up to nearest multiple of m */
+inline long RoundUp(long n, long m) {
+    return n >= 0 ? ((n + m - 1) / m) * m : (n / m) * m;
+}

@@ -405,36 +405,6 @@ void GameGuiRender(game_gui_impl impl)
 
 #pragma region Advanced Options Menu
 
-void MsgBox(UINT type, const char* title, const char* msg, const char* msg2, HWND owner)
-{
-    static wchar_t _title[256];
-    static wchar_t _msg[256];
-    static wchar_t _msg2[256];
-    MultiByteToWideChar(CP_UTF8, 0, title, -1, _title, 256);
-    MultiByteToWideChar(CP_UTF8, 0, msg, -1, _msg, 256);
-    if (msg2) {
-        MultiByteToWideChar(CP_UTF8, 0, msg2, -1, _msg2, 256);
-        wcscat_s(_msg, _msg2);
-    }
-    MessageBoxW(owner, _msg, _title, type);
-}
-
-void CenteredText(const char* text, float wndX)
-{
-    ImGui::SetCursorPosX((wndX - ImGui::CalcTextSize(text).x) / 2.0f);
-    ImGui::TextUnformatted(text);
-}
-
-float GetRelWidth(float rel)
-{
-    return ImGui::GetIO().DisplaySize.x * rel;
-}
-
-float GetRelHeight(float rel)
-{
-    return ImGui::GetIO().DisplaySize.y * rel;
-}
-
 void CalcFileHash(const wchar_t* file_name, uint64_t hash[2])
 {
     hash[0] = 0ll;
@@ -443,30 +413,6 @@ void CalcFileHash(const wchar_t* file_name, uint64_t hash[2])
     MappedFile file(file_name);
     if (file.fileMapView)
         MetroHash128::Hash((uint8_t*)file.fileMapView, file.fileSize, (uint8_t*)hash);
-}
-
-void HelpMarker(const char* desc)
-{
-    ImGui::TextDisabled("(?)");
-    if (ImGui::IsItemHovered()) {
-        ImGui::BeginTooltip();
-        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-        ImGui::TextUnformatted(desc);
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
-    }
-}
-
-void CustomMarker(const char* text, const char* desc)
-{
-    ImGui::TextDisabled(text);
-    if (ImGui::IsItemHovered()) {
-        ImGui::BeginTooltip();
-        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-        ImGui::TextUnformatted(desc);
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
-    }
 }
 
 int FPSHelper(adv_opt_ctx& ctx, bool repStatus, bool vpFast, bool vpSlow, FPSHelperCallback* callback)
@@ -607,7 +553,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
         break;
     }
 
-    ImGui::PushItemWidth(GetRelWidth(0.23f));
+    ImGui::PushItemWidth(Gui::GetRelWidth(0.23f));
     if (canFpsChangeFreely) {
         ImGui::DragInt(S(TH_FPS_ADJ), &fps, 1.0f, 60, 6000);
         if (!ImGui::IsItemActive())
@@ -629,7 +575,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
     }
 
     if (replay) {
-        ImGui::PushItemWidth(GetRelWidth(0.23f));
+        ImGui::PushItemWidth(Gui::GetRelWidth(0.23f));
         if (fpsFastStatic > 20) {
             sprintf(tmpStr, "infinite");
         } else {
@@ -642,7 +588,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
     }
     ImGui::Checkbox("Debug acc.", (bool*)&fpsDebugAcc);
     ImGui::SameLine();
-    HelpMarker("Blah");
+    Gui::HelpMarker("Blah");
 
     if (fpsStatic != fps
         || fpsSlowStatic != ctx.fps_replay_slow
@@ -673,7 +619,7 @@ bool GameplayOpt(adv_opt_ctx& ctx)
 
     hasChanged |= ImGui::Checkbox(S(TH_FACTOR_ACB), &ctx.all_clear_bonus);
     ImGui::SameLine();
-    HelpMarker(S(TH_FACTOR_ACB_DESC));
+    Gui::HelpMarker(S(TH_FACTOR_ACB_DESC));
 
     return hasChanged;
 }
@@ -695,7 +641,7 @@ void AboutOpt(const char* thanks_text)
                 showLicense = true;
         }
         if (showLicense) {
-            ImGui::BeginChild("COPYING", ImVec2(0.0f, GetRelHeight(0.8f)), true);
+            ImGui::BeginChild("COPYING", ImVec2(0.0f, Gui::GetRelHeight(0.8f)), true);
 
             Gui::ShowLicenceInfo();
 

@@ -1466,7 +1466,7 @@ namespace TH18 {
             if (GetSaveFileNameW(&ofn)) {
                 auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {
-                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST), nullptr, ofn.hwndOwner);
+                    log_mbox((uintptr_t)ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST));
                     goto end;
                 }
                 SetFilePointer(outputFile, 0, nullptr, FILE_BEGIN);
@@ -1476,7 +1476,7 @@ namespace TH18 {
                 WriteFile(outputFile, mRepExtraData, mRepExtraDataSize, &bytesProcessed, nullptr);
                 CloseHandle(outputFile);
 
-                MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
+                log_mboxf((uintptr_t)ofn.hwndOwner, MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str());
             }
 
             end:
@@ -1544,7 +1544,7 @@ namespace TH18 {
                         mShowFixInstruction = true;
                 }
                 if (mShowFixInstruction) {
-                    ImGui::PushTextWrapPos(GetRelWidth(0.95f));
+                    ImGui::PushTextWrapPos(Gui::GetRelWidth(0.95f));
                     ImGui::TextUnformatted(S(TH18_REPFIX_INS));
                     ImGui::PopTextWrapPos();
                 }
@@ -2050,11 +2050,11 @@ namespace TH18 {
                     th18_static_mallet_replay_green.Toggle(staticMalletReplay);
                 }
                 ImGui::SameLine();
-                HelpMarker(S(TH18_STATIC_MALLET_DESC));
+                Gui::HelpMarker(S(TH18_STATIC_MALLET_DESC));
 
                 ImGui::Checkbox(S(TH18_MARKET_MANIP_LOADOUT), &useManipLoadout);
                 ImGui::SameLine();
-                HelpMarker(S(TH18_MARKET_MANIP_LOADOUT_DESC));
+                Gui::HelpMarker(S(TH18_MARKET_MANIP_LOADOUT_DESC));
 
                 if (useManipLoadout) {
                     if (ImGui::Button(S(TH18_MARKET_MANIP_ALL_KEEP))) {
@@ -2101,7 +2101,7 @@ namespace TH18 {
                         if (ValidateLoadoutCode(clipboardText))
                             ApplyLoadoutCode(clipboardText);
                         else
-                            MsgBox(MB_ICONERROR | MB_OK, S(TH18_MARKET_MANIP_PASTE_ERROR_TITLE), S(TH18_MARKET_MANIP_PASTE_ERROR), nullptr, *(HWND*)WINDOW_PTR);
+                            log_mbox(*(uintptr_t*)WINDOW_PTR, MB_ICONERROR | MB_OK, S(TH18_MARKET_MANIP_PASTE_ERROR_TITLE), S(TH18_MARKET_MANIP_PASTE_ERROR));
                     }
                     if (ImGui::IsItemHovered())
                         ImGui::SetTooltip(S(TH18_MARKET_MANIP_PASTE_CODE_HINT));
@@ -2109,12 +2109,12 @@ namespace TH18 {
                     ImGui::SameLine();
                     ImGui::Checkbox(S(TH18_MARKET_MANIP_AUTO_RESTART), &manipAutoRestart);
                     ImGui::SameLine();
-                    HelpMarker(S(TH18_MARKET_MANIP_AUTO_RESTART_DESC));
+                    Gui::HelpMarker(S(TH18_MARKET_MANIP_AUTO_RESTART_DESC));
 
                     ImGui::SameLine();
                     ImGui::Checkbox(S(TH18_MARKET_MANIP_OSCAR), &manipSafetyMode);
                     ImGui::SameLine();
-                    HelpMarker(S(TH18_MARKET_MANIP_OSCAR_DESC));
+                    Gui::HelpMarker(S(TH18_MARKET_MANIP_OSCAR_DESC));
 
                     ImGui::NewLine();
                     DrawManipCardGrid(loadoutHighCostCards, TH18_MARKET_MANIP_HIGH_COSTS, IM_COL32(195, 160, 160, 200));
@@ -2131,19 +2131,19 @@ namespace TH18 {
                     th18_mukade_fix.Toggle(mukadeFix);
                 }
                 ImGui::SameLine();
-                HelpMarker(S(TH18_MUKADE_FIX_DESC));
+                Gui::HelpMarker(S(TH18_MUKADE_FIX_DESC));
 
                 if (ImGui::Checkbox(S(TH18_SCROLL_FIX), &scrollFix)) {
                     th18_scroll_fix.Toggle(scrollFix);
                 }
                 ImGui::SameLine();
-                HelpMarker(S(TH18_SCROLL_FIX_DESC));
+                Gui::HelpMarker(S(TH18_SCROLL_FIX_DESC));
 
                 if (ImGui::Checkbox(S(TH18_ST6FINAL_FIX), &st6FinalFix)) {
                     th18_st6final_fix.Toggle(st6FinalFix);
                 }
                 ImGui::SameLine();
-                HelpMarker(S(TH18_ST6FINAL_FIX_DESC));
+                Gui::HelpMarker(S(TH18_ST6FINAL_FIX_DESC));
 
                 ImGui::Checkbox(S(TH18_RESTART_FIX), &restartFix);
 
@@ -2151,20 +2151,20 @@ namespace TH18 {
                     th18_active_card_fix.Toggle(activeCardIdFix);
                 }
                 ImGui::SameLine();
-                HelpMarker(S(TH18_AC_FIX_DESC));
+                Gui::HelpMarker(S(TH18_AC_FIX_DESC));
 
                 if (ImGui::Checkbox(S(TH18_EIRIN_EIKI_FIX), &eirinEikiCardFix)) {
                     th18_eirin_eiki_card_uninit_fix.Toggle(eirinEikiCardFix);
                 }
                 ImGui::SameLine();
-                HelpMarker(S(TH18_EIRIN_EIKI_FIX_DESC));
+                Gui::HelpMarker(S(TH18_EIRIN_EIKI_FIX_DESC));
 
                 if (ImGui::Checkbox(S(TH18_FUNC_CALL_FIX), &funcCallFix)) {
                     th18_func_call2_uninit_fix.Toggle(funcCallFix);
                     th18_func_call3_uninit_fix.Toggle(funcCallFix);
                 }
                 ImGui::SameLine();
-                HelpMarker(S(TH18_FUNC_CALL_FIX_DESC));
+                Gui::HelpMarker(S(TH18_FUNC_CALL_FIX_DESC));
 
                 EndOptGroup();
             }
@@ -2220,7 +2220,7 @@ namespace TH18 {
                         ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_FREEZE_RUN));
                 }
                 ImGui::SameLine();
-                HelpMarker(S(TH18_SAVEFILE_MANIP_FREEZE_DESC));
+                Gui::HelpMarker(S(TH18_SAVEFILE_MANIP_FREEZE_DESC));
 
                 ImGui::NewLine();
                 DrawManipCardGrid(allCostCards, TH18_SAVEFILE_MANIP_CARDS, IM_COL32(40, 75, 120, 200), 10, 27.5f, true);

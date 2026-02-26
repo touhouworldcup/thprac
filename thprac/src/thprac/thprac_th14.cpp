@@ -940,7 +940,7 @@ namespace TH14 {
             auto thMarisaLaser = &THMarisaLaser::singleton();
             bool wndFocus = true;
             ImGui::PushTextWrapPos();
-            ImGui::PushItemWidth(GetRelWidth(0.25f));
+            ImGui::PushItemWidth(Gui::GetRelWidth(0.25f));
             if (mLock)
                 ImGui::BeginDisabled();
             ImGui::ComboSectionsDefault(S(TH14_MODE), &(thMarisaLaser->mState), TH14_MODE_COMBO, Gui::LocaleGetCurrentGlossary(), "");
@@ -1022,9 +1022,9 @@ namespace TH14 {
                         ImGui::SameLine();
                         auto needInputBox = TH14_CORRECTION[tempFix] == TH14_CORRECTION_E_POSITIVE || TH14_CORRECTION[tempFix] == TH14_CORRECTION_E_NEGATIVE;
                         if (needInputBox)
-                            ImGui::PushItemWidth(GetRelWidth(0.13f));
+                            ImGui::PushItemWidth(Gui::GetRelWidth(0.13f));
                         else
-                            ImGui::PushItemWidth(GetRelWidth(0.27f));
+                            ImGui::PushItemWidth(Gui::GetRelWidth(0.27f));
                         sprintf_s(mTempStr, "##%s_%d", S(TH14_CORRECTION_VALUE), i);
                         ImGui::ComboSectionsDefault(mTempStr, &tempFix, TH14_CORRECTION, Gui::LocaleGetCurrentGlossary(), "");
                         if (ImGui::IsPopupOpen(mTempStr)) {
@@ -1110,7 +1110,7 @@ namespace TH14 {
             DWORD bytesProcessed;
             auto repFile = CreateFileW(rep_path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (repFile == INVALID_HANDLE_VALUE) {
-                MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_SRC), nullptr, *(HWND*)WINDOW_PTR);
+                log_mbox(*(uintptr_t*)WINDOW_PTR, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_SRC));
                 return false;
             }
             auto repSize = GetFileSize(repFile, nullptr);
@@ -1158,7 +1158,7 @@ namespace TH14 {
             if (GetSaveFileNameW(&ofn)) {
                 auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {
-                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST), nullptr, ofn.hwndOwner);
+                    log_mbox((uintptr_t)ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST));
                     return false;
                 }
                 SetFilePointer(outputFile, 0, nullptr, FILE_BEGIN);
@@ -1168,7 +1168,7 @@ namespace TH14 {
                     WriteFile(outputFile, dataBuffer, dataSize, &bytesProcessed, nullptr);
                 CloseHandle(outputFile);
 
-                MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
+                log_mboxf((uintptr_t)ofn.hwndOwner, MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str());
             }
 
             return true;

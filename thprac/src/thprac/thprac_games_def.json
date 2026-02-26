@@ -928,7 +928,7 @@
         "修正されたリプレイは、正しく再生するために thprac が必要です；それがない場合、以前と同じ動作になります。\nthprac を適用して録画されたリプレイは修正する必要はありません。"
       ],
       "TH_REPFIX_SAVE_SUCCESS": [ "保存成功", "Successfully saved", "保存しました" ],
-      "TH_REPFIX_SAVE_SUCCESS_DESC": [ "成功保存Replay至：", "Successfully saved replay to: ", "リプレイは正常に保存されました：" ],
+      "TH_REPFIX_SAVE_SUCCESS_DESC": [ "成功保存Replay至：%s", "Successfully saved replay to: %s", "リプレイは正常に保存されました：%s" ],
       "TH_REPFIX_SAVE_ERROR_SRC": [ "未能成功读取源Replay。", "Failed to access source replay.", "元のリプレイの読み取りに失敗しました。" ],
       "TH_REPFIX_SAVE_ERROR_DEST": [ "未能写入目标文件。", "Failed to write to destination file.", "ターゲットファイルに書き込めませんでした。" ],
       "TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS": [ "重置文件的 thprac 数据失败。", "Failed to reset file's thprac data.", "ファイルの thprac データのリセットに失敗しました。" ],

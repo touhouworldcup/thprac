@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "thprac_hook.h"
+#include "thprac_log.h"
 #include "thprac_gui_components.h"
 
 #include <vector>
@@ -90,13 +91,7 @@ struct adv_opt_ctx {
     bool all_clear_bonus = false;
 };
 
-void MsgBox(UINT type, const char* title, const char* msg, const char* msg2 = nullptr, HWND owner = nullptr);
-void CenteredText(const char* text, float wndX);
-float GetRelWidth(float rel);
-float GetRelHeight(float rel);
 void CalcFileHash(const wchar_t* file_name, uint64_t hash[2]);
-void HelpMarker(const char* desc);
-void CustomMarker(const char* text, const char* desc);
 template <th_glossary_t name>
 static bool BeginOptGroup(bool default_status = true)
 {
@@ -559,22 +554,6 @@ typedef void (*ecl_patch_func)(ECLHelper& ecl);
 typedef void __stdcall QuickCfgHotkeyCallback(std::string&, bool);
 int QuickCfg(const char* game, QuickCfgHotkeyCallback* callback);
 bool QuickCfgHintText(bool reset = false);
-
-#pragma endregion
-
-#pragma region Rounding
-
-/** round n down to nearest multiple of m */
-inline long RoundDown(long n, long m)
-{
-    return n >= 0 ? (n / m) * m : ((n - m + 1) / m) * m;
-}
-
-/** round n up to nearest multiple of m */
-inline long RoundUp(long n, long m)
-{
-    return n >= 0 ? ((n + m - 1) / m) * m : (n / m) * m;
-}
 
 #pragma endregion
 

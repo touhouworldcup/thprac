@@ -675,5 +675,25 @@ namespace THPrac
             ImVec2 posReal = { pos.x * io.DisplaySize.x, pos.y * io.DisplaySize.y };
             return ImGui::SetNextWindowPos(posReal, cond, pivot);
         }
+        void TextCentered(const char* text, float wndX) {
+            ImGui::SetCursorPosX((wndX - ImGui::CalcTextSize(text).x) / 2.0f);
+            ImGui::TextUnformatted(text);
+        }
+        float Gui::GetRelWidth(float rel) {
+            return ImGui::GetIO().DisplaySize.x * rel;
+        }
+        float GetRelHeight(float rel) {
+            return ImGui::GetIO().DisplaySize.y * rel;
+        }
+        void CustomMarker(const char* text, const char* desc) {
+            ImGui::TextDisabled(text);
+            if (ImGui::IsItemHovered()) {
+                ImGui::BeginTooltip();
+                ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+                ImGui::TextUnformatted(desc);
+                ImGui::PopTextWrapPos();
+                ImGui::EndTooltip();
+            }
+        }
     }
 }

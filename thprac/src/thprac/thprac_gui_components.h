@@ -800,6 +800,13 @@ namespace Gui {
 
     void SetNextWindowSizeRel(const ImVec2& size, ImGuiCond cond = 0);
     void SetNextWindowPosRel(const ImVec2& pos, ImGuiCond cond = 0, const ImVec2& pivot = ImVec2(0, 0));
+    void TextCentered(const char* text, float wndX);
+    float GetRelWidth(float rel);
+    float GetRelHeight(float rel);
+    void CustomMarker(const char* text, const char* desc);
+    inline void HelpMarker(const char* desc) {
+        CustomMarker("(?)", desc);
+    }
 }
 }
 
