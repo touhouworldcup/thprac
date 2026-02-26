@@ -5007,7 +5007,7 @@
       "TH11_MARISAB_WOOD":  [ "木符", "Wood",  "木符" ],
       "TH11_MARISAB_METAL": [ "金符", "Metal", "金符" ],
       "TH11_MARISAB_EARTH": [ "土符", "Earth", "土符" ],
-	  "TH11_SPELL_CATEGORY": [ "符卡类别", "Spell Cat.", "スペルカテゴリー" ], 
+	  "TH11_SPELL_CATEGORY": [ "想起", "Spell Cat.", "スペルカテゴリー" ], 
       "TH11_SELECTED_SHOTTYPE": [ "当前机体", "Selected Shottype", "選択した機体" ],
       "TH11_RA": [ "梦A", "Yakumo Yukari", "八云　紫" ],
       "TH11_RB": [ "梦B", "Ibuki Suika", "伊吹　萃香" ],
@@ -5627,7 +5627,7 @@
       },
       "TH11_ST4_RA_BOSS2": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [8, 2, 2], 
         "!EN": "TH11_SATORI1",
         "!HL": "TH11_SATORI2"
@@ -5640,19 +5640,19 @@
       },
       "TH11_ST4_RA_BOSS4": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [8, 2, 4], 
         "!ENHL": "TH11_YUKARI1"
       },
       "TH11_ST4_RA_BOSS5": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [8, 2, 5], 
         "!ENHL": "TH11_YUKARI2"
       },
       "TH11_ST4_RA_BOSS6": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [8, 2, 6], 
         "!ENHL": "TH11_YUKARI3"
       },
@@ -5676,7 +5676,7 @@
       },
       "TH11_ST4_RB_BOSS2": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [9, 2, 2], 
         "!EN": "TH11_SATORI1",
         "!HL": "TH11_SATORI2"
@@ -5689,19 +5689,19 @@
       },
       "TH11_ST4_RB_BOSS4": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [9, 2, 4], 
         "!ENHL": "TH11_SUIKA1"
       },
       "TH11_ST4_RB_BOSS5": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [9, 2, 5], 
         "!ENHL": "TH11_SUIKA2"
       },
       "TH11_ST4_RB_BOSS6": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [9, 2, 6], 
         "!ENHL": "TH11_SUIKA3"
       },
@@ -5725,7 +5725,7 @@
       },
       "TH11_ST4_RC_BOSS2": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [10, 2, 2], 
         "!EN": "TH11_SATORI1",
         "!HL": "TH11_SATORI2"
@@ -5738,19 +5738,19 @@
       },
       "TH11_ST4_RC_BOSS4": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [10, 2, 4], 
         "!ENHL": "TH11_AYA1"
       },
       "TH11_ST4_RC_BOSS5": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [10, 2, 5], 
         "!ENHL": "TH11_AYA2"
       },
       "TH11_ST4_RC_BOSS6": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [10, 2, 6], 
         "!ENHL": "TH11_AYA3"
       },
@@ -5774,7 +5774,7 @@
       },
       "TH11_ST4_MA_BOSS2": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [11, 2, 2], 
         "!EN": "TH11_SATORI1",
         "!HL": "TH11_SATORI2"
@@ -5787,19 +5787,19 @@
       },
       "TH11_ST4_MA_BOSS4": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [11, 2, 4], 
         "!ENHL": "TH11_ALICE1"
       },
       "TH11_ST4_MA_BOSS5": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [11, 2, 5], 
         "!ENHL": "TH11_ALICE2"
       },
       "TH11_ST4_MA_BOSS6": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [11, 2, 6], 
         "!ENHL": "TH11_ALICE3"
       },
@@ -5823,7 +5823,7 @@
       },
       "TH11_ST4_MB_BOSS2": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [12, 2, 2], 
         "!EN": "TH11_SATORI1",
         "!HL": "TH11_SATORI2"
@@ -5836,19 +5836,19 @@
       },
       "TH11_ST4_MB_BOSS4": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [12, 2, 4], 
         "!ENHL": "TH11_PATCHOULI1"
       },
       "TH11_ST4_MB_BOSS5": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [12, 2, 5], 
         "!ENHL": "TH11_PATCHOULI2"
       },
       "TH11_ST4_MB_BOSS6": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [12, 2, 6], 
         "!ENHL": "TH11_PATCHOULI3"
       },
@@ -5872,7 +5872,7 @@
       },
       "TH11_ST4_MC_BOSS2": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [13, 2, 2], 
         "!EN": "TH11_SATORI1",
         "!HL": "TH11_SATORI2"
@@ -5885,19 +5885,19 @@
       },
       "TH11_ST4_MC_BOSS4": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [13, 2, 4], 
         "!ENHL": "TH11_NITORI1"
       },
       "TH11_ST4_MC_BOSS5": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [13, 2, 5], 
         "!ENHL": "TH11_NITORI2"
       },
       "TH11_ST4_MC_BOSS6": {
         "bgm": 1,
-        "spell": 0,
+        "spell": 1,
         "appearance": [13, 2, 6], 
         "!ENHL": "TH11_NITORI3"
       }

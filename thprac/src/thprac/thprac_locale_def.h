@@ -3560,7 +3560,7 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3561];
+extern const wchar_t __thprac_loc_range_zh[3559];
 
 extern const wchar_t __thprac_loc_range_en[67];
 
