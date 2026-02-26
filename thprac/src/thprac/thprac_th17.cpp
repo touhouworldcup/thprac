@@ -40,8 +40,6 @@ namespace TH17 {
         int32_t field_78;
         int32_t hyper_fill;
         int32_t tokens[5];
-        int32_t field_94;
-        int32_t field_98;
         int32_t field_9C;
         int32_t field_A0;
         int32_t field_A4;
