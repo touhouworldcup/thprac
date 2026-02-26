@@ -2035,6 +2035,8 @@ namespace TH18 {
         const char* GetTrimmedClipboardText()
         {
             const char* clipboardText = ImGui::GetClipboardText();
+            if (!clipboardText) return "";
+
             static char trimmed[13];
 
             const char* start = clipboardText;
