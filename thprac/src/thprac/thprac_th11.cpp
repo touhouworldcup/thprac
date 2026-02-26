@@ -281,6 +281,10 @@ namespace TH11 {
         }
         int CalcSection()
         {
+            int st = 0;
+            if (*mStage == 3) {
+                st = (*mSpellCategory ? *mSpellCategory - 1 : (globals->chara * 3 + globals->subshot)) + 4;
+            }
             int chapterId = 0;
             switch (*mWarp) {
             case 1: // Chapter
@@ -292,11 +296,11 @@ namespace TH11 {
                 break;
             case 2:
             case 3: // Mid boss & End boss
-                return th_sections_cba[*mStage][*mWarp - 2][*mSection];
+                return th_sections_cba[*mStage + st][*mWarp - 2][*mSection];
                 break;
             case 4:
             case 5: // Non-spell & Spellcard
-                return th_sections_cbt[*mStage][*mWarp - 4][*mSection];
+                return th_sections_cbt[*mStage + st][*mWarp - 4][*mSection];
                 break;
             default:
                 return 0;
@@ -327,9 +331,7 @@ namespace TH11 {
             
             int st = 0;
             if (*mStage == 3) {
-                st = (*mSpellCategory 
-                      ? *mSpellCategory - 1 
-                      : (globals->chara * 3 + globals->subshot)) + 4;
+                st = (*mSpellCategory ? *mSpellCategory - 1 : (globals->chara * 3 + globals->subshot)) + 4;
             }
 
             switch (*mWarp) {
@@ -387,7 +389,7 @@ namespace TH11 {
         Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH_FAITH, 0, 999990, 10, 100000 };
         Gui::GuiCombo mSpellCategory { TH11_SPELL_CATEGORY, TH11_TYPE_SELECT };
 
-        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
+        Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH11_SPELL_CATEGORY, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_LIFE, TH_FAITH, TH_SCORE, TH_POWER, TH_GRAZE, TH11_MARISAB_FORMATION_LABEL };
 
@@ -1138,35 +1140,67 @@ namespace TH11 {
             ECLVoid(ecl, 0x1074, 0x2db4, 0x2dc4);
             ecl << pair{0x2bf8, 2700} << pair{0x65cc, (int16_t)0};
             break;
+        case THPrac::TH11::TH11_ST4_RA_MID1:
+        case THPrac::TH11::TH11_ST4_RB_MID1:
+        case THPrac::TH11::TH11_ST4_RC_MID1:
+        case THPrac::TH11::TH11_ST4_MA_MID1:
+        case THPrac::TH11::TH11_ST4_MB_MID1:
+        case THPrac::TH11::TH11_ST4_MC_MID1:
         case THPrac::TH11::TH11_ST4_MID1:
             ECLJump(ecl, 0xf764, 0xf7c0);
             ecl << pair{0x95f0, (int16_t)0} << pair{0x7b74, (int16_t)0} << pair{0x7af4, (int16_t)0}
                 << pair{0xf7f0, 900};
             break;
+        case THPrac::TH11::TH11_ST4_RA_MID2:
+        case THPrac::TH11::TH11_ST4_RB_MID2:
+        case THPrac::TH11::TH11_ST4_RC_MID2:
+        case THPrac::TH11::TH11_ST4_MA_MID2:
+        case THPrac::TH11::TH11_ST4_MB_MID2:
+        case THPrac::TH11::TH11_ST4_MC_MID2:
         case THPrac::TH11::TH11_ST4_MID2:
             ECLJump(ecl, 0xf764, 0xf8b0);
             ecl << pair{0x9668, (int16_t)0};
             break;
+        case THPrac::TH11::TH11_ST4_RA_BOSS1:
+        case THPrac::TH11::TH11_ST4_RB_BOSS1:
+        case THPrac::TH11::TH11_ST4_RC_BOSS1:
+        case THPrac::TH11::TH11_ST4_MA_BOSS1:
+        case THPrac::TH11::TH11_ST4_MB_BOSS1:
+        case THPrac::TH11::TH11_ST4_MC_BOSS1:
         case THPrac::TH11::TH11_ST4_BOSS1:
             if (thPracParam.dlg)
                 ECLJump(ecl, 0xf764, 0xf9e0);
             else
                 ECLJump(ecl, 0xf764, 0xfa04);
             break;
+        case THPrac::TH11::TH11_ST4_RA_BOSS2:
+        case THPrac::TH11::TH11_ST4_RB_BOSS2:
+        case THPrac::TH11::TH11_ST4_RC_BOSS2:
+        case THPrac::TH11::TH11_ST4_MA_BOSS2:
+        case THPrac::TH11::TH11_ST4_MB_BOSS2:
+        case THPrac::TH11::TH11_ST4_MC_BOSS2:
         case THPrac::TH11::TH11_ST4_BOSS2:
             ECLJump(ecl, 0xf764, 0xfa04);
             ecl << pair{0xfe4, 1900};
             ECLVoid(ecl, 0x48f0);
             break;
+        case THPrac::TH11::TH11_ST4_RA_BOSS3:
+        case THPrac::TH11::TH11_ST4_RB_BOSS3:
+        case THPrac::TH11::TH11_ST4_RC_BOSS3:
+        case THPrac::TH11::TH11_ST4_MA_BOSS3:
+        case THPrac::TH11::TH11_ST4_MB_BOSS3:
+        case THPrac::TH11::TH11_ST4_MC_BOSS3:
         case THPrac::TH11::TH11_ST4_BOSS3:
             ECLJump(ecl, 0xf764, 0xfa04);
             ecl << pair{0x1110, (int8_t)0x32};
             ECLVoid(ecl, 0x2fa4, 0x1058, 0x2fb4);
             ECLTimeFix(ecl, 0x1020, -60);
             break;
+        case THPrac::TH11::TH11_ST4_RA_BOSS4:
         case THPrac::TH11::TH11_ST4_RA1:
             ECLSatoriJump(ecl, 0);
             break;
+        case THPrac::TH11::TH11_ST4_RA_BOSS5:
         case THPrac::TH11::TH11_ST4_RA2:
             ECLSatoriJump(ecl, 0);
             ecl.SetFile(2);
@@ -1174,6 +1208,7 @@ namespace TH11 {
             ecl << pair{0x124, 6000};
             ECLVoid(ecl, 0x128, 0x644, 0x690, 0x654);
             break;
+        case THPrac::TH11::TH11_ST4_RA_BOSS6:
         case THPrac::TH11::TH11_ST4_RA3:
             ECLSatoriJump(ecl, 0);
             ecl.SetFile(2);
@@ -1181,9 +1216,11 @@ namespace TH11 {
             ecl << pair{0x124, 3500};
             ECLVoid(ecl, 0x128, 0x1cf8, 0x1d08);
             break;
+        case THPrac::TH11::TH11_ST4_RB_BOSS4:
         case THPrac::TH11::TH11_ST4_RB1:
             ECLSatoriJump(ecl, 1);
             break;
+        case THPrac::TH11::TH11_ST4_RB_BOSS5:
         case THPrac::TH11::TH11_ST4_RB2:
             ECLSatoriJump(ecl, 1);
             ecl.SetFile(3);
@@ -1191,6 +1228,7 @@ namespace TH11 {
             ecl << pair{0x170, 4000};
             ECLVoid(ecl, 0x174, 0x1f8, 0x1e20, 0x1e58, 0x1e6c);
             break;
+        case THPrac::TH11::TH11_ST4_RB_BOSS6:
         case THPrac::TH11::TH11_ST4_RB3: {
             constexpr unsigned int st4BossRB3InvulnVal = 0x30fc + 0x10;
 
@@ -1202,9 +1240,11 @@ namespace TH11 {
             ecl << pair{0x3390, 0x3c} << pair{0x33c0, 0x3c}
                 << pair { st4BossRB3InvulnVal, 0 }; // note: we skip a bunch of waits that normally elapse the invuln timer before the spell even begins
             break;
-        } case THPrac::TH11::TH11_ST4_RC1:
+        } case THPrac::TH11::TH11_ST4_RC_BOSS4:
+        case THPrac::TH11::TH11_ST4_RC1:
             ECLSatoriJump(ecl, 2);
             break;
+        case THPrac::TH11::TH11_ST4_RC_BOSS5:
         case THPrac::TH11::TH11_ST4_RC2:
             ECLSatoriJump(ecl, 2);
             ecl.SetFile(4);
@@ -1212,6 +1252,7 @@ namespace TH11 {
             ecl << pair{0x180, 4400} << pair{0x230, 5100};
             ECLVoid(ecl, 0x184, 0x2b8, 0x234, 0x1d40, 0x1d78, 0x1d8c);
             break;
+        case THPrac::TH11::TH11_ST4_RC_BOSS6:
         case THPrac::TH11::TH11_ST4_RC3:
             ECLSatoriJump(ecl, 2);
             ecl.SetFile(4);
@@ -1219,9 +1260,11 @@ namespace TH11 {
             ecl << pair{0x180, 2500} << pair{0x230, 3200};
             ECLVoid(ecl, 0x184, 0x2b8, 0x234, 0x2f1c, 0x2f2c, 0x2f98);
             break;
+        case THPrac::TH11::TH11_ST4_MA_BOSS4:
         case THPrac::TH11::TH11_ST4_MA1:
             ECLSatoriJump(ecl, 3);
             break;
+        case THPrac::TH11::TH11_ST4_MA_BOSS5:
         case THPrac::TH11::TH11_ST4_MA2:
             ECLSatoriJump(ecl, 3);
             ecl.SetFile(5);
@@ -1229,6 +1272,7 @@ namespace TH11 {
             ecl << pair{0x198, 3600};
             ECLVoid(ecl, 0x19c, 0x234, 0x1258, 0x1290, 0x12c4);
             break;
+        case THPrac::TH11::TH11_ST4_MA_BOSS6:
         case THPrac::TH11::TH11_ST4_MA3:
             ECLSatoriJump(ecl, 3);
             ecl.SetFile(5);
@@ -1236,9 +1280,11 @@ namespace TH11 {
             ecl << pair{0x198, 2000};
             ECLVoid(ecl, 0x19c, 0x234, 0x23c8, 0x23d8, 0x2444);
             break;
+        case THPrac::TH11::TH11_ST4_MB_BOSS4:
         case THPrac::TH11::TH11_ST4_MB1:
             ECLSatoriJump(ecl, 4);
             break;
+        case THPrac::TH11::TH11_ST4_MB_BOSS5:
         case THPrac::TH11::TH11_ST4_MB2:
             ECLSatoriJump(ecl, 4);
             ecl.SetFile(6);
@@ -1246,6 +1292,7 @@ namespace TH11 {
             ecl << pair{0x130, 4400};
             ECLVoid(ecl, 0x134, 0x1b8, 0xa08, 0xa40, 0xa94);
             break;
+        case THPrac::TH11::TH11_ST4_MB_BOSS6:
         case THPrac::TH11::TH11_ST4_MB3:
             ECLSatoriJump(ecl, 4);
             ecl.SetFile(6);
@@ -1253,9 +1300,11 @@ namespace TH11 {
             ecl << pair{0x130, 2400};
             ECLVoid(ecl, 0x134, 0x1b8, 0x14f8, 0x1508, 0x1574);
             break;
+        case THPrac::TH11::TH11_ST4_MC_BOSS4:
         case THPrac::TH11::TH11_ST4_MC1:
             ECLSatoriJump(ecl, 5);
             break;
+        case THPrac::TH11::TH11_ST4_MC_BOSS5:
         case THPrac::TH11::TH11_ST4_MC2:
             ECLSatoriJump(ecl, 5);
             ecl.SetFile(7);
@@ -1263,6 +1312,7 @@ namespace TH11 {
             ecl << pair{0xd0c, 4400};
             ECLVoid(ecl, 0xd10, 0xd94, 0x1c5c, 0x1c94, 0x1ce8);
             break;
+        case THPrac::TH11::TH11_ST4_MC_BOSS6:
         case THPrac::TH11::TH11_ST4_MC3:
             ECLSatoriJump(ecl, 5);
             ecl.SetFile(7);
