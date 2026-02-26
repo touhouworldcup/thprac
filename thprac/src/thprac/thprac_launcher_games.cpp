@@ -544,7 +544,24 @@ public:
                 }
                 if (gamebackup06.score_paths.size() != 0)
                     all_backup.push_back(gamebackup06);
-            }
+            } else if(strcmp(game.signature.idStr, "th20") == 0) {
+                    GameBackup gamebackup20;
+                    gamebackup20.zip_folder = "th20_pyras";
+                    gamebackup20.score_file_name_in_zip = "score20pyra.dat";
+                    for (auto& inst : game.instances) {
+                        if (inst.autoBackup) {
+                            have_backup = true;
+                            std::string scorefilepath;
+                            GetEnvironmentVariableA("APPDATA", appdata, MAX_PATH);
+                            scorefilepath = appdata;
+                            scorefilepath += "\\ShanghaiAlice\\th20\\score20pyra.dat";
+                            gamebackup20.score_paths.push_back(scorefilepath);
+                            break;
+                        }
+                    }
+                    if (gamebackup20.score_paths.size() != 0)
+                        all_backup.push_back(gamebackup20);
+                }
             GameBackup gamebackup;
             gamebackup.zip_folder = game.signature.idStr;
             gamebackup.score_file_name_in_zip = game.signature.scoreFileStr;
