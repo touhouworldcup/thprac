@@ -147,6 +147,13 @@ enum th_glossary_t {
     TH10_HINT_EDIT_SCALE,
     TH10_NO_FAITH_LOSS,
     TH10_TITLE,
+    TH11_ALICE1,
+    TH11_ALICE2,
+    TH11_ALICE3,
+    TH11_AYA1,
+    TH11_AYA2,
+    TH11_AYA3,
+    TH11_MA,
     TH11_MARISAB_EARTH,
     TH11_MARISAB_FIRE,
     TH11_MARISAB_FORMATION_LABEL,
@@ -155,8 +162,29 @@ enum th_glossary_t {
     TH11_MARISAB_METAL,
     TH11_MARISAB_WATER,
     TH11_MARISAB_WOOD,
+    TH11_MB,
+    TH11_MC,
+    TH11_NITORI1,
+    TH11_NITORI2,
+    TH11_NITORI3,
+    TH11_PATCHOULI1,
+    TH11_PATCHOULI2,
+    TH11_PATCHOULI3,
+    TH11_RA,
+    TH11_RB,
+    TH11_RC,
+    TH11_SATORI1,
+    TH11_SATORI2,
+    TH11_SELECTED_SHOTTYPE,
     TH11_SIGNAL,
+    TH11_SPELL_CATEGORY,
+    TH11_SUIKA1,
+    TH11_SUIKA2,
+    TH11_SUIKA3,
     TH11_TITLE,
+    TH11_YUKARI1,
+    TH11_YUKARI2,
+    TH11_YUKARI3,
     TH123_TITLE,
     TH125_SPOILER_HISCORE_FIX,
     TH125_TITLE,
@@ -261,6 +289,7 @@ enum th_glossary_t {
     TH15_AB_TEST_RES_RANK_8,
     TH15_AB_TEST_RES_RANK_9,
     TH15_AB_TEST_RET,
+    TH15_HECATIA_RAGE,
     TH15_ILT_0,
     TH15_ILT_1,
     TH15_ILT_2,
@@ -268,6 +297,10 @@ enum th_glossary_t {
     TH15_ILT_4,
     TH15_ILT_5,
     TH15_ILT_6,
+    TH15_JUNKO_RAGE,
+    TH15_PH_BLUE,
+    TH15_PH_GREEN,
+    TH15_PH_RED,
     TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2,
     TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2_PHASE,
     TH15_ST3_NORMAL1_TYPE_NORMAL,
@@ -1638,7 +1671,6 @@ enum th_glossary_t {
     TH_GAME_SPEED_PLSPD_KEEP,
     TH_GRAZE,
     TH_HEALTH,
-    TH_HECATIA_RAGE,
     TH_INFBOMBS,
     TH_INFCHARGE,
     TH_INFHEALTH,
@@ -1648,7 +1680,6 @@ enum th_glossary_t {
     TH_INFPOWER,
     TH_INFSPELLCHARGE,
     TH_INFSUBP,
-    TH_JUNKO_RAGE,
     TH_LEFT,
     TH_LIFE,
     TH_LIFE_FRAGMENT,
@@ -1762,7 +1793,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1751];
+extern const char* th_glossary_str[3][1782];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2466,15 +2497,63 @@ namespace TH11 {
         TH11_ST7_END_S8,
         TH11_ST7_END_S9,
         TH11_ST7_END_S10,
+        TH11_ST4_RA_MID1,
+        TH11_ST4_RA_MID2,
+        TH11_ST4_RA_BOSS1,
+        TH11_ST4_RA_BOSS2,
+        TH11_ST4_RA_BOSS3,
+        TH11_ST4_RA_BOSS4,
+        TH11_ST4_RA_BOSS5,
+        TH11_ST4_RA_BOSS6,
+        TH11_ST4_RB_MID1,
+        TH11_ST4_RB_MID2,
+        TH11_ST4_RB_BOSS1,
+        TH11_ST4_RB_BOSS2,
+        TH11_ST4_RB_BOSS3,
+        TH11_ST4_RB_BOSS4,
+        TH11_ST4_RB_BOSS5,
+        TH11_ST4_RB_BOSS6,
+        TH11_ST4_RC_MID1,
+        TH11_ST4_RC_MID2,
+        TH11_ST4_RC_BOSS1,
+        TH11_ST4_RC_BOSS2,
+        TH11_ST4_RC_BOSS3,
+        TH11_ST4_RC_BOSS4,
+        TH11_ST4_RC_BOSS5,
+        TH11_ST4_RC_BOSS6,
+        TH11_ST4_MA_MID1,
+        TH11_ST4_MA_MID2,
+        TH11_ST4_MA_BOSS1,
+        TH11_ST4_MA_BOSS2,
+        TH11_ST4_MA_BOSS3,
+        TH11_ST4_MA_BOSS4,
+        TH11_ST4_MA_BOSS5,
+        TH11_ST4_MA_BOSS6,
+        TH11_ST4_MB_MID1,
+        TH11_ST4_MB_MID2,
+        TH11_ST4_MB_BOSS1,
+        TH11_ST4_MB_BOSS2,
+        TH11_ST4_MB_BOSS3,
+        TH11_ST4_MB_BOSS4,
+        TH11_ST4_MB_BOSS5,
+        TH11_ST4_MB_BOSS6,
+        TH11_ST4_MC_MID1,
+        TH11_ST4_MC_MID2,
+        TH11_ST4_MC_BOSS1,
+        TH11_ST4_MC_BOSS2,
+        TH11_ST4_MC_BOSS3,
+        TH11_ST4_MC_BOSS4,
+        TH11_ST4_MC_BOSS5,
+        TH11_ST4_MC_BOSS6,
     };
 
-    extern const char* th_sections_str[3][4][89];
+    extern const char* th_sections_str[3][4][137];
 
-    extern const uint8_t th_sections_bgm[89];
+    extern const uint8_t th_sections_bgm[137];
 
-    extern const th_sections_t th_sections_cba[7][2][22];
+    extern const th_sections_t th_sections_cba[13][2][22];
 
-    extern const th_sections_t th_sections_cbt[7][2][20];
+    extern const th_sections_t th_sections_cbt[13][2][20];
 
     extern const th_glossary_t TH11_SPELL_5PHASE[9];
 
@@ -2483,6 +2562,8 @@ namespace TH11 {
     extern const th_glossary_t TH11_WAVE2_START[5];
 
     extern const th_glossary_t TH11_MARISAB_FORMATION[6];
+
+    extern const th_glossary_t TH11_TYPE_SELECT[8];
 
 }
 
@@ -3077,6 +3158,8 @@ namespace TH15 {
 
     extern const th_glossary_t TH15_SPELL_PHASE_EXTRA_LAST[5];
 
+    extern const th_glossary_t TH15_SPELL_PHASE_EXTRA_TIMEOUT[4];
+
     extern const th_glossary_t TH15_AB_5PHASE[6];
 
     extern const th_glossary_t TH15_ST3_NORMAL1_TYPE[5];
@@ -3477,10 +3560,10 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3559];
+extern const wchar_t __thprac_loc_range_zh[3561];
 
 extern const wchar_t __thprac_loc_range_en[67];
 
-extern const wchar_t __thprac_loc_range_ja[2879];
+extern const wchar_t __thprac_loc_range_ja[2881];
 
 }

@@ -145,6 +145,7 @@ namespace TH11 {
             *mPower = 80;
             *mMode = 1;
             *mValue = 50000;
+            *mSpellCategory = globals->chara * 3 + globals->subshot;
 
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -289,15 +290,14 @@ namespace TH11 {
             if (*mMode == 1) {
                 if (mWarp()){
                     *mSection = *mChapter = *mPhase = 0;
-                    if (*mStage == 3 && *mWarp == 5)
-                    {
-                        *mSection = player_type * 3 + 1;
-                    }
                 }
                 if (*mWarp) {
+                    if (*mStage == 3) {
+                        mSpellCategory();
+                    }
                     SectionWidget();
                     mPhase(TH_PHASE, SpellPhase());
-                     auto section = CalcSection();
+                    auto section = CalcSection();
                     if (section == TH11_ST4_RA2 && *mPhase!=0){
                         mBossX();
                         mBossY();
@@ -370,6 +370,13 @@ namespace TH11 {
         {
             static char chapterStr[256] {};
             auto& chapterCounts = mChapterSetup[*mStage];
+            int st = 0;
+            if (*mStage == 3) {
+                st = (*mSpellCategory
+                             ? *mSpellCategory - 1
+                             : (globals->chara * 3 + globals->subshot))
+                    + 4;
+            }
 
             switch (*mWarp) {
             case 1: // Chapter
@@ -387,8 +394,8 @@ namespace TH11 {
                 break;
             case 2:
             case 3: // Mid boss & End boss
-                if (mSection(TH_WARP_SELECT[*mWarp],
-                        th_sections_cba[*mStage][*mWarp - 2],
+                if (mSection.operator()(TH_WARP_SELECT[*mWarp],
+                        th_sections_cba[*mStage + st][*mWarp - 2],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
                 if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
@@ -397,7 +404,7 @@ namespace TH11 {
             case 4:
             case 5: // Non-spell & Spellcard
                 if (mSection(TH_WARP_SELECT[*mWarp],
-                        th_sections_cbt[*mStage][*mWarp - 4],
+                        th_sections_cbt[*mStage + st][*mWarp - 4],
                         th_sections_str[::THPrac::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
                 if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
@@ -424,6 +431,7 @@ namespace TH11 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 0, 80 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore { TH_SCORE, 0, 9999999990, 10, 100000000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH_FAITH, 0, 999990, 10, 100000 };
+        Gui::GuiCombo mSpellCategory { TH11_SPELL_CATEGORY, TH11_TYPE_SELECT };
 
         Gui::GuiDrag<float, ImGuiDataType_Float> mBossX { TH_BOSSX, -140.0f, 140.0f, 1.0f, 100.0f };
         Gui::GuiDrag<float, ImGuiDataType_Float> mBossY { TH_BOSSY, 80.0f, 176.0f, 1.0f, 100.0f };

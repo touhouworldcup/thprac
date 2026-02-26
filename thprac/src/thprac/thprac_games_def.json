@@ -1651,8 +1651,6 @@
       "TH_ATTACK": [ "攻击", "Attack", "弾幕" ],
       "TH_PROGRESS": [ "进度", "Progress", "進行度" ],
       "TH_BOTH_NORMAL": [ "都正常", "Both Normal", "両方とも正常" ],
-      "TH_HECATIA_RAGE": [ "赫卡提亚狂暴", "Hecatia Rage", "ヘカティアの怒り" ],
-      "TH_JUNKO_RAGE": [ "纯狐狂暴", "Junko Rage", "純子怒り" ],
       "TH_BOTH_RAGE": [ "夫妻双打", "Both Rage", "両方の怒り" ],
       "TH15_ST3_NORMAL1_TYPE_NORMAL": [ "正常", "normal", "normal" ],
       "TH15_ST3_NORMAL1_TYPE_FORCE_WAVE_2": [ "强制第二波", "force wave2", "force wave2" ],
@@ -5009,6 +5007,34 @@
       "TH11_MARISAB_WOOD":  [ "木符", "Wood",  "木符" ],
       "TH11_MARISAB_METAL": [ "金符", "Metal", "金符" ],
       "TH11_MARISAB_EARTH": [ "土符", "Earth", "土符" ],
+	  "TH11_SPELL_CATEGORY": [ "符卡类别", "Spell Cat.", "スペルカテゴリー" ], 
+      "TH11_SELECTED_SHOTTYPE": [ "当前机体", "Selected Shottype", "選択した機体" ],
+      "TH11_RA": [ "梦A", "Yakumo Yukari", "八云　紫" ],
+      "TH11_RB": [ "梦B", "Ibuki Suika", "伊吹　萃香" ],
+      "TH11_RC": [ "梦C", "Shameimaru Aya", "射命丸　文" ],
+      "TH11_MA": [ "魔A", "Alice Margatroid", "アリス・マーガトロイド" ],
+      "TH11_MB": [ "魔B", "Patchouli Knowledge", "パチュリー・ノーレッジ" ],
+      "TH11_MC": [ "魔C", "Kawasiro Nitori", "河城　にとり" ],
+      "TH11_SATORI1": [ "回忆「恐怖的回忆」", "Recollection \"Terrible Souvenir\"", "想起「テリブルスーヴニール」" ], 
+      "TH11_SATORI2": [ "回忆「恐怖催眠术」", "Recollection \"Terrifying Hypnotism\"", "想起「恐怖催眠術」" ], 
+      "TH11_YUKARI1": [ "回忆「二重黑死蝶」", "Recollection \"Double Black Death Butterfly\"", "想起「二重黒死蝶」" ],
+      "TH11_YUKARI2": [ "回忆「飞行虫之巢」", "Recollection \"Flying Insect's Nest\"", "想起「飛行虫ネスト」" ],
+      "TH11_YUKARI3": [ "回忆「波与粒的境界」", "Recollection \"Border of Wave & Particle\"", "想起「波と粒の境界」" ],
+      "TH11_SUIKA1": [ "回忆「户隐山之投」", "Recollection \"Mt. Togakushi Toss\"", "想起「戸隠山投げ」" ],
+      "TH11_SUIKA2": [ "回忆「百万鬼夜行」", "Recollection \"Night Parade of a Million Demons\"", "想起「百万鬼夜行」" ],
+      "TH11_SUIKA3": [ "回忆「蒙蒙迷雾」", "Recollection \"Deep Fog Labyrinth\"", "想起「濛々迷霧」" ],
+      "TH11_AYA1": [ "回忆「风神木叶隐身术」", "Recollection \"Wind God's Leaf-Veiling\"", "想起「風神木の葉隠れ」" ],
+      "TH11_AYA2": [ "回忆「天狗巨暴流」", "Recollection \"Tengu's Macroburst\"", "想起「天狗のマクロバースト」" ],
+      "TH11_AYA3": [ "回忆「鸟居旋风」", "Recollection \"Torii Whorl-Wind\"", "想起「鳥居つむじ風」" ],
+      "TH11_ALICE1": [ "回忆「春之京都人偶」", "Recollection \"Spring Kyoto Dolls\"", "想起「春の京人形」" ],
+      "TH11_ALICE2": [ "回忆「稻草人偶敢死队」", "Recollection \"Straw Doll Kamikaze\"", "想起「ストロードールカミカゼ」" ],
+      "TH11_ALICE3": [ "回忆「回归虚无」", "Recollection \"Return Inanimateness\"", "想起「リターンイナニメトネス」" ],
+      "TH11_PATCHOULI1": [ "回忆「水银之毒」", "Recollection \"Mercury Poison\"", "想起「マーキュリポイズン」" ],
+      "TH11_PATCHOULI2": [ "回忆「水精公主」", "Recollection \"Princess Undine\"", "想起「プリンセスウンディネ」" ],
+      "TH11_PATCHOULI3": [ "回忆「贤者之石」", "Recollection \"Philosopher's Stone\"", "想起「賢者の石」" ],
+      "TH11_NITORI1": [ "回忆「延展手臂」", "Recollection \"Extending Arm\"", "想起「のびーるアーム」" ],
+      "TH11_NITORI2": [ "回忆「河童之河口浪潮」", "Recollection \"Kappa's Pororoca\"", "想起「河童のポロロッカ」" ],
+      "TH11_NITORI3": [ "回忆「粼粼水底之心伤」", "Recollection \"Trauma in the Glimmering Depths\"", "想起「光り輝く水底のトラウマ」" ],
 	  
 	  "TH_11_DEFAULT_START": [ "默认", "default start", "default start" ],
 	  "TH_11_INIT_POS_CHANGE": [ "修改初始位置", "init pos change", "init pos change" ],
@@ -5579,6 +5605,301 @@
         "spell": 1,
         "appearance": [ 7, 2, 18 ],
         "!X": [ "「地底蔷薇」", "\"Subterranean Rose\"", "「サブタレイニアンローズ」" ]
+      },
+	  
+      "TH11_ST4_RA_MID1": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [8, 1, 1], 
+        "!ENHL": "TH_MID_NS1"
+      },
+      "TH11_ST4_RA_MID2": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [8, 1, 2], 
+        "!ENHL": "TH_MID_NS2"
+      },
+      "TH11_ST4_RA_BOSS1": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [8, 2, 1], 
+        "!ENHL": "TH_END_NS1"
+      },
+      "TH11_ST4_RA_BOSS2": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [8, 2, 2], 
+        "!EN": "TH11_SATORI1",
+        "!HL": "TH11_SATORI2"
+      },
+      "TH11_ST4_RA_BOSS3": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [8, 2, 3], 
+        "!ENHL": "TH_END_NS2"
+      },
+      "TH11_ST4_RA_BOSS4": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [8, 2, 4], 
+        "!ENHL": "TH11_YUKARI1"
+      },
+      "TH11_ST4_RA_BOSS5": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [8, 2, 5], 
+        "!ENHL": "TH11_YUKARI2"
+      },
+      "TH11_ST4_RA_BOSS6": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [8, 2, 6], 
+        "!ENHL": "TH11_YUKARI3"
+      },
+      "TH11_ST4_RB_MID1": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [9, 1, 1], 
+        "!ENHL": "TH_MID_NS1"
+      },
+      "TH11_ST4_RB_MID2": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [9, 1, 2], 
+        "!ENHL": "TH_MID_NS2"
+      },
+      "TH11_ST4_RB_BOSS1": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [9, 2, 1], 
+        "!ENHL": "TH_END_NS1"
+      },
+      "TH11_ST4_RB_BOSS2": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [9, 2, 2], 
+        "!EN": "TH11_SATORI1",
+        "!HL": "TH11_SATORI2"
+      },
+      "TH11_ST4_RB_BOSS3": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [9, 2, 3], 
+        "!ENHL": "TH_END_NS2"
+      },
+      "TH11_ST4_RB_BOSS4": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [9, 2, 4], 
+        "!ENHL": "TH11_SUIKA1"
+      },
+      "TH11_ST4_RB_BOSS5": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [9, 2, 5], 
+        "!ENHL": "TH11_SUIKA2"
+      },
+      "TH11_ST4_RB_BOSS6": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [9, 2, 6], 
+        "!ENHL": "TH11_SUIKA3"
+      },
+      "TH11_ST4_RC_MID1": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [10, 1, 1], 
+        "!ENHL": "TH_MID_NS1"
+      },
+      "TH11_ST4_RC_MID2": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [10, 1, 2], 
+        "!ENHL": "TH_MID_NS2"
+      },
+      "TH11_ST4_RC_BOSS1": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [10, 2, 1], 
+        "!ENHL": "TH_END_NS1"
+      },
+      "TH11_ST4_RC_BOSS2": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [10, 2, 2], 
+        "!EN": "TH11_SATORI1",
+        "!HL": "TH11_SATORI2"
+      },
+      "TH11_ST4_RC_BOSS3": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [10, 2, 3], 
+        "!ENHL": "TH_END_NS2"
+      },
+      "TH11_ST4_RC_BOSS4": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [10, 2, 4], 
+        "!ENHL": "TH11_AYA1"
+      },
+      "TH11_ST4_RC_BOSS5": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [10, 2, 5], 
+        "!ENHL": "TH11_AYA2"
+      },
+      "TH11_ST4_RC_BOSS6": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [10, 2, 6], 
+        "!ENHL": "TH11_AYA3"
+      },
+      "TH11_ST4_MA_MID1": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [11, 1, 1], 
+        "!ENHL": "TH_MID_NS1"
+      },
+      "TH11_ST4_MA_MID2": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [11, 1, 2], 
+        "!ENHL": "TH_MID_NS2"
+      },
+      "TH11_ST4_MA_BOSS1": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [11, 2, 1], 
+        "!ENHL": "TH_END_NS1"
+      },
+      "TH11_ST4_MA_BOSS2": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [11, 2, 2], 
+        "!EN": "TH11_SATORI1",
+        "!HL": "TH11_SATORI2"
+      },
+      "TH11_ST4_MA_BOSS3": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [11, 2, 3], 
+        "!ENHL": "TH_END_NS2"
+      },
+      "TH11_ST4_MA_BOSS4": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [11, 2, 4], 
+        "!ENHL": "TH11_ALICE1"
+      },
+      "TH11_ST4_MA_BOSS5": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [11, 2, 5], 
+        "!ENHL": "TH11_ALICE2"
+      },
+      "TH11_ST4_MA_BOSS6": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [11, 2, 6], 
+        "!ENHL": "TH11_ALICE3"
+      },
+      "TH11_ST4_MB_MID1": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [12, 1, 1], 
+        "!ENHL": "TH_MID_NS1"
+      },
+      "TH11_ST4_MB_MID2": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [12, 1, 2], 
+        "!ENHL": "TH_MID_NS2"
+      },
+      "TH11_ST4_MB_BOSS1": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [12, 2, 1], 
+        "!ENHL": "TH_END_NS1"
+      },
+      "TH11_ST4_MB_BOSS2": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [12, 2, 2], 
+        "!EN": "TH11_SATORI1",
+        "!HL": "TH11_SATORI2"
+      },
+      "TH11_ST4_MB_BOSS3": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [12, 2, 3], 
+        "!ENHL": "TH_END_NS2"
+      },
+      "TH11_ST4_MB_BOSS4": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [12, 2, 4], 
+        "!ENHL": "TH11_PATCHOULI1"
+      },
+      "TH11_ST4_MB_BOSS5": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [12, 2, 5], 
+        "!ENHL": "TH11_PATCHOULI2"
+      },
+      "TH11_ST4_MB_BOSS6": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [12, 2, 6], 
+        "!ENHL": "TH11_PATCHOULI3"
+      },
+      "TH11_ST4_MC_MID1": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [13, 1, 1], 
+        "!ENHL": "TH_MID_NS1"
+      },
+      "TH11_ST4_MC_MID2": {
+        "bgm": 0,
+        "spell": 0,
+        "appearance": [13, 1, 2], 
+        "!ENHL": "TH_MID_NS2"
+      },
+      "TH11_ST4_MC_BOSS1": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [13, 2, 1], 
+        "!ENHL": "TH_END_NS1"
+      },
+      "TH11_ST4_MC_BOSS2": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [13, 2, 2], 
+        "!EN": "TH11_SATORI1",
+        "!HL": "TH11_SATORI2"
+      },
+      "TH11_ST4_MC_BOSS3": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [13, 2, 3], 
+        "!ENHL": "TH_END_NS2"
+      },
+      "TH11_ST4_MC_BOSS4": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [13, 2, 4], 
+        "!ENHL": "TH11_NITORI1"
+      },
+      "TH11_ST4_MC_BOSS5": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [13, 2, 5], 
+        "!ENHL": "TH11_NITORI2"
+      },
+      "TH11_ST4_MC_BOSS6": {
+        "bgm": 1,
+        "spell": 0,
+        "appearance": [13, 2, 6], 
+        "!ENHL": "TH11_NITORI3"
       }
     },
 
@@ -5609,7 +5930,16 @@
           "TH11_MARISAB_WOOD",
           "TH11_MARISAB_METAL",
           "TH11_MARISAB_EARTH"
-		]
+		],
+      "TH11_TYPE_SELECT": [
+        "TH11_SELECTED_SHOTTYPE",
+        "TH11_RA",
+        "TH11_RB",
+        "TH11_RC",
+        "TH11_MA",
+        "TH11_MB",
+        "TH11_MC"
+      ]
     }
   },
 
@@ -8324,7 +8654,12 @@
       "TH15_ILT_3": [ "章节六（三吴克）", "Chapter 6", "チャプター 6" ],
       "TH15_ILT_4": [ "章节七（激光阵）", "Chapter 7", "チャプター 7" ],
       "TH15_ILT_5": [ "章节八（太田飞行阵）", "Chapter 8", "チャプター 8" ],
-      "TH15_ILT_6": [ "章节九", "Chapter 9", "チャプター 9" ]
+      "TH15_ILT_6": [ "章节九", "Chapter 9", "チャプター 9" ],
+      "TH15_HECATIA_RAGE": [ "赫卡提亚发狂", "Hecatia Rage", "ヘカティアの怒り" ],
+      "TH15_JUNKO_RAGE": [ "纯狐发狂", "Junko Rage", "純狐怒り" ],
+      "TH15_PH_BLUE": [ "蓝阶段", "Blue Phase", "青段階" ],
+      "TH15_PH_GREEN": [ "绿阶段", "Green Phase", "緑段階" ],
+      "TH15_PH_RED": [ "红阶段", "Red Phase", "赤段階" ]
     },
 
     "sections": {
@@ -8817,8 +9152,13 @@
       "TH15_SPELL_PHASE_EXTRA_LAST": [
         "TH_BOTH_NORMAL",
         "TH_BOTH_RAGE",
-        "TH_HECATIA_RAGE",
-        "TH_JUNKO_RAGE"
+        "TH15_HECATIA_RAGE",
+        "TH15_JUNKO_RAGE"
+      ],
+      "TH15_SPELL_PHASE_EXTRA_TIMEOUT": [
+        "TH15_PH_BLUE",
+        "TH15_PH_GREEN",
+        "TH15_PH_RED"
       ],
 	  "TH15_AB_5PHASE": [
         "TH_P1",
