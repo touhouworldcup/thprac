@@ -9074,8 +9074,13 @@
       "TH18_PSYCO_CD": [ "菫子冷却", "Sumi CD", "菫子CD" ],
       "TH18_CYLINDER_CD": [ "瓶子冷却", "Bottle CD", "瓶CD" ],
       "TH18_RICEBALL_CD": [ "饭团冷却", "Rice CD", "麦飯CD" ],
-      "TH18_UNCAP": [ "移除分数限制", "Score uncap", "スコアキャップ解放" ],
-      "TH18_UNCAP_OVERWRITE": [ "...并写入replay中", "...and write into the replay", "...そしてリプレイに書き込みます " ],
+      "TH18_UNCAP": [ "移除分数限制", "Remove score cap", "スコアキャップ解放" ],
+      "TH18_UNCAP_DESC": [
+        "允许得分计数器超过 9,999,999,990。\n注意，即使得分超过通常的显示上限，游戏仍会自然地将得分值保存到回放中。",
+        "Allows the score counter to go past 9,999,999,990. Note that the game will naturally save score values into replays even if they go past their usual display limit.",
+        "スコアカウンターが 9,999,999,990 を超えるようになります。\nなお、得点が通常の表示上限を超えても、ゲームは自然に得点値をリプレイへ保存します。"
+      ],
+      "TH18_UNCAP_OVERRIDE": [ "不要将未封顶分数写入replay", "Don't write uncapped score into replay", "上限解除スコアをリプレイに書き込まない" ],
       "TH18_REPLAY_BONUS": [ "播放replay时计算关卡/Clear Bonus", "Add stage/clear bonus when playing replay", "リプレイを再生するときにステージ/クリアボーナスを加算する" ],
       "TH18_STATIC_MALLET": [ "在播放replay时，将万宝槌的金币转换率固定为11/30", "Fix Mallet gold conversion ratio to 11/30 when playing replay", "リプレイ再生時の小槌の金変換率を十一の三十に変更" ],
       "TH18_STATIC_MALLET_DESC": [
