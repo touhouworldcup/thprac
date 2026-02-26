@@ -27,12 +27,12 @@ bool LauncherSettingGet(const char* name, std::string& valueOut);
 bool LauncherSettingGet(const char* name, std::array<int, 2>& valueOut);
 void LauncherSettingGet_KeyBind();
 
-void LauncherSettingSet(const char* name, int& valueIn);
-void LauncherSettingSet(const char* name, unsigned int& valueIn);
-void LauncherSettingSet(const char* name, bool& valueIn);
-void LauncherSettingSet(const char* name, float& valueIn);
+void LauncherSettingSet(const char* name, int valueIn);
+void LauncherSettingSet(const char* name, unsigned int valueIn);
+void LauncherSettingSet(const char* name, bool valueIn);
+void LauncherSettingSet(const char* name, float valueIn);
 void LauncherSettingSet(const char* name, const char* valueIn);
-void LauncherSettingSet(const char* name, const std::string& valueIn);
+void LauncherSettingSet(const char* name, const std::string valueIn);
 void LauncherSettingSet_KeyBind();
 
 void LauncherCfgGuiUpd();

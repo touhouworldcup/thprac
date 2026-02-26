@@ -256,7 +256,7 @@ bool LauncherSettingGet(const char* name, std::string& valueOut)
         return false;
     }
 }
-void LauncherSettingSet(const char* name, int& valueIn)
+void LauncherSettingSet(const char* name, int valueIn)
 {
     auto& settingsJson = GetCfgSettingsJson();
     if (settingsJson.HasMember(name)) {
@@ -265,7 +265,7 @@ void LauncherSettingSet(const char* name, int& valueIn)
     JsonAddMember(settingsJson, name, valueIn, gCfgJson.GetAllocator());
     LauncherCfgWrite();
 }
-void LauncherSettingSet(const char* name, unsigned int& valueIn)
+void LauncherSettingSet(const char* name, unsigned int valueIn)
 {
     auto& settingsJson = GetCfgSettingsJson();
     if (settingsJson.HasMember(name)) {
@@ -274,7 +274,7 @@ void LauncherSettingSet(const char* name, unsigned int& valueIn)
     JsonAddMember(settingsJson, name, valueIn, gCfgJson.GetAllocator());
     LauncherCfgWrite();
 }
-void LauncherSettingSet(const char* name, bool& valueIn)
+void LauncherSettingSet(const char* name, bool valueIn)
 {
     auto& settingsJson = GetCfgSettingsJson();
     if (settingsJson.HasMember(name)) {
@@ -283,7 +283,7 @@ void LauncherSettingSet(const char* name, bool& valueIn)
     JsonAddMember(settingsJson, name, valueIn, gCfgJson.GetAllocator());
     LauncherCfgWrite();
 }
-void LauncherSettingSet(const char* name, float& valueIn)
+void LauncherSettingSet(const char* name, float valueIn)
 {
     auto& settingsJson = GetCfgSettingsJson();
     if (settingsJson.HasMember(name)) {
@@ -341,7 +341,7 @@ void LauncherSettingSet(const char* name, const char* valueIn) {
     JsonAddMemberA(settingsJson, name, valueIn, gCfgJson.GetAllocator());
     LauncherCfgWrite();
 }
-void LauncherSettingSet(const char* name, const std::string& valueIn)
+void LauncherSettingSet(const char* name, const std::string valueIn)
 {
     LauncherSettingSet(name, valueIn.c_str());
 }
