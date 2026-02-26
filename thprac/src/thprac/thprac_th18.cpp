@@ -59,6 +59,7 @@ namespace TH18 {
 
     enum funcs {
         SAVE_REPLAY = 0x461e90,
+        SET_MENU = 0x4646e0,
     };
     
     enum cards {
@@ -902,7 +903,7 @@ namespace TH18 {
     EHOOK_ST(th18_auto_restart, 0x458e40, 1, {
         // simulate an R press as soon as pause menu starts taking input
         if (GetMemContent(pCtx->Esi + 0x1f4) == 6) {
-            *((int32_t*)0x4ca21c) = 0x200000;
+            *((int32_t*)MENU_INPUT) = 0x200000;
             self->Disable();
         }
     });
@@ -1556,7 +1557,13 @@ namespace TH18 {
                 WriteFile(outputFile, rd.extraData, rd.extraSize, &bytesProcessed, nullptr);
                 CloseHandle(outputFile);
 
+                // OK checkbox & close replay menu to force a reload
                 MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
+                uintptr_t mainMenu = GetMemContent(MAIN_MENU_PTR);
+                if (mainMenu) {
+                    THGuiRep::singleton().State(1);
+                    asm_call<SET_MENU, Thiscall>(mainMenu, 1);
+                }
 
                 _builtin_free(repDataEncoded);
                 return true;
@@ -1794,7 +1801,6 @@ namespace TH18 {
                         }
 
                         if (hasFixOptions) {
-                            LoadedReplayData& mRepLoaded = THGuiRep::singleton().mSelectedRepData;
                             ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mSelectedRepName.c_str());
 
                             auto isAvailable = GetAvailability();
