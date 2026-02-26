@@ -2677,8 +2677,8 @@ namespace TH20 {
         case THPrac::TH20::TH20_ST1_BOSS3: {
             constexpr unsigned int st1bsNonSubCallOrd = 0x6dc + 0x18;
             constexpr unsigned int st1bsNon2InvulnCallVal = 0x133c + 0x10;
-            constexpr unsigned int st1bsNon2BossItemCallSomething = 0x1428 + 0x4; // 32th cringequit on me when
-            constexpr unsigned int st1bsNon2PlaySoundSomething = 0x1554 + 0x4; // I asked what these were so :shrug:
+            constexpr unsigned int st1bsNon2BossItemCallOp = 0x1428 + 0x4; // 32th cringequit on me when
+            constexpr unsigned int st1bsNon2PlaySoundOp = 0x1554 + 0x4; // I asked what these were so :shrug:
             constexpr unsigned int st1bsNon2PostLifeMarker = 0x16c0;
             constexpr unsigned int st1bsNon2PostWait = 0x17ac; // 0x1608 previously
 
@@ -2687,8 +2687,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st1bsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
             ecl << pair { st1bsNon2InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st1bsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st1bsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st1bsNon2BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st1bsNon2PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ECLJump(ecl, st1bsNon2PostLifeMarker, st1bsNon2PostWait, 0); // Skip wait
             break;
         }
@@ -2734,8 +2734,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST2_BOSS3: {
             constexpr unsigned int st2bsNon2InvulnCallVal = 0x12a8 + 0x10;
-            constexpr unsigned int st2bsNon2BossItemCallSomething = 0x1394 + 0x4;
-            constexpr unsigned int st2bsNon2PlaySoundSomething = 0x14c0 + 0x4;
+            constexpr unsigned int st2bsNon2BossItemCallOp = 0x1394 + 0x4;
+            constexpr unsigned int st2bsNon2PlaySoundOp = 0x14c0 + 0x4;
             constexpr unsigned int st2bsNon2PostLifeMarker = 0x162c;
             constexpr unsigned int st2bsNon2PostWait = 0x1718;
 
@@ -2744,8 +2744,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st2bsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
             ecl << pair { st2bsNon2InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st2bsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st2bsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st2bsNon2BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st2bsNon2PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ECLJump(ecl, st2bsNon2PostLifeMarker, st2bsNon2PostWait, 0); // Skip wait
             break;
         }
@@ -2786,8 +2786,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST3_BOSS3: {
             constexpr unsigned int st3bsNon2InvulnCallVal = 0x127c + 0x10;
-            constexpr unsigned int st3bsNon2BossItemCallSomething = 0x1368 + 0x4;
-            constexpr unsigned int st3bsNon2PlaySoundSomething = 0x1494 + 0x4;
+            constexpr unsigned int st3bsNon2BossItemCallOp = 0x1368 + 0x4;
+            constexpr unsigned int st3bsNon2PlaySoundOp = 0x1494 + 0x4;
             constexpr unsigned int st3bsNon2PostLifeMarker = 0x1600;
             constexpr unsigned int st3bsNon2PostWait = 0x172c;
 
@@ -2796,8 +2796,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st3bsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
             ecl << pair { st3bsNon2InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st3bsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st3bsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st3bsNon2BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st3bsNon2PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ECLJump(ecl, st3bsNon2PostLifeMarker, st3bsNon2PostWait, 0); // Skip wait
             break;
         }
@@ -2812,8 +2812,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST3_BOSS5: {
             constexpr unsigned int st3bsNon3InvulnCallVal = 0x1f28 + 0x10;
-            constexpr unsigned int st3bsNon3BossItemCallSomething = 0x2014 + 0x4;
-            constexpr unsigned int st3bsNon3PlaySoundSomething = 0x2140 + 0x4;
+            constexpr unsigned int st3bsNon3BossItemCallOp = 0x2014 + 0x4;
+            constexpr unsigned int st3bsNon3PlaySoundOp = 0x2140 + 0x4;
             constexpr unsigned int st3bsNon3PostLifeCount = 0x22c0; // is this right? life count = 0? zun...
             constexpr unsigned int st3bsNon3PostWait = 0x23ec;
 
@@ -2822,8 +2822,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st3bsNonSubCallOrd, (int8_t)0x33 }; // Set nonspell ID in sub call to '3'
             ecl << pair { st3bsNon3InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st3bsNon3BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st3bsNon3PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st3bsNon3BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st3bsNon3PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ECLJump(ecl, st3bsNon3PostLifeCount, st3bsNon3PostWait, 0); // Skip wait
             break;
         }
@@ -2856,8 +2856,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST4_MID2: {
             constexpr unsigned int st4mbsNonSubCallOrd = 0x4a4 + 0x19;
-            constexpr unsigned int st4mbsNon2BossItemCallSomething = 0xd40 + 0x4;
-            constexpr unsigned int st4mbsNon2PlaySoundSomething = 0xe6c + 0x4;
+            constexpr unsigned int st4mbsNon2BossItemCallOp = 0xd40 + 0x4;
+            constexpr unsigned int st4mbsNon2PlaySoundOp = 0xe6c + 0x4;
             constexpr unsigned int st4mbsNon2PreWait = 0x1028;
             constexpr unsigned int st4mbsNon2PostWait = 0x103c;
             constexpr unsigned int st4mbsNon2InvincTime = 0xc54 + 0x10;
@@ -2868,8 +2868,8 @@ namespace TH20 {
             ecl.SetFile(3);
             ECLJump(ecl, st4mbsPreChargeAnim, st4mbsPostChargeAnim, 0);
             ecl << pair { st4mbsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
-            ecl << pair { st4mbsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st4mbsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st4mbsNon2BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st4mbsNon2PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ecl << pair { st4mbsNon2BulletClear, (int16_t)0 }; // Disable bullet clear
             ECLJump(ecl, st4mbsNon2PreWait, st4mbsNon2PostWait, 0); // Skip wait (100f)
             ecl << pair { st4mbsNon2InvincTime, (int16_t)20 }; // Reduce invincible timer by time skipped (120f->20f)
@@ -2896,8 +2896,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST4_BOSS3: {
             constexpr unsigned int st4bsNon2InvulnCallVal = 0x1540 + 0x10;
-            constexpr unsigned int st4bsNon2BossItemCallSomething = 0x162c + 0x4;
-            constexpr unsigned int st4bsNon2PlaySoundSomething = 0x1758 + 0x4;
+            constexpr unsigned int st4bsNon2BossItemCallOp = 0x162c + 0x4;
+            constexpr unsigned int st4bsNon2PlaySoundOp = 0x1758 + 0x4;
             constexpr unsigned int st4bsNon2PostLifeMarker = 0x18c4;
             constexpr unsigned int st4bsNon2PostWait1 = 0x1970;
             constexpr unsigned int st4bsNon2PostInit = 0x19e8;
@@ -2908,8 +2908,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st4bsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
             ecl << pair { st4bsNon2InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st4bsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st4bsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st4bsNon2BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st4bsNon2PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ECLJump(ecl, st4bsNon2PostLifeMarker, st4bsNon2PostWait1, 0); // Skip wait 1
             ECLJump(ecl, st4bsNon2PostInit, st4bsNon2PostWait2, 0); // Skip wait 2
             break;
@@ -2924,8 +2924,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST4_BOSS5: {
             constexpr unsigned int st4bsNon3InvulnCallVal = 0x2584 + 0x10;
-            constexpr unsigned int st4bsNon3BossItemCallSomething = 0x2670 + 0x4;
-            constexpr unsigned int st4bsNon3PlaySoundSomething = 0x279c + 0x4;
+            constexpr unsigned int st4bsNon3BossItemCallOp = 0x2670 + 0x4;
+            constexpr unsigned int st4bsNon3PlaySoundOp = 0x279c + 0x4;
             constexpr unsigned int st4bsNon3PostLifeCount = 0x291c;
             constexpr unsigned int st4bsNon3PostWait1 = 0x29c8;
             constexpr unsigned int st4bsNon3PostInit = 0x2a40;
@@ -2936,8 +2936,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st4bsNonSubCallOrd, (int8_t)0x33 }; // Set nonspell ID in sub call to '3'
             ecl << pair { st4bsNon3InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st4bsNon3BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st4bsNon3PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st4bsNon3BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st4bsNon3PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ECLJump(ecl, st4bsNon3PostLifeCount, st4bsNon3PostWait1, 0); // Skip wait 1
             ECLJump(ecl, st4bsNon3PostInit, st4bsNon3PostWait2, 0); // Skip wait 2
             break;
@@ -2994,8 +2994,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST5_BOSS3: {
             constexpr unsigned int st5bsNon2InvulnCallVal = 0x1470 + 0x10;
-            constexpr unsigned int st5bsNon2BossItemCallSomething = 0x155c + 0x4;
-            constexpr unsigned int st5bsNon2PlaySoundSomething = 0x1688 + 0x4;
+            constexpr unsigned int st5bsNon2BossItemCallOp = 0x155c + 0x4;
+            constexpr unsigned int st5bsNon2PlaySoundOp = 0x1688 + 0x4;
             constexpr unsigned int st5bsNon2PostLifeMarker = 0x17f4;
             constexpr unsigned int st5bsNon2PostWait = 0x18a0;
 
@@ -3004,8 +3004,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st5bsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
             ecl << pair { st5bsNon2InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st5bsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st5bsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st5bsNon2BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st5bsNon2PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ECLJump(ecl, st5bsNon2PostLifeMarker, st5bsNon2PostWait, 0); // Skip wait
             break;
         }
@@ -3020,8 +3020,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST5_BOSS5: {
             constexpr unsigned int st5bsNon3InvulnCallVal = 0x2498 + 0x10;
-            constexpr unsigned int st5bsNon3BossItemCallSomething = 0x2584 + 0x4;
-            constexpr unsigned int st5bsNon3PlaySoundSomething = 0x26b0 + 0x4;
+            constexpr unsigned int st5bsNon3BossItemCallOp = 0x2584 + 0x4;
+            constexpr unsigned int st5bsNon3PlaySoundOp = 0x26b0 + 0x4;
             constexpr unsigned int st5bsNon3PostLifeCount = 0x2830;
             constexpr unsigned int st5bsNon3PostWait = 0x28c8;
 
@@ -3030,8 +3030,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st5bsNonSubCallOrd, (int8_t)0x33 }; // Set nonspell ID in sub call to '3'
             ecl << pair { st5bsNon3InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st5bsNon3BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st5bsNon3PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st5bsNon3BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st5bsNon3PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ECLJump(ecl, st5bsNon3PostLifeCount, st5bsNon3PostWait, 0); // Skip wait
             break;
         }
@@ -3071,8 +3071,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST6_BOSS3: {
             constexpr unsigned int st6bsNon2InvulnCallVal = 0x1448 + 0x10;
-            constexpr unsigned int st6bsNon2BossItemCallSomething = 0x1534 + 0x4;
-            constexpr unsigned int st6bsNon2PlaySoundSomething = 0x1660 + 0x4;
+            constexpr unsigned int st6bsNon2BossItemCallOp = 0x1534 + 0x4;
+            constexpr unsigned int st6bsNon2PlaySoundOp = 0x1660 + 0x4;
             constexpr unsigned int st6bsNon2PostProtectRange = 0x17e0;
             constexpr unsigned int st6bsNon2PostWait = 0x188c;
 
@@ -3081,8 +3081,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st6bsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
             ecl << pair { st6bsNon2InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st6bsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st6bsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st6bsNon2BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st6bsNon2PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ecl << pair { st6bsSetYPos, (float)128.0f }; // Fix boss starting too high
             ECLJump(ecl, st6bsNon2PostProtectRange, st6bsNon2PostWait, 0); // Skip wait
             break;
@@ -3097,8 +3097,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST6_BOSS5: {
             constexpr unsigned int st6bsNon3InvulnCallVal = 0x1ec8 + 0x10;
-            constexpr unsigned int st6bsNon3BossItemCallSomething = 0x21f8 + 0x4;
-            constexpr unsigned int st6bsNon3PlaySoundSomething = 0x1660 + 0x4;
+            constexpr unsigned int st6bsNon3BossItemCallOp = 0x21f8 + 0x4;
+            constexpr unsigned int st6bsNon3PlaySoundOp = 0x1660 + 0x4;
             constexpr unsigned int st6bsNon3PostLifeCount = 0x2300;
             constexpr unsigned int st6bsNon3PostWait = 0x2398;
 
@@ -3109,8 +3109,8 @@ namespace TH20 {
             ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
             ecl.SetFile(2);
             ecl << pair { st6bsNonSubCallOrd, (int8_t)0x33 }; // Set nonspell ID in sub call to '3'
-            ecl << pair { st6bsNon3BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st6bsNon3PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st6bsNon3BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st6bsNon3PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ecl << pair { st6bsSetYPos, (float)128.0f }; // Fix boss starting too high
             ECLJump(ecl, st6bsNon3PostLifeCount, st6bsNon3PostWait, 0); // Skip wait
             if (!thPracParam.dlg) {
@@ -3130,8 +3130,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST6_BOSS7: {
             constexpr unsigned int st6bsNon4InvulnCallVal = 0x2b78 + 0x10;
-            constexpr unsigned int st6bsNon4BossItemCallSomething = 0x2c64 + 0x4;
-            constexpr unsigned int st6bsNon4PlaySoundSomething = 0x2d90 + 0x4;
+            constexpr unsigned int st6bsNon4BossItemCallOp = 0x2c64 + 0x4;
+            constexpr unsigned int st6bsNon4PlaySoundOp = 0x2d90 + 0x4;
             constexpr unsigned int st6bsNon4PostProtectRange = 0x2f10;
             constexpr unsigned int st6bsNon4PostWait = 0x2fbc;
 
@@ -3140,8 +3140,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st6bsNonSubCallOrd, (int8_t)0x34 }; // Set nonspell ID in sub call to '4'
             ecl << pair { st6bsNon4InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st6bsNon4BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st6bsNon4PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st6bsNon4BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st6bsNon4PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ecl << pair { st6bsSetYPos, (float)144.0f }; // Fix boss starting too high
             ECLJump(ecl, st6bsNon4PostProtectRange, st6bsNon4PostWait, 0); // Skip wait
             break;
@@ -3157,8 +3157,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST6_BOSS9: {
             constexpr unsigned int st6bsNon5InvulnCallVal = 0x38a0 + 0x10;
-            constexpr unsigned int st6bsNon5BossItemCallSomething = 0x39a4 + 0x4;
-            constexpr unsigned int st6bsNon5PlaySoundSomething = 0x3ad0 + 0x4;
+            constexpr unsigned int st6bsNon5BossItemCallOp = 0x39a4 + 0x4;
+            constexpr unsigned int st6bsNon5PlaySoundOp = 0x3ad0 + 0x4;
             constexpr unsigned int st6bsNon5PostLifeMarker = 0x3cf8;
             constexpr unsigned int st6bsNon5PostWait = 0x3db8;
 
@@ -3169,8 +3169,8 @@ namespace TH20 {
             ECLJump(ecl, st6PostMaple + stdInterruptSize, st6BossCreateCall, 60);
             ecl.SetFile(2);
             ecl << pair { st6bsNonSubCallOrd, (int8_t)0x35 }; // Set nonspell ID in sub call to '5'
-            ecl << pair { st6bsNon5BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st6bsNon5PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st6bsNon5BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st6bsNon5PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ecl << pair { st6bsSetYPos, (float)192.0f }; // Fix boss starting too high
             ECLJump(ecl, st6bsNon5PostLifeMarker, st6bsNon5PostWait, 0); // Skip wait
             if (!thPracParam.dlg) {
@@ -3271,8 +3271,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST7_BOSS3: {
             constexpr unsigned int st7bsNon2InvulnCallVal = 0x1ba4 + 0x10;
-            constexpr unsigned int st7bsNon2BossItemCallSomething = 0x1c88 + 0x4;
-            constexpr unsigned int st7bsNon2PlaySoundSomething = 0x1db4 + 0x4;
+            constexpr unsigned int st7bsNon2BossItemCallOp = 0x1c88 + 0x4;
+            constexpr unsigned int st7bsNon2PlaySoundOp = 0x1db4 + 0x4;
             constexpr unsigned int st7bsNon2PostProtectRange = 0x1f74;
             constexpr unsigned int st7bsNon2PostWait = 0x2020;
 
@@ -3281,8 +3281,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st7bsNonSubCallOrd, (int8_t)0x32 }; // Set nonspell ID in sub call to '2'
             ecl << pair { st7bsNon2InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st7bsNon2BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st7bsNon2PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st7bsNon2BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st7bsNon2PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ecl << pair { st7bsSetYPos, (float)128.0f }; // Avoid boss move
             ECLJump(ecl, st7bsNon2PostProtectRange, st7bsNon2PostWait, 0); // Skip wait
             break;
@@ -3297,8 +3297,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST7_BOSS5: {
             constexpr unsigned int st7bsNon3InvulnCallVal = 0x2618 + 0x10;
-            constexpr unsigned int st7bsNon3BossItemCallSomething = 0x26fc + 0x4;
-            constexpr unsigned int st7bsNon3PlaySoundSomething = 0x2828 + 0x4;
+            constexpr unsigned int st7bsNon3BossItemCallOp = 0x26fc + 0x4;
+            constexpr unsigned int st7bsNon3PlaySoundOp = 0x2828 + 0x4;
             constexpr unsigned int st7bsNon3PostProtectRange = 0x29e8;
             constexpr unsigned int st7bsNon3PostWait = 0x2a94;
 
@@ -3307,8 +3307,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st7bsNonSubCallOrd, (int8_t)0x33 }; // Set nonspell ID in sub call to '3'
             ecl << pair { st7bsNon3InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st7bsNon3BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st7bsNon3PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st7bsNon3BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st7bsNon3PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ecl << pair { st7bsSetYPos, (float)128.0f }; // Avoid boss move
             ECLJump(ecl, st7bsNon3PostProtectRange, st7bsNon3PostWait, 0); // Skip wait
             break;
@@ -3323,8 +3323,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST7_BOSS7: {
             constexpr unsigned int st7bsNon4InvulnCallVal = 0x308c + 0x10;
-            constexpr unsigned int st7bsNon4BossItemCallSomething = 0x3170 + 0x4;
-            constexpr unsigned int st7bsNon4PlaySoundSomething = 0x329c + 0x4;
+            constexpr unsigned int st7bsNon4BossItemCallOp = 0x3170 + 0x4;
+            constexpr unsigned int st7bsNon4PlaySoundOp = 0x329c + 0x4;
             constexpr unsigned int st7bsNon4PostProtectRange = 0x345c;
             constexpr unsigned int st7bsNon4PostWait = 0x3508;
 
@@ -3333,8 +3333,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st7bsNonSubCallOrd, (int8_t)0x34 }; // Set nonspell ID in sub call to '4'
             ecl << pair { st7bsNon4InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st7bsNon4BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st7bsNon4PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st7bsNon4BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st7bsNon4PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ecl << pair { st7bsSetYPos, (float)128.0f }; // Avoid boss move
             ECLJump(ecl, st7bsNon4PostProtectRange, st7bsNon4PostWait, 0); // Skip wait
             break;
@@ -3349,8 +3349,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST7_BOSS9: {
             constexpr unsigned int st7bsNon5InvulnCallVal = 0x3b00 + 0x10;
-            constexpr unsigned int st7bsNon5BossItemCallSomething = 0x3be4 + 0x4;
-            constexpr unsigned int st7bsNon5PlaySoundSomething = 0x3d10 + 0x4;
+            constexpr unsigned int st7bsNon5BossItemCallOp = 0x3be4 + 0x4;
+            constexpr unsigned int st7bsNon5PlaySoundOp = 0x3d10 + 0x4;
             constexpr unsigned int st7bsNon5PostProtectRange = 0x3e90;
             constexpr unsigned int st7bsNon5PostWait = 0x3f7c;
 
@@ -3359,8 +3359,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st7bsNonSubCallOrd, (int8_t)0x35 }; // Set nonspell ID in sub call to '5'
             ecl << pair { st7bsNon5InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st7bsNon5BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st7bsNon5PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st7bsNon5BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st7bsNon5PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ecl << pair { st7bsSetYPos, (float)128.0f }; // Avoid boss move
             ECLJump(ecl, st7bsNon5PostProtectRange, st7bsNon5PostWait, 0); // Skip wait
             break;
@@ -3376,8 +3376,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST7_BOSS11: {
             constexpr unsigned int st7bsNon6InvulnCallVal = 0x4574 + 0x10;
-            constexpr unsigned int st7bsNon6BossItemCallSomething = 0x4658 + 0x4;
-            constexpr unsigned int st7bsNon6PlaySoundSomething = 0x4784 + 0x4;
+            constexpr unsigned int st7bsNon6BossItemCallOp = 0x4658 + 0x4;
+            constexpr unsigned int st7bsNon6PlaySoundOp = 0x4784 + 0x4;
             constexpr unsigned int st7bsNon6PostProtectRange = 0x4944;
             constexpr unsigned int st7bsNon6PostWait = 0x49f0;
 
@@ -3386,8 +3386,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st7bsNonSubCallOrd, (int8_t)0x36 }; // Set nonspell ID in sub call to '6'
             ecl << pair { st7bsNon6InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st7bsNon6BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st7bsNon6PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st7bsNon6BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st7bsNon6PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ecl << pair { st7bsSetYPos, (float)128.0f }; // Avoid boss move
             ECLJump(ecl, st7bsNon6PostProtectRange, st7bsNon6PostWait, 0); // Skip wait
             break;
@@ -3403,8 +3403,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST7_BOSS13: {
             constexpr unsigned int st7bsNon7InvulnCallVal = 0x4fe8 + 0x10;
-            constexpr unsigned int st7bsNon7BossItemCallSomething = 0x50cc + 0x4;
-            constexpr unsigned int st7bsNon7PlaySoundSomething = 0x51f8 + 0x4;
+            constexpr unsigned int st7bsNon7BossItemCallOp = 0x50cc + 0x4;
+            constexpr unsigned int st7bsNon7PlaySoundOp = 0x51f8 + 0x4;
             constexpr unsigned int st7bsNon7PostProtectRange = 0x53b8;
             constexpr unsigned int st7bsNon7PostWait = 0x5464;
 
@@ -3413,8 +3413,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st7bsNonSubCallOrd, (int8_t)0x37 }; // Set nonspell ID in sub call to '7'
             ecl << pair { st7bsNon7InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st7bsNon7BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st7bsNon7PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st7bsNon7BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st7bsNon7PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ecl << pair { st7bsSetYPos, (float)128.0f }; // Avoid boss move
             ECLJump(ecl, st7bsNon7PostProtectRange, st7bsNon7PostWait, 0); // Skip wait
             break;
@@ -3430,8 +3430,8 @@ namespace TH20 {
         }
         case THPrac::TH20::TH20_ST7_BOSS15: {
             constexpr unsigned int st7bsNon8InvulnCallVal = 0x5a5c + 0x10;
-            constexpr unsigned int st7bsNon8BossItemCallSomething = 0x5b40 + 0x4;
-            constexpr unsigned int st7bsNon8PlaySoundSomething = 0x5c6c + 0x4;
+            constexpr unsigned int st7bsNon8BossItemCallOp = 0x5b40 + 0x4;
+            constexpr unsigned int st7bsNon8PlaySoundOp = 0x5c6c + 0x4;
             constexpr unsigned int st7bsNon8PostProtectRange = 0x5e2c;
             constexpr unsigned int st7bsNon8PostWait = 0x5ef8;
 
@@ -3440,8 +3440,8 @@ namespace TH20 {
             ecl.SetFile(2);
             ecl << pair { st7bsNonSubCallOrd, (int8_t)0x38 }; // Set nonspell ID in sub call to '8'
             ecl << pair { st7bsNon8InvulnCallVal, (int16_t)0 }; // Disable Invincible
-            ecl << pair { st7bsNon8BossItemCallSomething, (int16_t)0 }; // Disable item drops
-            ecl << pair { st7bsNon8PlaySoundSomething, (int16_t)0 }; // Disable sound effect
+            ecl << pair { st7bsNon8BossItemCallOp, (int16_t)0 }; // Disable item drops
+            ecl << pair { st7bsNon8PlaySoundOp, (int16_t)0 }; // Disable sound effect
             ecl << pair { st7bsSetYPos, (float)128.0f }; // Avoid boss move
             ECLJump(ecl, st7bsNon8PostProtectRange, st7bsNon8PostWait, 0); // Skip wait
             break;
