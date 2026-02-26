@@ -292,3 +292,35 @@ void debug_msg(const char* title, const char* format, ...)
     MessageBoxA(nullptr, buffer, title, 0);
     delete[] buffer;
 }
+
+const char* FormatNumberWithCommas(int64_t val)
+{
+    static char buffer[32];
+    static char temp[32];
+
+    sprintf(temp, "%lld", val);
+    int len = strlen(temp);
+    int commas = (len - (val < 0 ? 2 : 1)) / 3;
+
+    char* dst = buffer + len + commas;
+    *dst-- = '\0';
+
+    int group = 0;
+
+    for (int i = len - 1; i >= 0; --i) {
+        if (temp[i] == '-') {
+            *dst-- = '-';
+            break;
+        }
+
+        if (group == 3) {
+            *dst-- = ',';
+            group = 0;
+        }
+
+        *dst-- = temp[i];
+        ++group;
+    }
+
+    return buffer;
+}

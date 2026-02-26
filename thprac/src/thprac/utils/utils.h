@@ -85,3 +85,4 @@ privDefer<F> defer_func(F f)
 
 void memswap(void* buf1_, void* buf2_, unsigned int len);
 void debug_msg(const char* title, const char* format, ...);
+const char* FormatNumberWithCommas(long long val);
