@@ -4,6 +4,10 @@
 
 namespace THPrac {
 namespace TH128 {
+    enum addr {
+        PLAYER_PTR = 0x4B8A80,
+    };
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -572,11 +576,11 @@ namespace TH128 {
 
         virtual void OnPreUpdate() override
         {
-            if (*(DWORD*)(0x004B8A80)) {
+            if (GetMemContent(PLAYER_PTR)) {
                 GameUpdateInner(128);
             } else {
             }
-            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004B8A80)) {
+            if (*(THOverlay::singleton().mInGameInfo) && GetMemContent(PLAYER_PTR)) {
                 SetPos(516.0f, 226.0f);
                 SetSize(120.0f, 0.0f);
                 Open();
@@ -2371,7 +2375,7 @@ namespace TH128 {
         GameUpdateOuter(p, 128);
 
         bool drawCursor = THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen();
-        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004B8A80))
+        if (g_adv_igi_options.show_keyboard_monitor && GetMemContent(PLAYER_PTR))
             KeysHUD(128, { 256.0f, 0.0f }, { 0.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         GameGuiEnd(drawCursor);
     })

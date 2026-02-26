@@ -5,6 +5,12 @@
 
 namespace THPrac {
 namespace TH16 {
+    enum addrs {
+        CHARA_ADDR = 0x4A57A4,
+        SEASON_ADDR = 0x4A57AC,
+        PLAYER_PTR = 0x4a6ef8,
+    };
+
     int g_lock_timer = 0;
     bool g_lock_timer_flag = false;
 
@@ -587,12 +593,12 @@ namespace TH16 {
 
         virtual void OnPreUpdate() override
         {
-            if (*(DWORD*)(0x004A6EF8)) {
+            if (GetMemContent(PLAYER_PTR)) {
                 GameUpdateInner(16);
             } else {
             }
 
-            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004A6EF8)) {
+            if (*(THOverlay::singleton().mInGameInfo) && GetMemContent(PLAYER_PTR)) {
                 SetPosRel(900.0f / 1280.0f, 500.0f / 960.0f);
                 SetSizeRel(340.0f / 1280.0f, 0.0f);
                 Open();
@@ -2576,7 +2582,7 @@ namespace TH16 {
             }
         }
 
-        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004A6EF8))
+        if (g_adv_igi_options.show_keyboard_monitor && GetMemContent(PLAYER_PTR))
             KeysHUD(16, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         
         RenderLockTimer(p);

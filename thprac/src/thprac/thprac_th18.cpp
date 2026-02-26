@@ -40,6 +40,7 @@ namespace TH18 {
         CARD_DESC_LIST = 0x4c53c0,
         MUKADE_ADDR = 0x4cf2d4,
         WINDOW_PTR = 0x568c30,
+        PLAYER_PTR = 0x4cf410,
     };
     
     enum cards {
@@ -1001,11 +1002,11 @@ namespace TH18 {
 
         virtual void OnPreUpdate() override
         {
-            if (*(DWORD*)(0x004CF410)) {
+            if (GetMemContent(PLAYER_PTR)) {
                 GameUpdateInner(18);
             } else {
             }
-            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004CF410)) {
+            if (*(THOverlay::singleton().mInGameInfo) && GetMemContent(PLAYER_PTR)) {
                 SetPosRel(900.0f / 1280.0f, 840.0f / 960.0f);
                 SetSizeRel(340.0f / 1280.0f, 0.0f);
                 Open();
@@ -3294,7 +3295,7 @@ namespace TH18 {
             }
         }
 
-        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004CF410))
+        if (g_adv_igi_options.show_keyboard_monitor && GetMemContent(PLAYER_PTR))
             KeysHUD(18, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         
         RenderLockTimer(p);

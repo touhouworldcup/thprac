@@ -13,7 +13,11 @@ namespace TH10 {
     int g_rep_page = 0;
     const char chars_supported[] = "!\"#$%&' ()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
     enum ADDRS {
-        SOUND_MANAGER_ADDR = 0x492590
+        SOUND_MANAGER_ADDR = 0x492590,
+        DIFF_ADDR = 0x474C74,
+        CHARA_ADDR = 0x474C68,
+        SUBSHOT_ADDR = 0x474C6C,
+        PLAYER_PTR = 0x477834,
     };
     // Workaround for TH10's calling conventions
     // ecx: SOUND_MANAGER_PTR
@@ -600,10 +604,10 @@ namespace TH10 {
 
         virtual void OnPreUpdate() override
         {
-            if (*(DWORD*)(0x0477834)){
+            if (GetMemContent(PLAYER_PTR)) {
                 GameUpdateInner(10);
             }
-            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x0477834)) {
+            if (*(THOverlay::singleton().mInGameInfo) && GetMemContent(PLAYER_PTR)) {
                 SetPosRel(450.0f / 640.0f, 150.0f / 480.0f);
                 SetSizeRel(170.0f / 640.0f, 0.0f);
                 Open();
@@ -2693,7 +2697,7 @@ namespace TH10 {
 
         // move hint
         auto& adv_opt = THAdvOptWnd::singleton();
-        if (adv_opt.IsClosed() && g_mouse_move_hint && *(DWORD*)(0x477814)) {
+        if (adv_opt.IsClosed() && g_mouse_move_hint && GetMemContent(PLAYER_PTR)) {
             static struct
             {
                 Float2* pANM_pos;
@@ -2745,7 +2749,7 @@ namespace TH10 {
             }
         }
         SSS::SSS_Update(10);
-        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x0477834)){
+        if (g_adv_igi_options.show_keyboard_monitor && GetMemContent(PLAYER_PTR)) {
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
             KeysHUD(10, { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }

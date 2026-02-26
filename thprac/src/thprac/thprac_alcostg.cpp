@@ -4,6 +4,9 @@
 
 namespace THPrac {
 namespace Alcostg {
+    enum addrs {
+        PLAYER_PTR = 0x474194,
+    };
 
     static __forceinline void call_0x413ef0(uint16_t beer) {
 #ifndef __clang__

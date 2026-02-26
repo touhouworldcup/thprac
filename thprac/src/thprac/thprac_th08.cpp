@@ -10,10 +10,21 @@ namespace TH08 {
     bool g_show_bullet_hitbox=false;
     int g_lock_timer = 0;
 
-    enum ADDRS {
+     enum ADDRS {
+        SHOTTYPE_ADDR = 0x164d0b1,
+        DIFF_ADDR = 0x160f538,
         INPUT_ADDR = 0x164d528,
         GUI_ADDR = 0x160f428,
+        STAGE_PENDING_INTERRUPT = 0x4ea290,
+        SPELLCARD_ID_ADDR = 0x4EA678,
+        MISS_COUNT_ADDR = 0x0164CFA4,
+        BOMB_COUNT_ADDR = 0x0164CFA8,
+        DEATHBOMB_COUNT_ADDR = 0x0164CFAC,
+        GAMEMODE_ADDR = 0x17CE8B0,
+        GAMEMODE_NEXT_ADDR = 0x17CE8B4,
+        GAMEMODE_PREV_ADDR = 0x17CE8B8,
     };
+
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -764,7 +775,7 @@ namespace TH08 {
 
         virtual void OnPreUpdate() override
         {
-            DWORD gameState = *(DWORD*)(0x17CE8B4);
+            DWORD gameState = GetMemContent(GAMEMODE_ADDR);
             if (gameState == 2) {
                 GameUpdateInner(8);
             } else {
@@ -2510,7 +2521,7 @@ namespace TH08 {
         // show bullet hitbox
         if (g_show_bullet_hitbox) {
             DWORD mode = *(DWORD*)(0x164D0B4);
-            if (((mode & 0x1) || (mode & 0x8)) && (*(DWORD*)(0x17CE8B4) == 2)) {
+            if (((mode & 0x1) || (mode & 0x8)) && (GetMemContent(GAMEMODE_ADDR) == 2)) {
                 p->PushClipRect({ 32.0f, 16.0f }, { 416.0f, 464.0f });
 
                 ImVec2 plpos1 = *(ImVec2*)(0x017D6284);
@@ -2658,7 +2669,7 @@ namespace TH08 {
         case TH08_ST6B_LS5:
             el_switch = false;
         }
-        is_practice = *((int32_t*)0x17ce8b4) == 2;
+        is_practice = GetMemContent(GAMEMODE_ADDR) == 2;
         if (retn_addr == 0x4480ed && th08_pause_test == 0x434d08)
             result = ElBgmTest<0x447ef4, 0x4480ed, 0x43a170, 0x406c68, 0x43a048>(
                 el_switch, is_practice, 0x447ef4, 2, 2, call_addr);
@@ -2881,7 +2892,7 @@ namespace TH08 {
         THOverlay::singleton().Update();
         TH08InGameInfo::singleton().Update();
 
-        if (g_adv_igi_options.show_keyboard_monitor && (*(DWORD*)(0x17CE8B4) == 2)) {
+        if (g_adv_igi_options.show_keyboard_monitor && (GetMemContent(GAMEMODE_ADDR) == 2)) {
             g_adv_igi_options.keyboard_style.size = { 34.0f, 34.0f };
             KeysHUD(8, { 1280.0f, 0.0f }, { 833.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }

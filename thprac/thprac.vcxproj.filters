@@ -220,6 +220,9 @@
     <ClInclude Include="src\thprac\thprac_compatible.h">
       <Filter>THPrac Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac\thprac_th07.h">
+      <Filter>THPrac Games</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\thprac\thprac_utils.cpp">

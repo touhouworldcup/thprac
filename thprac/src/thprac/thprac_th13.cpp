@@ -654,11 +654,11 @@ namespace TH13 {
 
         virtual void OnPreUpdate() override
         {
-            if (*(DWORD*)(0x004C22C4)) {
+            if (GetMemContent(PLAYER_PTR)) {
                 GameUpdateInner(13);
             } else {
             }
-            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004C22C4)) {
+            if (*(THOverlay::singleton().mInGameInfo) && GetMemContent(PLAYER_PTR)) {
                 SetPosRel(450.0f / 640.0f, 280.0f / 480.0f);
                 SetSizeRel(170.0f / 640.0f, 0.0f);
                 Open();
@@ -2142,7 +2142,7 @@ namespace TH13 {
         // hit bar
         RenderHitBar(p);
         // RenderHitbox(p);
-        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004C22C4)){
+        if (g_adv_igi_options.show_keyboard_monitor && GetMemContent(PLAYER_PTR)) {
             g_adv_igi_options.keyboard_style.size = { 36.0f, 36.0f };
             KeysHUD(13, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }

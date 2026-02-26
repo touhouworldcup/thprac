@@ -11,6 +11,9 @@ namespace TH14 {
     enum addrs {
         BOMB_PTR = 0x4DB52C,
         WINDOW_PTR = 0x4f5a18,
+        CHARA_ADDR = 0x4f5828,
+        SUBSHOT_ADDR = 0x4f582c,
+        PLAYER_PTR = 0x4db67c,
     };
     int g_lock_timer = 0;
     bool g_lock_timer_flag = false;
@@ -688,11 +691,11 @@ namespace TH14 {
 
         virtual void OnPreUpdate() override
         {
-            if (*(DWORD*)(0x04DB67C)) {
+            if (GetMemContent(PLAYER_PTR)) {
                 GameUpdateInner(14);
             } else {
             }
-            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x04DB67C)) {
+            if (*(THOverlay::singleton().mInGameInfo) && GetMemContent(PLAYER_PTR)) {
                 SetPosRel(890.0f / 1280.0f, 560.0f / 960.0f);
                 SetSizeRel(360.0f / 1280.0f, 0.0f);
                 Open();
@@ -3029,7 +3032,7 @@ namespace TH14 {
         if (g_adv_igi_options.th14_showDropBar)
             RenderHitBar(p);
 
-        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x04DB67C))
+        if (g_adv_igi_options.show_keyboard_monitor && GetMemContent(PLAYER_PTR))
             KeysHUD(14, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
 
         RenderLockTimer(p);

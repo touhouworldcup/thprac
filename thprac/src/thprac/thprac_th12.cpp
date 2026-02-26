@@ -17,16 +17,6 @@ namespace TH12 {
     };
     std::vector<laser_hitbox_draw> g_th12_laser_hit_draw_vec;
 
-    
-    enum addrs {
-        CHARA = 0x4b0c90,
-        SUBSHOT = 0x4b0c94,
-        PLAYER_PTR = 0x4b4514,
-        MODEFLAGS = 0x4b0ce0,
-        STAGE_NUM = 0x4b0cb0,
-        REPLAY_MGR_PTR = 0x4b4518,
-    };
-
     constexpr uint32_t playerDmgSrcCnt = 0x80;
 
     struct PlayerDamageSource {
@@ -35,8 +25,23 @@ namespace TH12 {
     };
 
     struct Player {
-        char gap0[0x8988];
-        PlayerDamageSource damage_sources[playerDmgSrcCnt]; // 0x8988
+        char gap0[35208];
+        PlayerDamageSource damage_sources[129];
+        char gapC3FC[4];
+        Timer iframes;
+        char gapC414[388];
+        int32_t field_C598;
+    };
+
+    static_assert(offsetof(Player, iframes) == 0xc400);
+
+#define player (*(Player**)0x4b4514)
+    enum addrs {
+        CHARA = 0x4b0c90,
+        SUBSHOT = 0x4b0c94,
+        MODEFLAGS = 0x4b0ce0,
+        STAGE_NUM = 0x4b0cb0,
+        REPLAY_MGR_PTR = 0x4b4518,
     };
 
     using std::pair;
@@ -722,7 +727,7 @@ namespace TH12 {
                 GameUpdateInner(12);
             } else {
             }
-            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004B4514)) {
+            if (*(THOverlay::singleton().mInGameInfo) && player) {
                 SetPosRel(425.0f / 640.0f, 338.0f / 480.0f);
                 SetSizeRel(210.0f / 640.0f, 0.0f);
                 Open();
@@ -1918,7 +1923,6 @@ namespace TH12 {
         if (stageNum == 1 && !THGuiRep::singleton().mRepStatus && !thPracParam.mode)
             thPracParam.Reset();
         else if (stageNum > 1 && stageNum <= 6 && !(GetMemContent(MODEFLAGS) & 0b10000)) {
-            Player* player = GetMemContent<Player*>(PLAYER_PTR);
 
             if (THGuiRep::singleton().mRepStatus) { // Playback
                 for (int i = 0; i < playerDmgSrcCnt; i++) // if there are already active sources, its a transition - skip
@@ -1973,10 +1977,9 @@ namespace TH12 {
         if (!GetMemContent(REPLAY_MGR_PTR, 0xa8 + 0x24 * 1))
             return; // must have st1 in replay
 
-        Timer* iframes_timer = (Timer*)GetMemAddr(PLAYER_PTR, 0xc400);
-        iframes_timer->previous = 1;
-        iframes_timer->current = 0;
-        iframes_timer->current_f = 0.0f;
+        player->iframes.previous = 1;
+        player->iframes.current = 0;
+        player->iframes.current_f = 0.0f;
     })
     EHOOK_DY(th12_bgm, 0x42293a, 1, {
         if (THBGMTest()) {
@@ -2018,7 +2021,7 @@ namespace TH12 {
         }
         SSS::SSS_Update(12);
         
-        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004B4514)) {
+        if (g_adv_igi_options.show_keyboard_monitor && player) {
             g_adv_igi_options.keyboard_style.size = { 40.0f, 40.0f };
             KeysHUD(12, { 1280.0f, 0.0f }, { 835.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         }

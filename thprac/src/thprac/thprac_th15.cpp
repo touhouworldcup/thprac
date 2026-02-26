@@ -8,6 +8,10 @@
 
 namespace THPrac {
 namespace TH15 {
+    enum addrs {
+        PLAYER_PTR = 0x4e9bb8,
+    };
+
     int g_lock_timer = 0;
     bool g_lock_timer_flag = false;
 
@@ -705,11 +709,11 @@ namespace TH15 {
 
         virtual void OnPreUpdate() override
         {
-            if (*(DWORD*)(0x004E9BB8)) {
+            if (GetMemContent(PLAYER_PTR)) {
                 GameUpdateInner(15);
             } else {
             }
-            if (*(THOverlay::singleton().mInGameInfo) && *(DWORD*)(0x004E9BB8)) {
+            if (*(THOverlay::singleton().mInGameInfo) && GetMemContent(PLAYER_PTR)) {
                 SetSizeRel(360.0f / 1280.0f, 0.0f);
                 SetPosRel(890.0f / 1280.0f, 510.0f / 960.0f);
                 Open();
@@ -2545,7 +2549,7 @@ namespace TH15 {
             }
         }
         SSS::SSS_Update(15);
-        if (g_adv_igi_options.show_keyboard_monitor && *(DWORD*)(0x004E9BB8))
+        if (g_adv_igi_options.show_keyboard_monitor && GetMemContent(PLAYER_PTR))
             KeysHUD(15, { 1280.0f, 0.0f }, { 840.0f, 0.0f }, g_adv_igi_options.keyboard_style);
         
         RenderLockTimer(p);

@@ -1380,12 +1380,11 @@ namespace TH06 {
         }
         virtual void OnPreUpdate() override
         {
-            DWORD gameState = *(DWORD*)(0x6C6EA4);
-            if (gameState == 2)
+            if (GAME_MANAGER->isInGame)
             {
                 GameUpdateInner(6);
             }
-            if (*THOverlay::singleton().mShowSpellCapture && (gameState == 2)) {
+            if (*THOverlay::singleton().mShowSpellCapture && ((GAME_MANAGER->isInGame || GAME_MANAGER->isInGameMenu || GAME_MANAGER->isInRetryMenu))) {
                 SetPosRel(433.0f / 640.0f, 245.0f / 480.0f);
                 SetSizeRel(180.0f / 640.0f, 0.0f);
                 Open();
