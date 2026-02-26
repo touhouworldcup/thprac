@@ -20929,6 +20929,12 @@ namespace TH14 {
         TH_P5,
     };
 
+    const th_glossary_t TH14_SPELL_PHASE_TIMEOUT[4] {
+        TH_P1,
+        TH_P2,
+        TH_FINALE,
+    };
+
     const th_glossary_t TH14_MODE_COMBO[5] {
         TH14_MODE_NONE,
         TH14_MODE_NORMAL,

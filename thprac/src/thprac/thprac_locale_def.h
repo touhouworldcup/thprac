@@ -2975,6 +2975,8 @@ namespace TH14 {
 
     extern const th_glossary_t TH14_SPELL_5PHASE[6];
 
+    extern const th_glossary_t TH14_SPELL_PHASE_TIMEOUT[4];
+
     extern const th_glossary_t TH14_MODE_COMBO[5];
 
     extern const th_glossary_t TH14_CORRECTION[11];

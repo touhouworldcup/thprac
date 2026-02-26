@@ -8264,6 +8264,11 @@
         "TH_P4",
         "TH_P5"
       ],
+	  "TH14_SPELL_PHASE_TIMEOUT": [
+        "TH_P1",
+        "TH_P2",
+        "TH_FINALE"
+      ],
       "TH14_MODE_COMBO": [
         "TH14_MODE_NONE",
         "TH14_MODE_NORMAL",
