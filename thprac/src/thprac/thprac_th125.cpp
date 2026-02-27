@@ -186,7 +186,7 @@ namespace TH125 {
                 EndOptGroup();
             }
 
-            if (BeginOptGroup<TH18_BUG_FIX>()) {
+            if (BeginOptGroup<TH_BUGFIX>()) {
                 if (ImGui::Checkbox(S(TH125_SPOILER_HISCORE_FIX), &mHiscoreFix)) {
                     th125_hiscore_fix.Toggle(mHiscoreFix);
                 }

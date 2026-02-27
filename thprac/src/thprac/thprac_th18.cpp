@@ -1176,8 +1176,6 @@ namespace TH18 {
     class THGuiSP : public Gui::GameGuiWnd {
         THGuiSP() noexcept
         {
-            *mBugFix = true;
-
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -1289,7 +1287,6 @@ namespace TH18 {
 
         unsigned int mSpellId = UINT_MAX;
 
-        Gui::GuiCheckBox mBugFix { TH16_BUGFIX };
         Gui::GuiCombo mPhase { TH_PHASE };
         Gui::GuiNavFocus mNavFocus { TH_PHASE };
     };
@@ -2385,53 +2382,19 @@ namespace TH18 {
 
                 EndOptGroup();
             }
-            if (BeginOptGroup<TH18_BUG_FIX>()) {
-                ImGui::TextUnformatted(S(TH18_BUG_FIX_DESC));
-
-                /*if (ImGui::Checkbox(S(TH18_MUKADE_FIX), &mukadeFix)) {
-                    th18_mukade_fix.Toggle(mukadeFix);
-                }
+            if (BeginOptGroup<TH_BUGFIX>()) {
+                ImGui::TextUnformatted(S(TH18_BUGFIX_DESC));
+                ImGui::TextUnformatted(S(TH_BUGFIX_AUTO));
                 ImGui::SameLine();
-                HelpMarker(S(TH18_MUKADE_FIX_DESC));*/
-
-                /*if (ImGui::Checkbox(S(TH18_SCROLL_FIX), &scrollFix)) {
-                    th18_scroll_fix.Toggle(scrollFix);
-                }
-                ImGui::SameLine();
-                HelpMarker(S(TH18_SCROLL_FIX_DESC));*/
-
-                /*if (ImGui::Checkbox(S(TH18_ST6FINAL_FIX), &st6FinalFix)) {
-                    th18_st6final_fix.Toggle(st6FinalFix);
-                }
-                ImGui::SameLine();
-                HelpMarker(S(TH18_ST6FINAL_FIX_DESC));*/
+                HelpMarker(S(TH18_BUGFIX_AUTO_DESC));
 
                 // market reset incompatible with restarting for Market Manip.
                 if (manipAutoRestart) ImGui::BeginDisabled();
-                ImGui::Checkbox(S(TH18_RESTART_FIX), &restartResetMarket);
+                ImGui::Checkbox(S(TH18_RESTART_RESET_MARKET), &restartResetMarket);
                 if (manipAutoRestart) {
                     ImGui::EndDisabled();
                     if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH18_RESTART_SETTINGS_CONFLICT));
                 }
-
-                /*if (ImGui::Checkbox(S(TH18_AC_FIX), &activeCardIdFix)) {
-                    th18_active_card_fix.Toggle(activeCardIdFix);
-                }
-                ImGui::SameLine();
-                HelpMarker(S(TH18_AC_FIX_DESC));*/
-
-                /*if (ImGui::Checkbox(S(TH18_EIRIN_EIKI_FIX), &eirinEikiCardFix)) {
-                    th18_eirin_eiki_card_uninit_fix.Toggle(eirinEikiCardFix);
-                }
-                ImGui::SameLine();
-                HelpMarker(S(TH18_EIRIN_EIKI_FIX_DESC));*/
-
-                /*if (ImGui::Checkbox(S(TH18_FUNC_CALL_FIX), &funcCallFix)) {
-                    th18_func_call2_uninit_fix.Toggle(funcCallFix);
-                    th18_func_call3_uninit_fix.Toggle(funcCallFix);
-                }
-                ImGui::SameLine();
-                HelpMarker(S(TH18_FUNC_CALL_FIX_DESC));*/
 
                 EndOptGroup();
             }

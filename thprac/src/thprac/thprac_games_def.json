@@ -942,6 +942,8 @@
       "TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS": [ "重置文件的 thprac 数据失败。", "Failed to reset file's thprac data.", "ファイルの thprac データのリセットに失敗しました。" ],
       "TH_REPFIX_SAVE_ERROR_PARAMS": [ "无法将 thprac 数据写入重放文件。", "Failed to add thprac data to replay file.", "thprac のデータをリプレイファイルに書き込めませんでした。" ],
       "TH_TOOL_SHOW_TOGGLE": [ "显示工具", "Show tool", "ツールを表示" ],
+      "TH_BUGFIX": [ "可选Bug修复", "Optional Bug Fixes", "任意Bug修復" ],
+      "TH_BUGFIX_AUTO": [ "已自动应用关键Bug修复。", "Critical bug fixes have been applied automatically.", "重要なBug修復は自動的に適用されています。" ],
       "TH_STAGE_NUM": [ "第%d面", "Stage %d", "ステージ %d" ],
       "TH_EXTRA_STAGE": [ "Extra面", "Extra Stage", "Extraステージ" ],
       "TH_DELAY": [ "延迟", "Delay", "ディレイ" ],
@@ -9053,11 +9055,15 @@
     "namespace": "TH18",
 
     "glossary": {
-      "TH18_BUG_FIX": [ "可选Bug修复", "Optional Bug Fixes", "任意Bug修復" ],
-      "TH18_BUG_FIX_DESC": [
+      "TH18_BUGFIX_DESC": [
         "请在不需要使用以下选项的时候将其关闭。",
         "Please turn the following options off when there's no need for them.",
         "以下のオプションを利用する必要がない場合は、オフにしてください。"
+      ],
+      "TH18_BUGFIX_AUTO_DESC": [
+        "包括：\n• 游戏崩溃：在符卡练习中全避「弹幕的庇护所」。\n• 游戏崩溃：持有「死秽回避之药」或「有钱能使鬼推磨」时切换关卡。\n• 回放不同步：蜈蚣卡牌在关卡切换后伤害倍率重置。\n• 回放不同步：卷轴卡牌在 Extra 商店后冷却倍率重置。\n• 录制不同步：「妖怪们的盾构法」存在非确定性行为。\n• 录制不同步：关卡切换时错误地将所选主动卡写入回放。\n• 功能异常：Esc+R 与 Esc+Q。",
+        "Includes:\n• Game Crash: Timing out \"Asylum of Danmaku\" in Spell Practice.\n• Game Crash: Stage transition with cards \"Death Avoidance Elixir\" and \"Money is the Best Lawyer in Hell\"\n• Playback Desync: Centipede damage multiplier resetting on stage transition.\n• Playback Desync: Scroll cooldown multipliers resetting after Extra shop.\n• Recording Desync: Non-deterministic behavior on \"Shield Method of the Youkai\".\n• Recording Desync: Incorrect selected active card written to replay on stage transition.\n• Broken Features: Esc+R and Esc+Q.",
+        "内容：\n- ゲームクラッシュ：スペルプラクティスで「弾幕のアジール」をタイムアウトした場合。\n- ゲームクラッシュ：「死穢回避の薬」または「地獄の沙汰も金次第」を所持した状態でのステージ移行。\n- 再生ズレ：ムカデカードのダメージ倍率がステージ移行後にリセットされる。\n- 再生ズレ：経典カードのクールダウン倍率がExtraショップ後にリセットされる。\n- 記録ズレ：「妖怪達のシールドメソッド」における非決定的挙動。\n- 記録ズレ：ステージ移行時に選択した使用カードがリプレイへ正しく記録されない。\n- 機能不具合：Esc+R と Esc+Q。"
       ],
       "TH18_FUNDS": [ "资金力", "Funds", "資金力" ],
       "TH18_CARD": [ "卡片", "Card", "カード" ],
@@ -9149,45 +9155,8 @@
         "When enabled, restarting a run will quit to the main menu instead if a card you've marked as \"Keep\" can no longer appear.",
         "有効時、「保持」に設定したカードを購入していた場合、リスタート時にメインメニューへ戻ります。"
       ],
-      "TH18_MUKADE_FIX": [ "蜈蚣卡牌修复", "Centipede card fix", "ムカデカード修復" ],
-      "TH18_MUKADE_FIX_DESC": [
-        "开启时，能够从一面开始正常播放含有蜈蚣卡牌的replay。",
-        "When enabled, allowing replays that contain the centipede card to play normally if start from stage one.",
-        "有効にすると、ムカデカードを含むリプレイを一面から再生した場合に正常に再生できるようになります。"
-      ],
-      "TH18_SCROLL_FIX": [ "卷轴卡牌修复", "Scroll card fix", "経典カード修復" ],
-      "TH18_SCROLL_FIX_DESC": [
-        "开启时，能够正常播放含有卷轴卡牌的replay（仅限Extra）。",
-        "When enabled, allowing replays (Extra only) that contain the scroll card to play normally.",
-        "有効にすると、経典カードを含むリプレイ（Extraのみ）を再生した場合に正常に再生できるようになります。"
-      ],
-      "TH18_ST6FINAL_FIX": [ "修复「弹幕的庇护所」", "Fix \"Asylum of Danmaku\"", "「弾幕のアジール」を修復" ],
-      "TH18_ST6FINAL_FIX_DESC": [
-        "开启时，在符卡练习中全避「弹幕的庇护所」将不再使游戏崩溃。",
-        "When enabled, timeouting \"Asylum of Danmaku\" in spell practice no longer crashes the game.",
-        "有効にすると、スペルプラクティスで「弾幕のアジール」をタイムアウトしても、ゲームがクラッシュしなくなります。 "
-      ],
-      "TH18_RESTART_FIX": [ "重开游戏时重置商店", "Reset market on restart", "ゲームを再開するときに市場をリセットする" ],
+      "TH18_RESTART_RESET_MARKET": [ "重开游戏时重置商店", "Reset market on restart", "ゲームを再開するときに市場をリセットする" ],
       "TH18_RESTART_SETTINGS_CONFLICT": [ "无法同时启用互相冲突的重开设置。", "Cannot enable conflicting restart settings.", "互いに競合する再開設定を同時に有効にすることはできません。" ],
-      "TH18_AC_FIX": [ "正确记录关卡开始时所选择的主动卡片", "Correctly record the selected active card on stage beginning", "ステージ開始時に選択した使用カードを正しく記録します" ],
-      "TH18_AC_FIX_DESC": [
-        "如果要使这个选项生效，你必须在游戏时保持此选项开启。",
-        "This option needs to be enabled for the entire gaming session for it to work.",
-        "このオプションを機能させるには、プレイ中に常にこのオプションを有効にする必要があります。 "
-      ],
-      "TH18_EIRIN_EIKI_FIX": [ "修复「死秽回避之药」和「有钱能使鬼推磨」", "Fix \"Death Avoidance Elixir\" and \"Money is the Best Lawyer in Hell\"", "「死穢回避の薬」と「地獄の沙汰も金次第」の修正" ],
-      "TH18_EIRIN_EIKI_FIX_DESC": [
-        "启用时，购买这些卡片不再会导致切换关卡时可能出现的崩溃现象",
-        "When enabled, buying those cards no longer randomly crashes the game during the stage transition.",
-        "有効化すると、これらのカードを購入しても、ステージ移行時にたまに発生していたクラッシュが起こらなくなります。"
-      ],
-      "TH18_FUNC_CALL_FIX": [ "修复「妖怪们的盾构法」", "Fix \"Shield Method of the Youkai\"", "「妖怪達のシールドメソッド」の修正" ],
-      "TH18_FUNC_CALL_FIX_DESC": [
-        "启用时，「妖怪们的盾构法」不会再不时因为生成错子弹的位置而引发 rep 文件损坏。",
-        "When enabled, \"Shield Method of the Youkai\" will no longer randomly desync by spawning bullets in the wrong position.",
-        "有効化すると、「妖怪達のシールドメソッド」が弾の生成位置の誤りによるリプレイバグを引き起こすことはなくなります。"
-      ],
-
       "TH18_AC_REPFIX": [ "主动卡选择不同步修复", "Active card selection desync fix", "使用カード選択の同期ズレ修正" ],
       "TH18_AC_REPFIX_SHOW_INS": [ "显示说明##th18", "Show instructions##th18", "指示を表示##th18" ],
       "TH18_AC_REPFIX_HIDE_INS": [ "隐藏说明##th18", "Hide instructions##th18", "指示を非表示##th18" ],
