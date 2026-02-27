@@ -31,9 +31,12 @@ namespace TH18 {
     };
 
     enum addrs {
+        CARD_PRICE_TABLE = 0x4b35c4,
         CARD_DESC_LIST = 0x4c53c0,
         MENU_INPUT = 0x4ca21c,
         STAGE_NUM = 0x4cccdc,
+        FUNDS = 0x4ccd34,
+        POWER = 0x4ccd38,
         ABILITY_MANAGER_PTR = 0x4cf298,
         ABILITY_SHOP_PTR = 0x4cf2a4,
         ASCII_MANAGER_PTR = 0x4cf2ac,
@@ -721,23 +724,29 @@ namespace TH18 {
         bool mParamStatus = false;
         THPracParam mRepParam;
     };
+
+    const uint8_t* GetEquippedCardCounts()
+    {
+        uint32_t* list = nullptr;
+        static uint8_t cardIdArray[64];
+        memset(cardIdArray, 0, 64);
+
+        for (uint32_t* i = (uint32_t*)GetMemContent(ABILITY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
+            list = i;
+            auto cardId = ((uint32_t**)list)[0][1];
+            cardIdArray[cardId] += 1;
+        }
+
+        return cardIdArray;
+    }
+
     void AddIndicateCard()
     {
         if (GetMemContent(0x4ccd00) == 4) {
             th18_free_blank.Enable();
             asm_call<0x411460, Thiscall>(GetMemContent(ABILITY_MANAGER_PTR), 0, 2);
-        } else {
-            uint32_t* list = nullptr;
-            uint8_t cardIdArray[64];
-            memset(cardIdArray, 0, 64);
-            for (uint32_t* i = (uint32_t*)GetMemContent(ABILITY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
-                list = i;
-                auto cardId = ((uint32_t**)list)[0][1];
-                cardIdArray[cardId] += 1;
-            }
-            if (!cardIdArray[55]) {
-                asm_call<0x411460, Thiscall>(*(uint32_t*)ABILITY_MANAGER_PTR, 55, 2);
-            }
+        } else if (!GetEquippedCardCounts()[55]) {
+            asm_call<0x411460, Thiscall>(*(uint32_t*)ABILITY_MANAGER_PTR, 55, 2);
         }
     }
     PATCH_ST(th18_pause_skip_1, 0x458692, "E93F010000");
@@ -954,33 +963,45 @@ namespace TH18 {
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x45d4ea, "01")
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
         PATCH_HK(0x45d1a2, "00")
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
         PATCH_HK(0x4574d3, "90909090"),
         PATCH_HK(0x40a3ed, "909090909090"),
         PATCH_HK(0x40a42c, "909090909090")
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(0x45748e, "9090")
+        PATCH_HK(0x45748e, NOP(2)),
+        PATCH_HK(0x418283, NOP(2)),
+        EHOOK_HK(0x418427, 3, { // add indicator card for fraudulent purchases
+            uint32_t price = GetMemContent(CARD_PRICE_TABLE + 0x4 * ((TableCardData*)pCtx->Eax)->price);
+            if (price > GetMemContent(FUNDS) + GetMemContent(POWER) - 100)
+                AddIndicateCard();
+        })
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mInfFunds, TH18_INFFUNDS, "F5", VK_F5)
         PATCH_HK(0x45c244, "909090909090"),
         PATCH_HK(0x40d96f, "90909090909090909090"),
         PATCH_HK(0x418496, "90909090909090909090"),
-        PATCH_HK(0x418465, "9090")
+        PATCH_HK(0x418465, NOP(2)),
+        PATCH_HK(0x418225, NOP(2)),
+        EHOOK_HK(0x41842a, 5, { // add indicator card for fraudulent purchases
+            uint32_t price = GetMemContent(CARD_PRICE_TABLE + 0x4 * ((TableCardData*)pCtx->Eax)->price);
+            if (price > GetMemContent(FUNDS) + GetMemContent(POWER) - 100)
+                AddIndicateCard();
+        })
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F6", VK_F6)
         PATCH_HK(0x429eef, "eb"),
         PATCH_HK(0x43021b, "058d")
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F7", VK_F7)
         PATCH_HK(0x45c2bd, "909090909090")
         HOTKEY_ENDDEF();
@@ -1274,7 +1295,8 @@ namespace TH18 {
             }
 
             // Apply loadout code from clipboard if there is one
-            const char* clipboardText = ImGui::GetClipboardText();
+            const char* clipboardText = GetTrimmedClipboardText();
+
             if (ValidateLoadoutCode(clipboardText)) {
                 ApplyLoadoutCode(clipboardText);
                 useManipLoadout = true;
@@ -1804,23 +1826,27 @@ namespace TH18 {
             const bool saveManip = false)
         {
             // Calculate total weight for group & buy count
+            const uint32_t scorefileManager = GetMemContent(SCOREFILE_MANAGER_PTR);
+            const AbilityManager* abilityManager = GetMemContent<AbilityManager*>(ABILITY_MANAGER_PTR);
+            const uint32_t game_thread = GetMemContent(GAME_THREAD_PTR);
             uint32_t totalWeight = 0;
             uint32_t buyCount = 0;
+
             if (!saveManip) {
                 for (auto& [cd, shouldBuy] : cardGroup) {
-                    const uint8_t boughtBefore = *(uint8_t*)GetMemAddr(SCOREFILE_MANAGER_PTR, 0x5F4B8 + 0xD0 + cd->card_id);
+                    const bool boughtBefore = scorefileManager ? *(uint8_t*)(scorefileManager + 0x5F4B8 + 0xD0 + cd->card_id) : false;
+                    const bool boughtCurrent = game_thread && (abilityManager ? abilityManager->bought_flags[cd->card_id] : false);
 
-                    if (!shouldBuy && !(cd->appearance_condition && !boughtBefore))
-                        totalWeight += cd->weight + (boughtBefore ? 0 : 5);
-                    else
-                        buyCount++;
+                    if (!shouldBuy && !(cd->appearance_condition && !boughtBefore)) {
+                        if (!boughtCurrent) totalWeight += cd->weight + (boughtBefore ? 0 : 5);
+
+                    } else buyCount++;
                 }
             }
 
             // Grid drawing constants & utils
             ImDrawList* draw = ImGui::GetWindowDrawList();
             ImGuiStyle& style = ImGui::GetStyle();
-            uint32_t game_thread = GetMemContent(GAME_THREAD_PTR);
 
             const float oldItemSpacingX = style.ItemSpacing.x;
             const float oldItemSpacingY = style.ItemSpacing.y;
@@ -1888,8 +1914,9 @@ namespace TH18 {
                 ImGui::Dummy(ImVec2(0, vPadding));
                 ImTextureID tex = (ImTextureID)get_sprite_d3d_texture(31, cd->sprite_large);
 
-                const uint8_t* boughtBeforeAddr = (uint8_t*)GetMemAddr(SCOREFILE_MANAGER_PTR, 0x5F4B8 + 0xD0 + cd->card_id);
-                const uint8_t boughtBefore = *boughtBeforeAddr;
+                const uint8_t* boughtBeforeAddr = scorefileManager ? (uint8_t*)(scorefileManager + 0x5F4B8 + 0xD0 + cd->card_id) : nullptr;
+                const bool boughtBefore = boughtBeforeAddr ? *boughtBeforeAddr : 0;
+                const bool boughtCurrent = game_thread && (abilityManager ? abilityManager->bought_flags[cd->card_id] : false);
 
                 const bool dimCard = (saveManip && boughtBefore) || (!saveManip && shouldBuy);
                 ImVec4 tint = dimCard ? ImVec4(1, 1, 1, 0.35f) : ImVec4(1, 1, 1, 1.0f);
@@ -1897,7 +1924,7 @@ namespace TH18 {
                 ImGui::PushID(cd->card_id * (saveManip ? -1 : 1));
                 ImGui::BeginDisabled(saveManip && game_thread);
                 if (ImGui::ImageButton(tex, ImVec2(cardWidth, cardHeight), ImVec2(0, 0), ImVec2(1, 0.625f), 0, ImVec4(0, 0, 0, 0), tint)) {
-                    if (saveManip) *(uint8_t*)boughtBeforeAddr = !boughtBefore;
+                    if (saveManip && boughtBeforeAddr) *(uint8_t*)boughtBeforeAddr = !boughtBefore;
                     else shouldBuy = !shouldBuy;
                 }
                 ImGui::EndDisabled(saveManip && game_thread);
@@ -1919,32 +1946,62 @@ namespace TH18 {
 
                     if (ImGui::IsItemHovered()) {
                         if (boughtBefore) ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_BOUGHT_HINT));
-                        else if (cd->appearance_condition) ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_LOCKED_HINT));
+                        else if (cd->appearance_condition) {
+                            if (cd->appearance_condition <= 5)
+                                ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_STG_HINT), cd->appearance_condition);
+                            else
+                                ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_HINT));
+                        }
                         else ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_NEW_HINT));
                     }
 
                 } else {
-                    // Percent & policy text
-                    char percentText[16] = "0%%";
-                    if (!shouldBuy && !(cd->appearance_condition && !boughtBefore)) {
-                        const float spawnChance = (cd->weight + (boughtBefore ? 0 : 5)) / (float)totalWeight;
-                        snprintf(percentText, sizeof(percentText), "%.3g%%%%", spawnChance * 100.0f);
+                    // Availability & policy text
+                    char oddText[16] = "0%%";
+                    bool usePercent = true;
+                    const bool isStageUnlock = cd->appearance_condition && cd->appearance_condition <= 5;
+
+                    if (boughtCurrent) {
+                        strcpy(oddText, S(TH18_SAVEFILE_MANIP_BOUGHT));
+                        usePercent = false;
+
+                    } else if (!shouldBuy) {
+                        if (cd->appearance_condition && !boughtBefore) { // locked special cards
+                            if (isStageUnlock) snprintf(oddText, sizeof(oddText), S(TH18_MARKET_MANIP_LOCKED_STG), cd->appearance_condition);
+                            else strcpy(oddText, S(TH_NA));
+                            usePercent = false;
+
+                        } else {  // normal random cards
+                            const float spawnChance = (cd->weight + (boughtBefore ? 0 : 5)) / (float)totalWeight;
+                            snprintf(oddText, sizeof(oddText), "%.3g%%%%", spawnChance * 100.0f);
+                        }
                     }
 
                     style.ItemSpacing.y = -8.0f;
-                    if (shouldBuy) ImGui::BeginDisabled();
+                    if (shouldBuy || (cd->appearance_condition > 5 && !boughtBefore) || boughtCurrent)
+                        ImGui::BeginDisabled();
                     else if (!boughtBefore && !cd->appearance_condition)
                         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.9f, 0.3f, 1.0f));
 
-                    CenteredText(percentText, cardWidth, 1, 0.8);
+                    CenteredText(oddText, cardWidth, usePercent, 0.8);
 
-                    if (shouldBuy) ImGui::EndDisabled();
+                    if (shouldBuy || (cd->appearance_condition > 5 && !boughtBefore) || boughtCurrent)
+                        ImGui::EndDisabled();
                     else if (!boughtBefore && !cd->appearance_condition)
                         ImGui::PopStyleColor();
 
                     if (ImGui::IsItemHovered()) {
-                        if (cd->appearance_condition && !boughtBefore) ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_LOCKED_HINT), S(TH18_CARD_LIST[cd->card_id]));
-                        else if (!boughtBefore && !shouldBuy) ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_BOOST_HINT), S(TH18_CARD_LIST[cd->card_id]));
+                        if (boughtCurrent)
+                            ImGui::SetTooltip(S(TH18_MARKET_MANIP_BOUGHT_FLAG_HINT));
+
+                        else if (!boughtBefore && !cd->appearance_condition && !shouldBuy)
+                            ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_BOOST_HINT), S(TH18_CARD_LIST[cd->card_id]));
+
+                        else if (cd->appearance_condition && !shouldBuy && !(boughtBefore && !isStageUnlock)) {
+                            if (boughtBefore) ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_STG_HINT), S(TH18_CARD_LIST[cd->card_id]), cd->appearance_condition);
+                            else if (isStageUnlock) ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_STG_HINT), cd->appearance_condition);
+                            else ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_HINT));
+                        }
                         else ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_HINT), S(TH18_CARD_LIST[cd->card_id]));
                     }
                     style.ItemSpacing.y = oldItemSpacingY;
@@ -1981,7 +2038,25 @@ namespace TH18 {
             ImGui::NewLine();
         }
 
-        bool ValidateLoadoutCode(const char* input) {
+        const char* GetTrimmedClipboardText()
+        {
+            const char* clipboardText = ImGui::GetClipboardText();
+            static char trimmed[13];
+
+            const char* start = clipboardText;
+            while (*start == ' ')
+                ++start;
+
+            const size_t len = strlen(start);
+            const size_t copyLen = len > 12 ? 12 : len;
+            memcpy(trimmed, start, copyLen);
+            trimmed[copyLen] = '\0';
+
+            return trimmed;
+        }
+
+        bool ValidateLoadoutCode(const char* input)
+        {
             // Must be length 12
             if (!input || t_strlen(input) != 12)
                 return false;
@@ -1997,7 +2072,8 @@ namespace TH18 {
             return true;
         }
 
-        void ApplyLoadoutCode(const char* codeText) {
+        void ApplyLoadoutCode(const char* codeText)
+        {
             uint64_t code = 0;
             sscanf(codeText, "%llx", &code);
             int bitIndex = 0;
@@ -2102,7 +2178,7 @@ namespace TH18 {
 
                     ImGui::SameLine();
                     if (ImGui::Button(S(TH18_MARKET_MANIP_PASTE_CODE))) {
-                        const char* clipboardText = ImGui::GetClipboardText();
+                        const char* clipboardText = GetTrimmedClipboardText();
 
                         if (ValidateLoadoutCode(clipboardText))
                             ApplyLoadoutCode(clipboardText);
@@ -2234,7 +2310,7 @@ namespace TH18 {
             }
             wndFocus &= ReplayMenu();
 
-            AboutOpt();
+            AboutOpt("• Altair357 for the idea of adding configurable Market Manip. loadouts (& srn_ity for the motivation)\n• zero318 for the card image rendering logic and his extensive th18 reverse engineering work\n...and you!");
             ImGui::EndChild();
             if (wndFocus)
                 ImGui::SetWindowFocus();
@@ -2254,14 +2330,16 @@ namespace TH18 {
             return false;
 
         // Add all selected cards
+        const uint8_t* equippedCardCounts = GetEquippedCardCounts();
+
         for (const auto& [cd, buyFlag] : advOptWnd.loadoutHighCostCards)
-            if (buyFlag) AddCard(cd->card_id);
+            if (buyFlag && !equippedCardCounts[cd->card_id]) AddCard(cd->card_id);
 
         for (const auto& [cd, buyFlag] : advOptWnd.loadoutMidCostCards)
-            if (buyFlag) AddCard(cd->card_id);
+            if (buyFlag && !equippedCardCounts[cd->card_id]) AddCard(cd->card_id);
 
         for (const auto& [cd, buyFlag] : advOptWnd.loadoutLowCostCards)
-            if (buyFlag) AddCard(cd->card_id);
+            if (buyFlag && !equippedCardCounts[cd->card_id]) AddCard(cd->card_id);
 
         if (advOptWnd.manipAutoRestart) {
             // Restart run (via pause menu for simplicity)
@@ -2337,6 +2415,15 @@ namespace TH18 {
             start = ecl.GetPos();
         ecl << ecl_time << 0x0018000C << 0x02ff0000 << 0x00000000 << dest - start << at_frame;
     }
+
+    constexpr unsigned int st1PostMaple = 0xa750;
+    constexpr unsigned int st2PostMaple = 0x90b4;
+    constexpr unsigned int st3PostMaple = 0x83a0;
+    constexpr unsigned int st4PostMaple = 0x5a04;
+    constexpr unsigned int st5PostMaple = 0x96ec;
+    constexpr unsigned int st6PostMaple = 0x7e70;
+    constexpr unsigned int st7PostMaple = 0xa8fc;
+    constexpr unsigned int stdInterruptSize = 0x14;
     __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
     {
         if (stage == 1) {
@@ -2344,19 +2431,19 @@ namespace TH18 {
             case 1:
                 break;
             case 2:
-                ECLJump(ecl, 0xa750, 0xab90, 60, 90);
+                ECLJump(ecl, st1PostMaple, 0xab90, 60, 90);
                 ECLJump(ecl, 0x6fc8, 0x7088, 0);
                 break;
             case 3:
-                ECLJump(ecl, 0xa750, 0xab90, 60, 90);
+                ECLJump(ecl, st1PostMaple, 0xab90, 60, 90);
                 ECLJump(ecl, 0x6fc8, 0x70bc, 0);
                 break;
             case 4:
-                ECLStdExec(ecl, 0xa750, 1, 1);
+                ECLStdExec(ecl, st1PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0xac2c, 60, 90);
                 break;
             case 5:
-                ECLStdExec(ecl, 0xa750, 1, 1);
+                ECLStdExec(ecl, st1PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0xac2c, 60, 90);
                 ECLJump(ecl, 0x7184, 0x71f4, 0);
                 break;
@@ -2368,19 +2455,19 @@ namespace TH18 {
             case 1:
                 break;
             case 2:
-                ECLJump(ecl, 0x90b4, 0x94cc, 60, 90); // 0x9550, 0x9594, 0x9600
+                ECLJump(ecl, st2PostMaple, 0x94cc, 60, 90); // 0x9550, 0x9594, 0x9600
                 ECLJump(ecl, 0x55e0, 0x5614, 0, 0);
                 break;
             case 3:
-                ECLJump(ecl, 0x90b4, 0x94cc, 60, 90); // 0x9550, 0x9594, 0x9600
+                ECLJump(ecl, st2PostMaple, 0x94cc, 60, 90); // 0x9550, 0x9594, 0x9600
                 ECLJump(ecl, 0x55e0, 0x56a8, 0, 0);
                 break;
             case 4:
-                ECLStdExec(ecl, 0x90b4, 1, 1);
+                ECLStdExec(ecl, st2PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0x9594, 60, 90); // 0x9550, 0x9594, 0x9600
                 break;
             case 5:
-                ECLStdExec(ecl, 0x90b4, 1, 1);
+                ECLStdExec(ecl, st2PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0x9594, 60, 90); // 0x9550, 0x9594, 0x9600
                 ECLJump(ecl, 0x573c, 0x5770, 0, 0);
                 break;
@@ -2392,24 +2479,24 @@ namespace TH18 {
             case 1:
                 break;
             case 2:
-                ECLJump(ecl, 0x83a0, 0x86ec, 60, 90); // 0x8784, 0x87c8, 0x8848
+                ECLJump(ecl, st3PostMaple, 0x86ec, 60, 90); // 0x8784, 0x87c8, 0x8848
                 ECLJump(ecl, 0x4c34, 0x4c68, 0, 0);
                 break;
             case 3:
-                ECLJump(ecl, 0x83a0, 0x86ec, 60, 90); // 0x8784, 0x87c8, 0x8848
+                ECLJump(ecl, st3PostMaple, 0x86ec, 60, 90); // 0x8784, 0x87c8, 0x8848
                 ECLJump(ecl, 0x4c34, 0x4cc8, 0, 0);
                 break;
             case 4:
-                ECLStdExec(ecl, 0x83a0, 1, 1);
+                ECLStdExec(ecl, st3PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0x87c8, 60, 90); // 0x8784, 0x87c8, 0x8848
                 break;
             case 5:
-                ECLStdExec(ecl, 0x83a0, 1, 1);
+                ECLStdExec(ecl, st3PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0x87c8, 60, 90); // 0x8784, 0x87c8, 0x8848
                 ECLJump(ecl, 0x4d90, 0x4dd8, 0, 0);
                 break;
             case 6:
-                ECLStdExec(ecl, 0x83a0, 1, 1);
+                ECLStdExec(ecl, st3PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0x87c8, 60, 90); // 0x8784, 0x87c8, 0x8848
                 ECLJump(ecl, 0x4d90, 0x4e38, 0, 0);
                 break;
@@ -2421,33 +2508,33 @@ namespace TH18 {
             case 1:
                 break;
             case 2:
-                ECLJump(ecl, 0x5a04, 0x5d50, 60, 90); // 0x5d94, 0x5dd8, 0x5e58
+                ECLJump(ecl, st4PostMaple, 0x5d50, 60, 90); // 0x5d94, 0x5dd8, 0x5e58
                 ECLJump(ecl, 0x33cc, 0x3400, 0, 0);
                 break;
             case 3:
-                ECLJump(ecl, 0x5a04, 0x5d50, 60, 90); // 0x5d94, 0x5dd8, 0x5e58
+                ECLJump(ecl, st4PostMaple, 0x5d50, 60, 90); // 0x5d94, 0x5dd8, 0x5e58
                 ECLJump(ecl, 0x33cc, 0x3434, 0, 0);
                 break;
             case 4:
-                ECLJump(ecl, 0x5a04, 0x5d50, 60, 90); // 0x5d94, 0x5dd8, 0x5e58
+                ECLJump(ecl, st4PostMaple, 0x5d50, 60, 90); // 0x5d94, 0x5dd8, 0x5e58
                 ECLJump(ecl, 0x33cc, 0x3468, 0, 0);
                 break;
             case 5:
-                ECLStdExec(ecl, 0x5a04, 1, 1);
+                ECLStdExec(ecl, st4PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0x5dd8, 60, 90); // 0x5d94, 0x5dd8, 0x5e58
                 break;
             case 6:
-                ECLStdExec(ecl, 0x5a04, 1, 1);
+                ECLStdExec(ecl, st4PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0x5dd8, 60, 90); // 0x5d94, 0x5dd8, 0x5e58
                 ECLJump(ecl, 0x34fc, 0x3598, 0, 0);
                 break;
             case 7:
-                ECLStdExec(ecl, 0x5a04, 1, 1);
+                ECLStdExec(ecl, st4PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0x5dd8, 60, 90); // 0x5d94, 0x5dd8, 0x5e58
                 ECLJump(ecl, 0x34fc, 0x35cc, 0, 0);
                 break;
             case 8:
-                ECLStdExec(ecl, 0x5a04, 1, 1);
+                ECLStdExec(ecl, st4PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0x5dd8, 60, 90); // 0x5d94, 0x5dd8, 0x5e58
                 ECLJump(ecl, 0x34fc, 0x3640, 0, 0);
                 break;
@@ -2457,41 +2544,41 @@ namespace TH18 {
         } else if (stage == 5) {
             switch (portion) {
             case 1:
-                ECLJump(ecl, 0x96ec, 0x9b28, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
+                ECLJump(ecl, st5PostMaple, 0x9b28, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
                 ecl << pair{0x4c50, 0};
                 break;
             case 2:
-                ECLJump(ecl, 0x96ec, 0x9b28, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
+                ECLJump(ecl, st5PostMaple, 0x9b28, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
                 ECLJump(ecl, 0x4c40, 0x4c88, 0, 0);
                 break;
             case 3:
-                ECLJump(ecl, 0x96ec, 0x9b28, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
+                ECLJump(ecl, st5PostMaple, 0x9b28, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
                 ECLJump(ecl, 0x4c40, 0x4cbc, 0, 0);
                 break;
             case 4:
-                ECLJump(ecl, 0x96ec, 0x9b28, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
+                ECLJump(ecl, st5PostMaple, 0x9b28, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
                 ECLJump(ecl, 0x4c40, 0x4cf0, 0, 0);
                 break;
             case 5:
-                ECLJump(ecl, 0x96ec, 0x9bd8, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
+                ECLJump(ecl, st5PostMaple, 0x9bd8, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
                 ecl << pair{0x4d94, 0};
                 break;
             case 6:
-                ECLJump(ecl, 0x96ec, 0x9bd8, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
+                ECLJump(ecl, st5PostMaple, 0x9bd8, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
                 ECLJump(ecl, 0x4d84, 0x4df8, 0, 0);
                 break;
             case 7:
-                ECLStdExec(ecl, 0x96ec, 1, 1);
+                ECLStdExec(ecl, st5PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0x9bd8, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
                 ECLJump(ecl, 0x4d84, 0x4e2c, 0, 0);
                 break;
             case 8:
-                ECLStdExec(ecl, 0x96ec, 1, 1);
+                ECLStdExec(ecl, st5PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0x9bd8, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
                 ECLJump(ecl, 0x4d84, 0x4e8c, 0, 0);
                 break;
             case 9:
-                ECLStdExec(ecl, 0x96ec, 1, 1);
+                ECLStdExec(ecl, st5PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0x9bd8, 60, 90); // 0x9b94, 0x9bd8, 0x9c58
                 ECLJump(ecl, 0x4d84, 0x4ec0, 0, 0);
                 break;
@@ -2501,24 +2588,24 @@ namespace TH18 {
         } else if (stage == 6) {
             switch (portion) {
             case 1:
-                ECLJump(ecl, 0x7e70, 0x82ac, 60, 90); // 0x8318, 0x835c, 0x83dc
+                ECLJump(ecl, st6PostMaple, 0x82ac, 60, 90); // 0x8318, 0x835c, 0x83dc
                 ecl << pair{0x5ca0, 0};
                 break;
             case 2:
-                ECLJump(ecl, 0x7e70, 0x82ac, 60, 90); // 0x8318, 0x835c, 0x83dc
+                ECLJump(ecl, st6PostMaple, 0x82ac, 60, 90); // 0x8318, 0x835c, 0x83dc
                 ECLJump(ecl, 0x5c90, 0x5d0c, 0, 0);
                 break;
             case 3:
-                ECLJump(ecl, 0x7e70, 0x82ac, 60, 90); // 0x8318, 0x835c, 0x83dc
+                ECLJump(ecl, st6PostMaple, 0x82ac, 60, 90); // 0x8318, 0x835c, 0x83dc
                 ECLJump(ecl, 0x5c90, 0x5d74, 0, 0);
                 break;
             case 4:
-                ECLStdExec(ecl, 0x7e70, 1, 1);
+                ECLStdExec(ecl, st6PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0x835c, 60, 90); // 0x8318, 0x835c, 0x83dc
                 ECLJump(ecl, 0x5e3c, 0x5e7c, 0, 0);
                 break;
             case 5:
-                ECLStdExec(ecl, 0x7e70, 1, 1);
+                ECLStdExec(ecl, st6PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0x835c, 60, 90); // 0x8318, 0x835c, 0x83dc
                 ECLJump(ecl, 0x5e3c, 0x5eb0, 0, 0);
                 break;
@@ -2528,51 +2615,51 @@ namespace TH18 {
         } else if (stage == 7) {
             switch (portion) {
             case 1:
-                ECLJump(ecl, 0xa8fc, 0xaf34, 124, 90); // 0xafa0, 0xafe4, 0xb064
+                ECLJump(ecl, st7PostMaple, 0xaf34, 124, 90); // 0xafa0, 0xafe4, 0xb064
                 ecl << pair{0x5a18, 0};
                 break;
             case 2:
-                ECLJump(ecl, 0xa8fc, 0xaf34, 124, 90); // 0xafa0, 0xafe4, 0xb064
+                ECLJump(ecl, st7PostMaple, 0xaf34, 124, 90); // 0xafa0, 0xafe4, 0xb064
                 ECLJump(ecl, 0x5a08, 0x5a50, 0, 0);
                 break;
             case 3:
-                ECLJump(ecl, 0xa8fc, 0xaf34, 124, 90); // 0xafa0, 0xafe4, 0xb064
+                ECLJump(ecl, st7PostMaple, 0xaf34, 124, 90); // 0xafa0, 0xafe4, 0xb064
                 ECLJump(ecl, 0x5a08, 0x5a84, 0, 0);
                 break;
             case 4:
-                ECLJump(ecl, 0xa8fc, 0xaf34, 124, 90); // 0xafa0, 0xafe4, 0xb064
+                ECLJump(ecl, st7PostMaple, 0xaf34, 124, 90); // 0xafa0, 0xafe4, 0xb064
                 ECLJump(ecl, 0x5a08, 0x5ab8, 0, 0);
                 break;
             case 5:
-                ECLJump(ecl, 0xa8fc, 0xaf34, 124, 90); // 0xafa0, 0xafe4, 0xb064
+                ECLJump(ecl, st7PostMaple, 0xaf34, 124, 90); // 0xafa0, 0xafe4, 0xb064
                 ECLJump(ecl, 0x5a08, 0x5b18, 0, 0);
                 break;
             case 6:
-                ECLJump(ecl, 0xa8fc, 0xaf34, 124, 90); // 0xafa0, 0xafe4, 0xb064
+                ECLJump(ecl, st7PostMaple, 0xaf34, 124, 90); // 0xafa0, 0xafe4, 0xb064
                 ECLJump(ecl, 0x5a08, 0x5b4c, 0, 0);
                 break;
             case 7:
-                ECLStdExec(ecl, 0xa8fc, 1, 1);
+                ECLStdExec(ecl, st7PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0xafe4, 124, 90); // 0xafa0, 0xafe4, 0xb064
                 ecl << pair{0x5bd4, 0};
                 break;
             case 8:
-                ECLStdExec(ecl, 0xa8fc, 1, 1);
+                ECLStdExec(ecl, st7PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0xafe4, 124, 90); // 0xafa0, 0xafe4, 0xb064
                 ECLJump(ecl, 0x5bb4, 0x5c38, 0, 0);
                 break;
             case 9:
-                ECLStdExec(ecl, 0xa8fc, 1, 1);
+                ECLStdExec(ecl, st7PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0xafe4, 124, 90); // 0xafa0, 0xafe4, 0xb064
                 ECLJump(ecl, 0x5bb4, 0x5c6c, 0, 0);
                 break;
             case 10:
-                ECLStdExec(ecl, 0xa8fc, 1, 1);
+                ECLStdExec(ecl, st7PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0xafe4, 124, 90); // 0xafa0, 0xafe4, 0xb064
                 ECLJump(ecl, 0x5bb4, 0x5ccc, 0, 0);
                 break;
             case 11:
-                ECLStdExec(ecl, 0xa8fc, 1, 1);
+                ECLStdExec(ecl, st7PostMaple, 1, 1);
                 ECLJump(ecl, 0, 0xafe4, 124, 90); // 0xafa0, 0xafe4, 0xb064
                 ECLJump(ecl, 0x5bb4, 0x5d00, 0, 0);
                 break;
@@ -2583,229 +2670,234 @@ namespace TH18 {
     }
     __declspec(noinline) void THPatch(ECLHelper& ecl, th_sections_t section)
     {
+        constexpr unsigned int st7BossCreateCall = 0xb064;
+        constexpr unsigned int st7EndPreDialogue = 0x57cc;
+        constexpr unsigned int st7EndPostDialogue = 0x585c;
+        constexpr unsigned int st7bsPreDialogue = 0x718;
+        constexpr unsigned int st7bsPostDialogue = 0x758;
+        constexpr unsigned int st7bsPrePushSpellID = 0x80c;
+        constexpr unsigned int st7bsNonSubCallOrd = 0x1174 + 0x18;
+        constexpr unsigned int st7BossSpawnY = 0x56c + 0x14;
+
         switch (section) {
         case THPrac::TH18::TH18_ST1_MID1:
-            ECLStdExec(ecl, 0xa750, 1, 1);
+            ECLStdExec(ecl, st1PostMaple, 1, 1);
             ECLJump(ecl, 0, 0xabe8, 60);
             break;
         case THPrac::TH18::TH18_ST1_BOSS1:
-            ECLStdExec(ecl, 0xa750, 1, 1);
+            ECLStdExec(ecl, st1PostMaple, 1, 1);
             if (thPracParam.dlg)
                 ECLJump(ecl, 0, 0xacac, 60);
             else
                 ECLJump(ecl, 0, 0xacc0, 60);
             break;
         case THPrac::TH18::TH18_ST1_BOSS2:
-            ECLStdExec(ecl, 0xa750, 1, 1);
+            ECLStdExec(ecl, st1PostMaple, 1, 1);
             ECLJump(ecl, 0, 0xacc0, 60);
             ecl.SetFile(2);
             ECLJump(ecl, 0x3e4, 0x4cc, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x4dc, 2100}; // Set Health
-            ecl << pair{0x4fc, (int8_t)0x31}; // Set Spell Ordinal
+            ecl << pair { 0x4dc, 2100 }; // Set Health
+            ecl << pair { 0x4fc, (int8_t)0x31 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST1_BOSS3:
-            ECLStdExec(ecl, 0xa750, 1, 1);
+            ECLStdExec(ecl, st1PostMaple, 1, 1);
             ECLJump(ecl, 0, 0xacc0, 60);
             ecl.SetFile(2);
-            ecl << pair{0x61c, (int8_t)0x32}; // Change Nonspell
-            ecl << pair{0x1350, (int16_t)0} << pair{0x147c, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x1270, (int16_t)0}; // Disable Invincible
+            ecl << pair { 0x61c, (int8_t)0x32 }; // Change Nonspell
+            ecl << pair { 0x1350, (int16_t)0 } << pair { 0x147c, (int16_t)0 }; // Disable Item Drops & SE
+            ecl << pair { 0x1270, (int16_t)0 }; // Disable Invincible
             ECLJump(ecl, 0x15d0, 0x1650, 0); // Skip wait
             break;
         case THPrac::TH18::TH18_ST1_BOSS4:
-            ECLStdExec(ecl, 0xa750, 1, 1);
+            ECLStdExec(ecl, st1PostMaple, 1, 1);
             ECLJump(ecl, 0, 0xacc0, 60);
             ecl.SetFile(2);
             ECLJump(ecl, 0x3e4, 0x4cc, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x4dc, 2200}; // Set Health
-            ecl << pair{0x4fc, (int8_t)0x32}; // Set Spell Ordinal
+            ecl << pair { 0x4dc, 2200 }; // Set Health
+            ecl << pair { 0x4fc, (int8_t)0x32 }; // Set Spell Ordinal
             break;
 
-
         case THPrac::TH18::TH18_ST2_MID1:
-            ECLStdExec(ecl, 0x90b4, 1, 1);
+            ECLStdExec(ecl, st2PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x9550, 60); // 0x9550, 0x9594, 0x9600
             break;
         case THPrac::TH18::TH18_ST2_BOSS1:
-            ECLStdExec(ecl, 0x90b4, 1, 1);
+            ECLStdExec(ecl, st2PostMaple, 1, 1);
             if (thPracParam.dlg)
                 ECLJump(ecl, 0, 0x95ec, 60);
             else
                 ECLJump(ecl, 0, 0x9600, 60); // 0x9550, 0x9594, 0x9600
             break;
         case THPrac::TH18::TH18_ST2_BOSS2:
-            ECLStdExec(ecl, 0x90b4, 1, 1);
+            ECLStdExec(ecl, st2PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x9600, 60); // 0x9550, 0x9594, 0x9600
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x40c, 0x4f4, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x504, 2300}; // Set Health
-            ecl << pair{0x524, (int8_t)0x31}; // Set Spell Ordinal
+            ecl << pair { 0x504, 2300 }; // Set Health
+            ecl << pair { 0x524, (int8_t)0x31 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST2_BOSS3:
-            ECLStdExec(ecl, 0x90b4, 1, 1);
+            ECLStdExec(ecl, st2PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x9600, 60); // 0x9550, 0x9594, 0x9600
 
             ecl.SetFile(2);
-            ecl << pair{0x748, (int8_t)0x32}; // Change Nonspell
-            ecl << pair{0x113c, (int16_t)0} << pair{0x1268, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x105c, (int16_t)0}; // Disable Invincible
+            ecl << pair { 0x748, (int8_t)0x32 }; // Change Nonspell
+            ecl << pair { 0x113c, (int16_t)0 } << pair { 0x1268, (int16_t)0 }; // Disable Item Drops & SE
+            ecl << pair { 0x105c, (int16_t)0 }; // Disable Invincible
             ECLJump(ecl, 0x13bc, 0x13fc, 0); // Skip wait
             break;
         case THPrac::TH18::TH18_ST2_BOSS4:
-            ECLStdExec(ecl, 0x90b4, 1, 1);
+            ECLStdExec(ecl, st2PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x9600, 60); // 0x9550, 0x9594, 0x9600
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x40c, 0x4f4, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x504, 2300}; // Set Health
-            ecl << pair{0x524, (int8_t)0x32}; // Set Spell Ordinal
+            ecl << pair { 0x504, 2300 }; // Set Health
+            ecl << pair { 0x524, (int8_t)0x32 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST2_BOSS5:
-            ECLStdExec(ecl, 0x90b4, 1, 1);
+            ECLStdExec(ecl, st2PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x9600, 60); // 0x9550, 0x9594, 0x9600
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x40c, 0x4f4, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x504, 2700}; // Set Health
-            ecl << pair{0x524, (int8_t)0x33}; // Set Spell Ordinal
+            ecl << pair { 0x504, 2700 }; // Set Health
+            ecl << pair { 0x524, (int8_t)0x33 }; // Set Spell Ordinal
             break;
 
-
         case THPrac::TH18::TH18_ST3_MID1:
-            ECLStdExec(ecl, 0x83a0, 1, 1);
+            ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x8784, 60); // 0x8784, 0x87c8, 0x8848
             ecl.SetFile(3);
-            ecl << pair{0x324, (int16_t)100};
+            ecl << pair { 0x324, (int16_t)100 };
             ecl.SetPos(0x400);
             ecl << 0 << 0x001401ff << 0x01ff0000 << 0 << 13000;
             ECLJump(ecl, 0, 0x47c, 0);
             break;
         case THPrac::TH18::TH18_ST3_BOSS1:
-            ECLStdExec(ecl, 0x83a0, 1, 1);
+            ECLStdExec(ecl, st3PostMaple, 1, 1);
             if (thPracParam.dlg)
                 ECLJump(ecl, 0, 0x8834, 60);
             else
                 ECLJump(ecl, 0, 0x8848, 60); // 0x8784, 0x87c8, 0x8848
             break;
         case THPrac::TH18::TH18_ST3_BOSS2:
-            ECLStdExec(ecl, 0x83a0, 1, 1);
+            ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x8848, 60); // 0x8784, 0x87c8, 0x8848
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x46c, 0x554, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x564, 2800}; // Set Health
-            ecl << pair{0x584, (int8_t)0x31}; // Set Spell Ordinal
+            ecl << pair { 0x564, 2800 }; // Set Health
+            ecl << pair { 0x584, (int8_t)0x31 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST3_BOSS3:
-            ECLStdExec(ecl, 0x83a0, 1, 1);
+            ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x8848, 60); // 0x8784, 0x87c8, 0x8848
 
             ecl.SetFile(2);
-            ecl << pair{0x7c8, (int8_t)0x32}; // Change Nonspell
-            ecl << pair{0x14cc, (int16_t)30}; // Disable Invincible
-            ecl << pair{0x15ac, (int16_t)0} << pair{0x16d8, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x183c, (int16_t)0};
+            ecl << pair { 0x7c8, (int8_t)0x32 }; // Change Nonspell
+            ecl << pair { 0x14cc, (int16_t)30 }; // Disable Invincible
+            ecl << pair { 0x15ac, (int16_t)0 } << pair { 0x16d8, (int16_t)0 }; // Disable Item Drops & SE
+            ecl << pair { 0x183c, (int16_t)0 };
             break;
         case THPrac::TH18::TH18_ST3_BOSS4:
-            ECLStdExec(ecl, 0x83a0, 1, 1);
+            ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x8848, 60); // 0x8784, 0x87c8, 0x8848
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x46c, 0x554, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x564, 2800}; // Set Health
-            ecl << pair{0x584, (int8_t)0x32}; // Set Spell Ordinal
+            ecl << pair { 0x564, 2800 }; // Set Health
+            ecl << pair { 0x584, (int8_t)0x32 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST3_BOSS5:
-            ECLStdExec(ecl, 0x83a0, 1, 1);
+            ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x8848, 60); // 0x8784, 0x87c8, 0x8848
 
             ecl.SetFile(2);
-            ecl << pair{0x7c8, (int8_t)0x33}; // Change Nonspell
-            ecl << pair{0x24f4, (int16_t)30}; // Disable Invincible
-            ecl << pair{0x25d4, (int16_t)0} << pair{0x2700, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x2864, (int16_t)0};
+            ecl << pair { 0x7c8, (int8_t)0x33 }; // Change Nonspell
+            ecl << pair { 0x24f4, (int16_t)30 }; // Disable Invincible
+            ecl << pair { 0x25d4, (int16_t)0 } << pair { 0x2700, (int16_t)0 }; // Disable Item Drops & SE
+            ecl << pair { 0x2864, (int16_t)0 };
             break;
         case THPrac::TH18::TH18_ST3_BOSS6:
-            ECLStdExec(ecl, 0x83a0, 1, 1);
+            ECLStdExec(ecl, st3PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x8848, 60); // 0x8784, 0x87c8, 0x8848
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x46c, 0x554, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x564, 2600}; // Set Health
-            ecl << pair{0x584, (int8_t)0x33}; // Set Spell Ordinal
+            ecl << pair { 0x564, 2600 }; // Set Health
+            ecl << pair { 0x584, (int8_t)0x33 }; // Set Spell Ordinal
             break;
 
-
         case THPrac::TH18::TH18_ST4_MID1:
-            ECLStdExec(ecl, 0x5a04, 1, 1);
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x5d94, 60); // 0x5d94, 0x5dd8, 0x5e58
             break;
         case THPrac::TH18::TH18_ST4_BOSS1:
-            ECLStdExec(ecl, 0x5a04, 1, 1);
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
             if (thPracParam.dlg)
                 ECLJump(ecl, 0, 0x5e44, 60); // 0x5d94, 0x5dd8, 0x5e58
             else
                 ECLJump(ecl, 0, 0x5e58, 60); // 0x5d94, 0x5dd8, 0x5e58
             break;
         case THPrac::TH18::TH18_ST4_BOSS2:
-            ECLStdExec(ecl, 0x5a04, 1, 1);
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x5e58, 60); // 0x5d94, 0x5dd8, 0x5e58
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x3fc, 0x4e4, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x4f4, 3400}; // Set Health
-            ecl << pair{0x514, (int8_t)0x31}; // Set Spell Ordinal
+            ecl << pair { 0x4f4, 3400 }; // Set Health
+            ecl << pair { 0x514, (int8_t)0x31 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST4_BOSS3:
-            ECLStdExec(ecl, 0x5a04, 1, 1);
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x5e58, 60); // 0x5d94, 0x5dd8, 0x5e58
 
             ecl.SetFile(2);
-            ecl << pair{0x758, (int8_t)0x32}; // Change Nonspell
-            ecl << pair{0x12b4, (int16_t)30}; // Disable Invincible
-            ecl << pair{0x1394, (int16_t)0} << pair{0x14c0, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x1624, (int16_t)0};
+            ecl << pair { 0x758, (int8_t)0x32 }; // Change Nonspell
+            ecl << pair { 0x12b4, (int16_t)30 }; // Disable Invincible
+            ecl << pair { 0x1394, (int16_t)0 } << pair { 0x14c0, (int16_t)0 }; // Disable Item Drops & SE
+            ecl << pair { 0x1624, (int16_t)0 };
             break;
         case THPrac::TH18::TH18_ST4_BOSS4:
-            ECLStdExec(ecl, 0x5a04, 1, 1);
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x5e58, 60); // 0x5d94, 0x5dd8, 0x5e58
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x3fc, 0x4e4, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x4f4, 3400}; // Set Health
-            ecl << pair{0x514, (int8_t)0x32}; // Set Spell Ordinal
+            ecl << pair { 0x4f4, 3400 }; // Set Health
+            ecl << pair { 0x514, (int8_t)0x32 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST4_BOSS5:
-            ECLStdExec(ecl, 0x5a04, 1, 1);
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x5e58, 60); // 0x5d94, 0x5dd8, 0x5e58
 
             ecl.SetFile(2);
-            ecl << pair{0x758, (int8_t)0x33}; // Change Nonspell
-            ecl << pair{0x20e0, (int16_t)30}; // Disable Invincible
-            ecl << pair{0x21c0, (int16_t)0} << pair{0x22ec, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x2450, (int16_t)0};
+            ecl << pair { 0x758, (int8_t)0x33 }; // Change Nonspell
+            ecl << pair { 0x20e0, (int16_t)30 }; // Disable Invincible
+            ecl << pair { 0x21c0, (int16_t)0 } << pair { 0x22ec, (int16_t)0 }; // Disable Item Drops & SE
+            ecl << pair { 0x2450, (int16_t)0 };
             break;
         case THPrac::TH18::TH18_ST4_BOSS6:
-            ECLStdExec(ecl, 0x5a04, 1, 1);
+            ECLStdExec(ecl, st4PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x5e58, 60); // 0x5d94, 0x5dd8, 0x5e58
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x3fc, 0x4e4, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x4f4, 4800}; // Set Health
-            ecl << pair{0x514, (int8_t)0x33}; // Set Spell Ordinal
+            ecl << pair { 0x4f4, 4800 }; // Set Health
+            ecl << pair { 0x514, (int8_t)0x33 }; // Set Spell Ordinal
             break;
 
-
         case THPrac::TH18::TH18_ST5_MID1:
-            ECLJump(ecl, 0x96ec, 0x9b94, 60); // 0x9b94, 0x9bd8, 0x9c58
+            ECLJump(ecl, st5PostMaple, 0x9b94, 60); // 0x9b94, 0x9bd8, 0x9c58
             ecl.SetFile(3);
-            ecl << pair{0x324, (int16_t)100};
+            ecl << pair { 0x324, (int16_t)100 };
             ecl.SetPos(0x3ac);
             ecl << 0 << 0x002401ff << 0x01ff0000 << 0 << 13000;
             break;
         case THPrac::TH18::TH18_ST5_BOSS1:
-            ECLStdExec(ecl, 0x96ec, 1, 1);
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
             if (thPracParam.dlg)
                 ECLJump(ecl, 0, 0x9c44, 60); // 0x9b94, 0x9bd8, 0x9c58
             else {
@@ -2814,79 +2906,78 @@ namespace TH18 {
             }
             break;
         case THPrac::TH18::TH18_ST5_BOSS2:
-            ECLStdExec(ecl, 0x96ec, 1, 1);
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x9c58, 60); // 0x9b94, 0x9bd8, 0x9c58
             ECLJump(ecl, 0x4a44, 0x4a94, 3);
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x430, 0x518, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x528, 3200}; // Set Health
-            ecl << pair{0x548, (int8_t)0x31}; // Set Spell Ordinal
+            ecl << pair { 0x528, 3200 }; // Set Health
+            ecl << pair { 0x548, (int8_t)0x31 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST5_BOSS3:
-            ECLStdExec(ecl, 0x96ec, 1, 1);
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x9c58, 60); // 0x9b94, 0x9bd8, 0x9c58
             ECLJump(ecl, 0x4a44, 0x4a94, 3);
 
             ecl.SetFile(2);
-            ecl << pair{0x890, (int8_t)0x32}; // Change Nonspell
-            ecl << pair{0x10b0, (int16_t)30}; // Disable Invincible
-            ecl << pair{0x1190, (int16_t)0} << pair{0x12bc, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x13f4, (int16_t)0};
+            ecl << pair { 0x890, (int8_t)0x32 }; // Change Nonspell
+            ecl << pair { 0x10b0, (int16_t)30 }; // Disable Invincible
+            ecl << pair { 0x1190, (int16_t)0 } << pair { 0x12bc, (int16_t)0 }; // Disable Item Drops & SE
+            ecl << pair { 0x13f4, (int16_t)0 };
             break;
         case THPrac::TH18::TH18_ST5_BOSS4:
-            ECLStdExec(ecl, 0x96ec, 1, 1);
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x9c58, 60); // 0x9b94, 0x9bd8, 0x9c58
             ECLJump(ecl, 0x4a44, 0x4a94, 3);
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x430, 0x518, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x528, 3200}; // Set Health
-            ecl << pair{0x548, (int8_t)0x32}; // Set Spell Ordinal
+            ecl << pair { 0x528, 3200 }; // Set Health
+            ecl << pair { 0x548, (int8_t)0x32 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST5_BOSS5:
-            ECLStdExec(ecl, 0x96ec, 1, 1);
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x9c58, 60); // 0x9b94, 0x9bd8, 0x9c58
             ECLJump(ecl, 0x4a44, 0x4a94, 3);
 
             ecl.SetFile(2);
-            ecl << pair{0x890, (int8_t)0x33}; // Change Nonspell
-            ecl << pair{0x1b9c, (int16_t)30}; // Disable Invincible
-            ecl << pair{0x1c7c, (int16_t)0} << pair{0x1da8, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x1f0c, (int16_t)0};
+            ecl << pair { 0x890, (int8_t)0x33 }; // Change Nonspell
+            ecl << pair { 0x1b9c, (int16_t)30 }; // Disable Invincible
+            ecl << pair { 0x1c7c, (int16_t)0 } << pair { 0x1da8, (int16_t)0 }; // Disable Item Drops & SE
+            ecl << pair { 0x1f0c, (int16_t)0 };
             break;
         case THPrac::TH18::TH18_ST5_BOSS6:
-            ECLStdExec(ecl, 0x96ec, 1, 1);
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x9c58, 60); // 0x9b94, 0x9bd8, 0x9c58
             ECLJump(ecl, 0x4a44, 0x4a94, 3);
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x430, 0x518, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x528, 3000}; // Set Health
-            ecl << pair{0x548, (int8_t)0x33}; // Set Spell Ordinal
+            ecl << pair { 0x528, 3000 }; // Set Health
+            ecl << pair { 0x548, (int8_t)0x33 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST5_BOSS7:
-            ECLStdExec(ecl, 0x96ec, 1, 1);
+            ECLStdExec(ecl, st5PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x9c58, 60); // 0x9b94, 0x9bd8, 0x9c58
             ECLJump(ecl, 0x4a44, 0x4a94, 3);
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x430, 0x518, 1); // Utilize Spell Practice Jump
-            ecl << pair{0x528, 4500}; // Set Health
-            ecl << pair{0x548, (int8_t)0x34}; // Set Spell Ordinal
+            ecl << pair { 0x528, 4500 }; // Set Health
+            ecl << pair { 0x548, (int8_t)0x34 }; // Set Spell Ordinal
             break;
 
-
         case THPrac::TH18::TH18_ST6_MID1:
-            ECLStdExec(ecl, 0x7e70, 1, 1);
+            ECLStdExec(ecl, st6PostMaple, 1, 1);
             ECLJump(ecl, 0, 0x8318, 60); // 0x8318, 0x835c, 0x83dc
             ecl.SetFile(3);
-            ecl << pair{0x324, (int16_t)100};
+            ecl << pair { 0x324, (int16_t)100 };
             ecl.SetPos(0x3ac);
             ecl << 0 << 0x002401ff << 0x01ff0000 << 0 << 14000;
             break;
         case THPrac::TH18::TH18_ST6_BOSS1:
-            ECLStdExec(ecl, 0x7e70, 2, 1);
+            ECLStdExec(ecl, st6PostMaple, 2, 1);
             if (thPracParam.dlg) {
                 ECLJump(ecl, 0, 0x83c8, 60);
             } else {
@@ -2897,121 +2988,121 @@ namespace TH18 {
             }
             break;
         case THPrac::TH18::TH18_ST6_BOSS2:
-            ECLStdExec(ecl, 0x7e70, 2, 1);
+            ECLStdExec(ecl, st6PostMaple, 2, 1);
             ECLJump(ecl, 0, 0x83dc, 60); // 0x8318, 0x835c, 0x83dc
             ECLJump(ecl, 0x5a94, 0x5ae4, 3);
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x488, 0x504, 2); // Skip dialogue
             ECLJump(ecl, 0x5d8, 0x6c0, 2); // Utilize Spell Practice Jump
-            ecl << pair{0x6d0, 2000}; // Set Health
-            ecl << pair{0x6f0, (int8_t)0x31}; // Set Spell Ordinal
+            ecl << pair { 0x6d0, 2000 }; // Set Health
+            ecl << pair { 0x6f0, (int8_t)0x31 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST6_BOSS3:
-            ECLStdExec(ecl, 0x7e70, 2, 1);
+            ECLStdExec(ecl, st6PostMaple, 2, 1);
             ECLJump(ecl, 0, 0x83dc, 60); // 0x8318, 0x835c, 0x83dc
             ECLJump(ecl, 0x5a94, 0x5ae4, 3);
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x488, 0x504, 2); // Skip dialogue
-            ecl << pair{0xc64, (int8_t)0x32}; // Change Nonspell
-            ecl << pair{0x1db0, (int16_t)30}; // Disable Invincible
-            ecl << pair{0x1e70, (int16_t)0} << pair{0x1ec8, (int16_t)0} << pair{0x2008, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x216c, (int16_t)0};
+            ecl << pair { 0xc64, (int8_t)0x32 }; // Change Nonspell
+            ecl << pair { 0x1db0, (int16_t)30 }; // Disable Invincible
+            ecl << pair { 0x1e70, (int16_t)0 } << pair { 0x1ec8, (int16_t)0 } << pair { 0x2008, (int16_t)0 }; // Disable Item Drops & SE
+            ecl << pair { 0x216c, (int16_t)0 };
             break;
         case THPrac::TH18::TH18_ST6_BOSS4:
-            ECLStdExec(ecl, 0x7e70, 2, 1);
+            ECLStdExec(ecl, st6PostMaple, 2, 1);
             ECLJump(ecl, 0, 0x83dc, 60); // 0x8318, 0x835c, 0x83dc
             ECLJump(ecl, 0x5a94, 0x5ae4, 3);
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x488, 0x504, 2); // Skip dialogue
             ECLJump(ecl, 0x5d8, 0x6c0, 2); // Utilize Spell Practice Jump
-            ecl << pair{0x6d0, 4500}; // Set Health
-            ecl << pair{0x6f0, (int8_t)0x32}; // Set Spell Ordinal
+            ecl << pair { 0x6d0, 4500 }; // Set Health
+            ecl << pair { 0x6f0, (int8_t)0x32 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST6_BOSS5:
-            ECLStdExec(ecl, 0x7e70, 3, 1);
+            ECLStdExec(ecl, st6PostMaple, 3, 1);
             ECLJump(ecl, 0, 0x83dc, 60); // 0x8318, 0x835c, 0x83dc
             ECLJump(ecl, 0x5a94, 0x5ae4, 3);
 
             ecl.SetFile(2);
-            ecl << pair{0x25e8, (int16_t)0};
+            ecl << pair { 0x25e8, (int16_t)0 };
             ECLJump(ecl, 0x488, 0x504, 2); // Skip dialogue
-            ecl << pair{0xc64, (int8_t)0x33}; // Change Nonspell
-            ecl << pair{0x2528, (int16_t)30}; // Disable Invincible
-            ecl << pair{0x261c, (int16_t)0} << pair{0x2760, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x28c4, (int16_t)0};
-            ecl << pair{0x370, 176.0f};
+            ecl << pair { 0xc64, (int8_t)0x33 }; // Change Nonspell
+            ecl << pair { 0x2528, (int16_t)30 }; // Disable Invincible
+            ecl << pair { 0x261c, (int16_t)0 } << pair { 0x2760, (int16_t)0 }; // Disable Item Drops & SE
+            ecl << pair { 0x28c4, (int16_t)0 };
+            ecl << pair { 0x370, 176.0f };
             break;
         case THPrac::TH18::TH18_ST6_BOSS6:
-            ECLStdExec(ecl, 0x7e70, 3, 1);
+            ECLStdExec(ecl, st6PostMaple, 3, 1);
             ECLJump(ecl, 0, 0x83dc, 60); // 0x8318, 0x835c, 0x83dc
             ECLJump(ecl, 0x5a94, 0x5ae4, 3);
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x488, 0x504, 2); // Skip dialogue
             ECLJump(ecl, 0x5d8, 0x6c0, 2); // Utilize Spell Practice Jump
-            ecl << pair{0x6d0, 3000}; // Set Health
-            ecl << pair{0x6f0, (int8_t)0x33}; // Set Spell Ordinal
+            ecl << pair { 0x6d0, 3000 }; // Set Health
+            ecl << pair { 0x6f0, (int8_t)0x33 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST6_BOSS7:
-            ECLStdExec(ecl, 0x7e70, 4, 1);
+            ECLStdExec(ecl, st6PostMaple, 4, 1);
             ECLJump(ecl, 0, 0x83dc, 60); // 0x8318, 0x835c, 0x83dc
             ECLJump(ecl, 0x5a94, 0x5ae4, 3);
 
             ecl.SetFile(2);
-            ecl << pair{0x2d70, (int16_t)0};
+            ecl << pair { 0x2d70, (int16_t)0 };
             ECLJump(ecl, 0x488, 0x504, 2); // Skip dialogue
-            ecl << pair{0xc64, (int8_t)0x34}; // Change Nonspell
-            ecl << pair{0x2cb0, (int16_t)30}; // Disable Invincible
-            ecl << pair{0x2da4, (int16_t)0} << pair{0x2ee8, (int16_t)0}; // Disable Item Drops & SE
-            ecl << pair{0x304c, (int16_t)0};
+            ecl << pair { 0xc64, (int8_t)0x34 }; // Change Nonspell
+            ecl << pair { 0x2cb0, (int16_t)30 }; // Disable Invincible
+            ecl << pair { 0x2da4, (int16_t)0 } << pair { 0x2ee8, (int16_t)0 }; // Disable Item Drops & SE
+            ecl << pair { 0x304c, (int16_t)0 };
             break;
         case THPrac::TH18::TH18_ST6_BOSS8:
-            ECLStdExec(ecl, 0x7e70, 4, 1);
+            ECLStdExec(ecl, st6PostMaple, 4, 1);
             ECLJump(ecl, 0, 0x83dc, 60); // 0x8318, 0x835c, 0x83dc
             ECLJump(ecl, 0x5a94, 0x5ae4, 3);
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x488, 0x504, 2); // Skip dialogue
             ECLJump(ecl, 0x5d8, 0x6c0, 2); // Utilize Spell Practice Jump
-            ecl << pair{0x6d0, 2700}; // Set Health
-            ecl << pair{0x6f0, (int8_t)0x34}; // Set Spell Ordinal
+            ecl << pair { 0x6d0, 2700 }; // Set Health
+            ecl << pair { 0x6f0, (int8_t)0x34 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST6_BOSS9:
-            ECLStdExec(ecl, 0x7e70, 5, 1);
+            ECLStdExec(ecl, st6PostMaple, 5, 1);
             ECLJump(ecl, 0, 0x83dc, 60); // 0x8318, 0x835c, 0x83dc
             ECLJump(ecl, 0x5a94, 0x5ae4, 3);
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x488, 0x504, 2); // Skip dialogue
             ECLJump(ecl, 0x5d8, 0x6c0, 2); // Utilize Spell Practice Jump
-            ecl << pair{0x6d0, 3500}; // Set Health
-            ecl << pair{0x6f0, (int8_t)0x35}; // Set Spell Ordinal
+            ecl << pair { 0x6d0, 3500 }; // Set Health
+            ecl << pair { 0x6f0, (int8_t)0x35 }; // Set Spell Ordinal
             break;
         case THPrac::TH18::TH18_ST6_BOSS10:
-            ECLStdExec(ecl, 0x7e70, 5, 1);
+            ECLStdExec(ecl, st6PostMaple, 5, 1);
             ECLJump(ecl, 0, 0x83dc, 60); // 0x8318, 0x835c, 0x83dc
             ECLJump(ecl, 0x5a94, 0x5ae4, 3);
 
             ecl.SetFile(2);
             ECLJump(ecl, 0x488, 0x504, 2); // Skip dialogue
             ECLJump(ecl, 0x5d8, 0x6c0, 2); // Utilize Spell Practice Jump
-            ecl << pair{0x6d0, 7000}; // Set Health
-            ecl << pair{0x6f0, (int8_t)0x36}; // Set Spell Ordinal
+            ecl << pair { 0x6d0, 7000 }; // Set Health
+            ecl << pair { 0x6f0, (int8_t)0x36 }; // Set Spell Ordinal
 
             switch (thPracParam.phase) {
             case 1:
-                ecl << pair{0x6d0, 5000};
+                ecl << pair { 0x6d0, 5000 };
                 ECLJump(ecl, 0x99c4, 0x9b64, 120, 122);
                 break;
             case 2:
-                ecl << pair{0x6d0, 3500};
+                ecl << pair { 0x6d0, 3500 };
                 ECLJump(ecl, 0x99c4, 0x9d40, 120, 122);
                 break;
             case 3:
-                ecl << pair{0x6d0, 1700};
+                ecl << pair { 0x6d0, 1700 };
                 ECLJump(ecl, 0x99c4, 0x9d40, 120, 122);
                 ECLJump(ecl, 0x9dd0, 0x9ffc, 120, 0);
                 break;
@@ -3020,239 +3111,371 @@ namespace TH18 {
             }
             break;
 
-
         case THPrac::TH18::TH18_ST7_MID1:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
             if (thPracParam.dlg)
                 ECLJump(ecl, 0, 0xaf78, 124); // 0xafa0, 0xafe4, 0xb064
             else
                 ECLJump(ecl, 0, 0xafa0, 124); // 0xafa0, 0xafe4, 0xb064
             ecl.SetFile(3);
-            ecl << pair{0x2d0, 99999} << pair{0x2d8, (int16_t)0} << pair{0x368, 90};
+            ecl << pair { 0x2d0, 99999 } << pair { 0x2d8, (int16_t)0 } << pair { 0x368, 90 };
             ecl.SetPos(0x388);
             ecl << 0 << 0x00140017 << 0x01ff0000 << 0 << 90;
             ECLJump(ecl, 0, 0x428, 0);
             break;
         case THPrac::TH18::TH18_ST7_MID2:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
             ECLJump(ecl, 0, 0xafa0, 124); // 0xafa0, 0xafe4, 0xb064
             ecl.SetFile(3);
-            ecl << pair{0x2d0, 99999} << pair{0x2d8, (int16_t)0} << pair{0x368, 90};
+            ecl << pair { 0x2d0, 99999 } << pair { 0x2d8, (int16_t)0 } << pair { 0x368, 90 };
             ecl.SetPos(0x388);
             ecl << 0 << 0x00140017 << 0x01ff0000 << 0 << 90;
             ECLJump(ecl, 0, 0x4c4, 0);
             break;
         case THPrac::TH18::TH18_ST7_MID3:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
             ECLJump(ecl, 0, 0xafa0, 124); // 0xafa0, 0xafe4, 0xb064
             ecl.SetFile(3);
-            ecl << pair{0x2d0, 99999} << pair{0x2d8, (int16_t)0} << pair{0x368, 90};
+            ecl << pair { 0x2d0, 99999 } << pair { 0x2d8, (int16_t)0 } << pair { 0x368, 90 };
             ecl.SetPos(0x388);
             ecl << 0 << 0x00140017 << 0x01ff0000 << 0 << 90;
             ECLJump(ecl, 0, 0x560, 0);
             break;
-        case THPrac::TH18::TH18_ST7_END_NS1:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
+
+        case THPrac::TH18::TH18_ST7_END_NS1: {
+            constexpr unsigned int st7DialogRead = 0xb050;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+
             if (thPracParam.dlg)
-                ECLJump(ecl, 0, 0xb050, 124); // 0xafa0, 0xafe4, 0xb064
+                ECLJump(ecl, 0, st7DialogRead, 124); // 0xafa0, 0xafe4, 0xb064
+
             else {
-                ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-                ECLJump(ecl, 0x57cc, 0x585c, 3);
+                ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+                ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
                 ecl.SetFile(2);
-                ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
+                ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
             }
             break;
-        case THPrac::TH18::TH18_ST7_END_S1:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_S1: {
+            constexpr unsigned int st7bsSpell1SPLifeSet = 0x8ac;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ECLJump(ecl, 0x80c, 0x8ac, 9); // Utilize Spell Practice Jump
+            ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
+            ECLJump(ecl, st7bsPrePushSpellID, st7bsSpell1SPLifeSet, 9); // Utilize Spell Practice Jump
             break;
-        case THPrac::TH18::TH18_ST7_END_NS2:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_NS2: {
+            constexpr unsigned int st7bsNon2BossItemCallOp = 0x1cb8 + 0x4;
+            constexpr unsigned int st7bsNon2PlaySoundOp = 0x1de4 + 0x4;
+            constexpr unsigned int st7bsSpell1Bounds = 0x60e0;
+            constexpr unsigned int st7bsSpell1PostBounds = 0x6100;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ecl << pair{0x118c, (int8_t)0x32}; // Change Nonspell
-            ecl << pair{0x1cbc, (int16_t)0} << pair{0x1de8, (int16_t)0}; // Disable Item Drops & SE
+            ECLJump(ecl, st7bsPreDialogue, st7bsSpell1Bounds, 2);      // Skip dialogue while setting
+            ECLJump(ecl, st7bsSpell1PostBounds, st7bsPostDialogue, 9); // movement bounds from Spell1
+            ecl << pair { st7bsNonSubCallOrd, (int8_t)0x32 }    // Change Nonspell (2)
+                << pair { st7bsNon2BossItemCallOp, (int16_t)0 } // Disable item drops
+                << pair { st7bsNon2PlaySoundOp, (int16_t)0 };   // Disable drop SFX
             break;
-        case THPrac::TH18::TH18_ST7_END_S2:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_S2: {
+            constexpr unsigned int st7bsSpell2SPLifeSet = 0x948;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ECLJump(ecl, 0x80c, 0x948, 9); // Utilize Spell Practice Jump
+            ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
+            ECLJump(ecl, st7bsPrePushSpellID, st7bsSpell2SPLifeSet, 9); // Utilize Spell Practice Jump
             break;
-        case THPrac::TH18::TH18_ST7_END_NS3:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_NS3: {
+            constexpr unsigned int st7bsNon3InvulnVal = 0x23f4 + 0x10;
+            constexpr unsigned int st7bsNon3BossItemCallOp = 0x24d8 + 0x4;
+            constexpr unsigned int st7bsNon3PlaySoundOp = 0x2604 + 0x4;
+            constexpr unsigned int st7bsNon3InterruptTimeVal = 0x2714 + 0x18;
+            constexpr unsigned int st7bsNon3PreWait = 0x2770;
+            constexpr unsigned int st7bsNon3PostWait = 0x27a4;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ecl << pair{0x118c, (int8_t)0x33}; // Change Nonspell
-            ecl << pair{0x2404, (int16_t)0}; // Disable Invincible
-            ecl << pair{0x24dc, (int16_t)0} << pair{0x2608, (int16_t)0}; // Disable Item Drops & SE
-            ECLJump(ecl, 0x2770, 0x27a4, 0); // Skip wait
+            ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
+            ecl << pair { st7bsNonSubCallOrd, (int8_t)0x33 }    // Change Nonspell (3)
+                << pair { st7bsNon3InvulnVal, (int16_t)0 }      // Disable iframes
+                << pair { st7bsNon3BossItemCallOp, (int16_t)0 } // Disable item drops
+                << pair { st7bsNon3PlaySoundOp, (int16_t)0 }    // Disable drop SFX
+                << pair { st7bsNon3InterruptTimeVal, (int16_t)(3600 - 120) }; // Reduce timer by wait time skipped
+            ECLJump(ecl, st7bsNon3PreWait, st7bsNon3PostWait, 0); // Skip wait
             break;
-        case THPrac::TH18::TH18_ST7_END_S3:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_S3: {
+            constexpr unsigned int st7bsSpell3SPLifeSet = 0x9e4;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ECLJump(ecl, 0x80c, 0x9e4, 9); // Utilize Spell Practice Jump
+            ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
+            ECLJump(ecl, st7bsPrePushSpellID, st7bsSpell3SPLifeSet, 9); // Utilize Spell Practice Jump
             break;
-        case THPrac::TH18::TH18_ST7_END_NS4:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_NS4: {
+            constexpr unsigned int st7bsNon4InvulnVal = 0x2c7c + 0x10;
+            constexpr unsigned int st7bsNon4BossItemCallOp = 0x2d60 + 0x4;
+            constexpr unsigned int st7bsNon4PlaySoundOp = 0x2e8c + 0x4;
+            constexpr unsigned int st7bsNon4InterruptTimeVal = 0x2f9c + 0x18;
+            constexpr unsigned int st7bsNon4PreWait = 0x2ff8;
+            constexpr unsigned int st7bsNon4PostWait = 0x303c;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ecl << pair{0x118c, (int8_t)0x34}; // Change Nonspell
-            ecl << pair{0x2c8c, (int16_t)0}; // Disable Invincible
-            ecl << pair{0x2d64, (int16_t)0} << pair{0x2e90, (int16_t)0}; // Disable Item Drops & SE
-            ECLJump(ecl, 0x2ff8, 0x303c, 0); // Skip wait
+            ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
+            ecl << pair { st7bsNonSubCallOrd, (int8_t)0x34 }    // Change Nonspell (4)
+                << pair { st7bsNon4InvulnVal, (int16_t)0 }      // Disable iframes
+                << pair { st7bsNon4BossItemCallOp, (int16_t)0 } // Disable item drops
+                << pair { st7bsNon4PlaySoundOp, (int16_t)0 }    // Disable drop SFX
+                << pair { st7bsNon4InterruptTimeVal, (int16_t)(3600 - 120) }; // Reduce timer by wait time skipped
+            ECLJump(ecl, st7bsNon4PreWait, st7bsNon4PostWait, 0); // Skip wait
             break;
-        case THPrac::TH18::TH18_ST7_END_S4:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_S4: {
+            constexpr unsigned int st7bsSpell4SPLifeSet = 0xa80;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ECLJump(ecl, 0x80c, 0xa80, 9); // Utilize Spell Practice Jump
+            ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
+            ECLJump(ecl, st7bsPrePushSpellID, st7bsSpell4SPLifeSet, 9); // Utilize Spell Practice Jump
             break;
-        case THPrac::TH18::TH18_ST7_END_NS5:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_NS5: {
+            constexpr unsigned int st7bsNon5InvulnVal = 0x3514 + 0x10;
+            constexpr unsigned int st7bsNon5BossItemCallOp = 0x35f8 + 0x4;
+            constexpr unsigned int st7bsNon5PlaySoundOp = 0x3724 + 0x4;
+            constexpr unsigned int st7bsNon5InterruptTimeVal = 0x3834 + 0x18;
+            constexpr unsigned int st7bsNon5PreWait = 0x3890;
+            constexpr unsigned int st7bsNon5PostWait = 0x38c4;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ecl << pair{0x118c, (int8_t)0x35}; // Change Nonspell
-            ecl << pair{0x3524, (int16_t)0}; // Disable Invincible
-            ecl << pair{0x35fc, (int16_t)0} << pair{0x3728, (int16_t)0}; // Disable Item Drops & SE
-            ECLJump(ecl, 0x3890, 0x38c4, 0); // Skip wait
+            ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
+            ecl << pair { st7BossSpawnY, 96.0f } // Adjust boss spawn Y
+                << pair { st7bsNonSubCallOrd, (int8_t)0x35 }    // Change Nonspell (5)
+                << pair { st7bsNon5InvulnVal, (int16_t)0 }      // Disable iframes
+                << pair { st7bsNon5BossItemCallOp, (int16_t)0 } // Disable item drops
+                << pair { st7bsNon5PlaySoundOp, (int16_t)0 }    // Disable drop SFX
+                << pair { st7bsNon5InterruptTimeVal, (int16_t)(4200 - 120) }; // Reduce timer by wait time skipped
+            ECLJump(ecl, st7bsNon5PreWait, st7bsNon5PostWait, 0); // Skip wait (120f)
             break;
-        case THPrac::TH18::TH18_ST7_END_S5:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_S5: {
+            constexpr unsigned int st7bsNon5Bounds = 0x38c4;
+            constexpr unsigned int st7bsNon5PostBounds = 0x38e4;
+            constexpr unsigned int st7bsSpell5SPLifeSet = 0xb1c;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ECLJump(ecl, 0x80c, 0xb1c, 9); // Utilize Spell Practice Jump
+            ECLJump(ecl, st7bsPreDialogue, st7bsNon5Bounds, 2);      // Skip dialogue while setting
+            ECLJump(ecl, st7bsNon5PostBounds, st7bsPostDialogue, 9); // movement bounds from Non5
+            ECLJump(ecl, st7bsPrePushSpellID, st7bsSpell5SPLifeSet, 9); // Utilize Spell Practice Jump
             break;
-        case THPrac::TH18::TH18_ST7_END_NS6:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_NS6: {
+            constexpr unsigned int st7bsNon6InvulnVal = 0x3d9c + 0x10;
+            constexpr unsigned int st7bsNon6BossItemCallOp = 0x3eb0 + 0x4;
+            constexpr unsigned int st7bsNon6PlaySoundOp = 0x3fdc + 0x4;
+            constexpr unsigned int st7bsNon6InterruptTimeVal = 0x40ec + 0x18;
+            constexpr unsigned int st7bsNon6PreWait = 0x4158;
+            constexpr unsigned int st7bsNon6PostWait = 0x418c;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ecl << pair{0x118c, (int8_t)0x36}; // Change Nonspell
-            ecl << pair{0x3dac, (int16_t)0}; // Disable Invincible
-            ecl << pair{0x3eb4, (int16_t)0} << pair{0x3fe0, (int16_t)0}; // Disable Item Drops & SE
-            ECLJump(ecl, 0x4158, 0x418c, 0); // Skip wait
+            ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
+            ecl << pair { st7bsNonSubCallOrd, (int8_t)0x36 }    // Change Nonspell (6)
+                << pair { st7bsNon6InvulnVal, (int16_t)0 }      // Disable iframes
+                << pair { st7bsNon6BossItemCallOp, (int16_t)0 } // Disable item drops
+                << pair { st7bsNon6PlaySoundOp, (int16_t)0 }    // Disable drop SFX
+                << pair { st7bsNon6InterruptTimeVal, (int16_t)(4200 - 120) }; // Reduce timer by wait time skipped
+            ECLJump(ecl, st7bsNon6PreWait, st7bsNon6PostWait, 0); // Skip wait (120f)
             break;
-        case THPrac::TH18::TH18_ST7_END_S6:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_S6: {
+            constexpr unsigned int st7bsSpell6SPLifeSet = 0xbb8;
+            constexpr unsigned int st7bsSpell6FloatInterpTime = 0xc678 + 0x18;
+            constexpr unsigned int st7bsSpell6FloatInterpInit = 0xc678 + 0x20;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ECLJump(ecl, 0x80c, 0xbb8, 9); // Utilize Spell Practice Jump
+            ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
+            ECLJump(ecl, st7bsPrePushSpellID, st7bsSpell6SPLifeSet, 9); // Utilize Spell Practice Jump
 
             switch (thPracParam.phase) {
             case 1:
-                ecl << pair{0xc690, 1} << pair{0xc690, 1} << pair{0xc698, 60.0f};
+                ecl << pair { st7bsSpell6FloatInterpTime, 1 }
+                    << pair { st7bsSpell6FloatInterpInit, 60.0f }; // Already start at min. delay
                 break;
             default:
                 break;
             }
             break;
-        case THPrac::TH18::TH18_ST7_END_NS7:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_NS7: {
+            constexpr unsigned int st7bsNon7InvulnVal = 0x4664 + 0x10;
+            constexpr unsigned int st7bsNon7BossItemCallOp = 0x4748 + 0x4;
+            constexpr unsigned int st7bsNon7PlaySoundOp = 0x4874 + 0x4;
+            constexpr unsigned int st7bsNon7InterruptTimeVal = 0x4984 + 0x18;
+            constexpr unsigned int st7bsNon7PreWait = 0x49e0;
+            constexpr unsigned int st7bsNon7PostWait = 0x4a24;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ecl << pair{0x118c, (int8_t)0x37}; // Change Nonspell
-            ecl << pair{0x4674, (int16_t)0}; // Disable Invincible
-            ecl << pair{0x474c, (int16_t)0} << pair{0x4878, (int16_t)0}; // Disable Item Drops & SE
-            ECLJump(ecl, 0x49e0, 0x4a24, 0); // Skip wait
+            ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
+            ecl << pair { st7bsNonSubCallOrd, (int8_t)0x37 }    // Change Nonspell (7)
+                << pair { st7bsNon7InvulnVal, (int16_t)0 }      // Disable iframes
+                << pair { st7bsNon7BossItemCallOp, (int16_t)0 } // Disable item drops
+                << pair { st7bsNon7PlaySoundOp, (int16_t)0 }    // Disable drop SFX
+                << pair { st7bsNon7InterruptTimeVal, (int16_t)(4200 - 120) }; // Reduce timer by wait time skipped
+            ECLJump(ecl, st7bsNon7PreWait, st7bsNon7PostWait, 0); // Skip wait (120f)
             break;
-        case THPrac::TH18::TH18_ST7_END_S7:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_S7: {
+            constexpr unsigned int st7bsSpell7SPLifeSet = 0xc54;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ECLJump(ecl, 0x80c, 0xc54, 9); // Utilize Spell Practice Jump
+            ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
+            ECLJump(ecl, st7bsPrePushSpellID, st7bsSpell7SPLifeSet, 9); // Utilize Spell Practice Jump
             break;
-        case THPrac::TH18::TH18_ST7_END_NS8:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_NS8: {
+            constexpr unsigned int st7bsNon8InvulnVal = 0x4efc + 0x10;
+            constexpr unsigned int st7bsNon8BossItemCallOp = 0x4fe0 + 0x4;
+            constexpr unsigned int st7bsNon8PlaySoundOp = 0x510c + 0x4;
+            constexpr unsigned int st7bsNon8InterruptTimeVal = 0x521c + 0x18;
+            constexpr unsigned int st7bsNon8PreWait = 0x5278;
+            constexpr unsigned int st7bsNon8PostWait = 0x52bc;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ecl << pair{0x118c, (int8_t)0x38}; // Change Nonspell
-            ecl << pair{0x4f0c, (int16_t)0}; // Disable Invincible
-            ecl << pair{0x4fe4, (int16_t)0} << pair{0x5110, (int16_t)0}; // Disable Item Drops & SE
-            ECLJump(ecl, 0x5278, 0x52bc, 0); // Skip wait
+            ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
+            ecl << pair { st7bsNonSubCallOrd, (int8_t)0x38 }    // Change Nonspell (8)
+                << pair { st7bsNon8InvulnVal, (int16_t)0 }      // Disable iframes
+                << pair { st7bsNon8BossItemCallOp, (int16_t)0 } // Disable item drops
+                << pair { st7bsNon8PlaySoundOp, (int16_t)0 }    // Disable drop SFX
+                << pair { st7bsNon8InterruptTimeVal, (int16_t)(4200 - 120) }; // Reduce timer by wait time skipped
+            ECLJump(ecl, st7bsNon8PreWait, st7bsNon8PostWait, 0); // Skip wait
             break;
-        case THPrac::TH18::TH18_ST7_END_S8:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_S8: {
+            constexpr unsigned int st7bsSpell8SPLifeSet = 0xcf0;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ECLJump(ecl, 0x80c, 0xcf0, 9); // Utilize Spell Practice Jump
+            ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
+            ECLJump(ecl, st7bsPrePushSpellID, st7bsSpell8SPLifeSet, 9); // Utilize Spell Practice Jump
             break;
-        case THPrac::TH18::TH18_ST7_END_S9:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_S9: {
+            constexpr unsigned int st7bsSpell9SPLifeSet = 0xd8c;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ECLJump(ecl, 0x80c, 0xd8c, 9); // Utilize Spell Practice Jump
+            ECLJump(ecl, st7bsPreDialogue, st7bsPostDialogue, 9); // Skip dialogue
+            ECLJump(ecl, st7bsPrePushSpellID, st7bsSpell9SPLifeSet, 9); // Utilize Spell Practice Jump
             break;
-        case THPrac::TH18::TH18_ST7_END_S10:
-            ECLStdExec(ecl, 0xa8fc, 1, 1);
-            ECLJump(ecl, 0, 0xb064, 124); // 0xafa0, 0xafe4, 0xb064
-            ECLJump(ecl, 0x57cc, 0x585c, 3);
+        }
+
+        case THPrac::TH18::TH18_ST7_END_S10: {
+            constexpr unsigned int st7bsHurtbox = 0x76c;
+            constexpr unsigned int st7bsPostHurtbox = 0x784;
+            constexpr unsigned int st7bsSpell8Hurtbox = 0xf908;
+            constexpr unsigned int st7bsSpell8PostHurtbox = 0xf934;
+            constexpr unsigned int st7bsSpell10SPLifeSet = 0xe28;
+
+            ECLStdExec(ecl, st7PostMaple, 1, 1);
+            ECLJump(ecl, 0, st7BossCreateCall, 124); // 0xafa0, 0xafe4, 0xb064
+            ECLJump(ecl, st7EndPreDialogue, st7EndPostDialogue, 3);
 
             ecl.SetFile(2);
-            ECLJump(ecl, 0x718, 0x758, 9); // Skip dialogue
-            ECLJump(ecl, 0x80c, 0xe28, 9); // Utilize Spell Practice Jump
+            ECLJump(ecl, st7bsPreDialogue, st7bsSpell8Hurtbox, 2); // Skip dialogue
+            ECLJump(ecl, st7bsSpell8PostHurtbox, st7bsPostDialogue, 9); // and grab the Dragon Eater hurtbox
+            ECLJump(ecl, st7bsHurtbox, st7bsPostHurtbox, 9); // Avoid overwriting hurtbox (while still setting chapter 43 just in case)
+            ECLJump(ecl, st7bsPrePushSpellID, st7bsSpell10SPLifeSet, 9); // Utilize Spell Practice Jump
 
             switch (thPracParam.phase) {
             case 1:
-                ecl << pair{0xe38, 9000};
+                ecl << pair { st7bsSpell10SPLifeSet + 0x10, 9000 };
                 ECLJump(ecl, 0x68f4, 0x69a0, 90);
                 break;
             case 2:
-                ecl << pair{0xe38, 6500};
+                ecl << pair { st7bsSpell10SPLifeSet + 0x10, 6500 };
                 ECLJump(ecl, 0x68f4, 0x6a4c, 90);
                 break;
             case 3:
-                ecl << pair{0xe38, 4000};
+                ecl << pair { st7bsSpell10SPLifeSet + 0x10, 4000 };
                 ECLJump(ecl, 0x68cc, 0x6b40, 90);
                 break;
             case 4:
@@ -3263,6 +3486,7 @@ namespace TH18 {
                 break;
             }
             break;
+        }
         default:
             break;
         }

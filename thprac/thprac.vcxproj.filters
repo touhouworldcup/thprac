@@ -35,6 +35,9 @@
     <Filter Include="3rdParties\yyjson">
       <UniqueIdentifier>{d15c246f-476f-491c-9dd2-c94f9188f69d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="THPrac Games\th185 warps">
+      <UniqueIdentifier>{a51022eb-87a0-45b1-ab08-be75953c0e45}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -287,6 +290,33 @@
     </ClCompile>
     <ClCompile Include="src\3rdParties\yyjson\yyjson.c">
       <Filter>3rdParties\yyjson</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th185_warps0.cpp">
+      <Filter>THPrac Games\th185 warps</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th185_warps1.cpp">
+      <Filter>THPrac Games\th185 warps</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th185_warps2.cpp">
+      <Filter>THPrac Games\th185 warps</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th185_warps3.cpp">
+      <Filter>THPrac Games\th185 warps</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th185_warps4.cpp">
+      <Filter>THPrac Games\th185 warps</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th185_warps5.cpp">
+      <Filter>THPrac Games\th185 warps</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th185_warps6.cpp">
+      <Filter>THPrac Games\th185 warps</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th185_warps7.cpp">
+      <Filter>THPrac Games\th185 warps</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_th185_warps8.cpp">
+      <Filter>THPrac Games\th185 warps</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

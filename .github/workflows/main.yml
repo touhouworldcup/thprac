@@ -6,14 +6,10 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     steps:
     - uses: actions/checkout@v4
-    - name: Setup MSBuild environment
-      uses: microsoft/setup-msbuild@v2
-      with:
-          msbuild-architecture: x86
-    - name: Setup Visual Studio shell
+    - name: Setup Developer PowerShell
       uses: egor-tensin/vs-shell@v2
       with:
           arch: x86
