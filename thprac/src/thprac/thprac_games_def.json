@@ -9053,10 +9053,10 @@
     "namespace": "TH18",
 
     "glossary": {
-      "TH18_BUG_FIX": [ "Bug修复", "Bug fix", "Bug修復" ],
+      "TH18_BUG_FIX": [ "可选Bug修复", "Optional Bug Fixes", "任意Bug修復" ],
       "TH18_BUG_FIX_DESC": [
         "请在不需要使用以下选项的时候将其关闭。",
-        "Please turn the following options off when there's no need to utilizing them.",
+        "Please turn the following options off when there's no need for them.",
         "以下のオプションを利用する必要がない場合は、オフにしてください。"
       ],
       "TH18_FUNDS": [ "资金力", "Funds", "資金力" ],
@@ -9168,7 +9168,8 @@
         "有効にすると、スペルプラクティスで「弾幕のアジール」をタイムアウトしても、ゲームがクラッシュしなくなります。 "
       ],
       "TH18_RESTART_FIX": [ "重开游戏时重置商店", "Reset market on restart", "ゲームを再開するときに市場をリセットする" ],
-      "TH18_AC_FIX": [ "正确记录关卡开始时所选择的主动卡片", "Correctly record the selected active card on stage beginning.", "ステージ開始時に選択した使用カードを正しく記録します" ],
+      "TH18_RESTART_SETTINGS_CONFLICT": [ "无法同时启用互相冲突的重开设置。", "Cannot enable conflicting restart settings.", "互いに競合する再開設定を同時に有効にすることはできません。" ],
+      "TH18_AC_FIX": [ "正确记录关卡开始时所选择的主动卡片", "Correctly record the selected active card on stage beginning", "ステージ開始時に選択した使用カードを正しく記録します" ],
       "TH18_AC_FIX_DESC": [
         "如果要使这个选项生效，你必须在游戏时保持此选项开启。",
         "This option needs to be enabled for the entire gaming session for it to work.",
