@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1792] {
+const char* th_glossary_str[3][1793] {
     {
         "",
         "啤酒",
@@ -635,7 +635,8 @@ const char* th_glossary_str[3][1792] {
         "太阳冷却",
         "TH18 东方虹龙洞　～ Unconnected Marketeers.",
         "移除分数限制",
-        "...并写入replay中",
+        "允许得分计数器超过 9,999,999,990。\n注意，即使得分超过通常的显示上限，游戏仍会自然地将得分值保存到回放中。",
+        "不要将未封顶分数写入replay",
         "牙冷却",
         "无冷却",
         "盾",
@@ -2428,8 +2429,9 @@ const char* th_glossary_str[3][1792] {
         "When enabled, RNG will no longer play a part in the Miracle Mallet's item conversion during replays (11 gold items and 19 green items for every 30 bullets; close to vanilla rate).",
         "Sun CD",
         "TH18 Unconnected Marketeers",
-        "Score uncap",
-        "...and write into the replay",
+        "Remove score cap",
+        "Allows the score counter to go past 9,999,999,990. Note that the game will naturally save score values into replays even if they go past their usual display limit.",
+        "Don't write uncapped score into replay",
         "Fang CD",
         "No cooldown",
         "Barrier",
@@ -4223,7 +4225,8 @@ const char* th_glossary_str[3][1792] {
         "太陽CD",
         "TH18 東方虹龍洞　～ Unconnected Marketeers.",
         "スコアキャップ解放",
-        "...そしてリプレイに書き込みます ",
+        "スコアカウンターが 9,999,999,990 を超えるようになります。\nなお、得点が通常の表示上限を超えても、ゲームは自然に得点値をリプレイへ保存します。",
+        "上限解除スコアをリプレイに書き込まない",
         "牙CD",
         "クールタイムがない",
         "バリア",

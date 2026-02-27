@@ -1395,8 +1395,7 @@ namespace TH18 {
         }
 
         bool scoreUncapChkbox = false;
-        bool scoreUncapOverwrite = false;
-        bool scoreReplayFactor = false;
+        bool scoreUncapOverride = false;
         bool staticMalletReplay = false;
     public:
         int forceBossMoveDir = 0;
@@ -1777,6 +1776,7 @@ namespace TH18 {
             th18_score_uncap_replay_fix.Setup();
             th18_score_uncap_replay_disp.Setup();
             th18_score_uncap_replay_factor.Setup();
+            th18_score_uncap_replay_factor.Enable();// no reason for this fix not to be there by default
             {
                 *(uintptr_t*)((uintptr_t)scoreUncapStageTrFix[0].data.buffer.ptr + 1) = (uintptr_t)&globals_assign_hooked - 0x4179c7;
                 *(uintptr_t*)((uintptr_t)scoreUncapStageTrFix[1].data.buffer.ptr + 1) = (uintptr_t)&globals_assign_hooked - 0x463045;
@@ -1789,7 +1789,7 @@ namespace TH18 {
             for (auto& hook : scoreUncapHooks) {
                 hook.Toggle(scoreUncapChkbox);
             }
-            th18_score_uncap_replay_fix.Toggle(!scoreUncapOverwrite);
+            th18_score_uncap_replay_fix.Toggle(scoreUncapOverride);
             th18_score_uncap_replay_disp.Toggle(scoreUncapChkbox);
             scoreUncapStageTrFix[0].Toggle(scoreUncapChkbox);
             scoreUncapStageTrFix[1].Toggle(scoreUncapChkbox);
@@ -1924,26 +1924,19 @@ namespace TH18 {
 
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
-                if (ImGui::Checkbox(S(TH18_UNCAP), &scoreUncapChkbox)) {
-                    if (!scoreUncapChkbox) {
-                        scoreUncapOverwrite = false;
-                    }
+                if (ImGui::Checkbox(S(TH18_UNCAP), &scoreUncapChkbox))
                     ScoreUncapSet();
-                }
                 ImGui::SameLine();
-                if (!scoreUncapChkbox) {
-                    ImGui::BeginDisabled();
-                }
-                if (ImGui::Checkbox(S(TH18_UNCAP_OVERWRITE), &scoreUncapOverwrite)) {
-                    ScoreUncapSet();
-                }
-                if (!scoreUncapChkbox) {
-                    ImGui::EndDisabled();
-                }
+                HelpMarker(S(TH18_UNCAP_DESC));
 
-                if (ImGui::Checkbox(S(TH18_REPLAY_BONUS), &scoreReplayFactor)) {
-                    th18_score_uncap_replay_factor.Toggle(scoreReplayFactor);
-                }
+                /* Inclusion of this option is more confusing than it's worth
+                * Note that score uncap already affects replay scores (e.g. st5)
+                * & all the override does is force counterstop when writing the
+                * last stage's score
+                if (!scoreUncapChkbox) ImGui::BeginDisabled();
+                if (ImGui::Checkbox(S(TH18_UNCAP_OVERRIDE), &scoreUncapOverride))
+                    ScoreUncapSet();
+                if (!scoreUncapChkbox) ImGui::EndDisabled();*/
                 
                 if (ImGui::Checkbox(S(TH18_STATIC_MALLET), &staticMalletReplay)) {
                     th18_static_mallet_replay_gold.Toggle(staticMalletReplay);

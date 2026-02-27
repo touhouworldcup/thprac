@@ -635,7 +635,8 @@ enum th_glossary_t {
     TH18_SUN_CD,
     TH18_TITLE,
     TH18_UNCAP,
-    TH18_UNCAP_OVERWRITE,
+    TH18_UNCAP_DESC,
+    TH18_UNCAP_OVERRIDE,
     TH18_VAMPIRE_CD,
     TH18_ZERO_CD,
     TH19_BARRIER,
@@ -1803,7 +1804,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1792];
+extern const char* th_glossary_str[3][1793];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
