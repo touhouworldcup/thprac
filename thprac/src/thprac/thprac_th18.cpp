@@ -4029,8 +4029,29 @@ namespace TH18 {
     EHOOK_DY(th18_scroll_fix, 0x407e05, 10, { // hooks on card resets
         if (THGuiRep::singleton().mRepStatus
           && *(uint32_t*)(pCtx->Esp + 0x18) == 0x417955 // called from shop cleanup
-          && *(uint32_t*)(pCtx->Esp + 0x3c) == 0x417d39) // which was called from on tick
+          && *(uint32_t*)(pCtx->Esp + 0x3c) == 0x417d39) // which was called from relevant part of shop on tick
             pCtx->Eip = 0x407e0f; // skip resetting active card cooldown mult
+    })
+
+    // fix active card visuals becoming generic after shop cleanup
+    // part 1: if context is OK, skip resetting cards
+    EHOOK_DY(th18_shop_cleanup_anm_fix1, 0x417950, 5, {
+        if(!THGuiRep::singleton().mRepStatus) return;
+        if(*(uint32_t*)(pCtx->Ebp + 0x4) != 0x417d39) return;
+
+        pCtx->Eip = 0x417955;
+    })
+
+    // part 2: if context is OK, skip adding card unless it wasn't part of equipment list
+    EHOOK_DY(th18_shop_cleanup_anm_fix2, 0x41796f, 5, {
+        if(!THGuiRep::singleton().mRepStatus) return;
+        if(*(uint32_t*)(pCtx->Ebp + 0x4) != 0x417d39) return;
+
+        auto* abilityManager = *(AbilityManager**)ABILITY_MANAGER_PTR;
+
+        for (ThList<CardBase>* cl = &abilityManager->card_list_head; cl; cl = cl->next)
+            if (cl->entry->card_id == (int32_t)pCtx->Eax)
+                pCtx->Eip = 0x417974;
     })
 
     // fix pre-transition active card selection being written to replay on transition
