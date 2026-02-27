@@ -942,8 +942,8 @@
       "TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS": [ "重置文件的 thprac 数据失败。", "Failed to reset file's thprac data.", "ファイルの thprac データのリセットに失敗しました。" ],
       "TH_REPFIX_SAVE_ERROR_PARAMS": [ "无法将 thprac 数据写入重放文件。", "Failed to add thprac data to replay file.", "thprac のデータをリプレイファイルに書き込めませんでした。" ],
       "TH_TOOL_SHOW_TOGGLE": [ "显示工具", "Show tool", "ツールを表示" ],
-      "TH_BUGFIX": [ "可选Bug修复", "Optional Bug Fixes", "任意Bug修復" ],
-      "TH_BUGFIX_AUTO": [ "已自动应用关键Bug修复。", "Critical bug fixes have been applied automatically.", "重要なBug修復は自動的に適用されています。" ],
+      "TH_BUGFIX": [ "可选的Bug修复", "Optional Bug Fixes", "任意Bug修復" ],
+      "TH_BUGFIX_AUTO": [ "已自动应用关键Bug的修复。", "Critical bug fixes have been applied automatically.", "重要なBug修復は自動的に適用されています。" ],
       "TH_STAGE_NUM": [ "第%d面", "Stage %d", "ステージ %d" ],
       "TH_EXTRA_STAGE": [ "Extra面", "Extra Stage", "Extraステージ" ],
       "TH_DELAY": [ "延迟", "Delay", "ディレイ" ],
@@ -9061,7 +9061,7 @@
         "以下のオプションを利用する必要がない場合は、オフにしてください。"
       ],
       "TH18_BUGFIX_AUTO_DESC": [
-        "包括：\n• 游戏崩溃：在符卡练习中全避「弹幕的庇护所」。\n• 游戏崩溃：持有「死秽回避之药」或「有钱能使鬼推磨」时切换关卡。\n• 回放不同步：蜈蚣卡牌在关卡切换后伤害倍率重置。\n• 回放不同步：卷轴卡牌在 Extra 商店后冷却倍率重置。\n• 录制不同步：「妖怪们的盾构法」存在非确定性行为。\n• 录制不同步：关卡切换时错误地将所选主动卡写入回放。\n• 功能异常：Esc+R 与 Esc+Q。",
+        "包括：\n• 游戏崩溃：在符卡练习中全避「弹幕的庇护所」。\n• 游戏崩溃：持有「死秽回避之药」或「有钱能使鬼推磨」时切换关卡。\n• Replay不同步：蜈蚣卡牌在关卡切换后伤害倍率重置。\n• 回放不同步：卷轴卡牌在 Extra 面商店后冷却倍率重置。\n• 录制不同步：「妖怪们的盾构法」存在非确定性行为。\n• 录制不同步：关卡切换时将错误的所选主动卡写入回放。\n• 有问题的功能：Esc+R 与 Esc+Q。",
         "Includes:\n• Game Crash: Timing out \"Asylum of Danmaku\" in Spell Practice.\n• Game Crash: Stage transition with cards \"Death Avoidance Elixir\" and \"Money is the Best Lawyer in Hell\"\n• Playback Desync: Centipede damage multiplier resetting on stage transition.\n• Playback Desync: Scroll cooldown multipliers resetting after Extra shop.\n• Recording Desync: Non-deterministic behavior on \"Shield Method of the Youkai\".\n• Recording Desync: Incorrect selected active card written to replay on stage transition.\n• Broken Features: Esc+R and Esc+Q.",
         "内容：\n- ゲームクラッシュ：スペルプラクティスで「弾幕のアジール」をタイムアウトした場合。\n- ゲームクラッシュ：「死穢回避の薬」または「地獄の沙汰も金次第」を所持した状態でのステージ移行。\n- 再生ズレ：ムカデカードのダメージ倍率がステージ移行後にリセットされる。\n- 再生ズレ：経典カードのクールダウン倍率がExtraショップ後にリセットされる。\n- 記録ズレ：「妖怪達のシールドメソッド」における非決定的挙動。\n- 記録ズレ：ステージ移行時に選択した使用カードがリプレイへ正しく記録されない。\n- 機能不具合：Esc+R と Esc+Q。"
       ],
