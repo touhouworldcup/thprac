@@ -1951,7 +1951,7 @@ namespace TH20 {
                         if (advFixTimerOffsets) {
                             ImGui::Columns(2, 0, false);
                             for (size_t s = 0; s < totalTransitions; s++) {
-                                ImGui::Text(S(TH20_RPYFIX_STAGE_NUM), s + 2);
+                                ImGui::Text(S(TH_STAGE_NUM), s + 2);
                                 ImGui::SameLine();
 
                                 bool disabled = ((int32_t)s < stage);
@@ -2000,14 +2000,11 @@ namespace TH20 {
                             }
                         }
 
-                        std::string buttonLabelStr; // storage for formatted string
-                        const char* buttonLabel = S(TH_REPFIX_SAVE);
+                        char buttonLabel[64];
+                        snprintf(buttonLabel, sizeof(buttonLabel), "%s", S(TH_REPFIX_SAVE));
 
-                        if (remainingTransitions && startedOnSt1) {
-                            buttonLabelStr = std::vformat(S(TH20_MAINRPYFIX_SAVE_PROGRESS),
-                                std::make_format_args(stage, totalTransitions));
-                            buttonLabel = buttonLabelStr.c_str();
-                        }
+                       if (remainingTransitions && startedOnSt1)
+                            snprintf(buttonLabel, sizeof(buttonLabel), S(TH_REPFIX_SAVE_PROGRESS), stage, totalTransitions);
 
                         ImGui::BeginDisabled(mainRpyFixDisableSave);
                         bool saveClicked = ImGui::Button(buttonLabel);
@@ -2123,7 +2120,7 @@ namespace TH20 {
                 ImGui::SameLine();
                 HelpMarker(S(TH20_EXPIRED_STONE_FIX_DESC));
                 ImGui::SameLine();
-                ImGui::Checkbox(S(TH20_EXPSTONEFIX_SHOW_TOGGLE), &showExpiredPyramidFixTool);
+                ImGui::Checkbox(S(TH_TOOL_SHOW_TOGGLE), &showExpiredPyramidFixTool);
 
                 if (showExpiredPyramidFixTool) {
                     if (THGuiRep::singleton().mRepSelected) {
@@ -2143,7 +2140,7 @@ namespace TH20 {
                             for (size_t s = THGuiRep::singleton().mSelectedRepStartStage;
                                 s <= THGuiRep::singleton().mSelectedRepEndStage; ++s) {
                                 ImGui::EndDisabled(disableChangingExpStoneData);
-                                ImGui::Text(S(s == 7 ? TH20_RPYFIX_EXTRA_STAGE : TH20_RPYFIX_STAGE_NUM), s);
+                                ImGui::Text(S(s == 7 ? TH_EXTRA_STAGE : TH_STAGE_NUM), s);
                                 ImGui::BeginDisabled(disableChangingExpStoneData);
                                 ImGui::SameLine();
 

@@ -29,6 +29,9 @@ namespace TH18 {
         SND_INVALID = 16,
     };
 
+    static inline constexpr uint32_t COUNTERSTOP = 999999999;
+    static inline constexpr int32_t STAGE_COUNT = 8;
+
     int g_lock_timer = 0;
     bool g_lock_timer_flag = false;
 
@@ -37,10 +40,13 @@ namespace TH18 {
         CARD_DESC_LIST = 0x4c53c0,
         MENU_INPUT = 0x4ca21c,
         STAGE_NUM = 0x4cccdc,
+        SCORE = 0x4cccfc,
         FUNDS = 0x4ccd34,
         POWER = 0x4ccd38,
         ABILITY_MANAGER_PTR = 0x4cf298,
         ABILITY_SHOP_PTR = 0x4cf2a4,
+        ASCII_MANAGER_PTR = 0x4cf2ac,
+        TRANSITION_STG_PTR = 0x4cf2b0,
         BULLET_MANAGER_PTR = 0x4cf2bc,
         MUKADE_ADDR = 0x4cf2d4,
         GAME_THREAD_PTR = 0x4cf2e4,
@@ -48,8 +54,13 @@ namespace TH18 {
         PAUSE_MENU_PTR = 0x4cf40c,
         PLAYER_PTR = 0x4cf410,
         SCOREFILE_MANAGER_PTR = 0x4cf41c,
+        MAIN_MENU_PTR = 0x4cf43c,
         ANM_MANAGER_PTR = 0x51f65c,
         WINDOW_PTR = 0x568c30,
+    };
+
+    enum funcs {
+        SAVE_REPLAY = 0x461e90,
     };
     
    enum cards {
@@ -159,6 +170,37 @@ namespace TH18 {
     struct AnmManager {
         char _pad0[0x312072c];
         AnmLoaded* loaded_anm_files[33]; // 0x312072c
+    };
+
+    struct ReplayStageData { // size 0x28
+        struct ReplayFrameInput* input_start;
+        struct ReplayFrameInput* input_current; // 0x4
+        uint8_t* fps_counts_start; // 0x8
+        uint8_t* fps_counts_current; // 0xC
+        struct ReplayGameState* gamestate_start; // 0x10
+        int32_t current_frame; // 0x14
+        ThList<ReplayStageData> list_node; // 0x18
+    };
+
+    struct Replay { // size 0x31C
+        char _pad0[0xc];
+        uint32_t replay_mode; // 0xc
+        int __dword_10; // 0x10
+        struct ReplayHeader* header; // 0x14
+        struct ReplayInfo* info; // 0x18
+        struct ReplayGameState* game_states[STAGE_COUNT]; // 0x1c
+        ThList<struct ReplayChunk> chunk_lists[STAGE_COUNT]; // 0x3c
+        ThList<struct ReplayChunk>* current_chunk_node; // 0xbc
+        int __chunk_count; // 0xc0
+        struct ReplayStageData stage_data[STAGE_COUNT]; // 0xc4
+        void* file_buffer; // 0x204
+        uint8_t __byte_208; // 0x208
+        char _pad1[0x3]; // 0x209
+        int32_t __int_20C; // 0x20c
+        struct UpdateFunc* on_tick_func_B; // 0x210
+        int32_t stage_number; // 0x214
+        uint32_t flags; // 0x218
+        char file_path[0x100]; // 0x21c
     };
 
     using std::pair;
@@ -664,6 +706,17 @@ namespace TH18 {
 
         int mDiffculty = 0;
     };
+
+     struct LoadedReplayData {
+        std::wstring originalName;
+        std::wstring originalPath;
+        uint64_t metroHash[2];
+        uint32_t header[9];
+        void* decoded = nullptr;
+        void* extraData = nullptr;
+        size_t extraSize = 0;
+    };
+
     class THGuiRep : public Gui::GameGuiWnd {
         THGuiRep() noexcept
         {
@@ -674,27 +727,65 @@ namespace TH18 {
         SINGLETON(THGuiRep)
 
     public:
-        std::wstring mRepDir;
-        std::wstring mRepName;
-        uint64_t mRepMetroHash[2];
+        THPracParam mRepParam;
         bool mRepSelected = false;
+        uint32_t mSelectedRepStartStage;
+        uint32_t mSelectedRepEndStage;
+        uint32_t mSelectedRepPlaybackStartStage;
+        uint32_t mSelectedRepScores[STAGE_COUNT];
+        LoadedReplayData mSelectedRepData;
+        std::wstring mSelectedRepDir;
+        std::wstring mSelectedRepName;
+        std::wstring mSelectedRepPath;
+        std::wstring mAppdataPath;
+        uint64_t mRepMetroHash[2];
+
+        void DisableCardFix();
+        void EnableCardFix(LoadedReplayData& rd);
+        void ResetCardFix();
+        void ResetScoreFix();
 
         void CheckReplay()
         {
-            uint32_t index = GetMemContent(0x4cf43c, 0x5aac);
-            char* repName_ = (char*)GetMemAddr(0x4cf43c, index * 4 + 0x5ab4, 0x21c);
-            std::wstring repName = mb_to_utf16(repName_, 932);
+            const uint32_t index = GetMemContent(MAIN_MENU_PTR, 0x5aac);
+            const Replay replay = *GetMemContent<Replay*>(MAIN_MENU_PTR, index * 4 + 0x5ab4);
+
+            std::wstring repName = mb_to_utf16(replay.file_path, 932);
             std::wstring repDir(mAppdataPath);
             repDir.append(L"\\ShanghaiAlice\\th18\\replay\\");
-            repDir.append(repName);
-            mRepName = repName;
-            mRepDir = repDir;
+            mSelectedRepName = repName;
+            mSelectedRepDir = repDir;
 
+            // if selected replay changes, reset fixed score cache
+            if (mSelectedRepPath != repDir + repName) {
+                mSelectedRepPath = repDir + repName;
+                ResetCardFix();
+                ResetScoreFix();
+            }
+
+            // load thprac params if in replay
             std::string param;
-            if (ReplayLoadParam(repDir.c_str(), param) && mRepParam.ReadJson(param))
+            if (ReplayLoadParam(mSelectedRepPath.c_str(), param) && mRepParam.ReadJson(param))
                 mParamStatus = true;
             else
                 mRepParam.Reset();
+
+            
+            // determine scores & start/end stages of replay
+            for (size_t st = 1; st <= 7; ++st) {
+                if (replay.stage_data[st].input_start) {
+                    if (!mSelectedRepStartStage)
+                        mSelectedRepStartStage = st;
+                    mSelectedRepEndStage = st;
+
+                    mSelectedRepScores[st - 1] = GetMemContent((uintptr_t)&replay.stage_data[st].gamestate_start, 0x68 + 0x20);
+                }
+            }
+            mSelectedRepScores[mSelectedRepEndStage] = GetMemContent((uintptr_t)&replay.info, 0x18);
+
+            // load & decrypt file data
+            LoadSelectedReplayData();
+            EnableCardFix(mSelectedRepData);
         }
 
         bool mRepStatus = false;
@@ -707,6 +798,13 @@ namespace TH18 {
                 mRepSelected = false;
                 mRepStatus = false;
                 mParamStatus = false;
+                mSelectedRepStartStage = 0;
+                mSelectedRepEndStage = 0;
+                mSelectedRepPlaybackStartStage = 0;
+                memset(mSelectedRepScores, 0, sizeof(mSelectedRepScores));
+                UnloadReplayData();
+                DisableCardFix();
+
                 thPracParam.Reset();
                 break;
             case 2:
@@ -715,20 +813,62 @@ namespace TH18 {
                 break;
             case 3:
                 mRepStatus = true;
+                mSelectedRepPlaybackStartStage = GetMemContent(RVA(MAIN_MENU_PTR), 0x24) + 1;
+
                 if (mParamStatus)
                     memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
-                CalcFileHash(mRepDir.c_str(), mRepMetroHash);
+                CalcFileHash(mSelectedRepPath.c_str(), mRepMetroHash);
                 break;
             default:
                 break;
             }
         }
 
-        std::wstring mAppdataPath;
+        #define ThDecrypt(data, size1, param1, param2, param3, size2) asm_call<0x401e40, Fastcall>(data, size1, param1, param2, param3, size2)
+#define ThUnlzss(dataBuffer, dataSize, outBuffer, outSize) asm_call<0x46f840, Fastcall>(dataBuffer, dataSize, outBuffer, outSize)
+
+        __declspec(noinline) void LoadSelectedReplayData()
+        {
+            // Load replay file
+            MappedFile file(THGuiRep::singleton().mSelectedRepPath.c_str());
+            mSelectedRepData.originalName = THGuiRep::singleton().mSelectedRepName;
+            mSelectedRepData.originalPath = THGuiRep::singleton().mSelectedRepPath;
+
+            // Decode and copy data
+            void* mRepDataRaw = nullptr;
+            memcpy(mSelectedRepData.header, file.fileMapView, 0x24);
+            mRepDataRaw = malloc(mSelectedRepData.header[7]);
+            mSelectedRepData.decoded = malloc(mSelectedRepData.header[8]);
+            mSelectedRepData.extraSize = file.fileSize - mSelectedRepData.header[3];
+            mSelectedRepData.extraData = malloc(mSelectedRepData.extraSize);
+            memcpy(mRepDataRaw, (void*)((uint32_t)file.fileMapView + 0x24), mSelectedRepData.header[7]);
+            memcpy(mSelectedRepData.extraData, (void*)((uint32_t)file.fileMapView + mSelectedRepData.header[3]), mSelectedRepData.extraSize);
+            ThDecrypt(mRepDataRaw, mSelectedRepData.header[7], 0x5c, 0xe1, 0x400, mSelectedRepData.header[7]);
+            ThDecrypt(mRepDataRaw, mSelectedRepData.header[7], 0x7d, 0x3a, 0x100, mSelectedRepData.header[7]);
+            ThUnlzss(mRepDataRaw, mSelectedRepData.header[7], mSelectedRepData.decoded, mSelectedRepData.header[8]);
+            free(mRepDataRaw);
+
+            // Calc Hash
+            mSelectedRepData.metroHash[0] = 0;
+            mSelectedRepData.metroHash[1] = 0;
+            MetroHash128::Hash((uint8_t*)file.fileMapView, file.fileSize, (uint8_t*)mSelectedRepData.metroHash);
+        }
+
+        __declspec(noinline) void UnloadReplayData()
+        {
+            if (mSelectedRepData.decoded) {
+                free(mSelectedRepData.decoded);
+                mSelectedRepData.decoded = nullptr;
+            }
+            if (mSelectedRepData.extraData) {
+                free(mSelectedRepData.extraData);
+                mSelectedRepData.extraData = nullptr;
+                mSelectedRepData.extraSize = 0;
+            }
+        }
 
     protected:
         bool mParamStatus = false;
-        THPracParam mRepParam;
     };
 
      const uint8_t* GetEquippedCardCounts()
@@ -1282,7 +1422,7 @@ namespace TH18 {
     PATCH_ST(th18_func_call3_uninit_fix, 0x43926c, "0f1f4000");
     PATCH_ST(th18_all_clear_bonus_1, 0x4448ab, "eb0b909090");
     EHOOK_ST(th18_all_clear_bonus_2, 0x444afa, 7, {
-        *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(0x4cccfc);
+        *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(SCORE);
         if (GetMemContent(0x4cccc8) & 0x10) {
             typedef void (*PScoreFunc)();
             PScoreFunc a = (PScoreFunc)0x458bd0;
@@ -1291,7 +1431,7 @@ namespace TH18 {
         }
     });
     EHOOK_ST(th18_all_clear_bonus_3, 0x444c49, 7, {
-        *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(0x4cccfc);
+        *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(SCORE);
         if (GetMemContent(0x4cccc8) & 0x10) {
             typedef void (*PScoreFunc)();
             PScoreFunc a = (PScoreFunc)0x458bd0;
@@ -1300,9 +1440,8 @@ namespace TH18 {
         }
     });
     EHOOK_ST(th18_score_uncap_replay_fix, 0x4620b9, 3, {
-        if (pCtx->Eax >= 0x3b9aca00) {
-            pCtx->Eax = 0x3b9ac9ff;
-        }
+        if (pCtx->Eax > COUNTERSTOP)
+            pCtx->Eax = COUNTERSTOP;
     });
     EHOOK_ST(th18_score_uncap_replay_disp, 0x468405, 1, {
         *(const char**)(pCtx->Esp) = scoreDispFmt;
@@ -1409,6 +1548,7 @@ namespace TH18 {
         bool activeCardIdFix = false;
         bool eirinEikiCardFix = false;
         bool funcCallFix = false;
+        bool activeCardRepFix = false;
 
         struct FixData {
             uint32_t stage;
@@ -1421,16 +1561,7 @@ namespace TH18 {
         };
         bool mShowFixInstruction = false;
         std::vector<FixData> mFixData;
-        std::wstring mRepOriginalName;
-        std::wstring mRepOriginalPath;
-        uint64_t mRepMetroHash[2];
-        uint32_t mRepHeader[9];
-        void* mRepDataDecoded = nullptr;
-        void* mRepExtraData = nullptr;
-        size_t mRepExtraDataSize = 0;
-        const char* mStageStr[9] {
-            "?", "1", "2", "3", "4", "5", "6", "Extra", "?"
-        };
+        uint32_t mScoreOverwrites[STAGE_COUNT];
         
         __declspec(noinline) uint32_t* FindCardDesc(uint32_t id)
         {
@@ -1442,97 +1573,26 @@ namespace TH18 {
         }
 
 #define ThEncrypt(data, size1, param1, param2, param3, size2) asm_call<0x401f50, Fastcall>(data, size1, param1, param2, param3, size2)
-#define ThDecrypt(data, size1, param1, param2, param3, size2) asm_call<0x401e40, Fastcall>(data, size1, param1, param2, param3, size2)
-#define ThUnlzss(dataBuffer, dataSize, outBuffer, outSize)    asm_call<0x46f840, Fastcall>(dataBuffer, dataSize, outBuffer, outSize)
 #define ThLzss(dataBuffer, dataSize, outSize)                 asm_call<0x46f5b0, Fastcall, void*>(dataBuffer, dataSize, outSize)
 #define _builtin_free(buffer)                                 asm_call<0x491a3f, Cdecl>(buffer)
 
-        __declspec(noinline) void UnloadReplay()
+        __declspec(noinline) bool SaveReplayWithData(LoadedReplayData& rd, void* repDataCopy)
         {
-            if (mRepDataDecoded) {
-                free(mRepDataDecoded);
-                mRepDataDecoded = nullptr;
-            }
-            if (mRepExtraData) {
-                free(mRepExtraData);
-                mRepExtraData = nullptr;
-            }
-
-            mFixData.clear();
-            th18_rep_card_fix.Disable();
-        }
-        __declspec(noinline) void OverwriteReplayData(void* replayData)
-        {
-            for (auto& fix : mFixData) {
-                if (fix.activeCardVec.size()) {
-                    int32_t* cardIdx = (int32_t*)(fix.activeCardIdPtr + (uint32_t)replayData);
-                    *cardIdx = fix.activeCardVec[fix.activeCardComboIdx];
-                }
-            }
-        }
-        __declspec(noinline) void ParseReplayData()
-        {
-            if (!mRepDataDecoded) {
-                return;
-            }
-
-            uint32_t repData = (uint32_t)mRepDataDecoded + 0xc8;
-            int limit = *(int*)((uint32_t)mRepDataDecoded + 0xa8);
-            if (limit >= 8) {
-                limit = 6;
-            }
-
-            for (int i = 0; i < limit; ++i) {
-                if (*(uint16_t*)(repData) >= 1 && *(uint16_t*)(repData) <= 7) {
-                    FixData data;
-                    data.stage = *(uint16_t*)(repData);
-
-                    uint8_t cardTrigger[57];
-                    memset(cardTrigger, 0, 57);
-                    data.activeCardId = *(int32_t*)(repData + 0x964);
-                    data.activeCardIdPtr = repData + 0x964 - (uint32_t)mRepDataDecoded;
-                    for (int32_t* j = (int32_t*)((uint32_t)repData + 0x164); *j >= 0; j++) {
-                        auto cardStruct = FindCardDesc(*j);
-                        if (cardStruct && cardStruct[3] == 0 && !cardTrigger[*j]) {
-                            data.activeCardVec.push_back(*j);
-                            data.activeCardLabelVec.push_back(TH18_CARD_LIST[*j]);
-                            cardTrigger[*j] = 1;
-                        }
-                    }
-                    data.activeCardLabelVec.push_back(0);
-                    data.activeCardComboIdx = 0;
-                    for (size_t k = 0; k < data.activeCardVec.size(); ++k) {
-                        if (data.activeCardId == data.activeCardVec[k]) {
-                            data.activeCardComboIdx = k;
-                            break;
-                        }
-                    }
-
-                    mFixData.push_back(data);
-                }
-                repData = repData + *(uint32_t*)(repData + 8) + 0x126c;
-            }
-        }
-        __declspec(noinline) void SaveReplay()
-        {
+            // Setup header copy
             uint32_t repHeader[9];
-            memcpy(repHeader, mRepHeader, sizeof(repHeader));
+            memcpy(repHeader, rd.header, sizeof(repHeader));
 
-            void* repDataOutput = malloc(repHeader[8]);
-            memcpy(repDataOutput, mRepDataDecoded, repHeader[8]);
-            OverwriteReplayData(repDataOutput);
-
+            // Re-encode data from data copy
             uint32_t repDataEncodedSize;
-            auto repDataEncoded = ThLzss(repDataOutput, repHeader[8], &repDataEncodedSize);
+            auto repDataEncoded = ThLzss(repDataCopy, repHeader[8], &repDataEncodedSize);
             repHeader[7] = repDataEncodedSize;
             repHeader[3] = repDataEncodedSize + 0x24;
-            ThEncrypt(repDataEncoded, mRepHeader[7], 0x7d, 0x3a, 0x100, repHeader[7]);
-            ThEncrypt(repDataEncoded, mRepHeader[7], 0x5c, 0xe1, 0x400, repHeader[7]);
-            free(repDataOutput);
+            ThEncrypt(repDataEncoded, rd.header[7], 0x7d, 0x3a, 0x100, repHeader[7]);
+            ThEncrypt(repDataEncoded, rd.header[7], 0x5c, 0xe1, 0x400, repHeader[7]);
+            free(repDataCopy);
 
+            // Setup file picker
             DWORD bytesProcessed;
-            std::wstring repDir = THGuiRep::singleton().mAppdataPath;
-            repDir.append(L"\\ShanghaiAlice\\th18\\replay\\");
             OPENFILENAMEW ofn;
             wchar_t szFile[512];
             wcscpy_s(szFile, L"th18_ud----.rpy");
@@ -1545,9 +1605,11 @@ namespace TH18 {
             ofn.nFilterIndex = 1;
             ofn.lpstrFileTitle = nullptr;
             ofn.nMaxFileTitle = 0;
-            ofn.lpstrInitialDir = repDir.c_str();
+            ofn.lpstrInitialDir = THGuiRep::singleton().mSelectedRepDir.c_str();
             ofn.lpstrDefExt = L".rpy";
             ofn.Flags = OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
+
+            // Open file picker & write file
             if (GetSaveFileNameW(&ofn)) {
                 auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {
@@ -1558,59 +1620,129 @@ namespace TH18 {
                 SetEndOfFile(outputFile);
                 WriteFile(outputFile, repHeader, sizeof(repHeader), &bytesProcessed, nullptr);
                 WriteFile(outputFile, repDataEncoded, repDataEncodedSize, &bytesProcessed, nullptr);
-                WriteFile(outputFile, mRepExtraData, mRepExtraDataSize, &bytesProcessed, nullptr);
+                WriteFile(outputFile, rd.extraData, rd.extraSize, &bytesProcessed, nullptr);
                 CloseHandle(outputFile);
 
                 MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
+
+                _builtin_free(repDataEncoded);
+                return true;
+            }
+        end:
+            _builtin_free(repDataEncoded);
+            return false;
+        }
+        
+        __declspec(noinline) bool SaveReplayScoreFix()
+        {
+            auto& guiRep = THGuiRep::singleton();
+            LoadedReplayData rd = guiRep.mSelectedRepData;
+
+            // Setup copy
+            void* repDataCopy = malloc(rd.header[8]);
+            memcpy(repDataCopy, rd.decoded, rd.header[8]);
+
+            // Overwrite score data in replay data copy
+            uint32_t repData = (uint32_t)rd.decoded + 0xc8;
+            int limit = *(int*)((uint32_t)rd.decoded + 0xa8);
+            if (limit >= 8)
+                limit = 6;
+
+            for (int i = 0; i < limit; ++i) {
+                const uint16_t stage = GetMemContent<uint16_t>(repData);
+                const uint32_t newScore = mScoreOverwrites[stage - 1];
+
+                if (stage > 1 && stage <= 7 && newScore && guiRep.mSelectedRepScores[stage - 1] < newScore) {
+                    uintptr_t trScoreAddr = (uint32_t)repDataCopy + (repData - (uint32_t)rd.decoded) + 0x88;
+                    *(uint32_t*)trScoreAddr = newScore;
+                }
+
+                repData += *(uint32_t*)(repData + 8) + 0x126c;
             }
 
-            end:
-            _builtin_free(repDataEncoded);
+            uintptr_t finalScoreAddr = (uint32_t)repDataCopy + 0x18;
+            *(uint32_t*)finalScoreAddr = (uint32_t)mScoreOverwrites[guiRep.mSelectedRepEndStage];
+
+            return SaveReplayWithData(rd, repDataCopy);
         }
-        __declspec(noinline) void LoadReplay()
+
+        __declspec(noinline) void ParseReplayCardData(LoadedReplayData& rd)
         {
-            UnloadReplay();
+            if (!rd.decoded)
+                return;
 
-            // Load replay
-            MappedFile file(THGuiRep::singleton().mRepDir.c_str());
+            uint32_t repData = (uint32_t)rd.decoded + 0xc8;
+            int limit = *(int*)((uint32_t)rd.decoded + 0xa8);
+            if (limit >= 8)
+                limit = 6;
 
-            mRepOriginalName = THGuiRep::singleton().mRepName;
-            mRepOriginalPath = THGuiRep::singleton().mRepDir;
+            for (int i = 0; i < limit; ++i) {
+                if (*(uint16_t*)(repData) >= 1 && *(uint16_t*)(repData) <= 7) {
+                    FixData data;
+                    data.stage = *(uint16_t*)(repData);
 
-            // Decode and copy data
-            void* mRepDataRaw = nullptr;
-            memcpy(mRepHeader, file.fileMapView, 0x24);
-            mRepDataRaw = malloc(mRepHeader[7]);
-            mRepDataDecoded = malloc(mRepHeader[8]);
-            mRepExtraDataSize = file.fileSize - mRepHeader[3];
-            mRepExtraData = malloc(mRepExtraDataSize);
-            memcpy(mRepDataRaw, (void*)((uint32_t)file.fileMapView + 0x24), mRepHeader[7]);
-            memcpy(mRepExtraData, (void*)((uint32_t)file.fileMapView + mRepHeader[3]), mRepExtraDataSize);
-            ThDecrypt(mRepDataRaw, mRepHeader[7], 0x5c, 0xe1, 0x400, mRepHeader[7]);
-            ThDecrypt(mRepDataRaw, mRepHeader[7], 0x7d, 0x3a, 0x100, mRepHeader[7]);
-            ThUnlzss(mRepDataRaw, mRepHeader[7], mRepDataDecoded, mRepHeader[8]);
-            free(mRepDataRaw);
+                    uint8_t cardTrigger[57];
+                    memset(cardTrigger, 0, 57);
+                    data.activeCardId = *(int32_t*)(repData + 0x964);
+                    data.activeCardIdPtr = repData + 0x964 - (uint32_t)rd.decoded;
+                    for (int32_t* j = (int32_t*)((uint32_t)repData + 0x164); *j >= 0; j++) {
+                        auto cardStruct = FindCardDesc(*j);
 
-            // Calc Hash
-            mRepMetroHash[0] = 0;
-            mRepMetroHash[1] = 0;
-            MetroHash128::Hash((uint8_t*)file.fileMapView, file.fileSize, (uint8_t*)mRepMetroHash);
+                        if (cardStruct && cardStruct[3] == 0 && !cardTrigger[*j]) {
+                            data.activeCardVec.push_back(*j);
+                            data.activeCardLabelVec.push_back(TH18_CARD_LIST[*j]);
+                            cardTrigger[*j] = 1;
+                        }
+                    }
 
-            ParseReplayData();
-            th18_rep_card_fix.Enable();
+                    data.activeCardLabelVec.push_back(0);
+                    data.activeCardComboIdx = 0;
+                    for (size_t k = 0; k < data.activeCardVec.size(); ++k) {
+                        if (data.activeCardId == data.activeCardVec[k]) {
+                            data.activeCardComboIdx = k;
+                            break;
+                        }
+                    }
 
-            return;
+                    mFixData.push_back(data);
+                }
+
+                repData += *(uint32_t*)(repData + 8) + 0x126c;
+            }
         }
+        
+
+        __declspec(noinline) bool SaveReplayCardFix()
+        {
+            LoadedReplayData& mRepLoaded = THGuiRep::singleton().mSelectedRepData;
+
+            // Setup copy
+            void* repDataCopy = malloc(mRepLoaded.header[8]);
+            memcpy(repDataCopy, mRepLoaded.decoded, mRepLoaded.header[8]);
+            // Overwrite card data in replay copy
+            for (auto& fix : mFixData) {
+                if (fix.activeCardVec.size()) {
+                    int32_t* cardIdx = (int32_t*)(fix.activeCardIdPtr + (uint32_t)repDataCopy);
+                    *cardIdx = fix.activeCardVec[fix.activeCardComboIdx];
+
+                }
+               
+            }
+
+            return SaveReplayWithData(mRepLoaded, repDataCopy);
+        }
+        
         bool GetAvailability()
         {
-            if (!mRepDataDecoded) {
+            LoadedReplayData& mRepLoaded = THGuiRep::singleton().mSelectedRepData;
+            if (!mRepLoaded.decoded) {
                 return false;
             }
             auto& repMenu = THGuiRep::singleton();
             if (GetMemContent(GAME_THREAD_PTR) && !GetMemContent(GAME_THREAD_PTR, 0xd0)) {
                 return false;
             }
-            if (repMenu.mRepStatus && (repMenu.mRepMetroHash[0] != mRepMetroHash[0] || repMenu.mRepMetroHash[1] != mRepMetroHash[1])) {
+            if (repMenu.mRepStatus && (repMenu.mRepMetroHash[0] != mRepLoaded.metroHash[0] || repMenu.mRepMetroHash[1] != mRepLoaded.metroHash[1])) {
                 return false;
             }
             return true;
@@ -1620,72 +1752,173 @@ namespace TH18 {
             bool wndFocus = true;
 
             if (BeginOptGroup<TH_REPLAY_FIX>()) {
-                ImGui::TextUnformatted(S(TH18_REPFIX_DESC));
-                if (mShowFixInstruction) {
-                    if (ImGui::Button(S(TH18_REPFIX_HIDE_INS)))
-                        mShowFixInstruction = false;
-                } else {
-                    if (ImGui::Button(S(TH18_REPFIX_SHOW_INS)))
-                        mShowFixInstruction = true;
-                }
-                if (mShowFixInstruction) {
-                    ImGui::PushTextWrapPos(GetRelWidth(0.95f));
-                    ImGui::TextUnformatted(S(TH18_REPFIX_INS));
-                    ImGui::PopTextWrapPos();
-                }
-                ImGui::NewLine();
+                // Counterstop replay fix tool
+                CustomMarker(S(TH_REPFIX_NO_THPRAC), S(TH_REPFIX_NO_THPRAC_DESC));
+                ImGui::SameLine();
+                ImGui::TextUnformatted(S(TH18_CS_REPFIX));
+                ImGui::SameLine();
+                HelpMarker(S(TH18_CS_REPFIX_DESC));
 
-                if (!mRepDataDecoded) {
-                    if (THGuiRep::singleton().mRepSelected) {
-                        ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mRepName.c_str());
+                auto& guiReplay = THGuiRep::singleton();
+                uint32_t finalScore = guiReplay.mSelectedRepScores[guiReplay.mSelectedRepEndStage];
 
-                        if (!mRepDataDecoded) {
-                            ImGui::SameLine();
-                            if (ImGui::Button(S(TH18_REPFIX_LOCK))) {
-                                LoadReplay();
+                if (!scoreUncapChkbox)
+                    ImGui::TextDisabled(S(TH18_CS_REPFIX_NO_UNCAP));
+                else if (!finalScore)
+                    ImGui::TextDisabled(S(TH_REPFIX_SELECTED_NONE));
+                else if (finalScore < COUNTERSTOP)
+                    ImGui::TextDisabled(S(TH18_CS_REPFIX_SELECTED_NO_CS));
+                else if (finalScore > COUNTERSTOP)
+                    ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                else {
+                    ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mSelectedRepName.c_str());
+                    const uint32_t curStage = GetMemContent(RVA(STAGE_NUM));
+                    const bool startedOnCS = guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage - 1] == COUNTERSTOP;
+                    const bool inTransition = GetMemContent(TRANSITION_STG_PTR);
+
+                    uint32_t firstStageCS = 0;
+                    uint32_t counterStopCount = 0;
+                    uint32_t unknownCount = 0;
+
+                    ImGui::Columns(2, 0, false);
+
+                    for (size_t st = guiReplay.mSelectedRepStartStage; st <= guiReplay.mSelectedRepEndStage; st++) {
+                        const uint32_t stScore = guiReplay.mSelectedRepScores[st];
+                        const uint32_t stScoreOverwrite = mScoreOverwrites[st];
+                        const uint32_t curScore = GetMemContent(SCORE);
+
+                        if (stScore == COUNTERSTOP) {
+                            if (!firstStageCS)
+                                firstStageCS = st;
+                            if (stScoreOverwrite <= stScore)
+                                unknownCount += 1;
+
+                            counterStopCount += 1;
+                        }
+
+                        ImGui::Text(S(st == 7 ? TH18_CS_REPFIX_EXTRA : TH18_CS_REPFIX_STAGE), st);
+                        ImGui::SameLine();
+
+                        if (stScoreOverwrite > stScore) {
+                            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.9f, 0.3f, 1.0f));
+                            ImGui::Text("%s", FormatNumberWithCommas(((int64_t)stScoreOverwrite * 10)));
+                            ImGui::PopStyleColor();
+                            if (ImGui::IsItemHovered())
+                                ImGui::SetTooltip(S(TH18_CS_REPFIX_READY_HINT));
+
+                        } else if (stScore == COUNTERSTOP) {
+                            if (guiReplay.mRepStatus && (curStage == st || inTransition) && curScore && !startedOnCS) {
+                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.9f, 0.3f, 1.0f));
+                                ImGui::Text("%s", FormatNumberWithCommas(((int64_t)curScore * 10)));
+                                ImGui::PopStyleColor();
+                                if (ImGui::IsItemHovered())
+                                    ImGui::SetTooltip(S(TH18_CS_REPFIX_RECORDING_HINT));
+
+                            } else {
+                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.3f, 0.3f, 1.0f));
+                                ImGui::Text(S(TH_TYPE_UNKOWN));
+                                ImGui::PopStyleColor();
+                                if (ImGui::IsItemHovered())
+                                    ImGui::SetTooltip(S(firstStageCS == st ? TH18_CS_REPFIX_FIRST_UNKNOWN_HINT
+                                                                           : TH18_CS_REPFIX_UNKNOWN_HINT),
+                                        firstStageCS);
                             }
+                        } else {
+                            ImGui::Text("%s", FormatNumberWithCommas(((int64_t)stScore * 10)));
+                        }
+
+                        if (st == 3)
+                            ImGui::NextColumn();
+                    }
+                    ImGui::Columns(1);
+
+                    if (unknownCount) {
+                        char buttonLabel[64];
+                        snprintf(buttonLabel, sizeof(buttonLabel), S(TH_REPFIX_SAVE_PROGRESS),
+                            counterStopCount - unknownCount, counterStopCount);
+
+                        ImGui::BeginDisabled();
+                        ImGui::Button(buttonLabel);
+                        ImGui::EndDisabled();
+                        if (ImGui::IsItemHovered())
+                            ImGui::SetTooltip(S(TH18_CS_REPFIX_SAVE_PROGRESS_HINT), unknownCount, firstStageCS);
+
+                    } else if (ImGui::Button(S(TH_REPFIX_SAVE)))
+                        SaveReplayScoreFix();
+                }
+
+                // Seperate tools
+                ImGui::NewLine();
+                ImGui::Separator();
+
+                // Active card replay desync fix tool
+                CustomMarker(S(TH_REPFIX_NO_THPRAC), S(TH_REPFIX_NO_THPRAC_DESC));
+                ImGui::SameLine();
+                ImGui::TextUnformatted(S(TH18_AC_REPFIX));
+                ImGui::SameLine();
+                HelpMarker(S(TH18_AC_REPFIX_DESC));
+
+                ImGui::SameLine();
+                ImGui::Checkbox(S(TH_TOOL_SHOW_TOGGLE), &activeCardRepFix);
+
+                if (activeCardRepFix) {
+                    if (THGuiRep::singleton().mRepSelected) {
+                        bool hasFixOptions = false;
+                        for (auto& data : mFixData) {
+                            if (data.activeCardId != -1) {
+                                hasFixOptions = true;
+                                break;
+                            }
+                        }
+
+                        if (hasFixOptions) {
+                            LoadedReplayData& mRepLoaded = THGuiRep::singleton().mSelectedRepData;
+                            ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mSelectedRepName.c_str());
+
+                            auto isAvailable = GetAvailability();
+                            if (!isAvailable) {
+                                ImGui::TextUnformatted(S(TH18_AC_REPFIX_MISMATCH));
+                                ImGui::BeginDisabled();
+                            }
+
+                            char comboId[64];
+                            auto fontSize = ImGui::GetFontSize();
+                            ImGui::Columns(2, 0, false);
+
+                            for (auto& data : mFixData) {
+                                if (data.activeCardId != -1) {
+                                    ImGui::Text(S(data.stage == 7 ? TH_EXTRA : TH_STAGE_NUM), data.stage);
+                                    ImGui::SameLine();
+                                    ImGui::TextUnformatted(S(TH18_AC_REPFIX_INITIAL_CARD));
+                                    ImGui::SameLine(0.0f, 0.0f);
+
+                                    sprintf_s(comboId, "##active_card_idx_st%d", data.stage);
+                                    ImGui::PushItemWidth(fontSize * 10.0f);
+                                    ImGui::ComboSectionsDefault(comboId, &data.activeCardComboIdx, data.activeCardLabelVec.data(), Gui::LocaleGetCurrentGlossary(), "");
+                                    if (ImGui::IsPopupOpen(comboId)) {
+                                        wndFocus = false;
+                                    }
+                                    ImGui::PopItemWidth();
+                                }
+
+                                if (data.stage == 3)
+                                    ImGui::NextColumn();
+                            }
+                            ImGui::Columns(1);
+
+                            if (!isAvailable)
+                                ImGui::EndDisabled();
+
+                            ImGui::PushID("CARDFIX_SAVE");
+                            if (ImGui::Button(S(TH_REPFIX_SAVE)))
+                                SaveReplayCardFix();
+                            ImGui::PopID();
+
+                        } else {
+                            ImGui::TextDisabled(S(TH18_AC_REPFIX_NOTHING));
                         }
                     } else {
-                        ImGui::TextUnformatted(S(TH18_REPFIX_NOTHING));
-                    }
-                } else {
-                    ImGui::Text(S(TH18_REPFIX_LOCKED), mRepOriginalName.c_str());
-                    ImGui::SameLine();
-                    if (ImGui::Button(S(TH18_REPFIX_UNLOCK))) {
-                        UnloadReplay();
-                    }
-                    ImGui::SameLine();
-                    if (ImGui::Button(S(TH_REPFIX_SAVE))) {
-                        SaveReplay();
-                    }
-
-                    auto isAvailable = GetAvailability();
-                    if (!isAvailable) {
-                        ImGui::TextUnformatted(S(TH18_REPFIX_MISMATCH));
-                        ImGui::BeginDisabled();
-                    }
-
-                    char comboId[64];
-                    auto fontSize = ImGui::GetFontSize();
-                    for (auto& data : mFixData) {
-                        if (data.activeCardId != -1) {
-                            ImGui::Text("Stage %s:", mStageStr[data.stage]);
-                            ImGui::SameLine();
-                            ImGui::TextUnformatted(S(TH18_REPFIX_INITIAL_CARD));
-                            ImGui::SameLine(0.0f, 0.0f);
-
-                            sprintf_s(comboId, "##active_card_idx_st%d", data.stage);
-                            ImGui::PushItemWidth(fontSize * 10.0f);
-                            ImGui::ComboSectionsDefault(comboId, &data.activeCardComboIdx, data.activeCardLabelVec.data(), Gui::LocaleGetCurrentGlossary(), "");
-                            if (ImGui::IsPopupOpen(comboId)) {
-                                wndFocus = false;
-                            }
-                            ImGui::PopItemWidth();
-                        }
-                    }
-
-                    if (!isAvailable) {
-                        ImGui::EndDisabled();
+                        ImGui::TextDisabled(S(TH_REPFIX_SELECTED_NONE));
                     }
                 }
 
@@ -2006,9 +2239,42 @@ namespace TH18 {
         adv_opt_ctx mOptCtx;
     };
 
+     __declspec(noinline) void THGuiRep::DisableCardFix()
+    {
+        th18_rep_card_fix.Disable();
+    }
+
+    __declspec(noinline) void THGuiRep::EnableCardFix(LoadedReplayData& rd)
+    {
+        auto& advOptWnd = THAdvOptWnd::singleton();
+
+        if (!advOptWnd.mFixData.size())
+            advOptWnd.ParseReplayCardData(rd);
+        for (auto& data : advOptWnd.mFixData) {
+            if (data.activeCardId != -1) {
+                th18_rep_card_fix.Enable();
+                return;
+            }
+        }
+    }
+
+    __declspec(noinline) void THGuiRep::ResetCardFix()
+    {
+        THAdvOptWnd::singleton().mFixData.clear();
+        th18_rep_card_fix.Disable();
+    }
+
+    __declspec(noinline) void THGuiRep::ResetScoreFix()
+    {
+        auto& advOptWnd = THAdvOptWnd::singleton();
+        memset(advOptWnd.mScoreOverwrites, 0, sizeof(advOptWnd.mScoreOverwrites));
+    }
+
     EHOOK_ST(th18_rep_card_fix, 0x462e4b, 5, {
-        if (THAdvOptWnd::singleton().GetAvailability()) {
-            auto& fixVec = THAdvOptWnd::singleton().mFixData;
+        auto& advOptWnd = THAdvOptWnd::singleton();
+
+        if (advOptWnd.activeCardRepFix && advOptWnd.GetAvailability()) {
+            auto& fixVec = advOptWnd.mFixData;
             for (auto& fix : fixVec) {
                 if (fix.stage == *(uint32_t*)0x4CCCDC) {
                     *(int32_t*)pCtx->Esp = fix.activeCardVec[fix.activeCardComboIdx];
@@ -2026,7 +2292,7 @@ namespace TH18 {
             THAdvOptWnd::StaticMalletConversion(pCtx);
     });
     EHOOK_ST(th18_score_uncap_replay_factor, 0x44480d, 5, {
-        uint32_t* score = (uint32_t*)0x4cccfc;
+        uint32_t* score = (uint32_t*)SCORE;
         uint32_t* stage_num = (uint32_t*)0x4cccdc;
         uint32_t* lifes = (uint32_t*)0x4ccd48;
         uint32_t* bombs = (uint32_t*)0x4ccd58;
@@ -3312,7 +3578,7 @@ namespace TH18 {
     card->_recharge_timer.current = static_cast<int32_t>(card->recharge_time * (static_cast<float>(thPracParam.name) / 10000)); \
     card->_recharge_timer.current_f = card->recharge_time * (thPracParam.name / 10000.0f)
 
-         *(int32_t*)(0x4cccfc) = (int32_t)(thPracParam.score / 10);
+         *(int32_t*)(SCORE) = (int32_t)(thPracParam.score / 10);
          *(int32_t*)(0x4ccd48) = thPracParam.life;
          *(int32_t*)(0x4ccd4c) = thPracParam.life_fragment;
          *(int32_t*)(0x4ccd58) = thPracParam.bomb;
@@ -3421,42 +3687,63 @@ namespace TH18 {
             pCtx->Eip = 0x459578;
         }
     })
-     EHOOK_DY(th18_add_card, 0x411460, 1, {
-        uint32_t* list = nullptr;
-        uint32_t sub_count = 0;
-        uint32_t cardAddId = *(uint32_t*)(pCtx->Esp + 4);
-        uint32_t cardAddType = 0;
-        uint8_t cardIdArray[64] = {};
+    EHOOK_DY(th18_stage_transition, 0x443e60, 1, {
+        auto& guiReplay = THGuiRep::singleton();
+        auto& advOptWnd = THAdvOptWnd::singleton();
 
-        for (uint32_t* i = (uint32_t*)GetMemContent(ABILITY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
-            list = i;
-            auto cardId = ((uint32_t**)list)[0][1];
-            cardIdArray[cardId] += 1;
-        }
+        const uint32_t stage = GetMemContent(RVA(STAGE_NUM));
+        const uint32_t score = GetMemContent(SCORE);
+        const bool startedOnCS = guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage - 1] == COUNTERSTOP;
 
-        for (int i = 0; i < 56; ++i) {
-            uint32_t* cardsSrcOffset = (uint32_t*)(CARD_DESC_LIST + 0x34 * i);
-            if (cardIdArray[cardsSrcOffset[1]]) {
-                if (cardsSrcOffset[3] == 1) {
-                    sub_count += (cardsSrcOffset[1] == 51 ? 2 : 1) * cardIdArray[cardsSrcOffset[1]];
-                }
-            }
-            if (cardsSrcOffset[1] == cardAddId) {
-                cardAddType = cardsSrcOffset[3];
-            }
-        }
+        if (guiReplay.mRepStatus && !startedOnCS && score && stage > 1 && advOptWnd.mScoreOverwrites[stage - 1] < score)
+            advOptWnd.mScoreOverwrites[stage - 1] = score;
+    }) EHOOK_DY(th18_replay_end, 0x4588f0, 1, {
+        auto& guiReplay = THGuiRep::singleton();
+        auto& advOptWnd = THAdvOptWnd::singleton();
 
-        auto op = *(uint32_t*)(pCtx->Esp + 8);;
-        if (op != 3) {
-            if (cardAddType == 1) {
-                sub_count += (cardAddId == 51 ? 2 : 1);
-                if (sub_count > 12) {
-                    pCtx->Eip = 0x412d29;
-                }
-            } else if (cardAddId == 54 && cardIdArray[54]) {
-                pCtx->Eip = 0x412d29;
-            }
-        }
+        const uint32_t stage = GetMemContent(RVA(STAGE_NUM));
+        const uint32_t score = GetMemContent(SCORE);
+        const bool startedOnCS = guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage - 1] == COUNTERSTOP;
+
+        if (guiReplay.mRepStatus && !startedOnCS && score && stage && advOptWnd.mScoreOverwrites[stage - 1] < score)
+            advOptWnd.mScoreOverwrites[stage] = score;
+    })
+    EHOOK_DY(th18_add_card, 0x411460, 1, {
+       uint32_t* list = nullptr;
+       uint32_t sub_count = 0;
+       uint32_t cardAddId = *(uint32_t*)(pCtx->Esp + 4);
+       uint32_t cardAddType = 0;
+       uint8_t cardIdArray[64] = {};
+
+       for (uint32_t* i = (uint32_t*)GetMemContent(ABILITY_MANAGER_PTR, 0x1c); i; i = (uint32_t*)i[1]) {
+           list = i;
+           auto cardId = ((uint32_t**)list)[0][1];
+           cardIdArray[cardId] += 1;
+       }
+
+       for (int i = 0; i < 56; ++i) {
+           uint32_t* cardsSrcOffset = (uint32_t*)(CARD_DESC_LIST + 0x34 * i);
+           if (cardIdArray[cardsSrcOffset[1]]) {
+               if (cardsSrcOffset[3] == 1) {
+                   sub_count += (cardsSrcOffset[1] == 51 ? 2 : 1) * cardIdArray[cardsSrcOffset[1]];
+               }
+           }
+           if (cardsSrcOffset[1] == cardAddId) {
+               cardAddType = cardsSrcOffset[3];
+           }
+       }
+
+       auto op = *(uint32_t*)(pCtx->Esp + 8);;
+       if (op != 3) {
+           if (cardAddType == 1) {
+               sub_count += (cardAddId == 51 ? 2 : 1);
+               if (sub_count > 12) {
+                   pCtx->Eip = 0x412d29;
+               }
+           } else if (cardAddId == 54 && cardIdArray[54]) {
+               pCtx->Eip = 0x412d29;
+           }
+       }
     })
     EHOOK_DY(th18_active_buy_swap_fix, 0x412d94, 3, {
         asm_call<0x408c30, Fastcall>(*(uint32_t*)ABILITY_MANAGER_PTR);

@@ -624,3 +624,55 @@ void memswap(void* buf1_, void* buf2_, unsigned int len)
         buf2[i] = temp;
     }
 }
+
+
+void debug_msg(const char* title, const char* format, ...)
+{
+    va_list va;
+    va_start(va, format);
+    int length = vsnprintf(nullptr, 0, format, va);
+    va_end(va);
+
+    if (length < 0)
+        return;
+    char* buffer = new char[length + 1];
+
+    va_start(va, format);
+    vsnprintf(buffer, length + 1, format, va);
+    va_end(va);
+
+    MessageBoxA(nullptr, buffer, title, 0);
+    delete[] buffer;
+}
+
+const char* FormatNumberWithCommas(int64_t val)
+{
+    static char buffer[32];
+    static char temp[32];
+
+    sprintf(temp, "%lld", val);
+    int len = strlen(temp);
+    int commas = (len - (val < 0 ? 2 : 1)) / 3;
+
+    char* dst = buffer + len + commas;
+    *dst-- = '\0';
+
+    int group = 0;
+
+    for (int i = len - 1; i >= 0; --i) {
+        if (temp[i] == '-') {
+            *dst-- = '-';
+            break;
+        }
+
+        if (group == 3) {
+            *dst-- = ',';
+            group = 0;
+        }
+
+        *dst-- = temp[i];
+        ++group;
+    }
+
+    return buffer;
+}
