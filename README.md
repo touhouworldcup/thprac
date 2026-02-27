@@ -132,7 +132,7 @@ Choosing "Exit" will now prompt you to save a replay.
 ### First time setup (only needs to be performed once)
 Inside the folder named thprac, compile loc_json.cpp into loc_json.exe in whatever way you like most. I recommend this command
 ```
-cl.exe /Isrc\3rdparties\rapidjson\include /nologo /EHsc /O2 /std:c++20 loc_json.cpp /Fe:loc_json.exe"
+cl /Isrc\3rdparties\yyjson /nologo /EHsc /O2 /std:c++20 loc_json.cpp .\src\3rdParties\yyjson\yyjson.c /Fe:loc_json.exe
 ```
 
 ### Building on the command line

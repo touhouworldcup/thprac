@@ -1,5 +1,5 @@
 // To build this file, this command is recommended
-// cl.exe /nologo /EHsc /O2 /std:c++20 loc_json.cpp /Fe:loc_json.exe"
+// cl /Isrc\3rdparties\yyjson /nologo /EHsc /O2 /std:c++20 loc_json.cpp .\src\3rdParties\yyjson\yyjson.c /Fe:loc_json.exe
 
 // However, compiling loc_json.exe itself is not part of the rest of
 // the build system, so you can compile it however you want.
