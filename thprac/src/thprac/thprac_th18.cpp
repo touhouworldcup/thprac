@@ -36,13 +36,18 @@ namespace TH18 {
     bool g_lock_timer_flag = false;
 
     enum addrs {
+        REPLAY_MANAGER_PTR = 0x4cf418,
         CARD_PRICE_TABLE = 0x4b35c4,
         CARD_DESC_LIST = 0x4c53c0,
         MENU_INPUT = 0x4ca21c,
+        MODEFLAGS = 0x4cccc8,
         STAGE_NUM = 0x4cccdc,
+        NEXT_STAGE_NUM = 0x4ccce0,
         SCORE = 0x4cccfc,
         FUNDS = 0x4ccd34,
         POWER = 0x4ccd38,
+        LIVES = 0x4ccd48,
+        BOMBS = 0x4ccd58,
         ABILITY_MANAGER_PTR = 0x4cf298,
         ABILITY_SHOP_PTR = 0x4cf2a4,
         ASCII_MANAGER_PTR = 0x4cf2ac,
@@ -61,6 +66,7 @@ namespace TH18 {
 
     enum funcs {
         SAVE_REPLAY = 0x461e90,
+        SET_MENU = 0x4646e0,
     };
     
    enum cards {
@@ -1237,8 +1243,6 @@ namespace TH18 {
     class THGuiSP : public Gui::GameGuiWnd {
         THGuiSP() noexcept
         {
-            *mBugFix = true;
-
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -1350,7 +1354,6 @@ namespace TH18 {
 
         unsigned int mSpellId = UINT_MAX;
 
-        Gui::GuiCheckBox mBugFix { TH16_BUGFIX };
         Gui::GuiCombo mPhase { TH_PHASE };
         Gui::GuiNavFocus mNavFocus { TH_PHASE };
     };
@@ -1386,44 +1389,11 @@ namespace TH18 {
         { .addr = 0x45f2c4, .data = PatchCode("ffffffff") },
         { .addr = 0x45f2cf, .data = PatchCode("ffffffff") },
     };
-    EHOOK_ST(th18_st6final_fix, 0x438e47, 8, {
-        static int st6FinalDummy[4] { 0, 0, 0, 0 };
-        if (!pCtx->Ecx) {
-            pCtx->Ecx = (uint32_t)st6FinalDummy - 0x1270;
-        }
-    });
-    EHOOK_ST(th18_scroll_fix, 0x407e05, 10, {
-        if (GetMemContent(GAME_THREAD_PTR) && GetMemContent(GAME_THREAD_PTR, 0xd0) && *(uint32_t*)(pCtx->Esp + 0x18) == 0x417955 && *(uint32_t*)(pCtx->Esp + 0x3c) == 0x417d39) {
-            pCtx->Eip = 0x407e0f;
-        }
-    });
-    EHOOK_ST(th18_mukade_fix, 0x412c76, 10, {
-        auto caller = *(uint32_t*)(pCtx->Esp + 0x20);
-        if (caller == 0x417974) {
-            pCtx->Eip = 0x412c80;
-        } else if (caller == 0x462e2a) {
-            if (*(uint32_t*)0x4cccdc != *(uint32_t*)0x4ccce0) {
-                pCtx->Eip = 0x412c80;
-            }
-        }
-    });
-    EHOOK_ST(th18_active_card_fix, 0x462f33, 3, {
-        if (GetMemContent(GAME_THREAD_PTR) && !GetMemContent(GAME_THREAD_PTR, 0xd0)) {
-            uint32_t activeCardId = GetMemContent(ABILITY_MANAGER_PTR, 0x38);
-            if (activeCardId) {
-                *(uint32_t*)(pCtx->Esi + 0x964) = GetMemContent(activeCardId + 4);
-            } else {
-                *(uint32_t*)(pCtx->Esi + 0x964) = UINT_MAX;
-            }
-        }
-    });
-    PATCH_ST(th18_eirin_eiki_card_uninit_fix, 0x411ac2, "54");
-    PATCH_ST(th18_func_call2_uninit_fix, 0x4390ec, "0f1f4000");
-    PATCH_ST(th18_func_call3_uninit_fix, 0x43926c, "0f1f4000");
+   
     PATCH_ST(th18_all_clear_bonus_1, 0x4448ab, "eb0b909090");
     EHOOK_ST(th18_all_clear_bonus_2, 0x444afa, 7, {
         *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(SCORE);
-        if (GetMemContent(0x4cccc8) & 0x10) {
+        if (GetMemContent(MODEFLAGS) & 0x10) {
             typedef void (*PScoreFunc)();
             PScoreFunc a = (PScoreFunc)0x458bd0;
             a();
@@ -1432,7 +1402,7 @@ namespace TH18 {
     });
     EHOOK_ST(th18_all_clear_bonus_3, 0x444c49, 7, {
         *(int32_t*)(GetMemAddr(0x4cf2e0, 0x158)) = *(int32_t*)(SCORE);
-        if (GetMemContent(0x4cccc8) & 0x10) {
+        if (GetMemContent(MODEFLAGS) & 0x10) {
             typedef void (*PScoreFunc)();
             PScoreFunc a = (PScoreFunc)0x458bd0;
             a();
@@ -1473,7 +1443,6 @@ namespace TH18 {
 
     extern HookCtx th18_static_mallet_replay_gold;
     extern HookCtx th18_static_mallet_replay_green;
-    extern HookCtx th18_score_uncap_replay_factor;
     extern HookCtx th18_rep_card_fix;
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
@@ -1496,13 +1465,6 @@ namespace TH18 {
             MasterDisableInit();
             ScoreUncapInit();
             BossMovementInit();
-            th18_mukade_fix.Setup();
-            th18_scroll_fix.Setup();
-            th18_st6final_fix.Setup();
-            th18_active_card_fix.Setup();
-            th18_eirin_eiki_card_uninit_fix.Setup();
-            th18_func_call2_uninit_fix.Setup();
-            th18_func_call3_uninit_fix.Setup();
             th18_rep_card_fix.Setup();
             th18_static_mallet_replay_gold.Setup();
             th18_static_mallet_replay_green.Setup();
@@ -1533,7 +1495,7 @@ namespace TH18 {
             }
         }
 
-        bool scoreUncapChkbox = false;
+        bool scoreUncapChkbox = true;
         bool scoreUncapOverride = false;
         bool staticMalletReplay = false;
     public:
@@ -1544,7 +1506,7 @@ namespace TH18 {
         bool st6FinalFix = false;
         bool scrollFix = false;
         bool mukadeFix = false;
-        bool restartFix = false;
+        bool restartResetMarket = false;
         bool activeCardIdFix = false;
         bool eirinEikiCardFix = false;
         bool funcCallFix = false;
@@ -1623,7 +1585,13 @@ namespace TH18 {
                 WriteFile(outputFile, rd.extraData, rd.extraSize, &bytesProcessed, nullptr);
                 CloseHandle(outputFile);
 
+                // OK checkbox & close replay menu to force a reload
                 MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
+                uintptr_t mainMenu = GetMemContent(MAIN_MENU_PTR);
+                if (mainMenu) {
+                    THGuiRep::singleton().State(1);
+                    asm_call<SET_MENU, Thiscall>(mainMenu, 1);
+                }
 
                 _builtin_free(repDataEncoded);
                 return true;
@@ -1872,7 +1840,6 @@ namespace TH18 {
                         }
 
                         if (hasFixOptions) {
-                            LoadedReplayData& mRepLoaded = THGuiRep::singleton().mSelectedRepData;
                             ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mSelectedRepName.c_str());
 
                             auto isAvailable = GetAvailability();
@@ -1929,10 +1896,10 @@ namespace TH18 {
         }
 
     public:
-        void RestartFix()
+        void RestartResetMarket()
         {
-            if (restartFix) {
-                if (*(uint32_t*)0x4cccdc == *(uint32_t*)0x4ccce0) {
+            if (restartResetMarket) {
+                if (*(uint32_t*)STAGE_NUM == *(uint32_t*)NEXT_STAGE_NUM) {
                     uint32_t* list = nullptr;
                     uint8_t cardIdArray[64];
                     memset(cardIdArray, 0, 64);
@@ -2008,8 +1975,6 @@ namespace TH18 {
 
             th18_score_uncap_replay_fix.Setup();
             th18_score_uncap_replay_disp.Setup();
-            th18_score_uncap_replay_factor.Setup();
-            th18_score_uncap_replay_factor.Enable();// no reason for this fix not to be there by default
             {
                 *(uintptr_t*)((uintptr_t)scoreUncapStageTrFix[0].data.buffer.ptr + 1) = (uintptr_t)&globals_assign_hooked - 0x4179c7;
                 *(uintptr_t*)((uintptr_t)scoreUncapStageTrFix[1].data.buffer.ptr + 1) = (uintptr_t)&globals_assign_hooked - 0x463045;
@@ -2180,49 +2145,13 @@ namespace TH18 {
                 
                 EndOptGroup();
             }
-            if (BeginOptGroup<TH18_BUG_FIX>()) {
-                ImGui::TextUnformatted(S(TH18_BUG_FIX_DESC));
-
-                if (ImGui::Checkbox(S(TH18_MUKADE_FIX), &mukadeFix)) {
-                    th18_mukade_fix.Toggle(mukadeFix);
-                }
-                ImGui::SameLine();
-                HelpMarker(S(TH18_MUKADE_FIX_DESC));
-
-                if (ImGui::Checkbox(S(TH18_SCROLL_FIX), &scrollFix)) {
-                    th18_scroll_fix.Toggle(scrollFix);
-                }
-                ImGui::SameLine();
-                HelpMarker(S(TH18_SCROLL_FIX_DESC));
-
-                if (ImGui::Checkbox(S(TH18_ST6FINAL_FIX), &st6FinalFix)) {
-                    th18_st6final_fix.Toggle(st6FinalFix);
-                }
-                ImGui::SameLine();
-                HelpMarker(S(TH18_ST6FINAL_FIX_DESC));
-
-                ImGui::Checkbox(S(TH18_RESTART_FIX), &restartFix);
-
-                if (ImGui::Checkbox(S(TH18_AC_FIX), &activeCardIdFix)) {
-                    th18_active_card_fix.Toggle(activeCardIdFix);
-                }
-                ImGui::SameLine();
-                HelpMarker(S(TH18_AC_FIX_DESC));
-                if (ImGui::Checkbox(S(TH18_EIRIN_EIKI_FIX), &eirinEikiCardFix)) {
-                    th18_eirin_eiki_card_uninit_fix.Toggle(eirinEikiCardFix);
-                }
-                ImGui::SameLine();
-                HelpMarker(S(TH18_EIRIN_EIKI_FIX_DESC));
-
-                if (ImGui::Checkbox(S(TH18_FUNC_CALL_FIX), &funcCallFix)) {
-                    th18_func_call2_uninit_fix.Toggle(funcCallFix);
-                    th18_func_call3_uninit_fix.Toggle(funcCallFix);
-                }
-                ImGui::SameLine();
-                HelpMarker(S(TH18_FUNC_CALL_FIX_DESC));
-
-                EndOptGroup();
-            }
+            //if (BeginOptGroup<TH_BUGFIX>()) {
+            //ImGui::TextUnformatted(S(TH18_BUGFIX_DESC));
+            ImGui::TextUnformatted(S(TH_BUGFIX_AUTO));
+            ImGui::SameLine();
+            HelpMarker(S(TH18_BUGFIX_AUTO_DESC));
+            //EndOptGroup();
+            //}
 
             wndFocus &= ReplayMenu();
             InGameReactionTestOpt();
@@ -2284,29 +2213,12 @@ namespace TH18 {
         }
     });
     EHOOK_ST(th18_static_mallet_replay_gold, 0x429222, 6, {
-        if (GetMemContent(GAME_THREAD_PTR, 0xd0))
+        if (THGuiRep::singleton().mRepStatus)
             THAdvOptWnd::StaticMalletConversion(pCtx);
     });
     EHOOK_ST(th18_static_mallet_replay_green, 0x42921d, 5, {
-        if (GetMemContent(GAME_THREAD_PTR, 0xd0))
+        if (THGuiRep::singleton().mRepStatus)
             THAdvOptWnd::StaticMalletConversion(pCtx);
-    });
-    EHOOK_ST(th18_score_uncap_replay_factor, 0x44480d, 5, {
-        uint32_t* score = (uint32_t*)SCORE;
-        uint32_t* stage_num = (uint32_t*)0x4cccdc;
-        uint32_t* lifes = (uint32_t*)0x4ccd48;
-        uint32_t* bombs = (uint32_t*)0x4ccd58;
-
-        auto stageBonus = 100000 * *stage_num;
-        auto clearBonus = 100000 * (*lifes * 5 + *bombs);
-        if (GetMemContent(GAME_THREAD_PTR, 0xd0)) {
-            uint32_t rpy = *(uint32_t*)(*(uint32_t*)0x4cf418 + 0x18);
-            if (*(uint32_t*)(rpy + 0xb8) == 8 && (*stage_num == 6 || *stage_num == 7))
-                *score += clearBonus;
-            *score += stageBonus;
-            if (!THAdvOptWnd::singleton().scoreUncapChkbox && *score > 999999999)
-                *score = 999999999;
-        }
     });
 
     void ECLStdExec(ECLHelper& ecl, unsigned int start, int std_id, int ecl_time = 0)
@@ -3535,7 +3447,7 @@ namespace TH18 {
         bool result;
 
         el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && (thPracParam.mode == 1) && thPracParam.section;
-        is_practice = (*((int32_t*)0x4cccc8) & 0x1);
+        is_practice = (*((int32_t*)MODEFLAGS) & 0x1);
         result = ElBgmTest<0x4546d3, 0x443762, 0x45873a, 0x45a24e, 0xffffffff>(
             el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, 0xffffffff);
 
@@ -3567,7 +3479,7 @@ namespace TH18 {
     // Specifying the hook struct manually because code passed to a macro can't declare a macro
     { .addr = 0x4432a7, .name = "th18_patch_main", .callback = []([[maybe_unused]] PCONTEXT pCtx, [[maybe_unused]] HookCtx* self) {
          defer({
-             THAdvOptWnd::singleton().RestartFix();
+             // THAdvOptWnd::singleton().RestartResetMarket();
              thPracParam._playLock = true;
          });
 
@@ -3707,6 +3619,75 @@ namespace TH18 {
 
         if (guiReplay.mRepStatus && !startedOnCS && score && stage && advOptWnd.mScoreOverwrites[stage - 1] < score)
             advOptWnd.mScoreOverwrites[stage] = score;
+    })
+    // fix AoD timeout in Spell Prac crashing the game
+    EHOOK_DY(th18_st6final_fix, 0x438e47, 8, {
+        static int st6FinalDummy[4] { 0, 0, 0, 0 };
+        uint32_t stageNum = GetMemContent(STAGE_NUM);
+        bool inSpellPrac = GetMemContent(MODEFLAGS) & 32;
+
+        if (stageNum == 6 && inSpellPrac && !pCtx->Ecx)
+            pCtx->Ecx = (uint32_t)st6FinalDummy - 0x1270;
+    })
+
+    // fix Eiki & Eirin cards randomly crashing during transitions
+    PATCH_DY(th18_eirin_eiki_card_uninit_fix, 0x411ac2, "54")
+
+    // fix Centipede value being reset on stage transition in replays due to card reinitialization
+    EHOOK_DY(th18_mukade_transition_fix, 0x412c76, 10, {
+        if (!THGuiRep::singleton().mRepStatus)
+            return;
+        auto caller = *(uint32_t*)(pCtx->Esp + 0x20);
+
+        if (caller == 0x417974 || // from shop cleanup
+            (caller == 0x462e2a && *(uint32_t*)STAGE_NUM != *(uint32_t*)NEXT_STAGE_NUM)) // from replay transition?
+            pCtx->Eip = 0x412c80;
+    })
+
+    // fix funcCalls used by Momoyo Sp6 taking into account Z axis, leading to desyncs
+    PATCH_DY(th18_func_call2_uninit_fix, 0x4390ec, NOP(4)) PATCH_DY(th18_func_call3_uninit_fix, 0x43926c, NOP(4))
+
+    // fix active card CD scroll mult. being reset after shops due to cleanup (desyncs Extra)
+    EHOOK_DY(th18_scroll_fix, 0x407e05, 10, { // hooks on card resets
+        if (THGuiRep::singleton().mRepStatus
+            && *(uint32_t*)(pCtx->Esp + 0x18) == 0x417955 // called from shop cleanup
+            && *(uint32_t*)(pCtx->Esp + 0x3c) == 0x417d39) // which was called from on tick
+            pCtx->Eip = 0x407e0f; // skip resetting active card cooldown mult
+    })
+
+    // fix pre-transition active card selection being written to replay on transition
+    EHOOK_DY(th18_active_card_fix, 0x462f33, 3, { // in stage transition record / playback data handling
+        if (THGuiRep::singleton().mRepStatus)
+            return;
+        uint32_t activeCardId = GetMemContent(ABILITY_MANAGER_PTR, 0x38);
+
+        if (activeCardId)
+            *(uint32_t*)(pCtx->Esi + 0x964) = GetMemContent(activeCardId + 4);
+        else
+            *(uint32_t*)(pCtx->Esi + 0x964) = UINT_MAX;
+    })
+
+    // factor in stage/clear bonus when playing back replays
+    EHOOK_DY(th18_score_uncap_replay_factor, 0x44480d, 5, { // runs on replay's final stage end (i.e. s6 in runs, sX in practice, not for gameovers)
+        if (!THGuiRep::singleton().mRepStatus)
+            return;
+        uint32_t rpyInfo = (uint32_t)GetMemContent<Replay*>(REPLAY_MANAGER_PTR)->info;
+
+        uintptr_t score = GetMemAddr(SCORE);
+        uint32_t stageNum = GetMemContent(STAGE_NUM);
+        uint32_t lives = GetMemContent(LIVES);
+        uint32_t bombs = GetMemContent(BOMBS);
+
+        auto stageBonus = 100000 * stageNum;
+        auto clearBonus = 100000 * (lives * 5 + bombs);
+
+        if (*(uint32_t*)(rpyInfo + 0xb8) == 8 && (stageNum == 6 || stageNum == 7))
+            *(uint32_t*)score += clearBonus;
+
+        *(uint32_t*)score += stageBonus;
+
+        if (!THAdvOptWnd::singleton().scoreUncapChkbox && *(uint32_t*)score > 999999999)
+            *(uint32_t*)score = 999999999;
     })
     EHOOK_DY(th18_add_card, 0x411460, 1, {
        uint32_t* list = nullptr;

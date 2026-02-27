@@ -522,8 +522,6 @@ enum th_glossary_t {
     TH185_WHOLESALE,
     TH185_YAMASHIRO_TAKANE,
     TH185_YATADERA_NARUMI,
-    TH18_AC_FIX,
-    TH18_AC_FIX_DESC,
     TH18_AC_REPFIX,
     TH18_AC_REPFIX_DESC,
     TH18_AC_REPFIX_HIDE_INS,
@@ -535,8 +533,8 @@ enum th_glossary_t {
     TH18_AC_REPFIX_SHOW_INS,
     TH18_AC_REPFIX_UNLOCK,
     TH18_BASSDRUM_CD,
-    TH18_BUG_FIX,
-    TH18_BUG_FIX_DESC,
+    TH18_BUGFIX_AUTO_DESC,
+    TH18_BUGFIX_DESC,
     TH18_CARD,
     TH18_CARD_00,
     TH18_CARD_01,
@@ -608,10 +606,6 @@ enum th_glossary_t {
     TH18_CS_REPFIX_STAGE,
     TH18_CS_REPFIX_UNKNOWN_HINT,
     TH18_CYLINDER_CD,
-    TH18_EIRIN_EIKI_FIX,
-    TH18_EIRIN_EIKI_FIX_DESC,
-    TH18_FUNC_CALL_FIX,
-    TH18_FUNC_CALL_FIX_DESC,
     TH18_FUNDS,
     TH18_INFFUNDS,
     TH18_KANAME_CD,
@@ -627,18 +621,10 @@ enum th_glossary_t {
     TH18_MIKOFLASH_CD,
     TH18_MOON_CD,
     TH18_MUKADE,
-    TH18_MUKADE_FIX,
-    TH18_MUKADE_FIX_DESC,
     TH18_OPEN_MARKET,
     TH18_PSYCO_CD,
     TH18_REPLAY_BONUS,
-    TH18_RESTART_FIX,
-    TH18_RESTART_FIX_DESC,
     TH18_RICEBALL_CD,
-    TH18_SCROLL_FIX,
-    TH18_SCROLL_FIX_DESC,
-    TH18_ST6FINAL_FIX,
-    TH18_ST6FINAL_FIX_DESC,
     TH18_STATIC_MALLET,
     TH18_STATIC_MALLET_DESC,
     TH18_SUN_CD,
@@ -1604,6 +1590,8 @@ enum th_glossary_t {
     TH_BOTH_NORMAL,
     TH_BOTH_RAGE,
     TH_BT_PHASE,
+    TH_BUGFIX,
+    TH_BUGFIX_AUTO,
     TH_BULLETS,
     TH_BULLET_RANK,
     TH_BULLET_RANKLOCK,
@@ -1815,7 +1803,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1804];
+extern const char* th_glossary_str[3][1792];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3586,10 +3574,10 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3559];
+extern const wchar_t __thprac_loc_range_zh[3557];
 
 extern const wchar_t __thprac_loc_range_en[67];
 
-extern const wchar_t __thprac_loc_range_ja[2885];
+extern const wchar_t __thprac_loc_range_ja[2887];
 
 }
