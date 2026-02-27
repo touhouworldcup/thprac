@@ -9,9 +9,9 @@ void log_print(const char* const msg, size_t len);
 void log_vprintf(const char* format, va_list va);
 void log_printf(const char* format, ...);
 
-int log_mbox(uintptr_t hwnd, unsigned int type, const char* caption, const char* text);
-int log_vmboxf(uintptr_t hwnd, unsigned int type, const char* caption, const char* format, va_list va);
-int log_mboxf(uintptr_t hwnd, unsigned int type, const char* caption, const char* format, ...);
+int log_mbox(void* hwnd, unsigned int type, const char* caption, const char* text);
+int log_vmboxf(void* hwnd, unsigned int type, const char* caption, const char* format, va_list va);
+int log_mboxf(void* hwnd, unsigned int type, const char* caption, const char* format, ...);
 
 void log_init(bool launcher, bool console);
 

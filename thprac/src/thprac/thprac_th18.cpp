@@ -1466,7 +1466,7 @@ namespace TH18 {
             if (GetSaveFileNameW(&ofn)) {
                 auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {
-                    log_mbox((uintptr_t)ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST));
+                    log_mbox(ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST));
                     goto end;
                 }
                 SetFilePointer(outputFile, 0, nullptr, FILE_BEGIN);
@@ -1476,7 +1476,7 @@ namespace TH18 {
                 WriteFile(outputFile, mRepExtraData, mRepExtraDataSize, &bytesProcessed, nullptr);
                 CloseHandle(outputFile);
 
-                log_mboxf((uintptr_t)ofn.hwndOwner, MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str());
+                log_mboxf(ofn.hwndOwner, MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str());
             }
 
             end:
@@ -2107,7 +2107,7 @@ namespace TH18 {
                         if (ValidateLoadoutCode(clipboardText))
                             ApplyLoadoutCode(clipboardText);
                         else
-                            log_mbox(*(uintptr_t*)WINDOW_PTR, MB_ICONERROR | MB_OK, S(TH18_MARKET_MANIP_PASTE_ERROR_TITLE), S(TH18_MARKET_MANIP_PASTE_ERROR));
+                            log_mbox(*(HWND*)WINDOW_PTR, MB_ICONERROR | MB_OK, S(TH18_MARKET_MANIP_PASTE_ERROR_TITLE), S(TH18_MARKET_MANIP_PASTE_ERROR));
                     }
                     if (ImGui::IsItemHovered())
                         ImGui::SetTooltip(S(TH18_MARKET_MANIP_PASTE_CODE_HINT));

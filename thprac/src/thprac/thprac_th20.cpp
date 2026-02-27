@@ -1155,13 +1155,13 @@ namespace TH20 {
 
                 // copy original replay to the selected path, overwriting if existing (unless same path)
                 if (!samePath && !CopyFileW(THGuiRep::singleton().mSelectedRepPath.c_str(), szFile, FALSE)) {
-                    log_mbox((uintptr_t)ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST));
+                    log_mbox(ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST));
                     return false;
                 }
 
                 // clear thprac params if present (no impact otherwise)
                 if (ReplayClearParam(szFile) == ReplayClearResult::Error) {
-                    log_mbox((uintptr_t)ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS));
+                    log_mbox(ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS));
                     if (!existingFile)
                         DeleteFileW(szFile);
                     return false;
@@ -1169,11 +1169,11 @@ namespace TH20 {
 
                 // save params & notify
                 if (!ReplaySaveParam(szFile, repParams.GetJson())) {
-                    log_mboxf((uintptr_t)ofn.hwndOwner, MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str());
+                    log_mboxf(ofn.hwndOwner, MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str());
                     return true;
 
                 } else { // delete copy if params didn't save
-                    log_mbox((uintptr_t)ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_PARAMS));
+                    log_mbox(ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_PARAMS));
                     if (!existingFile) DeleteFileW(szFile);
                 }
             }

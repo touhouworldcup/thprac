@@ -38,7 +38,7 @@ void log_printf(const char* format, ...) {
     va_end(va);
 }
 
-int log_mbox(uintptr_t hwnd, unsigned int type, const char* caption, const char* text) {
+int log_mbox(void* hwnd, unsigned int type, const char* caption, const char* text) {
     log_printf(
         "---------------------------\n"
         "%s\n"
@@ -51,7 +51,7 @@ int log_mbox(uintptr_t hwnd, unsigned int type, const char* caption, const char*
     return ret;
 }
 
-int log_vmboxf(uintptr_t hwnd, unsigned int type, const char* caption, const char* format, va_list va) {
+int log_vmboxf(void* hwnd, unsigned int type, const char* caption, const char* format, va_list va) {
     va_list va2;
     va_copy(va2, va);
     int len = vsnprintf(nullptr, 0, format, va2);
@@ -66,7 +66,7 @@ int log_vmboxf(uintptr_t hwnd, unsigned int type, const char* caption, const cha
     return ret;
 }
 
-int log_mboxf(uintptr_t hwnd, unsigned int type, const char* caption, const char* format, ...)
+int log_mboxf(void* hwnd, unsigned int type, const char* caption, const char* format, ...)
 {
     va_list va;
     va_start(va, format);
