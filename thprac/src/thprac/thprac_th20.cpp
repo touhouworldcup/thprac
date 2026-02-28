@@ -1997,8 +1997,8 @@ namespace TH20 {
         case THPrac::TH20::TH20_ST1_BOSS3: {
             constexpr unsigned int st1bsNonSubCallOrd = 0x6dc + 0x18;
             constexpr unsigned int st1bsNon2InvulnCallVal = 0x133c + 0x10;
-            constexpr unsigned int st1bsNon2BossItemCallOp = 0x1428 + 0x4; // 32th cringequit on me when
-            constexpr unsigned int st1bsNon2PlaySoundOp = 0x1554 + 0x4; // I asked what these were so :shrug:
+            constexpr unsigned int st1bsNon2BossItemCallOp = 0x1428 + 0x4;
+            constexpr unsigned int st1bsNon2PlaySoundOp = 0x1554 + 0x4;
             constexpr unsigned int st1bsNon2PostLifeMarker = 0x16c0;
             constexpr unsigned int st1bsNon2PostWait = 0x17ac; // 0x1608 previously
 

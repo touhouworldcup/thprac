@@ -5,7 +5,17 @@
 namespace THPrac {
 namespace TH15 {
     enum addrs {
+        CHARACTER = 0x4e7404,
+        BOMB_PTR = 0x4e9a68,
         PLAYER_PTR = 0x4e9bb8,
+    };
+
+    enum funcs {
+        COPY_ANM_VM_FROM_LOADED = 0x40b880,
+        ANM_VM_RUN = 0x477e10,
+        APPEND_ANM_VM_TO_WORLD_LIST = 0x487bd0,
+        ANM_VM_INTERRUPT_TREE = 0x488620,
+        ALLOCATE_ANM_VM = 0x489460,
     };
 
     using std::pair;
@@ -23,6 +33,7 @@ namespace TH15 {
         int32_t power;
         int32_t value;
         int32_t graze;
+        int32_t reisen_shield;
 
         bool dlg;
 
@@ -50,6 +61,7 @@ namespace TH15 {
             GetJsonValue(power);
             GetJsonValue(value);
             GetJsonValue(graze);
+            GetJsonValue(reisen_shield);
 
             return true;
         }
@@ -76,6 +88,9 @@ namespace TH15 {
             AddJsonValue(power);
             AddJsonValue(value);
             AddJsonValue(graze);
+
+            if (reisen_shield)
+                AddJsonValue(reisen_shield);
 
             ReturnJson();
         }
@@ -131,6 +146,9 @@ namespace TH15 {
                 thPracParam.power = *mPower;
                 thPracParam.value = *mValue;
                 thPracParam.graze = *mGraze;
+
+                if (GetMemContent(CHARACTER) == 3)
+                    thPracParam.reisen_shield = *mReisenShield;
                 break;
             case 4:
                 Close();
@@ -218,6 +236,9 @@ namespace TH15 {
                 mLifeFragment();
                 mBomb();
                 mBombFragment();
+                if (GetMemContent(CHARACTER) == 3)
+                    mReisenShield();
+
                 auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
                 mPower(power_str.c_str());
                 mValue();
@@ -337,6 +358,7 @@ namespace TH15 {
         Gui::GuiSlider<int, ImGuiDataType_S32> mPower { TH_POWER, 0, 400 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mValue { TH_VALUE, 0, 999990, 10, 100000 };
         Gui::GuiDrag<int, ImGuiDataType_S32> mGraze { TH_GRAZE, 0, 999999, 1, 100000 };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mReisenShield { TH15_REISEN_SHIELD, 0, 3 };
 
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
@@ -1840,6 +1862,38 @@ namespace TH15 {
 
         ImGui::End();
     }
+
+    void MakeReisenShieldANM(uintptr_t bombPtr, int32_t shieldCount) {
+        if (!bombPtr || !shieldCount) return;
+
+        // create shield anmVM
+        uintptr_t newAnmVm = asm_call<ALLOCATE_ANM_VM, Cdecl, uintptr_t>();
+        asm_call<COPY_ANM_VM_FROM_LOADED, Thiscall>(GetMemContent(PLAYER_PTR, 0xc), newAnmVm, 0xa);
+        *(int32_t*)(newAnmVm + 0x1c) |= 0x400;
+        asm_call<ANM_VM_RUN, Thiscall>(newAnmVm);
+
+        // add it to the world & to the bomb
+        uint32_t outID = 0;
+        asm_call<APPEND_ANM_VM_TO_WORLD_LIST, Stdcall>(&outID, newAnmVm);
+        *(int32_t*)(bombPtr + 0x50) = outID;
+
+        // remove shield rings based on shield count
+        // can't trigger 2 interrupts in the same frame to remove 2 rings, so we do the work ourselves
+        if (shieldCount <= 2) {
+            ThList<struct AnmVM>* childListHead = (ThList<struct AnmVM>*)(newAnmVm + 0x544 + 0x50);
+
+            for (ThList<struct AnmVM>* vmList = childListHead; vmList; vmList = vmList->next) {
+                uintptr_t childVm = GetMemContent((uintptr_t)vmList);
+                uint32_t childId = GetMemContent(childVm + 0x30);
+
+                if (childId == 11 || (childId == 12 && shieldCount == 1)) {
+                    uint8_t& flags = *GetMemAddr<uint8_t*>(childVm + 0x1c);
+                    flags = (flags & 0x9F) | 0x20; // mark for deletion
+                }
+            }
+        }
+    }
+
     HOOKSET_DEFINE(THMainHook)
     { .addr = 0x43E6EE, .name = "th15_enter", .callback = tracker_reset, .data = PatchHookImpl(7) },
     { .addr = 0x41497A, .name = "th15_bomb_dec", .callback = th10_tracker_count_bomb, .data = PatchHookImpl(5) },
@@ -1894,6 +1948,7 @@ namespace TH15 {
         th15_chapter_set.Disable();
         th15_chapter_disable.Disable();
         th15_stars_bgm_sync.Disable();
+
         if (thPracParam.mode == 1) {
             *(int32_t*)(0x4E740C) = (int32_t)(thPracParam.score / 10);
             *(int32_t*)(0x4E7450) = thPracParam.life;
@@ -1903,6 +1958,14 @@ namespace TH15 {
             *(int32_t*)(0x4E7440) = thPracParam.power;
             *(int32_t*)(0x4E7434) = thPracParam.value * 100;
             *(int32_t*)(0x4E741C) = thPracParam.graze; // 0x4E7420: Chapter Graze
+
+            if (thPracParam.reisen_shield) {
+                uintptr_t bombPtr = GetMemContent(BOMB_PTR);
+                *(int32_t*)(bombPtr + 0x24) = 1; // active bomb
+                *(int32_t*)(bombPtr + 0x2c) = 31; // skip frame 30 of active state (plays shield SFX)
+                *(int32_t*)(bombPtr + 0x60) = thPracParam.reisen_shield; // shield count
+                MakeReisenShieldANM(bombPtr, thPracParam.reisen_shield);
+            }
 
             THSectionPatch();
         }

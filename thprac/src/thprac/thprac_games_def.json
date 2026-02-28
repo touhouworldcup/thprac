@@ -7552,7 +7552,8 @@
       "TH15_JUNKO_RAGE": [ "纯狐发狂", "Junko Rage", "純狐怒り" ],
       "TH15_PH_BLUE": [ "蓝阶段", "Blue Phase", "青段階" ],
       "TH15_PH_GREEN": [ "绿阶段", "Green Phase", "緑段階" ],
-      "TH15_PH_RED": [ "红阶段", "Red Phase", "赤段階" ]
+      "TH15_PH_RED": [ "红阶段", "Red Phase", "赤段階" ],
+      "TH15_REISEN_SHIELD": [ "护盾层数", "Shields", "ボムシールド" ]
     },
 
     "sections": {
