@@ -347,6 +347,7 @@ enum th_glossary_t {
     TH17_GOAST_WOLF_STATIC,
     TH17_INF_ROARING,
     TH17_NO_GOAST,
+    TH17_NO_HYPER,
     TH17_RANDOM_ANGLE,
     TH17_SPAWN_A_GOAST,
     TH17_TITLE,
@@ -1393,9 +1394,6 @@ enum th_glossary_t {
     THPRAC_TH08_FORCE_LS,
     THPRAC_TH13_DISABLE_TRANCE,
     THPRAC_TH13_DISABLE_TRANCE_AUTO,
-    THPRAC_TH17_DISABLE_HYPER,
-    THPRAC_TH17_DISABLE_HYPER_AUTO,
-    THPRAC_TH17_DISABLE_HYPER_DESC,
     THPRAC_TH18_CARD,
     THPRAC_TH18_CARD_1,
     THPRAC_TH18_CARD_2,
@@ -1809,7 +1807,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1798];
+extern const char* th_glossary_str[3][1796];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

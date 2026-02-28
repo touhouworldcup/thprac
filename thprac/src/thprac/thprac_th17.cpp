@@ -7,6 +7,7 @@ namespace THPrac {
 namespace TH17 {
     int g_lock_timer = 0;
     bool g_lock_timer_flag = false;
+    bool g_th17_goast_disable = false;
 
     struct __declspec(align(4)) GlobalsReplay {
         int32_t stage;
@@ -640,7 +641,7 @@ namespace TH17 {
             mTimeLock();
             mAutoBomb();
             mInfRoaring();
-            mNoGoast();
+            mNoHyper();
             mElBgm();
             mInGameInfo();
         }
@@ -685,8 +686,11 @@ namespace TH17 {
         })
         HOTKEY_ENDDEF();
 
-        HOTKEY_DEFINE(mNoGoast, TH17_NO_GOAST, "F8", VK_F8)
-        PATCH_HK(0x4347af, "e903010000")
+        HOTKEY_DEFINE(mNoHyper, TH17_NO_HYPER, "F8", VK_F8)
+        EHOOK_HK(0x40FDD4, 5,
+        {
+            globals->rpy.current_hyper = 4;
+        })
         HOTKEY_ENDDEF();
 
     public:
@@ -791,21 +795,6 @@ namespace TH17 {
             ImGui::Text(S(THPRAC_INGAMEINFO_17_ROAR_BREAK_COUNT));
             ImGui::NextColumn();
             ImGui::Text("%7d", mRoarBreakCount);
-
-            // ImGui::NextColumn();
-            // ImGui::Text(S(THPRAC_INGAMEINFO_17_WOLF_COUNT));
-            // ImGui::NextColumn();
-            // ImGui::Text("%8d", mWolfCount);
-            // ImGui::NextColumn();
-            // ImGui::Text(S(THPRAC_INGAMEINFO_17_OTTER_COUNT));
-            // ImGui::NextColumn();
-            // ImGui::Text("%8d", mOtterCount);
-            // ImGui::NextColumn();
-            // ImGui::Text(S(THPRAC_INGAMEINFO_17_EAGLE_COUNT));
-            // ImGui::NextColumn();
-            // ImGui::Text("%8d", mEagerCount);
-            // ImGui::NextColumn();
-            
         }
 
         virtual void OnPreUpdate() override
@@ -975,10 +964,7 @@ namespace TH17 {
     PATCH_DY(th17_master_disable1c, 0x41AB96, "00")
     HOOKSET_ENDDEF()
 
-    EHOOK_ST(th17_hyper_disable, 0x40FDD4, 5,
-    {
-        globals->rpy.current_hyper = 4;
-    });
+    PATCH_ST(th17_goast_disable, 0x4347af, "e903010000");
 
     float g_bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
     EHOOK_ST(th17_bossmovedown, 0x0423606, 5,{
@@ -1057,8 +1043,7 @@ namespace TH17 {
             FpsInit();
             GameplayInit();
             MasterDisableInit();
-            th17_hyper_disable.Setup();
-            th17_hyper_disable.Toggle(g_adv_igi_options.th17_disableHyper);
+            th17_goast_disable.Setup();
             th17_bossmovedown.Setup();
         }
         
@@ -1182,18 +1167,17 @@ namespace TH17 {
                 if (ImGui::DragFloat(S(TH_BOSS_FORCE_MOVE_DOWN_RANGE), &g_bossMoveDownRange, 0.002f, 0.0f, 1.0f))
                     g_bossMoveDownRange = std::clamp(g_bossMoveDownRange, 0.0f, 1.0f);
 
+                if (ImGui::Checkbox(S(TH17_NO_GOAST), &g_th17_goast_disable))
+                    th17_goast_disable.Toggle(g_th17_goast_disable);
+
+                ImGui::Checkbox(S(TH_ENABLE_LOCK_TIMER), &g_adv_igi_options.enable_lock_timer_autoly);
+
                 if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)) {
                     for (int i = 0; i < 3; i++)
                         th17_master_disable[i].Toggle(g_adv_igi_options.disable_master_autoly);
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));
-                ImGui::Checkbox(S(TH_ENABLE_LOCK_TIMER), &g_adv_igi_options.enable_lock_timer_autoly);
-
-                if (ImGui::Checkbox(S(THPRAC_TH17_DISABLE_HYPER), &g_adv_igi_options.th17_disableHyper))
-                    th17_hyper_disable.Toggle(g_adv_igi_options.th17_disableHyper);
-                ImGui::SameLine();
-                HelpMarker(S(THPRAC_TH17_DISABLE_HYPER_DESC));
 
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();

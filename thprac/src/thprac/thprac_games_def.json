@@ -1420,11 +1420,6 @@
 	  "THPRAC_INGAMEINFO_TH15_SHOOTING_DOWN_RATE":["击破数","shoot down","shoot down"],
 	  "THPRAC_INGAMEINFO_TH15_PRODUCT":["乘积","product","product"],
 	  
-	  "THPRAC_TH17_DISABLE_HYPER_AUTO": [ "鬼形兽自动禁用hyper", "WBaBC disable hyper system", "WBaBC disable hyper system" ],
-	  "THPRAC_TH17_DISABLE_HYPER_DESC": [ "吃三个以上同色后不会开启hyper", "Disable hyper system if 3 or more same goast is picked", "Disable hyper system if 3 or more same goast is picked" ],
-	  "THPRAC_TH17_DISABLE_HYPER": [ "禁用hyper", "Disable hyper system", "Disable hyper system"],
-	  
-	  
        "THPRAC_INGAMEINFO":["更多游戏信息","in game info","in game info"],
        "THPRAC_INGAMEINFO_MISS_COUNT":["miss:","miss:","miss:"],
        "THPRAC_INGAMEINFO_BOMB_COUNT":["bomb:","bomb:","bomb:"],
@@ -9735,6 +9730,7 @@
       "TH17_GOAST_3CHICK": [ "三只小鸡", "3 Chicks", "三匹のひよこ" ],
       "TH17_INF_ROARING": [ "无限咆哮", "Inf. Roaring", "無限のロアリング" ],
       "TH17_NO_GOAST": [ "无动物灵", "No Goast", "動物霊を落とさない" ],
+      "TH17_NO_HYPER": [ "禁用HYPER", "No Hyper", "ノーハイパー" ],
 	  "TH17_GOAST_ANGLE": [ "角度", "Angle", "角度" ],
       "TH17_SPAWN_A_GOAST": [ "生成一只动物灵", "Spawn a Goast", "動物霊アイテムを生成する" ],
       "TH17_FORCE_ANGLE": [ "角度固定", "Force Angle", "固定角度で生成する" ],

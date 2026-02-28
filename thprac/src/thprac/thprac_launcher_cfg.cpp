@@ -2471,7 +2471,6 @@ private:
             GuiHelpMarker(S(TH14_MODE_NORMAL_DESC));
 
             mCfgEnableTH15_ShowShootingDownRate_autoly.Gui(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2));
-            mCfgEnableTH17_DisableHyper_autoly.Gui(S(THPRAC_TH17_DISABLE_HYPER_AUTO), S(THPRAC_TH17_DISABLE_HYPER_DESC));
 
             mCfgTH18ForceCard.Gui(S(THPRAC_TH18_FORCE_CARD), S(THPRAC_TH18_FORCE_CARD_DESC));
             ImGui::SameLine();
@@ -2712,7 +2711,6 @@ private:
     THCfgCheckbox mCfgEnableTH14_ShowDropBar_autoly { "auto_th14_show_drop_bar", false };
     THCfgCheckbox mCfgEnableTH14_LaserRepRepair_autoly { "auto_th14_laser_rep_repair", false };
     THCfgCheckbox mCfgEnableTH15_ShowShootingDownRate_autoly { "auto_th15_show_rate", false };
-    THCfgCheckbox mCfgEnableTH17_DisableHyper_autoly { "auto_th17_disable_hyper", false };
     THCfgCheckbox mCfgEnableMasterDisable_autoly { "auto_disable_master", false };
 
     THCfgCheckbox mCfgEnableLockTimer_autoly { "auto_lock_timer", false };

@@ -48,7 +48,6 @@ namespace THPrac {
         bool th14_showDropBar = false;
         bool th14_laserRepRepair = false;
         bool th15_showShootingDownRate = false;
-        bool th17_disableHyper = false;
         bool show_keyboard_monitor = false;
         bool th10_ud_Replay = false;
         bool th12_chromatic_ufo = false;

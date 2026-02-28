@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1798] {
+const char* th_glossary_str[3][1796] {
     {
         "",
         "啤酒",
@@ -347,6 +347,7 @@ const char* th_glossary_str[3][1798] {
         "狼 (固定)",
         "无限咆哮",
         "无动物灵",
+        "禁用HYPER",
         "角度随机",
         "生成一只动物灵",
         "TH17 东方鬼形兽　～ Wily Beast and Weakest Creature.",
@@ -1393,9 +1394,6 @@ const char* th_glossary_str[3][1798] {
         "永夜抄强制总是开启LSC",
         "禁用MISS后灵界",
         "神灵庙自动禁用MISS后灵界",
-        "禁用hyper",
-        "鬼形兽自动禁用hyper",
-        "吃三个以上同色后不会开启hyper",
         "想要的卡牌",
         "stage1 卡牌",
         "stage2 卡牌",
@@ -2147,6 +2145,7 @@ const char* th_glossary_str[3][1798] {
         "Wolf (static)",
         "Inf. Roaring",
         "No Goast",
+        "No Hyper",
         "Random Angle",
         "Spawn a Goast",
         "TH17 Wily Beast and Weakest Creature",
@@ -3193,9 +3192,6 @@ const char* th_glossary_str[3][1798] {
         "force LS in IN",
         "Disable trance after miss",
         "TD Disable trance after miss",
-        "Disable hyper system",
-        "WBaBC disable hyper system",
-        "Disable hyper system if 3 or more same goast is picked",
         "cards you want",
         "card for stage 1",
         "card for stage 2",
@@ -3947,6 +3943,7 @@ const char* th_glossary_str[3][1798] {
         "オオカミ (色変わりしない)",
         "無限のロアリング",
         "動物霊を落とさない",
+        "ノーハイパー",
         "ランダムな角度で生成する",
         "動物霊アイテムを生成する",
         "TH17 東方鬼形獣　～ Wily Beast and Weakest Creature.",
@@ -4993,9 +4990,6 @@ const char* th_glossary_str[3][1798] {
         "force LS in IN",
         "Disable trance after miss",
         "TD Disable trance after miss",
-        "Disable hyper system",
-        "WBaBC disable hyper system",
-        "Disable hyper system if 3 or more same goast is picked",
         "cards you want",
         "card for stage 1",
         "card for stage 2",
