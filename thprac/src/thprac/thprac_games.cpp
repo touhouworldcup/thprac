@@ -363,11 +363,13 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         LauncherSettingGet("auto_th11_show_hint", g_adv_igi_options.th11_showHint);
         LauncherSettingGet("auto_th13_show_hits", g_adv_igi_options.th13_showHits);
         LauncherSettingGet("auto_th13_show_hitbar", g_adv_igi_options.th13_showHitBar);
+        LauncherSettingGet("auto_th13_disable_miss_trance", g_adv_igi_options.th13_disable_miss_trance);
         LauncherSettingGet("auto_th14_show_bonus", g_adv_igi_options.th14_showBonus);
         LauncherSettingGet("auto_th14_show_item_cnt", g_adv_igi_options.th14_showItemsCount);
         LauncherSettingGet("auto_th14_show_drop_bar", g_adv_igi_options.th14_showDropBar);
         LauncherSettingGet("auto_th14_laser_rep_repair", g_adv_igi_options.th14_laserRepRepair);
         LauncherSettingGet("auto_th15_show_rate", g_adv_igi_options.th15_showShootingDownRate);
+        LauncherSettingGet("auto_th17_disable_hyper", g_adv_igi_options.th17_disableHyper);
 
         LauncherSettingGet("auto_keyboard_monitor", g_adv_igi_options.show_keyboard_monitor);
 

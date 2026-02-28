@@ -703,7 +703,7 @@ namespace TH13 {
     EHOOK_ST(th13_master_disable2, 0x4130CE,6,{
         *(DWORD*)(pCtx->Esi + 0x0001917C) = 0;
     });
-
+    PATCH_ST(th13_disable_miss_trance, 0x405A4A, "9090");
     
     float g_bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
     EHOOK_ST(th13_bossmovedown, 0x0041CD97,5,{
@@ -728,8 +728,6 @@ namespace TH13 {
             for (int i = 0; i < 5; i++)
                 th13_master_disable1[i].Toggle(g_adv_igi_options.disable_master_autoly);
             th13_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
-
-            
         }
         void VPResetFPS(int32_t FPS)
         {
@@ -814,6 +812,8 @@ namespace TH13 {
             FpsInit();
             GameplayInit();
             MasterDisableInit();
+            th13_disable_miss_trance.Setup();
+            th13_disable_miss_trance.Toggle(g_adv_igi_options.th13_disable_miss_trance);
             th13_bossmovedown.Setup();
         }
     public:
@@ -908,6 +908,9 @@ namespace TH13 {
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));
                 ImGui::Checkbox(S(TH_ENABLE_LOCK_TIMER), &g_adv_igi_options.enable_lock_timer_autoly);
+
+                if(ImGui::Checkbox(S(THPRAC_TH13_DISABLE_TRANCE), &g_adv_igi_options.th13_disable_miss_trance))
+                    th13_disable_miss_trance.Toggle(g_adv_igi_options.th13_disable_miss_trance);
 
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();

@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1792] {
+const char* th_glossary_str[3][1798] {
     {
         "",
         "啤酒",
@@ -300,6 +300,7 @@ const char* th_glossary_str[3][1792] {
         "蓝阶段",
         "绿阶段",
         "红阶段",
+        "护盾层数",
         "强制第二波",
         "强制第二波(强制相位)",
         "正常",
@@ -1390,6 +1391,11 @@ const char* th_glossary_str[3][1792] {
         "妖妖梦始终保存存档",
         "例如练习模式re时",
         "永夜抄强制总是开启LSC",
+        "禁用MISS后灵界",
+        "神灵庙自动禁用MISS后灵界",
+        "禁用hyper",
+        "鬼形兽自动禁用hyper",
+        "吃三个以上同色后不会开启hyper",
         "想要的卡牌",
         "stage1 卡牌",
         "stage2 卡牌",
@@ -2094,6 +2100,7 @@ const char* th_glossary_str[3][1792] {
         "Blue Phase",
         "Green Phase",
         "Red Phase",
+        "Shields",
         "force wave2",
         "force wave2(force phase)",
         "normal",
@@ -3184,6 +3191,11 @@ const char* th_glossary_str[3][1792] {
         "always save score/spell history in PCB",
         "e.g. retry in practice",
         "force LS in IN",
+        "Disable trance after miss",
+        "TD Disable trance after miss",
+        "Disable hyper system",
+        "WBaBC disable hyper system",
+        "Disable hyper system if 3 or more same goast is picked",
         "cards you want",
         "card for stage 1",
         "card for stage 2",
@@ -3888,6 +3900,7 @@ const char* th_glossary_str[3][1792] {
         "青段階",
         "緑段階",
         "赤段階",
+        "ボムシールド",
         "force wave2",
         "force wave2(force phase)",
         "normal",
@@ -4978,6 +4991,11 @@ const char* th_glossary_str[3][1792] {
         "always save score/spell history in PCB",
         "e.g. retry in practice",
         "force LS in IN",
+        "Disable trance after miss",
+        "TD Disable trance after miss",
+        "Disable hyper system",
+        "WBaBC disable hyper system",
+        "Disable hyper system if 3 or more same goast is picked",
         "cards you want",
         "card for stage 1",
         "card for stage 2",

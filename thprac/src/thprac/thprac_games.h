@@ -42,11 +42,13 @@ namespace THPrac {
         bool th11_showHint = false;
         bool th13_showHits = false;
         bool th13_showHitBar = false;
+        bool th13_disable_miss_trance = false;
         bool th14_showBonus = false;
         bool th14_showItemsCount = false;
         bool th14_showDropBar = false;
         bool th14_laserRepRepair = false;
         bool th15_showShootingDownRate = false;
+        bool th17_disableHyper = false;
         bool show_keyboard_monitor = false;
         bool th10_ud_Replay = false;
         bool th12_chromatic_ufo = false;

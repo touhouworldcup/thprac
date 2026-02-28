@@ -2462,6 +2462,7 @@ private:
             mCfgEnableTH12_ChromaticUFO_info.Gui(S(THPRAC_INGAMEINFO_12_UFO_SUPER_ULTRA_CHROMATIC_INFO_PRO));
             mCfgEnableTH13_ShowHits_autoly.Gui(S(THPRAC_INGAMEINFO_TH13_SHOW_HITS2));
             mCfgEnableTH13_ShowHitBar_autoly.Gui(S(THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR2));
+            mCfgEnableTH13_DisableMissTrance_autoly.Gui(S(THPRAC_TH13_DISABLE_TRANCE_AUTO));
             mCfgEnableTH14_ShowBonus_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_BONUS2));
             mCfgEnableTH14_ShowItemsCnt_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_ITEMS2));
             mCfgEnableTH14_ShowDropBar_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR2));
@@ -2470,6 +2471,7 @@ private:
             GuiHelpMarker(S(TH14_MODE_NORMAL_DESC));
 
             mCfgEnableTH15_ShowShootingDownRate_autoly.Gui(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2));
+            mCfgEnableTH17_DisableHyper_autoly.Gui(S(THPRAC_TH17_DISABLE_HYPER_AUTO), S(THPRAC_TH17_DISABLE_HYPER_DESC));
 
             mCfgTH18ForceCard.Gui(S(THPRAC_TH18_FORCE_CARD), S(THPRAC_TH18_FORCE_CARD_DESC));
             ImGui::SameLine();
@@ -2704,11 +2706,13 @@ private:
     THCfgCheckbox mCfgEnableTH12_ChromaticUFO_info { "chromatic_UFO_info", false };
     THCfgCheckbox mCfgEnableTH13_ShowHits_autoly { "auto_th13_show_hits", false };
     THCfgCheckbox mCfgEnableTH13_ShowHitBar_autoly { "auto_th13_show_hitbar", false };
+    THCfgCheckbox mCfgEnableTH13_DisableMissTrance_autoly { "auto_th13_disable_miss_trance", false };
     THCfgCheckbox mCfgEnableTH14_ShowBonus_autoly { "auto_th14_show_bonus", false };
     THCfgCheckbox mCfgEnableTH14_ShowItemsCnt_autoly { "auto_th14_show_item_cnt", false };
     THCfgCheckbox mCfgEnableTH14_ShowDropBar_autoly { "auto_th14_show_drop_bar", false };
     THCfgCheckbox mCfgEnableTH14_LaserRepRepair_autoly { "auto_th14_laser_rep_repair", false };
     THCfgCheckbox mCfgEnableTH15_ShowShootingDownRate_autoly { "auto_th15_show_rate", false };
+    THCfgCheckbox mCfgEnableTH17_DisableHyper_autoly { "auto_th17_disable_hyper", false };
     THCfgCheckbox mCfgEnableMasterDisable_autoly { "auto_disable_master", false };
 
     THCfgCheckbox mCfgEnableLockTimer_autoly { "auto_lock_timer", false };

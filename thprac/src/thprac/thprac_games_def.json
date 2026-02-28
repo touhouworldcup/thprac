@@ -1395,6 +1395,8 @@
 	  "THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR":["显示连击条","show hit bar","show hit bar"],
 	  "THPRAC_INGAMEINFO_TH13_SHOW_HIT_BAR2":["神灵庙显示连击条","TD show hit bar","TD show hit bar"],
 	  "THPRAC_INGAMEINFO_TH13_HITS":["连击","hits","hits"],
+	  "THPRAC_TH13_DISABLE_TRANCE_AUTO": [ "神灵庙自动禁用MISS后灵界", "TD Disable trance after miss", "TD Disable trance after miss" ],
+	  "THPRAC_TH13_DISABLE_TRANCE": [ "禁用MISS后灵界", "Disable trance after miss", "Disable trance after miss" ],
 	  
 	  "THPRAC_INGAMEINFO_TH14_MARISA_LASER_REP":["辉针城魔理沙自动开启激光修复的rep预防功能 (独占全屏不建议)","DDC Marisa laser bug rep repair on (not recommended in fullscreen)","DDC Marisa laser bug rep repair on (not recommended in fullscreen)"],
 	  "THPRAC_INGAMEINFO_TH14_SHOW_BONUS":["显示bonus数","show bonuses","show bonuses"],
@@ -1417,6 +1419,10 @@
 	  "THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2":["绀珠传显示击破数","LoLK show shooting down","LoLK show shooting down"],
 	  "THPRAC_INGAMEINFO_TH15_SHOOTING_DOWN_RATE":["击破数","shoot down","shoot down"],
 	  "THPRAC_INGAMEINFO_TH15_PRODUCT":["乘积","product","product"],
+	  
+	  "THPRAC_TH17_DISABLE_HYPER_AUTO": [ "鬼形兽自动禁用hyper", "WBaBC disable hyper system", "WBaBC disable hyper system" ],
+	  "THPRAC_TH17_DISABLE_HYPER_DESC": [ "吃三个以上同色后不会开启hyper", "Disable hyper system if 3 or more same goast is picked", "Disable hyper system if 3 or more same goast is picked" ],
+	  "THPRAC_TH17_DISABLE_HYPER": [ "禁用hyper", "Disable hyper system", "Disable hyper system"],
 	  
 	  
        "THPRAC_INGAMEINFO":["更多游戏信息","in game info","in game info"],
@@ -8689,7 +8695,8 @@
       "TH15_JUNKO_RAGE": [ "纯狐发狂", "Junko Rage", "純狐怒り" ],
       "TH15_PH_BLUE": [ "蓝阶段", "Blue Phase", "青段階" ],
       "TH15_PH_GREEN": [ "绿阶段", "Green Phase", "緑段階" ],
-      "TH15_PH_RED": [ "红阶段", "Red Phase", "赤段階" ]
+      "TH15_PH_RED": [ "红阶段", "Red Phase", "赤段階" ],
+	  "TH15_REISEN_SHIELD": [ "护盾层数", "Shields", "ボムシールド" ]
     },
 
     "sections": {

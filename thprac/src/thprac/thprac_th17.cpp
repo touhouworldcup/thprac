@@ -706,8 +706,8 @@ namespace TH17 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetPosRel(900.0f / 1280.0f, 500.0f / 960.0f);
-            SetSizeRel(340.0f / 1280.0f, 0.0f);
+            SetPosRel(880.0f / 1280.0f, 500.0f / 960.0f);
+            SetSizeRel(380.0f / 1280.0f, 0.0f);
             SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
@@ -760,36 +760,51 @@ namespace TH17 {
             ImGui::Columns(2);
             ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
             ImGui::NextColumn();
-            ImGui::Text("%8d", mMissCount);
+            ImGui::Text("%7d", mMissCount);
             ImGui::NextColumn();
             ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
             ImGui::NextColumn();
-            ImGui::Text("%8d", mBombCount);
+            ImGui::Text("%7d", mBombCount);
             ImGui::NextColumn();
             ImGui::Text(S(THPRAC_INGAMEINFO_17_SPECIAL_GOAST_COUNT));
             ImGui::NextColumn();
-            ImGui::Text("%8d", mSpecialGoastCount);
+            ImGui::Text("%7d", mSpecialGoastCount);
             ImGui::NextColumn();
             ImGui::Text(S(THPRAC_INGAMEINFO_17_ROAR_COUNT));
             ImGui::NextColumn();
-            ImGui::Text("%8d", mRoarCount);
+
+            ImGui::Text("%7d(", mRoarCount);
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::TextColored({ 0.9f, 0.4f, 0.4f, 1.0f }, "%d", mWolfCount);
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::Text("/");
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::TextColored({ 0.6f, 0.9f, 0.6f, 1.0f }, "%d", mOtterCount);
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::Text("/");
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::TextColored({ 0.8f, 0.6f, 1.0f, 1.0f }, "%d", mEagerCount);
+            ImGui::SameLine(0.0f, 0.0f);
+            ImGui::Text(")");
+
             ImGui::NextColumn();
             ImGui::Text(S(THPRAC_INGAMEINFO_17_ROAR_BREAK_COUNT));
             ImGui::NextColumn();
-            ImGui::Text("%8d", mRoarBreakCount);
-            ImGui::NextColumn();
-            ImGui::Text(S(THPRAC_INGAMEINFO_17_WOLF_COUNT));
-            ImGui::NextColumn();
-            ImGui::Text("%8d", mWolfCount);
-            ImGui::NextColumn();
-            ImGui::Text(S(THPRAC_INGAMEINFO_17_OTTER_COUNT));
-            ImGui::NextColumn();
-            ImGui::Text("%8d", mOtterCount);
-            ImGui::NextColumn();
-            ImGui::Text(S(THPRAC_INGAMEINFO_17_EAGLE_COUNT));
-            ImGui::NextColumn();
-            ImGui::Text("%8d", mEagerCount);
-            ImGui::NextColumn();
+            ImGui::Text("%7d", mRoarBreakCount);
+
+            // ImGui::NextColumn();
+            // ImGui::Text(S(THPRAC_INGAMEINFO_17_WOLF_COUNT));
+            // ImGui::NextColumn();
+            // ImGui::Text("%8d", mWolfCount);
+            // ImGui::NextColumn();
+            // ImGui::Text(S(THPRAC_INGAMEINFO_17_OTTER_COUNT));
+            // ImGui::NextColumn();
+            // ImGui::Text("%8d", mOtterCount);
+            // ImGui::NextColumn();
+            // ImGui::Text(S(THPRAC_INGAMEINFO_17_EAGLE_COUNT));
+            // ImGui::NextColumn();
+            // ImGui::Text("%8d", mEagerCount);
+            // ImGui::NextColumn();
             
         }
 
@@ -800,8 +815,8 @@ namespace TH17 {
             } else {
             }
             if (*(THOverlay::singleton().mInGameInfo) && GetMemContent(PLAYER_PTR)) {
-                SetPosRel(900.0f / 1280.0f, 500.0f / 960.0f);
-                SetSizeRel(340.0f / 1280.0f, 0.0f);
+                SetPosRel(880.0f / 1280.0f, 500.0f / 960.0f);
+                SetSizeRel(380.0f / 1280.0f, 0.0f);
                 Open();
             } else {
                 Close();
@@ -960,6 +975,11 @@ namespace TH17 {
     PATCH_DY(th17_master_disable1c, 0x41AB96, "00")
     HOOKSET_ENDDEF()
 
+    EHOOK_ST(th17_hyper_disable, 0x40FDD4, 5,
+    {
+        globals->rpy.current_hyper = 4;
+    });
+
     float g_bossMoveDownRange = BOSS_MOVE_DOWN_RANGE_INIT;
     EHOOK_ST(th17_bossmovedown, 0x0423606, 5,{
         float* y_pos = (float*)(pCtx->Edi + 0x3F64);
@@ -1037,6 +1057,8 @@ namespace TH17 {
             FpsInit();
             GameplayInit();
             MasterDisableInit();
+            th17_hyper_disable.Setup();
+            th17_hyper_disable.Toggle(g_adv_igi_options.th17_disableHyper);
             th17_bossmovedown.Setup();
         }
         
@@ -1167,6 +1189,11 @@ namespace TH17 {
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));
                 ImGui::Checkbox(S(TH_ENABLE_LOCK_TIMER), &g_adv_igi_options.enable_lock_timer_autoly);
+
+                if (ImGui::Checkbox(S(THPRAC_TH17_DISABLE_HYPER), &g_adv_igi_options.th17_disableHyper))
+                    th17_hyper_disable.Toggle(g_adv_igi_options.th17_disableHyper);
+                ImGui::SameLine();
+                HelpMarker(S(THPRAC_TH17_DISABLE_HYPER_DESC));
 
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
