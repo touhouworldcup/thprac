@@ -164,7 +164,7 @@
   <PropertyGroup>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>thprac</TargetName>
-    <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\yyjson;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)src\3rdParties\yyjson;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)src\3rdParties;$(ProjectDir)src\3rdParties\FreeType\win32;$(LibraryPath)</LibraryPath>
     <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
