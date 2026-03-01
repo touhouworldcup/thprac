@@ -15,6 +15,10 @@
 
 using namespace THPrac;
 
+namespace THPrac {
+extern int Launcher(HINSTANCE hInstance, int nCmdShow);
+}
+
 bool PrivilegeCheck()
 {
     BOOL fRet = FALSE;
@@ -156,7 +160,5 @@ int WINAPI wWinMain(
         } while (FindNextFileW(hFind, &find));
         FindClose(hFind);
     }
-
-    MessageBoxW(NULL, L"TODO: implement launcher", L"", MB_ICONINFORMATION | MB_OK);
-    return 0;
+    return Launcher(hInstance, nCmdShow);
 }
