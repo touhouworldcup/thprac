@@ -72,25 +72,24 @@ namespace TH10 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
             GetJsonValue(life);
             GetJsonValue(power);
             GetJsonValue(faith);
             GetJsonValue(faith_bar);
             GetJsonValue(score);
             GetJsonValue(real_bullet_sprite);
-            GetJsonValue(st6_boss9_spd)
-            else
+            if (!GetJsonValue(st6_boss9_spd)) {
                 st6_boss9_spd = -1;
-
+            }
             return true;
         }
         std::string GetJson()
         {
             CreateJson();
 
-            AddJsonValueEx(version, GetVersionStr(), jalloc);
-            AddJsonValueEx(game, "th10", jalloc);
+            AddJsonValueEx(version, GetVersionStr());
+            AddJsonValueEx(game, "th10");
             AddJsonValue(mode);
             AddJsonValue(stage);
             if (section)

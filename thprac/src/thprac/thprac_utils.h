@@ -1,6 +1,9 @@
 #pragma once
 
 #define NOMINMAX
+#include <Windows.h>
+
+#include <stdint.h>
 
 #include "utils/utils.h"
 
@@ -12,23 +15,18 @@
 #include "thprac_locale_def.h"
 #include "thprac_gui_locale.h"
 
-#include <Windows.h>
-#include <cstdint>
+#include <charconv>
+#include <concepts>
 #include <imgui.h>
 #include <memory>
 #include <optional>
-#pragma warning(push)
-#pragma warning(disable : 26451)
-#pragma warning(disable : 26495)
-#pragma warning(disable : 33010)
-#pragma warning(disable : 26819)
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
-#pragma warning(pop)
 #include <random>
 #include <string>
 #include <utility>
+#include <type_traits>
 #include <vector>
+
+#include "yyjson.h"
 
 namespace THPrac {
 
@@ -124,7 +122,7 @@ constexpr bool PathsCompare(const T* a, const T* b) {
 }
 #pragma endregion
 
-
+#pragma region Algorithm
 template <typename T>
 unsigned int binary_search(const T* arr, size_t len, T needle) {
     size_t low = 0;
@@ -150,6 +148,76 @@ unsigned int binary_search(const T* arr, size_t len, T needle) {
 
     return (unsigned int)-1;
 }
+
+// thcrap is able to use it's entire expression parser for this
+// Here I'll just return true for any non empty string that doesn't say false or no
+__forceinline bool str_parse_bool(const char* str) {
+    if (*str) {
+        return _stricmp(str, "FALSE") == 0 || _stricmp(str, "NO") == 0;
+    } else {
+        return false;
+    }
+}
+#pragma endregion
+
+#pragma region Json
+
+// Parse numbers encoded as any type into an int of size 8/16/32/64 or float or double
+// while performing all required conversions automatically
+template <typename T>
+requires((std::integral<T> || std::same_as<T, float> || std::same_as<T, double>) && sizeof(T) <= 8)
+bool yyjson_eval_numeric(yyjson_val* val, T* out) noexcept
+{
+    switch (yyjson_get_type(val)) {
+    case YYJSON_TYPE_BOOL:
+        *out = unsafe_yyjson_get_bool(val);
+        return true;
+    case YYJSON_TYPE_NUM:
+        switch (val->tag & 0b000111000) {
+        case YYJSON_SUBTYPE_UINT:
+            *out = (T)val->uni.u64;
+            return true;
+        case YYJSON_SUBTYPE_SINT:
+            *out = (T)val->uni.i64;
+            return true;
+        case YYJSON_SUBTYPE_REAL:
+            *out = (T)val->uni.f64;
+            return true;
+        default:
+            return false;
+        }
+    case YYJSON_TYPE_STR: {
+        const char* val_str = unsafe_yyjson_get_str(val);
+        if constexpr (std::same_as<T, bool>) {
+            *out = str_parse_bool(val_str);
+            return true;
+        } else {
+            return std::from_chars(val_str, val_str + t_strlen(val_str), *out).ec == std::errc();
+        }
+    }
+    default:
+        return false;
+    }
+}
+
+// C++ overloads for yyjson_mut_obj_add, mainly for macros
+// In C, this would be the perfect use for _Generic, which
+// would also guarantee inlining even in debug mode.
+//
+#define CPP_YYJSON_MUT_OBJ_ADD_DECL(tname_cpp, tname_yy) \
+__forceinline bool yyjson_mut_obj_add(yyjson_mut_doc* doc, yyjson_mut_val* obj, const char* key, tname_cpp val) { \
+    return yyjson_mut_obj_add_##tname_yy(doc, obj, key, val); \
+}
+CPP_YYJSON_MUT_OBJ_ADD_DECL(bool, bool)
+CPP_YYJSON_MUT_OBJ_ADD_DECL(double, double)
+CPP_YYJSON_MUT_OBJ_ADD_DECL(float, float)
+CPP_YYJSON_MUT_OBJ_ADD_DECL(int, sint)
+CPP_YYJSON_MUT_OBJ_ADD_DECL(unsigned int, uint)
+CPP_YYJSON_MUT_OBJ_ADD_DECL(int64_t, sint)
+CPP_YYJSON_MUT_OBJ_ADD_DECL(uint64_t, uint)
+CPP_YYJSON_MUT_OBJ_ADD_DECL(const char*, str)
+#undef CPP_YYJSON_MUT_OBJ_ADD_DECL
+#pragma endregion
 
 }
 

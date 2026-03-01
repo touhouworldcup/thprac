@@ -59,8 +59,8 @@ namespace Alcostg {
         {
             CreateJson();
 
-            AddJsonValueEx(version, GetVersionStr(), jalloc);
-            AddJsonValueEx(game, "alcostg", jalloc);
+            AddJsonValueEx(version, GetVersionStr());
+            AddJsonValueEx(game, "alcostg");
             AddJsonValue(mode);
             AddJsonValue(stage);
             if (section)

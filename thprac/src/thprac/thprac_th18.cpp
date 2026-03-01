@@ -211,7 +211,7 @@ namespace TH18 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -242,8 +242,8 @@ namespace TH18 {
             if (mode == 1) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th18", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th18");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
                 if (section)
@@ -279,8 +279,8 @@ namespace TH18 {
             } else if (mode == 2) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th18", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th18");
                 AddJsonValue(mode);
 
                 if (phase)
@@ -290,7 +290,6 @@ namespace TH18 {
             }
 
             CreateJson();
-            jalloc; // Dummy usage to silence C4189
             ReturnJson();
         }
     };

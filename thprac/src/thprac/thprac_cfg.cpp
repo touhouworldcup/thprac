@@ -3,8 +3,6 @@
 #include "thprac_utils.h"
 #include "utils/wininternal.h"
 
-#include <yyjson.h>
-
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 namespace THPrac {
@@ -87,59 +85,6 @@ yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = 
     }
 }
 
-// thcrap is able to use it's entire expression parser for this
-// Here I'll just return true for any non empty string that doesn't say false or no
-bool str_parse_bool(const char* str) {
-    if (*str) {
-        return _stricmp(str, "FALSE") == 0 || _stricmp(str, "NO") == 0;
-    } else {
-        return false;
-    }
-}
-
-bool yyjson_parse_bool(yyjson_val* val, bool* out) {
-    switch (yyjson_get_type(val)) {
-    case YYJSON_TYPE_BOOL:
-        *out = unsafe_yyjson_get_bool(val);
-        return true;
-    case YYJSON_TYPE_NUM:
-        // Bools and numbers are represented differently internally
-        *out = unsafe_yyjson_get_uint(val);
-        return true;
-    case YYJSON_TYPE_STR:
-        *out = str_parse_bool(unsafe_yyjson_get_str(val));
-        return true;
-    // Both of these types use unsafe_yyjson_get_len for their "get size" functions internally
-    case YYJSON_TYPE_OBJ:
-    case YYJSON_TYPE_ARR:
-        *out = unsafe_yyjson_get_len(val);
-        return true;
-    default:
-        return false;
-    }
-}
-
-bool yyjson_parse_uint(yyjson_val* val, unsigned int* out) {
-    switch (yyjson_get_type(val)) {
-    case YYJSON_TYPE_BOOL:
-        *out = unsafe_yyjson_get_bool(val);
-        return true;
-    case YYJSON_TYPE_NUM:
-        if (unsafe_yyjson_is_real(val)) {
-            // https://www.youtube.com/watch?v=uSf5hIzHAKQ
-            *out = unsafe_yyjson_get_real(val);
-        } else {
-            *out = unsafe_yyjson_get_uint(val);
-        }
-        return true;
-    case YYJSON_TYPE_STR:
-        *out = atoi(unsafe_yyjson_get_str(val));
-        return true;
-    default:
-        return false;
-    }
-}
-
 void SetTheme(int theme) {
     switch (theme) {
     default:
@@ -173,48 +118,48 @@ bool LoadSettingsGlobal() {
     yyjson_val *key, *val;
     yyjson_obj_foreach(root, idx, max, key, val) {
         if (unsafe_yyjson_equals_str(key, "theme")) {
-            yyjson_parse_uint(val, &gSettingsGlobal.theme);
+            yyjson_eval_numeric(val, &gSettingsGlobal.theme);
             if (gSettingsGlobal.theme > 2) {
                 gSettingsGlobal.theme = 0;
             }
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "language")) {
-            if (!yyjson_parse_uint(val, (unsigned int*)&gSettingsGlobal.language) || gSettingsGlobal.language > 2) {
+            if (!yyjson_eval_numeric(val, (unsigned int*)&gSettingsGlobal.language) || gSettingsGlobal.language > 2) {
                 Gui::LocaleSetFromSysLang();
             }
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "render_only_used_glyphs")) {
-            yyjson_parse_bool(val, &gSettingsGlobal.render_only_used_glyphs);
+            yyjson_eval_numeric(val, &gSettingsGlobal.render_only_used_glyphs);
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "resizable_window")) {
-            yyjson_parse_bool(val, &gSettingsGlobal.resizable_window);
+            yyjson_eval_numeric(val, &gSettingsGlobal.resizable_window);
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "console")) {
-            yyjson_parse_bool(val, &gSettingsGlobal.console);
+            yyjson_eval_numeric(val, &gSettingsGlobal.console);
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "backspace_menu_chord")) {
-            yyjson_parse_uint(val, &hotkeys.backspace_menu);
+            yyjson_eval_numeric(val, &hotkeys.backspace_menu);
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "advanced_menu_chord")) {
-            yyjson_parse_uint(val, &hotkeys.advanced_menu);
+            yyjson_eval_numeric(val, &hotkeys.advanced_menu);
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "screenshot_chord")) {
-            yyjson_parse_uint(val, &hotkeys.screenshot);
+            yyjson_eval_numeric(val, &hotkeys.screenshot);
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "tracker_chord")) {
-            yyjson_parse_uint(val, &hotkeys.tracker);
+            yyjson_eval_numeric(val, &hotkeys.tracker);
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "language_chord")) {
-            yyjson_parse_uint(val, &hotkeys.language);
+            yyjson_eval_numeric(val, &hotkeys.language);
             continue;
         }
     }
@@ -286,27 +231,27 @@ bool LoadSettingsStartup() {
     yyjson_val *key, *val;
     yyjson_obj_foreach(root, idx, max, key, val) {
         if (unsafe_yyjson_equals_str(key, "existing_game_launch_action")) { 
-            yyjson_parse_uint(val, (unsigned int*)&gSettingsStartup.existing_game_launch_action);
+            yyjson_eval_numeric(val, (unsigned int*)&gSettingsStartup.existing_game_launch_action);
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "filename_after_update")) {
-            yyjson_parse_uint(val, (unsigned int*)&gSettingsStartup.filename_after_update);
+            yyjson_eval_numeric(val, (unsigned int*)&gSettingsStartup.filename_after_update);
             continue;
         }
-        if (unsafe_yyjson_equals_str(key, "check_update")) { 
-            yyjson_parse_uint(val, (unsigned int*)&gSettingsStartup.check_update);
+        if (unsafe_yyjson_equals_str(key, "check_update")) {
+            yyjson_eval_numeric(val, (unsigned int*)&gSettingsStartup.check_update);
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "update_without_confirmation")) {
-            yyjson_parse_bool(val, &gSettingsStartup.update_without_confirmation);
+            yyjson_eval_numeric(val, &gSettingsStartup.update_without_confirmation);
             continue;
         }
-        if (unsafe_yyjson_equals_str(key, "dont_search_ongoing_game")) { 
-            yyjson_parse_bool(val, &gSettingsStartup.dont_search_ongoing_game);
+        if (unsafe_yyjson_equals_str(key, "dont_search_ongoing_game")) {
+            yyjson_eval_numeric(val, &gSettingsStartup.dont_search_ongoing_game);
             continue;
         }
-        if (unsafe_yyjson_equals_str(key, "thprac_admin_rights")) { 
-            yyjson_parse_bool(val, &gSettingsStartup.thprac_admin_rights);
+        if (unsafe_yyjson_equals_str(key, "thprac_admin_rights")) {
+            yyjson_eval_numeric(val, &gSettingsStartup.thprac_admin_rights);
             continue;
         }
     }

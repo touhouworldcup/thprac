@@ -47,8 +47,8 @@ namespace TH14 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
-            GetJsonValueEx(keepSpellDrops, Bool);
+            GetJsonValue(dlg);
+            GetJsonValue(keepSpellDrops);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -67,8 +67,8 @@ namespace TH14 {
             if (mode == 1) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th14", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th14");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
                 if (section)
@@ -76,9 +76,9 @@ namespace TH14 {
                 if (phase)
                     AddJsonValue(phase);
                 if (dlg)
-                    AddJsonValue(dlg)
+                    AddJsonValue(dlg);
                 if (keepSpellDrops)
-                    AddJsonValue(keepSpellDrops)
+                    AddJsonValue(keepSpellDrops);
 
                 AddJsonValue(score);
                 AddJsonValue(life);
@@ -94,8 +94,8 @@ namespace TH14 {
             } else if (mode == 2) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th14", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th14");
                 AddJsonValue(mode);
                 AddJsonValue(phase);
 
@@ -103,7 +103,6 @@ namespace TH14 {
             }
 
             CreateJson();
-            jalloc; // Dummy usage to silence C4189
             ReturnJson();
         }
     };

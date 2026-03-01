@@ -1101,5 +1101,26 @@ bool GameState_Assert(bool cond)
 }
 #pragma endregion
 
+#pragma region Json
+// Wrap std::string in yyjson's allocator interface to be able to serialize to an std::string directly
+void* yyjson_string_alc_alloc(void* ctx, size_t size) {
+    auto* str = (std::string*)ctx;
+    str->resize(size, 0);
+    return str->data();
+}
+
+void* yyjson_string_alc_realloc(void* ctx, void* ptr, size_t old_size, size_t size) {
+    auto* str = (std::string*)ctx;
+    if (size > old_size) {
+        str->append(size - old_size, 0);
+    } else if (size < old_size) {
+        str->resize(old_size - size);
+    }
+    return str->data();
+}
+
+void yyjson_string_alc_free(void* ctx, void* ptr) { };
+#pragma endregion
+
 
 }

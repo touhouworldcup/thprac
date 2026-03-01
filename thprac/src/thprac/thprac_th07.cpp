@@ -56,7 +56,7 @@ namespace TH07 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
             GetJsonValue(frame);
             GetJsonValue(score);
             GetJsonValue(life);
@@ -71,7 +71,7 @@ namespace TH07 {
             GetJsonValue(cherryPlus);
             GetJsonValue(spellBonus);
             GetJsonValue(rank);
-            GetJsonValueEx(rankLock, Bool);
+            GetJsonValue(rankLock);
 
             return true;
         }
@@ -79,8 +79,8 @@ namespace TH07 {
         {
             CreateJson();
 
-            AddJsonValueEx(version, GetVersionStr(), jalloc);
-            AddJsonValueEx(game, "th07", jalloc);
+            AddJsonValueEx(version, GetVersionStr());
+            AddJsonValueEx(game, "th07");
             AddJsonValue(mode);
             AddJsonValue(stage);
             if (section)

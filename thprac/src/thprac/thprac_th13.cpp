@@ -48,7 +48,7 @@ namespace TH13 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -60,7 +60,7 @@ namespace TH13 {
             GetJsonValue(value);
             GetJsonValue(graze);
             GetJsonValue(trance_meter);
-            GetJsonValueEx(spirit_start_left, Bool);
+            GetJsonValue(spirit_start_left);
             GetJsonArray(lastSrcIdx, elementsof(lastSrcIdx));
 
             return true;
@@ -70,8 +70,8 @@ namespace TH13 {
             if (mode == 0) { //vanilla run mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th13", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th13");
                 AddJsonValue(mode);
                 AddJsonArray(lastSrcIdx, elementsof(lastSrcIdx));
 
@@ -80,8 +80,8 @@ namespace TH13 {
             } else { //thprac mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th13", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th13");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
                 if (section)

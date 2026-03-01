@@ -80,7 +80,7 @@ namespace TH11 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
             GetJsonValue(life);
             GetJsonValue(life_fragment);
             GetJsonValue(power);
@@ -96,8 +96,8 @@ namespace TH11 {
         {
             CreateJson();
 
-            AddJsonValueEx(version, GetVersionStr(), jalloc);
-            AddJsonValueEx(game, "th11", jalloc);
+            AddJsonValueEx(version, GetVersionStr());
+            AddJsonValueEx(game, "th11");
             AddJsonValue(mode);
             AddJsonValue(stage);
             if (section)

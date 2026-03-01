@@ -67,7 +67,7 @@ namespace TH06 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
             GetJsonValue(frame);
             GetJsonValue(score);
             GetJsonValue(life);
@@ -76,7 +76,7 @@ namespace TH06 {
             GetJsonValue(graze);
             GetJsonValue(point);
             GetJsonValue(rank);
-            GetJsonValueEx(rankLock, Bool);
+            GetJsonValue(rankLock);
             GetJsonValue(fakeType);
 
             return true;
@@ -85,8 +85,8 @@ namespace TH06 {
         {
             CreateJson();
 
-            AddJsonValueEx(version, GetVersionStr(), jalloc);
-            AddJsonValueEx(game, "th06", jalloc);
+            AddJsonValueEx(version, GetVersionStr());
+            AddJsonValueEx(game, "th06");
             AddJsonValue(mode);
             AddJsonValue(stage);
             if (section)

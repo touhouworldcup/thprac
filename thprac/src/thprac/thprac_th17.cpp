@@ -115,8 +115,8 @@ namespace TH17 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
-            GetJsonValueEx(keepSpellDrops, Bool);
+            GetJsonValue(dlg);
+            GetJsonValue(keepSpellDrops);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -139,8 +139,8 @@ namespace TH17 {
             if (mode == 1) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th17", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th17");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
                 if (section)
@@ -150,7 +150,7 @@ namespace TH17 {
                 if (dlg)
                     AddJsonValue(dlg);
                 if (keepSpellDrops)
-                    AddJsonValue(keepSpellDrops)
+                    AddJsonValue(keepSpellDrops);
 
                 AddJsonValue(score);
                 AddJsonValue(life);
@@ -180,8 +180,8 @@ namespace TH17 {
             } else if (mode == 2) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th17", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th17");
                 AddJsonValue(mode);
 
                 if (phase)
@@ -191,7 +191,6 @@ namespace TH17 {
             }
 
             CreateJson();
-            jalloc; // Dummy usage to silence C4189
             ReturnJson();
         }
     };

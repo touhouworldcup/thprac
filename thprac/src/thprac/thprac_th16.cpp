@@ -42,7 +42,7 @@ namespace TH16 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -52,7 +52,7 @@ namespace TH16 {
             GetJsonValue(power);
             GetJsonValue(value);
             GetJsonValue(graze);
-            GetJsonValueEx(bug_fix, Bool);
+            GetJsonValue(bug_fix);
 
             return true;
         }
@@ -61,8 +61,8 @@ namespace TH16 {
             if (mode == 1) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th16", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th16");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
                 if (section)
@@ -85,8 +85,8 @@ namespace TH16 {
             } else if (mode == 2) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th16", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th16");
                 AddJsonValue(mode);
 
                 AddJsonValue(season_gauge);
@@ -99,7 +99,6 @@ namespace TH16 {
             }
 
             CreateJson();
-            jalloc; // Dummy usage to silence C4189
             ReturnJson();
         }
     };

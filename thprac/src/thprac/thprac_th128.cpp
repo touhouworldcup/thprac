@@ -38,7 +38,7 @@ namespace TH128 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
 
             GetJsonValue(score);
             GetJsonValue(motivation);
@@ -52,8 +52,8 @@ namespace TH128 {
         {
             CreateJson();
 
-            AddJsonValueEx(version, GetVersionStr(), jalloc);
-            AddJsonValueEx(game, "th128", jalloc);
+            AddJsonValueEx(version, GetVersionStr());
+            AddJsonValueEx(game, "th128");
             AddJsonValue(mode);
             AddJsonValue(stage);
             if (section)

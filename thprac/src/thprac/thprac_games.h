@@ -8,6 +8,17 @@
 #include <unordered_map>
 #include <optional>
 
+#pragma warning(push)
+#pragma warning(disable : 26451)
+#pragma warning(disable : 26495)
+#pragma warning(disable : 33010)
+#pragma warning(disable : 26819)
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#pragma warning(pop)
+
+#include <yyjson.h>
+
 struct IDirect3DDevice8;
 
 namespace THPrac {
@@ -269,119 +280,86 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
 #pragma endregion
 
 #pragma region Json
+void* yyjson_string_alc_alloc(void* ctx, size_t size);
+void* yyjson_string_alc_realloc(void* ctx, void* ptr, size_t old_size, size_t size);
+void yyjson_string_alc_free(void* ctx, void* ptr);
 
-#define ParseJson()                                \
-    Reset();                                       \
-    rapidjson::Document param;                     \
-    if (param.Parse(json.c_str()).HasParseError()) \
-        return false;
-#define CreateJson()           \
-    rapidjson::Document param; \
-    param.SetObject();         \
-    auto& jalloc = param.GetAllocator();
-#define ReturnJson()                                       \
-    rapidjson::StringBuffer sb;                            \
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb); \
-    param.Accept(writer);                                  \
-    return sb.GetString();
-#define ForceJsonValue(value_name, comparator)                             \
-    if (!param.HasMember(#value_name) || param[#value_name] != comparator) \
-        return false;
-#define GetJsonValue(value_name)                                       \
-    if (param.HasMember(#value_name) && param[#value_name].IsNumber()) \
-        value_name = (decltype(value_name))param[#value_name].GetDouble();
-#define GetJsonValueEx(value_name, type)                               \
-    if (param.HasMember(#value_name) && param[#value_name].Is##type()) \
-        value_name = (decltype(value_name))param[#value_name].Get##type();
-#define AddJsonValue(value_name)                                           \
-    {                                                                      \
-        rapidjson::Value __key_##value_name(#value_name, jalloc);          \
-        rapidjson::Value __value_##value_name(value_name);                 \
-        param.AddMember(__key_##value_name, __value_##value_name, jalloc); \
+template<typename T>
+requires(std::integral<T>)
+__forceinline void AddJsonArrayImpl(yyjson_mut_doc* doc, yyjson_mut_val* yy_arr, T* arr, size_t len) {
+    for (size_t i = 0; i < len; i++) {
+        yyjson_mut_arr_add_int(doc, yy_arr, arr[i]);
     }
-#define AddJsonValueEx(value_name, ...)                                    \
-    {                                                                      \
-        rapidjson::Value __key_##value_name(#value_name, jalloc);          \
-        rapidjson::Value __value_##value_name(__VA_ARGS__);                \
-        param.AddMember(__key_##value_name, __value_##value_name, jalloc); \
-    }
+}
 
-#define GetJsonArray(value_name, value_len)                                                        \
-    {                                                                                              \
-        if (param.HasMember(#value_name) && param[#value_name].IsArray())                          \
-            for (size_t i = 0; i < std::min(param[#value_name].Size(), value_len); i++)            \
-                if (param[#value_name][i].IsNumber())                                              \
-                    value_name[i] = (decltype(+value_name[i]))(param[#value_name][i].GetDouble()); \
+template<typename T>
+requires(std::integral<T>)
+__forceinline void GetJsonArrayImpl(yyjson_val* yy_arr, T* arr, size_t len) {   
+    size_t idx = 0, max = std::min(yyjson_arr_size(yy_arr), len);
+    for (yyjson_val* val = yyjson_arr_get_first(yy_arr); idx < max; idx++, val = unsafe_yyjson_get_next(val)) {
+        arr[idx] = yyjson_get_int(val);
     }
+}
 
-#define GetJsonArray2D(value_name, outer_len, inner_len)                                               \
-    {                                                                                                  \
-        if (param.HasMember(#value_name) && param[#value_name].IsArray())                              \
-            for (size_t i = 0; i < std::min(param[#value_name].Size(), outer_len); i++)                \
-                if (param[#value_name][i].IsArray())                                                   \
-                    for (size_t j = 0; j < std::min(param[#value_name][i].Size(), inner_len); j++)     \
-                        if (param[#value_name][i][j].IsNumber())                                       \
-                            value_name[i][j] = (decltype(+value_name[i][j]))                           \
-                                (param[#value_name][i][j].GetDouble());                                \
-    }
+// doc and param must end up in the function's scope, so the "do {...} while(0)" trick can't be used
+#define ParseJson() this->Reset(); \
+    yyjson_doc* doc = yyjson_read(json.data(), json.size(), YYJSON_READ_STOP_WHEN_DONE); \
+    if (!doc) return false; \
+    defer(yyjson_doc_free(doc)); \
+    yyjson_val* param = yyjson_doc_get_root(doc); \
+    if (!yyjson_is_obj(param)) return false;
 
-#define GetJsonVectorArray(value_name, processor)                                                                                  \
-    {                                                                                                                              \
-        if (param.HasMember(#value_name) && param[#value_name].IsArray()) {                                                        \
-            for (rapidjson::SizeType arr_i = 0; arr_i < param[#value_name].Size(); arr_i++) {                                      \
-                const rapidjson::Value& vector = param[#value_name][arr_i];                                                        \
-                if (vector.IsArray()) {                                                                                            \
-                    for (auto& e : vector.GetArray()) {                                                                            \
-                        auto __processor = [&](const rapidjson::Value& el)                                                         \
-                            -> std::optional<typename std::remove_reference_t<decltype(value_name[arr_i])>::value_type> processor; \
-                        auto __result = __processor(e);                                                                            \
-                        if (__result.has_value())                                                                                  \
-                            value_name[arr_i].push_back(*__result);                                                                \
-                    }                                                                                                              \
-                }                                                                                                                  \
-            }                                                                                                                      \
-        }                                                                                                                          \
-    }
+#define CreateJson() \
+    yyjson_mut_doc* doc = yyjson_mut_doc_new(nullptr); \
+    yyjson_mut_val* param = yyjson_mut_obj(doc); \
+    yyjson_mut_doc_set_root(doc, param);
 
-#define AddJsonArray(value_name, value_len)                                \
-    {                                                                      \
-        rapidjson::Value __key_##value_name(#value_name, jalloc);          \
-        rapidjson::Value __value_##value_name(rapidjson::kArrayType);      \
-        __value_##value_name.SetArray();                                     \
-        for (int i = 0; i < value_len; i++)                                \
-            __value_##value_name.PushBack(value_name[i], jalloc);            \
-        param.AddMember(__key_##value_name, __value_##value_name, jalloc); \
-    }
+#define ReturnJson() \
+    std::string out; yyjson_alc out_alc = { yyjson_string_alc_alloc, yyjson_string_alc_realloc, yyjson_string_alc_free, &out }; \
+    yyjson_mut_write_opts(doc, YYJSON_WRITE_NOFLAG, &out_alc, nullptr, nullptr); \
+    yyjson_mut_doc_free(doc); \
+    return out;
 
-#define AddJsonArray2D(value_name, outer_len, inner_len)                   \
-    {                                                                      \
-        rapidjson::Value __key_##value_name(#value_name, jalloc);          \
-        rapidjson::Value __outer_##value_name(rapidjson::kArrayType);      \
-        for (int i = 0; i < outer_len; i++) {                              \
-            rapidjson::Value __inner_##value_name(rapidjson::kArrayType);  \
-            for (int j = 0; j < inner_len; j++) {                          \
-                __inner_##value_name.PushBack(value_name[i][j], jalloc);   \
-            }                                                              \
-            __outer_##value_name.PushBack(__inner_##value_name, jalloc);   \
-        }                                                                  \
-        param.AddMember(__key_##value_name, __outer_##value_name, jalloc); \
-    }
+#define ForceJsonValue(value_name, comparator) \
+    do { const char* mem = yyjson_get_str(yyjson_obj_get(param, #value_name)); \
+      if (!mem || strcmp(mem, comparator) != 0) return false; } while(0)
 
-#define AddJsonVectorArray(value_name, processor)                                          \
-    {                                                                                      \
-        rapidjson::Value json_##value_name(rapidjson::kArrayType);                         \
-        for (size_t arr_i = 0; arr_i < elementsof(value_name); ++arr_i) {                  \
-            rapidjson::Value vectorArray(rapidjson::kArrayType);                           \
-            for (auto& e : value_name[arr_i]) {                                            \
-                rapidjson::Value elArray(rapidjson::kArrayType);                           \
-                auto __processor = [&](auto& el) -> rapidjson::Value processor;            \
-                vectorArray.PushBack(__processor(e), jalloc);                              \
-            }                                                                              \
-            json_##value_name.PushBack(vectorArray, jalloc);                               \
-        }                                                                                  \
-        param.AddMember(rapidjson::Value(#value_name, jalloc), json_##value_name, jalloc); \
-    }
+#define GetJsonValue(value_name) yyjson_eval_numeric(yyjson_obj_get(param, #value_name), &value_name)
 
+#define GetJsonArray(value_name, value_size) GetJsonArrayImpl(yyjson_obj_get(param, #value_name), value_name, value_size)
+
+#define GetJsonArray2D(value_name) if (yyjson_val* arr = yyjson_obj_get(param, #value_name)) do { \
+        size_t idx1 = 0, max1 = std::min(yyjson_arr_size(arr), elementsof(value_name)); \
+        for (yyjson_val* arr_inner = yyjson_arr_get_first(arr); idx1 < max1; idx1++, arr_inner = unsafe_yyjson_get_next(arr_inner)) { \
+            size_t idx2 = 0, max2 = std::min(yyjson_arr_size(arr_inner), elementsof(value_name[0])); \
+            for (yyjson_val* arr_inner_val = yyjson_arr_get_first(arr_inner); idx2 < max2; idx2++, arr_inner_val = unsafe_yyjson_get_next(arr_inner_val)) { \
+                value_name[idx1][idx2] = yyjson_get_int(arr_inner_val); } } } while (0)
+
+#define GetJsonVectorArray(value_name, ...) do { \
+	yyjson_arr_iter iter = yyjson_arr_iter_with(yyjson_obj_get(param, #value_name)); \
+    iter.max = std::min(iter.max, elementsof(value_name)); \
+    while (yyjson_val* vector = yyjson_arr_iter_next(&iter)) { \
+        yyjson_arr_iter vector_iter = yyjson_arr_iter_with(vector); \
+        while (yyjson_val* el = yyjson_arr_iter_next(&vector_iter)) __VA_ARGS__ } } while(0)
+
+#define AddJsonValue(value_name) yyjson_mut_obj_add(doc, param, #value_name, value_name)
+
+#define AddJsonValueEx(value_name, value) yyjson_mut_obj_add(doc, param, #value_name, value)
+
+#define AddJsonArray(value_name, value_size) AddJsonArrayImpl(doc, yyjson_mut_obj_add_arr(doc, param, #value_name), value_name, value_size)
+
+#define AddJsonArray2D(value_name) do { \
+	yyjson_mut_val* arr_outer = yyjson_mut_obj_add_arr(doc, param, #value_name); \
+	for (size_t i = 0; i < elementsof(value_name); i++) { \
+		yyjson_mut_val* arr_inner = yyjson_mut_arr_add_arr(doc, arr_outer); \
+		for (size_t j = 0; i < elementsof(value_name[0]); i++) { \
+			yyjson_mut_arr_add_int(doc, arr_inner, value_name[i][j]); } } } while(0)
+
+#define AddJsonVectorArray(value_name, ...) do { \
+	yyjson_mut_val* yy_array = yyjson_mut_obj_add_arr(doc, param, #value_name); \
+	for (auto& vector : value_name) { \
+		yyjson_mut_val* yy_vector = yyjson_mut_arr_add_arr(doc, yy_array); \
+		for (auto& el : vector) __VA_ARGS__ } } while(0)
 
 #pragma endregion
 

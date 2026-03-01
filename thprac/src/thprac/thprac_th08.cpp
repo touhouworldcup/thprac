@@ -72,7 +72,7 @@ namespace TH08 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
             GetJsonValue(frame);
             GetJsonValue(life);
             GetJsonValue(bomb);
@@ -88,7 +88,7 @@ namespace TH08 {
             GetJsonValue(night);
             GetJsonValue(familiar);
             GetJsonValue(rank);
-            GetJsonValueEx(rankLock, Bool);
+            GetJsonValue(rankLock);
 
             return true;
         }
@@ -96,8 +96,8 @@ namespace TH08 {
         {
             CreateJson();
 
-            AddJsonValueEx(version, GetVersionStr(), jalloc);
-            AddJsonValueEx(game, "th08", jalloc);
+            AddJsonValueEx(version, GetVersionStr());
+            AddJsonValueEx(game, "th08");
             AddJsonValue(mode);
             AddJsonValue(stage);
             if (section)

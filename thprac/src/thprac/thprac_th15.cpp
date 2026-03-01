@@ -40,7 +40,7 @@ namespace TH15 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -57,8 +57,8 @@ namespace TH15 {
         {
             CreateJson();
 
-            AddJsonValueEx(version, GetVersionStr(), jalloc);
-            AddJsonValueEx(game, "th15", jalloc);
+            AddJsonValueEx(version, GetVersionStr());
+            AddJsonValueEx(game, "th15");
             AddJsonValue(mode);
             AddJsonValue(stage);
             if (section)

@@ -1,6 +1,7 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 
+#include <algorithm>
 #include <numeric>
 
 namespace THPrac {
@@ -57,6 +58,9 @@ namespace TH12 {
         bool dlg;
 
         bool _playLock = false;
+
+        static constexpr const size_t dmg_src_elem_count = sizeof(PlayerDamageSource) / sizeof(int32_t);
+
         void Reset()
         {
             for (size_t st = 0; st < elementsof(reimuADmgSrcs); ++st)
@@ -73,7 +77,7 @@ namespace TH12 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -88,18 +92,20 @@ namespace TH12 {
             GetJsonValue(ventra_2);
             GetJsonValue(ventra_3);
 
-            // deserializing damage source data (for ReimuA bomb desync fix)
+            // deserializing damage sour<ce data (for ReimuA bomb desync fix)
             GetJsonVectorArray(reimuADmgSrcs, {
-                if (!el.IsArray() || el.Size() * sizeof(int32_t) != sizeof(PlayerDamageSource))
-                    return std::nullopt;
+                if (yyjson_arr_size(el) != dmg_src_elem_count) {
+                    continue;
+                }
 
-                PlayerDamageSource dmgSrc {};
+                auto& dmgSrc = reimuADmgSrcs[iter.idx].emplace_back();
                 int32_t* p = (int32_t*)&dmgSrc;
-                for (rapidjson::SizeType i = 0; i < el.Size(); i++)
-                    p[i] = el[i].GetInt();
 
-                return dmgSrc;
-            });
+                yyjson_arr_iter el_iter = yyjson_arr_iter_with(el);
+                while (yyjson_val* v = yyjson_arr_iter_next(&el_iter)) {
+                    p[el_iter.idx] = yyjson_get_int(v);
+                }
+            });          
 
             return true;
         }
@@ -108,28 +114,25 @@ namespace TH12 {
             if (mode == 0) { //vanilla run mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th12", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th12");
                 AddJsonValue(mode);
 
                 // serializing damage source data (for ReimuA bomb desync fix)
                 AddJsonVectorArray(reimuADmgSrcs, {
-                    rapidjson::Value dmgSrcArray(rapidjson::kArrayType);
-
+                    yyjson_mut_val* yy_elem = yyjson_mut_arr_add_arr(doc, yy_vector);
                     int32_t* p = (int32_t*)&el;
-                    size_t count = sizeof(PlayerDamageSource) / sizeof(int32_t);
-                    for (size_t i = 0; i < count; ++i)
-                        dmgSrcArray.PushBack(p[i], jalloc);
-
-                    return dmgSrcArray;
+                    for (size_t i = 0; i < dmg_src_elem_count; i++) {
+                        yyjson_mut_arr_add_int(doc, yy_elem, p[i]);
+                    }
                 });
 
                 ReturnJson();
             } else { //thprac mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th12", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th12");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
                 if (section)

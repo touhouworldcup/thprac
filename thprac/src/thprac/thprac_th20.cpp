@@ -174,6 +174,8 @@ namespace TH20 {
 
         bool dlg;
 
+        static constexpr const size_t dmg_src_elem_count = sizeof(PlayerDamageSource) / sizeof(int32_t);
+
         bool _playLock = false;
         void Reset()
         {
@@ -191,7 +193,7 @@ namespace TH20 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -204,8 +206,8 @@ namespace TH20 {
 
             GetJsonValue(hyper);
             GetJsonValue(stone);
-            GetJsonValueEx(hyperActive, Bool);
-            GetJsonValueEx(stoneActive, Bool);
+            GetJsonValue(hyperActive);
+            GetJsonValue(stoneActive);
             GetJsonValue(stoneMax);
             GetJsonValue(levelR);
             GetJsonValue(priorityR);
@@ -215,32 +217,28 @@ namespace TH20 {
             GetJsonValue(priorityY);
             GetJsonValue(levelG);
             GetJsonValue(priorityG);
-
             GetJsonArray(reimuR2Timer, elementsof(reimuR2Timer));
             GetJsonArray(passiveMeterTimer, elementsof(passiveMeterTimer));
-            GetJsonArray2D(yellow2CycleAngle, elementsof(yellow2CycleAngle), elementsof(yellow2CycleAngle[0]));
-            GetJsonArray2D(yellow2CycleTimer, elementsof(yellow2CycleTimer), elementsof(yellow2CycleTimer[0]));
+            GetJsonArray2D(yellow2CycleAngle);
+            GetJsonArray2D(yellow2CycleTimer);
             GetJsonValue(resolutionSpriteHeight);
-
-            // deserializing damage source data (for Y1 lingering hitbox desync fix)
-            GetJsonVectorArray(rogueDmgSrcs, {
-                if (!el.IsArray() || el.Size() * sizeof(int32_t) != sizeof(PlayerDamageSource))
-                    return std::nullopt;
-
-                PlayerDamageSource dmgSrc {};
-                int32_t* p = (int32_t*)&dmgSrc;
-                for (rapidjson::SizeType i = 0; i < el.Size(); i++)
-                    p[i] = el[i].GetInt();
-
-                return dmgSrc;
-            });
             GetJsonArray(nextDmgID, elementsof(nextDmgID));
-
-            GetJsonVectorArray(expStoneColors, {
-                if (el.IsArray()) return std::nullopt;
-                return (uint32_t)el.GetInt();
+            GetJsonVectorArray(rogueDmgSrcs, {
+                if (yyjson_arr_size(el) != dmg_src_elem_count) {
+                    continue;
+                }
+                auto& dmgSrc = rogueDmgSrcs[iter.idx].emplace_back();
+                int32_t* p = (int32_t*)&dmgSrc;
+                yyjson_arr_iter el_iter = yyjson_arr_iter_with(el);
+                while (yyjson_val* v = yyjson_arr_iter_next(&el_iter)) {
+                    p[el_iter.idx] = yyjson_get_int(v);
+                }
             });
-
+            GetJsonVectorArray(expStoneColors, {
+                if (yyjson_is_int(el)) {
+                    expStoneColors[iter.idx].push_back((size_t)unsafe_yyjson_get_uint(el));
+                }
+            });
             return true;
         }
         std::string GetJson()
@@ -248,8 +246,8 @@ namespace TH20 {
             if (mode == 0) { //vanilla run mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th20", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th20");
                 AddJsonValue(mode);
 
                 AddJsonArray(reimuR2Timer, elementsof(reimuR2Timer));
@@ -260,32 +258,30 @@ namespace TH20 {
                 GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
                 if (globals->narrow_shot_stone_raw == 5 || globals->wide_shot_stone_raw == 5 ||
                     (globals->story_stone_raw == 5 && (globals->narrow_shot_stone_copy || globals->wide_shot_stone_copy))) {
-                    AddJsonArray2D(yellow2CycleAngle, elementsof(yellow2CycleAngle), elementsof(yellow2CycleAngle[0]));
-                    AddJsonArray2D(yellow2CycleTimer, elementsof(yellow2CycleTimer), elementsof(yellow2CycleTimer[0]));
+                    AddJsonArray2D(yellow2CycleAngle);
+                    AddJsonArray2D(yellow2CycleTimer);
                 }
 
                 AddJsonVectorArray(rogueDmgSrcs, {
-                    rapidjson::Value dmgSrcArray(rapidjson::kArrayType);
+                    yyjson_mut_val* yy_elem = yyjson_mut_arr_add_arr(doc, yy_vector);
 
                     int32_t* p = (int32_t*)&el;
                     size_t count = sizeof(PlayerDamageSource) / sizeof(int32_t);
-                    for (size_t i = 0; i < count; ++i)
-                        dmgSrcArray.PushBack(p[i], jalloc);
-
-                    return dmgSrcArray;
+                    for (size_t i = 0; i < count; ++i) {
+                        yyjson_mut_arr_add_int(doc, yy_elem, p[i]);
+                    }
                 });
                 AddJsonArray(nextDmgID, elementsof(nextDmgID));
-
                 AddJsonVectorArray(expStoneColors, {
-                    return rapidjson::Value(el);
+                    yyjson_mut_arr_add_int(doc, yyjson_mut_arr_add_arr(doc, yy_vector), el);
                 });
 
                 ReturnJson();
             } else { //thprac mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th20", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th20");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
                 if (section)
