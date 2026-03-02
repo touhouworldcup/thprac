@@ -317,7 +317,7 @@ namespace TH14 {
             case 1: // Chapter
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
-                if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
+                if (chapterCounts[0] == 0 || chapterCounts[1] == 0) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_1), *mChapter);
