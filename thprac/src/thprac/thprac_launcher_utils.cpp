@@ -34,17 +34,6 @@ inline void GuiCenteredText(const char* text);
 inline void GuiSetPosXText(const char* text, float offset);
 inline void GuiSetPosYRel(float rel);
 
-void GuiHelpMarker(const char* desc) {
-    ImGui::TextDisabled("(?)");
-    if (ImGui::IsItemHovered()) {
-        ImGui::BeginTooltip();
-        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-        ImGui::TextUnformatted(desc);
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
-    }
-}
-
 int GuiCornerButton(const char* text, const char* text2, const ImVec2& offset, bool useCurrentY) {
     int result = 0;
     auto& style = ImGui::GetStyle();

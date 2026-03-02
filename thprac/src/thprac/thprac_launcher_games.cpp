@@ -2157,7 +2157,7 @@ public:
             WriteGameCfg();
         }
         ImGui::SameLine();
-        GuiHelpMarker(S(THPRAC_GAMES_DEFAULT_LAUNCH_DESC));
+        HelpMarker(S(THPRAC_GAMES_DEFAULT_LAUNCH_DESC));
 
         if (sourceIdx != -1 && destIdx != -1) {
             auto gameTmp = currentGame[sourceIdx];

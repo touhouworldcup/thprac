@@ -381,7 +381,7 @@ public:
         }
         if (helpTxt) {
             ImGui::SameLine();
-            GuiHelpMarker(helpTxt);
+            HelpMarker(helpTxt);
         }
         return result;
     }
@@ -405,7 +405,7 @@ public:
         }
         if (helpTxt) {
             ImGui::SameLine();
-            GuiHelpMarker(helpTxt);
+            HelpMarker(helpTxt);
         }
     }
 };
@@ -444,7 +444,7 @@ public:
         }
         if (helpTxt) {
             ImGui::SameLine();
-            GuiHelpMarker(helpTxt);
+            HelpMarker(helpTxt);
         }
         return result;
     }
@@ -1692,7 +1692,10 @@ private:
         for (const auto& key : keys) {
             GuiHotkeyEdit(key.label, key.setting_name, &key.listening, key.block, key.has_conflict);
         }
+
         GuiHotkeyEdit(key_language.label, key_language.setting_name, &key_language.listening, key_language.block, key_language.has_conflict);
+        ImGui::SameLine();
+        HelpMarker(S(THPRAC_HOTKEY_LANGUAGE_TOOLTIP));
 
         // Reset button
         if (ImGui::Button(S(THPRAC_HOTKEY_RESET))) {
@@ -1744,7 +1747,7 @@ private:
         mReflectiveLaunch.Gui(S(THPRAC_REFLECTIVE_LAUNCH));
         ImGui::EndDisabled();
         ImGui::SameLine();
-        GuiHelpMarker(S(THPRAC_REFLECTIVE_LAUNCH_DESC));
+        HelpMarker(S(THPRAC_REFLECTIVE_LAUNCH_DESC));
         ImGui::NewLine();
         ImGui::TextUnformatted(S(THPRAC_SETTING_LAUNCHER));
         ImGui::Separator();
