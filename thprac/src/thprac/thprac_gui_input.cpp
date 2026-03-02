@@ -180,7 +180,7 @@ namespace THPrac
         int __gbackspace_menu_chord_current = 1 << ChordKey_Backspace;
         int __gadvanced_menu_chord_current = 1 << ChordKey_F12;
         int __gscreenshot_chord_current = 1 << ChordKey_Home;
-        int __gtracker_chord_current = 1 << ChordKey_End;
+        int __gtracker_chord_current = 1 << ChordKey_Tab;
         int __glanguage_chord_current = 1 << ChordKey_Alt;
 
         const char* ChordKeyStrings[ChordKey_COUNT];
@@ -193,7 +193,7 @@ namespace THPrac
             ChordKeyStrings[ChordKey_Alt] =			"Alt";
             ChordKeyStrings[ChordKey_Caps] =		"Caps";
             ChordKeyStrings[ChordKey_Tab] =			"Tab";
-            ChordKeyStrings[ChordKey_Space] =		S(THPRAC_HOTKEY_SPACEBAR);            
+            ChordKeyStrings[ChordKey_Space] =		S(THPRAC_HOTKEY_SPACEBAR);
 			ChordKeyStrings[ChordKey_Backspace] =	"Backspace";
             ChordKeyStrings[ChordKey_F11] =			"F11";
             ChordKeyStrings[ChordKey_F12] =			"F12";
@@ -279,6 +279,7 @@ namespace THPrac
 			__gbackspace_menu_chord_current = 1 << ChordKey_Backspace;
 			__gadvanced_menu_chord_current = 1 << ChordKey_F12;
 			__gscreenshot_chord_current = 1 << ChordKey_Home;
+			__gtracker_chord_current = 1 << ChordKey_Tab;
 			__glanguage_chord_current = 1 << ChordKey_Alt;
 		}
 

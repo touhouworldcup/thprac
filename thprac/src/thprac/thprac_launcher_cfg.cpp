@@ -1639,7 +1639,7 @@ private:
         };
 
         GuiHotkeyOption key_screenshot = {
-            .setting_name = "screenshot_menu_chord",
+            .setting_name = "screenshot_chord",
             .label = S(THPRAC_HOTKEY_SCREENSHOT),
             .listening = mHotkeyScreenshotListening,
         };
@@ -1707,8 +1707,8 @@ private:
 
             LauncherSettingSet("backspace_menu_chord", 1 << Gui::ChordKey_Backspace);
             LauncherSettingSet("advanced_menu_chord", 1 << Gui::ChordKey_F12);
-            LauncherSettingSet("screenshot_menu_chord", 1 << Gui::ChordKey_Home);
-            LauncherSettingSet("tracker_chord", 1 << Gui::ChordKey_End);
+            LauncherSettingSet("screenshot_chord", 1 << Gui::ChordKey_Home);
+            LauncherSettingSet("tracker_chord", 1 << Gui::ChordKey_Tab);
             LauncherSettingSet("language_chord", 1 << Gui::ChordKey_Alt);
         }
     }
@@ -1872,6 +1872,7 @@ private:
     THCfgCombo mHotkeyBackspaceMenu { "backspace_menu_chord", 1 << Gui::ChordKey_Backspace, 1 << Gui::ChordKey_COUNT };
     THCfgCombo mHotkeyF12Menu { "advanced_menu_chord", 1 << Gui::ChordKey_F12, 1 << Gui::ChordKey_COUNT };
     THCfgCombo mHotkeyScreenshot { "screenshot_chord", 1 << Gui::ChordKey_Home, 1 << Gui::ChordKey_COUNT };
+    THCfgCombo mHotkeyTracker { "tracker_chord", 1 << Gui::ChordKey_Tab, 1 << Gui::ChordKey_COUNT };
     THCfgCombo mHotkeyLanguage { "language_chord", 1 << Gui::ChordKey_Alt, 1 << Gui::ChordKey_COUNT };
 
     bool mHotkeyBackspaceMenuListening = false;
