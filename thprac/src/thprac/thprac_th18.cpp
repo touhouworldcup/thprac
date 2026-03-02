@@ -1667,7 +1667,8 @@ namespace TH18 {
                 else {
                     ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mSelectedRepName.c_str());
                     const uint32_t curStage = GetMemContent(RVA(STAGE_NUM));
-                    const bool startedOnCS = guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage-1] == COUNTERSTOP;
+                    const bool startedOnCS = (guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage-1] == COUNTERSTOP
+                                           && mScoreOverwrites[guiReplay.mSelectedRepPlaybackStartStage - 1] <= COUNTERSTOP);
                     const bool inTransition = GetMemContent(TRANSITION_STG_PTR);
 
                     uint32_t firstStageCS = 0;
@@ -3979,20 +3980,30 @@ namespace TH18 {
         auto& guiReplay = THGuiRep::singleton();
         auto& advOptWnd = THAdvOptWnd::singleton();
 
-        const uint32_t stage = GetMemContent(RVA(STAGE_NUM));
+        const uint32_t stage = GetMemContent(STAGE_NUM);
         const uint32_t score = GetMemContent(SCORE);
-        const bool startedOnCS = guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage - 1] == COUNTERSTOP;
 
-        if (guiReplay.mRepStatus && !startedOnCS && score && stage > 1 && advOptWnd.mScoreOverwrites[stage-1] < score)
-            advOptWnd.mScoreOverwrites[stage-1] = score;
+        if (guiReplay.mRepStatus && stage > 1 && score) {
+            if (score == COUNTERSTOP && advOptWnd.mScoreOverwrites[stage - 1] > score) {
+                *(uint32_t*)SCORE = advOptWnd.mScoreOverwrites[stage - 1];
+
+            } else {
+                const bool startedOnCS = (guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage - 1] == COUNTERSTOP
+                    && advOptWnd.mScoreOverwrites[guiReplay.mSelectedRepPlaybackStartStage - 1] <= COUNTERSTOP);
+
+                if (!startedOnCS && advOptWnd.mScoreOverwrites[stage - 1] < score)
+                    advOptWnd.mScoreOverwrites[stage - 1] = score;
+            }
+        }
     })
     EHOOK_DY(th18_replay_end, 0x4588f0, 1, {
         auto& guiReplay = THGuiRep::singleton();
         auto& advOptWnd = THAdvOptWnd::singleton();
 
-        const uint32_t stage = GetMemContent(RVA(STAGE_NUM));
+        const uint32_t stage = GetMemContent(STAGE_NUM);
         const uint32_t score = GetMemContent(SCORE);
-        const bool startedOnCS = guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage - 1] == COUNTERSTOP;
+        const bool startedOnCS = (guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage - 1] == COUNTERSTOP
+            && advOptWnd.mScoreOverwrites[guiReplay.mSelectedRepPlaybackStartStage - 1] <= COUNTERSTOP);
 
         if (guiReplay.mRepStatus && !startedOnCS && score && stage && advOptWnd.mScoreOverwrites[stage-1] < score)
             advOptWnd.mScoreOverwrites[stage] = score;
