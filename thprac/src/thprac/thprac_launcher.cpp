@@ -41,6 +41,9 @@ static constinit D3DPRESENT_PARAMETERS g_d3dpp = {
     .PresentationInterval = D3DPRESENT_INTERVAL_ONE,
 };
 
+static constinit float g_TitleBarHeight;
+static constinit bool g_IsOverTitleBarButton = false;
+
 static constinit IDirect3DDevice9* g_pd3dDevice = NULL;
 static constinit bool g_IsUITextureIDValid = false;
 static constinit bool g_IsInitialized = false;
@@ -48,8 +51,99 @@ static constinit bool g_IsInitialized = false;
 void ResetDevice();
 bool UpdateUIScaling(float scale = 1.0f);
 
-void UiUpdate()
-{
+// This title bar is inspriried by the title bar from the old launcher provided by a modified ImGui::Begin,
+// but it's remade from scratch and reponds to minimize and close button presses by sending messages to 'hwnd' directly
+void DrawTitleBar(HWND hwnd, const char* title) {
+
+    // The old launcher enabled the title bar when calling ImGui::Begin and used the buttons provided by that for it's title bar
+    // However, I haven't found a way to check if the title bar is selected, or if any of the title bar's buttons are selected
+    // It also seems like the title bar code was modified by thprac's previous behaviour, ACK. I want to cut down on non-standard
+    // Dear ImGui as much as possible to make it easier to upgrade Dear ImGui in the future.
+
+    auto& io = ImGui::GetIO();
+    const float btnW = g_TitleBarHeight;
+
+    ImGui::GetWindowDrawList()->AddRectFilled(
+        ImVec2(0.0f, 0.0f),
+        ImVec2(io.DisplaySize.x, btnW),
+        ImGui::GetColorU32(ImGuiCol_TitleBgActive));
+
+
+    ImGui::SetCursorPos(ImVec2(4.0f, (btnW - ImGui::GetTextLineHeight()) * 0.5f));
+    ImGui::TextUnformatted(title);
+
+    bool overBtn = false;
+    constexpr float cross_extent = 20.0f * 0.5f * 0.7071f - 1.0f;
+
+    // Minimize Button
+    {
+        ImVec2 btnPos = { io.DisplaySize.x - btnW * 2.0f, 0.0f };
+        ImVec2 btnCenter = { btnPos.x + (btnW / 2), btnPos.y + (btnW / 2) };
+
+        ImGui::SetCursorPos(btnPos);
+        if (ImGui::InvisibleButton("##MINIMIZE", { btnW, btnW })) {
+            ShowWindow(hwnd, SW_MINIMIZE);
+        }
+        bool hovered = ImGui::IsItemHovered();
+
+        if (hovered) {
+            ImGui::GetWindowDrawList()->AddCircleFilled(btnCenter, (btnW / 2) - 2.0f, ImGui::GetColorU32(ImGuiCol_ButtonHovered));
+        }    
+
+        ImVec2 lineLeft = btnCenter;
+        ImVec2 lineRight = btnCenter;
+
+        lineLeft.x -= cross_extent;
+        lineRight.x += cross_extent;
+
+        ImGui::GetWindowDrawList()->AddLine(lineLeft, lineRight, ImGui::GetColorU32(ImGuiCol_Text), 1.5f);         
+
+        overBtn |= hovered;
+    }
+
+    // Close button
+    {
+        ImVec2 btnPos = { io.DisplaySize.x - btnW, 0.0f };
+        ImVec2 btnCenter = { btnPos.x + (btnW / 2), btnPos.y + (btnW / 2) };
+
+        ImGui::SetCursorPos(btnPos);
+        if (ImGui::InvisibleButton("##CLOSE", { btnW, btnW })) {
+            PostQuitMessage(0);
+        }
+        bool hovered = ImGui::IsItemHovered();
+        if (hovered) {
+            ImGui::GetWindowDrawList()->AddCircleFilled(btnCenter, (btnW / 2) - 2.0f, ImGui::GetColorU32(ImGuiCol_ButtonHovered));
+        }
+
+        ImVec2 lineTopLeft = btnCenter;
+        ImVec2 lineTopRight = btnCenter;
+        ImVec2 lineBottomLeft = btnCenter;
+        ImVec2 lineBottomRight = btnCenter;
+
+        lineTopLeft.x -= cross_extent;
+        lineTopLeft.y -= cross_extent;
+        
+        lineTopRight.x += cross_extent;
+        lineTopRight.y -= cross_extent;      
+
+        lineBottomLeft.x -= cross_extent;
+        lineBottomLeft.y += cross_extent;
+
+        lineBottomRight.x += cross_extent;
+        lineBottomRight.y += cross_extent;
+
+        ImGui::GetWindowDrawList()->AddLine(lineBottomRight, lineTopLeft, ImGui::GetColorU32(ImGuiCol_Text));
+        ImGui::GetWindowDrawList()->AddLine(lineTopRight, lineBottomLeft, ImGui::GetColorU32(ImGuiCol_Text));     
+
+        overBtn |= hovered;
+    }
+
+    // Record whether the mouse is over a button so WndProc can skip HTCAPTION
+    g_IsOverTitleBarButton = overBtn;
+}
+
+
+void UiUpdate(HWND hwnd) {
     if (!g_IsInitialized)
         return;
 
@@ -61,13 +155,23 @@ void UiUpdate()
 
     auto& io = ImGui::GetIO();
     auto& style = ImGui::GetStyle();
+    style.WindowBorderSize = 0.0f;
     
+    ImGui::SetNextWindowPos({ 0, 0 });
     ImGui::SetNextWindowSize(io.DisplaySize);
-    ImGui::SetNextWindowPos({ 0.0f, 0.0f });
-    style.WindowBorderSize = 0;
-    ImGui::Begin("###_main_window", nullptr,
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.0f, 0.0f });
+    
+    // The title bar cannot have inner padding, but I want to have inner padding for the rest of the UI
+    ImGui::Begin("###_outer_window", nullptr,
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
+    DrawTitleBar(hwnd, "thprac - Touhou Game Launcher");
+    ImGui::PopStyleVar(1);
+    ImGui::SetNextWindowPos({ 0.0f, g_TitleBarHeight });
+    ImGui::SetNextWindowSize({ io.DisplaySize.x, io.DisplaySize.y - g_TitleBarHeight });
 
+    // So I put all of my actual content into a sub-window with padding re-enabled
+    ImGui::Begin("###_main_window", nullptr,
+         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::BeginTabBar("__launcher_tab_bar");
    
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_GAMES))) {
@@ -89,6 +193,7 @@ void UiUpdate()
 
     ImGui::EndTabBar();
 
+    ImGui::End();
     ImGui::End();
     ImGui::EndFrame();
     ImGui::Render();
@@ -206,6 +311,9 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
         return 1;
     }
 
+    // Send WM_NCCALCSIZE message immediately
+    SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+
     // Show the window
     ShowWindow(hwnd, nCmdShow);
     UpdateWindow(hwnd);
@@ -244,6 +352,55 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         return true;
 
     switch (msg) {
+    case WM_NCCALCSIZE: 
+        if (wParam == TRUE) {
+            if (IsZoomed(hWnd)) {
+                auto* params = (NCCALCSIZE_PARAMS*)lParam;
+                const int cx = GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+                const int cy = GetSystemMetrics(SM_CYSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+                params->rgrc[0].left += cx;
+                params->rgrc[0].top += cy;
+                params->rgrc[0].right -= cx;
+                params->rgrc[0].bottom -= cy;
+            }
+            return 0; // use the (adjusted) rect as-is → no non-client area
+        }
+        break;
+    case WM_NCHITTEST: {
+        // Let DefWindowProc handle any residual non-client hits first
+        LRESULT hit = DefWindowProcW(hWnd, msg, wParam, lParam);
+        if (hit != HTCLIENT)
+            return hit;
+
+        POINT pt = { LOWORD(lParam), HIWORD(lParam) };
+        ScreenToClient(hWnd, &pt);
+
+        RECT rc;
+        GetClientRect(hWnd, &rc);
+
+        int border = 4; // resize-grip thickness in pixels
+        int titleH = (int)g_TitleBarHeight;
+
+        if (!g_IsOverTitleBarButton && !IsZoomed(hWnd)) {
+            // Corners (tested before edges to take priority)
+            if (pt.x < border && pt.y >= rc.bottom - border)
+                return HTBOTTOMLEFT;
+            if (pt.x >= rc.right - border && pt.y >= rc.bottom - border)
+                return HTBOTTOMRIGHT;
+            // Edges
+            if (pt.y >= rc.bottom - border)
+                return HTBOTTOM;
+            if (pt.x < border)
+                return HTLEFT;
+            if (pt.x >= rc.right - border)
+                return HTRIGHT;
+        }
+
+        if (pt.y < titleH && !g_IsOverTitleBarButton)
+            return HTCAPTION; // enables drag, double-click maximise, system menu on right-click
+
+        return HTCLIENT;    
+    }
     case WM_GETMINMAXINFO: {
         LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
         lpMMI->ptMinTrackSize.x = 640;
@@ -266,7 +423,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             return 0;
         break;
     case WM_PAINT:
-        UiUpdate();
+        UiUpdate(hWnd);
         return 0;
     case WM_DPICHANGED: {
         RECT* rect = (RECT*)lParam;
@@ -299,10 +456,12 @@ bool UpdateUIScaling(float scale) {
     Gui::ImplDX9InvalidateDeviceObjects();
     
     // Setup Dear ImGui style
+    g_TitleBarHeight = 26.0f * scale;
     ImGuiStyle& style = ImGui::GetStyle();
     ImGuiStyle styleold = style; // Backup colors
     style = ImGuiStyle(); // IMPORTANT: ScaleAllSizes will change the original size, so we should reset all style config
     ImGui::GetStyle().ScaleAllSizes(scale);
+    style.WindowBorderSize = 0;
     memcpy(style.Colors, styleold.Colors, sizeof(style.Colors)); // Restore colors
     return Gui::ImplDX9CreateDeviceObjects();
 }
