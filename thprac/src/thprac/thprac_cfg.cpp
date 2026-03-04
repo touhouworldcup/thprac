@@ -258,14 +258,15 @@ bool SaveSettings() {
 void GuiSettings() {
     ImGui::TextUnformatted("Global settings");
     ImGui::Separator();
-    ImGui::SetNextItemWidth(90.0f);
+
+    ImGui::PushItemWidth(100.0f);
     if (ImGui::Combo(S(THPRAC_SETTING_LANGUAGE), (int*)&gSettings.language, "中文\0English\0日本語\0\0")) {
         Gui::LocaleSet(gSettings.language);
     }
-    ImGui::SetNextItemWidth(90.0f);
     if (ImGui::Combo(S(THPRAC_THEME), &gSettings.theme, S(THPRAC_THEME_OPTION))) {
         SetTheme(gSettings.theme);
     }
+    ImGui::PopItemWidth();
 
     ImGui::Checkbox(S(THPRAC_RENDER_ONLY_USED_GLYPHS), &gSettings.render_only_used_glyphs);
     ImGui::SameLine();
@@ -294,14 +295,17 @@ void GuiSettings() {
     ImGui::SameLine();
     Gui::HelpMarker("All of these settings only apply after a restart.");
     ImGui::Separator();
+    ImGui::SetNextItemWidth(150.0f);
     ImGui::Combo(S(THPRAC_EXISTING_GAME_ACTION), (int*)&gSettings.existing_game_launch_action, S(THPRAC_EXISTING_GAME_ACTION_OPTION));
     ImGui::Checkbox(S(THPRAC_DONT_SEARCH_ONGOING), &gSettings.dont_search_ongoing_game);
     ImGui::Checkbox(S(THPRAC_ADMIN_RIGHTS), &gSettings.thprac_admin_rights);
     ImGui::NewLine();
     ImGui::TextUnformatted("Update behavior");
     ImGui::Separator();
+    ImGui::PushItemWidth(250.0f);
     ImGui::Combo(S(THPRAC_FILENAME_AFTER_UPDATE), (int*)&gSettings.filename_after_update, S(THPRAC_FILENAME_AFTER_UPDATE_OPTION));
     ImGui::Combo(S(THPRAC_CHECK_UPDATE_WHEN), (int*)&gSettings.check_update, S(THPRAC_CHECK_UPDATE_WHEN_OPTION));
+    ImGui::PopItemWidth();
     ImGui::Checkbox(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION), &gSettings.update_without_confirmation);
     ImGui::SameLine();
     Gui::HelpMarker(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION_DESC));
