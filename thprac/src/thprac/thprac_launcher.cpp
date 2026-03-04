@@ -6,7 +6,7 @@
 #include <d3d9.h>
 #include <algorithm>
 
-#include <ImGui.h>
+#include <imgui.h>
 
 #include "thprac_cfg.h"
 #include "thprac_log.h"
@@ -157,23 +157,17 @@ void UiUpdate(HWND hwnd) {
     auto& style = ImGui::GetStyle();
     style.WindowBorderSize = 0.0f;
     
-    ImGui::SetNextWindowPos({ 0, 0 });
+    ImGui::SetNextWindowPos({ 0.0f, 0.0f });
     ImGui::SetNextWindowSize(io.DisplaySize);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.0f, 0.0f });
-    
-    // The title bar cannot have inner padding, but I want to have inner padding for the rest of the UI
-    ImGui::Begin("###_outer_window", nullptr,
-        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
-    DrawTitleBar(hwnd, "thprac - Touhou Game Launcher");
-    ImGui::PopStyleVar(1);
-    ImGui::SetNextWindowPos({ 0.0f, g_TitleBarHeight });
-    ImGui::SetNextWindowSize({ io.DisplaySize.x, io.DisplaySize.y - g_TitleBarHeight });
-
-    // So I put all of my actual content into a sub-window with padding re-enabled
     ImGui::Begin("###_main_window", nullptr,
-         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
+        ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
+    ImGui::PopStyleVar();
+    DrawTitleBar(hwnd, S(THPRAC_LAUNCHER));
+
+    ImGui::SetCursorPos({ 0.0f, g_TitleBarHeight });
+    ImGui::BeginChild("###__content", { io.DisplaySize.x, io.DisplaySize.y - g_TitleBarHeight }, ImGuiWindowFlags_AlwaysUseWindowPadding);
     ImGui::BeginTabBar("__launcher_tab_bar");
-   
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_GAMES))) {
         ImGui::TextUnformatted("Games");
         ImGui::EndTabItem();
@@ -190,10 +184,9 @@ void UiUpdate(HWND hwnd) {
         GuiSettings();
         ImGui::EndTabItem();
     }
-
     ImGui::EndTabBar();
 
-    ImGui::End();
+    ImGui::EndChild();
     ImGui::End();
     ImGui::EndFrame();
     ImGui::Render();
