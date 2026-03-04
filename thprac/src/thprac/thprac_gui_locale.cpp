@@ -518,5 +518,70 @@ static ImWchar baseUnicodeRanges[] =
 
         return true;
     }
+    bool LocalAddMergeFont(float font_size, int locale, bool merge)
+    {
+        auto& io = ImGui::GetIO();
+
+        // Var Definition
+        void* fontData = nullptr;
+        DWORD fontDataSize = 0;
+
+        // Create Font and Device Context
+        font_info info = {};
+        auto hdc = CreateCompatibleDC(nullptr);
+        auto font = fontCheckers[locale](hdc, info);
+        if (font == nullptr) {
+            __glocale_disabled |= 1 << locale;
+            return false;
+        }
+        SelectObject(hdc, font);
+
+        // Aquiring Font Data
+        fontDataSize = GetFontData(hdc, 0x66637474, 0, nullptr, 0);
+        if (fontDataSize == GDI_ERROR) {
+            fontDataSize = GetFontData(hdc, 0, 0, nullptr, 0);
+            if (fontDataSize == GDI_ERROR) {
+                DeleteObject(font);
+                DeleteDC(hdc);
+                __glocale_disabled |= 1 << locale;
+                return false;
+            }
+            fontData = ImGui::MemAlloc(fontDataSize);
+            GetFontData(hdc, 0, 0, fontData, fontDataSize);
+        } else {
+            fontData = ImGui::MemAlloc(fontDataSize);
+            GetFontData(hdc, 0x66637474, 0, fontData, fontDataSize);
+        }
+
+        DeleteObject(font);
+        DeleteDC(hdc);
+
+        // Add Font
+        ImFontConfig fontConfig;
+        fontConfig.MergeMode = merge;
+        fontConfig.FontNo = info.font_index;
+        fontConfig.RasterizerMultiply = 1.25;
+
+        ImWchar* glyphRange = GetGlyphRange(locale);
+        float fontFinalSize = font_size * info.font_scale;
+
+        io.Fonts->AddFontFromMemoryTTF(fontData, fontDataSize, fontFinalSize, &fontConfig, glyphRange);
+        return true;
+    }
+    bool LocaleCreateMergeFont(float font_size)
+    {
+        auto& io = ImGui::GetIO();
+
+        // The order in which these are all added should stay consistent
+        LocalAddMergeFont(font_size, LOCALE_EN_US, false);
+        LocalAddMergeFont(font_size, LOCALE_JA_JP, true);
+        LocalAddMergeFont(font_size, LOCALE_ZH_CN, true);
+
+        ImGuiFreeType::BuildFontAtlas(io.Fonts, 0);
+        __glocale_merge = true;
+        LocaleFontWarning();
+
+        return true;
+    }
 }
 }

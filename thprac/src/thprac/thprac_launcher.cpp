@@ -201,7 +201,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
         (float)cr.bottom - (float)cr.top
     };
 
-    Gui::LocaleCreateFont(20.0f);
+    Gui::LocaleCreateMergeFont(20.0f);
     if (!UpdateUIScaling(dpiscale > 1.0f ? dpiscale : 1.0f)) {
         return 1;
     }

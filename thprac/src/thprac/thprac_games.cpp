@@ -259,7 +259,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     auto& io = ::ImGui::GetIO();
     if (wnd_size_flag == -1) {
         io.DisplaySize = { x, y };
-        Gui::LocaleCreateFont(io.DisplaySize.x * 0.025f);
+        Gui::LocaleCreateMergeFont(io.DisplaySize.x * 0.025f);
     } else if (wnd_size_flag == -2) {
         float dispX, dispY;
         if (x > 1.6) {
@@ -273,7 +273,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
             dispY = 480.0f;
         }
         Gui::ImplDX9AdjustDispSize();
-        Gui::LocaleCreateFont(dispX * 0.025f);
+        Gui::LocaleCreateMergeFont(dispX * 0.025f);
     } else {
         switch (wnd_size_flag) {
         case 2:
@@ -288,7 +288,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
             io.DisplaySize = { 640.0f, 480.0f };
             break;
         }
-        Gui::LocaleCreateFont(io.DisplaySize.x * 0.025f);
+        Gui::LocaleCreateMergeFont(io.DisplaySize.x * 0.025f);
     }
 
 
