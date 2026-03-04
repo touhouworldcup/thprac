@@ -2399,7 +2399,7 @@ namespace TH18 {
 
                 EndOptGroup();
             }
-            if (BeginOptGroup<TH18_SAVEFILE_MANIP>(false)) {
+            if (BeginOptGroup<TH18_SAVEFILE_MANIP, false>()) {
                 ImGui::TextUnformatted(S(TH18_SAVEFILE_MANIP_DESC));
                 const uint32_t game_thread = GetMemContent(GAME_THREAD_PTR);
 
