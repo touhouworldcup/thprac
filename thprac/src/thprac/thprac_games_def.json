@@ -122,7 +122,7 @@
         "When enabled, launching thprac will always open the launcher even if there's a valid game available in the current directory.",
         "有効にすると、現在のディレクトリに有効なゲームが存在する場合でも、thpracを起動すると常にランチャーが開きます。"
       ],
-      "THPRAC_THEME": [ "主题:", "Theme: ", "テーマ:" ],
+      "THPRAC_THEME": [ "主题", "Theme ", "テーマ" ],
       "THPRAC_THEME_OPTION": [
         "暗黑\\0明亮\\0经典\\0\\0",
         "Dark\\0Light\\0Classic\\0\\0",
@@ -214,8 +214,10 @@
         "Enable if the game behaves abnormally when launched by thprac but not when launched directly.\nThis will nullify any functionality that requires a direct game launch from thprac.",
         "thpracによって起動されたときにゲームが異常に動作するが、直接起動されたときは動作しない場合に有効にします。\nこれを有効にすると、thpracから直接ゲームを起動する必要がある機能が無効になります。"
       ],
-      "THPRAC_RESIZABLE_WINDOW": [ "窗口大小可调", "Resizable window", "ウィンドウサイズ自由に変更" ],
+      "THPRAC_RESIZABLE_WINDOW": [ "窗口大小可调", "Resizable game window", "ウィンドウサイズ自由に変更" ],
       "THPRAC_GAME_ADJUSTMENTS": [ "thprac - 游戏调整", "thprac - Game adjustments", "thprac - ゲームの調整" ],
+      "THPRAC_CONSOLE": [ "Show console", "Show console", "Show console" ],
+      "THPRAC_DISABLE_CONSOLE_USELESS": [ "(If a console is already here, it'll stay open)", "(If a console is already here, it'll stay open)", "(If a console is already here, it'll stay open)" ],
       "THPRAC_CHECK_UPDATE_WHEN": [ "检查更新的时机:", "Check update when:", "更新を確認するタイミング:" ],
       "THPRAC_CHECK_UPDATE_WHEN_OPTION": [ "打开启动器时\\0执行thprac时\\0从不\\0\\0", "Opening launcher\\0Executing thprac\\0Never\\0\\0", "ランチャーを開くとき\\0thpracの実行するとき\\0なし\\0\\0" ],
       "THPRAC_UPDATE_WITHOUT_CONFIRMATION": [ "不作确认并自动更新thprac", "Update thprac without confirmation", "確認なしでthpracを更新する" ],
@@ -284,6 +286,11 @@
         "Error opening link.\nPlease confirm that the link is valid.",
         "リンクを開くときにエラーが発生しました。\nこのリンクが有効か確認してください。"
       ],
+
+      "THPRAC_LAUNCHER_TAB_GAMES": ["游戏###games", "Games###games", "ゲーム###games"],
+      "THPRAC_LAUNCHER_TAB_LINKS": ["链接###links", "Links###links", "リンク###links"],
+      "THPRAC_LAUNCHER_TAB_TOOLS": ["工具###tools", "Tools###tools", "ツール###tools"],
+      "THPRAC_LAUNCHER_TAB_CONFG": ["设置###config", "Settings###config", "設定###config" ],
 
       "THPRAC_LINKS_EDIT_NAME": [ "名称：", "Name:", "名前：" ],
       "THPRAC_LINKS_EDIT_LINK": [ "链接：", "Link:", "リンク：" ],

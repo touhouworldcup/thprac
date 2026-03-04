@@ -21,7 +21,10 @@ namespace THPrac {
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // Constinit structs where all the required data is already here
-// so that it doesn't need to be initialized
+// so that it doesn't need to be initialized.
+
+// (HINSTANCE)&__ImageBase is considered constinit in MSVC but not Clang,
+// so I can't use that to initiialize hInstance right here.
 static constinit WNDCLASSEXW g_WndCls = {
     .cbSize = sizeof(WNDCLASSEXW),
     .style = CS_HREDRAW | CS_VREDRAW,
@@ -58,7 +61,7 @@ void UiUpdate()
 
     auto& io = ImGui::GetIO();
     auto& style = ImGui::GetStyle();
-    // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+    
     ImGui::SetNextWindowSize(io.DisplaySize);
     ImGui::SetNextWindowPos({ 0.0f, 0.0f });
     style.WindowBorderSize = 0;
@@ -67,23 +70,22 @@ void UiUpdate()
 
     ImGui::BeginTabBar("__launcher_tab_bar");
    
-    if (ImGui::BeginTabItem(S(THPRAC_GAMES))) {
+    if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_GAMES))) {
         ImGui::TextUnformatted("Games");
         ImGui::EndTabItem();
     }
-    if (ImGui::BeginTabItem(S(THPRAC_LINKS))) {
+    if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_LINKS))) {
         ImGui::TextUnformatted("Links");
         ImGui::EndTabItem();
     }
-    if (ImGui::BeginTabItem(S(THPRAC_TOOLS))) {
+    if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_TOOLS))) {
         ImGui::TextUnformatted("Tools");
         ImGui::EndTabItem();
     }
-    if (ImGui::BeginTabItem(S(THPRAC_SETTINGS))) {
-        ImGui::TextUnformatted("Settings");
+    if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_CONFG))) {
+        GuiSettings();
         ImGui::EndTabItem();
     }
-
 
     ImGui::EndTabBar();
 
@@ -223,7 +225,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
         }
     }
     g_IsInitialized = false;
-
+    SaveSettings();
     return 0;
 }
 

@@ -19,4 +19,6 @@ inline void log_print(const char* const null_terminated) {
     return log_print(null_terminated, t_strlen(null_terminated));
 }
 
+extern bool console_open;
+
 }

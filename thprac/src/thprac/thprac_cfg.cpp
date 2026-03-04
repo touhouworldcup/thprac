@@ -255,85 +255,61 @@ bool SaveSettings() {
     return true;
 }
 
-bool LoadSettingsStartup() {
-    wchar_t settingsStartupPath[MAX_PATH + 1] = {};
-    memcpy(settingsStartupPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(settingsStartupPath, SIZED(L"startup.json"));
-
-    yyjson_doc* doc = yyjson_read_file_report(settingsStartupPath);
-    if (!doc) {
-        return false;
+void GuiSettings() {
+    ImGui::TextUnformatted("Global settings");
+    ImGui::Separator();
+    ImGui::SetNextItemWidth(90.0f);
+    if (ImGui::Combo(S(THPRAC_SETTING_LANGUAGE), (int*)&gSettings.language, "中文\0English\0日本語\0\0")) {
+        Gui::LocaleSet(gSettings.language);
+    }
+    ImGui::SetNextItemWidth(90.0f);
+    if (ImGui::Combo(S(THPRAC_THEME), &gSettings.theme, S(THPRAC_THEME_OPTION))) {
+        SetTheme(gSettings.theme);
     }
 
-    yyjson_val* root = yyjson_doc_get_root(doc);
+    ImGui::Checkbox(S(THPRAC_RENDER_ONLY_USED_GLYPHS), &gSettings.render_only_used_glyphs);
+    ImGui::SameLine();
+    Gui::HelpMarker(S(THPRAC_RENDER_ONLY_USED_GLYPHS_DESC));
+    ImGui::Checkbox(S(THPRAC_RESIZABLE_WINDOW), &gSettings.resizable_window);
 
-    size_t idx, max;
-    yyjson_val *key, *val;
-    yyjson_obj_foreach(root, idx, max, key, val) {
-        if (unsafe_yyjson_equals_str(key, "existing_game_launch_action")) { 
-            yyjson_eval_numeric(val, (unsigned int*)&gSettingsStartup.existing_game_launch_action);
-            continue;
+    if (ImGui::Checkbox(S(THPRAC_CONSOLE), &gSettings.console) && gSettings.console && !console_open) { 
+        if (!AttachConsole(GetCurrentProcessId()) && !AttachConsole(ATTACH_PARENT_PROCESS)) {
+            AllocConsole();
         }
-        if (unsafe_yyjson_equals_str(key, "filename_after_update")) {
-            yyjson_eval_numeric(val, (unsigned int*)&gSettingsStartup.filename_after_update);
-            continue;
-        }
-        if (unsafe_yyjson_equals_str(key, "check_update")) {
-            yyjson_eval_numeric(val, (unsigned int*)&gSettingsStartup.check_update);
-            continue;
-        }
-        if (unsafe_yyjson_equals_str(key, "update_without_confirmation")) {
-            yyjson_eval_numeric(val, &gSettingsStartup.update_without_confirmation);
-            continue;
-        }
-        if (unsafe_yyjson_equals_str(key, "dont_search_ongoing_game")) {
-            yyjson_eval_numeric(val, &gSettingsStartup.dont_search_ongoing_game);
-            continue;
-        }
-        if (unsafe_yyjson_equals_str(key, "thprac_admin_rights")) {
-            yyjson_eval_numeric(val, &gSettingsStartup.thprac_admin_rights);
-            continue;
-        }
+        SetConsoleOutputCP(CP_UTF8);
+        SetConsoleCP(CP_UTF8);
+
+        freopen("conin$", "r+b", stdin);
+        freopen("conout$", "w+b", stdout);
+        freopen("conerr$", "w+b", stderr);
+        console_open = true;
+    }
+    if (!gSettings.console && console_open) {
+        ImGui::SameLine();
+        ImGui::TextColored({ 1.0f, 0.0f, 0.0f, 1.0f }, "%s", S(THPRAC_DISABLE_CONSOLE_USELESS));
     }
 
-    return true;
-}
-
-static const char* settingsStartupTemplate =
-    "{\n"
-    "\t" R"("existing_game_launch_action": %d,)" "\n"
-    "\t" R"("filename_after_update": %d,)" "\n"
-    "\t" R"("check_update": %d,)" "\n"
-    "\t" R"("update_without_confirmation": %s,)" "\n"
-    "\t" R"("dont_search_ongoing_game": %s,)" "\n"
-    "\t" R"("thprac_admin_rights": %s,)" "\n"
-    "}";
-
-bool SaveSettingsStartup() {
-    wchar_t settingsStartupPath[MAX_PATH + 1] = {};
-    memcpy(settingsStartupPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(settingsStartupPath, SIZED(L"startup.json"));
-
-    HANDLE hFile = CreateFileW(settingsStartupPath, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (hFile == INVALID_HANDLE_VALUE) {
-        return false;
-    }
-
-    char buf[256] = {};
-    int len = snprintf(buf, 255, settingsStartupTemplate,
-        gSettingsStartup.existing_game_launch_action,
-        gSettingsStartup.filename_after_update,
-        gSettingsStartup.check_update,
-        gSettingsStartup.update_without_confirmation ? "true" : "false",
-        gSettingsStartup.dont_search_ongoing_game ? "true" : "false",
-        gSettingsStartup.thprac_admin_rights ? "true" : "false"
-    );
+    ImGui::NewLine();
+    ImGui::TextUnformatted("Startup behavior");
+    ImGui::SameLine();
+    Gui::HelpMarker("All of these settings only apply after a restart.");
+    ImGui::Separator();
+    ImGui::Combo(S(THPRAC_EXISTING_GAME_ACTION), (int*)&gSettings.existing_game_launch_action, S(THPRAC_EXISTING_GAME_ACTION_OPTION));
+    ImGui::Checkbox(S(THPRAC_DONT_SEARCH_ONGOING), &gSettings.dont_search_ongoing_game);
+    ImGui::Checkbox(S(THPRAC_ADMIN_RIGHTS), &gSettings.thprac_admin_rights);
+    ImGui::NewLine();
+    ImGui::TextUnformatted("Update behavior");
+    ImGui::Separator();
+    ImGui::Combo(S(THPRAC_FILENAME_AFTER_UPDATE), (int*)&gSettings.filename_after_update, S(THPRAC_FILENAME_AFTER_UPDATE_OPTION));
+    ImGui::Combo(S(THPRAC_CHECK_UPDATE_WHEN), (int*)&gSettings.check_update, S(THPRAC_CHECK_UPDATE_WHEN_OPTION));
+    ImGui::Checkbox(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION), &gSettings.update_without_confirmation);
+    ImGui::SameLine();
+    Gui::HelpMarker(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION_DESC));
     
-    DWORD byteRet;
-    WriteFile(hFile, buf, len, &byteRet, nullptr);
-
-    CloseHandle(hFile);
-    return true;
+    ImGui::NewLine();
+    ImGui::TextUnformatted("Hotkey mappings");
+    ImGui::Separator();
+    ImGui::TextUnformatted("TODO: implement hotkey remapping GUI");
 }
 
 }
