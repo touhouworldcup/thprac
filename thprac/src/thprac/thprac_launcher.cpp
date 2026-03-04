@@ -208,6 +208,36 @@ void UiUpdate(HWND hwnd) {
         ResetDevice();
 }
 
+void DwmTweaksForCustomTitlebar(HWND hwnd) {
+    struct MARGINS {
+        int cxLeftWidth;
+        int cxRightWidth;
+        int cyTopHeight;
+        int cyBottomHeight;
+    };
+
+    typedef HRESULT WINAPI T_DwmIsCompositionEnabled(BOOL* pfEnabled);
+    typedef HRESULT WINAPI T_DwmExtendFrameIntoClientArea(HWND hWnd, const MARGINS* pMarInset);
+
+    auto* dwmapi = LoadLibraryW(L"dwmapi.dll");
+    if (!dwmapi) {
+        return;
+    }
+
+    auto* pDwmIsCompositionEnabled = (T_DwmIsCompositionEnabled*)GetProcAddress(dwmapi, "DwmIsCompositionEnabled");
+    auto* pDwmExtendFrameIntoClientArea = (T_DwmExtendFrameIntoClientArea*)GetProcAddress(dwmapi, "DwmExtendFrameIntoClientArea");
+
+    if (!pDwmIsCompositionEnabled || !pDwmExtendFrameIntoClientArea) {
+        return;
+    }
+
+    BOOL compositon = FALSE;
+    if (SUCCEEDED(pDwmIsCompositionEnabled(&compositon)) && compositon) {
+        MARGINS margins = { -1, -1, -1, -1 };
+        pDwmExtendFrameIntoClientArea(hwnd, &margins);
+    }
+}
+
 int Launcher(HINSTANCE hInstance, int nCmdShow) {
     // There shall only be one
     if (HWND existing = FindWindowW(g_WndCls.lpszClassName, nullptr)) {
@@ -246,7 +276,8 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
         return 1;
     }
     defer(DestroyWindow(hwnd));
-
+    DwmTweaksForCustomTitlebar(hwnd);
+    
     if (d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &g_d3dpp, &g_pd3dDevice) < 0) {
         return 1;
     }
@@ -345,6 +376,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         return true;
 
     switch (msg) {
+    case WM_NCACTIVATE:
+        return TRUE;
     case WM_NCCALCSIZE: 
         if (wParam == TRUE) {
             if (IsZoomed(hWnd)) {
@@ -362,9 +395,9 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     case WM_NCHITTEST: {
         // Let DefWindowProc handle any residual non-client hits first
         LRESULT hit = DefWindowProcW(hWnd, msg, wParam, lParam);
-        if (hit != HTCLIENT)
+        if (hit == HTLEFT || hit == HTRIGHT || hit == HTTOP || hit == HTBOTTOM || hit == HTTOPLEFT || hit == HTTOPRIGHT || hit == HTBOTTOMLEFT || hit == HTBOTTOMRIGHT) {
             return hit;
-
+        }
         POINT pt = { LOWORD(lParam), HIWORD(lParam) };
         ScreenToClient(hWnd, &pt);
 
