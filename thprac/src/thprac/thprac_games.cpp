@@ -292,7 +292,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     }
 
 
-    if (gSettingsGlobal.resizable_window) {
+    if (gSettings.resizable_window) {
         RECT wndRect;
         GetClientRect(*(HWND*)hwnd_addr, &wndRect);
         auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
@@ -304,7 +304,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
             SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
     }
 
-    SetTheme(gSettingsGlobal.theme);
+    SetTheme(gSettings.theme);
 
     // Imgui settings
     io.IniFilename = nullptr;

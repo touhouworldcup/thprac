@@ -62,9 +62,15 @@ enum FilenameAfterUpdate {
     FN_UPDATE_THPRAC_EXE = 2,
 };
 
-struct THPracSettingsGlobal {
-    unsigned int theme = 0;
+struct THPracSettings {
+    int theme = 0;
     Locale language = LOCALE_EN_US;
+    ExistingGameLaunchAction existing_game_launch_action = LAUNCH_ACTION_LAUNCH_GAME;
+    FilenameAfterUpdate filename_after_update = FN_UPDATE_KEEP_DOWNLOADED;
+    CheckUpdateWhen check_update = CHECK_UPDATE_LAUNCHER;
+    bool update_without_confirmation = false;
+    bool dont_search_ongoing_game = false;
+    bool thprac_admin_rights = false;   
     bool render_only_used_glyphs = false;
     bool resizable_window = false;
     bool console = false;
@@ -78,23 +84,12 @@ struct HotkeyChords {
     unsigned int language = 1 << ChordKey_Alt;
 };
 
-struct THPracSettingsStartup {
-    ExistingGameLaunchAction existing_game_launch_action = LAUNCH_ACTION_LAUNCH_GAME;    
-    FilenameAfterUpdate      filename_after_update = FN_UPDATE_KEEP_DOWNLOADED;
-    CheckUpdateWhen          check_update = CHECK_UPDATE_LAUNCHER;
-    bool                     update_without_confirmation = false;
-    bool                     dont_search_ongoing_game = false;
-    bool                     thprac_admin_rights = false;   
-};
 
-extern constinit THPracSettingsGlobal gSettingsGlobal;
-extern constinit THPracSettingsStartup gSettingsStartup;
+extern constinit THPracSettings gSettings;
 extern constinit HotkeyChords hotkeys;
-bool LoadSettingsGlobal();
-bool SaveSettingsGlobal();
-
-bool LoadSettingsStartup();
-bool SaveSettingsStartup();
+bool LoadSettings();
+bool SaveSettings();
+void GuiSettings();
 
 void InitConfigDir();
 

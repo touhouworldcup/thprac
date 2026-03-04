@@ -43,14 +43,13 @@ int WINAPI wWinMain(
     _In_ int nCmdShow)
 {
     InitConfigDir();
-    LoadSettingsGlobal();
+    LoadSettings();
 
     RemoteInit();
-    LoadSettingsStartup();
 
-    log_init(true, gSettingsGlobal.console);
+    log_init(true, gSettings.console);
 
-    if (gSettingsStartup.thprac_admin_rights && !PrivilegeCheck()) {
+    if (gSettings.thprac_admin_rights && !PrivilegeCheck()) {
         ShellExecuteW(NULL, L"runas", CurrentPeb()->ProcessParameters->ImagePathName.Buffer, nullptr, nullptr, nCmdShow);        
     }
 
@@ -127,12 +126,12 @@ int WINAPI wWinMain(
     if (curCmd == CMD_ATTACH) {
         FindAndAttach(false, false);
         return 0;
-    } else if (!gSettingsStartup.dont_search_ongoing_game && FindAndAttach(false, true)) {
+    } else if (!gSettings.dont_search_ongoing_game && FindAndAttach(false, true)) {
         return 0;        
     }
 
     // I already need all of this to have it's own scope.
-    if (gSettingsStartup.existing_game_launch_action != LAUNCH_ACTION_OPEN_LAUNCHER) {
+    if (gSettings.existing_game_launch_action != LAUNCH_ACTION_OPEN_LAUNCHER) {
         WIN32_FIND_DATAW find = {};
         HANDLE hFind = FindFirstFileW(L"*.exe", &find);
         if (!hFind) {
@@ -144,7 +143,7 @@ int WINAPI wWinMain(
                 continue;
             }
 
-            if (gSettingsStartup.existing_game_launch_action == LAUNCH_ACTION_ALWAYS_ASK) {
+            if (gSettings.existing_game_launch_action == LAUNCH_ACTION_ALWAYS_ASK) {
                 int choice = log_mboxf(0, MB_YESNOCANCEL, S(THPRAC_EXISTING_GAME_CONFIRMATION_TITLE), S(THPRAC_EXISTING_GAME_CONFIRMATION), gThGameStrs[ver->gameId]);
                 if (choice == IDYES || choice == IDCANCEL) {
                     goto run_this_game;

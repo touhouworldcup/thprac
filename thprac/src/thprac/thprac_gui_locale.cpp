@@ -119,10 +119,10 @@ static ImWchar baseUnicodeRanges[] =
 
     void LocaleSet(Locale locale)
     {
-        gSettingsGlobal.language = locale;
+        gSettings.language = locale;
         if (!__glocale_merge) {
             ImGuiIO& io = ImGui::GetIO();
-            io.FontDefault = io.Fonts->Fonts[gSettingsGlobal.language];
+            io.FontDefault = io.Fonts->Fonts[gSettings.language];
         }
     }
     void LocaleSetFromSysLang()
@@ -130,13 +130,13 @@ static ImWchar baseUnicodeRanges[] =
         auto lang_id = GetUserDefaultUILanguage();
         switch (lang_id & 0x03ff) {
         case 0x4:
-            gSettingsGlobal.language = LOCALE_ZH_CN;
+            gSettings.language = LOCALE_ZH_CN;
             break;
         case 0x9:
-            gSettingsGlobal.language = LOCALE_EN_US;
+            gSettings.language = LOCALE_EN_US;
             break;
         case 0x11:
-            gSettingsGlobal.language = LOCALE_JA_JP;
+            gSettings.language = LOCALE_JA_JP;
             break;
         }
     }
@@ -144,7 +144,7 @@ static ImWchar baseUnicodeRanges[] =
     inline const char* LocaleGetStr(th_glossary_t name);
     void LocaleRotate()
     {
-        switch (gSettingsGlobal.language) {
+        switch (gSettings.language) {
         case LOCALE_ZH_CN:
             LocaleSet(LOCALE_EN_US);
             break;
@@ -408,7 +408,7 @@ static ImWchar baseUnicodeRanges[] =
         ImWchar* glyphRange = nullptr;
         switch (locale) {
         case LOCALE_ZH_CN:
-            if (gSettingsGlobal.render_only_used_glyphs) {
+            if (gSettings.render_only_used_glyphs) {
                 glyphRange = (ImWchar*)__thprac_loc_range_zh;
             } else {
                 glyphRange = (ImWchar*)io.Fonts->GetGlyphRangesChineseFull();
@@ -418,7 +418,7 @@ static ImWchar baseUnicodeRanges[] =
             glyphRange = (ImWchar*)__thprac_loc_range_en;
             break;
         case LOCALE_JA_JP: {
-            if (gSettingsGlobal.render_only_used_glyphs) {
+            if (gSettings.render_only_used_glyphs) {
                 glyphRange = (ImWchar*)__thprac_loc_range_ja;
             } else {
                 if (!__glocale_jp_glyphrange) {

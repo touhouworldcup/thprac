@@ -8,7 +8,7 @@ namespace Gui {
     void LocaleSet(Locale locale);
     void LocaleSetFromSysLang();
     __forceinline Locale LocaleGet() {
-        return gSettingsGlobal.language;
+        return gSettings.language;
     }
     __forceinline const char** LocaleGetCurrentGlossary() {
         return th_glossary_str[LocaleGet()];

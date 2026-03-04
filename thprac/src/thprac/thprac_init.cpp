@@ -58,7 +58,7 @@ void RemoteInit() {
         return;
     }
     if (const auto* ver = IdentifyExe((uint8_t*)CurrentPeb()->ImageBaseAddress)) {
-        log_init(false, gSettingsGlobal.console);
+        log_init(false, gSettings.console);
 
         LoadVpatchOrOILP(conf);
 

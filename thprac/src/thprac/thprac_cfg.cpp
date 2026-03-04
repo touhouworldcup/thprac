@@ -7,11 +7,13 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 namespace THPrac {
 
+// TODO: change to thprac.json
+constexpr const wchar_t THPRAC_SETTINGS_JSON_NAME[] = L"thprac_new.json";
+
 wchar_t _gConfigDir[MAX_PATH + 1] = {};
 unsigned int _gConfigDirLen = 0;
 
-constinit THPracSettingsStartup gSettingsStartup;
-constinit THPracSettingsGlobal gSettingsGlobal;
+constinit THPracSettings gSettings;
 constinit HotkeyChords hotkeys;
 
 void InitConfigDir() {
@@ -68,11 +70,12 @@ yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = 
             doc = yyjson_read_opts((char*)f.fileMapView, f.fileSize, flg, alc_ptr, &err);
         }
         if (!doc) {
+            // TODO: sprintf in the actual filename
             int choice = log_mboxf(
                 0,
                 MB_ICONERROR | MB_RETRYCANCEL,
                 "JSON Error",
-                "Failed to load global.json: JSON error %d at position %d\nMessage: %s",
+                "Failed to load thprac_new.json: JSON error %d at position %d\nMessage: %s",
                 err.code, err.pos, err.msg);
             if (choice == IDRETRY) {
                 continue;
@@ -97,12 +100,13 @@ void SetTheme(int theme) {
     }
 }
 
-bool LoadSettingsGlobal() {
-    wchar_t settingsGlobalPath[MAX_PATH + 1] = {};
-    memcpy(settingsGlobalPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(settingsGlobalPath + _gConfigDirLen, L"global.json", sizeof(L"global.json"));
+bool LoadSettings() {
+    wchar_t settingsPath[MAX_PATH + 1] = {};
+    memcpy(settingsPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
+    // TODO: rename to thprac.json
+    memcpy(settingsPath + _gConfigDirLen, SIZED(THPRAC_SETTINGS_JSON_NAME));
 
-    yyjson_doc* doc = yyjson_read_file_report(settingsGlobalPath);
+    yyjson_doc* doc = yyjson_read_file_report(settingsPath);
     if (!doc) {
         Gui::LocaleSetFromSysLang();
         return false;
@@ -118,28 +122,52 @@ bool LoadSettingsGlobal() {
     yyjson_val *key, *val;
     yyjson_obj_foreach(root, idx, max, key, val) {
         if (unsafe_yyjson_equals_str(key, "theme")) {
-            yyjson_eval_numeric(val, &gSettingsGlobal.theme);
-            if (gSettingsGlobal.theme > 2) {
-                gSettingsGlobal.theme = 0;
+            yyjson_eval_numeric(val, &gSettings.theme);
+            if (gSettings.theme > 2) {
+                gSettings.theme = 0;
             }
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "language")) {
-            if (!yyjson_eval_numeric(val, (unsigned int*)&gSettingsGlobal.language) || gSettingsGlobal.language > 2) {
+            if (!yyjson_eval_numeric(val, (unsigned int*)&gSettings.language) || gSettings.language > 2) {
                 Gui::LocaleSetFromSysLang();
             }
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "render_only_used_glyphs")) {
-            yyjson_eval_numeric(val, &gSettingsGlobal.render_only_used_glyphs);
+            yyjson_eval_numeric(val, &gSettings.render_only_used_glyphs);
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "resizable_window")) {
-            yyjson_eval_numeric(val, &gSettingsGlobal.resizable_window);
+            yyjson_eval_numeric(val, &gSettings.resizable_window);
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "console")) {
-            yyjson_eval_numeric(val, &gSettingsGlobal.console);
+            yyjson_eval_numeric(val, &gSettings.console);
+            continue;
+        }
+        if (unsafe_yyjson_equals_str(key, "existing_game_launch_action")) {
+            yyjson_eval_numeric(val, (unsigned int*)&gSettings.existing_game_launch_action);
+            continue;
+        }
+        if (unsafe_yyjson_equals_str(key, "filename_after_update")) {
+            yyjson_eval_numeric(val, (unsigned int*)&gSettings.filename_after_update);
+            continue;
+        }
+        if (unsafe_yyjson_equals_str(key, "check_update")) {
+            yyjson_eval_numeric(val, (unsigned int*)&gSettings.check_update);
+            continue;
+        }
+        if (unsafe_yyjson_equals_str(key, "update_without_confirmation")) {
+            yyjson_eval_numeric(val, &gSettings.update_without_confirmation);
+            continue;
+        }
+        if (unsafe_yyjson_equals_str(key, "dont_search_ongoing_game")) {
+            yyjson_eval_numeric(val, &gSettings.dont_search_ongoing_game);
+            continue;
+        }
+        if (unsafe_yyjson_equals_str(key, "thprac_admin_rights")) {
+            yyjson_eval_numeric(val, &gSettings.thprac_admin_rights);
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "backspace_menu_chord")) {
@@ -170,7 +198,7 @@ bool LoadSettingsGlobal() {
 }
 
 // Raw strings can't use escape sequences, but they can still be concatenated with other string literals
-static const char settingsGlobalTemplate[] = 
+static const char settingsTemplate[] = 
     "{\n"
     "\t" R"("backspace_menu_chord": %d,)" "\n"
     "\t" R"("advanced_menu_chord": %d,)" "\n"
@@ -179,33 +207,45 @@ static const char settingsGlobalTemplate[] =
     "\t" R"("language_chord": %d,)" "\n"
     "\t" R"("theme": %d,)" "\n"
     "\t" R"("language": %d,)" "\n"
+    "\t" R"("existing_game_launch_action": %d,)" "\n"
+    "\t" R"("filename_after_update": %d,)" "\n"
+    "\t" R"("check_update": %d,)" "\n"
     "\t" R"("render_only_used_glyphs": %s,)" "\n"
     "\t" R"("resizable_window": %s,)" "\n"
     "\t" R"("console": %s,)" "\n"
+    "\t" R"("update_without_confirmation": %s,)" "\n"
+    "\t" R"("dont_search_ongoing_game": %s,)" "\n"
+    "\t" R"("thprac_admin_rights": %s,)" "\n"
     "}";
 
-bool SaveSettingsGlobal() {
-    wchar_t settingsGlobalPath[MAX_PATH + 1] = {};
-    memcpy(settingsGlobalPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(settingsGlobalPath, SIZED(L"global.json"));
+bool SaveSettings() {
+    wchar_t settingsPath[MAX_PATH + 1] = {};
+    memcpy(settingsPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
+    memcpy(settingsPath + _gConfigDirLen, SIZED(THPRAC_SETTINGS_JSON_NAME));
 
-    HANDLE hFile = CreateFileW(settingsGlobalPath, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    HANDLE hFile = CreateFileW(settingsPath, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE) {
         return false;
     }
 
-    char buf[512] = {};
-    int len = snprintf(buf, 512, settingsGlobalTemplate,
+    char buf[1024] = {};
+    int len = snprintf(buf, 1023, settingsTemplate,
         hotkeys.backspace_menu,
         hotkeys.advanced_menu,
         hotkeys.screenshot,
         hotkeys.tracker,
         hotkeys.language,
-        gSettingsGlobal.theme,
-        gSettingsGlobal.language,
-        gSettingsGlobal.render_only_used_glyphs ? "true" : "false",
-        gSettingsGlobal.resizable_window ? "true" : "false",
-        gSettingsGlobal.console ? "true" : "false"
+        gSettings.theme,
+        gSettings.language,
+        gSettings.existing_game_launch_action,
+        gSettings.filename_after_update,
+        gSettings.check_update,
+        gSettings.render_only_used_glyphs ? "true" : "false",
+        gSettings.resizable_window ? "true" : "false",
+        gSettings.console ? "true" : "false",
+        gSettings.update_without_confirmation ? "true" : "false",
+        gSettings.dont_search_ongoing_game ? "true" : "false",
+        gSettings.thprac_admin_rights ? "true" : "false"
     );
 
     DWORD byteRet;

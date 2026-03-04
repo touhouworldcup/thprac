@@ -160,7 +160,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
     // Setup Dear ImGui flags
     ImGuiIO& io = ImGui::GetIO();
     io.IniFilename = nullptr;
-    SetTheme(gSettingsGlobal.theme);
+    SetTheme(gSettings.theme);
 
     // Setup Platform/Renderer backends
     if (!Gui::ImplWin32Init(hwnd)) {
