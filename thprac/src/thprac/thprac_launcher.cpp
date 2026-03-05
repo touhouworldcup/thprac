@@ -56,7 +56,8 @@ static constinit float g_TitleBarHeight;
 static constinit bool g_IsOverTitleBarButton = false;
 
 static constinit bool g_IsUITextureIDValid = false;
-constinit bool g_IsInitialized = false;
+static constinit bool g_IsInitialized = false;
+static constinit bool g_Rendering = false;
 
 void ResetDevice();
 bool UpdateUIScaling(float scale = 1.0f);
@@ -355,6 +356,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
 
     // Show the window
     ShowWindow(hwnd, nCmdShow);
+    RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
     UpdateWindow(hwnd);
 
     // Main loop
@@ -459,9 +461,22 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
             return 0;
         break;
-    case WM_PAINT:
+    case WM_PAINT: {
+        PAINTSTRUCT ps;
+        BeginPaint(hWnd, &ps);
+        EndPaint(hWnd, &ps);
+
+        if (g_Rendering)
+            return 0;
+
+        g_Rendering = true;
         UiUpdate(hWnd);
+        g_Rendering = false;
+
+        RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
+
         return 0;
+    }
     case WM_DPICHANGED: {
         RECT* rect = (RECT*)lParam;
         IM_ASSERT(LOWORD(wParam) == HIWORD(wParam));

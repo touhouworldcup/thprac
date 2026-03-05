@@ -285,10 +285,6 @@ void SaveGamesJson() {
 static constinit LauncherGame* selectedGame = nullptr;
 static char instRenameBuf[256] = {};
 
-// Expose this variable here to prevent UiUpdate from being called
-// due to ShellExecute causing the WndProc to be called.
-extern bool g_IsInitialized; 
-
 void DestroyInst(LauncherInstance* inst) {
     if (inst->name) {
         free((void*)inst->name);
@@ -435,9 +431,7 @@ if (game->selected == src) {
         size_t idx = pathW.rfind(L"\\");
         if (idx != std::wstring::npos) {
             pathW.resize(idx);
-            g_IsInitialized = false;
             ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", pathW.c_str(), nullptr, nullptr, SW_SHOW);
-            g_IsInitialized = true;
         }
     }
     ImGui::SameLine();
@@ -450,9 +444,7 @@ if (game->selected == src) {
             .lpFile = game->appdataPath,
             .nShow = SW_SHOW,
         };
-        g_IsInitialized = false;
         ShellExecuteExW(&se);
-        g_IsInitialized = true;
         ImGui::SameLine();
     }
     if (ImGui::Button(S(THPRAC_GAMES_LAUNCH_CUSTOM))) {
