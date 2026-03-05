@@ -695,5 +695,54 @@ namespace THPrac
                 ImGui::EndTooltip();
             }
         }
+        bool Modal(const char* modalTitle, ImVec2 sizeRel)
+        {
+            auto wndSize = ImGui::GetWindowSize();
+            wndSize.x *= 0.5f;
+            wndSize.y *= 0.5f;
+            ImGui::SetNextWindowPos(wndSize, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+            if (sizeRel.x != 0.0f || sizeRel.y != 0.0f) {
+                ImGui::SetNextWindowSize(sizeRel, ImGuiCond_Always);
+            }
+            return ImGui::BeginPopupModal(modalTitle, nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+        }
+        bool YesNoChoice(const char* buttonText1, const char* buttonText2, float buttonSize)
+        {
+            if (std::bit_cast<uint32_t>(buttonSize) == 0xFFFFFFFF) {
+                buttonSize = ImGui::GetItemRectSize().x / 2.05f;
+            } else {
+                buttonSize = buttonSize * ImGui::GetFontSize();
+            }
+
+            if (ImGui::Button(buttonText1, ImVec2(buttonSize, 0))) {
+                ImGui::CloseCurrentPopup();
+                return true;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button(buttonText2, ImVec2(buttonSize, 0))) {
+                ImGui::CloseCurrentPopup();
+            }
+            return false;
+        }
+        bool ButtonYesNoConfirm(
+            const char* buttonText,
+            const char* modalTitle,
+            const char* modalText,
+            float buttonSize,
+            const char* buttonText1,
+            const char* buttonText2) {
+            bool result = false;
+
+            ButtonModal(buttonText, modalTitle);
+            if (Modal(modalTitle)) {
+                ImGui::TextUnformatted(modalText);
+                if (YesNoChoice(buttonText1, buttonText2, buttonSize)) {
+                    result = true;
+                }
+                ImGui::EndPopup();
+            }
+
+            return result;
+        }
     }
 }
