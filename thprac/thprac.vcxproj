@@ -74,6 +74,7 @@
     <ClCompile Include="src\thprac\thprac_init.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_input.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher.cpp" />
+    <ClCompile Include="src\thprac\thprac_launcher_games.cpp" />
     <ClCompile Include="src\thprac\thprac_licence.cpp" />
     <ClCompile Include="src\thprac\thprac_load_exe.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_locale.cpp" />

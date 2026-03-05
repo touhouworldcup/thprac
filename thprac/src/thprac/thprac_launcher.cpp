@@ -25,6 +25,9 @@ namespace Gui {
     extern LRESULT ImplWin32WndProcHandlerW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     extern IDirect3DDevice9* ImplDX9GetDevice();
 }
+extern void LoadGamesJson();
+extern void SaveGamesJson();
+extern void LauncherGamesMain();
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -52,9 +55,8 @@ static constinit D3DPRESENT_PARAMETERS g_d3dpp = {
 static constinit float g_TitleBarHeight;
 static constinit bool g_IsOverTitleBarButton = false;
 
-static constinit IDirect3DDevice9* g_pd3dDevice = NULL;
 static constinit bool g_IsUITextureIDValid = false;
-static constinit bool g_IsInitialized = false;
+constinit bool g_IsInitialized = false;
 
 void ResetDevice();
 bool UpdateUIScaling(float scale = 1.0f);
@@ -177,7 +179,7 @@ void UiUpdate(HWND hwnd) {
     ImGui::BeginChild("###__content", { io.DisplaySize.x, io.DisplaySize.y - g_TitleBarHeight }, ImGuiWindowFlags_AlwaysUseWindowPadding);
     ImGui::BeginTabBar("__launcher_tab_bar");
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_GAMES))) {
-        ImGui::TextUnformatted("Games");
+        LauncherGamesMain();
         ImGui::EndTabItem();
     }
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_LINKS))) {
@@ -348,6 +350,8 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
 
     // Send WM_NCCALCSIZE message immediately
     SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+
+    LoadGamesJson();
 
     // Show the window
     ShowWindow(hwnd, nCmdShow);
