@@ -351,22 +351,15 @@ static void DetailsPage(LauncherGame* game) {
 
                     if (src != dst) {
                         LauncherInstance moved = game->instances[src];
-
                         if (src < dst) {
-                            memmove(&game->instances[src],
-                                &game->instances[src + 1],
-                                (dst - src) * sizeof(LauncherInstance));
+                            memmove(&game->instances[src], &game->instances[src + 1], (dst - src) * sizeof(LauncherInstance));
                         } else {
-                            memmove(&game->instances[dst + 1],
-                                &game->instances[dst],
-                                (src - dst) * sizeof(LauncherInstance));
+                            memmove(&game->instances[dst + 1], &game->instances[dst], (src - dst) * sizeof(LauncherInstance));
                         }
-
-game->instances[dst] = moved;
-
-if (game->selected == src) {
-    game->selected = dst;
-}
+                        game->instances[dst] = moved;
+                        if (game->selected == src) {
+                            game->selected = dst;
+                        }
                     }
                 }
 
