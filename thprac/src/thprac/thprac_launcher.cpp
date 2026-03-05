@@ -6,6 +6,9 @@
 #include <d3d9.h>
 #include <algorithm>
 
+#define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
+#define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
+
 #include <imgui.h>
 
 #include "thprac_cfg.h"
@@ -376,28 +379,24 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
 #define WM_DPICHANGED 0x02E0
 #endif
 
-namespace Gui {
-    extern LRESULT ImplWin32WndProcHandlerW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-}
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     if (Gui::ImplWin32WndProcHandlerW(hWnd, msg, wParam, lParam))
         return true;
 
     switch (msg) {
+    case WM_NCPAINT:
+        return 0;
     case WM_NCACTIVATE:
         return TRUE;
-    case WM_NCCALCSIZE: 
-        if (wParam == TRUE) {
+    case WM_NCCALCSIZE:
+        if (wParam) {
             if (IsZoomed(hWnd)) {
-                auto* params = (NCCALCSIZE_PARAMS*)lParam;
-                const int cx = GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
-                const int cy = GetSystemMetrics(SM_CYSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
-                params->rgrc[0].left += cx;
-                params->rgrc[0].top += cy;
-                params->rgrc[0].right -= cx;
-                params->rgrc[0].bottom -= cy;
+                NCCALCSIZE_PARAMS* params = (NCCALCSIZE_PARAMS*)lParam;
+                RECT rc;
+                SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
+                params->rgrc[0] = rc;
             }
-            return 0; // use the (adjusted) rect as-is → no non-client area
+            return 0;
         }
         break;
     case WM_NCHITTEST: {
@@ -406,7 +405,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         if (hit == HTLEFT || hit == HTRIGHT || hit == HTTOP || hit == HTBOTTOM || hit == HTTOPLEFT || hit == HTTOPRIGHT || hit == HTBOTTOMLEFT || hit == HTBOTTOMRIGHT) {
             return hit;
         }
-        POINT pt = { LOWORD(lParam), HIWORD(lParam) };
+        POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
         ScreenToClient(hWnd, &pt);
 
         RECT rc;
