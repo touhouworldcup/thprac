@@ -693,7 +693,7 @@ ExeInfo GetExeInfo(uint8_t* mod) {
     return out;
 }
 
-ExeInfo GetRemoteExeInfo(HANDLE hProc, uintptr_t mod) {
+ExeInfo GetRemoteExeInfo(void* hProc, uintptr_t mod) {
     ExeInfo out = {};
 
     DWORD byteRet;
