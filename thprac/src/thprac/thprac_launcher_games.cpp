@@ -4,6 +4,7 @@
 #include "utils/wininternal.h"
 
 #include "thprac_cfg.h"
+#include "thprac_load_exe.h"
 #include "thprac_gui_locale.h"
 #include "thprac_identify.h"
 #include "thprac_utils.h"
@@ -292,8 +293,53 @@ void DestroyInst(LauncherInstance* inst) {
     free((void*)inst->path);
 }
 
-void LaunchCustom(const wchar_t* path, THGameType type) {
-    MessageBoxW(Gui::ImplWin32GetHwnd(), L"Not implemented", L"TODO", MB_ICONERROR);
+void LaunchCustom(const wchar_t* dir, THGameType type) {
+    SHELLEXECUTEINFOW see = {
+        .cbSize = sizeof(see),
+        .hwnd = Gui::ImplWin32GetHwnd(),
+        .lpVerb = L"open",
+        .lpDirectory = dir,
+        .nShow = SW_SHOW,
+    };
+
+    switch (type) {
+    default:
+        see.lpFile = L"custom.exe";
+        if (ShellExecuteExW(&see)) {
+            return;
+        }
+        break;
+    case TYPE_TCHINESE:
+        see.lpFile = L"custom_cht.exe";
+        if (ShellExecuteExW(&see)) {
+            return;
+        }
+        break;
+    case TYPE_CHINESE:
+    case TYPE_SCHINESE:
+    case TYPE_NYASAMA:
+        see.lpFile = L"custom_cn.exe";
+        if (ShellExecuteExW(&see)) {
+            return;
+        }
+        see.lpFile = L"custom_c.exe";
+        if (ShellExecuteExW(&see)) {
+            return;
+        }
+        see.lpFile = L"custom_chs.exe";
+        if (ShellExecuteExW(&see)) {
+            return;
+        }
+        see.lpFile = L"custom_cht.exe";
+        if (ShellExecuteExW(&see)) {
+            return;
+        }
+        see.lpFile = L"custom.exe";
+        if (ShellExecuteExW(&see)) {
+            return;
+        }
+        break;
+    }
 }
 
 static void DetailsPage(LauncherGame* game) {
@@ -324,7 +370,6 @@ static void DetailsPage(LauncherGame* game) {
             } else {
                 name = "";
             }
-
 
             ImGui::TableNextRow(ImGuiTableRowFlags_None);
             ImGui::PushID((int)i);
@@ -464,7 +509,8 @@ static void DetailsPage(LauncherGame* game) {
     Gui::HelpMarker("Not implemented");
 
     if (Gui::ButtonCentered(S(THPRAC_GAMES_LAUNCH_GAME), 0.85f, { 0.98f, 0.1f })) {
-
+        std::wstring pathW = utf8_to_utf16(game->instances[game->selected].path);
+        RunGame(pathW.c_str(), nullptr, game->instances[game->selected].apply_thprac);
     }
 
     if (Gui::Modal(S(THPRAC_GAMES_RENAME_MODAL))) {

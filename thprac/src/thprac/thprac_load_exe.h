@@ -34,7 +34,7 @@ bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game);
 bool WriteTHPracSig(HANDLE hProc, uintptr_t base);
 bool LoadSelf(HANDLE hProcess, remote_init_config* conf = nullptr);
 bool ApplyToProcById(DWORD pid);
-void RunGameWithTHPrac(const wchar_t* exeFn, wchar_t* cmdLine, remote_init_config* conf = nullptr);
+void RunGame(const wchar_t* exeFn, wchar_t* cmdLine, bool withThprac = true, remote_init_config* conf = nullptr);
 remote_init_config* RemoteGetConfig();
 bool CheckDLLFunction(const wchar_t* path, const char* funcName);
 

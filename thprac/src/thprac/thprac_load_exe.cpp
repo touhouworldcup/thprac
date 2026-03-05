@@ -382,7 +382,7 @@ bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game) {
     return false;
 }
 
-void RunGameWithTHPrac(const wchar_t* exeFn, wchar_t* cmdLine, remote_init_config* conf) {
+void RunGame(const wchar_t* exeFn, wchar_t* cmdLine, bool withThprac, remote_init_config* conf) {
     remote_init_config nullConf = {
         .newProcess = true,
     };
@@ -399,19 +399,25 @@ void RunGameWithTHPrac(const wchar_t* exeFn, wchar_t* cmdLine, remote_init_confi
 
     const wchar_t* file_spec = std::max(wcsrchr(exeFn, L'\\'), wcsrchr(exeFn, L'/'));
     BOOL ret;
+
+    DWORD createProcessFlags = 0;
+    if (withThprac) {
+        createProcessFlags |= CREATE_SUSPENDED;
+    }
     if (file_spec) {
         std::wstring exeDir(exeFn, file_spec);
-        ret = CreateProcessW(exeFn, cmdLine, nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, exeDir.c_str(), &si, &pi);
+        ret = CreateProcessW(exeFn, cmdLine, nullptr, nullptr, FALSE, createProcessFlags, nullptr, exeDir.c_str(), &si, &pi);
     } else {
-        ret = CreateProcessW(exeFn, cmdLine, nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, nullptr, &si, &pi);
+        ret = CreateProcessW(exeFn, cmdLine, nullptr, nullptr, FALSE, createProcessFlags, nullptr, nullptr, &si, &pi);
     }
 
     if (!ret) {
         return;
     }
-    
-    LoadSelf(pi.hProcess, conf);
-    ResumeThread(pi.hThread);
+    if (withThprac) {
+        LoadSelf(pi.hProcess, conf);
+        ResumeThread(pi.hThread);
+    }
 
     // TODO: determine if these should be returned
     CloseHandle(pi.hProcess);

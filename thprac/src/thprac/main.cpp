@@ -113,7 +113,7 @@ int WINAPI wWinMain(
                 if (gGameVersions[j].exeInfo == exe_info) {
                     wchar_t* launch_cmdline = wcsstr(pCmdLine, argv[i]) + t_strlen(argv[i]);
 
-                    RunGameWithTHPrac(argv[i], launch_cmdline, &rInitConf);
+                    RunGame(argv[i], launch_cmdline, true, &rInitConf);
                     return 0;
                 }
             }
@@ -153,7 +153,7 @@ int WINAPI wWinMain(
             } else {
             run_this_game:
                 FindClose(hFind);
-                RunGameWithTHPrac(find.cFileName, nullptr);
+                RunGame(find.cFileName, nullptr);
                 return 0;
             }
         } while (FindNextFileW(hFind, &find));
