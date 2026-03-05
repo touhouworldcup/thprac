@@ -18,6 +18,11 @@
 #include "../../resource.h"
 
 namespace THPrac {
+namespace Gui {
+    extern LRESULT ImplWin32WndProcHandlerW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+    extern IDirect3DDevice9* ImplDX9GetDevice();
+}
+
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // Constinit structs where all the required data is already here
@@ -191,20 +196,22 @@ void UiUpdate(HWND hwnd) {
     ImGui::EndFrame();
     ImGui::Render();
 
-    g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
-    g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-    g_pd3dDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
-    g_pd3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(0, 0, 0, 255), 1.0f, 0);
-    if (g_pd3dDevice->BeginScene() >= 0) {
+    auto* dev = Gui::ImplDX9GetDevice();
+
+    dev->SetRenderState(D3DRS_ZENABLE, FALSE);
+    dev->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+    dev->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+    dev->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(0, 0, 0, 255), 1.0f, 0);
+    if (dev->BeginScene() >= 0) {
         if (g_IsUITextureIDValid) {
             Gui::ImplDX9RenderDrawData(ImGui::GetDrawData());
         }
-        g_pd3dDevice->EndScene();
+        dev->EndScene();
     }
-    HRESULT result = g_pd3dDevice->Present(NULL, NULL, NULL, NULL);
+    HRESULT result = dev->Present(NULL, NULL, NULL, NULL);
 
     // Handle loss of D3D9 device
-    if (result == D3DERR_DEVICELOST && g_pd3dDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
+    if (result == D3DERR_DEVICELOST && dev->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
         ResetDevice();
 }
 
@@ -278,7 +285,8 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
     defer(DestroyWindow(hwnd));
     DwmTweaksForCustomTitlebar(hwnd);
     
-    if (d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &g_d3dpp, &g_pd3dDevice) < 0) {
+    IDirect3DDevice9* dev;
+    if (d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &g_d3dpp, &dev) < 0) {
         return 1;
     }
     defer(d3d->Release());
@@ -299,7 +307,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
     }
     defer(Gui::ImplWin32Shutdown());
 
-    if (!Gui::ImplDX9Init(g_pd3dDevice)) {
+    if (!Gui::ImplDX9Init(dev)) {
         return 1;
     }
     defer(Gui::ImplDX9Shutdown());
@@ -434,7 +442,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         break;
     }
     case WM_SIZE:
-        if (g_pd3dDevice != NULL && wParam != SIZE_MINIMIZED) {
+        if (Gui::ImplDX9GetDevice() != NULL && wParam != SIZE_MINIMIZED) {
             g_d3dpp.BackBufferWidth = LOWORD(lParam);
             g_d3dpp.BackBufferHeight = HIWORD(lParam);
             ImGui::GetIO().DisplaySize = {
@@ -468,7 +476,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 void ResetDevice() {
     g_IsUITextureIDValid = false;
     Gui::ImplDX9InvalidateDeviceObjects();
-    HRESULT hr = g_pd3dDevice->Reset(&g_d3dpp);
+    HRESULT hr = Gui::ImplDX9GetDevice()->Reset(&g_d3dpp);
     if (hr == D3DERR_INVALIDCALL)
         IM_ASSERT(0);
     Gui::ImplDX9CreateDeviceObjects();

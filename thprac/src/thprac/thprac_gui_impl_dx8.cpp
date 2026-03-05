@@ -131,6 +131,9 @@ namespace THPrac
 
 
 		// Api functions
+		IDirect3DDevice8* ImplDX8GetDevice8() {
+			return g_pd3dDevice;
+	    }
 		bool ImplDX8Init(IDirect3DDevice8* device)
 		{
 			ImGuiIO& io = ImGui::GetIO();
