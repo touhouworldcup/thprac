@@ -446,6 +446,7 @@ static void DetailsPage(LauncherGame* game) {
             game->instances = 0;
             game->inst_count = 0;
             selectedGame = nullptr;
+            return;
         }
         else if (game->selected == game->inst_count - 1) {
             LauncherInstance& inst = game->instances[game->selected];
@@ -551,8 +552,14 @@ void LauncherGamesMain() {
     ImGui::TextUnformatted(S(THPRAC_GAMES_SPINOFF_STG));
     for (auto& game : spinoffShmups) {
         ImGui::Separator();
+        if (!game.instances) {
+            ImGui::BeginDisabled();
+        }
         if (ImGui::Selectable(S(game.title))) {
             selectedGame = &game;
+        }
+        if (!game.instances) {
+            ImGui::EndDisabled();
         }
     }
     ImGui::Separator();
@@ -561,8 +568,14 @@ void LauncherGamesMain() {
     ImGui::TextUnformatted(S(THPRAC_GAMES_SPINOFF_OTHERS));
     for (auto& game : spinoffOthers) {
         ImGui::Separator();
+        if (!game.instances) {
+            ImGui::BeginDisabled();
+        }
         if (ImGui::Selectable(S(game.title))) {
             selectedGame = &game;
+        }
+        if (!game.instances) {
+            ImGui::EndDisabled();
         }
     }
 }
