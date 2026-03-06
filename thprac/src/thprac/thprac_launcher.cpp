@@ -177,7 +177,7 @@ void UiUpdate(HWND hwnd) {
     DrawTitleBar(hwnd, S(THPRAC_LAUNCHER));
 
     ImGui::SetCursorPos({ 0.0f, g_TitleBarHeight });
-    ImGui::BeginChild("###__content", { io.DisplaySize.x, io.DisplaySize.y - g_TitleBarHeight }, ImGuiWindowFlags_AlwaysUseWindowPadding);
+    ImGui::BeginChild("###__content", { io.DisplaySize.x, io.DisplaySize.y - g_TitleBarHeight }, false, ImGuiWindowFlags_AlwaysUseWindowPadding);
     ImGui::BeginTabBar("__launcher_tab_bar");
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_GAMES))) {
         LauncherGamesMain();
