@@ -105,6 +105,7 @@ void __fastcall IDirectInputDevice8_GetDeviceState_VEHHook(PCONTEXT pCtx, [[mayb
 }
 
 decltype(joyGetPosEx)* orig_joyGetPosEx = nullptr;
+decltype(joyGetDevCapsW)* _joyGetDevCapsW = nullptr;
 
 // joyGetDevCaps() will necessarily be slower
 struct winmm_joy_caps_t {
@@ -137,7 +138,7 @@ MMRESULT WINAPI hook_joyGetPosEx(UINT uJoyID, JOYINFOEX* pji)
 
     if (!jc.initialized) {
         JOYCAPSW caps;
-        auto ret_caps = joyGetDevCapsW(uJoyID, &caps, sizeof(caps));
+        auto ret_caps = _joyGetDevCapsW(uJoyID, &caps, sizeof(caps));
         (void)ret_caps; // suppress "unused variable" warning
         assert(ret_caps == JOYERR_NOERROR);
 
@@ -177,7 +178,12 @@ void iat_hook_joyGetPosEx()
                         continue;
                     }
                     if (!strcmp("joyGetPosEx", (char*)pByName->Name)) {
+                        _joyGetDevCapsW = (decltype(joyGetDevCapsW)*)GetProcAddress(GetModuleHandleA("winmm.dll"), "joyGetDevCapsW");
                         orig_joyGetPosEx = (decltype(joyGetPosEx)*)pIT->u1.Function;
+
+                        if (!_joyGetDevCapsW) {
+                            return;
+                        }
 
                         DWORD oldProt;
                         VirtualProtect(&pIT->u1.Function, 4, PAGE_READWRITE, &oldProt);
