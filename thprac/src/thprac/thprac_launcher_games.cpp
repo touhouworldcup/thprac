@@ -548,77 +548,56 @@ static void GameRightClickMenu(LauncherGame* game) {
     }
 }
 
-void LauncherGamesMain() {
-    static LauncherGame* hovered = nullptr;
+static LauncherGame* hovered = nullptr;
 
+static inline void GamesList(LauncherGame* games, size_t count) {
+    for (size_t i = 0; i < count; i++) {
+        auto& game = games[i];
+        ImGui::Separator();
+        if (!game.instances) {
+            ImGui::BeginDisabled();
+        }
+        if (ImGui::Selectable(S(game.title))) {
+            selectedGame = &game;
+        }
+        if (ImGui::IsItemHovered()) {
+            hovered = &game;
+        }
+        if (&game == hovered && ImGui::BeginPopupContextItem("##__game_context")) {
+            GameRightClickMenu(hovered);
+            ImGui::EndPopup();
+        }
+        if (!game.instances) {
+            ImGui::EndDisabled();
+        }
+    }
+}
+
+void LauncherGamesMain() {
     if (selectedGame) {
         DetailsPage(selectedGame);
         return;
     }
 
-    ImGui::TextUnformatted(S(THPRAC_GAMES_MAIN_SERIES));
     if (ImGui::BeginPopupContextWindow("##__no_game_context")) {
         GameRightClickMenu(nullptr);
         ImGui::EndPopup();
-    }    
-    for (auto& game : mainGames) {
-        ImGui::Separator();
-        if (!game.instances) {
-            ImGui::BeginDisabled();
-        }
-        if (ImGui::Selectable(S(game.title))) {
-            selectedGame = &game;
-        }
-        if (!game.instances) {
-            ImGui::EndDisabled();
-        }
     }
+
+    ImGui::TextUnformatted(S(THPRAC_GAMES_MAIN_SERIES));
+    GamesList(mainGames, elementsof(mainGames));
+
     ImGui::Separator();
     ImGui::NewLine();
 
     ImGui::TextUnformatted(S(THPRAC_GAMES_SPINOFF_STG));
-    for (auto& game : spinoffShmups) {
-        ImGui::Separator();
-        if (!game.instances) {
-            ImGui::BeginDisabled();
-        }
-        if (ImGui::Selectable(S(game.title))) {
-            selectedGame = &game;
-        }
-        if (ImGui::IsItemHovered()) {
-            hovered = &game;
-        }
-        if (&game == hovered && ImGui::BeginPopupContextItem("##__game_context")) {
-            GameRightClickMenu(hovered);
-            ImGui::EndPopup();
-        }
-        if (!game.instances) {
-            ImGui::EndDisabled();
-        }
-    }
+    GamesList(spinoffShmups, elementsof(spinoffShmups));
+    
     ImGui::Separator();
     ImGui::NewLine();
     
     ImGui::TextUnformatted(S(THPRAC_GAMES_SPINOFF_OTHERS));
-    for (auto& game : spinoffOthers) {
-        ImGui::Separator();
-        if (!game.instances) {
-            ImGui::BeginDisabled();
-        }
-        if (ImGui::Selectable(S(game.title))) {
-            selectedGame = &game;
-        }
-        if (ImGui::IsItemHovered()) {
-            hovered = &game;
-        }
-        if (&game == hovered && ImGui::BeginPopupContextItem("##__game_context")) {
-            GameRightClickMenu(hovered);
-            ImGui::EndPopup();
-        }
-        if (!game.instances) {
-            ImGui::EndDisabled();
-        }
-    }
+    GamesList(spinoffOthers, elementsof(spinoffOthers));
 }
 
 
