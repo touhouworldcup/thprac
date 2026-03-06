@@ -526,14 +526,41 @@ static void DetailsPage(LauncherGame* game) {
         ImGui::EndPopup();
     }
 }
+ 
+static void GameRightClickMenu(LauncherGame* game) {
+    if (game) {
+        if (ImGui::Selectable(S(THPRAC_GAMES_DETAILS_PAGE))) {
+            selectedGame = game;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::Separator();
+    }
+
+    if(ImGui::Selectable(S(THPRAC_GAMES_SCAN_FOLDER))) {
+        ImGui::CloseCurrentPopup();
+    }
+    if(ImGui::Selectable(S(THPRAC_STEAM_MNG_BUTTON))) {
+        ImGui::CloseCurrentPopup();
+    }
+    ImGui::Separator();
+    if (ImGui::Selectable(S(THPRAC_GAMES_RESCAN))) {
+        ImGui::CloseCurrentPopup();
+    }
+}
 
 void LauncherGamesMain() {
+    static LauncherGame* hovered = nullptr;
+
     if (selectedGame) {
         DetailsPage(selectedGame);
         return;
     }
 
     ImGui::TextUnformatted(S(THPRAC_GAMES_MAIN_SERIES));
+    if (ImGui::BeginPopupContextWindow("##__no_game_context")) {
+        GameRightClickMenu(nullptr);
+        ImGui::EndPopup();
+    }    
     for (auto& game : mainGames) {
         ImGui::Separator();
         if (!game.instances) {
@@ -558,6 +585,13 @@ void LauncherGamesMain() {
         if (ImGui::Selectable(S(game.title))) {
             selectedGame = &game;
         }
+        if (ImGui::IsItemHovered()) {
+            hovered = &game;
+        }
+        if (&game == hovered && ImGui::BeginPopupContextItem("##__game_context")) {
+            GameRightClickMenu(hovered);
+            ImGui::EndPopup();
+        }
         if (!game.instances) {
             ImGui::EndDisabled();
         }
@@ -573,6 +607,13 @@ void LauncherGamesMain() {
         }
         if (ImGui::Selectable(S(game.title))) {
             selectedGame = &game;
+        }
+        if (ImGui::IsItemHovered()) {
+            hovered = &game;
+        }
+        if (&game == hovered && ImGui::BeginPopupContextItem("##__game_context")) {
+            GameRightClickMenu(hovered);
+            ImGui::EndPopup();
         }
         if (!game.instances) {
             ImGui::EndDisabled();
