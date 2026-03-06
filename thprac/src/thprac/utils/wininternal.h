@@ -245,6 +245,9 @@ write_fs_dword(offsetof(TEB, member), (data)) \
 
 #define CurrentModuleHandle ((HMODULE)CurrentImageBase)
 
+#define CurrentProcessHandle ((HANDLE)(LONG_PTR)-1)
+
+
 // Things from winternl.h.
 // I can't include that header because it conflicts with this header
 
@@ -433,3 +436,6 @@ struct KUSER_SHARED_DATA {
 #define Kuser_Shared_Data ((KUSER_SHARED_DATA*)0x7FFE0000)
 
 extern "C" ULONG RtlNtStatusToDosError(NTSTATUS Status);
+
+extern "C" NTSTATUS NTAPI NtOpenProcessToken(HANDLE ProcessHandle, ACCESS_MASK DesiredAccess, PHANDLE TokenHandle);
+extern "C" NTSTATUS NTAPI NtQueryInformationToken(HANDLE TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, PVOID TokenInformation, ULONG TokenInformationLength, PULONG ReturnLength);

@@ -19,21 +19,19 @@ namespace THPrac {
 extern int Launcher(HINSTANCE hInstance, int nCmdShow);
 }
 
-bool PrivilegeCheck()
-{
-    BOOL fRet = FALSE;
-    HANDLE hToken = nullptr;
-    if (OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken)) {
-        TOKEN_ELEVATION Elevation = {};
-        DWORD cbSize = sizeof(TOKEN_ELEVATION);
-        if (GetTokenInformation(hToken, TokenElevation, &Elevation, sizeof(Elevation), &cbSize)) {
-            fRet = Elevation.TokenIsElevated;
+bool PrivilegeCheck() {
+    bool ret = false;
+
+    HANDLE hToken;
+    if (!NtOpenProcessToken(CurrentProcessHandle, TOKEN_QUERY, &hToken)) {
+        TOKEN_ELEVATION Elevation;
+        ULONG cbSize = sizeof(Elevation);
+        if (!NtQueryInformationToken(hToken, TokenElevation, &Elevation, cbSize, &cbSize)) {
+            ret = Elevation.TokenIsElevated;
         }
-    }
-    if (hToken) {
         CloseHandle(hToken);
     }
-    return fRet;
+    return ret;
 }
 
 int WINAPI wWinMain(
