@@ -727,16 +727,16 @@ namespace TH18 {
     public:
         THPracParam mRepParam;
         bool mRepSelected = false;
-        uint32_t mSelectedRepStartStage;
-        uint32_t mSelectedRepEndStage;
-        uint32_t mSelectedRepPlaybackStartStage;
-        uint32_t mSelectedRepScores[STAGE_COUNT];
-        LoadedReplayData mSelectedRepData;
-        std::wstring mSelectedRepDir;
-        std::wstring mSelectedRepName;
-        std::wstring mSelectedRepPath;
-        std::wstring mAppdataPath;
-        uint64_t mRepMetroHash[2];
+        uint32_t mSelectedRepStartStage = {};
+        uint32_t mSelectedRepEndStage = {};
+        uint32_t mSelectedRepPlaybackStartStage = {};
+        uint32_t mSelectedRepScores[STAGE_COUNT] = {};
+        LoadedReplayData mSelectedRepData = {};
+        std::wstring mSelectedRepDir = {};
+        std::wstring mSelectedRepName = {};
+        std::wstring mSelectedRepPath = {};
+        std::wstring mAppdataPath = {};
+        uint64_t mRepMetroHash[2] = {};
 
         void DisableCardFix();
         void EnableCardFix(LoadedReplayData& rd);
@@ -1650,11 +1650,11 @@ namespace TH18 {
 
             if (BeginOptGroup<TH_REPLAY_FIX>()) {
                 // Counterstop replay fix tool
-                CustomMarker(S(TH_REPFIX_NO_THPRAC), S(TH_REPFIX_NO_THPRAC_DESC));
+                Gui::CustomMarker(S(TH_REPFIX_NO_THPRAC), S(TH_REPFIX_NO_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH18_CS_REPFIX));
                 ImGui::SameLine();
-                HelpMarker(S(TH18_CS_REPFIX_DESC));
+                Gui::HelpMarker(S(TH18_CS_REPFIX_DESC));
 
                 auto& guiReplay = THGuiRep::singleton();
                 uint32_t finalScore = guiReplay.mSelectedRepScores[guiReplay.mSelectedRepEndStage];
@@ -1741,11 +1741,11 @@ namespace TH18 {
                 ImGui::Separator();
 
                 // Active card replay desync fix tool
-                CustomMarker(S(TH_REPFIX_NO_THPRAC), S(TH_REPFIX_NO_THPRAC_DESC));
+                Gui::CustomMarker(S(TH_REPFIX_NO_THPRAC), S(TH_REPFIX_NO_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH18_AC_REPFIX));
                 ImGui::SameLine();
-                HelpMarker(S(TH18_AC_REPFIX_DESC));
+                Gui::HelpMarker(S(TH18_AC_REPFIX_DESC));
 
                 ImGui::SameLine();
                 ImGui::Checkbox(S(TH_TOOL_SHOW_TOGGLE), &activeCardRepFix);
@@ -2293,7 +2293,7 @@ namespace TH18 {
                 if (ImGui::Checkbox(S(TH18_UNCAP), &scoreUncapChkbox))
                     ScoreUncapSet();
                 ImGui::SameLine();
-                HelpMarker(S(TH18_UNCAP_DESC));
+                Gui::HelpMarker(S(TH18_UNCAP_DESC));
 
                 /* Inclusion of this option is more confusing than it's worth
                 * Note that score uncap already affects replay scores (e.g. st5)
@@ -2392,7 +2392,7 @@ namespace TH18 {
                 ImGui::TextUnformatted(S(TH18_BUGFIX_DESC));
                 ImGui::TextUnformatted(S(TH_BUGFIX_AUTO));
                 ImGui::SameLine();
-                HelpMarker(S(TH18_BUGFIX_AUTO_DESC));
+                Gui::HelpMarker(S(TH18_BUGFIX_AUTO_DESC));
 
                 // market reset incompatible with restarting for Market Manip.
                 if (manipAutoRestart) ImGui::BeginDisabled();
