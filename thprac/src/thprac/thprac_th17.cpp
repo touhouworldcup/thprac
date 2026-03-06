@@ -40,8 +40,6 @@ namespace TH17 {
         int32_t field_78;
         int32_t hyper_fill;
         int32_t tokens[5];
-        int32_t field_94;
-        int32_t field_98;
         int32_t field_9C;
         int32_t field_A0;
         int32_t field_A4;
@@ -428,7 +426,7 @@ namespace TH17 {
             case 1: // Chapter
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
-                if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
+                if (chapterCounts[0] == 0 || chapterCounts[1] == 0) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_1), *mChapter);

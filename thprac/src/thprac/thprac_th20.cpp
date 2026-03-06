@@ -643,7 +643,7 @@ namespace TH20 {
             case 1: // Chapter
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
-                if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
+                if (chapterCounts[0] == 0 || chapterCounts[1] == 0) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_1), *mChapter);
@@ -763,7 +763,7 @@ namespace TH20 {
             uint32_t* savedStones = GetMemAddr<uint32_t*>(main_menu_ptr + rep_offset, 0x1C, 0xDC);
             memcpy(replayStones, savedStones, sizeof(replayStones));
 
-            for (int st = 1; st <= 7; ++st) {
+            for (size_t st = 1; st <= 7; ++st) {
                 if (GetMemContent(main_menu_ptr + rep_offset, 0xf8 + 0x2c * st)) {
                     if (!mSelectedRepStartStage) mSelectedRepStartStage = st;
                     mSelectedRepEndStage = st;
@@ -1273,7 +1273,7 @@ namespace TH20 {
                         if (advFixTimerOffsets) {
                             ImGui::Columns(2, 0, false);
                             for (size_t s = 0; s < totalTransitions; s++) {
-                                ImGui::Text(S(TH20_RPYFIX_STAGE_NUM), s + 2);
+                                ImGui::Text(S(TH_STAGE_NUM), s + 2);
                                 ImGui::SameLine();
 
                                 bool disabled = ((int32_t)s < stage);
@@ -1322,14 +1322,11 @@ namespace TH20 {
                             }
                         }
 
-                        std::string buttonLabelStr; // storage for formatted string
-                        const char* buttonLabel = S(TH_REPFIX_SAVE);
+                        char buttonLabel[64];
+                        snprintf(buttonLabel, sizeof(buttonLabel), "%s", S(TH_REPFIX_SAVE));
 
-                        if (remainingTransitions && startedOnSt1) {
-                            buttonLabelStr = std::vformat(S(TH20_MAINRPYFIX_SAVE_PROGRESS),
-                                std::make_format_args(stage, totalTransitions));
-                            buttonLabel = buttonLabelStr.c_str();
-                        }
+                        if (remainingTransitions && startedOnSt1)
+                            snprintf(buttonLabel, sizeof(buttonLabel), S(TH_REPFIX_SAVE_PROGRESS), stage, totalTransitions);
 
                         ImGui::BeginDisabled(mainRpyFixDisableSave);
                         bool saveClicked = ImGui::Button(buttonLabel);
@@ -1445,7 +1442,7 @@ namespace TH20 {
                 ImGui::SameLine();
                 Gui::HelpMarker(S(TH20_EXPIRED_STONE_FIX_DESC));
                 ImGui::SameLine();
-                ImGui::Checkbox(S(TH20_EXPSTONEFIX_SHOW_TOGGLE), &showExpiredPyramidFixTool);
+                ImGui::Checkbox(S(TH_TOOL_SHOW_TOGGLE), &showExpiredPyramidFixTool);
 
                 if (showExpiredPyramidFixTool) {
                     if (THGuiRep::singleton().mRepSelected) {
@@ -1465,7 +1462,7 @@ namespace TH20 {
                             for (size_t s = THGuiRep::singleton().mSelectedRepStartStage;
                                 s <= THGuiRep::singleton().mSelectedRepEndStage; ++s) {
                                 ImGui::EndDisabled(disableChangingExpStoneData);
-                                ImGui::Text(S(s == 7 ? TH20_RPYFIX_EXTRA_STAGE : TH20_RPYFIX_STAGE_NUM), s);
+                                ImGui::Text(S(s == 7 ? TH_EXTRA_STAGE : TH_STAGE_NUM), s);
                                 ImGui::BeginDisabled(disableChangingExpStoneData);
                                 ImGui::SameLine();
 
@@ -1997,8 +1994,8 @@ namespace TH20 {
         case THPrac::TH20::TH20_ST1_BOSS3: {
             constexpr unsigned int st1bsNonSubCallOrd = 0x6dc + 0x18;
             constexpr unsigned int st1bsNon2InvulnCallVal = 0x133c + 0x10;
-            constexpr unsigned int st1bsNon2BossItemCallOp = 0x1428 + 0x4; // 32th cringequit on me when
-            constexpr unsigned int st1bsNon2PlaySoundOp = 0x1554 + 0x4; // I asked what these were so :shrug:
+            constexpr unsigned int st1bsNon2BossItemCallOp = 0x1428 + 0x4;
+            constexpr unsigned int st1bsNon2PlaySoundOp = 0x1554 + 0x4;
             constexpr unsigned int st1bsNon2PostLifeMarker = 0x16c0;
             constexpr unsigned int st1bsNon2PostWait = 0x17ac; // 0x1608 previously
 

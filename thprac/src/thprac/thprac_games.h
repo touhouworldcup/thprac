@@ -100,10 +100,10 @@ struct adv_opt_ctx {
 
 void OILPInit(adv_opt_ctx& ctx);
 void CalcFileHash(const wchar_t* file_name, uint64_t hash[2]);
-template <th_glossary_t name>
-static bool BeginOptGroup(bool default_status = true)
+template <th_glossary_t name, bool default_expand = true>
+static bool BeginOptGroup()
 {
-    static bool group_status = default_status;
+    static bool group_status = default_expand;
     ImGui::SetNextItemOpen(group_status);
     group_status = ImGui::CollapsingHeader(Gui::LocaleGetStr(name), ImGuiTreeNodeFlags_None);
     if (group_status)

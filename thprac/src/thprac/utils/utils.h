@@ -84,7 +84,6 @@ privDefer<F> defer_func(F f)
 #define MACRO_CAT(arg1, arg2) _MACRO_CAT(arg1, arg2)
 
 void memswap(void* buf1_, void* buf2_, unsigned int len);
-void debug_msg(const char* title, const char* format, ...);
 
 template <typename T>
 constexpr T t_tolower(T c) {
@@ -115,3 +114,4 @@ inline long RoundDown(long n, long m) {
 inline long RoundUp(long n, long m) {
     return n >= 0 ? ((n + m - 1) / m) * m : (n / m) * m;
 }
+const char* FormatNumberWithCommas(long long val);

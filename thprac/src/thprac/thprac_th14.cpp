@@ -316,7 +316,7 @@ namespace TH14 {
             case 1: // Chapter
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
-                if (chapterCounts[1] == 0 && chapterCounts[2] != 0) {
+                if (chapterCounts[0] == 0 || chapterCounts[1] == 0) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_N), *mChapter);
                 } else if (*mChapter <= chapterCounts[0]) {
                     sprintf_s(chapterStr, S(TH_STAGE_PORTION_1), *mChapter);
@@ -558,8 +558,6 @@ namespace TH14 {
     class THGuiSP : public Gui::GameGuiWnd {
         THGuiSP() noexcept
         {
-            *mBugFix = true;
-
             SetFade(0.8f, 0.1f);
             SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
             SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -673,7 +671,6 @@ namespace TH14 {
 
         unsigned int mSpellId = UINT_MAX;
 
-        Gui::GuiCheckBox mBugFix { TH16_BUGFIX };
         Gui::GuiCombo mPhase { TH_PHASE };
         Gui::GuiNavFocus mNavFocus { TH_PHASE };
     };

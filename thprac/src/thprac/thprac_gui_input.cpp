@@ -186,7 +186,7 @@ namespace THPrac
             ChordKeyStrings[ChordKey_Alt] =			"Alt";
             ChordKeyStrings[ChordKey_Caps] =		"Caps";
             ChordKeyStrings[ChordKey_Tab] =			"Tab";
-            ChordKeyStrings[ChordKey_Space] =		S(THPRAC_HOTKEY_SPACEBAR);            
+            ChordKeyStrings[ChordKey_Space] =		S(THPRAC_HOTKEY_SPACEBAR);
 			ChordKeyStrings[ChordKey_Backspace] =	"Backspace";
             ChordKeyStrings[ChordKey_F11] =			"F11";
             ChordKeyStrings[ChordKey_F12] =			"F12";

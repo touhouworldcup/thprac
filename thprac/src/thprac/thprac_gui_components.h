@@ -14,6 +14,8 @@
 #include "utils/utils.h"
 
 namespace THPrac {
+void HelpMarker(const char* desc);
+void CustomMarker(const char* text, const char* desc);
 void ImRotateStart();
 ImVec2 ImRotationCenter();
 void ImRotateEnd(float rad, ImVec2 center = ImRotationCenter());
