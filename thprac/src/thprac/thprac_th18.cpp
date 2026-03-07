@@ -258,7 +258,7 @@ namespace TH18 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -289,8 +289,8 @@ namespace TH18 {
             if (mode == 1) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th18", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th18");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
                 if (section)
@@ -326,8 +326,8 @@ namespace TH18 {
             } else if (mode == 2) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th18", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th18");
                 AddJsonValue(mode);
 
                 if (phase)
@@ -337,7 +337,6 @@ namespace TH18 {
             }
 
             CreateJson();
-            jalloc; // Dummy usage to silence C4189
             ReturnJson();
         }
     };
@@ -460,19 +459,19 @@ namespace TH18 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(0.5f, 0.7f);
                 SetPosRel(0.27f, 0.18f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(0.6f, 0.7f);
                 SetPosRel(0.215f, 0.18f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(0.56f, 0.7f);
                 SetPosRel(0.230f, 0.18f);
                 SetItemWidthRel(-0.105f);
@@ -728,16 +727,16 @@ namespace TH18 {
     public:
         THPracParam mRepParam;
         bool mRepSelected = false;
-        uint32_t mSelectedRepStartStage;
-        uint32_t mSelectedRepEndStage;
-        uint32_t mSelectedRepPlaybackStartStage;
-        uint32_t mSelectedRepScores[STAGE_COUNT];
-        LoadedReplayData mSelectedRepData;
-        std::wstring mSelectedRepDir;
-        std::wstring mSelectedRepName;
-        std::wstring mSelectedRepPath;
-        std::wstring mAppdataPath;
-        uint64_t mRepMetroHash[2];
+        uint32_t mSelectedRepStartStage = {};
+        uint32_t mSelectedRepEndStage = {};
+        uint32_t mSelectedRepPlaybackStartStage = {};
+        uint32_t mSelectedRepScores[STAGE_COUNT] = {};
+        LoadedReplayData mSelectedRepData = {};
+        std::wstring mSelectedRepDir = {};
+        std::wstring mSelectedRepName = {};
+        std::wstring mSelectedRepPath = {};
+        std::wstring mAppdataPath = {};
+        uint64_t mRepMetroHash[2] = {};
 
         void DisableCardFix();
         void EnableCardFix(LoadedReplayData& rd);
@@ -970,15 +969,15 @@ namespace TH18 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
@@ -1241,19 +1240,19 @@ namespace TH18 {
         {
             SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
@@ -1507,7 +1506,7 @@ namespace TH18 {
             if (GetSaveFileNameW(&ofn)) {
                 auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {
-                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST), nullptr, ofn.hwndOwner);
+                    log_mbox(ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST));
                     goto end;
                 }
                 SetFilePointer(outputFile, 0, nullptr, FILE_BEGIN);
@@ -1518,7 +1517,7 @@ namespace TH18 {
                 CloseHandle(outputFile);
 
                 // OK checkbox & close replay menu to force a reload
-                MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
+                log_mboxf(ofn.hwndOwner, MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str());
                 uintptr_t mainMenu = GetMemContent(MAIN_MENU_PTR);
                 if (mainMenu) {
                     THGuiRep::singleton().State(1);
@@ -1651,11 +1650,11 @@ namespace TH18 {
 
             if (BeginOptGroup<TH_REPLAY_FIX>()) {
                 // Counterstop replay fix tool
-                CustomMarker(S(TH_REPFIX_NO_THPRAC), S(TH_REPFIX_NO_THPRAC_DESC));
+                Gui::CustomMarker(S(TH_REPFIX_NO_THPRAC), S(TH_REPFIX_NO_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH18_CS_REPFIX));
                 ImGui::SameLine();
-                HelpMarker(S(TH18_CS_REPFIX_DESC));
+                Gui::HelpMarker(S(TH18_CS_REPFIX_DESC));
 
                 auto& guiReplay = THGuiRep::singleton();
                 uint32_t finalScore = guiReplay.mSelectedRepScores[guiReplay.mSelectedRepEndStage];
@@ -1742,11 +1741,11 @@ namespace TH18 {
                 ImGui::Separator();
 
                 // Active card replay desync fix tool
-                CustomMarker(S(TH_REPFIX_NO_THPRAC), S(TH_REPFIX_NO_THPRAC_DESC));
+                Gui::CustomMarker(S(TH_REPFIX_NO_THPRAC), S(TH_REPFIX_NO_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH18_AC_REPFIX));
                 ImGui::SameLine();
-                HelpMarker(S(TH18_AC_REPFIX_DESC));
+                Gui::HelpMarker(S(TH18_AC_REPFIX_DESC));
 
                 ImGui::SameLine();
                 ImGui::Checkbox(S(TH_TOOL_SHOW_TOGGLE), &activeCardRepFix);
@@ -1838,7 +1837,9 @@ namespace TH18 {
     private:
         void FpsInit()
         {
-            if (*(uint8_t*)0x4cd011 == 3) {
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                OILPInit(mOptCtx);
+            } else if (*(uint8_t*)0x4cd011 == 3) {
                 mOptCtx.fps_status = 1;
 
                 DWORD oldProtect;
@@ -1850,7 +1851,11 @@ namespace TH18 {
         }
         void FpsSet()
         {
-            if (mOptCtx.fps_status == 1) {
+            if (mOptCtx.fps_status == 3) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
+            } else if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
             } else if (mOptCtx.fps_status == 2) {
             }
@@ -1915,19 +1920,19 @@ namespace TH18 {
         {
             SetTitle("AdvOptMenu");
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
@@ -1967,7 +1972,7 @@ namespace TH18 {
 
         void CenteredText(const char* text, float parentWidth, int trim = 0, float size = 1.0f)
         {
-            float textWidth = ImGui::CalcTextSize(text, text + strlen(text) - trim).x;
+            float textWidth = ImGui::CalcTextSize(text, text + t_strlen(text) - trim).x;
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (parentWidth - size * textWidth) * 0.5f);
 
             if (size != 1.0f) ResizedText(text, size);
@@ -2237,7 +2242,7 @@ namespace TH18 {
         bool ValidateLoadoutCode(const char* input)
         {
             // Must be length 12
-            if (!input || strlen(input) != 12)
+            if (!input || t_strlen(input) != 12)
                 return false;
 
             // Must be hex
@@ -2288,7 +2293,7 @@ namespace TH18 {
                 if (ImGui::Checkbox(S(TH18_UNCAP), &scoreUncapChkbox))
                     ScoreUncapSet();
                 ImGui::SameLine();
-                HelpMarker(S(TH18_UNCAP_DESC));
+                Gui::HelpMarker(S(TH18_UNCAP_DESC));
 
                 /* Inclusion of this option is more confusing than it's worth
                 * Note that score uncap already affects replay scores (e.g. st5)
@@ -2304,11 +2309,11 @@ namespace TH18 {
                     th18_static_mallet_replay_green.Toggle(staticMalletReplay);
                 }
                 ImGui::SameLine();
-                HelpMarker(S(TH18_STATIC_MALLET_DESC));
+                Gui::HelpMarker(S(TH18_STATIC_MALLET_DESC));
 
                 ImGui::Checkbox(S(TH18_MARKET_MANIP_LOADOUT), &useManipLoadout);
                 ImGui::SameLine();
-                HelpMarker(S(TH18_MARKET_MANIP_LOADOUT_DESC));
+                Gui::HelpMarker(S(TH18_MARKET_MANIP_LOADOUT_DESC));
 
                 if (useManipLoadout) {
                     if (ImGui::Button(S(TH18_MARKET_MANIP_ALL_KEEP))) {
@@ -2355,7 +2360,7 @@ namespace TH18 {
                         if (ValidateLoadoutCode(clipboardText))
                             ApplyLoadoutCode(clipboardText);
                         else
-                            MsgBox(MB_ICONERROR | MB_OK, S(TH18_MARKET_MANIP_PASTE_ERROR_TITLE), S(TH18_MARKET_MANIP_PASTE_ERROR), nullptr, *(HWND*)WINDOW_PTR);
+                            log_mbox(*(HWND*)WINDOW_PTR, MB_ICONERROR | MB_OK, S(TH18_MARKET_MANIP_PASTE_ERROR_TITLE), S(TH18_MARKET_MANIP_PASTE_ERROR));
                     }
                     if (ImGui::IsItemHovered())
                         ImGui::SetTooltip(S(TH18_MARKET_MANIP_PASTE_CODE_HINT));
@@ -2368,12 +2373,12 @@ namespace TH18 {
                         if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH18_RESTART_SETTINGS_CONFLICT));
                     }
                     ImGui::SameLine();
-                    HelpMarker(S(TH18_MARKET_MANIP_AUTO_RESTART_DESC));
+                    Gui::HelpMarker(S(TH18_MARKET_MANIP_AUTO_RESTART_DESC));
 
                     ImGui::SameLine();
                     ImGui::Checkbox(S(TH18_MARKET_MANIP_OSCAR), &manipSafetyMode);
                     ImGui::SameLine();
-                    HelpMarker(S(TH18_MARKET_MANIP_OSCAR_DESC));
+                    Gui::HelpMarker(S(TH18_MARKET_MANIP_OSCAR_DESC));
 
                     ImGui::NewLine();
                     DrawManipCardGrid(loadoutHighCostCards, TH18_MARKET_MANIP_HIGH_COSTS, IM_COL32(195, 160, 160, 200));
@@ -2387,7 +2392,7 @@ namespace TH18 {
                 ImGui::TextUnformatted(S(TH18_BUGFIX_DESC));
                 ImGui::TextUnformatted(S(TH_BUGFIX_AUTO));
                 ImGui::SameLine();
-                HelpMarker(S(TH18_BUGFIX_AUTO_DESC));
+                Gui::HelpMarker(S(TH18_BUGFIX_AUTO_DESC));
 
                 // market reset incompatible with restarting for Market Manip.
                 if (manipAutoRestart) ImGui::BeginDisabled();
@@ -2451,7 +2456,7 @@ namespace TH18 {
                         ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_FREEZE_RUN));
                 }
                 ImGui::SameLine();
-                HelpMarker(S(TH18_SAVEFILE_MANIP_FREEZE_DESC));
+                Gui::HelpMarker(S(TH18_SAVEFILE_MANIP_FREEZE_DESC));
 
                 ImGui::NewLine();
                 DrawManipCardGrid(allCostCards, TH18_SAVEFILE_MANIP_CARDS, IM_COL32(40, 75, 120, 200), 10, 27.5f, true);

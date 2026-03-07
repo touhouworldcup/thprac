@@ -1,7 +1,6 @@
 ﻿#include "thprac_gui_input.h"
 #include "thprac_gui_locale.h"
 #include "thprac_gui_impl_win32.h"
-#include "thprac_launcher_cfg.h"
 #include <imgui.h>
 #define NOMINMAX
 #include <Windows.h>
@@ -177,12 +176,6 @@ namespace THPrac
 		
 		/***                    Menu Chords                          ***/
 
-        int __gbackspace_menu_chord_current = 1 << ChordKey_Backspace;
-        int __gadvanced_menu_chord_current = 1 << ChordKey_F12;
-        int __gscreenshot_chord_current = 1 << ChordKey_Home;
-        int __gtracker_chord_current = 1 << ChordKey_Tab;
-        int __glanguage_chord_current = 1 << ChordKey_Alt;
-
         const char* ChordKeyStrings[ChordKey_COUNT];
 
 		int ChordKeyVKs[ChordKey_COUNT];
@@ -252,38 +245,6 @@ namespace THPrac
             
 		}
 
-		bool MenuChordInitFromCfg() {
-            int backspace_menu_chord = 0;
-            int advanced_menu_chord = 0;
-            int screenshot_chord = 0;
-            int tracker_chord = 0;
-            int language_chord = 0;
-            if (
-				!LauncherSettingGet("backspace_menu_chord", backspace_menu_chord) ||
-				!LauncherSettingGet("advanced_menu_chord", advanced_menu_chord) || 
-				!LauncherSettingGet("screenshot_chord", screenshot_chord) || 
-				!LauncherSettingGet("tracker_chord", tracker_chord) || 
-				!LauncherSettingGet("language_chord", language_chord)
-			) {
-                return false;
-            }
-            __gbackspace_menu_chord_current = backspace_menu_chord;
-            __gadvanced_menu_chord_current = advanced_menu_chord;
-            __gscreenshot_chord_current = screenshot_chord;
-            __gtracker_chord_current = tracker_chord;
-            __glanguage_chord_current = language_chord;
-            return true;
-		}
-
-		void MenuChordAutoSet() {
-			__gbackspace_menu_chord_current = 1 << ChordKey_Backspace;
-			__gadvanced_menu_chord_current = 1 << ChordKey_F12;
-			__gscreenshot_chord_current = 1 << ChordKey_Home;
-			__gtracker_chord_current = 1 << ChordKey_Tab;
-			__glanguage_chord_current = 1 << ChordKey_Alt;
-		}
-
-
 		// Returns the time the desired chord has been pressed for.
 		int GetChordPressedDuration(int target_chord) {
             int min_held = 1 << 30;
@@ -311,11 +272,11 @@ namespace THPrac
 			return GetChordPressedDuration(chord) == 1;
 		}
 		
-		int GetBackspaceMenuChord() { return __gbackspace_menu_chord_current; }
-		int GetAdvancedMenuChord() { return __gadvanced_menu_chord_current; }
-		int GetScreenshotChord() { return __gscreenshot_chord_current; }
-		int GetTrackerChord() { return __gtracker_chord_current; }
-		int GetLanguageChord() { return __glanguage_chord_current; }
+        int GetBackspaceMenuChord() { return hotkeys.backspace_menu; }
+        int GetAdvancedMenuChord() { return hotkeys.advanced_menu; }
+        int GetScreenshotChord() { return hotkeys.screenshot; }
+        int GetTrackerChord() { return hotkeys.tracker; }
+        int GetLanguageChord() { return hotkeys.language; }
 
 		// Convert chords to user-readable string.
         std::string HotkeyChordToLabel(int chord) {
@@ -346,6 +307,5 @@ namespace THPrac
 				return ChordKeyVKs[chord];
 			}
 		}
-
 	}
 }

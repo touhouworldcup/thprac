@@ -1,6 +1,11 @@
 #pragma once
 
 #define NOMINMAX
+#include <Windows.h>
+
+#include <stdint.h>
+
+#include "utils/utils.h"
 
 #include "thprac_version.h"
 #include "thprac_gui_components.h"
@@ -10,23 +15,18 @@
 #include "thprac_locale_def.h"
 #include "thprac_gui_locale.h"
 
-#include <Windows.h>
-#include <cstdint>
+#include <charconv>
+#include <concepts>
 #include <imgui.h>
 #include <memory>
 #include <optional>
-#pragma warning(push)
-#pragma warning(disable : 26451)
-#pragma warning(disable : 26495)
-#pragma warning(disable : 33010)
-#pragma warning(disable : 26819)
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
-#pragma warning(pop)
 #include <random>
 #include <string>
 #include <utility>
+#include <type_traits>
 #include <vector>
+
+#include "yyjson.h"
 
 namespace THPrac {
 
@@ -68,36 +68,6 @@ struct MappedFile {
     }
 };
 
-struct cs_lock {
-    CRITICAL_SECTION* cs;
-    cs_lock(CRITICAL_SECTION* cs)
-    {
-        EnterCriticalSection(cs);
-        this->cs = cs;
-    }
-    ~cs_lock()
-    {
-        LeaveCriticalSection(cs);
-    }
-};
-
-struct RAII_CRITICAL_SECTION {
-    CRITICAL_SECTION cs;
-    RAII_CRITICAL_SECTION()
-    {
-        InitializeCriticalSection(&cs);
-    }
-
-    ~RAII_CRITICAL_SECTION()
-    {
-        DeleteCriticalSection(&cs);
-    }
-
-    CRITICAL_SECTION* operator*() {
-        return &cs;
-    }
-};
-
 #pragma region Locale
 std::string utf16_to_mb(const wchar_t* utf16, UINT encoding);
 std::wstring mb_to_utf16(const char* utf8, UINT encoding);
@@ -109,30 +79,50 @@ void ingame_mb_init();
 #pragma endregion
 
 #pragma region Path
-std::string GetSuffixFromPath(const char* pathC);
-std::string GetSuffixFromPath(const std::string& path);
-std::string GetDirFromFullPath(const std::string& dir);
-std::wstring GetDirFromFullPath(const std::wstring& dir);
-std::string GetNameFromFullPath(const std::string& dir);
-std::wstring GetNameFromFullPath(const std::wstring& dir);
-std::string GetCleanedPath(const std::string& path);
-std::wstring GetCleanedPath(const std::wstring& path);
-std::string GetUnifiedPath(const std::string& path);
-std::wstring GetUnifiedPath(const std::wstring& path);
-#pragma endregion
+template <typename T>
+constexpr bool PathsCompare(const T* a, size_t a_len, const T* b, size_t b_len) {
+    size_t i = 0, j = 0;
+
+    while (i < a_len && j < b_len) {
+        bool a_is_sep = (a[i] == '/' || a[i] == '\\');
+        bool b_is_sep = (b[j] == '/' || b[j] == '\\');
+
+        if (a_is_sep && b_is_sep) {
+            while (i < a_len && (a[i] == '/' || a[i] == '\\'))
+                i++;
+            while (j < b_len && (b[j] == '/' || b[j] == '\\'))
+                j++;
+            continue;
+        }
+
+        if (a_is_sep || b_is_sep)
+            return 0;
+
+        if (t_tolower(a[i]) != t_tolower(b[j])) {
+            return 0;
+        }
+
+        i++;
+        j++;
+    }
+
+    // Skip any trailing separators on both paths
+    while (i < a_len && (a[i] == '/' || a[i] == '\\'))
+        i++;
+    while (j < b_len && (b[j] == '/' || b[j] == '\\'))
+        j++;
+
+    // Both must be fully consumed.
+    return i == a_len && j == b_len;
+}
 
 template <typename T>
-static std::function<T(void)> GetRndGenerator(T min, T max, std::mt19937::result_type seed = 0)
-{
-    if (!seed) {
-        seed = (std::mt19937::result_type)time(0);
-    }
-    auto dice_rand = std::bind(std::uniform_int_distribution<T>(min, max), std::mt19937(seed));
-    return dice_rand;
+constexpr bool PathsCompare(const T* a, const T* b) {
+    return PathsCompare(a, t_strlen(a), b, t_strlen(b));
 }
-DWORD WINAPI CheckDLLFunction(const wchar_t* path, const char* funcName);
-}
+#pragma endregion
 
+#pragma region Algorithm
 template <typename T>
 unsigned int binary_search(const T* arr, size_t len, T needle) {
     size_t low = 0;
@@ -157,6 +147,78 @@ unsigned int binary_search(const T* arr, size_t len, T needle) {
     }
 
     return (unsigned int)-1;
+}
+
+// thcrap is able to use it's entire expression parser for this
+// Here I'll just return true for any non empty string that doesn't say false or no
+__forceinline bool str_parse_bool(const char* str) {
+    if (*str) {
+        return _stricmp(str, "FALSE") == 0 || _stricmp(str, "NO") == 0;
+    } else {
+        return false;
+    }
+}
+#pragma endregion
+
+#pragma region Json
+
+// Parse numbers encoded as any type into an int of size 8/16/32/64 or float or double
+// while performing all required conversions automatically
+template <typename T>
+requires((std::integral<T> || std::same_as<T, float> || std::same_as<T, double>) && sizeof(T) <= 8)
+bool yyjson_eval_numeric(yyjson_val* val, T* out) noexcept
+{
+    switch (yyjson_get_type(val)) {
+    case YYJSON_TYPE_BOOL:
+        *out = unsafe_yyjson_get_bool(val);
+        return true;
+    case YYJSON_TYPE_NUM:
+        switch (val->tag & 0b000111000) {
+        case YYJSON_SUBTYPE_UINT:
+            *out = (T)val->uni.u64;
+            return true;
+        case YYJSON_SUBTYPE_SINT:
+            *out = (T)val->uni.i64;
+            return true;
+        case YYJSON_SUBTYPE_REAL:
+            *out = (T)val->uni.f64;
+            return true;
+        default:
+            return false;
+        }
+    case YYJSON_TYPE_STR: {
+        const char* val_str = unsafe_yyjson_get_str(val);
+        if constexpr (std::same_as<T, bool>) {
+            *out = str_parse_bool(val_str);
+            return true;
+        } else {
+            return std::from_chars(val_str, val_str + t_strlen(val_str), *out).ec == std::errc();
+        }
+    }
+    default:
+        return false;
+    }
+}
+
+// C++ overloads for yyjson_mut_obj_add, mainly for macros
+// In C, this would be the perfect use for _Generic, which
+// would also guarantee inlining even in debug mode.
+//
+#define CPP_YYJSON_MUT_OBJ_ADD_DECL(tname_cpp, tname_yy) \
+__forceinline bool yyjson_mut_obj_add(yyjson_mut_doc* doc, yyjson_mut_val* obj, const char* key, tname_cpp val) { \
+    return yyjson_mut_obj_add_##tname_yy(doc, obj, key, val); \
+}
+CPP_YYJSON_MUT_OBJ_ADD_DECL(bool, bool)
+CPP_YYJSON_MUT_OBJ_ADD_DECL(double, double)
+CPP_YYJSON_MUT_OBJ_ADD_DECL(float, float)
+CPP_YYJSON_MUT_OBJ_ADD_DECL(int, sint)
+CPP_YYJSON_MUT_OBJ_ADD_DECL(unsigned int, uint)
+CPP_YYJSON_MUT_OBJ_ADD_DECL(int64_t, sint)
+CPP_YYJSON_MUT_OBJ_ADD_DECL(uint64_t, uint)
+CPP_YYJSON_MUT_OBJ_ADD_DECL(const char*, str)
+#undef CPP_YYJSON_MUT_OBJ_ADD_DECL
+#pragma endregion
+
 }
 
 #define w32u8_alloca(type, size) ((type*)_alloca((size) * sizeof(type)))

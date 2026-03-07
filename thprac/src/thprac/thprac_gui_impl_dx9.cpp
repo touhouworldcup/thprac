@@ -66,6 +66,11 @@ namespace Gui {
 
         return true;
     }
+
+    IDirect3DDevice9* ImplDX9GetDevice() {
+        return g_pd3dDevice;
+    }
+
     static void ImplDX9SetupRenderState(ImDrawData* draw_data)
     {
         // Setup viewport

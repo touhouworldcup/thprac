@@ -1,6 +1,4 @@
 #include "thprac_games.h"
-#include "thprac_launcher_cfg.h"
-#include "thprac_launcher_main.h"
 #include "thprac_licence.h"
 #include "thprac_load_exe.h"
 #include "thprac_gui_impl_dx8.h"
@@ -107,6 +105,7 @@ void __fastcall IDirectInputDevice8_GetDeviceState_VEHHook(PCONTEXT pCtx, [[mayb
 }
 
 decltype(joyGetPosEx)* orig_joyGetPosEx = nullptr;
+decltype(joyGetDevCapsW)* _joyGetDevCapsW = nullptr;
 
 // joyGetDevCaps() will necessarily be slower
 struct winmm_joy_caps_t {
@@ -139,7 +138,7 @@ MMRESULT WINAPI hook_joyGetPosEx(UINT uJoyID, JOYINFOEX* pji)
 
     if (!jc.initialized) {
         JOYCAPSW caps;
-        auto ret_caps = joyGetDevCapsW(uJoyID, &caps, sizeof(caps));
+        auto ret_caps = _joyGetDevCapsW(uJoyID, &caps, sizeof(caps));
         (void)ret_caps; // suppress "unused variable" warning
         assert(ret_caps == JOYERR_NOERROR);
 
@@ -179,7 +178,12 @@ void iat_hook_joyGetPosEx()
                         continue;
                     }
                     if (!strcmp("joyGetPosEx", (char*)pByName->Name)) {
+                        _joyGetDevCapsW = (decltype(joyGetDevCapsW)*)GetProcAddress(GetModuleHandleA("winmm.dll"), "joyGetDevCapsW");
                         orig_joyGetPosEx = (decltype(joyGetPosEx)*)pIT->u1.Function;
+
+                        if (!_joyGetDevCapsW) {
+                            return;
+                        }
 
                         DWORD oldProt;
                         VirtualProtect(&pIT->u1.Function, 4, PAGE_READWRITE, &oldProt);
@@ -221,16 +225,15 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     }
 
     ingame_mb_init();
-    ::ImGui::CreateContext();
+    ImGui::CreateContext();
+
     g_gameGuiImpl = impl;
     g_gameGuiDevice = (DWORD*)device;
     g_gameGuiHwnd = (DWORD*)hwnd_addr;
     g_gameIMCCtx = ImmAssociateContext(*(HWND*)hwnd_addr, 0);
 
-    // Set Locale
-    GuiLauncherLocaleInit();
     // Set Hotkeys
-    GuiLauncherHotkeyInit();
+    Gui::MenuChordInitArrays();
 
     switch (impl) {
     case THPrac::IMPL_WIN32_DX8:
@@ -262,7 +265,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     auto& io = ::ImGui::GetIO();
     if (wnd_size_flag == -1) {
         io.DisplaySize = { x, y };
-        Gui::LocaleCreateFont(io.DisplaySize.x * 0.025f);
+        Gui::LocaleCreateMergeFont(io.DisplaySize.x * 0.025f);
     } else if (wnd_size_flag == -2) {
         float dispX, dispY;
         if (x > 1.6) {
@@ -276,7 +279,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
             dispY = 480.0f;
         }
         Gui::ImplDX9AdjustDispSize();
-        Gui::LocaleCreateFont(dispX * 0.025f);
+        Gui::LocaleCreateMergeFont(dispX * 0.025f);
     } else {
         switch (wnd_size_flag) {
         case 2:
@@ -291,29 +294,24 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
             io.DisplaySize = { 640.0f, 480.0f };
             break;
         }
-        Gui::LocaleCreateFont(io.DisplaySize.x * 0.025f);
+        Gui::LocaleCreateMergeFont(io.DisplaySize.x * 0.025f);
     }
 
-    if (LauncherCfgInit(true)) {
-        bool resizable_window;
-        if (LauncherSettingGet("resizable_window", resizable_window) && resizable_window && !Gui::ImplWin32CheckFullScreen()) {
-            RECT wndRect;
-            GetClientRect(*(HWND*)hwnd_addr, &wndRect);
-            auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
-            auto captionSize = GetSystemMetrics(SM_CYCAPTION);
-            auto longPtr = GetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE);
-            SetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE, longPtr | WS_SIZEBOX);
-            SetWindowPos(*(HWND*)hwnd_addr, HWND_NOTOPMOST,
-                0, 0, wndRect.right + frameSize, wndRect.bottom + frameSize + captionSize,
-                SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
-        }
-        int theme;
-        if (LauncherSettingGet("theme", theme)) {
-            SetTheme(theme);
-        } else
-            ImGui::StyleColorsDark();
-    } else
-        ImGui::StyleColorsDark();
+
+    if (gSettings.resizable_window) {
+        RECT wndRect;
+        GetClientRect(*(HWND*)hwnd_addr, &wndRect);
+        auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
+        auto captionSize = GetSystemMetrics(SM_CYCAPTION);
+        auto longPtr = GetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE);
+        SetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE, longPtr | WS_SIZEBOX);
+        SetWindowPos(*(HWND*)hwnd_addr, HWND_NOTOPMOST,
+            0, 0, wndRect.right + frameSize, wndRect.bottom + frameSize + captionSize,
+            SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    }
+
+    SetTheme(gSettings.theme);
+
     // Imgui settings
     io.IniFilename = nullptr;
 }
@@ -373,11 +371,11 @@ void GameGuiEnd(bool draw_cursor)
     if (!ImGui::IsAnyItemActive()) {
         if (Gui::GetChordPressedDuration(Gui::GetLanguageChord()) > 0) {
             if (Gui::KeyboardInputUpdate('1') == 1) {
-                Gui::LocaleSet(Gui::LOCALE_JA_JP);
+                Gui::LocaleSet(LOCALE_JA_JP);
             } else if (Gui::KeyboardInputUpdate('2') == 1) {
-                Gui::LocaleSet(Gui::LOCALE_ZH_CN);
+                Gui::LocaleSet(LOCALE_ZH_CN);
             } else if (Gui::KeyboardInputUpdate('3') == 1) {
-                Gui::LocaleSet(Gui::LOCALE_EN_US);
+                Gui::LocaleSet(LOCALE_EN_US);
             }
         }
     }
@@ -412,35 +410,23 @@ void GameGuiRender(game_gui_impl impl)
 #pragma endregion
 
 #pragma region Advanced Options Menu
-
-void MsgBox(UINT type, const char* title, const char* msg, const char* msg2, HWND owner)
+void OILPInit(adv_opt_ctx& ctx)
 {
-    static wchar_t _title[256];
-    static wchar_t _msg[256];
-    static wchar_t _msg2[256];
-    MultiByteToWideChar(CP_UTF8, 0, title, -1, _title, 256);
-    MultiByteToWideChar(CP_UTF8, 0, msg, -1, _msg, 256);
-    if (msg2) {
-        MultiByteToWideChar(CP_UTF8, 0, msg2, -1, _msg2, 256);
-        wcscat_s(_msg, _msg2);
-    }
-    MessageBoxW(owner, _msg, _title, type);
-}
-
-void CenteredText(const char* text, float wndX)
-{
-    ImGui::SetCursorPosX((wndX - ImGui::CalcTextSize(text).x) / 2.0f);
-    ImGui::TextUnformatted(text);
-}
-
-float GetRelWidth(float rel)
-{
-    return ImGui::GetIO().DisplaySize.x * rel;
-}
-
-float GetRelHeight(float rel)
-{
-    return ImGui::GetIO().DisplaySize.y * rel;
+    ctx.fps_status = 3;
+    ctx.oilp_set_game_fps = (adv_opt_ctx::oilp_set_fps_t*)GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_set_game_fps");
+    auto oilp_get_game_fps = (int(__stdcall*)())GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_get_game_fps");
+    if (oilp_get_game_fps)
+        ctx.fps = oilp_get_game_fps();
+    else
+        ctx.fps = 60;
+    ctx.oilp_set_replay_skip_fps = (adv_opt_ctx::oilp_set_fps_t*)GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_set_replay_skip_fps");
+    ctx.oilp_set_replay_slow_fps = (adv_opt_ctx::oilp_set_fps_t*)GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_set_replay_slow_fps");
+    auto oilp_get_replay_skip_fps = (int(__stdcall*)())GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_get_replay_skip_fps");
+    auto oilp_get_replay_slow_fps = (int(__stdcall*)())GetProcAddress((HMODULE)ctx.vpatch_base, "oilp_get_replay_slow_fps");
+    if (oilp_get_replay_skip_fps)
+        ctx.fps_replay_fast = oilp_get_replay_skip_fps();
+    if (oilp_get_replay_slow_fps)
+        ctx.fps_replay_slow = oilp_get_replay_slow_fps();
 }
 
 void CalcFileHash(const wchar_t* file_name, uint64_t hash[2])
@@ -591,7 +577,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
         break;
     }
 
-    ImGui::PushItemWidth(GetRelWidth(0.23f));
+    ImGui::PushItemWidth(Gui::GetRelWidth(0.23f));
     if (canFpsChangeFreely) {
         ImGui::DragInt(S(TH_FPS_ADJ), &fps, 1.0f, 60, 6000);
         if (!ImGui::IsItemActive())
@@ -613,7 +599,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
     }
 
     if (replay) {
-        ImGui::PushItemWidth(GetRelWidth(0.23f));
+        ImGui::PushItemWidth(Gui::GetRelWidth(0.23f));
         if (fpsFastStatic > 20) {
             sprintf(tmpStr, "infinite");
         } else {
@@ -626,7 +612,7 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
     }
     ImGui::Checkbox("Debug acc.", (bool*)&fpsDebugAcc);
     ImGui::SameLine();
-    HelpMarker("Blah");
+    Gui::HelpMarker("Blah");
 
     if (fpsStatic != fps
         || fpsSlowStatic != ctx.fps_replay_slow
@@ -657,7 +643,7 @@ bool GameplayOpt(adv_opt_ctx& ctx)
 
     hasChanged |= ImGui::Checkbox(S(TH_FACTOR_ACB), &ctx.all_clear_bonus);
     ImGui::SameLine();
-    HelpMarker(S(TH_FACTOR_ACB_DESC));
+    Gui::HelpMarker(S(TH_FACTOR_ACB_DESC));
 
     return hasChanged;
 }
@@ -679,7 +665,7 @@ void AboutOpt(const char* thanks_text)
                 showLicense = true;
         }
         if (showLicense) {
-            ImGui::BeginChild("COPYING", ImVec2(0.0f, GetRelHeight(0.8f)), true);
+            ImGui::BeginChild("COPYING", ImVec2(0.0f, Gui::GetRelHeight(0.8f)), true);
 
             Gui::ShowLicenceInfo();
 
@@ -1119,6 +1105,27 @@ bool GameState_Assert(bool cond)
     else
         ExitProcess(UINT_MAX);
 }
+#pragma endregion
+
+#pragma region Json
+// Wrap std::string in yyjson's allocator interface to be able to serialize to an std::string directly
+void* yyjson_string_alc_alloc(void* ctx, size_t size) {
+    auto* str = (std::string*)ctx;
+    str->resize(size, 0);
+    return str->data();
+}
+
+void* yyjson_string_alc_realloc(void* ctx, void* ptr, size_t old_size, size_t size) {
+    auto* str = (std::string*)ctx;
+    if (size > old_size) {
+        str->append(size - old_size, 0);
+    } else if (size < old_size) {
+        str->resize(old_size - size);
+    }
+    return str->data();
+}
+
+void yyjson_string_alc_free(void* ctx, void* ptr) { };
 #pragma endregion
 
 

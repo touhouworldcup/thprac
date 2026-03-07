@@ -14,8 +14,6 @@
 #include "utils/utils.h"
 
 namespace THPrac {
-void HelpMarker(const char* desc);
-void CustomMarker(const char* text, const char* desc);
 void ImRotateStart();
 ImVec2 ImRotationCenter();
 void ImRotateEnd(float rad, ImVec2 center = ImRotationCenter());
@@ -37,7 +35,7 @@ namespace Gui {
             ImGuiIO& io = ImGui::GetIO();
             io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
-            mLocale = (locale_t)-1;
+            mLocale = LOCALE_NONE;
         }
 
         static constexpr ImGuiWindowFlags STYLE_DEFAULT = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | 0;
@@ -99,7 +97,7 @@ namespace Gui {
         Viewport* mViewport = nullptr;
 
     private:
-        locale_t mLocale;
+        Locale mLocale;
     };
 
     class PPGuiWnd : public GameGuiWnd {
@@ -777,7 +775,7 @@ namespace Gui {
     private:
         static bool mGlobalDisable;
         std::vector<int> mNavId;
-        locale_t mLocale;
+        Locale mLocale;
         int mFocusId = 0;
         int mForceFocusId = 0;
     };
@@ -802,6 +800,32 @@ namespace Gui {
 
     void SetNextWindowSizeRel(const ImVec2& size, ImGuiCond cond = 0);
     void SetNextWindowPosRel(const ImVec2& pos, ImGuiCond cond = 0, const ImVec2& pivot = ImVec2(0, 0));
+    void TextCentered(const char* text, float wndX);
+    float GetRelWidth(float rel);
+    float GetRelHeight(float rel);
+    void CustomMarker(const char* text, const char* desc);
+    inline void HelpMarker(const char* desc) {
+        CustomMarker("(?)", desc);
+    }
+    bool Modal(const char* modalTitle, ImVec2 sizeRel = ImVec2(0.0f, 0.0f));
+    bool YesNoChoice(const char* buttonText1, const char* buttonText2, float buttonSize = std::bit_cast<float>(0xFFFFFFFF));
+    bool ButtonYesNoConfirm(const char* buttonText, const char* modalTitle, const char* modalText, float buttonSize = 6.0f,
+        const char* buttonText1 = "OK",
+        const char* buttonText2 = "Cancel"
+    );
+    inline bool ButtonModal(const char* buttonText, const char* modalTitle) {
+        if (ImGui::Button(buttonText)) {
+            ImGui::OpenPopup(modalTitle);
+            return true;
+        }
+        return false;
+    }
+    inline bool ButtonCentered(const char* buttonText, float posYRel, const ImVec2& sizeRel) {
+        auto wndSize = ImGui::GetWindowSize();
+        ImGui::SetCursorPosX((wndSize.x - wndSize.x * sizeRel.x) / 2.0f);
+        ImGui::SetCursorPosY(wndSize.y * posYRel);
+        return ImGui::Button(buttonText, ImVec2(wndSize.x * sizeRel.x, wndSize.y * sizeRel.y));
+    }
 }
 }
 
