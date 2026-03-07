@@ -398,9 +398,14 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         if (wParam) {
             if (IsZoomed(hWnd)) {
                 NCCALCSIZE_PARAMS* params = (NCCALCSIZE_PARAMS*)lParam;
-                RECT rc;
-                SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
-                params->rgrc[0] = rc;
+
+                HMONITOR monitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+                MONITORINFO mi = { 
+                    .cbSize = sizeof(mi)
+                };
+                GetMonitorInfoW(monitor, &mi);
+
+                params->rgrc[0] = mi.rcWork;
             }
             return 0;
         }
