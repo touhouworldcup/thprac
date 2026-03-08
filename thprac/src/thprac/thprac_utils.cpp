@@ -293,10 +293,8 @@ void debug_msg(const char* title, const char* format, ...)
     delete[] buffer;
 }
 
-const char* FormatNumberWithCommas(int64_t val)
-{
-    static char buffer[32];
-    static char temp[32];
+char* FormatNumberWithCommas(int64_t val, char* buffer) {
+    char temp[32];
 
     sprintf(temp, "%lld", val);
     int len = strlen(temp);
