@@ -1536,9 +1536,9 @@ namespace TH12 {
 
         ImGui::TextColored(red, "%d", ufo[0]) NEXT;
         ImGui::TextUnformatted("/") NEXT;
-        ImGui::TextColored(green, "%d", ufo[1]) NEXT;
+        ImGui::TextColored(green, "%d", ufo[2]) NEXT;
         ImGui::TextUnformatted("/") NEXT;
-        ImGui::TextColored(blue, "%d", ufo[2]) NEXT;
+        ImGui::TextColored(blue, "%d", ufo[1]) NEXT;
 
         ImGui::TextUnformatted(")");
 

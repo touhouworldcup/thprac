@@ -729,16 +729,16 @@ namespace TH18 {
     public:
         THPracParam mRepParam;
         bool mRepSelected = false;
-        uint32_t mSelectedRepStartStage;
-        uint32_t mSelectedRepEndStage;
-        uint32_t mSelectedRepPlaybackStartStage;
-        uint32_t mSelectedRepScores[STAGE_COUNT];
-        LoadedReplayData mSelectedRepData;
-        std::wstring mSelectedRepDir;
-        std::wstring mSelectedRepName;
-        std::wstring mSelectedRepPath;
-        std::wstring mAppdataPath;
-        uint64_t mRepMetroHash[2];
+        uint32_t mSelectedRepStartStage = {};
+        uint32_t mSelectedRepEndStage = {};
+        uint32_t mSelectedRepPlaybackStartStage = {};
+        uint32_t mSelectedRepScores[STAGE_COUNT] = {};
+        LoadedReplayData mSelectedRepData = {};
+        std::wstring mSelectedRepDir = {};
+        std::wstring mSelectedRepName = {};
+        std::wstring mSelectedRepPath = {};
+        std::wstring mAppdataPath = {};
+        uint64_t mRepMetroHash[2] = {};
 
         void DisableCardFix();
         void EnableCardFix(LoadedReplayData& rd);
@@ -1695,16 +1695,18 @@ namespace TH18 {
                         ImGui::Text(S(st == 7 ? TH18_CS_REPFIX_EXTRA : TH18_CS_REPFIX_STAGE), st);
                         ImGui::SameLine();
 
+                        char num_with_commas_buf[32] = {};
+
                         if (stScoreOverwrite > stScore) {
                             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.9f, 0.3f, 1.0f));
-                            ImGui::Text("%s", FormatNumberWithCommas(((int64_t)stScoreOverwrite * 10)));
+                            ImGui::TextUnformatted(FormatNumberWithCommas(((int64_t)stScoreOverwrite * 10), num_with_commas_buf));
                             ImGui::PopStyleColor();
                             if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH18_CS_REPFIX_READY_HINT));
 
                         } else if (stScore == COUNTERSTOP) {
                             if (guiReplay.mRepStatus && (curStage == st || inTransition) && curScore && !startedOnCS) {
                                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.9f, 0.3f, 1.0f));
-                                ImGui::Text("%s", FormatNumberWithCommas(((int64_t)curScore * 10)));
+                                ImGui::TextUnformatted(FormatNumberWithCommas(((int64_t)curScore * 10), num_with_commas_buf));
                                 ImGui::PopStyleColor();
                                 if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH18_CS_REPFIX_RECORDING_HINT));
 
@@ -1718,7 +1720,7 @@ namespace TH18 {
 
                             }
                         } else {
-                            ImGui::Text("%s", FormatNumberWithCommas(((int64_t)stScore * 10)));
+                            ImGui::TextUnformatted(FormatNumberWithCommas(((int64_t)stScore * 10), num_with_commas_buf));
                         }
 
                         if (st == 3) ImGui::NextColumn();
