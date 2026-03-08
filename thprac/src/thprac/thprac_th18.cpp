@@ -3940,6 +3940,7 @@ namespace TH18 {
                         ((CardLily*)card)->count += thPracParam.lily_cycle + 2;
                 }
 
+                tracker_info.th18.active_uses[7] = ((CardLily*)card)->count;
                 R(lily_cd);
                 break;
             case BASSDRUM:
