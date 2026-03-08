@@ -43,7 +43,7 @@ struct MappedFile {
             return;
         }
         fileSize = GetFileSize(hFile, nullptr);
-        if (fileSize > max_size)
+        if (!fileSize || fileSize > max_size)
             return;
         fileMap = CreateFileMappingW(hFile, nullptr, PAGE_READONLY, 0, fileSize, nullptr);
         if (fileMap == nullptr) {

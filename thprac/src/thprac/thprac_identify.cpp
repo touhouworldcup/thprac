@@ -784,4 +784,58 @@ const THGameVersion* IdentifyExe(const wchar_t* path) {
     return IdentifyExe((uint8_t*)f.fileMapView, f.fileSize);
 }
 
+void GetExeOepCode(const uint8_t* mod, size_t len, uint16_t (&outOep)[10]) {
+    auto* dosHeader = (IMAGE_DOS_HEADER*)mod;
+    auto* ntHeader = (IMAGE_NT_HEADERS*)(mod + dosHeader->e_lfanew);
+
+    CHKBUF(mod, (unsigned char*)&ntHeader->OptionalHeader.AddressOfEntryPoint, len, );
+    auto* entry = mod + ntHeader->OptionalHeader.AddressOfEntryPoint;
+    CHKBUF(mod, entry + sizeof(outOep), len, );
+
+    memcpy(outOep, entry, sizeof(THGameVersion::oepCode));
+    for (size_t i = 0; i < 10; i++) {
+        outOep[i] ^= (i + 0x41) | ((i + 0x41) << 8);
+    }
+}
+
+bool IdentifyKnownGame(THKnownGame& out, const uint8_t* buf, size_t size) {
+    out.ver = IdentifyExe(buf, size);
+    if (!out.ver) {
+        return false;
+    }
+    MetroHash128::Hash(buf, size, (uint8_t*)out.metroHash);
+
+    for (const auto& known : gKnownGames) {
+        if (known.metroHash[0] == out.metroHash[0] &&
+            known.metroHash[1] == out.metroHash[1] &&
+            known.metroHash[2] == out.metroHash[2] &&
+            known.metroHash[3] == out.metroHash[3]) {
+            out.type = known.type;
+            return true;
+        }
+    }
+
+    uint16_t oepCode[10] = {};
+    GetExeOepCode(buf, size, oepCode);
+
+    for (size_t i = 0; i < 10; i++) {
+        if (oepCode[i] != out.ver->oepCode[i]) {
+            out.type = TYPE_MALICIOUS;
+            return true;
+        }
+    }
+
+    out.type = TYPE_MODDED;
+    return true;
+}
+
+bool IdentifyKnownGame(THKnownGame& out, const wchar_t* fn) {
+    MappedFile f(fn, 0x04000000); // 4 MiB
+    if (f.fileMapView) {
+        return IdentifyKnownGame(out, (const uint8_t*)f.fileMapView, f.fileSize);
+    } else {
+        return false;
+    }
+}
+
 }
