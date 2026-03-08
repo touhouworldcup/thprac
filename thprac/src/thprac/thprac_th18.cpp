@@ -728,16 +728,16 @@ namespace TH18 {
     public:
         THPracParam mRepParam;
         bool mRepSelected = false;
-        uint32_t mSelectedRepStartStage;
-        uint32_t mSelectedRepEndStage;
-        uint32_t mSelectedRepPlaybackStartStage;
-        uint32_t mSelectedRepScores[STAGE_COUNT];
-        LoadedReplayData mSelectedRepData;
-        std::wstring mSelectedRepDir;
-        std::wstring mSelectedRepName;
-        std::wstring mSelectedRepPath;
-        std::wstring mAppdataPath;
-        uint64_t mRepMetroHash[2];
+        uint32_t mSelectedRepStartStage = {};
+        uint32_t mSelectedRepEndStage = {};
+        uint32_t mSelectedRepPlaybackStartStage = {};
+        uint32_t mSelectedRepScores[STAGE_COUNT] = {};
+        LoadedReplayData mSelectedRepData = {};
+        std::wstring mSelectedRepDir = {};
+        std::wstring mSelectedRepName = {};
+        std::wstring mSelectedRepPath = {};
+        std::wstring mAppdataPath = {};
+        uint64_t mRepMetroHash[2] = {};
 
         void DisableCardFix();
         void EnableCardFix(LoadedReplayData& rd);
