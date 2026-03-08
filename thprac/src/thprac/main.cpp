@@ -102,7 +102,7 @@ int WINAPI wWinMain(
             if (!f.fileMapView) {
                 continue;
             }
-            auto exe_info = GetExeInfo((uint8_t*)f.fileMapView);
+            auto exe_info = GetExeInfo((uint8_t*)f.fileMapView, f.fileSize);
             if (!exe_info) {
                 continue;
             }

@@ -89,10 +89,10 @@ extern const char* gThGameStrs[];
 extern const unsigned int gGameVersionsCount;
 extern const unsigned int gKnownGamesCount;
 
-ExeInfo GetExeInfo(uint8_t* mod);
+ExeInfo GetExeInfo(const uint8_t* mod, size_t len);
 ExeInfo GetRemoteExeInfo(void* hProc, uintptr_t mod);
 
-const THGameVersion* IdentifyExe(uint8_t* buf);
+const THGameVersion* IdentifyExe(const uint8_t* buf, size_t len);
 const THGameVersion* IdentifyExe(const wchar_t* path);
 
 }

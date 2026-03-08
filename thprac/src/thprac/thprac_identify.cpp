@@ -674,16 +674,32 @@ const char* gThGameStrs[] = {
     "th20",
 };
 
-ExeInfo GetExeInfo(uint8_t* mod) {
-    ExeInfo out = {};    
+ExeInfo GetExeInfo(const uint8_t* mod, size_t len) {
+    ExeInfo out = {};
 
-    auto* dosHeader = (IMAGE_DOS_HEADER*)mod;
+    // Dawg
+    if unexpected(len == 1) {
+        return out;
+    }
+
+    if unexpected(mod[0] != 'M' || mod[1] != 'Z') {
+        return out;
+    }
+
+    auto* dosHeader = (IMAGE_DOS_HEADER*)mod;   
     auto* ntHeader = (IMAGE_NT_HEADERS*)(mod + dosHeader->e_lfanew);
-    auto* section = (IMAGE_SECTION_HEADER*)((uintptr_t)&ntHeader->OptionalHeader + ntHeader->FileHeader.SizeOfOptionalHeader);
 
+    CHKBUF(mod, (unsigned char*)ntHeader + sizeof(IMAGE_NT_HEADERS), len, out);
+
+    if unexpected(ntHeader->Signature != TextInt('P', 'E')) {
+        return out;
+    }
+
+    auto* section = (IMAGE_SECTION_HEADER*)((uintptr_t)&ntHeader->OptionalHeader + ntHeader->FileHeader.SizeOfOptionalHeader);
     out.timeStamp = ntHeader->FileHeader.TimeDateStamp;
 
     for (unsigned i = 0; i < ntHeader->FileHeader.NumberOfSections; i++) {
+        CHKBUF(mod, section + 1, len, out);
         if (!_stricmp(".text", (char*)section[i].Name)) {
             out.textSize = section[i].SizeOfRawData;
             break;
@@ -750,10 +766,9 @@ ExeInfo GetRemoteExeInfo(void* hProc, uintptr_t mod) {
     return out;
 }
 
-const THGameVersion* IdentifyExe(uint8_t* buf) {
-    auto exe_info = GetExeInfo(buf);
-
-    for (const auto& i : gGameVersions) {
+const THGameVersion* IdentifyExe(const uint8_t* buf, size_t len) {
+    auto exe_info = GetExeInfo(buf, len);
+    if (exe_info) for (const auto& i : gGameVersions) {
         if (exe_info == i.exeInfo) {
             return &i;
         }
@@ -766,7 +781,7 @@ const THGameVersion* IdentifyExe(const wchar_t* path) {
     if (!f.fileMapView) {
         return nullptr;
     }
-    return IdentifyExe((uint8_t*)f.fileMapView);
+    return IdentifyExe((uint8_t*)f.fileMapView, f.fileSize);
 }
 
 }

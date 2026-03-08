@@ -104,6 +104,7 @@ constexpr unsigned t_strlen(const T* str) {
 
 #define SIZED(a) a, sizeof(a)
 
+#define unexpected(condition) (!(condition)) ; else
 
 /** round n down to nearest multiple of m */
 inline long RoundDown(long n, long m) {
@@ -115,3 +116,14 @@ inline long RoundUp(long n, long m) {
     return n >= 0 ? ((n + m - 1) / m) * m : (n / m) * m;
 }
 const char* FormatNumberWithCommas(long long val);
+
+inline bool CheckBufPos(const void* bufStart, const void* bufPos, int bufLen) {
+    if (bufLen != 0) {
+        return ((const unsigned char*)bufPos - (const unsigned char*)bufStart) < bufLen;
+    } else {
+        // Very unsafe, only here because I don't know of a way to obtain a size for the currently running exe.
+        // However, if a file were to cause GetExeInfo to crash, Windows wouldn't be able to load it.
+        return true;
+    }
+}
+#define CHKBUF(buf, pos, len, ret) if unexpected(!CheckBufPos(buf, pos, len)) return ret
