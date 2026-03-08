@@ -4018,12 +4018,25 @@ namespace TH18 {
 
     EHOOK_DY(th18_stage_transition, 0x443e60, 1, {
         auto& guiReplay = THGuiRep::singleton();
-        auto& advOptWnd = THAdvOptWnd::singleton();
+        if(!guiReplay.mRepStatus) return;
 
+        // updating lily use tracker based on card data
+        auto* abilityManager = *(AbilityManager**)ABILITY_MANAGER_PTR;
+
+        for (ThList<CardBase>* cl = &abilityManager->card_list_head; cl; cl = cl->next) {
+            if (cl->entry->card_id == 48) {
+                tracker_info.th18.active_uses[7] = ((CardLily*)cl->entry)->count;
+                break;
+            }
+        }
+
+        // keeping track of score for CS fix
         const uint32_t stage = GetMemContent(STAGE_NUM);
         const uint32_t score = GetMemContent(SCORE);
 
-        if (guiReplay.mRepStatus && stage > 1 && score) {
+        if (stage > 1 && score) {
+            auto& advOptWnd = THAdvOptWnd::singleton();
+
             if (score == COUNTERSTOP && advOptWnd.mScoreOverwrites[stage - 1] > score) {
                 *(uint32_t*)SCORE = advOptWnd.mScoreOverwrites[stage - 1];
 
@@ -4038,14 +4051,15 @@ namespace TH18 {
     })
     EHOOK_DY(th18_replay_end, 0x4588f0, 1, {
         auto& guiReplay = THGuiRep::singleton();
-        auto& advOptWnd = THAdvOptWnd::singleton();
+        if (!guiReplay.mRepStatus) return;
 
+        auto& advOptWnd = THAdvOptWnd::singleton();
         const uint32_t stage = GetMemContent(STAGE_NUM);
         const uint32_t score = GetMemContent(SCORE);
         const bool startedOnCS = (guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage - 1] == COUNTERSTOP
             && advOptWnd.mScoreOverwrites[guiReplay.mSelectedRepPlaybackStartStage - 1] <= COUNTERSTOP);
 
-        if (guiReplay.mRepStatus && !startedOnCS && score && stage && advOptWnd.mScoreOverwrites[stage-1] < score)
+        if (!startedOnCS && score && stage && advOptWnd.mScoreOverwrites[stage-1] < score)
             advOptWnd.mScoreOverwrites[stage] = score;
     })
 
