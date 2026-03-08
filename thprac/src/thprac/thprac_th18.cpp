@@ -1121,6 +1121,7 @@ namespace TH18 {
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
         PATCH_HK(0x45748e, NOP(2)),
         PATCH_HK(0x418283, NOP(2)),
+        PATCH_HK(0x410e7a, NOP(6)), // allow tsukasa card use
         EHOOK_HK(0x418427, 3, { // add indicator card for fraudulent purchases
             uint32_t price = GetMemContent(CARD_PRICE_TABLE + 0x4 * ((TableCardData*)pCtx->Eax)->price);
             if (price > GetMemContent(FUNDS) + GetMemContent(POWER) - 100)
@@ -1130,7 +1131,8 @@ namespace TH18 {
 
         HOTKEY_DEFINE(mInfFunds, TH18_INFFUNDS, "F5", VK_F5)
         PATCH_HK(0x45c244, "909090909090"),
-        PATCH_HK(0x40d96f, "90909090909090909090"),
+        PATCH_HK(0x40d96f, "90909090909090909090"), // eiki 200g deduction
+        PATCH_HK(0x40da1a, NOP(2)), // allow eiki card use
         PATCH_HK(0x418496, "90909090909090909090"),
         PATCH_HK(0x418465, NOP(2)),
         PATCH_HK(0x418225, NOP(2)),
