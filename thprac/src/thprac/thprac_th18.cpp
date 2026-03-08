@@ -50,6 +50,7 @@ namespace TH18 {
         ABILITY_SHOP_PTR = 0x4cf2a4,
         ASCII_MANAGER_PTR = 0x4cf2ac,
         TRANSITION_STG_PTR = 0x4cf2b0,
+        BOMB_PTR = 0x4cf2b8,
         BULLET_MANAGER_PTR = 0x4cf2bc,
         MUKADE_ADDR = 0x4cf2d4,
         GAME_THREAD_PTR = 0x4cf2e4,
@@ -1118,17 +1119,6 @@ namespace TH18 {
         PATCH_HK(0x40a42c, "909090909090")
         HOTKEY_ENDDEF();
 
-        HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(0x45748e, NOP(2)),
-        PATCH_HK(0x418283, NOP(2)),
-        PATCH_HK(0x410e7a, NOP(6)), // allow tsukasa card use
-        EHOOK_HK(0x418427, 3, { // add indicator card for fraudulent purchases
-            uint32_t price = GetMemContent(CARD_PRICE_TABLE + 0x4 * ((TableCardData*)pCtx->Eax)->price);
-            if (price > GetMemContent(FUNDS) + GetMemContent(POWER) - 100)
-                AddIndicateCard();
-        })
-        HOTKEY_ENDDEF();
-
         HOTKEY_DEFINE(mInfFunds, TH18_INFFUNDS, "F5", VK_F5)
         PATCH_HK(0x45c244, "909090909090"),
         PATCH_HK(0x40d96f, "90909090909090909090"), // eiki 200g deduction
@@ -1172,6 +1162,17 @@ namespace TH18 {
         bool popColor = false;
 
     public:
+        HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
+        PATCH_HK(0x45748e, NOP(2)),
+        PATCH_HK(0x418283, NOP(2)),
+        PATCH_HK(0x410e7a, NOP(6)), // allow tsukasa card use
+        EHOOK_HK(0x418427, 3, { // add indicator card for fraudulent purchases
+            uint32_t price = GetMemContent(CARD_PRICE_TABLE + 0x4 * ((TableCardData*)pCtx->Eax)->price);
+            if (price > GetMemContent(FUNDS) + GetMemContent(POWER) - 100)
+                AddIndicateCard();
+        })
+        HOTKEY_ENDDEF();
+
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
         Gui::GuiHotKey mOpenMarket { TH18_OPEN_MARKET, "F10", VK_F10 };
     };
@@ -3751,12 +3752,18 @@ namespace TH18 {
         ReplaySaveParam(utf8_to_utf16(repName).c_str(), thPracParam.GetJson());
     }
 
+    constexpr uint32_t GetActiveID(uint32_t cardID)
+    {
+        return cardID - (41 + (cardID > 51));
+    }
+
     void THTrackerUpdate()
     {
-        Gui::SetNextWindowSizeRel({ 340.0f / 1280, 0.0f });
-        Gui::SetNextWindowPosRel({ 900.0f / 1280.0f, 830.0f / 960.0f });
-        ImGui::Begin("Tracker", nullptr,
-            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+        constexpr ImGuiWindowFlags trackerFlags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+
+        Gui::SetNextWindowSizeRel({ 340.0f / 1280.0f, 0.0f });
+        Gui::SetNextWindowPosRel({ 888.0f / 1280.0f, 845.0f / 960.0f });
+        ImGui::Begin("Tracker", nullptr, trackerFlags);
 
         ImGui::BeginTable("Tracker table", 2);
         ImGui::TableNextRow();
@@ -3776,6 +3783,34 @@ namespace TH18 {
         ImGui::EndTable();
 
         ImGui::End();
+
+        // Active card use count windows
+        auto* abilityManager = *(AbilityManager**)ABILITY_MANAGER_PTR;
+        if (!abilityManager) return;
+        const int32_t activeCardCnt = abilityManager->num_active_cards;
+        uint32_t activeCardI = activeCardCnt; // we iterate backwards because ZUN does
+
+        for (ThList<CardBase>* cl = &abilityManager->card_list_head; cl; cl = cl->next) {
+            const uint32_t cardID = cl->entry->card_id;
+            if (cardID > 56) continue; //dummy card
+
+            if (cl->entry->table_entry->category == 0) {
+                const char idStr[3] = { (char)cardID, (char)activeCardI, '\0'};
+                const float xPos = 1070.0f + // formula approximation done in excel
+                    (activeCardI - (activeCardCnt + 1) * 0.5f) *
+                    ((activeCardCnt > 4) ? (304.0f / (activeCardCnt - 1)) : 80.0f);
+                const char useCnt = tracker_info.th18.active_uses[GetActiveID(cardID)];
+
+                Gui::SetNextWindowPosRel({ xPos / 1280.0f, 550.0f / 960.0f });
+                ImGui::Begin(idStr, nullptr, trackerFlags);
+                ImGui::SetWindowFontScale(0.65f);
+                if(useCnt < 10) ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 4.0f);
+                ImGui::Text("%d", useCnt);
+                ImGui::End();
+
+                activeCardI--;
+            }
+        }
     }
 
     bool CheckSafetyRestartOverride() {
@@ -4098,6 +4133,25 @@ namespace TH18 {
 
         if (!THAdvOptWnd::singleton().scoreUncapChkbox && *(uint32_t*)score > 999999999)
             *(uint32_t*)score = 999999999;
+    })
+
+    EHOOK_DY(th18_c_press_count, 0x45c099, 3, {
+        const CardBase* curCard = (CardBase*)(pCtx->Ecx);
+        if(curCard->_recharge_timer.current) return; // cooldown
+
+        if (curCard->card_id == 52) { // tsukasa card conditions
+            auto& overlay = THOverlay::singleton();
+
+            if (!*overlay.mInfPower && GetMemContent(POWER) < GetMemContent(0x4ccd40) * 2) return; // power
+            if (GetMemContent(BOMB_PTR, 0x30) || GetMemContent(BOMB_PTR, 0xa0)) return; // bombing
+        }
+
+        else if (curCard->card_id == 41) { // yukari card conditions
+            if(GetMemContent(PLAYER_PTR, 0x4779c) & 0x180) return; // flags: can't warp
+            if(GetMemContent(PLAYER_PTR, 0x62c) + 0x5bff <= 0xb7fe) return; // unsure tbh
+        }
+
+        tracker_info.th18.active_uses[GetActiveID(curCard->card_id)]++;
     })
 
     EHOOK_DY(th18_add_card, 0x411460, 1, {
