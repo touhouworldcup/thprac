@@ -54,4 +54,5 @@ Memory addresses: Parts of thprac's code still use raw integer literals in place
 
 Using raw integer literals offsets is fine, but if you catch yourself using a lot of different offsets from the same address, it might make more sense to declare a struct.
 
-Add `[skip ci]` to commit descriptions of any commits that do not modify any C++ code.
+
+Add `[skip ci]` to commit descriptions of any commits that do not modify any C++ code. The only exception to that is `thprac_games_def.json`, because C++ code gets generated from that file at build time.
