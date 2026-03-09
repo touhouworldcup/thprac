@@ -24,11 +24,57 @@ Rest in Peace:
 Geoff Chappell
 */
 
-typedef struct _UNICODE_STRING {
+struct UNICODE_STRING {
     USHORT Length;
     USHORT MaximumLength;
     PWSTR Buffer;
-} UNICODE_STRING, *PUNICODE_STRING;
+};
+
+typedef UNICODE_STRING* PUNICODE_STRING;
+
+static inline constexpr UNICODE_STRING MakeUnicodeString(const wchar_t* str, size_t length) {
+    if (length > 0x7FFEu) {
+        length = 0x7FFEu;
+    }
+    length *= sizeof(wchar_t);
+    return {
+        (USHORT)length,
+        (USHORT)(length + sizeof(wchar_t)),
+        (PWSTR)str
+    };
+}
+
+static inline constexpr UNICODE_STRING MakeUnicodeString(const wchar_t* str) {
+    return MakeUnicodeString(str, t_strlen(str) + 1);
+}
+
+// Constexpr reimplementation of RtlInitUnicodeString
+static inline constexpr void RtlInitUnicodeString(UNICODE_STRING* out, const wchar_t* str) {
+    *out = MakeUnicodeString(str);
+}
+
+// %wZ is a printf format for UNICODE_STRING
+static inline constexpr UNICODE_STRING operator""_wZ(const wchar_t* str, size_t length) {
+    return MakeUnicodeString(str, length);
+}
+
+typedef struct _OBJECT_ATTRIBUTES {
+    ULONG Length;
+    HANDLE RootDirectory;
+    PUNICODE_STRING ObjectName;
+    ULONG Attributes;
+    PVOID SecurityDescriptor;
+    PVOID SecurityQualityOfService;
+} OBJECT_ATTRIBUTES, *POBJECT_ATTRIBUTES;
+
+#define InitializeObjectAttributes(p, n, a, r, s) do { \
+        (p)->Length = sizeof(OBJECT_ATTRIBUTES);  \
+        (p)->RootDirectory = r;                   \
+        (p)->Attributes = a;                      \
+        (p)->ObjectName = n;                      \
+        (p)->SecurityDescriptor = s;              \
+        (p)->SecurityQualityOfService = NULL;     \
+    } while (0)
 
 typedef struct _CURDIR {
     UNICODE_STRING DosPath;
@@ -439,3 +485,60 @@ extern "C" ULONG RtlNtStatusToDosError(NTSTATUS Status);
 
 extern "C" NTSTATUS NTAPI NtOpenProcessToken(HANDLE ProcessHandle, ACCESS_MASK DesiredAccess, PHANDLE TokenHandle);
 extern "C" NTSTATUS NTAPI NtQueryInformationToken(HANDLE TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, PVOID TokenInformation, ULONG TokenInformationLength, PULONG ReturnLength);
+
+typedef enum _KEY_VALUE_INFORMATION_CLASS {
+    KeyValueBasicInformation,
+    KeyValueFullInformation,
+    KeyValuePartialInformation,
+    KeyValueFullInformationAlign64,
+    KeyValuePartialInformationAlign64,
+    KeyValueLayerInformation,
+    MaxKeyValueInfoClass
+} KEY_VALUE_INFORMATION_CLASS;
+
+// Since we use our own header for NT API functions and structs anyways, might as well change these definitions to be better.
+template <typename D = UCHAR[1]>
+struct KEY_VALUE_PARTIAL_INFORMATION {
+    ULONG TitleIndex;
+    ULONG Type;
+    ULONG DataLength;
+    D Data;
+};
+
+template <typename D = UCHAR[1]>
+struct KEY_VALUE_PARTIAL_INFORMATION_ALIGN64 {
+    ULONG Type;
+    ULONG DataLength;
+    D Data;
+};
+
+template <typename D = UCHAR[1]>
+struct KEY_VALUE_FULL_INFORMATION {
+    ULONG TitleIndex;
+    ULONG Type;
+    ULONG DataOffset;
+    ULONG DataLength;
+    ULONG NameLength;
+    D Name;
+};
+
+template <typename D = UCHAR[1]>
+struct KEY_VALUE_BASIC_INFORMATION {
+    ULONG TitleIndex;
+    ULONG Type;
+    ULONG NameLength;
+    D Name;
+};
+
+extern "C" NTSYSAPI NTSTATUS NTAPI NtOpenKey(
+    PHANDLE KeyHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes);
+
+extern "C" NTSYSAPI NTSTATUS NTAPI NtQueryValueKey(
+    HANDLE KeyHandle,
+    UNICODE_STRING* ValueName,
+    KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
+    PVOID KeyValueInformation,
+    ULONG Length,
+    PULONG ResultLength);
