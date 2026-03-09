@@ -486,8 +486,8 @@ static void DetailsPage(LauncherGame* game) {
             .nShow = SW_SHOW,
         };
         ShellExecuteExW(&se);
-        ImGui::SameLine();
     }
+    ImGui::SameLine();
     if (ImGui::Button(S(THPRAC_GAMES_LAUNCH_CUSTOM))) {
         std::wstring pathW = utf8_to_utf16(game->instances[game->selected].path);
         size_t idx = pathW.rfind(L"\\");
