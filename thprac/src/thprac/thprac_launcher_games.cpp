@@ -13,6 +13,8 @@
 #include <string.h>
 #include <yyjson.h>
 
+#include <algorithm>
+
 namespace THPrac {
 namespace Gui {
     extern HWND ImplWin32GetHwnd();
@@ -526,6 +528,241 @@ static void DetailsPage(LauncherGame* game) {
         ImGui::EndPopup();
     }
 }
+
+
+struct FoundGame {
+    // Stored as a char array because that's what ImGui uses for text output.
+    // The UTF-16 version is only needed once, to load the file to identify and hash it.
+    char path[MAX_PATH + 1] = {};
+    bool selected = false;
+    THKnownGame info = {};
+};
+
+struct ScanCtx {
+    std::wstring scan_dir;
+    std::vector<FoundGame> found;
+    HANDLE scan_thread = NULL;
+    CRITICAL_SECTION found_cs = {};
+
+    ScanCtx() {
+        InitializeCriticalSection(&found_cs);
+    }
+    ~ScanCtx() {
+        DeleteCriticalSection(&found_cs);
+    }
+};
+
+static bool GameAlreadyExists(const char* path) {
+    for (const auto& game : mainGames) {
+        for (size_t i = 0; i < game.inst_count; i++) {
+            if (_stricmp(game.instances[i].path, path) == 0) {
+                return true;
+            }
+        }
+    }
+    for (const auto& game : spinoffShmups) {
+        for (size_t i = 0; i < game.inst_count; i++) {
+            if (_stricmp(game.instances[i].path, path) == 0) {
+                return true;
+            }
+        }
+    }
+    for (const auto& game : spinoffOthers) {
+        for (size_t i = 0; i < game.inst_count; i++) {
+            if (_stricmp(game.instances[i].path, path) == 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+static bool DontGoThere(const wchar_t* d) {
+    if (d[0] == L'.' && d[1] == 0) {
+        return true;
+    }
+    if (d[0] == L'.' && d[1] == L'.' && d[2] == 0) {
+        return true;
+    }
+    return false;
+}
+
+// TODO: since we have to SetCurrentDirectoryW into every folder we scan anyways, 
+// why not use NtQueryDirectoryFileEx instead? It requres a handle to a folder,
+// but that's actually convenient because of RTL_USER_PROCESS_PARAMETERS -> CurrentDirectory.Handle
+static void SearchFunc(ScanCtx* scanCtx, const wchar_t* path) {
+    if (!(GetFileAttributesW(path) & FILE_ATTRIBUTE_DIRECTORY)) {
+        FoundGame game = {};
+        if (!IdentifyKnownGame(game.info, path)) {
+            return;
+        }
+        else {
+            auto& cd = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
+            auto written = WideCharToMultiByte(CP_UTF8, 0, cd.Buffer, cd.Length / sizeof(wchar_t), game.path, MAX_PATH, nullptr, nullptr);
+            WideCharToMultiByte(CP_UTF8, 0, path, -1, game.path + written, MAX_PATH - written, nullptr, nullptr);
+            if (GameAlreadyExists(game.path)) {
+                return;
+            }
+
+            EnterCriticalSection(&scanCtx->found_cs);
+
+            auto& v = scanCtx->found;
+
+            v.insert(std::upper_bound(v.begin(), v.end(), game.info.ver->gameId, [](THGameID id, FoundGame& g) -> bool {
+                return id < g.info.ver->gameId;
+            }), game);
+
+            LeaveCriticalSection(&scanCtx->found_cs);
+            return;
+        }
+    }
+
+    SetCurrentDirectoryW(path);
+
+    WIN32_FIND_DATAW find = {};
+    HANDLE hFind = FindFirstFileW(L"*", &find);
+    if (hFind) do {
+        if (DontGoThere(find.cFileName)) {
+            continue;
+        }
+        SearchFunc(scanCtx, find.cFileName);
+    } while (FindNextFileW(hFind, &find));
+
+    SetCurrentDirectoryW(L"..");
+}
+
+static void BeginSearch(ScanCtx* scanCtx, const wchar_t* start) {
+    SetCurrentDirectoryW(start);
+    WIN32_FIND_DATAW find;
+    HANDLE hFind = FindFirstFileW(L"*", &find);
+    if (hFind) do {
+        if (DontGoThere(find.cFileName)) {
+            continue;
+        }
+        SearchFunc(scanCtx, find.cFileName);
+    } while (FindNextFileW(hFind, &find));
+}
+
+static DWORD WINAPI ScanThread(LPVOID lpParam) {
+    ScanCtx* scanCtx = (ScanCtx*)lpParam;
+
+    auto& c = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
+    std::wstring curdir_bak(c.Buffer, c.Length / sizeof(wchar_t));
+
+    BeginSearch(scanCtx, scanCtx->scan_dir.c_str());
+
+    SetCurrentDirectoryW(curdir_bak.c_str());
+    return 0;
+}
+
+static LauncherGame* FindLauncherGameByID(THGameID id) {
+    for (auto& game : mainGames) {
+        if (game.id == id) {
+            return &game;
+        }
+    }
+    for (auto& game : spinoffShmups) {
+        if (game.id == id) {
+            return &game;
+        }
+    }
+    for (auto& game : spinoffOthers) {
+        if (game.id == id) {
+            return &game;
+        }
+    }
+}
+
+static void ScanAddInstances(LauncherGame* game, FoundGame* found, size_t found_count) {
+    size_t off_begin = game->inst_count;
+    game->inst_count += found_count;
+    game->instances = (LauncherInstance*)realloc(game->instances, game->inst_count * sizeof(LauncherInstance));
+
+    for (size_t i = 0; i < found_count; i++) {
+        auto& inst = game->instances[off_begin + i];
+
+        inst.name = _strdup(gThGameStrs[found[i].info.ver->gameId]);
+        inst.path = _strdup(found[i].path);
+        inst.type = found[i].info.type;
+        // inst.apply_thprac = ???
+    }
+}
+
+static void ScanResults(std::vector<FoundGame>& found) {
+    auto cur_id = found[0].info.ver->gameId;
+    size_t cur_idx = 0;
+
+    for (size_t i = 1; i < found.size(); i++) {
+        if (found[i].info.ver->gameId > cur_id) {
+            ScanAddInstances(FindLauncherGameByID(cur_id), found.data() + cur_idx, i - cur_idx);
+            cur_idx = i;
+            cur_id = found[i].info.ver->gameId;
+        }
+    }
+    ScanAddInstances(FindLauncherGameByID(cur_id), found.data() + cur_idx, found.size() - cur_idx);
+    return;
+}
+
+
+constinit ScanCtx* scanCtx = nullptr;
+
+static void ScanForGamesUI() {
+    // WAIT_OBJECT_0: Scan thread finished.
+    // WAIT_TIMEOUT: Scan thread is running
+    // WAIT_FAILED: Scan thread does not exist
+    DWORD scanStatus = WaitForSingleObject(scanCtx->scan_thread, 0);
+
+    Gui::TextCentered(S(THPRAC_GAMES_SCAN_FOLDER), ImGui::GetWindowWidth());
+
+    auto& padding = ImGui::GetStyle().WindowPadding;
+
+    float childHeight = ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - ImGui::GetFrameHeight() - padding.y * 2;
+    float childWidth = ImGui::GetWindowWidth() - padding.x * 2;
+
+    ImGui::BeginChild(0x5CA88E6, { childWidth, childHeight }, true);
+    if (scanStatus != WAIT_FAILED) {
+        if (scanStatus != WAIT_OBJECT_0) {
+            ImGui::BeginDisabled();
+        }
+        EnterCriticalSection(&scanCtx->found_cs);
+
+        for (auto& game : scanCtx->found) {
+            ImGui::Checkbox(game.path, &game.selected);
+        }
+
+        LeaveCriticalSection(&scanCtx->found_cs);
+        if (scanStatus != WAIT_OBJECT_0) {
+            ImGui::EndDisabled();
+        }
+    }
+    ImGui::EndChild();
+
+    if (ImGui::Button(S(THPRAC_ABORT))) {
+        TerminateThread(scanCtx->scan_thread, 0);
+        delete scanCtx;
+        scanCtx = nullptr;
+        return;
+    }
+
+    ImGui::SameLine();
+
+    switch (scanStatus) {
+    case WAIT_FAILED:
+        if (Gui::ButtonRight(S(THPRAC_LINKS_EDIT_FOLDER)) && SelectFolder(scanCtx->scan_dir, Gui::ImplWin32GetHwnd())) {
+            scanCtx->scan_thread = CreateThread(nullptr, 0, ScanThread, scanCtx, 0, nullptr);
+        }
+        break;
+    case WAIT_TIMEOUT:
+        ImGui::TextUnformatted("TODO: add some kind of indicator");
+        break;
+    case WAIT_OBJECT_0:
+        if (Gui::ButtonRight("Finish")) {
+            ScanResults(scanCtx->found);
+            delete scanCtx;
+            scanCtx = nullptr;
+        }
+    }
+}
  
 static void GameRightClickMenu(LauncherGame* game) {
     if (game) {
@@ -537,6 +774,7 @@ static void GameRightClickMenu(LauncherGame* game) {
     }
 
     if(ImGui::Selectable(S(THPRAC_GAMES_SCAN_FOLDER))) {
+        scanCtx = new ScanCtx();
         ImGui::CloseCurrentPopup();
     }
     if(ImGui::Selectable(S(THPRAC_STEAM_MNG_BUTTON))) {
@@ -574,6 +812,11 @@ static inline void GamesList(LauncherGame* games, size_t count) {
 }
 
 void LauncherGamesMain() {
+    if (scanCtx) {
+        ScanForGamesUI();
+        return;
+    }
+
     if (selectedGame) {
         DetailsPage(selectedGame);
         return;

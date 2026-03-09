@@ -3,6 +3,8 @@
 #include <metrohash128.h>
 #include "../3rdParties/d3d8/include/d3d8.h"
 
+#include <shlobj.h>
+
 
 namespace THPrac {
 
@@ -48,8 +50,81 @@ void ingame_mb_init()
 }
 
 #pragma endregion
+
+#pragma region Select Folder
+
+// Needs 3 possible return values. Anything that tries to call SelectFolder will only need to know if a folder has been selected or not
+// The SelectFolder function itself though needs to know if the user clicked "Cancel", or if the function actually just failed, to determine
+// if the Windows XP folder picker should be called as a backup.
+enum SelectFolderVista_Status {
+    SF_SUCCESS,
+    SF_CANCEL,
+    SF_FAILED,
+};
+
+static SelectFolderVista_Status SelectFolderVista(std::wstring& out, HWND hwnd) {
+    IFileDialog* pfd;
+
+    CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
+
+    if (!pfd) {
+        return SF_FAILED;
+    }
+
+    defer(pfd->Release());
+
+    pfd->SetOptions(FOS_NOCHANGEDIR | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST | FOS_DONTADDTORECENT);
+    pfd->SetTitle(L"Deez");
+
+    HRESULT hr = pfd->Show(hwnd);
+    if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
+        return SF_CANCEL;
+    }
+
+    IShellItem* result;
+    pfd->GetResult(&result);
+    if (!result) {
+        return SF_FAILED;
+    }
+    defer(result->Release());
+
+    wchar_t* path;
+    if (FAILED(result->GetDisplayName(SIGDN_FILESYSPATH, &path))) {
+        return SF_FAILED;
+    }
+    out = path;
+    CoTaskMemFree(path);
+    return SF_SUCCESS;
 }
 
+static bool SelectFolderXP(std::wstring& out, HWND hwnd) {
+    BROWSEINFOW bi = {
+        .hwndOwner = hwnd,
+        .ulFlags = BIF_EDITBOX | BIF_NONEWFOLDERBUTTON
+    };
+    LPITEMIDLIST res = SHBrowseForFolderW(&bi);
+    out.resize(MAX_PATH + 1);
+
+    bool ret = SHGetPathFromIDListW(res, out.data());
+    if (auto pos = out.find(L'\0'); pos != std::wstring::npos) {
+        out.resize(pos);
+    }
+    return ret;
+}
+
+bool SelectFolder(std::wstring& out, HWND hwnd) {
+    auto res = SelectFolderVista(out, hwnd);
+    if (res == SF_FAILED) {
+        return SelectFolderXP(out, hwnd);
+    } else {
+        return res == SF_SUCCESS;
+    }
+}
+#pragma endregion
+
+}
+
+#pragma region They have to go somewhere
 void memswap(void* buf1_, void* buf2_, unsigned int len)
 {
     unsigned char* buf1 = (unsigned char*)buf1_;
@@ -93,3 +168,4 @@ const char* FormatNumberWithCommas(int64_t val)
 
     return buffer;
 }
+#pragma endregion

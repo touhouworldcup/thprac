@@ -3,6 +3,7 @@
 #define NOMINMAX
 #include <Windows.h>
 
+#include <string.h>
 #include <stdint.h>
 
 #include "utils/utils.h"
@@ -219,6 +220,8 @@ CPP_YYJSON_MUT_OBJ_ADD_DECL(const char*, str)
 #undef CPP_YYJSON_MUT_OBJ_ADD_DECL
 #pragma endregion
 
+bool SelectFolder(std::wstring& out, HWND hwnd = NULL);
+
 }
 
 #define w32u8_alloca(type, size) ((type*)_alloca((size) * sizeof(type)))
@@ -246,4 +249,13 @@ consteval uint32_t TextInt(uint8_t c1, uint8_t c2 = 0, uint8_t c3 = 0, uint8_t c
 // Packs the bytes [c1], [c2], [c3], [c4], [c5], [c6], [c7], and [c8] together as a little endian integer
 consteval uint64_t TextInt64(uint8_t c1, uint8_t c2 = 0, uint8_t c3 = 0, uint8_t c4 = 0, uint8_t c5 = 0, uint8_t c6 = 0, uint8_t c7 = 0, uint8_t c8 = 0) {
     return (uint64_t)c8 << 56 | (uint64_t)c7 << 48 | (uint64_t)c6 << 40 | (uint64_t)c5 << 32 | c4 << 24 | c3 << 16 | c2 << 8 | c1;
+}
+
+extern inline char* strdup_size(const char* src, size_t size) {
+    char* ret = (char*)malloc(size + 1);
+    // strncpy will 0 pad
+    if (ret && !_memccpy(ret, src, '\0', size)) {
+        ret[size] = '\0';
+    }
+    return ret;
 }

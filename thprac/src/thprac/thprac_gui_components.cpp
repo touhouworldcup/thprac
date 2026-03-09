@@ -744,5 +744,17 @@ namespace THPrac
 
             return result;
         }
+        bool ButtonRight(const char* text, float rel, const ImVec2& size_arg) {
+            auto& style = ImGui::GetStyle();
+            auto label_size = ImGui::CalcTextSize(text);
+            ImVec2 size = ImGui::CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
+
+            if (rel == 0) {
+                rel = ImGui::GetWindowWidth() - ImGui::GetStyle().WindowPadding.x;
+            }
+
+            ImGui::SetCursorPosX(rel - size.x);
+            return ImGui::Button(text, size);
+        }
     }
 }
