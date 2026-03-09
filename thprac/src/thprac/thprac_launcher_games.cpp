@@ -699,6 +699,10 @@ static void ScanAddInstances(LauncherGame* game, FoundGame* found, size_t found_
 }
 
 static void ScanResults(std::vector<FoundGame>& found) {
+    if unexpected(!found.size()) {
+        return;
+    }
+
     auto cur_id = found[0].info.ver->gameId;
     size_t cur_idx = 0;
 
@@ -731,27 +735,107 @@ static void ScanForGamesUI() {
 
     ImGui::BeginChild(0x5CA88E6, { childWidth, childHeight }, true);
     if (scanStatus != WAIT_FAILED) {
-        if (scanStatus != WAIT_OBJECT_0) {
-            ImGui::BeginDisabled();
-        }
-        EnterCriticalSection(&scanCtx->found_cs);
+        if (!(scanStatus == WAIT_OBJECT_0 && scanCtx->found.size() == 0)) {
+            if (scanStatus != WAIT_OBJECT_0) {
+                ImGui::BeginDisabled();
+            }
 
-        for (auto& game : scanCtx->found) {
-            ImGui::Checkbox(game.path, &game.selected);
-        }
+            ImGui::PushID(0xF085D);
+            EnterCriticalSection(&scanCtx->found_cs);
 
-        LeaveCriticalSection(&scanCtx->found_cs);
-        if (scanStatus != WAIT_OBJECT_0) {
-            ImGui::EndDisabled();
+            ImGui::BeginTable("###__scan_results", 3, ImGuiTableFlags_Borders);
+            
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, ImGui::GetFrameHeight());
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 128.0f);
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            
+            bool selectAll = std::all_of(scanCtx->found.begin(), scanCtx->found.end(), [](FoundGame& g) -> bool { return g.selected; });
+            if (ImGui::Checkbox("###__scan_select_all", &selectAll)) {
+                if (selectAll) for(auto& game : scanCtx->found) {
+                    game.selected = true;
+                } else for(auto& game : scanCtx->found) {
+                    game.selected = false;
+                }
+            }
+
+            ImGui::TableNextColumn();
+            ImGui::TextUnformatted("Game Type");
+            ImGui::TableNextColumn();
+            ImGui::TextUnformatted("Path");
+
+            auto& found = scanCtx->found;
+            for (size_t i = 0; i < found.size(); i++) {
+                ImGui::TableNextRow();
+
+                ImGui::TableNextColumn();                
+                ImGui::PushID(i);
+                ImGui::Checkbox("", &found[i].selected);
+                ImGui::PopID();
+
+                ImGui::TableNextColumn();
+                ImGui::TextUnformatted(S(gameTypeNames[found[i].info.type]));
+
+                ImGui::TableNextColumn();
+                ImGui::TextUnformatted(found[i].path);
+
+                char buf[256] = {};
+                snprintf(buf, 255, "MetroHash = { 0x%08x, 0x%08x, 0x%08x, 0x%08x }\noepCode = { 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x }",
+                    found[i].info.metroHash[0], found[i].info.metroHash[1], found[i].info.metroHash[2], found[i].info.metroHash[3],
+                    found[i].oepCode[0], found[i].oepCode[1], found[i].oepCode[2], found[i].oepCode[3], found[i].oepCode[4],
+                    found[i].oepCode[5], found[i].oepCode[6], found[i].oepCode[7], found[i].oepCode[8], found[i].oepCode[9]);
+
+                if (ImGui::IsItemHovered()) {
+                    ImGui::BeginTooltip();
+                    ImGui::TextUnformatted(buf);
+                    ImGui::EndTooltip();
+                }
+                if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
+                    ImGui::SetClipboardText(buf);
+                }
+            }
+
+            ImGui::EndTable();
+
+            LeaveCriticalSection(&scanCtx->found_cs);
+            ImGui::PopID();
+            if (scanStatus != WAIT_OBJECT_0) {
+                ImGui::EndDisabled();
+            }
+        } else {
+            ImGui::SetCursorPosY(childHeight / 2);
+            Gui::TextCentered("No games found", childWidth);
         }
     }
     ImGui::EndChild();
 
-    if (ImGui::Button(S(THPRAC_ABORT))) {
-        TerminateThread(scanCtx->scan_thread, 0);
-        delete scanCtx;
-        scanCtx = nullptr;
-        return;
+    if (scanStatus == WAIT_OBJECT_0) {
+        if (ImGui::Button("Select Original")) for (auto& game : scanCtx->found) {
+            if (game.info.type == TYPE_ORIGINAL) { 
+                game.selected = true;
+            }
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("Select Modded")) for (auto& game : scanCtx->found) {
+            if (game.info.type != TYPE_ORIGINAL && game.info.type != TYPE_STEAM) { 
+                game.selected = true;
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Select Steam")) for (auto& game : scanCtx->found) {
+            if (game.info.type == TYPE_STEAM) { 
+                game.selected = true;
+            }
+        }
+        ImGui::SameLine();
+    } else {
+        if (ImGui::Button(S(THPRAC_ABORT))) {
+            TerminateThread(scanCtx->scan_thread, 0);
+            delete scanCtx;
+            scanCtx = nullptr;
+            return;
+        }
     }
 
     ImGui::SameLine();
