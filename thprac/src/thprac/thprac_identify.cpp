@@ -788,13 +788,26 @@ void GetExeOepCode(const uint8_t* mod, size_t len, uint16_t (&outOep)[10]) {
     auto* dosHeader = (IMAGE_DOS_HEADER*)mod;
     auto* ntHeader = (IMAGE_NT_HEADERS*)(mod + dosHeader->e_lfanew);
 
-    CHKBUF(mod, (unsigned char*)&ntHeader->OptionalHeader.AddressOfEntryPoint, len, );
-    auto* entry = mod + ntHeader->OptionalHeader.AddressOfEntryPoint;
-    CHKBUF(mod, entry + sizeof(outOep), len, );
+    uintptr_t entry_v = ntHeader->OptionalHeader.AddressOfEntryPoint;
+    const uint8_t* entry = nullptr;
 
-    memcpy(outOep, entry, sizeof(THGameVersion::oepCode));
-    for (size_t i = 0; i < 10; i++) {
-        outOep[i] ^= (i + 0x41) | ((i + 0x41) << 8);
+    auto* section = (IMAGE_SECTION_HEADER*)((uintptr_t)&ntHeader->OptionalHeader + ntHeader->FileHeader.SizeOfOptionalHeader);
+    for (unsigned i = 0; i < ntHeader->FileHeader.NumberOfSections; i++) {
+        CHKBUF(mod, section + i + 1, len, );
+
+        if (entry_v >= section[i].VirtualAddress &&
+            entry_v <= (section[i].VirtualAddress + section[i].Misc.VirtualSize)) {
+            entry = mod + (entry_v - section[i].VirtualAddress + section[i].PointerToRawData);
+            break;
+        }
+    }
+
+    if (entry != nullptr) {
+        CHKBUF(mod, entry + sizeof(outOep), len, );
+        memcpy(outOep, entry, sizeof(outOep));
+        for (size_t i = 0; i < 10; i++) {
+            outOep[i] ^= (i + 0x41) | ((i + 0x41) << 8);
+        }
     }
 }
 
