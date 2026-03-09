@@ -678,11 +678,11 @@ ExeInfo GetExeInfo(const uint8_t* mod, size_t len) {
     ExeInfo out = {};
 
     // Dawg
-    if unexpected(len == 1) {
+    if (len == 1) {
         return out;
     }
 
-    if unexpected(mod[0] != 'M' || mod[1] != 'Z') {
+    if (mod[0] != 'M' || mod[1] != 'Z') {
         return out;
     }
 
@@ -691,7 +691,7 @@ ExeInfo GetExeInfo(const uint8_t* mod, size_t len) {
 
     CHKBUF(mod, (unsigned char*)ntHeader + sizeof(IMAGE_NT_HEADERS), len, out);
 
-    if unexpected(ntHeader->Signature != TextInt('P', 'E')) {
+    if (ntHeader->Signature != TextInt('P', 'E')) {
         return out;
     }
 

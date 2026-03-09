@@ -104,8 +104,6 @@ constexpr unsigned t_strlen(const T* str) {
 
 #define SIZED(a) a, sizeof(a)
 
-#define unexpected(condition) (!(condition)) ; else
-
 /** round n down to nearest multiple of m */
 inline long RoundDown(long n, long m) {
     return n >= 0 ? (n / m) * m : ((n - m + 1) / m) * m;
@@ -126,4 +124,4 @@ inline bool CheckBufPos(const void* bufStart, const void* bufPos, int bufLen) {
         return true;
     }
 }
-#define CHKBUF(buf, pos, len, ret) if unexpected(!CheckBufPos(buf, pos, len)) return ret
+#define CHKBUF(buf, pos, len, ret) if (!CheckBufPos(buf, pos, len)) return ret

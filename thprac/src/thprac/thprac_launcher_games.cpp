@@ -679,7 +679,7 @@ static void ScanAddInstances(LauncherGame* game, FoundGame* found, size_t found_
         }
     }
 
-    if unexpected(inst_count_prev == game->inst_count) {
+    if (inst_count_prev == game->inst_count) {
         return;
     }
 
@@ -699,7 +699,7 @@ static void ScanAddInstances(LauncherGame* game, FoundGame* found, size_t found_
 }
 
 static void ScanResults(std::vector<FoundGame>& found) {
-    if unexpected(!found.size()) {
+    if (!found.size()) {
         return;
     }
 
