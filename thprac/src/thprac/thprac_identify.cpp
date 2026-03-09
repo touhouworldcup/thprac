@@ -811,13 +811,13 @@ void GetExeOepCode(const uint8_t* mod, size_t len, uint16_t (&outOep)[10]) {
     }
 }
 
-bool IdentifyKnownGame(THKnownGame& out, const uint8_t* buf, size_t size) {
+bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const uint8_t* buf, size_t size) {
     out.ver = IdentifyExe(buf, size);
     if (!out.ver) {
         return false;
     }
     MetroHash128::Hash(buf, size, (uint8_t*)out.metroHash);
-
+    GetExeOepCode(buf, size, outOepCode);
     for (const auto& known : gKnownGames) {
         if (known.metroHash[0] == out.metroHash[0] &&
             known.metroHash[1] == out.metroHash[1] &&
@@ -828,11 +828,8 @@ bool IdentifyKnownGame(THKnownGame& out, const uint8_t* buf, size_t size) {
         }
     }
 
-    uint16_t oepCode[10] = {};
-    GetExeOepCode(buf, size, oepCode);
-
     for (size_t i = 0; i < 10; i++) {
-        if (oepCode[i] != out.ver->oepCode[i]) {
+        if (outOepCode[i] != out.ver->oepCode[i]) {
             out.type = TYPE_MALICIOUS;
             return true;
         }
@@ -842,10 +839,10 @@ bool IdentifyKnownGame(THKnownGame& out, const uint8_t* buf, size_t size) {
     return true;
 }
 
-bool IdentifyKnownGame(THKnownGame& out, const wchar_t* fn) {
+bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const wchar_t* fn) {
     MappedFile f(fn, 0x04000000); // 4 MiB
     if (f.fileMapView) {
-        return IdentifyKnownGame(out, (const uint8_t*)f.fileMapView, f.fileSize);
+        return IdentifyKnownGame(out, outOepCode, (const uint8_t*)f.fileMapView, f.fileSize);
     } else {
         return false;
     }

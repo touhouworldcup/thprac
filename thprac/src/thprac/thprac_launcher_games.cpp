@@ -535,6 +535,7 @@ struct FoundGame {
     // The UTF-16 version is only needed once, to load the file to identify and hash it.
     char path[MAX_PATH + 1] = {};
     bool selected = false;
+    uint16_t oepCode[10];
     THKnownGame info = {};
 };
 
@@ -593,7 +594,8 @@ static bool DontGoThere(const wchar_t* d) {
 static void SearchFunc(ScanCtx* scanCtx, const wchar_t* path) {
     if (!(GetFileAttributesW(path) & FILE_ATTRIBUTE_DIRECTORY)) {
         FoundGame game = {};
-        if (!IdentifyKnownGame(game.info, path)) {
+        uint16_t oepCode[10] = {};
+        if (!IdentifyKnownGame(game.info, game.oepCode, path)) {
             return;
         }
         else {
