@@ -669,17 +669,30 @@ static LauncherGame* FindLauncherGameByID(THGameID id) {
 }
 
 static void ScanAddInstances(LauncherGame* game, FoundGame* found, size_t found_count) {
-    size_t off_begin = game->inst_count;
-    game->inst_count += found_count;
-    game->instances = (LauncherInstance*)realloc(game->instances, game->inst_count * sizeof(LauncherInstance));
+    size_t inst_count_prev = game->inst_count;
 
     for (size_t i = 0; i < found_count; i++) {
-        auto& inst = game->instances[off_begin + i];
+        if (found[i].selected) {
+            game->inst_count++;
+        }
+    }
 
-        inst.name = _strdup(gThGameStrs[found[i].info.ver->gameId]);
-        inst.path = _strdup(found[i].path);
-        inst.type = found[i].info.type;
-        // inst.apply_thprac = ???
+    if unexpected(inst_count_prev == game->inst_count) {
+        return;
+    }
+
+    game->instances = (LauncherInstance*)realloc(game->instances, game->inst_count * sizeof(LauncherInstance));
+
+    for (size_t found_idx = 0, inst_idx = inst_count_prev; found_idx < found_count; found_idx++) {
+        if (!found[found_idx].selected) {
+            continue;
+        }
+        auto& inst = game->instances[inst_idx];
+
+        inst.name = _strdup(gThGameStrs[found[found_idx].info.ver->gameId]);
+        inst.path = _strdup(found[found_idx].path);
+        inst.type = found[found_idx].info.type;
+        inst_idx++;
     }
 }
 
