@@ -277,7 +277,39 @@ void LoadGamesJson() {
 }
 
 void SaveGamesJson() {
+    yyjson_mut_doc* doc = yyjson_mut_doc_new(nullptr);
+    yyjson_mut_val* root = yyjson_mut_obj(doc);
+    yyjson_mut_doc_set_root(doc, root);
+
+    for (const auto& game : games) {
+        yyjson_mut_val* obj = yyjson_mut_obj_add_obj(doc, root, gThGameStrs[game.id]);
+        yyjson_mut_obj_add_sint(doc, obj, "default_launch", game.default_launch);
+
+        yyjson_mut_val* insts = yyjson_mut_obj_add_arr(doc, obj, "instances");
+        for (size_t i = 0; i < game.inst_count; i++) {
+            yyjson_mut_val* inst = yyjson_mut_arr_add_obj(doc, insts);
+            
+            yyjson_mut_obj_add_str(doc, inst, "game", game.instances[i].name);
+            yyjson_mut_obj_add_int(doc, inst, "type", game.instances[i].type);
+            yyjson_mut_obj_add_str(doc, inst, "path", game.instances[i].path);
+            yyjson_mut_obj_add_bool(doc, inst, "apply_thprac", game.instances[i].apply_thprac);
+        }
+    }
     
+    size_t len = 0;
+    char* buf = yyjson_mut_write(doc, YYJSON_WRITE_PRETTY, &len);
+
+    if (buf) {
+        wchar_t gamesJsonPath[MAX_PATH + 1] = {};
+        memcpy(gamesJsonPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
+        memcpy(gamesJsonPath + _gConfigDirLen, SIZED(L"games.json"));
+
+        HANDLE hFile = CreateFileW(gamesJsonPath, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        DWORD byteRet;
+        WriteFile(hFile, buf, len, &byteRet, nullptr);
+        CloseHandle(hFile);
+        free(buf);
+    }
 }
 
 static constinit LauncherGame* selectedGame = nullptr;

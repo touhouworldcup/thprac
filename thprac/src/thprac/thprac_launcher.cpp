@@ -374,6 +374,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
         }
     }
     g_IsInitialized = false;
+    SaveGamesJson();
     SaveSettings();
     return 0;
 }
