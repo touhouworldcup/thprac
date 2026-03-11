@@ -646,7 +646,9 @@ static void SearchFunc(ScanCtx* scanCtx, const wchar_t* path) {
 }
 
 void BeginScan(ScanCtx* scanCtx, const wchar_t* start_dir) {
-    SetCurrentDirectoryW(start_dir);
+    if (!SetCurrentDirectoryW(start_dir)) {
+        return;
+    }
     WIN32_FIND_DATAW find;
     HANDLE hFind = FindFirstFileW(L"*", &find);
     if (hFind) do {
@@ -719,7 +721,12 @@ start:
 		}
 	}
 
-	BeginScan(scanCtx, path_buf);
+    const wchar_t suffix[] = L"\\steamapps\\common";
+    size_t suffix_len = t_strlen(suffix);
+    if (path_p + suffix_len < path_end) {
+        memcpy(path_p, suffix, suffix_len * sizeof(wchar_t));
+        BeginScan(scanCtx, path_buf);
+    }
 	
 	goto start;
 }
@@ -758,7 +765,7 @@ static DWORD WINAPI ScanThreadSteam(LPVOID lpParam) {
     std::wstring curdir_bak(c.Buffer, c.Length / sizeof(wchar_t));
 
     MappedFile f(val.Data);
-    if (f.fileMapView) {
+    if (!f.fileMapView) {
         return 4;
     }
     SteamReadLibrary(scanCtx, (char*)f.fileMapView, f.fileSize);
