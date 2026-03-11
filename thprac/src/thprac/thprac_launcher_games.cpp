@@ -629,17 +629,11 @@ static void SearchFunc(ScanCtx* scanCtx, const wchar_t* path) {
         }
         SearchFunc(scanCtx, find.cFileName);
     } while (FindNextFileW(hFind, &find));
-
     SetCurrentDirectoryW(L"..");
 }
 
-static DWORD WINAPI ScanThread(LPVOID lpParam) {
-    ScanCtx* scanCtx = (ScanCtx*)lpParam;
-
-    auto& c = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
-    std::wstring curdir_bak(c.Buffer, c.Length / sizeof(wchar_t));
-
-    SetCurrentDirectoryW(scanCtx->scan_dir.c_str());
+void BeginScan(ScanCtx* scanCtx, const wchar_t* start_dir) {
+    SetCurrentDirectoryW(start_dir);
     WIN32_FIND_DATAW find;
     HANDLE hFind = FindFirstFileW(L"*", &find);
     if (hFind) do {
@@ -648,6 +642,15 @@ static DWORD WINAPI ScanThread(LPVOID lpParam) {
         }
         SearchFunc(scanCtx, find.cFileName);
     } while (FindNextFileW(hFind, &find));
+}
+
+static DWORD WINAPI ScanThread(LPVOID lpParam) {
+    ScanCtx* scanCtx = (ScanCtx*)lpParam;
+
+    auto& c = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
+    std::wstring curdir_bak(c.Buffer, c.Length / sizeof(wchar_t));
+
+    BeginScan(scanCtx, scanCtx->scan_dir.c_str());
     SetCurrentDirectoryW(curdir_bak.c_str());
     return 0;
 }
