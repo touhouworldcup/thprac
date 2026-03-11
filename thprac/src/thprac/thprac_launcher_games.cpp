@@ -145,6 +145,11 @@ LauncherGame games[ID_TH_MAX - 1] = {
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th128",
     },
     {
+        .id = ID_TH135,
+        .title = TH135_TITLE,
+        .appdataPath = L"%AppData%\\ShanghaiAlice\\th135",
+    },
+    {
         .id = ID_TH143,
         .title = TH143_TITLE,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th143",
