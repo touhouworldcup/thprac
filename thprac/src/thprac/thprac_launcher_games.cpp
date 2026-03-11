@@ -57,7 +57,8 @@ th_glossary_t gameTypeNames[] = {
     TH_TYPE_UNKOWN,
 };
 
-static constinit LauncherGame mainGames[] = {
+static union {
+LauncherGame games[ID_TH_MAX - 1] = {
     {
         .id = ID_TH06,
         .title = TH06_TITLE,
@@ -126,9 +127,6 @@ static constinit LauncherGame mainGames[] = {
         .title = TH20_TITLE,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th20",
     },
-};
-
-static constinit LauncherGame spinoffShmups[] = {
     {
         .id = ID_ALCOSTG,
         .title = ALCOSTG_TITLE,
@@ -161,9 +159,6 @@ static constinit LauncherGame spinoffShmups[] = {
         .title = TH185_TITLE,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th185",
     },
-};
-
-static constinit LauncherGame spinoffOthers[] = {
     {
         .id = ID_TH075,
         .title = TH075_TITLE,
@@ -189,7 +184,12 @@ static constinit LauncherGame spinoffOthers[] = {
         .title = TH175_TITLE,
     },
 };
-
+struct {
+    LauncherGame mainGames[15];
+    LauncherGame spinoffShmups[7];
+    LauncherGame spinoffOthers[7];
+};
+};
 
 extern yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
 
@@ -262,17 +262,7 @@ void LoadGamesJson() {
     yyjson_obj_foreach(root, idx, max, key, val) {
         const char* keyReal = unsafe_yyjson_get_str(key);
 
-        for (auto& game : mainGames) {
-            if (strcmp(gThGameStrs[game.id], keyReal) == 0) {
-                InitLauncherGame(&game, val);
-            }
-        }
-        for (auto& game : spinoffShmups) {
-            if (strcmp(gThGameStrs[game.id], keyReal) == 0) {
-                InitLauncherGame(&game, val);
-            }
-        }
-        for (auto& game : spinoffOthers) {
+        for (auto& game : games) {
             if (strcmp(gThGameStrs[game.id], keyReal) == 0) {
                 InitLauncherGame(&game, val);
             }
@@ -554,21 +544,7 @@ struct ScanCtx {
 };
 
 static bool GameAlreadyExists(const char* path) {
-    for (const auto& game : mainGames) {
-        for (size_t i = 0; i < game.inst_count; i++) {
-            if (_stricmp(game.instances[i].path, path) == 0) {
-                return true;
-            }
-        }
-    }
-    for (const auto& game : spinoffShmups) {
-        for (size_t i = 0; i < game.inst_count; i++) {
-            if (_stricmp(game.instances[i].path, path) == 0) {
-                return true;
-            }
-        }
-    }
-    for (const auto& game : spinoffOthers) {
+    for (const auto& game : games) {
         for (size_t i = 0; i < game.inst_count; i++) {
             if (_stricmp(game.instances[i].path, path) == 0) {
                 return true;
@@ -755,17 +731,7 @@ static DWORD WINAPI ScanThreadSteam(LPVOID lpParam) {
 }
 
 static LauncherGame* FindLauncherGameByID(THGameID id) {
-    for (auto& game : mainGames) {
-        if (game.id == id) {
-            return &game;
-        }
-    }
-    for (auto& game : spinoffShmups) {
-        if (game.id == id) {
-            return &game;
-        }
-    }
-    for (auto& game : spinoffOthers) {
+    for (auto& game : games) {
         if (game.id == id) {
             return &game;
         }

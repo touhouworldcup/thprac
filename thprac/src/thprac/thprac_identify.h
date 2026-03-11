@@ -50,6 +50,7 @@ enum THGameID {
     ID_TH185,
     ID_TH19,
     ID_TH20,
+    ID_TH_MAX,
 };
 
 struct ExeInfo {
