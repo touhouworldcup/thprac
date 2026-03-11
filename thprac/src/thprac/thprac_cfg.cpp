@@ -7,8 +7,7 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 namespace THPrac {
 
-// TODO: change to thprac.json
-constexpr const wchar_t THPRAC_SETTINGS_JSON_NAME[] = L"thprac_new.json";
+constexpr const wchar_t THPRAC_SETTINGS_JSON_NAME[] = L"settings.json";
 
 wchar_t _gConfigDir[MAX_PATH + 1] = {};
 unsigned int _gConfigDirLen = 0;
@@ -75,7 +74,7 @@ yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = 
                 0,
                 MB_ICONERROR | MB_RETRYCANCEL,
                 "JSON Error",
-                "Failed to load thprac_new.json: JSON error %d at position %d\nMessage: %s",
+                "Failed to load global.json: JSON error %d at position %d\nMessage: %s",
                 err.code, err.pos, err.msg);
             if (choice == IDRETRY) {
                 continue;
@@ -103,7 +102,6 @@ void SetTheme(int theme) {
 bool LoadSettings() {
     wchar_t settingsPath[MAX_PATH + 1] = {};
     memcpy(settingsPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    // TODO: rename to thprac.json
     memcpy(settingsPath + _gConfigDirLen, SIZED(THPRAC_SETTINGS_JSON_NAME));
 
     yyjson_doc* doc = yyjson_read_file_report(settingsPath);
