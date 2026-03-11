@@ -313,7 +313,77 @@ void GuiSettings() {
     ImGui::NewLine();
     ImGui::TextUnformatted("Hotkey mappings");
     ImGui::Separator();
-    ImGui::TextUnformatted("TODO: implement hotkey remapping GUI");
+
+    struct GuiHotkeyOption {
+        const char* label;
+        int& chord;
+        bool has_conflict = false;
+
+        inline bool conflicts(GuiHotkeyOption* other) {
+            if (this->chord == 0 || other->chord == 0) {
+                return false;
+            }
+            return ((this->chord & other->chord) == this->chord);
+        }
+    };
+
+    GuiHotkeyOption key_backspace = {
+        .label = S(THPRAC_HOTKEY_QUICK_SETTINGS),
+        .chord = hotkeys.backspace_menu,
+    };
+
+    GuiHotkeyOption key_advanced = {
+        .label = S(THPRAC_HOTKEY_ADVANCED_SETTINGS),
+        .chord = hotkeys.advanced_menu,
+    };
+
+    GuiHotkeyOption key_screenshot = {
+        .label = S(THPRAC_HOTKEY_SCREENSHOT),
+        .chord = hotkeys.screenshot,
+    };
+
+    GuiHotkeyOption key_tracker = {
+        .label = S(THPRAC_HOTKEY_TRACKER),
+        .chord = hotkeys.tracker,
+    };
+
+    GuiHotkeyOption key_language = {
+        .label = S(THPRAC_HOTKEY_LANGUAGE_SETTINGS),
+        .chord = hotkeys.language,
+    };
+    
+    GuiHotkeyOption keys[] = { key_backspace, key_advanced, key_screenshot, key_tracker };
+
+    for (size_t i = 0; i < elementsof(keys); i++) {
+        for (size_t j = 0; j < elementsof(keys); j++) {
+            if (i == j)
+                continue;
+            if (keys[i].conflicts(&keys[j])) {
+                keys[i].has_conflict = true;
+                keys[j].has_conflict = true;
+            }
+        }
+    }
+
+    for (auto& key : keys) {
+        if (key_language.conflicts(&key)) {
+            key.has_conflict = true;
+            key_language.has_conflict = true;
+        }
+    }
+
+    for (const auto& key : keys) {
+        Gui::ChordEditDropdown(key.label, key.chord);
+        if (key.has_conflict) {
+            ImGui::SameLine();
+            Gui::CustomMarker("(!)", S(THPRAC_HOTKEY_SUBMASK_WARNING));
+        }
+    }
+    Gui::ChordEditDropdown(key_language.label, key_language.chord);
+    if (key_language.has_conflict) {
+        ImGui::SameLine();
+        Gui::CustomMarker("(!)", S(THPRAC_HOTKEY_SUBMASK_WARNING));
+    }
 }
 
 }

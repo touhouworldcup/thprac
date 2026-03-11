@@ -32,6 +32,7 @@ namespace THPrac
         bool GetChordPressed(int chord);
 
 		unsigned int HotkeyChordToLabel(int chord, char* chord_name);
+        void ChordEditDropdown(const char* label, int& chord);
         int HotkeyChordToVK(int chord);
 	}
 }

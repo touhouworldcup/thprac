@@ -299,6 +299,23 @@ namespace THPrac
             return p - chord_name;
         }
 
+		void ChordEditDropdown(const char* label, int& chord) {
+            char chord_name[512] = {};
+            HotkeyChordToLabel(chord, chord_name);
+
+            if (ImGui::BeginCombo(label, chord_name, ImGuiComboFlags_HeightLargest)) {
+                for (size_t i = 0; i < ChordKey_KEYBOARD_COUNT; i++) {
+                    ImGui::PushID(i);
+                    bool ticked = (chord >> i) & 1;
+                    if (ImGui::Checkbox(ChordKeyStrings[i], &ticked)) {
+                        chord ^= (-ticked ^ chord) & (1 << i);
+                    }
+                    ImGui::PopID();
+                }
+                ImGui::EndCombo();
+            }
+        }
+
 		// Convert chords to usable VKs
 		int HotkeyChordToVK(int chord) {
 			if (chord < 0 || chord >= ChordKey_COUNT) {
