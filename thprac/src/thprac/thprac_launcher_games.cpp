@@ -618,9 +618,9 @@ static void SearchFunc(ScanCtx* scanCtx, const wchar_t* path) {
             return;
         }
     }
-
-    SetCurrentDirectoryW(path);
-
+    if (!SetCurrentDirectoryW(path)) {
+        return;
+    }
     WIN32_FIND_DATAW find = {};
     HANDLE hFind = FindFirstFileW(L"*", &find);
     if (hFind) do {
