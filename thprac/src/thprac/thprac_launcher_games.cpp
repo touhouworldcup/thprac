@@ -655,6 +655,105 @@ static DWORD WINAPI ScanThread(LPVOID lpParam) {
     return 0;
 }
 
+static void SteamReadLibrary(ScanCtx* scanCtx, const char* buf, size_t len) {
+    const char* end = buf + len;
+	const char* p = buf;
+start:
+	p = strstr(p, "\"path\"");
+	if (!p) return;
+
+	p += strlen("\"path\"");
+	while (p < end && *p != '"') p++;
+	if (p >= end) return;
+	p++;
+
+	wchar_t path_buf[MAX_PATH + 1] = {};
+	wchar_t* path_p = path_buf;
+	wchar_t* path_end = path_buf + MAX_PATH;
+
+	bool escape = false;
+	while (p < end) {
+		if (escape) {
+			if (path_p >= path_end) break;
+			switch (*p) {
+			case 'n': *path_p++ = '\n'; break;
+			case 't': *path_p++ = '\t'; break;
+			case 'r': *path_p++ = '\r'; break;
+			case 'b': *path_p++ = '\b'; break;
+			case 'f': *path_p++ = '\f'; break;
+			case '"': *path_p++ = '"';  break;
+			case '\\': *path_p++ = '\\'; break;
+			default:
+				if (!utf8_utf16_adv(&p, end, &path_p, path_end)) {
+					return;
+				}
+				continue;
+			}
+			p++;
+			escape = false;
+			continue;
+		}
+		if (*p == '\\') {
+			escape = true;
+			p++;
+			continue;
+		}
+		if (*p == '"') {
+			break;
+		}
+		if (!utf8_utf16_adv(&p, end, &path_p, path_end)) {
+			return;
+		}
+	}
+
+	BeginScan(scanCtx, path_buf);
+	
+	goto start;
+}
+
+static DWORD WINAPI ScanThreadSteam(LPVOID lpParam) {
+    NTSTATUS err;
+    
+    ScanCtx* scanCtx = (ScanCtx*)lpParam;
+    
+    OBJECT_ATTRIBUTES keyPath;
+    UNICODE_STRING keyPath_str = L"\\Registry\\Machine\\SOFTWARE\\Valve\\Steam"_wZ;
+    InitializeObjectAttributes(&keyPath, &keyPath_str, 0, NULL, nullptr);
+
+    HANDLE hKey;
+    if (err = NtOpenKey(&hKey, KEY_READ, &keyPath)) {
+        return 1;
+    }
+    // CloseHandle is just a thin wrapper around NtClose
+    // TODO: Convert every call to CloseHandle to NtClose?
+    defer(CloseHandle(hKey));
+
+    KEY_VALUE_PARTIAL_INFORMATION_ALIGN64<wchar_t[MAX_PATH]> val;
+    ULONG outLen;
+    UNICODE_STRING InstallPath_str = L"InstallPath"_wZ;
+    if (err = NtQueryValueKey(hKey, &InstallPath_str, KeyValuePartialInformationAlign64, &val, sizeof(val), &outLen)) {
+        return 2;
+    }
+
+    const wchar_t lastPart[] = L"\\steamapps\\libraryfolders.vdf";
+    auto lastPartSize = sizeof(lastPart);
+
+    CHKBUF(&val, (char*)&val.Data + val.DataLength + lastPartSize, sizeof(val), 3);
+    memcpy(val.Data + val.DataLength / sizeof(wchar_t) - 1, lastPart, lastPartSize);
+
+    auto& c = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
+    std::wstring curdir_bak(c.Buffer, c.Length / sizeof(wchar_t));
+
+    MappedFile f(val.Data);
+    if (f.fileMapView) {
+        return 4;
+    }
+    SteamReadLibrary(scanCtx, (char*)f.fileMapView, f.fileSize);
+    SetCurrentDirectoryW(curdir_bak.c_str());
+
+    return 0;
+}
+
 static LauncherGame* FindLauncherGameByID(THGameID id) {
     for (auto& game : mainGames) {
         if (game.id == id) {
@@ -875,6 +974,8 @@ static void GameRightClickMenu(LauncherGame* game) {
         ImGui::CloseCurrentPopup();
     }
     if(ImGui::Selectable(S(THPRAC_STEAM_MNG_BUTTON))) {
+        scanCtx = new ScanCtx();
+        scanCtx->scan_thread = CreateThread(nullptr, 0, ScanThreadSteam, scanCtx, 0, nullptr);
         ImGui::CloseCurrentPopup();
     }
     ImGui::Separator();
