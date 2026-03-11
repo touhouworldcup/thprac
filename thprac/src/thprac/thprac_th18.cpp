@@ -1023,10 +1023,13 @@ namespace TH18 {
                     mOpenMarket();
                 }
             } else {
+                char hotkey_name[512] = {};
+                int len = Gui::HotkeyChordToLabel(hotkeys.backspace_menu, hotkey_name);
+
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC1));
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC2));
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC3));
-                ImGui::TextUnformatted(Gui::HotkeyChordToLabel(Gui::GetBackspaceMenuChord()).c_str());
+                ImGui::TextUnformatted(hotkey_name, hotkey_name + len);
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC4));
             }
@@ -1039,7 +1042,7 @@ namespace TH18 {
                 ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(255.0f, 0.0f, 0.0f, 255.0f));
                 popColor = true;
 
-                if (Gui::GetChordPressed(Gui::GetBackspaceMenuChord())) {
+                if (Gui::GetChordPressed(hotkeys.backspace_menu)) {
                     th18_shop_escape_1.Enable();
                     th18_shop_escape_2.Enable();
                 } else {
@@ -1101,7 +1104,7 @@ namespace TH18 {
             }
         }
 
-        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x45d4ea, "01")
@@ -1904,7 +1907,7 @@ namespace TH18 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
+            if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else

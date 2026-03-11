@@ -431,7 +431,7 @@ namespace Alcostg {
             }
         }
 
-        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x426eb5, "01"),
@@ -562,7 +562,7 @@ namespace Alcostg {
         static THAdvOptWnd* advOptWnd = nullptr;
         if (!advOptWnd)
             advOptWnd = new THAdvOptWnd();
-        if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
+        if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
             if (advOptWnd->IsOpen())
                 advOptWnd->Close();
             else

@@ -232,9 +232,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     g_gameGuiHwnd = (DWORD*)hwnd_addr;
     g_gameIMCCtx = ImmAssociateContext(*(HWND*)hwnd_addr, 0);
 
-    // Set Hotkeys
-    Gui::MenuChordInitArrays();
-
     switch (impl) {
     case THPrac::IMPL_WIN32_DX8:
         // Impl
@@ -348,7 +345,7 @@ void GameGuiBegin(game_gui_impl impl, bool game_nav)
     }
     GameGuiProgress = 1;
        
-    if (Gui::GetChordPressed(Gui::GetTrackerChord())) {
+    if (Gui::GetChordPressed(hotkeys.tracker)) {
         if (tracker_open) {
             tracker_open = false;
         } else {
@@ -369,7 +366,7 @@ void GameGuiEnd(bool draw_cursor)
 
     // Locale Change
     if (!ImGui::IsAnyItemActive()) {
-        if (Gui::GetChordPressedDuration(Gui::GetLanguageChord()) > 0) {
+        if (Gui::GetChordPressedDuration(hotkeys.language) > 0) {
             if (Gui::KeyboardInputUpdate('1') == 1) {
                 Gui::LocaleSet(LOCALE_JA_JP);
             } else if (Gui::KeyboardInputUpdate('2') == 1) {

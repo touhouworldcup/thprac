@@ -517,7 +517,7 @@ namespace TH09 {
         static THAdvOptWnd* advOptWnd = nullptr;
         if (!advOptWnd)
             advOptWnd = new THAdvOptWnd();
-        if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
+        if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
             if (advOptWnd->IsOpen())
                 advOptWnd->Close();
             else
@@ -556,7 +556,7 @@ namespace TH09 {
         TH09Tools& t = TH09Tools::singleton();
         THGuiPrac& p = THGuiPrac::singleton();
         if (t.enabled) {
-            if (Gui::GetChordPressed(Gui::GetBackspaceMenuChord())) {
+            if (Gui::GetChordPressed(hotkeys.backspace_menu)) {
                 if (t.IsOpen())
                     t.Close();
                 else

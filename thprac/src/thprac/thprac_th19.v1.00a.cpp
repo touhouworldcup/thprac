@@ -130,7 +130,7 @@ namespace V1_00a {
         static THAdvOptWnd* advOptWnd = nullptr;
         if (!advOptWnd)
             advOptWnd = new THAdvOptWnd();
-        if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
+        if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
             if (advOptWnd->IsOpen())
                 advOptWnd->Close();
             else
@@ -644,7 +644,7 @@ namespace V1_00a {
 
         auto& t = TH19Tools::singleton();
         if (t.allow) {
-            if (Gui::GetChordPressed(Gui::GetBackspaceMenuChord())) {
+            if (Gui::GetChordPressed(hotkeys.backspace_menu)) {
                 if (t.IsOpen()) {
                     t.Close();
                 } else {

@@ -77,11 +77,11 @@ struct THPracSettings {
 };
 
 struct HotkeyChords {
-    unsigned int backspace_menu = 1 << ChordKey_Backspace;
-    unsigned int advanced_menu = 1 << ChordKey_F12;
-    unsigned int screenshot = 1 << ChordKey_Home;
-    unsigned int tracker = 1 << ChordKey_End;
-    unsigned int language = 1 << ChordKey_Alt;
+    int backspace_menu = 1 << ChordKey_Backspace;
+    int advanced_menu = 1 << ChordKey_F12;
+    int screenshot = 1 << ChordKey_Home;
+    int tracker = 1 << ChordKey_End;
+    int language = 1 << ChordKey_Alt;
 };
 
 
