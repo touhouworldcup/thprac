@@ -289,7 +289,7 @@ void SaveGamesJson() {
         for (size_t i = 0; i < game.inst_count; i++) {
             yyjson_mut_val* inst = yyjson_mut_arr_add_obj(doc, insts);
             
-            yyjson_mut_obj_add_str(doc, inst, "game", game.instances[i].name);
+            yyjson_mut_obj_add_str(doc, inst, "name", game.instances[i].name);
             yyjson_mut_obj_add_int(doc, inst, "type", game.instances[i].type);
             yyjson_mut_obj_add_str(doc, inst, "path", game.instances[i].path);
             yyjson_mut_obj_add_bool(doc, inst, "apply_thprac", game.instances[i].apply_thprac);
