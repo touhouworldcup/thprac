@@ -57,6 +57,10 @@ th_glossary_t gameTypeNames[] = {
     TH_TYPE_UNKOWN,
 };
 
+constexpr unsigned int MAIN_GAMES_LEN = 15;
+constexpr unsigned int SPINOFF_SHMUP_LEN = 7;
+constexpr unsigned int SPINOFF_OTHER_LEN = 7;
+
 static union {
 LauncherGame games[ID_TH_MAX - 1] = {
     {
@@ -145,11 +149,6 @@ LauncherGame games[ID_TH_MAX - 1] = {
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th128",
     },
     {
-        .id = ID_TH135,
-        .title = TH135_TITLE,
-        .appdataPath = L"%AppData%\\ShanghaiAlice\\th135",
-    },
-    {
         .id = ID_TH143,
         .title = TH143_TITLE,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th143",
@@ -177,6 +176,10 @@ LauncherGame games[ID_TH_MAX - 1] = {
         .title = TH123_TITLE,
     },
     {
+        .id = ID_TH135,
+        .title = TH135_TITLE,
+    },
+    {
         .id = ID_TH145,
         .title = TH145_TITLE,
     },
@@ -190,11 +193,12 @@ LauncherGame games[ID_TH_MAX - 1] = {
     },
 };
 struct {
-    LauncherGame mainGames[15];
-    LauncherGame spinoffShmups[7];
-    LauncherGame spinoffOthers[7];
+    LauncherGame mainGames[MAIN_GAMES_LEN];
+    LauncherGame spinoffShmups[SPINOFF_SHMUP_LEN];
+    LauncherGame spinoffOthers[SPINOFF_OTHER_LEN];
 };
 };
+static_assert((MAIN_GAMES_LEN + SPINOFF_SHMUP_LEN + SPINOFF_OTHER_LEN) == elementsof(games));
 
 extern yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
 
