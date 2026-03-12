@@ -70,6 +70,7 @@ namespace TH17 {
     enum addrs {
         GOAST_MANAGER_PTR = 0x4B7684,
         PLAYER_PTR = 0x4b77d0,
+        SCALE_ADDR = 0x524718,
     };
 
     #define SpawnToken(goast, pos, ang) asm_call<0x00410380, Vectorcall>(GetMemContent<uintptr_t>(GOAST_MANAGER_PTR), UNUSED_DWORD, &pos, goast, UNUSED_FLOAT, UNUSED_FLOAT, ang)
@@ -2371,7 +2372,7 @@ namespace TH17 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4b5ae8, 0x5226c0,
             Gui::INGAGME_INPUT_GEN2, 0x4b323c, 0x4b3238, 0,
-            (*((int32_t*)0x524700) >> 2) & 0xf);
+            *(float*)SCALE_ADDR);
 
         SetDpadHook(0x40188D, 3);
 

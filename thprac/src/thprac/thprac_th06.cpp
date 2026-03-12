@@ -2173,7 +2173,7 @@ namespace TH06 {
         // Init
         GameGuiInit(IMPL_WIN32_DX8, 0x6c6d20, 0x6c6bd4,
             Gui::INGAGME_INPUT_GEN1, INPUT_ADDR, INPUT_PREV_ADDR, 0x69d90c,
-            -1);
+            1.0f);
 
         SetDpadHook(0x41D330, 3);
 

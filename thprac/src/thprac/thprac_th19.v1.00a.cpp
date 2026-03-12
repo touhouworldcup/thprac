@@ -34,9 +34,11 @@ namespace V1_00a {
 
         D3D_DEVICE = 0x208388,
         HWND_PTR = 0x209110,
+
+        SCALE_ADDR = 0x20B1D0
     };
         
-    #define SCALE (*(float*)RVA(0x20B1D0))
+    #define SCALE (*(float*)RVA(SCALE_ADDR))
 
     class THAdvOptWnd : public Gui::GameGuiWnd {
         // Option Related Functions
@@ -142,7 +144,7 @@ namespace V1_00a {
     }
 
     EHOOK_ST(th19_enemy_tick, 0xf6dd0, 1, {
-        drawEnemyHP(pCtx, SCALE);
+        drawEnemyHP(pCtx);
     });
 
     struct TH19Tools : public Gui::GameGuiWnd {
@@ -768,7 +770,7 @@ namespace V1_00a {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, RVA(D3D_DEVICE), RVA(HWND_PTR),
             Gui::INGAGME_INPUT_GEN2, GetMemContent(RVA(0x1AE3A0)) + 0x30 + 0x2B0, GetMemContent(RVA(0x1AE3A0)) + 0x30 + 0x10, 0,
-            -2, SCALE, 0.0f);
+            *(float*)RVA(SCALE_ADDR));
 
         SetDpadHook(0xAB7C1, 3);
 

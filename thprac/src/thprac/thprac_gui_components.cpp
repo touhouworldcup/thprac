@@ -5,6 +5,8 @@
 
 namespace THPrac
 {
+    float g_Scale = 1.0f;
+
     int rotation_start_index;
     void ImRotateStart()
     {

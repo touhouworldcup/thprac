@@ -239,7 +239,7 @@ namespace TH095 {
         // Init
         GameGuiInit(IMPL_WIN32_DX8, 0x4c4678, 0x4c45e8,
             Gui::INGAGME_INPUT_GEN2, 0x4be21e, 0x4be21c, 0,
-            -1);
+            1.0f);
 
         SetDpadHook(0x419725, 3);
 

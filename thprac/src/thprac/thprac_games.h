@@ -70,7 +70,7 @@ void SetDpadHook(uintptr_t addr, size_t instr_len);
 
 void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3 = 0,
-    int wnd_size_flag = -1, float x = 640.0f, float y = 480.0f);
+    float scale = 1.0f);
 extern int GameGuiProgress;
 void GameGuiBegin(game_gui_impl impl, bool game_nav = true);
 void GameGuiEnd(bool draw_cursor = false);

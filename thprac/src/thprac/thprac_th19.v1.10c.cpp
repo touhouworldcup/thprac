@@ -74,9 +74,9 @@ namespace V1_10c {
 
         D3D_DEVICE = 0x22BB48,
         HWND_PTR = 0x22BB88,
+
+        SCALE_ADDR = 0x22EEB0
     };
-        
-    #define SCALE (*(float*)RVA(0x22EEB0))
 
 #ifndef _DEBUG
     constinit HookCtx th19_patch_cpu_check_colliders = {
@@ -206,7 +206,7 @@ namespace V1_10c {
     }
 
     EHOOK_ST(th19_enemy_tick, 0x1089D0, 1, {
-        drawEnemyHP(pCtx, SCALE);
+        drawEnemyHP(pCtx);
     });
 
     struct TH19Tools : public Gui::GameGuiWnd {
@@ -842,7 +842,7 @@ namespace V1_10c {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, RVA(D3D_DEVICE), RVA(HWND_PTR),
             Gui::INGAGME_INPUT_GEN2, GetMemContent(RVA(0x1D19B0)) + 0x30 + 0x2B0, GetMemContent(RVA(0x1D19B0)) + 0x30 + 0x10, 0,
-            -2, SCALE, 0.0f);
+            *(float*)RVA(SCALE_ADDR));
 
         SetDpadHook(0xB84A0, 3);
 

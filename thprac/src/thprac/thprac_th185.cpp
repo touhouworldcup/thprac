@@ -35,7 +35,8 @@ namespace TH185 {
         BLACK_MARKET_PTR = 0x4d7ac4,
         CARD_DESC_LIST = 0x4ca370,
         ENEMY_MANAGER = 0x4d7af4,
-        GAME_THREAD_PTR = 0x4d7b0c
+        GAME_THREAD_PTR = 0x4d7b0c,
+        SCALE_ADDR = 0x573DC0,
     };
 
     bool isItemEnabled = false;
@@ -680,7 +681,7 @@ namespace TH185 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4d52c8, 0x571d50,
             Gui::INGAGME_INPUT_GEN2, 0x4ce400, 0x4ce3f8, 0,
-            -2, *(float*)0x573dc0, 0.0f);
+            *(float*)SCALE_ADDR);
 
         SetDpadHook(0x40175F, 3);
 

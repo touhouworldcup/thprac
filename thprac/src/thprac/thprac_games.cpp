@@ -212,7 +212,7 @@ void SetDpadHook(uintptr_t addr, size_t instr_len) {
 
 void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3,
-    int wnd_size_flag, float x, float y)
+    float scale)
 {
     thcrap_dll = GetModuleHandleW(L"thcrap.dll");
     if (!thcrap_dll) {
@@ -255,45 +255,20 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         break;
     }
 
+    auto& io = ImGui::GetIO();
+    RECT clientRect;
+    GetClientRect(*(HWND*)hwnd_addr, &clientRect);
+
+    io.DisplaySize = {
+        (float)clientRect.right - (float)clientRect.left,
+        (float)clientRect.bottom - (float)clientRect.top,
+    };
+
     // Inputs
     Gui::InGameInputInit(input_gen, reg1, reg2, reg3);
-
-    // Display size setup
-    auto& io = ::ImGui::GetIO();
-    if (wnd_size_flag == -1) {
-        io.DisplaySize = { x, y };
-        Gui::LocaleCreateMergeFont(io.DisplaySize.x * 0.025f);
-    } else if (wnd_size_flag == -2) {
-        float dispX, dispY;
-        if (x > 1.6) {
-            dispX = 1280.0f;
-            dispY = 960.0f;
-        } else if (x > 1.1) {
-            dispX = 960.0f;
-            dispY = 720.0f;
-        } else {
-            dispX = 640.0f;
-            dispY = 480.0f;
-        }
-        Gui::ImplDX9AdjustDispSize();
-        Gui::LocaleCreateMergeFont(dispX * 0.025f);
-    } else {
-        switch (wnd_size_flag) {
-        case 2:
-        case 5:
-            io.DisplaySize = { 1280.0f, 960.0f };
-            break;
-        case 1:
-        case 4:
-            io.DisplaySize = { 960.0f, 720.0f };
-            break;
-        default:
-            io.DisplaySize = { 640.0f, 480.0f };
-            break;
-        }
-        Gui::LocaleCreateMergeFont(io.DisplaySize.x * 0.025f);
-    }
-
+    ImGui::GetStyle().ScaleAllSizes(scale);
+    ImGui::GetStyle().MouseCursorScale = 1.0f;
+    Gui::LocaleCreateMergeFont(16.0f * scale);
 
     if (gSettings.resizable_window) {
         RECT wndRect;

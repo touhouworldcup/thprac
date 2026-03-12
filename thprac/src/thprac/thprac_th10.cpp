@@ -2509,7 +2509,7 @@ namespace TH10 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x491c30, 0x4924f0,
             Gui::INGAGME_INPUT_GEN2, 0x474e36, 0x474e34, 0,
-            -1);
+            1.0f);
 
         SetDpadHook(0x44A3BB, 3);
 

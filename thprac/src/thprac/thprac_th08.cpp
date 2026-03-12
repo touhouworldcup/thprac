@@ -2514,7 +2514,7 @@ namespace TH08 {
     EHOOK_DY(th08_recreate_device, 0x442A7E, 1, {
         GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700,
             Gui::INGAGME_INPUT_GEN1, INPUT_ADDR, 0x164d530, 0x164d538,
-            -1);
+            1.0f);
     })
     HOOKSET_ENDDEF()
 
@@ -2526,7 +2526,7 @@ namespace TH08 {
         // Init
         GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700,
             Gui::INGAGME_INPUT_GEN1, INPUT_ADDR, 0x164d530, 0x164d538,
-            -1);
+            1.0f);
 
         SetDpadHook(0x43D48B, 3);
 

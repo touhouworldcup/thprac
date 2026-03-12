@@ -60,6 +60,7 @@ namespace TH18 {
         MAIN_MENU_PTR = 0x4cf43c,
         ANM_MANAGER_PTR = 0x51f65c,
         WINDOW_PTR = 0x568c30,
+        SCALE_ADDR = 0x56ACA0
     };
 
     enum funcs {
@@ -4206,8 +4207,7 @@ namespace TH18 {
         }
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4ccdf8, WINDOW_PTR,
-            Gui::INGAGME_INPUT_GEN2, MENU_INPUT, 0x4ca218, 0,
-            -2, *(float*)0x56aca0, 0.0f);
+            Gui::INGAGME_INPUT_GEN2, MENU_INPUT, 0x4ca218, 0, *(float*)SCALE_ADDR);
 
         SetDpadHook(0x4016EF, 3);
 

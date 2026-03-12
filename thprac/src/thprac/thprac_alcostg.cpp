@@ -1124,9 +1124,7 @@ namespace Alcostg {
             return;
         }
         // Init
-        GameGuiInit(IMPL_WIN32_DX9, 0x48e648, 0x48ef20,
-            Gui::INGAGME_INPUT_GEN2, 0x471514, 0x471510, 0,
-            -1);
+        GameGuiInit(IMPL_WIN32_DX9, 0x48e648, 0x48ef20, Gui::INGAGME_INPUT_GEN2, 0x471514, 0x471510, 0, 1.0f);
 
         // Gui components creation
         THGuiPrac::singleton();

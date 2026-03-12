@@ -8,6 +8,7 @@ namespace TH15 {
         CHARACTER = 0x4e7404,
         BOMB_PTR = 0x4e9a68,
         PLAYER_PTR = 0x4e9bb8,
+        SCALE_ADDR = 0x51BC04,
     };
 
     enum funcs {
@@ -2023,7 +2024,7 @@ namespace TH15 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4e77d8, 0x519bb0,
             Gui::INGAGME_INPUT_GEN2, 0x4e6d1c, 0x4e6d18, 0,
-            (*((int32_t*)0x51bbec) >> 2) & 0xf);
+            *(float*)SCALE_ADDR);
 
         SetDpadHook(0x401D22, 3);
 

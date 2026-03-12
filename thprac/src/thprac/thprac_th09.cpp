@@ -594,7 +594,7 @@ namespace TH09 {
     EHOOK_DY(th09_gui_reinit, 0x42e50f, 2, {
         GameGuiInit(IMPL_WIN32_DX8, 0x4b3108, 0x4b30b0,
             Gui::INGAGME_INPUT_GEN2, 0x4acf3a, 0x4acf38, 0,
-            -1);
+            1.0f);
     })
     HOOKSET_ENDDEF()
 
@@ -605,7 +605,7 @@ namespace TH09 {
         }
         GameGuiInit(IMPL_WIN32_DX8, 0x4b3108, 0x4b30b0,
             Gui::INGAGME_INPUT_GEN2, 0x4acf3a, 0x4acf38, 0,
-            -1);
+            1.0f);
 
         SetDpadHook(0x42B823, 3);
 

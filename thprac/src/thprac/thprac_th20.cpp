@@ -30,6 +30,7 @@ namespace TH20 {
         ADD_TIMER_FUNC = 0x297A0,
         ALLOCATE_DMG_SRC_FUNC = 0xc0e60,
         DELETE_DMG_SRC_FUNC = 0xc1f30,
+        SCALE_ADDR = 0x1B8818
     };
 
     struct AnmVM {
@@ -3349,7 +3350,7 @@ namespace TH20 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, RVA(0x1C4D48), RVA(WINDOW_PTR),
             Gui::INGAGME_INPUT_GEN2, RVA(0x1B88C0), RVA(0x1B88B8), 0,
-            -2, *(float*)RVA(0x1B8818), 0.0f);
+            *(float*)RVA(SCALE_ADDR));
 
         SetDpadHook(0x22651, 6);
 

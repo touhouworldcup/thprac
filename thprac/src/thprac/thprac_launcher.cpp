@@ -59,6 +59,10 @@ static constinit bool g_IsUITextureIDValid = false;
 static constinit bool g_IsInitialized = false;
 static constinit bool g_Rendering = false;
 
+// I don't want to #include "thprac_gui_components.h" just for this
+// It has to go somewhere, and it shouldn't be here twice
+extern float g_Scale;
+
 void ResetDevice();
 bool UpdateUIScaling(float scale = 1.0f);
 
@@ -84,7 +88,7 @@ void DrawTitleBar(HWND hwnd, const char* title) {
     ImGui::TextUnformatted(title);
 
     bool overBtn = false;
-    float cross_extent = ImGui::GetFontSize() * 0.5f * 0.7071f - 1.0f;
+    float cross_extent = g_Scale * 7.071f - 1.0f;
 
     // Minimize Button
     {
@@ -107,7 +111,7 @@ void DrawTitleBar(HWND hwnd, const char* title) {
         lineLeft.x -= cross_extent;
         lineRight.x += cross_extent;
 
-        ImGui::GetWindowDrawList()->AddLine(lineLeft, lineRight, ImGui::GetColorU32(ImGuiCol_Text), 1.5f * (ImGui::GetFontSize() / 20.0f));
+        ImGui::GetWindowDrawList()->AddLine(lineLeft, lineRight, ImGui::GetColorU32(ImGuiCol_Text), 1.5f * g_Scale);
 
         overBtn |= hovered;
     }
@@ -143,8 +147,8 @@ void DrawTitleBar(HWND hwnd, const char* title) {
         lineBottomRight.x += cross_extent;
         lineBottomRight.y += cross_extent;
 
-        ImGui::GetWindowDrawList()->AddLine(lineBottomRight, lineTopLeft, ImGui::GetColorU32(ImGuiCol_Text), ImGui::GetFontSize() / 20.0f);
-        ImGui::GetWindowDrawList()->AddLine(lineTopRight, lineBottomLeft, ImGui::GetColorU32(ImGuiCol_Text), ImGui::GetFontSize() / 20.0f);     
+        ImGui::GetWindowDrawList()->AddLine(lineBottomRight, lineTopLeft, ImGui::GetColorU32(ImGuiCol_Text), g_Scale);
+        ImGui::GetWindowDrawList()->AddLine(lineTopRight, lineBottomLeft, ImGui::GetColorU32(ImGuiCol_Text), g_Scale);     
 
         overBtn |= hovered;
     }
@@ -522,6 +526,8 @@ bool UpdateUIScaling(float scale)
 
     Gui::LocaleFreeFonts();
     Gui::LocaleCreateMergeFont(20.0f * scale);
+
+    g_Scale = scale;
 
     return Gui::ImplDX9CreateDeviceObjects();
 }

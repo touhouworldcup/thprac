@@ -4,6 +4,10 @@
 
 namespace THPrac {
 namespace TH165 {
+    enum addrs {
+        SCALE_ADDR = 0x509BC4
+    };
+
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
         {
@@ -237,7 +241,7 @@ namespace TH165 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4b3b18, 0x507b70,
             Gui::INGAGME_INPUT_GEN2, 0x4b0ffc, 0x4b0ff8, 0,
-            (*((int32_t*)0x509bac) >> 2) & 0xf);
+            *(float*)SCALE_ADDR);
 
         SetDpadHook(0x40188B, 3);
 

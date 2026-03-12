@@ -14,6 +14,8 @@
 #include "utils/utils.h"
 
 namespace THPrac {
+extern float g_Scale;
+
 void ImRotateStart();
 ImVec2 ImRotationCenter();
 void ImRotateEnd(float rad, ImVec2 center = ImRotationCenter());

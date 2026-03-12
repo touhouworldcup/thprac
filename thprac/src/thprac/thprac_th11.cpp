@@ -2032,7 +2032,7 @@ namespace TH11 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4c3288, 0x4c3d88,
             Gui::INGAGME_INPUT_GEN2, 0x4c92b4, 0x4c92b0, 0,
-            -1);
+            1.0f);
 
         SetDpadHook(0x45749F, 2);
 

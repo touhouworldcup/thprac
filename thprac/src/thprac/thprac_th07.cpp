@@ -1911,7 +1911,7 @@ namespace TH07 {
         // Init
         GameGuiInit(IMPL_WIN32_DX8, (int)&SUPERVISOR->d3d_device, 0x575c20,
             Gui::INGAGME_INPUT_GEN1, 0x4b9e4c, 0x4b9e54, 0x4b9e5c,
-            -1);
+            1.0f);
 
         SetDpadHook(0x430760, 3);
 

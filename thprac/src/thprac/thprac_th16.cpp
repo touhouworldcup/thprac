@@ -8,6 +8,7 @@ namespace TH16 {
         CHARA_ADDR = 0x4A57A4,
         SEASON_ADDR = 0x4A57AC,
         PLAYER_PTR = 0x4a6ef8,
+        SCALE_ADDR = 0x4D9D34,
     };
 
     using std::pair;
@@ -2463,7 +2464,7 @@ namespace TH16 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4c10d8, 0x4d7ce0,
             Gui::INGAGME_INPUT_GEN2, 0x4a50bc, 0x4a50b8, 0,
-            (*((int32_t*)0x4d9d1c) >> 2) & 0xf);
+            *(float*)SCALE_ADDR);
 
         SetDpadHook(0x401B0A, 3);
 

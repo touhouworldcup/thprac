@@ -11,6 +11,7 @@ namespace TH14 {
         CHARA_ADDR = 0x4f5828,
         SUBSHOT_ADDR = 0x4f582c,
         PLAYER_PTR = 0x4db67c,
+        SCALE_ADDR = 0x4F7A6C,
     };
 
     using std::pair;
@@ -2591,7 +2592,7 @@ namespace TH14 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4d8f68, WINDOW_PTR,
             Gui::INGAGME_INPUT_GEN2, 0x4d6884, 0x4d6880, 0,
-            (*((int32_t*)0x4f7a54) >> 2) & 0xf);
+            *(float*)SCALE_ADDR);
 
         SetDpadHook(0x401A8E, 3);
 
