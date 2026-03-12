@@ -84,7 +84,7 @@ void DrawTitleBar(HWND hwnd, const char* title) {
     ImGui::TextUnformatted(title);
 
     bool overBtn = false;
-    constexpr float cross_extent = 20.0f * 0.5f * 0.7071f - 1.0f;
+    float cross_extent = ImGui::GetFontSize() * 0.5f * 0.7071f - 1.0f;
 
     // Minimize Button
     {
@@ -107,7 +107,7 @@ void DrawTitleBar(HWND hwnd, const char* title) {
         lineLeft.x -= cross_extent;
         lineRight.x += cross_extent;
 
-        ImGui::GetWindowDrawList()->AddLine(lineLeft, lineRight, ImGui::GetColorU32(ImGuiCol_Text), 1.5f);         
+        ImGui::GetWindowDrawList()->AddLine(lineLeft, lineRight, ImGui::GetColorU32(ImGuiCol_Text), 1.5f * (ImGui::GetFontSize() / 20.0f));
 
         overBtn |= hovered;
     }
@@ -143,8 +143,8 @@ void DrawTitleBar(HWND hwnd, const char* title) {
         lineBottomRight.x += cross_extent;
         lineBottomRight.y += cross_extent;
 
-        ImGui::GetWindowDrawList()->AddLine(lineBottomRight, lineTopLeft, ImGui::GetColorU32(ImGuiCol_Text));
-        ImGui::GetWindowDrawList()->AddLine(lineTopRight, lineBottomLeft, ImGui::GetColorU32(ImGuiCol_Text));     
+        ImGui::GetWindowDrawList()->AddLine(lineBottomRight, lineTopLeft, ImGui::GetColorU32(ImGuiCol_Text), ImGui::GetFontSize() / 20.0f);
+        ImGui::GetWindowDrawList()->AddLine(lineTopRight, lineBottomLeft, ImGui::GetColorU32(ImGuiCol_Text), ImGui::GetFontSize() / 20.0f);     
 
         overBtn |= hovered;
     }
@@ -327,7 +327,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
         auto setProcDpiAwareness = (PSetProcessDpiAwareness)GetProcAddress(shcore, "SetProcessDpiAwareness");
         auto getDpiForMonitor = (PGetDpiForMonitor)GetProcAddress(shcore, "GetDpiForMonitor");
         if (setProcDpiAwareness && getDpiForMonitor) {
-            setProcDpiAwareness(1);
+            setProcDpiAwareness(2);
             UINT dpiX;
             UINT dpiY;
             getDpiForMonitor(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), 0, &dpiX, &dpiY);
@@ -344,14 +344,12 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
         (float)cr.bottom - (float)cr.top
     };
 
-    Gui::LocaleCreateMergeFont(20.0f);
     if (!UpdateUIScaling(dpiscale > 1.0f ? dpiscale : 1.0f)) {
         return 1;
     }
 
     // Send WM_NCCALCSIZE message immediately
-    SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
-
+    SetWindowPos(hwnd, NULL, 0, 0, 960 * dpiscale, 720 * dpiscale, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     LoadGamesJson();
 
     // Show the window
@@ -488,8 +486,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         IM_ASSERT(LOWORD(wParam) == HIWORD(wParam));
         SetWindowPos(hWnd, NULL, rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top, SWP_NOZORDER);
         UpdateUIScaling((float)LOWORD(wParam) / (float)USER_DEFAULT_SCREEN_DPI);
-    }
         return 0;
+    }
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
@@ -506,13 +504,13 @@ void ResetDevice() {
     Gui::ImplDX9CreateDeviceObjects();
 }
 
-bool UpdateUIScaling(float scale) {
-    // Not rebuilding the font atlas here because it doesn't seem to do anything
+bool UpdateUIScaling(float scale)
+{
     ImGuiIO& io = ImGui::GetIO();
 
     g_IsUITextureIDValid = false;
     Gui::ImplDX9InvalidateDeviceObjects();
-    
+
     // Setup Dear ImGui style
     g_TitleBarHeight = 26.0f * scale;
     ImGuiStyle& style = ImGui::GetStyle();
@@ -521,6 +519,10 @@ bool UpdateUIScaling(float scale) {
     ImGui::GetStyle().ScaleAllSizes(scale);
     style.WindowBorderSize = 0;
     memcpy(style.Colors, styleold.Colors, sizeof(style.Colors)); // Restore colors
+
+    Gui::LocaleFreeFonts();
+    Gui::LocaleCreateMergeFont(20.0f * scale);
+
     return Gui::ImplDX9CreateDeviceObjects();
 }
 }

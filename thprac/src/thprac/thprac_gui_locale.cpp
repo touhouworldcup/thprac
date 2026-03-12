@@ -583,5 +583,17 @@ static ImWchar baseUnicodeRanges[] =
 
         return true;
     }
+
+    void LocaleFreeFonts() {
+        auto& io = ImGui::GetIO();
+
+        io.Fonts->ClearFonts();
+
+        for (auto& conf : io.Fonts->ConfigData) {
+            ImGui::MemFree(conf.FontData);
+        }
+
+        io.Fonts->ConfigData.clear();
+    }
 }
 }

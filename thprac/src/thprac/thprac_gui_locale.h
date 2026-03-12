@@ -20,6 +20,7 @@ namespace Gui {
     bool LocaleCreateFont(float font_size);
     bool LocalAddMergeFont(float font_size, int locale, bool merge);
     bool LocaleCreateMergeFont(float font_size);
+    void LocaleFreeFonts();
 
 // TODO: These can't be refactored into functions as-is, because they depend on
 // the current game's namespace being active where they're used. Fixing this
