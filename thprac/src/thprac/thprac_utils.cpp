@@ -137,11 +137,8 @@ void memswap(void* buf1_, void* buf2_, unsigned int len)
     }
 }
 
-const char* FormatNumberWithCommas(int64_t val)
-{
-    static char buffer[32];
-    static char temp[32];
-
+char* FormatNumberWithCommas(int64_t val, char* buffer) {
+    char temp[32];
     sprintf(temp, "%lld", val);
     int len = strlen(temp);
     int commas = (len - (val < 0 ? 2 : 1)) / 3;

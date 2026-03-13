@@ -646,7 +646,8 @@ struct TH17Info {
 struct TH18Info {
     uint32_t misses;
     uint32_t bombs;
-    uint32_t not_misses;
+    uint32_t not_misses; //autobomb (eirin)
+    char active_uses[12];
 };
 
 struct TH20Info {

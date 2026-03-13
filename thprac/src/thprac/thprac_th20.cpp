@@ -2988,32 +2988,33 @@ namespace TH20 {
         TableNextColumn();
         Text("%d", tracker_info.th20.hyper_breaks);
 
-        TableNextRow();
+        if (thPracParam.mode) {
+            TableNextRow();
 
-        TableNextColumn();
-        TextUnformatted(S(TH_TRACKER_STONE_SUMMONED));
-        TableNextColumn();
-        auto summoned = globals->stone_enemy_count_total;
-        if (summoned % 3 == 0) {
-            TextColored(red, "%d", summoned);
-        } else {
-            TextColored(green, "%d", summoned);
+            TableNextColumn();
+            TextUnformatted(S(TH_TRACKER_STONE_SUMMONED));
+            TableNextColumn();
+            auto summoned = globals->stone_enemy_count_total;
+            if (summoned % 3 == 0) {
+                TextColored(red, "%d", summoned);
+            } else {
+                TextColored(green, "%d", summoned);
+            }
+
+            TableNextRow();
+
+            TableNextColumn();
+            TextUnformatted(S(TH_TRACKER_STONE_KILLED));
+            TableNextColumn();
+            Text("%d", tracker_info.th20.delta_killed);
+
+            TableNextRow();
+
+            TableNextColumn();
+            TextUnformatted(S(TH_TRACKER_STONE_LEVEL));
+            TableNextColumn();
+            PrintStoneLv();
         }
-
-        TableNextRow();
-
-        TableNextColumn();
-        TextUnformatted(S(TH_TRACKER_STONE_KILLED));
-        TableNextColumn();
-        Text("%d", tracker_info.th20.delta_killed);
-
-        TableNextRow();
-
-        TableNextColumn();
-        TextUnformatted(S(TH_TRACKER_STONE_LEVEL));
-        TableNextColumn();
-        PrintStoneLv();        
-
         EndTable();
 
         #undef NEXT

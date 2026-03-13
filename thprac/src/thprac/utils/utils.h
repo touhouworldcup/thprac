@@ -113,7 +113,8 @@ inline long RoundDown(long n, long m) {
 inline long RoundUp(long n, long m) {
     return n >= 0 ? ((n + m - 1) / m) * m : (n / m) * m;
 }
-const char* FormatNumberWithCommas(long long val);
+// Buffer is expected to be 32 chars big
+char* FormatNumberWithCommas(long long val, char* buffer);
 
 inline bool CheckBufPos(const void* bufStart, const void* bufPos, int bufLen) {
     if (bufLen != 0) {
