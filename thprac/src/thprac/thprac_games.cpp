@@ -237,6 +237,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         // Impl
         Gui::ImplDX8Init((IDirect3DDevice8*)*g_gameGuiDevice);
         Gui::ImplWin32Init((HWND)*g_gameGuiHwnd);
+        Gui::ImplDX8AdjustDispSize();
 
         // Hooks
         Gui::ImplDX8HookReset();
@@ -246,6 +247,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         // Impl
         Gui::ImplDX9Init((IDirect3DDevice9*)*g_gameGuiDevice);
         Gui::ImplWin32Init((HWND)*g_gameGuiHwnd);
+        Gui::ImplDX9AdjustDispSize();
 
         // Hooks
         Gui::ImplDX9HookReset();
@@ -254,15 +256,6 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     default:
         break;
     }
-
-    auto& io = ImGui::GetIO();
-    RECT clientRect;
-    GetClientRect(*(HWND*)hwnd_addr, &clientRect);
-
-    io.DisplaySize = {
-        (float)clientRect.right - (float)clientRect.left,
-        (float)clientRect.bottom - (float)clientRect.top,
-    };
 
     // Inputs
     Gui::InGameInputInit(input_gen, reg1, reg2, reg3);
@@ -285,7 +278,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     SetTheme(gSettings.theme);
 
     // Imgui settings
-    io.IniFilename = nullptr;
+    ImGui::GetIO().IniFilename = nullptr;
 }
 
 int GameGuiProgress = 0;
