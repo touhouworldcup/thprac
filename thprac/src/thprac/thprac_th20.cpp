@@ -3009,13 +3009,14 @@ namespace TH20 {
         TableNextColumn();
         Text("%d", tracker_info.th20.delta_killed);
 
-        TableNextRow();
+        if (thPracParam.mode) {
+            TableNextRow();
 
-        TableNextColumn();
-        TextUnformatted(S(TH_TRACKER_STONE_LEVEL));
-        TableNextColumn();
-        PrintStoneLv();        
-
+            TableNextColumn();
+            TextUnformatted(S(TH_TRACKER_STONE_LEVEL));
+            TableNextColumn();
+            PrintStoneLv();
+        }
         EndTable();
 
         #undef NEXT
