@@ -26,6 +26,8 @@ struct LauncherInstance {
     const char* name;
     THGameType type;
     bool apply_thprac;
+    bool allow_oilp = true;
+    bool allow_vpatch = true;
 };
 
 struct LauncherGame {
@@ -530,7 +532,7 @@ static void DetailsPage(LauncherGame* game) {
     ImGui::NewLine();
 
     ImGui::Checkbox(S(THPRAC_GAMES_APPLY_THPRAC), &game->instances[game->selected].apply_thprac);
-
+    ImGui::SameLine();
     bool default_launch = game->default_launch == game->selected;
     if(ImGui::Checkbox(S(THPRAC_GAMES_DEFAULT_LAUNCH), &default_launch)) {
         if (default_launch) {
@@ -542,9 +544,23 @@ static void DetailsPage(LauncherGame* game) {
     ImGui::SameLine();
     Gui::HelpMarker("Not implemented");
 
+    ImGui::Checkbox("Allow OpenInputLagPatch", &game->instances[game->selected].allow_oilp);
+    ImGui::SameLine();
+    ImGui::Checkbox("Allow Vpatch", &game->instances[game->selected].allow_vpatch);
+    ImGui::SameLine();
+    Gui::HelpMarker("If both boxes are ticked and both Vpatch and OpenInputLagPatch are present, OpenInputLagPatch takes priority");
+
     if (Gui::ButtonCentered(S(THPRAC_GAMES_LAUNCH_GAME), 0.85f, { 0.98f, 0.1f })) {
         std::wstring pathW = utf8_to_utf16(game->instances[game->selected].path);
-        RunGame(pathW.c_str(), nullptr, game->instances[game->selected].apply_thprac);
+
+        uint32_t flags = 0;
+        if (game->instances[game->selected].allow_oilp) {
+            flags |= RUN_FLAG_OILP;
+        }
+        if (game->instances[game->selected].allow_vpatch) {
+            flags |= RUN_FLAG_VPATCH;
+        }
+        RunGame(pathW.c_str(), nullptr, flags, game->instances[game->selected].apply_thprac);
     }
 
     if (Gui::Modal(S(THPRAC_GAMES_RENAME_MODAL))) {
