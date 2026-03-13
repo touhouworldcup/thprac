@@ -84,7 +84,45 @@ privDefer<F> defer_func(F f)
 #define MACRO_CAT(arg1, arg2) _MACRO_CAT(arg1, arg2)
 
 void memswap(void* buf1_, void* buf2_, unsigned int len);
-void debug_msg(const char* title, const char* format, ...);
 
+template <typename T>
+constexpr T t_tolower(T c) {
+    if (c >= 'A' && c <= 'Z') {
+        return c | 0x20;
+    }
+    else {
+        return c;
+    }
+}
+
+template<typename T>
+constexpr unsigned t_strlen(const T* str) {
+    unsigned int i = 0;
+    for (; str[i]; i++);
+    return i;
+}
+
+#define SIZED(a) a, sizeof(a)
+
+/** round n down to nearest multiple of m */
+inline long RoundDown(long n, long m) {
+    return n >= 0 ? (n / m) * m : ((n - m + 1) / m) * m;
+}
+
+/** round n up to nearest multiple of m */
+inline long RoundUp(long n, long m) {
+    return n >= 0 ? ((n + m - 1) / m) * m : (n / m) * m;
+}
 // Buffer is expected to be 32 chars big
 char* FormatNumberWithCommas(long long val, char* buffer);
+
+inline bool CheckBufPos(const void* bufStart, const void* bufPos, int bufLen) {
+    if (bufLen != 0) {
+        return ((const unsigned char*)bufPos - (const unsigned char*)bufStart) < bufLen;
+    } else {
+        // Very unsafe, only here because I don't know of a way to obtain a size for the currently running exe.
+        // However, if a file were to cause GetExeInfo to crash, Windows wouldn't be able to load it.
+        return true;
+    }
+}
+#define CHKBUF(buf, pos, len, ret) if (!CheckBufPos(buf, pos, len)) return ret

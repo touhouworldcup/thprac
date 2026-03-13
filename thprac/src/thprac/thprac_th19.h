@@ -210,6 +210,6 @@ struct PlayerBarrier { /* size uncertain */
 
 #include <Windows.h>
 
-void drawEnemyHP(PCONTEXT pCtx, float SCALE);
+void drawEnemyHP(PCONTEXT pCtx);
 
 } }

@@ -6,8 +6,10 @@
 #define write_fs_byte(offset, data) __writefsbyte(offset, data)
 #define write_fs_word(offset, data) __writefsword(offset, data)
 #define write_fs_dword(offset, data) __writefsdword(offset, data)
-
+#include "utils.h"
 #include <Windows.h>
+typedef LONG NTSTATUS;
+
 #pragma warning(disable : 4201)
 
 /// Internal Windows Structs
@@ -22,6 +24,96 @@ Rest in Peace:
 Geoff Chappell
 */
 
+struct UNICODE_STRING {
+    USHORT Length;
+    USHORT MaximumLength;
+    PWSTR Buffer;
+};
+
+typedef UNICODE_STRING* PUNICODE_STRING;
+
+static inline constexpr UNICODE_STRING MakeUnicodeString(const wchar_t* str, size_t length) {
+    if (length > 0x7FFEu) {
+        length = 0x7FFEu;
+    }
+    length *= sizeof(wchar_t);
+    return {
+        (USHORT)length,
+        (USHORT)(length + sizeof(wchar_t)),
+        (PWSTR)str
+    };
+}
+
+static inline constexpr UNICODE_STRING MakeUnicodeString(const wchar_t* str) {
+    return MakeUnicodeString(str, t_strlen(str) + 1);
+}
+
+// Constexpr reimplementation of RtlInitUnicodeString
+static inline constexpr void RtlInitUnicodeString(UNICODE_STRING* out, const wchar_t* str) {
+    *out = MakeUnicodeString(str);
+}
+
+// %wZ is a printf format for UNICODE_STRING
+static inline constexpr UNICODE_STRING operator""_wZ(const wchar_t* str, size_t length) {
+    return MakeUnicodeString(str, length);
+}
+
+typedef struct _OBJECT_ATTRIBUTES {
+    ULONG Length;
+    HANDLE RootDirectory;
+    PUNICODE_STRING ObjectName;
+    ULONG Attributes;
+    PVOID SecurityDescriptor;
+    PVOID SecurityQualityOfService;
+} OBJECT_ATTRIBUTES, *POBJECT_ATTRIBUTES;
+
+#define InitializeObjectAttributes(p, n, a, r, s) do { \
+        (p)->Length = sizeof(OBJECT_ATTRIBUTES);  \
+        (p)->RootDirectory = r;                   \
+        (p)->Attributes = a;                      \
+        (p)->ObjectName = n;                      \
+        (p)->SecurityDescriptor = s;              \
+        (p)->SecurityQualityOfService = NULL;     \
+    } while (0)
+
+typedef struct _CURDIR {
+    UNICODE_STRING DosPath;
+    HANDLE Handle;
+} CURDIR;
+
+typedef struct _RTL_USER_PROCESS_PARAMETERS RTL_USER_PROCESS_PARAMETERS;
+struct _RTL_USER_PROCESS_PARAMETERS {
+    ULONG MaximumLength;
+    ULONG Length;
+    ULONG Flags;
+    ULONG DebugFlags;
+    HANDLE ConsoleHandle;
+    ULONG ConsoleFlags;
+    // 4 bytes of padding
+    HANDLE StandardInput;
+    HANDLE StandardOutput;
+    HANDLE StandardError;
+    CURDIR CurrentDirectory;
+    UNICODE_STRING DllPath;
+    UNICODE_STRING ImagePathName;
+    UNICODE_STRING CommandLine;
+    PVOID Environment;
+    ULONG StartingX;
+    ULONG StartingY;
+    ULONG CountX;
+    ULONG CountY;
+    ULONG CountCharsX;
+    ULONG CountCharsY;
+    ULONG FillAttribute;
+    ULONG WindowFlags;
+    ULONG ShowWindowFlags;
+    // 4 bytes of padding
+    UNICODE_STRING WindowTitle;
+    UNICODE_STRING DesktopInfo;
+    UNICODE_STRING ShellInfo;
+    UNICODE_STRING RuntimeData;
+};
+
 typedef struct _PEB PEB;
 struct _PEB {
     BOOLEAN InheritedAddressSpace;
@@ -34,7 +126,7 @@ struct _PEB {
     HANDLE Mutant;
     PVOID ImageBaseAddress;
     PVOID Ldr; // PEB_LDR_DATA*
-    PVOID ProcessParameters; // RTL_USER_PROCESS_PARAMETERS*
+    RTL_USER_PROCESS_PARAMETERS* ProcessParameters; // RTL_USER_PROCESS_PARAMETERS*
     PVOID SubSystemData;
     HANDLE ProcessHeap;
     RTL_CRITICAL_SECTION* FastPebLock;
@@ -117,11 +209,6 @@ typedef struct _GDI_TEB_BATCH {
     ULONG_PTR HDC;
     ULONG Buffer[310];
 } GDI_TEB_BATCH, *PGDI_TEB_BATCH;
-typedef struct _UNICODE_STRING {
-    USHORT Length;
-    USHORT MaximumLength;
-    PWSTR Buffer;
-} UNICODE_STRING, *PUNICODE_STRING;
 typedef struct _TEB TEB;
 struct _TEB {
     // NT_TIB NtTib;
@@ -204,6 +291,9 @@ write_fs_dword(offsetof(TEB, member), (data)) \
 
 #define CurrentModuleHandle ((HMODULE)CurrentImageBase)
 
+#define CurrentProcessHandle ((HANDLE)(LONG_PTR)-1)
+
+
 // Things from winternl.h.
 // I can't include that header because it conflicts with this header
 
@@ -225,14 +315,13 @@ typedef enum _PROCESSINFOCLASS {
     ProcessBreakOnTermination = 29
 } PROCESSINFOCLASS;
 
-extern "C" __kernel_entry NTSTATUS
-    NTAPI
-    NtQueryInformationProcess(
-        IN HANDLE ProcessHandle,
-        IN PROCESSINFOCLASS ProcessInformationClass,
-        OUT PVOID ProcessInformation,
-        IN ULONG ProcessInformationLength,
-        OUT PULONG ReturnLength OPTIONAL);
+extern "C" NTSTATUS NTAPI NtQueryInformationProcess(
+    HANDLE ProcessHandle,
+    PROCESSINFOCLASS ProcessInformationClass,
+    PVOID ProcessInformation,
+    ULONG ProcessInformationLength,
+    PULONG ReturnLength
+);
 
 // KUSER_SHARED_DATA struct definition so that we don't have to depend on the WDK just for ntddk.h
 // KUSER_SHARED_DATA itself comes from MSDN https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/ns-ntddk-kuser_shared_data
@@ -391,3 +480,65 @@ struct KUSER_SHARED_DATA {
 };
 
 #define Kuser_Shared_Data ((KUSER_SHARED_DATA*)0x7FFE0000)
+
+extern "C" ULONG RtlNtStatusToDosError(NTSTATUS Status);
+
+extern "C" NTSTATUS NTAPI NtOpenProcessToken(HANDLE ProcessHandle, ACCESS_MASK DesiredAccess, PHANDLE TokenHandle);
+extern "C" NTSTATUS NTAPI NtQueryInformationToken(HANDLE TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, PVOID TokenInformation, ULONG TokenInformationLength, PULONG ReturnLength);
+
+typedef enum _KEY_VALUE_INFORMATION_CLASS {
+    KeyValueBasicInformation,
+    KeyValueFullInformation,
+    KeyValuePartialInformation,
+    KeyValueFullInformationAlign64,
+    KeyValuePartialInformationAlign64,
+    KeyValueLayerInformation,
+    MaxKeyValueInfoClass
+} KEY_VALUE_INFORMATION_CLASS;
+
+// Since we use our own header for NT API functions and structs anyways, might as well change these definitions to be better.
+template <typename D = UCHAR[1]>
+struct KEY_VALUE_PARTIAL_INFORMATION {
+    ULONG TitleIndex;
+    ULONG Type;
+    ULONG DataLength;
+    D Data;
+};
+
+template <typename D = UCHAR[1]>
+struct KEY_VALUE_PARTIAL_INFORMATION_ALIGN64 {
+    ULONG Type;
+    ULONG DataLength;
+    D Data;
+};
+
+template <typename D = UCHAR[1]>
+struct KEY_VALUE_FULL_INFORMATION {
+    ULONG TitleIndex;
+    ULONG Type;
+    ULONG DataOffset;
+    ULONG DataLength;
+    ULONG NameLength;
+    D Name;
+};
+
+template <typename D = UCHAR[1]>
+struct KEY_VALUE_BASIC_INFORMATION {
+    ULONG TitleIndex;
+    ULONG Type;
+    ULONG NameLength;
+    D Name;
+};
+
+extern "C" NTSYSAPI NTSTATUS NTAPI NtOpenKey(
+    PHANDLE KeyHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes);
+
+extern "C" NTSYSAPI NTSTATUS NTAPI NtQueryValueKey(
+    HANDLE KeyHandle,
+    UNICODE_STRING* ValueName,
+    KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
+    PVOID KeyValueInformation,
+    ULONG Length,
+    PULONG ResultLength);

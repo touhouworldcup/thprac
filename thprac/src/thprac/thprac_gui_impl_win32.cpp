@@ -52,6 +52,10 @@ namespace Gui {
     unsigned int g_wndKeyFrameStatus[256] = {};
     bool g_isFullscreenCache = false;
 
+    HWND ImplWin32GetHwnd() {
+        return g_hWnd;
+    }
+
     // Key
     void ImplWin32UpdKeyStatus(UINT msg, WPARAM wParam, LPARAM lParam)
     {

@@ -5,29 +5,7 @@
 
 namespace THPrac
 {
-    void HelpMarker(const char* desc)
-    {
-        ImGui::TextDisabled("(?)");
-        if (ImGui::IsItemHovered()) {
-            ImGui::BeginTooltip();
-            ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-            ImGui::TextUnformatted(desc);
-            ImGui::PopTextWrapPos();
-            ImGui::EndTooltip();
-        }
-    }
-
-    void CustomMarker(const char* text, const char* desc)
-    {
-        ImGui::TextDisabled(text);
-        if (ImGui::IsItemHovered()) {
-            ImGui::BeginTooltip();
-            ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-            ImGui::TextUnformatted(desc);
-            ImGui::PopTextWrapPos();
-            ImGui::EndTooltip();
-        }
-    }
+    float g_Scale = 1.0f;
 
     int rotation_start_index;
     void ImRotateStart()
@@ -698,6 +676,87 @@ namespace THPrac
             ImGuiIO& io = ImGui::GetIO();
             ImVec2 posReal = { pos.x * io.DisplaySize.x, pos.y * io.DisplaySize.y };
             return ImGui::SetNextWindowPos(posReal, cond, pivot);
+        }
+        void TextCentered(const char* text, float wndX) {
+            ImGui::SetCursorPosX((wndX - ImGui::CalcTextSize(text).x) / 2.0f);
+            ImGui::TextUnformatted(text);
+        }
+        float Gui::GetRelWidth(float rel) {
+            return ImGui::GetIO().DisplaySize.x * rel;
+        }
+        float GetRelHeight(float rel) {
+            return ImGui::GetIO().DisplaySize.y * rel;
+        }
+        void CustomMarker(const char* text, const char* desc) {
+            ImGui::TextDisabled(text);
+            if (ImGui::IsItemHovered()) {
+                ImGui::BeginTooltip();
+                ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+                ImGui::TextUnformatted(desc);
+                ImGui::PopTextWrapPos();
+                ImGui::EndTooltip();
+            }
+        }
+        bool Modal(const char* modalTitle, ImVec2 sizeRel)
+        {
+            auto wndSize = ImGui::GetWindowSize();
+            wndSize.x *= 0.5f;
+            wndSize.y *= 0.5f;
+            ImGui::SetNextWindowPos(wndSize, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+            if (sizeRel.x != 0.0f || sizeRel.y != 0.0f) {
+                ImGui::SetNextWindowSize(sizeRel, ImGuiCond_Always);
+            }
+            return ImGui::BeginPopupModal(modalTitle, nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+        }
+        bool YesNoChoice(const char* buttonText1, const char* buttonText2, float buttonSize)
+        {
+            if (std::bit_cast<uint32_t>(buttonSize) == 0xFFFFFFFF) {
+                buttonSize = ImGui::GetItemRectSize().x / 2.05f;
+            } else {
+                buttonSize = buttonSize * ImGui::GetFontSize();
+            }
+
+            if (ImGui::Button(buttonText1, ImVec2(buttonSize, 0))) {
+                ImGui::CloseCurrentPopup();
+                return true;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button(buttonText2, ImVec2(buttonSize, 0))) {
+                ImGui::CloseCurrentPopup();
+            }
+            return false;
+        }
+        bool ButtonYesNoConfirm(
+            const char* buttonText,
+            const char* modalTitle,
+            const char* modalText,
+            float buttonSize,
+            const char* buttonText1,
+            const char* buttonText2) {
+            bool result = false;
+
+            ButtonModal(buttonText, modalTitle);
+            if (Modal(modalTitle)) {
+                ImGui::TextUnformatted(modalText);
+                if (YesNoChoice(buttonText1, buttonText2, buttonSize)) {
+                    result = true;
+                }
+                ImGui::EndPopup();
+            }
+
+            return result;
+        }
+        bool ButtonRight(const char* text, float rel, const ImVec2& size_arg) {
+            auto& style = ImGui::GetStyle();
+            auto label_size = ImGui::CalcTextSize(text);
+            ImVec2 size = ImGui::CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
+
+            if (rel == 0) {
+                rel = ImGui::GetWindowWidth() - ImGui::GetStyle().WindowPadding.x;
+            }
+
+            ImGui::SetCursorPosX(rel - size.x);
+            return ImGui::Button(text, size);
         }
     }
 }

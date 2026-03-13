@@ -131,6 +131,22 @@ namespace THPrac
 
 
 		// Api functions
+        void ImplDX8AdjustDispSize()
+        {
+            LPDIRECT3DSURFACE8 backBuffer;
+            D3DSURFACE_DESC backBufferDesc;
+            g_pd3dDevice->lpVtbl->GetBackBuffer(g_pd3dDevice, 0, D3DBACKBUFFER_TYPE_MONO, &backBuffer);
+            backBuffer->lpVtbl->GetDesc(backBuffer, &backBufferDesc);
+            backBuffer->lpVtbl->Release(backBuffer);
+
+            auto& io = ::ImGui::GetIO();
+            io.DisplaySize.x = (float)backBufferDesc.Width;
+            io.DisplaySize.y = (float)backBufferDesc.Height;
+        }
+
+		IDirect3DDevice8* ImplDX8GetDevice8() {
+			return g_pd3dDevice;
+	    }
 		bool ImplDX8Init(IDirect3DDevice8* device)
 		{
 			ImGuiIO& io = ImGui::GetIO();
