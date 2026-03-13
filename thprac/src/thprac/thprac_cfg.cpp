@@ -257,7 +257,7 @@ void GuiSettings() {
     ImGui::TextUnformatted("Global settings");
     ImGui::Separator();
 
-    ImGui::PushItemWidth(100.0f);
+    ImGui::PushItemWidth(ImGui::GetFontSize() * 8.0f);
     if (ImGui::Combo(S(THPRAC_SETTING_LANGUAGE), (int*)&gSettings.language, "中文\0English\0日本語\0\0")) {
         Gui::LocaleSet(gSettings.language);
     }
@@ -293,14 +293,14 @@ void GuiSettings() {
     ImGui::SameLine();
     Gui::HelpMarker("All of these settings only apply after a restart.");
     ImGui::Separator();
-    ImGui::SetNextItemWidth(150.0f);
+    ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8.0f);
     ImGui::Combo(S(THPRAC_EXISTING_GAME_ACTION), (int*)&gSettings.existing_game_launch_action, S(THPRAC_EXISTING_GAME_ACTION_OPTION));
     ImGui::Checkbox(S(THPRAC_DONT_SEARCH_ONGOING), &gSettings.dont_search_ongoing_game);
     ImGui::Checkbox(S(THPRAC_ADMIN_RIGHTS), &gSettings.thprac_admin_rights);
     ImGui::NewLine();
     ImGui::TextUnformatted("Update behavior");
     ImGui::Separator();
-    ImGui::PushItemWidth(250.0f);
+    ImGui::PushItemWidth(ImGui::GetFontSize() * 16.0f);
     ImGui::Combo(S(THPRAC_FILENAME_AFTER_UPDATE), (int*)&gSettings.filename_after_update, S(THPRAC_FILENAME_AFTER_UPDATE_OPTION));
     ImGui::Combo(S(THPRAC_CHECK_UPDATE_WHEN), (int*)&gSettings.check_update, S(THPRAC_CHECK_UPDATE_WHEN_OPTION));
     ImGui::PopItemWidth();
@@ -371,12 +371,14 @@ void GuiSettings() {
     }
 
     for (const auto& key : keys) {
+        ImGui::SetNextItemWidth(ImGui::GetFontSize() * 24.0f);
         Gui::ChordEditDropdown(key.label, key.chord);
         if (key.has_conflict) {
             ImGui::SameLine();
             Gui::CustomMarker("(!)", S(THPRAC_HOTKEY_SUBMASK_WARNING));
         }
     }
+    ImGui::SetNextItemWidth(ImGui::GetFontSize() * 24.0f);
     Gui::ChordEditDropdown(key_language.label, key_language.chord);
     if (key_language.has_conflict) {
         ImGui::SameLine();
