@@ -26,7 +26,6 @@ struct LauncherInstance {
     const char* name;
     THGameType type;
     bool apply_thprac;
-    remote_init_config initParam = {};
 };
 
 struct LauncherGame {
@@ -462,9 +461,11 @@ static void DetailsPage(LauncherGame* game) {
     }
     ImGui::PopStyleColor(2);
     ImGui::EndChild();
+
     if (ImGui::Button(S(THPRAC_GAMES_RENAME))) {
-        if (game->instances[game->selected].name) {
-            strncpy(instRenameBuf, game->instances[game->selected].name, 255);
+        LauncherInstance& inst = game->instances[game->selected];
+        if (inst.name) {
+            strncpy(instRenameBuf, inst.name, 255);
         }
         else {
             memset(instRenameBuf, 0, 256);
@@ -496,12 +497,9 @@ static void DetailsPage(LauncherGame* game) {
             game->instances[game->inst_count] = {};
         }
     }
-
-    auto& inst = game->instances[game->selected];
-
     ImGui::SameLine();
     if (ImGui::Button(S(THPRAC_GAMES_OPEN_FOLDER))) {
-        std::wstring pathW = utf8_to_utf16(inst.path);
+        std::wstring pathW = utf8_to_utf16(game->instances[game->selected].path);
         size_t idx = pathW.rfind(L"\\");
         if (idx != std::wstring::npos) {
             pathW.resize(idx);
@@ -522,35 +520,31 @@ static void DetailsPage(LauncherGame* game) {
     }
     ImGui::SameLine();
     if (ImGui::Button(S(THPRAC_GAMES_LAUNCH_CUSTOM))) {
-        std::wstring pathW = utf8_to_utf16(inst.path);
+        std::wstring pathW = utf8_to_utf16(game->instances[game->selected].path);
         size_t idx = pathW.rfind(L"\\");
         if (idx != std::wstring::npos) {
             pathW.resize(idx);
-            LaunchCustom(pathW.c_str(), inst.type);
+            LaunchCustom(pathW.c_str(), game->instances[game->selected].type);
         }
     }
     ImGui::NewLine();
 
     ImGui::Checkbox(S(THPRAC_GAMES_APPLY_THPRAC), &game->instances[game->selected].apply_thprac);
-    ImGui::SameLine();
+
     bool default_launch = game->default_launch == game->selected;
-    if (ImGui::Checkbox(S(THPRAC_GAMES_DEFAULT_LAUNCH), &default_launch)) {
+    if(ImGui::Checkbox(S(THPRAC_GAMES_DEFAULT_LAUNCH), &default_launch)) {
         if (default_launch) {
             game->default_launch = game->selected;
         } else {
             game->default_launch = -1;
         }
     }
-
-    Gui::AntiCheckbox("Allow Vpatch", &inst.initParam.forbidVpatch);
     ImGui::SameLine();
-    Gui::AntiCheckbox("Allow OpenInputLagPatch", &inst.initParam.forbidOILP);
-    ImGui::SameLine();
-    Gui::HelpMarker("These tickboxes determine if those additional patches are allowed to be injected into the game, if they are present. If both are present, OpenInputLagPatch takes priority over Vpatch");
+    Gui::HelpMarker("Not implemented");
 
     if (Gui::ButtonCentered(S(THPRAC_GAMES_LAUNCH_GAME), 0.85f, { 0.98f, 0.1f })) {
         std::wstring pathW = utf8_to_utf16(game->instances[game->selected].path);
-        RunGame(pathW.c_str(), nullptr, game->instances[game->selected].apply_thprac, &game->instances[game->selected].initParam);
+        RunGame(pathW.c_str(), nullptr, game->instances[game->selected].apply_thprac);
     }
 
     if (Gui::Modal(S(THPRAC_GAMES_RENAME_MODAL))) {
