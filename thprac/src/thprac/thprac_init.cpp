@@ -14,54 +14,14 @@
 
 namespace THPrac {
 
-bool TryLoadOILP() {
-    return LoadLibraryW(L"openinputlagpatch.dll");
-}
-
-bool TryLoadVpatch() {
-    WIN32_FIND_DATAW find = {};
-    HANDLE hFind = FindFirstFileW(L"vpatch*.dll", &find);
-    if (!hFind) {
-        return false;
-    }
-    do {
-        if (CheckDLLFunction(find.cFileName, "_Initialize@4") && LoadLibraryW(find.cFileName)) {
-            goto vpatch_loaded;
-        }   
-    } while (FindNextFileW(hFind, &find));
-    FindClose(hFind);
-    return false;
-vpatch_loaded:
-    FindClose(hFind);
-    return true;
-}
-
-inline void LoadVpatchOrOILP(remote_init_config* conf) {
-    if (!conf->newProcess) {
-        return;
-    }
-
-    if (!conf->forbidOILP && TryLoadOILP()) {
-        return;
-    }
-
-    if (!conf->forbidVpatch && TryLoadVpatch()) {
-        return;
-    }
-}
-
-
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 void RemoteInit() {
-    auto* conf = RemoteGetConfig();
-    // No remote shellcode buffer, no remote init config, we are not being injected
-    if (!conf) {
+    if ((PVOID)(&__ImageBase) == CurrentPeb()->ImageBaseAddress) {
         return;
     }
+
     if (const auto* ver = IdentifyExe((uint8_t*)CurrentPeb()->ImageBaseAddress, 0)) {
         log_init(false, gSettings.console);
-
-        LoadVpatchOrOILP(conf);
-
         VEHHookInit();
         ver->initFunc();
         ExitThread(0);

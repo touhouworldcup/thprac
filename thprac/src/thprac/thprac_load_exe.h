@@ -22,20 +22,18 @@ __declspec(align(16)) struct remote_param {
     char sLoadErrDllName[MAX_PATH];
 };
 
-__declspec(align(16)) struct remote_init_config {
-    bool newProcess = true;
-    bool forbidVpatch = false;
-    bool forbidOILP = false;
+enum RunFlags {
+    RUN_FLAG_OILP = 1 << 0,
+    RUN_FLAG_VPATCH = 1 << 1,
 };
 
 uintptr_t GetProcessModuleBase(HANDLE hProc);
 const THGameVersion* CheckOngoingGameByPID(DWORD pid, uintptr_t* base, HANDLE* pOutHandle);
 bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game);
 bool WriteTHPracSig(HANDLE hProc, uintptr_t base);
-bool LoadSelf(HANDLE hProcess, remote_init_config* conf = nullptr);
+bool LoadSelf(HANDLE hProcess);
 bool ApplyToProcById(DWORD pid);
-void RunGame(const wchar_t* exeFn, wchar_t* cmdLine, bool withThprac = true, remote_init_config* conf = nullptr);
-remote_init_config* RemoteGetConfig();
+void RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags = 0xFFFFFFFF, bool withThprac = true);
 bool CheckDLLFunction(const wchar_t* path, const char* funcName);
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;

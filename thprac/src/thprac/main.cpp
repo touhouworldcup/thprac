@@ -61,8 +61,7 @@ int WINAPI wWinMain(
     };
 
     CurrentCmd curCmd = CMD_NONE;
-
-    remote_init_config rInitConf = {};
+    uint32_t flags = 0xFFFFFFFF;
 
     for (int i = 0; i < argc; i++) {
         if (curCmd == CMD_ATTACH) {
@@ -83,12 +82,12 @@ int WINAPI wWinMain(
         }
 
         if (wcscmp(argv[i], L"--without-vpatch") == 0) {
-            rInitConf.forbidVpatch = true;
+            flags &= ~RUN_FLAG_VPATCH;
             continue;
         }
-
+        
         if (wcscmp(argv[i], L"--without-oilp") == 0) {
-            rInitConf.forbidOILP = true;
+            flags &= ~RUN_FLAG_OILP;
             continue;
         }
 
@@ -111,7 +110,7 @@ int WINAPI wWinMain(
                 if (gGameVersions[j].exeInfo == exe_info) {
                     wchar_t* launch_cmdline = wcsstr(pCmdLine, argv[i]) + t_strlen(argv[i]);
 
-                    RunGame(argv[i], launch_cmdline, true, &rInitConf);
+                    RunGame(argv[i], launch_cmdline, flags);
                     return 0;
                 }
             }
@@ -151,7 +150,7 @@ int WINAPI wWinMain(
             } else {
             run_this_game:
                 FindClose(hFind);
-                RunGame(find.cFileName, nullptr);
+                RunGame(find.cFileName, nullptr, flags);
                 return 0;
             }
         } while (FindNextFileW(hFind, &find));
