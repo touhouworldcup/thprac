@@ -18,6 +18,7 @@ namespace TH20 {
         WINDOW_PTR = 0x1b6758,
         GAME_SIDE0 = 0x1ba568,
         PLAYER_PTR = GAME_SIDE0 + 0x4,
+        ENEMY_MGR_PTR = GAME_SIDE0 + 0x8,
         DMG_SRC_MGR_PTR = GAME_SIDE0 + 0x28,
         MODEFLAGS = GAME_SIDE0 + 0x6c,
         STAGE_NUM = GAME_SIDE0 + 0x88 + 0x1f4,
@@ -933,7 +934,19 @@ namespace TH20 {
 
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F7", VK_F7)
         PATCH_HK(0x86FDD, "EB"),
-        PATCH_HK(0xA871E, "31")
+        PATCH_HK(0xA871E, "31"),
+        EHOOK_HK(0x13b5f2, 4, { // freeze ECL sub time for stage's MainLatter
+            const uint32_t subID = *(uint32_t*)(pCtx->Eax+0x4);
+            const uint32_t stage = GetMemContent(RVA(STAGE_NUM)) - 1;
+            constexpr uint32_t mainLatterIDs[7] = { 95, 102, 0, 82, 80, 0, 0 };
+
+            if (mainLatterIDs[stage] && subID == mainLatterIDs[stage]) {
+                const bool bossExists = (bool)GetMemContent(RVA(ENEMY_MGR_PTR), 0x10 + 0x44);
+
+                if (bossExists) // then ecl delta time = 0
+                    *(float*)(pCtx->Ebx + 0x8) = 0.0f;
+            }
+        })
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F8", VK_F8)
