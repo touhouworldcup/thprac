@@ -4,6 +4,7 @@
 #include "utils/wininternal.h"
 
 #include "thprac_cfg.h"
+#include "thprac_log.h"
 #include "thprac_load_exe.h"
 #include "thprac_gui_locale.h"
 #include "thprac_identify.h"
@@ -25,6 +26,9 @@ struct LauncherInstance {
     const char* path;
     const char* name;
     THGameType type;
+
+    // What version a game is is specific to the instance.
+    uint8_t ver = 0;
     bool apply_thprac;
     bool allow_oilp = true;
     bool allow_vpatch = true;
@@ -35,6 +39,12 @@ struct LauncherGame {
     th_glossary_t title;
     int default_launch = -1;
     unsigned int selected = 0;
+
+    // Multiple versions for the same game are guaranteed to be sequential in memory,
+    // so this is safe.
+    const THGameVersion* versions;
+    size_t ver_count;
+
     const wchar_t* appdataPath = nullptr;
 
     // TODO: an std::vector would look a lot cleaner here, but I don't want the compiler
@@ -68,130 +78,188 @@ LauncherGame games[ID_TH_MAX - 1] = {
     {
         .id = ID_TH06,
         .title = TH06_TITLE,
+        .versions = gGameVersions + VER_TH06,
+        .ver_count = 1,
     },
     {
         .id = ID_TH07,
         .title = TH07_TITLE,
+        .versions = gGameVersions + VER_TH07,
+        .ver_count = 1,
     },
     {
         .id = ID_TH08,
         .title = TH08_TITLE,
+        .versions = gGameVersions + VER_TH08,
+        .ver_count = 1,
     },
     {
         .id = ID_TH09,
         .title = TH09_TITLE,
+        .versions = gGameVersions + VER_TH09,
+        .ver_count = 1,
     },
     {
         .id = ID_TH10,
         .title = TH10_TITLE,
+        .versions = gGameVersions + VER_TH10,
+        .ver_count = 1,
     },
     {
         .id = ID_TH11,
         .title = TH11_TITLE,
+        .versions = gGameVersions + VER_TH11,
+        .ver_count = 1,
     },
     {
         .id = ID_TH12,
         .title = TH12_TITLE,
+        .versions = gGameVersions + VER_TH12,
+        .ver_count = 1,
     },
     {
         .id = ID_TH13,
         .title = TH13_TITLE,
+        .versions = gGameVersions + VER_TH13,
+        .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th13",
     },
     {
         .id = ID_TH14,
         .title = TH14_TITLE,
+        .versions = gGameVersions + VER_TH14,
+        .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th14",
     },
     {
         .id = ID_TH15,
         .title = TH15_TITLE,
+        .versions = gGameVersions + VER_TH15,
+        .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th15",
     },
     {
         .id = ID_TH16,
         .title = TH16_TITLE,
+        .versions = gGameVersions + VER_TH16,
+        .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th16",
     },
     {
         .id = ID_TH17,
         .title = TH17_TITLE,
+        .versions = gGameVersions + VER_TH17,
+        .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th17",
     },
     {
         .id = ID_TH18,
         .title = TH18_TITLE,
+        .versions = gGameVersions + VER_TH18,
+        .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th18",
     },
     {
         .id = ID_TH19,
         .title = TH19_TITLE,
+        .versions = gGameVersions + VER_TH19_V1_00A,
+        .ver_count = 2,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th19",
     },
     {
         .id = ID_TH20,
         .title = TH20_TITLE,
+        .versions = gGameVersions + VER_TH20,
+        .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th20",
     },
     {
         .id = ID_ALCOSTG,
         .title = ALCOSTG_TITLE,
+        .versions = gGameVersions + VER_ALCOSTG,
+        .ver_count = 1,
     },
     {
         .id = ID_TH095,
         .title = TH095_TITLE,
+        .versions = gGameVersions + VER_TH095,
+        .ver_count = 1,
     },
     {
         .id = ID_TH125,
         .title = TH125_TITLE,
+        .versions = gGameVersions + VER_TH125,
+        .ver_count = 1,
     },
     {
         .id = ID_TH128,
         .title = TH128_TITLE,
+        .versions = gGameVersions + VER_TH128,
+        .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th128",
     },
     {
         .id = ID_TH143,
         .title = TH143_TITLE,
+        .versions = gGameVersions + VER_TH143,
+        .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th143",
     },
     {
         .id = ID_TH165,
         .title = TH165_TITLE,
+        .versions = gGameVersions + VER_TH165,
+        .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th165",
     },
     {
         .id = ID_TH185,
         .title = TH185_TITLE,
+        .versions = gGameVersions + VER_TH185,
+        .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th185",
     },
     {
         .id = ID_TH075,
         .title = TH075_TITLE,
+        .versions = gGameVersions + VER_TH075,
+        .ver_count = 1,
     },
     {
         .id = ID_TH105,
         .title = TH105_TITLE,
+        .versions = gGameVersions + VER_TH105,
+        .ver_count = 1,
     },
     {
         .id = ID_TH123,
         .title = TH123_TITLE,
+        .versions = gGameVersions + VER_TH123,
+        .ver_count = 1,
     },
     {
         .id = ID_TH135,
         .title = TH135_TITLE,
+        .versions = gGameVersions + VER_TH135,
+        .ver_count = 1,
     },
     {
         .id = ID_TH145,
         .title = TH145_TITLE,
+        .versions = gGameVersions + VER_TH145,
+        .ver_count = 1,
     },
     {
         .id = ID_TH155,
         .title = TH155_TITLE,
+        .versions = gGameVersions + VER_TH155,
+        .ver_count = 1,
     },
     {
         .id = ID_TH175,
         .title = TH175_TITLE,
+        .versions = gGameVersions + VER_TH175,
+        .ver_count = 1,
     },
 };
 struct {
@@ -233,14 +301,37 @@ static void InitLauncherGame(LauncherGame* game, yyjson_val* json) {
         if (type > TYPE_UNKNOWN) {
             type = TYPE_ERROR;
         }
-        
-        instances[valid_insts_count] = {
-            .path = path,
-            .name = name,
-            .type = (THGameType)type,
-            .apply_thprac = apply_thprac,
-        };
-        valid_insts_count++;
+
+        uint8_t ver_off = 0xFF;
+        if(yyjson_eval_numeric(yyjson_obj_get(cur, "ver"), &ver_off)); else {
+            log_printf("Warning: instance %s has no version number, reidentifying...\r\n", path);
+            goto fresh_identify;
+        }
+
+        if (game->versions + ver_off >= game->versions + VER_MAX) {
+            log_printf("Warning: instance %s specifies invalid version number\r\n", path);
+fresh_identify:
+            const THGameVersion* ver = IdentifyExe(utf8_to_utf16(path).c_str());
+            if (ver) {
+                ver_off = ver - game->versions;
+            } else {
+                log_printf("Error: failed to identify version number for %s\r\n", path);
+                continue;
+            }
+        }
+
+        if (ver_off < game->ver_count) {
+            instances[valid_insts_count] = {
+                .path = path,
+                .name = name,
+                .type = (THGameType)type,
+                .ver = ver_off,
+                .apply_thprac = apply_thprac,
+            };
+            valid_insts_count++;
+        } else {
+            log_printf("Error: version offset %d for instance %s too large\r\n", ver_off, path);
+        }
     }
 
     if (!valid_insts_count) {
@@ -296,6 +387,7 @@ void SaveGamesJson() {
             yyjson_mut_val* inst = yyjson_mut_arr_add_obj(doc, insts);
             
             yyjson_mut_obj_add_str(doc, inst, "name", game.instances[i].name);
+            yyjson_mut_obj_add_int(doc, inst, "ver", game.instances[i].ver);
             yyjson_mut_obj_add_int(doc, inst, "type", game.instances[i].type);
             yyjson_mut_obj_add_str(doc, inst, "path", game.instances[i].path);
             yyjson_mut_obj_add_bool(doc, inst, "apply_thprac", game.instances[i].apply_thprac);
