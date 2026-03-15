@@ -412,7 +412,7 @@ bool TryLoadVpatch(HANDLE hProcess, const wchar_t* exeDir) {
     return false;
 }
 
-void RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags, bool withThprac) {   
+static bool RunGameImpl(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags) {
     STARTUPINFOW si = {
         .cb = sizeof(si),
     };
@@ -430,7 +430,7 @@ void RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags, bool withTh
     }
 
     if (!ret) {
-        return;
+        return false;
     }
 
     bool res = false;
@@ -446,7 +446,7 @@ void RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags, bool withTh
         TryLoadVpatch(pi.hProcess, exeDir.c_str());
     }
 
-    if (withThprac) {
+    if (flags & RUN_FLAG_THPRAC) {
         LoadSelf(pi.hProcess);
     }
 
@@ -455,7 +455,48 @@ void RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags, bool withTh
     // TODO: determine if these should be returned
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
+
+    return true;
 }
 
+bool RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags) {
+    if (flags & RUN_FLAG_SKIP_IDENTIFY) {
+        return RunGameImpl(exeFn, cmdLine, flags);
+    }
+
+    MappedFile f(exeFn);
+    if (!f.fileMapView) {
+        return false;
+    }
+    auto exe_info = GetExeInfo((uint8_t*)f.fileMapView, f.fileSize);
+    if (!exe_info) {
+        if (flags & RUN_FLAG_ALWAYS) {
+            return RunGameImpl(exeFn, cmdLine, 0);
+        } else {
+            return false;
+        }
+    }
+
+    for (size_t j = 0; j < gGameVersionsCount; j++) {
+        if (gGameVersions[j].exeInfo == exe_info) {
+            auto& ver = gGameVersions[j];
+            
+            if (!ver.has_oilp) {
+                flags &= ~RUN_FLAG_OILP;
+            }
+            if (!ver.has_vpatch) {
+                flags &= ~RUN_FLAG_VPATCH;
+            }
+            if (!ver.initFunc) {
+                flags &= ~RUN_FLAG_THPRAC;
+            }
+
+            return RunGameImpl(exeFn, cmdLine, flags);
+        }
+    }
+
+    log_mboxf(0, MB_ICONERROR | MB_OK, "Unknown executable", "path: %s\ntimestamp = %d\ntext size = %d", utf16_to_utf8(exeFn).c_str(), exe_info.timeStamp, exe_info.textSize);
+    return false;
+}
 
 }

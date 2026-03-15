@@ -23,8 +23,11 @@ __declspec(align(16)) struct remote_param {
 };
 
 enum RunFlags {
-    RUN_FLAG_OILP = 1 << 0,
-    RUN_FLAG_VPATCH = 1 << 1,
+    RUN_FLAG_THPRAC = 1 << 0,
+    RUN_FLAG_SKIP_IDENTIFY = 1 << 1,
+    RUN_FLAG_ALWAYS = 1 << 2,
+    RUN_FLAG_OILP = 1 << 3,
+    RUN_FLAG_VPATCH = 1 << 4,
 };
 
 uintptr_t GetProcessModuleBase(HANDLE hProc);
@@ -33,7 +36,7 @@ bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game);
 bool WriteTHPracSig(HANDLE hProc, uintptr_t base);
 bool LoadSelf(HANDLE hProcess);
 bool ApplyToProcById(DWORD pid);
-void RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags = 0xFFFFFFFF, bool withThprac = true);
+bool RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags = 0xFFFFFFFF);
 bool CheckDLLFunction(const wchar_t* path, const char* funcName);
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;

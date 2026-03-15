@@ -37,6 +37,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_ALCOSTG,
         .initFunc = AlcostgInit,
+        .has_vpatch = true,
+        .has_oilp  = false,
         .exeInfo = {
             .timeStamp = 1198873702,
             .textSize = 397312,
@@ -46,6 +48,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH06,
         .initFunc = TH06Init,
+        .has_vpatch = true,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1038721275,
             .textSize = 430080,
@@ -55,6 +59,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH07,
         .initFunc = TH07Init,
+        .has_vpatch = true,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1066942337,
             .textSize = 572928,
@@ -64,6 +70,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH075,
         .initFunc = nullptr,
+        .has_vpatch = false,
+        .has_oilp   = false,
         .exeInfo = {
             .timeStamp = 1120788294,
             .textSize = 2449408,
@@ -73,6 +81,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH08,
         .initFunc = TH08Init,
+        .has_vpatch = true,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1095610188,
             .textSize = 728064,
@@ -82,6 +92,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH09,
         .initFunc = TH09Init,
+        .has_vpatch = true,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1128708539,
             .textSize = 576512,
@@ -91,6 +103,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH095,
         .initFunc = TH095Init,
+        .has_vpatch = true,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1137085759,
             .textSize = 603136,
@@ -100,6 +114,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH10,
         .initFunc = TH10Init,
+        .has_vpatch = true,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1186086096,
             .textSize = 412672,
@@ -109,6 +125,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH105,
         .initFunc = nullptr,
+        .has_vpatch = false,
+        .has_oilp   = false,
         .exeInfo = {
             .timeStamp = 1319458676,
             .textSize = 2879488,
@@ -118,6 +136,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH11,
         .initFunc = TH11Init,
+        .has_vpatch = true,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1217734394,
             .textSize = 565248,
@@ -127,6 +147,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH12,
         .initFunc = TH12Init,
+        .has_vpatch = true,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1251344348,
             .textSize = 617472,
@@ -136,6 +158,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH123,
         .initFunc = nullptr,
+        .has_vpatch = false,
+        .has_oilp   = false,
         .exeInfo = {
             .timeStamp = 1316148875,
             .textSize = 4546560,
@@ -145,6 +169,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH125,
         .initFunc = TH125Init,
+        .has_vpatch = true,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1267822137,
             .textSize = 611328,
@@ -154,6 +180,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH128,
         .initFunc = TH128Init,
+        .has_vpatch = true,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1280811414,
             .textSize = 626176,
@@ -163,6 +191,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH13,
         .initFunc = TH13Init,
+        .has_vpatch = true,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1313589413,
             .textSize = 656384,
@@ -172,6 +202,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH135,
         .initFunc = nullptr,
+        .has_vpatch = false,
+        .has_oilp   = false,
         .exeInfo = {
             .timeStamp = 1381475275,
             .textSize = 3928064,
@@ -181,6 +213,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH14,
         .initFunc = TH14Init,
+        .has_vpatch = true, // As much as I hate to admit to it
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1376634201,
             .textSize = 720896,
@@ -190,6 +224,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH143,
         .initFunc = TH143Init,
+        .has_vpatch = false,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1398039605,
             .textSize = 748032,
@@ -199,6 +235,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH145,
         .initFunc = nullptr,
+        .has_vpatch = false,
+        .has_oilp   = false,
         .exeInfo = {
             .timeStamp = 1492674616,
             .textSize = 3516928,
@@ -208,6 +246,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH15,
         .initFunc = TH15Init,
+        .has_vpatch = true,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1444028071,
             .textSize = 772608,
@@ -217,6 +257,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH155,
         .initFunc = nullptr,
+        .has_vpatch = false,
+        .has_oilp   = false,
         .exeInfo = {
             .timeStamp = 1524477382,
             .textSize = 3695616,
@@ -226,6 +268,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH16,
         .initFunc = TH16Init,
+        .has_vpatch = false,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1501534029,
             .textSize = 564736,
@@ -235,6 +279,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH165,
         .initFunc = TH165Init,
+        .has_vpatch = false,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1532998383,
             .textSize = 607232,
@@ -244,6 +290,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH17,
         .initFunc = TH17Init,
+        .has_vpatch = false,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1565429804,
             .textSize = 626688,
@@ -253,6 +301,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH175,
         .initFunc = nullptr,
+        .has_vpatch = false,
+        .has_oilp   = false,
         .exeInfo = {
             .timeStamp = 1635319660,
             .textSize = 375296,
@@ -262,6 +312,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH18,
         .initFunc = TH18Init,
+        .has_vpatch = false,
+        .has_oilp   = true,
         .exeInfo = {
             .timeStamp = 1618619144,
             .textSize = 702464,
@@ -271,6 +323,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH185,
         .initFunc = TH185Init,
+        .has_vpatch = false,
+        .has_oilp   = false,
         .exeInfo = {
             .timeStamp = 1659144319,
             .textSize = 711168,
@@ -280,6 +334,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH19,
         .initFunc = TH19_v1_00a_Init,
+        .has_vpatch = false,
+        .has_oilp   = false,
         .exeInfo = {
             .timeStamp = 1690598468,
             .textSize = 1433600,
@@ -289,6 +345,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH19,
         .initFunc = TH19_v1_10c_Init,
+        .has_vpatch = false,
+        .has_oilp   = false,
         .exeInfo = {
             .timeStamp = 1720429610,
             .textSize = 1544704,
@@ -298,6 +356,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH20,
         .initFunc = TH20Init,
+        .has_vpatch = false,
+        .has_oilp   = false,
         .exeInfo = {
             .timeStamp = 1753839620,
             .textSize = 1484288,

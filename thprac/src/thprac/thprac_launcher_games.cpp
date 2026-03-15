@@ -325,6 +325,8 @@ fresh_identify:
                 .path = path,
                 .name = name,
                 .type = (THGameType)type,
+                .allow_oilp = game->versions[ver_off].has_oilp,
+                .allow_vpatch = game->versions[ver_off].has_vpatch,
                 .ver = ver_off,
                 .apply_thprac = apply_thprac,
             };
@@ -636,23 +638,36 @@ static void DetailsPage(LauncherGame* game) {
     ImGui::SameLine();
     Gui::HelpMarker("Not implemented");
 
-    ImGui::Checkbox("Allow OpenInputLagPatch", &game->instances[game->selected].allow_oilp);
-    ImGui::SameLine();
-    ImGui::Checkbox("Allow Vpatch", &game->instances[game->selected].allow_vpatch);
-    ImGui::SameLine();
-    Gui::HelpMarker("If both boxes are ticked and both Vpatch and OpenInputLagPatch are present, OpenInputLagPatch takes priority");
+    auto* ver = game->versions + game->instances[game->selected].ver;
+
+    if (ver->has_oilp) {
+        ImGui::Checkbox("Allow OpenInputLagPatch", &game->instances[game->selected].allow_oilp);
+        ImGui::SameLine();
+    }
+    if (ver->has_vpatch) {
+        ImGui::Checkbox("Allow Vpatch", &game->instances[game->selected].allow_vpatch);
+        ImGui::SameLine();
+    }
+    if (ver->has_oilp && ver->has_vpatch) {
+        Gui::HelpMarker("If both boxes are ticked and both Vpatch and OpenInputLagPatch are present, OpenInputLagPatch takes priority");
+    } else if(ver->has_oilp || ver->has_vpatch) {
+        ImGui::NewLine();
+    }
 
     if (Gui::ButtonCentered(S(THPRAC_GAMES_LAUNCH_GAME), 0.85f, { 0.98f, 0.1f })) {
         std::wstring pathW = utf8_to_utf16(game->instances[game->selected].path);
 
-        uint32_t flags = 0;
+        uint32_t flags = RUN_FLAG_SKIP_IDENTIFY;
         if (game->instances[game->selected].allow_oilp) {
             flags |= RUN_FLAG_OILP;
         }
         if (game->instances[game->selected].allow_vpatch) {
             flags |= RUN_FLAG_VPATCH;
         }
-        RunGame(pathW.c_str(), nullptr, flags, game->instances[game->selected].apply_thprac);
+        if (game->instances[game->selected].apply_thprac) {
+            flags |= RUN_FLAG_THPRAC;
+        }
+        RunGame(pathW.c_str(), nullptr, flags);
     }
 
     if (Gui::Modal(S(THPRAC_GAMES_RENAME_MODAL))) {

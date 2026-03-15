@@ -73,7 +73,10 @@ struct THGameInfo {
 
 struct THGameVersion {
     THGameID gameId;
+    // No need to have a "has_thprac" bool, initFunc already indicates this.
     void (*initFunc)();
+    bool has_vpatch;
+    bool has_oilp;
     ExeInfo exeInfo;
     uint16_t oepCode[10];
 };

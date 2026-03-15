@@ -96,27 +96,11 @@ int WINAPI wWinMain(
             if (memcmp(argv[i], self_exe.Buffer, self_exe.Length) == 0) {
                 continue;
             }
+            wchar_t* launch_cmdline = wcsstr(pCmdLine, argv[i]) + t_strlen(argv[i]);
 
-            MappedFile f(argv[i]);
-            if (!f.fileMapView) {
-                continue;
+            if (RunGame(argv[i], launch_cmdline, flags)) {
+                return 0;
             }
-            auto exe_info = GetExeInfo((uint8_t*)f.fileMapView, f.fileSize);
-            if (!exe_info) {
-                continue;
-            }
-
-            for (size_t j = 0; j < gGameVersionsCount; j++) {
-                if (gGameVersions[j].exeInfo == exe_info) {
-                    wchar_t* launch_cmdline = wcsstr(pCmdLine, argv[i]) + t_strlen(argv[i]);
-
-                    RunGame(argv[i], launch_cmdline, flags);
-                    return 0;
-                }
-            }
-
-            log_mboxf(0, MB_ICONERROR | MB_OK, "Unknown executable", "timestamp = %d\ntext size = %d", exe_info.timeStamp, exe_info.textSize);
-            return 1;
         }
     }
 
