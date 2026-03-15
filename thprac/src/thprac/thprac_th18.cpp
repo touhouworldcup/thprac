@@ -3940,7 +3940,7 @@ namespace TH18 {
                         ((CardLily*)card)->count += thPracParam.lily_cycle + 2;
                 }
 
-                tracker_info.th18.active_uses[7] = ((CardLily*)card)->count;
+                tracker_info.th18.active_uses[7] = (char)((CardLily*)card)->count;
                 R(lily_cd);
                 break;
             case BASSDRUM:
@@ -4025,7 +4025,7 @@ namespace TH18 {
 
         for (ThList<CardBase>* cl = &abilityManager->card_list_head; cl; cl = cl->next) {
             if (cl->entry->card_id == 48) {
-                tracker_info.th18.active_uses[7] = ((CardLily*)cl->entry)->count;
+                tracker_info.th18.active_uses[7] = (char)((CardLily*)cl->entry)->count;
                 break;
             }
         }

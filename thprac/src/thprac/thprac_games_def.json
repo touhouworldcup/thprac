@@ -837,6 +837,7 @@
       "TH_ON": [ "开启", "On", "有効" ],
       "TH_OFF": [ "关闭", "Off", "無効" ],
       "TH_NORMAL": [ "正常", "Normal", "普通" ],
+      "TH_FULL": [ "完全", "Full", "完全" ],
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
       "TH_FINALE": [ "终幕", "Finale", "終幕" ],
       "TH_P1": [ "P1", "P1", "P1" ],
@@ -1152,6 +1153,11 @@
       "TH_SPELL_PHASE_TIMEOUT": [
         "TH_NORMAL",
         "TH_FINALE"
+      ],
+      "TH_SPELL_PHASE_RAGEFUL": [
+        "TH_NORMAL",
+        "TH_FULL",
+        "TH_RAGE"
       ],
       "TH_SIDE_SELECT": [
         "TH_LEFT",
