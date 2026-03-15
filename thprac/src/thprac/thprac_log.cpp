@@ -28,7 +28,7 @@ void log_vprintf(const char* format, va_list va) {
     VLA(char, buf, len + 1);
     vsnprintf(buf, len, format, va);
 
-    log_print(buf, len);
+    log_print(buf, len - 1);
 }
 
 void log_printf(const char* format, ...) {
