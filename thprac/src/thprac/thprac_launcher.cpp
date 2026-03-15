@@ -184,19 +184,27 @@ void UiUpdate(HWND hwnd) {
     ImGui::BeginChild("###__content", { io.DisplaySize.x, io.DisplaySize.y - g_TitleBarHeight }, false, ImGuiWindowFlags_AlwaysUseWindowPadding);
     ImGui::BeginTabBar("__launcher_tab_bar");
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_GAMES))) {
+        ImGui::BeginChild(0x6A8E5);
         LauncherGamesMain();
+        ImGui::EndChild();
         ImGui::EndTabItem();
     }
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_LINKS))) {
+        ImGui::BeginChild(0x11945);
         ImGui::TextUnformatted("Links");
+        ImGui::EndChild();
         ImGui::EndTabItem();
     }
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_TOOLS))) {
+        ImGui::BeginChild(0x70015);
         ImGui::TextUnformatted("Tools");
+        ImGui::EndChild();
         ImGui::EndTabItem();
     }
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_CONFG))) {
+        ImGui::BeginChild(0xC02F16);
         GuiSettings();
+        ImGui::EndChild();
         ImGui::EndTabItem();
     }
     ImGui::EndTabBar();

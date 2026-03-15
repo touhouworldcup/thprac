@@ -388,8 +388,8 @@ static void DetailsPage(LauncherGame* game) {
 
     ImGui::TextUnformatted(S(THPRAC_GAMES_SELECT_VER));
 
-    ImGui::BeginChild("##__game_table", { 0, ImGui::GetWindowHeight() * 0.35f }, true);
-
+    ImGui::BeginChild("##__game_table", { ImGui::GetWindowWidth(), ImGui::GetWindowHeight() * 0.35f }, true);
+    
     ImGui::PushStyleColor(ImGuiCol_TableBorderStrong, ImGui::GetStyleColorVec4(ImGuiCol_Border));
     ImGui::PushStyleColor(ImGuiCol_TableBorderLight, ImGui::GetStyleColorVec4(ImGuiCol_Border));
 
@@ -862,10 +862,11 @@ static void ScanForGamesUI() {
 
     auto& padding = ImGui::GetStyle().WindowPadding;
 
-    float childHeight = ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - ImGui::GetFrameHeight() - padding.y * 2;
-    float childWidth = ImGui::GetWindowWidth() - padding.x * 2;
+    float childHeight = ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - ImGui::GetFrameHeight() - padding.y;
+    float childWidth = ImGui::GetWindowWidth();
 
     ImGui::BeginChild(0x5CA88E6, { childWidth, childHeight }, true);
+
     if (scanStatus != WAIT_FAILED) {
         if (!(scanStatus == WAIT_OBJECT_0 && scanCtx->found.size() == 0)) {
             if (scanStatus != WAIT_OBJECT_0) {
@@ -974,7 +975,7 @@ static void ScanForGamesUI() {
 
     switch (scanStatus) {
     case WAIT_FAILED:
-        if (Gui::ButtonRight(S(THPRAC_LINKS_EDIT_FOLDER)) && SelectFolder(scanCtx->scan_dir, Gui::ImplWin32GetHwnd())) {
+        if (Gui::ButtonRight(S(THPRAC_LINKS_EDIT_FOLDER), ImGui::GetWindowWidth()) && SelectFolder(scanCtx->scan_dir, Gui::ImplWin32GetHwnd())) {
             scanCtx->scan_thread = CreateThread(nullptr, 0, ScanThread, scanCtx, 0, nullptr);
         }
         break;
@@ -982,7 +983,7 @@ static void ScanForGamesUI() {
         ImGui::TextUnformatted("TODO: add some kind of indicator");
         break;
     case WAIT_OBJECT_0:
-        if (Gui::ButtonRight("Finish")) {
+        if (Gui::ButtonRight("Finish", ImGui::GetWindowWidth())) {
             ScanResults(scanCtx->found);
             delete scanCtx;
             scanCtx = nullptr;
