@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "utils/utils.h"
 
 namespace THPrac {
 
@@ -89,6 +90,40 @@ extern const char* gThGameStrs[];
 
 extern const unsigned int gGameVersionsCount;
 extern const unsigned int gKnownGamesCount;
+
+enum ThVersionArrOffset {
+    VER_ALCOSTG,
+    VER_TH06,
+    VER_TH07,
+    VER_TH075,
+    VER_TH08,
+    VER_TH09,
+    VER_TH095,
+    VER_TH10,
+    VER_TH105,
+    VER_TH11,
+    VER_TH12,
+    VER_TH123,
+    VER_TH125,
+    VER_TH128,
+    VER_TH13,
+    VER_TH135,
+    VER_TH14,
+    VER_TH143,
+    VER_TH145,
+    VER_TH15,
+    VER_TH155,
+    VER_TH16,
+    VER_TH165,
+    VER_TH17,
+    VER_TH175,
+    VER_TH18,
+    VER_TH185,
+    VER_TH19_V1_00A,
+    VER_TH19_V1_10C,
+    VER_TH20,
+    VER_MAX,
+};
 
 ExeInfo GetExeInfo(const uint8_t* mod, size_t len);
 ExeInfo GetRemoteExeInfo(void* hProc, uintptr_t mod);
