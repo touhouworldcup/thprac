@@ -302,16 +302,16 @@ static void InitLauncherGame(LauncherGame* game, yyjson_val* json) {
             type = TYPE_ERROR;
         }
 
+        const THGameVersion* ver = nullptr;
         uint8_t ver_off = 0xFF;
         if(yyjson_eval_numeric(yyjson_obj_get(cur, "ver"), &ver_off)); else {
             log_printf("Warning: instance %s has no version number, reidentifying...\r\n", path);
             goto fresh_identify;
         }
-
         if (game->versions + ver_off >= game->versions + VER_MAX) {
             log_printf("Warning: instance %s specifies invalid version number\r\n", path);
 fresh_identify:
-            const THGameVersion* ver = IdentifyExe(utf8_to_utf16(path).c_str());
+            ver = IdentifyExe(utf8_to_utf16(path).c_str());
             if (ver) {
                 ver_off = ver - game->versions;
             } else {
@@ -321,14 +321,15 @@ fresh_identify:
         }
 
         if (ver_off < game->ver_count) {
+            ver = game->versions + ver_off;
             instances[valid_insts_count] = {
                 .path = path,
                 .name = name,
                 .type = (THGameType)type,
+                .ver = ver_off,
                 .allow_oilp = game->versions[ver_off].has_oilp,
                 .allow_vpatch = game->versions[ver_off].has_vpatch,
-                .ver = ver_off,
-                .apply_thprac = apply_thprac,
+                .apply_thprac = ver->initFunc ? apply_thprac : false,
             };
             valid_insts_count++;
         } else {
@@ -625,8 +626,14 @@ static void DetailsPage(LauncherGame* game) {
     }
     ImGui::NewLine();
 
-    ImGui::Checkbox(S(THPRAC_GAMES_APPLY_THPRAC), &game->instances[game->selected].apply_thprac);
-    ImGui::SameLine();
+    
+    auto* ver = game->versions + game->instances[game->selected].ver;
+
+    if (ver->initFunc) {
+        ImGui::Checkbox(S(THPRAC_GAMES_APPLY_THPRAC), &game->instances[game->selected].apply_thprac);
+        ImGui::SameLine();
+    }
+    
     bool default_launch = game->default_launch == game->selected;
     if(ImGui::Checkbox(S(THPRAC_GAMES_DEFAULT_LAUNCH), &default_launch)) {
         if (default_launch) {
@@ -637,8 +644,6 @@ static void DetailsPage(LauncherGame* game) {
     }
     ImGui::SameLine();
     Gui::HelpMarker("Not implemented");
-
-    auto* ver = game->versions + game->instances[game->selected].ver;
 
     if (ver->has_oilp) {
         ImGui::Checkbox("Allow OpenInputLagPatch", &game->instances[game->selected].allow_oilp);
