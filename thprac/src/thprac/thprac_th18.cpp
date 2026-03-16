@@ -3772,10 +3772,52 @@ namespace TH18 {
         return cardID - (41 + (cardID > 51));
     }
 
-    void THTrackerUpdate()
-    {
-        constexpr ImGuiWindowFlags trackerFlags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+    constexpr ImGuiWindowFlags trackerFlags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
+    void DrawCardUseCount(float x, float y, unsigned char useCnt) {
+        auto* drawList = ImGui::GetWindowDrawList();
+        auto& style = ImGui::GetStyle();
+        auto& io = ImGui::GetIO();
+
+        ImVec2 pos = { (x / 1280.0f) * io.DisplaySize.x, (y / 960.0f) * io.DisplaySize.y };
+        ImVec2 limit = { (32.0f / 1280.0f) * io.DisplaySize.x + pos.x, (36.0f / 960.0f) * io.DisplaySize.y + pos.y };
+
+        drawList->AddRect(pos, limit, ImGui::GetColorU32(ImGuiCol_Border));
+
+        pos.x += 1.0f;
+        pos.y += 1.0f;
+
+        limit.x -= 1.0f;
+        limit.y -= 1.0f;
+
+        drawList->AddRectFilled(pos, limit, ImGui::GetColorU32(ImGuiCol_WindowBg));
+
+        char num[3];
+        char* num_end;
+        if (useCnt < 10) {
+            num[0] = useCnt + '0';
+            num_end = num + 1;
+        } else if(useCnt < 100) {
+            num[0] = ((useCnt / 10) % 10) + '0';
+            num[1] = (useCnt % 10) + '0';
+            num_end = num + 2;
+        } else {
+            num[0] = ((useCnt / 100) % 10) + '0';
+            num[1] = ((useCnt / 10) % 10) + '0';
+            num[2] = (useCnt % 10) + '0';
+            num_end = num + 3;
+        }
+
+        ImVec2 textSize = ImGui::CalcTextSize(num, num_end);
+
+        float boxWidth = limit.x - pos.x;
+        pos.x += boxWidth / 2 - textSize.x / 2;
+        pos.y += ImGui::GetTextLineHeight() / 4;
+
+        drawList->AddText(pos, ImGui::GetColorU32(ImGuiCol_Text), num, num_end);
+    }
+
+    void THTrackerUpdate() {
         Gui::SetNextWindowSizeRel({ 340.0f / 1280.0f, 0.0f });
         Gui::SetNextWindowPosRel({ 888.0f / 1280.0f, 845.0f / 960.0f });
         ImGui::Begin("Tracker", nullptr, trackerFlags);
@@ -3796,9 +3838,12 @@ namespace TH18 {
         ImGui::Text("%d", tracker_info.th18.bombs);
 
         ImGui::EndTable();
-
         ImGui::End();
 
+        ImGui::SetNextWindowPos({ 0, 0 });
+        ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+        ImGui::Begin("###__card_use_wnd", nullptr, trackerFlags | ImGuiWindowFlags_NoBackground);
+        ImGui::SetWindowFontScale(0.65f);
         // Active card use count windows
         auto* abilityManager = *(AbilityManager**)ABILITY_MANAGER_PTR;
         if (!abilityManager) return;
@@ -3810,22 +3855,17 @@ namespace TH18 {
             if (cardID > 56) continue; //dummy card
 
             if (cl->entry->table_entry->category == 0) {
-                const char idStr[3] = { (char)cardID, (char)activeCardI, '\0'};
                 const float xPos = 1070.0f + // formula approximation done in excel
                     (activeCardI - (activeCardCnt + 1) * 0.5f) *
                     ((activeCardCnt > 4) ? (304.0f / (activeCardCnt - 1)) : 80.0f);
                 const char useCnt = tracker_info.th18.active_uses[GetActiveID(cardID)];
 
-                Gui::SetNextWindowPosRel({ xPos / 1280.0f, 550.0f / 960.0f });
-                ImGui::Begin(idStr, nullptr, trackerFlags);
-                ImGui::SetWindowFontScale(0.65f);
-                if(useCnt < 10) ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 4.0f);
-                ImGui::Text("%d", useCnt);
-                ImGui::End();
-
+                DrawCardUseCount(xPos, 550.0f, useCnt);
+                
                 activeCardI--;
             }
         }
+        ImGui::End();
     }
 
     bool CheckSafetyRestartOverride() {
