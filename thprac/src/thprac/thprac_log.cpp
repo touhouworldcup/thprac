@@ -125,9 +125,10 @@ void log_init(bool launcher, bool console) {
         SetConsoleOutputCP(CP_UTF8);
         SetConsoleCP(CP_UTF8);
 
-        freopen("conin$", "r+b", stdin);
-        freopen("conout$", "w+b", stdout);
-        freopen("conerr$", "w+b", stderr);
+        (void)freopen("conin$", "r+b", stdin);
+        (void)freopen("conout$", "w+b", stdout);
+        setvbuf(stdout, NULL, _IONBF, 0);
+        (void)freopen("conout$", "w+b", stderr);
 
         console_open = true;
     }
