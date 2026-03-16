@@ -938,7 +938,7 @@ namespace TH20 {
         EHOOK_HK(0x13b5f2, 4, { // freeze ECL sub time for stage's MainLatter
             const uint32_t subID = *(uint32_t*)(pCtx->Eax+0x4);
             const uint32_t stage = GetMemContent(RVA(STAGE_NUM)) - 1;
-            constexpr uint32_t mainLatterIDs[7] = { 95, 102, 0, 82, 80, 0, 0 };
+            constexpr uint8_t mainLatterIDs[7] = { 95, 102, 0, 82, 80, 0, 0 };
 
             if (mainLatterIDs[stage] && subID == mainLatterIDs[stage]) {
                 const bool bossExists = (bool)GetMemContent(RVA(ENEMY_MGR_PTR), 0x10 + 0x44);

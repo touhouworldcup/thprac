@@ -68,7 +68,9 @@ namespace TH17 {
     Globals* globals = (Globals*)0x4b59c0;
 
     enum addrs {
-        GOAST_MANAGER_PTR = 0x4B7684,
+        STAGE_NUM = 0x4b59dc,
+        GOAST_MANAGER_PTR = 0x4b7684,
+        ENEMY_MANAGER_PTR = 0x4b76a0,
         PLAYER_PTR = 0x4b77d0,
     };
 
@@ -656,7 +658,19 @@ namespace TH17 {
 
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
         PATCH_HK(0x41a8cf, "eb"),
-        PATCH_HK(0x420a1e, "058d")
+        PATCH_HK(0x420a1e, "058d"),
+        EHOOK_HK(0x47a712, 4, { // freeze ECL sub time for stage's MainLatter
+            const uint32_t subID = *(uint32_t*)(pCtx->Edi+0x4);
+            const uint32_t stage = GetMemContent(STAGE_NUM) - 1;
+            constexpr uint8_t mainLatterIDs[7] = { 0, 87, 91, 86, 88, 92, 0 };
+
+            if (mainLatterIDs[stage] && subID == mainLatterIDs[stage]) {
+                const bool bossExists = (bool)GetMemContent(ENEMY_MANAGER_PTR, 0x48);
+
+                if (bossExists) // skip increasing sub time
+                    pCtx->Eip = 0x47a716;
+            }
+        })
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)

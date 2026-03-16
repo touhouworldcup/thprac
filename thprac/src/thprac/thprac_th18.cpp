@@ -52,6 +52,7 @@ namespace TH18 {
         TRANSITION_STG_PTR = 0x4cf2b0,
         BOMB_PTR = 0x4cf2b8,
         BULLET_MANAGER_PTR = 0x4cf2bc,
+        ENEMY_MANAGER_PTR = 0x4cf2d0,
         MUKADE_ADDR = 0x4cf2d4,
         GAME_THREAD_PTR = 0x4cf2e4,
         ITEM_MANAGER_PTR = 0x4cf2ec,
@@ -1135,7 +1136,19 @@ namespace TH18 {
 
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F6", VK_F6)
         PATCH_HK(0x429eef, "eb"),
-        PATCH_HK(0x43021b, "058d")
+        PATCH_HK(0x43021b, "058d"),
+        EHOOK_HK(0x48c822, 4, { // freeze ECL sub time for stage's MainLatter
+            const uint32_t subID = *(uint32_t*)(pCtx->Edi+0x4);
+            const uint32_t stage = GetMemContent(STAGE_NUM) - 1;
+            constexpr uint8_t mainLatterIDs[7] = { 0, 99, 97, 0, 91, 113, 0 };
+
+            if (mainLatterIDs[stage] && subID == mainLatterIDs[stage]) {
+                const bool bossExists = (bool)GetMemContent(ENEMY_MANAGER_PTR, 0x48);
+
+                if (bossExists) // skip increasing sub time
+                    pCtx->Eip = 0x48c826;
+            }
+        })
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F7", VK_F7)
