@@ -938,6 +938,7 @@ static void ScanAddInstances(LauncherGame* game, FoundGame* found, size_t found_
         inst.name = _strdup(gThGameStrs[found[found_idx].info.ver->gameId]);
         inst.path = _strdup(found[found_idx].path);
         inst.type = found[found_idx].info.type;
+        inst.ver = found[found_idx].info.ver - game->versions;
         inst_idx++;
     }
 }
