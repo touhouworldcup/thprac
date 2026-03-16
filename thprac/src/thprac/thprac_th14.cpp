@@ -11,6 +11,7 @@ namespace TH14 {
         CHARA_ADDR = 0x4f5828,
         SUBSHOT_ADDR = 0x4f582c,
         PLAYER_PTR = 0x4db67c,
+        SCALE_ADDR = 0x4F7A6C,
     };
 
     using std::pair;
@@ -47,8 +48,8 @@ namespace TH14 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
-            GetJsonValueEx(keepSpellDrops, Bool);
+            GetJsonValue(dlg);
+            GetJsonValue(keepSpellDrops);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -67,8 +68,8 @@ namespace TH14 {
             if (mode == 1) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th14", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th14");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
                 if (section)
@@ -76,9 +77,9 @@ namespace TH14 {
                 if (phase)
                     AddJsonValue(phase);
                 if (dlg)
-                    AddJsonValue(dlg)
+                    AddJsonValue(dlg);
                 if (keepSpellDrops)
-                    AddJsonValue(keepSpellDrops)
+                    AddJsonValue(keepSpellDrops);
 
                 AddJsonValue(score);
                 AddJsonValue(life);
@@ -94,8 +95,8 @@ namespace TH14 {
             } else if (mode == 2) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th14", jalloc);
+                AddJsonValueEx(version, GetVersionStr());
+                AddJsonValueEx(game, "th14");
                 AddJsonValue(mode);
                 AddJsonValue(phase);
 
@@ -103,7 +104,6 @@ namespace TH14 {
             }
 
             CreateJson();
-            jalloc; // Dummy usage to silence C4189
             ReturnJson();
         }
     };
@@ -177,19 +177,19 @@ namespace TH14 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(0.5f, 0.81f);
                 SetPosRel(0.4f, 0.14f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(0.6f, 0.75f);
                 SetPosRel(0.35f, 0.165f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(0.56f, 0.81f);
                 SetPosRel(0.37f, 0.14f);
                 SetItemWidthRel(-0.105f);
@@ -475,15 +475,15 @@ namespace TH14 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
@@ -521,7 +521,7 @@ namespace TH14 {
             }
         }
 
-        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
         
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x44F877, "01")
@@ -624,19 +624,19 @@ namespace TH14 {
         {
             SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
@@ -905,43 +905,51 @@ namespace TH14 {
         // Option Related Functions
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th14.dll");
-            if (mOptCtx.vpatch_base) {
-                uint64_t hash[2];
-                CalcFileHash(L"vpatch_th14.dll", hash);
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                OILPInit(mOptCtx);
+            } else {
+                mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th14.dll");
+                if (mOptCtx.vpatch_base) {
+                    uint64_t hash[2];
+                    CalcFileHash(L"vpatch_th14.dll", hash);
 
-                bool vp_valid = hash[0] == 16763243947833835441ll && hash[1] == 14013686233300952408ll;
-                if (hash[0] == 5864489015760801383ll && hash[1] == 8525349857717864816ll) {
-                    vp_valid = true;
-                    if (MessageBoxW(
-                            *(HWND*)WINDOW_PTR,
-                            L"Old version of vpatch detected. Do you want to download the newest version?",
-                            L"thprac: warning",
-                            MB_ICONWARNING | MB_YESNO)
-                        == IDYES) {
-                        ShellExecuteW(NULL, NULL, L"https://maribelhearn.com/mirror/VsyncPatch.zip", NULL, NULL, SW_SHOW);
+                    bool vp_valid = hash[0] == 16763243947833835441ll && hash[1] == 14013686233300952408ll;
+                    if (hash[0] == 5864489015760801383ll && hash[1] == 8525349857717864816ll) {
+                        vp_valid = true;
+                        if (MessageBoxW(
+                                *(HWND*)0x4f5a18,
+                                L"Old version of vpatch detected. Do you want to download the newest version?",
+                                L"thprac: warning",
+                                MB_ICONWARNING | MB_YESNO)
+                            == IDYES) {
+                            ShellExecuteW(NULL, NULL, L"https://maribelhearn.com/mirror/VsyncPatch.zip", NULL, NULL, SW_SHOW);
+                        }
                     }
-                }
 
-                if (vp_valid && *(int32_t*)(mOptCtx.vpatch_base + 0x42fbc) == 0) {
-                    mOptCtx.fps_status = 2;
-                    mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x42fcc);
-                } else if (!vp_valid) {
-                    mOptCtx.fps_status = -1;
-                }
-            } else if (*(uint8_t*)0x4d9159 == 3) {
-                mOptCtx.fps_status = 1;
+                    if (vp_valid && *(int32_t*)(mOptCtx.vpatch_base + 0x42fbc) == 0) {
+                        mOptCtx.fps_status = 2;
+                        mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x42fcc);
+                    } else if (!vp_valid) {
+                        mOptCtx.fps_status = -1;
+                    }
+                } else if (*(uint8_t*)0x4d9159 == 3) {
+                    mOptCtx.fps_status = 1;
 
-                DWORD oldProtect;
-                VirtualProtect((void*)0x46a792, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
-                *(double**)0x46a792 = &mOptCtx.fps_dbl;
-                VirtualProtect((void*)0x46a792, 4, oldProtect, &oldProtect);
-            } else
-                mOptCtx.fps_status = 0;
+                    DWORD oldProtect;
+                    VirtualProtect((void*)0x46a792, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+                    *(double**)0x46a792 = &mOptCtx.fps_dbl;
+                    VirtualProtect((void*)0x46a792, 4, oldProtect, &oldProtect);
+                } else
+                    mOptCtx.fps_status = 0;
+            }
         }
         void FpsSet()
         {
-            if (mOptCtx.fps_status == 1) {
+            if (mOptCtx.fps_status == 3) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
+            } else if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
             } else if (mOptCtx.fps_status == 2) {
                 *(int32_t*)(mOptCtx.vpatch_base + 0x40a34) = mOptCtx.fps;
@@ -976,7 +984,7 @@ namespace TH14 {
             auto thMarisaLaser = &THMarisaLaser::singleton();
             bool wndFocus = true;
             ImGui::PushTextWrapPos();
-            ImGui::PushItemWidth(GetRelWidth(0.25f));
+            ImGui::PushItemWidth(Gui::GetRelWidth(0.25f));
             if (mLock)
                 ImGui::BeginDisabled();
             ImGui::ComboSectionsDefault(S(TH14_MODE), &(thMarisaLaser->mState), TH14_MODE_COMBO, Gui::LocaleGetCurrentGlossary(), "");
@@ -1058,9 +1066,9 @@ namespace TH14 {
                         ImGui::SameLine();
                         auto needInputBox = TH14_CORRECTION[tempFix] == TH14_CORRECTION_E_POSITIVE || TH14_CORRECTION[tempFix] == TH14_CORRECTION_E_NEGATIVE;
                         if (needInputBox)
-                            ImGui::PushItemWidth(GetRelWidth(0.13f));
+                            ImGui::PushItemWidth(Gui::GetRelWidth(0.13f));
                         else
-                            ImGui::PushItemWidth(GetRelWidth(0.27f));
+                            ImGui::PushItemWidth(Gui::GetRelWidth(0.27f));
                         sprintf_s(mTempStr, "##%s_%d", S(TH14_CORRECTION_VALUE), i);
                         ImGui::ComboSectionsDefault(mTempStr, &tempFix, TH14_CORRECTION, Gui::LocaleGetCurrentGlossary(), "");
                         if (ImGui::IsPopupOpen(mTempStr)) {
@@ -1146,7 +1154,7 @@ namespace TH14 {
             DWORD bytesProcessed;
             auto repFile = CreateFileW(rep_path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (repFile == INVALID_HANDLE_VALUE) {
-                MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_SRC), nullptr, *(HWND*)WINDOW_PTR);
+                log_mbox(*(HWND*)WINDOW_PTR, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_SRC));
                 return false;
             }
             auto repSize = GetFileSize(repFile, nullptr);
@@ -1194,7 +1202,7 @@ namespace TH14 {
             if (GetSaveFileNameW(&ofn)) {
                 auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {
-                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST), nullptr, ofn.hwndOwner);
+                    log_mbox(ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST));
                     return false;
                 }
                 SetFilePointer(outputFile, 0, nullptr, FILE_BEGIN);
@@ -1204,7 +1212,7 @@ namespace TH14 {
                     WriteFile(outputFile, dataBuffer, dataSize, &bytesProcessed, nullptr);
                 CloseHandle(outputFile);
 
-                MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
+                log_mboxf(ofn.hwndOwner, MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str());
             }
 
             return true;
@@ -1234,7 +1242,7 @@ namespace TH14 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
+            if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else
@@ -1283,19 +1291,19 @@ namespace TH14 {
         {
             SetTitle("AdvOptMenu");
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
@@ -2584,7 +2592,7 @@ namespace TH14 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4d8f68, WINDOW_PTR,
             Gui::INGAGME_INPUT_GEN2, 0x4d6884, 0x4d6880, 0,
-            (*((int32_t*)0x4f7a54) >> 2) & 0xf);
+            *(float*)SCALE_ADDR);
 
         SetDpadHook(0x401A8E, 3);
 

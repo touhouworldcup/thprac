@@ -24,9 +24,9 @@ namespace Gui {
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("rapidjson")) {
-                ImGui::BeginChild("COPYING.rapidjson");
-                ImGui::TextUnformatted(COPYING_rapidjson);
+            if (ImGui::BeginTabItem("yyjson")) {
+                ImGui::BeginChild("COPYING.yyjson");
+                ImGui::TextUnformatted(COPYING_yyjson);
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }

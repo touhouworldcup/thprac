@@ -74,9 +74,9 @@ namespace V1_10c {
 
         D3D_DEVICE = 0x22BB48,
         HWND_PTR = 0x22BB88,
+
+        SCALE_ADDR = 0x22EEB0
     };
-        
-    #define SCALE (*(float*)RVA(0x22EEB0))
 
 #ifndef _DEBUG
     constinit HookCtx th19_patch_cpu_check_colliders = {
@@ -138,19 +138,19 @@ namespace V1_10c {
         {
             SetTitle(S(TH_ADV_OPT));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.075f);
@@ -194,7 +194,7 @@ namespace V1_10c {
         static THAdvOptWnd* advOptWnd = nullptr;
         if (!advOptWnd)
             advOptWnd = new THAdvOptWnd();
-        if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
+        if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
             if (advOptWnd->IsOpen())
                 advOptWnd->Close();
             else
@@ -206,7 +206,7 @@ namespace V1_10c {
     }
 
     EHOOK_ST(th19_enemy_tick, 0x1089D0, 1, {
-        drawEnemyHP(pCtx, SCALE);
+        drawEnemyHP(pCtx);
     });
 
     struct TH19Tools : public Gui::GameGuiWnd {
@@ -709,7 +709,7 @@ namespace V1_10c {
 
         auto& t = TH19Tools::singleton();
         if (t.allow) {
-            if (Gui::GetChordPressed(Gui::GetBackspaceMenuChord())) {
+            if (Gui::GetChordPressed(hotkeys.backspace_menu)) {
                 if (t.IsOpen()) {
                     t.Close();
                 } else {
@@ -842,7 +842,7 @@ namespace V1_10c {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, RVA(D3D_DEVICE), RVA(HWND_PTR),
             Gui::INGAGME_INPUT_GEN2, GetMemContent(RVA(0x1D19B0)) + 0x30 + 0x2B0, GetMemContent(RVA(0x1D19B0)) + 0x30 + 0x10, 0,
-            -2, SCALE, 0.0f);
+            *(float*)RVA(SCALE_ADDR));
 
         SetDpadHook(0xB84A0, 3);
 

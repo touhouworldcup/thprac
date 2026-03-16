@@ -4,7 +4,7 @@
 namespace THPrac {
 namespace TH19 {
 
-void drawEnemyHP(PCONTEXT pCtx, float SCALE) {
+void drawEnemyHP(PCONTEXT pCtx) {
     uint32_t side = *(uint32_t*)(pCtx->Ecx + 0x5638);
 
     if (!GameState_Assert(side <= 1)) {
@@ -33,7 +33,7 @@ void drawEnemyHP(PCONTEXT pCtx, float SCALE) {
 
     ImVec2 textSize = font->CalcTextSizeA(font->FontSize, ImGui::GetIO().DisplaySize.x, 0.0f, hp_str.c_str(), hp_str.c_str() + hp_str.size());
 
-    ImVec2 upperLeft = ImVec2((enm_pos[0] + offset.x) * SCALE, (enm_pos[1] + offset.y) * SCALE);
+    ImVec2 upperLeft = ImVec2((enm_pos[0] + offset.x) * g_Scale, (enm_pos[1] + offset.y) * g_Scale);
     ImVec2 lowerRight = ImVec2(upperLeft.x + textSize.x, upperLeft.y + textSize.y);
 
     drawList->AddRectFilled(upperLeft, lowerRight, 0xAA555555);
