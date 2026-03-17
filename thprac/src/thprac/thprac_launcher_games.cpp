@@ -54,21 +54,6 @@ struct LauncherGame {
     LauncherInstance* instances;
 };
 
-th_glossary_t gameTypeNames[] = {
-    TH_TYPE_ERROR,
-    TH_TYPE_ORIGINAL,
-    TH_TYPE_MODDED,
-    TH_TYPE_THCRAP,
-    TH_TYPE_CHINESE,
-    TH_TYPE_SCHINESE,
-    TH_TYPE_TCHINESE,
-    TH_TYPE_NYASAMA,
-    TH_TYPE_STEAM,
-    TH_TYPE_UNCERTAIN,
-    TH_TYPE_MALICIOUS,
-    TH_TYPE_UNKOWN,
-};
-
 constexpr unsigned int MAIN_GAMES_LEN = 15;
 constexpr unsigned int SPINOFF_SHMUP_LEN = 7;
 constexpr unsigned int SPINOFF_OTHER_LEN = 7;
@@ -327,9 +312,9 @@ fresh_identify:
                 .name = name,
                 .type = (THGameType)type,
                 .ver = ver_off,
+                .apply_thprac = ver->initFunc ? apply_thprac : false,
                 .allow_oilp = game->versions[ver_off].has_oilp,
                 .allow_vpatch = game->versions[ver_off].has_vpatch,
-                .apply_thprac = ver->initFunc ? apply_thprac : false,
             };
             valid_insts_count++;
         } else {
@@ -542,7 +527,7 @@ static void DetailsPage(LauncherGame* game) {
             }
 
             ImGui::TableSetColumnIndex(1);
-            ImGui::TextUnformatted(S(gameTypeNames[inst.type]));
+            ImGui::TextUnformatted(S(TH_TYPE_SELECT[inst.type]));
             if (inst.type == TYPE_ERROR) {
                 ImGui::SameLine();
                 Gui::CustomMarker("(!)", "You tampered with the config file, didn't you?");
@@ -1021,7 +1006,7 @@ static void ScanForGamesUI() {
                 ImGui::PopID();
 
                 ImGui::TableNextColumn();
-                ImGui::TextUnformatted(S(gameTypeNames[found[i].info.type]));
+                ImGui::TextUnformatted(S(TH_TYPE_SELECT[found[i].info.type]));
 
                 ImGui::TableNextColumn();
                 ImGui::TextUnformatted(found[i].path);
