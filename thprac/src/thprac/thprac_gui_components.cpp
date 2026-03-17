@@ -1,7 +1,5 @@
 ﻿#include "thprac_gui_components.h"
 #include "imgui_internal.h"
-#include <Shlwapi.h>
-#include <format>
 
 namespace THPrac
 {
@@ -451,23 +449,22 @@ namespace THPrac
 
         bool GuiHotKey::OnWidgetUpdate()
         {
-            const char* text = mText ? mText : LocaleGetStr(mTextRef);
-            std::string realText;
+            const char* text = mText ? mText : S(mTextRef);
+            auto cursor = ImGui::GetCursorPos();
             if (mStatus) {
-                realText = std::format("[{}: {}]", mKeyText, text);
-                ImGui::PushStyleColor(ImGuiCol_Text, { 0.0f, 1.0f, 0.0f, 1.0f });
+                ImGui::TextColored({ 0.0f, 1.0f, 0.0f, 1.0f }, "[%s: %s]", mKeyText, text);
             } else {
-                realText = std::format("{}: {}", mKeyText, text);
+                ImGui::Text("%s: %s", mKeyText, text);
             }
 
-            auto cursor = ImGui::GetCursorPos();
-            ImGui::TextUnformatted(realText.c_str());
             ImGui::SetCursorPos(cursor);
 
-            if (mStatus)
-                ImGui::PopStyleColor();
-                        
-            if (ImGui::InvisibleButton(mKeyText, ImGui::CalcTextSize(realText.c_str())))
+            ImVec2 size = {
+                ImGui::GetWindowWidth() - ImGui::GetStyle().WindowPadding.x * 2,
+                ImGui::GetTextLineHeight(),
+            };
+          
+            if (ImGui::InvisibleButton(mKeyText, size))
                 return true;
             else
                 return false;
