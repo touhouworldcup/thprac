@@ -23,6 +23,11 @@ enum THGameType {
 enum THGameID {
     ID_UNKNOWN = 0,
     ID_ALCOSTG,
+    ID_TH01,
+    ID_TH02,
+    ID_TH03,
+    ID_TH04,
+    ID_TH05,
     ID_TH06,
     ID_TH07,
     ID_TH075,

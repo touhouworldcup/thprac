@@ -708,6 +708,11 @@ const unsigned int gKnownGamesCount = elementsof(gKnownGames);
 const char* gThGameStrs[] = {
     "unknown",
     "alcostg",
+    "th01",
+    "th02",
+    "th03",
+    "th04",
+    "th05",
     "th06",
     "th07",
     "th075",

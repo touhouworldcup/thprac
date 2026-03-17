@@ -125,6 +125,25 @@ bool SelectFolder(std::wstring& out, HWND hwnd) {
 }
 
 #pragma region They have to go somewhere
+
+unsigned rand_range(unsigned max) {
+    unsigned max_mask = max;
+    max_mask |= max_mask >> 1;
+    max_mask |= max_mask >> 2;
+    max_mask |= max_mask >> 4;
+    max_mask |= max_mask >> 8;
+    max_mask |= max_mask >> 16;
+    max_mask |= max_mask >> 32;
+
+    for (;;) {
+        unsigned val = std::bit_cast<unsigned>(rand()) & max_mask;
+        if (val < max) {
+            return val;
+        }
+    }
+}
+
+
 void memswap(void* buf1_, void* buf2_, unsigned int len)
 {
     unsigned char* buf1 = (unsigned char*)buf1_;

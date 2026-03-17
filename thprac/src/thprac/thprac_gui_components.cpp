@@ -1,6 +1,8 @@
 ﻿#include "thprac_gui_components.h"
 #include "imgui_internal.h"
 
+#include <numeric>
+
 namespace THPrac
 {
     float g_Scale = 1.0f;
@@ -754,6 +756,12 @@ namespace THPrac
 
             ImGui::SetCursorPosX(rel - size.x);
             return ImGui::Button(text, size);
+        }
+        void CheckboxAll(const char* label, bool* v, size_t v_len) {
+            bool checked = std::accumulate(v, v + v_len, 0u) == v_len;
+            if (ImGui::Checkbox(label, &checked)) {
+                memset(v, checked, v_len);
+            }
         }
     }
 }

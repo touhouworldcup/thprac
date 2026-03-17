@@ -829,6 +829,7 @@ namespace Gui {
         return ImGui::Button(buttonText, ImVec2(wndSize.x * sizeRel.x, wndSize.y * sizeRel.y));
     }
     bool ButtonRight(const char* text, float rel = 0.0f, const ImVec2& size_arg = { 0.0f, 0.0f });
+    void CheckboxAll(const char* label, bool* v, size_t v_len);
 }
 }
 

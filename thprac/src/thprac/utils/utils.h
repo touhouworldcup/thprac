@@ -113,6 +113,9 @@ inline long RoundDown(long n, long m) {
 inline long RoundUp(long n, long m) {
     return n >= 0 ? ((n + m - 1) / m) * m : (n / m) * m;
 }
+
+unsigned rand_range(unsigned max);
+
 // Buffer is expected to be 32 chars big
 char* FormatNumberWithCommas(long long val, char* buffer);
 char* FormatNumberFixedPoint(int value, int dot_pos, char* buffer);

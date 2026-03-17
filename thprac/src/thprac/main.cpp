@@ -43,6 +43,7 @@ int WINAPI wWinMain(
     InitConfigDir();
     LoadSettings();
 
+    srand(Kuser_Shared_Data->SystemTime.LowPart);
     RemoteInit();
 
     log_init(true, gSettings.console);

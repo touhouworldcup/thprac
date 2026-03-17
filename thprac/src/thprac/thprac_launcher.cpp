@@ -13,9 +13,11 @@
 
 #include "thprac_cfg.h"
 #include "thprac_log.h"
+#include "thprac_load_exe.h"
 #include "thprac_gui_impl_win32.h"
 #include "thprac_gui_impl_dx9.h"
 #include "thprac_gui_locale.h"
+#include "thprac_gui_components.h"
 #include "thprac_gui_input.h"
 
 #include "../../resource.h"
@@ -58,10 +60,6 @@ static constinit bool g_IsOverTitleBarButton = false;
 static constinit bool g_IsUITextureIDValid = false;
 static constinit bool g_IsInitialized = false;
 static constinit bool g_Rendering = false;
-
-// I don't want to #include "thprac_gui_components.h" just for this
-// It has to go somewhere, and it shouldn't be here twice
-extern float g_Scale;
 
 void ResetDevice();
 bool UpdateUIScaling(float scale = 1.0f);
@@ -157,6 +155,30 @@ void DrawTitleBar(HWND hwnd, const char* title) {
     g_IsOverTitleBarButton = overBtn;
 }
 
+extern void RandomShotRollUI();
+extern void RandomGameRollUI();
+
+void (*toolFunc)() = nullptr;
+bool goToGamesPage = true;
+
+void LauncherTools() {
+    ImVec2 ds = ImGui::GetIO().DisplaySize;
+    ImVec2 buttonSize = { (ImGui::GetWindowWidth() / 4.0f) / ds.x, 0.0f };
+
+    if (toolFunc) {
+        return toolFunc();
+    }
+
+    if (Gui::ButtonCentered(S(THPRAC_TOOLS_APPLY_THPRAC), 0.2f, buttonSize)) {
+        FindAndAttach(true, true);
+    }
+    if (Gui::ButtonCentered(S(THPRAC_TOOLS_RND_GAME), 0.4f, buttonSize)) {
+        toolFunc = RandomGameRollUI;
+    }
+    if (Gui::ButtonCentered(S(THPRAC_TOOLS_RND_PLAYER), 0.6f, buttonSize)) {
+        toolFunc = RandomShotRollUI;
+    }
+}
 
 void UiUpdate(HWND hwnd) {
     if (!g_IsInitialized)
@@ -183,7 +205,13 @@ void UiUpdate(HWND hwnd) {
     ImGui::SetCursorPos({ 0.0f, g_TitleBarHeight });
     ImGui::BeginChild("###__content", { io.DisplaySize.x, io.DisplaySize.y - g_TitleBarHeight }, false, ImGuiWindowFlags_AlwaysUseWindowPadding);
     ImGui::BeginTabBar("__launcher_tab_bar");
-    if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_GAMES))) {
+
+    ImGuiTabItemFlags gameTabFlags = 0;
+    if (goToGamesPage) {
+        goToGamesPage = false;
+        gameTabFlags = ImGuiTabItemFlags_SetSelected;
+    }
+    if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_GAMES), nullptr, gameTabFlags)) {
         ImGui::BeginChild(0x6A8E5);
         LauncherGamesMain();
         ImGui::EndChild();
@@ -197,7 +225,7 @@ void UiUpdate(HWND hwnd) {
     }
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_TOOLS))) {
         ImGui::BeginChild(0x70015);
-        ImGui::TextUnformatted("Tools");
+        LauncherTools();
         ImGui::EndChild();
         ImGui::EndTabItem();
     }

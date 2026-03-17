@@ -52,55 +52,99 @@ struct LauncherGame {
     // ever added, replace this with the custom array.
     size_t inst_count;
     LauncherInstance* instances;
+
+    // For gamblers
+    th_glossary_t shots = A0000ERROR_C;
+    int shot_columns = 0;
 };
 
+constexpr unsigned int PC98_GAMES_LEN = 5;
 constexpr unsigned int MAIN_GAMES_LEN = 15;
 constexpr unsigned int SPINOFF_SHMUP_LEN = 7;
 constexpr unsigned int SPINOFF_OTHER_LEN = 7;
+constexpr unsigned int ALL_GAMES_LEN = PC98_GAMES_LEN + MAIN_GAMES_LEN + SPINOFF_SHMUP_LEN + SPINOFF_OTHER_LEN;
+constexpr unsigned int GAMES_LEN = ALL_GAMES_LEN - PC98_GAMES_LEN;
 
 static union {
-LauncherGame games[ID_TH_MAX - 1] = {
+LauncherGame gamesAll[ID_TH_MAX - 1] = {
+    {
+        .id = ID_TH01,
+    },
+    {
+        .id = ID_TH02,
+        .shots = THPRAC_GAMEROLL_TH02_SHOTTYPES,
+        .shot_columns = 3,
+    },
+    {
+        .id = ID_TH03,
+        .shots = THPRAC_GAMEROLL_TH03_SHOTTYPES,
+        .shot_columns = 3,
+    },
+    {
+        .id = ID_TH04,
+        .shots = THPRAC_GAMEROLL_TH04_SHOTTYPES,
+        .shot_columns = 2,
+    },
+    {
+        .id = ID_TH05,
+        .shots = THPRAC_GAMEROLL_TH05_SHOTTYPES,
+        .shot_columns = 4,
+    },
     {
         .id = ID_TH06,
         .title = TH06_TITLE,
         .versions = gGameVersions + VER_TH06,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH06_SHOTTYPES,
+        .shot_columns = 2,
     },
     {
         .id = ID_TH07,
         .title = TH07_TITLE,
         .versions = gGameVersions + VER_TH07,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH07_SHOTTYPES,
+        .shot_columns = 2,
     },
     {
         .id = ID_TH08,
         .title = TH08_TITLE,
         .versions = gGameVersions + VER_TH08,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH08_SHOTTYPES,
+        .shot_columns = 4,
     },
     {
         .id = ID_TH09,
         .title = TH09_TITLE,
         .versions = gGameVersions + VER_TH09,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH09_SHOTTYPES,
+        .shot_columns = 4,
     },
     {
         .id = ID_TH10,
         .title = TH10_TITLE,
         .versions = gGameVersions + VER_TH10,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH10_SHOTTYPES,
+        .shot_columns = 3,
     },
     {
         .id = ID_TH11,
         .title = TH11_TITLE,
         .versions = gGameVersions + VER_TH11,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH11_SHOTTYPES,
+        .shot_columns = 3,
     },
     {
         .id = ID_TH12,
         .title = TH12_TITLE,
         .versions = gGameVersions + VER_TH12,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH12_SHOTTYPES,
+        .shot_columns = 2,
     },
     {
         .id = ID_TH13,
@@ -108,6 +152,8 @@ LauncherGame games[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH13,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th13",
+        .shots = THPRAC_GAMEROLL_TH13_SHOTTYPES,
+        .shot_columns = 4,        
     },
     {
         .id = ID_TH14,
@@ -115,6 +161,8 @@ LauncherGame games[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH14,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th14",
+        .shots = THPRAC_GAMEROLL_TH14_SHOTTYPES,
+        .shot_columns = 2,        
     },
     {
         .id = ID_TH15,
@@ -122,6 +170,8 @@ LauncherGame games[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH15,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th15",
+        .shots = THPRAC_GAMEROLL_TH15_SHOTTYPES,
+        .shot_columns = 4,        
     },
     {
         .id = ID_TH16,
@@ -129,6 +179,8 @@ LauncherGame games[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH16,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th16",
+        .shots = THPRAC_GAMEROLL_TH16_SHOTTYPES,
+        .shot_columns = 4,        
     },
     {
         .id = ID_TH17,
@@ -136,6 +188,8 @@ LauncherGame games[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH17,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th17",
+        .shots = THPRAC_GAMEROLL_TH17_SHOTTYPES,
+        .shot_columns = 3,        
     },
     {
         .id = ID_TH18,
@@ -143,6 +197,8 @@ LauncherGame games[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH18,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th18",
+        .shots = THPRAC_GAMEROLL_TH18_SHOTTYPES,
+        .shot_columns = 4,        
     },
     {
         .id = ID_TH19,
@@ -150,6 +206,8 @@ LauncherGame games[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH19_V1_00A,
         .ver_count = 2,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th19",
+        .shots = THPRAC_GAMEROLL_TH19_SHOTTYPES,
+        .shot_columns = 4,        
     },
     {
         .id = ID_TH20,
@@ -157,6 +215,8 @@ LauncherGame games[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH20,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th20",
+        .shots = THPRAC_GAMEROLL_TH20_SHOTTYPES,
+        .shot_columns = 4,        
     },
     {
         .id = ID_ALCOSTG,
@@ -175,6 +235,8 @@ LauncherGame games[ID_TH_MAX - 1] = {
         .title = TH125_TITLE,
         .versions = gGameVersions + VER_TH125,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH125_SHOTTYPES,
+        .shot_columns = 2,
     },
     {
         .id = ID_TH128,
@@ -202,58 +264,76 @@ LauncherGame games[ID_TH_MAX - 1] = {
         .title = TH185_TITLE,
         .versions = gGameVersions + VER_TH185,
         .ver_count = 1,
-        .appdataPath = L"%AppData%\\ShanghaiAlice\\th185",
+        .appdataPath = L"%AppData%\\ShanghaiAlice\\th185",      
     },
     {
         .id = ID_TH075,
         .title = TH075_TITLE,
         .versions = gGameVersions + VER_TH075,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH075_SHOTTYPES,
+        .shot_columns = 4,
     },
     {
         .id = ID_TH105,
         .title = TH105_TITLE,
         .versions = gGameVersions + VER_TH105,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH105_SHOTTYPES,
+        .shot_columns = 4,
     },
     {
         .id = ID_TH123,
         .title = TH123_TITLE,
         .versions = gGameVersions + VER_TH123,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH123_SHOTTYPES,
+        .shot_columns = 3,
     },
     {
         .id = ID_TH135,
         .title = TH135_TITLE,
         .versions = gGameVersions + VER_TH135,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH135_SHOTTYPES,
+        .shot_columns = 4,
     },
     {
         .id = ID_TH145,
         .title = TH145_TITLE,
         .versions = gGameVersions + VER_TH145,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH145_SHOTTYPES,
+        .shot_columns = 4,
     },
     {
         .id = ID_TH155,
         .title = TH155_TITLE,
         .versions = gGameVersions + VER_TH155,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH155_SHOTTYPES,
+        .shot_columns = 4,
     },
     {
         .id = ID_TH175,
         .title = TH175_TITLE,
         .versions = gGameVersions + VER_TH175,
         .ver_count = 1,
+        .shots = THPRAC_GAMEROLL_TH175_SHOTTYPES,
+        .shot_columns = 4,
     },
 };
 struct {
+    LauncherGame pc98Games_filler[PC98_GAMES_LEN];
     LauncherGame mainGames[MAIN_GAMES_LEN];
     LauncherGame spinoffShmups[SPINOFF_SHMUP_LEN];
     LauncherGame spinoffOthers[SPINOFF_OTHER_LEN];
 };
+struct {
+    LauncherGame pc98Games[PC98_GAMES_LEN];
+    LauncherGame games[GAMES_LEN];
 };
-static_assert((MAIN_GAMES_LEN + SPINOFF_SHMUP_LEN + SPINOFF_OTHER_LEN) == elementsof(games));
+};
 
 extern yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
 
@@ -1135,6 +1215,191 @@ static inline void GamesList(LauncherGame* games, size_t count) {
         if (!game.instances) {
             ImGui::EndDisabled();
         }
+    }
+}
+
+void RandomGameSetUI(const char* id, bool* choices, unsigned int choices_len, LauncherGame* games) {
+    ImGui::BeginTable(id, 6);
+    ImGui::TableNextRow();
+    for (size_t i = 0; i < choices_len; i++) {
+        ImGui::TableNextColumn();
+        ImGui::Checkbox(gThGameStrs[games[i].id], choices + i);
+    }
+    ImGui::EndTable();
+}
+
+static size_t ShotTypeCount(const char* shots) {
+    size_t ret = 0;
+    for (;;) {
+        ret++;
+        shots += t_strlen(shots) + 1;
+        if (!*shots) {
+            return ret;
+        }
+    }
+}
+
+static const char* ShotNameGet(const char* shots, size_t count) {
+    for (size_t i = 0; i < count; i++) {
+        shots += t_strlen(shots) + 1;
+    }
+    return shots;
+}
+
+static inline unsigned RollChoices(bool* choices, unsigned count) {
+    unsigned max = 0;
+    for (unsigned i = 0; i < count; i++) {
+        if (choices[i]) {
+            max = i + 1;
+        }
+    }
+    if (max) for (;;) {
+        unsigned roll = rand_range(max);
+        if (choices[roll]) {
+            return roll;
+        }
+    }
+    return UINT_MAX;
+}
+
+extern void (*toolFunc)();
+extern bool goToGamesPage;
+
+static LauncherGame* randomShotGame = nullptr;
+static bool shotChoices[32] = { true, true, true };
+void RandomShotRollUI() {
+    if (ImGui::Button("Back")) {
+        toolFunc = nullptr;
+    }
+
+    ImGui::SameLine();
+    Gui::TextCentered(S(THPRAC_TOOLS_RND_PLAYER), ImGui::GetWindowWidth());
+    ImGui::Separator();
+
+    if (!randomShotGame) {
+        randomShotGame = gamesAll + 1;
+    }
+
+    static unsigned roll = UINT_MAX;
+
+    // Adjust if somehow ZUN makes a game with more than 32 shot types
+    // Or maybe this method of implementing random shottype choice is a bad idea
+    // Or maybe this whole screen is a bad idea.
+     // th02 is the default game and it only has 3 shottypes
+    if (ImGui::BeginCombo(S(THPRAC_TOOLS_RND_PLAYER_GAME), gThGameStrs[randomShotGame->id])) {
+        for (size_t i = 0; i < ALL_GAMES_LEN; i++) {
+            if (gamesAll[i].shots == A0000ERROR_C) {
+                continue;
+            }
+
+            if (ImGui::Selectable(gThGameStrs[gamesAll[i].id], randomShotGame == (gamesAll + i))) {
+                randomShotGame = gamesAll + i;
+                memset(shotChoices, 0, 32);
+                memset(shotChoices, 1, ShotTypeCount(S(randomShotGame->shots)));
+                roll = UINT_MAX;
+            }
+        }
+        ImGui::EndCombo();
+    }
+
+    ImGui::NewLine();
+
+    ImGui::BeginTable("###__random_shot_choice", randomShotGame->shot_columns);
+    ImGui::TableNextRow();
+
+    const char* shot_str = S(randomShotGame->shots);
+    for (size_t i = 0; ; i++) {
+        ImGui::TableNextColumn();
+        ImGui::Checkbox(shot_str, shotChoices + i);
+        
+        shot_str = shot_str + t_strlen(shot_str) + 1;
+        if (!*shot_str) {
+            break;
+        }
+    }
+    ImGui::EndTable();
+
+    char buttonText[128] = {};
+    if (roll != UINT_MAX) {
+        snprintf(buttonText, 127, S(THPRAC_TOOLS_ROLL_RESULT), ShotNameGet(S(randomShotGame->shots), roll));
+    } else {
+        strcpy(buttonText, S(THPRAC_TOOLS_ROLL));
+    }
+
+    if (Gui::ButtonCentered(buttonText, 0.85f, { 0.98f, 0.1f })) {
+        roll = RollChoices(shotChoices, 32);
+    }
+
+    if (randomShotGame->instances && ImGui::BeginPopupContextItem("###__roll_game_right_click")) {
+        if (ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_GAME))) {
+            selectedGame = randomShotGame;
+            goToGamesPage = true;
+        }
+        ImGui::EndPopup();
+    }
+}
+
+void RandomGameRollUI() {
+    if (ImGui::Button("Back")) {
+        toolFunc = nullptr;
+    }
+
+    ImGui::SameLine();
+    Gui::TextCentered(S(THPRAC_TOOLS_RND_GAME), ImGui::GetWindowWidth());
+    ImGui::Separator();
+
+    static union {
+        bool choices[ALL_GAMES_LEN] = {};
+        struct {
+            bool pc98_choice[PC98_GAMES_LEN];
+            bool maingame_choice[MAIN_GAMES_LEN];
+            bool spinoff_shmup_choice[SPINOFF_SHMUP_LEN];
+            bool spinoff_other_choice[SPINOFF_OTHER_LEN];
+        };
+    };
+
+    static unsigned roll = UINT_MAX;
+
+    RandomGameSetUI("###__random_games_pc98", pc98_choice, PC98_GAMES_LEN, pc98Games);
+    ImGui::NewLine();
+    RandomGameSetUI("###__random_games_maingame", maingame_choice, MAIN_GAMES_LEN, mainGames);
+    ImGui::NewLine();
+    RandomGameSetUI("###__random_games_spinoff_shmup", spinoff_shmup_choice, SPINOFF_SHMUP_LEN, spinoffShmups);
+    ImGui::NewLine();
+    RandomGameSetUI("###__random_games_spinoff_other", spinoff_other_choice, SPINOFF_OTHER_LEN, spinoffOthers);
+    ImGui::NewLine();
+    
+    Gui::CheckboxAll(S(THPRAC_TOOLS_RND_GAME_PC98), pc98_choice, PC98_GAMES_LEN);
+    ImGui::SameLine();
+    Gui::CheckboxAll(S(THPRAC_GAMES_MAIN_SERIES), maingame_choice, MAIN_GAMES_LEN);
+    ImGui::SameLine();
+    Gui::CheckboxAll(S(THPRAC_GAMES_SPINOFF_STG), spinoff_shmup_choice, SPINOFF_SHMUP_LEN);
+    ImGui::SameLine();
+    Gui::CheckboxAll(S(THPRAC_GAMES_SPINOFF_OTHERS), spinoff_other_choice, SPINOFF_OTHER_LEN);
+
+    char buttonText[128] = {};
+    if (roll != UINT_MAX) {
+        snprintf(buttonText, 127, S(THPRAC_TOOLS_ROLL_RESULT), gThGameStrs[gamesAll[roll].id]);
+    } else {
+        strcpy(buttonText, S(THPRAC_TOOLS_ROLL));
+    }
+
+    if (Gui::ButtonCentered(buttonText, 0.85f, { 0.98f, 0.1f })) {
+        roll = RollChoices(choices, ALL_GAMES_LEN);
+    }
+
+    if ((roll != UINT_MAX) && (gamesAll[roll].shots || gamesAll[roll].instances) && ImGui::BeginPopupContextItem("###__roll_game_right_click")) {
+        if (gamesAll[roll].shots && ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_PLAYER))) {
+            randomShotGame = gamesAll + roll;
+            memset(shotChoices, 0, 32);
+            memset(shotChoices, 1, ShotTypeCount(S(randomShotGame->shots)));
+            toolFunc = RandomShotRollUI;
+        }
+        if (gamesAll[roll].instances && ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_GAME))) {
+            selectedGame = gamesAll + roll;
+            goToGamesPage = true;
+        }
+        ImGui::EndPopup();
     }
 }
 
