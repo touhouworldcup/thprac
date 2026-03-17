@@ -527,14 +527,14 @@ namespace TH20 {
                     mPhase(TH_PHASE, SpellPhase());
                 }
 
+                char buf[32] = {};
+
                 mLife();
                 mLifeFragment();
                 mBomb();
                 mBombFragment();
-                auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
-                mPower(power_str.c_str());
-                auto value_str = std::format("{:.2f}", (float)(*mValue) / 5000.0f);
-                mValue(value_str.c_str());
+                mPower(FormatNumberFixedPoint(*mPower, 2, buf));
+                mValue(FormatNumberFixedPoint(*mValue, 2, buf));
 
                 ImGui::Columns(2, 0, false);
                 if (mHyperActive()) {
@@ -548,8 +548,15 @@ namespace TH20 {
                 }
                 ImGui::Columns(1);
 
-                mHyper(std::format("{:.2f} %%", (float)(*mHyper) / 100.0f).c_str());
-                mStone(std::format("{:.2f} %%", (float)(*mStone) / 100.0f).c_str());
+                FormatNumberFixedPoint(*mHyper, 2, buf);
+                *(uint32_t*)(buf + t_strlen(buf)) = 0x00002525;
+                mHyper(buf);
+                
+                memset(buf, 0, 32);
+                FormatNumberFixedPoint(*mStone, 2, buf);
+                *(uint32_t*)(buf + t_strlen(buf)) = 0x00002525;
+                mStone(buf);
+
                 mStoneSummoned();
                 mCycle();
 

@@ -239,10 +239,10 @@ namespace TH13 {
                 mLifeFragment();
                 mBomb();
                 mBombFragment();
-                auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
-                mPower(power_str.c_str());
-                auto trance_str = std::to_string((float)(*mTranceMeter) / 200.0f).substr(0, 4);
-                mTranceMeter(trance_str.c_str());
+
+                char buf[32];
+                mPower(FormatNumberFixedPoint(*mPower, 2, buf));
+                mTranceMeter(FormatNumberFixedPoint(*mTranceMeter >> 1, 2, buf));
                 mValue();
                 mValue.RoundDown(10);
                 mGraze();

@@ -255,8 +255,8 @@ namespace TH10 {
                 }
 
                 mLife();
-                auto power_str = std::to_string((float)(*mPower) * 5.0f / 100.0f).substr(0, 4);
-                mPower(power_str.c_str());
+                char buf[32];
+                mPower(FormatNumberFixedPoint(*mPower * 5, 2, buf));
                 mFaith();
                 mFaith.RoundDown(10);
                 mFaithBar();

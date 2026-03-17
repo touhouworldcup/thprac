@@ -239,9 +239,9 @@ namespace TH15 {
                 mBombFragment();
                 if (GetMemContent(CHARACTER) == 3)
                     mReisenShield();
-
-                auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
-                mPower(power_str.c_str());
+                
+                char buf[32];
+                mPower(FormatNumberFixedPoint(*mPower, 2, buf));
                 mValue();
                 mValue.RoundDown(10);
                 mGraze();

@@ -297,8 +297,8 @@ namespace TH12 {
                 mLifeFragment();
                 mBomb();
                 mBombFragment();
-                auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
-                mPower(power_str.c_str());
+                char buf[32];
+                mPower(FormatNumberFixedPoint(*mPower, 2, buf));
                 mUfoSide();
                 mVentra1();
                 if (*mVentra1) {

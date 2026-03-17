@@ -165,4 +165,44 @@ char* FormatNumberWithCommas(int64_t val, char* buffer) {
 
     return buffer;
 }
+
+char* FormatNumberFixedPoint(int value, int dot_pos, char* buffer) {
+    bool is_negative = value < 0;
+    if (is_negative) {
+        value = -value;
+        *buffer++ = '-';
+    }
+
+    char temp[32];
+
+    int digit_count = 0;
+    do {
+        temp[digit_count++] = (value % 10) + '0';
+        value /= 10;
+    } while (value > 0);
+
+    if (dot_pos >= digit_count) {
+        buffer[0] = '0';
+        buffer[1] = '.';
+
+        size_t i = 0;
+        while (i < dot_pos - digit_count) {
+            buffer[2 + i++] = '0';
+        }
+
+        for (size_t j = 0; j < digit_count; j++) {
+            buffer[i + j + 2] = temp[digit_count - j - 1];
+        }
+        buffer[digit_count + i + 2] = 0;
+    } else {
+        for (size_t i = 0, buf_pos = 0; i < digit_count; i++) {
+            if (i == digit_count - dot_pos) {
+                buffer[buf_pos++] = '.';
+            }
+            buffer[buf_pos++] = temp[digit_count - i - 1];
+        }
+        buffer[digit_count + 1] = 0;
+    }
+    return buffer - (unsigned int)is_negative;
+}
 #pragma endregion

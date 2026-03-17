@@ -259,13 +259,15 @@ namespace TH11 {
 
                 mLife();
                 mLifeFragment();
+
+                char buf[32];
+
                 if (isMarisaA) {
-                    auto power_str = std::to_string((float)(*mPower) * 8.0f / 96.0f).substr(0, 4);
-                    mPower(power_str.c_str());
+                    sprintf(buf, "%.2f", *mPower / 12.0f);
                 } else {
-                    auto power_str = std::to_string((float)(*mPower) * 5.0f / 100.0f).substr(0, 4);
-                    mPower(power_str.c_str());
+                    FormatNumberFixedPoint(*mPower * 5, 2, buf);
                 }
+                mPower(buf);
                 mGraze();
                 mValue();
                 mValue.RoundDown(10);

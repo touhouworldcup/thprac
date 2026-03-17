@@ -1,5 +1,6 @@
 #include "thprac_th19.h"
 #include "thprac_games.h"
+#include <string.h>
 
 namespace THPrac {
 namespace TH19 {
@@ -26,18 +27,20 @@ void drawEnemyHP(PCONTEXT pCtx) {
     float* enm_pos = (float*)(pCtx->Ecx + 0x48);
     uint32_t hp = *(uint32_t*)(pCtx->Ecx + 0x5008);
 
-    std::string hp_str = std::to_string(hp);
-
+    char hp_str[16] = {};
+    _itoa(hp, hp_str, 10);
+    char* hp_str_end = hp_str + t_strlen(hp_str);
+    
     auto* drawList = ImGui::GetOverlayDrawList();
     auto* font = ImGui::GetFont();
 
-    ImVec2 textSize = font->CalcTextSizeA(font->FontSize, ImGui::GetIO().DisplaySize.x, 0.0f, hp_str.c_str(), hp_str.c_str() + hp_str.size());
+    ImVec2 textSize = font->CalcTextSizeA(font->FontSize, ImGui::GetIO().DisplaySize.x, 0.0f, hp_str, hp_str_end);
 
     ImVec2 upperLeft = ImVec2((enm_pos[0] + offset.x) * g_Scale, (enm_pos[1] + offset.y) * g_Scale);
     ImVec2 lowerRight = ImVec2(upperLeft.x + textSize.x, upperLeft.y + textSize.y);
 
     drawList->AddRectFilled(upperLeft, lowerRight, 0xAA555555);
-    drawList->AddText(upperLeft, 0xFFFF55FF, hp_str.c_str(), hp_str.c_str() + hp_str.size());
+    drawList->AddText(upperLeft, 0xFFFF55FF, hp_str, hp_str_end);
 }
 
 }

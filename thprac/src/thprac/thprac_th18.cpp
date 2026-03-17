@@ -519,8 +519,8 @@ namespace TH18 {
                 mLifeFragment();
                 mBomb();
                 mBombFragment();
-                auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
-                mPower(power_str.c_str());
+                char buf[32];
+                mPower(FormatNumberFixedPoint(*mPower, 2, buf));
                 mFunds();
 
                 mScore();

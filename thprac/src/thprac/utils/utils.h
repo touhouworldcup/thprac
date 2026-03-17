@@ -115,6 +115,7 @@ inline long RoundUp(long n, long m) {
 }
 // Buffer is expected to be 32 chars big
 char* FormatNumberWithCommas(long long val, char* buffer);
+char* FormatNumberFixedPoint(int value, int dot_pos, char* buffer);
 
 inline bool CheckBufPos(const void* bufStart, const void* bufPos, int bufLen) {
     if (bufLen != 0) {
