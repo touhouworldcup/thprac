@@ -15,6 +15,8 @@ namespace TH07 {
         GUI_ADDR = 0x49fbf0,
         // TODO: figure out what this address is
         UNKNOWN_ADDR_1 = 0x575ab4,
+        ENEMY_MANAGER = 0x9a9b00,
+        STAGE_NUM = 0x1347fc8,
     };
 
     struct THPracParam {
@@ -555,7 +557,22 @@ namespace TH07 {
         
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
         PATCH_HK(0x417726, "eb"),
-        PATCH_HK(0x421F91, "eb")
+        PATCH_HK(0x421F91, "eb"),
+        EHOOK_HK(0x4207a1, 5, { // freeze timeline progress during st4 Lily (missing boss_wait)
+            if (GetMemContent(STAGE_NUM) != 4) return;
+            constexpr uint32_t lilyStart = 7122;
+            constexpr uint32_t lilyLatest = lilyStart + 60 * 50;
+
+            const bool bossExists = (bool)GetMemContent(ENEMY_MANAGER + 0x954598);
+            const int32_t curTime = GetMemContent(pCtx->Ecx + 0x8);
+
+            if (bossExists && curTime >= lilyStart && curTime < lilyLatest) {
+                pCtx->Eip = 0x4207a6; // don't run timelines
+
+                if (curTime < lilyStart + 60 * 10) // remove 10s of unnecessary wait
+                    *(int32_t*)(pCtx->Ecx + 0x8) = lilyStart + 60 * 10;
+            }
+        })
         HOTKEY_ENDDEF();
         
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
