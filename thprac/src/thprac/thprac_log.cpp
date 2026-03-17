@@ -5,6 +5,9 @@
 #include "thprac_utils.h"
 
 namespace THPrac {
+namespace Gui {
+    HWND ImplWin32GetHwnd();
+}
 
 HANDLE hLog = INVALID_HANDLE_VALUE;
 bool console_open = false;
@@ -44,6 +47,10 @@ int log_mbox(void* hwnd, unsigned int type, const char* caption, const char* tex
         "%s\n"
         "---------------------------\n",
         text);
+
+    if (!hwnd) {
+        hwnd = Gui::ImplWin32GetHwnd();
+    }
 
     int ret = MessageBoxW((HWND)hwnd, utf8_to_utf16(text).c_str(), utf8_to_utf16(caption).c_str(), type);
 
