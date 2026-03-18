@@ -340,6 +340,36 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
         }                                                                                                                          \
     }
 
+
+struct ThpracVersion {
+    uint8_t meta;
+    uint8_t major;
+    uint8_t minor;
+    uint8_t patch;
+
+    bool operator==(const ThpracVersion& other) const {
+        return meta == other.meta && major == other.major && minor == other.minor && patch == other.patch;
+    }
+
+    bool operator<(const ThpracVersion& other) const {
+        if (meta != other.meta) return meta < other.meta;
+        if (major != other.major) return major < other.major;
+        if (minor != other.minor) return minor < other.minor;
+        return patch < other.patch;
+    }
+
+    bool operator!=(const ThpracVersion& other) const { return !(*this == other); }
+    bool operator> (const ThpracVersion& other) const { return other < *this; }
+    bool operator<=(const ThpracVersion& other) const { return !(*this > other); }
+    bool operator>=(const ThpracVersion& other) const { return !(*this < other); }
+};
+
+ThpracVersion ParseVersion(const char* str);
+#define GetJsonVersion()                              \
+    param.HasMember("version")                        \
+        ? ParseVersion(param["version"].GetString())  \
+        : ThpracVersion{0, 0, 0, 0};
+
 #define AddJsonArray(value_name, value_len)                                \
     {                                                                      \
         rapidjson::Value __key_##value_name(#value_name, jalloc);          \

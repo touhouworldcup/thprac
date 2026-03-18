@@ -43,6 +43,12 @@ namespace TH16 {
             GetJsonValue(mode);
             GetJsonValue(stage);
             GetJsonValue(section);
+
+            // backwards compat (replays broke due to section 21 being removed in v2.2.2.3)
+            const ThpracVersion v = GetJsonVersion();
+            if (v < ThpracVersion { 2, 2, 2, 3 } && section > 21)
+                section -= 1;
+
             GetJsonValue(phase);
             GetJsonValueEx(dlg, Bool);
 
