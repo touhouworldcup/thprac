@@ -893,7 +893,6 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path)
     return ReplayClearResult::NoParams;
 }
 
-
 #pragma endregion
 
 #pragma region Virtual File System

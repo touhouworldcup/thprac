@@ -2,6 +2,7 @@
 
 #include "thprac_hook.h"
 #include "thprac_gui_components.h"
+#include "thprac_version.h"
 
 #include <vector>
 #include <unordered_map>
@@ -339,6 +340,11 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
             }                                                                                                                      \
         }                                                                                                                          \
     }
+
+#define GetJsonVersion()                              \
+    param.HasMember("version")                        \
+        ? ParseVersion(param["version"].GetString())  \
+        : ThpracVersion{0, 0, 0, 0};
 
 #define AddJsonArray(value_name, value_len)                                \
     {                                                                      \

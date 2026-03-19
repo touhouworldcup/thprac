@@ -707,6 +707,7 @@ private:
         auto& version = versionJson["version"];
         for (int i = 0; i < 4; ++i) {
             auto versionNum = version[i].GetInt();
+
             if (i < 2 || versionNum) {
                 cfgGui.mUpdVerStr += i ? '.' : 'v';
                 cfgGui.mUpdVerStr += std::to_string(version[i].GetInt());
@@ -748,22 +749,33 @@ private:
     static void CheckUpdateJson(const char* jsonStr, size_t jsonSize = 0)
     {
         rapidjson::Document versionJson;
+
         if (!versionJson.Parse(jsonStr, jsonSize ? jsonSize : strlen(jsonStr) + 1).HasParseError()) {
             if (versionJson.HasMember("version")) {
-                auto& version = versionJson["version"];
-                if (version.IsArray() && version.Size() == 4 && version[0].IsInt() && version[1].IsInt() && version[2].IsInt() && version[3].IsInt()) {
-                    for (int i = 0; i < 4; ++i) {
-                        int versionNum = version[i].GetInt();
-                        if (versionNum > GetVersionInt()[i]) {
-                            InitUpdatePopup(versionJson);
-                            return;
-                        } else if (versionNum < GetVersionInt()[i]) {
-                            break;
-                        }
-                    }
+                auto& ver = versionJson["version"];
+
+                // validation
+                if (!ver.IsArray()  || ver.Size() != 4 || !ver[0].IsInt()
+                 || !ver[1].IsInt() || !ver[2].IsInt() || !ver[3].IsInt())
+                    return;
+
+                const int verMeta  = ver[0].GetInt();
+                const int verMajor = ver[1].GetInt();
+                const int verMinor = ver[2].GetInt();
+                const int verPatch = ver[3].GetInt();
+
+                if (verMeta  < 0 || verMeta  > 255 || verMajor < 0 || verMajor > 255
+                 || verMinor < 0 || verMinor > 255 || verPatch < 0 || verPatch > 255)
+                    return;
+
+                const ThpracVersion updateVersion { (uint8_t)verMeta, (uint8_t)verMajor, (uint8_t)verMinor, (uint8_t)verPatch };
+                if (updateVersion > currentVersion) {
+                    InitUpdatePopup(versionJson);
+                    return;
                 }
             }
         }
+
         THUpdate::singleton().mChkUpdStatus = STATUS_NO_UPDATE;
         return;
     }
