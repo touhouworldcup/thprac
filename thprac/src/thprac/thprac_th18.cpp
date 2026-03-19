@@ -3776,7 +3776,7 @@ namespace TH18 {
 
     void DrawCardUseCount(float x, float y, unsigned char useCnt) {
         auto* drawList = ImGui::GetWindowDrawList();
-        auto& style = ImGui::GetStyle();
+        //auto& style = ImGui::GetStyle();
         auto& io = ImGui::GetIO();
 
         ImVec2 pos = { (x / 1280.0f) * io.DisplaySize.x, (y / 960.0f) * io.DisplaySize.y };

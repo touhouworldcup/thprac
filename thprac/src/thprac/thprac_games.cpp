@@ -893,29 +893,6 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path)
     return ReplayClearResult::NoParams;
 }
 
-ThpracVersion ParseVersion(const char* str) {
-    ThpracVersion ver = { 0, 0, 0, 0 };
-
-    uint8_t* fields[4] = { &ver.meta, &ver.major, &ver.minor, &ver.patch };
-    uint8_t curVal = 0;
-    size_t fieldIndex = 0;
-
-    for (const char* p = str;; ++p) {
-        if (*p >= '0' && *p <= '9') {
-            curVal = curVal * 10 + (*p - '0');
-
-        } else if (*p == '.' || *p == '\0') {
-            if (fieldIndex < 4)
-                *fields[fieldIndex++] = curVal;
-            curVal = 0;
-
-            if (*p == '\0') break;
-        }
-    }
-
-    return ver;
-}
-
 #pragma endregion
 
 #pragma region Virtual File System
