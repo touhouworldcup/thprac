@@ -506,7 +506,7 @@ namespace TH20 {
         {
             auto section = CalcSection();
             if (section == TH20_ST7_BOSS17)
-                return TH_SPELL_PHASE_TIMEOUT;
+                return TH_SPELL_PHASE_FINALE;
             if (section == TH20_ST6_BOSS12 || section == TH20_ST7_BOSS18)
                 return TH_SPELL_PHASE2;
             return nullptr;

@@ -1150,13 +1150,18 @@
         "TH_P4",
         "TH_RAGE"
       ],
-      "TH_SPELL_PHASE_TIMEOUT": [
+      "TH_SPELL_PHASE_FINALE": [
         "TH_NORMAL",
         "TH_FINALE"
       ],
       "TH_SPELL_PHASE_RAGEFUL": [
         "TH_NORMAL",
         "TH_FULL",
+        "TH_RAGE"
+      ],
+      "TH_SPELL_PHASE_RAGEFIN": [
+        "TH_NORMAL",
+        "TH_FINALE",
         "TH_RAGE"
       ],
       "TH_SIDE_SELECT": [
