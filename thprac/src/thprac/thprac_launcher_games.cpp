@@ -753,7 +753,6 @@ static void DetailsPage(LauncherGame* game) {
     }
 }
 
-
 struct FoundGame {
     // Stored as a char array because that's what ImGui uses for text output.
     // The UTF-16 version is only needed once, to load the file to identify and hash it.
@@ -788,82 +787,95 @@ static bool GameAlreadyExists(const char* path) {
     return false;
 }
 
-static bool DontGoThere(const wchar_t* d) {
-    if (d[0] == L'.' && d[1] == 0) {
-        return true;
-    }
-    if (d[0] == L'.' && d[1] == L'.' && d[2] == 0) {
-        return true;
-    }
-    return false;
-}
-
-// TODO: since we have to SetCurrentDirectoryW into every folder we scan anyways, 
-// why not use NtQueryDirectoryFileEx instead? It requres a handle to a folder,
-// but that's actually convenient because of RTL_USER_PROCESS_PARAMETERS -> CurrentDirectory.Handle
-static void SearchFunc(ScanCtx* scanCtx, const wchar_t* path) {
-    if (!(GetFileAttributesW(path) & FILE_ATTRIBUTE_DIRECTORY)) {
-        FoundGame game = {};
-        uint16_t oepCode[10] = {};
-        if (!IdentifyKnownGame(game.info, game.oepCode, path)) {
-            return;
-        }
-        else {
-            auto& cd = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
-            auto written = WideCharToMultiByte(CP_UTF8, 0, cd.Buffer, cd.Length / sizeof(wchar_t), game.path, MAX_PATH, nullptr, nullptr);
-            WideCharToMultiByte(CP_UTF8, 0, path, -1, game.path + written, MAX_PATH - written, nullptr, nullptr);
-            if (GameAlreadyExists(game.path)) {
-                return;
-            }
-
-            EnterCriticalSection(&scanCtx->found_cs);
-
+static void ScanIdentifyGame(ScanCtx* scanCtx, const wchar_t* path, size_t path_len) {
+    FoundGame game;
+    if (IdentifyKnownGame(game.info, game.oepCode, path)) {
+        WideCharToMultiByte(CP_UTF8, 0, path, path_len, game.path, MAX_PATH, nullptr, nullptr);
+        if (!GameAlreadyExists(game.path)) {
             auto& v = scanCtx->found;
 
             v.insert(std::upper_bound(v.begin(), v.end(), game.info.ver->gameId, [](THGameID id, FoundGame& g) -> bool {
                 return id < g.info.ver->gameId;
             }), game);
-
-            LeaveCriticalSection(&scanCtx->found_cs);
-            return;
         }
     }
-    if (!SetCurrentDirectoryW(path)) {
-        return;
-    }
-    WIN32_FIND_DATAW find = {};
-    HANDLE hFind = FindFirstFileW(L"*", &find);
-    if (hFind) do {
-        if (DontGoThere(find.cFileName)) {
-            continue;
-        }
-        SearchFunc(scanCtx, find.cFileName);
-    } while (FindNextFileW(hFind, &find));
-    SetCurrentDirectoryW(L"..");
 }
 
-void BeginScan(ScanCtx* scanCtx, const wchar_t* start_dir) {
-    if (!SetCurrentDirectoryW(start_dir)) {
+static void ScanDirectory(ScanCtx* scanCtx, const wchar_t* path) {
+    HANDLE hDir = CreateFileW(path,
+        FILE_LIST_DIRECTORY | SYNCHRONIZE,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
+
+    if (hDir == INVALID_HANDLE_VALUE) {
         return;
     }
-    WIN32_FIND_DATAW find;
-    HANDLE hFind = FindFirstFileW(L"*", &find);
-    if (hFind) do {
-        if (DontGoThere(find.cFileName)) {
-            continue;
+
+    BYTE* buffer = (BYTE*)VirtualAlloc(0, 65535, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    if (!buffer) {
+        CloseHandle(hDir);
+        return;
+    }
+
+    IO_STATUS_BLOCK iosb;
+    ULONG queryFlags = SL_RESTART_SCAN;
+
+    for (;;) {
+        NTSTATUS status = NtQueryDirectoryFileEx(hDir,
+            nullptr, nullptr, nullptr,
+            &iosb, buffer, 65535, FileDirectoryInformation, queryFlags, nullptr);
+        if (status == STATUS_NO_MORE_FILES) {
+            break;
         }
-        SearchFunc(scanCtx, find.cFileName);
-    } while (FindNextFileW(hFind, &find));
+        if (!NT_SUCCESS(status)) {
+            break;
+        }
+
+        queryFlags = 0;
+        BYTE* ptr = buffer;
+
+        for (;;) {
+            auto* info = (FILE_DIRECTORY_INFORMATION*)ptr;
+            std::wstring_view name(info->FileName, info->FileNameLength / sizeof(WCHAR));
+
+            if (name != L"." && name != L"..") {
+                std::wstring fullPath(path);
+                if (!fullPath.ends_with(L"\\")) {
+                    fullPath.push_back(L'\\');
+                }
+                fullPath.append(name);
+
+                if (info->FileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+                    ScanDirectory(scanCtx, fullPath.c_str());
+                } else if (name.length() > 4 && name.ends_with(L".exe")) {
+                    // I also tried collecting all exe names in a list then 
+                    // going through them in a separate step. The idea was
+                    // to show a progress bar during that second step. But
+                    // then it took my PC less than 100ms to go through 6
+                    // to 7000 exe files, so that clearly won't work. I refuse
+                    // to iterate the filesystem or any part of it twice
+                    // just for a progress bar.
+                    ScanIdentifyGame(scanCtx, fullPath.data(), fullPath.length());
+                }
+            }
+
+            if (info->NextEntryOffset == 0) {
+                break;
+            }
+
+            ptr += info->NextEntryOffset;
+        }
+    }
+    VirtualFree(buffer, 0, MEM_RELEASE);
+    CloseHandle(hDir);
 }
 
 static DWORD WINAPI ScanThread(LPVOID lpParam) {
     ScanCtx* scanCtx = (ScanCtx*)lpParam;
 
-    auto& c = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
-    std::wstring curdir_bak(c.Buffer, c.Length / sizeof(wchar_t));
+    std::vector<std::wstring> found_exe_names;
+    ScanDirectory(scanCtx, scanCtx->scan_dir.c_str());
 
-    BeginScan(scanCtx, scanCtx->scan_dir.c_str());
-    SetCurrentDirectoryW(curdir_bak.c_str());
     return 0;
 }
 
@@ -922,7 +934,7 @@ start:
     size_t suffix_len = t_strlen(suffix);
     if (path_p + suffix_len < path_end) {
         memcpy(path_p, suffix, suffix_len * sizeof(wchar_t));
-        BeginScan(scanCtx, path_buf);
+        ScanDirectory(scanCtx, path_buf);
     }
 	
 	goto start;
@@ -965,8 +977,9 @@ static DWORD WINAPI ScanThreadSteam(LPVOID lpParam) {
     if (!f.fileMapView) {
         return 4;
     }
+
+    std::vector<std::wstring> found_exe_names;
     SteamReadLibrary(scanCtx, (char*)f.fileMapView, f.fileSize);
-    SetCurrentDirectoryW(curdir_bak.c_str());
 
     return 0;
 }
@@ -1026,7 +1039,6 @@ static void ScanResults(std::vector<FoundGame>& found) {
     ScanAddInstances(FindLauncherGameByID(cur_id), found.data() + cur_idx, found.size() - cur_idx);
     return;
 }
-
 
 constinit ScanCtx* scanCtx = nullptr;
 

@@ -10,6 +10,14 @@
 #include <Windows.h>
 typedef LONG NTSTATUS;
 
+constexpr NTSTATUS STATUS_BUFFER_OVERFLOW = 0x80000005;
+constexpr NTSTATUS STATUS_NO_MORE_FILES = 0x80000006;
+constexpr NTSTATUS STATUS_BUFFER_TOO_SMALL = 0xC0000023;
+
+#ifndef NT_SUCCESS
+#define NT_SUCCESS(Status) (((NTSTATUS)(Status)) >= 0)
+#endif
+
 #pragma warning(disable : 4201)
 
 /// Internal Windows Structs
@@ -542,3 +550,162 @@ extern "C" NTSYSAPI NTSTATUS NTAPI NtQueryValueKey(
     PVOID KeyValueInformation,
     ULONG Length,
     PULONG ResultLength);
+
+enum FILE_INFORMATION_CLASS {
+    FileDirectoryInformation = 1,
+    FileFullDirectoryInformation = 2,
+    FileBothDirectoryInformation = 3,
+    FileBasicInformation = 4,
+    FileStandardInformation = 5,
+    FileInternalInformation = 6,
+    FileEaInformation = 7,
+    FileAccessInformation = 8,
+    FileNameInformation = 9,
+    FileRenameInformation = 10,
+    FileLinkInformation = 11,
+    FileNamesInformation = 12,
+    FileDispositionInformation = 13,
+    FilePositionInformation = 14,
+    FileFullEaInformation = 15,
+    FileModeInformation = 16,
+    FileAlignmentInformation = 17,
+    FileAllInformation = 18,
+    FileAllocationInformation = 19,
+    FileEndOfFileInformation = 20,
+    FileAlternateNameInformation = 21,
+    FileStreamInformation = 22,
+    FilePipeInformation = 23,
+    FilePipeLocalInformation = 24,
+    FilePipeRemoteInformation = 25,
+    FileMailslotQueryInformation = 26,
+    FileMailslotSetInformation = 27,
+    FileCompressionInformation = 28,
+    FileObjectIdInformation = 29,
+    FileCompletionInformation = 30,
+    FileMoveClusterInformation = 31,
+    FileQuotaInformation = 32,
+    FileReparsePointInformation = 33,
+    FileNetworkOpenInformation = 34,
+    FileAttributeTagInformation = 35,
+    FileTrackingInformation = 36,
+    FileIdBothDirectoryInformation = 37,
+    FileIdFullDirectoryInformation = 38,
+    FileValidDataLengthInformation = 39,
+    FileShortNameInformation = 40,
+    FileIoCompletionNotificationInformation = 41,
+    FileIoStatusBlockRangeInformation = 42,
+    FileIoPriorityHintInformation = 43,
+    FileSfioReserveInformation = 44,
+    FileSfioVolumeInformation = 45,
+    FileHardLinkInformation = 46,
+    FileProcessIdsUsingFileInformation = 47,
+    FileNormalizedNameInformation = 48,
+    FileNetworkPhysicalNameInformation = 49,
+    FileIdGlobalTxDirectoryInformation = 50,
+    FileIsRemoteDeviceInformation = 51,
+    FileUnusedInformation = 52,
+    FileNumaNodeInformation = 53,
+    FileStandardLinkInformation = 54,
+    FileRemoteProtocolInformation = 55,
+    FileRenameInformationBypassAccessCheck = 56,
+    FileLinkInformationBypassAccessCheck = 57,
+    FileVolumeNameInformation = 58,
+    FileIdInformation = 59,
+    FileIdExtdDirectoryInformation = 60,
+    FileReplaceCompletionInformation = 61,
+    FileHardLinkFullIdInformation = 62,
+    FileIdExtdBothDirectoryInformation = 63,
+    FileDispositionInformationEx = 64,
+    FileRenameInformationEx = 65,
+    FileRenameInformationExBypassAccessCheck = 66,
+    FileDesiredStorageClassInformation = 67,
+    FileStatInformation = 68,
+    FileMemoryPartitionInformation = 69,
+    FileStatLxInformation = 70,
+    FileCaseSensitiveInformation = 71,
+    FileLinkInformationEx = 72,
+    FileLinkInformationExBypassAccessCheck = 73,
+    FileStorageReserveIdInformation = 74,
+    FileCaseSensitiveInformationForceAccessCheck = 75,
+    FileKnownFolderInformation = 76,
+    FileStatBasicInformation = 77,
+    FileId64ExtdDirectoryInformation = 78,
+    FileId64ExtdBothDirectoryInformation = 79,
+    FileIdAllExtdDirectoryInformation = 80,
+    FileIdAllExtdBothDirectoryInformation = 81,
+    FileStreamReservationInformation,
+    FileMupProviderInfo,
+    FileMaximumInformation
+};
+typedef FILE_INFORMATION_CLASS* PFILE_INFORMATION_CLASS;
+
+struct FILE_NAMES_INFORMATION {
+    ULONG NextEntryOffset;
+    ULONG FileIndex;
+    ULONG FileNameLength;
+    WCHAR FileName[1];
+};
+
+struct FILE_DIRECTORY_INFORMATION {
+    ULONG NextEntryOffset;
+    ULONG FileIndex;
+    LARGE_INTEGER CreationTime;
+    LARGE_INTEGER LastAccessTime;
+    LARGE_INTEGER LastWriteTime;
+    LARGE_INTEGER ChangeTime;
+    LARGE_INTEGER EndOfFile;
+    LARGE_INTEGER AllocationSize;
+    ULONG FileAttributes;
+    ULONG FileNameLength;
+    WCHAR FileName[1];
+};
+
+struct FILE_FULL_DIR_INFORMATION {
+    ULONG NextEntryOffset;
+    ULONG FileIndex;
+    LARGE_INTEGER CreationTime;
+    LARGE_INTEGER LastAccessTime;
+    LARGE_INTEGER LastWriteTime;
+    LARGE_INTEGER ChangeTime;
+    LARGE_INTEGER EndOfFile;
+    LARGE_INTEGER AllocationSize;
+    ULONG FileAttributes;
+    ULONG FileNameLength;
+    ULONG EaSize;
+    WCHAR FileName[1];
+};
+
+struct IO_STATUS_BLOCK {
+    union {
+        NTSTATUS Status;
+        PVOID Pointer;
+    };
+    ULONG_PTR Information;
+};
+
+typedef IO_STATUS_BLOCK* PIO_STATUS_BLOCK;
+
+typedef VOID NTAPI IO_APC_ROUTINE(
+    PVOID ApcContext,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    ULONG Reserved);
+
+typedef IO_APC_ROUTINE PIO_APC_ROUTINE;
+
+#define SL_RESTART_SCAN 0x00000001
+#define SL_RETURN_SINGLE_ENTRY 0x00000002
+#define SL_INDEX_SPECIFIED 0x00000004
+#define SL_RETURN_ON_DISK_ENTRIES_ONLY 0x00000008
+#define SL_NO_CURSOR_UPDATE_QUERY 0x00000010
+
+extern "C" NTSTATUS NTAPI NtQueryDirectoryFileEx(
+    HANDLE FileHandle,
+    HANDLE Event,
+    PIO_APC_ROUTINE ApcRoutine,
+    PVOID ApcContext,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    PVOID FileInformation,
+    ULONG Length,
+    FILE_INFORMATION_CLASS FileInformationClass,
+    ULONG QueryFlags,
+    PUNICODE_STRING FileName);
