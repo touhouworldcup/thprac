@@ -767,6 +767,12 @@ struct ScanCtx {
     std::vector<FoundGame> found;
     HANDLE scan_thread = NULL;
     CRITICAL_SECTION found_cs = {};
+
+    size_t exes_found = 0;
+    size_t exes_scanned = 0;
+    size_t text_in_progress_bar_len = 0;
+    char text_in_progress_bar[MAX_PATH + 1] = {};
+    
     bool abort_message = false;
     bool relative = false;
 
@@ -813,12 +819,13 @@ static void PathMakeRelative(std::wstring& pathBuf, const wchar_t* relTo, size_t
 }
 
 static void ScanIdentifyGame(ScanCtx* scanCtx, const wchar_t* path, size_t path_len) {
+    size_t written = WideCharToMultiByte(CP_UTF8, 0, path, path_len, scanCtx->text_in_progress_bar, MAX_PATH, nullptr, nullptr);
+    scanCtx->text_in_progress_bar_len = written;
     FoundGame game;
+    memcpy(game.path, scanCtx->text_in_progress_bar, written);
     if (IdentifyKnownGame(game.info, game.oepCode, path)) {
-        WideCharToMultiByte(CP_UTF8, 0, path, path_len, game.path, MAX_PATH, nullptr, nullptr);
         if (!GameAlreadyExists(game.path)) {
             auto& v = scanCtx->found;
-
             v.insert(std::upper_bound(v.begin(), v.end(), game.info.ver->gameId, [](THGameID id, FoundGame& g) -> bool {
                 return id < g.info.ver->gameId;
             }), game);
@@ -826,7 +833,7 @@ static void ScanIdentifyGame(ScanCtx* scanCtx, const wchar_t* path, size_t path_
     }
 }
 
-static void ScanDirectory(ScanCtx* scanCtx, const wchar_t* path) {
+static void ScanDirectory(ScanCtx* scanCtx, const wchar_t* path, std::vector<std::wstring>& found_exe_names) {
     if (scanCtx->abort_message) {
         return;
     }
@@ -845,6 +852,9 @@ static void ScanDirectory(ScanCtx* scanCtx, const wchar_t* path) {
         CloseHandle(hDir);
         return;
     }
+
+    size_t written = WideCharToMultiByte(CP_UTF8, 0, path, -1, scanCtx->text_in_progress_bar, MAX_PATH, nullptr, nullptr);
+    scanCtx->text_in_progress_bar_len = written - 1;
 
     IO_STATUS_BLOCK iosb;
     ULONG queryFlags = SL_RESTART_SCAN;
@@ -882,20 +892,19 @@ static void ScanDirectory(ScanCtx* scanCtx, const wchar_t* path) {
                 fullPath.append(name);
 
                 if (info->FileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                    ScanDirectory(scanCtx, fullPath.c_str());
+                    ScanDirectory(scanCtx, fullPath.c_str(), found_exe_names);
                 } else if (name.length() > 4 && name.ends_with(L".exe")) {
                     if (scanCtx->relative) {
                         auto& curdir = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
                         PathMakeRelative(fullPath, curdir.Buffer, (curdir.Length / sizeof(WCHAR)) - 1);
                     }
-                    // I also tried collecting all exe names into a list then
-                    // going through them in a separate step. The idea was
-                    // to show a progress bar during that second step. But
-                    // then it took my PC less than 100ms to go through 6
-                    // to 7000 exe files, so that clearly won't work. I refuse
-                    // to iterate the filesystem or any part of it twice
-                    // just for a progress bar.
-                    ScanIdentifyGame(scanCtx, fullPath.data(), fullPath.length());
+                    // I originally decided to do it like this so I could have a proper progress bar
+                    // but then I realized that collecting all exe names into a buffer first, then
+                    // going through them all at once is twice as fast as identifying executables
+                    // as they're being found.
+                    // So because of this, there is a progress bar now, even though you won't get
+                    // to see it for very long.
+                    found_exe_names.push_back(fullPath);
                 }
             }
 
@@ -914,12 +923,18 @@ static DWORD WINAPI ScanThread(LPVOID lpParam) {
     ScanCtx* scanCtx = (ScanCtx*)lpParam;
 
     std::vector<std::wstring> found_exe_names;
-    ScanDirectory(scanCtx, scanCtx->scan_dir.c_str());
+    ScanDirectory(scanCtx, scanCtx->scan_dir.c_str(), found_exe_names);
+
+    scanCtx->exes_found = found_exe_names.size();
+    for (const auto& f : found_exe_names) {
+        ScanIdentifyGame(scanCtx, f.data(), f.length());
+        scanCtx->exes_scanned += 1;
+    }
 
     return 0;
 }
 
-static void SteamReadLibrary(ScanCtx* scanCtx, const char* buf, size_t len) {
+static void SteamReadLibrary(ScanCtx* scanCtx, const char* buf, size_t len, std::vector<std::wstring>& found_exe_names) {
     const char* end = buf + len;
 	const char* p = buf;
 start:
@@ -974,7 +989,7 @@ start:
     size_t suffix_len = t_strlen(suffix);
     if (path_p + suffix_len < path_end) {
         memcpy(path_p, suffix, suffix_len * sizeof(wchar_t));
-        ScanDirectory(scanCtx, path_buf);
+        ScanDirectory(scanCtx, path_buf, found_exe_names);
     }
 	
 	goto start;
@@ -1010,16 +1025,16 @@ static DWORD WINAPI ScanThreadSteam(LPVOID lpParam) {
     CHKBUF(&val, (char*)&val.Data + val.DataLength + lastPartSize, sizeof(val), 3);
     memcpy(val.Data + val.DataLength / sizeof(wchar_t) - 1, lastPart, lastPartSize);
 
-    auto& c = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
-    std::wstring curdir_bak(c.Buffer, c.Length / sizeof(wchar_t));
-
     MappedFile f(val.Data);
     if (!f.fileMapView) {
         return 4;
     }
 
     std::vector<std::wstring> found_exe_names;
-    SteamReadLibrary(scanCtx, (char*)f.fileMapView, f.fileSize);
+    SteamReadLibrary(scanCtx, (char*)f.fileMapView, f.fileSize, found_exe_names);
+    for (const auto& f : found_exe_names) {
+        ScanIdentifyGame(scanCtx, f.data(), f.length());
+    }
 
     return 0;
 }
@@ -1142,6 +1157,63 @@ void FoundGamesTable(ScanCtx* scanCtx) {
     ImGui::PopID();
 }
 
+void ProgressIndicator(float prog, const char* text, const char* textEnd = nullptr) {
+    auto& io = ImGui::GetIO();
+    auto& style = ImGui::GetStyle();
+    auto* drawList = ImGui::GetForegroundDrawList();
+
+    // This makes no sense whatsoever 
+    ImVec2 cursor = { style.WindowPadding.x, io.DisplaySize.y - ImGui::GetFontSize() * 2.0f + g_Scale * 2.0f };
+
+    ImVec2 barStart = cursor;
+    ImVec2 barEnd = barStart;
+    barEnd.x += ImGui::GetWindowWidth();
+    barEnd.y += (style.FramePadding.y * 2.0f) + ImGui::GetFontSize();
+
+    float barWidthPx = barEnd.x - barStart.x;
+    float indicatorWidthPx = barWidthPx / 4.0f;
+
+    drawList->AddRectFilled(barStart, barEnd, ImGui::GetColorU32(ImGuiCol_FrameBg));
+
+    ImVec2 clipStart = barStart;
+    ImVec2 clipEnd = barEnd;
+
+    ImVec2 textPos = {
+        barEnd.x - (barEnd.x - barStart.x) / 2.0f,
+        barStart.y + style.ItemInnerSpacing.y / 2.0f,
+    };
+
+    if (std::bit_cast<uint32_t>(prog) == 0xFFFFFFFF) {
+        float barPos = fmodf((float)ImGui::GetTime() * (barWidthPx / 2), barWidthPx + indicatorWidthPx) - indicatorWidthPx;
+
+        // barPos is negative
+        if (barStart.x + barPos < barStart.x) {
+            barEnd.x = barStart.x + indicatorWidthPx + barPos;
+        }
+        // clip indicator
+        else if (barStart.x + barPos + indicatorWidthPx > barEnd.x) {
+            barStart.x += barPos;
+        } else {
+            barStart.x += barPos;
+            barEnd.x = barStart.x + indicatorWidthPx;
+        }
+    } else {
+        barEnd.x = barStart.x + prog * barWidthPx;
+    }
+
+    drawList->AddRectFilled(barStart, barEnd, ImGui::GetColorU32(ImGuiCol_TitleBgActive));
+    if (!textEnd) {
+        textEnd = text + t_strlen(text);
+    }
+
+    ImVec2 textSize = ImGui::CalcTextSize(text, textEnd);
+    textPos.x -= textSize.x / 2;
+
+    drawList->PushClipRect(clipStart, clipEnd);
+    drawList->AddText(textPos, ImGui::GetColorU32(ImGuiCol_Text), text, textEnd);
+    drawList->PopClipRect();
+}
+
 constinit ScanCtx* scanCtx = nullptr;
 static void ScanForGamesUI() {
     // WAIT_OBJECT_0: Scan thread finished.
@@ -1193,10 +1265,11 @@ static void ScanForGamesUI() {
         }
         break;
     case WAIT_TIMEOUT:
-        
-
-
-
+        if (scanCtx->exes_found == 0) {
+            ProgressIndicator(std::bit_cast<float>(0xFFFFFFFF), scanCtx->text_in_progress_bar, scanCtx->text_in_progress_bar + scanCtx->text_in_progress_bar_len);
+        } else {
+            ProgressIndicator(scanCtx->exes_scanned / (float)scanCtx->exes_found, scanCtx->text_in_progress_bar, scanCtx->text_in_progress_bar + scanCtx->text_in_progress_bar_len);
+        }
         break;
     case WAIT_OBJECT_0:
         if (ImGui::Button("Select Original")) for (auto& game : scanCtx->found) {
