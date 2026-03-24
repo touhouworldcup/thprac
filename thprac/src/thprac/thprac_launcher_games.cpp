@@ -767,6 +767,8 @@ struct ScanCtx {
     std::vector<FoundGame> found;
     HANDLE scan_thread = NULL;
     CRITICAL_SECTION found_cs = {};
+    bool abort_message = false;
+    bool relative = false;
 
     ScanCtx() {
         InitializeCriticalSection(&found_cs);
@@ -787,6 +789,29 @@ static bool GameAlreadyExists(const char* path) {
     return false;
 }
 
+// Pretty damn simple when you can make lots of assumptions. Not in thprac_utils.h because of those assumptions
+static void PathMakeRelative(std::wstring& pathBuf, const wchar_t* relTo, size_t relTo_len) {
+    size_t relTo_idx = 0;
+    for (; !(relTo_idx >= relTo_len || relTo_idx >= pathBuf.length() || tolower(pathBuf[relTo_idx]) != tolower(relTo[relTo_idx])); relTo_idx++);
+
+    // Don't modify the path if the drive letters are different.
+    if (relTo_idx) {
+        if ((relTo_len > relTo_idx) && (pathBuf.length() > relTo_idx)) {
+            std::wstring back_chain = L"..\\";
+            for (size_t i = relTo_idx; i < relTo_len; i++) {
+                if (relTo[i] == L'\\') {
+                    back_chain.append(L"..\\");
+                }
+            }
+            pathBuf = back_chain + pathBuf.substr(relTo_idx - 1);
+        } else if (!(relTo_len > relTo_idx) && (pathBuf.length() > relTo_idx)) {
+            pathBuf.erase(0, relTo_idx + 1);
+        } else {
+            assert(false);
+        }
+    }
+}
+
 static void ScanIdentifyGame(ScanCtx* scanCtx, const wchar_t* path, size_t path_len) {
     FoundGame game;
     if (IdentifyKnownGame(game.info, game.oepCode, path)) {
@@ -802,6 +827,10 @@ static void ScanIdentifyGame(ScanCtx* scanCtx, const wchar_t* path, size_t path_
 }
 
 static void ScanDirectory(ScanCtx* scanCtx, const wchar_t* path) {
+    if (scanCtx->abort_message) {
+        return;
+    }
+
     HANDLE hDir = CreateFileW(path,
         FILE_LIST_DIRECTORY | SYNCHRONIZE,
         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
@@ -821,6 +850,9 @@ static void ScanDirectory(ScanCtx* scanCtx, const wchar_t* path) {
     ULONG queryFlags = SL_RESTART_SCAN;
 
     for (;;) {
+        if (scanCtx->abort_message) {
+            break;
+        }
         NTSTATUS status = NtQueryDirectoryFileEx(hDir,
             nullptr, nullptr, nullptr,
             &iosb, buffer, 65535, FileDirectoryInformation, queryFlags, nullptr);
@@ -839,6 +871,10 @@ static void ScanDirectory(ScanCtx* scanCtx, const wchar_t* path) {
             std::wstring_view name(info->FileName, info->FileNameLength / sizeof(WCHAR));
 
             if (name != L"." && name != L"..") {
+                if (scanCtx->abort_message) {
+                    break;
+                }
+
                 std::wstring fullPath(path);
                 if (!fullPath.ends_with(L"\\")) {
                     fullPath.push_back(L'\\');
@@ -848,7 +884,11 @@ static void ScanDirectory(ScanCtx* scanCtx, const wchar_t* path) {
                 if (info->FileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
                     ScanDirectory(scanCtx, fullPath.c_str());
                 } else if (name.length() > 4 && name.ends_with(L".exe")) {
-                    // I also tried collecting all exe names in a list then 
+                    if (scanCtx->relative) {
+                        auto& curdir = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
+                        PathMakeRelative(fullPath, curdir.Buffer, (curdir.Length / sizeof(WCHAR)) - 1);
+                    }
+                    // I also tried collecting all exe names into a list then
                     // going through them in a separate step. The idea was
                     // to show a progress bar during that second step. But
                     // then it took my PC less than 100ms to go through 6
@@ -1040,14 +1080,84 @@ static void ScanResults(std::vector<FoundGame>& found) {
     return;
 }
 
-constinit ScanCtx* scanCtx = nullptr;
+void FoundGamesTable(ScanCtx* scanCtx) {
+    ImGui::PushID(0xF085D);
+    ImGui::BeginTable("###__scan_results", 3, ImGuiTableFlags_Borders);
 
+    ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, ImGui::GetFrameHeight());
+    ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 128.0f);
+
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn();
+
+    bool selectAll = std::all_of(scanCtx->found.begin(), scanCtx->found.end(), [](FoundGame& g) -> bool { return g.selected; });
+    if (ImGui::Checkbox("###__scan_select_all", &selectAll)) {
+        if (selectAll)
+            for (auto& game : scanCtx->found) {
+                game.selected = true;
+            }
+        else
+            for (auto& game : scanCtx->found) {
+                game.selected = false;
+            }
+    }
+
+    ImGui::TableNextColumn();
+    ImGui::TextUnformatted("Game Type");
+    ImGui::TableNextColumn();
+    ImGui::TextUnformatted("Path");
+
+    auto& found = scanCtx->found;
+    for (size_t i = 0; i < found.size(); i++) {
+        ImGui::TableNextRow();
+
+        ImGui::TableNextColumn();
+        ImGui::PushID(i);
+        ImGui::Checkbox("", &found[i].selected);
+        ImGui::PopID();
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(S(TH_TYPE_SELECT[found[i].info.type]));
+
+        ImGui::TableNextColumn();
+        ImGui::TextUnformatted(found[i].path);
+
+        char buf[256] = {};
+        snprintf(buf, 255, "MetroHash = { 0x%08x, 0x%08x, 0x%08x, 0x%08x }\noepCode = { 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x }",
+            found[i].info.metroHash[0], found[i].info.metroHash[1], found[i].info.metroHash[2], found[i].info.metroHash[3],
+            found[i].oepCode[0], found[i].oepCode[1], found[i].oepCode[2], found[i].oepCode[3], found[i].oepCode[4],
+            found[i].oepCode[5], found[i].oepCode[6], found[i].oepCode[7], found[i].oepCode[8], found[i].oepCode[9]);
+
+        if (ImGui::IsItemHovered()) {
+            ImGui::BeginTooltip();
+            ImGui::TextUnformatted(buf);
+            ImGui::EndTooltip();
+        }
+        if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
+            ImGui::SetClipboardText(buf);
+        }
+    }
+
+    ImGui::EndTable();
+    ImGui::PopID();
+}
+
+constinit ScanCtx* scanCtx = nullptr;
 static void ScanForGamesUI() {
     // WAIT_OBJECT_0: Scan thread finished.
     // WAIT_TIMEOUT: Scan thread is running
     // WAIT_FAILED: Scan thread does not exist
     DWORD scanStatus = WaitForSingleObject(scanCtx->scan_thread, 0);
 
+    if (ImGui::Button(S(THPRAC_ABORT))) {
+        scanCtx->abort_message = true;
+        WaitForSingleObject(scanCtx->scan_thread, INFINITE);
+        CloseHandle(scanCtx->scan_thread);
+        delete scanCtx;
+        scanCtx = nullptr;
+        return;
+    }
+    ImGui::SameLine();
     Gui::TextCentered(S(THPRAC_GAMES_SCAN_FOLDER), ImGui::GetWindowWidth());
 
     auto& padding = ImGui::GetStyle().WindowPadding;
@@ -1056,73 +1166,12 @@ static void ScanForGamesUI() {
     float childWidth = ImGui::GetWindowWidth();
 
     ImGui::BeginChild(0x5CA88E6, { childWidth, childHeight }, true);
-
     if (scanStatus != WAIT_FAILED) {
         if (!(scanStatus == WAIT_OBJECT_0 && scanCtx->found.size() == 0)) {
             if (scanStatus != WAIT_OBJECT_0) {
                 ImGui::BeginDisabled();
             }
-
-            ImGui::PushID(0xF085D);
-            EnterCriticalSection(&scanCtx->found_cs);
-
-            ImGui::BeginTable("###__scan_results", 3, ImGuiTableFlags_Borders);
-            
-            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, ImGui::GetFrameHeight());
-            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 128.0f);
-
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            
-            bool selectAll = std::all_of(scanCtx->found.begin(), scanCtx->found.end(), [](FoundGame& g) -> bool { return g.selected; });
-            if (ImGui::Checkbox("###__scan_select_all", &selectAll)) {
-                if (selectAll) for(auto& game : scanCtx->found) {
-                    game.selected = true;
-                } else for(auto& game : scanCtx->found) {
-                    game.selected = false;
-                }
-            }
-
-            ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Game Type");
-            ImGui::TableNextColumn();
-            ImGui::TextUnformatted("Path");
-
-            auto& found = scanCtx->found;
-            for (size_t i = 0; i < found.size(); i++) {
-                ImGui::TableNextRow();
-
-                ImGui::TableNextColumn();                
-                ImGui::PushID(i);
-                ImGui::Checkbox("", &found[i].selected);
-                ImGui::PopID();
-
-                ImGui::TableNextColumn();
-                ImGui::TextUnformatted(S(TH_TYPE_SELECT[found[i].info.type]));
-
-                ImGui::TableNextColumn();
-                ImGui::TextUnformatted(found[i].path);
-
-                char buf[256] = {};
-                snprintf(buf, 255, "MetroHash = { 0x%08x, 0x%08x, 0x%08x, 0x%08x }\noepCode = { 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x }",
-                    found[i].info.metroHash[0], found[i].info.metroHash[1], found[i].info.metroHash[2], found[i].info.metroHash[3],
-                    found[i].oepCode[0], found[i].oepCode[1], found[i].oepCode[2], found[i].oepCode[3], found[i].oepCode[4],
-                    found[i].oepCode[5], found[i].oepCode[6], found[i].oepCode[7], found[i].oepCode[8], found[i].oepCode[9]);
-
-                if (ImGui::IsItemHovered()) {
-                    ImGui::BeginTooltip();
-                    ImGui::TextUnformatted(buf);
-                    ImGui::EndTooltip();
-                }
-                if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
-                    ImGui::SetClipboardText(buf);
-                }
-            }
-
-            ImGui::EndTable();
-
-            LeaveCriticalSection(&scanCtx->found_cs);
-            ImGui::PopID();
+            FoundGamesTable(scanCtx);
             if (scanStatus != WAIT_OBJECT_0) {
                 ImGui::EndDisabled();
             }
@@ -1133,7 +1182,23 @@ static void ScanForGamesUI() {
     }
     ImGui::EndChild();
 
-    if (scanStatus == WAIT_OBJECT_0) {
+    switch (scanStatus) {
+    case WAIT_FAILED:
+        ImGui::Checkbox("Use relative paths", &scanCtx->relative);
+        ImGui::SameLine();
+        Gui::HelpMarker("Store paths to games as paths relative to where thprac is located");
+        ImGui::SameLine();
+        if (Gui::ButtonRight(S(THPRAC_LINKS_EDIT_FOLDER), ImGui::GetWindowWidth()) && SelectFolder(scanCtx->scan_dir, Gui::ImplWin32GetHwnd())) {
+            scanCtx->scan_thread = CreateThread(nullptr, 0, ScanThread, scanCtx, 0, nullptr);
+        }
+        break;
+    case WAIT_TIMEOUT:
+        
+
+
+
+        break;
+    case WAIT_OBJECT_0:
         if (ImGui::Button("Select Original")) for (auto& game : scanCtx->found) {
             if (game.info.type == TYPE_ORIGINAL) { 
                 game.selected = true;
@@ -1152,29 +1217,9 @@ static void ScanForGamesUI() {
             }
         }
         ImGui::SameLine();
-    } else {
-        if (ImGui::Button(S(THPRAC_ABORT))) {
-            TerminateThread(scanCtx->scan_thread, 0);
-            delete scanCtx;
-            scanCtx = nullptr;
-            return;
-        }
-    }
-
-    ImGui::SameLine();
-
-    switch (scanStatus) {
-    case WAIT_FAILED:
-        if (Gui::ButtonRight(S(THPRAC_LINKS_EDIT_FOLDER), ImGui::GetWindowWidth()) && SelectFolder(scanCtx->scan_dir, Gui::ImplWin32GetHwnd())) {
-            scanCtx->scan_thread = CreateThread(nullptr, 0, ScanThread, scanCtx, 0, nullptr);
-        }
-        break;
-    case WAIT_TIMEOUT:
-        ImGui::TextUnformatted("TODO: add some kind of indicator");
-        break;
-    case WAIT_OBJECT_0:
         if (Gui::ButtonRight("Finish", ImGui::GetWindowWidth())) {
             ScanResults(scanCtx->found);
+            CloseHandle(scanCtx->scan_thread);
             delete scanCtx;
             scanCtx = nullptr;
         }
