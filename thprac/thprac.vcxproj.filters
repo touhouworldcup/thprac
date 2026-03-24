@@ -142,6 +142,9 @@
     <ClInclude Include="src\3rdParties\yyjson\yyjson.h">
       <Filter>3rdParties\yyjson</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac\thprac_launcher.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\thprac\thprac_utils.cpp">

@@ -1,10 +1,5 @@
-#include "utils/utils.h"
+#include "thprac_launcher.h"
 
-#define NOMINMAX
-#include "utils/wininternal.h"
-
-#include "thprac_cfg.h"
-#include "thprac_log.h"
 #include "thprac_load_exe.h"
 #include "thprac_gui_locale.h"
 #include "thprac_identify.h"
@@ -1391,9 +1386,6 @@ static inline unsigned RollChoices(bool* choices, unsigned count) {
     }
     return UINT_MAX;
 }
-
-extern void (*toolFunc)();
-extern bool goToGamesPage;
 
 static LauncherGame* randomShotGame = nullptr;
 static bool shotChoices[32] = { true, true, true };

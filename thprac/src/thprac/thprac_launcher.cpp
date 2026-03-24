@@ -1,24 +1,16 @@
 // Based on https://github.com/ocornut/imgui/discussions/3925
 // Fun fact: the author of that is also a Touhou fan
 
-#define NOMINMAX
-#include "utils/wininternal.h"
+#include "thprac_launcher.h"
+
 #include <d3d9.h>
 #include <algorithm>
 
 #define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
 #define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
 
-#include <imgui.h>
-
-#include "thprac_cfg.h"
-#include "thprac_log.h"
 #include "thprac_load_exe.h"
-#include "thprac_gui_impl_win32.h"
-#include "thprac_gui_impl_dx9.h"
-#include "thprac_gui_locale.h"
 #include "thprac_gui_components.h"
-#include "thprac_gui_input.h"
 
 #include "../../resource.h"
 
@@ -27,9 +19,6 @@ namespace Gui {
     extern LRESULT ImplWin32WndProcHandlerW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     extern IDirect3DDevice9* ImplDX9GetDevice();
 }
-extern void LoadGamesJson();
-extern void SaveGamesJson();
-extern void LauncherGamesMain();
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -154,9 +143,6 @@ void DrawTitleBar(HWND hwnd, const char* title) {
     // Record whether the mouse is over a button so WndProc can skip HTCAPTION
     g_IsOverTitleBarButton = overBtn;
 }
-
-extern void RandomShotRollUI();
-extern void RandomGameRollUI();
 
 void (*toolFunc)() = nullptr;
 bool goToGamesPage = true;
