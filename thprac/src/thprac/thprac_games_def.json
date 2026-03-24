@@ -945,6 +945,14 @@
       "TH_TOOL_SHOW_TOGGLE": [ "显示工具", "Show tool", "ツールを表示" ],
       "TH_BUGFIX": [ "可选的Bug修复", "Optional Bug Fixes", "任意Bug修復" ],
       "TH_BUGFIX_AUTO": [ "已自动应用关键Bug的修复。", "Critical bug fixes have been applied automatically.", "重要なBug修復は自動的に適用されています。" ],
+      "TH_COPY_CFG_CODE": [ "复制当前配置", "Copy current config", "現在の設定をコピー" ],
+      "TH_COPY_CFG_CODE_HINT": [
+        "将此配置的唯一代码复制到剪贴板。",
+        "Copies the unique code for this configuration to your clipboard.",
+        "この設定の固有コードをクリップボードにコピーします。"
+      ],
+      "TH_PASTE_CFG_CODE": [ "粘贴配置", "Paste config", "設定を貼り付け" ],
+      "TH_PASTE_CFG_CODE_HINT": [ "从剪贴板应用配置。", "Applies config from clipboard.", "クリップボードから設定を適用します。" ],
       "TH_STAGE_NUM": [ "第%d面", "Stage %d", "ステージ %d" ],
       "TH_EXTRA_STAGE": [ "Extra面", "Extra Stage", "Extraステージ" ],
       "TH_DELAY": [ "延迟", "Delay", "ディレイ" ],
@@ -8570,7 +8578,7 @@
       "TH17_SPAWN_A_GOAST": [ "生成一只动物灵", "Spawn a Goast", "動物霊アイテムを生成する" ],
       "TH17_FORCE_ANGLE": [ "角度固定", "Force Angle", "固定角度で生成する" ],
       "TH17_RANDOM_ANGLE": [ "角度随机", "Random Angle", "ランダムな角度で生成する" ],
-      "TH17_ANGLE_PREVIEW": [ "--预览角度-->", "--angle-preview-->", "--プレビューのアングル-->"],
+      "TH17_ANGLE_PREVIEW": [ "--预览角度-->", "--angle-preview-->", "--プレビューのアングル-->" ],
       "TH17_FORCE_ANGLE_HELP": [
         "动物灵在生成时或在墙上反弹时会试图远离彼此。这个选项会保证生成的动物灵总是朝指定的方向移动",
         "Tokens will try to move away from each other both when spawning and when bouncing from a wall. This will ensure that a token will always go in the direction you specify",
@@ -8586,6 +8594,43 @@
         "如果你的replay受到了上述bug的影响则可以尝试开启此选项。\n请不要在播放正常的replay时开启这个选项。",
         "Try to enable this option if you have any bugged replay.\nDo not enable this option when playbacking a normal replay.",
         "バグのあるリプレイがある場合は、このオプションを有効にしてみてください。\n普通のリプレイを再生するときは、このオプションを有効にしないでください。"
+      ],
+      "TH17_SHOW_ID_OPT": [ "显示高级参数", "Show advanced params", "高度なパラメータを表示" ],
+      "TH17_ID_P2_OPT": [ "P2 偏移量", "P2 Offset", "P2 オフセット" ],
+      "TH17_ID_P3_OPT": [ "P3 偏移量", "P3 Offset", "P3 オフセット" ],
+      "TH17_ID_P4_OPT": [ "P4 偏移量", "P4 Offset", "P4 オフセット" ],
+      "TH17_ID_TD_CFG": [ "应用时间推进配置", "Apply timedown config", "耐久設定を適用" ],
+      "TH17_ID_TD_CFG_HINT": [
+        "使偏移量与按时间自动推进阶段时的结果一致。",
+        "Makes the offsets match what you'd get by waiting for phases to transition automatically.",
+        "段階が自動で移行するのを待った場合と同じオフセットになります。"
+      ],
+      "TH17_ID_CFG_CODE_DESC": [
+        "偏移量可在游戏内追踪表中查看，并可通过相关的高级设置选项复制。",
+        "Offset values can both be seen in the in-game tracker and copied via the related Advanced Settings option.",
+        "オフセット値はゲーム内トラッカーで確認でき、関連する詳細設定オプションからコピーできます。"
+      ],
+      "TH17_ID_CFG_PASTE_ERROR_TITLE": [ "偶像恶魔配置验证错误", "Idola Diabolus config validation error", "イドラディアボルス設定の検証エラー" ],
+      "TH17_ID_CFG_PASTE_ERROR": [
+        "剪贴板中没有有效的偶像恶魔阶段偏移配置代码（24位十六进制字符串）。请检查剪贴板后重试。",
+        "Your clipboard does not contain a valid Idola Diabolus phase offset config code (24-character hexadecimal string). Please check your clipboard and try again.",
+        "クリップボードに有効なイドラディアボルス段階オフセット設定コード（24桁の16進文字列）がありません。確認して再試行してください。"
+      ],
+      "TH17_KEIKI_FINAL_PHASETRACK": [
+        "在游戏内追踪表中显示偶像恶魔阶段过渡偏移量",
+        "Show Idola Diabolus' phase transition offsets in in-game tracker",
+        "ゲーム内トラッカーでイドラディアボルスの段階移行オフセットを表示"
+      ],
+      "TH17_KEIKI_FINAL_PHASETRACK_DESC": [
+        "可通过练习菜单中的高级参数滑块使用这些数值来练习特定的偶像恶魔策略。偏移量仅在练习模式中游玩偶像恶魔时显示，但无论模式都可以复制。",
+        "You can use these values to practice specific Idola Diabolus strategies via the advanced param. sliders in the practice menu. Offsets are only shown when playing Idola Diabolus in Practice Mode, but can be copied regardless of mode.",
+        "これらの値は、練習メニューの高度なパラメータスライダーを使って特定のイドラディアボルス戦略を練習するのに使用できます。オフセットはイドラディアボルスを練習モードでプレイ中のみ表示されますが、モードに関係なくコピー可能です。"
+      ],
+      "TH17_ID_CFG_CODE_COPIED": [ "（剪贴板中有有效代码！）", "(Valid code in clipboard!)", "（有効なコードがクリップボードにあります！）" ],
+      "TH17_KEIKI_FINAL_PHASETRACK_NONE_HINT": [
+        "未处于偶像恶魔的第2至第4阶段时无法复制偏移配置。",
+        "Cannot copy offset configuration if not on phase 2 to 4 of Idola Diabolus.",
+        "イドラディアボルスの段階2〜4でない場合、オフセット設定はコピーできません。"
       ]
     },
 
@@ -9141,14 +9186,6 @@
       "TH18_MARKET_MANIP_HAS_RNG": [ "（存在随机性）", "(has randomness)", "（ランダム枠）" ],
       "TH18_MARKET_MANIP_ALL_BUY": [ "全部标记为买", "Mark all Buy", "全て購入に設定" ],
       "TH18_MARKET_MANIP_ALL_KEEP": [ "全部标记为留", "Mark all Keep", "全て保持に設定" ],
-      "TH18_MARKET_MANIP_COPY_CODE": [ "复制当前配置", "Copy current config", "現在の設定をコピー" ],
-      "TH18_MARKET_MANIP_COPY_CODE_HINT": [
-        "将此配置的唯一代码复制到剪贴板。",
-        "Copies the unique code for this configuration to your clipboard.",
-        "この設定の固有コードをクリップボードにコピーします。"
-      ],
-      "TH18_MARKET_MANIP_PASTE_CODE": [ "粘贴配置", "Paste config", "設定を貼り付け" ],
-      "TH18_MARKET_MANIP_PASTE_CODE_HINT": [ "从剪贴板应用配置。", "Applies config from clipboard.", "クリップボードから設定を適用します。" ],
       "TH18_MARKET_MANIP_PASTE_ERROR_TITLE": [ "卡牌配置验证错误", "Card config validation error", "カード設定の検証エラー" ],
       "TH18_MARKET_MANIP_PASTE_ERROR": [
         "剪贴板中没有有效的市场操纵配置代码（12位十六进制字符串）。请检查剪贴板后重试。",

@@ -388,6 +388,32 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
 
 #pragma endregion
 
+#pragma region Config Codes
+
+template <size_t maxLen = 12>
+const char* GetTrimmedClipboardText()
+{
+    const char* clipboardText = ImGui::GetClipboardText();
+    if (!clipboardText)
+        return "";
+
+    static char trimmed[maxLen + 1];
+
+    const char* start = clipboardText;
+    while (*start == ' ')
+        ++start;
+
+    const size_t len = strlen(start);
+    const size_t copyLen = len > maxLen ? maxLen : len;
+    memcpy(trimmed, start, copyLen);
+    trimmed[copyLen] = '\0';
+
+    return trimmed;
+}
+
+bool ValidateConfigCode(const char* input, size_t length = 12);
+#pragma endregion
+
 #pragma region Virtual File System
 class VFile {
 public:
@@ -580,6 +606,22 @@ inline long RoundUp(long n, long m)
     return n >= 0 ? ((n + m - 1) / m) * m : (n / m) * m;
 }
 
+/* normalize float value to [-pi, pi] range */
+/* (same implementation as ZUN's but without limits */
+inline float NormRad(float angle)
+{
+    const float PI = 3.14159274f;
+    const float TWO_PI = 6.28318548f;
+
+    while (angle > PI)
+        angle -= TWO_PI;
+
+    while (angle < -PI)
+        angle += TWO_PI;
+
+    return angle;
+}
+
 #pragma endregion
 
 #pragma region Snapshot
@@ -691,6 +733,7 @@ struct TH17Info {
     uint32_t roaring_with_special;
     uint32_t roaring_total;
     uint32_t roaring[3];
+    uint32_t keiki_final_phase_t[4];
 };
 
 struct TH18Info {

@@ -1120,5 +1120,26 @@ bool GameState_Assert(bool cond)
 }
 #pragma endregion
 
+#pragma region Config Codes
+
+bool ValidateConfigCode(const char* input, size_t length)
+{
+    // Must be given length
+    if (!input || strlen(input) != length)
+        return false;
+
+    // Must be hex
+    for (size_t i = 0; i < length; i++) {
+        const char c = input[i];
+
+        if ((c < '0' || c > '9') && (c < 'a' || c > 'f') && (c < 'A' || c > 'F'))
+            return false;
+    }
+
+    return true;
+}
+
+#pragma endregion
+
 
 }

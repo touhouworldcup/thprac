@@ -1411,7 +1411,7 @@ namespace TH18 {
             // Apply loadout code from clipboard if there is one
             const char* clipboardText = GetTrimmedClipboardText();
 
-            if (ValidateLoadoutCode(clipboardText)) {
+            if (ValidateConfigCode(clipboardText)) {
                 ApplyLoadoutCode(clipboardText);
                 useManipLoadout = true;
             }
@@ -2233,42 +2233,6 @@ namespace TH18 {
             ImGui::NewLine();
         }
 
-        const char* GetTrimmedClipboardText()
-        {
-            const char* clipboardText = ImGui::GetClipboardText();
-            if (!clipboardText) return "";
-
-            static char trimmed[13];
-
-            const char* start = clipboardText;
-            while (*start == ' ')
-                ++start;
-
-            const size_t len = strlen(start);
-            const size_t copyLen = len > 12 ? 12 : len;
-            memcpy(trimmed, start, copyLen);
-            trimmed[copyLen] = '\0';
-
-            return trimmed;
-        }
-
-        bool ValidateLoadoutCode(const char* input)
-        {
-            // Must be length 12
-            if (!input || strlen(input) != 12)
-                return false;
-
-            // Must be hex
-            for (int i = 0; i < 12; i++) {
-                char c = input[i];
-
-                if ((c < '0' || c > '9') && (c < 'a' || c > 'f') && (c < 'A' || c > 'F'))
-                    return false;
-            }
-
-            return true;
-        }
-
         void ApplyLoadoutCode(const char* codeText)
         {
             uint64_t code = 0;
@@ -2343,7 +2307,7 @@ namespace TH18 {
                     }
 
                     ImGui::SameLine();
-                    if (ImGui::Button(S(TH18_MARKET_MANIP_COPY_CODE))) {
+                    if (ImGui::Button(S(TH_COPY_CFG_CODE))) {
                         uint64_t code = 0;
                         int bitIndex = 0;
 
@@ -2364,19 +2328,19 @@ namespace TH18 {
                         ImGui::SetClipboardText(buffer);
                     }
                     if (ImGui::IsItemHovered())
-                        ImGui::SetTooltip(S(TH18_MARKET_MANIP_COPY_CODE_HINT));
+                        ImGui::SetTooltip(S(TH_COPY_CFG_CODE_HINT));
 
                     ImGui::SameLine();
-                    if (ImGui::Button(S(TH18_MARKET_MANIP_PASTE_CODE))) {
+                    if (ImGui::Button(S(TH_PASTE_CFG_CODE))) {
                         const char* clipboardText = GetTrimmedClipboardText();
 
-                        if (ValidateLoadoutCode(clipboardText))
+                        if (ValidateConfigCode(clipboardText))
                             ApplyLoadoutCode(clipboardText);
                         else
                             MsgBox(MB_ICONERROR | MB_OK, S(TH18_MARKET_MANIP_PASTE_ERROR_TITLE), S(TH18_MARKET_MANIP_PASTE_ERROR), nullptr, *(HWND*)WINDOW_PTR);
                     }
                     if (ImGui::IsItemHovered())
-                        ImGui::SetTooltip(S(TH18_MARKET_MANIP_PASTE_CODE_HINT));
+                        ImGui::SetTooltip(S(TH_PASTE_CFG_CODE_HINT));
 
                     ImGui::SameLine();
                     if (restartResetMarket) ImGui::BeginDisabled();
