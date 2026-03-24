@@ -2,7 +2,7 @@
 // Fun fact: the author of that is also a Touhou fan
 
 #define NOMINMAX
-#include <Windows.h>
+#include "utils/wininternal.h"
 #include <d3d9.h>
 #include <algorithm>
 
@@ -296,6 +296,18 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
     if (HWND existing = FindWindowW(g_WndCls.lpszClassName, nullptr)) {
         SetForegroundWindow(existing);
         return 0;
+    }
+    
+    {
+        UNICODE_STRING exeDir = CurrentPeb()->ProcessParameters->ImagePathName;   
+        for(size_t i = exeDir.Length / 2; i > 0; i++) {
+            if(exeDir.Buffer[i] == L'\\') {
+                exeDir.Length = i;
+                exeDir.MaximumLength = i;
+                break;
+            }
+        }
+        RtlSetCurrentDirectory_U(&exeDir);
     }
 
     auto* d3d9 = LoadLibraryW(L"d3d9.dll");
