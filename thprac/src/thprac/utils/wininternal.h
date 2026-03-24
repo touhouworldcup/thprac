@@ -24,7 +24,7 @@ constexpr NTSTATUS STATUS_BUFFER_TOO_SMALL = 0xC0000023;
 /// Copied from thcrap
 /*
 Struct definitions based on the fields documented to have
-consistent offsets in all Windoes versions 5.0+
+consistent offsets in all Windows versions 5.0+
 TEB: https://www.geoffchappell.com/studies/windows/km/ntoskrnl/inc/api/pebteb/teb/index.htm
 PEB: https://www.geoffchappell.com/studies/windows/km/ntoskrnl/inc/api/pebteb/peb/index.htm
 
@@ -288,17 +288,21 @@ struct _TEB {
 #define write_teb_member(member, data) (\
 member_size(TEB, member) == 1 ? write_fs_byte(offsetof(TEB, member), (data)) : \
 member_size(TEB, member) == 2 ? write_fs_word(offsetof(TEB, member), (data)) : \
-write_fs_dword(offsetof(TEB, member), (data)) \
+write_fs_dword(offsetof(TEB, member), (data))) \
 
+#ifdef __INTELLISENSE__
+#define CurrentPeb() ((PEB*)0)
+#define CurrentTeb() ((TEB*)0)
+#else
 #define CurrentTeb() ((TEB*)read_teb_member(Self))
 #define CurrentPeb() ((PEB*)read_teb_member(ProcessEnvironmentBlock))
+#endif
 
 #define KernelSharedDataAddr (0x7FFE0000u)
 
 #define CurrentImageBase ((uintptr_t)CurrentPeb()->ImageBaseAddress)
 
 #define CurrentModuleHandle ((HMODULE)CurrentImageBase)
-
 #define CurrentProcessHandle ((HANDLE)(LONG_PTR)-1)
 
 
@@ -489,7 +493,8 @@ struct KUSER_SHARED_DATA {
 
 #define Kuser_Shared_Data ((KUSER_SHARED_DATA*)0x7FFE0000)
 
-extern "C" ULONG RtlNtStatusToDosError(NTSTATUS Status);
+extern "C" ULONG NTAPI RtlNtStatusToDosError(NTSTATUS Status);
+extern "C" NTSTATUS NTAPI RtlSetCurrentDirectory_U(const UNICODE_STRING* Path);
 
 extern "C" NTSTATUS NTAPI NtOpenProcessToken(HANDLE ProcessHandle, ACCESS_MASK DesiredAccess, PHANDLE TokenHandle);
 extern "C" NTSTATUS NTAPI NtQueryInformationToken(HANDLE TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, PVOID TokenInformation, ULONG TokenInformationLength, PULONG ReturnLength);
@@ -520,7 +525,7 @@ struct KEY_VALUE_PARTIAL_INFORMATION_ALIGN64 {
     D Data;
 };
 
-template <typename D = UCHAR[1]>
+template <typename D = WCHAR[1]>
 struct KEY_VALUE_FULL_INFORMATION {
     ULONG TitleIndex;
     ULONG Type;
@@ -530,7 +535,7 @@ struct KEY_VALUE_FULL_INFORMATION {
     D Name;
 };
 
-template <typename D = UCHAR[1]>
+template <typename D = WCHAR[1]>
 struct KEY_VALUE_BASIC_INFORMATION {
     ULONG TitleIndex;
     ULONG Type;

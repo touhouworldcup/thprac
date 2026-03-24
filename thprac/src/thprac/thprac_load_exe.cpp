@@ -132,7 +132,7 @@ uintptr_t GetProcessModuleBase(HANDLE hProc)
 {
     PROCESS_BASIC_INFORMATION pbi;
     if (NTSTATUS err = NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi, sizeof(pbi), nullptr)) {
-        //SetLastError(RtlNtStatusToDosError(err));
+        SetLastError(RtlNtStatusToDosError(err));
         return 0;
     }
 
@@ -146,7 +146,6 @@ uintptr_t GetProcessModuleBase(HANDLE hProc)
 
     return ret;
 }
-
 
 constexpr DWORD thpracSig = 'CARP'; // 🐟
 
