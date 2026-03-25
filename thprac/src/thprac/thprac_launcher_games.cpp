@@ -332,7 +332,18 @@ struct {
 
 yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
 
-static bool LauncherRunGame(const char* exeFn, wchar_t* cmdLine, uint32_t flags) {
+static bool LauncherRunGame(LauncherInstance* inst) {
+    uint32_t flags = RUN_FLAG_SKIP_IDENTIFY;
+    if (inst->allow_oilp) {
+        flags |= RUN_FLAG_OILP;
+    }
+    if (inst->allow_vpatch) {
+        flags |= RUN_FLAG_VPATCH;
+    }
+    if (inst->apply_thprac) {
+        flags |= RUN_FLAG_THPRAC;
+    }
+
     switch (launcherSettings.after_launch) {
     case LAUNCH_MINIMIZE:
         ShowWindow(Gui::ImplWin32GetHwnd(), SW_MINIMIZE);
@@ -342,7 +353,7 @@ static bool LauncherRunGame(const char* exeFn, wchar_t* cmdLine, uint32_t flags)
         break;
     }
     
-    return RunGame(utf8_to_utf16(exeFn).c_str(), cmdLine, flags);
+    return RunGame(utf8_to_utf16(inst->path).c_str(), nullptr, flags);
 }
 
 static void InitLauncherGame(LauncherGame* game, yyjson_val* json) {
@@ -745,7 +756,7 @@ static void DetailsPage(LauncherGame* game) {
     }
 
     if (Gui::ButtonCentered(S(THPRAC_GAMES_LAUNCH_GAME), 0.85f, { 0.98f, 0.1f })) {
-        LauncherRunGame(game->instances[game->selected].path, nullptr, InstanceRunFlags(game->instances + game->selected));
+        LauncherRunGame(game->instances + game->selected);
     }
 
     if (Gui::Modal(S(THPRAC_GAMES_RENAME_MODAL))) {
@@ -791,20 +802,6 @@ struct ScanCtx {
         DeleteCriticalSection(&found_cs);
     }
 };
-
-static __forceinline uint32_t InstanceRunFlags(LauncherInstance* inst) {
-    uint32_t flags = RUN_FLAG_SKIP_IDENTIFY;
-    if (inst->allow_oilp) {
-        flags |= RUN_FLAG_OILP;
-    }
-    if (inst->allow_vpatch) {
-        flags |= RUN_FLAG_VPATCH;
-    }
-    if (inst->apply_thprac) {
-        flags |= RUN_FLAG_THPRAC;
-    }
-    return flags;
-}
 
 static bool GameAlreadyExists(const char* path) {
     for (const auto& game : games) {
@@ -1357,11 +1354,9 @@ static inline void GamesList(LauncherGame* games, size_t count) {
         }
         if (ImGui::Selectable(S(game.title))) {
             if (game.default_launch != -1) {
-                auto* inst = game.instances + game.default_launch;
-                LauncherRunGame(inst->path, nullptr, InstanceRunFlags(inst));
+                LauncherRunGame(game.instances + game.default_launch);
             } else if (launcherSettings.auto_default_launch) {
-                auto* inst = game.instances;
-                LauncherRunGame(inst->path, nullptr, InstanceRunFlags(inst));
+                LauncherRunGame(game.instances);
             } else {
                 selectedGame = &game;
             }
