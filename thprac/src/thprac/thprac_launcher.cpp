@@ -2,8 +2,11 @@
 // Fun fact: the author of that is also a Touhou fan
 
 #include "thprac_launcher.h"
+#include "thprac_utils.h"
 
 #include <d3d9.h>
+#include <yyjson.h>
+
 #include <algorithm>
 
 #define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
@@ -21,6 +24,7 @@ namespace Gui {
 }
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
 
 // Constinit structs where all the required data is already here
 // so that it doesn't need to be initialized.
@@ -49,6 +53,8 @@ static constinit bool g_IsOverTitleBarButton = false;
 static constinit bool g_IsUITextureIDValid = false;
 static constinit bool g_IsInitialized = false;
 static constinit bool g_Rendering = false;
+
+constinit LauncherSettings launcherSettings;
 
 void ResetDevice();
 bool UpdateUIScaling(float scale = 1.0f);
@@ -166,6 +172,18 @@ void LauncherTools() {
     }
 }
 
+static void LauncherSettingsMain() {
+    ImGui::Combo(S(THPRAC_AFTER_LAUNCH), (int*)&launcherSettings.after_launch, S(THPRAC_AFTER_LAUNCH_OPTION));
+    ImGui::Combo(S(THPRAC_APPLY_THPRAC_DEFAULT), (int*)&launcherSettings.apply_thprac_default, S(THPRAC_APPLY_THPRAC_DEFAULT_OPTION));
+    ImGui::Combo(S(THPRAC_FILTER_DEFAULT), &launcherSettings.filter_default, S(THPRAC_FILTER_DEFAULT_OPTION));
+    ImGui::Checkbox(S(THPRAC_AUTO_DEFAULT_LAUNCH), &launcherSettings.auto_default_launch);
+    ImGui::SameLine();
+    Gui::HelpMarker(S(THPRAC_AUTO_DEFAULT_LAUNCH_DESC));
+
+    // The rest of the settings, which will hopefully be displayed in-game too some day
+    GuiSettings();
+}
+
 void UiUpdate(HWND hwnd) {
     if (!g_IsInitialized)
         return;
@@ -217,7 +235,7 @@ void UiUpdate(HWND hwnd) {
     }
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_CONFG))) {
         ImGui::BeginChild(0xC02F16);
-        GuiSettings();
+        LauncherSettingsMain();
         ImGui::EndChild();
         ImGui::EndTabItem();
     }
@@ -275,6 +293,65 @@ void DwmTweaksForCustomTitlebar(HWND hwnd) {
         MARGINS margins = { -1, -1, -1, -1 };
         pDwmExtendFrameIntoClientArea(hwnd, &margins);
     }
+}
+
+void LoadLauncherSettings() {
+    wchar_t launcherSettingsPath[MAX_PATH + 1] = {};
+    memcpy(launcherSettingsPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
+    memcpy(launcherSettingsPath + _gConfigDirLen, SIZED("launcher.json"));
+
+    yyjson_doc* doc = yyjson_read_file_report(launcherSettingsPath);
+    if (!doc) {
+        return;
+    }
+
+    yyjson_val* root = yyjson_doc_get_root(doc);
+
+    size_t idx, max;
+    yyjson_val *key, *val;
+    yyjson_obj_foreach(root, idx, max, key, val) {
+        if (unsafe_yyjson_equals_str(key, "after_launch")) {
+            yyjson_eval_numeric(val, (int*)&launcherSettings.after_launch);
+        }
+        if (unsafe_yyjson_equals_str(key, "apply_thprac_default")) {
+            yyjson_eval_numeric(val, (int*)&launcherSettings.apply_thprac_default);
+        }
+        if (unsafe_yyjson_equals_str(key, "filter_default")) {
+            yyjson_eval_numeric(val, &launcherSettings.filter_default);
+        }
+        if (unsafe_yyjson_equals_str(key, "auto_default_launch")) {
+            yyjson_eval_numeric(val, &launcherSettings.auto_default_launch);
+        }
+    }
+
+    yyjson_doc_free(doc);
+}
+
+static const char launcherSettingsTemplate[] = 
+    "{\n"
+    "\t" R"("after_launch": %d,)" "\n"
+    "\t" R"("apply_thprac_default": %d,)" "\n"
+    "\t" R"("filter_default": %d,)" "\n"
+    "\t" R"("auto_default_launch": %s,)" "\n"
+    "}";
+
+void SaveLauncherSettings() {
+    char buf[1024];
+    int len = snprintf(buf, sizeof(buf) - 1, launcherSettingsTemplate
+        , launcherSettings.after_launch
+        , launcherSettings.apply_thprac_default
+        , launcherSettings.filter_default
+        , launcherSettings.auto_default_launch ? "true" : "false"
+    );
+
+    wchar_t launcherSettingsPath[MAX_PATH + 1] = {};
+    memcpy(launcherSettingsPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
+    memcpy(launcherSettingsPath + _gConfigDirLen, SIZED("launcher.json"));
+
+    HANDLE hFile = CreateFileW(launcherSettingsPath, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+    DWORD byteRet;
+    WriteFile(hFile, buf, len, &byteRet, nullptr);
 }
 
 int Launcher(HINSTANCE hInstance, int nCmdShow) {
@@ -410,6 +487,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
 
     // Send WM_NCCALCSIZE message immediately
     SetWindowPos(hwnd, NULL, 0, 0, 960 * dpiscale, 720 * dpiscale, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+    LoadLauncherSettings();
     LoadGamesJson();
 
     // Show the window
@@ -432,6 +510,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
         }
     }
     g_IsInitialized = false;
+    SaveLauncherSettings();
     SaveGamesJson();
     SaveSettings();
     return 0;

@@ -29,4 +29,25 @@ void RandomGameRollUI();
 extern void (*toolFunc)();
 extern bool goToGamesPage;
 
+enum AFTER_LAUNCH {
+    LAUNCH_MINIMIZE = 0,
+    LAUNCH_CLOSE = 1,
+    LAUNCH_NOTHING = 2,
+};
+
+enum APPLY_THPRAC_DEFAULT {
+    APPLY_THPRAC_KEEP_STATE = 0,
+    APPLY_THPRAC_DEFAULT_OPEN = 1,
+    APPLY_THPRAC_DEFAULT_CLOSE = 2,
+};
+
+struct LauncherSettings {
+    AFTER_LAUNCH after_launch = LAUNCH_MINIMIZE;
+    APPLY_THPRAC_DEFAULT apply_thprac_default = APPLY_THPRAC_KEEP_STATE;
+    int filter_default = 0; // unimplemented
+    bool auto_default_launch = false;
+};
+
+extern LauncherSettings launcherSettings;
+
 }

@@ -330,7 +330,20 @@ struct {
 };
 };
 
-extern yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
+yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
+
+static bool LauncherRunGame(const char* exeFn, wchar_t* cmdLine, uint32_t flags) {
+    switch (launcherSettings.after_launch) {
+    case LAUNCH_MINIMIZE:
+        ShowWindow(Gui::ImplWin32GetHwnd(), SW_MINIMIZE);
+        break;
+    case LAUNCH_CLOSE:
+        PostQuitMessage(0);
+        break;
+    }
+    
+    return RunGame(utf8_to_utf16(exeFn).c_str(), cmdLine, flags);
+}
 
 static void InitLauncherGame(LauncherGame* game, yyjson_val* json) {
     yyjson_val* insts = yyjson_obj_get(json, "instances");
@@ -353,9 +366,8 @@ static void InitLauncherGame(LauncherGame* game, yyjson_val* json) {
             name = _strdup(name);
         }
         
-        bool apply_thprac = false;
+        
         unsigned int type = TYPE_ERROR;
-        yyjson_eval_numeric(yyjson_obj_get(cur, "apply_thprac"), &apply_thprac);
         yyjson_eval_numeric(yyjson_obj_get(cur, "type"), &type);
 
         if (type > TYPE_UNKNOWN) {
@@ -382,12 +394,28 @@ fresh_identify:
 
         if (ver_off < game->ver_count) {
             ver = game->versions + ver_off;
+
+            bool apply_thprac = false;
+            if (ver->initFunc) {
+                switch (launcherSettings.apply_thprac_default) {
+                case APPLY_THPRAC_KEEP_STATE:
+                    yyjson_eval_numeric(yyjson_obj_get(cur, "apply_thprac"), &apply_thprac);
+                    break;
+                case APPLY_THPRAC_DEFAULT_OPEN:
+                    apply_thprac = true;
+                    break;
+                case APPLY_THPRAC_DEFAULT_CLOSE:
+                    apply_thprac = false;
+                    break;
+                }
+            }
+
             instances[valid_insts_count] = {
                 .path = path,
                 .name = name,
                 .type = (THGameType)type,
                 .ver = ver_off,
-                .apply_thprac = ver->initFunc ? apply_thprac : false,
+                .apply_thprac = apply_thprac,
                 .allow_oilp = game->versions[ver_off].has_oilp,
                 .allow_vpatch = game->versions[ver_off].has_vpatch,
             };
@@ -695,16 +723,13 @@ static void DetailsPage(LauncherGame* game) {
     }
     
     bool default_launch = game->default_launch == game->selected;
-    if(ImGui::Checkbox(S(THPRAC_GAMES_DEFAULT_LAUNCH), &default_launch)) {
+    if (ImGui::Checkbox(S(THPRAC_GAMES_DEFAULT_LAUNCH), &default_launch)) {
         if (default_launch) {
             game->default_launch = game->selected;
         } else {
             game->default_launch = -1;
         }
     }
-    ImGui::SameLine();
-    Gui::HelpMarker("Not implemented");
-
     if (ver->has_oilp) {
         ImGui::Checkbox("Allow OpenInputLagPatch", &game->instances[game->selected].allow_oilp);
         ImGui::SameLine();
@@ -720,19 +745,7 @@ static void DetailsPage(LauncherGame* game) {
     }
 
     if (Gui::ButtonCentered(S(THPRAC_GAMES_LAUNCH_GAME), 0.85f, { 0.98f, 0.1f })) {
-        std::wstring pathW = utf8_to_utf16(game->instances[game->selected].path);
-
-        uint32_t flags = RUN_FLAG_SKIP_IDENTIFY;
-        if (game->instances[game->selected].allow_oilp) {
-            flags |= RUN_FLAG_OILP;
-        }
-        if (game->instances[game->selected].allow_vpatch) {
-            flags |= RUN_FLAG_VPATCH;
-        }
-        if (game->instances[game->selected].apply_thprac) {
-            flags |= RUN_FLAG_THPRAC;
-        }
-        RunGame(pathW.c_str(), nullptr, flags);
+        LauncherRunGame(game->instances[game->selected].path, nullptr, InstanceRunFlags(game->instances + game->selected));
     }
 
     if (Gui::Modal(S(THPRAC_GAMES_RENAME_MODAL))) {
@@ -778,6 +791,20 @@ struct ScanCtx {
         DeleteCriticalSection(&found_cs);
     }
 };
+
+static __forceinline uint32_t InstanceRunFlags(LauncherInstance* inst) {
+    uint32_t flags = RUN_FLAG_SKIP_IDENTIFY;
+    if (inst->allow_oilp) {
+        flags |= RUN_FLAG_OILP;
+    }
+    if (inst->allow_vpatch) {
+        flags |= RUN_FLAG_VPATCH;
+    }
+    if (inst->apply_thprac) {
+        flags |= RUN_FLAG_THPRAC;
+    }
+    return flags;
+}
 
 static bool GameAlreadyExists(const char* path) {
     for (const auto& game : games) {
@@ -1067,6 +1094,8 @@ static void ScanAddInstances(LauncherGame* game, FoundGame* found, size_t found_
         inst.path = _strdup(found[found_idx].path);
         inst.type = found[found_idx].info.type;
         inst.ver = found[found_idx].info.ver - game->versions;
+        inst.apply_thprac = found[found_idx].info.ver->initFunc && launcherSettings.apply_thprac_default == APPLY_THPRAC_DEFAULT_OPEN;
+
         inst_idx++;
     }
 }
@@ -1157,8 +1186,7 @@ void ProgressIndicator(float prog, const char* text, const char* textEnd = nullp
     auto& style = ImGui::GetStyle();
     auto* drawList = ImGui::GetForegroundDrawList();
 
-    // This makes no sense whatsoever 
-    ImVec2 cursor = { style.WindowPadding.x, io.DisplaySize.y - ImGui::GetFontSize() * 2.0f + g_Scale * 2.0f };
+    ImVec2 cursor = ImGui::GetCursorScreenPos();
 
     ImVec2 barStart = cursor;
     ImVec2 barEnd = barStart;
@@ -1328,7 +1356,15 @@ static inline void GamesList(LauncherGame* games, size_t count) {
             ImGui::BeginDisabled();
         }
         if (ImGui::Selectable(S(game.title))) {
-            selectedGame = &game;
+            if (game.default_launch != -1) {
+                auto* inst = game.instances + game.default_launch;
+                LauncherRunGame(inst->path, nullptr, InstanceRunFlags(inst));
+            } else if (launcherSettings.auto_default_launch) {
+                auto* inst = game.instances;
+                LauncherRunGame(inst->path, nullptr, InstanceRunFlags(inst));
+            } else {
+                selectedGame = &game;
+            }
         }
         if (ImGui::IsItemHovered()) {
             hovered = &game;
@@ -1526,7 +1562,7 @@ void RandomGameRollUI() {
 }
 
 void LauncherGamesMain() {
-    if (scanCtx) {
+	if (scanCtx) {
         ScanForGamesUI();
         return;
     }
