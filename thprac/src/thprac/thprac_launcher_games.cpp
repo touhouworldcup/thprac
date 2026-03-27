@@ -333,6 +333,8 @@ struct {
 yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
 
 static bool LauncherRunGame(LauncherInstance* inst) {
+    SaveSettings();
+
     uint32_t flags = RUN_FLAG_SKIP_IDENTIFY;
     if (inst->allow_oilp) {
         flags |= RUN_FLAG_OILP;
