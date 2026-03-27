@@ -4115,6 +4115,9 @@ namespace TH18 {
             pCtx->Eip = 0x407e0f; // skip resetting active card cooldown mult
     })
 
+    // fix koishi card persisting between quick restarts
+    PATCH_DY(th18_fix_koishi, 0x42aba9, "C78364010000000000005B85C07404836004FDC3")
+
     // fix active card visuals becoming generic after shop cleanup
     // part 1: if context is OK, skip resetting cards
     EHOOK_DY(th18_shop_cleanup_anm_fix1, 0x417950, 5, {
