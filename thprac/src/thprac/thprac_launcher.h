@@ -44,7 +44,6 @@ enum APPLY_THPRAC_DEFAULT {
 struct LauncherSettings {
     AFTER_LAUNCH after_launch = LAUNCH_MINIMIZE;
     APPLY_THPRAC_DEFAULT apply_thprac_default = APPLY_THPRAC_KEEP_STATE;
-    int filter_default = 0; // unimplemented
     bool auto_default_launch = false;
 };
 

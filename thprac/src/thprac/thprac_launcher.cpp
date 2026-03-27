@@ -175,7 +175,6 @@ void LauncherTools() {
 static void LauncherSettingsMain() {
     ImGui::Combo(S(THPRAC_AFTER_LAUNCH), (int*)&launcherSettings.after_launch, S(THPRAC_AFTER_LAUNCH_OPTION));
     ImGui::Combo(S(THPRAC_APPLY_THPRAC_DEFAULT), (int*)&launcherSettings.apply_thprac_default, S(THPRAC_APPLY_THPRAC_DEFAULT_OPTION));
-    ImGui::Combo(S(THPRAC_FILTER_DEFAULT), &launcherSettings.filter_default, S(THPRAC_FILTER_DEFAULT_OPTION));
     ImGui::Checkbox(S(THPRAC_AUTO_DEFAULT_LAUNCH), &launcherSettings.auto_default_launch);
     ImGui::SameLine();
     Gui::HelpMarker(S(THPRAC_AUTO_DEFAULT_LAUNCH_DESC));
@@ -316,9 +315,6 @@ void LoadLauncherSettings() {
         if (unsafe_yyjson_equals_str(key, "apply_thprac_default")) {
             yyjson_eval_numeric(val, (int*)&launcherSettings.apply_thprac_default);
         }
-        if (unsafe_yyjson_equals_str(key, "filter_default")) {
-            yyjson_eval_numeric(val, &launcherSettings.filter_default);
-        }
         if (unsafe_yyjson_equals_str(key, "auto_default_launch")) {
             yyjson_eval_numeric(val, &launcherSettings.auto_default_launch);
         }
@@ -331,7 +327,6 @@ static const char launcherSettingsTemplate[] =
     "{\n"
     "\t" R"("after_launch": %d,)" "\n"
     "\t" R"("apply_thprac_default": %d,)" "\n"
-    "\t" R"("filter_default": %d,)" "\n"
     "\t" R"("auto_default_launch": %s,)" "\n"
     "}";
 
