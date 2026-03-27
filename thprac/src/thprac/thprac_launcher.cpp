@@ -297,7 +297,7 @@ void DwmTweaksForCustomTitlebar(HWND hwnd) {
 void LoadLauncherSettings() {
     wchar_t launcherSettingsPath[MAX_PATH + 1] = {};
     memcpy(launcherSettingsPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(launcherSettingsPath + _gConfigDirLen, SIZED("launcher.json"));
+    memcpy(launcherSettingsPath + _gConfigDirLen, SIZED(L"launcher.json"));
 
     yyjson_doc* doc = yyjson_read_file_report(launcherSettingsPath);
     if (!doc) {
@@ -335,13 +335,12 @@ void SaveLauncherSettings() {
     int len = snprintf(buf, sizeof(buf) - 1, launcherSettingsTemplate
         , launcherSettings.after_launch
         , launcherSettings.apply_thprac_default
-        , launcherSettings.filter_default
         , launcherSettings.auto_default_launch ? "true" : "false"
     );
 
     wchar_t launcherSettingsPath[MAX_PATH + 1] = {};
     memcpy(launcherSettingsPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(launcherSettingsPath + _gConfigDirLen, SIZED("launcher.json"));
+    memcpy(launcherSettingsPath + _gConfigDirLen, SIZED(L"launcher.json"));
 
     HANDLE hFile = CreateFileW(launcherSettingsPath, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
