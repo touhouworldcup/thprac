@@ -810,27 +810,10 @@ namespace Gui {
         CustomMarker("(?)", desc);
     }
     bool Modal(const char* modalTitle, ImVec2 sizeRel = ImVec2(0.0f, 0.0f));
-    bool YesNoChoice(const char* buttonText1, const char* buttonText2, float buttonSize = std::bit_cast<float>(0xFFFFFFFF));
-    bool ButtonYesNoConfirm(const char* buttonText, const char* modalTitle, const char* modalText, float buttonSize = 6.0f,
-        const char* buttonText1 = "OK",
-        const char* buttonText2 = "Cancel"
-    );
-    inline bool ButtonModal(const char* buttonText, const char* modalTitle) {
-        if (ImGui::Button(buttonText)) {
-            ImGui::OpenPopup(modalTitle);
-            return true;
-        }
-        return false;
-    }
-    inline bool ButtonCentered(const char* buttonText, float posYRel, const ImVec2& sizeRel) {
-        auto wndSize = ImGui::GetWindowSize();
-        ImGui::SetCursorPosX((wndSize.x - wndSize.x * sizeRel.x) / 2.0f);
-        ImGui::SetCursorPosY(wndSize.y * posYRel);
-        return ImGui::Button(buttonText, ImVec2(wndSize.x * sizeRel.x, wndSize.y * sizeRel.y));
-    }
     bool ButtonRight(const char* text, float rel = 0.0f, const ImVec2& size_arg = { 0.0f, 0.0f });
     void CheckboxAll(const char* label, bool* v, size_t v_len);
     int MultiButtonsRight(float x, ...);
+    int MultiButtonsFillWindow(float height, ...);
 }
 }
 

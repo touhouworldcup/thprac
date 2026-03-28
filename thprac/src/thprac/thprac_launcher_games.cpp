@@ -16,6 +16,16 @@ namespace Gui {
     extern HWND ImplWin32GetHwnd();
 }
 
+inline bool LargeBottomButton(const char* text, float height, float offset = 0.0f) {
+    height *= g_Scale;
+
+    auto& style = ImGui::GetStyle();
+    auto wnd_dim = ImGui::GetWindowSize();
+
+    ImGui::SetCursorPosY(wnd_dim.y - height - style.ItemSpacing.y * 2 - offset);
+    return ImGui::Button(text, { wnd_dim.x, height });
+}
+
 struct LauncherInstance {
     // If type == TYPE_THCRAP this is passed as the runconfig to thcrap_loader
     const char* path;
@@ -576,6 +586,7 @@ void LaunchCustom(const wchar_t* dir, THGameType type) {
 static void DetailsPage(LauncherGame* game) {
     if (ImGui::Button("Back")) {
         selectedGame = nullptr;
+        return;
     }
 
     ImGui::SameLine();
@@ -584,7 +595,7 @@ static void DetailsPage(LauncherGame* game) {
 
     ImGui::TextUnformatted(S(THPRAC_GAMES_SELECT_VER));
 
-    ImGui::BeginChild("##__game_table", { ImGui::GetWindowWidth(), ImGui::GetWindowHeight() * 0.35f }, true);
+    ImGui::BeginChild("##__game_table", { 0.0f, ImGui::GetWindowHeight() * 0.35f }, true);
     
     ImGui::PushStyleColor(ImGuiCol_TableBorderStrong, ImGui::GetStyleColorVec4(ImGuiCol_Border));
     ImGui::PushStyleColor(ImGuiCol_TableBorderLight, ImGui::GetStyleColorVec4(ImGuiCol_Border));
@@ -671,30 +682,40 @@ static void DetailsPage(LauncherGame* game) {
         ImGui::OpenPopup(S(THPRAC_GAMES_RENAME_MODAL));
     }
     ImGui::SameLine();
-    if (Gui::ButtonYesNoConfirm(S(THPRAC_GAMES_DELETE), S(THPRAC_GAMES_DELETE_MODAL), S(THPRAC_GAMES_DELETE_CONFIRM), 6.0f, S(THPRAC_YES), S(THPRAC_NO))) {
-        if (game->inst_count == 1) {
-            DestroyInst(game->instances + 0);
-            game->instances = 0;
-            game->inst_count = 0;
-            selectedGame = nullptr;
-            return;
-        }
-        else if (game->selected == game->inst_count - 1) {
-            LauncherInstance& inst = game->instances[game->selected];
-            DestroyInst(&inst);
-            memset(&inst, 0, sizeof(inst));
-            game->inst_count--;
-            game->selected--;
-        }
-        else {
-            LauncherInstance* begin = game->instances + game->selected;
-            DestroyInst(begin);
-            size_t elem_to_move = game->instances + game->inst_count - begin - 1;
-            memmove(begin, begin + 1, elem_to_move * sizeof(LauncherInstance));
-            game->inst_count--;
-            game->instances[game->inst_count] = {};
-        }
+
+    if (ImGui::Button(S(THPRAC_GAMES_DELETE))) {
+        ImGui::OpenPopup(S(THPRAC_GAMES_DELETE_MODAL));
     }
+    if (Gui::Modal(S(THPRAC_GAMES_DELETE_MODAL))) {
+        ImGui::TextUnformatted(S(THPRAC_GAMES_DELETE_CONFIRM));
+        switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_YES), S(THPRAC_NO), nullptr)) {
+        case 0:
+            if (game->inst_count == 1) {
+                DestroyInst(game->instances + 0);
+                game->instances = 0;
+                game->inst_count = 0;
+                selectedGame = nullptr;
+                return;
+            } else if (game->selected == game->inst_count - 1) {
+                LauncherInstance& inst = game->instances[game->selected];
+                DestroyInst(&inst);
+                memset(&inst, 0, sizeof(inst));
+                game->inst_count--;
+                game->selected--;
+            } else {
+                LauncherInstance* begin = game->instances + game->selected;
+                DestroyInst(begin);
+                size_t elem_to_move = game->instances + game->inst_count - begin - 1;
+                memmove(begin, begin + 1, elem_to_move * sizeof(LauncherInstance));
+                game->inst_count--;
+                game->instances[game->inst_count] = {};
+            }
+        case 1:
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+
     ImGui::SameLine();
     if (ImGui::Button(S(THPRAC_GAMES_OPEN_FOLDER))) {
         std::wstring pathW = utf8_to_utf16(game->instances[game->selected].path);
@@ -757,18 +778,22 @@ static void DetailsPage(LauncherGame* game) {
         ImGui::NewLine();
     }
 
-    if (Gui::ButtonCentered(S(THPRAC_GAMES_LAUNCH_GAME), 0.85f, { 0.98f, 0.1f })) {
+    if (LargeBottomButton(S(THPRAC_GAMES_LAUNCH_GAME), 64.0f)) {
         LauncherRunGame(game->instances + game->selected);
     }
 
     if (Gui::Modal(S(THPRAC_GAMES_RENAME_MODAL))) {
         ImGui::InputText("", instRenameBuf, 255);
-        if (Gui::YesNoChoice("OK", "Cancel")) {
+        switch (Gui::MultiButtonsFillWindow(0.0f, "OK", "Cancel", nullptr)) {
+        case 0: {
             auto& inst = game->instances[game->selected];
             if (inst.name) {
                 free((void*)inst.name);
             }
             inst.name = _strdup(instRenameBuf);
+        }
+        case 1:
+            ImGui::CloseCurrentPopup();
         }
         ImGui::EndPopup();
     }
@@ -1189,9 +1214,8 @@ void FoundGamesTable(ScanCtx* scanCtx) {
 }
 
 void ProgressIndicator(float prog, const char* text, const char* textEnd = nullptr) {
-    auto& io = ImGui::GetIO();
     auto& style = ImGui::GetStyle();
-    auto* drawList = ImGui::GetForegroundDrawList();
+    auto* drawList = ImGui::GetWindowDrawList();
 
     ImVec2 cursor = ImGui::GetCursorScreenPos();
 
@@ -1263,11 +1287,9 @@ static void ScanForGamesUI() {
     Gui::TextCentered(S(THPRAC_GAMES_SCAN_FOLDER), ImGui::GetWindowWidth());
 
     auto& padding = ImGui::GetStyle().WindowPadding;
-
     float childHeight = ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - ImGui::GetFrameHeight() - padding.y;
-    float childWidth = ImGui::GetWindowWidth();
 
-    ImGui::BeginChild(0x5CA88E6, { childWidth, childHeight }, true);
+    ImGui::BeginChild(0x5CA88E6, { 0.0f, childHeight }, true);
     if (scanStatus != WAIT_FAILED) {
         if (!(scanStatus == WAIT_OBJECT_0 && scanCtx->found.size() == 0)) {
             if (scanStatus != WAIT_OBJECT_0) {
@@ -1279,7 +1301,7 @@ static void ScanForGamesUI() {
             }
         } else {
             ImGui::SetCursorPosY(childHeight / 2);
-            Gui::TextCentered("No games found", childWidth);
+            Gui::TextCentered("No games found", ImGui::GetWindowWidth());
         }
     }
     ImGui::EndChild();
@@ -1489,7 +1511,7 @@ void RandomShotRollUI() {
         strcpy(buttonText, S(THPRAC_TOOLS_ROLL));
     }
 
-    if (Gui::ButtonCentered(buttonText, 0.85f, { 0.98f, 0.1f })) {
+    if (LargeBottomButton(buttonText, 64.0f)) {
         roll = RollChoices(shotChoices, 32);
     }
 
@@ -1547,7 +1569,7 @@ void RandomGameRollUI() {
         strcpy(buttonText, S(THPRAC_TOOLS_ROLL));
     }
 
-    if (Gui::ButtonCentered(buttonText, 0.85f, { 0.98f, 0.1f })) {
+    if (LargeBottomButton(buttonText, 64.0f)) {
         roll = RollChoices(choices, ALL_GAMES_LEN);
     }
 
@@ -1597,6 +1619,4 @@ void LauncherGamesMain() {
     ImGui::TextUnformatted(S(THPRAC_GAMES_SPINOFF_OTHERS));
     GamesList(spinoffOthers, elementsof(spinoffOthers));
 }
-
-
 }

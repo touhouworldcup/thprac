@@ -687,7 +687,9 @@ namespace THPrac
             return ImGui::GetIO().DisplaySize.y * rel;
         }
         void CustomMarker(const char* text, const char* desc) {
-            ImGui::TextDisabled(text);
+            ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+            ImGui::TextUnformatted(text);
+            ImGui::PopStyleColor();
             if (ImGui::IsItemHovered()) {
                 ImGui::BeginTooltip();
                 ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
@@ -696,8 +698,7 @@ namespace THPrac
                 ImGui::EndTooltip();
             }
         }
-        bool Modal(const char* modalTitle, ImVec2 sizeRel)
-        {
+        bool Modal(const char* modalTitle, ImVec2 sizeRel) {
             auto wndSize = ImGui::GetWindowSize();
             wndSize.x *= 0.5f;
             wndSize.y *= 0.5f;
@@ -706,44 +707,6 @@ namespace THPrac
                 ImGui::SetNextWindowSize(sizeRel, ImGuiCond_Always);
             }
             return ImGui::BeginPopupModal(modalTitle, nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
-        }
-        bool YesNoChoice(const char* buttonText1, const char* buttonText2, float buttonSize)
-        {
-            if (std::bit_cast<uint32_t>(buttonSize) == 0xFFFFFFFF) {
-                buttonSize = ImGui::GetItemRectSize().x / 2.05f;
-            } else {
-                buttonSize = buttonSize * ImGui::GetFontSize();
-            }
-
-            if (ImGui::Button(buttonText1, ImVec2(buttonSize, 0))) {
-                ImGui::CloseCurrentPopup();
-                return true;
-            }
-            ImGui::SameLine();
-            if (ImGui::Button(buttonText2, ImVec2(buttonSize, 0))) {
-                ImGui::CloseCurrentPopup();
-            }
-            return false;
-        }
-        bool ButtonYesNoConfirm(
-            const char* buttonText,
-            const char* modalTitle,
-            const char* modalText,
-            float buttonSize,
-            const char* buttonText1,
-            const char* buttonText2) {
-            bool result = false;
-
-            ButtonModal(buttonText, modalTitle);
-            if (Modal(modalTitle)) {
-                ImGui::TextUnformatted(modalText);
-                if (YesNoChoice(buttonText1, buttonText2, buttonSize)) {
-                    result = true;
-                }
-                ImGui::EndPopup();
-            }
-
-            return result;
         }
         bool ButtonRight(const char* text, float rel, const ImVec2& size_arg) {
             auto& style = ImGui::GetStyle();
@@ -787,6 +750,26 @@ namespace THPrac
             va_end(va);
             return ret;
         }
+        int MultiButtonsFillWindow(float height, ...) {
+            int ret = -1;
+            const char** labs = (const char**)((&height) + 1);
+            size_t count = t_strlen(labs);
 
+            auto& style = ImGui::GetStyle();
+            float wnd_width = ImGui::GetWindowWidth() - style.WindowPadding.x;
+
+            float btn_width = wnd_width / count - style.ItemSpacing.x;
+            ImVec2 size { btn_width, height };
+
+            for (size_t i = 0; i < count; i++) {
+                if (ImGui::Button(labs[i], size)) {
+                    ret = i;
+                }
+                if (i != count - 1) {
+                    ImGui::SameLine();
+                }
+            }
+            return ret;
+        }
     }
 }

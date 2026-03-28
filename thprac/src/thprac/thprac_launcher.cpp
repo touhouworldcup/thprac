@@ -154,20 +154,26 @@ void (*toolFunc)() = nullptr;
 bool goToGamesPage = true;
 
 void LauncherTools() {
-    ImVec2 ds = ImGui::GetIO().DisplaySize;
-    ImVec2 buttonSize = { (ImGui::GetWindowWidth() / 4.0f) / ds.x, 0.0f };
-
     if (toolFunc) {
         return toolFunc();
     }
 
-    if (Gui::ButtonCentered(S(THPRAC_TOOLS_APPLY_THPRAC), 0.2f, buttonSize)) {
+    ImVec2 buttonSize = { (ImGui::GetWindowWidth() / 4.0f), 0.0f };
+    float btnPosX = (ImGui::GetWindowWidth() / 2) - (buttonSize.x / 2);
+
+    float step = ImGui::GetWindowHeight() / 4.0f;
+    float height = 135.0f;
+
+    ImGui::SetCursorPos({ btnPosX,  height + step * 0 });
+    if (ImGui::Button(S(THPRAC_TOOLS_APPLY_THPRAC), buttonSize)) {
         FindAndAttach(true, true);
     }
-    if (Gui::ButtonCentered(S(THPRAC_TOOLS_RND_GAME), 0.4f, buttonSize)) {
+    ImGui::SetCursorPos({ btnPosX,  height + step * 1 });
+    if (ImGui::Button(S(THPRAC_TOOLS_RND_GAME), buttonSize)) {
         toolFunc = RandomGameRollUI;
     }
-    if (Gui::ButtonCentered(S(THPRAC_TOOLS_RND_PLAYER), 0.6f, buttonSize)) {
+    ImGui::SetCursorPos({ btnPosX,  height + step * 2 });
+    if (ImGui::Button(S(THPRAC_TOOLS_RND_PLAYER), buttonSize)) {
         toolFunc = RandomShotRollUI;
     }
 }
