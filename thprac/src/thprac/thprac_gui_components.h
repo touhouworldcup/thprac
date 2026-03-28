@@ -830,6 +830,7 @@ namespace Gui {
     }
     bool ButtonRight(const char* text, float rel = 0.0f, const ImVec2& size_arg = { 0.0f, 0.0f });
     void CheckboxAll(const char* label, bool* v, size_t v_len);
+    int MultiButtonsRight(float x, ...);
 }
 }
 

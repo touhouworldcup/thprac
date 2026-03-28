@@ -763,5 +763,30 @@ namespace THPrac
                 memset(v, checked, v_len);
             }
         }
+        int MultiButtonsRight(float x, ...) {
+            va_list va;
+            va_start(va, x);
+
+            const char* label = va_arg(va, const char*);
+            int ret = -1;
+
+            for (int i = 0;; i++) {
+                if (ButtonRight(label, x)) {
+                    ret = i;
+                }
+                label = va_arg(va, const char*);
+                if (!label) {
+                    break;
+                }
+                ImVec2 pos = ImGui::GetItemRectMin();
+                ImVec2 wndPos = ImGui::GetWindowPos();
+                x = pos.x - wndPos.x - ImGui::GetStyle().ItemSpacing.x;
+
+                ImGui::SameLine();
+            }
+            va_end(va);
+            return ret;
+        }
+
     }
 }
