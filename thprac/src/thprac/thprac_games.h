@@ -262,6 +262,7 @@ enum class ReplayClearResult { Cleared, NoParams, Error };
 bool ReplaySaveParam(const wchar_t* rep_path, const std::string& param);
 bool ReplayLoadParam(const wchar_t* rep_path, std::string& param);
 ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
+bool CloneReplayWithParams(const std::wstring& rep_path, const std::string& param, const wchar_t* gameId, HWND window);
 
 
 #pragma endregion

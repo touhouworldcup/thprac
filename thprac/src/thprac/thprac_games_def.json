@@ -917,6 +917,7 @@
       "TH_REPLAY_FIX": [ "Replay修复", "Replay Fixing", "リプレイ修復" ],
       "TH_REPFIX_SELECTED": [ "已选择replay：%ls", "Replay selected: %ls", "選択したリプレイ: %ls" ],
       "TH_REPFIX_SELECTED_NONE": [ "未选择replay。", "No replay selected.", "リプレイが選択されていません。" ],
+      "TH_REPFIX_REAL_SELECTED_NONE": [ "未选择非练习replay。", "No non-practice replay selected.", "練習ではないリプレイが選択されていません。" ],
       "TH_REPFIX_MAIN_SELECTED_NONE": [ "未选择主线replay。", "No main story replay selected.", "メインストーリーのリプレイが選択されていません。" ],
       "TH_REPFIX_EXTRA_SELECTED_NONE": [ "未选择extra面replay。", "No Extra Stage replay selected.", "Extraステージのリプレイが選択されていません。" ],
       "TH_REPFIX_SELECTED_ALREADY_FIXED": [ "已修复所选replay。", "Selected replay is already fixed.", "選択したリプレイはすでに修正されています。" ],
@@ -9118,9 +9119,9 @@
         "以下のオプションを利用する必要がない場合は、オフにしてください。"
       ],
       "TH18_BUGFIX_AUTO_DESC": [
-        "包括：\n• 游戏崩溃：在符卡练习中全避「弹幕的庇护所」。\n• 游戏崩溃：持有「死秽回避之药」或「有钱能使鬼推磨」时切换关卡。\n• 回放不同步：蜈蚣卡牌在关卡切换后伤害倍率重置。\n• 回放不同步：卷轴卡牌在 Extra 面商店后冷却倍率重置。\n• 录制不同步：「妖怪们的盾构法」存在非确定性行为。\n• 录制不同步：关卡切换时将错误的所选主动卡写入回放。\n• 录制不同步：即使在关卡重新开始后不再装备，「小石子帽子」效果仍会持续存在。\n• 有问题的功能：Esc+R、Esc+Q，Extra 关卡重放中的主动卡片 HUD。",
-        "Includes:\n• Game Crash: Timing out \"Asylum of Danmaku\" in Spell Practice.\n• Game Crash: Stage transition with cards \"Death Avoidance Elixir\" and \"Money is the Best Lawyer in Hell\"\n• Playback Desync: Centipede damage multiplier resetting on stage transition.\n• Playback Desync: Scroll cooldown multipliers resetting after Extra shop.\n• Recording Desync: Non-deterministic behavior on \"Shield Method of the Youkai\".\n• Recording Desync: Incorrect selected active card written to replay on stage transition.\n• Recording Desync: \"Pebble Hat\" effect persisting across run restart even if no longer equipped. \n• Broken Features: Esc+R, Esc+Q, active card HUD in Extra replays.",
-        "内容：\n- ゲームクラッシュ：スペルプラクティスで「弾幕のアジール」をタイムアウトした場合。\n- ゲームクラッシュ：「死穢回避の薬」または「地獄の沙汰も金次第」を所持した状態でのステージ移行。\n- 再生ズレ：ムカデカードのダメージ倍率がステージ移行後にリセットされる。\n- 再生ズレ：経典カードのクールダウン倍率がExtraショップ後にリセットされる。\n- 記録ズレ：「妖怪達のシールドメソッド」における非決定的挙動。\n- 記録ズレ：ステージ移行時に選択した使用カードがリプレイへ正しく記録されない。\n- 記録ズレ：「小石ころ帽子」の効果が、装備を外した後でもラン再開後に持続する。\n- 機能不具合：Esc+R、Esc+Q、エキストラボスのリプレイ中のアクティブカードHUD。"
+        "包括：\n• 游戏崩溃：在符卡练习中全避「弹幕的庇护所」。\n• 游戏崩溃：持有「死秽回避之药」或「有钱能使鬼推磨」时切换关卡。\n• 回放不同步：蜈蚣卡牌在关卡切换后伤害倍率重置。\n• 回放不同步：卷轴卡牌在 Extra 面商店后冷却倍率重置。\n• 录制不同步：「妖怪们的盾构法」存在非确定性行为。\n• 录制不同步：关卡切换时将错误的所选主动卡写入回放。\n• 有问题的功能：Esc+R、Esc+Q，Extra 关卡重放中的主动卡片 HUD。",
+        "Includes:\n• Game Crash: Timing out \"Asylum of Danmaku\" in Spell Practice.\n• Game Crash: Stage transition with cards \"Death Avoidance Elixir\" and \"Money is the Best Lawyer in Hell\"\n• Playback Desync: Centipede damage multiplier resetting on stage transition.\n• Playback Desync: Scroll cooldown multipliers resetting after Extra shop.\n• Recording Desync: Non-deterministic behavior on \"Shield Method of the Youkai\".\n• Recording Desync: Incorrect selected active card written to replay on stage transition.\n• Broken Features: Esc+R, Esc+Q, active card HUD in Extra replays.",
+        "内容：\n- ゲームクラッシュ：スペルプラクティスで「弾幕のアジール」をタイムアウトした場合。\n- ゲームクラッシュ：「死穢回避の薬」または「地獄の沙汰も金次第」を所持した状態でのステージ移行。\n- 再生ズレ：ムカデカードのダメージ倍率がステージ移行後にリセットされる。\n- 再生ズレ：経典カードのクールダウン倍率がExtraショップ後にリセットされる。\n- 記録ズレ：「妖怪達のシールドメソッド」における非決定的挙動。\n- 記録ズレ：ステージ移行時に選択した使用カードがリプレイへ正しく記録されない。\n- 機能不具合：Esc+R、Esc+Q、エキストラボスのリプレイ中のアクティブカードHUD。"
       ],
       "TH18_FUNDS": [ "资金力", "Funds", "資金力" ],
       "TH18_CARD": [ "卡片", "Card", "カード" ],
@@ -9205,6 +9206,12 @@
         "有効時、「保持」に設定したカードを購入していた場合、リスタート時にメインメニューへ戻ります。"
       ],
       "TH18_RESTART_RESET_MARKET": [ "重开游戏时重置商店", "Reset market on restart", "ゲームを再開するときに市場をリセットする" ],
+      "TH18_RESTART_RESET_KOISHI": [ "重开游戏时重置“小石子帽子”效果", "Reset \"Pebble Hat\" effect on restart", "再開時に「小石ころ帽子」の効果をリセットする" ],
+      "TH18_RESTART_RESET_KOISHI_DESC": [
+        "在重开时清除使你在未拥有古明地恋的卡片时仍对敌人碰撞无敌的标志（通常只在关卡切换或返回主菜单时重置）。启用此修复后，受此问题影响的录像在原版中可以正常同步；若不启用，则仅在 thprac 中同步。",
+        "Clears the flag making you invulnerable to enemy collisions on restart if you no longer have Koishi's card (normally only reset on stage transition / main menu). Replays affected by this issue will sync on vanilla if this bug fix is enabled, and will sync only with thprac if not.",
+        "再開後にこいしのカードを所持していない状態になる場合、敵との接触時に無敵となるフラグを削除します（通常はステージ切り替えまたはメインメニューに戻ったときのみリセットされます）。この修正を有効にすると、この問題の影響を受けたリプレイはバニラで正常に同期し、無効の場合は thprac のみで同期されます。"
+      ],
       "TH18_RESTART_SETTINGS_CONFLICT": [ "无法同时启用互相冲突的重开设置。", "Cannot enable conflicting restart settings.", "互いに競合する再開設定を同時に有効にすることはできません。" ],
       "TH18_AC_REPFIX": [ "主动卡选择不同步修复", "Active card selection desync fix", "使用カード選択の同期ズレ修正" ],
       "TH18_AC_REPFIX_SHOW_INS": [ "显示说明##th18", "Show instructions##th18", "指示を表示##th18" ],
@@ -9222,9 +9229,15 @@
       ],
       "TH18_CS_REPFIX": [ "分数上限修复", "Counterstop fix", "カンスト修正" ],
       "TH18_CS_REPFIX_DESC": [
-        "Replay文件会因为达到分数上限而无法正确地记录真实分数。此问题可能发生在某一面或多面，且可被此工具修复。请启用“移除分数限制”选项，从第一个真实得分未知的关卡开始，播放replay直到结束，然后保存修复后的副本。\n\n注意：此工具不会影响回放是否同步。请确保在启用相关修复选项的情况下播放replay。",
-        "This tool allows you to fix replays whose true score was not recorded in one or more stages due to the score cap. Enable the \"Remove score cap\" option, play back the replay from the first stage with an unknwon score to the end of the replay, then save a fixed copy.\n\nNote that this tool does not affect whether the replay syncs. Please make sure to play back the replay with the relevant fixes enabled.",
-        "このツールでは、スコアキャップにより1つ以上のステージで本来の得点が記録されなかったリプレイを修正できます。「スコアキャップ解放」オプションを有効にし、実際の得点が不明な最初のステージからリプレイ終了まで再生した後、修正済みのコピーを保存してください。\n\nなお、このツールはリプレイの同期には影響しません。必ず関連する修正を有効にした状態で再生してください。"
+        "Replay文件会因为达到分数上限而无法正确地记录真实分数。此问题可能发生在某一面或多面，且可被此工具修复。请启用“移除分数限制”选项，从第一个真实得分未知的关卡开始，播放replay直到结束，然后保存修复后的副本。\n\n注意：此工具不会影响回放是否同步。",
+        "This tool allows you to fix replays whose true score was not recorded in one or more stages due to the score cap. Enable the \"Remove score cap\" option, play back the replay from the first stage with an unknwon score to the end of the replay, then save a fixed copy.\n\nNote that this tool does not affect whether the replay syncs.",
+        "このツールでは、スコアキャップにより1つ以上のステージで本来の得点が記録されなかったリプレイを修正できます。「スコアキャップ解放」オプションを有効にし、実際の得点が不明な最初のステージからリプレイ終了まで再生した後、修正済みのコピーを保存してください。\n\nなお、このツールはリプレイの同期には影響しません。"
+      ],
+      "TH18_HK_REPFIX": [ "隐藏的“小石子帽子”效果不同步修复", "Hidden \"Pebble Hat\" effect desync fix", "隠し「小石ころ帽子」効果の同期ズレ修正" ],
+      "TH18_HK_REPFIX_DESC": [
+        "此工具可修复由于重开后古明地恋的卡片效果在未装备的情况下仍然生效而导致的录像不同步问题。它仅会将录像标记为受该问题影响，从而让 thprac 知道需要复现该 bug。\n\n请注意，此工具无法“预览”修复是否会让你的录像正常同步，你需要先保存修复后的副本。",
+        "This tool allows you to fix replays that desync due to the effect of Koishi's card staying active after a restart, despite the card no longer being equipped. It simply marks the replay as being affected so that thprac knows to reproduce the bug.\n\nNote that this tool does not let you \"preview\" whether the fix will make your replay sync; you will need to save the fixed copy first.",
+        "このツールは、再開後にこいしのカードが未装備にもかかわらず効果が有効になり続けることで発生するリプレイの同期ズレを修正します。リプレイにその問題の影響があることを示すフラグを付けるだけで、thprac がそのバグを再現できるようにします。\n\nなお、このツールでは修正によってリプレイが同期するかどうかを事前に確認（プレビュー）することはできません。修正済みのコピーを保存する必要があります。"
       ],
       "TH18_CS_REPFIX_NO_UNCAP": [ "“移除分数限制”选项未启用。", "\"Remove score cap\" option disabled.", "「スコアキャップ解放」オプションが無効です。" ],
       "TH18_CS_REPFIX_SELECTED_NO_CS": [ "所选回放未达到分数上限。", "Selected replay does not hit the score cap.", "選択したリプレイはカンストしていません。" ],

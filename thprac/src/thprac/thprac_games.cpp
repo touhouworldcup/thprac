@@ -893,6 +893,58 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path)
     return ReplayClearResult::NoParams;
 }
 
+bool CloneReplayWithParams(const std::wstring& rep_path, const std::string& param, const wchar_t* gameId, HWND window)
+{
+    // setup open file prompt
+    OPENFILENAMEW ofn;
+    wchar_t szFile[512];
+    swprintf_s(szFile, L"th%s_ud----.rpy", gameId);
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = window;
+    ofn.lpstrFile = szFile;
+    ofn.nMaxFile = sizeof(szFile);
+    ofn.lpstrFilter = L"Replay File\0*.rpy\0";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = nullptr;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = rep_path.c_str();
+    ofn.lpstrDefExt = L".rpy";
+    ofn.Flags = OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
+
+    if (GetSaveFileNameW(&ofn)) {
+        bool existingFile = (GetFileAttributesW(szFile) != INVALID_FILE_ATTRIBUTES);
+        bool samePath = (GetUnifiedPath(szFile) == GetUnifiedPath(rep_path));
+
+        // copy original replay to the selected path, overwriting if existing (unless same path)
+        if (!samePath && !CopyFileW(rep_path.c_str(), szFile, FALSE)) {
+            MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST), nullptr, ofn.hwndOwner);
+            return false;
+        }
+
+        // clear thprac params if present (no impact otherwise)
+        if (ReplayClearParam(szFile) == ReplayClearResult::Error) {
+            MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS), nullptr, ofn.hwndOwner);
+            if (!existingFile)
+                DeleteFileW(szFile);
+            return false;
+        }
+
+        // save params & notify
+        if (!ReplaySaveParam(szFile, param)) {
+            MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
+            return true;
+
+        } else { // delete copy if params didn't save
+            MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_PARAMS), nullptr, ofn.hwndOwner);
+            if (!existingFile)
+                DeleteFileW(szFile);
+        }
+    }
+
+    return false;
+}
+
 #pragma endregion
 
 #pragma region Virtual File System

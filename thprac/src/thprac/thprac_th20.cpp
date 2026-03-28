@@ -1144,57 +1144,11 @@ namespace TH20 {
                 break;
             }
         }
-        bool CloneSelectedReplayWithParams(THPracParam repParams) {
-            //setup open file prompt
-            OPENFILENAMEW ofn;
-            wchar_t szFile[512];
-            wcscpy_s(szFile, L"th20_ud----.rpy");
-            ZeroMemory(&ofn, sizeof(ofn));
-            ofn.lStructSize = sizeof(ofn);
-            ofn.hwndOwner = *(HWND*)RVA(WINDOW_PTR);
-            ofn.lpstrFile = szFile;
-            ofn.nMaxFile = sizeof(szFile);
-            ofn.lpstrFilter = L"Replay File\0*.rpy\0";
-            ofn.nFilterIndex = 1;
-            ofn.lpstrFileTitle = nullptr;
-            ofn.nMaxFileTitle = 0;
-            ofn.lpstrInitialDir = THGuiRep::singleton().mSelectedRepDir.c_str();
-            ofn.lpstrDefExt = L".rpy";
-            ofn.Flags = OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
 
-            if (GetSaveFileNameW(&ofn)) {
-                bool existingFile = (GetFileAttributesW(szFile) != INVALID_FILE_ATTRIBUTES);
-                bool samePath = (GetUnifiedPath(szFile) == GetUnifiedPath(THGuiRep::singleton().mSelectedRepPath));
+        inline void CloneSelectedReplayWithParams(THPracParam newRepParam, bool refresh = true) {
+            const std::wstring& repPath = THGuiRep::singleton().mSelectedRepPath;
 
-                // copy original replay to the selected path, overwriting if existing (unless same path)
-                if (!samePath && !CopyFileW(THGuiRep::singleton().mSelectedRepPath.c_str(), szFile, FALSE)) {
-                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST), nullptr, ofn.hwndOwner);
-                    return false;
-                }
-
-                // clear thprac params if present (no impact otherwise)
-                if (ReplayClearParam(szFile) == ReplayClearResult::Error) {
-                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS), nullptr, ofn.hwndOwner);
-                    if (!existingFile) DeleteFileW(szFile);
-                    return false;
-                }
-
-                // save params & notify
-                if (!ReplaySaveParam(szFile, repParams.GetJson())) {
-                    MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
-                    return true;
-
-                } else { //delete copy if params didn't save
-                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_PARAMS), nullptr, ofn.hwndOwner);
-                    if (!existingFile) DeleteFileW(szFile);
-                }
-            }
-
-            return false;
-        }
-
-        void CloneWithParamsAndRefresh(THPracParam newRepParam) {
-            if (CloneSelectedReplayWithParams(newRepParam) && !THGuiRep::singleton().mRepStatus)
+            if(CloneReplayWithParams(repPath, newRepParam.GetJson(), L"20", *(HWND*)RVA(WINDOW_PTR)) && refresh)
                 THGuiRep::singleton().CheckReplay(); // refresh for if user overwrote og file in menu
         }
 
@@ -1366,7 +1320,7 @@ namespace TH20 {
                                 newRepParam.expStoneColors[s] = advExpStoneColors[s];
                             newRepParam.MarkExpStoneFixed(false);
 
-                            CloneSelectedReplayWithParams(newRepParam);
+                            CloneSelectedReplayWithParams(newRepParam, false);
                             //can't save in menu, thPracParam is reset
                         }
 
@@ -1386,7 +1340,7 @@ namespace TH20 {
                             for (size_t st = 0; st < elementsof(newRepParam.rogueDmgSrcs); ++st)
                                 newRepParam.rogueDmgSrcs[st].clear();
 
-                            CloneWithParamsAndRefresh(newRepParam);
+                            CloneSelectedReplayWithParams(newRepParam);
                         }
                     }
                 } else {
@@ -1433,7 +1387,7 @@ namespace TH20 {
                                 newRepParam.expStoneColors[s] = advExpStoneColors[s];
                             newRepParam.MarkExpStoneFixed(true);
 
-                            CloneWithParamsAndRefresh(newRepParam);
+                            CloneSelectedReplayWithParams(newRepParam);
                         };
                         DisableTooltip(extraResFixDisableSave, TH20_EXRESFIX_SAVE_DISABLE_HINT, false);
 
@@ -1444,7 +1398,7 @@ namespace TH20 {
                             THPracParam newRepParam = THGuiRep::singleton().mRepParam;
                             newRepParam.resolutionSpriteHeight = 0;
 
-                            CloneWithParamsAndRefresh(newRepParam);
+                            CloneSelectedReplayWithParams(newRepParam);
                         }
                     }
                 }
@@ -1534,7 +1488,7 @@ namespace TH20 {
                                     for (size_t s = 0; s < elementsof(advExpStoneColors); ++s)
                                         newRepParam.expStoneColors[s] = advExpStoneColors[s];
 
-                                    CloneWithParamsAndRefresh(newRepParam);
+                                    CloneSelectedReplayWithParams(newRepParam);
                                 }
                             }
                             else {
@@ -1542,7 +1496,7 @@ namespace TH20 {
                                     THPracParam newRepParam = THGuiRep::singleton().mRepParam;
                                     newRepParam.MarkExpStoneFixed(THGuiRep::singleton().mSelectedRepEndStage == 7);
 
-                                    CloneWithParamsAndRefresh(newRepParam);
+                                    CloneSelectedReplayWithParams(newRepParam);
                                 }
                             }
 
@@ -1559,7 +1513,7 @@ namespace TH20 {
                                 for (auto& stgData : newRepParam.expStoneColors)
                                     stgData.clear();
 
-                                CloneWithParamsAndRefresh(newRepParam);
+                                CloneSelectedReplayWithParams(newRepParam);
                             }
                         }
                     } else ImGui::TextDisabled(S(TH_REPFIX_SELECTED_NONE));
