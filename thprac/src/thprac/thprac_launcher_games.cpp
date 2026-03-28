@@ -914,7 +914,7 @@ static void ScanDirectory(ScanCtx* scanCtx, const wchar_t* path, std::vector<std
 
                 if (info->FileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
                     ScanDirectory(scanCtx, fullPath.c_str(), found_exe_names);
-                } else if (name.length() > 4 && name.ends_with(L".exe")) {
+                } else if (name.length() > 4 && (_wcsnicmp(name.data() + name.size() - 4, L".exe", 4) == 0)) {
                     if (scanCtx->relative) {
                         auto& curdir = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
                         PathMakeRelative(fullPath, curdir.Buffer, (curdir.Length / sizeof(WCHAR)) - 1);
@@ -948,6 +948,9 @@ static DWORD WINAPI ScanThread(LPVOID lpParam) {
 
     scanCtx->exes_found = found_exe_names.size();
     for (const auto& f : found_exe_names) {
+        if (scanCtx->abort_message) {
+            break;
+        }
         ScanIdentifyGame(scanCtx, f.data(), f.length());
         scanCtx->exes_scanned += 1;
     }
@@ -1053,8 +1056,13 @@ static DWORD WINAPI ScanThreadSteam(LPVOID lpParam) {
 
     std::vector<std::wstring> found_exe_names;
     SteamReadLibrary(scanCtx, (char*)f.fileMapView, f.fileSize, found_exe_names);
+    scanCtx->exes_found = found_exe_names.size();
     for (const auto& f : found_exe_names) {
+        if (scanCtx->abort_message) {
+            break;
+        }
         ScanIdentifyGame(scanCtx, f.data(), f.length());
+        scanCtx->exes_scanned += 1;
     }
 
     return 0;
