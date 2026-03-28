@@ -917,10 +917,10 @@
       "TH_REPLAY_FIX": [ "Replay修复", "Replay Fixing", "リプレイ修復" ],
       "TH_REPFIX_SELECTED": [ "已选择replay：%ls", "Replay selected: %ls", "選択したリプレイ: %ls" ],
       "TH_REPFIX_SELECTED_NONE": [ "未选择replay。", "No replay selected.", "リプレイが選択されていません。" ],
-      "TH_REPFIX_REAL_SELECTED_NONE": [ "未选择非练习replay。", "No non-practice replay selected.", "練習ではないリプレイが選択されていません。" ],
+      "TH_REPFIX_REAL_SELECTED_NONE": [ "未选择练习模式以外的replay。", "No non-practice replay selected.", "練習ではないリプレイが選択されていません。" ],
       "TH_REPFIX_MAIN_SELECTED_NONE": [ "未选择主线replay。", "No main story replay selected.", "メインストーリーのリプレイが選択されていません。" ],
       "TH_REPFIX_EXTRA_SELECTED_NONE": [ "未选择extra面replay。", "No Extra Stage replay selected.", "Extraステージのリプレイが選択されていません。" ],
-      "TH_REPFIX_SELECTED_ALREADY_FIXED": [ "已修复所选replay。", "Selected replay is already fixed.", "選択したリプレイはすでに修正されています。" ],
+      "TH_REPFIX_SELECTED_ALREADY_FIXED": [ "已修复所选replay。", "Selected replay is already fixed.", "選択したリプレイはすでに修正されています。" ],  
       "TH_REPFIX_SAVE": [ "保存修复后的副本", "Save fixed copy", "修正版を保存" ],
       "TH_REPFIX_SAVE_PROGRESS": [ "保存replay (%d/%d)", "Save replay (%d/%d)", "リプレイをセーブ (%d/%d)" ],
       "TH_REPFIX_RESET_DATA": [ "重置此同步数据", "Reset this sync data", "この同期データをリセット" ],
@@ -8600,9 +8600,9 @@
       "TH17_ID_P2_OPT": [ "P2 偏移量", "P2 Offset", "P2 オフセット" ],
       "TH17_ID_P3_OPT": [ "P3 偏移量", "P3 Offset", "P3 オフセット" ],
       "TH17_ID_P4_OPT": [ "P4 偏移量", "P4 Offset", "P4 オフセット" ],
-      "TH17_ID_TD_CFG": [ "应用时间推进配置", "Apply timedown config", "耐久設定を適用" ],
+      "TH17_ID_TD_CFG": [ "应用全避时的配置", "Apply timedown config", "耐久設定を適用" ],
       "TH17_ID_TD_CFG_HINT": [
-        "使偏移量与按时间自动推进阶段时的结果一致。",
+        "使偏移量与全避时的结果一致。",
         "Makes the offsets match what you'd get by waiting for phases to transition automatically.",
         "段階が自動で移行するのを待った場合と同じオフセットになります。"
       ],
@@ -8613,7 +8613,7 @@
       ],
       "TH17_ID_CFG_PASTE_ERROR_TITLE": [ "偶像恶魔配置验证错误", "Idola Diabolus config validation error", "イドラディアボルス設定の検証エラー" ],
       "TH17_ID_CFG_PASTE_ERROR": [
-        "剪贴板中没有有效的偶像恶魔阶段偏移配置代码（24位十六进制字符串）。请检查剪贴板后重试。",
+        "剪贴板中没有有效的偶像恶魔阶段偏移量配置代码（24位十六进制字符串）。请检查剪贴板后重试。",
         "Your clipboard does not contain a valid Idola Diabolus phase offset config code (24-character hexadecimal string). Please check your clipboard and try again.",
         "クリップボードに有効なイドラディアボルス段階オフセット設定コード（24桁の16進文字列）がありません。確認して再試行してください。"
       ],
@@ -8623,13 +8623,13 @@
         "ゲーム内トラッカーでイドラディアボルスの段階移行オフセットを表示"
       ],
       "TH17_KEIKI_FINAL_PHASETRACK_DESC": [
-        "可通过练习菜单中的高级参数滑块使用这些数值来练习特定的偶像恶魔策略。偏移量仅在练习模式中游玩偶像恶魔时显示，但无论模式都可以复制。",
+        "可以使用这些值来练习特定的偶像恶魔避弹方法。偏移量可以在练习菜单的高级参数内设置。其仅在练习模式下的偶像恶魔显示，但无论在什么模式下都可以复制。",
         "You can use these values to practice specific Idola Diabolus strategies via the advanced param. sliders in the practice menu. Offsets are only shown when playing Idola Diabolus in Practice Mode, but can be copied regardless of mode.",
         "これらの値は、練習メニューの高度なパラメータスライダーを使って特定のイドラディアボルス戦略を練習するのに使用できます。オフセットはイドラディアボルスを練習モードでプレイ中のみ表示されますが、モードに関係なくコピー可能です。"
       ],
       "TH17_ID_CFG_CODE_COPIED": [ "（剪贴板中有有效代码！）", "(Valid code in clipboard!)", "（有効なコードがクリップボードにあります！）" ],
       "TH17_KEIKI_FINAL_PHASETRACK_NONE_HINT": [
-        "未处于偶像恶魔的第2至第4阶段时无法复制偏移配置。",
+        "未处于偶像恶魔的第2~4阶段，无法复制偏移量配置。",
         "Cannot copy offset configuration if not on phase 2 to 4 of Idola Diabolus.",
         "イドラディアボルスの段階2〜4でない場合、オフセット設定はコピーできません。"
       ]
