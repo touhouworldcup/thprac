@@ -61,7 +61,7 @@ int log_mbox(void* hwnd, unsigned int type, const char* caption, const char* tex
 int log_vmboxf(void* hwnd, unsigned int type, const char* caption, const char* format, va_list va) {
     va_list va2;
     va_copy(va2, va);
-    int len = vsnprintf(nullptr, 0, format, va2);
+    int len = vsnprintf(nullptr, 0, format, va2) + 1;
 
     VLA(char, buf, len + 1);
     memset(buf, 0, len + 1);
