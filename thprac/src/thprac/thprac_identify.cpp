@@ -33,6 +33,8 @@ extern void TH19_v1_10c_Init();
 extern void TH20Init();
 
 // Putting them into an array, then having an enum to label indicies into this array ensures that all of these end up being sequential in memory
+// Multiple versions of the same game MUST be sequential in this array. New versions must always be inserted after the last added existing version
+// so if you add th15 v1.00a for example, it must come after th15 v1.00b, which is the currently supported version of th15.
 constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_ALCOSTG,

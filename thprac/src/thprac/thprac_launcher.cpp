@@ -18,6 +18,10 @@
 #include "../../resource.h"
 
 namespace THPrac {
+static bool g_IsUITextureIDValid = false;
+static bool g_IsOverTitleBarButton = false;
+constinit LauncherSettings launcherSettings;
+
 namespace Gui {
     extern LRESULT ImplWin32WndProcHandlerW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     extern IDirect3DDevice9* ImplDX9GetDevice();
@@ -47,56 +51,44 @@ static constinit D3DPRESENT_PARAMETERS g_d3dpp = {
     .PresentationInterval = D3DPRESENT_INTERVAL_ONE,
 };
 
-static constinit float g_TitleBarHeight;
-static constinit bool g_IsOverTitleBarButton = false;
-
-static constinit bool g_IsUITextureIDValid = false;
-static constinit bool g_IsInitialized = false;
-static constinit bool g_Rendering = false;
-
-constinit LauncherSettings launcherSettings;
-
 void ResetDevice();
 bool UpdateUIScaling(float scale = 1.0f);
 
+#define TITLE_BAR_HEIGHT() (ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2)
+
 // This title bar is inspriried by the title bar from the old launcher provided by a modified ImGui::Begin,
 // but it's remade from scratch and reponds to minimize and close button presses by sending messages to 'hwnd' directly
-void DrawTitleBar(HWND hwnd, const char* title) {
-
-    // The old launcher enabled the title bar when calling ImGui::Begin and used the buttons provided by that for it's title bar
-    // However, I haven't found a way to check if the title bar is selected, or if any of the title bar's buttons are selected
-    // It also seems like the title bar code was modified by thprac's previous behaviour, ACK. I want to cut down on non-standard
-    // Dear ImGui as much as possible to make it easier to upgrade Dear ImGui in the future.
-
+// The old launcher enabled the title bar when calling ImGui::Begin and used the buttons provided by that.
+// However, I haven't found a way to check if the title bar is selected, or if any of the title bar's buttons are selected
+// It also seems like the title bar code was modified by thprac's previous behaviour, ACK, in order to add a real minimize button.
+// I want to cut down on non-standard Dear ImGui as much as possible to make it easier to upgrade Dear ImGui in the future.
+float DrawTitleBar(HWND hwnd, const char* title) {
     auto& io = ImGui::GetIO();
-    const float btnW = g_TitleBarHeight;
+    const float tbH = TITLE_BAR_HEIGHT();
 
     ImGui::GetWindowDrawList()->AddRectFilled(
         ImVec2(0.0f, 0.0f),
-        ImVec2(io.DisplaySize.x, btnW),
+        ImVec2(io.DisplaySize.x, tbH),
         ImGui::GetColorU32(ImGuiCol_TitleBgActive));
 
-
-    ImGui::SetCursorPos(ImVec2(4.0f, (btnW - ImGui::GetTextLineHeight()) * 0.5f));
+    ImGui::SetCursorPos(ImVec2(4.0f, (tbH - ImGui::GetTextLineHeight()) * 0.5f));
     ImGui::TextUnformatted(title);
 
-    bool overBtn = false;
     float cross_extent = g_Scale * 7.071f - 1.0f;
 
     // Minimize Button
     {
-        ImVec2 btnPos = { io.DisplaySize.x - btnW * 2.0f, 0.0f };
-        ImVec2 btnCenter = { btnPos.x + (btnW / 2), btnPos.y + (btnW / 2) };
+        ImVec2 btnPos = { io.DisplaySize.x - tbH * 2.0f, 0.0f };
+        ImVec2 btnCenter = { btnPos.x + (tbH / 2), btnPos.y + (tbH / 2) };
 
         ImGui::SetCursorPos(btnPos);
-        if (ImGui::InvisibleButton("##MINIMIZE", { btnW, btnW })) {
+        if (ImGui::InvisibleButton("##MINIMIZE", { tbH, tbH })) {
             ShowWindow(hwnd, SW_MINIMIZE);
         }
-        bool hovered = ImGui::IsItemHovered();
 
-        if (hovered) {
-            ImGui::GetWindowDrawList()->AddCircleFilled(btnCenter, (btnW / 2) - 2.0f, ImGui::GetColorU32(ImGuiCol_ButtonHovered));
-        }    
+        if (ImGui::IsItemHovered()) {
+            ImGui::GetWindowDrawList()->AddCircleFilled(btnCenter, (tbH / 2) - 2.0f, ImGui::GetColorU32(ImGuiCol_ButtonHovered));
+        }
 
         ImVec2 lineLeft = btnCenter;
         ImVec2 lineRight = btnCenter;
@@ -105,22 +97,20 @@ void DrawTitleBar(HWND hwnd, const char* title) {
         lineRight.x += cross_extent;
 
         ImGui::GetWindowDrawList()->AddLine(lineLeft, lineRight, ImGui::GetColorU32(ImGuiCol_Text), 1.5f * g_Scale);
-
-        overBtn |= hovered;
     }
 
     // Close button
     {
-        ImVec2 btnPos = { io.DisplaySize.x - btnW, 0.0f };
-        ImVec2 btnCenter = { btnPos.x + (btnW / 2), btnPos.y + (btnW / 2) };
+        ImVec2 btnPos = { io.DisplaySize.x - tbH, 0.0f };
+        ImVec2 btnCenter = { btnPos.x + (tbH / 2), btnPos.y + (tbH / 2) };
 
         ImGui::SetCursorPos(btnPos);
-        if (ImGui::InvisibleButton("##CLOSE", { btnW, btnW })) {
+        if (ImGui::InvisibleButton("##CLOSE", { tbH, tbH })) {
             PostQuitMessage(0);
         }
-        bool hovered = ImGui::IsItemHovered();
-        if (hovered) {
-            ImGui::GetWindowDrawList()->AddCircleFilled(btnCenter, (btnW / 2) - 2.0f, ImGui::GetColorU32(ImGuiCol_ButtonHovered));
+
+        if (ImGui::IsItemHovered()) {
+            ImGui::GetWindowDrawList()->AddCircleFilled(btnCenter, (tbH / 2) - 2.0f, ImGui::GetColorU32(ImGuiCol_ButtonHovered));
         }
 
         ImVec2 lineTopLeft = btnCenter;
@@ -132,7 +122,7 @@ void DrawTitleBar(HWND hwnd, const char* title) {
         lineTopLeft.y -= cross_extent;
         
         lineTopRight.x += cross_extent;
-        lineTopRight.y -= cross_extent;      
+        lineTopRight.y -= cross_extent;
 
         lineBottomLeft.x -= cross_extent;
         lineBottomLeft.y += cross_extent;
@@ -141,13 +131,12 @@ void DrawTitleBar(HWND hwnd, const char* title) {
         lineBottomRight.y += cross_extent;
 
         ImGui::GetWindowDrawList()->AddLine(lineBottomRight, lineTopLeft, ImGui::GetColorU32(ImGuiCol_Text), g_Scale);
-        ImGui::GetWindowDrawList()->AddLine(lineTopRight, lineBottomLeft, ImGui::GetColorU32(ImGuiCol_Text), g_Scale);     
-
-        overBtn |= hovered;
+        ImGui::GetWindowDrawList()->AddLine(lineTopRight, lineBottomLeft, ImGui::GetColorU32(ImGuiCol_Text), g_Scale);
     }
 
-    // Record whether the mouse is over a button so WndProc can skip HTCAPTION
-    g_IsOverTitleBarButton = overBtn;
+    g_IsOverTitleBarButton = ImGui::IsAnyItemHovered();
+    ImGui::SetCursorPos({ 0.0f, tbH });
+    return tbH;
 }
 
 void (*toolFunc)() = nullptr;
@@ -179,20 +168,20 @@ void LauncherTools() {
 }
 
 static void LauncherSettingsMain() {
+    ImGui::TextUnformatted("Launcher settings");
+    ImGui::Separator();
     ImGui::Combo(S(THPRAC_AFTER_LAUNCH), (int*)&launcherSettings.after_launch, S(THPRAC_AFTER_LAUNCH_OPTION));
     ImGui::Combo(S(THPRAC_APPLY_THPRAC_DEFAULT), (int*)&launcherSettings.apply_thprac_default, S(THPRAC_APPLY_THPRAC_DEFAULT_OPTION));
     ImGui::Checkbox(S(THPRAC_AUTO_DEFAULT_LAUNCH), &launcherSettings.auto_default_launch);
     ImGui::SameLine();
     Gui::HelpMarker(S(THPRAC_AUTO_DEFAULT_LAUNCH_DESC));
+    ImGui::NewLine();
 
     // The rest of the settings, which will hopefully be displayed in-game too some day
     GuiSettings();
 }
 
 void UiUpdate(HWND hwnd) {
-    if (!g_IsInitialized)
-        return;
-
     // Start the Dear ImGui frame
     Gui::ImplDX9NewFrame();
     Gui::ImplWin32NewFrame();
@@ -209,10 +198,8 @@ void UiUpdate(HWND hwnd) {
     ImGui::Begin("###_main_window", nullptr,
         ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::PopStyleVar();
-    DrawTitleBar(hwnd, S(THPRAC_LAUNCHER));
 
-    ImGui::SetCursorPos({ 0.0f, g_TitleBarHeight });
-    ImGui::BeginChild("###__content", { io.DisplaySize.x, io.DisplaySize.y - g_TitleBarHeight }, false, ImGuiWindowFlags_AlwaysUseWindowPadding);
+    ImGui::BeginChild("###__content", { io.DisplaySize.x, io.DisplaySize.y - DrawTitleBar(hwnd, S(THPRAC_LAUNCHER)) }, false, ImGuiWindowFlags_AlwaysUseWindowPadding);
     ImGui::BeginTabBar("__launcher_tab_bar");
 
     ImGuiTabItemFlags gameTabFlags = 0;
@@ -497,7 +484,6 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
 
     // Main loop
     MSG msg = {};
-    g_IsInitialized = true;
     while (msg.message != WM_QUIT) {
         // Poll and handle messages (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -509,7 +495,6 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
             DispatchMessageW(&msg);
         }
     }
-    g_IsInitialized = false;
     SaveLauncherSettings();
     SaveGamesJson();
     SaveLinksJson();
@@ -562,8 +547,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         GetClientRect(hWnd, &rc);
 
         int border = 4; // resize-grip thickness in pixels
-        int titleH = (int)g_TitleBarHeight;
-
+        int titleH = TITLE_BAR_HEIGHT();
         if (!g_IsOverTitleBarButton && !IsZoomed(hWnd)) {
             // Corners (tested before edges to take priority)
             if (pt.x < border && pt.y >= rc.bottom - border)
@@ -609,16 +593,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         PAINTSTRUCT ps;
         BeginPaint(hWnd, &ps);
         EndPaint(hWnd, &ps);
-
-        if (g_Rendering)
-            return 0;
-
-        g_Rendering = true;
         UiUpdate(hWnd);
-        g_Rendering = false;
-
         RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
-
         return 0;
     }
     case WM_DPICHANGED: {
@@ -652,7 +628,6 @@ bool UpdateUIScaling(float scale)
     Gui::ImplDX9InvalidateDeviceObjects();
 
     // Setup Dear ImGui style
-    g_TitleBarHeight = 26.0f * scale;
     ImGuiStyle& style = ImGui::GetStyle();
     ImGuiStyle styleold = style; // Backup colors
     style = ImGuiStyle(); // IMPORTANT: ScaleAllSizes will change the original size, so we should reset all style config

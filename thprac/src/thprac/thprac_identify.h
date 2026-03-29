@@ -72,10 +72,6 @@ struct ExeInfo {
     }
 };
 
-struct THGameInfo {
-    uint32_t steamId;
-};
-
 struct THGameVersion {
     THGameID gameId;
     // No need to have a "has_thprac" bool, initFunc already indicates this.

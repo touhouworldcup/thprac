@@ -25,12 +25,14 @@ struct LinkSet {
     std::vector<std::pair<std::string, std::string>> links;
 };
 
+// Globals
 static LinksIndexes selected = { (size_t)-1, (size_t)-1 };
 static char linkEditTitleBuf[1024] = {};
 static char linkEditLinkBuf[1024] = {};
 static bool linkNameWarn = false;
 static bool linkLinkWarn = false;
 static std::vector<LinkSet> linkSets;
+// ---
 
 namespace Gui {
     extern HWND ImplWin32GetHwnd();

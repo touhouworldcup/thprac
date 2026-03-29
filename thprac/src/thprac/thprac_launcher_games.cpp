@@ -55,6 +55,8 @@ struct LauncherGame {
     // TODO: an std::vector would look a lot cleaner here, but I don't want the compiler
     // to generate atexit destructors for this struct. If a custom dynamic array type is
     // ever added, replace this with the custom array.
+    // Note: these are the only dynamic fields in this struct, everything else is known
+    // and provided at compile time.
     size_t inst_count;
     LauncherInstance* instances;
 
@@ -340,6 +342,59 @@ struct {
 };
 };
 
+struct FoundGame {
+    // Stored as a char array because that's what ImGui uses for text output.
+    // The UTF-16 version is only needed once, to load the file to identify and hash it.
+    char path[MAX_PATH + 1] = {};
+    bool selected = false;
+    uint16_t oepCode[10];
+    THKnownGame info = {};
+};
+
+struct ScanCtx {
+    std::wstring scan_dir;
+    std::vector<FoundGame> found;
+    HANDLE scan_thread = NULL;
+    CRITICAL_SECTION found_cs = {};
+
+    size_t exes_found = 0;
+    size_t exes_scanned = 0;
+    size_t text_in_progress_bar_len = 0;
+    char text_in_progress_bar[MAX_PATH + 1] = {};
+
+    bool abort_message = false;
+    bool relative = false;
+
+    ScanCtx()
+    {
+        InitializeCriticalSection(&found_cs);
+    }
+    ~ScanCtx()
+    {
+        DeleteCriticalSection(&found_cs);
+    }
+};
+
+// Globals
+static LauncherGame* selectedGame = nullptr;
+static LauncherGame* hoveredGame = nullptr;
+constinit ScanCtx* scanCtx = nullptr;
+static char instRenameBuf[256] = {};
+static union {
+    bool choices[ALL_GAMES_LEN] = {};
+    struct {
+        bool pc98_choice[PC98_GAMES_LEN];
+        bool maingame_choice[MAIN_GAMES_LEN];
+        bool spinoff_shmup_choice[SPINOFF_SHMUP_LEN];
+        bool spinoff_other_choice[SPINOFF_OTHER_LEN];
+    };
+} randomGameChoices;
+static unsigned randomGameRoll = UINT_MAX;
+static unsigned randomShotRoll = UINT_MAX;
+static LauncherGame* randomShotGame = nullptr;
+static bool shotChoices[32] = { true, true, true };
+// ---
+
 yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
 
 static bool LauncherRunGame(LauncherInstance* inst) {
@@ -523,9 +578,6 @@ void SaveGamesJson() {
         free(buf);
     }
 }
-
-static constinit LauncherGame* selectedGame = nullptr;
-static char instRenameBuf[256] = {};
 
 void DestroyInst(LauncherInstance* inst) {
     if (inst->name) {
@@ -798,37 +850,6 @@ static void DetailsPage(LauncherGame* game) {
         ImGui::EndPopup();
     }
 }
-
-struct FoundGame {
-    // Stored as a char array because that's what ImGui uses for text output.
-    // The UTF-16 version is only needed once, to load the file to identify and hash it.
-    char path[MAX_PATH + 1] = {};
-    bool selected = false;
-    uint16_t oepCode[10];
-    THKnownGame info = {};
-};
-
-struct ScanCtx {
-    std::wstring scan_dir;
-    std::vector<FoundGame> found;
-    HANDLE scan_thread = NULL;
-    CRITICAL_SECTION found_cs = {};
-
-    size_t exes_found = 0;
-    size_t exes_scanned = 0;
-    size_t text_in_progress_bar_len = 0;
-    char text_in_progress_bar[MAX_PATH + 1] = {};
-    
-    bool abort_message = false;
-    bool relative = false;
-
-    ScanCtx() {
-        InitializeCriticalSection(&found_cs);
-    }
-    ~ScanCtx() {
-        DeleteCriticalSection(&found_cs);
-    }
-};
 
 static bool GameAlreadyExists(const char* path) {
     for (const auto& game : games) {
@@ -1268,7 +1289,6 @@ void ProgressIndicator(float prog, const char* text, const char* textEnd = nullp
     drawList->PopClipRect();
 }
 
-constinit ScanCtx* scanCtx = nullptr;
 static void ScanForGamesUI() {
     // WAIT_OBJECT_0: Scan thread finished.
     // WAIT_TIMEOUT: Scan thread is running
@@ -1375,8 +1395,6 @@ static void GameRightClickMenu(LauncherGame* game) {
     }
 }
 
-static LauncherGame* hovered = nullptr;
-
 static inline void GamesList(LauncherGame* games, size_t count) {
     for (size_t i = 0; i < count; i++) {
         auto& game = games[i];
@@ -1394,10 +1412,10 @@ static inline void GamesList(LauncherGame* games, size_t count) {
             }
         }
         if (ImGui::IsItemHovered()) {
-            hovered = &game;
+            hoveredGame = &game;
         }
-        if (&game == hovered && ImGui::BeginPopupContextItem("##__game_context")) {
-            GameRightClickMenu(hovered);
+        if (&game == hoveredGame && ImGui::BeginPopupContextItem("##__game_context")) {
+            GameRightClickMenu(hoveredGame);
             ImGui::EndPopup();
         }
         if (!game.instances) {
@@ -1450,8 +1468,6 @@ static inline unsigned RollChoices(bool* choices, unsigned count) {
     return UINT_MAX;
 }
 
-static LauncherGame* randomShotGame = nullptr;
-static bool shotChoices[32] = { true, true, true };
 void RandomShotRollUI() {
     if (ImGui::Button("Back")) {
         toolFunc = nullptr;
@@ -1464,8 +1480,6 @@ void RandomShotRollUI() {
     if (!randomShotGame) {
         randomShotGame = gamesAll + 1;
     }
-
-    static unsigned roll = UINT_MAX;
 
     // Adjust if somehow ZUN makes a game with more than 32 shot types
     // Or maybe this method of implementing random shottype choice is a bad idea
@@ -1481,7 +1495,7 @@ void RandomShotRollUI() {
                 randomShotGame = gamesAll + i;
                 memset(shotChoices, 0, 32);
                 memset(shotChoices, 1, ShotTypeCount(S(randomShotGame->shots)));
-                roll = UINT_MAX;
+                randomShotRoll = UINT_MAX;
             }
         }
         ImGui::EndCombo();
@@ -1505,14 +1519,14 @@ void RandomShotRollUI() {
     ImGui::EndTable();
 
     char buttonText[128] = {};
-    if (roll != UINT_MAX) {
-        snprintf(buttonText, 127, S(THPRAC_TOOLS_ROLL_RESULT), ShotNameGet(S(randomShotGame->shots), roll));
+    if (randomShotRoll != UINT_MAX) {
+        snprintf(buttonText, 127, S(THPRAC_TOOLS_ROLL_RESULT), ShotNameGet(S(randomShotGame->shots), randomShotRoll));
     } else {
         strcpy(buttonText, S(THPRAC_TOOLS_ROLL));
     }
 
     if (LargeBottomButton(buttonText, 64.0f)) {
-        roll = RollChoices(shotChoices, 32);
+        randomShotRoll = RollChoices(shotChoices, 32);
     }
 
     if (randomShotGame->instances && ImGui::BeginPopupContextItem("###__roll_game_right_click")) {
@@ -1533,55 +1547,43 @@ void RandomGameRollUI() {
     Gui::TextCentered(S(THPRAC_TOOLS_RND_GAME), ImGui::GetWindowWidth());
     ImGui::Separator();
 
-    static union {
-        bool choices[ALL_GAMES_LEN] = {};
-        struct {
-            bool pc98_choice[PC98_GAMES_LEN];
-            bool maingame_choice[MAIN_GAMES_LEN];
-            bool spinoff_shmup_choice[SPINOFF_SHMUP_LEN];
-            bool spinoff_other_choice[SPINOFF_OTHER_LEN];
-        };
-    };
+    RandomGameSetUI("###__random_games_pc98", randomGameChoices.pc98_choice, PC98_GAMES_LEN, pc98Games);
+    ImGui::NewLine();
+    RandomGameSetUI("###__random_games_maingame", randomGameChoices.maingame_choice, MAIN_GAMES_LEN, mainGames);
+    ImGui::NewLine();
+    RandomGameSetUI("###__random_games_spinoff_shmup", randomGameChoices.spinoff_shmup_choice, SPINOFF_SHMUP_LEN, spinoffShmups);
+    ImGui::NewLine();
+    RandomGameSetUI("###__random_games_spinoff_other", randomGameChoices.spinoff_other_choice, SPINOFF_OTHER_LEN, spinoffOthers);
+    ImGui::NewLine();
 
-    static unsigned roll = UINT_MAX;
-
-    RandomGameSetUI("###__random_games_pc98", pc98_choice, PC98_GAMES_LEN, pc98Games);
-    ImGui::NewLine();
-    RandomGameSetUI("###__random_games_maingame", maingame_choice, MAIN_GAMES_LEN, mainGames);
-    ImGui::NewLine();
-    RandomGameSetUI("###__random_games_spinoff_shmup", spinoff_shmup_choice, SPINOFF_SHMUP_LEN, spinoffShmups);
-    ImGui::NewLine();
-    RandomGameSetUI("###__random_games_spinoff_other", spinoff_other_choice, SPINOFF_OTHER_LEN, spinoffOthers);
-    ImGui::NewLine();
-    
-    Gui::CheckboxAll(S(THPRAC_TOOLS_RND_GAME_PC98), pc98_choice, PC98_GAMES_LEN);
+    Gui::CheckboxAll(S(THPRAC_TOOLS_RND_GAME_PC98), randomGameChoices.pc98_choice, PC98_GAMES_LEN);
     ImGui::SameLine();
-    Gui::CheckboxAll(S(THPRAC_GAMES_MAIN_SERIES), maingame_choice, MAIN_GAMES_LEN);
+    Gui::CheckboxAll(S(THPRAC_GAMES_MAIN_SERIES), randomGameChoices.maingame_choice, MAIN_GAMES_LEN);
     ImGui::SameLine();
-    Gui::CheckboxAll(S(THPRAC_GAMES_SPINOFF_STG), spinoff_shmup_choice, SPINOFF_SHMUP_LEN);
+    Gui::CheckboxAll(S(THPRAC_GAMES_SPINOFF_STG), randomGameChoices.spinoff_shmup_choice, SPINOFF_SHMUP_LEN);
     ImGui::SameLine();
-    Gui::CheckboxAll(S(THPRAC_GAMES_SPINOFF_OTHERS), spinoff_other_choice, SPINOFF_OTHER_LEN);
+    Gui::CheckboxAll(S(THPRAC_GAMES_SPINOFF_OTHERS), randomGameChoices.spinoff_other_choice, SPINOFF_OTHER_LEN);
 
     char buttonText[128] = {};
-    if (roll != UINT_MAX) {
-        snprintf(buttonText, 127, S(THPRAC_TOOLS_ROLL_RESULT), gThGameStrs[gamesAll[roll].id]);
+    if (randomGameRoll != UINT_MAX) {
+        snprintf(buttonText, 127, S(THPRAC_TOOLS_ROLL_RESULT), gThGameStrs[gamesAll[randomGameRoll].id]);
     } else {
         strcpy(buttonText, S(THPRAC_TOOLS_ROLL));
     }
 
     if (LargeBottomButton(buttonText, 64.0f)) {
-        roll = RollChoices(choices, ALL_GAMES_LEN);
+        randomGameRoll = RollChoices(randomGameChoices.choices, ALL_GAMES_LEN);
     }
 
-    if ((roll != UINT_MAX) && (gamesAll[roll].shots || gamesAll[roll].instances) && ImGui::BeginPopupContextItem("###__roll_game_right_click")) {
-        if (gamesAll[roll].shots && ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_PLAYER))) {
-            randomShotGame = gamesAll + roll;
+    if ((randomGameRoll != UINT_MAX) && (gamesAll[randomGameRoll].shots || gamesAll[randomGameRoll].instances) && ImGui::BeginPopupContextItem("###__roll_game_right_click")) {
+        if (gamesAll[randomGameRoll].shots && ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_PLAYER))) {
+            randomShotGame = gamesAll + randomGameRoll;
             memset(shotChoices, 0, 32);
             memset(shotChoices, 1, ShotTypeCount(S(randomShotGame->shots)));
             toolFunc = RandomShotRollUI;
         }
-        if (gamesAll[roll].instances && ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_GAME))) {
-            selectedGame = gamesAll + roll;
+        if (gamesAll[randomGameRoll].instances && ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_GAME))) {
+            selectedGame = gamesAll + randomGameRoll;
             goToGamesPage = true;
         }
         ImGui::EndPopup();
