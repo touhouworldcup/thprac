@@ -330,6 +330,9 @@
     <ClCompile Include="src\thprac\thprac_launcher_games.cpp">
       <Filter>THPrac Launcher</Filter>
     </ClCompile>
+    <ClCompile Include="src\thprac\thprac_launcher_links.cpp">
+      <Filter>THPrac Launcher</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

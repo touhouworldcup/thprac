@@ -227,9 +227,8 @@ void UiUpdate(HWND hwnd) {
         ImGui::EndTabItem();
     }
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_LINKS))) {
-        ImGui::BeginChild(0x11945);
-        ImGui::TextUnformatted("Links");
-        ImGui::EndChild();
+        // Links page has it's own child window for all it's content
+        LauncherLinksMain();
         ImGui::EndTabItem();
     }
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_TOOLS))) {
@@ -489,6 +488,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
     SetWindowPos(hwnd, NULL, 0, 0, 960 * dpiscale, 720 * dpiscale, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     LoadLauncherSettings();
     LoadGamesJson();
+    LoadLinksJson();
 
     // Show the window
     ShowWindow(hwnd, nCmdShow);
@@ -512,6 +512,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
     g_IsInitialized = false;
     SaveLauncherSettings();
     SaveGamesJson();
+    SaveLinksJson();
     SaveSettings();
     return 0;
 }

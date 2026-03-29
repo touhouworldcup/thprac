@@ -21,7 +21,10 @@ typedef HRESULT(WINAPI* PGetDpiForMonitor)(HMONITOR hmonitor, DWORD dpiType, UIN
 
 void LoadGamesJson();
 void SaveGamesJson();
+void LoadLinksJson();
+void SaveLinksJson();
 void LauncherGamesMain();
+void LauncherLinksMain();
 
 void RandomShotRollUI();
 void RandomGameRollUI();
