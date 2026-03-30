@@ -424,7 +424,7 @@ namespace TH09 {
             } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th09.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th09.dll", hash);
-                if (hash[0] != 8777309807944811310ll || hash[1] != 16244273824227920047ll)
+                if (hash[0] != 8777309807944811310ull || hash[1] != 16244273824227920047ull)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
                     mOptCtx.fps_status = 2;

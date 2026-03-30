@@ -25,7 +25,7 @@ namespace TH185 {
         constexpr card_names_t()
             : locale(Locale::LOCALE_NONE)
         {
-            for (int i = 0; i < count; ++i) {
+            for (size_t i = 0; i < count; ++i) {
                 ptrs[i] = strings[i];
             }
         }
@@ -207,7 +207,7 @@ namespace TH185 {
 
             const ImVec4 green = { 0, 1, 0, 1 };
 
-            if (selectedWave == -1) {
+            if (selectedWave == SIZE_MAX) {
                 ImGui::TextColored(green, "[%s]", S(TH185_NONE_RANDOM));
             } else {
                 ImGui::TextUnformatted(S(TH185_NONE_RANDOM));
@@ -355,8 +355,8 @@ namespace TH185 {
 
                 if (card_names.locale != Gui::LocaleGet()) {
                     card_names.locale = Gui::LocaleGet();
-                    for (int i = 0; i < card_names.count; ++i) {
-                        std::strcpy(card_names.strings[i], S(TH185_CARD_LIST[i]));
+                    for (size_t i = 0; i < card_names.count; ++i) {
+                        strcpy(card_names.strings[i], S(TH185_CARD_LIST[i]));
                     }
                 }
 
@@ -647,7 +647,7 @@ namespace TH185 {
     })
     EHOOK_DY(th185_force_wave, 0x43d156, 7, {
         auto& wave_select = THWaveSelect::singleton();
-        if (auto i = wave_select.selectedWave; i != -1 && thPracParam.mode) {
+        if (auto i = wave_select.selectedWave; i != SIZE_MAX && thPracParam.mode) {
             auto& [id, name] = wave_select.waveOpts[i];
             pCtx->Esi = id;
             wave_forced = true;

@@ -555,8 +555,8 @@ namespace TH15 {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th15.dll", hash);
 
-                bool vp_valid = hash[0] == 7265142250215198902ll && hash[1] == 13547095955570115225ll;
-                if (hash[0] == 16371671977271057239ll && hash[1] == 17823539316282081507ll) {
+                bool vp_valid = hash[0] == 7265142250215198902ull && hash[1] == 13547095955570115225ull;
+                if (hash[0] == 16371671977271057239ull && hash[1] == 17823539316282081507ull) {
                     vp_valid = true;
                     if (MessageBoxW(
                             *(HWND*)0x519bb0,
@@ -1839,8 +1839,6 @@ namespace TH15 {
     {
         ReplaySaveParam(mb_to_utf16(repName, 932).c_str(), thPracParam.GetJson());
     }
-
-    static bool frameStarted = false;
 
     void THTrackerUpdate() {
         Gui::SetNextWindowSizeRel({ 360.0f / 1280.0f, 0.0f });

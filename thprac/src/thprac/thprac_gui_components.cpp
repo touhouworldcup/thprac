@@ -680,7 +680,7 @@ namespace THPrac
             ImGui::SetCursorPosX((wndX - ImGui::CalcTextSize(text).x) / 2.0f);
             ImGui::TextUnformatted(text);
         }
-        float Gui::GetRelWidth(float rel) {
+        float GetRelWidth(float rel) {
             return ImGui::GetIO().DisplaySize.x * rel;
         }
         float GetRelHeight(float rel) {

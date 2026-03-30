@@ -244,7 +244,6 @@ namespace THPrac
 			// Render command lists
 			int vtx_offset = 0;
 			int idx_offset = 0;
-			ImVec2 clip_off = draw_data->DisplayPos;
 			for (int n = 0; n < draw_data->CmdListsCount; n++)
 			{
 				const ImDrawList* cmd_list = draw_data->CmdLists[n];

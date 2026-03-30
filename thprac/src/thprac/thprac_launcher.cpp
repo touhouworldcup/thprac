@@ -344,7 +344,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
     
     {
         UNICODE_STRING exeDir = CurrentPeb()->ProcessParameters->ImagePathName;   
-        for(size_t i = exeDir.Length / 2; i > 0; i++) {
+        for (USHORT i = exeDir.Length / 2; i > 0; i++) {
             if(exeDir.Buffer[i] == L'\\') {
                 exeDir.Length = i;
                 exeDir.MaximumLength = i;
@@ -471,7 +471,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
     }
 
     // Send WM_NCCALCSIZE message immediately
-    SetWindowPos(hwnd, NULL, 0, 0, 960 * dpiscale, 720 * dpiscale, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+    SetWindowPos(hwnd, NULL, 0, 0, (int)(960.0f * dpiscale), (int)(720.0f * dpiscale), SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     LoadLauncherSettings(&state->settings);
     LoadGamesJson(state->settings.apply_thprac_default);
     LoadLinksJson(state->linkSets);
@@ -554,7 +554,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         GetClientRect(hWnd, &rc);
 
         int border = 4; // resize-grip thickness in pixels
-        int titleH = TITLE_BAR_HEIGHT();
+        int titleH = (int)TITLE_BAR_HEIGHT();
         if (!state->g_IsOverTitleBarButton && !IsZoomed(hWnd)) {
             // Corners (tested before edges to take priority)
             if (pt.x < border && pt.y >= rc.bottom - border)
@@ -632,7 +632,6 @@ void ResetDevice() {
 }
 
 bool UpdateUIScaling(float scale) {
-    ImGuiIO& io = ImGui::GetIO();
     Gui::ImplDX9InvalidateDeviceObjects();
 
     // Setup Dear ImGui style

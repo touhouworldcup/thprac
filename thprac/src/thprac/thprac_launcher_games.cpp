@@ -319,6 +319,8 @@ static bool LauncherRunGame(LauncherInstance* inst, AFTER_LAUNCH afterLaunch) {
     case LAUNCH_CLOSE:
         PostQuitMessage(0);
         break;
+    case LAUNCH_NOTHING:
+        break;
     }
     
     return RunGame(utf8_to_utf16(inst->path).c_str(), nullptr, flags);
@@ -364,7 +366,7 @@ static void InitLauncherGame(LauncherGame* game, yyjson_val* json, APPLY_THPRAC_
 fresh_identify:
             ver = IdentifyExe(utf8_to_utf16(path).c_str());
             if (ver) {
-                ver_off = ver - game->versions;
+                ver_off = (uint8_t)(ver - game->versions);
             } else {
                 log_printf("Error: failed to identify version number for %s\r\n", path);
                 continue;
@@ -700,7 +702,6 @@ static bool DetailsPage(LauncherGame* game, char* instRenameBuf, AFTER_LAUNCH af
     }
     ImGui::NewLine();
 
-    
     auto* ver = game->versions + game->instances[game->selected].ver;
 
     if (ver->initFunc) {
@@ -708,7 +709,7 @@ static bool DetailsPage(LauncherGame* game, char* instRenameBuf, AFTER_LAUNCH af
         ImGui::SameLine();
     }
 
-    bool default_launch = game->default_launch == game->selected;
+    bool default_launch = (unsigned int)game->default_launch == game->selected;
     if (ImGui::Checkbox(S(THPRAC_GAMES_DEFAULT_LAUNCH), &default_launch)) {
         if (default_launch) {
             game->default_launch = game->selected;
@@ -1048,7 +1049,7 @@ static void ScanAddInstances(LauncherGame* game, FoundGame* found, size_t found_
         inst.name = _strdup(gThGameStrs[found[found_idx].info.ver->gameId]);
         inst.path = _strdup(found[found_idx].path);
         inst.type = found[found_idx].info.type;
-        inst.ver = found[found_idx].info.ver - game->versions;
+        inst.ver = (uint8_t)(found[found_idx].info.ver - game->versions);
         inst.apply_thprac = found[found_idx].info.ver->initFunc && apply_thprac;
 
         inst_idx++;

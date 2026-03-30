@@ -4,10 +4,12 @@
 #include "utils/wininternal.h"
 #include <d3d9.h>
 
+#include <limits.h>
+
 #include <algorithm>
 #include <vector>
 
-#include <ImGui.h>
+#include <imgui.h>
 
 #include "thprac_cfg.h"
 #include "thprac_log.h"
@@ -155,7 +157,7 @@ struct LauncherState {
     LauncherGame* randomShotGame = nullptr;
     bool shotChoices[32] = { true, true, true };
 
-    LinksIndexes linkSelected = { (size_t)-1, (size_t)-1 };
+    LinksIndexes linkSelected = { SIZE_MAX, SIZE_MAX };
     char linkEditTitleBuf[1024] = {};
     char linkEditLinkBuf[1024] = {};
     bool linkNameWarn = false;

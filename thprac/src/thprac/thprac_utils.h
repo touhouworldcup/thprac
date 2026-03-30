@@ -90,79 +90,10 @@ static uint8_t utf8_len[8] = {
 // Advance a string by one UTF-8 codepoint
 // Return false if utf8_param doesn't double point at a valud UTF-8 sequence
 // Has an out parameter for the codepoint too, just in case
-inline bool utf8_adv(const char** utf8_param, const char* end, uint32_t* out) {
-    const char* s = *utf8_param;
-    unsigned char byte = *(unsigned char*)s;
-
-    DWORD n;
-    if (byte < 0x80) {
-        if (out) {
-            *out = byte;
-        }
-        (*utf8_param)++;
-        return true;
-    }
-    auto len = utf8_len[(byte >> 4) & 7];
-    // If the first 4 bits from the left are 1,
-    // the one after MUST be 0
-    if (len == 4 && byte & 8) {
-        return false;
-    }
-    if (len == 0) {
-        return false;
-    }
-    if (s + len > end) {
-        return false;
-    }
-
-    uint32_t cp = byte & (0x7F >> len);
-    for (uint32_t i = 1; i < len; ++i) {
-        unsigned char c = (unsigned char)s[i];
-        // continuation byte must be 10xxxxxx
-        if ((c & 0xC0) != 0x80) {
-            return false;
-        }
-        cp = (cp << 6) | (c & 0x3F);
-    }
-
-    // YOUR      LONG
-    static const uint32_t min_cp[5] = { 0, 0, 0x80, 0x800, 0x10000 };
-    if (cp < min_cp[len]) {
-        return false;
-    }
-    if (out) {
-        *out = cp;
-    }
-    *utf8_param += len;
-    return true;
-}
+bool utf8_adv(const char** utf8_param, const char* end, uint32_t* out);
 
 // Convert one UTF-8 character to UTF-16 and advance both pointers by the correct amount of bytes
-inline bool utf8_utf16_adv(const char** utf8_param, const char* end, wchar_t** utf16_param, wchar_t* utf16_end) {
-    uint32_t cp;
-    if (!utf8_adv(utf8_param, end, &cp)) {
-        return false;
-    }
-    wchar_t* out = *utf16_param;
-
-    if (cp <= 0xFFFF) {
-        if (out >= utf16_end) {
-            return false;
-        }
-        *out++ = (uint16_t)cp;
-    } else {
-        if (out + 1 >= utf16_end) {
-            return false;
-        }
-        cp -= 0x10000;
-        out[0] = 0xD800 | (cp >> 10);
-        out[1] = 0xDC00 | (cp & 0x3FF);
-        out += 2;
-    }
-
-    *utf16_param = out;
-    return true;
-}
+bool utf8_utf16_adv(const char** utf8_param, const char* end, wchar_t** utf16_param, wchar_t* utf16_end);
 
 void ingame_mb_init();
 #pragma endregion

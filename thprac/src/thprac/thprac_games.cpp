@@ -88,7 +88,7 @@ HRESULT IDirectInputDevice8_GetDeviceState_Hook(IDirectInputDevice8A* This, DWOR
     Ranges<long> di_range = { -1000, 1000, -1000, 1000 };
 
     bool ret_map = false;
-    for (int i = 0; i < elementsof(js->rgdwPOV) && !ret_map; i++) {
+    for (unsigned i = 0; i < elementsof(js->rgdwPOV) && !ret_map; i++) {
         ret_map = pov_to_xy(js->lX, js->lY, di_range, js->rgdwPOV[i]);
     }
     return res;
@@ -1080,7 +1080,7 @@ void* yyjson_string_alc_alloc(void* ctx, size_t size) {
     return str->data();
 }
 
-void* yyjson_string_alc_realloc(void* ctx, void* ptr, size_t old_size, size_t size) {
+void* yyjson_string_alc_realloc(void* ctx, [[maybe_unused]] void* ptr, [[maybe_unused]] size_t old_size, [[maybe_unused]] size_t size) {
     auto* str = (std::string*)ctx;
     if (size > old_size) {
         str->append(size - old_size, 0);
@@ -1090,7 +1090,7 @@ void* yyjson_string_alc_realloc(void* ctx, void* ptr, size_t old_size, size_t si
     return str->data();
 }
 
-void yyjson_string_alc_free(void* ctx, void* ptr) { };
+void yyjson_string_alc_free([[maybe_unused]] void* ctx, [[maybe_unused]] void* ptr) {};
 #pragma endregion
 
 

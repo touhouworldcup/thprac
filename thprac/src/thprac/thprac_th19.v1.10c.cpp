@@ -117,9 +117,9 @@ namespace V1_10c {
         void GameplaySet()
         {
         }
-
+#ifndef _DEBUG
         bool perf_fix = false;
-
+#endif
     public:
         THAdvOptWnd() noexcept
         {

@@ -581,7 +581,7 @@ namespace TH07 {
             } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th07.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th07.dll", hash);
-                if (hash[0] != 9678734212472211387ll || hash[1] != 9671871756369193188ll)
+                if (hash[0] != 9678734212472211387ull || hash[1] != 9671871756369193188ull)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
                     mOptCtx.fps_status = 2;

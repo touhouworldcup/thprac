@@ -61,12 +61,8 @@ namespace TH12 {
 
         static constexpr const size_t dmg_src_elem_count = sizeof(PlayerDamageSource) / sizeof(int32_t);
 
-        void Reset()
-        {
-            for (size_t st = 0; st < elementsof(reimuADmgSrcs); ++st)
-                reimuADmgSrcs[st].clear();
-
-            memset(this, 0, sizeof(THPracParam));
+        void Reset() {
+            *this = {};
         }
         bool ReadJson(std::string& json)
         {
@@ -472,8 +468,9 @@ namespace TH12 {
                 break;
             case 3:
                 mRepStatus = true;
-                if (mParamStatus)
-                    memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
+                if (mParamStatus) {
+                    thPracParam = mRepParam;
+                }
                 break;
             default:
                 break;
@@ -610,7 +607,7 @@ namespace TH12 {
             } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th12.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th12.dll", hash);
-                if (hash[0] != 666604866657820391ll || hash[1] != 18391463919001639953ll)
+                if (hash[0] != 666604866657820391ull || hash[1] != 18391463919001639953ull)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {
                     mOptCtx.fps_status = 2;
@@ -1707,7 +1704,7 @@ namespace TH12 {
 
         else if (stageNum > 1 && stageNum <= 6 && !(GetMemContent(MODEFLAGS) & 0b10000)) {
             if (THGuiRep::singleton().mRepStatus) { // Playback
-                for (int i = 0; i < playerDmgSrcCnt; i++) // if there are already active sources, its a transition - skip
+                for (uint32_t i = 0; i < playerDmgSrcCnt; i++) // if there are already active sources, its a transition - skip
                     if (player->damage_sources[i].flags & 1)
                         return;
 
@@ -1720,7 +1717,7 @@ namespace TH12 {
                         player->damage_sources[curSrcIndex++] = stageSrcs[i];
                 }
             } else { // Recording
-                for (int i = 0; i < playerDmgSrcCnt; i++)
+                for (uint32_t i = 0; i < playerDmgSrcCnt; i++)
                     if (player->damage_sources[i].flags & 1) // (erroneously) active damage source
                         thPracParam.reimuADmgSrcs[stageNum - 2].push_back(player->damage_sources[i]);
             }

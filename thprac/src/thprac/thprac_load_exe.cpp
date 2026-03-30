@@ -372,7 +372,7 @@ uintptr_t LoadRemoteLibrary(HANDLE hProcess, const wchar_t* libName) {
     DWORD byteRet;
     WriteProcessMemory(hProcess, rBuf, libName, l_Len, &byteRet);
 
-    HANDLE hrThread = CreateRemoteThread(hProcess, nullptr, 0, (LPTHREAD_START_ROUTINE)LoadLibraryW, rBuf, 0, nullptr);
+    HANDLE hrThread = CreateRemoteThread(hProcess, nullptr, 0, (LPTHREAD_START_ROUTINE)(UINT_PTR)LoadLibraryW, rBuf, 0, nullptr);
     if (!hrThread) {
         return 0;
     }

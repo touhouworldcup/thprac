@@ -308,7 +308,7 @@ namespace THPrac
                     ImGui::PushID(i);
                     bool ticked = (chord >> i) & 1;
                     if (ImGui::Checkbox(ChordKeyStrings[i], &ticked)) {
-                        chord ^= (-ticked ^ chord) & (1 << i);
+                        chord ^= (-((int)ticked) ^ chord) & (1 << i);
                     }
                     ImGui::PopID();
                 }

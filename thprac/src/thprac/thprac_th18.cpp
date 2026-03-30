@@ -150,7 +150,7 @@ namespace TH18 {
         int32_t __array_3[0x100]; //0x858
         char filler_3160[0xc]; //0xc58
         int32_t __created_ability_txt; //0xc64
-        struct Thread __thread; //0xc68
+        Thread thread; //0xc68
         int32_t bought_flags[0x40]; //0xc84
     };
 
@@ -1666,10 +1666,10 @@ namespace TH18 {
                 auto& guiReplay = THGuiRep::singleton();
                 uint32_t finalScore = guiReplay.mSelectedRepScores[guiReplay.mSelectedRepEndStage];
 
-                if (!scoreUncapChkbox) ImGui::TextDisabled(S(TH18_CS_REPFIX_NO_UNCAP));
-                else if (!finalScore) ImGui::TextDisabled(S(TH_REPFIX_SELECTED_NONE));
-                else if (finalScore < COUNTERSTOP) ImGui::TextDisabled(S(TH18_CS_REPFIX_SELECTED_NO_CS));
-                else if (finalScore > COUNTERSTOP) ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                if (!scoreUncapChkbox) ImGui::TextDisabled("%s", S(TH18_CS_REPFIX_NO_UNCAP));
+                else if (!finalScore) ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_NONE));
+                else if (finalScore < COUNTERSTOP) ImGui::TextDisabled("%s", S(TH18_CS_REPFIX_SELECTED_NO_CS));
+                else if (finalScore > COUNTERSTOP) ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_ALREADY_FIXED));
                 else {
                     ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mSelectedRepName.c_str());
                     const uint32_t curStage = GetMemContent(RVA(STAGE_NUM));
@@ -1704,18 +1704,18 @@ namespace TH18 {
                             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.9f, 0.3f, 1.0f));
                             ImGui::TextUnformatted(FormatNumberWithCommas(((int64_t)stScoreOverwrite * 10), num_with_commas_buf));
                             ImGui::PopStyleColor();
-                            if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH18_CS_REPFIX_READY_HINT));
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", S(TH18_CS_REPFIX_READY_HINT));
 
                         } else if (stScore == COUNTERSTOP) {
                             if (guiReplay.mRepStatus && (curStage == st || inTransition) && curScore && !startedOnCS) {
                                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.9f, 0.3f, 1.0f));
                                 ImGui::TextUnformatted(FormatNumberWithCommas(((int64_t)curScore * 10), num_with_commas_buf));
                                 ImGui::PopStyleColor();
-                                if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH18_CS_REPFIX_RECORDING_HINT));
+                                if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", S(TH18_CS_REPFIX_RECORDING_HINT));
 
                             } else {
                                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.3f, 0.3f, 1.0f));
-                                ImGui::Text(S(TH_TYPE_UNKOWN));
+                                ImGui::TextUnformatted(S(TH_TYPE_UNKOWN));
                                 ImGui::PopStyleColor();
                                 if (ImGui::IsItemHovered())
                                     ImGui::SetTooltip(S(firstStageCS == st ? TH18_CS_REPFIX_FIRST_UNKNOWN_HINT
@@ -1811,10 +1811,10 @@ namespace TH18 {
                             ImGui::PopID();
 
                         } else {
-                            ImGui::TextDisabled(S(TH18_AC_REPFIX_NOTHING));
+                            ImGui::TextDisabled("%s", S(TH18_AC_REPFIX_NOTHING));
                         }
                     } else {
-                        ImGui::TextDisabled(S(TH_REPFIX_SELECTED_NONE));
+                        ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_NONE));
                     }
                 }
 
@@ -1985,7 +1985,7 @@ namespace TH18 {
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (parentWidth - size * textWidth) * 0.5f);
 
             if (size != 1.0f) ResizedText(text, size);
-            else ImGui::Text(text);
+            else ImGui::TextUnformatted(text);
         }
 
         void ResizedText(const char* text, float size = 1.0f)
@@ -2000,7 +2000,7 @@ namespace TH18 {
                 ImGui::SetWindowFontScale(size);
             }
 
-            ImGui::Text(text);
+            ImGui::TextUnformatted(text);
 
             if (size != 1.0f)
                 ImGui::SetWindowFontScale(1.0f);
@@ -2065,7 +2065,7 @@ namespace TH18 {
 
             ImGui::Dummy(ImVec2(20.0f * scaleX, 0));
             ImGui::SameLine();
-            ImGui::Text(S(header_tag));
+            ImGui::TextUnformatted(S(header_tag));
             if (!saveManip) {
                 if (buyCount < cardCount - 1) {
                     ImGui::SameLine();
@@ -2121,7 +2121,7 @@ namespace TH18 {
                 ImGui::EndDisabled(saveManip && game_thread);
                 ImGui::PopID();
                 if (ImGui::IsItemHovered()) {
-                    if (saveManip && game_thread) ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_RUN));
+                    if (saveManip && game_thread) ImGui::SetTooltip("%s", S(TH18_SAVEFILE_MANIP_RUN));
                     else ImGui::SetTooltip(S(TH18_MARKET_MANIP_CARD_HINT), S(TH18_CARD_LIST[cd->card_id]));
                 }
 
@@ -2136,14 +2136,14 @@ namespace TH18 {
                         ImGui::PopStyleColor();
 
                     if (ImGui::IsItemHovered()) {
-                        if (boughtBefore) ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_BOUGHT_HINT));
+                        if (boughtBefore) ImGui::SetTooltip("%s", S(TH18_SAVEFILE_MANIP_BOUGHT_HINT));
                         else if (cd->appearance_condition) {
                             if (cd->appearance_condition <= 5)
                                 ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_STG_HINT), cd->appearance_condition);
                             else
-                                ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_HINT));
+                                ImGui::SetTooltip("%s", S(TH18_MARKET_MANIP_LOCKED_HINT));
                         }
-                        else ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_NEW_HINT));
+                        else ImGui::SetTooltip("%s", S(TH18_SAVEFILE_MANIP_NEW_HINT));
                     }
 
                 } else {
@@ -2183,7 +2183,7 @@ namespace TH18 {
 
                     if (ImGui::IsItemHovered()) {
                         if (boughtCurrent)
-                            ImGui::SetTooltip(S(TH18_MARKET_MANIP_BOUGHT_FLAG_HINT));
+                            ImGui::SetTooltip("%s", S(TH18_MARKET_MANIP_BOUGHT_FLAG_HINT));
 
                         else if (!boughtBefore && !cd->appearance_condition && !shouldBuy)
                             ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_BOOST_HINT), S(TH18_CARD_LIST[cd->card_id]));
@@ -2191,7 +2191,7 @@ namespace TH18 {
                         else if (cd->appearance_condition && !shouldBuy && !(boughtBefore && !isStageUnlock)) {
                             if (boughtBefore) ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_STG_HINT), S(TH18_CARD_LIST[cd->card_id]), cd->appearance_condition);
                             else if (isStageUnlock) ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_STG_HINT), cd->appearance_condition);
-                            else ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_HINT));
+                            else ImGui::SetTooltip("%s", S(TH18_MARKET_MANIP_LOCKED_HINT));
                         }
                         else ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_HINT), S(TH18_CARD_LIST[cd->card_id]));
                     }
@@ -2199,7 +2199,7 @@ namespace TH18 {
 
                     CenteredText(shouldBuy ? S(TH18_MARKET_MANIP_BUY) : S(TH18_MARKET_MANIP_KEEP), cardWidth);
                     if (ImGui::IsItemHovered())
-                        ImGui::SetTooltip(S(shouldBuy ? TH18_MARKET_MANIP_BUY_HINT : TH18_MARKET_MANIP_KEEP_HINT));
+                        ImGui::SetTooltip("%s", S(shouldBuy ? TH18_MARKET_MANIP_BUY_HINT : TH18_MARKET_MANIP_KEEP_HINT));
                 }
 
                 // Padding & border math
@@ -2360,7 +2360,7 @@ namespace TH18 {
                         ImGui::SetClipboardText(buffer);
                     }
                     if (ImGui::IsItemHovered())
-                        ImGui::SetTooltip(S(TH18_MARKET_MANIP_COPY_CODE_HINT));
+                        ImGui::SetTooltip("%s", S(TH18_MARKET_MANIP_COPY_CODE_HINT));
 
                     ImGui::SameLine();
                     if (ImGui::Button(S(TH18_MARKET_MANIP_PASTE_CODE))) {
@@ -2372,14 +2372,14 @@ namespace TH18 {
                             log_mbox(*(HWND*)WINDOW_PTR, MB_ICONERROR | MB_OK, S(TH18_MARKET_MANIP_PASTE_ERROR_TITLE), S(TH18_MARKET_MANIP_PASTE_ERROR));
                     }
                     if (ImGui::IsItemHovered())
-                        ImGui::SetTooltip(S(TH18_MARKET_MANIP_PASTE_CODE_HINT));
+                        ImGui::SetTooltip("%s", S(TH18_MARKET_MANIP_PASTE_CODE_HINT));
 
                     ImGui::SameLine();
                     if (restartResetMarket) ImGui::BeginDisabled();
                     ImGui::Checkbox(S(TH18_MARKET_MANIP_AUTO_RESTART), &manipAutoRestart);
                     if (restartResetMarket) {
                         ImGui::EndDisabled();
-                        if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH18_RESTART_SETTINGS_CONFLICT));
+                        if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", S(TH18_RESTART_SETTINGS_CONFLICT));
                     }
                     ImGui::SameLine();
                     Gui::HelpMarker(S(TH18_MARKET_MANIP_AUTO_RESTART_DESC));
@@ -2408,7 +2408,7 @@ namespace TH18 {
                 ImGui::Checkbox(S(TH18_RESTART_RESET_MARKET), &restartResetMarket);
                 if (manipAutoRestart) {
                     ImGui::EndDisabled();
-                    if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH18_RESTART_SETTINGS_CONFLICT));
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", S(TH18_RESTART_SETTINGS_CONFLICT));
                 }
 
                 EndOptGroup();
@@ -2424,14 +2424,14 @@ namespace TH18 {
                 }
                 if (game_thread) {
                     ImGui::EndDisabled();
-                    if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_RUN));
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", S(TH18_SAVEFILE_MANIP_RUN));
                 } else {
                     const uint32_t cur_global_frame = GetMemContent(ASCII_MANAGER_PTR, 0x1925c);
                     static uint32_t last_non_hover_frame = cur_global_frame;
 
                     if (ImGui::IsItemHovered()) {
                         if (cur_global_frame > last_non_hover_frame + 60)
-                            ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_CHIMATA));
+                            ImGui::SetTooltip("%s", S(TH18_SAVEFILE_MANIP_CHIMATA));
                     } else
                         last_non_hover_frame = cur_global_frame;
                 }
@@ -2445,7 +2445,7 @@ namespace TH18 {
                 if (game_thread) {
                     ImGui::EndDisabled();
                     if (ImGui::IsItemHovered())
-                        ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_RUN));
+                        ImGui::SetTooltip("%s", S(TH18_SAVEFILE_MANIP_RUN));
                 }
 
                 ImGui::SameLine();
@@ -2462,7 +2462,7 @@ namespace TH18 {
                 if (game_thread) {
                     ImGui::EndDisabled();
                     if (ImGui::IsItemHovered())
-                        ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_FREEZE_RUN));
+                        ImGui::SetTooltip("%s", S(TH18_SAVEFILE_MANIP_FREEZE_RUN));
                 }
                 ImGui::SameLine();
                 Gui::HelpMarker(S(TH18_SAVEFILE_MANIP_FREEZE_DESC));
@@ -2604,7 +2604,7 @@ namespace TH18 {
     constexpr unsigned int st5PostMaple = 0x96ec;
     constexpr unsigned int st6PostMaple = 0x7e70;
     constexpr unsigned int st7PostMaple = 0xa8fc;
-    constexpr unsigned int stdInterruptSize = 0x14;
+    //constexpr unsigned int stdInterruptSize = 0x14;
     __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
     {
         if (stage == 1) {
@@ -3949,7 +3949,7 @@ namespace TH18 {
                         ((CardLily*)card)->count += thPracParam.lily_cycle + 2;
                 }
 
-                tracker_info.th18.active_uses[7] = ((CardLily*)card)->count;
+                tracker_info.th18.active_uses[7] = (uint8_t)((CardLily*)card)->count;
                 R(lily_cd);
                 break;
             case BASSDRUM:
@@ -4034,7 +4034,7 @@ namespace TH18 {
 
         for (ThList<CardBase>* cl = &abilityManager->card_list_head; cl; cl = cl->next) {
             if (cl->entry->card_id == 48) {
-                tracker_info.th18.active_uses[7] = ((CardLily*)cl->entry)->count;
+                tracker_info.th18.active_uses[7] = (uint8_t)((CardLily*)cl->entry)->count;
                 break;
             }
         }

@@ -103,7 +103,7 @@ void SaveLinksJson(std::vector<LinkSet>& linkSets) {
 }
 
 void LinksAddSet(std::vector<LinkSet>& linkSets, size_t pos, const char* name) {
-    if (pos == -1) {
+    if (pos == SIZE_MAX) {
         linkSets.emplace_back().name = name;
     } else {
         linkSets.emplace(linkSets.begin() + pos)->name = name;
@@ -118,7 +118,7 @@ void LinkSetAddLink(LinkSet& set, size_t pos, const char* name, const char* link
             return;
         }
     }
-    if (pos == -1) {
+    if (pos == SIZE_MAX) {
         set.links.emplace_back() = { name, link };
     } else {
         *set.links.emplace(set.links.begin() + pos) = { name, link };

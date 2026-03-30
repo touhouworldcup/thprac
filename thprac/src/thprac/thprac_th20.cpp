@@ -183,7 +183,7 @@ namespace TH20 {
             for (size_t st = 0; st < elementsof(rogueDmgSrcs); ++st)
                 rogueDmgSrcs[st].clear();
 
-            memset(this, 0, sizeof(THPracParam));
+            *this = {};
         }
         bool ReadJson(std::string& json)
         {
@@ -1195,7 +1195,7 @@ namespace TH20 {
             if (disabled) {
                 ImGui::EndDisabled();
                 if (ImGui::IsItemHovered())
-                    ImGui::SetTooltip(S(hint));
+                    ImGui::SetTooltip("%s", S(hint));
                 if (keepDisabled) ImGui::BeginDisabled();
             }
         }
@@ -1265,7 +1265,7 @@ namespace TH20 {
                         if (THGuiRep::singleton().mRepStatus) {
                             ImGui::EndDisabled();
                             if (ImGui::IsItemHovered())
-                                ImGui::SetTooltip(S(TH20_MAINRPYFIX_TIMERS_FIX_DISABLE_HINT));
+                                ImGui::SetTooltip("%s", S(TH20_MAINRPYFIX_TIMERS_FIX_DISABLE_HINT));
                         }
 
                         ImGui::SameLine();
@@ -1341,9 +1341,9 @@ namespace TH20 {
                         if (mainRpyFixDisableSave) {
                             ImGui::EndDisabled();
                             if (ImGui::IsItemHovered()) {
-                                if (!startedOnSt1) ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_NO_ST1_HINT));
+                                if (!startedOnSt1) ImGui::SetTooltip("%s", S(TH20_MAINRPYFIX_SAVE_NO_ST1_HINT));
                                 else if (remainingTransitions) ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_PROGRESS_HINT), remainingTransitions, remainingTransitions > 1 ? "s" : "");
-                                else ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_SKIPPED_STAGE_HINT));
+                                else ImGui::SetTooltip("%s", S(TH20_MAINRPYFIX_SAVE_SKIPPED_STAGE_HINT));
                             }
                         } else if (saveClicked) {
                             THPracParam newRepParam = THGuiRep::singleton().mRepParam;
@@ -1365,7 +1365,7 @@ namespace TH20 {
                         if (advFixTimerOffsets) ImGui::Columns(1);
 
                     } else {
-                        ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                        ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_ALREADY_FIXED));
                         ImGui::SameLine();
 
                         if (ImGui::Button(S(TH_REPFIX_RESET_DATA))) {
@@ -1383,8 +1383,8 @@ namespace TH20 {
                     }
                 } else {
                     if (THGuiRep::singleton().mSelectedRepStartStage >= 1 && THGuiRep::singleton().mSelectedRepEndStage <= 6)
-                         ImGui::TextDisabled(S(TH20_MAINRPYFIX_SELECTED_NO_TRANSITIONS));
-                    else ImGui::TextDisabled(S(TH_REPFIX_MAIN_SELECTED_NONE));
+                         ImGui::TextDisabled("%s", S(TH20_MAINRPYFIX_SELECTED_NO_TRANSITIONS));
+                    else ImGui::TextDisabled("%s", S(TH_REPFIX_MAIN_SELECTED_NONE));
                 }
 
                 // Extra replay fix
@@ -1430,7 +1430,7 @@ namespace TH20 {
                         DisableTooltip(extraResFixDisableSave, TH20_EXRESFIX_SAVE_DISABLE_HINT, false);
 
                     } else {
-                        ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                        ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_ALREADY_FIXED));
                         ImGui::SameLine();
                         if (ImGui::Button(S(TH_REPFIX_RESET_DATA))) {
                             THPracParam newRepParam = THGuiRep::singleton().mRepParam;
@@ -1440,7 +1440,7 @@ namespace TH20 {
                         }
                     }
                 }
-                else ImGui::TextDisabled(S(TH_REPFIX_EXTRA_SELECTED_NONE));
+                else ImGui::TextDisabled("%s", S(TH_REPFIX_EXTRA_SELECTED_NONE));
 
                 // Expired pyramid bug replay fix
                 ImGui::Separator();
@@ -1544,7 +1544,7 @@ namespace TH20 {
                                 DisableTooltip(true, TH20_EXPSTONEFIX_SAVE_USE_MAINRPYFIX_HINT, false);
 
                         } else {
-                            ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                            ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_ALREADY_FIXED));
                             ImGui::SameLine();
                             if (ImGui::Button(S(TH_REPFIX_RESET_DATA2))) {
                                 THPracParam newRepParam = THGuiRep::singleton().mRepParam;
@@ -1554,7 +1554,7 @@ namespace TH20 {
                                 CloneWithParamsAndRefresh(newRepParam);
                             }
                         }
-                    } else ImGui::TextDisabled(S(TH_REPFIX_SELECTED_NONE));
+                    } else ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_NONE));
                 }
 
                 EndOptGroup();

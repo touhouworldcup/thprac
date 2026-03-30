@@ -34,12 +34,7 @@ bool PrivilegeCheck() {
     return ret;
 }
 
-int WINAPI wWinMain(
-    _In_ HINSTANCE hInstance,
-    _In_opt_ HINSTANCE hPrevInstance,
-    _In_ PWSTR pCmdLine,
-    _In_ int nCmdShow)
-{
+int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
     InitConfigDir();
     LoadSettings();
 

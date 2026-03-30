@@ -527,7 +527,7 @@ namespace TH128 {
             } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th128.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th128.dll", hash);
-                if (hash[0] != 14796143656184423751ll || hash[1] != 15800222838538749590ll)
+                if (hash[0] != 14796143656184423751ull || hash[1] != 15800222838538749590ull)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {
                     mOptCtx.fps_status = 2;

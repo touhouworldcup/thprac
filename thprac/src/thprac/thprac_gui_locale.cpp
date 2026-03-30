@@ -427,7 +427,7 @@ static ImWchar baseUnicodeRanges[] =
                     int codepoint = 0x4e00;
                     memcpy(__glocale_jp_glyphrange, baseUnicodeRanges, sizeof(baseUnicodeRanges));
                     ImWchar* dst = __glocale_jp_glyphrange + _countof(baseUnicodeRanges);
-                    for (int n = 0; n < _countof(offsetsFrom0x4E00); n++, dst += 2) {
+                    for (unsigned n = 0; n < _countof(offsetsFrom0x4E00); n++, dst += 2) {
                         dst[0] = dst[1] = (ImWchar)(codepoint += (offsetsFrom0x4E00[n] + 1));
                     }
                     dst[0] = 0;

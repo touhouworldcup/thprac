@@ -913,7 +913,7 @@ namespace TH14 {
                     uint64_t hash[2];
                     CalcFileHash(L"vpatch_th14.dll", hash);
 
-                    bool vp_valid = hash[0] == 16763243947833835441ll && hash[1] == 14013686233300952408ll;
+                    bool vp_valid = hash[0] == 16763243947833835441ull && hash[1] == 14013686233300952408ull;
                     if (hash[0] == 5864489015760801383ll && hash[1] == 8525349857717864816ll) {
                         vp_valid = true;
                         if (MessageBoxW(

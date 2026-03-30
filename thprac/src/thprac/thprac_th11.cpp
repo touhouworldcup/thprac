@@ -577,7 +577,7 @@ namespace TH11 {
             } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th11.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th11.dll", hash);
-                if (hash[0] != 5913416708557704950ll || hash[1] != 10824003281749047314ll)
+                if (hash[0] != 5913416708557704950ull || hash[1] != 10824003281749047314ull)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {
                     mOptCtx.fps_status = 2;

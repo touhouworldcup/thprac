@@ -6,6 +6,14 @@ namespace TH10 {
     constexpr const char* chars_supported = "!\"#$%&' ()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
     int g_rep_page = 0;
 
+    struct th10_std {
+        int32_t time;
+        int16_t ins;
+        int16_t length;
+        int32_t param1;
+        int32_t param2;
+    };
+
     enum ADDRS {
         SOUND_MANAGER_ADDR = 0x492590,
         DIFF_ADDR = 0x474C74,
@@ -553,7 +561,7 @@ namespace TH10 {
             } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th10.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th10.dll", hash);
-                if (hash[0] != 9704945468076323108ll || hash[1] != 99312983382598050ll)
+                if (hash[0] != 9704945468076323108ull || hash[1] != 99312983382598050ull)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {
                     mOptCtx.fps_status = 2;
@@ -709,17 +717,9 @@ namespace TH10 {
 
 #undef ANMChangeWord
     }
-    void* THStage4STD(int32_t time_delta)
-    {
+    void* THStage4STD(int32_t time_delta) {
         int8_t* buffer = (int8_t*)GetMemContent(0x4776e8, 0x10);
 
-        struct th10_std {
-            int32_t time;
-            int16_t ins;
-            int16_t length;
-            int32_t param1;
-            int32_t param2;
-        };
         union {
             th10_std* p_std;
             int8_t* p_int8;
@@ -728,7 +728,7 @@ namespace TH10 {
         std.p_int8 = buffer;
         std.p_int8 += 0x5e0;
 
-        while (std.p_std->time != 0xffffffff) {
+        while (std.p_std->time != -1) {
             if (std.p_std->ins == 1) {
                 auto jmp_time = std.p_std->param2;
                 std.p_std->param2 = (jmp_time - time_delta >= 0) ? jmp_time - time_delta : 0;
@@ -774,18 +774,10 @@ namespace TH10 {
         return nullptr;
 #undef ANMChangeWord
     }
-    void* THStage6STD()
-    {
+    void* THStage6STD() {
         int8_t* buffer = (int8_t*)GetMemContent(0x4776e8, 0x10);
 
         if (thPracParam.mode == 1 && thPracParam.section >= TH10_ST6_BOSS1 && thPracParam.section <= TH10_ST6_BOSS9) {
-            struct th10_std {
-                int32_t time;
-                int16_t ins;
-                int16_t length;
-                int32_t param1;
-                int32_t param2;
-            };
             union {
                 th10_std* p_std;
                 int8_t* p_int8;
@@ -794,7 +786,7 @@ namespace TH10 {
             std.p_int8 = buffer;
             std.p_int8 += 0x994;
 
-            while (std.p_std->time != 0xffffffff) {
+            while (std.p_std->time != -1) {
                 if (std.p_std->ins == 1) {
                     auto jmp_time = std.p_std->param2;
                     std.p_std->param2 = (jmp_time - 3487 >= 0) ? jmp_time - 3487 : 0;

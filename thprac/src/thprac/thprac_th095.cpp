@@ -99,7 +99,7 @@ namespace TH095 {
             } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th095.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th095.dll", hash);
-                if (hash[0] != 11971022730696137433ll || hash[1] != 6069366661305861631ll)
+                if (hash[0] != 11971022730696137433ull || hash[1] != 6069366661305861631ull)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1c024) == 0) {
                     mOptCtx.fps_status = 2;

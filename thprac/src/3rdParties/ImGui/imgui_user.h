@@ -13,16 +13,13 @@ namespace ImGui
 	bool BeginComboAlt(const char* label, const char* preview_value, ImGuiComboFlags flags = 0);
 
 	template<typename T>
-	bool ComboSections(const char* label, int* current_item, T* selector, const char** items, const char* skip)
-	{
+	bool ComboSections(const char* label, int* current_item, T* selector, const char** items, const char* skip) {
 		if (!selector[0])
 		{
 			if (!(*current_item)) return false;
 			*current_item = 0;
 			return true;
 		}
-
-		ImGuiContext& g = *ImGui::GetCurrentContext();
 
 		// Call the getter to obtain the preview string which is a parameter to BeginCombo()
 		const char* preview_value = items[selector[*current_item]];
@@ -72,8 +69,6 @@ namespace ImGui
 			*current_item = 0;
 			return true;
 		}
-
-		ImGuiContext& g = *ImGui::GetCurrentContext();
 
 		// Call the getter to obtain the preview string which is a parameter to BeginCombo()
 		const char* preview_value = items[selector[*current_item]];

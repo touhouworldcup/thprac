@@ -792,7 +792,7 @@ namespace TH06 {
             } else if (mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th06.dll", hash);
-                if (hash[0] != 3665784961181135876ll || hash[1] != 9283021252209177490ll)
+                if (hash[0] != 3665784961181135876ull || hash[1] != 9283021252209177490ull)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
                     mOptCtx.fps_status = 2;
@@ -801,7 +801,7 @@ namespace TH06 {
             } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th06_unicode.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th06_unicode.dll", hash);
-                if (hash[0] != 5021620919341617817ll || hash[1] != 10919509441391235291ll)
+                if (hash[0] != 5021620919341617817ull || hash[1] != 10919509441391235291ull)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
                     mOptCtx.fps_status = 2;

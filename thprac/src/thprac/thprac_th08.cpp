@@ -663,7 +663,7 @@ namespace TH08 {
             } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th08.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th08.dll", hash);
-                if (hash[0] != 14324321420199198230ll || hash[1] != 10561235471127337137ll)
+                if (hash[0] != 14324321420199198230ull || hash[1] != 10561235471127337137ull)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
                     mOptCtx.fps_status = 2;
@@ -2330,7 +2330,7 @@ namespace TH08 {
         };
         tracker_info.th08.spells_captured++;
 
-        if (binary_search(last_spells, elementsof(last_spells), GetMemContent<uint32_t>(SPELLCARD_ID_ADDR)) != -1) {
+        if (binary_search(last_spells, elementsof(last_spells), GetMemContent<uint32_t>(SPELLCARD_ID_ADDR)) != UINT32_MAX) {
             tracker_info.th08.last_spells_captured++;
         }
     })
