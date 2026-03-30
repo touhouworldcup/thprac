@@ -26,52 +26,6 @@ inline bool LargeBottomButton(const char* text, float height, float offset = 0.0
     return ImGui::Button(text, { wnd_dim.x, height });
 }
 
-struct LauncherInstance {
-    // If type == TYPE_THCRAP this is passed as the runconfig to thcrap_loader
-    const char* path;
-    const char* name;
-    THGameType type;
-
-    // What version a game is is specific to the instance.
-    uint8_t ver = 0;
-    bool apply_thprac;
-    bool allow_oilp = true;
-    bool allow_vpatch = true;
-};
-
-struct LauncherGame {
-    THGameID id;
-    th_glossary_t title;
-    int default_launch = -1;
-    unsigned int selected = 0;
-
-    // Multiple versions for the same game are guaranteed to be sequential in memory,
-    // so this is safe.
-    const THGameVersion* versions;
-    size_t ver_count;
-
-    const wchar_t* appdataPath = nullptr;
-
-    // TODO: an std::vector would look a lot cleaner here, but I don't want the compiler
-    // to generate atexit destructors for this struct. If a custom dynamic array type is
-    // ever added, replace this with the custom array.
-    // Note: these are the only dynamic fields in this struct, everything else is known
-    // and provided at compile time.
-    size_t inst_count;
-    LauncherInstance* instances;
-
-    // For gamblers
-    th_glossary_t shots = A0000ERROR_C;
-    int shot_columns = 0;
-};
-
-constexpr unsigned int PC98_GAMES_LEN = 5;
-constexpr unsigned int MAIN_GAMES_LEN = 15;
-constexpr unsigned int SPINOFF_SHMUP_LEN = 7;
-constexpr unsigned int SPINOFF_OTHER_LEN = 7;
-constexpr unsigned int ALL_GAMES_LEN = PC98_GAMES_LEN + MAIN_GAMES_LEN + SPINOFF_SHMUP_LEN + SPINOFF_OTHER_LEN;
-constexpr unsigned int GAMES_LEN = ALL_GAMES_LEN - PC98_GAMES_LEN;
-
 static union {
 LauncherGame gamesAll[ID_TH_MAX - 1] = {
     {
@@ -342,62 +296,9 @@ struct {
 };
 };
 
-struct FoundGame {
-    // Stored as a char array because that's what ImGui uses for text output.
-    // The UTF-16 version is only needed once, to load the file to identify and hash it.
-    char path[MAX_PATH + 1] = {};
-    bool selected = false;
-    uint16_t oepCode[10];
-    THKnownGame info = {};
-};
-
-struct ScanCtx {
-    std::wstring scan_dir;
-    std::vector<FoundGame> found;
-    HANDLE scan_thread = NULL;
-    CRITICAL_SECTION found_cs = {};
-
-    size_t exes_found = 0;
-    size_t exes_scanned = 0;
-    size_t text_in_progress_bar_len = 0;
-    char text_in_progress_bar[MAX_PATH + 1] = {};
-
-    bool abort_message = false;
-    bool relative = false;
-
-    ScanCtx()
-    {
-        InitializeCriticalSection(&found_cs);
-    }
-    ~ScanCtx()
-    {
-        DeleteCriticalSection(&found_cs);
-    }
-};
-
-// Globals
-static LauncherGame* selectedGame = nullptr;
-static LauncherGame* hoveredGame = nullptr;
-constinit ScanCtx* scanCtx = nullptr;
-static char instRenameBuf[256] = {};
-static union {
-    bool choices[ALL_GAMES_LEN] = {};
-    struct {
-        bool pc98_choice[PC98_GAMES_LEN];
-        bool maingame_choice[MAIN_GAMES_LEN];
-        bool spinoff_shmup_choice[SPINOFF_SHMUP_LEN];
-        bool spinoff_other_choice[SPINOFF_OTHER_LEN];
-    };
-} randomGameChoices;
-static unsigned randomGameRoll = UINT_MAX;
-static unsigned randomShotRoll = UINT_MAX;
-static LauncherGame* randomShotGame = nullptr;
-static bool shotChoices[32] = { true, true, true };
-// ---
-
 yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
 
-static bool LauncherRunGame(LauncherInstance* inst) {
+static bool LauncherRunGame(LauncherInstance* inst, AFTER_LAUNCH afterLaunch) {
     SaveSettings();
 
     uint32_t flags = RUN_FLAG_SKIP_IDENTIFY;
@@ -411,7 +312,7 @@ static bool LauncherRunGame(LauncherInstance* inst) {
         flags |= RUN_FLAG_THPRAC;
     }
 
-    switch (launcherSettings.after_launch) {
+    switch (afterLaunch) {
     case LAUNCH_MINIMIZE:
         ShowWindow(Gui::ImplWin32GetHwnd(), SW_MINIMIZE);
         break;
@@ -423,7 +324,7 @@ static bool LauncherRunGame(LauncherInstance* inst) {
     return RunGame(utf8_to_utf16(inst->path).c_str(), nullptr, flags);
 }
 
-static void InitLauncherGame(LauncherGame* game, yyjson_val* json) {
+static void InitLauncherGame(LauncherGame* game, yyjson_val* json, APPLY_THPRAC_DEFAULT apply_thprac_default) {
     yyjson_val* insts = yyjson_obj_get(json, "instances");
     size_t insts_len = yyjson_arr_size(insts);
     if (!insts_len) {
@@ -475,7 +376,7 @@ fresh_identify:
 
             bool apply_thprac = false;
             if (ver->initFunc) {
-                switch (launcherSettings.apply_thprac_default) {
+                switch (apply_thprac_default) {
                 case APPLY_THPRAC_KEEP_STATE:
                     yyjson_eval_numeric(yyjson_obj_get(cur, "apply_thprac"), &apply_thprac);
                     break;
@@ -513,7 +414,7 @@ fresh_identify:
     yyjson_eval_numeric(yyjson_obj_get(json, "default_launch"), &game->default_launch);
 }
 
-void LoadGamesJson() {
+void LoadGamesJson(APPLY_THPRAC_DEFAULT apply_thprac_default) {
     wchar_t gamesJsonPath[MAX_PATH + 1] = {};
     memcpy(gamesJsonPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
     memcpy(gamesJsonPath + _gConfigDirLen, SIZED(L"games.json"));
@@ -535,7 +436,7 @@ void LoadGamesJson() {
 
         for (auto& game : games) {
             if (strcmp(gThGameStrs[game.id], keyReal) == 0) {
-                InitLauncherGame(&game, val);
+                InitLauncherGame(&game, val, apply_thprac_default);
             }
         }
     }
@@ -556,7 +457,7 @@ void SaveGamesJson() {
             yyjson_mut_val* inst = yyjson_mut_arr_add_obj(doc, insts);
             
             yyjson_mut_obj_add_str(doc, inst, "name", game.instances[i].name);
-            yyjson_mut_obj_add_int(doc, inst, "ver", game.instances[i].ver);
+            yyjson_mut_obj_add_int(doc, inst, "ver",  game.instances[i].ver);
             yyjson_mut_obj_add_int(doc, inst, "type", game.instances[i].type);
             yyjson_mut_obj_add_str(doc, inst, "path", game.instances[i].path);
             yyjson_mut_obj_add_bool(doc, inst, "apply_thprac", game.instances[i].apply_thprac);
@@ -635,10 +536,10 @@ void LaunchCustom(const wchar_t* dir, THGameType type) {
     }
 }
 
-static void DetailsPage(LauncherGame* game) {
+// TODO: how to get rid of the instRenameBuf parameter?
+static bool DetailsPage(LauncherGame* game, char* instRenameBuf, AFTER_LAUNCH after_launch) {
     if (ImGui::Button("Back")) {
-        selectedGame = nullptr;
-        return;
+        return false;
     }
 
     ImGui::SameLine();
@@ -746,8 +647,7 @@ static void DetailsPage(LauncherGame* game) {
                 DestroyInst(game->instances + 0);
                 game->instances = 0;
                 game->inst_count = 0;
-                selectedGame = nullptr;
-                return;
+                return false;
             } else if (game->selected == game->inst_count - 1) {
                 LauncherInstance& inst = game->instances[game->selected];
                 DestroyInst(&inst);
@@ -807,7 +707,7 @@ static void DetailsPage(LauncherGame* game) {
         ImGui::Checkbox(S(THPRAC_GAMES_APPLY_THPRAC), &game->instances[game->selected].apply_thprac);
         ImGui::SameLine();
     }
-    
+
     bool default_launch = game->default_launch == game->selected;
     if (ImGui::Checkbox(S(THPRAC_GAMES_DEFAULT_LAUNCH), &default_launch)) {
         if (default_launch) {
@@ -831,7 +731,7 @@ static void DetailsPage(LauncherGame* game) {
     }
 
     if (LargeBottomButton(S(THPRAC_GAMES_LAUNCH_GAME), 64.0f)) {
-        LauncherRunGame(game->instances + game->selected);
+        LauncherRunGame(game->instances + game->selected, after_launch);
     }
 
     if (Gui::Modal(S(THPRAC_GAMES_RENAME_MODAL))) {
@@ -849,6 +749,7 @@ static void DetailsPage(LauncherGame* game) {
         }
         ImGui::EndPopup();
     }
+    return true;
 }
 
 static bool GameAlreadyExists(const char* path) {
@@ -1103,11 +1004,11 @@ static DWORD WINAPI ScanThreadSteam(LPVOID lpParam) {
     std::vector<std::wstring> found_exe_names;
     SteamReadLibrary(scanCtx, (char*)f.fileMapView, f.fileSize, found_exe_names);
     scanCtx->exes_found = found_exe_names.size();
-    for (const auto& f : found_exe_names) {
+    for (const auto& found : found_exe_names) {
         if (scanCtx->abort_message) {
             break;
         }
-        ScanIdentifyGame(scanCtx, f.data(), f.length());
+        ScanIdentifyGame(scanCtx, found.data(), found.length());
         scanCtx->exes_scanned += 1;
     }
 
@@ -1120,9 +1021,10 @@ static LauncherGame* FindLauncherGameByID(THGameID id) {
             return &game;
         }
     }
+    return nullptr;
 }
 
-static void ScanAddInstances(LauncherGame* game, FoundGame* found, size_t found_count) {
+static void ScanAddInstances(LauncherGame* game, FoundGame* found, size_t found_count, bool apply_thprac) {
     size_t inst_count_prev = game->inst_count;
 
     for (size_t i = 0; i < found_count; i++) {
@@ -1147,13 +1049,13 @@ static void ScanAddInstances(LauncherGame* game, FoundGame* found, size_t found_
         inst.path = _strdup(found[found_idx].path);
         inst.type = found[found_idx].info.type;
         inst.ver = found[found_idx].info.ver - game->versions;
-        inst.apply_thprac = found[found_idx].info.ver->initFunc && launcherSettings.apply_thprac_default == APPLY_THPRAC_DEFAULT_OPEN;
+        inst.apply_thprac = found[found_idx].info.ver->initFunc && apply_thprac;
 
         inst_idx++;
     }
 }
 
-static void ScanResults(std::vector<FoundGame>& found) {
+static void ScanResults(std::vector<FoundGame>& found, bool apply_thprac) {
     if (!found.size()) {
         return;
     }
@@ -1163,12 +1065,12 @@ static void ScanResults(std::vector<FoundGame>& found) {
 
     for (size_t i = 1; i < found.size(); i++) {
         if (found[i].info.ver->gameId > cur_id) {
-            ScanAddInstances(FindLauncherGameByID(cur_id), found.data() + cur_idx, i - cur_idx);
+            ScanAddInstances(FindLauncherGameByID(cur_id), found.data() + cur_idx, i - cur_idx, apply_thprac);
             cur_idx = i;
             cur_id = found[i].info.ver->gameId;
         }
     }
-    ScanAddInstances(FindLauncherGameByID(cur_id), found.data() + cur_idx, found.size() - cur_idx);
+    ScanAddInstances(FindLauncherGameByID(cur_id), found.data() + cur_idx, found.size() - cur_idx, apply_thprac);
     return;
 }
 
@@ -1289,7 +1191,7 @@ void ProgressIndicator(float prog, const char* text, const char* textEnd = nullp
     drawList->PopClipRect();
 }
 
-static void ScanForGamesUI() {
+static bool ScanForGamesUI(ScanCtx* scanCtx, bool apply_thprac) {
     // WAIT_OBJECT_0: Scan thread finished.
     // WAIT_TIMEOUT: Scan thread is running
     // WAIT_FAILED: Scan thread does not exist
@@ -1299,9 +1201,7 @@ static void ScanForGamesUI() {
         scanCtx->abort_message = true;
         WaitForSingleObject(scanCtx->scan_thread, INFINITE);
         CloseHandle(scanCtx->scan_thread);
-        delete scanCtx;
-        scanCtx = nullptr;
-        return;
+        return false;
     }
     ImGui::SameLine();
     Gui::TextCentered(S(THPRAC_GAMES_SCAN_FOLDER), ImGui::GetWindowWidth());
@@ -1363,30 +1263,30 @@ static void ScanForGamesUI() {
         }
         ImGui::SameLine();
         if (Gui::ButtonRight("Finish", ImGui::GetWindowWidth())) {
-            ScanResults(scanCtx->found);
+            ScanResults(scanCtx->found, apply_thprac);
             CloseHandle(scanCtx->scan_thread);
-            delete scanCtx;
-            scanCtx = nullptr;
+            return false;
         }
     }
+    return true;
 }
  
-static void GameRightClickMenu(LauncherGame* game) {
+static void GameRightClickMenu(LauncherState* state, LauncherGame* game) {
     if (game) {
         if (ImGui::Selectable(S(THPRAC_GAMES_DETAILS_PAGE))) {
-            selectedGame = game;
+            state->selectedGame = game;
             ImGui::CloseCurrentPopup();
         }
         ImGui::Separator();
     }
 
     if(ImGui::Selectable(S(THPRAC_GAMES_SCAN_FOLDER))) {
-        scanCtx = new ScanCtx();
+        state->inScan = true;
         ImGui::CloseCurrentPopup();
     }
     if(ImGui::Selectable(S(THPRAC_STEAM_MNG_BUTTON))) {
-        scanCtx = new ScanCtx();
-        scanCtx->scan_thread = CreateThread(nullptr, 0, ScanThreadSteam, scanCtx, 0, nullptr);
+        state->inScan = true;
+        state->scanCtx.scan_thread = CreateThread(nullptr, 0, ScanThreadSteam, &state->scanCtx, 0, nullptr);
         ImGui::CloseCurrentPopup();
     }
     ImGui::Separator();
@@ -1395,27 +1295,27 @@ static void GameRightClickMenu(LauncherGame* game) {
     }
 }
 
-static inline void GamesList(LauncherGame* games, size_t count) {
+static inline void GamesList(LauncherState* state, LauncherGame* games_param, size_t count) {
     for (size_t i = 0; i < count; i++) {
-        auto& game = games[i];
+        auto& game = games_param[i];
         ImGui::Separator();
         if (!game.instances) {
             ImGui::BeginDisabled();
         }
         if (ImGui::Selectable(S(game.title))) {
             if (game.default_launch != -1) {
-                LauncherRunGame(game.instances + game.default_launch);
-            } else if (launcherSettings.auto_default_launch) {
-                LauncherRunGame(game.instances);
+                LauncherRunGame(game.instances + game.default_launch, state->settings.after_launch);
+            } else if (state->settings.auto_default_launch) {
+                LauncherRunGame(game.instances, state->settings.after_launch);
             } else {
-                selectedGame = &game;
+                state->selectedGame = &game;
             }
         }
         if (ImGui::IsItemHovered()) {
-            hoveredGame = &game;
+            state->hoveredGame = &game;
         }
-        if (&game == hoveredGame && ImGui::BeginPopupContextItem("##__game_context")) {
-            GameRightClickMenu(hoveredGame);
+        if (&game == state->hoveredGame && ImGui::BeginPopupContextItem("##__game_context")) {
+            GameRightClickMenu(state, state->hoveredGame);
             ImGui::EndPopup();
         }
         if (!game.instances) {
@@ -1424,12 +1324,12 @@ static inline void GamesList(LauncherGame* games, size_t count) {
     }
 }
 
-void RandomGameSetUI(const char* id, bool* choices, unsigned int choices_len, LauncherGame* games) {
+void RandomGameSetUI(const char* id, bool* choices, unsigned int choices_len, LauncherGame* games_param) {
     ImGui::BeginTable(id, 6);
     ImGui::TableNextRow();
     for (size_t i = 0; i < choices_len; i++) {
         ImGui::TableNextColumn();
-        ImGui::Checkbox(gThGameStrs[games[i].id], choices + i);
+        ImGui::Checkbox(gThGameStrs[games_param[i].id], choices + i);
     }
     ImGui::EndTable();
 }
@@ -1468,34 +1368,34 @@ static inline unsigned RollChoices(bool* choices, unsigned count) {
     return UINT_MAX;
 }
 
-void RandomShotRollUI() {
+void RandomShotRollUI(LauncherState* state) {
     if (ImGui::Button("Back")) {
-        toolFunc = nullptr;
+        state->toolFunc = nullptr;
     }
 
     ImGui::SameLine();
     Gui::TextCentered(S(THPRAC_TOOLS_RND_PLAYER), ImGui::GetWindowWidth());
     ImGui::Separator();
 
-    if (!randomShotGame) {
-        randomShotGame = gamesAll + 1;
+    if (!state->randomShotGame) {
+        state->randomShotGame = gamesAll + 1;
     }
 
     // Adjust if somehow ZUN makes a game with more than 32 shot types
     // Or maybe this method of implementing random shottype choice is a bad idea
     // Or maybe this whole screen is a bad idea.
      // th02 is the default game and it only has 3 shottypes
-    if (ImGui::BeginCombo(S(THPRAC_TOOLS_RND_PLAYER_GAME), gThGameStrs[randomShotGame->id])) {
+    if (ImGui::BeginCombo(S(THPRAC_TOOLS_RND_PLAYER_GAME), gThGameStrs[state->randomShotGame->id])) {
         for (size_t i = 0; i < ALL_GAMES_LEN; i++) {
             if (gamesAll[i].shots == A0000ERROR_C) {
                 continue;
             }
 
-            if (ImGui::Selectable(gThGameStrs[gamesAll[i].id], randomShotGame == (gamesAll + i))) {
-                randomShotGame = gamesAll + i;
-                memset(shotChoices, 0, 32);
-                memset(shotChoices, 1, ShotTypeCount(S(randomShotGame->shots)));
-                randomShotRoll = UINT_MAX;
+            if (ImGui::Selectable(gThGameStrs[gamesAll[i].id], state->randomShotGame == (gamesAll + i))) {
+                state->randomShotGame = gamesAll + i;
+                memset(state->shotChoices, 0, 32);
+                memset(state->shotChoices, 1, ShotTypeCount(S(state->randomShotGame->shots)));
+                state->randomShotRoll = UINT_MAX;
             }
         }
         ImGui::EndCombo();
@@ -1503,13 +1403,13 @@ void RandomShotRollUI() {
 
     ImGui::NewLine();
 
-    ImGui::BeginTable("###__random_shot_choice", randomShotGame->shot_columns);
+    ImGui::BeginTable("###__random_shot_choice", state->randomShotGame->shot_columns);
     ImGui::TableNextRow();
 
-    const char* shot_str = S(randomShotGame->shots);
+    const char* shot_str = S(state->randomShotGame->shots);
     for (size_t i = 0; ; i++) {
         ImGui::TableNextColumn();
-        ImGui::Checkbox(shot_str, shotChoices + i);
+        ImGui::Checkbox(shot_str, state->shotChoices + i);
         
         shot_str = shot_str + t_strlen(shot_str) + 1;
         if (!*shot_str) {
@@ -1519,106 +1419,109 @@ void RandomShotRollUI() {
     ImGui::EndTable();
 
     char buttonText[128] = {};
-    if (randomShotRoll != UINT_MAX) {
-        snprintf(buttonText, 127, S(THPRAC_TOOLS_ROLL_RESULT), ShotNameGet(S(randomShotGame->shots), randomShotRoll));
+    if (state->randomShotRoll != UINT_MAX) {
+        snprintf(buttonText, 127, S(THPRAC_TOOLS_ROLL_RESULT), ShotNameGet(S(state->randomShotGame->shots), state->randomShotRoll));
     } else {
         strcpy(buttonText, S(THPRAC_TOOLS_ROLL));
     }
 
     if (LargeBottomButton(buttonText, 64.0f)) {
-        randomShotRoll = RollChoices(shotChoices, 32);
+        state->randomShotRoll = RollChoices(state->shotChoices, 32);
     }
 
-    if (randomShotGame->instances && ImGui::BeginPopupContextItem("###__roll_game_right_click")) {
+    if (state->randomShotGame->instances && ImGui::BeginPopupContextItem("###__roll_game_right_click")) {
         if (ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_GAME))) {
-            selectedGame = randomShotGame;
-            goToGamesPage = true;
+            state->selectedGame = state->randomShotGame;
+            state->goToGamesPage = true;
         }
         ImGui::EndPopup();
     }
 }
 
-void RandomGameRollUI() {
+void RandomGameRollUI(LauncherState* state) {
     if (ImGui::Button("Back")) {
-        toolFunc = nullptr;
+        state->toolFunc = nullptr;
     }
 
     ImGui::SameLine();
     Gui::TextCentered(S(THPRAC_TOOLS_RND_GAME), ImGui::GetWindowWidth());
     ImGui::Separator();
 
-    RandomGameSetUI("###__random_games_pc98", randomGameChoices.pc98_choice, PC98_GAMES_LEN, pc98Games);
+    RandomGameSetUI("###__random_games_pc98", state->randomGameChoices.pc98_choice, PC98_GAMES_LEN, pc98Games);
     ImGui::NewLine();
-    RandomGameSetUI("###__random_games_maingame", randomGameChoices.maingame_choice, MAIN_GAMES_LEN, mainGames);
+    RandomGameSetUI("###__random_games_maingame", state->randomGameChoices.maingame_choice, MAIN_GAMES_LEN, mainGames);
     ImGui::NewLine();
-    RandomGameSetUI("###__random_games_spinoff_shmup", randomGameChoices.spinoff_shmup_choice, SPINOFF_SHMUP_LEN, spinoffShmups);
+    RandomGameSetUI("###__random_games_spinoff_shmup", state->randomGameChoices.spinoff_shmup_choice, SPINOFF_SHMUP_LEN, spinoffShmups);
     ImGui::NewLine();
-    RandomGameSetUI("###__random_games_spinoff_other", randomGameChoices.spinoff_other_choice, SPINOFF_OTHER_LEN, spinoffOthers);
+    RandomGameSetUI("###__random_games_spinoff_other", state->randomGameChoices.spinoff_other_choice, SPINOFF_OTHER_LEN, spinoffOthers);
     ImGui::NewLine();
 
-    Gui::CheckboxAll(S(THPRAC_TOOLS_RND_GAME_PC98), randomGameChoices.pc98_choice, PC98_GAMES_LEN);
+    Gui::CheckboxAll(S(THPRAC_TOOLS_RND_GAME_PC98), state->randomGameChoices.pc98_choice, PC98_GAMES_LEN);
     ImGui::SameLine();
-    Gui::CheckboxAll(S(THPRAC_GAMES_MAIN_SERIES), randomGameChoices.maingame_choice, MAIN_GAMES_LEN);
+    Gui::CheckboxAll(S(THPRAC_GAMES_MAIN_SERIES), state->randomGameChoices.maingame_choice, MAIN_GAMES_LEN);
     ImGui::SameLine();
-    Gui::CheckboxAll(S(THPRAC_GAMES_SPINOFF_STG), randomGameChoices.spinoff_shmup_choice, SPINOFF_SHMUP_LEN);
+    Gui::CheckboxAll(S(THPRAC_GAMES_SPINOFF_STG), state->randomGameChoices.spinoff_shmup_choice, SPINOFF_SHMUP_LEN);
     ImGui::SameLine();
-    Gui::CheckboxAll(S(THPRAC_GAMES_SPINOFF_OTHERS), randomGameChoices.spinoff_other_choice, SPINOFF_OTHER_LEN);
+    Gui::CheckboxAll(S(THPRAC_GAMES_SPINOFF_OTHERS), state->randomGameChoices.spinoff_other_choice, SPINOFF_OTHER_LEN);
 
     char buttonText[128] = {};
-    if (randomGameRoll != UINT_MAX) {
-        snprintf(buttonText, 127, S(THPRAC_TOOLS_ROLL_RESULT), gThGameStrs[gamesAll[randomGameRoll].id]);
+    if (state->randomGameRoll != UINT_MAX) {
+        snprintf(buttonText, 127, S(THPRAC_TOOLS_ROLL_RESULT), gThGameStrs[gamesAll[state->randomGameRoll].id]);
     } else {
         strcpy(buttonText, S(THPRAC_TOOLS_ROLL));
     }
 
     if (LargeBottomButton(buttonText, 64.0f)) {
-        randomGameRoll = RollChoices(randomGameChoices.choices, ALL_GAMES_LEN);
+        state->randomGameRoll = RollChoices(state->randomGameChoices.choices, ALL_GAMES_LEN);
     }
 
-    if ((randomGameRoll != UINT_MAX) && (gamesAll[randomGameRoll].shots || gamesAll[randomGameRoll].instances) && ImGui::BeginPopupContextItem("###__roll_game_right_click")) {
-        if (gamesAll[randomGameRoll].shots && ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_PLAYER))) {
-            randomShotGame = gamesAll + randomGameRoll;
-            memset(shotChoices, 0, 32);
-            memset(shotChoices, 1, ShotTypeCount(S(randomShotGame->shots)));
-            toolFunc = RandomShotRollUI;
+    if ((state->randomGameRoll != UINT_MAX) && (gamesAll[state->randomGameRoll].shots || gamesAll[state->randomGameRoll].instances) && ImGui::BeginPopupContextItem("###__roll_game_right_click")) {
+        if (gamesAll[state->randomGameRoll].shots && ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_PLAYER))) {
+            state->randomShotGame = gamesAll + state->randomGameRoll;
+            memset(state->shotChoices, 0, 32);
+            memset(state->shotChoices, 1, ShotTypeCount(S(state->randomShotGame->shots)));
+            state->toolFunc = RandomShotRollUI;
         }
-        if (gamesAll[randomGameRoll].instances && ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_GAME))) {
-            selectedGame = gamesAll + randomGameRoll;
-            goToGamesPage = true;
+        if (gamesAll[state->randomGameRoll].instances && ImGui::Selectable(S(THPRAC_TOOLS_RND_TURNTO_GAME))) {
+            state->selectedGame = gamesAll + state->randomGameRoll;
+            state->goToGamesPage = true;
         }
         ImGui::EndPopup();
     }
 }
 
-void LauncherGamesMain() {
-	if (scanCtx) {
-        ScanForGamesUI();
+void LauncherGamesMain(LauncherState* state) {
+	if (state->inScan) {
+        state->inScan = ScanForGamesUI(&state->scanCtx, state->settings.apply_thprac_default == APPLY_THPRAC_DEFAULT_OPEN);
+        if (!state->inScan) {
+            state->scanCtx = {};
+        }
         return;
     }
 
-    if (selectedGame) {
-        DetailsPage(selectedGame);
+    if (state->selectedGame) {
+        state->selectedGame = DetailsPage(state->selectedGame, state->instRenameBuf, state->settings.after_launch) ? state->selectedGame : nullptr;
         return;
     }
 
     if (ImGui::BeginPopupContextWindow("##__no_game_context")) {
-        GameRightClickMenu(nullptr);
+        GameRightClickMenu(state, nullptr);
         ImGui::EndPopup();
     }
 
     ImGui::TextUnformatted(S(THPRAC_GAMES_MAIN_SERIES));
-    GamesList(mainGames, elementsof(mainGames));
+    GamesList(state, mainGames, elementsof(mainGames));
 
     ImGui::Separator();
     ImGui::NewLine();
 
     ImGui::TextUnformatted(S(THPRAC_GAMES_SPINOFF_STG));
-    GamesList(spinoffShmups, elementsof(spinoffShmups));
+    GamesList(state, spinoffShmups, elementsof(spinoffShmups));
     
     ImGui::Separator();
     ImGui::NewLine();
     
     ImGui::TextUnformatted(S(THPRAC_GAMES_SPINOFF_OTHERS));
-    GamesList(spinoffOthers, elementsof(spinoffOthers));
+    GamesList(state, spinoffOthers, elementsof(spinoffOthers));
 }
 }

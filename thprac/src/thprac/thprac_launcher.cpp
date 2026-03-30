@@ -18,10 +18,6 @@
 #include "../../resource.h"
 
 namespace THPrac {
-static bool g_IsUITextureIDValid = false;
-static bool g_IsOverTitleBarButton = false;
-constinit LauncherSettings launcherSettings;
-
 namespace Gui {
     extern LRESULT ImplWin32WndProcHandlerW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     extern IDirect3DDevice9* ImplDX9GetDevice();
@@ -62,7 +58,7 @@ bool UpdateUIScaling(float scale = 1.0f);
 // However, I haven't found a way to check if the title bar is selected, or if any of the title bar's buttons are selected
 // It also seems like the title bar code was modified by thprac's previous behaviour, ACK, in order to add a real minimize button.
 // I want to cut down on non-standard Dear ImGui as much as possible to make it easier to upgrade Dear ImGui in the future.
-float DrawTitleBar(HWND hwnd, const char* title) {
+inline float DrawTitleBar(HWND hwnd, bool* overBtn, const char* title) {
     auto& io = ImGui::GetIO();
     const float tbH = TITLE_BAR_HEIGHT();
 
@@ -134,17 +130,14 @@ float DrawTitleBar(HWND hwnd, const char* title) {
         ImGui::GetWindowDrawList()->AddLine(lineTopRight, lineBottomLeft, ImGui::GetColorU32(ImGuiCol_Text), g_Scale);
     }
 
-    g_IsOverTitleBarButton = ImGui::IsAnyItemHovered();
+    *overBtn = ImGui::IsAnyItemHovered();
     ImGui::SetCursorPos({ 0.0f, tbH });
     return tbH;
 }
 
-void (*toolFunc)() = nullptr;
-bool goToGamesPage = true;
-
-void LauncherTools() {
-    if (toolFunc) {
-        return toolFunc();
+void LauncherToolsMain(LauncherState* state) {
+    if (state->toolFunc) {
+        return state->toolFunc(state);
     }
 
     ImVec2 buttonSize = { (ImGui::GetWindowWidth() / 4.0f), 0.0f };
@@ -159,20 +152,20 @@ void LauncherTools() {
     }
     ImGui::SetCursorPos({ btnPosX,  height + step * 1 });
     if (ImGui::Button(S(THPRAC_TOOLS_RND_GAME), buttonSize)) {
-        toolFunc = RandomGameRollUI;
+        state->toolFunc = RandomGameRollUI;
     }
     ImGui::SetCursorPos({ btnPosX,  height + step * 2 });
     if (ImGui::Button(S(THPRAC_TOOLS_RND_PLAYER), buttonSize)) {
-        toolFunc = RandomShotRollUI;
+        state->toolFunc = RandomShotRollUI;
     }
 }
 
-static void LauncherSettingsMain() {
+static void LauncherSettingsMain(LauncherSettings* launcherSettings) {
     ImGui::TextUnformatted("Launcher settings");
     ImGui::Separator();
-    ImGui::Combo(S(THPRAC_AFTER_LAUNCH), (int*)&launcherSettings.after_launch, S(THPRAC_AFTER_LAUNCH_OPTION));
-    ImGui::Combo(S(THPRAC_APPLY_THPRAC_DEFAULT), (int*)&launcherSettings.apply_thprac_default, S(THPRAC_APPLY_THPRAC_DEFAULT_OPTION));
-    ImGui::Checkbox(S(THPRAC_AUTO_DEFAULT_LAUNCH), &launcherSettings.auto_default_launch);
+    ImGui::Combo(   S(THPRAC_AFTER_LAUNCH),         (int*)&launcherSettings->after_launch,         S(THPRAC_AFTER_LAUNCH_OPTION));
+    ImGui::Combo(   S(THPRAC_APPLY_THPRAC_DEFAULT), (int*)&launcherSettings->apply_thprac_default, S(THPRAC_APPLY_THPRAC_DEFAULT_OPTION));
+    ImGui::Checkbox(S(THPRAC_AUTO_DEFAULT_LAUNCH),        &launcherSettings->auto_default_launch);
     ImGui::SameLine();
     Gui::HelpMarker(S(THPRAC_AUTO_DEFAULT_LAUNCH_DESC));
     ImGui::NewLine();
@@ -181,11 +174,11 @@ static void LauncherSettingsMain() {
     GuiSettings();
 }
 
-void UiUpdate(HWND hwnd) {
+void UiUpdate(HWND hwnd, LauncherState* state) {
     // Start the Dear ImGui frame
     Gui::ImplDX9NewFrame();
     Gui::ImplWin32NewFrame();
-    g_IsUITextureIDValid = true;
+    state->g_IsUITextureIDValid = true;
     ImGui::NewFrame();
 
     auto& io = ImGui::GetIO();
@@ -199,34 +192,34 @@ void UiUpdate(HWND hwnd) {
         ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::PopStyleVar();
 
-    ImGui::BeginChild("###__content", { io.DisplaySize.x, io.DisplaySize.y - DrawTitleBar(hwnd, S(THPRAC_LAUNCHER)) }, false, ImGuiWindowFlags_AlwaysUseWindowPadding);
+    ImGui::BeginChild("###__content", { io.DisplaySize.x, io.DisplaySize.y - DrawTitleBar(hwnd, &state->g_IsOverTitleBarButton, S(THPRAC_LAUNCHER)) }, false, ImGuiWindowFlags_AlwaysUseWindowPadding);
     ImGui::BeginTabBar("__launcher_tab_bar");
 
     ImGuiTabItemFlags gameTabFlags = 0;
-    if (goToGamesPage) {
-        goToGamesPage = false;
+    if (state->goToGamesPage) {
+        state->goToGamesPage = false;
         gameTabFlags = ImGuiTabItemFlags_SetSelected;
     }
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_GAMES), nullptr, gameTabFlags)) {
         ImGui::BeginChild(0x6A8E5);
-        LauncherGamesMain();
+        LauncherGamesMain(state);
         ImGui::EndChild();
         ImGui::EndTabItem();
     }
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_LINKS))) {
         // Links page has it's own child window for all it's content
-        LauncherLinksMain();
+        LauncherLinksMain(state);
         ImGui::EndTabItem();
     }
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_TOOLS))) {
         ImGui::BeginChild(0x70015);
-        LauncherTools();
+        LauncherToolsMain(state);
         ImGui::EndChild();
         ImGui::EndTabItem();
     }
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_CONFG))) {
         ImGui::BeginChild(0xC02F16);
-        LauncherSettingsMain();
+        LauncherSettingsMain(&state->settings);
         ImGui::EndChild();
         ImGui::EndTabItem();
     }
@@ -244,7 +237,7 @@ void UiUpdate(HWND hwnd) {
     dev->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
     dev->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(0, 0, 0, 255), 1.0f, 0);
     if (dev->BeginScene() >= 0) {
-        if (g_IsUITextureIDValid) {
+        if (state->g_IsUITextureIDValid) {
             Gui::ImplDX9RenderDrawData(ImGui::GetDrawData());
         }
         dev->EndScene();
@@ -252,8 +245,10 @@ void UiUpdate(HWND hwnd) {
     HRESULT result = dev->Present(NULL, NULL, NULL, NULL);
 
     // Handle loss of D3D9 device
-    if (result == D3DERR_DEVICELOST && dev->TestCooperativeLevel() == D3DERR_DEVICENOTRESET)
+    if (result == D3DERR_DEVICELOST && dev->TestCooperativeLevel() == D3DERR_DEVICENOTRESET) {
+        state->g_IsUITextureIDValid = false;
         ResetDevice();
+    }
 }
 
 void DwmTweaksForCustomTitlebar(HWND hwnd) {
@@ -286,7 +281,7 @@ void DwmTweaksForCustomTitlebar(HWND hwnd) {
     }
 }
 
-void LoadLauncherSettings() {
+void LoadLauncherSettings(LauncherSettings* launcherSettings) {
     wchar_t launcherSettingsPath[MAX_PATH + 1] = {};
     memcpy(launcherSettingsPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
     memcpy(launcherSettingsPath + _gConfigDirLen, SIZED(L"launcher.json"));
@@ -302,13 +297,13 @@ void LoadLauncherSettings() {
     yyjson_val *key, *val;
     yyjson_obj_foreach(root, idx, max, key, val) {
         if (unsafe_yyjson_equals_str(key, "after_launch")) {
-            yyjson_eval_numeric(val, (int*)&launcherSettings.after_launch);
+            yyjson_eval_numeric(val, (int*)&launcherSettings->after_launch);
         }
         if (unsafe_yyjson_equals_str(key, "apply_thprac_default")) {
-            yyjson_eval_numeric(val, (int*)&launcherSettings.apply_thprac_default);
+            yyjson_eval_numeric(val, (int*)&launcherSettings->apply_thprac_default);
         }
         if (unsafe_yyjson_equals_str(key, "auto_default_launch")) {
-            yyjson_eval_numeric(val, &launcherSettings.auto_default_launch);
+            yyjson_eval_numeric(val, &launcherSettings->auto_default_launch);
         }
     }
 
@@ -322,12 +317,12 @@ static const char launcherSettingsTemplate[] =
     "\t" R"("auto_default_launch": %s,)" "\n"
     "}";
 
-void SaveLauncherSettings() {
+void SaveLauncherSettings(LauncherSettings* launcherSettings) {
     char buf[1024];
     int len = snprintf(buf, sizeof(buf) - 1, launcherSettingsTemplate
-        , launcherSettings.after_launch
-        , launcherSettings.apply_thprac_default
-        , launcherSettings.auto_default_launch ? "true" : "false"
+        , launcherSettings->after_launch
+        , launcherSettings->apply_thprac_default
+        , launcherSettings->auto_default_launch ? "true" : "false"
     );
 
     wchar_t launcherSettingsPath[MAX_PATH + 1] = {};
@@ -381,10 +376,12 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
     }
     defer(UnregisterClassW(g_WndCls.lpszClassName, g_WndCls.hInstance));
 
+    LauncherState* state = new LauncherState;
+
     HWND hwnd = CreateWindowExW(
         0, g_WndCls.lpszClassName, L"thprac - Touhou Game Launcher", WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT, 960, 720,
-        NULL, NULL, g_WndCls.hInstance, NULL);
+        NULL, NULL, g_WndCls.hInstance, state);
 
     if (!hwnd) {
         return 1;
@@ -443,39 +440,41 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
 
     float dpiscale = 1.0f;
     if (auto shcore = GetModuleHandleW(L"shcore.dll")) {
+        typedef HRESULT(WINAPI * T_SetProcessDpiAwareness)(DWORD value);
+        typedef HRESULT(WINAPI * T_GetDpiForMonitor)(HMONITOR hmonitor, DWORD dpiType, UINT * dpiX, UINT * dpiY);
 
-        typedef HRESULT(WINAPI * PSetProcessDpiAwareness)(DWORD value);
-        typedef HRESULT(WINAPI * PGetDpiForMonitor)(HMONITOR hmonitor, DWORD dpiType, UINT * dpiX, UINT * dpiY);
-
-        auto setProcDpiAwareness = (PSetProcessDpiAwareness)GetProcAddress(shcore, "SetProcessDpiAwareness");
-        auto getDpiForMonitor = (PGetDpiForMonitor)GetProcAddress(shcore, "GetDpiForMonitor");
-        if (setProcDpiAwareness && getDpiForMonitor) {
-            setProcDpiAwareness(2);
+        auto SetProcessDpiAwareness = (T_SetProcessDpiAwareness)GetProcAddress(shcore, "SetProcessDpiAwareness");
+        auto GetDpiForMonitor = (T_GetDpiForMonitor)GetProcAddress(shcore, "GetDpiForMonitor");
+        if (SetProcessDpiAwareness && GetDpiForMonitor) {
+            SetProcessDpiAwareness(2);
             UINT dpiX;
             UINT dpiY;
-            getDpiForMonitor(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), 0, &dpiX, &dpiY);
+            GetDpiForMonitor(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), 0, &dpiX, &dpiY);
             dpiscale = dpiX / (float)USER_DEFAULT_SCREEN_DPI;
         }
     }
 
     // In vanilla ImGui, ImGui_ImplWin32_NewFrame sets DisplaySize
-    // THPrac's Gui::ImplWin32NewFrame removed that line.
+    // THPrac's Gui::ImplWin32NewFrame removed that line because
+    // it's common for Touhou games to have their window client
+    // area and D3D9 backbuffer size differ.
     RECT cr;
     GetClientRect(hwnd, &cr);
     io.DisplaySize = {
-        (float)cr.right - (float)cr.left,
-        (float)cr.bottom - (float)cr.top
+        (float)(cr.right - cr.left),
+        (float)(cr.bottom - cr.top)
     };
 
+    state->g_IsUITextureIDValid = false;
     if (!UpdateUIScaling(dpiscale > 1.0f ? dpiscale : 1.0f)) {
         return 1;
     }
 
     // Send WM_NCCALCSIZE message immediately
     SetWindowPos(hwnd, NULL, 0, 0, 960 * dpiscale, 720 * dpiscale, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
-    LoadLauncherSettings();
-    LoadGamesJson();
-    LoadLinksJson();
+    LoadLauncherSettings(&state->settings);
+    LoadGamesJson(state->settings.apply_thprac_default);
+    LoadLinksJson(state->linkSets);
 
     // Show the window
     ShowWindow(hwnd, nCmdShow);
@@ -485,20 +484,18 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
     // Main loop
     MSG msg = {};
     while (msg.message != WM_QUIT) {
-        // Poll and handle messages (inputs, window resize, etc.)
-        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-        // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
         if (PeekMessageW(&msg, NULL, 0U, 0U, PM_REMOVE)) {
             TranslateMessage(&msg);
             DispatchMessageW(&msg);
         }
     }
-    SaveLauncherSettings();
+    SaveLauncherSettings(&state->settings);
     SaveGamesJson();
-    SaveLinksJson();
+    SaveLinksJson(state->linkSets);
     SaveSettings();
+
+    delete state;
+
     return 0;
 }
 
@@ -512,6 +509,16 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     if (Gui::ImplWin32WndProcHandlerW(hWnd, msg, wParam, lParam))
         return true;
+
+    LauncherState* state = nullptr;
+    if (msg == WM_NCCREATE) {
+        auto* create = (CREATESTRUCT*)lParam;
+        state = (LauncherState*)create->lpCreateParams;
+        SetWindowLongPtrW(hWnd, GWLP_USERDATA, (LONG_PTR)state);
+    }
+    else {
+        state = (LauncherState*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+    }
 
     switch (msg) {
     case WM_NCPAINT:
@@ -548,7 +555,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
         int border = 4; // resize-grip thickness in pixels
         int titleH = TITLE_BAR_HEIGHT();
-        if (!g_IsOverTitleBarButton && !IsZoomed(hWnd)) {
+        if (!state->g_IsOverTitleBarButton && !IsZoomed(hWnd)) {
             // Corners (tested before edges to take priority)
             if (pt.x < border && pt.y >= rc.bottom - border)
                 return HTBOTTOMLEFT;
@@ -563,9 +570,12 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 return HTRIGHT;
         }
 
-        if (pt.y < titleH && !g_IsOverTitleBarButton)
-            return HTCAPTION; // enables drag, double-click maximise, system menu on right-click
-
+        if (pt.y < titleH && !state->g_IsOverTitleBarButton) {
+            // Enables drag and double-click maximize.
+            // Don't even think about handling window movement yourself
+            // through ImGui itself, it will be an epic disaster.
+            return HTCAPTION; 
+        }
         return HTCLIENT;    
     }
     case WM_GETMINMAXINFO: {
@@ -582,6 +592,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 (float)g_d3dpp.BackBufferWidth,
                 (float)g_d3dpp.BackBufferHeight
             };
+            state->g_IsUITextureIDValid = false;
             ResetDevice();
         }
         return 0;
@@ -593,7 +604,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         PAINTSTRUCT ps;
         BeginPaint(hWnd, &ps);
         EndPaint(hWnd, &ps);
-        UiUpdate(hWnd);
+        UiUpdate(hWnd, state);
         RedrawWindow(hWnd, NULL, NULL, RDW_INTERNALPAINT | RDW_INVALIDATE);
         return 0;
     }
@@ -601,6 +612,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         RECT* rect = (RECT*)lParam;
         IM_ASSERT(LOWORD(wParam) == HIWORD(wParam));
         SetWindowPos(hWnd, NULL, rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top, SWP_NOZORDER);
+        state->g_IsUITextureIDValid = false;
         UpdateUIScaling((float)LOWORD(wParam) / (float)USER_DEFAULT_SCREEN_DPI);
         return 0;
     }
@@ -612,7 +624,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 void ResetDevice() {
-    g_IsUITextureIDValid = false;
     Gui::ImplDX9InvalidateDeviceObjects();
     HRESULT hr = Gui::ImplDX9GetDevice()->Reset(&g_d3dpp);
     if (hr == D3DERR_INVALIDCALL)
@@ -620,11 +631,8 @@ void ResetDevice() {
     Gui::ImplDX9CreateDeviceObjects();
 }
 
-bool UpdateUIScaling(float scale)
-{
+bool UpdateUIScaling(float scale) {
     ImGuiIO& io = ImGui::GetIO();
-
-    g_IsUITextureIDValid = false;
     Gui::ImplDX9InvalidateDeviceObjects();
 
     // Setup Dear ImGui style

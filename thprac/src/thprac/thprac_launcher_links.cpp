@@ -2,8 +2,7 @@
 #include <Windows.h>
 
 #include "utils/utils.h"
-#include "thprac_cfg.h"
-#include "thprac_log.h"
+#include "thprac_launcher.h"
 #include "thprac_gui_components.h"
 #include "thprac_utils.h"
 
@@ -14,26 +13,6 @@
 #include <yyjson.h>
 
 namespace THPrac {
-struct LinksIndexes {
-    size_t linkSetIdx;
-    size_t linkIdx;
-};
-
-struct LinkSet {
-    bool is_open = true;
-    std::string name;
-    std::vector<std::pair<std::string, std::string>> links;
-};
-
-// Globals
-static LinksIndexes selected = { (size_t)-1, (size_t)-1 };
-static char linkEditTitleBuf[1024] = {};
-static char linkEditLinkBuf[1024] = {};
-static bool linkNameWarn = false;
-static bool linkLinkWarn = false;
-static std::vector<LinkSet> linkSets;
-// ---
-
 namespace Gui {
     extern HWND ImplWin32GetHwnd();
 }
@@ -56,7 +35,7 @@ void LinksDefault(LinkSet& out) {
     } };
 }
 
-void LoadLinksJson() {
+void LoadLinksJson(std::vector<LinkSet>& linkSets) {
     wchar_t linksJsonPath[MAX_PATH + 1] = {};
     memcpy(linksJsonPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
     memcpy(linksJsonPath + _gConfigDirLen, SIZED(L"links.json"));
@@ -96,7 +75,7 @@ void LoadLinksJson() {
     yyjson_doc_free(doc);
 }
 
-void SaveLinksJson() {
+void SaveLinksJson(std::vector<LinkSet>& linkSets) {
     yyjson_mut_doc* doc = yyjson_mut_doc_new(nullptr);
     yyjson_mut_val* root = yyjson_mut_obj(doc);
     yyjson_mut_doc_set_root(doc, root);
@@ -156,7 +135,7 @@ enum OpenWhichPopup {
     OPEN_ADD_FILTER,
 };
 
-int EditLinkUI() {
+int EditLinkUI(char* linkEditTitleBuf, char* linkEditLinkBuf, bool& linkNameWarn, bool& linkLinkWarn) {
     ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_NAME));
     ImGui::SameLine();
     ImGui::InputText("##__linkname_input", linkEditTitleBuf, 1023);
@@ -212,14 +191,14 @@ int EditLinkUI() {
     return ret;
 }
 
-void LauncherLinksMain() {
+void LauncherLinksMain(LauncherState* state) {
     auto& style = ImGui::GetStyle();
     ImGui::BeginChild(0x21945, { 0.0f, ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - ImGui::GetFontSize() - style.WindowPadding.y - style.ItemSpacing.y - style.FramePadding.y * 2 });
 
     OpenWhichPopup openWhich = OPEN_NONE;
 
     if (ImGui::BeginPopupContextWindow()) {
-        selected = { (size_t)-1, (size_t)-1 };
+        state->linkSelected = { (size_t)-1, (size_t)-1 };
         if (ImGui::Selectable(S(THPRAC_LINKS_FILTER_ADD))) {
             openWhich = OPEN_ADD_FILTER;
         }
@@ -227,14 +206,14 @@ void LauncherLinksMain() {
     }
 
     ImGui::BeginTable("###__links_table", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV);
-    for (size_t linkSetIdx = 0; linkSetIdx < linkSets.size(); linkSetIdx++) {
+    for (size_t linkSetIdx = 0; linkSetIdx < state->linkSets.size(); linkSetIdx++) {
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
 
-        ImGui::SetNextItemOpen(linkSets[linkSetIdx].is_open);
-        bool nodeOpen = ImGui::TreeNode(linkSets[linkSetIdx].name.c_str());
+        ImGui::SetNextItemOpen(state->linkSets[linkSetIdx].is_open);
+        bool nodeOpen = ImGui::TreeNode(state->linkSets[linkSetIdx].name.c_str());
         if (ImGui::BeginPopupContextItem()) {
-            selected = { linkSetIdx, (size_t)-1 };
+            state->linkSelected = { linkSetIdx, (size_t)-1 };
             if (ImGui::Selectable(S(THPRAC_LINKS_FILTER_DEL))) {
                 openWhich = OPEN_DELETE_FILTER;
             }
@@ -247,26 +226,24 @@ void LauncherLinksMain() {
             }
             ImGui::EndPopup();
         }
-
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("##@__dnd_link")) {
                 auto src = *(const LinksIndexes*)payload->Data;
-                auto val = linkSets[src.linkSetIdx].links[src.linkIdx];
+                auto val = state->linkSets[src.linkSetIdx].links[src.linkIdx];
 
                 if (src.linkSetIdx == linkSetIdx) {
-                    auto& v = linkSets[linkSetIdx].links;
+                    auto& v = state->linkSets[linkSetIdx].links;
                     v.erase(v.begin() + src.linkIdx);
                     v.insert(v.begin(), std::move(val));
                 } else {
-                    for (auto& link : linkSets[linkSetIdx].links) {
+                    for (auto& link : state->linkSets[linkSetIdx].links) {
                         if (link.first == val.first) {
                             link.second = val.second;
                             goto link_on_filter_dnd_finished;
                         }
                     }
-
-                    linkSets[src.linkSetIdx].links.erase(linkSets[src.linkSetIdx].links.begin() + src.linkIdx);
-                    linkSets[linkSetIdx].links.insert(linkSets[linkSetIdx].links.begin(), std::move(val));
+                    state->linkSets[src.linkSetIdx].links.erase(state->linkSets[src.linkSetIdx].links.begin() + src.linkIdx);
+                    state->linkSets[linkSetIdx].links.insert(state->linkSets[linkSetIdx].links.begin(), std::move(val));
                 }
             }
         link_on_filter_dnd_finished:
@@ -274,22 +251,22 @@ void LauncherLinksMain() {
         }
 
         if (nodeOpen) {
-            linkSets[linkSetIdx].is_open = true;
+            state->linkSets[linkSetIdx].is_open = true;
             ImGui::TableNextRow();
 
-            for (size_t linkIdx = 0; linkIdx < linkSets[linkSetIdx].links.size(); linkIdx++) {
+            for (size_t linkIdx = 0; linkIdx < state->linkSets[linkSetIdx].links.size(); linkIdx++) {
                 ImGui::TableNextColumn();
                 ImGui::Indent();
-                ImGui::Selectable(linkSets[linkSetIdx].links[linkIdx].first.c_str());
+                ImGui::Selectable(state->linkSets[linkSetIdx].links[linkIdx].first.c_str());
                 if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
-                    std::wstring u16_cmd = utf8_to_utf16(linkSets[linkSetIdx].links[linkIdx].second.c_str());
+                    std::wstring u16_cmd = utf8_to_utf16(state->linkSets[linkSetIdx].links[linkIdx].second.c_str());
                     if ((UINT_PTR)ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", u16_cmd.c_str(), nullptr, nullptr, SW_SHOW) < 32) {
                         openWhich = OPEN_LINK_ERROR;
                     }
                 }
                 ImGui::Unindent();
                 if (ImGui::BeginPopupContextItem()) {
-                    selected = { linkSetIdx, linkIdx };
+                    state->linkSelected = { linkSetIdx, linkIdx };
                     if (ImGui::Selectable(S(THPRAC_LINKS_EDIT))) {
                         openWhich = OPEN_EDIT_LINK;
                     }
@@ -309,62 +286,61 @@ void LauncherLinksMain() {
                 if (ImGui::BeginDragDropSource()) {
                     LinksIndexes payload { linkSetIdx, linkIdx };
                     ImGui::SetDragDropPayload("##@__dnd_link", &payload, sizeof(payload));
-                    ImGui::TextUnformatted(linkSets[linkSetIdx].links[linkIdx].first.c_str());
+                    ImGui::TextUnformatted(state->linkSets[linkSetIdx].links[linkIdx].first.c_str());
                     ImGui::EndDragDropSource();
                 }
 
                 if (ImGui::BeginDragDropTarget()) {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("##@__dnd_link")) {
                         auto src = *(const LinksIndexes*)payload->Data;
-                        auto val = std::move(linkSets[src.linkSetIdx].links[src.linkIdx]);
+                        auto val = std::move(state->linkSets[src.linkSetIdx].links[src.linkIdx]);
 
                         if (src.linkSetIdx == linkSetIdx) {
-                            auto& v = linkSets[linkSetIdx].links;
+                            auto& v = state->linkSets[linkSetIdx].links;
                             v.erase(v.begin() + src.linkIdx);
                             v.insert(v.begin() + linkIdx, val);
                         } else {
-                            for (auto& link : linkSets[linkSetIdx].links) {
+                            for (auto& link : state->linkSets[linkSetIdx].links) {
                                 if (link.first == val.first) {
                                     link.second = val.second;
                                     goto link_on_link_dnd_finished;
                                 }
                             }
-
-                            linkSets[src.linkSetIdx].links.erase(linkSets[src.linkSetIdx].links.begin() + src.linkIdx);                            
-                            linkSets[linkSetIdx].links.insert(linkSets[linkSetIdx].links.begin() + linkIdx + 1, std::move(val));
+                            state->linkSets[src.linkSetIdx].links.erase(state->linkSets[src.linkSetIdx].links.begin() + src.linkIdx);                            
+                            state->linkSets[linkSetIdx].links.insert(state->linkSets[linkSetIdx].links.begin() + linkIdx + 1, std::move(val));
                         }
                     }
                     link_on_link_dnd_finished:
                     ImGui::EndDragDropTarget();
                 }
                 ImGui::TableNextColumn();
-                ImGui::TextUnformatted(linkSets[linkSetIdx].links[linkIdx].second.c_str());
+                ImGui::TextUnformatted(state->linkSets[linkSetIdx].links[linkIdx].second.c_str());
             }
             ImGui::TreePop();
         } else {
-            linkSets[linkSetIdx].is_open = false;
+            state->linkSets[linkSetIdx].is_open = false;
         }
     }
     ImGui::EndTable();
     ImGui::EndChild();
 
     if (ImGui::Button("Expand all")) {
-        for (auto& i : linkSets) {
+        for (auto& i : state->linkSets) {
             i.is_open = true;
         }
     }
     ImGui::SameLine();
     if (ImGui::Button("Collapse all")) {
-        for (auto& i : linkSets) {
+        for (auto& i : state->linkSets) {
             i.is_open = false;
         }
     }
 
     if (openWhich != OPEN_NONE) {
-        memset(linkEditTitleBuf, 0, 1024);
-        memset(linkEditLinkBuf, 0, 1024);
-        linkNameWarn = false;
-        linkLinkWarn = false;
+        memset(state->linkEditTitleBuf, 0, 1024);
+        memset(state->linkEditLinkBuf, 0, 1024);
+        state->linkNameWarn = false;
+        state->linkLinkWarn = false;
     }
 
     switch (openWhich) {
@@ -378,9 +354,9 @@ void LauncherLinksMain() {
         ImGui::OpenPopup(S(THPRAC_LINKS_DELETE_MODAL));
         break;
     case OPEN_EDIT_LINK: {
-        auto& l = linkSets[selected.linkSetIdx].links[selected.linkIdx];
-        strncpy(linkEditTitleBuf, l.first.c_str(), 1023);
-        strncpy(linkEditLinkBuf, l.second.c_str(), 1023);
+        auto& l = state->linkSets[state->linkSelected.linkSetIdx].links[state->linkSelected.linkIdx];
+        strncpy(state->linkEditTitleBuf, l.first.c_str(), 1023);
+        strncpy(state->linkEditLinkBuf, l.second.c_str(), 1023);
         ImGui::OpenPopup(S(THPRAC_LINKS_EDIT_MODAL));
         } break;
     case OPEN_ADD_LINK:
@@ -404,7 +380,7 @@ void LauncherLinksMain() {
         ImGui::TextUnformatted(S(THPRAC_LINKS_FILTER_DELETE_WARNING));
         switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_YES), S(THPRAC_NO), nullptr)) {
         case 0:
-            linkSets.erase(linkSets.begin() + selected.linkSetIdx);
+            state->linkSets.erase(state->linkSets.begin() + state->linkSelected.linkSetIdx);
         case 1:
             ImGui::CloseCurrentPopup();
         }
@@ -413,10 +389,10 @@ void LauncherLinksMain() {
     }
     if (Gui::Modal(S(THPRAC_LINKS_DELETE_MODAL))) {
         ImGui::TextUnformatted(S(THPRAC_LINKS_DELETE_WARNING));
-        auto& v = linkSets[selected.linkSetIdx].links;
+        auto& v = state->linkSets[state->linkSelected.linkSetIdx].links;
         switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_YES), S(THPRAC_NO), nullptr)) {
         case 0:
-            v.erase(v.begin() + selected.linkIdx);
+            v.erase(v.begin() + state->linkSelected.linkIdx);
         case 1:
             ImGui::CloseCurrentPopup();
         }
@@ -425,18 +401,18 @@ void LauncherLinksMain() {
     }
 
     if(Gui::Modal(S(THPRAC_LINKS_EDIT_MODAL))) {
-        switch (EditLinkUI()) {
+        switch (EditLinkUI(state->linkEditTitleBuf, state->linkEditLinkBuf, state->linkNameWarn, state->linkLinkWarn)) {
         case 1:
-            linkSets[selected.linkSetIdx].links[selected.linkIdx] = { linkEditTitleBuf, linkEditLinkBuf };
+            state->linkSets[state->linkSelected.linkSetIdx].links[state->linkSelected.linkIdx] = { state->linkEditTitleBuf, state->linkEditLinkBuf };
         case 0:
             ImGui::CloseCurrentPopup();
         }
         ImGui::EndPopup();
     }
     if (Gui::Modal(S(THPRAC_LINKS_ADD_MODAL))) {
-        switch (EditLinkUI()) {
+        switch (EditLinkUI(state->linkEditTitleBuf, state->linkEditLinkBuf, state->linkNameWarn, state->linkLinkWarn)) {
         case 1: {
-            LinkSetAddLink(linkSets[selected.linkSetIdx], selected.linkIdx, linkEditTitleBuf, linkEditLinkBuf);
+            LinkSetAddLink(state->linkSets[state->linkSelected.linkSetIdx], state->linkSelected.linkIdx, state->linkEditTitleBuf, state->linkEditLinkBuf);
         }
         case 0:
             ImGui::CloseCurrentPopup();
@@ -446,21 +422,22 @@ void LauncherLinksMain() {
     if(Gui::Modal(S(THPRAC_LINKS_FILTER_ADD_MODAL))) {
         ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_NAME));
         ImGui::SameLine();
-        ImGui::InputText("##__linkname_input", linkEditTitleBuf, 1023);
+        ImGui::InputText("##__linkname_input", state->linkEditTitleBuf, 1023);
 
-        std::string_view sv = linkEditTitleBuf;
-        for (const auto& i : linkSets) {
+        std::string_view sv = state->linkEditTitleBuf;
+        int sel;
+        for (const auto& i : state->linkSets) {
             if (i.name == sv) {
                 goto filter_name_collision;
             }
         }
-        int sel = Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_OK), S(THPRAC_CANCEL), nullptr);
+        sel = Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_OK), S(THPRAC_CANCEL), nullptr);
         if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
             sel = 1;
         }
         switch (sel) {
         case 1:
-            LinksAddSet(linkSets, selected.linkSetIdx, linkEditTitleBuf);
+            LinksAddSet(state->linkSets, state->linkSelected.linkSetIdx, state->linkEditTitleBuf);
         case 0:
             ImGui::CloseCurrentPopup();
         }
