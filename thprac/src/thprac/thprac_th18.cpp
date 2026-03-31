@@ -52,7 +52,9 @@ namespace TH18 {
         ABILITY_SHOP_PTR = 0x4cf2a4,
         ASCII_MANAGER_PTR = 0x4cf2ac,
         TRANSITION_STG_PTR = 0x4cf2b0,
+        BOMB_PTR = 0x4cf2b8,
         BULLET_MANAGER_PTR = 0x4cf2bc,
+        ENEMY_MANAGER_PTR = 0x4cf2d0,
         MUKADE_ADDR = 0x4cf2d4,
         GAME_THREAD_PTR = 0x4cf2e4,
         ITEM_MANAGER_PTR = 0x4cf2ec,
@@ -240,6 +242,7 @@ namespace TH18 {
         int32_t mukade;
 
         bool dlg;
+        bool hiddenKoishi; // for replay desync fix
 
         bool _playLock = false;
         void Reset()
@@ -279,12 +282,23 @@ namespace TH18 {
             GetJsonValue(cylinder);
             GetJsonValue(riceball);
             GetJsonValue(mukade);
+            GetJsonValueEx(hiddenKoishi, Bool);
 
             return true;
         }
         std::string GetJson()
         {
-            if (mode == 1) {
+            if (mode == 0 && hiddenKoishi) { // vanilla run mode
+                CreateJson();
+
+                AddJsonValueEx(version, GetVersionStr(), jalloc);
+                AddJsonValueEx(game, "th18", jalloc);
+                AddJsonValue(mode);
+                AddJsonValue(hiddenKoishi);
+
+                ReturnJson();
+
+            } else if (mode == 1) { // thprac mode
                 CreateJson();
 
                 AddJsonValueEx(version, GetVersionStr(), jalloc);
@@ -342,6 +356,12 @@ namespace TH18 {
     THPracParam thPracParam {};
 
     
+    constexpr uint32_t GetActiveID(uint32_t cardID)
+    {
+        return cardID - (41 + (cardID > 51));
+    }
+
+
     EHOOK_ST(th18_free_blank, 0x411f4b, 2, {
         pCtx->Eip = 0x411f52;
         self->Disable();
@@ -735,16 +755,17 @@ namespace TH18 {
     public:
         THPracParam mRepParam;
         bool mRepSelected = false;
-        uint32_t mSelectedRepStartStage;
-        uint32_t mSelectedRepEndStage;
-        uint32_t mSelectedRepPlaybackStartStage;
-        uint32_t mSelectedRepScores[STAGE_COUNT];
-        LoadedReplayData mSelectedRepData;
-        std::wstring mSelectedRepDir;
-        std::wstring mSelectedRepName;
-        std::wstring mSelectedRepPath;
-        std::wstring mAppdataPath;
-        uint64_t mRepMetroHash[2];
+        uint32_t mSelectedRepStartStage = {};
+        uint32_t mSelectedRepEndStage = {};
+        uint32_t mSelectedRepPlaybackStartStage = {};
+        uint32_t mSelectedRepScores[STAGE_COUNT] = {};
+        uint32_t mSelectedRepMode = 0;
+        LoadedReplayData mSelectedRepData = {};
+        std::wstring mSelectedRepDir = {};
+        std::wstring mSelectedRepName = {};
+        std::wstring mSelectedRepPath = {};
+        std::wstring mAppdataPath = {};
+        uint64_t mRepMetroHash[2] = {};
 
         void DisableCardFix();
         void EnableCardFix(LoadedReplayData& rd);
@@ -788,6 +809,7 @@ namespace TH18 {
                 }
             }
             mSelectedRepScores[mSelectedRepEndStage] = GetMemContent((uintptr_t)&replay.info, 0x18);
+            mSelectedRepMode = GetMemContent((uintptr_t)&replay.info, 0xa);
 
             // load & decrypt file data
             LoadSelectedReplayData();
@@ -900,6 +922,17 @@ namespace TH18 {
         } else if (!GetEquippedCardCounts()[55]) {
             asm_call<0x411460, Thiscall>(*(uint32_t*)ABILITY_MANAGER_PTR, 55, 2);
         }
+    }
+
+    CardBase* FindEquippedCard(int32_t cardID)
+    {
+        AbilityManager* abilityManager = GetMemContent<AbilityManager*>(ABILITY_MANAGER_PTR);
+
+        for (ThList<CardBase>* cl = &abilityManager->card_list_head; cl; cl = cl->next)
+            if (cl->entry->card_id == cardID)
+                return cl->entry;
+
+        return nullptr;
     }
     PATCH_ST(th18_pause_skip_1, 0x458692, "E93F010000");
     PATCH_ST(th18_pause_skip_2, 0x4588e3, "0F1F8000000000");
@@ -1108,19 +1141,10 @@ namespace TH18 {
         PATCH_HK(0x40a42c, "909090909090")
         HOTKEY_ENDDEF();
         
-        HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(0x45748e, NOP(2)),
-        PATCH_HK(0x418283, NOP(2)),
-        EHOOK_HK(0x418427, 3, { // add indicator card for fraudulent purchases
-            uint32_t price = GetMemContent(CARD_PRICE_TABLE + 0x4 * ((TableCardData*)pCtx->Eax)->price);
-            if (price > GetMemContent(FUNDS) + GetMemContent(POWER) - 100)
-                AddIndicateCard();
-        })
-        HOTKEY_ENDDEF();
-        
         HOTKEY_DEFINE(mInfFunds, TH18_INFFUNDS, "F5", VK_F5)
         PATCH_HK(0x45c244, "909090909090"),
-        PATCH_HK(0x40d96f, "90909090909090909090"),
+        PATCH_HK(0x40d96f, "90909090909090909090"), // eiki 200g deduction
+        PATCH_HK(0x40da1a, NOP(2)), // allow eiki card use
         PATCH_HK(0x418496, "90909090909090909090"),
         PATCH_HK(0x418465, NOP(2)),
         PATCH_HK(0x418225, NOP(2)),
@@ -1156,11 +1180,36 @@ namespace TH18 {
         bool popColor = false;
 
     public:
+        
+        
+        HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
+        PATCH_HK(0x45748e, NOP(2)),
+        PATCH_HK(0x418283, NOP(2)),
+        PATCH_HK(0x410e7a, NOP(6)), // allow tsukasa card use
+        EHOOK_HK(0x418427, 3, { // add indicator card for fraudulent purchases
+            uint32_t price = GetMemContent(CARD_PRICE_TABLE + 0x4 * ((TableCardData*)pCtx->Eax)->price);
+            if (price > GetMemContent(FUNDS) + GetMemContent(POWER) - 100)
+                AddIndicateCard();
+        })
+        HOTKEY_ENDDEF();
+
         Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2 };
 
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F6", VK_F6)
         PATCH_HK(0x429eef, "eb"),
-        PATCH_HK(0x43021b, "058d")
+        PATCH_HK(0x43021b, "058d"),
+        EHOOK_HK(0x48c822, 4, { // freeze ECL sub time for stage's MainLatter
+            const uint32_t subID = *(uint32_t*)(pCtx->Edi+0x4);
+            const uint32_t stage = GetMemContent(STAGE_NUM) - 1;
+            constexpr uint8_t mainLatterIDs[7] = { 0, 99, 97, 0, 91, 113, 0 };
+
+            if (mainLatterIDs[stage] && subID == mainLatterIDs[stage]) {
+                const bool bossExists = (bool)GetMemContent(ENEMY_MANAGER_PTR, 0x48);
+
+                if (bossExists) // skip increasing sub time
+                    pCtx->Eip = 0x48c826;
+            }
+        })
         HOTKEY_ENDDEF();
 
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F9", VK_F9 };
@@ -1186,6 +1235,7 @@ namespace TH18 {
         int32_t mBombCount;
         int32_t mDeadBombCount;
 
+        int32_t active_uses[12];
     protected:
         virtual void OnLocaleChange() override
         {
@@ -1209,6 +1259,50 @@ namespace TH18 {
             }
         }
 
+        void DrawCardUseCount(float x, float y, unsigned char useCnt)
+        {
+            auto* drawList = ImGui::GetWindowDrawList();
+            auto& io = ImGui::GetIO();
+
+            ImVec2 pos = { (x / 1280.0f) * io.DisplaySize.x, (y / 960.0f) * io.DisplaySize.y };
+
+
+            char num[3];
+            char* num_end;
+            if (useCnt < 10) {
+                num[0] = useCnt + '0';
+                num_end = num + 1;
+            } else if (useCnt < 100) {
+                num[0] = ((useCnt / 10) % 10) + '0';
+                num[1] = (useCnt % 10) + '0';
+                num_end = num + 2;
+            } else {
+                num[0] = ((useCnt / 100) % 10) + '0';
+                num[1] = ((useCnt / 10) % 10) + '0';
+                num[2] = (useCnt % 10) + '0';
+                num_end = num + 3;
+            }
+
+            ImVec2 textSize = ImGui::CalcTextSize(num, num_end);
+
+            pos.x -= textSize.x;
+
+            ImVec2 pos2 = { pos.x - 3.0f, pos.y - 1.0f };
+            ImVec2 pos3 = { pos.x + textSize.x + 3.0f , pos.y + textSize.y + 1.0f };
+            drawList->AddRect(pos2, pos3, ImGui::GetColorU32(ImGuiCol_Border));
+
+            pos2.x += 1.0f;
+            pos2.y += 1.0f;
+            pos3.x -= 1.0f;
+            pos3.y -= 1.0f;
+
+            drawList->AddRectFilled(pos2, pos3, ImGui::GetColorU32(ImGuiCol_WindowBg));
+
+
+            drawList->AddText(pos, ImGui::GetColorU32(ImGuiCol_Text), num, num_end);
+        }
+
+
         virtual void OnContentUpdate() override
         {
             ImGui::Columns(2);
@@ -1220,6 +1314,41 @@ namespace TH18 {
             ImGui::NextColumn();
             ImGui::Text("%8d", mBombCount);
             
+            if (g_adv_igi_options.th18_card_activated_count)
+            {
+                // Active card use count windows
+                AbilityManager* abilityManager = GetMemContent<AbilityManager*>(ABILITY_MANAGER_PTR);
+                if (!abilityManager)
+                    return;
+                const int32_t activeCardCnt = abilityManager->num_active_cards;
+                uint32_t activeCardI = activeCardCnt; // we iterate backwards because ZUN does
+
+                auto p = ImGui::GetOverlayDrawList();
+
+                ImGui::SetNextWindowPos({ 0, 0 });
+                ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+                constexpr ImGuiWindowFlags trackerFlags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+
+                ImGui::Begin("###__card_use_wnd", nullptr, trackerFlags | ImGuiWindowFlags_NoBackground);
+                ImGui::SetWindowFontScale(1.0f);
+
+                for (ThList<CardBase>* cl = &abilityManager->card_list_head; cl; cl = cl->next) {
+                    const uint32_t cardID = cl->entry->card_id;
+                    if (cardID > 56)
+                        continue; // dummy card
+
+                    if (cl->entry->table_entry->category == 0) {
+                        const char idStr[3] = { (char)cardID, (char)activeCardI, '\0' };
+                        const float xPos = 1070.0f + // formula approximation done in excel
+                            (activeCardI - (activeCardCnt + 1) * 0.5f) * ((activeCardCnt > 4) ? (304.0f / (activeCardCnt - 1)) : 80.0f);
+                        const char useCnt = active_uses[GetActiveID(cardID)];
+
+                        DrawCardUseCount(xPos + 18.0f, 550.0f + 20.0f, useCnt); // x - 10.0f
+                        activeCardI--;
+                    }
+                }
+                ImGui::End();
+            }
         }
 
         virtual void OnPreUpdate() override
@@ -1409,10 +1538,6 @@ namespace TH18 {
             pCtx->Eip = 0x4448b0;
         }
     });
-    EHOOK_ST(th18_score_uncap_replay_fix, 0x4620b9, 3, {
-        if (pCtx->Eax > COUNTERSTOP)
-            pCtx->Eax = COUNTERSTOP;
-    });
     EHOOK_ST(th18_score_uncap_replay_disp, 0x468405, 1, {
         *(const char**)(pCtx->Esp) = scoreDispFmt;
     });
@@ -1443,6 +1568,7 @@ namespace TH18 {
 
     extern HookCtx th18_static_mallet_replay_gold;
     extern HookCtx th18_static_mallet_replay_green;
+    extern HookCtx th18_restart_reset_koishi;
     extern HookCtx th18_rep_card_fix;
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
@@ -1468,6 +1594,7 @@ namespace TH18 {
             th18_rep_card_fix.Setup();
             th18_static_mallet_replay_gold.Setup();
             th18_static_mallet_replay_green.Setup();
+            th18_restart_reset_koishi.Setup();
             th18_bossmovedown.Setup();
         }
         SINGLETON(THAdvOptWnd)
@@ -1494,23 +1621,20 @@ namespace TH18 {
                     pCtx->Eip = 0x42917b; // green
             }
         }
-
-        bool scoreUncapChkbox = true;
-        bool scoreUncapOverride = false;
-        bool staticMalletReplay = false;
     public:
         int forceBossMoveDir = 0;
         bool forceBossMoveDown = false;
-        
 
-        bool st6FinalFix = false;
-        bool scrollFix = false;
-        bool mukadeFix = false;
+        bool scoreUncapChkbox = false;
+        bool staticMalletReplay = false;
+        bool useManipLoadout = false;
+        bool manipAutoRestart = false;
+        bool manipSafetyMode = false;
+        bool saveManipFreeze = false;
         bool restartResetMarket = false;
-        bool activeCardIdFix = false;
-        bool eirinEikiCardFix = false;
-        bool funcCallFix = false;
-        bool activeCardRepFix = false;
+        bool restartResetKoishi = false;
+        bool showActiveCardRepFix = false;
+        bool showHiddenKoishiRepFix = false;
 
         struct FixData {
             uint32_t stage;
@@ -1700,6 +1824,16 @@ namespace TH18 {
             return SaveReplayWithData(mRepLoaded, repDataCopy);
         }
         
+        inline void CloneSelectedReplayWithParams(THPracParam newRepParam)
+        {
+            auto& guiRep = THGuiRep::singleton();
+            const std::wstring& repPath = guiRep.mSelectedRepPath;
+            const bool cloned = CloneReplayWithParams(repPath, newRepParam.GetJson(), L"18", *(HWND*)WINDOW_PTR);
+
+            if (cloned && !guiRep.mRepStatus)
+                guiRep.CheckReplay(); // refresh for if user overwrote selected file in menu
+        }
+
         bool GetAvailability()
         {
             LoadedReplayData& mRepLoaded = THGuiRep::singleton().mSelectedRepData;
@@ -1715,6 +1849,7 @@ namespace TH18 {
             }
             return true;
         }
+
         bool ReplayMenu()
         {
             bool wndFocus = true;
@@ -1741,7 +1876,8 @@ namespace TH18 {
                 else {
                     ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mSelectedRepName.c_str());
                     const uint32_t curStage = GetMemContent(RVA(STAGE_NUM));
-                    const bool startedOnCS = guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage - 1] == COUNTERSTOP;
+                    const bool startedOnCS = (guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage - 1] == COUNTERSTOP
+                        && mScoreOverwrites[guiReplay.mSelectedRepPlaybackStartStage - 1] <= COUNTERSTOP);
                     const bool inTransition = GetMemContent(TRANSITION_STG_PTR);
 
                     uint32_t firstStageCS = 0;
@@ -1767,9 +1903,11 @@ namespace TH18 {
                         ImGui::Text(S(st == 7 ? TH18_CS_REPFIX_EXTRA : TH18_CS_REPFIX_STAGE), st);
                         ImGui::SameLine();
 
+                        char num_with_commas_buf[32] = {};
+
                         if (stScoreOverwrite > stScore) {
                             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.9f, 0.3f, 1.0f));
-                            ImGui::Text("%s", FormatNumberWithCommas(((int64_t)stScoreOverwrite * 10)));
+                            ImGui::TextUnformatted(FormatNumberWithCommas(((int64_t)stScoreOverwrite * 10), num_with_commas_buf));
                             ImGui::PopStyleColor();
                             if (ImGui::IsItemHovered())
                                 ImGui::SetTooltip(S(TH18_CS_REPFIX_READY_HINT));
@@ -1777,7 +1915,7 @@ namespace TH18 {
                         } else if (stScore == COUNTERSTOP) {
                             if (guiReplay.mRepStatus && (curStage == st || inTransition) && curScore && !startedOnCS) {
                                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.9f, 0.3f, 1.0f));
-                                ImGui::Text("%s", FormatNumberWithCommas(((int64_t)curScore * 10)));
+                                ImGui::TextUnformatted(FormatNumberWithCommas(((int64_t)curScore * 10), num_with_commas_buf));
                                 ImGui::PopStyleColor();
                                 if (ImGui::IsItemHovered())
                                     ImGui::SetTooltip(S(TH18_CS_REPFIX_RECORDING_HINT));
@@ -1792,7 +1930,7 @@ namespace TH18 {
                                         firstStageCS);
                             }
                         } else {
-                            ImGui::Text("%s", FormatNumberWithCommas(((int64_t)stScore * 10)));
+                            ImGui::TextUnformatted(FormatNumberWithCommas(((int64_t)stScore * 10), num_with_commas_buf));
                         }
 
                         if (st == 3)
@@ -1827,9 +1965,9 @@ namespace TH18 {
                 HelpMarker(S(TH18_AC_REPFIX_DESC));
 
                 ImGui::SameLine();
-                ImGui::Checkbox(S(TH_TOOL_SHOW_TOGGLE), &activeCardRepFix);
+                ImGui::Checkbox(S(TH_TOOL_SHOW_TOGGLE), &showActiveCardRepFix);
 
-                if (activeCardRepFix) {
+                if (showActiveCardRepFix) {
                     if (THGuiRep::singleton().mRepSelected) {
                         bool hasFixOptions = false;
                         for (auto& data : mFixData) {
@@ -1889,12 +2027,54 @@ namespace TH18 {
                     }
                 }
 
+                // Seperate tools
+                ImGui::NewLine();
+                ImGui::Separator();
+
+                // Hidden Koishi Card replay desync fix tool
+                CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
+                ImGui::SameLine();
+                ImGui::TextUnformatted(S(TH18_HK_REPFIX));
+                ImGui::SameLine();
+                HelpMarker(S(TH18_HK_REPFIX_DESC));
+
+                ImGui::SameLine();
+                ImGui::PushID("HIDDEN_KOISHI_SHOW");
+                ImGui::Checkbox(S(TH_TOOL_SHOW_TOGGLE), &showHiddenKoishiRepFix);
+                ImGui::PopID();
+
+                if (showHiddenKoishiRepFix) {
+                    if (THGuiRep::singleton().mRepSelected && THGuiRep::singleton().mSelectedRepMode == 0) {
+                        if (!THGuiRep::singleton().mRepParam.hiddenKoishi) {
+                            ImGui::PushID("HIDDEN_KOISHI_SAVE");
+                            if (ImGui::Button(S(TH_REPFIX_SAVE))) {
+                                THPracParam newRepParam = THGuiRep::singleton().mRepParam;
+                                newRepParam.hiddenKoishi = true;
+                                CloneSelectedReplayWithParams(newRepParam);
+                            }
+                            ImGui::PopID();
+
+                        } else {
+                            ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                            ImGui::SameLine();
+
+                            if (ImGui::Button(S(TH_REPFIX_RESET_DATA))) {
+                                THPracParam newRepParam = THGuiRep::singleton().mRepParam;
+                                newRepParam.hiddenKoishi = false;
+                                CloneSelectedReplayWithParams(newRepParam);
+                            }
+                        }
+
+                    } else {
+                        ImGui::TextDisabled(S(TH_REPFIX_REAL_SELECTED_NONE));
+                    }
+                }
+
                 EndOptGroup();
             }
 
             return wndFocus;
         }
-
     public:
         void RestartResetMarket()
         {
@@ -1973,7 +2153,7 @@ namespace TH18 {
                 scoreUncapHooks[i].Setup();
             }
 
-            th18_score_uncap_replay_fix.Setup();
+            th18_score_uncap_replay_disp.Setup();
             th18_score_uncap_replay_disp.Setup();
             {
                 *(uintptr_t*)((uintptr_t)scoreUncapStageTrFix[0].data.buffer.ptr + 1) = (uintptr_t)&globals_assign_hooked - 0x4179c7;
@@ -1987,7 +2167,6 @@ namespace TH18 {
             for (auto& hook : scoreUncapHooks) {
                 hook.Toggle(scoreUncapChkbox);
             }
-            th18_score_uncap_replay_fix.Toggle(scoreUncapOverride);
             th18_score_uncap_replay_disp.Toggle(scoreUncapChkbox);
             scoreUncapStageTrFix[0].Toggle(scoreUncapChkbox);
             scoreUncapStageTrFix[1].Toggle(scoreUncapChkbox);
@@ -2119,6 +2298,7 @@ namespace TH18 {
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));
                 ImGui::Checkbox(S(TH_ENABLE_LOCK_TIMER), &g_adv_igi_options.enable_lock_timer_autoly);
+                ImGui::Checkbox(S(THPRAC_TH18_SHOW_CARD_ACTIVATED_CNT), &g_adv_igi_options.th18_card_activated_count);
 
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
@@ -2127,14 +2307,6 @@ namespace TH18 {
                 ImGui::SameLine();
                 HelpMarker(S(TH18_UNCAP_DESC));
 
-                /* Inclusion of this option is more confusing than it's worth
-                * Note that score uncap already affects replay scores (e.g. st5)
-                * & all the override does is force counterstop when writing the
-                * last stage's score
-                if (!scoreUncapChkbox) ImGui::BeginDisabled();
-                if (ImGui::Checkbox(S(TH18_UNCAP_OVERRIDE), &scoreUncapOverride))
-                    ScoreUncapSet();
-                if (!scoreUncapChkbox) ImGui::EndDisabled();*/
                 
                 if (ImGui::Checkbox(S(TH18_STATIC_MALLET), &staticMalletReplay)) {
                     th18_static_mallet_replay_gold.Toggle(staticMalletReplay);
@@ -2145,11 +2317,17 @@ namespace TH18 {
                 
                 EndOptGroup();
             }
+
             //if (BeginOptGroup<TH_BUGFIX>()) {
             //ImGui::TextUnformatted(S(TH18_BUGFIX_DESC));
             ImGui::TextUnformatted(S(TH_BUGFIX_AUTO));
             ImGui::SameLine();
             HelpMarker(S(TH18_BUGFIX_AUTO_DESC));
+            if (ImGui::Checkbox(S(TH18_RESTART_RESET_KOISHI), &restartResetKoishi)) {
+                th18_restart_reset_koishi.Toggle(restartResetKoishi);
+            }
+            ImGui::SameLine();
+            HelpMarker(S(TH18_RESTART_RESET_KOISHI_DESC));
             //EndOptGroup();
             //}
 
@@ -2202,7 +2380,7 @@ namespace TH18 {
     EHOOK_ST(th18_rep_card_fix, 0x462e4b, 5, {
         auto& advOptWnd = THAdvOptWnd::singleton();
 
-        if (advOptWnd.activeCardRepFix && advOptWnd.GetAvailability()) {
+        if (advOptWnd.showActiveCardRepFix && advOptWnd.GetAvailability()) {
             auto& fixVec = advOptWnd.mFixData;
             for (auto& fix : fixVec) {
                 if (fix.stage == *(uint32_t*)0x4CCCDC) {
@@ -2219,6 +2397,10 @@ namespace TH18 {
     EHOOK_ST(th18_static_mallet_replay_green, 0x42921d, 5, {
         if (THGuiRep::singleton().mRepStatus)
             THAdvOptWnd::StaticMalletConversion(pCtx);
+    });
+
+    EHOOK_ST(th18_restart_reset_koishi, 0x42aba9, 1, {
+        *(uint32_t*)(pCtx->Ebx + 0x164) = 0;
     });
 
     void ECLStdExec(ECLHelper& ecl, unsigned int start, int std_id, int ecl_time = 0)
@@ -3483,6 +3665,20 @@ namespace TH18 {
              thPracParam._playLock = true;
          });
 
+         // record extra data for hidden koishi card desync
+         const uint32_t stage = GetMemContent(STAGE_NUM);
+
+         if (stage == 1 || stage == 7) {
+             if (!THGuiRep::singleton().mRepStatus) { // recording
+                 // note: not possible in practice mode since equipped card list can't change mid-run
+                 thPracParam.hiddenKoishi = (GetMemContent(ENEMY_MANAGER_PTR, 0x164) && !FindEquippedCard(27));
+
+             } else if (thPracParam.hiddenKoishi) { // playback
+                 uintptr_t enemyManager = GetMemContent(ENEMY_MANAGER_PTR);
+                 *(uint32_t*)(enemyManager + 0x164) = 1;
+             }
+         }
+
          if (thPracParam.mode != 1)
              return;
 
@@ -3498,9 +3694,9 @@ namespace TH18 {
          *(int32_t*)(0x4ccd38) = thPracParam.power;
          *(int32_t*)(0x4ccd30) = *(int32_t*)(0x4ccd34) = thPracParam.funds;
 
-         auto* ability_manager = *(AbilityManager**)ABILITY_MANAGER_PTR;
+         AbilityManager* abilityManager = GetMemContent<AbilityManager*>(ABILITY_MANAGER_PTR);
 
-         for (ThList<CardBase>* entry = &ability_manager->card_list_head; entry; entry = entry->next) {
+         for (ThList<CardBase>* entry = &abilityManager->card_list_head; entry; entry = entry->next) {
              CardBase* card = entry->entry;
              if (!GameState_Assert(card != nullptr))
                  continue;
@@ -3533,6 +3729,7 @@ namespace TH18 {
                      if (thPracParam.lily_count >= 10)
                          ((CardLily*)card)->count += thPracParam.lily_cycle + 2;
                  }
+                 TH18InGameInfo::singleton().active_uses[7] = ((CardLily*)card)->count;
                  R(lily_cd);
                  break;
              case BASSDRUM:
@@ -3598,26 +3795,48 @@ namespace TH18 {
         if (Gui::KeyboardInputGetRaw('Q')) {
             pCtx->Eip = 0x459578;
         }
+    }) 
+    
+     EHOOK_DY(th18_stage_transition, 0x443e60, 1, {
+        auto& guiReplay = THGuiRep::singleton();
+        if(!guiReplay.mRepStatus) return;
+
+        // updating lily use tracker based on card data
+
+        CardLily* lilyCard = (CardLily*)FindEquippedCard(48);
+        if (lilyCard)
+            TH18InGameInfo::singleton().active_uses[7] = (char)lilyCard->count;
+
+        // keeping track of score for CS fix
+        const uint32_t stage = GetMemContent(STAGE_NUM);
+        const uint32_t score = GetMemContent(SCORE);
+
+        if (stage > 1 && score) {
+            auto& advOptWnd = THAdvOptWnd::singleton();
+
+            if (score == COUNTERSTOP && advOptWnd.mScoreOverwrites[stage - 1] > score) {
+                *(uint32_t*)SCORE = advOptWnd.mScoreOverwrites[stage - 1];
+
+            } else {
+                const bool startedOnCS = (guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage - 1] == COUNTERSTOP
+                    && advOptWnd.mScoreOverwrites[guiReplay.mSelectedRepPlaybackStartStage - 1] <= COUNTERSTOP);
+
+                if (!startedOnCS && advOptWnd.mScoreOverwrites[stage - 1] < score)
+                    advOptWnd.mScoreOverwrites[stage - 1] = score;
+            }
+        }
     })
-    EHOOK_DY(th18_stage_transition, 0x443e60, 1, {
+    EHOOK_DY(th18_replay_end, 0x4588f0, 1, {
         auto& guiReplay = THGuiRep::singleton();
+        if (!guiReplay.mRepStatus) return;
+
         auto& advOptWnd = THAdvOptWnd::singleton();
-
-        const uint32_t stage = GetMemContent(RVA(STAGE_NUM));
+        const uint32_t stage = GetMemContent(STAGE_NUM);
         const uint32_t score = GetMemContent(SCORE);
-        const bool startedOnCS = guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage - 1] == COUNTERSTOP;
+        const bool startedOnCS = (guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage - 1] == COUNTERSTOP
+            && advOptWnd.mScoreOverwrites[guiReplay.mSelectedRepPlaybackStartStage - 1] <= COUNTERSTOP);
 
-        if (guiReplay.mRepStatus && !startedOnCS && score && stage > 1 && advOptWnd.mScoreOverwrites[stage - 1] < score)
-            advOptWnd.mScoreOverwrites[stage - 1] = score;
-    }) EHOOK_DY(th18_replay_end, 0x4588f0, 1, {
-        auto& guiReplay = THGuiRep::singleton();
-        auto& advOptWnd = THAdvOptWnd::singleton();
-
-        const uint32_t stage = GetMemContent(RVA(STAGE_NUM));
-        const uint32_t score = GetMemContent(SCORE);
-        const bool startedOnCS = guiReplay.mSelectedRepScores[guiReplay.mSelectedRepPlaybackStartStage - 1] == COUNTERSTOP;
-
-        if (guiReplay.mRepStatus && !startedOnCS && score && stage && advOptWnd.mScoreOverwrites[stage - 1] < score)
+        if (!startedOnCS && score && stage && advOptWnd.mScoreOverwrites[stage-1] < score)
             advOptWnd.mScoreOverwrites[stage] = score;
     })
     // fix AoD timeout in Spell Prac crashing the game
@@ -3689,6 +3908,24 @@ namespace TH18 {
         if (!THAdvOptWnd::singleton().scoreUncapChkbox && *(uint32_t*)score > 999999999)
             *(uint32_t*)score = 999999999;
     })
+    EHOOK_DY(th18_c_press_count, 0x45c099, 3, {
+        const CardBase* curCard = (CardBase*)(pCtx->Ecx);
+        if(curCard->_recharge_timer.current) return; // cooldown
+
+        if (curCard->card_id == 52) { // tsukasa card conditions
+            auto& overlay = THOverlay::singleton();
+
+            if (!*overlay.mInfPower && GetMemContent(POWER) < GetMemContent(0x4ccd40) * 2) return; // power
+            if (GetMemContent(BOMB_PTR, 0x30) || GetMemContent(BOMB_PTR, 0xa0)) return; // bombing
+        }
+
+        else if (curCard->card_id == 41) { // yukari card conditions
+            if(GetMemContent(PLAYER_PTR, 0x4779c) & 0x180) return; // flags: can't warp
+            if(GetMemContent(PLAYER_PTR, 0x62c) + 0x5bff <= 0xb7fe) return; // unsure tbh
+        }
+
+        TH18InGameInfo::singleton().active_uses[GetActiveID(curCard->card_id)]++;
+    })
     EHOOK_DY(th18_add_card, 0x411460, 1, {
        uint32_t* list = nullptr;
        uint32_t sub_count = 0;
@@ -3731,7 +3968,7 @@ namespace TH18 {
     })
     EHOOK_DY(th18_rep_save, 0x462657, 5, {
         char* repName = (char*)(pCtx->Esp + 0x30);
-        if (thPracParam.mode == 1)
+        if (thPracParam.mode == 1 || thPracParam.hiddenKoishi)
             THSaveReplay(repName);
         else if (thPracParam.mode == 2 && thPracParam.phase)
             THSaveReplay(repName);
@@ -3824,6 +4061,7 @@ namespace TH18 {
         TH18InGameInfo::singleton().mBombCount = 0;
         TH18InGameInfo::singleton().mMissCount = 0;
         TH18InGameInfo::singleton().mDeadBombCount = 0;
+        memset(TH18InGameInfo::singleton().active_uses, 0, sizeof(TH18InGameInfo::singleton().active_uses));
     })
     EHOOK_DY(th18_bomb_dec, 0x4574D3,4, // bomb dec
     {

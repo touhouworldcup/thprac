@@ -155,7 +155,6 @@ inline void GuiSetPosYRel(float rel)
     ImGui::SetCursorPosY(ImGui::GetWindowHeight() * rel);
 }
 
-void GuiHelpMarker(const char* desc);
 int GuiCornerButton(
     const char* text,
     const char* text2 = nullptr,

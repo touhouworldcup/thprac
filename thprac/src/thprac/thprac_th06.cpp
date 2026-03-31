@@ -29,6 +29,8 @@ namespace TH06 {
     static const GameManager* const GAME_MANAGER = (const GameManager* const)0x69bca0;
 
     enum ADDRS {
+        ENEMY_MANAGER = 0x4b79c8,
+        GUI = 0x69bc30,
         INPUT_ADDR = 0x69D904,
         INPUT_PREV_ADDR = 0x69D908,
     };
@@ -468,7 +470,25 @@ namespace TH06 {
         HOTKEY_ENDDEF();
         
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
-        PATCH_HK(0x412DD1, "eb")
+        PATCH_HK(0x412DD1, "eb"),
+        EHOOK_HK(0x412e31, 5, { // freeze timeline progress during st1/2/4/5 mid (missing boss_wait)
+            const uint32_t st = GAME_MANAGER->currentStage - 1;
+            if (st >= 5 || st == 2) return;
+
+            constexpr uint32_t midStart[5] = { 2008, 2588, 0, 4132, 3374 };
+            constexpr uint32_t midLength[5] = { (24+24)*60, 32*60, 0, 40*60, (40+30)*60 };
+            constexpr uint32_t midExtraWait[5] = { 4*60, 15*60, 0, 12*60, 5*60 };
+
+            const bool bossExists = GetMemContent<bool>(GUI + 0x20);
+            const uint32_t curTime = pCtx->Edx;
+
+            if (bossExists && curTime >= midStart[st] && curTime < midStart[st] + midLength[st]) {
+                pCtx->Eip = 0x412e36; // don't tick timeline
+
+                if (curTime < midStart[st] + midExtraWait[st]) // remove unnecessary wait
+                    *(int32_t*)(ENEMY_MANAGER + 0xee5e0 + 0x8) = midStart[st] + midExtraWait[st];
+            }
+        })
         HOTKEY_ENDDEF();
 
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };

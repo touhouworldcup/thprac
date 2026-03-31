@@ -45,8 +45,11 @@ namespace TH11 {
     Globals* globals = (Globals*)0x4a56e0;
 
     static_assert(offsetof(Player, marisa_b_formation) == 0x8bac);
+
     enum addrs {
+        STAGE_NUM = 0x4a5728,
         STAGE_PTR = 0x4a8d60,
+        ENEMY_MGR_PTR = 0x4a8d7c,
         REPLAY_MGR_PTR = 0x4a8eb8,
         GAME_THREAD_PTR = 0x4a8e88,
     };
@@ -588,7 +591,26 @@ namespace TH11 {
 
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F4", VK_F4)
         PATCH_HK(0x40C0DD, "eb"),
-        PATCH_HK(0x41278C, "90")
+        PATCH_HK(0x41278C, "90"),
+        EHOOK_HK(0x45d2a3, 2, { // freeze ECL sub time for st4-6 main during midboss
+            uint32_t stage = globals->stage;
+            if (stage <= 3 || stage == 7) return;
+
+            const uint32_t enmFlags = GetMemContent(pCtx->Edi + 0x1014, 0x103c + 0x1580);
+            if (enmFlags != 20512) return; // only main
+
+            const bool bossExists = (bool)GetMemContent(ENEMY_MGR_PTR, 0x1c);
+            if (bossExists) { // skip increasing sub time
+                pCtx->Eip = 0x45d2a5;
+
+                // reduce main sub waits matching midboss signature (band-aid)
+                constexpr float postMidWaits[3] = { -900.0f, -1800.0f, -1000.0f };
+                const float curTime = *(float*)pCtx->Edi;
+
+                if (curTime == postMidWaits[stage - 4] || (stage == 4 && curTime == -600.0f)) // st4 has 2 midbosses
+                    *(float*)pCtx->Edi = -100.0f;
+            }
+        })
         HOTKEY_ENDDEF();
 
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F6", VK_F6 };

@@ -10,10 +10,12 @@ namespace TH14 {
     bool g_show_bullet_hitbox = false;
     enum addrs {
         BOMB_PTR = 0x4DB52C,
-        WINDOW_PTR = 0x4f5a18,
+        ENEMY_MANAGER_PTR = 0x4db544,
         CHARA_ADDR = 0x4f5828,
         SUBSHOT_ADDR = 0x4f582c,
         PLAYER_PTR = 0x4db67c,
+        STAGE_NUM = 0x4f58a4,
+        WINDOW_PTR = 0x4f5a18,
     };
     int g_lock_timer = 0;
     bool g_lock_timer_flag = false;
@@ -584,7 +586,25 @@ namespace TH14 {
 
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
         PATCH_HK(0x41C5DD, "eb"),
-        PATCH_HK(0x424ACA, "90")
+        PATCH_HK(0x424ACA, "90"),
+        EHOOK_HK(0x483c4f, 4, { // freeze ECL sub time for stage 5's MainLatter
+            if (GetMemContent(STAGE_NUM) != 5) return;
+
+            constexpr uint32_t st5MainLatterID = 65;
+            const uint32_t eclSubArr = GetMemContent(ENEMY_MANAGER_PTR, 0xcc, 0x8c);
+            const uint32_t st5MainLatterStart = GetMemContent(eclSubArr + 0x8 * st5MainLatterID + 0x4);
+            const uint32_t st5MainLatterEnd = GetMemContent(eclSubArr + 0x8 * (st5MainLatterID + 1) + 0x4);
+            const uint32_t curInstr = *(uint32_t*)(pCtx->Edi + 0x4);
+
+            // note: this bounds check technique does not work for every sub due to how subs
+            //       are stored (not strictly contiguous) but should work for MainLatter subs
+            if (curInstr >= st5MainLatterStart && curInstr < st5MainLatterEnd) {
+                const bool bossExists = (bool)GetMemContent(ENEMY_MANAGER_PTR, 0x5c);
+
+                if (bossExists) // skip increasing sub time
+                    pCtx->Eip = 0x483c53;
+            }
+        })
         HOTKEY_ENDDEF();
 
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };

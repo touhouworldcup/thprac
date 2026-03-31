@@ -176,6 +176,10 @@ bool CheckIfGameExist(THGameSig& gameSig, std::wstring& name, bool& isSteamExe)
             name = L"東方紅魔郷.exe";
             return true;
         }
+        if (CheckIfGameExistEx(gameSig, L"搶曽峠杺嫿.exe", isSteamExe)) {
+            name = L"搶曽峠杺嫿.exe";
+            return true;
+        }
     }
     std::wstring n = utf8_to_utf16(gameSig.idStr);
     n += L".exe";

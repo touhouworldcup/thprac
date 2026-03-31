@@ -12,12 +12,14 @@ namespace TH10 {
 
     int g_rep_page = 0;
     const char chars_supported[] = "!\"#$%&' ()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~";
-    enum ADDRS {
-        SOUND_MANAGER_ADDR = 0x492590,
-        DIFF_ADDR = 0x474C74,
-        CHARA_ADDR = 0x474C68,
-        SUBSHOT_ADDR = 0x474C6C,
+    enum addrs {
+        CHARA_ADDR = 0x474c68,
+        SUBSHOT_ADDR = 0x474c6c,
+        DIFF_ADDR = 0x474c74,
+        STAGE_NUM = 0x474c7c,
+        ENEMY_MANAGER_PTR = 0x477704,
         PLAYER_PTR = 0x477834,
+        SOUND_MANAGER_ADDR = 0x492590,
     };
     // Workaround for TH10's calling conventions
     // ecx: SOUND_MANAGER_PTR
@@ -535,7 +537,28 @@ namespace TH10 {
         Gui::GuiHotKey mInfLives { TH_INFLIVES2, "F2", VK_F2 };
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F4", VK_F4)
         PATCH_HK(0x408D93, "eb"),
-        PATCH_HK(0x40E5B0, "90")
+        PATCH_HK(0x40E5B0, "90"),
+        EHOOK_HK(0x44fb9f, 2, { // freeze ECL sub time for st1/2/4 main during midboss
+            const uint32_t stage = GetMemContent(STAGE_NUM) - 1;
+            if (stage >= 2 && stage != 3) return;
+
+            const uint32_t enmFlags = GetMemContent(pCtx->Esi + 0x1014, 0x103c + 0x1444);
+            if (enmFlags != 1296) return; // only main
+
+            const bool bossExists = (bool)GetMemContent(ENEMY_MANAGER_PTR, 0x10);
+            const float curTime = *(float*)pCtx->Esi;
+
+            if (bossExists && curTime) { // skip increasing sub time
+                pCtx->Eip = 0x44fba1;
+
+                // skip post-midboss main sub wait
+                constexpr float mainTimeMid[4] = { 2200.0f, 2200.0f, 0.0f, 3600.0f };
+                constexpr float mainTimePostMid[4] = { 2600.0f, 2900.0f, 0.0f, 4100.0f };
+
+                if (curTime >= mainTimeMid[stage] && curTime < mainTimePostMid[stage])
+                    *(float*)pCtx->Esi = mainTimePostMid[stage];
+            }
+        })
         HOTKEY_ENDDEF();
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
         Gui::GuiHotKey mInGameInfo { THPRAC_INGAMEINFO, "F8", VK_F8 };
@@ -2645,7 +2668,7 @@ namespace TH10 {
         if (transition_stage_ptr)
             return;
 
-        uint32_t stage_num = *(uint32_t*)0x474c7c;
+        uint32_t stage_num = *(uint32_t*)STAGE_NUM;
         if (stage_num != 4)
             return;
 

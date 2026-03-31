@@ -617,7 +617,7 @@ public:
         }
         if (helpTxt) {
             ImGui::SameLine();
-            GuiHelpMarker(helpTxt);
+            HelpMarker(helpTxt);
         }
     }
 };
@@ -641,7 +641,7 @@ public:
         }
         if (helpTxt) {
             ImGui::SameLine();
-            GuiHelpMarker(helpTxt);
+            HelpMarker(helpTxt);
         }
     }
 };
@@ -661,7 +661,7 @@ public:
         }
         if (helpTxt) {
             ImGui::SameLine();
-            GuiHelpMarker(helpTxt);
+            HelpMarker(helpTxt);
         }
     }
 };
@@ -684,7 +684,7 @@ public:
         }
         if (helpTxt) {
             ImGui::SameLine();
-            GuiHelpMarker(helpTxt);
+            HelpMarker(helpTxt);
         }
     }
 };
@@ -704,7 +704,7 @@ public:
         }
         if (helpTxt) {
             ImGui::SameLine();
-            GuiHelpMarker(helpTxt);
+            HelpMarker(helpTxt);
         }
         return result;
     }
@@ -728,7 +728,7 @@ public:
         }
         if (helpTxt) {
             ImGui::SameLine();
-            GuiHelpMarker(helpTxt);
+            HelpMarker(helpTxt);
         }
     }
 };
@@ -750,7 +750,7 @@ public:
         }
         if (helpTxt) {
             ImGui::SameLine();
-            GuiHelpMarker(helpTxt);
+            HelpMarker(helpTxt);
         }
     }
 };
@@ -797,7 +797,7 @@ public:
         }
         if (helpTxt) {
             ImGui::SameLine();
-            GuiHelpMarker(helpTxt);
+            HelpMarker(helpTxt);
         }
         return result;
     }
@@ -1103,22 +1103,33 @@ private:
     static void CheckUpdateJson(const char* jsonStr, size_t jsonSize = 0)
     {
         rapidjson::Document versionJson;
+
         if (!versionJson.Parse(jsonStr, jsonSize ? jsonSize : strlen(jsonStr) + 1).HasParseError()) {
             if (versionJson.HasMember("version")) {
-                auto& version = versionJson["version"];
-                if (version.IsArray() && version.Size() == 4 && version[0].IsInt() && version[1].IsInt() && version[2].IsInt() && version[3].IsInt()) {
-                    for (int i = 0; i < 4; ++i) {
-                        int versionNum = version[i].GetInt();
-                        if (versionNum > GetVersionInt()[i]) {
-                            InitUpdatePopup(versionJson);
-                            return;
-                        } else if (versionNum < GetVersionInt()[i]) {
-                            break;
-                        }
-                    }
+                auto& ver = versionJson["version"];
+
+                // validation
+                if (!ver.IsArray() || ver.Size() != 4 || !ver[0].IsInt()
+                    || !ver[1].IsInt() || !ver[2].IsInt() || !ver[3].IsInt())
+                    return;
+
+                const int verMeta = ver[0].GetInt();
+                const int verMajor = ver[1].GetInt();
+                const int verMinor = ver[2].GetInt();
+                const int verPatch = ver[3].GetInt();
+
+                if (verMeta < 0 || verMeta > 255 || verMajor < 0 || verMajor > 255
+                    || verMinor < 0 || verMinor > 255 || verPatch < 0 || verPatch > 255)
+                    return;
+
+                const ThpracVersion updateVersion { (uint8_t)verMeta, (uint8_t)verMajor, (uint8_t)verMinor, (uint8_t)verPatch };
+                if (updateVersion > currentVersion) {
+                    InitUpdatePopup(versionJson);
+                    return;
                 }
             }
         }
+
         THUpdate::singleton().mChkUpdStatus = STATUS_NO_UPDATE;
         return;
     }
@@ -2326,7 +2337,7 @@ private:
     void GuiMain()
     {
         if (ImGui::CollapsingHeader(S(THPRAC_COMPATIBILITY_SETTINGS))) {
-            mTryInnerPatch.Gui(S(THPRAC_GAMES_USE_INNER_PATCH), S(THPRAC_GAMES_USE_INNER_PATCH_DESC));
+            // mTryInnerPatch.Gui(S(THPRAC_GAMES_USE_INNER_PATCH), S(THPRAC_GAMES_USE_INNER_PATCH_DESC));
             mFixEscLag.Gui(S(THPRAC_GAMES_FIX_ESC_LAG), S(THPRAC_GAMES_FIX_ESC_LAG_DESC));
             mDisableJoy.Gui(S(THPRAC_DISABLE_JOY), S(THPRAC_DISABLE_JOY_DESC));
             mCfgUnlockRefreshRate.Gui(S(THPRAC_UNLOCK_REFRESH_RATE), S(THPRAC_UNLOCK_REFRESH_RATE_DESC));
@@ -2345,7 +2356,7 @@ private:
             mMsgBoxA2W.Gui(S(THPRAC_HOOK_MSG_BOX_A2W), S(THPRAC_HOOK_MSG_BOX_A2W_DESC));
             mUseCorrectJaFonts.Gui(S(THPRAC_RENDER_CORRECT_FONT), S(THPRAC_RENDER_CORRECT_FONT_DESC));
             ImGui::SameLine();
-            GuiHelpMarker(S(THPRAC_RENDER_CORRECT_FONT_DESC2));
+            HelpMarker(S(THPRAC_RENDER_CORRECT_FONT_DESC2));
             // custom fonts
             mUseCustomFont.Gui(S(THPRAC_CUSTOM_FONTS), S(THPRAC_CUSTOM_FONTS_DESC));
             if (mUseCustomFont.Get()) {
@@ -2468,13 +2479,14 @@ private:
             mCfgEnableTH14_ShowDropBar_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR2));
             mCfgEnableTH14_LaserRepRepair_autoly.Gui(S(THPRAC_INGAMEINFO_TH14_MARISA_LASER_REP));
             ImGui::SameLine();
-            GuiHelpMarker(S(TH14_MODE_NORMAL_DESC));
+            HelpMarker(S(TH14_MODE_NORMAL_DESC));
 
             mCfgEnableTH15_ShowShootingDownRate_autoly.Gui(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2));
+            mCfgTH18EnableCardActivatedCount.Gui(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2));
 
             mCfgTH18ForceCard.Gui(S(THPRAC_TH18_FORCE_CARD), S(THPRAC_TH18_FORCE_CARD_DESC));
             ImGui::SameLine();
-            GuiHelpMarker(S(THPRAC_TH18_FORCE_CARD_DESC2));
+            HelpMarker(S(THPRAC_TH18_FORCE_CARD_DESC2));
             if (mCfgTH18ForceCard.Get()){
                 if (ImGui::TreeNode(S(THPRAC_TH18_CARD))){
                     static char card_names[32768];
@@ -2621,7 +2633,7 @@ private:
             int time = 2;
             mCheckUpdateTiming.Set(time);
             ImGui::SameLine();
-            GuiHelpMarker(S(THPRAC_CHECK_UPDATE_WHEN_OPTION_2));
+            HelpMarker(S(THPRAC_CHECK_UPDATE_WHEN_OPTION_2));
             if (mCheckUpdateTiming.Get() == 2) {
                 ImGui::BeginDisabled();
                 mUpdateWithoutConfirm.Gui(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION));
@@ -2720,6 +2732,7 @@ private:
     // THCfgCheckbox mCfgEnableAutoEsc_autoly { "auto_esc_when_loss_focus", false };
 
     THCfgCheckbox mCfgTH18ForceCard { "th18_force_card", false };
+    THCfgCheckbox mCfgTH18EnableCardActivatedCount { "th18_card_activated_count", false };
     THCfgCombo mCfgTH18Card_st1 { "th18_card_st1", 0,56 };
     THCfgCombo mCfgTH18Card_st2 { "th18_card_st2", 0,56 };
     THCfgCombo mCfgTH18Card_st3 { "th18_card_st3", 0,56 };

@@ -338,6 +338,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         LauncherSettingGet("forceLS_08", g_adv_igi_options.th08_forceLS);
         LauncherSettingGet("th10_ud_Replay", g_adv_igi_options.th10_ud_Replay);
         LauncherSettingGet("chromatic_UFO_info", g_adv_igi_options.th12_chromatic_ufo);
+        LauncherSettingGet("th18_card_activated_count", g_adv_igi_options.th18_card_activated_count);
 
         LauncherSettingGet("th18_force_card", g_adv_igi_options.th18_force_card);
         LauncherSettingGet("th18_card_st1", g_adv_igi_options.th18_cards[0]);
@@ -620,7 +621,8 @@ void InitHook(int ver,void* addr1, void* addr2)
     is_inited = true;
     if (LauncherCfgInit(true)) {
         bool msg_box_a2w = false;
-        LauncherSettingGet("tryInnerPatch", g_adv_igi_options.try_inner_patch);
+        // LauncherSettingGet("tryInnerPatch", g_adv_igi_options.try_inner_patch);
+        g_adv_igi_options.try_inner_patch = false;// it's buggy currently
         
         if (LauncherSettingGet("msg_box_a2w", msg_box_a2w) && msg_box_a2w)
         {
@@ -780,30 +782,6 @@ void CalcFileHash(const wchar_t* file_name, uint64_t hash[2])
     MappedFile file(file_name);
     if (file.fileMapView)
         MetroHash128::Hash((uint8_t*)file.fileMapView, file.fileSize, (uint8_t*)hash);
-}
-
-void HelpMarker(const char* desc)
-{
-    ImGui::TextDisabled("(?)");
-    if (ImGui::IsItemHovered()) {
-        ImGui::BeginTooltip();
-        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-        ImGui::TextUnformatted(desc);
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
-    }
-}
-
-void CustomMarker(const char* text, const char* desc)
-{
-    ImGui::TextDisabled(text);
-    if (ImGui::IsItemHovered()) {
-        ImGui::BeginTooltip();
-        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-        ImGui::TextUnformatted(desc);
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
-    }
 }
 
 int FPSHelper(adv_opt_ctx& ctx, bool repStatus, bool vpFast, bool vpSlow, FPSHelperCallback* callback)
@@ -1405,6 +1383,57 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path)
 
     return ReplayClearResult::NoParams;
 }
+bool CloneReplayWithParams(const std::wstring& rep_path, const std::string& param, const wchar_t* gameId, HWND window)
+{
+    // setup open file prompt
+    OPENFILENAMEW ofn;
+    wchar_t szFile[512];
+    swprintf_s(szFile, L"th%s_ud----.rpy", gameId);
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = window;
+    ofn.lpstrFile = szFile;
+    ofn.nMaxFile = sizeof(szFile);
+    ofn.lpstrFilter = L"Replay File\0*.rpy\0";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = nullptr;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = rep_path.c_str();
+    ofn.lpstrDefExt = L".rpy";
+    ofn.Flags = OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
+
+    if (GetSaveFileNameW(&ofn)) {
+        bool existingFile = (GetFileAttributesW(szFile) != INVALID_FILE_ATTRIBUTES);
+        bool samePath = (GetUnifiedPath(szFile) == GetUnifiedPath(rep_path));
+
+        // copy original replay to the selected path, overwriting if existing (unless same path)
+        if (!samePath && !CopyFileW(rep_path.c_str(), szFile, FALSE)) {
+            MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST), nullptr, ofn.hwndOwner);
+            return false;
+        }
+
+        // clear thprac params if present (no impact otherwise)
+        if (ReplayClearParam(szFile) == ReplayClearResult::Error) {
+            MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS), nullptr, ofn.hwndOwner);
+            if (!existingFile)
+                DeleteFileW(szFile);
+            return false;
+        }
+
+        // save params & notify
+        if (!ReplaySaveParam(szFile, param)) {
+            MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
+            return true;
+
+        } else { // delete copy if params didn't save
+            MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_PARAMS), nullptr, ofn.hwndOwner);
+            if (!existingFile)
+                DeleteFileW(szFile);
+        }
+    }
+
+    return false;
+}
 
 
 
@@ -1582,4 +1611,26 @@ bool GameState_Assert(bool cond)
         ExitProcess(UINT_MAX);
 }
 #pragma endregion
+
+#pragma region Config Codes
+
+bool ValidateConfigCode(const char* input, size_t length)
+{
+    // Must be given length
+    if (!input || strlen(input) != length)
+        return false;
+
+    // Must be hex
+    for (size_t i = 0; i < length; i++) {
+        const char c = input[i];
+
+        if ((c < '0' || c > '9') && (c < 'a' || c > 'f') && (c < 'A' || c > 'F'))
+            return false;
+    }
+
+    return true;
+}
+
+#pragma endregion
+
 }

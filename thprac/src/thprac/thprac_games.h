@@ -51,6 +51,7 @@ namespace THPrac {
         bool show_keyboard_monitor = false;
         bool th10_ud_Replay = false;
         bool th12_chromatic_ufo = false;
+        bool th18_card_activated_count = false;
 
         bool th20_piv_overflow_fix = false;
         bool th20_piv_uncap = false;
@@ -147,12 +148,10 @@ void CenteredText(const char* text, float wndX);
 float GetRelWidth(float rel);
 float GetRelHeight(float rel);
 void CalcFileHash(const wchar_t* file_name, uint64_t hash[2]);
-void HelpMarker(const char* desc);
-void CustomMarker(const char* text, const char* desc);
-template <th_glossary_t name>
+template <th_glossary_t name, bool default_expand = true>
 static bool BeginOptGroup()
 {
-    static bool group_status = true;
+    static bool group_status = default_expand;
     ImGui::SetNextItemOpen(group_status);
     group_status = ImGui::CollapsingHeader(Gui::LocaleGetStr(name), ImGuiTreeNodeFlags_None);
     if (group_status)
@@ -319,6 +318,7 @@ enum class ReplayClearResult { Cleared, NoParams, Error };
 bool ReplaySaveParam(const wchar_t* rep_path, const std::string& param);
 bool ReplayLoadParam(const wchar_t* rep_path, std::string& param);
 ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
+bool CloneReplayWithParams(const std::wstring& rep_path, const std::string& param, const wchar_t* gameId, HWND window);
 
 #pragma endregion
 
@@ -436,6 +436,32 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
         param.AddMember(rapidjson::Value(#value_name, jalloc), json_##value_name, jalloc); \
     }
 
+#pragma endregion
+
+#pragma region Config Codes
+
+template <size_t maxLen = 12>
+const char* GetTrimmedClipboardText()
+{
+    const char* clipboardText = ImGui::GetClipboardText();
+    if (!clipboardText)
+        return "";
+
+    static char trimmed[maxLen + 1];
+
+    const char* start = clipboardText;
+    while (*start == ' ')
+        ++start;
+
+    const size_t len = strlen(start);
+    const size_t copyLen = len > maxLen ? maxLen : len;
+    memcpy(trimmed, start, copyLen);
+    trimmed[copyLen] = '\0';
+
+    return trimmed;
+}
+
+bool ValidateConfigCode(const char* input, size_t length = 12);
 #pragma endregion
 
 #pragma region Virtual File System
@@ -661,6 +687,15 @@ inline long RoundDown(long n, long m)
 inline long RoundUp(long n, long m)
 {
     return n >= 0 ? ((n + m - 1) / m) * m : (n / m) * m;
+}
+
+/* normalize float value to [-pi, pi] range */
+/* ...why not */
+inline float NormRad(float a)
+{
+    constexpr float PI = 3.14159265358979323846f;
+    constexpr float TWO_PI = 2.0f * PI;
+    return std::remainderf(a, TWO_PI);
 }
 
 #pragma endregion

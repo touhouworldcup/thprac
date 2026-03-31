@@ -6,8 +6,10 @@
 namespace THPrac {
 namespace TH16 {
     enum addrs {
-        CHARA_ADDR = 0x4A57A4,
-        SEASON_ADDR = 0x4A57AC,
+        STAGE_NUM = 0x4a5790,
+        CHARACTER = 0x4a57a4,
+        SUBSHOT = 0x4a57ac,
+        ENEMY_MANAGER_PTR = 0x4a6dc0,
         PLAYER_PTR = 0x4a6ef8,
     };
 
@@ -517,7 +519,19 @@ namespace TH16 {
 
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F6", VK_F6)
         PATCH_HK(0x417965, "eb"),
-        PATCH_HK(0x41d4ef, "058d")
+        PATCH_HK(0x41d4ef, "058d"),
+        EHOOK_HK(0x473995, 4, { // freeze ECL sub time for stage's MainLatter
+            const uint32_t subID = *(uint32_t*)(pCtx->Edi+0x4);
+            const uint32_t stage = GetMemContent(STAGE_NUM) - 1;
+            constexpr uint8_t mainLatterIDs[7] = { 0, 0, 0, 92, 122, 0, 0 };
+
+            if (mainLatterIDs[stage] && subID == mainLatterIDs[stage]) {
+                const bool bossExists = (bool)GetMemContent(ENEMY_MANAGER_PTR, 0xc + 0x3c);
+
+                if (bossExists) // skip increasing sub time
+                    pCtx->Eip = 0x473999;
+            }
+        })
         HOTKEY_ENDDEF();
 
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F8", VK_F8 };

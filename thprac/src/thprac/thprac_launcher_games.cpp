@@ -1145,6 +1145,9 @@ public:
             if (CheckExeName(dir, "東方紅魔郷")) {
                 return true;
             }
+            if (CheckExeName(dir, "搶曽峠杺嫿")) {
+                return true;
+            }
         }
 
         auto idStr16 = utf8_to_utf16(idStr);
@@ -1743,7 +1746,7 @@ public:
     }
     static bool WINAPI CheckProcessOmni(PROCESSENTRY32W& proc, uintptr_t& base)
     {
-        if (wcscmp(L"東方紅魔郷.exe", proc.szExeFile) && wcscmp(L"alcostg.exe", proc.szExeFile)) {
+        if (wcscmp(L"東方紅魔郷.exe", proc.szExeFile) && wcscmp(L"alcostg.exe", proc.szExeFile) && wcscmp(L"搶曽峠杺嫿.exe", proc.szExeFile)) {
             if (proc.szExeFile[0] != L't' || proc.szExeFile[1] != L'h')
                 return false;
             if (proc.szExeFile[2] < 0x30 || proc.szExeFile[2] > 0x39)
@@ -1981,7 +1984,7 @@ public:
         }
         else if (currentInst.useVpatch) {
             auto exeName = GetNameFromFullPath(currentInstPath);
-            if (exeName == L"東方紅魔郷.exe") {
+            if (exeName == L"東方紅魔郷.exe" || exeName == L"搶曽峠杺嫿") {
                 if (!CheckAndLoadVPatch(proc_info.hProcess, currentInstDir, L"vpatch_th06_unicode.dll")) {
                     CheckAndLoadVPatch(proc_info.hProcess, currentInstDir, L"vpatch_th06.dll");
                 }
@@ -2412,7 +2415,7 @@ public:
             WriteGameCfg();
         }
         ImGui::SameLine();
-        GuiHelpMarker(S(THPRAC_GAMES_DEFAULT_LAUNCH_DESC));
+        HelpMarker(S(THPRAC_GAMES_DEFAULT_LAUNCH_DESC));
 
         if (sourceIdx != -1 && destIdx != -1) {
             auto gameTmp = currentGame[sourceIdx];
