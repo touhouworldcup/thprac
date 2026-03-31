@@ -1,15 +1,13 @@
 #include "thprac_launcher.h"
 
 #include "thprac_load_exe.h"
-#include "thprac_gui_locale.h"
 #include "thprac_identify.h"
-#include "thprac_utils.h"
 
 #include <stdlib.h>
 #include <string.h>
-#include <yyjson.h>
 
 #include <algorithm>
+#include <bit>
 
 namespace THPrac {
 namespace Gui {
@@ -295,8 +293,6 @@ struct {
     LauncherGame games[GAMES_LEN];
 };
 };
-
-yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
 
 static bool LauncherRunGame(LauncherInstance* inst, AFTER_LAUNCH afterLaunch) {
     SaveSettings();

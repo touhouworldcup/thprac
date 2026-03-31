@@ -1,23 +1,12 @@
-#define NOMINMAX
-#include <Windows.h>
-
-#include "utils/utils.h"
 #include "thprac_launcher.h"
-#include "thprac_gui_components.h"
-#include "thprac_utils.h"
 
-#include <string>
-#include <vector>
+#include <string_view>
 #include <utility>
-
-#include <yyjson.h>
 
 namespace THPrac {
 namespace Gui {
     extern HWND ImplWin32GetHwnd();
 }
-
-extern yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
 
 void LinksDefault(LinkSet& out) {
     out = { true, "Default", {

@@ -2,18 +2,10 @@
 // Fun fact: the author of that is also a Touhou fan
 
 #include "thprac_launcher.h"
-#include "thprac_utils.h"
-
-#include <d3d9.h>
-#include <yyjson.h>
-
-#include <algorithm>
+#include "thprac_load_exe.h"
 
 #define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
 #define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
-
-#include "thprac_load_exe.h"
-#include "thprac_gui_components.h"
 
 #include "../../resource.h"
 
@@ -24,7 +16,6 @@ namespace Gui {
 }
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
 
 // Constinit structs where all the required data is already here
 // so that it doesn't need to be initialized.

@@ -6,18 +6,18 @@
 
 #include <limits.h>
 
-#include <algorithm>
 #include <vector>
+#include <string>
 
 #include <imgui.h>
+#include <yyjson.h>
 
 #include "thprac_cfg.h"
 #include "thprac_log.h"
 #include "thprac_identify.h"
-#include "thprac_gui_impl_win32.h"
-#include "thprac_gui_impl_dx9.h"
+#include "thprac_gui_components.h"
 #include "thprac_gui_locale.h"
-#include "thprac_gui_input.h"
+#include "thprac_utils.h"
 
 namespace THPrac {
 
@@ -164,6 +164,8 @@ struct LauncherState {
     bool linkLinkWarn = false;
     std::vector<LinkSet> linkSets;
 };
+
+yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
 
 void LoadGamesJson(APPLY_THPRAC_DEFAULT);
 void SaveGamesJson();
