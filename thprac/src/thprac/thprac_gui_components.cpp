@@ -771,5 +771,59 @@ namespace THPrac
             }
             return ret;
         }
+        void ProgressBar(float prog, const char* text, const char* textEnd) {
+            auto& style = ImGui::GetStyle();
+            auto* drawList = ImGui::GetWindowDrawList();
+
+            ImVec2 cursor = ImGui::GetCursorScreenPos();
+
+            ImVec2 barStart = cursor;
+            ImVec2 barEnd = barStart;
+            barEnd.x += ImGui::GetWindowWidth();
+            barEnd.y += (style.FramePadding.y * 2.0f) + ImGui::GetFontSize();
+
+            float barWidthPx = barEnd.x - barStart.x;
+            float indicatorWidthPx = barWidthPx / 4.0f;
+
+            drawList->AddRectFilled(barStart, barEnd, ImGui::GetColorU32(ImGuiCol_FrameBg));
+
+            ImVec2 clipStart = barStart;
+            ImVec2 clipEnd = barEnd;
+
+            ImVec2 textPos = {
+                barEnd.x - (barEnd.x - barStart.x) / 2.0f,
+                barStart.y + style.ItemInnerSpacing.y / 2.0f,
+            };
+
+            if (prog == -1.0f) {
+                float barPos = fmodf((float)ImGui::GetTime() * (barWidthPx / 2), barWidthPx + indicatorWidthPx) - indicatorWidthPx;
+
+                // barPos is negative
+                if (barStart.x + barPos < barStart.x) {
+                    barEnd.x = barStart.x + indicatorWidthPx + barPos;
+                }
+                // clip indicator
+                else if (barStart.x + barPos + indicatorWidthPx > barEnd.x) {
+                    barStart.x += barPos;
+                } else {
+                    barStart.x += barPos;
+                    barEnd.x = barStart.x + indicatorWidthPx;
+                }
+            } else {
+                barEnd.x = barStart.x + prog * barWidthPx;
+            }
+
+            drawList->AddRectFilled(barStart, barEnd, ImGui::GetColorU32(ImGuiCol_TitleBgActive));
+            if (!textEnd) {
+                textEnd = text + t_strlen(text);
+            }
+
+            ImVec2 textSize = ImGui::CalcTextSize(text, textEnd);
+            textPos.x -= textSize.x / 2;
+
+            drawList->PushClipRect(clipStart, clipEnd);
+            drawList->AddText(textPos, ImGui::GetColorU32(ImGuiCol_Text), text, textEnd);
+            drawList->PopClipRect();
+        }
     }
 }

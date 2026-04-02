@@ -814,6 +814,8 @@ namespace Gui {
     void CheckboxAll(const char* label, bool* v, size_t v_len);
     int MultiButtonsRight(float x, ...);
     int MultiButtonsFillWindow(float height, ...);
+
+    void ProgressBar(float prog, const char* text, const char* textEnd = nullptr);
 }
 }
 
