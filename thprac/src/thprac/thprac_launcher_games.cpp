@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <algorithm>
 #include <bit>
 
 namespace THPrac {
@@ -294,7 +293,50 @@ struct {
 };
 };
 
-static bool LauncherRunGame(LauncherInstance* inst, AFTER_LAUNCH afterLaunch) {
+static bool LauncherRunWithThcrap(std::wstring_view dir, std::wstring_view runcfg, THGameID game, bool custom = false) {
+    std::wstring_view loader_release = L"\\bin\\thcrap_loader.exe";
+    std::wstring_view loader_debug = L"\\bin\\thcrap_loader_d.exe";
+
+    wchar_t path[MAX_PATH] = {};
+    wchar_t param[512] = {};
+    
+    memcpy(param + 1, runcfg.data(), runcfg.length() * sizeof(wchar_t));
+    
+    param[0] = L'"';
+    param[runcfg.length() + 0] = L'"';
+    param[runcfg.length() + 1] = L' ';
+
+    wchar_t* p = param + runcfg.length() + 2;
+    auto* game_str = gThGameStrs[game];
+
+    // Perfectly safe ASCII to UTF-16 conversion
+    for (size_t i = 0; game_str[i]; i++) {
+        *p++ = game_str[i];
+    }
+
+    if (custom) {
+        memcpy(p, SIZED(L"_custom"));
+    }
+
+    memcpy(path, dir.data(), dir.length() * sizeof(wchar_t));
+    memcpy(path + dir.length(), loader_release.data(), loader_release.length() * sizeof(wchar_t));
+
+    HWND hwnd = Gui::ImplWin32GetHwnd();
+
+    if ((UINT_PTR)ShellExecuteW(hwnd, L"open", path, param, nullptr, SW_SHOW) > 32) {
+        return true;
+    }
+
+    memcpy(path + dir.length(), loader_debug.data(), loader_debug.length() * sizeof(wchar_t));
+    
+    if ((UINT_PTR)ShellExecuteW(hwnd, L"open", path, param, nullptr, SW_SHOW) > 32) {
+        return true;
+    }
+
+    return false;
+}
+
+static bool LauncherRunGame(LauncherState* state, THGameID game, LauncherInstance* inst) {
     SaveSettings();
 
     uint32_t flags = RUN_FLAG_SKIP_IDENTIFY;
@@ -307,8 +349,7 @@ static bool LauncherRunGame(LauncherInstance* inst, AFTER_LAUNCH afterLaunch) {
     if (inst->apply_thprac) {
         flags |= RUN_FLAG_THPRAC;
     }
-
-    switch (afterLaunch) {
+    switch (state->settings.after_launch) {
     case LAUNCH_MINIMIZE:
         ShowWindow(Gui::ImplWin32GetHwnd(), SW_MINIMIZE);
         break;
@@ -317,9 +358,14 @@ static bool LauncherRunGame(LauncherInstance* inst, AFTER_LAUNCH afterLaunch) {
         break;
     case LAUNCH_NOTHING:
         break;
+    }    
+    if (inst->type != TYPE_THCRAP) {
+        return RunGame(utf8_to_utf16(inst->path).c_str(), nullptr, flags);
+    } else {
+        state->thcrapLaunch.game = game;
+        state->thcrapLaunch.inst = inst;
+        return LauncherRunWithThcrap(state->settings.thcrap_dir, utf8_to_utf16(inst->path), game);
     }
-    
-    return RunGame(utf8_to_utf16(inst->path).c_str(), nullptr, flags);
 }
 
 static void InitLauncherGame(LauncherGame* game, yyjson_val* json, APPLY_THPRAC_DEFAULT apply_thprac_default) {
@@ -534,11 +580,12 @@ void LaunchCustom(const wchar_t* dir, THGameType type) {
     }
 }
 
-// TODO: how to get rid of the instRenameBuf parameter?
-static bool DetailsPage(LauncherGame* game, char* instRenameBuf, AFTER_LAUNCH after_launch) {
+static bool DetailsPage(LauncherState* state) {
     if (ImGui::Button("Back")) {
         return false;
     }
+
+    auto* game = state->selectedGame;
 
     ImGui::SameLine();
     Gui::TextCentered(S(game->title), ImGui::GetWindowWidth());
@@ -622,20 +669,25 @@ static bool DetailsPage(LauncherGame* game, char* instRenameBuf, AFTER_LAUNCH af
     ImGui::PopStyleColor(2);
     ImGui::EndChild();
 
+    auto* inst = game->instances + game->selected;
+
     if (ImGui::Button(S(THPRAC_GAMES_RENAME))) {
-        LauncherInstance& inst = game->instances[game->selected];
-        if (inst.name) {
-            strncpy(instRenameBuf, inst.name, 255);
+        if (inst->name) {
+            strncpy(state->instRenameBuf, inst->name, 255);
         }
         else {
-            memset(instRenameBuf, 0, 256);
+            memset(state->instRenameBuf, 0, 256);
         }
         ImGui::OpenPopup(S(THPRAC_GAMES_RENAME_MODAL));
     }
     ImGui::SameLine();
 
     if (ImGui::Button(S(THPRAC_GAMES_DELETE))) {
-        ImGui::OpenPopup(S(THPRAC_GAMES_DELETE_MODAL));
+        if (state->thcrapLaunch == inst) {
+            ImGui::OpenPopup("##cannot_delete_game");
+        } else {
+            ImGui::OpenPopup(S(THPRAC_GAMES_DELETE_MODAL));
+        }
     }
     if (Gui::Modal(S(THPRAC_GAMES_DELETE_MODAL))) {
         ImGui::TextUnformatted(S(THPRAC_GAMES_DELETE_CONFIRM));
@@ -647,13 +699,12 @@ static bool DetailsPage(LauncherGame* game, char* instRenameBuf, AFTER_LAUNCH af
                 game->inst_count = 0;
                 return false;
             } else if (game->selected == game->inst_count - 1) {
-                LauncherInstance& inst = game->instances[game->selected];
-                DestroyInst(&inst);
-                memset(&inst, 0, sizeof(inst));
+                DestroyInst(inst);
+                memset(inst, 0, sizeof(*inst));
                 game->inst_count--;
                 game->selected--;
             } else {
-                LauncherInstance* begin = game->instances + game->selected;
+                LauncherInstance* begin = inst;
                 DestroyInst(begin);
                 size_t elem_to_move = game->instances + game->inst_count - begin - 1;
                 memmove(begin, begin + 1, elem_to_move * sizeof(LauncherInstance));
@@ -665,17 +716,26 @@ static bool DetailsPage(LauncherGame* game, char* instRenameBuf, AFTER_LAUNCH af
         }
         ImGui::EndPopup();
     }
+    if (Gui::Modal("##cannot_delete_game")) {
+        ImGui::TextUnformatted("Cannot delete this instance because thprac is attempting to launch it.");
+        if (Gui::MultiButtonsFillWindow(0.0f, "OK", nullptr) != -1) {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
 
     ImGui::SameLine();
-    if (ImGui::Button(S(THPRAC_GAMES_OPEN_FOLDER))) {
-        std::wstring pathW = utf8_to_utf16(game->instances[game->selected].path);
-        size_t idx = pathW.rfind(L"\\");
-        if (idx != std::wstring::npos) {
-            pathW.resize(idx);
-            ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", pathW.c_str(), nullptr, nullptr, SW_SHOW);
+    if (inst->type != TYPE_THCRAP) {
+        if (ImGui::Button(S(THPRAC_GAMES_OPEN_FOLDER))) {
+            std::wstring pathW = utf8_to_utf16(inst->path);
+            size_t idx = pathW.rfind(L"\\");
+            if (idx != std::wstring::npos) {
+                pathW.resize(idx);
+                ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", pathW.c_str(), nullptr, nullptr, SW_SHOW);
+            }
         }
+        ImGui::SameLine();
     }
-    ImGui::SameLine();
     if (game->appdataPath && ImGui::Button(S(THPRAC_GAMES_OPEN_APPDATA))) {
         SHELLEXECUTEINFOW se = {
             .cbSize = sizeof(se),
@@ -689,19 +749,23 @@ static bool DetailsPage(LauncherGame* game, char* instRenameBuf, AFTER_LAUNCH af
     }
     ImGui::SameLine();
     if (ImGui::Button(S(THPRAC_GAMES_LAUNCH_CUSTOM))) {
-        std::wstring pathW = utf8_to_utf16(game->instances[game->selected].path);
-        size_t idx = pathW.rfind(L"\\");
-        if (idx != std::wstring::npos) {
-            pathW.resize(idx);
-            LaunchCustom(pathW.c_str(), game->instances[game->selected].type);
+        if (inst->type != TYPE_THCRAP) {
+            std::wstring pathW = utf8_to_utf16(inst->path);
+            size_t idx = pathW.rfind(L"\\");
+            if (idx != std::wstring::npos) {
+                pathW.resize(idx);
+                LaunchCustom(pathW.c_str(), inst->type);
+            }
+        } else {
+            LauncherRunWithThcrap(state->settings.thcrap_dir, utf8_to_utf16(inst->path), game->id, true);
         }
     }
     ImGui::NewLine();
 
-    auto* ver = game->versions + game->instances[game->selected].ver;
+    auto* ver = game->versions + inst->ver;
 
     if (ver->initFunc) {
-        ImGui::Checkbox(S(THPRAC_GAMES_APPLY_THPRAC), &game->instances[game->selected].apply_thprac);
+        ImGui::Checkbox(S(THPRAC_GAMES_APPLY_THPRAC), &inst->apply_thprac);
         ImGui::SameLine();
     }
 
@@ -713,33 +777,41 @@ static bool DetailsPage(LauncherGame* game, char* instRenameBuf, AFTER_LAUNCH af
             game->default_launch = -1;
         }
     }
-    if (ver->has_oilp) {
-        ImGui::Checkbox("Allow OpenInputLagPatch", &game->instances[game->selected].allow_oilp);
-        ImGui::SameLine();
-    }
-    if (ver->has_vpatch) {
-        ImGui::Checkbox("Allow Vpatch", &game->instances[game->selected].allow_vpatch);
-        ImGui::SameLine();
-    }
-    if (ver->has_oilp && ver->has_vpatch) {
-        Gui::HelpMarker("If both boxes are ticked and both Vpatch and OpenInputLagPatch are present, OpenInputLagPatch takes priority");
-    } else if(ver->has_oilp || ver->has_vpatch) {
-        ImGui::NewLine();
+
+    if (inst->type != TYPE_THCRAP) {
+        if (ver->has_oilp) {
+            ImGui::Checkbox("Allow OpenInputLagPatch", &inst->allow_oilp);
+            ImGui::SameLine();
+        }
+        if (ver->has_vpatch) {
+            ImGui::Checkbox("Allow Vpatch", &inst->allow_vpatch);
+            ImGui::SameLine();
+        }
+        if (ver->has_oilp && ver->has_vpatch) {
+            Gui::HelpMarker("If both boxes are ticked and both Vpatch and OpenInputLagPatch are present, OpenInputLagPatch takes priority");
+        } else if (ver->has_oilp || ver->has_vpatch) {
+            ImGui::NewLine();
+        }
     }
 
-    if (LargeBottomButton(S(THPRAC_GAMES_LAUNCH_GAME), 64.0f)) {
-        LauncherRunGame(game->instances + game->selected, after_launch);
+    if (inst->type == TYPE_THCRAP && state->thcrapLaunch) {
+        if (LargeBottomButton("Abort wait for thcrap launch", 64.0f)) {
+            state->thcrapLaunch = {};
+        }
+    } else {
+        if (LargeBottomButton(S(THPRAC_GAMES_LAUNCH_GAME), 64.0f)) {
+            LauncherRunGame(state, game->id, inst);
+        }
     }
 
     if (Gui::Modal(S(THPRAC_GAMES_RENAME_MODAL))) {
-        ImGui::InputText("", instRenameBuf, 255);
+        ImGui::InputText("", state->instRenameBuf, 255);
         switch (Gui::MultiButtonsFillWindow(0.0f, "OK", "Cancel", nullptr)) {
         case 0: {
-            auto& inst = game->instances[game->selected];
-            if (inst.name) {
-                free((void*)inst.name);
+            if (inst->name) {
+                free((void*)inst->name);
             }
-            inst.name = _strdup(instRenameBuf);
+            inst->name = _strdup(state->instRenameBuf);
         }
         case 1:
             ImGui::CloseCurrentPopup();
@@ -749,7 +821,16 @@ static bool DetailsPage(LauncherGame* game, char* instRenameBuf, AFTER_LAUNCH af
     return true;
 }
 
-static bool GameAlreadyExists(const char* path) {
+static bool GameAlreadyExists(LauncherGame* game, const char* path) {
+    for (size_t i = 0; i < game->inst_count; i++) {
+        if (_stricmp(game->instances[i].path, path) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool PathAlreadyExists(const char* path) {
     for (const auto& game : games) {
         for (size_t i = 0; i < game.inst_count; i++) {
             if (_stricmp(game.instances[i].path, path) == 0) {
@@ -789,7 +870,7 @@ static void ScanIdentifyGame(ScanCtx* scanCtx, const wchar_t* path, size_t path_
     FoundGame game;
     memcpy(game.path, scanCtx->text_in_progress_bar, written);
     if (IdentifyKnownGame(game.info, game.oepCode, path)) {
-        if (!GameAlreadyExists(game.path)) {
+        if (!PathAlreadyExists(game.path)) {
             auto& v = scanCtx->found;
             v.insert(std::upper_bound(v.begin(), v.end(), game.info.ver->gameId, [](THGameID id, FoundGame& g) -> bool {
                 return id < g.info.ver->gameId;
@@ -1042,7 +1123,23 @@ static void ScanAddInstances(LauncherGame* game, FoundGame* found, size_t found_
         }
         auto& inst = game->instances[inst_idx];
 
-        inst.name = _strdup(gThGameStrs[found[found_idx].info.ver->gameId]);
+        auto* gameName = gThGameStrs[found[found_idx].info.ver->gameId];
+        if (found[found_idx].info.type == TYPE_THCRAP) {
+            size_t len = 0;
+            if (auto* p = strchr(found[found_idx].path, '.')) {
+                len = p - found[found_idx].path;
+            } else {
+                len = strlen(found[found_idx].path);
+            }
+
+            int name_len = snprintf(nullptr, 0, "%s (%.*s)", gameName, len, found[found_idx].path) + 1;
+            auto* name = (char*)malloc(name_len);
+            snprintf(name, name_len, "%s (%.*s)", gameName, len, found[found_idx].path);
+            inst.name = name;
+        } else {
+            inst.name = _strdup(gThGameStrs[found[found_idx].info.ver->gameId]);
+        }
+
         inst.path = _strdup(found[found_idx].path);
         inst.type = found[found_idx].info.type;
         inst.ver = (uint8_t)(found[found_idx].info.ver - game->versions);
@@ -1246,9 +1343,9 @@ static inline void GamesList(LauncherState* state, LauncherGame* games_param, si
         }
         if (ImGui::Selectable(S(game.title))) {
             if (game.default_launch != -1) {
-                LauncherRunGame(game.instances + game.default_launch, state->settings.after_launch);
+                LauncherRunGame(state, game.id, game.instances + game.default_launch);
             } else if (state->settings.auto_default_launch) {
-                LauncherRunGame(game.instances, state->settings.after_launch);
+                LauncherRunGame(state, game.id, game.instances);
             } else {
                 state->selectedGame = &game;
             }
@@ -1432,6 +1529,100 @@ void RandomGameRollUI(LauncherState* state) {
     }
 }
 
+void ThcrapAddConfigsUI(LauncherState* state) {
+    if (ImGui::Button("Back")) {
+        state->foundThcrapConfigs.clear();
+        return;
+    }
+
+    ImGui::SameLine();
+    Gui::TextCentered("Add thcrap configs", ImGui::GetWindowWidth());
+    ImGui::Separator();
+    ImGui::TextUnformatted("Add the following selected configs");
+
+    auto& style = ImGui::GetStyle();
+    
+    float spacing_height = ImGui::GetFrameHeight() + style.WindowPadding.y / 2;
+    float remaining_window_height = ImGui::GetWindowHeight() - ImGui::GetCursorPosY();
+
+    float child_height = remaining_window_height / 2 - spacing_height;
+    
+    ImGui::BeginChild(0x7FC2A8, { 0, child_height }, true);
+    ImGui::BeginTable("##_thcrap_config_sel", 3);
+    ImGui::TableNextRow();
+
+    for (size_t i = 0; i < state->foundThcrapConfigs.size(); i++) {
+        ImGui::TableNextColumn();
+        ImGui::Checkbox(state->foundThcrapConfigs[i], (bool*)&state->foundThcrapConfigsSel[i]);
+    }
+
+    ImGui::EndTable();
+    ImGui::EndChild();
+    ImGui::TextUnformatted("...to the following selected games:");
+    ImGui::BeginChild(0x7FC2A9, { 0, child_height }, true);
+
+    ImGui::BeginTable("##_thcrap_main_games", 7);
+    ImGui::TableNextRow();
+    for (size_t i = 0; i < MAIN_GAMES_LEN; i++) {
+        ImGui::TableNextColumn();
+        ImGui::Checkbox(gThGameStrs[mainGames[i].id], state->thcrapSel.main_series + i);
+    }
+    ImGui::EndTable();
+    ImGui::NewLine();
+    ImGui::BeginTable("##_thcrap_spinoff_shmup", 6);
+    ImGui::TableNextRow();
+    for (size_t i = 0; i < SPINOFF_SHMUP_LEN; i++) {
+        ImGui::TableNextColumn();
+        ImGui::Checkbox(gThGameStrs[spinoffShmups[i].id], state->thcrapSel.spinoff_shmups + i);
+    }
+    ImGui::EndTable();
+    ImGui::NewLine();
+    ImGui::BeginTable("##_thcrap_spinoff_others", 6);
+    ImGui::TableNextRow();
+    for (size_t i = 0; i < SPINOFF_OTHER_LEN; i++) {
+        ImGui::TableNextColumn();
+        ImGui::Checkbox(gThGameStrs[spinoffOthers[i].id], state->thcrapSel.spinoff_others + i);
+    }
+    ImGui::EndTable();
+    ImGui::EndChild();
+
+    Gui::CheckboxAll("All configs", (bool*)state->foundThcrapConfigsSel.data(), state->foundThcrapConfigsSel.size());
+    ImGui::SameLine();
+    Gui::CheckboxAll(S(THPRAC_GAMES_MAIN_SERIES), state->thcrapSel.main_series, MAIN_GAMES_LEN);
+    ImGui::SameLine();
+    Gui::CheckboxAll(S(THPRAC_GAMES_SPINOFF_STG), state->thcrapSel.spinoff_shmups, SPINOFF_SHMUP_LEN);
+    ImGui::SameLine();
+    Gui::CheckboxAll(S(THPRAC_GAMES_SPINOFF_OTHERS), state->thcrapSel.spinoff_others, SPINOFF_OTHER_LEN);
+    ImGui::SameLine();
+    if (Gui::ButtonRight("Apply", ImGui::GetWindowWidth())) {
+        for (size_t i = 0; i < GAMES_LEN; i++) {
+            if (!state->thcrapSel.sel[i]) {
+                continue;
+            }
+
+            std::vector<FoundGame> found;
+            for (size_t j = 0; j < state->foundThcrapConfigs.size(); j++) {
+                if (GameAlreadyExists(games + i, state->foundThcrapConfigs[j])) {
+                    continue;
+                }
+
+                auto& g = found.emplace_back() = {
+                    .selected = (bool)state->foundThcrapConfigsSel[j],
+                    .info = {
+                        .ver = games[i].versions,
+                        .type = TYPE_THCRAP,
+                    },
+                };
+                strncpy(g.path, state->foundThcrapConfigs[j], MAX_PATH);
+            }
+            ScanAddInstances(games + i, found.data(), found.size(), state->settings.apply_thprac_default == APPLY_THPRAC_DEFAULT_OPEN);
+        }
+
+        state->foundThcrapConfigs.clear();
+        state->foundThcrapConfigsSel.clear();
+    }
+}
+
 void LauncherGamesMain(LauncherState* state) {
 	if (state->inScan) {
         state->inScan = ScanForGamesUI(&state->scanCtx, state->settings.apply_thprac_default == APPLY_THPRAC_DEFAULT_OPEN);
@@ -1442,7 +1633,7 @@ void LauncherGamesMain(LauncherState* state) {
     }
 
     if (state->selectedGame) {
-        state->selectedGame = DetailsPage(state->selectedGame, state->instRenameBuf, state->settings.after_launch) ? state->selectedGame : nullptr;
+        state->selectedGame = DetailsPage(state) ? state->selectedGame : nullptr;
         return;
     }
 

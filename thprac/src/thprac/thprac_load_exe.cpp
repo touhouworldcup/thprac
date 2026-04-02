@@ -227,7 +227,7 @@ const THGameVersion* CheckOngoingGameByPID(DWORD pid, uintptr_t* pOutBase, HANDL
     return nullptr;
 }
 
-const wchar_t* mutexNames[] = {
+const wchar_t* allMutexNames[] = {
     L"Touhou Koumakyou App",
     L"Touhou YouYouMu App",
     L"Touhou 08 App",
@@ -241,8 +241,49 @@ const wchar_t* mutexNames[] = {
     L"th20 App",
 };
 
+const wchar_t* GetGameMutexName(THGameID game) {
+    switch (game) {
+    case ID_ALCOSTG:
+        return L"Touhou 10 App";
+    case ID_TH06:
+        return L"Touhou Koumakyou App";
+    case ID_TH07:
+        return L"Touhou YouYouMu App";
+    case ID_TH08:
+    case ID_TH09:
+    case ID_TH095:
+        return L"Touhou 08 App";
+    case ID_TH10:
+        return L"Touhou 10 App";
+    case ID_TH11:
+        return L"Touhou 11 App";
+    case ID_TH12:
+    case ID_TH125:
+    case ID_TH128:
+    case ID_TH13:
+    case ID_TH14:
+    case ID_TH143:
+    case ID_TH15:
+    case ID_TH16:
+    case ID_TH165:
+        return L"Touhou 12 App";
+    case ID_TH17:
+        return L"th17 App";
+    case ID_TH18:
+        return L"th18 App";
+    case ID_TH185:
+        return L"th185 App";
+    case ID_TH19:
+        return L"th19 App";
+    case ID_TH20:
+        return L"th20 App";
+    default:
+        return nullptr;
+    }
+}
+
 bool CheckIfAnyGame() {
-    for (const wchar_t* mutexName : mutexNames) {
+    for (const wchar_t* mutexName : allMutexNames) {
         HANDLE hMutex = OpenMutexW(SYNCHRONIZE, FALSE, mutexName);
         if (hMutex) {
             CloseHandle(hMutex);

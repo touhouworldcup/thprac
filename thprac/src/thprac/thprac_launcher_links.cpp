@@ -1,6 +1,5 @@
 #include "thprac_launcher.h"
 
-#include <string_view>
 #include <utility>
 
 namespace THPrac {

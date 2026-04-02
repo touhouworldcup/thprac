@@ -6,8 +6,10 @@
 
 #include <limits.h>
 
+#include <algorithm>
 #include <vector>
 #include <string>
+#include <string_view>
 
 #include <imgui.h>
 #include <yyjson.h>
@@ -33,10 +35,46 @@ enum APPLY_THPRAC_DEFAULT {
     APPLY_THPRAC_DEFAULT_CLOSE = 2,
 };
 
+struct ThcrapDir {
+    size_t w_len = 0;
+    size_t s_len = 0;
+    wchar_t w[MAX_PATH + 1] = {};
+    char    s[MAX_PATH + 1] = {};
+
+    ThcrapDir& operator=(std::wstring_view other) {
+        memcpy(this->w, other.data(), other.size() * sizeof(wchar_t));
+        s_len = WideCharToMultiByte(CP_UTF8, 0, other.data(), other.length(), this->s, MAX_PATH, nullptr, nullptr);
+        w_len = other.length();
+
+        return *this;
+    }
+
+    ThcrapDir& operator=(std::string_view other) {
+        memcpy(this->s, other.data(), other.size() * sizeof(wchar_t));
+        w_len = MultiByteToWideChar(CP_UTF8, 0, other.data(), other.length(), this->w, MAX_PATH);
+        s_len = other.length();
+
+        return *this;
+    }
+
+    operator std::wstring_view() {
+        return std::wstring_view(w, w_len);
+    }
+
+    operator bool() {
+        return w_len;
+    }
+
+    void clear() {
+        memset(this, 0, sizeof(*this));
+    }
+};
+
 struct LauncherSettings {
     AFTER_LAUNCH after_launch = LAUNCH_MINIMIZE;
     APPLY_THPRAC_DEFAULT apply_thprac_default = APPLY_THPRAC_KEEP_STATE;
     bool auto_default_launch = false;
+    ThcrapDir thcrap_dir;
 };
 
 struct LauncherInstance {
@@ -121,6 +159,28 @@ constexpr unsigned int SPINOFF_OTHER_LEN = 7;
 constexpr unsigned int ALL_GAMES_LEN = PC98_GAMES_LEN + MAIN_GAMES_LEN + SPINOFF_SHMUP_LEN + SPINOFF_OTHER_LEN;
 constexpr unsigned int GAMES_LEN = ALL_GAMES_LEN - PC98_GAMES_LEN;
 
+struct LauncherThcrapLaunch {
+    THGameID game = ID_UNKNOWN;
+    LauncherInstance* inst = nullptr;
+
+    operator bool() {
+        return inst;
+    }
+
+    bool operator==(LauncherInstance* other) {
+        return inst == other;
+    }
+};
+
+union LauncherThcrapSelection {
+    bool sel[GAMES_LEN] = {};
+    struct { 
+        bool main_series[MAIN_GAMES_LEN];
+        bool spinoff_shmups[SPINOFF_SHMUP_LEN];
+        bool spinoff_others[SPINOFF_OTHER_LEN];
+    };
+};
+
 // All launcher specific globals that do not contain lots of data already known at compile time go here.
 // So for example, buffers used for text input fields go here, meanwhile every LauncherGame is defined
 // as a constinit global variable because most of it's fields are known at compile time, so it makes more
@@ -140,6 +200,9 @@ struct LauncherState {
 
     LauncherGame* selectedGame = nullptr;
     LauncherGame* hoveredGame = nullptr;
+    LauncherThcrapLaunch thcrapLaunch;
+    LauncherThcrapSelection thcrapSel;
+
     bool inScan = false;
     ScanCtx scanCtx;
     char instRenameBuf[256] = {};
@@ -163,6 +226,16 @@ struct LauncherState {
     bool linkNameWarn = false;
     bool linkLinkWarn = false;
     std::vector<LinkSet> linkSets;
+    struct Dir {
+        char data[MAX_PATH] = {};
+        operator char*() {
+            return data;
+        }
+    };
+    std::vector<Dir> foundThcrapConfigs;
+    // it's like vector<bool> but with none of the jank
+    static_assert(sizeof(bool) == sizeof(unsigned char));
+    std::vector<unsigned char> foundThcrapConfigsSel;
 };
 
 yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
@@ -175,6 +248,7 @@ void LauncherLinksMain(LauncherState*);
 
 void RandomShotRollUI(LauncherState*);
 void RandomGameRollUI(LauncherState*);
+void ThcrapAddConfigsUI(LauncherState*);
 
 void LoadLinksJson(std::vector<LinkSet>&);
 void SaveLinksJson(std::vector<LinkSet>&);

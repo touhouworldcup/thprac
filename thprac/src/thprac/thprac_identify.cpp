@@ -855,6 +855,19 @@ const THGameVersion* IdentifyExe(const wchar_t* path) {
     return IdentifyExe((uint8_t*)f.fileMapView, f.fileSize);
 }
 
+const THGameVersion* IdentifyRemoteExe(void* hProc, uintptr_t mod) {
+    ExeInfo exeInfo = GetRemoteExeInfo(hProc, mod);
+    if (!exeInfo) {
+        return nullptr;
+    }
+    for (auto& ver : gGameVersions) {
+        if (ver.exeInfo == exeInfo) {
+            return &ver;
+        }
+    }
+
+}
+
 void GetExeOepCode(const uint8_t* mod, size_t len, uint16_t (&outOep)[10]) {
     auto* dosHeader = (IMAGE_DOS_HEADER*)mod;
     auto* ntHeader = (IMAGE_NT_HEADERS*)(mod + dosHeader->e_lfanew);

@@ -134,6 +134,7 @@ ExeInfo GetRemoteExeInfo(void* hProc, uintptr_t mod);
 
 const THGameVersion* IdentifyExe(const uint8_t* buf, size_t len);
 const THGameVersion* IdentifyExe(const wchar_t* path);
+const THGameVersion* IdentifyRemoteExe(void* hProc, uintptr_t mod);
 
 bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const uint8_t* buf, size_t size);
 bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const wchar_t* fn);

@@ -32,6 +32,9 @@ enum RunFlags {
 
 uintptr_t GetProcessModuleBase(HANDLE hProc);
 const THGameVersion* CheckOngoingGameByPID(DWORD pid, uintptr_t* base, HANDLE* pOutHandle);
+bool CheckIfAnyGame();
+const wchar_t* GetGameMutexName(THGameID game);
+bool CheckTHPracSig(HANDLE hProc, uintptr_t base);
 bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game);
 bool WriteTHPracSig(HANDLE hProc, uintptr_t base);
 bool LoadSelf(HANDLE hProcess);

@@ -4,6 +4,8 @@
 #include "thprac_launcher.h"
 #include "thprac_load_exe.h"
 
+#include <psapi.h>
+
 #define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
 #define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
 
@@ -12,6 +14,7 @@
 namespace THPrac {
 namespace Gui {
     extern LRESULT ImplWin32WndProcHandlerW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+    extern HWND ImplWin32GetHwnd();
     extern IDirect3DDevice9* ImplDX9GetDevice();
 }
 
@@ -151,18 +154,213 @@ void LauncherToolsMain(LauncherState* state) {
     }
 }
 
-static void LauncherSettingsMain(LauncherSettings* launcherSettings) {
+static bool LauncherSettingsCheckThcrapDir(std::wstring_view dir) {
+    std::wstring_view dll_release = L"\\bin\\thcrap.dll";
+    std::wstring_view dll_debug = L"\\bin\\thcrap_d.dll";
+
+    wchar_t dll_path[MAX_PATH + 1] = {};
+
+    if (dir.length() + dll_debug.length() > MAX_PATH) {
+        return false;
+    }
+    
+    memcpy(dll_path, dir.data(), dir.length() * sizeof(wchar_t));
+    memcpy(dll_path + dir.length(), dll_release.data(), dll_release.length() * sizeof(wchar_t));
+    if (GetFileAttributesW(dll_path) != INVALID_FILE_ATTRIBUTES) {
+        return true;
+    }
+
+    memcpy(dll_path + dir.length(), dll_debug.data(), dll_debug.length() * sizeof(wchar_t));
+    return GetFileAttributesW(dll_path) != INVALID_FILE_ATTRIBUTES;
+}
+
+static void LauncherSettingsMain(LauncherState* state) {
+    if (state->foundThcrapConfigs.size()) {
+        return ThcrapAddConfigsUI(state);
+    }
+
     ImGui::TextUnformatted("Launcher settings");
     ImGui::Separator();
-    ImGui::Combo(   S(THPRAC_AFTER_LAUNCH),         (int*)&launcherSettings->after_launch,         S(THPRAC_AFTER_LAUNCH_OPTION));
-    ImGui::Combo(   S(THPRAC_APPLY_THPRAC_DEFAULT), (int*)&launcherSettings->apply_thprac_default, S(THPRAC_APPLY_THPRAC_DEFAULT_OPTION));
-    ImGui::Checkbox(S(THPRAC_AUTO_DEFAULT_LAUNCH),        &launcherSettings->auto_default_launch);
+    ImGui::Combo(   S(THPRAC_AFTER_LAUNCH),         (int*)&state->settings.after_launch,         S(THPRAC_AFTER_LAUNCH_OPTION));
+    ImGui::Combo(   S(THPRAC_APPLY_THPRAC_DEFAULT), (int*)&state->settings.apply_thprac_default, S(THPRAC_APPLY_THPRAC_DEFAULT_OPTION));
+    ImGui::Checkbox(S(THPRAC_AUTO_DEFAULT_LAUNCH),        &state->settings.auto_default_launch);
     ImGui::SameLine();
     Gui::HelpMarker(S(THPRAC_AUTO_DEFAULT_LAUNCH_DESC));
+    ImGui::NewLine();
+    ImGui::TextUnformatted("thcrap");
+    ImGui::Separator();
+
+    auto& t = state->settings.thcrap_dir;
+    if (t) {
+        ImGui::Text("thcrap set to: %s", t.s);
+        if (ImGui::Button("Unset")) {
+            t.clear();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Add thcrap configs...")) {
+            wchar_t thcrapConfigDir[MAX_PATH + 1] = {};
+            memcpy(thcrapConfigDir, t.w, t.w_len * sizeof(wchar_t));
+            memcpy(thcrapConfigDir + t.w_len, SIZED(L"\\config\\*.js"));
+
+            WIN32_FIND_DATAW find = {};
+            HANDLE hFind = FindFirstFileW(thcrapConfigDir, &find);
+
+            if (hFind) do {
+                if (wcscmp(find.cFileName, L"games.js") == 0 || wcscmp(find.cFileName, L"config.js") == 0) {
+                    continue;
+                }
+
+                auto& name = state->foundThcrapConfigs.emplace_back();
+                WideCharToMultiByte(CP_UTF8, 0, find.cFileName, -1, name, MAX_PATH, nullptr, nullptr);
+            } while (FindNextFileW(hFind, &find));
+
+            state->foundThcrapConfigsSel.resize(state->foundThcrapConfigs.size());
+            std::fill_n(state->foundThcrapConfigsSel.data(), state->foundThcrapConfigsSel.size(), 0);
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Launch thcrap_configure")) {
+            wchar_t conf_path[MAX_PATH + 1] = {};
+            std::wstring_view conf_exe = L"\\bin\\thcrap_configure_v3.exe";
+            
+            if (t.w_len + conf_exe.length() < MAX_PATH) {
+                memcpy(conf_path, t.w, t.w_len * sizeof(wchar_t));
+                memcpy(conf_path + t.w_len, conf_exe.data(), conf_exe.length() * sizeof(wchar_t));
+                
+                ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", conf_path, nullptr, nullptr, SW_SHOW);
+            }
+        }
+    } else {
+        ImGui::TextUnformatted(S(THPRAC_THCRAP_NOTYET));
+        if (ImGui::Button("Get thcrap")) {
+            ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", L"https://thpatch.net", nullptr, nullptr, SW_SHOW);
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Set Location")) {
+            std::wstring new_thcrap_dir;
+            if (SelectFolder(new_thcrap_dir, Gui::ImplWin32GetHwnd())) {
+                if (LauncherSettingsCheckThcrapDir(new_thcrap_dir)) {
+                    t = new_thcrap_dir;
+                } else {
+                    ImGui::OpenPopup("Error##__bad_thcrap_dir");
+                }
+            }
+        }
+    }
     ImGui::NewLine();
 
     // The rest of the settings, which will hopefully be displayed in-game too some day
     GuiSettings();
+
+    if (Gui::Modal("Error##__bad_thcrap_dir")) {
+        ImGui::TextUnformatted(S(THPRAC_THCRAP_INVALID));
+        if (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_OK)) != -1) {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+}
+
+// Horribly overcomplicated amalgamation of jank just to make sure that thprac always attaches to the correct game when launching with thcrap.
+// TODO: get rid of all of this and implement thcrap launching in a way that actually makes sense.
+// If thprac were to know the path to the exe it's launching when running with thcrap, it could run thcrap through the command line and do something better.
+// Here's an idea for a UI change that might be better and that would guarantee that: https://imgur.com/a/4lOaM1p
+// Another idea is to not use the "path" field in LauncherInstance to store the name of a thcrap config, and use separate field instead.
+bool CheckAttachThcrapProc(THGameID game, DWORD pid) {
+    auto hProc = OpenProcess(
+        PROCESS_QUERY_INFORMATION | PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE,
+        FALSE, pid);
+    if (!hProc) {
+        return false;
+    }
+    defer(CloseHandle(hProc));
+    uintptr_t base = GetProcessModuleBase(hProc);
+    if (!base) {
+        return false;
+    }
+    if (CheckTHPracSig(hProc, base)) {
+        return false;
+    }
+
+    HMODULE hMods[512];
+    DWORD byteRet;
+    if (!EnumProcessModules(hProc, hMods, sizeof(hMods), &byteRet)) {
+        return false;
+    }
+
+    for (size_t i = 0; i < std::min((DWORD)sizeof(hMods), byteRet) / sizeof(HMODULE); i++) {
+        wchar_t modName[MAX_PATH + 1] = {};
+        K32GetModuleBaseNameW(hProc, hMods[i], modName, MAX_PATH);
+        if (CheckTHPracSig(hProc, base)) {
+            continue;
+        }
+
+        if (_wcsicmp(modName, L"thcrap.dll") == 0 || _wcsicmp(modName, L"thcrap_d.dll") == 0) {
+            auto* gameVer = IdentifyRemoteExe(hProc, base);
+            if (gameVer->gameId == game) {
+                if (WriteTHPracSig(hProc, base) && LoadSelf(hProc)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+// TODO: run this on another thread?
+bool FindAttachThcrapProc(LauncherState* state) {
+    auto game = state->thcrapLaunch.game;
+    const wchar_t* mutexName = GetGameMutexName(game);
+    if (!mutexName) {
+        log_print("Warning: FindAttachThcrapProc called with invalid gameID: ");
+        if (game > ID_TH_MAX) {
+            log_print(">ID_TH_MAX\r\n");
+        } else if (game == ID_TH_MAX) {
+            log_print("=ID_TH_MAX\r\n");
+        } else {
+            log_print(gThGameStrs[game]);
+        }
+        state->thcrapLaunch = {};
+        return false;
+    }
+
+    HANDLE mutex = OpenMutexW(SYNCHRONIZE, FALSE, mutexName);
+    if (!mutex) {
+        return false;
+    }
+    defer(CloseHandle(mutex));
+
+    SYSTEM_HANDLE_INFORMATION h1;
+    NtQuerySystemInformation(SystemHandleInformation, &h1, sizeof(h1), nullptr);
+
+    ULONG len = h1.NumberOfHandles * sizeof(h1.Handles) + sizeof(h1.NumberOfHandles);
+    LPVOID buf = VirtualAlloc(nullptr, len, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    if (!buf) {
+        return false;
+    }
+    defer(VirtualFree(buf, 0, MEM_RELEASE));
+
+    if (NtQuerySystemInformation(SystemHandleInformation, buf, len, nullptr)) {
+        return false;
+    }
+    auto* handles = (SYSTEM_HANDLE_INFORMATION*)buf;
+
+    auto myPID = GetCurrentProcessId();
+    void* kernelAddr = nullptr;
+    for (ULONG i = 0; i < handles->NumberOfHandles; i++) {
+        SYSTEM_HANDLE_TABLE_ENTRY_INFO* handle = handles->Handles + i;
+        if (handle->UniqueProcessId == myPID && handle->HandleValue == (USHORT)mutex) {
+            kernelAddr = handle->Object;
+            break;
+        }
+    }
+
+    for (ULONG i = 0; i < handles->NumberOfHandles; i++) {
+        SYSTEM_HANDLE_TABLE_ENTRY_INFO* handle = handles->Handles + i;
+        if (handle->Object == kernelAddr && handle->UniqueProcessId != myPID && CheckAttachThcrapProc(game, handles->Handles[i].UniqueProcessId)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void UiUpdate(HWND hwnd, LauncherState* state) {
@@ -210,11 +408,15 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
     }
     if (ImGui::BeginTabItem(S(THPRAC_LAUNCHER_TAB_CONFG))) {
         ImGui::BeginChild(0xC02F16);
-        LauncherSettingsMain(&state->settings);
+        LauncherSettingsMain(state);
         ImGui::EndChild();
         ImGui::EndTabItem();
     }
     ImGui::EndTabBar();
+
+    if (state->thcrapLaunch && FindAttachThcrapProc(state)) {
+        state->thcrapLaunch = { };
+    }
 
     ImGui::EndChild();
     ImGui::End();
@@ -296,6 +498,13 @@ void LoadLauncherSettings(LauncherSettings* launcherSettings) {
         if (unsafe_yyjson_equals_str(key, "auto_default_launch")) {
             yyjson_eval_numeric(val, &launcherSettings->auto_default_launch);
         }
+        if (unsafe_yyjson_equals_str(key, "thcrap")) {
+            if (const char* str = yyjson_get_str(val)) {
+                if (size_t len = unsafe_yyjson_get_len(val)) {
+                    launcherSettings->thcrap_dir = std::string_view(str, len);
+                }
+            }
+        }
     }
 
     yyjson_doc_free(doc);
@@ -306,14 +515,30 @@ static const char launcherSettingsTemplate[] =
     "\t" R"("after_launch": %d,)" "\n"
     "\t" R"("apply_thprac_default": %d,)" "\n"
     "\t" R"("auto_default_launch": %s,)" "\n"
+    "\t" R"("thcrap": "%.*s",)" "\n"
     "}";
 
 void SaveLauncherSettings(LauncherSettings* launcherSettings) {
+
+    char thcrap_dir_safe[MAX_PATH * 2] = {};
+    
+    char* thcrap_dir = launcherSettings->thcrap_dir.s;
+    size_t thcrap_dir_len = 0;
+    
+    // If more characters need to be escaped, I'll use yyjson's write API
+    for (size_t i = 0; i < launcherSettings->thcrap_dir.s_len; i++) {
+        if (thcrap_dir[i] == '\\') {
+            thcrap_dir_safe[thcrap_dir_len++] = '\\';
+        }
+        thcrap_dir_safe[thcrap_dir_len++] = thcrap_dir[i];
+    }
+
     char buf[1024];
     int len = snprintf(buf, sizeof(buf) - 1, launcherSettingsTemplate
         , launcherSettings->after_launch
         , launcherSettings->apply_thprac_default
         , launcherSettings->auto_default_launch ? "true" : "false"
+        , thcrap_dir_len, thcrap_dir_safe
     );
 
     wchar_t launcherSettingsPath[MAX_PATH + 1] = {};
