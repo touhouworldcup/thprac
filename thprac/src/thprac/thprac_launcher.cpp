@@ -9,8 +9,6 @@
 #define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
 #define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
 
-#include "../../resource.h"
-
 namespace THPrac {
 namespace Gui {
     extern LRESULT ImplWin32WndProcHandlerW(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -585,7 +583,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
         return 1;
     }
     defer(d3d->Release());
-    g_WndCls.hIcon = LoadIconW(hInstance, MAKEINTRESOURCEW(IDI_ICON1));
+    g_WndCls.hIcon = LoadIconW(hInstance, (LPCWSTR)1);
     g_WndCls.hInstance = hInstance;
     if (!RegisterClassExW(&g_WndCls)) {
         return 1;

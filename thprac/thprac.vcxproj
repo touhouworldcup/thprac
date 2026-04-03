@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h" />
     <ClInclude Include="src\3rdParties\ImGui\imconfig.h" />
     <ClInclude Include="src\3rdParties\ImGui\imgui.h" />
     <ClInclude Include="src\3rdParties\ImGui\imgui_freetype.h" />
@@ -115,12 +114,11 @@
     <ClCompile Include="src\thprac\thprac_th19.v1.00a.cpp" />
     <ClCompile Include="src\thprac\thprac_th19.v1.10c.cpp" />
     <ClCompile Include="src\thprac\thprac_th20.cpp" />
+    <ClCompile Include="src\thprac\thprac_update.cpp" />
     <ClCompile Include="src\thprac\thprac_utils.cpp" />
     <ClCompile Include="src\thprac\thprac_version.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="resource.hm" />
     <None Include="src\3rdParties\ImGui\imgui_user.inl" />
     <None Include="src\thprac\thprac_games_def.json" />
   </ItemGroup>
@@ -180,8 +178,7 @@
       <SubSystem>Windows</SubSystem>
       <FixedBaseAddress>false</FixedBaseAddress>
       <AdditionalDependencies>kernel32.lib;ntdll.lib;user32.lib;freetype.lib;gdi32.lib;ole32.lib;comdlg32.lib;shell32.lib</AdditionalDependencies>
-      <GenerateMapFile>true</GenerateMapFile>
-      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
