@@ -652,6 +652,8 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
     }
     defer(Gui::ImplDX9Shutdown());
 
+    HMONITOR hMonitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+
     float dpiscale = 1.0f;
     if (auto shcore = GetModuleHandleW(L"shcore.dll")) {
         typedef HRESULT(WINAPI * T_SetProcessDpiAwareness)(DWORD value);
@@ -663,7 +665,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
             SetProcessDpiAwareness(2);
             UINT dpiX;
             UINT dpiY;
-            GetDpiForMonitor(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), 0, &dpiX, &dpiY);
+            GetDpiForMonitor(hMonitor, 0, &dpiX, &dpiY);
             dpiscale = dpiX / (float)USER_DEFAULT_SCREEN_DPI;
         }
     }
@@ -684,8 +686,18 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
         return 1;
     }
 
-    // Send WM_NCCALCSIZE message immediately
-    SetWindowPos(hwnd, NULL, 0, 0, (int)(960.0f * dpiscale), (int)(720.0f * dpiscale), SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+    int width = (int)(960.0f * dpiscale), height = (int)(720.0f * dpiscale);
+    MONITORINFO mi = {
+        .cbSize = sizeof(mi)
+    };
+    if (GetMonitorInfoW(hMonitor, &mi)) {
+        int x = (mi.rcMonitor.right - mi.rcMonitor.left) / 2 - width / 2;
+        int y = (mi.rcMonitor.bottom - mi.rcMonitor.top) / 2 - height / 2;
+        SetWindowPos(hwnd, NULL, x, y, width, height, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+    } else {
+        SetWindowPos(hwnd, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+    }
+    
     LoadLauncherSettings(&state->settings);
     LoadGamesJson(state->settings.apply_thprac_default);
     LoadLinksJson(state->linkSets);
