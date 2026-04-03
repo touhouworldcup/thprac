@@ -37,7 +37,6 @@
     <ClInclude Include="src\thprac\thprac_gui_impl_dx9.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_win32.h" />
     <ClInclude Include="src\thprac\thprac_identify.h" />
-    <ClInclude Include="src\thprac\thprac_init.h" />
     <ClInclude Include="src\thprac\thprac_gui_input.h" />
     <ClInclude Include="src\thprac\thprac_launcher.h" />
     <ClInclude Include="src\thprac\thprac_licence.h" />
@@ -62,7 +61,6 @@
     <ClCompile Include="src\3rdParties\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="src\3rdParties\MetroHash\metrohash128.cpp" />
     <ClCompile Include="src\3rdParties\yyjson\yyjson.c" />
-    <ClCompile Include="src\thprac\main.cpp" />
     <ClCompile Include="src\thprac\thprac_cfg.cpp" />
     <ClCompile Include="src\thprac\thprac_games.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_impl_dx8.cpp" />
