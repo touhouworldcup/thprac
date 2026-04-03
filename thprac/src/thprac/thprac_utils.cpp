@@ -1,3 +1,4 @@
+#include "utils/wininternal.h"
 #include "thprac_utils.h"
 #include "thprac_licence.h"
 #include <metrohash128.h>
@@ -7,6 +8,84 @@
 
 
 namespace THPrac {
+
+#pragma region Windows Version
+wchar_t* windows_version_str() {
+    static constinit wchar_t version[64] = {};
+    if (version[0] != 0) {
+        return version;
+    }
+    int wrote = 0;
+#define snprintf_cat(fmt, ...) wrote += _snwprintf(version + wrote, 64 - wrote, fmt, __VA_ARGS__)
+
+    auto major = Kuser_Shared_Data->NtMajorVersion;
+    auto minor = Kuser_Shared_Data->NtMinorVersion;
+    auto product = Kuser_Shared_Data->NtProductType;
+
+    // As per https://msdn.microsoft.com/en-us/library/windows/hardware/ff563620(v=vs.85).aspx
+    const wchar_t* winver = nullptr;
+    if (major == 10) {
+        // Windows 11 also use major = 10 and minor = 0
+        if (Kuser_Shared_Data->NtBuildNumber >= 22000) {
+            winver = L"11";
+        } else {
+            winver = L"10";
+        }
+    } else if (major == 6 && minor == 3) {
+        winver = L"8.1";
+    } else if (major == 6 && minor == 2 && product == VER_NT_WORKSTATION) {
+        winver = L"8";
+    } else if (major == 6 && minor == 2 && product != VER_NT_WORKSTATION) {
+        winver = L"Server 2012";
+    } else if (major == 6 && minor == 1 && product == VER_NT_WORKSTATION) {
+        winver = L"7";
+    } else if (major == 6 && minor == 1 && product != VER_NT_WORKSTATION) {
+        winver = L"Server 2008 R2";
+    } else if (major == 6 && minor == 0 && product == VER_NT_WORKSTATION) {
+        winver = L"Vista";
+    } else if (major == 6 && minor == 0 && product != VER_NT_WORKSTATION) {
+        winver = L"Server 2008";
+    } else if (major == 5 && minor == 2 && Kuser_Shared_Data->SuiteMask == VER_SUITE_WH_SERVER) {
+        winver = L"Home Server";
+    } else if (major == 5 && minor == 2) {
+        winver = L"Server 2003";
+    } else if (major == 5 && minor == 1) {
+        winver = L"XP";
+    } else if (major == 5 && minor == 0) {
+        winver = L"2000";
+    }
+
+    if (winver) {
+        snprintf_cat(L"Windows %s", winver);
+    } else {
+        snprintf_cat(L"Windows %u.%u", major, minor);
+    }
+
+    auto* peb = CurrentPeb();
+    if (peb->OSCSDMajorVersion != 0) {
+        snprintf_cat(L", Service Pack %hu", peb->OSCSDMajorVersion);
+        if (peb->OSCSDMinorVersion != 0) {
+            snprintf_cat(L".%hu", peb->OSCSDMajorVersion);
+        }
+    }
+    if (Kuser_Shared_Data->NtBuildNumber != 0) {
+        snprintf_cat(L", Build %u", Kuser_Shared_Data->NtBuildNumber);
+    }
+#undef snprintf_cat
+    return version;
+}
+#pragma endregion
+
+#pragma region Error
+
+std::wstring ErrorToString(DWORD err) {
+    std::wstring ret(32767, 0);
+    DWORD wrote = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, err, 0, ret.data(), 32767, nullptr);
+    ret.resize(wrote);
+    return ret;
+}
+
+#pragma endregion
 
 #pragma region Locale
 typedef int WINAPI MultiByteToWideChar_t(UINT CodePage, DWORD dwFlags, LPCCH lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar);

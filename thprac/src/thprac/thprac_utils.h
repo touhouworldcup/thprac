@@ -69,6 +69,14 @@ struct MappedFile {
     }
 };
 
+#pragma region Windows Version
+wchar_t* windows_version_str();
+#pragma endregion
+
+#pragma region Error
+std::wstring ErrorToString(DWORD err);
+#pragma endregion
+
 #pragma region Text Encoding
 std::string utf16_to_mb(const wchar_t* utf16, UINT encoding);
 std::wstring mb_to_utf16(const char* utf8, UINT encoding);
