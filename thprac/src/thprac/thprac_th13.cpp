@@ -70,7 +70,7 @@ namespace TH13 {
             if (mode == 0) { //vanilla run mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr());
+                AddJsonVersion();
                 AddJsonValueEx(game, "th13");
                 AddJsonValue(mode);
                 AddJsonArray(lastSrcIdx, elementsof(lastSrcIdx));
@@ -80,7 +80,7 @@ namespace TH13 {
             } else { //thprac mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr());
+                AddJsonVersion();
                 AddJsonValueEx(game, "th13");
                 AddJsonValue(mode);
                 AddJsonValue(stage);

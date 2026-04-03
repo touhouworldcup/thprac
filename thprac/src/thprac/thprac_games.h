@@ -291,6 +291,12 @@ __forceinline void GetJsonArrayImpl(yyjson_val* yy_arr, T* arr, size_t len) {
     }
 }
 
+inline void AddJsonVersionImpl(yyjson_mut_doc* doc, yyjson_mut_val* param) {
+    char ver_str[64] = {};
+    snprintf(ver_str, 63, "%d.%d.%d.%d", VER_PARAMS);
+    yyjson_mut_obj_add_str(doc, param, "version", ver_str);
+}
+
 // doc and param must end up in the function's scope, so the "do {...} while(0)" trick can't be used
 #define ParseJson() this->Reset(); \
     yyjson_doc* doc = yyjson_read(json.data(), json.size(), YYJSON_READ_STOP_WHEN_DONE); \
@@ -352,6 +358,8 @@ __forceinline void GetJsonArrayImpl(yyjson_val* yy_arr, T* arr, size_t len) {
 	for (auto& vector : value_name) { \
 		yyjson_mut_val* yy_vector = yyjson_mut_arr_add_arr(doc, yy_array); \
 		for (auto& el : vector) __VA_ARGS__ } } while(0)
+
+#define AddJsonVersion() AddJsonVersionImpl(doc, param)
 
 #pragma endregion
 

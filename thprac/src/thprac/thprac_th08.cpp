@@ -96,7 +96,7 @@ namespace TH08 {
         {
             CreateJson();
 
-            AddJsonValueEx(version, GetVersionStr());
+            AddJsonVersion();
             AddJsonValueEx(game, "th08");
             AddJsonValue(mode);
             AddJsonValue(stage);

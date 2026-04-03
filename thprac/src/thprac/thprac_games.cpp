@@ -617,7 +617,7 @@ void AboutOpt(const char* thanks_text)
 {
     static bool showLicense = false;
     if (BeginOptGroup<TH_ABOUT_THPRAC>()) {
-        ImGui::Text(S(TH_ABOUT_VERSION), GetVersionStr());
+        Gui::VersionText();
         ImGui::TextUnformatted(S(TH_ABOUT_WEBSITE));
         ImGui::Text(S(TH_ABOUT_THANKS), thanks_text ? thanks_text : "You!");
 

@@ -35,12 +35,8 @@ struct ThpracVersion {
 #define THPRAC_VERSION_1 2
 #define THPRAC_VERSION_2 2
 #define THPRAC_VERSION_3 7
-inline constexpr ThpracVersion currentVersion = { THPRAC_VERSION_0, THPRAC_VERSION_1, THPRAC_VERSION_2, THPRAC_VERSION_3 };
+extern const ThpracVersion gVersion;
+#define VER_PARAMS gVersion.meta, gVersion.major, gVersion.minor, gVersion.patch
 
-#define STRR(X) #X
-#define STR(X) STRR(X) 
-
-const char* GetVersionStr();
-const wchar_t* GetVersionWcs();
 ThpracVersion ParseVersion(const char* str);
 }

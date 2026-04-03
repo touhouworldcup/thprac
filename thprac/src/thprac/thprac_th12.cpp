@@ -110,7 +110,7 @@ namespace TH12 {
             if (mode == 0) { //vanilla run mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr());
+                AddJsonVersion();
                 AddJsonValueEx(game, "th12");
                 AddJsonValue(mode);
 
@@ -127,7 +127,7 @@ namespace TH12 {
             } else { //thprac mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr());
+                AddJsonVersion();
                 AddJsonValueEx(game, "th12");
                 AddJsonValue(mode);
                 AddJsonValue(stage);

@@ -248,7 +248,7 @@ namespace TH20 {
             if (mode == 0) { //vanilla run mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr());
+                AddJsonVersion();
                 AddJsonValueEx(game, "th20");
                 AddJsonValue(mode);
 
@@ -282,7 +282,7 @@ namespace TH20 {
             } else { //thprac mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr());
+                AddJsonVersion();
                 AddJsonValueEx(game, "th20");
                 AddJsonValue(mode);
                 AddJsonValue(stage);

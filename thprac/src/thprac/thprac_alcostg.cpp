@@ -59,7 +59,7 @@ namespace Alcostg {
         {
             CreateJson();
 
-            AddJsonValueEx(version, GetVersionStr());
+            AddJsonVersion();
             AddJsonValueEx(game, "alcostg");
             AddJsonValue(mode);
             AddJsonValue(stage);

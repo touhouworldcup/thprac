@@ -11,6 +11,7 @@
 #include "thprac_gui_input.h"
 #include "thprac_gui_locale.h"
 #include "thprac_hook.h"
+#include "thprac_version.h"
 #include "utils/utils.h"
 
 namespace THPrac {
@@ -793,6 +794,10 @@ namespace Gui {
         } else {
             return false;
         }
+    }
+
+    inline void VersionText() {
+        return ImGui::Text(S(TH_ABOUT_VERSION), VER_PARAMS);
     }
 
     void ComboSelect(size_t& out, th_glossary_t* choices, const size_t choices_count, const char* label);

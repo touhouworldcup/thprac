@@ -52,7 +52,7 @@ namespace TH128 {
         {
             CreateJson();
 
-            AddJsonValueEx(version, GetVersionStr());
+            AddJsonVersion();
             AddJsonValueEx(game, "th128");
             AddJsonValue(mode);
             AddJsonValue(stage);

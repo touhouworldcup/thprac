@@ -70,7 +70,7 @@ namespace TH16 {
             if (mode == 1) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr());
+                AddJsonVersion();
                 AddJsonValueEx(game, "th16");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
@@ -94,7 +94,7 @@ namespace TH16 {
             } else if (mode == 2) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr());
+                AddJsonVersion();
                 AddJsonValueEx(game, "th16");
                 AddJsonValue(mode);
 

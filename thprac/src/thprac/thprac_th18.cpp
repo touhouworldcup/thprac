@@ -294,7 +294,7 @@ namespace TH18 {
             if (mode == 0 && hiddenKoishi) { // vanilla run mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr());
+                AddJsonVersion();
                 AddJsonValueEx(game, "th18");
                 AddJsonValue(mode);
                 AddJsonValue(hiddenKoishi);
@@ -304,7 +304,7 @@ namespace TH18 {
             } else if (mode == 1) { // thprac mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr());
+                AddJsonVersion();
                 AddJsonValueEx(game, "th18");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
@@ -341,7 +341,7 @@ namespace TH18 {
             } else if (mode == 2) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr());
+                AddJsonVersion();
                 AddJsonValueEx(game, "th18");
                 AddJsonValue(mode);
 
