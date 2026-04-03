@@ -5,8 +5,10 @@
 namespace THPrac {
 namespace TH16 {
     enum addrs {
-        CHARA_ADDR = 0x4A57A4,
-        SEASON_ADDR = 0x4A57AC,
+        STAGE_NUM = 0x4a5790,
+        CHARACTER = 0x4a57a4,
+        SUBSHOT = 0x4a57ac,
+        ENEMY_MANAGER_PTR = 0x4a6dc0,
         PLAYER_PTR = 0x4a6ef8,
         SCALE_ADDR = 0x4D9D34,
     };
@@ -42,6 +44,12 @@ namespace TH16 {
             GetJsonValue(mode);
             GetJsonValue(stage);
             GetJsonValue(section);
+
+            // backwards compat (replays broke due to section 21 being removed in v2.2.2.3)
+            const ThpracVersion v = GetJsonVersion();
+            if (v < ThpracVersion { 2, 2, 2, 3 } && section > 21)
+                section -= 1;
+
             GetJsonValue(phase);
             GetJsonValue(dlg);
 
@@ -496,7 +504,19 @@ namespace TH16 {
 
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
         PATCH_HK(0x417965, "eb"),
-        PATCH_HK(0x41d4ef, "058d")
+        PATCH_HK(0x41d4ef, "058d"),
+        EHOOK_HK(0x473995, 4, { // freeze ECL sub time for stage's MainLatter
+            const uint32_t subID = *(uint32_t*)(pCtx->Edi+0x4);
+            const uint32_t stage = GetMemContent(STAGE_NUM) - 1;
+            constexpr uint8_t mainLatterIDs[7] = { 0, 0, 0, 92, 122, 0, 0 };
+
+            if (mainLatterIDs[stage] && subID == mainLatterIDs[stage]) {
+                const bool bossExists = (bool)GetMemContent(ENEMY_MANAGER_PTR, 0xc + 0x3c);
+
+                if (bossExists) // skip increasing sub time
+                    pCtx->Eip = 0x473999;
+            }
+        })
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
@@ -2167,7 +2187,7 @@ namespace TH16 {
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 
         char buf[32] = {};
-        snprintf(buf, sizeof(buf), "%s+%s", S(CHARNAMES[GetMemContent(CHARA_ADDR)]), S(SEASONNAMES[GetMemContent(SEASON_ADDR)]));
+        snprintf(buf, sizeof(buf), "%s+%s", S(CHARNAMES[GetMemContent(CHARACTER)]), S(SEASONNAMES[GetMemContent(SUBSHOT)]));
         auto textSize = ImGui::CalcTextSize(buf);
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - textSize.x * 0.5f);

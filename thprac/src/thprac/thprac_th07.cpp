@@ -15,6 +15,8 @@ namespace TH07 {
         GUI_ADDR = 0x49fbf0,
         // TODO: figure out what this address is
         UNKNOWN_ADDR_1 = 0x575ab4,
+        ENEMY_MANAGER = 0x9a9b00,
+        STAGE_NUM = 0x1347fc8,
     };
 
     struct THPracParam {
@@ -234,6 +236,8 @@ namespace TH07 {
             auto section = CalcSection();
             if (section == TH07_ST8_END_S10) {
                 return TH_SPELL_PHASE1;
+            } else if (section == TH07_ST7_END_S10) {
+                return TH_SPELL_PHASE_RAGEFUL;
             }
             return nullptr;
         }
@@ -553,7 +557,22 @@ namespace TH07 {
         
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
         PATCH_HK(0x417726, "eb"),
-        PATCH_HK(0x421F91, "eb")
+        PATCH_HK(0x421F91, "eb"),
+        EHOOK_HK(0x4207a1, 5, { // freeze timeline progress during st4 Lily (missing boss_wait)
+            if (GetMemContent(STAGE_NUM) != 4) return;
+            constexpr uint32_t lilyStart = 7122;
+            constexpr uint32_t lilyLatest = lilyStart + 60 * 50;
+
+            const bool bossExists = (bool)GetMemContent(ENEMY_MANAGER + 0x954598);
+            const uint32_t curTime = GetMemContent(pCtx->Ecx + 0x8);
+
+            if (bossExists && curTime >= lilyStart && curTime < lilyLatest) {
+                pCtx->Eip = 0x4207a6; // don't run timelines
+
+                if (curTime < lilyStart + 60 * 10) // remove 10s of unnecessary wait
+                    *(int32_t*)(pCtx->Ecx + 0x8) = lilyStart + 60 * 10;
+            }
+        })
         HOTKEY_ENDDEF();
         
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
@@ -1454,13 +1473,51 @@ namespace TH07 {
                 << pair{0x5fdc, 0} << pair{0x5ff0, 0};
             ECLCallSub(ecl, 0x4ce0, 0x3c, 0x53);
             break;
-        case THPrac::TH07::TH07_ST7_END_S10:
+
+        case THPrac::TH07::TH07_ST7_END_S10: {
+            // Pre-spell non we warp to: Sub 84
+            // Spell: Sub 123
+            constexpr uint32_t st7BossLifeCallbackOp = 0x4b58 + 0x4;
+            constexpr uint32_t st7BossLifeFirstCall = 0x4ce0;
+            constexpr uint32_t st7BossNon10DropItemsOp = 0x602c + 0x4;
+            constexpr uint32_t st7BossNon10DropPointItemsOp = 0x603c + 0x4;
+            constexpr uint32_t st7BossNon10SetInt7Delay = 0x614c;
+            constexpr uint32_t st7BossNon10SpellCallDelay = 0x6160;
+
             ECLNameFix();
             ECLTimeWarp(2, 0x225f);
-            ecl << pair{0x4b5c, (int16_t)0} << pair{0x6030, (int16_t)0} << pair{0x6040, (int16_t)0}
-                << pair{0x614c, 0} << pair{0x6160, 0};
-            ECLCallSub(ecl, 0x4ce0, 0x3c, 0x54);
+            ecl << pair { st7BossLifeCallbackOp, (int16_t)0 }
+                << pair { st7BossNon10DropItemsOp, (int16_t)0 }
+                << pair { st7BossNon10DropPointItemsOp, (int16_t)0 }
+                << pair { st7BossNon10SetInt7Delay, 0 }
+                << pair { st7BossNon10SpellCallDelay, 0 };
+            ECLCallSub(ecl, st7BossLifeFirstCall, 60, 84);
+
+            switch (thPracParam.phase) {
+            case 1: { // fully deployed
+                constexpr uint32_t st7BossSpell10Shot1HealthCheckOp = 0xd3b8 + 0x4;
+                constexpr uint32_t st7BossSpell10Shot2HealthCheckOp = 0xd480 + 0x4;
+                constexpr uint32_t st7BossSpell10Shot3HealthCheckOp = 0xd548 + 0x4;
+                constexpr uint32_t st7BossSpell10Shot4HealthCheckOp = 0xd610 + 0x4;
+                constexpr uint32_t st7BossSpell10Shot5HealthCheckOp = 0xd6d8 + 0x4;
+
+                ecl << pair { st7BossSpell10Shot1HealthCheckOp, (int16_t)0 } << pair { st7BossSpell10Shot2HealthCheckOp, (int16_t)0 }
+                    << pair { st7BossSpell10Shot3HealthCheckOp, (int16_t)0 } << pair { st7BossSpell10Shot4HealthCheckOp, (int16_t)0 }
+                    << pair { st7BossSpell10Shot5HealthCheckOp, (int16_t)0 };
+                break;
+            }
+
+            case 2: { // rage phase
+                constexpr uint32_t st7BossSpell10TimeCheckReq = 0xd39c + 0x10;
+                ecl << pair { st7BossSpell10TimeCheckReq, (int16_t)0 };
+                break;
+            }
+
+            default:
+                break;
+            }
             break;
+        }
         case THPrac::TH07::TH07_ST8_MID1:
             ECLTimeWarp(2, 0xf7d);
             if (!thPracParam.dlg)

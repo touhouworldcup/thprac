@@ -18,6 +18,7 @@ namespace TH20 {
         WINDOW_PTR = 0x1b6758,
         GAME_SIDE0 = 0x1ba568,
         PLAYER_PTR = GAME_SIDE0 + 0x4,
+        ENEMY_MGR_PTR = GAME_SIDE0 + 0x8,
         DMG_SRC_MGR_PTR = GAME_SIDE0 + 0x28,
         MODEFLAGS = GAME_SIDE0 + 0x6c,
         STAGE_NUM = GAME_SIDE0 + 0x88 + 0x1f4,
@@ -502,7 +503,7 @@ namespace TH20 {
         {
             auto section = CalcSection();
             if (section == TH20_ST7_BOSS17)
-                return TH_SPELL_PHASE_TIMEOUT;
+                return TH_SPELL_PHASE_FINALE;
             if (section == TH20_ST6_BOSS12 || section == TH20_ST7_BOSS18)
                 return TH_SPELL_PHASE2;
             return nullptr;
@@ -937,7 +938,19 @@ namespace TH20 {
 
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F7", VK_F7)
         PATCH_HK(0x86FDD, "EB"),
-        PATCH_HK(0xA871E, "31")
+        PATCH_HK(0xA871E, "31"),
+        EHOOK_HK(0x13b5f2, 4, { // freeze ECL sub time for stage's MainLatter
+            const uint32_t subID = *(uint32_t*)(pCtx->Eax+0x4);
+            const uint32_t stage = GetMemContent(RVA(STAGE_NUM)) - 1;
+            constexpr uint8_t mainLatterIDs[7] = { 95, 102, 0, 82, 80, 0, 0 };
+
+            if (mainLatterIDs[stage] && subID == mainLatterIDs[stage]) {
+                const bool bossExists = (bool)GetMemContent(RVA(ENEMY_MGR_PTR), 0x10 + 0x44);
+
+                if (bossExists) // then ecl delta time = 0
+                    *(float*)(pCtx->Ebx + 0x8) = 0.0f;
+            }
+        })
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F8", VK_F8)
@@ -1135,58 +1148,11 @@ namespace TH20 {
                 break;
             }
         }
-        bool CloneSelectedReplayWithParams(THPracParam repParams) {
-            //setup open file prompt
-            OPENFILENAMEW ofn;
-            wchar_t szFile[512];
-            wcscpy_s(szFile, L"th20_ud----.rpy");
-            ZeroMemory(&ofn, sizeof(ofn));
-            ofn.lStructSize = sizeof(ofn);
-            ofn.hwndOwner = *(HWND*)RVA(WINDOW_PTR);
-            ofn.lpstrFile = szFile;
-            ofn.nMaxFile = sizeof(szFile);
-            ofn.lpstrFilter = L"Replay File\0*.rpy\0";
-            ofn.nFilterIndex = 1;
-            ofn.lpstrFileTitle = nullptr;
-            ofn.nMaxFileTitle = 0;
-            ofn.lpstrInitialDir = THGuiRep::singleton().mSelectedRepDir.c_str();
-            ofn.lpstrDefExt = L".rpy";
-            ofn.Flags = OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
 
-            if (GetSaveFileNameW(&ofn)) {
-                bool existingFile = (GetFileAttributesW(szFile) != INVALID_FILE_ATTRIBUTES);
-                bool samePath = PathsCompare(szFile, t_strlen(szFile), THGuiRep::singleton().mSelectedRepPath.data(), THGuiRep::singleton().mSelectedRepPath.size());
+        inline void CloneSelectedReplayWithParams(THPracParam newRepParam, bool refresh = true) {
+            const std::wstring& repPath = THGuiRep::singleton().mSelectedRepPath;
 
-                // copy original replay to the selected path, overwriting if existing (unless same path)
-                if (!samePath && !CopyFileW(THGuiRep::singleton().mSelectedRepPath.c_str(), szFile, FALSE)) {
-                    log_mbox(ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST));
-                    return false;
-                }
-
-                // clear thprac params if present (no impact otherwise)
-                if (ReplayClearParam(szFile) == ReplayClearResult::Error) {
-                    log_mbox(ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS));
-                    if (!existingFile)
-                        DeleteFileW(szFile);
-                    return false;
-                }
-
-                // save params & notify
-                if (!ReplaySaveParam(szFile, repParams.GetJson())) {
-                    log_mboxf(ofn.hwndOwner, MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str());
-                    return true;
-
-                } else { // delete copy if params didn't save
-                    log_mbox(ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_PARAMS));
-                    if (!existingFile) DeleteFileW(szFile);
-                }
-            }
-
-            return false;
-        }
-
-        void CloneWithParamsAndRefresh(THPracParam newRepParam) {
-            if (CloneSelectedReplayWithParams(newRepParam) && !THGuiRep::singleton().mRepStatus)
+            if (CloneReplayWithParams(repPath, newRepParam.GetJson(), L"20", *(HWND*)RVA(WINDOW_PTR)) && refresh)
                 THGuiRep::singleton().CheckReplay(); // refresh for if user overwrote og file in menu
         }
 
@@ -1358,7 +1324,7 @@ namespace TH20 {
                                 newRepParam.expStoneColors[s] = advExpStoneColors[s];
                             newRepParam.MarkExpStoneFixed(false);
 
-                            CloneSelectedReplayWithParams(newRepParam);
+                            CloneSelectedReplayWithParams(newRepParam, false);
                             //can't save in menu, thPracParam is reset
                         }
 
@@ -1378,7 +1344,7 @@ namespace TH20 {
                             for (size_t st = 0; st < elementsof(newRepParam.rogueDmgSrcs); ++st)
                                 newRepParam.rogueDmgSrcs[st].clear();
 
-                            CloneWithParamsAndRefresh(newRepParam);
+                            CloneSelectedReplayWithParams(newRepParam);
                         }
                     }
                 } else {
@@ -1425,7 +1391,7 @@ namespace TH20 {
                                 newRepParam.expStoneColors[s] = advExpStoneColors[s];
                             newRepParam.MarkExpStoneFixed(true);
 
-                            CloneWithParamsAndRefresh(newRepParam);
+                            CloneSelectedReplayWithParams(newRepParam);
                         };
                         DisableTooltip(extraResFixDisableSave, TH20_EXRESFIX_SAVE_DISABLE_HINT, false);
 
@@ -1436,7 +1402,7 @@ namespace TH20 {
                             THPracParam newRepParam = THGuiRep::singleton().mRepParam;
                             newRepParam.resolutionSpriteHeight = 0;
 
-                            CloneWithParamsAndRefresh(newRepParam);
+                            CloneSelectedReplayWithParams(newRepParam);
                         }
                     }
                 }
@@ -1526,7 +1492,7 @@ namespace TH20 {
                                     for (size_t s = 0; s < elementsof(advExpStoneColors); ++s)
                                         newRepParam.expStoneColors[s] = advExpStoneColors[s];
 
-                                    CloneWithParamsAndRefresh(newRepParam);
+                                    CloneSelectedReplayWithParams(newRepParam);
                                 }
                             }
                             else {
@@ -1534,7 +1500,7 @@ namespace TH20 {
                                     THPracParam newRepParam = THGuiRep::singleton().mRepParam;
                                     newRepParam.MarkExpStoneFixed(THGuiRep::singleton().mSelectedRepEndStage == 7);
 
-                                    CloneWithParamsAndRefresh(newRepParam);
+                                    CloneSelectedReplayWithParams(newRepParam);
                                 }
                             }
 
@@ -1551,7 +1517,7 @@ namespace TH20 {
                                 for (auto& stgData : newRepParam.expStoneColors)
                                     stgData.clear();
 
-                                CloneWithParamsAndRefresh(newRepParam);
+                                CloneSelectedReplayWithParams(newRepParam);
                             }
                         }
                     } else ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_NONE));

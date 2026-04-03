@@ -645,7 +645,7 @@ void AboutOpt(const char* thanks_text)
 
 #pragma region Replay System
 
-bool ReplaySaveParam(const wchar_t* rep_path, const std::string& param)
+bool ReplaySaveParam(const wchar_t* rep_path, std::string_view param)
 {
     auto repFile = CreateFileW(rep_path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (repFile == INVALID_HANDLE_VALUE)
@@ -844,6 +844,56 @@ ReplayClearResult ReplayClearParam(const wchar_t* rep_path)
     return ReplayClearResult::NoParams;
 }
 
+bool CloneReplayWithParams(std::wstring_view rep_path, std::string_view param, const wchar_t* gameId, HWND window) {
+    // setup open file prompt
+    OPENFILENAMEW ofn;
+    wchar_t szFile[512];
+    int szFile_len = _snwprintf(szFile, 512, L"th%s_ud----.rpy", gameId);
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = window;
+    ofn.lpstrFile = szFile;
+    ofn.nMaxFile = sizeof(szFile);
+    ofn.lpstrFilter = L"Replay File\0*.rpy\0";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = nullptr;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = rep_path.data();
+    ofn.lpstrDefExt = L".rpy";
+    ofn.Flags = OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
+
+    if (GetSaveFileNameW(&ofn)) {
+        bool existingFile = GetFileAttributesW(szFile) != INVALID_FILE_ATTRIBUTES;
+        bool samePath = PathsCompare(szFile, szFile_len, rep_path.data(), rep_path.length());
+
+        // copy original replay to the selected path, overwriting if existing (unless same path)
+        if (!samePath && !CopyFileW(rep_path.data(), szFile, FALSE)) {
+            log_mbox(window, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST));
+            return false;
+        }
+
+        // clear thprac params if present (no impact otherwise)
+        if (ReplayClearParam(szFile) == ReplayClearResult::Error) {
+            log_mbox(window, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS));
+            if (!existingFile)
+                DeleteFileW(szFile);
+            return false;
+        }
+
+        // save params & notify
+        if (!ReplaySaveParam(szFile, param)) {
+            log_mboxf(window, MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str());
+            return true;
+
+        } else { // delete copy if params didn't save
+            log_mbox(window, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_PARAMS));
+            if (!existingFile)
+                DeleteFileW(szFile);
+        }
+    }
+
+    return false;
+}
 
 #pragma endregion
 
@@ -1093,5 +1143,24 @@ void* yyjson_string_alc_realloc(void* ctx, [[maybe_unused]] void* ptr, [[maybe_u
 void yyjson_string_alc_free([[maybe_unused]] void* ctx, [[maybe_unused]] void* ptr) {};
 #pragma endregion
 
+#pragma region Config Codes
 
+bool ValidateConfigCode(const char* input, size_t length)
+{
+    // Must be given length
+    if (!input || strlen(input) != length)
+        return false;
+
+    // Must be hex
+    for (size_t i = 0; i < length; i++) {
+        const char c = input[i];
+
+        if ((c < '0' || c > '9') && (c < 'a' || c > 'f') && (c < 'A' || c > 'F'))
+            return false;
+    }
+
+    return true;
+}
+
+#pragma endregion
 }

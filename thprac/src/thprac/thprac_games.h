@@ -3,6 +3,7 @@
 #include "thprac_hook.h"
 #include "thprac_log.h"
 #include "thprac_gui_components.h"
+#include "thprac_version.h"
 
 #include <vector>
 #include <unordered_map>
@@ -260,13 +261,11 @@ static bool ElBgmTestTemp(bool hotkey_status, bool practice_status,
 
 #pragma region Replay System
 
-typedef void*(__cdecl* p_malloc)(size_t size);
-
 enum class ReplayClearResult { Cleared, NoParams, Error };
-bool ReplaySaveParam(const wchar_t* rep_path, const std::string& param);
+bool ReplaySaveParam(const wchar_t* rep_path, std::string_view param);
 bool ReplayLoadParam(const wchar_t* rep_path, std::string& param);
 ReplayClearResult ReplayClearParam(const wchar_t* rep_path);
-
+bool CloneReplayWithParams(std::wstring_view rep_path, std::string_view param, const wchar_t* gameId, HWND window);
 
 #pragma endregion
 
@@ -311,6 +310,8 @@ __forceinline void GetJsonArrayImpl(yyjson_val* yy_arr, T* arr, size_t len) {
     yyjson_mut_doc_free(doc); \
     return out;
 
+#define GetJsonVersion() ParseVersion(yyjson_get_str(yyjson_obj_get(param, "version")))
+
 #define ForceJsonValue(value_name, comparator) \
     do { const char* mem = yyjson_get_str(yyjson_obj_get(param, #value_name)); \
       if (!mem || strcmp(mem, comparator) != 0) return false; } while(0)
@@ -352,6 +353,32 @@ __forceinline void GetJsonArrayImpl(yyjson_val* yy_arr, T* arr, size_t len) {
 		yyjson_mut_val* yy_vector = yyjson_mut_arr_add_arr(doc, yy_array); \
 		for (auto& el : vector) __VA_ARGS__ } } while(0)
 
+#pragma endregion
+
+#pragma region Config Codes
+
+template <size_t maxLen = 12>
+const char* GetTrimmedClipboardText()
+{
+    const char* clipboardText = ImGui::GetClipboardText();
+    if (!clipboardText)
+        return "";
+
+    static char trimmed[maxLen + 1];
+
+    const char* start = clipboardText;
+    while (*start == ' ')
+        ++start;
+
+    const size_t len = strlen(start);
+    const size_t copyLen = len > maxLen ? maxLen : len;
+    memcpy(trimmed, start, copyLen);
+    trimmed[copyLen] = '\0';
+
+    return trimmed;
+}
+
+bool ValidateConfigCode(const char* input, size_t length = 12);
 #pragma endregion
 
 #pragma region Virtual File System
@@ -532,6 +559,25 @@ bool QuickCfgHintText(bool reset = false);
 
 #pragma endregion
 
+// normalize float value to [-pi, pi] range
+// (works the same as ZUN's but without limits, and it's O(1)
+// Shoutouts to WolframAlpha for helping me simplify my math.
+inline float NormRad(float angle) {
+#define MY_TRUNC(x) ((int)(x)) // Don't want to call libm for something built into the CPU
+    constexpr float PI = 3.14159274f;
+    constexpr float TWO_PI = 6.28318548f;
+
+    if (angle != PI) { // If this branch runs unconditionally, π gets normalized to -π
+        // This statement is basically an expanded fmod that was then simplified with WolframAlpha
+        angle = angle - PI * (2.0f * MY_TRUNC((angle + PI) / TWO_PI) - 1.0f);
+        // Depending on the sign of the previous expression, either π or -π needs to be added
+        return angle - copysignf(PI, angle);
+    } else {
+        return angle;
+    }
+#undef MY_TRUNC
+}
+
 #pragma region Snapshot
 namespace THSnapshot {
     void* GetSnapshotData(IDirect3DDevice8* d3d8);
@@ -641,6 +687,7 @@ struct TH17Info {
     uint32_t roaring_with_special;
     uint32_t roaring_total;
     uint32_t roaring[3];
+    uint32_t keiki_final_phase_t[4];
 };
 
 struct TH18Info {

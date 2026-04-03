@@ -865,7 +865,7 @@ const THGameVersion* IdentifyRemoteExe(void* hProc, uintptr_t mod) {
             return &ver;
         }
     }
-
+    return nullptr;
 }
 
 void GetExeOepCode(const uint8_t* mod, size_t len, uint16_t (&outOep)[10]) {

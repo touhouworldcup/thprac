@@ -844,6 +844,7 @@
       "TH_ON": [ "开启", "On", "有効" ],
       "TH_OFF": [ "关闭", "Off", "無効" ],
       "TH_NORMAL": [ "正常", "Normal", "普通" ],
+      "TH_FULL": [ "完全", "Full", "完全" ],
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
       "TH_FINALE": [ "终幕", "Finale", "終幕" ],
       "TH_P1": [ "P1", "P1", "P1" ],
@@ -923,9 +924,10 @@
       "TH_REPLAY_FIX": [ "Replay修复", "Replay Fixing", "リプレイ修復" ],
       "TH_REPFIX_SELECTED": [ "已选择replay：%ls", "Replay selected: %ls", "選択したリプレイ: %ls" ],
       "TH_REPFIX_SELECTED_NONE": [ "未选择replay。", "No replay selected.", "リプレイが選択されていません。" ],
+      "TH_REPFIX_REAL_SELECTED_NONE": [ "未选择练习模式以外的replay。", "No non-practice replay selected.", "練習ではないリプレイが選択されていません。" ],
       "TH_REPFIX_MAIN_SELECTED_NONE": [ "未选择主线replay。", "No main story replay selected.", "メインストーリーのリプレイが選択されていません。" ],
       "TH_REPFIX_EXTRA_SELECTED_NONE": [ "未选择extra面replay。", "No Extra Stage replay selected.", "Extraステージのリプレイが選択されていません。" ],
-      "TH_REPFIX_SELECTED_ALREADY_FIXED": [ "已修复所选replay。", "Selected replay is already fixed.", "選択したリプレイはすでに修正されています。" ],
+      "TH_REPFIX_SELECTED_ALREADY_FIXED": [ "已修复所选replay。", "Selected replay is already fixed.", "選択したリプレイはすでに修正されています。" ],  
       "TH_REPFIX_SAVE": [ "保存修复后的副本", "Save fixed copy", "修正版を保存" ],
       "TH_REPFIX_SAVE_PROGRESS": [ "保存replay (%d/%d)", "Save replay (%d/%d)", "リプレイをセーブ (%d/%d)" ],
       "TH_REPFIX_RESET_DATA": [ "重置此同步数据", "Reset this sync data", "この同期データをリセット" ],
@@ -951,6 +953,14 @@
       "TH_TOOL_SHOW_TOGGLE": [ "显示工具", "Show tool", "ツールを表示" ],
       "TH_BUGFIX": [ "可选的Bug修复", "Optional Bug Fixes", "任意Bug修復" ],
       "TH_BUGFIX_AUTO": [ "已自动应用关键Bug的修复。", "Critical bug fixes have been applied automatically.", "重要なBug修復は自動的に適用されています。" ],
+      "TH_COPY_CFG_CODE": [ "复制当前配置", "Copy current config", "現在の設定をコピー" ],
+      "TH_COPY_CFG_CODE_HINT": [
+        "将此配置的唯一代码复制到剪贴板。",
+        "Copies the unique code for this configuration to your clipboard.",
+        "この設定の固有コードをクリップボードにコピーします。"
+      ],
+      "TH_PASTE_CFG_CODE": [ "粘贴配置", "Paste config", "設定を貼り付け" ],
+      "TH_PASTE_CFG_CODE_HINT": [ "从剪贴板应用配置。", "Applies config from clipboard.", "クリップボードから設定を適用します。" ],
       "TH_STAGE_NUM": [ "第%d面", "Stage %d", "ステージ %d" ],
       "TH_EXTRA_STAGE": [ "Extra面", "Extra Stage", "Extraステージ" ],
       "TH_DELAY": [ "延迟", "Delay", "ディレイ" ],
@@ -1156,9 +1166,19 @@
         "TH_P4",
         "TH_RAGE"
       ],
-      "TH_SPELL_PHASE_TIMEOUT": [
+      "TH_SPELL_PHASE_FINALE": [
         "TH_NORMAL",
         "TH_FINALE"
+      ],
+      "TH_SPELL_PHASE_RAGEFUL": [
+        "TH_NORMAL",
+        "TH_FULL",
+        "TH_RAGE"
+      ],
+      "TH_SPELL_PHASE_RAGEFIN": [
+        "TH_NORMAL",
+        "TH_FINALE",
+        "TH_RAGE"
       ],
       "TH_SIDE_SELECT": [
         "TH_LEFT",
@@ -8566,7 +8586,7 @@
       "TH17_SPAWN_A_GOAST": [ "生成一只动物灵", "Spawn a Goast", "動物霊アイテムを生成する" ],
       "TH17_FORCE_ANGLE": [ "角度固定", "Force Angle", "固定角度で生成する" ],
       "TH17_RANDOM_ANGLE": [ "角度随机", "Random Angle", "ランダムな角度で生成する" ],
-      "TH17_ANGLE_PREVIEW": [ "--预览角度-->", "--angle-preview-->", "--プレビューのアングル-->"],
+      "TH17_ANGLE_PREVIEW": [ "--预览角度-->", "--angle-preview-->", "--プレビューのアングル-->" ],
       "TH17_FORCE_ANGLE_HELP": [
         "动物灵在生成时或在墙上反弹时会试图远离彼此。这个选项会保证生成的动物灵总是朝指定的方向移动",
         "Tokens will try to move away from each other both when spawning and when bouncing from a wall. This will ensure that a token will always go in the direction you specify",
@@ -8582,6 +8602,43 @@
         "如果你的replay受到了上述bug的影响则可以尝试开启此选项。\n请不要在播放正常的replay时开启这个选项。",
         "Try to enable this option if you have any bugged replay.\nDo not enable this option when playbacking a normal replay.",
         "バグのあるリプレイがある場合は、このオプションを有効にしてみてください。\n普通のリプレイを再生するときは、このオプションを有効にしないでください。"
+      ],
+      "TH17_SHOW_ID_OPT": [ "显示高级参数", "Show advanced params", "高度なパラメータを表示" ],
+      "TH17_ID_P2_OPT": [ "P2 偏移量", "P2 Offset", "P2 オフセット" ],
+      "TH17_ID_P3_OPT": [ "P3 偏移量", "P3 Offset", "P3 オフセット" ],
+      "TH17_ID_P4_OPT": [ "P4 偏移量", "P4 Offset", "P4 オフセット" ],
+      "TH17_ID_TD_CFG": [ "应用全避时的配置", "Apply timedown config", "耐久設定を適用" ],
+      "TH17_ID_TD_CFG_HINT": [
+        "使偏移量与全避时的结果一致。",
+        "Makes the offsets match what you'd get by waiting for phases to transition automatically.",
+        "段階が自動で移行するのを待った場合と同じオフセットになります。"
+      ],
+      "TH17_ID_CFG_CODE_DESC": [
+        "偏移量可在游戏内追踪表中查看，并可通过相关的高级设置选项复制。",
+        "Offset values can both be seen in the in-game tracker and copied via the related Advanced Settings option.",
+        "オフセット値はゲーム内トラッカーで確認でき、関連する詳細設定オプションからコピーできます。"
+      ],
+      "TH17_ID_CFG_PASTE_ERROR_TITLE": [ "偶像恶魔配置验证错误", "Idola Diabolus config validation error", "イドラディアボルス設定の検証エラー" ],
+      "TH17_ID_CFG_PASTE_ERROR": [
+        "剪贴板中没有有效的偶像恶魔阶段偏移量配置代码（24位十六进制字符串）。请检查剪贴板后重试。",
+        "Your clipboard does not contain a valid Idola Diabolus phase offset config code (24-character hexadecimal string). Please check your clipboard and try again.",
+        "クリップボードに有効なイドラディアボルス段階オフセット設定コード（24桁の16進文字列）がありません。確認して再試行してください。"
+      ],
+      "TH17_KEIKI_FINAL_PHASETRACK": [
+        "在游戏内追踪表中显示偶像恶魔阶段过渡偏移量",
+        "Show Idola Diabolus' phase transition offsets in in-game tracker",
+        "ゲーム内トラッカーでイドラディアボルスの段階移行オフセットを表示"
+      ],
+      "TH17_KEIKI_FINAL_PHASETRACK_DESC": [
+        "可以使用这些值来练习特定的偶像恶魔避弹方法。偏移量可以在练习菜单的高级参数内设置。其仅在练习模式下的偶像恶魔显示，但无论在什么模式下都可以复制。",
+        "You can use these values to practice specific Idola Diabolus strategies via the advanced param. sliders in the practice menu. Offsets are only shown when playing Idola Diabolus in Practice Mode, but can be copied regardless of mode.",
+        "これらの値は、練習メニューの高度なパラメータスライダーを使って特定のイドラディアボルス戦略を練習するのに使用できます。オフセットはイドラディアボルスを練習モードでプレイ中のみ表示されますが、モードに関係なくコピー可能です。"
+      ],
+      "TH17_ID_CFG_CODE_COPIED": [ "（剪贴板中有有效代码！）", "(Valid code in clipboard!)", "（有効なコードがクリップボードにあります！）" ],
+      "TH17_KEIKI_FINAL_PHASETRACK_NONE_HINT": [
+        "未处于偶像恶魔的第2~4阶段，无法复制偏移量配置。",
+        "Cannot copy offset configuration if not on phase 2 to 4 of Idola Diabolus.",
+        "イドラディアボルスの段階2〜4でない場合、オフセット設定はコピーできません。"
       ]
     },
 
@@ -9069,9 +9126,9 @@
         "以下のオプションを利用する必要がない場合は、オフにしてください。"
       ],
       "TH18_BUGFIX_AUTO_DESC": [
-        "包括：\n• 游戏崩溃：在符卡练习中全避「弹幕的庇护所」。\n• 游戏崩溃：持有「死秽回避之药」或「有钱能使鬼推磨」时切换关卡。\n• Replay不同步：蜈蚣卡牌在关卡切换后伤害倍率重置。\n• 回放不同步：卷轴卡牌在 Extra 面商店后冷却倍率重置。\n• 录制不同步：「妖怪们的盾构法」存在非确定性行为。\n• 录制不同步：关卡切换时将错误的所选主动卡写入回放。\n• 有问题的功能：Esc+R 与 Esc+Q。",
-        "Includes:\n• Game Crash: Timing out \"Asylum of Danmaku\" in Spell Practice.\n• Game Crash: Stage transition with cards \"Death Avoidance Elixir\" and \"Money is the Best Lawyer in Hell\"\n• Playback Desync: Centipede damage multiplier resetting on stage transition.\n• Playback Desync: Scroll cooldown multipliers resetting after Extra shop.\n• Recording Desync: Non-deterministic behavior on \"Shield Method of the Youkai\".\n• Recording Desync: Incorrect selected active card written to replay on stage transition.\n• Broken Features: Esc+R and Esc+Q.",
-        "内容：\n- ゲームクラッシュ：スペルプラクティスで「弾幕のアジール」をタイムアウトした場合。\n- ゲームクラッシュ：「死穢回避の薬」または「地獄の沙汰も金次第」を所持した状態でのステージ移行。\n- 再生ズレ：ムカデカードのダメージ倍率がステージ移行後にリセットされる。\n- 再生ズレ：経典カードのクールダウン倍率がExtraショップ後にリセットされる。\n- 記録ズレ：「妖怪達のシールドメソッド」における非決定的挙動。\n- 記録ズレ：ステージ移行時に選択した使用カードがリプレイへ正しく記録されない。\n- 機能不具合：Esc+R と Esc+Q。"
+        "包括：\n• 游戏崩溃：在符卡练习中全避「弹幕的庇护所」。\n• 游戏崩溃：持有「死秽回避之药」或「有钱能使鬼推磨」时切换关卡。\n• 回放不同步：蜈蚣卡牌在关卡切换后伤害倍率重置。\n• 回放不同步：卷轴卡牌在 Extra 面商店后冷却倍率重置。\n• 录制不同步：「妖怪们的盾构法」存在非确定性行为。\n• 录制不同步：关卡切换时将错误的所选主动卡写入回放。\n• 有问题的功能：Esc+R、Esc+Q，Extra 关卡重放中的主动卡片 HUD。",
+        "Includes:\n• Game Crash: Timing out \"Asylum of Danmaku\" in Spell Practice.\n• Game Crash: Stage transition with cards \"Death Avoidance Elixir\" and \"Money is the Best Lawyer in Hell\"\n• Playback Desync: Centipede damage multiplier resetting on stage transition.\n• Playback Desync: Scroll cooldown multipliers resetting after Extra shop.\n• Recording Desync: Non-deterministic behavior on \"Shield Method of the Youkai\".\n• Recording Desync: Incorrect selected active card written to replay on stage transition.\n• Broken Features: Esc+R, Esc+Q, active card HUD in Extra replays.",
+        "内容：\n- ゲームクラッシュ：スペルプラクティスで「弾幕のアジール」をタイムアウトした場合。\n- ゲームクラッシュ：「死穢回避の薬」または「地獄の沙汰も金次第」を所持した状態でのステージ移行。\n- 再生ズレ：ムカデカードのダメージ倍率がステージ移行後にリセットされる。\n- 再生ズレ：経典カードのクールダウン倍率がExtraショップ後にリセットされる。\n- 記録ズレ：「妖怪達のシールドメソッド」における非決定的挙動。\n- 記録ズレ：ステージ移行時に選択した使用カードがリプレイへ正しく記録されない。\n- 機能不具合：Esc+R、Esc+Q、エキストラボスのリプレイ中のアクティブカードHUD。"
       ],
       "TH18_FUNDS": [ "资金力", "Funds", "資金力" ],
       "TH18_CARD": [ "卡片", "Card", "カード" ],
@@ -9137,14 +9194,6 @@
       "TH18_MARKET_MANIP_HAS_RNG": [ "（存在随机性）", "(has randomness)", "（ランダム枠）" ],
       "TH18_MARKET_MANIP_ALL_BUY": [ "全部标记为买", "Mark all Buy", "全て購入に設定" ],
       "TH18_MARKET_MANIP_ALL_KEEP": [ "全部标记为留", "Mark all Keep", "全て保持に設定" ],
-      "TH18_MARKET_MANIP_COPY_CODE": [ "复制当前配置", "Copy current config", "現在の設定をコピー" ],
-      "TH18_MARKET_MANIP_COPY_CODE_HINT": [
-        "将此配置的唯一代码复制到剪贴板。",
-        "Copies the unique code for this configuration to your clipboard.",
-        "この設定の固有コードをクリップボードにコピーします。"
-      ],
-      "TH18_MARKET_MANIP_PASTE_CODE": [ "粘贴配置", "Paste config", "設定を貼り付け" ],
-      "TH18_MARKET_MANIP_PASTE_CODE_HINT": [ "从剪贴板应用配置。", "Applies config from clipboard.", "クリップボードから設定を適用します。" ],
       "TH18_MARKET_MANIP_PASTE_ERROR_TITLE": [ "卡牌配置验证错误", "Card config validation error", "カード設定の検証エラー" ],
       "TH18_MARKET_MANIP_PASTE_ERROR": [
         "剪贴板中没有有效的市场操纵配置代码（12位十六进制字符串）。请检查剪贴板后重试。",
@@ -9164,6 +9213,12 @@
         "有効時、「保持」に設定したカードを購入していた場合、リスタート時にメインメニューへ戻ります。"
       ],
       "TH18_RESTART_RESET_MARKET": [ "重开游戏时重置商店", "Reset market on restart", "ゲームを再開するときに市場をリセットする" ],
+      "TH18_RESTART_RESET_KOISHI": [ "重开游戏时重置“小石子帽子”效果", "Reset \"Pebble Hat\" effect on restart", "再開時に「小石ころ帽子」の効果をリセットする" ],
+      "TH18_RESTART_RESET_KOISHI_DESC": [
+        "在重开时清除使你在未拥有古明地恋的卡片时仍对敌人碰撞无敌的标志（通常只在关卡切换或返回主菜单时重置）。启用此修复后，受此问题影响的录像在原版中可以正常同步；若不启用，则仅在 thprac 中同步。",
+        "Clears the flag making you invulnerable to enemy collisions on restart if you no longer have Koishi's card (normally only reset on stage transition / main menu). Replays affected by this issue will sync on vanilla if this bug fix is enabled, and will sync only with thprac if not.",
+        "再開後にこいしのカードを所持していない状態になる場合、敵との接触時に無敵となるフラグを削除します（通常はステージ切り替えまたはメインメニューに戻ったときのみリセットされます）。この修正を有効にすると、この問題の影響を受けたリプレイはバニラで正常に同期し、無効の場合は thprac のみで同期されます。"
+      ],
       "TH18_RESTART_SETTINGS_CONFLICT": [ "无法同时启用互相冲突的重开设置。", "Cannot enable conflicting restart settings.", "互いに競合する再開設定を同時に有効にすることはできません。" ],
       "TH18_AC_REPFIX": [ "主动卡选择不同步修复", "Active card selection desync fix", "使用カード選択の同期ズレ修正" ],
       "TH18_AC_REPFIX_SHOW_INS": [ "显示说明##th18", "Show instructions##th18", "指示を表示##th18" ],
@@ -9181,9 +9236,15 @@
       ],
       "TH18_CS_REPFIX": [ "分数上限修复", "Counterstop fix", "カンスト修正" ],
       "TH18_CS_REPFIX_DESC": [
-        "Replay文件会因为达到分数上限而无法正确地记录真实分数。此问题可能发生在某一面或多面，且可被此工具修复。请启用“移除分数限制”选项，从第一个真实得分未知的关卡开始，播放replay直到结束，然后保存修复后的副本。\n\n注意：此工具不会影响回放是否同步。请确保在启用相关修复选项的情况下播放replay。",
-        "This tool allows you to fix replays whose true score was not recorded in one or more stages due to the score cap. Enable the \"Remove score cap\" option, play back the replay from the first stage with an unknwon score to the end of the replay, then save a fixed copy.\n\nNote that this tool does not affect whether the replay syncs. Please make sure to play back the replay with the relevant fixes enabled.",
-        "このツールでは、スコアキャップにより1つ以上のステージで本来の得点が記録されなかったリプレイを修正できます。「スコアキャップ解放」オプションを有効にし、実際の得点が不明な最初のステージからリプレイ終了まで再生した後、修正済みのコピーを保存してください。\n\nなお、このツールはリプレイの同期には影響しません。必ず関連する修正を有効にした状態で再生してください。"
+        "Replay文件会因为达到分数上限而无法正确地记录真实分数。此问题可能发生在某一面或多面，且可被此工具修复。请启用“移除分数限制”选项，从第一个真实得分未知的关卡开始，播放replay直到结束，然后保存修复后的副本。\n\n注意：此工具不会影响回放是否同步。",
+        "This tool allows you to fix replays whose true score was not recorded in one or more stages due to the score cap. Enable the \"Remove score cap\" option, play back the replay from the first stage with an unknwon score to the end of the replay, then save a fixed copy.\n\nNote that this tool does not affect whether the replay syncs.",
+        "このツールでは、スコアキャップにより1つ以上のステージで本来の得点が記録されなかったリプレイを修正できます。「スコアキャップ解放」オプションを有効にし、実際の得点が不明な最初のステージからリプレイ終了まで再生した後、修正済みのコピーを保存してください。\n\nなお、このツールはリプレイの同期には影響しません。"
+      ],
+      "TH18_HK_REPFIX": [ "隐藏的“小石子帽子”效果不同步修复", "Hidden \"Pebble Hat\" effect desync fix", "隠し「小石ころ帽子」効果の同期ズレ修正" ],
+      "TH18_HK_REPFIX_DESC": [
+        "此工具可修复由于重开后古明地恋的卡片效果在未装备的情况下仍然生效而导致的录像不同步问题。它仅会将录像标记为受该问题影响，从而让 thprac 知道需要复现该 bug。\n\n请注意，此工具无法“预览”修复是否会让你的录像正常同步，你需要先保存修复后的副本。",
+        "This tool allows you to fix replays that desync due to the effect of Koishi's card staying active after a restart, despite the card no longer being equipped. It simply marks the replay as being affected so that thprac knows to reproduce the bug.\n\nNote that this tool does not let you \"preview\" whether the fix will make your replay sync; you will need to save the fixed copy first.",
+        "このツールは、再開後にこいしのカードが未装備にもかかわらず効果が有効になり続けることで発生するリプレイの同期ズレを修正します。リプレイにその問題の影響があることを示すフラグを付けるだけで、thprac がそのバグを再現できるようにします。\n\nなお、このツールでは修正によってリプレイが同期するかどうかを事前に確認（プレビュー）することはできません。修正済みのコピーを保存する必要があります。"
       ],
       "TH18_CS_REPFIX_NO_UNCAP": [ "“移除分数限制”选项未启用。", "\"Remove score cap\" option disabled.", "「スコアキャップ解放」オプションが無効です。" ],
       "TH18_CS_REPFIX_SELECTED_NO_CS": [ "所选回放未达到分数上限。", "Selected replay does not hit the score cap.", "選択したリプレイはカンストしていません。" ],
