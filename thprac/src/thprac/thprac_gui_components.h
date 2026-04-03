@@ -11,11 +11,12 @@
 #include "thprac_gui_input.h"
 #include "thprac_gui_locale.h"
 #include "thprac_hook.h"
+#include "thprac_version.h"
 #include "utils/utils.h"
 
 namespace THPrac {
-void HelpMarker(const char* desc);
-void CustomMarker(const char* text, const char* desc);
+extern float g_Scale;
+
 void ImRotateStart();
 ImVec2 ImRotationCenter();
 void ImRotateEnd(float rad, ImVec2 center = ImRotationCenter());
@@ -37,7 +38,7 @@ namespace Gui {
             ImGuiIO& io = ImGui::GetIO();
             io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
-            mLocale = (locale_t)-1;
+            mLocale = LOCALE_NONE;
         }
 
         static constexpr ImGuiWindowFlags STYLE_DEFAULT = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | 0;
@@ -99,7 +100,7 @@ namespace Gui {
         Viewport* mViewport = nullptr;
 
     private:
-        locale_t mLocale;
+        Locale mLocale;
     };
 
     class PPGuiWnd : public GameGuiWnd {
@@ -777,7 +778,7 @@ namespace Gui {
     private:
         static bool mGlobalDisable;
         std::vector<int> mNavId;
-        locale_t mLocale;
+        Locale mLocale;
         int mFocusId = 0;
         int mForceFocusId = 0;
     };
@@ -795,6 +796,10 @@ namespace Gui {
         }
     }
 
+    inline void VersionText() {
+        return ImGui::Text(S(TH_ABOUT_VERSION), VER_PARAMS);
+    }
+
     void ComboSelect(size_t& out, th_glossary_t* choices, const size_t choices_count, const char* label);
     void ComboSelect(size_t& out, const char* const* choices, const size_t choices_count, const char* label);
 
@@ -802,6 +807,20 @@ namespace Gui {
 
     void SetNextWindowSizeRel(const ImVec2& size, ImGuiCond cond = 0);
     void SetNextWindowPosRel(const ImVec2& pos, ImGuiCond cond = 0, const ImVec2& pivot = ImVec2(0, 0));
+    void TextCentered(const char* text, float wndX);
+    float GetRelWidth(float rel);
+    float GetRelHeight(float rel);
+    void CustomMarker(const char* text, const char* desc);
+    inline void HelpMarker(const char* desc) {
+        CustomMarker("(?)", desc);
+    }
+    bool Modal(const char* modalTitle, ImVec2 sizeRel = ImVec2(0.0f, 0.0f));
+    bool ButtonRight(const char* text, float rel = 0.0f, const ImVec2& size_arg = { 0.0f, 0.0f });
+    void CheckboxAll(const char* label, bool* v, size_t v_len);
+    int MultiButtonsRight(float x, ...);
+    int MultiButtonsFillWindow(float height, ...);
+
+    void ProgressBar(float prog, const char* text, const char* textEnd = nullptr);
 }
 }
 

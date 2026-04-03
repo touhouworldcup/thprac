@@ -6,21 +6,121 @@
 #define write_fs_byte(offset, data) __writefsbyte(offset, data)
 #define write_fs_word(offset, data) __writefsword(offset, data)
 #define write_fs_dword(offset, data) __writefsdword(offset, data)
-
+#include "utils.h"
 #include <Windows.h>
+typedef LONG NTSTATUS;
+
+constexpr NTSTATUS STATUS_BUFFER_OVERFLOW = 0x80000005;
+constexpr NTSTATUS STATUS_NO_MORE_FILES = 0x80000006;
+constexpr NTSTATUS STATUS_BUFFER_TOO_SMALL = 0xC0000023;
+
+#ifndef NT_SUCCESS
+#define NT_SUCCESS(Status) (((NTSTATUS)(Status)) >= 0)
+#endif
+
 #pragma warning(disable : 4201)
 
 /// Internal Windows Structs
 /// Copied from thcrap
 /*
 Struct definitions based on the fields documented to have
-consistent offsets in all Windoes versions 5.0+
+consistent offsets in all Windows versions 5.0+
 TEB: https://www.geoffchappell.com/studies/windows/km/ntoskrnl/inc/api/pebteb/teb/index.htm
 PEB: https://www.geoffchappell.com/studies/windows/km/ntoskrnl/inc/api/pebteb/peb/index.htm
 
 Rest in Peace:
 Geoff Chappell
 */
+
+struct UNICODE_STRING {
+    USHORT Length;
+    USHORT MaximumLength;
+    PWSTR Buffer;
+};
+
+typedef UNICODE_STRING* PUNICODE_STRING;
+
+static inline constexpr UNICODE_STRING MakeUnicodeString(const wchar_t* str, size_t length) {
+    if (length > 0x7FFEu) {
+        length = 0x7FFEu;
+    }
+    length *= sizeof(wchar_t);
+    return {
+        (USHORT)length,
+        (USHORT)(length + sizeof(wchar_t)),
+        (PWSTR)str
+    };
+}
+
+static inline constexpr UNICODE_STRING MakeUnicodeString(const wchar_t* str) {
+    return MakeUnicodeString(str, t_strlen(str) + 1);
+}
+
+// Constexpr reimplementation of RtlInitUnicodeString
+static inline constexpr void RtlInitUnicodeString(UNICODE_STRING* out, const wchar_t* str) {
+    *out = MakeUnicodeString(str);
+}
+
+// %wZ is a printf format for UNICODE_STRING
+static inline constexpr UNICODE_STRING operator""_wZ(const wchar_t* str, size_t length) {
+    return MakeUnicodeString(str, length);
+}
+
+typedef struct _OBJECT_ATTRIBUTES {
+    ULONG Length;
+    HANDLE RootDirectory;
+    PUNICODE_STRING ObjectName;
+    ULONG Attributes;
+    PVOID SecurityDescriptor;
+    PVOID SecurityQualityOfService;
+} OBJECT_ATTRIBUTES, *POBJECT_ATTRIBUTES;
+
+#define InitializeObjectAttributes(p, n, a, r, s) do { \
+        (p)->Length = sizeof(OBJECT_ATTRIBUTES);  \
+        (p)->RootDirectory = r;                   \
+        (p)->Attributes = a;                      \
+        (p)->ObjectName = n;                      \
+        (p)->SecurityDescriptor = s;              \
+        (p)->SecurityQualityOfService = NULL;     \
+    } while (0)
+
+typedef struct _CURDIR {
+    UNICODE_STRING DosPath;
+    HANDLE Handle;
+} CURDIR;
+
+typedef struct _RTL_USER_PROCESS_PARAMETERS RTL_USER_PROCESS_PARAMETERS;
+struct _RTL_USER_PROCESS_PARAMETERS {
+    ULONG MaximumLength;
+    ULONG Length;
+    ULONG Flags;
+    ULONG DebugFlags;
+    HANDLE ConsoleHandle;
+    ULONG ConsoleFlags;
+    // 4 bytes of padding
+    HANDLE StandardInput;
+    HANDLE StandardOutput;
+    HANDLE StandardError;
+    CURDIR CurrentDirectory;
+    UNICODE_STRING DllPath;
+    UNICODE_STRING ImagePathName;
+    UNICODE_STRING CommandLine;
+    PVOID Environment;
+    ULONG StartingX;
+    ULONG StartingY;
+    ULONG CountX;
+    ULONG CountY;
+    ULONG CountCharsX;
+    ULONG CountCharsY;
+    ULONG FillAttribute;
+    ULONG WindowFlags;
+    ULONG ShowWindowFlags;
+    // 4 bytes of padding
+    UNICODE_STRING WindowTitle;
+    UNICODE_STRING DesktopInfo;
+    UNICODE_STRING ShellInfo;
+    UNICODE_STRING RuntimeData;
+};
 
 typedef struct _PEB PEB;
 struct _PEB {
@@ -34,7 +134,7 @@ struct _PEB {
     HANDLE Mutant;
     PVOID ImageBaseAddress;
     PVOID Ldr; // PEB_LDR_DATA*
-    PVOID ProcessParameters; // RTL_USER_PROCESS_PARAMETERS*
+    RTL_USER_PROCESS_PARAMETERS* ProcessParameters; // RTL_USER_PROCESS_PARAMETERS*
     PVOID SubSystemData;
     HANDLE ProcessHeap;
     RTL_CRITICAL_SECTION* FastPebLock;
@@ -79,9 +179,9 @@ struct _PEB {
     ULONG OSMajorVersion;
     ULONG OSMinorVersion;
     USHORT OSBuildNumber;
-    union OSCSDVERSION {
+    union {
         USHORT OSCSDVersion;
-        struct OSCSDVERSION_BYTES {
+        struct {
             BYTE OSCSDMajorVersion;
             BYTE OSCSDMinorVersion;
         };
@@ -117,11 +217,6 @@ typedef struct _GDI_TEB_BATCH {
     ULONG_PTR HDC;
     ULONG Buffer[310];
 } GDI_TEB_BATCH, *PGDI_TEB_BATCH;
-typedef struct _UNICODE_STRING {
-    USHORT Length;
-    USHORT MaximumLength;
-    PWSTR Buffer;
-} UNICODE_STRING, *PUNICODE_STRING;
 typedef struct _TEB TEB;
 struct _TEB {
     // NT_TIB NtTib;
@@ -193,16 +288,23 @@ struct _TEB {
 #define write_teb_member(member, data) (\
 member_size(TEB, member) == 1 ? write_fs_byte(offsetof(TEB, member), (data)) : \
 member_size(TEB, member) == 2 ? write_fs_word(offsetof(TEB, member), (data)) : \
-write_fs_dword(offsetof(TEB, member), (data)) \
+write_fs_dword(offsetof(TEB, member), (data))) \
 
+#ifdef __INTELLISENSE__
+#define CurrentPeb() ((PEB*)0)
+#define CurrentTeb() ((TEB*)0)
+#else
 #define CurrentTeb() ((TEB*)read_teb_member(Self))
 #define CurrentPeb() ((PEB*)read_teb_member(ProcessEnvironmentBlock))
+#endif
 
 #define KernelSharedDataAddr (0x7FFE0000u)
 
 #define CurrentImageBase ((uintptr_t)CurrentPeb()->ImageBaseAddress)
 
 #define CurrentModuleHandle ((HMODULE)CurrentImageBase)
+#define CurrentProcessHandle ((HANDLE)(LONG_PTR)-1)
+
 
 // Things from winternl.h.
 // I can't include that header because it conflicts with this header
@@ -225,14 +327,44 @@ typedef enum _PROCESSINFOCLASS {
     ProcessBreakOnTermination = 29
 } PROCESSINFOCLASS;
 
-extern "C" __kernel_entry NTSTATUS
-    NTAPI
-    NtQueryInformationProcess(
-        IN HANDLE ProcessHandle,
-        IN PROCESSINFOCLASS ProcessInformationClass,
-        OUT PVOID ProcessInformation,
-        IN ULONG ProcessInformationLength,
-        OUT PULONG ReturnLength OPTIONAL);
+extern "C" NTSTATUS NTAPI NtQueryInformationProcess(
+    HANDLE ProcessHandle,
+    PROCESSINFOCLASS ProcessInformationClass,
+    PVOID ProcessInformation,
+    ULONG ProcessInformationLength,
+    PULONG ReturnLength
+);
+
+// Completely undocumented data structure. Am I cooking too nasty?
+struct SYSTEM_HANDLE_TABLE_ENTRY_INFO {
+    // Geoff Chapell documents this as being a USHORT with another USHORT after it
+    // Wine uses a ULONG for this. Which one is correct? Which one does my NT kernel use?
+    // Maybe I should call NtQuerySystemInformation with SystemExtendedHandleInformation 
+    // instead and not care about possible Windows 2000 support.
+    ULONG UniqueProcessId;
+    UCHAR ObjectTypeIndex;
+    UCHAR HandleAttributes;
+    USHORT HandleValue;
+    PVOID Object;
+    ULONG GrantedAccess;
+};
+
+struct SYSTEM_HANDLE_INFORMATION {
+    ULONG NumberOfHandles;
+    SYSTEM_HANDLE_TABLE_ENTRY_INFO Handles[1];
+};
+
+enum SYSTEM_INFORMATION_CLASS {
+    SystemHandleInformation = 16,
+};
+
+extern "C" NTSTATUS NTAPI NtQuerySystemInformation(
+    SYSTEM_INFORMATION_CLASS SystemInformationClass,
+    PVOID SystemInformation,
+    ULONG SystemInformationLength,
+    PULONG ReturnLength
+);
+
 
 // KUSER_SHARED_DATA struct definition so that we don't have to depend on the WDK just for ntddk.h
 // KUSER_SHARED_DATA itself comes from MSDN https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/ns-ntddk-kuser_shared_data
@@ -391,3 +523,225 @@ struct KUSER_SHARED_DATA {
 };
 
 #define Kuser_Shared_Data ((KUSER_SHARED_DATA*)0x7FFE0000)
+
+extern "C" ULONG NTAPI RtlNtStatusToDosError(NTSTATUS Status);
+extern "C" NTSTATUS NTAPI RtlSetCurrentDirectory_U(const UNICODE_STRING* Path);
+
+extern "C" NTSTATUS NTAPI NtOpenProcessToken(HANDLE ProcessHandle, ACCESS_MASK DesiredAccess, PHANDLE TokenHandle);
+extern "C" NTSTATUS NTAPI NtQueryInformationToken(HANDLE TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, PVOID TokenInformation, ULONG TokenInformationLength, PULONG ReturnLength);
+
+typedef enum _KEY_VALUE_INFORMATION_CLASS {
+    KeyValueBasicInformation,
+    KeyValueFullInformation,
+    KeyValuePartialInformation,
+    KeyValueFullInformationAlign64,
+    KeyValuePartialInformationAlign64,
+    KeyValueLayerInformation,
+    MaxKeyValueInfoClass
+} KEY_VALUE_INFORMATION_CLASS;
+
+// Since we use our own header for NT API functions and structs anyways, might as well change these definitions to be better.
+template <typename D = UCHAR[1]>
+struct KEY_VALUE_PARTIAL_INFORMATION {
+    ULONG TitleIndex;
+    ULONG Type;
+    ULONG DataLength;
+    D Data;
+};
+
+template <typename D = UCHAR[1]>
+struct KEY_VALUE_PARTIAL_INFORMATION_ALIGN64 {
+    ULONG Type;
+    ULONG DataLength;
+    D Data;
+};
+
+template <typename D = WCHAR[1]>
+struct KEY_VALUE_FULL_INFORMATION {
+    ULONG TitleIndex;
+    ULONG Type;
+    ULONG DataOffset;
+    ULONG DataLength;
+    ULONG NameLength;
+    D Name;
+};
+
+template <typename D = WCHAR[1]>
+struct KEY_VALUE_BASIC_INFORMATION {
+    ULONG TitleIndex;
+    ULONG Type;
+    ULONG NameLength;
+    D Name;
+};
+
+extern "C" NTSYSAPI NTSTATUS NTAPI NtOpenKey(
+    PHANDLE KeyHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes);
+
+extern "C" NTSYSAPI NTSTATUS NTAPI NtQueryValueKey(
+    HANDLE KeyHandle,
+    UNICODE_STRING* ValueName,
+    KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
+    PVOID KeyValueInformation,
+    ULONG Length,
+    PULONG ResultLength);
+
+enum FILE_INFORMATION_CLASS {
+    FileDirectoryInformation = 1,
+    FileFullDirectoryInformation = 2,
+    FileBothDirectoryInformation = 3,
+    FileBasicInformation = 4,
+    FileStandardInformation = 5,
+    FileInternalInformation = 6,
+    FileEaInformation = 7,
+    FileAccessInformation = 8,
+    FileNameInformation = 9,
+    FileRenameInformation = 10,
+    FileLinkInformation = 11,
+    FileNamesInformation = 12,
+    FileDispositionInformation = 13,
+    FilePositionInformation = 14,
+    FileFullEaInformation = 15,
+    FileModeInformation = 16,
+    FileAlignmentInformation = 17,
+    FileAllInformation = 18,
+    FileAllocationInformation = 19,
+    FileEndOfFileInformation = 20,
+    FileAlternateNameInformation = 21,
+    FileStreamInformation = 22,
+    FilePipeInformation = 23,
+    FilePipeLocalInformation = 24,
+    FilePipeRemoteInformation = 25,
+    FileMailslotQueryInformation = 26,
+    FileMailslotSetInformation = 27,
+    FileCompressionInformation = 28,
+    FileObjectIdInformation = 29,
+    FileCompletionInformation = 30,
+    FileMoveClusterInformation = 31,
+    FileQuotaInformation = 32,
+    FileReparsePointInformation = 33,
+    FileNetworkOpenInformation = 34,
+    FileAttributeTagInformation = 35,
+    FileTrackingInformation = 36,
+    FileIdBothDirectoryInformation = 37,
+    FileIdFullDirectoryInformation = 38,
+    FileValidDataLengthInformation = 39,
+    FileShortNameInformation = 40,
+    FileIoCompletionNotificationInformation = 41,
+    FileIoStatusBlockRangeInformation = 42,
+    FileIoPriorityHintInformation = 43,
+    FileSfioReserveInformation = 44,
+    FileSfioVolumeInformation = 45,
+    FileHardLinkInformation = 46,
+    FileProcessIdsUsingFileInformation = 47,
+    FileNormalizedNameInformation = 48,
+    FileNetworkPhysicalNameInformation = 49,
+    FileIdGlobalTxDirectoryInformation = 50,
+    FileIsRemoteDeviceInformation = 51,
+    FileUnusedInformation = 52,
+    FileNumaNodeInformation = 53,
+    FileStandardLinkInformation = 54,
+    FileRemoteProtocolInformation = 55,
+    FileRenameInformationBypassAccessCheck = 56,
+    FileLinkInformationBypassAccessCheck = 57,
+    FileVolumeNameInformation = 58,
+    FileIdInformation = 59,
+    FileIdExtdDirectoryInformation = 60,
+    FileReplaceCompletionInformation = 61,
+    FileHardLinkFullIdInformation = 62,
+    FileIdExtdBothDirectoryInformation = 63,
+    FileDispositionInformationEx = 64,
+    FileRenameInformationEx = 65,
+    FileRenameInformationExBypassAccessCheck = 66,
+    FileDesiredStorageClassInformation = 67,
+    FileStatInformation = 68,
+    FileMemoryPartitionInformation = 69,
+    FileStatLxInformation = 70,
+    FileCaseSensitiveInformation = 71,
+    FileLinkInformationEx = 72,
+    FileLinkInformationExBypassAccessCheck = 73,
+    FileStorageReserveIdInformation = 74,
+    FileCaseSensitiveInformationForceAccessCheck = 75,
+    FileKnownFolderInformation = 76,
+    FileStatBasicInformation = 77,
+    FileId64ExtdDirectoryInformation = 78,
+    FileId64ExtdBothDirectoryInformation = 79,
+    FileIdAllExtdDirectoryInformation = 80,
+    FileIdAllExtdBothDirectoryInformation = 81,
+    FileStreamReservationInformation,
+    FileMupProviderInfo,
+    FileMaximumInformation
+};
+typedef FILE_INFORMATION_CLASS* PFILE_INFORMATION_CLASS;
+
+struct FILE_NAMES_INFORMATION {
+    ULONG NextEntryOffset;
+    ULONG FileIndex;
+    ULONG FileNameLength;
+    WCHAR FileName[1];
+};
+
+struct FILE_DIRECTORY_INFORMATION {
+    ULONG NextEntryOffset;
+    ULONG FileIndex;
+    LARGE_INTEGER CreationTime;
+    LARGE_INTEGER LastAccessTime;
+    LARGE_INTEGER LastWriteTime;
+    LARGE_INTEGER ChangeTime;
+    LARGE_INTEGER EndOfFile;
+    LARGE_INTEGER AllocationSize;
+    ULONG FileAttributes;
+    ULONG FileNameLength;
+    WCHAR FileName[1];
+};
+
+struct FILE_FULL_DIR_INFORMATION {
+    ULONG NextEntryOffset;
+    ULONG FileIndex;
+    LARGE_INTEGER CreationTime;
+    LARGE_INTEGER LastAccessTime;
+    LARGE_INTEGER LastWriteTime;
+    LARGE_INTEGER ChangeTime;
+    LARGE_INTEGER EndOfFile;
+    LARGE_INTEGER AllocationSize;
+    ULONG FileAttributes;
+    ULONG FileNameLength;
+    ULONG EaSize;
+    WCHAR FileName[1];
+};
+
+struct IO_STATUS_BLOCK {
+    union {
+        NTSTATUS Status;
+        PVOID Pointer;
+    };
+    ULONG_PTR Information;
+};
+
+typedef IO_STATUS_BLOCK* PIO_STATUS_BLOCK;
+
+typedef VOID NTAPI IO_APC_ROUTINE(
+    PVOID ApcContext,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    ULONG Reserved);
+
+typedef IO_APC_ROUTINE PIO_APC_ROUTINE;
+
+#define SL_RESTART_SCAN 0x00000001
+#define SL_RETURN_SINGLE_ENTRY 0x00000002
+#define SL_INDEX_SPECIFIED 0x00000004
+#define SL_RETURN_ON_DISK_ENTRIES_ONLY 0x00000008
+#define SL_NO_CURSOR_UPDATE_QUERY 0x00000010
+
+extern "C" NTSTATUS NTAPI NtQueryDirectoryFileEx(
+    HANDLE FileHandle,
+    HANDLE Event,
+    PIO_APC_ROUTINE ApcRoutine,
+    PVOID ApcContext,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    PVOID FileInformation,
+    ULONG Length,
+    FILE_INFORMATION_CLASS FileInformationClass,
+    ULONG QueryFlags,
+    PUNICODE_STRING FileName);

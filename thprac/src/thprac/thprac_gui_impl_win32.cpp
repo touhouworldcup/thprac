@@ -42,7 +42,6 @@ namespace Gui {
     static INT64 g_Time = 0;
     static INT64 g_TicksPerSecond = 0;
     static ImGuiMouseCursor g_LastMouseCursor = ImGuiMouseCursor_COUNT;
-    static bool g_HasGamepad = false;
     static bool g_WantUpdateHasGamepad = true;
     struct WndKeyStatus {
         unsigned int hold = 0;
@@ -51,6 +50,10 @@ namespace Gui {
     } g_wndKeyStatus[256] = {};
     unsigned int g_wndKeyFrameStatus[256] = {};
     bool g_isFullscreenCache = false;
+
+    HWND ImplWin32GetHwnd() {
+        return g_hWnd;
+    }
 
     // Key
     void ImplWin32UpdKeyStatus(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -434,9 +437,6 @@ namespace Gui {
 
         if (ImGui::GetCurrentContext() == NULL)
             return 0;
-
-        static char doubleByte[2] {};
-        static bool isDoubleByte = false;
 
         ImGuiIO& io = ImGui::GetIO();
         switch (msg) {

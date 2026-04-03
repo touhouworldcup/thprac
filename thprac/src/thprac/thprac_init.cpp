@@ -1,55 +1,154 @@
-﻿#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
+﻿#define NOMINMAX
+#include "utils/wininternal.h"
 
-#include "thprac_init.h"
-#include "thprac_games.h"
-#include "thprac_launcher_games.h"
+#include "thprac_identify.h"
 #include "thprac_load_exe.h"
-#include <Windows.h>
-#include <imgui.h>
-#include <metrohash128.h>
-#include <string>
-#include <utility>
-
-#pragma intrinsic(strcmp)
-
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#include "thprac_hook.h"
+#include "thprac_cfg.h"
+#include "thprac_log.h"
+#include "thprac_gui_locale.h"
 
 namespace THPrac {
-void RemoteInit()
-{
-#define THREAD_RETURN(err, lasterr) ExitThread(err << 16 | lasterr);
-    uintptr_t base = (uintptr_t)GetModuleHandleW(NULL);
-    if (reinterpret_cast<uintptr_t>(&__ImageBase) == base)
+extern int Launcher(HINSTANCE hInstance, int nCmdShow);
+
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+void RemoteInit() {
+    if ((PVOID)(&__ImageBase) == CurrentPeb()->ImageBaseAddress) {
         return;
-
-    ExeSig exeSig;
-    if (!GetExeInfoEx((uintptr_t)GetCurrentProcess(), base, exeSig))
-        THREAD_RETURN(InjectResult::Ok, 0);
-
-    for (auto& gameDef : gGameDefs) {
-        if (gameDef.catagory != CAT_MAIN && gameDef.catagory != CAT_SPINOFF_STG) {
-            continue;
-        }
-        if (gameDef.exeSig.textSize != exeSig.textSize || gameDef.exeSig.timeStamp != exeSig.timeStamp) {
-            continue;
-        }
-        if (gameDef.initFunc) {
-            gameDef.initFunc();
-        }
-        break;
     }
 
-    // This has to be ExitThread, because making wWinMain return will destruct any static classes 
-    // and uninitialize a lot of C runtime library stuff that we'll need when the game hits our hooks.
-    // Using ExitThread here, directly, prevents all that uninitialization code from running.
-    // 
-    // This also means that every resource allocated by thprac gets leaked when the game exits, but
-    // Windows knows how to clean that up on it's own
-    // 
-    // The value passed to ExitThread is interpreted as an InjectResult { .error = Ok, .lastError = 0 }
-    // See thprac_load_exe.cpp, thprac_load_exe.h and inject_shellcode.cpp for more info
-    THREAD_RETURN(InjectResult::Ok, 0);
-#undef THREAD_RETURN
+    if (const auto* ver = IdentifyExe((uint8_t*)CurrentPeb()->ImageBaseAddress, 0)) {
+        log_init(false, gSettings.console);
+        VEHHookInit();
+        ver->initFunc();
+        ExitThread(0);
+    } else {
+        FreeLibraryAndExitThread((HMODULE)&__ImageBase, 0);
+    }
 }
+
+bool PrivilegeCheck() {
+    bool ret = false;
+
+    HANDLE hToken;
+    if (!NtOpenProcessToken(CurrentProcessHandle, TOKEN_QUERY, &hToken)) {
+        TOKEN_ELEVATION Elevation;
+        ULONG cbSize = sizeof(Elevation);
+        if (!NtQueryInformationToken(hToken, TokenElevation, &Elevation, cbSize, &cbSize)) {
+            ret = Elevation.TokenIsElevated;
+        }
+        CloseHandle(hToken);
+    }
+    return ret;
+}
+}
+
+using namespace THPrac;
+int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
+    InitConfigDir();
+    LoadSettings();
+
+    srand(Kuser_Shared_Data->SystemTime.LowPart);
+    RemoteInit();
+
+    log_init(true, gSettings.console);
+
+    if (gSettings.thprac_admin_rights && !PrivilegeCheck()) {
+        ShellExecuteW(NULL, L"runas", CurrentPeb()->ProcessParameters->ImagePathName.Buffer, nullptr, nullptr, nCmdShow);
+    }
+
+    int argc = 0;
+    wchar_t** argv = CommandLineToArgvW(pCmdLine, &argc);
+    defer(LocalFree(argv));
+
+    enum CurrentCmd {
+        CMD_NONE,
+        CMD_ATTACH
+    };
+
+    CurrentCmd curCmd = CMD_NONE;
+    uint32_t flags = 0xFFFFFFFF;
+
+    for (int i = 0; i < argc; i++) {
+        if (curCmd == CMD_ATTACH) {
+            curCmd = CMD_NONE;
+
+            int pid = _wtoi(argv[i]);
+            if (ApplyToProcById(pid)) {
+                return 0;
+            }
+            else {
+                fprintf(stderr, "Warning: invalid PID: %d\n", pid);
+                continue;
+            }
+        }
+
+        if (wcscmp(argv[i], L"--attach") == 0) {
+            curCmd = CMD_ATTACH;
+            continue;
+        }
+
+        if (wcscmp(argv[i], L"--without-vpatch") == 0) {
+            flags &= ~RUN_FLAG_VPATCH;
+            continue;
+        }
+
+        if (wcscmp(argv[i], L"--without-oilp") == 0) {
+            flags &= ~RUN_FLAG_OILP;
+            continue;
+        }
+
+        if (GetFileAttributesW(argv[i]) != INVALID_FILE_ATTRIBUTES) {
+            auto& self_exe = CurrentPeb()->ProcessParameters->ImagePathName;
+            if (memcmp(argv[i], self_exe.Buffer, self_exe.Length) == 0) {
+                continue;
+            }
+            wchar_t* launch_cmdline = wcsstr(pCmdLine, argv[i]) + t_strlen(argv[i]);
+
+            if (RunGame(argv[i], launch_cmdline, flags)) {
+                return 0;
+            }
+        }
+    }
+
+    if (curCmd == CMD_ATTACH) {
+        FindAndAttach(false, false);
+        return 0;
+    }
+    else if (!gSettings.dont_search_ongoing_game && FindAndAttach(false, true)) {
+        return 0;
+    }
+
+    // I already need all of this to have it's own scope.
+    if (gSettings.existing_game_launch_action != LAUNCH_ACTION_OPEN_LAUNCHER) {
+        WIN32_FIND_DATAW find = {};
+        HANDLE hFind = FindFirstFileW(L"*.exe", &find);
+        if (!hFind) {
+            return false;
+        }
+        do {
+            const auto* ver = IdentifyExe(find.cFileName);
+            if (!ver) {
+                continue;
+            }
+
+            if (gSettings.existing_game_launch_action == LAUNCH_ACTION_ALWAYS_ASK) {
+                int choice = log_mboxf(0, MB_YESNOCANCEL, S(THPRAC_EXISTING_GAME_CONFIRMATION_TITLE), S(THPRAC_EXISTING_GAME_CONFIRMATION), gThGameStrs[ver->gameId]);
+                if (choice == IDYES || choice == IDCANCEL) {
+                    goto run_this_game;
+                }
+                else {
+                    continue;
+                }
+            }
+            else {
+            run_this_game:
+                FindClose(hFind);
+                RunGame(find.cFileName, nullptr, flags);
+                return 0;
+            }
+        } while (FindNextFileW(hFind, &find));
+        FindClose(hFind);
+    }
+    return Launcher(hInstance, nCmdShow);
 }

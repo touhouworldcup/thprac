@@ -1,33 +1,11 @@
 ﻿#include "thprac_gui_components.h"
 #include "imgui_internal.h"
-#include <Shlwapi.h>
-#include <format>
+
+#include <numeric>
 
 namespace THPrac
 {
-    void HelpMarker(const char* desc)
-    {
-        ImGui::TextDisabled("(?)");
-        if (ImGui::IsItemHovered()) {
-            ImGui::BeginTooltip();
-            ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-            ImGui::TextUnformatted(desc);
-            ImGui::PopTextWrapPos();
-            ImGui::EndTooltip();
-        }
-    }
-
-    void CustomMarker(const char* text, const char* desc)
-    {
-        ImGui::TextDisabled(text);
-        if (ImGui::IsItemHovered()) {
-            ImGui::BeginTooltip();
-            ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-            ImGui::TextUnformatted(desc);
-            ImGui::PopTextWrapPos();
-            ImGui::EndTooltip();
-        }
-    }
+    float g_Scale = 1.0f;
 
     int rotation_start_index;
     void ImRotateStart()
@@ -473,23 +451,22 @@ namespace THPrac
 
         bool GuiHotKey::OnWidgetUpdate()
         {
-            const char* text = mText ? mText : LocaleGetStr(mTextRef);
-            std::string realText;
+            const char* text = mText ? mText : S(mTextRef);
+            auto cursor = ImGui::GetCursorPos();
             if (mStatus) {
-                realText = std::format("[{}: {}]", mKeyText, text);
-                ImGui::PushStyleColor(ImGuiCol_Text, { 0.0f, 1.0f, 0.0f, 1.0f });
+                ImGui::TextColored({ 0.0f, 1.0f, 0.0f, 1.0f }, "[%s: %s]", mKeyText, text);
             } else {
-                realText = std::format("{}: {}", mKeyText, text);
+                ImGui::Text("%s: %s", mKeyText, text);
             }
 
-            auto cursor = ImGui::GetCursorPos();
-            ImGui::TextUnformatted(realText.c_str());
             ImGui::SetCursorPos(cursor);
 
-            if (mStatus)
-                ImGui::PopStyleColor();
-                        
-            if (ImGui::InvisibleButton(mKeyText, ImGui::CalcTextSize(realText.c_str())))
+            ImVec2 size = {
+                ImGui::GetWindowWidth() - ImGui::GetStyle().WindowPadding.x * 2,
+                ImGui::GetTextLineHeight(),
+            };
+          
+            if (ImGui::InvisibleButton(mKeyText, size))
                 return true;
             else
                 return false;
@@ -698,6 +675,155 @@ namespace THPrac
             ImGuiIO& io = ImGui::GetIO();
             ImVec2 posReal = { pos.x * io.DisplaySize.x, pos.y * io.DisplaySize.y };
             return ImGui::SetNextWindowPos(posReal, cond, pivot);
+        }
+        void TextCentered(const char* text, float wndX) {
+            ImGui::SetCursorPosX((wndX - ImGui::CalcTextSize(text).x) / 2.0f);
+            ImGui::TextUnformatted(text);
+        }
+        float GetRelWidth(float rel) {
+            return ImGui::GetIO().DisplaySize.x * rel;
+        }
+        float GetRelHeight(float rel) {
+            return ImGui::GetIO().DisplaySize.y * rel;
+        }
+        void CustomMarker(const char* text, const char* desc) {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+            ImGui::TextUnformatted(text);
+            ImGui::PopStyleColor();
+            if (ImGui::IsItemHovered()) {
+                ImGui::BeginTooltip();
+                ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+                ImGui::TextUnformatted(desc);
+                ImGui::PopTextWrapPos();
+                ImGui::EndTooltip();
+            }
+        }
+        bool Modal(const char* modalTitle, ImVec2 sizeRel) {
+            auto wndSize = ImGui::GetWindowSize();
+            wndSize.x *= 0.5f;
+            wndSize.y *= 0.5f;
+            ImGui::SetNextWindowPos(wndSize, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+            if (sizeRel.x != 0.0f || sizeRel.y != 0.0f) {
+                ImGui::SetNextWindowSize(sizeRel, ImGuiCond_Always);
+            }
+            return ImGui::BeginPopupModal(modalTitle, nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+        }
+        bool ButtonRight(const char* text, float rel, const ImVec2& size_arg) {
+            auto& style = ImGui::GetStyle();
+            auto label_size = ImGui::CalcTextSize(text);
+            ImVec2 size = ImGui::CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
+
+            if (rel == 0) {
+                rel = ImGui::GetWindowWidth() - ImGui::GetStyle().WindowPadding.x;
+            }
+
+            ImGui::SetCursorPosX(rel - size.x);
+            return ImGui::Button(text, size);
+        }
+        void CheckboxAll(const char* label, bool* v, size_t v_len) {
+            bool checked = std::accumulate(v, v + v_len, 0u) == v_len;
+            if (ImGui::Checkbox(label, &checked)) {
+                memset(v, checked, v_len);
+            }
+        }
+        int MultiButtonsRight(float x, ...) {
+            va_list va;
+            va_start(va, x);
+
+            const char* label = va_arg(va, const char*);
+            int ret = -1;
+
+            for (int i = 0;; i++) {
+                if (ButtonRight(label, x)) {
+                    ret = i;
+                }
+                label = va_arg(va, const char*);
+                if (!label) {
+                    break;
+                }
+                ImVec2 pos = ImGui::GetItemRectMin();
+                ImVec2 wndPos = ImGui::GetWindowPos();
+                x = pos.x - wndPos.x - ImGui::GetStyle().ItemSpacing.x;
+
+                ImGui::SameLine();
+            }
+            va_end(va);
+            return ret;
+        }
+        int MultiButtonsFillWindow(float height, ...) {
+            int ret = -1;
+            const char** labs = (const char**)((&height) + 1);
+            size_t count = t_strlen(labs);
+
+            auto& style = ImGui::GetStyle();
+            float wnd_width = ImGui::GetWindowWidth() - style.WindowPadding.x;
+
+            float btn_width = wnd_width / count - style.ItemSpacing.x;
+            ImVec2 size { btn_width, height };
+
+            for (size_t i = 0; i < count; i++) {
+                if (ImGui::Button(labs[i], size)) {
+                    ret = i;
+                }
+                if (i != count - 1) {
+                    ImGui::SameLine();
+                }
+            }
+            return ret;
+        }
+        void ProgressBar(float prog, const char* text, const char* textEnd) {
+            auto& style = ImGui::GetStyle();
+            auto* drawList = ImGui::GetWindowDrawList();
+
+            ImVec2 cursor = ImGui::GetCursorScreenPos();
+
+            ImVec2 barStart = cursor;
+            ImVec2 barEnd = barStart;
+            barEnd.x += ImGui::GetWindowWidth();
+            barEnd.y += (style.FramePadding.y * 2.0f) + ImGui::GetFontSize();
+
+            float barWidthPx = barEnd.x - barStart.x;
+            float indicatorWidthPx = barWidthPx / 4.0f;
+
+            drawList->AddRectFilled(barStart, barEnd, ImGui::GetColorU32(ImGuiCol_FrameBg));
+
+            ImVec2 clipStart = barStart;
+            ImVec2 clipEnd = barEnd;
+
+            ImVec2 textPos = {
+                barEnd.x - (barEnd.x - barStart.x) / 2.0f,
+                barStart.y + style.ItemInnerSpacing.y / 2.0f,
+            };
+
+            if (prog == -1.0f) {
+                float barPos = fmodf((float)ImGui::GetTime() * (barWidthPx / 2), barWidthPx + indicatorWidthPx) - indicatorWidthPx;
+
+                // barPos is negative
+                if (barStart.x + barPos < barStart.x) {
+                    barEnd.x = barStart.x + indicatorWidthPx + barPos;
+                }
+                // clip indicator
+                else if (barStart.x + barPos + indicatorWidthPx > barEnd.x) {
+                    barStart.x += barPos;
+                } else {
+                    barStart.x += barPos;
+                    barEnd.x = barStart.x + indicatorWidthPx;
+                }
+            } else {
+                barEnd.x = barStart.x + prog * barWidthPx;
+            }
+
+            drawList->AddRectFilled(barStart, barEnd, ImGui::GetColorU32(ImGuiCol_TitleBgActive));
+            if (!textEnd) {
+                textEnd = text + t_strlen(text);
+            }
+
+            ImVec2 textSize = ImGui::CalcTextSize(text, textEnd);
+            textPos.x -= textSize.x / 2;
+
+            drawList->PushClipRect(clipStart, clipEnd);
+            drawList->AddText(textPos, ImGui::GetColorU32(ImGuiCol_Text), text, textEnd);
+            drawList->PopClipRect();
         }
     }
 }

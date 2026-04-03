@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h" />
     <ClInclude Include="src\3rdParties\ImGui\imconfig.h" />
     <ClInclude Include="src\3rdParties\ImGui\imgui.h" />
     <ClInclude Include="src\3rdParties\ImGui\imgui_freetype.h" />
@@ -29,27 +28,22 @@
     <ClInclude Include="src\3rdParties\ImGui\imstb_textedit.h" />
     <ClInclude Include="src\3rdParties\MetroHash\metrohash128.h" />
     <ClInclude Include="src\3rdParties\MetroHash\platform.h" />
+    <ClInclude Include="src\3rdParties\yyjson\yyjson.h" />
+    <ClInclude Include="src\thprac\thprac_cfg.h" />
     <ClInclude Include="src\thprac\thprac_games.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_dx8.h" />
     <ClInclude Include="src\thprac\thprac_gui_components.h" />
     <ClInclude Include="src\thprac\thprac_hook.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_dx9.h" />
     <ClInclude Include="src\thprac\thprac_gui_impl_win32.h" />
-    <ClInclude Include="src\thprac\thprac_init.h" />
+    <ClInclude Include="src\thprac\thprac_identify.h" />
     <ClInclude Include="src\thprac\thprac_gui_input.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_cfg.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_games.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_games_def.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_links.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_main.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_tools.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_utils.h" />
-    <ClInclude Include="src\thprac\thprac_launcher_wnd.h" />
+    <ClInclude Include="src\thprac\thprac_launcher.h" />
     <ClInclude Include="src\thprac\thprac_licence.h" />
     <ClInclude Include="src\thprac\thprac_load_exe.h" />
     <ClInclude Include="src\thprac\thprac_gui_locale.h" />
     <ClInclude Include="src\thprac\thprac_locale_def.h" />
-    <ClInclude Include="src\thprac\thprac_main.h" />
+    <ClInclude Include="src\thprac\thprac_log.h" />
     <ClInclude Include="src\thprac\thprac_th06.h" />
     <ClInclude Include="src\thprac\thprac_th07.h" />
     <ClInclude Include="src\thprac\thprac_th19.h" />
@@ -57,7 +51,6 @@
     <ClInclude Include="src\thprac\thprac_version.h" />
     <ClInclude Include="src\thprac\utils\utils.h" />
     <ClInclude Include="src\thprac\utils\wininternal.h" />
-    <ClInclude Include="src\thprac\thprac_log.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\3rdParties\ImGui\imgui.cpp" />
@@ -67,28 +60,26 @@
     <ClCompile Include="src\3rdParties\ImGui\imgui_tables.cpp" />
     <ClCompile Include="src\3rdParties\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="src\3rdParties\MetroHash\metrohash128.cpp" />
-    <ClCompile Include="src\thprac\main.cpp" />
+    <ClCompile Include="src\3rdParties\yyjson\yyjson.c" />
+    <ClCompile Include="src\thprac\thprac_cfg.cpp" />
     <ClCompile Include="src\thprac\thprac_games.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_impl_dx8.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_components.cpp" />
     <ClCompile Include="src\thprac\thprac_hook.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_impl_dx9.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_impl_win32.cpp" />
+    <ClCompile Include="src\thprac\thprac_identify.cpp" />
     <ClCompile Include="src\thprac\thprac_init.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_input.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_cfg.cpp" />
+    <ClCompile Include="src\thprac\thprac_launcher.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher_games.cpp" />
     <ClCompile Include="src\thprac\thprac_launcher_links.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_main.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_tools.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_utils.cpp" />
-    <ClCompile Include="src\thprac\thprac_launcher_wnd.cpp" />
     <ClCompile Include="src\thprac\thprac_licence.cpp" />
     <ClCompile Include="src\thprac\thprac_load_exe.cpp" />
     <ClCompile Include="src\thprac\thprac_gui_locale.cpp" />
     <ClCompile Include="src\thprac\thprac_locale_def.cpp" />
-    <ClCompile Include="src\thprac\thprac_main.cpp" />
     <ClCompile Include="src\thprac\thprac_alcostg.cpp" />
+    <ClCompile Include="src\thprac\thprac_log.cpp" />
     <ClCompile Include="src\thprac\thprac_th06.cpp" />
     <ClCompile Include="src\thprac\thprac_th07.cpp" />
     <ClCompile Include="src\thprac\thprac_th08.cpp" />
@@ -121,13 +112,11 @@
     <ClCompile Include="src\thprac\thprac_th19.v1.00a.cpp" />
     <ClCompile Include="src\thprac\thprac_th19.v1.10c.cpp" />
     <ClCompile Include="src\thprac\thprac_th20.cpp" />
+    <ClCompile Include="src\thprac\thprac_update.cpp" />
     <ClCompile Include="src\thprac\thprac_utils.cpp" />
     <ClCompile Include="src\thprac\thprac_version.cpp" />
-    <ClCompile Include="src\thprac\thprac_log.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="resource.hm" />
     <None Include="src\3rdParties\ImGui\imgui_user.inl" />
     <None Include="src\thprac\thprac_games_def.json" />
   </ItemGroup>
@@ -175,8 +164,8 @@
   <PropertyGroup>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>thprac</TargetName>
-    <IncludePath>$(ProjectDir)src\3rdParties\rapidjson\include;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)src\3rdParties\FreeType\win32;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)src\3rdParties\yyjson;$(ProjectDir)src\3rdParties\MetroHash;$(ProjectDir)src\3rdParties\ImGui;$(ProjectDir)src\3rdParties\FreeType\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)src\3rdParties;$(ProjectDir)src\3rdParties\FreeType\win32;$(LibraryPath)</LibraryPath>
     <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
@@ -186,14 +175,12 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <FixedBaseAddress>false</FixedBaseAddress>
-      <AdditionalDependencies>kernel32.lib;ntdll.lib;user32.lib;freetype.lib;gdi32.lib;wininet.lib;shlwapi.lib;ole32.lib;comdlg32.lib;shell32.lib;advapi32.lib;winmm.lib;delayimp.lib</AdditionalDependencies>
-      <GenerateMapFile>true</GenerateMapFile>
-      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <AdditionalDependencies>kernel32.lib;ntdll.lib;user32.lib;freetype.lib;gdi32.lib;ole32.lib;comdlg32.lib;shell32.lib</AdditionalDependencies>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
       <AdditionalManifestDependencies>type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
-      <AdditionalOptions>/DELAYLOAD:wininet.dll %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(ToolsetType)'=='MSVC'">/IGNORE:4098 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)'=='ReleaseLLVM'">%(AdditionalOptions) $(SolutionDir)\thprac\src\thprac\blobs\th19_fast_llvm.obj</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)'=='Release'">%(AdditionalOptions) $(SolutionDir)\thprac\src\thprac\blobs\th19_fast_msvc.obj</AdditionalOptions>
@@ -211,7 +198,8 @@
       <FloatingPointModel Condition="'$(ToolsetType)'=='MSVC'">Fast</FloatingPointModel>
       <ControlFlowGuard>false</ControlFlowGuard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(ToolsetType)'=='ClangCL'">-Wno-ambiguous-reversed-operator -Wno-unused-function -Wno-unused-const-variable -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-private-field -Wno-unused-label -Wno-unused-local-typedef -Wno-missing-braces %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4706;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions Condition="'$(ToolsetType)'=='ClangCL'">-Wno-parentheses -Wno-missing-designated-field-initializers %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <CustomBuildStep>
       <Command>loc_json.exe src\thprac</Command>
@@ -228,6 +216,8 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='DebugLLVM|Win32'">true</MultiProcessorCompilation>
+      <InlineFunctionExpansion Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">OnlyExplicitInline</InlineFunctionExpansion>
+      <InlineFunctionExpansion Condition="'$(Configuration)|$(Platform)'=='DebugLLVM|Win32'">OnlyExplicitInline</InlineFunctionExpansion>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(BuildType)|$(Platform)'=='Release|Win32'">
