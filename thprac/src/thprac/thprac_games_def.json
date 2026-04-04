@@ -1421,6 +1421,8 @@
 	  "THPRAC_INGAMEINFO_TH15_SHOOTING_DOWN_RATE":["击破数","shoot down","shoot down"],
 	  "THPRAC_INGAMEINFO_TH15_PRODUCT":["乘积","product","product"],
 	  
+	  "THPRAC_TH20_LV_LOCK": [ "锦上京miss/bomb后不掉石头等级", "FW no lv drop after miss/bomb", "FW no lv drop after miss/bomb" ],
+	  
        "THPRAC_INGAMEINFO":["更多游戏信息","in game info","in game info"],
        "THPRAC_INGAMEINFO_MISS_COUNT":["miss:","miss:","miss:"],
        "THPRAC_INGAMEINFO_BOMB_COUNT":["bomb:","bomb:","bomb:"],

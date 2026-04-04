@@ -59,6 +59,7 @@ namespace THPrac {
         bool th20_fake_unlock_stone = false;
         bool th20_fix_bullet_hitbox = false;
         bool th20_decrease_graze_effect = false;
+        bool th20_lv_lock = false;
         KeyRectStyle keyboard_style;
     };
     extern AdvancedGameOptions g_adv_igi_options;

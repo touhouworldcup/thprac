@@ -2009,7 +2009,7 @@ namespace TH07 {
         el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode && thPracParam.section;
         if (thPracParam.mode && thPracParam.section == TH07_ST6_BOSS10)
             el_switch = false;
-        is_practice = SUPERVISOR->gamemode == 10;
+        is_practice = SUPERVISOR->gamemode_next == 10;
         if (retn_addr == 0x43a180)
             result = ElBgmTest<0x439f47, 0x43a0cb, 0x42d9c4, 0x4034a9, 0x42f21b>(
                 el_switch, is_practice, 0x439f47, 2, 2, call_addr);

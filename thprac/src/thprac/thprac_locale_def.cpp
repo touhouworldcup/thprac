@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1842] {
+const char* th_glossary_str[3][1843] {
     {
         "",
         "啤酒",
@@ -1448,6 +1448,7 @@ const char* th_glossary_str[3][1842] {
         "锦上京解锁未获得的石",
         "锦上京修复弹幕判定",
         "锦上京游戏",
+        "锦上京miss/bomb后不掉石头等级",
         "锦上京PIV溢出修复",
         "锦上京移除PIV限制",
         "锦上京移除分数限制",
@@ -3292,6 +3293,7 @@ const char* th_glossary_str[3][1842] {
         "FW Fake unlock stones",
         "FW fix bullet hitbox",
         "FW Game",
+        "FW no lv drop after miss/bomb",
         "FW PIV overflow fix",
         "FW PIV uncap",
         "FW Score uncap",
@@ -5136,6 +5138,7 @@ const char* th_glossary_str[3][1842] {
         "FW 未解放ストーン使用",
         "FW 弾幕判定を修復します",
         "FW Game",
+        "FW no lv drop after miss/bomb",
         "FW PIVオーバーフロー修正",
         "FW PIVキャップ解放",
         "FW スコアキャップ解放",

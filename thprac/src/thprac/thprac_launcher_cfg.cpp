@@ -2519,6 +2519,7 @@ private:
             mCfgEnableTH20_FakeUnlockStones_autoly.Gui(S(THPRAC_TH20_FAKE_UNLOCK_STONES), S(THPRAC_TH20_UNLOCK_STONES_DESC));
             mCfgEnableTH20_FixBulletHitbox_autoly.Gui(S(THPRAC_TH20_FIX_BULLETHITBOX), S(THPRAC_TH20_FIX_BULLETHITBOX_DESC));
             mCfgEnableTH20_DecreaseGrazeEffect_autoly.Gui(S(THPRAC_TH20_DECREASE_EFF));
+            mCfgEnableTH20_LvLock_autoly.Gui(S(THPRAC_TH20_LV_LOCK));
             ImGui::Separator();
             ImGui::Text(S(THPRAC_KB));
             
@@ -2746,6 +2747,7 @@ private:
     THCfgCheckbox mCfgEnableTH20_FakeUnlockStones_autoly { "auto_th20_fake_unlock_stones",true};
     THCfgCheckbox mCfgEnableTH20_FixBulletHitbox_autoly { "auto_th20_fix_bullet_hitbox",true};
     THCfgCheckbox mCfgEnableTH20_DecreaseGrazeEffect_autoly { "auto_th20_decrease_graze_effect",false};
+    THCfgCheckbox mCfgEnableTH20_LvLock_autoly { "auto_th20_lv_lock",false};
     // kbs
     THCfgColor mKb_ColorBorderPress { "kb_border_color_press", 0xFFFFFFFF };
     THCfgColor mKb_ColorBorderRelease { "kb_border_color_release", 0xFFFFFFFF };

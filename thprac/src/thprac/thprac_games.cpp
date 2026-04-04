@@ -379,6 +379,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         LauncherSettingGet("auto_th20_fake_unlock_stones", g_adv_igi_options.th20_fake_unlock_stone);
         LauncherSettingGet("auto_th20_fix_bullet_hitbox", g_adv_igi_options.th20_fix_bullet_hitbox);
         LauncherSettingGet("auto_th20_decrease_graze_effect", g_adv_igi_options.th20_decrease_graze_effect);
+        LauncherSettingGet("auto_th20_lv_lock", g_adv_igi_options.th20_lv_lock);
 
         if (!LauncherSettingGet("kb_separated",             g_adv_igi_options.keyboard_style.separated))                g_adv_igi_options.keyboard_style.separated = true;
         if (!LauncherSettingGet("kb_aps",                   g_adv_igi_options.keyboard_style.show_aps))                 g_adv_igi_options.keyboard_style.show_aps = true;

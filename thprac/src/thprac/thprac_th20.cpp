@@ -1768,6 +1768,13 @@ namespace TH20 {
     PATCH_DY(th20_master_disable1c, 0x875E0, "03")
     HOOKSET_ENDDEF()
 
+    HOOKSET_DEFINE(th20_lock_lv)
+    PATCH_DY(th20_lock_lv1, 0xF84CF, "00")
+    PATCH_DY(th20_lock_lv2, 0xF84E6, "00")
+    PATCH_DY(th20_lock_lv3, 0xF84FD, "00")
+    PATCH_DY(th20_lock_lv4, 0xF8514, "00")
+    HOOKSET_ENDDEF()
+
         
     class TH20InGameInfo : public Gui::GameGuiWnd {
         TH20InGameInfo() noexcept
@@ -2112,6 +2119,10 @@ namespace TH20 {
             GameplayInit();
             MasterDisableInit();
 
+            for (int i = 0; i < 4; i++)
+                th20_lock_lv[i].Setup();
+            for (int i = 0; i < 4; i++)
+                th20_lock_lv[i].Toggle(g_adv_igi_options.th20_lv_lock);
             
             th20_bossmovedown.Setup();
             th20_piv_overflow_fix.Setup();
@@ -2242,6 +2253,9 @@ namespace TH20 {
                 }
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));
+                if (ImGui::Checkbox(S(THPRAC_TH20_LV_LOCK), &g_adv_igi_options.th20_lv_lock))
+                    for (int i = 0; i < 4; i++)
+                        th20_lock_lv[i].Toggle(g_adv_igi_options.th20_lv_lock);
 
                 DisableKeyOpt();
                 KeyHUDOpt();

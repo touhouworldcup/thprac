@@ -1448,6 +1448,7 @@ enum th_glossary_t {
     THPRAC_TH20_FAKE_UNLOCK_STONES,
     THPRAC_TH20_FIX_BULLETHITBOX,
     THPRAC_TH20_FIX_BULLETHITBOX_DESC,
+    THPRAC_TH20_LV_LOCK,
     THPRAC_TH20_PIV_OVERFLOW_FIX,
     THPRAC_TH20_UNCAP_PIV,
     THPRAC_TH20_UNCAP_SCORE,
@@ -1853,7 +1854,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1842];
+extern const char* th_glossary_str[3][1843];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
