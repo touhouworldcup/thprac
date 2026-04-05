@@ -20,6 +20,7 @@
 #include "thprac_gui_components.h"
 #include "thprac_gui_locale.h"
 #include "thprac_utils.h"
+#include "thprac_update.h"
 
 namespace THPrac {
 
@@ -236,6 +237,13 @@ struct LauncherState {
     // it's like vector<bool> but with none of the jank
     static_assert(sizeof(bool) == sizeof(unsigned char));
     std::vector<unsigned char> foundThcrapConfigsSel;
+
+    // The actual downloading of the update is still contained to the launcher because the idea for triggerring
+    // updates from an in-game popup is to close the game and run thprac with a `--update` command line flag,
+    // which triggers the PreLaunchUpdate function regardless of settings
+    HANDLE hUpdateThread = NULL;
+    DownloadParams updateDownload;
+    std::wstring updateUrl;
 };
 
 yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);

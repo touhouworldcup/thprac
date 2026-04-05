@@ -1,6 +1,8 @@
 ﻿#define NOMINMAX
 #include "utils/wininternal.h"
 
+#include "thprac_update.h"
+#include "thprac_utils.h"
 #include "thprac_identify.h"
 #include "thprac_load_exe.h"
 #include "thprac_hook.h"
@@ -9,6 +11,9 @@
 #include "thprac_gui_locale.h"
 
 namespace THPrac {
+constinit wchar_t old_working_dir[MAX_PATH + 1] = {};
+
+
 extern int Launcher(HINSTANCE hInstance, int nCmdShow);
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
@@ -45,16 +50,44 @@ bool PrivilegeCheck() {
 
 using namespace THPrac;
 int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
+    GetCurrentDirectoryW(MAX_PATH, old_working_dir);
+
     InitConfigDir();
     LoadSettings();
 
     srand(Kuser_Shared_Data->SystemTime.LowPart);
     RemoteInit();
+    UpdaterInit();
+
+    {
+        UNICODE_STRING exeDir = CurrentPeb()->ProcessParameters->ImagePathName;
+        for (USHORT i = exeDir.Length; i > 0; i--) {
+            if (((char*)exeDir.Buffer)[i] == '\\') {
+                exeDir.Length = i & 0xFFFE;
+                exeDir.MaximumLength = i & 0xFFFE;
+                break;
+            }
+        }
+        RtlSetCurrentDirectory_U(&exeDir);
+    }
 
     log_init(true, gSettings.console);
 
     if (gSettings.thprac_admin_rights && !PrivilegeCheck()) {
-        ShellExecuteW(NULL, L"runas", CurrentPeb()->ProcessParameters->ImagePathName.Buffer, nullptr, nullptr, nCmdShow);
+        ShellExecuteW(NULL, L"runas", CurrentPeb()->ProcessParameters->ImagePathName.Buffer, pCmdLine, old_working_dir, nCmdShow);
+    }
+
+    if (gSettings.check_update == CHECK_UPDATE_ALWAYS) {
+        const char* message =
+            "Your update settings are configured to always check for updates when running thprac, but the updater failed to initialize."
+            "\r\n\r\nDo you want to completely disable updates?";
+        if (!UpdaterInitialized()) {
+            if (log_mbox(NULL, MB_ICONERROR | MB_YESNO, "Update error", message) == IDYES) {
+                gSettings.check_update = CHECK_UPDATE_NEVER;
+            }
+        } else if (PreLaunchUpdate(hInstance, pCmdLine, nCmdShow, gSettings.update_without_confirmation)) {
+            return 0;
+        }        
     }
 
     int argc = 0;

@@ -34,9 +34,10 @@ struct ThpracVersion {
 #define THPRAC_VERSION_0 2
 #define THPRAC_VERSION_1 2
 #define THPRAC_VERSION_2 2
-#define THPRAC_VERSION_3 7
+#define THPRAC_VERSION_3 6
 extern const ThpracVersion gVersion;
-#define VER_PARAMS gVersion.meta, gVersion.major, gVersion.minor, gVersion.patch
+#define VER_PARAMS(v) (v).meta, (v).major, (v).minor, (v).patch
+#define VER_PARAMS_CUR VER_PARAMS(gVersion)
 
 ThpracVersion ParseVersion(const char* str);
 }

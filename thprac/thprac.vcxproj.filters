@@ -52,9 +52,6 @@
     <ClInclude Include="src\thprac\thprac_games.h">
       <Filter>THPrac Games</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_init.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="src\thprac\thprac_load_exe.h">
       <Filter>Main</Filter>
     </ClInclude>
@@ -142,6 +139,9 @@
     <ClInclude Include="src\thprac\thprac_launcher.h">
       <Filter>THPrac Launcher</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac\thprac_update.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\thprac\thprac_utils.cpp">
@@ -161,9 +161,6 @@
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_th11.cpp">
       <Filter>THPrac Games</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\main.cpp">
-      <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_init.cpp">
       <Filter>Main</Filter>

@@ -354,7 +354,7 @@ static bool LauncherRunGame(LauncherState* state, THGameID game, LauncherInstanc
         ShowWindow(Gui::ImplWin32GetHwnd(), SW_MINIMIZE);
         break;
     case LAUNCH_CLOSE:
-        PostQuitMessage(0);
+        SendMessageW(Gui::ImplWin32GetHwnd(), WM_CLOSE, 0, 0);
         break;
     case LAUNCH_NOTHING:
         break;

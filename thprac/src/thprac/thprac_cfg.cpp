@@ -1,6 +1,7 @@
 #include "thprac_cfg.h"
 #include "thprac_log.h"
 #include "thprac_utils.h"
+#include "thprac_update.h"
 #include "utils/wininternal.h"
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
@@ -300,6 +301,13 @@ void GuiSettings() {
     ImGui::NewLine();
     ImGui::TextUnformatted("Update behavior");
     ImGui::Separator();
+
+    if (!UpdaterInitialized()) {
+        ImGui::PushStyleColor(ImGuiCol_Text, 0xFFFF0000);
+        ImGui::TextUnformatted("Warning: the updater failed to initialize. Check thprac_launcher_log.txt for more information.");
+        ImGui::PopStyleColor();
+    }
+
     ImGui::PushItemWidth(ImGui::GetFontSize() * 16.0f);
     ImGui::Combo(S(THPRAC_FILENAME_AFTER_UPDATE), (int*)&gSettings.filename_after_update, S(THPRAC_FILENAME_AFTER_UPDATE_OPTION));
     ImGui::Combo(S(THPRAC_CHECK_UPDATE_WHEN), (int*)&gSettings.check_update, S(THPRAC_CHECK_UPDATE_WHEN_OPTION));
@@ -307,6 +315,14 @@ void GuiSettings() {
     ImGui::Checkbox(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION), &gSettings.update_without_confirmation);
     ImGui::SameLine();
     Gui::HelpMarker(S(THPRAC_UPDATE_WITHOUT_CONFIRMATION_DESC));
+    
+    if (!background_update_check || background_update_check->hThread) {
+        ImGui::BeginDisabled();
+        ImGui::Button("Check for updates");
+        ImGui::EndDisabled();
+    } else if (ImGui::Button("Check for updates")) {
+        background_update_check->hThread = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)DownloadFile, background_update_check, 0, nullptr);
+    }
     
     ImGui::NewLine();
     ImGui::TextUnformatted("Hotkey mappings");

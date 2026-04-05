@@ -797,7 +797,7 @@ namespace Gui {
     }
 
     inline void VersionText() {
-        return ImGui::Text(S(TH_ABOUT_VERSION), VER_PARAMS);
+        return ImGui::Text(S(TH_ABOUT_VERSION), VER_PARAMS_CUR);
     }
 
     void ComboSelect(size_t& out, th_glossary_t* choices, const size_t choices_count, const char* label);

@@ -293,7 +293,7 @@ __forceinline void GetJsonArrayImpl(yyjson_val* yy_arr, T* arr, size_t len) {
 
 inline void AddJsonVersionImpl(yyjson_mut_doc* doc, yyjson_mut_val* param) {
     char ver_str[64] = {};
-    snprintf(ver_str, 63, "%d.%d.%d.%d", VER_PARAMS);
+    snprintf(ver_str, 63, "%d.%d.%d.%d", VER_PARAMS_CUR);
     yyjson_mut_obj_add_str(doc, param, "version", ver_str);
 }
 

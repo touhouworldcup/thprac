@@ -94,7 +94,7 @@ inline float DrawTitleBar(HWND hwnd, bool* overBtn, const char* title) {
 
         ImGui::SetCursorPos(btnPos);
         if (ImGui::InvisibleButton("##CLOSE", { tbH, tbH })) {
-            PostQuitMessage(0);
+            SendMessageW(hwnd, WM_CLOSE, 0, 0);
         }
 
         if (ImGui::IsItemHovered()) {
@@ -379,7 +379,9 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
         ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
     ImGui::PopStyleVar();
 
-    ImGui::BeginChild("###__content", { io.DisplaySize.x, io.DisplaySize.y - DrawTitleBar(hwnd, &state->g_IsOverTitleBarButton, S(THPRAC_LAUNCHER)) }, false, ImGuiWindowFlags_AlwaysUseWindowPadding);
+    const char* title = background_update_check->hThread ? S(THPRAC_LAUNCHER_CHECKING_UPDATE) : S(THPRAC_LAUNCHER);
+    float begin_height = DrawTitleBar(hwnd, &state->g_IsOverTitleBarButton, title);
+    ImGui::BeginChild("###__content", { io.DisplaySize.x, io.DisplaySize.y - begin_height }, false, ImGuiWindowFlags_AlwaysUseWindowPadding);
     ImGui::BeginTabBar("__launcher_tab_bar");
 
     ImGuiTabItemFlags gameTabFlags = 0;
@@ -417,6 +419,97 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
     }
 
     ImGui::EndChild();
+
+    if (background_update_check && background_update_check->hThread) {
+        DWORD waitStatus = WaitForSingleObject(background_update_check->hThread, 0);
+
+        if (waitStatus == WAIT_OBJECT_0) {
+            DWORD exitCode = -1;
+            GetExitCodeThread(background_update_check->hThread, &exitCode);
+
+            if (exitCode == 0) {
+                ImGui::OpenPopup(S(THPRAC_UPDATE_MODAL));
+            }
+            else {
+                ImGui::OpenPopup("Update unavailable");
+            }
+            CloseHandle(background_update_check->hThread);
+            background_update_check->hThread = NULL;
+        }
+    }
+
+    ImGui::SetNextWindowSize({ 355.0f, 128.0f });
+    if (Gui::Modal(S(THPRAC_UPDATE_MODAL))) {
+        if (state->hUpdateThread) {
+            ImGui::TextUnformatted("Downloading update...");
+            
+            if (state->updateDownload.filesize) {
+                float prog = (float)state->updateDownload.out.size() / (float)state->updateDownload.filesize;
+
+                char txt[16] = {};
+                char* txt_end = txt + snprintf(txt, 15, "%.2f%%", prog * 100);
+                Gui::ProgressBar(prog, txt, txt_end);
+            }
+            else {
+                Gui::ProgressBar(0.0f, "0.0%");
+            }
+            ImGui::SetCursorPosY(ImGui::GetWindowHeight() - (ImGui::GetFontSize() + style.FramePadding.y * 2 + style.ItemSpacing.y * 2));
+
+            if (ImGui::Button("Cancel")) {
+                state->updateDownload.abort_signal = true;
+            }
+
+            DWORD waitStatus = WaitForSingleObject(state->hUpdateThread, 0);
+            if (waitStatus == WAIT_OBJECT_0) {
+                DWORD exitCode = -1;
+                GetExitCodeThread(state->hUpdateThread, &exitCode);
+                CloseHandle(state->hUpdateThread);
+                state->hUpdateThread = NULL;
+                if (exitCode == 0) {
+                    CompleteUpdate(state->updateDownload.out.data(), state->updateDownload.out.size(), nullptr, SW_SHOW, &background_update_check->updateJson);
+                    PostQuitMessage(0);
+                } else {
+                    state->updateDownload.out.clear();
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+            else if (waitStatus != WAIT_TIMEOUT) {
+                ImGui::CloseCurrentPopup();
+                ImGui::OpenPopup("Update unavailable");
+            }
+        } else {
+            ImGui::Text(S(THPRAC_UPDATE_PROMPT), VER_PARAMS(background_update_check->updateJson.ver));
+            switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_UPDATE_AUTO_UPDATE), "Download manually", nullptr)) {
+            case 0:
+                state->updateUrl = utf8_to_utf16(background_update_check->updateJson.url);
+                state->updateDownload.url = state->updateUrl.c_str();
+                state->hUpdateThread = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)DownloadFile, &state->updateDownload, 0, nullptr);
+                break;
+            case 1:
+                ShellExecuteA(Gui::ImplWin32GetHwnd(), "open", background_update_check->updateJson.url, nullptr, nullptr, SW_SHOW);
+            }
+            switch (Gui::MultiButtonsFillWindow(0.0f, "View changelog", "Close", nullptr)) {
+            case 0:
+                ShellExecuteA(Gui::ImplWin32GetHwnd(), "open", background_update_check->updateJson.changelog, nullptr, nullptr, SW_SHOW);
+                break;
+            case 1:
+                ImGui::CloseCurrentPopup();
+            }
+        }
+        ImGui::EndPopup();
+    }
+    if (Gui::Modal("Update unavailable")) {
+        ImGui::TextUnformatted("An error occurred while looking for updates.\nDo you want to permanentally disable automatic update checking?");
+        switch (Gui::MultiButtonsFillWindow(0.0f, "Yes", "No", nullptr)) {
+        case 0:
+            gSettings.check_update = CHECK_UPDATE_NEVER;
+        case 1:
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+
+
     ImGui::End();
     ImGui::EndFrame();
     ImGui::Render();
@@ -556,18 +649,6 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
         return 0;
     }
     
-    {
-        UNICODE_STRING exeDir = CurrentPeb()->ProcessParameters->ImagePathName;   
-        for (USHORT i = exeDir.Length / 2; i > 0; i++) {
-            if(exeDir.Buffer[i] == L'\\') {
-                exeDir.Length = i;
-                exeDir.MaximumLength = i;
-                break;
-            }
-        }
-        RtlSetCurrentDirectory_U(&exeDir);
-    }
-
     auto* d3d9 = LoadLibraryW(L"d3d9.dll");
     if (!d3d9) {
         return 1;
