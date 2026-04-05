@@ -779,7 +779,8 @@ namespace THPrac
 
             ImVec2 barStart = cursor;
             ImVec2 barEnd = barStart;
-            barEnd.x += ImGui::GetWindowWidth();
+
+            barEnd.x += ImGui::GetContentRegionAvail().x;
             barEnd.y += (style.FramePadding.y * 2.0f) + ImGui::GetFontSize();
 
             float barWidthPx = barEnd.x - barStart.x;
