@@ -50,15 +50,24 @@ bool PrivilegeCheck() {
 
 using namespace THPrac;
 int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
-    GetCurrentDirectoryW(MAX_PATH, old_working_dir);
-
     InitConfigDir();
     LoadSettings();
 
     srand(Kuser_Shared_Data->SystemTime.LowPart);
-    RemoteInit();
-    UpdaterInit();
 
+    RemoteInit();
+    log_init(true, gSettings.console);
+
+    // Exit because we rerun ourselves with LegacyPostUpdate with no parameters
+    if (LegacyPostUpdate(pCmdLine, nCmdShow)) {
+        return 0;
+    }
+
+    if (gSettings.thprac_admin_rights && !PrivilegeCheck()) {
+        ShellExecuteW(NULL, L"runas", CurrentPeb()->ProcessParameters->ImagePathName.Buffer, pCmdLine, old_working_dir, nCmdShow);
+    }
+    
+    GetCurrentDirectoryW(MAX_PATH, old_working_dir);
     {
         UNICODE_STRING exeDir = CurrentPeb()->ProcessParameters->ImagePathName;
         for (USHORT i = exeDir.Length; i > 0; i--) {
@@ -71,12 +80,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         RtlSetCurrentDirectory_U(&exeDir);
     }
 
-    log_init(true, gSettings.console);
-
-    if (gSettings.thprac_admin_rights && !PrivilegeCheck()) {
-        ShellExecuteW(NULL, L"runas", CurrentPeb()->ProcessParameters->ImagePathName.Buffer, pCmdLine, old_working_dir, nCmdShow);
-    }
-
+    UpdaterInit();
     if (gSettings.check_update == CHECK_UPDATE_ALWAYS) {
         const char* message =
             "Your update settings are configured to always check for updates when running thprac, but the updater failed to initialize."
@@ -96,7 +100,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
 
     enum CurrentCmd {
         CMD_NONE,
-        CMD_ATTACH
+        CMD_ATTACH,
     };
 
     CurrentCmd curCmd = CMD_NONE;
@@ -115,7 +119,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
                 continue;
             }
         }
-
         if (wcscmp(argv[i], L"--attach") == 0) {
             curCmd = CMD_ATTACH;
             continue;

@@ -221,7 +221,7 @@ void CompleteUpdate(unsigned char* buf, size_t len, wchar_t* pCmdLine, int nCmdS
     new_cmd_line[new_exe_path_len + 1] = L'"';
     new_cmd_line[new_exe_path_len + 2] = L' ';
 
-    auto cmd_line_len = wcslen(pCmdLine);
+    auto cmd_line_len = t_strlen(pCmdLine);
     memcpy(new_cmd_line + new_exe_path_len + 3, pCmdLine, cmd_line_len * sizeof(wchar_t));
     new_cmd_line[new_exe_path_len + cmd_line_len + 3] = 0;
 
@@ -424,5 +424,81 @@ bool PreLaunchUpdate(HINSTANCE hInstance, wchar_t* pCmdLine, int nCmdShow, bool 
     }
     
     return false;
+}
+
+static inline bool DeleteFileLoop(const wchar_t* fileName, size_t timeout) {
+    auto attr = GetFileAttributesW(fileName);
+    if (attr == INVALID_FILE_ATTRIBUTES || attr & FILE_ATTRIBUTE_DIRECTORY || attr & FILE_ATTRIBUTE_READONLY) {
+        return false;
+    }
+
+    size_t localTimeout = 0;
+    while (true) {
+        if (DeleteFileW(fileName)) {
+            return true;
+        }
+        Sleep(1000);
+        localTimeout += 1000;
+        if (localTimeout > timeout) {
+            return false;
+        }
+    }
+}
+
+// This function is only needed to support upgrading from thprac versions that are coded with the assumption that a Windows executable cannot MoveFile itself
+// TODO: do we want to remove this at some point? Maybe if UPDATE_JSON_URL has to be changed at some point, an old one could stay over on GitHub, pointing
+// to the first thprac version that uses the new one, and this change could also be used as an opportunity to get rid of this.
+bool LegacyPostUpdate(LPCWSTR lpCmdLine, int nCmdShow) {
+    auto* substr = wcsstr(lpCmdLine, L"--update-launcher-1 ");
+
+    if (!substr) {
+        return false;
+    }
+
+    substr += 20;
+    
+    wchar_t finalPath[MAX_PATH + 1] = {};
+    size_t substr_len = t_strlen(substr);
+    memcpy(finalPath, substr, substr_len * sizeof(wchar_t));
+    
+    auto self = CurrentPeb()->ProcessParameters->ImagePathName;
+
+    if (gSettings.filename_after_update != FN_UPDATE_USE_PREVIOUS) {
+        for (size_t i = substr_len; i > 0; i--) {
+            if (substr[i] == L'\\') {
+                i++;
+                substr_len = i;
+                break;
+            }
+        }
+        auto self_name = L"thprac.exe"_wZ;
+        if (gSettings.filename_after_update == FN_UPDATE_KEEP_DOWNLOADED) {
+            self_name = self;
+            for (USHORT i = self_name.Length / 2; i > 0; i--) {
+                if (self_name.Buffer[i] == L'\\') {
+                    i++;
+                    self_name.Buffer = self_name.Buffer + i;
+                    self_name.Length = self_name.Length - i * 2;
+                    self_name.MaximumLength = self_name.Length;
+                    break;
+                }
+            }
+        }
+        memset(finalPath + substr_len, 0, MAX_PATH - substr_len);
+        memcpy(finalPath + substr_len, self_name.Buffer, self_name.Length);
+    }
+
+    DeleteFileLoop(finalPath, 20000);
+
+    // No need for the other 2 stages (initiated with --update-launcher-2 and --update-launcher) when you can just do this.
+    MoveFileW(self.Buffer, finalPath);
+    wchar_t finalDir[MAX_PATH + 1] = {};
+    memcpy(finalDir, finalPath, substr_len * sizeof(wchar_t));
+
+    // Rerun because moving your own exe file doesn't update CurrentPeb()->ProcessParameters->ImagePathName
+    // Rerunning without passing on any command line parameters because the old updater wasn't really designed with
+    // thprac supporting more command line parameters than the --update-launcher flags in mind.
+    ShellExecuteW(NULL, L"open", finalPath, nullptr, finalDir, nCmdShow);
+    return true;
 }
 }
