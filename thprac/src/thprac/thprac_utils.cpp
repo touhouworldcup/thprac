@@ -15,6 +15,22 @@ wchar_t* windows_version_str() {
     if (version[0] != 0) {
         return version;
     }
+
+    auto* wine_get_version = (const char*(*)())GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "wine_get_version");
+    if (wine_get_version) {
+        // wine_get_version never returns a null pointer
+        // https://gitlab.winehq.org/wine/wine/-/blob/wine-11.0/dlls/ntdll/version.c?ref_type=tags#L221
+        const char* p = wine_get_version();
+
+        std::wstring_view sv = L"Wine ";
+        memcpy(version, sv.data(), sv.length() * sizeof(wchar_t));
+
+        for (size_t i = sv.length(); *p; i++, p++) {
+            version[i] = *p;
+        }
+        return version;
+    }
+
     int wrote = 0;
 #define snprintf_cat(fmt, ...) wrote += _snwprintf(version + wrote, 64 - wrote, fmt, __VA_ARGS__)
 
