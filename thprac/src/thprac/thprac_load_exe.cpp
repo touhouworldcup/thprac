@@ -241,47 +241,6 @@ const wchar_t* allMutexNames[] = {
     L"th20 App",
 };
 
-const wchar_t* GetGameMutexName(THGameID game) {
-    switch (game) {
-    case ID_ALCOSTG:
-        return L"Touhou 10 App";
-    case ID_TH06:
-        return L"Touhou Koumakyou App";
-    case ID_TH07:
-        return L"Touhou YouYouMu App";
-    case ID_TH08:
-    case ID_TH09:
-    case ID_TH095:
-        return L"Touhou 08 App";
-    case ID_TH10:
-        return L"Touhou 10 App";
-    case ID_TH11:
-        return L"Touhou 11 App";
-    case ID_TH12:
-    case ID_TH125:
-    case ID_TH128:
-    case ID_TH13:
-    case ID_TH14:
-    case ID_TH143:
-    case ID_TH15:
-    case ID_TH16:
-    case ID_TH165:
-        return L"Touhou 12 App";
-    case ID_TH17:
-        return L"th17 App";
-    case ID_TH18:
-        return L"th18 App";
-    case ID_TH185:
-        return L"th185 App";
-    case ID_TH19:
-        return L"th19 App";
-    case ID_TH20:
-        return L"th20 App";
-    default:
-        return nullptr;
-    }
-}
-
 bool CheckIfAnyGame() {
     for (const wchar_t* mutexName : allMutexNames) {
         HANDLE hMutex = OpenMutexW(SYNCHRONIZE, FALSE, mutexName);
@@ -357,7 +316,7 @@ enum thprac_prompt_t {
     PR_ERR_RUN_FAILED,
 };
 
-bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game) {
+bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game, THGameID gameID) {
     bool hasPrompted = false;
 
     if (CheckIfAnyGame()) {
@@ -371,6 +330,10 @@ bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game) {
                 HANDLE hProc = 0;
                 if (!(gameSig = CheckOngoingGameByPID(entry.th32ProcessID, &base, &hProc)))
                     continue;
+
+                if(gameID != ID_UNKNOWN && gameSig->gameId != gameID) {
+                    continue;
+                }
 
                 hasPrompted = true;
                 if (prompt_if_yes_game) {

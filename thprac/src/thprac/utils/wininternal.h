@@ -336,37 +336,6 @@ extern "C" NTSTATUS NTAPI NtQueryInformationProcess(
     PULONG ReturnLength
 );
 
-// Completely undocumented data structure. Am I cooking too nasty?
-struct SYSTEM_HANDLE_TABLE_ENTRY_INFO {
-    // Geoff Chapell documents this as being a USHORT with another USHORT after it
-    // Wine uses a ULONG for this. Which one is correct? Which one does my NT kernel use?
-    // Maybe I should call NtQuerySystemInformation with SystemExtendedHandleInformation 
-    // instead and not care about possible Windows 2000 support.
-    ULONG UniqueProcessId;
-    UCHAR ObjectTypeIndex;
-    UCHAR HandleAttributes;
-    USHORT HandleValue;
-    PVOID Object;
-    ULONG GrantedAccess;
-};
-
-struct SYSTEM_HANDLE_INFORMATION {
-    ULONG NumberOfHandles;
-    SYSTEM_HANDLE_TABLE_ENTRY_INFO Handles[1];
-};
-
-enum SYSTEM_INFORMATION_CLASS {
-    SystemHandleInformation = 16,
-};
-
-extern "C" NTSTATUS NTAPI NtQuerySystemInformation(
-    SYSTEM_INFORMATION_CLASS SystemInformationClass,
-    PVOID SystemInformation,
-    ULONG SystemInformationLength,
-    PULONG ReturnLength
-);
-
-
 // KUSER_SHARED_DATA struct definition so that we don't have to depend on the WDK just for ntddk.h
 // KUSER_SHARED_DATA itself comes from MSDN https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/ns-ntddk-kuser_shared_data
 // The structs and enums used inside are not on MSDN (for some reason) do I got them from NirSoft

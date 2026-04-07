@@ -258,109 +258,6 @@ static void LauncherSettingsMain(LauncherState* state) {
     }
 }
 
-// Horribly overcomplicated amalgamation of jank just to make sure that thprac always attaches to the correct game when launching with thcrap.
-// TODO: get rid of all of this and implement thcrap launching in a way that actually makes sense.
-// If thprac were to know the path to the exe it's launching when running with thcrap, it could run thcrap through the command line and do something better.
-// Here's an idea for a UI change that might be better and that would guarantee that: https://imgur.com/a/4lOaM1p
-// Another idea is to not use the "path" field in LauncherInstance to store the name of a thcrap config, and use separate field instead.
-bool CheckAttachThcrapProc(THGameID game, DWORD pid) {
-    auto hProc = OpenProcess(
-        PROCESS_QUERY_INFORMATION | PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE,
-        FALSE, pid);
-    if (!hProc) {
-        return false;
-    }
-    defer(CloseHandle(hProc));
-    uintptr_t base = GetProcessModuleBase(hProc);
-    if (!base) {
-        return false;
-    }
-    if (CheckTHPracSig(hProc, base)) {
-        return false;
-    }
-
-    HMODULE hMods[512];
-    DWORD byteRet;
-    if (!EnumProcessModules(hProc, hMods, sizeof(hMods), &byteRet)) {
-        return false;
-    }
-
-    for (size_t i = 0; i < std::min((DWORD)sizeof(hMods), byteRet) / sizeof(HMODULE); i++) {
-        wchar_t modName[MAX_PATH + 1] = {};
-        K32GetModuleBaseNameW(hProc, hMods[i], modName, MAX_PATH);
-        if (CheckTHPracSig(hProc, base)) {
-            continue;
-        }
-
-        if (_wcsicmp(modName, L"thcrap.dll") == 0 || _wcsicmp(modName, L"thcrap_d.dll") == 0) {
-            auto* gameVer = IdentifyRemoteExe(hProc, base);
-            if (gameVer->gameId == game) {
-                if (WriteTHPracSig(hProc, base) && LoadSelf(hProc)) {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
-// TODO: run this on another thread?
-bool FindAttachThcrapProc(LauncherState* state) {
-    auto game = state->thcrapLaunch.game;
-    const wchar_t* mutexName = GetGameMutexName(game);
-    if (!mutexName) {
-        log_print("Warning: FindAttachThcrapProc called with invalid gameID: ");
-        if (game > ID_TH_MAX) {
-            log_print(">ID_TH_MAX\r\n");
-        } else if (game == ID_TH_MAX) {
-            log_print("=ID_TH_MAX\r\n");
-        } else {
-            log_print(gThGameStrs[game]);
-        }
-        state->thcrapLaunch = {};
-        return false;
-    }
-
-    HANDLE mutex = OpenMutexW(SYNCHRONIZE, FALSE, mutexName);
-    if (!mutex) {
-        return false;
-    }
-    defer(CloseHandle(mutex));
-
-    SYSTEM_HANDLE_INFORMATION h1;
-    NtQuerySystemInformation(SystemHandleInformation, &h1, sizeof(h1), nullptr);
-
-    ULONG len = h1.NumberOfHandles * sizeof(h1.Handles) + sizeof(h1.NumberOfHandles);
-    LPVOID buf = VirtualAlloc(nullptr, len, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-    if (!buf) {
-        return false;
-    }
-    defer(VirtualFree(buf, 0, MEM_RELEASE));
-
-    if (NtQuerySystemInformation(SystemHandleInformation, buf, len, nullptr)) {
-        return false;
-    }
-    auto* handles = (SYSTEM_HANDLE_INFORMATION*)buf;
-
-    auto myPID = GetCurrentProcessId();
-    void* kernelAddr = nullptr;
-    for (ULONG i = 0; i < handles->NumberOfHandles; i++) {
-        SYSTEM_HANDLE_TABLE_ENTRY_INFO* handle = handles->Handles + i;
-        if (handle->UniqueProcessId == myPID && handle->HandleValue == (USHORT)mutex) {
-            kernelAddr = handle->Object;
-            break;
-        }
-    }
-
-    for (ULONG i = 0; i < handles->NumberOfHandles; i++) {
-        SYSTEM_HANDLE_TABLE_ENTRY_INFO* handle = handles->Handles + i;
-        if (handle->Object == kernelAddr && handle->UniqueProcessId != myPID && CheckAttachThcrapProc(game, handles->Handles[i].UniqueProcessId)) {
-            return true;
-        }
-    }
-    return false;
-}
-
 void UiUpdate(HWND hwnd, LauncherState* state) {
     // Start the Dear ImGui frame
     Gui::ImplDX9NewFrame();
@@ -414,8 +311,8 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
     }
     ImGui::EndTabBar();
 
-    if (state->thcrapLaunch && FindAttachThcrapProc(state)) {
-        state->thcrapLaunch = { };
+    if (state->reflectiveLaunchID && FindAndAttach(false, false, state->reflectiveLaunchID)) {
+        state->reflectiveLaunchID = ID_UNKNOWN;
     }
 
     ImGui::EndChild();

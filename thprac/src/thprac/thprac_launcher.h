@@ -160,19 +160,6 @@ constexpr unsigned int SPINOFF_OTHER_LEN = 7;
 constexpr unsigned int ALL_GAMES_LEN = PC98_GAMES_LEN + MAIN_GAMES_LEN + SPINOFF_SHMUP_LEN + SPINOFF_OTHER_LEN;
 constexpr unsigned int GAMES_LEN = ALL_GAMES_LEN - PC98_GAMES_LEN;
 
-struct LauncherThcrapLaunch {
-    THGameID game = ID_UNKNOWN;
-    LauncherInstance* inst = nullptr;
-
-    operator bool() {
-        return inst;
-    }
-
-    bool operator==(LauncherInstance* other) {
-        return inst == other;
-    }
-};
-
 union LauncherThcrapSelection {
     bool sel[GAMES_LEN] = {};
     struct { 
@@ -201,7 +188,7 @@ struct LauncherState {
 
     LauncherGame* selectedGame = nullptr;
     LauncherGame* hoveredGame = nullptr;
-    LauncherThcrapLaunch thcrapLaunch;
+    THGameID reflectiveLaunchID = ID_UNKNOWN;
     LauncherThcrapSelection thcrapSel;
 
     bool inScan = false;

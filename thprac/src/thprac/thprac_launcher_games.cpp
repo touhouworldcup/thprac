@@ -337,6 +337,11 @@ static bool LauncherRunWithThcrap(std::wstring_view dir, std::wstring_view runcf
 }
 
 static bool LauncherRunGame(LauncherState* state, THGameID game, LauncherInstance* inst) {
+    if (state->reflectiveLaunchID == game) {
+        ImGui::OpenPopup("Cannot launch this game");
+        return false;
+    }
+
     SaveSettings();
 
     uint32_t flags = RUN_FLAG_SKIP_IDENTIFY;
@@ -358,12 +363,18 @@ static bool LauncherRunGame(LauncherState* state, THGameID game, LauncherInstanc
         break;
     case LAUNCH_NOTHING:
         break;
-    }    
+    }
     if (inst->type != TYPE_THCRAP) {
-        return RunGame(utf8_to_utf16(inst->path).c_str(), nullptr, flags);
+        if (inst->type != TYPE_STEAM) {
+            return RunGame(utf8_to_utf16(inst->path).c_str(), nullptr, flags);
+        }
+        else {
+            state->reflectiveLaunchID = game;
+            ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", utf8_to_utf16(inst->path).c_str(), nullptr, nullptr, SW_SHOW);
+            return true;
+        }
     } else {
-        state->thcrapLaunch.game = game;
-        state->thcrapLaunch.inst = inst;
+        state->reflectiveLaunchID = game;
         return LauncherRunWithThcrap(state->settings.thcrap_dir, utf8_to_utf16(inst->path), game);
     }
 }
@@ -683,7 +694,7 @@ static bool DetailsPage(LauncherState* state) {
     ImGui::SameLine();
 
     if (ImGui::Button(S(THPRAC_GAMES_DELETE))) {
-        if (state->thcrapLaunch == inst) {
+        if (state->reflectiveLaunchID == game->id) {
             ImGui::OpenPopup("##cannot_delete_game");
         } else {
             ImGui::OpenPopup(S(THPRAC_GAMES_DELETE_MODAL));
@@ -717,7 +728,7 @@ static bool DetailsPage(LauncherState* state) {
         ImGui::EndPopup();
     }
     if (Gui::Modal("##cannot_delete_game")) {
-        ImGui::TextUnformatted("Cannot delete this instance because thprac is attempting to launch it.");
+        ImGui::TextUnformatted("Cannot delete this instance because thprac is attempting to launch this game.");
         if (Gui::MultiButtonsFillWindow(0.0f, "OK", nullptr) != -1) {
             ImGui::CloseCurrentPopup();
         }
@@ -794,9 +805,9 @@ static bool DetailsPage(LauncherState* state) {
         }
     }
 
-    if (inst->type == TYPE_THCRAP && state->thcrapLaunch) {
-        if (LargeBottomButton("Abort wait for thcrap launch", 64.0f)) {
-            state->thcrapLaunch = {};
+    if (state->reflectiveLaunchID == game->id) {
+        if (LargeBottomButton("Abort wait for current launch", 64.0f)) {
+            state->reflectiveLaunchID = ID_UNKNOWN;
         }
     } else {
         if (LargeBottomButton(S(THPRAC_GAMES_LAUNCH_GAME), 64.0f)) {
@@ -1630,6 +1641,28 @@ void LauncherGamesMain(LauncherState* state) {
             state->scanCtx = {};
         }
         return;
+    }
+
+    if (Gui::Modal("Cannot launch this game")) {
+        if (state->reflectiveLaunchID != ID_UNKNOWN) {
+            ImGui::TextUnformatted(
+                "thprac cannot attempt to launch this game because it is currently waiting for an instance of this game to start.\n"
+                "Do you want to abort this wait? Note: the game might still start, but without attaching thprac\n"
+            );
+            switch (Gui::MultiButtonsFillWindow(0.0f, "Yes", "No", nullptr)) {
+            case 0:
+                state->reflectiveLaunchID = ID_UNKNOWN;
+            case 1:
+                ImGui::CloseCurrentPopup();
+            }
+        }
+        else {
+            ImGui::TextUnformatted("In the time it took you to read this popup, the game already launched");
+            if (Gui::MultiButtonsFillWindow(0.0f, "OK", nullptr) == 0) {
+                ImGui::CloseCurrentPopup();
+            }
+        }
+        ImGui::EndPopup();
     }
 
     if (state->selectedGame) {
