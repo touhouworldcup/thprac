@@ -1125,10 +1125,10 @@ namespace TH20 {
             *mBomb = 7;
             *mPower = 400;
             *mValue = 0;
-            *mLevelR = 1;
-            *mLevelB = 1;
-            *mLevelY = 1;
-            *mLevelG = 1;
+            *mLevelR = 5;
+            *mLevelB = 5;
+            *mLevelY = 5;
+            *mLevelG = 5;
             *mPriorityR = 0;
             *mPriorityB = 0;
             *mPriorityY = 0;

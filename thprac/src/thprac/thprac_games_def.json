@@ -9267,6 +9267,7 @@
     "glossary": {
       "TH16_SEASON_GAUGE": [ "季节槽", "Season \nGauge", "季節ゲージ" ],
       "TH16_SEASON_GAUGE_ALT": [ "季节槽", "Season Gauge", "季節ゲージ" ],
+      "TH16_SEASON_GAUGE_PERCENT": [ "季节槽%", "Season \nGauge%", "季節ゲージ%" ],
       "TH16_SUBSEASON": [ "子季节", "Sub Season", "サブ季節" ],
       "TH16_SPRING": [ "春", "Spring", "春" ],
       "TH16_SUMMER": [ "夏", "Summer", "夏" ],

@@ -312,6 +312,7 @@ enum th_glossary_t {
     TH16_DOGDAYS,
     TH16_SEASON_GAUGE,
     TH16_SEASON_GAUGE_ALT,
+    TH16_SEASON_GAUGE_PERCENT,
     TH16_SPRING,
     TH16_SUBSEASON,
     TH16_SUMMER,
@@ -1854,7 +1855,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1843];
+extern const char* th_glossary_str[3][1844];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

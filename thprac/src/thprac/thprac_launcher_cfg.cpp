@@ -2482,7 +2482,7 @@ private:
             HelpMarker(S(TH14_MODE_NORMAL_DESC));
 
             mCfgEnableTH15_ShowShootingDownRate_autoly.Gui(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2));
-            mCfgTH18EnableCardActivatedCount.Gui(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2));
+            mCfgTH18EnableCardActivatedCount.Gui(S(THPRAC_TH18_SHOW_CARD_ACTIVATED_CNT));
 
             mCfgTH18ForceCard.Gui(S(THPRAC_TH18_FORCE_CARD), S(THPRAC_TH18_FORCE_CARD_DESC));
             ImGui::SameLine();

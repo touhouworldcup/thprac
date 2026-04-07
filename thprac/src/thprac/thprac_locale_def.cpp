@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1843] {
+const char* th_glossary_str[3][1844] {
     {
         "",
         "啤酒",
@@ -312,6 +312,7 @@ const char* th_glossary_str[3][1843] {
         "土用",
         "季节槽",
         "季节槽",
+        "季节槽%",
         "春",
         "子季节",
         "夏",
@@ -2157,6 +2158,7 @@ const char* th_glossary_str[3][1843] {
         "Dog Days",
         "Season \nGauge",
         "Season Gauge",
+        "Season \nGauge%",
         "Spring",
         "Sub Season",
         "Summer",
@@ -4002,6 +4004,7 @@ const char* th_glossary_str[3][1843] {
         "土用",
         "季節ゲージ",
         "季節ゲージ",
+        "季節ゲージ%",
         "春",
         "サブ季節",
         "夏",
