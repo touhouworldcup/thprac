@@ -213,7 +213,9 @@ static void LauncherSettingsMain(LauncherState* state) {
             } while (FindNextFileW(hFind, &find));
 
             state->foundThcrapConfigsSel.resize(state->foundThcrapConfigs.size());
-            std::fill_n(state->foundThcrapConfigsSel.data(), state->foundThcrapConfigsSel.size(), 0);
+
+            auto& v = state->foundThcrapConfigsSel;
+            std::fill(v.begin(), v.end(), '\x00');
         }
         ImGui::SameLine();
         if (ImGui::Button("Launch thcrap_configure")) {
@@ -321,7 +323,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
         DWORD waitStatus = WaitForSingleObject(background_update_check->hThread, 0);
 
         if (waitStatus == WAIT_OBJECT_0) {
-            DWORD exitCode = -1;
+            DWORD exitCode = 0xFFFFFFFF;
             GetExitCodeThread(background_update_check->hThread, &exitCode);
 
             if (exitCode == 0) {
@@ -358,7 +360,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
 
             DWORD waitStatus = WaitForSingleObject(state->hUpdateThread, 0);
             if (waitStatus == WAIT_OBJECT_0) {
-                DWORD exitCode = -1;
+                DWORD exitCode = 0xFFFFFFFF;
                 GetExitCodeThread(state->hUpdateThread, &exitCode);
                 CloseHandle(state->hUpdateThread);
                 state->hUpdateThread = NULL;

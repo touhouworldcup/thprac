@@ -113,7 +113,7 @@ bool ParseUpdateJson(char* buf, size_t len, UpdateJson* out) {
             yyjson_val* val;
             yyjson_arr_foreach(version_val, idx, max, val) {
                 if (yyjson_is_int(val)) {
-                    ver[idx] = unsafe_yyjson_get_int(val);
+                    ver[idx] = (uint8_t)unsafe_yyjson_get_int(val);
                 } else {
                     return false;
                 }
@@ -162,7 +162,7 @@ bool ParseUpdateJson(char* buf, size_t len, UpdateJson* out) {
     return true;
 }
 
-void CompleteUpdate(unsigned char* buf, size_t len, wchar_t* pCmdLine, int nCmdShow, UpdateJson* updateJson) {
+void CompleteUpdate(unsigned char* buf, size_t len, const wchar_t* pCmdLine, int nCmdShow, UpdateJson* updateJson) {
     if (!pCmdLine) {
         pCmdLine = L"";
     }
@@ -313,7 +313,7 @@ static LRESULT CALLBACK DownloadPopupWndProc(HWND hwnd, UINT msg, WPARAM wParam,
     return DefWindowProcW(hwnd, msg, wParam, lParam);
 }
 
-static unsigned int DownloadPopupCallback(DOWNLOAD_CALLBACK_REASON reason, DownloadParams* dl) {
+static unsigned int DownloadPopupCallback([[maybe_unused]] DOWNLOAD_CALLBACK_REASON reason, DownloadParams* dl) {
     InvalidateRect(((DownloadPopupContext*)dl)->hwnd, NULL, FALSE);
     return 0;
 }
@@ -370,6 +370,8 @@ static bool DownloadPopup(HINSTANCE hInstance, const wchar_t* title, const wchar
     DestroyWindow(hwnd);
     DeleteObject(dl.hBlack);
     DeleteObject(dl.hBlue);
+
+    out = std::move(dl.dl.out);
 
     return !dl.dl.abort_signal;
 }
