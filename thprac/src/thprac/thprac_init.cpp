@@ -103,7 +103,9 @@ RUN_GAME_STATUS TryRunGame(const wchar_t* exeFn, const wchar_t* cmdLine, uint32_
         }
         break;
     default:
+        break;
     }
+
     if (RunGame(exeFn, (wchar_t*)std::wstring(cmdLine).c_str(), flags)) {
         return RUN_GAME_SUCCESS;
     }
