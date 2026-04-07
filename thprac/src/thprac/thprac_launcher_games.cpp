@@ -344,16 +344,6 @@ static bool LauncherRunGame(LauncherState* state, THGameID game, LauncherInstanc
 
     SaveSettings();
 
-    uint32_t flags = RUN_FLAG_SKIP_IDENTIFY;
-    if (inst->allow_oilp) {
-        flags |= RUN_FLAG_OILP;
-    }
-    if (inst->allow_vpatch) {
-        flags |= RUN_FLAG_VPATCH;
-    }
-    if (inst->apply_thprac) {
-        flags |= RUN_FLAG_THPRAC;
-    }
     switch (state->settings.after_launch) {
     case LAUNCH_MINIMIZE:
         ShowWindow(Gui::ImplWin32GetHwnd(), SW_MINIMIZE);
@@ -366,15 +356,29 @@ static bool LauncherRunGame(LauncherState* state, THGameID game, LauncherInstanc
     }
     if (inst->type != TYPE_THCRAP) {
         if (inst->type != TYPE_STEAM) {
+            uint32_t flags = RUN_FLAG_SKIP_IDENTIFY;
+            if (inst->allow_oilp) {
+                flags |= RUN_FLAG_OILP;
+            }
+            if (inst->allow_vpatch) {
+                flags |= RUN_FLAG_VPATCH;
+            }
+            if (inst->apply_thprac) {
+                flags |= RUN_FLAG_THPRAC;
+            }
             return RunGame(utf8_to_utf16(inst->path).c_str(), nullptr, flags);
         }
         else {
-            state->reflectiveLaunchID = game;
+            if (inst->apply_thprac) {
+                state->reflectiveLaunchID = game;
+            }
             ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", utf8_to_utf16(inst->path).c_str(), nullptr, nullptr, SW_SHOW);
             return true;
         }
     } else {
-        state->reflectiveLaunchID = game;
+        if (inst->apply_thprac) {
+            state->reflectiveLaunchID = game;
+        }
         return LauncherRunWithThcrap(state->settings.thcrap_dir, utf8_to_utf16(inst->path), game);
     }
 }
@@ -792,7 +796,7 @@ static bool DetailsPage(LauncherState* state) {
         }
     }
 
-    if (inst->type != TYPE_THCRAP) {
+    if (inst->type != TYPE_THCRAP && inst->type != TYPE_STEAM) {
         if (ver->has_oilp) {
             ImGui::Checkbox("Allow OpenInputLagPatch", &inst->allow_oilp);
             ImGui::SameLine();
