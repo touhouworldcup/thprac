@@ -132,12 +132,12 @@ enum ThVersionArrOffset {
 ExeInfo GetExeInfo(const uint8_t* mod, size_t len);
 ExeInfo GetRemoteExeInfo(void* hProc, uintptr_t mod);
 
-const THGameVersion* IdentifyExe(const uint8_t* buf, size_t len);
-const THGameVersion* IdentifyExe(const wchar_t* path);
-const THGameVersion* IdentifyRemoteExe(void* hProc, uintptr_t mod);
+const THGameVersion* IdentifyExe(const uint8_t* buf, size_t len, ExeInfo* outInfo);
+const THGameVersion* IdentifyExe(const wchar_t* path, ExeInfo* outInfo);
+const THGameVersion* IdentifyRemoteExe(void* hProc, uintptr_t mod, ExeInfo* outInfo);
 
-bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const uint8_t* buf, size_t size);
-bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const wchar_t* fn);
+bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const uint8_t* buf, size_t size, ExeInfo* outInfo);
+bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const wchar_t* fn, ExeInfo* outInfo);
 
 #define METRO_HASH_FORMAT "{ 0x%04x, 0x%04x, 0x%04x, 0x%04x }"
 #define METRO_HASH_ARGS(h) (h)[0], (h)[1], (h)[2], (h)[3]

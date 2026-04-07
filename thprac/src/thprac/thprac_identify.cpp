@@ -837,8 +837,11 @@ ExeInfo GetRemoteExeInfo(void* hProc, uintptr_t mod) {
     return out;
 }
 
-const THGameVersion* IdentifyExe(const uint8_t* buf, size_t len) {
+const THGameVersion* IdentifyExe(const uint8_t* buf, size_t len, ExeInfo* outInfo) {
     auto exe_info = GetExeInfo(buf, len);
+    if (outInfo) {
+        *outInfo = exe_info;
+    }
     if (exe_info) for (const auto& i : gGameVersions) {
         if (exe_info == i.exeInfo) {
             return &i;
@@ -847,18 +850,21 @@ const THGameVersion* IdentifyExe(const uint8_t* buf, size_t len) {
     return nullptr;
 }
 
-const THGameVersion* IdentifyExe(const wchar_t* path) {
+const THGameVersion* IdentifyExe(const wchar_t* path, ExeInfo* outInfo) {
     MappedFile f(path);
     if (!f.fileMapView) {
         return nullptr;
     }
-    return IdentifyExe((uint8_t*)f.fileMapView, f.fileSize);
+    return IdentifyExe((uint8_t*)f.fileMapView, f.fileSize, outInfo);
 }
 
-const THGameVersion* IdentifyRemoteExe(void* hProc, uintptr_t mod) {
+const THGameVersion* IdentifyRemoteExe(void* hProc, uintptr_t mod, ExeInfo* outInfo) {
     ExeInfo exeInfo = GetRemoteExeInfo(hProc, mod);
     if (!exeInfo) {
         return nullptr;
+    }
+    if (outInfo) {
+        *outInfo = exeInfo;
     }
     for (auto& ver : gGameVersions) {
         if (ver.exeInfo == exeInfo) {
@@ -895,8 +901,8 @@ void GetExeOepCode(const uint8_t* mod, size_t len, uint16_t (&outOep)[10]) {
     }
 }
 
-bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const uint8_t* buf, size_t size) {
-    out.ver = IdentifyExe(buf, size);
+bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const uint8_t* buf, size_t size, ExeInfo* outInfo) {
+    out.ver = IdentifyExe(buf, size, outInfo);
     if (!out.ver) {
         return false;
     }
@@ -923,10 +929,10 @@ bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const uint8
     return true;
 }
 
-bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const wchar_t* fn) {
+bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const wchar_t* fn, ExeInfo* outInfo) {
     MappedFile f(fn, 0x04000000); // 4 MiB
     if (f.fileMapView) {
-        return IdentifyKnownGame(out, outOepCode, (const uint8_t*)f.fileMapView, f.fileSize);
+        return IdentifyKnownGame(out, outOepCode, (const uint8_t*)f.fileMapView, f.fileSize, outInfo);
     } else {
         return false;
     }

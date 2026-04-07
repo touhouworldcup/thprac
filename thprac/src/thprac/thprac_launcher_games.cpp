@@ -416,12 +416,15 @@ static void InitLauncherGame(LauncherGame* game, yyjson_val* json, APPLY_THPRAC_
         }
         if (game->versions + ver_off >= game->versions + VER_MAX) {
             log_printf("Warning: instance %s specifies invalid version number\r\n", path);
-fresh_identify:
-            ver = IdentifyExe(utf8_to_utf16(path).c_str());
+        fresh_identify:
+            ExeInfo exeInfo;
+
+            ver = IdentifyExe(utf8_to_utf16(path).c_str(), &exeInfo);
             if (ver) {
                 ver_off = (uint8_t)(ver - game->versions);
             } else {
                 log_printf("Error: failed to identify version number for %s\r\n", path);
+                log_printf(" -> ExeInfo { timeStamp = %d, textSize = %d }", exeInfo.textSize, exeInfo.timeStamp);
                 continue;
             }
         }
@@ -880,7 +883,7 @@ static void ScanIdentifyGame(ScanCtx* scanCtx, const wchar_t* path, size_t path_
     scanCtx->text_in_progress_bar_len = written;
     FoundGame game;
     memcpy(game.path, scanCtx->text_in_progress_bar, written);
-    if (IdentifyKnownGame(game.info, game.oepCode, path)) {
+    if (IdentifyKnownGame(game.info, game.oepCode, path, nullptr)) {
         if (!PathAlreadyExists(game.path)) {
             auto& v = scanCtx->found;
             v.insert(std::upper_bound(v.begin(), v.end(), game.info.ver->gameId, [](THGameID id, FoundGame& g) -> bool {

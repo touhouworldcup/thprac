@@ -10,19 +10,18 @@
 #include "thprac_log.h"
 #include "thprac_gui_locale.h"
 
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+
 namespace THPrac {
+
 constinit wchar_t old_working_dir[MAX_PATH + 1] = {};
-
-
 extern int Launcher(HINSTANCE hInstance, int nCmdShow);
 
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 void RemoteInit() {
     if ((PVOID)(&__ImageBase) == CurrentPeb()->ImageBaseAddress) {
         return;
     }
-
-    if (const auto* ver = IdentifyExe((uint8_t*)CurrentPeb()->ImageBaseAddress, 0)) {
+    if (const auto* ver = IdentifyExe((uint8_t*)CurrentPeb()->ImageBaseAddress, 0, nullptr)) {
         log_init(false, gSettings.console);
         VEHHookInit();
         ver->initFunc();
@@ -45,6 +44,72 @@ bool PrivilegeCheck() {
         CloseHandle(hToken);
     }
     return ret;
+}
+
+enum RUN_GAME_STATUS {
+    RUN_GAME_SUCCESS,
+    RUN_GAME_FAILURE,
+    RUN_GAME_LAUNCHER,
+    RUN_GAME_MALICIOUS,
+};
+
+RUN_GAME_STATUS TryRunGame(const wchar_t* exeFn, const wchar_t* cmdLine, uint32_t flags, bool prompt, bool warn_unknown_exe) {
+    size_t exeLen = t_strlen(exeFn);
+    if (_wcsnicmp(exeFn + exeLen - 4, L".exe", 4) != 0) {
+        return RUN_GAME_FAILURE;
+    }
+
+    ExeInfo exeInfo = {};
+    THKnownGame knownGame;
+    uint16_t oepCode[10];
+    if (!IdentifyKnownGame(knownGame, oepCode, exeFn, &exeInfo)) {
+        if (warn_unknown_exe && exeInfo) {
+            log_printf("Warning: completely unknown executable %s\r\n", utf16_to_utf8(exeFn).c_str());
+            log_printf(" -> timestamp = %d, text size = %d", exeInfo.timeStamp, exeInfo.textSize);
+        }
+        return RUN_GAME_FAILURE;
+    } else if (prompt) {
+        int choice = log_mboxf(0, MB_YESNOCANCEL, S(THPRAC_EXISTING_GAME_CONFIRMATION_TITLE), S(THPRAC_EXISTING_GAME_CONFIRMATION), gThGameStrs[knownGame.ver->gameId]);
+        switch (choice) {
+        case IDYES:
+            break;
+        case IDNO:
+            return RUN_GAME_LAUNCHER;
+        default:
+            return RUN_GAME_FAILURE;
+        }
+    }
+
+    switch (knownGame.type) {
+    case TYPE_MODDED:
+        log_printf("Warning: unknown variant of %s\n", gThGameStrs[knownGame.ver->gameId]);
+        log_printf("-> MetroHash: " METRO_HASH_FORMAT "\n", METRO_HASH_ARGS(knownGame.metroHash));
+        break;
+    case TYPE_MALICIOUS:
+        log_printf("Warning: potentially malicious variant of %s\n", gThGameStrs[knownGame.ver->gameId]);
+        log_printf("-> MetroHash: " METRO_HASH_FORMAT "\n", METRO_HASH_ARGS(knownGame.metroHash));
+        log_printf("-> oepCode: " OEP_CODE_FORMAT "\n", OEP_CODE_ARGS(oepCode));
+        if (log_mbox(NULL, MB_ICONWARNING | MB_YESNO, "Potentially malicious game", "The game you are attempting to run is detected to be potentially malicious. Are you sure you want to run it?") != IDYES) {
+            return RUN_GAME_MALICIOUS;
+        }
+        break;
+    case TYPE_STEAM:
+        ShellExecuteW(NULL, L"open", exeFn, cmdLine, old_working_dir, SW_SHOW);
+        for (;;) {
+            Sleep(100);
+            if (FindAndAttach(false, false, knownGame.ver->gameId)) {
+                return RUN_GAME_SUCCESS;
+            }
+        }
+        break;
+    default:
+    }
+    if (RunGame(exeFn, (wchar_t*)std::wstring(cmdLine).c_str(), flags)) {
+        return RUN_GAME_SUCCESS;
+    }
+    else {
+        return RUN_GAME_FAILURE;
+    }
 }
 }
 
@@ -91,7 +156,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
             }
         } else if (PreLaunchUpdate(hInstance, pCmdLine, nCmdShow, gSettings.update_without_confirmation)) {
             return 0;
-        }        
+        }
     }
 
     int argc = 0;
@@ -115,7 +180,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
                 return 0;
             }
             else {
-                fprintf(stderr, "Warning: invalid PID: %d\n", pid);
+                log_printf("Warning: invalid PID: %d\n", pid);
                 continue;
             }
         }
@@ -123,27 +188,26 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
             curCmd = CMD_ATTACH;
             continue;
         }
-
         if (wcscmp(argv[i], L"--without-vpatch") == 0) {
             flags &= ~RUN_FLAG_VPATCH;
             continue;
         }
-
         if (wcscmp(argv[i], L"--without-oilp") == 0) {
             flags &= ~RUN_FLAG_OILP;
             continue;
         }
 
-        if (GetFileAttributesW(argv[i]) != INVALID_FILE_ATTRIBUTES) {
-            auto& self_exe = CurrentPeb()->ProcessParameters->ImagePathName;
-            if (memcmp(argv[i], self_exe.Buffer, self_exe.Length) == 0) {
-                continue;
-            }
-            wchar_t* launch_cmdline = wcsstr(pCmdLine, argv[i]) + t_strlen(argv[i]);
+        if (PathsCompare(argv[i], t_strlen(argv[i]), CurrentPeb()->ProcessParameters->ImagePathName.Buffer, CurrentPeb()->ProcessParameters->ImagePathName.Length / 2)) {
+            continue;
+        }
 
-            if (RunGame(argv[i], launch_cmdline, flags)) {
-                return 0;
-            }
+        switch (TryRunGame(argv[i], nullptr, flags, false, true)) {
+        case RUN_GAME_SUCCESS:
+            return 0;
+        case RUN_GAME_MALICIOUS:
+            return 1;
+        default:
+            continue;
         }
     }
 
@@ -163,28 +227,18 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
             return false;
         }
         do {
-            const auto* ver = IdentifyExe(find.cFileName);
-            if (!ver) {
-                continue;
-            }
-
-            if (gSettings.existing_game_launch_action == LAUNCH_ACTION_ALWAYS_ASK) {
-                int choice = log_mboxf(0, MB_YESNOCANCEL, S(THPRAC_EXISTING_GAME_CONFIRMATION_TITLE), S(THPRAC_EXISTING_GAME_CONFIRMATION), gThGameStrs[ver->gameId]);
-                if (choice == IDYES || choice == IDCANCEL) {
-                    goto run_this_game;
-                }
-                else {
-                    continue;
-                }
-            }
-            else {
-            run_this_game:
-                FindClose(hFind);
-                RunGame(find.cFileName, nullptr, flags);
+            switch (TryRunGame(find.cFileName, nullptr, flags, gSettings.existing_game_launch_action == LAUNCH_ACTION_ALWAYS_ASK, false)) {
+            case RUN_GAME_SUCCESS:
                 return 0;
+            case RUN_GAME_LAUNCHER:
+                goto breakout;
+            default:
+                break;
             }
         } while (FindNextFileW(hFind, &find));
+    breakout:
         FindClose(hFind);
     }
+
     return Launcher(hInstance, nCmdShow);
 }
