@@ -139,4 +139,10 @@ const THGameVersion* IdentifyRemoteExe(void* hProc, uintptr_t mod);
 bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const uint8_t* buf, size_t size);
 bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const wchar_t* fn);
 
+#define METRO_HASH_FORMAT "{ 0x%04x, 0x%04x, 0x%04x, 0x%04x }"
+#define METRO_HASH_ARGS(h) (h)[0], (h)[1], (h)[2], (h)[3]
+
+#define OEP_CODE_FORMAT "{ 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x }"
+#define OEP_CODE_ARGS(o) (o)[0], (o)[1], (o)[2], (o)[3], (o)[4], (o)[5], (o)[6], (o)[7], (o)[8], (o)[9]
+
 }

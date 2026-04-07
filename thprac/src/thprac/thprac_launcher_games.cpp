@@ -1222,10 +1222,8 @@ void FoundGamesTable(ScanCtx* scanCtx) {
         ImGui::TextUnformatted(found[i].path);
 
         char buf[256] = {};
-        snprintf(buf, 255, "MetroHash = { 0x%08x, 0x%08x, 0x%08x, 0x%08x }\noepCode = { 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x, 0x%04x }",
-            found[i].info.metroHash[0], found[i].info.metroHash[1], found[i].info.metroHash[2], found[i].info.metroHash[3],
-            found[i].oepCode[0], found[i].oepCode[1], found[i].oepCode[2], found[i].oepCode[3], found[i].oepCode[4],
-            found[i].oepCode[5], found[i].oepCode[6], found[i].oepCode[7], found[i].oepCode[8], found[i].oepCode[9]);
+        snprintf(buf, 255, "MetroHash = " METRO_HASH_FORMAT "\noepCode = " OEP_CODE_FORMAT,
+            METRO_HASH_ARGS(found[i].info.metroHash), OEP_CODE_ARGS(found[i].oepCode));
 
         if (ImGui::IsItemHovered()) {
             ImGui::BeginTooltip();
