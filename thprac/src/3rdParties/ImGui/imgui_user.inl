@@ -83,7 +83,7 @@ void ImGui::EndDisabled(bool disabled)
 
 bool ImGui::ComboAlt(const char* data_ex, const char* label, int* current_item, bool(*items_getter)(void*, int, const char**), void* data, int items_count, int popup_max_height_in_items)
 {
-	ImGuiContext& g = *GImGui;
+    (void)(popup_max_height_in_items);
 
 	// Call the getter to obtain the preview string which is a parameter to BeginCombo()
 	const char* preview_value = NULL;

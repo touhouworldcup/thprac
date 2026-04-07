@@ -62,6 +62,7 @@ namespace TH18 {
         MAIN_MENU_PTR = 0x4cf43c,
         ANM_MANAGER_PTR = 0x51f65c,
         WINDOW_PTR = 0x568c30,
+        SCALE_ADDR = 0x56ACA0
     };
 
     enum funcs {
@@ -150,7 +151,7 @@ namespace TH18 {
         int32_t __array_3[0x100]; //0x858
         char filler_3160[0xc]; //0xc58
         int32_t __created_ability_txt; //0xc64
-        struct Thread __thread; //0xc68
+        Thread thread; //0xc68
         int32_t bought_flags[0x40]; //0xc84
     };
 
@@ -261,7 +262,7 @@ namespace TH18 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -284,7 +285,7 @@ namespace TH18 {
             GetJsonValue(cylinder);
             GetJsonValue(riceball);
             GetJsonValue(mukade);
-            GetJsonValueEx(hiddenKoishi, Bool);
+            GetJsonValue(hiddenKoishi);
 
             return true;
         }
@@ -293,8 +294,8 @@ namespace TH18 {
             if (mode == 0 && hiddenKoishi) { // vanilla run mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th18", jalloc);
+                AddJsonVersion();
+                AddJsonValueEx(game, "th18");
                 AddJsonValue(mode);
                 AddJsonValue(hiddenKoishi);
 
@@ -303,8 +304,8 @@ namespace TH18 {
             } else if (mode == 1) { // thprac mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th18", jalloc);
+                AddJsonVersion();
+                AddJsonValueEx(game, "th18");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
                 if (section)
@@ -340,8 +341,8 @@ namespace TH18 {
             } else if (mode == 2) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th18", jalloc);
+                AddJsonVersion();
+                AddJsonValueEx(game, "th18");
                 AddJsonValue(mode);
 
                 if (phase)
@@ -351,7 +352,6 @@ namespace TH18 {
             }
 
             CreateJson();
-            jalloc; // Dummy usage to silence C4189
             ReturnJson();
         }
     };
@@ -474,19 +474,19 @@ namespace TH18 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(0.5f, 0.7f);
                 SetPosRel(0.27f, 0.18f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(0.6f, 0.7f);
                 SetPosRel(0.215f, 0.18f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(0.56f, 0.7f);
                 SetPosRel(0.230f, 0.18f);
                 SetItemWidthRel(-0.105f);
@@ -532,8 +532,8 @@ namespace TH18 {
                 mLifeFragment();
                 mBomb();
                 mBombFragment();
-                auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
-                mPower(power_str.c_str());
+                char buf[32];
+                mPower(FormatNumberFixedPoint(*mPower, 2, buf));
                 mFunds();
 
                 mScore();
@@ -997,15 +997,15 @@ namespace TH18 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
@@ -1051,10 +1051,13 @@ namespace TH18 {
                     mOpenMarket();
                 }
             } else {
+                char hotkey_name[512] = {};
+                int len = Gui::HotkeyChordToLabel(hotkeys.backspace_menu, hotkey_name);
+
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC1));
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC2));
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC3));
-                ImGui::TextUnformatted(Gui::HotkeyChordToLabel(Gui::GetBackspaceMenuChord()).c_str());
+                ImGui::TextUnformatted(hotkey_name, hotkey_name + len);
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH18_MARKET_MANIP_DESC4));
             }
@@ -1067,7 +1070,7 @@ namespace TH18 {
                 ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(255.0f, 0.0f, 0.0f, 255.0f));
                 popColor = true;
 
-                if (Gui::GetChordPressed(Gui::GetBackspaceMenuChord())) {
+                if (Gui::GetChordPressed(hotkeys.backspace_menu)) {
                     th18_shop_escape_1.Enable();
                     th18_shop_escape_2.Enable();
                 } else {
@@ -1129,7 +1132,7 @@ namespace TH18 {
             }
         }
 
-        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x45d4ea, "01")
@@ -1282,19 +1285,19 @@ namespace TH18 {
         {
             SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
@@ -1541,7 +1544,7 @@ namespace TH18 {
             if (GetSaveFileNameW(&ofn)) {
                 auto outputFile = CreateFileW(szFile, GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (outputFile == INVALID_HANDLE_VALUE) {
-                    MsgBox(MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST), nullptr, ofn.hwndOwner);
+                    log_mbox(ofn.hwndOwner, MB_ICONERROR | MB_OK, S(TH_ERROR), S(TH_REPFIX_SAVE_ERROR_DEST));
                     goto end;
                 }
                 SetFilePointer(outputFile, 0, nullptr, FILE_BEGIN);
@@ -1552,7 +1555,7 @@ namespace TH18 {
                 CloseHandle(outputFile);
 
                 // OK checkbox & close replay menu to force a reload
-                MsgBox(MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str(), ofn.hwndOwner);
+                log_mboxf(ofn.hwndOwner, MB_ICONINFORMATION | MB_OK, S(TH_REPFIX_SAVE_SUCCESS), S(TH_REPFIX_SAVE_SUCCESS_DESC), utf16_to_utf8(szFile).c_str());
                 uintptr_t mainMenu = GetMemContent(MAIN_MENU_PTR);
                 if (mainMenu) {
                     THGuiRep::singleton().State(1);
@@ -1666,7 +1669,7 @@ namespace TH18 {
 
         inline void CloneSelectedReplayWithParams(THPracParam newRepParam) {
             auto& guiRep = THGuiRep::singleton();
-            const std::wstring& repPath = guiRep.mSelectedRepPath;
+            std::wstring& repPath = guiRep.mSelectedRepPath;
             const bool cloned = CloneReplayWithParams(repPath, newRepParam.GetJson(), L"18", *(HWND*)WINDOW_PTR);
 
             if (cloned && !guiRep.mRepStatus)
@@ -1695,19 +1698,19 @@ namespace TH18 {
 
             if (BeginOptGroup<TH_REPLAY_FIX>()) {
                 // Counterstop replay fix tool
-                CustomMarker(S(TH_REPFIX_NO_THPRAC), S(TH_REPFIX_NO_THPRAC_DESC));
+                Gui::CustomMarker(S(TH_REPFIX_NO_THPRAC), S(TH_REPFIX_NO_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH18_CS_REPFIX));
                 ImGui::SameLine();
-                HelpMarker(S(TH18_CS_REPFIX_DESC));
+                Gui::HelpMarker(S(TH18_CS_REPFIX_DESC));
 
                 auto& guiReplay = THGuiRep::singleton();
                 uint32_t finalScore = guiReplay.mSelectedRepScores[guiReplay.mSelectedRepEndStage];
 
-                if (!scoreUncapChkbox) ImGui::TextDisabled(S(TH18_CS_REPFIX_NO_UNCAP));
-                else if (!finalScore) ImGui::TextDisabled(S(TH_REPFIX_SELECTED_NONE));
-                else if (finalScore < COUNTERSTOP) ImGui::TextDisabled(S(TH18_CS_REPFIX_SELECTED_NO_CS));
-                else if (finalScore > COUNTERSTOP) ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                if (!scoreUncapChkbox) ImGui::TextDisabled("%s", S(TH18_CS_REPFIX_NO_UNCAP));
+                else if (!finalScore) ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_NONE));
+                else if (finalScore < COUNTERSTOP) ImGui::TextDisabled("%s", S(TH18_CS_REPFIX_SELECTED_NO_CS));
+                else if (finalScore > COUNTERSTOP) ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_ALREADY_FIXED));
                 else {
                     ImGui::Text(S(TH_REPFIX_SELECTED), THGuiRep::singleton().mSelectedRepName.c_str());
                     const uint32_t curStage = GetMemContent(RVA(STAGE_NUM));
@@ -1742,18 +1745,18 @@ namespace TH18 {
                             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.9f, 0.3f, 1.0f));
                             ImGui::TextUnformatted(FormatNumberWithCommas(((int64_t)stScoreOverwrite * 10), num_with_commas_buf));
                             ImGui::PopStyleColor();
-                            if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH18_CS_REPFIX_READY_HINT));
+                            if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", S(TH18_CS_REPFIX_READY_HINT));
 
                         } else if (stScore == COUNTERSTOP) {
                             if (guiReplay.mRepStatus && (curStage == st || inTransition) && curScore && !startedOnCS) {
                                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.9f, 0.3f, 1.0f));
                                 ImGui::TextUnformatted(FormatNumberWithCommas(((int64_t)curScore * 10), num_with_commas_buf));
                                 ImGui::PopStyleColor();
-                                if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH18_CS_REPFIX_RECORDING_HINT));
+                                if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", S(TH18_CS_REPFIX_RECORDING_HINT));
 
                             } else {
                                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.3f, 0.3f, 1.0f));
-                                ImGui::Text(S(TH_TYPE_UNKOWN));
+                                ImGui::TextUnformatted(S(TH_TYPE_UNKOWN));
                                 ImGui::PopStyleColor();
                                 if (ImGui::IsItemHovered())
                                     ImGui::SetTooltip(S(firstStageCS == st ? TH18_CS_REPFIX_FIRST_UNKNOWN_HINT
@@ -1788,11 +1791,11 @@ namespace TH18 {
                 ImGui::Separator();
 
                 // Active card replay desync fix tool
-                CustomMarker(S(TH_REPFIX_NO_THPRAC), S(TH_REPFIX_NO_THPRAC_DESC));
+                Gui::CustomMarker(S(TH_REPFIX_NO_THPRAC), S(TH_REPFIX_NO_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH18_AC_REPFIX));
                 ImGui::SameLine();
-                HelpMarker(S(TH18_AC_REPFIX_DESC));
+                Gui::HelpMarker(S(TH18_AC_REPFIX_DESC));
 
                 ImGui::SameLine();
                 ImGui::Checkbox(S(TH_TOOL_SHOW_TOGGLE), &showActiveCardRepFix);
@@ -1849,10 +1852,10 @@ namespace TH18 {
                             ImGui::PopID();
 
                         } else {
-                            ImGui::TextDisabled(S(TH18_AC_REPFIX_NOTHING));
+                            ImGui::TextDisabled("%s", S(TH18_AC_REPFIX_NOTHING));
                         }
                     } else {
-                        ImGui::TextDisabled(S(TH_REPFIX_SELECTED_NONE));
+                        ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_NONE));
                     }
                 }
 
@@ -1861,11 +1864,11 @@ namespace TH18 {
                 ImGui::Separator();
 
                 // Hidden Koishi Card replay desync fix tool
-                CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
+                Gui::CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH18_HK_REPFIX));
                 ImGui::SameLine();
-                HelpMarker(S(TH18_HK_REPFIX_DESC));
+                Gui::HelpMarker(S(TH18_HK_REPFIX_DESC));
 
                 ImGui::SameLine();
                 ImGui::PushID("HIDDEN_KOISHI_SHOW");
@@ -1885,7 +1888,7 @@ namespace TH18 {
                             ImGui::PopID();
 
                         } else {
-                            ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                            ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_ALREADY_FIXED));
                             ImGui::SameLine();
 
                             if (ImGui::Button(S(TH_REPFIX_RESET_DATA))) {
@@ -1896,7 +1899,7 @@ namespace TH18 {
                         }
 
                     } else {
-                        ImGui::TextDisabled(S(TH_REPFIX_REAL_SELECTED_NONE));
+                        ImGui::TextDisabled("%s", S(TH_REPFIX_REAL_SELECTED_NONE));
                     }
                 }
 
@@ -1927,7 +1930,9 @@ namespace TH18 {
     private:
         void FpsInit()
         {
-            if (*(uint8_t*)0x4cd011 == 3) {
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                OILPInit(mOptCtx);
+            } else if (*(uint8_t*)0x4cd011 == 3) {
                 mOptCtx.fps_status = 1;
 
                 DWORD oldProtect;
@@ -1939,7 +1944,11 @@ namespace TH18 {
         }
         void FpsSet()
         {
-            if (mOptCtx.fps_status == 1) {
+            if (mOptCtx.fps_status == 3) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
+            } else if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
             } else if (mOptCtx.fps_status == 2) {
             }
@@ -1986,7 +1995,7 @@ namespace TH18 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
+            if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else
@@ -2002,19 +2011,19 @@ namespace TH18 {
         {
             SetTitle("AdvOptMenu");
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
@@ -2054,11 +2063,11 @@ namespace TH18 {
 
         void CenteredText(const char* text, float parentWidth, int trim = 0, float size = 1.0f)
         {
-            float textWidth = ImGui::CalcTextSize(text, text + strlen(text) - trim).x;
+            float textWidth = ImGui::CalcTextSize(text, text + t_strlen(text) - trim).x;
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (parentWidth - size * textWidth) * 0.5f);
 
             if (size != 1.0f) ResizedText(text, size);
-            else ImGui::Text(text);
+            else ImGui::TextUnformatted(text);
         }
 
         void ResizedText(const char* text, float size = 1.0f)
@@ -2073,7 +2082,7 @@ namespace TH18 {
                 ImGui::SetWindowFontScale(size);
             }
 
-            ImGui::Text(text);
+            ImGui::TextUnformatted(text);
 
             if (size != 1.0f)
                 ImGui::SetWindowFontScale(1.0f);
@@ -2138,7 +2147,7 @@ namespace TH18 {
 
             ImGui::Dummy(ImVec2(20.0f * scaleX, 0));
             ImGui::SameLine();
-            ImGui::Text(S(header_tag));
+            ImGui::TextUnformatted(S(header_tag));
             if (!saveManip) {
                 if (buyCount < cardCount - 1) {
                     ImGui::SameLine();
@@ -2194,7 +2203,7 @@ namespace TH18 {
                 ImGui::EndDisabled(saveManip && game_thread);
                 ImGui::PopID();
                 if (ImGui::IsItemHovered()) {
-                    if (saveManip && game_thread) ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_RUN));
+                    if (saveManip && game_thread) ImGui::SetTooltip("%s", S(TH18_SAVEFILE_MANIP_RUN));
                     else ImGui::SetTooltip(S(TH18_MARKET_MANIP_CARD_HINT), S(TH18_CARD_LIST[cd->card_id]));
                 }
 
@@ -2209,14 +2218,14 @@ namespace TH18 {
                         ImGui::PopStyleColor();
 
                     if (ImGui::IsItemHovered()) {
-                        if (boughtBefore) ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_BOUGHT_HINT));
+                        if (boughtBefore) ImGui::SetTooltip("%s", S(TH18_SAVEFILE_MANIP_BOUGHT_HINT));
                         else if (cd->appearance_condition) {
                             if (cd->appearance_condition <= 5)
                                 ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_STG_HINT), cd->appearance_condition);
                             else
-                                ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_HINT));
+                                ImGui::SetTooltip("%s", S(TH18_MARKET_MANIP_LOCKED_HINT));
                         }
-                        else ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_NEW_HINT));
+                        else ImGui::SetTooltip("%s", S(TH18_SAVEFILE_MANIP_NEW_HINT));
                     }
 
                 } else {
@@ -2256,7 +2265,7 @@ namespace TH18 {
 
                     if (ImGui::IsItemHovered()) {
                         if (boughtCurrent)
-                            ImGui::SetTooltip(S(TH18_MARKET_MANIP_BOUGHT_FLAG_HINT));
+                            ImGui::SetTooltip("%s", S(TH18_MARKET_MANIP_BOUGHT_FLAG_HINT));
 
                         else if (!boughtBefore && !cd->appearance_condition && !shouldBuy)
                             ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_BOOST_HINT), S(TH18_CARD_LIST[cd->card_id]));
@@ -2264,7 +2273,7 @@ namespace TH18 {
                         else if (cd->appearance_condition && !shouldBuy && !(boughtBefore && !isStageUnlock)) {
                             if (boughtBefore) ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_STG_HINT), S(TH18_CARD_LIST[cd->card_id]), cd->appearance_condition);
                             else if (isStageUnlock) ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_STG_HINT), cd->appearance_condition);
-                            else ImGui::SetTooltip(S(TH18_MARKET_MANIP_LOCKED_HINT));
+                            else ImGui::SetTooltip("%s", S(TH18_MARKET_MANIP_LOCKED_HINT));
                         }
                         else ImGui::SetTooltip(S(TH18_MARKET_MANIP_ODD_HINT), S(TH18_CARD_LIST[cd->card_id]));
                     }
@@ -2272,7 +2281,7 @@ namespace TH18 {
 
                     CenteredText(shouldBuy ? S(TH18_MARKET_MANIP_BUY) : S(TH18_MARKET_MANIP_KEEP), cardWidth);
                     if (ImGui::IsItemHovered())
-                        ImGui::SetTooltip(S(shouldBuy ? TH18_MARKET_MANIP_BUY_HINT : TH18_MARKET_MANIP_KEEP_HINT));
+                        ImGui::SetTooltip("%s", S(shouldBuy ? TH18_MARKET_MANIP_BUY_HINT : TH18_MARKET_MANIP_KEEP_HINT));
                 }
 
                 // Padding & border math
@@ -2339,18 +2348,18 @@ namespace TH18 {
                 if (ImGui::Checkbox(S(TH18_UNCAP), &scoreUncapChkbox))
                     ScoreUncapSet();
                 ImGui::SameLine();
-                HelpMarker(S(TH18_UNCAP_DESC));
+                Gui::HelpMarker(S(TH18_UNCAP_DESC));
 
                 if (ImGui::Checkbox(S(TH18_STATIC_MALLET), &staticMalletReplay)) {
                     th18_static_mallet_replay_gold.Toggle(staticMalletReplay);
                     th18_static_mallet_replay_green.Toggle(staticMalletReplay);
                 }
                 ImGui::SameLine();
-                HelpMarker(S(TH18_STATIC_MALLET_DESC));
+                Gui::HelpMarker(S(TH18_STATIC_MALLET_DESC));
 
                 ImGui::Checkbox(S(TH18_MARKET_MANIP_LOADOUT), &useManipLoadout);
                 ImGui::SameLine();
-                HelpMarker(S(TH18_MARKET_MANIP_LOADOUT_DESC));
+                Gui::HelpMarker(S(TH18_MARKET_MANIP_LOADOUT_DESC));
 
                 if (useManipLoadout) {
                     if (ImGui::Button(S(TH18_MARKET_MANIP_ALL_KEEP))) {
@@ -2388,7 +2397,7 @@ namespace TH18 {
                         ImGui::SetClipboardText(buffer);
                     }
                     if (ImGui::IsItemHovered())
-                        ImGui::SetTooltip(S(TH_COPY_CFG_CODE_HINT));
+                        ImGui::SetTooltip("%s", S(TH_COPY_CFG_CODE_HINT));
 
                     ImGui::SameLine();
                     if (ImGui::Button(S(TH_PASTE_CFG_CODE))) {
@@ -2397,25 +2406,25 @@ namespace TH18 {
                         if (ValidateConfigCode(clipboardText))
                             ApplyLoadoutCode(clipboardText);
                         else
-                            MsgBox(MB_ICONERROR | MB_OK, S(TH18_MARKET_MANIP_PASTE_ERROR_TITLE), S(TH18_MARKET_MANIP_PASTE_ERROR), nullptr, *(HWND*)WINDOW_PTR);
+                            log_mbox(*(HWND*)WINDOW_PTR, MB_ICONERROR | MB_OK, S(TH18_MARKET_MANIP_PASTE_ERROR_TITLE), S(TH18_MARKET_MANIP_PASTE_ERROR));
                     }
                     if (ImGui::IsItemHovered())
-                        ImGui::SetTooltip(S(TH_PASTE_CFG_CODE_HINT));
+                        ImGui::SetTooltip("%s", S(TH_PASTE_CFG_CODE_HINT));
 
                     ImGui::SameLine();
                     if (restartResetMarket) ImGui::BeginDisabled();
                     ImGui::Checkbox(S(TH18_MARKET_MANIP_AUTO_RESTART), &manipAutoRestart);
                     if (restartResetMarket) {
                         ImGui::EndDisabled();
-                        if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH18_RESTART_SETTINGS_CONFLICT));
+                        if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", S(TH18_RESTART_SETTINGS_CONFLICT));
                     }
                     ImGui::SameLine();
-                    HelpMarker(S(TH18_MARKET_MANIP_AUTO_RESTART_DESC));
+                    Gui::HelpMarker(S(TH18_MARKET_MANIP_AUTO_RESTART_DESC));
 
                     ImGui::SameLine();
                     ImGui::Checkbox(S(TH18_MARKET_MANIP_OSCAR), &manipSafetyMode);
                     ImGui::SameLine();
-                    HelpMarker(S(TH18_MARKET_MANIP_OSCAR_DESC));
+                    Gui::HelpMarker(S(TH18_MARKET_MANIP_OSCAR_DESC));
 
                     ImGui::NewLine();
                     DrawManipCardGrid(loadoutHighCostCards, TH18_MARKET_MANIP_HIGH_COSTS, IM_COL32(195, 160, 160, 200));
@@ -2429,21 +2438,21 @@ namespace TH18 {
                 ImGui::TextUnformatted(S(TH18_BUGFIX_DESC));
                 ImGui::TextUnformatted(S(TH_BUGFIX_AUTO));
                 ImGui::SameLine();
-                HelpMarker(S(TH18_BUGFIX_AUTO_DESC));
+                Gui::HelpMarker(S(TH18_BUGFIX_AUTO_DESC));
 
                 // market reset incompatible with restarting for Market Manip.
                 if (manipAutoRestart) ImGui::BeginDisabled();
                 ImGui::Checkbox(S(TH18_RESTART_RESET_MARKET), &restartResetMarket);
                 if (manipAutoRestart) {
                     ImGui::EndDisabled();
-                    if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH18_RESTART_SETTINGS_CONFLICT));
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", S(TH18_RESTART_SETTINGS_CONFLICT));
                 }
 
                 if (ImGui::Checkbox(S(TH18_RESTART_RESET_KOISHI), &restartResetKoishi)) {
                     th18_restart_reset_koishi.Toggle(restartResetKoishi);
                 }
                 ImGui::SameLine();
-                HelpMarker(S(TH18_RESTART_RESET_KOISHI_DESC));
+                Gui::HelpMarker(S(TH18_RESTART_RESET_KOISHI_DESC));
 
                 EndOptGroup();
             }
@@ -2458,14 +2467,14 @@ namespace TH18 {
                 }
                 if (game_thread) {
                     ImGui::EndDisabled();
-                    if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_RUN));
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", S(TH18_SAVEFILE_MANIP_RUN));
                 } else {
                     const uint32_t cur_global_frame = GetMemContent(ASCII_MANAGER_PTR, 0x1925c);
                     static uint32_t last_non_hover_frame = cur_global_frame;
 
                     if (ImGui::IsItemHovered()) {
                         if (cur_global_frame > last_non_hover_frame + 60)
-                            ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_CHIMATA));
+                            ImGui::SetTooltip("%s", S(TH18_SAVEFILE_MANIP_CHIMATA));
                     } else
                         last_non_hover_frame = cur_global_frame;
                 }
@@ -2479,7 +2488,7 @@ namespace TH18 {
                 if (game_thread) {
                     ImGui::EndDisabled();
                     if (ImGui::IsItemHovered())
-                        ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_RUN));
+                        ImGui::SetTooltip("%s", S(TH18_SAVEFILE_MANIP_RUN));
                 }
 
                 ImGui::SameLine();
@@ -2496,10 +2505,10 @@ namespace TH18 {
                 if (game_thread) {
                     ImGui::EndDisabled();
                     if (ImGui::IsItemHovered())
-                        ImGui::SetTooltip(S(TH18_SAVEFILE_MANIP_FREEZE_RUN));
+                        ImGui::SetTooltip("%s", S(TH18_SAVEFILE_MANIP_FREEZE_RUN));
                 }
                 ImGui::SameLine();
-                HelpMarker(S(TH18_SAVEFILE_MANIP_FREEZE_DESC));
+                Gui::HelpMarker(S(TH18_SAVEFILE_MANIP_FREEZE_DESC));
 
                 ImGui::NewLine();
                 DrawManipCardGrid(allCostCards, TH18_SAVEFILE_MANIP_CARDS, IM_COL32(40, 75, 120, 200), 10, 27.5f, true);
@@ -2642,7 +2651,7 @@ namespace TH18 {
     constexpr unsigned int st5PostMaple = 0x96ec;
     constexpr unsigned int st6PostMaple = 0x7e70;
     constexpr unsigned int st7PostMaple = 0xa8fc;
-    constexpr unsigned int stdInterruptSize = 0x14;
+    //constexpr unsigned int stdInterruptSize = 0x14;
     __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
     {
         if (stage == 1) {
@@ -4043,7 +4052,7 @@ namespace TH18 {
                         ((CardLily*)card)->count += thPracParam.lily_cycle + 2;
                 }
 
-                tracker_info.th18.active_uses[7] = (char)((CardLily*)card)->count;
+                tracker_info.th18.active_uses[7] = (uint8_t)((CardLily*)card)->count;
                 R(lily_cd);
                 break;
             case BASSDRUM:
@@ -4368,8 +4377,7 @@ namespace TH18 {
         }
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4ccdf8, WINDOW_PTR,
-            Gui::INGAGME_INPUT_GEN2, MENU_INPUT, 0x4ca218, 0,
-            -2, *(float*)0x56aca0, 0.0f);
+            Gui::INGAGME_INPUT_GEN2, MENU_INPUT, 0x4ca218, 0, *(float*)SCALE_ADDR);
 
         SetDpadHook(0x4016EF, 3);
 

@@ -1,687 +1,439 @@
-﻿#include "thprac_launcher_cfg.h"
-#include "thprac_launcher_utils.h"
-#include "thprac_launcher_wnd.h"
-#include "thprac_gui_locale.h"
-#include "thprac_utils.h"
-#include "utils/utils.h"
-#include <functional>
-#include <imgui.h>
-#pragma warning(push)
-#pragma warning(disable : 26451)
-#pragma warning(disable : 26495)
-#pragma warning(disable : 33010)
-#include <rapidjson/document.h>
-#pragma warning(pop)
-#include <string>
-#include <vector>
+#include "thprac_launcher.h"
 
+#include <utility>
 
 namespace THPrac {
+namespace Gui {
+    extern HWND ImplWin32GetHwnd();
+}
 
-struct LinkSelectable {
-};
+void LinksDefault(LinkSet& out) {
+    out = { true, "Default", {
+        { "Royalflare Archive", "https://maribelhearn.com/royalflare/" },
+        { "PND's Scoreboard", "https://thscore.pndsng.com/index.php" },
+        { "甜品站 (isndes)", "https://www.isndes.com/" },
+        { "Lunarcast", "http://replay.lunarcast.net/" },
+        { "Silent Selene", "https://www.silentselene.net/" },
+        { "Maribel Hearn's Touhou Portal", "https://maribelhearn.com/" },
+        { "Touhou Patch Center", "https://www.thpatch.net/" },
+        { "Touhou Replay Showcase", "https://twitch.tv/touhou_replay_showcase/" },
+        { "Touhou World Cup", "https://touhouworldcup.com/" },
+        { "THBWiki", "https://thwiki.cc/" },
+        { "Touhou Wiki (EN)", "https://en.touhouwiki.net/" }
+    } };
+}
 
-struct LinkLeaf : public LinkSelectable {
-    std::string name;
-    std::string link;
-};
+void LoadLinksJson(std::vector<LinkSet>& linkSets) {
+    wchar_t linksJsonPath[MAX_PATH + 1] = {};
+    memcpy(linksJsonPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
+    memcpy(linksJsonPath + _gConfigDirLen, SIZED(L"links.json"));
 
-struct LinkNode : public LinkSelectable {
-    std::string name = "";
-    std::vector<LinkLeaf> leaves;
-    bool isOpen = false;
-};
-
-
-class THLinksGui {
-private:
-    THLinksGui()
-    {
-        mGuiUpdFunc = [&]() { GuiMain(); };
-        LoadLinksCfg();
+    yyjson_doc* doc = yyjson_read_file_report(linksJsonPath);
+    if (!doc) {
+        LinksDefault(linkSets.emplace_back());
+        return;
     }
-    SINGLETON(THLinksGui);
 
-public:
-    void GuiUpdate()
-    {
-        mGuiUpdFunc();
+    yyjson_val* root = yyjson_doc_get_root(doc);
+    if (!yyjson_is_obj(root)) {
+        LinksDefault(linkSets.emplace_back());
+        return;
     }
 
-private:
-    enum LinkGuiTrigger {
-        TRIGGER_ERROR,
-        TRIGGER_ADD_LINK,
-        TRIGGER_EDIT_LINK,
-        TRIGGER_DELETE_LINK,
-        TRIGGER_ADD_FILTER,
-        TRIGGER_DELETE_FILTER,
-        TRIGGER_ERR_REPETED,
-        TRIGGER_ERR_EXEC,
-    };
-    void WriteLinksCfgDefault()
-    {
-        const char* linksJsonStr = R"123({
-            "Default":{
-                "__is_open__" : true,
-                "Royalflare Archive":"https://maribelhearn.com/royalflare",
-                "Lunarcast":"http://replay.lunarcast.net/",
-                "PND's Scoreboard":"https://thscore.pndsng.com/index.php",
-                "Maribel Hearn's Touhou Portal":"https://maribelhearn.com/",
-                "Touhou Patch Center":"https://www.thpatch.net/",
-                "Touhou Replay Showcase":"https://twitch.tv/touhou_replay_showcase",
-                "甜品站 (isndes)":"https://www.isndes.com/",
-                "THBWiki":"https://thwiki.cc/"
-            }
-        })123";
-        rapidjson::Document linksJson;
-        linksJson.Parse(linksJsonStr);
+    size_t idx_outer, max_outer;
+    yyjson_val *key_outer, *val_outer;
+    yyjson_obj_foreach(root, idx_outer, max_outer, key_outer, val_outer) {
+        auto& linksList = linkSets.emplace_back();
+        linksList.name = unsafe_yyjson_get_str(key_outer);
 
-        auto& cfg = LauncherCfgGet();
-        if (cfg.HasMember("links")) {
-            cfg.RemoveMember("links");
-        }
-        JsonAddMemberA(cfg, "links", linksJson, cfg.GetAllocator());
-        LauncherCfgWrite();
-    }
-    void WriteLinksCfg()
-    {
-        rapidjson::Document linksJson;
-        auto& alloc = linksJson.GetAllocator();
-        linksJson.SetObject();
-
-        for (auto& node : mLinks) {
-            rapidjson::Value nodeJson;
-            nodeJson.SetObject();
-            JsonAddMember(nodeJson, "__is_open__", node.isOpen, alloc);
-            for (auto& leaf : node.leaves) {
-                JsonAddMemberA(nodeJson, leaf.name.c_str(), leaf.link.c_str(), alloc);
-            }
-            JsonAddMemberA(linksJson, node.name.c_str(), nodeJson, alloc);
-        }
-
-        auto& cfg = LauncherCfgGet();
-        if (cfg.HasMember("links")) {
-            cfg.RemoveMember("links");
-        }
-        JsonAddMemberA(cfg, "links", linksJson, cfg.GetAllocator());
-        LauncherCfgWrite();
-    }
-    bool LoadLinksCfg()
-    {
-        bool result = true;
-        int filterState = 0;
-        LauncherSettingGet("filter_default", filterState);
-
-        auto& cfg = LauncherCfgGet();
-        if (!cfg.HasMember("links")) {
-            WriteLinksCfgDefault();
-        }
-        if (cfg.HasMember("links") && cfg["links"].IsObject()) {
-            auto& linkRoot = cfg["links"];
-            for (auto it = linkRoot.MemberBegin(); it != linkRoot.MemberEnd(); ++it) {
-                if (it->value.IsObject()) {
-                    LinkNode node;
-                    node.name = it->name.GetString();
-                    for (auto linkIt = it->value.MemberBegin(); linkIt != it->value.MemberEnd(); ++linkIt) {
-                        auto isOpenFlag = !strcmp(linkIt->name.GetString(), "__is_open__");
-                        if (!isOpenFlag && linkIt->value.IsString()) {
-                            LinkLeaf leaf;
-                            leaf.name = linkIt->name.GetString();
-                            leaf.link = linkIt->value.GetString();
-                            node.leaves.push_back(leaf);
-                        } else if (isOpenFlag && linkIt->value.IsBool()) {
-                            node.isOpen = linkIt->value.GetBool();
-                        }
-                    }
-                    if (filterState == 1) {
-                        node.isOpen = true;
-                    } else if (filterState == 2) {
-                        node.isOpen = false;
-                    }
-                    mLinks.push_back(node);
+        size_t idx_inner, max_inner;
+        yyjson_val *key_inner, *val_inner;
+        yyjson_obj_foreach(val_outer, idx_inner, max_inner, key_inner, val_inner) {
+            if (!unsafe_yyjson_equals_str(key_inner, "__is_open__")) {
+                if (yyjson_is_str(val_inner)) {
+                    auto& linkEntry = linksList.links.emplace_back();
+                    linkEntry.first = unsafe_yyjson_get_str(key_inner);
+                    linkEntry.second = unsafe_yyjson_get_str(val_inner);
                 }
-            }
-        } else {
-            if (cfg.HasMember("links")) {
-                result = false;
-                cfg["links"].SetObject();
-            }
-        }
-
-        WriteLinksCfg();
-        return result;
-    }
-    std::string WrapLink(const char* link, const char* param, int type)
-    {
-        std::string finalLink;
-        if (type == 1 && GetSuffixFromPath(link) == "exe") {
-            finalLink = "\"";
-            finalLink += link;
-            finalLink += "\" ";
-            finalLink += param;
-        } else {
-            finalLink = link;
-        }
-        return finalLink;
-    }
-    int ResolveLink(std::string& link, std::string& linkOut, std::string& paramOut)
-    {
-        auto frontPos = link.find('\"');
-        auto backPos = link.rfind('\"');
-        if (frontPos != std::string::npos && backPos != std::string::npos && frontPos != backPos) {
-            linkOut = link.substr(frontPos + 1, backPos - frontPos - 1);
-            paramOut = link.substr(backPos + 1);
-            while (paramOut.size() && isblank(paramOut[0])) {
-                paramOut.erase(0, 1);
-            }
-            return 1;
-        } else {
-            linkOut = link;
-            paramOut = "";
-            auto resStr = GetUnifiedPath(link);
-            if (isalpha(resStr[0]) && resStr[1] == ':' && resStr[2] == '\\') {
-                return 2;
             } else {
-                return 0;
+                yyjson_eval_numeric(val_inner, &linksList.is_open);
             }
         }
     }
-    bool ExecLink(std::string& link)
-    {
-        std::string linkExec;
-        std::string linkParam;
-        std::wstring linkDirectoryW;
-        HINSTANCE execResult;
-        auto linkType = ResolveLink(link, linkExec, linkParam);
-        auto linkExecW = utf8_to_utf16(linkExec.c_str());
-        auto linkParamW = utf8_to_utf16(linkParam.c_str());
+    yyjson_doc_free(doc);
+}
 
-        switch (linkType) {
-        case 1:
-            linkDirectoryW = GetDirFromFullPath(linkExecW);
-            execResult = ShellExecuteW(nullptr, L"open", linkExecW.c_str(), linkParamW.c_str(), linkDirectoryW.c_str(), SW_SHOW);
-            break;
-        case 0:
-        case 2:
-            execResult = ShellExecuteW(nullptr, nullptr, linkExecW.c_str(), nullptr, nullptr, SW_SHOW);
-            break;
-        default:
-            return false;
-        }
+void SaveLinksJson(std::vector<LinkSet>& linkSets) {
+    yyjson_mut_doc* doc = yyjson_mut_doc_new(nullptr);
+    yyjson_mut_val* root = yyjson_mut_obj(doc);
+    yyjson_mut_doc_set_root(doc, root);
 
-        return ((DWORD)execResult > 32);
-    }
-    void GuiLinkEditPopupClr()
-    {
-        mLinkInput[0] = mLinkNameInput[0] = mLinkParamInput[0] = '\0';
-        mLinkInputType = mLinkInputErr = 0;
-    }
-    void GuiLinkEditPopupErrTxt(int err)
-    {
-        switch (err) {
-        case 1:
-            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", S(THPRAC_LINKS_EDIT_ERR_NAME));
-            break;
-        case 2:
-            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", S(THPRAC_LINKS_EDIT_ERR_LINK));
-            break;
-        case 3:
-            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", S(THPRAC_LINKS_EDIT_ERR_REPEATED));
-            break;
-        case 4:
-            ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 255.0f), "%s", S(THPRAC_LINKS_EDIT_ERR_RSV));
-            break;
-        default:
-            break;
+    for (const auto& linkSet : linkSets) {
+        yyjson_mut_val* linkSet_json = yyjson_mut_obj_add_obj(doc, root, linkSet.name.c_str());
+        yyjson_mut_obj_add_bool(doc, linkSet_json, "__is_open__", linkSet.is_open);
+
+        for (const auto& link : linkSet.links) {
+            yyjson_mut_obj_add_str(doc, linkSet_json, link.first.c_str(), link.second.c_str());
         }
     }
-    int GuiLinkEditPopup()
-    {
-        ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_NAME));
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(-1.0f);
-        if (ImGui::InputText("##__linkname_input", mLinkNameInput, sizeof(mLinkInput))) {
-            if (mLinkInputErr == 1 || mLinkInputErr == 3) {
-                mLinkInputErr = 0;
-            }
-        }
-        ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_LINK));
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(-1.0f);
-        if (mLinkInputType == 0) {
-            if (ImGui::InputText("##__link_input", mLinkInput, sizeof(mLinkInput))) {
-                if (mLinkInputErr == 2) {
-                    mLinkInputErr = 0;
-                }
-            }
-        } else {
-            ImGui::TextUnformatted(mLinkInput);
-        }
-        if (mLinkInputType == 1 && GetSuffixFromPath(mLinkInput) == "exe") {
-            ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_PARAM));
-            ImGui::SameLine();
-            ImGui::SetNextItemWidth(-1.0f);
-            ImGui::InputText("##__linkparam_input", mLinkParamInput, sizeof(mLinkParamInput));
-        }
 
-        GuiLinkEditPopupErrTxt(mLinkInputErr);
+    size_t len;
+    char* buf = yyjson_mut_write(doc, YYJSON_WRITE_PRETTY, &len);
+    if (buf) {
+        wchar_t linksJsonPath[MAX_PATH + 1] = {};
+        memcpy(linksJsonPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
+        memcpy(linksJsonPath + _gConfigDirLen, SIZED(L"links.json"));
 
-        if (ImGui::Button(S(THPRAC_LINKS_EDIT_FILE))) {
-            auto fileStr = LauncherWndFileSelect();
-            if (fileStr != L"") {
-                mLinkInputErr = 0;
-                mLinkInputType = 1;
-                mLinkParamInput[0] = '\0';
-                sprintf_s(mLinkInput, "%s", utf16_to_utf8(fileStr.c_str()).c_str());
-            }
-        }
-        ImGui::SameLine();
-        if (ImGui::Button(S(THPRAC_LINKS_EDIT_FOLDER))) {
-            auto folderStr = LauncherWndFolderSelect();
-            if (folderStr != L"") {
-                mLinkInputErr = 0;
-                mLinkInputType = 2;
-                sprintf_s(mLinkInput, "%s", utf16_to_utf8(folderStr.c_str()).c_str());
-            }
-        }
-        ImGui::SameLine();
-        if (ImGui::Button(S(THPRAC_LINKS_EDIT_INPUT))) {
-            mLinkInputErr = 0;
-            mLinkInput[0] = '\0';
-            mLinkInputType = 0;
-        }
-        ImGui::SameLine();
-
-        auto result = GuiCornerButton(S(THPRAC_OK), S(THPRAC_CANCEL), ImVec2(1.0f, 0.0f), true);
-        if (result == 1) {
-            if (mLinkNameInput[0] == '\0') {
-                mLinkInputErr = 1;
-            } else if (mLinkInput[0] == '\0') {
-                mLinkInputErr = 2;
-            } else if (!strcmp(mLinkNameInput, "__is_open__")) {
-                mLinkInputErr = 4;
-            } else {
-                for (auto& leaf : mLinks[mCurrentNode].leaves) {
-                    if (leaf.name == mLinkNameInput) {
-                        mLinkInputErr = 3;
-                        break;
-                    }
-                }
-            }
-            if (mLinkInputErr) {
-                result = 0;
-            }
-        }
-        return result;
+        HANDLE hFile = CreateFileW(linksJsonPath, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        DWORD byteRet;
+        WriteFile(hFile, buf, len, &byteRet, nullptr);
     }
-    void GuiCtxMenuUpdate()
-    {
-        switch (mTrigger) {
-        case THPrac::THLinksGui::TRIGGER_ADD_LINK:
-            GuiLinkEditPopupClr();
-            ImGui::OpenPopup(S(THPRAC_LINKS_ADD));
-            break;
-        case THPrac::THLinksGui::TRIGGER_EDIT_LINK: {
-            GuiLinkEditPopupClr();
-            std::string linkOut;
-            std::string paramOut;
-            auto& leaf = mLinks[mCurrentNode].leaves[mCurrentLeaf];
-            mLinkInputType = ResolveLink(leaf.link, linkOut, paramOut);
-            strcpy_s(mLinkNameInput, leaf.name.c_str());
-            strcpy_s(mLinkInput, linkOut.c_str());
-            strcpy_s(mLinkParamInput, paramOut.c_str());
-            ImGui::OpenPopup(S(THPRAC_LINKS_EDIT));
-        }
-            break;
-        case THPrac::THLinksGui::TRIGGER_DELETE_LINK:
-            ImGui::OpenPopup(S(THPRAC_LINKS_DELETE_MODAL));
-            break;
-        case THPrac::THLinksGui::TRIGGER_ADD_FILTER:
-            GuiLinkEditPopupClr();
-            ImGui::OpenPopup(S(THPRAC_LINKS_FILTER_ADD_MODAL));
-            break;
-        case THPrac::THLinksGui::TRIGGER_DELETE_FILTER:
-            ImGui::OpenPopup(S(THPRAC_LINKS_FILTER_DEL_MODAL));
-            break;
-        case THPrac::THLinksGui::TRIGGER_ERR_REPETED:
-            ImGui::OpenPopup(S(THPRAC_LINKS_ERR_MOVE_MODAL));
-            break;
-        case THPrac::THLinksGui::TRIGGER_ERR_EXEC:
-            ImGui::OpenPopup(S(THPRAC_LINKS_ERR_EXEC_MODAL));
-            break;
-        default:
-            break;
-        }
-        mTrigger = TRIGGER_ERROR;
+}
 
-        if (GuiModal(S(THPRAC_LINKS_ADD), ImVec2(ImGui::GetIO().DisplaySize.x * 0.9f, 0.0f))) {
-            auto result = GuiLinkEditPopup();
-            if (result) {
-                if (result == 1) {
-                    auto finalLink = WrapLink(mLinkInput, mLinkParamInput, mLinkInputType);
-                    LinkLeaf linkToInsert;
-                    linkToInsert.name = mLinkNameInput;
-                    linkToInsert.link = finalLink;
-                    auto insertIdx = mLinkSelected ? mCurrentLeaf : 0;
-                    mLinks[mCurrentNode].leaves.insert(mLinks[mCurrentNode].leaves.begin() + insertIdx, linkToInsert);
-                    mCurrentLeaf = insertIdx;
-                    mLinkSelected = nullptr;
-                    WriteLinksCfg();
-                }
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::EndPopup();
-        }
-
-        if (GuiModal(S(THPRAC_LINKS_EDIT), ImVec2(ImGui::GetIO().DisplaySize.x * 0.9f, 0.0f))) {
-            auto result = GuiLinkEditPopup();
-            if (result) {
-                if (result == 1) {
-                    auto finalLink = WrapLink(mLinkInput, mLinkParamInput, mLinkInputType);
-                    auto& linkToEdit = mLinks[mCurrentNode].leaves[mCurrentLeaf];
-                    linkToEdit.name = mLinkNameInput;
-                    linkToEdit.link = finalLink;
-                    WriteLinksCfg();
-                }
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::EndPopup();
-        }
-
-        if (GuiModal(S(THPRAC_LINKS_DELETE_MODAL))) {
-            ImGui::TextUnformatted(S(THPRAC_LINKS_DELETE_WARNING));
-            if (GuiButtonYesNo(S(THPRAC_YES), S(THPRAC_NO), 6.0f)) {
-                mLinks[mCurrentNode].leaves.erase(mLinks[mCurrentNode].leaves.begin() + mCurrentLeaf);
-                mLinkSelected = nullptr;
-                WriteLinksCfg();
-            }
-            ImGui::EndPopup();
-        }
-
-        if (GuiModal(S(THPRAC_LINKS_FILTER_ADD_MODAL), ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, 0.0f))) {
-            ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_NAME));
-            ImGui::SameLine();
-            ImGui::SetNextItemWidth(-1.0f);
-            if (ImGui::InputText("##__linkname_input", mLinkNameInput, sizeof(mLinkInput))) {
-                if (mLinkInputErr == 1 || mLinkInputErr == 3) {
-                    mLinkInputErr = 0;
-                }
-            }
-            GuiLinkEditPopupErrTxt(mLinkInputErr);
-            auto result = GuiCornerButton(S(THPRAC_OK), S(THPRAC_CANCEL), ImVec2(1.0f, 0.0f), true);
-            if (result == 1) {
-                if (mLinkNameInput[0] == '\0') {
-                    mLinkInputErr = 1;
-                } else {
-                    for (auto& node : mLinks) {
-                        if (node.name == mLinkNameInput) {
-                            mLinkInputErr = 3;
-                            break;
-                        }
-                    }
-                }
-                if (!mLinkInputErr) {
-                    LinkNode tmpNode;
-                    tmpNode.name = mLinkNameInput;
-                    tmpNode.isOpen = true;
-                    mLinks.insert(mLinks.begin() + mCurrentNode, tmpNode);
-                    WriteLinksCfg();
-                    ImGui::CloseCurrentPopup();
-                }
-            } else if (result == 2) {
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::EndPopup();
-        }
-
-        if (GuiModal(S(THPRAC_LINKS_FILTER_DEL_MODAL))) {
-            ImGui::TextUnformatted(S(THPRAC_LINKS_FILTER_DELETE_WARNING));
-            if (GuiButtonYesNo(S(THPRAC_YES), S(THPRAC_NO), 6.0f)) {
-                mLinks.erase(mLinks.begin() + mCurrentNode);
-                mLinkSelected = nullptr;
-                WriteLinksCfg();
-            }
-            ImGui::EndPopup();
-        }
-
-        if (GuiModal(S(THPRAC_LINKS_ERR_MOVE_MODAL))) {
-            ImGui::TextUnformatted(S(THPRAC_LINKS_ERR_MOVE));
-            if (GuiCornerButton(S(THPRAC_OK), nullptr, ImVec2(1.0f, 0.0f), true)) {
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::EndPopup();
-        }
-
-        if (GuiModal(S(THPRAC_LINKS_ERR_EXEC_MODAL))) {
-            ImGui::TextUnformatted(S(THPRAC_LINKS_ERR_EXEC));
-            if (GuiCornerButton(S(THPRAC_OK), nullptr, ImVec2(1.0f, 0.0f), true)) {
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::EndPopup();
-        }
+void LinksAddSet(std::vector<LinkSet>& linkSets, size_t pos, const char* name) {
+    if (pos == SIZE_MAX) {
+        linkSets.emplace_back().name = name;
+    } else {
+        linkSets.emplace(linkSets.begin() + pos)->name = name;
     }
-    bool GuiPopupCtxMenu(int type)
-    {
-        if (type) {
-            if (ImGui::BeginPopupContextItem()) {
-                if (type == 2) {
-                    if (ImGui::Selectable(S(THPRAC_LINKS_EDIT))) {
-                        mTrigger = TRIGGER_EDIT_LINK;
-                    }
-                    if (ImGui::Selectable(S(THPRAC_LINKS_DELETE))) {
-                        mTrigger = TRIGGER_DELETE_LINK;
-                    }
-                    ImGui::Separator();
-                } else {
-                    if (ImGui::Selectable(S(THPRAC_LINKS_FILTER_DEL))) {
-                        mTrigger = TRIGGER_DELETE_FILTER;
-                    }
-                }
-                if (ImGui::Selectable(S(THPRAC_LINKS_ADD))) {
-                    mTrigger = TRIGGER_ADD_LINK;
-                }
-                ImGui::Separator();
-                if (ImGui::Selectable(S(THPRAC_LINKS_FILTER_ADD))) {
-                    mTrigger = TRIGGER_ADD_FILTER;
-                }
-                ImGui::EndPopup();
-                return true;
-            }
-        } else {
-            if (ImGui::BeginPopupContextWindow()) {
-                if (ImGui::Selectable(S(THPRAC_LINKS_FILTER_ADD))) {
-                    mTrigger = TRIGGER_ADD_FILTER;
-                }
-                if (!mLinks.size()) {
-                    if (ImGui::Selectable(S(THPRAC_LINKS_RESET))) {
-                        WriteLinksCfgDefault();
-                        LoadLinksCfg();
-                    }
-                }
-                ImGui::EndPopup();
-                return true;
-            }
-        }
-        return false;
-    }
-    void GuiMain()
-    {
-        static int moveIdx[2] = { -1, -1 };
-        int destIdx[2] = { -1, -1 };
-        static int filterMoveIdx = -1;
-        int filterDestIdx = -1;
-        if (GuiPopupCtxMenu(0)) {
-            mLinkSelected = nullptr;
-            mCurrentNode = mLinks.size();
-        }
-        if (!mLinks.size()) {
-            GuiSetPosYRel(0.5f);
-            GuiCenteredText(S(THPRAC_GAMES_MISSING));
+}
+
+void LinkSetAddLink(LinkSet& set, size_t pos, const char* name, const char* link) {
+    std::string_view sv = name;
+    for (auto& i : set.links) {
+        if (i.first == sv) {
+            i.second = link;
             return;
         }
-        ImGui::Columns(2, "##@__col_links", true, true);
-
-        int i = 0;
-        for (auto& node : mLinks) {
-            ImGui::SetNextItemOpen(node.isOpen, ImGuiCond_FirstUseEver);
-            auto isNodeOpen = ImGui::TreeNodeEx(node.name.c_str(), mLinkSelected == &node ? ImGuiTreeNodeFlags_Selected : 0);
-            if (ImGui::BeginDragDropSource()) {
-                filterMoveIdx = i;
-                ImGui::SetDragDropPayload("##@__dnd_linkfilter", &(moveIdx), sizeof(moveIdx));
-                ImGui::EndDragDropSource();
-            }
-            if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("##@__dnd_linkfilter")) {
-                    filterDestIdx = i;
-                }
-                ImGui::EndDragDropTarget();
-            }
-            if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("##@__dnd_linkleaf")) {
-                    destIdx[0] = i;
-                    destIdx[1] = 0;
-                }
-                ImGui::EndDragDropTarget();
-            }
-            if (GuiPopupCtxMenu(1)) {
-                mLinkSelected = &node;
-                mCurrentNode = i;
-            } else if (mLinkSelected == &node) {
-                mLinkSelected = nullptr;
-            }
-            ImGui::NextColumn();
-            ImGui::NextColumn();
-
-            if (isNodeOpen) {
-                int j = 0;
-                for (auto& leaf : node.leaves) {
-                    auto nodeFlag = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanAvailWidth;
-                    if (mLinkSelected == &leaf) {
-                        nodeFlag |= ImGuiTreeNodeFlags_Selected;
-                    }
-                    ImGui::TreeNodeEx((void*)(intptr_t)j, nodeFlag, "%s", leaf.name.c_str());
-                    if (ImGui::IsItemHovered()) {
-                        if (ImGui::IsMouseDoubleClicked(0)) {
-                            mLinkSelected = &leaf;
-                            mCurrentNode = i;
-                            mCurrentLeaf = j;
-                            if (!ExecLink(leaf.link)) {
-                                mTrigger = TRIGGER_ERR_EXEC;
-                            }
-                        } else if (ImGui::IsMouseClicked(0)) {
-                            mLinkSelected = &leaf;
-                            mCurrentNode = i;
-                            mCurrentLeaf = j;
-                        }
-                    }
-
-                    if (ImGui::BeginDragDropSource()) {
-                        moveIdx[0] = i;
-                        moveIdx[1] = j;
-                        ImGui::SetDragDropPayload("##@__dnd_linkleaf", &(moveIdx), sizeof(moveIdx));
-                        ImGui::EndDragDropSource();
-                    }
-                    if (ImGui::BeginDragDropTarget()) {
-                        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("##@__dnd_linkleaf")) {
-                            destIdx[0] = i;
-                            destIdx[1] = j;
-                        }
-                        ImGui::EndDragDropTarget();
-                    }
-
-                    if (GuiPopupCtxMenu(2)) {
-                        mLinkSelected = &leaf;
-                        mCurrentNode = i;
-                        mCurrentLeaf = j;
-                    }
-
-                    ImGui::NextColumn();
-                    GuiColumnText(leaf.link.c_str());
-                    ImGui::NextColumn();
-                    j++;
-                }
-                ImGui::TreePop();
-            }
-
-            if (node.isOpen != isNodeOpen) {
-                node.isOpen = isNodeOpen;
-                WriteLinksCfg();
-                mLinkSelected = nullptr;
-            }
-            i++;
-        }
-        ImGui::Columns(1);
-
-        if (filterDestIdx != -1) {
-            auto filterTmp = mLinks[filterMoveIdx];
-            if (filterDestIdx > filterMoveIdx) {
-                mLinks.insert(mLinks.begin() + filterDestIdx + 1, filterTmp);
-                mLinks.erase(mLinks.begin() + filterMoveIdx);
-            } else if (filterDestIdx < filterMoveIdx) {
-                mLinks.insert(mLinks.begin() + filterDestIdx, filterTmp);
-                mLinks.erase(mLinks.begin() + filterMoveIdx + 1);
-            }
-            mCurrentNode = filterDestIdx;
-            mLinkSelected = nullptr;
-            WriteLinksCfg();
-        }
-
-        if (destIdx[0] != -1 && destIdx[1] != -1) {
-            auto linkTmp = mLinks[moveIdx[0]].leaves[moveIdx[1]];
-            auto& srcNode = mLinks[moveIdx[0]].leaves;
-            auto& destNode = mLinks[destIdx[0]].leaves;
-
-            if (moveIdx[0] != destIdx[0]) {
-                for (auto& leaf : destNode) {
-                    if (leaf.name == linkTmp.name) {
-                        mTrigger = TRIGGER_ERR_REPETED;
-                        break;
-                    }
-                }
-            }
-
-            if (mTrigger != TRIGGER_ERR_REPETED) {
-                if (moveIdx[0] == destIdx[0]) {
-                    if (destIdx[1] > moveIdx[1]) {
-                        destNode.insert(destNode.begin() + destIdx[1] + 1, linkTmp);
-                        srcNode.erase(srcNode.begin() + moveIdx[1]);
-                    } else {
-                        destNode.insert(destNode.begin() + destIdx[1], linkTmp);
-                        srcNode.erase(srcNode.begin() + moveIdx[1] + 1);
-                    }
-                } else {
-                    destNode.insert(destNode.begin() + destIdx[1], linkTmp);
-                    srcNode.erase(srcNode.begin() + moveIdx[1]);
-                }
-                mCurrentNode = destIdx[0];
-                mCurrentLeaf = destIdx[1];
-                mLinkSelected = &destNode[destIdx[1]];
-                WriteLinksCfg();
-            }
-        }
-
-        GuiCtxMenuUpdate();
     }
+    if (pos == SIZE_MAX) {
+        set.links.emplace_back() = { name, link };
+    } else {
+        *set.links.emplace(set.links.begin() + pos) = { name, link };
+    }
+}
 
-    std::function<void(void)> mGuiUpdFunc = []() {};
-    std::vector<LinkNode> mLinks;
-
-    LinkGuiTrigger mTrigger = TRIGGER_ERROR;
-    LinkSelectable* mLinkSelected = nullptr;
-    int mCurrentNode = 0;
-    int mCurrentLeaf = 0;
-
-    char mLinkNameInput[1024];
-    char mLinkInput[1024];
-    char mLinkParamInput[1024];
-    int mLinkInputType = 0;
-    int mLinkInputErr = 0;
+enum OpenWhichPopup {
+    OPEN_NONE,
+    OPEN_LINK_ERROR,
+    OPEN_DELETE_FILTER,
+    OPEN_DELETE_LINK,
+    OPEN_EDIT_LINK,
+    OPEN_ADD_LINK,
+    OPEN_ADD_FILTER,
 };
 
-bool LauncherLinksGuiUpd()
-{
-    THLinksGui::singleton().GuiUpdate();
-    return true;
+int EditLinkUI(char* linkEditTitleBuf, char* linkEditLinkBuf, bool& linkNameWarn, bool& linkLinkWarn) {
+    ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_NAME));
+    ImGui::SameLine();
+    ImGui::InputText("##__linkname_input", linkEditTitleBuf, 1023);
+    ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_LINK));
+    ImGui::SameLine();
+    ImGui::InputText("##__link_input", linkEditLinkBuf, 1023);
+
+    ImGui::PushStyleColor(ImGuiCol_Text, { 1.0f, 0.0f, 0.0f, 1.0f });
+    if (linkNameWarn) {
+        ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_ERR_NAME));
+    }
+    if (linkLinkWarn) {
+        ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_ERR_LINK));
+    }
+    ImGui::PopStyleColor();
+    
+    if (ImGui::Button(S(THPRAC_LINKS_EDIT_FILE))) {
+        wchar_t szFile[MAX_PATH + 1] = {};
+
+        OPENFILENAMEW ofn = {
+            .lStructSize = sizeof(ofn),
+            .hwndOwner = Gui::ImplWin32GetHwnd(),
+            .lpstrFile = szFile,
+            .nMaxFile = MAX_PATH + 1,
+            .Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NODEREFERENCELINKS,
+        };
+        if (GetOpenFileNameW(&ofn)) {
+            std::string file_u8 = utf16_to_utf8(szFile);
+            strncat(linkEditLinkBuf, file_u8.c_str(), 1023);
+        }
+    }
+    ImGui::SameLine();
+    if (ImGui::Button(S(THPRAC_LINKS_EDIT_FOLDER))) {
+        std::wstring folder;
+        if (SelectFolder(folder, Gui::ImplWin32GetHwnd())) {
+            std::string folder_u8 = utf16_to_utf8(folder.c_str());
+            strncat(linkEditLinkBuf, folder_u8.c_str(), 1023);
+        }
+    }
+    ImGui::SameLine();
+
+    int ret = Gui::MultiButtonsRight(0.0f, S(THPRAC_CANCEL), S(THPRAC_OK), nullptr);
+    if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
+        ret = 1;
+    }
+    if (ret == 1) {
+        linkNameWarn = !*linkEditTitleBuf;
+        linkLinkWarn = !*linkEditLinkBuf;
+        if (linkNameWarn || linkLinkWarn) {
+            ret = -1;
+        }
+    }
+    return ret;
+}
+
+void LauncherLinksMain(LauncherState* state) {
+    auto& style = ImGui::GetStyle();
+    ImGui::BeginChild(0x21945, { 0.0f, ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - ImGui::GetFontSize() - style.WindowPadding.y - style.ItemSpacing.y - style.FramePadding.y * 2 });
+
+    OpenWhichPopup openWhich = OPEN_NONE;
+
+    if (ImGui::BeginPopupContextWindow()) {
+        state->linkSelected = { (size_t)-1, (size_t)-1 };
+        if (ImGui::Selectable(S(THPRAC_LINKS_FILTER_ADD))) {
+            openWhich = OPEN_ADD_FILTER;
+        }
+        ImGui::EndPopup();
+    }
+
+    ImGui::BeginTable("###__links_table", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV);
+    for (size_t linkSetIdx = 0; linkSetIdx < state->linkSets.size(); linkSetIdx++) {
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemOpen(state->linkSets[linkSetIdx].is_open);
+        bool nodeOpen = ImGui::TreeNode(state->linkSets[linkSetIdx].name.c_str());
+        if (ImGui::BeginPopupContextItem()) {
+            state->linkSelected = { linkSetIdx, (size_t)-1 };
+            if (ImGui::Selectable(S(THPRAC_LINKS_FILTER_DEL))) {
+                openWhich = OPEN_DELETE_FILTER;
+            }
+            if (ImGui::Selectable(S(THPRAC_LINKS_ADD))) {
+                openWhich = OPEN_ADD_LINK;
+            }
+            ImGui::Separator();
+            if (ImGui::Selectable(S(THPRAC_LINKS_FILTER_ADD))) {
+                openWhich = OPEN_ADD_FILTER;
+            }
+            ImGui::EndPopup();
+        }
+        if (ImGui::BeginDragDropTarget()) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("##@__dnd_link")) {
+                auto src = *(const LinksIndexes*)payload->Data;
+                auto val = state->linkSets[src.linkSetIdx].links[src.linkIdx];
+
+                if (src.linkSetIdx == linkSetIdx) {
+                    auto& v = state->linkSets[linkSetIdx].links;
+                    v.erase(v.begin() + src.linkIdx);
+                    v.insert(v.begin(), std::move(val));
+                } else {
+                    for (auto& link : state->linkSets[linkSetIdx].links) {
+                        if (link.first == val.first) {
+                            link.second = val.second;
+                            goto link_on_filter_dnd_finished;
+                        }
+                    }
+                    state->linkSets[src.linkSetIdx].links.erase(state->linkSets[src.linkSetIdx].links.begin() + src.linkIdx);
+                    state->linkSets[linkSetIdx].links.insert(state->linkSets[linkSetIdx].links.begin(), std::move(val));
+                }
+            }
+        link_on_filter_dnd_finished:
+            ImGui::EndDragDropTarget();
+        }
+
+        if (nodeOpen) {
+            state->linkSets[linkSetIdx].is_open = true;
+            ImGui::TableNextRow();
+
+            for (size_t linkIdx = 0; linkIdx < state->linkSets[linkSetIdx].links.size(); linkIdx++) {
+                ImGui::TableNextColumn();
+                ImGui::Indent();
+                ImGui::Selectable(state->linkSets[linkSetIdx].links[linkIdx].first.c_str());
+                if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+                    std::wstring u16_cmd = utf8_to_utf16(state->linkSets[linkSetIdx].links[linkIdx].second.c_str());
+                    if ((UINT_PTR)ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", u16_cmd.c_str(), nullptr, nullptr, SW_SHOW) < 32) {
+                        openWhich = OPEN_LINK_ERROR;
+                    }
+                }
+                ImGui::Unindent();
+                if (ImGui::BeginPopupContextItem()) {
+                    state->linkSelected = { linkSetIdx, linkIdx };
+                    if (ImGui::Selectable(S(THPRAC_LINKS_EDIT))) {
+                        openWhich = OPEN_EDIT_LINK;
+                    }
+                    if (ImGui::Selectable(S(THPRAC_LINKS_DELETE))) {
+                        openWhich = OPEN_DELETE_LINK;
+                    }
+                    ImGui::Separator();
+                    if (ImGui::Selectable(S(THPRAC_LINKS_ADD))) {
+                        openWhich = OPEN_ADD_LINK;
+                    }
+                    ImGui::Separator();
+                    if (ImGui::Selectable(S(THPRAC_LINKS_FILTER_ADD))) {
+                        openWhich = OPEN_ADD_FILTER;
+                    }
+                    ImGui::EndPopup();
+                }
+                if (ImGui::BeginDragDropSource()) {
+                    LinksIndexes payload { linkSetIdx, linkIdx };
+                    ImGui::SetDragDropPayload("##@__dnd_link", &payload, sizeof(payload));
+                    ImGui::TextUnformatted(state->linkSets[linkSetIdx].links[linkIdx].first.c_str());
+                    ImGui::EndDragDropSource();
+                }
+
+                if (ImGui::BeginDragDropTarget()) {
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("##@__dnd_link")) {
+                        auto src = *(const LinksIndexes*)payload->Data;
+                        auto val = std::move(state->linkSets[src.linkSetIdx].links[src.linkIdx]);
+
+                        if (src.linkSetIdx == linkSetIdx) {
+                            auto& v = state->linkSets[linkSetIdx].links;
+                            v.erase(v.begin() + src.linkIdx);
+                            v.insert(v.begin() + linkIdx, val);
+                        } else {
+                            for (auto& link : state->linkSets[linkSetIdx].links) {
+                                if (link.first == val.first) {
+                                    link.second = val.second;
+                                    goto link_on_link_dnd_finished;
+                                }
+                            }
+                            state->linkSets[src.linkSetIdx].links.erase(state->linkSets[src.linkSetIdx].links.begin() + src.linkIdx);                            
+                            state->linkSets[linkSetIdx].links.insert(state->linkSets[linkSetIdx].links.begin() + linkIdx + 1, std::move(val));
+                        }
+                    }
+                    link_on_link_dnd_finished:
+                    ImGui::EndDragDropTarget();
+                }
+                ImGui::TableNextColumn();
+                ImGui::TextUnformatted(state->linkSets[linkSetIdx].links[linkIdx].second.c_str());
+            }
+            ImGui::TreePop();
+        } else {
+            state->linkSets[linkSetIdx].is_open = false;
+        }
+    }
+    ImGui::EndTable();
+    ImGui::EndChild();
+
+    if (ImGui::Button("Expand all")) {
+        for (auto& i : state->linkSets) {
+            i.is_open = true;
+        }
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Collapse all")) {
+        for (auto& i : state->linkSets) {
+            i.is_open = false;
+        }
+    }
+
+    if (openWhich != OPEN_NONE) {
+        memset(state->linkEditTitleBuf, 0, 1024);
+        memset(state->linkEditLinkBuf, 0, 1024);
+        state->linkNameWarn = false;
+        state->linkLinkWarn = false;
+    }
+
+    switch (openWhich) {
+    case OPEN_LINK_ERROR:
+        ImGui::OpenPopup(S(THPRAC_LINKS_ERR_EXEC_MODAL));
+        break;
+    case OPEN_DELETE_FILTER:
+        ImGui::OpenPopup(S(THPRAC_LINKS_FILTER_DEL_MODAL));
+        break;
+    case OPEN_DELETE_LINK:
+        ImGui::OpenPopup(S(THPRAC_LINKS_DELETE_MODAL));
+        break;
+    case OPEN_EDIT_LINK: {
+        auto& l = state->linkSets[state->linkSelected.linkSetIdx].links[state->linkSelected.linkIdx];
+        strncpy(state->linkEditTitleBuf, l.first.c_str(), 1023);
+        strncpy(state->linkEditLinkBuf, l.second.c_str(), 1023);
+        ImGui::OpenPopup(S(THPRAC_LINKS_EDIT_MODAL));
+        } break;
+    case OPEN_ADD_LINK:
+        ImGui::OpenPopup(S(THPRAC_LINKS_ADD_MODAL));
+        break;
+    case OPEN_ADD_FILTER:
+        ImGui::OpenPopup(S(THPRAC_LINKS_FILTER_ADD_MODAL));
+        break;
+    case OPEN_NONE:
+        break;
+    }
+
+    if (Gui::Modal(S(THPRAC_LINKS_ERR_EXEC_MODAL))) {
+        ImGui::TextUnformatted(S(THPRAC_LINKS_ERR_EXEC));
+        if (ImGui::Button(S(THPRAC_OK), { ImGui::GetWindowWidth() - style.WindowPadding.x * 2, 0.0f })) {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+    if (Gui::Modal(S(THPRAC_LINKS_FILTER_DEL_MODAL))) {
+        ImGui::TextUnformatted(S(THPRAC_LINKS_FILTER_DELETE_WARNING));
+        switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_YES), S(THPRAC_NO), nullptr)) {
+        case 0:
+            state->linkSets.erase(state->linkSets.begin() + state->linkSelected.linkSetIdx);
+        case 1:
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+    if (Gui::Modal(S(THPRAC_LINKS_DELETE_MODAL))) {
+        ImGui::TextUnformatted(S(THPRAC_LINKS_DELETE_WARNING));
+        auto& v = state->linkSets[state->linkSelected.linkSetIdx].links;
+        switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_YES), S(THPRAC_NO), nullptr)) {
+        case 0:
+            v.erase(v.begin() + state->linkSelected.linkIdx);
+        case 1:
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
+    if(Gui::Modal(S(THPRAC_LINKS_EDIT_MODAL))) {
+        switch (EditLinkUI(state->linkEditTitleBuf, state->linkEditLinkBuf, state->linkNameWarn, state->linkLinkWarn)) {
+        case 1:
+            state->linkSets[state->linkSelected.linkSetIdx].links[state->linkSelected.linkIdx] = { state->linkEditTitleBuf, state->linkEditLinkBuf };
+        case 0:
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+    if (Gui::Modal(S(THPRAC_LINKS_ADD_MODAL))) {
+        switch (EditLinkUI(state->linkEditTitleBuf, state->linkEditLinkBuf, state->linkNameWarn, state->linkLinkWarn)) {
+        case 1: {
+            LinkSetAddLink(state->linkSets[state->linkSelected.linkSetIdx], state->linkSelected.linkIdx, state->linkEditTitleBuf, state->linkEditLinkBuf);
+        }
+        case 0:
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+    if(Gui::Modal(S(THPRAC_LINKS_FILTER_ADD_MODAL))) {
+        ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_NAME));
+        ImGui::SameLine();
+        ImGui::InputText("##__linkname_input", state->linkEditTitleBuf, 1023);
+
+        std::string_view sv = state->linkEditTitleBuf;
+        int sel;
+        for (const auto& i : state->linkSets) {
+            if (i.name == sv) {
+                goto filter_name_collision;
+            }
+        }
+        sel = Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_OK), S(THPRAC_CANCEL), nullptr);
+        if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
+            sel = 1;
+        }
+        switch (sel) {
+        case 1:
+            LinksAddSet(state->linkSets, state->linkSelected.linkSetIdx, state->linkEditTitleBuf);
+        case 0:
+            ImGui::CloseCurrentPopup();
+        }
+        goto filter_add_end_popup;
+    filter_name_collision:
+        ImGui::TextColored({ 1.0f, 0.0f, 0.0f, 1.0f }, "%s", S(THPRAC_LINKS_EDIT_ERR_REPEATED));
+    filter_add_end_popup:
+        ImGui::EndPopup();
+    }
 }
 }

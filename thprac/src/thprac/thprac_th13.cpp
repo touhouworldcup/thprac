@@ -48,7 +48,7 @@ namespace TH13 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -60,7 +60,7 @@ namespace TH13 {
             GetJsonValue(value);
             GetJsonValue(graze);
             GetJsonValue(trance_meter);
-            GetJsonValueEx(spirit_start_left, Bool);
+            GetJsonValue(spirit_start_left);
             GetJsonArray(lastSrcIdx, elementsof(lastSrcIdx));
 
             return true;
@@ -70,8 +70,8 @@ namespace TH13 {
             if (mode == 0) { //vanilla run mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th13", jalloc);
+                AddJsonVersion();
+                AddJsonValueEx(game, "th13");
                 AddJsonValue(mode);
                 AddJsonArray(lastSrcIdx, elementsof(lastSrcIdx));
 
@@ -80,8 +80,8 @@ namespace TH13 {
             } else { //thprac mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th13", jalloc);
+                AddJsonVersion();
+                AddJsonValueEx(game, "th13");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
                 if (section)
@@ -177,19 +177,19 @@ namespace TH13 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 AutoSize(ImVec2(0.0f, 0.0f),
                     XSSS(3)[TH13_ST7_END_S1], nullptr, S(TH_BOMB_FRAGMENT), nullptr,
                     15.5f, ImVec2(ImGui::GetMainViewport()->Size.x, 450.0f), ImVec2(370.0f, -1.0f));
                 AutoPos(0.9f, 0.65f);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 AutoSize(ImVec2(0.0f, 0.0f),
                     XSSS(3)[TH13_ST1_BOSS2], nullptr, S(TH13_TRANCE_METER), nullptr,
                     15.5f, ImVec2(ImGui::GetMainViewport()->Size.x, 450.0f), ImVec2(-1.0f, -1.0f));
                 AutoPos(0.9f, 0.65f);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 AutoSize(ImVec2(0.0f, 0.0f),
                     XSSS(3)[TH13_ST1_BOSS4], nullptr, S(TH13_EXTEND), nullptr,
                     15.5f, ImVec2(ImGui::GetMainViewport()->Size.x, 450.0f), ImVec2(370.0f, -1.0f));
@@ -248,10 +248,10 @@ namespace TH13 {
                 mLifeFragment();
                 mBomb();
                 mBombFragment();
-                auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
-                mPower(power_str.c_str());
-                auto trance_str = std::to_string((float)(*mTranceMeter) / 200.0f).substr(0, 4);
-                mTranceMeter(trance_str.c_str());
+
+                char buf[32];
+                mPower(FormatNumberFixedPoint(*mPower, 2, buf));
+                mTranceMeter(FormatNumberFixedPoint(*mTranceMeter >> 1, 2, buf));
                 mValue();
                 mValue.RoundDown(10);
                 mGraze();
@@ -455,15 +455,15 @@ namespace TH13 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
@@ -503,7 +503,7 @@ namespace TH13 {
             }
         }
 
-        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x444D7B, "01")
@@ -582,8 +582,9 @@ namespace TH13 {
         {
             mOptCtx.fps_replay_fast = 10;
 
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th13.dll");
-            if (mOptCtx.vpatch_base) {
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                OILPInit(mOptCtx);
+            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th13.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th13.dll", hash);
                 if (hash[0] != 6450385832836080372ll || hash[1] != 579365625616419970ll)
@@ -605,7 +606,11 @@ namespace TH13 {
         }
         void FpsSet()
         {
-            if (mOptCtx.fps_status == 1) {
+            if (mOptCtx.fps_status == 3) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
+            } else if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
             } else if (mOptCtx.fps_status == 2) {
                 VPResetFPS(mOptCtx.fps);
@@ -657,7 +662,7 @@ namespace TH13 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
+            if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else
@@ -673,19 +678,19 @@ namespace TH13 {
         {
             SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
@@ -1795,7 +1800,7 @@ namespace TH13 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4dc6a8, 0x4dd0a8,
             Gui::INGAGME_INPUT_GEN2, 0x4e49fc, 0x4e49f8, 0,
-            -1);
+            1.0f);
 
         SetDpadHook(0x4713EF, 2);
 

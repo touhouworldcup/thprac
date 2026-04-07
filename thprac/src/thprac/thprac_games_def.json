@@ -122,7 +122,7 @@
         "When enabled, launching thprac will always open the launcher even if there's a valid game available in the current directory.",
         "有効にすると、現在のディレクトリに有効なゲームが存在する場合でも、thpracを起動すると常にランチャーが開きます。"
       ],
-      "THPRAC_THEME": [ "主题:", "Theme: ", "テーマ:" ],
+      "THPRAC_THEME": [ "主题", "Theme ", "テーマ" ],
       "THPRAC_THEME_OPTION": [
         "暗黑\\0明亮\\0经典\\0\\0",
         "Dark\\0Light\\0Classic\\0\\0",
@@ -196,8 +196,8 @@
       "THPRAC_UPDATE_AVALIABLE": [ "更新可用。", "Update available.", "利用可能な更新。" ],
       "THPRAC_UPDATE_NO_UPDATE": [ "没有找到可用的更新。", "No update was found.", "更新が見つかりませんでした。" ],
       "THPRAC_UPDATE_ERROR": [ "网络错误。", "Network error.", "ネットワークエラー。" ],
-      "THPRAC_UPDATE_MODAL": [ "更新可用##modal", "Update available##modal", "利用可能な更新##modal" ],
-      "THPRAC_UPDATE_PROMPT": [ "thprac检测到一个可用的新版本：%s", "A new version of thprac has been detected: %s", "thpracの新しいバージョンが検出されました：%s" ],
+      "THPRAC_UPDATE_MODAL": [ "更新可用##update_modal", "Update available##update_modal", "利用可能な更新##update_modal" ],
+      "THPRAC_UPDATE_PROMPT": [ "thprac检测到一个可用的新版本：v%u.%u.%u.%u", "A new version of thprac has been detected: v%u.%u.%u.%u", "thpracの新しいバージョンが検出されました：v%u.%u.%u.%u" ],
       "THPRAC_UPDATE_AUTO_UPDATE": [ "自动更新", "Auto update", "自動更新" ],
       "THPRAC_UPDATE_OR_DOWNLOAD": [ "或从下方链接下载：", "or download the links below", "または以下のリンクからダウンロード：" ],
       "THPRAC_UPDATE_DOWNLOADING": [ "下载中: %.1f%%", "Downloading: %.1f%%", "ダウンロード中: %.1f%%" ],
@@ -214,8 +214,10 @@
         "Enable if the game behaves abnormally when launched by thprac but not when launched directly.\nThis will nullify any functionality that requires a direct game launch from thprac.",
         "thpracによって起動されたときにゲームが異常に動作するが、直接起動されたときは動作しない場合に有効にします。\nこれを有効にすると、thpracから直接ゲームを起動する必要がある機能が無効になります。"
       ],
-      "THPRAC_RESIZABLE_WINDOW": [ "窗口大小可调", "Resizable window", "ウィンドウサイズ自由に変更" ],
+      "THPRAC_RESIZABLE_WINDOW": [ "窗口大小可调", "Resizable game window", "ウィンドウサイズ自由に変更" ],
       "THPRAC_GAME_ADJUSTMENTS": [ "thprac - 游戏调整", "thprac - Game adjustments", "thprac - ゲームの調整" ],
+      "THPRAC_CONSOLE": [ "Show console", "Show console", "Show console" ],
+      "THPRAC_DISABLE_CONSOLE_USELESS": [ "(If a console is already here, it'll stay open)", "(If a console is already here, it'll stay open)", "(If a console is already here, it'll stay open)" ],
       "THPRAC_CHECK_UPDATE_WHEN": [ "检查更新的时机:", "Check update when:", "更新を確認するタイミング:" ],
       "THPRAC_CHECK_UPDATE_WHEN_OPTION": [ "打开启动器时\\0执行thprac时\\0从不\\0\\0", "Opening launcher\\0Executing thprac\\0Never\\0\\0", "ランチャーを開くとき\\0thpracの実行するとき\\0なし\\0\\0" ],
       "THPRAC_UPDATE_WITHOUT_CONFIRMATION": [ "不作确认并自动更新thprac", "Update thprac without confirmation", "確認なしでthpracを更新する" ],
@@ -284,6 +286,11 @@
         "Error opening link.\nPlease confirm that the link is valid.",
         "リンクを開くときにエラーが発生しました。\nこのリンクが有効か確認してください。"
       ],
+
+      "THPRAC_LAUNCHER_TAB_GAMES": ["游戏###games", "Games###games", "ゲーム###games"],
+      "THPRAC_LAUNCHER_TAB_LINKS": ["链接###links", "Links###links", "リンク###links"],
+      "THPRAC_LAUNCHER_TAB_TOOLS": ["工具###tools", "Tools###tools", "ツール###tools"],
+      "THPRAC_LAUNCHER_TAB_CONFG": ["设置###config", "Settings###config", "設定###config" ],
 
       "THPRAC_LINKS_EDIT_NAME": [ "名称：", "Name:", "名前：" ],
       "THPRAC_LINKS_EDIT_LINK": [ "链接：", "Link:", "リンク：" ],
@@ -906,7 +913,7 @@
       "TH_CHAPTER_CH": [ "章节 %d", "Chapter %d", "チャプター %d" ],
 
       "TH_ABOUT_THPRAC": [ "关于thprac", "About thprac", "thpracのバージョン情報" ],
-      "TH_ABOUT_VERSION": [ "thprac 版本 %s", "thprac version %s", "thprac ver.%s" ],
+      "TH_ABOUT_VERSION": [ "thprac 版本 %d.%d.%d.%d", "thprac version %d.%d.%d.%d", "thprac ver.%d.%d.%d.%d" ],
       "TH_ABOUT_WEBSITE": [ "网站：https://github.com/touhouworldcup/thprac", "Website: https://github.com/touhouworldcup/thprac", "ウェブサイト：https://github.com/touhouworldcup/thprac" ],
       "TH_ABOUT_THANKS": [ "特别感谢：\n%s", "Special thanks: \n%s", "スペシャルサンクス：\n%s" ],
       "TH_ABOUT_SHOW_LICENCE": [ "显示许可信息", "Show license info", "ライセンス情報を表示" ],
@@ -938,8 +945,8 @@
         "修復されたリプレイは、オリジナルゲームで再生できます（thpracは必要ありません）。"
       ],
       "TH_REPFIX_SAVE_SUCCESS": [ "保存成功", "Successfully saved", "保存しました" ],
-      "TH_REPFIX_SAVE_SUCCESS_DESC": [ "成功保存replay至：", "Successfully saved replay to: ", "リプレイは正常に保存されました：" ],
-      "TH_REPFIX_SAVE_ERROR_SRC": [ "未能成功读取源replay。", "Failed to access source replay.", "元のリプレイの読み取りに失敗しました。" ],
+      "TH_REPFIX_SAVE_SUCCESS_DESC": [ "成功保存Replay至：%s", "Successfully saved replay to: %s", "リプレイは正常に保存されました：%s" ],
+      "TH_REPFIX_SAVE_ERROR_SRC": [ "未能成功读取源Replay。", "Failed to access source replay.", "元のリプレイの読み取りに失敗しました。" ],
       "TH_REPFIX_SAVE_ERROR_DEST": [ "未能写入目标文件。", "Failed to write to destination file.", "ターゲットファイルに書き込めませんでした。" ],
       "TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS": [ "重置文件的 thprac 数据失败。", "Failed to reset file's thprac data.", "ファイルの thprac データのリセットに失敗しました。" ],
       "TH_REPFIX_SAVE_ERROR_PARAMS": [ "无法将 thprac 数据写入重放文件。", "Failed to add thprac data to replay file.", "thprac のデータをリプレイファイルに書き込めませんでした。" ],

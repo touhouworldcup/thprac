@@ -74,6 +74,7 @@ namespace TH17 {
         SPELLCARD_PTR = 0x4b7690,
         ENEMY_MANAGER_PTR = 0x4b76a0,
         PLAYER_PTR = 0x4b77d0,
+        SCALE_ADDR = 0x524718,
         WINDOW_PTR = 0x5226c0,
     };
 
@@ -119,10 +120,9 @@ namespace TH17 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
-            GetJsonValueEx(keepSpellDrops, Bool);
+            GetJsonValue(dlg);
+            GetJsonValue(keepSpellDrops);
             GetJsonArray(keikiFinalPhaseOfs, elementsof(keikiFinalPhaseOfs));
-
             GetJsonValue(score);
             GetJsonValue(life);
             GetJsonValue(life_fragment);
@@ -144,8 +144,8 @@ namespace TH17 {
             if (mode == 1) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th17", jalloc);
+                AddJsonVersion();
+                AddJsonValueEx(game, "th17");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
                 if (section)
@@ -187,8 +187,8 @@ namespace TH17 {
             } else if (mode == 2) {
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th17", jalloc);
+                AddJsonVersion();
+                AddJsonValueEx(game, "th17");
                 AddJsonValue(mode);
 
                 if (phase)
@@ -198,7 +198,6 @@ namespace TH17 {
             }
 
             CreateJson();
-            jalloc; // Dummy usage to silence C4189
             ReturnJson();
         }
     };
@@ -293,19 +292,19 @@ namespace TH17 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(0.5f, 0.81f);
                 SetPosRel(0.27f, 0.18f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(0.6f, 0.79f);
                 SetPosRel(0.215f, 0.18f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(0.56f, 0.81f);
                 SetPosRel(0.230f, 0.18f);
                 SetItemWidthRel(-0.105f);
@@ -360,8 +359,8 @@ namespace TH17 {
                         }
                     }
                 }
-                auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
-                mPower(power_str.c_str());
+                char buf[32];
+                mPower(FormatNumberFixedPoint(*mPower, 2, buf));
                 mValue();
                 mValue.RoundDown(10);
                 mGraze();
@@ -468,7 +467,7 @@ namespace TH17 {
                     *mKeikiFinalP3Offset = timelockCycleOffsets[1];
                     *mKeikiFinalP4Offset = timelockCycleOffsets[2];
                 }
-                if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH17_ID_TD_CFG_HINT));
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", S(TH17_ID_TD_CFG_HINT));
                 ImGui::SameLine();
 
                 if (ImGui::Button(S(TH_PASTE_CFG_CODE))) {
@@ -491,12 +490,12 @@ namespace TH17 {
                         else if (offsetP2 >= 0) *mPhase = 1;
 
                     } else {
-                        MsgBox(MB_ICONERROR | MB_OK, S(TH17_ID_CFG_PASTE_ERROR_TITLE), S(TH17_ID_CFG_PASTE_ERROR), nullptr, *(HWND*)WINDOW_PTR);
+                        log_mbox(*(HWND*)WINDOW_PTR, MB_ICONERROR | MB_OK, S(TH17_ID_CFG_PASTE_ERROR_TITLE), S(TH17_ID_CFG_PASTE_ERROR));
                     }
                 }
-                if (ImGui::IsItemHovered()) ImGui::SetTooltip(S(TH_PASTE_CFG_CODE_HINT));
+                if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", S(TH_PASTE_CFG_CODE_HINT));
                 ImGui::SameLine();
-                HelpMarker(S(TH17_ID_CFG_CODE_DESC));
+                Gui::HelpMarker(S(TH17_ID_CFG_CODE_DESC));
 
                 ImGui::NewLine();
             }
@@ -651,15 +650,15 @@ namespace TH17 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
@@ -699,7 +698,7 @@ namespace TH17 {
             }
         }
 
-        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x44956a, "01")
@@ -823,19 +822,19 @@ namespace TH17 {
         {
             SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
@@ -914,7 +913,9 @@ namespace TH17 {
 
         void FpsInit()
         {
-            if (*(uint8_t*)0x4b5cd9 == 3) {
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                OILPInit(mOptCtx);
+            } else if (*(uint8_t*)0x4b5cd9 == 3) {
                 mOptCtx.fps_status = 1;
 
                 DWORD oldProtect;
@@ -926,7 +927,11 @@ namespace TH17 {
         }
         void FpsSet()
         {
-            if (mOptCtx.fps_status == 1) {
+            if (mOptCtx.fps_status == 3) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
+            } else if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
             }
         }
@@ -966,7 +971,7 @@ namespace TH17 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
+            if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else
@@ -982,19 +987,19 @@ namespace TH17 {
         {
             SetTitle("AdvOptMenu");
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
@@ -1023,7 +1028,7 @@ namespace TH17 {
             ImGui::SliderFloat(S(TH17_GOAST_ANGLE), &mGoastAng, -std::numbers::pi, std::numbers::pi);
             ImGui::Checkbox(S(TH17_FORCE_ANGLE), &mForceGoastAngle);
             ImGui::SameLine();
-            HelpMarker(S(TH17_FORCE_ANGLE_HELP));
+            Gui::HelpMarker(S(TH17_FORCE_ANGLE_HELP));
 
             if (mGoastAngleRandom)
                 ImGui::EndDisabled();
@@ -1072,7 +1077,7 @@ namespace TH17 {
 
                 ImGui::Checkbox(S(TH17_KEIKI_FINAL_PHASETRACK), &mTrackKeikiFinalPhase);
                 ImGui::SameLine();
-                HelpMarker(S(TH17_KEIKI_FINAL_PHASETRACK_DESC));
+                Gui::HelpMarker(S(TH17_KEIKI_FINAL_PHASETRACK_DESC));
 
                 if (mTrackKeikiFinalPhase) {
                     const int32_t offsetP2 = GetPhaseOffset(1);
@@ -1094,11 +1099,11 @@ namespace TH17 {
                     if (disabled) {
                         ImGui::EndDisabled();
                         if (ImGui::IsItemHovered())
-                            ImGui::SetTooltip(S(TH17_KEIKI_FINAL_PHASETRACK_NONE_HINT));
+                            ImGui::SetTooltip("%s", S(TH17_KEIKI_FINAL_PHASETRACK_NONE_HINT));
                     }
                     else {
                         if (ImGui::IsItemHovered())
-                            ImGui::SetTooltip(S(TH_COPY_CFG_CODE_HINT));
+                            ImGui::SetTooltip("%s", S(TH_COPY_CFG_CODE_HINT));
 
                         const char* clipboardText = GetTrimmedClipboardText<24>();
                         if (ValidateConfigCode(clipboardText, 24)) {
@@ -1113,7 +1118,7 @@ namespace TH17 {
                 ImGui::Checkbox(S(TH17_GOAST_BUGFIX), &mGoastBugfix);
                 ImGui::Checkbox(S(TH17_GOAST_REPFIX), &mGoastRepfix);
                 ImGui::SameLine();
-                HelpMarker(S(TH17_GOAST_REPFIX_DESC));
+                Gui::HelpMarker(S(TH17_GOAST_REPFIX_DESC));
 
                 if (ImGui::Button(S(TH17_SPAWN_A_GOAST))) {
                     mInGoastMenu = true;
@@ -1854,13 +1859,23 @@ namespace TH17 {
             const int32_t offsets[4] = { 0, thPracParam.keikiFinalPhaseOfs[0], thPracParam.keikiFinalPhaseOfs[1], thPracParam.keikiFinalPhaseOfs[2] };
             const float tickRate = st6bsSp7DiffAtkTickRate[GetMemContent(DIFFICULTY)];
 
+            constexpr float PI = 3.14159274f;
+            constexpr float TWO_PI = 6.28318548f;
+
             // this is to reproduce the float imprecision that happens for spawners who've been looping for a while
             auto loopIncAngle = [](float dt, uint32_t loopCnt) -> float {
-                volatile float ang = 0.0f;
+                float ang = 0.0f;
+                // Idk if the O(1) NormRad implementation would break this, so to be safe
+                // and ensure that the float inaccuracy is reproduced exactly, loopy NormRad
+                // is inlined here.
+                for (size_t i = 0; i < loopCnt; i++) {
+                    ang += dt;
+                    while (ang > PI)
+                        ang -= TWO_PI;
 
-                for (volatile size_t i = 0; i < loopCnt; i++)
-                    ang = NormRad(ang + dt);
-
+                    while (ang < -PI)
+                        ang += TWO_PI;
+                }
                 return ang;
             };
 
@@ -2284,7 +2299,7 @@ namespace TH17 {
         const int32_t phaseOfs = GetPhaseOffset(phaseId);
 
         if (phaseOfs >= 0) ImGui::Text("%d", phaseOfs);
-        else ImGui::TextDisabled(S(TH_NA));
+        else ImGui::TextDisabled("%s", S(TH_NA));
     }
 
     void THTrackerUpdate() {
@@ -2588,7 +2603,7 @@ namespace TH17 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4b5ae8, WINDOW_PTR,
             Gui::INGAGME_INPUT_GEN2, 0x4b323c, 0x4b3238, 0,
-            (*((int32_t*)0x524700) >> 2) & 0xf);
+            *(float*)SCALE_ADDR);
 
         SetDpadHook(0x40188D, 3);
 

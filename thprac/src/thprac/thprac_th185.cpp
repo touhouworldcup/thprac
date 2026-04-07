@@ -18,12 +18,14 @@ namespace THPrac {
 namespace TH185 {
     struct card_names_t {
         static constexpr size_t count = 86;
-        Gui::locale_t locale;
+        Locale locale;
         char strings[count][50];
         const char* ptrs[count];
 
-        constexpr card_names_t() : locale(Gui::locale_t::LOCALE_NONE) {
-            for (int i = 0; i < count; ++i) {
+        constexpr card_names_t()
+            : locale(Locale::LOCALE_NONE)
+        {
+            for (size_t i = 0; i < count; ++i) {
                 ptrs[i] = strings[i];
             }
         }
@@ -33,7 +35,8 @@ namespace TH185 {
         BLACK_MARKET_PTR = 0x4d7ac4,
         CARD_DESC_LIST = 0x4ca370,
         ENEMY_MANAGER = 0x4d7af4,
-        GAME_THREAD_PTR = 0x4d7b0c
+        GAME_THREAD_PTR = 0x4d7b0c,
+        SCALE_ADDR = 0x573DC0,
     };
 
     bool isItemEnabled = false;
@@ -98,15 +101,15 @@ namespace TH185 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
@@ -134,7 +137,7 @@ namespace TH185 {
                 }
             }
         }
-        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x4635a5, "01")
@@ -204,7 +207,7 @@ namespace TH185 {
 
             const ImVec4 green = { 0, 1, 0, 1 };
 
-            if (selectedWave == -1) {
+            if (selectedWave == SIZE_MAX) {
                 ImGui::TextColored(green, "[%s]", S(TH185_NONE_RANDOM));
             } else {
                 ImGui::TextUnformatted(S(TH185_NONE_RANDOM));
@@ -296,19 +299,19 @@ namespace TH185 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(0.5f, 0.81f);
                 SetPosRel(0.4f, 0.14f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(0.6f, 0.75f);
                 SetPosRel(0.35f, 0.165f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(0.56f, 0.81f);
                 SetPosRel(0.37f, 0.14f);
                 SetItemWidthRel(-0.105f);
@@ -352,8 +355,8 @@ namespace TH185 {
 
                 if (card_names.locale != Gui::LocaleGet()) {
                     card_names.locale = Gui::LocaleGet();
-                    for (int i = 0; i < card_names.count; ++i) {
-                        std::strcpy(card_names.strings[i], S(TH185_CARD_LIST[i]));
+                    for (size_t i = 0; i < card_names.count; ++i) {
+                        strcpy(card_names.strings[i], S(TH185_CARD_LIST[i]));
                     }
                 }
 
@@ -430,19 +433,19 @@ namespace TH185 {
         {
             SetTitle(S(TH_ADV_OPT));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.075f);
@@ -476,7 +479,7 @@ namespace TH185 {
         static THAdvOptWnd* advOptWnd = nullptr;
         if (!advOptWnd)
             advOptWnd = new THAdvOptWnd();
-        if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
+        if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
             if (advOptWnd->IsOpen())
                 advOptWnd->Close();
             else
@@ -644,7 +647,7 @@ namespace TH185 {
     })
     EHOOK_DY(th185_force_wave, 0x43d156, 7, {
         auto& wave_select = THWaveSelect::singleton();
-        if (auto i = wave_select.selectedWave; i != -1 && thPracParam.mode) {
+        if (auto i = wave_select.selectedWave; i != SIZE_MAX && thPracParam.mode) {
             auto& [id, name] = wave_select.waveOpts[i];
             pCtx->Esi = id;
             wave_forced = true;
@@ -678,7 +681,7 @@ namespace TH185 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4d52c8, 0x571d50,
             Gui::INGAGME_INPUT_GEN2, 0x4ce400, 0x4ce3f8, 0,
-            -2, *(float*)0x573dc0, 0.0f);
+            *(float*)SCALE_ADDR);
 
         SetDpadHook(0x40175F, 3);
 

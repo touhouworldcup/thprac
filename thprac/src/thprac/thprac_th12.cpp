@@ -1,6 +1,7 @@
 ﻿#include "thprac_games.h"
 #include "thprac_utils.h"
 
+#include <algorithm>
 #include <numeric>
 
 namespace THPrac {
@@ -57,12 +58,11 @@ namespace TH12 {
         bool dlg;
 
         bool _playLock = false;
-        void Reset()
-        {
-            for (size_t st = 0; st < elementsof(reimuADmgSrcs); ++st)
-                reimuADmgSrcs[st].clear();
 
-            memset(this, 0, sizeof(THPracParam));
+        static constexpr const size_t dmg_src_elem_count = sizeof(PlayerDamageSource) / sizeof(int32_t);
+
+        void Reset() {
+            *this = {};
         }
         bool ReadJson(std::string& json)
         {
@@ -73,7 +73,7 @@ namespace TH12 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -88,18 +88,20 @@ namespace TH12 {
             GetJsonValue(ventra_2);
             GetJsonValue(ventra_3);
 
-            // deserializing damage source data (for ReimuA bomb desync fix)
+            // deserializing damage sour<ce data (for ReimuA bomb desync fix)
             GetJsonVectorArray(reimuADmgSrcs, {
-                if (!el.IsArray() || el.Size() * sizeof(int32_t) != sizeof(PlayerDamageSource))
-                    return std::nullopt;
+                if (yyjson_arr_size(el) != dmg_src_elem_count) {
+                    continue;
+                }
 
-                PlayerDamageSource dmgSrc {};
+                auto& dmgSrc = reimuADmgSrcs[iter.idx].emplace_back();
                 int32_t* p = (int32_t*)&dmgSrc;
-                for (rapidjson::SizeType i = 0; i < el.Size(); i++)
-                    p[i] = el[i].GetInt();
 
-                return dmgSrc;
-            });
+                yyjson_arr_iter el_iter = yyjson_arr_iter_with(el);
+                while (yyjson_val* v = yyjson_arr_iter_next(&el_iter)) {
+                    p[el_iter.idx] = yyjson_get_int(v);
+                }
+            });          
 
             return true;
         }
@@ -108,28 +110,25 @@ namespace TH12 {
             if (mode == 0) { //vanilla run mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th12", jalloc);
+                AddJsonVersion();
+                AddJsonValueEx(game, "th12");
                 AddJsonValue(mode);
 
                 // serializing damage source data (for ReimuA bomb desync fix)
                 AddJsonVectorArray(reimuADmgSrcs, {
-                    rapidjson::Value dmgSrcArray(rapidjson::kArrayType);
-
+                    yyjson_mut_val* yy_elem = yyjson_mut_arr_add_arr(doc, yy_vector);
                     int32_t* p = (int32_t*)&el;
-                    size_t count = sizeof(PlayerDamageSource) / sizeof(int32_t);
-                    for (size_t i = 0; i < count; ++i)
-                        dmgSrcArray.PushBack(p[i], jalloc);
-
-                    return dmgSrcArray;
+                    for (size_t i = 0; i < dmg_src_elem_count; i++) {
+                        yyjson_mut_arr_add_int(doc, yy_elem, p[i]);
+                    }
                 });
 
                 ReturnJson();
             } else { //thprac mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th12", jalloc);
+                AddJsonVersion();
+                AddJsonValueEx(game, "th12");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
                 if (section)
@@ -241,17 +240,17 @@ namespace TH12 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSize(350.f, 410.f);
                 SetPos(260.f, 50.f);
                 SetItemWidth(-65.0f);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSize(425.f, 410.f);
                 SetPos(185.f, 50.f);
                 SetItemWidth(-65.0f);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSize(350.f, 410.f);
                 SetPos(260.f, 50.f);
                 SetItemWidth(-65.0f);
@@ -294,8 +293,8 @@ namespace TH12 {
                 mLifeFragment();
                 mBomb();
                 mBombFragment();
-                auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
-                mPower(power_str.c_str());
+                char buf[32];
+                mPower(FormatNumberFixedPoint(*mPower, 2, buf));
                 mUfoSide();
                 mVentra1();
                 if (*mVentra1) {
@@ -469,8 +468,9 @@ namespace TH12 {
                 break;
             case 3:
                 mRepStatus = true;
-                if (mParamStatus)
-                    memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
+                if (mParamStatus) {
+                    thPracParam = mRepParam;
+                }
                 break;
             default:
                 break;
@@ -501,15 +501,15 @@ namespace TH12 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
@@ -547,7 +547,7 @@ namespace TH12 {
             }
         }
 
-        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
         
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x43837F, "01"),
@@ -602,11 +602,12 @@ namespace TH12 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th12.dll");
-            if (mOptCtx.vpatch_base) {
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                OILPInit(mOptCtx);
+            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th12.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th12.dll", hash);
-                if (hash[0] != 666604866657820391ll || hash[1] != 18391463919001639953ll)
+                if (hash[0] != 666604866657820391ull || hash[1] != 18391463919001639953ull)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x1b024) == 0) {
                     mOptCtx.fps_status = 2;
@@ -624,7 +625,11 @@ namespace TH12 {
         }
         void FpsSet()
         {
-            if (mOptCtx.fps_status == 1) {
+            if (mOptCtx.fps_status == 3) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
+            } else if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
             } else if (mOptCtx.fps_status == 2) {
                 *(int32_t*)(mOptCtx.vpatch_base + 0x18abc) = mOptCtx.fps;
@@ -667,7 +672,7 @@ namespace TH12 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
+            if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else
@@ -683,19 +688,19 @@ namespace TH12 {
         {
             SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
@@ -1699,7 +1704,7 @@ namespace TH12 {
 
         else if (stageNum > 1 && stageNum <= 6 && !(GetMemContent(MODEFLAGS) & 0b10000)) {
             if (THGuiRep::singleton().mRepStatus) { // Playback
-                for (int i = 0; i < playerDmgSrcCnt; i++) // if there are already active sources, its a transition - skip
+                for (uint32_t i = 0; i < playerDmgSrcCnt; i++) // if there are already active sources, its a transition - skip
                     if (player->damage_sources[i].flags & 1)
                         return;
 
@@ -1712,7 +1717,7 @@ namespace TH12 {
                         player->damage_sources[curSrcIndex++] = stageSrcs[i];
                 }
             } else { // Recording
-                for (int i = 0; i < playerDmgSrcCnt; i++)
+                for (uint32_t i = 0; i < playerDmgSrcCnt; i++)
                     if (player->damage_sources[i].flags & 1) // (erroneously) active damage source
                         thPracParam.reimuADmgSrcs[stageNum - 2].push_back(player->damage_sources[i]);
             }
@@ -1801,7 +1806,7 @@ namespace TH12 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, 0x4ce8f0, 0x4cf3f0,
             Gui::INGAGME_INPUT_GEN2, 0x4d48c4, 0x4d48c0, 0,
-            -1);
+            1.0f);
 
         SetDpadHook(0x462CAF, 2);
 

@@ -1,5 +1,5 @@
 // To build this file, this command is recommended
-// cl.exe /nologo /EHsc /O2 /std:c++20 loc_json.cpp /Fe:loc_json.exe"
+// cl /Isrc\3rdparties\yyjson /nologo /EHsc /O2 /std:c++20 loc_json.cpp .\src\3rdParties\yyjson\yyjson.c /Fe:loc_json.exe
 
 // However, compiling loc_json.exe itself is not part of the rest of
 // the build system, so you can compile it however you want.
@@ -29,9 +29,7 @@ privDefer<F> defer_func(F f)
 #define DEFER_3(x) DEFER_2(x, __COUNTER__)
 #define defer(code) auto DEFER_3(_defer_) = defer_func([&]() { code; })
 
-#include "rapidjson/document.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
+#include "yyjson.h"
 
 #include <cstdarg>
 #include <cstdint>
@@ -107,9 +105,6 @@ if (statement) \
 	printf_warn(ENDL); \
 	break; \
 }
-
-string g_current_game;
-string g_current_section;
 
 constexpr size_t NUM_LANGUAGES = 3;
 
@@ -206,10 +201,10 @@ struct section_t {
 	string ref;
 	loc_str_t loc_str[MAX_NUM_DIFFICULTIES];
 
-	bool FillWith(rapidjson::Value& sec);
+	bool FillWith(yyjson_val* sec);
 
 	section_t() = default;
-	section_t(const char* sec_name, rapidjson::Value& sec) :
+	section_t(const char* sec_name, yyjson_val* sec) :
 		name(sec_name)
 	{
 		FillWith(sec);
@@ -220,7 +215,7 @@ struct game_t {
 	string name;
 	string namespace_;
 	vector<section_t> sections;
-	vector<pair<string, rapidjson::Value>> groups;
+	vector<pair<string, vector<string>>> groups;
 
 	static map<string, loc_str_t> glossary;
 	static set<uint16_t> glyph_range_zh;
@@ -258,11 +253,11 @@ void AppendGlyphs(set<uint16_t>& glyphs, std::string& str) {
 		uint32_t codepoint = 0;
 		int bytes = 0;
 
-		if (c <= 0x7F) {                   
+		if (c <= 0x7F) {
 			codepoint = c;
 			bytes = 1;
 		}
-		else if ((c & 0xE0) == 0xC0) { 
+		else if ((c & 0xE0) == 0xC0) {
 			codepoint = c & 0x1F;
 			bytes = 2;
 		}
@@ -303,53 +298,30 @@ void AddGlyphRange(loc_str_t& str) {
 	AppendGlyphs(game_t::glyph_range_en, str.en_str);
 }
 
-bool ValidateGroup(rapidjson::GenericValue<rapidjson::UTF8<>>& value) {
-	if (!value.IsArray()) return true;
-
-	for (auto& sub_value : value.GetArray()) {
-		if (sub_value.IsArray() && ValidateGroup(sub_value)) return false;
-		else if (!sub_value.IsString()) return false;
+bool ValidateGroupJSON(yyjson_val* group) {
+	yyjson_arr_iter iter;
+	if (!yyjson_arr_iter_init(group, &iter)) {
+		return false;
 	}
 
+	while (yyjson_val* val = yyjson_arr_iter_next(&iter)) {
+		if (!yyjson_is_str(val)) {
+			return false;
+		}
+	}
 	return true;
 }
 
-void PrintGroupSize(std::string& output, rapidjson::Value& value) {
-	vector<rapidjson::SizeType> result;
-	function<void(rapidjson::Value&, unsigned int)> getSizeLimit = [&](
-		rapidjson::Value& value, unsigned int dim
-		) {
-			if (value.IsArray()) {
-				if (result.size() < dim + 1) result.resize(dim + 1);
-				for (auto it = value.Begin(); it != value.End(); ++it)
-					getSizeLimit(*it, dim + 1);
-				if (result[dim] < value.Size()) result[dim] = value.Size();
-			}
-		};
-
-	getSizeLimit(value, 0);
-	if (result.size() > 0) result.back()++;
-	for (auto dim : result)
-		sprintf_append(output, "[%d]", dim);
-
+void PrintGroupSize(std::string& output, vector<string>& value) {
+	sprintf_append(output, "[%d]", value.size());
 }
 
-void PrintGroup(std::string& output, rapidjson::Value& value, int tab = 0) {
-	if (value.IsArray()) {
-		for (int i = tab; i > 0; --i) output.push_back(' ');
-		sprintf_append(output, "{" ENDL);
-		for (auto v_itr = value.Begin(); v_itr != value.End(); ++v_itr)
-			PrintGroup(output, *v_itr, tab + 4);
-		for (int i = tab; i > 0; --i) output.push_back(' ');
-		sprintf_append(output, "}%c" ENDL, !tab ? ';' : ',');
+void PrintGroup(std::string& output, vector<string>& value) {
+	output.append("{\n");
+	for (const auto& str : value) {
+		sprintf_append(output, "    %s,\n", str.c_str());
 	}
-	else {
-		for (int i = tab; i > 0; --i) output.push_back(' ');
-		if (!tab)
-			sprintf_append(output, "= %s;" ENDL, value.GetString());
-		else
-			sprintf_append(output, "%s," ENDL, value.GetString());
-	}
+	output.append("};\n");
 }
 
 std::string EscapeString(std::string& str) {
@@ -380,7 +352,7 @@ std::string EscapeString(std::string& str) {
 	return escaped_str;
 }
 
-bool section_t::FillWith(rapidjson::Value& sec) {
+bool section_t::FillWith(yyjson_val* sec) {
 	enum sec_switch {
 		SW_BGM,
 		SW_APPEARANCE,
@@ -396,32 +368,36 @@ bool section_t::FillWith(rapidjson::Value& sec) {
 		{"ref", SW_REF},
 	};
 
-	for (auto sw_itr = sec.MemberBegin(); sw_itr != sec.MemberEnd(); ++sw_itr) {
-		auto sw_key = sw_itr->name.GetString();
-		auto& sw_value = sw_itr->value;
+	yyjson_obj_iter iter = yyjson_obj_iter_with(sec);
+	while (yyjson_val* key = yyjson_obj_iter_next(&iter)) {
+		const char* sw_key = unsafe_yyjson_get_str(key);
+		yyjson_val* sw_value = yyjson_obj_iter_get_val(key);
 
 		if (sw_key[0] == '!') {
 			loc_str_t lstr;
+
+			yyjson_val* v0 = yyjson_arr_get(sw_value, 0);
+			yyjson_val* v1 = yyjson_arr_get(sw_value, 1);
+			yyjson_val* v2 = yyjson_arr_get(sw_value, 2);
+
 			if (
-				sw_value.IsArray() &&
-				sw_value.Size() == NUM_LANGUAGES &&
-				sw_value[0].IsString() &&
-				sw_value[1].IsString() &&
-				sw_value[2].IsString()
+				yyjson_is_str(v0) &&
+				yyjson_is_str(v1) &&
+				yyjson_is_str(v2)
 				) {
 				lstr = {
-					sw_value[0].GetString(),
-					sw_value[1].GetString(),
-					sw_value[2].GetString()
+					unsafe_yyjson_get_str(v0),
+					unsafe_yyjson_get_str(v1),
+					unsafe_yyjson_get_str(v2)
 				};
 				AddGlyphRange(lstr);
 			}
-			else if (sw_value.IsString()) {
-				auto it = game_t::glossary.find(sw_value.GetString());
+			else if (yyjson_is_str(sw_value)) {
+				auto it = game_t::glossary.find(unsafe_yyjson_get_str(sw_value));
 				SKIP_IF(
 					it == game_t::glossary.end(),
 					"Warning: Reference not found: %s, ignoring.",
-					sw_value.GetString()
+					unsafe_yyjson_get_str(sw_value)
 				);
 				lstr = it->second;
 			}
@@ -468,43 +444,46 @@ bool section_t::FillWith(rapidjson::Value& sec) {
 			switch (sec_switch_map[sw_key]) {
 			case SW_BGM:
 				BREAK_IF(
-					!sw_value.IsInt(),
+					!yyjson_is_int(sw_value),
 					"Warning: Incorrect property switch: %s, ignoring.",
 					sw_key
 				);
-				bgm_id = sw_value.GetInt();
+				bgm_id = unsafe_yyjson_get_int(sw_value);
 				break;
-			case SW_APPEARANCE:
+			case SW_APPEARANCE: {
+				yyjson_val* a0 = yyjson_arr_get(sw_value, 0);
+				yyjson_val* a1 = yyjson_arr_get(sw_value, 1);
+				yyjson_val* a2 = yyjson_arr_get(sw_value, 2);
+
 				BREAK_IF(
 					(
-						!sw_value.IsArray() ||
-						sw_value.Size() != NUM_LANGUAGES ||
-						!sw_value[0].IsInt() ||
-						!sw_value[1].IsInt() ||
-						!sw_value[2].IsInt()
+						!yyjson_is_int(a0) ||
+						!yyjson_is_int(a1) ||
+						!yyjson_is_int(a2)
 						),
 					"Warning: Incorrect property switch: %s, ignoring.",
 					sw_key
 				);
-				appearance[0] = sw_value[0].GetInt();
-				appearance[1] = sw_value[1].GetInt();
-				appearance[2] = sw_value[2].GetInt();
+				appearance[0] = unsafe_yyjson_get_int(a0);
+				appearance[1] = unsafe_yyjson_get_int(a1);
+				appearance[2] = unsafe_yyjson_get_int(a2);
 				break;
+			}
 			case SW_SPELL:
 				BREAK_IF(
-					!sw_value.IsInt(),
+					!yyjson_is_int(sw_value),
 					"Warning: Incorrect property switch: %s, ignoring.",
 					sw_key
 				);
-				spell_id = sw_value.GetInt();
+				spell_id = unsafe_yyjson_get_int(sw_value);
 				break;
 			case SW_REF:
 				BREAK_IF(
-					!sw_value.IsString(),
+					!yyjson_is_str(sw_value),
 					"Warning: Incorrect property switch: %s, ignoring.",
 					sw_key
 				);
-				ref = sw_value.GetString();
+				ref = unsafe_yyjson_get_str(sw_value);
 				break;
 			default:
 				BREAK_IF(
@@ -974,180 +953,136 @@ std::string generate_source_file(vector<game_t>& games) {
 	return output;
 }
 
-vector<game_t> loc_json_parse(rapidjson::Document& doc) {
+vector<game_t> loc_json_parse(yyjson_doc* doc) {
 
 	// Iterate through games
 	vector<game_t> games;
-	for (
-		auto game_itr = doc.MemberBegin();
-		game_itr != doc.MemberEnd();
-		++game_itr
-		) {
-		games.emplace_back();
-		game_t& game_obj = games.back();
-		game_obj.name = game_itr->name.GetString();
-		g_current_game = game_itr->name.GetString();
 
-		auto& game = game_itr->value;
+	yyjson_obj_iter iter;
+	yyjson_obj_iter_init(yyjson_doc_get_root(doc), &iter);
+	while (yyjson_val* key = yyjson_obj_iter_next(&iter)) {
+		yyjson_val* game = yyjson_obj_iter_get_val(key);
+		const char* g_current_game = unsafe_yyjson_get_str(key);
+
+		auto& game_obj = games.emplace_back();
+		game_obj.name = g_current_game;
+
 		SKIP_IF(
-			!game.IsObject(),
+			!yyjson_is_obj(game),
 			"Warning: A non-object value for a game has detected, ignoring."
 		);
 
 		// Check namespace
-		if (game.HasMember("namespace")) {
-			if (game["namespace"].IsString()) {
-				game_obj.namespace_ = game["namespace"].GetString();
+		if (yyjson_val* ns_json = yyjson_obj_get(game, "namespace")) {
+			if (const char* ns_str = yyjson_get_str(ns_json)) {
+				game_obj.namespace_ = ns_str;
 			}
 			else {
 				printf_warn(
 					"Warning: In game \"%s\": "
 					"Invalid namespace value, ignoring." ENDL,
-					g_current_game.c_str()
+					g_current_game
 				);
 			}
 		}
-
+		
 		// Parsing Glossary
-		if (game.HasMember("glossary")) {
-			auto& glossary = game["glossary"];
+		if (yyjson_val* glossary = yyjson_obj_get(game, "glossary")) {
+			yyjson_obj_iter glossary_iter;
+			if (yyjson_obj_iter_init(glossary, &glossary_iter)) while (yyjson_val* item_itr_key = yyjson_obj_iter_next(&glossary_iter)) {
+				yyjson_val* item_itr_value = yyjson_obj_iter_get_val(item_itr_key);
+				const char* glossary_key = unsafe_yyjson_get_str(item_itr_key);
 
-			if (glossary.IsObject()) {
-				for (
-					auto item_itr = glossary.MemberBegin();
-					item_itr != glossary.MemberEnd();
-					++item_itr
-					) {
-					auto& item = item_itr->value;
-					SKIP_IF(
-						(
-							!item.IsArray() ||
-							item.Size() != NUM_LANGUAGES ||
-							!item[0].IsString() ||
-							!item[1].IsString() ||
-							!item[2].IsString()
-							),
-						"Warning: In game \"%s\": Invalid glossary item: "
-						"\"%s\", ignoring.",
-						g_current_game.c_str(),
-						item_itr->name.GetString()
-					);
+				yyjson_val* i0 = yyjson_arr_get(item_itr_value, 0);
+				yyjson_val* i1 = yyjson_arr_get(item_itr_value, 1);
+				yyjson_val* i2 = yyjson_arr_get(item_itr_value, 2);
 
-					auto glossary_key = item_itr->name.GetString();
-					game_obj.glossary[glossary_key] = {
-						item[0].GetString(),
-						item[1].GetString(),
-						item[2].GetString()
-					};
-					AddGlyphRange(game_obj.glossary[glossary_key]);
-				}
+				SKIP_IF(
+					!yyjson_is_str(i0) || !yyjson_is_str(i1) || !yyjson_is_str(i2),
+					"Warning: In game \"%s\": Invalid glossary item: "
+					"\"%s\", ignoring.",
+					g_current_game,
+					glossary_key
+				);
+
+				game_obj.glossary[glossary_key] = { unsafe_yyjson_get_str(i0), unsafe_yyjson_get_str(i1), unsafe_yyjson_get_str(i2) };
+				AddGlyphRange(game_obj.glossary[glossary_key]);
 			}
 			else {
 				printf_warn(
 					"Warning: In game \"%s\": "
 					"Invalid glossary value, ignoring." ENDL,
-					g_current_game.c_str()
+					g_current_game
 				);
 			}
 		}
 
 		// Parsing sections
-		if (game.HasMember("sections")) {
-			auto& sections = game["sections"];
+		if (yyjson_val* sections = yyjson_obj_get(game, "sections")) {
+			yyjson_obj_iter sections_iter;
+			if (yyjson_obj_iter_init(sections, &sections_iter)) while (yyjson_val* section_itr_key = yyjson_obj_iter_next(&sections_iter)) {
+				yyjson_val* section_val = yyjson_obj_iter_get_val(section_itr_key);
+				const char* section_key = unsafe_yyjson_get_str(section_itr_key);
 
-			if (sections.IsObject()) {
-				// Iterate through sections
-				for (
-					auto section_itr = sections.MemberBegin();
-					section_itr != sections.MemberEnd();
-					++section_itr
-					) {
-					SKIP_IF(
-						!section_itr->value.IsObject(),
-						"Warning: In game \"%s\": Incorrect section: %s",
-						g_current_game.c_str(),
-						section_itr->name.GetString()
-					);
-					game_obj.sections.emplace_back(
-						section_itr->name.GetString(),
-						section_itr->value
-					);
-				}
+				SKIP_IF(
+					!yyjson_is_obj(section_val),
+					"Warning: In game \"%s\": Incorrect section: %s",
+					g_current_game, section_key
+				);
+				game_obj.sections.emplace_back(section_key, section_val);
 			}
 			else {
 				printf_warn(
 					"Warning: In game \"%s\": "
 					"Invalid sections value, ignoring." ENDL,
-					g_current_game.c_str()
+					g_current_game
 				);
 			}
 		}
-
 		// Parsing groups
-		if (game.HasMember("groups")) {
-			auto& groups = game["groups"];
+		if (yyjson_val* groups = yyjson_obj_get(game, "groups")) {
+			yyjson_obj_iter groups_iter;
+						
+			if (yyjson_obj_iter_init(groups, &groups_iter)) while (yyjson_val* groups_itr_key = yyjson_obj_iter_next(&groups_iter)) {
+				yyjson_val* group_itr_val = yyjson_obj_iter_get_val(groups_itr_key);
+				const char* group_name = unsafe_yyjson_get_str(groups_itr_key);
+				if (ValidateGroupJSON(group_itr_val)) {
+					auto& group = game_obj.groups.emplace_back();
+					group.first = group_name;
 
-			if (groups.IsObject()) {
-				// Iterate through sections
-				for (
-					auto group_itr = groups.MemberBegin();
-					group_itr != groups.MemberEnd();
-					++group_itr
-					) {
-					// Validate group
-					if (ValidateGroup(group_itr->value)) {
-						game_obj.groups.emplace_back();
-						game_obj.groups.back().first =
-							group_itr->name.GetString();
-						game_obj.groups.back().second = group_itr->value;
+					size_t arr_len = unsafe_yyjson_get_len(group_itr_val);
+					group.second.reserve(arr_len);
+
+					for (size_t i = 0; i < arr_len; i++) {
+						group.second.emplace_back(unsafe_yyjson_get_str(yyjson_arr_get(group_itr_val, i)));
 					}
-					else {
-						SKIP_IF(
-							true,
-							"Warning: In game \"%s\": Incorrect group: %s",
-							g_current_game.c_str(),
-							group_itr->name.GetString()
-						);
-					}
+
+				}
+				else {
+					SKIP_IF(
+						true,
+						"Warning: In game \"%s\": Incorrect group: %s",
+						g_current_game,
+						group_name
+					);
 				}
 			}
 			else {
 				printf_warn(
 					"Warning: In game \"%s\": "
 					"Invalid groups value, ignoring." ENDL,
-					g_current_game.c_str()
+					g_current_game
 				);
 			}
 		}
-
 	}
 
 	return games;
 }
 
-const char* JSON_PARSE_ERROR_CODES[] = {
-	"No error.",
-	"The document is empty.",
-	"The document root must not follow by other values.",
-	"Invalid value.",
-	"Missing a name for object member.",
-	"Missing a colon after a name of object member.",
-	"Missing a comma or '}' after an object member.",
-	"Missing a comma or ']' after an array element.",
-	"Incorrect hex digit after \\u escape in string.",
-	"The surrogate pair in string is invalid.",
-	"Invalid escape character in string.",
-	"Missing a closing quotation mark in string.",
-	"Invalid encoding in string.",
-	"Number too big to be stored in double.",
-	"Miss fraction part in number.",
-	"Miss exponent in number.",
-	"Parsing was terminated.",
-	"Unspecific syntax error."
-};
-
 #ifdef _WIN32
 #include <Windows.h>
+#include <optional>
 
 struct MappedFile {
 	HANDLE fileMap = NULL;
@@ -1228,23 +1163,23 @@ int wmain(int argc, wchar_t** argv) {
 	}
 	defer(CloseHandle(hSource));
 
-	rapidjson::Document d;
+	yyjson_doc* doc;
+	yyjson_read_err err;
 	{
 		auto json_data = read_entire_text_file(L"" THPRAC_LOC_JSON_NAME);
 		if(!json_data) {
 			return -4;
 		}
 
-		d.Parse(json_data->data(), json_data->size());
+		doc = yyjson_read_opts(json_data->data(), json_data->size(), YYJSON_READ_ALLOW_BOM | YYJSON_READ_ALLOW_TRAILING_COMMAS, nullptr, &err);
 	}
 
-	if (auto err = d.GetParseError()) {
-		fprintf(stderr, "Error: JSON parse error at %zu\n", d.GetErrorOffset());
-		fprintf(stderr, "%s", JSON_PARSE_ERROR_CODES[err]);
+	if (!doc) {
+		fprintf(stderr, "Error: JSON parse error %d at %d\n%s", err.code, err.pos, err.msg);
 		return -5;
 	}
 
-	auto games = loc_json_parse(d);
+	auto games = loc_json_parse(doc);
 	DWORD byteRet;
 
 	{

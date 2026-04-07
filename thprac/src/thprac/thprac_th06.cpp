@@ -69,7 +69,7 @@ namespace TH06 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
             GetJsonValue(frame);
             GetJsonValue(score);
             GetJsonValue(life);
@@ -78,7 +78,7 @@ namespace TH06 {
             GetJsonValue(graze);
             GetJsonValue(point);
             GetJsonValue(rank);
-            GetJsonValueEx(rankLock, Bool);
+            GetJsonValue(rankLock);
             GetJsonValue(fakeType);
 
             return true;
@@ -87,8 +87,8 @@ namespace TH06 {
         {
             CreateJson();
 
-            AddJsonValueEx(version, GetVersionStr(), jalloc);
-            AddJsonValueEx(game, "th06", jalloc);
+            AddJsonVersion();
+            AddJsonValueEx(game, "th06");
             AddJsonValue(mode);
             AddJsonValue(stage);
             if (section)
@@ -137,15 +137,15 @@ namespace TH06 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.12f;
                 x_offset_2 = 0.172f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.12f;
                 x_offset_2 = 0.16f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.18f;
                 x_offset_2 = 0.235f;
                 break;
@@ -184,7 +184,7 @@ namespace TH06 {
             }
         }
 
-        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
         
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x4277c2, "03"),
@@ -375,17 +375,17 @@ namespace TH06 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSize(330.f, 390.f);
                 SetPos(260.f, 65.f);
                 SetItemWidth(-60.0f);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSize(370.f, 375.f);
                 SetPos(240.f, 75.f);
                 SetItemWidth(-60.0f);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSize(330.f, 390.f);
                 SetPos(260.f, 65.f);
                 SetItemWidth(-65.0f);
@@ -688,13 +688,13 @@ namespace TH06 {
         virtual void OnLocaleChange() override
         {
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetItemWidth(-60.0f);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetItemWidth(-60.0f);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetItemWidth(-65.0f);
                 break;
             default:
@@ -807,30 +807,28 @@ namespace TH06 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06.dll");
-            if (mOptCtx.vpatch_base) {
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                OILPInit(mOptCtx);
+            } else if (mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th06.dll", hash);
-                if (hash[0] != 3665784961181135876ll || hash[1] != 9283021252209177490ll)
+                if (hash[0] != 3665784961181135876ull || hash[1] != 9283021252209177490ull)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
                     mOptCtx.fps_status = 2;
                     mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x17034);
                 }
-            } else {
-                mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06_unicode.dll");
-                if (mOptCtx.vpatch_base) {
-                    uint64_t hash[2];
-                    CalcFileHash(L"vpatch_th06_unicode.dll", hash);
-                    if (hash[0] != 5021620919341617817ll || hash[1] != 10919509441391235291ll)
-                        mOptCtx.fps_status = -1;
-                    else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
-                        mOptCtx.fps_status = 2;
-                        mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x17034);
-                    }
-                } else
-                    mOptCtx.fps_status = 0;
-            }
+            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th06_unicode.dll")) {
+                uint64_t hash[2];
+                CalcFileHash(L"vpatch_th06_unicode.dll", hash);
+                if (hash[0] != 5021620919341617817ull || hash[1] != 10919509441391235291ull)
+                    mOptCtx.fps_status = -1;
+                else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
+                    mOptCtx.fps_status = 2;
+                    mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x17034);
+                }
+            } else
+                mOptCtx.fps_status = 0;
         }
         void FpsSet()
         {
@@ -839,6 +837,10 @@ namespace TH06 {
             } else if (mOptCtx.fps_status == 2) {
                 *(int32_t*)(mOptCtx.vpatch_base + 0x15a4c) = mOptCtx.fps;
                 *(int32_t*)(mOptCtx.vpatch_base + 0x17034) = mOptCtx.fps;
+            } else if (mOptCtx.fps_status == 3) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
             }
         }
         void GameplayInit()
@@ -871,7 +873,7 @@ namespace TH06 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
+            if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else
@@ -887,19 +889,19 @@ namespace TH06 {
         {
             SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
@@ -2178,7 +2180,7 @@ namespace TH06 {
     })
     EHOOK_DY(th06_render, 0x41cb6d, 1, {
         GameGuiRender(IMPL_WIN32_DX8);
-        if (Gui::GetChordPressed(Gui::GetScreenshotChord()))
+        if (Gui::GetChordPressed(hotkeys.screenshot))
             THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);
     })
     HOOKSET_ENDDEF()
@@ -2191,7 +2193,7 @@ namespace TH06 {
         // Init
         GameGuiInit(IMPL_WIN32_DX8, 0x6c6d20, 0x6c6bd4,
             Gui::INGAGME_INPUT_GEN1, INPUT_ADDR, INPUT_PREV_ADDR, 0x69d90c,
-            -1);
+            1.0f);
 
         SetDpadHook(0x41D330, 3);
 

@@ -14,9 +14,6 @@
     <Filter Include="3rdParties\ImGui">
       <UniqueIdentifier>{8ff51cf4-6d55-4d77-bbdc-2509b2e6cfbb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="3rdParties\MinHook">
-      <UniqueIdentifier>{7578d527-6afa-4ddd-941f-7b862a0b4ef6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="3rdParties\MetroHash">
       <UniqueIdentifier>{e7ddfcbb-ad50-4bb5-a7c9-732ec57b8ac4}</UniqueIdentifier>
     </Filter>
@@ -32,23 +29,20 @@
     <Filter Include="THPrac Games">
       <UniqueIdentifier>{4b6df0ca-a900-42f7-acc7-0d426c23cb66}</UniqueIdentifier>
     </Filter>
-    <Filter Include="THPrac Launcher">
-      <UniqueIdentifier>{bd74869f-32b5-4bd3-960f-3bcff4aa1638}</UniqueIdentifier>
+    <Filter Include="THPrac Log">
+      <UniqueIdentifier>{16c57099-363c-403f-9df9-34b742d1e48c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="3rdParties\distorm">
-      <UniqueIdentifier>{653ef50e-68b6-4a06-8e84-3ddf50867dfe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="THPrac Logging">
-      <UniqueIdentifier>{89b3b162-0590-4673-a372-b4699cc95cb7}</UniqueIdentifier>
+    <Filter Include="3rdParties\yyjson">
+      <UniqueIdentifier>{d15c246f-476f-491c-9dd2-c94f9188f69d}</UniqueIdentifier>
     </Filter>
     <Filter Include="THPrac Games\th185 warps">
       <UniqueIdentifier>{a51022eb-87a0-45b1-ab08-be75953c0e45}</UniqueIdentifier>
     </Filter>
+    <Filter Include="THPrac Launcher">
+      <UniqueIdentifier>{ecdf8c7d-fbf9-4eee-9495-8f9a70d23bad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\thprac\thprac_utils.h">
       <Filter>THPrac Utils</Filter>
     </ClInclude>
@@ -57,9 +51,6 @@
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_games.h">
       <Filter>THPrac Games</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_init.h">
-      <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_load_exe.h">
       <Filter>Main</Filter>
@@ -112,38 +103,11 @@
     <ClInclude Include="src\thprac\thprac_gui_components.h">
       <Filter>THPrac Gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_main.h">
-      <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_launcher_games.h">
-      <Filter>THPrac Launcher</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_launcher_games_def.h">
-      <Filter>THPrac Launcher</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_launcher_main.h">
-      <Filter>THPrac Launcher</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_launcher_wnd.h">
-      <Filter>THPrac Launcher</Filter>
-    </ClInclude>
     <ClInclude Include="src\thprac\utils\utils.h">
       <Filter>THPrac Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\thprac\utils\wininternal.h">
       <Filter>THPrac Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_launcher_cfg.h">
-      <Filter>THPrac Launcher</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_launcher_utils.h">
-      <Filter>THPrac Launcher</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_launcher_links.h">
-      <Filter>THPrac Launcher</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thprac\thprac_launcher_tools.h">
-      <Filter>THPrac Launcher</Filter>
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_version.h">
       <Filter>THPrac Utils</Filter>
@@ -154,14 +118,29 @@
     <ClInclude Include="src\thprac\thprac_th19.h">
       <Filter>THPrac Games</Filter>
     </ClInclude>
-    <ClInclude Include="src\thprac\thprac_log.h">
-      <Filter>THPrac Logging</Filter>
-    </ClInclude>
     <ClInclude Include="src\thprac\thprac_th06.h">
       <Filter>THPrac Games</Filter>
     </ClInclude>
     <ClInclude Include="src\thprac\thprac_th07.h">
       <Filter>THPrac Games</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_identify.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_cfg.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_log.h">
+      <Filter>THPrac Log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\3rdParties\yyjson\yyjson.h">
+      <Filter>3rdParties\yyjson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_launcher.h">
+      <Filter>THPrac Launcher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac\thprac_update.h">
+      <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -182,9 +161,6 @@
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_th11.cpp">
       <Filter>THPrac Games</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\main.cpp">
-      <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_init.cpp">
       <Filter>Main</Filter>
@@ -267,29 +243,8 @@
     <ClCompile Include="src\thprac\thprac_th09.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_main.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
     <ClCompile Include="src\thprac\thprac_alcostg.cpp">
       <Filter>THPrac Games</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\thprac_launcher_games.cpp">
-      <Filter>THPrac Launcher</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\thprac_launcher_main.cpp">
-      <Filter>THPrac Launcher</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\thprac_launcher_wnd.cpp">
-      <Filter>THPrac Launcher</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\thprac_launcher_cfg.cpp">
-      <Filter>THPrac Launcher</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\thprac_launcher_links.cpp">
-      <Filter>THPrac Launcher</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\thprac_launcher_tools.cpp">
-      <Filter>THPrac Launcher</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_licence.cpp">
       <Filter>THPrac Utils</Filter>
@@ -309,17 +264,11 @@
     <ClCompile Include="src\thprac\thprac_locale_def.cpp">
       <Filter>THPrac Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac\thprac_launcher_utils.cpp">
-      <Filter>THPrac Launcher</Filter>
-    </ClCompile>
     <ClCompile Include="src\thprac\thprac_games.cpp">
       <Filter>THPrac Games</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_th19.v1.00a.cpp">
       <Filter>THPrac Games</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thprac\thprac_log.cpp">
-      <Filter>THPrac Logging</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_th19.v1.10c.cpp">
       <Filter>THPrac Games</Filter>
@@ -329,6 +278,18 @@
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_th20.cpp">
       <Filter>THPrac Games</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_identify.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_cfg.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_log.cpp">
+      <Filter>THPrac Log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\3rdParties\yyjson\yyjson.c">
+      <Filter>3rdParties\yyjson</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac\thprac_th185_warps0.cpp">
       <Filter>THPrac Games\th185 warps</Filter>
@@ -357,19 +318,25 @@
     <ClCompile Include="src\thprac\thprac_th185_warps8.cpp">
       <Filter>THPrac Games\th185 warps</Filter>
     </ClCompile>
+    <ClCompile Include="src\thprac\thprac_launcher.cpp">
+      <Filter>THPrac Launcher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_launcher_games.cpp">
+      <Filter>THPrac Launcher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_launcher_links.cpp">
+      <Filter>THPrac Launcher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac\thprac_update.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="src\3rdParties\ImGui\imgui_user.inl">
       <Filter>3rdParties\ImGui</Filter>
     </None>
     <None Include="src\thprac\thprac_games_def.json">
       <Filter>THPrac Utils</Filter>
-    </None>
-    <None Include="resource.hm">
-      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -31,6 +31,7 @@ namespace TH20 {
         ADD_TIMER_FUNC = 0x297A0,
         ALLOCATE_DMG_SRC_FUNC = 0xc0e60,
         DELETE_DMG_SRC_FUNC = 0xc1f30,
+        SCALE_ADDR = 0x1B8818
     };
 
     struct AnmVM {
@@ -175,13 +176,15 @@ namespace TH20 {
 
         bool dlg;
 
+        static constexpr const size_t dmg_src_elem_count = sizeof(PlayerDamageSource) / sizeof(int32_t);
+
         bool _playLock = false;
         void Reset()
         {
             for (size_t st = 0; st < elementsof(rogueDmgSrcs); ++st)
                 rogueDmgSrcs[st].clear();
 
-            memset(this, 0, sizeof(THPracParam));
+            *this = {};
         }
         bool ReadJson(std::string& json)
         {
@@ -192,7 +195,7 @@ namespace TH20 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
 
             GetJsonValue(score);
             GetJsonValue(life);
@@ -205,8 +208,8 @@ namespace TH20 {
 
             GetJsonValue(hyper);
             GetJsonValue(stone);
-            GetJsonValueEx(hyperActive, Bool);
-            GetJsonValueEx(stoneActive, Bool);
+            GetJsonValue(hyperActive);
+            GetJsonValue(stoneActive);
             GetJsonValue(stoneMax);
             GetJsonValue(levelR);
             GetJsonValue(priorityR);
@@ -216,32 +219,28 @@ namespace TH20 {
             GetJsonValue(priorityY);
             GetJsonValue(levelG);
             GetJsonValue(priorityG);
-
             GetJsonArray(reimuR2Timer, elementsof(reimuR2Timer));
             GetJsonArray(passiveMeterTimer, elementsof(passiveMeterTimer));
-            GetJsonArray2D(yellow2CycleAngle, elementsof(yellow2CycleAngle), elementsof(yellow2CycleAngle[0]));
-            GetJsonArray2D(yellow2CycleTimer, elementsof(yellow2CycleTimer), elementsof(yellow2CycleTimer[0]));
+            GetJsonArray2D(yellow2CycleAngle);
+            GetJsonArray2D(yellow2CycleTimer);
             GetJsonValue(resolutionSpriteHeight);
-
-            // deserializing damage source data (for Y1 lingering hitbox desync fix)
-            GetJsonVectorArray(rogueDmgSrcs, {
-                if (!el.IsArray() || el.Size() * sizeof(int32_t) != sizeof(PlayerDamageSource))
-                    return std::nullopt;
-
-                PlayerDamageSource dmgSrc {};
-                int32_t* p = (int32_t*)&dmgSrc;
-                for (rapidjson::SizeType i = 0; i < el.Size(); i++)
-                    p[i] = el[i].GetInt();
-
-                return dmgSrc;
-            });
             GetJsonArray(nextDmgID, elementsof(nextDmgID));
-
-            GetJsonVectorArray(expStoneColors, {
-                if (el.IsArray()) return std::nullopt;
-                return (uint32_t)el.GetInt();
+            GetJsonVectorArray(rogueDmgSrcs, {
+                if (yyjson_arr_size(el) != dmg_src_elem_count) {
+                    continue;
+                }
+                auto& dmgSrc = rogueDmgSrcs[iter.idx].emplace_back();
+                int32_t* p = (int32_t*)&dmgSrc;
+                yyjson_arr_iter el_iter = yyjson_arr_iter_with(el);
+                while (yyjson_val* v = yyjson_arr_iter_next(&el_iter)) {
+                    p[el_iter.idx] = yyjson_get_int(v);
+                }
             });
-
+            GetJsonVectorArray(expStoneColors, {
+                if (yyjson_is_int(el)) {
+                    expStoneColors[iter.idx].push_back((size_t)unsafe_yyjson_get_uint(el));
+                }
+            });
             return true;
         }
         std::string GetJson()
@@ -249,8 +248,8 @@ namespace TH20 {
             if (mode == 0) { //vanilla run mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th20", jalloc);
+                AddJsonVersion();
+                AddJsonValueEx(game, "th20");
                 AddJsonValue(mode);
 
                 AddJsonArray(reimuR2Timer, elementsof(reimuR2Timer));
@@ -261,32 +260,30 @@ namespace TH20 {
                 GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
                 if (globals->narrow_shot_stone_raw == 5 || globals->wide_shot_stone_raw == 5 ||
                     (globals->story_stone_raw == 5 && (globals->narrow_shot_stone_copy || globals->wide_shot_stone_copy))) {
-                    AddJsonArray2D(yellow2CycleAngle, elementsof(yellow2CycleAngle), elementsof(yellow2CycleAngle[0]));
-                    AddJsonArray2D(yellow2CycleTimer, elementsof(yellow2CycleTimer), elementsof(yellow2CycleTimer[0]));
+                    AddJsonArray2D(yellow2CycleAngle);
+                    AddJsonArray2D(yellow2CycleTimer);
                 }
 
                 AddJsonVectorArray(rogueDmgSrcs, {
-                    rapidjson::Value dmgSrcArray(rapidjson::kArrayType);
+                    yyjson_mut_val* yy_elem = yyjson_mut_arr_add_arr(doc, yy_vector);
 
                     int32_t* p = (int32_t*)&el;
                     size_t count = sizeof(PlayerDamageSource) / sizeof(int32_t);
-                    for (size_t i = 0; i < count; ++i)
-                        dmgSrcArray.PushBack(p[i], jalloc);
-
-                    return dmgSrcArray;
+                    for (size_t i = 0; i < count; ++i) {
+                        yyjson_mut_arr_add_int(doc, yy_elem, p[i]);
+                    }
                 });
                 AddJsonArray(nextDmgID, elementsof(nextDmgID));
-
                 AddJsonVectorArray(expStoneColors, {
-                    return rapidjson::Value(el);
+                    yyjson_mut_arr_add_int(doc, yyjson_mut_arr_add_arr(doc, yy_vector), el);
                 });
 
                 ReturnJson();
             } else { //thprac mode
                 CreateJson();
 
-                AddJsonValueEx(version, GetVersionStr(), jalloc);
-                AddJsonValueEx(game, "th20", jalloc);
+                AddJsonVersion();
+                AddJsonValueEx(game, "th20");
                 AddJsonValue(mode);
                 AddJsonValue(stage);
                 if (section)
@@ -473,19 +470,19 @@ namespace TH20 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(0.65f, 0.81f);
                 SetPosRel(0.27f, 0.18f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(0.6f, 0.79f);
                 SetPosRel(0.215f, 0.18f);
                 SetItemWidthRel(-0.100f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(0.56f, 0.81f);
                 SetPosRel(0.230f, 0.18f);
                 SetItemWidthRel(-0.105f);
@@ -531,14 +528,14 @@ namespace TH20 {
                     mPhase(TH_PHASE, SpellPhase());
                 }
 
+                char buf[32] = {};
+
                 mLife();
                 mLifeFragment();
                 mBomb();
                 mBombFragment();
-                auto power_str = std::to_string((float)(*mPower) / 100.0f).substr(0, 4);
-                mPower(power_str.c_str());
-                auto value_str = std::format("{:.2f}", (float)(*mValue) / 5000.0f);
-                mValue(value_str.c_str());
+                mPower(FormatNumberFixedPoint(*mPower, 2, buf));
+                mValue(FormatNumberFixedPoint(*mValue, 2, buf));
 
                 ImGui::Columns(2, 0, false);
                 if (mHyperActive()) {
@@ -552,8 +549,15 @@ namespace TH20 {
                 }
                 ImGui::Columns(1);
 
-                mHyper(std::format("{:.2f} %%", (float)(*mHyper) / 100.0f).c_str());
-                mStone(std::format("{:.2f} %%", (float)(*mStone) / 100.0f).c_str());
+                FormatNumberFixedPoint(*mHyper, 2, buf);
+                *(uint32_t*)(buf + t_strlen(buf)) = 0x00002525;
+                mHyper(buf);
+                
+                memset(buf, 0, 32);
+                FormatNumberFixedPoint(*mStone, 2, buf);
+                *(uint32_t*)(buf + t_strlen(buf)) = 0x00002525;
+                mStone(buf);
+
                 mStoneSummoned();
                 mCycle();
 
@@ -858,15 +862,15 @@ namespace TH20 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
@@ -908,7 +912,7 @@ namespace TH20 {
             }
         }
 
-        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0xF87FC, "01"),
@@ -1106,7 +1110,7 @@ namespace TH20 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
+            if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else
@@ -1122,19 +1126,19 @@ namespace TH20 {
         {
             SetTitle("AdvOptMenu");
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
@@ -1148,7 +1152,7 @@ namespace TH20 {
         inline void CloneSelectedReplayWithParams(THPracParam newRepParam, bool refresh = true) {
             const std::wstring& repPath = THGuiRep::singleton().mSelectedRepPath;
 
-            if(CloneReplayWithParams(repPath, newRepParam.GetJson(), L"20", *(HWND*)RVA(WINDOW_PTR)) && refresh)
+            if (CloneReplayWithParams(repPath, newRepParam.GetJson(), L"20", *(HWND*)RVA(WINDOW_PTR)) && refresh)
                 THGuiRep::singleton().CheckReplay(); // refresh for if user overwrote og file in menu
         }
 
@@ -1157,7 +1161,7 @@ namespace TH20 {
             if (disabled) {
                 ImGui::EndDisabled();
                 if (ImGui::IsItemHovered())
-                    ImGui::SetTooltip(S(hint));
+                    ImGui::SetTooltip("%s", S(hint));
                 if (keepDisabled) ImGui::BeginDisabled();
             }
         }
@@ -1195,12 +1199,12 @@ namespace TH20 {
                 if (ImGui::Checkbox(S(TH20_FAKE_UNLOCK_STONES), &infiniteStones))
                     th20_infinite_stones.Toggle(infiniteStones);
                 ImGui::SameLine();
-                HelpMarker(S(TH20_FAKE_UNLOCK_STONES_DESC));
+                Gui::HelpMarker(S(TH20_FAKE_UNLOCK_STONES_DESC));
                 ImGui::SameLine();
                 if (ImGui::Checkbox(S(TH20_FIX_HITBOX), &plHitboxScaleFix))
                     th20_hitbox_scale_fix.Toggle(plHitboxScaleFix);
                 ImGui::SameLine();
-                HelpMarker(S(TH20_FIX_HITBOX_DESC));
+                Gui::HelpMarker(S(TH20_FIX_HITBOX_DESC));
 
                 ImGui::SetNextItemWidth(180.0f);
                 EndOptGroup();
@@ -1208,11 +1212,11 @@ namespace TH20 {
             if (BeginOptGroup<TH_REPLAY_FIX>()) {
 
                 // Main story replay fixes
-                CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
+                Gui::CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH20_MAIN_STORY_FIXES));
                 ImGui::SameLine();
-                HelpMarker(S(TH20_MAIN_STORY_FIXES_DESC));
+                Gui::HelpMarker(S(TH20_MAIN_STORY_FIXES_DESC));
 
                 bool hasTransitions = THGuiRep::singleton().mSelectedRepStartStage != THGuiRep::singleton().mSelectedRepEndStage;
                 bool hasTransitionSyncData = THGuiRep::singleton().mRepParam.HasTransitionSyncData();
@@ -1227,15 +1231,15 @@ namespace TH20 {
                         if (THGuiRep::singleton().mRepStatus) {
                             ImGui::EndDisabled();
                             if (ImGui::IsItemHovered())
-                                ImGui::SetTooltip(S(TH20_MAINRPYFIX_TIMERS_FIX_DISABLE_HINT));
+                                ImGui::SetTooltip("%s", S(TH20_MAINRPYFIX_TIMERS_FIX_DISABLE_HINT));
                         }
 
                         ImGui::SameLine();
-                        HelpMarker(S(TH20_MAINRPYFIX_TIMERS_FIX_DESC));
+                        Gui::HelpMarker(S(TH20_MAINRPYFIX_TIMERS_FIX_DESC));
                         ImGui::SameLine();
-                        CustomMarker(S(TH20_MAINRPYFIX_TIPS), S(TH20_MAINRPYFIX_TIMERS_FIX_TIPS_DESC));
+                        Gui::CustomMarker(S(TH20_MAINRPYFIX_TIPS), S(TH20_MAINRPYFIX_TIMERS_FIX_TIPS_DESC));
                         ImGui::SameLine();
-                        CustomMarker(S(TH20_MAINRPYFIX_TIPS2), S(TH20_MAINRPYFIX_TIMERS_FIX_TIPS2_DESC));
+                        Gui::CustomMarker(S(TH20_MAINRPYFIX_TIPS2), S(TH20_MAINRPYFIX_TIMERS_FIX_TIPS2_DESC));
 
                         int32_t stage = THGuiRep::singleton().mRepStatus ? (GetMemContent(RVA(STAGE_NUM)) - 1) : -1;
                         uint32_t totalTransitions = THGuiRep::singleton().mSelectedRepEndStage - 1;
@@ -1303,9 +1307,9 @@ namespace TH20 {
                         if (mainRpyFixDisableSave) {
                             ImGui::EndDisabled();
                             if (ImGui::IsItemHovered()) {
-                                if (!startedOnSt1) ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_NO_ST1_HINT));
+                                if (!startedOnSt1) ImGui::SetTooltip("%s", S(TH20_MAINRPYFIX_SAVE_NO_ST1_HINT));
                                 else if (remainingTransitions) ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_PROGRESS_HINT), remainingTransitions, remainingTransitions > 1 ? "s" : "");
-                                else ImGui::SetTooltip(S(TH20_MAINRPYFIX_SAVE_SKIPPED_STAGE_HINT));
+                                else ImGui::SetTooltip("%s", S(TH20_MAINRPYFIX_SAVE_SKIPPED_STAGE_HINT));
                             }
                         } else if (saveClicked) {
                             THPracParam newRepParam = THGuiRep::singleton().mRepParam;
@@ -1327,7 +1331,7 @@ namespace TH20 {
                         if (advFixTimerOffsets) ImGui::Columns(1);
 
                     } else {
-                        ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                        ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_ALREADY_FIXED));
                         ImGui::SameLine();
 
                         if (ImGui::Button(S(TH_REPFIX_RESET_DATA))) {
@@ -1345,17 +1349,17 @@ namespace TH20 {
                     }
                 } else {
                     if (THGuiRep::singleton().mSelectedRepStartStage >= 1 && THGuiRep::singleton().mSelectedRepEndStage <= 6)
-                         ImGui::TextDisabled(S(TH20_MAINRPYFIX_SELECTED_NO_TRANSITIONS));
-                    else ImGui::TextDisabled(S(TH_REPFIX_MAIN_SELECTED_NONE));
+                         ImGui::TextDisabled("%s", S(TH20_MAINRPYFIX_SELECTED_NO_TRANSITIONS));
+                    else ImGui::TextDisabled("%s", S(TH_REPFIX_MAIN_SELECTED_NONE));
                 }
 
                 // Extra replay fix
                 ImGui::Separator();
-                CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
+                Gui::CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH20_EXTRA_RESOLUTION_FIX));
                 ImGui::SameLine();
-                HelpMarker(S(TH20_EXTRA_RESOLUTION_FIX_DESC));
+                Gui::HelpMarker(S(TH20_EXTRA_RESOLUTION_FIX_DESC));
                 bool extraResFixDisableSave = true;
 
                 if (THGuiRep::singleton().mSelectedRepEndStage == 7) {
@@ -1392,7 +1396,7 @@ namespace TH20 {
                         DisableTooltip(extraResFixDisableSave, TH20_EXRESFIX_SAVE_DISABLE_HINT, false);
 
                     } else {
-                        ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                        ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_ALREADY_FIXED));
                         ImGui::SameLine();
                         if (ImGui::Button(S(TH_REPFIX_RESET_DATA))) {
                             THPracParam newRepParam = THGuiRep::singleton().mRepParam;
@@ -1402,15 +1406,15 @@ namespace TH20 {
                         }
                     }
                 }
-                else ImGui::TextDisabled(S(TH_REPFIX_EXTRA_SELECTED_NONE));
+                else ImGui::TextDisabled("%s", S(TH_REPFIX_EXTRA_SELECTED_NONE));
 
                 // Expired pyramid bug replay fix
                 ImGui::Separator();
-                CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
+                Gui::CustomMarker(S(TH_REPFIX_NEED_THPRAC), S(TH_REPFIX_NEED_THPRAC_DESC));
                 ImGui::SameLine();
                 ImGui::TextUnformatted(S(TH20_EXPIRED_STONE_FIX));
                 ImGui::SameLine();
-                HelpMarker(S(TH20_EXPIRED_STONE_FIX_DESC));
+                Gui::HelpMarker(S(TH20_EXPIRED_STONE_FIX_DESC));
                 ImGui::SameLine();
                 ImGui::Checkbox(S(TH_TOOL_SHOW_TOGGLE), &showExpiredPyramidFixTool);
 
@@ -1506,7 +1510,7 @@ namespace TH20 {
                                 DisableTooltip(true, TH20_EXPSTONEFIX_SAVE_USE_MAINRPYFIX_HINT, false);
 
                         } else {
-                            ImGui::TextDisabled(S(TH_REPFIX_SELECTED_ALREADY_FIXED));
+                            ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_ALREADY_FIXED));
                             ImGui::SameLine();
                             if (ImGui::Button(S(TH_REPFIX_RESET_DATA2))) {
                                 THPracParam newRepParam = THGuiRep::singleton().mRepParam;
@@ -1516,7 +1520,7 @@ namespace TH20 {
                                 CloneSelectedReplayWithParams(newRepParam);
                             }
                         }
-                    } else ImGui::TextDisabled(S(TH_REPFIX_SELECTED_NONE));
+                    } else ImGui::TextDisabled("%s", S(TH_REPFIX_SELECTED_NONE));
                 }
 
                 EndOptGroup();
@@ -3320,7 +3324,7 @@ namespace TH20 {
         // Init
         GameGuiInit(IMPL_WIN32_DX9, RVA(0x1C4D48), RVA(WINDOW_PTR),
             Gui::INGAGME_INPUT_GEN2, RVA(0x1B88C0), RVA(0x1B88B8), 0,
-            -2, *(float*)RVA(0x1B8818), 0.0f);
+            *(float*)RVA(SCALE_ADDR));
 
         SetDpadHook(0x22651, 6);
 

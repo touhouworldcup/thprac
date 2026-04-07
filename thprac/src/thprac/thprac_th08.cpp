@@ -72,7 +72,7 @@ namespace TH08 {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValueEx(dlg, Bool);
+            GetJsonValue(dlg);
             GetJsonValue(frame);
             GetJsonValue(life);
             GetJsonValue(bomb);
@@ -88,7 +88,7 @@ namespace TH08 {
             GetJsonValue(night);
             GetJsonValue(familiar);
             GetJsonValue(rank);
-            GetJsonValueEx(rankLock, Bool);
+            GetJsonValue(rankLock);
 
             return true;
         }
@@ -96,8 +96,8 @@ namespace TH08 {
         {
             CreateJson();
 
-            AddJsonValueEx(version, GetVersionStr(), jalloc);
-            AddJsonValueEx(game, "th08", jalloc);
+            AddJsonVersion();
+            AddJsonValueEx(game, "th08");
             AddJsonValue(mode);
             AddJsonValue(stage);
             if (section)
@@ -252,17 +252,17 @@ namespace TH08 {
         {
             SetTitle(S(TH_MENU));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSize(370.f, 390.f);
                 SetPos(245.f, 75.f);
                 SetItemWidth(-60.0f);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSize(440.f, 375.f);
                 SetPos(190.f, 75.f);
                 SetItemWidth(-80.0f);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSize(380.f, 390.f);
                 SetPos(250.f, 75.f);
                 SetItemWidth(-65.0f);
@@ -559,15 +559,15 @@ namespace TH08 {
             float x_offset_1 = 0.0f;
             float x_offset_2 = 0.0f;
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 x_offset_1 = 0.12f;
                 x_offset_2 = 0.172f;
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 x_offset_1 = 0.12f;
                 x_offset_2 = 0.16f;
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 x_offset_1 = 0.18f;
                 x_offset_2 = 0.235f;
                 break;
@@ -606,7 +606,7 @@ namespace TH08 {
             }
         }
 
-        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", Gui::GetBackspaceMenuChord() };
+        Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x44abda, "B970A64E00E8BC1F0000E9C0020000"),
@@ -658,11 +658,12 @@ namespace TH08 {
     private:
         void FpsInit()
         {
-            mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th08.dll");
-            if (mOptCtx.vpatch_base) {
+            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+                OILPInit(mOptCtx);
+            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th08.dll")) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th08.dll", hash);
-                if (hash[0] != 14324321420199198230ll || hash[1] != 10561235471127337137ll)
+                if (hash[0] != 14324321420199198230ull || hash[1] != 10561235471127337137ull)
                     mOptCtx.fps_status = -1;
                 else if (*(int32_t*)(mOptCtx.vpatch_base + 0x17024) == 0) {
                     mOptCtx.fps_status = 2;
@@ -673,7 +674,11 @@ namespace TH08 {
         }
         void FpsSet()
         {
-            if (mOptCtx.fps_status == 1) {
+            if (mOptCtx.fps_status == 3) {
+                mOptCtx.oilp_set_game_fps(mOptCtx.fps);
+                mOptCtx.oilp_set_replay_skip_fps(mOptCtx.fps_replay_fast);
+                mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
+            } else if (mOptCtx.fps_status == 1){
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
             } else if (mOptCtx.fps_status == 2) {
                 *(int32_t*)(mOptCtx.vpatch_base + 0x15a4c) = mOptCtx.fps;
@@ -718,7 +723,7 @@ namespace TH08 {
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
 
-            if (Gui::GetChordPressed(Gui::GetAdvancedMenuChord())) {
+            if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
                 if (advOptWnd.IsOpen())
                     advOptWnd.Close();
                 else
@@ -734,19 +739,19 @@ namespace TH08 {
         {
             SetTitle(S(TH_SPELL_PRAC));
             switch (Gui::LocaleGet()) {
-            case Gui::LOCALE_ZH_CN:
+            case LOCALE_ZH_CN:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_EN_US:
+            case LOCALE_EN_US:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
                 SetAutoSpacing(true);
                 break;
-            case Gui::LOCALE_JA_JP:
+            case LOCALE_JA_JP:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
@@ -2326,7 +2331,7 @@ namespace TH08 {
         };
         tracker_info.th08.spells_captured++;
 
-        if (binary_search(last_spells, elementsof(last_spells), GetMemContent<uint32_t>(SPELLCARD_ID_ADDR)) != -1) {
+        if (binary_search(last_spells, elementsof(last_spells), GetMemContent<uint32_t>(SPELLCARD_ID_ADDR)) != UINT32_MAX) {
             tracker_info.th08.last_spells_captured++;
         }
     })
@@ -2510,7 +2515,7 @@ namespace TH08 {
     EHOOK_DY(th08_recreate_device, 0x442A7E, 1, {
         GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700,
             Gui::INGAGME_INPUT_GEN1, INPUT_ADDR, 0x164d530, 0x164d538,
-            -1);
+            1.0f);
     })
     HOOKSET_ENDDEF()
 
@@ -2522,7 +2527,7 @@ namespace TH08 {
         // Init
         GameGuiInit(IMPL_WIN32_DX8, 0x17ce760, 0x17ce700,
             Gui::INGAGME_INPUT_GEN1, INPUT_ADDR, 0x164d530, 0x164d538,
-            -1);
+            1.0f);
 
         SetDpadHook(0x43D48B, 3);
 

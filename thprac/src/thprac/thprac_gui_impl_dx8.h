@@ -18,6 +18,7 @@ namespace THPrac
 {
 	namespace Gui
 	{
+		void ImplDX8AdjustDispSize();
 		bool ImplDX8Init(IDirect3DDevice8* device);
 		void ImplDX8Check(IDirect3DDevice8* device);
 		void ImplDX8Shutdown();
