@@ -54,7 +54,7 @@ unsigned int WINAPI DownloadFile(DownloadParams* params);
 
 bool PreLaunchUpdate(HINSTANCE hInstance, wchar_t* pCmdLine, int nCmdShow, bool ask);
 bool ParseUpdateJson(char* buf, size_t len, UpdateJson* out);
-void CompleteUpdate(unsigned char* buf, size_t len, wchar_t* pCmdLine, int nCmdShow, UpdateJson* updateJson);
+void CompleteUpdate(unsigned char* buf, size_t len, const wchar_t* pCmdLine, int nCmdShow, UpdateJson* updateJson);
 bool LegacyPostUpdate(LPCWSTR lpCmdLine, int nCmdShow);
 
 }
