@@ -190,12 +190,15 @@ static void LauncherSettingsMain(LauncherState* state) {
 
     auto& t = state->settings.thcrap_dir;
     if (t) {
-        ImGui::Text("thcrap set to: %s", t.s);
-        if (ImGui::Button("Unset")) {
+        ImGui::Text(S(THPRAC_THCRAP_LOCATION), t.s);
+        if (ImGui::Button(S(THPRAC_THCRAP_UNSET))) {
+            state->thcrapError = A0000ERROR_C;
             t.clear();
         }
         ImGui::SameLine();
-        if (ImGui::Button("Add thcrap configs...")) {
+        if (ImGui::Button(S(THPRAC_THCRAP_ADDCFG))) {
+            state->thcrapError = A0000ERROR_C;
+
             wchar_t thcrapConfigDir[MAX_PATH + 1] = {};
             memcpy(thcrapConfigDir, t.w, t.w_len * sizeof(wchar_t));
             memcpy(thcrapConfigDir + t.w_len, SIZED(L"\\config\\*.js"));
@@ -211,14 +214,16 @@ static void LauncherSettingsMain(LauncherState* state) {
                 auto& name = state->foundThcrapConfigs.emplace_back();
                 WideCharToMultiByte(CP_UTF8, 0, find.cFileName, -1, name, MAX_PATH, nullptr, nullptr);
             } while (FindNextFileW(hFind, &find));
-
-            state->foundThcrapConfigsSel.resize(state->foundThcrapConfigs.size());
-
-            auto& v = state->foundThcrapConfigsSel;
-            std::fill(v.begin(), v.end(), '\x00');
+            if (state->foundThcrapConfigs.size()) {
+                auto& v = state->foundThcrapConfigsSel;
+                v.resize(state->foundThcrapConfigs.size());
+                memset(v.data(), v.size(), 0);
+            } else {
+                state->thcrapError = THPRAC_THCRAP_ADDCFG_404;
+            }
         }
         ImGui::SameLine();
-        if (ImGui::Button("Launch thcrap_configure")) {
+        if (ImGui::Button(S(THPRAC_THCRAP_LAUNCH_CONFIGURE))) {
             wchar_t conf_path[MAX_PATH + 1] = {};
             std::wstring_view conf_exe = L"\\bin\\thcrap_configure_v3.exe";
             
@@ -226,38 +231,41 @@ static void LauncherSettingsMain(LauncherState* state) {
                 memcpy(conf_path, t.w, t.w_len * sizeof(wchar_t));
                 memcpy(conf_path + t.w_len, conf_exe.data(), conf_exe.length() * sizeof(wchar_t));
                 
-                ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", conf_path, nullptr, nullptr, SW_SHOW);
+                if ((UINT_PTR)ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", conf_path, nullptr, nullptr, SW_SHOW) > 32) {
+                    state->thcrapError = A0000ERROR_C;
+                } else {
+                    state->thcrapError = THPRAC_THCRAP_LAUNCH_FAILED;
+                }
             }
         }
     } else {
         ImGui::TextUnformatted(S(THPRAC_THCRAP_NOTYET));
         if (ImGui::Button("Get thcrap")) {
             ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", L"https://thpatch.net", nullptr, nullptr, SW_SHOW);
+            state->thcrapError = A0000ERROR_C;
         }
         ImGui::SameLine();
-        if (ImGui::Button("Set Location")) {
+        if (ImGui::Button(S(THPRAC_THCRAP_SET))) {
             std::wstring new_thcrap_dir;
             if (SelectFolder(new_thcrap_dir, Gui::ImplWin32GetHwnd())) {
                 if (LauncherSettingsCheckThcrapDir(new_thcrap_dir)) {
                     t = new_thcrap_dir;
+                    state->thcrapError = A0000ERROR_C;
                 } else {
-                    ImGui::OpenPopup("Error##__bad_thcrap_dir");
+                    state->thcrapError = THPRAC_THCRAP_INVALID;
                 }
             }
         }
     }
+    if (state->thcrapError != A0000ERROR_C) {
+        ImGui::SameLine();
+        ImGui::TextUnformatted(S(state->thcrapError));
+    }
+
     ImGui::NewLine();
 
     // The rest of the settings, which will hopefully be displayed in-game too some day
     GuiSettings();
-
-    if (Gui::Modal("Error##__bad_thcrap_dir")) {
-        ImGui::TextUnformatted(S(THPRAC_THCRAP_INVALID));
-        if (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_OK)) != -1) {
-            ImGui::CloseCurrentPopup();
-        }
-        ImGui::EndPopup();
-    }
 }
 
 void UiUpdate(HWND hwnd, LauncherState* state) {

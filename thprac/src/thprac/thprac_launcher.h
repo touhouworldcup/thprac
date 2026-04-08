@@ -192,6 +192,8 @@ struct LauncherState {
     THGameID reflectiveLaunchID = ID_UNKNOWN;
     LauncherThcrapSelection thcrapSel;
 
+    th_glossary_t thcrapError = A0000ERROR_C;
+
     bool inScan = false;
     ScanCtx scanCtx;
     char instRenameBuf[256] = {};
