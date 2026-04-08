@@ -724,33 +724,6 @@ static bool DetailsPage(LauncherState* state) {
             ImGui::OpenPopup(S(THPRAC_GAMES_DELETE_MODAL));
         }
     }
-    if (Gui::Modal(S(THPRAC_GAMES_DELETE_MODAL))) {
-        ImGui::TextUnformatted(S(THPRAC_GAMES_DELETE_CONFIRM));
-        switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_YES), S(THPRAC_NO), nullptr)) {
-        case 0:
-            if (game->inst_count == 1) {
-                DestroyInst(game->instances + 0);
-                game->instances = 0;
-                game->inst_count = 0;
-                return false;
-            } else if (game->selected == game->inst_count - 1) {
-                DestroyInst(inst);
-                memset(inst, 0, sizeof(*inst));
-                game->inst_count--;
-                game->selected--;
-            } else {
-                LauncherInstance* begin = inst;
-                DestroyInst(begin);
-                size_t elem_to_move = game->instances + game->inst_count - begin - 1;
-                memmove(begin, begin + 1, elem_to_move * sizeof(LauncherInstance));
-                game->inst_count--;
-                game->instances[game->inst_count] = {};
-            }
-        case 1:
-            ImGui::CloseCurrentPopup();
-        }
-        ImGui::EndPopup();
-    }
     if (Gui::Modal("##cannot_delete_game")) {
         ImGui::TextUnformatted("Cannot delete this instance because thprac is attempting to launch this game.");
         if (Gui::MultiButtonsFillWindow(0.0f, "OK", nullptr) != -1) {
@@ -853,7 +826,39 @@ static bool DetailsPage(LauncherState* state) {
         }
         ImGui::EndPopup();
     }
-    return true;
+    bool ret = true;
+
+    if (Gui::Modal(S(THPRAC_GAMES_DELETE_MODAL))) {
+        ImGui::TextUnformatted(S(THPRAC_GAMES_DELETE_CONFIRM));
+        switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO), nullptr)) {
+        case 0:
+            if (game->inst_count == 1) {
+                DestroyInst(game->instances + 0);
+                game->instances = 0;
+                game->inst_count = 0;
+                ret = false;
+            }
+            else if (game->selected == game->inst_count - 1) {
+                DestroyInst(inst);
+                memset(inst, 0, sizeof(*inst));
+                game->inst_count--;
+                game->selected--;
+            }
+            else {
+                LauncherInstance* begin = inst;
+                DestroyInst(begin);
+                size_t elem_to_move = game->instances + game->inst_count - begin - 1;
+                memmove(begin, begin + 1, elem_to_move * sizeof(LauncherInstance));
+                game->inst_count--;
+                game->instances[game->inst_count] = {};
+            }
+        case 1:
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+
+    return ret;
 }
 
 static bool GameAlreadyExists(LauncherGame* game, const char* path) {
