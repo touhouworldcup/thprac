@@ -214,8 +214,8 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .title = TH128_TITLE,
         .versions = gGameVersions + VER_TH128,
         .ver_count = 1,
-        .steamId = 1100180,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th128",
+        .steamId = 1100180,
     },
     {
         .id = ID_TH143,
