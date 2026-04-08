@@ -77,6 +77,7 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .title = TH09_TITLE,
         .versions = gGameVersions + VER_TH09,
         .ver_count = 1,
+        .steamId = 1420810,
         .shots = THPRAC_GAMEROLL_TH09_SHOTTYPES,
         .shot_columns = 4,
     },
@@ -85,6 +86,7 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .title = TH10_TITLE,
         .versions = gGameVersions + VER_TH10,
         .ver_count = 1,
+        .steamId = 1100140,
         .shots = THPRAC_GAMEROLL_TH10_SHOTTYPES,
         .shot_columns = 3,
     },
@@ -93,6 +95,7 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .title = TH11_TITLE,
         .versions = gGameVersions + VER_TH11,
         .ver_count = 1,
+        .steamId = 1100150,
         .shots = THPRAC_GAMEROLL_TH11_SHOTTYPES,
         .shot_columns = 3,
     },
@@ -101,6 +104,7 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .title = TH12_TITLE,
         .versions = gGameVersions + VER_TH12,
         .ver_count = 1,
+        .steamId = 1100160,
         .shots = THPRAC_GAMEROLL_TH12_SHOTTYPES,
         .shot_columns = 2,
     },
@@ -110,6 +114,7 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH13,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th13",
+        .steamId = 1043230,
         .shots = THPRAC_GAMEROLL_TH13_SHOTTYPES,
         .shot_columns = 4,        
     },
@@ -119,6 +124,7 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH14,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th14",
+        .steamId = 1043240,
         .shots = THPRAC_GAMEROLL_TH14_SHOTTYPES,
         .shot_columns = 2,        
     },
@@ -128,6 +134,7 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH15,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th15",
+        .steamId = 937580,
         .shots = THPRAC_GAMEROLL_TH15_SHOTTYPES,
         .shot_columns = 4,        
     },
@@ -146,6 +153,7 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH17,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th17",
+        .steamId = 1079160,
         .shots = THPRAC_GAMEROLL_TH17_SHOTTYPES,
         .shot_columns = 3,        
     },
@@ -155,6 +163,7 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH18,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th18",
+        .steamId = 1566410,
         .shots = THPRAC_GAMEROLL_TH18_SHOTTYPES,
         .shot_columns = 4,        
     },
@@ -164,6 +173,7 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH19_V1_00A,
         .ver_count = 2,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th19",
+        .steamId = 2400340,
         .shots = THPRAC_GAMEROLL_TH19_SHOTTYPES,
         .shot_columns = 4,        
     },
@@ -173,6 +183,7 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH20,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th20",
+        .steamId = 3671710,
         .shots = THPRAC_GAMEROLL_TH20_SHOTTYPES,
         .shot_columns = 4,        
     },
@@ -187,12 +198,14 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .title = TH095_TITLE,
         .versions = gGameVersions + VER_TH095,
         .ver_count = 1,
+        .steamId = 1420650,
     },
     {
         .id = ID_TH125,
         .title = TH125_TITLE,
         .versions = gGameVersions + VER_TH125,
         .ver_count = 1,
+        .steamId = 1100170,
         .shots = THPRAC_GAMEROLL_TH125_SHOTTYPES,
         .shot_columns = 2,
     },
@@ -201,6 +214,7 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .title = TH128_TITLE,
         .versions = gGameVersions + VER_TH128,
         .ver_count = 1,
+        .steamId = 1100180,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th128",
     },
     {
@@ -209,6 +223,7 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH143,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th143",
+        .steamId = 937570,
     },
     {
         .id = ID_TH165,
@@ -216,13 +231,15 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .versions = gGameVersions + VER_TH165,
         .ver_count = 1,
         .appdataPath = L"%AppData%\\ShanghaiAlice\\th165",
+        .steamId = 924650,
     },
     {
         .id = ID_TH185,
         .title = TH185_TITLE,
         .versions = gGameVersions + VER_TH185,
         .ver_count = 1,
-        .appdataPath = L"%AppData%\\ShanghaiAlice\\th185",      
+        .appdataPath = L"%AppData%\\ShanghaiAlice\\th185",
+        .steamId = 2097720,
     },
     {
         .id = ID_TH075,
@@ -1366,8 +1383,11 @@ static inline void GamesList(LauncherState* state, LauncherGame* games_param, si
                 state->selectedGame = &game;
             }
         }
-        if (ImGui::IsItemHovered()) {
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
             state->hoveredGame = &game;
+            if (!game.instances && game.steamId && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+                ImGui::OpenPopup("##__menu_open_steam");
+            }
         }
         if (&game == state->hoveredGame && ImGui::BeginPopupContextItem("##__game_context")) {
             GameRightClickMenu(state, state->hoveredGame);
@@ -1694,5 +1714,19 @@ void LauncherGamesMain(LauncherState* state) {
     
     ImGui::TextUnformatted(S(THPRAC_GAMES_SPINOFF_OTHERS));
     GamesList(state, spinoffOthers, elementsof(spinoffOthers));
+
+    if (ImGui::BeginPopup("##__menu_open_steam")) {
+        if (ImGui::Selectable(S(THPRAC_GOTO_STEAM_PAGE))) {
+            wchar_t url[64] = {};
+            _snwprintf(url, 64, L"steam://store/%d", state->hoveredGame->steamId);
+
+            if ((UINT_PTR)ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", url, nullptr, nullptr, SW_SHOW) <= 32) {
+                _snwprintf(url, 64, L"https://store.steampowered.com/app/%d", state->hoveredGame->steamId);
+                ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", url, nullptr, nullptr, SW_SHOW);
+            }
+        }
+        ImGui::EndPopup();
+    }
+
 }
 }

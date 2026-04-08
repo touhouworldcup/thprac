@@ -105,6 +105,7 @@ struct LauncherGame {
     size_t ver_count;
 
     const wchar_t* appdataPath = nullptr;
+    uint32_t steamId = 0;
 
     // TODO: an std::vector would look a lot cleaner here, but I don't want the compiler
     // to generate atexit destructors for this struct. If a custom dynamic array type is
