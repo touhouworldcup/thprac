@@ -323,6 +323,11 @@ void LauncherLinksMain(LauncherState* state) {
             i.is_open = false;
         }
     }
+    ImGui::SameLine();
+    if (Gui::ButtonRight(S(THPRAC_LINKS_RESET))) {
+        state->linkSets = {};
+        LinksDefault(state->linkSets.emplace_back());
+    }
 
     if (openWhich != OPEN_NONE) {
         memset(state->linkEditTitleBuf, 0, 1024);
@@ -413,26 +418,34 @@ void LauncherLinksMain(LauncherState* state) {
         ImGui::InputText("##__linkname_input", state->linkEditTitleBuf, 1023);
 
         std::string_view sv = state->linkEditTitleBuf;
-        int sel;
+        
+        bool collision = false;
         for (const auto& i : state->linkSets) {
             if (i.name == sv) {
-                goto filter_name_collision;
+                collision = true;
             }
         }
-        sel = Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_OK), S(THPRAC_CANCEL), nullptr);
+
+        int sel = Gui::MultiButtonsFillWindow(0.0f, S(TH_OK), S(TH_CANCEL), nullptr);
         if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
-            sel = 1;
+            sel = 0;
+        }
+        if (sel == 0 && (collision || !(state->linkEditTitleBuf[0]))) {
+            sel = -1;
         }
         switch (sel) {
-        case 1:
-            LinksAddSet(state->linkSets, state->linkSelected.linkSetIdx, state->linkEditTitleBuf);
         case 0:
+            LinksAddSet(state->linkSets, state->linkSelected.linkSetIdx, state->linkEditTitleBuf);
+        case 1:
             ImGui::CloseCurrentPopup();
         }
-        goto filter_add_end_popup;
-    filter_name_collision:
-        ImGui::TextColored({ 1.0f, 0.0f, 0.0f, 1.0f }, "%s", S(THPRAC_LINKS_EDIT_ERR_REPEATED));
-    filter_add_end_popup:
+        ImGui::PushStyleColor(ImGuiCol_Text, 0xFFFF0000);
+        if (!(state->linkEditTitleBuf[0])) {
+            ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_ERR_NAME));
+        } else if (collision) {
+            ImGui::TextUnformatted(S(THPRAC_LINKS_EDIT_ERR_REPEATED));
+        }
+        ImGui::PopStyleColor();
         ImGui::EndPopup();
     }
 }
