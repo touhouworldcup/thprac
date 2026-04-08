@@ -376,6 +376,8 @@ static bool DownloadPopup(HINSTANCE hInstance, const wchar_t* title, const wchar
     return !dl.dl.abort_signal;
 }
 
+static const wchar_t* UPDATE_DIALOG_CHECKING[] = { L"检查更新中", L"Checking for update", L"更新を確認しています" };
+static const wchar_t* UPDATE_DIALOG_UPDATING[] = { L"正在更新thprac", L"Updating thprac", L"thpracを更新しています" };
 static const wchar_t* UPDATE_DIALOG_TITLE[] = { L"更新thprac？", L"Update thprac?", L"thpracを更新しますか？" };
 static const wchar_t* UPDATE_DIALOG_TEXT[] = {
     L"已检测到thprac的新版本。\n是否现在下载更新？",
@@ -393,6 +395,8 @@ static bool PreLaunchUpdateConfirm() {
 }
 
 bool PreLaunchUpdate(HINSTANCE hInstance, wchar_t* pCmdLine, int nCmdShow, bool update_without_confirmation) {
+    auto l = Gui::LocaleGet();
+
     WNDCLASS wc = { 
         .lpfnWndProc = DownloadPopupWndProc,
         .hInstance = hInstance,
@@ -402,7 +406,7 @@ bool PreLaunchUpdate(HINSTANCE hInstance, wchar_t* pCmdLine, int nCmdShow, bool 
     defer(UnregisterClassW(L"thprac update", hInstance));
 
     std::vector<unsigned char> buf;
-    if (!DownloadPopup(hInstance, L"Checking for update...", UPDATE_JSON_URL, buf)) {
+    if (!DownloadPopup(hInstance, UPDATE_DIALOG_CHECKING[l], UPDATE_JSON_URL, buf)) {
         return false;
     }
 
@@ -416,7 +420,7 @@ bool PreLaunchUpdate(HINSTANCE hInstance, wchar_t* pCmdLine, int nCmdShow, bool 
         && (update_without_confirmation || PreLaunchUpdateConfirm())
         && DownloadPopup(
             hInstance,
-            L"Downloading thprac update...",
+            UPDATE_DIALOG_UPDATING[l],
             utf8_to_utf16(updateJson.url).c_str(),
             buf)
         )

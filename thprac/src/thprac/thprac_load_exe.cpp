@@ -304,18 +304,6 @@ bool ApplyToProcById(DWORD pid) {
     return true;
 }
 
-enum thprac_prompt_t {
-    PR_FAILED,
-    PR_INFO_ATTACHED,
-    PR_INFO_NO_GAME_FOUND,
-    PR_ASK_IF_ATTACH,
-    PR_ASK_IF_CONTINUE,
-    PR_ASK_USE_VPATCH,
-    PR_ERR_NO_GAME_FOUND,
-    PR_ERR_ATTACH_FAILED,
-    PR_ERR_RUN_FAILED,
-};
-
 bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game, THGameID gameID) {
     bool hasPrompted = false;
 

@@ -259,7 +259,7 @@ void GuiSettings() {
     ImGui::Separator();
 
     ImGui::PushItemWidth(ImGui::GetFontSize() * 8.0f);
-    if (ImGui::Combo(S(THPRAC_SETTING_LANGUAGE), (int*)&gSettings.language, "中文\0English\0日本語\0\0")) {
+    if (ImGui::Combo("语言/Language/言語", (int*)&gSettings.language, "中文\0English\0日本語\0\0")) {
         Gui::LocaleSet(gSettings.language);
     }
     if (ImGui::Combo(S(THPRAC_THEME), &gSettings.theme, S(THPRAC_THEME_OPTION))) {
@@ -290,7 +290,7 @@ void GuiSettings() {
     }
 
     ImGui::NewLine();
-    ImGui::TextUnformatted("Startup behavior");
+    ImGui::TextUnformatted(S(THPRAC_LAUNCH_BEHAVIOR));
     ImGui::SameLine();
     Gui::HelpMarker("All of these settings only apply after a restart.");
     ImGui::Separator();
@@ -318,14 +318,14 @@ void GuiSettings() {
     
     if (!background_update_check || background_update_check->hThread) {
         ImGui::BeginDisabled();
-        ImGui::Button("Check for updates");
+        ImGui::Button(S(THPRAC_CHECK_UPDATE_NOW));
         ImGui::EndDisabled();
-    } else if (ImGui::Button("Check for updates")) {
+    } else if (ImGui::Button(S(THPRAC_CHECK_UPDATE_NOW))) {
         background_update_check->hThread = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)DownloadFile, background_update_check, 0, nullptr);
     }
     
     ImGui::NewLine();
-    ImGui::TextUnformatted("Hotkey mappings");
+    ImGui::TextUnformatted(S(THPRAC_REBIND_HOTKEYS));
     ImGui::Separator();
 
     struct GuiHotkeyOption {

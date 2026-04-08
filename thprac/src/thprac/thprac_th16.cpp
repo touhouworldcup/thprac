@@ -2175,10 +2175,6 @@ namespace TH16 {
         TH_TRACKER_AYA,
         TH_TRACKER_MARISA
     };
-    constexpr th_glossary_t SEASONNAMES[] = {
-        TH_TRACKER_SPRING, TH_TRACKER_SUMMER, TH_TRACKER_AUTUMN, 
-        TH_TRACKER_WINTER, TH_TRACKER_DOG
-    };
 
     void THTrackerUpdate() {
         Gui::SetNextWindowSizeRel({ 340.0f / 1280, 0.0f });
@@ -2187,7 +2183,7 @@ namespace TH16 {
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 
         char buf[32] = {};
-        snprintf(buf, sizeof(buf), "%s+%s", S(CHARNAMES[GetMemContent(CHARACTER)]), S(SEASONNAMES[GetMemContent(SUBSHOT)]));
+        snprintf(buf, sizeof(buf), "%s+%s", S(CHARNAMES[GetMemContent(CHARACTER)]), S(TH16_SUBSEASON_ALL[GetMemContent(SUBSHOT)]));
         auto textSize = ImGui::CalcTextSize(buf);
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - textSize.x * 0.5f);

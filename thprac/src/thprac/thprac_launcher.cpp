@@ -335,10 +335,12 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
             GetExitCodeThread(background_update_check->hThread, &exitCode);
 
             if (exitCode == 0) {
-                ImGui::OpenPopup(S(THPRAC_UPDATE_MODAL));
+                if (background_update_check->updateJson.ver > gVersion) {
+                    ImGui::OpenPopup(S(THPRAC_UPDATE_MODAL));
+                }
             }
             else {
-                ImGui::OpenPopup("Update unavailable");
+                ImGui::OpenPopup(S(THPRAC_UPDATE_ERROR_MODAL));
             }
             CloseHandle(background_update_check->hThread);
             background_update_check->hThread = NULL;
@@ -356,13 +358,12 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
                 char txt[16] = {};
                 char* txt_end = txt + snprintf(txt, 15, "%.2f%%", prog * 100);
                 Gui::ProgressBar(prog, txt, txt_end);
-            }
-            else {
+            } else {
                 Gui::ProgressBar(0.0f, "0.0%");
             }
             ImGui::SetCursorPosY(ImGui::GetWindowHeight() - (ImGui::GetFontSize() + style.FramePadding.y * 2 + style.ItemSpacing.y * 2));
 
-            if (ImGui::Button("Cancel")) {
+            if (ImGui::Button(S(TH_CANCEL))) {
                 state->updateDownload.abort_signal = true;
             }
 
@@ -382,7 +383,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
             }
             else if (waitStatus != WAIT_TIMEOUT) {
                 ImGui::CloseCurrentPopup();
-                ImGui::OpenPopup("Update unavailable");
+
             }
         } else {
             ImGui::Text(S(THPRAC_UPDATE_PROMPT), VER_PARAMS(background_update_check->updateJson.ver));
@@ -405,7 +406,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
         }
         ImGui::EndPopup();
     }
-    if (Gui::Modal("Update unavailable")) {
+    if (Gui::Modal(S(THPRAC_UPDATE_ERROR_MODAL))) {
         ImGui::TextUnformatted("An error occurred while looking for updates.\nDo you want to permanentally disable automatic update checking?");
         switch (Gui::MultiButtonsFillWindow(0.0f, "Yes", "No", nullptr)) {
         case 0:
@@ -415,7 +416,6 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
         }
         ImGui::EndPopup();
     }
-
 
     ImGui::End();
     ImGui::EndFrame();

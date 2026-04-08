@@ -616,7 +616,7 @@ void LaunchCustom(const wchar_t* dir, THGameType type) {
 }
 
 static bool DetailsPage(LauncherState* state) {
-    if (ImGui::Button("Back")) {
+    if (ImGui::Button(S(TH_BACK))) {
         return false;
     }
 
@@ -785,18 +785,20 @@ static bool DetailsPage(LauncherState* state) {
             game->default_launch = -1;
         }
     }
+    ImGui::SameLine();
+    Gui::HelpMarker(S(THPRAC_GAMES_DEFAULT_LAUNCH_DESC));
 
     if (inst->type != TYPE_THCRAP && inst->type != TYPE_STEAM) {
         if (ver->has_oilp) {
-            ImGui::Checkbox("Allow OpenInputLagPatch", &inst->allow_oilp);
+            ImGui::Checkbox(S(THPRAC_GAMES_USE_OILP), &inst->allow_oilp);
             ImGui::SameLine();
         }
         if (ver->has_vpatch) {
-            ImGui::Checkbox("Allow Vpatch", &inst->allow_vpatch);
+            ImGui::Checkbox(S(THPRAC_GAMES_USE_VPATCH), &inst->allow_vpatch);
             ImGui::SameLine();
         }
         if (ver->has_oilp && ver->has_vpatch) {
-            Gui::HelpMarker("If both boxes are ticked and both Vpatch and OpenInputLagPatch are present, OpenInputLagPatch takes priority");
+            Gui::HelpMarker(S(THPRAC_GAMES_VPATCH_OILP_PRIORITY));
         } else if (ver->has_oilp || ver->has_vpatch) {
             ImGui::NewLine();
         }
@@ -1274,7 +1276,7 @@ static bool ScanForGamesUI(ScanCtx* scanCtx, bool apply_thprac) {
     // WAIT_FAILED: Scan thread does not exist
     DWORD scanStatus = WaitForSingleObject(scanCtx->scan_thread, 0);
 
-    if (ImGui::Button(S(THPRAC_ABORT))) {
+    if (ImGui::Button(S(TH_ABORT))) {
         scanCtx->abort_message = true;
         WaitForSingleObject(scanCtx->scan_thread, INFINITE);
         CloseHandle(scanCtx->scan_thread);
@@ -1404,12 +1406,12 @@ static inline void GamesList(LauncherState* state, LauncherGame* games_param, si
     }
 }
 
-void RandomGameSetUI(const char* id, bool* choices, unsigned int choices_len, LauncherGame* games_param) {
+void RandomGameSetUI(const char* id, bool* choices, unsigned int choices_len, const th_glossary_t* names) {
     ImGui::BeginTable(id, 6);
     ImGui::TableNextRow();
     for (size_t i = 0; i < choices_len; i++) {
         ImGui::TableNextColumn();
-        ImGui::Checkbox(gThGameStrs[games_param[i].id], choices + i);
+        ImGui::Checkbox(S(names[i]), choices + i);
     }
     ImGui::EndTable();
 }
@@ -1449,7 +1451,7 @@ static inline unsigned RollChoices(bool* choices, unsigned count) {
 }
 
 void RandomShotRollUI(LauncherState* state) {
-    if (ImGui::Button("Back")) {
+    if (ImGui::Button(S(TH_BACK))) {
         state->toolFunc = nullptr;
     }
 
@@ -1519,7 +1521,7 @@ void RandomShotRollUI(LauncherState* state) {
 }
 
 void RandomGameRollUI(LauncherState* state) {
-    if (ImGui::Button("Back")) {
+    if (ImGui::Button(S(TH_BACK))) {
         state->toolFunc = nullptr;
     }
 
@@ -1527,13 +1529,13 @@ void RandomGameRollUI(LauncherState* state) {
     Gui::TextCentered(S(THPRAC_TOOLS_RND_GAME), ImGui::GetWindowWidth());
     ImGui::Separator();
 
-    RandomGameSetUI("###__random_games_pc98", state->randomGameChoices.pc98_choice, PC98_GAMES_LEN, pc98Games);
+    RandomGameSetUI("###__random_games_pc98", state->randomGameChoices.pc98_choice, PC98_GAMES_LEN, THPRAC_GAMEROLL_PC98);
     ImGui::NewLine();
-    RandomGameSetUI("###__random_games_maingame", state->randomGameChoices.maingame_choice, MAIN_GAMES_LEN, mainGames);
+    RandomGameSetUI("###__random_games_maingame", state->randomGameChoices.maingame_choice, MAIN_GAMES_LEN, THPRAC_GAMEROLL_MAINGAMES);
     ImGui::NewLine();
-    RandomGameSetUI("###__random_games_spinoff_shmup", state->randomGameChoices.spinoff_shmup_choice, SPINOFF_SHMUP_LEN, spinoffShmups);
+    RandomGameSetUI("###__random_games_spinoff_shmup", state->randomGameChoices.spinoff_shmup_choice, SPINOFF_SHMUP_LEN, THPRAC_GAMEROLL_SPINOFF_SHMUP);
     ImGui::NewLine();
-    RandomGameSetUI("###__random_games_spinoff_other", state->randomGameChoices.spinoff_other_choice, SPINOFF_OTHER_LEN, spinoffOthers);
+    RandomGameSetUI("###__random_games_spinoff_other", state->randomGameChoices.spinoff_other_choice, SPINOFF_OTHER_LEN, THPRAC_GAMEROLL_SPINOFF_OTHER);
     ImGui::NewLine();
 
     Gui::CheckboxAll(S(THPRAC_TOOLS_RND_GAME_PC98), state->randomGameChoices.pc98_choice, PC98_GAMES_LEN);
@@ -1571,15 +1573,15 @@ void RandomGameRollUI(LauncherState* state) {
 }
 
 void ThcrapAddConfigsUI(LauncherState* state) {
-    if (ImGui::Button("Back")) {
+    if (ImGui::Button(S(TH_BACK))) {
         state->foundThcrapConfigs.clear();
         return;
     }
 
     ImGui::SameLine();
-    Gui::TextCentered("Add thcrap configs", ImGui::GetWindowWidth());
+    Gui::TextCentered(S(THPRAC_THCRAP_ADDCFG), ImGui::GetWindowWidth());
     ImGui::Separator();
-    ImGui::TextUnformatted("Add the following selected configs");
+    ImGui::TextUnformatted(S(THPRAC_THCRAP_ADDCFG_CONFIGS));
 
     auto& style = ImGui::GetStyle();
     
@@ -1599,7 +1601,7 @@ void ThcrapAddConfigsUI(LauncherState* state) {
 
     ImGui::EndTable();
     ImGui::EndChild();
-    ImGui::TextUnformatted("...to the following selected games:");
+    ImGui::TextUnformatted(S(THPRAC_THCRAP_ADDCFG_GAMES));
     ImGui::BeginChild(0x7FC2A9, { 0, child_height }, true);
 
     ImGui::BeginTable("##_thcrap_main_games", 7);
@@ -1627,7 +1629,7 @@ void ThcrapAddConfigsUI(LauncherState* state) {
     ImGui::EndTable();
     ImGui::EndChild();
 
-    Gui::CheckboxAll("All configs", (bool*)state->foundThcrapConfigsSel.data(), state->foundThcrapConfigsSel.size());
+    Gui::CheckboxAll(S(THPRAC_THCRAP_ADDCFG_ALLCFG), (bool*)state->foundThcrapConfigsSel.data(), state->foundThcrapConfigsSel.size());
     ImGui::SameLine();
     Gui::CheckboxAll(S(THPRAC_GAMES_MAIN_SERIES), state->thcrapSel.main_series, MAIN_GAMES_LEN);
     ImGui::SameLine();
@@ -1635,7 +1637,7 @@ void ThcrapAddConfigsUI(LauncherState* state) {
     ImGui::SameLine();
     Gui::CheckboxAll(S(THPRAC_GAMES_SPINOFF_OTHERS), state->thcrapSel.spinoff_others, SPINOFF_OTHER_LEN);
     ImGui::SameLine();
-    if (Gui::ButtonRight("Apply", ImGui::GetWindowWidth())) {
+    if (Gui::ButtonRight(S(TH_APPLY), ImGui::GetWindowWidth())) {
         for (size_t i = 0; i < GAMES_LEN; i++) {
             if (!state->thcrapSel.sel[i]) {
                 continue;
@@ -1679,7 +1681,7 @@ void LauncherGamesMain(LauncherState* state) {
                 "thprac cannot attempt to launch this game because it is currently waiting for an instance of this game to start.\n"
                 "Do you want to abort this wait? Note: the game might still start, but without attaching thprac\n"
             );
-            switch (Gui::MultiButtonsFillWindow(0.0f, "Yes", "No", nullptr)) {
+            switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO), nullptr)) {
             case 0:
                 state->reflectiveLaunchID = ID_UNKNOWN;
             case 1:
@@ -1688,7 +1690,7 @@ void LauncherGamesMain(LauncherState* state) {
         }
         else {
             ImGui::TextUnformatted("In the time it took you to read this popup, the game already launched");
-            if (Gui::MultiButtonsFillWindow(0.0f, "OK", nullptr) == 0) {
+            if (Gui::MultiButtonsFillWindow(0.0f, S(TH_OK), nullptr) == 0) {
                 ImGui::CloseCurrentPopup();
             }
         }

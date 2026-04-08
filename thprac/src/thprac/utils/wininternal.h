@@ -299,10 +299,7 @@ write_fs_dword(offsetof(TEB, member), (data))) \
 #define CurrentPeb() ((PEB*)read_teb_member(ProcessEnvironmentBlock))
 #endif
 
-#define KernelSharedDataAddr (0x7FFE0000u)
-
 #define CurrentImageBase ((uintptr_t)CurrentPeb()->ImageBaseAddress)
-
 #define CurrentModuleHandle ((HMODULE)CurrentImageBase)
 #define CurrentProcessHandle ((HANDLE)(LONG_PTR)-1)
 
