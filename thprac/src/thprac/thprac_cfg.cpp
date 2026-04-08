@@ -400,6 +400,12 @@ void GuiSettings() {
         ImGui::SameLine();
         Gui::CustomMarker("(!)", S(THPRAC_HOTKEY_SUBMASK_WARNING));
     }
+    ImGui::SameLine();
+    Gui::HelpMarker(S(THPRAC_HOTKEY_LANGUAGE_TOOLTIP));
+
+    if (ImGui::Button(S(THPRAC_HOTKEY_RESET))) {
+        hotkeys = {};
+    }
 }
 
 }

@@ -80,7 +80,7 @@ struct HotkeyChords {
     int backspace_menu = 1 << ChordKey_Backspace;
     int advanced_menu = 1 << ChordKey_F12;
     int screenshot = 1 << ChordKey_Home;
-    int tracker = 1 << ChordKey_End;
+    int tracker = 1 << ChordKey_Tab;
     int language = 1 << ChordKey_Alt;
 };
 
