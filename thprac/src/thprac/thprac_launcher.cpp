@@ -217,7 +217,7 @@ static void LauncherSettingsMain(LauncherState* state) {
             if (state->foundThcrapConfigs.size()) {
                 auto& v = state->foundThcrapConfigsSel;
                 v.resize(state->foundThcrapConfigs.size());
-                memset(v.data(), v.size(), 0);
+                memset(v.data(), 0, v.size());
             } else {
                 state->thcrapError = THPRAC_THCRAP_ADDCFG_404;
             }
