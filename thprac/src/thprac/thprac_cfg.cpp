@@ -262,7 +262,10 @@ void GuiSettings() {
     ImGui::Separator();
 
     ImGui::PushItemWidth(ImGui::GetFontSize() * 8.0f);
-    ImGui::Combo("语言/Language/言語", (int*)&gSettings.language, "中文\0English\0日本語\0\0");
+    if (ImGui::Combo("语言/Language/言語", (int*)&gSettings.language, "中文\0English\0日本語\0\0")) {
+        ImGui::SameLine();
+        ImGui::TextColored({ 1.0f, 0.0f, 0.0f, 1.0f }, "%s", S(THPRAC_LANG_SWITCH_UI_FROZEN));
+    }
     if (ImGui::Combo(S(THPRAC_THEME), &gSettings.theme, S(THPRAC_THEME_OPTION))) {
         SetTheme(gSettings.theme);
     }

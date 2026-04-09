@@ -205,6 +205,8 @@
       "THPRAC_GAMES_LAUNCH_GAME": [ "开始游戏", "Start game", "ゲームを開始" ],
       "THPRAC_GOTO_STEAM_PAGE": [ "前往Steam页面", "Go to Steam page", "Steamページに移動" ],
 
+      "THPRAC_LANG_SWITCH_UI_FROZEN": [ "UI is frozen", "UI is frozen", "UI is frozen" ],
+
       "THPRAC_GAMEROLL_ALCOSTG": [ "黄昏酒场", "alcostg", "黄昏酒場" ],
       "THPRAC_GAMEROLL_TH01": [ "灵异传", "th01", "靈異伝" ],
       "THPRAC_GAMEROLL_TH02": [ "封魔录", "th02", "封魔録" ],
