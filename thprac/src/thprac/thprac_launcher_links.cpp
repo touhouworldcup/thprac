@@ -312,13 +312,13 @@ void LauncherLinksMain(LauncherState* state) {
     ImGui::EndTable();
     ImGui::EndChild();
 
-    if (ImGui::Button("Expand all")) {
+    if (ImGui::Button(S(THPRAC_LINKS_EXPAND_ALL))) {
         for (auto& i : state->linkSets) {
             i.is_open = true;
         }
     }
     ImGui::SameLine();
-    if (ImGui::Button("Collapse all")) {
+    if (ImGui::Button(S(THPRAC_LINKS_COLLAPSE_ALL))) {
         for (auto& i : state->linkSets) {
             i.is_open = false;
         }

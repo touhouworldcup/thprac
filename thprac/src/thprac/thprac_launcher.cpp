@@ -16,6 +16,8 @@ namespace Gui {
     extern IDirect3DDevice9* ImplDX9GetDevice();
 }
 
+static const wchar_t* LAUNCHER_TITLE_W[] = { L"thprac - 东方游戏启动器", L"thprac - Touhou Game Launcher", L"thprac - 東方ゲームランチャー" };
+
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // Constinit structs where all the required data is already here
@@ -177,7 +179,7 @@ static void LauncherSettingsMain(LauncherState* state) {
         return ThcrapAddConfigsUI(state);
     }
 
-    ImGui::TextUnformatted("Launcher settings");
+    ImGui::TextUnformatted(S(THPRAC_LAUNCHER_SETTINGS));
     ImGui::Separator();
     ImGui::Combo(   S(THPRAC_AFTER_LAUNCH),         (int*)&state->settings.after_launch,         S(THPRAC_AFTER_LAUNCH_OPTION));
     ImGui::Combo(   S(THPRAC_APPLY_THPRAC_DEFAULT), (int*)&state->settings.apply_thprac_default, S(THPRAC_APPLY_THPRAC_DEFAULT_OPTION));
@@ -185,7 +187,7 @@ static void LauncherSettingsMain(LauncherState* state) {
     ImGui::SameLine();
     Gui::HelpMarker(S(THPRAC_AUTO_DEFAULT_LAUNCH_DESC));
     ImGui::NewLine();
-    ImGui::TextUnformatted("thcrap");
+    ImGui::TextUnformatted("thcrap"); // Doesn't need translation
     ImGui::Separator();
 
     auto& t = state->settings.thcrap_dir;
@@ -240,7 +242,7 @@ static void LauncherSettingsMain(LauncherState* state) {
         }
     } else {
         ImGui::TextUnformatted(S(THPRAC_THCRAP_NOTYET));
-        if (ImGui::Button("Get thcrap")) {
+        if (ImGui::Button(S(THPRAC_THCRAP_GET))) {
             ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", L"https://thpatch.net", nullptr, nullptr, SW_SHOW);
             state->thcrapError = A0000ERROR_C;
         }
@@ -271,6 +273,7 @@ static void LauncherSettingsMain(LauncherState* state) {
 void UiUpdate(HWND hwnd, LauncherState* state) {
     if (Gui::LocaleGet() != gSettings.language) {
         Gui::LocaleSet(gSettings.language);
+        SetWindowTextW(hwnd, LAUNCHER_TITLE_W[Gui::LocaleGet()]);
         UpdateUIScaling(g_Scale);
     }
 
@@ -355,7 +358,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
     ImGui::SetNextWindowSize({ 355.0f, 128.0f });
     if (Gui::Modal(S(THPRAC_UPDATE_MODAL))) {
         if (state->hUpdateThread) {
-            ImGui::TextUnformatted("Downloading update...");
+            ImGui::TextUnformatted(S(THPRAC_UPDATE_DOWNLOADING));
             
             if (state->updateDownload.filesize) {
                 float prog = (float)state->updateDownload.out.size() / (float)state->updateDownload.filesize;
@@ -392,7 +395,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
             }
         } else {
             ImGui::Text(S(THPRAC_UPDATE_PROMPT), VER_PARAMS(background_update_check->updateJson.ver));
-            switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_UPDATE_AUTO_UPDATE), "Download manually", nullptr)) {
+            switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_UPDATE_AUTO_UPDATE), S(THPRAC_UPDATE_DOWNLOAD_MANUALLY), nullptr)) {
             case 0:
                 state->updateUrl = utf8_to_utf16(background_update_check->updateJson.url);
                 state->updateDownload.url = state->updateUrl.c_str();
@@ -401,7 +404,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
             case 1:
                 ShellExecuteA(Gui::ImplWin32GetHwnd(), "open", background_update_check->updateJson.url, nullptr, nullptr, SW_SHOW);
             }
-            switch (Gui::MultiButtonsFillWindow(0.0f, "View changelog", "Close", nullptr)) {
+            switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_UPDATE_VIEW_CHANGELOG), S(TH_CLOSE), nullptr)) {
             case 0:
                 ShellExecuteA(Gui::ImplWin32GetHwnd(), "open", background_update_check->updateJson.changelog, nullptr, nullptr, SW_SHOW);
                 break;
@@ -412,8 +415,8 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
         ImGui::EndPopup();
     }
     if (Gui::Modal(S(THPRAC_UPDATE_ERROR_MODAL))) {
-        ImGui::TextUnformatted("An error occurred while looking for updates.\nDo you want to permanentally disable automatic update checking?");
-        switch (Gui::MultiButtonsFillWindow(0.0f, "Yes", "No", nullptr)) {
+        ImGui::TextUnformatted(S(THPRAC_UPDATE_ERROR_ASK_DISABLE));
+        switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO), nullptr)) {
         case 0:
             gSettings.check_update = CHECK_UPDATE_NEVER;
         case 1:
@@ -586,7 +589,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
     LauncherState* state = new LauncherState;
 
     HWND hwnd = CreateWindowExW(
-        0, g_WndCls.lpszClassName, L"thprac - Touhou Game Launcher", WS_OVERLAPPEDWINDOW,
+        0, g_WndCls.lpszClassName, LAUNCHER_TITLE_W[Gui::LocaleGet()], WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT, 960, 720,
         NULL, NULL, g_WndCls.hInstance, state);
 

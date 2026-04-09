@@ -355,7 +355,7 @@ static bool LauncherRunWithThcrap(std::wstring_view dir, std::wstring_view runcf
 
 static bool LauncherRunGame(LauncherState* state, THGameID game, LauncherInstance* inst) {
     if (state->reflectiveLaunchID == game) {
-        ImGui::OpenPopup("Cannot launch this game");
+        ImGui::OpenPopup(S(THPRAC_GAMES_CANNOT_LAUNCH_MODAL));
         return false;
     }
 
@@ -690,7 +690,7 @@ static bool DetailsPage(LauncherState* state) {
             ImGui::TextUnformatted(S(TH_TYPE_SELECT[inst.type]));
             if (inst.type == TYPE_ERROR) {
                 ImGui::SameLine();
-                Gui::CustomMarker("(!)", "You tampered with the config file, didn't you?");
+                Gui::CustomMarker("(!)", S(THPRAC_GAMES_CONFIG_TAMPERED));
             }
 
             ImGui::TableSetColumnIndex(2);
@@ -725,7 +725,7 @@ static bool DetailsPage(LauncherState* state) {
         }
     }
     if (Gui::Modal("##cannot_delete_game")) {
-        ImGui::TextUnformatted("Cannot delete this instance because thprac is attempting to launch this game.");
+        ImGui::TextUnformatted(S(THPRAC_GAMES_CANNOT_DELETE_INST));
         if (Gui::MultiButtonsFillWindow(0.0f, "OK", nullptr) != -1) {
             ImGui::CloseCurrentPopup();
         }
@@ -805,7 +805,7 @@ static bool DetailsPage(LauncherState* state) {
     }
 
     if (state->reflectiveLaunchID == game->id) {
-        if (LargeBottomButton("Abort wait for current launch", 64.0f)) {
+        if (LargeBottomButton(S(THPRAC_GAMES_LAUNCH_ABORT_WAIT), 64.0f)) {
             state->reflectiveLaunchID = ID_UNKNOWN;
         }
     } else {
@@ -816,7 +816,7 @@ static bool DetailsPage(LauncherState* state) {
 
     if (Gui::Modal(S(THPRAC_GAMES_RENAME_MODAL))) {
         ImGui::InputText("", state->instRenameBuf, 255);
-        switch (Gui::MultiButtonsFillWindow(0.0f, "OK", "Cancel", nullptr)) {
+        switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_OK), S(TH_CANCEL), nullptr)) {
         case 0: {
             if (inst->name) {
                 free((void*)inst->name);
@@ -1233,9 +1233,9 @@ void FoundGamesTable(ScanCtx* scanCtx) {
     }
 
     ImGui::TableNextColumn();
-    ImGui::TextUnformatted("Game Type");
+    ImGui::TextUnformatted(S(THPRAC_SCAN_SCAN_RESULT_C1));
     ImGui::TableNextColumn();
-    ImGui::TextUnformatted("Path");
+    ImGui::TextUnformatted(S(THPRAC_SCAN_SCAN_RESULT_C2));
 
     auto& found = scanCtx->found;
     for (size_t i = 0; i < found.size(); i++) {
@@ -1247,7 +1247,7 @@ void FoundGamesTable(ScanCtx* scanCtx) {
         ImGui::PopID();
 
         ImGui::TableNextColumn();
-        ImGui::TextUnformatted(S(TH_TYPE_SELECT[found[i].info.type]));
+        ImGui::Text("%s (%s)", gThGameStrs[found[i].info.ver->gameId], S(TH_TYPE_SELECT[found[i].info.type]));
 
         ImGui::TableNextColumn();
         ImGui::TextUnformatted(found[i].path);
@@ -1300,16 +1300,16 @@ static bool ScanForGamesUI(ScanCtx* scanCtx, bool apply_thprac) {
             }
         } else {
             ImGui::SetCursorPosY(childHeight / 2);
-            Gui::TextCentered("No games found", ImGui::GetWindowWidth());
+            Gui::TextCentered(S(THPRAC_SCAN_NOTHING_FOUND), ImGui::GetWindowWidth());
         }
     }
     ImGui::EndChild();
 
     switch (scanStatus) {
     case WAIT_FAILED:
-        ImGui::Checkbox("Use relative paths", &scanCtx->relative);
+        ImGui::Checkbox(S(THPRAC_GAMES_SCAN_RELATIVE), &scanCtx->relative);
         ImGui::SameLine();
-        Gui::HelpMarker("Store paths to games as paths relative to where thprac is located");
+        Gui::HelpMarker(S(THPRAC_GAMES_SCAN_RELATIVE_DESC));
         ImGui::SameLine();
         if (Gui::ButtonRight(S(THPRAC_LINKS_EDIT_FOLDER), ImGui::GetWindowWidth()) && SelectFolder(scanCtx->scan_dir, Gui::ImplWin32GetHwnd())) {
             scanCtx->scan_thread = CreateThread(nullptr, 0, ScanThread, scanCtx, 0, nullptr);
@@ -1323,25 +1323,25 @@ static bool ScanForGamesUI(ScanCtx* scanCtx, bool apply_thprac) {
         }
         break;
     case WAIT_OBJECT_0:
-        if (ImGui::Button("Select Original")) for (auto& game : scanCtx->found) {
+        if (ImGui::Button(S(THPRAC_GAMES_SELECT_ORIGINAL))) for (auto& game : scanCtx->found) {
             if (game.info.type == TYPE_ORIGINAL) { 
                 game.selected = true;
             }
         }
         ImGui::SameLine();
-        if(ImGui::Button("Select Modded")) for (auto& game : scanCtx->found) {
+        if(ImGui::Button(S(THPRAC_GAMES_SELECT_MODDED))) for (auto& game : scanCtx->found) {
             if (game.info.type != TYPE_ORIGINAL && game.info.type != TYPE_STEAM) { 
                 game.selected = true;
             }
         }
         ImGui::SameLine();
-        if (ImGui::Button("Select Steam")) for (auto& game : scanCtx->found) {
+        if (ImGui::Button(S(THPRAC_GAMES_SELECT_STEAM))) for (auto& game : scanCtx->found) {
             if (game.info.type == TYPE_STEAM) { 
                 game.selected = true;
             }
         }
         ImGui::SameLine();
-        if (Gui::ButtonRight("Finish", ImGui::GetWindowWidth())) {
+        if (Gui::ButtonRight(S(TH_FINISH), ImGui::GetWindowWidth())) {
             ScanResults(scanCtx->found, apply_thprac);
             CloseHandle(scanCtx->scan_thread);
             return false;
@@ -1675,12 +1675,9 @@ void LauncherGamesMain(LauncherState* state) {
         return;
     }
 
-    if (Gui::Modal("Cannot launch this game")) {
+    if (Gui::Modal(S(THPRAC_GAMES_CANNOT_LAUNCH_MODAL))) {
         if (state->reflectiveLaunchID != ID_UNKNOWN) {
-            ImGui::TextUnformatted(
-                "thprac cannot attempt to launch this game because it is currently waiting for an instance of this game to start.\n"
-                "Do you want to abort this wait? Note: the game might still start, but without attaching thprac\n"
-            );
+            ImGui::TextUnformatted(S(THPRAC_GAMES_CANNOT_LAUNCH_DESC));
             switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO), nullptr)) {
             case 0:
                 state->reflectiveLaunchID = ID_UNKNOWN;
@@ -1689,7 +1686,7 @@ void LauncherGamesMain(LauncherState* state) {
             }
         }
         else {
-            ImGui::TextUnformatted("In the time it took you to read this popup, the game already launched");
+            ImGui::TextUnformatted(S(THPRAC_GAMES_CANNOT_LAUNCH_DESC_NVM));
             if (Gui::MultiButtonsFillWindow(0.0f, S(TH_OK), nullptr) == 0) {
                 ImGui::CloseCurrentPopup();
             }

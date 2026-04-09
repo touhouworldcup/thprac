@@ -54,6 +54,15 @@ void InitConfigDir() {
     // else case: .thprac_data exists and is a directory. If that is the case, do nothing.
 }
 
+static const wchar_t* JSON_ERROR_TITLE[] = {
+    L"JSON Error", L"JSON Error", L"JSON Error"
+};
+static const wchar_t* JSON_ERROR_FORMAT[] = {
+    L"Failed to load %s: JSON error %d at position %d\nMessage: ",
+    L"Failed to load %s: JSON error %d at position %d\nMessage: ",
+    L"Failed to load %s: JSON error %d at position %d\nMessage: ",
+};
+
 yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr) {
     for (;;) {
         yyjson_read_err err;
@@ -63,20 +72,31 @@ yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = 
         {
             MappedFile f(path);
             if (!f.fileMapView) {
-                log_printf("JSON: file %s not found\n", "TODO: pass UTF-16 filename to UTF-8 function");
+                // This buffer is in it's own scope...
+                char buf[MAX_PATH * 2] = {};
+                WideCharToMultiByte(CP_UTF8, 0, path, -1, buf, MAX_PATH * 2 - 1, nullptr, nullptr);
+                
+                log_printf("JSON: file %s not found\n", buf);
                 return nullptr;
             }
 
             doc = yyjson_read_opts((char*)f.fileMapView, f.fileSize, flg, alc_ptr, &err);
         }
         if (!doc) {
-            // TODO: sprintf in the actual filename
-            int choice = log_mboxf(
-                0,
-                MB_ICONERROR | MB_RETRYCANCEL,
-                "JSON Error",
-                "Failed to load global.json: JSON error %d at position %d\nMessage: %s",
-                err.code, err.pos, err.msg);
+            // ...and so is this one, meaning they can occupy the space in memory on the stack
+            wchar_t json_error_buffer[1024];
+            memset(json_error_buffer, 0x10, sizeof(json_error_buffer));
+            int wrote = _snwprintf(json_error_buffer, 1023, JSON_ERROR_FORMAT[Gui::LocaleGet()], path, err.code, err.pos);
+            
+            // Perfectly safe conversion to UTF-16
+            // yyjson only returns error messages in English
+            for (size_t i = 0; err.msg[i]; i++) {
+                json_error_buffer[wrote++] = err.msg[i];
+            }
+            json_error_buffer[wrote] = 0;
+
+            int choice = MessageBoxW(NULL, json_error_buffer, JSON_ERROR_TITLE[Gui::LocaleGet()], MB_ICONERROR | MB_RETRYCANCEL);
+
             if (choice == IDRETRY) {
                 continue;
             } else {
@@ -258,7 +278,7 @@ bool SaveSettings() {
 }
 
 void GuiSettings() {
-    ImGui::TextUnformatted("Global settings");
+    ImGui::TextUnformatted(S(THPRAC_GLOBAL_SETTINGS));
     ImGui::Separator();
 
     ImGui::PushItemWidth(ImGui::GetFontSize() * 8.0f);
@@ -296,19 +316,19 @@ void GuiSettings() {
     ImGui::NewLine();
     ImGui::TextUnformatted(S(THPRAC_LAUNCH_BEHAVIOR));
     ImGui::SameLine();
-    Gui::HelpMarker("All of these settings only apply after a restart.");
+    Gui::HelpMarker(S(THPRAC_LAUNCH_BEHAVIOR_NOTICE));
     ImGui::Separator();
     ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8.0f);
     ImGui::Combo(S(THPRAC_EXISTING_GAME_ACTION), (int*)&gSettings.existing_game_launch_action, S(THPRAC_EXISTING_GAME_ACTION_OPTION));
     ImGui::Checkbox(S(THPRAC_DONT_SEARCH_ONGOING), &gSettings.dont_search_ongoing_game);
     ImGui::Checkbox(S(THPRAC_ADMIN_RIGHTS), &gSettings.thprac_admin_rights);
     ImGui::NewLine();
-    ImGui::TextUnformatted("Update behavior");
+    ImGui::TextUnformatted(S(THPRAC_UPDATE_BEHAVIOR));
     ImGui::Separator();
 
     if (!UpdaterInitialized()) {
         ImGui::PushStyleColor(ImGuiCol_Text, 0xFFFF0000);
-        ImGui::TextUnformatted("Warning: the updater failed to initialize. Check thprac_launcher_log.txt for more information.");
+        ImGui::TextUnformatted(S(THPRAC_UPDATE_INIT_FAILED));
         ImGui::PopStyleColor();
     }
 

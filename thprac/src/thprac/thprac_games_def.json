@@ -31,6 +31,7 @@
 
       "THPRAC_THCRAP_NOTYET": [ "尚未设置thcrap的路径。", "thcrap location not yet specified.", "thcrapの場所はまだ指定されていません。" ],
       "THPRAC_THCRAP_SET": [ "设置路径", "Set location", "場所を設定する" ],
+      "THPRAC_THCRAP_GET": [ "Get thcrap", "Get thcrap", "Get thcrap" ],
       "THPRAC_THCRAP_LOCATION": [ "thcrap已设置: %s", "thcrap set to: %s", "thpracが設定されました: %s" ],
       "THPRAC_THCRAP_INVALID": [ "无效的thcrap路径！", "Invalid thcrap location!", "無効なthcrapの場所！" ],
       "THPRAC_THCRAP_LAUNCH_CONFIGURE": [ "启动thcrap_configure", "Launch thcrap_configure", "thcrap_configureを起動します" ],
@@ -47,6 +48,7 @@
         "Dark\\0Light\\0Classic\\0\\0",
         "ダーク\\0ライト\\0クラシック\\0\\0"
       ],
+      "THPRAC_LAUNCHER_SETTINGS": [ "Launcher settings", "Launcher settings", "Launcher settings" ],
       "THPRAC_AFTER_LAUNCH": [ "启动游戏后:", "After launching game:", "ゲーム起動後:" ],
       "THPRAC_AFTER_LAUNCH_OPTION": [
         "最小化启动器\\0关闭启动器\\0什么也不做\\0\\0",
@@ -85,8 +87,22 @@
       "THPRAC_UPDATE_PROMPT": [ "thprac检测到一个可用的新版本：v%u.%u.%u.%u", "A new version of thprac has been detected: v%u.%u.%u.%u", "thpracの新しいバージョンが検出されました：v%u.%u.%u.%u" ],
       "THPRAC_UPDATE_AUTO_UPDATE": [ "自动更新", "Auto update", "自動更新" ],
       "THPRAC_UPDATE_ERROR_MODAL": [ "Update unavailable##__update_error", "Update unavailable##__update_error", "Update unavailable##__update_error" ],
+      "THPRAC_UPDATE_DOWNLOADING": [ "Downloading update...", "Downloading update...", "Downloading update..." ],
+      "THPRAC_UPDATE_VIEW_CHANGELOG": [ "View changelog", "View changelog", "View changelog" ],
+      "THPRAC_UPDATE_DOWNLOAD_MANUALLY": [ "Download manually", "Download manually", "Download manually" ],
+      "THPRAC_UPDATE_ERROR_ASK_DISABLE": [
+        "An error occurred while looking for updates.\nDo you want to permanentally disable automatic update checking?",
+        "An error occurred while looking for updates.\nDo you want to permanentally disable automatic update checking?",
+        "An error occurred while looking for updates.\nDo you want to permanentally disable automatic update checking?"
+      ],
 
+      "THPRAC_GLOBAL_SETTINGS": [ "Global settings", "Global settings", "Global settings" ],
       "THPRAC_LAUNCH_BEHAVIOR": [ "启动行为", "Launch behavior", "起動動作" ],
+      "THPRAC_LAUNCH_BEHAVIOR_NOTICE": [
+        "All of these settings only apply after a restart.",
+        "All of these settings only apply after a restart.",
+        "All of these settings only apply after a restart."
+      ],
       "THPRAC_ADMIN_RIGHTS": [ "以管理员身份启动thprac", "Launch thprac with admin rights", "管理者権限でthpracを起動する" ],
       "THPRAC_EXISTING_GAME_ACTION": [ "启动thprac时，如果同一目录下存在游戏:", "When starting thprac, if a game exists under the same directory:", "thpracを起動するときに、ゲームが同じディレクトリに存在する場合:" ],
       "THPRAC_EXISTING_GAME_ACTION_OPTION": [ "启动游戏\\0打开启动器\\0总是询问\\0\\0", "Launch game\\0Open launcher\\0Always ask\\0\\0", "ゲームを起動します\\0ランチャーを開く\\0常に尋ねる\\0\\0" ],
@@ -94,6 +110,8 @@
       "THPRAC_RESIZABLE_WINDOW": [ "窗口大小可调", "Resizable game window", "ウィンドウサイズ自由に変更" ],
       "THPRAC_CONSOLE": [ "Show console", "Show console", "Show console" ],
       "THPRAC_DISABLE_CONSOLE_USELESS": [ "(If a console is already here, it'll stay open)", "(If a console is already here, it'll stay open)", "(If a console is already here, it'll stay open)" ],
+      "THPRAC_UPDATE_BEHAVIOR": [ "Update behavior", "Update behavior", "Update behavior" ],
+      "THPRAC_UPDATE_INIT_FAILED": [ "Error: the updater failed to initialize", "Error: the updater failed to initialize", "Error: the updater failed to initialize" ],
       "THPRAC_CHECK_UPDATE_WHEN": [ "检查更新的时机:", "Check update when:", "更新を確認するタイミング:" ],
       "THPRAC_CHECK_UPDATE_WHEN_OPTION": [ "打开启动器时\\0执行thprac时\\0从不\\0\\0", "Opening launcher\\0Executing thprac\\0Never\\0\\0", "ランチャーを開くとき\\0thpracの実行するとき\\0なし\\0\\0" ],
       "THPRAC_UPDATE_WITHOUT_CONFIRMATION": [ "不作确认并自动更新thprac", "Update thprac without confirmation", "確認なしでthpracを更新する" ],
@@ -119,6 +137,8 @@
       "THPRAC_TOOLS_RND_TURNTO_GAME": [ "转至游戏页面", "Turn to game page", "ゲームページに移動" ],
 
       "THPRAC_LINKS_RESET": [ "重置默认", "Reset default", "デフォルトにリセット" ],
+      "THPRAC_LINKS_EXPAND_ALL": [ "Expand all", "Expand all", "Expand all" ],
+      "THPRAC_LINKS_COLLAPSE_ALL": [ "Collapse all", "Collapse all", "Collapse all" ],
       "THPRAC_LINKS_ADD": [ "添加链接", "Add link", "リンクを追加" ],
       "THPRAC_LINKS_ADD_MODAL": [ "添加链接##modal", "Add link##modal", "リンクを追加##modal" ],
       "THPRAC_LINKS_EDIT": [ "编辑链接", "Edit link", "リンクを編集" ],
@@ -170,6 +190,18 @@
       "THPRAC_GAMES_SPINOFF_STG": [ "小数点作（STG）", "Spinoff (Shmup)", "小数点作（STG）" ],
       "THPRAC_GAMES_SPINOFF_OTHERS": [ "小数点作（其他）", "Spinoff (Others)", "小数点作（その他）" ],
       "THPRAC_GAMES_SCAN_FOLDER": [ "扫描游戏", "Scan for games", "ゲームを探す" ],
+      "THPRAC_SCAN_NOTHING_FOUND": [ "No games found", "No games found", "No games found" ],
+      "THPRAC_GAMES_SELECT_ORIGINAL": [ "Select Original", "Select Original", "Select Original" ],
+      "THPRAC_GAMES_SELECT_MODDED": [ "Select Modded", "Select Modded", "Select Modded" ],
+      "THPRAC_GAMES_SELECT_STEAM": [ "Select Steam", "Select Steam", "Select Steam" ],
+      "THPRAC_GAMES_SCAN_RELATIVE": [ "Use relative paths", "Use relative paths", "Use relative paths" ],
+      "THPRAC_GAMES_SCAN_RELATIVE_DESC": [
+          "Store paths to games as paths relative to where thprac is located",
+          "Store paths to games as paths relative to where thprac is located",
+          "Store paths to games as paths relative to where thprac is located"
+      ],
+      "THPRAC_SCAN_SCAN_RESULT_C1": [ "游戏（类型）", "Game (Type)", "ゲーム（種類）" ],
+      "THPRAC_SCAN_SCAN_RESULT_C2": [ "路径", "Path", "ファイルの場所" ],
       "THPRAC_GAMES_RESCAN": [ "重新扫描", "Rescan", "再スキャン" ],
       "THPRAC_STEAM_MNG_BUTTON": [ "Steam游戏...", "Steam games...", "Steamゲーム..." ],
       "THPRAC_EXISTING_GAME_CONFIRMATION_TITLE": [ "操作确认", "Action confirmation", "アクションの確認 " ],
@@ -203,8 +235,29 @@
         "設定したら、「ゲーム」タブで対応するゲームタイトルをクリックすると、このゲームが直接開始されます。 （ゲームタイトルを右クリックして詳細ページに入ります）"
       ],
       "THPRAC_GAMES_LAUNCH_GAME": [ "开始游戏", "Start game", "ゲームを開始" ],
+      "THPRAC_GAMES_CONFIG_TAMPERED": [
+        "You tampered with the config file, didn't you?",
+        "You tampered with the config file, didn't you?",
+        "You tampered with the config file, didn't you?"
+      ],
+      "THPRAC_GAMES_LAUNCH_ABORT_WAIT": [ "Abort wait for current launch", "Abort wait for current launch", "Abort wait for current launch" ],
+      "THPRAC_GAMES_CANNOT_LAUNCH_MODAL": [ "Cannot launch this game##_cannot_launch_modal", "Cannot launch this game##_cannot_launch_modal", "Cannot launch this game##_cannot_launch_modal" ],
+      "THPRAC_GAMES_CANNOT_DELETE_INST":  [
+        "Cannot delete this instance because thprac is attempting to launch this game.",
+        "Cannot delete this instance because thprac is attempting to launch this game.",
+        "Cannot delete this instance because thprac is attempting to launch this game."
+      ],
+      "THPRAC_GAMES_CANNOT_LAUNCH_DESC": [
+        "thprac cannot attempt to launch this game because it is currently waiting for an instance of this game to start.\nDo you want to abort this wait? Note: the game might still start, but without attaching thprac\n",
+        "thprac cannot attempt to launch this game because it is currently waiting for an instance of this game to start.\nDo you want to abort this wait? Note: the game might still start, but without attaching thprac\n",
+        "thprac cannot attempt to launch this game because it is currently waiting for an instance of this game to start.\nDo you want to abort this wait? Note: the game might still start, but without attaching thprac\n"
+      ],
+      "THPRAC_GAMES_CANNOT_LAUNCH_DESC_NVM": [
+        "A popup to inform you that thprac was waiting for a game to start was opened, but that game has started by now",
+        "A popup to inform you that thprac was waiting for a game to start was opened, but that game has started by now",
+        "A popup to inform you that thprac was waiting for a game to start was opened, but that game has started by now"
+      ],
       "THPRAC_GOTO_STEAM_PAGE": [ "前往Steam页面", "Go to Steam page", "Steamページに移動" ],
-
       "THPRAC_LANG_SWITCH_UI_FROZEN": [ "UI is frozen", "UI is frozen", "UI is frozen" ],
 
       "THPRAC_GAMEROLL_ALCOSTG": [ "黄昏酒场", "alcostg", "黄昏酒場" ],
@@ -370,7 +423,7 @@
         "Reimu+Scarlet Devil\\0Reimu+Creature Red\\0Reimu+Snow Blossom\\0Reimu+Blue Season\\0Reimu+Yellow Subterranean\\0Reimu+Imperishable Moon\\0Reimu+Beast Hardness\\0Reimu+Shintoism Wind\\0Marisa+Scarlet Devil\\0Marisa+Creature Red\\0Marisa+Snow Blossom\\0Marisa+Blue Season\\0Marisa+Yellow Subterranean\\0Marisa+Imperishable Moon\\0Marisa+Beast Hardness\\0Marisa+Shintoism Wind\\0\\0",
         "霊夢+スカーレットデビル\\0霊夢+クリーチャーレッド\\0霊夢+スノーブロッサム\\0霊夢+ブルーシーズン\\0霊夢+イエローサブタレイニアン\\0霊夢+インペリシャブルムーン\\0霊夢+ビーストハードネス\\0霊夢+シントイズムウィンド\\0魔理沙+スカーレットデビル\\0魔理沙+クリーチャーレッド\\0魔理沙+スノーブロッサム\\0魔理沙+ブルーシーズン\\0魔理沙+イエローサブタレイニアン\\0魔理沙+インペリシャブルムーン\\0魔理沙+ビーストハードネス\\0魔理沙+シントイズムウィンド\\0\\0"
       ],
-      
+
       "TH_TYPE_ERROR": [ "错误", "ERROR", "エラー" ],
       "TH_TYPE_ORIGINAL": [ "原版", "Original", "オリジナル" ],
       "TH_TYPE_MODDED": [ "修改版", "Modded", "改造" ],
