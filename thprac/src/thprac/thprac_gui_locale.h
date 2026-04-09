@@ -4,11 +4,12 @@
 
 namespace THPrac {
 namespace Gui {
+    extern Locale __glocale_current;
 
     void LocaleSet(Locale locale);
     void LocaleSetFromSysLang();
     __forceinline Locale LocaleGet() {
-        return gSettings.language;
+        return __glocale_current;
     }
     __forceinline const char** LocaleGetCurrentGlossary() {
         return th_glossary_str[LocaleGet()];
@@ -20,7 +21,6 @@ namespace Gui {
     bool LocaleCreateFont(float font_size);
     bool LocalAddMergeFont(float font_size, int locale, bool merge);
     bool LocaleCreateMergeFont(float font_size);
-    void LocaleFreeFonts();
 
 // TODO: These can't be refactored into functions as-is, because they depend on
 // the current game's namespace being active where they're used. Fixing this

@@ -269,6 +269,11 @@ static void LauncherSettingsMain(LauncherState* state) {
 }
 
 void UiUpdate(HWND hwnd, LauncherState* state) {
+    if (Gui::LocaleGet() != gSettings.language) {
+        Gui::LocaleSet(gSettings.language);
+        UpdateUIScaling(g_Scale);
+    }
+
     // Start the Dear ImGui frame
     Gui::ImplDX9NewFrame();
     Gui::ImplWin32NewFrame();
@@ -856,9 +861,7 @@ bool UpdateUIScaling(float scale) {
     style.WindowBorderSize = 0;
     memcpy(style.Colors, styleold.Colors, sizeof(style.Colors)); // Restore colors
 
-    Gui::LocaleFreeFonts();
     Gui::LocaleCreateMergeFont(20.0f * scale);
-
     g_Scale = scale;
 
     return Gui::ImplDX9CreateDeviceObjects();

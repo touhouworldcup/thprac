@@ -116,13 +116,15 @@ static ImWchar baseUnicodeRanges[] =
     bool __glocale_merge = false;
     unsigned int __glocale_disabled = 0;
     ImWchar* __glocale_jp_glyphrange = nullptr;
+    Locale __glocale_current = LOCALE_EN_US;
 
     void LocaleSet(Locale locale)
     {
         gSettings.language = locale;
+        __glocale_current = locale;
         if (!__glocale_merge) {
             ImGuiIO& io = ImGui::GetIO();
-            io.FontDefault = io.Fonts->Fonts[gSettings.language];
+            io.FontDefault = io.Fonts->Fonts[locale];
         }
     }
     void LocaleSetFromSysLang()
@@ -131,12 +133,15 @@ static ImWchar baseUnicodeRanges[] =
         switch (lang_id & 0x03ff) {
         case 0x4:
             gSettings.language = LOCALE_ZH_CN;
+            __glocale_current  = LOCALE_ZH_CN;
             break;
         case 0x9:
             gSettings.language = LOCALE_EN_US;
+            __glocale_current  = LOCALE_EN_US;
             break;
         case 0x11:
             gSettings.language = LOCALE_JA_JP;
+            __glocale_current  = LOCALE_JA_JP;
             break;
         }
     }
@@ -568,32 +573,34 @@ static ImWchar baseUnicodeRanges[] =
         io.Fonts->AddFontFromMemoryTTF(fontData, fontDataSize, fontFinalSize, &fontConfig, glyphRange);
         return true;
     }
-    bool LocaleCreateMergeFont(float font_size)
-    {
+    bool LocaleCreateMergeFont(float font_size) {
         auto& io = ImGui::GetIO();
-
-        // The order in which these are all added should stay consistent
-        LocalAddMergeFont(font_size, LOCALE_EN_US, false);
-        LocalAddMergeFont(font_size, LOCALE_JA_JP, true);
-        LocalAddMergeFont(font_size, LOCALE_ZH_CN, true);
+        io.Fonts->Clear();
+        switch (gSettings.language) {
+        case LOCALE_ZH_CN:
+            LocalAddMergeFont(font_size, LOCALE_ZH_CN, false);
+            LocalAddMergeFont(font_size, LOCALE_JA_JP, true);
+            LocalAddMergeFont(font_size, LOCALE_EN_US, true);
+            break;
+        case LOCALE_EN_US:
+            LocalAddMergeFont(font_size, LOCALE_EN_US, false);
+            LocalAddMergeFont(font_size, LOCALE_JA_JP, true);
+            LocalAddMergeFont(font_size, LOCALE_ZH_CN, true);
+            break;
+        case LOCALE_JA_JP:
+            LocalAddMergeFont(font_size, LOCALE_JA_JP, false);
+            LocalAddMergeFont(font_size, LOCALE_ZH_CN, true);
+            LocalAddMergeFont(font_size, LOCALE_EN_US, true);
+            break;
+        default:
+            return false;
+        }
 
         ImGuiFreeType::BuildFontAtlas(io.Fonts, 0);
         __glocale_merge = true;
         LocaleFontWarning();
 
         return true;
-    }
-
-    void LocaleFreeFonts() {
-        auto& io = ImGui::GetIO();
-
-        io.Fonts->ClearFonts();
-
-        for (auto& conf : io.Fonts->ConfigData) {
-            ImGui::MemFree(conf.FontData);
-        }
-
-        io.Fonts->ConfigData.clear();
     }
 }
 }

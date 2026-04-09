@@ -131,6 +131,9 @@ bool LoadSettings() {
             if (!yyjson_eval_numeric(val, (unsigned int*)&gSettings.language) || gSettings.language > 2) {
                 Gui::LocaleSetFromSysLang();
             }
+            else {
+                Gui::__glocale_current = gSettings.language;
+            }
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "render_only_used_glyphs")) {
@@ -259,9 +262,7 @@ void GuiSettings() {
     ImGui::Separator();
 
     ImGui::PushItemWidth(ImGui::GetFontSize() * 8.0f);
-    if (ImGui::Combo("语言/Language/言語", (int*)&gSettings.language, "中文\0English\0日本語\0\0")) {
-        Gui::LocaleSet(gSettings.language);
-    }
+    ImGui::Combo("语言/Language/言語", (int*)&gSettings.language, "中文\0English\0日本語\0\0");
     if (ImGui::Combo(S(THPRAC_THEME), &gSettings.theme, S(THPRAC_THEME_OPTION))) {
         SetTheme(gSettings.theme);
     }

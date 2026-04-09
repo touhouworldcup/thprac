@@ -261,7 +261,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     Gui::InGameInputInit(input_gen, reg1, reg2, reg3);
     ImGui::GetStyle().ScaleAllSizes(scale);
     ImGui::GetStyle().MouseCursorScale = 1.0f;
-    Gui::LocaleCreateMergeFont(16.0f * scale);
+    Gui::LocaleCreateFont(16.0f * scale);
 
     if (gSettings.resizable_window) {
         RECT wndRect;
