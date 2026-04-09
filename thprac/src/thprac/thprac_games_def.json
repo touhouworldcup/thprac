@@ -551,7 +551,7 @@
         "THPRAC_GAMEROLL_TH02",
         "THPRAC_GAMEROLL_TH03",
         "THPRAC_GAMEROLL_TH04",
-        "THPRAC_GAMEROLL_TH05",
+        "THPRAC_GAMEROLL_TH05"
       ],
       "THPRAC_GAMEROLL_MAINGAMES": [
         "THPRAC_GAMEROLL_TH06",
@@ -587,7 +587,7 @@
         "THPRAC_GAMEROLL_TH145",
         "THPRAC_GAMEROLL_TH155",
         "THPRAC_GAMEROLL_TH175"
-      ],
+      ]
     }
   },
 
