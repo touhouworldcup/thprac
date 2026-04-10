@@ -137,10 +137,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     GetCurrentDirectoryW(MAX_PATH, old_working_dir);
     {
         UNICODE_STRING exeDir = CurrentPeb()->ProcessParameters->ImagePathName;
-        for (USHORT i = exeDir.Length; i > 0; i--) {
-            if (((char*)exeDir.Buffer)[i] == '\\') {
-                exeDir.Length = i & 0xFFFE;
-                exeDir.MaximumLength = i & 0xFFFE;
+        for (USHORT i = exeDir.Length / sizeof(wchar_t); i > 0; i--) {
+            if (exeDir.Buffer[i] == '\\') {
+                exeDir.Length = i * sizeof(wchar_t);
+                exeDir.MaximumLength = i * sizeof(wchar_t);
                 break;
             }
         }

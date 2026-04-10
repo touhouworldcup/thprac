@@ -17,16 +17,17 @@ constinit THPracSettings gSettings;
 constinit HotkeyChords hotkeys;
 
 void InitConfigDir() {
-    DWORD endPos = GetModuleFileNameW((HINSTANCE)&__ImageBase, _gConfigDir, MAX_PATH);
-
-    for (DWORD i = endPos; i > 0; i--) {
-        if (_gConfigDir[i] == L'\\') {
+    DWORD endPos = 0;
+    auto& self = CurrentPeb()->ProcessParameters->ImagePathName;
+    for (USHORT i = self.Length / sizeof(wchar_t); i > 0; i--) {
+        if (self.Buffer[i] == L'\\') {
             endPos = i + 1;
             break;
         }
     }
-    wcscpy(_gConfigDir + endPos, L".thprac_data\\");
-    _gConfigDirLen = endPos;
+    memcpy(_gConfigDir, self.Buffer, endPos * sizeof(wchar_t));
+    memcpy(_gConfigDir + endPos, SIZED(L".thprac_data\\"));
+    _gConfigDirLen = endPos + t_strlen(L".thprac_data\\");
 
     GetEnvironmentVariableW(L"AppData", nullptr, 0);
     DWORD code = GetLastError();
@@ -40,18 +41,15 @@ void InitConfigDir() {
         !code && (attrs == INVALID_FILE_ATTRIBUTES || !(attrs & FILE_ATTRIBUTE_DIRECTORY))) {
         endPos = GetEnvironmentVariableW(L"AppData", _gConfigDir, MAX_PATH);
         
-        if (_gConfigDir[endPos - 1] == L'\\') {
-            memcpy(_gConfigDir + endPos, SIZED(L"thprac\\"));
-            _gConfigDirLen = endPos + t_strlen(L"thprac\\");
-        } else {
-            memcpy(_gConfigDir + endPos, SIZED(L"\\thprac\\"));
-            _gConfigDirLen = endPos + t_strlen(L"\\thprac\\");
+        if (_gConfigDir[endPos] != L'\\') {
+            _gConfigDir[endPos++] = L'\\';
         }
-
-
+        memcpy(_gConfigDir + endPos, SIZED(L"thprac\\"));
+        _gConfigDirLen = endPos + t_strlen(L"thprac\\");
+        CreateDirectoryW(_gConfigDir, nullptr);
     }
-    // TODO(log): log data folder. Not implemented because UTF-16 logging is not implemented.
     // else case: .thprac_data exists and is a directory. If that is the case, do nothing.
+    // No log statements can be made here because this runs before log_init
 }
 
 static const wchar_t* JSON_ERROR_TITLE[] = {
@@ -76,7 +74,7 @@ yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = 
                 char buf[MAX_PATH * 2] = {};
                 WideCharToMultiByte(CP_UTF8, 0, path, -1, buf, MAX_PATH * 2 - 1, nullptr, nullptr);
                 
-                log_printf("JSON: file %s not found\n", buf);
+                log_printf("JSON: file %s not found\r\n", buf);
                 return nullptr;
             }
 

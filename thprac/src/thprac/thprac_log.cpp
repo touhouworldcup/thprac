@@ -140,6 +140,12 @@ void log_init(bool launcher, bool console) {
         console_open = true;
     }
 
-    log_print("THPrac: Logging initialized\r\n");
+    log_print("THPrac: Logging initialized\r\nData directory is: ");
+
+    // Log data directory, because the data directory needs to be known before logging is initialized
+    char dir_u8[MAX_PATH * 2 + 1];
+    int wrote = WideCharToMultiByte(CP_UTF8, 0, _gConfigDir, _gConfigDirLen, dir_u8, MAX_PATH * 2, nullptr, nullptr);
+    log_print(dir_u8, wrote);
+    log_print("\r\n");
 }
 }
