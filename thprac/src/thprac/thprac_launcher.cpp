@@ -434,7 +434,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
     dev->SetRenderState(D3DRS_ZENABLE, FALSE);
     dev->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
     dev->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
-    dev->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(0, 0, 0, 255), 1.0f, 0);
+    dev->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_RGBA(115, 140, 155, 255), 1.0f, 0);
     if (dev->BeginScene() >= 0) {
         if (state->g_IsUITextureIDValid) {
             Gui::ImplDX9RenderDrawData(ImGui::GetDrawData());
