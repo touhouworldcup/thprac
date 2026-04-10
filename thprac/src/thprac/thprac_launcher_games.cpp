@@ -946,15 +946,15 @@ static void ScanDirectory(ScanCtx* scanCtx, const wchar_t* path, std::vector<std
     scanCtx->text_in_progress_bar_len = written - 1;
 
     IO_STATUS_BLOCK iosb;
-    ULONG queryFlags = SL_RESTART_SCAN;
+    BOOLEAN restartScan = TRUE;
 
     for (;;) {
         if (scanCtx->abort_message) {
             break;
         }
-        NTSTATUS status = NtQueryDirectoryFileEx(hDir,
-            nullptr, nullptr, nullptr,
-            &iosb, buffer, 65535, FileDirectoryInformation, queryFlags, nullptr);
+
+        NTSTATUS status = NtQueryDirectoryFile(hDir, NULL, nullptr, nullptr, &iosb, buffer, 65535, FileDirectoryInformation, FALSE, nullptr, restartScan);
+        
         if (status == STATUS_NO_MORE_FILES) {
             break;
         }
@@ -962,7 +962,7 @@ static void ScanDirectory(ScanCtx* scanCtx, const wchar_t* path, std::vector<std
             break;
         }
 
-        queryFlags = 0;
+        restartScan = FALSE;
         BYTE* ptr = buffer;
 
         for (;;) {

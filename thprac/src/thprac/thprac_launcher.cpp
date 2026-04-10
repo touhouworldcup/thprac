@@ -450,36 +450,6 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
     }
 }
 
-void DwmTweaksForCustomTitlebar(HWND hwnd) {
-    struct MARGINS {
-        int cxLeftWidth;
-        int cxRightWidth;
-        int cyTopHeight;
-        int cyBottomHeight;
-    };
-
-    typedef HRESULT WINAPI T_DwmIsCompositionEnabled(BOOL* pfEnabled);
-    typedef HRESULT WINAPI T_DwmExtendFrameIntoClientArea(HWND hWnd, const MARGINS* pMarInset);
-
-    auto* dwmapi = LoadLibraryW(L"dwmapi.dll");
-    if (!dwmapi) {
-        return;
-    }
-
-    auto* pDwmIsCompositionEnabled = (T_DwmIsCompositionEnabled*)GetProcAddress(dwmapi, "DwmIsCompositionEnabled");
-    auto* pDwmExtendFrameIntoClientArea = (T_DwmExtendFrameIntoClientArea*)GetProcAddress(dwmapi, "DwmExtendFrameIntoClientArea");
-
-    if (!pDwmIsCompositionEnabled || !pDwmExtendFrameIntoClientArea) {
-        return;
-    }
-
-    BOOL compositon = FALSE;
-    if (SUCCEEDED(pDwmIsCompositionEnabled(&compositon)) && compositon) {
-        MARGINS margins = { -1, -1, -1, -1 };
-        pDwmExtendFrameIntoClientArea(hwnd, &margins);
-    }
-}
-
 void LoadLauncherSettings(LauncherSettings* launcherSettings) {
     wchar_t launcherSettingsPath[MAX_PATH + 1] = {};
     memcpy(launcherSettingsPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
@@ -597,7 +567,6 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
         return 1;
     }
     defer(DestroyWindow(hwnd));
-    DwmTweaksForCustomTitlebar(hwnd);
     
     IDirect3DDevice9* dev;
     if (d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &g_d3dpp, &dev) < 0) {

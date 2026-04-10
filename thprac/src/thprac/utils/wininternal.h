@@ -693,22 +693,16 @@ typedef VOID NTAPI IO_APC_ROUTINE(
     PIO_STATUS_BLOCK IoStatusBlock,
     ULONG Reserved);
 
-typedef IO_APC_ROUTINE PIO_APC_ROUTINE;
-
-#define SL_RESTART_SCAN 0x00000001
-#define SL_RETURN_SINGLE_ENTRY 0x00000002
-#define SL_INDEX_SPECIFIED 0x00000004
-#define SL_RETURN_ON_DISK_ENTRIES_ONLY 0x00000008
-#define SL_NO_CURSOR_UPDATE_QUERY 0x00000010
-
-extern "C" NTSTATUS NTAPI NtQueryDirectoryFileEx(
-    HANDLE FileHandle,
-    HANDLE Event,
-    PIO_APC_ROUTINE ApcRoutine,
-    PVOID ApcContext,
-    PIO_STATUS_BLOCK IoStatusBlock,
-    PVOID FileInformation,
-    ULONG Length,
+extern "C" NTSTATUS NTAPI NtQueryDirectoryFile(
+    HANDLE                 FileHandle,
+    HANDLE                 Event,
+    IO_APC_ROUTINE*        ApcRoutine,
+    PVOID                  ApcContext,
+    PIO_STATUS_BLOCK       IoStatusBlock,
+    PVOID                  FileInformation,
+    ULONG                  Length,
     FILE_INFORMATION_CLASS FileInformationClass,
-    ULONG QueryFlags,
-    PUNICODE_STRING FileName);
+    BOOLEAN                ReturnSingleEntry,
+    PUNICODE_STRING        FileName,
+    BOOLEAN                RestartScan
+);
