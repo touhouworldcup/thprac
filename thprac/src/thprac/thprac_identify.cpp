@@ -749,7 +749,7 @@ ExeInfo GetExeInfo(const uint8_t* mod, size_t len) {
     ExeInfo out = {};
 
     // Dawg
-    if (len == 1) {
+    if (len < 64) {  // Make sure that the length is long enough to read the e_lfanew field
         return out;
     }
 

@@ -120,9 +120,9 @@ unsigned rand_range(unsigned max);
 char* FormatNumberWithCommas(long long val, char* buffer);
 char* FormatNumberFixedPoint(int value, unsigned int dot_pos, char* buffer);
 
-inline bool CheckBufPos(const void* bufStart, const void* bufPos, int bufLen) {
+inline bool CheckBufPos(const void* bufStart, const void* bufPos, unsigned bufLen) {
     if (bufLen != 0) {
-        return ((const unsigned char*)bufPos - (const unsigned char*)bufStart) < bufLen;
+        return (unsigned)((const unsigned char*)bufPos - (const unsigned char*)bufStart) < bufLen;
     } else {
         // Very unsafe, only here because I don't know of a way to obtain a size for the currently running exe.
         // However, if a file were to cause GetExeInfo to crash, Windows wouldn't be able to load it.
