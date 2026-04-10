@@ -303,7 +303,7 @@ void GuiSettings() {
 
         freopen("conin$", "r+b", stdin);
         freopen("conout$", "w+b", stdout);
-        freopen("conerr$", "w+b", stderr);
+        freopen("conout$", "w+b", stderr);
         console_open = true;
     }
     if (!gSettings.console && console_open) {
