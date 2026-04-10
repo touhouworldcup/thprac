@@ -654,7 +654,8 @@ static bool DetailsPage(LauncherState* state) {
             bool selected = game->selected == i;
             ImGui::SetCursorPosX(ImGui::GetWindowPos().x + 4.0f);
             
-            if (ImGui::Selectable(name, selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap, {0.0f, 24.0f})) {
+            auto pad = ImGui::GetStyle().FramePadding.y;
+            if (ImGui::Selectable(name, selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap, {0.0f, ImGui::GetFontSize() + pad})) {
                 game->selected = i;
             }
 
