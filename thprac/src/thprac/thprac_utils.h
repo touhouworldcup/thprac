@@ -67,6 +67,10 @@ struct MappedFile {
         if (hFile != INVALID_HANDLE_VALUE)
             CloseHandle(hFile);
     }
+
+    operator bool() {
+        return fileMapView;
+    }
 };
 
 #pragma region Windows Version

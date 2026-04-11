@@ -451,11 +451,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
 }
 
 void LoadLauncherSettings(LauncherSettings* launcherSettings) {
-    wchar_t launcherSettingsPath[MAX_PATH + 1] = {};
-    memcpy(launcherSettingsPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(launcherSettingsPath + _gConfigDirLen, SIZED(L"launcher.json"));
-
-    yyjson_doc* doc = yyjson_read_file_report(launcherSettingsPath);
+    yyjson_doc* doc = LoadConfigFile(L"launcher.json");
     if (!doc) {
         return;
     }
@@ -495,7 +491,6 @@ static const char launcherSettingsTemplate[] =
     "}";
 
 void SaveLauncherSettings(LauncherSettings* launcherSettings) {
-
     char thcrap_dir_safe[MAX_PATH * 2] = {};
     
     char* thcrap_dir = launcherSettings->thcrap_dir.s;
@@ -517,14 +512,7 @@ void SaveLauncherSettings(LauncherSettings* launcherSettings) {
         , thcrap_dir_len, thcrap_dir_safe
     );
 
-    wchar_t launcherSettingsPath[MAX_PATH + 1] = {};
-    memcpy(launcherSettingsPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(launcherSettingsPath + _gConfigDirLen, SIZED(L"launcher.json"));
-
-    HANDLE hFile = CreateFileW(launcherSettingsPath, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-
-    DWORD byteRet;
-    WriteFile(hFile, buf, len, &byteRet, nullptr);
+    SaveConfigFile(L"launcher.json", buf, len);
 }
 
 int Launcher(HINSTANCE hInstance, int nCmdShow) {

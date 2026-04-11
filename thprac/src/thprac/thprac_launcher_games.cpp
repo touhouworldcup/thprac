@@ -494,11 +494,7 @@ static void InitLauncherGame(LauncherGame* game, yyjson_val* json, APPLY_THPRAC_
 }
 
 void LoadGamesJson(APPLY_THPRAC_DEFAULT apply_thprac_default) {
-    wchar_t gamesJsonPath[MAX_PATH + 1] = {};
-    memcpy(gamesJsonPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(gamesJsonPath + _gConfigDirLen, SIZED(L"games.json"));
-
-    yyjson_doc* doc = yyjson_read_file_report(gamesJsonPath);
+    yyjson_doc* doc = LoadConfigFile(L"games.json");
     if (!doc) {
         return;
     }
@@ -545,18 +541,8 @@ void SaveGamesJson() {
     
     size_t len = 0;
     char* buf = yyjson_mut_write(doc, YYJSON_WRITE_PRETTY, &len);
-
-    if (buf) {
-        wchar_t gamesJsonPath[MAX_PATH + 1] = {};
-        memcpy(gamesJsonPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-        memcpy(gamesJsonPath + _gConfigDirLen, SIZED(L"games.json"));
-
-        HANDLE hFile = CreateFileW(gamesJsonPath, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-        DWORD byteRet;
-        WriteFile(hFile, buf, len, &byteRet, nullptr);
-        CloseHandle(hFile);
-        free(buf);
-    }
+    SaveConfigFile(L"games.json", buf, len);
+    free(buf);
 }
 
 void DestroyInst(LauncherInstance* inst) {

@@ -73,8 +73,7 @@ int log_vmboxf(void* hwnd, unsigned int type, const char* caption, const char* f
     return ret;
 }
 
-int log_mboxf(void* hwnd, unsigned int type, const char* caption, const char* format, ...)
-{
+int log_mboxf(void* hwnd, unsigned int type, const char* caption, const char* format, ...) {
     va_list va;
     va_start(va, format);
     int ret = log_vmboxf(hwnd, type, caption, format, va);
@@ -82,14 +81,27 @@ int log_mboxf(void* hwnd, unsigned int type, const char* caption, const char* fo
     return ret;
 }
 
-void log_init(bool launcher, bool console) {
-    UNICODE_STRING& cur_dir = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
-    wchar_t cur_dir_backup[MAX_PATH + 1] = {};
-    memcpy(cur_dir_backup, cur_dir.Buffer, cur_dir.Length);
-    SetCurrentDirectoryW(_gConfigDir);
-    CreateDirectoryW(L"logs", nullptr);
-    SetCurrentDirectoryW(L"logs");
+const wchar_t* ERROR_NO_DATA_DIR_MSG[] = {
+    L"thprac was unable to find a suitable data directory.\n"
+     "Logs will not be saved to a file.\n"
+     "Do you want to open a console to see the logs?",
 
+    L"thprac was unable to find a suitable data directory.\n"
+     "Logs will not be saved to a file.\n"
+     "Do you want to open a console to see the logs?",
+   
+    L"thprac was unable to find a suitable data directory.\n"
+     "Logs will not be saved to a file.\n"
+     "Do you want to open a console to see the logs?",
+};
+
+const wchar_t* ERROR_FAILED_TO_OPEN_LOG_FILE_MSG[] = {
+    L"Cannot open a log file for writing. No logs will be saved to disk. Do you want to open a console to see logs anyways?",
+    L"Cannot open a log file for writing. No logs will be saved to disk. Do you want to open a console to see logs anyways?",
+    L"Cannot open a log file for writing. No logs will be saved to disk. Do you want to open a console to see logs anyways?",
+};
+
+void log_init(bool launcher, bool console) {
     constexpr unsigned int rot_max = 9;
     constexpr unsigned int scratch_size = 32;
     wchar_t fn_rot_temp_1[scratch_size] = {};
@@ -101,14 +113,33 @@ void log_init(bool launcher, bool console) {
     const wchar_t* const fn_rot_launcher = L"thprac_launcher_log.9.txt";
     const wchar_t* const fn_rot_ingame = L"thprac_log.9.txt";
 
+    unsigned int rot_num_off;
+    const wchar_t* fn;
+
+    wchar_t cur_dir_backup[MAX_PATH + 1];
+    UNICODE_STRING cur_dir;
+
+    if (!_gConfigDirLen) {
+        console = MessageBoxW(NULL, ERROR_NO_DATA_DIR_MSG[Gui::LocaleGet()], nullptr, MB_ICONERROR | MB_YESNO) != IDNO;
+        goto past_log_file_open;
+    }
+
+    cur_dir = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
+    memcpy(cur_dir_backup, cur_dir.Buffer, cur_dir.Length);
+    cur_dir_backup[cur_dir.Length / sizeof(wchar_t)] = 0;
+
+    SetCurrentDirectoryW(_gConfigDir);
+    CreateDirectoryW(L"logs", nullptr);
+    SetCurrentDirectoryW(L"logs");
+
     if (launcher) {
         memcpy(fn_rot_temp_1, fn_rot_launcher, t_strlen(fn_rot_launcher) * sizeof(wchar_t));
     } else {
         memcpy(fn_rot_temp_1, fn_rot_ingame, t_strlen(fn_rot_ingame) * sizeof(wchar_t)); 
     }
 
-    const unsigned int rot_num_off = launcher ? 20 : 11;
-    const wchar_t* const fn = launcher ? fn_launcher : fn_ingame;
+    rot_num_off = launcher ? 20 : 11;
+    fn = launcher ? fn_launcher : fn_ingame;
 
     memcpy(fn_rot_temp_2, fn_rot_temp_1, scratch_size * sizeof(wchar_t));
 
@@ -121,9 +152,17 @@ void log_init(bool launcher, bool console) {
     }
 
     MoveFileW(fn, fn_rot_temp_1);
+
     hLog = CreateFileW(fn, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     SetCurrentDirectoryW(cur_dir_backup);
     
+    if (hLog == INVALID_HANDLE_VALUE) {
+        if (MessageBoxW(NULL, ERROR_FAILED_TO_OPEN_LOG_FILE_MSG[Gui::LocaleGet()], nullptr, MB_ICONERROR | MB_YESNO) != IDNO) {
+            console = true;
+        }
+    }
+
+past_log_file_open:
     if (!AttachConsole(GetCurrentProcessId()) && !AttachConsole(ATTACH_PARENT_PROCESS) && console) {
         console = AllocConsole();
     }
@@ -134,18 +173,24 @@ void log_init(bool launcher, bool console) {
 
         (void)freopen("conin$", "r+b", stdin);
         (void)freopen("conout$", "w+b", stdout);
-        setvbuf(stdout, NULL, _IONBF, 0);
         (void)freopen("conout$", "w+b", stderr);
+        setvbuf(stdout, NULL, _IONBF, 0);
+        setvbuf(stderr, NULL, _IONBF, 0);
 
         console_open = true;
     }
 
-    log_print("THPrac: Logging initialized\r\nData directory is: ");
+    log_print("THPrac: Logging initialized\r\n");
 
-    // Log data directory, because the data directory needs to be known before logging is initialized
-    char dir_u8[MAX_PATH * 2 + 1];
-    int wrote = WideCharToMultiByte(CP_UTF8, 0, _gConfigDir, _gConfigDirLen, dir_u8, MAX_PATH * 2, nullptr, nullptr);
-    log_print(dir_u8, wrote);
-    log_print("\r\n");
+    if (_gConfigDirLen) {
+        log_print(SIZED("Data directory is: "));
+        // Log data directory, because the data directory needs to be known before logging is initialized
+        char dir_u8[MAX_PATH * 2 + 1];
+        int wrote = WideCharToMultiByte(CP_UTF8, 0, _gConfigDir, _gConfigDirLen, dir_u8, MAX_PATH * 2, nullptr, nullptr);
+        log_print(dir_u8, wrote);
+        log_print("\r\n");
+    } else {
+        log_print(SIZED("Failed to initialize data directory\r\n"));
+    }
 }
 }

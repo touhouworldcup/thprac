@@ -236,7 +236,8 @@ struct LauncherState {
     std::wstring updateUrl;
 };
 
-yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr);
+yyjson_doc* LoadConfigFile(const wchar_t* name);
+void SaveConfigFile(const wchar_t* name, void* buf, size_t len);
 
 void LoadGamesJson(APPLY_THPRAC_DEFAULT);
 void SaveGamesJson();

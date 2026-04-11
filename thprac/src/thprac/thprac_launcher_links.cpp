@@ -24,11 +24,7 @@ void LinksDefault(LinkSet& out) {
 }
 
 void LoadLinksJson(std::vector<LinkSet>& linkSets) {
-    wchar_t linksJsonPath[MAX_PATH + 1] = {};
-    memcpy(linksJsonPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(linksJsonPath + _gConfigDirLen, SIZED(L"links.json"));
-
-    yyjson_doc* doc = yyjson_read_file_report(linksJsonPath);
+    yyjson_doc* doc = LoadConfigFile(L"links.json");
     if (!doc) {
         LinksDefault(linkSets.emplace_back());
         return;
@@ -79,15 +75,8 @@ void SaveLinksJson(std::vector<LinkSet>& linkSets) {
 
     size_t len;
     char* buf = yyjson_mut_write(doc, YYJSON_WRITE_PRETTY, &len);
-    if (buf) {
-        wchar_t linksJsonPath[MAX_PATH + 1] = {};
-        memcpy(linksJsonPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-        memcpy(linksJsonPath + _gConfigDirLen, SIZED(L"links.json"));
-
-        HANDLE hFile = CreateFileW(linksJsonPath, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-        DWORD byteRet;
-        WriteFile(hFile, buf, len, &byteRet, nullptr);
-    }
+    SaveConfigFile(L"links.json", buf, len);
+    free(buf);
 }
 
 void LinksAddSet(std::vector<LinkSet>& linkSets, size_t pos, const char* name) {

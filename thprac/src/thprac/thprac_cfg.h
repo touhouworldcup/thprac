@@ -97,5 +97,7 @@ void SetTheme(int theme);
 
 extern wchar_t _gConfigDir[];
 extern unsigned int _gConfigDirLen;
+extern bool _gIsLocalConfigDir;
+extern bool _gIsAppDataAvailable;
 
 }

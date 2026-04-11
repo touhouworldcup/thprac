@@ -12,9 +12,18 @@ constexpr const wchar_t THPRAC_SETTINGS_JSON_NAME[] = L"settings.json";
 
 wchar_t _gConfigDir[MAX_PATH + 1] = {};
 unsigned int _gConfigDirLen = 0;
+bool _gIsLocalConfigDir = true;
+bool _gIsAppDataAvailable = true;
 
 constinit THPracSettings gSettings;
 constinit HotkeyChords hotkeys;
+
+static bool BadDirectoryAttributes(DWORD attrs) {
+    if(attrs == INVALID_FILE_ATTRIBUTES) {
+        return true;
+    }
+    return !(attrs & FILE_ATTRIBUTE_DIRECTORY);
+}
 
 void InitConfigDir() {
     DWORD endPos = 0;
@@ -25,6 +34,9 @@ void InitConfigDir() {
             break;
         }
     }
+    // Initialize _gConfigDir with <EXE_DIR>\\.thprac_data. Obtaining this path is needed anyways to
+    // at least check if it exists. Then, if something goes wrong with obtaining the %AppData%
+    // environment variable, we can fall back to using .thprac_data at no cost.
     memcpy(_gConfigDir, self.Buffer, endPos * sizeof(wchar_t));
     memcpy(_gConfigDir + endPos, SIZED(L".thprac_data\\"));
     _gConfigDirLen = endPos + t_strlen(L".thprac_data\\");
@@ -32,21 +44,40 @@ void InitConfigDir() {
     GetEnvironmentVariableW(L"AppData", nullptr, 0);
     DWORD code = GetLastError();
 
-    // AppData environment variable not set, force .thprac_data as config dir
-    if (code == ERROR_ENVVAR_NOT_FOUND) {
-        CreateDirectoryW(_gConfigDir, nullptr);
-    }
-    // AppData environment variable exists, and .thprac_data is not a directory
-    else if (DWORD attrs = GetFileAttributesW(_gConfigDir);
-        !code && (attrs == INVALID_FILE_ATTRIBUTES || !(attrs & FILE_ATTRIBUTE_DIRECTORY))) {
-        endPos = GetEnvironmentVariableW(L"AppData", _gConfigDir, MAX_PATH);
-        
-        if (_gConfigDir[endPos] != L'\\') {
-            _gConfigDir[endPos++] = L'\\';
+    // Cannot obtain AppData environment variable at all, use .thprac_data as data directory
+    if (code) {
+        force_local_dir:
+        if (!CreateDirectoryW(_gConfigDir, nullptr) && GetLastError() != ERROR_ALREADY_EXISTS) {
+            // Complete failure to find a suitable data directory. Proceeding with no data directory
+            // The user will be prompted about this in log_init
+            memset(_gConfigDir, 0, sizeof(_gConfigDir));
+            _gConfigDirLen = 0;
         }
-        memcpy(_gConfigDir + endPos, SIZED(L"thprac\\"));
-        _gConfigDirLen = endPos + t_strlen(L"thprac\\");
-        CreateDirectoryW(_gConfigDir, nullptr);
+        _gIsAppDataAvailable = false;
+    }
+    // AppData environment variable exists, and .thprac_data has undesirable attributes
+    else if (BadDirectoryAttributes(GetFileAttributesW(_gConfigDir))) {
+        wchar_t appdataDir[MAX_PATH + 1];
+        int appdataLen = GetEnvironmentVariableW(L"AppData", appdataDir, MAX_PATH);
+        if (BadDirectoryAttributes(GetFileAttributesW(appdataDir))) {
+            goto force_local_dir;
+        }
+
+        if (appdataDir[appdataLen] != L'\\') {
+            appdataDir[appdataLen++] = L'\\';
+        }
+        
+        memcpy(appdataDir + appdataLen, SIZED(L"thprac\\"));
+        appdataLen += t_strlen(L"thprac\\");
+
+        if (!CreateDirectoryW(appdataDir, nullptr) && GetLastError() != ERROR_ALREADY_EXISTS) {
+            goto force_local_dir;
+        }
+
+        memcpy(_gConfigDir, appdataDir, appdataLen * sizeof(wchar_t));
+        _gConfigDirLen = appdataLen;
+        _gConfigDir[_gConfigDirLen] = 0;
+        _gIsLocalConfigDir = false;
     }
     // else case: .thprac_data exists and is a directory. If that is the case, do nothing.
     // No log statements can be made here because this runs before log_init
@@ -62,48 +93,71 @@ static const wchar_t* JSON_ERROR_FORMAT[] = {
 };
 
 yyjson_doc* yyjson_read_file_report(const wchar_t* path, yyjson_read_flag flg = YYJSON_READ_JSON5, const yyjson_alc* alc_ptr = nullptr) {
-    for (;;) {
-        yyjson_read_err err;
-        yyjson_doc* doc;
+begin:
+    yyjson_read_err err;
+    yyjson_doc* doc;
 
-        // Ensure MappedFile gets destroyed right after JSON parsing is complete
-        {
-            MappedFile f(path);
-            if (!f.fileMapView) {
-                // This buffer is in it's own scope...
-                char buf[MAX_PATH * 2] = {};
-                WideCharToMultiByte(CP_UTF8, 0, path, -1, buf, MAX_PATH * 2 - 1, nullptr, nullptr);
-                
-                log_printf("JSON: file %s not found\r\n", buf);
-                return nullptr;
-            }
+    // Calls constructor and then operator bool of MappedFile
+    if (MappedFile f = path) {
+        doc = yyjson_read_opts((char*)f.fileMapView, f.fileSize, flg, alc_ptr, &err);
+    } else {
+        // This buffer is in it's own scope...
+        char buf[MAX_PATH * 2] = {};
+        WideCharToMultiByte(CP_UTF8, 0, path, -1, buf, MAX_PATH * 2 - 1, nullptr, nullptr);
 
-            doc = yyjson_read_opts((char*)f.fileMapView, f.fileSize, flg, alc_ptr, &err);
-        }
-        if (!doc) {
-            // ...and so is this one, meaning they can occupy the space in memory on the stack
-            wchar_t json_error_buffer[1024];
-            memset(json_error_buffer, 0x10, sizeof(json_error_buffer));
-            int wrote = _snwprintf(json_error_buffer, 1023, JSON_ERROR_FORMAT[Gui::LocaleGet()], path, err.code, err.pos);
-            
-            // Perfectly safe conversion to UTF-16
-            // yyjson only returns error messages in English
-            for (size_t i = 0; err.msg[i]; i++) {
-                json_error_buffer[wrote++] = err.msg[i];
-            }
-            json_error_buffer[wrote] = 0;
-
-            int choice = MessageBoxW(NULL, json_error_buffer, JSON_ERROR_TITLE[Gui::LocaleGet()], MB_ICONERROR | MB_RETRYCANCEL);
-
-            if (choice == IDRETRY) {
-                continue;
-            } else {
-                return nullptr;
-            }
-        } else {
-            return doc;
-        }
+       log_printf("JSON: could not load file %s\r\n", buf);
+        return nullptr;
     }
+    
+    if (!doc) {
+        // ...and so is this one, meaning they can occupy the space in memory on the stack
+        wchar_t json_error_buffer[1024];
+        memset(json_error_buffer, 0x10, sizeof(json_error_buffer));
+        int wrote = _snwprintf(json_error_buffer, 1023, JSON_ERROR_FORMAT[Gui::LocaleGet()], path, err.code, err.pos);
+        
+        // Perfectly safe conversion to UTF-16
+        // yyjson only returns error messages in English
+        for (size_t i = 0; err.msg[i]; i++) {
+            json_error_buffer[wrote++] = err.msg[i];
+        }
+        json_error_buffer[wrote] = 0;
+
+        int choice = MessageBoxW(NULL, json_error_buffer, JSON_ERROR_TITLE[Gui::LocaleGet()], MB_ICONERROR | MB_RETRYCANCEL);
+        if (choice == IDRETRY) {
+            goto begin;
+        } else {
+            return nullptr;
+        }
+    } else {
+        return doc;
+    }
+}
+
+yyjson_doc* LoadConfigFile(const wchar_t* name) {
+    if (!_gConfigDirLen) {
+        return nullptr;
+    }
+
+    wchar_t path[MAX_PATH + 1] = {};
+    memcpy(path, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
+    memcpy(path + _gConfigDirLen, name, t_strlen(name) * sizeof(wchar_t));
+
+    return yyjson_read_file_report(path);
+}
+
+void SaveConfigFile(const wchar_t* name, void* buf, size_t len) {
+    if (!_gConfigDirLen) {
+        return;
+    }
+    wchar_t path[MAX_PATH + 1] = {};
+    memcpy(path, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
+    memcpy(path + _gConfigDirLen, name, t_strlen(name) * sizeof(wchar_t));
+
+    HANDLE hFile = CreateFileW(path, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+    DWORD byteRet;
+    WriteFile(hFile, buf, len, &byteRet, nullptr);
+    CloseHandle(hFile);
 }
 
 void SetTheme(int theme) {
