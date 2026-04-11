@@ -83,6 +83,7 @@
       "THPRAC_HOTKEY_SPECIAL_SETTINGS_TOOLTIP": [ "花映冢、兽王园、弹幕狂们的黑市", "TH09 (PoFV), TH19 (UDoALG), TH185 (100BM)", "東方花映塚，東方獣王園，バレットフィリア達の闇市場" ],
 
       "THPRAC_CHECK_UPDATE_NOW": [ "检查更新", "Check for updates", "更新を確認する" ],
+      "THPRAC_CHECK_UPDATE_ERROR":  ["在检查更新时发生了错误。", "An error occurred while looking for updates", "An error occurred while looking for updates"],
       "THPRAC_UPDATE_MODAL": [ "更新可用##update_modal", "Update available##update_modal", "利用可能な更新##update_modal" ],
       "THPRAC_UPDATE_PROMPT": [ "thprac检测到一个可用的新版本：v%u.%u.%u.%u", "A new version of thprac has been detected: v%u.%u.%u.%u", "thpracの新しいバージョンが検出されました：v%u.%u.%u.%u" ],
       "THPRAC_UPDATE_AUTO_UPDATE": [ "自动更新", "Auto update", "自動更新" ],
@@ -90,10 +91,13 @@
       "THPRAC_UPDATE_DOWNLOADING": [ "下载新版本中……", "Downloading update...", "Downloading update..." ],
       "THPRAC_UPDATE_VIEW_CHANGELOG": [ "查看更新日志", "View changelog", "View changelog" ],
       "THPRAC_UPDATE_DOWNLOAD_MANUALLY": [ "手动下载", "Download manually", "Download manually" ],
-      "THPRAC_UPDATE_ERROR_ASK_DISABLE": [
-        "在检查更新时发生了错误。\n你想要永久禁用自动检查更新吗？",
-        "An error occurred while looking for updates.\nDo you want to permanentally disable automatic update checking?",
-        "An error occurred while looking for updates.\nDo you want to permanentally disable automatic update checking?"
+      "THPRAC_UPDATE_DOWNLOAD_ERROR": [ "An error occurred while downloading the update", "An error occurred while downloading the update", "An error occurred while downloading the update" ],
+      "THPRAC_UPDATE_COMPLETION_ERROR": [ "An error occurred while finishing the update", "An error occurred while finishing the update", "An error occurred while finishing the update" ],
+
+      "THPRAC_UPDATE_ASK_DISABLE": [
+        "你想要永久禁用自动检查更新吗？",
+        "Do you want to permanentally disable automatic update checking?",
+        "Do you want to permanentally disable automatic update checking?"
       ],
 
       "THPRAC_GLOBAL_SETTINGS": [ "全局设置", "Global settings", "Global settings" ],

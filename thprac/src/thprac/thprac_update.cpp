@@ -162,38 +162,39 @@ bool ParseUpdateJson(char* buf, size_t len, UpdateJson* out) {
     return true;
 }
 
-void CompleteUpdate(unsigned char* buf, size_t len, const wchar_t* pCmdLine, int nCmdShow, UpdateJson* updateJson) {
+bool CompleteUpdate(unsigned char* buf, size_t len, const wchar_t* pCmdLine, int nCmdShow, UpdateJson* updateJson) {
     if (!pCmdLine) {
         pCmdLine = L"";
     }
 
+    // Determine the name of the post update exe file.
     wchar_t new_exe_path[MAX_PATH + 1] = {};
     auto new_exe_path_len = GetCurrentDirectoryW(MAX_PATH, new_exe_path);
     new_exe_path[new_exe_path_len++] = L'\\';
     wchar_t* new_fn = new_exe_path + new_exe_path_len;
     
-    auto& self = CurrentPeb()->ProcessParameters->ImagePathName;
+    auto& self_path = CurrentPeb()->ProcessParameters->ImagePathName;
+    wchar_t self_fn[MAX_PATH] = {};
+    size_t self_len = 0;
 
-    const wchar_t* self_begin = self.Buffer + self.Length / 2;
-    const wchar_t* self_end = self.Buffer + self.Length / 2;
-
-    for (;;) {
+    for (const wchar_t *self_begin = self_path.Buffer + self_path.Length / 2, *self_end = self_path.Buffer + self_path.Length / 2;;) {
         if (*--self_begin == L'\\') {
             self_begin++;
+            memcpy(self_fn, self_begin, (char*)self_end - (char*)self_begin);
+            self_len = self_end - self_begin;
             break;
         }
-        if (self_begin == self.Buffer) {
+        if (self_begin == self_path.Buffer) {
             break;
         }
     }
-
-    auto self_len = self_end - self_begin;
+    
     switch (gSettings.filename_after_update) {
     case FN_UPDATE_KEEP_DOWNLOADED:
         new_exe_path_len += _snwprintf(new_fn, MAX_PATH - new_exe_path_len, L"thprac.v%u.%u.%u.%u.exe", VER_PARAMS(updateJson->ver));
         break;
     case FN_UPDATE_USE_PREVIOUS:
-        memcpy(new_fn, self_begin, self_len * sizeof(wchar_t));
+        memcpy(new_fn, self_fn, self_len * sizeof(wchar_t));
         new_exe_path_len += self_len;
         break;
     case FN_UPDATE_THPRAC_EXE:
@@ -201,20 +202,50 @@ void CompleteUpdate(unsigned char* buf, size_t len, const wchar_t* pCmdLine, int
         new_exe_path_len += t_strlen(L"thprac.exe");
         break;
     }
+    // ---
 
+    // Rename to <self_name>.exe.old
     wchar_t move_to[MAX_PATH] = {};
-    memcpy(move_to, self_begin, self_len * sizeof(wchar_t));
+    memcpy(move_to, self_fn, self_len * sizeof(wchar_t));
     memcpy(move_to + self_len, SIZED(L".old"));
 
     DeleteFileW(move_to);
-    MoveFileW(self_begin, move_to);
-    DeleteFileW(new_exe_path);
+    if (!MoveFileW(self_fn, move_to)) {
+        // TODO: revisit
+        log_printf("Update error: failed to rename running executable, code %d\r\n", GetLastError());
+        return false;
+    }
+    // ---
 
+    // Write new file
     HANDLE new_file = CreateFileW(new_exe_path, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (!new_file) {
+        // Well this was a bust, we renamed ourselves to <self_name>.exe.old but then we can't even write our new exe file.
+        // TODO: what else should happen here?
+        DWORD err = GetLastError();
+        char buf[MAX_PATH * 2];
+        int wrote = WideCharToMultiByte(CP_UTF8, 0, new_exe_path, new_exe_path_len, buf, MAX_PATH * 2, nullptr, nullptr);
+        log_printf("Update error: failed to open %.*s for writing, error %d\r\n", err, wrote, buf);
+        DeleteFileW(self_fn);
+        MoveFileW(move_to, self_fn);
+        return false;
+    }
     DWORD byteRet;
-    WriteFile(new_file, buf, len, &byteRet, nullptr);
-    CloseHandle(new_file);
-
+    if (WriteFile(new_file, buf, len, &byteRet, nullptr) && len == byteRet) {
+        CloseHandle(new_file);
+    } else {
+        DWORD err = GetLastError();
+        char buf[MAX_PATH * 2];
+        int wrote = WideCharToMultiByte(CP_UTF8, 0, new_exe_path, new_exe_path_len, buf, MAX_PATH * 2, nullptr, nullptr);
+        log_printf("Update error: failed to write %.*s, error %d\r\n -> Wrote %d/%d bytes\r\n", wrote, buf, err, len, byteRet);
+        CloseHandle(new_file);
+        DeleteFileW(self_fn);
+        MoveFileW(move_to, self_fn);
+        return false;
+    }
+    // ---
+    
+    // Run new file.
     wchar_t new_cmd_line[8192];
     memcpy(new_cmd_line + 1, new_exe_path, new_exe_path_len * 2);
     new_cmd_line[0] = L'"';
@@ -226,7 +257,9 @@ void CompleteUpdate(unsigned char* buf, size_t len, const wchar_t* pCmdLine, int
     new_cmd_line[new_exe_path_len + cmd_line_len + 3] = 0;
 
     ShellExecuteW(NULL, L"open", new_exe_path, new_cmd_line, old_working_dir, nCmdShow);
-    return;
+    // ---
+
+    return true;
 }
 
 unsigned int DummyCallback([[maybe_unused]] DOWNLOAD_CALLBACK_REASON reason, [[maybe_unused]] DownloadParams* dl) {
@@ -495,7 +528,6 @@ bool LegacyPostUpdate(LPCWSTR lpCmdLine, int nCmdShow) {
     }
 
     DeleteFileLoop(finalPath, 20000);
-
     // No need for the other 2 stages (initiated with --update-launcher-2 and --update-launcher) when you can just do this.
     MoveFileW(self.Buffer, finalPath);
     wchar_t finalDir[MAX_PATH + 1] = {};

@@ -193,6 +193,7 @@ struct LauncherState {
     LauncherThcrapSelection thcrapSel;
 
     th_glossary_t thcrapError = A0000ERROR_C;
+    th_glossary_t updateError = A0000ERROR_C;
 
     bool inScan = false;
     ScanCtx scanCtx;

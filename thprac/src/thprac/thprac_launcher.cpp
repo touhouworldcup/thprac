@@ -335,6 +335,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
 
     ImGui::EndChild();
 
+    bool openUpdateError = false;
     if (background_update_check && background_update_check->hThread) {
         DWORD waitStatus = WaitForSingleObject(background_update_check->hThread, 0);
 
@@ -348,13 +349,13 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
                 }
             }
             else {
-                ImGui::OpenPopup(S(THPRAC_UPDATE_ERROR_MODAL));
+                openUpdateError = true;
+                state->updateError = THPRAC_CHECK_UPDATE_ERROR;
             }
             CloseHandle(background_update_check->hThread);
             background_update_check->hThread = NULL;
         }
     }
-
     ImGui::SetNextWindowSize({ 355.0f, 128.0f });
     if (Gui::Modal(S(THPRAC_UPDATE_MODAL))) {
         if (state->hUpdateThread) {
@@ -382,16 +383,27 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
                 CloseHandle(state->hUpdateThread);
                 state->hUpdateThread = NULL;
                 if (exitCode == 0) {
-                    CompleteUpdate(state->updateDownload.out.data(), state->updateDownload.out.size(), nullptr, SW_SHOW, &background_update_check->updateJson);
+                    if (!CompleteUpdate(state->updateDownload.out.data(), state->updateDownload.out.size(), nullptr, SW_SHOW, &background_update_check->updateJson)) {
+                        ImGui::CloseCurrentPopup();
+                        openUpdateError = true;
+                        state->updateDownload.out.clear();
+                        state->updateError = THPRAC_UPDATE_COMPLETION_ERROR;
+                    }
                     PostQuitMessage(0);
                 } else {
                     state->updateDownload.out.clear();
                     ImGui::CloseCurrentPopup();
+
+                    if (exitCode != 0x80000000) {
+                        openUpdateError = true;
+                        state->updateError = THPRAC_UPDATE_DOWNLOAD_ERROR;
+                    }
                 }
             }
             else if (waitStatus != WAIT_TIMEOUT) {
                 ImGui::CloseCurrentPopup();
-
+                state->updateDownload.out.clear();
+                state->updateError = THPRAC_UPDATE_DOWNLOAD_ERROR;
             }
         } else {
             ImGui::Text(S(THPRAC_UPDATE_PROMPT), VER_PARAMS(background_update_check->updateJson.ver));
@@ -414,8 +426,10 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
         }
         ImGui::EndPopup();
     }
+
     if (Gui::Modal(S(THPRAC_UPDATE_ERROR_MODAL))) {
-        ImGui::TextUnformatted(S(THPRAC_UPDATE_ERROR_ASK_DISABLE));
+        ImGui::TextUnformatted(S(state->updateError));
+        ImGui::TextUnformatted(S(THPRAC_UPDATE_ASK_DISABLE));
         switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO), nullptr)) {
         case 0:
             gSettings.check_update = CHECK_UPDATE_NEVER;
@@ -423,6 +437,10 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
             ImGui::CloseCurrentPopup();
         }
         ImGui::EndPopup();
+    }
+
+    if (openUpdateError) {
+        ImGui::OpenPopup(S(THPRAC_UPDATE_ERROR_MODAL));
     }
 
     ImGui::End();
