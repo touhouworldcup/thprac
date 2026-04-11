@@ -153,7 +153,7 @@ void log_init(bool launcher, bool console) {
 
     MoveFileW(fn, fn_rot_temp_1);
 
-    hLog = CreateFileW(fn, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    hLog = CreateFileW(fn, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     SetCurrentDirectoryW(cur_dir_backup);
     
     if (hLog == INVALID_HANDLE_VALUE) {
