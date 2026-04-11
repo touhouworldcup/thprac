@@ -146,7 +146,7 @@ yyjson_doc* LoadConfigFile(const wchar_t* name) {
 }
 
 void SaveConfigFile(const wchar_t* name, void* buf, size_t len) {
-    if (!_gConfigDirLen) {
+    if (!buf || !len || !_gConfigDirLen) {
         return;
     }
     wchar_t path[MAX_PATH + 1] = {};
