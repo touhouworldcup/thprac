@@ -822,12 +822,13 @@ static bool DetailsPage(LauncherState* state) {
         switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO), nullptr)) {
         case 0:
             if (game->inst_count == 1) {
-                DestroyInst(game->instances + 0);
+                DestroyInst(game->instances);
+                free(game->instances);
                 game->instances = 0;
                 game->inst_count = 0;
                 ret = false;
             }
-            else if (game->selected == game->inst_count - 1) {
+            else if (game->selected == (game->inst_count - 1)) {
                 DestroyInst(inst);
                 memset(inst, 0, sizeof(*inst));
                 game->inst_count--;

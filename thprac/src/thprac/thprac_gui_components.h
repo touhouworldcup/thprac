@@ -817,8 +817,8 @@ namespace Gui {
     bool Modal(const char* modalTitle, ImVec2 sizeRel = ImVec2(0.0f, 0.0f));
     bool ButtonRight(const char* text, float rel = 0.0f, const ImVec2& size_arg = { 0.0f, 0.0f });
     void CheckboxAll(const char* label, bool* v, size_t v_len);
-    int MultiButtonsRight(float x, ...);
-    int MultiButtonsFillWindow(float height, ...);
+    int MultiButtonsRight(double x, ...);
+    int MultiButtonsFillWindow(double height, ...);
 
     void ProgressBar(float prog, const char* text, const char* textEnd = nullptr);
 }

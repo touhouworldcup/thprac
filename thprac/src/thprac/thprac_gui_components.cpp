@@ -726,10 +726,11 @@ namespace THPrac
                 memset(v, checked, v_len);
             }
         }
-        int MultiButtonsRight(float x, ...) {
+        int MultiButtonsRight(double x_, ...) {
             va_list va;
-            va_start(va, x);
+            va_start(va, x_);
 
+            float x = (float)x_;
             const char* label = va_arg(va, const char*);
             int ret = -1;
 
@@ -750,25 +751,34 @@ namespace THPrac
             va_end(va);
             return ret;
         }
-        int MultiButtonsFillWindow(float height, ...) {
-            int ret = -1;
-            const char** labs = (const char**)((&height) + 1);
-            size_t count = t_strlen(labs);
+        int MultiButtonsFillWindow(double height, ...) {
+            va_list va, va2;
+            va_start(va, height);
+            va_copy(va2, va);
 
+            int ret = -1;
+            size_t count = 0;
+
+            while (va_arg(va2, const char*) != nullptr) {
+                count++;
+            }
+            va_end(va2);
+            
             auto& style = ImGui::GetStyle();
             float wnd_width = ImGui::GetWindowWidth() - style.WindowPadding.x;
 
             float btn_width = wnd_width / count - style.ItemSpacing.x;
-            ImVec2 size { btn_width, height };
+            ImVec2 size { btn_width, (float)height };
 
             for (size_t i = 0; i < count; i++) {
-                if (ImGui::Button(labs[i], size)) {
+                if (ImGui::Button(va_arg(va, const char*), size)) {
                     ret = i;
                 }
                 if (i != count - 1) {
                     ImGui::SameLine();
                 }
             }
+            va_end(va);
             return ret;
         }
         void ProgressBar(float prog, const char* text, const char* textEnd) {
