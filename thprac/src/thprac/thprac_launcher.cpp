@@ -657,6 +657,10 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
         return 1;
     }
 
+    if (UpdaterInitialized() && gSettings.check_update == CHECK_UPDATE_LAUNCHER) {
+        background_update_check->hThread = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)DownloadFile, background_update_check, 0, nullptr);
+    }
+
     int width = (int)(960.0f * dpiscale), height = (int)(720.0f * dpiscale);
     MONITORINFO mi = {
         .cbSize = sizeof(mi)
