@@ -13,7 +13,6 @@ constexpr const wchar_t THPRAC_SETTINGS_JSON_NAME[] = L"settings.json";
 wchar_t _gConfigDir[MAX_PATH + 1] = {};
 unsigned int _gConfigDirLen = 0;
 bool _gIsLocalConfigDir = true;
-bool _gIsAppDataAvailable = true;
 
 constinit THPracSettings gSettings;
 constinit HotkeyChords hotkeys;
@@ -53,7 +52,6 @@ void InitConfigDir() {
             memset(_gConfigDir, 0, sizeof(_gConfigDir));
             _gConfigDirLen = 0;
         }
-        _gIsAppDataAvailable = false;
     }
     // AppData environment variable exists, and .thprac_data has undesirable attributes
     else if (BadDirectoryAttributes(GetFileAttributesW(_gConfigDir))) {
