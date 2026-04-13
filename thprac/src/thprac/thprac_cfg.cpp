@@ -480,6 +480,23 @@ void GuiSettings() {
     if (ImGui::Button(S(THPRAC_HOTKEY_RESET))) {
         hotkeys = {};
     }
+    ImGui::NewLine();
+    
+    ImGui::TextUnformatted(S(THPRAC_DIRECTORY_SETTING));
+    ImGui::Separator();
+    if (!_gConfigDirLen) {
+        ImGui::BeginDisabled();
+    }
+    if (ImGui::Button(S(THPRAC_DATADIR_OPEN))) {
+        ShellExecuteW(NULL, L"open", _gConfigDir, nullptr, nullptr, SW_SHOW);
+    }
+    if (!_gConfigDirLen) {
+        ImGui::EndDisabled();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button(S(THPRAC_DATADIR_LEARN_MORE))) {
+        ShellExecuteW(NULL, L"open", L"https://github.com/touhouworldcup/thprac/wiki/Config-directory-or-data-directory", nullptr, nullptr, SW_SHOW);
+    }
 }
 
 }

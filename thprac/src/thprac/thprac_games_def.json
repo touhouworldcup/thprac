@@ -128,6 +128,9 @@
         "If all text in the game fails to display properly (e.g., appears as white solid squares), please enable this option.",
         "ゲーム内のすべての文字が正常に表示されない場合（白い四角で表示されるなど）、このオプションを有効にしてください。"
       ],
+      "THPRAC_DIRECTORY_SETTING": [ "数据目录", "Data directory", "データディレクトリ" ],
+      "THPRAC_DATADIR_OPEN": [ "打开数据目录", "Open data directory", "データディレクトリを開く" ],
+      "THPRAC_DATADIR_LEARN_MORE": [ "Learn More", "Learn More", "Learn More" ],
 
       "THPRAC_TOOLS": [ "工具", "Tools", "ツール" ],
       "THPRAC_TOOLS_APPLY_THPRAC": [ "应用thprac至正在运行的游戏", "Apply thprac to ongoing game", "実行中のゲームにthpracを適用します" ],
