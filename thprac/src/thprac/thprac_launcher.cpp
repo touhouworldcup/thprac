@@ -61,10 +61,10 @@ inline float DrawTitleBar(HWND hwnd, bool* overBtn, const char* title) {
         ImVec2(io.DisplaySize.x, tbH),
         ImGui::GetColorU32(ImGuiCol_TitleBgActive));
 
-    ImGui::SetCursorPos(ImVec2(4.0f, (tbH - ImGui::GetTextLineHeight()) * 0.5f));
+    ImGui::SetCursorPos(ImVec2(ImGui::GetStyle().FramePadding.x, (tbH - ImGui::GetTextLineHeight()) * 0.5f));
     ImGui::TextUnformatted(title);
 
-    float cross_extent = g_Scale * 7.071f - 1.0f;
+    float cross_extent = ImGui::GetFontSize() * (0.5f * 0.7071f) - 1.0f;
 
     // Minimize Button
     {
