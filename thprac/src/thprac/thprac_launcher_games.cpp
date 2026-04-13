@@ -1273,8 +1273,7 @@ static bool ScanForGamesUI(ScanCtx* scanCtx, bool apply_thprac) {
     ImGui::SameLine();
     Gui::TextCentered(S(THPRAC_GAMES_SCAN_FOLDER), ImGui::GetWindowWidth());
 
-    auto& padding = ImGui::GetStyle().WindowPadding;
-    float childHeight = ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - ImGui::GetFrameHeight() - padding.y;
+    float childHeight = ImGui::GetWindowHeight() - ImGui::GetCursorPosY() - ImGui::GetFrameHeight() - ImGui::GetStyle().ItemSpacing.y;
 
     ImGui::BeginChild(0x5CA88E6, { 0.0f, childHeight }, true);
     if (scanStatus != WAIT_FAILED) {
@@ -1291,6 +1290,24 @@ static bool ScanForGamesUI(ScanCtx* scanCtx, bool apply_thprac) {
             Gui::TextCentered(S(THPRAC_SCAN_NOTHING_FOUND), ImGui::GetWindowWidth());
         }
     }
+    else {
+        auto fontSize = ImGui::GetFontSize();
+
+        ImVec2 wndSize = ImGui::GetWindowSize();
+        ImVec2 btnSize = {
+            fontSize * 8,
+            fontSize * 2,
+        };
+        ImVec2 btnPos = {
+            wndSize.x / 2 - btnSize.x / 2,
+            wndSize.y / 2 - btnSize.y / 2,
+        };
+        
+        ImGui::SetCursorPos(btnPos);
+        if (ImGui::Button(S(THPRAC_LINKS_EDIT_FOLDER), btnSize) && SelectFolder(scanCtx->scan_dir, Gui::ImplWin32GetHwnd())) {
+            scanCtx->scan_thread = CreateThread(nullptr, 0, ScanThread, scanCtx, 0, nullptr);
+        }
+    }
     ImGui::EndChild();
 
     switch (scanStatus) {
@@ -1298,10 +1315,6 @@ static bool ScanForGamesUI(ScanCtx* scanCtx, bool apply_thprac) {
         ImGui::Checkbox(S(THPRAC_GAMES_SCAN_RELATIVE), &scanCtx->relative);
         ImGui::SameLine();
         Gui::HelpMarker(S(THPRAC_GAMES_SCAN_RELATIVE_DESC));
-        ImGui::SameLine();
-        if (Gui::ButtonRight(S(THPRAC_LINKS_EDIT_FOLDER), ImGui::GetWindowWidth()) && SelectFolder(scanCtx->scan_dir, Gui::ImplWin32GetHwnd())) {
-            scanCtx->scan_thread = CreateThread(nullptr, 0, ScanThread, scanCtx, 0, nullptr);
-        }
         break;
     case WAIT_TIMEOUT:
         if (scanCtx->exes_found == 0) {
@@ -1349,6 +1362,7 @@ static void GameRightClickMenu(LauncherState* state, LauncherGame* game) {
 
     if(ImGui::Selectable(S(THPRAC_GAMES_SCAN_FOLDER))) {
         state->inScan = true;
+        state->scanCtx.relative = _gIsLocalConfigDir;
         ImGui::CloseCurrentPopup();
     }
     if(ImGui::Selectable(S(THPRAC_STEAM_MNG_BUTTON))) {
