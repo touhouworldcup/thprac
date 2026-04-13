@@ -714,7 +714,7 @@ namespace THPrac
             ImVec2 size = ImGui::CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
 
             if (rel == 0) {
-                rel = ImGui::GetWindowWidth() - ImGui::GetStyle().WindowPadding.x;
+                rel = ImGui::GetContentRegionMax().x;
             }
 
             ImGui::SetCursorPosX(rel - size.x);
@@ -726,7 +726,7 @@ namespace THPrac
                 memset(v, checked, v_len);
             }
         }
-        int MultiButtonsRight(double x_, ...) {
+        int MultiButtonsRight_Impl(double x_, ...) {
             va_list va;
             va_start(va, x_);
 
@@ -751,7 +751,7 @@ namespace THPrac
             va_end(va);
             return ret;
         }
-        int MultiButtonsFillWindow(double height, ...) {
+        int MultiButtonsFillWindow_Impl(double height, ...) {
             va_list va, va2;
             va_start(va, height);
             va_copy(va2, va);
@@ -765,9 +765,9 @@ namespace THPrac
             va_end(va2);
             
             auto& style = ImGui::GetStyle();
-            float wnd_width = ImGui::GetWindowWidth() - style.WindowPadding.x;
+            float wnd_width = ImGui::GetContentRegionAvail().x;
 
-            float btn_width = wnd_width / count - style.ItemSpacing.x;
+            float btn_width = wnd_width / count - style.ItemSpacing.x / 2;
             ImVec2 size { btn_width, (float)height };
 
             for (size_t i = 0; i < count; i++) {

@@ -817,8 +817,20 @@ namespace Gui {
     bool Modal(const char* modalTitle, ImVec2 sizeRel = ImVec2(0.0f, 0.0f));
     bool ButtonRight(const char* text, float rel = 0.0f, const ImVec2& size_arg = { 0.0f, 0.0f });
     void CheckboxAll(const char* label, bool* v, size_t v_len);
-    int MultiButtonsRight(double x, ...);
-    int MultiButtonsFillWindow(double height, ...);
+
+    int MultiButtonsRight_Impl(double x, ...);
+    template<typename... Args>
+    requires (std::is_same_v<Args, const char*> && ...)
+    __forceinline int MultiButtonsRight(double x, Args... args) {
+        return MultiButtonsRight_Impl(x, args..., nullptr);
+    }
+
+    int MultiButtonsFillWindow_Impl(double height, ...);
+    template<typename... Args>
+    requires (std::is_same_v<Args, const char*> && ...)
+    __forceinline int MultiButtonsFillWindow(double height, Args... args) {
+        return MultiButtonsFillWindow_Impl(height, args..., nullptr);
+    }
 
     void ProgressBar(float prog, const char* text, const char* textEnd = nullptr);
 }

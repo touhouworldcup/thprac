@@ -713,7 +713,7 @@ static bool DetailsPage(LauncherState* state) {
     }
     if (Gui::Modal("##cannot_delete_game")) {
         ImGui::TextUnformatted(S(THPRAC_GAMES_CANNOT_DELETE_INST));
-        if (Gui::MultiButtonsFillWindow(0.0f, "OK", nullptr) != -1) {
+        if (Gui::MultiButtonsFillWindow(0.0f, S(TH_OK)) != -1) {
             ImGui::CloseCurrentPopup();
         }
         ImGui::EndPopup();
@@ -803,7 +803,7 @@ static bool DetailsPage(LauncherState* state) {
 
     if (Gui::Modal(S(THPRAC_GAMES_RENAME_MODAL))) {
         ImGui::InputText("", state->instRenameBuf, 255);
-        switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_OK), S(TH_CANCEL), nullptr)) {
+        switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_OK), S(TH_CANCEL))) {
         case 0: {
             if (inst->name) {
                 free((void*)inst->name);
@@ -819,7 +819,7 @@ static bool DetailsPage(LauncherState* state) {
 
     if (Gui::Modal(S(THPRAC_GAMES_DELETE_MODAL))) {
         ImGui::TextUnformatted(S(THPRAC_GAMES_DELETE_CONFIRM));
-        switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO), nullptr)) {
+        switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO))) {
         case 0:
             if (game->inst_count == 1) {
                 DestroyInst(game->instances);
@@ -1329,7 +1329,7 @@ static bool ScanForGamesUI(ScanCtx* scanCtx, bool apply_thprac) {
             }
         }
         ImGui::SameLine();
-        if (Gui::ButtonRight(S(TH_FINISH), ImGui::GetWindowWidth())) {
+        if (Gui::ButtonRight(S(TH_FINISH))) {
             ScanResults(scanCtx->found, apply_thprac);
             CloseHandle(scanCtx->scan_thread);
             return false;
@@ -1625,7 +1625,7 @@ void ThcrapAddConfigsUI(LauncherState* state) {
     ImGui::SameLine();
     Gui::CheckboxAll(S(THPRAC_GAMES_SPINOFF_OTHERS), state->thcrapSel.spinoff_others, SPINOFF_OTHER_LEN);
     ImGui::SameLine();
-    if (Gui::ButtonRight(S(TH_APPLY), ImGui::GetWindowWidth())) {
+    if (Gui::ButtonRight(S(TH_APPLY))) {
         for (size_t i = 0; i < GAMES_LEN; i++) {
             if (!state->thcrapSel.sel[i]) {
                 continue;
@@ -1666,7 +1666,7 @@ void LauncherGamesMain(LauncherState* state) {
     if (Gui::Modal(S(THPRAC_GAMES_CANNOT_LAUNCH_MODAL))) {
         if (state->reflectiveLaunchID != ID_UNKNOWN) {
             ImGui::TextUnformatted(S(THPRAC_GAMES_CANNOT_LAUNCH_DESC));
-            switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO), nullptr)) {
+            switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO))) {
             case 0:
                 state->reflectiveLaunchID = ID_UNKNOWN;
             case 1:
@@ -1675,7 +1675,7 @@ void LauncherGamesMain(LauncherState* state) {
         }
         else {
             ImGui::TextUnformatted(S(THPRAC_GAMES_CANNOT_LAUNCH_DESC_NVM));
-            if (Gui::MultiButtonsFillWindow(0.0f, S(TH_OK), nullptr) == 0) {
+            if (Gui::MultiButtonsFillWindow(0.0f, S(TH_OK)) == 0) {
                 ImGui::CloseCurrentPopup();
             }
         }

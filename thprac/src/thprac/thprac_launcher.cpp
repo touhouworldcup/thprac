@@ -407,7 +407,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
             }
         } else {
             ImGui::Text(S(THPRAC_UPDATE_PROMPT), VER_PARAMS(background_update_check->updateJson.ver));
-            switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_UPDATE_AUTO_UPDATE), S(THPRAC_UPDATE_DOWNLOAD_MANUALLY), nullptr)) {
+            switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_UPDATE_AUTO_UPDATE), S(THPRAC_UPDATE_DOWNLOAD_MANUALLY))) {
             case 0:
                 state->updateUrl = utf8_to_utf16(background_update_check->updateJson.url);
                 state->updateDownload.url = state->updateUrl.c_str();
@@ -416,7 +416,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
             case 1:
                 ShellExecuteA(Gui::ImplWin32GetHwnd(), "open", background_update_check->updateJson.url, nullptr, nullptr, SW_SHOW);
             }
-            switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_UPDATE_VIEW_CHANGELOG), S(TH_CLOSE), nullptr)) {
+            switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_UPDATE_VIEW_CHANGELOG), S(TH_CLOSE))) {
             case 0:
                 ShellExecuteA(Gui::ImplWin32GetHwnd(), "open", background_update_check->updateJson.changelog, nullptr, nullptr, SW_SHOW);
                 break;
@@ -430,7 +430,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
     if (Gui::Modal(S(THPRAC_UPDATE_ERROR_MODAL))) {
         ImGui::TextUnformatted(S(state->updateError));
         ImGui::TextUnformatted(S(THPRAC_UPDATE_ASK_DISABLE));
-        switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO), nullptr)) {
+        switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO))) {
         case 0:
             gSettings.check_update = CHECK_UPDATE_NEVER;
         case 1:

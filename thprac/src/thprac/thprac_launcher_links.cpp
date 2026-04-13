@@ -154,7 +154,7 @@ int EditLinkUI(char* linkEditTitleBuf, char* linkEditLinkBuf, bool& linkNameWarn
     }
     ImGui::SameLine();
 
-    int ret = Gui::MultiButtonsRight(0.0f, S(TH_CANCEL), S(TH_OK), nullptr);
+    int ret = Gui::MultiButtonsRight(0.0f, S(TH_CANCEL), S(TH_OK));
     if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
         ret = 1;
     }
@@ -360,7 +360,7 @@ void LauncherLinksMain(LauncherState* state) {
     }
     if (Gui::Modal(S(THPRAC_LINKS_FILTER_DEL_MODAL))) {
         ImGui::TextUnformatted(S(THPRAC_LINKS_FILTER_DELETE_WARNING));
-        switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO), nullptr)) {
+        switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO))) {
         case 0:
             state->linkSets.erase(state->linkSets.begin() + state->linkSelected.linkSetIdx);
         case 1:
@@ -372,7 +372,7 @@ void LauncherLinksMain(LauncherState* state) {
     if (Gui::Modal(S(THPRAC_LINKS_DELETE_MODAL))) {
         ImGui::TextUnformatted(S(THPRAC_LINKS_DELETE_WARNING));
         auto& v = state->linkSets[state->linkSelected.linkSetIdx].links;
-        switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO), nullptr)) {
+        switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO))) {
         case 0:
             v.erase(v.begin() + state->linkSelected.linkIdx);
         case 1:
@@ -415,7 +415,7 @@ void LauncherLinksMain(LauncherState* state) {
             }
         }
 
-        int sel = Gui::MultiButtonsFillWindow(0.0f, S(TH_OK), S(TH_CANCEL), nullptr);
+        int sel = Gui::MultiButtonsFillWindow(0.0f, S(TH_OK), S(TH_CANCEL));
         if (ImGui::IsKeyPressed(ImGuiKey_Enter)) {
             sel = 0;
         }
