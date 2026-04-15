@@ -752,7 +752,7 @@ namespace TH13 {
         }
         void FpsInit()
         {
-            mOptCtx.fps_replay_fast = 10;
+            mOptCtx.fps_replay_fast = 240;
 
             if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) != NULL) {
                 OILPInit(mOptCtx);
