@@ -681,9 +681,9 @@
       "TH_VALUE": [ "最大得点", "Value", "最大得点" ],
       "TH_FAITH": [ "信仰", "Faith", "信仰" ],
       "TH_BULLET_RANK": [ "Rank", "Rank", "ランク" ],
-      "TH_BULLET_RANKLOCK": [ "锁Rank", "Rank Lock", "ランクをロックする" ],
+      "TH_BULLET_RANKLOCK": [ "锁Rank", "Rank Lock", "ランクを固定する" ],
       "TH_DIFFICULTY": [ "难度", "Difficulty", "難易度" ],
-      "TH_REAL_BULLET_SIZE": [ "真实子弹贴图", "Real bullet sprites", "弾のリアルスプライト" ],
+      "TH_REAL_BULLET_SIZE": [ "真实子弹贴图", "Real bullet sprites", "弾の見た目を変えない" ],
       "TH_ORIGINAL": [ "原版练习", "Original", "オリジナル" ],
       "TH_ENHANCED": [ "自定义练习", "Custom", "カスタム" ],
       "TH_MODE": [ "模式", "Mode", "モード" ],
@@ -691,8 +691,8 @@
       "TH_BOSS": [ "Boss", "Boss", "ボス" ],
       "TH_ATTACK": [ "攻击", "Attack", "弾幕" ],
       "TH_PROGRESS": [ "进度", "Progress", "進行度" ],
-      "TH_BOTH_NORMAL": [ "都正常", "Both Normal", "両方とも正常" ],
-      "TH_BOTH_RAGE": [ "都发狂", "Both Rage", "両方の怒り" ],
+      "TH_BOTH_NORMAL": [ "都正常", "Both Normal", "普通" ],
+      "TH_BOTH_RAGE": [ "都发狂", "Both Rage", "両方発狂" ],
       "TH_NONE": [ "无", "None", "なし" ],
       "TH_NONSPELL": [ "非符", "Non Spell", "通常" ],
       "TH_SPELL": [ "符卡", "Spell Card", "スペカ" ],
@@ -738,8 +738,8 @@
       "TH_STAGE_PORTION_N": [ "#%d", "#%d", "#%d" ],
       "TH_STAGE_PORTION_1": [ "前半 #%d", "First Half #%d", "前半 #%d" ],
       "TH_STAGE_PORTION_2": [ "后半 #%d", "Second Half #%d", "後半 #%d" ],
-      "TH_DLG": [ "对话", "Dialog", "ダイアログ" ],
-      "TH_DROP_ITEMS": [ "掉落道具", "Drop items", "道具掉落" ],
+      "TH_DLG": [ "对话", "Dialog", "会話" ],
+      "TH_DROP_ITEMS": [ "掉落道具", "Drop items", "アイテムを出す" ],
 
       "TH_LEFT": [ "左", "Left", "左" ],
       "TH_RIGHT": [ "右", "Right", "右" ],
@@ -791,8 +791,8 @@
 
       "TH_ABOUT_THPRAC": [ "关于thprac", "About thprac", "thpracのバージョン情報" ],
       "TH_ABOUT_VERSION": [ "thprac 版本 %d.%d.%d.%d", "thprac version %d.%d.%d.%d", "thprac ver.%d.%d.%d.%d" ],
-      "TH_ABOUT_WEBSITE": [ "网站：https://github.com/touhouworldcup/thprac", "Website: https://github.com/touhouworldcup/thprac", "ウェブサイト：https://github.com/touhouworldcup/thprac" ],
-      "TH_ABOUT_THANKS": [ "特别感谢：\n%s", "Special thanks: \n%s", "スペシャルサンクス：\n%s" ],
+      "TH_ABOUT_WEBSITE": [ "网站：https://github.com/touhouworldcup/thprac", "Website: https://github.com/touhouworldcup/thprac", "Website：https://github.com/touhouworldcup/thprac" ],
+      "TH_ABOUT_THANKS": [ "特别感谢：\n%s", "Special thanks: \n%s", "Special thanks:\n%s" ],
       "TH_ABOUT_SHOW_LICENCE": [ "显示许可信息", "Show license info", "ライセンス情報を表示" ],
       "TH_ABOUT_HIDE_LICENCE": [ "隐藏许可信息", "Hide license info", "ライセンス情報を非表示" ],
       "TH_ADV_OPT": [ "高级选项", "Advanced Options", "拡張オプション" ],
@@ -801,25 +801,25 @@
       "TH_REPLAY_FIX": [ "Replay修复", "Replay Fixing", "リプレイ修復" ],
       "TH_REPFIX_SELECTED": [ "已选择replay：%ls", "Replay selected: %ls", "選択したリプレイ: %ls" ],
       "TH_REPFIX_SELECTED_NONE": [ "未选择replay。", "No replay selected.", "リプレイが選択されていません。" ],
-      "TH_REPFIX_REAL_SELECTED_NONE": [ "未选择练习模式以外的replay。", "No non-practice replay selected.", "練習ではないリプレイが選択されていません。" ],
-      "TH_REPFIX_MAIN_SELECTED_NONE": [ "未选择主线replay。", "No main story replay selected.", "メインストーリーのリプレイが選択されていません。" ],
-      "TH_REPFIX_EXTRA_SELECTED_NONE": [ "未选择extra面replay。", "No Extra Stage replay selected.", "Extraステージのリプレイが選択されていません。" ],
-      "TH_REPFIX_SELECTED_ALREADY_FIXED": [ "已修复所选replay。", "Selected replay is already fixed.", "選択したリプレイはすでに修正されています。" ],
-      "TH_REPFIX_SAVE": [ "保存修复后的副本", "Save fixed copy", "修正版を保存" ],
-      "TH_REPFIX_SAVE_PROGRESS": [ "保存replay (%d/%d)", "Save replay (%d/%d)", "リプレイをセーブ (%d/%d)" ],
-      "TH_REPFIX_RESET_DATA": [ "重置此同步数据", "Reset this sync data", "この同期データをリセット" ],
-      "TH_REPFIX_RESET_DATA2": [ "重置此同步数据##2", "Reset this sync data##2", "この同期データをリセット##2" ],
+      "TH_REPFIX_REAL_SELECTED_NONE": [ "未选择练习模式以外的replay。", "No non-practice replay selected.", "プラクティスではないリプレイを選択してください。" ],
+      "TH_REPFIX_MAIN_SELECTED_NONE": [ "未选择主线replay。", "No main story replay selected.", "本編のリプレイが選択されていません。" ],
+      "TH_REPFIX_EXTRA_SELECTED_NONE": [ "未选择extra面replay。", "No Extra Stage replay selected.", "Extraのリプレイが選択されていません。" ],
+      "TH_REPFIX_SELECTED_ALREADY_FIXED": [ "已修复所选replay。", "Selected replay is already fixed.", "選択したリプレイはすでに修復されています。" ],
+      "TH_REPFIX_SAVE": [ "保存修复后的副本", "Save fixed copy", "修復したリプレイを別名で保存" ],
+      "TH_REPFIX_SAVE_PROGRESS": [ "保存replay (%d/%d)", "Save replay (%d/%d)", "リプレイ修復用のデータを収集中 (%d/%d)" ],
+      "TH_REPFIX_RESET_DATA": [ "重置此同步数据", "Reset this sync data", "同期データをリセットしたリプレイを別名で保存" ],
+      "TH_REPFIX_RESET_DATA2": [ "重置此同步数据##2", "Reset this sync data##2", "同期データをリセットしたリプレイを別名で保存##2" ],
       "TH_REPFIX_NEED_THPRAC": [ "(thprac)", "(thprac)", "(thprac)" ],
       "TH_REPFIX_NEED_THPRAC_DESC": [
         "修复后的replay还需要thprac才能正常回放；没有它时将保持与之前相同的行为。\n使用thprac录制的replay无需修复。",
         "Fixed replay also requires thprac to play back properly; will behave the same as before without it.\nReplays recorded with thprac applied do not need to be fixed.",
-        "修正されたリプレイは、正しく再生するために thprac が必要です；それがない場合、以前と同じ動作になります。\nthprac を適用して録画されたリプレイは修正する必要はありません。"
+        "この機能で修復されたリプレイはthpracを適用した状態で再生してください。適用していない場合、修復前と同じ動作になります。"
       ],
-      "TH_REPFIX_NO_THPRAC": [ "（原版）", "(vanilla)", "（原版）" ],
+      "TH_REPFIX_NO_THPRAC": [ "（原版）", "(vanilla)", "(vanilla)" ],
       "TH_REPFIX_NO_THPRAC_DESC": [
         "修复的replay可以使用原版游戏播放（不需要thprac）。",
         "Fixed replays can be played with the original game (thprac is not needed).",
-        "修復されたリプレイは、オリジナルゲームで再生できます（thpracは必要ありません）。"
+        "この機能で修復されたリプレイはthpracなしで再生できます。"
       ],
       "TH_REPFIX_SAVE_SUCCESS": [ "保存成功", "Successfully saved", "保存しました" ],
       "TH_REPFIX_SAVE_SUCCESS_DESC": [ "成功保存Replay至：%s", "Successfully saved replay to: %s", "リプレイは正常に保存されました：%s" ],
@@ -828,7 +828,7 @@
       "TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS": [ "重置文件的 thprac 数据失败。", "Failed to reset file's thprac data.", "ファイルの thprac データのリセットに失敗しました。" ],
       "TH_REPFIX_SAVE_ERROR_PARAMS": [ "无法将 thprac 数据写入重放文件。", "Failed to add thprac data to replay file.", "thprac のデータをリプレイファイルに書き込めませんでした。" ],
       "TH_TOOL_SHOW_TOGGLE": [ "显示工具", "Show tool", "ツールを表示" ],
-      "TH_BUGFIX": [ "可选的Bug修复", "Optional Bug Fixes", "任意Bug修復" ],
+      "TH_BUGFIX": [ "可选的Bug修复", "Optional Bug Fixes", "オプション" ],
       "TH_BUGFIX_AUTO": [ "已自动应用关键Bug的修复。", "Critical bug fixes have been applied automatically.", "重要なBug修復は自動的に適用されています。" ],
       "TH_COPY_CFG_CODE": [ "复制当前配置", "Copy current config", "現在の設定をコピー" ],
       "TH_COPY_CFG_CODE_HINT": [
@@ -845,7 +845,7 @@
       "TH_FPS_ERR": [
         "FPS调整相关的功能已禁用，你必须满足以下条件之一以使用这些功能：\n1. 使用VsyncPatch，且在vpatch.ini中将“Vsync”一项的值设为0。\n2. 在游戏的custom.exe中将输入方式设置为“高速”。（仅限地灵殿及之后的游戏）",
         "FPS Adjustment related features has been disabled. To enable them, satisfy either of the following requirements:\n1. Use VsyncPatch, and make sure the \"Vsync\" value in vpatch.ini is set to 0.\n2. In the game's custom.exe, set the input method to \"Fast\". (Only applies to SA and after)",
-        "FPS調整関連のオプションは無効になっています。 それらを有効にするには、次の要件のいずれかを満たします：\n\n1. VsyncPatchを使用し、vpatch.iniの「Vsync」値を0に設定します。\n2. ゲームのcustom.exeで、入力のレイテンシを「高速」に設定します。 （地霊殿以降のみに適用）"
+        "FPS調整関連の機能は無効になっています。有効にするには、以下のいずれかの要件を満たす必要があります。\n\n1. VsyncPatchを使用し、vpatch.iniの「Vsync」値を0に設定します。\n2. ゲームのcustom.exeで、入力のレイテンシを「高速」に設定します。（地霊殿以降のみ）"
       ],
       "TH_FPS_UNSUPPORTED": [
         "不支持的VsyncPatch版本。",
@@ -859,11 +859,11 @@
       ],
       "TH_FPS_FREE_ADJ": [ "自由调整", "Adjust freely", "自由調整" ],
       "TH_GAMEPLAY": [ "游戏进行", "Gameplay", "ゲームプレイ" ],
-      "TH_FACTOR_ACB": [ "总是计入All Clear Bonus", "Always factor in the \"All Clear Bonus\"", "いつもオールクリアボーナスを加算します" ],
+      "TH_FACTOR_ACB": [ "总是计入All Clear Bonus", "Always factor in the \"All Clear Bonus\"", "プラクティスでもオールクリアボーナスを加算する" ],
       "TH_FACTOR_ACB_DESC": [
         "开启时，单关练习六面结束后将会计入All Clear Bonus。",
         "If enabled, when practicing stage 6, the \"All Clear Bonus\" will be added to the total score at the end.",
-        "有効になっている場合、練習モードのステージ6の終わりに、最終スコアにオールクリアボーナスを加算されます。"
+        "有効にした場合、プラクティスモードの6面終了時にオールクリアボーナスを加算します。"
       ],
       
       "TH_BULLETS": [ "子弹", "Bullets", "弾" ],
@@ -875,16 +875,16 @@
       "TH_TRACKER_BORDER_BREAK": [ "爆结界", "Border Breaks", "霊撃" ],
       "TH_TRACKER_SPELLS_CAPTURED": [ "收符卡数", "Spells Captured", "霊撃" ],
       "TH_TRACKER_LAST_SPELLS": [ "LSC数", "Last Spells", "ラストスペル" ],
-      "TH_TRACKER_UFO_COLLECTED": [ "飞碟收集", "UFO Collected", "取得されたベントラー" ],
-      "TH_TRACKER_UFO_DROPPED": [ "飞碟掉落", "UFO Dropped", "落とされたベントラー" ],
-      "TH_TRACKER_UFO_SUMMONED": [ "飞碟召唤", "UFO Summoned", "召喚されたＵＦＯ" ],
+      "TH_TRACKER_UFO_COLLECTED": [ "飞碟收集", "UFO Collected", "取得したベントラー" ],
+      "TH_TRACKER_UFO_DROPPED": [ "飞碟掉落", "UFO Dropped", "逃がしたベントラー" ],
+      "TH_TRACKER_UFO_SUMMONED": [ "飞碟召唤", "UFO Summoned", "召喚したUFO" ],
       "TH_TRACKER_TRANCE": [ "灵界", "Trance", "トランス" ],
       "TH_TRACKER_RELEASE": [ "季节解放", "Release", "季節解放" ],
       "TH_TRACKER_ROARING": [ "Hyper", "Roaring", "ロアリング" ],
       "TH_TRACKER_SPIRIT_STRIKE": [ "爆Hyper", "Spirit Strikes", "霊撃" ],
-      "TH_TRACKER_SPECIAL_SPIRIT_USED": [ "吸收的特殊灵", "Spec. Used", "取得されたレア動物霊" ],
-      "TH_TRACKER_STONE_SUMMONED": [ "异变敌生成", "Δ Appeared", "召喚された異変敵" ],
-      "TH_TRACKER_STONE_KILLED": [ "异变敌击破", "Δ Killed", "撃破された異変敵" ],
+      "TH_TRACKER_SPECIAL_SPIRIT_USED": [ "吸收的特殊灵", "Spec. Used", "取得したレア動物霊" ],
+      "TH_TRACKER_STONE_SUMMONED": [ "异变敌生成", "Δ Appeared", "召喚した異変敵" ],
+      "TH_TRACKER_STONE_KILLED": [ "异变敌击破", "Δ Killed", "撃破した異変敵" ],
       "TH_TRACKER_HYPER": [ "Hyper", "Hyper", "異変攻撃" ],
       "TH_TRACKER_HYPER_BREAK": [ "爆Hyper", "Hyper Break", "異変攻撃中の被弾" ],
       "TH_TRACKER_STONE_LEVEL": [ "异变石等级", "Stone Lv.", "異変敵レベル" ],
@@ -917,19 +917,19 @@
       "TH_TRACKER_BORDER_TEAM": [ "结界组", "Border Team", "結界組" ],
       "TH_TRACKER_MAGIC_TEAM": [ "咏唱组", "Magic Team", "詠唱組" ],
       "TH_TRACKER_SCARLET_TEAM": [ "红魔组", "Scarlet Team", "紅魔組" ],
-      "TH_TRACKER_NETHERWORLD_TEAM": [ "冥界组", "Netherworld Team", "冥界組" ],
-      "TH_TRACKER_REIMU_YUKARI": [ "灵梦+紫", "Reimu + Yukari", "霊夢＋紫" ],
-      "TH_TRACKER_REIMU_SUIKA": [ "灵梦+萃香", "Reimu + Suika", "霊夢＋萃香" ],
-      "TH_TRACKER_REIMU_AYA": [ "灵梦+文", "Reimu + Aya", "霊夢＋文" ],
-      "TH_TRACKER_MARISA_ALICE": [ "魔理沙+爱丽丝", "Marisa + Alice", "魔理沙＋アリス" ],
-      "TH_TRACKER_MARISA_PATCHOULI": [ "魔理沙+帕秋莉", "Marisa + Patchouli", "魔理沙＋パチュリー" ],
-      "TH_TRACKER_MARISA_NITORI": [ "魔理沙+荷取", "Marisa + Nitori", "魔理沙＋にとり" ],
+      "TH_TRACKER_NETHERWORLD_TEAM": [ "冥界组", "Netherworld Team", "幽冥組" ],
+      "TH_TRACKER_REIMU_YUKARI": [ "灵梦+紫", "Reimu + Yukari", "霊夢A" ],
+      "TH_TRACKER_REIMU_SUIKA": [ "灵梦+萃香", "Reimu + Suika", "霊夢B" ],
+      "TH_TRACKER_REIMU_AYA": [ "灵梦+文", "Reimu + Aya", "霊夢C" ],
+      "TH_TRACKER_MARISA_ALICE": [ "魔理沙+爱丽丝", "Marisa + Alice", "魔理沙A" ],
+      "TH_TRACKER_MARISA_PATCHOULI": [ "魔理沙+帕秋莉", "Marisa + Patchouli", "魔理沙B" ],
+      "TH_TRACKER_MARISA_NITORI": [ "魔理沙+荷取", "Marisa + Nitori", "魔理沙C" ],
       "TH_TRACKER_WOLF": [ "野狼", "Wolf", "オオカミ" ],
       "TH_TRACKER_OTTER": [ "水獭", "Otter", "カワウソ" ],
       "TH_TRACKER_EAGLE": [ "大鹫", "Eagle", "オオワシ" ],
       "TH_TRACKER_STONE_N": [ "普通", "N", "コモン" ],
-      "TH_TRACKER_STONE_R1": [ "红1", "R1", "紅1" ],
-      "TH_TRACKER_STONE_R2": [ "红2", "R2", "紅2" ],
+      "TH_TRACKER_STONE_R1": [ "红1", "R1", "赤1" ],
+      "TH_TRACKER_STONE_R2": [ "红2", "R2", "赤2" ],
       "TH_TRACKER_STONE_B1": [ "蓝1", "B1", "青1" ],
       "TH_TRACKER_STONE_B2": [ "蓝2", "B2", "青2" ],
       "TH_TRACKER_STONE_Y1": [ "黄1", "Y1", "黄1" ],
@@ -1037,7 +1037,7 @@
       "TH06_MARISA_A": [ "魔A", "Marisa A", "魔符" ],
       "TH06_MARISA_B": [ "魔B", "Marisa B", "恋符" ],
       "TH06_RANK": [ "Rank", "Rank", "ランク" ],
-      "TH06_RANKLOCK": [ "锁Rank", "Rank Lock", "ランクをロックする" ],
+      "TH06_RANKLOCK": [ "锁Rank", "Rank Lock", "ランクを固定する" ],
       "TH06_BOOKS": [ "魔法阵", "Books", "魔導書" ],
 
       "TH06_ST4_FIRE1": [ "火符「火神之光」", "Fire Sign \"Agni Shine\"", "火符「アグニシャイン」" ],
@@ -1748,7 +1748,7 @@
       "TH07_CHERRY": [ "樱点", "Cherry", "桜点" ],
       "TH07_CHERRYMAX": [ "最大樱点", "CherryMax", "桜点最大値" ],
       "TH07_CHERRYPLUS": [ "樱+", "Cherry+", "桜点＋" ],
-      "TH07_SPELLBONUS": [ "符卡奖励", "Spell Bonus", "スペカ\nボーナス" ],
+      "TH07_SPELLBONUS": [ "符卡奖励", "Spell Bonus", "スペカ\n取得枚数" ],
       "TH07_CHAOS": [ "道中小妖精", "Chaos", "ケイオス" ],
       "TH07_RB": [ "反魂蝶", "Res. Butterfly", "反魂蝶" ],
       "TH07_PHANTASM": [ "Phantasm", "Phantasm", "Phantasm" ],
@@ -2465,11 +2465,11 @@
 
     "glossary": {
       "TH08_LASTSPELL": [ "Last Spell", "Last Spell", "ラストスペル" ],
-      "TH08_FAMILIAR": [ "使魔", "Familiar", "使い魔" ],
+      "TH08_FAMILIAR": [ "使魔", "Familiar", "累計使い魔" ],
       "TH08_TIME": [ "刻符", "Time", "刻符" ],
-      "TH08_VALUE": [ "夜点", "Value", "最大得点" ],
+      "TH08_VALUE": [ "夜点", "Value", "人妖点" ],
       "TH08_GAUGE": [ "人妖槽", "Gauge", "妖率ゲージ" ],
-      "TH08_NIGHT": [ "夜晚", "Night", "ナイト" ],
+      "TH08_NIGHT": [ "夜晚", "Night", "時刻" ],
       "TH08_STAGE_4A": [ "4A", "4A", "4A" ],
       "TH08_STAGE_4B": [ "4B", "4B", "4B" ],
       "TH08_STAGE_6A": [ "6A", "6A", "6A" ],
@@ -3234,8 +3234,8 @@
     "namespace": "TH10",
 
     "glossary": {
-      "TH10_FAITH_BAR": [ "信仰条", "Faith Bar", "カウンター" ],
-      "TH10_NO_FAITH_LOSS": [ "不掉信仰", "No faith loss", "信仰点を減少させない" ]
+      "TH10_FAITH_BAR": [ "信仰条", "Faith Bar", "信仰ゲージ" ],
+      "TH10_NO_FAITH_LOSS": [ "不掉信仰", "No faith loss", "信仰点減少させない" ]
     },
 
     "sections": {
@@ -3838,7 +3838,7 @@
 
     "glossary": {
       "TH11_SIGNAL": [ "信号强度", "C. Gauge", "交信強度" ],
-      "TH11_MARISAB_FORMATION_LABEL": [ "配置", "Formation", "配置" ],
+      "TH11_MARISAB_FORMATION_LABEL": [ "配置", "Formation", "オプション" ],
       "TH11_MARISAB_FIRE":  [ "火符", "Fire",  "火符" ],
       "TH11_MARISAB_WATER": [ "水符", "Water", "水符" ],
       "TH11_MARISAB_WOOD":  [ "木符", "Wood",  "木符" ],
@@ -3846,12 +3846,12 @@
       "TH11_MARISAB_EARTH": [ "土符", "Earth", "土符" ],
       "TH11_SPELL_CATEGORY": [ "符卡类别", "Spell Cat.", "スペル種類" ], 
       "TH11_SELECTED_SHOTTYPE": [ "已选的机体", "Selected Shottype", "選択した機体" ],
-      "TH11_RA": [ "八云紫", "Yakumo Yukari", "八云　紫" ],
-      "TH11_RB": [ "伊吹萃香", "Ibuki Suika", "伊吹　萃香" ],
-      "TH11_RC": [ "射命丸文", "Shameimaru Aya", "射命丸　文" ],
-      "TH11_MA": [ "爱丽丝·玛格特罗伊德", "Alice Margatroid", "アリス・マーガトロイド" ],
-      "TH11_MB": [ "帕秋莉·诺蕾姬", "Patchouli Knowledge", "パチュリー・ノーレッジ" ],
-      "TH11_MC": [ "河城荷取", "Kawasiro Nitori", "河城　にとり" ],
+      "TH11_RA": [ "八云紫", "Yakumo Yukari", "霊夢A" ],
+      "TH11_RB": [ "伊吹萃香", "Ibuki Suika", "霊夢B" ],
+      "TH11_RC": [ "射命丸文", "Shameimaru Aya", "霊夢C" ],
+      "TH11_MA": [ "爱丽丝·玛格特罗伊德", "Alice Margatroid", "魔理沙A" ],
+      "TH11_MB": [ "帕秋莉·诺蕾姬", "Patchouli Knowledge", "魔理沙B" ],
+      "TH11_MC": [ "河城荷取", "Kawasiro Nitori", "魔理沙C" ],
       "TH11_SATORI1": [ "回忆「恐怖的回忆」", "Recollection \"Terrible Souvenir\"", "想起「テリブルスーヴニール」" ], 
       "TH11_SATORI2": [ "回忆「恐怖催眠术」", "Recollection \"Terrifying Hypnotism\"", "想起「恐怖催眠術」" ], 
       "TH11_YUKARI1": [ "回忆「二重黑死蝶」", "Recollection \"Double Black Death Butterfly\"", "想起「二重黒死蝶」" ],
@@ -6276,8 +6276,8 @@
     "glossary": {
       "TH13_TRANCE_METER": [ "灵界槽", "Trance Meter", "霊界ゲージ" ],
       "TH13_EXTEND": [ "奖残次数", "Extends", "エクステンド回数" ],
-      "TH13_SPIRIT_SIDE": [ "灵方向", "Spirit Side", "霊方向" ],
-      "TH13_TRANCE_LOCK": [ "锁灵界槽", "Trance Meter Lock", "霊界ゲージ計固定" ]
+      "TH13_SPIRIT_SIDE": [ "灵方向", "Spirit Side", "神霊方向" ],
+      "TH13_TRANCE_LOCK": [ "锁灵界槽", "Trance Meter Lock", "霊界ゲージ固定" ]
     },
 
     "sections": {
@@ -6753,7 +6753,7 @@
       "TH14_MARISA_LASER": [ "辉针城 - 魔理沙激光相关", "DDC - Marisa Laser Related", "輝針城 - 魔理沙レーザー関連" ],
       "TH14_LOCKED": [ "现在无法更改该选项。", "You cannot change this option at the moment.", "このオプションは今は変更できません。" ],
       "TH14_MODE": [ "处理模式", "Processing mode", "処理モード" ],
-      "TH14_MODE_NONE": [ "无", "None", "処理モード" ],
+      "TH14_MODE_NONE": [ "无", "None", "なし" ],
       "TH14_MODE_NONE_DESC": [ "一切相关功能已被关闭。", "All related features have been disabled.", "すべての関連機能が無効になりました。" ],
       "TH14_MODE_NORMAL": [ "正常游玩", "Normal play", "通常プレイ" ],
       "TH14_MODE_NORMAL_DESC": [
@@ -7413,8 +7413,8 @@
       "TH15_ILT_4": [ "章节七（激光阵）", "Chapter 7", "チャプター 7" ],
       "TH15_ILT_5": [ "章节八（太田飞行阵）", "Chapter 8", "チャプター 8" ],
       "TH15_ILT_6": [ "章节九", "Chapter 9", "チャプター 9" ],
-      "TH15_HECATIA_RAGE": [ "赫卡提亚发狂", "Hecatia Rage", "ヘカティアの怒り" ],
-      "TH15_JUNKO_RAGE": [ "纯狐发狂", "Junko Rage", "純狐怒り" ],
+      "TH15_HECATIA_RAGE": [ "赫卡提亚发狂", "Hecatia Rage", "ヘカーティア発狂" ],
+      "TH15_JUNKO_RAGE": [ "纯狐发狂", "Junko Rage", "純狐発狂" ],
       "TH15_PH_BLUE": [ "蓝阶段", "Blue Phase", "青段階" ],
       "TH15_PH_GREEN": [ "绿阶段", "Green Phase", "緑段階" ],
       "TH15_PH_RED": [ "红阶段", "Red Phase", "赤段階" ],
@@ -8415,9 +8415,9 @@
       "TH17_GOAST_WOLF": [ "狼", "Wolf", "オオカミ" ],
       "TH17_GOAST_OTTER": [ "獭", "Otter", "カワウソ" ],
       "TH17_GOAST_EAGLE": [ "鹰", "Eagle", "オオワシ" ],
-      "TH17_GOAST_WOLF_STATIC": [ "狼（不变色）", "Wolf (static)", "オオカミ（色変わりしない）" ],
-      "TH17_GOAST_OTTER_STATIC": [ "獭（不变色）", "Otter (static)", "カワウソ（色変わりしない）" ],
-      "TH17_GOAST_EAGLE_STATIC": [ "鹰（不变色）", "Eagle (static)", "オオワシ（色変わりしない）" ],
+      "TH17_GOAST_WOLF_STATIC": [ "狼（不变色）", "Wolf (static)", "オオカミ（固定）" ],
+      "TH17_GOAST_OTTER_STATIC": [ "獭（不变色）", "Otter (static)", "カワウソ（固定）" ],
+      "TH17_GOAST_EAGLE_STATIC": [ "鹰（不变色）", "Eagle (static)", "オオワシ（固定）" ],
       "TH17_GOAST_JELLYFISH": [ "水母", "Jellyfish", "クラゲ" ],
       "TH17_GOAST_COW": [ "牛", "Cow", "牛" ],
       "TH17_GOAST_CHICK": [ "小鸡", "Chick", "ひよこ" ],
@@ -8425,13 +8425,13 @@
       "TH17_GOAST_HANIWA": [ "埴轮", "Haniwa", "埴輪" ],
       "TH17_GOAST_HORSE": [ "埴轮（马）", "Haniwa (Horse)", "埴輪（馬）" ],
       "TH17_GOAST_3CHICK": [ "三只小鸡", "3 Chicks", "三匹のひよこ" ],
-      "TH17_INF_ROARING": [ "无限咆哮", "Inf. Roaring", "無限のロアリング" ],
+      "TH17_INF_ROARING": [ "无限咆哮", "Inf. Roaring", "無限ロアリング" ],
       "TH17_NO_GOAST": [ "无动物灵", "No Goast", "動物霊を落とさない" ],
       "TH17_GOAST_ANGLE": [ "角度", "Angle", "角度" ],
-      "TH17_SPAWN_A_GOAST": [ "生成一只动物灵", "Spawn a Goast", "動物霊アイテムを生成する" ],
+      "TH17_SPAWN_A_GOAST": [ "生成一只动物灵", "Spawn a Goast", "マウスクリックで動物霊を生成する" ],
       "TH17_FORCE_ANGLE": [ "角度固定", "Force Angle", "固定角度で生成する" ],
       "TH17_RANDOM_ANGLE": [ "角度随机", "Random Angle", "ランダムな角度で生成する" ],
-      "TH17_ANGLE_PREVIEW": [ "--预览角度-->", "--angle-preview-->", "--プレビューのアングル-->" ],
+      "TH17_ANGLE_PREVIEW": [ "--预览角度-->", "--angle-preview-->", "--角度のプレビュー-->" ],
       "TH17_FORCE_ANGLE_HELP": [
         "动物灵在生成时或在墙上反弹时会试图远离彼此。这个选项会保证生成的动物灵总是朝指定的方向移动",
         "Tokens will try to move away from each other both when spawning and when bouncing from a wall. This will ensure that a token will always go in the direction you specify",
@@ -8440,50 +8440,50 @@
       "TH17_GOAST_BUGFIX": [
         "修复因在咆哮模式中退出/推把而导致replay爆炸的bug",
         "Fix the replay desync bug that occurs when you exit/retry the game while roaring mode is active",
-        "ロアリングモードでゲームを終了/リトライすると発生するリプレイバグを修正します"
+        "ロアリング中にゲームを終了/リトライすると発生するリプレイバグを修正する"
       ],
-      "TH17_GOAST_REPFIX": [ "尝试正常播放已经爆炸的replay", "Try to re-sync bugged replay", "バグのあるリプレイを正常に再生してみます" ],
+      "TH17_GOAST_REPFIX": [ "尝试正常播放已经爆炸的replay", "Try to re-sync bugged replay", "バグの発生するリプレイの正常な再生を試みる" ],
       "TH17_GOAST_REPFIX_DESC": [
         "如果你的replay受到了上述bug的影响则可以尝试开启此选项。\n请不要在播放正常的replay时开启这个选项。",
         "Try to enable this option if you have any bugged replay.\nDo not enable this option when playbacking a normal replay.",
-        "バグのあるリプレイがある場合は、このオプションを有効にしてみてください。\n普通のリプレイを再生するときは、このオプションを有効にしないでください。"
+        "バグの発生するリプレイを再生する際はこのオプションを有効にしてみてください。\n正常なリプレイを再生する際はこのオプションを有効にしないでください。"
       ],
       "TH17_SHOW_ID_OPT": [ "显示高级参数", "Show advanced params", "高度なパラメータを表示" ],
-      "TH17_ID_P2_OPT": [ "P2 偏移量", "P2 Offset", "P2 オフセット" ],
-      "TH17_ID_P3_OPT": [ "P3 偏移量", "P3 Offset", "P3 オフセット" ],
-      "TH17_ID_P4_OPT": [ "P4 偏移量", "P4 Offset", "P4 オフセット" ],
-      "TH17_ID_TD_CFG": [ "应用全避时的配置", "Apply timedown config", "耐久設定を適用" ],
+      "TH17_ID_P2_OPT": [ "P2 偏移量", "P2 Offset", "P2移行フレーム" ],
+      "TH17_ID_P3_OPT": [ "P3 偏移量", "P3 Offset", "P3移行フレーム" ],
+      "TH17_ID_P4_OPT": [ "P4 偏移量", "P4 Offset", "P4移行フレーム" ],
+      "TH17_ID_TD_CFG": [ "应用全避时的配置", "Apply timedown config", "耐久時の設定を適用" ],
       "TH17_ID_TD_CFG_HINT": [
         "使偏移量与全避时的结果一致。",
         "Makes the offsets match what you'd get by waiting for phases to transition automatically.",
-        "段階が自動で移行するのを待った場合と同じオフセットになります。"
+        "段階が自動で移行するのを待った場合と同じ設定値を適用します。"
       ],
       "TH17_ID_CFG_CODE_DESC": [
         "偏移量可在游戏内追踪表中查看，并可通过相关的高级设置选项复制。",
         "Offset values can both be seen in the in-game tracker and copied via the related Advanced Settings option.",
-        "オフセット値はゲーム内トラッカーで確認でき、関連する詳細設定オプションからコピーできます。"
+        "段階移行フレームはゲーム内トラッカーで確認でき、関連する詳細設定オプションからコピーできます。"
       ],
       "TH17_ID_CFG_PASTE_ERROR_TITLE": [ "偶像恶魔配置验证错误", "Idola Diabolus config validation error", "イドラディアボルス設定の検証エラー" ],
       "TH17_ID_CFG_PASTE_ERROR": [
         "剪贴板中没有有效的偶像恶魔阶段偏移量配置代码（24位十六进制字符串）。请检查剪贴板后重试。",
         "Your clipboard does not contain a valid Idola Diabolus phase offset config code (24-character hexadecimal string). Please check your clipboard and try again.",
-        "クリップボードに有効なイドラディアボルス段階オフセット設定コード（24桁の16進文字列）がありません。確認して再試行してください。"
+        "クリップボードに有効なイドラディアボルス段階移行フレーム設定コード（24桁の16進文字列）がありません。確認して再試行してください。"
       ],
       "TH17_KEIKI_FINAL_PHASETRACK": [
         "在游戏内追踪表中显示偶像恶魔阶段过渡偏移量",
         "Show Idola Diabolus' phase transition offsets in in-game tracker",
-        "ゲーム内トラッカーでイドラディアボルスの段階移行オフセットを表示"
+        "ゲーム内トラッカーでイドラディアボルスの段階移行フレームを表示"
       ],
       "TH17_KEIKI_FINAL_PHASETRACK_DESC": [
         "可以使用这些值来练习特定的偶像恶魔避弹方法。偏移量可以在练习菜单的高级参数内设置。其仅在练习模式下的偶像恶魔显示，但无论在什么模式下都可以复制。",
         "You can use these values to practice specific Idola Diabolus strategies via the advanced param. sliders in the practice menu. Offsets are only shown when playing Idola Diabolus in Practice Mode, but can be copied regardless of mode.",
-        "これらの値は、練習メニューの高度なパラメータスライダーを使って特定のイドラディアボルス戦略を練習するのに使用できます。オフセットはイドラディアボルスを練習モードでプレイ中のみ表示されますが、モードに関係なくコピー可能です。"
+        "表示された値をイドラディアボルスの練習メニューの高度なパラメータに適用することで、特定のパターンを練習することができます。段階移行フレームはイドラディアボルスをプラクティスモードでプレイした時のみ表示されますが、モードに関係なくコピー可能です。"
       ],
       "TH17_ID_CFG_CODE_COPIED": [ "（剪贴板中有有效代码！）", "(Valid code in clipboard!)", "（有効なコードがクリップボードにあります！）" ],
       "TH17_KEIKI_FINAL_PHASETRACK_NONE_HINT": [
         "未处于偶像恶魔的第2~4阶段，无法复制偏移量配置。",
         "Cannot copy offset configuration if not on phase 2 to 4 of Idola Diabolus.",
-        "イドラディアボルスの段階2〜4でない場合、オフセット設定はコピーできません。"
+        "イドラディアボルスの段階2〜4でない場合、段階移行フレーム設定コードはコピーできません。"
       ]
     },
 
@@ -8973,13 +8973,13 @@
       "TH18_BUGFIX_AUTO_DESC": [
         "包括：\n• 游戏崩溃：在符卡练习中全避「弹幕的庇护所」。\n• 游戏崩溃：持有「死秽回避之药」或「有钱能使鬼推磨」时切换关卡。\n• 回放不同步：蜈蚣卡牌在关卡切换后伤害倍率重置。\n• 回放不同步：卷轴卡牌在 Extra 面商店后冷却倍率重置。\n• 录制不同步：「妖怪们的盾构法」存在非确定性行为。\n• 录制不同步：关卡切换时将错误的所选主动卡写入回放。\n• 有问题的功能：Esc+R、Esc+Q，Extra 关卡重放中的主动卡片 HUD。",
         "Includes:\n• Game Crash: Timing out \"Asylum of Danmaku\" in Spell Practice.\n• Game Crash: Stage transition with cards \"Death Avoidance Elixir\" and \"Money is the Best Lawyer in Hell\"\n• Playback Desync: Centipede damage multiplier resetting on stage transition.\n• Playback Desync: Scroll cooldown multipliers resetting after Extra shop.\n• Recording Desync: Non-deterministic behavior on \"Shield Method of the Youkai\".\n• Recording Desync: Incorrect selected active card written to replay on stage transition.\n• Broken Features: Esc+R, Esc+Q, active card HUD in Extra replays.",
-        "内容：\n- ゲームクラッシュ：スペルプラクティスで「弾幕のアジール」をタイムアウトした場合。\n- ゲームクラッシュ：「死穢回避の薬」または「地獄の沙汰も金次第」を所持した状態でのステージ移行。\n- 再生ズレ：ムカデカードのダメージ倍率がステージ移行後にリセットされる。\n- 再生ズレ：経典カードのクールダウン倍率がExtraショップ後にリセットされる。\n- 記録ズレ：「妖怪達のシールドメソッド」における非決定的挙動。\n- 記録ズレ：ステージ移行時に選択した使用カードがリプレイへ正しく記録されない。\n- 機能不具合：Esc+R、Esc+Q、エキストラボスのリプレイ中のアクティブカードHUD。"
+        "内容：\n- ゲームクラッシュ：スペルプラクティスで「弾幕のアジール」をタイムアウトした場合。\n- ゲームクラッシュ：「死穢回避の薬」または「地獄の沙汰も金次第」を所持した状態でのステージ移行。\n- リプレイ再生ズレ：ムカデカードのダメージ倍率がステージ移行後にリセットされる。\n- リプレイ再生ズレ：経典カードのクールダウン倍率がExtraショップ後にリセットされる。\n- リプレイ記録ズレ：「妖怪達のシールドメソッド」における非決定的挙動。\n- リプレイ記録ズレ：ステージ移行時に選択した使用カードがリプレイへ正しく記録されない。\n- 機能不具合：Esc+R、Esc+Q、エキストラボスのリプレイ中のアクティブカードHUD。"
       ],
       "TH18_FUNDS": [ "资金力", "Funds", "資金力" ],
       "TH18_CARD": [ "卡片", "Card", "カード" ],
       "TH18_CARD_FORMAT": [ "卡片 %d", "Card %d", "カード %d" ],
       "TH18_INFFUNDS": [ "锁资金", "Inf. Funds", "資金力減らない" ],
-      "TH18_ZERO_CD": [ "无冷却", "No cooldown", "クールタイムがない" ],
+      "TH18_ZERO_CD": [ "无冷却", "No cooldown", "クールタイムなし" ],
       "TH18_MARKET_MANIP": [ "市场操纵", "Market Manip.", "市場操作" ],
       "TH18_OPEN_MARKET": [ "打开市场", "Open shop", "市場に入る" ],
       "TH18_MARKET_MANIP_DESC1": [ "1-8: 按顺序展示卡片", "1-8: Display cards in order", "1-8: カードを順番に表示する " ],
@@ -8987,38 +8987,38 @@
       "TH18_MARKET_MANIP_DESC3": [ "Ctrl+0: 获取所有卡片", "Ctrl+0: Acquire all cards", "Ctrl+0: すべてのカードを取得する " ],
       "TH18_MARKET_MANIP_DESC4": [ ": 退出市场", ": Leave the market", ": 市場を出る" ],
       "TH18_MUKADE": [ "蜈蚣", "Centipede", "ムカデ" ],
-      "TH18_KOZUCHI_CD": [ "万宝槌冷却", "Mallet CD", "槌CD" ],
+      "TH18_KOZUCHI_CD": [ "万宝槌冷却", "Mallet CD", "小槌CD" ],
       "TH18_KANAME_CD": [ "要石冷却", "Keystone CD", "要石CD" ],
       "TH18_MOON_CD": [ "月亮冷却", "Moon CD", "月CD" ],
       "TH18_MIKOFLASH_CD": [ "神子冷却", "Miko CD", "神子CD" ],
       "TH18_VAMPIRE_CD": [ "牙冷却", "Fang CD", "牙CD" ],
       "TH18_SUN_CD": [ "太阳冷却", "Sun CD", "太陽CD" ],
-      "TH18_LILY_COUNT": [ "莉莉等级", "Lily Level", "リリレベル" ],
-      "TH18_LILY_CYCLE": [ "莉莉循环", "Lily Cycle", "リリサイクル" ],
-      "TH18_LILY_CD": [ "莉莉冷却", "Lily CD", "リリCD" ],
+      "TH18_LILY_COUNT": [ "莉莉等级", "Lily Level", "リリーレベル" ],
+      "TH18_LILY_CYCLE": [ "莉莉循环", "Lily Cycle", "リリーサイクル" ],
+      "TH18_LILY_CD": [ "莉莉冷却", "Lily CD", "リリーCD" ],
       "TH18_BASSDRUM_CD": [ "鼓冷却", "Drum CD", "低音鼓CD" ],
       "TH18_PSYCO_CD": [ "菫子冷却", "Sumi CD", "菫子CD" ],
-      "TH18_CYLINDER_CD": [ "瓶子冷却", "Bottle CD", "瓶CD" ],
+      "TH18_CYLINDER_CD": [ "瓶子冷却", "Bottle CD", "標本瓶CD" ],
       "TH18_RICEBALL_CD": [ "饭团冷却", "Rice CD", "麦飯CD" ],
       "TH18_UNCAP": [ "移除分数限制", "Remove score cap", "スコアキャップ解放" ],
       "TH18_UNCAP_DESC": [
         "允许分数超过 9,999,999,990。\n请注意，即使得分超过了通常的显示上限，游戏仍会像往常一样将分数保存到replay文件中。",
         "Allows the score counter to go past 9,999,999,990. Note that the game will naturally save score values into replays even if they go past their usual display limit.",
-        "スコアカウンターが 9,999,999,990 を超えるようになります。\nなお、得点が通常の表示上限を超えても、ゲームは自然に得点値をリプレイへ保存します。"
+        "スコア表示が 9,999,999,990 を超えるようになります。\nスコアが通常の表示上限を超えた場合、リプレイにもその値が保存されます。"
       ],
       "TH18_UNCAP_OVERRIDE": [ "不要将超出上限的分数写入replay文件", "Don't write uncapped score into replay", "上限解除スコアをリプレイに書き込まない" ],
       "TH18_REPLAY_BONUS": [ "播放replay时计算关卡/Clear Bonus", "Add stage/clear bonus when playing replay", "リプレイを再生するときにステージ/クリアボーナスを加算する" ],
-      "TH18_STATIC_MALLET": [ "在播放replay时，将万宝槌的金币转换率固定为11/30", "Fix Mallet gold conversion ratio to 11/30 when playing replay", "リプレイ再生時の小槌の金変換率を十一の三十に変更" ],
+      "TH18_STATIC_MALLET": [ "在播放replay时，将万宝槌的金币转换率固定为11/30", "Fix Mallet gold conversion ratio to 11/30 when playing replay", "リプレイ再生時の小槌の金変換率を11/30に変更" ],
       "TH18_STATIC_MALLET_DESC": [
         "启用后，在回放中，万宝槌的物品转换将不再受到RNG影响（每30颗子弹变为11个金钱道具和19个得分道具；接近原版游戏的比率）。",
         "When enabled, RNG will no longer play a part in the Miracle Mallet's item conversion during replays (11 gold items and 19 green items for every 30 bullets; close to vanilla rate).",
-        "有効にすると、リプレイ中の打ち出の小槌のアイテム変換においてRNGは影響しません（30弾毎に11の金アイテムと19の緑アイテム；ほぼバニラゲームのレートに近い）。"
+        "有効にすると、リプレイ中の打ち出の小槌のアイテム変換率を「30発あたり金アイテム11個と緑アイテム19個」に固定します。これはバニラゲームのレートに近い値です）。"
       ],
-      "TH18_MARKET_MANIP_LOADOUT": [ "对市场操纵使用预设购买策略", "Use preset purchasing strategy for Market Manip.", "市場操作にプリセット購入戦略を使用" ],
+      "TH18_MARKET_MANIP_LOADOUT": [ "对市场操纵使用预设购买策略", "Use preset purchasing strategy for Market Manip.", "市場操作の購入プリセットを使用" ],
       "TH18_MARKET_MANIP_LOADOUT_DESC": [
         "启用后，使用市场操纵时会自动购买所有标记为“买”的卡牌，然后关闭商店。标记为“留”的卡牌不会被购买，且之后的商店中，这些卡牌只会出现在随机槽位和关卡特定槽位里。",
         "When enabled, using Market Manip. will automatically buy every card you've marked as \"Buy\", then close the shop. Cards marked as \"Keep\" will not be bought and only these cards can appear in the random and stage-based slots of future shops.",
-        "有効にすると、市場操作を使用した際に「購入」とマークしたカードをすべて自動購入し、その後ショップを閉じます。「保持」とマークしたカードは購入されず、以降のショップではランダム枠およびステージ枠にこれらのカードのみが出現します。"
+        "有効にすると、市場操作に入った際「購入」とマークしたカードをすべて自動購入し、その後ショップを閉じます。「保持」とマークしたカードは購入されず、以降のショップではランダム枠およびステージ枠に「保持」したカードのみが出現します。"
       ],
       "TH18_MARKET_MANIP_CARD_HINT": [ "切换 %s", "Toggle %s", "%s を切り替え" ],
       "TH18_MARKET_MANIP_BUY": [ "买", "Buy", "購入" ],
@@ -9027,10 +9027,10 @@
       "TH18_MARKET_MANIP_BUY_HINT": [ "在使用市场操纵后不会出现在商店中", "Can't appear in shops after Market Manip.", "市場操作後のショップには出現しません" ],
       "TH18_MARKET_MANIP_KEEP_HINT": [ "在使用市场操纵后可以出现在商店中", "Can appear in shops after Market Manip.", "市場操作後のショップに出現します" ],
       "TH18_MARKET_MANIP_ODD_HINT": [ "使用市场操纵后，%s 在商店中出现的概率", "Chance for %s to appear in shops after Market Manip.", "市場操作後のショップで %s が出現する確率" ],
-      "TH18_MARKET_MANIP_ODD_BOOST_HINT": [ "使用市场操纵后，%s 在商店中出现的概率\n（受新卡牌加成影响）", "Chance for %s to appear in shops after Market Manip.\n(boosted by New bonus)", "市場操作後のショップで %s が出現する確率\n（新ボーナスで増加）" ],
+      "TH18_MARKET_MANIP_ODD_BOOST_HINT": [ "使用市场操纵后，%s 在商店中出现的概率\n（受新卡牌加成影响）", "Chance for %s to appear in shops after Market Manip.\n(boosted by New bonus)", "市場操作後のショップで %s が出現する確率\n（新規カードボーナスで増加）" ],
       "TH18_MARKET_MANIP_ODD_STG_HINT": [ "使用市场操纵后，%s 在商店中出现的概率\n在第%d面商店中必定可见", "Chance for %s to appear in shops after Market Manip.\nAlways available in the stage %d shop", "市場操作後のショップで %s が出現する確率\n%d面のショップで必ず出現" ],
       "TH18_MARKET_MANIP_LOCKED_HINT": [ "无法在商店出现（未解锁）", "Can't appear in shops (locked)", "ショップに出現しません（未解放）" ],
-      "TH18_MARKET_MANIP_LOCKED_STG_HINT": [ "无法随机出现在商店中（未解锁）\n在第%d面商店中必定可见", "Can't randomly appear in shops (locked)\nAvailable in the stage %d shop", "ショップにランダムに出現しません（未解放）\n%d面のショップで必ず出現" ],
+      "TH18_MARKET_MANIP_LOCKED_STG_HINT": [ "无法随机出现在商店中（未解锁）\n在第%d面商店中必定可见", "Can't randomly appear in shops (locked)\nAvailable in the stage %d shop", "ショップのランダム枠に出現しません（未解放）\n%d面のショップで必ず出現" ],
       "TH18_MARKET_MANIP_LOCKED_STG": [ "%d面", "st%d", "%d面" ],
       "TH18_MARKET_MANIP_HIGH_COSTS": [ "高价位卡牌", "High Cost Slot Cards", "高コスト枠カード" ],
       "TH18_MARKET_MANIP_MID_COSTS": [ "中价位卡牌", "Medium Cost Slot Cards", "中コスト枠カード" ],
@@ -9045,27 +9045,27 @@
         "Your clipboard does not contain a valid Market Manip. config code (12-character hexadecimal string). Please check your clipboard and try again.",
         "クリップボードに有効な市場操作設定コード（12桁の16進文字列）がありません。確認して再試行してください。"
       ],
-      "TH18_MARKET_MANIP_AUTO_RESTART": [ "自动重开", "Auto-restart", "自動リスタート" ],
+      "TH18_MARKET_MANIP_AUTO_RESTART": [ "自动重开", "Auto-restart", "自動リトライ" ],
       "TH18_MARKET_MANIP_AUTO_RESTART_DESC": [
         "启用后，通过市场操纵购买所有“买”卡牌时，也会自动重开本局。",
         "When enabled, buying all Buy cards via Market Manip. also restarts the run.",
-        "有効時、市場操作で「購入」カードをすべて買うと自動的にリスタートします。"
+        "有効時、市場操作でカードを入手後、自動的にリトライします。"
       ],
       "TH18_MARKET_MANIP_OSCAR": [ "保险", "Safety", "保険" ],
       "TH18_MARKET_MANIP_OSCAR_DESC": [
         "启用后，如果购买了标记为“留”的卡牌，重开时将改为返回主菜单。",
         "When enabled, restarting a run will quit to the main menu instead if a card you've marked as \"Keep\" can no longer appear.",
-        "有効時、「保持」に設定したカードを購入していた場合、リスタート時にメインメニューへ戻ります。"
+        "有効時、「保持」に設定したカードを購入していた場合、リトライ時にメインメニューへ戻ります。"
       ],
-      "TH18_RESTART_RESET_MARKET": [ "重开游戏时重置商店", "Reset market on restart", "ゲームを再開するときに市場をリセットする" ],
-      "TH18_RESTART_RESET_KOISHI": [ "重开游戏时重置“小石子帽子”效果", "Reset \"Pebble Hat\" effect on restart", "再開時に「小石ころ帽子」の効果をリセットする" ],
+      "TH18_RESTART_RESET_MARKET": [ "重开游戏时重置商店", "Reset market on restart", "リトライ時に市場をリセットする" ],
+      "TH18_RESTART_RESET_KOISHI": [ "重开游戏时重置“小石子帽子”效果", "Reset \"Pebble Hat\" effect on restart", "リトライ時「小石ころ帽子」の効果が残り続けないようリセットする" ],
       "TH18_RESTART_RESET_KOISHI_DESC": [
         "在重开时清除使你在未拥有古明地恋的卡片时仍对敌人碰撞无敌的标志（通常只在关卡切换或返回主菜单时重置）。启用此修复后，受此问题影响的录像在原版中可以正常同步；若不启用，则仅在 thprac 中同步。",
         "Clears the flag making you invulnerable to enemy collisions on restart if you no longer have Koishi's card (normally only reset on stage transition / main menu). Replays affected by this issue will sync on vanilla if this bug fix is enabled, and will sync only with thprac if not.",
-        "再開後にこいしのカードを所持していない状態になる場合、敵との接触時に無敵となるフラグを削除します（通常はステージ切り替えまたはメインメニューに戻ったときのみリセットされます）。この修正を有効にすると、この問題の影響を受けたリプレイはバニラで正常に同期し、無効の場合は thprac のみで同期されます。"
+        "リトライ時に「小石ころ帽子」を所持している状態から所持していない状態になった時、「小石ころ帽子」の効果が残り続けないようリセットします（通常はステージ切り替えまたはメインメニューに戻ったときのみリセットされます）。この修正を有効にすると、この問題の影響を受けたリプレイはバニラで正常に同期し、無効の場合は thprac のみで同期されます。"
       ],
       "TH18_RESTART_SETTINGS_CONFLICT": [ "无法同时启用互相冲突的重开设置。", "Cannot enable conflicting restart settings.", "互いに競合する再開設定を同時に有効にすることはできません。" ],
-      "TH18_AC_REPFIX": [ "主动卡选择不同步修复", "Active card selection desync fix", "使用カード選択の同期ズレ修正" ],
+      "TH18_AC_REPFIX": [ "主动卡选择不同步修复", "Active card selection desync fix", "使用カード選択の同期ズレ修復" ],
       "TH18_AC_REPFIX_SHOW_INS": [ "显示说明##th18", "Show instructions##th18", "指示を表示##th18" ],
       "TH18_AC_REPFIX_HIDE_INS": [ "隐藏说明##th18", "Hide instructions##th18", "指示を非表示##th18" ],
       "TH18_AC_REPFIX_NOTHING": [ "所选回放未使用主动卡。", "Selected replay does not use Active cards.", "選択したリプレイでは使用カードが使われていません。" ],
@@ -9077,55 +9077,55 @@
       "TH18_AC_REPFIX_DESC": [
         "你可以使用这个工具修复被“关卡间切换主动卡”bug影响的replay。你可以选择每一面开始时应选中的主动卡，并检查相关的不同步问题是否已被修复。每一面都同步后即可保存修复后的副本。\n\n警告：如果replay中含有“太古的勾玉”或“暴食的蜈蚣”，则每次播放replay都必须从1面开始，否则有极高概率爆炸。",
         "This tool allows you to fix replays that were affected by the \"switching Active cards in-between stages\" desync. You can select which Active card is meant to be selected at the start of each stage and check if it fixes related desyncs. Once all stages sync, you can save a fixed copy.\n\nWarning: if the replay contains either \"Ancient Magatama\" or \"Gluttonous Centipede\", make sure you always start replaying from Stage 1, otherwise a desync is almost guaranteed to happen.",
-        "このセクションでは、「ステージ間で使用カードを切り替える」バグの影響を受けたリプレイを修正できます。各ステージ開始時に選択される使用カードを指定し、同期ズレが解消されるか確認できます。すべてのステージが同期した後、修正済みのコピーを保存できます。\n\n警告：リプレイに「太古の勾玉」または「暴食のムカデ」のいずれかが含まれている場合は、必ず一面からリプレイを再生開始してください。そうしないと、リプレイがほぼ確実にズレします。"
+        "このセクションでは、「ステージ間で使用カードを切り替える」バグの影響を受けたリプレイを修復できます。各ステージ開始時に本来選択されていた使用カードを指定し、同期ズレが解消されるかを確認してください。すべてのステージが同期した後、修復済みのコピーを保存できます。\n\n警告：リプレイに「太古の勾玉」または「暴食のムカデ」のいずれかが含まれている場合は、必ず1面からリプレイを再生開始してください。そうしないと、リプレイがほぼ確実に同期ズレします。"
       ],
-      "TH18_CS_REPFIX": [ "分数上限修复", "Counterstop fix", "カンスト修正" ],
+      "TH18_CS_REPFIX": [ "分数上限修复", "Counterstop fix", "カンスト越えのスコアを記録する" ],
       "TH18_CS_REPFIX_DESC": [
         "Replay文件会因为达到分数上限而无法正确地记录真实分数。此问题可能发生在某一面或多面，且可被此工具修复。请启用“移除分数限制”选项，从第一个真实得分未知的关卡开始，播放replay直到结束，然后保存修复后的副本。\n\n注意：此工具不会影响回放是否同步。",
         "This tool allows you to fix replays whose true score was not recorded in one or more stages due to the score cap. Enable the \"Remove score cap\" option, play back the replay from the first stage with an unknwon score to the end of the replay, then save a fixed copy.\n\nNote that this tool does not affect whether the replay syncs.",
-        "このツールでは、スコアキャップにより1つ以上のステージで本来の得点が記録されなかったリプレイを修正できます。「スコアキャップ解放」オプションを有効にし、実際の得点が不明な最初のステージからリプレイ終了まで再生した後、修正済みのコピーを保存してください。\n\nなお、このツールはリプレイの同期には影響しません。"
+        "この機能では、スコアキャップにより1つ以上のステージで9,999,999,990を超えたスコアが記録されなかったリプレイを修復できます。「スコアキャップ解放」オプションを有効にし、実スコアが不明な最初のステージ～リプレイ終了まで再生後、修復済みのコピーを保存してください。\n\nなお、この機能はリプレイの同期には影響しません。"
       ],
-      "TH18_HK_REPFIX": [ "隐藏的“小石子帽子”效果不同步修复", "Hidden \"Pebble Hat\" effect desync fix", "隠し「小石ころ帽子」効果の同期ズレ修正" ],
+      "TH18_HK_REPFIX": [ "隐藏的“小石子帽子”效果不同步修复", "Hidden \"Pebble Hat\" effect desync fix", "隠し「小石ころ帽子」効果の同期ズレ修復" ],
       "TH18_HK_REPFIX_DESC": [
         "此工具可修复由于重开后古明地恋的卡片效果在未装备的情况下仍然生效而导致的录像不同步问题。它仅会将录像标记为受该问题影响，从而让 thprac 知道需要复现该 bug。\n\n请注意，此工具无法“预览”修复是否会让你的录像正常同步，你需要先保存修复后的副本。",
         "This tool allows you to fix replays that desync due to the effect of Koishi's card staying active after a restart, despite the card no longer being equipped. It simply marks the replay as being affected so that thprac knows to reproduce the bug.\n\nNote that this tool does not let you \"preview\" whether the fix will make your replay sync; you will need to save the fixed copy first.",
-        "このツールは、再開後にこいしのカードが未装備にもかかわらず効果が有効になり続けることで発生するリプレイの同期ズレを修正します。リプレイにその問題の影響があることを示すフラグを付けるだけで、thprac がそのバグを再現できるようにします。\n\nなお、このツールでは修正によってリプレイが同期するかどうかを事前に確認（プレビュー）することはできません。修正済みのコピーを保存する必要があります。"
+        "この機能は、こいしのカードを装備した状態でリトライした時に、こいしのカードが未装備にも関わらず効果が有効になり続けることで発生するリプレイの同期ズレを修復します。リプレイに問題の影響があることを示すフラグを付けるだけで、thprac がそのバグを再現できるようにします。\n\nなお、この機能では修復によってリプレイが同期するかを事前に確認することはできません。修復済みのコピーを保存する必要があります。"
       ],
       "TH18_CS_REPFIX_NO_UNCAP": [ "“移除分数限制”选项未启用。", "\"Remove score cap\" option disabled.", "「スコアキャップ解放」オプションが無効です。" ],
       "TH18_CS_REPFIX_SELECTED_NO_CS": [ "所选回放未达到分数上限。", "Selected replay does not hit the score cap.", "選択したリプレイはカンストしていません。" ],
-      "TH18_CS_REPFIX_STAGE": [ "第%d面分数：", "Stage %d Score:", "ステージ %d得点：" ],
-      "TH18_CS_REPFIX_EXTRA": [ "Extra面分数：", "Extra Stage Score:", "Extraステージ得点：" ],
-      "TH18_CS_REPFIX_READY_HINT": [ "修复后的分数已记录，可保存。", "Fixed score recorded & ready to save.", "修正済みの得点が記録され、保存可能です。" ],
-      "TH18_CS_REPFIX_RECORDING_HINT": [ "正在记录分数……请喝杯茶慢慢等等吧。", "Recording score... Please wait warmly and have some tea.", "得点を記録中です...どうぞ温かいお茶でも飲んでお待ちください。" ],
-      "TH18_CS_REPFIX_FIRST_UNKNOWN_HINT": [ "真实分数未知；请从此关开始播放replay直到结束。", "Real score unknown; please play back replay from this stage to the end of the run.", "実際の得点が不明です。このステージから最後まで再生してください。" ],
-      "TH18_CS_REPFIX_UNKNOWN_HINT": [ "真实分数未知；请从第 %d 面开始播放回放直到结束。", "Real score unknown; please play back replay from Stage %d to the end of the run.", "実際の得点が不明です。ステージ%dから最後まで再生してください。" ],
+      "TH18_CS_REPFIX_STAGE": [ "第%d面分数：", "Stage %d Score:", "%d面スコア：" ],
+      "TH18_CS_REPFIX_EXTRA": [ "Extra面分数：", "Extra Stage Score:", "Extraスコア：" ],
+      "TH18_CS_REPFIX_READY_HINT": [ "修复后的分数已记录，可保存。", "Fixed score recorded & ready to save.", "修復済みの得点が記録され、保存可能です。" ],
+      "TH18_CS_REPFIX_RECORDING_HINT": [ "正在记录分数……请喝杯茶慢慢等等吧。", "Recording score... Please wait warmly and have some tea.", "スコアを記録中です...どうぞ温かいお茶でも飲んでお待ちください。" ],
+      "TH18_CS_REPFIX_FIRST_UNKNOWN_HINT": [ "真实分数未知；请从此关开始播放replay直到结束。", "Real score unknown; please play back replay from this stage to the end of the run.", "実スコアが不明です。このステージから最後まで再生してください。" ],
+      "TH18_CS_REPFIX_UNKNOWN_HINT": [ "真实分数未知；请从第 %d 面开始播放回放直到结束。", "Real score unknown; please play back replay from Stage %d to the end of the run.", "実スコアが不明です。%d面から最後まで再生してください。" ],
       "TH18_CS_REPFIX_SAVE_PROGRESS_HINT": [
         "仍有 %d 个分数未知。\n请从第 %d 面开始播放回放直到结束。",
         "%d scores still unknown.\nPlease play back replay from Stage %d to the end of the run.",
-        "まだ %d 件の得点が不明です。\nステージ%dから最後まで再生してください。"
+        "まだ%dステージ分のスコアが不明です。\n%d面から最後まで再生してください。"
       ],
       "TH18_SAVEFILE_MANIP": [ "存档文件操纵", "Scorefile Manip.", "スコアファイル操作" ],
       "TH18_SAVEFILE_MANIP_DESC": [
         "点击卡牌以切换游戏是否将其视为“新”（从未购买）。\n此工具旨在供计分玩家使用，以在路线需要时影响商店随机结果。\n注意：该功能也可锁定或解锁具有特殊解锁条件的卡牌。",
         "Click cards to toggle whether the game considers them New (never bought before).\nThis tool is intended to be used by scorerunners to influence shop RNG if it is present in their route.\nNote that it can also lock/unlock cards with special unlock conditions.",
-        "カードをクリックして、そのカードをゲームが「新規」（未購入）として扱うか切り替えます。\nこのツールは、スコアラーランナーがルートに組み込んだ場合に、ショップのランダム性に影響を与えることを目的としています。\n注：特殊な解放条件を持つカードの施錠／解除にも影響します。"
+        "カードをクリックして、そのカードをゲームが「新規」（未購入）として扱うか切り替えます。\nこの機能は通しプレイで入手したいカードを「新規」に設定することで、ショップにそのカードを出現させやすくすることを目的としています。\n注：特殊な解放条件を持つカードの解放/解除にも影響します。"
       ],
       "TH18_SAVEFILE_MANIP_CARDS": [ "全部非默认随机卡牌", "All Non-Default Random Cards", "全ての非デフォルトランダムカード" ],
       "TH18_SAVEFILE_MANIP_NEW": [ "新", "New", "新規" ],
-      "TH18_SAVEFILE_MANIP_BOUGHT": [ "已售", "Sold", "買済" ],
+      "TH18_SAVEFILE_MANIP_BOUGHT": [ "已售", "Sold", "購入済" ],
       "TH18_SAVEFILE_MANIP_NEW_HINT": [ "提升商店概率", "Boosted shop odds", "店出現率上昇" ],
       "TH18_SAVEFILE_MANIP_BOUGHT_HINT": [ "普通商店概率", "Non-boosted shop odds", "通常店出現率" ],
       "TH18_SAVEFILE_MANIP_ALL_NEW": [ "全部标记为新", "Mark all New", "全て新規に設定" ],
-      "TH18_SAVEFILE_MANIP_ALL_BOUGHT": [ "全部标记为已售", "Mark all Sold", "全て買済に設定" ],
+      "TH18_SAVEFILE_MANIP_ALL_BOUGHT": [ "全部标记为已售", "Mark all Sold", "全て購入済に設定" ],
       "TH18_SAVEFILE_MANIP_CHIMATA": [ "一切尽归于无吧！", "Let all return to nothing!", "すべて無に返そう！" ],
       "TH18_SAVEFILE_MANIP_FREEZE": [ "冻结", "Freeze", "固定" ],
       "TH18_SAVEFILE_MANIP_FREEZE_DESC": [
         "启用后，返回主菜单时将恢复先前的卡牌购买状态。",
         "When enabled, returning to the main menu resets card bought flags to what they were before.",
-        "有効時、メインメニューへ戻るとカード購入状態が元に戻ります。"
+        "有効時、メインメニューへ戻るとカード購入状態が設定した状態に戻ります。"
       ],
-      "TH18_SAVEFILE_MANIP_RUN": [ "无法在主菜单外操纵存档文件。", "Can't manipulate scorefile outside main menu.", "メインメニュー外ではスコアファイル操作不可。" ],
-      "TH18_SAVEFILE_MANIP_FREEZE_RUN": [ "无法在主菜单外切换是否冻结。", "Can't toggle freeze outside main menu.", "メインメニュー外では固定切替不可。" ],
+      "TH18_SAVEFILE_MANIP_RUN": [ "无法在主菜单外操纵存档文件。", "Can't manipulate scorefile outside main menu.", "プレイ中はスコアファイル操作不可。" ],
+      "TH18_SAVEFILE_MANIP_FREEZE_RUN": [ "无法在主菜单外切换是否冻结。", "Can't toggle freeze outside main menu.", "プレイ中固定切替不可。" ],
 
       "TH18_CARD_00": [ "空白卡牌", "Blank Card", "空白のカード" ],
       "TH18_CARD_01": [ "生命卡牌", "Life Card", "命のカード" ],
@@ -9963,14 +9963,14 @@
       "TH20_STONE_GAUGE": [ "异变敌人", "Summon", "異変石" ],
       "TH20_STONE_SUMMONED": [ "召唤次数", "Summoned", "召喚数" ],
       "TH20_CYCLE_3": [ "3 (残机碎片)", "3 (Life Fragment)", "3 (残機の欠片)" ],
-      "TH20_STONE_LEVEL_R": [ "等级(红)", "LevelR", "レベルR" ],
-      "TH20_STONE_PRIORITY_R": [ "优先级(红)", "PriorityR", "優先R" ],
-      "TH20_STONE_LEVEL_B": [ "等级(蓝)", "LevelB", "レベルB" ],
-      "TH20_STONE_PRIORITY_B": [ "优先级(蓝)", "PriorityB", "優先B" ],
-      "TH20_STONE_LEVEL_Y": [ "等级(黄)", "LevelY", "レベルY" ],
-      "TH20_STONE_PRIORITY_Y": [ "优先级(黄)", "PriorityY", "優先Y" ],
-      "TH20_STONE_LEVEL_G": [ "等级(绿)", "LevelG", "レベルG" ],
-      "TH20_STONE_PRIORITY_G": [ "优先级(绿)", "PriorityG", "優先G" ],
+      "TH20_STONE_LEVEL_R": [ "等级(红)", "LevelR", "赤レベル" ],
+      "TH20_STONE_PRIORITY_R": [ "优先级(红)", "PriorityR", "赤優先度" ],
+      "TH20_STONE_LEVEL_B": [ "等级(蓝)", "LevelB", "青レベル" ],
+      "TH20_STONE_PRIORITY_B": [ "优先级(蓝)", "PriorityB", "青優先度" ],
+      "TH20_STONE_LEVEL_Y": [ "等级(黄)", "LevelY", "黄レベル" ],
+      "TH20_STONE_PRIORITY_Y": [ "优先级(黄)", "PriorityY", "黄優先度" ],
+      "TH20_STONE_LEVEL_G": [ "等级(绿)", "LevelG", "緑レベル" ],
+      "TH20_STONE_PRIORITY_G": [ "优先级(绿)", "PriorityG", "緑優先度" ],
       "TH20_HYPER_ACTIVE": [ "异变攻击开", "Hyper Active", "異変攻撃作" ],
       "TH20_STONE_ACTIVE": [ "异变敌人开", "Summon Active", "異変石作" ],
       "TH20_HYP_LOCK": [ "锁异变攻击槽", "Hyper Gauge Lock", "異変攻撃計固定" ],
@@ -9980,43 +9980,43 @@
       "TH20_PIV_OVERFLOW_FIX": [ "异变值溢出修复", "PIV overflow fix", "PIVオーバーフロー修正" ],
       "TH20_UNCAP_PIV": [ "移除异变值限制", "PIV uncap", "PIVキャップ解放" ],
       "TH20_UNCAP_SCORE": [ "移除分数限制", "Score uncap", "スコアキャップ解放" ],
-      "TH20_FAKE_UNLOCK_STONES": [ "解锁异变石（伪）", "Fake unlock stones", "未解放ストーン使用" ],
+      "TH20_FAKE_UNLOCK_STONES": [ "解锁异变石（伪）", "Fake unlock stones", "未解放の異変石を使用" ],
       "TH20_FAKE_UNLOCK_STONES_DESC": [
         "这允许你在副异变石槽位选择未解锁的异变石。",
         "Allows you to select stones you haven't actually unlocked in the side slots.",
-        "未解放ストーンをサイドスロットに設定可能。"
+        "未解放の異変石をサブスロットに設定可能にします。"
       ],
-      "TH20_FIX_HITBOX": [ "修复玩家判定点缩放", "Fix player hitbox scale", "プレイヤーの当たり判定のスケールを修正" ],
+      "TH20_FIX_HITBOX": [ "修复玩家判定点缩放", "Fix player hitbox scale", "当たり判定の大きさを100%に変更" ],
       "TH20_FIX_HITBOX_DESC": [
         "将你的判定点缩放从当前的0%（点状、极小）恢复为100%（原始大小）。",
         "Makes your hitbox 100% scale (original size) instead of 0% (current size, point-like).",
-        " 現在の0%（点のように小さい）から100%（本来のサイズ）に戻します。"
+        "当たり判定の大きさを0%から100%にします。"
       ],
-      "TH20_MAIN_STORY_FIXES": [ "主线爆炸replay修复", "Main story desyncs fix", "メインストーリーの同期ずれ修正" ],
+      "TH20_MAIN_STORY_FIXES": [ "主线爆炸replay修复", "Main story desyncs fix", "本編のリプレイ同期ズレ修正" ],
       "TH20_MAIN_STORY_FIXES_DESC": [
         "选择一个爆炸的主线replay，从第一面开始播放，并在最后一面结束后保存修复后的副本（倘若已经修好）。此功能可自然地修复最常见的replay爆炸问题，并允许你从任意面开始播放修复后的replay。\n\n在少数特定情况下，你的replay文件可能从第一面起就不正常。这是因为一个内部计时器在切换到下一面的过程中仍在走时。如果出现这种情况，你需要对每次关卡切换测试可能的计时器偏移量，直到replay的行为与录制时同步（见下方按钮）。\n\n如果replay因为致命的ANM复用bug而不同步（此bug随机发生并可能在任意时刻发生，且会造成画面损坏），则无法修复。此bug在使用thprac的情况下不会发生。",
         "Select a main story replay that desyncs and play it back from stage 1, then save a fixed copy after the final stage transition (assuming it synced). This will naturally work for the most common desyncs and will allow you to play the fixed replay back from any stage.\n\nIn a few specific cases, your replay may not sync from stage 1 due to a timer ticking during stage transitions, and you will need to test possible timer offsets at each transition until it syncs (see below button).\n\nIf your replay desyncs due to the fatal ANM reuse bug (which is random, causes visual corruptions & can happen any time), it cannot be repaired. This bug is fixed by thprac.",
-        "同期ずれするメインストーリーリプレイを選択し、ステージ1から再生して、最終ステージのトランジション後に修正版を保存してください（同期していれば）。これは一般的な同期ずれに対して自然に機能し、修正版リプレイを任意のステージから再生できます。\n\n特定のケースでは、ステージ間のタイマーの影響でステージ1から同期しない場合があり、その場合は各トランジションでタイマーオフセットを試して同期を確認する必要があります（下のボタン参照）。\n\n致命的なANM再利用バグにより同期ずれが発生したリプレイ（ランダム発生、表示の破損、いつでも起こり得る）は修復できません。このバグはthpracで修正済みです。"
+        "同期ズレを起こす本編のリプレイを1面から再生し、最終ステージのトランジション後に修正版を保存してください（同期していれば）。これにより、一般的なデシンクの多くは自然に解消され、修正されたリプレイを任意のステージから再生できるようになります\n\n特定のケースでは、ステージ間のタイマーの影響で1面から同期しない場合があり、その場合は各トランジションでタイマーオフセットを試して同期を確認する必要があります（下のボタン参照）。\n\n致命的なANM再利用バグにより同期ずれが発生したリプレイ（ランダム発生、表示の破損、いつでも起こり得る）は修復できません。このバグはthpracで修正済みです。"
       ],
       "TH20_MAINRPYFIX_ENABLE_TIMERS_FIX": [ "调整计时偏移量", "Adjust timer offsets", "タイマーオフセットを調整" ],
       "TH20_MAINRPYFIX_DISABLE_TIMERS_FIX": [ "禁用计时器偏移量修复", "Disable timer offset fix", "タイマーオフセット修正を無効化" ],
-      "TH20_MAINRPYFIX_TIMERS_FIX_DISABLE_HINT": [ "播放replay时无法切换是否启用计时器偏移量修复。", "Can't toggle fixing timers during playback.", "再生中はタイマー修正を切り替えられません。" ],
+      "TH20_MAINRPYFIX_TIMERS_FIX_DISABLE_HINT": [ "播放replay时无法切换是否启用计时器偏移量修复。", "Can't toggle fixing timers during playback.", "リプレイ再生中はタイマー修正を切り替えられません。" ],
       "TH20_MAINRPYFIX_TIMERS_FIX_DESC": [
         "如果你的replay使用了灵梦机体且在扩散石使用了生物赤红（即鬼形兽石头），或者是利用了“关卡切换时灵梦的bomb和黄色地心（即地灵殿石头）子机的伤害光环不会消失”的bug，那么在第一面结束之后replay很可能会爆炸，这是由于关卡加载时间与录制时不同导致的。\n\n请在出现问题的关卡调整计时器偏移量，然后从前一关重新开始播放replay（请尝试多种可能的偏移量，直到问题消失为止）。重复此操作直至所有关卡同步，然后保存修复后的replay。",
         "If your replay uses Reimu with R2 as a Wide Shot Stone or makes use of a glitch which allows damage auras from Reimu's bomb or Y1's options to persist through a stage transition, it will likely desync after Stage 1 due to a difference in loading times.\n\nAdjust the timer offset for the stage where a desync occurs and restart the replay on the previous stage (try various possible values until it syncs), then repeat until all stages sync & save a fixed copy.",
-        "リプレイで霊夢がR2としてワイドショットストーンを使用している場合、または霊夢のボムまたはY1のオプションによるダメージオーラがステージトランジションを跨いで残るグリッチを利用している場合、ロード時間の差によってステージ1の後で同期が崩れる可能性があります。\n\n同期が崩れるステージのタイマーオフセットを調整し、前のステージからリプレイを\u00a0再起動\u00a0してください（同期するまでさまざまな値を試します）。これをすべてのステージで同期するまで繰り返し、修正済みリプレイを保存してください。"
+        "リプレイで霊夢がR2としてワイドショットストーンを使用している場合、または霊夢のボムまたはY1のオプションによるダメージオーラがステージトランジションを跨いで残るグリッチを利用している場合、ロード時間の差によって1面の後で同期が崩れる可能性があります。\n\n同期が崩れるステージのタイマーオフセットを調整し、前のステージからリプレイを\u00a0再起動\u00a0してください（同期するまでさまざまな値を試します）。これをすべてのステージで同期するまで繰り返し、修正済みリプレイを保存してください。"
       ],
       "TH20_MAINRPYFIX_TIPS": [ "（建议1）", "(tips 1)", "(コツ1)" ],
       "TH20_MAINRPYFIX_TIMERS_FIX_TIPS_DESC": [
         "这个过程可能耗时较长，因此建议将游戏调整到更高的帧率。\n你实际上需要通过穷举可能的帧数来猜测每个关卡切换时在录制时发生的延迟。对于第一次关卡切换，推荐检查的范围是\u00a010\u00a0到\u00a035\u00a0帧之间（尽管正确偏移量不能保证落在此范围内）。\n一旦找到正确的偏移量，下一个偏移量通常不会差太远（即在\u00a0±10\u00a0帧以内），虽然某些特定的关卡的偏移量可能会出现跳变（详见“建议2”中的“*注意”一段）。\n\n在此模式下，每次切换关卡时都会保存同步数据。例如，如果你找到第\u00a01->2\u00a0面的正确偏移量并在游戏内执行了此偏移量，你就可以接着从第\u00a02\u00a0关开始继续播放replay并继续工作。你也可以返回第\u00a01\u00a0面并覆盖这条数据（如果发现之前的偏移量数据不正确）。你可能需要把找到的正确数值记到别处，以防数据丢失。一旦所有关卡切换都有使replay正常的偏移量数据，你就可以保存修复后的replay副本。",
         "This process can take a long time, so playing on higher FPS is recommended.\n\nYou effectively need to guess the amount of lag that occured on the runner's PC at each stage transition by checking possible values exhaustively. For the first transition, the recommended range to check is 10 to 35 frames (though the correct offset is not guaranteed to fall in this range).\nOnce you've found a correct offset, the following offset usually doesn't fall too far from it (i.e. within ±10 frames), though there may be spikes on specific stages*.\n\nWhile in this mode, sync data is saved every time you go through a stage transition. For example, if you find the correct offset for the Stage 1→2 transition and perform this transition in-game, you can then start playing the replay from Stage 2 and continue your work from there. You can also go back to Stage 1 to overwrite this data if it turned out to be incorrect. You may want to write down the correct values you find to prevent data loss. Once all transitions have sync data, you can save a fixed copy.",
-        "この作業には時間がかかる場合があるため、高FPSでのプレイが推奨されます。\n各ステージトランジションでランナーのPCに発生したラグの量を、可能な値を念入りに確認することで推測する必要があります。最初のトランジションについては、チェックする推奨範囲は10〜35フレームですが（正しいオフセットがこの範囲内にある保証はありません）。\n正しいオフセットを見つけたら、次のオフセットは通常、それほど離れていません（±10フレーム以内）が、特定のステージでは急激にずれる場合もあります*。\n\nこのモードでは、ステージトランジションを通過するたびに同期データが保存されます。例えば、ステージ1->2の正しいオフセットを見つけてゲーム内でそのトランジションを行った場合、その後ステージ2からリプレイを再開して作業を続けることができます。また、間違っていた場合はステージ1に戻ってデータを上書きすることも可能です。見つけた正しい値は、データを失わないように別の場所にメモしておくと良いでしょう。すべてのステージ間遷移に同期データが揃ったら、修正版を保存できます。"
+        "この作業には時間がかかる場合があるため、高FPSでのプレイが推奨されます。\n各ステージトランジションでランナーのPCに発生したラグの量を、可能な値を念入りに確認することで推測する必要があります。最初のトランジションについては、チェックする推奨範囲は10〜35フレームですが（正しいオフセットがこの範囲内にある保証はありません）。\n正しいオフセットを見つけたら、次のオフセットは通常、それほど離れていません（±10フレーム以内）が、特定のステージでは急激にずれる場合もあります*。\n\nこのモードでは、ステージトランジションを通過するたびに同期データが保存されます。例えば、ステージ1->2の正しいオフセットを見つけてゲーム内でそのトランジションを行った場合、その後2面からリプレイを再開して作業を続けることができます。また、間違っていた場合は1面に戻ってデータを上書きすることも可能です。見つけた正しい値は、データを失わないように別の場所にメモしておくと良いでしょう。すべてのステージ間遷移に同期データが揃ったら、修正版を保存できます。"
       ],
       "TH20_MAINRPYFIX_TIPS2": [ "（建议2）", "(tips 2)", "(コツ2)" ],
       "TH20_MAINRPYFIX_TIMERS_FIX_TIPS2_DESC": [
         "•\u00a0黄色地心（即地灵殿石头）子机光环导致爆炸：只需以\u00a03\u00a0帧为一个周期，找到一个可行偏移量（即所有关卡切换可以使用\u00a00、1\u00a0或\u00a02\u00a0帧三者之一的偏移量修复）。\n•\u00a0灵梦生物赤红（即鬼形兽石头）导致爆炸：需要以\u00a0120\u00a0帧为一个周期，找到一个可行偏移量。\n•\u00a0灵梦炸弹光环导致爆炸：必须找到精确的偏移值。注意，不同步通常只在\u00a0Boss\u00a0战中途左右才会明显出现（当光环停止作用时）。\n\n*\u00a0注意：第\u00a04\u00a0面需要加载更多资源，因此正确值可能会出现跳变（例如\u00a0+[10f,\u00a040f]，不保证）。如果机师使用了\u00a0thcrap，加载延迟可能会显著增加\u00a0，具体取决于所使用的补丁\u00a0（例如语言补丁，\u00a0+[90f,\u00a0120f]），关卡间的变化可能更大。可以问一下机师他们是否使用了\u00a0thcrap。\u00a0需要注意的是，像\u00a0thprac\u00a0一样，thcrap\u00a0也会防止\u00a0ANM\u00a0重用bug出现。",
         "•\u00a0Y1 aura desync: You only need to find a working offset within a 3-frame cycle (i.e. all stage transitions can be made to work with an offset of 0, 1 or 2 frames).\n•\u00a0ReimuR2 desync: You need to find a working offset wihin a 120-frame cycle, which means you'll effectively have to find the correct value.\n•\u00a0Reimu bomb aura desync: You must find the exact correct offset value. Note that the desync usually only becomes noticeable around halfway through bossfights (when the aura stops being active).\n\n* Note: Stage 4 requires loading more resources, so you may see a spike in the correct value there (e.g. +[10f, 40f]; not guaranteed). If the runner used thcrap, loading lag can be significantly higher depending on the patches used (e.g. +[90f, 120f] for a language patch), and variations from stage to stage can be larger. It's worth noting that like thprac, thcrap prevents the ANM reuse bug.",
-        "-\u00a0Y1オーラの同期ズレ:\u00a03フレーム周期内で有効なオフセットを見つければ十分です（つまり、すべてのステージトランジションは0、1、2フレームのいずれかのオフセットで調整可能です）。\n-\u00a0霊夢R2の同期ズレ:\u00a0120フレーム周期内で動作するオフセットを見つける必要があります。\n-\u00a0霊夢ボムオーラの同期ズレ:\u00a0正確なオフセット値を見つける必要があります。なお、この同期ズレは通常、ボス戦の中盤あたりで目立つようになります（オーラが停止するタイミング）。\n\n*\u00a0注意:\u00a0ステージ4ではより多くのリソースをロードする必要があるため、正しい値にピークが生じることがあります（例:\u00a0+[10f,\u00a040f]、保証なし）。もしランナーが\u00a0thcrap\u00a0を使用した場合、ロードラグは使用したパッチによって大きく変化する可能性があります（例:\u00a0言語パッチ\u00a0+[90f,\u00a0120f]）、ステージ間の差も大きくなることがあります。元のランナーに、thcrap\u00a0を使用したかどうか尋ねてみる価値があるかもしれません。\u00a0thprac\u00a0と同様に、thcrap\u00a0では\u00a0ANM\u00a0再利用バグを防止する。"
+        "-\u00a0Y1オーラの同期ズレ:\u00a03フレーム周期内で有効なオフセットを見つければ十分です（つまり、すべてのステージトランジションは0、1、2フレームのいずれかのオフセットで調整可能です）。\n-\u00a0霊夢R2の同期ズレ:\u00a0120フレーム周期内で動作するオフセットを見つける必要があります。\n-\u00a0霊夢ボムオーラの同期ズレ:\u00a0正確なオフセット値を見つける必要があります。なお、この同期ズレは通常、ボス戦の中盤あたりで目立つようになります（オーラが停止するタイミング）。\n\n*\u00a0注意:\u00a04面ではより多くのリソースをロードする必要があるため、正しい値にピークが生じることがあります（例:\u00a0+[10f,\u00a040f]、保証なし）。もしランナーが\u00a0thcrap\u00a0を使用した場合、ロードラグは使用したパッチによって大きく変化する可能性があります（例:\u00a0言語パッチ\u00a0+[90f,\u00a0120f]）、ステージ間の差も大きくなることがあります。元のランナーに、thcrap\u00a0を使用したかどうか尋ねてみる価値があるかもしれません。\u00a0thprac\u00a0と同様に、thcrap\u00a0では\u00a0ANM\u00a0再利用バグを防止する。"
       ],
       "TH20_MAINRPYFIX_STAGE_TIMER_DISABLE_HINT": [ "播放replay时无法修改已经过去的关卡的计时器偏移量。", "Can't change past stage timer offset during playback.", "再生中は過去ステージのタイマーオフセットを変更できません。" ],
       "TH20_MAINRPYFIX_SAVE_PROGRESS_HINT": [ "剩余 %d 次关卡切换。", "%d stage transition%s remaining.", "残り %d ステージのトランジション" ],
@@ -10027,7 +10027,7 @@
       "TH20_EXTRA_RESOLUTION_FIX_DESC": [
         "如果游戏分辨率与录制replay时不同，ex面的replay在渡里妮娜的四符（古老的光明会）处可能会爆炸（即与录制时不同步）。选择一个ex面的replay和可能的原始分辨率，然后检查replay是否与录制时同步，如果同步则保存已修复的副本。\n注意：无需保存文件也可以预览是否同步。\n修复好的replay将无论分辨率如何都保持同步。",
         "Extra Stage replays may desync on Nina Spell 4 if your game's resolution is different from when they were recorded. Select an Extra Stage replay and one of the possible original resolutions, then check if it syncs & save a fixed copy if so.\nNote: You can preview whether it syncs without first saving the file.\nFixed replays will sync regardless of resolution.",
-        "ゲームの解像度が録画時と異なる場合、Extraステージのリプレイは渡里ニナのスペルカード4で同期ずれが発生する可能性があります。Extraステージのリプレイと元の解像度の候補を選択し、同期を確認して、問題なければ修正済みのコピーを保存してください。\n注意：ファイルを保存せずに同期状況をプレビューできます。\n修正済みのリプレイは、解像度に関係なく同期します。"
+        "ゲームの解像度が録画時と異なる場合、Extraのリプレイは渡里ニナのスペルカード4で同期ずれが発生する可能性があります。Extraのリプレイと元の解像度の候補を選択し、同期を確認して、問題なければ修正済みのコピーを保存してください。\n注意：ファイルを保存せずに同期状況をプレビューできます。\n修正済みのリプレイは、解像度に関係なく同期します。"
       ],
       "TH20_EXRESFIX_RESOLUTION": [ "原始分辨率：", "Original resolution:", "元の解像度：" ],
       "TH20_EXRESFIX_RESOLUTION_DISABLE_HINT": [ "播放中无法更改原始分辨率。", "Can't change original resolution during playback.", "再生中は元の解像度を変更できません。" ],
@@ -10040,7 +10040,7 @@
       "TH20_EXPIRED_STONE_FIX_DESC": [
         "如果你在异变敌召唤槽耗尽后，击败了一个光环已经消失的异变敌，接下来可能随机地发生\u00a05\u00a0种结果之一。虽然这种现象出乎意料地罕见，但相关的replay爆炸问题尤其微妙，因为replay在机师的电脑上通常没有问题，但在其他玩家电脑上可能有问题。\n\n你可以使用此工具检查replay是否受到此问题影响，如果是，则保存修复后的副本。我们会用一个计数器统计显示在某一关中发生此现象的次数（但仅在replay保持同步时准确）。工具的控件允许你指定每次击杀的结果，并可以通过手动输入或播放replay自动记录。最常见的结果是提升对应颜色异变敌的等级。如果replay因此bug不同步（通常在另一次召唤刚开始后），你可以测试其他可能的结果（最常见的是\"无\"和\"+红\"）。\n\n此工具可与上述两个工具一起使用，它们的保存按钮也会保存此工具的数据。",
         "If you kill a summoned Wonder Stone enemy after the summon gauge fully depletes and the visual aura around it disappears, one of 5 scenarios can happen at random. While this situation is surprisingly rare, the related desync is particularly subtle as the replay will often sync on the original runner's computer but may not for others.\n\nYou can use this tool to check whether a replay is impacted by this issue, and if so, save a fixed copy. A counter will show you how many times it happens on a given stage (though this counter is only accurate for as long as the replay syncs). Controls allow you to specify what the outcome of each kill was, and you can add them manually or automatically by playing the replay. The most common outcome is raising the level of the correct Wonder Stone color. If the replay desyncs due to this bug (often directly after another summon starts), you can test other outcomes (the most common being \"None\" and \"+Red\").\n\nThis tool can be used alongside the above two tools, and their save buttons will save its data too.",
-        "召喚ゲージが完全に減少し、周囲のオーラが消えた後に異変石の敵を撃破すると、ランダムで5つのシナリオのいずれかが発生します。この状況は意外と稀ですが、関連する同期ずれは特に微妙で、元のランナーの環境ではリプレイが同期しても、他の環境では同期しないことがあります。\n\nこのツールを使用すると、リプレイがこの問題の影響を受けているかどうかを確認でき、影響がある場合は修正版を保存できます。カウンターは、特定のステージで何回発生したかを表示します（ただし、このカウンターはリプレイが同期している間のみ正確です）。操作により、各撃破の結果を指定でき、手動で追加することも、リプレイを再生して自動で追加することも可能です。最も一般的な結果は、正しい異変石の色のレベルを上げることです。このバグによってリプレイが同期ずれした場合（多くは別の召喚が始まった直後）、他の結果をテストできます（最も一般的なのは「なし」と「+赤」）。\n\nこのツールは上記2つのツールと併用でき、それらの保存ボタンでもこのツールのデータを保存できます。"
+        "異変敵ゲージが0になり、周囲のオーラが消えた後に異変敵を撃破すると、ランダムで5つのシナリオのいずれかが発生します。この状況は意外と稀ですが、関連する同期ずれは特に微妙で、元のランナーの環境ではリプレイが同期しても、他の環境では同期しないことがあります。\n\nこのツールを使用すると、リプレイがこの問題の影響を受けているかどうかを確認でき、影響がある場合は修正版を保存できます。カウンターは、特定のステージで何回発生したかを表示します（ただし、このカウンターはリプレイが同期している間のみ正確です）。操作により、各撃破の結果を指定でき、手動で追加することも、リプレイを再生して自動で追加することも可能です。最も一般的な結果は、正しい異変石の色のレベルを上げることです。このバグによってリプレイが同期ずれした場合（多くは別の召喚が始まった直後）、他の結果をテストできます（最も一般的なのは「なし」と「+赤」）。\n\nこのツールは上記2つのツールと併用でき、それらの保存ボタンでもこのツールのデータを保存できます。"
       ],
       "TH20_EXPSTONEFIX_PLUS_RED": [ "+红", "+Red", "+赤" ],
       "TH20_EXPSTONEFIX_PLUS_BLUE": [ "+蓝", "+Blue", "+青" ],
@@ -10051,8 +10051,8 @@
       "TH20_EXPSTONEFIX_MARK_FIXED": [ "标记为已修复", "Mark as fixed", "修正済みにする" ],
       "TH20_EXPSTONEFIX_SAVE_NO_DATA_HINT": [ "未设置任何超时异变敌数据。", "No expired summon data set.", "期限切れの異変石データが設定されていません。" ],
       "TH20_EXPSTONEFIX_SAVE_USE_MAINRPYFIX_HINT": [ "请使用主线爆炸replay修复的保存按钮。", "Use Main story desyncs fix's save button instead.", "メインストーリーの同期ずれ修正の保存ボタンを使用してください。" ],
-      "TH20_EXPSTONEFIX_SAVE_USE_EXRESFIX_HINT": [ "请使用Extra关卡分辨率修复的保存按钮。", "Use Extra Resolution fix's save button instead.", "Extraステージ解像度修正の保存ボタンを使用してください。" ],
-      "TH20_CREDITS": [ "Khangaroo、Guy、zero318、rue，以及你！", "Khangaroo, Guy, zero318, rue, and you!", "Khangaroo、Guy、zero318、rue、そしてあなた！" ]
+      "TH20_EXPSTONEFIX_SAVE_USE_EXRESFIX_HINT": [ "请使用Extra关卡分辨率修复的保存按钮。", "Use Extra Resolution fix's save button instead.", "Extra解像度修正の保存ボタンを使用してください。" ],
+      "TH20_CREDITS": [ "Khangaroo、Guy、zero318、rue，以及你！", "Khangaroo, Guy, zero318, rue, and you!", "Khangaroo、Guy、zero318、rue, and you!" ]
     },
 
     "sections": {
