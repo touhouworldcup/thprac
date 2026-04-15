@@ -91,8 +91,8 @@
       "THPRAC_UPDATE_DOWNLOADING": [ "下载新版本中……", "Downloading update...", "Downloading update..." ],
       "THPRAC_UPDATE_VIEW_CHANGELOG": [ "查看更新日志", "View changelog", "View changelog" ],
       "THPRAC_UPDATE_DOWNLOAD_MANUALLY": [ "手动下载", "Download manually", "Download manually" ],
-      "THPRAC_UPDATE_DOWNLOAD_ERROR": [ "An error occurred while downloading the update", "An error occurred while downloading the update", "An error occurred while downloading the update" ],
-      "THPRAC_UPDATE_COMPLETION_ERROR": [ "An error occurred while finishing the update", "An error occurred while finishing the update", "An error occurred while finishing the update" ],
+      "THPRAC_UPDATE_DOWNLOAD_ERROR": [ "下载更新时出现错误", "An error occurred while downloading the update", "An error occurred while downloading the update" ],
+      "THPRAC_UPDATE_COMPLETION_ERROR": [ "结束更新时出现错误", "An error occurred while finishing the update", "An error occurred while finishing the update" ],
 
       "THPRAC_UPDATE_ASK_DISABLE": [
         "你想要永久禁用自动检查更新吗？",
@@ -130,7 +130,7 @@
       ],
       "THPRAC_DIRECTORY_SETTING": [ "数据目录", "Data directory", "データディレクトリ" ],
       "THPRAC_DATADIR_OPEN": [ "打开数据目录", "Open data directory", "データディレクトリを開く" ],
-      "THPRAC_DATADIR_LEARN_MORE": [ "Learn More", "Learn More", "Learn More" ],
+      "THPRAC_DATADIR_LEARN_MORE": [ "了解更多", "Learn More", "Learn More" ],
 
       "THPRAC_TOOLS": [ "工具", "Tools", "ツール" ],
       "THPRAC_TOOLS_APPLY_THPRAC": [ "应用thprac至正在运行的游戏", "Apply thprac to ongoing game", "実行中のゲームにthpracを適用します" ],
@@ -917,7 +917,7 @@
       "TH_TRACKER_BORDER_TEAM": [ "结界组", "Border Team", "結界組" ],
       "TH_TRACKER_MAGIC_TEAM": [ "咏唱组", "Magic Team", "詠唱組" ],
       "TH_TRACKER_SCARLET_TEAM": [ "红魔组", "Scarlet Team", "紅魔組" ],
-      "TH_TRACKER_NETHERWORLD_TEAM": [ "冥界组", "Netherworld Team", "冥界組" ],
+      "TH_TRACKER_NETHERWORLD_TEAM": [ "幽冥组", "Netherworld Team", "冥界組" ],
       "TH_TRACKER_REIMU_YUKARI": [ "灵梦+紫", "Reimu + Yukari", "霊夢＋紫" ],
       "TH_TRACKER_REIMU_SUIKA": [ "灵梦+萃香", "Reimu + Suika", "霊夢＋萃香" ],
       "TH_TRACKER_REIMU_AYA": [ "灵梦+文", "Reimu + Aya", "霊夢＋文" ],

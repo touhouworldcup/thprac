@@ -82,9 +82,9 @@ int log_mboxf(void* hwnd, unsigned int type, const char* caption, const char* fo
 }
 
 const wchar_t* ERROR_NO_DATA_DIR_MSG[] = {
-    L"thprac was unable to find a suitable data directory.\n"
-     "Logs will not be saved to a file.\n"
-     "Do you want to open a console to see the logs?",
+    L"thprac 无法找到合适的文件夹来存放数据。\n"
+     "日志将不会被保存到日志文件中。\n"
+     "你想要打开控制台窗口来查看日志吗？",
 
     L"thprac was unable to find a suitable data directory.\n"
      "Logs will not be saved to a file.\n"
@@ -96,7 +96,7 @@ const wchar_t* ERROR_NO_DATA_DIR_MSG[] = {
 };
 
 const wchar_t* ERROR_FAILED_TO_OPEN_LOG_FILE_MSG[] = {
-    L"Cannot open a log file for writing. No logs will be saved to disk. Do you want to open a console to see logs anyways?",
+    L"无法打开日志文件。日志将不会被保存到磁盘上。你想要打开控制台窗口来查看日志吗？",
     L"Cannot open a log file for writing. No logs will be saved to disk. Do you want to open a console to see logs anyways?",
     L"Cannot open a log file for writing. No logs will be saved to disk. Do you want to open a console to see logs anyways?",
 };
