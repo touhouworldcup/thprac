@@ -753,6 +753,7 @@ namespace TH13 {
         void FpsInit()
         {
             mOptCtx.fps_replay_fast = 240;
+            mOptCtx.fps_replay_slow = 15;
 
             if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) != NULL) {
                 OILPInit(mOptCtx);
@@ -784,7 +785,8 @@ namespace TH13 {
                 mOptCtx.oilp_set_replay_slow_fps(mOptCtx.fps_replay_slow);
             } else if (mOptCtx.fps_status == 1) {
                 mOptCtx.fps_dbl = 1.0 / (double)mOptCtx.fps;
-            } else if (mOptCtx.fps_status == 2) {
+            }
+            else if (mOptCtx.fps_status == 2) {
                 VPResetFPS(mOptCtx.fps);
                 *(int32_t*)(mOptCtx.vpatch_base + 0x1a03c) = mOptCtx.fps_replay_slow;
             }
