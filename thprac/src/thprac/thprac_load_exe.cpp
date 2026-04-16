@@ -359,7 +359,7 @@ uintptr_t LoadRemoteLibrary(HANDLE hProcess, const wchar_t* libName) {
     if (!rBuf) {
         return 0;
     }
-    defer(VirtualFree(rBuf, 0, MEM_DECOMMIT));
+    defer(VirtualFreeEx(hProcess, rBuf, 0, MEM_RELEASE));
 
     DWORD byteRet;
     WriteProcessMemory(hProcess, rBuf, libName, l_Len, &byteRet);
