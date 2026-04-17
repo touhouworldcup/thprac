@@ -1398,7 +1398,7 @@ namespace TH06 {
         }
         virtual void OnPreUpdate() override
         {
-            if (GAME_MANAGER->isInGame)
+            if (GAME_MANAGER->isInGame || GAME_MANAGER->isInGameMenu || GAME_MANAGER->isInRetryMenu)
             {
                 GameUpdateInner(6);
             }
