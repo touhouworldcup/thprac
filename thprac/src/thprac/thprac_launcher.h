@@ -131,10 +131,10 @@ struct FoundGame {
 
 struct ScanCtx {
     std::wstring scan_dir;
+    std::vector<std::wstring> found_exes;
     std::vector<FoundGame> found;
     HANDLE scan_thread = NULL;
 
-    size_t exes_found = 0;
     size_t exes_scanned = 0;
     size_t text_in_progress_bar_len = 0;
     char text_in_progress_bar[MAX_PATH + 1] = {};
@@ -196,6 +196,7 @@ struct LauncherState {
     th_glossary_t updateError = A0000ERROR_C;
 
     bool inScan = false;
+    bool loadRescanNeeded = false;
     ScanCtx scanCtx;
     char instRenameBuf[256] = {};
     union {
@@ -240,7 +241,7 @@ struct LauncherState {
 yyjson_doc* LoadConfigFile(const wchar_t* name);
 void SaveConfigFile(const wchar_t* name, void* buf, size_t len);
 
-void LoadGamesJson(APPLY_THPRAC_DEFAULT);
+void LoadGamesJson(LauncherState*);
 void SaveGamesJson();
 
 void LauncherGamesMain(LauncherState*);

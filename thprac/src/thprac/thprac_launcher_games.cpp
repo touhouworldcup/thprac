@@ -400,7 +400,7 @@ static bool LauncherRunGame(LauncherState* state, THGameID game, LauncherInstanc
     }
 }
 
-static void InitLauncherGame(LauncherGame* game, yyjson_val* json, APPLY_THPRAC_DEFAULT apply_thprac_default) {
+static void InitLauncherGame(LauncherState* state, LauncherGame* game, yyjson_val* json) {
     yyjson_val* insts = yyjson_obj_get(json, "instances");
     size_t insts_len = yyjson_arr_size(insts);
     if (!insts_len) {
@@ -433,54 +433,52 @@ static void InitLauncherGame(LauncherGame* game, yyjson_val* json, APPLY_THPRAC_
         uint8_t ver_off = 0xFF;
         if(yyjson_eval_numeric(yyjson_obj_get(cur, "ver"), &ver_off)); else {
             log_printf("Warning: instance %s has no version number, reidentifying...\r\n", path);
-            goto fresh_identify;
+
+            state->scanCtx.found_exes.push_back(utf8_to_utf16(path));
+            free((void*)path);
+            continue;
         }
         if (game->versions + ver_off >= game->versions + VER_MAX) {
             log_printf("Warning: instance %s specifies invalid version number\r\n", path);
-        fresh_identify:
-            ExeInfo exeInfo;
 
-            ver = IdentifyExe(utf8_to_utf16(path).c_str(), &exeInfo);
-            if (ver) {
-                ver_off = (uint8_t)(ver - game->versions);
-            } else {
-                log_printf("Error: failed to identify version number for %s\r\n", path);
-                log_printf(" -> ExeInfo { timeStamp = %d, textSize = %d }", exeInfo.textSize, exeInfo.timeStamp);
-                continue;
+            state->scanCtx.found_exes.push_back(utf8_to_utf16(path));
+            free((void*)path);
+            continue;
+        }
+        if (ver_off >= game->ver_count) {
+            log_printf("Warning: version offset %d for instance %s too large\r\n", ver_off, path);
+
+            state->scanCtx.found_exes.push_back(utf8_to_utf16(path));
+            free((void*)path);
+            continue;
+        }
+        ver = game->versions + ver_off;
+
+        bool apply_thprac = false;
+        if (ver->initFunc) {
+            switch (state->settings.apply_thprac_default) {
+            case APPLY_THPRAC_KEEP_STATE:
+                yyjson_eval_numeric(yyjson_obj_get(cur, "apply_thprac"), &apply_thprac);
+                break;
+            case APPLY_THPRAC_DEFAULT_OPEN:
+                apply_thprac = true;
+                break;
+            case APPLY_THPRAC_DEFAULT_CLOSE:
+                apply_thprac = false;
+                break;
             }
         }
 
-        if (ver_off < game->ver_count) {
-            ver = game->versions + ver_off;
-
-            bool apply_thprac = false;
-            if (ver->initFunc) {
-                switch (apply_thprac_default) {
-                case APPLY_THPRAC_KEEP_STATE:
-                    yyjson_eval_numeric(yyjson_obj_get(cur, "apply_thprac"), &apply_thprac);
-                    break;
-                case APPLY_THPRAC_DEFAULT_OPEN:
-                    apply_thprac = true;
-                    break;
-                case APPLY_THPRAC_DEFAULT_CLOSE:
-                    apply_thprac = false;
-                    break;
-                }
-            }
-
-            instances[valid_insts_count] = {
-                .path = path,
-                .name = name,
-                .type = (THGameType)type,
-                .ver = ver_off,
-                .apply_thprac = apply_thprac,
-                .allow_oilp = game->versions[ver_off].has_oilp,
-                .allow_vpatch = game->versions[ver_off].has_vpatch,
-            };
-            valid_insts_count++;
-        } else {
-            log_printf("Error: version offset %d for instance %s too large\r\n", ver_off, path);
-        }
+        instances[valid_insts_count] = {
+            .path = path,
+            .name = name,
+            .type = (THGameType)type,
+            .ver = ver_off,
+            .apply_thprac = apply_thprac,
+            .allow_oilp = game->versions[ver_off].has_oilp,
+            .allow_vpatch = game->versions[ver_off].has_vpatch,
+        };
+        valid_insts_count++;
     }
 
     if (!valid_insts_count) {
@@ -493,7 +491,7 @@ static void InitLauncherGame(LauncherGame* game, yyjson_val* json, APPLY_THPRAC_
     yyjson_eval_numeric(yyjson_obj_get(json, "default_launch"), &game->default_launch);
 }
 
-void LoadGamesJson(APPLY_THPRAC_DEFAULT apply_thprac_default) {
+void LoadGamesJson(LauncherState* state) {
     yyjson_doc* doc = LoadConfigFile(L"games.json");
     if (!doc) {
         return;
@@ -508,14 +506,14 @@ void LoadGamesJson(APPLY_THPRAC_DEFAULT apply_thprac_default) {
     yyjson_val *key, *val;
     yyjson_obj_foreach(root, idx, max, key, val) {
         const char* keyReal = unsafe_yyjson_get_str(key);
-
         for (auto& game : games) {
             if (strcmp(gThGameStrs[game.id], keyReal) == 0) {
-                InitLauncherGame(&game, val, apply_thprac_default);
+                InitLauncherGame(state, &game, val);
             }
         }
     }
     yyjson_doc_free(doc);
+    state->loadRescanNeeded = state->scanCtx.found_exes.size();
 }
 
 void SaveGamesJson() {
@@ -997,12 +995,11 @@ static void ScanDirectory(ScanCtx* scanCtx, const wchar_t* path, std::vector<std
 
 static DWORD WINAPI ScanThread(LPVOID lpParam) {
     ScanCtx* scanCtx = (ScanCtx*)lpParam;
+    if (!scanCtx->found_exes.size()) {
+        ScanDirectory(scanCtx, scanCtx->scan_dir.c_str(), scanCtx->found_exes);
+    }
 
-    std::vector<std::wstring> found_exe_names;
-    ScanDirectory(scanCtx, scanCtx->scan_dir.c_str(), found_exe_names);
-
-    scanCtx->exes_found = found_exe_names.size();
-    for (const auto& f : found_exe_names) {
+    for (const auto& f : scanCtx->found_exes) {
         if (scanCtx->abort_message) {
             break;
         }
@@ -1111,7 +1108,6 @@ static DWORD WINAPI ScanThreadSteam(LPVOID lpParam) {
 
     std::vector<std::wstring> found_exe_names;
     SteamReadLibrary(scanCtx, (char*)f.fileMapView, f.fileSize, found_exe_names);
-    scanCtx->exes_found = found_exe_names.size();
     for (const auto& found : found_exe_names) {
         if (scanCtx->abort_message) {
             break;
@@ -1268,6 +1264,7 @@ static bool ScanForGamesUI(ScanCtx* scanCtx, bool apply_thprac) {
         scanCtx->abort_message = true;
         WaitForSingleObject(scanCtx->scan_thread, INFINITE);
         CloseHandle(scanCtx->scan_thread);
+        scanCtx->found_exes.clear();
         return false;
     }
     ImGui::SameLine();
@@ -1317,10 +1314,10 @@ static bool ScanForGamesUI(ScanCtx* scanCtx, bool apply_thprac) {
         Gui::HelpMarker(S(THPRAC_GAMES_SCAN_RELATIVE_DESC));
         break;
     case WAIT_TIMEOUT:
-        if (scanCtx->exes_found == 0) {
+        if (scanCtx->found_exes.size() == 0) {
             Gui::ProgressBar(-1.0f, scanCtx->text_in_progress_bar, scanCtx->text_in_progress_bar + scanCtx->text_in_progress_bar_len);
         } else {
-            Gui::ProgressBar(scanCtx->exes_scanned / (float)scanCtx->exes_found, scanCtx->text_in_progress_bar, scanCtx->text_in_progress_bar + scanCtx->text_in_progress_bar_len);
+            Gui::ProgressBar(scanCtx->exes_scanned / (float)(scanCtx->found_exes.size()), scanCtx->text_in_progress_bar, scanCtx->text_in_progress_bar + scanCtx->text_in_progress_bar_len);
         }
         break;
     case WAIT_OBJECT_0:
@@ -1345,12 +1342,13 @@ static bool ScanForGamesUI(ScanCtx* scanCtx, bool apply_thprac) {
         if (Gui::ButtonRight(S(TH_FINISH))) {
             ScanResults(scanCtx->found, apply_thprac);
             CloseHandle(scanCtx->scan_thread);
+            scanCtx->found_exes.clear();
             return false;
         }
     }
     return true;
 }
- 
+
 static void GameRightClickMenu(LauncherState* state, LauncherGame* game) {
     if (game) {
         if (ImGui::Selectable(S(THPRAC_GAMES_DETAILS_PAGE))) {
@@ -1372,6 +1370,20 @@ static void GameRightClickMenu(LauncherState* state, LauncherGame* game) {
     }
     ImGui::Separator();
     if (ImGui::Selectable(S(THPRAC_GAMES_RESCAN))) {
+        state->scanCtx.found_exes.clear();
+        for (auto& game : games) {
+            if (game.instances) {
+                for (size_t i = 0; i < game.inst_count; i++) {
+                    state->scanCtx.found_exes.push_back(utf8_to_utf16(game.instances[i].path));
+                    DestroyInst(game.instances + i);
+                }
+                free(game.instances);
+                game.instances = nullptr;
+                game.inst_count = 0;
+            }
+        }
+        state->inScan = true;
+        state->scanCtx.scan_thread = CreateThread(nullptr, 0, ScanThread, &state->scanCtx, 0, nullptr);;
         ImGui::CloseCurrentPopup();
     }
 }
@@ -1676,6 +1688,10 @@ void LauncherGamesMain(LauncherState* state) {
         }
         return;
     }
+    if (state->loadRescanNeeded) {
+        state->loadRescanNeeded = false;
+        ImGui::OpenPopup("##forced_rescan");
+    }
 
     if (Gui::Modal(S(THPRAC_GAMES_CANNOT_LAUNCH_MODAL))) {
         if (state->reflectiveLaunchID != ID_UNKNOWN) {
@@ -1692,6 +1708,20 @@ void LauncherGamesMain(LauncherState* state) {
             if (Gui::MultiButtonsFillWindow(0.0f, S(TH_OK)) == 0) {
                 ImGui::CloseCurrentPopup();
             }
+        }
+        ImGui::EndPopup();
+    }
+
+    ImGui::SetNextWindowSize({ ImGui::GetIO().DisplaySize.x / 2.5f, 0.0f});
+    if (Gui::Modal("##forced_rescan")) {
+        ImGui::TextWrapped("%s", S(THPRAC_RESCAN_MESSAGE));
+
+        switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO))) {
+        case 0:
+            state->inScan = true;
+            state->scanCtx.scan_thread = CreateThread(nullptr, 0, ScanThread, &state->scanCtx, 0, nullptr);
+        case 1:
+            ImGui::CloseCurrentPopup();
         }
         ImGui::EndPopup();
     }

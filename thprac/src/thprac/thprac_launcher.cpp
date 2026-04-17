@@ -674,7 +674,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
     }
     
     LoadLauncherSettings(&state->settings);
-    LoadGamesJson(state->settings.apply_thprac_default);
+    LoadGamesJson(state);
     LoadLinksJson(state->linkSets);
 
     // Show the window
