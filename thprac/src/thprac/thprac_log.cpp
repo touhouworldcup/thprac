@@ -27,11 +27,12 @@ void log_vprintf(const char* format, va_list va) {
     va_list va2;
     va_copy(va2, va);
     int len = vsnprintf(nullptr, 0, format, va2);
+    va_end(va2);
 
     VLA(char, buf, len + 1);
-    vsnprintf(buf, len, format, va);
+    vsnprintf(buf, len + 1, format, va);
 
-    log_print(buf, len - 1);
+    log_print(buf, len);
 }
 
 void log_printf(const char* format, ...) {
