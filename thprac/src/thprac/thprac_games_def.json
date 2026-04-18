@@ -160,7 +160,6 @@
       "THPRAC_LINKS_FILTER_ADD_MODAL": [ "添加筛选器##modal", "Add filter##modal", "フィルタを追加##modal" ],
       "THPRAC_LINKS_FILTER_DEL": [ "删除筛选器", "Delete filter", "フィルタを削除" ],
       "THPRAC_LINKS_FILTER_DEL_MODAL": [ "删除筛选器##modal", "Delete filter##modal", "フィルタを削除##modal" ],
-      "THPRAC_LINKS_ERR_MOVE_MODAL": [ "错误##err_link_move", "Error##err_link_move", "エラー##err_link_move" ],
       "THPRAC_LINKS_ERR_EXEC_MODAL": [ "错误##err_link_exec", "Error##err_link_exec", "エラー##err_link_exec" ],
       "THPRAC_LINKS_EDIT_ERR_NAME": [ "你必须键入一个名称。", "You must enter a name.", "名前を入力する必要があります。" ],
       "THPRAC_LINKS_EDIT_ERR_LINK": [ "你必须键入/选择一个链接。", "You must enter/select a link.", "リンクを入力/選択する必要があります。" ],
@@ -175,11 +174,6 @@
         "删除这个筛选器？\n其中的所有链接都将丢失！",
         "Delete this link?\nAll links in it will be lost!",
         "このフィルタを削除しますか？\nこの中のすべてのリンクは失われます！"
-      ],
-      "THPRAC_LINKS_ERR_MOVE": [
-        "移动链接时发生错误：目标筛选器具有重名的链接。\n请尝试更改链接的名字后再进行移动。",
-        "Error moving link: target filter has a link with a duplicate name.\nPlease change the name of the link and try again.",
-        "リンクの移動中にエラーが発生しました：ターゲットのフィルタは重複した名前のリンクを持っています。\nリンクの名前を変更して再度移動してみてください。"
       ],
       "THPRAC_LINKS_ERR_EXEC": [
         "打开链接时发生错误。\n请确认该链接是否有效。",
