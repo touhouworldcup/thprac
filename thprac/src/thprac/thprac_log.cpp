@@ -91,15 +91,15 @@ const wchar_t* ERROR_NO_DATA_DIR_MSG[] = {
      "Logs will not be saved to a file.\n"
      "Do you want to open a console to see the logs?",
    
-    L"thprac was unable to find a suitable data directory.\n"
-     "Logs will not be saved to a file.\n"
-     "Do you want to open a console to see the logs?",
+    L"thpracはデータを保存するための適切なディレクトリを見つけることができませんでした。\n"
+     "ログはファイルに保存されません。\n"
+     "コンソール画面を開いてログを確認しますか？",
 };
 
 const wchar_t* ERROR_FAILED_TO_OPEN_LOG_FILE_MSG[] = {
     L"无法打开日志文件。日志将不会被保存到磁盘上。你想要打开控制台窗口来查看日志吗？",
     L"Cannot open a log file for writing. No logs will be saved to disk. Do you want to open a console to see logs anyways?",
-    L"Cannot open a log file for writing. No logs will be saved to disk. Do you want to open a console to see logs anyways?",
+    L"ログファイルを書き込みモードで開けません。ログがディスクに保存されません。代替としてコンソール画面を開いてログを確認しますか？",
 };
 
 void log_init(bool launcher, bool console) {
