@@ -265,9 +265,9 @@
         "A popup to inform you that thprac was waiting for a game to start was opened, but that game has started by now"
       ],
       "THPRAC_RESCAN_MESSAGE": [
+          "thprac检测到一些游戏缺失文件，需要重新扫描。是否重新扫描？",
           "thprac detected that some games need to be rescanned due to missing data. Rescan those games?",
-          "thprac detected that some games need to be rescanned due to missing data. Rescan those games?",
-          "thprac detected that some games need to be rescanned due to missing data. Rescan those games?",
+          "thprac detected that some games need to be rescanned due to missing data. Rescan those games?"
       ],
       "THPRAC_GOTO_STEAM_PAGE": [ "前往Steam页面", "Go to Steam page", "Steamページに移動" ],
       "THPRAC_LANG_SWITCH_UI_FROZEN": [ "UI冻结中", "UI is frozen", "UI is frozen" ],
