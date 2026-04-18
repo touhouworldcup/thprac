@@ -36,7 +36,7 @@
       "THPRAC_THCRAP_INVALID": [ "无效的thcrap路径！", "Invalid thcrap location!", "thcrapの場所が無効です！" ],
       "THPRAC_THCRAP_LAUNCH_CONFIGURE": [ "启动thcrap_configure", "Launch thcrap_configure", "thcrap_configureを起動します" ],
       "THPRAC_THCRAP_LAUNCH_FAILED": [ "未能启动thcrap_configure！", "Failed to launch thcrap_configure!", "thcrapを起動できませんでした！" ],
-      "THPRAC_THCRAP_ADDCFG": [ "添加thcrap配置……", "Add thcrap configs...", "thcrapコンフィグを追加..." ],
+      "THPRAC_THCRAP_ADDCFG": [ "添加thcrap配置……", "Add thcrap configs...", "thcrapのコンフィグを追加..." ],
       "THPRAC_THCRAP_ADDCFG_404": [ "没有找到任何thcrap配置！", "No thcrap configs was found!", "thcrapのコンフィグが見つかりませんでした！" ],
       "THPRAC_THCRAP_ADDCFG_CONFIGS": [ "将下方选中的配置: ", "Add the following selected configs: ", "次の選択したコンフィグを: " ],
       "THPRAC_THCRAP_ADDCFG_GAMES": [ "...加入下方选中的游戏: ", "...to the following selected games: ", "...次の選択したゲームに追加します: " ],
@@ -68,7 +68,7 @@
         "前の状態\\0開く\\0閉じる\\0\\0"
       ],
 
-      "THPRAC_REBIND_HOTKEYS": [ "重新绑定快捷键", "Rebind Hotkeys", "ホットキーを再割り当て" ],
+      "THPRAC_REBIND_HOTKEYS": [ "重新绑定快捷键", "Rebind Hotkeys", "ホットキーの割り当て" ],
       "THPRAC_HOTKEY_QUICK_SETTINGS": [ "快速设置", "Quick Settings", "クイック設定" ],
       "THPRAC_HOTKEY_ADVANCED_SETTINGS": [ "高级设置", "Advanced Settings", "詳細設定" ],
       "THPRAC_HOTKEY_SPECIAL_SETTINGS": [ "特殊设置", "Special Settings", "特別設定" ],
@@ -76,7 +76,7 @@
       "THPRAC_HOTKEY_LANGUAGE_TOOLTIP": [ "按住此键并按 1/2/3 可切换为日语／中文／英语", "Hold and press 1 = Japanese, 2 = Chinese, 3 = English.", "このキーを押したまま、1/2/3を押すと日本語／中国語／英語に切り替わります" ],
       "THPRAC_HOTKEY_TRACKER": [ "追踪表", "In-game Tracker", "トラッカー" ],
       "THPRAC_HOTKEY_SCREENSHOT": [ "截图（红魔乡和妖妖梦）", "Screenshot (EoSD and PCB)", "スクリーンショット（東方紅魔郷・東方妖々夢）" ],
-      "THPRAC_HOTKEY_SUBMASK_WARNING": [ "警告：所选按键已被其他快捷键使用或需要。", "Warning: Chosen keys contains or are required for a different hotkey.", "警告: 選択したキーは、別のホットキーで使用されているか、必要とされています。" ],
+      "THPRAC_HOTKEY_SUBMASK_WARNING": [ "警告：所选按键已被其他快捷键使用或需要。", "Warning: Chosen keys contains or are required for a different hotkey.", "警告: 選択したキーは別のホットキーで使用されているか、別のホットキーの組み合わせの一部に使用されています。" ],
       "THPRAC_HOTKEY_UNASSIGNED": [ "未分配", "Unassigned", "未割り当て" ],
       "THPRAC_HOTKEY_SPACEBAR": [ "空格", "Space", "スペース" ],
       "THPRAC_HOTKEY_RESET": [ "重置到默认快捷键", "Reset hotkeys to default", "ホットキーをデフォルトにリセット" ],
@@ -111,7 +111,7 @@
       "THPRAC_EXISTING_GAME_ACTION": [ "启动thprac时，如果同一目录下存在游戏:", "When starting thprac, if a game exists under the same directory:", "thpracを起動するときに、ゲームが同じディレクトリに存在する場合:" ],
       "THPRAC_EXISTING_GAME_ACTION_OPTION": [ "启动游戏\\0打开启动器\\0总是询问\\0\\0", "Launch game\\0Open launcher\\0Always ask\\0\\0", "ゲームを起動します\\0ランチャーを開く\\0常に尋ねる\\0\\0" ],
       "THPRAC_DONT_SEARCH_ONGOING": [ "启动thprac时不搜索正在运行的游戏", "Do not search for any ongoing game when launching thprac", "thpracを起動するときに進行中のゲームを検索しない" ],
-      "THPRAC_RESIZABLE_WINDOW": [ "窗口大小可调", "Resizable game window", "ウィンドウサイズ自由に変更" ],
+      "THPRAC_RESIZABLE_WINDOW": [ "窗口大小可调", "Resizable game window", "ゲームのウィンドウサイズを自由に変更できるようにする" ],
       "THPRAC_CONSOLE": [ "显示控制台", "Show console", "コンソール画面を開く" ],
       "THPRAC_DISABLE_CONSOLE_USELESS": [ "（已有的控制台窗口不会自动关闭）", "(If a console is already here, it'll stay open)", "(既にコンソール画面を開いている場合はそのまま表示され続けます)" ],
       "THPRAC_UPDATE_BEHAVIOR": [ "更新行为", "Update behavior", "更新関連の設定" ],
@@ -179,7 +179,7 @@
       "THPRAC_LINKS_ERR_MOVE": [
         "移动链接时发生错误：目标筛选器具有重名的链接。\n请尝试更改链接的名字后再进行移动。",
         "Error moving link: target filter has a link with a duplicate name.\nPlease change the name of the link and try again.",
-        "リンクの移動中にエラーが発生しました：ターゲットフィルタは名前を重複させたリンクを持っています。\nリンクの名前を変更して再度移動してみてください。"
+        "リンクの移動中にエラーが発生しました：ターゲットのフィルタは重複した名前のリンクを持っています。\nリンクの名前を変更して再度移動してみてください。"
       ],
       "THPRAC_LINKS_ERR_EXEC": [
         "打开链接时发生错误。\n请确认该链接是否有效。",
