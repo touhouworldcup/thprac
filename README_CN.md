@@ -126,7 +126,7 @@ thprac 会自动将您输入的选项保存到 replay 中，播放 replay 时，
 ## <a name="credits"></a> 贡献者名单（2022 年 5 月 27 日及之后）
 - 开发: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [muter3000](https://github.com/muter3000), [zero318](https://github.com/zero318), [Lmocinemod](https://github.com/Lmocinemod), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 
 - 中文翻译: [CrestedPeak9](https://twitter.com/CrestedPeak9), maksim71_doll, DeepL
-- 日语翻译: [Yu-miya](https://www.twitch.tv/toho_yumiya), CyrusVorazan, DeepL
+- 日语翻译: [Yu-miya](https://www.twitch.tv/toho_yumiya), [wefma](https://github.com/wefma), CyrusVorazan, DeepL
 - 将所有 bug 追踪报告从 [旧的 bug 追踪处](https://github.com/ack7139/thprac/issues) 移到 [此处](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
 - 中文 README 翻译：[TNT569](https://github.com/TNT569)、[H-J-Granger](https://github.com/H-J-Granger)
 - 日语版 README.md 翻译：[wefma](https://github.com/wefma)
