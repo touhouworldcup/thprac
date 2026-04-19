@@ -114,7 +114,8 @@ std::string utf16_to_mb(const wchar_t* utf16, UINT encoding) {
     int utf8Length = _WideCharToMultiByte(encoding, 0, utf16, -1, nullptr, 0, NULL, NULL);
     std::string utf8;
     utf8.resize(utf8Length);
-    _WideCharToMultiByte(encoding, 0, utf16, -1, utf8.data(), utf8Length, NULL, NULL);    
+    _WideCharToMultiByte(encoding, 0, utf16, -1, utf8.data(), utf8Length, NULL, NULL);
+    utf8.resize(utf8Length - 1);
     return utf8;
 }
 
@@ -123,6 +124,7 @@ std::wstring mb_to_utf16(const char* utf8, UINT encoding) {
     std::wstring utf16;
     utf16.resize(utf16Length);
     _MultiByteToWideChar(encoding, 0, utf8, -1, utf16.data(), utf16Length);
+    utf16.resize(utf16Length - 1);
     return utf16;
 }
 
