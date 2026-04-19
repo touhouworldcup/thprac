@@ -492,13 +492,9 @@ static void InitLauncherGame(LauncherState* state, LauncherGame* game, yyjson_va
 }
 
 void LoadGamesJson(LauncherState* state) {
-    yyjson_doc* doc = LoadConfigFile(L"games.json");
-    if (!doc) {
-        return;
-    }
-
-    yyjson_val* root = yyjson_doc_get_root(doc);
+    auto [doc, root] = LoadConfigFile(L"games.json", "games");
     if (!yyjson_is_obj(root)) {
+        yyjson_doc_free(doc);
         return;
     }
 

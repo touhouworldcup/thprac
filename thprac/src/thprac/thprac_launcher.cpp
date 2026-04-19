@@ -469,12 +469,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
 }
 
 void LoadLauncherSettings(LauncherSettings* launcherSettings) {
-    yyjson_doc* doc = LoadConfigFile(L"launcher.json");
-    if (!doc) {
-        return;
-    }
-
-    yyjson_val* root = yyjson_doc_get_root(doc);
+    auto [doc, root] = LoadConfigFile(L"launcher.json", "settings");
 
     size_t idx, max;
     yyjson_val *key, *val;

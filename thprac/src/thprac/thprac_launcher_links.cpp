@@ -24,15 +24,10 @@ void LinksDefault(LinkSet& out) {
 }
 
 void LoadLinksJson(std::vector<LinkSet>& linkSets) {
-    yyjson_doc* doc = LoadConfigFile(L"links.json");
-    if (!doc) {
-        LinksDefault(linkSets.emplace_back());
-        return;
-    }
-
-    yyjson_val* root = yyjson_doc_get_root(doc);
+    auto [doc, root] = LoadConfigFile(L"links.json", "links");
     if (!yyjson_is_obj(root)) {
         LinksDefault(linkSets.emplace_back());
+        yyjson_doc_free(doc);
         return;
     }
 

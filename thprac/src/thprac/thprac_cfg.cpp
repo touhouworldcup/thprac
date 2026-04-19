@@ -4,6 +4,8 @@
 #include "thprac_update.h"
 #include "utils/wininternal.h"
 
+#include <utility>
+
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 namespace THPrac {
@@ -131,16 +133,22 @@ begin:
     }
 }
 
-yyjson_doc* LoadConfigFile(const wchar_t* name) {
+std::pair<yyjson_doc*, yyjson_val*> LoadConfigFile(const wchar_t* fn, const char* legacy_config_fallback) {
     if (!_gConfigDirLen) {
-        return nullptr;
+        return {};
     }
 
     wchar_t path[MAX_PATH + 1] = {};
     memcpy(path, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(path + _gConfigDirLen, name, t_strlen(name) * sizeof(wchar_t));
+    memcpy(path + _gConfigDirLen, fn, t_strlen(fn) * sizeof(wchar_t));
+    if (yyjson_doc* doc = yyjson_read_file_report(path)) {
+        return { doc, yyjson_doc_get_root(doc) };
+    }
 
-    return yyjson_read_file_report(path);
+    memcpy(path + _gConfigDirLen, SIZED(L"thprac.json"));
+    yyjson_doc* doc = yyjson_read_file_report(path);
+
+    return { doc, yyjson_obj_get(yyjson_doc_get_root(doc), legacy_config_fallback) };
 }
 
 void SaveConfigFile(const wchar_t* name, void* buf, size_t len) {
@@ -171,17 +179,8 @@ void SetTheme(int theme) {
 }
 
 bool LoadSettings() {
-    wchar_t settingsPath[MAX_PATH + 1] = {};
-    memcpy(settingsPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(settingsPath + _gConfigDirLen, SIZED(THPRAC_SETTINGS_JSON_NAME));
-
-    yyjson_doc* doc = yyjson_read_file_report(settingsPath);
-    if (!doc) {
-        Gui::LocaleSetFromSysLang();
-        return false;
-    }
-
-    yyjson_val* root = yyjson_doc_get_root(doc);
+    Gui::LocaleSetFromSysLang();
+    auto [doc, root] = LoadConfigFile(L"settings.json", "settings");
 
     // yyjson doesn't use a hashmap, so accessing an object by key loops
     // through the whole object and running a string compare on all keys
@@ -265,7 +264,6 @@ bool LoadSettings() {
     }
 
     yyjson_doc_free(doc);
-
     return true;
 }
 

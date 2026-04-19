@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include <imgui.h>
 #include <yyjson.h>
@@ -238,7 +239,7 @@ struct LauncherState {
     std::wstring updateUrl;
 };
 
-yyjson_doc* LoadConfigFile(const wchar_t* name);
+std::pair<yyjson_doc*, yyjson_val*> LoadConfigFile(const wchar_t* fn, const char* legacy_config_fallback);
 void SaveConfigFile(const wchar_t* name, void* buf, size_t len);
 
 void LoadGamesJson(LauncherState*);
