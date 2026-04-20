@@ -320,10 +320,10 @@ static bool LauncherRunWithThcrap(std::wstring_view dir, std::wstring_view runcf
     memcpy(param + 1, runcfg.data(), runcfg.length() * sizeof(wchar_t));
     
     param[0] = L'"';
-    param[runcfg.length() + 0] = L'"';
-    param[runcfg.length() + 1] = L' ';
+    param[runcfg.length() + 1] = L'"';
+    param[runcfg.length() + 2] = L' ';
 
-    wchar_t* p = param + runcfg.length() + 2;
+    wchar_t* p = param + runcfg.length() + 3;
     auto* game_str = gThGameStrs[game];
 
     // Perfectly safe ASCII to UTF-16 conversion
