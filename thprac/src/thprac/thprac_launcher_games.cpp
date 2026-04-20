@@ -589,7 +589,7 @@ void LaunchCustom(const wchar_t* dir, THGameType type) {
 
 static void DeleteGameInstance(LauncherGame* game, unsigned int inst_idx) {
     LauncherInstance* inst = game->instances + inst_idx;
-    if (game->selected == inst_idx && inst_idx == (game->inst_count + 1)) {
+    if (game->selected == inst_idx && inst_idx == (game->inst_count - 1)) {
         game->selected--;
     }
 
@@ -843,6 +843,9 @@ static bool DetailsPage(LauncherState* state) {
         switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO))) {
         case 0:
             DeleteGameInstance(game, game->selected);
+            if (game->instances == nullptr) {
+                ret = false;
+            }
         case 1:
             ImGui::CloseCurrentPopup();
         }
