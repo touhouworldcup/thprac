@@ -32,9 +32,9 @@ struct ThpracVersion {
 
 // literal macros needed for thprac.rc
 #define THPRAC_VERSION_0 2
-#define THPRAC_VERSION_1 2
-#define THPRAC_VERSION_2 2
-#define THPRAC_VERSION_3 8
+#define THPRAC_VERSION_1 3
+#define THPRAC_VERSION_2 0
+#define THPRAC_VERSION_3 0
 extern const ThpracVersion gVersion;
 #define VER_PARAMS(v) (v).meta, (v).major, (v).minor, (v).patch
 #define VER_PARAMS_CUR VER_PARAMS(gVersion)
