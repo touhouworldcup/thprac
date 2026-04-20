@@ -1001,6 +1001,7 @@ static DWORD WINAPI ScanThread(LPVOID lpParam) {
     
     std::vector<std::wstring> found_exe_names;
     ScanDirectory(scanCtx, scanCtx->scan_dir.c_str(), found_exe_names);
+    scanCtx->exes_count = found_exe_names.size();
     for (const auto& f : found_exe_names) {
         if (scanCtx->abort_message) {
             break;
