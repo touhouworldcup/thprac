@@ -431,29 +431,22 @@ static void InitLauncherGame(LauncherState* state, LauncherGame* game, yyjson_va
 
         const THGameVersion* ver = nullptr;
         uint8_t ver_off = 0xFF;
-        if(yyjson_eval_numeric(yyjson_obj_get(cur, "ver"), &ver_off)); else {
-            log_printf("Warning: instance %s has no version number, reidentifying...\r\n", path);
 
-            state->scanCtx.found_exes.push_back(utf8_to_utf16(path));
-            free((void*)path);
-            continue;
+        if (type != TYPE_THCRAP) {
+            if (!yyjson_eval_numeric(yyjson_obj_get(cur, "ver"), &ver_off)) {
+                state->loadRescanNeeded = true;
+                log_printf("Warning: instance %s has no version number...\r\n", path);
+            }
+            else if ((game->versions + ver_off) >= (game->versions + game->ver_count)) {
+                state->loadRescanNeeded = true;
+                log_printf("Warning: instance %s specifies invalid version number\r\n", path);
+                ver_off = 0xFF;
+            }
+        } else {
+            ver_off = 0;
         }
-        if (game->versions + ver_off >= game->versions + VER_MAX) {
-            log_printf("Warning: instance %s specifies invalid version number\r\n", path);
 
-            state->scanCtx.found_exes.push_back(utf8_to_utf16(path));
-            free((void*)path);
-            continue;
-        }
-        if (ver_off >= game->ver_count) {
-            log_printf("Warning: version offset %d for instance %s too large\r\n", ver_off, path);
-
-            state->scanCtx.found_exes.push_back(utf8_to_utf16(path));
-            free((void*)path);
-            continue;
-        }
         ver = game->versions + ver_off;
-
         bool apply_thprac = false;
         if (ver->initFunc) {
             switch (state->settings.apply_thprac_default) {
@@ -509,7 +502,6 @@ void LoadGamesJson(LauncherState* state) {
         }
     }
     yyjson_doc_free(doc);
-    state->loadRescanNeeded = state->scanCtx.found_exes.size();
 }
 
 void SaveGamesJson() {
@@ -593,6 +585,41 @@ void LaunchCustom(const wchar_t* dir, THGameType type) {
         }
         break;
     }
+}
+
+static void DeleteGameInstance(LauncherGame* game, unsigned int inst_idx) {
+    LauncherInstance* inst = game->instances + inst_idx;
+    if (game->selected == inst_idx && inst_idx == (game->inst_count + 1)) {
+        game->selected--;
+    }
+
+    if (game->inst_count == 1) {
+        DestroyInst(game->instances);
+        free(game->instances);
+        game->instances = 0;
+        game->inst_count = 0;
+    }
+    else if (inst_idx == (game->inst_count - 1)) {
+        DestroyInst(inst);
+        memset(inst, 0, sizeof(*inst));
+        game->inst_count--;
+    }
+    else {
+        LauncherInstance* begin = inst;
+        DestroyInst(begin);
+        size_t elem_to_move = game->instances + game->inst_count - begin - 1;
+        memmove(begin, begin + 1, elem_to_move * sizeof(LauncherInstance));
+        game->inst_count--;
+        game->instances[game->inst_count] = {};
+    }
+}
+
+static unsigned int CountAllInstances() {
+    unsigned int ret = 0;    
+    for (const auto& game : games) {
+        ret += game.inst_count;
+    }
+    return ret;
 }
 
 static bool DetailsPage(LauncherState* state) {
@@ -815,27 +842,7 @@ static bool DetailsPage(LauncherState* state) {
         ImGui::TextUnformatted(S(THPRAC_GAMES_DELETE_CONFIRM));
         switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO))) {
         case 0:
-            if (game->inst_count == 1) {
-                DestroyInst(game->instances);
-                free(game->instances);
-                game->instances = 0;
-                game->inst_count = 0;
-                ret = false;
-            }
-            else if (game->selected == (game->inst_count - 1)) {
-                DestroyInst(inst);
-                memset(inst, 0, sizeof(*inst));
-                game->inst_count--;
-                game->selected--;
-            }
-            else {
-                LauncherInstance* begin = inst;
-                DestroyInst(begin);
-                size_t elem_to_move = game->instances + game->inst_count - begin - 1;
-                memmove(begin, begin + 1, elem_to_move * sizeof(LauncherInstance));
-                game->inst_count--;
-                game->instances[game->inst_count] = {};
-            }
+            DeleteGameInstance(game, game->selected);
         case 1:
             ImGui::CloseCurrentPopup();
         }
@@ -991,11 +998,10 @@ static void ScanDirectory(ScanCtx* scanCtx, const wchar_t* path, std::vector<std
 
 static DWORD WINAPI ScanThread(LPVOID lpParam) {
     ScanCtx* scanCtx = (ScanCtx*)lpParam;
-    if (!scanCtx->found_exes.size()) {
-        ScanDirectory(scanCtx, scanCtx->scan_dir.c_str(), scanCtx->found_exes);
-    }
-
-    for (const auto& f : scanCtx->found_exes) {
+    
+    std::vector<std::wstring> found_exe_names;
+    ScanDirectory(scanCtx, scanCtx->scan_dir.c_str(), found_exe_names);
+    for (const auto& f : found_exe_names) {
         if (scanCtx->abort_message) {
             break;
         }
@@ -1260,7 +1266,7 @@ static bool ScanForGamesUI(ScanCtx* scanCtx, bool apply_thprac) {
         scanCtx->abort_message = true;
         WaitForSingleObject(scanCtx->scan_thread, INFINITE);
         CloseHandle(scanCtx->scan_thread);
-        scanCtx->found_exes.clear();
+        *scanCtx = {};
         return false;
     }
     ImGui::SameLine();
@@ -1310,10 +1316,10 @@ static bool ScanForGamesUI(ScanCtx* scanCtx, bool apply_thprac) {
         Gui::HelpMarker(S(THPRAC_GAMES_SCAN_RELATIVE_DESC));
         break;
     case WAIT_TIMEOUT:
-        if (scanCtx->found_exes.size() == 0) {
+        if (scanCtx->exes_count == 0) {
             Gui::ProgressBar(-1.0f, scanCtx->text_in_progress_bar, scanCtx->text_in_progress_bar + scanCtx->text_in_progress_bar_len);
         } else {
-            Gui::ProgressBar(scanCtx->exes_scanned / (float)(scanCtx->found_exes.size()), scanCtx->text_in_progress_bar, scanCtx->text_in_progress_bar + scanCtx->text_in_progress_bar_len);
+            Gui::ProgressBar(scanCtx->exes_scanned / (float)scanCtx->exes_count, scanCtx->text_in_progress_bar, scanCtx->text_in_progress_bar + scanCtx->text_in_progress_bar_len);
         }
         break;
     case WAIT_OBJECT_0:
@@ -1338,11 +1344,43 @@ static bool ScanForGamesUI(ScanCtx* scanCtx, bool apply_thprac) {
         if (Gui::ButtonRight(S(TH_FINISH))) {
             ScanResults(scanCtx->found, apply_thprac);
             CloseHandle(scanCtx->scan_thread);
-            scanCtx->found_exes.clear();
+            *scanCtx = {};
             return false;
         }
     }
     return true;
+}
+
+static DWORD WINAPI RescanThread(LPVOID lpParam) {
+    ScanCtx* scanCtx = (ScanCtx*)lpParam;
+
+    for (auto& game : games) {
+        for (size_t i = 0; i < game.inst_count; scanCtx->exes_scanned++) {
+            if (game.instances[i].type == TYPE_THCRAP) {
+                i++;
+                continue;
+            }
+
+            scanCtx->text_in_progress_bar_len = strlen(game.instances[i].path);
+            memcpy(scanCtx->text_in_progress_bar, game.instances[i].path, scanCtx->text_in_progress_bar_len);
+
+            wchar_t path_w[MAX_PATH + 1] = {};
+            MultiByteToWideChar(CP_UTF8, 0, game.instances[i].path, -1, path_w, MAX_PATH);
+            
+            THKnownGame knownGame;
+            uint16_t oepCode[10];
+            if (IdentifyKnownGame(knownGame, oepCode, path_w, nullptr)) {
+                game.instances[i].type = knownGame.type;
+                game.instances[i].ver = knownGame.ver - game.versions;
+                i++;
+            }
+            else {
+                DeleteGameInstance(&game, i);
+            }
+        }
+    }
+    *scanCtx = {};
+    return 0;
 }
 
 static void GameRightClickMenu(LauncherState* state, LauncherGame* game) {
@@ -1366,20 +1404,8 @@ static void GameRightClickMenu(LauncherState* state, LauncherGame* game) {
     }
     ImGui::Separator();
     if (ImGui::Selectable(S(THPRAC_GAMES_RESCAN))) {
-        state->scanCtx.found_exes.clear();
-        for (auto& game : games) {
-            if (game.instances) {
-                for (size_t i = 0; i < game.inst_count; i++) {
-                    state->scanCtx.found_exes.push_back(utf8_to_utf16(game.instances[i].path));
-                    DestroyInst(game.instances + i);
-                }
-                free(game.instances);
-                game.instances = nullptr;
-                game.inst_count = 0;
-            }
-        }
-        state->inScan = true;
-        state->scanCtx.scan_thread = CreateThread(nullptr, 0, ScanThread, &state->scanCtx, 0, nullptr);;
+        state->scanCtx.exes_count = CountAllInstances();
+        state->scanCtx.scan_thread = CreateThread(nullptr, 0, RescanThread, &state->scanCtx, 0, nullptr);
         ImGui::CloseCurrentPopup();
     }
 }
@@ -1684,6 +1710,11 @@ void LauncherGamesMain(LauncherState* state) {
         }
         return;
     }
+    if (state->scanCtx.exes_count) {
+        ImGui::SetCursorPosY(ImGui::GetWindowHeight() / 2);
+        Gui::ProgressBar(state->scanCtx.exes_scanned / (float)state->scanCtx.exes_count, state->scanCtx.text_in_progress_bar, state->scanCtx.text_in_progress_bar + state->scanCtx.text_in_progress_bar_len);
+        return;
+    }
     if (state->loadRescanNeeded) {
         state->loadRescanNeeded = false;
         ImGui::OpenPopup("##forced_rescan");
@@ -1714,8 +1745,8 @@ void LauncherGamesMain(LauncherState* state) {
 
         switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO))) {
         case 0:
-            state->inScan = true;
-            state->scanCtx.scan_thread = CreateThread(nullptr, 0, ScanThread, &state->scanCtx, 0, nullptr);
+            state->scanCtx.exes_count = CountAllInstances();
+            state->scanCtx.scan_thread = CreateThread(nullptr, 0, RescanThread, &state->scanCtx, 0, nullptr);
         case 1:
             ImGui::CloseCurrentPopup();
         }

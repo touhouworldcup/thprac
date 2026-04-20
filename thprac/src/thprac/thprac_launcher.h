@@ -132,11 +132,13 @@ struct FoundGame {
 
 struct ScanCtx {
     std::wstring scan_dir;
-    std::vector<std::wstring> found_exes;
     std::vector<FoundGame> found;
+
     HANDLE scan_thread = NULL;
 
+    size_t exes_count = 0;
     size_t exes_scanned = 0;
+
     size_t text_in_progress_bar_len = 0;
     char text_in_progress_bar[MAX_PATH + 1] = {};
 
