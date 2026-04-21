@@ -313,7 +313,7 @@ bool ValidateGroupJSON(yyjson_val* group) {
 }
 
 void PrintGroupSize(std::string& output, vector<string>& value) {
-	sprintf_append(output, "[%d]", value.size());
+	sprintf_append(output, "[%d]", value.size() + 1);
 }
 
 void PrintGroup(std::string& output, vector<string>& value) {
