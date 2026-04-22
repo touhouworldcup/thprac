@@ -53,7 +53,7 @@ enum RUN_GAME_STATUS {
     RUN_GAME_MALICIOUS,
 };
 
-RUN_GAME_STATUS TryRunGame(const wchar_t* exeFn, const wchar_t* cmdLine, uint32_t flags, bool prompt, bool warn_unknown_exe) {
+RUN_GAME_STATUS TryRunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags, bool prompt, bool warn_unknown_exe) {
     size_t exeLen = t_strlen(exeFn);
     if (_wcsnicmp(exeFn + exeLen - 4, L".exe", 4) != 0) {
         return RUN_GAME_FAILURE;
@@ -106,7 +106,7 @@ RUN_GAME_STATUS TryRunGame(const wchar_t* exeFn, const wchar_t* cmdLine, uint32_
         break;
     }
 
-    if (RunGame(exeFn, (wchar_t*)std::wstring(cmdLine).c_str(), flags)) {
+    if (RunGame(exeFn, cmdLine, flags)) {
         return RUN_GAME_SUCCESS;
     }
     else {
