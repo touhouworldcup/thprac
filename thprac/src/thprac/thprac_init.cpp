@@ -115,6 +115,63 @@ RUN_GAME_STATUS TryRunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flag
 }
 }
 
+wchar_t* NextCommandLineParam(wchar_t* cmdline, wchar_t* out) {
+    while (*cmdline == L' ' || *cmdline == L'\t') {
+        ++cmdline;
+    }
+
+    if (*cmdline == L'\0') {
+        return nullptr;
+    }
+
+    wchar_t* dst = out;
+    bool in_quotes = 0;
+
+    while (*cmdline != L'\0') {
+        if (*cmdline == L'\\') {
+            unsigned num_backslashes = 0;
+            while (*cmdline == L'\\') {
+                ++num_backslashes;
+                ++cmdline;
+            }
+
+            if (*cmdline == L'"') {
+                for (unsigned i = 0; i < num_backslashes / 2; ++i) {
+                    *dst++ = L'\\';
+                }
+                if (num_backslashes % 2 == 1) {
+                    *dst++ = L'"';
+                }
+                else {
+                    in_quotes = !in_quotes;
+                }
+                ++cmdline;
+            }
+            else for (unsigned i = 0; i < num_backslashes; ++i) {
+                *dst++ = L'\\';
+            }
+        }
+        else if (*cmdline == L'"') {
+            in_quotes = !in_quotes;
+            ++cmdline;
+        }
+        else if (!in_quotes && (*cmdline == L' ' || *cmdline == L'\t')) {
+            break;
+        }
+        else {
+            *dst++ = *cmdline++;
+        }
+    }
+
+    *dst = L'\0';
+
+    while (*cmdline == L' ' || *cmdline == L'\t') {
+        ++cmdline;
+    }
+
+    return cmdline;
+}
+
 using namespace THPrac;
 int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
     InitConfigDir();
@@ -161,23 +218,20 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         }
     }
 
-    int argc = 0;
-    wchar_t** argv = CommandLineToArgvW(pCmdLine, &argc);
-    defer(LocalFree(argv));
-
     enum CurrentCmd {
         CMD_NONE,
         CMD_ATTACH,
     };
 
-    CurrentCmd curCmd = CMD_NONE;
+    CurrentCmd curCmdId = CMD_NONE;
     uint32_t flags = 0xFFFFFFFF;
 
-    for (int i = 0; i < argc; i++) {
-        if (curCmd == CMD_ATTACH) {
-            curCmd = CMD_NONE;
+    wchar_t curCmdStr[512];
+    for (wchar_t* p = NextCommandLineParam(GetCommandLineW(), curCmdStr); p; p = NextCommandLineParam(p, curCmdStr)) {
+        if (curCmdId == CMD_ATTACH) {
+            curCmdId = CMD_NONE;
 
-            int pid = _wtoi(argv[i]);
+            int pid = _wtoi(curCmdStr);
             if (ApplyToProcById(pid)) {
                 return 0;
             }
@@ -186,24 +240,24 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
                 continue;
             }
         }
-        if (wcscmp(argv[i], L"--attach") == 0) {
-            curCmd = CMD_ATTACH;
+        if (wcscmp(curCmdStr, L"--attach") == 0) {
+            curCmdId = CMD_ATTACH;
             continue;
         }
-        if (wcscmp(argv[i], L"--without-vpatch") == 0) {
+        if (wcscmp(curCmdStr, L"--without-vpatch") == 0) {
             flags &= ~RUN_FLAG_VPATCH;
             continue;
         }
-        if (wcscmp(argv[i], L"--without-oilp") == 0) {
+        if (wcscmp(curCmdStr, L"--without-oilp") == 0) {
             flags &= ~RUN_FLAG_OILP;
             continue;
         }
 
-        if (PathsCompare(argv[i], t_strlen(argv[i]), CurrentPeb()->ProcessParameters->ImagePathName.Buffer, CurrentPeb()->ProcessParameters->ImagePathName.Length / 2)) {
+        if (PathsCompare(curCmdStr, t_strlen(curCmdStr), CurrentPeb()->ProcessParameters->ImagePathName.Buffer, CurrentPeb()->ProcessParameters->ImagePathName.Length / 2)) {
             continue;
         }
 
-        switch (TryRunGame(argv[i], nullptr, flags, false, true)) {
+        switch (TryRunGame(curCmdStr, p, flags, false, true)) {
         case RUN_GAME_SUCCESS:
             return 0;
         case RUN_GAME_MALICIOUS:
@@ -213,7 +267,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         }
     }
 
-    if (curCmd == CMD_ATTACH) {
+    if (curCmdId == CMD_ATTACH) {
         FindAndAttach(false, false);
         return 0;
     }
