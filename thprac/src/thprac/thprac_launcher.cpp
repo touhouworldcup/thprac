@@ -409,12 +409,18 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
             ImGui::Text(S(THPRAC_UPDATE_PROMPT), VER_PARAMS(background_update_check->updateJson.ver));
             switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_UPDATE_AUTO_UPDATE), S(THPRAC_UPDATE_DOWNLOAD_MANUALLY))) {
             case 0:
+            do_the_update:
                 state->updateUrl = utf8_to_utf16(background_update_check->updateJson.url);
                 state->updateDownload.url = state->updateUrl.c_str();
+                state->updateDownload.abort_signal = false;
                 state->hUpdateThread = CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)DownloadFile, &state->updateDownload, 0, nullptr);
                 break;
             case 1:
                 ShellExecuteA(Gui::ImplWin32GetHwnd(), "open", background_update_check->updateJson.url, nullptr, nullptr, SW_SHOW);
+            case -1:
+                if (gSettings.update_without_confirmation && !state->hUpdateThread) {
+                    goto do_the_update;
+                }
             }
             switch (Gui::MultiButtonsFillWindow(0.0f, S(THPRAC_UPDATE_VIEW_CHANGELOG), S(TH_CLOSE))) {
             case 0:
