@@ -436,7 +436,9 @@ bool RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags) {
     }
 
     if (flags & RUN_FLAG_THPRAC) {
-        LoadSelf(pi.hProcess);
+        if (WriteTHPracSig(pi.hProcess, GetProcessModuleBase(pi.hProcess))) {
+            LoadSelf(pi.hProcess);
+        }
     }
 
     ResumeThread(pi.hThread);
