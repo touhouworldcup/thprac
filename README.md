@@ -41,17 +41,20 @@ This video explains how to use the launcher.
 
 ### Command line
 The following command line options are supported:
-- `<path to game exe>` The command `thprac.exe <path to game exe>` will run a game and attach thprac without any confirmation prompt. This makes it possible to drag a Touhou game executable onto thprac.exe and it will run with thprac.
+- `<path to game exe>` The command `thprac.exe <path to game exe>` will run a game and attach thprac without any confirmation prompt. This makes it possible to drag a Touhou game executable onto thprac.exe and it will run with thprac. Note that if you place more command line parameters after `<path to game exe>`, those parameters will be forwarded to the game exe. This is completely useless because ZUN does not use command line parameters.
 - `--attach <pid>` immediately inject thprac into a process with ID `<pid>` without any confirmation prompts.
 - `--attach` (without any other flags). The command `thprac.exe --attach` will attach thprac to the first Touhou game process it finds without opening any kind of confirmation prompt.
 - `--without-vpatch` Prevent automatically applying vpatch.
+- - `--without-vpatch` Prevent automatically applying OpenInputLagPatch.
+
+Small note about the last two flags: if neither of them are specified, but both vpatch and OpenInputLagPatch are present, OpenInputLagPatch will take priority.
 
 Example commands:
 ```
 thprac.exe --attach 1234
 thprac.exe --attach
 thprac.exe C:\Users\Name\Desktop\Games\Touhou\th17\th17.exe
-thprac.exe --without-vpatch C:\Users\Name\Desktop\Games\Touhou\th17\th17.exe
+thprac.exe --without-vpatch C:\Users\Name\Desktop\Games\Touhou\th12\th12.exe
 ```
 
 ## <a name="compatability"></a> **Compatability**
