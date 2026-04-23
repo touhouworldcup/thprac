@@ -1541,9 +1541,9 @@ namespace TH12 {
 
         ImGui::TextColored(red, "%d", ufo[0]) NEXT;
         ImGui::TextUnformatted("/") NEXT;
-        ImGui::TextColored(green, "%d", ufo[2]) NEXT;
+        ImGui::TextColored(green, "%d", ufo[1]) NEXT;
         ImGui::TextUnformatted("/") NEXT;
-        ImGui::TextColored(blue, "%d", ufo[1]) NEXT;
+        ImGui::TextColored(blue, "%d", ufo[2]) NEXT;
 
         ImGui::TextUnformatted(")");
 
@@ -1648,7 +1648,11 @@ namespace TH12 {
     EHOOK_DY(th12_ufo_item, 0x4270b0, 3, { 
         uint32_t type = pCtx->Eax;
         GameState_Assert(type < 3);
-        tracker_info.th12.ufos_collected[type]++;
+        if (type) {
+            tracker_info.th12.ufos_collected[3 - type]++;
+        } else {
+            tracker_info.th12.ufos_collected[0]++;
+        }
     })
     EHOOK_DY(th12_ufo_item2, 0x427411, 6, {
         uint32_t type = pCtx->Eax;
