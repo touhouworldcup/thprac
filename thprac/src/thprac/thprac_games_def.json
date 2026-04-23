@@ -813,7 +813,7 @@
       "TH_REPFIX_NEED_THPRAC_DESC": [
         "修复后的replay还需要thprac才能正常回放；没有它时将保持与之前相同的行为。\n使用thprac录制的replay无需修复。",
         "Fixed replay also requires thprac to play back properly; will behave the same as before without it.\nReplays recorded with thprac applied do not need to be fixed.",
-        "この機能で修復されたリプレイはthpracを適用した状態で再生してください。適用していない場合、修復前と同じ動作になります。"
+        "この機能で修復されたリプレイはthpracを適用した状態で再生してください。適用していない場合、修復前と同じ動作になります。\nthpracを適用して保存したリプレイは修正不要です。"
       ],
       "TH_REPFIX_NO_THPRAC": [ "（原版）", "(vanilla)", "(vanilla)" ],
       "TH_REPFIX_NO_THPRAC_DESC": [
