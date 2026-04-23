@@ -356,7 +356,7 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
             background_update_check->hThread = NULL;
         }
     }
-    ImGui::SetNextWindowSize({ 355.0f, 128.0f });
+    ImGui::SetNextWindowSize({ 355.0f * g_Scale, 128.0f * g_Scale });
     if (Gui::Modal(S(THPRAC_UPDATE_MODAL))) {
         if (state->hUpdateThread) {
             ImGui::TextUnformatted(S(THPRAC_UPDATE_DOWNLOADING));
