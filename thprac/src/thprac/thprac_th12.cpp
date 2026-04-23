@@ -1639,7 +1639,11 @@ namespace TH12 {
     EHOOK_DY(th12_ufo_spawn, 0x44A909, 7, {
         uint32_t type = pCtx->Eax;
         GameState_Assert(type < 4);
-        tracker_info.th12.ufos_summoned[type]++;
+        if (type == 1 || type == 2) {
+            tracker_info.th12.ufos_summoned[3 - type]++;
+        } else {
+            tracker_info.th12.ufos_summoned[type]++;
+        }
     })
     EHOOK_DY(th12_ufo_item, 0x4270b0, 3, { 
         uint32_t type = pCtx->Eax;
