@@ -291,15 +291,18 @@ __forceinline void GetJsonArrayImpl(yyjson_val* yy_arr, T* arr, size_t len) {
     }
 }
 
-inline void AddJsonVersionImpl(yyjson_mut_doc* doc, yyjson_mut_val* param) {
-    char ver_str[64] = {};
-    snprintf(ver_str, 63, "%d.%d.%d.%d", VER_PARAMS_CUR);
-    yyjson_mut_obj_add_str(doc, param, "version", ver_str);
+__forceinline yyjson_doc* ParseJsonImpl(char* data, size_t len) {
+    yyjson_read_err err = {};
+    yyjson_doc* doc = yyjson_read_opts(data, len, YYJSON_READ_STOP_WHEN_DONE, nullptr, &err);
+    if (!doc) {
+        log_mboxf(NULL, MB_ICONERROR, "JSON Error", "Failed to load replay JSON, error %d\r\n%s\r\nThis replay will not play correctly");
+    }
+    return doc;
 }
 
 // doc and param must end up in the function's scope, so the "do {...} while(0)" trick can't be used
 #define ParseJson() this->Reset(); \
-    yyjson_doc* doc = yyjson_read(json.data(), json.size(), YYJSON_READ_STOP_WHEN_DONE); \
+    yyjson_doc* doc = ParseJsonImpl(json.data(), json.size()); \
     if (!doc) return false; \
     defer(yyjson_doc_free(doc)); \
     yyjson_val* param = yyjson_doc_get_root(doc); \
@@ -310,12 +313,24 @@ inline void AddJsonVersionImpl(yyjson_mut_doc* doc, yyjson_mut_val* param) {
     yyjson_mut_val* param = yyjson_mut_obj(doc); \
     yyjson_mut_doc_set_root(doc, param);
 
-#define ReturnJson() \
-    std::string out; yyjson_alc out_alc = { yyjson_string_alc_alloc, yyjson_string_alc_realloc, yyjson_string_alc_free, &out }; \
-    yyjson_mut_write_opts(doc, YYJSON_WRITE_NOFLAG, &out_alc, nullptr, nullptr); \
-    yyjson_mut_doc_free(doc); \
-    return out;
+__forceinline std::string ReturnJsonImpl(yyjson_mut_doc* doc) {
+    std::string out; yyjson_alc out_alc = { yyjson_string_alc_alloc, yyjson_string_alc_realloc, yyjson_string_alc_free, &out };
 
+    yyjson_write_err err = {};
+    size_t real_size = 0;
+    yyjson_mut_write_opts(doc, YYJSON_WRITE_NOFLAG, &out_alc, &real_size, &err);
+    if (!err.code) {
+        out.resize(real_size);
+    } else {
+        log_mboxf(NULL, MB_ICONERROR, "JSON Write Error", "Error %d\r\n%s\r\n\r\nThis replay will not play correctly", err.code, err.msg);
+        out = "";
+    }
+
+    yyjson_mut_doc_free(doc);
+    return out;
+}
+
+#define ReturnJson() return ReturnJsonImpl(doc)
 #define GetJsonVersion() ParseVersion(yyjson_get_str(yyjson_obj_get(param, "version")))
 
 #define ForceJsonValue(value_name, comparator) \
@@ -359,7 +374,12 @@ inline void AddJsonVersionImpl(yyjson_mut_doc* doc, yyjson_mut_val* param) {
 		yyjson_mut_val* yy_vector = yyjson_mut_arr_add_arr(doc, yy_array); \
 		for (auto& el : vector) __VA_ARGS__ } } while(0)
 
-#define AddJsonVersion() AddJsonVersionImpl(doc, param)
+// Code is inlined to ensure that `ver_str` stays in scope. yyjson_mut_obj_add_str adds a **reference** to your string, 
+// so you must ensure it lives long enough for the yyjson_mut_write_opts call to work
+#define AddJsonVersion() \
+    char ver_str[64] = {}; \
+    snprintf(ver_str, 63, "%d.%d.%d.%d", VER_PARAMS_CUR); \
+    yyjson_mut_obj_add_str(doc, param, "version", ver_str); \
 
 #pragma endregion
 
