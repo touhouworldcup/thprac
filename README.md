@@ -45,7 +45,7 @@ The following command line options are supported:
 - `--attach <pid>` immediately inject thprac into a process with ID `<pid>` without any confirmation prompts.
 - `--attach` (without any other flags). The command `thprac.exe --attach` will attach thprac to the first Touhou game process it finds without opening any kind of confirmation prompt.
 - `--without-vpatch` Prevent automatically applying vpatch.
-- - `--without-vpatch` Prevent automatically applying OpenInputLagPatch.
+- `--without-oilp` Prevent automatically applying OpenInputLagPatch.
 
 Small note about the last two flags: if neither of them are specified, but both vpatch and OpenInputLagPatch are present, OpenInputLagPatch will take priority.
 
