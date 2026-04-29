@@ -362,11 +362,10 @@ static bool LauncherRunGame(LauncherState* state, THGameID game, LauncherInstanc
     SaveSettings();
 
     switch (state->settings.after_launch) {
+    case LAUNCH_CLOSE:
+        state->closeAfterLaunch = true;
     case LAUNCH_MINIMIZE:
         ShowWindow(Gui::ImplWin32GetHwnd(), SW_MINIMIZE);
-        break;
-    case LAUNCH_CLOSE:
-        SendMessageW(Gui::ImplWin32GetHwnd(), WM_CLOSE, 0, 0);
         break;
     case LAUNCH_NOTHING:
         break;
@@ -815,6 +814,7 @@ static bool DetailsPage(LauncherState* state) {
     if (state->reflectiveLaunchID == game->id) {
         if (LargeBottomButton(S(THPRAC_GAMES_LAUNCH_ABORT_WAIT), 64.0f)) {
             state->reflectiveLaunchID = ID_UNKNOWN;
+            state->closeAfterLaunch = false;
         }
     } else {
         if (LargeBottomButton(S(THPRAC_GAMES_LAUNCH_GAME), 64.0f)) {
@@ -1730,6 +1730,7 @@ void LauncherGamesMain(LauncherState* state) {
             switch (Gui::MultiButtonsFillWindow(0.0f, S(TH_YES), S(TH_NO))) {
             case 0:
                 state->reflectiveLaunchID = ID_UNKNOWN;
+                state->closeAfterLaunch = false;
             case 1:
                 ImGui::CloseCurrentPopup();
             }

@@ -187,6 +187,7 @@ struct LauncherState {
     bool g_IsUITextureIDValid = false;
     bool g_IsOverTitleBarButton = false;
     bool goToGamesPage = false;
+    bool closeAfterLaunch = false;
 
     void (*toolFunc)(LauncherState*) = nullptr;
 

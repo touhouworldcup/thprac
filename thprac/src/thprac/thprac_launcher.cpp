@@ -332,6 +332,9 @@ void UiUpdate(HWND hwnd, LauncherState* state) {
     if (state->reflectiveLaunchID && FindAndAttach(false, false, state->reflectiveLaunchID)) {
         state->reflectiveLaunchID = ID_UNKNOWN;
     }
+    if (state->reflectiveLaunchID == ID_UNKNOWN && state->closeAfterLaunch) {
+        PostQuitMessage(0);
+    }
 
     ImGui::EndChild();
 
