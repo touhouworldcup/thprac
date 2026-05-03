@@ -615,6 +615,7 @@ namespace TH18 {
             case TH18_ST6_BOSS1:
             case TH18_ST7_END_NS1:
             case TH18_ST7_MID1:
+            case TH18_ST6_MID1:
                 return true;
             default:
                 return false;
@@ -2994,11 +2995,18 @@ namespace TH18 {
 
         case THPrac::TH18::TH18_ST6_MID1:
             ECLStdExec(ecl, st6PostMaple, 1, 1);
-            ECLJump(ecl, 0, 0x8318, 60); // 0x8318, 0x835c, 0x83dc
-            ecl.SetFile(3);
-            ecl << pair{0x324, (int16_t)100};
-            ecl.SetPos(0x3ac);
-            ecl << 0 << 0x002401ff << 0x01ff0000 << 0 << 14000;
+            if (thPracParam.dlg) {
+                ECLJump(ecl, 0, 0x82F0, 60);
+            }
+            else
+            {
+                ECLJump(ecl, 0, 0x8318, 60); // 0x8318, 0x835c, 0x83dc
+                ecl.SetFile(3);
+                ecl << pair { 0x324, (int16_t)100 };
+                ecl << pair { 0x28C, (int32_t)1320 - 374 + 104 };
+                ecl.SetPos(0x3ac);
+                ecl << 0 << 0x002401ff << 0x01ff0000 << 0 << 14000;
+            }
             break;
         case THPrac::TH18::TH18_ST6_BOSS1:
             ECLStdExec(ecl, st6PostMaple, 2, 1);

@@ -121,7 +121,7 @@ namespace TH11 {
                 AddJsonValue(phase);
             if (dlg)
                 AddJsonValue(dlg);
-            if (section == TH11_ST4_RA2 && phase!=0) {
+            if ((section == TH11_ST4_RA2 || section == TH11_ST4_RA_BOSS5) && phase != 0) {
                 AddJsonValue(boss_x);
                 AddJsonValue(boss_y);
             }
@@ -209,7 +209,7 @@ namespace TH11 {
                 thPracParam.value = *mValue;
                 thPracParam.score = *mScore;
                 thPracParam.marisa_b_formation = *mMarisaBFormation;
-                if (thPracParam.section == TH11_ST4_RA2 && *mPhase!=0)
+                if ((thPracParam.section == TH11_ST4_RA2 || thPracParam.section == TH11_ST4_RA_BOSS5) && *mPhase != 0)
                 {
                     thPracParam.boss_x = *mBossX;
                     thPracParam.boss_y = *mBossY;
@@ -264,7 +264,7 @@ namespace TH11 {
                 return TH_SPELL_PHASE2;
             } else if (section == 10000 + 5 * 100 + 4) {
                 return TH_PHASE_INF_MODE;
-            } else if (section == TH11_ST4_RA2){
+            } else if ((section == TH11_ST4_RA2 || section == TH11_ST4_RA_BOSS5)) {
                 return TH11_SPELL_STARTSET;
             } else if (section == TH11_ST5_MID3) {
                 return TH11_WAVE2_START;
@@ -300,7 +300,7 @@ namespace TH11 {
                     SectionWidget();
                     mPhase(TH_PHASE, SpellPhase());
                     auto section = CalcSection();
-                    if (section == TH11_ST4_RA2 && *mPhase!=0){
+                    if ((section == TH11_ST4_RA2 || section == TH11_ST4_RA_BOSS5) && *mPhase != 0) {
                         mBossX();
                         mBossY();
                     }

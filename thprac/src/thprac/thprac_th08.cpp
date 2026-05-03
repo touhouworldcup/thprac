@@ -9,6 +9,7 @@ namespace TH08 {
     int g_gamefence = 0;
     bool g_show_bullet_hitbox=false;
     int g_lock_timer = 0;
+    bool g_autobomb_trigger = false;
 
      enum ADDRS {
         SHOTTYPE_ADDR = 0x164d0b1,
@@ -682,9 +683,22 @@ namespace TH08 {
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
-        PATCH_HK(0x44CC18, "ff89"),
-        PATCH_HK(0x44CC21, "66C70528D5640102"),
-        PATCH_HK(0x44C85D, "30")
+        //PATCH_HK(0x44CC18, "ff89"),
+        //PATCH_HK(0x44CC21, "66C70528D5640102"),
+        //PATCH_HK(0x44C85D, "30")
+        EHOOK_HK(0x44CC21, 3, {
+            if (pCtx->Edx != 0)
+                g_autobomb_trigger = true;
+            else
+                g_autobomb_trigger = false;
+        }),
+        EHOOK_HK(0x44C861, 3, {
+            if (((pCtx->Edx & 2) == 0) && !g_autobomb_trigger)
+                pCtx->Eip = 0x44CB87;
+            else
+                pCtx->Eip = 0x44C86C;
+            g_autobomb_trigger = false;
+        })
         HOTKEY_ENDDEF();
 
     public:

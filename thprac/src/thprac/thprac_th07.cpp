@@ -27,6 +27,7 @@ namespace TH07 {
 
     bool g_show_bullet_hitbox = false;
     int g_lock_timer = 0;
+    bool g_autobomb_trigger = false;
 
     struct THPracParam {
         int32_t mode;
@@ -563,9 +564,22 @@ namespace TH07 {
 
         
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
-        PATCH_HK(0x440D2C, "ff"),
-        PATCH_HK(0x440D35, "66C7054C9E4B0002"),
-        PATCH_HK(0x440B8E, "54")
+        // PATCH_HK(0x440D2C, "ff"),
+        // PATCH_HK(0x440D35, "66C7054C9E4B0002"),
+        // PATCH_HK(0x440B8E, "54"),
+        EHOOK_HK(0x440D35, 3, {
+            if (pCtx->Ecx != 0)
+                g_autobomb_trigger = true;
+            else
+                g_autobomb_trigger = false;
+        }),
+        EHOOK_HK(0x440B92, 3, { 
+             if (((pCtx->Ecx & 2) == 0) && !g_autobomb_trigger)
+                pCtx->Eip = 0x440CD7;
+             else
+                pCtx->Eip = 0x440B9D;
+             g_autobomb_trigger = false;
+        })
         HOTKEY_ENDDEF();
 
     public:
