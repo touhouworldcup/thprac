@@ -265,7 +265,7 @@ namespace TH11 {
                 char buf[32];
 
                 if (isMarisaA) {
-                    sprintf(buf, "%.2f", *mPower / 12.0f);
+                    FormatNumberFixedPoint(*mPower * 100 / 12, 2, buf);
                 } else {
                     FormatNumberFixedPoint(*mPower * 5, 2, buf);
                 }
