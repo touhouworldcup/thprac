@@ -886,7 +886,7 @@
       "TH_TRACKER_STONE_SUMMONED": [ "异变敌生成", "Δ Appeared", "召喚した異変敵" ],
       "TH_TRACKER_STONE_KILLED": [ "异变敌击破", "Δ Killed", "撃破した異変敵" ],
       "TH_TRACKER_HYPER": [ "Hyper", "Hyper", "異変攻撃" ],
-      "TH_TRACKER_HYPER_BREAK": [ "爆Hyper", "Hyper Break", "異変攻撃中の被弾" ],
+      "TH_TRACKER_HYPER_BREAK": [ "爆Hyper", "Hyper Break", "霊撃" ],
       "TH_TRACKER_STONE_LEVEL": [ "异变石等级", "Stone Lv.", "異変敵レベル" ],
       "TH_TRACKER_EASY": [ "Easy", "Easy", "イージー" ],
       "TH_TRACKER_NORMAL": [ "Normal", "Normal", "ノーマル" ],
