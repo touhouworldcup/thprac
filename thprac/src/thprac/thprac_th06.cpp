@@ -1293,7 +1293,7 @@ namespace TH06 {
         {
             SetTitle("igi");
             SetFade(0.9f, 0.9f);
-            SetSizeRel(180.0f / 640.0f, 0.0f);
+            SetSizeRel(190.0f / 640.0f, 0.0f);
             SetPosRel(433.0f / 640.0f, 245.0f / 480.0f);
             SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
@@ -1363,6 +1363,13 @@ namespace TH06 {
             ImGui::Text(diff_pl.c_str());
 
             ImGui::Columns(2);
+            if (mGreyInBombCount || mGreyCount){
+                int sz = ImGui::CalcTextSize(std::format(" {} / {}  ",mGreyInBombCount,mGreyCount).c_str()).x;
+                if (ImGui::GetColumnWidth(1) < sz) {
+                    ImGui::SetColumnWidth(0, ImGui::GetWindowContentRegionWidth() - sz);
+                    ImGui::SetColumnWidth(1, sz);
+                }
+            }
             ImGui::Text(S(THPRAC_INGAMEINFO_MISS_COUNT));
             ImGui::NextColumn();
             ImGui::Text("%8d", mMissCount);
@@ -1376,7 +1383,7 @@ namespace TH06 {
                 ImGui::NextColumn();
                 ImGui::Text(S(THPRAC_INGAMEINFO_TH06_POINT));
                 ImGui::NextColumn();
-                ImGui::TextColored(ImVec4(1, 1, 1, 1), "%6d / ", mGreyInBombCount);
+                ImGui::TextColored(ImVec4(1, 1, 1, 1), "%5d / ", mGreyInBombCount);
                 ImGui::SameLine(0.0f, 0.0f);
                 ImGui::TextColored(ImVec4(1, 1, 0.5, 1), "%d", mGreyCount);
             }
@@ -1385,7 +1392,7 @@ namespace TH06 {
                 ImGui::NextColumn();
                 ImGui::Text(S(THPRAC_INGAMEINFO_TH06_RANK));
                 ImGui::NextColumn();
-                ImGui::Text("%8d.%02d", *(int32_t*)(0x69d710), *(int32_t*)(0x69d71C));
+                ImGui::Text("%6d.%02d", *(int32_t*)(0x69d710), *(int32_t*)(0x69d71C));
             }
 
             ImGui::Columns(1);
@@ -1418,7 +1425,7 @@ namespace TH06 {
             }
             if (*THOverlay::singleton().mShowSpellCapture && ((GAME_MANAGER->isInGame || GAME_MANAGER->isInGameMenu || GAME_MANAGER->isInRetryMenu))) {
                 SetPosRel(433.0f / 640.0f, 245.0f / 480.0f);
-                SetSizeRel(180.0f / 640.0f, 0.0f);
+                SetSizeRel(190.0f / 640.0f, 0.0f);
                 Open();
             } else {
                 Close();

@@ -630,7 +630,7 @@ namespace TH10 {
                 ImGui::NextColumn();
                 ImGui::Text(S(THPRAC_INGAMEINFO_TH10_POINT));
                 ImGui::NextColumn();
-                ImGui::TextColored(ImVec4(1, 1, 1, 1), "%6d / ", mWhiteCount);
+                ImGui::TextColored(ImVec4(1, 1, 1, 1), "%5d / ", mWhiteCount);
                 ImGui::SameLine(0.0f, 0.0f);
                 ImGui::TextColored(ImVec4(1, 1, 0.5, 1), "%d", mYellowCount);
             }
