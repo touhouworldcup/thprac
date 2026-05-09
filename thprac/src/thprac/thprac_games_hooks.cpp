@@ -1360,6 +1360,11 @@ HRESULT STDMETHODCALLTYPE GetDeviceState_Changed(LPDIRECTINPUTDEVICE8 thiz, DWOR
         ((BYTE*)state)[DIK_LSHIFT] = 0x0;
         ((BYTE*)state)[DIK_RSHIFT] = 0x0;
     }
+    if (g_input_opt.force_shiftkey)
+    {
+        ((BYTE*)state)[DIK_LSHIFT] = 0x80;
+        ((BYTE*)state)[DIK_RSHIFT] = 0x80;
+    }
     if (g_input_opt.disable_zkey) {
         ((BYTE*)state)[DIK_Z] = 0x0;
     }
@@ -1521,6 +1526,9 @@ LB_FINAL:
     }
     if (g_input_opt.disable_shiftkey) {
         keyBoardState[VK_LSHIFT] = keyBoardState[VK_LSHIFT] = keyBoardState[VK_SHIFT] = 0x0;
+    }
+    if (g_input_opt.force_shiftkey) {
+        keyBoardState[VK_LSHIFT] = keyBoardState[VK_LSHIFT] = keyBoardState[VK_SHIFT] = 0x80;
     }
     if (g_input_opt.disable_zkey) {
         keyBoardState['Z'] = 0x0;

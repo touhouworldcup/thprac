@@ -581,7 +581,8 @@ namespace TH10 {
     public:
         int32_t mMissCount;
         int32_t mBombCount;
-
+        int32_t mWhiteCount;
+        int32_t mYellowCount;
     protected:
         virtual void OnLocaleChange() override
         {
@@ -623,6 +624,16 @@ namespace TH10 {
             ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
             ImGui::NextColumn();
             ImGui::Text("%8d", mBombCount);
+
+            if (g_adv_igi_options.th10_show_point_item)
+            {
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH10_POINT));
+                ImGui::NextColumn();
+                ImGui::TextColored(ImVec4(1, 1, 1, 1), "%6d / ", mWhiteCount);
+                ImGui::SameLine(0.0f, 0.0f);
+                ImGui::TextColored(ImVec4(1, 1, 0.5, 1), "%d", mYellowCount);
+            }
         }
 
         virtual void OnPreUpdate() override
@@ -706,6 +717,14 @@ namespace TH10 {
             + *(DWORD*)(0x47783C) + 17276 * (*(DWORD*)(0x474C68) + *(DWORD*)(0x474C6C) + 2 * *(DWORD*)(0x474C68)) + 1576);
         master_disable_render_capture(capture_tot, capture_cur,thiz);
     });
+    EHOOK_ST(th10_white, 0x41B4D5, 6,
+        {
+            TH10InGameInfo::singleton().mWhiteCount++;
+        });
+    EHOOK_ST(th10_yellow, 0x41B4BD, 5,
+        {
+            TH10InGameInfo::singleton().mYellowCount++;
+        });
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
         SINGLETON(THAdvOptWnd)
@@ -783,6 +802,10 @@ namespace TH10 {
             GameplayInit();
             MasterDisableInit();
             th10_bossmovedown.Setup();
+            th10_yellow.Setup();
+            th10_white.Setup();
+            th10_yellow.Toggle(g_adv_igi_options.th10_show_point_item);
+            th10_white.Toggle(g_adv_igi_options.th10_show_point_item);
         }
 
     public:
@@ -970,6 +993,13 @@ namespace TH10 {
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));
                 ImGui::Checkbox(S(TH_ENABLE_LOCK_TIMER), &g_adv_igi_options.enable_lock_timer_autoly);
+
+                if (ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH10_SHOW_POINT), &g_adv_igi_options.th10_show_point_item)) {
+                    th10_yellow.Toggle(g_adv_igi_options.th10_show_point_item);
+                    th10_white.Toggle(g_adv_igi_options.th10_show_point_item);
+                    TH10InGameInfo::singleton().mWhiteCount = 0;
+                    TH10InGameInfo::singleton().mYellowCount = 0;
+                }
 
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
@@ -2893,6 +2923,8 @@ namespace TH10 {
     {
         TH10InGameInfo::singleton().mBombCount = 0;
         TH10InGameInfo::singleton().mMissCount = 0;
+        TH10InGameInfo::singleton().mWhiteCount = 0;
+        TH10InGameInfo::singleton().mYellowCount = 0;
     })
     EHOOK_DY(th10_bomb_dec, 0x4259CF,5, // bomb dec
     {

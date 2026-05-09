@@ -1302,6 +1302,8 @@ namespace TH06 {
 
     public:
         int32_t mMissCount;
+        int32_t mGreyCount;
+        int32_t mGreyInBombCount;
         struct BooksInfo {
             bool is_books;
             int32_t time_books;
@@ -1318,6 +1320,8 @@ namespace TH06 {
             booksInfo.is_died = false;
             booksInfo.miss_count = 0;
             booksInfo.bomb_count = 0;
+            mGreyInBombCount = 0;
+            mGreyCount = 0;
         }
 
     protected:
@@ -1366,6 +1370,16 @@ namespace TH06 {
             ImGui::Text(S(THPRAC_INGAMEINFO_BOMB_COUNT));
             ImGui::NextColumn();
             ImGui::Text("%8d", mBombCount);
+
+            if (g_adv_igi_options.th06_show_grey_item)
+            {
+                ImGui::NextColumn();
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH06_POINT));
+                ImGui::NextColumn();
+                ImGui::TextColored(ImVec4(1, 1, 1, 1), "%6d / ", mGreyInBombCount);
+                ImGui::SameLine(0.0f, 0.0f);
+                ImGui::TextColored(ImVec4(1, 1, 0.5, 1), "%d", mGreyCount);
+            }
 
             if (g_adv_igi_options.th06_showRank) {
                 ImGui::NextColumn();
@@ -1439,7 +1453,13 @@ namespace TH06 {
             pCtx->Edx = 0x00000000;
         })
     HOOKSET_ENDDEF()
-
+    EHOOK_ST(th06_grey, 0x420059, 6,
+    {
+        if (*(DWORD*)(0x6D1BF0))
+            TH06InGameInfo::singleton().mGreyInBombCount++;
+        else
+            TH06InGameInfo::singleton().mGreyCount++;
+    });
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
         SINGLETON(THAdvOptWnd)
@@ -1512,6 +1532,8 @@ namespace TH06 {
                 th06_rankdown_disable[i].Toggle(g_adv_igi_options.th06_disable_drop_rank);
             th06_bossmovedown.Setup();
             th06_bossmovedown.Toggle(false);
+            th06_grey.Setup();
+            th06_grey.Toggle(g_adv_igi_options.th06_show_grey_item);
             GameplayInit();
         }
 
@@ -1740,6 +1762,12 @@ namespace TH06 {
                 g_adv_igi_options.th06_seed = std::clamp(g_adv_igi_options.th06_seed, 0, 65535);
             }
             ImGui::Text("%s: %d",S(THPRAC_TH06_REP_RAND_SEED),g_last_rep_seed);
+
+            if (ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_POINT), &g_adv_igi_options.th06_show_grey_item)) {
+                th06_grey.Toggle(g_adv_igi_options.th06_show_grey_item);
+                TH06InGameInfo::singleton().mGreyInBombCount = 0;
+                TH06InGameInfo::singleton().mGreyCount = 0;
+            }
 
             if (ImGui::Checkbox(S(THPRAC_TH06_BACKGROUND_FIX), &g_adv_igi_options.th06_bg_fix))
             {

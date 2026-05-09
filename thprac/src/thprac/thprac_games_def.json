@@ -1373,6 +1373,10 @@
 	  "THPRAC_TH06_REP_RAND_SEED": [ "当前打开rep的初始种子", "rand seed for current rep", "rand seed for current rep" ],
 	  
 	  "THPRAC_TH06_RANKLOCK_DOWN": [ "红魔乡自动miss/bomb后不掉rank", "EoSD no rank drop after miss/bomb", "EoSD no rank drop after miss/bomb" ],
+	  
+	  "THPRAC_INGAMEINFO_TH06_POINT":["灰点","Grey Item","Grey Item"],
+	  "THPRAC_INGAMEINFO_TH06_SHOW_POINT":["红魔乡显示灰点","EoSD Show grey item","EoSD Show grey item"],
+	  
 	  "THPRAC_INFLIVES_MAP": [ "将锁残修改为不疮", "map inf.lives to no continue", "map inf.lives to no continue" ],
       "THPRAC_DISABLE_MASTER_AUTO": [ "自动禁用MASTER", "automatically disable master", "automatically disable master" ],
       "THPRAC_ENABLE_LOCK_TIMER_AUTO": [ "自动启用锁时计时", "automatically enable lock timer", "automatically enable lock timer" ],
@@ -1387,6 +1391,9 @@
 	  "THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC":["自定义判定: 将判定点图片hitbox.png放入红魔乡游戏所在文件夹","custom hitbox: put hitbox.png file in EoSD .exe folder","custom hitbox: put hitbox.png file in EoSD .exe folder"],
 	  "THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_RELOAD":["重载","reload","reload"],
 	  "THPRAC_INGAMEINFO_TH06_RANK":["rank","rank","rank"],
+	  
+	  "THPRAC_INGAMEINFO_TH10_POINT":["蓝点","Point","Point"],
+	  "THPRAC_INGAMEINFO_TH10_SHOW_POINT":["风神录显示蓝点","MoF Show white/yellow point item","MoF show white/yellow point item"],
 	  
 	  "THPRAC_INGAMEINFO_TH11_SHOW_HINT":["显示hint","show hint","show hint"],
 	  "THPRAC_INGAMEINFO_TH11_SHOW_HINT2":["地灵殿显示hint","SA show hint","SA show hint"],
@@ -1411,6 +1418,7 @@
 	  "THPRAC_INGAMEINFO_TH14_BONUS_NORMAL":["普通收点","normal bonus","normal bonus"],
 	  "THPRAC_INGAMEINFO_TH14_BONUS_20":["2.0收点","2.0 bonus","2.0 bonus"],
 	  "THPRAC_INGAMEINFO_TH14_BONUS_TOTAL":["总奖励","total bonus","total bonus"],
+	  "THPRAC_INGAMEINFO_TH14_EXTEND_COUNT":["残数","extend count","extend count"],
 	  "THPRAC_INGAMEINFO_TH14_BONUS_NEXT":["下一奖励","next bonus","next bonus"],
 	  "THPRAC_INGAMEINFO_TH14_BONUS_LIFE":["残","L","L"],
 	  "THPRAC_INGAMEINFO_TH14_BONUS_BOMB":["雷","B","B"],
@@ -1917,6 +1925,7 @@
       "TH_ADV_DISABLE_C_KEY_SAMETIME": [ "禁用X同时禁用C键", "disable C key at the same time when disable X", "disable C key at the same time when disable X" ],
       "TH_ADV_DISABLE_Z_KEY": [ "禁用Z键", "disable Z key", "disable Z key" ],
       "TH_ADV_DISABLE_SHIFT_KEY": [ "禁用Shift键", "disable shift key", "disable shift key" ],
+	  "TH_ADV_FORCE_SHIFT_KEY": [ "始终按住Shift键", "force press shift key", "force press shift key" ],
 
       "TH_ADV_DISABLE_X_KEY_DESC": [ "给打nb的人准备(快捷键 shift+D)", "for who want to play nb neta(hotkey shift+D)", "for who want to play nb neta(hotkey shift+D)" ],
       "TH_ADV_DISABLE_Z_KEY_DESC": [ "真假...(快捷键 shift+S)", "really?(hotkey shift+S)", "really?(hotkey shift+S)" ],

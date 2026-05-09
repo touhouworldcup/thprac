@@ -36,9 +36,11 @@ namespace THPrac {
         bool th06_show_hitbox = false;
         bool th06_showRepMarker = false;
         bool th06_autoname = false;
+        bool th06_show_grey_item = false;
         char th06_autoname_name[12] = {0};
         bool th07_save_score_always = false;
         bool th08_forceLS = false;
+        bool th10_show_point_item = false;
         bool th11_showHint = false;
         bool th13_showHits = false;
         bool th13_showHitBar = false;

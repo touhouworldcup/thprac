@@ -747,6 +747,12 @@ namespace TH14 {
                 ImGui::Text("%8d", *(DWORD*)(0x4F5894));
                 ImGui::NextColumn();
 
+                ImGui::Text(S(THPRAC_INGAMEINFO_TH14_EXTEND_COUNT));
+                ImGui::NextColumn();
+                ImGui::TextColored((*(DWORD*)(0x4F586C) >= 49) ? ImVec4(0.5f, 0.5f, 0.5f, 1.0f) : ImVec4(1.0f, 1.0f, 1.0f, 1.0f)
+                                 , "%8d", *(DWORD*)(0x4F586C));
+                ImGui::NextColumn();
+
                 ImGui::Text(S(THPRAC_INGAMEINFO_TH14_BONUS_NEXT));
                 ImGui::NextColumn();
                 const ImVec4 color_life = { 0.4f, 0.2f, 0.2f, 1.0f };

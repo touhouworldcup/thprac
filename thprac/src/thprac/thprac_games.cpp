@@ -361,6 +361,8 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         LauncherSettingGet("auto_th06_show_rank", g_adv_igi_options.th06_showRank);
         LauncherSettingGet("auto_th06_disable_rank_drop", g_adv_igi_options.th06_disable_drop_rank);
         LauncherSettingGet("auto_th06_show_hitbox", g_adv_igi_options.th06_show_hitbox);
+        LauncherSettingGet("auto_th06_show_grey", g_adv_igi_options.th06_show_grey_item);
+        LauncherSettingGet("auto_th10_show_point", g_adv_igi_options.th10_show_point_item);
         LauncherSettingGet("auto_th11_show_hint", g_adv_igi_options.th11_showHint);
         LauncherSettingGet("auto_th13_show_hits", g_adv_igi_options.th13_showHits);
         LauncherSettingGet("auto_th13_show_hitbar", g_adv_igi_options.th13_showHitBar);
@@ -1005,9 +1007,10 @@ void DisableKeyOpt()
         ImGui::Checkbox(S(TH_ADV_DISABLE_Z_KEY), &g_input_opt.disable_zkey);
         ImGui::SameLine();
         HelpMarker(S(TH_ADV_DISABLE_Z_KEY_DESC));
-        ImGui::SameLine();
+        
         ImGui::Checkbox(S(TH_ADV_DISABLE_C_KEY_SAMETIME), &g_input_opt.disable_Ckey_at_same_time);
-
+        ImGui::SameLine();
+        ImGui::Checkbox(S(TH_ADV_FORCE_SHIFT_KEY), &g_input_opt.force_shiftkey);
         static bool test_opt = false;
         ImGui::SameLine();
         ImGui::Checkbox("Hook Opt.(test)", &test_opt);
@@ -1062,6 +1065,7 @@ void DisableKeyOpt()
                 }
             }
         }
+        ImGui::Separator();
         double cur_latency;
         if (GetLatency(&cur_latency))
         {

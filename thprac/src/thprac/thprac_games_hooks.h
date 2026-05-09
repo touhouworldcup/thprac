@@ -34,6 +34,7 @@ namespace THPrac {
     bool disable_xkey = false;
     bool disable_Ckey_at_same_time = true;
     bool disable_shiftkey = false;
+    bool force_shiftkey = false;
     bool disable_zkey = false;
     bool disable_f10_11_13 = false;
     bool disable_locale_change_hotkey = true;
