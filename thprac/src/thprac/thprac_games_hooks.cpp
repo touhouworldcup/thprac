@@ -1471,6 +1471,8 @@ BOOL WINAPI GetKeyboardState_Changed(PBYTE keyBoardState)
                 keyBoardState[VK_CONTROL] = 0x80;
             if ((keyboardState[DIK_LMENU] & 0x80) || (keyboardState[DIK_RMENU] & 0x80))
                 keyBoardState[VK_MENU] = 0x80;
+            if ((keyboardState[DIK_RETURN] & 0x80) || (keyboardState[DIK_NUMPADENTER] & 0x80))
+                keyBoardState[VK_RETURN] = 0x80;
             return TRUE;
         }
     }

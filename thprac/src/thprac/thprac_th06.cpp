@@ -46,6 +46,12 @@ namespace TH06 {
 
     int g_lock_timer = 0;
 
+    struct TH06BossIndicator{
+        int totLife;
+        int curLife;
+        int lifeThreshold;
+    } g_boss_indicator;
+
     bool THBGMTest();
     using std::pair;
 
@@ -1468,6 +1474,38 @@ namespace TH06 {
             TH06InGameInfo::singleton().mGreyCount++;
     });
 
+    
+    EHOOK_ST(th06_set_boss_lifebar, 0x412D2B, 5,
+        {
+            g_boss_indicator.curLife = *(int*)(pCtx->Edx + 0xCE4);
+            g_boss_indicator.totLife= *(int*)(pCtx->Edx + 0xCE8);
+            g_boss_indicator.lifeThreshold = *(int*)(pCtx->Edx + 0xEA8);
+    });
+
+     EHOOK_ST(th06_render_life_threshold, 0x419D7B, 6,
+        {
+            if (g_boss_indicator.totLife > 0) {
+                int panmvm = *(DWORD*)(pCtx->Ebp-0x10);
+                float cur_life = 0; 
+                if (g_boss_indicator.lifeThreshold>0){
+                    cur_life = std::min(g_boss_indicator.curLife, g_boss_indicator.lifeThreshold);
+                }else{
+                    cur_life = g_boss_indicator.curLife;
+                }
+                float bar_ratio = cur_life / (float)g_boss_indicator.totLife;
+
+                
+                DWORD thiz = *(DWORD*)(pCtx->Ebp - 0x1E0);
+                float bar_ratio1 = *(float*)(thiz + 0x28);
+
+                bar_ratio = std::min(bar_ratio, bar_ratio1);
+                *(float*)(panmvm + 0x1C) = bar_ratio * 288.0 / 14.0; // X scale
+                *(DWORD*)(panmvm + 0x7C) = 0xFFFFAAAA; // color
+                asm_call<0x432AD0, Thiscall>(*(DWORD*)(0x6D4588), panmvm);
+                *(DWORD*)(panmvm + 0x7C) = 0xFFFFFFFF; // color
+            }
+     });
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
         SINGLETON(THAdvOptWnd)
         // Option Related Functions
@@ -1541,6 +1579,10 @@ namespace TH06 {
             th06_bossmovedown.Toggle(false);
             th06_grey.Setup();
             th06_grey.Toggle(g_adv_igi_options.th06_show_grey_item);
+            th06_set_boss_lifebar.Setup();
+            th06_render_life_threshold.Setup();
+            th06_set_boss_lifebar.Toggle(g_adv_igi_options.th06_showBossLifeThreshold);
+            th06_render_life_threshold.Toggle(g_adv_igi_options.th06_showBossLifeThreshold);
             GameplayInit();
         }
 
@@ -1775,6 +1817,14 @@ namespace TH06 {
                 TH06InGameInfo::singleton().mGreyInBombCount = 0;
                 TH06InGameInfo::singleton().mGreyCount = 0;
             }
+
+            ImGui::SameLine();
+            if (ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH06_SHOW_THRESHOLD), &g_adv_igi_options.th06_showBossLifeThreshold)) {
+                th06_set_boss_lifebar.Toggle(g_adv_igi_options.th06_showBossLifeThreshold);
+                th06_render_life_threshold.Toggle(g_adv_igi_options.th06_showBossLifeThreshold);
+            }
+            ImGui::SameLine();
+            HelpMarker(S(THPRAC_INGAMEINFO_TH06_SHOW_THRESHOLD_DESC));
 
             if (ImGui::Checkbox(S(THPRAC_TH06_BACKGROUND_FIX), &g_adv_igi_options.th06_bg_fix))
             {

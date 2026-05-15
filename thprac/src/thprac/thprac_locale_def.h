@@ -1087,6 +1087,8 @@ enum th_glossary_t {
     THPRAC_INGAMEINFO_TH06_SHOW_POINT,
     THPRAC_INGAMEINFO_TH06_SHOW_RANK,
     THPRAC_INGAMEINFO_TH06_SHOW_RANK2,
+    THPRAC_INGAMEINFO_TH06_SHOW_THRESHOLD,
+    THPRAC_INGAMEINFO_TH06_SHOW_THRESHOLD_DESC,
     THPRAC_INGAMEINFO_TH10_POINT,
     THPRAC_INGAMEINFO_TH10_SHOW_POINT,
     THPRAC_INGAMEINFO_TH11_SHOW_HINT,
@@ -1861,7 +1863,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1850];
+extern const char* th_glossary_str[3][1852];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3636,7 +3638,7 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3575];
+extern const wchar_t __thprac_loc_range_zh[3579];
 
 extern const wchar_t __thprac_loc_range_en[67];
 

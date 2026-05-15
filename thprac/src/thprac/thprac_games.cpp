@@ -362,6 +362,7 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
         LauncherSettingGet("auto_th06_disable_rank_drop", g_adv_igi_options.th06_disable_drop_rank);
         LauncherSettingGet("auto_th06_show_hitbox", g_adv_igi_options.th06_show_hitbox);
         LauncherSettingGet("auto_th06_show_grey", g_adv_igi_options.th06_show_grey_item);
+        LauncherSettingGet("auto_th06_show_threshold", g_adv_igi_options.th06_showBossLifeThreshold);
         LauncherSettingGet("auto_th10_show_point", g_adv_igi_options.th10_show_point_item);
         LauncherSettingGet("auto_th11_show_hint", g_adv_igi_options.th11_showHint);
         LauncherSettingGet("auto_th13_show_hits", g_adv_igi_options.th13_showHits);

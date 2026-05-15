@@ -1376,6 +1376,8 @@
 	  
 	  "THPRAC_INGAMEINFO_TH06_POINT":["灰点","Grey Item","Grey Item"],
 	  "THPRAC_INGAMEINFO_TH06_SHOW_POINT":["红魔乡显示灰点","EoSD Show grey item","EoSD Show grey item"],
+	  "THPRAC_INGAMEINFO_TH06_SHOW_THRESHOLD":["红魔乡显示阶段血量阈值","Grey Item","Grey Item"],
+	  "THPRAC_INGAMEINFO_TH06_SHOW_THRESHOLD_DESC":["尽管有人觉得是作弊，但是显示这个阈值理论上和将鼠标移动到对应位置或画一根线是等价的...所以我保留了让它在实战中起作用的设定","Though some might consider it cheating, displaying this threshold is theoretically equivalent to moving the mouse to the corresponding position or drawing a line on the screen... so I kept the setting that makes it work in normal play.","Though some might consider it cheating, displaying this threshold is theoretically equivalent to moving the mouse to the corresponding position or drawing a line on the screen... so I kept the setting that makes it work in normal play."],
 	  
 	  "THPRAC_INFLIVES_MAP": [ "将锁残修改为不疮", "map inf.lives to no continue", "map inf.lives to no continue" ],
       "THPRAC_DISABLE_MASTER_AUTO": [ "自动禁用MASTER", "automatically disable master", "automatically disable master" ],

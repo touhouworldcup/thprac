@@ -33,6 +33,7 @@ namespace THPrac {
         bool th06_pauseBGM = false;
         bool th06_disable_drop_rank = false;
         bool th06_showRank = false;
+        bool th06_showBossLifeThreshold = false;
         bool th06_show_hitbox = false;
         bool th06_showRepMarker = false;
         bool th06_autoname = false;

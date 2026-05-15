@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1850] {
+const char* th_glossary_str[3][1852] {
     {
         "",
         "啤酒",
@@ -1087,6 +1087,8 @@ const char* th_glossary_str[3][1850] {
         "红魔乡显示灰点",
         "显示rank",
         "红魔乡显示rank",
+        "红魔乡显示阶段血量阈值",
+        "尽管有人觉得是作弊，但是显示这个阈值理论上和将鼠标移动到对应位置或画一根线是等价的...所以我保留了让它在实战中起作用的设定",
         "蓝点",
         "风神录显示蓝点",
         "显示hint",
@@ -2939,6 +2941,8 @@ const char* th_glossary_str[3][1850] {
         "EoSD Show grey item",
         "show rank",
         "EoSD show rank",
+        "Grey Item",
+        "Though some might consider it cheating, displaying this threshold is theoretically equivalent to moving the mouse to the corresponding position or drawing a line on the screen... so I kept the setting that makes it work in normal play.",
         "Point",
         "MoF Show white/yellow point item",
         "show hint",
@@ -4791,6 +4795,8 @@ const char* th_glossary_str[3][1850] {
         "EoSD Show grey item",
         "show rank",
         "EoSD show rank",
+        "Grey Item",
+        "Though some might consider it cheating, displaying this threshold is theoretically equivalent to moving the mouse to the corresponding position or drawing a line on the screen... so I kept the setting that makes it work in normal play.",
         "Point",
         "MoF show white/yellow point item",
         "show hint",
@@ -28409,7 +28415,7 @@ namespace TH20 {
 
 }
 
-const wchar_t __thprac_loc_range_zh[3575] {
+const wchar_t __thprac_loc_range_zh[3579] {
     0x0020, 0x00FF,
     0x394, 0x394,
     0x2014, 0x2014,
@@ -28505,6 +28511,7 @@ const wchar_t __thprac_loc_range_zh[3575] {
     0x4eec, 0x4eec,
     0x4ef0, 0x4ef0,
     0x4ef6, 0x4ef6,
+    0x4ef7, 0x4ef7,
     0x4efb, 0x4efb,
     0x4efd, 0x4efd,
     0x4f0a, 0x4f0a,
@@ -30059,6 +30066,7 @@ const wchar_t __thprac_loc_range_zh[3575] {
     0x95ee, 0x95ee,
     0x95f4, 0x95f4,
     0x95fb, 0x95fb,
+    0x9608, 0x9608,
     0x961f, 0x961f,
     0x9631, 0x9631,
     0x9632, 0x9632,

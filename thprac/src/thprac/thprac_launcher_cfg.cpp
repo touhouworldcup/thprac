@@ -2465,6 +2465,7 @@ private:
             mCfgEnableTH06_DisableRankDrop_autoly.Gui(S(THPRAC_TH06_RANKLOCK_DOWN));
             mCfgEnableTH06_ShowHitbox_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX2), S(THPRAC_INGAMEINFO_TH06_SHOW_HITBOX_DESC));
             mCfgEnableTH06_ShowGrey_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_POINT));
+            mCfgEnableTH06_ShowThreshold_autoly.Gui(S(THPRAC_INGAMEINFO_TH06_SHOW_THRESHOLD), S(THPRAC_INGAMEINFO_TH06_SHOW_THRESHOLD_DESC));
             mCfgEnableTH06_FixSeed_autoly.Gui(S(THPRAC_TH06_FIX_RAND_SEED));
             ImGui::SameLine();
             ImGui::SetNextItemWidth(180.0f);
@@ -2714,6 +2715,7 @@ private:
     THCfgCheckbox mCfgEnableTH06_BgFix_autoly { "auto_th06_bg_fix", false };
     THCfgCheckbox mCfgEnableTH06_FixSeed_autoly { "auto_th06_fix_seed", false };
     THCfgCheckbox mCfgEnableTH06_ShowGrey_autoly { "auto_th06_show_grey", false };
+    THCfgCheckbox mCfgEnableTH06_ShowThreshold_autoly { "auto_th06_show_threshold", false };
     THCfgInt      mCfgTH06_Seed { "th06_seed", 0, 0, 65535 };
     THCfgCheckbox mCfgTH06_RepMarker { "auto_th06_rep_marker",true };
     THCfgCheckbox mCfgEnableTH06_ShowHitbox_autoly { "auto_th06_show_hitbox", false };
