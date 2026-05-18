@@ -9951,7 +9951,8 @@
 
           "TH19_BARRIER": [ "盾", "Barrier", "バリア" ],
           "TH19_RANK_FORMAT": [ "Rank: %d", "Rank: %d", "ランク: %d" ],
-          "TH19_SHOW_ENEMY_HP": [ "显示敌人HP", "Show Enemy HP", "敵のHPを表示する" ]
+          "TH19_SHOW_ENEMY_HP": [ "显示敌人HP", "Show Enemy HP", "敵のHPを表示する" ],
+          "TH19_ADDITIONAL_CARDS": [ "额外卡牌", "Additional Cards", "追加カード" ]
       }
   },
   "th20": {
