@@ -154,42 +154,45 @@
       "THPRAC_TOOLS_RND_TURNTO_PLAYER": [ "转至随机机体", "Turn to random shot type", "機体のランダム選択へ移動", "무작위 샷 타입으로 이동" ],
       "THPRAC_TOOLS_RND_TURNTO_GAME": [ "转至游戏页面", "Turn to game page", "ゲームページへ移動", "게임 페이지로 이동" ],
 
-      "THPRAC_LINKS_RESET": [ "重置默认", "Reset default", "デフォルトにリセット" ],
-      "THPRAC_LINKS_EXPAND_ALL": [ "展开全部", "Expand all", "全て展開する" ],
-      "THPRAC_LINKS_COLLAPSE_ALL": [ "收起全部", "Collapse all", "全て折りたたむ" ],
-      "THPRAC_LINKS_ADD": [ "添加链接", "Add link", "リンクを追加" ],
-      "THPRAC_LINKS_ADD_MODAL": [ "添加链接##modal", "Add link##modal", "リンクを追加##modal" ],
-      "THPRAC_LINKS_EDIT": [ "编辑链接", "Edit link", "リンクを編集" ],
-      "THPRAC_LINKS_EDIT_MODAL": [ "编辑链接##modal", "Edit link##modal", "リンクを編集##modal" ],
-      "THPRAC_LINKS_EDIT_NAME": [ "名称：", "Name:", "名前：" ],
-      "THPRAC_LINKS_EDIT_LINK": [ "链接：", "Link:", "リンク：" ],
-      "THPRAC_LINKS_EDIT_FILE": [ "选择文件", "Select file", "ファイルを選択" ],
-      "THPRAC_LINKS_EDIT_FOLDER": [ "选择文件夹", "Select folder", "フォルダーを選択" ],
-      "THPRAC_LINKS_DELETE": [ "删除链接", "Delete link", "リンクを削除" ],
-      "THPRAC_LINKS_DELETE_MODAL": [ "删除链接##modal", "Delete link##modal", "リンクを削除##modal" ],
-      "THPRAC_LINKS_FILTER_ADD": [ "添加筛选器", "Add filter", "フィルタを追加" ],
-      "THPRAC_LINKS_FILTER_ADD_MODAL": [ "添加筛选器##modal", "Add filter##modal", "フィルタを追加##modal" ],
-      "THPRAC_LINKS_FILTER_DEL": [ "删除筛选器", "Delete filter", "フィルタを削除" ],
-      "THPRAC_LINKS_FILTER_DEL_MODAL": [ "删除筛选器##modal", "Delete filter##modal", "フィルタを削除##modal" ],
-      "THPRAC_LINKS_ERR_EXEC_MODAL": [ "错误##err_link_exec", "Error##err_link_exec", "エラー##err_link_exec" ],
-      "THPRAC_LINKS_EDIT_ERR_NAME": [ "你必须键入一个名称。", "You must enter a name.", "名前を入力する必要があります。" ],
-      "THPRAC_LINKS_EDIT_ERR_LINK": [ "你必须键入/选择一个链接。", "You must enter/select a link.", "リンクを入力/選択する必要があります。" ],
-      "THPRAC_LINKS_EDIT_ERR_REPEATED": [ "你无法使用重复的名称。", "Repeated names are not allowed.", "重複した名前は使えません。" ],
+      "THPRAC_LINKS_RESET": [ "重置默认", "Reset default", "デフォルトにリセット", "기본값으로 재설정" ],
+      "THPRAC_LINKS_EXPAND_ALL": [ "展开全部", "Expand all", "全て展開する", "모두 펼치기" ],
+      "THPRAC_LINKS_COLLAPSE_ALL": [ "收起全部", "Collapse all", "全て折りたたむ", "모두 접기" ],
+      "THPRAC_LINKS_ADD": [ "添加链接", "Add link", "リンクを追加", "링크 추가" ],
+      "THPRAC_LINKS_ADD_MODAL": [ "添加链接##modal", "Add link##modal", "リンクを追加##modal", "링크 추가##modal" ],
+      "THPRAC_LINKS_EDIT": [ "编辑链接", "Edit link", "リンクを編集", "링크 편집" ],
+      "THPRAC_LINKS_EDIT_MODAL": [ "编辑链接##modal", "Edit link##modal", "リンクを編集##modal", "링크 편집##modal" ],
+      "THPRAC_LINKS_EDIT_NAME": [ "名称：", "Name:", "名前：", "이름:" ],
+      "THPRAC_LINKS_EDIT_LINK": [ "链接：", "Link:", "リンク：", "링크:" ],
+      "THPRAC_LINKS_EDIT_FILE": [ "选择文件", "Select file", "ファイルを選択", "파일 선택" ],
+      "THPRAC_LINKS_EDIT_FOLDER": [ "选择文件夹", "Select folder", "フォルダーを選択", "폴더 선택" ],
+      "THPRAC_LINKS_DELETE": [ "删除链接", "Delete link", "リンクを削除", "링크 삭제" ],
+      "THPRAC_LINKS_DELETE_MODAL": [ "删除链接##modal", "Delete link##modal", "リンクを削除##modal", "링크 삭제##modal" ],
+      "THPRAC_LINKS_FILTER_ADD": [ "添加筛选器", "Add filter", "フィルタを追加", "필터 추가" ],
+      "THPRAC_LINKS_FILTER_ADD_MODAL": [ "添加筛选器##modal", "Add filter##modal", "フィルタを追加##modal", "필터 추가##modal" ],
+      "THPRAC_LINKS_FILTER_DEL": [ "删除筛选器", "Delete filter", "フィルタを削除", "필터 삭제" ],
+      "THPRAC_LINKS_FILTER_DEL_MODAL": [ "删除筛选器##modal", "Delete filter##modal", "フィルタを削除##modal", "필터 삭제##modal" ],
+      "THPRAC_LINKS_ERR_EXEC_MODAL": [ "错误##err_link_exec", "Error##err_link_exec", "エラー##err_link_exec", "오류##err_link_exec" ],
+      "THPRAC_LINKS_EDIT_ERR_NAME": [ "你必须键入一个名称。", "You must enter a name.", "名前を入力する必要があります。", "이름을 입력해야 합니다." ],
+      "THPRAC_LINKS_EDIT_ERR_LINK": [ "你必须键入/选择一个链接。", "You must enter/select a link.", "リンクを入力/選択する必要があります。", "링크를 입력/선택해야 합니다." ],
+      "THPRAC_LINKS_EDIT_ERR_REPEATED": [ "你无法使用重复的名称。", "Repeated names are not allowed.", "重複した名前は使えません。", "반복된 이름은 허용되지 않습니다." ],
 
       "THPRAC_LINKS_DELETE_WARNING": [
         "删除这个链接？",
         "Delete this link?",
-        "このリンクを削除しますか？"
+        "このリンクを削除しますか？",
+        "이 링크를 삭제하시겠습니까?"
       ],
       "THPRAC_LINKS_FILTER_DELETE_WARNING": [
         "删除这个筛选器？\n其中的所有链接都将丢失！",
         "Delete this link?\nAll links in it will be lost!",
-        "このフィルタを削除しますか？\nこの中のすべてのリンクは失われます！"
+        "このフィルタを削除しますか？\nこの中のすべてのリンクは失われます！",
+        "이 필터를 삭제하시겠습니까?\n이 안의 모든 링크가 사라집니다!"
       ],
       "THPRAC_LINKS_ERR_EXEC": [
         "打开链接时发生错误。\n请确认该链接是否有效。",
         "Error opening link.\nPlease confirm that the link is valid.",
-        "リンクを開くときにエラーが発生しました。\nこのリンクが有効か確認してください。"
+        "リンクを開くときにエラーが発生しました。\nこのリンクが有効か確認してください。",
+        "링크를 여는 중 오류가 발생했습니다.\n이 링크가 유효한지 확인해주세요."
       ],
 
       "THPRAC_LAUNCHER_TAB_GAMES": [ "游戏###games", "Games###games", "ゲーム###games", "게임###games" ],
@@ -198,247 +201,281 @@
       "THPRAC_LAUNCHER_TAB_CONFG": [ "设置###config", "Settings###config", "設定###config", "설정###config" ],
 
       "THPRAC_GAMES": [ "游戏", "Games", "ゲーム" ],
-      "THPRAC_GAMES_MAIN_SERIES": [ "整数作", "Main Series", "整数作" ],
-      "THPRAC_GAMES_SPINOFF_STG": [ "小数点作（STG）", "Spinoff (Shmup)", "小数点作（STG）" ],
-      "THPRAC_GAMES_SPINOFF_OTHERS": [ "小数点作（其他）", "Spinoff (Others)", "小数点作（その他）" ],
-      "THPRAC_GAMES_SCAN_FOLDER": [ "扫描游戏", "Scan for games", "ゲームを探す" ],
-      "THPRAC_SCAN_NOTHING_FOUND": [ "未找到游戏", "No games found", "ゲームが見つかりませんでした" ],
-      "THPRAC_GAMES_SELECT_ORIGINAL": [ "选择原版游戏", "Select Original", "オリジナルを選択する" ],
-      "THPRAC_GAMES_SELECT_MODDED": [ "选择修改版游戏", "Select Modded", "MOD適用済ゲームを選択する" ],
-      "THPRAC_GAMES_SELECT_STEAM": [ "选择Steam版游戏", "Select Steam", "Steam版を選択する" ],
-      "THPRAC_GAMES_SCAN_RELATIVE": [ "使用相对路径", "Use relative paths", "相対パスを使用する" ],
+      "THPRAC_GAMES_MAIN_SERIES": [ "整数作", "Main Series", "整数作", "정규작" ],
+      "THPRAC_GAMES_SPINOFF_STG": [ "小数点作（STG）", "Spinoff (Shmup)", "小数点作（STG）", "외전작 (슈팅)" ],
+      "THPRAC_GAMES_SPINOFF_OTHERS": [ "小数点作（其他）", "Spinoff (Others)", "小数点作（その他）", "외전작 (기타)" ],
+      "THPRAC_GAMES_SCAN_FOLDER": [ "扫描游戏", "Scan for games", "ゲームを探す", "게임 검색" ],
+      "THPRAC_SCAN_NOTHING_FOUND": [ "未找到游戏", "No games found", "ゲームが見つかりませんでした", "게임을 찾을 수 없었습니다" ],
+      "THPRAC_GAMES_SELECT_ORIGINAL": [ "选择原版游戏", "Select Original", "オリジナルを選択する", "원본 게임 선택" ],
+      "THPRAC_GAMES_SELECT_MODDED": [ "选择修改版游戏", "Select Modded", "MOD適用済ゲームを選択する", "모드판 게임 선택" ],
+      "THPRAC_GAMES_SELECT_STEAM": [ "选择Steam版游戏", "Select Steam", "Steam版を選択する", "Steam판 게임 선택" ],
+      "THPRAC_GAMES_SCAN_RELATIVE": [ "使用相对路径", "Use relative paths", "相対パスを使用する", "상대 경로 사용" ],
       "THPRAC_GAMES_SCAN_RELATIVE_DESC": [
         "将游戏路径以相对于thprac的路径形式存储",
         "Store paths to games as paths relative to where thprac is located",
-        "ゲームの保存場所をthpracから見た相対パスで保存します"
+        "ゲームの保存場所をthpracから見た相対パスで保存します",
+        "게임의 저장 위치를 thprac이 위치한 곳에서 본 상대 경로로 저장합니다"
       ],
-      "THPRAC_SCAN_SCAN_RESULT_C1": [ "游戏（类型）", "Game (Type)", "ゲーム（種類）" ],
-      "THPRAC_SCAN_SCAN_RESULT_C2": [ "路径", "Path", "ファイルの場所" ],
-      "THPRAC_GAMES_RESCAN": [ "重新扫描", "Rescan", "再スキャン" ],
-      "THPRAC_STEAM_MNG_BUTTON": [ "Steam游戏...", "Steam games...", "Steamゲーム..." ],
-      "THPRAC_EXISTING_GAME_CONFIRMATION_TITLE": [ "操作确认", "Action confirmation", "アクションの確認 " ],
+      "THPRAC_SCAN_SCAN_RESULT_C1": [ "游戏（类型）", "Game (Type)", "ゲーム（種類）", "게임 (종류)" ],
+      "THPRAC_SCAN_SCAN_RESULT_C2": [ "路径", "Path", "ファイルの場所", "경로" ],
+      "THPRAC_GAMES_RESCAN": [ "重新扫描", "Rescan", "再スキャン", "다시 스캔" ],
+      "THPRAC_STEAM_MNG_BUTTON": [ "Steam游戏...", "Steam games...", "Steamゲーム...", "Steam 게임..." ],
+      "THPRAC_EXISTING_GAME_CONFIRMATION_TITLE": [ "操作确认", "Action confirmation", "アクションの確認 ", "작업 확인" ],
       "THPRAC_EXISTING_GAME_CONFIRMATION": [
         "当前目录下已找到游戏: %s。\n按\"是\"启动游戏。\n按\"否\"打开启动器。",
         "An existing game was found: %s.\nClick \"Yes\" to launch the game.\nClick \"No\" to open the launcher.",
-        "既存のゲームが見つかりました: %s。\n「はい」をクリックしてゲームを起動します。\n「いいえ」をクリックしてランチャーを開きます。"
+        "既存のゲームが見つかりました: %s。\n「はい」をクリックしてゲームを起動します。\n「いいえ」をクリックしてランチャーを開きます。",
+        "기존 게임이 발견되었습니다: %s.\n\"예\"를 클릭하면 게임을 시작합니다.\n\"아니오\"를 클릭하면 런처를 엽니다."
       ],
-      "THPRAC_GAMES_DETAILS_PAGE": [ "详情页面", "Details page", "詳細ページ" ],
-      "THPRAC_GAMES_SELECT_VER": [ "选择游戏：", "Select game:", "ゲームを選択：" ],
-      "THPRAC_GAMES_RENAME": [ "重命名", "Rename", "名前を変更" ],
-      "THPRAC_GAMES_RENAME_MODAL": [ "重命名##modal", "Rename##modal", "名前を変更##modal" ],
-      "THPRAC_GAMES_DELETE": [ "删除", "Delete", "削除" ],
-      "THPRAC_GAMES_DELETE_MODAL": [ "删除##modal", "Delete##modal", "削除##modal" ],
-      "THPRAC_GAMES_DELETE_CONFIRM": [ "删除这个游戏？", "Delete this game?", "このゲームを削除しますか？" ],
-      "THPRAC_GAMES_OPEN_FOLDER": [ "打开文件夹", "Open folder", "フォルダを開く" ],
-      "THPRAC_GAMES_OPEN_APPDATA": [ "打开游戏数据文件夹", "Open game data folder", "ゲームデータフォルダを開く" ],
-      "THPRAC_GAMES_LAUNCH_CUSTOM": [ "启动custom.exe", "Launch custom.exe", "custom.exeを起動します" ],
-      "THPRAC_GAMES_USE_VPATCH": [ "使用VsyncPatch（如果可用）", "Use VsyncPatch (if avaliable)", "VsyncPatch を使用する (利用可能な場合)" ],
-      "THPRAC_GAMES_USE_OILP": [ "使用OpenInputLagPatch（如果可用）", "Use OpenInputLagPatch (if avaliable)", "OpenInputLagPatch を使用する (利用可能な場合)" ],
+      "THPRAC_GAMES_DETAILS_PAGE": [ "详情页面", "Details page", "詳細ページ", "세부 정보 페이지" ],
+      "THPRAC_GAMES_SELECT_VER": [ "选择游戏：", "Select game:", "ゲームを選択：", "게임 선택:" ],
+      "THPRAC_GAMES_RENAME": [ "重命名", "Rename", "名前を変更", "이름 바꾸기" ],
+      "THPRAC_GAMES_RENAME_MODAL": [ "重命名##modal", "Rename##modal", "名前を変更##modal", "이름 바꾸기##modal" ],
+      "THPRAC_GAMES_DELETE": [ "删除", "Delete", "削除", "삭제" ],
+      "THPRAC_GAMES_DELETE_MODAL": [ "删除##modal", "Delete##modal", "削除##modal", "삭제##modal" ],
+      "THPRAC_GAMES_DELETE_CONFIRM": [ "删除这个游戏？", "Delete this game?", "このゲームを削除しますか？", "이 게임을 삭제하시겠습니까?" ],
+      "THPRAC_GAMES_OPEN_FOLDER": [ "打开文件夹", "Open folder", "フォルダを開く", "폴더 열기" ],
+      "THPRAC_GAMES_OPEN_APPDATA": [ "打开游戏数据文件夹", "Open game data folder", "ゲームデータフォルダを開く", "게임 데이터 폴더 열기" ],
+      "THPRAC_GAMES_LAUNCH_CUSTOM": [ "启动custom.exe", "Launch custom.exe", "custom.exeを起動します", "custom.exe 실행" ],
+      "THPRAC_GAMES_USE_VPATCH": [ "使用VsyncPatch（如果可用）", "Use VsyncPatch (if avaliable)", "VsyncPatch を使用する (利用可能な場合)", "VsyncPatch 사용 (사용 가능한 경우)" ],
+      "THPRAC_GAMES_USE_OILP": [ "使用OpenInputLagPatch（如果可用）", "Use OpenInputLagPatch (if avaliable)", "OpenInputLagPatch を使用する (利用可能な場合)", "OpenInputLagPatch 사용 (사용 가능한 경우)" ],
       "THPRAC_GAMES_VPATCH_OILP_PRIORITY": [
         "如果同时打开两个选项，启动器会优先调用OpenInputLagPatch",
         "If both boxes are ticked and both Vpatch and OpenInputLagPatch are present, OpenInputLagPatch takes priority",
-        "もし両方ともチェックが入っていて、かつOpenInputLagPatchもVsyncPatchも利用可能な場合、OpenInputLagPatchが優先されます"
+        "もし両方ともチェックが入っていて、かつOpenInputLagPatchもVsyncPatchも利用可能な場合、OpenInputLagPatchが優先されます",
+        "두 옵션이 모두 선택되고 Vpatch와 OpenInputLagPatch가 모두 있는 경우, OpenInputLagPatch가 우선됩니다"
       ],
-      "THPRAC_GAMES_APPLY_THPRAC": [ "应用thprac", "Apply thprac", "thpracを適用する" ],
-      "THPRAC_GAMES_DEFAULT_LAUNCH": [ "默认启动此游戏", "Start this game by default", "デフォルトでこのゲームを開始します" ],
+      "THPRAC_GAMES_APPLY_THPRAC": [ "应用thprac", "Apply thprac", "thpracを適用する", "thprac 적용" ],
+      "THPRAC_GAMES_DEFAULT_LAUNCH": [ "默认启动此游戏", "Start this game by default", "デフォルトでこのゲームを開始します", "이 게임을 기본적으로 시작" ],
       "THPRAC_GAMES_DEFAULT_LAUNCH_DESC": [
         "设置后，在“游戏”选项卡中点击对应的游戏标题将直接启动该游戏。（右键游戏标题以进入详情页面）",
         "When set, click the corresponding game title in the \"Games\" tab will start this game directly. (right click the game title to enter the details page)",
-        "設定したら、「ゲーム」タブで対応するゲームタイトルをクリックすると、このゲームが直接開始されます。 （ゲームタイトルを右クリックして詳細ページに入ります）"
+        "設定したら、「ゲーム」タブで対応するゲームタイトルをクリックすると、このゲームが直接開始されます。 （ゲームタイトルを右クリックして詳細ページに入ります）",
+        "설정했을 경우, \"게임\" 탭에서 해당 게임 제목을 클릭하면 이 게임이 직접 시작됩니다. (게임 제목을 우클릭하여 세부 정보 페이지로 들어갑니다)"
       ],
-      "THPRAC_GAMES_LAUNCH_GAME": [ "开始游戏", "Start game", "ゲームを開始" ],
+      "THPRAC_GAMES_LAUNCH_GAME": [ "开始游戏", "Start game", "ゲームを開始", "게임 시작" ],
       "THPRAC_GAMES_CONFIG_TAMPERED": [
         "你自己改了配置文件，对吧？",
         "You tampered with the config file, didn't you?",
-        "設定ファイルを編集しましたか？"
+        "設定ファイルを編集しましたか？",
+        "설정 파일을 건드리셨나요?"
       ],
-      "THPRAC_GAMES_LAUNCH_ABORT_WAIT": [ "放弃等待当前启动", "Abort wait for current launch", "起動待機を中止する" ],
-      "THPRAC_GAMES_CANNOT_LAUNCH_MODAL": [ "无法启动此游戏##_cannot_launch_modal", "Cannot launch this game##_cannot_launch_modal", "このゲームは起動できません##_cannot_launch_modal" ],
+      "THPRAC_GAMES_LAUNCH_ABORT_WAIT": [ "放弃等待当前启动", "Abort wait for current launch", "起動待機を中止する", "현재 시작 대기를 중단한다" ],
+      "THPRAC_GAMES_CANNOT_LAUNCH_MODAL": [ "无法启动此游戏##_cannot_launch_modal", "Cannot launch this game##_cannot_launch_modal", "このゲームは起動できません##_cannot_launch_modal", "이 게임을 시작할 수 없습니다##_cannot_launch_modal" ],
       "THPRAC_GAMES_CANNOT_DELETE_INST": [
         "无法删除此实例，因为thprac正在尝试启动它。",
         "Cannot delete this instance because thprac is attempting to launch this game.",
-        "このゲームはthpracが起動しようとしているため削除できません。"
+        "このゲームはthpracが起動しようとしているため削除できません。",
+        "이 게임은 thprac이 시작하려고 시도 중이기 때문에 삭제할 수 없습니다."
       ],
       "THPRAC_GAMES_CANNOT_LAUNCH_DESC": [
         "thprac现在不能启动此游戏，因为它正在等待此游戏的一个进程启动。\n你想要放弃等待吗？注：该进程可能仍会正常启动，但不会被应用thprac\n",
         "thprac cannot attempt to launch this game because it is currently waiting for an instance of this game to start.\nDo you want to abort this wait? Note: the game might still start, but without attaching thprac\n",
-        "このゲームはthpracが起動待機中のため起動することができません。\n起動待機を中止しますか？ 注意: ゲームは起動する可能性がありますがthpracは連動しません\n"
+        "このゲームはthpracが起動待機中のため起動することができません。\n起動待機を中止しますか？ 注意: ゲームは起動する可能性がありますがthpracは連動しません\n",
+        "이 게임은 thprac이 시작 대기 중이기 때문에 시작할 수 없습니다.\n이 대기를 중단하시겠습니까? 참고: 게임은 여전히 시작할 수 있지만 thprac이 연동되지 않습니다\n"
       ],
       "THPRAC_GAMES_CANNOT_LAUNCH_DESC_NVM": [
         "之前弹出过一个窗口，提示你thprac正在等待游戏启动。但是现在该游戏已经启动了",
         "A popup to inform you that thprac was waiting for a game to start was opened, but that game has started by now",
-        "thpracがゲームの起動の待機していることを知らせるポップアップが出ていましたが、当該ゲームは現在起動済です"
+        "thpracがゲームの起動の待機していることを知らせるポップアップが出ていましたが、当該ゲームは現在起動済です",
+        "thprac이 게임 시작을 기다리고 있다는 팝업이 떴었지만, 해당 게임은 현재 시작된 상태입니다"
       ],
       "THPRAC_RESCAN_MESSAGE": [
         "thprac检测到一些游戏缺失文件，需要重新扫描。是否重新扫描？",
         "thprac detected that some games need to be rescanned due to missing data. Rescan those games?",
-        "thpracがデータの欠落によりいくつかのゲームを再スキャンする必要があることを検知しました。これらのゲームを再スキャンしますか？"
+        "thpracがデータの欠落によりいくつかのゲームを再スキャンする必要があることを検知しました。これらのゲームを再スキャンしますか？",
+        "thprac이 데이터 누락으로 인해 일부 게임을 다시 스캔해야 한다는 것을 감지했습니다. 이 게임들을 다시 스캔하시겠습니까?"
       ],
       "THPRAC_GOTO_STEAM_PAGE": [ "前往Steam页面", "Go to Steam page", "Steamページに移動", "Steam 페이지로 이동" ],
       "THPRAC_LANG_SWITCH_UI_FROZEN": [ "UI冻结中", "UI is frozen", "UIはロックされています", "UI 일시정지됨" ],
 
-      "THPRAC_GAMEROLL_ALCOSTG": [ "黄昏酒场", "alcostg", "黄昏酒場" ],
-      "THPRAC_GAMEROLL_TH01": [ "灵异传", "th01", "靈異伝" ],
-      "THPRAC_GAMEROLL_TH02": [ "封魔录", "th02", "封魔録" ],
-      "THPRAC_GAMEROLL_TH03": [ "梦时空", "th03", "夢時空" ],
-      "THPRAC_GAMEROLL_TH04": [ "幻想乡", "th04", "幻想郷" ],
-      "THPRAC_GAMEROLL_TH05": [ "怪绮谈", "th05", "怪綺談" ],
-      "THPRAC_GAMEROLL_TH06": [ "红魔乡", "th06", "紅魔郷" ],
-      "THPRAC_GAMEROLL_TH07": [ "妖妖梦", "th07", "妖々夢" ],
-      "THPRAC_GAMEROLL_TH075": [ "萃梦想", "th075", "萃夢想" ],
-      "THPRAC_GAMEROLL_TH08": [ "永夜抄", "th08", "永夜抄" ],
-      "THPRAC_GAMEROLL_TH09": [ "花映冢", "th09", "花映塚" ],
-      "THPRAC_GAMEROLL_TH095": [ "文花帖", "th095", "文花帖" ],
-      "THPRAC_GAMEROLL_TH10": [ "风神录", "th10", "風神録" ],
-      "THPRAC_GAMEROLL_TH105": [ "绯想天", "th105", "緋想天" ],
-      "THPRAC_GAMEROLL_TH11": [ "地灵殿", "th11", "地霊殿" ],
-      "THPRAC_GAMEROLL_TH12": [ "星莲船", "th12", "星蓮船" ],
-      "THPRAC_GAMEROLL_TH123": [ "非想天则", "th123", "非想天則" ],
-      "THPRAC_GAMEROLL_TH125": [ "文花帖DS", "th125", "ダブルスポイラー" ],
-      "THPRAC_GAMEROLL_TH128": [ "妖精大战争", "th128", "妖精大戦争" ],
-      "THPRAC_GAMEROLL_TH13": [ "神灵庙", "th13", "神霊廟" ],
-      "THPRAC_GAMEROLL_TH135": [ "心绮楼", "th135", "心綺楼" ],
-      "THPRAC_GAMEROLL_TH14": [ "辉针城", "th14", "輝針城" ],
-      "THPRAC_GAMEROLL_TH143": [ "天邪鬼", "th143", "弾幕アマノジャク" ],
-      "THPRAC_GAMEROLL_TH145": [ "深秘录", "th145", "深秘録" ],
-      "THPRAC_GAMEROLL_TH15": [ "绀珠传", "th15", "紺珠伝" ],
-      "THPRAC_GAMEROLL_TH155": [ "凭依华", "th155", "憑依華" ],
-      "THPRAC_GAMEROLL_TH16": [ "天空璋", "th16", "天空璋" ],
-      "THPRAC_GAMEROLL_TH165": [ "秘封噩梦日记", "th165", "秘封ナイトメアダイアリー" ],
-      "THPRAC_GAMEROLL_TH17": [ "鬼形兽", "th17", "鬼形獣" ],
-      "THPRAC_GAMEROLL_TH175": [ "刚欲异闻", "th175", "剛欲異聞" ],
-      "THPRAC_GAMEROLL_TH18": [ "虹龙洞", "th18", "虹龍洞" ],
-      "THPRAC_GAMEROLL_TH185": [ "弹幕狂们的黑市", "th185", "バレットフィリア達の闇市場" ],
-      "THPRAC_GAMEROLL_TH19": [ "兽王园", "th19", "獣王園" ],
-      "THPRAC_GAMEROLL_TH20": [ "锦上京", "th20", "錦上京" ],
+      "THPRAC_GAMEROLL_ALCOSTG": [ "黄昏酒场", "alcostg", "黄昏酒場", "황혼주점" ],
+      "THPRAC_GAMEROLL_TH01": [ "灵异传", "th01", "靈異伝", "영이전" ],
+      "THPRAC_GAMEROLL_TH02": [ "封魔录", "th02", "封魔録", "봉마록" ],
+      "THPRAC_GAMEROLL_TH03": [ "梦时空", "th03", "夢時空", "몽시공" ],
+      "THPRAC_GAMEROLL_TH04": [ "幻想乡", "th04", "幻想郷", "환상향" ],
+      "THPRAC_GAMEROLL_TH05": [ "怪绮谈", "th05", "怪綺談", "괴기담" ],
+      "THPRAC_GAMEROLL_TH06": [ "红魔乡", "th06", "紅魔郷", "홍마향" ],
+      "THPRAC_GAMEROLL_TH07": [ "妖妖梦", "th07", "妖々夢", "요요몽" ],
+      "THPRAC_GAMEROLL_TH075": [ "萃梦想", "th075", "萃夢想", "췌몽상" ],
+      "THPRAC_GAMEROLL_TH08": [ "永夜抄", "th08", "永夜抄", "영야초" ],
+      "THPRAC_GAMEROLL_TH09": [ "花映冢", "th09", "花映塚", "화영종" ],
+      "THPRAC_GAMEROLL_TH095": [ "文花帖", "th095", "文花帖", "문화첩" ],
+      "THPRAC_GAMEROLL_TH10": [ "风神录", "th10", "風神録", "풍신록" ],
+      "THPRAC_GAMEROLL_TH105": [ "绯想天", "th105", "緋想天", "비상천" ],
+      "THPRAC_GAMEROLL_TH11": [ "地灵殿", "th11", "地霊殿", "지령전" ],
+      "THPRAC_GAMEROLL_TH12": [ "星莲船", "th12", "星蓮船", "성련선" ],
+      "THPRAC_GAMEROLL_TH123": [ "非想天则", "th123", "非想天則", "비상천칙" ],
+      "THPRAC_GAMEROLL_TH125": [ "文花帖DS", "th125", "ダブルスポイラー", "더블 스포일러" ],
+      "THPRAC_GAMEROLL_TH128": [ "妖精大战争", "th128", "妖精大戦争", "요정대전쟁" ],
+      "THPRAC_GAMEROLL_TH13": [ "神灵庙", "th13", "神霊廟", "신령묘" ],
+      "THPRAC_GAMEROLL_TH135": [ "心绮楼", "th135", "心綺楼", "심기루" ],
+      "THPRAC_GAMEROLL_TH14": [ "辉针城", "th14", "輝針城", "휘침성" ],
+      "THPRAC_GAMEROLL_TH143": [ "天邪鬼", "th143", "弾幕アマノジャク", "탄막 아마노자쿠" ],
+      "THPRAC_GAMEROLL_TH145": [ "深秘录", "th145", "深秘録", "심비록" ],
+      "THPRAC_GAMEROLL_TH15": [ "绀珠传", "th15", "紺珠伝", "감주전" ],
+      "THPRAC_GAMEROLL_TH155": [ "凭依华", "th155", "憑依華", "빙의화" ],
+      "THPRAC_GAMEROLL_TH16": [ "天空璋", "th16", "天空璋", "천공장" ],
+      "THPRAC_GAMEROLL_TH165": [ "秘封噩梦日记", "th165", "秘封ナイトメアダイアリー", "비봉 나이트메어 다이어리" ],
+      "THPRAC_GAMEROLL_TH17": [ "鬼形兽", "th17", "鬼形獣", "귀형수" ],
+      "THPRAC_GAMEROLL_TH175": [ "刚欲异闻", "th175", "剛欲異聞", "강욕이문" ],
+      "THPRAC_GAMEROLL_TH18": [ "虹龙洞", "th18", "虹龍洞", "홍룡동" ],
+      "THPRAC_GAMEROLL_TH185": [ "弹幕狂们的黑市", "th185", "バレットフィリア達の闇市場", "불릿필리아들의 암시장" ],
+      "THPRAC_GAMEROLL_TH19": [ "兽王园", "th19", "獣王園", "수왕원" ],
+      "THPRAC_GAMEROLL_TH20": [ "锦上京", "th20", "錦上京", "금상경" ],
 
       "THPRAC_GAMEROLL_TH02_SHOTTYPES": [ "灵梦A\\0灵梦B\\0灵梦C\\0\\0", "Reimu A\\0Reimu B\\0Reimu C\\0\\0", "靈梦A\\0靈梦B\\0靈梦C\\0\\0", "레이무A\\0레이무B\\0레이무C\\0\\0" ],
       "THPRAC_GAMEROLL_TH03_SHOTTYPES": [
         "灵梦\\0魅魔\\0魔理沙\\0爱莲\\0小兔姬\\0卡娜\\0理香子\\0千百合\\0梦美\\0\\0",
         "Reimu\\0Mima\\0Marisa\\0Ellen\\0Kotohime\\0Kana\\0Rikako\\0Chiyuri\\0Yumemi\\0\\0",
-        "靈夢\\0魅魔\\0魔理沙\\0エレン\\0小兎姫\\0カナ\\0理香子\\0ちゆり\\0夢美\\0\\0"
+        "靈夢\\0魅魔\\0魔理沙\\0エレン\\0小兎姫\\0カナ\\0理香子\\0ちゆり\\0夢美\\0\\0",
+        "레이무\\0미마\\0마리사\\0엘렌\\0코토히메\\0카나\\0리카코\\0치유리\\0유메미\\0\\0"
       ],
-      "THPRAC_GAMEROLL_TH04_SHOTTYPES": [ "灵梦\\0魔理沙\\0\\0", "Reimu\\0Marisa\\0\\0", "靈夢\\0魔理沙\\0\\0" ],
-      "THPRAC_GAMEROLL_TH05_SHOTTYPES": [ "灵梦\\0魔理沙\\0魅魔\\0幽香\\0\\0", "Reimu\\0Marisa\\0Mima\\0Yuuka\\0\\0", "靈夢\\0魔理沙\\0魅魔\\0幽香\\0\\0" ],
+      "THPRAC_GAMEROLL_TH04_SHOTTYPES": [ "灵梦\\0魔理沙\\0\\0", "Reimu\\0Marisa\\0\\0", "靈夢\\0魔理沙\\0\\0", "레이무\\0마리사\\0\\0" ],
+      "THPRAC_GAMEROLL_TH05_SHOTTYPES": [ "灵梦\\0魔理沙\\0魅魔\\0幽香\\0\\0", "Reimu\\0Marisa\\0Mima\\0Yuuka\\0\\0", "靈夢\\0魔理沙\\0魅魔\\0幽香\\0\\0", "레이무\\0마리사\\0미마\\0유카\\0\\0" ],
       "THPRAC_GAMEROLL_TH06_SHOTTYPES": [
         "灵梦A\\0灵梦B\\0魔理沙A\\0魔理沙B\\0\\0",
         "Reimu A\\0Reimu B\\0Marisa A\\0Marisa B\\0\\0",
-        "霊夢A\\0霊夢B\\0魔理沙A\\0魔理沙B\\0\\0"
+        "霊夢A\\0霊夢B\\0魔理沙A\\0魔理沙B\\0\\0",
+        "레이무A\\0레이무B\\0마리사A\\0마리사B\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH07_SHOTTYPES": [
         "灵梦A\\0灵梦B\\0魔理沙A\\0魔理沙B\\0咲夜A\\0咲夜B\\0\\0",
         "Reimu A\\0Reimu B\\0Marisa A\\0Marisa B\\0Sakuya A\\0Sakuya B\\0\\0",
-        "霊夢A\\0霊夢B\\0魔理沙A\\0魔理沙B\\0咲夜A\\0咲夜B\\0\\0"
+        "霊夢A\\0霊夢B\\0魔理沙A\\0魔理沙B\\0咲夜A\\0咲夜B\\0\\0",
+        "레이무A\\0레이무B\\0마리사A\\0마리사B\\0사쿠야A\\0사쿠야B\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH075_SHOTTYPES": [
         "灵梦\\0魔理沙\\0咲夜\\0爱丽丝\\0帕秋莉\\0妖梦\\0蕾米莉亚\\0幽幽子\\0紫\\0萃香\\0\\0",
         "Reimu\\0Marisa\\0Sakuya\\0Alice\\0Patchouli\\0Youmu\\0Remilia\\0Yuyuko\\0Yukari\\0Suika\\0\\0",
-        "霊夢\\0魔理沙\\0咲夜\\0アリス\\0パチュリー\\0妖夢\\0レミリア\\0幽々子\\0紫\\0萃香\\0\\0"
+        "霊夢\\0魔理沙\\0咲夜\\0アリス\\0パチュリー\\0妖夢\\0レミリア\\0幽々子\\0紫\\0萃香\\0\\0",
+        "레이무\\0마리사\\0사쿠야\\0앨리스\\0파츄리\\0요우무\\0레밀리아\\0유유코\\0유카리\\0스이카\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH08_SHOTTYPES": [
         "结界组\\0咏唱组\\0红魔组\\0幽冥组\\0灵梦\\0紫\\0魔理沙\\0爱丽丝\\0咲夜\\0蕾米莉亚\\0妖梦\\0幽幽子\\0\\0",
         "Reimu&Yukari\\0Marisa&Alice\\0Sakuya&Remilia\\0Youmu&Yuyuko\\0Reimu\\0Yukari\\0Marisa\\0Alice\\0Sakuya\\0Remilia\\0Youmu\\0Yuyuko\\0\\0",
-        "結界組\\0詠唱組\\0紅魔組\\0冥界組\\0霊夢\\0紫\\0魔理沙\\0アリス\\0咲夜\\0レミリア\\0妖夢\\0幽々子\\0\\0"
+        "結界組\\0詠唱組\\0紅魔組\\0冥界組\\0霊夢\\0紫\\0魔理沙\\0アリス\\0咲夜\\0レミリア\\0妖夢\\0幽々子\\0\\0",
+        "결계조\\0영창조\\0홍마조\\0명계조\\0레이무\\0유카리\\0마리사\\0앨리스\\0사쿠야\\0레밀리아\\0요우무\\0유유코\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH09_SHOTTYPES": [
         "灵梦\\0魔理沙\\0咲夜\\0妖梦\\0铃仙\\0琪露诺\\0莉莉卡\\0梅露兰\\0露娜萨\\0米斯蒂娅\\0天为\\0文\\0梅蒂欣\\0幽香\\0小町\\0映姬\\0\\0",
         "Reimu\\0Marisa\\0Sakuya\\0Youmu\\0Reisen\\0Cirno\\0Lyrica\\0Merlin\\0Lunasa\\0Mystia\\0Tewi\\0Aya\\0Medicine\\0Yuuka\\0Komachi\\0Eiki\\0\\0",
-        "霊夢\\0魔理沙\\0咲夜\\0妖夢\\0鈴仙\\0チルノ\\0リリカ\\0メルラン\\0ルナサ\\0ミスティア\\0てゐ\\0文\\0メディスン\\0幽香\\0小町\\0映姫\\0\\0"
+        "霊夢\\0魔理沙\\0咲夜\\0妖夢\\0鈴仙\\0チルノ\\0リリカ\\0メルラン\\0ルナサ\\0ミスティア\\0てゐ\\0文\\0メディスン\\0幽香\\0小町\\0映姫\\0\\0",
+        "레이무\\0마리사\\0사쿠야\\0요우무\\0레이센\\0치르노\\0리리카\\0메를랑\\0루나사\\0미스티아\\0테위\\0아야\\0메디슨\\0유카\\0코마치\\0에이키\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH10_SHOTTYPES": [
         "灵梦A\\0灵梦B\\0灵梦C\\0魔理沙A\\0魔理沙B\\0魔理沙C\\0\\0",
         "Reimu A\\0Reimu B\\0Reimu C\\0Marisa A\\0Marisa B\\0Marisa C\\0\\0",
-        "霊夢A\\0霊夢B\\0霊夢C\\0魔理沙A\\0魔理沙B\\0魔理沙C\\0\\0"
+        "霊夢A\\0霊夢B\\0霊夢C\\0魔理沙A\\0魔理沙B\\0魔理沙C\\0\\0",
+        "레이무A\\0레이무B\\0레이무C\\0마리사A\\0마리사B\\0마리사C\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH105_SHOTTYPES": [
         "灵梦\\0魔理沙\\0咲夜\\0爱丽丝\\0帕秋莉\\0妖梦\\0蕾米莉亚\\0幽幽子\\0紫\\0萃香\\0铃仙\\0文\\0小町\\0衣玖\\0天子\\0\\0",
         "Reimu\\0Marisa\\0Sakuya\\0Alice\\0Patchouli\\0Youmu\\0Remilia\\0Yuyuko\\0Yukari\\0Suika\\0Reisen\\0Aya\\0Komachi\\0Iku\\0Tenshi\\0\\0",
-        "霊夢\\0魔理沙\\0咲夜\\0アリス\\0パチュリー\\0妖夢\\0レミリア\\0幽々子\\0紫\\0萃香\\0美鈴\\0\\0"
+        "霊夢\\0魔理沙\\0咲夜\\0アリス\\0パチュリー\\0妖夢\\0レミリア\\0幽々子\\0紫\\0萃香\\0美鈴\\0\\0",
+        "레이무\\0마리사\\0사쿠야\\0앨리스\\0파츄리\\0요우무\\0레밀리아\\0유유코\\0유카리\\0스이카\\0레이센\\0아야\\0코마치\\0이쿠\\0텐시\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH11_SHOTTYPES": [
         "灵梦A\\0灵梦B\\0灵梦C\\0魔理沙A\\0魔理沙B\\0魔理沙C\\0\\0",
         "Reimu A\\0Reimu B\\0Reimu C\\0Marisa A\\0Marisa B\\0Marisa C\\0\\0",
-        "霊夢A\\0霊夢B\\0霊夢C\\0魔理沙A\\0魔理沙B\\0魔理沙C\\0\\0"
+        "霊夢A\\0霊夢B\\0霊夢C\\0魔理沙A\\0魔理沙B\\0魔理沙C\\0\\0",
+        "레이무A\\0레이무B\\0레이무C\\0마리사A\\0마리사B\\0마리사C\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH12_SHOTTYPES": [
         "灵梦A\\0灵梦B\\0魔理沙A\\0魔理沙B\\0早苗A\\0早苗B\\0\\0",
         "Reimu A\\0Reimu B\\0Marisa A\\0Marisa B\\0Sanae A\\0Sanae B\\0\\0",
-        "霊夢A\\0霊夢B\\0魔理沙A\\0魔理沙B\\0早苗A\\0早苗B\\0\\0"
+        "霊夢A\\0霊夢B\\0魔理沙A\\0魔理沙B\\0早苗A\\0早苗B\\0\\0",
+        "레이무A\\0레이무B\\0마리사A\\0마리사B\\0사나에A\\0사나에B\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH123_SHOTTYPES": [
         "早苗\\0琪露诺\\0美铃\\0\\0",
         "Sanae\\0Cirno\\0Meiling\\0\\0",
-        "早苗\\0チルノ\\0美鈴\\0\\0"
+        "早苗\\0チルノ\\0美鈴\\0\\0",
+        "사나에\\0치르노\\0메이링\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH125_SHOTTYPES": [
         "文\\0果\\0\\0",
         "Aya\\0Hatate\\0\\0",
-        "文\\0はたて\\0\\0"
+        "文\\0はたて\\0\\0",
+        "아야\\0하타테\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH13_SHOTTYPES": [
         "灵梦\\0魔理沙\\0早苗\\0妖梦\\0\\0",
         "Reimu\\0Marisa\\0Sanae\\0Youmu\\0\\0",
-        "霊梦\\0魔理沙\\0早苗\\0妖梦\\0\\0"
+        "霊梦\\0魔理沙\\0早苗\\0妖梦\\0\\0",
+        "레이무\\0마리사\\0사나에\\0요우무\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH135_SHOTTYPES": [
         "灵梦\\0魔理沙\\0一轮\\0白莲\\0布都\\0神子\\0荷取\\0恋\\0猯藏\\0心\\0\\0",
         "Reimu\\0Marisa\\0Ichirin\\0Byakuren\\0Futo\\0Miko\\0Nitori\\0Koishi\\0Mamizou\\0Kokoro\\0\\0",
-        "霊梦\\0魔理沙\\0一輪\\0白蓮\\0布都\\0神子\\0にとり\\0こいし\\0マミゾウ\\0こころ\\0\\0"
+        "霊梦\\0魔理沙\\0一輪\\0白蓮\\0布都\\0神子\\0にとり\\0こいし\\0マミゾウ\\0こころ\\0\\0",
+        "레이무\\0마리사\\0이치린\\0뱌쿠렌\\0후토\\0미코\\0니토리\\0코이시\\0마미조\\0코코로\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH14_SHOTTYPES": [
         "灵梦A\\0灵梦B\\0魔理沙A\\0魔理沙B\\0咲夜A\\0咲夜B\\0\\0",
         "Reimu A\\0Reimu B\\0Marisa A\\0Marisa B\\0Sakuya A\\0Sakuya B\\0\\0",
-        "霊夢A\\0霊夢B\\0魔理沙A\\0魔理沙B\\0咲夜A\\0咲夜B\\0\\0"
+        "霊夢A\\0霊夢B\\0魔理沙A\\0魔理沙B\\0咲夜A\\0咲夜B\\0\\0",
+        "레이무A\\0레이무B\\0마리사A\\0마리사B\\0사쿠야A\\0사쿠야B\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH145_SHOTTYPES": [
         "灵梦\\0魔理沙\\0华扇\\0一轮\\0白莲\\0布都\\0神子\\0猯藏\\0妹红\\0针妙丸\\0荷取\\0恋\\0心\\0堇子\\0铃仙\\0\\0",
         "Reimu\\0Marisa\\0Kasen\\0Ichirin\\0Byakuren\\0Futo\\0Miko\\0Mamizou\\0Mokou\\0Shinmyoumaru\\0Nitori\\0Koishi\\0Kokoro\\0Sumireko\\0Reisen\\0\\0",
-        "霊梦\\0魔理沙\\0華扇\\0一輪\\0白蓮\\0布都\\0神子\\0マミゾウ\\0妹紅\\0針妙丸\\0にとり\\0こいし\\0こころ\\0菫子\\0鈴仙\\0\\0"
+        "霊梦\\0魔理沙\\0華扇\\0一輪\\0白蓮\\0布都\\0神子\\0マミゾウ\\0妹紅\\0針妙丸\\0にとり\\0こいし\\0こころ\\0菫子\\0鈴仙\\0\\0",
+        "레이무\\0마리사\\0카센\\0이치린\\0뱌쿠렌\\0후토\\0미코\\0마미조\\0모코우\\0신묘마루\\0니토리\\0코이시\\0코코로\\0스미레코\\0레이센\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH15_SHOTTYPES": [
         "灵梦\\0魔理沙\\0早苗\\0铃仙\\0\\0",
         "Reimu\\0Marisa\\0Sanae\\0Reisen\\0\\0",
-        "霊梦\\0魔理沙\\0早苗\\0鈴仙\\0\\0"
+        "霊梦\\0魔理沙\\0早苗\\0鈴仙\\0\\0",
+        "레이무\\0마리사\\0사나에\\0레이센\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH155_SHOTTYPES": [
         "灵梦&华扇\\0魔理沙&恋\\0荷取&心\\0猯藏&妹红\\0神子&白莲\\0布都&一轮\\0铃仙&哆来咪\\0堇子&哆来咪\\0天子&针妙丸\\0紫&灵梦\\0女苑&紫苑\\0\\0",
         "Reimu&Kasen\\0Marisa&Koishi\\0Nitori&Kokoro\\0Mamizou&Mokou\\0Miko&Byakuren\\0Futo&Ichirin\\0Reisen&Doremy\\0Sumireko&Doremy\\0Tenshi&Shinmyoumaru\\0Yukari&Reimu\\0Joon&Shion\\0\\0",
-        "霊夢&華扇\\0魔理沙&こいし\\0にとり&こころ\\0マミゾウ&妹紅\\0神子&白蓮\\0布都&一輪\\0鈴仙&ドレミー\\0菫子&ドレミー\\0紫&霊夢\\0女苑&紫苑\\0\\0"
+        "霊夢&華扇\\0魔理沙&こいし\\0にとり&こころ\\0マミゾウ&妹紅\\0神子&白蓮\\0布都&一輪\\0鈴仙&ドレミー\\0菫子&ドレミー\\0紫&霊夢\\0女苑&紫苑\\0\\0",
+        "레이무&카센\\0마리사&코이시\\0니토리&코코로\\0마미조&모코우\\0미코&뱌쿠렌\\0후토&이치린\\0레이센&도레미\\0스미레코&도레미\\0유카리&레이무\\0죠온&시온\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH16_SHOTTYPES": [
         "灵梦（春）\\0灵梦（夏）\\0灵梦（秋）\\0灵梦（冬）\\0琪露诺（春）\\0琪露诺（夏）\\0琪露诺（秋）\\0琪露诺（冬）\\0文（春）\\0文（夏）\\0文（秋）\\0文（冬）\\0魔理沙（春）\\0魔理沙（夏）\\0魔理沙（秋）\\0魔理沙（冬）\\0\\0",
         "Reimu (Spring)\\0Reimu (Summer)\\0Reimu (Autumn)\\0Reimu (Winter)\\0Cirno (Spring)\\0Cirno (Summer)\\0Cirno (Autumn)\\0Cirno (Winter)\\0Aya (Spring)\\0Aya (Summer)\\0Aya (Autumn)\\0Aya (Winter)\\0Marisa (Spring)\\0Marisa (Summer)\\0Marisa (Autumn)\\0Marisa (Winter)\\0\\0",
-        "霊夢（春）\\0霊夢（夏）\\0霊夢（秋）\\0霊夢（冬）\\0チルノ（春）\\0チルノ（夏）\\0チルノ（秋）\\0チルノ（冬）\\0文（春）\\0文（夏）\\0文（秋）\\0文（冬）\\0魔理沙（春）\\0魔理沙（夏）\\0魔理沙（秋）\\0魔理沙（冬）\\0\\0"
+        "霊夢（春）\\0霊夢（夏）\\0霊夢（秋）\\0霊夢（冬）\\0チルノ（春）\\0チルノ（夏）\\0チルノ（秋）\\0チルノ（冬）\\0文（春）\\0文（夏）\\0文（秋）\\0文（冬）\\0魔理沙（春）\\0魔理沙（夏）\\0魔理沙（秋）\\0魔理沙（冬）\\0\\0",
+        "레이무（봄）\\0레이무（여름）\\0레이무（가을）\\0레이무（겨울）\\0치르노（봄）\\0치르노（여름）\\0치르노（가을）\\0치르노（겨울）\\0아야（봄）\\0아야（여름）\\0아야（가을）\\0아야（겨울）\\0마리사（봄）\\0마리사（여름）\\0마리사（가을）\\0마리사（겨울）\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH17_SHOTTYPES": [
         "灵梦+野狼灵\\0灵梦+水獭灵\\0灵梦+大鹫灵\\0魔理沙+野狼灵\\0魔理沙+水獭灵\\0魔理沙+大鹫灵\\0妖梦+野狼灵\\0妖梦+水獭灵\\0妖梦+大鹫灵\\0\\0",
         "Reimu+Wolf\\0Reimu+Otter\\0Reimu+Eagle\\0Marisa+Wolf\\0Marisa+Otter\\0Marisa+Eagle\\0Youmu+Wolf\\0Youmu+Otter\\0Youmu+Eagle\\0\\0",
-        "霊夢+オオカミ\\0霊夢+カワウソ\\0霊夢+オオワシ\\0魔理沙+オオカミ\\0魔理沙+カワウソ\\0魔理沙+オオワシ\\0妖夢+オオカミ\\0妖夢+カワウソ\\0妖夢+オオワシ\\0\\0"
+        "霊夢+オオカミ\\0霊夢+カワウソ\\0霊夢+オオワシ\\0魔理沙+オオカミ\\0魔理沙+カワウソ\\0魔理沙+オオワシ\\0妖夢+オオカミ\\0妖夢+カワウソ\\0妖夢+オオワシ\\0\\0",
+        "레이무+늑대\\0레이무+수달\\0레이무+수리\\0마리사+늑대\\0마리사+수달\\0마리사+수리\\0요우무+늑대\\0요우무+수달\\0요우무+수리\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH175_SHOTTYPES": [
         "灵梦\\0魔理沙\\0神奈子\\0水蜜\\0女苑&紫苑\\0芙兰朵露\\0尤魔\\0\\0",
         "Reimu\\0Marisa\\0Kanako\\0Minamitsu\\0Joon&Shion\\0Flandre\\0Yuuma\\0\\0",
-        "霊梦\\0魔理沙\\0神奈子\\0水蜜\\0女苑&紫苑\\0フランドール\\0尤魔\\0\\0"
+        "霊梦\\0魔理沙\\0神奈子\\0水蜜\\0女苑&紫苑\\0フランドール\\0尤魔\\0\\0",
+        "레이무\\0마리사\\0카나코\\0미나미츠\\0죠온&시온\\0플랑드르\\0유마\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH18_SHOTTYPES": [
         "灵梦\\0魔理沙\\0咲夜\\0早苗\\0\\0",
         "Reimu\\0Marisa\\0Sakuya\\0Sanae\\0\\0",
-        "霊梦\\0魔理沙\\0咲夜\\0早苗\\0\\0"
+        "霊梦\\0魔理沙\\0咲夜\\0早苗\\0\\0",
+        "레이무\\0마리사\\0사쿠야\\0사나에\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH19_SHOTTYPES": [
         "灵梦\\0魔理沙\\0咲夜\\0蓝\\0阿吽\\0娜兹玲\\0清兰\\0燐\\0典\\0猯藏\\0八千慧\\0早鬼\\0尤魔\\0萃香\\0美天\\0慧之子\\0血枪\\0日狭美\\0残无\\0\\0",
         "Reimu\\0Marisa\\0Sanae\\0Ran\\0Aunn\\0Nazrin\\0Seiran\\0Orin\\0Tsukasa\\0Mamizou\\0Yachie\\0Saki\\0Yuuma\\0Suika\\0Biten\\0Enoko\\0Chiyari\\0Hisami\\0Zanmu\\0\\0",
-        "霊梦\\0魔理沙\\0咲夜\\0藍\\0阿吽\\0ナズーリン\\0清蘭\\0燐\\0典\\0マミゾウ\\0八千慧\\0早鬼\\0尤魔\\0萃香\\0美天\\0慧ノ子\\0ちやり\\0日狭美\\0残無\\0\\0"
+        "霊梦\\0魔理沙\\0咲夜\\0藍\\0阿吽\\0ナズーリン\\0清蘭\\0燐\\0典\\0マミゾウ\\0八千慧\\0早鬼\\0尤魔\\0萃香\\0美天\\0慧ノ子\\0ちやり\\0日狭美\\0残無\\0\\0",
+        "레이무\\0마리사\\0사쿠야\\0란\\0아운\\0나즈린\\0세이란\\0오린\\0츠카사\\0마미조\\0야치에\\0사키\\0유마\\0스이카\\0손미천\\0에노코\\0치야리\\0히사미\\0잔무\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH19_EASTER_EGG_SHOTTYPES": [
         "灵梦\\0魔理沙\\0咲夜\\0蓝\\0阿吽\\0娜兹玲\\0清兰\\0燐\\0典\\0猯藏\\0八千慧\\0早鬼\\0尤魔\\0萃香\\0悟空\\0慧之子\\0血枪\\0日狭美\\0残无\\0\\0",
         "Reimu\\0Marisa\\0Sanae\\0Ran\\0Aunn\\0Nazrin\\0Seiran\\0Orin\\0Tsukasa\\0Mamizou\\0Yachie\\0Saki\\0Yuuma\\0Suika\\0Goku\\0Enoko\\0Chiyari\\0Hisami\\0Zanmu\\0\\0",
-        "霊梦\\0魔理沙\\0咲夜\\0藍\\0阿吽\\0ナズーリン\\0清蘭\\0燐\\0典\\0マミゾウ\\0八千慧\\0早鬼\\0尤魔\\0萃香\\0悟空\\0慧ノ子\\0ちやり\\0日狭美\\0残無\\0\\0"
+        "霊梦\\0魔理沙\\0咲夜\\0藍\\0阿吽\\0ナズーリン\\0清蘭\\0燐\\0典\\0マミゾウ\\0八千慧\\0早鬼\\0尤魔\\0萃香\\0悟空\\0慧ノ子\\0ちやり\\0日狭美\\0残無\\0\\0",
+        "레이무\\0마리사\\0사쿠야\\0란\\0아운\\0나즈린\\0세이란\\0오린\\0츠카사\\0마미조\\0야치에\\0사키\\0유마\\0스이카\\0손미천\\0에노코\\0치야리\\0히사미\\0잔무\\0\\0"
       ],
       "THPRAC_GAMEROLL_TH20_SHOTTYPES": [
         "灵梦+绯红恶魔\\0灵梦+生物赤红\\0灵梦+冰雪花簇\\0灵梦+蓝色季节\\0灵梦+黄色地心\\0灵梦+不朽明月\\0灵梦+兽之冷硬\\0灵梦+神道之风\\0魔理沙+绯红恶魔\\0魔理沙+生物赤红\\0魔理沙+冰雪花簇\\0魔理沙+蓝色季节\\0魔理沙+黄色地心\\0魔理沙+不朽明月\\0魔理沙+兽之冷硬\\0魔理沙+神道之风\\0\\0",
         "Reimu+Scarlet Devil\\0Reimu+Creature Red\\0Reimu+Snow Blossom\\0Reimu+Blue Season\\0Reimu+Yellow Subterranean\\0Reimu+Imperishable Moon\\0Reimu+Beast Hardness\\0Reimu+Shintoism Wind\\0Marisa+Scarlet Devil\\0Marisa+Creature Red\\0Marisa+Snow Blossom\\0Marisa+Blue Season\\0Marisa+Yellow Subterranean\\0Marisa+Imperishable Moon\\0Marisa+Beast Hardness\\0Marisa+Shintoism Wind\\0\\0",
-        "霊夢+スカーレットデビル\\0霊夢+クリーチャーレッド\\0霊夢+スノーブロッサム\\0霊夢+ブルーシーズン\\0霊夢+イエローサブタレイニアン\\0霊夢+インペリシャブルムーン\\0霊夢+ビーストハードネス\\0霊夢+シントイズムウィンド\\0魔理沙+スカーレットデビル\\0魔理沙+クリーチャーレッド\\0魔理沙+スノーブロッサム\\0魔理沙+ブルーシーズン\\0魔理沙+イエローサブタレイニアン\\0魔理沙+インペリシャブルムーン\\0魔理沙+ビーストハードネス\\0魔理沙+シントイズムウィンド\\0\\0"
+        "霊夢+スカーレットデビル\\0霊夢+クリーチャーレッド\\0霊夢+スノーブロッサム\\0霊夢+ブルーシーズン\\0霊夢+イエローサブタレイニアン\\0霊夢+インペリシャブルムーン\\0霊夢+ビーストハードネス\\0霊夢+シントイズムウィンド\\0魔理沙+スカーレットデビル\\0魔理沙+クリーチャーレッド\\0魔理沙+スノーブロッサム\\0魔理沙+ブルーシーズン\\0魔理沙+イエローサブタレイニアン\\0魔理沙+インペリシャブルムーン\\0魔理沙+ビーストハードネス\\0魔理沙+シントイズムウィンド\\0\\0",
+        "레이무+스칼렛 데빌\\0레이무+크리처 레드\\0레이무+스노우 블로섬\\0레이무+블루 시즌\\0레이무+옐로 서브터레이니언\\0레이무+임페리셔블 문\\0레이무+비스트 하드니스\\0레이무+신토이즘 윈드\\0마리사+스칼렛 데빌\\0마리사+크리처 레드\\0마리사+스노우 블로섬\\0마리사+블루 시즌\\0마리사+옐로우 서브터레이니언\\0마리사+임페리셔블 문\\0마리사+비스트 하드니스\\0마리사+신토이즘 윈드\\0\\0"
       ],
 
       "TH_TYPE_ERROR": [ "错误", "ERROR", "エラー", "오류" ],
@@ -830,7 +867,12 @@
 
       "TH_ABOUT_THPRAC": [ "关于thprac", "About thprac", "thpracのバージョン情報", "thprac에 대해" ],
       "TH_ABOUT_VERSION": [ "thprac 版本 %d.%d.%d.%d", "thprac version %d.%d.%d.%d", "thprac ver.%d.%d.%d.%d", "thprac 버전 %d.%d.%d.%d" ],
-      "TH_ABOUT_WEBSITE": [ "网站：https://github.com/touhouworldcup/thprac", "Website: https://github.com/touhouworldcup/thprac", "Website：https://github.com/touhouworldcup/thprac", "웹사이트: https://github.com/touhouworldcup/thprac" ],
+      "TH_ABOUT_WEBSITE": [ 
+        "网站：https://github.com/touhouworldcup/thprac", 
+        "Website: https://github.com/touhouworldcup/thprac", 
+        "Website：https://github.com/touhouworldcup/thprac", 
+        "웹사이트: https://github.com/touhouworldcup/thprac" 
+      ],
       "TH_ABOUT_THANKS": [ "特别感谢：\n%s", "Special thanks: \n%s", "Special thanks:\n%s", "특별히 감사드립니다: \n%s" ],
       "TH_ABOUT_SHOW_LICENCE": [ "显示许可信息", "Show license info", "ライセンス情報を表示", "라이센스 정보 표시" ],
       "TH_ABOUT_HIDE_LICENCE": [ "隐藏许可信息", "Hide license info", "ライセンス情報を非表示", "라이센스 정보 숨기기" ],
@@ -862,23 +904,29 @@
         "この機能で修復されたリプレイはthpracなしで再生できます。",
         "이 기능으로 복구된 리플레이는 thprac 없이도 재생할 수 있습니다."
       ],
-      "TH_REPFIX_SAVE_SUCCESS": [ "保存成功", "Successfully saved", "保存しました" ],
-      "TH_REPFIX_SAVE_SUCCESS_DESC": [ "成功保存Replay至：%s", "Successfully saved replay to: %s", "リプレイは正常に保存されました：%s" ],
-      "TH_REPFIX_SAVE_ERROR_SRC": [ "未能成功读取源Replay。", "Failed to access source replay.", "元のリプレイの読み取りに失敗しました。" ],
-      "TH_REPFIX_SAVE_ERROR_DEST": [ "未能写入目标文件。", "Failed to write to destination file.", "ターゲットファイルに書き込めませんでした。" ],
-      "TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS": [ "重置文件的 thprac 数据失败。", "Failed to reset file's thprac data.", "ファイルの thprac データのリセットに失敗しました。" ],
-      "TH_REPFIX_SAVE_ERROR_PARAMS": [ "无法将 thprac 数据写入重放文件。", "Failed to add thprac data to replay file.", "thprac のデータをリプレイファイルに書き込めませんでした。" ],
-      "TH_TOOL_SHOW_TOGGLE": [ "显示工具", "Show tool", "ツールを表示" ],
-      "TH_BUGFIX": [ "可选的Bug修复", "Optional Bug Fixes", "修復オプション" ],
-      "TH_BUGFIX_AUTO": [ "已自动应用关键Bug的修复。", "Critical bug fixes have been applied automatically.", "なお、致命的なバグの修復は自動的に適用されています。" ],
-      "TH_COPY_CFG_CODE": [ "复制当前配置", "Copy current config", "現在の設定をコピー" ],
+      "TH_REPFIX_SAVE_SUCCESS": [ "保存成功", "Successfully saved", "保存しました", "저장에 성공했습니다" ],
+      "TH_REPFIX_SAVE_SUCCESS_DESC": [ "成功保存Replay至：%s", "Successfully saved replay to: %s", "リプレイは正常に保存されました：%s", "성공적으로 리플레이를 저장했습니다: %s" ],
+      "TH_REPFIX_SAVE_ERROR_SRC": [ "未能成功读取源Replay。", "Failed to access source replay.", "元のリプレイの読み取りに失敗しました。", "원본 리플레이를 읽는 데 실패했습니다." ],
+      "TH_REPFIX_SAVE_ERROR_DEST": [ "未能写入目标文件。", "Failed to write to destination file.", "ターゲットファイルに書き込めませんでした。", "타겟 파일에 쓰는 데 실패했습니다." ],
+      "TH_REPFIX_SAVE_ERROR_CLEAR_PARAMS": [ "重置文件的 thprac 数据失败。", "Failed to reset file's thprac data.", "ファイルの thprac データのリセットに失敗しました。", "파일의 thprac 데이터를 초기화하는 데 실패했습니다." ],
+      "TH_REPFIX_SAVE_ERROR_PARAMS": [ 
+        "无法将 thprac 数据写入重放文件。", 
+        "Failed to add thprac data to replay file.", 
+        "thprac のデータをリプレイファイルに書き込めませんでした。", 
+        "thprac 데이터를 리플레이 파일에 추가하는 데 실패했습니다." 
+      ],
+      "TH_TOOL_SHOW_TOGGLE": [ "显示工具", "Show tool", "ツールを表示", "도구 표시" ],
+      "TH_BUGFIX": [ "可选的Bug修复", "Optional Bug Fixes", "修復オプション", "버그 수정 옵션" ],
+      "TH_BUGFIX_AUTO": [ "已自动应用关键Bug的修复。", "Critical bug fixes have been applied automatically.", "なお、致命的なバグの修復は自動的に適用されています。", "치명적인 버그 수정이 자동으로 적용되었습니다." ],
+      "TH_COPY_CFG_CODE": [ "复制当前配置", "Copy current config", "現在の設定をコピー", "현재 설정 복사" ],
       "TH_COPY_CFG_CODE_HINT": [
         "将此配置的唯一代码复制到剪贴板。",
         "Copies the unique code for this configuration to your clipboard.",
-        "この設定の固有コードをクリップボードにコピーします。"
+        "この設定の固有コードをクリップボードにコピーします。",
+        "이 설정의 고유 코드를 클립보드에 복사합니다."
       ],
-      "TH_PASTE_CFG_CODE": [ "粘贴配置", "Paste config", "設定を貼り付け" ],
-      "TH_PASTE_CFG_CODE_HINT": [ "从剪贴板应用配置。", "Applies config from clipboard.", "クリップボードから設定を適用します。" ],
+      "TH_PASTE_CFG_CODE": [ "粘贴配置", "Paste config", "設定を貼り付け", "설정 붙여넣기" ],
+      "TH_PASTE_CFG_CODE_HINT": [ "从剪贴板应用配置。", "Applies config from clipboard.", "クリップボードから設定を適用します。", "클립보드에서 설정을 적용합니다." ],
       "TH_STAGE_NUM": [ "第%d面", "Stage %d", "ステージ %d" ],
       "TH_EXTRA_STAGE": [ "Extra面", "Extra Stage", "Extraステージ" ],
       "TH_DELAY": [ "延迟", "Delay", "ディレイ" ],
@@ -886,25 +934,29 @@
       "TH_FPS_ERR": [
         "FPS调整相关的功能已禁用，你必须满足以下条件之一以使用这些功能：\n1. 使用VsyncPatch，且在vpatch.ini中将“Vsync”一项的值设为0。\n2. 在游戏的custom.exe中将输入方式设置为“高速”。（仅限地灵殿及之后的游戏）",
         "FPS Adjustment related features has been disabled. To enable them, satisfy either of the following requirements:\n1. Use VsyncPatch, and make sure the \"Vsync\" value in vpatch.ini is set to 0.\n2. In the game's custom.exe, set the input method to \"Fast\". (Only applies to SA and after)",
-        "FPS調整関連の機能は無効になっています。有効にするには、以下のいずれかの要件を満たす必要があります。\n\n1. VsyncPatchを使用し、vpatch.iniの「Vsync」値を0に設定します。\n2. ゲームのcustom.exeで、入力のレイテンシを「高速」に設定します。（地霊殿以降のみ）"
+        "FPS調整関連の機能は無効になっています。有効にするには、以下のいずれかの要件を満たす必要があります。\n\n1. VsyncPatchを使用し、vpatch.iniの「Vsync」値を0に設定します。\n2. ゲームのcustom.exeで、入力のレイテンシを「高速」に設定します。（地霊殿以降のみ）",
+        "FPS 조정 관련 기능이 비활성화되었습니다. 활성화하려면 다음 요구 사항 중 하나를 충족해야 합니다.\n1. VsyncPatch를 사용하고, vpatch.ini에서 \"Vsync\" 값을 0으로 설정합니다.\n2. 게임의 custom.exe에서 입력 방법을 \"빠름\"으로 설정합니다. (지령전 이후 작품에만 적용)"
       ],
       "TH_FPS_UNSUPPORTED": [
         "不支持的VsyncPatch版本。",
         "Unsupported VsyncPatch version.",
-        "このバージョンのVsyncPatchはサポートされていません。"
+        "このバージョンのVsyncPatchはサポートされていません。",
+        "지원되지 않는 VsyncPatch 버전입니다."
       ],
       "TH_FPS_LOWERING": [
         "使用VsyncPatch时降低FPS可能会导致游戏冻结一小段时间，请耐心等待。",
         "When using VsyncPatch, lowering FPS may freeze the game for a brief time. Please wait patiently.",
-        "VsyncPatchを使用している場合、FPSを下げるとゲームが一時的にフリーズする可能性がありますので、しばらくお待ちください。"
+        "VsyncPatchを使用している場合、FPSを下げるとゲームが一時的にフリーズする可能性がありますので、しばらくお待ちください。",
+        "VsyncPatch를 사용하는 경우, FPS를 낮추면 게임이 잠시 멈출 수 있습니다. 잠시 기다려 주세요."
       ],
-      "TH_FPS_FREE_ADJ": [ "自由调整", "Adjust freely", "自由調整" ],
-      "TH_GAMEPLAY": [ "游戏进行", "Gameplay", "ゲームプレイ" ],
-      "TH_FACTOR_ACB": [ "总是计入All Clear Bonus", "Always factor in the \"All Clear Bonus\"", "プラクティスでもオールクリアボーナスを加算する" ],
+      "TH_FPS_FREE_ADJ": [ "自由调整", "Adjust freely", "自由調整", "자유 조정" ],
+      "TH_GAMEPLAY": [ "游戏进行", "Gameplay", "ゲームプレイ", "게임 플레이" ],
+      "TH_FACTOR_ACB": [ "总是计入All Clear Bonus", "Always factor in the \"All Clear Bonus\"", "プラクティスでもオールクリアボーナスを加算する", "프랙티스에서도 \"올 클리어 보너스\"를 계산에 포함하기" ],
       "TH_FACTOR_ACB_DESC": [
         "开启时，单关练习六面结束后将会计入All Clear Bonus。",
         "If enabled, when practicing stage 6, the \"All Clear Bonus\" will be added to the total score at the end.",
-        "有効にした場合、プラクティスモードの6面終了時にオールクリアボーナスを加算します。"
+        "有効にした場合、プラクティスモードの6面終了時にオールクリアボーナスを加算します。",
+        "활성화하면, 프랙티스 모드에서 6면 종료 시 \"올 클리어 보너스\"가 총 점수에 추가됩니다."
       ],
       
       "TH_BULLETS": [ "子弹", "Bullets", "弾", "탄환" ],
@@ -969,14 +1021,14 @@
       "TH_TRACKER_OTTER": [ "水獭", "Otter", "カワウソ", "수달" ],
       "TH_TRACKER_EAGLE": [ "大鹫", "Eagle", "オオワシ", "수리" ],
       "TH_TRACKER_STONE_N": [ "普通", "N", "コモン", "커먼" ],
-      "TH_TRACKER_STONE_R1": [ "红1", "R1", "赤1" ],
-      "TH_TRACKER_STONE_R2": [ "红2", "R2", "赤2" ],
-      "TH_TRACKER_STONE_B1": [ "蓝1", "B1", "青1" ],
-      "TH_TRACKER_STONE_B2": [ "蓝2", "B2", "青2" ],
-      "TH_TRACKER_STONE_Y1": [ "黄1", "Y1", "黄1" ],
-      "TH_TRACKER_STONE_Y2": [ "黄2", "Y2", "黄2" ],
-      "TH_TRACKER_STONE_G1": [ "绿1", "G1", "緑1" ],
-      "TH_TRACKER_STONE_G2": [ "绿2", "G2", "緑2" ]
+      "TH_TRACKER_STONE_R1": [ "红1", "R1", "赤1", "적1" ],
+      "TH_TRACKER_STONE_R2": [ "红2", "R2", "赤2", "적2" ],
+      "TH_TRACKER_STONE_B1": [ "蓝1", "B1", "青1", "청1" ],
+      "TH_TRACKER_STONE_B2": [ "蓝2", "B2", "青2", "청2" ],
+      "TH_TRACKER_STONE_Y1": [ "黄1", "Y1", "黄1", "황1" ],
+      "TH_TRACKER_STONE_Y2": [ "黄2", "Y2", "黄2", "황2" ],
+      "TH_TRACKER_STONE_G1": [ "绿1", "G1", "緑1", "녹1" ],
+      "TH_TRACKER_STONE_G2": [ "绿2", "G2", "緑2", "녹2" ]
     },
 
     "groups": {
@@ -1081,24 +1133,24 @@
       "TH06_RANKLOCK": [ "锁Rank", "Rank Lock", "ランクを固定する", "랭크 고정" ],
       "TH06_BOOKS": [ "魔法阵", "Books", "魔導書", "마도서" ],
 
-      "TH06_ST4_FIRE1": [ "火符「火神之光」", "Fire Sign \"Agni Shine\"", "火符「アグニシャイン」" ],
-      "TH06_ST4_FIRE2": [ "火符「火神之光 上级」", "Fire Sign \"Agni Shine High Level\"", "火符「アグニシャイン上級」" ],
-      "TH06_ST4_FIRE3": [ "火符「火神之光辉」", "Fire Sign \"Agni Radiance\"", "火符「アグニレイディアンス」" ],
-      "TH06_ST4_WOOD1": [ "木符「风灵角笛」", "Wood Sign \"Sylphy Horn\"", "木符「シルフィホルン」" ],
-      "TH06_ST4_WOOD2": [ "木符「风灵角笛 上级」", "Wood Sign \"Sylphy Horn High Level\"", "木符「シルフィホルン上級」" ],
-      "TH06_ST4_WOOD3": [ "木符「翠绿风暴」", "Wood Sign \"Green Storm\"", "木符「グリーンストーム」" ],
-      "TH06_ST4_EARTH1": [ "土符「慵懒三石塔」", "Earth Sign \"Lazy Trilithon\"", "土符「レイジィトリリトン」" ],
-      "TH06_ST4_EARTH2": [ "土符「慵懒三石塔 上级」", "Earth Sign \"Lazy Trilithon High Level\"", "土符「レイジィトリリトン上級」" ],
-      "TH06_ST4_EARTH3": [ "土符「三石塔的震动」", "Earth Sign \"Trilithon Shake\"", "土符「トリリトンシェイク」" ],
-      "TH06_ST4_WATER1": [ "水符「水精公主」", "Water Sign \"Princess Undine\"", "水符「プリンセスウンディネ」" ],
-      "TH06_ST4_WATER2": [ "水符「湖葬」", "Water Sign \"Bury In Lake\"", "水符「ベリーインレイク」" ],
-      "TH06_ST4_METAL1": [ "金符「金属疲劳」", "Metal Sign \"Metal Fatigue\"", "金符「メタルファティーグ」" ],
-      "TH06_ST4_METAL2": [ "金符「银龙」", "Metal Sign \"Silver Dragon\"", "金符「シルバードラゴン」" ],
-      "TH06_ST4_FIRE_EARTH": [ "火&土符「环状熔岩带」", "Fire & Earth Sign \"Lava Cromlech\"", "火＆土符「ラーヴァクロムレク」" ],
-      "TH06_ST4_WATER_WOOD": [ "水&木符「水之精灵」", "Water & Wood Sign \"Water Elf\"", "水＆木符「ウォーターエルフ」" ],
-      "TH06_ST4_WOOD_FIRE": [ "木&火符「森林大火」", "Wood & Fire Sign \"Forest Blaze\"", "木＆火符「フォレストブレイズ」" ],
-      "TH06_ST4_EARTH_METAL": [ "土&金符「翡翠巨石」", "Earth & Metal Sign \"Emerald Megalith\"", "土＆金符「エメラルドメガリス」" ],
-      "TH06_ST4_METAL_WATER": [ "金&水符「水银之毒」", "Metal & Water Sign \"Mercury Poison\"", "金＆水符「マーキュリポイズン」" ]
+      "TH06_ST4_FIRE1": [ "火符「火神之光」", "Fire Sign \"Agni Shine\"", "火符「アグニシャイン」", "화부「아그니 샤인」" ],
+      "TH06_ST4_FIRE2": [ "火符「火神之光 上级」", "Fire Sign \"Agni Shine High Level\"", "火符「アグニシャイン上級」", "화부「아그니 샤인 상급」" ],
+      "TH06_ST4_FIRE3": [ "火符「火神之光辉」", "Fire Sign \"Agni Radiance\"", "火符「アグニレイディアンス」", "화부「아그니 레이디언스」" ],
+      "TH06_ST4_WOOD1": [ "木符「风灵角笛」", "Wood Sign \"Sylphy Horn\"", "木符「シルフィホルン」", "목부「실피 호른」" ],
+      "TH06_ST4_WOOD2": [ "木符「风灵角笛 上级」", "Wood Sign \"Sylphy Horn High Level\"", "木符「シルフィホルン上級」", "목부「실피 호른 상급」" ],
+      "TH06_ST4_WOOD3": [ "木符「翠绿风暴」", "Wood Sign \"Green Storm\"", "木符「グリーンストーム」", "목부「그린 스톰」" ],
+      "TH06_ST4_EARTH1": [ "土符「慵懒三石塔」", "Earth Sign \"Lazy Trilithon\"", "土符「レイジィトリリトン」", "토부「레이지 트릴리톤」" ],
+      "TH06_ST4_EARTH2": [ "土符「慵懒三石塔 上级」", "Earth Sign \"Lazy Trilithon High Level\"", "土符「レイジィトリリトン上級」", "토부「레이지 트릴리톤 상급」" ],
+      "TH06_ST4_EARTH3": [ "土符「三石塔的震动」", "Earth Sign \"Trilithon Shake\"", "土符「トリリトンシェイク」", "토부「트릴리톤 셰이크」" ],
+      "TH06_ST4_WATER1": [ "水符「水精公主」", "Water Sign \"Princess Undine\"", "水符「プリンセスウンディネ」", "수부「프린세스 운디네」" ],
+      "TH06_ST4_WATER2": [ "水符「湖葬」", "Water Sign \"Bury In Lake\"", "水符「ベリーインレイク」", "수부「버리 인 레이크」" ],
+      "TH06_ST4_METAL1": [ "金符「金属疲劳」", "Metal Sign \"Metal Fatigue\"", "金符「メタルファティーグ」", "금부「메탈 퍼티그」" ],
+      "TH06_ST4_METAL2": [ "金符「银龙」", "Metal Sign \"Silver Dragon\"", "金符「シルバードラゴン」", "금부「실버 드래곤」" ],
+      "TH06_ST4_FIRE_EARTH": [ "火&土符「环状熔岩带」", "Fire & Earth Sign \"Lava Cromlech\"", "火＆土符「ラーヴァクロムレク」", "화&토부「라바 크롬렉」" ],
+      "TH06_ST4_WATER_WOOD": [ "水&木符「水之精灵」", "Water & Wood Sign \"Water Elf\"", "水＆木符「ウォーターエルフ」", "수&목부「워터 엘프」" ],
+      "TH06_ST4_WOOD_FIRE": [ "木&火符「森林大火」", "Wood & Fire Sign \"Forest Blaze\"", "木＆火符「フォレストブレイズ」", "목&화부「포레스트 블레이즈」" ],
+      "TH06_ST4_EARTH_METAL": [ "土&金符「翡翠巨石」", "Earth & Metal Sign \"Emerald Megalith\"", "土＆金符「エメラルドメガリス」", "토&금부「에메랄드 메갈리스」" ],
+      "TH06_ST4_METAL_WATER": [ "金&水符「水银之毒」", "Metal & Water Sign \"Mercury Poison\"", "金＆水符「マーキュリポイズン」", "금&수부「머큐리 포이즌」" ]
     },
 
     "sections": {
@@ -1112,7 +1164,7 @@
         "bgm": 0,
         "spell": 1,
         "appearance": [ 1, 1, 2 ],
-        "!HL": [ "月符「月光」", "Moon Sign \"Moonlight Ray\"", "月符「ムーンライトレイ」" ]
+        "!HL": [ "月符「月光」", "Moon Sign \"Moonlight Ray\"", "月符「ムーンライトレイ」", "월부「문라이트 레이」" ]
       },
       "TH06_ST1_BOSS1": {
         "bgm": 1,
@@ -1124,7 +1176,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 1, 2, 2 ],
-        "!ENHL": [ "夜符「夜雀」", "Night Sign \"Night Bird\"", "夜符「ナイトバード」" ]
+        "!ENHL": [ "夜符「夜雀」", "Night Sign \"Night Bird\"", "夜符「ナイトバード」", "야부「나이트 버드」" ]
       },
       "TH06_ST1_BOSS3": {
         "bgm": 1,
@@ -1136,7 +1188,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 1, 2, 4 ],
-        "!ENHL": [ "暗符「境界线」", "Darkness Sign \"Demarcation\"", "闇符「ディマーケイション」" ]
+        "!ENHL": [ "暗符「境界线」", "Darkness Sign \"Demarcation\"", "闇符「ディマーケイション」", "암부「디마케이션」" ]
       },
 
       "TH06_ST2_MID1": {
@@ -1155,8 +1207,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 2, 2, 2 ],
-        "!EN": [ "冰符「冰瀑」", "Ice Sign \"Icicle Fall\"", "氷符「アイシクルフォール」" ],
-        "!HL": [ "雹符「冰雹暴风」", "Hail Sign \"Hailstorm\"", "雹符「ヘイルストーム」" ]
+        "!EN": [ "冰符「冰瀑」", "Ice Sign \"Icicle Fall\"", "氷符「アイシクルフォール」", "빙부「아이시클 폴」" ],
+        "!HL": [ "雹符「冰雹暴风」", "Hail Sign \"Hailstorm\"", "雹符「ヘイルストーム」", "박부「헤일 스톰」" ]
       },
       "TH06_ST2_BOSS3": {
         "bgm": 1,
@@ -1168,13 +1220,13 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 2, 2, 4 ],
-        "!ENHL": [ "冻符「完美冻结」", "Freeze Sign \"Perfect Freeze\"", "凍符「パーフェクトフリーズ」" ]
+        "!ENHL": [ "冻符「完美冻结」", "Freeze Sign \"Perfect Freeze\"", "凍符「パーフェクトフリーズ」", "동부「퍼펙트 프리즈」" ]
       },
       "TH06_ST2_BOSS5": {
         "bgm": 1,
         "spell": 1,
         "appearance": [ 2, 2, 5 ],
-        "!NHL": [ "雪符「钻石风暴」", "Snow Sign \"Diamond Blizzard\"", "雪符「ダイアモンドブリザード」" ]
+        "!NHL": [ "雪符「钻石风暴」", "Snow Sign \"Diamond Blizzard\"", "雪符「ダイアモンドブリザード」", "설부「다이아몬드 블리자드」" ]
       },
 
       "TH06_ST3_MID1": {
@@ -1187,8 +1239,8 @@
         "bgm": 0,
         "spell": 1,
         "appearance": [ 3, 1, 2 ],
-        "!EN": [ "华符「芳华绚烂」", "Flower Sign \"Gorgeous Sweet Flower\"", "華符「芳華絢爛」" ],
-        "!HL": [ "华符「卷柏9」", "Flower Sign \"Selaginella 9\"", "華符「セラギネラ９」" ]
+        "!EN": [ "华符「芳华绚烂」", "Flower Sign \"Gorgeous Sweet Flower\"", "華符「芳華絢爛」", "화부「방화현란」" ],
+        "!HL": [ "华符「卷柏9」", "Flower Sign \"Selaginella 9\"", "華符「セラギネラ９」", "화부「세라기넬라 9」" ]
       },
       "TH06_ST3_BOSS1": {
         "bgm": 1,
@@ -1200,7 +1252,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 3, 2, 2 ],
-        "!ENHL": [ "虹符「彩虹的风铃」", "Rainbow Sign \"Colorful Rainbow Wind Chime\"", "虹符「彩虹の風鈴」" ]
+        "!ENHL": [ "虹符「彩虹的风铃」", "Rainbow Sign \"Colorful Rainbow Wind Chime\"", "虹符「彩虹の風鈴」", "홍부「채홍의 풍령」" ]
       },
       "TH06_ST3_BOSS3": {
         "bgm": 1,
@@ -1212,7 +1264,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 3, 2, 4 ],
-        "!HL": [ "幻符「华想梦葛」", "Illusion Sign \"Imaginary Flower Yumezakura\"", "幻符「華想夢葛」" ]
+        "!HL": [ "幻符「华想梦葛」", "Illusion Sign \"Imaginary Flower Yumezakura\"", "幻符「華想夢葛」", "환부「화상몽갈」" ]
       },
       "TH06_ST3_BOSS5": {
         "bgm": 1,
@@ -1224,14 +1276,14 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 3, 2, 6 ],
-        "!EN": [ "彩符「彩雨」", "Colorful Sign \"Colorful Rain\"", "彩符「彩雨」" ],
-        "!HL": [ "彩符「彩光乱舞」", "Colorful Sign \"Vivid Chaotic Dance\"", "彩符「彩光乱舞」" ]
+        "!EN": [ "彩符「彩雨」", "Colorful Sign \"Colorful Rain\"", "彩符「彩雨」", "채부「채우」" ],
+        "!HL": [ "彩符「彩光乱舞」", "Colorful Sign \"Vivid Chaotic Dance\"", "彩符「彩光乱舞」", "채부「채광난무」" ]
       },
       "TH06_ST3_BOSS7": {
         "bgm": 1,
         "spell": 1,
         "appearance": [ 3, 2, 7 ],
-        "!NHL": [ "彩符「极彩台风」", "Colorful Sign \"Dazzling Color Typhoon\"", "彩符「極彩颱風」" ]
+        "!NHL": [ "彩符「极彩台风」", "Colorful Sign \"Dazzling Color Typhoon\"", "彩符「極彩颱風」", "채부「극채태풍」" ]
       },
 
       "TH06_ST4_BOOKS": {
@@ -1294,8 +1346,8 @@
         "bgm": 0,
         "spell": 1,
         "appearance": [ 5, 1, 2 ],
-        "!EN": [ "奇术「误导」", "Conjuring \"Misdirection\"", "奇術「ミスディレクション」" ],
-        "!HL": [ "奇术「幻惑误导」", "Conjuring \"Mesmerizing Misdirection\"", "奇術「幻惑ミスディレクション」" ]
+        "!EN": [ "奇术「误导」", "Conjuring \"Misdirection\"", "奇術「ミスディレクション」", "기술「미스디렉션」" ],
+        "!HL": [ "奇术「幻惑误导」", "Conjuring \"Mesmerizing Misdirection\"", "奇術「幻惑ミスディレクション」", "기술「환혹 미스디렉션」" ]
       },
       "TH06_ST5_BOSS1": {
         "bgm": 1,
@@ -1307,8 +1359,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 5, 2, 2 ],
-        "!EN": [ "幻在「时钟遗骸」", "Illusion Existence \"Clock Corpse\"", "幻在「クロックコープス」" ],
-        "!HL": [ "幻幽「迷幻杰克」", "Illusion Phantom \"Jack the Ludo Bile\"", "幻幽「ジャック・ザ・ルドビレ」" ]
+        "!EN": [ "幻在「时钟遗骸」", "Illusion Existence \"Clock Corpse\"", "幻在「クロックコープス」", "환재「클락 콥스」" ],
+        "!HL": [ "幻幽「迷幻杰克」", "Illusion Phantom \"Jack the Ludo Bile\"", "幻幽「ジャック・ザ・ルドビレ」", "환유「잭 더 루드비레」" ]
       },
       "TH06_ST5_BOSS3": {
         "bgm": 1,
@@ -1320,8 +1372,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 5, 2, 4 ],
-        "!EN": [ "幻象「月神之钟」", "Illusion Image \"Luna Clock\"", "幻象「ルナクロック」" ],
-        "!HL": [ "幻世「世界」", "Illusion World \"The World\"", "幻世「ザ・ワールド」" ]
+        "!EN": [ "幻象「月神之钟」", "Illusion Image \"Luna Clock\"", "幻象「ルナクロック」", "환상「루나 클락」" ],
+        "!HL": [ "幻世「世界」", "Illusion World \"The World\"", "幻世「ザ・ワールド」", "환세「더 월드」" ]
       },
       "TH06_ST5_BOSS5": {
         "bgm": 1,
@@ -1333,8 +1385,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 5, 2, 6 ],
-        "!EN": [ "女仆秘技「操弄玩偶」", "Maid Secret Skill \"Manipulating Doll\"", "メイド秘技「操りドール」" ],
-        "!HL": [ "女仆秘技「杀人玩偶」", "Maid Secret Skill \"Killing Doll\"", "メイド秘技「殺人ドール」" ]
+        "!EN": [ "女仆秘技「操弄玩偶」", "Maid Secret Skill \"Manipulating Doll\"", "メイド秘技「操りドール」", "메이드 비기「꼭두각시 인형」" ],
+        "!HL": [ "女仆秘技「杀人玩偶」", "Maid Secret Skill \"Killing Doll\"", "メイド秘技「殺人ドール」", "메이드 비기「살인 인형」" ]
       },
 
       "TH06_ST6_MID1": {
@@ -1347,7 +1399,7 @@
         "bgm": 0,
         "spell": 1,
         "appearance": [ 6, 1, 2 ],
-        "!NHL": [ "奇术「永恒的温柔」", "Conjuring \"Eternal Meek\"", "奇術「エターナルミーク」" ]
+        "!NHL": [ "奇术「永恒的温柔」", "Conjuring \"Eternal Meek\"", "奇術「エターナルミーク」", "기술「이터널 믹」" ]
       },
       "TH06_ST6_BOSS1": {
         "bgm": 1,
@@ -1359,8 +1411,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 6, 2, 2 ],
-        "!EN": [ "天罚「大卫之星」", "Heaven's Punishment \"Star of David\"", "天罰「スターオブダビデ」" ],
-        "!HL": [ "神罚「幼小的恶魔领主」", "God's Punishment \"Young Demon Lord\"", "神罰「幼きデーモンロード」" ]
+        "!EN": [ "天罚「大卫之星」", "Heaven's Punishment \"Star of David\"", "天罰「スターオブダビデ」", "천벌「스타 오브 다비드」" ],
+        "!HL": [ "神罚「幼小的恶魔领主」", "God's Punishment \"Young Demon Lord\"", "神罰「幼きデーモンロード」", "신벌「어린 데몬 로드」" ]
       },
       "TH06_ST6_BOSS3": {
         "bgm": 1,
@@ -1372,8 +1424,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 6, 2, 4 ],
-        "!EN": [ "冥符「红色的冥界」", "Nether Sign \"Scarlet Netherworld\"", "冥符「紅色の冥界」" ],
-        "!HL": [ "狱符「千根针的针山」", "Hell Sign \"Mountain of a Thousand Needles\"", "獄符「千本の針の山」" ]
+        "!EN": [ "冥符「红色的冥界」", "Nether Sign \"Scarlet Netherworld\"", "冥符「紅色の冥界」", "명부「홍색의 명계」" ],
+        "!HL": [ "狱符「千根针的针山」", "Hell Sign \"Mountain of a Thousand Needles\"", "獄符「千本の針の山」", "옥부「천 개의 바늘산」" ]
       },
       "TH06_ST6_BOSS5": {
         "bgm": 1,
@@ -1385,8 +1437,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 6, 2, 6 ],
-        "!EN": [ "诅咒「Vlad Tepes的诅咒」", "Curse \"Curse of Vlad Țepeș\"", "呪詛「ブラド・ツェペシュの呪い」" ],
-        "!HL": [ "神术「吸血鬼幻想」", "Divine Art \"Vampire Illusion\"", "神術「吸血鬼幻想」" ]
+        "!EN": [ "诅咒「Vlad Tepes的诅咒」", "Curse \"Curse of Vlad Țepeș\"", "呪詛「ブラド・ツェペシュの呪い」", "주저「블라드 체페슈의 저주」" ],
+        "!HL": [ "神术「吸血鬼幻想」", "Divine Art \"Vampire Illusion\"", "神術「吸血鬼幻想」", "신술「흡혈귀 환상」" ]
       },
       "TH06_ST6_BOSS7": {
         "bgm": 1,
@@ -1398,34 +1450,34 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 6, 2, 8 ],
-        "!EN": [ "红符「深红射击」", "Scarlet Sign \"Scarlet Shoot\"", "紅符「スカーレットシュート」" ],
-        "!HL": [ "红符「绯红之主」", "Scarlet Sign \"Scarlet Meister\"", "紅符「スカーレットマイスタ」" ]
+        "!EN": [ "红符「深红射击」", "Scarlet Sign \"Scarlet Shoot\"", "紅符「スカーレットシュート」", "홍부「스칼렛 슛」" ],
+        "!HL": [ "红符「绯红之主」", "Scarlet Sign \"Scarlet Meister\"", "紅符「スカーレットマイスタ」", "홍부「스칼렛 마이스터」" ]
       },
       "TH06_ST6_BOSS9": {
         "bgm": 1,
         "spell": 1,
         "appearance": [ 6, 2, 9 ],
-        "!EN": [ "「Red Magic」", "\"Red Magic\"", "「レッドマジック」" ],
-        "!HL": [ "「红色的幻想乡」", "\"Scarlet Gensokyo\"", "「紅色の幻想郷」" ]
+        "!EN": [ "「Red Magic」", "\"Red Magic\"", "「レッドマジック」", "「레드 매직」" ],
+        "!HL": [ "「红色的幻想乡」", "\"Scarlet Gensokyo\"", "「紅色の幻想郷」", "「홍색의 환상향」" ]
       },
 
       "TH06_ST7_MID1": {
         "bgm": 0,
         "spell": 1,
         "appearance": [ 7, 1, 1 ],
-        "!X": [ "月符「沉静的月神」", "Moon Sign \"Silent Selene\"", "月符「サイレントセレナ」" ]
+        "!X": [ "月符「沉静的月神」", "Moon Sign \"Silent Selene\"", "月符「サイレントセレナ」", "월부「사일런트 세레나」" ]
       },
       "TH06_ST7_MID2": {
         "bgm": 0,
         "spell": 1,
         "appearance": [ 7, 1, 2 ],
-        "!X": [ "日符「皇家烈焰」", "Sun Sign \"Royal Flare\"", "日符「ロイヤルフレア」" ]
+        "!X": [ "日符「皇家烈焰」", "Sun Sign \"Royal Flare\"", "日符「ロイヤルフレア」", "일부「로열 플레어」" ]
       },
       "TH06_ST7_MID3": {
         "bgm": 0,
         "spell": 1,
         "appearance": [ 7, 1, 3 ],
-        "!X": [ "火水木金土符「贤者之石」", "Fire Water Wood Metal Earth Sign \n\"Philosopher's Stone\"", "火水木金土符「賢者の石」" ]
+        "!X": [ "火水木金土符「贤者之石」", "Fire Water Wood Metal Earth Sign \n\"Philosopher's Stone\"", "火水木金土符「賢者の石」", "화수목금토부「현자의 돌」" ]
       },
       "TH06_ST7_END_NS1": {
         "bgm": 1,
@@ -1437,7 +1489,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 2 ],
-        "!X": [ "禁忌「红莓陷阱」", "Taboo \"Cranberry Trap\"", "禁忌「クランベリートラップ」" ]
+        "!X": [ "禁忌「红莓陷阱」", "Taboo \"Cranberry Trap\"", "禁忌「クランベリートラップ」", "금기「크랜베리 트랩」" ]
       },
       "TH06_ST7_END_NS2": {
         "bgm": 1,
@@ -1449,7 +1501,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 4 ],
-        "!X": [ "禁忌「莱瓦汀」", "Taboo \"Lævateinn\"", "禁忌「レーヴァテイン」" ]
+        "!X": [ "禁忌「莱瓦汀」", "Taboo \"Lævateinn\"", "禁忌「レーヴァテイン」", "금기「레바테인」" ]
       },
       "TH06_ST7_END_NS3": {
         "bgm": 1,
@@ -1461,7 +1513,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 6 ],
-        "!X": [ "禁忌「四重存在」", "Taboo \"Four of a Kind\"", "禁忌「フォーオブアカインド」" ]
+        "!X": [ "禁忌「四重存在」", "Taboo \"Four of a Kind\"", "禁忌「フォーオブアカインド」", "금기「포 오브 어 카인드」" ]
       },
       "TH06_ST7_END_NS4": {
         "bgm": 1,
@@ -1473,7 +1525,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 8 ],
-        "!X": [ "禁忌「笼中鸟」", "Taboo \"Kagome, Kagome\"", "禁忌「カゴメカゴメ」" ]
+        "!X": [ "禁忌「笼中鸟」", "Taboo \"Kagome, Kagome\"", "禁忌「カゴメカゴメ」", "금기「카고메 카고메」" ]
       },
       "TH06_ST7_END_NS5": {
         "bgm": 1,
@@ -1485,7 +1537,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 10 ],
-        "!X": [ "禁忌「恋之迷宫」", "Taboo \"Maze of Love\"", "禁忌「恋の迷路」" ]
+        "!X": [ "禁忌「恋之迷宫」", "Taboo \"Maze of Love\"", "禁忌「恋の迷路」", "금기「사랑의 미로」" ]
       },
       "TH06_ST7_END_NS6": {
         "bgm": 1,
@@ -1497,7 +1549,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 12 ],
-        "!X": [ "禁弹「星弧破碎」", "Forbidden Barrage \"Starbow Break\"", "禁弾「スターボウブレイク」" ]
+        "!X": [ "禁弹「星弧破碎」", "Forbidden Barrage \"Starbow Break\"", "禁弾「スターボウブレイク」", "금탄「스타 보우 브레이크」" ]
       },
       "TH06_ST7_END_NS7": {
         "bgm": 1,
@@ -1509,7 +1561,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 14 ],
-        "!X": [ "禁弹「折反射」", "Forbidden Barrage \"Catadioptric\"", "禁弾「カタディオプトリック」" ]
+        "!X": [ "禁弹「折反射」", "Forbidden Barrage \"Catadioptric\"", "禁弾「カタディオプトリック」", "금탄「캐터디옵트릭」" ]
       },
       "TH06_ST7_END_NS8": {
         "bgm": 1,
@@ -1521,19 +1573,19 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 16 ],
-        "!X": [ "禁弹「刻着过去的钟表」", "Forbidden Barrage \n\"Clock that Ticks Away the Past\"", "禁弾「過去を刻む時計」" ]
+        "!X": [ "禁弹「刻着过去的钟表」", "Forbidden Barrage \n\"Clock that Ticks Away the Past\"", "禁弾「過去を刻む時計」", "금탄「과거를 새기는 시계」" ]
       },
       "TH06_ST7_END_S9": {
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 17 ],
-        "!X": [ "秘弹「之后就一个人都没有了吗？」", "Secret Barrage \n\"And Then Will There Be None?\"", "秘弾「そして誰もいなくなるか？」" ]
+        "!X": [ "秘弹「之后就一个人都没有了吗？」", "Secret Barrage \n\"And Then Will There Be None?\"", "秘弾「そして誰もいなくなるか？」", "비탄「그리고 아무도 없게 되는가？」" ]
       },
       "TH06_ST7_END_S10": {
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 18 ],
-        "!X": [ "QED「495年的波纹」", "Q.E.D. \"Ripples of 495 Years\"", "QED「495年の波紋」" ]
+        "!X": [ "QED「495年的波纹」", "Q.E.D. \"Ripples of 495 Years\"", "QED「495年の波紋」", "Q.E.D.「495년의 파문」" ]
       },
 
       "TH06_ST4_RA_BOOKS": {
