@@ -113,362 +113,537 @@ static ImWchar baseUnicodeRanges[] =
 };
 #pragma endregion
 
-    bool __glocale_merge = false;
-    unsigned int __glocale_disabled = 0;
-    ImWchar* __glocale_jp_glyphrange = nullptr;
-    Locale __glocale_current = LOCALE_EN_US;
+        bool __glocale_merge = false;
+        unsigned int __glocale_disabled = 0;
+        ImWchar* __glocale_jp_glyphrange = nullptr;
+        Locale __glocale_current = LOCALE_EN_US;
 
-    void LocaleSet(Locale locale)
-    {
-        gSettings.language = locale;
-        __glocale_current = locale;
-        if (!__glocale_merge) {
-            ImGuiIO& io = ImGui::GetIO();
-            io.FontDefault = io.Fonts->Fonts[locale];
-        }
-    }
-    void LocaleSetFromSysLang()
-    {
-        auto lang_id = GetUserDefaultUILanguage();
-        switch (lang_id & 0x03ff) {
-        case 0x4:
-            gSettings.language = LOCALE_ZH_CN;
-            __glocale_current  = LOCALE_ZH_CN;
-            break;
-        case 0x9:
-            gSettings.language = LOCALE_EN_US;
-            __glocale_current  = LOCALE_EN_US;
-            break;
-        case 0x11:
-            gSettings.language = LOCALE_JA_JP;
-            __glocale_current  = LOCALE_JA_JP;
-            break;
-        }
-    }
-    inline const char** LocaleGetCurrentGlossary();
-    inline const char* LocaleGetStr(th_glossary_t name);
-    void LocaleRotate()
-    {
-        switch (gSettings.language) {
-        case LOCALE_ZH_CN:
-            LocaleSet(LOCALE_EN_US);
-            break;
-        case LOCALE_EN_US:
-            LocaleSet(LOCALE_JA_JP);
-            break;
-        case LOCALE_JA_JP:
-            LocaleSet(LOCALE_ZH_CN);
-            break;
-        default:
-            break;
-        }
-    }
+        static ImFont* __glocale_fonts[4]{};
 
-    struct font_info {
-        const wchar_t* font_name;
-        int font_index;
-        float font_scale;
-    };
-
-    font_info zhFontsInfo[] = {
-        { L"Microsoft YaHei UI Light", 1, 1.0f },
-        { L"Microsoft YaHei Light", 0, 1.0f },
-        { L"微软雅黑", 0, 1.0f },
-        { L"Microsoft YaHei", 0, 1.0f },
-        { L"黑体", 0, 0.9f },
-        { L"SimHei", 0, 0.9f },
-        { L"宋体", 0, 0.9f },
-        { L"SimSun", 0, 0.9f },
-    };
-    font_info enFontsInfo[] = {
-        { L"Segoe UI", 0, 1.0f },
-        { L"Tahoma", 0, 0.88f },
-    };
-    font_info jaFontsInfo[] = {
-        { L"Yu Gothic UI", 1, 1.0f },
-        { L"Meiryo UI", 0, 1.0f },
-        { L"MS UI Gothic", 0, 0.85f },
-        { L"MS Mincho", 0, 0.85f },
-    };
-
-    int CALLBACK __glocale_font_enum_proc([[maybe_unused]] const LOGFONTW* lpelfe, [[maybe_unused]] const TEXTMETRICW* lpntme, [[maybe_unused]] DWORD FontType, LPARAM lParam)
-    {
-        *((int*)lParam) = 1;
-        return 0;
-    }
-    int CALLBACK FindFirstJapaneseFontProc(const LOGFONTW* logicalFont, const NEWTEXTMETRICEXW* fontMetricEx, DWORD fontType, LPARAM lParam)
-    {
-        if (fontType != TRUETYPE_FONTTYPE) {
-            return TRUE;
-        }
-
-        // Supports Japanese encoding
-        if (logicalFont->lfCharSet != SHIFTJIS_CHARSET) {
-            return TRUE;
-        }
-
-        // Variable pitch to save space
-        if ((logicalFont->lfPitchAndFamily & 0x3) != VARIABLE_PITCH) {
-            return TRUE;
-        }
-
-        // Reject font for vertical writing
-        if (logicalFont->lfFaceName[0] == '@') {
-            return TRUE;
-        }
-
-        // Check code page bitfields
-        // For complete list of bitfields: https://msdn.microsoft.com/library/windows/desktop/dd317754(v=vs.85).aspx
-        static std::uint8_t codePageBitfields[] = {
-            0, 1, // Latin,
-            17, // Japanese
-        };
-
-        for (auto bitToCheck : codePageBitfields) {
-            DWORD mask = 1 << (bitToCheck & 32);
-            if (!(fontMetricEx->ntmFontSig.fsCsb[bitToCheck / 32] & mask)) {
-                return TRUE;
-            }
-        }
-
-        // Check unicode subset bitfields
-        // For complete list of bitfields: https://msdn.microsoft.com/library/windows/desktop/dd374090(v=vs.85).aspx
-        static std::uint8_t unicodeSubsetBitfields[] = {
-            0, 1, // Basic Latin + Latin Supplement
-            48, 49, 50, // Punctuations, Hiragana, Katakana
-            68, // Half-width characters
-            37, // Arrows
-            59, // CJK Unified Ideographs
-        };
-
-        for (auto bitToCheck : unicodeSubsetBitfields) {
-            DWORD mask = 1 << (bitToCheck % 32);
-            if (!(fontMetricEx->ntmFontSig.fsUsb[bitToCheck / 32] & mask)) {
-                return TRUE;
-            }
-        }
-
-        memcpy((void*)lParam, logicalFont->lfFaceName, sizeof(logicalFont->lfFaceName));
-
-        return FALSE;
-    }
-    int CALLBACK FindFirstChineseFontProc(const LOGFONTW* logicalFont, const NEWTEXTMETRICEXW* fontMetricEx, DWORD fontType, LPARAM lParam)
-    {
-        if (fontType != TRUETYPE_FONTTYPE) {
-            return TRUE;
-        }
-
-        // Supports Japanese encoding
-        if (logicalFont->lfCharSet != GB2312_CHARSET) {
-            return TRUE;
-        }
-
-        // Variable pitch to save space
-        if ((logicalFont->lfPitchAndFamily & 0x3) != VARIABLE_PITCH) {
-            return TRUE;
-        }
-
-        // Reject font for vertical writing
-        if (logicalFont->lfFaceName[0] == '@') {
-            return TRUE;
-        }
-
-        // Check code page bitfields
-        // For complete list of bitfields: https://msdn.microsoft.com/library/windows/desktop/dd317754(v=vs.85).aspx
-        static std::uint8_t codePageBitfields[] = {
-            0, 1, // Latin,
-            18, // SChinese
-        };
-
-        for (auto bitToCheck : codePageBitfields) {
-            DWORD mask = 1 << (bitToCheck & 32);
-            if (!(fontMetricEx->ntmFontSig.fsCsb[bitToCheck / 32] & mask)) {
-                return TRUE;
-            }
-        }
-
-        // Check unicode subset bitfields
-        // For complete list of bitfields: https://msdn.microsoft.com/library/windows/desktop/dd374090(v=vs.85).aspx
-        static std::uint8_t unicodeSubsetBitfields[] = {
-            0, 1, // Basic Latin + Latin Supplement
-            //31,
-            48, //49, 50, // Punctuations, Hiragana, Katakana
-            //68, // Half-width characters
-            59, // CJK Unified Ideographs
-        };
-
-        for (auto bitToCheck : unicodeSubsetBitfields) {
-            DWORD mask = 1 << (bitToCheck % 32);
-            if (!(fontMetricEx->ntmFontSig.fsUsb[bitToCheck / 32] & mask)) {
-                return TRUE;
-            }
-        }
-
-        memcpy((void*)lParam, logicalFont->lfFaceName, sizeof(logicalFont->lfFaceName));
-        return FALSE;
-    }
-    HFONT CALLBACK CheckFontZh(HDC hdc, font_info& info)
-    {
-        LOGFONTW font = {};
-        int signal = 0;
-
-        font.lfPitchAndFamily = 0;
-        font.lfCharSet = GB2312_CHARSET;
-
-        for (auto f : zhFontsInfo) {
-            wcsncpy(font.lfFaceName, f.font_name, 32);
-            EnumFontFamiliesExW(hdc, &font, __glocale_font_enum_proc, (LPARAM)&signal, 0);
-            if (signal) {
-                info = f;
-                break;
-            }
-        }
-
-        if (!signal) {
-            wchar_t fontFamilyName[32] = {};
-            EnumFontFamiliesExW(hdc, nullptr, (FONTENUMPROCW)&FindFirstChineseFontProc, (LPARAM)fontFamilyName, 0);
-            if (!*fontFamilyName) {
-                return nullptr;
-            }
-            info.font_name = L"";
-            info.font_index = 0;
-            info.font_scale = 1.0f;
-            return CreateFontW(0, 0, 0, 0, 0, 0, 0, 0, GB2312_CHARSET, 0, 0, 0, 0, fontFamilyName);
-        }
-
-        return CreateFontW(
-            0, 0, 0, 0, 0, 0, 0, 0,
-            GB2312_CHARSET,
-            0, 0, 0, 0,
-            info.font_name);
-    }
-    HFONT CALLBACK CheckFontEn(HDC hdc, font_info& info)
-    {
-        LOGFONTW font = {};
-        int signal = 0;
-
-        font.lfPitchAndFamily = 0;
-        font.lfCharSet = ANSI_CHARSET;
-
-        for (auto f : enFontsInfo) {
-            wcsncpy(font.lfFaceName, f.font_name, 32);
-            EnumFontFamiliesExW(hdc, &font, __glocale_font_enum_proc, (LPARAM)&signal, 0);
-            if (signal) {
-                info = f;
-                break;
-            }
-        }
-
-        if (!signal) {
-            info.font_name = L"";
-            info.font_index = 0;
-            info.font_scale = 1.0f;
-            return (HFONT)GetStockObject(SYSTEM_FONT);
-        }
-
-        return CreateFontW(
-            0, 0, 0, 0, 0, 0, 0, 0,
-            ANSI_CHARSET,
-            0, 0, 0, 0,
-            info.font_name);
-    }
-    HFONT CALLBACK CheckFontJa(HDC hdc, font_info& info)
-    {
-        LOGFONTW font = {};
-        int signal = 0;
-
-        font.lfPitchAndFamily = 0;
-        font.lfCharSet = SHIFTJIS_CHARSET;
-
-        for (auto f : jaFontsInfo) {
-            wcsncpy(font.lfFaceName, f.font_name, 32);
-            EnumFontFamiliesExW(hdc, &font, __glocale_font_enum_proc, (LPARAM)&signal, 0);
-            if (signal) {
-                info = f;
-                break;
-            }
-        }
-
-        if (!signal) {
-            wchar_t fontFamilyName[32] = {};
-            EnumFontFamiliesExW(hdc, nullptr, (FONTENUMPROCW)&FindFirstJapaneseFontProc, (LPARAM)fontFamilyName, 0);
-            if (!*fontFamilyName) {
-                return nullptr;
-            }
-            info.font_name = L"";
-            info.font_index = 0;
-            info.font_scale = 1.0f;
-            return CreateFontW(0, 0, 0, 0, 0, 0, 0, 0, SHIFTJIS_CHARSET, 0, 0, 0, 0, fontFamilyName);
-        }
-
-        return CreateFontW(
-            0, 0, 0, 0, 0, 0, 0, 0,
-            SHIFTJIS_CHARSET,
-            0, 0, 0, 0,
-            info.font_name);
-    }
-    ImWchar* GetGlyphRange(int locale)
-    {
-        auto& io = ImGui::GetIO();
-        ImWchar* glyphRange = nullptr;
-        switch (locale) {
-        case LOCALE_ZH_CN:
-            if (gSettings.render_only_used_glyphs) {
-                glyphRange = (ImWchar*)__thprac_loc_range_zh;
-            } else {
-                glyphRange = (ImWchar*)io.Fonts->GetGlyphRangesChineseFull();
-            }
-            break;
-        case LOCALE_EN_US:
-            glyphRange = (ImWchar*)__thprac_loc_range_en;
-            break;
-        case LOCALE_JA_JP: {
-            if (gSettings.render_only_used_glyphs) {
-                glyphRange = (ImWchar*)__thprac_loc_range_ja;
-            } else {
-                if (!__glocale_jp_glyphrange) {
-                    __glocale_jp_glyphrange = (ImWchar*)malloc((_countof(baseUnicodeRanges) + _countof(offsetsFrom0x4E00) * 2 + 1) * sizeof(ImWchar));
-                    // Unpack
-                    int codepoint = 0x4e00;
-                    memcpy(__glocale_jp_glyphrange, baseUnicodeRanges, sizeof(baseUnicodeRanges));
-                    ImWchar* dst = __glocale_jp_glyphrange + _countof(baseUnicodeRanges);
-                    for (unsigned n = 0; n < _countof(offsetsFrom0x4E00); n++, dst += 2) {
-                        dst[0] = dst[1] = (ImWchar)(codepoint += (offsetsFrom0x4E00[n] + 1));
-                    }
-                    dst[0] = 0;
+        void LocaleSet(Locale locale)
+        {
+            gSettings.language = locale;
+            __glocale_current = locale;
+            if (!__glocale_merge) {
+                ImGuiIO& io = ImGui::GetIO();
+                // Fix: Prevent index out-of-bounds when a font fails to load, and resolve C4018 signed/unsigned mismatch warning.
+                if (__glocale_fonts[locale] != nullptr) {
+                    io.FontDefault = __glocale_fonts[locale];
                 }
-                glyphRange = (ImWchar*)__glocale_jp_glyphrange;
+                else if ((int)io.Fonts->Fonts.Size > (int)locale) {
+                    io.FontDefault = io.Fonts->Fonts[locale];
+                }
             }
-            break;
         }
-        default:
-            break;
+        void LocaleSetFromSysLang()
+        {
+            auto lang_id = GetUserDefaultUILanguage();
+            switch (lang_id & 0x03ff) {
+            case 0x4:
+                gSettings.language = LOCALE_ZH_CN;
+                __glocale_current = LOCALE_ZH_CN;
+                break;
+            case 0x9:
+                gSettings.language = LOCALE_EN_US;
+                __glocale_current = LOCALE_EN_US;
+                break;
+            case 0x11:
+                gSettings.language = LOCALE_JA_JP;
+                __glocale_current = LOCALE_JA_JP;
+                break;
+            case 0x12:
+                gSettings.language = LOCALE_KO_KR;
+                __glocale_current = LOCALE_KO_KR;
+                break;
+            }
         }
-        return glyphRange;
-    }
-    typedef HFONT(CALLBACK* font_checker)(HDC hdc, font_info& info);
-    font_checker fontCheckers[] = {
-        CheckFontZh,
-        CheckFontEn,
-        CheckFontJa,
-    };
+        inline const char** LocaleGetCurrentGlossary();
+        inline const char* LocaleGetStr(th_glossary_t name);
+        void LocaleRotate()
+        {
+            switch (gSettings.language) {
+            case LOCALE_ZH_CN:
+                LocaleSet(LOCALE_EN_US);
+                break;
+            case LOCALE_EN_US:
+                LocaleSet(LOCALE_JA_JP);
+                break;
+            case LOCALE_JA_JP:
+                LocaleSet(LOCALE_KO_KR);
+                break;
+            case LOCALE_KO_KR:
+                LocaleSet(LOCALE_ZH_CN);
+                break;
+            default:
+                break;
+            }
+        }
 
-    static ImFont* __glocale_fonts[3] {};
-    void LocaleFontWarning()
-    {
-        if (__glocale_disabled) {
-            if (__glocale_disabled == 7) {
-                MessageBoxW(nullptr, L"No font can be loaded.\nthprac will now terminate.", L"Fatal error", MB_OK | MB_ICONERROR);
-                ExitProcess(ERROR_FILE_CORRUPT);
-            } else {
-                MessageBoxW(nullptr, L"One or more fonts failed to load, which will cause certain non-Latin characters to not render properly.\nIf you are running thprac under wine/Crossover, seek help to link the appropriate fonts or try using wine-staging.", L"Warning", MB_OK | MB_ICONWARNING);
+        struct font_info {
+            const wchar_t* font_name;
+            int font_index;
+            float font_scale;
+        };
+
+        font_info zhFontsInfo[] = {
+            { L"Microsoft YaHei UI Light", 1, 1.0f },
+            { L"Microsoft YaHei Light", 0, 1.0f },
+            { L"微软雅黑", 0, 1.0f },
+            { L"Microsoft YaHei", 0, 1.0f },
+            { L"黑体", 0, 0.9f },
+            { L"SimHei", 0, 0.9f },
+            { L"宋体", 0, 0.9f },
+            { L"SimSun", 0, 0.9f },
+        };
+        font_info enFontsInfo[] = {
+            { L"Segoe UI", 0, 1.0f },
+            { L"Tahoma", 0, 0.88f },
+        };
+        font_info jaFontsInfo[] = {
+            { L"Yu Gothic UI", 1, 1.0f },
+            { L"Meiryo UI", 0, 1.0f },
+            { L"MS UI Gothic", 0, 0.85f },
+            { L"MS Mincho", 0, 0.85f },
+        };
+        font_info koFontsInfo[] = {
+            { L"Malgun Gothic", 0, 1.0f },
+            { L"맑은 고딕", 0, 1.0f },
+            { L"Gulim", 0, 0.9f },
+        };
+
+        int CALLBACK __glocale_font_enum_proc([[maybe_unused]] const LOGFONTW* lpelfe, [[maybe_unused]] const TEXTMETRICW* lpntme, [[maybe_unused]] DWORD FontType, LPARAM lParam)
+        {
+            *((int*)lParam) = 1;
+            return 0;
+        }
+        int CALLBACK FindFirstJapaneseFontProc(const LOGFONTW* logicalFont, const NEWTEXTMETRICEXW* fontMetricEx, DWORD fontType, LPARAM lParam)
+        {
+            if (fontType != TRUETYPE_FONTTYPE) {
+                return TRUE;
+            }
+
+            // Supports Japanese encoding
+            if (logicalFont->lfCharSet != SHIFTJIS_CHARSET) {
+                return TRUE;
+            }
+
+            // Variable pitch to save space
+            if ((logicalFont->lfPitchAndFamily & 0x3) != VARIABLE_PITCH) {
+                return TRUE;
+            }
+
+            // Reject font for vertical writing
+            if (logicalFont->lfFaceName[0] == '@') {
+                return TRUE;
+            }
+
+            // Check code page bitfields
+            // For complete list of bitfields: https://msdn.microsoft.com/library/windows/desktop/dd317754(v=vs.85).aspx
+            static std::uint8_t codePageBitfields[] = {
+                0, 1, // Latin,
+                17, // Japanese
+            };
+
+            for (auto bitToCheck : codePageBitfields) {
+                DWORD mask = 1 << (bitToCheck & 32);
+                if (!(fontMetricEx->ntmFontSig.fsCsb[bitToCheck / 32] & mask)) {
+                    return TRUE;
+                }
+            }
+
+            // Check unicode subset bitfields
+            // For complete list of bitfields: https://msdn.microsoft.com/library/windows/desktop/dd374090(v=vs.85).aspx
+            static std::uint8_t unicodeSubsetBitfields[] = {
+                0, 1, // Basic Latin + Latin Supplement
+                48, 49, 50, // Punctuations, Hiragana, Katakana
+                68, // Half-width characters
+                37, // Arrows
+                59, // CJK Unified Ideographs
+            };
+
+            for (auto bitToCheck : unicodeSubsetBitfields) {
+                DWORD mask = 1 << (bitToCheck % 32);
+                if (!(fontMetricEx->ntmFontSig.fsUsb[bitToCheck / 32] & mask)) {
+                    return TRUE;
+                }
+            }
+
+            memcpy((void*)lParam, logicalFont->lfFaceName, sizeof(logicalFont->lfFaceName));
+
+            return FALSE;
+        }
+        int CALLBACK FindFirstChineseFontProc(const LOGFONTW* logicalFont, const NEWTEXTMETRICEXW* fontMetricEx, DWORD fontType, LPARAM lParam)
+        {
+            if (fontType != TRUETYPE_FONTTYPE) {
+                return TRUE;
+            }
+
+            // Supports Japanese encoding
+            if (logicalFont->lfCharSet != GB2312_CHARSET) {
+                return TRUE;
+            }
+
+            // Variable pitch to save space
+            if ((logicalFont->lfPitchAndFamily & 0x3) != VARIABLE_PITCH) {
+                return TRUE;
+            }
+
+            // Reject font for vertical writing
+            if (logicalFont->lfFaceName[0] == '@') {
+                return TRUE;
+            }
+
+            // Check code page bitfields
+            // For complete list of bitfields: https://msdn.microsoft.com/library/windows/desktop/dd317754(v=vs.85).aspx
+            static std::uint8_t codePageBitfields[] = {
+                0, 1, // Latin,
+                18, // SChinese
+            };
+
+            for (auto bitToCheck : codePageBitfields) {
+                DWORD mask = 1 << (bitToCheck & 32);
+                if (!(fontMetricEx->ntmFontSig.fsCsb[bitToCheck / 32] & mask)) {
+                    return TRUE;
+                }
+            }
+
+            // Check unicode subset bitfields
+            // For complete list of bitfields: https://msdn.microsoft.com/library/windows/desktop/dd374090(v=vs.85).aspx
+            static std::uint8_t unicodeSubsetBitfields[] = {
+                0, 1, // Basic Latin + Latin Supplement
+                //31,
+                48, //49, 50, // Punctuations, Hiragana, Katakana
+                //68, // Half-width characters
+                59, // CJK Unified Ideographs
+            };
+
+            for (auto bitToCheck : unicodeSubsetBitfields) {
+                DWORD mask = 1 << (bitToCheck % 32);
+                if (!(fontMetricEx->ntmFontSig.fsUsb[bitToCheck / 32] & mask)) {
+                    return TRUE;
+                }
+            }
+
+            memcpy((void*)lParam, logicalFont->lfFaceName, sizeof(logicalFont->lfFaceName));
+            return FALSE;
+        }
+        HFONT CALLBACK CheckFontZh(HDC hdc, font_info& info)
+        {
+            LOGFONTW font = {};
+            int signal = 0;
+
+            font.lfPitchAndFamily = 0;
+            font.lfCharSet = GB2312_CHARSET;
+
+            for (auto f : zhFontsInfo) {
+                wcsncpy(font.lfFaceName, f.font_name, 32);
+                EnumFontFamiliesExW(hdc, &font, __glocale_font_enum_proc, (LPARAM)&signal, 0);
+                if (signal) {
+                    info = f;
+                    break;
+                }
+            }
+
+            if (!signal) {
+                wchar_t fontFamilyName[32] = {};
+                EnumFontFamiliesExW(hdc, nullptr, (FONTENUMPROCW)&FindFirstChineseFontProc, (LPARAM)fontFamilyName, 0);
+                if (!*fontFamilyName) {
+                    return nullptr;
+                }
+                info.font_name = L"";
+                info.font_index = 0;
+                info.font_scale = 1.0f;
+                return CreateFontW(0, 0, 0, 0, 0, 0, 0, 0, GB2312_CHARSET, 0, 0, 0, 0, fontFamilyName);
+            }
+
+            return CreateFontW(
+                0, 0, 0, 0, 0, 0, 0, 0,
+                GB2312_CHARSET,
+                0, 0, 0, 0,
+                info.font_name);
+        }
+        HFONT CALLBACK CheckFontEn(HDC hdc, font_info& info)
+        {
+            LOGFONTW font = {};
+            int signal = 0;
+
+            font.lfPitchAndFamily = 0;
+            font.lfCharSet = ANSI_CHARSET;
+
+            for (auto f : enFontsInfo) {
+                wcsncpy(font.lfFaceName, f.font_name, 32);
+                EnumFontFamiliesExW(hdc, &font, __glocale_font_enum_proc, (LPARAM)&signal, 0);
+                if (signal) {
+                    info = f;
+                    break;
+                }
+            }
+
+            if (!signal) {
+                info.font_name = L"";
+                info.font_index = 0;
+                info.font_scale = 1.0f;
+                return (HFONT)GetStockObject(SYSTEM_FONT);
+            }
+
+            return CreateFontW(
+                0, 0, 0, 0, 0, 0, 0, 0,
+                ANSI_CHARSET,
+                0, 0, 0, 0,
+                info.font_name);
+        }
+        HFONT CALLBACK CheckFontJa(HDC hdc, font_info& info)
+        {
+            LOGFONTW font = {};
+            int signal = 0;
+
+            font.lfPitchAndFamily = 0;
+            font.lfCharSet = SHIFTJIS_CHARSET;
+
+            for (auto f : jaFontsInfo) {
+                wcsncpy(font.lfFaceName, f.font_name, 32);
+                EnumFontFamiliesExW(hdc, &font, __glocale_font_enum_proc, (LPARAM)&signal, 0);
+                if (signal) {
+                    info = f;
+                    break;
+                }
+            }
+
+            if (!signal) {
+                wchar_t fontFamilyName[32] = {};
+                EnumFontFamiliesExW(hdc, nullptr, (FONTENUMPROCW)&FindFirstJapaneseFontProc, (LPARAM)fontFamilyName, 0);
+                if (!*fontFamilyName) {
+                    return nullptr;
+                }
+                info.font_name = L"";
+                info.font_index = 0;
+                info.font_scale = 1.0f;
+                return CreateFontW(0, 0, 0, 0, 0, 0, 0, 0, SHIFTJIS_CHARSET, 0, 0, 0, 0, fontFamilyName);
+            }
+
+            return CreateFontW(
+                0, 0, 0, 0, 0, 0, 0, 0,
+                SHIFTJIS_CHARSET,
+                0, 0, 0, 0,
+                info.font_name);
+        }
+
+        // Added Korean font enumeration proc (Hangul Charset, Code Page 19, Subset 56).
+        int CALLBACK FindFirstKoreanFontProc(const LOGFONTW* logicalFont, const NEWTEXTMETRICEXW* fontMetricEx, DWORD fontType, LPARAM lParam)
+        {
+            if (fontType != TRUETYPE_FONTTYPE) {
+                return TRUE;
+            }
+
+            // Supports Korean encoding
+            if (logicalFont->lfCharSet != HANGUL_CHARSET) {
+                return TRUE;
+            }
+
+            // Variable pitch to save space
+            if ((logicalFont->lfPitchAndFamily & 0x3) != VARIABLE_PITCH) {
+                return TRUE;
+            }
+
+            // Reject font for vertical writing
+            if (logicalFont->lfFaceName[0] == '@') {
+                return TRUE;
+            }
+
+            // Check code page bitfields (19 = Korean Wansung)
+            static std::uint8_t codePageBitfields[] = {
+                0, 1, // Latin,
+                19,   // Korean
+            };
+
+            for (auto bitToCheck : codePageBitfields) {
+                DWORD mask = 1 << (bitToCheck % 32);
+                if (!(fontMetricEx->ntmFontSig.fsCsb[bitToCheck / 32] & mask)) {
+                    return TRUE;
+                }
+            }
+
+            // Check unicode subset bitfields (56 = Hangul Syllables)
+            static std::uint8_t unicodeSubsetBitfields[] = {
+                0, 1, // Basic Latin + Latin Supplement
+                56,   // Hangul Syllables
+            };
+
+            for (auto bitToCheck : unicodeSubsetBitfields) {
+                DWORD mask = 1 << (bitToCheck % 32);
+                if (!(fontMetricEx->ntmFontSig.fsUsb[bitToCheck / 32] & mask)) {
+                    return TRUE;
+                }
+            }
+
+            memcpy((void*)lParam, logicalFont->lfFaceName, sizeof(logicalFont->lfFaceName));
+            return FALSE;
+        }
+
+        HFONT CALLBACK CheckFontKo(HDC hdc, font_info& info)
+        {
+            LOGFONTW font = {};
+            int signal = 0;
+
+            font.lfPitchAndFamily = 0;
+            font.lfCharSet = HANGUL_CHARSET;
+
+            for (auto f : koFontsInfo) {
+                wcsncpy(font.lfFaceName, f.font_name, 32);
+                EnumFontFamiliesExW(hdc, &font, __glocale_font_enum_proc, (LPARAM)&signal, 0);
+                if (signal) {
+                    info = f;
+                    break;
+                }
+            }
+
+            if (!signal) {
+                wchar_t fontFamilyName[32] = {};
+                EnumFontFamiliesExW(hdc, nullptr, (FONTENUMPROCW)&FindFirstKoreanFontProc, (LPARAM)fontFamilyName, 0);
+                if (!*fontFamilyName) {
+                    return nullptr;
+                }
+                info.font_name = L"";
+                info.font_index = 0;
+                info.font_scale = 1.0f;
+                return CreateFontW(0, 0, 0, 0, 0, 0, 0, 0, HANGUL_CHARSET, 0, 0, 0, 0, fontFamilyName);
+            }
+
+            return CreateFontW(
+                0, 0, 0, 0, 0, 0, 0, 0,
+                HANGUL_CHARSET,
+                0, 0, 0, 0,
+                info.font_name);
+        }
+        ImWchar* GetGlyphRange(int locale)
+        {
+            auto& io = ImGui::GetIO();
+            ImWchar* glyphRange = nullptr;
+            switch (locale) {
+            case LOCALE_ZH_CN:
+                if (gSettings.render_only_used_glyphs) {
+                    glyphRange = (ImWchar*)__thprac_loc_range_zh;
+                }
+                else {
+                    glyphRange = (ImWchar*)io.Fonts->GetGlyphRangesChineseFull();
+                }
+                break;
+            case LOCALE_EN_US:
+                glyphRange = (ImWchar*)__thprac_loc_range_en;
+                break;
+            case LOCALE_JA_JP: {
+                if (gSettings.render_only_used_glyphs) {
+                    glyphRange = (ImWchar*)__thprac_loc_range_ja;
+                }
+                else {
+                    if (!__glocale_jp_glyphrange) {
+                        __glocale_jp_glyphrange = (ImWchar*)malloc((_countof(baseUnicodeRanges) + _countof(offsetsFrom0x4E00) * 2 + 1) * sizeof(ImWchar));
+                        // Unpack
+                        int codepoint = 0x4e00;
+                        memcpy(__glocale_jp_glyphrange, baseUnicodeRanges, sizeof(baseUnicodeRanges));
+                        ImWchar* dst = __glocale_jp_glyphrange + _countof(baseUnicodeRanges);
+                        for (unsigned n = 0; n < _countof(offsetsFrom0x4E00); n++, dst += 2) {
+                            dst[0] = dst[1] = (ImWchar)(codepoint += (offsetsFrom0x4E00[n] + 1));
+                        }
+                        dst[0] = 0;
+                    }
+                    glyphRange = (ImWchar*)__glocale_jp_glyphrange;
+                }
+                break;
+            }
+            case LOCALE_KO_KR:
+                glyphRange = (ImWchar*)__thprac_loc_range_ko;
+                break;
+            default:
+                break;
+            }
+            return glyphRange;
+        }
+        typedef HFONT(CALLBACK* font_checker)(HDC hdc, font_info& info);
+        font_checker fontCheckers[] = {
+            CheckFontZh,
+            CheckFontEn,
+            CheckFontJa,
+            CheckFontKo,
+        };
+
+        void LocaleFontWarning()
+        {
+            if (__glocale_disabled) {
+                if (__glocale_disabled == 7) {
+                    MessageBoxW(nullptr, L"No font can be loaded.\nthprac will now terminate.", L"Fatal error", MB_OK | MB_ICONERROR);
+                    ExitProcess(ERROR_FILE_CORRUPT);
+                }
+                else {
+                    MessageBoxW(nullptr, L"One or more fonts failed to load, which will cause certain non-Latin characters to not render properly.\nIf you are running thprac under wine/Crossover, seek help to link the appropriate fonts or try using wine-staging.", L"Warning", MB_OK | MB_ICONWARNING);
+                }
             }
         }
-    }
-    bool LocaleCreateFont(float font_size)
-    {
-        auto& io = ImGui::GetIO();
-        for (unsigned int locale = 0; locale < 3; locale++) {
+        bool LocaleCreateFont(float font_size)
+        {
+            auto& io = ImGui::GetIO();
+            io.Fonts->Clear(); // Fix: Clear the font atlas before loading to prevent the default font from implicitly occupying index 0.
+
+            for (unsigned int locale = 0; locale < 4; locale++) {
+                // Var Definition
+                void* fontData = nullptr;
+                DWORD fontDataSize = 0;
+
+                // Create Font and Device Context
+                font_info info = {};
+                auto hdc = CreateCompatibleDC(nullptr);
+                auto font = fontCheckers[locale](hdc, info);
+                if (font == nullptr) {
+                    __glocale_disabled |= 1 << locale;
+                    return false;
+                }
+                SelectObject(hdc, font);
+
+                // Aquiring Font Data
+                fontDataSize = GetFontData(hdc, 0x66637474, 0, nullptr, 0);
+                if (fontDataSize == GDI_ERROR) {
+                    fontDataSize = GetFontData(hdc, 0, 0, nullptr, 0);
+                    if (fontDataSize == GDI_ERROR) {
+                        DeleteObject(font);
+                        DeleteDC(hdc);
+                        __glocale_disabled |= 1 << locale;
+                        return false;
+                    }
+                    fontData = ImGui::MemAlloc(fontDataSize);
+                    GetFontData(hdc, 0, 0, fontData, fontDataSize);
+                }
+                else {
+                    fontData = ImGui::MemAlloc(fontDataSize);
+                    GetFontData(hdc, 0x66637474, 0, fontData, fontDataSize);
+                }
+
+                DeleteObject(font);
+                DeleteDC(hdc);
+
+                // Add Font
+                ImFontConfig fontConfig;
+                fontConfig.FontNo = info.font_index;
+                fontConfig.RasterizerMultiply = 1.25;
+                fontConfig.OversampleH = 5;
+                fontConfig.OversampleV = 5;
+
+                float fontFinalSize = font_size * info.font_scale;
+                ImWchar* glyphRange = GetGlyphRange(locale);
+
+                __glocale_fonts[locale] = io.Fonts->AddFontFromMemoryTTF(fontData, fontDataSize, fontFinalSize,
+                    &fontConfig, (ImWchar*)glyphRange);
+            }
+
+            ImGuiFreeType::BuildFontAtlas(io.Fonts, 0);
+            LocaleSet(LocaleGet());
+            LocaleFontWarning();
+
+            return true;
+        }
+        bool LocalAddMergeFont(float font_size, int locale, bool merge)
+        {
+            auto& io = ImGui::GetIO();
+
             // Var Definition
             void* fontData = nullptr;
             DWORD fontDataSize = 0;
@@ -495,7 +670,8 @@ static ImWchar baseUnicodeRanges[] =
                 }
                 fontData = ImGui::MemAlloc(fontDataSize);
                 GetFontData(hdc, 0, 0, fontData, fontDataSize);
-            } else {
+            }
+            else {
                 fontData = ImGui::MemAlloc(fontDataSize);
                 GetFontData(hdc, 0x66637474, 0, fontData, fontDataSize);
             }
@@ -505,102 +681,57 @@ static ImWchar baseUnicodeRanges[] =
 
             // Add Font
             ImFontConfig fontConfig;
+            fontConfig.MergeMode = merge;
             fontConfig.FontNo = info.font_index;
             fontConfig.RasterizerMultiply = 1.25;
-            fontConfig.OversampleH = 5;
-            fontConfig.OversampleV = 5;
 
-            float fontFinalSize = font_size * info.font_scale;
             ImWchar* glyphRange = GetGlyphRange(locale);
+            float fontFinalSize = font_size * info.font_scale;
 
-            __glocale_fonts[locale] = io.Fonts->AddFontFromMemoryTTF(fontData, fontDataSize, fontFinalSize,
-                &fontConfig, (ImWchar*)glyphRange);
+            io.Fonts->AddFontFromMemoryTTF(fontData, fontDataSize, fontFinalSize, &fontConfig, glyphRange);
+            return true;
         }
 
-        ImGuiFreeType::BuildFontAtlas(io.Fonts, 0);
-        LocaleSet(LocaleGet());
-        LocaleFontWarning();
+        // Fix: failsafe (SafeAdd)
+        bool LocaleCreateMergeFont(float font_size) {
+            auto& io = ImGui::GetIO();
+            io.Fonts->Clear();
 
-        return true;
-    }
-    bool LocalAddMergeFont(float font_size, int locale, bool merge)
-    {
-        auto& io = ImGui::GetIO();
+            // Fix: Explicitly set FontDefault to prevent ImGui initial window scaling issues before a language is selected.
+            bool has_base = false;
+            auto SafeAdd = [&](int loc) {
+                if (LocalAddMergeFont(font_size, loc, has_base)) {
+                    has_base = true;
+                }
+                };
 
-        // Var Definition
-        void* fontData = nullptr;
-        DWORD fontDataSize = 0;
-
-        // Create Font and Device Context
-        font_info info = {};
-        auto hdc = CreateCompatibleDC(nullptr);
-        auto font = fontCheckers[locale](hdc, info);
-        if (font == nullptr) {
-            __glocale_disabled |= 1 << locale;
-            return false;
-        }
-        SelectObject(hdc, font);
-
-        // Aquiring Font Data
-        fontDataSize = GetFontData(hdc, 0x66637474, 0, nullptr, 0);
-        if (fontDataSize == GDI_ERROR) {
-            fontDataSize = GetFontData(hdc, 0, 0, nullptr, 0);
-            if (fontDataSize == GDI_ERROR) {
-                DeleteObject(font);
-                DeleteDC(hdc);
-                __glocale_disabled |= 1 << locale;
+            switch (gSettings.language) {
+            case LOCALE_ZH_CN:
+                SafeAdd(LOCALE_ZH_CN); SafeAdd(LOCALE_JA_JP); SafeAdd(LOCALE_EN_US); SafeAdd(LOCALE_KO_KR);
+                break;
+            case LOCALE_EN_US:
+                SafeAdd(LOCALE_EN_US); SafeAdd(LOCALE_JA_JP); SafeAdd(LOCALE_ZH_CN); SafeAdd(LOCALE_KO_KR);
+                break;
+            case LOCALE_JA_JP:
+                SafeAdd(LOCALE_JA_JP); SafeAdd(LOCALE_ZH_CN); SafeAdd(LOCALE_EN_US); SafeAdd(LOCALE_KO_KR);
+                break;
+            case LOCALE_KO_KR:
+                SafeAdd(LOCALE_KO_KR); SafeAdd(LOCALE_EN_US); SafeAdd(LOCALE_JA_JP); SafeAdd(LOCALE_ZH_CN);
+                break;
+            default:
                 return false;
             }
-            fontData = ImGui::MemAlloc(fontDataSize);
-            GetFontData(hdc, 0, 0, fontData, fontDataSize);
-        } else {
-            fontData = ImGui::MemAlloc(fontDataSize);
-            GetFontData(hdc, 0x66637474, 0, fontData, fontDataSize);
+
+            ImGuiFreeType::BuildFontAtlas(io.Fonts, 0);
+            __glocale_merge = true;
+            LocaleFontWarning();
+
+            // Fix: Explicitly set FontDefault to prevent ImGui initial window scaling issues before a language is selected.
+            if (io.Fonts->Fonts.Size > 0) {
+                io.FontDefault = io.Fonts->Fonts[0];
+            }
+
+            return true;
         }
-
-        DeleteObject(font);
-        DeleteDC(hdc);
-
-        // Add Font
-        ImFontConfig fontConfig;
-        fontConfig.MergeMode = merge;
-        fontConfig.FontNo = info.font_index;
-        fontConfig.RasterizerMultiply = 1.25;
-
-        ImWchar* glyphRange = GetGlyphRange(locale);
-        float fontFinalSize = font_size * info.font_scale;
-
-        io.Fonts->AddFontFromMemoryTTF(fontData, fontDataSize, fontFinalSize, &fontConfig, glyphRange);
-        return true;
     }
-    bool LocaleCreateMergeFont(float font_size) {
-        auto& io = ImGui::GetIO();
-        io.Fonts->Clear();
-        switch (gSettings.language) {
-        case LOCALE_ZH_CN:
-            LocalAddMergeFont(font_size, LOCALE_ZH_CN, false);
-            LocalAddMergeFont(font_size, LOCALE_JA_JP, true);
-            LocalAddMergeFont(font_size, LOCALE_EN_US, true);
-            break;
-        case LOCALE_EN_US:
-            LocalAddMergeFont(font_size, LOCALE_EN_US, false);
-            LocalAddMergeFont(font_size, LOCALE_JA_JP, true);
-            LocalAddMergeFont(font_size, LOCALE_ZH_CN, true);
-            break;
-        case LOCALE_JA_JP:
-            LocalAddMergeFont(font_size, LOCALE_JA_JP, false);
-            LocalAddMergeFont(font_size, LOCALE_ZH_CN, true);
-            LocalAddMergeFont(font_size, LOCALE_EN_US, true);
-            break;
-        default:
-            return false;
-        }
-
-        ImGuiFreeType::BuildFontAtlas(io.Fonts, 0);
-        __glocale_merge = true;
-        LocaleFontWarning();
-
-        return true;
-    }
-}
 }

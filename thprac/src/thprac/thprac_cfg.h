@@ -7,6 +7,7 @@ enum Locale : unsigned {
     LOCALE_ZH_CN = 0,
     LOCALE_EN_US = 1,
     LOCALE_JA_JP = 2,
+	LOCALE_KO_KR = 3,
 };
 
 enum ChordKeys {

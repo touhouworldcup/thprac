@@ -84,9 +84,10 @@ void InitConfigDir() {
 }
 
 static const wchar_t* JSON_ERROR_TITLE[] = {
-    L"JSON Error", L"JSON Error", L"JSON Error"
+    L"JSON Error", L"JSON Error", L"JSON Error", L"JSON Error"
 };
 static const wchar_t* JSON_ERROR_FORMAT[] = {
+    L"Failed to load %s: JSON error %d at position %d\nMessage: ",
     L"Failed to load %s: JSON error %d at position %d\nMessage: ",
     L"Failed to load %s: JSON error %d at position %d\nMessage: ",
     L"Failed to load %s: JSON error %d at position %d\nMessage: ",
@@ -197,7 +198,7 @@ bool LoadSettings() {
             continue;
         }
         if (unsafe_yyjson_equals_str(key, "language")) {
-            if (!yyjson_eval_numeric(val, (unsigned int*)&gSettings.language) || gSettings.language > 2) {
+            if (!yyjson_eval_numeric(val, (unsigned int*)&gSettings.language) || gSettings.language > 3) {
                 Gui::LocaleSetFromSysLang();
             }
             else {
@@ -330,7 +331,7 @@ void GuiSettings() {
     ImGui::Separator();
 
     ImGui::PushItemWidth(ImGui::GetFontSize() * 8.0f);
-    if (ImGui::Combo("语言/Language/言語", (int*)&gSettings.language, "中文\0English\0日本語\0\0")) {
+    if (ImGui::Combo("语言/Language/言語/언어", (int*)&gSettings.language, "中文\0English\0日本語\0한국어\0\0")) {
         ImGui::SameLine();
         ImGui::TextColored({ 1.0f, 0.0f, 0.0f, 1.0f }, "%s", S(THPRAC_LANG_SWITCH_UI_FROZEN));
     }

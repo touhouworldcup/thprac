@@ -106,18 +106,20 @@ if (statement) \
 	break; \
 }
 
-constexpr size_t NUM_LANGUAGES = 3;
+constexpr size_t NUM_LANGUAGES = 4;
 
 enum class Language {
 	Chinese,
 	English,
 	Japanese,
+	Korean,
 };
 
 constexpr Language LANGUAGE_LIST[NUM_LANGUAGES] = {
 	Language::Chinese,
 	Language::English,
 	Language::Japanese,
+	Language::Korean,
 };
 
 const char* const language_to_iso_639_1(Language language) {
@@ -128,6 +130,8 @@ const char* const language_to_iso_639_1(Language language) {
 		return "en";
 	case Language::Japanese:
 		return "ja";
+	case Language::Korean:
+		return "ko";
 	default:
 		// NOTE: Should never execute.
 		printf_warn(
@@ -144,10 +148,10 @@ struct loc_str_t {
 	string zh_str;
 	string en_str;
 	string ja_str;
-
+	string ko_str;
 	loc_str_t() = default;
-	loc_str_t(const char* zh, const char* en, const char* ja) :
-		zh_str(zh), en_str(en), ja_str(ja)
+	loc_str_t(const char* zh, const char* en, const char* ja, const char* ko) :
+		zh_str(zh), en_str(en), ja_str(ja), ko_str(ko)
 	{
 
 	}
@@ -160,6 +164,8 @@ struct loc_str_t {
 			return en_str;
 		case Language::Japanese:
 			return ja_str;
+		case Language::Korean:
+			return ko_str;
 		default:
 			// NOTE: This should never execute.
 			printf_warn(
@@ -195,7 +201,7 @@ struct section_t {
 	int sec_id{ -1 };
 	int chap_id{ -1 };
 	int spell_id{ 0 };
-	int appearance[NUM_LANGUAGES]{ -1, -1, -1 };
+	int appearance[3]{ -1, -1, -1 };
 
 	string name;
 	string ref;
@@ -221,6 +227,7 @@ struct game_t {
 	static set<uint16_t> glyph_range_zh;
 	static set<uint16_t> glyph_range_en;
 	static set<uint16_t> glyph_range_ja;
+	static set<uint16_t> glyph_range_ko;
 
 	game_t() = default;
 
@@ -232,6 +239,8 @@ struct game_t {
 			return glyph_range_en;
 		case Language::Japanese:
 			return glyph_range_ja;
+		case Language::Korean:
+			return glyph_range_ko;
 		default:
 			// NOTE: This should never execute.
 			printf_warn(
@@ -246,7 +255,7 @@ map<string, loc_str_t> game_t::glossary;
 set<uint16_t> game_t::glyph_range_zh;
 set<uint16_t> game_t::glyph_range_en;
 set<uint16_t> game_t::glyph_range_ja;
-
+set<uint16_t> game_t::glyph_range_ko;
 void AppendGlyphs(set<uint16_t>& glyphs, std::string& str) {
 	for (size_t i = 0; i < str.length(); ) {
 		unsigned char c = static_cast<unsigned char>(str[i]);
@@ -296,6 +305,7 @@ void AddGlyphRange(loc_str_t& str) {
 	AppendGlyphs(game_t::glyph_range_zh, str.zh_str);
 	AppendGlyphs(game_t::glyph_range_ja, str.ja_str);
 	AppendGlyphs(game_t::glyph_range_en, str.en_str);
+	AppendGlyphs(game_t::glyph_range_ko, str.ko_str);
 }
 
 bool ValidateGroupJSON(yyjson_val* group) {
@@ -376,19 +386,30 @@ bool section_t::FillWith(yyjson_val* sec) {
 		if (sw_key[0] == '!') {
 			loc_str_t lstr;
 
-			yyjson_val* v0 = yyjson_arr_get(sw_value, 0);
-			yyjson_val* v1 = yyjson_arr_get(sw_value, 1);
-			yyjson_val* v2 = yyjson_arr_get(sw_value, 2);
+			bool is_arr_valid = false;
+			const char* parsed_strs[NUM_LANGUAGES] = { nullptr };
 
-			if (
-				yyjson_is_str(v0) &&
-				yyjson_is_str(v1) &&
-				yyjson_is_str(v2)
-				) {
+			if (yyjson_is_arr(sw_value)) {
+				is_arr_valid = true;
+				for (size_t idx = 0; idx < NUM_LANGUAGES; ++idx) {
+					yyjson_val* val = yyjson_arr_get(sw_value, idx);
+					if (yyjson_is_str(val)) {
+						parsed_strs[idx] = unsafe_yyjson_get_str(val);
+					}
+					else {
+						if (parsed_strs[1]) parsed_strs[idx] = parsed_strs[1];
+						else if (parsed_strs[0]) parsed_strs[idx] = parsed_strs[0];
+						else is_arr_valid = false;
+					}
+				}
+			}
+
+			if (is_arr_valid) {
 				lstr = {
-					unsafe_yyjson_get_str(v0),
-					unsafe_yyjson_get_str(v1),
-					unsafe_yyjson_get_str(v2)
+					parsed_strs[0],
+					parsed_strs[1],
+					parsed_strs[2],
+					parsed_strs[3]
 				};
 				AddGlyphRange(lstr);
 			}
@@ -993,19 +1014,30 @@ vector<game_t> loc_json_parse(yyjson_doc* doc) {
 				yyjson_val* item_itr_value = yyjson_obj_iter_get_val(item_itr_key);
 				const char* glossary_key = unsafe_yyjson_get_str(item_itr_key);
 
-				yyjson_val* i0 = yyjson_arr_get(item_itr_value, 0);
-				yyjson_val* i1 = yyjson_arr_get(item_itr_value, 1);
-				yyjson_val* i2 = yyjson_arr_get(item_itr_value, 2);
+				const char* parsed_strs[NUM_LANGUAGES] = { nullptr };
+				bool is_valid = true;
+
+				for (size_t idx = 0; idx < NUM_LANGUAGES; ++idx) {
+					yyjson_val* val = yyjson_arr_get(item_itr_value, idx);
+					if (yyjson_is_str(val)) {
+						parsed_strs[idx] = unsafe_yyjson_get_str(val);
+					}
+					else {
+						if (parsed_strs[1]) parsed_strs[idx] = parsed_strs[1];
+						else if (parsed_strs[0]) parsed_strs[idx] = parsed_strs[0];
+						else is_valid = false;
+					}
+				}
 
 				SKIP_IF(
-					!yyjson_is_str(i0) || !yyjson_is_str(i1) || !yyjson_is_str(i2),
+					!is_valid,
 					"Warning: In game \"%s\": Invalid glossary item: "
 					"\"%s\", ignoring.",
 					g_current_game,
 					glossary_key
 				);
 
-				game_obj.glossary[glossary_key] = { unsafe_yyjson_get_str(i0), unsafe_yyjson_get_str(i1), unsafe_yyjson_get_str(i2) };
+				game_obj.glossary[glossary_key] = { parsed_strs[0], parsed_strs[1], parsed_strs[2], parsed_strs[3] };
 				AddGlyphRange(game_obj.glossary[glossary_key]);
 			}
 			else {

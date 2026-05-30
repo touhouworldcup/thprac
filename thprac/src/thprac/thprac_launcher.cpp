@@ -16,7 +16,7 @@ namespace Gui {
     extern IDirect3DDevice9* ImplDX9GetDevice();
 }
 
-static const wchar_t* LAUNCHER_TITLE_W[] = { L"thprac - 东方游戏启动器", L"thprac - Touhou Game Launcher", L"thprac - 東方ゲームランチャー" };
+static const wchar_t* LAUNCHER_TITLE_W[] = { L"thprac - 东方游戏启动器", L"thprac - Touhou Game Launcher", L"thprac - 東方ゲームランチャー", L"thprac - 동방 게임 런처" };
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

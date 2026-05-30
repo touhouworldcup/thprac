@@ -341,6 +341,8 @@ void GameGuiEnd(bool draw_cursor)
                 Gui::LocaleSet(LOCALE_ZH_CN);
             } else if (Gui::KeyboardInputUpdate('3') == 1) {
                 Gui::LocaleSet(LOCALE_EN_US);
+            } else if (Gui::KeyboardInputUpdate('4') == 1) {
+                Gui::LocaleSet(LOCALE_KO_KR);
             }
         }
     }
