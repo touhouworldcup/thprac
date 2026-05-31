@@ -255,6 +255,11 @@ namespace TH12 {
                 SetPos(260.f, 50.f);
                 SetItemWidth(-65.0f);
                 break;
+            case LOCALE_KO_KR:
+                SetSize(350.f, 410.f);
+                SetPos(260.f, 50.f);
+                SetItemWidth(-65.0f);
+                break;
             default:
                 break;
             }
@@ -513,6 +518,10 @@ namespace TH12 {
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
+            case LOCALE_KO_KR:
+                x_offset_1 = 0.1f;
+                x_offset_2 = 0.14f;
+                break;
             default:
                 break;
             }
@@ -701,6 +710,12 @@ namespace TH12 {
                 SetAutoSpacing(true);
                 break;
             case LOCALE_JA_JP:
+                SetSizeRel(1.0f, 1.0f);
+                SetPosRel(0.0f, 0.0f);
+                SetItemWidthRel(-0.0f);
+                SetAutoSpacing(true);
+                break;
+            case LOCALE_KO_KR:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);

@@ -197,6 +197,12 @@ namespace TH14 {
                 SetItemWidthRel(-0.105f);
                 SetAutoSpacing(true);
                 break;
+            case LOCALE_KO_KR:
+                SetSizeRel(0.56f, 0.81f);
+                SetPosRel(0.37f, 0.14f);
+                SetItemWidthRel(-0.105f);
+                SetAutoSpacing(true);
+                break;
             default:
                 break;
             }
@@ -489,6 +495,10 @@ namespace TH14 {
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
+            case LOCALE_KO_KR:
+                x_offset_1 = 0.1f;
+                x_offset_2 = 0.14f;
+                break;
             default:
                 break;
             }
@@ -657,6 +667,12 @@ namespace TH14 {
                 SetAutoSpacing(true);
                 break;
             case LOCALE_JA_JP:
+                SetSizeRel(0.38f, 0.12f);
+                SetPosRel(0.35f, 0.45f);
+                SetItemWidthRel(-0.075f);
+                SetAutoSpacing(true);
+                break;
+            case LOCALE_KO_KR:
                 SetSizeRel(0.38f, 0.12f);
                 SetPosRel(0.35f, 0.45f);
                 SetItemWidthRel(-0.075f);
@@ -1324,6 +1340,12 @@ namespace TH14 {
                 SetAutoSpacing(true);
                 break;
             case LOCALE_JA_JP:
+                SetSizeRel(1.0f, 1.0f);
+                SetPosRel(0.0f, 0.0f);
+                SetItemWidthRel(-0.0f);
+                SetAutoSpacing(true);
+                break;
+            case LOCALE_KO_KR:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);

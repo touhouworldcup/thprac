@@ -267,6 +267,11 @@ namespace TH08 {
                 SetPos(250.f, 75.f);
                 SetItemWidth(-65.0f);
                 break;
+            case LOCALE_KO_KR:
+                SetSize(380.f, 390.f);
+                SetPos(250.f, 75.f);
+                SetItemWidth(-65.0f);
+                break;
             default:
                 break;
             }
@@ -571,6 +576,10 @@ namespace TH08 {
                 x_offset_1 = 0.18f;
                 x_offset_2 = 0.235f;
                 break;
+            case LOCALE_KO_KR:
+                x_offset_1 = 0.18f;
+                x_offset_2 = 0.235f;
+                break;
             default:
                 break;
             }
@@ -752,6 +761,12 @@ namespace TH08 {
                 SetAutoSpacing(true);
                 break;
             case LOCALE_JA_JP:
+                SetSizeRel(1.0f, 1.0f);
+                SetPosRel(0.0f, 0.0f);
+                SetItemWidthRel(-0.0f);
+                SetAutoSpacing(true);
+                break;
+            case LOCALE_KO_KR:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);

@@ -223,6 +223,10 @@ namespace TH10 {
                 AutoSize(0.0f, 0.0f, XSSS(0)[TH10_ST7_END_S9], S(TH10_FAITH_BAR), 10.5f, 300.0f);
                 AutoPos(0.5f, 0.57f);
                 break;
+            case LOCALE_KO_KR:
+                AutoSize(0.0f, 0.0f, XSSS(0)[TH10_ST7_END_S9], S(TH10_FAITH_BAR), 10.5f, 300.0f);
+                AutoPos(0.5f, 0.57f);
+                break;
             default:
                 break;
             }
@@ -469,6 +473,10 @@ namespace TH10 {
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
+            case LOCALE_KO_KR:
+                x_offset_1 = 0.1f;
+                x_offset_2 = 0.14f;
+                break;
             default:
                 break;
             }
@@ -672,6 +680,12 @@ namespace TH10 {
                 SetAutoSpacing(true);
                 break;
             case LOCALE_JA_JP:
+                SetSizeRel(1.0f, 1.0f);
+                SetPosRel(0.0f, 0.0f);
+                SetItemWidthRel(-0.0f);
+                SetAutoSpacing(true);
+                break;
+            case LOCALE_KO_KR:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);

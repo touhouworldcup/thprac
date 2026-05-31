@@ -156,6 +156,12 @@ namespace V1_10c {
                 SetItemWidthRel(-0.075f);
                 SetAutoSpacing(true);
                 break;
+            case LOCALE_KO_KR:
+                SetSizeRel(1.0f, 1.0f);
+                SetPosRel(0.0f, 0.0f);
+                SetItemWidthRel(-0.075f);
+                SetAutoSpacing(true);
+                break;
             default:
                 break;
             }

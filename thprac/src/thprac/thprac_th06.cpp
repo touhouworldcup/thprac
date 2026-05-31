@@ -149,6 +149,10 @@ namespace TH06 {
                 x_offset_1 = 0.18f;
                 x_offset_2 = 0.235f;
                 break;
+            case LOCALE_KO_KR:
+                x_offset_1 = 0.18f;
+                x_offset_2 = 0.235f;
+                break;
             default:
                 break;
             }
@@ -386,6 +390,11 @@ namespace TH06 {
                 SetItemWidth(-60.0f);
                 break;
             case LOCALE_JA_JP:
+                SetSize(330.f, 390.f);
+                SetPos(260.f, 65.f);
+                SetItemWidth(-65.0f);
+                break;
+            case LOCALE_KO_KR:
                 SetSize(330.f, 390.f);
                 SetPos(260.f, 65.f);
                 SetItemWidth(-65.0f);
@@ -697,6 +706,9 @@ namespace TH06 {
             case LOCALE_JA_JP:
                 SetItemWidth(-65.0f);
                 break;
+            case LOCALE_KO_KR:
+                SetItemWidth(-65.0f);
+                break;
             default:
                 break;
             }
@@ -902,6 +914,12 @@ namespace TH06 {
                 SetAutoSpacing(true);
                 break;
             case LOCALE_JA_JP:
+                SetSizeRel(1.0f, 1.0f);
+                SetPosRel(0.0f, 0.0f);
+                SetItemWidthRel(-0.0f);
+                SetAutoSpacing(true);
+                break;
+            case LOCALE_KO_KR:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);

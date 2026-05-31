@@ -195,6 +195,12 @@ namespace TH13 {
                     15.5f, ImVec2(ImGui::GetMainViewport()->Size.x, 450.0f), ImVec2(370.0f, -1.0f));
                 AutoPos(0.9f, 0.65f);
                 break;
+            case LOCALE_KO_KR:
+                AutoSize(ImVec2(0.0f, 0.0f),
+                    XSSS(3)[TH13_ST1_BOSS4], nullptr, S(TH13_EXTEND), nullptr,
+                    15.5f, ImVec2(ImGui::GetMainViewport()->Size.x, 450.0f), ImVec2(370.0f, -1.0f));
+                AutoPos(0.9f, 0.65f);
+                break;
             default:
                 break;
             }
@@ -467,6 +473,10 @@ namespace TH13 {
                 x_offset_1 = 0.1f;
                 x_offset_2 = 0.14f;
                 break;
+            case LOCALE_KO_KR:
+                x_offset_1 = 0.1f;
+                x_offset_2 = 0.14f;
+                break;
             default:
                 break;
             }
@@ -691,6 +701,12 @@ namespace TH13 {
                 SetAutoSpacing(true);
                 break;
             case LOCALE_JA_JP:
+                SetSizeRel(1.0f, 1.0f);
+                SetPosRel(0.0f, 0.0f);
+                SetItemWidthRel(-0.0f);
+                SetAutoSpacing(true);
+                break;
+            case LOCALE_KO_KR:
                 SetSizeRel(1.0f, 1.0f);
                 SetPosRel(0.0f, 0.0f);
                 SetItemWidthRel(-0.0f);
