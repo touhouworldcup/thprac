@@ -1447,7 +1447,7 @@ static inline void GamesList(LauncherState* state, LauncherGame* games_param, si
 }
 
 void RandomGameSetUI(const char* id, bool* choices, unsigned int choices_len, const th_glossary_t* names) {
-    ImGui::BeginTable(id, 6);
+    ImGui::BeginTable(id, 5);
     ImGui::TableNextRow();
     for (size_t i = 0; i < choices_len; i++) {
         ImGui::TableNextColumn();
