@@ -105,6 +105,7 @@ static const short offsetsFrom0x4E00[] =
 static ImWchar baseUnicodeRanges[] =
 {
 	0x0020, 0x00FF, // Basic Latin + Latin Supplement
+	0x2000, 0x206F, // General Punctuation
 	0x3000, 0x30FF, // Punctuations, Hiragana, Katakana
 	0x31F0, 0x31FF, // Katakana Phonetic Extensions
 	0xFF00, 0xFFEF, // Half-width characters
@@ -559,6 +560,8 @@ static ImWchar baseUnicodeRanges[] =
                     static const ImWchar ko_ranges_full[] =
                     {
                         0x0020, 0x00FF, // Basic Latin + Latin Supplement
+                        0x2000, 0x206F, // General Punctuation
+                        0x2190, 0x21FF, // Arrows
                         0x3000, 0x30FF, // CJK Symbols and Punctuations, Hiragana, Katakana
                         0x3131, 0x3163, // Korean alphabets
                         0xAC00, 0xD7A3, // Korean characters

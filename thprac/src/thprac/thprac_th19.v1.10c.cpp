@@ -598,7 +598,11 @@ namespace V1_10c {
             SetTitle(S(TH_MENU));
             SetSizeRel(0.3125f, 0.075f);
             SetPosRel(0.34375f, 0.15f);
-            SetItemWidthRel(-0.052f);
+            if (Gui::LocaleGet() == LOCALE_KO_KR) {
+                SetItemWidthRel(-0.085f);
+            } else {
+                SetItemWidthRel(-0.052f);
+            }
         }
         virtual void OnContentUpdate() override { mMode(); }
     };
@@ -798,7 +802,11 @@ namespace V1_10c {
             SetTitle(S(TH_MENU));
             SetSizeRel(0.6f, 0.8f);
             SetPosRel(0.2f, 0.1f);
-            SetItemWidthRel(-0.052f);
+            if (Gui::LocaleGet() == LOCALE_KO_KR) {
+                SetItemWidthRel(-0.085f);
+            } else {
+                SetItemWidthRel(-0.052f);
+            }
         }
         virtual void OnContentUpdate() override {
             mMode();
