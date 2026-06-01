@@ -36,8 +36,8 @@
 **이 방법은 대부분의 환경에서 작동합니다.** 먼저 원하는 방식(thcrap, vpatch, Steam 등)으로 게임을 실행한 다음 `thprac.exe`를 실행합니다. 그러면 thprac이 현재 실행 중인 게임을 감지하고 툴을 적용하려고 시도할 것입니다. thprac이 적용된 것을 확인하려면 게임의 메인 메뉴 화면으로 돌아가야 할 수도 있습니다.
 
 ### **런처를 사용하여 thprac 켜기**
-아래 영상은 런처 사용 방법을 설명하고 있습니다.
-[![A quick and dirty overview of thprac 2.0](https://i.ytimg.com/vi/sRV4PDQceYo/maxresdefault.jpg)](https://www.youtube.com/watch?v=sRV4PDQceYo)
+아래 영상은 런처 사용 방법을 설명하고 있습니다. (이미지를 클릭하세요)
+[![thprac 한국어 소개 영상 (26/06/02)](https://github.com/user-attachments/assets/e5a5e2d1-ceb9-4936-b2b3-a9623afd516e)](https://www.youtube.com/watch?v=oAfq3Q8uho8)
 
 ### 명령줄
 다음과 같은 명령줄 인자(옵션)를 지원합니다:
