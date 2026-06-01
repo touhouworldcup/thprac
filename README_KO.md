@@ -126,12 +126,12 @@ thprac은 위 사진과 같이 원래의 프랙티스 메뉴를 새로운 UI로 
 - 개발: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [muter3000](https://github.com/muter3000), [zero318](https://github.com/zero318), [Lmocinemod](https://github.com/Lmocinemod), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 
 - 중국어 번역: [CrestedPeak9](https://twitter.com/CrestedPeak9), maksim71_doll, DeepL
 - 일본어 번역: [Yu-miya](https://www.twitch.tv/toho_yumiya), [SOC](https://github.com/soc-3), [wefma](https://github.com/wefma), CyrusVorazan, DeepL
-- 한국어 번역: [Tea Barley] (https://www.youtube.com/@teabarley), [Srty7462] (https://www.youtube.com/@srty7462), [Sepheille] (https://www.youtube.com/@cinitalp)
+- 한국어 번역: [Tea Barley](https://www.youtube.com/@teabarley), [Srty7462](https://www.youtube.com/@srty7462), [Sepheille](https://www.youtube.com/@cinitalp)
 - [이전 버그 트래커] (https://github.com/ack7139/thprac/issues) 의 모든 리포트를 [현재 위치](https://github.com/touhouworldcup/thprac/issues) 로 이전: [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
 - 영어 README.md: [Galagyy](https://github.com/Galagyy)
 - 중국어 README.md 번역: [TNT569](https://github.com/TNT569), [H-J-Granger](https://github.com/H-J-Granger)
 - 일본어 README.md 번역: [wefma](https://github.com/wefma)
-- 한국어 README.md 번역: [Tea Barley] (https://www.youtube.com/@teabarley)
+- 한국어 README.md 번역: [Tea Barley](https://www.youtube.com/@teabarley)
 
 ## <a name="소스-코드-빌드-방법"></a> **소스 코드 빌드 방법**
 ### 최초 설정 (처음 한 번만 수행)

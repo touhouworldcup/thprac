@@ -1,4 +1,4 @@
-﻿#include "thprac_games.h"
+#include "thprac_games.h"
 #include "thprac_utils.h"
 
 namespace THPrac {
@@ -224,7 +224,7 @@ namespace TH10 {
                 AutoPos(0.5f, 0.57f);
                 break;
             case LOCALE_KO_KR:
-                AutoSize(0.0f, 0.0f, XSSS(0)[TH10_ST7_END_S9], S(TH10_FAITH_BAR), 10.5f, 300.0f);
+                AutoSize(0.0f, 0.0f, XSSS(0)[TH10_ST7_END_S1], S(TH10_FAITH_BAR), 10.5f, 300.0f);
                 AutoPos(0.5f, 0.57f);
                 break;
             default:

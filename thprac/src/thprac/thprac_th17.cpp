@@ -1,4 +1,4 @@
-﻿#include "thprac_games.h"
+#include "thprac_games.h"
 #include "thprac_utils.h"
 #include <numbers>
 
@@ -311,9 +311,9 @@ namespace TH17 {
                 SetAutoSpacing(true);
                 break;
             case LOCALE_KO_KR:
-                SetSizeRel(0.56f, 0.81f);
-                SetPosRel(0.230f, 0.18f);
-                SetItemWidthRel(-0.105f);
+                SetSizeRel(0.65f, 0.81f);
+                SetPosRel(0.185f, 0.18f);
+                SetItemWidthRel(-0.170f);
                 SetAutoSpacing(true);
                 break;
             default:
@@ -2325,8 +2325,14 @@ namespace TH17 {
     }
 
     void THTrackerUpdate() {
-        Gui::SetNextWindowSizeRel({ 340.0f / 1280.0f, 0.0f });
-        Gui::SetNextWindowPosRel({ 900.0f / 1280.0f, 500.0f / 960.0f });
+        float trackerWidth = 340.0f;
+        float trackerX = 900.0f;
+        if (Gui::LocaleGet() == LOCALE_KO_KR) {
+            trackerWidth = 400.0f;
+            trackerX = 840.0f;
+        }
+        Gui::SetNextWindowSizeRel({ trackerWidth / 1280.0f, 0.0f });
+        Gui::SetNextWindowPosRel({ trackerX / 1280.0f, 500.0f / 960.0f });
         ImGui::Begin("Tracker", nullptr,
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 

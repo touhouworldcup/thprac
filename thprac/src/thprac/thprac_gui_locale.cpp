@@ -1,4 +1,4 @@
-﻿#include "thprac_gui_locale.h"
+#include "thprac_gui_locale.h"
 #include <imgui.h>
 #include <imgui_freetype.h>
 
@@ -552,7 +552,21 @@ static ImWchar baseUnicodeRanges[] =
                 break;
             }
             case LOCALE_KO_KR:
-                glyphRange = (ImWchar*)__thprac_loc_range_ko;
+                if (gSettings.render_only_used_glyphs) {
+                    glyphRange = (ImWchar*)__thprac_loc_range_ko;
+                }
+                else {
+                    static const ImWchar ko_ranges_full[] =
+                    {
+                        0x0020, 0x00FF, // Basic Latin + Latin Supplement
+                        0x3000, 0x30FF, // CJK Symbols and Punctuations, Hiragana, Katakana
+                        0x3131, 0x3163, // Korean alphabets
+                        0xAC00, 0xD7A3, // Korean characters
+                        0xFF00, 0xFFEF, // Half-width characters
+                        0,
+                    };
+                    glyphRange = (ImWchar*)ko_ranges_full;
+                }
                 break;
             default:
                 break;

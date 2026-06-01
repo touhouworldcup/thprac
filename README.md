@@ -126,10 +126,12 @@ Choosing "Exit" will now prompt you to save a replay.
 - Development: [32th System](https://www.youtube.com/channel/UChyVpooBi31k3xPbWYsoq3w), [muter3000](https://github.com/muter3000), [zero318](https://github.com/zero318), [Lmocinemod](https://github.com/Lmocinemod), [Cao Minh](https://github.com/hoangcaominh), [raviddog](https://github.com/raviddog) 
 - Chinese translations: [CrestedPeak9](https://twitter.com/CrestedPeak9), maksim71_doll, DeepL
 - Japanese translations: [Yu-miya](https://www.twitch.tv/toho_yumiya), [SOC](https://github.com/soc-3), [wefma](https://github.com/wefma), CyrusVorazan, DeepL
+- Korean translation: [Tea Barley](https://www.youtube.com/@teabarley), [Srty7462](https://www.youtube.com/@srty7462), [Sepheille](https://www.youtube.com/@cinitalp)
 - Moving all reports from the [old bugtracker](https://github.com/ack7139/thprac/issues) [here](https://github.com/touhouworldcup/thprac/issues): [toimine](https://www.youtube.com/channel/UCtxu8Rg0Vh8mX6iENenetuA)
 - English README.md: [Galagyy](https://github.com/Galagyy)
 - Chinese README.md translation: [TNT569](https://github.com/TNT569), [H-J-Granger](https://github.com/H-J-Granger)
 - Japanese README.md translation: [wefma](https://github.com/wefma)
+- Korean README.md translation: [Tea Barley](https://www.youtube.com/@teabarley)
 
 ## <a name="building-from-source"></a> **Building from Source**
 ### First time setup (only needs to be performed once)
@@ -203,7 +205,8 @@ This feature locks the camera onto the boss at all times and eliminates the came
 - To change the language in-game, use the shortcuts:  
   - **`ALT + 1`**: Japanese 
   - **`ALT + 2`**: Chinese 
-  - **`ALT + 3`**: English 
+  - **`ALT + 3`**: English
+  - **`ALT + 4`**: Korean  
 
 The hotkey for changing languages can be changed from the launcher's settings tab.
 

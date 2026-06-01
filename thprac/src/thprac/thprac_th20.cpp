@@ -489,9 +489,9 @@ namespace TH20 {
                 SetAutoSpacing(true);
                 break;
             case LOCALE_KO_KR:
-                SetSizeRel(0.56f, 0.81f);
-                SetPosRel(0.230f, 0.18f);
-                SetItemWidthRel(-0.105f);
+                SetSizeRel(0.70f, 0.81f);
+                SetPosRel(0.150f, 0.18f);
+                SetItemWidthRel(-0.170f);
                 SetAutoSpacing(true);
                 break;
             default:

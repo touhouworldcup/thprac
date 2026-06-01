@@ -1,4 +1,4 @@
-﻿#include "thprac_games.h"
+#include "thprac_games.h"
 #include "thprac_utils.h"
 
 
@@ -184,9 +184,9 @@ namespace TH15 {
                 SetAutoSpacing(true);
                 break;
             case LOCALE_KO_KR:
-                SetSizeRel(0.56f, 0.81f);
-                SetPosRel(0.37f, 0.14f);
-                SetItemWidthRel(-0.105f);
+                SetSizeRel(0.65f, 0.81f);
+                SetPosRel(0.25f, 0.14f);
+                SetItemWidthRel(-0.125f);
                 SetAutoSpacing(true);
                 break;
             default:
