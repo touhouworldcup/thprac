@@ -1,4 +1,4 @@
-﻿#include "thprac_games.h"
+#include "thprac_games.h"
 #include "thprac_utils.h"
 #include <metrohash128.h>
 
@@ -493,9 +493,9 @@ namespace TH18 {
                 SetAutoSpacing(true);
                 break;
             case LOCALE_KO_KR:
-                SetSizeRel(0.56f, 0.7f);
-                SetPosRel(0.230f, 0.18f);
-                SetItemWidthRel(-0.105f);
+                SetSizeRel(0.60f, 0.7f);
+                SetPosRel(0.215f, 0.18f);
+                SetItemWidthRel(-0.135f); 
                 SetAutoSpacing(true);
                 break;
             default:

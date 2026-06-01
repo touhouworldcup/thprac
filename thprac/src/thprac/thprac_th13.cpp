@@ -1,4 +1,4 @@
-﻿#include "thprac_games.h"
+#include "thprac_games.h"
 #include "thprac_utils.h"
 
 
@@ -197,7 +197,7 @@ namespace TH13 {
                 break;
             case LOCALE_KO_KR:
                 AutoSize(ImVec2(0.0f, 0.0f),
-                    XSSS(3)[TH13_ST1_BOSS4], nullptr, S(TH13_EXTEND), nullptr,
+                    XSSS(3)[TH13_ST1_BOSS4], nullptr, S(TH13_SPIRIT_SIDE), nullptr,
                     15.5f, ImVec2(ImGui::GetMainViewport()->Size.x, 450.0f), ImVec2(370.0f, -1.0f));
                 AutoPos(0.9f, 0.65f);
                 break;

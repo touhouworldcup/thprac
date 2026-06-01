@@ -1,4 +1,4 @@
-## [简体中文](/README_CN.md) [日本語](/README_JP.md)
+## [简体中文](/README_CN.md) [日本語](/README_JP.md) [한국어](/README_KO.md)
 
 # **thprac**
 > thprac is a tool for practicing Touhou shmups.
