@@ -1987,6 +1987,7 @@ namespace TH06 {
         THGuiPrac::singleton().State(4);
     })
     EHOOK_DY(th06_prac_menu_enter, 0x4373a3, 5, {
+        *(bool*)(&(GAME_MANAGER->isInPracticeMode)) = (thPracParam.stage != 6);
         *(int32_t*)(0x69d6d4) = *(int32_t*)(0x69d6d8) = thPracParam.stage;
         if (thPracParam.stage == 6)
             *(int8_t*)(0x69bcb0) = 4;
@@ -2093,6 +2094,9 @@ namespace TH06 {
             pCtx->Eip = 0x436DCB;
         }
         if (thRestartFlag) {
+            if (!thRestartFlag_normalGame && GAME_MANAGER->currentStage != 6) {
+                *(bool*)(&(GAME_MANAGER->isInPracticeMode)) = true;
+            }
             th06_white_screen.Enable();
             thRestartFlag = false;
             pCtx->Eip = 0x43738c;
