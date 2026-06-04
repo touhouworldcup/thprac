@@ -3862,7 +3862,7 @@ namespace TH18 {
 
     void THTrackerUpdate() {
         Gui::SetNextWindowSizeRel({ 340.0f / 1280.0f, 0.0f });
-        Gui::SetNextWindowPosRel({ 888.0f / 1280.0f, 845.0f / 960.0f });
+        Gui::SetNextWindowPosRel({ 888.0f / 1280.0f, 825.0f / 960.0f });
         ImGui::Begin("Tracker", nullptr, trackerFlags);
 
         ImGui::BeginTable("Tracker table", 2);
