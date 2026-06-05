@@ -80,6 +80,17 @@ RUN_GAME_STATUS TryRunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flag
         }
     }
 
+    auto* ver = knownGame.ver;
+    if (!ver->has_oilp) {
+        flags &= ~RUN_FLAG_OILP;
+    }
+    if (!ver->has_vpatch) {
+        flags &= ~RUN_FLAG_VPATCH;
+    }
+    if (!ver->initFunc) {
+        flags &= ~RUN_FLAG_THPRAC;
+    }
+
     switch (knownGame.type) {
     case TYPE_MODDED:
         log_printf("Warning: unknown variant of %s\n", gThGameStrs[knownGame.ver->gameId]);
