@@ -1,4 +1,4 @@
-﻿#include "thprac_games.h"
+#include "thprac_games.h"
 #include "thprac_utils.h"
 
 namespace THPrac {

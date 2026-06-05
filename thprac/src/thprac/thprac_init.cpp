@@ -1,4 +1,4 @@
-﻿#define NOMINMAX
+#define NOMINMAX
 #include "utils/wininternal.h"
 
 #include "thprac_update.h"

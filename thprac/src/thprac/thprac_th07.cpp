@@ -1,4 +1,4 @@
-﻿#include "thprac_th07.h"
+#include "thprac_th07.h"
 
 
 namespace THPrac {

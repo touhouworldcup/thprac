@@ -1,4 +1,4 @@
-﻿#define NOMINMAX
+#define NOMINMAX
 
 #include "thprac_load_exe.h"
 #include "thprac_identify.h"

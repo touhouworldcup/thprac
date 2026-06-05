@@ -1,4 +1,4 @@
-﻿#include "thprac_licence.h"
+#include "thprac_licence.h"
 #include <imgui.h>
 
 namespace THPrac {

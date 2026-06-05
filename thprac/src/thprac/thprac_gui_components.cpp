@@ -1,4 +1,4 @@
-﻿#include "thprac_gui_components.h"
+#include "thprac_gui_components.h"
 #include "imgui_internal.h"
 
 #include <numeric>
