@@ -102,6 +102,17 @@ constexpr const THGameVersion gGameVersions[] = {
         },
         .oepCode = { 0x212b, 0xea2a, 0x0a16, 0xac44, 0x5900, 0x4646, 0xd3f8, 0x4848, 0xc249, 0xa28d }
     },
+    {  // Steam version
+        .gameId = ID_TH09,
+        .initFunc = TH09Init,
+        .has_vpatch = true,
+        .has_oilp   = true,
+        .exeInfo = {
+            .timeStamp = 1122350436,
+            .textSize = 556544,
+        },
+        .oepCode = { 0x212b, 0xea2a, 0x0a16, 0xac44, 0x5900, 0x4646, 0xd3f8, 0x4848, 0xc249, 0xa28d }
+    },
     {
         .gameId = ID_TH095,
         .initFunc = TH095Init,
@@ -311,6 +322,17 @@ constexpr const THGameVersion gGameVersions[] = {
         },
         .oepCode = { 0x31a9, 0x4244, 0xaa43, 0xbaca, 0xbaba, 0xcd13, 0x11ab, 0x3db7, 0xc241, 0xa2bb }
     },
+    {  // Latest Steam version
+        .gameId = ID_TH175,
+        .initFunc = nullptr,
+        .has_vpatch = false,
+        .has_oilp   = false,
+        .exeInfo = {
+            .timeStamp = 1675058423,
+            .textSize = 414208,
+        },
+        .oepCode = { 0x31a9, 0x4244, 0xaa43, 0xbaca, 0xbaba, 0xcd13, 0x11ab, 0x3db7, 0xc241, 0xa2bb }
+    },
     {
         .gameId = ID_TH18,
         .initFunc = TH18Init,
@@ -374,6 +396,7 @@ static_assert(gGameVersions[VER_TH07].gameId == ID_TH07);
 static_assert(gGameVersions[VER_TH075].gameId == ID_TH075);
 static_assert(gGameVersions[VER_TH08].gameId == ID_TH08);
 static_assert(gGameVersions[VER_TH09].gameId == ID_TH09);
+static_assert(gGameVersions[VER_TH09_STEAM].gameId == ID_TH09);
 static_assert(gGameVersions[VER_TH095].gameId == ID_TH095);
 static_assert(gGameVersions[VER_TH10].gameId == ID_TH10);
 static_assert(gGameVersions[VER_TH105].gameId == ID_TH105);
@@ -393,6 +416,7 @@ static_assert(gGameVersions[VER_TH16].gameId == ID_TH16);
 static_assert(gGameVersions[VER_TH165].gameId == ID_TH165);
 static_assert(gGameVersions[VER_TH17].gameId == ID_TH17);
 static_assert(gGameVersions[VER_TH175].gameId == ID_TH175);
+static_assert(gGameVersions[VER_TH175_STEAM].gameId == ID_TH175);
 static_assert(gGameVersions[VER_TH18].gameId == ID_TH18);
 static_assert(gGameVersions[VER_TH185].gameId == ID_TH185);
 static_assert(gGameVersions[VER_TH19_V1_00A].gameId == ID_TH19);
@@ -456,6 +480,10 @@ const THKnownGame gKnownGames[] = {
         TYPE_SCHINESE,
         { 0x479728a5, 0xefc341e0,
             0x260d5e91, 0xe6851479 } },
+    { gGameVersions + VER_TH09,
+        TYPE_STEAM,
+        { 0x1f970004, 0x5b12aa84,
+            0xee19f17, 0xd7fd7729 } },
     { gGameVersions + VER_TH095,
         TYPE_ORIGINAL,
         { 0x46eaf90e, 0x2a24f234,
@@ -660,6 +688,10 @@ const THKnownGame gKnownGames[] = {
         TYPE_ORIGINAL,
         { 0xac9cb8f9, 0x1972b2cc,
             0xadab5748, 0x751593e1 } },
+    { gGameVersions + VER_TH175,
+        TYPE_STEAM,
+        { 0xc96cffd1, 0x88e7c0df, 
+            0x55fb0585, 0x3d899cfb } },
     { gGameVersions + VER_TH18,
         TYPE_ORIGINAL,
         { 0xa3f0a451, 0x85ce8668,
