@@ -306,45 +306,103 @@ bool ApplyToProcById(DWORD pid) {
 
 bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game, THGameID gameID) {
     bool hasPrompted = false;
+    auto DoTheInjection = [&](HANDLE hProc, uintptr_t base, const THGameVersion* gameSig) -> bool {
+        if (prompt_if_yes_game) {
+            hasPrompted = true;
+            int choice = log_mboxf(0, MB_YESNO, S(THPRAC_PR_APPLY), S(THPRAC_PR_ASK_ATTACH), gThGameStrs[gameSig->gameId]);
+            if (choice != IDYES) {
+                return false;
+            }
+        }
+        if (WriteTHPracSig(hProc, base) && LoadSelf(hProc)) {
+            if (prompt_if_yes_game) {
+                hasPrompted = true;
+                log_mbox(0, MB_ICONASTERISK | MB_OK, S(THPRAC_PR_COMPLETE), S(THPRAC_PR_INFO_ATTACHED));
+            }
+            return true;
+        }
+        else {
+            hasPrompted = true;
+            log_mbox(0, MB_ICONERROR | MB_OK, S(THPRAC_PR_ERROR), S(THPRAC_PR_ERR_ATTACH));
+            return true;
+        }
+    };
 
     if (CheckIfAnyGame()) {
-        const THGameVersion* gameSig = nullptr;
-        PROCESSENTRY32W entry = {};
-        entry.dwSize = sizeof(PROCESSENTRY32W);
-        HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-        if (Process32FirstW(snapshot, &entry)) {
-            do {
-                uintptr_t base;
-                HANDLE hProc = 0;
-                if (!(gameSig = CheckOngoingGameByPID(entry.th32ProcessID, &base, &hProc)))
-                    continue;
+        ULONG bufLen = 0;
+        NtQuerySystemInformation(SystemProcessInformation, nullptr, 0, &bufLen);
+        LPVOID buf = VirtualAlloc(nullptr, bufLen, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+        if (!buf) {
+            goto no_game;
+        }
+        defer (if (buf) VirtualFree(buf, 0, MEM_RELEASE));
+        if (!NT_SUCCESS(NtQuerySystemInformation(SystemProcessInformation, buf, bufLen, &bufLen))) {
+            goto no_game;
+        }
 
-                if(gameID != ID_UNKNOWN && gameSig->gameId != gameID) {
-                    continue;
-                }
+        for (auto* proc = (SYSTEM_PROCESS_INFORMATION*)buf; proc;
+             proc = proc->NextEntryOffset ? (SYSTEM_PROCESS_INFORMATION*)((uintptr_t)proc + proc->NextEntryOffset) : nullptr
+        ) {
+            HANDLE hProc = NULL;
+            uintptr_t base;
 
-                hasPrompted = true;
-                if (prompt_if_yes_game) {
-                    int choice = log_mboxf(0, MB_YESNO, S(THPRAC_PR_APPLY), S(THPRAC_PR_ASK_ATTACH), gThGameStrs[gameSig->gameId]);
-                    if (choice != IDYES)
-                        continue;
-                }
-                if (WriteTHPracSig(hProc, base) && LoadSelf(hProc)) {
-                    if (prompt_if_yes_game) {
-                        log_mbox(0, MB_ICONASTERISK | MB_OK, S(THPRAC_PR_COMPLETE), S(THPRAC_PR_INFO_ATTACHED));
+            defer(if (hProc) CloseHandle(hProc));
+        
+            THGameID curGameId_fromExeName = ParseExeName(UNICODE_STRING_PARAM(proc->ImageName));
+            if (gameID != ID_UNKNOWN) {
+                if (curGameId_fromExeName == gameID) {
+                    auto* gameSig = CheckOngoingGameByPID(proc->UniqueProcessId, &base, &hProc);
+                    if (gameSig->gameId == curGameId_fromExeName && gameSig->initFunc) {
+                        if (DoTheInjection(hProc, base, gameSig)) {
+                            return true;
+                        }
+                        else {
+                            // If the user doesn't want to inject into this game,
+                            // but we found the process in this loop already, we gotta keep track of that... [1] 
+                            proc->UniqueProcessId = 0;
+                        }
                     }
-                    CloseHandle(snapshot);
-                    return true;
-                } else {
-                    log_mbox(0, MB_ICONERROR | MB_OK, S(THPRAC_PR_ERROR), S(THPRAC_PR_ERR_ATTACH));
-                    CloseHandle(snapshot);
-                    return true;
                 }
+            } else if (curGameId_fromExeName != ID_UNKNOWN) {
+                auto* gameSig = CheckOngoingGameByPID(proc->UniqueProcessId, &base, &hProc);
+                if (gameSig->gameId == curGameId_fromExeName && gameSig->initFunc) {
+                    if (DoTheInjection(hProc, base, gameSig)) {
+                        return true;
+                    } else {
+                        // If the user doesn't want to inject into this game,
+                        // but we found the process in this loop already, we gotta keep track of that... [1] 
+                        proc->UniqueProcessId = 0;
+                    }
+                }
+            }
+        }
 
-            } while (Process32NextW(snapshot, &entry));
+        for (auto* proc = (SYSTEM_PROCESS_INFORMATION*)buf; proc;
+            proc = proc->NextEntryOffset ? (SYSTEM_PROCESS_INFORMATION*)((uintptr_t)proc + proc->NextEntryOffset) : nullptr
+            )
+        {
+            // [1]... and we could allocate a dynamic array for that, but I don't like that
+            if (!proc->UniqueProcessId) {
+                continue;
+            }
+        
+            uintptr_t base;
+            HANDLE hProc = 0;
+
+            const THGameVersion* gameSig = CheckOngoingGameByPID(proc->UniqueProcessId, &base, &hProc);
+            defer(if (hProc) CloseHandle(hProc));
+
+            if (!gameSig || (gameID != ID_UNKNOWN && gameSig->gameId != gameID) || !gameSig->initFunc) {
+                continue;
+            }
+
+            if (DoTheInjection(hProc, base, gameSig)) {
+                return true;
+            }
         }
     }
 
+no_game:
     if (prompt_if_no_game && !hasPrompted) {
         log_mbox(0, MB_ICONERROR | MB_OK, S(THPRAC_PR_ERROR), S(THPRAC_PR_ERR_NO_GAME));
     }

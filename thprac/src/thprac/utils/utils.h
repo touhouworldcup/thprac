@@ -102,7 +102,22 @@ constexpr unsigned t_strlen(const T* str) {
     return i;
 }
 
+template<typename T>
+bool t_str_compare_nocase(const T* a, size_t a_len, const T* b, size_t b_len) {
+    if (a_len != b_len) {
+       return false;
+    }
+    
+    for (size_t i = 0; i < a_len; i++) {
+        if (t_tolower(a[i]) != t_tolower(b[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
 #define SIZED(a) a, sizeof(a)
+#define COUNTED(a) a, t_strlen(a)
 
 /** round n down to nearest multiple of m */
 inline long RoundDown(long n, long m) {

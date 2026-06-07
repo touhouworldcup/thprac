@@ -970,4 +970,71 @@ bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const wchar
     }
 }
 
+THGameID ParseExeName(const wchar_t* name, size_t name_len) {
+    if (t_str_compare_nocase(name, name_len, COUNTED(L"東方紅魔郷.exe"))) {
+        return ID_TH06;
+    }
+
+    if (t_str_compare_nocase(name, name_len, COUNTED(L"algostg.exe"))) {
+        return ID_ALCOSTG;
+    }
+
+    if (!(name_len == 8 || name_len == 9) || ((name[0] | 0x20) != L't') || ((name[1] | 0x20) != L'h')) {
+        return ID_UNKNOWN;
+    }
+
+    if (name_len == 8) {
+        if(name[2] < L'0' || name[2] > L'9' ||
+           name[3] < L'0' || name[3] > L'9') {
+            return ID_UNKNOWN;
+        }
+        size_t game_num = (name[2] - L'0') * 10 + (name[3] - L'0');
+        switch (game_num) {
+            case  6: return ID_TH06;
+            case  7: return ID_TH07;
+            case  8: return ID_TH08;
+            case  9: return ID_TH09;
+            case 10: return ID_TH10;
+            case 11: return ID_TH11;
+            case 12: return ID_TH12;
+            case 13: return ID_TH13;
+            case 14: return ID_TH14;
+            case 15: return ID_TH15;
+            case 16: return ID_TH16;
+            case 17: return ID_TH17;
+            case 18: return ID_TH18;
+            case 19: return ID_TH19;
+            case 20: return ID_TH20;
+            default: return ID_UNKNOWN;
+        }
+    }
+    if (name_len == 9) {
+        if(name[2] < L'0' || name[2] > L'9' ||
+           name[3] < L'0' || name[3] > L'9' ||
+           name[4] < L'0' || name[4] > L'9') {
+            return ID_UNKNOWN;
+        }
+        size_t game_num = (name[4] - L'0') * 100 + (name[3] - L'0') * 10 + (name[4] - L'0');
+
+        switch (game_num) {
+            case  75: return ID_TH075;
+            case  95: return ID_TH095;
+            case 105: return ID_TH105;
+            case 123: return ID_TH123;
+            case 125: return ID_TH125;
+            case 128: return ID_TH128;
+            case 135: return ID_TH135;
+            case 143: return ID_TH143;
+            case 145: return ID_TH145;
+            case 155: return ID_TH155;
+            case 165: return ID_TH165;
+            case 175: return ID_TH175;
+            case 185: return ID_TH185;
+            default:  return ID_UNKNOWN;
+        }
+    }
+
+    __assume(0);
+}
+
 }

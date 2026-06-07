@@ -141,6 +141,8 @@ const THGameVersion* IdentifyRemoteExe(void* hProc, uintptr_t mod, ExeInfo* outI
 bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const uint8_t* buf, size_t size, ExeInfo* outInfo);
 bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const wchar_t* fn, ExeInfo* outInfo);
 
+THGameID ParseExeName(const wchar_t* name, size_t name_len);
+
 #define METRO_HASH_FORMAT "{ 0x%04x, 0x%04x, 0x%04x, 0x%04x }"
 #define METRO_HASH_ARGS(h) (h)[0], (h)[1], (h)[2], (h)[3]
 
