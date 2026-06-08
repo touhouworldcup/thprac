@@ -1,4 +1,4 @@
-﻿#include "thprac_gui_input.h"
+#include "thprac_gui_input.h"
 #include "thprac_gui_locale.h"
 #include "thprac_gui_impl_win32.h"
 #include <imgui.h>

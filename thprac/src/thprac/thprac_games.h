@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "thprac_hook.h"
 #include "thprac_log.h"

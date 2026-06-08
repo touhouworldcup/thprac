@@ -1,4 +1,4 @@
-﻿#define NOMINMAX
+#define NOMINMAX
 #include "utils/wininternal.h"
 
 #include "thprac_update.h"
@@ -78,6 +78,17 @@ RUN_GAME_STATUS TryRunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flag
         default:
             return RUN_GAME_FAILURE;
         }
+    }
+
+    auto* ver = knownGame.ver;
+    if (!ver->has_oilp) {
+        flags &= ~RUN_FLAG_OILP;
+    }
+    if (!ver->has_vpatch) {
+        flags &= ~RUN_FLAG_VPATCH;
+    }
+    if (!ver->initFunc) {
+        flags &= ~RUN_FLAG_THPRAC;
     }
 
     switch (knownGame.type) {
