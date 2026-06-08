@@ -59,6 +59,8 @@ namespace TH06 {
             rank = 0;
             rankLock = false;
             fakeType = 0;
+            dlg = false;
+            frame = 0;
         }
         bool ReadJson(std::string& json)
         {
