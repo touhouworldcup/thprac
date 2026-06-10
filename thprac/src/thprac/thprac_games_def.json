@@ -858,6 +858,7 @@
       ],
       "TH_FPS_FREE_ADJ": [ "自由调整", "Adjust freely", "自由調整" ],
       "TH_GAMEPLAY": [ "游戏进行", "Gameplay", "ゲームプレイ" ],
+      "TH_FAST_RETRY": [ "快速重开", "Fast retry", "高速リトライ" ],
       "TH_FACTOR_ACB": [ "总是计入All Clear Bonus", "Always factor in the \"All Clear Bonus\"", "プラクティスでもオールクリアボーナスを加算する" ],
       "TH_FACTOR_ACB_DESC": [
         "开启时，单关练习六面结束后将会计入All Clear Bonus。",

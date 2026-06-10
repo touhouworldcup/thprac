@@ -964,6 +964,7 @@ namespace TH20 {
 
     // TODO(?)
     //static constinit HookCtx listIterUnlinkFix = { .addr = 0x11AB2, .data = PatchCode("e800000000") };
+    PATCH_ST(th20_instant_esc_r, 0xE2EB5, "EB");
     EHOOK_ST(th20_piv_overflow_fix, 0xC496B, 2, {
         GlobalsSide* globals = (GlobalsSide*)RVA(GAME_SIDE0 + 0x88);
 
@@ -1003,6 +1004,7 @@ namespace TH20 {
     public:
     private:
     private:
+        bool fastRetry = true;
         bool pivOverflowFix = false;
         bool pivUncap = false;
         bool scoreUncap = false;
@@ -1084,7 +1086,8 @@ namespace TH20 {
             FpsInit();
             GameplayInit();
             MasterDisableInit();
-
+            
+            th20_instant_esc_r.Setup();
             th20_piv_overflow_fix.Setup();
             th20_piv_uncap_1.Setup();
             th20_piv_uncap_2.Setup();
@@ -1093,7 +1096,8 @@ namespace TH20 {
             th20_infinite_stones.Setup();
             th20_hitbox_scale_fix.Setup();
             th20_cleanup_stone_active.Setup();
-
+            
+            th20_instant_esc_r.Enable();
             // TODO(?)
             /*
             // thcrap base_tsa already patches this to fix the crash, don't try to rehook it if it's being used
@@ -1180,6 +1184,9 @@ namespace TH20 {
                 EndOptGroup();
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
+                if (ImGui::Checkbox(S(TH_FAST_RETRY), &fastRetry)) {
+                    th20_instant_esc_r.Toggle(fastRetry);       
+                }
                 if (ImGui::Checkbox(S(TH20_PIV_OVERFLOW_FIX), &pivOverflowFix)) {
                     th20_piv_overflow_fix.Toggle(pivOverflowFix);
                     th20_score_uncap_stage_tr.Toggle(scoreUncap || pivOverflowFix || pivUncap);
@@ -3136,7 +3143,6 @@ namespace TH20 {
     EHOOK_DY(th20_extra_prac_fix, 0x11EB3D, 2, {
         *(uint32_t*)RVA(GAME_SIDE0 + 0x88 + 0x1E0) = GetMemContent(RVA(DIFFICULTY));
     })
-    PATCH_DY(th20_instant_esc_r, 0xE2EB5, "EB")
     EHOOK_DY(th20_esc_q, 0xe2f45 , 7 , {
         if (Gui::KeyboardInputGetRaw('Q'))
             pCtx->Eip = RVA(0xe2fe7);
