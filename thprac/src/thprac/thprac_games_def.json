@@ -1516,6 +1516,16 @@
        "THPRAC_PYRAMID_20_SUB_STONE":["辅助石",     "S. Stone",  "S. Stone"  ],
        "THPRAC_PYRAMID_20_UNFOCUS_STONE":["高速石", "U. Stone",  "U. Stone"  ],
 	   
+	   
+       "THPRAC_FIX_RSQRT":["修复CPU导致的问题", "Fix rep problem caused by CPU",  "Fix rep problem caused by CPU"  ],
+       "THPRAC_FIX_RSQRT_DESC":["RSQRTSS指令会在不同CPU下有不同效果，导致REP不对", "asm code RSQRTSS have different effect in different CPU, which will cause problem",  "asm code RSQRTSS have different effect in different CPU, which will cause problem"  ],
+       "THPRAC_SELECT_CPU":["CPU选择", "Select CPU",  "Select CPU"  ],
+       "THPRAC_SELECT_CPU_COMBO":["Intel\\0AMD\\0自定义\\0\\0", "Intel\\0AMD\\0Custom\\0\\0",  "Intel\\0AMD\\0Custom\\0\\0"  ],
+       "THPRAC_EXPORT_CUSTOM":["导出自定义CPU表", "export custom CPU table",  "export custom CPU table"  ],
+       "THPRAC_EXPORT_CUSTOM_DESC":["会在th08.exe对应目录导出custom_bin.bin", "will export custom_bin.bin in path of th08.exe",  "will export custom_bin.bin in path of th08.exe"  ],
+       "THPRAC_IMPORT_CUSTOM":["导入自定义CPU表", "import custom CPU table",  "import custom CPU table"  ],
+       "THPRAC_IMPORT_CUSTOM_DESC":["将custom_bin.bin放入th08.exe对应目录", "place custom_bin.bin in path of th08.exe",  "place custom_bin.bin in path of th08.exe"  ],
+	   
        "THPRAC_PYRAMID_20_QUERY":["查询", "Query",  "Query"  ],
        "THPRAC_PYRAMID_20_LAST_200":["前200个", "Last 200",  "Last 200"  ],
        "THPRAC_PYRAMID_20_QUERY_RES":["查询情况", "Query Result",  "Query Result"  ],

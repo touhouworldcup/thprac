@@ -223,6 +223,9 @@
     <ClInclude Include="src\thprac\thprac_th07.h">
       <Filter>THPrac Games</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac\thprac_th08_rsqrt.h">
+      <Filter>THPrac Games</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\thprac\thprac_utils.cpp">
