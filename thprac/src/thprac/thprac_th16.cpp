@@ -671,8 +671,21 @@ namespace TH16 {
             pCtx->Eip = 0x42e245;
         }
     });
+    static constinit HookCtx scoreUncapHooks[] = {
+        {.addr = 0x482A13, .data = PatchCode("ffffffff") },
+        {.addr = 0x408345, .data = PatchCode("ffffffff") },
+        {.addr = 0x43E125, .data = PatchCode("ffffffff") },
+        {.addr = 0x41822E, .data = PatchCode("ffffffff") },
+        {.addr = 0x4918A8, .data = PatchCode("ffffffff") },
+        {.addr = 0x48CC98, .data = PatchCode("ffffffff") },
+        {.addr = 0x4181FC, .data = PatchCode("ffffffff") },
+        {.addr = 0x43E12B, .data = PatchCode("ffffffff") },
+    };
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
-    private:
+        SINGLETON(THAdvOptWnd);
+
+    public:
         void FpsInit()
         {
             if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
@@ -710,6 +723,19 @@ namespace TH16 {
             th16_all_clear_bonus_3.Toggle(mOptCtx.all_clear_bonus);
         }
 
+        void ScoreUncapInit()
+        {
+            for (size_t i = 0; i < elementsof(scoreUncapHooks); i++) {
+                scoreUncapHooks[i].Setup();
+            }
+        }
+        void ScoreUncapSet()
+        {
+            for (auto& hook : scoreUncapHooks) {
+                hook.Toggle(scoreUncapChkbox);
+            }
+        }
+
         THAdvOptWnd() noexcept
         {
             SetWndFlag(ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
@@ -725,10 +751,9 @@ namespace TH16 {
             OnLocaleChange();
             FpsInit();
             GameplayInit();
+            ScoreUncapInit();
         }
-        SINGLETON(THAdvOptWnd);
 
-    public:
         __declspec(noinline) static bool StaticUpdate()
         {
             auto& advOptWnd = THAdvOptWnd::singleton();
@@ -744,7 +769,6 @@ namespace TH16 {
             return advOptWnd.IsOpen();
         }
 
-    protected:
         void LocaleUpdate()
         {
             SetTitle("AdvOptMenu");
@@ -785,6 +809,11 @@ namespace TH16 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
+
+                if (ImGui::Checkbox(S(TH18_UNCAP), &scoreUncapChkbox)) {
+                    ScoreUncapSet();
+                }
+
                 EndOptGroup();
             }
 
@@ -794,6 +823,7 @@ namespace TH16 {
         }
 
         adv_opt_ctx mOptCtx;
+        bool scoreUncapChkbox = false;
     };
 
     void ECLJump(ECLHelper& ecl, unsigned int start, unsigned int dest, int at_frame, int ecl_time = 0)
