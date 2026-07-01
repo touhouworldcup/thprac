@@ -29,6 +29,17 @@ struct Float3 {
     float z;
 };
 
+struct Float4 {
+    float x;
+    float y;
+    float z;
+    float w;
+};
+
+struct Matrix44 {
+    float dat[4][4];
+};
+
 struct Timer {
     int32_t previous;
     int32_t current;

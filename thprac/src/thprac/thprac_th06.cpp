@@ -11,13 +11,20 @@ namespace TH06 {
         TH_TRACKER_MARISA_A, TH_TRACKER_MARISA_B
     };
     
-    static const GameManager* const GAME_MANAGER = (const GameManager* const)0x69bca0;
+    static PatchouliShottypeVars(*const PATCHOULI_SHOTTYPE_VARS)[2] = (PatchouliShottypeVars(*const)[2])0x476264;
+    static int32_t* const PLAYER_SHOT = (int32_t* const)0x487e44;
+    static EclManager* const ECL_MANAGER = (EclManager* const)0x487e50;
+    static EnemyManager* const ENEMY_MANAGER = (EnemyManager* const)0x4b79c8;
+    static ZunGui* const ZUN_GUI = (ZunGui* const)0x69bc30;
+    static GameManager* const GAME_MANAGER = (GameManager* const)0x69bca0;
+    static MainMenu* const MAIN_MENU = (MainMenu* const)0x6d46c0;
+    static GameWindow* const GAME_WINDOW = (GameWindow* const)0x6c6bd4;
+    static Supervisor* const SUPERVISOR = (Supervisor* const)0x6c6d18;
 
     enum ADDRS {
-        ENEMY_MANAGER = 0x4b79c8,
-        GUI = 0x69bc30,
         INPUT_ADDR = 0x69D904,
         INPUT_PREV_ADDR = 0x69D908,
+        IS_EIGTH_FRAME_OF_HELD_INPUT_ADDR = 0x69D90C,
     };
 
     bool THBGMTest();
@@ -181,7 +188,7 @@ namespace TH06 {
                     Open();
                 } else {
                     Close();
-                    *((int32_t*)0x6c6eb0) = 3;
+                    SUPERVISOR->screenBorderForceRedrawFrames = 3;
                 }
             }
         }
@@ -216,14 +223,14 @@ namespace TH06 {
             constexpr uint32_t midLength[5] = { (24+24)*60, 32*60, 0, 40*60, (40+30)*60 };
             constexpr uint32_t midExtraWait[5] = { 4*60, 15*60, 0, 12*60, 5*60 };
 
-            const bool bossExists = GetMemContent<bool>(GUI + 0x20);
+            const bool bossExists = GetMemContent<bool>((uintptr_t)(&ZUN_GUI->bossPresent));
             const uint32_t curTime = pCtx->Edx;
 
             if (bossExists && curTime >= midStart[st] && curTime < midStart[st] + midLength[st]) {
                 pCtx->Eip = 0x412e36; // don't tick timeline
 
                 if (curTime < midStart[st] + midExtraWait[st]) // remove unnecessary wait
-                    *(int32_t*)(ENEMY_MANAGER + 0xee5e0 + 0x8) = midStart[st] + midExtraWait[st];
+                    ENEMY_MANAGER->timelineTime.current = midStart[st] + midExtraWait[st];
             }
         })
         HOTKEY_ENDDEF();
@@ -265,8 +272,8 @@ namespace TH06 {
             case 1:
                 SetFade(0.8f, 0.1f);
                 Open();
-                mDiffculty = (int)(*((int8_t*)0x69bcb0));
-                mShotType = (int)(*((int8_t*)0x69d4bd) * 2) + *((int8_t*)0x69d4be);
+                mDiffculty = GAME_MANAGER->difficulty;
+                mShotType = (int)(GAME_MANAGER->character * 2 + GAME_MANAGER->shotType);
                 break;
             case 2:
                 break;
@@ -767,8 +774,8 @@ namespace TH06 {
 
         void CheckReplay()
         {
-            uint32_t index = GetMemContent(0x6d46c0 + 0x81e8);
-            char* raw = (char*)(0x6d46c0 + index * 512 + 0x823c);
+            uint32_t index = GetMemContent((uintptr_t)(&(MAIN_MENU->chosenReplay)));
+            char* raw = (char*)((MAIN_MENU->replayFilePaths)[index]);
 
             std::string param;
             if (ReplayLoadParam(mb_to_utf16(raw, 932).c_str(), param) && mRepParam.ReadJson(param))
@@ -915,7 +922,7 @@ namespace TH06 {
         }
         void ContentUpdate()
         {
-            *((int32_t*)0x6c6eb0) = 3;
+            SUPERVISOR->screenBorderForceRedrawFrames = 3;
             ImGui::TextUnformatted(S(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
@@ -939,7 +946,7 @@ namespace TH06 {
     // ECL Patch Helper
     void ECLWarp(int32_t time)
     {
-        *((int32_t*)(0x5a5fb0)) = time;
+        ENEMY_MANAGER->timelineTime.current = time;
     }
     void ECLSetHealth(ECLHelper& ecl, int offset, int32_t ecl_time, int32_t time)
     {
@@ -1362,7 +1369,7 @@ namespace TH06 {
             }
             break;
         case THPrac::TH06::TH06_ST6_MID2:
-            shot = (int)(*((int8_t*)0x69d4bd) * 2) + *((int8_t*)0x69d4be);
+            shot = GAME_MANAGER->character * 2 + GAME_MANAGER->shotType;
             if (shot > 1)
                 shot = 1099;
             else if (!shot)
@@ -1867,8 +1874,8 @@ namespace TH06 {
     __declspec(noinline) void THSectionPatch()
     {
         ECLHelper ecl;
-        ecl.SetBaseAddr((void*)0x487e50);
-
+        ecl.SetBaseAddr((void*)(ECL_MANAGER));
+        
         auto section = thPracParam.section;
         if (section >= 10000 && section < 20000) {
             int stage = (section - 10000) / 100;
@@ -1943,8 +1950,11 @@ namespace TH06 {
 
     EHOOK_ST(th06_result_screen_create, 0x42d812, 4, {
         self->Disable();
-        *(uint32_t*)(*(uint32_t*)(pCtx->Ebp - 0x10) + 0x8) = 0xA;
-        *(uint64_t*)(*(uint32_t*)(pCtx->Ebp - 0x10) + 0x34) = 0x2020202020202020;
+        ResultScreen* resultScreen = (ResultScreen*)(*(uint32_t*)(pCtx->Ebp - 0x10));
+        resultScreen->resultScreenState = RESULT_SCREEN_STATE_SAVE_REPLAY_QUESTION;
+        for (int i = 0; i < sizeof(resultScreen->replayName); ++i) {
+            resultScreen->replayName[i] = ' ';
+        }
         pCtx->Eip = 0x42d839;
     });
 
@@ -1991,20 +2001,21 @@ namespace TH06 {
     })
     EHOOK_DY(th06_prac_menu_enter, 0x4373a3, 5, {
         *(bool*)(&(GAME_MANAGER->isInPracticeMode)) = (thPracParam.stage != 6);
-        *(int32_t*)(0x69d6d4) = *(int32_t*)(0x69d6d8) = thPracParam.stage;
-        if (thPracParam.stage == 6)
-                *(int8_t*)(0x69bcb0) = 4;
-            else
-            *(int8_t*)(0x69bcb0) = *(int8_t*)(0x6c6e49);
+        GAME_MANAGER->currentStage = GAME_MANAGER->menuCursorBackup = thPracParam.stage;
+        if (thPracParam.stage == 6) {
+            GAME_MANAGER->difficulty = 4;
+        } else {
+            GAME_MANAGER->difficulty = SUPERVISOR->cfg.defaultDifficulty;
+        }
     })
     EHOOK_DY(th06_pause_menu, 0x401b8f, 2, {
-        if (thPracParam.mode && (*((int32_t*)0x69bcbc) == 0)) {
+        if (thPracParam.mode && (GAME_MANAGER->isInReplay == 0)) {
             auto sig = THPauseMenu::singleton().PMState();
             if (sig == THPauseMenu::SIGNAL_RESUME) {
                 pCtx->Eip = 0x40223d;
             } else if (sig == THPauseMenu::SIGNAL_EXIT) {
-                *(uint32_t*)0x6c6ea4 = 7; // Set gamemode to result screen
-                *(uint16_t*)0x69d4bf = 0; // Close pause menu
+                SUPERVISOR->curState = SUPERVISOR_STATE_RESULTSCREEN_FROMGAME;  // Set gamemode to result sc
+                GAME_MANAGER->isInGameMenu = GAME_MANAGER->isInRetryMenu = false;  // Close pause menu
                 th06_result_screen_create.Enable();
             } else if (sig == THPauseMenu::SIGNAL_RESTART) {
                 pCtx->Eip = 0x40263c;
@@ -2033,8 +2044,9 @@ namespace TH06 {
         if (!GAME_MANAGER->isInReplay) {
             *(WORD*)(INPUT_ADDR) &= ~0x2; // clear bomb bit from input
 
-            uint32_t GUI_impl = *(uint32_t*)(0x69bc30 + 0x4);
-            if (*(int32_t*)(GUI_impl + 0x253c) >= 0) //in dialogue
+            // uint32_t GUI_impl = *(uint32_t*)(0x69bc30 + 0x4);
+            // if (*(int32_t*)(GUI_impl + 0x253c) >= 0) //in dialogue
+            if (ZUN_GUI->impl->msg.currentMsgIdx >= 0) //in dialogue
                 *(WORD*)(INPUT_ADDR) &= ~0x1; // clear shoot bit from input
         }
     })
@@ -2050,29 +2062,29 @@ namespace TH06 {
 					mov dword ptr [69d714],eax
 					mov dword ptr [69d718],eax
 				*/
-            *(int8_t*)(0x69d4ba) = (int8_t)thPracParam.life;
-            *(int8_t*)(0x69d4bb) = (int8_t)thPracParam.bomb;
-            *(int16_t*)(0x69d4b0) = (int16_t)thPracParam.power;
-            *(int32_t*)(0x69bca0) = *(int32_t*)(0x69bca4) = (int32_t)thPracParam.score;
-            *(int32_t*)(0x69bcb4) = *(int32_t*)(0x69bcb8) = (int32_t)thPracParam.graze;
-            *(int16_t*)(0x69d4b4) = *(int16_t*)(0x69d4b6) = (int16_t)thPracParam.point;
-            *(uint32_t*)0x5a5fb0 = thPracParam.frame;
+            GAME_MANAGER->livesRemaining = (int8_t)thPracParam.life;
+            GAME_MANAGER->bombsRemaining = (int8_t)thPracParam.life;
+            GAME_MANAGER->currentPower = (int16_t)thPracParam.power;
+            GAME_MANAGER->guiScore = GAME_MANAGER->score = (int32_t)thPracParam.score;
+            GAME_MANAGER->grazeInStage = GAME_MANAGER->grazeInTotal = (int32_t)thPracParam.graze;
+            GAME_MANAGER->pointItemsCollectedInStage = GAME_MANAGER->pointItemsCollected = (int16_t)thPracParam.point;
+            ENEMY_MANAGER->timelineTime.current = thPracParam.frame;
 
-            if (*(int8_t*)(0x69bcb0) != 4) {
+            if (GAME_MANAGER->difficulty != 4) {
                 if (thPracParam.score >= 60000000)
-                    *(int8_t*)(0x69d4bc) = 4;
+                    GAME_MANAGER->extraLives = 4;
                 else if (thPracParam.score >= 40000000)
-                    *(int8_t*)(0x69d4bc) = 3;
+                    GAME_MANAGER->extraLives = 3;
                 else if (thPracParam.score >= 20000000)
-                    *(int8_t*)(0x69d4bc) = 2;
+                    GAME_MANAGER->extraLives = 2;
                 else if (thPracParam.score >= 10000000)
-                    *(int8_t*)(0x69d4bc) = 1;
+                    GAME_MANAGER->extraLives = 1;
             }
 
-            *(int32_t*)(0x69d710) = *(int32_t*)(0x69d710) = (int32_t)thPracParam.rank;
+            GAME_MANAGER->rank = (int32_t)thPracParam.rank;
             if (thPracParam.rankLock) {
-                *(int32_t*)(0x69d714) = *(int32_t*)(0x69d714) = (int32_t)thPracParam.rank;
-                *(int32_t*)(0x69d718) = *(int32_t*)(0x69d718) = (int32_t)thPracParam.rank;
+                GAME_MANAGER->maxRank = (int32_t)thPracParam.rank;
+                GAME_MANAGER->minRank = (int32_t)thPracParam.rank;
             }
 
             THSectionPatch();
@@ -2098,7 +2110,7 @@ namespace TH06 {
         }
         if (thRestartFlag) {
             if (!thRestartFlag_normalGame && GAME_MANAGER->currentStage != 6) {
-                *(bool*)(&(GAME_MANAGER->isInPracticeMode)) = true;
+                GAME_MANAGER->isInPracticeMode = true;
             }
             th06_white_screen.Enable();
             thRestartFlag = false;
@@ -2118,7 +2130,7 @@ namespace TH06 {
     PATCH_DY(th06_preplay_1, 0x42d835, "09")
     EHOOK_DY(th06_preplay_2, 0x418ef9, 5, {
         if (thPracParam.mode && !THGuiRep::singleton().mRepStatus) {
-            *(uint32_t*)0x69bca0 = *(uint32_t*)0x69bca4;
+            GAME_MANAGER->guiScore = GAME_MANAGER->score;
             pCtx->Eip = 0x418f0e;
         }
     })
@@ -2138,28 +2150,32 @@ namespace TH06 {
     })
     EHOOK_DY(th06_fake_shot_type, 0x40b2f9, 6, {
         if (thPracParam.fakeType) {
-            *((int32_t*)0x487e44) = thPracParam.fakeType - 1;
+            *PLAYER_SHOT = thPracParam.fakeType - 1;
             pCtx->Eip = 0x40b2ff;
         }
     })
     EHOOK_DY(th06_patchouli, 0x40c100, 1, {
-        int32_t* var = *(int32_t**)(pCtx->Esp + 4);
+        static Enemy* const enemy = (Enemy*)(*(int32_t**)(pCtx->Esp + 4));
+        unsigned index1 = (thPracParam.fakeType - 1) / 2;
+        unsigned index2 = (thPracParam.fakeType - 1) % 2;
         if (thPracParam.fakeType) {
-            var[618] = ((int32_t*)0x476264)[3 * (thPracParam.fakeType - 1)];
-            var[619] = ((int32_t*)0x476268)[3 * (thPracParam.fakeType - 1)];
-            var[620] = ((int32_t*)0x47626c)[3 * (thPracParam.fakeType - 1)];
+            enemy->currentContext.var1 = (*PATCHOULI_SHOTTYPE_VARS)[index1].shotVars[index2].var1;
+            enemy->currentContext.var2 = (*PATCHOULI_SHOTTYPE_VARS)[index1].shotVars[index2].var2;
+            enemy->currentContext.var3 = (*PATCHOULI_SHOTTYPE_VARS)[index1].shotVars[index2].var3;
             pCtx->Eip = 0x40c174;
         }
     })
     EHOOK_DY(th06_cancel_muteki, 0x429ec4, 7, {
+        static Player* const player = (Player*)(pCtx->Eax);
         if (thPracParam.mode) {
-            *(uint8_t*)(pCtx->Eax + 0x9e0) = 0;
+            player->playerState = 0;
             pCtx->Eip = 0x429ecb;
         }
     })
     EHOOK_DY(th06_set_deathbomb_timer, 0x42a09c, 10, {
+        static Player* const player = (Player*)(pCtx->Eax);
         if (thPracParam.mode) {
-            *(uint32_t*)(pCtx->Eax + 0x9d8) = 6;
+            player->respawnTimer = 6;
             pCtx->Eip = 0x42a0a6;
         }
     })
@@ -2187,8 +2203,10 @@ namespace TH06 {
     })
     EHOOK_DY(th06_render, 0x41cb6d, 1, {
         GameGuiRender(IMPL_WIN32_DX8);
-        if (Gui::GetChordPressed(hotkeys.screenshot))
-            THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);
+        if (Gui::GetChordPressed(hotkeys.screenshot)) {
+            // THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);
+            THSnapshot::Snapshot(SUPERVISOR->d3dDevice);
+        }
     })
     HOOKSET_ENDDEF()
 
@@ -2198,8 +2216,8 @@ namespace TH06 {
         }
 
         // Init
-        GameGuiInit(IMPL_WIN32_DX8, 0x6c6d20, 0x6c6bd4,
-            Gui::INGAGME_INPUT_GEN1, INPUT_ADDR, INPUT_PREV_ADDR, 0x69d90c,
+        GameGuiInit(IMPL_WIN32_DX8, (int)(&SUPERVISOR->d3dDevice), (int)(&(GAME_WINDOW->window)),
+            Gui::INGAGME_INPUT_GEN1, INPUT_ADDR, INPUT_PREV_ADDR, IS_EIGTH_FRAME_OF_HELD_INPUT_ADDR,
             1.0f);
 
         SetDpadHook(0x41D330, 3);
