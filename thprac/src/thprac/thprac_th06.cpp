@@ -1944,6 +1944,7 @@ namespace TH06 {
     EHOOK_ST(th06_result_screen_create, 0x42d812, 4, {
         self->Disable();
         *(uint32_t*)(*(uint32_t*)(pCtx->Ebp - 0x10) + 0x8) = 0xA;
+        *(uint64_t*)(*(uint32_t*)(pCtx->Ebp - 0x10) + 0x34) = 0x2020202020202020;
         pCtx->Eip = 0x42d839;
     });
 
@@ -1992,8 +1993,8 @@ namespace TH06 {
         *(bool*)(&(GAME_MANAGER->isInPracticeMode)) = (thPracParam.stage != 6);
         *(int32_t*)(0x69d6d4) = *(int32_t*)(0x69d6d8) = thPracParam.stage;
         if (thPracParam.stage == 6)
-            *(int8_t*)(0x69bcb0) = 4;
-        else
+                *(int8_t*)(0x69bcb0) = 4;
+            else
             *(int8_t*)(0x69bcb0) = *(int8_t*)(0x6c6e49);
     })
     EHOOK_DY(th06_pause_menu, 0x401b8f, 2, {
