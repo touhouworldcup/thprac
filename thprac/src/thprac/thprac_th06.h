@@ -1456,5 +1456,13 @@ struct AnmManager {
     int32_t screenshotHeight;
 };
 static_assert(sizeof(AnmManager) == 0x2112c);
+
+struct Chain {
+    ChainElem calcChain;
+    ChainElem drawChain;
+    uint32_t midiOutputDeviceCount;
+    uint32_t unk;
+};
+static_assert(sizeof(Chain) == 0x48);
 }
 }

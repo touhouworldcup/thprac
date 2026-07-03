@@ -17,18 +17,21 @@ namespace TH06 {
     static EnemyManager* const ENEMY_MANAGER = (EnemyManager* const)0x4b79c8;
     static ZunGui* const ZUN_GUI = (ZunGui* const)0x69bc30;
     static GameManager* const GAME_MANAGER = (GameManager* const)0x69bca0;
+    static Chain* const CHAIN = (Chain* const)0x69d918;
     static GameWindow* const GAME_WINDOW = (GameWindow* const)0x6c6bd4;
     static Supervisor* const SUPERVISOR = (Supervisor* const)0x6c6d18;
     static AnmManager* const ANM_MANAGER = (AnmManager* const)0x6d4588;
     static MainMenu* const MAIN_MENU = (MainMenu* const)0x6d46c0;
 
     enum ADDRS {
+        SHAKE_SCREEN_ADDR = 0x42ffc0,
         INPUT_ADDR = 0x69D904,
         INPUT_PREV_ADDR = 0x69D908,
         IS_EIGTH_FRAME_OF_HELD_INPUT_ADDR = 0x69D90C,
     };
 
     bool THBGMTest();
+    void DisableShakeScreenEffect();
     using std::pair;
     struct THPracParam {
         int32_t mode;
@@ -593,6 +596,7 @@ namespace TH06 {
     protected:
         signal StateRestart()
         {
+            DisableShakeScreenEffect();
             if (mState != STATE_RESTART) {
                 mState = STATE_RESTART;
                 mFrameCounter = 0;
@@ -1949,6 +1953,8 @@ namespace TH06 {
         ImGui::End();
     }
 
+    int th06_called_get_random_f32_zero_to_one_cnt = 0;
+
     EHOOK_ST(th06_result_screen_create, 0x42d812, 4, {
         self->Disable();
         ResultScreen* resultScreen = (ResultScreen*)(*(uint32_t*)(pCtx->Ebp - 0x10));
@@ -1985,6 +1991,22 @@ namespace TH06 {
             ENEMY_MANAGER->bosses[0]->bulletProps.sfx = idx;
         }
     });
+
+    EHOOK_ST(th06_bomb_esc_r_prevent_desyncs, 0x430042, 2, {
+        self->Disable();
+        pCtx->Eip = 0x430044;
+    });
+
+    // Disable shake screen effect in the calculation chain (if exist) to avoid desyncing
+    void DisableShakeScreenEffect() {
+        ChainElem* current = &(CHAIN->calcChain);
+        while (current != nullptr) {
+            if ((uint32_t)(current->callback) == SHAKE_SCREEN_ADDR) {
+                th06_bomb_esc_r_prevent_desyncs.Enable();
+            }
+            current = current->next;
+        }
+    }
 
     // It would be good practice to run Setup() on this
     // But due to the way this new hooking system works
@@ -2064,6 +2086,7 @@ namespace TH06 {
                 if (Gui::KeyboardInputGetRaw('R') || (key & 0x124) == 0x124) { // ctrl+shift+down or R
                     *(DWORD*)(thiz) = 7;
                     thRestartFlag_normalGame = true;
+                    DisableShakeScreenEffect();
                     pCtx->Eip = 0x40263c;
                 }
             }
@@ -2261,6 +2284,8 @@ namespace TH06 {
         th06_result_screen_create.Setup();
         th06_sfx_fix.Setup();
         th06_sfx_fix.Disable();
+        th06_bomb_esc_r_prevent_desyncs.Setup();
+        th06_bomb_esc_r_prevent_desyncs.Disable();
 
         // Reset thPracParam
         thPracParam.Reset();
