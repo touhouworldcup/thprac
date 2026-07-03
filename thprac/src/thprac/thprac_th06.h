@@ -396,7 +396,7 @@ static_assert(sizeof(MidiTrack) == 0x20);
 
 struct MidiTimer
 {
-    virtual void OnTimerElapsed() = 0;
+    virtual void DummyFunctionToGenerateVirtualTable() = 0;
     uint32_t timerId;
     TIMECAPS timeCaps;
 };
@@ -450,14 +450,7 @@ struct MidiOutput : MidiTimer {
 };
 
 struct IPbg3Parser {
-    virtual int32_t ReadBit() = 0;
-    virtual uint32_t ReadInt(uint32_t numBitsAsPowersOf2) = 0;
-    virtual int32_t ReadByteAssumeAligned() = 0;
-    virtual int32_t SeekToOffset(uint32_t fileOffset) = 0;
-    virtual int32_t SeekToNextByte() = 0;
-    virtual int32_t ReadByteAlignedData(uint8_t* data, uint32_t bytesToRead) = 0;
-    virtual int32_t GetLastWriteTime(LPFILETIME lastWriteTime) = 0;
-    virtual ~IPbg3Parser() {}
+    virtual void DummyFunctionToGenerateVirtualTable() = 0;
     uint32_t offsetInFile;
     uint32_t fileSize;
     uint32_t curByte;
@@ -468,16 +461,7 @@ struct IPbg3Parser {
 struct IFileAbstraction {
 };
 struct FileAbstraction : public IFileAbstraction {
-    virtual int32_t Open(char* filename, char* mode);
-    virtual void Close();
-    virtual int32_t Read(uint8_t* data, uint32_t dataLen, uint32_t* numBytesRead);
-    virtual int32_t Write(uint8_t* data, uint32_t dataLen, uint32_t* outWritten);
-    virtual int32_t ReadByte();
-    virtual int32_t WriteByte(uint32_t b);
-    virtual int32_t Seek(uint32_t amount, uint32_t seekFrom);
-    virtual uint32_t Tell();
-    virtual uint32_t GetSize();
-    virtual uint8_t* ReadWholeFile(uint32_t maxSize);
+    virtual void DummyFunctionToGenerateVirtualTable() = 0;
     HANDLE handle;
     DWORD access;
 };
@@ -726,7 +710,7 @@ union EclRawInstrArg {
         int16_t hi;
     } sh;
     float f32;
-    int32_t i32;
+    int32_t int32_t;
     EclVarId id;
 };
 struct EclRawInstrAluArgs { 
@@ -1409,5 +1393,68 @@ struct EclManager {
     EclTimelineInstr* timeline;
 };
 static_assert(sizeof(EclManager) == 0xc);
+
+struct AnmRawScript {
+    uint32_t id;
+    AnmRawInstr* firstInstruction;
+};
+
+struct AnmRawEntry {
+    int32_t numSprites;
+    int32_t numScripts;
+    uint32_t textureIdx;
+    int32_t width;
+    int32_t height;
+    uint32_t format;
+    uint32_t colorKey;
+    uint32_t nameOffset;
+    uint32_t spriteIdxOffset;
+    uint32_t mipmapNameOffset;
+    uint32_t version;
+    uint32_t unk1;
+    uint32_t textureOffset;
+    uint32_t hasData;
+    uint32_t nextOffset;
+    uint32_t unk2;
+    uint32_t spriteOffsets[10];
+    AnmRawScript scripts[10];
+};
+static_assert(sizeof(AnmRawEntry) == 0xb8);
+
+struct RenderVertexInfo {
+    Float3 position;
+    Float2 textureUV;
+};
+static_assert(sizeof(RenderVertexInfo) == 0x14);
+
+struct AnmManager {
+    AnmLoadedSprite sprites[2048];
+    AnmVm virtualMachine;
+    IDirect3DTexture8* textures[264];
+    void* imageDataArray[256];
+    int32_t maybeLoadedSpriteCount;
+    AnmRawInstr* scripts[2048];
+    int32_t spriteIndices[2048];
+    AnmRawEntry* anmFiles[128];
+    uint32_t anmFilesSpriteIndexOffsets[128];
+    IDirect3DSurface8* surfaces[32];
+    IDirect3DSurface8* surfacesBis[32];
+    uint8_t surfaceSourceInfo[32][0x14];  // real type: D3DXIMAGE_INFO[32]
+    D3DCOLOR currentTextureFactor;
+    IDirect3DTexture8* currentTexture;
+    uint8_t currentBlendMode;
+    uint8_t currentColorOp;
+    uint8_t currentVertexShader;
+    uint8_t currentZWriteDisable;
+    AnmLoadedSprite* currentSprite;
+    IDirect3DVertexBuffer8* vertexBuffer;
+    RenderVertexInfo vertexBufferContents[4];
+    int32_t screenshotTextureId;
+    int32_t screenshotLeft;
+    int32_t screenshotTop;
+    int32_t screenshotWidth;
+    int32_t screenshotHeight;
+};
+static_assert(sizeof(AnmManager) == 0x2112c);
 }
 }

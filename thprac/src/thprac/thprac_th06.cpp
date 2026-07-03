@@ -17,9 +17,10 @@ namespace TH06 {
     static EnemyManager* const ENEMY_MANAGER = (EnemyManager* const)0x4b79c8;
     static ZunGui* const ZUN_GUI = (ZunGui* const)0x69bc30;
     static GameManager* const GAME_MANAGER = (GameManager* const)0x69bca0;
-    static MainMenu* const MAIN_MENU = (MainMenu* const)0x6d46c0;
     static GameWindow* const GAME_WINDOW = (GameWindow* const)0x6c6bd4;
     static Supervisor* const SUPERVISOR = (Supervisor* const)0x6c6d18;
+    static AnmManager* const ANM_MANAGER = (AnmManager* const)0x6d4588;
+    static MainMenu* const MAIN_MENU = (MainMenu* const)0x6d46c0;
 
     enum ADDRS {
         INPUT_ADDR = 0x69D904,
@@ -965,7 +966,7 @@ namespace TH06 {
     }
     void ECLNameFix()
     {
-        void* thisPtr = *((void**)0x6d4588);
+        void* thisPtr = (void*)(ANM_MANAGER);
         if (thPracParam.stage == 5) {
             asm_call<0x431dc0, Thiscall>(thisPtr, 11, "data/eff06.anm", 691);
         } else if (thPracParam.stage == 6) {
@@ -2072,8 +2073,6 @@ namespace TH06 {
         if (!GAME_MANAGER->isInReplay) {
             *(WORD*)(INPUT_ADDR) &= ~0x2; // clear bomb bit from input
 
-            // uint32_t GUI_impl = *(uint32_t*)(0x69bc30 + 0x4);
-            // if (*(int32_t*)(GUI_impl + 0x253c) >= 0) //in dialogue
             if (ZUN_GUI->impl->msg.currentMsgIdx >= 0) //in dialogue
                 *(WORD*)(INPUT_ADDR) &= ~0x1; // clear shoot bit from input
         }
@@ -2232,7 +2231,6 @@ namespace TH06 {
     EHOOK_DY(th06_render, 0x41cb6d, 1, {
         GameGuiRender(IMPL_WIN32_DX8);
         if (Gui::GetChordPressed(hotkeys.screenshot)) {
-            // THSnapshot::Snapshot(*(IDirect3DDevice8**)0x6c6d20);
             THSnapshot::Snapshot(SUPERVISOR->d3dDevice);
         }
     })
