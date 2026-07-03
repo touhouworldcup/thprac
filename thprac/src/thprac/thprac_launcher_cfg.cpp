@@ -2485,6 +2485,10 @@ private:
             HelpMarker(S(TH14_MODE_NORMAL_DESC));
 
             mCfgEnableTH15_ShowShootingDownRate_autoly.Gui(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2));
+
+            mCfgEnableTH16_CrashFix_autoly.Gui(S(THPRAC_INGAMEINFO_TH16_CRASH_BUGFIX), S(THPRAC_INGAMEINFO_TH16_CRASH_BUGFIX_DESC));
+            mCfgEnableTH16_UncapScore_autoly.Gui(S(THPRAC_INGAMEINFO_TH16_UNCAP_SCORE));
+
             mCfgTH18EnableCardActivatedCount.Gui(S(THPRAC_TH18_SHOW_CARD_ACTIVATED_CNT));
 
             mCfgTH18ForceCard.Gui(S(THPRAC_TH18_FORCE_CARD), S(THPRAC_TH18_FORCE_CARD_DESC));
@@ -2730,6 +2734,8 @@ private:
     THCfgCheckbox mCfgEnableTH14_ShowDropBar_autoly { "auto_th14_show_drop_bar", false };
     THCfgCheckbox mCfgEnableTH14_LaserRepRepair_autoly { "auto_th14_laser_rep_repair", false };
     THCfgCheckbox mCfgEnableTH15_ShowShootingDownRate_autoly { "auto_th15_show_rate", false };
+    THCfgCheckbox mCfgEnableTH16_CrashFix_autoly { "auto_th16_crash_fix", false };
+    THCfgCheckbox mCfgEnableTH16_UncapScore_autoly { "auto_th16_uncap_score", false };
     THCfgCheckbox mCfgEnableMasterDisable_autoly { "auto_disable_master", false };
 
     THCfgCheckbox mCfgEnableLockTimer_autoly { "auto_lock_timer", false };

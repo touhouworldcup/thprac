@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1860] {
+const char* th_glossary_str[3][1863] {
     {
         "",
         "啤酒",
@@ -1123,6 +1123,9 @@ const char* th_glossary_str[3][1860] {
         "击破数",
         "显示击破数",
         "绀珠传显示击破数",
+        "天空璋尝试修复消弹崩溃bug",
+        "不确定能不能用以及rep支持情况...",
+        "天空璋取消分数上限",
         "初始化窗口位置",
         "如果遇到游戏启动后没窗口可尝试开启此选项",
         "按键显示设置",
@@ -2985,6 +2988,9 @@ const char* th_glossary_str[3][1860] {
         "shoot down",
         "show shooting down",
         "LoLK show shooting down",
+        "HSiFS try fix season release crash bug",
+        "not sure about if it able to use or replay support",
+        "HSiFS uncap score",
         "init window pos",
         "try this option when game is invisible after opened",
         "key monitor setting",
@@ -4847,6 +4853,9 @@ const char* th_glossary_str[3][1860] {
         "shoot down",
         "show shooting down",
         "LoLK show shooting down",
+        "HSiFS try fix season release crash bug",
+        "not sure about if it able to use or replay support",
+        "HSiFS uncap score",
         "init window pos",
         "try this option when game is invisible after opened",
         "key monitor setting",
@@ -11184,7 +11193,7 @@ namespace TH08 {
             },
         },
         {
-            {},
+            { },
             {
                 TH08_ST4A_BOSS1,
                 TH08_ST4A_BOSS2,
@@ -11199,7 +11208,7 @@ namespace TH08 {
             },
         },
         {
-            {},
+            { },
             {
                 TH08_ST4B_BOSS1,
                 TH08_ST4B_BOSS2,
@@ -11298,7 +11307,7 @@ namespace TH08 {
             },
         },
         {
-            {},
+            { },
             {
                 TH08_LW_1,
                 TH08_LW_2,
@@ -11481,7 +11490,7 @@ namespace TH08 {
             },
         },
         {
-            {},
+            { },
             {
                 TH08_LW_1,
                 TH08_LW_2,
@@ -11581,14 +11590,14 @@ namespace TH09 {
 
     const th_sections_t th_sections_cba[1][1][2] {
         {
-            {},
+            { },
         },
     };
 
     const th_sections_t th_sections_cbt[1][2][1] {
         {
-            {},
-            {},
+            { },
+            { },
         },
     };
 
@@ -12598,7 +12607,7 @@ namespace TH10 {
             },
         },
         {
-            {},
+            { },
             {
                 TH10_ST6_BOSS1,
                 TH10_ST6_BOSS2,
@@ -13043,7 +13052,7 @@ namespace Alcostg {
 
     const th_sections_t th_sections_cba[3][2][10] {
         {
-            {},
+            { },
             {
                 ALCOSTG_ST1_BOSS1,
                 ALCOSTG_ST1_BOSS2,
@@ -13052,7 +13061,7 @@ namespace Alcostg {
             },
         },
         {
-            {},
+            { },
             {
                 ALCOSTG_ST2_BOSS1,
                 ALCOSTG_ST2_BOSS2,
@@ -13062,7 +13071,7 @@ namespace Alcostg {
             },
         },
         {
-            {},
+            { },
             {
                 ALCOSTG_ST3_BOSS1,
                 ALCOSTG_ST3_BOSS2,
@@ -16703,14 +16712,14 @@ namespace TH125 {
 
     const th_sections_t th_sections_cba[1][1][2] {
         {
-            {},
+            { },
         },
     };
 
     const th_sections_t th_sections_cbt[1][2][1] {
         {
-            {},
-            {},
+            { },
+            { },
         },
     };
 
@@ -20403,7 +20412,7 @@ namespace TH13 {
             },
         },
         {
-            {},
+            { },
             {
                 TH13_ST6_BOSS1,
                 TH13_ST6_BOSS2,
@@ -24467,7 +24476,7 @@ namespace TH16 {
             },
         },
         {
-            {},
+            { },
             {
                 TH16_ST6_BOSS1,
                 TH16_ST6_BOSS2,
@@ -27069,14 +27078,14 @@ namespace TH185 {
 
     const th_sections_t th_sections_cba[1][1][2] {
         {
-            {},
+            { },
         },
     };
 
     const th_sections_t th_sections_cbt[1][2][1] {
         {
-            {},
-            {},
+            { },
+            { },
         },
     };
 
@@ -27224,14 +27233,14 @@ namespace TH19 {
 
     const th_sections_t th_sections_cba[1][1][2] {
         {
-            {},
+            { },
         },
     };
 
     const th_sections_t th_sections_cbt[1][2][1] {
         {
-            {},
-            {},
+            { },
+            { },
         },
     };
 
@@ -28211,7 +28220,7 @@ namespace TH20 {
             },
         },
         {
-            {},
+            { },
             {
                 TH20_ST3_BOSS1,
                 TH20_ST3_BOSS2,
@@ -28252,7 +28261,7 @@ namespace TH20 {
             },
         },
         {
-            {},
+            { },
             {
                 TH20_ST6_BOSS1,
                 TH20_ST6_BOSS2,

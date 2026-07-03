@@ -27,9 +27,11 @@ extern FastRetryOpt g_fast_re_opt;
 
 namespace TH06 {
     static const GameManager* const GAME_MANAGER = (const GameManager* const)0x69bca0;
+    static Chain* const CHAIN = (Chain* const)0x69d918;
+    static EnemyManager* const ENEMY_MANAGER = (EnemyManager* const)0x4b79c8;
 
     enum ADDRS {
-        ENEMY_MANAGER = 0x4b79c8,
+        SHAKE_SCREEN_ADDR = 0x42ffc0,
         GUI = 0x69bc30,
         INPUT_ADDR = 0x69D904,
         INPUT_PREV_ADDR = 0x69D908,
@@ -53,6 +55,7 @@ namespace TH06 {
     } g_boss_indicator;
 
     bool THBGMTest();
+    void DisableShakeScreenEffect();
     using std::pair;
 
     class TH06Save {
@@ -1034,6 +1037,7 @@ namespace TH06 {
     protected:
         signal StateRestart()
         {
+            DisableShakeScreenEffect();
             if (mState != STATE_RESTART) {
                 mState = STATE_RESTART;
                 mFrameCounter = 0;
@@ -3128,13 +3132,56 @@ namespace TH06 {
             p->AddText({ 110.0f - sz.x, 0.0f }, 0xFF000000, time_text.c_str());
         }
     }
+    int th06_called_get_random_f32_zero_to_one_cnt = 0;
 
     EHOOK_ST(th06_result_screen_create, 0x42d812, 4, {
         self->Disable();
         *(uint32_t*)(*(uint32_t*)(pCtx->Ebp - 0x10) + 0x8) = 0xA;
+        *(uint64_t*)(*(uint32_t*)(pCtx->Ebp - 0x10) + 0x34) = 0x2020202020202020;
         pCtx->Eip = 0x42d839;
     });
+    EHOOK_ST(th06_sfx_fix, 0x4145c6, 3, {
+        self->Disable();
+        SoundIdx idx = NO_SOUND;
+        switch (thPracParam.section) {
+        case THPrac::TH06::TH06_ST5_BOSS2: // It seems that the SFX for this spell varies between SOUND_16 and
+                                           // SOUND_7, depending on the phase of the last non when entering this
+                                           // spell. We are using SOUND_16 here.
+        case THPrac::TH06::TH06_ST5_BOSS4:
+        case THPrac::TH06::TH06_ST5_BOSS5:
+        case THPrac::TH06::TH06_ST5_BOSS6:
+            idx = SOUND_16;
+            break;
+        case THPrac::TH06::TH06_ST6_BOSS2:
+            idx = SOUND_7;
+            break;
+        case THPrac::TH06::TH06_ST6_BOSS6:
+            idx = SOUND_17;
+            break;
+        case THPrac::TH06::TH06_ST6_BOSS9:
+            idx = SOUND_WTF_IS_THAT_LMAO;
+            break;
+        }
+        if (idx != NO_SOUND) {
+            ENEMY_MANAGER->bosses[0]->bulletProps.sfx = idx;
+        }
+    });
+    EHOOK_ST(th06_bomb_esc_r_prevent_desyncs, 0x430042, 2, {
+        self->Disable();
+        pCtx->Eip = 0x430044;
+    });
 
+    // Disable shake screen effect in the calculation chain (if exist) to avoid desyncing
+    void DisableShakeScreenEffect()
+    {
+        ChainElem* current = &(CHAIN->calcChain);
+        while (current != nullptr) {
+            if ((uint32_t)(current->callback) == SHAKE_SCREEN_ADDR) {
+                th06_bomb_esc_r_prevent_desyncs.Enable();
+            }
+            current = current->next;
+        }
+    }
     // It would be good practice to run Setup() on this
     // But due to the way this new hooking system works
     // running Setup is only needed for Hooks, not patches
@@ -3181,6 +3228,7 @@ namespace TH06 {
             *(int8_t*)(0x69bcb0) = 4;
         else
             *(int8_t*)(0x69bcb0) = *(int8_t*)(0x6c6e49);
+        th06_sfx_fix.Enable();
     })
     EHOOK_DY(th06_pause_menu, 0x401b8f, 2, {
         if (thPracParam.mode && (*((int32_t*)0x69bcbc) == 0)) {
@@ -3211,6 +3259,7 @@ namespace TH06 {
                 if (Gui::KeyboardInputGetRaw('R') || (key & 0x124) == 0x124) { // ctrl+shift+down or R
                     *(DWORD*)(thiz) = 7;
                     threstartflag_normalgame = true;
+                    DisableShakeScreenEffect();
                 }
             }
         }
@@ -3853,6 +3902,10 @@ namespace TH06 {
         {
             EnableAllHooks(TH06BgFix);
         }
+        th06_sfx_fix.Setup();
+        th06_sfx_fix.Disable();
+        th06_bomb_esc_r_prevent_desyncs.Setup();
+        th06_bomb_esc_r_prevent_desyncs.Disable();
 
         // Reset thPracParam
         thPracParam.Reset();

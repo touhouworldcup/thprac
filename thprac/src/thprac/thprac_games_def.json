@@ -1431,6 +1431,10 @@
 	  "THPRAC_INGAMEINFO_TH15_SHOOTING_DOWN_RATE":["击破数","shoot down","shoot down"],
 	  "THPRAC_INGAMEINFO_TH15_PRODUCT":["乘积","product","product"],
 	  
+	  "THPRAC_INGAMEINFO_TH16_CRASH_BUGFIX":["天空璋尝试修复消弹崩溃bug","HSiFS try fix season release crash bug","HSiFS try fix season release crash bug"],
+	  "THPRAC_INGAMEINFO_TH16_CRASH_BUGFIX_DESC":["不确定能不能用以及rep支持情况...","not sure about if it able to use or replay support","not sure about if it able to use or replay support"],
+	  "THPRAC_INGAMEINFO_TH16_UNCAP_SCORE":["天空璋取消分数上限","HSiFS uncap score","HSiFS uncap score"],
+	  
 	  "THPRAC_TH20_LV_LOCK": [ "锦上京miss/bomb后不掉石头等级", "FW no lv drop after miss/bomb", "FW no lv drop after miss/bomb" ],
 	  
        "THPRAC_INGAMEINFO":["更多游戏信息","in game info","in game info"],

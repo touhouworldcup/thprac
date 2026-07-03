@@ -1,3 +1,8 @@
+## 26.7.3
+- (C0)根据twc主分支：修复红魔乡部分符卡音效问题，修复震屏导致rep爆炸问题
+- 天空璋分数上限取消选项
+- 天空璋尝试修复游戏爆炸问题（不确定可用性）
+
 ## 26.6.30
 - (BF)加入了CPU选择的RSQRTSS函数，对应于 https://nylilsa.github.io/#/bugs/th08/rsqrtss-desync
 - 其中一个测试用REP：\test\th8_ud07B.rpy ，该rep在AMD CPU下可以正常播放，Intel下则不行
