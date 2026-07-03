@@ -1958,6 +1958,33 @@ namespace TH06 {
         pCtx->Eip = 0x42d839;
     });
 
+    EHOOK_ST(th06_sfx_fix, 0x4145c6, 3, {
+        self->Disable();
+        SoundIdx idx = NO_SOUND;
+        switch (thPracParam.section) {
+            case THPrac::TH06::TH06_ST5_BOSS2:  // It seems that the SFX for this spell varies between SOUND_16 and 
+                                                // SOUND_7, depending on the phase of the last non when entering this 
+                                                // spell. We are using SOUND_16 here.
+            case THPrac::TH06::TH06_ST5_BOSS4:
+            case THPrac::TH06::TH06_ST5_BOSS5:
+            case THPrac::TH06::TH06_ST5_BOSS6:
+                idx = SOUND_16;
+                break;
+            case THPrac::TH06::TH06_ST6_BOSS2:
+                idx = SOUND_7;
+                break;
+            case THPrac::TH06::TH06_ST6_BOSS6:
+                idx = SOUND_17;
+                break;
+            case THPrac::TH06::TH06_ST6_BOSS9:
+                idx = SOUND_WTF_IS_THAT_LMAO;
+                break;
+        }
+        if (idx != NO_SOUND) {
+            ENEMY_MANAGER->bosses[0]->bulletProps.sfx = idx;
+        }
+    });
+
     // It would be good practice to run Setup() on this
     // But due to the way this new hooking system works
     // running Setup is only needed for Hooks, not patches
@@ -2007,6 +2034,7 @@ namespace TH06 {
         } else {
             GAME_MANAGER->difficulty = SUPERVISOR->cfg.defaultDifficulty;
         }
+        th06_sfx_fix.Enable();
     })
     EHOOK_DY(th06_pause_menu, 0x401b8f, 2, {
         if (thPracParam.mode && (GAME_MANAGER->isInReplay == 0)) {
@@ -2233,6 +2261,8 @@ namespace TH06 {
         EnableAllHooks(THMainHook);
         th06_white_screen.Setup();
         th06_result_screen_create.Setup();
+        th06_sfx_fix.Setup();
+        th06_sfx_fix.Disable();
 
         // Reset thPracParam
         thPracParam.Reset();
