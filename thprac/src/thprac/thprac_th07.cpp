@@ -5,6 +5,7 @@ namespace THPrac {
 namespace TH07 {
     using std::pair;
 
+    ZunGui* GUI = (ZunGui*)0x49fbf0;
     GameManager* GAME_MANAGER = (GameManager*)0x00626270;
     Supervisor* SUPERVISOR = (Supervisor*)0x575950;
 
@@ -591,6 +592,14 @@ namespace TH07 {
         pCtx->Eip = 0x4280bf;
     });
 
+    HOOKSET_DEFINE(SpellBonusDisplayFix)
+    PATCH_DY(th07_spell_bonus_display_fix1, 0x42c80f, "c745e000e1f505")
+    PATCH_DY(th07_spell_bonus_display_fix2, 0x42c889, "837dfc09")
+    EHOOK_DY(th07_spell_bonus_display_fix3, 0x42c87c, 4, {
+        GUI->impl->enemySpellStatsDigit.pos.x -= 7.0f;
+    })
+    HOOKSET_ENDDEF()
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
     private:
         void FpsInit()
@@ -709,6 +718,17 @@ namespace TH07 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
+                
+                if (ImGui::Checkbox(S(TH07_FIX_SPELL_BONUS_DISPLAY), &mFixSpellBonusDisplay)) {
+                    if (mFixSpellBonusDisplay) {
+                        EnableAllHooks(SpellBonusDisplayFix);
+                    } else {
+                        DisableAllHooks(SpellBonusDisplayFix);
+                    }
+                }
+                ImGui::SameLine();
+                Gui::HelpMarker(S(TH07_FIX_SPELL_BONUS_DISPLAY_DESC));
+
                 EndOptGroup();
             }
 
@@ -718,6 +738,9 @@ namespace TH07 {
         }
 
         adv_opt_ctx mOptCtx;
+    
+    public:
+        bool mFixSpellBonusDisplay = false;
     };
 
     EHOOK_ST(th07_rb, 0x4157f3, 7, {
@@ -1980,6 +2003,7 @@ namespace TH07 {
 
         // Hooks
         EnableAllHooks(THMainHook);
+        DisableAllHooks(SpellBonusDisplayFix);
 
         // Reset thPracParam
         thPracParam.Reset();

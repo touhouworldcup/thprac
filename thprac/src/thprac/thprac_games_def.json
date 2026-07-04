@@ -1752,6 +1752,12 @@
       "TH07_CHAOS": [ "道中小妖精", "Chaos", "ケイオス" ],
       "TH07_RB": [ "反魂蝶", "Res. Butterfly", "反魂蝶" ],
       "TH07_PHANTASM": [ "Phantasm", "Phantasm", "Phantasm" ],
+      "TH07_FIX_SPELL_BONUS_DISPLAY": [ "修复符卡bonus的显示bug", "Fix the display bug of the spell bonus", "スペカボーナスの表示バグを修正" ],
+      "TH07_FIX_SPELL_BONUS_DISPLAY_DESC": [ 
+        "修复在符卡Bonus超过1亿时无法正常显示，甚至使游戏崩溃的bug", 
+        "Fixed a bug where the Spell Bonus would not display properly when it exceeded 100 million points, and would even cause the game to crash.", 
+        "スペルカードボーナスが１億を超えると正常に表示されず、場合によってはゲームがクラッシュしてしまうバグを修正します"
+      ],
 
       "TH07_NS1_LUNASA": [ "露娜萨一非", "Lunasa Nonspell 1", "ルナサ 通常1" ],
       "TH07_NS1_MERLIN": [ "梅露兰一非", "Merlin Nonspell 1", "メルラン 通常1" ],

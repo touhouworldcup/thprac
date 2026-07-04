@@ -242,5 +242,199 @@ static_assert(offsetof(Supervisor, gamemode_prev) == 0x15C);
 static_assert(offsetof(Supervisor, device_caps) == 0x198);
 static_assert(offsetof(Supervisor, current_fog_enabled) == 0x2bc);
 
+// The following struct definitions are from the GensokyoClub's decompilation project
+
+struct AnmLoadedSprite {
+    int32_t sourceFileIndex;
+    Float2 startPixelInclusive;
+    Float2 endPixelExclusive;
+    float textureHeight;
+    float textureWidth;
+    Float2 uvStart;
+    Float2 uvEnd;
+    float heightPx;
+    float widthPx;
+    Float2 uvScale;
+    int32_t spriteID;
+};
+
+struct ZunTimer {
+    int32_t previous;
+    float subFrame;
+    int32_t current;
+};
+
+struct ZunColor_struct {
+    uint8_t b;
+    uint8_t g;
+    uint8_t r;
+    uint8_t a;
+};
+
+union ZunColor {
+    D3DCOLOR asD3DCOLOR;
+    ZunColor_struct asStruct;
+};
+
+struct AnmVMPrefix {
+    Float3 rotation;
+    Float3 angleVel;
+    Float2 scale;
+    Float2 scaleGrowth;
+    Float2 uvScrollPos;
+    ZunTimer currentTimeInScript;
+    ZunTimer waitTimer;
+    ZunTimer interpCurrentTimes[5];
+    ZunTimer interpEndTimes[5];
+    uint8_t interpModes[5];
+    uint8_t field10_0xc5;
+    uint8_t field11_0xc6;
+    uint8_t field12_0xc7;
+    int32_t var0;
+    int32_t var1;
+    int32_t var2;
+    int32_t var3;
+    float float0;
+    float float1;
+    float float2;
+    float float3;
+    int32_t var4;
+    int32_t var5;
+    Float2 uvScrollVel;
+    Matrix44 matrix1;
+    Matrix44 matrix2;
+    Matrix44 matrix3;
+    ZunColor color1;
+    ZunColor color2;
+    uint32_t flags;
+    int16_t type;
+    int16_t pendingInterrupt;
+};
+
+struct AnmRawInstr {};
+
+struct GuiFormattedText {
+    Float3 pos;
+    int32_t fmtArg;
+    int32_t type;
+    struct ZunTimer timer;
+};
+
+struct AnmVM {
+    AnmVMPrefix prefix;
+    Float3 pos;
+    int16_t activeSpriteIndex;
+    int16_t baseSpriteIndex;
+    int16_t scriptIndex;
+    uint8_t field5_0x1da;
+    uint8_t field6_0x1db;
+    AnmRawInstr* beginningOfScript;
+    AnmRawInstr* currentInstruction;
+    AnmLoadedSprite* loadedSprite;
+    Float3 posInitial;
+    Float3 posFinal;
+    Float3 rotateInitial;
+    Float3 rotateFinal;
+    Float2 scaleInitial;
+    Float2 scaleFinal;
+    ZunColor color1Initial;
+    ZunColor color1Final;
+    Float3 pos2;
+    int32_t timeOfLastSpriteSet;
+    uint8_t fontWidth;
+    uint8_t fontHeight;
+    uint8_t field22_0x242;
+    uint8_t field23_0x243;
+    uint8_t field24_0x244;
+    uint8_t field25_0x245;
+    uint8_t field26_0x246;
+    uint8_t field27_0x247;
+    uint8_t field28_0x248;
+    uint8_t field29_0x249;
+    uint8_t field30_0x24a;
+    uint8_t field31_0x24b;
+};
+
+struct GuiMsgVm {
+    uint8_t* msgFile;
+    void* currentInstr;
+    int32_t currentMsgIdx;
+    ZunTimer timer;
+    int32_t framesElapsedDuringPause;
+    AnmVM portraits[2];
+    AnmVM dialogueLines[2];
+    AnmVM introLines[2];
+    COLORREF textColorsA[4];
+    COLORREF textColorsB[4];
+    uint32_t fontSize;
+    uint32_t ignoreWaitCounter;
+    bool dialogueSkippable;
+    uint8_t field13_0xe0d;
+    uint8_t field14_0xe0e;
+    uint8_t field15_0xe0f;
+};
+
+struct GuiImpl {
+    AnmVM vms[33];
+    uint8_t bossLifeBarState;
+    uint8_t field2_0x4bcd;
+    uint8_t field3_0x4bce;
+    uint8_t field4_0x4bcf;
+    AnmVM stageTextSprites[5];
+    AnmVM playerSpellPortrait;
+    AnmVM enemySpellPortrait;
+    AnmVM bombSpellCutInSpriteA;
+    AnmVM enemySpellCutInSpriteA;
+    AnmVM bombSpellCutInSpriteB;
+    AnmVM enemySpellCutInSpriteB;
+    AnmVM bombSpellName;
+    AnmVM enemySpellName;
+    AnmVM bombSpellNameBackground;
+    AnmVM enemySpellNameBackground;
+    AnmVM loadingScreenSprite;
+    AnmVM nowLoadingSprite;
+    AnmVM arcadeZoneSprite;
+    AnmVM enemySpellStatsDigit;
+    AnmVM enemySpellStats;
+    AnmVM stageTransitionSprites[14][12];
+    uint32_t stageTransitionActiveScriptCount;
+    GuiMsgVm msg;
+    uint32_t stageClearScreenCounter;
+    int32_t clearBonusTotal;
+    BOOL finishedStage;
+    GuiFormattedText bonusScore;
+    GuiFormattedText popupText;
+    GuiFormattedText spellcardBonus;
+    int32_t clearBonusPower;
+    int32_t clearBonusPointItems;
+    int32_t clearBonusCherryMax;
+    int32_t clearBonusGraze;
+};
+
+// I have to rename this structure from Gui, to avoid shadowing the namespace thprac::Gui.
+struct ZunGui {
+    int32_t frameNumber;
+    uint32_t flags;
+    GuiImpl* impl;
+    float bombSpellcardBarLength;  // leftover from EoSD 
+    float blueSpellcardBarLength;  // leftover from EoSD
+    uint32_t bossUIOpacity;
+    int32_t eclSetLives;
+    int32_t spellcardSecondsRemaining;
+    int32_t previousSpellcardSecondsRemaining;
+    bool bossPresent;
+    uint8_t field10_0x25;
+    uint8_t field11_0x26;
+    uint8_t field12_0x27;
+    float bossLifeBarMaxSize;
+    float bossLifeBarSize;
+    uint8_t field15_0x30;
+    uint8_t field16_0x31;
+    uint8_t field17_0x32;
+    uint8_t field18_0x33;
+    float bossLifeBarSegmentStop[8];
+    float bossLifeBarSegmentStart[8];
+    int32_t bossLifeBarSegmentColor[8];
+};
 }
 }
