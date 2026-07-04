@@ -2272,11 +2272,11 @@ namespace TH17 {
 
         ImGui::Text("%d (", tracker_info.th17.roaring_total) NEXT;
 
-        ImGui::TextColored(wolf, "%d", tracker_info.th17.roaring[0]) NEXT;
+        ImGui::TextColored(wolf, "%d", 10 + tracker_info.th17.roaring[0]) NEXT;
         ImGui::TextUnformatted("/") NEXT;
-        ImGui::TextColored(otter, "%d", tracker_info.th17.roaring[1]) NEXT;
+        ImGui::TextColored(otter, "%d", 10 + tracker_info.th17.roaring[1]) NEXT;
         ImGui::TextUnformatted("/") NEXT;
-        ImGui::TextColored(eagle, "%d", tracker_info.th17.roaring[2]) NEXT;
+        ImGui::TextColored(eagle, "%d", 10 + tracker_info.th17.roaring[2]) NEXT;
     
         ImGui::TextUnformatted(")");
 
@@ -2303,8 +2303,8 @@ namespace TH17 {
     }
 
     void THTrackerUpdate() {
-        Gui::SetNextWindowSizeRel({ 340.0f / 1280.0f, 0.0f });
-        Gui::SetNextWindowPosRel({ 900.0f / 1280.0f, 500.0f / 960.0f });
+        Gui::SetNextWindowSizeRel({ 380.0f / 1280.0f, 0.0f });
+        Gui::SetNextWindowPosRel({ 880.0f / 1280.0f, 500.0f / 960.0f });
         ImGui::Begin("Tracker", nullptr,
             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 
@@ -2316,8 +2316,8 @@ namespace TH17 {
         ImGui::TextUnformatted(buf);
 
         ImGui::BeginTable("Tracker table", 2);
-        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 2);
-        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 10);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 7);
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
