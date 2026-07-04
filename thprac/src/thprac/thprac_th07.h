@@ -368,7 +368,7 @@ struct GuiMsgVm {
     COLORREF textColorsB[4];
     uint32_t fontSize;
     uint32_t ignoreWaitCounter;
-    bool dialogueSkippable;
+    int32_t dialogueSkippable;
     uint8_t field13_0xe0d;
     uint8_t field14_0xe0e;
     uint8_t field15_0xe0f;
@@ -401,7 +401,7 @@ struct GuiImpl {
     GuiMsgVm msg;
     uint32_t stageClearScreenCounter;
     int32_t clearBonusTotal;
-    BOOL finishedStage;
+    int32_t finishedStage;
     GuiFormattedText bonusScore;
     GuiFormattedText popupText;
     GuiFormattedText spellcardBonus;
@@ -422,7 +422,7 @@ struct ZunGui {
     int32_t eclSetLives;
     int32_t spellcardSecondsRemaining;
     int32_t previousSpellcardSecondsRemaining;
-    bool bossPresent;
+    int32_t bossPresent;
     uint8_t field10_0x25;
     uint8_t field11_0x26;
     uint8_t field12_0x27;
