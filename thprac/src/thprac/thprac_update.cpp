@@ -223,9 +223,9 @@ bool CompleteUpdate(unsigned char* buf, size_t len, const wchar_t* pCmdLine, int
         // Well this was a bust, we renamed ourselves to <self_name>.exe.old but then we can't even write our new exe file.
         // TODO: what else should happen here?
         DWORD err = GetLastError();
-        char buf[MAX_PATH * 2];
-        int wrote = WideCharToMultiByte(CP_UTF8, 0, new_exe_path, new_exe_path_len, buf, MAX_PATH * 2, nullptr, nullptr);
-        log_printf("Update error: failed to open %.*s for writing, error %d\r\n", err, wrote, buf);
+        char buffer[MAX_PATH * 2];
+        int wrote = WideCharToMultiByte(CP_UTF8, 0, new_exe_path, new_exe_path_len, buffer, MAX_PATH * 2, nullptr, nullptr);
+        log_printf("Update error: failed to open %.*s for writing, error %d\r\n", err, wrote, buffer);
         DeleteFileW(self_fn);
         MoveFileW(move_to, self_fn);
         return false;
@@ -235,9 +235,9 @@ bool CompleteUpdate(unsigned char* buf, size_t len, const wchar_t* pCmdLine, int
         CloseHandle(new_file);
     } else {
         DWORD err = GetLastError();
-        char buf[MAX_PATH * 2];
-        int wrote = WideCharToMultiByte(CP_UTF8, 0, new_exe_path, new_exe_path_len, buf, MAX_PATH * 2, nullptr, nullptr);
-        log_printf("Update error: failed to write %.*s, error %d\r\n -> Wrote %d/%d bytes\r\n", wrote, buf, err, len, byteRet);
+        char buffer[MAX_PATH * 2];
+        int wrote = WideCharToMultiByte(CP_UTF8, 0, new_exe_path, new_exe_path_len, buffer, MAX_PATH * 2, nullptr, nullptr);
+        log_printf("Update error: failed to write %.*s, error %d\r\n -> Wrote %d/%d bytes\r\n", wrote, buffer, err, len, byteRet);
         CloseHandle(new_file);
         DeleteFileW(self_fn);
         MoveFileW(move_to, self_fn);

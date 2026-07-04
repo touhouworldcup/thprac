@@ -1375,7 +1375,7 @@ static DWORD WINAPI RescanThread(LPVOID lpParam) {
             uint16_t oepCode[10];
             if (IdentifyKnownGame(knownGame, oepCode, path_w, nullptr)) {
                 game.instances[i].type = knownGame.type;
-                game.instances[i].ver = knownGame.ver - game.versions;
+                game.instances[i].ver = (uint8_t)(knownGame.ver - game.versions);
                 i++;
             }
             else {
