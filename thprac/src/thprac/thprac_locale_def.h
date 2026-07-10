@@ -1693,6 +1693,7 @@ enum th_glossary_t {
     TH_DELAY,
     TH_DIFFICULTY,
     TH_DISABLE_MASTER,
+    TH_DISABLE_MASTER_10_DESC,
     TH_DISABLE_MASTER_DESC,
     TH_DLG,
     TH_DROP_ITEMS,
@@ -1874,7 +1875,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1863];
+extern const char* th_glossary_str[3][1864];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

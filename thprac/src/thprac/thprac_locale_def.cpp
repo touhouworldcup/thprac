@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1863] {
+const char* th_glossary_str[3][1864] {
     {
         "",
         "啤酒",
@@ -1693,6 +1693,7 @@ const char* th_glossary_str[3][1863] {
         "延迟",
         "难度",
         "符卡收率完整显示",
+        "由于代码原因，风神录暂时无法从游戏内开关禁用MASTER(风神录为99/99)",
         "不显示master 0/99+等",
         "对话",
         "掉落道具",
@@ -3558,6 +3559,7 @@ const char* th_glossary_str[3][1863] {
         "Delay",
         "Difficulty",
         "show complete spellcard capture rate",
+        "Due to code problem, cannot turn on/off Disable Master(\"99/99\") in MoF",
         "no master, 0/99+, etc",
         "Dialog",
         "Drop items",
@@ -5423,6 +5425,7 @@ const char* th_glossary_str[3][1863] {
         "ディレイ",
         "難易度",
         "show complete spellcard capture rate",
+        "Due to code problem, cannot turn on/off Disable Master(\"99/99\") in MoF",
         "no master, 0/99+, etc",
         "ダイアログ",
         "道具掉落",

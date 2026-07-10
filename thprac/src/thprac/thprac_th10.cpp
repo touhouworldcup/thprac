@@ -679,44 +679,124 @@ namespace TH10 {
         *y_range = (y_max - y_min2);
     });
 
-    static void master_disable_render_capture(int tot, int cur, int thz)
+    static void setup_texture_quad_and_matrices(DWORD a, DWORD b, DWORD c)
     {
-        int capture_cur = cur;
-        int capture_tot = tot;
-        int thiz = thz;
-        float pos[3] = { 360.0f, 52.0f, 0.0f };
-        DWORD ppos = (DWORD)pos;
-        static const char ch[] = "%d/%d";
-        DWORD pch = (DWORD)ch;
+        __asm
+            {
+                mov ecx,c
+                mov edx,b
+                mov eax,a
+                mov ebx,0x43E5A0
+                call ebx
+            }
+    }
+
+    static void draw_vm(DWORD a, DWORD b)
+    {
         __asm
         {
-                push capture_tot
-                push capture_cur
-                push pch
-
-                mov ebx,ppos
-                mov esi,thiz
-
-                mov eax,0x00401690
-                call eax
-                add esp,0xC
+                mov ecx,b
+                mov eax,a
+                mov ebx,0x4451C0
+                call ebx
         }
     }
 
-    EHOOK_ST(th10_master_disable2, 0x409064,2,{
+    static void init_anm(DWORD a, DWORD b, DWORD c)
+    {
+        __asm
+        {
+                mov ebx,c
+                mov ecx,b
+                mov eax,a
+                mov edx,0x43E710
+                call edx
+        }
+    }
+
+
+
+    HOOKSET_DEFINE(th10_master_disable)
+    EHOOK_DY(th10_master_disable_register1, 0x409064, 2, {
         for (int i = 0; i < 5; i++)
             *(float*)(pCtx->Edi + 0x24D8 + 0x3AC * i + 0x334) = -9999.0f; // original ascii texture
-        DWORD thiz = *(DWORD*)(0x4776E0);
-        if (*(DWORD*)(0x00477834) && *(float*)(*(DWORD*)(0x00477834) + 0x3C4) < 120.0f)
-            *(DWORD*)(thiz + 0x8974) = 0x80FFFFFF;
-        else
-            *(DWORD*)(thiz + 0x8974) = 0xFFFFFFFF;
+
         int capture_cur = *(DWORD*)(144 * *(DWORD*)(pCtx->Edi + 0x3788)
             + *(DWORD*)(0x47783C) + 17276 * (*(DWORD*)(0x474C68) + *(DWORD*)(0x474C6C) + 2 * *(DWORD*)(0x474C68)) + 1572);
         int capture_tot = *(DWORD*)(144 * *(DWORD*)(pCtx->Edi + 0x3788)
             + *(DWORD*)(0x47783C) + 17276 * (*(DWORD*)(0x474C68) + *(DWORD*)(0x474C6C) + 2 * *(DWORD*)(0x474C68)) + 1576);
-        master_disable_render_capture(capture_tot, capture_cur,thiz);
-    });
+
+        static char chars[21];
+        snprintf(chars, sizeof(chars), "%02d/%02d", capture_cur, capture_tot);
+
+        float cur_x = 360.0f;
+        int chlen = strlen(chars);
+        if (chlen > 7) {
+            float left = 7.0f * (chlen - 8) + 4.0f;
+            cur_x -= left;
+            for (int i = 0; i < 8; i++) 
+                *(float*)(pCtx->Edi + 0x778 + 0x3AC * i + 0x334) = 265.0f + 7.0f * i - left; // bonus
+
+
+            int anm_id = *(int*)(pCtx->Edi + 0x770);
+            DWORD panm = asm_call<0x4491C0, Fastcall,DWORD>(anm_id, *(DWORD*)(0x491C10), anm_id); // "BONUS" "HISTORY"
+            *(float*)(panm + 0x334) = 368.0f - left;
+        }
+        for (int i = 0; i < 21; i++) {
+            DWORD p = pCtx->Edi + 0x37B0 + 0x3AC * i;
+            if ((chars[i] >= '0' && chars[i] <= '9') || chars[i] == '/') {
+                int ascii_idx;
+                *(float*)(p + 0x334) = cur_x;
+                if (chars[i] != '/')
+                    setup_texture_quad_and_matrices(p, chars[i] - '0' + 30, *(DWORD*)(*(DWORD*)(0x47770C) + 0x9EC8));
+                else
+                    setup_texture_quad_and_matrices(p, 40, *(DWORD*)(*(DWORD*)(0x47770C) + 0x9EC8));
+
+                asm_call<0x43EE30, Stdcall>(p); // run vm
+                cur_x += 7.0f;
+            } else if (chars[i] == 0)
+                break;
+            else if (chars[i] == ' ')
+                cur_x += 7.0f;
+        }
+    })
+    EHOOK_DY(th10_master_disable_register3, 0x408F6D, 6, {
+        for (int i = 0; i < 21; i++) {
+            DWORD p = pCtx->Edi + 0x37B0 + 0x3AC * i;
+            *(DWORD*)(p + 0x304) = 2;
+        }
+    })
+    EHOOK_DY(th10_master_disable_register2, 0x408EED, 6, {
+        for (int i = 0; i < 21; i++) {
+            DWORD p = pCtx->Edi + 0x37B0 + 0x3AC * i;
+            *(DWORD*)(p + 0x304) = 3;
+        }
+    })
+    PATCH_DY(th10_master_disable_new, 0x408CA8, "CC850000") // 0x37B0+0x3AC*21+0x100=0x85CC
+
+    EHOOK_DY(th10_master_disable_constructor, 0x40898C, 7, {
+        DWORD buf = pCtx->Esi;
+        asm_call<0x45252D, Stdcall>((void*)(buf + 0x37B0), 0x3AC, 21, 0x402050, 0x401FF0);
+        memset((void*)(buf + 0x37B0), 0, 0x3AC * 21);
+    })
+    EHOOK_DY(th10_master_disable_destructor, 0x408C0C, 5, {
+        DWORD buf = pCtx->Esi;
+        asm_call<0x4525FF, Stdcall>((void*)(buf + 0x37B0), 0x3AC, 21, 0x401FF0);
+    })
+    EHOOK_DY(th10_master_disable_on_draw, 0x409217, 1, {
+        DWORD buf = pCtx->Ebx;
+        for (int i = 0; i < 21; i++) {
+            draw_vm(buf + 0x37B0 + i * 0x3AC, *(DWORD*)0x491C10);
+        }
+    })
+    EHOOK_DY(th10_master_disable_init, 0x409422, 5, {
+        for (int i = 0; i < 21; i++) {
+            DWORD p = pCtx->Ebp + 0x37B0 + 0x3AC * i;
+            init_anm(p, *(DWORD*)(*(DWORD*)(0x47770C) + 0x9EC8), 66);
+        }
+    })
+    HOOKSET_ENDDEF()
+
     EHOOK_ST(th10_white, 0x41B4D5, 6,
         {
             TH10InGameInfo::singleton().mWhiteCount++;
@@ -733,8 +813,8 @@ namespace TH10 {
     private:
         void MasterDisableInit()
         {
-            th10_master_disable2.Setup();
-            th10_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
+            if (g_adv_igi_options.disable_master_autoly)
+                EnableAllHooks(th10_master_disable);
         }
         void FpsInit()
         {
@@ -987,9 +1067,14 @@ namespace TH10 {
                 ImGui::SameLine();
                 HelpMarker(S(TH_ONE_KEY_DIE_DESC));
 
-                if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)){
-                    th10_master_disable2.Toggle(g_adv_igi_options.disable_master_autoly);
-                }
+                // if (ImGui::Checkbox(S(TH_DISABLE_MASTER), &g_adv_igi_options.disable_master_autoly)){
+                //     if(g_adv_igi_options.disable_master_autoly)
+                //         EnableAllHooks(th10_master_disable);
+                //     else
+                //         DisableAllHooks(th10_master_disable);
+                // }
+                ImGui::Text(S(TH_DISABLE_MASTER_10_DESC));
+
                 ImGui::SameLine();
                 HelpMarker(S(TH_DISABLE_MASTER_DESC));
                 ImGui::Checkbox(S(TH_ENABLE_LOCK_TIMER), &g_adv_igi_options.enable_lock_timer_autoly);

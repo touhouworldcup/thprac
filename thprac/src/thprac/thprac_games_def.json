@@ -1763,6 +1763,7 @@
       "TH_EL_BGM": [ "永续BGM", "Everlasting BGM", "永遠に続くBGM" ],
       "TH_DISABLE_MASTER": [ "符卡收率完整显示", "show complete spellcard capture rate", "show complete spellcard capture rate" ],
       "TH_DISABLE_MASTER_DESC": [ "不显示master 0/99+等", "no master, 0/99+, etc", "no master, 0/99+, etc" ],
+      "TH_DISABLE_MASTER_10_DESC": [ "由于代码原因，风神录暂时无法从游戏内开关禁用MASTER(风神录为99/99)", "Due to code problem, cannot turn on/off Disable Master(\"99/99\") in MoF", "Due to code problem, cannot turn on/off Disable Master(\"99/99\") in MoF" ],
       "TH_ENABLE_LOCK_TIMER": [ "启用锁时计时", "enable lock timer", "enable lock timer" ],
 	  
 	  "TH_ERROR": [ "错误", "Error", "エラー" ],
