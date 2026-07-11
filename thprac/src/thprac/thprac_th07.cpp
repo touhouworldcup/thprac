@@ -6,17 +6,28 @@ namespace TH07 {
     using std::pair;
 
     ZunGui* GUI = (ZunGui*)0x49fbf0;
-    GameManager* GAME_MANAGER = (GameManager*)0x00626270;
+    AnmManager** ANM_MANAGER = (AnmManager**)0x4b9e44;
+    Player* PLAYER = (Player*)0x4bdad8;
+    GameWindow* GAME_WINDOW = (GameWindow*)0x575c20;
     Supervisor* SUPERVISOR = (Supervisor*)0x575950;
+    Chain* CHAIN = (Chain*)0x626218;
+    GameManager* GAME_MANAGER = (GameManager*)0x626270;
+    BulletManager* BULLET_MANAGER = (BulletManager*)0x62f958;
+    ChainElem* ENEMY_MANAGER_DRAW_HIGH_PRIO_CHAIN = (ChainElem*)0x9a9adc;
+    EnemyManager* ENEMY_MANAGER = (EnemyManager*)0x9a9b00;
+    EclManager* ECL_MANAGER = (EclManager*)0x1347938;
+    Background* BACKGROUND = (Background*)0x1347b00;
 
 #define globals (GAME_MANAGER->globals)
 
     enum ADDRS {
-        INPUT_ADDR = 0x4B9E4C,
-        GUI_ADDR = 0x49fbf0,
-        // TODO: figure out what this address is
-        UNKNOWN_ADDR_1 = 0x575ab4,
-        ENEMY_MANAGER = 0x9a9b00,
+        COPY_ENEMY_NAME_TEXTURE_ADDR = 0x427d92,
+        SUPERVISOR_LOADMUSIC_ADDR = 0x439dd0,
+        STR_TH07_13B_MID_ADDR = 0x4986b4,  // string "bgm/th07_13b.mid"
+        INPUT_ADDR = 0x4b9e4c,
+        LAST_FRAME_INPUT_ADDR = 0x4b9e54,
+        IS_EIGHTH_FRAME_OF_INPUT_ADDR = 0x4b9e5c,
+        TITLE_SCREEN_ON_UPDATE_ADDR = 0x4554d6,
         STAGE_NUM = 0x1347fc8,
     };
 
@@ -423,17 +434,18 @@ namespace TH07 {
 
         void CheckReplay()
         {
-            uint32_t* moduleList = (uint32_t*)0x626218;
+            ChainElem* current = &(CHAIN->calcChain);
             while (true) {
-                if (moduleList[1] == 0x4554d6)
+                if ((unsigned)(current->callback) == TITLE_SCREEN_ON_UPDATE_ADDR)
                     break;
-                if (moduleList[5])
-                    moduleList = (uint32_t*)moduleList[5];
+                if (current->next != nullptr)
+                    current = current->next;
                 else
                     return;
             }
-            uint32_t index = GetMemContent((int)(&moduleList[7]), 0xb0b8);
-            char* raw = (char*)GetMemAddr((int)(&moduleList[7]), index * 512 + 0x6c);
+            TitleScreen* titleScreen = (TitleScreen*)(current->arg);
+            uint32_t index = titleScreen->selectedReplay;
+            char* raw = titleScreen->replayFilePaths[index];
 
             std::wstring repName = mb_to_utf16(raw, 932);
             std::string param;
@@ -466,8 +478,7 @@ namespace TH07 {
             }
         }
 
-    protected:
-        bool mParamStatus = false;
+    protected:        bool mParamStatus = false;
         THPracParam mRepParam;
     };
     class THOverlay : public Gui::GameGuiWnd {
@@ -532,7 +543,7 @@ namespace TH07 {
                     Open();
                 } else {
                     Close();
-                    *((int32_t*)UNKNOWN_ADDR_1) = 2;
+                    SUPERVISOR->gui_update_frames = 2;
                 }
             }
         }
@@ -564,14 +575,14 @@ namespace TH07 {
             constexpr uint32_t lilyStart = 7122;
             constexpr uint32_t lilyLatest = lilyStart + 60 * 50;
 
-            const bool bossExists = (bool)GetMemContent(ENEMY_MANAGER + 0x954598);
-            const uint32_t curTime = GetMemContent(pCtx->Ecx + 0x8);
+            const bool bossExists = (ENEMY_MANAGER->bosses[0] != nullptr);
+            const uint32_t curTime = ((EclTimeline*)(pCtx->Ecx))->timer.current;
 
             if (bossExists && curTime >= lilyStart && curTime < lilyLatest) {
                 pCtx->Eip = 0x4207a6; // don't run timelines
 
                 if (curTime < lilyStart + 60 * 10) // remove 10s of unnecessary wait
-                    *(int32_t*)(pCtx->Ecx + 0x8) = lilyStart + 60 * 10;
+                    ((EclTimeline*)(pCtx->Ecx))->timer.current = lilyStart + 60 * 10;
             }
         })
         HOTKEY_ENDDEF();
@@ -705,7 +716,7 @@ namespace TH07 {
         }
         void ContentUpdate()
         {
-            *((int32_t*)UNKNOWN_ADDR_1) = 2;
+            SUPERVISOR->gui_update_frames = 2;
             ImGui::TextUnformatted(S(TH_ADV_OPT));
             ImGui::Separator();
             ImGui::BeginChild("Adv. Options", ImVec2(0.0f, 0.0f));
@@ -745,23 +756,21 @@ namespace TH07 {
 
     EHOOK_ST(th07_rb, 0x4157f3, 7, {
         self->Disable();
-        *(uint32_t*)(pCtx->Ecx + 0x6f0) = 0x1e0;
+        ((Enemy*)(pCtx->Ecx))->currentContext.time.current = 0x1e0;
         pCtx->Eip = 0x41677b;
     });
     void ECLTimeWarp(int count, uint32_t time)
     {
-        uint32_t* addr = (uint32_t*)GetMemAddr(0x9a9af8, 0x9545fc);
         for (auto i = 0; i < count; i++) {
-            *addr = time;
-            addr = (uint32_t*)((uint32_t)addr + 0x10);
+            ((EnemyManager*)(ENEMY_MANAGER_DRAW_HIGH_PRIO_CHAIN->arg))->timelines[i].timer.current = time;
         }
     }
     void ECLST3BG()
     {
-        *((uint16_t*)GetMemAddr(0x4b9e44, 0x2df2c, 0x140)) = 2;
-        *((uint16_t*)GetMemAddr(0x4b9e44, 0x2df2c, 0x1a4)) = 2;
-        *((uint16_t*)GetMemAddr(0x4b9e44, 0x2df2c, 0x208)) = 2;
-        *((uint16_t*)GetMemAddr(0x4b9e44, 0x2df2c, 0x26c)) = 2;
+        *((uint16_t*)((*ANM_MANAGER)->anmFiles[5].rawData) + 0xa0) = 2;
+        *((uint16_t*)((*ANM_MANAGER)->anmFiles[5].rawData) + 0xd2) = 2;
+        *((uint16_t*)((*ANM_MANAGER)->anmFiles[5].rawData) + 0x104) = 2;
+        *((uint16_t*)((*ANM_MANAGER)->anmFiles[5].rawData) + 0x136) = 2;
     }
     void ECLSetHealth(ECLHelper& ecl, int offset, int32_t ecl_time, int32_t health)
     {
@@ -813,22 +822,22 @@ namespace TH07 {
     void ECLNameFix()
     {
         if (thPracParam.stage == 0) {
-            asm_call<0x427d92, Fastcall>(0x60f);
+            asm_call<COPY_ENEMY_NAME_TEXTURE_ADDR, Fastcall>(0x60f);
         } else if (thPracParam.stage == 3) {
-            asm_call<0x427d92, Fastcall>(0x615);
+            asm_call<COPY_ENEMY_NAME_TEXTURE_ADDR, Fastcall>(0x615);
         } else if (thPracParam.stage == 5) {
-            *((int32_t*)0x1348024) = 2;
-            *((int32_t*)0x9a9ab8) = 9;
-            asm_call<0x427d92, Fastcall>(0x619);
+            BACKGROUND->baseSpellcardBackgroundScriptIndex = 2;
+            BULLET_MANAGER->bonusItemType = 9;
+            asm_call<COPY_ENEMY_NAME_TEXTURE_ADDR, Fastcall>(0x619);
         } else if (thPracParam.stage == 6) {
-            *((int32_t*)0x1348024) = 1;
-            *((int32_t*)0x1348020) = 2;
-            *((int32_t*)0x9a9ab8) = 9;
-            asm_call<0x427d92, Fastcall>(0x61b);
+            BACKGROUND->baseSpellcardBackgroundScriptIndex = 1;
+            BACKGROUND->numSpellcardBackgroundVMs = 2;
+            BULLET_MANAGER->bonusItemType = 9;
+            asm_call<COPY_ENEMY_NAME_TEXTURE_ADDR, Fastcall>(0x61b);
         } else if (thPracParam.stage == 7) {
-            *((int32_t*)0x1348024) = 2;
-            *((int32_t*)0x9a9ab8) = 9;
-            asm_call<0x427d92, Fastcall>(0x61d);
+            BACKGROUND->baseSpellcardBackgroundScriptIndex = 2;
+            BULLET_MANAGER->bonusItemType = 9;
+            asm_call<COPY_ENEMY_NAME_TEXTURE_ADDR, Fastcall>(0x61d);
         }
     }
     __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
@@ -1695,10 +1704,10 @@ namespace TH07 {
     __declspec(noinline) void THSectionPatch()
     {
         if (thPracParam.section)
-            *((int8_t*)(0x4bfee0)) = 0;
+            PLAYER->playerState = PLAYER_STATE_ALIVE;
 
         ECLHelper ecl;
-        ecl.SetBaseAddr((void*)GetMemAddr(0x1347938));
+        ecl.SetBaseAddr(ECL_MANAGER); 
 
         auto section = thPracParam.section;
         if (section >= 10000 && section < 20000) {
@@ -1843,11 +1852,11 @@ namespace TH07 {
     })
     EHOOK_DY(th07_prac_menu_3, 0x45a65d, 10, {
         THGuiPrac::singleton().State(3);
-        *((int32_t*)0x62f85c) = thPracParam.stage;
+        GAME_MANAGER->stage = thPracParam.stage;
         if (thPracParam.stage == 6)
-            *((int32_t*)0x626280) = 4;
+            GAME_MANAGER->difficulty = 4;
         else if (thPracParam.stage == 7)
-            *((int32_t*)0x626280) = 5;
+            GAME_MANAGER->difficulty = 5;
     })
     EHOOK_DY(th07_prac_menu_4, 0x45a6d4, 2, {
         THGuiPrac::singleton().State(4);
@@ -1864,8 +1873,7 @@ namespace TH07 {
     EHOOK_DY(th07_unpause_prevent_desync, 0x403481, 7, {
         if (THGuiRep::singleton().mRepStatus) return;
 
-        uint32_t GUI_impl = *(uint32_t*)(GUI_ADDR + 0x8);
-        if (*(int32_t*)(GUI_impl + 0x209b0) == 1) //skippable dialogue
+        if (GUI->impl->msg.dialogueSkippable == 1) //skippable dialogue
             *(WORD*)(INPUT_ADDR) &= ~0x1; // clear shoot bit from input
     })
     EHOOK_DY(th07_patch_main, 0x42f2e3, 1, {
@@ -1920,7 +1928,7 @@ namespace TH07 {
     EHOOK_DY(th07_bgm, 0x42f206, 7, {
         if (thPracParam.mode == 1 && thPracParam.section) {
             if (thPracParam.stage == 5) {
-                asm_call<0x439dd0, Thiscall>(SUPERVISOR, 2, 0x4986b4);
+                asm_call<SUPERVISOR_LOADMUSIC_ADDR, Thiscall>(SUPERVISOR, 2, STR_TH07_13B_MID_ADDR);
             }
 
             if (THBGMTest()) {
@@ -1989,8 +1997,8 @@ namespace TH07 {
             return;
         }
         // Init
-        GameGuiInit(IMPL_WIN32_DX8, (int)&SUPERVISOR->d3d_device, 0x575c20,
-            Gui::INGAGME_INPUT_GEN1, 0x4b9e4c, 0x4b9e54, 0x4b9e5c,
+        GameGuiInit(IMPL_WIN32_DX8, (int)&SUPERVISOR->d3d_device, (int)&GAME_WINDOW->window,
+            Gui::INGAGME_INPUT_GEN1, INPUT_ADDR, LAST_FRAME_INPUT_ADDR, IS_EIGHTH_FRAME_OF_INPUT_ADDR,
             1.0f);
 
         SetDpadHook(0x430760, 3);
