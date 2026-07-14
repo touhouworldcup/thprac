@@ -4,6 +4,11 @@
 
 namespace THPrac {
 namespace TH095 {
+    enum ADDRS {
+        PHOTO_MANAGER_ADDR = 0x4C4E6C,
+        ANMVM_SETUP_SPRITE_AND_MATRICES = 0x439E30
+    };
+
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
         {
@@ -88,6 +93,42 @@ namespace TH095 {
     public:
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
     };
+
+    HOOKSET_DEFINE(PhotoScoreDisplayFix)
+    EHOOK_DY(th095_photo_score_display_fix1, 0x42C655, 4, {
+        int photo_score = *(int*)(pCtx->Ebp + 0x8);
+        BOOL *have_encountered_a_nonzero_digit = (BOOL*)(pCtx->Ebp - 0x34);
+        uint8_t *this_ = *(uint8_t**)(pCtx->Ebp - 0x140);
+        void* unknown_struct_ptr = GetMemContent<void*>(PHOTO_MANAGER_ADDR, 0x2571C);
+
+        *have_encountered_a_nonzero_digit = (photo_score / 1'000'000) != 0;
+        if (*have_encountered_a_nonzero_digit) {
+            asm_call<0x404B80, Thiscall>(unknown_struct_ptr, (uint32_t*)(this_ + 0x245C), (int)(0x1E));
+            asm_call<ANMVM_SETUP_SPRITE_AND_MATRICES, Thiscall>(unknown_struct_ptr, (int)(this_ + 0x245C), 
+                                                                (int)(photo_score / 1'000'000 + 0xF));
+        }
+
+        *(float*)(this_ + 0x25B0) = *(float*)(pCtx->Ebp - 0x1C) - 9.0f;
+        *(float*)(this_ + 0x25B4) = *(float*)(pCtx->Ebp - 0x18);
+        *(float*)(this_ + 0x25B8) = *(float*)(pCtx->Ebp - 0x14);
+
+        int sixth_digit = (photo_score / 100'000) % 10;
+        if (sixth_digit != 0 || *have_encountered_a_nonzero_digit) {
+            asm_call<0x404B80, Thiscall>(unknown_struct_ptr, (uint32_t*)(this_ + 0x10C8), (int)(0x1E));
+            asm_call<ANMVM_SETUP_SPRITE_AND_MATRICES, Thiscall>(unknown_struct_ptr, (int)(this_ + 0x10C8), 
+                                                                (int)(sixth_digit + 0xF));
+            *have_encountered_a_nonzero_digit = true;
+        }
+        
+        pCtx->Eip = 0x42C6A5;
+    })
+    PATCH_DY(th095_photo_score_display_fix2, 0x42C2E6, "837DE808")
+    EHOOK_DY(th095_photo_score_display_fix3, 0x42C2F0, 3, {
+        if (*(int*)(pCtx->Ebp - 0x18) == 6) {
+            pCtx->Eip = 0x42C2DD;
+        }
+    })
+    HOOKSET_ENDDEF()
 
     class THAdvOptWnd : public Gui::GameGuiWnd {
         // Option Related Functions
@@ -179,6 +220,19 @@ namespace TH095 {
                     FpsSet();
                 EndOptGroup();
             }
+            if (BeginOptGroup<TH_GAMEPLAY>()) {                
+                if (ImGui::Checkbox(S(TH095_FIX_PHOTO_SCORE_DISPLAY), &mFixPhotoScoreDisplay)) {
+                    if (mFixPhotoScoreDisplay) {
+                        EnableAllHooks(PhotoScoreDisplayFix);
+                    } else {
+                        DisableAllHooks(PhotoScoreDisplayFix);
+                    }
+                }
+                ImGui::SameLine();
+                Gui::HelpMarker(S(TH095_FIX_PHOTO_SCORE_DISPLAY_DESC));
+
+                EndOptGroup();
+            }
 
             AboutOpt();
             ImGui::EndChild();
@@ -186,6 +240,9 @@ namespace TH095 {
         }
 
         adv_opt_ctx mOptCtx;
+
+    public:
+        bool mFixPhotoScoreDisplay = false;
     };
     bool UpdateAdvOptWindow()
     {
@@ -264,5 +321,6 @@ namespace TH095 {
 void TH095Init()
 {
     EnableAllHooks(TH095::THInitHook);
+    DisableAllHooks(TH095::PhotoScoreDisplayFix);
 }
 }
