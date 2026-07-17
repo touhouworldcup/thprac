@@ -95,6 +95,7 @@ namespace TH095 {
     };
 
     HOOKSET_DEFINE(PhotoScoreDisplayFix)
+    // Correctly compute the sixth and seventh least significant decimal digit, and set the AnmVM of it
     EHOOK_DY(th095_photo_score_display_fix1, 0x42C655, 4, {
         int photo_score = *(int*)(pCtx->Ebp + 0x8);
         BOOL *have_encountered_a_nonzero_digit = (BOOL*)(pCtx->Ebp - 0x34);
@@ -122,10 +123,18 @@ namespace TH095 {
         
         pCtx->Eip = 0x42C6A5;
     })
+    // Display the AnmVM that is set above 
     PATCH_DY(th095_photo_score_display_fix2, 0x42C2E6, "837DE808")
     EHOOK_DY(th095_photo_score_display_fix3, 0x42C2F0, 3, {
         if (*(int*)(pCtx->Ebp - 0x18) == 6) {
-            pCtx->Eip = 0x42C2DD;
+            pCtx->Eip = 0x42C2DD;   
+        }
+    })
+    // Hide the tens digit when the score is < 10 
+    EHOOK_DY(th095_photo_score_display_fix4, 0x42C88D, 3, {
+        int photo_score = *(int*)(pCtx->Ebp + 0x8);
+        if (photo_score < 10) {
+            pCtx->Eip = 0x42C8E6;
         }
     })
     HOOKSET_ENDDEF()

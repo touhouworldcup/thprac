@@ -3242,9 +3242,9 @@
     "glossary": {
       "TH095_FIX_PHOTO_SCORE_DISPLAY": [ "修复照片分数的显示bug", "Fix the display bug of the photos' scores", "写真のスコアの表示バグを修正" ],
       "TH095_FIX_PHOTO_SCORE_DISPLAY_DESC": [ 
-        "修复在照片分数超过一百万时无法正常显示的bug", 
-        "Fixed a bug where the photo's score would not display properly when it exceeded 1 million points", 
-        "写真のスコアが１００万を超えると正常に表示されないバグを修正します"
+        "修复在照片分数为0或超过一百万时无法正常显示的bug", 
+        "Fixed a bug where the photo's score will not display properly when it either exceeds 1 million points or is at 0", 
+        "写真のスコアが０または１００万を超えると正常に表示されないバグを修正します"
       ]
     }
   },
