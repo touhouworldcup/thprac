@@ -2341,6 +2341,7 @@ private:
             mFixEscLag.Gui(S(THPRAC_GAMES_FIX_ESC_LAG), S(THPRAC_GAMES_FIX_ESC_LAG_DESC));
             mDisableJoy.Gui(S(THPRAC_DISABLE_JOY), S(THPRAC_DISABLE_JOY_DESC));
             mCfgUnlockRefreshRate.Gui(S(THPRAC_UNLOCK_REFRESH_RATE), S(THPRAC_UNLOCK_REFRESH_RATE_DESC));
+            mCfgEnableTH16_CrashFix_autoly.Gui(S(THPRAC_INGAMEINFO_TH16_CRASH_BUGFIX), S(THPRAC_INGAMEINFO_TH16_CRASH_BUGFIX_DESC));
             ImGui::Separator();
             mInitWindowPos.Gui(S(THPRAC_INIT_WINDOW_POS), S(THPRAC_INIT_WINDOW_POS_DESC));
             mDisableMaximizeBtn.Gui(S(THPRAC_DISABLE_MAXIMIZE_BTN));
@@ -2486,7 +2487,6 @@ private:
 
             mCfgEnableTH15_ShowShootingDownRate_autoly.Gui(S(THPRAC_INGAMEINFO_TH15_SHOW_SHOOTING_DOWN_RATE2));
 
-            mCfgEnableTH16_CrashFix_autoly.Gui(S(THPRAC_INGAMEINFO_TH16_CRASH_BUGFIX), S(THPRAC_INGAMEINFO_TH16_CRASH_BUGFIX_DESC));
             mCfgEnableTH16_UncapScore_autoly.Gui(S(THPRAC_INGAMEINFO_TH16_UNCAP_SCORE));
 
             mCfgTH18EnableCardActivatedCount.Gui(S(THPRAC_TH18_SHOW_CARD_ACTIVATED_CNT));

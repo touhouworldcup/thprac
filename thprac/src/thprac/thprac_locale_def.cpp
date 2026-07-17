@@ -7,7 +7,7 @@
 
 namespace THPrac {
 
-const char* th_glossary_str[3][1864] {
+const char* th_glossary_str[3][1865] {
     {
         "",
         "啤酒",
@@ -1756,6 +1756,7 @@ const char* th_glossary_str[3][1864] {
         "无限季节槽",
         "左",
         "残机",
+        "控血终幕",
         "残机碎片",
         "莉莉",
         "练习选项",
@@ -3622,6 +3623,7 @@ const char* th_glossary_str[3][1864] {
         "inf subP",
         "Left",
         "Life",
+        "Life controlled finale",
         "Life Frag.",
         "Lily",
         "Option",
@@ -5488,6 +5490,7 @@ const char* th_glossary_str[3][1864] {
         "inf subP",
         "左",
         "残機",
+        "Life controlled finale",
         "残機の欠片",
         "リリー",
         "オプション",
@@ -6000,6 +6003,12 @@ const th_glossary_t TH_SPELL_PHASE4[7] {
 const th_glossary_t TH_SPELL_PHASE_FINALE[3] {
     TH_NORMAL,
     TH_FINALE,
+};
+
+const th_glossary_t TH_SPELL_PHASE_LIFE_CONTROL_FINALE[4] {
+    TH_NORMAL,
+    TH_FINALE,
+    TH_LIFE_CONTROLLED_FINALE,
 };
 
 const th_glossary_t TH_SPELL_PHASE_RAGEFUL[4] {

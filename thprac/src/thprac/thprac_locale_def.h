@@ -1756,6 +1756,7 @@ enum th_glossary_t {
     TH_INFSUBP,
     TH_LEFT,
     TH_LIFE,
+    TH_LIFE_CONTROLLED_FINALE,
     TH_LIFE_FRAGMENT,
     TH_LILY,
     TH_MENU,
@@ -1875,7 +1876,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1864];
+extern const char* th_glossary_str[3][1865];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1962,6 +1963,8 @@ extern const th_glossary_t TH_SPELL_PHASE3[6];
 extern const th_glossary_t TH_SPELL_PHASE4[7];
 
 extern const th_glossary_t TH_SPELL_PHASE_FINALE[3];
+
+extern const th_glossary_t TH_SPELL_PHASE_LIFE_CONTROL_FINALE[4];
 
 extern const th_glossary_t TH_SPELL_PHASE_RAGEFUL[4];
 

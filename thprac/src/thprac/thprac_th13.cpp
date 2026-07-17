@@ -225,7 +225,7 @@ namespace TH13 {
                 return TH_SPELL_PHASE1;
 
             case TH13_ST6_BOSS11:
-                return mDiffculty == 3 ? TH_SPELL_PHASE_FINALE : TH_SPELL_PHASE_RAGEFIN;
+                return mDiffculty == 3 ? TH_SPELL_PHASE_LIFE_CONTROL_FINALE : TH_SPELL_PHASE_RAGEFIN;
             case TH13_ST1_BOSS5:
                 return TH13_RAGE;
             default:
@@ -1609,15 +1609,22 @@ namespace TH13 {
                 break;
             }
 
-            case 2: { // rage phase (lowers shoot delay on Easy-Hard)
-                constexpr uint32_t st6bsSpell7LifeMarkerOp = 0xbee0 + 0x4;
-                constexpr uint32_t st6bsSpell7Phase2TimeCheckS1 = 0xcd34 + 0x10;
-                constexpr uint32_t st6bsSpell7Phase2TimeCheckS2 = 0xcd6c + 0x10;
+            case 2: { // rage phase (lowers shoot delay on Easy-Hard); life controlled finale on lunatic
+                int32_t mDiffculty = *((int32_t*)0x4be7c4);
+                if (mDiffculty == 3) // lunatic
+                {
+                    ecl << pair { st6bsSpellHealthVal, 2800 };
+                    break;
+                } else {
+                    constexpr uint32_t st6bsSpell7LifeMarkerOp = 0xbee0 + 0x4;
+                    constexpr uint32_t st6bsSpell7Phase2TimeCheckS1 = 0xcd34 + 0x10;
+                    constexpr uint32_t st6bsSpell7Phase2TimeCheckS2 = 0xcd6c + 0x10;
 
-                ECLJump(ecl, st6bsSpell7SetupPhase1, st6bsSpell7SetupPhase2, 0);
-                ecl << pair { st6bsSpell7LifeMarkerOp, (int16_t)0 }
-                    << pair { st6bsSpell7Phase2TimeCheckS1, 0 } // note: make the time threshold for rage
-                    << pair { st6bsSpell7Phase2TimeCheckS2, 0 }; //       shoot delay zero
+                    ECLJump(ecl, st6bsSpell7SetupPhase1, st6bsSpell7SetupPhase2, 0);
+                    ecl << pair { st6bsSpell7LifeMarkerOp, (int16_t)0 }
+                        << pair { st6bsSpell7Phase2TimeCheckS1, 0 } // note: make the time threshold for rage
+                        << pair { st6bsSpell7Phase2TimeCheckS2, 0 }; //       shoot delay zero
+                }
                 break;
             }
 

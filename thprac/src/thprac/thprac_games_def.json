@@ -1859,6 +1859,7 @@
       "TH_RAGE_PRO": [ "发狂Pro", "Rage Pro", "発狂 Pro" ],
       "TH_RAGE_PRO_MAX": [ "发狂ProMax", "Rage ProMax", "発狂 ProMax" ],
 	  "TH_FINALE": [ "终幕", "Finale", "終幕" ],
+	  "TH_LIFE_CONTROLLED_FINALE": [ "控血终幕", "Life controlled finale", "Life controlled finale" ],
 
       "TH_P1": [ "P1", "P1", "P1" ],
       "TH_P2": [ "P2", "P2", "P2" ],
@@ -2140,6 +2141,11 @@
       "TH_SPELL_PHASE_FINALE": [
         "TH_NORMAL",
         "TH_FINALE"
+      ],
+	  "TH_SPELL_PHASE_LIFE_CONTROL_FINALE": [
+        "TH_NORMAL",
+        "TH_FINALE",
+		"TH_LIFE_CONTROLLED_FINALE"
       ],
 	  "TH_SPELL_PHASE_RAGEFUL": [
         "TH_NORMAL",
