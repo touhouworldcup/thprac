@@ -1319,6 +1319,8 @@ enum th_glossary_t {
     THPRAC_OTHER_LUCK_POFV,
     THPRAC_OTHER_LUCK_POFVA,
     THPRAC_OTHER_LUCK_POFVB,
+    THPRAC_OTHER_LUCK_Q1,
+    THPRAC_OTHER_LUCK_Q2,
     THPRAC_OTHER_LUCK_SA,
     THPRAC_OTHER_LUCK_SAA,
     THPRAC_OTHER_LUCK_SAB,
@@ -1452,6 +1454,8 @@ enum th_glossary_t {
     THPRAC_TH08_FORCE_LS,
     THPRAC_TH13_DISABLE_TRANCE,
     THPRAC_TH13_DISABLE_TRANCE_AUTO,
+    THPRAC_TH14_FORCE_FIX_BUG,
+    THPRAC_TH14_FORCE_FIX_BUG_DESC,
     THPRAC_TH18_CARD,
     THPRAC_TH18_CARD_1,
     THPRAC_TH18_CARD_2,
@@ -1590,6 +1594,8 @@ enum th_glossary_t {
     TH_11_SS_RAGE4,
     TH_11_WAVE2_START,
     TH_11_WAVE2_START_FAST,
+    TH_11_WAVE_PASSED,
+    TH_11_WAVE_PASSED_DESC,
     TH_ABOUT_AUTHOR,
     TH_ABOUT_BRANCH,
     TH_ABOUT_HIDE_LICENCE,
@@ -1876,7 +1882,7 @@ enum th_glossary_t {
     TH_WARP,
 };
 
-extern const char* th_glossary_str[3][1865];
+extern const char* th_glossary_str[3][1871];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -3653,10 +3659,10 @@ namespace TH20 {
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3579];
+extern const wchar_t __thprac_loc_range_zh[3581];
 
-extern const wchar_t __thprac_loc_range_en[67];
+extern const wchar_t __thprac_loc_range_en[81];
 
-extern const wchar_t __thprac_loc_range_ja[2897];
+extern const wchar_t __thprac_loc_range_ja[2899];
 
 }

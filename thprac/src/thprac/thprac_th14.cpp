@@ -1111,6 +1111,9 @@ namespace TH14 {
     };
 
     EHOOK_ST(th14_marisa_laser, 0x45286f, 6, {
+        if (g_adv_igi_options.th14_fixMarisaBug) {
+            *(uint32_t*)(pCtx->Esp + 0x2c) = 0;
+        }
         *(uint32_t*)(pCtx->Esp + 0x2c) = THMarisaLaser::singleton().Access(*(uint32_t*)(pCtx->Esp + 0x2c));
     });
     PATCH_ST(th14_all_clear_bonus_1, 0x43708a, "EB0CCCCCCC");
@@ -1593,6 +1596,10 @@ namespace TH14 {
                 DisableKeyOpt();
                 KeyHUDOpt();
                 InfLifeOpt();
+                ImGui::Checkbox(S(THPRAC_TH14_FORCE_FIX_BUG), &(g_adv_igi_options.th14_fixMarisaBug));
+                ImGui::SameLine();
+                HelpMarker(S(THPRAC_TH14_FORCE_FIX_BUG_DESC));
+
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_BONUS), &(g_adv_igi_options.th14_showBonus));
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_ITEMS), &(g_adv_igi_options.th14_showItemsCount));
                 ImGui::Checkbox(S(THPRAC_INGAMEINFO_TH14_SHOW_DROP_BAR), &(g_adv_igi_options.th14_showDropBar));

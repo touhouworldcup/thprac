@@ -262,7 +262,35 @@ public:
                 DrawTextScaled(std::format("{}{}",name,S(THPRAC_OTHER_DRAW_LUCK)).c_str(), 0.5f, 1.0f, { 1, 0.7, 0.7, 1 },0.0f,1.0f);
                 float r, g, b;
                 ImGui::ColorConvertHSVtoRGB(0.0f, 1.0f - (luck_value / (float)(ARRAYSIZE(LUCK_RANGE) - 2)), 1.0f - 0.6f*(luck_value / (float)(ARRAYSIZE(LUCK_RANGE) - 2)), r, g, b);
-                DrawTextScaled(S(LUCK_RANGE[luck_value]), 0.5f, 2.0f, { r,g,b, 1 },0.125f);
+                if ((luck_value == ARRAYSIZE(LUCK_RANGE) - 2) || (luck_value == ARRAYSIZE(LUCK_RANGE) - 3))// xiong, da xiong
+                {
+                    int name_s = 0;
+                    for (int i = 0; i < sizeof(name); i++) {
+                        if (name[i] == 0)
+                            break;
+                        name_s *= 114;
+                        name_s ^= name[i] * name[i];
+                    }
+                    std::default_random_engine rand((draw_luck_D * draw_luck_D * 114) ^ (draw_luck_Y * 514) ^ (draw_luck_M * 1919) ^ (name_s * 810));
+                    std::uniform_int_distribution<int32_t> rand_maggot(1, 10);
+                    if (rand_maggot(rand) <= 1)
+                    {
+                        if (luck_value == ARRAYSIZE(LUCK_RANGE) - 2)
+                        {
+                            DrawTextScaled(S(THPRAC_OTHER_LUCK_Q2), 0.5f, 2.0f, { r, g, b, 1 }, 0.125f);
+                        }
+                        else
+                        {
+                            DrawTextScaled(S(THPRAC_OTHER_LUCK_Q1), 0.5f, 2.0f, { r, g, b, 1 }, 0.125f);
+                        }
+                    } else {
+                        DrawTextScaled(S(LUCK_RANGE[luck_value]), 0.5f, 2.0f, { r, g, b, 1 }, 0.125f);
+                    }
+                }
+                else
+                {
+                    DrawTextScaled(S(LUCK_RANGE[luck_value]), 0.5f, 2.0f, { r, g, b, 1 }, 0.125f);
+                }
                 ImGui::NewLine();
                 if (luck_value == 0)
                 {

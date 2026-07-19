@@ -48,6 +48,7 @@ namespace THPrac {
         bool th13_disable_miss_trance = false;
         bool th14_showBonus = false;
         bool th14_showItemsCount = false;
+        bool th14_fixMarisaBug = false;
         bool th14_showDropBar = false;
         bool th14_laserRepRepair = false;
         bool th15_showShootingDownRate = false;

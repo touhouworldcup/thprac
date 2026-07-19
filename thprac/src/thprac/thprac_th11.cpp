@@ -75,6 +75,7 @@ namespace TH11 {
 
         float boss_x;// used for RA spell 2
         float boss_y;
+        int32_t wave_passed;// used for st5 later
 
         bool dlg;
 
@@ -104,6 +105,7 @@ namespace TH11 {
 
             GetJsonValue(boss_x);
             GetJsonValue(boss_y);
+            GetJsonValue(wave_passed);
 
             return true;
         }
@@ -125,7 +127,9 @@ namespace TH11 {
                 AddJsonValue(boss_x);
                 AddJsonValue(boss_y);
             }
-                
+            if (section == 10000 + 5 * 100 + 4) {
+                AddJsonValue(wave_passed);
+            }
 
             AddJsonValue(life);
             AddJsonValue(life_fragment);
@@ -213,6 +217,9 @@ namespace TH11 {
                 {
                     thPracParam.boss_x = *mBossX;
                     thPracParam.boss_y = *mBossY;
+                }
+                if (thPracParam.section == 10000 + 5 * 100 + 4) {
+                    thPracParam.wave_passed = *mWavePassed;
                 }
                 break;
             case 4:
@@ -303,6 +310,14 @@ namespace TH11 {
                     if ((section == TH11_ST4_RA2 || section == TH11_ST4_RA_BOSS5) && *mPhase != 0) {
                         mBossX();
                         mBossY();
+                    }
+                    if (section == 10000 + 5 * 100 + 4) {
+                        static char desc[1024];
+                        sprintf_s(desc, S(TH_11_WAVE_PASSED_DESC), 0, 25, 25, 40);
+                        HelpMarker(desc);
+                        ImGui::SameLine();
+                        mWavePassed();
+                        
                     }
                 }
 
@@ -438,6 +453,7 @@ namespace TH11 {
 
         Gui::GuiDrag<float, ImGuiDataType_Float> mBossX { TH_BOSSX, -140.0f, 140.0f, 1.0f, 100.0f };
         Gui::GuiDrag<float, ImGuiDataType_Float> mBossY { TH_BOSSY, 80.0f, 176.0f, 1.0f, 100.0f };
+        Gui::GuiSlider<int, ImGuiDataType_S32> mWavePassed { TH_11_WAVE_PASSED, 0, 40 };
 
         Gui::GuiNavFocus mNavFocus { TH_STAGE, TH_MODE, TH11_SPELL_CATEGORY, TH_WARP, TH_DLG,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
@@ -1146,6 +1162,7 @@ namespace TH11 {
                 if (thPracParam.phase == 1) {
                     ECLJump(ecl, 0x2BF8, 0x2AB0, 0, 0);
                 }
+                ecl << pair { 0x2A80, 40 - thPracParam.wave_passed };
                 ecl << pair{0x6790, 0};
                 ECLJump(ecl, 0x67a8, 0x6878);
                 break;

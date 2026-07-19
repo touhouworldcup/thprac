@@ -280,6 +280,141 @@ namespace THPrac {
         ImGui::PopID();
     }
 
+    /// name#AARRGGBB
+    /// name#RRGGBB
+    /// name#*colorname
+    /// name* (star color)
+    std::pair<std::string, uint32_t> ParseNameColor(const std::string& input)
+    {
+        constexpr uint32_t INVALID_COLOR = 0x00FFFFFF;
+        constexpr uint32_t STAR_COLOR = 0xFFFFA500;
+        static const std::unordered_map<std::string, uint32_t> color_map = {
+            { "r", 0xFFFF0000 },
+            { "dr", 0xFFAA0000 },
+            { "red", 0xFFFF0000 },
+            { "g", 0xFF00FF00 },
+            { "dg", 0xFF00AA00 },
+            { "green", 0xFF00FF00 },
+            { "b", 0xFF0000FF },
+            { "db", 0xFF0000AA },
+            { "blue", 0xFF0000FF },
+            { "w", 0xFFFFFFFF },
+            { "white", 0xFFFFFFFF },
+            { "k", 0xFF000000 },
+            { "black", 0xFF000000 },
+
+            { "y", 0xFFFFFF00 },
+            { "dy", 0xFFAAAA00 },
+            { "yellow", 0xFFFFFF00 },
+            { "c", 0xFF00FFFF },
+            { "dc", 0xFF00AAAA },
+            { "cyan", 0xFF00FFFF },
+            { "m", 0xFFFF00FF },
+            { "dm", 0xFFAA00AA },
+            { "magenta", 0xFFFF00FF },
+
+            { "gray", 0xFF808080 },
+            { "grey", 0xFF808080 },
+            { "darkgray", 0xFF404040 },
+            { "lightgray", 0xFFC0C0C0 },
+
+            { "orange", 0xFFFFA500 },
+            { "o", 0xFFFFA500 },
+            { "gold", 0xFFFFD700 },
+            { "brown", 0xFFA52A2A },
+            { "coral", 0xFFFF7F50 },
+            { "salmon", 0xFFFA8072 },
+            { "pink", 0xFFFFC0CB },
+            { "hotpink", 0xFFFF69B4 },
+
+            { "purple", 0xFF800080 },
+            { "violet", 0xFFEE82EE },
+            { "indigo", 0xFF4B0082 },
+            { "navy", 0xFF000080 },
+            { "teal", 0xFF008080 },
+            { "azure", 0xFFF0FFFF },
+            { "sky", 0xFF87CEEB },
+
+            { "lime", 0xFF00FF00 },
+            { "olive", 0xFF808000 },
+            { "green2", 0xFF008000 },
+            { "mint", 0xFF98FF98 },
+            { "forest", 0xFF228B22 },
+
+            { "silver", 0xFFC0C0C0 },
+            { "maroon", 0xFF800000 },
+            { "aqua", 0xFF00FFFF },
+            { "fuchsia", 0xFFFF00FF },
+        };
+        if (!input.empty() && input.back() == '*') {
+            return {input.substr(0, input.size() - 1),STAR_COLOR};
+        }
+        auto pos = input.rfind('#');
+
+        if (pos == std::string::npos) {
+            return { input, INVALID_COLOR };
+        }
+
+        std::string text = input.substr(0, pos);
+        std::string color = input.substr(pos + 1);
+
+        if (color.empty()) {
+            return { text, INVALID_COLOR };
+        }
+
+        uint32_t value = INVALID_COLOR;
+
+       if (color[0] == '*') {
+            std::string name = color.substr(1);
+
+            std::transform(
+                name.begin(),
+                name.end(),
+                name.begin(),
+                [](unsigned char c) {
+                    return std::tolower(c);
+                });
+
+            auto it = color_map.find(name);
+
+            if (it != color_map.end())
+                value = it->second;
+
+            return { text, value };
+        }
+
+        //hex
+        std::string hex = color;
+
+        if (hex.size() >= 2 && hex[0] == '0' && (hex[1] == 'x' || hex[1] == 'X')) {
+            hex.erase(0, 2);
+        }
+
+        if (hex.size() != 6 && hex.size() != 8) {
+            return { text, INVALID_COLOR };
+        }
+
+        for (char c : hex) {
+            if (!std::isxdigit(static_cast<unsigned char>(c))) {
+                return { text, INVALID_COLOR };
+            }
+        }
+
+        uint32_t rgb = 0;
+        try {
+            rgb = static_cast<uint32_t>(
+                std::stoul(hex, nullptr, 16));
+        } catch (...) {
+            return { text, INVALID_COLOR };
+        }
+        if (hex.size() == 6) {
+            value = 0xFF000000 | rgb;
+        } else {
+            value = rgb;
+        }
+        return { text, value };
+    }
+
     typedef int DiffIndex;
 
     struct KengDifficulty {
@@ -1128,7 +1263,37 @@ namespace THPrac {
                 ImGui::NextColumn();
                 ImGui::Text(S(THPRAC_KENG_NAME));
                 ImGui::NextColumn();
+
+                auto [name, color] = ParseNameColor(mKengName);
                 ImGui::InputText("##keng name", mKengName, sizeof(mKengName));
+
+                static bool is_stared = false;
+                if (mKengName[strlen(mKengName) - 1] != '*'){
+                    is_stared = false;
+                    auto color4 = ImGui::ColorConvertU32ToFloat4(color);
+                    if (color4.w == 0) {
+                        color4 = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+                    }
+                    static float c[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+                    c[0] = color4.x;
+                    c[1] = color4.y;
+                    c[2] = color4.z;
+                    c[3] = color4.w;
+                    if (ImGui::ColorEdit4("color", c, ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_AlphaPreview)) {
+                        ImVec4 color4_2 = { c[0], c[1], c[2], c[3] };
+                        sprintf_s(mKengName, "%s#%08x", name.c_str(), ImGui::ColorConvertFloat4ToU32(color4_2));
+                    }
+                }else{
+                    is_stared = true;
+                }
+
+                if (ImGui::Checkbox("Star", &is_stared)){
+                    if(is_stared)
+                        sprintf_s(mKengName, "%s*", name.c_str());
+                    else
+                        sprintf_s(mKengName, "%s", name.c_str());
+                }
+
                 ImGui::NextColumn();
 
                 ImGui::NextColumn();
@@ -1257,7 +1422,7 @@ namespace THPrac {
                 if (ImGui::Button(S(THPRAC_KENG_SAVE_CSV)))
                 {
                     OPENFILENAMEW ofn;
-                    wchar_t szFile[MAX_PATH] = L".csv";
+                    wchar_t szFile[MAX_PATH] = L"data.csv";
                     ZeroMemory(&ofn, sizeof(ofn));
                     ofn.lStructSize = sizeof(ofn);
                     ofn.hwndOwner = nullptr;
@@ -1391,13 +1556,26 @@ namespace THPrac {
 
                         ImGui::TableNextRow();
                         ImGui::TableNextColumn();
-                        if (ImGui::Selectable(std::format("{}##{}", it->mKengName, idx).c_str(), false, ImGuiSelectableFlags_::ImGuiSelectableFlags_SpanAllColumns)) {
+                        if (ImGui::Selectable(std::format("##keng{}", idx).c_str(), false, ImGuiSelectableFlags_::ImGuiSelectableFlags_SpanAllColumns)) {
                             cur_draw_keng_idx = idx;
                         }
-                        ImGui::TableNextColumn();
-                        ImGui::Text(it->GetTimeDesc());
-                        ImGui::TableNextColumn();
-                        ImGui::Text(it->GetDescription_Line());
+                        ImGui::SameLine(0.0f,0.0f);
+                        auto [name, color] = ParseNameColor(it->mKengName);
+                        if (color >> 24 == 0)
+                        {
+                            ImGui::Text(name.c_str());
+                            ImGui::TableNextColumn();
+                            ImGui::Text(it->GetTimeDesc());
+                            ImGui::TableNextColumn();
+                            ImGui::Text(it->GetDescription_Line());
+                        } else {
+                            auto colorf = ImGui::ColorConvertU32ToFloat4(color);
+                            ImGui::TextColored(colorf, name.c_str());
+                            ImGui::TableNextColumn();
+                            ImGui::TextColored(colorf, it->GetTimeDesc());
+                            ImGui::TableNextColumn();
+                            ImGui::TextColored(colorf, it->GetDescription_Line());
+                        }
                         idx++;
                     }
                     ImGui::EndTable();

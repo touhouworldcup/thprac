@@ -968,12 +968,14 @@
       "THPRAC_OTHER_CONTINUE": [ "已经打卡了%d天", "%d days", "%d days" ],
       "THPRAC_OTHER_TODAY": [ "%d年%d月%d日", "%d-%d-%d", "%d-%d-%d" ],
     
-      "THPRAC_OTHER_LUCK_A": [ "§大吉§", "GOOD JI", "GOOD JI" ],
-      "THPRAC_OTHER_LUCK_B": [ "§中吉§", "MID JI", "MID JI" ],
-      "THPRAC_OTHER_LUCK_C": [ "§小吉§", "SMALL JI", "SMALL JI" ],
-      "THPRAC_OTHER_LUCK_D": [ "§中平§", "MID", "MID" ],
-      "THPRAC_OTHER_LUCK_E": [ "§凶§",   "CHEST", "CHEST" ],
-      "THPRAC_OTHER_LUCK_F": [ "§大凶§", "BIG CUP", "BIG CUP" ],
+      "THPRAC_OTHER_LUCK_A": [ "§大吉§", "§大吉§", "§大吉§" ],
+      "THPRAC_OTHER_LUCK_B": [ "§中吉§", "§中吉§", "§中吉§" ],
+      "THPRAC_OTHER_LUCK_C": [ "§小吉§", "§小吉§", "§小吉§" ],
+      "THPRAC_OTHER_LUCK_D": [ "§中平§", "§中平§", "§中平§" ],
+      "THPRAC_OTHER_LUCK_E": [ "§凶§",   "§凶§", "§凶§" ],
+      "THPRAC_OTHER_LUCK_F": [ "§大凶§", "§大凶§", "§大凶§" ],
+      "THPRAC_OTHER_LUCK_Q1": [ "§区§",   "§区§", "§区§" ],
+      "THPRAC_OTHER_LUCK_Q2": [ "§大区§", "§大区§", "§大区§" ],
       
       "THPRAC_OTHER_LUCK_BETTER": [ "宜", "BETTER", "BETTER" ],
       "THPRAC_OTHER_LUCK_BETTER_NOT": [ "忌", "BETTER NOT", "BETTER NOT" ],
@@ -1339,6 +1341,9 @@
 	  "THPRAC_INGAMEINFO_ADV2":["自动开启高级功能","automatically use advanced opts","automatically use advanced opts"],
 	  "THPRAC_TH06_SHOW_REP_MARKER":["红魔乡显示是否为rep","show rep marker in EoSD","show rep marker in EoSD"],
 	  "THPRAC_TH08_FORCE_LS":["永夜抄强制总是开启LSC","force LS in IN","force LS in IN"],
+	  
+	  "THPRAC_TH14_FORCE_FIX_BUG":["强制修复魔理沙激光BUG","Force fix Marisa laser Bug in DDC","Force fix Marisa laser Bug in DDC"],
+	  "THPRAC_TH14_FORCE_FIX_BUG_DESC":["开启该选项后原本的未初始化变量会当成0","After enabling this option, the originally uninitialized variables will be treated as 0","After enabling this option, the originally uninitialized variables will be treated as 0"],
 	   
 	  "THPRAC_TH18_FORCE_CARD": [ "虹龙洞强制卡牌", "UM force card", "UM force card" ],
 	  "THPRAC_TH18_FORCE_CARD_DESC": [ "强制让商店内第一张卡牌为想要的卡牌", "force the first card in market", "force the first card in market" ],
@@ -5157,6 +5162,9 @@
 	  "TH_11_WAVE2_START": [ "初始第二波", "wave 2 start", "wave 2 start" ],
 	  "TH_11_DEFAULT_START_FAST": [ "初始第一波(光速)", "wave 1 start(fast)", "wave 1 start(fast)" ],
 	  "TH_11_WAVE2_START_FAST": [ "初始第二波(光速)", "wave 2 start(fast)", "wave 2 start(fast)" ],
+	  
+	  "TH_11_WAVE_PASSED": [ "经过的波数", "waves passed", "waves passed" ],
+	  "TH_11_WAVE_PASSED_DESC": [ "全避道中一非约%d，\n全避一二非约%d，\n全避一非猫步一波约%d，\n全避一二非猫步一波约%d", "Timing out mid NS 1:~%d;\n Timing out mid NS 1 2:~%d;\nTiming out mid NS 1, 1 wave cat walk:%d;\nTiming out mid NS 1 2, 1 wave cat walk:%d\n", "Timing out mid NS 1:~%d;\n Timing out mid NS 1 2:~%d;\nTiming out mid NS 1, 1 wave cat walk:%d;\nTiming out mid NS 1 2, 1 wave cat walk:%d\n" ],
 	  
       "TH_11_SS_RAGE4": [ "P4狂暴", "Rage(P4)", "Rage(P4)" ],
       "TH_11_SS_RAGE3": [ "P3狂暴", "Rage(P3)", "Rage(P3)" ],
