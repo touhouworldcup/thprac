@@ -1,3 +1,5 @@
+#include "thprac_th095.h"
+
 #include "thprac_games.h"
 #include "thprac_utils.h"
 
@@ -6,6 +8,7 @@ namespace THPrac {
 namespace TH095 {
     enum ADDRS {
         PHOTO_MANAGER_ADDR = 0x4C4E6C,
+        PLAYER_PTR = 0x4C4E70,
         ANMVM_SETUP_SPRITE_AND_MATRICES = 0x439E30
     };
 
@@ -94,40 +97,63 @@ namespace TH095 {
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
     };
 
+    AnmVm photoScoreSeventhDigitVms[10];
+    bool photoScoreSeventhDigitVmIsInUse = false;
+
     HOOKSET_DEFINE(PhotoScoreDisplayFix)
     // Correctly compute the sixth and seventh least significant decimal digit, and set the AnmVM of it
     EHOOK_DY(th095_photo_score_display_fix1, 0x42C655, 4, {
         int photo_score = *(int*)(pCtx->Ebp + 0x8);
-        BOOL *have_encountered_a_nonzero_digit = (BOOL*)(pCtx->Ebp - 0x34);
-        uint8_t *this_ = *(uint8_t**)(pCtx->Ebp - 0x140);
+        BOOL* have_encountered_a_nonzero_digit = (BOOL*)(pCtx->Ebp - 0x34);
+        struct PhotoManagerArrayItem* this_ = *(struct PhotoManagerArrayItem**)(pCtx->Ebp - 0x140);
         void* unknown_struct_ptr = GetMemContent<void*>(PHOTO_MANAGER_ADDR, 0x2571C);
 
+        struct BonusManager* bonus_manager_ptr = (struct BonusManager*)(*(int*)(PLAYER_PTR) + 0x1E3C);
+        int* existing_photo_cnt = (int*)((int)(bonus_manager_ptr) + 0xBA8);
+        AnmVm* score_digit_vms = (AnmVm*)((int)(this_) + 0x10C8);
+        AnmVm* seventh_digit_vm = &photoScoreSeventhDigitVms[*existing_photo_cnt];
+        Float3* cur_digit_pos = (Float3*)(pCtx->Ebp - 0x1C);
+
         *have_encountered_a_nonzero_digit = (photo_score / 1'000'000) != 0;
+        memset(seventh_digit_vm, 0x00, sizeof(AnmVm));
         if (*have_encountered_a_nonzero_digit) {
-            asm_call<0x404B80, Thiscall>(unknown_struct_ptr, (uint32_t*)(this_ + 0x245C), (int)(0x1E));
-            asm_call<ANMVM_SETUP_SPRITE_AND_MATRICES, Thiscall>(unknown_struct_ptr, (int)(this_ + 0x245C), 
-                                                                (int)(photo_score / 1'000'000 + 0xF));
+            asm_call<0x404B80, Thiscall>(unknown_struct_ptr, seventh_digit_vm, (int)(0x1E));
+            asm_call<ANMVM_SETUP_SPRITE_AND_MATRICES, Thiscall>(unknown_struct_ptr, seventh_digit_vm, 
+                                                                photo_score / 1'000'000 + DIGIT_0);
+            photoScoreSeventhDigitVmIsInUse = true;
         }
-
-        *(float*)(this_ + 0x25B0) = *(float*)(pCtx->Ebp - 0x1C) - 9.0f;
-        *(float*)(this_ + 0x25B4) = *(float*)(pCtx->Ebp - 0x18);
-        *(float*)(this_ + 0x25B8) = *(float*)(pCtx->Ebp - 0x14);
-
+        seventh_digit_vm->entity_pos.x = cur_digit_pos->x - 9.0f;
+        seventh_digit_vm->entity_pos.y = cur_digit_pos->y;
+        seventh_digit_vm->entity_pos.z = cur_digit_pos->z;
+        
         int sixth_digit = (photo_score / 100'000) % 10;
         if (sixth_digit != 0 || *have_encountered_a_nonzero_digit) {
-            asm_call<0x404B80, Thiscall>(unknown_struct_ptr, (uint32_t*)(this_ + 0x10C8), (int)(0x1E));
-            asm_call<ANMVM_SETUP_SPRITE_AND_MATRICES, Thiscall>(unknown_struct_ptr, (int)(this_ + 0x10C8), 
-                                                                (int)(sixth_digit + 0xF));
+            asm_call<0x404B80, Thiscall>(unknown_struct_ptr, &score_digit_vms[0], (int)(0x1E));
+            asm_call<ANMVM_SETUP_SPRITE_AND_MATRICES, Thiscall>(unknown_struct_ptr, &score_digit_vms[0], 
+                                                                sixth_digit + DIGIT_0);
             *have_encountered_a_nonzero_digit = true;
         }
         
         pCtx->Eip = 0x42C6A5;
     })
-    // Display the AnmVM that is set above 
-    PATCH_DY(th095_photo_score_display_fix2, 0x42C2E6, "837DE808")
-    EHOOK_DY(th095_photo_score_display_fix3, 0x42C2F0, 3, {
-        if (*(int*)(pCtx->Ebp - 0x18) == 6) {
-            pCtx->Eip = 0x42C2DD;   
+    // Clean photoScoreSeventhDigitVms in the constructor of PhotoManager
+    EHOOK_DY(th095_photo_score_display_fix2, 0x42A921, 6, {
+        log_printf("Clearing!\n");
+        memset(photoScoreSeventhDigitVms, 0x00, sizeof(photoScoreSeventhDigitVms));
+    })
+    // Display the AnmVM that is set above
+    EHOOK_DY(th095_photo_score_display_fix3, 0x42C3C8, 5, {
+        struct PhotoManager* this_ = *(struct PhotoManager**)(pCtx->Ebp - 0x1C);
+        struct PhotoManagerArrayItem* array = (struct PhotoManagerArrayItem*)((int)(this_) + 0x44);
+        struct BonusManager* bonus_manager_ptr = (struct BonusManager*)(*(int*)(PLAYER_PTR) + 0x1E3C);
+        int* existing_photo_cnt = (int*)((int)(bonus_manager_ptr) + 0xBA8);
+
+        for (int i = 0; i < 10; ++i) {
+            AnmVm* ones_digit_vm = (AnmVm*)((int)(array) + i * 0x2214 + 0x10C8) + 5;
+            AnmVm* seventh_digit_vm = &photoScoreSeventhDigitVms[i];
+            auto tmp = ones_digit_vm->color_1;
+            seventh_digit_vm->color_1 = tmp;
+            asm_call<0x4452D0, Fastcall>(seventh_digit_vm);
         }
     })
     // Hide the tens digit when the score is < 10 
