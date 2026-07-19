@@ -145,6 +145,8 @@ struct ZunTimer {
 };
 static_assert(sizeof(ZunTimer) == 0xc);
 
+#pragma warning(push)
+#pragma warning(disable : 4201)  // nameless struct/union
 union AnmVmFlags {
     uint16_t flags;
     struct {
@@ -161,6 +163,7 @@ union AnmVmFlags {
         uint32_t isStopped : 1;
     };
 };
+#pragma warning(pop)
 
 struct AnmRawInstr {
     int16_t time;
@@ -1383,7 +1386,7 @@ struct EclRawHeader {
     int16_t subCount;
     int16_t mainCount;
     EclTimelineInstr* timelineOffsets[3];
-    EclRawInstr* subOffsets[0];
+    // EclRawInstr* subOffsets[0];
 };
 static_assert(sizeof(EclRawHeader) == 0x10);
 
