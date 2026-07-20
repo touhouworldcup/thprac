@@ -3245,6 +3245,12 @@
         "修复在照片分数为0或超过一百万时无法正常显示的bug", 
         "Fixed a bug where the photo's score will not display properly when it either exceeds 1 million points or is at 0", 
         "写真のスコアが０または１００万を超えると正常に表示されないバグを修正します"
+      ],
+      "TH095_DS_STYLE_BONUS_DISPLAY": [ "更好的Bonus显示", "Better Bonus Display", "ボーナスの表示を改善" ],
+      "TH095_DS_STYLE_BONUS_DISPLAY_DESC": [ 
+        "在Bonus界面的最上方和最下方额外显示基础得分、最终得分（即文花帖DS中的Base Point、\nResult Score）；正确地显示Risk Bonus的奖分（固定为0）；将所有的乘算Bonus的显示都\n精确到小数点后第二位；额外显示一个隐藏的、仅与关卡与当前是第几张照片有关的固定的修正系数。", 
+        "Display the base score and final score (i.e., Base Point and Result Score\nin DS) at the very top and bottom of the Bonus interface; Correctly display\nthe Risk Bonus points (fixed at 0); display all multiplier bonuses rounded\nto the second decimal place; Display an additional hidden, fixed adjustment\nfactor that is specific to the level and the current photo number.", 
+        "ボーナス画面の最上部と最下部に、基本得点と最終得点（文花帖ＤＳにおける「Base Point」および\n「Result Score」に相当）を追加表示する；「Risk Bonus」のボーナス得点（固定値0）を正しく\n表示する；すべての乗算ボーナスの表示を小数点以下２桁まで正確に行う；ステージおよび現在\n表示されている写真の番号のみに基づいて算出される、固定の補正係数を非表示で追加表示する。"
       ]
     }
   },

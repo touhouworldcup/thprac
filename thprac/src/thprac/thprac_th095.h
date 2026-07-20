@@ -7,44 +7,80 @@
 namespace THPrac {
 namespace TH095 {
 
+// Some of the structures are from https://github.com/exphp-share/th-re-data
+
 // Anm IDs of data/bullet/photo2.png.
 enum DATA_BULLET_PHOTO2_ANM_ID { 
-    DIGIT_0 = 15,
-    DIGIT_1 = 16,
-    DIGIT_2 = 17,
-    DIGIT_3 = 18,
-    DIGIT_4 = 19,
-    DIGIT_5 = 20,
-    DIGIT_6 = 21,
-    DIGIT_7 = 22,
-    DIGIT_8 = 23,
-    DIGIT_9 = 24,
-    PERCENT = 25,
-    DECIMAL_POINT = 26,
-    ENABLE = 27,
-    DISABLE = 28,
-    SUCCESS = 29,
-    FAILED = 30,
-    BOSS_SHOT = 31,
-    SELF_SHOT = 32,
-    TWO_SHOT = 33,
-    NICE_SHOT = 34,
-    RISK_SHOT = 35,
-    GEOMETRIC_UNUSED = 36,
-    RED_SHOT = 37,
-    PURPLE_SHOT = 38,
-    BLUE_SHOT = 39,
-    CYAN_SHOT = 40,
-    GREEN_SHOT = 41,
-    YELLOW_SHOT = 42,
-    ORANGE_SHOT = 43,
-    COLORFUL_SHOT = 44,
-    RAINBOW_SHOT = 45,
-    EMPTY_SHOT = 46,
-    SOLO_SHOT = 47,
-    LONELY_SHOT_UNUSED = 48,
-    MISS_SHOT_UNUSED = 49,
-    COUNTER_FLASH_UNUSED = 50
+    ANM_ID_DIGIT_0 = 15,
+    ANM_ID_DIGIT_1 = 16,
+    ANM_ID_DIGIT_2 = 17,
+    ANM_ID_DIGIT_3 = 18,
+    ANM_ID_DIGIT_4 = 19,
+    ANM_ID_DIGIT_5 = 20,
+    ANM_ID_DIGIT_6 = 21,
+    ANM_ID_DIGIT_7 = 22,
+    ANM_ID_DIGIT_8 = 23,
+    ANM_ID_DIGIT_9 = 24,
+    ANM_ID_PERCENT = 25,
+    ANM_ID_DECIMAL_POINT = 26,
+    ANM_ID_ENABLE = 27,
+    ANM_ID_DISABLE = 28,
+    ANM_ID_SUCCESS = 29,
+    ANM_ID_FAILED = 30,
+    ANM_ID_BOSS_SHOT = 31,
+    ANM_ID_SELF_SHOT = 32,
+    ANM_ID_TWO_SHOT = 33,
+    ANM_ID_NICE_SHOT = 34,
+    ANM_ID_RISK_SHOT = 35,
+    ANM_ID_GEOMETRIC_UNUSED = 36,
+    ANM_ID_RED_SHOT = 37,
+    ANM_ID_PURPLE_SHOT = 38,
+    ANM_ID_BLUE_SHOT = 39,
+    ANM_ID_CYAN_SHOT = 40,
+    ANM_ID_GREEN_SHOT = 41,
+    ANM_ID_YELLOW_SHOT = 42,
+    ANM_ID_ORANGE_SHOT = 43,
+    ANM_ID_COLORFUL_SHOT = 44,
+    ANM_ID_RAINBOW_SHOT = 45,
+    ANM_ID_EMPTY_SHOT = 46,
+    ANM_ID_SOLO_SHOT = 47,
+    ANM_ID_LONELY_SHOT_UNUSED = 48,
+    ANM_ID_MISS_SHOT_UNUSED = 49,
+    ANM_ID_COUNTER_FLASH_UNUSED = 50
+};
+
+enum BonusBitfields {
+    BONUS_BOSS_SHOT = 0x1,
+    BONUS_SELF_SHOT = 0x2,
+    BONUS_TWO_SHOT = 0x4,
+    BONUS_NICE_SHOT = 0x8,
+    BONUS_RISK_SHOT = 0x10,
+    BONUS_GEOMETRIC_UNUSED = 0x20,
+    BONUS_RED_SHOT = 0x40,
+    BONUS_PURPLE_SHOT = 0x80,
+    BONUS_BLUE_SHOT = 0x100,
+    BONUS_CYAN_SHOT = 0x200,
+    BONUS_GREEN_SHOT = 0x400,
+    BONUS_YELLOW_SHOT = 0x800,
+    BONUS_ORANGE_SHOT = 0x1000,
+    BONUS_COLORFUL_SHOT = 0x2000,
+    BONUS_RAINBOW_SHOT = 0x4000,
+    BONUS_EMPTY_SHOT = 0x8000,
+    BONUS_SOLO_SHOT = 0x10000,
+    BONUS_LONELY_SHOT_UNUSED = 0x20000,
+    BONUS_MISS_SHOT_UNUSED = 0x40000,
+    BONUS_COUNTER_FLASH_UNUSED = 0x80000
+};
+
+struct ScoreResType {
+    int final_score;
+    int base_point;
+    float bullet_shot_cnt;
+    float graze_bullet_and_laser_cnt;
+    float risk_shot_bonus_bugged;
+    float boss_shot_multiplier;
+    float nice_shot_multiplier;
+    BonusBitfields bonuses;
 };
 
 struct AnmVmInterpModes {
