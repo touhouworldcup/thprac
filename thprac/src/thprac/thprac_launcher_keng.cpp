@@ -280,6 +280,19 @@ namespace THPrac {
         ImGui::PopID();
     }
 
+    std::string GetDescLine(std::string str, int max_byte = 25)
+    {
+        if (str.size() > max_byte)
+        {
+            std::size_t end = max_byte;
+            while (end > 0 && (static_cast<unsigned char>(str[end]) & 0xC0) == 0x80) {
+                --end;
+            }
+            return std::string(str.substr(0, end)) + "...";
+        }
+        return str;
+    }
+
     /// name#AARRGGBB
     /// name#RRGGBB
     /// name#*colorname
@@ -288,6 +301,60 @@ namespace THPrac {
     {
         constexpr uint32_t INVALID_COLOR = 0x00FFFFFF;
         constexpr uint32_t STAR_COLOR = 0xFFFFA500;
+        static const std::unordered_map<std::string, uint32_t> color_map_game_spec = {
+            // Mmaribelhearn colors(changed)
+            { "hrtp", 0xFFFF766F },
+            { "soew", 0xFFD98AE2 },
+            { "podd", 0xFFFFD84D },
+            { "lls", 0xFF8FEA91 },
+            { "ms", 0xFFE56BFF },
+            { "eosd", 0xFFFF8A8A },
+            { "pcb", 0xFFFF8ED2 },
+            { "in", 0xFF9999FF },
+            { "pofv", 0xFF38D6A8 },
+            { "stb", 0xFF54C9D4 },
+            { "mof", 0xFFFFD477 },
+            { "sa", 0xFFD6A0A0 },
+            { "ufo", 0xFF82A8FF },
+            { "ds", 0xFFB79AD8 },
+            { "gfw", 0xFF39DDE2 },
+            { "td", 0xFF8CCFDE },
+            { "ddc", 0xFFE19A9A },
+            { "isc", 0xFFFF7068 },
+            { "lolk", 0xFFB58CFF },
+            { "hsifs", 0xFF8EE68C },
+            { "vd", 0xFFD47AD8 },
+            { "wbawc", 0xFFC6ADC6 },
+            { "um", 0xFF66EBC6 },
+            { "udoalg", 0xFFE6D978 },
+            { "fw", 0xFF8DE4E4 }, 
+
+            { "lyz", 0xFFFF766F },
+            { "fml", 0xFFD98AE2 },
+            { "msk", 0xFFFFD84D },
+            { "hxx", 0xFF8FEA91 },
+            { "gqt", 0xFFE56BFF },
+            { "hmx", 0xFFFF8A8A },
+            { "yym", 0xFFFF8ED2 },
+            { "yyc", 0xFF9999FF },
+            { "hyz", 0xFF38D6A8 },
+            { "wht", 0xFF54C9D4 },
+            { "fsl", 0xFFFFD477 },
+            { "dld", 0xFFD6A0A0 },
+            { "xlc", 0xFF82A8FF },
+            { "ds", 0xFFB79AD8 },
+            { "dzz", 0xFF39DDE2 },
+            { "slm", 0xFF8CCFDE },
+            { "hzc", 0xFFE19A9A },
+            { "txg", 0xFFFF7068 },
+            { "gzz", 0xFFB58CFF },
+            { "tkz", 0xFF8EE68C },
+            { "emrj", 0xFFD47AD8 },
+            { "gxs", 0xFFC6ADC6 },
+            { "hld", 0xFF66EBC6 },
+            { "swy", 0xFFE6D978 },
+            { "jsj", 0xFF8DE4E4 }, 
+        };
         static const std::unordered_map<std::string, uint32_t> color_map = {
             { "r", 0xFFFF0000 },
             { "dr", 0xFFAA0000 },
@@ -378,7 +445,27 @@ namespace THPrac {
             auto it = color_map.find(name);
 
             if (it != color_map.end())
+            {
                 value = it->second;
+            }
+            else {
+                auto it = color_map_game_spec.find(name);
+                if (it != color_map.end()) {
+                    auto color4 = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+                    float h, s, v;
+                    ImGui::ColorConvertRGBtoHSV(color4.x, color4.y, color4.z, h, s, v);
+                    if (v > 0.5)
+                    {
+                        // dark bg, light text
+                        value = it->second;
+                    } else {
+                        // invert color
+                        value = (0xFFFFFFFF - it->second) | 0xFF000000;
+                    }
+                }
+            }
+
+            
 
             return { text, value };
         }
@@ -560,34 +647,6 @@ namespace THPrac {
             static char chs[256] = { 0 };
             sprintf_s(chs, S(THPRAC_OTHER_TODAY), static_cast<int>(mTimeCreate.year()), static_cast<unsigned int>(mTimeCreate.month()), static_cast<unsigned int>(mTimeCreate.day()));
             return chs;
-        }
-
-        
-        const char* GetDescription_Line()
-        {
-            static char mCmtLine[64];
-            memcpy_s(mCmtLine, sizeof(mCmtLine), mPlayComment, sizeof(mCmtLine));
-            bool add_dots = false;
-            for (int i = 0; i < 25; i++) {
-                if (mCmtLine[i] == '\r' || mCmtLine[i] == '\n') {
-                    mCmtLine[i] = '.';
-                    mCmtLine[i + 1] = '.';
-                    mCmtLine[i + 2] = '.';
-                    mCmtLine[i + 3] = '\0';
-                    add_dots = true;
-                    break;
-                } else if (mCmtLine[i] == '\0') {
-                    add_dots = true;
-                    break;
-                }
-            }
-            if (!add_dots) {
-                mCmtLine[24] = '.';
-                mCmtLine[25] = '.';
-                mCmtLine[26] = '.';
-                mCmtLine[27] = '\0';
-            }
-            return mCmtLine;
         }
 
         void DrawPlay(bool* is_del, bool* is_open, std::vector<KengDifficulty>& diffs, int& diffs_id_tot, std::function<void(int)> remove_diff)
@@ -831,6 +890,59 @@ namespace THPrac {
     };
     const ImGuiTableSortSpecs* DiffsDetailedTableItem::s_current_sort_specs = NULL;
 
+    
+    struct KengsTableItem {
+        int index;
+        int play_count;
+        char name[KENG_NAME_SIZE];
+        char desc[KENG_DESC_SIZE];
+        std::chrono::year_month_day time;
+        static const ImGuiTableSortSpecs* s_current_sort_specs;
+
+#ifndef IMGUI_CDECL
+#ifdef _MSC_VER
+#define IMGUI_CDECL __cdecl
+#else
+#define IMGUI_CDECL
+#endif
+#endif
+        static int IMGUI_CDECL CompareWithSortSpecs(const void* lhs, const void* rhs)
+        {
+            const KengsTableItem* a = (const KengsTableItem*)lhs;
+            const KengsTableItem* b = (const KengsTableItem*)rhs;
+            for (int n = 0; n < s_current_sort_specs->SpecsCount; n++) {
+                // Here we identify columns using the ColumnUserID value that we ourselves passed to TableSetupColumn()
+                // We could also choose to identify columns based on their index (sort_spec->ColumnIndex), which is simpler!
+                const ImGuiTableColumnSortSpecs* sort_spec = &s_current_sort_specs->Specs[n];
+                double delta = 0;
+                switch (sort_spec->ColumnUserID) {
+                default:
+                case 0:
+                    delta = a->index - b->index;
+                    break;
+                case 1:
+                    delta = (strcmp(a->name, b->name));
+                    break;
+                case 2:
+                    delta = (a->time < b->time)?(-1):(+1);
+                    break;
+                case 3:
+                    delta = (a->play_count - b->play_count);
+                    break;
+                case 4:
+                    delta = (strcmp(a->desc, b->desc));
+                    break;
+                }
+                if (delta > 0)
+                    return (sort_spec->SortDirection == ImGuiSortDirection_Ascending) ? +1 : -1;
+                if (delta < 0)
+                    return (sort_spec->SortDirection == ImGuiSortDirection_Ascending) ? -1 : +1;
+            }
+            return (a->index - b->index);
+        };
+    };
+    const ImGuiTableSortSpecs* KengsTableItem::s_current_sort_specs = NULL;
+
     class Keng
     {
         char mKengName[KENG_NAME_SIZE];
@@ -841,11 +953,11 @@ namespace THPrac {
         int mDifficulties_idtot=0;
         std::vector<SingleGamePlay> mPlays;
     public:
-        char* GetTimeDesc()
+        static std::string GetTimeDesc(std::chrono::year_month_day time)
         {
             static char chs[256] = { 0 };
-            sprintf_s(chs, S(THPRAC_OTHER_TODAY), static_cast<int>(mTimeCreate.year()), static_cast<unsigned int>(mTimeCreate.month()), static_cast<unsigned int>(mTimeCreate.day()));
-            return chs;
+            sprintf_s(chs, S(THPRAC_OTHER_TODAY), static_cast<int>(time.year()), static_cast<unsigned int>(time.month()), static_cast<unsigned int>(time.day()));
+            return std::string(chs);
         }
 
         void GuiGetDetails()
@@ -1049,35 +1161,6 @@ namespace THPrac {
             }
             if(!isopen)
                 calculated=false;
-        }
-
-        const char* GetDescription_Line()
-        {
-            static char mKengDescription_line[64];
-            memcpy_s(mKengDescription_line, sizeof(mKengDescription_line), mKengDescription, sizeof(mKengDescription_line));
-            bool add_dots=false;
-            for (int i = 0; i < 25; i++)
-            {
-                if (mKengDescription_line[i] == '\r' || mKengDescription_line[i] == '\n'){
-                    mKengDescription_line[i] = '.';
-                    mKengDescription_line[i+1] = '.';
-                    mKengDescription_line[i+2] = '.';
-                    mKengDescription_line[i+3] = '\0';
-                    add_dots = true;
-                    break;
-                } else if (mKengDescription_line[i] == '\0') {
-                    add_dots = true;
-                    break;
-                }
-            }
-            if (!add_dots)
-            {
-                mKengDescription_line[24] = '.';
-                mKengDescription_line[25] = '.';
-                mKengDescription_line[26] = '.';
-                mKengDescription_line[27] = '\0';
-            }
-            return mKengDescription_line;
         }
 
         void WriteToCsv(std::wstring csv_filename)
@@ -1471,7 +1554,7 @@ namespace THPrac {
                             ImGui::TableNextColumn();
                             ImGui::Text(it->GetTimeDesc());
                             ImGui::TableNextColumn();
-                            ImGui::Text(it->GetDescription_Line());
+                            ImGui::Text(GetDescLine(it->mPlayComment).c_str());
                             ImGui::TableNextColumn();
                             ImGui::Text("%6d", it->mDiffsDied.size());
                             idx--;
@@ -1539,44 +1622,68 @@ namespace THPrac {
         }
         void DrawKengs()
         {
+            static ImVector<KengsTableItem> table_itmes;
             if (cur_draw_keng_idx >= std::ssize(mKengs) || cur_draw_keng_idx < 0)
                 cur_draw_keng_idx = -1;
             if (cur_draw_keng_idx == -1)
             {
                 ImGui::SetCursorPosX(LauncherWndGetSize().x * 0.05f);
-                if (ImGui::BeginTable("##kengsTable", 3, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable, ImVec2(LauncherWndGetSize().x * 0.9f, 0.0f)))
+                if (ImGui::BeginTable("##kengsTable", 5, ImGuiTableFlags_::ImGuiTableFlags_Borders | ImGuiTableFlags_::ImGuiTableFlags_Resizable | ImGuiTableFlags_::ImGuiTableFlags_Sortable | ImGuiTableFlags_::ImGuiTableFlags_SortMulti, ImVec2(LauncherWndGetSize().x * 0.9f, 0.0f)))
                 {
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_NAME), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.25f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_DATE), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.25f);
-                    ImGui::TableSetupColumn(S(THPRAC_KENG_DESC), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.5f);
+                    ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.04f,0);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_NAME), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.25f,1);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_DATE), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.3f,2);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_DETAILS_DIFF_CNT), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.1f, 3);
+                    ImGui::TableSetupColumn(S(THPRAC_KENG_DESC), ImGuiTableColumnFlags_WidthStretch, LauncherWndGetSize().x * 0.9f * 0.45f,4);
                     ImGui::TableHeadersRow();
 
-                    int idx = 0;
-                    for (auto it = mKengs.begin(); it != mKengs.end(); it++) {
-
+                    // fill the table
+                    if (table_itmes.size() != mKengs.size())
+                    {
+                        table_itmes = {};
+                        int n = 0;
+                        for (auto& keng : mKengs) {
+                            KengsTableItem item;
+                            item.index = n;
+                            memcpy(item.name, keng.mKengName, sizeof(keng.mKengName));
+                            memcpy(item.desc, keng.mKengDescription, sizeof(keng.mKengDescription));
+                            item.time = keng.mTimeCreate;
+                            item.play_count = keng.mPlays.size();
+                            table_itmes.push_back(item);
+                            n++;
+                        }
+                    }
+                   
+                    if (ImGuiTableSortSpecs* sorts_specs = ImGui::TableGetSortSpecs())
+                        if (sorts_specs->SpecsDirty) {
+                            KengsTableItem::s_current_sort_specs = sorts_specs; // Store in variable accessible by the sort function.
+                            if (table_itmes.Size > 1)
+                                qsort(&table_itmes[0], (size_t)table_itmes.Size, sizeof(table_itmes[0]), KengsTableItem::CompareWithSortSpecs);
+                            KengsTableItem::s_current_sort_specs = NULL;
+                            sorts_specs->SpecsDirty = false;
+                        }
+                    for (auto& item : table_itmes) {
                         ImGui::TableNextRow();
                         ImGui::TableNextColumn();
-                        if (ImGui::Selectable(std::format("##keng{}", idx).c_str(), false, ImGuiSelectableFlags_::ImGuiSelectableFlags_SpanAllColumns)) {
-                            cur_draw_keng_idx = idx;
+
+                        auto [name, color] = ParseNameColor(item.name);
+                        if (color >> 24 == 0) {
+                            color = ImGui::ColorConvertFloat4ToU32(ImGui::GetStyleColorVec4(ImGuiCol_Text));
                         }
-                        ImGui::SameLine(0.0f,0.0f);
-                        auto [name, color] = ParseNameColor(it->mKengName);
-                        if (color >> 24 == 0)
-                        {
-                            ImGui::Text(name.c_str());
-                            ImGui::TableNextColumn();
-                            ImGui::Text(it->GetTimeDesc());
-                            ImGui::TableNextColumn();
-                            ImGui::Text(it->GetDescription_Line());
-                        } else {
-                            auto colorf = ImGui::ColorConvertU32ToFloat4(color);
-                            ImGui::TextColored(colorf, name.c_str());
-                            ImGui::TableNextColumn();
-                            ImGui::TextColored(colorf, it->GetTimeDesc());
-                            ImGui::TableNextColumn();
-                            ImGui::TextColored(colorf, it->GetDescription_Line());
+                        auto colorf = ImGui::ColorConvertU32ToFloat4(color);
+                        if (ImGui::Selectable(std::format("##keng{}", item.index).c_str(), false, ImGuiSelectableFlags_::ImGuiSelectableFlags_SpanAllColumns)) {
+                            cur_draw_keng_idx = item.index;
                         }
-                        idx++;
+                        ImGui::SameLine(0.0f, 0.0f);
+                        ImGui::TextColored(colorf, std::format("{}",item.index+1).c_str());
+                        ImGui::TableNextColumn();
+                        ImGui::TextColored(colorf, name.c_str());
+                        ImGui::TableNextColumn();
+                        ImGui::TextColored(colorf, Keng::GetTimeDesc(item.time).c_str());
+                        ImGui::TableNextColumn();
+                        ImGui::TextColored(colorf, "%d", item.play_count);
+                        ImGui::TableNextColumn();
+                        ImGui::TextColored(colorf, GetDescLine(item.desc).c_str());
                     }
                     ImGui::EndTable();
                 }
@@ -1661,6 +1768,15 @@ namespace THPrac {
             }else{
                 bool is_del = false,is_open=true;
                 mKengs[cur_draw_keng_idx].DrawKeng(&is_del, &is_open);
+                for (int i=0;i < table_itmes.size();i++)  {
+                    if (table_itmes[i].index == cur_draw_keng_idx){
+                        memcpy(table_itmes[i].name, mKengs[cur_draw_keng_idx].mKengName, sizeof(mKengs[cur_draw_keng_idx].mKengName));
+                        memcpy(table_itmes[i].desc, mKengs[cur_draw_keng_idx].mKengDescription, sizeof(mKengs[cur_draw_keng_idx].mKengDescription));
+                        table_itmes[i].time = mKengs[cur_draw_keng_idx].mTimeCreate;
+                        table_itmes[i].play_count = mKengs[cur_draw_keng_idx].mPlays.size();
+                        break;
+                    }
+                }
                 if (is_del) {
                     mKengs.erase(mKengs.begin() + cur_draw_keng_idx);
                     cur_draw_keng_idx = -1;
