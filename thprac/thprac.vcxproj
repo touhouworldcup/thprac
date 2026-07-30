@@ -275,13 +275,27 @@
       </IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dumpbin /imports "$(TargetPath)" | findstr "GetSystemTimePreciseAsFileTime" &amp;&amp; (
-    echo WARNING:Compatiable with win7:"GetSystemTimePreciseAsFileTime"
-    exit 0
-) || (
-    echo compatiable OK
-    exit 0
-)</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">echo Generate Win7 compatible executable
+
+"$(TargetDir)IATPatch.exe" "$(TargetPath)" "$(TargetDir)$(TargetName)_compatible$(TargetExt)"
+
+echo Check Win7 compatibility
+
+dumpbin /imports "$(TargetDir)$(TargetName)_compatible$(TargetExt)" &gt; "$(IntDir)\imports.txt"
+
+findstr "GetSystemTimePreciseAsFileTime" "$(IntDir)\imports.txt"
+
+if %errorlevel%==0 goto ERROR
+
+echo Win7 compatible OK
+
+exit /b 0
+
+:ERROR
+
+echo ERROR: Still contains GetSystemTimePreciseAsFileTime
+
+exit /b 1</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
