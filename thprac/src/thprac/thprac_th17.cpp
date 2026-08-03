@@ -907,6 +907,31 @@ namespace TH17 {
         return -1;
     }
 
+    constinit HookCtx scoreUncapHooks[] = {
+        { .addr = 0x41b1d3, .data = PatchCode("ffffffff") },
+        { .addr = 0x41b1d8, .data = PatchCode("ffffffff") },
+        { .addr = 0x4212a9, .data = PatchCode("ffffffff") },
+        { .addr = 0x4212ae, .data = PatchCode("ffffffff") },
+        { .addr = 0x432160, .data = PatchCode("ffffffff") },
+        { .addr = 0x432166, .data = PatchCode("ffffffff") },
+        { .addr = 0x4323b2, .data = PatchCode("ffffffff") },
+        { .addr = 0x4323b8, .data = PatchCode("ffffffff") },
+        { .addr = 0x4324e0, .data = PatchCode("ffffffff") },
+        { .addr = 0x4324e5, .data = PatchCode("ffffffff") },
+        { .addr = 0x433c5e, .data = PatchCode("ffffffff") },
+        { .addr = 0x433c75, .data = PatchCode("ffffffff") },
+        { .addr = 0x433d50, .data = PatchCode("ffffffff") },
+        { .addr = 0x433d60, .data = PatchCode("ffffffff") },
+        { .addr = 0x433f6d, .data = PatchCode("ffffffff") },
+        { .addr = 0x433f73, .data = PatchCode("ffffffff") },
+        { .addr = 0x4343e1, .data = PatchCode("ffffffff") },
+        { .addr = 0x4343e7, .data = PatchCode("ffffffff") },
+        { .addr = 0x43454f, .data = PatchCode("ffffffff") },
+        { .addr = 0x434555, .data = PatchCode("ffffffff") },
+        { .addr = 0x44b261, .data = PatchCode("ffffffff") },
+        { .addr = 0x44b279, .data = PatchCode("ffffffff") },
+    };
+
     class THAdvOptWnd : public Gui::PPGuiWnd {
     private:
         bool mInGoastMenu = false;
@@ -963,6 +988,7 @@ namespace TH17 {
             OnLocaleChange();
             FpsInit();
             GameplayInit();
+            ScoreUncapInit();
         }
         SINGLETON(THAdvOptWnd);
 
@@ -1074,6 +1100,10 @@ namespace TH17 {
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 if (GameplayOpt(mOptCtx))
                     GameplaySet();
+                if (ImGui::Checkbox(S(TH18_UNCAP), &scoreUncapChkbox))
+                    ScoreUncapSet();
+                ImGui::SameLine();
+                Gui::HelpMarker(S(TH18_UNCAP_DESC));
 
                 ImGui::Checkbox(S(TH17_KEIKI_FINAL_PHASETRACK), &mTrackKeikiFinalPhase);
                 ImGui::SameLine();
@@ -1133,12 +1163,26 @@ namespace TH17 {
 
         adv_opt_ctx mOptCtx;
 
+
+    void ScoreUncapInit()
+    {
+        for (size_t i = 0; i < elementsof(scoreUncapHooks); i++) {
+            scoreUncapHooks[i].Setup();
+        }
+    }
+    void ScoreUncapSet()
+    {
+        for (auto& hook : scoreUncapHooks)
+            hook.Toggle(scoreUncapChkbox);
+    }
+
     public:
         bool mTrackKeikiFinalPhase = false;
         bool mGoastBugfix = true;
         bool mGoastRepfix = false;
         bool mForceGoastAngle = false;
         bool mGoastAngleRandom = false;
+        bool scoreUncapChkbox = false;
 
         size_t mSelectedGoast = 0;
         float mGoastAng = 0;
