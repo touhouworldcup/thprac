@@ -20,8 +20,9 @@ namespace TH06 {
     static Chain* const CHAIN = (Chain* const)0x69d918;
     static GameWindow* const GAME_WINDOW = (GameWindow* const)0x6c6bd4;
     static Supervisor* const SUPERVISOR = (Supervisor* const)0x6c6d18;
-    static AnmManager* const ANM_MANAGER = (AnmManager* const)0x6d4588;
     static MainMenu* const MAIN_MENU = (MainMenu* const)0x6d46c0;
+
+#define ANM_MANAGER (*(AnmManager** const)0x6d4588)
 
     enum ADDRS {
         SHAKE_SCREEN_ADDR = 0x42ffc0,
