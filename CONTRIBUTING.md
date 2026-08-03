@@ -60,7 +60,10 @@ Add `[skip ci]` to commit descriptions of any commits that do not modify any C++
 
 ## 6. Banned C++ features
 
-New additions that use any of these features will have your commit reverted:
+Changes that use the following C++ features will be discarded.
 - std::format
 
 This list may expand in the future
+
+## 7. No LLM usage
+If you are caught using an LLM, your changes will be discarded.
