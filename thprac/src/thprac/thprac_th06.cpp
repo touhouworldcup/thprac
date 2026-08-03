@@ -20,7 +20,8 @@ namespace TH06 {
     static Chain* const CHAIN = (Chain* const)0x69d918;
     static GameWindow* const GAME_WINDOW = (GameWindow* const)0x6c6bd4;
     static Supervisor* const SUPERVISOR = (Supervisor* const)0x6c6d18;
-    static AnmManager* const ANM_MANAGER = (AnmManager* const)0x6d4588;
+    // 0x6d4588 holds a pointer to the AnmManager, not the object itself.
+    static AnmManager** const ANM_MANAGER = (AnmManager** const)0x6d4588;
     static MainMenu* const MAIN_MENU = (MainMenu* const)0x6d46c0;
 
     enum ADDRS {
@@ -970,7 +971,7 @@ namespace TH06 {
     }
     void ECLNameFix()
     {
-        void* thisPtr = (void*)(ANM_MANAGER);
+        void* thisPtr = (void*)(*ANM_MANAGER);
         if (thPracParam.stage == 5) {
             asm_call<0x431dc0, Thiscall>(thisPtr, 11, "data/eff06.anm", 691);
         } else if (thPracParam.stage == 6) {
