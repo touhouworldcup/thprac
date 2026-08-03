@@ -671,16 +671,8 @@ namespace TH16 {
             pCtx->Eip = 0x42e245;
         }
     });
-    static constinit HookCtx scoreUncapHooks[] = {
-        {.addr = 0x482A13, .data = PatchCode("ffffffff") },
-        {.addr = 0x408345, .data = PatchCode("ffffffff") },
-        {.addr = 0x43E125, .data = PatchCode("ffffffff") },
-        {.addr = 0x41822E, .data = PatchCode("ffffffff") },
-        {.addr = 0x4918A8, .data = PatchCode("ffffffff") },
-        {.addr = 0x48CC98, .data = PatchCode("ffffffff") },
-        {.addr = 0x4181FC, .data = PatchCode("ffffffff") },
-        {.addr = 0x43E12B, .data = PatchCode("ffffffff") },
-    };
+
+    constinit HookCtx scoreUncapHook = { .addr = 0x43E124, .data = PatchCode("81FAFFFFFFFFB8FFFFFFFF") };
 
     class THAdvOptWnd : public Gui::PPGuiWnd {
         SINGLETON(THAdvOptWnd);
@@ -725,15 +717,11 @@ namespace TH16 {
 
         void ScoreUncapInit()
         {
-            for (size_t i = 0; i < elementsof(scoreUncapHooks); i++) {
-                scoreUncapHooks[i].Setup();
-            }
+            scoreUncapHook.Setup();
         }
         void ScoreUncapSet()
         {
-            for (auto& hook : scoreUncapHooks) {
-                hook.Toggle(scoreUncapChkbox);
-            }
+            scoreUncapHook.Toggle(scoreUncapChkbox);
         }
 
         THAdvOptWnd() noexcept
