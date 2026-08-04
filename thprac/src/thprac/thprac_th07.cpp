@@ -482,6 +482,8 @@ namespace TH07 {
         THPracParam mRepParam;
     };
     class THOverlay : public Gui::GameGuiWnd {
+        SINGLETON(THOverlay);
+    public:
         THOverlay() noexcept
         {
             SetTitle("Mod Menu");
@@ -492,10 +494,7 @@ namespace TH07 {
                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
         }
-        SINGLETON(THOverlay);
-    public:
 
-    protected:
         virtual void OnLocaleChange() override
         {
             float x_offset_1 = 0.0f;
@@ -592,8 +591,9 @@ namespace TH07 {
         PATCH_HK(0x440D35, "66C7054C9E4B0002"),
         PATCH_HK(0x440B8E, "54")
         HOTKEY_ENDDEF();
-    public:
+
         Gui::GuiHotKey mElBgm { TH_EL_BGM, "F7", VK_F7 };
+        int32_t cur_song = -1;
     };
 
     EHOOK_ST(th07_all_clear_bonus_1, 0x42b3d2, 2, {
@@ -1814,6 +1814,14 @@ namespace TH07 {
         ImGui::End();
     }
 
+#ifdef _DEBUG
+#define ELBGM_LOGf log_printf
+#define ELBGM_LOG  log_print
+#else
+#define ELBGM_LOGf
+#define ELBGM_LOG
+#endif
+
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th07_enter, 0x42EB08, 3, { // set inner misscount to 0
         tracker_info.th07 = {};
@@ -1822,31 +1830,49 @@ namespace TH07 {
         tracker_info.th07.border_break++;
     })
     PATCH_DY(th07_reacquire_input, 0x430f03, "0000000074")
-    EHOOK_DY(th07_everlasting_bgm, 0x44d2f0, 1, {
-        int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
-        int32_t bgm_cmd = ((int32_t*)pCtx->Esp)[1];
-        int32_t bgm_id = ((int32_t*)pCtx->Esp)[2];
-        int32_t call_addr = ((int32_t*)pCtx->Esp)[7];
+    EHOOK_DY(th07_soundplayer_queue_command, 0x44d2f0, 1, {
+        auto& o = THOverlay::singleton();
+        
+        auto ret_addr = ((uintptr_t*)pCtx->Esp)[0];
+        auto opcode   = ((uintptr_t*)pCtx->Esp)[1];
+        auto arg      = ((uintptr_t*)pCtx->Esp)[2];
 
-        bool el_switch;
-        bool is_practice;
-        bool result;
+        if (!*o.mElBgm || !thPracParam.mode) {
+            if (opcode == AUDIO_START) {
+                o.cur_song = arg;
+            }
+            return;
+        }
 
-        el_switch = *(THOverlay::singleton().mElBgm) && !THGuiRep::singleton().mRepStatus && thPracParam.mode && thPracParam.section;
-        if (thPracParam.mode && thPracParam.section == TH07_ST6_BOSS10)
-            el_switch = false;
-        is_practice = SUPERVISOR->gamemode == 10;
-        if (retn_addr == 0x43a180)
-            result = ElBgmTest<0x439f47, 0x43a0cb, 0x42d9c4, 0x4034a9, 0x42f21b>(
-                el_switch, is_practice, 0x439f47, 2, 2, call_addr);
-        else
-            result = ElBgmTest<0x439f47, 0x43a0cb, 0x42d9c4, 0x4034a9, 0x42f21b>(
-                el_switch, is_practice, retn_addr, bgm_cmd, bgm_id, call_addr);
+        ELBGM_LOGf("[th07] SoundPlayer::QueueCommand\r\n"
+            "-> opcode = %d, arg = %d\r\n"
+            "-> return to 0x%x\r\n", opcode, arg, ret_addr);
 
-        if (result) {
-            pCtx->Eip = 0x44d3ce;
+        if (thPracParam.section != TH07_ST6_BOSS10 && opcode == AUDIO_FADEOUT && ret_addr == 0x43a180) {
+            ELBGM_LOG("-> Hacky RB workaround triggered.\r\n");
+            return;
+        }
+
+        // Disable AUDIO_STOP, AUDIO_PAUSE and AUDIO_UNPAUSE
+        if (opcode >= AUDIO_STOP) {
+            ELBGM_LOG("-> This opcode is disabled\r\n");
+            pCtx->Eip = PopHelper32(pCtx);
+            pCtx->Esp += 0xC;
+            return;
+        }
+
+        if (opcode == AUDIO_START) {
+            if (arg != o.cur_song) {
+                o.cur_song = arg;
+            }
+            else {
+                pCtx->Eip = PopHelper32(pCtx);
+                pCtx->Esp += 0xC;
+                return;
+            }
         }
     })
+
     EHOOK_DY(th07_prac_menu_1, 0x45a214, 2, {
         THGuiPrac::singleton().State(1);
     })

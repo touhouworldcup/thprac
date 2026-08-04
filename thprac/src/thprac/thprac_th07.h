@@ -1374,5 +1374,23 @@ struct GameWindow {
     BOOL lowPowerActive;
     BOOL powerOffActive;
 };
+
+enum AudioOpcode : int32_t {
+    AUDIO_PRELOAD = 1,
+    AUDIO_START = 2,
+    AUDIO_STOP = 3,
+    AUDIO_SHUTDOWN = 4,
+    AUDIO_FADEOUT = 5,
+    AUDIO_PAUSE = 6,
+    AUDIO_UNPAUSE = 7
+};
+
+struct SoundPlayerCommand {
+    AudioOpcode opcode;
+    int32_t arg1;
+    int32_t arg2;
+    char string[256];
+};
+
 }
 }
