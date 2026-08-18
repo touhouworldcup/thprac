@@ -3188,6 +3188,15 @@
         "TH_NORMAL",
         "TH08_HE_POST_SPIN",
         "TH08_HE_SLOWDOWN"
+      ],
+      "TH08_SPELL_PHASE_IMPERISHABLE_SHOOTING": [
+        "TH185_WAVE_1",
+        "TH185_WAVE_2",
+        "TH185_WAVE_3",
+        "TH185_WAVE_4",
+        "TH185_WAVE_5",
+        "TH185_WAVE_6",
+        "TH_FINALE"
       ]
     }
   },

@@ -145,3 +145,9 @@ inline bool CheckBufPos(const void* bufStart, const void* bufPos, unsigned bufLe
     }
 }
 #define CHKBUF(buf, pos, len, ret) if (!CheckBufPos(buf, pos, len)) return ret
+
+#if !NDEBUG
+#define debug_msg(title, format, ...) log_mboxf(NULL, 0, title, format, __VA_ARGS__)
+#else
+#define debug_msg(title, format, ...)
+#endif

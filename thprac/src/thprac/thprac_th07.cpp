@@ -1862,7 +1862,7 @@ namespace TH07 {
         }
 
         if (opcode == AUDIO_START) {
-            if (arg != o.cur_song) {
+            if (arg != (uint32_t)o.cur_song) {
                 o.cur_song = arg;
             }
             else {

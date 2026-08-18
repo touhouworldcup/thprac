@@ -29,6 +29,7 @@ namespace TH08 {
         ECL_INS_TIME = 0x0,
         ECL_INS_OPCODE = 0x4,
         ECL_INS_ARG1 = 0xc,
+        ECL_INS_ARG2 = 0x10,
     };
 
     struct THPracParam {
@@ -283,6 +284,9 @@ namespace TH08 {
             auto section = CalcSection();
             if (section == TH08_ST6A_LS)
                 return TH08_SPELL_PHASE_HOURAI_ELIXIR;
+            else if (section == TH08_ST7_END_LS)
+                return TH08_SPELL_PHASE_IMPERISHABLE_SHOOTING;
+
             return nullptr;
         }
 
@@ -2165,12 +2169,69 @@ namespace TH08 {
             ECLCallSub(ecl, 0x67c4, 83, 60);
             ecl << pair{0x8408, (int16_t)0};
             break;
-        case THPrac::TH08::TH08_ST7_END_LS:
+
+        case THPrac::TH08::TH08_ST7_END_LS: { // Imperishable Shooting
+            constexpr unsigned int st7TLPreLSTime = 9678;
+            constexpr unsigned int st7TLPreLS = 0x1530c;
+            constexpr unsigned int st7BossSp11PreTimeCheck = 0x851c;
+            constexpr unsigned int st7BossSp11PostTimeCheck = 0x8544;
+
+            constexpr unsigned int st7BossSp11TimerThreshold = 0x0fc88;
+            constexpr unsigned int st7BossSp11Wave1Particles = 0x0fe74;
+            constexpr unsigned int st7BossSp11Wave1ShotColor = 0x0fec0;
+            constexpr unsigned int st7BossSp11Wave1PostColor = 0x0fed4;
+
+            constexpr unsigned int st7BossSp11Wave2Start = 0xff0c;
+            constexpr unsigned int st7BossSp11Wave3Start = 0x10050;
+            constexpr unsigned int st7BossSp11Wave4Start = 0x101f0;
+            constexpr unsigned int st7BossSp11Wave5Start = 0x104fc;
+            constexpr unsigned int st7BossSp11Wave6Start = 0x10a10;
+            constexpr unsigned int st7BossSp11Wave7Start = 0x10d1c;
+
             MSGNameFix();
-            ECLWarp(9678, 0x1530c, 0, -1);
-            ECLJump(ecl, 0x851c, 0x8544);
-            ECLCheckTime(10);
+            ECLWarp(st7TLPreLSTime, st7TLPreLS, 0, -1);
+            ECLJump(ecl, st7BossSp11PreTimeCheck, st7BossSp11PostTimeCheck);
+            if (!thPracParam.phase) break;
+            ecl << pair{ st7BossSp11Wave1Particles + ECL_INS_OPCODE, (int16_t)0 }; // NOP wave1 particles
+            //Note: each particles call (sub152) is 32f counted for seconds timer but not ECL time; we deduct skipped ones from threshold
+
+            switch (thPracParam.phase) {
+            case 1: // two circles (69s left)
+                ECLJump(ecl, st7BossSp11Wave1PostColor, st7BossSp11Wave2Start, 540, 90); // (skip 540-90 = 450f)
+                ecl << pair{ st7BossSp11TimerThreshold + ECL_INS_ARG1, (int16_t)4258 };  // (base 4740f - 450f - 1 * 32f)
+                break;
+
+            case 2: // triangular circles (61s left)
+                ECLJump(ecl, st7BossSp11Wave1PostColor, st7BossSp11Wave3Start, 1000, 90); // (skip 1000-90 = 910f)
+                ecl << pair{ st7BossSp11TimerThreshold + ECL_INS_ARG1, (int16_t)3798 }    // (base 4740f - 910f - 1 * 32f)
+                    << pair{ st7BossSp11Wave1ShotColor + ECL_INS_ARG2, 2}; // (red)
+                break;
+
+            case 3: // line of circles (52s left)
+                ECLJump(ecl, st7BossSp11Wave1PostColor, st7BossSp11Wave4Start, 1460, 90); // (skip 1460-90 = 1370f)
+                ecl << pair{ st7BossSp11TimerThreshold + ECL_INS_ARG1, (int16_t)3306 };   // (base 4740f - 1370f - 2 * 32f)
+                break;
+
+            case 4: // thick circles (36s left)
+                ECLJump(ecl, st7BossSp11Wave1PostColor, st7BossSp11Wave5Start, 2280, 90); // (skip 2280-90 = 2190f)
+                ecl << pair{ st7BossSp11TimerThreshold + ECL_INS_ARG1, (int16_t)2326 }    // (base 4740f - 2190f - 7 * 32f)
+                    << pair{ st7BossSp11Wave1ShotColor + ECL_INS_ARG2, 2 }; // (red)
+                break;
+
+            case 5: // green rice circle (22s left)
+                ECLJump(ecl, st7BossSp11Wave1PostColor, st7BossSp11Wave6Start, 3040, 90); // (skip 3040-90 = 2950f)
+                ecl << pair{ st7BossSp11TimerThreshold + ECL_INS_ARG1, (int16_t)1502 };   // (base 4740f - 2950f - 9 * 32f)
+                break;
+
+            case 6: // finale (14s left)
+                ECLJump(ecl, st7BossSp11Wave1PostColor, st7BossSp11Wave7Start, 3410, 90); // (skip 3410-90 = 3320f)
+                ecl << pair{ st7BossSp11TimerThreshold + ECL_INS_ARG1, (int16_t)1020 };   // (base 4740f - 3320f - 10 * 32f - 5 * 16f) (phase 6 green shooter subs cost 16f)
+                break;
+            }
+
             break;
+        }
+
         default:
             break;
         }
