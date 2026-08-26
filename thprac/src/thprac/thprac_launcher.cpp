@@ -2,6 +2,7 @@
 // Fun fact: the author of that is also a Touhou fan
 
 #include "thprac_launcher.h"
+#include "thprac_licence.h"
 #include "thprac_load_exe.h"
 
 #include <psapi.h>
@@ -175,6 +176,17 @@ static bool LauncherSettingsCheckThcrapDir(std::wstring_view dir) {
 }
 
 static void LauncherSettingsMain(LauncherState* state) {
+    if (state->settingsLicenseInfo) {
+        if (ImGui::Button(S(TH_BACK))) {
+            state->settingsLicenseInfo = false;
+        }
+        ImGui::SameLine();
+        Gui::TextCentered("COPYING", ImGui::GetWindowWidth());
+        ImGui::Separator();
+        Gui::ShowLicenceInfo();
+        return;
+    }
+
     if (state->foundThcrapConfigs.size()) {
         return ThcrapAddConfigsUI(state);
     }
@@ -268,6 +280,19 @@ static void LauncherSettingsMain(LauncherState* state) {
 
     // The rest of the settings, which will hopefully be displayed in-game too some day
     GuiSettings();
+    ImGui::NewLine();
+    ImGui::TextUnformatted(S(TH_ABOUT_THPRAC));
+    ImGui::Separator();
+    ImGui::Text(S(TH_ABOUT_VERSION), VER_PARAMS_CUR);
+    if (ImGui::Button(S(TH_VISIT_WEBSITE))) {
+        ShellExecuteW(Gui::ImplWin32GetHwnd(), L"open", L"https://github.com/touhouworldcup/thprac", nullptr, nullptr, SW_SHOW);
+    }
+    ImGui::SameLine();
+    if (ImGui::Button(S(TH_ABOUT_SHOW_LICENCE))) {
+        state->settingsLicenseInfo = true;
+    }
+    ImGui::NewLine();
+    ImGui::Text(S(TH_ABOUT_THANKS), "You!");
 }
 
 void UiUpdate(HWND hwnd, LauncherState* state) {

@@ -188,6 +188,7 @@ struct LauncherState {
     bool g_IsOverTitleBarButton = false;
     bool goToGamesPage = false;
     bool closeAfterLaunch = false;
+    bool settingsLicenseInfo = false;
 
     void (*toolFunc)(LauncherState*) = nullptr;
 
