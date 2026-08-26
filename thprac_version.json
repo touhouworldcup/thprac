@@ -1,13 +1,13 @@
 {
-    "version": [2, 3, 0, 3],
-    "changelog": "https://github.com/touhouworldcup/thprac/releases/tag/v2.3.0.3",
+    "version": [2, 3, 1, 0],
+    "changelog": "https://github.com/touhouworldcup/thprac/releases/tag/v2.3.1.0",
     "description": [
-        "Changelog: https://github.com/touhouworldcup/thprac/releases/tag/v2.3.0.3",
+        "Changelog: https://github.com/touhouworldcup/thprac/releases/tag/v2.3.1.0",
         " ",
         " "   
     ],
-    "file_size": 2693632,
-    "direct_link": "https://github.com/touhouworldcup/thprac/releases/download/v2.3.0.3/thprac.v2.3.0.3.exe",
+    "file_size": 2722304,
+    "direct_link": "https://github.com/touhouworldcup/thprac/releases/download/v2.3.1.0/thprac.v2.3.1.0.exe",
     "downloads": {
         "GitHub": "https://github.com/touhouworldcup/thprac/releases/latest"
     }
