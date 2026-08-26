@@ -233,12 +233,12 @@ namespace TH20 {
                 int32_t* p = (int32_t*)&dmgSrc;
                 yyjson_arr_iter el_iter = yyjson_arr_iter_with(el);
                 while (yyjson_val* v = yyjson_arr_iter_next(&el_iter)) {
-                    p[el_iter.idx] = yyjson_get_int(v);
+                    p[el_iter.idx - 1] = yyjson_get_int(v);
                 }
             });
             GetJsonVectorArray(expStoneColors, {
                 if (yyjson_is_int(el)) {
-                    expStoneColors[iter.idx].push_back((size_t)unsafe_yyjson_get_uint(el));
+                    expStoneColors[iter.idx - 1].push_back((size_t)unsafe_yyjson_get_uint(el));
                 }
             });
             return true;

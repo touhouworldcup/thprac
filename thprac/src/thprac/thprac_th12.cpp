@@ -99,7 +99,7 @@ namespace TH12 {
 
                 yyjson_arr_iter el_iter = yyjson_arr_iter_with(el);
                 while (yyjson_val* v = yyjson_arr_iter_next(&el_iter)) {
-                    p[el_iter.idx] = yyjson_get_int(v);
+                    p[el_iter.idx - 1] = yyjson_get_int(v);
                 }
             });          
 
