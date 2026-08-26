@@ -287,13 +287,22 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     }
 
     // I already need all of this to have it's own scope.
-    if (gSettings.existing_game_launch_action != LAUNCH_ACTION_OPEN_LAUNCHER) {
+    if (gSettings.existing_game_launch_action != LAUNCH_ACTION_OPEN_LAUNCHER)
+        for (int originalNamePass = 1; originalNamePass >= 0; originalNamePass--)
+    {
         WIN32_FIND_DATAW find = {};
         HANDLE hFind = FindFirstFileW(L"*.exe", &find);
         if (!hFind) {
             return false;
         }
         do {
+            THGameID idFromExeName = ParseExeName(COUNTED(find.cFileName));
+
+            // fucked up ternary
+            if (originalNamePass ? idFromExeName == ID_UNKNOWN : idFromExeName != ID_UNKNOWN) {
+                continue;
+            }
+
             switch (TryRunGame(find.cFileName, nullptr, flags, gSettings.existing_game_launch_action == LAUNCH_ACTION_ALWAYS_ASK, false)) {
             case RUN_GAME_SUCCESS:
                 return 0;
