@@ -627,6 +627,7 @@ namespace TH09 {
         self->Disable();
     })
     PATCH_DY(th09_disable_mutex, 0x42d928, "EB")
+    PATCH_DY(th09_replay_save_crash_fix, 0x420C92, "08")
     HOOKSET_ENDDEF()
 }
 
