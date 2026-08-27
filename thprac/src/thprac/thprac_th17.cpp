@@ -2316,11 +2316,11 @@ namespace TH17 {
 
         ImGui::Text("%d (", tracker_info.th17.roaring_total) NEXT;
 
-        ImGui::TextColored(wolf, "%d", 10 + tracker_info.th17.roaring[0]) NEXT;
+        ImGui::TextColored(wolf, "%d", tracker_info.th17.roaring[0]) NEXT;
         ImGui::TextUnformatted("/") NEXT;
-        ImGui::TextColored(otter, "%d", 10 + tracker_info.th17.roaring[1]) NEXT;
+        ImGui::TextColored(otter, "%d", tracker_info.th17.roaring[1]) NEXT;
         ImGui::TextUnformatted("/") NEXT;
-        ImGui::TextColored(eagle, "%d", 10 + tracker_info.th17.roaring[2]) NEXT;
+        ImGui::TextColored(eagle, "%d", tracker_info.th17.roaring[2]) NEXT;
     
         ImGui::TextUnformatted(")");
 
