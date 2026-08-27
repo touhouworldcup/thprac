@@ -2230,7 +2230,7 @@ namespace TH18 {
 
                 } else {
                     // Availability & policy text
-                    char oddText[16] = "0%%";
+                    char oddText[16] = "0%";
                     bool usePercent = true;
                     const bool isStageUnlock = cd->appearance_condition && cd->appearance_condition <= 5;
 
@@ -2246,7 +2246,7 @@ namespace TH18 {
 
                         } else {  // normal random cards
                             const float spawnChance = (cd->weight + (boughtBefore ? 0 : 5)) / (float)totalWeight;
-                            snprintf(oddText, sizeof(oddText), "%.3g%%%%", spawnChance * 100.0f);
+                            snprintf(oddText, sizeof(oddText), "%.3g%%", spawnChance * 100.0f);
                         }
                     }
 
