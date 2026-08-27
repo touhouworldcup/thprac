@@ -365,7 +365,7 @@ bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game, THGameID gam
                 }
             } else if (curGameId_fromExeName != ID_UNKNOWN) {
                 auto* gameSig = CheckOngoingGameByPID(proc->UniqueProcessId, &base, &hProc);
-                if (gameSig->gameId == curGameId_fromExeName && gameSig->initFunc) {
+                if (gameSig && gameSig->gameId == curGameId_fromExeName && gameSig->initFunc) {
                     if (DoTheInjection(hProc, base, gameSig)) {
                         return true;
                     } else {
