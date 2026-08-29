@@ -306,7 +306,15 @@ bool ApplyToProcById(DWORD pid) {
 
 bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game, THGameID gameID) {
     bool hasPrompted = false;
-    auto DoTheInjection = [&](HANDLE hProc, uintptr_t base, const THGameVersion* gameSig) -> bool {
+    auto TryProcess = [&](SYSTEM_PROCESS_INFORMATION* proc, THGameID requiredGameID) -> bool {
+        uintptr_t base;
+        HANDLE hProc = NULL;
+        const THGameVersion* gameSig = CheckOngoingGameByPID(proc->UniqueProcessId, &base, &hProc);
+        defer(if (hProc) CloseHandle(hProc));
+
+        if (!gameSig || !gameSig->initFunc || (requiredGameID != ID_UNKNOWN && gameSig->gameId != requiredGameID)) {
+            return false;
+        }
         if (prompt_if_yes_game) {
             hasPrompted = true;
             int choice = log_mboxf(0, MB_YESNO, S(THPRAC_PR_APPLY), S(THPRAC_PR_ASK_ATTACH), gThGameStrs[gameSig->gameId]);
@@ -343,60 +351,27 @@ bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game, THGameID gam
         for (auto* proc = (SYSTEM_PROCESS_INFORMATION*)buf; proc;
              proc = proc->NextEntryOffset ? (SYSTEM_PROCESS_INFORMATION*)((uintptr_t)proc + proc->NextEntryOffset) : nullptr
         ) {
-            HANDLE hProc = NULL;
-            uintptr_t base;
+            THGameID exeGameId = ParseExeName(UNICODE_STRING_PARAM(proc->ImageName));
 
-            defer(if (hProc) CloseHandle(hProc));
-        
-            THGameID curGameId_fromExeName = ParseExeName(UNICODE_STRING_PARAM(proc->ImageName));
-            if (gameID != ID_UNKNOWN) {
-                if (curGameId_fromExeName == gameID) {
-                    auto* gameSig = CheckOngoingGameByPID(proc->UniqueProcessId, &base, &hProc);
-                    if (gameSig->gameId == curGameId_fromExeName && gameSig->initFunc) {
-                        if (DoTheInjection(hProc, base, gameSig)) {
-                            return true;
-                        }
-                        else {
-                            // If the user doesn't want to inject into this game,
-                            // but we found the process in this loop already, we gotta keep track of that... [1] 
-                            proc->UniqueProcessId = 0;
-                        }
-                    }
-                }
-            } else if (curGameId_fromExeName != ID_UNKNOWN) {
-                auto* gameSig = CheckOngoingGameByPID(proc->UniqueProcessId, &base, &hProc);
-                if (gameSig && gameSig->gameId == curGameId_fromExeName && gameSig->initFunc) {
-                    if (DoTheInjection(hProc, base, gameSig)) {
-                        return true;
-                    } else {
-                        // If the user doesn't want to inject into this game,
-                        // but we found the process in this loop already, we gotta keep track of that... [1] 
-                        proc->UniqueProcessId = 0;
-                    }
-                }
+            if (gameID == ID_UNKNOWN ? exeGameId == ID_UNKNOWN : exeGameId != gameID) {
+                continue;
             }
+
+            if (TryProcess(proc, exeGameId)) {
+                return true;
+            }
+            proc->UniqueProcessId = 0;
         }
 
         for (auto* proc = (SYSTEM_PROCESS_INFORMATION*)buf; proc;
             proc = proc->NextEntryOffset ? (SYSTEM_PROCESS_INFORMATION*)((uintptr_t)proc + proc->NextEntryOffset) : nullptr
             )
         {
-            // [1]... and we could allocate a dynamic array for that, but I don't like that
             if (!proc->UniqueProcessId) {
                 continue;
             }
-        
-            uintptr_t base;
-            HANDLE hProc = 0;
 
-            const THGameVersion* gameSig = CheckOngoingGameByPID(proc->UniqueProcessId, &base, &hProc);
-            defer(if (hProc) CloseHandle(hProc));
-
-            if (!gameSig || (gameID != ID_UNKNOWN && gameSig->gameId != gameID) || !gameSig->initFunc) {
-                continue;
-            }
-
-            if (DoTheInjection(hProc, base, gameSig)) {
+            if (TryProcess(proc, gameID)) {
                 return true;
             }
         }
