@@ -130,6 +130,7 @@ namespace TH06 {
     bool thRestartFlag = false;
     bool thRestartFlag_normalGame = false;
     THPracParam thPracParam {};
+    extern constinit HookCtx th06_sfx_fix;
 
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept
@@ -804,8 +805,10 @@ namespace TH06 {
                 break;
             case 3:
                 mRepStatus = true;
-                if (mParamStatus)
+                if (mParamStatus) {
                     memcpy(&thPracParam, &mRepParam, sizeof(THPracParam));
+                    th06_sfx_fix.Enable();
+                }
                 break;
             default:
                 break;
