@@ -211,8 +211,8 @@ namespace TH095 {
     }
 
     HOOKSET_DEFINE(DsStyledBonusDisplay)
-    // Clean our VM when the constructor of PhotoManager is called
-    EHOOK_DY(th095_ds_styled_bonus_display0, 0x42A934, 7, {
+    // Clean our VMs before using them
+    EHOOK_DY(th095_ds_styled_bonus_display0, 0x42C5D1, 3, {
         memset(extraBonusVms, 0x00, sizeof(extraBonusVms));
         extraBonusVmsSize = 0;
     })
