@@ -1660,7 +1660,11 @@ namespace TH12 {
         if (type > 3) { 
             type = 3;
         }
-        tracker_info.th12.ufos_dropped[type]++;
+        if (type == 1 || type == 2) {
+            tracker_info.th12.ufos_dropped[3 - type]++;
+        } else {
+            tracker_info.th12.ufos_dropped[type]++;
+        }
     })
     EHOOK_DY(th12_everlasting_bgm, 0x454960, 10, {
         int32_t retn_addr = ((int32_t*)pCtx->Esp)[0];
