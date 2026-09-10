@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\lib\ImGui\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="..\lib\ImGui\backends\imgui_impl_dx8.cpp" />
+    <ClCompile Include="..\lib\ImGui\backends\imgui_impl_dx9.cpp" />
+    <ClCompile Include="..\lib\ImGui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\lib\ImGui\imgui.cpp" />
+    <ClCompile Include="..\lib\ImGui\imgui_demo.cpp" />
+    <ClCompile Include="..\lib\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="..\lib\ImGui\imgui_tables.cpp" />
+    <ClCompile Include="..\lib\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="..\lib\ImGui\misc\freetype\imgui_freetype.cpp" />
+    <ClCompile Include="..\lib\MetroHash\metrohash128.cpp" />
+    <ClCompile Include="..\lib\yyjson\yyjson.c" />
+    <ClCompile Include="..\thprac_common\src\thprac_cfg.cpp" />
+    <ClCompile Include="..\thprac_common\src\thprac_games.cpp" />
+    <ClCompile Include="..\thprac_common\src\thprac_gui_components.cpp" />
+    <ClCompile Include="..\thprac_common\src\thprac_gui_input.cpp" />
+    <ClCompile Include="..\thprac_common\src\thprac_gui_locale.cpp" />
+    <ClCompile Include="..\thprac_common\src\thprac_hook.cpp" />
+    <ClCompile Include="..\thprac_common\src\thprac_identify.cpp" />
+    <ClCompile Include="..\thprac_common\src\thprac_licence.cpp" />
+    <ClCompile Include="..\thprac_common\src\thprac_locale_def.cpp" />
+    <ClCompile Include="..\thprac_common\src\thprac_log.cpp" />
+    <ClCompile Include="..\thprac_common\src\thprac_pe.cpp" />
+    <ClCompile Include="..\thprac_common\src\thprac_utils.cpp" />
+    <ClCompile Include="..\thprac_common\src\thprac_version.cpp" />
+    <ClCompile Include="src\thprac_alcostg.cpp" />
+    <ClCompile Include="src\thprac_dll32_init.cpp" />
+    <ClCompile Include="src\thprac_th06.cpp" />
+    <ClCompile Include="src\thprac_th07.cpp" />
+    <ClCompile Include="src\thprac_th08.cpp" />
+    <ClCompile Include="src\thprac_th09.cpp" />
+    <ClCompile Include="src\thprac_th095.cpp" />
+    <ClCompile Include="src\thprac_th10.cpp" />
+    <ClCompile Include="src\thprac_th11.cpp" />
+    <ClCompile Include="src\thprac_th12.cpp" />
+    <ClCompile Include="src\thprac_th125.cpp" />
+    <ClCompile Include="src\thprac_th128.cpp" />
+    <ClCompile Include="src\thprac_th13.cpp" />
+    <ClCompile Include="src\thprac_th14.cpp" />
+    <ClCompile Include="src\thprac_th143.cpp" />
+    <ClCompile Include="src\thprac_th15.cpp" />
+    <ClCompile Include="src\thprac_th16.cpp" />
+    <ClCompile Include="src\thprac_th165.cpp" />
+    <ClCompile Include="src\thprac_th17.cpp" />
+    <ClCompile Include="src\thprac_th18.cpp" />
+    <ClCompile Include="src\thprac_th185.cpp" />
+    <ClCompile Include="src\thprac_th185_warps0.cpp" />
+    <ClCompile Include="src\thprac_th185_warps1.cpp" />
+    <ClCompile Include="src\thprac_th185_warps2.cpp" />
+    <ClCompile Include="src\thprac_th185_warps3.cpp" />
+    <ClCompile Include="src\thprac_th185_warps4.cpp" />
+    <ClCompile Include="src\thprac_th185_warps5.cpp" />
+    <ClCompile Include="src\thprac_th185_warps6.cpp" />
+    <ClCompile Include="src\thprac_th185_warps7.cpp" />
+    <ClCompile Include="src\thprac_th185_warps8.cpp" />
+    <ClCompile Include="src\thprac_th19.cpp" />
+    <ClCompile Include="src\thprac_th19.v1.00a.cpp" />
+    <ClCompile Include="src\thprac_th19.v1.10c.cpp" />
+    <ClCompile Include="src\thprac_th20.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\thprac_common\src\thprac_cfg.h" />
+    <ClInclude Include="..\thprac_common\src\thprac_games.h" />
+    <ClInclude Include="..\thprac_common\src\thprac_hook.h" />
+    <ClInclude Include="..\thprac_common\src\thprac_pe.h" />
+    <ClInclude Include="..\thprac_common\src\utils.h" />
+    <ClInclude Include="src\thprac_th06.h" />
+    <ClInclude Include="src\thprac_th07.h" />
+    <ClInclude Include="src\thprac_th095.h" />
+    <ClInclude Include="src\thprac_th19.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="thprac32.def" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>18.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{f478e0c3-1989-4dc1-ad81-1c6a7869bc81}</ProjectGuid>
+    <RootNamespace>thprac32</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NOMINMAX;TH_X86;THPRAC_DLL;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;THPRAC32_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\lib\d3d8;$(SolutionDir)\lib\freetype\include;$(SolutionDir)\lib\ImGui\misc\freetype;$(SolutionDir)\lib\ImGui;$(SolutionDir)\lib\ImGui\backends;$(SolutionDir)\lib\MetroHash;$(SolutionDir)\lib\yyjson;$(SolutionDir)\thprac_common\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(SolutionDir)\thprac_common\src\compiler.h</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>freetype.lib;imm32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\lib\FreeType\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>thprac32.def</ModuleDefinitionFile>
+    </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NOMINMAX;TH_X86;THPRAC_DLL;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;THPRAC32_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\lib\d3d8;$(SolutionDir)\lib\freetype\include;$(SolutionDir)\lib\ImGui\misc\freetype;$(SolutionDir)\lib\ImGui;$(SolutionDir)\lib\ImGui\backends;$(SolutionDir)\lib\MetroHash;$(SolutionDir)\lib\yyjson;$(SolutionDir)\thprac_common\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(SolutionDir)\thprac_common\src\compiler.h</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>freetype.lib;imm32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\lib\FreeType\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>thprac32.def</ModuleDefinitionFile>
+    </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NOMINMAX;TH_X86;THPRAC_DLL;_CRT_SECURE_NO_WARNINGS;_DEBUG;THPRAC32_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\lib\d3d8;$(SolutionDir)\lib\freetype\include;$(SolutionDir)\lib\ImGui\misc\freetype;$(SolutionDir)\lib\ImGui;$(SolutionDir)\lib\ImGui\backends;$(SolutionDir)\lib\MetroHash;$(SolutionDir)\lib\yyjson;$(SolutionDir)\thprac_common\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(SolutionDir)\thprac_common\src\compiler.h</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>freetype.lib;imm32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\lib\FreeType\win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>thprac32.def</ModuleDefinitionFile>
+    </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NOMINMAX;TH_X86;THPRAC_DLL;_CRT_SECURE_NO_WARNINGS;NDEBUG;THPRAC32_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\lib\d3d8;$(SolutionDir)\lib\freetype\include;$(SolutionDir)\lib\ImGui\misc\freetype;$(SolutionDir)\lib\ImGui;$(SolutionDir)\lib\ImGui\backends;$(SolutionDir)\lib\MetroHash;$(SolutionDir)\lib\yyjson;$(SolutionDir)\thprac_common\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(SolutionDir)\thprac_common\src\compiler.h</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>freetype.lib;imm32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\lib\FreeType\win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>thprac32.def</ModuleDefinitionFile>
+    </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

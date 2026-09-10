@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{d08318bc-7921-41ad-8a73-2294cb70b19a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libaries">
+      <UniqueIdentifier>{8bab662e-d486-4e92-8e28-faca232acf42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{1f0b4532-c872-4b95-bcfc-f0d7ae852d06}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\thprac_inject.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_cfg.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_games.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_gui_components.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_gui_impl_dx8.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_gui_impl_dx9.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_gui_impl_win32.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_gui_input.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_gui_locale.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_hook.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_identify.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_licence.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_locale_def.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_log.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_utils.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_version.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\wininternal.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thprac_common\src\thprac_update.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac_launcher.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\thprac_main.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thprac_common\src\thprac_update.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac_launcher.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac_launcher_games.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac_launcher_links.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\imgui.cpp">
+      <Filter>Libaries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\imgui_demo.cpp">
+      <Filter>Libaries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\imgui_draw.cpp">
+      <Filter>Libaries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\misc\freetype\imgui_freetype.cpp">
+      <Filter>Libaries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\backends\imgui_impl_dx9.cpp">
+      <Filter>Libaries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\backends\imgui_impl_dx11.cpp">
+      <Filter>Libaries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\backends\imgui_impl_win32.cpp">
+      <Filter>Libaries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\imgui_tables.cpp">
+      <Filter>Libaries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\imgui_widgets.cpp">
+      <Filter>Libaries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\MetroHash\metrohash128.cpp">
+      <Filter>Libaries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\yyjson\yyjson.c">
+      <Filter>Libaries</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thprac_inject.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thprac_common\src\thprac_cfg.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thprac_common\src\thprac_gui_components.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thprac_common\src\thprac_gui_input.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thprac_common\src\thprac_gui_locale.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thprac_common\src\thprac_identify.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thprac_common\src\thprac_licence.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thprac_common\src\thprac_locale_def.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thprac_common\src\thprac_log.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thprac_common\src\thprac_utils.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thprac_common\src\thprac_version.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
