@@ -877,7 +877,7 @@
       "TH_TRACKER_SPELLS_CAPTURED": [ "收符卡数", "Spells Captured", "霊撃" ],
       "TH_TRACKER_LAST_SPELLS": [ "LSC数", "Last Spells", "ラストスペル" ],
       "TH_TRACKER_UFO_COLLECTED": [ "飞碟收集", "UFO Collected", "取得したベントラー" ],
-      "TH_TRACKER_UFO_DROPPED": [ "飞碟掉落", "UFO Dropped", "逃がしたベントラー" ],
+      "TH_TRACKER_UFO_DROPPED": [ "飞碟掉落", "UFO Dropped", "生成したベントラー" ],
       "TH_TRACKER_UFO_SUMMONED": [ "飞碟召唤", "UFO Summoned", "召喚したUFO" ],
       "TH_TRACKER_TRANCE": [ "灵界", "Trance", "トランス" ],
       "TH_TRACKER_RELEASE": [ "季节解放", "Release", "季節解放" ],
