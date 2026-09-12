@@ -700,11 +700,11 @@ public:
     void SetBaseAddr(void* addr)
     {
         mPtrToBuffer = (uint8_t*)addr;
-        VFile::SetFile((uint8_t*)(*(uint32_t*)addr), 0x99999);
+        VFile::SetFile((uint8_t*)(*(uintptr_t*)addr), 0x99999);
     }
     void SetFile(unsigned int ordinal)
     {
-        VFile::SetFile((uint8_t*)(*(uint32_t*)(mPtrToBuffer + ordinal * 4)), 0x99999);
+        VFile::SetFile((uint8_t*)(*(uintptr_t*)(mPtrToBuffer + ordinal * 4)), 0x99999);
     }
 
 private:

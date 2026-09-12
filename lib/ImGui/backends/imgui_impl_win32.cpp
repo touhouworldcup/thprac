@@ -302,7 +302,7 @@ static LRESULT CALLBACK __ThImGui_WndProc_HookFunc(HWND hWnd, UINT uMsg, WPARAM 
 
 IMGUI_IMPL_API void ImGui_ImplWin32_HookWndProc()
 {
-    __thimgui_wp_original = (WNDPROC)GetWindowLongW(g_hWnd, GWLP_WNDPROC);
+    __thimgui_wp_original = (WNDPROC)GetWindowLongPtrW(g_hWnd, GWLP_WNDPROC);
     if (__thimgui_wp_original) {
         SetWindowLongPtrW(g_hWnd, GWLP_WNDPROC, (LONG_PTR)__ThImGui_WndProc_HookFunc);
     }

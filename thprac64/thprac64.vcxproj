@@ -107,8 +107,6 @@
       <PreprocessorDefinitions>NOMINMAX;TH_X64;THPRAC_DLL;_CRT_SECURE_NO_WARNINGS;NDEBUG;THPRAC64_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>$(SolutionDir)\thprac_common\src\compiler.h</ForcedIncludeFiles>
       <AdditionalIncludeDirectories>$(SolutionDir)\lib\d3d8;$(SolutionDir)\lib\freetype\include;$(SolutionDir)\lib\ImGui\misc\freetype;$(SolutionDir)\lib\ImGui;$(SolutionDir)\lib\ImGui\backends;$(SolutionDir)\lib\MetroHash;$(SolutionDir)\lib\yyjson;$(SolutionDir)\thprac_common\src</AdditionalIncludeDirectories>
     </ClCompile>

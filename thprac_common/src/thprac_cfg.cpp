@@ -166,7 +166,7 @@ void SaveConfigFile(const wchar_t* name, void* buf, size_t len) {
     HANDLE hFile = CreateFileW(path, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
     DWORD byteRet;
-    WriteFile(hFile, buf, len, &byteRet, nullptr);
+    WriteFile(hFile, buf, (DWORD)len, &byteRet, nullptr);
     CloseHandle(hFile);
 }
 

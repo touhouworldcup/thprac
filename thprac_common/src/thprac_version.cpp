@@ -8,7 +8,7 @@ ThpracVersion ParseVersion(const char* str) {
     }
 
     unsigned char curVal = 0;
-    size_t fieldIndex = 0;
+    unsigned int fieldIndex = 0;
 
     for (const char* p = str;; ++p) {
         if (*p >= '0' && *p <= '9') {

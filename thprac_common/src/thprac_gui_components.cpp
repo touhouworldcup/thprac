@@ -701,7 +701,7 @@ namespace Gui
         float btn_width = wnd_width / count - style.ItemSpacing.x / 2;
         ImVec2 size { btn_width, (float)height };
 
-        for (size_t i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
             if (ImGui::Button(va_arg(va, const char*), size)) {
                 ret = i;
             }

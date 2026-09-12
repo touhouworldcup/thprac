@@ -305,7 +305,6 @@ unsigned rand_range(unsigned max) {
     }
 }
 
-
 void memswap(void* buf1_, void* buf2_, unsigned int len)
 {
     unsigned char* buf1 = (unsigned char*)buf1_;

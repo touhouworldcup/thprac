@@ -766,7 +766,7 @@ bool ReplaySaveParam(const wchar_t* rep_path, std::string_view param)
             SetFilePointer(repFile, 8, nullptr, FILE_BEGIN);
             WriteFile(repFile, &checksum, 4, &bytesRead, nullptr);
         } else {
-            auto paramSize = param.size() + 12;
+            auto paramSize = (int32_t)param.size() + 12;
             for (paramSize++; paramSize % 4; paramSize++)
                 ;
             auto paramBuf = malloc(paramSize);
