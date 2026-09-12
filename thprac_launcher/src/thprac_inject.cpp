@@ -3,6 +3,7 @@
 #include "thprac_inject.h"
 #include "thprac_identify.h"
 #include "thprac_log.h"
+#include "thprac_pe.h"
 #include "thprac_gui_locale.h"
 #include "thprac_utils.h"
 #include "utils.h"
@@ -136,11 +137,6 @@ bool CheckIfAnyGame() {
     return false;
 }
 
-bool LoadSelf(HANDLE hProcess) {
-    MessageBoxW(NULL, __FUNCTIONW__ L": NOT IMPLEMENTED", L"TODO", MB_ICONERROR);
-    abort();
-}
-
 bool ApplyToProcById(DWORD pid) {
     uintptr_t base;
     HANDLE hProc;
@@ -264,6 +260,12 @@ uintptr_t LoadRemoteLibrary(HANDLE hProcess, const wchar_t* libName) {
     GetExitCodeThread(hrThread, &ret);
 
     return ret;
+}
+
+extern wchar_t thprac_dll_path[];
+
+bool LoadSelf(HANDLE hProcess) {
+    return LoadRemoteLibrary(hProcess, thprac_dll_path);
 }
 
 bool TryLoadVpatch(HANDLE hProcess, const wchar_t* exeDir) {

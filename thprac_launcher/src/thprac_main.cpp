@@ -9,9 +9,9 @@
 
 #include "thprac_inject.h"
 
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-
 constinit wchar_t old_working_dir[MAX_PATH + 1] = {};
+constinit wchar_t thprac_dll_path[MAX_PATH + 1] = {};
+
 extern int Launcher(HINSTANCE hInstance, int nCmdShow);
 
 bool PrivilegeCheck() {
@@ -194,6 +194,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
             }
         }
         RtlSetCurrentDirectory_U(&exeDir);
+
+        memcpy(thprac_dll_path, exeDir.Buffer, exeDir.Length);
+        memcpy((char*)thprac_dll_path + exeDir.Length, SIZED(L"\\thprac32.dll"));
+
+        CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
     }
 
     UpdaterInit();

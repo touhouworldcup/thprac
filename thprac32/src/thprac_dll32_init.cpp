@@ -7,15 +7,23 @@
 
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 
-TH_NORETURN void thprac_init() {
-    if (const auto* ver = IdentifyExe((uint8_t*)CurrentPeb()->ImageBaseAddress, 0, nullptr)) {
-        InitConfigDir();
-        LoadSettings();
-        log_init(false, gSettings.console);
-        VEHHookInit();
-        ver->initFunc();
-        ExitThread(0);
-    } else {
-        FreeLibraryAndExitThread((HMODULE)&__ImageBase, 0);
+void thprac_init() {
+    MessageBoxW(NULL, L"But there was nothing here", L"NULL", MB_ICONINFORMATION);
+    abort();
+}
+
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+    if (fdwReason == DLL_PROCESS_ATTACH) {
+        if (const auto* ver = IdentifyExe((uint8_t*)CurrentPeb()->ImageBaseAddress, 0, nullptr)) {
+            InitConfigDir();
+            LoadSettings();
+            log_init(false, gSettings.console);
+            VEHHookInit();
+            ver->initFunc();
+            return TRUE;
+        } else {
+            return FALSE;
+        }
     }
+    return TRUE;
 }

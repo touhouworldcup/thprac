@@ -152,5 +152,8 @@
     <ClCompile Include="..\thprac_common\src\thprac_version.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\thprac_common\src\thprac_pe.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
