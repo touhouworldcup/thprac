@@ -725,8 +725,6 @@ std::string generate_header_file(vector<game_t>& games) {
 		);
 	}
 
-	// `namespace THPrac` end
-	sprintf_append(output, "}" ENDL);
 	return output;
 }
 
@@ -948,8 +946,6 @@ std::string generate_source_file(vector<game_t>& games) {
 		);
 	}
 
-	// `namespace THPrac` end
-	sprintf_append(output, "}" ENDL);
 	return output;
 }
 
@@ -1081,7 +1077,7 @@ vector<game_t> loc_json_parse(yyjson_doc* doc) {
 }
 
 #ifdef _WIN32
-
+#include <Windows.h>
 #include <optional>
 
 struct MappedFile {
@@ -1119,7 +1115,7 @@ std::optional<std::string> read_entire_text_file(HANDLE hFile, const wchar_t* fn
 	DWORD fileSize = GetFileSize(hFile, NULL);
 	ret.resize(fileSize, 0);
 
-	SIZE_T byteRet;
+	DWORD byteRet;
 	if (!ReadFile(hFile, ret.data(), fileSize, &byteRet, NULL)) {
 		fwprintf(stderr, L"Error: failed to read file %s, error = %d\n", fn, GetLastError());
 	}
@@ -1180,7 +1176,7 @@ int wmain(int argc, wchar_t** argv) {
 	}
 
 	auto games = loc_json_parse(doc);
-	SIZE_T byteRet;
+	DWORD byteRet;
 
 	{
 		auto header_new = generate_header_file(games);
