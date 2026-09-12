@@ -219,7 +219,4 @@
       <UniqueIdentifier>{68675fa8-15ca-4229-b68e-ce11b895a078}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="thprac32.def" />
-  </ItemGroup>
 </Project>

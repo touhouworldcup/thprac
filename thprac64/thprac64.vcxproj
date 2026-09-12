@@ -29,6 +29,7 @@
     <ClCompile Include="..\thprac_common\src\thprac_gui_locale.cpp" />
     <ClCompile Include="..\thprac_common\src\thprac_hook.cpp" />
     <ClCompile Include="..\thprac_common\src\thprac_identify.cpp" />
+    <ClCompile Include="..\thprac_common\src\thprac_inject.cpp" />
     <ClCompile Include="..\thprac_common\src\thprac_licence.cpp" />
     <ClCompile Include="..\thprac_common\src\thprac_locale_def.cpp" />
     <ClCompile Include="..\thprac_common\src\thprac_log.cpp" />
@@ -36,16 +37,15 @@
     <ClCompile Include="..\thprac_common\src\thprac_utils.cpp" />
     <ClCompile Include="..\thprac_common\src\thprac_version.cpp" />
     <ClCompile Include="src\thprac_dllinit_64.cpp" />
+    <ClCompile Include="src\thprac_th06nc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\thprac_common\src\thprac_cfg.h" />
     <ClInclude Include="..\thprac_common\src\thprac_games.h" />
     <ClInclude Include="..\thprac_common\src\thprac_hook.h" />
+    <ClInclude Include="..\thprac_common\src\thprac_inject.h" />
     <ClInclude Include="..\thprac_common\src\thprac_pe.h" />
     <ClInclude Include="..\thprac_common\src\utils.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="thprac64.def" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{064229ed-2ab8-4a37-a0dd-93e68b6d2cca}</ProjectGuid>
@@ -73,9 +73,6 @@
       <PreprocessorDefinitions>THPRAC_DLL;THPRAC64_EXPORTS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)lib\d3d8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <Link>
-      <ModuleDefinitionFile>thprac64.def</ModuleDefinitionFile>
-    </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

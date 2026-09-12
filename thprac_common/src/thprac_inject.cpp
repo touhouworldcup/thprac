@@ -236,7 +236,7 @@ no_game:
     return false;
 }
 
-uintptr_t LoadRemoteLibrary(HANDLE hProcess, const wchar_t* libName) {
+bool LoadRemoteLibrary(HANDLE hProcess, const wchar_t* libName) {
     size_t l_Len = t_strlen(libName) * sizeof(wchar_t);
 
     LPVOID rBuf = VirtualAllocEx(hProcess, nullptr, l_Len, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);

@@ -34,7 +34,7 @@
     <ClCompile Include="..\thprac_common\src\thprac_update.cpp" />
     <ClCompile Include="..\thprac_common\src\thprac_utils.cpp" />
     <ClCompile Include="..\thprac_common\src\thprac_version.cpp" />
-    <ClCompile Include="src\thprac_inject.cpp" />
+    <ClCompile Include="..\thprac_common\src\thprac_inject.cpp" />
     <ClCompile Include="src\thprac_launcher.cpp" />
     <ClCompile Include="src\thprac_launcher_games.cpp" />
     <ClCompile Include="src\thprac_launcher_links.cpp" />
@@ -58,7 +58,7 @@
     <ClInclude Include="..\thprac_common\src\thprac_utils.h" />
     <ClInclude Include="..\thprac_common\src\thprac_version.h" />
     <ClInclude Include="..\thprac_common\src\wininternal.h" />
-    <ClInclude Include="src\thprac_inject.h" />
+    <ClInclude Include="..\thprac_common\thprac_inject.h" />
     <ClInclude Include="src\thprac_launcher.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

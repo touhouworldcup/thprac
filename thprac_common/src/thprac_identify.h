@@ -23,7 +23,7 @@ __forceinline THInitFunc::operator bool() const {
 #if defined(TH_X64)
 
 #define TH_INIT_FUNC_32(func) THInitFunc(DummyInit)
-#define TH_INIT_FUNC_64(func) 
+#define TH_INIT_FUNC_64(func) THInitFunc(func##Real)
 
 #define TH_INIT_FUNC_32_DECL(func) 
 #define TH_INIT_FUNC_64_DECL(func) void func##Real();
@@ -75,6 +75,7 @@ enum THGameID : uint8_t {
     ID_TH04,
     ID_TH05,
     ID_TH06,
+    ID_TH06NC,
     ID_TH07,
     ID_TH075,
     ID_TH08,
@@ -144,6 +145,7 @@ extern const unsigned int gKnownGamesCount;
 enum ThVersionArrOffset {
     VER_ALCOSTG,
     VER_TH06,
+    VER_TH06NC,
     VER_TH07,
     VER_TH075,
     VER_TH08,

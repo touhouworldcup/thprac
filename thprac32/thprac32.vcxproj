@@ -82,9 +82,6 @@
     <ClInclude Include="src\thprac_th095.h" />
     <ClInclude Include="src\thprac_th19.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="thprac32.def" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{f478e0c3-1989-4dc1-ad81-1c6a7869bc81}</ProjectGuid>
     <RootNamespace>thprac32</RootNamespace>
@@ -111,9 +108,6 @@
       <PreprocessorDefinitions>THPRAC_DLL;THPRAC32_EXPORTS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)lib\d3d8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <Link>
-      <ModuleDefinitionFile>thprac32.def</ModuleDefinitionFile>
-    </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -22,5 +22,4 @@ bool WriteTHPracSig(HANDLE hProc, uintptr_t base);
 bool LoadSelf(HANDLE hProcess);
 bool ApplyToProcById(DWORD pid);
 bool RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags = 0xFFFFFFFF);
-
-
+bool LoadRemoteLibrary(HANDLE hProcess, const wchar_t* libName);
