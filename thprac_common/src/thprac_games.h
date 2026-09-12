@@ -211,8 +211,8 @@ enum game_gui_impl {
 
 void SetDpadHook(uintptr_t addr, size_t instr_len);
 
-void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
-    Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3 = 0,
+void GameGuiInit(game_gui_impl impl, uintptr_t device, uintptr_t hwnd_addr,
+    Gui::ingame_input_gen_t input_gen, uintptr_t reg1, uintptr_t reg2, uintptr_t reg3 = 0,
     float scale = 1.0f);
 extern int GameGuiProgress;
 void GameGuiBegin(game_gui_impl impl, bool game_nav = true);

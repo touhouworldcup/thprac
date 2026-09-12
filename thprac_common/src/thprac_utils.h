@@ -31,10 +31,10 @@
 struct MappedFile {
     HANDLE fileMap = nullptr;
     HANDLE hFile = INVALID_HANDLE_VALUE;
-    size_t fileSize = 0;
+    DWORD fileSize = 0;
     void* fileMapView = nullptr;
 
-    MappedFile(const wchar_t* fn, size_t max_size = -1)
+    MappedFile(const wchar_t* fn, DWORD max_size = MAXDWORD)
     {
         hFile = CreateFileW(fn, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
         if (hFile == INVALID_HANDLE_VALUE) {

@@ -1,37 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\lib\ImGui\imgui.cpp">
-      <Filter>Libraries</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lib\ImGui\imgui_demo.cpp">
-      <Filter>Libraries</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lib\ImGui\imgui_draw.cpp">
-      <Filter>Libraries</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lib\ImGui\misc\freetype\imgui_freetype.cpp">
-      <Filter>Libraries</Filter>
-    </ClCompile>
     <ClCompile Include="..\lib\ImGui\backends\imgui_impl_dx8.cpp">
-      <Filter>Libraries</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lib\ImGui\backends\imgui_impl_dx9.cpp">
-      <Filter>Libraries</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lib\ImGui\backends\imgui_impl_dx11.cpp">
-      <Filter>Libraries</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lib\ImGui\backends\imgui_impl_win32.cpp">
-      <Filter>Libraries</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lib\ImGui\imgui_tables.cpp">
-      <Filter>Libraries</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lib\ImGui\imgui_widgets.cpp">
-      <Filter>Libraries</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lib\MetroHash\metrohash128.cpp">
       <Filter>Libraries</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac_alcostg.cpp">
@@ -136,9 +106,6 @@
     <ClCompile Include="src\thprac_th185_warps8.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\lib\yyjson\yyjson.c">
-      <Filter>Libraries</Filter>
-    </ClCompile>
     <ClCompile Include="..\thprac_common\src\thprac_cfg.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -177,6 +144,39 @@
     </ClCompile>
     <ClCompile Include="..\thprac_common\src\thprac_version.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\imgui.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\imgui_demo.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\imgui_draw.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\misc\freetype\imgui_freetype.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\backends\imgui_impl_dx9.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\backends\imgui_impl_dx11.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\backends\imgui_impl_win32.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\imgui_tables.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\ImGui\imgui_widgets.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\MetroHash\metrohash128.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\yyjson\yyjson.c">
+      <Filter>Libraries</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -30,14 +30,14 @@ namespace Gui
 				return true;
 		return false;
 	}
-	__forceinline bool __GI_Gen1_Init(int reg1, int reg2, int reg3)
+	__forceinline bool __GI_Gen1_Init(uintptr_t reg1, uintptr_t reg2, uintptr_t reg3)
 	{
 		__gi_gen1_r1 = (int16_t*)reg1;
 		__gi_gen1_r2 = (int16_t*)reg2;
 		__gi_gen1_r3 = (int16_t*)reg3;
 		return (!reg1 || !reg2 || !reg3);
 	}
-	__forceinline bool __GI_Gen1_Get(int key)
+	__forceinline bool __GI_Gen1_Get(int16_t key)
 	{
 		switch (key)
 		{
@@ -73,7 +73,7 @@ namespace Gui
 		if (*__gi_gen2_r1 & mask) return true;
 		return false;
 	}
-	__forceinline bool __GI_Gen2_Init(int reg1, int reg2, [[maybe_unused]] int reg3)
+	__forceinline bool __GI_Gen2_Init(uintptr_t reg1, uintptr_t reg2, [[maybe_unused]] uintptr_t reg3)
 	{
 		__gi_gen2_r1 = (int32_t*)reg1;
 		__gi_gen2_r2 = (int8_t*)reg2;
@@ -106,7 +106,7 @@ namespace Gui
 
 	// API
 	static ingame_input_gen_t __gi_gen = INGAGME_INPUT_NONE;
-	bool InGameInputInit(ingame_input_gen_t gen, int reg1, int reg2, int reg3)
+	bool InGameInputInit(ingame_input_gen_t gen, uintptr_t reg1, uintptr_t reg2, uintptr_t reg3)
 	{
 		__gi_gen = gen;
 		switch (gen)
@@ -296,7 +296,7 @@ namespace Gui
         } else {
             strcpy(p, S(THPRAC_HOTKEY_UNASSIGNED));
         }
-        return p - chord_name;
+        return (unsigned int)(p - chord_name);
     }
 
 	void ChordEditDropdown(const char* label, int& chord) {
@@ -304,7 +304,7 @@ namespace Gui
         HotkeyChordToLabel(chord, chord_name);
 
         if (ImGui::BeginCombo(label, chord_name, ImGuiComboFlags_HeightLargest)) {
-            for (size_t i = 0; i < ChordKey_KEYBOARD_COUNT; i++) {
+            for (int i = 0; i < ChordKey_KEYBOARD_COUNT; i++) {
                 ImGui::PushID(i);
                 bool ticked = (chord >> i) & 1;
                 if (ImGui::Checkbox(ChordKeyStrings[i], &ticked)) {

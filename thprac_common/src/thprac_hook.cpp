@@ -129,16 +129,16 @@ LONG NTAPI VEHHandler(EXCEPTION_POINTERS* ExceptionInfo)
     if (ExceptionInfo->ExceptionRecord->ExceptionCode != EXCEPTION_BREAKPOINT) {
         return EXCEPTION_CONTINUE_SEARCH;
     }
-    auto hook = vehHooks.find(ExceptionInfo->ContextRecord->Eip);
+    auto hook = vehHooks.find(ExceptionInfo->ContextRecord->Xip);
     if (hook == vehHooks.end()) {
         return EXCEPTION_CONTINUE_SEARCH;
     }
 
-    auto EipBak = ExceptionInfo->ContextRecord->Eip;
+    auto XipBak = ExceptionInfo->ContextRecord->Xip;
     hook->second->callback(ExceptionInfo->ContextRecord, hook->second);
 
-    if (ExceptionInfo->ContextRecord->Eip == EipBak) {
-        ExceptionInfo->ContextRecord->Eip = (DWORD)hook->second->data.hook.codecave;
+    if (ExceptionInfo->ContextRecord->Xip == XipBak) {
+        ExceptionInfo->ContextRecord->Xip = (UINT_PTR)hook->second->data.hook.codecave;
     }
     return EXCEPTION_CONTINUE_EXECUTION;
 }

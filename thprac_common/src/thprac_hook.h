@@ -10,10 +10,27 @@
 #include <bit>
 #include "utils.h"
 
+// TODO: define our own CONTEXT struct instead?
 #if defined(TH_X64)
-#define XSP Rsp
+#define Xax Rax
+#define Xcx Rcx
+#define Xdx Rdx
+#define Xbx Rbx
+#define Xsp Rsp
+#define Xbp Rbp
+#define Xsi Rsi
+#define Xdi Rdi
+#define Xip Rip
 #elif defined(TH_X86)
-#define XSP Esp
+#define Xax Eax
+#define Xcx Ecx
+#define Xdx Edx
+#define Xbx Ebx
+#define Xsp Esp
+#define Xbp Ebp
+#define Xsi Esi
+#define Xdi Edi
+#define Xip Eip
 #endif
 
 extern uintptr_t ingame_image_base;
@@ -24,14 +41,14 @@ typedef void __fastcall Callback(PCONTEXT pCtx, HookCtx* self);
 
 inline void PushHelper(CONTEXT* pCtx, uintptr_t value)
 {
-    pCtx->XSP -= sizeof(uintptr_t);
-    *(uintptr_t*)pCtx->XSP = value;
+    pCtx->Xsp -= sizeof(uintptr_t);
+    *(uintptr_t*)pCtx->Xsp = value;
 }
 inline uintptr_t PopHelper(CONTEXT* pCtx)
 {
     // The compiler will optimize this to just use eax
-    auto ret = *(uintptr_t*)pCtx->XSP;
-    pCtx->XSP += sizeof(uintptr_t);
+    auto ret = *(uintptr_t*)pCtx->Xsp;
+    pCtx->Xsp += sizeof(uintptr_t);
     return ret;
 }
 

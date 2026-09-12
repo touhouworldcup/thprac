@@ -15,10 +15,10 @@ bool console_open = false;
 void log_print(const char* msg, size_t len) {
     DWORD byteRet;
     if (console_open) {
-        WriteFile(GetStdHandle(STD_OUTPUT_HANDLE), msg, len, &byteRet, nullptr);
+        WriteFile(GetStdHandle(STD_OUTPUT_HANDLE), msg, (DWORD)len, &byteRet, nullptr);
     }
     if (hLog != INVALID_HANDLE_VALUE) {
-        WriteFile(hLog, msg, len, &byteRet, nullptr);
+        WriteFile(hLog, msg, (DWORD)len, &byteRet, nullptr);
     }
 }
 

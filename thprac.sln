@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "thprac_launcher", "thprac_l
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "thprac32", "thprac32\thprac32.vcxproj", "{F478E0C3-1989-4DC1-AD81-1C6A7869BC81}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "thprac64", "thprac64\thprac64.vcxproj", "{064229ED-2AB8-4A37-A0DD-93E68B6D2CCA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -21,6 +23,10 @@ Global
 		{F478E0C3-1989-4DC1-AD81-1C6A7869BC81}.Debug|x86.Build.0 = Debug|Win32
 		{F478E0C3-1989-4DC1-AD81-1C6A7869BC81}.Release|x86.ActiveCfg = Release|Win32
 		{F478E0C3-1989-4DC1-AD81-1C6A7869BC81}.Release|x86.Build.0 = Release|Win32
+		{064229ED-2AB8-4A37-A0DD-93E68B6D2CCA}.Debug|x86.ActiveCfg = Debug|x64
+		{064229ED-2AB8-4A37-A0DD-93E68B6D2CCA}.Debug|x86.Build.0 = Debug|x64
+		{064229ED-2AB8-4A37-A0DD-93E68B6D2CCA}.Release|x86.ActiveCfg = Release|x64
+		{064229ED-2AB8-4A37-A0DD-93E68B6D2CCA}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

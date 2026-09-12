@@ -103,8 +103,8 @@ bool GuiHotKeyChord::operator()(bool use_widget)
 
 
 int g_gameGuiImpl = -1;
-DWORD* g_gameGuiDevice = nullptr;
-DWORD* g_gameGuiHwnd = nullptr;
+void** g_gameGuiDevice = nullptr;
+HWND* g_gameGuiHwnd = nullptr;
 HIMC g_gameIMCCtx = 0;
 
 HANDLE thcrap_dll;
@@ -161,12 +161,12 @@ HRESULT IDirectInputDevice8_GetDeviceState_Hook(IDirectInputDevice8A* This, DWOR
 
 void __fastcall IDirectInputDevice8_GetDeviceState_VEHHook(PCONTEXT pCtx, [[maybe_unused]] HookCtx* self)
 {
-    pCtx->Eax = IDirectInputDevice8_GetDeviceState_Hook(
-        GetMemContent<IDirectInputDevice8A*>(pCtx->Esp + 0),
-        GetMemContent<DWORD>(pCtx->Esp + 4),
-        GetMemContent<void*>(pCtx->Esp + 8));
-    pCtx->Esp += 12;
-    pCtx->Eip += self->data.hook.instr_len;
+    pCtx->Xax = IDirectInputDevice8_GetDeviceState_Hook(
+        GetMemContent<IDirectInputDevice8A*>(pCtx->Xsp + 0),
+        GetMemContent<DWORD>(pCtx->Xsp + 4),
+        GetMemContent<void*>(pCtx->Xsp + 8));
+    pCtx->Xsp += 12;
+    pCtx->Xip += self->data.hook.instr_len;
 }
 
 decltype(joyGetPosEx)* orig_joyGetPosEx = nullptr;
@@ -252,7 +252,7 @@ void iat_hook_joyGetPosEx()
 
                         DWORD oldProt;
                         VirtualProtect(&pIT->u1.Function, 4, PAGE_READWRITE, &oldProt);
-                        pIT->u1.Function = (DWORD)hook_joyGetPosEx;
+                        pIT->u1.Function = (UINT_PTR)hook_joyGetPosEx;
                         VirtualProtect(&pIT->u1.Function, 4, oldProt, &oldProt);
                     }
                 }
@@ -275,8 +275,8 @@ void SetDpadHook(uintptr_t addr, size_t instr_len) {
     iat_hook_joyGetPosEx();
 }
 
-void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
-    Gui::ingame_input_gen_t input_gen, int reg1, int reg2, int reg3,
+void GameGuiInit(game_gui_impl impl, uintptr_t device, uintptr_t hwnd_addr,
+    Gui::ingame_input_gen_t input_gen, uintptr_t reg1, uintptr_t reg2, uintptr_t reg3,
     float scale)
 {
     thcrap_dll = GetModuleHandleW(L"thcrap.dll");
@@ -293,25 +293,27 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     ImGui::CreateContext();
 
     g_gameGuiImpl = impl;
-    g_gameGuiDevice = (DWORD*)device;
-    g_gameGuiHwnd = (DWORD*)hwnd_addr;
-    g_gameIMCCtx = ImmAssociateContext(*(HWND*)hwnd_addr, 0);
+    g_gameGuiDevice = (void**)device;
+    g_gameGuiHwnd = (HWND*)hwnd_addr;
+    g_gameIMCCtx = ImmAssociateContext(*g_gameGuiHwnd, 0);
 
     switch (impl) {
+#ifdef TH_X86
     case IMPL_WIN32_DX8:
         // Impl
         ImGui_ImplDX8_Init((IDirect3DDevice8*)*g_gameGuiDevice);
-        ImGui_ImplWin32_Init((HWND)*g_gameGuiHwnd);
+        ImGui_ImplWin32_Init(*g_gameGuiHwnd);
         ImGui_ImplDX8_AdjustDispSize();
 
         // Hooks
         ImGui_ImplDX8_HookReset();
         ImGui_ImplWin32_HookWndProc();
         break;
+#endif
     case IMPL_WIN32_DX9:
         // Impl
         ImGui_ImplDX9_Init((IDirect3DDevice9*)*g_gameGuiDevice);
-        ImGui_ImplWin32_Init((HWND)*g_gameGuiHwnd);
+        ImGui_ImplWin32_Init(*g_gameGuiHwnd);
         ImGui_ImplDX9_AdjustDispSize();
 
         // Hooks
@@ -328,17 +330,17 @@ void GameGuiInit(game_gui_impl impl, int device, int hwnd_addr,
     ImGui::GetStyle().MouseCursorScale = 1.0f;
     Gui::LocaleCreateFont(16.0f * scale);
 
-    if (gSettings.resizable_window) {
-        RECT wndRect;
-        GetClientRect(*(HWND*)hwnd_addr, &wndRect);
-        auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
-        auto captionSize = GetSystemMetrics(SM_CYCAPTION);
-        auto longPtr = GetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE);
-        SetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE, longPtr | WS_SIZEBOX);
-        SetWindowPos(*(HWND*)hwnd_addr, HWND_NOTOPMOST,
-            0, 0, wndRect.right + frameSize, wndRect.bottom + frameSize + captionSize,
-            SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
-    }
+    //if (gSettings.resizable_window) {
+    //    RECT wndRect;
+    //    GetClientRect(*(HWND*)hwnd_addr, &wndRect);
+    //    auto frameSize = GetSystemMetrics(SM_CXSIZEFRAME) * 2;
+    //    auto captionSize = GetSystemMetrics(SM_CYCAPTION);
+    //    auto longPtr = GetWindowLongW(*g_gameGuiHwnd, GWL_STYLE);
+    //    SetWindowLongW(*(HWND*)hwnd_addr, GWL_STYLE, longPtr | WS_SIZEBOX);
+    //    SetWindowPos(*(HWND*)hwnd_addr, HWND_NOTOPMOST,
+    //        0, 0, wndRect.right + frameSize, wndRect.bottom + frameSize + captionSize,
+    //        SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    //}
 
     SetTheme(gSettings.theme);
 
@@ -363,12 +365,14 @@ void GameGuiBegin(game_gui_impl impl, bool game_nav)
     }
 
     switch (impl) {
+#ifdef TH_X86
     case IMPL_WIN32_DX8:
         // New frame
         ImGui_ImplDX8_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ::ImGui::NewFrame();
         break;
+#endif
     case IMPL_WIN32_DX9:
         // New frame
         ImGui_ImplDX9_NewFrame();
@@ -419,12 +423,14 @@ void GameGuiRender(game_gui_impl impl)
         return;
     ImGui_ImplWin32_Check((void*)*g_gameGuiHwnd);
     switch (impl) {
+#ifdef TH_X86
     case IMPL_WIN32_DX8:
         // End frame and render
         ImGui_ImplDX8_Check((IDirect3DDevice8*)*g_gameGuiDevice);
         ::ImGui::Render();
         ImGui_ImplDX8_RenderDrawData(::ImGui::GetDrawData());
         break;
+#endif
     case IMPL_WIN32_DX9:
         // End frame and render
         ImGui_ImplDX9_Check((IDirect3DDevice9*)*g_gameGuiDevice);
@@ -720,7 +726,7 @@ bool ReplaySaveParam(const wchar_t* rep_path, std::string_view param)
     DWORD repMagic = 0, bytesRead = 0;
     if ((SetFilePointer(repFile, 0, nullptr, FILE_BEGIN) != INVALID_SET_FILE_POINTER) && (ReadFile(repFile, &repMagic, sizeof(LONG), &bytesRead, nullptr))) {
         if (repMagic == 'PR6T' || repMagic == 'PR7T') {
-            auto paramSize = param.size();
+            auto paramSize = (int32_t)param.size();
             for (paramSize++; paramSize % 4; paramSize++)
                 ;
             auto paramBuf = malloc(paramSize + 8);
@@ -729,8 +735,8 @@ bool ReplaySaveParam(const wchar_t* rep_path, std::string_view param)
             defer(free(paramBuf));
             memset(paramBuf, 0, paramSize);
             memcpy(paramBuf, param.data(), param.size());
-            *(int32_t*)((int)paramBuf + paramSize) = paramSize;
-            *(int32_t*)((int)paramBuf + paramSize + 4) = 'CARP';
+            *(int32_t*)((uintptr_t)paramBuf + paramSize) = paramSize;
+            *(int32_t*)((uintptr_t)paramBuf + paramSize + 4) = 'CARP';
 
             SetFilePointer(repFile, 0, nullptr, FILE_END);
             WriteFile(repFile, paramBuf, paramSize + 8, &bytesRead, nullptr);
@@ -768,10 +774,10 @@ bool ReplaySaveParam(const wchar_t* rep_path, std::string_view param)
                 return false;
             defer(free(paramBuf));
             memset(paramBuf, 0, paramSize);
-            *(int32_t*)((int)paramBuf) = 'RESU';
-            *(int32_t*)((int)paramBuf + 4) = paramSize;
-            *(int32_t*)((int)paramBuf + 8) = 'CARP';
-            memcpy((void*)((int)paramBuf + 12), param.data(), param.size());
+            *(int32_t*)((uintptr_t)paramBuf) = 'RESU';
+            *(int32_t*)((uintptr_t)paramBuf + 4) = paramSize;
+            *(int32_t*)((uintptr_t)paramBuf + 8) = 'CARP';
+            memcpy((void*)((uintptr_t)paramBuf + 12), param.data(), param.size());
 
             SetFilePointer(repFile, 0, nullptr, FILE_END);
             WriteFile(repFile, paramBuf, paramSize, &bytesRead, nullptr);
