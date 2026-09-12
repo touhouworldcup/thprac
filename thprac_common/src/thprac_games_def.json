@@ -728,6 +728,10 @@
       "TH_P3": [ "P3", "P3", "P3" ],
       "TH_P4": [ "P4", "P4", "P4" ],
       "TH_P5": [ "P5", "P5", "P5" ],
+      "TH_PH_BLUE": [ "蓝阶段", "Blue Phase", "青段階" ],
+      "TH_PH_GREEN": [ "绿阶段", "Green Phase", "緑段階" ],
+      "TH_PH_RED": [ "红阶段", "Red Phase", "赤段階" ],
+      "TH_PH_YELLOW": [ "黄阶段", "Yellow Phase", "黄段階" ],
       "TH_PHASE": [ "阶段", "Phase", "段階" ],
       "TH_MID_STAGE": [ "道中Boss", "Mid Boss", "道中ボス" ],
       "TH_END_STAGE": [ "关底Boss", "End Boss", "ボス" ],
@@ -4787,6 +4791,11 @@
         "TH11_MA",
         "TH11_MB",
         "TH11_MC"
+      ],
+      "TH11_SPELL_PHASE_EXTRA_TIMEOUT": [
+        "TH_PH_BLUE",
+        "TH_PH_YELLOW",
+        "TH_PH_RED"
       ]
     }
   },
@@ -7450,9 +7459,6 @@
       "TH15_ILT_6": [ "章节九", "Chapter 9", "チャプター 9" ],
       "TH15_HECATIA_RAGE": [ "赫卡提亚发狂", "Hecatia Rage", "ヘカーティア発狂" ],
       "TH15_JUNKO_RAGE": [ "纯狐发狂", "Junko Rage", "純狐発狂" ],
-      "TH15_PH_BLUE": [ "蓝阶段", "Blue Phase", "青段階" ],
-      "TH15_PH_GREEN": [ "绿阶段", "Green Phase", "緑段階" ],
-      "TH15_PH_RED": [ "红阶段", "Red Phase", "赤段階" ],
       "TH15_REISEN_SHIELD": [ "护盾层数", "Shields", "ボムシールド" ]
     },
 
@@ -7940,9 +7946,9 @@
         "TH15_JUNKO_RAGE"
       ],
       "TH15_SPELL_PHASE_EXTRA_TIMEOUT": [
-        "TH15_PH_BLUE",
-        "TH15_PH_GREEN",
-        "TH15_PH_RED"
+        "TH_PH_BLUE",
+        "TH_PH_GREEN",
+        "TH_PH_RED"
       ]
     }
   },

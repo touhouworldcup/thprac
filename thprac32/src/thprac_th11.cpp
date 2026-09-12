@@ -235,12 +235,14 @@ namespace TH11 {
         const th_glossary_t* SpellPhase()
         {
             auto section = CalcSection();
-            if (section == TH11_ST6_BOSS9) {
+
+            if (section == TH11_ST6_BOSS9)
                 return TH11_SPELL_5PHASE;
-            }
-            if (section == TH11_ST7_END_S10) {
+            else if (section == TH11_ST7_END_S9)
+                return TH11_SPELL_PHASE_EXTRA_TIMEOUT;
+            else if (section == TH11_ST7_END_S10)
                 return TH_SPELL_PHASE2;
-            }
+
             return nullptr;
         }
         void PracticeMenu()
@@ -1750,19 +1752,72 @@ namespace TH11 {
             ecl << pair{0x44a0, 60} << pair{0x44b0, 60};
             ECLVoid(ecl, 0xc610, 0xc648);
             break;
-        case TH11::TH11_ST7_END_S9:
-            ECLJump(ecl, 0x4c00, 0x4e5c);
+
+        case TH11::TH11_ST7_END_S9: { // Philosophy of a Hated Person
+            constexpr unsigned int st7PostMaple = 0x4c00;
+            constexpr unsigned int st7BossCreateCall = 0x4e5c;
+            constexpr unsigned int st7bsDialogWait = 0x568;
+            constexpr unsigned int st7bsNon1MoveLimit = 0x5b8;
+            constexpr unsigned int st7bsNonspellOrd = 0x65c;
+
+            constexpr unsigned int st7bsNon8InterruptOrd = 0x42b4;
+            constexpr unsigned int st7bsNon8ItemDrop = 0x441c;
+            constexpr unsigned int st7bsNon8ItemDropSnd = 0x4454;
+            constexpr unsigned int st7bsNon8PostWaitNop = 0x44a0;
+            constexpr unsigned int st7bsNon8PostWaitMoveLimit = 0x44b0;
+            constexpr unsigned int st7bsNon8Attacks = 0x44d0;
+
+            constexpr unsigned int st7bsSpell9ItemDrop = 0xd9e8;
+            constexpr unsigned int st7bsSpell9ItemDropSnd = 0xda20;
+            constexpr unsigned int st7bsSpell9StartWait = 0xda4c;
+            constexpr unsigned int st7bsSpell9InterruptTime = 0xd898 + 0x18;
+
+            constexpr unsigned int st7bsSpell9Phase1Snd = 0xdabc;
+            constexpr unsigned int st7bsSpell9Phase1InitialBubbles = 0xdc40;
+            constexpr unsigned int st7bsSpell9Phase1Atk = 0xdcd0;
+            constexpr unsigned int st7bsSpell9Phase1PreFogWait = 0xdcf4;
+            constexpr unsigned int st7bsSpell9Phase1PostFog = 0xdd20;
+
+            ECLJump(ecl, st7PostMaple, st7BossCreateCall);
             ecl.SetFile(3);
-            ecl << pair{0x65c, (int8_t)0x38};
-            ECLTimeFix(ecl, 0x568, -60);
-            ECLVoid(ecl, 0x5b8);
-            ECLVoid(ecl, 0x441c, 0x4454);
-            ECLSetHealth(ecl, 0x44d0, 2000);
-            ecl << pair{0x44a0, 60} << pair{0x44b0, 60};
-            ECLVoid(ecl, 0xc610, 0xc648);
-            ecl << pair{0x42b4, 0x39};
-            ECLVoid(ecl, 0xd9e8, 0xda20, 0xda4c);
+            ECLTimeFix(ecl, st7bsDialogWait, -60);
+            ECLVoid(ecl, st7bsNon1MoveLimit);
+            ecl << pair{ st7bsNonspellOrd, (int8_t)0x38 }; // non 8
+
+            ecl << pair{ st7bsNon8InterruptOrd, 0x39 }; // spell 9
+            ECLVoid(ecl, st7bsNon8ItemDrop, st7bsNon8ItemDropSnd);
+            ecl << pair{ st7bsNon8PostWaitNop, 60 } // 1s sooner
+                << pair{ st7bsNon8PostWaitMoveLimit, 60 };
+            ECLSetHealth(ecl, st7bsNon8Attacks, 2000); // trigger dmg interrupt
+
+            ECLVoid(ecl, st7bsSpell9ItemDrop, st7bsSpell9ItemDropSnd, st7bsSpell9StartWait);
+
+            if (thPracParam.phase) {
+                ECLVoid(ecl, st7bsSpell9Phase1Snd, st7bsSpell9Phase1InitialBubbles);
+                ECLVoid(ecl, st7bsSpell9Phase1Atk, st7bsSpell9Phase1PreFogWait);
+            }
+
+            switch (thPracParam.phase) {
+            case 1: {
+                constexpr unsigned int st7bsSpell9Phase2Start = 0xde5c;
+
+                ecl << pair{ st7bsSpell9InterruptTime, 2700 }; // 3540f - 840f of waits
+                ECLJump(ecl, st7bsSpell9Phase1PostFog, st7bsSpell9Phase2Start);
+                break;
+            }
+            case 2: {
+                constexpr unsigned int st7bsSpell9Phase3Start = 0xe0b4;
+
+                ecl << pair{ st7bsSpell9InterruptTime, 1220 }; // 3540f - 2320f of waits
+                ECLJump(ecl, st7bsSpell9Phase1PostFog, st7bsSpell9Phase3Start);
+                break;
+            }
+            default:
+                break;
+            }
             break;
+        }
+
         case TH11::TH11_ST7_END_S10:
             ECLJump(ecl, 0x4c00, 0x4e5c);
             ecl.SetFile(3);
@@ -1810,7 +1865,6 @@ namespace TH11 {
         } else {
             THPatch(ecl, (th_sections_t)section);
         }
-
     }
 
     bool THBGMTest()

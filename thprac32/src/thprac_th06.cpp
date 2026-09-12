@@ -2114,7 +2114,7 @@ namespace TH06 {
 					mov dword ptr [69d718],eax
 				*/
             GAME_MANAGER->livesRemaining = (int8_t)thPracParam.life;
-            GAME_MANAGER->bombsRemaining = (int8_t)thPracParam.life;
+            GAME_MANAGER->bombsRemaining = (int8_t)thPracParam.bomb;
             GAME_MANAGER->currentPower = (int16_t)thPracParam.power;
             GAME_MANAGER->guiScore = GAME_MANAGER->score = (int32_t)thPracParam.score;
             GAME_MANAGER->grazeInStage = GAME_MANAGER->grazeInTotal = (int32_t)thPracParam.graze;
