@@ -1,5 +1,3 @@
-#include <thprac_utils.h>
-#include <d3d8.h>
 #include "thprac_th06.h"
 
 namespace TH06 {

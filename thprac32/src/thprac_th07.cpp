@@ -1,7 +1,5 @@
 #include "thprac_th07.h"
 
-
-
 namespace TH07 {
     using std::pair;
 

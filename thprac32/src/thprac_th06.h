@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdint.h>
-#include "thprac_games.h"
-
+#include <thprac_games.h>
+#include <thprac_utils.h>
+#include "thprac_games_d3d8.h"
 
 namespace TH06 {
 

@@ -178,6 +178,9 @@
     <ClCompile Include="..\lib\yyjson\yyjson.c">
       <Filter>Libraries</Filter>
     </ClCompile>
+    <ClCompile Include="src\thprac_games_d3d8.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\thprac_th06.h">
@@ -206,6 +209,9 @@
     </ClInclude>
     <ClInclude Include="..\thprac_common\src\utils.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thprac_games_d3d8.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

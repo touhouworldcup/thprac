@@ -38,6 +38,7 @@
     <ClCompile Include="..\thprac_common\src\thprac_version.cpp" />
     <ClCompile Include="src\thprac_alcostg.cpp" />
     <ClCompile Include="src\thprac_dll32_init.cpp" />
+    <ClCompile Include="src\thprac_games_d3d8.cpp" />
     <ClCompile Include="src\thprac_th06.cpp" />
     <ClCompile Include="src\thprac_th07.cpp" />
     <ClCompile Include="src\thprac_th08.cpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="..\thprac_common\src\thprac_hook.h" />
     <ClInclude Include="..\thprac_common\src\thprac_pe.h" />
     <ClInclude Include="..\thprac_common\src\utils.h" />
+    <ClInclude Include="src\thprac_games_d3d8.h" />
     <ClInclude Include="src\thprac_th06.h" />
     <ClInclude Include="src\thprac_th07.h" />
     <ClInclude Include="src\thprac_th095.h" />
