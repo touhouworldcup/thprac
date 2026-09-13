@@ -206,14 +206,15 @@ struct ThList {
 
 enum game_gui_impl {
     IMPL_WIN32_DX8,
-    IMPL_WIN32_DX9
+    IMPL_WIN32_DX9,
+    IMPL_WIN32_DX11,
 };
 
 void SetDpadHook(uintptr_t addr, size_t instr_len);
 
 void GameGuiInit(game_gui_impl impl, uintptr_t device, uintptr_t hwnd_addr,
     Gui::ingame_input_gen_t input_gen, uintptr_t reg1, uintptr_t reg2, uintptr_t reg3 = 0,
-    float scale = 1.0f);
+    float scale = 1.0f, uintptr_t d3d11_device_context);
 extern int GameGuiProgress;
 void GameGuiBegin(game_gui_impl impl, bool game_nav = true);
 void GameGuiEnd(bool draw_cursor = false);

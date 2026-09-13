@@ -765,6 +765,7 @@ const char* gThGameStrs[] = {
     "th04",
     "th05",
     "th06",
+    "th06nc",
     "th07",
     "th075",
     "th08",

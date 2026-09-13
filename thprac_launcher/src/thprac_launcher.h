@@ -161,7 +161,7 @@ struct LinkSet {
 };
 
 constexpr unsigned int PC98_GAMES_LEN = 5;
-constexpr unsigned int MAIN_GAMES_LEN = 15;
+constexpr unsigned int MAIN_GAMES_LEN = 16;
 constexpr unsigned int SPINOFF_SHMUP_LEN = 7;
 constexpr unsigned int SPINOFF_OTHER_LEN = 7;
 constexpr unsigned int ALL_GAMES_LEN = PC98_GAMES_LEN + MAIN_GAMES_LEN + SPINOFF_SHMUP_LEN + SPINOFF_OTHER_LEN;

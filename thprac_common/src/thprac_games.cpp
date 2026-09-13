@@ -1,3 +1,8 @@
+#ifdef __INTELLISENSE__
+#define TH_X86
+#define TH_X64
+#endif
+
 #include "wininternal.h"
 
 #include "thprac_games.h"
@@ -5,12 +10,20 @@
 #include "thprac_utils.h"
 #include "thprac_pe.h"
 
-#include <d3d8.h>
-#include <d3d9.h>
-
-#include <imgui_impl_dx8.h>
-#include <imgui_impl_dx9.h>
 #include <imgui_impl_win32.h>
+
+#include <d3d9.h>
+#include <imgui_impl_dx9.h>
+
+#ifdef TH_X86
+#include <imgui_impl_dx8.h>
+#include <d3d8.h>
+#endif
+
+#ifdef TH_X64
+#include <d3d11.h>
+#include <imgui_impl_dx11.h>
+#endif
 
 #include <metrohash128.h>
 #include <dinput.h>
@@ -277,7 +290,7 @@ void SetDpadHook(uintptr_t addr, size_t instr_len) {
 
 void GameGuiInit(game_gui_impl impl, uintptr_t device, uintptr_t hwnd_addr,
     Gui::ingame_input_gen_t input_gen, uintptr_t reg1, uintptr_t reg2, uintptr_t reg3,
-    float scale)
+    float scale, uintptr_t d3d11_device_context)
 {
     thcrap_dll = GetModuleHandleW(L"thcrap.dll");
     if (!thcrap_dll) {
@@ -320,6 +333,13 @@ void GameGuiInit(game_gui_impl impl, uintptr_t device, uintptr_t hwnd_addr,
         ImGui_ImplDX9_HookReset();
         ImGui_ImplWin32_HookWndProc();
         break;
+#ifdef TH_X64
+    case IMPL_WIN32_DX11:
+        ImGui_ImplDX11_Init((ID3D11Device*)*g_gameGuiDevice, *(ID3D11DeviceContext**)d3d11_device_context);
+        ImGui_ImplWin32_Init(*g_gameGuiHwnd);
+        ImGui_ImplWin32_HookWndProc();
+        break;
+#endif
     default:
         break;
     }

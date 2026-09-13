@@ -53,6 +53,18 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
         .title = TH06_TITLE,
         .versions = gGameVersions + VER_TH06,
         .ver_count = 1,
+        .steamId = 4924840,
+        .shots = THPRAC_GAMEROLL_TH06_SHOTTYPES,
+        .shot_columns = 2,
+    },
+    {
+        .id = ID_TH06NC,
+        // Can't be arsed to add something to thprac_locale_def
+        // while automatic rebuilding of that isn't implemented
+        .title = THPRAC_LINKS_EDIT_ERR_REPEATED,
+        .versions = gGameVersions + VER_TH06NC,
+        .ver_count = 1,
+        .steamId = 4659620,
         .shots = THPRAC_GAMEROLL_TH06_SHOTTYPES,
         .shot_columns = 2,
     },
