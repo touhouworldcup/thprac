@@ -2209,7 +2209,7 @@ namespace TH06 {
         }
     })
     EHOOK_DY(th06_patchouli, 0x40c100, 1, {
-        static Enemy* const enemy = (Enemy*)(*(int32_t**)(pCtx->Esp + 4));
+        Enemy* const enemy = (Enemy*)(*(int32_t**)(pCtx->Esp + 4));
         unsigned index1 = (thPracParam.fakeType - 1) / 2;
         unsigned index2 = (thPracParam.fakeType - 1) % 2;
         if (thPracParam.fakeType) {
@@ -2220,14 +2220,14 @@ namespace TH06 {
         }
     })
     EHOOK_DY(th06_cancel_muteki, 0x429ec4, 7, {
-        static Player* const player = (Player*)(pCtx->Eax);
+        Player* const player = (Player*)(pCtx->Eax);
         if (thPracParam.mode) {
             player->playerState = 0;
             pCtx->Eip = 0x429ecb;
         }
     })
     EHOOK_DY(th06_set_deathbomb_timer, 0x42a09c, 10, {
-        static Player* const player = (Player*)(pCtx->Eax);
+        Player* const player = (Player*)(pCtx->Eax);
         if (thPracParam.mode) {
             player->respawnTimer = 6;
             pCtx->Eip = 0x42a0a6;
