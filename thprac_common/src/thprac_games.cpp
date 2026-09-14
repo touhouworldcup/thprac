@@ -389,6 +389,14 @@ void GameGuiBegin(game_gui_impl impl, bool game_nav)
         ImGui_ImplWin32_NewFrame();
         ::ImGui::NewFrame();
         break;
+#ifdef TH_X64
+    case IMPL_WIN32_DX11:
+        // New grame
+        ImGui_ImplDX11_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ::ImGui::NewFrame();
+        break;
+#endif
     }
     GameGuiProgress = 1;
        
@@ -447,6 +455,12 @@ void GameGuiRender(game_gui_impl impl)
         ::ImGui::Render();
         ImGui_ImplDX9_RenderDrawData(::ImGui::GetDrawData());
         break;
+#ifdef TH_X64
+    case IMPL_WIN32_DX11:
+        ::ImGui::Render();
+        ImGui_ImplDX11_RenderDrawData(::ImGui::GetDrawData());
+        break;
+#endif
     default:
         break;
     }
