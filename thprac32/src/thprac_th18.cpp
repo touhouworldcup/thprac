@@ -571,6 +571,7 @@ namespace TH18 {
         int CalcSection()
         {
             int chapterId = 0;
+
             switch (*mWarp) {
             case 1: // Chapter
                 // Chapter Id = 10000 + Stage * 100 + Section
@@ -578,18 +579,17 @@ namespace TH18 {
                 chapterId += *mChapter;
                 chapterId += 10000; // Base of chapter ID is 1000.
                 return chapterId;
-                break;
-            case 2:
-            case 3: // Mid boss & End boss
+
+            case 2: // Mid boss
+            case 3: // End boss
                 return th_sections_cba[*mStage][*mWarp - 2][*mSection];
-                break;
-            case 4:
-            case 5: // Non-spell & Spellcard
+
+            case 4: // Non-spell
+            case 5: // Spellcard
                 return th_sections_cbt[*mStage][*mWarp - 4][*mSection];
-                break;
+
             default:
                 return 0;
-                break;
             }
         }
         bool SectionHasDlg(int32_t section) {

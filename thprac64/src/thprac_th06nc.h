@@ -1,0 +1,148 @@
+#pragma once
+#include <thprac_games.h>
+#include <thprac_utils.h>
+#include <d3d11.h>
+
+namespace TH06NC {
+    enum ADDRS {
+        GAME_MANAGER_ADDR = 0x4f1e60,
+        HWND_PTR = 0x55e5a8,
+        D3D_DEVICE_PTR = 0x9b1cf8,
+        ECL_MANAGER_ADDR = 0xa6eb78,
+        INPUT_ADDR = 0xa6ec60,
+        INPUT_PREV_ADDR = 0xa6ec64,
+        IS_EIGTH_FRAME_OF_HELD_INPUT_ADDR = 0xa6ec48,
+        ENEMY_MANAGER_ADDR = 0xaa1e90,
+    };
+
+    struct GameManager {
+        char __unknown1[0x20];    // 0x0
+        uint8_t character;        // 0x20
+        uint8_t subShot;          // 0x21
+        char __unknown2[0x6];     // 0x22
+        uint16_t curPower;        // 0x28
+        char __unknown3[0x906];   // 0x2a
+        int64_t visualScore;      // 0x930
+        int64_t actualScore;      // 0x938
+        char __unknown4[0x1a];    // 0x940
+        uint16_t stagePointItems; // 0x95a
+        uint16_t totalPointItems; // 0x95c
+        char __unknown5[0x2];     // 0x95e
+        uint32_t difficulty;      // 0x960
+        char __unknown6[0xc908];  // 0x964
+        int32_t stageGraze;       // 0xd26c
+        int32_t totalGraze;       // 0xd270
+        char __unknown7[0x1c];    // 0xd274
+        int8_t livesRemaining;    // 0xd290
+        int8_t bombsRemaining;    // 0xd291
+        uint16_t scoreExtends;    // 0xd292
+        char __unknown8[0x188];   // 0xd294
+        int32_t rank;             // 0xd41c
+        // size unknown
+    };
+
+    struct Timer {
+        int32_t prev;    // 0x0
+        int32_t current; // 0x4
+        // size unknown
+    };
+
+    struct EnemyManager {
+        char __unknown1[0x10c0b8]; // 0x0
+        Timer timelineTime;        // 0x10c0b8
+        // size unknown
+    };
+
+    struct THPracParam {
+        int32_t mode;
+
+        int32_t stage;
+        int32_t section;
+        int32_t phase;
+        int32_t frame;
+
+        int16_t power;
+        int64_t score;
+        int32_t graze;
+        int32_t point;
+        int8_t life;
+        int8_t bomb;
+
+        int32_t rank;
+        int32_t fakeType;
+
+        bool dlg;
+
+        bool _playLock;
+
+        void Reset()
+        {
+            mode = 0;
+            stage = 0;
+            section = 0;
+            phase = 0;
+            score = 0ll;
+            life = 0;
+            bomb = 0;
+            power = 0;
+            graze = 0;
+            point = 0;
+            rank = 0;
+            fakeType = 0;
+            dlg = false;
+            frame = 0;
+        }
+
+        bool ReadJson(std::string& json)
+        {
+            ParseJson();
+
+            ForceJsonValue(game, "th06");
+            GetJsonValue(mode);
+            GetJsonValue(stage);
+            GetJsonValue(section);
+            GetJsonValue(phase);
+            GetJsonValue(dlg);
+            GetJsonValue(frame);
+            GetJsonValue(score);
+            GetJsonValue(life);
+            GetJsonValue(bomb);
+            GetJsonValue(power);
+            GetJsonValue(graze);
+            GetJsonValue(point);
+            GetJsonValue(rank);
+            GetJsonValue(fakeType);
+
+            return true;
+        }
+
+        std::string GetJson()
+        {
+            CreateJson();
+
+            AddJsonVersion();
+            AddJsonValueEx(game, "th06nc");
+            AddJsonValue(mode);
+            AddJsonValue(stage);
+            if (section)
+                AddJsonValue(section);
+            if (phase)
+                AddJsonValue(phase);
+            if (frame)
+                AddJsonValue(frame);
+            if (dlg)
+                AddJsonValue(dlg);
+
+            AddJsonValue(score);
+            AddJsonValueEx(life, (int)life);
+            AddJsonValueEx(bomb, (int)bomb);
+            AddJsonValueEx(power, (int)power);
+            AddJsonValue(graze);
+            AddJsonValue(point);
+            AddJsonValue(rank);
+            AddJsonValue(fakeType);
+
+            ReturnJson();
+        }
+    };
+}

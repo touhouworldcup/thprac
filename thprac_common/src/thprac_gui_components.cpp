@@ -519,7 +519,7 @@ namespace Gui
     {
         if (ImGui::BeginCombo(label, choices[out])) {
             for (size_t i = 0; i < choices_count; i++) {
-                ImGui::PushID(i);
+                ImGui::PushID((int)i);
 
                 bool item_selected = (i == out);
 
@@ -548,7 +548,7 @@ namespace Gui
     {
         if (ImGui::BeginCombo(label, S(choices[out]))) {
             for (size_t i = 0; i < choices_count; i++) {
-                ImGui::PushID(i);
+                ImGui::PushID((int)i);
 
                 bool item_selected = (i == out);
 
@@ -701,9 +701,9 @@ namespace Gui
         float btn_width = wnd_width / count - style.ItemSpacing.x / 2;
         ImVec2 size { btn_width, (float)height };
 
-        for (int i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++) {
             if (ImGui::Button(va_arg(va, const char*), size)) {
-                ret = i;
+                ret = (int)i;
             }
             if (i != count - 1) {
                 ImGui::SameLine();

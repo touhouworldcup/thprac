@@ -105,6 +105,9 @@
     <ClInclude Include="..\thprac_common\src\thprac_inject.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="src\thprac_th06nc.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">

@@ -414,6 +414,7 @@ namespace TH06 {
         int CalcSection()
         {
             int chapterId = 0;
+
             switch (*mWarp) {
             case 1: // Chapter
                 // Chapter Id = 10000 + Stage * 100 + Section
@@ -421,15 +422,15 @@ namespace TH06 {
                 chapterId += *mChapter;
                 chapterId += 10000; // Base of chapter ID is 1000.
                 return chapterId;
-                break;
-            case 2:
-            case 3: // Mid boss & End boss
+
+            case 2: // Mid boss
+            case 3: // End boss
                 return th_sections_cba[*mStage][*mWarp - 2][*mSection];
-                break;
-            case 4:
-            case 5: // Non-spell & Spellcard
+
+            case 4: // Non-spell
+            case 5: // Spellcard
                 return th_sections_cbt[*mStage][*mWarp - 4][*mSection];
-                break;
+
             default:
                 return 0;
                 break;
@@ -500,7 +501,6 @@ namespace TH06 {
                 break;
             }
         }
-
 
         // Data
         Gui::GuiCombo mMode { TH_MODE, TH_MODE_SELECT };
@@ -1035,16 +1035,22 @@ namespace TH06 {
             ecl << pair{0x342e, 0x0};
         };
 
+        constexpr unsigned int st1MidbossTime = 0x7d8; // frame 2008
+
         switch (section) {
         case TH06::TH06_ST1_MID1:
-            ECLWarp(0x7d8);
-            ecl << pair{0x0ab0, 0x3c} << pair{0x0ad0, 0x3c};
+            ECLWarp(st1MidbossTime);
+            //ecl << pair{0x0ab0, 60} << pair{0x0ad0, 60};
             break;
-        case TH06::TH06_ST1_MID2:
-            ECLWarp(0x7d8);
-            ecl << pair{0x0ab0, 0x3c} << pair{0x0ad0, 0x3c};
-            ECLSetHealth(ecl, 0x0af0, 0x3c, 0x1f3);
+
+        case TH06::TH06_ST1_MID2: {
+            ECLWarp(st1MidbossTime);
+            //ecl << pair{0x0ab0, 60} << pair{0x0ad0, 60};
+
+            constexpr unsigned int st1MidbossSoundIns = 0x0af0;
+            ECLSetHealth(ecl, st1MidbossSoundIns, 60, 499);
             break;
+        }
         case TH06::TH06_ST1_BOSS1:
             if (thPracParam.dlg)
                 ECLWarp(0x149e);
@@ -2276,7 +2282,6 @@ namespace TH06 {
         THGuiRep::singleton();
         THOverlay::singleton();
 
-        
         // Hooks
         EnableAllHooks(THMainHook);
         th06_white_screen.Setup();

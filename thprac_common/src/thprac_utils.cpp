@@ -320,7 +320,7 @@ void memswap(void* buf1_, void* buf2_, unsigned int len)
 char* FormatNumberWithCommas(int64_t val, char* buffer) {
     char temp[32];
     sprintf(temp, "%lld", val);
-    int len = strlen(temp);
+    int len = (int)strlen(temp);
     int commas = (len - (val < 0 ? 2 : 1)) / 3;
 
     char* dst = buffer + len + commas;

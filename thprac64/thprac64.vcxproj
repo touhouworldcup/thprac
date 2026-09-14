@@ -47,6 +47,7 @@
     <ClInclude Include="..\thprac_common\src\thprac_inject.h" />
     <ClInclude Include="..\thprac_common\src\thprac_pe.h" />
     <ClInclude Include="..\thprac_common\src\utils.h" />
+    <ClInclude Include="src\thprac_th06nc.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{064229ed-2ab8-4a37-a0dd-93e68b6d2cca}</ProjectGuid>
