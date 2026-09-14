@@ -46,7 +46,6 @@ inline void PushHelper(CONTEXT* pCtx, uintptr_t value)
 }
 inline uintptr_t PopHelper(CONTEXT* pCtx)
 {
-    // The compiler will optimize this to just use eax
     auto ret = *(uintptr_t*)pCtx->Xsp;
     pCtx->Xsp += sizeof(uintptr_t);
     return ret;

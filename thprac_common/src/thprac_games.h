@@ -636,13 +636,13 @@ void* VFSOriginal(const char* file_name, int32_t* file_size, int32_t is_file);
 
 #pragma region Memory Helper
 
-template <typename R = size_t>
+template <typename R = uintptr_t>
 inline R GetMemContent(uintptr_t addr)
 {
     return *(R*)addr;
 }
-template <typename R = size_t, typename... OffsetArgs>
-inline R GetMemContent(uintptr_t addr, size_t offset, OffsetArgs... remaining_offsets)
+template <typename R = uintptr_t, typename... OffsetArgs>
+inline R GetMemContent(uintptr_t addr, uintptr_t offset, OffsetArgs... remaining_offsets)
 {
     return GetMemContent<R>(((uintptr_t) * (R*)addr) + offset, remaining_offsets...);
 }
