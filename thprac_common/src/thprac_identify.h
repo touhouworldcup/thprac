@@ -145,6 +145,7 @@ extern const unsigned int gKnownGamesCount;
 enum ThVersionArrOffset {
     VER_ALCOSTG,
     VER_TH06,
+    VER_TH06C,
     VER_TH06NC,
     VER_TH07,
     VER_TH075,

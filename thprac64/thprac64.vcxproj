@@ -37,6 +37,7 @@
     <ClCompile Include="..\thprac_common\src\thprac_utils.cpp" />
     <ClCompile Include="..\thprac_common\src\thprac_version.cpp" />
     <ClCompile Include="src\thprac_dllinit_64.cpp" />
+    <ClCompile Include="src\thprac_th06c.cpp" />
     <ClCompile Include="src\thprac_th06nc.cpp" />
   </ItemGroup>
   <ItemGroup>

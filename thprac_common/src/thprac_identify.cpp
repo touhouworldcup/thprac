@@ -11,6 +11,7 @@ void DummyInit() {
 }
 
 TH_INIT_FUNC_32_DECL(TH06Init);
+TH_INIT_FUNC_64_DECL(TH06CInit);
 TH_INIT_FUNC_64_DECL(TH06NCInit);
 TH_INIT_FUNC_32_DECL(TH07Init);
 TH_INIT_FUNC_32_DECL(TH08Init);
@@ -60,6 +61,17 @@ constexpr const THGameVersion gGameVersions[] = {
             .textSize = 430080,
         },
         .oepCode = { 0x212b, 0xe22a, 0x05bc, 0xac44, 0x4867, 0x4646, 0xd3f8, 0x4848, 0xc249, 0xa28d }
+    },
+    {
+        .gameId = ID_TH06,
+        .initFunc = TH_INIT_FUNC_64(TH06CInit),
+        .has_vpatch = true,
+        .has_oilp = true,
+        .exeInfo = {
+            .timeStamp = 0x6a9e388e,
+            .textSize = 0x00284800,
+        },
+        .oepCode = { 0xc209, 0x6aae, 0x08ab, 0x4442, 0x0d45, 0x82c5, 0xae6f, 0xb632, 0xb6b6, 0x8686 }
     },
     {
         .gameId = ID_TH06NC,
@@ -406,6 +418,7 @@ constexpr const THGameVersion gGameVersions[] = {
 
 static_assert(gGameVersions[VER_ALCOSTG].gameId == ID_ALCOSTG);
 static_assert(gGameVersions[VER_TH06].gameId == ID_TH06);
+static_assert(gGameVersions[VER_TH06C].gameId == ID_TH06);
 static_assert(gGameVersions[VER_TH06NC].gameId == ID_TH06NC);
 static_assert(gGameVersions[VER_TH07].gameId == ID_TH07);
 static_assert(gGameVersions[VER_TH075].gameId == ID_TH075);
@@ -449,6 +462,10 @@ const THKnownGame gKnownGames[] = {
         TYPE_ORIGINAL,
         { 0xbae18847, 0x78d78ce2,
             0x4d19703a, 0x3f5cbe16 } },
+    { gGameVersions + VER_TH06,
+        TYPE_ORIGINAL,
+        { 0xa793848c, 0xfc498d04,
+            0xc1b56268, 0xffba1887 } },
     { gGameVersions + VER_TH06,
         TYPE_CHINESE,
         { 0x6c2e0eb5, 0x6bb9bce8,
