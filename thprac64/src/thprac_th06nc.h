@@ -8,6 +8,7 @@ namespace TH06NC {
         GAME_MANAGER_ADDR = 0x4f1e60,
         HWND_PTR = 0x55e5a8,
         D3D_DEVICE_PTR = 0x9b1cf8,
+        D3D_DEVICE_CONTEXT = 0x9b1d00,
         ECL_MANAGER_ADDR = 0xa6eb78,
         INPUT_ADDR = 0xa6ec60,
         INPUT_PREV_ADDR = 0xa6ec64,
@@ -19,7 +20,8 @@ namespace TH06NC {
         char __unknown1[0x20];    // 0x0
         uint8_t character;        // 0x20
         uint8_t subShot;          // 0x21
-        char __unknown2[0x6];     // 0x22
+        char __unknown2[0x2];     // 0x22
+        uint32_t stage;           // 0x24
         uint16_t curPower;        // 0x28
         char __unknown3[0x906];   // 0x2a
         int64_t visualScore;      // 0x930

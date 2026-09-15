@@ -2,7 +2,7 @@
 #include <wininternal.h>
 
 // TODOs:
-    // - Hooking fix so that anything works (32th)
+    // - Alt tabbed game processing inputs when thprac is applied
     // - Practice mode hooks to open/close/confirm thprac menu
     // - All the warps
     // - Other TH6 hooks (check if needed)
@@ -23,16 +23,16 @@ namespace TH06NC {
         Gui::GuiCombo mPhase{ TH_PHASE };
         Gui::GuiCheckBox mDlg{ TH_DLG };
 
-        Gui::GuiSlider<int, ImGuiDataType_S32> mChapter{ TH_CHAPTER, 0, 0 };
-        Gui::GuiDrag<int, ImGuiDataType_S32> mFrame{ TH_FRAME, 0, INT_MAX };
-        Gui::GuiSlider<int8_t, ImGuiDataType_S32> mLife{ TH_LIFE, 0, 8 };
-        Gui::GuiSlider<int8_t, ImGuiDataType_S32> mBomb{ TH_BOMB, 0, 8 };
+        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mChapter{ TH_CHAPTER, 0, 0 };
+        Gui::GuiDrag<int32_t, ImGuiDataType_S32> mFrame{ TH_FRAME, 0, INT_MAX };
+        Gui::GuiSlider<int8_t, ImGuiDataType_S8> mLife{ TH_LIFE, 0, 8 };
+        Gui::GuiSlider<int8_t, ImGuiDataType_S8> mBomb{ TH_BOMB, 0, 8 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore{ TH_SCORE, 0, 9999999990, 10, 100000000 };
-        Gui::GuiSlider<int16_t, ImGuiDataType_S32> mPower{ TH_POWER, 0, 128 };
-        Gui::GuiDrag<int, ImGuiDataType_S32> mGraze{ TH_GRAZE, 0, 99999, 1, 10000 };
-        Gui::GuiDrag<int, ImGuiDataType_S32> mPoint{ TH_POINT, 0, 9999, 1, 1000 };
+        Gui::GuiSlider<int16_t, ImGuiDataType_S16> mPower{ TH_POWER, 0, 128 };
+        Gui::GuiDrag<int32_t, ImGuiDataType_S32> mGraze{ TH_GRAZE, 0, 99999, 1, 10000 };
+        Gui::GuiDrag<int32_t, ImGuiDataType_S32> mPoint{ TH_POINT, 0, 9999, 1, 1000 };
 
-        Gui::GuiSlider<int, ImGuiDataType_S32> mRank{ TH06_RANK, 0, 32, 1, 10, 10 };
+        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mRank{ TH06_RANK, 0, 32, 1, 10, 10 };
         Gui::GuiCombo mFakeShot{ TH06_FS, TH06_TYPE_SELECT };
 
         Gui::GuiNavFocus mNavFocus{ TH_STAGE, TH_MODE, TH_WARP, TH_FRAME,
@@ -150,6 +150,33 @@ namespace TH06NC {
             }
 
             nav_focus();
+        }
+
+        virtual void OnLocaleChange() override {
+            SetTitle(S(TH_MENU));
+
+            switch (Gui::LocaleGet()) {
+            case LOCALE_ZH_CN:
+                SetSize(330.f, 390.f);
+                SetPos(260.f, 65.f);
+                SetItemWidth(-60.0f);
+                break;
+
+            case LOCALE_EN_US:
+                SetSize(370.f, 375.f);
+                SetPos(240.f, 75.f);
+                SetItemWidth(-60.0f);
+                break;
+
+            case LOCALE_JA_JP:
+                SetSize(330.f, 390.f);
+                SetPos(260.f, 65.f);
+                SetItemWidth(-65.0f);
+                break;
+
+            default:
+                break;
+            }
         }
 
         virtual void OnContentUpdate() override {
@@ -275,8 +302,6 @@ namespace TH06NC {
 
 
 
-
-    // Hooks
     HOOKSET_DEFINE(THMainHook)
     EHOOK_DY(th06_prac_menu_1, 0x0, 0, {
         THGuiPrac::singleton().OpenMenu();
@@ -287,22 +312,29 @@ namespace TH06NC {
     EHOOK_DY(th06_prac_menu_4, 0x0, 0, {
         THGuiPrac::singleton().CloseMenu();
     })
-    EHOOK_DY(th06_update, 0x0, 0, {
-        GameGuiBegin(IMPL_WIN32_DX8);
 
-        // Gui components update
-        //Gui::KeyboardInputUpdate(VK_ESCAPE);
+    // Core Hooks
+    EHOOK_DY(th06nc_update, 0x3bf59, 1, { // end of run_all_on_tick
+        GameGuiBegin(IMPL_WIN32_DX11);
+
+        /* Gui components update */
+        /* Gui::KeyboardInputUpdate(VK_ESCAPE); */
         THGuiPrac::singleton().Update();
-        //THGuiRep::singleton().Update();
-        //THOverlay::singleton().Update();
+        /* THGuiRep::singleton().Update();
+        THOverlay::singleton().Update();
 
-        //if (tracker_open && (GAME_MANAGER->isInGame || GAME_MANAGER->isInGameMenu || GAME_MANAGER->isInRetryMenu))
-        //    THTrackerUpdate();
+        if (tracker_open && (GAME_MANAGER->isInGame || GAME_MANAGER->isInGameMenu || GAME_MANAGER->isInRetryMenu))
+            THTrackerUpdate();*/
 
         //GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
         GameGuiEnd(THGuiPrac::singleton().IsOpen());
+        OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
-    EHOOK_DY(th06_patch_main, 0x0, 0, {
+    EHOOK_DY(th06nc_render, 0x3c257, 1, {  // end of run_all_on_draw
+        GameGuiRender(IMPL_WIN32_DX11);
+        OG_INS(pCtx->Rip = PopHelper(pCtx));
+    })
+    /*EHOOK_DY(th06nc_patch_main, 0x0, 0, {
         GAME_MANAGER->curPower = thPracParam.power;
         GAME_MANAGER->actualScore = GAME_MANAGER->visualScore = thPracParam.score;
         GAME_MANAGER->stageGraze = GAME_MANAGER->totalGraze = thPracParam.graze;
@@ -320,23 +352,23 @@ namespace TH06NC {
 
         if (thPracParam.frame) ECLWarp(thPracParam.frame);
         else THSectionPatch();
-    })
+    })*/
     HOOKSET_ENDDEF()
-
 
     static __declspec(noinline) void THGuiCreate() {
         if (ImGui::GetCurrentContext()) return;
 
         // Grab key globals
-        GAME_MANAGER = GetMemContent<GameManager*>(RVA(GAME_MANAGER_ADDR));
-        ENEMY_MANAGER = GetMemContent<EnemyManager*>(RVA(ENEMY_MANAGER_ADDR));
+        GAME_MANAGER = (GameManager*)RVA(GAME_MANAGER_ADDR);
+        ENEMY_MANAGER = (EnemyManager*)RVA(ENEMY_MANAGER_ADDR);
 
         // Init
-        GameGuiInit(IMPL_WIN32_DX11,
-                    GetMemContent<uintptr_t>(RVA(D3D_DEVICE_PTR)),
-                    GetMemContent<uintptr_t>(RVA(HWND_PTR)),
+        GameGuiInit(IMPL_WIN32_DX11, RVA(D3D_DEVICE_PTR), RVA(HWND_PTR),
                     Gui::INGAGME_INPUT_GEN1, RVA(INPUT_ADDR), RVA(INPUT_PREV_ADDR),
-                    RVA(IS_EIGTH_FRAME_OF_HELD_INPUT_ADDR), 1.0f);
+                    RVA(IS_EIGTH_FRAME_OF_HELD_INPUT_ADDR), 1.0f, RVA(D3D_DEVICE_CONTEXT));
+
+        // weird...
+        ImGui::GetIO().DisplaySize = ImVec2(1280, 720);
 
         //TODO
         //SetDpadHook(0x41D330, 3);
@@ -361,13 +393,15 @@ namespace TH06NC {
     }
 
     HOOKSET_DEFINE(THInitHook)
-    EHOOK_DY(th06_gui_init_1, 0x73D33, 4, { // main menu ontick
+    //EHOOK_DY(th06nc_gui_init_1, 0x73D33, 4, { // main menu ontick (TODO: TEST THIS)
+    //    THGuiCreate();
+    //    self->Disable();
+    //    OG_INS(pCtx->Rcx = *(uint64_t*)(pCtx->Rbp - 0x58));
+    //})
+    EHOOK_DY(th06nc_gui_init_2, 0x27070e, 8, { // initial loading (d3d creation)
         THGuiCreate();
         self->Disable();
-    })
-    EHOOK_DY(th06_gui_init_2, 0x27070e, 8, { // initial loading (d3d creation)
-        THGuiCreate();
-        self->Disable();
+        OG_INS(pCtx->R12 = *(uint64_t*)(pCtx->Rsp + 0x98));
     })
     HOOKSET_ENDDEF()
 }

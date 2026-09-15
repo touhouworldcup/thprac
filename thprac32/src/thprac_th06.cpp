@@ -2239,7 +2239,7 @@ namespace TH06 {
             pCtx->Eip = 0x40e1d8;
         }
     })
-    PATCH_DY(th06_disable_menu, 0x439ab2, "9090909090")
+    PATCH_DY(th06_disable_menu, 0x439ab2, NOP(5))
     EHOOK_DY(th06_update, 0x41caac, 1, {
         GameGuiBegin(IMPL_WIN32_DX8, !THAdvOptWnd::singleton().IsOpen());
 
@@ -2250,9 +2250,8 @@ namespace TH06 {
         THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
 
-        if (tracker_open && (GAME_MANAGER->isInGame || GAME_MANAGER->isInGameMenu || GAME_MANAGER->isInRetryMenu)) {
+        if (tracker_open && (GAME_MANAGER->isInGame || GAME_MANAGER->isInGameMenu || GAME_MANAGER->isInRetryMenu))
             THTrackerUpdate();
-        }
 
         GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
     })
