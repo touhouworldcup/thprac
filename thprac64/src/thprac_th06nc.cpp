@@ -303,14 +303,45 @@ namespace TH06NC {
 
 
     HOOKSET_DEFINE(THMainHook)
-    EHOOK_DY(th06_prac_menu_1, 0x0, 0, {
-        THGuiPrac::singleton().OpenMenu();
+
+    // Prac Menu UX
+    // TODO: change some R registers to E if that's possible (32th?)
+    EHOOK_DY(th06nc_skip_prac_mode, 0x4bbd5, 6, { // subshot select confirm input, writing next state
+        uintptr_t rsi = pCtx->Rsi;
+        bool inPractice = GetMemContent<bool>(rsi + 0x168d1);
+
+        if (inPractice) {
+            *(uint32_t*)(rsi + 0x168b0) = 0x18; // start prompt
+            pCtx->Rdx = -1; // prevent triggering unwanted interrupts (ty to zero318 for insight)
+            THGuiPrac::singleton().OpenMenu();
+        }
+        else OG_INS(*(uint32_t*)(rsi + 0x168b0) = (uint32_t)pCtx->Rdx);
     })
-    EHOOK_DY(th06_prac_menu_3, 0x0, 0, {
-        THGuiPrac::singleton().ConfirmMenu();
+
+    EHOOK_DY(th06nc_skip_prac_mode_2, 0x4bc46, 5, { // after setting -1 interrupts
+        if (pCtx->Rdx == -1) pCtx->Rdx = 0x18;
     })
-    EHOOK_DY(th06_prac_menu_4, 0x0, 0, {
-        THGuiPrac::singleton().CloseMenu();
+
+    EHOOK_DY(th06nc_cancel_prac, 0x4c2ba, 6, { // start prompt back input, writing next state
+        uintptr_t rsi = pCtx->Rsi;
+        bool inPractice = GetMemContent<bool>(rsi + 0x168d1);
+
+        if (inPractice) {
+            pCtx->Rip = RVA(0x4be03); // pretend we just exited mode selection
+            THGuiPrac::singleton().CloseMenu();
+        }
+        else OG_INS(pCtx->Rax = *(uint32_t*)(rsi + 0x168cc));
+    })
+
+    EHOOK_DY(th06nc_confirm_prac, 0x4c474, 10, {
+        uintptr_t rsi = pCtx->Rsi;
+        bool inPractice = GetMemContent<bool>(rsi + 0x168d1);
+
+        if (inPractice) {
+            THGuiPrac::singleton().ConfirmMenu();
+            GAME_MANAGER->stage = thPracParam.stage;
+        }
+        OG_INS(*(uint32_t*)(rsi + 0x168b0) = 0x19);
     })
 
     // Core Hooks
