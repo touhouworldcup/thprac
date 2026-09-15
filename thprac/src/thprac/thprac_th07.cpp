@@ -550,7 +550,34 @@ namespace TH07 {
         Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
-        PATCH_HK(0x43Ee14, "03")
+        PATCH_HK(0x43EE14, "03"),
+        EHOOK_HK(0x43EE46, 5, { // fail the sc bonus at miss while invincibility
+            constexpr uintptr_t p_iSpellcardBonus = 0x12FE0CC;
+            constexpr uintptr_t p_bUpdateSpellcardBonus = 0x12FE0C4;
+            const bool bossExists = (ENEMY_MANAGER->bosses[0] != nullptr);
+
+            if (bossExists) {
+                *reinterpret_cast<uint32_t*>(p_iSpellcardBonus) = 0;
+                *reinterpret_cast<uint32_t*>(p_bUpdateSpellcardBonus) = 0;
+            }
+            pCtx; // C4100
+        }),
+        EHOOK_HK(0x43E366, 5, {
+            constexpr uintptr_t p_iSpellcardBonus = 0x12FE0CC;
+            constexpr uintptr_t p_bUpdateSpellcardBonus = 0x12FE0C4;
+            void(__thiscall* const playMissSfx)(void*, int, int) = reinterpret_cast<void(__thiscall*)(void*, int, int)>(0x44C930);
+
+            const bool bossExists = (ENEMY_MANAGER->bosses[0] != nullptr);
+
+            (*playMissSfx)(reinterpret_cast<void*>(0x4BA0D8), 4, 0);
+
+            if (bossExists) {
+                *reinterpret_cast<uint32_t*>(p_iSpellcardBonus) = 0;
+                *reinterpret_cast<uint32_t*>(p_bUpdateSpellcardBonus) = 0;
+            }
+
+            pCtx->Eip = 0x43E36B; // skip border break
+        })
         HOTKEY_ENDDEF();
         
         HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
@@ -563,7 +590,7 @@ namespace TH07 {
         
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
         PATCH_HK(0x440DD3, "00"),
-        PATCH_HK(0x440DBF,"90909090909090")
+        PATCH_HK(0x440DBF, NOP(7))
         HOTKEY_ENDDEF();
         
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
