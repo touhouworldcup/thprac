@@ -2,12 +2,10 @@
 #include <wininternal.h>
 
 // TODOs:
-    // - Fix: Left HUD image not showing insta outside c1 like Spell Prac does
-    // - Fix: wrong BGM name in bottom right for boss BGM warps
     // - Fix: Alt tabbed game processing inputs when thprac is applied
     // - Fix: Going back to prac after Extra makes Extra the selected gamemode (affects score extends in non-extra; doesn't go back until menuing back to practice mode)
     // - Fix: Rank bounds
-    // - Add: STD timeline skip for Frame warping?
+    // - Add: STD timeline skip for Frame warping? Per-stage frame cap?
     // - All the warps
     // - Other TH6 hooks (check if needed)
     // - THOverlay, Replays, Advanced Menu, etc.
@@ -201,8 +199,7 @@ namespace TH06NC {
             }
         }
 
-    public:
-        static bool SectionHasDlg(int32_t section) {
+        bool SectionHasDlg(int32_t section) {
             switch (section) {
             case TH06_ST1_BOSS1:
             case TH06_ST2_BOSS1:
@@ -220,6 +217,7 @@ namespace TH06NC {
             }
         }
 
+    public:
         __declspec(noinline) void OpenMenu() {
             SetFade(0.8f, 0.1f);
             Open();
@@ -237,8 +235,7 @@ namespace TH06NC {
             thPracParam.section = CalcSection();
             thPracParam.phase = *mPhase;
             thPracParam.frame = *mFrame;
-            if (SectionHasDlg(thPracParam.section))
-                thPracParam.dlg = *mDlg;
+            thPracParam.dlg = SectionHasDlg(thPracParam.section) ? *mDlg : false;
 
             thPracParam.score = *mScore;
             thPracParam.life  = *mLife;
@@ -432,10 +429,19 @@ namespace TH06NC {
     EHOOK_DY(th06nc_stage_bgm, 0x3b611, 3, { // stage start bgm pick (0x80 = boss, set by spell prac)
         int32_t section = thPracParam.section;
 
-        if (thPracParam.mode && section && section < 10000 && th_sections_bgm[section]
-          && !(THGuiPrac::SectionHasDlg(section) && thPracParam.dlg))
+        if (thPracParam.mode && section && section < 10000
+          && th_sections_bgm[section] && !thPracParam.dlg)
             pCtx->Rdx += 0x80;
         else OG_INS(pCtx->Rdx += pCtx->R15);
+    })
+
+    EHOOK_DY(th06nc_bgm_title, 0x3e5f4, 7, { // spell prac check when picking BGM name key to render
+        OG_INS(pCtx->R12 = GetMemContent<uint64_t>(RVA(0x509c08)));
+        int32_t section = thPracParam.section;
+
+        if (thPracParam.mode && section && section < 10000
+          && th_sections_bgm[section] && !thPracParam.dlg)
+            pCtx->Rip = RVA(0x3e5fd);
     })
     HOOKSET_ENDDEF()
 
