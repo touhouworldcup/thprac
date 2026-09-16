@@ -6,6 +6,7 @@
 namespace TH06NC {
     enum ADDRS {
         GAME_MANAGER_ADDR = 0x4f1e60,
+        STAGE_BACKGROUND_ADDR = 0x509b60,
         HWND_PTR = 0x55e5a8,
         D3D_DEVICE_PTR = 0x9b1cf8,
         D3D_DEVICE_CONTEXT = 0x9b1d00,
@@ -17,31 +18,50 @@ namespace TH06NC {
     };
 
     struct GameManager {
-        char __unknown1[0x20];    // 0x0
-        uint8_t character;        // 0x20
-        uint8_t subShot;          // 0x21
-        char __unknown2[0x2];     // 0x22
-        uint32_t stage;           // 0x24
-        uint16_t curPower;        // 0x28
-        char __unknown3[0x906];   // 0x2a
-        int64_t visualScore;      // 0x930
-        int64_t actualScore;      // 0x938
-        char __unknown4[0x1a];    // 0x940
-        uint16_t stagePointItems; // 0x95a
-        uint16_t totalPointItems; // 0x95c
-        char __unknown5[0x2];     // 0x95e
-        uint32_t difficulty;      // 0x960
-        char __unknown6[0xc908];  // 0x964
-        int32_t stageGraze;       // 0xd26c
-        int32_t totalGraze;       // 0xd270
-        char __unknown7[0x1c];    // 0xd274
-        int8_t livesRemaining;    // 0xd290
-        int8_t bombsRemaining;    // 0xd291
-        uint16_t scoreExtends;    // 0xd292
-        char __unknown8[0x188];   // 0xd294
-        int32_t rank;             // 0xd41c
+        char __unknown1[0x20];     // 0x0
+        uint8_t character;         // 0x20
+        uint8_t subShot;           // 0x21
+        uint32_t stage;            // 0x24
+        uint16_t curPower;         // 0x28
+        char __unknown2[0x906];    // 0x2a
+        int64_t visualScore;       // 0x930
+        int64_t actualScore;       // 0x938
+        char __unknown3[0x15];     // 0x940
+        int8_t inSpellPrac;        // 0x955
+        char __unknown4[0x2];      // 0x956
+        int8_t spellPracSpellNum;  // 0x958
+        uint16_t stagePointItems;  // 0x95a
+        uint16_t totalPointItems;  // 0x95c
+        uint32_t difficulty;       // 0x960
+        char __unknown5[0xc908];   // 0x964
+        int32_t stageGraze;        // 0xd26c
+        int32_t totalGraze;        // 0xd270
+        char __unknown6[0x1c];     // 0xd274
+        int8_t livesRemaining;     // 0xd290
+        int8_t bombsRemaining;     // 0xd291
+        uint16_t scoreExtends;     // 0xd292
+        char __unknown7[0x188];    // 0xd294
+        int32_t rank;              // 0xd41c
         // size unknown
     };
+
+    static_assert(offsetof(GameManager, character) == 0x20);
+    static_assert(offsetof(GameManager, subShot) == 0x21);
+    static_assert(offsetof(GameManager, stage) == 0x24);
+    static_assert(offsetof(GameManager, curPower) == 0x28);
+    static_assert(offsetof(GameManager, visualScore) == 0x930);
+    static_assert(offsetof(GameManager, actualScore) == 0x938);
+    static_assert(offsetof(GameManager, inSpellPrac) == 0x955);
+    static_assert(offsetof(GameManager, spellPracSpellNum) == 0x958);
+    static_assert(offsetof(GameManager, stagePointItems) == 0x95a);
+    static_assert(offsetof(GameManager, totalPointItems) == 0x95c);
+    static_assert(offsetof(GameManager, difficulty) == 0x960);
+    static_assert(offsetof(GameManager, stageGraze) == 0xd26c);
+    static_assert(offsetof(GameManager, totalGraze) == 0xd270);
+    static_assert(offsetof(GameManager, livesRemaining) == 0xd290);
+    static_assert(offsetof(GameManager, bombsRemaining) == 0xd291);
+    static_assert(offsetof(GameManager, scoreExtends) == 0xd292);
+    static_assert(offsetof(GameManager, rank) == 0xd41c);
 
     struct Timer {
         int32_t prev;    // 0x0
@@ -54,6 +74,17 @@ namespace TH06NC {
         Timer timelineTime;        // 0x10c0b8
         // size unknown
     };
+
+    struct StageBackground {
+        char __unknown1[0x68]; // 0x0
+        uint8_t is_frozen;     // 0x68
+        char __unknown2[0x47]; // 0x69
+        Timer timelineTime;    // 0xb0
+    };
+
+    static_assert(offsetof(EnemyManager, timelineTime) == 0x10c0b8);
+    static_assert(offsetof(StageBackground, is_frozen) == 0x68);
+    static_assert(offsetof(StageBackground, timelineTime) == 0xb0);
 
     struct THPracParam {
         int32_t mode;
@@ -136,9 +167,9 @@ namespace TH06NC {
                 AddJsonValue(dlg);
 
             AddJsonValue(score);
-            AddJsonValueEx(life, (int)life);
-            AddJsonValueEx(bomb, (int)bomb);
-            AddJsonValueEx(power, (int)power);
+            AddJsonValue(life);
+            AddJsonValue(bomb);
+            AddJsonValue(power);
             AddJsonValue(graze);
             AddJsonValue(point);
             AddJsonValue(rank);
@@ -146,5 +177,15 @@ namespace TH06NC {
 
             ReturnJson();
         }
+    };
+
+    int mChapterSetup[7][2]{
+        { 4, 2 },
+        { 2, 2 },
+        { 4, 3 },
+        { 4, 5 },
+        { 3, 2 },
+        { 2, 0 },
+        { 4, 3 }
     };
 }

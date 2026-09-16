@@ -2,18 +2,23 @@
 #include <wininternal.h>
 
 // TODOs:
-    // - Alt tabbed game processing inputs when thprac is applied
-    // - Practice mode hooks to open/close/confirm thprac menu
+    // - Fix: Alt tabbed game processing inputs when thprac is applied
+    // - Fix: Going back to prac after Extra makes Extra the selected gamemode (affects score extends in non-extra; doesn't go back until menuing back to practice mode)
+    // - Fix: Rank bounds
     // - All the warps
     // - Other TH6 hooks (check if needed)
     // - THOverlay, Replays, Advanced Menu, etc.
     // - Replace addresses that are members of static structs with static struct access (cf. GameManager)
 
 using namespace TH06;
+using std::pair;
+
 namespace TH06NC {
     THPracParam thPracParam{};
     GameManager* GAME_MANAGER;
     EnemyManager* ENEMY_MANAGER;
+    StageBackground* STAGE_BACKGROUND;
+    void* ECL_MANAGER;
 
     class THGuiPrac : public Gui::GameGuiWnd {
         Gui::GuiCombo mMode{ TH_MODE, TH_MODE_SELECT };
@@ -39,16 +44,6 @@ namespace TH06NC {
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
             TH_LIFE, TH_BOMB, TH_SCORE, TH_POWER, TH_GRAZE, TH_POINT,
             TH06_RANK, TH06_FS };
-
-        int mChapterSetup[7][2]{
-            { 4, 2 },
-            { 2, 2 },
-            { 4, 3 },
-            { 4, 5 },
-            { 3, 2 },
-            { 2, 0 },
-            { 4, 3 }
-        };
 
         float mStep = 10.0;
         uint32_t mDiffculty = 0;
@@ -82,9 +77,8 @@ namespace TH06NC {
             auto& chapterCounts = mChapterSetup[*mStage];
 
             int st = 0;
-            if (*mStage == 3) { // Stage 4 Fake Shot
+            if (*mStage == 3) // Stage 4 Fake Shot
                 st = (*mFakeShot ? *mFakeShot - 1 : mShotType) + 4;
-            }
 
             switch (*mWarp) {
             case 1: // Chapter
@@ -361,11 +355,22 @@ namespace TH06NC {
         GameGuiEnd(THGuiPrac::singleton().IsOpen());
         OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
+
     EHOOK_DY(th06nc_render, 0x3c257, 1, {  // end of run_all_on_draw
         GameGuiRender(IMPL_WIN32_DX11);
         OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
-    /*EHOOK_DY(th06nc_patch_main, 0x0, 0, {
+
+    EHOOK_DY(th06nc_title_screen_transition, 0x4802e, 7, {
+        thPracParam.Reset();
+        OG_INS(*(uint32_t*)(pCtx->Rsi + 0x168b0) = (uint32_t)pCtx->R10);
+    })
+
+    // On Prac (Re)Start
+    EHOOK_DY(th06nc_patch_main, 0x3b69d, 1, { // end of GameManager::on_registration
+        OG_INS(pCtx->Rip = PopHelper(pCtx));
+        if (thPracParam.mode != 1) return;
+
         GAME_MANAGER->curPower = thPracParam.power;
         GAME_MANAGER->actualScore = GAME_MANAGER->visualScore = thPracParam.score;
         GAME_MANAGER->stageGraze = GAME_MANAGER->totalGraze = thPracParam.graze;
@@ -382,8 +387,34 @@ namespace TH06NC {
         }
 
         if (thPracParam.frame) ECLWarp(thPracParam.frame);
-        else THSectionPatch();
-    })*/
+        else if (thPracParam.section) THSectionPatch();
+    })
+
+    EHOOK_DY(th06nc_bg_fastforward, 0x3b4b5, 2, { // spell prac check for fast-forwarding stage background
+        constexpr int32_t safeSpellNums[7] = { 2, 9, 24, 37, 84, 100, 121 };
+
+        if (thPracParam.mode) {
+            int32_t section = thPracParam.section;
+            int32_t stage = thPracParam.stage;
+
+            if (section < 10000) { // Section
+                for (const auto& stage : th_sections_cba) { // must iterate all stages due to how patchy warps are implemented
+                    for (const auto& s : stage[1]) {
+                        if (s == section) { // boss section -> boss bg
+                            GAME_MANAGER->spellPracSpellNum = safeSpellNums[thPracParam.stage];
+                            return;
+                        }
+                    }
+                }
+                return; // midboss section -> midboss bg
+
+            } else if (section - 10000 > mChapterSetup[thPracParam.stage][0]) {
+                return; // post-mid chapter -> midboss bg
+            }
+        }
+
+        OG_INS(pCtx->Rip = RVA(0x3b4bc)); // start bg
+    })
     HOOKSET_ENDDEF()
 
     static __declspec(noinline) void THGuiCreate() {
@@ -391,7 +422,9 @@ namespace TH06NC {
 
         // Grab key globals
         GAME_MANAGER = (GameManager*)RVA(GAME_MANAGER_ADDR);
+        STAGE_BACKGROUND = (StageBackground*)RVA(STAGE_BACKGROUND_ADDR);
         ENEMY_MANAGER = (EnemyManager*)RVA(ENEMY_MANAGER_ADDR);
+        ECL_MANAGER = (void*)RVA(ECL_MANAGER_ADDR);
 
         // Init
         GameGuiInit(IMPL_WIN32_DX11, RVA(D3D_DEVICE_PTR), RVA(HWND_PTR),
