@@ -106,8 +106,6 @@ namespace TH06NC {
 
         bool dlg;
 
-        bool _playLock;
-
         void Reset()
         {
             mode = 0;

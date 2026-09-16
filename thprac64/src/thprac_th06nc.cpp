@@ -2,10 +2,12 @@
 #include <wininternal.h>
 
 // TODOs:
-    // - Fix: Stage title popping up on any section except the first
+    // - Fix: Left HUD image not showing insta outside c1 like Spell Prac does
+    // - Fix: wrong BGM name in bottom right for boss BGM warps
     // - Fix: Alt tabbed game processing inputs when thprac is applied
     // - Fix: Going back to prac after Extra makes Extra the selected gamemode (affects score extends in non-extra; doesn't go back until menuing back to practice mode)
     // - Fix: Rank bounds
+    // - Add: STD timeline skip for Frame warping?
     // - All the warps
     // - Other TH6 hooks (check if needed)
     // - THOverlay, Replays, Advanced Menu, etc.
@@ -199,7 +201,8 @@ namespace TH06NC {
             }
         }
 
-        bool SectionHasDlg(int32_t section) {
+    public:
+        static bool SectionHasDlg(int32_t section) {
             switch (section) {
             case TH06_ST1_BOSS1:
             case TH06_ST2_BOSS1:
@@ -217,7 +220,6 @@ namespace TH06NC {
             }
         }
 
-    public:
         __declspec(noinline) void OpenMenu() {
             SetFade(0.8f, 0.1f);
             Open();
@@ -274,6 +276,10 @@ namespace TH06NC {
         ENEMY_MANAGER->timelineTime.current = time;
     }
 
+    inline void HideStageLogo() {
+        *(uint8_t*)(*(uintptr_t*)RVA(0xA6EC08) + 0xa24) = 2;
+    }
+
     __declspec(noinline) void THStageWarp(int stage, int portion) {
         constexpr uint32_t stageWarps[7][10] = {
             { 68, 580, 1160, 1540, 2348, 4438 }, // st1
@@ -285,11 +291,15 @@ namespace TH06NC {
             { 380, 1300, 2600, 3680, 4803, 5933, 7733 }, // ex
         };
 
-        uint32_t warp = stageWarps[stage - 1][portion - 1];
-        if (warp) ECLWarp(warp);
+        int32_t warp = stageWarps[stage][portion - 1];
+        if (warp) {
+            ECLWarp(warp);
+            HideStageLogo();
+        }
     }
 
     __declspec(noinline) void THPatch(ECLHelper& ecl, th_sections_t section) {
+        HideStageLogo();
         //todo
     }
 
@@ -387,32 +397,42 @@ namespace TH06NC {
             else if (thPracParam.score >= 10000000) GAME_MANAGER->scoreExtends = 1;
         }
 
-        if (thPracParam.frame) ECLWarp(thPracParam.frame);
-        else if (thPracParam.section) THSectionPatch();
+        int32_t frame = thPracParam.frame;
+        if (thPracParam.section) THSectionPatch();
+        else if (frame) {
+            if (frame > 60) HideStageLogo();
+            ECLWarp(frame);
+        }
     })
 
     EHOOK_DY(th06nc_bg_fastforward, 0x3b4b5, 2, { // spell prac check for fast-forwarding stage background
-        constexpr int32_t safeSpellNums[7] = { 2, 9, 24, 37, 84, 100, 121 }; // not fully sure how fast-forwarding works but giving it a spell# it expects makes it use the boss pseudo-interrupt
+        constexpr int32_t safeSpellNums[7] = { 2, 9, 24, 37, 84, 103, 121 }; // not fully sure how fast-forwarding works but giving it a spell# it expects makes it use the boss pseudo-interrupt
+        int32_t section = thPracParam.section;
 
-        if (thPracParam.mode) {
-            int32_t section = thPracParam.section;
+        if (thPracParam.mode && section) {
             int32_t stage = thPracParam.stage;
 
             if (section < 10000) { // Section
                 if (th_sections_bgm[section]) // boss section -> boss bg
                     GAME_MANAGER->spellPracSpellNum = safeSpellNums[thPracParam.stage];
+                else GAME_MANAGER->spellPracSpellNum = 0;
 
                 return; // midboss section -> midboss bg
 
             } else if (section - 10000 > mChapterSetup[thPracParam.stage][0]) {
+                GAME_MANAGER->spellPracSpellNum = 0;
                 return; // post-mid chapter -> midboss bg
             }
         }
 
         OG_INS(pCtx->Rip = RVA(0x3b4bc)); // start bg
     })
+
     EHOOK_DY(th06nc_stage_bgm, 0x3b611, 3, { // stage start bgm pick (0x80 = boss, set by spell prac)
-        if (thPracParam.mode && th_sections_bgm[thPracParam.section] && !thPracParam.dlg)
+        int32_t section = thPracParam.section;
+
+        if (thPracParam.mode && section && section < 10000 && th_sections_bgm[section]
+          && !(THGuiPrac::SectionHasDlg(section) && thPracParam.dlg))
             pCtx->Rdx += 0x80;
         else OG_INS(pCtx->Rdx += pCtx->R15);
     })
