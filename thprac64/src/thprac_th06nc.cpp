@@ -2,6 +2,7 @@
 #include <wininternal.h>
 
 // TODOs:
+    // - Fix: Stage title popping up on any section except the first
     // - Fix: Alt tabbed game processing inputs when thprac is applied
     // - Fix: Going back to prac after Extra makes Extra the selected gamemode (affects score extends in non-extra; doesn't go back until menuing back to practice mode)
     // - Fix: Rank bounds
@@ -327,7 +328,7 @@ namespace TH06NC {
         else OG_INS(pCtx->Rax = *(uint32_t*)(rsi + 0x168cc));
     })
 
-    EHOOK_DY(th06nc_confirm_prac, 0x4c474, 10, {
+    EHOOK_DY(th06nc_confirm_prac, 0x4c474, 10, { // start prompt confirm input
         uintptr_t rsi = pCtx->Rsi;
         bool inPractice = GetMemContent<bool>(rsi + 0x168d1);
 
@@ -361,7 +362,7 @@ namespace TH06NC {
         OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
 
-    EHOOK_DY(th06nc_title_screen_transition, 0x4802e, 7, {
+    EHOOK_DY(th06nc_title_screen_transition, 0x4802e, 7, { // transition to title screen (main menu state 3)
         thPracParam.Reset();
         OG_INS(*(uint32_t*)(pCtx->Rsi + 0x168b0) = (uint32_t)pCtx->R10);
     })
@@ -391,21 +392,16 @@ namespace TH06NC {
     })
 
     EHOOK_DY(th06nc_bg_fastforward, 0x3b4b5, 2, { // spell prac check for fast-forwarding stage background
-        constexpr int32_t safeSpellNums[7] = { 2, 9, 24, 37, 84, 100, 121 };
+        constexpr int32_t safeSpellNums[7] = { 2, 9, 24, 37, 84, 100, 121 }; // not fully sure how fast-forwarding works but giving it a spell# it expects makes it use the boss pseudo-interrupt
 
         if (thPracParam.mode) {
             int32_t section = thPracParam.section;
             int32_t stage = thPracParam.stage;
 
             if (section < 10000) { // Section
-                for (const auto& stage : th_sections_cba) { // must iterate all stages due to how patchy warps are implemented
-                    for (const auto& s : stage[1]) {
-                        if (s == section) { // boss section -> boss bg
-                            GAME_MANAGER->spellPracSpellNum = safeSpellNums[thPracParam.stage];
-                            return;
-                        }
-                    }
-                }
+                if (th_sections_bgm[section]) // boss section -> boss bg
+                    GAME_MANAGER->spellPracSpellNum = safeSpellNums[thPracParam.stage];
+
                 return; // midboss section -> midboss bg
 
             } else if (section - 10000 > mChapterSetup[thPracParam.stage][0]) {
@@ -414,6 +410,11 @@ namespace TH06NC {
         }
 
         OG_INS(pCtx->Rip = RVA(0x3b4bc)); // start bg
+    })
+    EHOOK_DY(th06nc_stage_bgm, 0x3b611, 3, { // stage start bgm pick (0x80 = boss, set by spell prac)
+        if (thPracParam.mode && th_sections_bgm[thPracParam.section] && !thPracParam.dlg)
+            pCtx->Rdx += 0x80;
+        else OG_INS(pCtx->Rdx += pCtx->R15);
     })
     HOOKSET_ENDDEF()
 
