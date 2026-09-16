@@ -276,8 +276,9 @@ namespace TH06NC {
         ENEMY_MANAGER->timelineTime.current = time;
     }
 
-    inline void HideStageLogo() {
-        *(uint8_t*)(*(uintptr_t*)RVA(0xA6EC08) + 0xa24) = 2;
+    inline void FixStageVisuals() {
+        *(uint8_t*)(*(uintptr_t*)RVA(0xA6EC08) + 0xa24) = 2; // hide stage logo/title
+        *(uint8_t*)(GetMemAddr<uintptr_t>(RVA(0x4ff2b8), 0x38, 0x480) + 0xef) = 255; // show stage HUD illustration
     }
 
     __declspec(noinline) void THStageWarp(int stage, int portion) {
@@ -294,12 +295,12 @@ namespace TH06NC {
         int32_t warp = stageWarps[stage][portion - 1];
         if (warp) {
             ECLWarp(warp);
-            HideStageLogo();
+            FixStageVisuals();
         }
     }
 
     __declspec(noinline) void THPatch(ECLHelper& ecl, th_sections_t section) {
-        HideStageLogo();
+        FixStageVisuals();
         //todo
     }
 
@@ -400,7 +401,7 @@ namespace TH06NC {
         int32_t frame = thPracParam.frame;
         if (thPracParam.section) THSectionPatch();
         else if (frame) {
-            if (frame > 60) HideStageLogo();
+            if (frame > 60) FixStageVisuals();
             ECLWarp(frame);
         }
     })
