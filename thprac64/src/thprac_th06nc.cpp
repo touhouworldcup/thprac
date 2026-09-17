@@ -281,7 +281,7 @@ namespace TH06NC {
         constexpr int32_t d = 40;
         constexpr int32_t stageWarps[7][10] = {
             { 0, 594 - d, 1174 - d, 1554 - d, 2282 - d, 4372 - d }, // st1
-            { 0, 924, 3528, 4563 }, // st2
+            { 0, 894 - d, 3498 - d, 4533 - d }, // st2
             { 0, 1050, 1670, 2762, 3807, 4118, 5274 }, // st3
             { 0, 1454, 2328, 3392, 4872, 5712, 7434, 8354, 9784 }, // st4
             { 0, 1352, 2292, 3814, 6774 }, // st5
@@ -300,17 +300,18 @@ namespace TH06NC {
         ecl << pair{ offset, ecl_time };
     }
 
-    void ECLSetArg(ECLHelper& ecl, int offset, int argOff, int value) {
-        ecl << pair{ offset + 0xc + argOff, value };
+    template<typename... KVPairs>
+    void ECLSetArgs(ECLHelper& ecl, int offset, KVPairs&&... args) {
+        (ecl << ... << pair{ offset + 0xc + args.first, args.second });
+    }
+
+    void ECLMakeCall(ECLHelper& ecl, int offset, int32_t subNum, int32_t ecl_time = 0) {
+        ecl.SetPos(offset);
+        ecl << ecl_time << (int16_t)0x23 << (int16_t)0x18 << 0x00ffff00 << subNum;
     }
 
     void ECLDisable(ECLHelper& ecl, int offset) {
         ecl << pair{ offset + 0x4, (int16_t)0 };
-    }
-
-    void ECLSetHealth(ECLHelper& ecl, int offset, int32_t ecl_time, int32_t time) {
-        ecl.SetPos(offset);
-        ecl << ecl_time << 0x0010006f << 0x00ffff00 << time;
     }
 
     int32_t healthOverride;
@@ -334,53 +335,53 @@ namespace TH06NC {
         switch (stage) {
         case 0: { // Stage 1
             constexpr uint32_t st1MidbossTime = 1882;
-            constexpr uint32_t st1BossTime = 5093;
+
+            auto s1_boss_warp_skip_move = [&]() {
+                constexpr uint32_t st1BossTime = 5093;
+                constexpr uint32_t st1BossMoveInterp = 0x1744;
+
+                ECLWarp(st1BossTime);
+                ECLSetArgs(ecl, st1BossMoveInterp, pair{ 0, 0 });
+            };
 
             switch (section) {
-            case TH06_ST1_MID1:
+            case TH06_ST1_MID1: // Midboss
                 ECLWarp(st1MidbossTime);
                 break;
 
-            case TH06_ST1_MID2: {
+            case TH06_ST1_MID2: // Midspell (NHL)
                 ECLWarp(st1MidbossTime);
                 TriggerHealthInterrupt(500);
                 break;
-            }
 
-            case TH06_ST1_BOSS1: {
+            case TH06_ST1_BOSS1: { // Non 1
                 constexpr uint32_t st1BossDlgTime = 5092;
-                ECLWarp(thPracParam.dlg ? st1BossDlgTime : st1BossTime);
+                thPracParam.dlg ? ECLWarp(st1BossDlgTime) : s1_boss_warp_skip_move();
                 break;
             }
 
-            case TH06_ST1_BOSS2: {
+            case TH06_ST1_BOSS2: { // Spell 1 (NHL)
                 constexpr uint32_t st1bsNon1TimeThreshold = 0x1870;
 
-                ECLWarp(st1BossTime);
-                ECLSetArg(ecl, st1bsNon1TimeThreshold, 0, 0);
+                s1_boss_warp_skip_move();
+                ECLSetArgs(ecl, st1bsNon1TimeThreshold, pair{ 0, 0 });
                 break;
             }
 
-            case TH06_ST1_BOSS4: {
+            case TH06_ST1_BOSS4: { // Spell 2
                 constexpr uint32_t st1bsNon2TimeThreshold = 0x2b20;
-                ECLSetArg(ecl, st1bsNon2TimeThreshold, 0, 0);
+                ECLSetArgs(ecl, st1bsNon2TimeThreshold, pair{ 0, 0 });
                 [[fallthrough]];
             }
-            case TH06_ST1_BOSS3: {
-                constexpr uint32_t st1bsNon1PreCallIns1 = 0x18dc;
-                constexpr uint32_t st1bsNon1PreCallIns2 = 0x18fc;
-                constexpr uint32_t st1bsNon1Sub15Call = 0x191c;
+            case TH06_ST1_BOSS3: { // Non 2
+                constexpr uint32_t st1bsNon1FirstDelayedIns = 0x18dc;
                 constexpr uint32_t st1bsNon2ItemDrop = 0x2b50;
 
-                ECLWarp(st1BossTime);
-                ECLSetInsTime(ecl, st1bsNon1PreCallIns1, 0);
-                ECLSetInsTime(ecl, st1bsNon1PreCallIns2, 0);
-                ECLSetInsTime(ecl, st1bsNon1Sub15Call, 0);
-                ecl << pair{ st1bsNon1Sub15Call + 0xc, 19 }; // call sub 19 (non2)
+                s1_boss_warp_skip_move();
+                ECLMakeCall(ecl, st1bsNon1FirstDelayedIns, 19, 0); // call sub 19 (non2)
                 ECLDisable(ecl, st1bsNon2ItemDrop);
                 break;
             }
-
 
             default: break;
             }
@@ -388,7 +389,75 @@ namespace TH06NC {
         }
 
         case 1: { // Stage 2
+            constexpr uint32_t st2MidbossTime = 2498;
+            constexpr uint32_t st2bsNon2TimeThreshold = 0x20f4;
+
+            auto s2_boss_warp_skip_fadein = [&]() {
+                constexpr uint32_t st2BossTime = 5894;
+
+                ECLWarp(st2BossTime);
+                ECLDisable(ecl, 0x184c);
+            };
+
+            auto s2_boss_non2_warp = [&]() {
+                constexpr uint32_t st2bsNon1FirstDelayedIns = 0x192c;
+                constexpr uint32_t st2bsNon2ItemDrop = 0x2124;
+
+                s2_boss_warp_skip_fadein();
+                ECLMakeCall(ecl, st2bsNon1FirstDelayedIns, 25, 0); // call sub 25 (non2)
+                ECLDisable(ecl, st2bsNon2ItemDrop);
+            };
+
             switch (section) {
+            case TH06::TH06_ST2_MID1: // Midboss
+                ECLWarp(st2MidbossTime);
+                break;
+
+            case TH06::TH06_ST2_BOSS1: { // Non 1
+                constexpr uint32_t st2BossDlgTime = 5893;
+                thPracParam.dlg ? ECLWarp(st2BossDlgTime) : s2_boss_warp_skip_fadein();
+                break;
+            }
+
+            case TH06::TH06_ST2_BOSS2: { // Spell 1
+                constexpr uint32_t st2bsNon1TimeThreshold = 0x18ec;
+
+                s2_boss_warp_skip_fadein();
+                ECLSetArgs(ecl, st2bsNon1TimeThreshold, pair{ 0, 0 });
+                break;
+            }
+
+            case TH06::TH06_ST2_BOSS3: // Non 2
+                s2_boss_non2_warp();
+                break;
+
+            case TH06::TH06_ST2_BOSS4: // Spell 2
+                s2_boss_non2_warp();
+                ECLSetArgs(ecl, st2bsNon2TimeThreshold, pair{ 0, 0 });
+                break;
+
+            case TH06::TH06_ST2_BOSS5: { // Spell 3
+                constexpr uint32_t st2bsNon2HealthThreshold = 0x20d4;
+                constexpr uint32_t st2bsNon2TimeCallbackSub = 0x2104;
+                constexpr uint32_t st2bsNon3DropItems = 0x377c;
+                constexpr uint32_t st2bsNon3Particle = 0x3754;
+                constexpr uint32_t st2bsNon3DelayedIns1 = 0x37b0;
+                constexpr uint32_t st2bsNon3DelayedIns2 = 0x37c0;
+                constexpr uint32_t st2bsNon3DelayedIns3 = 0x37d8;
+
+                s2_boss_non2_warp();
+                ECLSetArgs(ecl, st2bsNon2HealthThreshold, pair{ 0, 1400 });
+                ECLSetArgs(ecl, st2bsNon2TimeCallbackSub, pair{ 0, 39 }); // call sub39
+                ECLSetArgs(ecl, st2bsNon2TimeThreshold, pair{ 0, 0 });
+                ECLDisable(ecl, st2bsNon3DropItems);
+                ECLDisable(ecl, st2bsNon3Particle);
+                ECLSetInsTime(ecl, st2bsNon3DelayedIns1, 0);
+                ECLSetInsTime(ecl, st2bsNon3DelayedIns2, 0);
+                ECLSetInsTime(ecl, st2bsNon3DelayedIns3, 0);
+                break;
+            }
+
+
             default: break;
             }
             break;

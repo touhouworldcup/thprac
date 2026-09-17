@@ -1065,6 +1065,7 @@ namespace TH06 {
 
         case 1: { // Stage 2
             constexpr uint32_t st2MidbossTime = 2588;
+            constexpr uint32_t st2BossTime = 5984;
 
             auto s2b_nd = [&]() {
                 ECLWarp(0x1760);
@@ -1075,19 +1076,18 @@ namespace TH06 {
                 ecl << pair{ 0x196c, 0x0 };
                 ecl << pair{ 0x198c, 0x0 };
                 ecl << pair{ 0x19a0, 0x0 };
-                };
+            };
 
             switch (section) {
             case TH06::TH06_ST2_MID1:
                 ECLWarp(st2MidbossTime);
                 break;
 
-            case TH06::TH06_ST2_BOSS1:
-                if (thPracParam.dlg)
-                    ECLWarp(0x175f);
-                else
-                    ECLWarp(0x1760);
+            case TH06::TH06_ST2_BOSS1: {
+                constexpr uint32_t st2BossDlgTime = 5983;
+                ECLWarp(thPracParam.dlg ? st2BossDlgTime : st2BossTime);
                 break;
+            }
 
             case TH06::TH06_ST2_BOSS2:
                 s2b_nd();
