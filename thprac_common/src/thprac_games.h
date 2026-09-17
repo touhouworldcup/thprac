@@ -565,8 +565,7 @@ public:
     }
     void SetPos(size_t pos)
     {
-        if (pos >= mSize)
-            return;
+        if (pos >= mSize) return;
         mPos = pos;
     }
     size_t GetPos()
@@ -591,15 +590,8 @@ public:
         Read(&data, sizeof(T));
         return *this;
     }
-    template <typename T>
-    VFile& operator<<(std::pair<size_t, T> data)
-    {
-        SetPos(data.first);
-        operator<<(data.second);
-        return *this;
-    }
-    template <typename T>
-    VFile& operator<<(std::pair<int, T> data)
+    template<typename T1, typename T2>
+    VFile& operator<<(std::pair<T1, T2> data)
     {
         SetPos(data.first);
         operator<<(data.second);

@@ -952,15 +952,15 @@ namespace TH06 {
     {
         ENEMY_MANAGER->timelineTime.current = time;
     }
-    void ECLSetHealth(ECLHelper& ecl, int offset, int32_t ecl_time, int32_t time)
+    void ECLSetHealth(ECLHelper& ecl, int offset, int32_t ecl_time, int32_t health)
     {
         ecl.SetPos(offset);
-        ecl << ecl_time << 0x0010006f << 0x00ffff00 << time;
+        ecl << ecl_time << 0x0010006f << 0x00ffff00 << health;
     }
-    void ECLSetTime(ECLHelper& ecl, int offset, int32_t ecl_time, int32_t health)
+    void ECLSetTime(ECLHelper& ecl, int offset, int32_t ecl_time, int32_t time)
     {
         ecl.SetPos(offset);
-        ecl << ecl_time << 0x00100073 << 0x00ffff00 << health;
+        ecl << ecl_time << 0x00100073 << 0x00ffff00 << time;
     }
     void ECLStall(ECLHelper& ecl, int offset)
     {
@@ -1035,50 +1035,82 @@ namespace TH06 {
             ecl << pair{0x342e, 0x0};
         };
 
-        constexpr unsigned int st1MidbossTime = 0x7d8; // frame 2008
+        constexpr uint32_t st1MidbossTime = 2008;
+        constexpr uint32_t st1BossTime = 5279;
+
+        constexpr uint32_t st1PreSub12Ins1 = 0x16a6;
+        constexpr uint32_t st1PreSub12Ins2 = 0x16c6;
+        constexpr uint32_t st1Sub12Call = 0x16e6;
+
+        constexpr uint32_t st1bsNon2ItemDrop = 0x291a;
+        constexpr uint32_t st1bsNon2PreSub18Ins = 0x293a;
+        constexpr uint32_t st1bsNon2Sub18Call = 0x294a;
 
         switch (section) {
-        case TH06::TH06_ST1_MID1:
+        case TH06_ST1_MID1:
             ECLWarp(st1MidbossTime);
-            //ecl << pair{0x0ab0, 60} << pair{0x0ad0, 60};
             break;
 
-        case TH06::TH06_ST1_MID2: {
-            ECLWarp(st1MidbossTime);
-            //ecl << pair{0x0ab0, 60} << pair{0x0ad0, 60};
+        case TH06_ST1_MID2: {
+            constexpr uint32_t st1PreSoundIns1 = 0x0ab0;
+            constexpr uint32_t st1PreSoundIns2 = 0x0ad0;
+            constexpr uint32_t st1MidbossSoundIns = 0x0af0;
 
-            constexpr unsigned int st1MidbossSoundIns = 0x0af0;
+            ECLWarp(st1MidbossTime);
+            ecl << pair{ st1PreSoundIns1, 60 }
+                << pair{ st1PreSoundIns2, 60 };
             ECLSetHealth(ecl, st1MidbossSoundIns, 60, 499);
             break;
         }
-        case TH06::TH06_ST1_BOSS1:
+
+        case TH06_ST1_BOSS1: {
+            constexpr uint32_t st1BossDlgTime = 5278;
+
             if (thPracParam.dlg)
-                ECLWarp(0x149e);
+                ECLWarp(st1BossDlgTime);
             else {
-                ECLWarp(0x149f);
-                ecl << pair{0x16a6, 0} << pair{0x16c6, 0} << pair{0x16e6, 0x50};
+                ECLWarp(st1BossTime);
+                ecl << pair{ st1PreSub12Ins1, 0 }
+                    << pair{ st1PreSub12Ins2, 0 }
+                    << pair{ st1Sub12Call, 0x50 };
             }
             break;
-        case TH06::TH06_ST1_BOSS2:
-            ECLWarp(0x149f);
-            ecl << pair{0x16a6, 0} << pair{0x16c6, 0} << pair{0x16e6, 0x50};
-            ECLSetTime(ecl, 0x16e6, 0, 0);
-            ECLStall(ecl, 0x16f6);
+        }
+
+        case TH06_ST1_BOSS2:
+            ECLWarp(st1BossTime);
+            ecl << pair{ st1PreSub12Ins1, 0 }
+                << pair{ st1PreSub12Ins2, 0 }
+                << pair{ st1Sub12Call, 0x50 };
+            ECLSetTime(ecl, st1Sub12Call, 0, 0);
+            ECLStall(ecl, st1Sub12Call + 0x10);
             break;
-        case TH06::TH06_ST1_BOSS3:
-            ECLWarp(0x149f);
-            ecl << pair{0x16a6, 0} << pair{0x16c6, 0} << pair{0x16e6, 0x50}
-                << pair{0x16f2, 0x10} << pair{0x293a, 0} << pair{0x294a, 0}
-                << pair{0x291e, (int16_t)0};
+
+        case TH06_ST1_BOSS3: {
+            ECLWarp(st1BossTime);
+            ecl << pair{ st1PreSub12Ins1, 0 }
+                << pair{ st1PreSub12Ins2, 0 }
+                << pair{ st1Sub12Call, 0x50 }
+                << pair{ st1Sub12Call + 0xc, 16 } // set sub ordinal to 16 (non2)
+                << pair{ st1bsNon2ItemDrop + 0x4, (int16_t)0 }
+                << pair{ st1bsNon2PreSub18Ins, 0}
+                << pair{ st1bsNon2Sub18Call, 0};
             break;
+        }
+
         case TH06::TH06_ST1_BOSS4:
-            ECLWarp(0x149f);
-            ecl << pair{0x16a6, 0} << pair{0x16c6, 0} << pair{0x16e6, 0x50}
-                << pair{0x16f2, 0x10} << pair{0x293a, 0} << pair{0x294a, 0}
-                << pair{0x291e, (int16_t)0};
-            ECLSetTime(ecl, 0x294a, 0, 0);
-            ECLStall(ecl, 0x295a);
+            ECLWarp(st1BossTime);
+            ecl << pair{ st1PreSub12Ins1, 0 }
+                << pair{ st1PreSub12Ins2, 0 }
+                << pair{ st1Sub12Call, 0x50 }
+                << pair{ st1Sub12Call + 0xc, 16 } // set sub ordinal to 16 (non2)
+                << pair{ st1bsNon2PreSub18Ins, 0}
+                << pair{ st1bsNon2Sub18Call, 0}
+                << pair{ st1bsNon2ItemDrop + 0x4, (int16_t)0};
+            ECLSetTime(ecl, st1bsNon2Sub18Call, 0, 0);
+            ECLStall(ecl, st1bsNon2Sub18Call + 0x10);
             break;
+
         case TH06::TH06_ST2_MID1:
             ECLWarp(0xa1c);
             break;
@@ -1724,25 +1756,27 @@ namespace TH06 {
     }
     __declspec(noinline) void THStageWarp([[maybe_unused]] ECLHelper& ecl, int stage, int portion)
     {
+        constexpr int32_t d = 60;
+
         if (stage == 1) {
             switch (portion) {
             case 1:
-                ECLWarp(68);
+                ECLWarp(128 - d);
                 break;
             case 2:
-                ECLWarp(580);
+                ECLWarp(640 - d);
                 break;
             case 3:
-                ECLWarp(1160);
+                ECLWarp(1220 - d);
                 break;
             case 4:
-                ECLWarp(1540);
+                ECLWarp(1600 - d);
                 break;
             case 5:
-                ECLWarp(2348);
+                ECLWarp(2408 - d);
                 break;
             case 6:
-                ECLWarp(4438);
+                ECLWarp(4498 - d);
                 break;
             default:
                 break;

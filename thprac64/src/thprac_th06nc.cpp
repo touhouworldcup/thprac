@@ -2,7 +2,6 @@
 #include <wininternal.h>
 
 // TODOs:
-    // - Fix: Alt tabbed game processing inputs when thprac is applied
     // - Fix: Going back to prac after Extra makes Extra the selected gamemode (affects score extends in non-extra; doesn't go back until menuing back to practice mode)
     // - Fix: Rank bounds
     // - Add: STD timeline skip for Frame warping? Per-stage frame cap?
@@ -256,16 +255,16 @@ namespace TH06NC {
     };
 
 
-    // ECL Patching
-    void THPatch(ECLHelper&, th_sections_t);
+    // ECL Patching Tools
+    void THPatch(ECLHelper&, int32_t, th_sections_t);
     void THStageWarp(int, int);
 
     __declspec(noinline) void THSectionPatch() {
         ECLHelper ecl;
-        ecl.SetBaseAddr((void*)ECL_MANAGER_ADDR);
-        auto section = thPracParam.section;
+        ecl.SetBaseAddr(ECL_MANAGER);
+        int32_t section = thPracParam.section;
 
-        if (section < 10000) THPatch(ecl, (th_sections_t)section);
+        if (section < 10000) THPatch(ecl, thPracParam.stage, (th_sections_t)section);
         else THStageWarp(thPracParam.stage, section - 10000);
     }
 
@@ -273,20 +272,21 @@ namespace TH06NC {
         ENEMY_MANAGER->timelineTime.current = time;
     }
 
-    inline void FixStageVisuals() {
+    void FixStageVisuals() {
         *(uint8_t*)(*(uintptr_t*)RVA(0xA6EC08) + 0xa24) = 2; // hide stage logo/title
         *(uint8_t*)(GetMemAddr<uintptr_t>(RVA(0x4ff2b8), 0x38, 0x480) + 0xef) = 255; // show stage HUD illustration
     }
 
-    __declspec(noinline) void THStageWarp(int stage, int portion) {
-        constexpr uint32_t stageWarps[7][10] = {
-            { 68, 580, 1160, 1540, 2348, 4438 }, // st1
-            { 270, 924, 3528, 4563 }, // st2
-            { 340, 1050, 1670, 2762, 3807, 4118, 5274 }, // st3
-            { 380, 1454, 2328, 3392, 4872, 5712, 7434, 8354, 9784 }, // st4
-            { 350, 1352, 2292, 3814, 6774 }, // st5
-            { 380, 1484 }, // st6
-            { 380, 1300, 2600, 3680, 4803, 5933, 7733 }, // ex
+    __declspec(noinline) void THStageWarp(int32_t stage, int32_t portion) {
+        constexpr int32_t d = 40;
+        constexpr int32_t stageWarps[7][10] = {
+            { 0, 594 - d, 1174 - d, 1554 - d, 2282 - d, 4372 - d }, // st1
+            { 0, 924, 3528, 4563 }, // st2
+            { 0, 1050, 1670, 2762, 3807, 4118, 5274 }, // st3
+            { 0, 1454, 2328, 3392, 4872, 5712, 7434, 8354, 9784 }, // st4
+            { 0, 1352, 2292, 3814, 6774 }, // st5
+            { 0, 1484 }, // st6
+            { 0, 1300, 2600, 3680, 4803, 5933, 7733 }, // ex
         };
 
         int32_t warp = stageWarps[stage][portion - 1];
@@ -296,9 +296,141 @@ namespace TH06NC {
         }
     }
 
-    __declspec(noinline) void THPatch(ECLHelper& ecl, th_sections_t section) {
+    void ECLSetInsTime(ECLHelper& ecl, int offset, int32_t ecl_time = 0) {
+        ecl << pair{ offset, ecl_time };
+    }
+
+    void ECLSetArg(ECLHelper& ecl, int offset, int argOff, int value) {
+        ecl << pair{ offset + 0xc + argOff, value };
+    }
+
+    void ECLDisable(ECLHelper& ecl, int offset) {
+        ecl << pair{ offset + 0x4, (int16_t)0 };
+    }
+
+    void ECLSetHealth(ECLHelper& ecl, int offset, int32_t ecl_time, int32_t time) {
+        ecl.SetPos(offset);
+        ecl << ecl_time << 0x0010006f << 0x00ffff00 << time;
+    }
+
+    int32_t healthOverride;
+    EHOOK_ST(th06nc_trigger_health_interrupt, 0x36248, 3, {
+        uintptr_t enemyAddr = pCtx->Rbx;
+        *(int32_t*)(enemyAddr + 0x234) = healthOverride;
+
+        OG_INS(pCtx->Rax = enemyAddr);
+        self->Disable();
+    });
+
+    void TriggerHealthInterrupt(int32_t threshold) {
+        th06nc_trigger_health_interrupt.Enable();
+        healthOverride = threshold - 1;
+    }
+
+    // ECL Patching
+    __declspec(noinline) void THPatch(ECLHelper& ecl, int32_t stage, th_sections_t section) {
         FixStageVisuals();
-        //todo
+
+        switch (stage) {
+        case 0: { // Stage 1
+            constexpr uint32_t st1MidbossTime = 1882;
+            constexpr uint32_t st1BossTime = 5093;
+
+            switch (section) {
+            case TH06_ST1_MID1:
+                ECLWarp(st1MidbossTime);
+                break;
+
+            case TH06_ST1_MID2: {
+                ECLWarp(st1MidbossTime);
+                TriggerHealthInterrupt(500);
+                break;
+            }
+
+            case TH06_ST1_BOSS1: {
+                constexpr uint32_t st1BossDlgTime = 5092;
+                ECLWarp(thPracParam.dlg ? st1BossDlgTime : st1BossTime);
+                break;
+            }
+
+            case TH06_ST1_BOSS2: {
+                constexpr uint32_t st1bsNon1TimeThreshold = 0x1870;
+
+                ECLWarp(st1BossTime);
+                ECLSetArg(ecl, st1bsNon1TimeThreshold, 0, 0);
+                break;
+            }
+
+            case TH06_ST1_BOSS4: {
+                constexpr uint32_t st1bsNon2TimeThreshold = 0x2b20;
+                ECLSetArg(ecl, st1bsNon2TimeThreshold, 0, 0);
+                [[fallthrough]];
+            }
+            case TH06_ST1_BOSS3: {
+                constexpr uint32_t st1bsNon1PreCallIns1 = 0x18dc;
+                constexpr uint32_t st1bsNon1PreCallIns2 = 0x18fc;
+                constexpr uint32_t st1bsNon1Sub15Call = 0x191c;
+                constexpr uint32_t st1bsNon2ItemDrop = 0x2b50;
+
+                ECLWarp(st1BossTime);
+                ECLSetInsTime(ecl, st1bsNon1PreCallIns1, 0);
+                ECLSetInsTime(ecl, st1bsNon1PreCallIns2, 0);
+                ECLSetInsTime(ecl, st1bsNon1Sub15Call, 0);
+                ecl << pair{ st1bsNon1Sub15Call + 0xc, 19 }; // call sub 19 (non2)
+                ECLDisable(ecl, st1bsNon2ItemDrop);
+                break;
+            }
+
+
+            default: break;
+            }
+            break;
+        }
+
+        case 1: { // Stage 2
+            switch (section) {
+            default: break;
+            }
+            break;
+        }
+
+        case 2: { // Stage 3
+            switch (section) {
+            default: break;
+            }
+            break;
+        }
+
+        case 3: { // Stage 4
+            switch (section) {
+            default: break;
+            }
+            break;
+        }
+
+        case 4: { // Stage 5
+            switch (section) {
+            default: break;
+            }
+            break;
+        }
+
+        case 5: { // Stage 6
+            switch (section) {
+            default: break;
+            }
+            break;
+        }
+
+        case 6: { // Extra Stage
+            switch (section) {
+            default: break;
+            }
+            break;
+        }
+
+        default: break;
+        }
     }
 
 
@@ -479,6 +611,7 @@ namespace TH06NC {
         //th06_sfx_fix.Disable();
         //th06_bomb_esc_r_prevent_desyncs.Setup();
         //th06_bomb_esc_r_prevent_desyncs.Disable();
+        th06nc_trigger_health_interrupt.Setup();
 
         // Reset thPracParam
         thPracParam.Reset();
