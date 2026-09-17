@@ -1067,15 +1067,27 @@ namespace TH06 {
             constexpr uint32_t st2MidbossTime = 2588;
             constexpr uint32_t st2BossTime = 5984;
 
-            auto s2b_nd = [&]() {
-                ECLWarp(0x1760);
-                ecl << pair{ 0x18fc, 0x0 };
-                ecl << pair{ 0x191c, 0x0 };
-                ecl << pair{ 0x192c, 0x0 };
-                ecl << pair{ 0x194c, 0x0 };
-                ecl << pair{ 0x196c, 0x0 };
-                ecl << pair{ 0x198c, 0x0 };
-                ecl << pair{ 0x19a0, 0x0 };
+            constexpr uint32_t st2bsNon1Sub23Call = 0x19a0;
+            constexpr uint32_t st2bsNon2ItemDrop = 0x2104;
+            constexpr uint32_t st2bsNon2PreCallIns = 0x2138;
+            constexpr uint32_t st2bsNon2Sub26Call = 0x2148;
+
+            auto s2_boss_non1_warp = [&]() {
+                constexpr uint32_t st2bsNon1DelayedIns1 = 0x18fc;
+                constexpr uint32_t st2bsNon1DelayedIns2 = 0x191c;
+                constexpr uint32_t st2bsNon1DelayedIns3 = 0x192c;
+                constexpr uint32_t st2bsNon1DelayedIns4 = 0x194c;
+                constexpr uint32_t st2bsNon1DelayedIns5 = 0x196c;
+                constexpr uint32_t st2bsNon1DelayedIns6 = 0x198c;
+
+                ECLWarp(st2BossTime);
+                ecl << pair{ st2bsNon1DelayedIns1, 0x0 }
+                    << pair{ st2bsNon1DelayedIns2, 0x0 }
+                    << pair{ st2bsNon1DelayedIns3, 0x0 }
+                    << pair{ st2bsNon1DelayedIns4, 0x0 }
+                    << pair{ st2bsNon1DelayedIns5, 0x0 }
+                    << pair{ st2bsNon1DelayedIns6, 0x0 }
+                    << pair{ st2bsNon1Sub23Call, 0x0 };
             };
 
             switch (section) {
@@ -1090,45 +1102,54 @@ namespace TH06 {
             }
 
             case TH06::TH06_ST2_BOSS2:
-                s2b_nd();
-                ECLSetTime(ecl, 0x19a0, 0x0, 0x0);
-                ECLStall(ecl, 0x19b0);
+                s2_boss_non1_warp();
+                ECLSetTime(ecl, st2bsNon1Sub23Call, 0x0, 0x0);
+                ECLStall(ecl, st2bsNon1Sub23Call + 0x10);
                 break;
 
             case TH06::TH06_ST2_BOSS3:
-                s2b_nd();
-                ecl << pair{ 0x19ac, 0x19 };
-                ecl << pair{ 0x2138, 0x0 };
-                ecl << pair{ 0x2148, 0x60 };
-                ecl << pair{ 0x2110, (int16_t)0x0 };
+                s2_boss_non1_warp();
+                ecl << pair{ st2bsNon1Sub23Call + 0xc, 25 }
+                    << pair{ st2bsNon2ItemDrop + 0xc, (int16_t)0x0 }
+                    << pair{ st2bsNon2PreCallIns, 0x0 }
+                    << pair{ st2bsNon2Sub26Call, 0x60 };
                 break;
 
             case TH06::TH06_ST2_BOSS4:
-                s2b_nd();
-                ecl << pair{ 0x19ac, 0x19 };
-                ecl << pair{ 0x2138, 0x0 };
-                ecl << pair{ 0x2148, 0x60 };
-                ecl << pair{ 0x2110, (int16_t)0x0 };
-                ECLSetTime(ecl, 0x2148, 0x30, 0x0);
-                ECLStall(ecl, 0x2158);
+                s2_boss_non1_warp();
+                ecl << pair{ st2bsNon1Sub23Call + 0xc, 25 }
+                    << pair{ st2bsNon2ItemDrop + 0xc, (int16_t)0x0 }
+                    << pair{ st2bsNon2PreCallIns, 0x0 }
+                    << pair{ st2bsNon2Sub26Call, 0x60 };
+                ECLSetTime(ecl, st2bsNon2Sub26Call, 0x30, 0x0);
+                ECLStall(ecl, st2bsNon2Sub26Call + 0x10);
                 break;
 
-            case TH06::TH06_ST2_BOSS5:
-                s2b_nd();
-                ecl << pair{ 0x19ac, 0x19 };
-                ecl << pair{ 0x2138, 0x0 };
-                ecl << pair{ 0x2148, 0x60 };
-                ecl << pair{ 0x2110, (int16_t)0x0 };
-                ecl << pair{ 0x2148, 0x0 };
-                ecl << pair{ 0x2154, 0x20 };
-                ecl << pair{ 0x33a2, (int16_t)0x0 };
-                ecl << pair{ 0x337a, (int16_t)0x0 };
-                ecl << pair{ 0x3392, (int16_t)0x0 };
-                ecl << pair{ 0x2090, 0x578 };
-                ecl << pair{ 0x20b0, 0xffffffff };
-                ecl << pair{ 0x20c0, 0xffffffff };
-                ecl << pair{ 0x20f0, 0x1c };
+            case TH06::TH06_ST2_BOSS5: {
+                constexpr uint32_t st2bsNon2LifeSet = 0x2084;
+                constexpr uint32_t st2bsNon2LifeThresholdE = 0x20a4;
+                constexpr uint32_t st2bsNon2LifeThresholdNHL = 0x20b4;
+                constexpr uint32_t st2bsNon2TimeCallback = 0x20e4;
+
+                constexpr uint32_t st2bsNon3Particle = 0x3376;
+                constexpr uint32_t st2bsNon3SFX = 0x338e;
+                constexpr uint32_t st2bsNon3ItemDrop = 0x339e;
+
+                s2_boss_non1_warp();
+                ecl << pair{ st2bsNon1Sub23Call + 0xc, 25 }
+                    << pair{ st2bsNon2ItemDrop + 0xc, (int16_t)0x0 }
+                    << pair{ st2bsNon2PreCallIns, 0x0 }
+                    << pair{ st2bsNon2Sub26Call, 0x0 }
+                    << pair{ st2bsNon2Sub26Call + 0xc, 32 } // sub 32 (non3)
+                    << pair{ st2bsNon3ItemDrop + 0x4, (int16_t)0x0 }
+                    << pair{ st2bsNon3Particle + 0x4, (int16_t)0x0 }
+                    << pair{ st2bsNon3SFX + 0x4, (int16_t)0x0 }
+                    << pair{ st2bsNon2LifeSet + 0xc, 1400 }
+                    << pair{ st2bsNon2LifeThresholdE + 0xc, 0xffffffff }
+                    << pair{ st2bsNon2LifeThresholdNHL + 0xc, 0xffffffff }
+                    << pair{ st2bsNon2TimeCallback + 0xc, 28 }; // sub 28
                 break;
+            }
 
             default: break;
             }
