@@ -1088,7 +1088,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 1, 2, 2 ],
-        "!ENHL": [ "夜符「夜雀」", "Night Sign \"Night Bird\"", "夜符「ナイトバード」" ]
+        "!NHL": [ "夜符「夜雀」", "Night Sign \"Night Bird\"", "夜符「ナイトバード」" ]
       },
       "TH06_ST1_BOSS3": {
         "bgm": 1,
