@@ -247,6 +247,7 @@ namespace TH11 {
         }
         void PracticeMenu()
         {
+            int warpType = *mWarp;
             mMode();
             if (mStage())
                 *mSection = *mChapter = 0;
@@ -254,7 +255,7 @@ namespace TH11 {
                 if (mWarp())
                     *mSection = *mChapter = *mPhase = 0;
                 if (*mWarp) {
-                    if (*mStage == 3) {
+                    if (*mStage == 3 && (warpType == 3 || warpType == 5)) {
                         mSpellCategory();
                     }
                     SectionWidget();
