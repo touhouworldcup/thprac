@@ -16,6 +16,7 @@ using std::pair;
 namespace TH06NC {
     THPracParam thPracParam{};
     GameManager* GAME_MANAGER;
+    Player* PLAYER;
     EnemyManager* ENEMY_MANAGER;
     StageBackground* STAGE_BACKGROUND;
     void* ECL_MANAGER;
@@ -272,9 +273,13 @@ namespace TH06NC {
         ENEMY_MANAGER->timelineTime.current = time;
     }
 
-    void FixStageVisuals() {
+    void PostStartWarpAdjustments() {
         *(uint8_t*)(*(uintptr_t*)RVA(0xA6EC08) + 0xa24) = 2; // hide stage logo/title
         *(uint8_t*)(GetMemAddr<uintptr_t>(RVA(0x4ff2b8), 0x38, 0x480) + 0xef) = 255; // show stage HUD illustration
+
+        // disable iframes
+        PLAYER->player_state = 0;
+        PLAYER->state_timer = 0;
     }
 
     __declspec(noinline) void THStageWarp(int32_t stage, int32_t portion) {
@@ -282,7 +287,7 @@ namespace TH06NC {
         constexpr int32_t stageWarps[7][10] = {
             { 0, 594 - d, 1174 - d, 1554 - d, 2282 - d, 4372 - d }, // st1
             { 0, 894 - d, 3498 - d, 4533 - d }, // st2
-            { 0, 1050, 1670, 2762, 3807, 4118, 5274 }, // st3
+            { 0, 910 - d, 1530 - d, 2622 - d, 3476 + 1, 3898 - d, 5054 - d }, // st3
             { 0, 1454, 2328, 3392, 4872, 5712, 7434, 8354, 9784 }, // st4
             { 0, 1352, 2292, 3814, 6774 }, // st5
             { 0, 1484 }, // st6
@@ -292,12 +297,12 @@ namespace TH06NC {
         int32_t warp = stageWarps[stage][portion - 1];
         if (warp) {
             ECLWarp(warp);
-            FixStageVisuals();
+            PostStartWarpAdjustments();
         }
     }
 
-    void ECLSetInsTime(ECLHelper& ecl, int offset, int32_t ecl_time = 0) {
-        ecl << pair{ offset, ecl_time };
+    void ECLSetInsTime(ECLHelper& ecl, int offset, int32_t ecl_time = 0, bool timeline = false) {
+        ecl << pair{ offset, timeline ? (int16_t)ecl_time : ecl_time };
     }
 
     template<typename... KVPairs>
@@ -305,13 +310,15 @@ namespace TH06NC {
         (ecl << ... << pair{ offset + 0xc + args.first, args.second });
     }
 
-    void ECLMakeCall(ECLHelper& ecl, int offset, int32_t subNum, int32_t ecl_time = 0) {
+    template<typename... KVPairs>
+    void ECLMakeIns(ECLHelper& ecl, int offset, int32_t ecl_time, ECL_OP op, KVPairs&&... args) {
         ecl.SetPos(offset);
-        ecl << ecl_time << (int16_t)0x23 << (int16_t)0x18 << 0x00ffff00 << subNum;
+        ecl << ecl_time << op.code << op.size << 0x00ffff00;
+        if constexpr (sizeof...(args) > 0) ECLSetArgs(ecl, offset, args...);
     }
 
-    void ECLDisable(ECLHelper& ecl, int offset) {
-        ecl << pair{ offset + 0x4, (int16_t)0 };
+    void ECLDisable(ECLHelper& ecl, int offset, bool timeline = false) {
+        ecl << pair{ offset + 0x4, (int16_t)(timeline ? 14 : 0) };
     }
 
     int32_t healthOverride;
@@ -330,7 +337,7 @@ namespace TH06NC {
 
     // ECL Patching
     __declspec(noinline) void THPatch(ECLHelper& ecl, int32_t stage, th_sections_t section) {
-        FixStageVisuals();
+        PostStartWarpAdjustments();
 
         switch (stage) {
         case 0: { // Stage 1
@@ -378,7 +385,7 @@ namespace TH06NC {
                 constexpr uint32_t st1bsNon2ItemDrop = 0x2b50;
 
                 s1_boss_warp_skip_move();
-                ECLMakeCall(ecl, st1bsNon1FirstDelayedIns, 19, 0); // call sub 19 (non2)
+                ECLMakeIns(ecl, st1bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 19 }); // call sub 19 (non2)
                 ECLDisable(ecl, st1bsNon2ItemDrop);
                 break;
             }
@@ -394,9 +401,10 @@ namespace TH06NC {
 
             auto s2_boss_warp_skip_fadein = [&]() {
                 constexpr uint32_t st2BossTime = 5894;
+                constexpr uint32_t st2BossFadeIn = 0x184c;
 
                 ECLWarp(st2BossTime);
-                ECLDisable(ecl, 0x184c);
+                ECLDisable(ecl, st2BossFadeIn);
             };
 
             auto s2_boss_non2_warp = [&]() {
@@ -404,7 +412,7 @@ namespace TH06NC {
                 constexpr uint32_t st2bsNon2ItemDrop = 0x2124;
 
                 s2_boss_warp_skip_fadein();
-                ECLMakeCall(ecl, st2bsNon1FirstDelayedIns, 25, 0); // call sub 25 (non2)
+                ECLMakeIns(ecl, st2bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 25 }); // call sub 25 (non2)
                 ECLDisable(ecl, st2bsNon2ItemDrop);
             };
 
@@ -463,7 +471,114 @@ namespace TH06NC {
         }
 
         case 2: { // Stage 3
+            constexpr uint32_t st3MidbossTime = 3474;
+            constexpr uint32_t st3BossTime = 6254;
+
+            constexpr uint32_t st3bsNon1FirstDelayedIns = 0x23f8;
+            constexpr uint32_t st2bsNon3TimeThreshold = 0x3500;
+
+            auto s3_boss_warp_skip_setup = [&]() {
+                constexpr uint32_t st3DialogRead = 0x95e8;
+                constexpr uint32_t st3DialogWait = 0x95f0;
+                constexpr uint32_t st3BossInterupt = 0x95f8;
+
+                ECLWarp(st3BossTime);
+                ECLSetInsTime(ecl, st3DialogRead, st3BossTime, true);
+                ECLDisable(ecl, st3DialogRead, true);
+                ECLSetInsTime(ecl, st3DialogWait, st3BossTime, true);
+                ECLDisable(ecl, st3DialogWait, true);
+                ECLSetInsTime(ecl, st3BossInterupt, st3BossTime, true);
+
+                constexpr uint32_t st3BossMoveInterp = 0x2258;
+                constexpr uint32_t st3BossSub10Call = 0x2274;
+                constexpr uint32_t st3BossBossSet = 0x22a8;
+
+                ECLSetArgs(ecl, st3BossMoveInterp, pair{ 0, 0 });
+                ECLDisable(ecl, st3BossSub10Call);
+                ECLSetInsTime(ecl, st3BossBossSet, 0);
+            };
+
+            auto s3_boss_non3_warp = [&]() {
+                constexpr uint32_t st3bsNon3ItemDrop = 0x3540;
+
+                s3_boss_warp_skip_setup();
+                ECLMakeIns(ecl, st3bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 30 }); // call sub 30 (non3)
+                ECLDisable(ecl, st3bsNon3ItemDrop);
+            };
+
             switch (section) {
+            case TH06::TH06_ST3_MID1: // Midnon
+                ECLWarp(st3MidbossTime);
+                break;
+
+            case TH06::TH06_ST3_MID2: { // Midspell
+                constexpr uint32_t st3mbsSub10Call = 0x1088;
+
+                ECLWarp(st3MidbossTime);
+                TriggerHealthInterrupt(1300);
+                ECLDisable(ecl, st3mbsSub10Call); // makes boss intangible since we skip to the spell while it's executing
+                break;
+            }
+
+            case TH06::TH06_ST3_BOSS1: // Non 1
+                thPracParam.dlg ? ECLWarp(st3BossTime) : s3_boss_warp_skip_setup();
+                break;
+
+            case TH06::TH06_ST3_BOSS2: { // Spell 1
+                constexpr uint32_t st3bsNon1TimeThreshold = 0x2360;
+
+                s3_boss_warp_skip_setup();
+                ECLSetArgs(ecl, st3bsNon1TimeThreshold, pair{ 0, 0 });
+                break;
+            }
+
+            case TH06::TH06_ST3_BOSS4: { // Spell 2 (HL)
+                constexpr uint32_t st3bsNon2TimeThreshold = 0x290c;
+                ECLSetArgs(ecl, st3bsNon2TimeThreshold, pair{ 0, 0 });
+                [[fallthrough]];
+            }
+            case TH06::TH06_ST3_BOSS3: { // Non 2
+                constexpr uint32_t st3bsNon2ItemDrop = 0x294c;
+
+                s3_boss_warp_skip_setup();
+                ECLMakeIns(ecl, st3bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 24 }); // call sub 24 (non2)
+                ECLDisable(ecl, st3bsNon2ItemDrop);
+                break;
+            }
+
+            case TH06::TH06_ST3_BOSS5: { // Non 3
+                s3_boss_non3_warp();
+                break;
+            }
+
+            case TH06::TH06_ST3_BOSS6: // Spell 3
+                s3_boss_non3_warp();
+                ECLSetArgs(ecl, st2bsNon3TimeThreshold, pair{ 0, 0 });
+                break;
+
+            case TH06::TH06_ST3_BOSS7: { // Spell 4 (NHL)
+                constexpr uint32_t st3bsNon3HealthThreshold = 0x34d0;
+                constexpr uint32_t st3bsNon3TimeCallbackSubN = 0x3510;
+                constexpr uint32_t st3bsNon3TimeCallbackSubHL = 0x3520;
+                constexpr uint32_t st3bsNon4DropItems = 0x52f4;
+                constexpr uint32_t st3bsNon4TimeThreshold = 0x5304;
+                constexpr uint32_t st3bsNon4Particle = 0x5364;
+                constexpr uint32_t st3bsNon4DelayedIns1 = 0x538c;
+                constexpr uint32_t st3bsNon4DelayedIns2 = 0x53a4;
+
+                s3_boss_non3_warp();
+                ECLSetArgs(ecl, st3bsNon3HealthThreshold, pair{ 0, 2000 });
+                ECLSetArgs(ecl, st3bsNon3TimeCallbackSubN, pair{ 0, 45 }); // call sub45 (non4)
+                ECLSetArgs(ecl, st3bsNon3TimeCallbackSubHL, pair{ 0, 45 }); // call sub45 (non4)
+                ECLSetArgs(ecl, st2bsNon3TimeThreshold, pair{ 0, 0 });
+                ECLDisable(ecl, st3bsNon4DropItems);
+                ECLDisable(ecl, st3bsNon4Particle);
+                ECLSetArgs(ecl, st3bsNon4TimeThreshold, pair{0, 2100}); // account for starting spell 60f sooner & time not resetting on cast
+                ECLSetInsTime(ecl, st3bsNon4DelayedIns1, 0);
+                ECLSetInsTime(ecl, st3bsNon4DelayedIns2, 0);
+                break;
+            }
+
             default: break;
             }
             break;
@@ -598,7 +713,7 @@ namespace TH06NC {
         int32_t frame = thPracParam.frame;
         if (thPracParam.section) THSectionPatch();
         else if (frame) {
-            if (frame > 60) FixStageVisuals();
+            if (frame > 60) PostStartWarpAdjustments();
             ECLWarp(frame);
         }
     })
@@ -650,6 +765,7 @@ namespace TH06NC {
 
         // Grab key globals
         GAME_MANAGER = (GameManager*)RVA(GAME_MANAGER_ADDR);
+        PLAYER = (Player*)RVA(PLAYER_ADDR);
         STAGE_BACKGROUND = (StageBackground*)RVA(STAGE_BACKGROUND_ADDR);
         ENEMY_MANAGER = (EnemyManager*)RVA(ENEMY_MANAGER_ADDR);
         ECL_MANAGER = (void*)RVA(ECL_MANAGER_ADDR);

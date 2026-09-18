@@ -1157,6 +1157,8 @@ namespace TH06 {
         }
 
         case 2: { // Stage 3
+            constexpr uint32_t st3MidbossTime = 3804;
+
             auto s3b_n1 = [&]() {
                 ecl << pair{ 0x1274, (int16_t)0x0 };
                 ecl << pair{ 0x12f0, (int16_t)0x0 };
@@ -1176,15 +1178,15 @@ namespace TH06 {
 
             switch (section) {
             case TH06::TH06_ST3_MID1:
-                ECLWarp(0x0edc);
+                ECLWarp(st3MidbossTime);
                 break;
 
             case TH06::TH06_ST3_MID2:
-                ECLWarp(0x0edc);
+                ECLWarp(st3MidbossTime);
                 ecl << pair{ 0x1274, (int16_t)0x0 };
                 ecl << pair{ 0x12f0, (int16_t)0x0 };
                 ecl << pair{ 0x1018, 0x0 };
-                ECLSetHealth(ecl, 0x10dc, 0x1e, 0x513);
+                ECLSetHealth(ecl, 0x10dc, 30, 1299);
                 ECLStall(ecl, 0x10ec);
                 break;
 
@@ -1942,25 +1944,25 @@ namespace TH06 {
         } else if (stage == 3) {
             switch (portion) {
             case 1:
-                ECLWarp(340);
+                ECLWarp(400 - d);
                 break;
             case 2:
-                ECLWarp(1050);
+                ECLWarp(1110 - d);
                 break;
             case 3:
-                ECLWarp(1670);
+                ECLWarp(1730 - d);
                 break;
             case 4:
-                ECLWarp(2762);
+                ECLWarp(2822 - d);
                 break;
             case 5:
-                ECLWarp(3807);
+                ECLWarp(3806 + 1);
                 break;
             case 6:
-                ECLWarp(4118);
+                ECLWarp(4178 - d);
                 break;
             case 7:
-                ECLWarp(5274);
+                ECLWarp(5334 - d);
                 break;
             default:
                 break;

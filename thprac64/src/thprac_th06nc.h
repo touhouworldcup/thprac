@@ -6,6 +6,7 @@
 namespace TH06NC {
     enum ADDRS {
         GAME_MANAGER_ADDR = 0x4f1e60,
+        PLAYER_ADDR = 0x4ff3a0,
         STAGE_BACKGROUND_ADDR = 0x509b60,
         HWND_PTR = 0x55e5a8,
         D3D_DEVICE_PTR = 0x9b1cf8,
@@ -16,6 +17,14 @@ namespace TH06NC {
         IS_EIGTH_FRAME_OF_HELD_INPUT_ADDR = 0xa6ec48,
         ENEMY_MANAGER_ADDR = 0xaa1e90,
     };
+
+    struct ECL_OP {
+        int16_t code;
+        int16_t size;
+    };
+
+    constexpr ECL_OP CALL = { 35, 0x18 };
+    constexpr ECL_OP TIMER_THRESHOLD = { 115, 0x10 };
 
     struct GameManager {
         char __unknown1[0x20];     // 0x0
@@ -85,6 +94,16 @@ namespace TH06NC {
     static_assert(offsetof(EnemyManager, timelineTime) == 0x10c0b8);
     static_assert(offsetof(StageBackground, is_frozen) == 0x68);
     static_assert(offsetof(StageBackground, timelineTime) == 0xb0);
+
+    struct Player {
+        char __unknown1[0x7858]; // 0x0
+        int32_t state_timer; // 0x7858
+        char __unknown2[0x3c]; // 0x785c
+        int8_t player_state; // 0x7898
+    };
+
+    static_assert(offsetof(Player, state_timer) == 0x7858);
+    static_assert(offsetof(Player, player_state) == 0x7898);
 
     struct THPracParam {
         int32_t mode;
