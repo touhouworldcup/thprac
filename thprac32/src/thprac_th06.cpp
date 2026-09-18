@@ -1174,7 +1174,7 @@ namespace TH06 {
                 ecl << pair{ 0x2160, 0x1e };
                 ecl << pair{ 0x2194, 0x1e };
                 ecl << pair{ 0x2188, 150 };
-                };
+            };
 
             switch (section) {
             case TH06::TH06_ST3_MID1:
@@ -1270,16 +1270,20 @@ namespace TH06 {
                 ecl << pair{ 0x2824, 0x0 };
                 ecl << pair{ 0x283c, 0x0 };
                 ecl << pair{ 0x2850, 0x0 };
-                };
+            };
 
             switch (section) {
-            case TH06::TH06_ST4_BOOKS:
-                ECLWarp(0x0d40);
+            case TH06::TH06_ST4_BOOKS: {
+                constexpr uint32_t st4BooksTime = 3452 - 60;
+                ECLWarp(st4BooksTime);
                 break;
+            }
 
-            case TH06::TH06_ST4_MID1:
-                ECLWarp(0x1024);
+            case TH06::TH06_ST4_MID1: {
+                constexpr uint32_t st4MidbossTime = 4132;
+                ECLWarp(st4MidbossTime);
                 break;
+            }
 
             case TH06::TH06_ST4_BOSS1:
                 if (thPracParam.dlg)
@@ -1665,7 +1669,8 @@ namespace TH06 {
                 ecl << pair{ 0x345e, 0x0 };
                 ecl << pair{ 0x3462, 0x0 };
                 ECLStall(ecl, 0x3466);
-                };
+            };
+
             auto s7b_n1 = [&]() {
                 ECLWarp(0x2192);
                 ecl << pair{ 0x339e, 0x0 };
@@ -1674,7 +1679,7 @@ namespace TH06 {
                 ecl << pair{ 0x33ee, 0x0 };
                 ecl << pair{ 0x340e, 0x0 };
                 ecl << pair{ 0x342e, 0x0 };
-                };
+            };
 
             switch (section) {
             case TH06::TH06_ST7_MID1:
@@ -1970,31 +1975,31 @@ namespace TH06 {
         } else if (stage == 4) {
             switch (portion) {
             case 1:
-                ECLWarp(380);
+                ECLWarp(440 - d);
                 break;
             case 2:
-                ECLWarp(1454);
+                ECLWarp(1514 - d);
                 break;
             case 3:
-                ECLWarp(2328);
+                ECLWarp(2388 - d);
                 break;
             case 4:
-                ECLWarp(0x0d40);
+                ECLWarp(3452 - d);
                 break;
             case 5:
-                ECLWarp(4872);
+                ECLWarp(4932 - d);
                 break;
             case 6:
-                ECLWarp(5712);
+                ECLWarp(5772 - d);
                 break;
             case 7:
-                ECLWarp(7434);
+                ECLWarp(7494 - d);
                 break;
             case 8:
-                ECLWarp(8354);
+                ECLWarp(8414 - d);
                 break;
             case 9:
-                ECLWarp(9784);
+                ECLWarp(9844 - d);
                 break;
             default:
                 break;

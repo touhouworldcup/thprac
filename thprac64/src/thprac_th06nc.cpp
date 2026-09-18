@@ -9,6 +9,7 @@
     // - Other TH6 hooks (check if needed)
     // - THOverlay, Replays, Advanced Menu, etc.
     // - Replace addresses that are members of static structs with static struct access (cf. GameManager)
+    // - Correct spell translations to match NC (official TLs)
 
 using namespace TH06;
 using std::pair;
@@ -73,7 +74,7 @@ namespace TH06NC {
                 mPhase(TH_PHASE, TH_SPELL_PHASE1);
         }
 
-        void SectionWidget() {
+        void SectionWidget(int warpType) {
             static char chapterStr[256]{};
             auto& chapterCounts = mChapterSetup[*mStage];
 
@@ -81,8 +82,8 @@ namespace TH06NC {
             if (*mStage == 3) // Stage 4 Fake Shot
                 st = (*mFakeShot ? *mFakeShot - 1 : mShotType) + 4;
 
-            switch (*mWarp) {
-            case 1: // Chapter
+            switch (warpType) {
+            case CHAPTER:
                 mChapter.SetBound(1, chapterCounts[0] + chapterCounts[1]);
 
                 if (chapterCounts[1] == 0)
@@ -95,27 +96,29 @@ namespace TH06NC {
                 mChapter(chapterStr);
                 break;
 
-            case 2: // Mid boss
-            case 3: // End boss
-                if (mSection(TH_WARP_SELECT_FRAME[*mWarp],
-                    th_sections_cba[*mStage + st][*mWarp - 2],
+            case MIDBOSS:
+            case ENDBOSS:
+                if (mSection(TH_WARP_SELECT_FRAME[warpType],
+                    th_sections_cba[*mStage + st][warpType - 2],
                     th_sections_str[::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
-                if (SectionHasDlg(th_sections_cba[*mStage][*mWarp - 2][*mSection]))
+
+                if (SectionHasDlg(th_sections_cba[*mStage][warpType - 2][*mSection]))
                     mDlg();
                 break;
 
-            case 4: // Non-spell
-            case 5: // Spellcard
-                if (mSection(TH_WARP_SELECT_FRAME[*mWarp],
-                    th_sections_cbt[*mStage + st][*mWarp - 4],
+            case NONSPELL:
+            case SPELL:
+                if (mSection(TH_WARP_SELECT_FRAME[warpType],
+                    th_sections_cbt[*mStage + st][warpType - 4],
                     th_sections_str[::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
-                if (SectionHasDlg(th_sections_cbt[*mStage][*mWarp - 4][*mSection]))
+
+                if (SectionHasDlg(th_sections_cbt[*mStage][warpType - 4][*mSection]))
                     mDlg();
                 break;
 
-            case 6: // Frame
+            case FRAME: // Frame
                 mFrame();
                 break;
             }
@@ -127,10 +130,13 @@ namespace TH06NC {
 
             if (*mMode == 1) {
                 if (mWarp()) *mSection = *mChapter = *mPhase = *mFrame = 0;
-                if (*mWarp) {
-                    if (*mStage == 3) mFakeShot();
 
-                    SectionWidget();
+                int warpType = *mWarp;
+                if (warpType) {
+                    if (*mStage == 3 && warpType > 2 && warpType != FRAME)
+                        mFakeShot();
+
+                    SectionWidget(warpType);
                     SpellPhase();
                 }
 
@@ -182,17 +188,19 @@ namespace TH06NC {
         }
 
         int CalcSection() {
-            switch (*mWarp) {
-            case 1: // Chapter
+            int warpType = *mWarp;
+
+            switch (warpType) {
+            case CHAPTER:
                 return *mChapter + 10000;
 
-            case 2: // Mid boss
-            case 3: // End boss
-                return th_sections_cba[*mStage][*mWarp - 2][*mSection];
+            case MIDBOSS:
+            case ENDBOSS:
+                return th_sections_cba[*mStage][warpType - 2][*mSection];
 
-            case 4: // Non-spell
-            case 5: // Spellcard
-                return th_sections_cbt[*mStage][*mWarp - 4][*mSection];
+            case NONSPELL:
+            case SPELL:
+                return th_sections_cbt[*mStage][warpType - 4][*mSection];
 
             default:
                 return 0;
@@ -246,7 +254,8 @@ namespace TH06NC {
 
             thPracParam.rank = *mRank;
             if (thPracParam.section >= TH06_ST4_BOSS1 && thPracParam.section <= TH06_ST4_BOSS7)
-                thPracParam.fakeType = *mFakeShot;
+                 thPracParam.fakeType = *mFakeShot;
+            else thPracParam.fakeType = 0;
         }
 
         __declspec(noinline) void CloseMenu() {
@@ -285,10 +294,10 @@ namespace TH06NC {
     __declspec(noinline) void THStageWarp(int32_t stage, int32_t portion) {
         constexpr int32_t d = 40;
         constexpr int32_t stageWarps[7][10] = {
-            { 0, 594 - d, 1174 - d, 1554 - d, 2282 - d, 4372 - d }, // st1
-            { 0, 894 - d, 3498 - d, 4533 - d }, // st2
-            { 0, 910 - d, 1530 - d, 2622 - d, 3476 + 1, 3898 - d, 5054 - d }, // st3
-            { 0, 1454, 2328, 3392, 4872, 5712, 7434, 8354, 9784 }, // st4
+            { 0, 594  - d, 1174 - d, 1554 - d, 2282 - d, 4372 - d }, // st1
+            { 0, 894  - d, 3498 - d, 4533 - d }, // st2
+            { 0, 910  - d, 1530 - d, 2622 - d, 3476 + 1, 3898 - d, 5054 - d }, // st3
+            { 0, 1430 - d, 2304 - d, 3378 - d, 4858 - d, 5698 - d, 7380 - d, 8300 - d, 9730 - d }, // st4
             { 0, 1352, 2292, 3814, 6774 }, // st5
             { 0, 1484 }, // st6
             { 0, 1300, 2600, 3680, 4803, 5933, 7733 }, // ex
@@ -585,7 +594,141 @@ namespace TH06NC {
         }
 
         case 3: { // Stage 4
+            constexpr uint32_t st4bsNon1FirstDelayedIns = 0x2890;
+            constexpr uint32_t st4bsNon3FirstDelayedIns = 0x7c4c;
+
+            auto s4_boss_warp_skip_move = [&]() {
+                constexpr uint32_t st4BossTime = 10511;
+                constexpr uint32_t st4BossMoveInterp = 0x2310;
+
+                ECLWarp(st4BossTime);
+                ECLSetArgs(ecl, st4BossMoveInterp, pair{ 0, 0 });
+            };
+
+            auto s4_boss_non3_warp = [&]() {
+                constexpr uint32_t st4bsNon3ItemDrop = 0x7a9c;
+
+                s4_boss_warp_skip_move();
+                ECLMakeIns(ecl, st4bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 39 }); // call sub 39 (non3)
+                ECLDisable(ecl, st4bsNon3ItemDrop);
+            };
+
+            auto s4_boss_post_non3_warp = [&](int subNum) {
+                s4_boss_non3_warp();
+
+                // trigger non 4/5 via timer threshold to set health to expected sp2/3 amount
+                ECLMakeIns(ecl, st4bsNon3FirstDelayedIns, 0, TIMER_CALLBACK, pair{ 0, subNum });
+                ECLMakeIns(ecl, st4bsNon3FirstDelayedIns + TIMER_CALLBACK.size, 0, TIMER_THRESHOLD, pair{ 0, 0 });
+                ECLMakeIns(ecl, st4bsNon3FirstDelayedIns + TIMER_CALLBACK.size + TIMER_THRESHOLD.size, 1, NOP);
+            };
+
+            //debug_msg("!!", "%d", section);
+
             switch (section) {
+            case TH06::TH06_ST4_BOOKS: { // Books
+                constexpr uint32_t st4BooksTime = 3378 - 40;
+                ECLWarp(st4BooksTime);
+                break;
+            }
+
+            case TH06::TH06_ST4_MID1: { // Midboss
+                constexpr uint32_t st4MidbossTime = 4058;
+                ECLWarp(st4MidbossTime);
+                ecl << pair{ 0x24c0 + 0xc, 6942069 };
+                break;
+            }
+
+            case TH06::TH06_ST4_BOSS1: { // Non 1
+                constexpr uint32_t st4BossDlgTime = 10510;
+                thPracParam.dlg ? ECLWarp(st4BossDlgTime) : s4_boss_warp_skip_move();
+                break;
+            }
+
+            case TH06::TH06_ST4_BOSS2: // Spell 1
+                s4_boss_warp_skip_move();
+                ECLMakeIns(ecl, st4bsNon1FirstDelayedIns, 0, TIMER_THRESHOLD, pair{ 0, 0 });
+                break;
+
+            case TH06::TH06_ST4_BOSS3: { // Spell 2
+                constexpr uint32_t st4bsNon2FirstDelayedIns = 0x7568;
+
+                ECLMakeIns(ecl, st4bsNon2FirstDelayedIns, 0, TIMER_THRESHOLD, pair{ 0, 0 });
+                ECLMakeIns(ecl, st4bsNon2FirstDelayedIns + TIMER_THRESHOLD.size, 1, NOP);
+                [[fallthrough]];
+            }
+            case TH06::TH06_ST4_BOSS4: { // Non 2
+                constexpr uint32_t st4bsNon2ItemDrop = 0x6ec4;
+
+                s4_boss_warp_skip_move();
+                ECLMakeIns(ecl, st4bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 37 }); // call sub 37 (non2)
+                ECLDisable(ecl, st4bsNon2ItemDrop);
+                break;
+            }
+
+            case TH06::TH06_ST4_BOSS5: { // Spell 3
+                constexpr uint32_t st4bsNon3DelayedIns2 = 0x7c5c;
+                constexpr uint32_t st4bsNon3DelayedIns3 = 0x7c7c;
+                constexpr uint32_t st4bsNon3DelayedIns4 = 0x7c9c;
+                constexpr uint32_t st4bsNon3DelayedIns5 = 0x7cbc;
+                constexpr uint32_t st4bsNon3DelayedIns6 = 0x7cdc;
+
+                s4_boss_non3_warp();
+                ECLSetInsTime(ecl, st4bsNon3FirstDelayedIns, 0);
+                ECLSetInsTime(ecl, st4bsNon3DelayedIns2, 0);
+                ECLSetInsTime(ecl, st4bsNon3DelayedIns3, 0);
+                ECLSetInsTime(ecl, st4bsNon3DelayedIns4, 0);
+                ECLSetInsTime(ecl, st4bsNon3DelayedIns5, 0);
+                ECLSetInsTime(ecl, st4bsNon3DelayedIns6, 0);
+                break;
+            }
+
+            case TH06::TH06_ST4_BOSS6: { // Spell 4
+                constexpr uint32_t st4bsNon4ItemDrop = 0x7d2c;
+                constexpr uint32_t st4bsNon4Particle = 0x7e58;
+                constexpr uint32_t st4bsNon4DelayedIns1 = 0x7e80;
+                constexpr uint32_t st4bsNon4DelayedIns2 = 0x7e90;
+                constexpr uint32_t st4bsNon4DelayedIns3 = 0x7eb0;
+                constexpr uint32_t st4bsNon4DelayedIns4 = 0x7ed0;
+                constexpr uint32_t st4bsNon4DelayedIns5 = 0x7ef0;
+                constexpr uint32_t st4bsNon4DelayedIns6 = 0x7f10;
+
+                s4_boss_post_non3_warp(40); // non 4
+                ECLDisable(ecl, st4bsNon4ItemDrop);
+                ECLDisable(ecl, st4bsNon4Particle);
+                ECLSetInsTime(ecl, st4bsNon4DelayedIns1, 0);
+                ECLSetInsTime(ecl, st4bsNon4DelayedIns2, 0);
+                ECLSetInsTime(ecl, st4bsNon4DelayedIns3, 0);
+                ECLSetInsTime(ecl, st4bsNon4DelayedIns4, 0);
+                ECLSetInsTime(ecl, st4bsNon4DelayedIns5, 0);
+                ECLSetInsTime(ecl, st4bsNon4DelayedIns6, 0);
+                break;
+            }
+
+            case TH06::TH06_ST4_BOSS7: { // Spell 5
+                constexpr uint32_t st4bsNon3HealthThresholdHL = 0x7ba8;
+                constexpr uint32_t st4bsNon5ItemDrop = 0x7f60;
+                constexpr uint32_t st4bsNon5Particle = 0x804c;
+                constexpr uint32_t st4bsNon5DelayedIns1 = 0x8074;
+                constexpr uint32_t st4bsNon5DelayedIns2 = 0x8084;
+                constexpr uint32_t st4bsNon5DelayedIns3 = 0x80a4;
+                constexpr uint32_t st4bsNon5DelayedIns4 = 0x80c4;
+                constexpr uint32_t st4bsNon5DelayedIns5 = 0x80e4;
+                constexpr uint32_t st4bsNon5DelayedIns6 = 0x8104;
+
+                ECLSetArgs(ecl, st4bsNon3HealthThresholdHL, pair{ 0, 1700 });
+                s4_boss_post_non3_warp(41); // non 5
+
+                ECLDisable(ecl, st4bsNon5ItemDrop);
+                ECLDisable(ecl, st4bsNon5Particle);
+                ECLSetInsTime(ecl, st4bsNon5DelayedIns1, 0);
+                ECLSetInsTime(ecl, st4bsNon5DelayedIns2, 0);
+                ECLSetInsTime(ecl, st4bsNon5DelayedIns3, 0);
+                ECLSetInsTime(ecl, st4bsNon5DelayedIns4, 0);
+                ECLSetInsTime(ecl, st4bsNon5DelayedIns5, 0);
+                ECLSetInsTime(ecl, st4bsNon5DelayedIns6, 0);
+                break;
+            }
+
             default: break;
             }
             break;
@@ -716,6 +859,24 @@ namespace TH06NC {
             if (frame > 60) PostStartWarpAdjustments();
             ECLWarp(frame);
         }
+    })
+
+    EHOOK_DY(th06nc_patchouli_fakeshot, 0x23a1d, 6, { // retrieving shottype ID in ECL
+        if (thPracParam.mode && thPracParam.fakeType)
+            *(int32_t*)RVA(0xa6ebbc) = thPracParam.fakeType - 1;
+        else
+            OG_INS(*(int32_t*)RVA(0xa6ebbc) = (int32_t)pCtx->Rcx);
+    })
+
+    EHOOK_DY(th06_nc_patchouli_fakeshot_2, 0x333d0, 4, {  // retrieving patchy's last 3 spells
+        if (thPracParam.mode && thPracParam.fakeType) {
+            uintptr_t patchyLastSpellsEntry = RVA(PATCHY_LAST_SPELLS_TABLE) + (thPracParam.fakeType - 1) * 0xc;
+
+            *(int32_t*)(pCtx->R8 + 0x4c) = GetMemContent<int32_t>(patchyLastSpellsEntry);
+            *(int32_t*)(pCtx->R8 + 0x50) = GetMemContent<int32_t>(patchyLastSpellsEntry + 0x4);
+            *(int32_t*)(pCtx->R8 + 0x54) = GetMemContent<int32_t>(patchyLastSpellsEntry + 0x8);
+        }
+        else OG_INS(*(int32_t*)(pCtx->R8 + 0x54) = (int32_t)pCtx->Rax);
     })
 
     EHOOK_DY(th06nc_bg_fastforward, 0x3b4b5, 2, { // spell prac check for fast-forwarding stage background

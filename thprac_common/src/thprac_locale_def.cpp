@@ -160,7 +160,6 @@ const char* th_glossary_str[3][1196]
         "射命丸文",
         "回忆「恐怖的回忆」",
         "回忆「恐怖催眠术」",
-        "已选的机体",
         "信号强度",
         "符卡类别",
         "回忆「户隐山之投」",
@@ -1100,6 +1099,7 @@ const char* th_glossary_str[3][1196]
         "继续游戏",
         "右",
         "分数",
+        "已选的机体",
         "符卡",
         "终符",
         "符卡练习",
@@ -1358,7 +1358,6 @@ const char* th_glossary_str[3][1196]
         "Shameimaru Aya",
         "Recollection \"Terrible Souvenir\"",
         "Recollection \"Terrifying Hypnotism\"",
-        "Selected Shottype",
         "C. Gauge",
         "Spell Cat.",
         "Recollection \"Mt. Togakushi Toss\"",
@@ -2298,6 +2297,7 @@ const char* th_glossary_str[3][1196]
         "Resume",
         "Right",
         "Score",
+        "Selected Shottype",
         "Spell Card",
         "Final Spell",
         "Spell Practice",
@@ -2556,7 +2556,6 @@ const char* th_glossary_str[3][1196]
         "霊夢C",
         "想起「テリブルスーヴニール」",
         "想起「恐怖催眠術」",
-        "選択した機体",
         "交信強度",
         "スペル種類",
         "想起「戸隠山投げ」",
@@ -3496,6 +3495,7 @@ const char* th_glossary_str[3][1196]
         "再開",
         "右",
         "スコア",
+        "選択した機体",
         "スペカ",
         "ラスト",
         "スペルプラクティス",
@@ -5309,7 +5309,7 @@ const th_sections_t th_sections_cbt[11][2][14]
 
 const th_glossary_t TH06_TYPE_SELECT[6]
 {
-    TH06_NONE,
+    TH_SELECTED_SHOTTYPE,
     TH06_REIMU_A,
     TH06_REIMU_B,
     TH06_MARISA_A,
@@ -11744,7 +11744,7 @@ const th_glossary_t TH11_MARISAB_FORMATION[6]
 
 const th_glossary_t TH11_TYPE_SELECT[8]
 {
-    TH11_SELECTED_SHOTTYPE,
+    TH_SELECTED_SHOTTYPE,
     TH11_RA,
     TH11_RB,
     TH11_RC,

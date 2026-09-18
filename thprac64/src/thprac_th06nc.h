@@ -5,6 +5,7 @@
 
 namespace TH06NC {
     enum ADDRS {
+        PATCHY_LAST_SPELLS_TABLE = 0x3de300,
         GAME_MANAGER_ADDR = 0x4f1e60,
         PLAYER_ADDR = 0x4ff3a0,
         STAGE_BACKGROUND_ADDR = 0x509b60,
@@ -23,8 +24,17 @@ namespace TH06NC {
         int16_t size;
     };
 
+    constexpr ECL_OP NOP = { 0, 0xc };
     constexpr ECL_OP CALL = { 35, 0x18 };
     constexpr ECL_OP TIMER_THRESHOLD = { 115, 0x10 };
+    constexpr ECL_OP TIMER_CALLBACK = { 116, 0x10 };
+
+    enum WARP_TYPE {
+        NONE, CHAPTER,
+        MIDBOSS, ENDBOSS,
+        NONSPELL, SPELL,
+        FRAME
+    };
 
     struct GameManager {
         char __unknown1[0x20];     // 0x0

@@ -743,6 +743,7 @@
       "TH_STAGE_PORTION_2": [ "后半 #%d", "Second Half #%d", "後半 #%d" ],
       "TH_DLG": [ "对话", "Dialog", "会話" ],
       "TH_DROP_ITEMS": [ "掉落道具", "Drop items", "アイテムを落とす" ],
+      "TH_SELECTED_SHOTTYPE": [ "已选的机体", "Selected Shottype", "選択した機体" ],
 
       "TH_LEFT": [ "左", "Left", "左" ],
       "TH_RIGHT": [ "右", "Right", "右" ],
@@ -794,7 +795,7 @@
 
       "TH_ABOUT_THPRAC": [ "关于thprac", "About thprac", "thpracのバージョン情報" ],
       "TH_ABOUT_VERSION": [ "thprac 版本 %d.%d.%d.%d", "thprac version %d.%d.%d.%d", "thprac ver.%d.%d.%d.%d" ],
-      "TH_VISIT_WEBSITE":  [ "访问网站", "Visit website", "ウェブサイト" ],
+      "TH_VISIT_WEBSITE": [ "访问网站", "Visit website", "ウェブサイト" ],
       "TH_ABOUT_WEBSITE": [ "网站：https://github.com/touhouworldcup/thprac", "Website: https://github.com/touhouworldcup/thprac", "Website：https://github.com/touhouworldcup/thprac" ],
       "TH_ABOUT_THANKS": [ "特别感谢：\n%s", "Special thanks: \n%s", "Special thanks:\n%s" ],
       "TH_ABOUT_SHOW_LICENCE": [ "显示许可信息", "Show license info", "ライセンス情報を表示" ],
@@ -870,7 +871,7 @@
         "If enabled, when practicing stage 6, the \"All Clear Bonus\" will be added to the total score at the end.",
         "有効にした場合、プラクティスモードの6面終了時にオールクリアボーナスを加算します。"
       ],
-      
+
       "TH_BULLETS": [ "子弹", "Bullets", "弾" ],
       "TH_PERFORMANCE": [ "性能", "Performance", "性能" ],
 
@@ -1736,7 +1737,7 @@
 
     "groups": {
       "TH06_TYPE_SELECT": [
-        "TH06_NONE",
+        "TH_SELECTED_SHOTTYPE",
         "TH06_REIMU_A",
         "TH06_REIMU_B",
         "TH06_MARISA_A",
@@ -3883,8 +3884,7 @@
       "TH11_MARISAB_WOOD":  [ "木符", "Wood",  "木符" ],
       "TH11_MARISAB_METAL": [ "金符", "Metal", "金符" ],
       "TH11_MARISAB_EARTH": [ "土符", "Earth", "土符" ],
-      "TH11_SPELL_CATEGORY": [ "符卡类别", "Spell Cat.", "スペル種類" ], 
-      "TH11_SELECTED_SHOTTYPE": [ "已选的机体", "Selected Shottype", "選択した機体" ],
+      "TH11_SPELL_CATEGORY": [ "符卡类别", "Spell Cat.", "スペル種類" ],
       "TH11_RA": [ "八云紫", "Yakumo Yukari", "霊夢A" ],
       "TH11_RB": [ "伊吹萃香", "Ibuki Suika", "霊夢B" ],
       "TH11_RC": [ "射命丸文", "Shameimaru Aya", "霊夢C" ],
@@ -4784,7 +4784,7 @@
           "TH11_MARISAB_EARTH"
       ],
       "TH11_TYPE_SELECT": [
-        "TH11_SELECTED_SHOTTYPE",
+        "TH_SELECTED_SHOTTYPE",
         "TH11_RA",
         "TH11_RB",
         "TH11_RC",
