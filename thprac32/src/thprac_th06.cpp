@@ -1905,167 +1905,23 @@ namespace TH06 {
         default: break;
         }
     }
-    __declspec(noinline) void THStageWarp([[maybe_unused]] ECLHelper& ecl, int stage, int portion)
-    {
-        constexpr int32_t d = 60;
 
-        if (stage == 1) {
-            switch (portion) {
-            case 1:
-                ECLWarp(128 - d);
-                break;
-            case 2:
-                ECLWarp(640 - d);
-                break;
-            case 3:
-                ECLWarp(1220 - d);
-                break;
-            case 4:
-                ECLWarp(1600 - d);
-                break;
-            case 5:
-                ECLWarp(2408 - d);
-                break;
-            case 6:
-                ECLWarp(4498 - d);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 2) {
-            switch (portion) {
-            case 1:
-                ECLWarp(330 - d);
-                break;
-            case 2:
-                ECLWarp(984 - d);
-                break;
-            case 3:
-                ECLWarp(3588 - d);
-                break;
-            case 4:
-                ECLWarp(4623 - d);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 3) {
-            switch (portion) {
-            case 1:
-                ECLWarp(400 - d);
-                break;
-            case 2:
-                ECLWarp(1110 - d);
-                break;
-            case 3:
-                ECLWarp(1730 - d);
-                break;
-            case 4:
-                ECLWarp(2822 - d);
-                break;
-            case 5:
-                ECLWarp(3806 + 1);
-                break;
-            case 6:
-                ECLWarp(4178 - d);
-                break;
-            case 7:
-                ECLWarp(5334 - d);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 4) {
-            switch (portion) {
-            case 1:
-                ECLWarp(440 - d);
-                break;
-            case 2:
-                ECLWarp(1514 - d);
-                break;
-            case 3:
-                ECLWarp(2388 - d);
-                break;
-            case 4:
-                ECLWarp(3452 - d);
-                break;
-            case 5:
-                ECLWarp(4932 - d);
-                break;
-            case 6:
-                ECLWarp(5772 - d);
-                break;
-            case 7:
-                ECLWarp(7494 - d);
-                break;
-            case 8:
-                ECLWarp(8414 - d);
-                break;
-            case 9:
-                ECLWarp(9844 - d);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 5) {
-            switch (portion) {
-            case 1:
-                ECLWarp(440 - 90);
-                break;
-            case 2:
-                ECLWarp(1442 - 90);
-                break;
-            case 3:
-                ECLWarp(2352 - d);
-                break;
-            case 4:
-                ECLWarp(3874 - d);
-                break;
-            case 5:
-                ECLWarp(6834 - d);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 6) {
-            switch (portion) {
-            case 1:
-                ECLWarp(440 - d);
-                break;
-            case 2:
-                ECLWarp(1544 - d);
-                break;
-            default:
-                break;
-            }
-        } else if (stage == 7) {
-            switch (portion) {
-            case 1:
-                ECLWarp(380);
-                break;
-            case 2:
-                ECLWarp(1300);
-                break;
-            case 3:
-                ECLWarp(2600);
-                break;
-            case 4:
-                ECLWarp(3680);
-                break;
-            case 5:
-                ECLWarp(4803);
-                break;
-            case 6:
-                ECLWarp(5933);
-                break;
-            case 7:
-                ECLWarp(7733);
-                break;
-            default:
-                break;
-            }
-        }
+    __declspec(noinline) void THStageWarp(int32_t stage, int32_t portion) {
+        constexpr int32_t d = 60;
+        constexpr int32_t stageWarps[7][9] = {
+            { 128 - d,  640  - d,  1220 - d, 1600 - d, 2408 - d, 4498 - d }, // st1
+            { 330 - d,  984  - d,  3588 - d, 4623 - d }, // st2
+            { 400 - d,  1110 - d,  1730 - d, 2822 - d, 3806 + 1, 4178 - d, 5334 - d }, // st3
+            { 440 - d,  1514 - d,  2388 - d, 3452 - d, 4932 - d, 5772 - d, 7494 - d, 8414 - d, 9844 - d }, // st4
+            { 440 - 90, 1442 - 90, 2352 - d, 3874 - d, 6834 - d }, // st5
+            { 440 - d,  1544 - d }, // st6
+            { 440 - d,  1360 - d,  2660 - d, 3740 - d, 4863 - d, 5993 - d, 7793 - d }, // ex
+        };
+
+        int32_t warp = stageWarps[stage - 1][portion - 1];
+        if (warp) ECLWarp(warp);
     }
+
     __declspec(noinline) void THSectionPatch()
     {
         ECLHelper ecl;
@@ -2075,7 +1931,7 @@ namespace TH06 {
         if (section >= 10000 && section < 20000) {
             int stage = (section - 10000) / 100;
             int portionId = (section - 10000) % 100;
-            THStageWarp(ecl, stage, portionId);
+            THStageWarp(stage, portionId);
         } else {
             THPatch(ecl, thPracParam.stage, (th_sections_t)section);
         }
