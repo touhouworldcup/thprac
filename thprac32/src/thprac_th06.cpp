@@ -1373,16 +1373,17 @@ namespace TH06 {
         }
 
         case 4: { // Stage 5
+            constexpr uint32_t st5MidbossTime = 3372;
 
             switch (section) {
             case TH06::TH06_ST5_MID1:
-                ECLWarp(0x0d2c);
+                ECLWarp(st5MidbossTime);
                 if (!thPracParam.dlg)
                     ecl << pair{ 0x64a8, (uint16_t)13 };
                 break;
 
             case TH06::TH06_ST5_MID2:
-                ECLWarp(0x0d2c);
+                ECLWarp(st5MidbossTime);
                 ecl << pair{ 0x64a4, (int16_t)0x0 };
                 ECLSetHealth(ecl, 0x14d8, 0x1e, 0x2c5);
                 ECLStall(ecl, 0x14e8);
@@ -2007,19 +2008,19 @@ namespace TH06 {
         } else if (stage == 5) {
             switch (portion) {
             case 1:
-                ECLWarp(350);
+                ECLWarp(440 - 90);
                 break;
             case 2:
-                ECLWarp(1352);
+                ECLWarp(1442 - 90);
                 break;
             case 3:
-                ECLWarp(2292);
+                ECLWarp(2352 - d);
                 break;
             case 4:
-                ECLWarp(3814);
+                ECLWarp(3874 - d);
                 break;
             case 5:
-                ECLWarp(6774);
+                ECLWarp(6834 - d);
                 break;
             default:
                 break;
