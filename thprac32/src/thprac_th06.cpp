@@ -1486,11 +1486,13 @@ namespace TH06 {
         }
 
         case 5: { // Stage 6
+            constexpr uint32_t st6MidbossTime = 2564;
+            constexpr uint32_t st6BossTime = 3169;
             int shot;
 
             switch (section) {
             case TH06::TH06_ST6_MID1:
-                ECLWarp(0x0a04);
+                ECLWarp(st6MidbossTime);
                 if (!thPracParam.dlg) {
                     ecl << pair{ 0x77f2, (int16_t)0x0 };
                     ecl << pair{ 0x9e8, 0x1 };
@@ -1505,7 +1507,7 @@ namespace TH06 {
                     shot = 749;
                 else
                     shot = 999;
-                ECLWarp(0x0a04);
+                ECLWarp(st6MidbossTime);
                 ecl << pair{ 0x77f2, (int16_t)0x0 };
                 ecl << pair{ 0x0d2c, 0x0 };
                 ECLSetHealth(ecl, 0x0d3c, 0x0, shot);
@@ -1516,7 +1518,7 @@ namespace TH06 {
                 if (thPracParam.dlg)
                     ECLWarp(0x0c5f);
                 else {
-                    ECLWarp(0x0c61);
+                    ECLWarp(st6BossTime);
                     ECLNameFix();
                     ecl << pair{ 0x1686, 0x0 };
                     ecl << pair{ 0x16a6, 0x0 };
@@ -1528,7 +1530,7 @@ namespace TH06 {
 
             case TH06::TH06_ST6_BOSS2:
                 ECLNameFix();
-                ECLWarp(0x0c61);
+                ECLWarp(st6BossTime);
                 ecl << pair{ 0x1686, 0x0 };
                 ecl << pair{ 0x16a6, 0x0 };
                 ecl << pair{ 0x16c6, 0x0 };
@@ -1540,7 +1542,7 @@ namespace TH06 {
 
             case TH06::TH06_ST6_BOSS3:
                 ECLNameFix();
-                ECLWarp(0x0c61);
+                ECLWarp(st6BossTime);
                 ecl << pair{ 0x1686, 0x0 };
                 ecl << pair{ 0x16a6, 0x0 };
                 ecl << pair{ 0x16c6, 0x0 };
@@ -1555,7 +1557,7 @@ namespace TH06 {
 
             case TH06::TH06_ST6_BOSS4:
                 ECLNameFix();
-                ECLWarp(0x0c61);
+                ECLWarp(st6BossTime);
                 ecl << pair{ 0x1686, 0x0 };
                 ecl << pair{ 0x16a6, 0x0 };
                 ecl << pair{ 0x16c6, 0x0 };
@@ -1572,7 +1574,7 @@ namespace TH06 {
 
             case TH06::TH06_ST6_BOSS5:
                 ECLNameFix();
-                ECLWarp(0x0c61);
+                ECLWarp(st6BossTime);
                 ecl << pair{ 0x1686, 0x0 };
                 ecl << pair{ 0x16a6, 0x0 };
                 ecl << pair{ 0x16c6, 0x0 };
@@ -1587,7 +1589,7 @@ namespace TH06 {
 
             case TH06::TH06_ST6_BOSS6:
                 ECLNameFix();
-                ECLWarp(0x0c61);
+                ECLWarp(st6BossTime);
                 ecl << pair{ 0x1686, 0x0 };
                 ecl << pair{ 0x16a6, 0x0 };
                 ecl << pair{ 0x16c6, 0x0 };
@@ -1605,7 +1607,7 @@ namespace TH06 {
 
             case TH06::TH06_ST6_BOSS7:
                 ECLNameFix();
-                ECLWarp(0x0c61);
+                ECLWarp(st6BossTime);
                 ecl << pair{ 0x1686, 0x0 };
                 ecl << pair{ 0x16a6, 0x0 };
                 ecl << pair{ 0x16c6, 0x0 };
@@ -1620,7 +1622,7 @@ namespace TH06 {
 
             case TH06::TH06_ST6_BOSS8:
                 ECLNameFix();
-                ECLWarp(0x0c61);
+                ECLWarp(st6BossTime);
                 ecl << pair{ 0x1686, 0x0 };
                 ecl << pair{ 0x16a6, 0x0 };
                 ecl << pair{ 0x16c6, 0x0 };
@@ -1637,7 +1639,7 @@ namespace TH06 {
 
             case TH06::TH06_ST6_BOSS9:
                 ECLNameFix();
-                ECLWarp(0x0c61);
+                ECLWarp(st6BossTime);
                 ecl << pair{ 0x1686, 0x0 };
                 ecl << pair{ 0x16a6, 0x0 };
                 ecl << pair{ 0x16c6, 0x0 };
@@ -2028,10 +2030,10 @@ namespace TH06 {
         } else if (stage == 6) {
             switch (portion) {
             case 1:
-                ECLWarp(380);
+                ECLWarp(440 - d);
                 break;
             case 2:
-                ECLWarp(1484);
+                ECLWarp(1544 - d);
                 break;
             default:
                 break;

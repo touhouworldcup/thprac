@@ -22,6 +22,7 @@ namespace TH06NC {
     EnemyManager* ENEMY_MANAGER;
     StageBackground* STAGE_BACKGROUND;
     void* ECL_MANAGER;
+    void* ANM_MANAGER_PTR;
 
     class THGuiPrac : public Gui::GameGuiWnd {
         Gui::GuiCombo mMode{ TH_MODE, TH_MODE_SELECT };
@@ -300,7 +301,7 @@ namespace TH06NC {
             { 0, 910  - d, 1530 - d, 2622 - d, 3476 + 1, 3898 - d, 5054 - d }, // st3
             { 0, 1430 - d, 2304 - d, 3378 - d, 4858 - d, 5698 - d, 7380 - d, 8300 - d, 9730 - d }, // st4
             { 0, 1342 - d, 2252 - d, 3774 - d, 6734 - d }, // st5
-            { 0, 1484 }, // st6
+            { 0, 1459 - d }, // st6
             { 0, 1300, 2600, 3680, 4803, 5933, 7733 }, // ex
         };
 
@@ -343,6 +344,10 @@ namespace TH06NC {
     void TriggerHealthInterrupt(int32_t threshold) {
         th06nc_trigger_health_interrupt.Enable();
         healthOverride = threshold - 1;
+    }
+
+    void LoadBackground(const char* filename, int32_t anmID, int32_t spriteIndexOffset) {
+        asm_call_rel<0x20b0, Thiscall>(ANM_MANAGER_PTR, anmID, filename, spriteIndexOffset);
     }
 
     // ECL Patching
@@ -822,7 +827,149 @@ namespace TH06NC {
         }
 
         case 5: { // Stage 6
+            constexpr uint32_t st6MidbossTime = 2493;
+            constexpr uint32_t st6bsNon1FirstDelayedIns = 0x1834;
+
+            auto s6_midboss_warp_skip_move = [&]() {
+                constexpr uint32_t st6MidbossDialogRead = 0x9584;
+                constexpr uint32_t st6MidbossMoveInterp = 0xa80;
+
+                ECLWarp(st6MidbossTime);
+                ECLDisable(ecl, st6MidbossDialogRead, true);
+                ECLSetArgs(ecl, st6MidbossMoveInterp, pair{ 0, 0 });
+            };
+
+            auto s6_boss_warp_skip_move = [&]() {
+                constexpr uint32_t st6BossTime = 3098;
+                constexpr uint32_t st6BossMoveInterp = 0x1618;
+                constexpr uint32_t st6bsNon1Particle = 0x1780;
+
+                ECLWarp(st6BossTime);
+                ECLSetArgs(ecl, st6BossMoveInterp, pair{ 0, 0 });
+                ECLDisable(ecl, st6bsNon1Particle);
+                LoadBackground("data/eff06.anm", 11, 723);
+            };
+
             switch (section) {
+            case TH06::TH06_ST6_MID1: // Midboss
+                thPracParam.dlg ? ECLWarp(st6MidbossTime) : s6_midboss_warp_skip_move();
+                break;
+
+            case TH06::TH06_ST6_MID2: { // Midspell
+                constexpr uint32_t st6mbsPreInteractable = 0xdd0;
+                constexpr uint32_t st6mbsInteractable = 0xde0;
+
+                s6_midboss_warp_skip_move();
+                ECLSetInsTime(ecl, st6mbsPreInteractable, 0);
+                ECLSetInsTime(ecl, st6mbsInteractable, 0);
+                TriggerHealthInterrupt(750); // lowest (interrupt corrects health)
+                break;
+            }
+
+            case TH06::TH06_ST6_BOSS1: { // Non 1
+                constexpr uint32_t st6BossDlgTime = 3096;
+                thPracParam.dlg ? ECLWarp(st6BossDlgTime) : s6_boss_warp_skip_move();
+                break;
+            }
+
+            case TH06::TH06_ST6_BOSS2: { // Spell 1
+                constexpr uint32_t st6bsNon1TimeThreshold = 0x1794;
+
+                s6_boss_warp_skip_move();
+                ECLSetArgs(ecl, st6bsNon1TimeThreshold, pair{ 0, 0 });
+                break;
+            }
+
+            case TH06_ST6_BOSS4: { // Spell 2
+                constexpr uint32_t st6bsNon2TimeThreshold = 0x1e14;
+                ECLSetArgs(ecl, st6bsNon2TimeThreshold, pair{ 0, 0 });
+                [[fallthrough]];
+            }
+            case TH06::TH06_ST6_BOSS3: { // Non 2
+                constexpr uint32_t st6bsNon2ItemDrop = 0x1d38;
+                constexpr uint32_t st6bsNon2Particle = 0x1e00;
+
+                s6_boss_warp_skip_move();
+                ECLMakeIns(ecl, st6bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 21 }); // call sub 21 (non2)
+                ECLDisable(ecl, st6bsNon2ItemDrop);
+                ECLDisable(ecl, st6bsNon2Particle);
+                break;
+            }
+
+            case TH06_ST6_BOSS6: { // Spell 3
+                constexpr uint32_t st6bsNon3TimeThreshold = 0x2bf8;
+                ECLSetArgs(ecl, st6bsNon3TimeThreshold, pair{ 0, 0 });
+                [[fallthrough]];
+            }
+            case TH06::TH06_ST6_BOSS5: { // Non 3
+                constexpr uint32_t st6bsNon3ItemDrop = 0x2b1c;
+                constexpr uint32_t st6bsNon3Particle = 0x2be4;
+
+                s6_boss_warp_skip_move();
+                ECLMakeIns(ecl, st6bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 25 }); // call sub 25 (non3)
+                ECLDisable(ecl, st6bsNon3ItemDrop);
+                ECLDisable(ecl, st6bsNon3Particle);
+                break;
+            }
+
+            case TH06_ST6_BOSS8: { // Spell 4
+                constexpr uint32_t st6bsNon4TimeThreshold = 0x30bc;
+                ECLSetArgs(ecl, st6bsNon4TimeThreshold, pair{ 0, 0 });
+                [[fallthrough]];
+            }
+            case TH06::TH06_ST6_BOSS7: { // Non 4
+                constexpr uint32_t st6bsNon4ItemDrop = 0x2fe0;
+                constexpr uint32_t st6bsNon4Particle = 0x30a8;
+
+                s6_boss_warp_skip_move();
+                ECLMakeIns(ecl, st6bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 28 }); // call sub 28 (non4)
+                ECLDisable(ecl, st6bsNon4ItemDrop);
+                ECLDisable(ecl, st6bsNon4Particle);
+                break;
+            }
+
+            case TH06::TH06_ST6_BOSS9: { // Spell 5
+                constexpr uint32_t st6bsNon1HealthThreshold = 0x17c4;
+                constexpr uint32_t st6bsNNon5ItemDrop = 0x6720;
+                constexpr uint32_t st6bsNNon5DelayedIns1 = 0x6800;
+                constexpr uint32_t st6bsNNon5DelayedIns2 = 0x6810;
+                constexpr uint32_t st6bsNNon5DelayedIns3 = 0x6820;
+                constexpr uint32_t st6bsNNon5DelayedIns4 = 0x6834;
+                constexpr uint32_t st6bsNNon5DelayedIns5 = 0x684c;
+
+                constexpr uint32_t st6bsHLNon5ItemDrop = 0x6e24;
+                constexpr uint32_t st6bsHLNon5DelayedIns1 = 0x6f04;
+                constexpr uint32_t st6bsHLNon5DelayedIns2 = 0x6f14;
+                constexpr uint32_t st6bsHLNon5DelayedIns3 = 0x6f24;
+                constexpr uint32_t st6bsHLNon5DelayedIns4 = 0x6f38;
+                constexpr uint32_t st6bsHLNon5DelayedIns5 = 0x6f50;
+
+                s6_boss_warp_skip_move();
+                ECLSetArgs(ecl, st6bsNon1HealthThreshold, pair{0, -1});
+
+                if (GAME_MANAGER->difficulty <= 1) {
+                    ECLMakeIns(ecl, st6bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 61 }); // call sub 61 (non5 for N)
+
+                    ECLDisable(ecl, st6bsNNon5ItemDrop);
+                    ECLSetInsTime(ecl, st6bsNNon5DelayedIns1, 0);
+                    ECLSetInsTime(ecl, st6bsNNon5DelayedIns2, 0);
+                    ECLSetInsTime(ecl, st6bsNNon5DelayedIns3, 0);
+                    ECLSetInsTime(ecl, st6bsNNon5DelayedIns4, 0);
+                    ECLSetInsTime(ecl, st6bsNNon5DelayedIns5, 0);
+
+                } else {
+                    ECLMakeIns(ecl, st6bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 64 }); // call sub 64 (non5 for HL)
+
+                    ECLDisable(ecl, st6bsHLNon5ItemDrop);
+                    ECLSetInsTime(ecl, st6bsHLNon5DelayedIns1, 0);
+                    ECLSetInsTime(ecl, st6bsHLNon5DelayedIns2, 0);
+                    ECLSetInsTime(ecl, st6bsHLNon5DelayedIns3, 0);
+                    ECLSetInsTime(ecl, st6bsHLNon5DelayedIns4, 0);
+                    ECLSetInsTime(ecl, st6bsHLNon5DelayedIns5, 0);
+                }
+                break;
+            }
+
             default: break;
             }
             break;
@@ -1008,6 +1155,7 @@ namespace TH06NC {
         GAME_MANAGER = (GameManager*)RVA(GAME_MANAGER_ADDR);
         PLAYER = (Player*)RVA(PLAYER_ADDR);
         STAGE_BACKGROUND = (StageBackground*)RVA(STAGE_BACKGROUND_ADDR);
+        ANM_MANAGER_PTR = (void*)RVA(ANM_MANAGER_PTR_ADDR);
         ENEMY_MANAGER = (EnemyManager*)RVA(ENEMY_MANAGER_ADDR);
         ECL_MANAGER = (void*)RVA(ECL_MANAGER_ADDR);
 

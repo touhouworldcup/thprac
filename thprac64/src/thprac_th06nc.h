@@ -12,6 +12,7 @@ namespace TH06NC {
         HWND_PTR = 0x55e5a8,
         D3D_DEVICE_PTR = 0x9b1cf8,
         D3D_DEVICE_CONTEXT = 0x9b1d00,
+        ANM_MANAGER_PTR_ADDR = 0xa6e9b0,
         ECL_MANAGER_ADDR = 0xa6eb78,
         INPUT_ADDR = 0xa6ec60,
         INPUT_PREV_ADDR = 0xa6ec64,
