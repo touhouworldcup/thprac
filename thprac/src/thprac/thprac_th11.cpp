@@ -247,14 +247,14 @@ namespace TH11 {
         }
         void PracticeMenu()
         {
-            int warpType = *mWarp;
             mMode();
             if (mStage())
                 *mSection = *mChapter = 0;
             if (*mMode == 1) {
+                int warpType = *mWarp;
                 if (mWarp())
                     *mSection = *mChapter = *mPhase = 0;
-                if (*mWarp) {
+                if (warpType) {
                     if (*mStage == 3 && (warpType == 3 || warpType == 5)) {
                         mSpellCategory();
                     }
