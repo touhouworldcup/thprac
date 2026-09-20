@@ -2,7 +2,6 @@
 #include <wininternal.h>
 
 // TODOs:
-    // - Fix: Going back to prac after Extra makes Extra the selected gamemode (affects score extends in non-extra; doesn't go back until menuing back to practice mode)
     // - Fix: Rank bounds
     // - Add: STD timeline skip for Frame warping? Per-stage frame cap?
     // - All the warps
@@ -50,7 +49,7 @@ namespace TH06NC {
             TH06_RANK, TH06_FS };
 
         float mStep = 10.0;
-        uint32_t mDiffculty = 0;
+        int32_t mDiffculty = -1;
         uint8_t mShotType = 0;
 
         THGuiPrac() noexcept {
@@ -263,6 +262,13 @@ namespace TH06NC {
         __declspec(noinline) void CloseMenu() {
             Close();
             *mNavFocus = 0;
+            mDiffculty = -1;
+        }
+
+        __declspec(noinline) void RestoreDifficulty() {
+            // ensure the game menu's difficulty is restored to what it was
+            // when practice started (extra stage sets it to 4)
+            if (mDiffculty > -1) GAME_MANAGER->difficulty = mDiffculty;
         }
     };
 
@@ -294,15 +300,15 @@ namespace TH06NC {
     }
 
     __declspec(noinline) void THStageWarp(int32_t stage, int32_t portion) {
-        constexpr int32_t d = 40;
-        constexpr int32_t stageWarps[7][10] = {
+        constexpr int32_t d = 45;
+        constexpr int32_t stageWarps[7][9] = {
             { 0, 594  - d, 1174 - d, 1554 - d, 2282 - d, 4372 - d }, // st1
             { 0, 894  - d, 3498 - d, 4533 - d }, // st2
             { 0, 910  - d, 1530 - d, 2622 - d, 3476 + 1, 3898 - d, 5054 - d }, // st3
             { 0, 1430 - d, 2304 - d, 3378 - d, 4858 - d, 5698 - d, 7380 - d, 8300 - d, 9730 - d }, // st4
             { 0, 1342 - d, 2252 - d, 3774 - d, 6734 - d }, // st5
             { 0, 1459 - d }, // st6
-            { 0, 1300, 2600, 3680, 4803, 5933, 7733 }, // ex
+            { 0, 1260 - d, 2560 - d, 3640 - d, 4763 - d, 5893 - d, 7693 - d }, // ex
         };
 
         int32_t warp = stageWarps[stage][portion - 1];
@@ -346,8 +352,8 @@ namespace TH06NC {
         healthOverride = threshold - 1;
     }
 
-    void LoadBackground(const char* filename, int32_t anmID, int32_t spriteIndexOffset) {
-        asm_call_rel<0x20b0, Thiscall>(ANM_MANAGER_PTR, anmID, filename, spriteIndexOffset);
+    void LoadBackground(const char* filename, int32_t spriteIndexOffset) {
+        asm_call_rel<LOAD_ANM_FILE, Thiscall>(ANM_MANAGER_PTR, 11, filename, spriteIndexOffset);
     }
 
     // ECL Patching
@@ -847,7 +853,7 @@ namespace TH06NC {
                 ECLWarp(st6BossTime);
                 ECLSetArgs(ecl, st6BossMoveInterp, pair{ 0, 0 });
                 ECLDisable(ecl, st6bsNon1Particle);
-                LoadBackground("data/eff06.anm", 11, 723);
+                LoadBackground("data/eff06.anm", 723);
             };
 
             switch (section) {
@@ -976,7 +982,188 @@ namespace TH06NC {
         }
 
         case 6: { // Extra Stage
+            constexpr uint32_t st7MidbossTime = 4640;
+            constexpr uint32_t st7MidbossFirstSub = 0x1ad4;
+            constexpr uint32_t st7bsNon1FirstDelayedIns = 0x360e;
+
+            auto ex_midboss_warp_skip_move = [&]() {
+                constexpr uint32_t st7MidbossDialogRead = 0x11800;
+                constexpr uint32_t st7MidbossMoveInterp = 0x1ab8;
+
+                ECLWarp(st7MidbossTime);
+                ECLDisable(ecl, st7MidbossDialogRead, true);
+                ECLSetArgs(ecl, st7MidbossMoveInterp, pair{ 0, 0 });
+            };
+
+            auto ex_boss_warp_skip_move = [&]() {
+                constexpr uint32_t st7BossTime = 8494;
+                constexpr uint32_t st7BossMoveInterp = 0x341a;
+
+                ECLWarp(st7BossTime);
+                ECLSetArgs(ecl, st7BossMoveInterp, pair{ 0, 0 });
+                LoadBackground("data/eff07.anm", 723);
+            };
+
             switch (section) {
+            case TH06::TH06_ST7_MID1: // Midspell 1
+                thPracParam.dlg ? ECLWarp(st7MidbossTime) : ex_midboss_warp_skip_move();
+                break;
+
+            case TH06::TH06_ST7_MID2: { // Midspell 2
+                constexpr uint32_t st7mbsNon2ItemDrop = 0x1d54;
+
+                ex_midboss_warp_skip_move();
+                ECLSetArgs(ecl, st7MidbossFirstSub, pair{ 0, 18 }); // sub 18
+                ECLDisable(ecl, st7mbsNon2ItemDrop);
+                break;
+            }
+
+            case TH06::TH06_ST7_MID3: { // Midspell 3
+                constexpr uint32_t st7mbsNon3ItemDrop = 0x1ea4;
+
+                ex_midboss_warp_skip_move();
+                ECLSetArgs(ecl, st7MidbossFirstSub, pair{ 0, 19 }); // sub 19
+                ECLDisable(ecl, st7mbsNon3ItemDrop);
+                break;
+            }
+
+            case TH06::TH06_ST7_END_NS1: { // Non 1
+                constexpr uint32_t st7BossDlgTime = 8493;
+                thPracParam.dlg ? ECLWarp(st7BossDlgTime) : ex_boss_warp_skip_move();
+                break;
+            }
+
+            case TH06::TH06_ST7_END_S1: { // Spell 1
+                constexpr uint32_t st7bsNon1TimeThreshold = 0x3572;
+
+                ex_boss_warp_skip_move();
+                ECLSetArgs(ecl, st7bsNon1TimeThreshold, pair{ 0, 0 });
+                break;
+            }
+
+            case TH06_ST7_END_S2: { // Spell 2
+                constexpr uint32_t st7bsNon2TimeThreshold = 0x443c;
+                ECLSetArgs(ecl, st7bsNon2TimeThreshold, pair{ 0, 0 });
+                [[fallthrough]];
+            }
+            case TH06::TH06_ST7_END_NS2: { // Non 2
+                constexpr uint32_t st7bsNon2ItemDrop = 0x44e8;
+
+                ex_boss_warp_skip_move();
+                ECLMakeIns(ecl, st7bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 43 }); // call sub 43 (non2)
+                ECLDisable(ecl, st7bsNon2ItemDrop);
+                break;
+            }
+
+            case TH06_ST7_END_S3: { // Spell 3
+                constexpr uint32_t st7bsNon3TimeThreshold = 0x4fba;
+                ECLSetArgs(ecl, st7bsNon3TimeThreshold, pair{ 0, 0 });
+                [[fallthrough]];
+            }
+            case TH06::TH06_ST7_END_NS3: { // Non 3
+                constexpr uint32_t st7bsNon3ItemDrop = 0x5066;
+
+                ex_boss_warp_skip_move();
+                ECLMakeIns(ecl, st7bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 48 }); // call sub 48 (non3)
+                ECLDisable(ecl, st7bsNon3ItemDrop);
+                break;
+            }
+
+            case TH06_ST7_END_S4: { // Spell 4
+                constexpr uint32_t st7bsNon4TimeThreshold = 0x5d90;
+                ECLSetArgs(ecl, st7bsNon4TimeThreshold, pair{ 0, 0 });
+                [[fallthrough]];
+            }
+            case TH06::TH06_ST7_END_NS4: { // Non 4
+                constexpr uint32_t st7bsNon4ItemDrop = 0x5e3c;
+
+                ex_boss_warp_skip_move();
+                ECLMakeIns(ecl, st7bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 55 }); // call sub 55 (non4)
+                ECLDisable(ecl, st7bsNon4ItemDrop);
+                break;
+            }
+
+            case TH06_ST7_END_S5: { // Spell 5
+                constexpr uint32_t st7bsNon5TimeThreshold = 0x67d2;
+                ECLSetArgs(ecl, st7bsNon5TimeThreshold, pair{ 0, 0 });
+                [[fallthrough]];
+            }
+            case TH06::TH06_ST7_END_NS5: { // Non 5
+                constexpr uint32_t st7bsNon5ItemDrop = 0x687e;
+
+                ex_boss_warp_skip_move();
+                ECLMakeIns(ecl, st7bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 61 }); // call sub 61 (non5)
+                ECLDisable(ecl, st7bsNon5ItemDrop);
+                break;
+            }
+
+            case TH06_ST7_END_S6: { // Spell 6
+                constexpr uint32_t st7bsNon6TimeThreshold = 0x6fb8;
+                ECLSetArgs(ecl, st7bsNon6TimeThreshold, pair{ 0, 0 });
+                [[fallthrough]];
+            }
+            case TH06::TH06_ST7_END_NS6: { // Non 6
+                constexpr uint32_t st7bsNon6ItemDrop = 0x7064;
+
+                ex_boss_warp_skip_move();
+                ECLMakeIns(ecl, st7bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 65 }); // call sub 65 (non6)
+                ECLDisable(ecl, st7bsNon6ItemDrop);
+                break;
+            }
+
+            case TH06_ST7_END_S7: { // Spell 7
+                constexpr uint32_t st7bsNon7TimeThreshold = 0x7db2;
+                ECLSetArgs(ecl, st7bsNon7TimeThreshold, pair{ 0, 0 });
+                [[fallthrough]];
+            }
+            case TH06::TH06_ST7_END_NS7: { // Non 7
+                constexpr uint32_t st7bsNon7ItemDrop = 0x7e5e;
+
+                ex_boss_warp_skip_move();
+                ECLMakeIns(ecl, st7bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 71 }); // call sub 71 (non7)
+                ECLDisable(ecl, st7bsNon7ItemDrop);
+                break;
+            }
+
+            case TH06_ST7_END_S8: { // Spell 8
+                constexpr uint32_t st7bsNon8TimeThreshold = 0x8a7c;
+                ECLSetArgs(ecl, st7bsNon8TimeThreshold, pair{ 0, 0 });
+                [[fallthrough]];
+            }
+            case TH06::TH06_ST7_END_NS8: { // Non 8
+                constexpr uint32_t st7bsNon8ItemDrop = 0x8b28;
+
+                ex_boss_warp_skip_move();
+                ECLMakeIns(ecl, st7bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 76 }); // call sub 76 (non8)
+                ECLDisable(ecl, st7bsNon8ItemDrop);
+                break;
+            }
+
+            case TH06::TH06_ST7_END_S9: { // Spell 9
+                constexpr uint32_t st7bsNon9ItemDrop = 0x9a96;
+                constexpr uint32_t st7bsNon9TimeThreshold = 0x99ea;
+
+                ex_boss_warp_skip_move();
+                ECLMakeIns(ecl, st7bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 81 }); // call sub 81 (non9)
+                ECLDisable(ecl, st7bsNon9ItemDrop);
+                ECLSetArgs(ecl, st7bsNon9TimeThreshold, pair{ 0, 0 });
+                break;
+            }
+
+            case TH06::TH06_ST7_END_S10: { // Spell 10
+                constexpr uint32_t st7bsNon10ItemDrop = 0xc58c;
+                constexpr uint32_t st7bsNon10TimeThreshold = 0xc4f0;
+
+                ex_boss_warp_skip_move();
+                ECLMakeIns(ecl, st7bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 91 }); // call sub 91 (non10)
+                ECLDisable(ecl, st7bsNon10ItemDrop);
+                ECLSetArgs(ecl, st7bsNon10TimeThreshold, pair{ 0, 0 });
+
+                // for rage phase or 30% health warp, cf. th06nc_qed_phase_warp
+                // (yes, QED is mostly hardcoded lol)
+                break;
+            }
+
             default: break;
             }
             break;
@@ -993,7 +1180,6 @@ namespace TH06NC {
     HOOKSET_DEFINE(THMainHook)
 
     // Prac Menu UX
-    // TODO: change some R registers to E if that's possible (32th?)
     EHOOK_DY(th06nc_skip_prac_mode, 0x4bbd5, 6, { // subshot select confirm input, writing next state
         uintptr_t rsi = pCtx->Rsi;
         bool inPractice = GetMemContent<bool>(rsi + 0x168d1);
@@ -1030,6 +1216,13 @@ namespace TH06NC {
             GAME_MANAGER->stage = thPracParam.stage;
         }
         OG_INS(*(uint32_t*)(rsi + 0x168b0) = 0x19);
+    })
+
+    EHOOK_DY(th06nc_setup_prac_screen, 0x4b062, 5, { // first check of difficulty upon returning to prac menu
+        bool inPractice = GetMemContent<bool>(pCtx->Rsi + 0x168d1);
+        if (inPractice) THGuiPrac::singleton().RestoreDifficulty();
+
+        OG_INS(pCtx->Rcx = 0xad);
     })
 
     // Core Hooks
@@ -1095,7 +1288,7 @@ namespace TH06NC {
             OG_INS(*(int32_t*)RVA(0xa6ebbc) = (int32_t)pCtx->Rcx);
     })
 
-    EHOOK_DY(th06_nc_patchouli_fakeshot_2, 0x333d0, 4, {  // retrieving patchy's last 3 spells
+    EHOOK_DY(th06nc_patchouli_fakeshot_2, 0x333d0, 4, {  // retrieving patchy's last 3 spells
         if (thPracParam.mode && thPracParam.fakeType) {
             uintptr_t patchyLastSpellsEntry = RVA(PATCHY_LAST_SPELLS_TABLE) + (thPracParam.fakeType - 1) * 0xc;
 
@@ -1104,6 +1297,15 @@ namespace TH06NC {
             *(int32_t*)(pCtx->R8 + 0x54) = GetMemContent<int32_t>(patchyLastSpellsEntry + 0x8);
         }
         else OG_INS(*(int32_t*)(pCtx->R8 + 0x54) = (int32_t)pCtx->Rax);
+    })
+
+    EHOOK_DY(th06nc_qed_phase_warp, 0x35864, 7, { // retrieving boss health (or 0 if timer is under 2min)
+        const Enemy* flandre = (Enemy*)pCtx->Rcx;
+
+        if (thPracParam.mode && thPracParam.section == TH06_ST7_END_S10 && thPracParam.phase)
+            pCtx->Rax = 0;
+        else
+            OG_INS(pCtx->Rax = flandre->bossTimer.current < 7200 ? flandre->curHealth : 0);
     })
 
     EHOOK_DY(th06nc_bg_fastforward, 0x3b4b5, 2, { // spell prac check for fast-forwarding stage background

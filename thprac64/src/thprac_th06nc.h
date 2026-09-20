@@ -5,6 +5,7 @@
 
 namespace TH06NC {
     enum ADDRS {
+        LOAD_ANM_FILE = 0x20b0,
         PATCHY_LAST_SPELLS_TABLE = 0x3de300,
         GAME_MANAGER_ADDR = 0x4f1e60,
         PLAYER_ADDR = 0x4ff3a0,
@@ -95,14 +96,24 @@ namespace TH06NC {
         // size unknown
     };
 
+    struct Enemy {
+        Timer bossTimer;        // 0x0
+        char __unknown1[0x22c]; // 0x8
+        int32_t curHealth;      // 0x234
+        // size unknown
+    };
+
     struct StageBackground {
         char __unknown1[0x68]; // 0x0
         uint8_t is_frozen;     // 0x68
         char __unknown2[0x47]; // 0x69
         Timer timelineTime;    // 0xb0
+        // size unknown
     };
 
     static_assert(offsetof(EnemyManager, timelineTime) == 0x10c0b8);
+    static_assert(offsetof(Enemy, bossTimer) == 0x0);
+    static_assert(offsetof(Enemy, curHealth) == 0x234);
     static_assert(offsetof(StageBackground, is_frozen) == 0x68);
     static_assert(offsetof(StageBackground, timelineTime) == 0xb0);
 
@@ -111,6 +122,7 @@ namespace TH06NC {
         int32_t state_timer; // 0x7858
         char __unknown2[0x3c]; // 0x785c
         int8_t player_state; // 0x7898
+        // size unknown
     };
 
     static_assert(offsetof(Player, state_timer) == 0x7858);
