@@ -9,7 +9,6 @@
     // - THOverlay, Replays, Advanced Menu, etc.
     // - Replace addresses that are members of static structs with static struct access (cf. GameManager)
     // - Correct spell translations to match NC (official TLs)
-    // - Skip midboss anims on spell cast?
 
 using namespace TH06;
 using std::pair;
@@ -20,6 +19,7 @@ namespace TH06NC {
     Player* PLAYER;
     EnemyManager* ENEMY_MANAGER;
     StageBackground* STAGE_BACKGROUND;
+    Enemy** BOSS_PTR;
     void* ECL_MANAGER;
     void* ANM_MANAGER_PTR;
 
@@ -72,7 +72,7 @@ namespace TH06NC {
             auto section = CalcSection();
 
             if (section == TH06_ST7_END_S10)
-                mPhase(TH_PHASE, TH_SPELL_PHASE1);
+                mPhase(TH_PHASE, TH06_SPELL_PHASE_QED);
         }
 
         void SectionWidget(int warpType) {
@@ -339,17 +339,23 @@ namespace TH06NC {
     }
 
     int32_t healthOverride;
-    EHOOK_ST(th06nc_trigger_health_interrupt, 0x36248, 3, {
-        uintptr_t enemyAddr = pCtx->Rbx;
-        *(int32_t*)(enemyAddr + 0x234) = healthOverride;
+    int32_t triggerFrame;
 
-        OG_INS(pCtx->Rax = enemyAddr);
-        self->Disable();
+    EHOOK_ST(th06nc_trigger_health_interrupt, 0x36f12, 1, { // end of timeline ECL ontick
+        Enemy* boss = *BOSS_PTR;
+
+        if (boss && boss->bossTimer.current >= triggerFrame) {
+            boss->curHealth = healthOverride;
+            self->Disable();
+        }
+
+        OG_INS(pCtx->Rip = PopHelper(pCtx));
     });
 
-    void TriggerHealthInterrupt(int32_t threshold) {
+    void TriggerHealthInterrupt(int32_t threshold, int32_t atBossFrame = 0) {
         th06nc_trigger_health_interrupt.Enable();
         healthOverride = threshold - 1;
+        triggerFrame = atBossFrame;
     }
 
     void LoadBackground(const char* filename, int32_t spriteIndexOffset) {
@@ -377,10 +383,14 @@ namespace TH06NC {
                 ECLWarp(st1MidbossTime);
                 break;
 
-            case TH06_ST1_MID2: // Midspell (NHL)
+            case TH06_ST1_MID2: { // Midspell (NHL)
+                constexpr uint32_t st1mbsSpellMoveInterp = 0x1448;
+
                 ECLWarp(st1MidbossTime);
                 TriggerHealthInterrupt(500);
+                ECLSetArgs(ecl, st1mbsSpellMoveInterp, pair{ 0, 0 });
                 break;
+            }
 
             case TH06_ST1_BOSS1: { // Non 1
                 constexpr uint32_t st1BossDlgTime = 5092;
@@ -534,10 +544,12 @@ namespace TH06NC {
 
             case TH06::TH06_ST3_MID2: { // Midspell
                 constexpr uint32_t st3mbsSub10Call = 0x1088;
+                constexpr uint32_t st3mbsSpellMoveInterp = 0x1c90;
 
                 ECLWarp(st3MidbossTime);
                 TriggerHealthInterrupt(1300);
                 ECLDisable(ecl, st3mbsSub10Call); // makes boss intangible since we skip to the spell while it's executing
+                ECLSetArgs(ecl, st3mbsSpellMoveInterp, pair{ 0, 0 });
                 break;
             }
 
@@ -1159,8 +1171,14 @@ namespace TH06NC {
                 ECLDisable(ecl, st7bsNon10ItemDrop);
                 ECLSetArgs(ecl, st7bsNon10TimeThreshold, pair{ 0, 0 });
 
-                // for rage phase or 30% health warp, cf. th06nc_qed_phase_warp
+                // for rage phase warp, cf. th06nc_qed_phase_warp
                 // (yes, QED is mostly hardcoded lol)
+
+                if (thPracParam.phase == 1) {
+                    constexpr uint32_t st07bsSpell10ParticleLoop = 0xc8aa;
+                    ECLDisable(ecl, st07bsSpell10ParticleLoop);
+                    TriggerHealthInterrupt(1800, 3); // (6000f * 30%)
+                }
                 break;
             }
 
@@ -1302,7 +1320,7 @@ namespace TH06NC {
     EHOOK_DY(th06nc_qed_phase_warp, 0x35864, 7, { // retrieving boss health (or 0 if timer is under 2min)
         const Enemy* flandre = (Enemy*)pCtx->Rcx;
 
-        if (thPracParam.mode && thPracParam.section == TH06_ST7_END_S10 && thPracParam.phase)
+        if (thPracParam.mode && thPracParam.section == TH06_ST7_END_S10 && thPracParam.phase == 2)
             pCtx->Rax = 0;
         else
             OG_INS(pCtx->Rax = flandre->bossTimer.current < 7200 ? flandre->curHealth : 0);
@@ -1360,6 +1378,7 @@ namespace TH06NC {
         ANM_MANAGER_PTR = (void*)RVA(ANM_MANAGER_PTR_ADDR);
         ENEMY_MANAGER = (EnemyManager*)RVA(ENEMY_MANAGER_ADDR);
         ECL_MANAGER = (void*)RVA(ECL_MANAGER_ADDR);
+        BOSS_PTR = (Enemy**)RVA(BOSS_PTR_ADDR);
 
         // Init
         GameGuiInit(IMPL_WIN32_DX11, RVA(D3D_DEVICE_PTR), RVA(HWND_PTR),

@@ -5,7 +5,7 @@
 
 
 
-const char* th_glossary_str[3][1196]
+const char* th_glossary_str[3][1197]
 {
     {
         "",
@@ -26,6 +26,7 @@ const char* th_glossary_str[3][1196]
         "魔A",
         "魔B",
         "无",
+        "剩余 30% 血量",
         "Rank",
         "锁Rank",
         "梦A",
@@ -1224,6 +1225,7 @@ const char* th_glossary_str[3][1196]
         "Marisa A",
         "Marisa B",
         "None",
+        "30% Health Left",
         "Rank",
         "Rank Lock",
         "Reimu A",
@@ -2422,6 +2424,7 @@ const char* th_glossary_str[3][1196]
         "魔符",
         "恋符",
         "なし",
+        "体力30%から",
         "ランク",
         "ランクを固定する",
         "霊符",
@@ -5314,6 +5317,13 @@ const th_glossary_t TH06_TYPE_SELECT[6]
     TH06_REIMU_B,
     TH06_MARISA_A,
     TH06_MARISA_B,
+};
+
+const th_glossary_t TH06_SPELL_PHASE_QED[4]
+{
+    TH_NORMAL,
+    TH06_QED_30P,
+    TH_RAGE,
 };
 
 }

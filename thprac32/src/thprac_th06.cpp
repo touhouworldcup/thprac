@@ -270,15 +270,18 @@ namespace TH06 {
             switch (state) {
             case 0:
                 break;
+
             case 1:
                 SetFade(0.8f, 0.1f);
                 Open();
                 mDiffculty = GAME_MANAGER->difficulty;
                 mShotType = (int)(GAME_MANAGER->character * 2 + GAME_MANAGER->shotType);
                 break;
+
             case 2:
                 break;
-            case 3:
+
+            case 3: {
                 SetFade(0.8f, 0.8f);
                 Close();
                 *mNavFocus = 0;
@@ -288,7 +291,14 @@ namespace TH06 {
 
                 thPracParam.stage = *mStage;
                 thPracParam.section = CalcSection();
-                thPracParam.phase = *mPhase;
+
+                // backwards compatibility for QEDR replays prior to 30% health warp
+                int phaseVal = *mPhase;
+
+                if (thPracParam.section == TH06_ST7_END_S10)
+                    thPracParam.phase = (phaseVal == 0) ? 0 : 3 - phaseVal;
+                else thPracParam.phase = phaseVal;
+
                 thPracParam.frame = *mFrame;
                 if (SectionHasDlg(thPracParam.section))
                     thPracParam.dlg = *mDlg;
@@ -305,10 +315,13 @@ namespace TH06 {
                 if (thPracParam.section >= TH06_ST4_BOSS1 && thPracParam.section <= TH06_ST4_BOSS7)
                     thPracParam.fakeType = *mFakeShot;
                 break;
+            }
+
             case 4:
                 Close();
                 *mNavFocus = 0;
                 break;
+
             case 5:
                 // Fill Param
                 thPracParam.mode = *mMode;
@@ -332,6 +345,7 @@ namespace TH06 {
                 if (thPracParam.section >= TH06_ST4_BOSS1 && thPracParam.section <= TH06_ST4_BOSS7)
                     thPracParam.fakeType = *mFakeShot;
                 break;
+
             default:
                 break;
             }
@@ -339,9 +353,9 @@ namespace TH06 {
 
         void SpellPhase()
         {
-            auto section = CalcSection();
+            int section = CalcSection();
             if (section == TH06_ST7_END_S10) {
-                mPhase(TH_PHASE, TH_SPELL_PHASE1);
+                mPhase(TH_PHASE, TH06_SPELL_PHASE_QED);
             }
         }
         void PracticeMenu(Gui::GuiNavFocus& nav_focus)
@@ -952,21 +966,25 @@ namespace TH06 {
     {
         ENEMY_MANAGER->timelineTime.current = time;
     }
+
     void ECLSetHealth(ECLHelper& ecl, int offset, int32_t ecl_time, int32_t health)
     {
         ecl.SetPos(offset);
         ecl << ecl_time << 0x0010006f << 0x00ffff00 << health;
     }
+
     void ECLSetTime(ECLHelper& ecl, int offset, int32_t ecl_time, int32_t time)
     {
         ecl.SetPos(offset);
         ecl << ecl_time << 0x00100073 << 0x00ffff00 << time;
     }
+
     void ECLStall(ECLHelper& ecl, int offset)
     {
         ecl.SetPos(offset);
         ecl << 0x99999 << 0x000c0000 << 0x0000ff00;
     }
+
     void ECLNameFix()
     {
         void* thisPtr = (void*)(ANM_MANAGER);
@@ -977,6 +995,26 @@ namespace TH06 {
             asm_call<0x431dc0, Thiscall>(thisPtr, 18, "data/face12c.anm", 1192);
         }
     }
+
+    int32_t healthOverride;
+    int32_t triggerFrame;
+
+    EHOOK_ST(th06_set_boss_health, 0x411d62, 1, { // end of timeline ECL ontick
+        Enemy* boss = ENEMY_MANAGER->bosses[0];
+
+        if (boss && boss->bossTimer.current >= triggerFrame) {
+            boss->life = healthOverride;
+            self->Disable();
+        }
+    });
+
+    // sets both health without affecting boss max health
+    void SetBossHealth(int32_t health, int32_t atBossFrame = 0) {
+        th06_set_boss_health.Enable();
+        healthOverride = health;
+        triggerFrame = atBossFrame;
+    }
+
     __declspec(noinline) void THPatch(ECLHelper& ecl, int32_t stage, th_sections_t section)
     {
 
@@ -1895,6 +1933,12 @@ namespace TH06 {
                 ecl << pair{ 0x0bfa0, 0x0 };
                 ecl << pair{ 0x0bfac, 0x0 };
                 ecl << pair{ 0x0bfbc, 0x0 };
+
+                if (thPracParam.phase == 2) {
+                    constexpr uint32_t st07bsSpell10ParticleLoop = 0xc152;
+                    ecl << pair{ st07bsSpell10ParticleLoop + 0x4, (int16_t)0 };
+                    SetBossHealth(1800, 3); // (6000f * 30%)
+                }
                 break;
 
             default: break;
@@ -2330,6 +2374,7 @@ namespace TH06 {
         th06_sfx_fix.Disable();
         th06_bomb_esc_r_prevent_desyncs.Setup();
         th06_bomb_esc_r_prevent_desyncs.Disable();
+        th06_set_boss_health.Setup();
 
         // Reset thPracParam
         thPracParam.Reset();

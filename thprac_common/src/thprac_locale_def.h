@@ -26,6 +26,7 @@ enum th_glossary_t
     TH06_MARISA_A,
     TH06_MARISA_B,
     TH06_NONE,
+    TH06_QED_30P,
     TH06_RANK,
     TH06_RANKLOCK,
     TH06_REIMU_A,
@@ -1206,7 +1207,7 @@ enum th_glossary_t
     TH_YES,
 };
 
-extern const char* th_glossary_str[3][1196];
+extern const char* th_glossary_str[3][1197];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1368,6 +1369,8 @@ extern const th_sections_t th_sections_cba[11][2][19];
 extern const th_sections_t th_sections_cbt[11][2][14];
 
 extern const th_glossary_t TH06_TYPE_SELECT[6];
+
+extern const th_glossary_t TH06_SPELL_PHASE_QED[4];
 
 }
 

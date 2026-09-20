@@ -19,6 +19,7 @@ namespace TH06NC {
         INPUT_PREV_ADDR = 0xa6ec64,
         IS_EIGTH_FRAME_OF_HELD_INPUT_ADDR = 0xa6ec48,
         ENEMY_MANAGER_ADDR = 0xaa1e90,
+        BOSS_PTR_ADDR = 0xBADF78,
     };
 
     struct ECL_OP {
@@ -100,6 +101,7 @@ namespace TH06NC {
         Timer bossTimer;        // 0x0
         char __unknown1[0x22c]; // 0x8
         int32_t curHealth;      // 0x234
+        int32_t maxHealth;      // 0x238
         // size unknown
     };
 
@@ -114,6 +116,7 @@ namespace TH06NC {
     static_assert(offsetof(EnemyManager, timelineTime) == 0x10c0b8);
     static_assert(offsetof(Enemy, bossTimer) == 0x0);
     static_assert(offsetof(Enemy, curHealth) == 0x234);
+    static_assert(offsetof(Enemy, maxHealth) == 0x238);
     static_assert(offsetof(StageBackground, is_frozen) == 0x68);
     static_assert(offsetof(StageBackground, timelineTime) == 0xb0);
 

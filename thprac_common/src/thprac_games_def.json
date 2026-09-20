@@ -1045,6 +1045,7 @@
       "TH06_RANK": [ "Rank", "Rank", "ランク" ],
       "TH06_RANKLOCK": [ "锁Rank", "Rank Lock", "ランクを固定する" ],
       "TH06_BOOKS": [ "魔法阵", "Books", "魔導書" ],
+      "TH06_QED_30P": [ "剩余 30% 血量", "30% Health Left", "体力30%から" ],
 
       "TH06_ST4_FIRE1": [ "火符「火神之光」", "Fire Sign \"Agni Shine\"", "火符「アグニシャイン」" ],
       "TH06_ST4_FIRE2": [ "火符「火神之光 上级」", "Fire Sign \"Agni Shine High Level\"", "火符「アグニシャイン上級」" ],
@@ -1742,6 +1743,11 @@
         "TH06_REIMU_B",
         "TH06_MARISA_A",
         "TH06_MARISA_B"
+      ],
+      "TH06_SPELL_PHASE_QED": [
+        "TH_NORMAL",
+        "TH06_QED_30P",
+        "TH_RAGE"
       ]
     }
   },
