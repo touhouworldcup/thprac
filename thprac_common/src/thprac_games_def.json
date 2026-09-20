@@ -723,11 +723,11 @@
       "TH_FULL": [ "完全", "Full", "完全" ],
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
       "TH_FINALE": [ "终幕", "Finale", "終幕" ],
-      "TH_P1": [ "P1", "P1", "P1" ],
-      "TH_P2": [ "P2", "P2", "P2" ],
-      "TH_P3": [ "P3", "P3", "P3" ],
-      "TH_P4": [ "P4", "P4", "P4" ],
-      "TH_P5": [ "P5", "P5", "P5" ],
+      "TH_P1": [ "P1", "Phase 1", "P1" ],
+      "TH_P2": [ "P2", "Phase 2", "P2" ],
+      "TH_P3": [ "P3", "Phase 3", "P3" ],
+      "TH_P4": [ "P4", "Phase 4", "P4" ],
+      "TH_P5": [ "P5", "Phase 5", "P5" ],
       "TH_PH_BLUE": [ "蓝阶段", "Blue Phase", "青段階" ],
       "TH_PH_GREEN": [ "绿阶段", "Green Phase", "緑段階" ],
       "TH_PH_RED": [ "红阶段", "Red Phase", "赤段階" ],
@@ -1743,6 +1743,11 @@
         "TH06_REIMU_B",
         "TH06_MARISA_A",
         "TH06_MARISA_B"
+      ],
+      "TH06_SPELL_PHASE_TIMEOUT": [
+        "TH_P1",
+        "TH_P2",
+        "TH_FINALE"
       ],
       "TH06_SPELL_PHASE_QED": [
         "TH_NORMAL",

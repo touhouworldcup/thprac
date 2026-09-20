@@ -99,7 +99,9 @@ namespace TH06NC {
 
     struct Enemy {
         Timer bossTimer;        // 0x0
-        char __unknown1[0x22c]; // 0x8
+        char __unknown1[0x38];  // 0x8
+        Timer eclTimer;         // 0x40
+        char __unknown2[0x1ec]; // 0x48
         int32_t curHealth;      // 0x234
         int32_t maxHealth;      // 0x238
         // size unknown
@@ -115,6 +117,7 @@ namespace TH06NC {
 
     static_assert(offsetof(EnemyManager, timelineTime) == 0x10c0b8);
     static_assert(offsetof(Enemy, bossTimer) == 0x0);
+    static_assert(offsetof(Enemy, eclTimer) == 0x40);
     static_assert(offsetof(Enemy, curHealth) == 0x234);
     static_assert(offsetof(Enemy, maxHealth) == 0x238);
     static_assert(offsetof(StageBackground, is_frozen) == 0x68);

@@ -351,13 +351,17 @@ namespace TH06 {
             }
         }
 
-        void SpellPhase()
-        {
-            int section = CalcSection();
-            if (section == TH06_ST7_END_S10) {
-                mPhase(TH_PHASE, TH06_SPELL_PHASE_QED);
-            }
+        const th_glossary_t* SpellPhase() {
+            auto section = CalcSection();
+
+            if (section == TH06_ST7_END_S9)
+                return TH06_SPELL_PHASE_TIMEOUT;
+            else if (section == TH06_ST7_END_S10)
+                return TH06_SPELL_PHASE_QED;
+
+            return nullptr;
         }
+
         void PracticeMenu(Gui::GuiNavFocus& nav_focus)
         {
             mMode();
@@ -372,7 +376,7 @@ namespace TH06 {
                     }
 
                     SectionWidget();
-                    SpellPhase();
+                    mPhase(TH_PHASE, SpellPhase());
                 }
 
                 mLife();
@@ -1898,7 +1902,7 @@ namespace TH06 {
                 ECLStall(ecl, 0x8524);
                 break;
 
-            case TH06::TH06_ST7_END_S9:
+            case TH06::TH06_ST7_END_S9: { // Spell 9 (Timeout)
                 ECLNameFix();
                 s7b_n1();
                 s7b_call();
@@ -1912,9 +1916,50 @@ namespace TH06 {
                 ecl << pair{ 0x9466, 0x0 };
                 ecl << pair{ 0x9472, 0x0 };
                 ecl << pair{ 0x9482, 0x0 };
-                break;
+                if (!thPracParam.phase) return;
 
-            case TH06::TH06_ST7_END_S10:
+                auto ex_timeout_adjust_times = [&](int32_t skipTo, int32_t startDelay = 0) {
+                    constexpr uint32_t st7bsTimeoutTimeThreshold = 0x9560;
+                    constexpr uint32_t st7bsTimeoutStartTime = 120;
+                    constexpr uint32_t st7bsTimeoutStart = 0x9654;
+                    constexpr uint32_t st7bsTimeoutEnd = 0x987c;
+
+                    uint32_t curIns = st7bsTimeoutStart;
+                    int32_t timeAcc = startDelay + st7bsTimeoutStartTime;
+                    int32_t prevInsTime = 0;
+                    int32_t curInsTime;
+                    int16_t curInsSize;
+
+                    while (curIns <= st7bsTimeoutEnd) {
+                        ecl.SetPos(curIns);
+                        ecl >> curInsTime;
+                        ecl.SetPos(curIns + 0x6);
+                        ecl >> curInsSize;
+
+                        if (curInsTime < skipTo) {
+                            ecl << pair{ curIns + 0x0, st7bsTimeoutStartTime }
+                                << pair{ curIns + 0x4, (int16_t)0 };
+
+                        }
+                        else {
+                            if (prevInsTime)
+                                timeAcc += (curInsTime - prevInsTime);
+
+                            ecl << pair{ curIns + 0x0, timeAcc };
+                            prevInsTime = curInsTime;
+                        }
+
+                        curIns = curIns + curInsSize;
+                    }
+
+                    ecl << pair{ st7bsTimeoutTimeThreshold + 0xc, 5160 - skipTo + startDelay + st7bsTimeoutStartTime };
+                };
+
+                ex_timeout_adjust_times(thPracParam.phase == 1 ? 1976 : 4536, 45);
+                break;
+            }
+
+            case TH06::TH06_ST7_END_S10: // Spell 10 (QED)
                 ECLNameFix();
                 s7b_n1();
                 s7b_call();

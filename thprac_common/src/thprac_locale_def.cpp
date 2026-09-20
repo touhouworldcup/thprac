@@ -2254,11 +2254,11 @@ const char* th_glossary_str[3][1197]
         "OK",
         "On",
         "Original",
-        "P1",
-        "P2",
-        "P3",
-        "P4",
-        "P5",
+        "Phase 1",
+        "Phase 2",
+        "Phase 3",
+        "Phase 4",
+        "Phase 5",
         "Paste config",
         "Applies config from clipboard.",
         "Performance",
@@ -5317,6 +5317,13 @@ const th_glossary_t TH06_TYPE_SELECT[6]
     TH06_REIMU_B,
     TH06_MARISA_A,
     TH06_MARISA_B,
+};
+
+const th_glossary_t TH06_SPELL_PHASE_TIMEOUT[4]
+{
+    TH_P1,
+    TH_P2,
+    TH_FINALE,
 };
 
 const th_glossary_t TH06_SPELL_PHASE_QED[4]

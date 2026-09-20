@@ -1370,6 +1370,8 @@ extern const th_sections_t th_sections_cbt[11][2][14];
 
 extern const th_glossary_t TH06_TYPE_SELECT[6];
 
+extern const th_glossary_t TH06_SPELL_PHASE_TIMEOUT[4];
+
 extern const th_glossary_t TH06_SPELL_PHASE_QED[4];
 
 }

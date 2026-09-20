@@ -68,11 +68,15 @@ namespace TH06NC {
         }
         SINGLETON(THGuiPrac);
 
-        void SpellPhase() {
+        const th_glossary_t* SpellPhase() {
             auto section = CalcSection();
 
-            if (section == TH06_ST7_END_S10)
-                mPhase(TH_PHASE, TH06_SPELL_PHASE_QED);
+            if (section == TH06_ST7_END_S9)
+                return TH06_SPELL_PHASE_TIMEOUT;
+            else if (section == TH06_ST7_END_S10)
+                return TH06_SPELL_PHASE_QED;
+
+            return nullptr;
         }
 
         void SectionWidget(int warpType) {
@@ -119,7 +123,7 @@ namespace TH06NC {
                     mDlg();
                 break;
 
-            case FRAME: // Frame
+            case FRAME:
                 mFrame();
                 break;
             }
@@ -138,7 +142,7 @@ namespace TH06NC {
                         mFakeShot();
 
                     SectionWidget(warpType);
-                    SpellPhase();
+                    mPhase(TH_PHASE, SpellPhase());
                 }
 
                 mLife();
@@ -1151,7 +1155,7 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST7_END_S9: { // Spell 9
+            case TH06::TH06_ST7_END_S9: { // Spell 9 (Timeout)
                 constexpr uint32_t st7bsNon9ItemDrop = 0x9a96;
                 constexpr uint32_t st7bsNon9TimeThreshold = 0x99ea;
 
@@ -1159,10 +1163,48 @@ namespace TH06NC {
                 ECLMakeIns(ecl, st7bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 81 }); // call sub 81 (non9)
                 ECLDisable(ecl, st7bsNon9ItemDrop);
                 ECLSetArgs(ecl, st7bsNon9TimeThreshold, pair{ 0, 0 });
+                if (!thPracParam.phase) return;
+
+                auto ex_timeout_adjust_times = [&](int32_t skipTo, int32_t startDelay = 0) {
+                    constexpr uint32_t st7bsTimeoutTimeThreshold = 0x9c64;
+                    constexpr uint32_t st7bsTimeoutStart = 0x9d50;
+                    constexpr uint32_t st7bsTimeoutEnd = 0x9f78;
+
+                    uint32_t curIns = st7bsTimeoutStart;
+                    int32_t timeAcc = startDelay;
+                    int32_t prevInsTime = 0;
+                    int32_t curInsTime;
+                    int16_t curInsSize;
+
+                    while (curIns <= st7bsTimeoutEnd) {
+                        ecl.SetPos(curIns);
+                        ecl >> curInsTime;
+                        ecl.SetPos(curIns + 0x6);
+                        ecl >> curInsSize;
+
+                        if (curInsTime < skipTo) {
+                            ECLSetInsTime(ecl, curIns, 0);
+                            ECLDisable(ecl, curIns);
+
+                        } else {
+                            if (prevInsTime)
+                                timeAcc += (curInsTime - prevInsTime);
+
+                            ECLSetInsTime(ecl, curIns, timeAcc);
+                            prevInsTime = curInsTime;
+                        }
+
+                        curIns = curIns + curInsSize;
+                    }
+
+                    ECLSetArgs(ecl, st7bsTimeoutTimeThreshold, pair{ 0, 5160 - skipTo + startDelay });
+                };
+
+                ex_timeout_adjust_times(thPracParam.phase == 1 ? 1856 : 4416, 45);
                 break;
             }
 
-            case TH06::TH06_ST7_END_S10: { // Spell 10
+            case TH06::TH06_ST7_END_S10: { // Spell 10 (QED)
                 constexpr uint32_t st7bsNon10ItemDrop = 0xc58c;
                 constexpr uint32_t st7bsNon10TimeThreshold = 0xc4f0;
 
