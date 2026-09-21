@@ -40,33 +40,38 @@ namespace TH06NC {
     };
 
     struct GameManager {
-        char __unknown1[0x20];     // 0x0
+        char __unknown1[0x8];      // 0x0
+        uint32_t spellCaps;        // 0x8
+        uint32_t spellCapsForTLB;  // 0xc
+        char __unknown2[0x10];     // 0x10
         uint8_t character;         // 0x20
         uint8_t subShot;           // 0x21
         uint32_t stage;            // 0x24
         uint16_t curPower;         // 0x28
-        char __unknown2[0x906];    // 0x2a
+        char __unknown3[0x906];    // 0x2a
         int64_t visualScore;       // 0x930
         int64_t actualScore;       // 0x938
-        char __unknown3[0x15];     // 0x940
+        char __unknown4[0x15];     // 0x940
         int8_t inSpellPrac;        // 0x955
-        char __unknown4[0x2];      // 0x956
+        char __unknown5[0x2];      // 0x956
         int8_t spellPracSpellNum;  // 0x958
         uint16_t stagePointItems;  // 0x95a
         uint16_t totalPointItems;  // 0x95c
         uint32_t difficulty;       // 0x960
-        char __unknown5[0xc908];   // 0x964
+        char __unknown6[0xc908];   // 0x964
         int32_t stageGraze;        // 0xd26c
         int32_t totalGraze;        // 0xd270
-        char __unknown6[0x1c];     // 0xd274
+        char __unknown7[0x1c];     // 0xd274
         int8_t livesRemaining;     // 0xd290
         int8_t bombsRemaining;     // 0xd291
         uint16_t scoreExtends;     // 0xd292
-        char __unknown7[0x188];    // 0xd294
+        char __unknown8[0x188];    // 0xd294
         int32_t rank;              // 0xd41c
         // size unknown
     };
 
+    static_assert(offsetof(GameManager, spellCaps) == 0x8);
+    static_assert(offsetof(GameManager, spellCapsForTLB) == 0xc);
     static_assert(offsetof(GameManager, character) == 0x20);
     static_assert(offsetof(GameManager, subShot) == 0x21);
     static_assert(offsetof(GameManager, stage) == 0x24);
@@ -151,7 +156,7 @@ namespace TH06NC {
 
         int32_t rank;
         int32_t fakeType;
-
+        bool guaranteeTLB;
         bool dlg;
 
         void Reset()
@@ -160,7 +165,8 @@ namespace TH06NC {
             stage = 0;
             section = 0;
             phase = 0;
-            score = 0ll;
+            frame = 0;
+            score = 0;
             life = 0;
             bomb = 0;
             power = 0;
@@ -168,8 +174,8 @@ namespace TH06NC {
             point = 0;
             rank = 0;
             fakeType = 0;
+            guaranteeTLB = false;
             dlg = false;
-            frame = 0;
         }
 
         bool ReadJson(std::string& json)
@@ -181,7 +187,6 @@ namespace TH06NC {
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
-            GetJsonValue(dlg);
             GetJsonValue(frame);
             GetJsonValue(score);
             GetJsonValue(life);
@@ -191,6 +196,8 @@ namespace TH06NC {
             GetJsonValue(point);
             GetJsonValue(rank);
             GetJsonValue(fakeType);
+            GetJsonValue(guaranteeTLB);
+            GetJsonValue(dlg);
 
             return true;
         }
@@ -209,6 +216,8 @@ namespace TH06NC {
                 AddJsonValue(phase);
             if (frame)
                 AddJsonValue(frame);
+            if (guaranteeTLB)
+                AddJsonValue(guaranteeTLB);
             if (dlg)
                 AddJsonValue(dlg);
 

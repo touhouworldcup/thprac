@@ -5,7 +5,7 @@
 
 
 
-const char* th_glossary_str[3][1197]
+const char* th_glossary_str[3][1199]
 {
     {
         "",
@@ -21,6 +21,8 @@ const char* th_glossary_str[3][1197]
         "练习模式",
         "时间",
         "黄昏酒场",
+        "关底Boss (PH)",
+        "强制进入PH",
         "魔法阵",
         "机体伪装",
         "魔A",
@@ -1220,6 +1222,8 @@ const char* th_glossary_str[3][1197]
         "Practice Mode",
         "Time",
         "Uwabami Breakers",
+        "True Last Boss",
+        "Guarantee Extra Phantom",
         "Books",
         "Fake Shot",
         "Marisa A",
@@ -2419,6 +2423,8 @@ const char* th_glossary_str[3][1197]
         "練習モード",
         "時間",
         "黄昏酒場～Uwabami Breakers～",
+        "TODO",
+        "TODO",
         "魔導書",
         "機体偽装",
         "魔符",
@@ -5331,6 +5337,76 @@ const th_glossary_t TH06_SPELL_PHASE_QED[4]
     TH_NORMAL,
     TH06_QED_30P,
     TH_RAGE,
+};
+
+}
+
+namespace TH06NC {
+
+const char* th_sections_str[3][4][1]
+{
+    {
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+    },
+    {
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+    },
+    {
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+        {
+            "",
+        },
+    },
+};
+
+const uint8_t th_sections_bgm[1]
+{
+    0,
+};
+
+const th_sections_t th_sections_cba[1][1][2]
+{
+    {
+        { },
+    },
+};
+
+const th_sections_t th_sections_cbt[1][2][1]
+{
+    {
+        { },
+        { },
+    },
 };
 
 }

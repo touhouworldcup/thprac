@@ -1757,6 +1757,19 @@
     }
   },
 
+  "th06nc": {
+
+    "namespace": "TH06NC",
+
+    "glossary": {
+      "TH06NC_TLB": [ "关底Boss (PH)", "True Last Boss", "TODO" ],
+      "TH06NC_TLB_LOCK": [ "强制进入PH", "Guarantee Extra Phantom", "TODO" ]
+    },
+
+    "sections": {},
+    "groups": {}
+  },
+
   "th07": {
 
     "namespace": "TH07",

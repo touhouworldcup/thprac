@@ -42,6 +42,7 @@ namespace TH06NC {
 
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mRank{ TH06_RANK, 0, 32, 1, 10, 10 };
         Gui::GuiCombo mFakeShot{ TH06_FS, TH06_TYPE_SELECT };
+        Gui::GuiCheckBox mGuaranteeTLB { TH06NC_TLB_LOCK };
 
         Gui::GuiNavFocus mNavFocus{ TH_STAGE, TH_MODE, TH_WARP, TH_FRAME,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
@@ -104,22 +105,22 @@ namespace TH06NC {
             case MIDBOSS:
             case ENDBOSS:
                 if (mSection(TH_WARP_SELECT_FRAME[warpType],
-                    th_sections_cba[*mStage + st][warpType - 2],
-                    th_sections_str[::Gui::LocaleGet()][mDiffculty]))
+                    TH06::th_sections_cba[*mStage + st][warpType - 2],
+                    TH06::th_sections_str[::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
 
-                if (SectionHasDlg(th_sections_cba[*mStage][warpType - 2][*mSection]))
+                if (SectionHasDlg(TH06::th_sections_cba[*mStage][warpType - 2][*mSection]))
                     mDlg();
                 break;
 
             case NONSPELL:
             case SPELL:
                 if (mSection(TH_WARP_SELECT_FRAME[warpType],
-                    th_sections_cbt[*mStage + st][warpType - 4],
-                    th_sections_str[::Gui::LocaleGet()][mDiffculty]))
+                    TH06::th_sections_cbt[*mStage + st][warpType - 4],
+                    TH06::th_sections_str[::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
 
-                if (SectionHasDlg(th_sections_cbt[*mStage][warpType - 4][*mSection]))
+                if (SectionHasDlg(TH06::th_sections_cbt[*mStage][warpType - 4][*mSection]))
                     mDlg();
                 break;
 
@@ -137,8 +138,10 @@ namespace TH06NC {
                 if (mWarp()) *mSection = *mChapter = *mPhase = *mFrame = 0;
 
                 int warpType = *mWarp;
+                int stage = *mStage;
+
                 if (warpType) {
-                    if (*mStage == 3 && warpType > 2 && warpType != FRAME)
+                    if (stage == 3 && warpType > 2 && warpType != FRAME)
                         mFakeShot();
 
                     SectionWidget(warpType);
@@ -153,6 +156,9 @@ namespace TH06NC {
                 mGraze();
                 mPoint();
                 mRank();
+
+                if (stage == 6 && warpType > 2 && warpType != FRAME)
+                    mGuaranteeTLB();
             }
 
             nav_focus();
@@ -201,11 +207,11 @@ namespace TH06NC {
 
             case MIDBOSS:
             case ENDBOSS:
-                return th_sections_cba[*mStage][warpType - 2][*mSection];
+                return TH06::th_sections_cba[*mStage][warpType - 2][*mSection];
 
             case NONSPELL:
             case SPELL:
-                return th_sections_cbt[*mStage][warpType - 4][*mSection];
+                return TH06::th_sections_cbt[*mStage][warpType - 4][*mSection];
 
             default:
                 return 0;
@@ -261,6 +267,9 @@ namespace TH06NC {
             if (thPracParam.section >= TH06_ST4_BOSS1 && thPracParam.section <= TH06_ST4_BOSS7)
                  thPracParam.fakeType = *mFakeShot;
             else thPracParam.fakeType = 0;
+            if (thPracParam.section >= TH06_ST7_END_NS1 && thPracParam.section <= TH06_ST7_END_S10)
+                thPracParam.guaranteeTLB = *mGuaranteeTLB;
+            else thPracParam.guaranteeTLB = false;
         }
 
         __declspec(noinline) void CloseMenu() {
@@ -1325,6 +1334,7 @@ namespace TH06NC {
         GAME_MANAGER->livesRemaining = thPracParam.life;
         GAME_MANAGER->bombsRemaining = thPracParam.bomb;
         GAME_MANAGER->rank = thPracParam.rank;
+        GAME_MANAGER->spellCapsForTLB = thPracParam.guaranteeTLB ? 6 : 0;
 
         if (GAME_MANAGER->difficulty != 4) { // avoid triggering score extends
             if (thPracParam.score >= 60000000) GAME_MANAGER->scoreExtends = 4;
@@ -1376,7 +1386,7 @@ namespace TH06NC {
             int32_t stage = thPracParam.stage;
 
             if (section < 10000) { // Section
-                if (th_sections_bgm[section]) // boss section -> boss bg
+                if (TH06::th_sections_bgm[section]) // boss section -> boss bg
                     GAME_MANAGER->spellPracSpellNum = safeSpellNums[thPracParam.stage];
                 else GAME_MANAGER->spellPracSpellNum = 0;
 
@@ -1395,7 +1405,7 @@ namespace TH06NC {
         int32_t section = thPracParam.section;
 
         if (thPracParam.mode && section && section < 10000
-          && th_sections_bgm[section] && !thPracParam.dlg)
+          && TH06::th_sections_bgm[section] && !thPracParam.dlg)
             pCtx->Rdx += 0x80;
         else OG_INS(pCtx->Rdx += pCtx->R15);
     })
@@ -1405,7 +1415,7 @@ namespace TH06NC {
         int32_t section = thPracParam.section;
 
         if (thPracParam.mode && section && section < 10000
-          && th_sections_bgm[section] && !thPracParam.dlg)
+          && TH06::th_sections_bgm[section] && !thPracParam.dlg)
             pCtx->Rip = RVA(0x3e5fd);
     })
     HOOKSET_ENDDEF()

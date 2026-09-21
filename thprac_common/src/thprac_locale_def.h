@@ -21,6 +21,8 @@ enum th_glossary_t
     ALCOSTG_PRACTICE_MODE,
     ALCOSTG_TIME,
     ALCOSTG_TITLE,
+    TH06NC_TLB,
+    TH06NC_TLB_LOCK,
     TH06_BOOKS,
     TH06_FS,
     TH06_MARISA_A,
@@ -1207,7 +1209,7 @@ enum th_glossary_t
     TH_YES,
 };
 
-extern const char* th_glossary_str[3][1197];
+extern const char* th_glossary_str[3][1199];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1373,6 +1375,23 @@ extern const th_glossary_t TH06_TYPE_SELECT[6];
 extern const th_glossary_t TH06_SPELL_PHASE_TIMEOUT[4];
 
 extern const th_glossary_t TH06_SPELL_PHASE_QED[4];
+
+}
+
+namespace TH06NC {
+
+enum th_sections_t : uint8_t
+{
+    A0000ERROR,
+};
+
+extern const char* th_sections_str[3][4][1];
+
+extern const uint8_t th_sections_bgm[1];
+
+extern const th_sections_t th_sections_cba[1][1][2];
+
+extern const th_sections_t th_sections_cbt[1][2][1];
 
 }
 
