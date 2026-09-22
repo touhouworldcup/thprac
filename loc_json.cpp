@@ -605,7 +605,8 @@ std::string generate_header_file(vector<game_t>& games) {
 	// (NOTE: Not every entry is actually a game. However, every actual game
 	// will have a non-empty namespace string.)
 	for (auto& game : games) {
-		bool has_namespace = game.namespace_.length() > 0;
+		bool has_namespace = (game.namespace_.length() > 0);
+
 		if (has_namespace) {
 			// Namespace start
 			sprintf_append(
@@ -960,28 +961,46 @@ vector<game_t> loc_json_parse(yyjson_doc* doc) {
 		yyjson_val* game = yyjson_obj_iter_get_val(key);
 		const char* g_current_game = unsafe_yyjson_get_str(key);
 
-		auto& game_obj = games.emplace_back();
-		game_obj.name = g_current_game;
-
 		SKIP_IF(
 			!yyjson_is_obj(game),
 			"Warning: A non-object value for a game has detected, ignoring."
 		);
 
-		// Check namespace
-		if (yyjson_val* ns_json = yyjson_obj_get(game, "namespace")) {
-			if (const char* ns_str = yyjson_get_str(ns_json)) {
-				game_obj.namespace_ = ns_str;
-			}
-			else {
-				printf_warn(
-					"Warning: In game \"%s\": "
-					"Invalid namespace value, ignoring." ENDL,
-					g_current_game
-				);
+		game_t* game_obj_ptr; // don't worry about this
+
+		// Check namespace parent
+		if (yyjson_val* nsp_json = yyjson_obj_get(game, "namespaceParent")) {
+			const char* nsp_str = yyjson_get_str(nsp_json);
+			SKIP_IF(!nsp_str, "Warning: Invalid namespace parent; skipping game \"%s\"", g_current_game);
+
+			auto it = std::ranges::find_if(games, [=](const game_t& g) {
+				return g.namespace_ == nsp_str;
+			});
+
+			SKIP_IF(it == games.end(),
+				"Warning: Namespace parent not found; skipping game \"%s\"", g_current_game);
+			game_obj_ptr = &*it;
+		}
+		else { // New game && check namespace
+			game_obj_ptr = &games.emplace_back();
+			game_obj_ptr->name = g_current_game;
+
+			if (yyjson_val* ns_json = yyjson_obj_get(game, "namespace")) {
+				if (const char* ns_str = yyjson_get_str(ns_json)) {
+					game_obj_ptr->namespace_ = ns_str;
+				}
+				else {
+					printf_warn(
+						"Warning: In game \"%s\": "
+						"Invalid namespace value, ignoring." ENDL,
+						g_current_game
+					);
+				}
 			}
 		}
-		
+
+		auto& game_obj = *game_obj_ptr;
+
 		// Parsing Glossary
 		if (yyjson_val* glossary = yyjson_obj_get(game, "glossary")) {
 			yyjson_obj_iter glossary_iter;
@@ -1001,8 +1020,16 @@ vector<game_t> loc_json_parse(yyjson_doc* doc) {
 					glossary_key
 				);
 
-				game_obj.glossary[glossary_key] = { unsafe_yyjson_get_str(i0), unsafe_yyjson_get_str(i1), unsafe_yyjson_get_str(i2) };
-				AddGlyphRange(game_obj.glossary[glossary_key]);
+				auto [it, newKey] = game_obj.glossary.try_emplace(glossary_key, unsafe_yyjson_get_str(i0), unsafe_yyjson_get_str(i1), unsafe_yyjson_get_str(i2));
+
+				if (newKey) AddGlyphRange(it->second);
+				else {
+					printf_warn(
+						"Warning: In game \"%s\": "
+						"Ignored attempt to redefine key %s." ENDL,
+						g_current_game, glossary_key
+					);
+				}
 			}
 			else {
 				printf_warn(
@@ -1171,7 +1198,7 @@ int wmain(int argc, wchar_t** argv) {
 	}
 
 	if (!doc) {
-		fprintf(stderr, "Error: JSON parse error %d at %d\n%s", err.code, err.pos, err.msg);
+		fprintf(stderr, "Error: JSON parse error %d at %zd\n%s", err.code, err.pos, err.msg);
 		return -5;
 	}
 
@@ -1187,7 +1214,7 @@ int wmain(int argc, wchar_t** argv) {
 			SetFilePointer(hHeader, 0, NULL, FILE_BEGIN);
 			SetEndOfFile(hHeader);
 			WriteFile(hHeader, header_new.data(), header_new.size(), &byteRet, NULL);
-			wprintf(L"%s: wrote %d/%d bytes, code = %d\n", L"" THPRAC_LOC_HEADER_NAME, byteRet, header_new.size(), GetLastError());
+			wprintf(L"%s: wrote %d/%zd bytes, code = %d\n", L"" THPRAC_LOC_HEADER_NAME, byteRet, header_new.size(), GetLastError());
 		}
 	}
 
@@ -1201,7 +1228,7 @@ int wmain(int argc, wchar_t** argv) {
 			SetFilePointer(hSource, 0, NULL, FILE_BEGIN);
 			SetEndOfFile(hSource);
 			WriteFile(hSource, source_new.data(), source_new.size(), &byteRet, NULL);
-			wprintf(L"%s: wrote %d/%d bytes, code = %d\n", L"" THPRAC_LOC_SOURCE_NAME, byteRet, source_new.size(), GetLastError());
+			wprintf(L"%s: wrote %d/%zd bytes, code = %d\n", L"" THPRAC_LOC_SOURCE_NAME, byteRet, source_new.size(), GetLastError());
 		}
 	}
 
