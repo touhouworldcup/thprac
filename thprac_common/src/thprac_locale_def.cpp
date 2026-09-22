@@ -3769,6 +3769,12 @@ const th_glossary_t TH_SPELL_PHASE_FINALE[3]
     TH_FINALE,
 };
 
+const th_glossary_t TH_SPELL_PHASE_FULL[3]
+{
+    TH_NORMAL,
+    TH_FULL,
+};
+
 const th_glossary_t TH_SPELL_PHASE_RAGEFUL[4]
 {
     TH_NORMAL,
@@ -5343,70 +5349,121 @@ const th_glossary_t TH06_SPELL_PHASE_QED[4]
 
 namespace TH06NC {
 
-const char* th_sections_str[3][4][1]
+const char* th_sections_str[3][4][4]
 {
     {
         {
             "",
+            "咒弹「易碎之翼」",
+            "咒弹「伏行之血痕」",
+            "「弹幕的心脏」",
         },
         {
             "",
+            "咒弹「易碎之翼」",
+            "咒弹「伏行之血痕」",
+            "「弹幕的心脏」",
         },
         {
             "",
+            "咒弹「易碎之翼」",
+            "咒弹「伏行之血痕」",
+            "「弹幕的心脏」",
         },
         {
             "",
-        },
-    },
-    {
-        {
-            "",
-        },
-        {
-            "",
-        },
-        {
-            "",
-        },
-        {
-            "",
+            "咒弹「易碎之翼」",
+            "咒弹「伏行之血痕」",
+            "「弹幕的心脏」",
         },
     },
     {
         {
             "",
+            "Cursed Barrage \"Fragile Wing\"",
+            "Cursed Barrage \"Creeping Bloodstain\"",
+            "\"Danmaku Heart\"",
         },
         {
             "",
+            "Cursed Barrage \"Fragile Wing\"",
+            "Cursed Barrage \"Creeping Bloodstain\"",
+            "\"Danmaku Heart\"",
         },
         {
             "",
+            "Cursed Barrage \"Fragile Wing\"",
+            "Cursed Barrage \"Creeping Bloodstain\"",
+            "\"Danmaku Heart\"",
         },
         {
             "",
+            "Cursed Barrage \"Fragile Wing\"",
+            "Cursed Barrage \"Creeping Bloodstain\"",
+            "\"Danmaku Heart\"",
+        },
+    },
+    {
+        {
+            "",
+            "呪弾「フラジャイルウィング」",
+            "呪弾「這い寄る血痕」",
+            "「弾幕の心臓」",
+        },
+        {
+            "",
+            "呪弾「フラジャイルウィング」",
+            "呪弾「這い寄る血痕」",
+            "「弾幕の心臓」",
+        },
+        {
+            "",
+            "呪弾「フラジャイルウィング」",
+            "呪弾「這い寄る血痕」",
+            "「弾幕の心臓」",
+        },
+        {
+            "",
+            "呪弾「フラジャイルウィング」",
+            "呪弾「這い寄る血痕」",
+            "「弾幕の心臓」",
         },
     },
 };
 
-const uint8_t th_sections_bgm[1]
+const uint8_t th_sections_bgm[4]
 {
     0,
+    2,
+    2,
+    2,
 };
 
-const th_sections_t th_sections_cba[1][1][2]
+const th_sections_t th_sections_cba[1][1][4]
 {
     {
-        { },
+        { TH06NC_TLB1, TH06NC_TLB2, TH06NC_TLB3, },
     },
 };
 
-const th_sections_t th_sections_cbt[1][2][1]
+const th_sections_t th_sections_cbt[1][2][4]
 {
     {
         { },
-        { },
+        { TH06NC_TLB1, TH06NC_TLB2, TH06NC_TLB3, },
     },
+};
+
+const th_glossary_t TH06NC_WARP_SELECT_EX[9]
+{
+    TH_NONE,
+    TH_STAGE_PORTION,
+    TH_MID_STAGE,
+    TH_END_STAGE,
+    TH06NC_TLB,
+    TH_NONSPELL,
+    TH_SPELL,
+    TH_FRAME,
 };
 
 }
@@ -23112,7 +23169,7 @@ const th_glossary_t TH20_EXPIRED_PYRAMID_FIX_OPT[6]
 
 }
 
-const wchar_t __thprac_loc_range_zh[3357] {
+const wchar_t __thprac_loc_range_zh[3361] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -23204,6 +23261,7 @@ const wchar_t __thprac_loc_range_zh[3357] {
     0x4efb, 0x4efb,
     0x4efd, 0x4efd,
     0x4f0a, 0x4f0a,
+    0x4f0f, 0x4f0f,
     0x4f10, 0x4f10,
     0x4f17, 0x4f17,
     0x4f18, 0x4f18,
@@ -23852,6 +23910,7 @@ const wchar_t __thprac_loc_range_zh[3357] {
     0x6606, 0x6606,
     0x660e, 0x660e,
     0x660f, 0x660f,
+    0x6613, 0x6613,
     0x661f, 0x661f,
     0x6620, 0x6620,
     0x6625, 0x6625,
@@ -24813,7 +24872,7 @@ const wchar_t __thprac_loc_range_en[31] {
     0
 };
 
-const wchar_t __thprac_loc_range_ja[2851] {
+const wchar_t __thprac_loc_range_ja[2853] {
     0x0020, 0x00FF,
     0x2026, 0x2026,
     0x2192, 0x2192,
@@ -25885,6 +25944,7 @@ const wchar_t __thprac_loc_range_ja[2851] {
     0x8105, 0x8105,
     0x810a, 0x810a,
     0x8133, 0x8133,
+    0x81d3, 0x81d3,
     0x81e8, 0x81e8,
     0x81ea, 0x81ea,
     0x81f3, 0x81f3,

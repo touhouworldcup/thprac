@@ -22,11 +22,12 @@ namespace TH06NC {
     Enemy** BOSS_PTR;
     void* ECL_MANAGER;
     void* ANM_MANAGER_PTR;
+    void* ZUN_GUI;
 
     class THGuiPrac : public Gui::GameGuiWnd {
         Gui::GuiCombo mMode{ TH_MODE, TH_MODE_SELECT };
         Gui::GuiCombo mStage{ TH_STAGE, TH_STAGE_SELECT };
-        Gui::GuiCombo mWarp{ TH_WARP, TH_WARP_SELECT_FRAME };
+        Gui::GuiCombo mWarp{ TH_WARP };
         Gui::GuiCombo mSection{ TH_MODE };
         Gui::GuiCombo mPhase{ TH_PHASE };
         Gui::GuiCheckBox mDlg{ TH_DLG };
@@ -70,23 +71,39 @@ namespace TH06NC {
         SINGLETON(THGuiPrac);
 
         const th_glossary_t* SpellPhase() {
-            auto section = CalcSection();
+            int stage = *mStage;
+            int section = CalcSection();
 
             if (section == TH06_ST7_END_S9)
                 return TH06_SPELL_PHASE_TIMEOUT;
+
             else if (section == TH06_ST7_END_S10)
                 return TH06_SPELL_PHASE_QED;
+
+            else if (stage == 6) {
+                switch (section) {
+                case TH06NC_TLB1:
+                case TH06NC_TLB2:
+                    return TH_SPELL_PHASE_FULL;
+                case TH06NC_TLB3:
+                    return TH_SPELL_PHASE1;
+                }
+            }
 
             return nullptr;
         }
 
-        void SectionWidget(int warpType) {
+        int SectionWidget(int warpType) {
             static char chapterStr[256]{};
-            auto& chapterCounts = mChapterSetup[*mStage];
+            int stage = *mStage;
+            auto& chapterCounts = mChapterSetup[stage];
 
-            int st = 0;
-            if (*mStage == 3) // Stage 4 Fake Shot
-                st = (*mFakeShot ? *mFakeShot - 1 : mShotType) + 4;
+            if (stage != 6)
+                warpType = fixType(warpType);
+
+            int stgOffset = 0;
+            if (stage == 3) // Stage 4 Fake Shot
+                stgOffset = (*mFakeShot ? *mFakeShot - 1 : mShotType) + 4;
 
             switch (warpType) {
             case CHAPTER:
@@ -105,47 +122,71 @@ namespace TH06NC {
             case MIDBOSS:
             case ENDBOSS:
                 if (mSection(TH_WARP_SELECT_FRAME[warpType],
-                    TH06::th_sections_cba[*mStage + st][warpType - 2],
+                    TH06::th_sections_cba[stage + stgOffset][warpType - 2],
                     TH06::th_sections_str[::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
 
-                if (SectionHasDlg(TH06::th_sections_cba[*mStage][warpType - 2][*mSection]))
-                    mDlg();
-                break;
+                return TH06::th_sections_cba[stage][warpType - 2][*mSection];
+
+            case TLB:
+                if (mSection(TH_SPELL, TH06NC::th_sections_cba[0][0],
+                    TH06NC::th_sections_str[Gui::LocaleGet()][0]))
+                    *mPhase = 0;
+
+                return TH06NC::th_sections_cba[0][0][*mSection];
 
             case NONSPELL:
             case SPELL:
-                if (mSection(TH_WARP_SELECT_FRAME[warpType],
-                    TH06::th_sections_cbt[*mStage + st][warpType - 4],
+                if (mSection(TH_WARP_SELECT_FRAME[warpType - 1],
+                    TH06::th_sections_cbt[stage + stgOffset][warpType - 5],
                     TH06::th_sections_str[::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
 
-                if (SectionHasDlg(TH06::th_sections_cbt[*mStage][warpType - 4][*mSection]))
-                    mDlg();
-                break;
+                return TH06::th_sections_cbt[stage][warpType - 5][*mSection];
 
             case FRAME:
                 mFrame();
                 break;
             }
+
+            return A0000ERROR;
+        }
+
+        int prevStage = *mStage; //s1
+        void AdjustWarpSelection() {
+            int stage = *mStage;
+            int warpType = *mWarp;
+
+            if (stage == 6) { // change to Ex (warp has 1 more option)
+                if (warpType >= TLB) *mWarp = warpType + 1;
+            } else if (prevStage == 6) { // change from Ex (warp has 1 less option)
+                if (warpType >= TLB) *mWarp = warpType - 1; // if TLB was selected, it changes to End Boss
+            }
+
+            prevStage = stage;
         }
 
         void PracticeMenu(Gui::GuiNavFocus& nav_focus) {
             mMode();
-            if (mStage()) *mSection = *mChapter = 0;
+            if (mStage()) {
+                *mSection = *mChapter = 0;
+                AdjustWarpSelection();
+            }
 
             if (*mMode == 1) {
-                if (mWarp()) *mSection = *mChapter = *mPhase = *mFrame = 0;
+                int stage = *mStage;
+                if (mWarp(TH_WARP, stage == 6 ? TH06NC_WARP_SELECT_EX : TH_WARP_SELECT_FRAME))
+                    *mSection = *mChapter = *mPhase = *mFrame = 0;
 
                 int warpType = *mWarp;
-                int stage = *mStage;
-
                 if (warpType) {
-                    if (stage == 3 && warpType > 2 && warpType != FRAME)
+                    if (stage == 3 && warpType > CHAPTER && fixType(warpType) != FRAME)
                         mFakeShot();
 
-                    SectionWidget(warpType);
+                    int section = SectionWidget(warpType);
                     mPhase(TH_PHASE, SpellPhase());
+                    if (SectionHasDlg(section, stage))
+                        mDlg();
                 }
 
                 mLife();
@@ -157,7 +198,7 @@ namespace TH06NC {
                 mPoint();
                 mRank();
 
-                if (stage == 6 && warpType > 2 && warpType != FRAME)
+                if (stage == 6 && warpType > MIDBOSS && warpType != TLB && warpType != FRAME)
                     mGuaranteeTLB();
             }
 
@@ -199,7 +240,9 @@ namespace TH06NC {
         }
 
         int CalcSection() {
+            int stage = *mStage;
             int warpType = *mWarp;
+            if (stage != 6) warpType = fixType(warpType);
 
             switch (warpType) {
             case CHAPTER:
@@ -207,18 +250,27 @@ namespace TH06NC {
 
             case MIDBOSS:
             case ENDBOSS:
-                return TH06::th_sections_cba[*mStage][warpType - 2][*mSection];
+                return TH06::th_sections_cba[stage][warpType - 2][*mSection];
+
+            case TLB:
+                return TH06NC::th_sections_cba[0][0][*mSection];
 
             case NONSPELL:
             case SPELL:
-                return TH06::th_sections_cbt[*mStage][warpType - 4][*mSection];
+                return TH06::th_sections_cbt[stage][warpType - 5][*mSection];
 
             default:
                 return 0;
             }
         }
 
-        bool SectionHasDlg(int32_t section) {
+        int32_t dbgSection = 0;
+
+        bool SectionHasDlg(int32_t section, int32_t stage) {
+            // (same section ID as the first 3 sections in St1, so can't add to switch)
+            if (stage == 6 && section <= TH06NC_TLB3)
+                return section == TH06NC_TLB1;
+
             switch (section) {
             case TH06_ST1_BOSS1:
             case TH06_ST2_BOSS1:
@@ -254,7 +306,7 @@ namespace TH06NC {
             thPracParam.section = CalcSection();
             thPracParam.phase = *mPhase;
             thPracParam.frame = *mFrame;
-            thPracParam.dlg = SectionHasDlg(thPracParam.section) ? *mDlg : false;
+            thPracParam.dlg = SectionHasDlg(thPracParam.section, thPracParam.stage) ? *mDlg : false;
 
             thPracParam.score = *mScore;
             thPracParam.life  = *mLife;
@@ -371,8 +423,8 @@ namespace TH06NC {
         triggerFrame = atBossFrame;
     }
 
-    void LoadBackground(const char* filename, int32_t spriteIndexOffset) {
-        asm_call_rel<LOAD_ANM_FILE, Thiscall>(ANM_MANAGER_PTR, 11, filename, spriteIndexOffset);
+    void LoadANMFile(const char* filename, int32_t anmID, int32_t spriteIndexOffset) {
+        asm_call_rel<LOAD_ANM_FILE, Thiscall>(ANM_MANAGER_PTR, anmID, filename, spriteIndexOffset);
     }
 
     // ECL Patching
@@ -878,7 +930,7 @@ namespace TH06NC {
                 ECLWarp(st6BossTime);
                 ECLSetArgs(ecl, st6BossMoveInterp, pair{ 0, 0 });
                 ECLDisable(ecl, st6bsNon1Particle);
-                LoadBackground("data/eff06.anm", 723);
+                LoadANMFile("data/eff06.anm", BACKGROUND, 0x2d3);
             };
 
             switch (section) {
@@ -1010,6 +1062,7 @@ namespace TH06NC {
             constexpr uint32_t st7MidbossTime = 4640;
             constexpr uint32_t st7MidbossFirstSub = 0x1ad4;
             constexpr uint32_t st7bsNon1FirstDelayedIns = 0x360e;
+            constexpr uint32_t st7TLBFirstSubCall = 0xd2f2;
 
             auto ex_midboss_warp_skip_move = [&]() {
                 constexpr uint32_t st7MidbossDialogRead = 0x11800;
@@ -1026,7 +1079,49 @@ namespace TH06NC {
 
                 ECLWarp(st7BossTime);
                 ECLSetArgs(ecl, st7BossMoveInterp, pair{ 0, 0 });
-                LoadBackground("data/eff07.anm", 723);
+                LoadANMFile("data/eff07.anm", BACKGROUND, 0x2d3);
+            };
+
+            auto ex_tlb_warp_skip_anim = [&]() {
+                constexpr uint32_t st7TLBTime = 8500;
+                constexpr uint32_t st7TLBInstantEnmCreate = 0xcd0a;
+
+                ECLWarp(st7TLBTime);
+                LoadANMFile("data/eff07.anm", BACKGROUND, 0x2d3);
+                LoadANMFile("data/frame_stage7_1.anm", STAGE_ILLUST_MAIN, 0x782);
+                ECLDisable(ecl, st7TLBInstantEnmCreate);
+
+                uintptr_t difficultyVM = GetMemAddr((uintptr_t)ZUN_GUI + 0x38, 0x28e0);
+                asm_call_rel<ANM_VM_SET_SPRITE, Thiscall>(*(uintptr_t*)ANM_MANAGER_PTR, difficultyVM, 0x647);
+            };
+
+            auto ex_adjust_times = [&](uint32_t start, uint32_t end, int32_t skipTo, int32_t startDelay = 0) {
+                uint32_t curIns = start;
+                int32_t timeAcc = startDelay;
+                int32_t prevInsTime = 0;
+                int32_t curInsTime;
+                int16_t curInsSize;
+
+                while (curIns <= end) {
+                    ecl.SetPos(curIns);
+                    ecl >> curInsTime;
+                    ecl.SetPos(curIns + 0x6);
+                    ecl >> curInsSize;
+
+                    if (curInsTime < skipTo) {
+                        ECLSetInsTime(ecl, curIns, 0);
+                        ECLDisable(ecl, curIns);
+
+                    } else {
+                        if (prevInsTime)
+                            timeAcc += (curInsTime - prevInsTime);
+
+                        ECLSetInsTime(ecl, curIns, timeAcc);
+                        prevInsTime = curInsTime;
+                    }
+
+                    curIns = curIns + curInsSize;
+                }
             };
 
             switch (section) {
@@ -1167,49 +1262,26 @@ namespace TH06NC {
             case TH06::TH06_ST7_END_S9: { // Spell 9 (Timeout)
                 constexpr uint32_t st7bsNon9ItemDrop = 0x9a96;
                 constexpr uint32_t st7bsNon9TimeThreshold = 0x99ea;
+                constexpr uint32_t st7bsTimeoutTimeThreshold = 0x9c64;
+                constexpr uint32_t st7bsTimeoutStart = 0x9d50;
+                constexpr uint32_t st7bsTimeoutEnd = 0x9f78;
 
                 ex_boss_warp_skip_move();
                 ECLMakeIns(ecl, st7bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 81 }); // call sub 81 (non9)
                 ECLDisable(ecl, st7bsNon9ItemDrop);
                 ECLSetArgs(ecl, st7bsNon9TimeThreshold, pair{ 0, 0 });
-                if (!thPracParam.phase) return;
 
-                auto ex_timeout_adjust_times = [&](int32_t skipTo, int32_t startDelay = 0) {
-                    constexpr uint32_t st7bsTimeoutTimeThreshold = 0x9c64;
-                    constexpr uint32_t st7bsTimeoutStart = 0x9d50;
-                    constexpr uint32_t st7bsTimeoutEnd = 0x9f78;
+                switch (thPracParam.phase) {
+                case 1:
+                    ex_adjust_times(st7bsTimeoutStart, st7bsTimeoutEnd, 1856, 45);
+                    ECLSetArgs(ecl, st7bsTimeoutTimeThreshold, pair{ 0, 5160 - 1856 + 45 });
+                    break;
 
-                    uint32_t curIns = st7bsTimeoutStart;
-                    int32_t timeAcc = startDelay;
-                    int32_t prevInsTime = 0;
-                    int32_t curInsTime;
-                    int16_t curInsSize;
-
-                    while (curIns <= st7bsTimeoutEnd) {
-                        ecl.SetPos(curIns);
-                        ecl >> curInsTime;
-                        ecl.SetPos(curIns + 0x6);
-                        ecl >> curInsSize;
-
-                        if (curInsTime < skipTo) {
-                            ECLSetInsTime(ecl, curIns, 0);
-                            ECLDisable(ecl, curIns);
-
-                        } else {
-                            if (prevInsTime)
-                                timeAcc += (curInsTime - prevInsTime);
-
-                            ECLSetInsTime(ecl, curIns, timeAcc);
-                            prevInsTime = curInsTime;
-                        }
-
-                        curIns = curIns + curInsSize;
-                    }
-
-                    ECLSetArgs(ecl, st7bsTimeoutTimeThreshold, pair{ 0, 5160 - skipTo + startDelay });
-                };
-
-                ex_timeout_adjust_times(thPracParam.phase == 1 ? 1856 : 4416, 45);
+                case 2:
+                    ex_adjust_times(st7bsTimeoutStart, st7bsTimeoutEnd, 4416, 45);
+                    ECLSetArgs(ecl, st7bsTimeoutTimeThreshold, pair{ 0, 5160 - 4416 + 45 });
+                    break;
+                }
                 break;
             }
 
@@ -1229,6 +1301,63 @@ namespace TH06NC {
                     constexpr uint32_t st07bsSpell10ParticleLoop = 0xc8aa;
                     ECLDisable(ecl, st07bsSpell10ParticleLoop);
                     TriggerHealthInterrupt(1800, 3); // (6000f * 30%)
+                }
+                break;
+            }
+
+            // (note: yes, this only works because I've split the section
+            // (      switches by stage; these are IDs 1-3)
+            case TH06NC::TH06NC_TLB1: {
+                constexpr uint32_t st7TLBDlgTime = 8497;
+                constexpr uint32_t st7TLB1SetWingLength = 0xd54c;
+
+                if (thPracParam.dlg) {
+                    ECLWarp(st7TLBDlgTime);
+                    LoadANMFile("data/eff07.anm", BACKGROUND, 0x2d3);
+                }
+                else ex_tlb_warp_skip_anim();
+
+                if (thPracParam.phase)
+                    ECLSetArgs(ecl, st7TLB1SetWingLength, pair{ 0x4, 140 });
+                break;
+            }
+
+            case TH06NC::TH06NC_TLB2: {
+                constexpr uint32_t st7TLB2NonFirstDelayedIns = 0xde1c;
+                constexpr uint32_t st7TLB2SetAimedBubbleDelay = 0xe062;
+
+                ex_tlb_warp_skip_anim();
+                ECLSetArgs(ecl, st7TLBFirstSubCall, pair{ 0, 106 }); // sub 106 (TLB2 fake non)
+                ECLMakeIns(ecl, st7TLB2NonFirstDelayedIns, 0, CALL, pair{ 0, 107 }); // sub 107 (TLB2 start)
+
+                if (thPracParam.phase)
+                    ECLSetArgs(ecl, st7TLB2SetAimedBubbleDelay, pair{ 0x4, 100 });
+                break;
+            }
+
+            case TH06NC::TH06NC_TLB3: {
+                constexpr uint32_t st7TLB3NonFirstDelayedIns = 0xe8f2;
+
+                ex_tlb_warp_skip_anim();
+                ECLSetArgs(ecl, st7TLBFirstSubCall, pair{ 0, 112 }); // sub 112 (TLB3 fake non)
+                ECLMakeIns(ecl, st7TLB3NonFirstDelayedIns, 0, CALL, pair{ 0, 113 }); // sub 113 (TLB3 start)
+
+                if (thPracParam.phase) {
+                    // like QED, some of this spell is hardcoded (cf. th06nc_danmaku_heart_phase_warp)
+                    // the very first wave behaves differently and has higher post-wave delay, so we skip it
+                    constexpr uint32_t st7TLB3FirstWave1 = 0xeb40;
+                    constexpr uint32_t st7TLB3FirstWave2 = 0xeb64;
+                    constexpr uint32_t st7TLB3LoopStart = 0xeb88;
+                    constexpr uint32_t st7TLB3LoopParticles = 0xebc4;
+                    constexpr uint32_t st7TLB3LoopDelay = 0xed08;
+                    constexpr uint32_t st7TLB3LoopEnd = 0xed20;
+
+                    ex_adjust_times(st7TLB3LoopStart, st7TLB3LoopEnd, 600, 2);
+                    ECLDisable(ecl, st7TLB3FirstWave1);
+                    ECLDisable(ecl, st7TLB3FirstWave2);
+                    ECLSetArgs(ecl, st7TLB3LoopParticles, pair{ 0, 2 });
+                    ECLSetArgs(ecl, st7TLB3LoopDelay, pair{ 0, 4 });
+                    ECLSetArgs(ecl, st7TLB3LoopEnd, pair{ 0, 2 });
                 }
                 break;
             }
@@ -1326,6 +1455,7 @@ namespace TH06NC {
     EHOOK_DY(th06nc_patch_main, 0x3b69d, 1, { // end of GameManager::on_registration
         OG_INS(pCtx->Rip = PopHelper(pCtx));
         if (thPracParam.mode != 1) return;
+        int32_t section = thPracParam.section;
 
         GAME_MANAGER->curPower = thPracParam.power;
         GAME_MANAGER->actualScore = GAME_MANAGER->visualScore = thPracParam.score;
@@ -1334,7 +1464,9 @@ namespace TH06NC {
         GAME_MANAGER->livesRemaining = thPracParam.life;
         GAME_MANAGER->bombsRemaining = thPracParam.bomb;
         GAME_MANAGER->rank = thPracParam.rank;
-        GAME_MANAGER->spellCapsForTLB = thPracParam.guaranteeTLB ? 6 : 0;
+
+        if (thPracParam.guaranteeTLB || (thPracParam.stage == 6 && section <= TH06NC::TH06NC_TLB3))
+            GAME_MANAGER->spellCapsForTLB = 6;
 
         if (GAME_MANAGER->difficulty != 4) { // avoid triggering score extends
             if (thPracParam.score >= 60000000) GAME_MANAGER->scoreExtends = 4;
@@ -1343,9 +1475,8 @@ namespace TH06NC {
             else if (thPracParam.score >= 10000000) GAME_MANAGER->scoreExtends = 1;
         }
 
-        int32_t frame = thPracParam.frame;
-        if (thPracParam.section) THSectionPatch();
-        else if (frame) {
+        if (section) THSectionPatch();
+        else if (int32_t frame = thPracParam.frame) {
             if (frame > 60) PostStartWarpAdjustments();
             ECLWarp(frame);
         }
@@ -1369,13 +1500,22 @@ namespace TH06NC {
         else OG_INS(*(int32_t*)(pCtx->R8 + 0x54) = (int32_t)pCtx->Rax);
     })
 
-    EHOOK_DY(th06nc_qed_phase_warp, 0x35864, 7, { // retrieving boss health (or 0 if timer is under 2min)
+    EHOOK_DY(th06nc_qed_phase_warp, 0x35864, 7, { // QED retrieving boss health (or 0 if timer is under 2min)
         const Enemy* flandre = (Enemy*)pCtx->Rcx;
 
-        if (thPracParam.mode && thPracParam.section == TH06_ST7_END_S10 && thPracParam.phase == 2)
+        if (thPracParam.mode && thPracParam.phase == 2)
             pCtx->Rax = 0;
         else
             OG_INS(pCtx->Rax = flandre->bossTimer.current < 7200 ? flandre->curHealth : 0);
+    })
+
+    EHOOK_DY(th06nc_danmaku_heart_phase_warp, 0x35a4a, 8, { // DH retrieving boss health (or 0 if timer is under 2min) (yes these 2 spells work the exact same way)
+        const Enemy* flandre = (Enemy*)pCtx->Rcx;
+
+        if (thPracParam.mode && thPracParam.phase)
+            pCtx->Rax = 0;
+        else
+            OG_INS(pCtx->R8 = flandre->bossTimer.current < 7200 ? flandre->curHealth : 0);
     })
 
     EHOOK_DY(th06nc_bg_fastforward, 0x3b4b5, 2, { // spell prac check for fast-forwarding stage background
@@ -1404,19 +1544,37 @@ namespace TH06NC {
     EHOOK_DY(th06nc_stage_bgm, 0x3b611, 3, { // stage start bgm pick (0x80 = boss, set by spell prac)
         int32_t section = thPracParam.section;
 
-        if (thPracParam.mode && section && section < 10000
-          && TH06::th_sections_bgm[section] && !thPracParam.dlg)
-            pCtx->Rdx += 0x80;
-        else OG_INS(pCtx->Rdx += pCtx->R15);
+        if (thPracParam.mode && section && section < 10000 && !thPracParam.dlg) {
+            if (thPracParam.stage == 6 && section <= TH06NC_TLB3) {
+                pCtx->Rdx += 0x100; // flan TLB theme
+                return;
+
+            } else if (TH06::th_sections_bgm[section]) {
+                pCtx->Rdx += 0x80;
+                return;
+            }
+        }
+
+        OG_INS(pCtx->Rdx += pCtx->R15);
     })
 
-    EHOOK_DY(th06nc_bgm_title, 0x3e5f4, 7, { // spell prac check when picking BGM name key to render
-        OG_INS(pCtx->R12 = GetMemContent<uint64_t>(RVA(0x509c08)));
+    EHOOK_DY(th06nc_bgm_title, 0x3e655, 7, { // after setting BGM name translation key
+        OG_INS(pCtx->R13 = *(int64_t*)RVA(0xa6ec28));
         int32_t section = thPracParam.section;
 
-        if (thPracParam.mode && section && section < 10000
-          && TH06::th_sections_bgm[section] && !thPracParam.dlg)
-            pCtx->Rip = RVA(0x3e5fd);
+        if (thPracParam.mode && section && section < 10000 && !thPracParam.dlg) {
+            if (thPracParam.stage == 6 && section <= TH06NC_TLB3)
+                pCtx->Rax = 0x100;
+            else if (TH06::th_sections_bgm[section])
+                pCtx->Rax = 0x80;
+        }
+    })
+
+    EHOOK_DY(th06nc_bgm_title_2, 0x3e74a, 8, { // before call to load BGM name ascii
+        if (thPracParam.stage == 6 && thPracParam.section <= TH06NC_TLB3 && thPracParam.dlg)
+            pCtx->Rip = RVA(0x3e757); // dont load it for TLB dialogue
+
+        OG_INS(*(uint32_t*)(pCtx->Rsp + 0x20) = 0x10101);
     })
     HOOKSET_ENDDEF()
 
@@ -1430,6 +1588,7 @@ namespace TH06NC {
         ANM_MANAGER_PTR = (void*)RVA(ANM_MANAGER_PTR_ADDR);
         ENEMY_MANAGER = (EnemyManager*)RVA(ENEMY_MANAGER_ADDR);
         ECL_MANAGER = (void*)RVA(ECL_MANAGER_ADDR);
+        ZUN_GUI = (void*)RVA(ZUN_GUI_ADDR);
         BOSS_PTR = (Enemy**)RVA(BOSS_PTR_ADDR);
 
         // Init

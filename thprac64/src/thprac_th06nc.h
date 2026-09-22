@@ -5,7 +5,6 @@
 
 namespace TH06NC {
     enum ADDRS {
-        LOAD_ANM_FILE = 0x20b0,
         PATCHY_LAST_SPELLS_TABLE = 0x3de300,
         GAME_MANAGER_ADDR = 0x4f1e60,
         PLAYER_ADDR = 0x4ff3a0,
@@ -15,11 +14,17 @@ namespace TH06NC {
         D3D_DEVICE_CONTEXT = 0x9b1d00,
         ANM_MANAGER_PTR_ADDR = 0xa6e9b0,
         ECL_MANAGER_ADDR = 0xa6eb78,
+        ZUN_GUI_ADDR = 0xa6ebd0,
         INPUT_ADDR = 0xa6ec60,
         INPUT_PREV_ADDR = 0xa6ec64,
         IS_EIGTH_FRAME_OF_HELD_INPUT_ADDR = 0xa6ec48,
         ENEMY_MANAGER_ADDR = 0xaa1e90,
-        BOSS_PTR_ADDR = 0xBADF78,
+        BOSS_PTR_ADDR = 0xbadf78,
+    };
+
+    enum FUNCS {
+        LOAD_ANM_FILE = 0x20b0,
+        ANM_VM_SET_SPRITE = 0x2980,
     };
 
     struct ECL_OP {
@@ -32,12 +37,22 @@ namespace TH06NC {
     constexpr ECL_OP TIMER_THRESHOLD = { 115, 0x10 };
     constexpr ECL_OP TIMER_CALLBACK = { 116, 0x10 };
 
+    enum ANM_IDS {
+        BACKGROUND = 11,
+        STAGE_ILLUST_MAIN = 62,
+        STAGE_ILLUST_TLB = 63,
+    };
+
     enum WARP_TYPE {
         NONE, CHAPTER,
-        MIDBOSS, ENDBOSS,
+        MIDBOSS, ENDBOSS, TLB,
         NONSPELL, SPELL,
         FRAME
     };
+
+    constexpr WARP_TYPE fixType(int warpType) {
+        return (WARP_TYPE)(warpType >= TLB ? warpType + 1 : warpType);
+    }
 
     struct GameManager {
         char __unknown1[0x8];      // 0x0

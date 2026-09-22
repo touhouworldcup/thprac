@@ -1243,6 +1243,8 @@ extern const th_glossary_t TH_SPELL_PHASE3[6];
 
 extern const th_glossary_t TH_SPELL_PHASE_FINALE[3];
 
+extern const th_glossary_t TH_SPELL_PHASE_FULL[3];
+
 extern const th_glossary_t TH_SPELL_PHASE_RAGEFUL[4];
 
 extern const th_glossary_t TH_SPELL_PHASE_RAGEFIN[4];
@@ -1383,15 +1385,20 @@ namespace TH06NC {
 enum th_sections_t : uint8_t
 {
     A0000ERROR,
+    TH06NC_TLB1,
+    TH06NC_TLB2,
+    TH06NC_TLB3,
 };
 
-extern const char* th_sections_str[3][4][1];
+extern const char* th_sections_str[3][4][4];
 
-extern const uint8_t th_sections_bgm[1];
+extern const uint8_t th_sections_bgm[4];
 
-extern const th_sections_t th_sections_cba[1][1][2];
+extern const th_sections_t th_sections_cba[1][1][4];
 
-extern const th_sections_t th_sections_cbt[1][2][1];
+extern const th_sections_t th_sections_cbt[1][2][4];
+
+extern const th_glossary_t TH06NC_WARP_SELECT_EX[9];
 
 }
 
@@ -2952,9 +2959,9 @@ extern const th_glossary_t TH20_EXPIRED_PYRAMID_FIX_OPT[6];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3357];
+extern const wchar_t __thprac_loc_range_zh[3361];
 
 extern const wchar_t __thprac_loc_range_en[31];
 
-extern const wchar_t __thprac_loc_range_ja[2851];
+extern const wchar_t __thprac_loc_range_ja[2853];
 
