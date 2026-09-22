@@ -71,26 +71,24 @@ namespace TH06NC {
         SINGLETON(THGuiPrac);
 
         const th_glossary_t* SpellPhase() {
-            int stage = *mStage;
             int section = CalcSection();
 
-            if (section == TH06_ST7_END_S9)
+            switch (section) {
+            case TH06_ST7_END_S9:
                 return TH06_SPELL_PHASE_TIMEOUT;
 
-            else if (section == TH06_ST7_END_S10)
+            case TH06_ST7_END_S10:
                 return TH06_SPELL_PHASE_QED;
 
-            else if (stage == 6) {
-                switch (section) {
-                case TH06NC_TLB1:
-                case TH06NC_TLB2:
-                    return TH_SPELL_PHASE_FULL;
-                case TH06NC_TLB3:
-                    return TH_SPELL_PHASE1;
-                }
-            }
+            case TH06NC_TLB1:
+            case TH06NC_TLB2:
+                return TH_SPELL_PHASE_FULL;
 
-            return nullptr;
+            case TH06NC_TLB3:
+                return TH_SPELL_PHASE1;
+
+            default: return nullptr;
+            }
         }
 
         int SectionWidget(int warpType) {
@@ -122,27 +120,26 @@ namespace TH06NC {
             case MIDBOSS:
             case ENDBOSS:
                 if (mSection(TH_WARP_SELECT_FRAME[warpType],
-                    TH06::th_sections_cba[stage + stgOffset][warpType - 2],
-                    TH06::th_sections_str[::Gui::LocaleGet()][mDiffculty]))
+                    th_sections_cba[stage + stgOffset][warpType - 2],
+                    th_sections_str[::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
 
-                return TH06::th_sections_cba[stage][warpType - 2][*mSection];
+                return th_sections_cba[stage][warpType - 2][*mSection];
 
             case TLB:
-                if (mSection(TH_SPELL, TH06NC::th_sections_cba[0][0],
-                    TH06NC::th_sections_str[Gui::LocaleGet()][0]))
+                if (mSection(TH_SPELL, th_sections_cba[6][2], th_sections_str[Gui::LocaleGet()][0]))
                     *mPhase = 0;
 
-                return TH06NC::th_sections_cba[0][0][*mSection];
+                return th_sections_cba[6][2][*mSection];
 
             case NONSPELL:
             case SPELL:
                 if (mSection(TH_WARP_SELECT_FRAME[warpType - 1],
-                    TH06::th_sections_cbt[stage + stgOffset][warpType - 5],
-                    TH06::th_sections_str[::Gui::LocaleGet()][mDiffculty]))
+                    th_sections_cbt[stage + stgOffset][warpType - 5],
+                    th_sections_str[::Gui::LocaleGet()][mDiffculty]))
                     *mPhase = 0;
 
-                return TH06::th_sections_cbt[stage][warpType - 5][*mSection];
+                return th_sections_cbt[stage][warpType - 5][*mSection];
 
             case FRAME:
                 mFrame();
@@ -174,18 +171,20 @@ namespace TH06NC {
             }
 
             if (*mMode == 1) {
+                int warpType = *mWarp;
                 int stage = *mStage;
+                int section;
+
                 if (mWarp(TH_WARP, stage == 6 ? TH06NC_WARP_SELECT_EX : TH_WARP_SELECT_FRAME))
                     *mSection = *mChapter = *mPhase = *mFrame = 0;
 
-                int warpType = *mWarp;
                 if (warpType) {
                     if (stage == 3 && warpType > CHAPTER && fixType(warpType) != FRAME)
                         mFakeShot();
 
-                    int section = SectionWidget(warpType);
+                    section = SectionWidget(warpType);
                     mPhase(TH_PHASE, SpellPhase());
-                    if (SectionHasDlg(section, stage))
+                    if (SectionHasDlg(section))
                         mDlg();
                 }
 
@@ -198,7 +197,7 @@ namespace TH06NC {
                 mPoint();
                 mRank();
 
-                if (stage == 6 && warpType > MIDBOSS && warpType != TLB && warpType != FRAME)
+                if (stage == 6 && warpType > MIDBOSS && warpType != FRAME && section < TH06NC_TLB1)
                     mGuaranteeTLB();
             }
 
@@ -250,27 +249,21 @@ namespace TH06NC {
 
             case MIDBOSS:
             case ENDBOSS:
-                return TH06::th_sections_cba[stage][warpType - 2][*mSection];
+                return th_sections_cba[stage][warpType - 2][*mSection];
 
             case TLB:
-                return TH06NC::th_sections_cba[0][0][*mSection];
+                return th_sections_cba[6][2][*mSection];
 
             case NONSPELL:
             case SPELL:
-                return TH06::th_sections_cbt[stage][warpType - 5][*mSection];
+                return th_sections_cbt[stage][warpType - 5][*mSection];
 
             default:
                 return 0;
             }
         }
 
-        int32_t dbgSection = 0;
-
-        bool SectionHasDlg(int32_t section, int32_t stage) {
-            // (same section ID as the first 3 sections in St1, so can't add to switch)
-            if (stage == 6 && section <= TH06NC_TLB3)
-                return section == TH06NC_TLB1;
-
+        bool SectionHasDlg(int32_t section) {
             switch (section) {
             case TH06_ST1_BOSS1:
             case TH06_ST2_BOSS1:
@@ -282,6 +275,7 @@ namespace TH06NC {
             case TH06_ST6_MID1:
             case TH06_ST7_END_NS1:
             case TH06_ST7_MID1:
+            case TH06NC_TLB1:
                 return true;
             default:
                 return false;
@@ -306,7 +300,7 @@ namespace TH06NC {
             thPracParam.section = CalcSection();
             thPracParam.phase = *mPhase;
             thPracParam.frame = *mFrame;
-            thPracParam.dlg = SectionHasDlg(thPracParam.section, thPracParam.stage) ? *mDlg : false;
+            thPracParam.dlg = SectionHasDlg(thPracParam.section) ? *mDlg : false;
 
             thPracParam.score = *mScore;
             thPracParam.life  = *mLife;
@@ -513,17 +507,17 @@ namespace TH06NC {
             };
 
             switch (section) {
-            case TH06::TH06_ST2_MID1: // Midboss
+            case TH06_ST2_MID1: // Midboss
                 ECLWarp(st2MidbossTime);
                 break;
 
-            case TH06::TH06_ST2_BOSS1: { // Non 1
+            case TH06_ST2_BOSS1: { // Non 1
                 constexpr uint32_t st2BossDlgTime = 5893;
                 thPracParam.dlg ? ECLWarp(st2BossDlgTime) : s2_boss_warp_skip_fadein();
                 break;
             }
 
-            case TH06::TH06_ST2_BOSS2: { // Spell 1
+            case TH06_ST2_BOSS2: { // Spell 1
                 constexpr uint32_t st2bsNon1TimeThreshold = 0x18ec;
 
                 s2_boss_warp_skip_fadein();
@@ -531,16 +525,16 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST2_BOSS3: // Non 2
+            case TH06_ST2_BOSS3: // Non 2
                 s2_boss_non2_warp();
                 break;
 
-            case TH06::TH06_ST2_BOSS4: // Spell 2
+            case TH06_ST2_BOSS4: // Spell 2
                 s2_boss_non2_warp();
                 ECLSetArgs(ecl, st2bsNon2TimeThreshold, pair{ 0, 0 });
                 break;
 
-            case TH06::TH06_ST2_BOSS5: { // Spell 3
+            case TH06_ST2_BOSS5: { // Spell 3
                 constexpr uint32_t st2bsNon2HealthThreshold = 0x20d4;
                 constexpr uint32_t st2bsNon2TimeCallbackSub = 0x2104;
                 constexpr uint32_t st2bsNon3DropItems = 0x377c;
@@ -603,11 +597,11 @@ namespace TH06NC {
             };
 
             switch (section) {
-            case TH06::TH06_ST3_MID1: // Midnon
+            case TH06_ST3_MID1: // Midnon
                 ECLWarp(st3MidbossTime);
                 break;
 
-            case TH06::TH06_ST3_MID2: { // Midspell
+            case TH06_ST3_MID2: { // Midspell
                 constexpr uint32_t st3mbsSub10Call = 0x1088;
                 constexpr uint32_t st3mbsSpellMoveInterp = 0x1c90;
 
@@ -618,11 +612,11 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST3_BOSS1: // Non 1
+            case TH06_ST3_BOSS1: // Non 1
                 thPracParam.dlg ? ECLWarp(st3BossTime) : s3_boss_warp_skip_setup();
                 break;
 
-            case TH06::TH06_ST3_BOSS2: { // Spell 1
+            case TH06_ST3_BOSS2: { // Spell 1
                 constexpr uint32_t st3bsNon1TimeThreshold = 0x2360;
 
                 s3_boss_warp_skip_setup();
@@ -630,12 +624,12 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST3_BOSS4: { // Spell 2 (HL)
+            case TH06_ST3_BOSS4: { // Spell 2 (HL)
                 constexpr uint32_t st3bsNon2TimeThreshold = 0x290c;
                 ECLSetArgs(ecl, st3bsNon2TimeThreshold, pair{ 0, 0 });
                 [[fallthrough]];
             }
-            case TH06::TH06_ST3_BOSS3: { // Non 2
+            case TH06_ST3_BOSS3: { // Non 2
                 constexpr uint32_t st3bsNon2ItemDrop = 0x294c;
 
                 s3_boss_warp_skip_setup();
@@ -644,17 +638,17 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST3_BOSS5: { // Non 3
+            case TH06_ST3_BOSS5: { // Non 3
                 s3_boss_non3_warp();
                 break;
             }
 
-            case TH06::TH06_ST3_BOSS6: // Spell 3
+            case TH06_ST3_BOSS6: // Spell 3
                 s3_boss_non3_warp();
                 ECLSetArgs(ecl, st2bsNon3TimeThreshold, pair{ 0, 0 });
                 break;
 
-            case TH06::TH06_ST3_BOSS7: { // Spell 4 (NHL)
+            case TH06_ST3_BOSS7: { // Spell 4 (NHL)
                 constexpr uint32_t st3bsNon3HealthThreshold = 0x34d0;
                 constexpr uint32_t st3bsNon3TimeCallbackSubN = 0x3510;
                 constexpr uint32_t st3bsNon3TimeCallbackSubHL = 0x3520;
@@ -712,38 +706,38 @@ namespace TH06NC {
             };
 
             switch (section) {
-            case TH06::TH06_ST4_BOOKS: { // Books
+            case TH06_ST4_BOOKS: { // Books
                 constexpr uint32_t st4BooksTime = 3378 - 40;
                 ECLWarp(st4BooksTime);
                 break;
             }
 
-            case TH06::TH06_ST4_MID1: { // Midboss
+            case TH06_ST4_MID1: { // Midboss
                 constexpr uint32_t st4MidbossTime = 4058;
                 ECLWarp(st4MidbossTime);
                 ecl << pair{ 0x24c0 + 0xc, 6942069 };
                 break;
             }
 
-            case TH06::TH06_ST4_BOSS1: { // Non 1
+            case TH06_ST4_BOSS1: { // Non 1
                 constexpr uint32_t st4BossDlgTime = 10510;
                 thPracParam.dlg ? ECLWarp(st4BossDlgTime) : s4_boss_warp_skip_move();
                 break;
             }
 
-            case TH06::TH06_ST4_BOSS2: // Spell 1
+            case TH06_ST4_BOSS2: // Spell 1
                 s4_boss_warp_skip_move();
                 ECLMakeIns(ecl, st4bsNon1FirstDelayedIns, 0, TIMER_THRESHOLD, pair{ 0, 0 });
                 break;
 
-            case TH06::TH06_ST4_BOSS3: { // Spell 2
+            case TH06_ST4_BOSS3: { // Spell 2
                 constexpr uint32_t st4bsNon2FirstDelayedIns = 0x7568;
 
                 ECLMakeIns(ecl, st4bsNon2FirstDelayedIns, 0, TIMER_THRESHOLD, pair{ 0, 0 });
                 ECLMakeIns(ecl, st4bsNon2FirstDelayedIns + TIMER_THRESHOLD.size, 1, NOP);
                 [[fallthrough]];
             }
-            case TH06::TH06_ST4_BOSS4: { // Non 2
+            case TH06_ST4_BOSS4: { // Non 2
                 constexpr uint32_t st4bsNon2ItemDrop = 0x6ec4;
 
                 s4_boss_warp_skip_move();
@@ -752,7 +746,7 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST4_BOSS5: { // Spell 3
+            case TH06_ST4_BOSS5: { // Spell 3
                 constexpr uint32_t st4bsNon3DelayedIns2 = 0x7c5c;
                 constexpr uint32_t st4bsNon3DelayedIns3 = 0x7c7c;
                 constexpr uint32_t st4bsNon3DelayedIns4 = 0x7c9c;
@@ -769,7 +763,7 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST4_BOSS6: { // Spell 4
+            case TH06_ST4_BOSS6: { // Spell 4
                 constexpr uint32_t st4bsNon4ItemDrop = 0x7d2c;
                 constexpr uint32_t st4bsNon4Particle = 0x7e58;
                 constexpr uint32_t st4bsNon4DelayedIns1 = 0x7e80;
@@ -791,7 +785,7 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST4_BOSS7: { // Spell 5
+            case TH06_ST4_BOSS7: { // Spell 5
                 constexpr uint32_t st4bsNon3HealthThresholdHL = 0x7ba8;
                 constexpr uint32_t st4bsNon5ItemDrop = 0x7f60;
                 constexpr uint32_t st4bsNon5Particle = 0x804c;
@@ -847,11 +841,11 @@ namespace TH06NC {
             };
 
             switch (section) {
-            case TH06::TH06_ST5_MID1: // Midboss
+            case TH06_ST5_MID1: // Midboss
                 thPracParam.dlg ? ECLWarp(st5MidbossTime) : s5_midboss_warp_skip_move();
                 break;
 
-            case TH06::TH06_ST5_MID2: { // Midspell
+            case TH06_ST5_MID2: { // Midspell
                 constexpr uint32_t st5mbsInteractable = 0x1524;
 
                 s5_midboss_warp_skip_move();
@@ -860,11 +854,11 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST5_BOSS1: // Non 1
+            case TH06_ST5_BOSS1: // Non 1
                 thPracParam.dlg ? ECLWarp(st5BossTime) : s5_boss_warp_skip_move();
                 break;
 
-            case TH06::TH06_ST5_BOSS2: { // Spell 1
+            case TH06_ST5_BOSS2: { // Spell 1
                 constexpr uint32_t st5bsNon1TimeThreshold = 0x2404;
 
                 s5_boss_warp_skip_move();
@@ -877,7 +871,7 @@ namespace TH06NC {
                 ECLSetArgs(ecl, st5bsNon2TimeThreshold, pair{ 0, 0 });
                 [[fallthrough]];
             }
-            case TH06::TH06_ST5_BOSS3: { // Non 2
+            case TH06_ST5_BOSS3: { // Non 2
                 constexpr uint32_t st5bsNon2ItemDrop = 0x3980;
                 constexpr uint32_t st5bsNon2Particle = 0x3a30;
 
@@ -893,7 +887,7 @@ namespace TH06NC {
                 ECLSetArgs(ecl, st5bsNon3TimeThreshold, pair{ 0, 0 });
                 [[fallthrough]];
             }
-            case TH06::TH06_ST5_BOSS5: { // Non 3
+            case TH06_ST5_BOSS5: { // Non 3
                 constexpr uint32_t st5bsNon3ItemDrop = 0x4908;
                 constexpr uint32_t st5bsNon3Particle = 0x49b8;
 
@@ -934,11 +928,11 @@ namespace TH06NC {
             };
 
             switch (section) {
-            case TH06::TH06_ST6_MID1: // Midboss
+            case TH06_ST6_MID1: // Midboss
                 thPracParam.dlg ? ECLWarp(st6MidbossTime) : s6_midboss_warp_skip_move();
                 break;
 
-            case TH06::TH06_ST6_MID2: { // Midspell
+            case TH06_ST6_MID2: { // Midspell
                 constexpr uint32_t st6mbsPreInteractable = 0xdd0;
                 constexpr uint32_t st6mbsInteractable = 0xde0;
 
@@ -949,13 +943,13 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST6_BOSS1: { // Non 1
+            case TH06_ST6_BOSS1: { // Non 1
                 constexpr uint32_t st6BossDlgTime = 3096;
                 thPracParam.dlg ? ECLWarp(st6BossDlgTime) : s6_boss_warp_skip_move();
                 break;
             }
 
-            case TH06::TH06_ST6_BOSS2: { // Spell 1
+            case TH06_ST6_BOSS2: { // Spell 1
                 constexpr uint32_t st6bsNon1TimeThreshold = 0x1794;
 
                 s6_boss_warp_skip_move();
@@ -968,7 +962,7 @@ namespace TH06NC {
                 ECLSetArgs(ecl, st6bsNon2TimeThreshold, pair{ 0, 0 });
                 [[fallthrough]];
             }
-            case TH06::TH06_ST6_BOSS3: { // Non 2
+            case TH06_ST6_BOSS3: { // Non 2
                 constexpr uint32_t st6bsNon2ItemDrop = 0x1d38;
                 constexpr uint32_t st6bsNon2Particle = 0x1e00;
 
@@ -984,7 +978,7 @@ namespace TH06NC {
                 ECLSetArgs(ecl, st6bsNon3TimeThreshold, pair{ 0, 0 });
                 [[fallthrough]];
             }
-            case TH06::TH06_ST6_BOSS5: { // Non 3
+            case TH06_ST6_BOSS5: { // Non 3
                 constexpr uint32_t st6bsNon3ItemDrop = 0x2b1c;
                 constexpr uint32_t st6bsNon3Particle = 0x2be4;
 
@@ -1000,7 +994,7 @@ namespace TH06NC {
                 ECLSetArgs(ecl, st6bsNon4TimeThreshold, pair{ 0, 0 });
                 [[fallthrough]];
             }
-            case TH06::TH06_ST6_BOSS7: { // Non 4
+            case TH06_ST6_BOSS7: { // Non 4
                 constexpr uint32_t st6bsNon4ItemDrop = 0x2fe0;
                 constexpr uint32_t st6bsNon4Particle = 0x30a8;
 
@@ -1011,7 +1005,7 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST6_BOSS9: { // Spell 5
+            case TH06_ST6_BOSS9: { // Spell 5
                 constexpr uint32_t st6bsNon1HealthThreshold = 0x17c4;
                 constexpr uint32_t st6bsNNon5ItemDrop = 0x6720;
                 constexpr uint32_t st6bsNNon5DelayedIns1 = 0x6800;
@@ -1125,11 +1119,11 @@ namespace TH06NC {
             };
 
             switch (section) {
-            case TH06::TH06_ST7_MID1: // Midspell 1
+            case TH06_ST7_MID1: // Midspell 1
                 thPracParam.dlg ? ECLWarp(st7MidbossTime) : ex_midboss_warp_skip_move();
                 break;
 
-            case TH06::TH06_ST7_MID2: { // Midspell 2
+            case TH06_ST7_MID2: { // Midspell 2
                 constexpr uint32_t st7mbsNon2ItemDrop = 0x1d54;
 
                 ex_midboss_warp_skip_move();
@@ -1138,7 +1132,7 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST7_MID3: { // Midspell 3
+            case TH06_ST7_MID3: { // Midspell 3
                 constexpr uint32_t st7mbsNon3ItemDrop = 0x1ea4;
 
                 ex_midboss_warp_skip_move();
@@ -1147,13 +1141,13 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST7_END_NS1: { // Non 1
+            case TH06_ST7_END_NS1: { // Non 1
                 constexpr uint32_t st7BossDlgTime = 8493;
                 thPracParam.dlg ? ECLWarp(st7BossDlgTime) : ex_boss_warp_skip_move();
                 break;
             }
 
-            case TH06::TH06_ST7_END_S1: { // Spell 1
+            case TH06_ST7_END_S1: { // Spell 1
                 constexpr uint32_t st7bsNon1TimeThreshold = 0x3572;
 
                 ex_boss_warp_skip_move();
@@ -1166,7 +1160,7 @@ namespace TH06NC {
                 ECLSetArgs(ecl, st7bsNon2TimeThreshold, pair{ 0, 0 });
                 [[fallthrough]];
             }
-            case TH06::TH06_ST7_END_NS2: { // Non 2
+            case TH06_ST7_END_NS2: { // Non 2
                 constexpr uint32_t st7bsNon2ItemDrop = 0x44e8;
 
                 ex_boss_warp_skip_move();
@@ -1180,7 +1174,7 @@ namespace TH06NC {
                 ECLSetArgs(ecl, st7bsNon3TimeThreshold, pair{ 0, 0 });
                 [[fallthrough]];
             }
-            case TH06::TH06_ST7_END_NS3: { // Non 3
+            case TH06_ST7_END_NS3: { // Non 3
                 constexpr uint32_t st7bsNon3ItemDrop = 0x5066;
 
                 ex_boss_warp_skip_move();
@@ -1194,7 +1188,7 @@ namespace TH06NC {
                 ECLSetArgs(ecl, st7bsNon4TimeThreshold, pair{ 0, 0 });
                 [[fallthrough]];
             }
-            case TH06::TH06_ST7_END_NS4: { // Non 4
+            case TH06_ST7_END_NS4: { // Non 4
                 constexpr uint32_t st7bsNon4ItemDrop = 0x5e3c;
 
                 ex_boss_warp_skip_move();
@@ -1208,7 +1202,7 @@ namespace TH06NC {
                 ECLSetArgs(ecl, st7bsNon5TimeThreshold, pair{ 0, 0 });
                 [[fallthrough]];
             }
-            case TH06::TH06_ST7_END_NS5: { // Non 5
+            case TH06_ST7_END_NS5: { // Non 5
                 constexpr uint32_t st7bsNon5ItemDrop = 0x687e;
 
                 ex_boss_warp_skip_move();
@@ -1222,7 +1216,7 @@ namespace TH06NC {
                 ECLSetArgs(ecl, st7bsNon6TimeThreshold, pair{ 0, 0 });
                 [[fallthrough]];
             }
-            case TH06::TH06_ST7_END_NS6: { // Non 6
+            case TH06_ST7_END_NS6: { // Non 6
                 constexpr uint32_t st7bsNon6ItemDrop = 0x7064;
 
                 ex_boss_warp_skip_move();
@@ -1236,7 +1230,7 @@ namespace TH06NC {
                 ECLSetArgs(ecl, st7bsNon7TimeThreshold, pair{ 0, 0 });
                 [[fallthrough]];
             }
-            case TH06::TH06_ST7_END_NS7: { // Non 7
+            case TH06_ST7_END_NS7: { // Non 7
                 constexpr uint32_t st7bsNon7ItemDrop = 0x7e5e;
 
                 ex_boss_warp_skip_move();
@@ -1250,7 +1244,7 @@ namespace TH06NC {
                 ECLSetArgs(ecl, st7bsNon8TimeThreshold, pair{ 0, 0 });
                 [[fallthrough]];
             }
-            case TH06::TH06_ST7_END_NS8: { // Non 8
+            case TH06_ST7_END_NS8: { // Non 8
                 constexpr uint32_t st7bsNon8ItemDrop = 0x8b28;
 
                 ex_boss_warp_skip_move();
@@ -1259,7 +1253,7 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST7_END_S9: { // Spell 9 (Timeout)
+            case TH06_ST7_END_S9: { // Spell 9 (Timeout)
                 constexpr uint32_t st7bsNon9ItemDrop = 0x9a96;
                 constexpr uint32_t st7bsNon9TimeThreshold = 0x99ea;
                 constexpr uint32_t st7bsTimeoutTimeThreshold = 0x9c64;
@@ -1285,7 +1279,7 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06::TH06_ST7_END_S10: { // Spell 10 (QED)
+            case TH06_ST7_END_S10: { // Spell 10 (QED)
                 constexpr uint32_t st7bsNon10ItemDrop = 0xc58c;
                 constexpr uint32_t st7bsNon10TimeThreshold = 0xc4f0;
 
@@ -1305,9 +1299,7 @@ namespace TH06NC {
                 break;
             }
 
-            // (note: yes, this only works because I've split the section
-            // (      switches by stage; these are IDs 1-3)
-            case TH06NC::TH06NC_TLB1: {
+            case TH06NC_TLB1: {
                 constexpr uint32_t st7TLBDlgTime = 8497;
                 constexpr uint32_t st7TLB1SetWingLength = 0xd54c;
 
@@ -1322,7 +1314,7 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06NC::TH06NC_TLB2: {
+            case TH06NC_TLB2: {
                 constexpr uint32_t st7TLB2NonFirstDelayedIns = 0xde1c;
                 constexpr uint32_t st7TLB2SetAimedBubbleDelay = 0xe062;
 
@@ -1335,7 +1327,7 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06NC::TH06NC_TLB3: {
+            case TH06NC_TLB3: {
                 constexpr uint32_t st7TLB3NonFirstDelayedIns = 0xe8f2;
 
                 ex_tlb_warp_skip_anim();
@@ -1465,7 +1457,7 @@ namespace TH06NC {
         GAME_MANAGER->bombsRemaining = thPracParam.bomb;
         GAME_MANAGER->rank = thPracParam.rank;
 
-        if (thPracParam.guaranteeTLB || (thPracParam.stage == 6 && section <= TH06NC::TH06NC_TLB3))
+        if (thPracParam.guaranteeTLB || (section >= TH06NC_TLB1 && section <= TH06NC_TLB3))
             GAME_MANAGER->spellCapsForTLB = 6;
 
         if (GAME_MANAGER->difficulty != 4) { // avoid triggering score extends
@@ -1526,7 +1518,7 @@ namespace TH06NC {
             int32_t stage = thPracParam.stage;
 
             if (section < 10000) { // Section
-                if (TH06::th_sections_bgm[section]) // boss section -> boss bg
+                if (th_sections_bgm[section]) // boss section -> boss bg
                     GAME_MANAGER->spellPracSpellNum = safeSpellNums[thPracParam.stage];
                 else GAME_MANAGER->spellPracSpellNum = 0;
 
@@ -1545,11 +1537,11 @@ namespace TH06NC {
         int32_t section = thPracParam.section;
 
         if (thPracParam.mode && section && section < 10000 && !thPracParam.dlg) {
-            if (thPracParam.stage == 6 && section <= TH06NC_TLB3) {
+            if (section >= TH06NC_TLB1) {
                 pCtx->Rdx += 0x100; // flan TLB theme
                 return;
 
-            } else if (TH06::th_sections_bgm[section]) {
+            } else if (th_sections_bgm[section]) {
                 pCtx->Rdx += 0x80;
                 return;
             }
@@ -1563,15 +1555,15 @@ namespace TH06NC {
         int32_t section = thPracParam.section;
 
         if (thPracParam.mode && section && section < 10000 && !thPracParam.dlg) {
-            if (thPracParam.stage == 6 && section <= TH06NC_TLB3)
+            if (section >= TH06NC_TLB1)
                 pCtx->Rax = 0x100;
-            else if (TH06::th_sections_bgm[section])
+            else if (th_sections_bgm[section])
                 pCtx->Rax = 0x80;
         }
     })
 
     EHOOK_DY(th06nc_bgm_title_2, 0x3e74a, 8, { // before call to load BGM name ascii
-        if (thPracParam.stage == 6 && thPracParam.section <= TH06NC_TLB3 && thPracParam.dlg)
+        if (thPracParam.section == TH06NC_TLB1 && thPracParam.dlg)
             pCtx->Rip = RVA(0x3e757); // dont load it for TLB dialogue
 
         OG_INS(*(uint32_t*)(pCtx->Rsp + 0x20) = 0x10101);

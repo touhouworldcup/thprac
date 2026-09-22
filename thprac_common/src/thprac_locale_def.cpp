@@ -2423,8 +2423,8 @@ const char* th_glossary_str[3][1199]
         "練習モード",
         "時間",
         "黄昏酒場～Uwabami Breakers～",
-        "TODO",
-        "TODO",
+        "秘密ボス",
+        "Extra Phantomへの強制突入",
         "魔導書",
         "機体偽装",
         "魔符",
@@ -3797,7 +3797,7 @@ const th_glossary_t TH_SIDE_SELECT[3]
 
 namespace TH06 {
 
-const char* th_sections_str[3][4][107]
+const char* th_sections_str[3][4][110]
 {
     {
         {
@@ -3908,6 +3908,9 @@ const char* th_sections_str[3][4][107]
             "土&金符「翡翠巨石」",
             "",
             "",
+            "咒弹「易碎之翼」",
+            "咒弹「伏行之血痕」",
+            "「弹幕的心脏」",
         },
         {
             "",
@@ -4017,6 +4020,9 @@ const char* th_sections_str[3][4][107]
             "土&金符「翡翠巨石」",
             "水&木符「水之精灵」",
             "",
+            "咒弹「易碎之翼」",
+            "咒弹「伏行之血痕」",
+            "「弹幕的心脏」",
         },
         {
             "",
@@ -4126,6 +4132,9 @@ const char* th_sections_str[3][4][107]
             "土&金符「翡翠巨石」",
             "水&木符「水之精灵」",
             "金&水符「水银之毒」",
+            "咒弹「易碎之翼」",
+            "咒弹「伏行之血痕」",
+            "「弹幕的心脏」",
         },
         {
             "",
@@ -4235,6 +4244,9 @@ const char* th_sections_str[3][4][107]
             "土&金符「翡翠巨石」",
             "水&木符「水之精灵」",
             "金&水符「水银之毒」",
+            "咒弹「易碎之翼」",
+            "咒弹「伏行之血痕」",
+            "「弹幕的心脏」",
         },
     },
     {
@@ -4346,6 +4358,9 @@ const char* th_sections_str[3][4][107]
             "Earth & Metal Sign \"Emerald Megalith\"",
             "",
             "",
+            "Cursed Barrage \"Fragile Wing\"",
+            "Cursed Barrage \"Creeping Bloodstain\"",
+            "\"Danmaku Heart\"",
         },
         {
             "",
@@ -4455,6 +4470,9 @@ const char* th_sections_str[3][4][107]
             "Earth & Metal Sign \"Emerald Megalith\"",
             "Water & Wood Sign \"Water Elf\"",
             "",
+            "Cursed Barrage \"Fragile Wing\"",
+            "Cursed Barrage \"Creeping Bloodstain\"",
+            "\"Danmaku Heart\"",
         },
         {
             "",
@@ -4564,6 +4582,9 @@ const char* th_sections_str[3][4][107]
             "Earth & Metal Sign \"Emerald Megalith\"",
             "Water & Wood Sign \"Water Elf\"",
             "Metal & Water Sign \"Mercury Poison\"",
+            "Cursed Barrage \"Fragile Wing\"",
+            "Cursed Barrage \"Creeping Bloodstain\"",
+            "\"Danmaku Heart\"",
         },
         {
             "",
@@ -4673,6 +4694,9 @@ const char* th_sections_str[3][4][107]
             "Earth & Metal Sign \"Emerald Megalith\"",
             "Water & Wood Sign \"Water Elf\"",
             "Metal & Water Sign \"Mercury Poison\"",
+            "Cursed Barrage \"Fragile Wing\"",
+            "Cursed Barrage \"Creeping Bloodstain\"",
+            "\"Danmaku Heart\"",
         },
     },
     {
@@ -4784,6 +4808,9 @@ const char* th_sections_str[3][4][107]
             "土＆金符「エメラルドメガリス」",
             "",
             "",
+            "呪弾「フラジャイルウィング」",
+            "呪弾「這い寄る血痕」",
+            "「弾幕の心臓」",
         },
         {
             "",
@@ -4893,6 +4920,9 @@ const char* th_sections_str[3][4][107]
             "土＆金符「エメラルドメガリス」",
             "水＆木符「ウォーターエルフ」",
             "",
+            "呪弾「フラジャイルウィング」",
+            "呪弾「這い寄る血痕」",
+            "「弾幕の心臓」",
         },
         {
             "",
@@ -5002,6 +5032,9 @@ const char* th_sections_str[3][4][107]
             "土＆金符「エメラルドメガリス」",
             "水＆木符「ウォーターエルフ」",
             "金＆水符「マーキュリポイズン」",
+            "呪弾「フラジャイルウィング」",
+            "呪弾「這い寄る血痕」",
+            "「弾幕の心臓」",
         },
         {
             "",
@@ -5111,11 +5144,14 @@ const char* th_sections_str[3][4][107]
             "土＆金符「エメラルドメガリス」",
             "水＆木符「ウォーターエルフ」",
             "金＆水符「マーキュリポイズン」",
+            "呪弾「フラジャイルウィング」",
+            "呪弾「這い寄る血痕」",
+            "「弾幕の心臓」",
         },
     },
 };
 
-const uint8_t th_sections_bgm[107]
+const uint8_t th_sections_bgm[110]
 {
     0,
     0,
@@ -5224,57 +5260,71 @@ const uint8_t th_sections_bgm[107]
     1,
     1,
     1,
+    2,
+    2,
+    2,
 };
 
-const th_sections_t th_sections_cba[11][2][19]
+const th_sections_t th_sections_cba[11][3][19]
 {
     {
         { TH06_ST1_MID1, TH06_ST1_MID2, },
         { TH06_ST1_BOSS1, TH06_ST1_BOSS2, TH06_ST1_BOSS3, TH06_ST1_BOSS4, },
+        { },
     },
     {
         { TH06_ST2_MID1, },
         { TH06_ST2_BOSS1, TH06_ST2_BOSS2, TH06_ST2_BOSS3, TH06_ST2_BOSS4, TH06_ST2_BOSS5, },
+        { },
     },
     {
         { TH06_ST3_MID1, TH06_ST3_MID2, },
         { TH06_ST3_BOSS1, TH06_ST3_BOSS2, TH06_ST3_BOSS3, TH06_ST3_BOSS4, TH06_ST3_BOSS5, TH06_ST3_BOSS6, TH06_ST3_BOSS7, },
+        { },
     },
     {
         { TH06_ST4_BOOKS, TH06_ST4_MID1, },
         { TH06_ST4_BOSS1, TH06_ST4_BOSS2, TH06_ST4_BOSS4, TH06_ST4_BOSS3, TH06_ST4_BOSS5, TH06_ST4_BOSS6, TH06_ST4_BOSS7, },
+        { },
     },
     {
         { TH06_ST5_MID1, TH06_ST5_MID2, },
         { TH06_ST5_BOSS1, TH06_ST5_BOSS2, TH06_ST5_BOSS3, TH06_ST5_BOSS4, TH06_ST5_BOSS5, TH06_ST5_BOSS6, },
+        { },
     },
     {
         { TH06_ST6_MID1, TH06_ST6_MID2, },
         { TH06_ST6_BOSS1, TH06_ST6_BOSS2, TH06_ST6_BOSS3, TH06_ST6_BOSS4, TH06_ST6_BOSS5, TH06_ST6_BOSS6, TH06_ST6_BOSS7, TH06_ST6_BOSS8, TH06_ST6_BOSS9, },
+        { },
     },
     {
         { TH06_ST7_MID1, TH06_ST7_MID2, TH06_ST7_MID3, },
         { TH06_ST7_END_NS1, TH06_ST7_END_S1, TH06_ST7_END_NS2, TH06_ST7_END_S2, TH06_ST7_END_NS3, TH06_ST7_END_S3, TH06_ST7_END_NS4, TH06_ST7_END_S4, TH06_ST7_END_NS5, TH06_ST7_END_S5, TH06_ST7_END_NS6, TH06_ST7_END_S6, TH06_ST7_END_NS7, TH06_ST7_END_S7, TH06_ST7_END_NS8, TH06_ST7_END_S8, TH06_ST7_END_S9, TH06_ST7_END_S10, },
+        { TH06NC_TLB1, TH06NC_TLB2, TH06NC_TLB3, },
     },
     {
         { TH06_ST4_RA_BOOKS, TH06_ST4_RA_MID1, },
         { TH06_ST4_RA_BOSS1, TH06_ST4_RA_BOSS2, TH06_ST4_RA_BOSS4, TH06_ST4_RA_BOSS3, TH06_ST4_RA_BOSS5, TH06_ST4_RA_BOSS6, TH06_ST4_RA_BOSS7, },
+        { },
     },
     {
         { TH06_ST4_RB_BOOKS, TH06_ST4_RB_MID1, },
         { TH06_ST4_RB_BOSS1, TH06_ST4_RB_BOSS2, TH06_ST4_RB_BOSS4, TH06_ST4_RB_BOSS3, TH06_ST4_RB_BOSS5, TH06_ST4_RB_BOSS6, TH06_ST4_RB_BOSS7, },
+        { },
     },
     {
         { TH06_ST4_MA_BOOKS, TH06_ST4_MA_MID1, },
         { TH06_ST4_MA_BOSS1, TH06_ST4_MA_BOSS2, TH06_ST4_MA_BOSS4, TH06_ST4_MA_BOSS3, TH06_ST4_MA_BOSS5, TH06_ST4_MA_BOSS6, TH06_ST4_MA_BOSS7, },
+        { },
     },
     {
         { TH06_ST4_MB_BOOKS, TH06_ST4_MB_MID1, },
         { TH06_ST4_MB_BOSS1, TH06_ST4_MB_BOSS2, TH06_ST4_MB_BOSS4, TH06_ST4_MB_BOSS3, TH06_ST4_MB_BOSS5, TH06_ST4_MB_BOSS6, TH06_ST4_MB_BOSS7, },
+        { },
     },
 };
 
-const th_sections_t th_sections_cbt[11][2][14]
+const th_sections_t th_sections_cbt[11][2][17]
 {
     {
         { TH06_ST1_MID1, TH06_ST1_BOSS1, TH06_ST1_BOSS3, },
@@ -5302,7 +5352,7 @@ const th_sections_t th_sections_cbt[11][2][14]
     },
     {
         { TH06_ST7_END_NS1, TH06_ST7_END_NS2, TH06_ST7_END_NS3, TH06_ST7_END_NS4, TH06_ST7_END_NS5, TH06_ST7_END_NS6, TH06_ST7_END_NS7, TH06_ST7_END_NS8, },
-        { TH06_ST7_MID1, TH06_ST7_MID2, TH06_ST7_MID3, TH06_ST7_END_S1, TH06_ST7_END_S2, TH06_ST7_END_S3, TH06_ST7_END_S4, TH06_ST7_END_S5, TH06_ST7_END_S6, TH06_ST7_END_S7, TH06_ST7_END_S8, TH06_ST7_END_S9, TH06_ST7_END_S10, },
+        { TH06_ST7_MID1, TH06_ST7_MID2, TH06_ST7_MID3, TH06_ST7_END_S1, TH06_ST7_END_S2, TH06_ST7_END_S3, TH06_ST7_END_S4, TH06_ST7_END_S5, TH06_ST7_END_S6, TH06_ST7_END_S7, TH06_ST7_END_S8, TH06_ST7_END_S9, TH06_ST7_END_S10, TH06NC_TLB1, TH06NC_TLB2, TH06NC_TLB3, },
     },
     {
         { TH06_ST4_RA_BOOKS, TH06_ST4_RA_MID1, TH06_ST4_RA_BOSS1, TH06_ST4_RA_BOSS4, },
@@ -5343,115 +5393,6 @@ const th_glossary_t TH06_SPELL_PHASE_QED[4]
     TH_NORMAL,
     TH06_QED_30P,
     TH_RAGE,
-};
-
-}
-
-namespace TH06NC {
-
-const char* th_sections_str[3][4][4]
-{
-    {
-        {
-            "",
-            "咒弹「易碎之翼」",
-            "咒弹「伏行之血痕」",
-            "「弹幕的心脏」",
-        },
-        {
-            "",
-            "咒弹「易碎之翼」",
-            "咒弹「伏行之血痕」",
-            "「弹幕的心脏」",
-        },
-        {
-            "",
-            "咒弹「易碎之翼」",
-            "咒弹「伏行之血痕」",
-            "「弹幕的心脏」",
-        },
-        {
-            "",
-            "咒弹「易碎之翼」",
-            "咒弹「伏行之血痕」",
-            "「弹幕的心脏」",
-        },
-    },
-    {
-        {
-            "",
-            "Cursed Barrage \"Fragile Wing\"",
-            "Cursed Barrage \"Creeping Bloodstain\"",
-            "\"Danmaku Heart\"",
-        },
-        {
-            "",
-            "Cursed Barrage \"Fragile Wing\"",
-            "Cursed Barrage \"Creeping Bloodstain\"",
-            "\"Danmaku Heart\"",
-        },
-        {
-            "",
-            "Cursed Barrage \"Fragile Wing\"",
-            "Cursed Barrage \"Creeping Bloodstain\"",
-            "\"Danmaku Heart\"",
-        },
-        {
-            "",
-            "Cursed Barrage \"Fragile Wing\"",
-            "Cursed Barrage \"Creeping Bloodstain\"",
-            "\"Danmaku Heart\"",
-        },
-    },
-    {
-        {
-            "",
-            "呪弾「フラジャイルウィング」",
-            "呪弾「這い寄る血痕」",
-            "「弾幕の心臓」",
-        },
-        {
-            "",
-            "呪弾「フラジャイルウィング」",
-            "呪弾「這い寄る血痕」",
-            "「弾幕の心臓」",
-        },
-        {
-            "",
-            "呪弾「フラジャイルウィング」",
-            "呪弾「這い寄る血痕」",
-            "「弾幕の心臓」",
-        },
-        {
-            "",
-            "呪弾「フラジャイルウィング」",
-            "呪弾「這い寄る血痕」",
-            "「弾幕の心臓」",
-        },
-    },
-};
-
-const uint8_t th_sections_bgm[4]
-{
-    0,
-    2,
-    2,
-    2,
-};
-
-const th_sections_t th_sections_cba[1][1][4]
-{
-    {
-        { TH06NC_TLB1, TH06NC_TLB2, TH06NC_TLB3, },
-    },
-};
-
-const th_sections_t th_sections_cbt[1][2][4]
-{
-    {
-        { },
-        { TH06NC_TLB1, TH06NC_TLB2, TH06NC_TLB3, },
-    },
 };
 
 const th_glossary_t TH06NC_WARP_SELECT_EX[9]

@@ -1737,7 +1737,6 @@
         "appearance": [ 11, 2, 7 ],
         "!HL": "TH06_ST4_METAL_WATER"
       }
-
     },
 
     "groups": {
@@ -1762,30 +1761,30 @@
   },
 
   "th06nc": {
-    "namespace": "TH06NC",
+    "namespaceParent": "TH06",
 
     "glossary": {
-      "TH06NC_TLB": [ "关底Boss (PH)", "True Last Boss", "TODO" ],
-      "TH06NC_TLB_LOCK": [ "强制进入PH", "Guarantee Extra Phantom", "TODO" ],
+      "TH06NC_TLB": [ "关底Boss (PH)", "True Last Boss", "秘密ボス" ],
+      "TH06NC_TLB_LOCK": [ "强制进入PH", "Guarantee Extra Phantom", "Extra Phantomへの強制突入" ]
     },
 
     "sections": {
       "TH06NC_TLB1": {
         "bgm": 2,
         "spell": 1,
-        "appearance": [ 1, 1, 1 ],
-        "!X": [ "咒弹「易碎之翼」", "Cursed Barrage \"Fragile Wing\"", "呪弾「フラジャイルウィング」" ],
+        "appearance": [ 7, 3, 1 ],
+        "!X": [ "咒弹「易碎之翼」", "Cursed Barrage \"Fragile Wing\"", "呪弾「フラジャイルウィング」" ]
       },
       "TH06NC_TLB2": {
         "bgm": 2,
         "spell": 1,
-        "appearance": [ 1, 1, 2 ],
+        "appearance": [ 7, 3, 2 ],
         "!X": [ "咒弹「伏行之血痕」", "Cursed Barrage \"Creeping Bloodstain\"", "呪弾「這い寄る血痕」" ]
       },
       "TH06NC_TLB3": {
         "bgm": 2,
         "spell": 1,
-        "appearance": [ 1, 1, 3 ],
+        "appearance": [ 7, 3, 3 ],
         "!X": [ "「弹幕的心脏」", "\"Danmaku Heart\"", "「弾幕の心臓」" ]
       }
     },

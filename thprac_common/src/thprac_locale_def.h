@@ -1362,41 +1362,24 @@ enum th_sections_t : uint8_t
     TH06_ST4_MB_BOSS5,
     TH06_ST4_MB_BOSS6,
     TH06_ST4_MB_BOSS7,
+    TH06NC_TLB1,
+    TH06NC_TLB2,
+    TH06NC_TLB3,
 };
 
-extern const char* th_sections_str[3][4][107];
+extern const char* th_sections_str[3][4][110];
 
-extern const uint8_t th_sections_bgm[107];
+extern const uint8_t th_sections_bgm[110];
 
-extern const th_sections_t th_sections_cba[11][2][19];
+extern const th_sections_t th_sections_cba[11][3][19];
 
-extern const th_sections_t th_sections_cbt[11][2][14];
+extern const th_sections_t th_sections_cbt[11][2][17];
 
 extern const th_glossary_t TH06_TYPE_SELECT[6];
 
 extern const th_glossary_t TH06_SPELL_PHASE_TIMEOUT[4];
 
 extern const th_glossary_t TH06_SPELL_PHASE_QED[4];
-
-}
-
-namespace TH06NC {
-
-enum th_sections_t : uint8_t
-{
-    A0000ERROR,
-    TH06NC_TLB1,
-    TH06NC_TLB2,
-    TH06NC_TLB3,
-};
-
-extern const char* th_sections_str[3][4][4];
-
-extern const uint8_t th_sections_bgm[4];
-
-extern const th_sections_t th_sections_cba[1][1][4];
-
-extern const th_sections_t th_sections_cbt[1][2][4];
 
 extern const th_glossary_t TH06NC_WARP_SELECT_EX[9];
 
