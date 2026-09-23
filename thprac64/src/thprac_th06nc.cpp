@@ -1659,11 +1659,11 @@ namespace TH06NC {
     }
 
     HOOKSET_DEFINE(THInitHook)
-    //EHOOK_DY(th06nc_gui_init_1, 0x73D33, 4, { // main menu ontick (TODO: TEST THIS)
-    //    THGuiCreate();
-    //    self->Disable();
-    //    OG_INS(pCtx->Rcx = *(uint64_t*)(pCtx->Rbp - 0x58));
-    //})
+    EHOOK_DY(th06nc_gui_init_1, 0x4D0E5, 1, { // main menu ontick (TODO: TEST THIS)
+        THGuiCreate();
+        self->Disable();
+        OG_INS(pCtx->Rip = PopHelper(pCtx));
+    })
     EHOOK_DY(th06nc_gui_init_2, 0x27070e, 8, { // initial loading (d3d creation)
         THGuiCreate();
         self->Disable();
