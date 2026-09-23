@@ -11,7 +11,7 @@ namespace TH14 {
         PLAYER_PTR = 0x4db67c,
         CHARA_ADDR = 0x4f5828,
         SUBSHOT_ADDR = 0x4f582c,
-        SCALE_ADDR = 0x4F7A6C,
+        SCALE_ADDR = 0x4f7a6c,
         STAGE_NUM = 0x4f58a4,
         WINDOW_PTR = 0x4f5a18,
     };

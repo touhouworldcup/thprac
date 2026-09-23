@@ -205,25 +205,32 @@ namespace TH06NC {
         }
 
         virtual void OnLocaleChange() override {
+            constexpr float asnWidth = 0.26f;
+            constexpr float asnHeight = 0.58f;
+            constexpr float enWidth = asnWidth * 1.2f;
+            constexpr float enHeight = asnHeight;
+
+            constexpr float targetX = 0.81f;
+            constexpr float targetY = 0.4f;
+            constexpr float asnX = targetX - asnWidth / 2.f;
+            constexpr float asnY = targetY - asnHeight / 2.f;
+            constexpr float enX = targetX - enWidth / 2.f;
+            constexpr float enY = targetY - enHeight / 2.f;
+
             SetTitle(S(TH_MENU));
 
             switch (Gui::LocaleGet()) {
             case LOCALE_ZH_CN:
-                SetSize(330.f, 390.f);
-                SetPos(260.f, 65.f);
-                SetItemWidth(-60.0f);
+            case LOCALE_JA_JP:
+                SetSizeRel(asnWidth, asnHeight);
+                SetPosRel(asnX, asnY);
+                //SetItemWidth(-60.f); // -65.f for JP, butwhy
                 break;
 
             case LOCALE_EN_US:
-                SetSize(370.f, 375.f);
-                SetPos(240.f, 75.f);
-                SetItemWidth(-60.0f);
-                break;
-
-            case LOCALE_JA_JP:
-                SetSize(330.f, 390.f);
-                SetPos(260.f, 65.f);
-                SetItemWidth(-65.0f);
+                SetSizeRel(enWidth, enHeight);
+                SetPosRel(enX, enY);
+                //SetItemWidth(-60.f);
                 break;
 
             default:
@@ -1363,6 +1370,16 @@ namespace TH06NC {
         }
     }
 
+    ImVec2 GetWindowSize() {
+        float windowWidth = (float)GetMemContent<int32_t>(RVA(WINDOW_WIDTH));
+        float windowHeight = (float)GetMemContent<int32_t>(RVA(WINDOW_HEIGHT));
+        return { windowWidth, windowHeight };
+    }
+
+    float GetWindowScale() {
+        return 1.15f * GetWindowSize().x / 1280.f;
+    }
+
 
 
 
@@ -1441,6 +1458,20 @@ namespace TH06NC {
     EHOOK_DY(th06nc_title_screen_transition, 0x4802e, 7, { // transition to title screen (main menu state 3)
         thPracParam.Reset();
         OG_INS(*(uint32_t*)(pCtx->Rsi + 0x168b0) = (uint32_t)pCtx->R10);
+    })
+
+    EHOOK_DY(th06nc_resolution_change, 0x7c848, 1, { // window dimensions have changed
+        ImVec2 size = GetWindowSize();
+        float scale = GetWindowScale();
+
+        ImGui::GetStyle() = ImGuiStyle();
+        ImGui::GetStyle().ScaleAllSizes(scale);
+        ImGui::GetStyle().MouseCursorScale = 1.0f;
+        //Gui::LocaleCreateFont(16.f * scale);  // <- seems needed, but makes the prac window disappear...
+        ImGui::GetIO().DisplaySize = size;
+        THGuiPrac::singleton().RefreshLocale();
+
+        OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
 
     // On Prac (Re)Start
@@ -1586,10 +1617,8 @@ namespace TH06NC {
         // Init
         GameGuiInit(IMPL_WIN32_DX11, RVA(D3D_DEVICE_PTR), RVA(HWND_PTR),
                     Gui::INGAGME_INPUT_GEN1, RVA(INPUT_ADDR), RVA(INPUT_PREV_ADDR),
-                    RVA(IS_EIGTH_FRAME_OF_HELD_INPUT_ADDR), 1.0f, RVA(D3D_DEVICE_CONTEXT));
-
-        // weird...
-        ImGui::GetIO().DisplaySize = ImVec2(1280, 720);
+                    RVA(IS_EIGTH_FRAME_OF_HELD_INPUT_ADDR), GetWindowScale(), RVA(D3D_DEVICE_CONTEXT));
+        ImGui::GetIO().DisplaySize = GetWindowSize();
 
         //TODO
         //SetDpadHook(0x41D330, 3);

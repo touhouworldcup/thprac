@@ -9,6 +9,8 @@ namespace TH06NC {
         GAME_MANAGER_ADDR = 0x4f1e60,
         PLAYER_ADDR = 0x4ff3a0,
         STAGE_BACKGROUND_ADDR = 0x509b60,
+        WINDOW_WIDTH = 0xc21e44,
+        WINDOW_HEIGHT = 0xc21e44 + 0x4,
         HWND_PTR = 0x55e5a8,
         D3D_DEVICE_PTR = 0x9b1cf8,
         D3D_DEVICE_CONTEXT = 0x9b1d00,

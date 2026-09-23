@@ -103,6 +103,11 @@ namespace Gui
 
             OnPostUpdate();
         }
+    void GameGuiWnd::RefreshLocale()
+    {
+        mLocale = LocaleGet();
+        OnLocaleChange();
+    }
     void GameGuiWnd::Open()
     {
         if (mStatus != 2)
