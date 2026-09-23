@@ -812,97 +812,83 @@ const char* gThGameStrs[] = {
     "th20",
 };
 
-ExeInfo GetExeInfo(const uint8_t* mod, size_t len) {
+static_assert(offsetof(IMAGE_NT_HEADERS32, OptionalHeader) == offsetof(IMAGE_NT_HEADERS64, OptionalHeader),
+    "PE32/PE32+ prefix layout differs");
+static_assert(offsetof(IMAGE_NT_HEADERS32, FileHeader) == offsetof(IMAGE_NT_HEADERS64, FileHeader),
+    "PE32/PE32+ prefix layout differs");
+
+template<typename F>
+    requires std::invocable<F&, void*, uintptr_t, uintptr_t, uintptr_t, void*, size_t>
+__forceinline ExeInfo GetExeInfo_Base(F&& Read, void* hProc, uintptr_t mod, uintptr_t size) {
+#define MYREAD(...) Read(hProc, mod, size, __VA_ARGS__)
     ExeInfo out = {};
 
-    // Dawg
-    if (len && len < 64) {  // Make sure that the length is long enough to read the e_lfanew field
-        return out;
-    }
+    LONG lfanew;
+    if (!MYREAD(mod + offsetof(IMAGE_DOS_HEADER, e_lfanew), &lfanew, sizeof(lfanew))
+        || lfanew <= 0) return out;
 
-    if (mod[0] != 'M' || mod[1] != 'Z') {
-        return out;
-    }
+    const uintptr_t ntHeader = mod + (uintptr_t)lfanew;
 
-    auto* dosHeader = (IMAGE_DOS_HEADER*)mod;   
-    auto* ntHeader = (IMAGE_NT_HEADERS*)(mod + dosHeader->e_lfanew);
+    struct {
+        DWORD Signature;
+        IMAGE_FILE_HEADER FileHeader;
+    } ntCommon;
 
-    CHKBUF(mod, (unsigned char*)ntHeader + sizeof(IMAGE_NT_HEADERS), len, out);
+    if (!MYREAD(ntHeader, &ntCommon, sizeof(ntCommon))) return out;
+    if (ntCommon.Signature != IMAGE_NT_SIGNATURE) return out;
 
-    if (ntHeader->Signature != TextInt('P', 'E')) {
-        return out;
-    }
+    uintptr_t sections = ntHeader + sizeof(ntCommon) + ntCommon.FileHeader.SizeOfOptionalHeader;
 
-    auto* section = (IMAGE_SECTION_HEADER*)((uintptr_t)&ntHeader->OptionalHeader + ntHeader->FileHeader.SizeOfOptionalHeader);
-    out.timeStamp = ntHeader->FileHeader.TimeDateStamp;
-
-    for (unsigned i = 0; i < ntHeader->FileHeader.NumberOfSections; i++) {
-        CHKBUF(mod, section + 1, len, out);
-        if (!_stricmp(".text", (char*)section[i].Name)) {
-            out.textSize = section[i].SizeOfRawData;
-            break;
-        }
-    }
-
-    return out;
-}
-
-ExeInfo GetRemoteExeInfo(void* hProc, uintptr_t mod) {
-    ExeInfo out = {};
-
-    SIZE_T byteRet;
-
-    uintptr_t addr_ntHeader;
-    ReadProcessMemory(
-        hProc,
-        (void*)(mod + offsetof(IMAGE_DOS_HEADER, e_lfanew)),
-        &addr_ntHeader, sizeof(addr_ntHeader),
-        &byteRet
-    );
-    addr_ntHeader += mod;
-
-    uintptr_t addr_optionalHeader = addr_ntHeader + offsetof(IMAGE_NT_HEADERS, OptionalHeader);
-    uintptr_t addr_fileHeader = addr_ntHeader + offsetof(IMAGE_NT_HEADERS, FileHeader);
-
-    ReadProcessMemory(
-        hProc,
-        (void*)(addr_fileHeader + offsetof(IMAGE_FILE_HEADER, TimeDateStamp)),
-        &out.timeStamp, sizeof(out.timeStamp),
-        &byteRet
-    );
-
-    WORD sizeOfOptionalHeader;
-    ReadProcessMemory(
-        hProc,
-        (void*)(addr_fileHeader + offsetof(IMAGE_FILE_HEADER, SizeOfOptionalHeader)),
-        &sizeOfOptionalHeader, sizeof(sizeOfOptionalHeader),
-        &byteRet
-    );
-
-    WORD numberOfSections;
-    ReadProcessMemory(
-        hProc,
-        (void*)(addr_fileHeader + offsetof(IMAGE_FILE_HEADER, NumberOfSections)),
-        &numberOfSections, sizeof(numberOfSections),
-        &byteRet
-    );
-
-    for (size_t i = 0; i < numberOfSections; i++) {
+    for (size_t i = 0; i < ntCommon.FileHeader.NumberOfSections; i++) {
         IMAGE_SECTION_HEADER section;
-        ReadProcessMemory(
-            hProc,
-            (void*)(addr_optionalHeader + sizeOfOptionalHeader + i * sizeof(IMAGE_SECTION_HEADER)),
-            &section, sizeof(section),
-            &byteRet
-        );
+        if (!MYREAD(sections + i * sizeof(section), &section, sizeof(section))) break;
 
-        if (!_stricmp((char*)section.Name, ".text")) {
+        if (!_strnicmp(".text", (const char*)section.Name, IMAGE_SIZEOF_SHORT_NAME)) {
             out.textSize = section.SizeOfRawData;
             break;
         }
     }
+
+    if (out.textSize) {
+        out.timeStamp = ntCommon.FileHeader.TimeDateStamp;
+    }
+
     return out;
+#undef MYREAD
 }
+
+ExeInfo GetRemoteExeInfo(void* hProc, uintptr_t mod) {
+    // The compiler needs full visibility into the functor being passed
+    // so that it can inline this code. It could also inline a lambda,
+    // but there doesn't seem to be a way to guarantee that.
+    //
+    // Making a struct to be able to add __forceinline. Technically,
+    // the thing that makes lambdas callable is implementing operator().
+    struct Reader {
+        __forceinline bool operator()(void* hProc, uintptr_t buf_base, uintptr_t buf_size, uintptr_t buf_addr, void* dst_out, size_t read_len) {
+            (void)buf_base;
+           
+            SIZE_T byteRet;
+            return ReadProcessMemory(hProc, (LPCVOID)buf_addr, dst_out, read_len, &byteRet) && byteRet == read_len;
+        }
+    };
+    return GetExeInfo_Base(Reader(), hProc, (uintptr_t)mod, 0);
+}
+
+ExeInfo GetExeInfo(const uint8_t* mod, size_t len) {
+    // Pretend the comment from GetRemoteExeInfo is also here.
+    struct Reader {
+        __forceinline bool operator()(void* hProc, uintptr_t buf_base, uintptr_t buf_size, uintptr_t buf_addr, void* dst_out, size_t read_len) {
+            if (buf_size && buf_addr >= (buf_base + buf_size)) {
+                return false;
+            }
+            memcpy(dst_out, (void*)buf_addr, read_len);
+            return true;
+        }
+    };
+    return GetExeInfo_Base(Reader(), NULL, (uintptr_t)mod, len);
+}
+
 
 const THGameVersion* IdentifyExe(const uint8_t* buf, size_t len, ExeInfo* outInfo) {
     auto exe_info = GetExeInfo(buf, len);
