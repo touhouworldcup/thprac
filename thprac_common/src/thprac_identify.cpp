@@ -65,8 +65,8 @@ constexpr const THGameVersion gGameVersions[] = {
     {
         .gameId = ID_TH06,
         .initFunc = TH_INIT_FUNC_64(TH06CInit),
-        .has_vpatch = true,
-        .has_oilp = true,
+        .has_vpatch = false,
+        .has_oilp = false,
         .exeInfo = {
             .timeStamp = 0x6a9e388e,
             .textSize = 0x00284800,
