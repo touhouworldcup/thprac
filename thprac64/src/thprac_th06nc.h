@@ -22,6 +22,7 @@ namespace TH06NC {
         IS_EIGTH_FRAME_OF_HELD_INPUT_ADDR = 0xa6ec48,
         ENEMY_MANAGER_ADDR = 0xaa1e90,
         BOSS_PTR_ADDR = 0xbadf78,
+        MAIN_MENU_ADDR = 0xc07240,
     };
 
     enum FUNCS {
@@ -142,6 +143,11 @@ namespace TH06NC {
         // size unknown
     };
 
+    struct MainMenu {
+        char __unknown1[0x1ab7b]; // 0x0
+        uint8_t selectedMode;     // 0x1ab7b
+    };
+
     static_assert(offsetof(EnemyManager, timelineTime) == 0x10c0b8);
     static_assert(offsetof(Enemy, bossTimer) == 0x0);
     static_assert(offsetof(Enemy, eclTimer) == 0x40);
@@ -149,6 +155,7 @@ namespace TH06NC {
     static_assert(offsetof(Enemy, maxHealth) == 0x238);
     static_assert(offsetof(StageBackground, is_frozen) == 0x68);
     static_assert(offsetof(StageBackground, timelineTime) == 0xb0);
+    static_assert(offsetof(MainMenu, selectedMode) == 0x1ab7b);
 
     struct Player {
         char __unknown1[0x7858]; // 0x0
@@ -163,6 +170,7 @@ namespace TH06NC {
 
     struct THPracParam {
         int32_t mode;
+        int32_t gameMode;
 
         int32_t stage;
         int32_t section;

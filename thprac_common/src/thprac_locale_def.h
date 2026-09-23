@@ -21,6 +21,10 @@ enum th_glossary_t
     ALCOSTG_PRACTICE_MODE,
     ALCOSTG_TIME,
     ALCOSTG_TITLE,
+    TH06NC_ENHANCED_CHALLENGE,
+    TH06NC_ENHANCED_STANDARD,
+    TH06NC_ORIGINAL_CHALLENGE,
+    TH06NC_ORIGINAL_STANDARD,
     TH06NC_TLB,
     TH06NC_TLB_LOCK,
     TH06_BOOKS,
@@ -1209,7 +1213,7 @@ enum th_glossary_t
     TH_YES,
 };
 
-extern const char* th_glossary_str[3][1199];
+extern const char* th_glossary_str[3][1203];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -1382,6 +1386,8 @@ extern const th_glossary_t TH06_SPELL_PHASE_TIMEOUT[4];
 extern const th_glossary_t TH06_SPELL_PHASE_QED[4];
 
 extern const th_glossary_t TH06NC_WARP_SELECT_EX[9];
+
+extern const th_glossary_t TH06NC_MODE_SELECT[5];
 
 }
 
@@ -2942,7 +2948,7 @@ extern const th_glossary_t TH20_EXPIRED_PYRAMID_FIX_OPT[6];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3361];
+extern const wchar_t __thprac_loc_range_zh[3363];
 
 extern const wchar_t __thprac_loc_range_en[31];
 

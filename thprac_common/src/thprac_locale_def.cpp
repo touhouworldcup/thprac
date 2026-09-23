@@ -5,7 +5,7 @@
 
 
 
-const char* th_glossary_str[3][1199]
+const char* th_glossary_str[3][1203]
 {
     {
         "",
@@ -21,6 +21,10 @@ const char* th_glossary_str[3][1199]
         "练习模式",
         "时间",
         "黄昏酒场",
+        "自定义练习 (挑战模式)",
+        "自定义练习 (挑战模式)",
+        "原版练习 (标准模式)",
+        "原版练习 (标准模式)",
         "关底Boss (PH)",
         "强制进入PH",
         "魔法阵",
@@ -1222,6 +1226,10 @@ const char* th_glossary_str[3][1199]
         "Practice Mode",
         "Time",
         "Uwabami Breakers",
+        "Custom (Challenge Mode)",
+        "Custom (Standard Mode)",
+        "Original (Challenge Mode)",
+        "Original (Standard Mode)",
         "True Last Boss",
         "Guarantee Extra Phantom",
         "Books",
@@ -2423,6 +2431,10 @@ const char* th_glossary_str[3][1199]
         "練習モード",
         "時間",
         "黄昏酒場～Uwabami Breakers～",
+        "カスタム (チャレンジモード)",
+        "カスタム (チャレンジモード)",
+        "オリジナル (標準モード)",
+        "オリジナル (標準モード)",
         "秘密ボス",
         "Extra Phantomへの強制突入",
         "魔導書",
@@ -5405,6 +5417,14 @@ const th_glossary_t TH06NC_WARP_SELECT_EX[9]
     TH_NONSPELL,
     TH_SPELL,
     TH_FRAME,
+};
+
+const th_glossary_t TH06NC_MODE_SELECT[5]
+{
+    TH06NC_ORIGINAL_STANDARD,
+    TH06NC_ORIGINAL_CHALLENGE,
+    TH06NC_ENHANCED_STANDARD,
+    TH06NC_ENHANCED_CHALLENGE,
 };
 
 }
@@ -23110,7 +23130,7 @@ const th_glossary_t TH20_EXPIRED_PYRAMID_FIX_OPT[6]
 
 }
 
-const wchar_t __thprac_loc_range_zh[3361] {
+const wchar_t __thprac_loc_range_zh[3363] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -23782,6 +23802,7 @@ const wchar_t __thprac_loc_range_zh[3361] {
     0x6301, 0x6301,
     0x6307, 0x6307,
     0x6309, 0x6309,
+    0x6311, 0x6311,
     0x6323, 0x6323,
     0x6325, 0x6325,
     0x632f, 0x632f,

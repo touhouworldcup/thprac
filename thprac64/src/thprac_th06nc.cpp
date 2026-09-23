@@ -20,12 +20,13 @@ namespace TH06NC {
     EnemyManager* ENEMY_MANAGER;
     StageBackground* STAGE_BACKGROUND;
     Enemy** BOSS_PTR;
+    MainMenu* MAIN_MENU;
     void* ECL_MANAGER;
     void* ANM_MANAGER_PTR;
     void* ZUN_GUI;
 
     class THGuiPrac : public Gui::GameGuiWnd {
-        Gui::GuiCombo mMode{ TH_MODE, TH_MODE_SELECT };
+        Gui::GuiCombo mMode{ TH_MODE, TH06NC_MODE_SELECT };
         Gui::GuiCombo mStage{ TH_STAGE, TH_STAGE_SELECT };
         Gui::GuiCombo mWarp{ TH_WARP };
         Gui::GuiCombo mSection{ TH_MODE };
@@ -58,7 +59,7 @@ namespace TH06NC {
             *mLife = 8;
             *mBomb = 8;
             *mPower = 128;
-            *mMode = 1;
+            *mMode = 2;
             *mScore = 0;
             *mGraze = 0;
             *mRank = 32;
@@ -165,12 +166,14 @@ namespace TH06NC {
 
         void PracticeMenu(Gui::GuiNavFocus& nav_focus) {
             mMode();
+            int mode = *mMode;
+
             if (mStage()) {
                 *mSection = *mChapter = 0;
                 AdjustWarpSelection();
             }
 
-            if (*mMode == 1) {
+            if (mode >= 2) {
                 int warpType = *mWarp;
                 int stage = *mStage;
                 int section;
@@ -188,7 +191,7 @@ namespace TH06NC {
                         mDlg();
                 }
 
-                mLife();
+                if (mode % 2 == 0) mLife();
                 mBomb();
                 mScore();
                 mScore.RoundDown(10);
@@ -302,7 +305,9 @@ namespace TH06NC {
             Close();
             *mNavFocus = 0;
 
-            thPracParam.mode  = *mMode;
+            int mode = *mMode;
+            thPracParam.mode = mode >= 2;
+            thPracParam.gameMode = mode % 2;
             thPracParam.stage = *mStage;
             thPracParam.section = CalcSection();
             thPracParam.phase = *mPhase;
@@ -1421,6 +1426,7 @@ namespace TH06NC {
         if (inPractice) {
             THGuiPrac::singleton().ConfirmMenu();
             GAME_MANAGER->stage = thPracParam.stage;
+            MAIN_MENU->selectedMode = thPracParam.gameMode;
         }
         OG_INS(*(uint32_t*)(rsi + 0x168b0) = 0x19);
     })
@@ -1628,6 +1634,7 @@ namespace TH06NC {
         ECL_MANAGER = (void*)RVA(ECL_MANAGER_ADDR);
         ZUN_GUI = (void*)RVA(ZUN_GUI_ADDR);
         BOSS_PTR = (Enemy**)RVA(BOSS_PTR_ADDR);
+        MAIN_MENU = (MainMenu*)RVA(MAIN_MENU_ADDR);
 
         // Init
         GameGuiInit(IMPL_WIN32_DX11, RVA(D3D_DEVICE_PTR), RVA(HWND_PTR),
