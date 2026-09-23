@@ -13,6 +13,7 @@ constinit wchar_t thprac_dll_path[MAX_PATH + 1] = {};
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
     if (fdwReason == DLL_PROCESS_ATTACH) {
+        GetModuleFileNameW((HMODULE)&__ImageBase, thprac_dll_path, MAX_PATH);
         if (const auto* ver = IdentifyExe((uint8_t*)CurrentPeb()->ImageBaseAddress, 0, nullptr)) {
             InitConfigDir();
             LoadSettings();
@@ -24,18 +25,21 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
     return TRUE;
 }
 
-extern "C" __declspec(dllexport) void CALLBACK thprac_rundll_inject_helperW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow) {
-    MessageBoxW(hwnd, L"rundll helper", L"It works", MB_OK);
+extern "C" {
+    __declspec(dllexport) void CALLBACK thprac_rundll_inject_exeW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow) {
+        STARTUPINFOW si = { .cb = sizeof(si) };
+        PROCESS_INFORMATION pi = {};
 
-    STARTUPINFOW si = { .cb = sizeof(si) };
-    PROCESS_INFORMATION pi = {};
+        CreateProcessW(nullptr, lpszCmdLine, nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, nullptr, &si, &pi);
+        LoadSelf(pi.hProcess);
 
-    GetModuleFileNameW((HMODULE)&__ImageBase, thprac_dll_path, MAX_PATH);
+        ResumeThread(pi.hThread);
+        CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
+    }
 
-    CreateProcessW(nullptr, lpszCmdLine, nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, nullptr, &si, &pi);
-    LoadSelf(pi.hProcess);
-
-    ResumeThread(pi.hThread);
-    CloseHandle(pi.hThread);
-    CloseHandle(pi.hProcess);
+    __declspec(dllexport) void CALLBACK thprac_rundll_inject_pidW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow) {
+        auto pid = _wtoi(lpszCmdLine);
+        ApplyToProcById(pid);
+    }
 }
