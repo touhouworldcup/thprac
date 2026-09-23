@@ -68,14 +68,17 @@ namespace TH06NC {
         char __unknown3[0x906];    // 0x2a
         int64_t visualScore;       // 0x930
         int64_t actualScore;       // 0x938
-        char __unknown4[0x15];     // 0x940
+        int64_t __unkScore;        // 0x940
+        int64_t highScore;         // 0x948
+        char __unknown4[0x5];      // 0x950
         int8_t inSpellPrac;        // 0x955
         char __unknown5[0x2];      // 0x956
         int8_t spellPracSpellNum;  // 0x958
         uint16_t stagePointItems;  // 0x95a
         uint16_t totalPointItems;  // 0x95c
         uint32_t difficulty;       // 0x960
-        char __unknown6[0xc908];   // 0x964
+        uint8_t mode;              // 0x964
+        char __unknown6[0xc907];   // 0x965
         int32_t stageGraze;        // 0xd26c
         int32_t totalGraze;        // 0xd270
         char __unknown7[0x1c];     // 0xd274
@@ -95,11 +98,13 @@ namespace TH06NC {
     static_assert(offsetof(GameManager, curPower) == 0x28);
     static_assert(offsetof(GameManager, visualScore) == 0x930);
     static_assert(offsetof(GameManager, actualScore) == 0x938);
+    static_assert(offsetof(GameManager, highScore) == 0x948);
     static_assert(offsetof(GameManager, inSpellPrac) == 0x955);
     static_assert(offsetof(GameManager, spellPracSpellNum) == 0x958);
     static_assert(offsetof(GameManager, stagePointItems) == 0x95a);
     static_assert(offsetof(GameManager, totalPointItems) == 0x95c);
     static_assert(offsetof(GameManager, difficulty) == 0x960);
+    static_assert(offsetof(GameManager, mode) == 0x964);
     static_assert(offsetof(GameManager, stageGraze) == 0xd26c);
     static_assert(offsetof(GameManager, totalGraze) == 0xd270);
     static_assert(offsetof(GameManager, livesRemaining) == 0xd290);

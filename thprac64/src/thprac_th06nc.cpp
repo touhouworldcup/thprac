@@ -1599,6 +1599,21 @@ namespace TH06NC {
 
         OG_INS(*(uint32_t*)(pCtx->Rsp + 0x20) = 0x10101);
     })
+
+    // fix extra prac using wrong/invalid registers
+    // note: [0x9a8, 0x9e0] inclusive should be unused spell prac registers (for Spell #1 on unreachable difficulties)
+    EHOOK_DY(th06nc_practice_high_score_read, 0x3ae66, 4, { // initializing high score for this practice mode stage/diff/shot/char
+        if (GAME_MANAGER->stage == 6) // game later adds 1 to this for reasons unknown
+            pCtx->Rax = 0x12e + (GAME_MANAGER->character * 2 + GAME_MANAGER->subShot) * 2 + GAME_MANAGER->mode; // [0x12e, 0x135] -> [0x9a8, 0x9e0]
+        else
+            OG_INS(pCtx->Rax = pCtx->Rcx * 3);
+    })
+    EHOOK_DY(th06nc_practice_high_score_write, 0x74440, 4, { // retrieving practice high score register on run end
+        if (GAME_MANAGER->stage == 7)
+            pCtx->Rax = 0x12e + (GAME_MANAGER->character * 2 + GAME_MANAGER->subShot) * 2 + GAME_MANAGER->mode; // [0x12e, 0x135] -> [0x9a8, 0x9e0]
+        else
+            OG_INS(pCtx->Rax = pCtx->Rcx * 3);
+    })
     HOOKSET_ENDDEF()
 
     static __declspec(noinline) void THGuiCreate() {
