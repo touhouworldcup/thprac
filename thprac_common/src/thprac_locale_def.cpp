@@ -5,7 +5,7 @@
 
 
 
-const char* th_glossary_str[3][1203]
+const char* th_glossary_str[3][1204]
 {
     {
         "",
@@ -25,6 +25,7 @@ const char* th_glossary_str[3][1203]
         "自定义练习 (挑战模式)",
         "原版练习 (标准模式)",
         "原版练习 (标准模式)",
+        "返",
         "关底Boss (PH)",
         "强制进入PH",
         "魔法阵",
@@ -1230,6 +1231,7 @@ const char* th_glossary_str[3][1203]
         "Custom (Standard Mode)",
         "Original (Challenge Mode)",
         "Original (Standard Mode)",
+        "R",
         "True Last Boss",
         "Guarantee Extra Phantom",
         "Books",
@@ -2435,6 +2437,7 @@ const char* th_glossary_str[3][1203]
         "カスタム (チャレンジモード)",
         "オリジナル (標準モード)",
         "オリジナル (標準モード)",
+        "戻",
         "秘密ボス",
         "Extra Phantomへの強制突入",
         "魔導書",
@@ -5423,8 +5426,8 @@ const th_glossary_t TH06NC_MODE_SELECT[5]
 {
     TH06NC_ORIGINAL_STANDARD,
     TH06NC_ORIGINAL_CHALLENGE,
-    TH06NC_ENHANCED_STANDARD,
-    TH06NC_ENHANCED_CHALLENGE,
+    TH06NC_CUSTOM_STANDARD,
+    TH06NC_CUSTOM_CHALLENGE,
 };
 
 }

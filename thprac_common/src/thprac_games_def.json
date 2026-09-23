@@ -1768,8 +1768,9 @@
       "TH06NC_TLB_LOCK": [ "强制进入PH", "Guarantee Extra Phantom", "Extra Phantomへの強制突入" ],
       "TH06NC_ORIGINAL_STANDARD": [ "原版练习 (标准模式)", "Original (Standard Mode)", "オリジナル (標準モード)" ],
       "TH06NC_ORIGINAL_CHALLENGE": [ "原版练习 (标准模式)", "Original (Challenge Mode)", "オリジナル (標準モード)" ],
-      "TH06NC_ENHANCED_STANDARD": [ "自定义练习 (挑战模式)", "Custom (Standard Mode)", "カスタム (チャレンジモード)" ],
-      "TH06NC_ENHANCED_CHALLENGE": [ "自定义练习 (挑战模式)", "Custom (Challenge Mode)", "カスタム (チャレンジモード)" ]
+      "TH06NC_CUSTOM_STANDARD": [ "自定义练习 (挑战模式)", "Custom (Standard Mode)", "カスタム (チャレンジモード)" ],
+      "TH06NC_CUSTOM_CHALLENGE": [ "自定义练习 (挑战模式)", "Custom (Challenge Mode)", "カスタム (チャレンジモード)" ],
+      "TH06NC_RESET": [ "返", "R", "戻" ]
     },
 
     "sections": {
@@ -1807,8 +1808,8 @@
       "TH06NC_MODE_SELECT": [
         "TH06NC_ORIGINAL_STANDARD",
         "TH06NC_ORIGINAL_CHALLENGE",
-        "TH06NC_ENHANCED_STANDARD",
-        "TH06NC_ENHANCED_CHALLENGE"
+        "TH06NC_CUSTOM_STANDARD",
+        "TH06NC_CUSTOM_CHALLENGE"
       ]
     }
   },

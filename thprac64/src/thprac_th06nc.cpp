@@ -2,13 +2,12 @@
 #include <wininternal.h>
 
 // TODOs:
-    // - Fix: Rank bounds
-    // - Add: STD timeline skip for Frame warping? Per-stage frame cap?
-    // - All the warps
-    // - Other TH6 hooks (check if needed)
-    // - THOverlay, Replays, Advanced Menu, etc.
-    // - Replace addresses that are members of static structs with static struct access (cf. GameManager)
     // - Correct spell translations to match NC (official TLs)
+    // - Backspace menu
+    // - Replays
+    // - Tracker
+    // - Advanced Menu
+    // - Add: STD timeline skip for Frame warping? Per-stage frame cap?
 
 using namespace TH06;
 using std::pair;
@@ -42,7 +41,7 @@ namespace TH06NC {
         Gui::GuiDrag<int32_t, ImGuiDataType_S32> mGraze{ TH_GRAZE, 0, 99999, 1, 10000 };
         Gui::GuiDrag<int32_t, ImGuiDataType_S32> mPoint{ TH_POINT, 0, 9999, 1, 1000 };
 
-        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mRank{ TH06_RANK, 0, 32, 1, 10, 10 };
+        Gui::GuiDrag<int32_t, ImGuiDataType_S32> mRank{ TH06_RANK, 0, 999, 1, 100 };
         Gui::GuiCombo mFakeShot{ TH06_FS, TH06_TYPE_SELECT };
         Gui::GuiCheckBox mGuaranteeTLB { TH06NC_TLB_LOCK };
 
@@ -52,7 +51,7 @@ namespace TH06NC {
             TH06_RANK, TH06_FS };
 
         float mStep = 10.0;
-        int32_t mDiffculty = -1;
+        int32_t mDifficulty = -1;
         uint8_t mShotType = 0;
 
         THGuiPrac() noexcept {
@@ -122,7 +121,7 @@ namespace TH06NC {
             case ENDBOSS:
                 if (mSection(TH_WARP_SELECT_FRAME[warpType],
                     th_sections_cba[stage + stgOffset][warpType - 2],
-                    th_sections_str[::Gui::LocaleGet()][mDiffculty]))
+                    th_sections_str[::Gui::LocaleGet()][mDifficulty]))
                     *mPhase = 0;
 
                 return th_sections_cba[stage][warpType - 2][*mSection];
@@ -137,7 +136,7 @@ namespace TH06NC {
             case SPELL:
                 if (mSection(TH_WARP_SELECT_FRAME[warpType - 1],
                     th_sections_cbt[stage + stgOffset][warpType - 5],
-                    th_sections_str[::Gui::LocaleGet()][mDiffculty]))
+                    th_sections_str[::Gui::LocaleGet()][mDifficulty]))
                     *mPhase = 0;
 
                 return th_sections_cbt[stage][warpType - 5][*mSection];
@@ -151,14 +150,25 @@ namespace TH06NC {
         }
 
         int prevStage = *mStage; //s1
-        void AdjustWarpSelection() {
+        void StageUpdate() {
             int stage = *mStage;
+
+            // Adjust warp selection
             int warpType = *mWarp;
 
             if (stage == 6) { // change to Ex (warp has 1 more option)
                 if (warpType >= TLB) *mWarp = warpType + 1;
             } else if (prevStage == 6) { // change from Ex (warp has 1 less option)
                 if (warpType >= TLB) *mWarp = warpType - 1; // if TLB was selected, it changes to End Boss
+            }
+
+            // Adjust rank if left on default value
+            int rank = *mRank;
+
+            if (stage == 6) {
+                if (rank == (mDifficulty > EASY ? NHL_RANK : EASY_RANK)) *mRank = EX_RANK;
+            } else if (prevStage == 6) {
+                if (rank == EX_RANK) *mRank = (mDifficulty > EASY ? NHL_RANK : EASY_RANK);
             }
 
             prevStage = stage;
@@ -170,7 +180,7 @@ namespace TH06NC {
 
             if (mStage()) {
                 *mSection = *mChapter = 0;
-                AdjustWarpSelection();
+                StageUpdate();
             }
 
             if (mode >= 2) {
@@ -198,7 +208,16 @@ namespace TH06NC {
                 mPower();
                 mGraze();
                 mPoint();
+
                 mRank();
+                uint32_t defaultRank = (stage == 6) ? EX_RANK : (mDifficulty == EASY ? EASY_RANK : NHL_RANK);
+                if (*mRank != defaultRank) {
+                    ImGui::SameLine();
+                    float size = ImGui::GetFrameHeight();
+
+                    if (ImGui::Button(S(TH06NC_RESET), ImVec2(size, size)))
+                        *mRank = defaultRank;
+                }
 
                 if (stage == 6 && warpType > MIDBOSS && warpType != FRAME && section < TH06NC_TLB1)
                     mGuaranteeTLB();
@@ -296,7 +315,20 @@ namespace TH06NC {
         __declspec(noinline) void OpenMenu() {
             SetFade(0.8f, 0.1f);
             Open();
-            mDiffculty = GAME_MANAGER->difficulty;
+
+            // Adjust rank if changed to/from easy with Ex not selected
+            uint32_t curDifficulty = GAME_MANAGER->difficulty;
+            if (mDifficulty != curDifficulty && *mStage != 6) {
+                int rank = *mRank;
+
+                if (curDifficulty == EASY) {
+                    if (rank == NHL_RANK) *mRank = EASY_RANK;
+                } else if(mDifficulty == EASY) {
+                    if (rank == EASY_RANK) *mRank = NHL_RANK;
+                }
+            }
+
+            mDifficulty = curDifficulty;
             mShotType = GAME_MANAGER->character * 2 + GAME_MANAGER->subShot;
         }
 
@@ -333,13 +365,16 @@ namespace TH06NC {
         __declspec(noinline) void CloseMenu() {
             Close();
             *mNavFocus = 0;
-            mDiffculty = -1;
+        }
+
+        __declspec(noinline) void ClosePracticeScreen() {
+            mDifficulty = -1;
         }
 
         __declspec(noinline) void RestoreDifficulty() {
             // ensure the game menu's difficulty is restored to what it was
             // when practice started (extra stage sets it to 4)
-            if (mDiffculty > -1) GAME_MANAGER->difficulty = mDiffculty;
+            if (mDifficulty > -1) GAME_MANAGER->difficulty = mDifficulty;
         }
     };
 
@@ -1036,7 +1071,7 @@ namespace TH06NC {
                 s6_boss_warp_skip_move();
                 ECLSetArgs(ecl, st6bsNon1HealthThreshold, pair{0, -1});
 
-                if (GAME_MANAGER->difficulty <= 1) {
+                if (GAME_MANAGER->difficulty <= NORMAL) {
                     ECLMakeIns(ecl, st6bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 61 }); // call sub 61 (non5 for N)
 
                     ECLDisable(ecl, st6bsNNon5ItemDrop);
@@ -1463,6 +1498,7 @@ namespace TH06NC {
 
     EHOOK_DY(th06nc_title_screen_transition, 0x4802e, 7, { // transition to title screen (main menu state 3)
         thPracParam.Reset();
+        THGuiPrac::singleton().ClosePracticeScreen();
         OG_INS(*(uint32_t*)(pCtx->Rsi + 0x168b0) = (uint32_t)pCtx->R10);
     })
 
@@ -1497,7 +1533,7 @@ namespace TH06NC {
         if (thPracParam.guaranteeTLB || (section >= TH06NC_TLB1 && section <= TH06NC_TLB3))
             GAME_MANAGER->spellCapsForTLB = 6;
 
-        if (GAME_MANAGER->difficulty != 4) { // avoid triggering score extends
+        if (GAME_MANAGER->difficulty != EXTRA) { // avoid triggering score extends
             if (thPracParam.score >= 60000000) GAME_MANAGER->scoreExtends = 4;
             else if (thPracParam.score >= 40000000) GAME_MANAGER->scoreExtends = 3;
             else if (thPracParam.score >= 20000000) GAME_MANAGER->scoreExtends = 2;
@@ -1653,12 +1689,6 @@ namespace TH06NC {
 
         // Hooks
         EnableAllHooks(THMainHook);
-        //th06_white_screen.Setup();
-        //th06_result_screen_create.Setup();
-        //th06_sfx_fix.Setup();
-        //th06_sfx_fix.Disable();
-        //th06_bomb_esc_r_prevent_desyncs.Setup();
-        //th06_bomb_esc_r_prevent_desyncs.Disable();
         th06nc_trigger_health_interrupt.Setup();
 
         // Reset thPracParam
@@ -1666,7 +1696,7 @@ namespace TH06NC {
     }
 
     HOOKSET_DEFINE(THInitHook)
-    EHOOK_DY(th06nc_gui_init_1, 0x4D0E5, 1, { // main menu ontick (TODO: TEST THIS)
+    EHOOK_DY(th06nc_gui_init_1, 0x4d0e5, 1, { // main menu ontick (TODO: TEST THIS)
         THGuiCreate();
         self->Disable();
         OG_INS(pCtx->Rip = PopHelper(pCtx));

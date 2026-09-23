@@ -21,10 +21,11 @@ enum th_glossary_t
     ALCOSTG_PRACTICE_MODE,
     ALCOSTG_TIME,
     ALCOSTG_TITLE,
-    TH06NC_ENHANCED_CHALLENGE,
-    TH06NC_ENHANCED_STANDARD,
+    TH06NC_CUSTOM_CHALLENGE,
+    TH06NC_CUSTOM_STANDARD,
     TH06NC_ORIGINAL_CHALLENGE,
     TH06NC_ORIGINAL_STANDARD,
+    TH06NC_RESET,
     TH06NC_TLB,
     TH06NC_TLB_LOCK,
     TH06_BOOKS,
@@ -1213,7 +1214,7 @@ enum th_glossary_t
     TH_YES,
 };
 
-extern const char* th_glossary_str[3][1203];
+extern const char* th_glossary_str[3][1204];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

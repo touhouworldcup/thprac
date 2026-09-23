@@ -46,6 +46,18 @@ namespace TH06NC {
         STAGE_ILLUST_TLB = 63,
     };
 
+    enum RANK_VALS {
+        EASY_RANK = 20,
+        NHL_RANK = 32,
+        EX_RANK = 18,
+    };
+
+    enum DIFFICULTY {
+        EASY, NORMAL,
+        HARD, LUNATIC,
+        EXTRA
+    };
+
     enum WARP_TYPE {
         NONE, CHAPTER,
         MIDBOSS, ENDBOSS, TLB,
