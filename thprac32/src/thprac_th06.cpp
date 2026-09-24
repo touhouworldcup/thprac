@@ -195,25 +195,25 @@ namespace TH06 {
         }
 
         GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
-        
+
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
         PATCH_HK(0x4277c2, "03"),
         PATCH_HK(0x42779a, "83c4109090")
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
         PATCH_HK(0x428DDC, "15")
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
         PATCH_HK(0x4289e3, "00")
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
         PATCH_HK(0x428B7D, "00"),
         PATCH_HK(0x428B67,"909090909090909090")
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
         PATCH_HK(0x412DD1, "eb"),
         EHOOK_HK(0x412e31, 5, { // freeze timeline progress during st1/2/4/5 mid (missing boss_wait)
@@ -221,10 +221,10 @@ namespace TH06 {
             if (st >= 5 || st == 2) return;
 
             constexpr uint32_t midStart[5] = { 2008, 2588, 0, 4132, 3374 };
-            constexpr uint32_t midLength[5] = { (24+24)*60, 32*60, 0, 40*60, (40+30)*60 };
-            constexpr uint32_t midExtraWait[5] = { 4*60, 15*60, 0, 12*60, 5*60 };
+            constexpr uint32_t midLength[5] = { (24+22)*60, 32*60, 0, 40*60, (40+30)*60 };
+            constexpr uint32_t midExtraWait[5] = { 4*60, 15*60, 0, 10*60, 5*60 };
 
-            const bool bossExists = GetMemContent<bool>((uintptr_t)(&ZUN_GUI->bossPresent));
+            const bool bossExists = ZUN_GUI->bossPresent;
             const uint32_t curTime = pCtx->Edx;
 
             if (bossExists && curTime >= midStart[st] && curTime < midStart[st] + midLength[st]) {
@@ -235,7 +235,7 @@ namespace TH06 {
             }
         })
         HOTKEY_ENDDEF();
-        
+
         HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
         PATCH_HK(0x428989, "EB1D"),
         PATCH_HK(0x4289B4, "85D2"),

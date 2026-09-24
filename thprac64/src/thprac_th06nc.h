@@ -11,6 +11,7 @@ namespace TH06NC {
         STAGE_BACKGROUND_ADDR = 0x509b60,
         WINDOW_WIDTH = 0xc21e44,
         WINDOW_HEIGHT = 0xc21e44 + 0x4,
+        BGM_ADDR = 0x50966c,
         HWND_PTR = 0x55e5a8,
         D3D_DEVICE_PTR = 0x9b1cf8,
         D3D_DEVICE_CONTEXT = 0x9b1d00,
@@ -23,11 +24,16 @@ namespace TH06NC {
         ENEMY_MANAGER_ADDR = 0xaa1e90,
         BOSS_PTR_ADDR = 0xbadf78,
         MAIN_MENU_ADDR = 0xc07240,
+        SUPERVISOR_ADDR = 0xc21970,
     };
 
     enum FUNCS {
         LOAD_ANM_FILE = 0x20b0,
         ANM_VM_SET_SPRITE = 0x2980,
+        BGM_PLAY = 0x7bc80,
+        BGM_STOP = 0x7f9c0,
+        BGM_RESUME = 0xc8110,
+        BGM_PAUSE = 0xcce50,
     };
 
     struct ECL_OP {
@@ -69,6 +75,12 @@ namespace TH06NC {
         return (WARP_TYPE)(warpType >= TLB ? warpType + 1 : warpType);
     }
 
+    // used for ECL patching & midboss timelock
+    constexpr uint32_t st1MidbossTime = 1882;
+    constexpr uint32_t st2MidbossTime = 2498;
+    constexpr uint32_t st4MidbossTime = 4058;
+    constexpr uint32_t st5MidbossTime = 3272;
+
     struct GameManager {
         char __unknown1[0x8];      // 0x0
         uint32_t spellCaps;        // 0x8
@@ -83,7 +95,8 @@ namespace TH06NC {
         int64_t actualScore;       // 0x938
         int64_t __unkScore;        // 0x940
         int64_t highScore;         // 0x948
-        char __unknown4[0x5];      // 0x950
+        char __unknown4[0x4];      // 0x950
+        int8_t inPracticeMode;     // 0x954
         int8_t inSpellPrac;        // 0x955
         char __unknown5[0x2];      // 0x956
         int8_t spellPracSpellNum;  // 0x958
@@ -112,6 +125,7 @@ namespace TH06NC {
     static_assert(offsetof(GameManager, visualScore) == 0x930);
     static_assert(offsetof(GameManager, actualScore) == 0x938);
     static_assert(offsetof(GameManager, highScore) == 0x948);
+    static_assert(offsetof(GameManager, inPracticeMode) == 0x954);
     static_assert(offsetof(GameManager, inSpellPrac) == 0x955);
     static_assert(offsetof(GameManager, spellPracSpellNum) == 0x958);
     static_assert(offsetof(GameManager, stagePointItems) == 0x95a);
@@ -160,6 +174,27 @@ namespace TH06NC {
         uint8_t selectedMode;     // 0x1ab7b
     };
 
+    struct ZUNGui {
+        char __unknown1[0x44]; // 0x0
+        uint8_t isBossPresent; // 0x44
+    };
+
+    struct Supervisor {
+        char __unknown1[0x42c]; // 0x0
+        uint32_t curState;      // 0x42c
+    };
+
+    enum SUPERVISOR_STATES {
+        RESTART_START = 0x0,
+        MAIN_MENU_EXIT = 0x1,
+        RUN_START = 0x2,
+        STAGE_TRANSITION = 0x3,
+        RUN_END_NO_ENDING = 0x7,
+        REPLAY_MENU_EXIT = 0x8,
+        RUN_END_ENDING = 0xa,
+        RESTART_END = 0xc,
+    };
+
     static_assert(offsetof(EnemyManager, timelineTime) == 0x10c0b8);
     static_assert(offsetof(Enemy, bossTimer) == 0x0);
     static_assert(offsetof(Enemy, eclTimer) == 0x40);
@@ -168,6 +203,8 @@ namespace TH06NC {
     static_assert(offsetof(StageBackground, is_frozen) == 0x68);
     static_assert(offsetof(StageBackground, timelineTime) == 0xb0);
     static_assert(offsetof(MainMenu, selectedMode) == 0x1ab7b);
+    static_assert(offsetof(ZUNGui, isBossPresent) == 0x44);
+    static_assert(offsetof(Supervisor, curState) == 0x42c);
 
     struct Player {
         char __unknown1[0x7858]; // 0x0

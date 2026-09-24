@@ -2256,7 +2256,7 @@ namespace TH18 {
                     else if (!boughtBefore && !cd->appearance_condition)
                         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.9f, 0.3f, 1.0f));
 
-                    CenteredText(oddText, cardWidth, usePercent, 0.8);
+                    CenteredText(oddText, cardWidth, usePercent, 0.8f);
 
                     if (shouldBuy || (cd->appearance_condition > 5 && !boughtBefore) || boughtCurrent)
                         ImGui::EndDisabled();

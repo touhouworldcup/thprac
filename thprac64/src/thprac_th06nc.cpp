@@ -3,7 +3,6 @@
 
 // TODOs:
     // - Correct spell translations to match NC (official TLs)
-    // - Backspace menu
     // - Replays
     // - Tracker
     // - Advanced Menu
@@ -14,16 +13,20 @@ using std::pair;
 
 namespace TH06NC {
     THPracParam thPracParam{};
+    intptr_t startBGM;
+
     GameManager* GAME_MANAGER;
     Player* PLAYER;
-    EnemyManager* ENEMY_MANAGER;
     StageBackground* STAGE_BACKGROUND;
+    void* ANM_MANAGER_PTR;
+    EnemyManager* ENEMY_MANAGER;
+    void* ECL_MANAGER;
+    ZUNGui* ZUN_GUI;
     Enemy** BOSS_PTR;
     MainMenu* MAIN_MENU;
-    void* ECL_MANAGER;
-    void* ANM_MANAGER_PTR;
-    void* ZUN_GUI;
+    Supervisor* SUPERVISOR;
 
+    // Practice Menu
     class THGuiPrac : public Gui::GameGuiWnd {
         Gui::GuiCombo mMode{ TH_MODE, TH06NC_MODE_SELECT };
         Gui::GuiCombo mStage{ TH_STAGE, TH_STAGE_SELECT };
@@ -192,7 +195,7 @@ namespace TH06NC {
                     *mSection = *mChapter = *mPhase = *mFrame = 0;
 
                 if (warpType) {
-                    if (stage == 3 && warpType > CHAPTER && fixType(warpType) != FRAME)
+                    if (stage == 3 && warpType > MIDBOSS && fixType(warpType) != FRAME)
                         mFakeShot();
 
                     section = SectionWidget(warpType);
@@ -378,6 +381,138 @@ namespace TH06NC {
         }
     };
 
+    // Overlay (Backspace Menu)
+    class THOverlay : public Gui::GameGuiWnd {
+        THOverlay() noexcept {
+            SetTitle("Mod Menu");
+            SetFade(0.5f, 0.5f);
+            SetSize(0.0f, 0.0f);
+            SetWndFlag(ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize
+                | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize
+                | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing
+                | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+        }
+        SINGLETON(THOverlay);
+
+    protected:
+        virtual void OnLocaleChange() override {
+            SetPosRel(0.006f, 0.01f);
+        }
+
+        virtual void OnPreUpdate() override {
+            if (mMenu(false) && !ImGui::IsAnyItemActive()) {
+                if (*mMenu) Open();
+                else Close();
+            }
+        }
+
+        virtual void OnContentUpdate() override {
+            bool inMainMenu = (GetMemContent(RVA(ECL_MANAGER_ADDR)) == 0);
+
+            mInvincible();
+            if (inMainMenu || GAME_MANAGER->mode != 1) mInfLives();
+            mInfBombs();
+            mInfPower();
+            mTimeLock();
+            mAutoBomb();
+            if (inMainMenu || GAME_MANAGER->inPracticeMode) mElBgm();
+        }
+
+        GuiHotKeyChord mMenu{ "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
+        HOTKEY_DEFINE(mInvincible, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(0x6aacf, NOP(5)),     // bullet hit | disable large white particle effect on hit
+        PATCH_HK(0x6aaf1 + 0x6, "00"), // bullet hit | keep player state to default (not pre-death)
+        PATCH_HK(0x6ad18, NOP(5)),     // laser hit | disable large white particle effect on hit
+        PATCH_HK(0x6ad3e + 0x6, "00")  // laser hit | keep player state to default (not pre-death)
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
+        PATCH_HK(0x68e88, NOP(6)) // disable lowering life cnt
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
+        PATCH_HK(0x68a7b, NOP(6)) // disable lowering bomb cnt
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
+        PATCH_HK(0x68baf, NOP(7)), // disable lowering power on death
+        PATCH_HK(0x68bbe, NOP(8)) // disable clamp to >= 8 for challenge mode
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
+        PATCH_HK(0x3816f, NOP(2)),
+        EHOOK_HK(0x381f9, 2, { // freeze timeline progress during st1/2/4/5 mid (missing boss_wait)
+            constexpr int32_t midStart[5] = { st1MidbossTime, st2MidbossTime, 0, st4MidbossTime, st5MidbossTime + 2 };
+            constexpr int32_t midLength[5] = { (24 + 22) * 60, 32 * 60, 0, 40 * 60, (40 + 30) * 60 };
+            constexpr int32_t midExtraWait[5] = { 4 * 60, 15 * 60, 0, 10 * 60, 5 * 60 };
+
+            const uint32_t st = GAME_MANAGER->stage - 1;
+            if (st < 6 && st != 2) {
+                const bool bossExists = ZUN_GUI->isBossPresent;
+                const int32_t stMidStart = midStart[st];
+                const int32_t curTime = (int32_t)pCtx->Rcx;
+
+                if (bossExists && curTime >= stMidStart && curTime < stMidStart + midLength[st]) {
+                    const int32_t noWaitTime = stMidStart + midExtraWait[st];
+
+                    if (curTime < noWaitTime) pCtx->Rcx = noWaitTime; // remove unnecessary wait
+                    return; // don't tick timeline
+                }
+            }
+
+            OG_INS(pCtx->Rcx += 1);
+        })
+        // tofix: - Rumia mid leaving, Daiyousei stops shooting, Meiling midspell becomes strange (OG eosd carryover, issue #339)
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
+        EHOOK_HK(0x689fa, 6, { // player checking for X input
+            uint16_t player_state = *(uint16_t*)(pCtx->Rdi + 0x7898);
+
+            if (player_state == 0x2) pCtx->Rip = RVA(0x68a11); // pre-death
+            OG_INS(else if (pCtx->EFlags & EFLAGS::ZF) pCtx->Rip = RVA(0x68ad2));
+        })
+        HOTKEY_ENDDEF();
+
+    public:
+        inline static intptr_t storedBGM;
+        static bool ShouldKeepBGM() {
+            uint32_t gameState = SUPERVISOR->curState;
+
+            if (!GAME_MANAGER->inPracticeMode) return false;
+            if (gameState != RESTART_END && gameState != RESTART_START) return false;
+            if (!thPracParam.mode) return false;
+            if (!thPracParam.section && thPracParam.frame < 60) return false;
+            if (*(int32_t*)RVA(BGM_ADDR) != startBGM) return false;
+
+            return true; // keep BGM
+        }
+
+        HOTKEY_DEFINE(mElBgm, TH_EL_BGM, "F7", VK_F7)
+        EHOOK_HK(0x3a313, 5, {  // disable bgm pause (on pause)
+            if (!GAME_MANAGER->inPracticeMode)
+                OG_INS(asm_call_rel<BGM_PAUSE, Stdcall>(pCtx->Rcx, 0));
+        }),
+        EHOOK_HK(0x3b6cb, 6, { // disable bgm stop (on stage end) when doing restart
+            if (ShouldKeepBGM()) {
+                int32_t curBGM = *(int32_t*)RVA(BGM_ADDR);
+                asm_call_rel<BGM_RESUME, Stdcall>(curBGM, 3); // resume bgm if it was paused (i.e. toggle on ElBgm after pausing)
+                storedBGM = curBGM;
+                pCtx->Rcx = -1;
+
+            } else OG_INS(pCtx->Rcx = *(int32_t*)RVA(BGM_ADDR)); // do stop
+        }),
+        EHOOK_HK(0x3b61b, 5, { // disable bgm start (on stage start) when doing restart
+            if (ShouldKeepBGM()) {
+                *(intptr_t*)RVA(BGM_ADDR) = storedBGM;
+                storedBGM = (intptr_t)nullptr;
+
+            } else OG_INS(asm_call_rel<BGM_PLAY, Stdcall>(pCtx->Rcx, pCtx->Rdx)); // do play
+        })
+        HOTKEY_ENDDEF();
+    };
+
 
     // ECL Patching Tools
     void THPatch(ECLHelper&, int32_t, th_sections_t);
@@ -474,8 +609,6 @@ namespace TH06NC {
 
         switch (stage) {
         case 0: { // Stage 1
-            constexpr uint32_t st1MidbossTime = 1882;
-
             auto s1_boss_warp_skip_move = [&]() {
                 constexpr uint32_t st1BossTime = 5093;
                 constexpr uint32_t st1BossMoveInterp = 0x1744;
@@ -533,7 +666,6 @@ namespace TH06NC {
         }
 
         case 1: { // Stage 2
-            constexpr uint32_t st2MidbossTime = 2498;
             constexpr uint32_t st2bsNon2TimeThreshold = 0x20f4;
 
             auto s2_boss_warp_skip_fadein = [&]() {
@@ -760,7 +892,6 @@ namespace TH06NC {
             }
 
             case TH06_ST4_MID1: { // Midboss
-                constexpr uint32_t st4MidbossTime = 4058;
                 ECLWarp(st4MidbossTime);
                 ecl << pair{ 0x24c0 + 0xc, 6942069 };
                 break;
@@ -863,7 +994,6 @@ namespace TH06NC {
         }
 
         case 4: { // Stage 5
-            constexpr uint32_t st5MidbossTime = 3272;
             constexpr uint32_t st5BossTime = 7604;
             constexpr uint32_t st5bsNon1FirstDelayedIns = 0x24a4;
 
@@ -1305,7 +1435,7 @@ namespace TH06NC {
                 constexpr uint32_t st7bsNon9TimeThreshold = 0x99ea;
                 constexpr uint32_t st7bsTimeoutTimeThreshold = 0x9c64;
                 constexpr uint32_t st7bsTimeoutStart = 0x9d50;
-                constexpr uint32_t st7bsTimeoutEnd = 0x9f78;
+                constexpr uint32_t st7bsTimeoutEnd = 0x9f90;
 
                 ex_boss_warp_skip_move();
                 ECLMakeIns(ecl, st7bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 81 }); // call sub 81 (non9)
@@ -1478,10 +1608,10 @@ namespace TH06NC {
         GameGuiBegin(IMPL_WIN32_DX11);
 
         /* Gui components update */
-        /* Gui::KeyboardInputUpdate(VK_ESCAPE); */
+        Gui::KeyboardInputUpdate(VK_ESCAPE);
         THGuiPrac::singleton().Update();
-        /* THGuiRep::singleton().Update();
         THOverlay::singleton().Update();
+        /* THGuiRep::singleton().Update();
 
         if (tracker_open && (GAME_MANAGER->isInGame || GAME_MANAGER->isInGameMenu || GAME_MANAGER->isInRetryMenu))
             THTrackerUpdate();*/
@@ -1512,6 +1642,7 @@ namespace TH06NC {
         //Gui::LocaleCreateFont(16.f * scale);  // <- seems needed, but makes the prac window disappear...
         ImGui::GetIO().DisplaySize = size;
         THGuiPrac::singleton().RefreshLocale();
+        THOverlay::singleton().RefreshLocale();
 
         OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
@@ -1520,7 +1651,9 @@ namespace TH06NC {
     EHOOK_DY(th06nc_patch_main, 0x3b69d, 1, { // end of GameManager::on_registration
         OG_INS(pCtx->Rip = PopHelper(pCtx));
         if (thPracParam.mode != 1) return;
+
         int32_t section = thPracParam.section;
+        startBGM = *(int32_t*)RVA(BGM_ADDR);
 
         GAME_MANAGER->curPower = thPracParam.power;
         GAME_MANAGER->actualScore = GAME_MANAGER->visualScore = thPracParam.score;
@@ -1610,11 +1743,13 @@ namespace TH06NC {
         int32_t section = thPracParam.section;
 
         if (thPracParam.mode && section && section < 10000 && !thPracParam.dlg) {
-            if (section >= TH06NC_TLB1) {
+            uint8_t bgmID = th_sections_bgm[section];
+
+            if (bgmID == 2) {
                 pCtx->Rdx += 0x100; // flan TLB theme
                 return;
 
-            } else if (th_sections_bgm[section]) {
+            } else if (bgmID) {
                 pCtx->Rdx += 0x80;
                 return;
             }
@@ -1636,7 +1771,10 @@ namespace TH06NC {
     })
 
     EHOOK_DY(th06nc_bgm_title_2, 0x3e74a, 8, { // before call to load BGM name ascii
-        if (thPracParam.section == TH06NC_TLB1 && thPracParam.dlg)
+        bool isTLBDialogueWarp = thPracParam.section == TH06NC_TLB1 && thPracParam.dlg;
+        bool isBGMKeptRestart = *THOverlay::singleton().mElBgm && THOverlay::ShouldKeepBGM();
+
+        if (isTLBDialogueWarp || isBGMKeptRestart)
             pCtx->Rip = RVA(0x3e757); // dont load it for TLB dialogue
 
         OG_INS(*(uint32_t*)(pCtx->Rsp + 0x20) = 0x10101);
@@ -1668,9 +1806,10 @@ namespace TH06NC {
         ANM_MANAGER_PTR = (void*)RVA(ANM_MANAGER_PTR_ADDR);
         ENEMY_MANAGER = (EnemyManager*)RVA(ENEMY_MANAGER_ADDR);
         ECL_MANAGER = (void*)RVA(ECL_MANAGER_ADDR);
-        ZUN_GUI = (void*)RVA(ZUN_GUI_ADDR);
+        ZUN_GUI = (ZUNGui*)RVA(ZUN_GUI_ADDR);
         BOSS_PTR = (Enemy**)RVA(BOSS_PTR_ADDR);
         MAIN_MENU = (MainMenu*)RVA(MAIN_MENU_ADDR);
+        SUPERVISOR = (Supervisor*)RVA(SUPERVISOR_ADDR);
 
         // Init
         GameGuiInit(IMPL_WIN32_DX11, RVA(D3D_DEVICE_PTR), RVA(HWND_PTR),
@@ -1683,9 +1822,9 @@ namespace TH06NC {
 
         // Gui components creation
         THGuiPrac::singleton();
+        THOverlay::singleton();
         //THPauseMenu::singleton();
         //THGuiRep::singleton();
-        //THOverlay::singleton();
 
         // Hooks
         EnableAllHooks(THMainHook);
