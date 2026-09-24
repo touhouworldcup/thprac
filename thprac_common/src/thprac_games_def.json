@@ -1052,13 +1052,13 @@
       "TH06_QED_30P": [ "剩余 30% 血量", "30% Health Left", "体力30%から" ],
 
       "TH06_ST4_FIRE1": [ "火符「火神之光」", "Fire Sign \"Agni Shine\"", "火符「アグニシャイン」" ],
-      "TH06_ST4_FIRE2": [ "火符「火神之光 上级」", "Fire Sign \"Agni Shine High Level\"", "火符「アグニシャイン上級」" ],
+      "TH06_ST4_FIRE2": [ "火符「火神之光 上级」", "Fire Sign \"Greater Agni Shine\"", "火符「アグニシャイン上級」" ],
       "TH06_ST4_FIRE3": [ "火符「火神之光辉」", "Fire Sign \"Agni Radiance\"", "火符「アグニレイディアンス」" ],
       "TH06_ST4_WOOD1": [ "木符「风灵角笛」", "Wood Sign \"Sylphy Horn\"", "木符「シルフィホルン」" ],
-      "TH06_ST4_WOOD2": [ "木符「风灵角笛 上级」", "Wood Sign \"Sylphy Horn High Level\"", "木符「シルフィホルン上級」" ],
+      "TH06_ST4_WOOD2": [ "木符「风灵角笛 上级」", "Wood Sign \"Greater Sylphy Horn\"", "木符「シルフィホルン上級」" ],
       "TH06_ST4_WOOD3": [ "木符「翠绿风暴」", "Wood Sign \"Green Storm\"", "木符「グリーンストーム」" ],
       "TH06_ST4_EARTH1": [ "土符「慵懒三石塔」", "Earth Sign \"Lazy Trilithon\"", "土符「レイジィトリリトン」" ],
-      "TH06_ST4_EARTH2": [ "土符「慵懒三石塔 上级」", "Earth Sign \"Lazy Trilithon High Level\"", "土符「レイジィトリリトン上級」" ],
+      "TH06_ST4_EARTH2": [ "土符「慵懒三石塔 上级」", "Earth Sign \"Greater Lazy Trilithon\"", "土符「レイジィトリリトン上級」" ],
       "TH06_ST4_EARTH3": [ "土符「三石塔的震动」", "Earth Sign \"Trilithon Shake\"", "土符「トリリトンシェイク」" ],
       "TH06_ST4_WATER1": [ "水符「水精公主」", "Water Sign \"Princess Undine\"", "水符「プリンセスウンディネ」" ],
       "TH06_ST4_WATER2": [ "水符「湖葬」", "Water Sign \"Bury In Lake\"", "水符「ベリーインレイク」" ],
@@ -1182,7 +1182,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 3, 2, 4 ],
-        "!HL": [ "幻符「华想梦葛」", "Illusion Sign \"Imaginary Flower Yumezakura\"", "幻符「華想夢葛」" ]
+        "!HL": [ "幻符「华想梦葛」", "Illusion Sign \"Imaginary Flower Yumekazura\"", "幻符「華想夢葛」" ]
       },
       "TH06_ST3_BOSS5": {
         "bgm": 1,
@@ -1277,8 +1277,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 5, 2, 2 ],
-        "!EN": [ "幻在「时钟遗骸」", "Illusion Existence \"Clock Corpse\"", "幻在「クロックコープス」" ],
-        "!HL": [ "幻幽「迷幻杰克」", "Illusion Phantom \"Jack the Ludo Bile\"", "幻幽「ジャック・ザ・ルドビレ」" ]
+        "!EN": [ "幻在「时钟遗骸」", "Illusionary Existence \"Clock Corpse\"", "幻在「クロックコープス」" ],
+        "!HL": [ "幻幽「迷幻杰克」", "Illusionary Phantom \"Jack the Ludo Bile\"", "幻幽「ジャック・ザ・ルドビレ」" ]
       },
       "TH06_ST5_BOSS3": {
         "bgm": 1,
@@ -1290,7 +1290,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 5, 2, 4 ],
-        "!EN": [ "幻象「月神之钟」", "Illusion Image \"Luna Clock\"", "幻象「ルナクロック」" ],
+        "!EN": [ "幻象「月神之钟」", "Illusionary Image \"Luna Clock\"", "幻象「ルナクロック」" ],
         "!HL": [ "幻世「世界」", "Illusion World \"The World\"", "幻世「ザ・ワールド」" ]
       },
       "TH06_ST5_BOSS5": {
@@ -1303,7 +1303,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 5, 2, 6 ],
-        "!EN": [ "女仆秘技「操弄玩偶」", "Maid Secret Skill \"Manipulating Doll\"", "メイド秘技「操りドール」" ],
+        "!EN": [ "女仆秘技「操弄玩偶」", "Maid Secret Skill \"Marionette Doll\"", "メイド秘技「操りドール」" ],
         "!HL": [ "女仆秘技「杀人玩偶」", "Maid Secret Skill \"Killing Doll\"", "メイド秘技「殺人ドール」" ]
       },
 
@@ -1329,8 +1329,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 6, 2, 2 ],
-        "!EN": [ "天罚「大卫之星」", "Heaven's Punishment \"Star of David\"", "天罰「スターオブダビデ」" ],
-        "!HL": [ "神罚「幼小的恶魔领主」", "God's Punishment \"Young Demon Lord\"", "神罰「幼きデーモンロード」" ]
+        "!EN": [ "天罚「大卫之星」", "Heaven's Punishment \"Star of Vanities\"", "天罰「スターオブダビデ」" ],
+        "!HL": [ "神罚「幼小的恶魔领主」", "Divine Punishment \"Young Demon Lord\"", "神罰「幼きデーモンロード」" ]
       },
       "TH06_ST6_BOSS3": {
         "bgm": 1,
@@ -1356,7 +1356,7 @@
         "spell": 1,
         "appearance": [ 6, 2, 6 ],
         "!EN": [ "诅咒「Vlad Tepes的诅咒」", "Curse \"Curse of Vlad Țepeș\"", "呪詛「ブラド・ツェペシュの呪い」" ],
-        "!HL": [ "神术「吸血鬼幻想」", "Divine Art \"Vampire Illusion\"", "神術「吸血鬼幻想」" ]
+        "!HL": [ "神术「吸血鬼幻想」", "Divine Art \"Vampiric Illusion\"", "神術「吸血鬼幻想」" ]
       },
       "TH06_ST6_BOSS7": {
         "bgm": 1,
@@ -1376,7 +1376,7 @@
         "spell": 1,
         "appearance": [ 6, 2, 9 ],
         "!EN": [ "「Red Magic」", "\"Red Magic\"", "「レッドマジック」" ],
-        "!HL": [ "「红色的幻想乡」", "\"Scarlet Gensokyo\"", "「紅色の幻想郷」" ]
+        "!HL": [ "「红色的幻想乡」", "\"Scarlet Gensoukyou\"", "「紅色の幻想郷」" ]
       },
 
       "TH06_ST7_MID1": {

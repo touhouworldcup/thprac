@@ -2,7 +2,7 @@
 #include <wininternal.h>
 
 // TODOs:
-    // - Correct spell translations to match NC (official TLs)
+    // - New version support
     // - Replays
     // - Tracker
     // - Advanced Menu
