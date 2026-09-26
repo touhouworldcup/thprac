@@ -1036,7 +1036,7 @@ void StageWarpsRender(stage_warps_t& warps, std::vector<unsigned int>& out_warp,
         out_warp.resize(level + 1);
 
     if (warps.section_param.size() <= out_warp[level]) {
-        out_warp[level] = warps.section_param.size() - 1;
+        out_warp[level] = (unsigned int)warps.section_param.size() - 1;
     }
 
     switch (warps.type) {

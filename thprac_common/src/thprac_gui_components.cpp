@@ -591,7 +591,7 @@ namespace Gui
         ComboSelect(out[level], choices, choices_count, labelStr);
 
         if (out[level]) {
-            ImGui::PushID(++level);
+            ImGui::PushID((int)++level);
             MultiComboSelectImpl(out, choices, choices_count, format, level);
             ImGui::PopID();
         }
