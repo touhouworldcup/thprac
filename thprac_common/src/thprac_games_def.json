@@ -1051,24 +1051,24 @@
       "TH06_BOOKS": [ "魔法阵", "Books", "魔導書" ],
       "TH06_QED_30P": [ "剩余 30% 血量", "30% Health Left", "体力30%から" ],
 
-      "TH06_ST4_FIRE1": [ "火符「火神之光」", "Fire Sign \"Agni Shine\"", "火符「アグニシャイン」" ],
-      "TH06_ST4_FIRE2": [ "火符「火神之光 上级」", "Fire Sign \"Greater Agni Shine\"", "火符「アグニシャイン上級」" ],
-      "TH06_ST4_FIRE3": [ "火符「火神之光辉」", "Fire Sign \"Agni Radiance\"", "火符「アグニレイディアンス」" ],
-      "TH06_ST4_WOOD1": [ "木符「风灵角笛」", "Wood Sign \"Sylphy Horn\"", "木符「シルフィホルン」" ],
-      "TH06_ST4_WOOD2": [ "木符「风灵角笛 上级」", "Wood Sign \"Greater Sylphy Horn\"", "木符「シルフィホルン上級」" ],
-      "TH06_ST4_WOOD3": [ "木符「翠绿风暴」", "Wood Sign \"Green Storm\"", "木符「グリーンストーム」" ],
-      "TH06_ST4_EARTH1": [ "土符「慵懒三石塔」", "Earth Sign \"Lazy Trilithon\"", "土符「レイジィトリリトン」" ],
-      "TH06_ST4_EARTH2": [ "土符「慵懒三石塔 上级」", "Earth Sign \"Greater Lazy Trilithon\"", "土符「レイジィトリリトン上級」" ],
-      "TH06_ST4_EARTH3": [ "土符「三石塔的震动」", "Earth Sign \"Trilithon Shake\"", "土符「トリリトンシェイク」" ],
-      "TH06_ST4_WATER1": [ "水符「水精公主」", "Water Sign \"Princess Undine\"", "水符「プリンセスウンディネ」" ],
-      "TH06_ST4_WATER2": [ "水符「湖葬」", "Water Sign \"Bury In Lake\"", "水符「ベリーインレイク」" ],
-      "TH06_ST4_METAL1": [ "金符「金属疲劳」", "Metal Sign \"Metal Fatigue\"", "金符「メタルファティーグ」" ],
-      "TH06_ST4_METAL2": [ "金符「银龙」", "Metal Sign \"Silver Dragon\"", "金符「シルバードラゴン」" ],
-      "TH06_ST4_FIRE_EARTH": [ "火&土符「环状熔岩带」", "Fire & Earth Sign \"Lava Cromlech\"", "火＆土符「ラーヴァクロムレク」" ],
-      "TH06_ST4_WATER_WOOD": [ "水&木符「水之精灵」", "Water & Wood Sign \"Water Elf\"", "水＆木符「ウォーターエルフ」" ],
-      "TH06_ST4_WOOD_FIRE": [ "木&火符「森林大火」", "Wood & Fire Sign \"Forest Blaze\"", "木＆火符「フォレストブレイズ」" ],
-      "TH06_ST4_EARTH_METAL": [ "土&金符「翡翠巨石」", "Earth & Metal Sign \"Emerald Megalith\"", "土＆金符「エメラルドメガリス」" ],
-      "TH06_ST4_METAL_WATER": [ "金&水符「水银之毒」", "Metal & Water Sign \"Mercury Poison\"", "金＆水符「マーキュリポイズン」" ]
+      "TH06_ST4_FIRE1": [ "火符「Agni Shine」(火神之光)", "Fire Sign \"Agni Shine\"", "火符「アグニシャイン」" ],
+      "TH06_ST4_FIRE2": [ "火符「Agni Shine 上级」(火神之光 上级)", "Fire Sign \"Greater Agni Shine\"", "火符「アグニシャイン上級」" ],
+      "TH06_ST4_FIRE3": [ "火符「Agni Radiance」(火神光辉)", "Fire Sign \"Agni Radiance\"", "火符「アグニレイディアンス」" ],
+      "TH06_ST4_WOOD1": [ "木符「Sylphy Horn」(风灵角笛)", "Wood Sign \"Sylphy Horn\"", "木符「シルフィホルン」" ],
+      "TH06_ST4_WOOD2": [ "木符「Sylphy Horn 上级」(风灵角笛 上级)", "Wood Sign \"Greater Sylphy Horn\"", "木符「シルフィホルン上級」" ],
+      "TH06_ST4_WOOD3": [ "木符「Green Storm」(翠绿风暴)", "Wood Sign \"Green Storm\"", "木符「グリーンストーム」" ],
+      "TH06_ST4_EARTH1": [ "土符「Lazy Trilithon」(慵懒三石塔)", "Earth Sign \"Lazy Trilithon\"", "土符「レイジィトリリトン」" ],
+      "TH06_ST4_EARTH2": [ "土符「Lazy Trilithon 上级」(慵懒三石塔 上级)", "Earth Sign \"Greater Lazy Trilithon\"", "土符「レイジィトリリトン上級」" ],
+      "TH06_ST4_EARTH3": [ "土符「Trilithon Shake」(三石塔的震动)", "Earth Sign \"Trilithon Shake\"", "土符「トリリトンシェイク」" ],
+      "TH06_ST4_WATER1": [ "水符「Princess Undine」(水精公主)", "Water Sign \"Princess Undine\"", "水符「プリンセスウンディネ」" ],
+      "TH06_ST4_WATER2": [ "水符「Bury In Lake」(湖葬)", "Water Sign \"Bury In Lake\"", "水符「ベリーインレイク」" ],
+      "TH06_ST4_METAL1": [ "金符「Metal Fatigue」(金属疲劳)", "Metal Sign \"Metal Fatigue\"", "金符「メタルファティーグ」" ],
+      "TH06_ST4_METAL2": [ "金符「Silver Dragon」(银龙)", "Metal Sign \"Silver Dragon\"", "金符「シルバードラゴン」" ],
+      "TH06_ST4_FIRE_EARTH": [ "火&土符「Lava Cromlech」(环状熔岩带)", "Fire & Earth Sign \"Lava Cromlech\"", "火＆土符「ラーヴァクロムレク」" ],
+      "TH06_ST4_WATER_WOOD": [ "水&木符「Water Elf」(水精灵)", "Water & Wood Sign \"Water Elf\"", "水＆木符「ウォーターエルフ」" ],
+      "TH06_ST4_WOOD_FIRE": [ "木&火符「Forest Blaze」(森林大火)", "Wood & Fire Sign \"Forest Blaze\"", "木＆火符「フォレストブレイズ」" ],
+      "TH06_ST4_EARTH_METAL": [ "土&金符「Emerald Megalith」(翡翠巨石)", "Earth & Metal Sign \"Emerald Megalith\"", "土＆金符「エメラルドメガリス」" ],
+      "TH06_ST4_METAL_WATER": [ "金&水符「Mercury Poison」(水银之毒)", "Metal & Water Sign \"Mercury Poison\"", "金＆水符「マーキュリポイズン」" ]
     },
 
     "sections": {
@@ -1082,7 +1082,7 @@
         "bgm": 0,
         "spell": 1,
         "appearance": [ 1, 1, 2 ],
-        "!HL": [ "月符「月光」", "Moon Sign \"Moonlight Ray\"", "月符「ムーンライトレイ」" ]
+        "!HL": [ "月符「Moonlight Ray」(月光)", "Moon Sign \"Moonlight Ray\"", "月符「ムーンライトレイ」" ]
       },
       "TH06_ST1_BOSS1": {
         "bgm": 1,
@@ -1094,7 +1094,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 1, 2, 2 ],
-        "!NHL": [ "夜符「夜雀」", "Night Sign \"Night Bird\"", "夜符「ナイトバード」" ]
+        "!NHL": [ "夜符「Night Bird」(夜雀)", "Night Sign \"Night Bird\"", "夜符「ナイトバード」" ]
       },
       "TH06_ST1_BOSS3": {
         "bgm": 1,
@@ -1106,7 +1106,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 1, 2, 4 ],
-        "!ENHL": [ "暗符「境界线」", "Darkness Sign \"Demarcation\"", "闇符「ディマーケイション」" ]
+        "!ENHL": [ "暗符「Demarcation」(境界线)", "Darkness Sign \"Demarcation\"", "闇符「ディマーケイション」" ]
       },
 
       "TH06_ST2_MID1": {
@@ -1125,8 +1125,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 2, 2, 2 ],
-        "!EN": [ "冰符「冰瀑」", "Ice Sign \"Icicle Fall\"", "氷符「アイシクルフォール」" ],
-        "!HL": [ "雹符「冰雹暴风」", "Hail Sign \"Hailstorm\"", "雹符「ヘイルストーム」" ]
+        "!EN": [ "冰符「Icicle Fall」(冰瀑)", "Ice Sign \"Icicle Fall\"", "氷符「アイシクルフォール」" ],
+        "!HL": [ "雹符「Hailstorm」(冰雹暴风)", "Hail Sign \"Hailstorm\"", "雹符「ヘイルストーム」" ]
       },
       "TH06_ST2_BOSS3": {
         "bgm": 1,
@@ -1138,13 +1138,13 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 2, 2, 4 ],
-        "!ENHL": [ "冻符「完美冻结」", "Freeze Sign \"Perfect Freeze\"", "凍符「パーフェクトフリーズ」" ]
+        "!ENHL": [ "冻符「Perfect Freeze」(完美冻结)", "Freeze Sign \"Perfect Freeze\"", "凍符「パーフェクトフリーズ」" ]
       },
       "TH06_ST2_BOSS5": {
         "bgm": 1,
         "spell": 1,
         "appearance": [ 2, 2, 5 ],
-        "!NHL": [ "雪符「钻石风暴」", "Snow Sign \"Diamond Blizzard\"", "雪符「ダイアモンドブリザード」" ]
+        "!NHL": [ "雪符「Diamond Blizzard」(钻石风暴)", "Snow Sign \"Diamond Blizzard\"", "雪符「ダイアモンドブリザード」" ]
       },
 
       "TH06_ST3_MID1": {
@@ -1158,7 +1158,7 @@
         "spell": 1,
         "appearance": [ 3, 1, 2 ],
         "!EN": [ "华符「芳华绚烂」", "Flower Sign \"Gorgeous Sweet Flower\"", "華符「芳華絢爛」" ],
-        "!HL": [ "华符「卷柏9」", "Flower Sign \"Selaginella 9\"", "華符「セラギネラ９」" ]
+        "!HL": [ "华符「Selaginella 9」(卷柏9)", "Flower Sign \"Selaginella 9\"", "華符「セラギネラ９」" ]
       },
       "TH06_ST3_BOSS1": {
         "bgm": 1,
@@ -1264,8 +1264,8 @@
         "bgm": 0,
         "spell": 1,
         "appearance": [ 5, 1, 2 ],
-        "!EN": [ "奇术「误导」", "Conjuring \"Misdirection\"", "奇術「ミスディレクション」" ],
-        "!HL": [ "奇术「幻惑误导」", "Conjuring \"Mesmerizing Misdirection\"", "奇術「幻惑ミスディレクション」" ]
+        "!EN": [ "奇术「Misdirection」(误导)", "Conjuring \"Misdirection\"", "奇術「ミスディレクション」" ],
+        "!HL": [ "奇术「幻惑Misdirection」(幻惑误导)", "Conjuring \"Mesmerizing Misdirection\"", "奇術「幻惑ミスディレクション」" ]
       },
       "TH06_ST5_BOSS1": {
         "bgm": 1,
@@ -1277,8 +1277,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 5, 2, 2 ],
-        "!EN": [ "幻在「时钟遗骸」", "Illusionary Existence \"Clock Corpse\"", "幻在「クロックコープス」" ],
-        "!HL": [ "幻幽「迷幻杰克」", "Illusionary Phantom \"Jack the Ludo Bile\"", "幻幽「ジャック・ザ・ルドビレ」" ]
+        "!EN": [ "幻在「Clock Corpse」(时钟遗骸)", "Illusionary Existence \"Clock Corpse\"", "幻在「クロックコープス」" ],
+        "!HL": [ "幻幽「Jack the Ludo Bile」(迷幻杰克)", "Illusionary Phantom \"Jack the Ludo Bile\"", "幻幽「ジャック・ザ・ルドビレ」" ]
       },
       "TH06_ST5_BOSS3": {
         "bgm": 1,
@@ -1290,8 +1290,8 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 5, 2, 4 ],
-        "!EN": [ "幻象「月神之钟」", "Illusionary Image \"Luna Clock\"", "幻象「ルナクロック」" ],
-        "!HL": [ "幻世「世界」", "Illusion World \"The World\"", "幻世「ザ・ワールド」" ]
+        "!EN": [ "幻象「Luna Clock」(月神之钟)", "Illusionary Image \"Luna Clock\"", "幻象「ルナクロック」" ],
+        "!HL": [ "幻世「The World」(世界)", "Illusion World \"The World\"", "幻世「ザ・ワールド」" ]
       },
       "TH06_ST5_BOSS5": {
         "bgm": 1,
@@ -1303,7 +1303,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 5, 2, 6 ],
-        "!EN": [ "女仆秘技「操弄玩偶」", "Maid Secret Skill \"Marionette Doll\"", "メイド秘技「操りドール」" ],
+        "!EN": [ "女仆秘技「提线玩偶」", "Maid Secret Skill \"Marionette Doll\"", "メイド秘技「操りドール」" ],
         "!HL": [ "女仆秘技「杀人玩偶」", "Maid Secret Skill \"Killing Doll\"", "メイド秘技「殺人ドール」" ]
       },
 
@@ -1317,7 +1317,7 @@
         "bgm": 0,
         "spell": 1,
         "appearance": [ 6, 1, 2 ],
-        "!NHL": [ "奇术「永恒的温柔」", "Conjuring \"Eternal Meek\"", "奇術「エターナルミーク」" ]
+        "!NHL": [ "奇术「Eternal Meek」(永恒的温柔)", "Conjuring \"Eternal Meek\"", "奇術「エターナルミーク」" ]
       },
       "TH06_ST6_BOSS1": {
         "bgm": 1,
@@ -1329,7 +1329,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 6, 2, 2 ],
-        "!EN": [ "天罚「大卫之星」", "Heaven's Punishment \"Star of Vanities\"", "天罰「スターオブダビデ」" ],
+        "!EN": [ "天罚「Star of Vanities」(虚荣之星)", "Heaven's Punishment \"Star of Vanities\"", "天罰「スターオブヴァニティーズ」" ],
         "!HL": [ "神罚「幼小的恶魔领主」", "Divine Punishment \"Young Demon Lord\"", "神罰「幼きデーモンロード」" ]
       },
       "TH06_ST6_BOSS3": {
@@ -1343,7 +1343,7 @@
         "spell": 1,
         "appearance": [ 6, 2, 4 ],
         "!EN": [ "冥符「红色的冥界」", "Nether Sign \"Scarlet Netherworld\"", "冥符「紅色の冥界」" ],
-        "!HL": [ "狱符「千根针的针山」", "Hell Sign \"Mountain of a Thousand Needles\"", "獄符「千本の針の山」" ]
+        "!HL": [ "狱符「千针山」", "Hell Sign \"Mountain of a Thousand Needles\"", "獄符「千本の針の山」" ]
       },
       "TH06_ST6_BOSS5": {
         "bgm": 1,
@@ -1355,7 +1355,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 6, 2, 6 ],
-        "!EN": [ "诅咒「Vlad Tepes的诅咒」", "Curse \"Curse of Vlad Țepeș\"", "呪詛「ブラド・ツェペシュの呪い」" ],
+        "!EN": [ "诅咒「弗拉德·采佩什的诅咒」", "Curse \"Curse of Vlad Țepeș\"", "呪詛「ブラド・ツェペシュの呪い」" ],
         "!HL": [ "神术「吸血鬼幻想」", "Divine Art \"Vampiric Illusion\"", "神術「吸血鬼幻想」" ]
       },
       "TH06_ST6_BOSS7": {
@@ -1368,28 +1368,28 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 6, 2, 8 ],
-        "!EN": [ "红符「深红射击」", "Scarlet Sign \"Scarlet Shoot\"", "紅符「スカーレットシュート」" ],
-        "!HL": [ "红符「绯红之主」", "Scarlet Sign \"Scarlet Meister\"", "紅符「スカーレットマイスタ」" ]
+        "!EN": [ "红符「Scarlet Shoot」(绯红射击)", "Scarlet Sign \"Scarlet Shoot\"", "紅符「スカーレットシュート」" ],
+        "!HL": [ "红符「Scarlet Meister」(绯红之主)", "Scarlet Sign \"Scarlet Meister\"", "紅符「スカーレットマイスタ」" ]
       },
       "TH06_ST6_BOSS9": {
         "bgm": 1,
         "spell": 1,
         "appearance": [ 6, 2, 9 ],
-        "!EN": [ "「Red Magic」", "\"Red Magic\"", "「レッドマジック」" ],
-        "!HL": [ "「红色的幻想乡」", "\"Scarlet Gensoukyou\"", "「紅色の幻想郷」" ]
+        "!EN": [ "「Red Magic」(红魔法)", "\"Red Magic\"", "「レッドマジック」" ],
+        "!HL": [ "「红色幻想乡」", "\"Scarlet Gensoukyou\"", "「紅色の幻想郷」" ]
       },
 
       "TH06_ST7_MID1": {
         "bgm": 0,
         "spell": 1,
         "appearance": [ 7, 1, 1 ],
-        "!X": [ "月符「沉静的月神」", "Moon Sign \"Silent Selene\"", "月符「サイレントセレナ」" ]
+        "!X": [ "月符「Silent Selene」(沉静的月神)", "Moon Sign \"Silent Selene\"", "月符「サイレントセレナ」" ]
       },
       "TH06_ST7_MID2": {
         "bgm": 0,
         "spell": 1,
         "appearance": [ 7, 1, 2 ],
-        "!X": [ "日符「皇家烈焰」", "Sun Sign \"Royal Flare\"", "日符「ロイヤルフレア」" ]
+        "!X": [ "日符「Royal Flare」(皇家烈焰)", "Sun Sign \"Royal Flare\"", "日符「ロイヤルフレア」" ]
       },
       "TH06_ST7_MID3": {
         "bgm": 0,
@@ -1407,7 +1407,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 2 ],
-        "!X": [ "禁忌「红莓陷阱」", "Taboo \"Cranberry Trap\"", "禁忌「クランベリートラップ」" ]
+        "!X": [ "禁忌「Cranberry Trap」(红莓陷阱)", "Taboo \"Cranberry Trap\"", "禁忌「クランベリートラップ」" ]
       },
       "TH06_ST7_END_NS2": {
         "bgm": 1,
@@ -1419,7 +1419,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 4 ],
-        "!X": [ "禁忌「莱瓦汀」", "Taboo \"Lævateinn\"", "禁忌「レーヴァテイン」" ]
+        "!X": [ "禁忌「Laevatein」(莱瓦汀)", "Taboo \"Lævateinn\"", "禁忌「レーヴァテイン」" ]
       },
       "TH06_ST7_END_NS3": {
         "bgm": 1,
@@ -1431,7 +1431,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 6 ],
-        "!X": [ "禁忌「四重存在」", "Taboo \"Four of a Kind\"", "禁忌「フォーオブアカインド」" ]
+        "!X": [ "禁忌「Four of a Kind」(四重存在)", "Taboo \"Four of a Kind\"", "禁忌「フォーオブアカインド」" ]
       },
       "TH06_ST7_END_NS4": {
         "bgm": 1,
@@ -1467,7 +1467,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 12 ],
-        "!X": [ "禁弹「星弧破碎」", "Forbidden Barrage \"Starbow Break\"", "禁弾「スターボウブレイク」" ]
+        "!X": [ "禁弹「Starbow Break」(星弧破碎)", "Forbidden Barrage \"Starbow Break\"", "禁弾「スターボウブレイク」" ]
       },
       "TH06_ST7_END_NS7": {
         "bgm": 1,
@@ -1479,7 +1479,7 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 14 ],
-        "!X": [ "禁弹「折反射」", "Forbidden Barrage \"Catadioptric\"", "禁弾「カタディオプトリック」" ]
+        "!X": [ "禁弹「Catadioptric」(折反射)", "Forbidden Barrage \"Catadioptric\"", "禁弾「カタディオプトリック」" ]
       },
       "TH06_ST7_END_NS8": {
         "bgm": 1,
@@ -1491,13 +1491,13 @@
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 16 ],
-        "!X": [ "禁弹「刻着过去的钟表」", "Forbidden Barrage \n\"Clock that Ticks Away the Past\"", "禁弾「過去を刻む時計」" ]
+        "!X": [ "禁弹「铭刻往昔之钟」", "Forbidden Barrage \n\"Clock that Ticks Away the Past\"", "禁弾「過去を刻む時計」" ]
       },
       "TH06_ST7_END_S9": {
         "bgm": 1,
         "spell": 1,
         "appearance": [ 7, 2, 17 ],
-        "!X": [ "秘弹「之后就一个人都没有了吗？」", "Secret Barrage \n\"And Then Will There Be None?\"", "秘弾「そして誰もいなくなるか？」" ]
+        "!X": [ "秘弹「无人生还？」", "Secret Barrage \n\"And Then Will There Be None?\"", "秘弾「そして誰もいなくなるか？」" ]
       },
       "TH06_ST7_END_S10": {
         "bgm": 1,
@@ -1778,7 +1778,7 @@
         "bgm": 2,
         "spell": 1,
         "appearance": [ 7, 3, 1 ],
-        "!X": [ "咒弹「易碎之翼」", "Cursed Barrage \"Fragile Wing\"", "呪弾「フラジャイルウィング」" ]
+        "!X": [ "咒弹「Fragile Wing」(易碎之翼)", "Cursed Barrage \"Fragile Wing\"", "呪弾「フラジャイルウィング」" ]
       },
       "TH06NC_TLB2": {
         "bgm": 2,
