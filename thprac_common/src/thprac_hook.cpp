@@ -15,7 +15,7 @@ void HookCtx::PatchSwap()
 {
     DWORD oldProt;
     VirtualProtect((LPVOID)this->addr, this->data.buffer.size, PAGE_EXECUTE_READWRITE, &oldProt);
-    memswap((void*)this->addr, this->data.buffer.ptr, this->data.buffer.size);
+    memswap((void*)this->addr, this->data.buffer.ptr, (unsigned int)this->data.buffer.size);
     VirtualProtect((LPVOID)this->addr, this->data.buffer.size, oldProt, &oldProt);
 }
 

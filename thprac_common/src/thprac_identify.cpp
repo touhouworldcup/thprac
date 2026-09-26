@@ -12,7 +12,8 @@ void DummyInit() {
 
 TH_INIT_FUNC_32_DECL(TH06Init);
 TH_INIT_FUNC_64_DECL(TH06CInit);
-TH_INIT_FUNC_64_DECL(TH06NCInit);
+TH_INIT_FUNC_64_DECL(TH06NC_v1_03a_Init);
+TH_INIT_FUNC_64_DECL(TH06NC_v1_03b_Init);
 TH_INIT_FUNC_32_DECL(TH07Init);
 TH_INIT_FUNC_32_DECL(TH08Init);
 TH_INIT_FUNC_32_DECL(TH09Init);
@@ -75,14 +76,25 @@ constexpr const THGameVersion gGameVersions[] = {
     },
     {
         .gameId = ID_TH06NC,
-        .initFunc = TH_INIT_FUNC_64(TH06NCInit),
+        .initFunc = TH_INIT_FUNC_64(TH06NC_v1_03a_Init),
         .has_vpatch = false,
         .has_oilp = false,
         .exeInfo = {
             .timeStamp = 0x6a9e3a91,
-            .textSize = 0x002bec00
+            .textSize = 0x2bec00
         },
         .oepCode = {0xc209, 0x6aae, 0x00ab, 0x4442, 0x0d45, 0x82c5, 0xae6f, 0xb632, 0xb6b6, 0x8686},
+    },
+    {
+        .gameId = ID_TH06NC,
+        .initFunc = TH_INIT_FUNC_64(TH06NC_v1_03b_Init),
+        .has_vpatch = false,
+        .has_oilp = false,
+        .exeInfo = {
+            .timeStamp = 0x6aa8420a,
+            .textSize = 0x2f3c00,
+        },
+        .oepCode = {0xc209, 0x6aae, 0x30ab, 0x4442, 0x0d45, 0x82c5, 0x6f83, 0xa160, 0xb733, 0xb5b5},
     },
     {
         .gameId = ID_TH07,
@@ -419,7 +431,8 @@ constexpr const THGameVersion gGameVersions[] = {
 static_assert(gGameVersions[VER_ALCOSTG].gameId == ID_ALCOSTG);
 static_assert(gGameVersions[VER_TH06].gameId == ID_TH06);
 static_assert(gGameVersions[VER_TH06C].gameId == ID_TH06);
-static_assert(gGameVersions[VER_TH06NC].gameId == ID_TH06NC);
+static_assert(gGameVersions[VER_TH06NC_V1_03A].gameId == ID_TH06NC);
+static_assert(gGameVersions[VER_TH06NC_V1_03B].gameId == ID_TH06NC);
 static_assert(gGameVersions[VER_TH07].gameId == ID_TH07);
 static_assert(gGameVersions[VER_TH075].gameId == ID_TH075);
 static_assert(gGameVersions[VER_TH08].gameId == ID_TH08);
@@ -474,10 +487,14 @@ const THKnownGame gKnownGames[] = {
         TYPE_ORIGINAL,
         { 0xd179f6c8, 0x0af9170,
             0xae99b942, 0x4c974b53 } },
-    { gGameVersions + VER_TH06NC,
+    { gGameVersions + VER_TH06NC_V1_03A,
         TYPE_ORIGINAL,
-        { 0x2e28dca2, 0x7645dff5, 
+        { 0x2e28dca2, 0x7645dff5,
             0x947defe8, 0xb3bc0d1f }},
+    { gGameVersions + VER_TH06NC_V1_03B,
+        TYPE_ORIGINAL,
+        { 0x1a3a6ce6, 0xccc72850,
+            0x36f07033, 0x42a6da5e }},
     { gGameVersions + VER_TH07,
         TYPE_ORIGINAL,
         { 0xd69a5df6, 0x4a78f383,
@@ -891,7 +908,8 @@ ExeInfo GetExeInfo(const uint8_t* mod, size_t len) {
 
 
 const THGameVersion* IdentifyExe(const uint8_t* buf, size_t len, ExeInfo* outInfo) {
-    auto exe_info = GetExeInfo(buf, len);
+    ExeInfo exe_info = GetExeInfo(buf, len);
+
     if (outInfo) {
         *outInfo = exe_info;
     }
@@ -956,11 +974,11 @@ void GetExeOepCode(const uint8_t* mod, size_t len, uint16_t (&outOep)[10]) {
 
 bool IdentifyKnownGame(THKnownGame& out, uint16_t (&outOepCode)[10], const uint8_t* buf, size_t size, ExeInfo* outInfo) {
     out.ver = IdentifyExe(buf, size, outInfo);
-    if (!out.ver) {
-        return false;
-    }
+    if (!out.ver) return false;
+
     MetroHash128::Hash(buf, size, (uint8_t*)out.metroHash);
     GetExeOepCode(buf, size, outOepCode);
+
     for (const auto& known : gKnownGames) {
         if (known.metroHash[0] == out.metroHash[0] &&
             known.metroHash[1] == out.metroHash[1] &&

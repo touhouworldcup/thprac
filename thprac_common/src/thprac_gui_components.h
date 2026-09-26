@@ -701,7 +701,8 @@ __forceinline int MultiButtonsFillWindow(double height, Args... args) {
 void ProgressBar(float prog, const char* text, const char* textEnd = nullptr);
 }
 
-#define HOTKEY_DEFINE(name, txt, keytxt, vkey) ::GuiHotKey name { txt, keytxt, vkey, make_hook_array<
+#define HOTKEY_DEFINE(name, txt, keytxt, vkey) ::GuiHotKey name { txt, keytxt, vkey, false, make_hook_array<
+#define HOTKEY_DEFINE_RT(name, txt, keytxt, vkey) ::GuiHotKey name { txt, keytxt, vkey, true, make_hook_array<
 
 #if __INTELLISENSE__
 #define PATCH_HK(addr_, code_) HookCtx { .data = PatchData() }

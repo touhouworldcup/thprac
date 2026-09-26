@@ -2,7 +2,6 @@
 #include <wininternal.h>
 
 // TODOs:
-    // - New version support
     // - Replays
     // - Tracker
     // - Advanced Menu
@@ -392,6 +391,14 @@ namespace TH06NC {
                 | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing
                 | ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
+
+            mInvincible.SetupHooksRT(GetHookAddr);
+            mInfLives.SetupHooksRT(GetHookAddr);
+            mInfBombs.SetupHooksRT(GetHookAddr);
+            mInfPower.SetupHooksRT(GetHookAddr);
+            mTimeLock.SetupHooksRT(GetHookAddr);
+            mAutoBomb.SetupHooksRT(GetHookAddr);
+            mElBgm.SetupHooksRT(GetHookAddr);
         }
         SINGLETON(THOverlay);
 
@@ -408,7 +415,7 @@ namespace TH06NC {
         }
 
         virtual void OnContentUpdate() override {
-            bool inMainMenu = (GetMemContent(RVA(ECL_MANAGER_ADDR)) == 0);
+            bool inMainMenu = (GetMemContent(ECL_MANAGER_ADDR) == 0);
 
             mInvincible();
             if (inMainMenu || GAME_MANAGER->mode != 1) mInfLives();
@@ -420,29 +427,30 @@ namespace TH06NC {
         }
 
         GuiHotKeyChord mMenu{ "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
-        HOTKEY_DEFINE(mInvincible, TH_MUTEKI, "F1", VK_F1)
-        PATCH_HK(0x6aacf, NOP(5)),     // bullet hit | disable large white particle effect on hit
-        PATCH_HK(0x6aaf1 + 0x6, "00"), // bullet hit | keep player state to default (not pre-death)
-        PATCH_HK(0x6ad18, NOP(5)),     // laser hit | disable large white particle effect on hit
-        PATCH_HK(0x6ad3e + 0x6, "00")  // laser hit | keep player state to default (not pre-death)
+
+        HOTKEY_DEFINE_RT(mInvincible, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(BULLET_HIT_BIG_PARTICLE, NOP(5)),
+        PATCH_HK(BULLET_HIT_SET_PLY_STATE, "00"), // default state (not pre-death)
+        PATCH_HK(LASER_HIT_BIG_PARTICLE, NOP(5)),
+        PATCH_HK(LASER_HIT_SET_PLY_STATE, "00") // default state (not pre-death)
         HOTKEY_ENDDEF();
 
-        HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
-        PATCH_HK(0x68e88, NOP(6)) // disable lowering life cnt
+        HOTKEY_DEFINE_RT(mInfLives, TH_INFLIVES, "F2", VK_F2)
+        PATCH_HK(LIFE_CNT_DECREASE, NOP(6))
         HOTKEY_ENDDEF();
 
-        HOTKEY_DEFINE(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
-        PATCH_HK(0x68a7b, NOP(6)) // disable lowering bomb cnt
+        HOTKEY_DEFINE_RT(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
+        PATCH_HK(BOMB_CNT_DECREASE, NOP(6))
         HOTKEY_ENDDEF();
 
-        HOTKEY_DEFINE(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(0x68baf, NOP(7)), // disable lowering power on death
-        PATCH_HK(0x68bbe, NOP(8)) // disable clamp to >= 8 for challenge mode
+        HOTKEY_DEFINE_RT(mInfPower, TH_INFPOWER, "F4", VK_F4)
+        PATCH_HK(POWER_DECREASE, NOP(7)),
+        PATCH_HK(POWER_MIN_CHALLENGE_MODE, NOP(8))
         HOTKEY_ENDDEF();
 
-        HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
-        PATCH_HK(0x3816f, NOP(2)),
-        EHOOK_HK(0x381f9, 2, { // freeze timeline progress during st1/2/4/5 mid (missing boss_wait)
+        HOTKEY_DEFINE_RT(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
+        PATCH_HK(ENEMY_MGR_TICK_BOSS_TIME, NOP(2)),
+        EHOOK_HK(ENEMY_MGR_TICK_TIMELINE, 2, { // freeze timeline progress during st1/2/4/5 mid (missing boss_wait)
             constexpr int32_t midStart[5] = { st1MidbossTime, st2MidbossTime, 0, st4MidbossTime, st5MidbossTime + 2 };
             constexpr int32_t midLength[5] = { (24 + 22) * 60, 32 * 60, 0, 40 * 60, (40 + 30) * 60 };
             constexpr int32_t midExtraWait[5] = { 4 * 60, 15 * 60, 0, 10 * 60, 5 * 60 };
@@ -466,12 +474,12 @@ namespace TH06NC {
         // tofix: - Rumia mid leaving, Daiyousei stops shooting, Meiling midspell becomes strange (OG eosd carryover, issue #339)
         HOTKEY_ENDDEF();
 
-        HOTKEY_DEFINE(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
-        EHOOK_HK(0x689fa, 6, { // player checking for X input
+        HOTKEY_DEFINE_RT(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
+        EHOOK_HK(BOMB_INPUT_CHECK, 6, {
             uint16_t player_state = *(uint16_t*)(pCtx->Rdi + 0x7898);
 
-            if (player_state == 0x2) pCtx->Rip = RVA(0x68a11); // pre-death
-            OG_INS(else if (pCtx->EFlags & EFLAGS::ZF) pCtx->Rip = RVA(0x68ad2));
+            if (player_state == 0x2) pCtx->Rip = BOMB_INPUT_CHECK_PASS; // pre-death state
+            OG_INS(else if (pCtx->EFlags & EFLAGS::ZF) pCtx->Rip = BOMB_INPUT_CHECK_FAIL);
         })
         HOTKEY_ENDDEF();
 
@@ -484,31 +492,31 @@ namespace TH06NC {
             if (gameState != RESTART_END && gameState != RESTART_START) return false;
             if (!thPracParam.mode) return false;
             if (!thPracParam.section && thPracParam.frame < 60) return false;
-            if (*(int32_t*)RVA(BGM_ADDR) != startBGM) return false;
+            if (*(int32_t*)BGM_ADDR != startBGM) return false;
 
             return true; // keep BGM
         }
 
-        HOTKEY_DEFINE(mElBgm, TH_EL_BGM, "F7", VK_F7)
-        EHOOK_HK(0x3a313, 5, {  // disable bgm pause (on pause)
+        HOTKEY_DEFINE_RT(mElBgm, TH_EL_BGM, "F7", VK_F7)
+        EHOOK_HK(PAUSE_MENU_BGM_PAUSE, 5, {
             if (!GAME_MANAGER->inPracticeMode)
-                OG_INS(asm_call_rel<BGM_PAUSE, Stdcall>(pCtx->Rcx, 0));
+                OG_INS(BGM_PAUSE(pCtx->Rcx, 0));
         }),
-        EHOOK_HK(0x3b6cb, 6, { // disable bgm stop (on stage end) when doing restart
+        EHOOK_HK(GAME_MGR_END_PAUSE_BGM, 6, {
             if (ShouldKeepBGM()) {
-                int32_t curBGM = *(int32_t*)RVA(BGM_ADDR);
-                asm_call_rel<BGM_RESUME, Stdcall>(curBGM, 3); // resume bgm if it was paused (i.e. toggle on ElBgm after pausing)
+                int32_t curBGM = *(int32_t*)BGM_ADDR;
+                BGM_RESUME(curBGM, 3); // resume bgm if it was paused (i.e. toggle on ElBgm after pausing)
                 storedBGM = curBGM;
                 pCtx->Rcx = -1;
 
-            } else OG_INS(pCtx->Rcx = *(int32_t*)RVA(BGM_ADDR)); // do stop
+            } else OG_INS(pCtx->Rcx = *(int32_t*)BGM_ADDR); // do stop
         }),
-        EHOOK_HK(0x3b61b, 5, { // disable bgm start (on stage start) when doing restart
+        EHOOK_HK(GAME_MGR_REG_PLAY_BGM, 5, { // disable bgm start (on stage start) when doing restart
             if (ShouldKeepBGM()) {
-                *(intptr_t*)RVA(BGM_ADDR) = storedBGM;
+                *(intptr_t*)BGM_ADDR = storedBGM;
                 storedBGM = (intptr_t)nullptr;
 
-            } else OG_INS(asm_call_rel<BGM_PLAY, Stdcall>(pCtx->Rcx, pCtx->Rdx)); // do play
+            } else OG_INS(BGM_PLAY(pCtx->Rcx, pCtx->Rdx)); // do play
         })
         HOTKEY_ENDDEF();
     };
@@ -532,8 +540,8 @@ namespace TH06NC {
     }
 
     void PostStartWarpAdjustments() {
-        *(uint8_t*)(*(uintptr_t*)RVA(0xA6EC08) + 0xa24) = 2; // hide stage logo/title
-        *(uint8_t*)(GetMemAddr<uintptr_t>(RVA(0x4ff2b8), 0x38, 0x480) + 0xef) = 255; // show stage HUD illustration
+        *(uint8_t*)(ZUN_GUI->stageLogo + 0xa24) = 2; // hide stage logo/title
+        *(uint8_t*)(*(uintptr_t*)((uintptr_t)ZUN_GUI + 0x38) + 0x480 + 0xef) = 255; // show stage HUD illustration
 
         // disable iframes
         PLAYER->player_state = 0;
@@ -582,7 +590,7 @@ namespace TH06NC {
     int32_t healthOverride;
     int32_t triggerFrame;
 
-    EHOOK_ST(th06nc_trigger_health_interrupt, 0x36f12, 1, { // end of timeline ECL ontick
+    EHOOK_ST(th06nc_trigger_health_interrupt, ECL_TIMELINE_RET, 1, { // end of timeline ECL ontick
         Enemy* boss = *BOSS_PTR;
 
         if (boss && boss->bossTimer.current >= triggerFrame) {
@@ -600,7 +608,7 @@ namespace TH06NC {
     }
 
     void LoadANMFile(const char* filename, int32_t anmID, int32_t spriteIndexOffset) {
-        asm_call_rel<LOAD_ANM_FILE, Thiscall>(ANM_MANAGER_PTR, anmID, filename, spriteIndexOffset);
+        LOAD_ANM_FILE(ANM_MANAGER_PTR, anmID, filename, spriteIndexOffset);
     }
 
     // ECL Patching
@@ -1263,7 +1271,7 @@ namespace TH06NC {
                 ECLDisable(ecl, st7TLBInstantEnmCreate);
 
                 uintptr_t difficultyVM = GetMemAddr((uintptr_t)ZUN_GUI + 0x38, 0x28e0);
-                asm_call_rel<ANM_VM_SET_SPRITE, Thiscall>(*(uintptr_t*)ANM_MANAGER_PTR, difficultyVM, 0x647);
+                ANM_VM_SET_SPRITE(*(uintptr_t*)ANM_MANAGER_PTR, difficultyVM, 0x647);
             };
 
             auto ex_adjust_times = [&](uint32_t start, uint32_t end, int32_t skipTo, int32_t startDelay = 0) {
@@ -1541,8 +1549,8 @@ namespace TH06NC {
     }
 
     ImVec2 GetWindowSize() {
-        float windowWidth = (float)GetMemContent<int32_t>(RVA(WINDOW_WIDTH));
-        float windowHeight = (float)GetMemContent<int32_t>(RVA(WINDOW_HEIGHT));
+        float windowWidth = (float)GetMemContent<int32_t>(WINDOW_WIDTH);
+        float windowHeight = (float)GetMemContent<int32_t>(WINDOW_HEIGHT);
         return { windowWidth, windowHeight };
     }
 
@@ -1557,82 +1565,80 @@ namespace TH06NC {
     HOOKSET_DEFINE(THMainHook)
 
     // Prac Menu UX
-    EHOOK_DY(th06nc_skip_prac_mode, 0x4bbd5, 6, { // subshot select confirm input, writing next state
-        uintptr_t rsi = pCtx->Rsi;
-        bool inPractice = GetMemContent<bool>(rsi + 0x168d1);
+    EHOOK_DY(th06nc_skip_prac_mode, MENU_SET_PRAC_STATE, 6, { // subshot select confirm input, writing next state
+        MainMenu* mainMenu = (MainMenu*)pCtx->Rsi;
 
-        if (inPractice) {
-            *(uint32_t*)(rsi + 0x168b0) = 0x18; // start prompt
+        if (mainMenu->inPractice) {
+            mainMenu->curState = 0x18; // start prompt state
             pCtx->Rdx = -1; // prevent triggering unwanted interrupts (ty to zero318 for insight)
             THGuiPrac::singleton().OpenMenu();
         }
-        else OG_INS(*(uint32_t*)(rsi + 0x168b0) = (uint32_t)pCtx->Rdx);
+        else OG_INS(mainMenu->curState = (uint32_t)pCtx->Rdx);
     })
 
-    EHOOK_DY(th06nc_skip_prac_mode_2, 0x4bc46, 5, { // after setting -1 interrupts
+    EHOOK_DY(th06nc_skip_prac_mode_2, MENU_SET_PRAC_STATE_2, 5, { // after setting -1 interrupts
         if (pCtx->Rdx == -1) pCtx->Rdx = 0x18;
     })
 
-    EHOOK_DY(th06nc_cancel_prac, 0x4c2ba, 6, { // start prompt back input, writing next state
-        uintptr_t rsi = pCtx->Rsi;
-        bool inPractice = GetMemContent<bool>(rsi + 0x168d1);
+    EHOOK_DY(th06nc_cancel_prac, MENU_CANCEL_CONFIRM_STATE, 6, { // start prompt back input, writing next state
+        MainMenu* mainMenu = (MainMenu*)pCtx->Rsi;
 
-        if (inPractice) {
-            pCtx->Rip = RVA(0x4be03); // pretend we just exited mode selection
+        if (mainMenu->inPractice) {
+            pCtx->Rip = MENU_SET_SUBSHOT_SEL_STATE; // pretend we just exited mode selection
             THGuiPrac::singleton().CloseMenu();
         }
-        else OG_INS(pCtx->Rax = *(uint32_t*)(rsi + 0x168cc));
+        else OG_INS(pCtx->Rax = *(uint32_t*)(pCtx->Rsi + 0x168cc));
     })
 
-    EHOOK_DY(th06nc_confirm_prac, 0x4c474, 10, { // start prompt confirm input
-        uintptr_t rsi = pCtx->Rsi;
-        bool inPractice = GetMemContent<bool>(rsi + 0x168d1);
+    EHOOK_DY(th06nc_confirm_prac, MENU_SET_CONFIRMED_STATE, 10, { // start prompt confirm input
+        MainMenu* mainMenu = (MainMenu*)pCtx->Rsi;
 
-        if (inPractice) {
+        if (mainMenu->inPractice) {
             THGuiPrac::singleton().ConfirmMenu();
             GAME_MANAGER->stage = thPracParam.stage;
-            MAIN_MENU->selectedMode = thPracParam.gameMode;
+            SUPERVISOR->curMode = thPracParam.gameMode;
         }
-        OG_INS(*(uint32_t*)(rsi + 0x168b0) = 0x19);
+        OG_INS(mainMenu->curState = 0x19);
     })
 
-    EHOOK_DY(th06nc_setup_prac_screen, 0x4b062, 5, { // first check of difficulty upon returning to prac menu
-        bool inPractice = GetMemContent<bool>(pCtx->Rsi + 0x168d1);
-        if (inPractice) THGuiPrac::singleton().RestoreDifficulty();
+    EHOOK_DY(th06nc_setup_prac_screen, MENU_LOAD_DIFF_CHECK, 5, { // first check of difficulty upon returning to prac menu
+        MainMenu* mainMenu = (MainMenu*)pCtx->Rsi;
+        if (mainMenu->inPractice) THGuiPrac::singleton().RestoreDifficulty();
 
         OG_INS(pCtx->Rcx = 0xad);
     })
 
-    // Core Hooks
-    EHOOK_DY(th06nc_update, 0x3bf59, 1, { // end of run_all_on_tick
+    // Core Hooks 
+    EHOOK_DY(th06nc_update, POST_ON_TICK, 1, { // end of run_all_on_tick
         GameGuiBegin(IMPL_WIN32_DX11);
 
-        /* Gui components update */
+        // Gui components update
         Gui::KeyboardInputUpdate(VK_ESCAPE);
         THGuiPrac::singleton().Update();
         THOverlay::singleton().Update();
-        /* THGuiRep::singleton().Update();
+        // THGuiRep::singleton().Update();
 
-        if (tracker_open && (GAME_MANAGER->isInGame || GAME_MANAGER->isInGameMenu || GAME_MANAGER->isInRetryMenu))
-            THTrackerUpdate();*/
+        // if (tracker_open && (GAME_MANAGER->isInGame || GAME_MANAGER->isInGameMenu || GAME_MANAGER->isInRetryMenu))
+        //     THTrackerUpdate();
 
         //GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
         GameGuiEnd(THGuiPrac::singleton().IsOpen());
         OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
 
-    EHOOK_DY(th06nc_render, 0x3c257, 1, {  // end of run_all_on_draw
+    EHOOK_DY(th06nc_render, POST_ON_DRAW, 1, {  // end of run_all_on_draw
         GameGuiRender(IMPL_WIN32_DX11);
         OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
 
-    EHOOK_DY(th06nc_title_screen_transition, 0x4802e, 7, { // transition to title screen (main menu state 3)
+    EHOOK_DY(th06nc_title_screen_transition, MENU_SET_TITLE_STATE, 7, { // transition to title screen (main menu state 3)
         thPracParam.Reset();
         THGuiPrac::singleton().ClosePracticeScreen();
         OG_INS(*(uint32_t*)(pCtx->Rsi + 0x168b0) = (uint32_t)pCtx->R10);
     })
 
-    EHOOK_DY(th06nc_resolution_change, 0x7c848, 1, { // window dimensions have changed
+
+    EHOOK_DY(th06nc_resolution_change, POST_DIMENSION_CHANGE, 1, { // window dimensions have changed
         ImVec2 size = GetWindowSize();
         float scale = GetWindowScale();
 
@@ -1647,13 +1653,14 @@ namespace TH06NC {
         OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
 
+
     // On Prac (Re)Start
-    EHOOK_DY(th06nc_patch_main, 0x3b69d, 1, { // end of GameManager::on_registration
+    EHOOK_DY(th06nc_patch_main, GAME_MANAGER_REGISTERED, 1, { // end of GameManager::on_registration
         OG_INS(pCtx->Rip = PopHelper(pCtx));
         if (thPracParam.mode != 1) return;
 
         int32_t section = thPracParam.section;
-        startBGM = *(int32_t*)RVA(BGM_ADDR);
+        startBGM = *(int32_t*)BGM_ADDR;
 
         GAME_MANAGER->curPower = thPracParam.power;
         GAME_MANAGER->actualScore = GAME_MANAGER->visualScore = thPracParam.score;
@@ -1674,22 +1681,22 @@ namespace TH06NC {
         }
 
         if (section) THSectionPatch();
-        else if (int32_t frame = thPracParam.frame) {
+        else if(int32_t frame = thPracParam.frame) {
             if (frame > 60) PostStartWarpAdjustments();
             ECLWarp(frame);
         }
     })
 
-    EHOOK_DY(th06nc_patchouli_fakeshot, 0x23a1d, 6, { // retrieving shottype ID in ECL
+    EHOOK_DY(th06nc_patchouli_fakeshot, ECL_RETRIEVE_SHOT_ID, 6, { // retrieving shottype ID in ECL
         if (thPracParam.mode && thPracParam.fakeType)
-            *(int32_t*)RVA(0xa6ebbc) = thPracParam.fakeType - 1;
+            *(int32_t*)ECL_PLAYER_SHOT = thPracParam.fakeType - 1;
         else
-            OG_INS(*(int32_t*)RVA(0xa6ebbc) = (int32_t)pCtx->Rcx);
+            OG_INS(*(int32_t*)ECL_PLAYER_SHOT = (int32_t)pCtx->Rcx);
     })
 
-    EHOOK_DY(th06nc_patchouli_fakeshot_2, 0x333d0, 4, {  // retrieving patchy's last 3 spells
+    EHOOK_DY(th06nc_patchouli_fakeshot_2, FUNCSET_PATCHY_GET_LAST3, 4, {  // retrieving patchy's last 3 spells
         if (thPracParam.mode && thPracParam.fakeType) {
-            uintptr_t patchyLastSpellsEntry = RVA(PATCHY_LAST_SPELLS_TABLE) + (thPracParam.fakeType - 1) * 0xc;
+            uintptr_t patchyLastSpellsEntry = PATCHY_LAST_SPELLS_TABLE + (thPracParam.fakeType - 1) * 0xc;
 
             *(int32_t*)(pCtx->R8 + 0x4c) = GetMemContent<int32_t>(patchyLastSpellsEntry);
             *(int32_t*)(pCtx->R8 + 0x50) = GetMemContent<int32_t>(patchyLastSpellsEntry + 0x4);
@@ -1698,25 +1705,21 @@ namespace TH06NC {
         else OG_INS(*(int32_t*)(pCtx->R8 + 0x54) = (int32_t)pCtx->Rax);
     })
 
-    EHOOK_DY(th06nc_qed_phase_warp, 0x35864, 7, { // QED retrieving boss health (or 0 if timer is under 2min)
+    EHOOK_DY(th06nc_qed_phase_warp, FUNCSET_QED_GET_HEALTH, 7, { // QED retrieving boss health (or 0 if timer is under 2min)
         const Enemy* flandre = (Enemy*)pCtx->Rcx;
 
-        if (thPracParam.mode && thPracParam.phase == 2)
-            pCtx->Rax = 0;
-        else
-            OG_INS(pCtx->Rax = flandre->bossTimer.current < 7200 ? flandre->curHealth : 0);
+        if (thPracParam.mode && thPracParam.phase == 2) pCtx->Rax = 0;
+        else OG_INS(pCtx->Rax = flandre->bossTimer.current < 7200 ? flandre->curHealth : 0);
     })
 
-    EHOOK_DY(th06nc_danmaku_heart_phase_warp, 0x35a4a, 8, { // DH retrieving boss health (or 0 if timer is under 2min) (yes these 2 spells work the exact same way)
+    EHOOK_DY(th06nc_danmaku_heart_phase_warp, FUNCSET_DH_GET_HEALTH, 8, { // DH retrieving boss health (or 0 if timer is under 2min) (yes these 2 spells work the exact same way)
         const Enemy* flandre = (Enemy*)pCtx->Rcx;
 
-        if (thPracParam.mode && thPracParam.phase)
-            pCtx->Rax = 0;
-        else
-            OG_INS(pCtx->R8 = flandre->bossTimer.current < 7200 ? flandre->curHealth : 0);
+        if (thPracParam.mode && thPracParam.phase) pCtx->Rax = 0;
+        else OG_INS(pCtx->R8 = flandre->bossTimer.current < 7200 ? flandre->curHealth : 0);
     })
 
-    EHOOK_DY(th06nc_bg_fastforward, 0x3b4b5, 2, { // spell prac check for fast-forwarding stage background
+    EHOOK_DY(th06nc_bg_fastforward, GAME_MGR_REG_BG_FF_CHECK, 2, { // spell prac check for fast-forwarding stage background
         constexpr int32_t safeSpellNums[7] = { 2, 9, 24, 37, 84, 103, 121 }; // not fully sure how fast-forwarding works but giving it a spell# it expects makes it use the boss pseudo-interrupt
         int32_t section = thPracParam.section;
 
@@ -1736,10 +1739,10 @@ namespace TH06NC {
             }
         }
 
-        OG_INS(pCtx->Rip = RVA(0x3b4bc)); // start bg
+        OG_INS(pCtx->Rip = GAME_MGR_REG_BG_FF_CHECK_FAIL); // start bg
     })
 
-    EHOOK_DY(th06nc_stage_bgm, 0x3b611, 3, { // stage start bgm pick (0x80 = boss, set by spell prac)
+    EHOOK_DY(th06nc_stage_bgm, GAME_MGR_REG_BGM_PICK, 3, { // stage start bgm pick (0x80 = boss, set by spell prac)
         int32_t section = thPracParam.section;
 
         if (thPracParam.mode && section && section < 10000 && !thPracParam.dlg) {
@@ -1758,8 +1761,8 @@ namespace TH06NC {
         OG_INS(pCtx->Rdx += pCtx->R15);
     })
 
-    EHOOK_DY(th06nc_bgm_title, 0x3e655, 7, { // after setting BGM name translation key
-        OG_INS(pCtx->R13 = *(int64_t*)RVA(0xa6ec28));
+    EHOOK_DY(th06nc_bgm_title, BGM_NAME_GET_TRANSLATIONS, 7, { // after setting BGM name translation key
+        OG_INS(pCtx->R13 = *(uintptr_t*)((uintptr_t)ZUN_GUI + 0x58));
         int32_t section = thPracParam.section;
 
         if (thPracParam.mode && section && section < 10000 && !thPracParam.dlg) {
@@ -1770,25 +1773,25 @@ namespace TH06NC {
         }
     })
 
-    EHOOK_DY(th06nc_bgm_title_2, 0x3e74a, 8, { // before call to load BGM name ascii
+    EHOOK_DY(th06nc_bgm_title_2, BGM_NAME_LOAD, 8, { // before call to load BGM name ascii
         bool isTLBDialogueWarp = thPracParam.section == TH06NC_TLB1 && thPracParam.dlg;
         bool isBGMKeptRestart = *THOverlay::singleton().mElBgm && THOverlay::ShouldKeepBGM();
 
         if (isTLBDialogueWarp || isBGMKeptRestart)
-            pCtx->Rip = RVA(0x3e757); // dont load it for TLB dialogue
+            pCtx->Rip = self->addr + 0xd; // dont load it
 
         OG_INS(*(uint32_t*)(pCtx->Rsp + 0x20) = 0x10101);
     })
 
     // fix extra prac using wrong/invalid registers
     // note: [0x9a8, 0x9e0] inclusive should be unused spell prac registers (for Spell #1 on unreachable difficulties)
-    EHOOK_DY(th06nc_practice_high_score_read, 0x3ae66, 4, { // initializing high score for this practice mode stage/diff/shot/char
+    EHOOK_DY(th06nc_practice_high_score_read, PRAC_HIGH_SCORE_READ, 4, { // initializing high score for this practice mode stage/diff/shot/char
         if (GAME_MANAGER->stage == 6) // game later adds 1 to this for reasons unknown
             pCtx->Rax = 0x12e + (GAME_MANAGER->character * 2 + GAME_MANAGER->subShot) * 2 + GAME_MANAGER->mode; // [0x12e, 0x135] -> [0x9a8, 0x9e0]
         else
             OG_INS(pCtx->Rax = pCtx->Rcx * 3);
     })
-    EHOOK_DY(th06nc_practice_high_score_write, 0x74440, 4, { // retrieving practice high score register on run end
+    EHOOK_DY(th06nc_practice_high_score_write, PRAC_HIGH_SCORE_WRITE, 4, { // retrieving practice high score register on run end
         if (GAME_MANAGER->stage == 7)
             pCtx->Rax = 0x12e + (GAME_MANAGER->character * 2 + GAME_MANAGER->subShot) * 2 + GAME_MANAGER->mode; // [0x12e, 0x135] -> [0x9a8, 0x9e0]
         else
@@ -1800,21 +1803,21 @@ namespace TH06NC {
         if (ImGui::GetCurrentContext()) return;
 
         // Grab key globals
-        GAME_MANAGER = (GameManager*)RVA(GAME_MANAGER_ADDR);
-        PLAYER = (Player*)RVA(PLAYER_ADDR);
-        STAGE_BACKGROUND = (StageBackground*)RVA(STAGE_BACKGROUND_ADDR);
-        ANM_MANAGER_PTR = (void*)RVA(ANM_MANAGER_PTR_ADDR);
-        ENEMY_MANAGER = (EnemyManager*)RVA(ENEMY_MANAGER_ADDR);
-        ECL_MANAGER = (void*)RVA(ECL_MANAGER_ADDR);
-        ZUN_GUI = (ZUNGui*)RVA(ZUN_GUI_ADDR);
-        BOSS_PTR = (Enemy**)RVA(BOSS_PTR_ADDR);
-        MAIN_MENU = (MainMenu*)RVA(MAIN_MENU_ADDR);
-        SUPERVISOR = (Supervisor*)RVA(SUPERVISOR_ADDR);
+        GAME_MANAGER = (GameManager*)GAME_MANAGER_ADDR;
+        PLAYER = (Player*)PLAYER_ADDR;
+        STAGE_BACKGROUND = (StageBackground*)STAGE_BACKGROUND_ADDR;
+        ANM_MANAGER_PTR = (void*)ANM_MANAGER_PTR_ADDR;
+        ENEMY_MANAGER = (EnemyManager*)ENEMY_MANAGER_ADDR;
+        ECL_MANAGER = (void*)ECL_MANAGER_ADDR;
+        ZUN_GUI = (ZUNGui*)ZUN_GUI_ADDR;
+        BOSS_PTR = (Enemy**)BOSS_PTR_ADDR;
+        MAIN_MENU = (MainMenu*)MAIN_MENU_ADDR;
+        SUPERVISOR = (Supervisor*)SUPERVISOR_ADDR;
 
         // Init
-        GameGuiInit(IMPL_WIN32_DX11, RVA(D3D_DEVICE_PTR), RVA(HWND_PTR),
-                    Gui::INGAGME_INPUT_GEN1, RVA(INPUT_ADDR), RVA(INPUT_PREV_ADDR),
-                    RVA(IS_EIGTH_FRAME_OF_HELD_INPUT_ADDR), GetWindowScale(), RVA(D3D_DEVICE_CONTEXT));
+        GameGuiInit(IMPL_WIN32_DX11, D3D_DEVICE_PTR, HWND_PTR,
+                    Gui::INGAGME_INPUT_GEN1, INPUT_ADDR, INPUT_PREV_ADDR,
+                    EIGTH_FRAME_INPUT_HELD_ADDR, GetWindowScale(), D3D_DEVICE_CONTEXT);
         ImGui::GetIO().DisplaySize = GetWindowSize();
 
         //TODO
@@ -1827,28 +1830,33 @@ namespace TH06NC {
         //THGuiRep::singleton();
 
         // Hooks
-        EnableAllHooks(THMainHook);
-        th06nc_trigger_health_interrupt.Setup();
+        EnableAllHooksVersion(THMainHook);
+        SetupHook(th06nc_trigger_health_interrupt);
 
         // Reset thPracParam
         thPracParam.Reset();
     }
 
     HOOKSET_DEFINE(THInitHook)
-    EHOOK_DY(th06nc_gui_init_1, 0x4d0e5, 1, { // main menu ontick (TODO: TEST THIS)
+    EHOOK_DY(th06nc_gui_init_main, GUI_INIT_MAIN, 1, { // main menu ontick (TODO: TEST THIS)
         THGuiCreate();
         self->Disable();
         OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
-    EHOOK_DY(th06nc_gui_init_2, 0x27070e, 8, { // initial loading (d3d creation)
+    EHOOK_DY(th06nc_gui_init_launch, GUI_INIT_LAUNCH, 1, { // initial loading (d3d creation)
         THGuiCreate();
         self->Disable();
-        OG_INS(pCtx->R12 = *(uint64_t*)(pCtx->Rsp + 0x98));
+        OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
     HOOKSET_ENDDEF()
 }
 
-void TH06NCInitReal() {
+
+void TH06NC_Init(TH06NC::VERSION ver) {
     ingame_image_base = (uintptr_t)CurrentPeb()->ImageBaseAddress;
-    EnableAllHooks(TH06NC::THInitHook);
+    SetupGameVersion(ver);
+    TH06NC::EnableAllHooksVersion(THInitHook);
 }
+
+void TH06NC_v1_03a_InitReal() { TH06NC_Init(TH06NC::VER_1_03A); }
+void TH06NC_v1_03b_InitReal() { TH06NC_Init(TH06NC::VER_1_03B); }

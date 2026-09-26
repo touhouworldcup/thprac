@@ -32,25 +32,29 @@ protected:
     bool OnWidgetUpdate();
 
 public:
-    GuiHotKey(th_glossary_t text_ref, const char* key_text, int vkey, HookSlice hooks)
+    GuiHotKey(th_glossary_t text_ref, const char* key_text, int vkey, bool runtime, HookSlice hooks)
         : mTextRef(text_ref)
         , mKeyText(key_text)
         , mKey(vkey)
         , mHooks(hooks)
     {
-        for (size_t i = 0; i < hooks.len; i++) {
-            hooks.ptr[i].Setup();
+        if (!runtime) {
+            for (size_t i = 0; i < hooks.len; i++) {
+                hooks.ptr[i].Setup();
+            }
         }
     }
 
-    GuiHotKey(const char* text, const char* key_text, int vkey, HookSlice hooks)
+    GuiHotKey(const char* text, const char* key_text, int vkey, bool runtime, HookSlice hooks)
         : mText(text)
         , mKeyText(key_text)
         , mKey(vkey)
         , mHooks(hooks)
     {
-        for (size_t i = 0; i < hooks.len; i++) {
-            hooks.ptr[i].Setup();
+        if (!runtime) {
+            for (size_t i = 0; i < hooks.len; i++) {
+                hooks.ptr[i].Setup();
+            }
         }
     }
 
@@ -125,6 +129,15 @@ public:
             for (size_t i = 0; i < mHooks.len; i++) {
                 mHooks.ptr[i].Disable();
             }
+        }
+    }
+    template <typename F>
+    inline void SetupHooksRT(F&& func) {
+        // (will not work if not using HOTKEY_DEFINE_RT)
+        for (size_t i = 0; i < mHooks.len; i++) {
+            HookCtx& hook = mHooks.ptr[i];
+            hook.addr = func(hook.addr);
+            hook.Setup();
         }
     }
     inline bool& operator*()

@@ -145,8 +145,15 @@ inline bool CheckBufPos(const void* bufStart, const void* bufPos, size_t bufLen)
 
 #if !NDEBUG
 #define debug_msg(title, format, ...) log_mboxf(NULL, 0, title, format, __VA_ARGS__)
+#define debug_msg_raw(bufName, size, format, ...)  \
+do {                                               \
+    char bufName[size];                            \
+    snprintf(bufName, size, format, __VA_ARGS__);  \
+    MessageBoxA(nullptr, bufName, "Debug", MB_OK); \
+} while (false);
 #else
 #define debug_msg(title, format, ...)
+#define debug_msg_raw(buf, size, format, ...)
 #endif
 
 // Packs the bytes [c1], [c2], [c3], and [c4] together as a little endian integer

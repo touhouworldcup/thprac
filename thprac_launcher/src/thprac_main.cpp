@@ -45,6 +45,7 @@ RUN_GAME_STATUS TryRunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flag
     ExeInfo exeInfo = {};
     THKnownGame knownGame;
     uint16_t oepCode[10];
+
     if (!IdentifyKnownGame(knownGame, oepCode, exeFn, &exeInfo)) {
         if (warn_unknown_exe && exeInfo) {
             log_printf("Warning: completely unknown executable %s\r\n", utf16_to_utf8(exeFn).c_str());

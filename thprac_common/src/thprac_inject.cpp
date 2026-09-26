@@ -160,7 +160,7 @@ bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game, THGameID gam
     auto TryProcess = [&](SYSTEM_PROCESS_INFORMATION* proc, THGameID requiredGameID) -> bool {
         uintptr_t base;
         HANDLE hProc = NULL;
-        const THGameVersion* gameSig = CheckOngoingGameByPID(proc->UniqueProcessId, &base, &hProc);
+        const THGameVersion* gameSig = CheckOngoingGameByPID((DWORD)proc->UniqueProcessId, &base, &hProc);
         defer(if (hProc) CloseHandle(hProc));
 
         if (!gameSig || !gameSig->initFunc || (requiredGameID != ID_UNKNOWN && gameSig->gameId != requiredGameID)) {
