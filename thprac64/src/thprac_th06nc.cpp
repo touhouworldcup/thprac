@@ -1546,7 +1546,7 @@ namespace TH06NC {
 
 
 
-
+    extern constinit HookCtx th06nc_sfx_fix;
 
     HOOKSET_DEFINE(THMainHook)
 
@@ -1672,6 +1672,8 @@ namespace TH06NC {
             if (frame > 60) PostStartWarpAdjustments();
             ECLWarp(frame);
         }
+
+        th06nc_sfx_fix.Enable();
     })
 
     EHOOK_DY(th06nc_patchouli_fakeshot, ECL_RETRIEVE_SHOT_ID, 6, { // retrieving shottype ID in ECL
@@ -1793,6 +1795,33 @@ namespace TH06NC {
     })
     HOOKSET_ENDDEF()
 
+    EHOOK_ST(th06nc_sfx_fix, RETRIEVE_BULLET_SFX, 3, { // cf. th06_sfx_fix
+        self->Disable();
+        SoundIdx idx = NO_SOUND;
+        switch (thPracParam.section) {
+            case TH06::TH06_ST5_BOSS2:  // using the SFX in the vanilla spell practise. It's possible to have SOUND_7
+                                        // here if entering this spell in the right moment, though
+            case TH06::TH06_ST5_BOSS4:
+            case TH06::TH06_ST5_BOSS5:
+            case TH06::TH06_ST5_BOSS6:
+                idx = SOUND_16;
+                break;
+            case TH06::TH06_ST6_BOSS2:
+                idx = SOUND_7;
+                break;
+            case TH06::TH06_ST6_BOSS6:
+                idx = SOUND_17;
+                break;
+            case TH06::TH06_ST6_BOSS9:
+                idx = SOUND_WTF_IS_THAT_LMAO;
+                break;
+        }
+        if (idx != NO_SOUND) {
+            ENEMY_MANAGER->bulletSfx = idx;
+        }
+        OG_INS(pCtx->Rdx = (pCtx->Rdx & 0xffff'ffff'0000'0000) | GetMemContent<uint32_t>(pCtx->Rdi + 0x3c));
+    });
+
     static __declspec(noinline) void THGuiCreate() {
         if (ImGui::GetCurrentContext()) return;
 
@@ -1826,6 +1855,8 @@ namespace TH06NC {
         // Hooks
         EnableAllHooksVersion(THMainHook);
         SetupHook(th06nc_trigger_health_interrupt);
+        SetupHook(th06nc_sfx_fix);
+        th06nc_sfx_fix.Disable();
 
         // Reset thPracParam
         thPracParam.Reset();

@@ -17,6 +17,7 @@ namespace TH06NC {
 
 #define HOOK_LIST(X)                          \
     /*                           V1_03A      V1_03B */ \
+    X(RETRIEVE_BULLET_SFX,       0x10577,    0x10ca7)  \
     X(ECL_RETRIEVE_SHOT_ID,      0x23a1d,    0x238cd)  \
     X(FUNCSET_PATCHY_GET_LAST3,  0x333d0,    0x34cf0)  \
     X(FUNCSET_QED_GET_HEALTH,    0x35864,    0x37184)  \
@@ -244,6 +245,44 @@ namespace TH06NC {
         FRAME
     };
 
+    // Copied from thprac_th06.h
+    // TODO: Find an elegant way to reduce the code repetition.
+    enum SoundIdx {
+        NO_SOUND = -1,
+        SOUND_SHOOT = 0,
+        SOUND_1 = 1,
+        SOUND_2 = 2,
+        SOUND_3 = 3,
+        SOUND_PICHUN = 4,
+        SOUND_5 = 5,
+        SOUND_BOMB_REIMARI = 6,
+        SOUND_7 = 7,
+        SOUND_8 = 8,
+        SOUND_SHOOT_BOSS = 9,
+        SOUND_SELECT = 10,
+        SOUND_BACK = 11,
+        SOUND_MOVE_MENU = 12,
+        SOUND_BOMB_REIMU_A = 13,
+        SOUND_BOMB = 14,
+        SOUND_F = 15,
+        SOUND_BOSS_LASER = 16,
+        SOUND_BOSS_LASER_2 = 17,
+        SOUND_12 = 18,
+        SOUND_BOMB_MARISA_B = 19,
+        SOUND_TOTAL_BOSS_DEATH = 20,
+        SOUND_15 = 21,
+        SOUND_16 = 22,
+        SOUND_17 = 23,
+        SOUND_18 = 24,
+        SOUND_WTF_IS_THAT_LMAO = 25,
+        SOUND_1A = 26,
+        SOUND_1B = 27,
+        SOUND_1UP = 28,
+        SOUND_1D = 29,
+        SOUND_GRAZE = 30,
+        SOUND_POWERUP = 31,
+    };
+
     constexpr WARP_TYPE fixType(int warpType) {
         return (WARP_TYPE)(warpType >= TLB ? warpType + 1 : warpType);
     }
@@ -332,10 +371,14 @@ namespace TH06NC {
     };
 
     struct EnemyManager {
-        char __unknown1[0x10c0b8]; // 0x0
+        char __unknown1[0x2b0];    // 0x0
+        SoundIdx bulletSfx;        // 0x2b0
+        char __unknown2[0x10be04]; // 0x2b4
         Timer timelineTime;        // 0x10c0b8
         // size unknown
     };
+    static_assert(offsetof(EnemyManager, bulletSfx) == 0x2b0);
+    static_assert(offsetof(EnemyManager, timelineTime) == 0x10c0b8);
 
     struct Enemy {
         Timer bossTimer;        // 0x0
