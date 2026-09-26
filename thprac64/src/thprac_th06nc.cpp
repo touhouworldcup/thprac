@@ -35,7 +35,7 @@ namespace TH06NC {
         Gui::GuiCheckBox mDlg{ TH_DLG };
 
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mChapter{ TH_CHAPTER, 0, 0 };
-        Gui::GuiDrag<int32_t, ImGuiDataType_S32> mFrame{ TH_FRAME, 0, INT_MAX };
+        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mFrame{ TH_FRAME, 0, frameMax[0], 1, 1000};
         Gui::GuiSlider<int8_t, ImGuiDataType_S8> mLife{ TH_LIFE, 0, 8 };
         Gui::GuiSlider<int8_t, ImGuiDataType_S8> mBomb{ TH_BOMB, 0, 8 };
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore{ TH_SCORE, 0, 9999999990, 10, 100000000 };
@@ -173,6 +173,7 @@ namespace TH06NC {
                 if (rank == EX_RANK) *mRank = (mDifficulty > EASY ? NHL_RANK : EASY_RANK);
             }
 
+            mFrame.SetBound(0, frameMax[stage]);
             prevStage = stage;
         }
 
@@ -451,18 +452,17 @@ namespace TH06NC {
         HOTKEY_DEFINE_RT(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
         PATCH_HK(ENEMY_MGR_TICK_BOSS_TIME, NOP(2)),
         EHOOK_HK(ENEMY_MGR_TICK_TIMELINE, 2, { // freeze timeline progress during st1/2/4/5 mid (missing boss_wait)
-            constexpr int32_t midStart[5] = { st1MidbossTime, st2MidbossTime, 0, st4MidbossTime, st5MidbossTime + 2 };
             constexpr int32_t midLength[5] = { (24 + 22) * 60, 32 * 60, 0, 40 * 60, (40 + 30) * 60 };
             constexpr int32_t midExtraWait[5] = { 4 * 60, 15 * 60, 0, 10 * 60, 5 * 60 };
 
             const uint32_t st = GAME_MANAGER->stage - 1;
             if (st < 6 && st != 2) {
                 const bool bossExists = ZUN_GUI->isBossPresent;
-                const int32_t stMidStart = midStart[st];
+                const int32_t midStart = midbossTime[st] + (st == 4 ? 2 : 0);
                 const int32_t curTime = (int32_t)pCtx->Rcx;
 
-                if (bossExists && curTime >= stMidStart && curTime < stMidStart + midLength[st]) {
-                    const int32_t noWaitTime = stMidStart + midExtraWait[st];
+                if (bossExists && curTime >= midStart && curTime < midStart + midLength[st]) {
+                    const int32_t noWaitTime = midStart + midExtraWait[st];
 
                     if (curTime < noWaitTime) pCtx->Rcx = noWaitTime; // remove unnecessary wait
                     return; // don't tick timeline
@@ -627,23 +627,21 @@ namespace TH06NC {
 
             switch (section) {
             case TH06_ST1_MID1: // Midboss
-                ECLWarp(st1MidbossTime);
+                ECLWarp(midbossTime[stage]);
                 break;
 
             case TH06_ST1_MID2: { // Midspell (NHL)
                 constexpr uint32_t st1mbsSpellMoveInterp = 0x1448;
 
-                ECLWarp(st1MidbossTime);
+                ECLWarp(midbossTime[stage]);
                 TriggerHealthInterrupt(500);
                 ECLSetArgs(ecl, st1mbsSpellMoveInterp, pair{ 0, 0 });
                 break;
             }
 
-            case TH06_ST1_BOSS1: { // Non 1
-                constexpr uint32_t st1BossDlgTime = 5092;
-                thPracParam.dlg ? ECLWarp(st1BossDlgTime) : s1_boss_warp_skip_move();
+            case TH06_ST1_BOSS1: // Non 1
+                thPracParam.dlg ? ECLWarp(bossDlgTime[stage]) : s1_boss_warp_skip_move();
                 break;
-            }
 
             case TH06_ST1_BOSS2: { // Spell 1 (NHL)
                 constexpr uint32_t st1bsNon1TimeThreshold = 0x1870;
@@ -695,14 +693,12 @@ namespace TH06NC {
 
             switch (section) {
             case TH06_ST2_MID1: // Midboss
-                ECLWarp(st2MidbossTime);
+                ECLWarp(midbossTime[stage]);
                 break;
 
-            case TH06_ST2_BOSS1: { // Non 1
-                constexpr uint32_t st2BossDlgTime = 5893;
-                thPracParam.dlg ? ECLWarp(st2BossDlgTime) : s2_boss_warp_skip_fadein();
+            case TH06_ST2_BOSS1: // Non 1
+                thPracParam.dlg ? ECLWarp(bossDlgTime[stage]) : s2_boss_warp_skip_fadein();
                 break;
-            }
 
             case TH06_ST2_BOSS2: { // Spell 1
                 constexpr uint32_t st2bsNon1TimeThreshold = 0x18ec;
@@ -748,9 +744,7 @@ namespace TH06NC {
         }
 
         case 2: { // Stage 3
-            constexpr uint32_t st3MidbossTime = 3474;
-            constexpr uint32_t st3BossTime = 6254;
-
+            constexpr uint32_t st3BossTime = bossDlgTime[2];
             constexpr uint32_t st3bsNon1FirstDelayedIns = 0x23f8;
             constexpr uint32_t st2bsNon3TimeThreshold = 0x3500;
 
@@ -785,14 +779,14 @@ namespace TH06NC {
 
             switch (section) {
             case TH06_ST3_MID1: // Midnon
-                ECLWarp(st3MidbossTime);
+                ECLWarp(midbossTime[stage]);
                 break;
 
             case TH06_ST3_MID2: { // Midspell
                 constexpr uint32_t st3mbsSub10Call = 0x1088;
                 constexpr uint32_t st3mbsSpellMoveInterp = 0x1c90;
 
-                ECLWarp(st3MidbossTime);
+                ECLWarp(midbossTime[stage]);
                 TriggerHealthInterrupt(1300);
                 ECLDisable(ecl, st3mbsSub10Call); // makes boss intangible since we skip to the spell while it's executing
                 ECLSetArgs(ecl, st3mbsSpellMoveInterp, pair{ 0, 0 });
@@ -900,16 +894,14 @@ namespace TH06NC {
             }
 
             case TH06_ST4_MID1: { // Midboss
-                ECLWarp(st4MidbossTime);
+                ECLWarp(midbossTime[stage]);
                 ecl << pair{ 0x24c0 + 0xc, 6942069 };
                 break;
             }
 
-            case TH06_ST4_BOSS1: { // Non 1
-                constexpr uint32_t st4BossDlgTime = 10510;
-                thPracParam.dlg ? ECLWarp(st4BossDlgTime) : s4_boss_warp_skip_move();
+            case TH06_ST4_BOSS1: // Non 1
+                thPracParam.dlg ? ECLWarp(bossDlgTime[stage]) : s4_boss_warp_skip_move();
                 break;
-            }
 
             case TH06_ST4_BOSS2: // Spell 1
                 s4_boss_warp_skip_move();
@@ -1002,14 +994,14 @@ namespace TH06NC {
         }
 
         case 4: { // Stage 5
-            constexpr uint32_t st5BossTime = 7604;
+            constexpr uint32_t st5BossTime = bossDlgTime[4];
             constexpr uint32_t st5bsNon1FirstDelayedIns = 0x24a4;
 
             auto s5_midboss_warp_skip_move = [&]() {
                 constexpr uint32_t st5MidbossDialogRead = 0x7944;
                 constexpr uint32_t st5MidbossMoveInterp = 0x1360;
 
-                ECLWarp(st5MidbossTime);
+                ECLWarp(midbossTime[stage]);
                 ECLDisable(ecl, st5MidbossDialogRead, true);
                 ECLSetArgs(ecl, st5MidbossMoveInterp, pair{ 0, 0 });
             };
@@ -1027,7 +1019,7 @@ namespace TH06NC {
 
             switch (section) {
             case TH06_ST5_MID1: // Midboss
-                thPracParam.dlg ? ECLWarp(st5MidbossTime) : s5_midboss_warp_skip_move();
+                thPracParam.dlg ? ECLWarp(midbossTime[stage]) : s5_midboss_warp_skip_move();
                 break;
 
             case TH06_ST5_MID2: { // Midspell
@@ -1089,14 +1081,13 @@ namespace TH06NC {
         }
 
         case 5: { // Stage 6
-            constexpr uint32_t st6MidbossTime = 2493;
             constexpr uint32_t st6bsNon1FirstDelayedIns = 0x1834;
 
             auto s6_midboss_warp_skip_move = [&]() {
                 constexpr uint32_t st6MidbossDialogRead = 0x9584;
                 constexpr uint32_t st6MidbossMoveInterp = 0xa80;
 
-                ECLWarp(st6MidbossTime);
+                ECLWarp(midbossTime[stage]);
                 ECLDisable(ecl, st6MidbossDialogRead, true);
                 ECLSetArgs(ecl, st6MidbossMoveInterp, pair{ 0, 0 });
             };
@@ -1114,7 +1105,7 @@ namespace TH06NC {
 
             switch (section) {
             case TH06_ST6_MID1: // Midboss
-                thPracParam.dlg ? ECLWarp(st6MidbossTime) : s6_midboss_warp_skip_move();
+                thPracParam.dlg ? ECLWarp(midbossTime[stage]) : s6_midboss_warp_skip_move();
                 break;
 
             case TH06_ST6_MID2: { // Midspell
@@ -1128,11 +1119,9 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06_ST6_BOSS1: { // Non 1
-                constexpr uint32_t st6BossDlgTime = 3096;
-                thPracParam.dlg ? ECLWarp(st6BossDlgTime) : s6_boss_warp_skip_move();
+            case TH06_ST6_BOSS1: // Non 1
+                thPracParam.dlg ? ECLWarp(bossDlgTime[stage]) : s6_boss_warp_skip_move();
                 break;
-            }
 
             case TH06_ST6_BOSS2: { // Spell 1
                 constexpr uint32_t st6bsNon1TimeThreshold = 0x1794;
@@ -1238,7 +1227,6 @@ namespace TH06NC {
         }
 
         case 6: { // Extra Stage
-            constexpr uint32_t st7MidbossTime = 4640;
             constexpr uint32_t st7MidbossFirstSub = 0x1ad4;
             constexpr uint32_t st7bsNon1FirstDelayedIns = 0x360e;
             constexpr uint32_t st7TLBFirstSubCall = 0xd2f2;
@@ -1247,7 +1235,7 @@ namespace TH06NC {
                 constexpr uint32_t st7MidbossDialogRead = 0x11800;
                 constexpr uint32_t st7MidbossMoveInterp = 0x1ab8;
 
-                ECLWarp(st7MidbossTime);
+                ECLWarp(midbossTime[stage]);
                 ECLDisable(ecl, st7MidbossDialogRead, true);
                 ECLSetArgs(ecl, st7MidbossMoveInterp, pair{ 0, 0 });
             };
@@ -1305,7 +1293,7 @@ namespace TH06NC {
 
             switch (section) {
             case TH06_ST7_MID1: // Midspell 1
-                thPracParam.dlg ? ECLWarp(st7MidbossTime) : ex_midboss_warp_skip_move();
+                thPracParam.dlg ? ECLWarp(midbossTime[stage]) : ex_midboss_warp_skip_move();
                 break;
 
             case TH06_ST7_MID2: { // Midspell 2
@@ -1326,11 +1314,9 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06_ST7_END_NS1: { // Non 1
-                constexpr uint32_t st7BossDlgTime = 8493;
-                thPracParam.dlg ? ECLWarp(st7BossDlgTime) : ex_boss_warp_skip_move();
+            case TH06_ST7_END_NS1: // Non 1
+                thPracParam.dlg ? ECLWarp(bossDlgTime[stage]) : ex_boss_warp_skip_move();
                 break;
-            }
 
             case TH06_ST7_END_S1: { // Spell 1
                 constexpr uint32_t st7bsNon1TimeThreshold = 0x3572;
@@ -1669,6 +1655,7 @@ namespace TH06NC {
         GAME_MANAGER->livesRemaining = thPracParam.life;
         GAME_MANAGER->bombsRemaining = thPracParam.bomb;
         GAME_MANAGER->rank = thPracParam.rank;
+        GAME_MANAGER->spellPracSpellNum = 0; // cf. th06nc_bg_fastforward
 
         if (thPracParam.guaranteeTLB || (section >= TH06NC_TLB1 && section <= TH06NC_TLB3))
             GAME_MANAGER->spellCapsForTLB = 6;
@@ -1721,21 +1708,28 @@ namespace TH06NC {
 
     EHOOK_DY(th06nc_bg_fastforward, GAME_MGR_REG_BG_FF_CHECK, 2, { // spell prac check for fast-forwarding stage background
         constexpr int32_t safeSpellNums[7] = { 2, 9, 24, 37, 84, 103, 121 }; // not fully sure how fast-forwarding works but giving it a spell# it expects makes it use the boss pseudo-interrupt
+        int32_t stage = thPracParam.stage;
         int32_t section = thPracParam.section;
+        uint32_t frame = (uint32_t)thPracParam.frame;
 
-        if (thPracParam.mode && section) {
-            int32_t stage = thPracParam.stage;
+        if (thPracParam.mode && (section || frame)) {
+            int32_t interrupt = 0;
 
-            if (section < 10000) { // Section
-                if (th_sections_bgm[section]) // boss section -> boss bg
-                    GAME_MANAGER->spellPracSpellNum = safeSpellNums[thPracParam.stage];
-                else GAME_MANAGER->spellPracSpellNum = 0;
+            if (section) {
+                if (section < 10000 || section - 10000 > mChapterSetup[stage][0]) // section or postmid chapter
+                    interrupt += 1;
 
-                return; // midboss section -> midboss bg
+                if (section < 10000 && th_sections_bgm[section]) // boss warp
+                    interrupt += 1;
 
-            } else if (section - 10000 > mChapterSetup[thPracParam.stage][0]) {
-                GAME_MANAGER->spellPracSpellNum = 0;
-                return; // post-mid chapter -> midboss bg
+            } else {
+                if (frame > midbossTime[stage] - 10 * 60) interrupt += 1;
+                if (frame > bossDlgTime[stage] - 10 * 60) interrupt += 1;
+            }
+
+            if (interrupt) {
+                if (interrupt > 1) GAME_MANAGER->spellPracSpellNum = safeSpellNums[stage]; // boss bg
+                return; // midboss bg, unless boss warp
             }
         }
 
