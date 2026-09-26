@@ -1039,6 +1039,7 @@ namespace TH06NC {
                 constexpr uint32_t st5bsNon1TimeThreshold = 0x2404;
 
                 s5_boss_warp_skip_move();
+                ECLMakeIns(ecl, st5bsNon1FirstDelayedIns, 0, BULLET_SOUND, pair{ 0, 22 }); // fix bullet sounds
                 ECLSetArgs(ecl, st5bsNon1TimeThreshold, pair{ 0, 0 });
                 break;
             }
@@ -1053,7 +1054,8 @@ namespace TH06NC {
                 constexpr uint32_t st5bsNon2Particle = 0x3a30;
 
                 s5_boss_warp_skip_move();
-                ECLMakeIns(ecl, st5bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 36 }); // call sub 36 (non2)
+                ECLMakeIns(ecl, st5bsNon1FirstDelayedIns, 0, BULLET_SOUND, pair{ 0, 22 }); // fix bullet sounds
+                ECLMakeIns(ecl, st5bsNon1FirstDelayedIns + BULLET_SOUND.size, 0, CALL, pair{ 0, 36 }); // call sub 36 (non2)
                 ECLDisable(ecl, st5bsNon2ItemDrop);
                 ECLDisable(ecl, st5bsNon2Particle);
                 break;
@@ -1069,7 +1071,8 @@ namespace TH06NC {
                 constexpr uint32_t st5bsNon3Particle = 0x49b8;
 
                 s5_boss_warp_skip_move();
-                ECLMakeIns(ecl, st5bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 43 }); // call sub 43 (non3)
+                ECLMakeIns(ecl, st5bsNon1FirstDelayedIns, 0, BULLET_SOUND, pair{ 0, 22 }); // fix bullet sounds
+                ECLMakeIns(ecl, st5bsNon1FirstDelayedIns + BULLET_SOUND.size, 0, CALL, pair{ 0, 43 }); // call sub 43 (non3)
                 ECLDisable(ecl, st5bsNon3ItemDrop);
                 ECLDisable(ecl, st5bsNon3Particle);
                 break;
@@ -1128,6 +1131,8 @@ namespace TH06NC {
 
                 s6_boss_warp_skip_move();
                 ECLSetArgs(ecl, st6bsNon1TimeThreshold, pair{ 0, 0 });
+                ECLMakeIns(ecl, st6bsNon1FirstDelayedIns, 0, BULLET_SOUND, pair{ 0, 7 }); // fix bullet sounds
+                ECLMakeIns(ecl, st6bsNon1FirstDelayedIns + BULLET_SOUND.size, 10, NOP);
                 break;
             }
 
@@ -1157,7 +1162,8 @@ namespace TH06NC {
                 constexpr uint32_t st6bsNon3Particle = 0x2be4;
 
                 s6_boss_warp_skip_move();
-                ECLMakeIns(ecl, st6bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 25 }); // call sub 25 (non3)
+                ECLMakeIns(ecl, st6bsNon1FirstDelayedIns, 0, BULLET_SOUND, pair{ 0, 23 }); // fix bullet sounds
+                ECLMakeIns(ecl, st6bsNon1FirstDelayedIns + BULLET_SOUND.size, 0, CALL, pair{ 0, 25 }); // call sub 25 (non3)
                 ECLDisable(ecl, st6bsNon3ItemDrop);
                 ECLDisable(ecl, st6bsNon3Particle);
                 break;
@@ -1165,7 +1171,11 @@ namespace TH06NC {
 
             case TH06_ST6_BOSS8: { // Spell 4
                 constexpr uint32_t st6bsNon4TimeThreshold = 0x30bc;
+                constexpr uint32_t st6bsNon4FirstDelayedIns = 0x3154;
+
                 ECLSetArgs(ecl, st6bsNon4TimeThreshold, pair{ 0, 0 });
+                ECLMakeIns(ecl, st6bsNon4FirstDelayedIns, 0, BULLET_SOUND, pair{ 0, 25 }); // fix bullet sounds
+                ECLMakeIns(ecl, st6bsNon4FirstDelayedIns + BULLET_SOUND.size, 10, NOP);
                 [[fallthrough]];
             }
             case TH06_ST6_BOSS7: { // Non 4
@@ -1179,7 +1189,7 @@ namespace TH06NC {
                 break;
             }
 
-            case TH06_ST6_BOSS9: { // Spell 5
+            case TH06_ST6_BOSS9: { // Spell 5 (Scarlet Gensokyo)
                 constexpr uint32_t st6bsNon1HealthThreshold = 0x17c4;
                 constexpr uint32_t st6bsNNon5ItemDrop = 0x6720;
                 constexpr uint32_t st6bsNNon5DelayedIns1 = 0x6800;
@@ -1197,9 +1207,10 @@ namespace TH06NC {
 
                 s6_boss_warp_skip_move();
                 ECLSetArgs(ecl, st6bsNon1HealthThreshold, pair{0, -1});
+                ECLMakeIns(ecl, st6bsNon1FirstDelayedIns, 0, BULLET_SOUND, pair{ 0, 25 }); // fix bullet sounds
 
                 if (GAME_MANAGER->difficulty <= NORMAL) {
-                    ECLMakeIns(ecl, st6bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 61 }); // call sub 61 (non5 for N)
+                    ECLMakeIns(ecl, st6bsNon1FirstDelayedIns + BULLET_SOUND.size, 0, CALL, pair{ 0, 61 }); // call sub 61 (non5 for N)
 
                     ECLDisable(ecl, st6bsNNon5ItemDrop);
                     ECLSetInsTime(ecl, st6bsNNon5DelayedIns1, 0);
@@ -1209,7 +1220,7 @@ namespace TH06NC {
                     ECLSetInsTime(ecl, st6bsNNon5DelayedIns5, 0);
 
                 } else {
-                    ECLMakeIns(ecl, st6bsNon1FirstDelayedIns, 0, CALL, pair{ 0, 64 }); // call sub 64 (non5 for HL)
+                    ECLMakeIns(ecl, st6bsNon1FirstDelayedIns + BULLET_SOUND.size, 0, CALL, pair{ 0, 64 }); // call sub 64 (non5 for HL)
 
                     ECLDisable(ecl, st6bsHLNon5ItemDrop);
                     ECLSetInsTime(ecl, st6bsHLNon5DelayedIns1, 0);
@@ -1546,8 +1557,6 @@ namespace TH06NC {
 
 
 
-    extern constinit HookCtx th06nc_sfx_fix;
-
     HOOKSET_DEFINE(THMainHook)
 
     // Prac Menu UX
@@ -1672,8 +1681,6 @@ namespace TH06NC {
             if (frame > 60) PostStartWarpAdjustments();
             ECLWarp(frame);
         }
-
-        th06nc_sfx_fix.Enable();
     })
 
     EHOOK_DY(th06nc_patchouli_fakeshot, ECL_RETRIEVE_SHOT_ID, 6, { // retrieving shottype ID in ECL
@@ -1795,32 +1802,6 @@ namespace TH06NC {
     })
     HOOKSET_ENDDEF()
 
-    EHOOK_ST(th06nc_sfx_fix, RETRIEVE_BULLET_SFX, 3, { // cf. th06_sfx_fix
-        self->Disable();
-        SoundIdx idx = NO_SOUND;
-        switch (thPracParam.section) {
-            case TH06::TH06_ST5_BOSS2:  // using the SFX in the vanilla spell practise. It's possible to have SOUND_7
-                                        // here if entering this spell in the right moment, though
-            case TH06::TH06_ST5_BOSS4:
-            case TH06::TH06_ST5_BOSS5:
-            case TH06::TH06_ST5_BOSS6:
-                idx = SOUND_16;
-                break;
-            case TH06::TH06_ST6_BOSS2:
-                idx = SOUND_7;
-                break;
-            case TH06::TH06_ST6_BOSS6:
-                idx = SOUND_17;
-                break;
-            case TH06::TH06_ST6_BOSS9:
-                idx = SOUND_WTF_IS_THAT_LMAO;
-                break;
-        }
-        if (idx != NO_SOUND) {
-            ENEMY_MANAGER->bulletSfx = idx;
-        }
-        OG_INS(pCtx->Rdx = (pCtx->Rdx & 0xffff'ffff'0000'0000) | GetMemContent<uint32_t>(pCtx->Rdi + 0x3c));
-    });
 
     static __declspec(noinline) void THGuiCreate() {
         if (ImGui::GetCurrentContext()) return;
@@ -1855,8 +1836,6 @@ namespace TH06NC {
         // Hooks
         EnableAllHooksVersion(THMainHook);
         SetupHook(th06nc_trigger_health_interrupt);
-        SetupHook(th06nc_sfx_fix);
-        th06nc_sfx_fix.Disable();
 
         // Reset thPracParam
         thPracParam.Reset();
