@@ -4,7 +4,6 @@
 // TODOs:
     // - Tracker
     // - Advanced Menu
-    // - Add: STD timeline skip for Frame warping? Per-stage frame cap?
 
 using namespace TH06;
 using std::pair;
@@ -440,7 +439,9 @@ namespace TH06NC {
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE_RT(mInfLives, TH_INFLIVES, "F2", VK_F2)
-        PATCH_HK(LIFE_CNT_DECREASE, NOP(6))
+        PATCH_HK(LIFE_CNT_FETCH, "B801000000" NOP(2)), // prevent game over
+        PATCH_HK(LIFE_CNT_DECREASE, NOP(6)),
+        PATCH_HK(LAST_LIFE_HIT_DROP_FS, NOP(6))
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE_RT(mInfBombs, TH_INFBOMBS, "F3", VK_F3)

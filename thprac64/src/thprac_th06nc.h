@@ -57,8 +57,10 @@ namespace TH06NC {
     X(REPLAY_SEL_FETCH_MODE_STR, 0x553fd,    0x56b5d)  \
     X(BOMB_INPUT_CHECK,          0x689fa,    0x6a10a)  \
     X(BOMB_CNT_DECREASE,         0x68a7b,    0x6a18b)  \
+    X(LAST_LIFE_HIT_DROP_FS,     0x68b3b,    0x6a24b)  \
     X(POWER_DECREASE,            0x68baf,    0x6a2bf)  \
     X(POWER_MIN_CHALLENGE_MODE,  0x68bbe,    0x6a2ce)  \
+    X(LIFE_CNT_FETCH,            0x68e66,    0x6a576)  \
     X(LIFE_CNT_DECREASE,         0x68e88,    0x6a59f)  \
     X(BULLET_HIT_BIG_PARTICLE,   0x6aacf,    0x6c1df)  \
     X(BULLET_HIT_SET_PLY_STATE,  0x6aaf7,    0x6c207)  \
