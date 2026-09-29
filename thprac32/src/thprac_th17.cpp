@@ -1051,7 +1051,7 @@ namespace TH17 {
             if (mGoastAngleRandom)
                 ImGui::BeginDisabled();
 
-            ImGui::SliderFloat(S(TH17_GOAST_ANGLE), &mGoastAng, -std::numbers::pi, std::numbers::pi);
+            ImGui::SliderFloat(S(TH17_GOAST_ANGLE), &mGoastAng, (float)-std::numbers::pi, (float)std::numbers::pi);
             ImGui::Checkbox(S(TH17_FORCE_ANGLE), &mForceGoastAngle);
             ImGui::SameLine();
             Gui::HelpMarker(S(TH17_FORCE_ANGLE_HELP));

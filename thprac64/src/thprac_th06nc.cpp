@@ -1746,16 +1746,22 @@ namespace TH06NC {
     })
 
     EHOOK_DY(th06nc_stage_bgm, GAME_MGR_REG_BGM_PICK, 3, { // stage start bgm pick (0x80 = boss, set by spell prac)
-        int32_t section = thPracParam.section;
+        if (thPracParam.mode) {
+            int32_t section = thPracParam.section;
 
-        if (thPracParam.mode && section && section < 10000 && !thPracParam.dlg) {
-            uint8_t bgmID = th_sections_bgm[section];
+            if (section && section < 10000 && !thPracParam.dlg) {
+                uint8_t bgmID = th_sections_bgm[section];
 
-            if (bgmID == 2) {
-                pCtx->Rdx += 0x100; // flan TLB theme
-                return;
+                if (bgmID == 2) {
+                    pCtx->Rdx += 0x100; // flan TLB theme
+                    return;
 
-            } else if (bgmID) {
+                } else if (bgmID) {
+                    pCtx->Rdx += 0x80;
+                    return;
+                }
+
+            } else if ((uint32_t)thPracParam.frame >= bossDlgTime[thPracParam.stage]) {
                 pCtx->Rdx += 0x80;
                 return;
             }
