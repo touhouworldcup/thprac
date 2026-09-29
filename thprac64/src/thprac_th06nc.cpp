@@ -2,7 +2,6 @@
 #include <wininternal.h>
 
 // TODOs:
-    // - Replays
     // - Tracker
     // - Advanced Menu
     // - Add: STD timeline skip for Frame warping? Per-stage frame cap?
@@ -14,6 +13,7 @@ namespace TH06NC {
     THPracParam thPracParam{};
     intptr_t startBGM;
 
+    AsciiManager* ASCII_MANAGER;
     GameManager* GAME_MANAGER;
     Player* PLAYER;
     StageBackground* STAGE_BACKGROUND;
@@ -24,6 +24,7 @@ namespace TH06NC {
     Enemy** BOSS_PTR;
     MainMenu* MAIN_MENU;
     Supervisor* SUPERVISOR;
+    SaveReplayMenu** SAVE_REPLAY_MENU_PTR;
 
     // Practice Menu
     class THGuiPrac : public Gui::GameGuiWnd {
@@ -339,6 +340,7 @@ namespace TH06NC {
             SetFade(0.8f, 0.8f);
             Close();
             *mNavFocus = 0;
+            thPracParam.Reset();
 
             int mode = *mMode;
             thPracParam.mode = mode >= 2;
@@ -347,6 +349,7 @@ namespace TH06NC {
             thPracParam.section = CalcSection();
             thPracParam.phase = *mPhase;
             thPracParam.frame = *mFrame;
+            thPracParam.lastFrame = 0;
             thPracParam.dlg = SectionHasDlg(thPracParam.section) ? *mDlg : false;
 
             thPracParam.score = *mScore;
@@ -1557,6 +1560,8 @@ namespace TH06NC {
 
 
 
+
+
     HOOKSET_DEFINE(THMainHook)
 
     // Prac Menu UX
@@ -1806,6 +1811,155 @@ namespace TH06NC {
         else
             OG_INS(pCtx->Rax = pCtx->Rcx * 3);
     })
+
+    // Practice Mode Replays (lotta hooks, we're changing how the menus work!)
+    EHOOK_DY(th06nc_practice_game_over, PRAC_GAME_OVER_SET_STATE, 10, { // setting state to go back to main menu on prac game over
+        GAME_MANAGER->spellPracEndFlag = true;
+        if (!*THOverlay::singleton().mElBgm) BGM_PAUSE(*(int32_t*)BGM_ADDR, 0); // consistency's sake
+    })
+    EHOOK_DY(th06nc_practice_end, SET_RETURN_TO_MENU_STATE, 10, { // idem but for prac end (stage end)
+        GAME_MANAGER->spellPracEndFlag = true;
+        ASCII_MANAGER->spellPracEndWin = true;
+    })
+
+    EHOOK_DY(th06nc_replay_practice_stage_end, SET_STG_TRANSITION_STATE, 10, {  // practice mode replay end leads to title screen/spell prac instead of replay menu on stages 1-5
+        if (GAME_MANAGER->inReplay && !GetMemContent((uintptr_t)ZUN_GUI + 0x68, 0x70, 0x40 + 0x8 * GAME_MANAGER->stage)) // check if no replay entry for next stage
+            SUPERVISOR->curState = REPLAY_MENU_EXIT;
+        else
+            OG_INS(SUPERVISOR->curState = STAGE_TRANSITION);
+    })
+
+    EHOOK_DY(th06nc_prac_end_restart_bgm, SPELL_PRAC_KEEP_BGM_FLAG, 7, { // setting flag to not restart bgm (note: in retrospect i could've just used this for elbgm...)
+        bool isBGMKeptRestart = *THOverlay::singleton().mElBgm && THOverlay::ShouldKeepBGM();
+
+        if (!GAME_MANAGER->inPracticeMode || isBGMKeptRestart)
+            OG_INS(*(uint8_t*)VANILLA_ELBGM_FLAG = 1);
+    })
+
+    EHOOK_DY(th06nc_prac_end_opts, SPELL_PRAC_END_LOAD_OPTS, 3, { // fetching the translation key strings to use for the spell practice end menu
+        if (GAME_MANAGER->inPracticeMode && pCtx->Rbx == 0) // option 1
+            pCtx->R9 = RETURN_TO_STAGE_SELECT_STR; // normally the "Return to Spell Card Select" str
+        else
+            OG_INS(pCtx->R9 = *(uint64_t*)pCtx->Rdi);
+    })
+    EHOOK_DY(th06nc_prac_pause_opts, PAUSE_MENU_LOAD_OPTS, 3, { // fetching the translation key strings to use for the pause menu
+        if (GAME_MANAGER->inPracticeMode && !GAME_MANAGER->inReplay && pCtx->Rdi == 2) // option 3
+            pCtx->R9 = SPELL_PRAC_SAVE_REPLAY_STR; // normally the "Return to Title" str
+        else
+            OG_INS(pCtx->R9 = *(uint64_t*)pCtx->Rbx);
+    })
+
+    EHOOK_DY(th06nc_return_title_prac, PAUSE_MENU_RETURN_TITLE, 5, { // map option 3 (Return to Title) to Save Replay func from Spell Prac End menu
+        if (GAME_MANAGER->inPracticeMode && !GAME_MANAGER->inReplay && pCtx->R9 == 2) {
+            thPracParam.lastFrame = GAME_MANAGER->stageTime;
+            GAME_MANAGER->pauseState = 0x0;
+            GAME_MANAGER->spellPracEndFlag = true;
+            ASCII_MANAGER->spellPracEndState = 0x2;
+            (*SAVE_REPLAY_MENU_PTR)->curState = 0x1;
+            pCtx->Rip = PAUSE_MENU_POST_RETURN_TITLE;
+
+        } else OG_INS(pCtx->Rdx = 0x2);
+    })
+    HOOKSET_ENDDEF()
+
+    EHOOK_ST(th06nc_prac_exit_replay_save_fix_options, PAUSE_MENU_TICK_END, 1, { // fix option strings on next pause menu tick (they get fucked up fsr)
+        FETCH_PAUSE_MENU_OPT_STRS(&ASCII_MANAGER->pauseMenu);
+        OG_INS(pCtx->Rip = PopHelper(pCtx));
+        self->Disable();
+    });
+
+    HOOKSET_DEFINE(THMainHook2)
+    EHOOK_DY(th06nc_prac_exit_replay_save, SPELL_PRAC_EXIT_RPY_SAVE, 7, { // undo th06nc_return_title_prac when exiting the Save Replay menu
+        if (GAME_MANAGER->inPracticeMode && !GAME_MANAGER->inReplay && thPracParam.lastFrame) {
+            thPracParam.lastFrame = 0;
+            GAME_MANAGER->pauseState = 0x1;
+            GAME_MANAGER->spellPracEndFlag = false;
+            ASCII_MANAGER->spellPracEndState = 0x0;
+            (*SAVE_REPLAY_MENU_PTR)->curState = 0x0;
+            th06nc_prac_exit_replay_save_fix_options.Enable();
+        }
+        else OG_INS(ASCII_MANAGER->spellPracEndState = 1);
+    })
+
+    EHOOK_DY(th06nc_save_replay, POST_REPLAY_SAVE, 7, { // replay save, filename on stack
+        if (GAME_MANAGER->inPracticeMode && (thPracParam.mode || thPracParam.lastFrame)) {
+            char* rpyName = (char*)(pCtx->Rsp + 0x97);
+            std::wstring w = L"replay/" + std::wstring(rpyName, rpyName + strlen(rpyName));
+            ReplaySaveParam(w.c_str(), thPracParam.GetJson());
+
+            if (thPracParam.lastFrame) { // unfortunately saving multiple replays of the same run is glitchy so we have to disable it :/
+                SUPERVISOR->curState = RUN_END_NO_ENDING;
+                GAME_MANAGER->spellPracEndFlag = false;
+            }
+        }
+
+        OG_INS(pCtx->Rdx = pCtx->Rsi + 0x9e88);
+    })
+
+    EHOOK_DY(th06nc_select_replay, REPLAY_SELECT_PATH_FETCH, 2, { // replay selection, filename in rcx
+        char* rpyName = (char*)pCtx->Rcx;
+        std::wstring w = std::wstring(rpyName, rpyName + strlen(rpyName));
+
+        thPracParam.Reset();
+        std::string param;
+
+        if (ReplayLoadParam(w.c_str(), param) && thPracParam.ReadJson(param))
+            if (thPracParam.lastFrame)
+                th06nc_end_rpy_on_last_frame.Enable();
+
+        OG_INS(pCtx->Rdx = 0x1);
+    })
+    HOOKSET_ENDDEF()
+
+    EHOOK_ST(th06nc_end_rpy_on_last_frame, GAME_MANAGER_TICK_TIMER, 6, { // runs on tick, so we don't want this enabled unless needed
+        OG_INS(GAME_MANAGER->stageTime += 1);
+
+        if (GAME_MANAGER->stageTime > thPracParam.lastFrame) {
+            SUPERVISOR->curState = REPLAY_MENU_EXIT;
+            self->Disable();
+        }
+    });
+
+    HOOKSET_DEFINE(THMainHook3)
+    EHOOK_DY(th06nc_main_replay_sel_show_prac, REPLAY_SEL_FETCH_MODE_STR, 8, { // if prac sentinel set, show "Practice" in main menu replay selection
+        if (*(uint8_t*)(pCtx->Rdi + 0x2))
+            pCtx->Rax = (uintptr_t)PRAC_STR;
+        else
+            OG_INS(pCtx->Rax = *(int64_t*)(pCtx->R12 + pCtx->Rax * 8 + MODE_STRINGS));
+    })
+
+    EHOOK_DY(th06nc_ingame_replay_sel_show_prac, PRAC_RPY_SEL_GET_MODE_STR, 8, { // same as above but for in-game save replay scren
+        if (*(uint8_t*)(pCtx->Rbx + 0x2))
+            pCtx->Rax = (uintptr_t)PRAC_STR;
+        else
+            OG_INS(pCtx->Rax = *(int64_t*)(pCtx->R9 + pCtx->Rax * 8 + MODE_STRINGS));
+    })
+
+    EHOOK_DY(th06nc_mark_replay_prac, POST_LOAD_REPLAY_META, 1, { // setting prac sentinel when loading replay meta
+        uintptr_t retAddr = PopHelper(pCtx);
+        OG_INS(pCtx->Rip = retAddr);
+
+        uintptr_t rpyNameOffset; // even though it's an argument, it gets overwritten by this point. but we can find it on the stack
+        if (retAddr == MAIN_MENU_LOADED_REPLAY_META) rpyNameOffset = MAIN_MENU_RPY_NAME_STK_OFF;
+        else if (retAddr == IN_GAME_LOADED_REPLAY_META_1) rpyNameOffset = IN_GAME_RPY_NAME_STK_OFF_1; // reloading after already selecting a rpy
+        else if (retAddr == IN_GAME_LOADED_REPLAY_META_2) rpyNameOffset = IN_GAME_RPY_NAME_STK_OFF_2; // opening in-game replay menu
+        else return;
+
+        char* rpyName = GetMemAddr<char*>(pCtx->Rsp - 0x118, rpyNameOffset);
+        std::wstring w = std::wstring(rpyName, rpyName + strlen(rpyName));
+        std::string param;
+
+        if (ReplayLoadParam(w.c_str(), param))
+            *(uint8_t*)(pCtx->Rax + 0x9) = 1; // sentinel byte (seemingly unused) (we're not modifying the replay, so its fine :))
+    })
+
+    EHOOK_DY(th06nc_ingame_replay_sel_save_prac, PRAC_RPY_SAVE_GET_MODE_ST, 8, { // show "Practice" when saving replay in-game (if it'll have prac params)
+        if (GAME_MANAGER->inPracticeMode && (thPracParam.mode || thPracParam.lastFrame))
+            pCtx->Rax = (uintptr_t)PRAC_STR;
+        else
+            OG_INS(pCtx->Rax = *(int64_t*)(pCtx->Rcx + pCtx->R8 * 8 + MODE_STRINGS));
+    })
+
     HOOKSET_ENDDEF()
 
 
@@ -1813,6 +1967,7 @@ namespace TH06NC {
         if (ImGui::GetCurrentContext()) return;
 
         // Grab key globals
+        ASCII_MANAGER = (AsciiManager*)ASCII_MANAGER_ADDR;
         GAME_MANAGER = (GameManager*)GAME_MANAGER_ADDR;
         PLAYER = (Player*)PLAYER_ADDR;
         STAGE_BACKGROUND = (StageBackground*)STAGE_BACKGROUND_ADDR;
@@ -1823,6 +1978,7 @@ namespace TH06NC {
         BOSS_PTR = (Enemy**)BOSS_PTR_ADDR;
         MAIN_MENU = (MainMenu*)MAIN_MENU_ADDR;
         SUPERVISOR = (Supervisor*)SUPERVISOR_ADDR;
+        SAVE_REPLAY_MENU_PTR = (SaveReplayMenu**)SAVE_REPLAY_MENU_PTR_ADDR;
 
         // Init
         GameGuiInit(IMPL_WIN32_DX11, D3D_DEVICE_PTR, HWND_PTR,
@@ -1841,7 +1997,11 @@ namespace TH06NC {
 
         // Hooks
         EnableAllHooksVersion(THMainHook);
+        EnableAllHooksVersion(THMainHook2);
+        EnableAllHooksVersion(THMainHook3);
         SetupHook(th06nc_trigger_health_interrupt);
+        SetupHook(th06nc_prac_exit_replay_save_fix_options);
+        SetupHook(th06nc_end_rpy_on_last_frame);
 
         // Reset thPracParam
         thPracParam.Reset();

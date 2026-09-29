@@ -744,19 +744,20 @@ void AboutOpt(const char* thanks_text)
 bool ReplaySaveParam(const wchar_t* rep_path, std::string_view param)
 {
     auto repFile = CreateFileW(rep_path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (repFile == INVALID_HANDLE_VALUE)
-        return false;
+    if (repFile == INVALID_HANDLE_VALUE) return false;
     defer(CloseHandle(repFile));
+
     DWORD repMagic = 0, bytesRead = 0;
+
     if ((SetFilePointer(repFile, 0, nullptr, FILE_BEGIN) != INVALID_SET_FILE_POINTER) && (ReadFile(repFile, &repMagic, sizeof(LONG), &bytesRead, nullptr))) {
         if (repMagic == 'PR6T' || repMagic == 'PR7T') {
             auto paramSize = (int32_t)param.size();
-            for (paramSize++; paramSize % 4; paramSize++)
-                ;
+            for (paramSize++; paramSize % 4; paramSize++) ;
+
             auto paramBuf = malloc(paramSize + 8);
-            if (!paramBuf)
-                return false;
+            if (!paramBuf) return false;
             defer(free(paramBuf));
+
             memset(paramBuf, 0, paramSize);
             memcpy(paramBuf, param.data(), param.size());
             *(int32_t*)((uintptr_t)paramBuf + paramSize) = paramSize;
@@ -765,37 +766,62 @@ bool ReplaySaveParam(const wchar_t* rep_path, std::string_view param)
             SetFilePointer(repFile, 0, nullptr, FILE_END);
             WriteFile(repFile, paramBuf, paramSize + 8, &bytesRead, nullptr);
 
+            // TH06: Check if New Classic
+            uint32_t eosdEncStart = 14;
+            uint32_t checksumOffset = 8;
+            DWORD checksumBase = 0x3F000318;
+
+            if (repMagic == 'PR6T') {
+                uint8_t versionByte;
+                SetFilePointer(repFile, 4, nullptr, FILE_BEGIN);
+                if (!ReadFile(repFile, &versionByte, 1, &bytesRead, nullptr))
+                    return false;
+
+                if (versionByte == 0xf) { // New Classic
+                    eosdEncStart = 0x12;
+                    checksumOffset = 0xc;
+                    checksumBase = 0x2f10a329;
+                }
+            }
+
             // Recalculate checksum
             auto repSize = GetFileSize(repFile, nullptr);
-            uint8_t* repBuf = (uint8_t*)malloc(repSize - (repMagic == 'PR6T' ? 14 : 13));
-            if (!repBuf)
-                return false;
+            uint32_t encStart = (repMagic == 'PR6T') ? eosdEncStart : 13;
+            uint32_t encSize = repSize - encStart;
+
+            uint8_t* repBuf = (uint8_t*)malloc(encSize);
+            if (!repBuf) return false;
             defer(free(repBuf));
-            SetFilePointer(repFile, repMagic == 'PR6T' ? 14 : 13, nullptr, FILE_BEGIN);
-            if (!ReadFile(repFile, repBuf, repSize - (repMagic == 'PR6T' ? 14 : 13), &bytesRead, nullptr))
+
+            SetFilePointer(repFile, encStart, nullptr, FILE_BEGIN);
+            if (!ReadFile(repFile, repBuf, encSize, &bytesRead, nullptr))
                 return false;
 
             uint8_t key = *repBuf;
-            auto decBuf = repBuf + (repMagic == 'PR6T' ? 1 : 3);
-            for (DWORD i = 0; i < repSize - (repMagic == 'PR6T' ? 15 : 16); i++, decBuf++) {
+            uint32_t decryptOffset = (repMagic == 'PR6T' ? 1 : 3);
+            auto decBuf = repBuf + decryptOffset;
+
+            for (DWORD i = 0; i < repSize - (encStart + decryptOffset); i++, decBuf++) {
                 *decBuf -= key;
                 key += 7;
             }
 
-            DWORD checksum = 0x3F000318;
+            DWORD checksum = checksumBase;
             decBuf = repBuf;
-            for (DWORD i = 0; i < repSize - (repMagic == 'PR6T' ? 14 : 13); i++, decBuf++)
+            for (DWORD i = 0; i < encSize; i++, decBuf++)
                 checksum += *decBuf;
 
-            SetFilePointer(repFile, 8, nullptr, FILE_BEGIN);
+            SetFilePointer(repFile, checksumOffset, nullptr, FILE_BEGIN);
             WriteFile(repFile, &checksum, 4, &bytesRead, nullptr);
+
         } else {
             auto paramSize = (int32_t)param.size() + 12;
-            for (paramSize++; paramSize % 4; paramSize++)
-                ;
+            for (paramSize++; paramSize % 4; paramSize++) ;
+
             auto paramBuf = malloc(paramSize);
             if (!paramBuf)
                 return false;
+
             defer(free(paramBuf));
             memset(paramBuf, 0, paramSize);
             *(int32_t*)((uintptr_t)paramBuf) = 'RESU';

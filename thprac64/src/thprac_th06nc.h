@@ -17,6 +17,13 @@ namespace TH06NC {
 
 #define HOOK_LIST(X)                                   \
     /*                           V1_03A      V1_03B */ \
+    X(PAUSE_MENU_LOAD_OPTS,      0x9f59,     0xa689)   \
+    X(PAUSE_MENU_RETURN_TITLE,   0xa753,     0xae83)   \
+    X(PAUSE_MENU_TICK_END,       0xae9d,     0xb5cd)   \
+    X(PRAC_GAME_OVER_SET_STATE,  0xb57e,     0xbcae)   \
+    X(SPELL_PRAC_END_LOAD_OPTS,  0xc1d0,     0xc900)   \
+    X(SPELL_PRAC_EXIT_RPY_SAVE,  0xc737,     0xce67)   \
+    X(SPELL_PRAC_KEEP_BGM_FLAG,  0xc882,     0xcfb2)   \
     X(ECL_RETRIEVE_SHOT_ID,      0x23a1d,    0x238cd)  \
     X(FUNCSET_PATCHY_GET_LAST3,  0x333d0,    0x34cf0)  \
     X(FUNCSET_QED_GET_HEALTH,    0x35864,    0x37184)  \
@@ -25,23 +32,29 @@ namespace TH06NC {
     X(ENEMY_MGR_TICK_BOSS_TIME,  0x3816f,    0x39a8f)  \
     X(ENEMY_MGR_TICK_TIMELINE,   0x381f9,    0x39b19)  \
     X(PAUSE_MENU_BGM_PAUSE,      0x3a313,    0x3bba3)  \
+    X(GAME_MANAGER_TICK_TIMER,   0x3a7bd,    0x3c04d)  \
     X(PRAC_HIGH_SCORE_READ,      0x3ae66,    0x3c6e0)  \
     X(GAME_MGR_REG_BG_FF_CHECK,  0x3b4b5,    0x3cd35)  \
     X(GAME_MGR_REG_BGM_PICK,     0x3b611,    0x3ce91)  \
     X(GAME_MGR_REG_PLAY_BGM,     0x3b61b,    0x3ce9b)  \
+    X(NO_STAGE_SET_RETURN_STATE, 0x3b66a,    0x3ceea)  \
     X(GAME_MANAGER_REGISTERED,   0x3b69d,    0x3cf1d)  \
     X(GAME_MGR_END_PAUSE_BGM,    0x3b6cb,    0x3cf4b)  \
     X(POST_ON_TICK,              0x3bf59,    0x3d7d9)  \
     X(POST_ON_DRAW,              0x3c257,    0x1f28)   \
     X(BGM_NAME_GET_TRANSLATIONS, 0x3e655,    0x3ff35)  \
     X(BGM_NAME_LOAD,             0x3e74a,    0x4002a)  \
+    X(SET_RETURN_TO_MENU_STATE,  0x3fb9e,    0x4147e)  \
+    X(SET_STG_TRANSITION_STATE,  0x3fbcb,    0x414ab)  \
     X(MENU_SET_TITLE_STATE,      0x4802e,    0x4978e)  \
+    X(REPLAY_SELECT_PATH_FETCH,  0x48e1b,    0x4a579)  \
     X(MENU_SET_PRAC_STATE,       0x4bbd5,    0x4d335)  \
     X(MENU_SET_PRAC_STATE_2,     0x4bc46,    0x4d3a6)  \
     X(MENU_CANCEL_CONFIRM_STATE, 0x4c2ba,    0x4da1a)  \
     X(MENU_SET_CONFIRMED_STATE,  0x4c474,    0x4dbd4)  \
     X(MENU_LOAD_DIFF_CHECK,      0x4b062,    0x4c7c2)  \
     X(GUI_INIT_MAIN,             0x4d0e5,    0x4e845)  \
+    X(REPLAY_SEL_FETCH_MODE_STR, 0x553fd,    0x56b5d)  \
     X(BOMB_INPUT_CHECK,          0x689fa,    0x6a10a)  \
     X(BOMB_CNT_DECREASE,         0x68a7b,    0x6a18b)  \
     X(POWER_DECREASE,            0x68baf,    0x6a2bf)  \
@@ -51,6 +64,10 @@ namespace TH06NC {
     X(BULLET_HIT_SET_PLY_STATE,  0x6aaf7,    0x6c207)  \
     X(LASER_HIT_BIG_PARTICLE,    0x6ad18,    0x6c428)  \
     X(LASER_HIT_SET_PLY_STATE,   0x6ad44,    0x6c454)  \
+    X(POST_LOAD_REPLAY_META,     0x6b0f2,    0x6c7f3)  \
+    X(POST_REPLAY_SAVE,          0x71954,    0x73024)  \
+    X(PRAC_RPY_SAVE_GET_MODE_ST, 0x735e8,    0x74cb8)  \
+    X(PRAC_RPY_SEL_GET_MODE_STR, 0x7376b,    0x74e3b)  \
     X(PRAC_HIGH_SCORE_WRITE,     0x74440,    0x75b0f)  \
     X(POST_DIMENSION_CHANGE,     0x7c848,    0x7e498)  \
     X(GUI_INIT_LAUNCH,           0x270725,   0x2724d5) \
@@ -88,13 +105,18 @@ namespace TH06NC {
 
 #define INST_LIST(X)                                      \
     /*                               V1_03A     V1_03B */ \
+    X(PAUSE_MENU_POST_RETURN_TITLE,  0xa7cc,    0xaefc)   \
     X(MENU_SET_SUBSHOT_SEL_STATE,    0x4be03,   0x4d563)  \
     X(GAME_MGR_REG_BG_FF_CHECK_FAIL, 0x3b4bc,   0x3cd3c)  \
+    X(MAIN_MENU_LOADED_REPLAY_META,  0x38c62,   0x3a522)  \
     X(BOMB_INPUT_CHECK_PASS,         0x68a11,   0x6a121)  \
     X(BOMB_INPUT_CHECK_FAIL,         0x68ad2,   0x6a1e2)  \
+    X(IN_GAME_LOADED_REPLAY_META_1,  0x6d3df,   0x6eaae)  \
+    X(IN_GAME_LOADED_REPLAY_META_2,  0x71bd0,   0x732a0)  \
 
 #define IS_VAR(name, ...) uintptr_t name;
     INST_LIST(IS_VAR)
+#undef IS_VAR
 #define IS_ENUM(name, ...) name##_ID,
         enum INSTS { INST_LIST(IS_ENUM) };
 #undef IS_ENUM
@@ -109,18 +131,46 @@ namespace TH06NC {
     }
 #undef INST_LIST
 
+//-------------------------------------------------------------------------
+// Other Offsets (used by hooks, no RVA) ----------------------------------
+
+#define OFFS_LIST(X)                                    \
+    /*                            V1_03A      V1_03B */ \
+    X(MAIN_MENU_RPY_NAME_STK_OFF, 0xc8,       0x88)     \
+    X(IN_GAME_RPY_NAME_STK_OFF_1, 0xb0,       0x70)     \
+    X(IN_GAME_RPY_NAME_STK_OFF_2, 0x150,      0x110)    \
+    X(MODE_STRINGS,               0x3086f8,   0x34e2f0) \
+
+#define OF_VAR(name, ...) uintptr_t name;
+    OFFS_LIST(OF_VAR)
+#undef OF_VAR
+#define OF_ENUM(name, ...) name##_ID,
+        enum OFFS { OFFS_LIST(OF_ENUM) };
+#undef OF_ENUM
+#define OF_DATA(name, ...) { __VA_ARGS__ },
+        static const uintptr_t offset_data[][__VER_CNT] = { OFFS_LIST(OF_DATA) };
+#undef OF_DATA
+
+    void InitOffsets(VERSION ver) {
+    #define OF_INIT(name, ...) name = offset_data[name##_ID][ver];
+        OFFS_LIST(OF_INIT)
+    #undef OF_INIT
+    }
+#undef OFFS_LIST
+
 
 //-------------------------------------------------------------------------
 // Global RVAs ------------------------------------------------------------
 
 #define ADDR_LIST(X)                                    \
     /*                             V1_03A     V1_03B */ \
+    X(RETURN_TO_STAGE_SELECT_STR,  0x307f20,  0x34db20) \
+    X(SPELL_PRAC_SAVE_REPLAY_STR,  0x307fa0,  0x34dba0) \
     X(PATCHY_LAST_SPELLS_TABLE,    0x3de300,  0x428f50) \
+    X(ASCII_MANAGER_ADDR,          0x3de620,  0x429270) \
     X(GAME_MANAGER_ADDR,           0x4f1e60,  0x53cab0) \
     X(PLAYER_ADDR,                 0x4ff3a0,  0x549ff0) \
     X(STAGE_BACKGROUND_ADDR,       0x509b60,  0x5547b0) \
-    X(WINDOW_WIDTH,                0xc21e44,  0xc6e064) \
-    X(WINDOW_HEIGHT,               0xc21e48,  0xc6e068) \
     X(BGM_ADDR,                    0x50966c,  0x5542bc) \
     X(HWND_PTR,                    0x55e5a8,  0x5a9548) \
     X(D3D_DEVICE_PTR,              0x9b1cf8,  0x9fcc98) \
@@ -132,10 +182,14 @@ namespace TH06NC {
     X(EIGTH_FRAME_INPUT_HELD_ADDR, 0xa6ec48,  0xabae68) \
     X(INPUT_ADDR,                  0xa6ec60,  0xabae80) \
     X(INPUT_PREV_ADDR,             0xa6ec64,  0xabae84) \
+    X(VANILLA_ELBGM_FLAG,          0xaa1e8c,  0xaee0ac) \
     X(ENEMY_MANAGER_ADDR,          0xaa1e90,  0xaee0b0) \
     X(BOSS_PTR_ADDR,               0xbadf78,  0xbfa198) \
     X(MAIN_MENU_ADDR,              0xc07240,  0xc53460) \
     X(SUPERVISOR_ADDR,             0xc21970,  0xc6db90) \
+    X(WINDOW_WIDTH,                0xc21e44,  0xc6e064) \
+    X(WINDOW_HEIGHT,               0xc21e48,  0xc6e068) \
+    X(SAVE_REPLAY_MENU_PTR_ADDR,   0xc22158,  0xc6e378) \
 
 #define AD_VAR(name, ...) uintptr_t name;
     ADDR_LIST(AD_VAR)
@@ -158,14 +212,15 @@ namespace TH06NC {
 //-------------------------------------------------------------------------
 // Game Functions ---------------------------------------------------------
 
-#define FUNC_LIST(X)                          \
-    /*                   V1_03A     V1_03B */ \
-    X(LOAD_ANM_FILE,     0x20b0,    0x2440)   \
-    X(ANM_VM_SET_SPRITE, 0x2980,    0x2d60)   \
-    X(BGM_PLAY,          0x7bc80,   0x7d8d0)  \
-    X(BGM_STOP,          0x7f9c0,   0x81740)  \
-    X(BGM_RESUME,        0xc8110,   0xc9df0)  \
-    X(BGM_PAUSE,         0xcce50,   0xceb30)  \
+#define FUNC_LIST(X)                                  \
+    /*                           V1_03A     V1_03B */ \
+    X(LOAD_ANM_FILE,             0x20b0,    0x2440)   \
+    X(ANM_VM_SET_SPRITE,         0x2980,    0x2d60)   \
+    X(FETCH_PAUSE_MENU_OPT_STRS, 0x9e80,    0xa5b0)   \
+    X(BGM_PLAY,                  0x7bc80,   0x7d8d0)  \
+    X(BGM_STOP,                  0x7f9c0,   0x81740)  \
+    X(BGM_RESUME,                0xc8110,   0xc9df0)  \
+    X(BGM_PAUSE,                 0xcce50,   0xceb30)  \
 
     struct Function {
         uintptr_t addr;
@@ -201,6 +256,7 @@ namespace TH06NC {
     void SetupGameVersion(VERSION ver) {
         gameVersion = ver;
         InitInstructions(ver);
+        InitOffsets(ver);
         InitGlobals(ver);
         InitFuncs(ver);
     }
@@ -208,6 +264,8 @@ namespace TH06NC {
 
 //-------------------------------------------------------------------------
 // Utils ------------------------------------------------------------------
+
+    const char* PRAC_STR = "Practice ";
 
     struct ECL_OP {
         int16_t code;
@@ -291,37 +349,41 @@ namespace TH06NC {
 // Structs ----------------------------------------------------------------
 
     struct GameManager {
-        char __unknown1[0x8];      // 0x0
-        uint32_t spellCaps;        // 0x8
-        uint32_t spellCapsForTLB;  // 0xc
-        char __unknown2[0x10];     // 0x10
-        uint8_t character;         // 0x20
-        uint8_t subShot;           // 0x21
-        uint32_t stage;            // 0x24
-        uint16_t curPower;         // 0x28
-        char __unknown3[0x906];    // 0x2a
-        int64_t visualScore;       // 0x930
-        int64_t actualScore;       // 0x938
-        int64_t __unkScore;        // 0x940
-        int64_t highScore;         // 0x948
-        char __unknown4[0x4];      // 0x950
-        int8_t inPracticeMode;     // 0x954
-        int8_t inSpellPrac;        // 0x955
-        char __unknown5[0x2];      // 0x956
-        int8_t spellPracSpellNum;  // 0x958
-        uint16_t stagePointItems;  // 0x95a
-        uint16_t totalPointItems;  // 0x95c
-        uint32_t difficulty;       // 0x960
-        uint8_t mode;              // 0x964
-        char __unknown6[0xc907];   // 0x965
-        int32_t stageGraze;        // 0xd26c
-        int32_t totalGraze;        // 0xd270
-        char __unknown7[0x1c];     // 0xd274
-        int8_t livesRemaining;     // 0xd290
-        int8_t bombsRemaining;     // 0xd291
-        uint16_t scoreExtends;     // 0xd292
-        char __unknown8[0x188];    // 0xd294
-        int32_t rank;              // 0xd41c
+        char __unknown_0[0x8];      // 0x0
+        uint32_t spellCaps;         // 0x8
+        uint32_t spellCapsForTLB;   // 0xc
+        char __unknown_10[0x10];    // 0x10
+        uint8_t character;          // 0x20
+        uint8_t subShot;            // 0x21
+        uint32_t stage;             // 0x24
+        uint16_t curPower;          // 0x28
+        char __unknown_2a[0x902];   // 0x2a
+        int8_t inReplay;            // 0x92c
+        int64_t visualScore;        // 0x930
+        int64_t actualScore;        // 0x938
+        int64_t __unkScore;         // 0x940
+        int64_t highScore;          // 0x948
+        uint8_t pauseState;         // 0x950
+        char __unknown_951[0x3];    // 0x951
+        int8_t inPracticeMode;      // 0x954
+        int8_t inSpellPrac;         // 0x955
+        int8_t spellPracEndFlag;    // 0x956
+        char __unknown_958[0x1];    // 0x958
+        int8_t spellPracSpellNum;   // 0x958
+        uint16_t stagePointItems;   // 0x95a
+        uint16_t totalPointItems;   // 0x95c
+        uint32_t difficulty;        // 0x960
+        uint8_t mode;               // 0x964
+        char __unknown_965[0xc907]; // 0x965
+        int32_t stageGraze;         // 0xd26c
+        int32_t totalGraze;         // 0xd270
+        char __unknown_d274[0x1c];  // 0xd274
+        int8_t livesRemaining;      // 0xd290
+        int8_t bombsRemaining;      // 0xd291
+        uint16_t scoreExtends;      // 0xd292
+        char __unknown_d294[0x184]; // 0xd294
+        int32_t stageTime;          // 0xd418
+        int32_t rank;               // 0xd41c
         // size unknown
     };
 
@@ -331,11 +393,14 @@ namespace TH06NC {
     static_assert(offsetof(GameManager, subShot) == 0x21);
     static_assert(offsetof(GameManager, stage) == 0x24);
     static_assert(offsetof(GameManager, curPower) == 0x28);
+    static_assert(offsetof(GameManager, inReplay) == 0x92c);
     static_assert(offsetof(GameManager, visualScore) == 0x930);
     static_assert(offsetof(GameManager, actualScore) == 0x938);
     static_assert(offsetof(GameManager, highScore) == 0x948);
+    static_assert(offsetof(GameManager, pauseState) == 0x950);
     static_assert(offsetof(GameManager, inPracticeMode) == 0x954);
     static_assert(offsetof(GameManager, inSpellPrac) == 0x955);
+    static_assert(offsetof(GameManager, spellPracEndFlag) == 0x956);
     static_assert(offsetof(GameManager, spellPracSpellNum) == 0x958);
     static_assert(offsetof(GameManager, stagePointItems) == 0x95a);
     static_assert(offsetof(GameManager, totalPointItems) == 0x95c);
@@ -346,6 +411,7 @@ namespace TH06NC {
     static_assert(offsetof(GameManager, livesRemaining) == 0xd290);
     static_assert(offsetof(GameManager, bombsRemaining) == 0xd291);
     static_assert(offsetof(GameManager, scoreExtends) == 0xd292);
+    static_assert(offsetof(GameManager, stageTime) == 0xd418);
     static_assert(offsetof(GameManager, rank) == 0xd41c);
 
     struct Timer {
@@ -412,6 +478,19 @@ namespace TH06NC {
         uint8_t curMode;          // 0x44b
     };
 
+    struct AsciiManager {
+        char __unknown1[0x52d0];    // 0x0
+        uintptr_t pauseMenu;        // 0x52d0
+        char __unknown2[0x28cc];    // 0x52d8
+        uint32_t spellPracEndState; // 0x7ba4
+        uint8_t spellPracEndWin;    // 0x7ba8
+    };
+
+    struct SaveReplayMenu {
+        char __unknown1[0x34]; // 0x0
+        uint32_t curState;     // 0x34
+    };
+
     static_assert(offsetof(EnemyManager, bulletSFX) == 0x2b0);
     static_assert(offsetof(EnemyManager, timelineTime) == 0x10c0b8);
     static_assert(offsetof(Enemy, bossTimer) == 0x0);
@@ -426,6 +505,10 @@ namespace TH06NC {
     static_assert(offsetof(ZUNGui, isBossPresent) == 0x44);
     static_assert(offsetof(Supervisor, curState) == 0x42c);
     static_assert(offsetof(Supervisor, curMode) == 0x44b);
+    static_assert(offsetof(AsciiManager, pauseMenu) == 0x52d0);
+    static_assert(offsetof(AsciiManager, spellPracEndState) == 0x7ba4);
+    static_assert(offsetof(AsciiManager, spellPracEndWin) == 0x7ba8);
+    static_assert(offsetof(SaveReplayMenu, curState) == 0x34);
 
     struct Player {
         char __unknown1[0x7858]; // 0x0
@@ -441,6 +524,8 @@ namespace TH06NC {
 
 //-------------------------------------------------------------------------
 // THPracParam ------------------------------------------------------------
+    extern HookCtx th06nc_end_rpy_on_last_frame;
+
     struct THPracParam {
         int32_t mode;
         int32_t gameMode;
@@ -459,11 +544,11 @@ namespace TH06NC {
 
         int32_t rank;
         int32_t fakeType;
+        int32_t lastFrame;
         bool guaranteeTLB;
         bool dlg;
 
-        void Reset()
-        {
+        void Reset() {
             mode = 0;
             stage = 0;
             section = 0;
@@ -477,62 +562,62 @@ namespace TH06NC {
             point = 0;
             rank = 0;
             fakeType = 0;
+            lastFrame = 0;
+            th06nc_end_rpy_on_last_frame.Disable();
             guaranteeTLB = false;
             dlg = false;
         }
 
-        bool ReadJson(std::string& json)
-        {
+        bool ReadJson(std::string& json) {
             ParseJson();
 
-            ForceJsonValue(game, "th06");
+            ForceJsonValue(game, "th06nc");
             GetJsonValue(mode);
             GetJsonValue(stage);
             GetJsonValue(section);
             GetJsonValue(phase);
             GetJsonValue(frame);
-            GetJsonValue(score);
-            GetJsonValue(life);
-            GetJsonValue(bomb);
             GetJsonValue(power);
+            GetJsonValue(score);
             GetJsonValue(graze);
             GetJsonValue(point);
+            GetJsonValue(life);
+            GetJsonValue(bomb);
             GetJsonValue(rank);
             GetJsonValue(fakeType);
+            GetJsonValue(lastFrame);
             GetJsonValue(guaranteeTLB);
             GetJsonValue(dlg);
 
             return true;
         }
 
-        std::string GetJson()
-        {
+        std::string GetJson() {
             CreateJson();
 
             AddJsonVersion();
             AddJsonValueEx(game, "th06nc");
             AddJsonValue(mode);
-            AddJsonValue(stage);
-            if (section)
-                AddJsonValue(section);
-            if (phase)
-                AddJsonValue(phase);
-            if (frame)
-                AddJsonValue(frame);
-            if (guaranteeTLB)
-                AddJsonValue(guaranteeTLB);
-            if (dlg)
-                AddJsonValue(dlg);
+            if (lastFrame) AddJsonValue(lastFrame);
 
-            AddJsonValue(score);
-            AddJsonValue(life);
-            AddJsonValue(bomb);
-            AddJsonValue(power);
-            AddJsonValue(graze);
-            AddJsonValue(point);
-            AddJsonValue(rank);
-            AddJsonValue(fakeType);
+            if (mode) {
+                AddJsonValue(stage);
+                if (section) AddJsonValue(section);
+                if (phase) AddJsonValue(phase);
+                if (frame) AddJsonValue(frame);
 
+                AddJsonValue(power);
+                AddJsonValue(score);
+                AddJsonValue(graze);
+                AddJsonValue(point);
+                AddJsonValue(life);
+                AddJsonValue(bomb);
+                AddJsonValue(rank);
+                AddJsonValue(fakeType);
+
+                if (guaranteeTLB) AddJsonValue(guaranteeTLB);
+                if (dlg) AddJsonValue(dlg);
+            }
             ReturnJson();
         }
     };
