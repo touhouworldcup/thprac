@@ -534,6 +534,9 @@ namespace TH06NC {
         uint32_t lastSpellID;
         uint32_t lastSpellTimer;
 
+        const uint32_t BOOKS_ID = 200;
+        bool inBooksCapAttempt;
+
         const th_glossary_t shotNames[4] = {
             TH_TRACKER_REIMU_A, TH_TRACKER_REIMU_B,
             TH_TRACKER_MARISA_A, TH_TRACKER_MARISA_B
@@ -565,7 +568,44 @@ namespace TH06NC {
             UpdateSize(2);
         }
 
+        uint64_t& GetBooksHistory(uint32_t diff = GAME_MANAGER->difficulty, uint32_t shotID = GAME_MANAGER->GetShotID()) {
+            SavefileSpellData& spellData = GAME_MANAGER->spellData[118]; // silent selene unused registers (easy-luna diffs)
+            return spellData.spellPracHighScores[GAME_MANAGER->difficulty][GAME_MANAGER->GetShotID()];
+        }
+
         virtual void OnPreUpdate() override {
+            bool isBooksActive = false;
+
+            if (GAME_MANAGER->stage == 4) { // check for Books Attempt & increment attempt/cap
+                uint32_t timelineTime = (uint32_t)ENEMY_MANAGER->timelineTime.current;
+                isBooksActive = timelineTime >= st4BooksTime && timelineTime < midbossTime[3];
+
+                if (timelineTime == st4BooksTime) { // attempt start
+                    uint32_t& attemptCnt = ((uint32_t*)&GetBooksHistory())[0];
+                    if (attemptCnt < UINT32_MAX) attemptCnt++;
+
+                    inBooksCapAttempt = true;
+
+                } else if (inBooksCapAttempt && timelineTime >= midbossTime[3]) { // cap (miss/bomb/reset ends attempt)
+                    uint32_t& captureCnt = ((uint32_t*)&GetBooksHistory())[1];
+                    if (captureCnt < UINT32_MAX) captureCnt++;
+
+                    inBooksCapAttempt = false;
+                }
+            }
+
+            if (isBooksActive) {
+                lastSpellID = BOOKS_ID;
+                lastSpellTimer = 280;
+            } else if (*(uint32_t*)SPELLCARD_IS_ACTIVE) {
+                lastSpellID = *(uint32_t*)SPELLCARD_ID;
+                lastSpellTimer = 280;
+            } else if (GAME_MANAGER->inSpellPrac) {
+                lastSpellID = GAME_MANAGER->spellPracSpellNum;
+                lastSpellTimer = 1;
+            } else if (lastSpellTimer && !GAME_MANAGER->pauseState)
+                lastSpellTimer--;
+
             if (tracker_open && GetMemContent(ECL_MANAGER_ADDR)) Open();
             else Close();
         }
@@ -576,9 +616,10 @@ namespace TH06NC {
 
             uint32_t tableLineCnt = 0;
             ImGui::BeginTable("Tracker Table", 2);
-            ImGui::TableNextRow();
 
             if (!GAME_MANAGER->inSpellPrac) {
+                ImGui::TableNextRow();
+
                 ImGui::TableNextColumn();
                 ImGui::TextUnformatted(S(TH_TRACKER_MISS));
                 ImGui::TableNextColumn();
@@ -590,24 +631,11 @@ namespace TH06NC {
                 ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
                 ImGui::TableNextColumn();
                 ImGui::Text("%d", bombs);
-
                 tableLineCnt += 2;
             }
 
-            // we keep spell info on screen for a lil after cap (so history can be updated post-cap)
-            bool isSpellActive = *(uint32_t*)SPELLCARD_IS_ACTIVE;
-
-            if (isSpellActive) {
-                lastSpellID = *(uint32_t*)SPELLCARD_ID;
-                lastSpellTimer = 280;
-            } else if (GAME_MANAGER->inSpellPrac) {
-                lastSpellID = GAME_MANAGER->spellPracSpellNum;
-                lastSpellTimer = 1;
-            } else if (lastSpellTimer && !GAME_MANAGER->pauseState)
-                lastSpellTimer--;
-
-            if (lastSpellTimer) {
-                SavefileSpellData& spellData = GAME_MANAGER->spellData[lastSpellID];
+            // spell history + Yellow Bonus & SCB (if in prac)
+            if (lastSpellTimer) { // note: we keep spell info on screen for a lil after cap (so history can be updated post-cap)
                 ImGui::TableNextRow();
 
                 ImGui::TableNextColumn();
@@ -616,20 +644,30 @@ namespace TH06NC {
 
                 uint32_t captureCnt, attemptCnt;
                 uint8_t shotID = GAME_MANAGER->GetShotID();
+                uint32_t difficulty = GAME_MANAGER->difficulty;
+                bool isBooks = lastSpellID == BOOKS_ID;
 
-                if (GAME_MANAGER->inSpellPrac) {
-                    uint32_t difficulty = GAME_MANAGER->difficulty;
-                    captureCnt = spellData.spellPracCaptures[difficulty][shotID];
-                    attemptCnt = spellData.spellPracAttempts[difficulty][shotID];
-
-                } else if (GAME_MANAGER->inPracticeMode) { // custom registers
-                    uint32_t unusedDifficulty = GAME_MANAGER->difficulty == EXTRA ? EASY : EXTRA;
-                    captureCnt = spellData.spellPracCaptures[unusedDifficulty][shotID];
-                    attemptCnt = spellData.spellPracAttempts[unusedDifficulty][shotID];
+                if (isBooks) {
+                    uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty, shotID);
+                    attemptCnt = booksHistory[0];
+                    captureCnt = booksHistory[1];
 
                 } else {
-                    captureCnt = spellData.captureCount;
-                    attemptCnt = spellData.attemptCount;
+                    SavefileSpellData& spellData = GAME_MANAGER->spellData[lastSpellID];
+
+                    if (GAME_MANAGER->inSpellPrac) {
+                        captureCnt = spellData.spellPracCaptures[difficulty][shotID];
+                        attemptCnt = spellData.spellPracAttempts[difficulty][shotID];
+
+                    } else if (GAME_MANAGER->inPracticeMode) { // custom registers
+                        uint32_t unusedDifficulty = difficulty == EXTRA ? EASY : EXTRA;
+                        captureCnt = spellData.spellPracCaptures[unusedDifficulty][shotID];
+                        attemptCnt = spellData.spellPracAttempts[unusedDifficulty][shotID];
+
+                    } else {
+                        captureCnt = spellData.captureCount;
+                        attemptCnt = spellData.attemptCount;
+                    }
                 }
 
                 if (attemptCnt)
@@ -637,7 +675,8 @@ namespace TH06NC {
                 else ImGui::Text("%d / %d", captureCnt, attemptCnt);
                 tableLineCnt++;
 
-                if (GAME_MANAGER->inPracticeMode || GAME_MANAGER->inSpellPrac || GAME_MANAGER->inReplay) {
+                if ((GAME_MANAGER->inPracticeMode || GAME_MANAGER->inSpellPrac || GAME_MANAGER->inReplay) && !isBooks) {
+                    bool isSpellActive = *(uint32_t*)SPELLCARD_IS_ACTIVE;
                     ImGui::TableNextRow();
 
                     ImGui::TableNextColumn();
@@ -681,12 +720,14 @@ namespace TH06NC {
         void Reset() {
             misses = bombs = 0;
             lastSpellTimer = 0;
+            inBooksCapAttempt = false;
+
             snprintf(shotNameBuf, sizeof(shotNameBuf), "%s", S(shotNames[GAME_MANAGER->GetShotID()]));
             shotNameSize = ImGui::CalcTextSize(shotNameBuf);
         }
 
-        void CountMiss() { misses++; }
-        void CountBomb() { bombs++; }
+        void CountMiss() { inBooksCapAttempt = false; misses++; }
+        void CountBomb() { inBooksCapAttempt = false; bombs++; }
     };
 
 
@@ -1057,8 +1098,7 @@ namespace TH06NC {
 
             switch (section) {
             case TH06_ST4_BOOKS: { // Books
-                constexpr uint32_t st4BooksTime = 3378 - 40;
-                ECLWarp(st4BooksTime);
+                ECLWarp(st4BooksTime - 45);
                 break;
             }
 

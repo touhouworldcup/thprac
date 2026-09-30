@@ -345,6 +345,7 @@ namespace TH06NC {
     constexpr uint32_t frameMax[] =    { 5096, 5897, 6317, 10514, 7607, 3103, 8502 };
     constexpr uint32_t midbossTime[] = { 1882, 2498, 3474, 4058,  3272, 2493, 4640 };
     constexpr uint32_t bossDlgTime[] = { 5092, 5893, 6254, 10510, 7604, 3096, 8493 };
+    constexpr uint32_t st4BooksTime = 3378;
 
     int mChapterSetup[7][2]{
         { 4, 2 },
