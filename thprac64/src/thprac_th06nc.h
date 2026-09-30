@@ -68,9 +68,9 @@ namespace TH06NC {
     X(LIFE_CNT_FETCH,            0x68e66,    0x6a576)  \
     X(LIFE_CNT_DECREASE,         0x68e88,    0x6a59f)  \
     X(BULLET_HIT_BIG_PARTICLE,   0x6aacf,    0x6c1df)  \
-    X(BULLET_HIT_SET_PLY_STATE,  0x6aaf7,    0x6c207)  \
+    X(BULLET_HIT_SET_PLY_STATE,  0x6aaf1,    0x6c201)  \
     X(LASER_HIT_BIG_PARTICLE,    0x6ad18,    0x6c428)  \
-    X(LASER_HIT_SET_PLY_STATE,   0x6ad44,    0x6c454)  \
+    X(LASER_HIT_SET_PLY_STATE,   0x6ad3e,    0x6c44e)  \
     X(POST_LOAD_REPLAY_META,     0x6b0f2,    0x6c7f3)  \
     X(POST_REPLAY_SAVE,          0x71954,    0x73024)  \
     X(PRAC_RPY_SAVE_GET_MODE_ST, 0x735e8,    0x74cb8)  \

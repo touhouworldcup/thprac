@@ -381,153 +381,12 @@ namespace TH06NC {
         }
     };
 
-    // Overlay (Backspace Menu)
-    class THOverlay : public Gui::GameGuiWnd {
-        THOverlay() noexcept {
-            SetTitle("Mod Menu");
-            SetFade(0.5f, 0.5f);
-            SetSize(0.0f, 0.0f);
-            SetWndFlag(ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize
-                | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize
-                | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing
-                | ImGuiWindowFlags_NoNav | 0);
-            OnLocaleChange();
-
-            mInvincible.SetupHooksRT(GetHookAddr);
-            mInfLives.SetupHooksRT(GetHookAddr);
-            mInfBombs.SetupHooksRT(GetHookAddr);
-            mInfPower.SetupHooksRT(GetHookAddr);
-            mTimeLock.SetupHooksRT(GetHookAddr);
-            mAutoBomb.SetupHooksRT(GetHookAddr);
-            mElBgm.SetupHooksRT(GetHookAddr);
-        }
-        SINGLETON(THOverlay);
-
-    protected:
-        virtual void OnLocaleChange() override {
-            SetPosRel(0.006f, 0.01f);
-        }
-
-        virtual void OnPreUpdate() override {
-            if (mMenu(false) && !ImGui::IsAnyItemActive()) {
-                if (*mMenu) Open();
-                else Close();
-            }
-        }
-
-        virtual void OnContentUpdate() override {
-            bool inMainMenu = (GetMemContent(ECL_MANAGER_ADDR) == 0);
-
-            mInvincible();
-            if (inMainMenu || GAME_MANAGER->mode != 1) mInfLives();
-            mInfBombs();
-            mInfPower();
-            mTimeLock();
-            mAutoBomb();
-            if (inMainMenu || GAME_MANAGER->inPracticeMode) mElBgm();
-        }
-
-        GuiHotKeyChord mMenu{ "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
-
-        HOTKEY_DEFINE_RT(mInvincible, TH_MUTEKI, "F1", VK_F1)
-        PATCH_HK(BULLET_HIT_BIG_PARTICLE, NOP(5)),
-        PATCH_HK(BULLET_HIT_SET_PLY_STATE, "00"), // default state (not pre-death)
-        PATCH_HK(LASER_HIT_BIG_PARTICLE, NOP(5)),
-        PATCH_HK(LASER_HIT_SET_PLY_STATE, "00") // default state (not pre-death)
-        HOTKEY_ENDDEF();
-
-        HOTKEY_DEFINE_RT(mInfLives, TH_INFLIVES, "F2", VK_F2)
-        PATCH_HK(LIFE_CNT_FETCH, "B801000000" NOP(2)), // prevent game over
-        PATCH_HK(LIFE_CNT_DECREASE, NOP(6)),
-        PATCH_HK(LAST_LIFE_HIT_DROP_FS, NOP(6))
-        HOTKEY_ENDDEF();
-
-        HOTKEY_DEFINE_RT(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
-        PATCH_HK(BOMB_CNT_DECREASE, NOP(6))
-        HOTKEY_ENDDEF();
-
-        HOTKEY_DEFINE_RT(mInfPower, TH_INFPOWER, "F4", VK_F4)
-        PATCH_HK(POWER_DECREASE, NOP(7)),
-        PATCH_HK(POWER_MIN_CHALLENGE_MODE, NOP(8))
-        HOTKEY_ENDDEF();
-
-        HOTKEY_DEFINE_RT(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
-        PATCH_HK(ENEMY_MGR_TICK_BOSS_TIME, NOP(2)),
-        EHOOK_HK(ENEMY_MGR_TICK_TIMELINE, 2, { // freeze timeline progress during st1/2/4/5 mid (missing boss_wait)
-            constexpr int32_t midLength[5] = { (24 + 22) * 60, 32 * 60, 0, 40 * 60, (40 + 30) * 60 };
-            constexpr int32_t midExtraWait[5] = { 4 * 60, 15 * 60, 0, 10 * 60, 5 * 60 };
-
-            const uint32_t st = GAME_MANAGER->stage - 1;
-            if (st < 6 && st != 2) {
-                const bool bossExists = ZUN_GUI->isBossPresent;
-                const int32_t midStart = midbossTime[st] + (st == 4 ? 2 : 0);
-                const int32_t curTime = (int32_t)pCtx->Rcx;
-
-                if (bossExists && curTime >= midStart && curTime < midStart + midLength[st]) {
-                    const int32_t noWaitTime = midStart + midExtraWait[st];
-
-                    if (curTime < noWaitTime) pCtx->Rcx = noWaitTime; // remove unnecessary wait
-                    return; // don't tick timeline
-                }
-            }
-
-            OG_INS(pCtx->Rcx += 1);
-        })
-        // tofix: - Rumia mid leaving, Daiyousei stops shooting, Meiling midspell becomes strange (OG eosd carryover, issue #339)
-        HOTKEY_ENDDEF();
-
-        HOTKEY_DEFINE_RT(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
-        EHOOK_HK(BOMB_INPUT_CHECK, 6, {
-            uint16_t player_state = *(uint16_t*)(pCtx->Rdi + 0x7898);
-
-            if (player_state == 0x2) pCtx->Rip = BOMB_INPUT_CHECK_PASS; // pre-death state
-            OG_INS(else if (pCtx->EFlags & EFLAGS::ZF) pCtx->Rip = BOMB_INPUT_CHECK_FAIL);
-        })
-        HOTKEY_ENDDEF();
-
-    public:
-        inline static intptr_t storedBGM;
-        static bool ShouldKeepBGM() {
-            uint32_t gameState = SUPERVISOR->curState;
-
-            if (!GAME_MANAGER->inPracticeMode) return false;
-            if (gameState != RESTART_END && gameState != RESTART_START) return false;
-            if (!thPracParam.mode) return false;
-            if (!thPracParam.section && thPracParam.frame < 60) return false;
-            if (*(int32_t*)BGM_ADDR != startBGM) return false;
-
-            return true; // keep BGM
-        }
-
-        HOTKEY_DEFINE_RT(mElBgm, TH_EL_BGM, "F7", VK_F7)
-        EHOOK_HK(PAUSE_MENU_BGM_PAUSE, 5, {
-            if (!GAME_MANAGER->inPracticeMode)
-                OG_INS(BGM_PAUSE(pCtx->Rcx, 0));
-        }),
-        EHOOK_HK(GAME_MGR_END_PAUSE_BGM, 6, {
-            if (ShouldKeepBGM()) {
-                int32_t curBGM = *(int32_t*)BGM_ADDR;
-                BGM_RESUME(curBGM, 3); // resume bgm if it was paused (i.e. toggle on ElBgm after pausing)
-                storedBGM = curBGM;
-                pCtx->Rcx = -1;
-
-            } else OG_INS(pCtx->Rcx = *(int32_t*)BGM_ADDR); // do stop
-        }),
-        EHOOK_HK(GAME_MGR_REG_PLAY_BGM, 5, { // disable bgm start (on stage start) when doing restart
-            if (ShouldKeepBGM()) {
-                *(intptr_t*)BGM_ADDR = storedBGM;
-                storedBGM = (intptr_t)nullptr;
-
-            } else OG_INS(BGM_PLAY(pCtx->Rcx, pCtx->Rdx)); // do play
-        })
-        HOTKEY_ENDDEF();
-    };
-
 
     // In-Game Tracker
     class THTracker : public Gui::GameGuiWnd {
         char shotNameBuf[32];
         ImVec2 shotNameSize;
+        uint32_t blockedHits = 0;
         uint32_t misses = 0;
         uint32_t bombs = 0;
 
@@ -617,21 +476,25 @@ namespace TH06NC {
             uint32_t tableLineCnt = 0;
             ImGui::BeginTable("Tracker Table", 2);
 
-            if (!GAME_MANAGER->inSpellPrac) {
+            if (!GAME_MANAGER->inSpellPrac || blockedHits) { // misses
                 ImGui::TableNextRow();
 
                 ImGui::TableNextColumn();
                 ImGui::TextUnformatted(S(TH_TRACKER_MISS));
                 ImGui::TableNextColumn();
-                ImGui::Text("%d", misses);
+                if (blockedHits) ImGui::Text("%d (%d)", misses, blockedHits);
+                else ImGui::Text("%d", misses);
+                tableLineCnt += 1;
+            }
 
+            if (!GAME_MANAGER->inSpellPrac) { // bombs
                 ImGui::TableNextRow();
 
                 ImGui::TableNextColumn();
                 ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
                 ImGui::TableNextColumn();
                 ImGui::Text("%d", bombs);
-                tableLineCnt += 2;
+                tableLineCnt += 1;
             }
 
             // spell history + Yellow Bonus & SCB (if in prac)
@@ -720,6 +583,7 @@ namespace TH06NC {
         void Reset() {
             misses = bombs = 0;
             lastSpellTimer = 0;
+            blockedHits = 0;
             inBooksCapAttempt = false;
 
             snprintf(shotNameBuf, sizeof(shotNameBuf), "%s", S(shotNames[GAME_MANAGER->GetShotID()]));
@@ -728,8 +592,158 @@ namespace TH06NC {
 
         void CountMiss() { inBooksCapAttempt = false; misses++; }
         void CountBomb() { inBooksCapAttempt = false; bombs++; }
+        void CountBlockedHit() { inBooksCapAttempt = false; blockedHits++; }
     };
 
+
+
+    // Overlay (Backspace Menu)
+    class THOverlay : public Gui::GameGuiWnd {
+        THOverlay() noexcept {
+            SetTitle("Mod Menu");
+            SetFade(0.5f, 0.5f);
+            SetSize(0.0f, 0.0f);
+            SetWndFlag(ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize
+                | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize
+                | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing
+                | ImGuiWindowFlags_NoNav | 0);
+            OnLocaleChange();
+
+            mInvincible.SetupHooksRT(GetHookAddr);
+            mInfLives.SetupHooksRT(GetHookAddr);
+            mInfBombs.SetupHooksRT(GetHookAddr);
+            mInfPower.SetupHooksRT(GetHookAddr);
+            mTimeLock.SetupHooksRT(GetHookAddr);
+            mAutoBomb.SetupHooksRT(GetHookAddr);
+            mElBgm.SetupHooksRT(GetHookAddr);
+        }
+        SINGLETON(THOverlay);
+
+    protected:
+        virtual void OnLocaleChange() override {
+            SetPosRel(0.006f, 0.01f);
+        }
+
+        virtual void OnPreUpdate() override {
+            if (mMenu(false) && !ImGui::IsAnyItemActive()) {
+                if (*mMenu) Open();
+                else Close();
+            }
+        }
+
+        virtual void OnContentUpdate() override {
+            bool inMainMenu = (GetMemContent(ECL_MANAGER_ADDR) == 0);
+
+            mInvincible();
+            if (inMainMenu || GAME_MANAGER->mode != 1) mInfLives();
+            mInfBombs();
+            mInfPower();
+            mTimeLock();
+            mAutoBomb();
+            if (inMainMenu || GAME_MANAGER->inPracticeMode) mElBgm();
+        }
+
+        GuiHotKeyChord mMenu{ "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
+
+        HOTKEY_DEFINE_RT(mInvincible, TH_MUTEKI, "F1", VK_F1)
+        PATCH_HK(BULLET_HIT_BIG_PARTICLE, NOP(5)),
+        EHOOK_HK(BULLET_HIT_SET_PLY_STATE, 7, {
+            PLAYER->player_state = 0; // default state (not pre-death)
+            THTracker::singleton().CountBlockedHit();
+        }),
+        PATCH_HK(LASER_HIT_BIG_PARTICLE, NOP(5)),
+        EHOOK_HK(LASER_HIT_SET_PLY_STATE, 7, {
+            PLAYER->player_state = 0; // default state (not pre-death)
+            THTracker::singleton().CountBlockedHit();
+        })
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE_RT(mInfLives, TH_INFLIVES, "F2", VK_F2)
+        PATCH_HK(LIFE_CNT_FETCH, "B801000000" NOP(2)), // prevent game over
+        PATCH_HK(LIFE_CNT_DECREASE, NOP(6)),
+        PATCH_HK(LAST_LIFE_HIT_DROP_FS, NOP(6))
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE_RT(mInfBombs, TH_INFBOMBS, "F3", VK_F3)
+        PATCH_HK(BOMB_CNT_DECREASE, NOP(6))
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE_RT(mInfPower, TH_INFPOWER, "F4", VK_F4)
+        PATCH_HK(POWER_DECREASE, NOP(7)),
+        PATCH_HK(POWER_MIN_CHALLENGE_MODE, NOP(8))
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE_RT(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
+        PATCH_HK(ENEMY_MGR_TICK_BOSS_TIME, NOP(2)),
+        EHOOK_HK(ENEMY_MGR_TICK_TIMELINE, 2, { // freeze timeline progress during st1/2/4/5 mid (missing boss_wait)
+            constexpr int32_t midLength[5] = { (24 + 22) * 60, 32 * 60, 0, 40 * 60, (40 + 30) * 60 };
+            constexpr int32_t midExtraWait[5] = { 4 * 60, 15 * 60, 0, 10 * 60, 5 * 60 };
+
+            const uint32_t st = GAME_MANAGER->stage - 1;
+            if (st < 6 && st != 2) {
+                const bool bossExists = ZUN_GUI->isBossPresent;
+                const int32_t midStart = midbossTime[st] + (st == 4 ? 2 : 0);
+                const int32_t curTime = (int32_t)pCtx->Rcx;
+
+                if (bossExists && curTime >= midStart && curTime < midStart + midLength[st]) {
+                    const int32_t noWaitTime = midStart + midExtraWait[st];
+
+                    if (curTime < noWaitTime) pCtx->Rcx = noWaitTime; // remove unnecessary wait
+                    return; // don't tick timeline
+                }
+            }
+
+            OG_INS(pCtx->Rcx += 1);
+        })
+        // tofix: - Rumia mid leaving, Daiyousei stops shooting, Meiling midspell becomes strange (OG eosd carryover, issue #339)
+        HOTKEY_ENDDEF();
+
+        HOTKEY_DEFINE_RT(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
+        EHOOK_HK(BOMB_INPUT_CHECK, 6, {
+            uint16_t player_state = *(uint16_t*)(pCtx->Rdi + 0x7898);
+
+            if (player_state == 0x2) pCtx->Rip = BOMB_INPUT_CHECK_PASS; // pre-death state
+            OG_INS(else if (pCtx->EFlags & EFLAGS::ZF) pCtx->Rip = BOMB_INPUT_CHECK_FAIL);
+        })
+        HOTKEY_ENDDEF();
+
+    public:
+        inline static intptr_t storedBGM;
+        static bool ShouldKeepBGM() {
+            uint32_t gameState = SUPERVISOR->curState;
+
+            if (!GAME_MANAGER->inPracticeMode) return false;
+            if (gameState != RESTART_END && gameState != RESTART_START) return false;
+            if (!thPracParam.mode) return false;
+            if (!thPracParam.section && thPracParam.frame < 60) return false;
+            if (*(int32_t*)BGM_ADDR != startBGM) return false;
+
+            return true; // keep BGM
+        }
+
+        HOTKEY_DEFINE_RT(mElBgm, TH_EL_BGM, "F7", VK_F7)
+        EHOOK_HK(PAUSE_MENU_BGM_PAUSE, 5, {
+            if (!GAME_MANAGER->inPracticeMode)
+                OG_INS(BGM_PAUSE(pCtx->Rcx, 0));
+        }),
+        EHOOK_HK(GAME_MGR_END_PAUSE_BGM, 6, {
+            if (ShouldKeepBGM()) {
+                int32_t curBGM = *(int32_t*)BGM_ADDR;
+                BGM_RESUME(curBGM, 3); // resume bgm if it was paused (i.e. toggle on ElBgm after pausing)
+                storedBGM = curBGM;
+                pCtx->Rcx = -1;
+
+            } else OG_INS(pCtx->Rcx = *(int32_t*)BGM_ADDR); // do stop
+        }),
+        EHOOK_HK(GAME_MGR_REG_PLAY_BGM, 5, { // disable bgm start (on stage start) when doing restart
+            if (ShouldKeepBGM()) {
+                *(intptr_t*)BGM_ADDR = storedBGM;
+                storedBGM = (intptr_t)nullptr;
+
+            } else OG_INS(BGM_PLAY(pCtx->Rcx, pCtx->Rdx)); // do play
+        })
+        HOTKEY_ENDDEF();
+    };
 
 
     // ECL Patching Tools
