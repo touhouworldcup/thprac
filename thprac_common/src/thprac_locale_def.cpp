@@ -5,7 +5,7 @@
 
 
 
-const char* th_glossary_str[3][1204]
+const char* th_glossary_str[3][1206]
 {
     {
         "",
@@ -1132,11 +1132,13 @@ const char* th_glossary_str[3][1204]
         "Bomb",
         "爆结界",
         "结界组",
+        "收取",
         "琪露诺",
         "大鹫",
         "Easy",
         "Extra",
         "Hard",
+        "历史",
         "Hyper",
         "爆Hyper",
         "LSC数",
@@ -2338,11 +2340,13 @@ const char* th_glossary_str[3][1204]
         "Bombs",
         "Border Breaks",
         "Border Team",
+        "Captures",
         "Cirno",
         "Eagle",
         "Easy",
         "Extra",
         "Hard",
+        "History",
         "Hyper",
         "Hyper Break",
         "Last Spells",
@@ -3544,11 +3548,13 @@ const char* th_glossary_str[3][1204]
         "ボム",
         "霊撃",
         "結界組",
+        "TODO_JP",
         "チルノ",
         "オオワシ",
         "イージー",
         "エキストラ",
         "ハード",
+        "TODO_JP",
         "異変攻撃",
         "霊撃",
         "ラストスペル",

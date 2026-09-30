@@ -1132,11 +1132,13 @@ enum th_glossary_t
     TH_TRACKER_BOMB,
     TH_TRACKER_BORDER_BREAK,
     TH_TRACKER_BORDER_TEAM,
+    TH_TRACKER_CAPTURES,
     TH_TRACKER_CIRNO,
     TH_TRACKER_EAGLE,
     TH_TRACKER_EASY,
     TH_TRACKER_EXTRA,
     TH_TRACKER_HARD,
+    TH_TRACKER_HISTORY,
     TH_TRACKER_HYPER,
     TH_TRACKER_HYPER_BREAK,
     TH_TRACKER_LAST_SPELLS,
@@ -1214,7 +1216,7 @@ enum th_glossary_t
     TH_YES,
 };
 
-extern const char* th_glossary_str[3][1204];
+extern const char* th_glossary_str[3][1206];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

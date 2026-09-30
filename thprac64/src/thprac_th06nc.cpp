@@ -249,13 +249,11 @@ namespace TH06NC {
             case LOCALE_JA_JP:
                 SetSizeRel(asnWidth, asnHeight);
                 SetPosRel(asnX, asnY);
-                //SetItemWidth(-60.f); // -65.f for JP, butwhy
                 break;
 
             case LOCALE_EN_US:
                 SetSizeRel(enWidth, enHeight);
                 SetPosRel(enX, enY);
-                //SetItemWidth(-60.f);
                 break;
 
             default:
@@ -332,7 +330,7 @@ namespace TH06NC {
             }
 
             mDifficulty = curDifficulty;
-            mShotType = GAME_MANAGER->character * 2 + GAME_MANAGER->subShot;
+            mShotType = GAME_MANAGER->GetShotID();
         }
 
         __declspec(noinline) void ConfirmMenu() {
@@ -524,6 +522,128 @@ namespace TH06NC {
         })
         HOTKEY_ENDDEF();
     };
+
+
+    // In-Game Tracker
+    class THTracker : public Gui::GameGuiWnd {
+        char shotNameBuf[32];
+        ImVec2 shotNameSize;
+        uint32_t misses = 0;
+        uint32_t bombs = 0;
+
+        uint32_t lastSpellID;
+        uint32_t lastSpellTimer;
+
+        const th_glossary_t shotNames[4] = {
+            TH_TRACKER_REIMU_A, TH_TRACKER_REIMU_B,
+            TH_TRACKER_MARISA_A, TH_TRACKER_MARISA_B
+        };
+
+        THTracker() noexcept {
+            SetTitle("Tracker");
+            SetFade(0.8f, 0.4f);
+            SetWndFlag(ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs |
+                ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+            OnLocaleChange();
+        }
+        SINGLETON(THTracker);
+
+    protected:
+        void UpdateSize(uint32_t tableLineCnt) {
+            constexpr float width = 0.14f;
+            const float height = 0.0286f * tableLineCnt + 0.06f;
+            SetSizeRel(width, height);
+
+            constexpr float targetX = 0.865f;
+            constexpr float targetY = 0.755f;
+            SetPosRel(targetX - width / 2.f, targetY - height / 2.f);
+        }
+
+        virtual void OnLocaleChange() override {
+            UpdateSize(2);
+        }
+
+        virtual void OnPreUpdate() override {
+            if (tracker_open && GetMemContent(ECL_MANAGER_ADDR)) Open();
+            else Close();
+        }
+
+        virtual void OnContentUpdate() override {
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - shotNameSize.x * 0.5f);
+            ImGui::TextUnformatted(shotNameBuf);
+
+            uint32_t tableLineCnt = 0;
+            ImGui::BeginTable("Tracker Table", 2);
+            ImGui::TableNextRow();
+
+            if (!GAME_MANAGER->inSpellPrac) {
+                ImGui::TableNextColumn();
+                ImGui::TextUnformatted(S(TH_TRACKER_MISS));
+                ImGui::TableNextColumn();
+                ImGui::Text("%d", misses);
+
+                ImGui::TableNextRow();
+
+                ImGui::TableNextColumn();
+                ImGui::TextUnformatted(S(TH_TRACKER_BOMB));
+                ImGui::TableNextColumn();
+                ImGui::Text("%d", bombs);
+
+                tableLineCnt += 2;
+            }
+
+            // we keep spell info on screen for a lil after cap (so history can be updated post-cap)
+            if (*(uint32_t*)SPELLCARD_IS_ACTIVE) {
+                lastSpellID = *(uint32_t*)SPELLCARD_ID;
+                lastSpellTimer = 280;
+            } else if (GAME_MANAGER->inSpellPrac) {
+                lastSpellID = GAME_MANAGER->spellPracSpellNum;
+                lastSpellTimer = 1;
+            } else if (lastSpellTimer && !GAME_MANAGER->pauseState)
+                lastSpellTimer--;
+
+            if (lastSpellTimer) {
+                SavefileSpellData& spellData = GAME_MANAGER->spellData[lastSpellID];
+                ImGui::TableNextRow();
+
+                ImGui::TableNextColumn();
+                ImGui::TextUnformatted(S(TH_TRACKER_HISTORY));
+                ImGui::TableNextColumn();
+
+                uint32_t capCnt, attemptCnt;
+                if (GAME_MANAGER->inSpellPrac) {
+                    capCnt = spellData.spellPracCaps[GAME_MANAGER->difficulty][GAME_MANAGER->GetShotID()];
+                    attemptCnt = spellData.spellPracAttempts[GAME_MANAGER->difficulty][GAME_MANAGER->GetShotID()];
+
+                } else {
+                    capCnt = spellData.capCount;
+                    attemptCnt = spellData.attemptCount;
+                }
+
+                if (attemptCnt)
+                    ImGui::Text("%d / %d (%d%%)", capCnt, attemptCnt, capCnt * 100 / attemptCnt);
+                else ImGui::Text("%d / %d", capCnt, attemptCnt);
+                tableLineCnt++;
+            }
+
+            ImGui::EndTable();
+            UpdateSize(tableLineCnt);
+        }
+
+    public:
+        void Reset() {
+            misses = bombs = 0;
+            lastSpellTimer = 0;
+            snprintf(shotNameBuf, sizeof(shotNameBuf), "%s", S(shotNames[GAME_MANAGER->GetShotID()]));
+            shotNameSize = ImGui::CalcTextSize(shotNameBuf);
+        }
+
+        void CountMiss() { misses++; }
+        void CountBomb() { bombs++; }
+    };
+
 
 
     // ECL Patching Tools
@@ -1563,7 +1683,7 @@ namespace TH06NC {
 
 
 
-    HOOKSET_DEFINE(THMainHook)
+    HOOKSET_DEFINE(THMainHooks)
 
     // Prac Menu UX
     EHOOK_DY(th06nc_skip_prac_mode, MENU_SET_PRAC_STATE, 6, { // subshot select confirm input, writing next state
@@ -1617,12 +1737,8 @@ namespace TH06NC {
         Gui::KeyboardInputUpdate(VK_ESCAPE);
         THGuiPrac::singleton().Update();
         THOverlay::singleton().Update();
-        // THGuiRep::singleton().Update();
+        THTracker::singleton().Update();
 
-        // if (tracker_open && (GAME_MANAGER->isInGame || GAME_MANAGER->isInGameMenu || GAME_MANAGER->isInRetryMenu))
-        //     THTrackerUpdate();
-
-        //GameGuiEnd(THAdvOptWnd::StaticUpdate() || THGuiPrac::singleton().IsOpen() || THPauseMenu::singleton().IsOpen());
         GameGuiEnd(THGuiPrac::singleton().IsOpen());
         OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
@@ -1650,12 +1766,14 @@ namespace TH06NC {
         ImGui::GetIO().DisplaySize = size;
         THGuiPrac::singleton().RefreshLocale();
         THOverlay::singleton().RefreshLocale();
+        THTracker::singleton().RefreshLocale();
 
         OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
+    HOOKSET_ENDDEF()
 
 
-    // On Prac (Re)Start
+    HOOKSET_DEFINE(THPatchHooks)// On Prac (Re)Start
     EHOOK_DY(th06nc_patch_main, GAME_MANAGER_REGISTERED, 1, { // end of GameManager::on_registration
         OG_INS(pCtx->Rip = PopHelper(pCtx));
         if (thPracParam.mode != 1) return;
@@ -1802,18 +1920,20 @@ namespace TH06NC {
     // note: [0x9a8, 0x9e0] inclusive should be unused spell prac registers (for Spell #1 on unreachable difficulties)
     EHOOK_DY(th06nc_practice_high_score_read, PRAC_HIGH_SCORE_READ, 4, { // initializing high score for this practice mode stage/diff/shot/char
         if (GAME_MANAGER->stage == 6) // game later adds 1 to this for reasons unknown
-            pCtx->Rax = 0x12e + (GAME_MANAGER->character * 2 + GAME_MANAGER->subShot) * 2 + GAME_MANAGER->mode; // [0x12e, 0x135] -> [0x9a8, 0x9e0]
+            pCtx->Rax = 0x12e + GAME_MANAGER->GetShotID() * 2 + GAME_MANAGER->mode; // [0x12e, 0x135] -> [0x9a8, 0x9e0]
         else
             OG_INS(pCtx->Rax = pCtx->Rcx * 3);
     })
     EHOOK_DY(th06nc_practice_high_score_write, PRAC_HIGH_SCORE_WRITE, 4, { // retrieving practice high score register on run end
         if (GAME_MANAGER->stage == 7)
-            pCtx->Rax = 0x12e + (GAME_MANAGER->character * 2 + GAME_MANAGER->subShot) * 2 + GAME_MANAGER->mode; // [0x12e, 0x135] -> [0x9a8, 0x9e0]
+            pCtx->Rax = 0x12e + GAME_MANAGER->GetShotID() * 2 + GAME_MANAGER->mode; // [0x12e, 0x135] -> [0x9a8, 0x9e0]
         else
             OG_INS(pCtx->Rax = pCtx->Rcx * 3);
     })
+    HOOKSET_ENDDEF()
 
-    // Practice Mode Replays (lotta hooks, we're changing how the menus work!)
+
+    HOOKSET_DEFINE(THReplayHooks) // Practice Mode Replays (lotta hooks, we're changing how the menus work!)
     EHOOK_DY(th06nc_practice_game_over, PRAC_GAME_OVER_SET_STATE, 10, { // setting state to go back to main menu on prac game over
         GAME_MANAGER->spellPracEndFlag = true;
         if (!*THOverlay::singleton().mElBgm) BGM_PAUSE(*(int32_t*)BGM_ADDR, 0); // consistency's sake
@@ -1869,7 +1989,7 @@ namespace TH06NC {
         self->Disable();
     });
 
-    HOOKSET_DEFINE(THMainHook2)
+    HOOKSET_DEFINE(THReplayHooks2)
     EHOOK_DY(th06nc_prac_exit_replay_save, SPELL_PRAC_EXIT_RPY_SAVE, 7, { // undo th06nc_return_title_prac when exiting the Save Replay menu
         if (GAME_MANAGER->inPracticeMode && !GAME_MANAGER->inReplay && thPracParam.lastFrame) {
             thPracParam.lastFrame = 0;
@@ -1921,7 +2041,7 @@ namespace TH06NC {
         }
     });
 
-    HOOKSET_DEFINE(THMainHook3)
+    HOOKSET_DEFINE(THReplayHooks3)
     EHOOK_DY(th06nc_main_replay_sel_show_prac, REPLAY_SEL_FETCH_MODE_STR, 8, { // if prac sentinel set, show "Practice" in main menu replay selection
         if (*(uint8_t*)(pCtx->Rdi + 0x2))
             pCtx->Rax = (uintptr_t)PRAC_STR;
@@ -1960,7 +2080,24 @@ namespace TH06NC {
         else
             OG_INS(pCtx->Rax = *(int64_t*)(pCtx->Rcx + pCtx->R8 * 8 + MODE_STRINGS));
     })
+    HOOKSET_ENDDEF()
 
+
+    HOOKSET_DEFINE(THTrackerHooks) // Tracker hooks
+    EHOOK_DY(th06nc_enter, RUN_START_SET_SCORE, 7, {
+        THTracker::singleton().Reset();
+        OG_INS(GAME_MANAGER->actualScore = 0);
+    })
+
+    EHOOK_DY(th06nc_count_miss, PLAYER_SET_RESPAWN_STATE, 7, {
+        THTracker::singleton().CountMiss();
+        OG_INS(PLAYER->player_state = 0x1);
+    })
+
+    EHOOK_DY(th06nc_count_bomb, PLAYER_DECREMENT_BOMBS, 2, {
+        THTracker::singleton().CountBomb();
+        OG_INS(pCtx->Rcx -= 1);
+    })
     HOOKSET_ENDDEF()
 
 
@@ -1993,13 +2130,15 @@ namespace TH06NC {
         // Gui components creation
         THGuiPrac::singleton();
         THOverlay::singleton();
-        //THPauseMenu::singleton();
-        //THGuiRep::singleton();
+        THTracker::singleton();
 
         // Hooks
-        EnableAllHooksVersion(THMainHook);
-        EnableAllHooksVersion(THMainHook2);
-        EnableAllHooksVersion(THMainHook3);
+        EnableAllHooksVersion(THMainHooks);
+        EnableAllHooksVersion(THPatchHooks);
+        EnableAllHooksVersion(THReplayHooks);
+        EnableAllHooksVersion(THReplayHooks2);
+        EnableAllHooksVersion(THReplayHooks3);
+        EnableAllHooksVersion(THTrackerHooks);
         SetupHook(th06nc_trigger_health_interrupt);
         SetupHook(th06nc_prac_exit_replay_save_fix_options);
         SetupHook(th06nc_end_rpy_on_last_frame);

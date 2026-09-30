@@ -894,6 +894,8 @@
       "TH_TRACKER_HYPER": [ "Hyper", "Hyper", "異変攻撃" ],
       "TH_TRACKER_HYPER_BREAK": [ "爆Hyper", "Hyper Break", "霊撃" ],
       "TH_TRACKER_STONE_LEVEL": [ "异变石等级", "Stone Lv.", "異変敵レベル" ],
+      "TH_TRACKER_HISTORY": [ "历史", "History", "TODO_JP" ],
+      "TH_TRACKER_CAPTURES": [ "收取", "Captures", "TODO_JP" ],
       "TH_TRACKER_EASY": [ "Easy", "Easy", "イージー" ],
       "TH_TRACKER_NORMAL": [ "Normal", "Normal", "ノーマル" ],
       "TH_TRACKER_HARD": [ "Hard", "Hard", "ハード" ],

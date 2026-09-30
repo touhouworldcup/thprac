@@ -33,6 +33,7 @@ namespace TH06NC {
     X(ENEMY_MGR_TICK_TIMELINE,   0x381f9,    0x39b19)  \
     X(PAUSE_MENU_BGM_PAUSE,      0x3a313,    0x3bba3)  \
     X(GAME_MANAGER_TICK_TIMER,   0x3a7bd,    0x3c04d)  \
+    X(RUN_START_SET_SCORE,       0x3aa7f,    0x3c30f)  \
     X(PRAC_HIGH_SCORE_READ,      0x3ae66,    0x3c6e0)  \
     X(GAME_MGR_REG_BG_FF_CHECK,  0x3b4b5,    0x3cd35)  \
     X(GAME_MGR_REG_BGM_PICK,     0x3b611,    0x3ce91)  \
@@ -56,10 +57,12 @@ namespace TH06NC {
     X(GUI_INIT_MAIN,             0x4d0e5,    0x4e845)  \
     X(REPLAY_SEL_FETCH_MODE_STR, 0x553fd,    0x56b5d)  \
     X(BOMB_INPUT_CHECK,          0x689fa,    0x6a10a)  \
+    X(PLAYER_DECREMENT_BOMBS,    0x68a70,    0x6a180)  \
     X(BOMB_CNT_DECREASE,         0x68a7b,    0x6a18b)  \
     X(LAST_LIFE_HIT_DROP_FS,     0x68b3b,    0x6a24b)  \
     X(POWER_DECREASE,            0x68baf,    0x6a2bf)  \
     X(POWER_MIN_CHALLENGE_MODE,  0x68bbe,    0x6a2ce)  \
+    X(PLAYER_SET_RESPAWN_STATE,  0x68dbe,    0x6a4ce)  \
     X(LIFE_CNT_FETCH,            0x68e66,    0x6a576)  \
     X(LIFE_CNT_DECREASE,         0x68e88,    0x6a59f)  \
     X(BULLET_HIT_BIG_PARTICLE,   0x6aacf,    0x6c1df)  \
@@ -186,6 +189,8 @@ namespace TH06NC {
     X(INPUT_PREV_ADDR,             0xa6ec64,  0xabae84) \
     X(VANILLA_ELBGM_FLAG,          0xaa1e8c,  0xaee0ac) \
     X(ENEMY_MANAGER_ADDR,          0xaa1e90,  0xaee0b0) \
+    X(SPELLCARD_IS_ACTIVE,         0xbadf60,  0xbfa180) \
+    X(SPELLCARD_ID,                0xbadf68,  0xbfa188) \
     X(BOSS_PTR_ADDR,               0xbadf78,  0xbfa198) \
     X(MAIN_MENU_ADDR,              0xc07240,  0xc53460) \
     X(SUPERVISOR_ADDR,             0xc21970,  0xc6db90) \
@@ -350,43 +355,63 @@ namespace TH06NC {
 //-------------------------------------------------------------------------
 // Structs ----------------------------------------------------------------
 
+    constexpr uint8_t DIFFS = 0x5;
+    constexpr uint8_t SHOTS = 0x4;
+    struct SavefileSpellData {
+        char __unknown_0[0x12];                     // 0x0
+        uint8_t subNameChecksum;                    // 0x12
+        char __unknown_13[0x5];                     // 0x13
+        char subName[0x24];                         // 0x18
+        uint16_t attemptCount;                      // 0x3c
+        uint16_t capCount;                          // 0x3e
+        uint64_t spellPracHighScores[DIFFS][SHOTS]; // 0x40
+        uint32_t spellPracAttempts[DIFFS][SHOTS];   // 0xe0
+        uint32_t spellPracCaps[DIFFS][SHOTS];       // 0x120
+        // exact size known (0x180)
+    };
+
     struct GameManager {
-        char __unknown_0[0x8];      // 0x0
-        uint32_t spellCaps;         // 0x8
-        uint32_t spellCapsForTLB;   // 0xc
-        char __unknown_10[0x10];    // 0x10
-        uint8_t character;          // 0x20
-        uint8_t subShot;            // 0x21
-        uint32_t stage;             // 0x24
-        uint16_t curPower;          // 0x28
-        char __unknown_2a[0x902];   // 0x2a
-        int8_t inReplay;            // 0x92c
-        int64_t visualScore;        // 0x930
-        int64_t actualScore;        // 0x938
-        int64_t __unkScore;         // 0x940
-        int64_t highScore;          // 0x948
-        uint8_t pauseState;         // 0x950
-        char __unknown_951[0x3];    // 0x951
-        int8_t inPracticeMode;      // 0x954
-        int8_t inSpellPrac;         // 0x955
-        int8_t spellPracEndFlag;    // 0x956
-        char __unknown_958[0x1];    // 0x958
-        int8_t spellPracSpellNum;   // 0x958
-        uint16_t stagePointItems;   // 0x95a
-        uint16_t totalPointItems;   // 0x95c
-        uint32_t difficulty;        // 0x960
-        uint8_t mode;               // 0x964
-        char __unknown_965[0xc907]; // 0x965
-        int32_t stageGraze;         // 0xd26c
-        int32_t totalGraze;         // 0xd270
-        char __unknown_d274[0x1c];  // 0xd274
-        int8_t livesRemaining;      // 0xd290
-        int8_t bombsRemaining;      // 0xd291
-        uint16_t scoreExtends;      // 0xd292
-        char __unknown_d294[0x184]; // 0xd294
-        int32_t stageTime;          // 0xd418
-        int32_t rank;               // 0xd41c
+        char __unknown_0[0x8];             // 0x0
+        uint32_t spellCaps;                // 0x8
+        uint32_t spellCapsForTLB;          // 0xc
+        char __unknown_10[0x10];           // 0x10
+        uint8_t character;                 // 0x20
+        uint8_t subShot;                   // 0x21
+        uint32_t stage;                    // 0x24
+        uint16_t curPower;                 // 0x28
+        char __unknown_2a[0x902];          // 0x2a
+        int8_t inReplay;                   // 0x92c
+        int64_t visualScore;               // 0x930
+        int64_t actualScore;               // 0x938
+        int64_t __unkScore;                // 0x940
+        int64_t highScore;                 // 0x948
+        uint8_t pauseState;                // 0x950
+        char __unknown_951[0x3];           // 0x951
+        int8_t inPracticeMode;             // 0x954
+        int8_t inSpellPrac;                // 0x955
+        int8_t spellPracEndFlag;           // 0x956
+        char __unknown_958[0x1];           // 0x958
+        int8_t spellPracSpellNum;          // 0x958
+        uint16_t stagePointItems;          // 0x95a
+        uint16_t totalPointItems;          // 0x95c
+        uint32_t difficulty;               // 0x960
+        uint8_t mode;                      // 0x964
+        SavefileSpellData spellData[0x86]; // 0x968
+        char __unknown_d268[0x4];          // 0xd268
+        int32_t stageGraze;                // 0xd26c
+        int32_t totalGraze;                // 0xd270
+        char __unknown_d274[0x1c];         // 0xd274
+        int8_t livesRemaining;             // 0xd290
+        int8_t bombsRemaining;             // 0xd291
+        uint16_t scoreExtends;             // 0xd292
+        char __unknown_d294[0x184];        // 0xd294
+        int32_t stageTime;                 // 0xd418
+        int32_t rank;                      // 0xd41c
         // size unknown
+
+        uint8_t GetShotID() {
+            return character * 2 + subShot;
+        }
     };
 
     static_assert(offsetof(GameManager, spellCaps) == 0x8);

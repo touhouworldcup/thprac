@@ -2066,7 +2066,7 @@ namespace TH06 {
         auto textSize = ImGui::CalcTextSize(buf);
 
         ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - textSize.x * 0.5f);
-        ImGui::TextUnformatted(buf);        
+        ImGui::TextUnformatted(buf);
 
         ImGui::BeginTable("Tracker table", 2);
         ImGui::TableNextRow();
