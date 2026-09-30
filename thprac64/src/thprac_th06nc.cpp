@@ -595,7 +595,9 @@ namespace TH06NC {
             }
 
             // we keep spell info on screen for a lil after cap (so history can be updated post-cap)
-            if (*(uint32_t*)SPELLCARD_IS_ACTIVE) {
+            bool isSpellActive = *(uint32_t*)SPELLCARD_IS_ACTIVE;
+
+            if (isSpellActive) {
                 lastSpellID = *(uint32_t*)SPELLCARD_ID;
                 lastSpellTimer = 280;
             } else if (GAME_MANAGER->inSpellPrac) {
@@ -626,6 +628,20 @@ namespace TH06NC {
                     ImGui::Text("%d / %d (%d%%)", capCnt, attemptCnt, capCnt * 100 / attemptCnt);
                 else ImGui::Text("%d / %d", capCnt, attemptCnt);
                 tableLineCnt++;
+
+                if (GAME_MANAGER->inPracticeMode || GAME_MANAGER->inSpellPrac || GAME_MANAGER->inReplay) {
+                    ImGui::TableNextRow();
+
+                    ImGui::TableNextColumn();
+                    ImGui::TextUnformatted(S(TH_TRACKER_SCB));
+                    ImGui::TableNextColumn();
+
+                    if (isSpellActive) {
+                        uint32_t scbBase = *(uint32_t*)BASE_SPELL_CARD_BONUS;
+                        ImGui::Text("%d", scbBase + (ZUN_GUI->bossTimerSec * scbBase) / 10);
+                    } else ImGui::Text("%d", ZUN_GUI->impl->storedSCB);
+                    tableLineCnt++;
+                }
             }
 
             ImGui::EndTable();
@@ -664,8 +680,8 @@ namespace TH06NC {
     }
 
     void PostStartWarpAdjustments() {
-        *(uint8_t*)(ZUN_GUI->stageLogo + 0xa24) = 2; // hide stage logo/title
-        *(uint8_t*)(*(uintptr_t*)((uintptr_t)ZUN_GUI + 0x38) + 0x480 + 0xef) = 255; // show stage HUD illustration
+        *(uint8_t*)((uintptr_t)ZUN_GUI->impl + 0xa24) = 2; // hide stage logo/title
+        *(uint8_t*)((uintptr_t)ZUN_GUI->impl + 0x480 + 0xef) = 255; // show stage HUD illustration
 
         // disable iframes
         PLAYER->player_state = 0;

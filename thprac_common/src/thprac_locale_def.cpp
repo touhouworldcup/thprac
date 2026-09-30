@@ -5,7 +5,7 @@
 
 
 
-const char* th_glossary_str[3][1206]
+const char* th_glossary_str[3][1207]
 {
     {
         "",
@@ -1172,6 +1172,7 @@ const char* th_glossary_str[3][1206]
         "早苗A",
         "早苗B",
         "红魔组",
+        "符卡奖励",
         "吸收的特殊灵",
         "收符卡数",
         "爆Hyper",
@@ -2380,6 +2381,7 @@ const char* th_glossary_str[3][1206]
         "SanaeA",
         "SanaeB",
         "Scarlet Team",
+        "SCB",
         "Spec. Used",
         "Spells Captured",
         "Spirit Strikes",
@@ -3548,13 +3550,13 @@ const char* th_glossary_str[3][1206]
         "ボム",
         "霊撃",
         "結界組",
-        "TODO_JP",
+        "取得回数",
         "チルノ",
         "オオワシ",
         "イージー",
         "エキストラ",
         "ハード",
-        "TODO_JP",
+        "戦歴",
         "異変攻撃",
         "霊撃",
         "ラストスペル",
@@ -3588,6 +3590,7 @@ const char* th_glossary_str[3][1206]
         "早苗A",
         "早苗B",
         "紅魔組",
+        "SCB",
         "取得したレア動物霊",
         "霊撃",
         "霊撃",

@@ -1172,6 +1172,7 @@ enum th_glossary_t
     TH_TRACKER_SANAE_A,
     TH_TRACKER_SANAE_B,
     TH_TRACKER_SCARLET_TEAM,
+    TH_TRACKER_SCB,
     TH_TRACKER_SPECIAL_SPIRIT_USED,
     TH_TRACKER_SPELLS_CAPTURED,
     TH_TRACKER_SPIRIT_STRIKE,
@@ -1216,7 +1217,7 @@ enum th_glossary_t
     TH_YES,
 };
 
-extern const char* th_glossary_str[3][1206];
+extern const char* th_glossary_str[3][1207];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

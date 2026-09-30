@@ -191,6 +191,7 @@ namespace TH06NC {
     X(ENEMY_MANAGER_ADDR,          0xaa1e90,  0xaee0b0) \
     X(SPELLCARD_IS_ACTIVE,         0xbadf60,  0xbfa180) \
     X(SPELLCARD_ID,                0xbadf68,  0xbfa188) \
+    X(BASE_SPELL_CARD_BONUS,       0xbadf70,  0xbfa190) \
     X(BOSS_PTR_ADDR,               0xbadf78,  0xbfa198) \
     X(MAIN_MENU_ADDR,              0xc07240,  0xc53460) \
     X(SUPERVISOR_ADDR,             0xc21970,  0xc6db90) \
@@ -433,6 +434,7 @@ namespace TH06NC {
     static_assert(offsetof(GameManager, totalPointItems) == 0x95c);
     static_assert(offsetof(GameManager, difficulty) == 0x960);
     static_assert(offsetof(GameManager, mode) == 0x964);
+    static_assert(offsetof(GameManager, spellData) == 0x968);
     static_assert(offsetof(GameManager, stageGraze) == 0xd26c);
     static_assert(offsetof(GameManager, totalGraze) == 0xd270);
     static_assert(offsetof(GameManager, livesRemaining) == 0xd290);
@@ -478,13 +480,23 @@ namespace TH06NC {
         uint32_t curState; // 0x168b0
         char __unknown2[0x1d]; // 0x168b4
         uint8_t inPractice; // 0x168d1
+        // size unknown
+    };
+
+    struct ZUNGuiImpl {
+        char __unknown_0[0x710]; // 0x0
+        uint32_t storedSCB;      // 0x710
+        // size unknown
     };
 
     struct ZUNGui {
-        char __unknown1[0x38]; // 0x0
-        uintptr_t stageLogo;   // 0x38
-        char __unknown2[0x4];  // 0x40
-        uint8_t isBossPresent; // 0x44
+        char __unknown_0[0x38]; // 0x0
+        ZUNGuiImpl* impl;       // 0x38
+        char __unknown_40[0x4]; // 0x40
+        uint8_t isBossPresent;  // 0x44
+        char __unknown_45[0x4]; // 0x48
+        uint32_t bossTimerSec;  // 0x4c
+        // size unknown
     };
 
     enum SupervisorState : uint32_t {
@@ -528,8 +540,10 @@ namespace TH06NC {
     static_assert(offsetof(StageBackground, timelineTime) == 0xb0);
     static_assert(offsetof(MainMenu, curState) == 0x168b0);
     static_assert(offsetof(MainMenu, inPractice) == 0x168d1);
-    static_assert(offsetof(ZUNGui, stageLogo) == 0x38);
+    static_assert(offsetof(ZUNGuiImpl, storedSCB) == 0x710);
+    static_assert(offsetof(ZUNGui, impl) == 0x38);
     static_assert(offsetof(ZUNGui, isBossPresent) == 0x44);
+    static_assert(offsetof(ZUNGui, bossTimerSec) == 0x4c);
     static_assert(offsetof(Supervisor, curState) == 0x42c);
     static_assert(offsetof(Supervisor, curMode) == 0x44b);
     static_assert(offsetof(AsciiManager, pauseMenu) == 0x52d0);
