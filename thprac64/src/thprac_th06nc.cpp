@@ -552,7 +552,7 @@ namespace TH06NC {
 
     protected:
         void UpdateSize(uint32_t tableLineCnt) {
-            constexpr float width = 0.14f;
+            constexpr float width = 0.15f;
             const float height = 0.0286f * tableLineCnt + 0.06f;
             SetSizeRel(width, height);
 
@@ -633,6 +633,26 @@ namespace TH06NC {
                     ImGui::TableNextRow();
 
                     ImGui::TableNextColumn();
+                    ImGui::TextUnformatted(S(TH06NC_TRACKER_YELLOW));
+                    ImGui::TableNextColumn();
+
+                    if (isSpellActive) { // same calculation as spell cancel, just without the spell cancel
+                        uint32_t yellowBonus = 0;
+                        uint32_t bonusIncrement = 2000;
+
+                        for (int i = 0; i < 640; i++) {
+                            if (((Bullet*)BULLET_ARRAY)[i].state) {
+                                yellowBonus += bonusIncrement;
+                                if (bonusIncrement < 12800) bonusIncrement += 10;
+                            }
+                        }
+                        ImGui::Text("%d", yellowBonus);
+                    }
+                    else ImGui::Text("%d", ZUN_GUI->impl->storedYellowBonus);
+
+                    ImGui::TableNextRow();
+
+                    ImGui::TableNextColumn();
                     ImGui::TextUnformatted(S(TH_TRACKER_SCB));
                     ImGui::TableNextColumn();
 
@@ -640,7 +660,8 @@ namespace TH06NC {
                         uint32_t scbBase = *(uint32_t*)BASE_SPELL_CARD_BONUS;
                         ImGui::Text("%d", scbBase + (ZUN_GUI->bossTimerSec * scbBase) / 10);
                     } else ImGui::Text("%d", ZUN_GUI->impl->storedSCB);
-                    tableLineCnt++;
+
+                    tableLineCnt += 2;
                 }
             }
 

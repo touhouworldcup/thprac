@@ -173,6 +173,7 @@ namespace TH06NC {
     X(SPELL_PRAC_SAVE_REPLAY_STR,  0x307fa0,  0x34dba0) \
     X(PATCHY_LAST_SPELLS_TABLE,    0x3de300,  0x428f50) \
     X(ASCII_MANAGER_ADDR,          0x3de620,  0x429270) \
+    X(BULLET_ARRAY,                0x3ec2a8,  0x436ef8) \
     X(GAME_MANAGER_ADDR,           0x4f1e60,  0x53cab0) \
     X(PLAYER_ADDR,                 0x4ff3a0,  0x549ff0) \
     X(STAGE_BACKGROUND_ADDR,       0x509b60,  0x5547b0) \
@@ -220,38 +221,39 @@ namespace TH06NC {
 //-------------------------------------------------------------------------
 // Game Functions ---------------------------------------------------------
 
-#define FUNC_LIST(X)                                  \
-    /*                           V1_03A     V1_03B */ \
-    X(LOAD_ANM_FILE,             0x20b0,    0x2440)   \
-    X(ANM_VM_SET_SPRITE,         0x2980,    0x2d60)   \
-    X(FETCH_PAUSE_MENU_OPT_STRS, 0x9e80,    0xa5b0)   \
-    X(BGM_PLAY,                  0x7bc80,   0x7d8d0)  \
-    X(BGM_STOP,                  0x7f9c0,   0x81740)  \
-    X(BGM_RESUME,                0xc8110,   0xc9df0)  \
-    X(BGM_PAUSE,                 0xcce50,   0xceb30)  \
+#define FUNC_LIST(X)                                            \
+    /*                                     V1_03A     V1_03B */ \
+    X(void,     LOAD_ANM_FILE,             0x20b0,    0x2440)   \
+    X(void,     ANM_VM_SET_SPRITE,         0x2980,    0x2d60)   \
+    X(void,     FETCH_PAUSE_MENU_OPT_STRS, 0x9e80,    0xa5b0)   \
+    X(void,     BGM_PLAY,                  0x7bc80,   0x7d8d0)  \
+    X(void,     BGM_STOP,                  0x7f9c0,   0x81740)  \
+    X(void,     BGM_RESUME,                0xc8110,   0xc9df0)  \
+    X(void,     BGM_PAUSE,                 0xcce50,   0xceb30)  \
 
+    template <typename R = void>
     struct Function {
         uintptr_t addr;
 
-        template <typename R = void, typename... Args>
+        template <typename... Args>
         R operator()(Args... args) const {
             auto* func = (R(*)(Args...))addr;
             return func(args...);
         }
     };
 
-#define FN_VAR(name, ...) Function name;
+#define FN_VAR(ret, name, ...) Function<ret> name;
     FUNC_LIST(FN_VAR)
 #undef FN_VAR
-#define FN_ENUM(name, ...) name##_ID,
+#define FN_ENUM(ret, name, ...) name##_ID,
         enum FUNCS { FUNC_LIST(FN_ENUM) };
 #undef FN_ENUM
-#define FN_DATA(name, ...) { __VA_ARGS__ },
+#define FN_DATA(ret, name, ...) { __VA_ARGS__ },
     static const uintptr_t func_data[][__VER_CNT] = { FUNC_LIST(FN_DATA) };
 #undef FN_DATA
 
     void InitFuncs(VERSION ver) {
-    #define FN_INIT(name, ...) name.addr = RVA(func_data[name##_ID][ver]);
+    #define FN_INIT(ret, name, ...) name.addr = RVA(func_data[name##_ID][ver]);
         FUNC_LIST(FN_INIT)
     #undef FN_INIT
     }
@@ -415,6 +417,7 @@ namespace TH06NC {
         }
     };
 
+    static_assert(sizeof(SavefileSpellData) == 0x180);
     static_assert(offsetof(GameManager, spellCaps) == 0x8);
     static_assert(offsetof(GameManager, spellCapsForTLB) == 0xc);
     static_assert(offsetof(GameManager, character) == 0x20);
@@ -484,8 +487,10 @@ namespace TH06NC {
     };
 
     struct ZUNGuiImpl {
-        char __unknown_0[0x710]; // 0x0
-        uint32_t storedSCB;      // 0x710
+        char __unknown_0[0x6d8];    // 0x0
+        uint32_t storedYellowBonus; // 0x6d8
+        char __unknown_6dc[0x34];   // 0x6dc
+        uint32_t storedSCB;         // 0x710
         // size unknown
     };
 
@@ -530,6 +535,13 @@ namespace TH06NC {
         uint32_t curState;     // 0x34
     };
 
+    struct Bullet {
+        char __unknown1[0x44];  // 0x0
+        uint16_t state;         // 0x44
+        char __unknown2[0x5da]; // 0x46
+        // exact size known (0x620)
+    };
+
     static_assert(offsetof(EnemyManager, bulletSFX) == 0x2b0);
     static_assert(offsetof(EnemyManager, timelineTime) == 0x10c0b8);
     static_assert(offsetof(Enemy, bossTimer) == 0x0);
@@ -540,6 +552,7 @@ namespace TH06NC {
     static_assert(offsetof(StageBackground, timelineTime) == 0xb0);
     static_assert(offsetof(MainMenu, curState) == 0x168b0);
     static_assert(offsetof(MainMenu, inPractice) == 0x168d1);
+    static_assert(offsetof(ZUNGuiImpl, storedYellowBonus) == 0x6d8);
     static_assert(offsetof(ZUNGuiImpl, storedSCB) == 0x710);
     static_assert(offsetof(ZUNGui, impl) == 0x38);
     static_assert(offsetof(ZUNGui, isBossPresent) == 0x44);
@@ -550,6 +563,8 @@ namespace TH06NC {
     static_assert(offsetof(AsciiManager, spellPracEndState) == 0x7ba4);
     static_assert(offsetof(AsciiManager, spellPracEndWin) == 0x7ba8);
     static_assert(offsetof(SaveReplayMenu, curState) == 0x34);
+    static_assert(offsetof(Bullet, state) == 0x44);
+    static_assert(sizeof(Bullet) == 0x620);
 
     struct Player {
         char __unknown1[0x7858]; // 0x0

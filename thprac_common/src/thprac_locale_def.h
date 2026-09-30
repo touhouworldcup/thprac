@@ -28,6 +28,7 @@ enum th_glossary_t
     TH06NC_RESET,
     TH06NC_TLB,
     TH06NC_TLB_LOCK,
+    TH06NC_TRACKER_YELLOW,
     TH06_BOOKS,
     TH06_FS,
     TH06_MARISA_A,
@@ -1217,7 +1218,7 @@ enum th_glossary_t
     TH_YES,
 };
 
-extern const char* th_glossary_str[3][1207];
+extern const char* th_glossary_str[3][1208];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

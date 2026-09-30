@@ -896,7 +896,7 @@
       "TH_TRACKER_STONE_LEVEL": [ "异变石等级", "Stone Lv.", "異変敵レベル" ],
       "TH_TRACKER_HISTORY": [ "历史", "History", "戦歴" ],
       "TH_TRACKER_CAPTURES": [ "收取", "Captures", "取得回数" ],
-      "TH_TRACKER_SCB": [ "符卡奖励", "SCB", "SCB" ],
+      "TH_TRACKER_SCB": [ "符卡奖励", "Spell Bonus", "SCB" ],
       "TH_TRACKER_EASY": [ "Easy", "Easy", "イージー" ],
       "TH_TRACKER_NORMAL": [ "Normal", "Normal", "ノーマル" ],
       "TH_TRACKER_HARD": [ "Hard", "Hard", "ハード" ],
@@ -1773,7 +1773,8 @@
       "TH06NC_ORIGINAL_CHALLENGE": [ "原版练习 (标准模式)", "Original (Challenge Mode)", "オリジナル (標準モード)" ],
       "TH06NC_CUSTOM_STANDARD": [ "自定义练习 (挑战模式)", "Custom (Standard Mode)", "カスタム (チャレンジモード)" ],
       "TH06NC_CUSTOM_CHALLENGE": [ "自定义练习 (挑战模式)", "Custom (Challenge Mode)", "カスタム (チャレンジモード)" ],
-      "TH06NC_RESET": [ "返", "R", "戻" ]
+      "TH06NC_RESET": [ "返", "R", "戻" ],
+      "TH06NC_TRACKER_YELLOW": [ "消弹奖分", "Yellow Bonus", "弾消しボーナス" ]
     },
 
     "sections": {

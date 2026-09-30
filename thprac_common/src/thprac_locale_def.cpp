@@ -5,7 +5,7 @@
 
 
 
-const char* th_glossary_str[3][1207]
+const char* th_glossary_str[3][1208]
 {
     {
         "",
@@ -28,6 +28,7 @@ const char* th_glossary_str[3][1207]
         "返",
         "关底Boss (PH)",
         "强制进入PH",
+        "消弹奖分",
         "魔法阵",
         "机体伪装",
         "魔A",
@@ -1237,6 +1238,7 @@ const char* th_glossary_str[3][1207]
         "R",
         "True Last Boss",
         "Guarantee Extra Phantom",
+        "Yellow Bonus",
         "Books",
         "Fake Shot",
         "Marisa A",
@@ -2381,7 +2383,7 @@ const char* th_glossary_str[3][1207]
         "SanaeA",
         "SanaeB",
         "Scarlet Team",
-        "SCB",
+        "Spell Bonus",
         "Spec. Used",
         "Spells Captured",
         "Spirit Strikes",
@@ -2446,6 +2448,7 @@ const char* th_glossary_str[3][1207]
         "戻",
         "秘密ボス",
         "Extra Phantomへの強制突入",
+        "弾消しボーナス",
         "魔導書",
         "機体偽装",
         "魔符",
