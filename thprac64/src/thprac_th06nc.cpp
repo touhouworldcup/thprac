@@ -614,19 +614,27 @@ namespace TH06NC {
                 ImGui::TextUnformatted(S(TH_TRACKER_HISTORY));
                 ImGui::TableNextColumn();
 
-                uint32_t capCnt, attemptCnt;
+                uint32_t captureCnt, attemptCnt;
+                uint8_t shotID = GAME_MANAGER->GetShotID();
+
                 if (GAME_MANAGER->inSpellPrac) {
-                    capCnt = spellData.spellPracCaps[GAME_MANAGER->difficulty][GAME_MANAGER->GetShotID()];
-                    attemptCnt = spellData.spellPracAttempts[GAME_MANAGER->difficulty][GAME_MANAGER->GetShotID()];
+                    uint32_t difficulty = GAME_MANAGER->difficulty;
+                    captureCnt = spellData.spellPracCaptures[difficulty][shotID];
+                    attemptCnt = spellData.spellPracAttempts[difficulty][shotID];
+
+                } else if (GAME_MANAGER->inPracticeMode) { // custom registers
+                    uint32_t unusedDifficulty = GAME_MANAGER->difficulty == EXTRA ? EASY : EXTRA;
+                    captureCnt = spellData.spellPracCaptures[unusedDifficulty][shotID];
+                    attemptCnt = spellData.spellPracAttempts[unusedDifficulty][shotID];
 
                 } else {
-                    capCnt = spellData.capCount;
+                    captureCnt = spellData.captureCount;
                     attemptCnt = spellData.attemptCount;
                 }
 
                 if (attemptCnt)
-                    ImGui::Text("%d / %d (%d%%)", capCnt, attemptCnt, capCnt * 100 / attemptCnt);
-                else ImGui::Text("%d / %d", capCnt, attemptCnt);
+                    ImGui::Text("%d / %d (%d%%)", captureCnt, attemptCnt, captureCnt * 100 / attemptCnt);
+                else ImGui::Text("%d / %d", captureCnt, attemptCnt);
                 tableLineCnt++;
 
                 if (GAME_MANAGER->inPracticeMode || GAME_MANAGER->inSpellPrac || GAME_MANAGER->inReplay) {
@@ -1966,6 +1974,36 @@ namespace TH06NC {
             pCtx->Rax = 0x12e + GAME_MANAGER->GetShotID() * 2 + GAME_MANAGER->mode; // [0x12e, 0x135] -> [0x9a8, 0x9e0]
         else
             OG_INS(pCtx->Rax = pCtx->Rcx * 3);
+    })
+
+    EHOOK_DY(th06nc_practice_extend_history_1, SPELL_ATTEMPT_CNT_INCR, 4, { // instead of 9999-capped all-shot 16bit registers, we use uncapped shot-separated 32bit free ones
+        SavefileSpellData* spellData = (SavefileSpellData*)pCtx->Rsi;
+
+        if (GAME_MANAGER->inPracticeMode) {
+            DIFFICULTY cacheDiff = (GAME_MANAGER->difficulty == EXTRA) ? EASY : EXTRA; // select difficulty spell doesn't exist in
+            uint32_t& attempts = spellData->spellPracAttempts[cacheDiff][GAME_MANAGER->GetShotID()];
+            if (attempts < UINT32_MAX) ++attempts;
+
+            pCtx->Rax = pCtx->Rcx; // skip increment
+            return;
+        }
+
+        OG_INS(pCtx->Rax = spellData->attemptCount);
+    })
+
+    EHOOK_DY(th06nc_practice_extend_history_2, SPELL_CAPTURE_CNT_INCR, 9, { // same as above but for caps
+        SavefileSpellData* spellData = &GAME_MANAGER->spellData[pCtx->R8];
+
+        if (GAME_MANAGER->inPracticeMode) {
+            DIFFICULTY cacheDiff = (GAME_MANAGER->difficulty == EXTRA) ? EASY : EXTRA; // select difficulty spell doesn't exist in
+            uint32_t& captures = spellData->spellPracCaptures[cacheDiff][GAME_MANAGER->GetShotID()];
+            if (captures < UINT32_MAX) ++captures;
+
+            pCtx->Rax = 9999; // skip increment
+            return;
+        }
+
+        OG_INS(pCtx->Rax = spellData->captureCount);
     })
     HOOKSET_ENDDEF()
 

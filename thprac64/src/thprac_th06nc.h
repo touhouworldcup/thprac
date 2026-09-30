@@ -25,6 +25,8 @@ namespace TH06NC {
     X(SPELL_PRAC_EXIT_RPY_SAVE,  0xc737,     0xce67)   \
     X(SPELL_PRAC_KEEP_BGM_FLAG,  0xc882,     0xcfb2)   \
     X(ECL_RETRIEVE_SHOT_ID,      0x23a1d,    0x238cd)  \
+    X(SPELL_ATTEMPT_CNT_INCR,    0x27b7a,    0x27a2a)  \
+    X(SPELL_CAPTURE_CNT_INCR,    0x27cdd,    0x27b8d)  \
     X(FUNCSET_PATCHY_GET_LAST3,  0x333d0,    0x34cf0)  \
     X(FUNCSET_QED_GET_HEALTH,    0x35864,    0x37184)  \
     X(FUNCSET_DH_GET_HEALTH,     0x35a4a,    0x3736a)  \
@@ -366,10 +368,10 @@ namespace TH06NC {
         char __unknown_13[0x5];                     // 0x13
         char subName[0x24];                         // 0x18
         uint16_t attemptCount;                      // 0x3c
-        uint16_t capCount;                          // 0x3e
+        uint16_t captureCount;                      // 0x3e
         uint64_t spellPracHighScores[DIFFS][SHOTS]; // 0x40
         uint32_t spellPracAttempts[DIFFS][SHOTS];   // 0xe0
-        uint32_t spellPracCaps[DIFFS][SHOTS];       // 0x120
+        uint32_t spellPracCaptures[DIFFS][SHOTS];   // 0x120
         // exact size known (0x180)
     };
 
