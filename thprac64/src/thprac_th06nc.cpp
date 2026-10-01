@@ -393,7 +393,9 @@ namespace TH06NC {
         uint32_t lastSpellID;
         uint32_t lastSpellTimer;
 
-        const uint32_t BOOKS_ID = 200;
+        static const uint32_t BOOKS_ID = 134; // #TLB3 + 1
+        uint32_t seshStartAttempts[BOOKS_ID + 1];
+        uint32_t seshStartCaptures[BOOKS_ID + 1];
         bool inBooksCapAttempt;
 
         const th_glossary_t shotNames[4] = {
@@ -506,9 +508,9 @@ namespace TH06NC {
                 ImGui::TableNextColumn();
 
                 uint32_t captureCnt, attemptCnt;
-                uint8_t shotID = GAME_MANAGER->GetShotID();
-                uint32_t difficulty = GAME_MANAGER->difficulty;
-                bool isBooks = lastSpellID == BOOKS_ID;
+                const uint8_t shotID = GAME_MANAGER->GetShotID();
+                const uint32_t difficulty = GAME_MANAGER->difficulty;
+                const bool isBooks = lastSpellID == BOOKS_ID;
 
                 if (isBooks) {
                     uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty, shotID);
@@ -537,6 +539,23 @@ namespace TH06NC {
                     ImGui::Text("%d / %d (%d%%)", captureCnt, attemptCnt, captureCnt * 100 / attemptCnt);
                 else ImGui::Text("%d / %d", captureCnt, attemptCnt);
                 tableLineCnt++;
+
+                // session history
+                if (!GAME_MANAGER->inReplay && (GAME_MANAGER->inPracticeMode || GAME_MANAGER->inSpellPrac)) {
+                    ImGui::TableNextRow();
+
+                    ImGui::TableNextColumn();
+                    ImGui::TextUnformatted(S(TH_TRACKER_SESSION));
+                    ImGui::TableNextColumn();
+
+                    int32_t seshAttemptCnt = attemptCnt - seshStartAttempts[lastSpellID];
+                    int32_t seshCaptureCnt = captureCnt - seshStartCaptures[lastSpellID];
+
+                    if (seshAttemptCnt)
+                        ImGui::Text("%d / %d (%d%%)", seshCaptureCnt, seshAttemptCnt, seshCaptureCnt * 100 / seshAttemptCnt);
+                    else ImGui::Text("%d / %d", seshCaptureCnt, seshAttemptCnt);
+                    tableLineCnt++;
+                }
 
                 if ((GAME_MANAGER->inPracticeMode || GAME_MANAGER->inSpellPrac || GAME_MANAGER->inReplay) && !isBooks) {
                     bool isSpellActive = *(uint32_t*)SPELLCARD_IS_ACTIVE;
@@ -586,8 +605,34 @@ namespace TH06NC {
             blockedHits = 0;
             inBooksCapAttempt = false;
 
-            snprintf(shotNameBuf, sizeof(shotNameBuf), "%s", S(shotNames[GAME_MANAGER->GetShotID()]));
+            const uint8_t shotID = GAME_MANAGER->GetShotID();
+            snprintf(shotNameBuf, sizeof(shotNameBuf), "%s", S(shotNames[shotID]));
             shotNameSize = ImGui::CalcTextSize(shotNameBuf);
+
+            if (SUPERVISOR->curState == RUN_START && !GAME_MANAGER->inReplay) { // refresh session start attempt counts
+                const uint32_t difficulty = GAME_MANAGER->difficulty;
+
+                if (GAME_MANAGER->inPracticeMode) {
+                    uint32_t unusedDifficulty = difficulty == EXTRA ? EASY : EXTRA;
+
+                    for (int i = 0; i < BOOKS_ID; i++) {
+                        SavefileSpellData& spellData = GAME_MANAGER->spellData[i];
+                        seshStartAttempts[i] = spellData.spellPracAttempts[unusedDifficulty][shotID];
+                        seshStartCaptures[i] = spellData.spellPracCaptures[unusedDifficulty][shotID];
+                    }
+
+                    uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty, shotID);
+                    seshStartAttempts[BOOKS_ID] = booksHistory[0];
+                    seshStartCaptures[BOOKS_ID] = booksHistory[1];
+
+                } else if (GAME_MANAGER->inSpellPrac) {
+                    for (int i = 0; i < BOOKS_ID; i++) {
+                        SavefileSpellData& spellData = GAME_MANAGER->spellData[i];
+                        seshStartAttempts[i] = spellData.spellPracAttempts[difficulty][shotID];
+                        seshStartCaptures[i] = spellData.spellPracCaptures[difficulty][shotID];
+                    }
+                }
+            }
         }
 
         void CountMiss() { inBooksCapAttempt = false; misses++; }
@@ -2213,17 +2258,17 @@ namespace TH06NC {
 
 
     HOOKSET_DEFINE(THTrackerHooks) // Tracker hooks
-    EHOOK_DY(th06nc_enter, RUN_START_SET_SCORE, 7, {
+    EHOOK_DY(th06nc_enter, RUN_START_SET_SCORE, 7, { // run start (including restarts, not including stage transitions)
         THTracker::singleton().Reset();
         OG_INS(GAME_MANAGER->actualScore = 0);
     })
 
-    EHOOK_DY(th06nc_count_miss, PLAYER_SET_RESPAWN_STATE, 7, {
+    EHOOK_DY(th06nc_count_miss, PLAYER_SET_RESPAWN_STATE, 7, { // on miss confirmed
         THTracker::singleton().CountMiss();
         OG_INS(PLAYER->player_state = 0x1);
     })
 
-    EHOOK_DY(th06nc_count_bomb, PLAYER_DECREMENT_BOMBS, 2, {
+    EHOOK_DY(th06nc_count_bomb, PLAYER_DECREMENT_BOMBS, 2, { // on bomb
         THTracker::singleton().CountBomb();
         OG_INS(pCtx->Rcx -= 1);
     })

@@ -5,7 +5,7 @@
 
 
 
-const char* th_glossary_str[3][1208]
+const char* th_glossary_str[3][1209]
 {
     {
         "",
@@ -1133,7 +1133,7 @@ const char* th_glossary_str[3][1208]
         "Bomb",
         "爆结界",
         "结界组",
-        "当前",
+        "收取",
         "琪露诺",
         "大鹫",
         "Easy",
@@ -1174,6 +1174,7 @@ const char* th_glossary_str[3][1208]
         "早苗B",
         "红魔组",
         "SCB",
+        "当前",
         "吸收的特殊灵",
         "收符卡数",
         "爆Hyper",
@@ -2384,6 +2385,7 @@ const char* th_glossary_str[3][1208]
         "SanaeB",
         "Scarlet Team",
         "Spell Bonus",
+        "Session",
         "Spec. Used",
         "Spells Captured",
         "Spirit Strikes",
@@ -3594,6 +3596,7 @@ const char* th_glossary_str[3][1208]
         "早苗B",
         "紅魔組",
         "SCB",
+        "直近戦歴",
         "取得したレア動物霊",
         "霊撃",
         "霊撃",
