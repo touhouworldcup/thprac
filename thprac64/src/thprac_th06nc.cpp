@@ -1,4 +1,5 @@
 #include "thprac_th06nc.h"
+#include "imgui_internal.h"
 #include <wininternal.h>
 
 // TODOs:
@@ -217,8 +218,10 @@ namespace TH06NC {
                     ImGui::SameLine();
                     float size = ImGui::GetFrameHeight();
 
+                    ImGui::PushItemFlag(ImGuiItemFlags_NoNav, true);
                     if (ImGui::Button(S(TH06NC_RESET), ImVec2(size, size)))
                         *mRank = defaultRank;
+                    ImGui::PopItemFlag();
                 }
 
                 if (stage == 6 && warpType > MIDBOSS && warpType != FRAME && section < TH06NC_TLB1)
