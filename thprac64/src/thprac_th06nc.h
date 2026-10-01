@@ -180,6 +180,7 @@ namespace TH06NC {
     X(PLAYER_ADDR,                 0x4ff3a0,  0x549ff0) \
     X(STAGE_BACKGROUND_ADDR,       0x509b60,  0x5547b0) \
     X(BGM_ADDR,                    0x50966c,  0x5542bc) \
+    X(VSYNC_FLAG,                  0x50a204,  0x5551a4) \
     X(HWND_PTR,                    0x55e5a8,  0x5a9548) \
     X(D3D_DEVICE_PTR,              0x9b1cf8,  0x9fcc98) \
     X(D3D_DEVICE_CONTEXT,          0x9b1d00,  0x9fcca0) \
@@ -200,6 +201,7 @@ namespace TH06NC {
     X(SUPERVISOR_ADDR,             0xc21970,  0xc6db90) \
     X(WINDOW_WIDTH,                0xc21e44,  0xc6e064) \
     X(WINDOW_HEIGHT,               0xc21e48,  0xc6e068) \
+    X(FPS_LIMITER_CONSTANT,        0xc22100,  0xc6e320) \
     X(SAVE_REPLAY_MENU_PTR_ADDR,   0xc22158,  0xc6e378) \
 
 #define AD_VAR(name, ...) uintptr_t name;
@@ -510,7 +512,7 @@ namespace TH06NC {
     enum SupervisorState : uint32_t {
         RESTART_START = 0x0,
         MAIN_MENU_EXIT = 0x1,
-        RUN_START = 0x2,
+        IN_RUN = 0x2,
         STAGE_TRANSITION = 0x3,
         RUN_END_NO_ENDING = 0x7,
         REPLAY_MENU_EXIT = 0x8,

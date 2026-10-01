@@ -2,9 +2,6 @@
 #include "imgui_internal.h"
 #include <wininternal.h>
 
-// TODOs:
-    // - Advanced Menu
-
 using namespace TH06;
 using std::pair;
 
@@ -384,6 +381,66 @@ namespace TH06NC {
     };
 
 
+    // Advanced Options
+    class THAdvOptWnd : public Gui::GameGuiWnd {
+        const ImVec2 rootChildSize = ImVec2(0.0f, 0.0f);
+        adv_opt_ctx mOptCtx;
+
+        THAdvOptWnd() noexcept {
+            SetFade(0.8f, 0.2f);
+            SetWndFlag(ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse |
+                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
+            SetStyle(ImGuiStyleVar_WindowRounding, 0.0f);
+            SetStyle(ImGuiStyleVar_WindowBorderSize, 0.0f);
+            OnLocaleChange();
+
+            mOptCtx.fps_status = 2;
+        }
+        SINGLETON(THAdvOptWnd);
+
+        void FpsSet(double fps) {
+            LARGE_INTEGER freq;
+            QueryPerformanceFrequency(&freq);
+            uint64_t fpsConstant = (uint64_t)(((double)freq.QuadPart / fps) + 0.5);
+
+            *(uint64_t*)FPS_LIMITER_CONSTANT = fpsConstant;
+            *(uint32_t*)VSYNC_FLAG = (fps != 60.0);
+        }
+
+    protected:
+        virtual void OnLocaleChange() override {
+            SetTitle(S(TH_SPELL_PRAC));
+            SetSizeRel(1.0f, 1.0f);
+            SetPosRel(0.0f, 0.0f);
+            SetAutoSpacing(true);
+        }
+
+        virtual void OnPreUpdate() override {
+            if (Gui::GetChordPressed(hotkeys.advanced_menu)) {
+                if (this->IsOpen()) this->Close();
+                else this->Open();
+            }
+        }
+
+        virtual void OnContentUpdate() override {
+            ImGui::TextUnformatted(S(TH_ADV_OPT));
+            ImGui::Separator();
+            ImGui::BeginChild("Adv. Options", rootChildSize);
+
+            if (BeginOptGroup<TH_GAME_SPEED>()) {
+                if (GameFPSOpt(mOptCtx, false, false))
+                    FpsSet((double)mOptCtx.fps);
+
+                EndOptGroup();
+            }
+
+            AboutOpt();
+            ImGui::EndChild();
+            ImGui::SetWindowFocus();
+        }
+    };
+
+
     // In-Game Tracker
     class THTracker : public Gui::GameGuiWnd {
         char shotNameBuf[32];
@@ -611,7 +668,7 @@ namespace TH06NC {
             snprintf(shotNameBuf, sizeof(shotNameBuf), "%s", S(shotNames[shotID]));
             shotNameSize = ImGui::CalcTextSize(shotNameBuf);
 
-            if (SUPERVISOR->curState == RUN_START && !GAME_MANAGER->inReplay) { // refresh session start attempt counts
+            if (SUPERVISOR->curState == IN_RUN && !GAME_MANAGER->inReplay) { // refresh session start attempt counts
                 const uint32_t difficulty = GAME_MANAGER->difficulty;
 
                 if (GAME_MANAGER->inPracticeMode) {
@@ -643,17 +700,16 @@ namespace TH06NC {
     };
 
 
-
     // Overlay (Backspace Menu)
     class THOverlay : public Gui::GameGuiWnd {
         THOverlay() noexcept {
             SetTitle("Mod Menu");
             SetFade(0.5f, 0.5f);
             SetSize(0.0f, 0.0f);
-            SetWndFlag(ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize
-                | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize
-                | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing
-                | ImGuiWindowFlags_NoNav | 0);
+            SetWndFlag(ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize |
+                ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
+                ImGuiWindowFlags_NoNav | 0);
             OnLocaleChange();
 
             mInvincible.SetupHooksRT(GetHookAddr);
@@ -1884,8 +1940,9 @@ namespace TH06NC {
         THGuiPrac::singleton().Update();
         THOverlay::singleton().Update();
         THTracker::singleton().Update();
+        THAdvOptWnd::singleton().Update();
 
-        GameGuiEnd(THGuiPrac::singleton().IsOpen());
+        GameGuiEnd(THGuiPrac::singleton().IsOpen() || THAdvOptWnd::singleton().IsOpen());
         OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
 
@@ -1913,6 +1970,7 @@ namespace TH06NC {
         THGuiPrac::singleton().RefreshLocale();
         THOverlay::singleton().RefreshLocale();
         THTracker::singleton().RefreshLocale();
+        THAdvOptWnd::singleton().RefreshLocale();
 
         OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
@@ -2302,13 +2360,14 @@ namespace TH06NC {
                     EIGTH_FRAME_INPUT_HELD_ADDR, GetWindowScale(), D3D_DEVICE_CONTEXT);
         ImGui::GetIO().DisplaySize = GetWindowSize();
 
-        //TODO
+        //TODO (?)
         //SetDpadHook(0x41D330, 3);
 
         // Gui components creation
         THGuiPrac::singleton();
         THOverlay::singleton();
         THTracker::singleton();
+        THAdvOptWnd::singleton();
 
         // Hooks
         EnableAllHooksVersion(THMainHooks);

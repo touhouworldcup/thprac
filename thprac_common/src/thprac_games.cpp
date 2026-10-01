@@ -553,7 +553,7 @@ int FPSHelper(adv_opt_ctx& ctx, bool repStatus, bool vpFast, bool vpSlow, bool s
     return res;
 }
 
-bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
+bool GameFPSOpt(adv_opt_ctx& ctx, bool replay, bool showDebugAcc)
 {
     static char tmpStr[32] {};
     static int fps = 0;
@@ -671,9 +671,11 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay)
         ImGui::SliderInt("Replay fast FPS", &fpsFastStatic, 1, 21, tmpStr);
         ImGui::PopItemWidth();
     }
-    ImGui::Checkbox("Debug acc.", (bool*)&fpsDebugAcc);
-    ImGui::SameLine();
-    Gui::HelpMarker("Blah");
+    if (showDebugAcc) { // guy note: no clue what this is supposed to be and the help marker isn't helping
+        ImGui::Checkbox("Debug acc.", (bool*)&fpsDebugAcc);
+        ImGui::SameLine();
+        Gui::HelpMarker("Blah");
+    }
 
     if (fpsStatic != fps
         || fpsSlowStatic != ctx.fps_replay_slow
