@@ -144,7 +144,7 @@ inline bool CheckBufPos(const void* bufStart, const void* bufPos, size_t bufLen)
 #define CHKBUF(buf, pos, len, ret) if (!CheckBufPos(buf, pos, len)) return ret
 
 #if !NDEBUG
-#define debug_msg(title, format, ...) log_mboxf(NULL, 0, title, format, __VA_ARGS__)
+#define debug_msg(format, ...) log_mboxf(NULL, 0, "Debug", format, __VA_ARGS__)
 #define debug_msg_raw(bufName, size, format, ...)  \
 do {                                               \
     char bufName[size];                            \
@@ -152,7 +152,7 @@ do {                                               \
     MessageBoxA(nullptr, bufName, "Debug", MB_OK); \
 } while (false);
 #else
-#define debug_msg(title, format, ...)
+#define debug_msg(format, ...)
 #define debug_msg_raw(buf, size, format, ...)
 #endif
 

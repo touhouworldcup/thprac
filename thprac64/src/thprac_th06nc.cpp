@@ -2,7 +2,6 @@
 #include <wininternal.h>
 
 // TODOs:
-    // - Tracker
     // - Advanced Menu
 
 using namespace TH06;
@@ -151,7 +150,7 @@ namespace TH06NC {
             return A0000ERROR;
         }
 
-        int prevStage = *mStage; //s1
+        int prevStage = *mStage; //st1
         void StageUpdate() {
             int stage = *mStage;
 
@@ -2180,6 +2179,8 @@ namespace TH06NC {
         if (GAME_MANAGER->inPracticeMode && (thPracParam.mode || thPracParam.lastFrame)) {
             char* rpyName = (char*)(pCtx->Rsp + 0x97);
             std::wstring w = L"replay/" + std::wstring(rpyName, rpyName + strlen(rpyName));
+
+            Sleep(10); // ugly! awful! but otherwise the handle might not be closed, so writing fails (just 1 fixes the issue, 10 is added safety)
             ReplaySaveParam(w.c_str(), thPracParam.GetJson());
 
             if (thPracParam.lastFrame) { // unfortunately saving multiple replays of the same run is glitchy so we have to disable it :/

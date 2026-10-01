@@ -740,11 +740,12 @@ void AboutOpt(const char* thanks_text)
 #pragma endregion
 
 #pragma region Replay System
+#define ERROR_RET(str) { debug_msg(str); return false; }
 
 bool ReplaySaveParam(const wchar_t* rep_path, std::string_view param)
 {
     auto repFile = CreateFileW(rep_path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (repFile == INVALID_HANDLE_VALUE) return false;
+    if (repFile == INVALID_HANDLE_VALUE) ERROR_RET("Failed to save replay: Invalid handle");
     defer(CloseHandle(repFile));
 
     DWORD repMagic = 0, bytesRead = 0;
@@ -755,7 +756,7 @@ bool ReplaySaveParam(const wchar_t* rep_path, std::string_view param)
             for (paramSize++; paramSize % 4; paramSize++) ;
 
             auto paramBuf = malloc(paramSize + 8);
-            if (!paramBuf) return false;
+            if (!paramBuf) ERROR_RET("Failed to save replay: Couldn't allocate paramBuf");
             defer(free(paramBuf));
 
             memset(paramBuf, 0, paramSize);
@@ -775,7 +776,7 @@ bool ReplaySaveParam(const wchar_t* rep_path, std::string_view param)
                 uint8_t versionByte;
                 SetFilePointer(repFile, 4, nullptr, FILE_BEGIN);
                 if (!ReadFile(repFile, &versionByte, 1, &bytesRead, nullptr))
-                    return false;
+                    ERROR_RET("Failed to save replay: Couldn't read EoSD version byte");
 
                 if (versionByte == 0xf) { // New Classic
                     eosdEncStart = 0x12;
@@ -795,7 +796,7 @@ bool ReplaySaveParam(const wchar_t* rep_path, std::string_view param)
 
             SetFilePointer(repFile, encStart, nullptr, FILE_BEGIN);
             if (!ReadFile(repFile, repBuf, encSize, &bytesRead, nullptr))
-                return false;
+                ERROR_RET("Failed to save replay: Couldn't read encrypted portion");
 
             uint8_t key = *repBuf;
             uint32_t decryptOffset = (repMagic == 'PR6T' ? 1 : 3);
@@ -820,7 +821,7 @@ bool ReplaySaveParam(const wchar_t* rep_path, std::string_view param)
 
             auto paramBuf = malloc(paramSize);
             if (!paramBuf)
-                return false;
+                ERROR_RET("Failed to save replay: Couldn't allocate paramBuf");
 
             defer(free(paramBuf));
             memset(paramBuf, 0, paramSize);
