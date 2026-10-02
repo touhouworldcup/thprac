@@ -1950,7 +1950,7 @@ namespace TH06NC {
         OG_INS(pCtx->Rcx = 0xad);
     })
 
-    // Core Hooks 
+    // Core Hooks
     EHOOK_DY(th06nc_update, POST_ON_TICK, 1, { // end of run_all_on_tick
         GameGuiBegin(IMPL_WIN32_DX11);
 
@@ -1965,9 +1965,9 @@ namespace TH06NC {
         OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
 
-    EHOOK_DY(th06nc_render, POST_ON_DRAW, 1, {  // end of run_all_on_draw
+    EHOOK_DY(th06nc_render, POST_RENDER_FINISH, 2, { // after post-processing / top-layer ANM render
         GameGuiRender(IMPL_WIN32_DX11);
-        OG_INS(pCtx->Rip = PopHelper(pCtx));
+        OG_INS(pCtx->Rdi = 0);
     })
 
     EHOOK_DY(th06nc_title_screen_transition, MENU_SET_TITLE_STATE, 7, { // transition to title screen (main menu state 3)

@@ -44,7 +44,6 @@ namespace TH06NC {
     X(GAME_MANAGER_REGISTERED,   0x3b69d,    0x3cf1d)  \
     X(GAME_MGR_END_PAUSE_BGM,    0x3b6cb,    0x3cf4b)  \
     X(POST_ON_TICK,              0x3bf59,    0x3d7d9)  \
-    X(POST_ON_DRAW,              0x3c257,    0x1f28)   \
     X(BGM_NAME_GET_TRANSLATIONS, 0x3e655,    0x3ff35)  \
     X(BGM_NAME_LOAD,             0x3e74a,    0x4002a)  \
     X(SET_RETURN_TO_MENU_STATE,  0x3fb9e,    0x4147e)  \
@@ -77,6 +76,7 @@ namespace TH06NC {
     X(PRAC_RPY_SEL_GET_MODE_STR, 0x7376b,    0x74e3b)  \
     X(PRAC_HIGH_SCORE_WRITE,     0x74440,    0x75b0f)  \
     X(POST_DIMENSION_CHANGE,     0x7c848,    0x7e498)  \
+    X(POST_RENDER_FINISH,        0x259b9a,   0x25baaa) \
     X(GUI_INIT_LAUNCH,           0x270725,   0x2724d5) \
 
 #define HK_ENUM(name, ...) name,
