@@ -113,9 +113,10 @@ namespace TH06NC {
 #define INST_LIST(X)                                      \
     /*                               V1_03A     V1_03B */ \
     X(PAUSE_MENU_POST_RETURN_TITLE,  0xa7cc,    0xaefc)   \
-    X(MENU_SET_SUBSHOT_SEL_STATE,    0x4be03,   0x4d563)  \
     X(GAME_MGR_REG_BG_FF_CHECK_FAIL, 0x3b4bc,   0x3cd3c)  \
     X(MAIN_MENU_LOADED_REPLAY_META,  0x38c62,   0x3a522)  \
+    X(REPLAY_FASTFORWARD_LOOP_CNT,   0x45de1,   0x3d95e)  \
+    X(MENU_SET_SUBSHOT_SEL_STATE,    0x4be03,   0x4d563)  \
     X(BOMB_INPUT_CHECK_PASS,         0x68a11,   0x6a121)  \
     X(BOMB_INPUT_CHECK_FAIL,         0x68ad2,   0x6a1e2)  \
     X(IN_GAME_LOADED_REPLAY_META_1,  0x6d3df,   0x6eaae)  \
@@ -173,6 +174,7 @@ namespace TH06NC {
     /*                             V1_03A     V1_03B */ \
     X(RETURN_TO_STAGE_SELECT_STR,  0x307f20,  0x34db20) \
     X(SPELL_PRAC_SAVE_REPLAY_STR,  0x307fa0,  0x34dba0) \
+    X(REPLAY_MULT_STR,             0x30c228,  0x351ef8) \
     X(PATCHY_LAST_SPELLS_TABLE,    0x3de300,  0x428f50) \
     X(ASCII_MANAGER_ADDR,          0x3de620,  0x429270) \
     X(BULLET_ARRAY,                0x3ec2a8,  0x436ef8) \
@@ -337,6 +339,12 @@ namespace TH06NC {
         SOUND_1UP = 28,
         SOUND_GRAZE = 30,
         SOUND_POWERUP = 31,
+    };
+
+    enum INPUTS {
+        FOCUS = 0x4,
+        CTRL = 0x8,
+        SHOOT = 0x8000,
     };
 
     constexpr WARP_TYPE fixType(int warpType) {

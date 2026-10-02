@@ -1025,6 +1025,9 @@ enum th_glossary_t
     TH_FPS_ERR,
     TH_FPS_FREE_ADJ,
     TH_FPS_LOWERING,
+    TH_FPS_RPY_FAST,
+    TH_FPS_RPY_INPUT,
+    TH_FPS_RPY_SLOW,
     TH_FPS_UNSUPPORTED,
     TH_FRAME,
     TH_FULL,
@@ -1219,7 +1222,7 @@ enum th_glossary_t
     TH_YES,
 };
 
-extern const char* th_glossary_str[3][1209];
+extern const char* th_glossary_str[3][1212];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

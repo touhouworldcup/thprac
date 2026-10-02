@@ -667,8 +667,8 @@ bool GameFPSOpt(adv_opt_ctx& ctx, bool replay, bool showDebugAcc)
             sprintf(tmpStr, "x%d.0 (%dfps)", fpsFastStatic, fpsFastStatic * 60);
         }
 
-        ImGui::SliderInt("Replay slow FPS", &fpsSlowStatic, 1, 60);
-        ImGui::SliderInt("Replay fast FPS", &fpsFastStatic, 1, 21, tmpStr);
+        ImGui::SliderInt(S(TH_FPS_RPY_SLOW), &fpsSlowStatic, 1, 60);
+        ImGui::SliderInt(S(TH_FPS_RPY_FAST), &fpsFastStatic, 1, 21, tmpStr);
         ImGui::PopItemWidth();
     }
     if (showDebugAcc) { // guy note: no clue what this is supposed to be and the help marker isn't helping

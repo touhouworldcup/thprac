@@ -383,6 +383,8 @@ namespace TH06NC {
 
     // Advanced Options
     class THAdvOptWnd : public Gui::GameGuiWnd {
+        Gui::GuiSlider<uint8_t, ImGuiDataType_U8> mFastforwardMult { TH_FPS_RPY_FAST, 2, 64 };
+
         const ImVec2 rootChildSize = ImVec2(0.0f, 0.0f);
         adv_opt_ctx mOptCtx;
 
@@ -395,6 +397,7 @@ namespace TH06NC {
             OnLocaleChange();
 
             mOptCtx.fps_status = 2;
+            *mFastforwardMult = 8;
         }
         SINGLETON(THAdvOptWnd);
 
@@ -405,6 +408,17 @@ namespace TH06NC {
 
             *(uint64_t*)FPS_LIMITER_CONSTANT = fpsConstant;
             *(uint32_t*)VSYNC_FLAG = (fps != 60.0);
+        }
+
+        void ReplayFastFpsSet(uint8_t mult) {
+            DWORD oldProtect;
+            VirtualProtect((void*)REPLAY_FASTFORWARD_LOOP_CNT, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
+            *(uint8_t*)REPLAY_FASTFORWARD_LOOP_CNT = mult - 1;
+            VirtualProtect((void*)REPLAY_FASTFORWARD_LOOP_CNT, 1, oldProtect, &oldProtect);
+
+            VirtualProtect((void*)(REPLAY_MULT_STR + 1), 2, PAGE_EXECUTE_READWRITE, &oldProtect);
+            snprintf((char*)(REPLAY_MULT_STR + 1), 3, "%u", mult);
+            VirtualProtect((void*)(REPLAY_MULT_STR + 1), 2, oldProtect, &oldProtect);
         }
 
     protected:
@@ -431,6 +445,11 @@ namespace TH06NC {
                 if (GameFPSOpt(mOptCtx, false, false))
                     FpsSet((double)mOptCtx.fps);
 
+                ImGui::PushItemWidth(Gui::GetRelWidth(0.23f));
+                if (mFastforwardMult("x%d"))
+                    ReplayFastFpsSet(*mFastforwardMult);
+
+                ImGui::PopItemWidth();
                 EndOptGroup();
             }
 

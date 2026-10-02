@@ -863,6 +863,9 @@
         "VsyncPatchを使用している場合、FPSを下げるとゲームが一時的にフリーズする可能性がありますので、しばらくお待ちください。"
       ],
       "TH_FPS_FREE_ADJ": [ "自由调整", "Adjust freely", "自由調整" ],
+      "TH_FPS_RPY_INPUT": [ "Replay输入FPS", "Replay input FPS", "リプレイ入力FPS" ],
+      "TH_FPS_RPY_SLOW": [ "Replay慢速FPS", "Replay slow FPS", "リプレイ低速FPS" ],
+      "TH_FPS_RPY_FAST": [ "Replay快速FPS", "Replay fast FPS", "リプレイ高速FPS" ],
       "TH_GAMEPLAY": [ "游戏进行", "Gameplay", "ゲームプレイ" ],
       "TH_FAST_RETRY": [ "快速重开", "Fast retry", "高速リトライ" ],
       "TH_FACTOR_ACB": [ "总是计入All Clear Bonus", "Always factor in the \"All Clear Bonus\"", "プラクティスでもオールクリアボーナスを加算する" ],

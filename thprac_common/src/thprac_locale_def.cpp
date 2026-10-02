@@ -5,7 +5,7 @@
 
 
 
-const char* th_glossary_str[3][1209]
+const char* th_glossary_str[3][1212]
 {
     {
         "",
@@ -1025,6 +1025,9 @@ const char* th_glossary_str[3][1209]
         "FPS调整相关的功能已禁用，你必须满足以下条件之一以使用这些功能：\n1. 使用VsyncPatch，且在vpatch.ini中将“Vsync”一项的值设为0。\n2. 在游戏的custom.exe中将输入方式设置为“高速”。（仅限地灵殿及之后的游戏）",
         "自由调整",
         "使用VsyncPatch时降低FPS可能会导致游戏冻结一小段时间，请耐心等待。",
+        "Replay快速FPS",
+        "Replay输入FPS",
+        "Replay慢速FPS",
         "不支持的VsyncPatch版本。",
         "帧",
         "完全",
@@ -2236,6 +2239,9 @@ const char* th_glossary_str[3][1209]
         "FPS Adjustment related features has been disabled. To enable them, satisfy either of the following requirements:\n1. Use VsyncPatch, and make sure the \"Vsync\" value in vpatch.ini is set to 0.\n2. In the game's custom.exe, set the input method to \"Fast\". (Only applies to SA and after)",
         "Adjust freely",
         "When using VsyncPatch, lowering FPS may freeze the game for a brief time. Please wait patiently.",
+        "Replay fast FPS",
+        "Replay input FPS",
+        "Replay slow FPS",
         "Unsupported VsyncPatch version.",
         "Frame",
         "Full",
@@ -3447,6 +3453,9 @@ const char* th_glossary_str[3][1209]
         "FPS調整関連の機能は無効になっています。有効にするには、以下のいずれかの要件を満たす必要があります。\n\n1. VsyncPatchを使用し、vpatch.iniの「Vsync」値を0に設定します。\n2. ゲームのcustom.exeで、入力のレイテンシを「高速」に設定します。（地霊殿以降のみ）",
         "自由調整",
         "VsyncPatchを使用している場合、FPSを下げるとゲームが一時的にフリーズする可能性がありますので、しばらくお待ちください。",
+        "リプレイ高速FPS",
+        "リプレイ入力FPS",
+        "リプレイ低速FPS",
         "このバージョンのVsyncPatchはサポートされていません。",
         "フレーム",
         "完全",
