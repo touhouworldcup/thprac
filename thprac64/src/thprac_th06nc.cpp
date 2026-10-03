@@ -954,7 +954,8 @@ namespace TH06NC {
 
     // Gui components update
     void GuiUpdate() {
-        GameGuiBegin(IMPL_WIN32_DX11);
+        bool isAdvOptWndOpen = THAdvOptWnd::singleton().IsOpen();
+        GameGuiBegin(IMPL_WIN32_DX11, !isAdvOptWndOpen);
 
         Gui::KeyboardInputUpdate(VK_ESCAPE);
         THGuiPrac::singleton().Update();
@@ -962,7 +963,7 @@ namespace TH06NC {
         THTracker::singleton().Update();
         THAdvOptWnd::singleton().Update();
 
-        GameGuiEnd(THGuiPrac::singleton().IsOpen() || THAdvOptWnd::singleton().IsOpen());
+        GameGuiEnd(THGuiPrac::singleton().IsOpen() || isAdvOptWndOpen);
     }
 
 
