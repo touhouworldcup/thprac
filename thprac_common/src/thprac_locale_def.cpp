@@ -5,7 +5,7 @@
 
 
 
-const char* th_glossary_str[3][1212]
+const char* th_glossary_str[3][1213]
 {
     {
         "",
@@ -26,6 +26,7 @@ const char* th_glossary_str[3][1212]
         "原版练习 (标准模式)",
         "原版练习 (标准模式)",
         "返",
+        "按 Shift 键（键盘），或按左/右扳机键（手柄）。",
         "关底Boss (PH)",
         "强制进入PH",
         "消弹奖分",
@@ -1240,6 +1241,7 @@ const char* th_glossary_str[3][1212]
         "Original (Challenge Mode)",
         "Original (Standard Mode)",
         "R",
+        "Press Shift (keyboard) or left/right trigger (controller).",
         "True Last Boss",
         "Guarantee Extra Phantom",
         "Yellow Bonus",
@@ -2454,6 +2456,7 @@ const char* th_glossary_str[3][1212]
         "オリジナル (標準モード)",
         "オリジナル (標準モード)",
         "戻",
+        "Shiftキー（キーボード）または左右のトリガー（コントローラー）を押してください。",
         "秘密ボス",
         "Extra Phantomへの強制突入",
         "弾消しボーナス",
@@ -23157,7 +23160,7 @@ const th_glossary_t TH20_EXPIRED_PYRAMID_FIX_OPT[6]
 
 }
 
-const wchar_t __thprac_loc_range_zh[3371] {
+const wchar_t __thprac_loc_range_zh[3375] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -23804,6 +23807,7 @@ const wchar_t __thprac_loc_range_zh[3371] {
     0x6267, 0x6267,
     0x6269, 0x6269,
     0x626b, 0x626b,
+    0x6273, 0x6273,
     0x627e, 0x627e,
     0x6280, 0x6280,
     0x6284, 0x6284,
@@ -23958,6 +23962,7 @@ const wchar_t __thprac_loc_range_zh[3371] {
     0x67ad, 0x67ad,
     0x67af, 0x67af,
     0x67b7, 0x67b7,
+    0x67c4, 0x67c4,
     0x67cf, 0x67cf,
     0x67d0, 0x67d0,
     0x67d3, 0x67d3,

@@ -1778,7 +1778,8 @@
       "TH06NC_CUSTOM_STANDARD": [ "自定义练习 (挑战模式)", "Custom (Standard Mode)", "カスタム (チャレンジモード)" ],
       "TH06NC_CUSTOM_CHALLENGE": [ "自定义练习 (挑战模式)", "Custom (Challenge Mode)", "カスタム (チャレンジモード)" ],
       "TH06NC_RESET": [ "返", "R", "戻" ],
-      "TH06NC_TRACKER_YELLOW": [ "消弹奖分", "Yellow Bonus", "弾消しボーナス" ]
+      "TH06NC_TRACKER_YELLOW": [ "消弹奖分", "Yellow Bonus", "弾消しボーナス" ],
+      "TH06NC_SLOWDOWN_HINT": [ "按 Shift 键（键盘），或按左/右扳机键（手柄）。", "Press Shift (keyboard) or left/right trigger (controller).", "Shiftキー（キーボード）または左右のトリガー（コントローラー）を押してください。" ]
     },
 
     "sections": {

@@ -48,6 +48,8 @@ namespace TH06NC {
     X(BGM_NAME_LOAD,             0x3e74a,    0x4002a)  \
     X(SET_RETURN_TO_MENU_STATE,  0x3fb9e,    0x4147e)  \
     X(SET_STG_TRANSITION_STATE,  0x3fbcb,    0x414ab)  \
+    X(POST_DRAW_POWER_TEXT,      0x413c0,    0x42ca0)  \
+    X(ON_TICK_CALL,              0x45d82,    0x3d8ef)  \
     X(MENU_SET_TITLE_STATE,      0x4802e,    0x4978e)  \
     X(REPLAY_SELECT_PATH_FETCH,  0x48e1b,    0x4a579)  \
     X(MENU_SET_PRAC_STATE,       0x4bbd5,    0x4d335)  \
@@ -183,6 +185,7 @@ namespace TH06NC {
     X(STAGE_BACKGROUND_ADDR,       0x509b60,  0x5547b0) \
     X(BGM_ADDR,                    0x50966c,  0x5542bc) \
     X(VSYNC_FLAG,                  0x50a204,  0x5551a4) \
+    X(IS_EITHER_FAR_TRIGGER_HELD,  0x54601c,  0x590fbc) \
     X(HWND_PTR,                    0x55e5a8,  0x5a9548) \
     X(D3D_DEVICE_PTR,              0x9b1cf8,  0x9fcc98) \
     X(D3D_DEVICE_CONTEXT,          0x9b1d00,  0x9fcca0) \
@@ -203,6 +206,7 @@ namespace TH06NC {
     X(SUPERVISOR_ADDR,             0xc21970,  0xc6db90) \
     X(WINDOW_WIDTH,                0xc21e44,  0xc6e064) \
     X(WINDOW_HEIGHT,               0xc21e48,  0xc6e068) \
+    X(IS_SHIFT_HELD,               0xc21f9a,  0xc6e1ba) \
     X(FPS_LIMITER_CONSTANT,        0xc22100,  0xc6e320) \
     X(SAVE_REPLAY_MENU_PTR_ADDR,   0xc22158,  0xc6e378) \
 
@@ -231,11 +235,13 @@ namespace TH06NC {
     /*                                     V1_03A     V1_03B */ \
     X(void,     LOAD_ANM_FILE,             0x20b0,    0x2440)   \
     X(void,     ANM_VM_SET_SPRITE,         0x2980,    0x2d60)   \
+    X(void,     DRAW_ASCII_TEXT,           0x9aa0,    0xa1d0)   \
     X(void,     FETCH_PAUSE_MENU_OPT_STRS, 0x9e80,    0xa5b0)   \
     X(void,     BGM_PLAY,                  0x7bc80,   0x7d8d0)  \
     X(void,     BGM_STOP,                  0x7f9c0,   0x81740)  \
     X(void,     BGM_RESUME,                0xc8110,   0xc9df0)  \
     X(void,     BGM_PAUSE,                 0xcce50,   0xceb30)  \
+    X(bool,     RUN_ALL_ON_TICK,           0x3be80,   0x3d700)  \
 
     template <typename R = void>
     struct Function {
@@ -344,7 +350,7 @@ namespace TH06NC {
     enum INPUTS {
         FOCUS = 0x4,
         CTRL = 0x8,
-        SHOOT = 0x8000,
+        RPY_SHOOT = 0x8000,
     };
 
     constexpr WARP_TYPE fixType(int warpType) {
@@ -465,6 +471,18 @@ namespace TH06NC {
         // size unknown
     };
 
+    struct Float2 {
+        float x; // 0x0
+        float y; // 0x4
+    };
+
+    struct ARGB {
+        uint8_t b;
+        uint8_t g;
+        uint8_t r;
+        uint8_t a;
+    };
+
     struct EnemyManager {
         char __unknown1[0x2b0];    // 0x0
         SoundIdx bulletSFX;        // 0x2b0
@@ -536,11 +554,12 @@ namespace TH06NC {
     };
 
     struct AsciiManager {
-        char __unknown1[0x52d0];    // 0x0
-        uintptr_t pauseMenu;        // 0x52d0
-        char __unknown2[0x28cc];    // 0x52d8
-        uint32_t spellPracEndState; // 0x7ba4
-        uint8_t spellPracEndWin;    // 0x7ba8
+        char __unknown_0[0x52cc];    // 0x0
+        ARGB curColor;               // 0x52cc
+        uintptr_t pauseMenu;         // 0x52d0
+        char __unknown_28cc[0x28cc]; // 0x52d8
+        uint32_t spellPracEndState;  // 0x7ba4
+        uint8_t spellPracEndWin;     // 0x7ba8
     };
 
     struct SaveReplayMenu {
@@ -572,6 +591,7 @@ namespace TH06NC {
     static_assert(offsetof(ZUNGui, bossTimerSec) == 0x4c);
     static_assert(offsetof(Supervisor, curState) == 0x42c);
     static_assert(offsetof(Supervisor, curMode) == 0x44b);
+    static_assert(offsetof(AsciiManager, curColor) == 0x52cc);
     static_assert(offsetof(AsciiManager, pauseMenu) == 0x52d0);
     static_assert(offsetof(AsciiManager, spellPracEndState) == 0x7ba4);
     static_assert(offsetof(AsciiManager, spellPracEndWin) == 0x7ba8);

@@ -384,8 +384,10 @@ namespace TH06NC {
     // Advanced Options
     class THAdvOptWnd : public Gui::GameGuiWnd {
         Gui::GuiSlider<uint8_t, ImGuiDataType_U8> mFastforwardMult { TH_FPS_RPY_FAST, 2, 64 };
+        Gui::GuiSlider<uint8_t, ImGuiDataType_U8> mSlowdownDiv { TH_FPS_RPY_SLOW, 2, 32 };
 
         const ImVec2 rootChildSize = ImVec2(0.0f, 0.0f);
+        uint64_t slowHeldTime = 0;
         adv_opt_ctx mOptCtx;
 
         THAdvOptWnd() noexcept {
@@ -398,6 +400,7 @@ namespace TH06NC {
 
             mOptCtx.fps_status = 2;
             *mFastforwardMult = 8;
+            *mSlowdownDiv = 2;
         }
         SINGLETON(THAdvOptWnd);
 
@@ -419,6 +422,12 @@ namespace TH06NC {
             VirtualProtect((void*)(REPLAY_MULT_STR + 1), 2, PAGE_EXECUTE_READWRITE, &oldProtect);
             snprintf((char*)(REPLAY_MULT_STR + 1), 3, "%u", mult);
             VirtualProtect((void*)(REPLAY_MULT_STR + 1), 2, oldProtect, &oldProtect);
+        }
+
+        bool SlowdownPrereqs() {
+            return GAME_MANAGER->inReplay && !GAME_MANAGER->pauseState
+                && !(*(uint32_t*)INPUT_ADDR & RPY_SHOOT) // note: unlike shoot, focus is not tracked in the standard input var during replays
+                && (*(uint8_t*)IS_SHIFT_HELD || *(uint8_t*)IS_EITHER_FAR_TRIGGER_HELD);
         }
 
     protected:
@@ -449,6 +458,10 @@ namespace TH06NC {
                 if (mFastforwardMult("x%d"))
                     ReplayFastFpsSet(*mFastforwardMult);
 
+                mSlowdownDiv("÷%d");
+                ImGui::SameLine();
+                Gui::HelpMarker(S(TH06NC_SLOWDOWN_HINT));
+
                 ImGui::PopItemWidth();
                 EndOptGroup();
             }
@@ -456,6 +469,25 @@ namespace TH06NC {
             AboutOpt();
             ImGui::EndChild();
             ImGui::SetWindowFocus();
+        }
+
+    public:
+        bool DoSlowdownSkipTick() {
+            if (!SlowdownPrereqs()) return false;
+            return slowHeldTime++ % *mSlowdownDiv;
+        }
+
+        void SlowdownTextDraw(Float2* stackPos) {
+            if (!SlowdownPrereqs()) return;
+
+            // note: would be nice to also lower the text size for v1.03b and above
+            if (gameVersion == VER_1_03A) *stackPos = { 305.0f, 439.0f };
+            else *stackPos = { 300.0f, 444.0f };
+
+            float alpha = 150.0f + 52.5f * (sin(slowHeldTime * 0.1f) + 1.0f);
+            ASCII_MANAGER->curColor = { 0xd6, 0xb4, 0xb5, (uint8_t)alpha };
+            DRAW_ASCII_TEXT(ASCII_MANAGER, stackPos, "/%d", *mSlowdownDiv);
+            ASCII_MANAGER->curColor = { 255, 255, 255, 255 };
         }
     };
 
@@ -866,6 +898,20 @@ namespace TH06NC {
         })
         HOTKEY_ENDDEF();
     };
+
+
+    // Gui components update
+    void GuiUpdate() {
+        GameGuiBegin(IMPL_WIN32_DX11);
+
+        Gui::KeyboardInputUpdate(VK_ESCAPE);
+        THGuiPrac::singleton().Update();
+        THOverlay::singleton().Update();
+        THTracker::singleton().Update();
+        THAdvOptWnd::singleton().Update();
+
+        GameGuiEnd(THGuiPrac::singleton().IsOpen() || THAdvOptWnd::singleton().IsOpen());
+    }
 
 
     // ECL Patching Tools
@@ -1952,16 +1998,7 @@ namespace TH06NC {
 
     // Core Hooks
     EHOOK_DY(th06nc_update, POST_ON_TICK, 1, { // end of run_all_on_tick
-        GameGuiBegin(IMPL_WIN32_DX11);
-
-        // Gui components update
-        Gui::KeyboardInputUpdate(VK_ESCAPE);
-        THGuiPrac::singleton().Update();
-        THOverlay::singleton().Update();
-        THTracker::singleton().Update();
-        THAdvOptWnd::singleton().Update();
-
-        GameGuiEnd(THGuiPrac::singleton().IsOpen() || THAdvOptWnd::singleton().IsOpen());
+        GuiUpdate();
         OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
 
@@ -2355,6 +2392,23 @@ namespace TH06NC {
     })
     HOOKSET_ENDDEF()
 
+    HOOKSET_DEFINE(THFPSHooks) // Replay Slowdown hooks
+    EHOOK_DY(th06nc_replay_slowdown, ON_TICK_CALL, 5, { // main call to run_all_on_tick
+        if (THAdvOptWnd::singleton().DoSlowdownSkipTick()) {
+            GuiUpdate();
+            pCtx->Rax = 0; // tick failed
+            return;
+        }
+
+        OG_INS(RUN_ALL_ON_TICK(pCtx->Rcx));
+    })
+
+    EHOOK_DY(th06nc_pre_render, POST_DRAW_POWER_TEXT, 7, { // draw our text in a context where AsciiManager vars (& stack?) are as they should be
+        THAdvOptWnd::singleton().SlowdownTextDraw((Float2*)(pCtx->Rsp + 0x30));
+        OG_INS(pCtx->R9 = GAME_MANAGER->actualScore);
+    })
+    HOOKSET_ENDDEF()
+
 
     static __declspec(noinline) void THGuiCreate() {
         if (ImGui::GetCurrentContext()) return;
@@ -2395,6 +2449,7 @@ namespace TH06NC {
         EnableAllHooksVersion(THReplayHooks2);
         EnableAllHooksVersion(THReplayHooks3);
         EnableAllHooksVersion(THTrackerHooks);
+        EnableAllHooksVersion(THFPSHooks);
         SetupHook(th06nc_trigger_health_interrupt);
         SetupHook(th06nc_prac_exit_replay_save_fix_options);
         SetupHook(th06nc_end_rpy_on_last_frame);

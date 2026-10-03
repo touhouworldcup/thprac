@@ -26,6 +26,7 @@ enum th_glossary_t
     TH06NC_ORIGINAL_CHALLENGE,
     TH06NC_ORIGINAL_STANDARD,
     TH06NC_RESET,
+    TH06NC_SLOWDOWN_HINT,
     TH06NC_TLB,
     TH06NC_TLB_LOCK,
     TH06NC_TRACKER_YELLOW,
@@ -1222,7 +1223,7 @@ enum th_glossary_t
     TH_YES,
 };
 
-extern const char* th_glossary_str[3][1212];
+extern const char* th_glossary_str[3][1213];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 
@@ -2957,7 +2958,7 @@ extern const th_glossary_t TH20_EXPIRED_PYRAMID_FIX_OPT[6];
 
 }
 
-extern const wchar_t __thprac_loc_range_zh[3371];
+extern const wchar_t __thprac_loc_range_zh[3375];
 
 extern const wchar_t __thprac_loc_range_en[31];
 
