@@ -5,7 +5,7 @@
 
 
 
-const char* th_glossary_str[3][1213]
+const char* th_glossary_str[3][1217]
 {
     {
         "",
@@ -29,6 +29,10 @@ const char* th_glossary_str[3][1213]
         "按 Shift 键（键盘），或按左/右扳机键（手柄）。",
         "关底Boss (PH)",
         "强制进入PH",
+        "在追踪表中显示历史",
+        "在追踪表中显示当前历史",
+        "在追踪表中显示消弹奖分",
+        "追踪表打开时，游戏中通常只会在符卡结束时进行的消弹奖分计算将改为每帧模拟。这可能会带来可忽略不计的额外开销。\n注意，消弹奖分和SCB仅会在练习模式、符卡练习模式以及回放中显示。",
         "消弹奖分",
         "魔法阵",
         "机体伪装",
@@ -1244,6 +1248,10 @@ const char* th_glossary_str[3][1213]
         "Press Shift (keyboard) or left/right trigger (controller).",
         "True Last Boss",
         "Guarantee Extra Phantom",
+        "Show history in in-game tracker",
+        "Show session history in in-game tracker",
+        "Show yellow bonus in in-game tracker",
+        "The game's cancel bonus calculations, which are normally only performed when a spell ends, will be simulated each frame while the tracker is open. This may add a negligeable amount of overhead.\nNote that both Yellow Bonus and Spell Card Bonus are only shown in Practice Mode, Spell Practice Mode & in replays.",
         "Yellow Bonus",
         "Books",
         "Fake Shot",
@@ -2459,6 +2467,10 @@ const char* th_glossary_str[3][1213]
         "Shiftキー（キーボード）または左右のトリガー（コントローラー）を押してください。",
         "秘密ボス",
         "Extra Phantomへの強制突入",
+        "戦歴をトラッカーに表示",
+        "直近戦歴をトラッカーに表示",
+        "弾消しボーナスをトラッカーに表示",
+        "トラッカーを開いている間、ゲーム内では通常スペル終了時にのみ行われる弾消しボーナスの計算を毎フレームシミュレートします。これにより、無視できる程度のオーバーヘッドが発生する場合があります。\nなお、弾消しボーナスとSCBは練習モード、スペルプラクティス、リプレイでのみ表示されます。",
         "弾消しボーナス",
         "魔導書",
         "機体偽装",
@@ -23160,7 +23172,7 @@ const th_glossary_t TH20_EXPIRED_PYRAMID_FIX_OPT[6]
 
 }
 
-const wchar_t __thprac_loc_range_zh[3375] {
+const wchar_t __thprac_loc_range_zh[3381] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -23751,6 +23763,7 @@ const wchar_t __thprac_loc_range_zh[3375] {
     0x5fe4, 0x5fe4,
     0x5feb, 0x5feb,
     0x5ff5, 0x5ff5,
+    0x5ffd, 0x5ffd,
     0x5fff, 0x5fff,
     0x6001, 0x6001,
     0x6012, 0x6012,
@@ -23826,6 +23839,7 @@ const wchar_t __thprac_loc_range_zh[3375] {
     0x62d2, 0x62d2,
     0x62db, 0x62db,
     0x62dc, 0x62dc,
+    0x62df, 0x62df,
     0x62e5, 0x62e5,
     0x62e8, 0x62e8,
     0x62e9, 0x62e9,
@@ -24702,6 +24716,7 @@ const wchar_t __thprac_loc_range_zh[3375] {
     0x94f3, 0x94f3,
     0x94f6, 0x94f6,
     0x94fe, 0x94fe,
+    0x9500, 0x9500,
     0x9501, 0x9501,
     0x9519, 0x9519,
     0x951a, 0x951a,
@@ -24870,7 +24885,7 @@ const wchar_t __thprac_loc_range_en[31] {
     0
 };
 
-const wchar_t __thprac_loc_range_ja[2853] {
+const wchar_t __thprac_loc_range_ja[2855] {
     0x0020, 0x00FF,
     0x2026, 0x2026,
     0x2192, 0x2192,
@@ -25843,6 +25858,7 @@ const wchar_t __thprac_loc_range_ja[2853] {
     0x79d8, 0x79d8,
     0x79fb, 0x79fb,
     0x7a00, 0x7a00,
+    0x7a0b, 0x7a0b,
     0x7a20, 0x7a20,
     0x7a2e, 0x7a2e,
     0x7a3c, 0x7a3c,

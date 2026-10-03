@@ -430,6 +430,11 @@ namespace TH06NC {
                 && (*(uint8_t*)IS_SHIFT_HELD || *(uint8_t*)IS_EITHER_FAR_TRIGGER_HELD);
         }
 
+    public:
+        bool showYellowBonus = true;
+        bool showHistory = true;
+        bool showSessionHistory = true;
+
     protected:
         virtual void OnLocaleChange() override {
             SetTitle(S(TH_SPELL_PRAC));
@@ -463,6 +468,20 @@ namespace TH06NC {
                 Gui::HelpMarker(S(TH06NC_SLOWDOWN_HINT));
 
                 ImGui::PopItemWidth();
+                EndOptGroup();
+            }
+
+            if (BeginOptGroup<TH_GAMEPLAY>()) {
+                ImGui::Checkbox(S(TH06NC_TRACKER_SHOW_YELLOW), &showYellowBonus);
+                ImGui::SameLine();
+                Gui::HelpMarker(S(TH06NC_TRACKER_SHOW_YELLOW_HINT));
+
+                if (ImGui::Checkbox(S(TH06NC_TRACKER_SHOW_HISTORY), &showHistory) && !showHistory)
+                    showSessionHistory = false;
+
+                ImGui::BeginDisabled(!showHistory);
+                ImGui::Checkbox(S(TH06NC_TRACKER_SHOW_SESSION), &showSessionHistory);
+                ImGui::EndDisabled(!showHistory);
                 EndOptGroup();
             }
 
@@ -586,6 +605,7 @@ namespace TH06NC {
             ImGui::TextUnformatted(shotNameBuf);
 
             uint32_t tableLineCnt = 0;
+            THAdvOptWnd& options = THAdvOptWnd::singleton();
             ImGui::BeginTable("Tracker Table", 2);
 
             if (!GAME_MANAGER->inSpellPrac || blockedHits) { // misses
@@ -611,83 +631,90 @@ namespace TH06NC {
 
             // spell history + Yellow Bonus & SCB (if in prac)
             if (lastSpellTimer) { // note: we keep spell info on screen for a lil after cap (so history can be updated post-cap)
-                ImGui::TableNextRow();
-
-                ImGui::TableNextColumn();
-                ImGui::TextUnformatted(S(TH_TRACKER_HISTORY));
-                ImGui::TableNextColumn();
-
-                uint32_t captureCnt, attemptCnt;
-                const uint8_t shotID = GAME_MANAGER->GetShotID();
-                const uint32_t difficulty = GAME_MANAGER->difficulty;
                 const bool isBooks = lastSpellID == BOOKS_ID;
 
-                if (isBooks) {
-                    uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty, shotID);
-                    attemptCnt = booksHistory[0];
-                    captureCnt = booksHistory[1];
-
-                } else {
-                    SavefileSpellData& spellData = GAME_MANAGER->spellData[lastSpellID];
-
-                    if (GAME_MANAGER->inSpellPrac) {
-                        captureCnt = spellData.spellPracCaptures[difficulty][shotID];
-                        attemptCnt = spellData.spellPracAttempts[difficulty][shotID];
-
-                    } else if (GAME_MANAGER->inPracticeMode) { // custom registers
-                        uint32_t unusedDifficulty = difficulty == EXTRA ? EASY : EXTRA;
-                        captureCnt = spellData.spellPracCaptures[unusedDifficulty][shotID];
-                        attemptCnt = spellData.spellPracAttempts[unusedDifficulty][shotID];
-
-                    } else {
-                        captureCnt = spellData.captureCount;
-                        attemptCnt = spellData.attemptCount;
-                    }
-                }
-
-                if (attemptCnt)
-                    ImGui::Text("%d / %d (%d%%)", captureCnt, attemptCnt, captureCnt * 100 / attemptCnt);
-                else ImGui::Text("%d / %d", captureCnt, attemptCnt);
-                tableLineCnt++;
-
-                // session history
-                if (!GAME_MANAGER->inReplay && (GAME_MANAGER->inPracticeMode || GAME_MANAGER->inSpellPrac)) {
+                if (options.showHistory) { // total history
                     ImGui::TableNextRow();
 
                     ImGui::TableNextColumn();
-                    ImGui::TextUnformatted(S(TH_TRACKER_SESSION));
+                    ImGui::TextUnformatted(S(TH_TRACKER_HISTORY));
                     ImGui::TableNextColumn();
 
-                    int32_t seshAttemptCnt = attemptCnt - seshStartAttempts[lastSpellID];
-                    int32_t seshCaptureCnt = captureCnt - seshStartCaptures[lastSpellID];
+                    uint32_t captureCnt, attemptCnt;
+                    const uint8_t shotID = GAME_MANAGER->GetShotID();
+                    const uint32_t difficulty = GAME_MANAGER->difficulty;
 
-                    if (seshAttemptCnt)
-                        ImGui::Text("%d / %d (%d%%)", seshCaptureCnt, seshAttemptCnt, seshCaptureCnt * 100 / seshAttemptCnt);
-                    else ImGui::Text("%d / %d", seshCaptureCnt, seshAttemptCnt);
+                    if (isBooks) {
+                        uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty, shotID);
+                        attemptCnt = booksHistory[0];
+                        captureCnt = booksHistory[1];
+
+                    } else {
+                        SavefileSpellData& spellData = GAME_MANAGER->spellData[lastSpellID];
+
+                        if (GAME_MANAGER->inSpellPrac) {
+                            captureCnt = spellData.spellPracCaptures[difficulty][shotID];
+                            attemptCnt = spellData.spellPracAttempts[difficulty][shotID];
+
+                        } else if (GAME_MANAGER->inPracticeMode) { // custom registers
+                            uint32_t unusedDifficulty = difficulty == EXTRA ? EASY : EXTRA;
+                            captureCnt = spellData.spellPracCaptures[unusedDifficulty][shotID];
+                            attemptCnt = spellData.spellPracAttempts[unusedDifficulty][shotID];
+
+                        } else {
+                            captureCnt = spellData.captureCount;
+                            attemptCnt = spellData.attemptCount;
+                        }
+                    }
+
+                    if (attemptCnt)
+                        ImGui::Text("%d / %d (%d%%)", captureCnt, attemptCnt, captureCnt * 100 / attemptCnt);
+                    else ImGui::Text("%d / %d", captureCnt, attemptCnt);
                     tableLineCnt++;
+
+                    // session history
+                    if (options.showSessionHistory && !GAME_MANAGER->inReplay && (GAME_MANAGER->inPracticeMode || GAME_MANAGER->inSpellPrac)) {
+                        ImGui::TableNextRow();
+
+                        ImGui::TableNextColumn();
+                        ImGui::TextUnformatted(S(TH_TRACKER_SESSION));
+                        ImGui::TableNextColumn();
+
+                        int32_t seshAttemptCnt = attemptCnt - seshStartAttempts[lastSpellID];
+                        int32_t seshCaptureCnt = captureCnt - seshStartCaptures[lastSpellID];
+
+                        if (seshAttemptCnt)
+                            ImGui::Text("%d / %d (%d%%)", seshCaptureCnt, seshAttemptCnt, seshCaptureCnt * 100 / seshAttemptCnt);
+                        else ImGui::Text("%d / %d", seshCaptureCnt, seshAttemptCnt);
+                        tableLineCnt++;
+                    }
                 }
 
                 if ((GAME_MANAGER->inPracticeMode || GAME_MANAGER->inSpellPrac || GAME_MANAGER->inReplay) && !isBooks) {
                     bool isSpellActive = *(uint32_t*)SPELLCARD_IS_ACTIVE;
-                    ImGui::TableNextRow();
 
-                    ImGui::TableNextColumn();
-                    ImGui::TextUnformatted(S(TH06NC_TRACKER_YELLOW));
-                    ImGui::TableNextColumn();
+                    if (options.showYellowBonus) {
+                        ImGui::TableNextRow();
 
-                    if (isSpellActive) { // same calculation as spell cancel, just without the spell cancel
-                        uint32_t yellowBonus = 0;
-                        uint32_t bonusIncrement = 2000;
+                        ImGui::TableNextColumn();
+                        ImGui::TextUnformatted(S(TH06NC_TRACKER_YELLOW));
+                        ImGui::TableNextColumn();
 
-                        for (int i = 0; i < 640; i++) {
-                            if (((Bullet*)BULLET_ARRAY)[i].state) {
-                                yellowBonus += bonusIncrement;
-                                if (bonusIncrement < 12800) bonusIncrement += 10;
+                        if (isSpellActive) { // same calculation as spell cancel, just without the spell cancel
+                            uint32_t yellowBonus = 0;
+                            uint32_t bonusIncrement = 2000;
+
+                            for (int i = 0; i < 640; i++) {
+                                if (((Bullet*)BULLET_ARRAY)[i].state) {
+                                    yellowBonus += bonusIncrement;
+                                    if (bonusIncrement < 12800) bonusIncrement += 10;
+                                }
                             }
+                            ImGui::Text("%d", yellowBonus);
                         }
-                        ImGui::Text("%d", yellowBonus);
+                        else ImGui::Text("%d", ZUN_GUI->impl->storedYellowBonus);
+                        tableLineCnt += 1;
                     }
-                    else ImGui::Text("%d", ZUN_GUI->impl->storedYellowBonus);
 
                     ImGui::TableNextRow();
 
@@ -703,7 +730,7 @@ namespace TH06NC {
                     } else {
                         ImGui::Text("%d", ZUN_GUI->impl->storedSCB);
                     }
-                    tableLineCnt += 2;
+                    tableLineCnt += 1;
                 }
             }
 
