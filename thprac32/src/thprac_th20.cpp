@@ -1187,7 +1187,7 @@ namespace TH20 {
             }
             if (BeginOptGroup<TH_GAMEPLAY>()) {
                 if (ImGui::Checkbox(S(TH_FAST_RETRY), &fastRetry)) {
-                    th20_instant_esc_r.Toggle(fastRetry);       
+                    th20_instant_esc_r.Toggle(fastRetry);
                 }
                 if (ImGui::Checkbox(S(TH20_PIV_OVERFLOW_FIX), &pivOverflowFix)) {
                     th20_piv_overflow_fix.Toggle(pivOverflowFix);

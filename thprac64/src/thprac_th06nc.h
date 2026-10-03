@@ -200,6 +200,7 @@ namespace TH06NC {
     X(ENEMY_MANAGER_ADDR,          0xaa1e90,  0xaee0b0) \
     X(SPELLCARD_IS_ACTIVE,         0xbadf60,  0xbfa180) \
     X(SPELLCARD_ID,                0xbadf68,  0xbfa188) \
+    X(SPELLCARD_CAPTURE_FLAG,      0xbadf6c,  0xbfa18c) \
     X(BASE_SPELL_CARD_BONUS,       0xbadf70,  0xbfa190) \
     X(BOSS_PTR_ADDR,               0xbadf78,  0xbfa198) \
     X(MAIN_MENU_ADDR,              0xc07240,  0xc53460) \

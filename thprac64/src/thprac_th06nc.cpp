@@ -695,11 +695,14 @@ namespace TH06NC {
                     ImGui::TextUnformatted(S(TH_TRACKER_SCB));
                     ImGui::TableNextColumn();
 
-                    if (isSpellActive) {
+                    if (*(uint8_t*)SPELLCARD_CAPTURE_FLAG == 0) {
+                        ImGui::TextUnformatted("Failed");
+                    } else if (isSpellActive) {
                         uint32_t scbBase = *(uint32_t*)BASE_SPELL_CARD_BONUS;
                         ImGui::Text("%d", scbBase + (ZUN_GUI->bossTimerSec * scbBase) / 10);
-                    } else ImGui::Text("%d", ZUN_GUI->impl->storedSCB);
-
+                    } else {
+                        ImGui::Text("%d", ZUN_GUI->impl->storedSCB);
+                    }
                     tableLineCnt += 2;
                 }
             }
