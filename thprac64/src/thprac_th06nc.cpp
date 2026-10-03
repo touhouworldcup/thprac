@@ -431,6 +431,7 @@ namespace TH06NC {
         }
 
     public:
+        bool splitPracHistory = true;
         bool showYellowBonus = true;
         bool showHistory = true;
         bool showSessionHistory = true;
@@ -472,9 +473,20 @@ namespace TH06NC {
             }
 
             if (BeginOptGroup<TH_GAMEPLAY>()) {
+                bool isSpellActive = GetMemContent(ECL_MANAGER_ADDR) && !GAME_MANAGER->inReplay && *(uint32_t*)SPELLCARD_IS_ACTIVE;
+
+                ImGui::BeginDisabled(isSpellActive);
+                ImGui::Checkbox(S(TH06NC_SPLIT_PRAC_HISTORY), &splitPracHistory);
+                if (isSpellActive) {
+                    ImGui::EndDisabled();
+                    if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s", S(TH06NC_SPLIT_PRAC_HISTORY_DISABLE_HINT));
+                }
+                ImGui::SameLine();
+                Gui::HelpMarker(S(TH06NC_SPLIT_PRAC_HISTORY_DESC));
+
                 ImGui::Checkbox(S(TH06NC_TRACKER_SHOW_YELLOW), &showYellowBonus);
                 ImGui::SameLine();
-                Gui::HelpMarker(S(TH06NC_TRACKER_SHOW_YELLOW_HINT));
+                Gui::HelpMarker(S(TH06NC_TRACKER_SHOW_YELLOW_DESC));
 
                 if (ImGui::Checkbox(S(TH06NC_TRACKER_SHOW_HISTORY), &showHistory) && !showHistory)
                     showSessionHistory = false;
@@ -523,8 +535,9 @@ namespace TH06NC {
         uint32_t lastSpellTimer;
 
         static const uint32_t BOOKS_ID = 134; // #TLB3 + 1
-        uint32_t seshStartAttempts[BOOKS_ID + 1];
-        uint32_t seshStartCaptures[BOOKS_ID + 1];
+        struct History { uint32_t attempts; uint32_t captures; };
+        History seshStartSpellHistory[BOOKS_ID + 1];
+        History seshStartMainHistory[BOOKS_ID];
         bool inBooksCapAttempt;
 
         const th_glossary_t shotNames[4] = {
@@ -656,7 +669,7 @@ namespace TH06NC {
                             captureCnt = spellData.spellPracCaptures[difficulty][shotID];
                             attemptCnt = spellData.spellPracAttempts[difficulty][shotID];
 
-                        } else if (GAME_MANAGER->inPracticeMode) { // custom registers
+                        } else if (GAME_MANAGER->inPracticeMode && options.splitPracHistory) {
                             uint32_t unusedDifficulty = difficulty == EXTRA ? EASY : EXTRA;
                             captureCnt = spellData.spellPracCaptures[unusedDifficulty][shotID];
                             attemptCnt = spellData.spellPracAttempts[unusedDifficulty][shotID];
@@ -680,8 +693,12 @@ namespace TH06NC {
                         ImGui::TextUnformatted(S(TH_TRACKER_SESSION));
                         ImGui::TableNextColumn();
 
-                        int32_t seshAttemptCnt = attemptCnt - seshStartAttempts[lastSpellID];
-                        int32_t seshCaptureCnt = captureCnt - seshStartCaptures[lastSpellID];
+                        History& seshStartHistory =
+                            (isBooks || GAME_MANAGER->inSpellPrac || options.splitPracHistory)
+                            ? seshStartSpellHistory[lastSpellID] : seshStartMainHistory[lastSpellID];
+
+                        int32_t seshAttemptCnt = attemptCnt - seshStartHistory.attempts;
+                        int32_t seshCaptureCnt = captureCnt - seshStartHistory.captures;
 
                         if (seshAttemptCnt)
                             ImGui::Text("%d / %d (%d%%)", seshCaptureCnt, seshAttemptCnt, seshCaptureCnt * 100 / seshAttemptCnt);
@@ -722,7 +739,7 @@ namespace TH06NC {
                     ImGui::TextUnformatted(S(TH_TRACKER_SCB));
                     ImGui::TableNextColumn();
 
-                    if (*(uint8_t*)SPELLCARD_CAPTURE_FLAG == 0) {
+                    if (*(uint8_t*)SPELLCARD_CAPTURE_FLAG == 0 && !GAME_MANAGER->inSpellPrac) {
                         ImGui::TextUnformatted("Failed");
                     } else if (isSpellActive) {
                         uint32_t scbBase = *(uint32_t*)BASE_SPELL_CARD_BONUS;
@@ -757,19 +774,24 @@ namespace TH06NC {
 
                     for (int i = 0; i < BOOKS_ID; i++) {
                         SavefileSpellData& spellData = GAME_MANAGER->spellData[i];
-                        seshStartAttempts[i] = spellData.spellPracAttempts[unusedDifficulty][shotID];
-                        seshStartCaptures[i] = spellData.spellPracCaptures[unusedDifficulty][shotID];
+                        seshStartMainHistory[i] = { spellData.attemptCount, spellData.captureCount };
+
+                        seshStartSpellHistory[i] = {
+                            spellData.spellPracAttempts[unusedDifficulty][shotID],
+                            spellData.spellPracCaptures[unusedDifficulty][shotID],
+                        };
                     }
 
                     uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty, shotID);
-                    seshStartAttempts[BOOKS_ID] = booksHistory[0];
-                    seshStartCaptures[BOOKS_ID] = booksHistory[1];
+                    seshStartSpellHistory[BOOKS_ID] = { booksHistory[0], booksHistory[1] };
 
                 } else if (GAME_MANAGER->inSpellPrac) {
                     for (int i = 0; i < BOOKS_ID; i++) {
                         SavefileSpellData& spellData = GAME_MANAGER->spellData[i];
-                        seshStartAttempts[i] = spellData.spellPracAttempts[difficulty][shotID];
-                        seshStartCaptures[i] = spellData.spellPracCaptures[difficulty][shotID];
+                        seshStartSpellHistory[i] = {
+                            spellData.spellPracAttempts[difficulty][shotID],
+                            spellData.spellPracCaptures[difficulty][shotID],
+                        };
                     }
                 }
             }
@@ -2224,7 +2246,7 @@ namespace TH06NC {
     EHOOK_DY(th06nc_practice_extend_history_1, SPELL_ATTEMPT_CNT_INCR, 4, { // instead of 9999-capped all-shot 16bit registers, we use uncapped shot-separated 32bit free ones
         SavefileSpellData* spellData = (SavefileSpellData*)pCtx->Rsi;
 
-        if (GAME_MANAGER->inPracticeMode) {
+        if (GAME_MANAGER->inPracticeMode && THAdvOptWnd::singleton().splitPracHistory) {
             DIFFICULTY cacheDiff = (GAME_MANAGER->difficulty == EXTRA) ? EASY : EXTRA; // select difficulty spell doesn't exist in
             uint32_t& attempts = spellData->spellPracAttempts[cacheDiff][GAME_MANAGER->GetShotID()];
             if (attempts < UINT32_MAX) ++attempts;
@@ -2239,7 +2261,7 @@ namespace TH06NC {
     EHOOK_DY(th06nc_practice_extend_history_2, SPELL_CAPTURE_CNT_INCR, 9, { // same as above but for caps
         SavefileSpellData* spellData = &GAME_MANAGER->spellData[pCtx->R8];
 
-        if (GAME_MANAGER->inPracticeMode) {
+        if (GAME_MANAGER->inPracticeMode && THAdvOptWnd::singleton().splitPracHistory) {
             DIFFICULTY cacheDiff = (GAME_MANAGER->difficulty == EXTRA) ? EASY : EXTRA; // select difficulty spell doesn't exist in
             uint32_t& captures = spellData->spellPracCaptures[cacheDiff][GAME_MANAGER->GetShotID()];
             if (captures < UINT32_MAX) ++captures;

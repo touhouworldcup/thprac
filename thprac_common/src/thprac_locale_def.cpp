@@ -5,7 +5,7 @@
 
 
 
-const char* th_glossary_str[3][1217]
+const char* th_glossary_str[3][1220]
 {
     {
         "",
@@ -27,12 +27,15 @@ const char* th_glossary_str[3][1217]
         "原版练习 (标准模式)",
         "返",
         "按 Shift 键（键盘），或按左/右扳机键（手柄）。",
+        "分开保存练习模式和游戏中的符卡历史",
+        "启用后，练习模式会将符卡历史记录存储在不同的变量中。这样可以按机体分别记录，并突破通常的 9999 上限，但会导致无法使用 thprac 在符卡练习中解锁符卡。",
+        "符卡激活时无法更改此设置。",
         "关底Boss (PH)",
         "强制进入PH",
         "在追踪表中显示历史",
         "在追踪表中显示当前历史",
         "在追踪表中显示消弹奖分",
-        "追踪表打开时，游戏中通常只会在符卡结束时进行的消弹奖分计算将改为每帧模拟。这可能会带来可忽略不计的额外开销。\n注意，消弹奖分和SCB仅会在练习模式、符卡练习模式以及回放中显示。",
+        "追踪表打开时，游戏中通常只会在符卡结束时进行的消弹奖分计算将改为每帧模拟。这可能会带来可忽略不计的额外开销。注意，消弹奖分和SCB仅会在练习模式、符卡练习模式以及回放中显示。",
         "消弹奖分",
         "魔法阵",
         "机体伪装",
@@ -1246,6 +1249,9 @@ const char* th_glossary_str[3][1217]
         "Original (Standard Mode)",
         "R",
         "Press Shift (keyboard) or left/right trigger (controller).",
+        "Split Practice Mode and in-run Spell Card histories",
+        "When enabled, Practice Mode will store Spell Card histories in different variables. This allows them to be split by shot type and to go beyond the usual 9999 cap, but prevents using thprac to unlock cards in Spell Practice.",
+        "This can't be changed while a Spell Card is active.",
         "True Last Boss",
         "Guarantee Extra Phantom",
         "Show history in in-game tracker",
@@ -2465,6 +2471,9 @@ const char* th_glossary_str[3][1217]
         "オリジナル (標準モード)",
         "戻",
         "Shiftキー（キーボード）または左右のトリガー（コントローラー）を押してください。",
+        "練習モードとプレイ中のスペカ戦歴を分離",
+        "有効にすると、練習モードではスペカ戦歴を別々の変数に保存します。これにより、機体ごとに分けて記録でき、通常の9999件の上限を超えられるようになりますが、スペルプラクティスでthpracを使ってスペカを解禁できなくなります。",
+        "スペカ発動中は変更できません。",
         "秘密ボス",
         "Extra Phantomへの強制突入",
         "戦歴をトラッカーに表示",
