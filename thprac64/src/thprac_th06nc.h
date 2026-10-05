@@ -116,13 +116,10 @@ namespace TH06NC {
     /*                               V1_03A     V1_03B */ \
     X(PAUSE_MENU_POST_RETURN_TITLE,  0xa7cc,    0xaefc)   \
     X(GAME_MGR_REG_BG_FF_CHECK_FAIL, 0x3b4bc,   0x3cd3c)  \
-    X(MAIN_MENU_LOADED_REPLAY_META,  0x38c62,   0x3a522)  \
     X(REPLAY_FASTFORWARD_LOOP_CNT,   0x45de1,   0x3d95e)  \
     X(MENU_SET_SUBSHOT_SEL_STATE,    0x4be03,   0x4d563)  \
     X(BOMB_INPUT_CHECK_PASS,         0x68a11,   0x6a121)  \
     X(BOMB_INPUT_CHECK_FAIL,         0x68ad2,   0x6a1e2)  \
-    X(IN_GAME_LOADED_REPLAY_META_1,  0x6d3df,   0x6eaae)  \
-    X(IN_GAME_LOADED_REPLAY_META_2,  0x71bd0,   0x732a0)  \
 
 #define IS_VAR(name, ...) uintptr_t name;
     INST_LIST(IS_VAR)
@@ -146,9 +143,6 @@ namespace TH06NC {
 
 #define OFFS_LIST(X)                                    \
     /*                            V1_03A      V1_03B */ \
-    X(MAIN_MENU_RPY_NAME_STK_OFF, 0xc8,       0x88)     \
-    X(IN_GAME_RPY_NAME_STK_OFF_1, 0xb0,       0x70)     \
-    X(IN_GAME_RPY_NAME_STK_OFF_2, 0x150,      0x110)    \
     X(MODE_STRINGS,               0x3086f8,   0x34e2f0) \
 
 #define OF_VAR(name, ...) uintptr_t name;

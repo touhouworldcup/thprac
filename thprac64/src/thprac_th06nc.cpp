@@ -2402,21 +2402,14 @@ namespace TH06NC {
     })
 
     EHOOK_DY(th06nc_mark_replay_prac, POST_LOAD_REPLAY_META, 1, { // setting prac sentinel when loading replay meta
-        uintptr_t retAddr = PopHelper(pCtx);
-        OG_INS(pCtx->Rip = retAddr);
-
-        uintptr_t rpyNameOffset; // even though it's an argument, it gets overwritten by this point. but we can find it on the stack
-        if (retAddr == MAIN_MENU_LOADED_REPLAY_META) rpyNameOffset = MAIN_MENU_RPY_NAME_STK_OFF;
-        else if (retAddr == IN_GAME_LOADED_REPLAY_META_1) rpyNameOffset = IN_GAME_RPY_NAME_STK_OFF_1; // reloading after already selecting a rpy
-        else if (retAddr == IN_GAME_LOADED_REPLAY_META_2) rpyNameOffset = IN_GAME_RPY_NAME_STK_OFF_2; // opening in-game replay menu
-        else return;
-
-        char* rpyName = GetMemAddr<char*>(pCtx->Rsp - 0x118, rpyNameOffset);
-        std::wstring w = std::wstring(rpyName, rpyName + strlen(rpyName));
         std::string param;
+        wchar_t rpyPath[32];
+        swprintf(rpyPath, 32, L"replay/th6_%02u.rpy", (uint32_t)pCtx->Rdi);
 
-        if (ReplayLoadParam(w.c_str(), param))
+        if (ReplayLoadParam(rpyPath, param))
             *(uint8_t*)(pCtx->Rax + 0x9) = 1; // sentinel byte (seemingly unused) (we're not modifying the replay, so its fine :))
+
+        OG_INS(pCtx->Rip = PopHelper(pCtx));
     })
 
     EHOOK_DY(th06nc_ingame_replay_sel_save_prac, PRAC_RPY_SAVE_GET_MODE_ST, 8, { // show "Practice" when saving replay in-game (if it'll have prac params)
