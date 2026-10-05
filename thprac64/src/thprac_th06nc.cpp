@@ -770,7 +770,7 @@ namespace TH06NC {
                 const uint32_t difficulty = GAME_MANAGER->difficulty;
 
                 if (GAME_MANAGER->inPracticeMode) {
-                    uint32_t unusedDifficulty = difficulty == EXTRA ? EASY : EXTRA;
+                    uint32_t unusedDifficulty = (thPracParam.stage == 6) ? EASY : EXTRA; // note: extra difficulty not set yet
 
                     for (int i = 0; i < BOOKS_ID; i++) {
                         SavefileSpellData& spellData = GAME_MANAGER->spellData[i];
