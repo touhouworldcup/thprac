@@ -2454,6 +2454,10 @@ namespace TH06NC {
         THAdvOptWnd::singleton().SlowdownTextDraw((Float2*)(pCtx->Rsp + 0x30));
         OG_INS(pCtx->R9 = GAME_MANAGER->actualScore);
     })
+
+    EHOOK_DY(th06nc_override_vsync, VSYNC_FLAG_SET, 6, { // override vsync flag changes when higher FPS is set (otherwise it'll reset it to 60)
+        *(uint32_t*)VSYNC_FLAG = (*(uint64_t*)FPS_LIMITER_CONSTANT == 166667 ? (uint32_t)pCtx->Rax : 1);
+    })
     HOOKSET_ENDDEF()
 
 

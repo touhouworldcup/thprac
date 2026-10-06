@@ -78,6 +78,7 @@ namespace TH06NC {
     X(PRAC_RPY_SEL_GET_MODE_STR, 0x7376b,    0x74e3b)  \
     X(PRAC_HIGH_SCORE_WRITE,     0x74440,    0x75b0f)  \
     X(POST_DIMENSION_CHANGE,     0x7c848,    0x7e498)  \
+    X(VSYNC_FLAG_SET,            0x982a7,    0x9a017)  \
     X(POST_RENDER_FINISH,        0x259b9a,   0x25baaa) \
     X(GUI_INIT_LAUNCH,           0x270725,   0x2724d5) \
 
