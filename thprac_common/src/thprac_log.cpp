@@ -102,67 +102,67 @@ const wchar_t* ERROR_FAILED_TO_OPEN_LOG_FILE_MSG[] = {
 };
 
 void log_init(bool launcher, bool console) {
-    constexpr unsigned int rot_max = 9;
-    constexpr unsigned int scratch_size = 32;
-    wchar_t fn_rot_temp_1[scratch_size] = {};
-    wchar_t fn_rot_temp_2[scratch_size] = {};
+    if (g_ConfigDir.length()) {
+        auto cur_dir = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
+        VLA(wchar_t, cur_dir_backup, cur_dir.Length / sizeof(wchar_t) + 1);
+        memset(cur_dir_backup, 0, cur_dir.Length + sizeof(wchar_t));
+        memcpy(cur_dir_backup, cur_dir.Buffer, cur_dir.Length);
 
-    const wchar_t* const fn_launcher = L"thprac_launcher_log.txt";
-    const wchar_t* const fn_ingame = L"thprac_log.txt";
+        cur_dir_backup[cur_dir.Length / sizeof(wchar_t)] = 0;
 
-    const wchar_t* const fn_rot_launcher = L"thprac_launcher_log.9.txt";
-    const wchar_t* const fn_rot_ingame = L"thprac_log.9.txt";
+        SetCurrentDirectoryW(g_ConfigDir.data());
+        CreateDirectoryW(L"logs", nullptr);
+        SetCurrentDirectoryW(L"logs");
 
-    unsigned int rot_num_off;
-    const wchar_t* fn;
+        constexpr unsigned int rot_max = 9;
+        constexpr unsigned int scratch_size = 32;
+        wchar_t fn_rot_temp_1[scratch_size] = {};
+        wchar_t fn_rot_temp_2[scratch_size] = {};
 
-    wchar_t cur_dir_backup[MAX_PATH + 1];
-    UNICODE_STRING cur_dir;
+        const wchar_t* const fn_launcher = L"thprac_launcher_log.txt";
+        const wchar_t* const fn_ingame = L"thprac_log.txt";
 
-    if (!_gConfigDirLen) {
-        console = MessageBoxW(NULL, ERROR_NO_DATA_DIR_MSG[Gui::LocaleGet()], nullptr, MB_ICONERROR | MB_YESNO) != IDNO;
-        goto past_log_file_open;
-    }
+        const wchar_t* const fn_rot_launcher = L"thprac_launcher_log.9.txt";
+        const wchar_t* const fn_rot_ingame = L"thprac_log.9.txt";
 
-    cur_dir = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
-    memcpy(cur_dir_backup, cur_dir.Buffer, cur_dir.Length);
-    cur_dir_backup[cur_dir.Length / sizeof(wchar_t)] = 0;
+        unsigned int rot_num_off;
+        const wchar_t* fn;
+        
+        if (launcher) {
+            memcpy(fn_rot_temp_1, fn_rot_launcher, t_strlen(fn_rot_launcher) * sizeof(wchar_t));
+        }
+        else {
+            memcpy(fn_rot_temp_1, fn_rot_ingame, t_strlen(fn_rot_ingame) * sizeof(wchar_t));
+        }
 
-    SetCurrentDirectoryW(_gConfigDir);
-    CreateDirectoryW(L"logs", nullptr);
-    SetCurrentDirectoryW(L"logs");
+        rot_num_off = launcher ? 20 : 11;
+        fn = launcher ? fn_launcher : fn_ingame;
 
-    if (launcher) {
-        memcpy(fn_rot_temp_1, fn_rot_launcher, t_strlen(fn_rot_launcher) * sizeof(wchar_t));
-    } else {
-        memcpy(fn_rot_temp_1, fn_rot_ingame, t_strlen(fn_rot_ingame) * sizeof(wchar_t)); 
-    }
+        memcpy(fn_rot_temp_2, fn_rot_temp_1, scratch_size * sizeof(wchar_t));
 
-    rot_num_off = launcher ? 20 : 11;
-    fn = launcher ? fn_launcher : fn_ingame;
+        DeleteFileW(fn_rot_temp_1);
 
-    memcpy(fn_rot_temp_2, fn_rot_temp_1, scratch_size * sizeof(wchar_t));
+        for (size_t i = 0; i < rot_max - 1; i++) {
+            fn_rot_temp_2[rot_num_off]--;
+            MoveFileW(fn_rot_temp_2, fn_rot_temp_1);
+            fn_rot_temp_1[rot_num_off]--;
+        }
 
-    DeleteFileW(fn_rot_temp_1);
+        MoveFileW(fn, fn_rot_temp_1);
 
-    for (size_t i = 0; i < rot_max - 1; i++) {
-        fn_rot_temp_2[rot_num_off]--;
-        MoveFileW(fn_rot_temp_2, fn_rot_temp_1);
-        fn_rot_temp_1[rot_num_off]--;
-    }
+        hLog = CreateFileW(fn, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        SetCurrentDirectoryW(cur_dir_backup);
+        VLA_FREE(cur_dir_backup);
 
-    MoveFileW(fn, fn_rot_temp_1);
-
-    hLog = CreateFileW(fn, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    SetCurrentDirectoryW(cur_dir_backup);
-    
-    if (hLog == INVALID_HANDLE_VALUE) {
-        if (MessageBoxW(NULL, ERROR_FAILED_TO_OPEN_LOG_FILE_MSG[Gui::LocaleGet()], nullptr, MB_ICONERROR | MB_YESNO) != IDNO) {
-            console = true;
+        if (hLog == INVALID_HANDLE_VALUE) {
+            if (MessageBoxW(NULL, ERROR_FAILED_TO_OPEN_LOG_FILE_MSG[Gui::LocaleGet()], nullptr, MB_ICONERROR | MB_YESNO) != IDNO) {
+                console = true;
+            }
         }
     }
-
-past_log_file_open:
+    else {
+        console = MessageBoxW(NULL, ERROR_NO_DATA_DIR_MSG[Gui::LocaleGet()], nullptr, MB_ICONERROR | MB_YESNO) != IDNO;
+    }
     if (!AttachConsole(GetCurrentProcessId()) && !AttachConsole(ATTACH_PARENT_PROCESS) && console) {
         console = AllocConsole();
     }
@@ -182,11 +182,12 @@ past_log_file_open:
 
     log_print("THPrac: Logging initialized\r\n");
 
-    if (_gConfigDirLen) {
+    if (g_ConfigDir.length()) {
         log_print(SIZED("Data directory is: "));
-        // Log data directory, because the data directory needs to be known before logging is initialized
+        // Log config directory now. The config directory had to be known before log_init
+        // so we never got to log it until now
         char dir_u8[MAX_PATH * 2 + 1];
-        int wrote = WideCharToMultiByte(CP_UTF8, 0, _gConfigDir, _gConfigDirLen, dir_u8, MAX_PATH * 2, nullptr, nullptr);
+        int wrote = WideCharToMultiByte(CP_UTF8, 0, g_ConfigDir.data(), g_ConfigDir.length(), dir_u8, MAX_PATH * 2, nullptr, nullptr);
         log_print(dir_u8, wrote);
         log_print("\r\n");
     } else {

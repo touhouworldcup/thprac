@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string_view>
+
 enum Locale : unsigned {
     LOCALE_NONE = (unsigned int)-1, // Only here because of how GameGuiWnd works
     LOCALE_ZH_CN = 0,
@@ -82,18 +84,20 @@ struct HotkeyChords {
     int language = 1 << ChordKey_Alt;
 };
 
-
 extern constinit THPracSettings gSettings;
 extern constinit HotkeyChords hotkeys;
+
+extern constinit std::wstring_view g_OldWorkingDir;
+extern constinit std::wstring_view g_SelfDir;
+extern constinit std::wstring_view g_Dll32Path;
+extern constinit std::wstring_view g_Dll64Path;
+extern constinit std::wstring_view g_ConfigDir;
+extern constinit bool g_IsLocalConfigDir;
+
 bool LoadSettings();
 bool SaveSettings();
 void GuiSettings();
 
-void InitConfigDir();
-
 void SetTheme(int theme);
 
-extern wchar_t _gConfigDir[];
-extern unsigned int _gConfigDirLen;
-extern bool _gIsLocalConfigDir;
-extern bool _gIsAppDataAvailable;
+void InitPaths(std::wstring_view exe_path);

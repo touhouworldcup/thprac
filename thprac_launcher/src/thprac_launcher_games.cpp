@@ -1410,7 +1410,7 @@ static void GameRightClickMenu(LauncherState* state, LauncherGame* game) {
 
     if(ImGui::Selectable(S(THPRAC_GAMES_SCAN_FOLDER))) {
         state->inScan = true;
-        state->scanCtx.relative = _gIsLocalConfigDir;
+        state->scanCtx.relative = g_IsLocalConfigDir;
         ImGui::CloseCurrentPopup();
     }
     if(ImGui::Selectable(S(THPRAC_STEAM_MNG_BUTTON))) {

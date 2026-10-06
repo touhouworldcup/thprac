@@ -12,80 +12,187 @@
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
-
-
 constexpr const wchar_t THPRAC_SETTINGS_JSON_NAME[] = L"settings.json";
 
-wchar_t _gConfigDir[MAX_PATH + 1] = {};
-unsigned int _gConfigDirLen = 0;
-bool _gIsLocalConfigDir = true;
+static std::vector<wchar_t> _gPathBuf;
+
+constinit std::wstring_view g_OldWorkingDir;
+constinit std::wstring_view g_SelfDir;
+constinit std::wstring_view g_Dll32Path;
+constinit std::wstring_view g_Dll64Path;
+constinit std::wstring_view g_ConfigDir;
+constinit bool g_IsLocalConfigDir = false;
 
 constinit THPracSettings gSettings;
 constinit HotkeyChords hotkeys;
 
-static bool BadDirectoryAttributes(DWORD attrs) {
-    if(attrs == INVALID_FILE_ATTRIBUTES) {
+static bool BadDirectoryAttributes(const wchar_t* dir) {
+    DWORD attrs = GetFileAttributesW(dir);
+    if (attrs == INVALID_FILE_ATTRIBUTES) {
         return true;
     }
     return !(attrs & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-void InitConfigDir() {
-    DWORD endPos = 0;
-    auto& self = CurrentPeb()->ProcessParameters->ImagePathName;
-    for (USHORT i = self.Length / sizeof(wchar_t); i > 0; i--) {
-        if (self.Buffer[i] == L'\\') {
-            endPos = i + 1;
-            break;
-        }
+static bool EnsureDirectory(const wchar_t* dir) {
+    if (CreateDirectoryW(dir, nullptr)) {
+        return true;
     }
-    // Initialize _gConfigDir with <EXE_DIR>\\.thprac_data. Obtaining this path is needed anyways to
-    // at least check if it exists. Then, if something goes wrong with obtaining the %AppData%
-    // environment variable, we can fall back to using .thprac_data at no cost.
-    memcpy(_gConfigDir, self.Buffer, endPos * sizeof(wchar_t));
-    memcpy(_gConfigDir + endPos, SIZED(L".thprac_data\\"));
-    _gConfigDirLen = endPos + t_strlen(L".thprac_data\\");
-
-    GetEnvironmentVariableW(L"AppData", nullptr, 0);
-    DWORD code = GetLastError();
-
-    // Cannot obtain AppData environment variable at all, use .thprac_data as data directory
-    if (code) {
-        force_local_dir:
-        if (!CreateDirectoryW(_gConfigDir, nullptr) && GetLastError() != ERROR_ALREADY_EXISTS) {
-            // Complete failure to find a suitable data directory. Proceeding with no data directory
-            // The user will be prompted about this in log_init
-            memset(_gConfigDir, 0, sizeof(_gConfigDir));
-            _gConfigDirLen = 0;
-        }
-    }
-    // AppData environment variable exists, and .thprac_data has undesirable attributes
-    else if (BadDirectoryAttributes(GetFileAttributesW(_gConfigDir))) {
-        wchar_t appdataDir[MAX_PATH + 1];
-        int appdataLen = GetEnvironmentVariableW(L"AppData", appdataDir, MAX_PATH);
-        if (BadDirectoryAttributes(GetFileAttributesW(appdataDir))) {
-            goto force_local_dir;
-        }
-
-        if (appdataDir[appdataLen] != L'\\') {
-            appdataDir[appdataLen++] = L'\\';
-        }
-        
-        memcpy(appdataDir + appdataLen, SIZED(L"thprac\\"));
-        appdataLen += t_strlen(L"thprac\\");
-
-        if (!CreateDirectoryW(appdataDir, nullptr) && GetLastError() != ERROR_ALREADY_EXISTS) {
-            goto force_local_dir;
-        }
-
-        memcpy(_gConfigDir, appdataDir, appdataLen * sizeof(wchar_t));
-        _gConfigDirLen = appdataLen;
-        _gConfigDir[_gConfigDirLen] = 0;
-        _gIsLocalConfigDir = false;
-    }
-    // else case: .thprac_data exists and is a directory. If that is the case, do nothing.
-    // No log statements can be made here because this runs before log_init
+    return GetLastError() == ERROR_ALREADY_EXISTS && !BadDirectoryAttributes(dir);
 }
+
+void InitPaths(std::wstring_view exe_path) {
+    ScopedPebLock peb_lock;
+    _gPathBuf.clear();
+
+    size_t old_cwd_idx = 0;
+    size_t old_cwd_len = 0;
+    // Old working directory
+    {
+        std::wstring_view dir = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
+        _gPathBuf.insert(_gPathBuf.end(), dir.begin(), dir.end());
+        old_cwd_len = _gPathBuf.size();
+        _gPathBuf.push_back(0);
+    }
+
+    size_t self_dir_idx = 0;
+    size_t self_dir_len = 0;
+
+    std::wstring_view self_dir_temp;
+    std::wstring_view self_exe_name_temp;
+
+    // Program directory 
+    if (auto last_slash = exe_path.find_last_of(L"\\/");
+        last_slash != std::wstring_view::npos) {
+
+        self_dir_idx = _gPathBuf.size();
+        self_dir_len = last_slash + 1;
+
+        self_dir_temp = { exe_path.data(), self_dir_len };
+        self_exe_name_temp = { exe_path.data() + self_dir_len, exe_path.length() - self_dir_len };
+
+        _gPathBuf.insert(_gPathBuf.end(), exe_path.data(), exe_path.data() + last_slash + 1);
+        _gPathBuf.push_back(0);
+    }
+
+    // DLL paths
+    size_t dll32_path_idx = _gPathBuf.size();
+    size_t dll32_path_len = 0;
+
+    size_t dll64_path_idx = 0;
+    size_t dll64_path_len = 0;
+
+    auto first_dot_pos = self_exe_name_temp.find(L'.') + self_dir_len;
+
+    if (t_str_compare_nocase(self_exe_name_temp.data() + self_exe_name_temp.size() - 4, 4, L".exe", 4)) {
+        {
+            _gPathBuf.insert(_gPathBuf.end(), exe_path.data(), exe_path.data() + first_dot_pos);
+            _gPathBuf.push_back(L'3');
+            _gPathBuf.push_back(L'2');
+            _gPathBuf.insert(_gPathBuf.end(), exe_path.begin() + first_dot_pos, exe_path.end());
+
+            auto idx = _gPathBuf.size() - 3;
+            _gPathBuf[idx++] = L'd';
+            _gPathBuf[idx++] = L'l';
+            _gPathBuf[idx++] = L'l';
+            _gPathBuf.push_back(0);
+        }
+
+        dll64_path_idx = _gPathBuf.size();
+
+        {
+            _gPathBuf.insert(_gPathBuf.end(), exe_path.data(), exe_path.data() + first_dot_pos);
+            _gPathBuf.push_back(L'6');
+            _gPathBuf.push_back(L'4');
+            _gPathBuf.insert(_gPathBuf.end(), exe_path.begin() + first_dot_pos, exe_path.end());
+
+            auto idx = _gPathBuf.size() - 3;
+            _gPathBuf[idx++] = L'd';
+            _gPathBuf[idx++] = L'l';
+            _gPathBuf[idx++] = L'l';
+            _gPathBuf.push_back(0);
+        }
+        dll32_path_len = dll64_path_len = exe_path.length() + 2;
+    }
+    else if (t_str_compare_nocase(self_exe_name_temp.data() + self_exe_name_temp.size() - 4, 4, L".dll", 4)) {
+        if (auto* s = &exe_path[first_dot_pos - 2];
+            s[0] == L'3' && s[1] == L'2' || s[0] == L'6' && s[1] == L'4') {
+            _gPathBuf.insert(_gPathBuf.end(), exe_path.begin(), exe_path.end());
+            _gPathBuf.push_back(0);
+
+            dll64_path_idx = _gPathBuf.size();
+            _gPathBuf.insert(_gPathBuf.end(), exe_path.begin(), exe_path.end());
+            _gPathBuf.push_back(0);
+
+            _gPathBuf[dll32_path_idx + first_dot_pos - 2] = L'3';
+            _gPathBuf[dll32_path_idx + first_dot_pos - 1] = L'2';
+
+            _gPathBuf[dll64_path_idx + first_dot_pos - 2] = L'6';
+            _gPathBuf[dll64_path_idx + first_dot_pos - 1] = L'4';
+
+            dll32_path_len = dll64_path_len = exe_path.length();
+        }
+        else {
+            abort();
+        }
+    }
+
+    // Config directory
+    size_t config_dir_idx = _gPathBuf.size();
+    size_t config_dir_len = 0;
+
+    constexpr const wchar_t* deez = L".thprac_data\\";
+    _gPathBuf.insert(_gPathBuf.end(), _gPathBuf.begin() + self_dir_idx, _gPathBuf.begin() + self_dir_idx + self_dir_len);
+    _gPathBuf.insert(_gPathBuf.end(), RANGED(deez));
+    _gPathBuf.push_back(0);
+
+    wchar_t* config_dir = _gPathBuf.data() + config_dir_idx;
+    if (BadDirectoryAttributes(config_dir)) {
+        auto* appdata_env_str = find_env_var((const wchar_t*)CurrentPeb()->ProcessParameters->Environment, L"APPDATA");
+        auto appdata_env_len = t_strlen(appdata_env_str);
+
+        const wchar_t* thprac_dir_name = L"\\thprac\\";
+        if (appdata_env_str[appdata_env_len - 1] == L'\\' || appdata_env_str[appdata_env_len - 1] == L'/') {
+            thprac_dir_name++;
+        }
+
+        auto appdata_dir_len = appdata_env_len + t_strlen(thprac_dir_name) + 1;
+        VLA(wchar_t, appdata_dir_str, appdata_dir_len);
+
+        memset(appdata_dir_str, 0, appdata_dir_len * sizeof(wchar_t));
+        memcpy(appdata_dir_str, appdata_env_str, appdata_env_len * sizeof(wchar_t));
+        memcpy(appdata_dir_str + appdata_env_len, thprac_dir_name, t_strlen(thprac_dir_name) * sizeof(wchar_t));
+
+        if (EnsureDirectory(appdata_dir_str)) {
+            _gPathBuf.resize(config_dir_idx);
+            _gPathBuf.insert(_gPathBuf.end(), appdata_dir_str, appdata_dir_str + appdata_dir_len);
+            config_dir_len = appdata_dir_len - 1;
+            g_IsLocalConfigDir = false;
+        }
+        else if (EnsureDirectory(config_dir)) {
+            config_dir_len = _gPathBuf.size() - 1 - config_dir_idx;
+            g_IsLocalConfigDir = true;
+        }
+        else {
+            _gPathBuf.resize(config_dir_idx);
+            config_dir_idx = 0;
+        }
+
+        VLA_FREE(appdata_dir_str);
+    }
+    else {
+        config_dir_len = _gPathBuf.size() - 1 - config_dir_idx;
+        g_IsLocalConfigDir = true;
+    }
+
+    // All of this needs to be at the end because while this buffer is still being built up, pointers into it can become invalidated
+    g_OldWorkingDir = { _gPathBuf.data() + old_cwd_idx, old_cwd_len };
+    g_SelfDir = { _gPathBuf.data() + self_dir_idx, self_dir_len };
+    g_Dll32Path = { _gPathBuf.data() + dll32_path_idx, dll32_path_len };
+    g_Dll64Path = { _gPathBuf.data() + dll64_path_idx, dll64_path_len };
+    g_ConfigDir = { _gPathBuf.data() + config_dir_idx, config_dir_len };
+}
+
 
 static const wchar_t* JSON_ERROR_TITLE[] = {
     L"JSON Error", L"JSON Error", L"JSON Error"
@@ -138,30 +245,32 @@ begin:
 }
 
 std::pair<yyjson_doc*, yyjson_val*> LoadConfigFile(const wchar_t* fn, const char* legacy_config_fallback) {
-    if (!_gConfigDirLen) {
+    if (!g_ConfigDir.length()) {
         return {};
     }
 
-    wchar_t path[MAX_PATH + 1] = {};
-    memcpy(path, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(path + _gConfigDirLen, fn, t_strlen(fn) * sizeof(wchar_t));
+    auto fn_len = t_strlen(fn);
+    VLA(wchar_t, path, g_ConfigDir.length() + fn_len + 1);
+    
+    memcpy(path, g_ConfigDir.data(), g_ConfigDir.length() * sizeof(wchar_t));
+    memcpy(path + g_ConfigDir.length(), fn, (t_strlen(fn) + 1) * sizeof(wchar_t));
     if (yyjson_doc* doc = yyjson_read_file_report(path)) {
         return { doc, yyjson_doc_get_root(doc) };
     }
 
-    memcpy(path + _gConfigDirLen, SIZED(L"thprac.json"));
+    memcpy(path + g_ConfigDir.length(), SIZED(L"thprac.json"));
     yyjson_doc* doc = yyjson_read_file_report(path);
 
     return { doc, yyjson_obj_get(yyjson_doc_get_root(doc), legacy_config_fallback) };
 }
 
 void SaveConfigFile(const wchar_t* name, void* buf, size_t len) {
-    if (!buf || !len || !_gConfigDirLen) {
+    if (!buf || !len || !g_ConfigDir.length()) {
         return;
     }
     wchar_t path[MAX_PATH + 1] = {};
-    memcpy(path, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(path + _gConfigDirLen, name, t_strlen(name) * sizeof(wchar_t));
+    memcpy(path, g_ConfigDir.data(), g_ConfigDir.length() * sizeof(wchar_t));
+    memcpy(path + g_ConfigDir.length(), name, t_strlen(name) * sizeof(wchar_t));
 
     HANDLE hFile = CreateFileW(path, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
@@ -294,8 +403,8 @@ static const char settingsTemplate[] =
 
 bool SaveSettings() {
     wchar_t settingsPath[MAX_PATH + 1] = {};
-    memcpy(settingsPath, _gConfigDir, _gConfigDirLen * sizeof(wchar_t));
-    memcpy(settingsPath + _gConfigDirLen, SIZED(THPRAC_SETTINGS_JSON_NAME));
+    memcpy(settingsPath, g_ConfigDir.data(), g_ConfigDir.length() * sizeof(wchar_t));
+    memcpy(settingsPath + g_ConfigDir.length(), SIZED(THPRAC_SETTINGS_JSON_NAME));
 
     HANDLE hFile = CreateFileW(settingsPath, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE) {
@@ -494,13 +603,13 @@ void GuiSettings() {
     
     ImGui::TextUnformatted(S(THPRAC_DIRECTORY_SETTING));
     ImGui::Separator();
-    if (!_gConfigDirLen) {
+    if (!g_ConfigDir.length()) {
         ImGui::BeginDisabled();
     }
     if (ImGui::Button(S(THPRAC_DATADIR_OPEN))) {
-        ShellExecuteW(NULL, L"open", _gConfigDir, nullptr, nullptr, SW_SHOW);
+        ShellExecuteW(NULL, L"open", g_ConfigDir.data(), nullptr, nullptr, SW_SHOW);
     }
-    if (!_gConfigDirLen) {
+    if (!g_ConfigDir.length()) {
         ImGui::EndDisabled();
     }
     ImGui::SameLine();

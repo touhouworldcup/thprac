@@ -385,4 +385,19 @@ char* FormatNumberFixedPoint(int value, unsigned int dot_pos, char* buffer) {
     }
     return buffer - (unsigned int)is_negative;
 }
+
+const wchar_t* find_env_var(const wchar_t* env, const wchar_t* name) {
+    size_t name_len = t_strlen(name);
+    const wchar_t* cur = env;
+
+    while (*cur != '\0') {
+        if (t_str_compare_nocase(cur, name_len, name, name_len) && cur[name_len] == L'=') {
+            return cur + name_len + 1;
+        }
+
+        cur += t_strlen(cur) + 1;
+    }
+
+    return nullptr;
+}
 #pragma endregion

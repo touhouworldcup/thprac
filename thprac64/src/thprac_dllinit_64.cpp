@@ -15,7 +15,10 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
     if (fdwReason == DLL_PROCESS_ATTACH) {
         GetModuleFileNameW((HMODULE)&__ImageBase, thprac_dll_path, MAX_PATH);
         if (const auto* ver = IdentifyExe((uint8_t*)CurrentPeb()->ImageBaseAddress, 0, nullptr)) {
-            InitConfigDir();
+            wchar_t mod_fn[MAX_PATH + 1] = {};
+            auto cch = GetModuleFileNameW(hinstDLL, mod_fn, MAX_PATH);
+            InitPaths({ mod_fn, cch });
+
             LoadSettings();
             log_init(false, gSettings.console);
             VEHHookInit();

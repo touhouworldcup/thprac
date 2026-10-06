@@ -276,3 +276,5 @@ extern inline char* strdup_size(const char* src, size_t size) {
     }
     return ret;
 }
+
+const wchar_t* find_env_var(const wchar_t* env, const wchar_t* name);

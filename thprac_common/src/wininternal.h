@@ -3,6 +3,7 @@
 #include <type_traits>
 #include <stdint.h>
 #include "utils.h"
+#include <string_view>
 
 #pragma region Macros
 #ifndef NT_SUCCESS
@@ -166,6 +167,10 @@ struct UNICODE_STRING {
     USHORT Length;
     USHORT MaximumLength;
     PWSTR  Buffer;
+
+    operator std::wstring_view() const {
+        return { Buffer, Length / sizeof(WCHAR) };
+    }
 };
 typedef UNICODE_STRING *PUNICODE_STRING;
 
@@ -593,70 +598,6 @@ struct KEY_VALUE_BASIC_INFORMATION {
 
 #pragma endregion
 
-#pragma region Helper functions
-template<typename T, size_t offset, typename R = std::conditional_t<sizeof(T) == sizeof(uint8_t) || sizeof(T) == sizeof(uint16_t) || sizeof(T) == sizeof(uint32_t) || sizeof(T) == sizeof(uint64_t), T, T&>>
-static inline R read_teb_value() {
-    if constexpr (sizeof(T) == sizeof(uint8_t)) {
-        uint8_t temp = read_teb_byte(offset);
-        return *(T*)&temp;
-    } else if constexpr (sizeof(T) == sizeof(uint16_t)) {
-        uint16_t temp = read_teb_word(offset);
-        return *(T*)&temp;
-    } else if constexpr (sizeof(T) == sizeof(uint32_t)) {
-        uint32_t temp = read_teb_dword(offset);
-        return *(T*)&temp;
-    } else if constexpr (sizeof(T) == sizeof(uint64_t)) {
-        uint64_t temp = read_teb_qword(offset);
-        return *(T*)&temp;
-    } else {
-        T& ret = *(T*)((uintptr_t)CurrentTeb() + offset);
-        return ret;
-    }
-}
-
-template<typename T, size_t offset>
-static inline void write_teb_value(const T& value) {
-    if constexpr (sizeof(T) == sizeof(uint8_t)) {
-        write_teb_byte(offset, *(uint8_t*)&value);
-    } else if constexpr (sizeof(T) == sizeof(uint16_t)) {
-        write_teb_word(offset, *(uint16_t*)&value);
-    } else if constexpr (sizeof(T) == sizeof(uint32_t)) {
-        write_teb_dword(offset, *(uint32_t*)&value);
-    } else if constexpr (sizeof(T) == sizeof(uint64_t)) {
-        write_teb_qword(offset, *(uint64_t*)&value);
-    } else {
-        *(T*)((uintptr_t)CurrentTeb() + offset) = value;
-    }
-}
-
-static inline constexpr UNICODE_STRING MakeUnicodeString(const wchar_t* str, size_t length) {
-    if (length > 0x7FFEu) {
-        length = 0x7FFEu;
-    }
-    length *= sizeof(wchar_t);
-    return {
-        (USHORT)length,
-        (USHORT)(length + sizeof(wchar_t)),
-        (PWSTR)str
-    };
-}
-
-static inline constexpr UNICODE_STRING MakeUnicodeString(const wchar_t* str) {
-    return MakeUnicodeString(str, t_strlen(str) + 1);
-}
-
-// Constexpr reimplementation of RtlInitUnicodeString
-static inline constexpr void RtlInitUnicodeString(UNICODE_STRING* out, const wchar_t* str) {
-    *out = MakeUnicodeString(str);
-}
-
-// %wZ is a printf format for UNICODE_STRING
-static inline constexpr UNICODE_STRING operator""_wZ(const wchar_t* str, size_t length) {
-    return MakeUnicodeString(str, length);
-}
-
-#pragma endregion
-
 #pragma region Functions
 typedef VOID NTAPI IO_APC_ROUTINE(
     PVOID ApcContext,
@@ -664,6 +605,9 @@ typedef VOID NTAPI IO_APC_ROUTINE(
     ULONG Reserved
 );
 extern "C" {
+    NTSYSAPI void NTAPI RtlAcquirePebLock();
+    NTSYSAPI void NTAPI RtlReleasePebLock();
+
     NTSYSAPI ULONG NTAPI RtlNtStatusToDosError(
         NTSTATUS Status
     );
@@ -729,4 +673,84 @@ extern "C" {
         BOOLEAN                RestartScan
     );
 }
+#pragma endregion
+
+#pragma region Helpers
+template<typename T, size_t offset, typename R = std::conditional_t<sizeof(T) == sizeof(uint8_t) || sizeof(T) == sizeof(uint16_t) || sizeof(T) == sizeof(uint32_t) || sizeof(T) == sizeof(uint64_t), T, T&>>
+static inline R read_teb_value() {
+    if constexpr (sizeof(T) == sizeof(uint8_t)) {
+        uint8_t temp = read_teb_byte(offset);
+        return *(T*)&temp;
+    }
+    else if constexpr (sizeof(T) == sizeof(uint16_t)) {
+        uint16_t temp = read_teb_word(offset);
+        return *(T*)&temp;
+    }
+    else if constexpr (sizeof(T) == sizeof(uint32_t)) {
+        uint32_t temp = read_teb_dword(offset);
+        return *(T*)&temp;
+    }
+    else if constexpr (sizeof(T) == sizeof(uint64_t)) {
+        uint64_t temp = read_teb_qword(offset);
+        return *(T*)&temp;
+    }
+    else {
+        T& ret = *(T*)((uintptr_t)CurrentTeb() + offset);
+        return ret;
+    }
+}
+
+template<typename T, size_t offset>
+static inline void write_teb_value(const T& value) {
+    if constexpr (sizeof(T) == sizeof(uint8_t)) {
+        write_teb_byte(offset, *(uint8_t*)&value);
+    }
+    else if constexpr (sizeof(T) == sizeof(uint16_t)) {
+        write_teb_word(offset, *(uint16_t*)&value);
+    }
+    else if constexpr (sizeof(T) == sizeof(uint32_t)) {
+        write_teb_dword(offset, *(uint32_t*)&value);
+    }
+    else if constexpr (sizeof(T) == sizeof(uint64_t)) {
+        write_teb_qword(offset, *(uint64_t*)&value);
+    }
+    else {
+        *(T*)((uintptr_t)CurrentTeb() + offset) = value;
+    }
+}
+
+static inline constexpr UNICODE_STRING MakeUnicodeString(const wchar_t* str, size_t length) {
+    if (length > 0x7FFEu) {
+        length = 0x7FFEu;
+    }
+    length *= sizeof(wchar_t);
+    return {
+        (USHORT)length,
+        (USHORT)(length + sizeof(wchar_t)),
+        (PWSTR)str
+    };
+}
+
+static inline constexpr UNICODE_STRING MakeUnicodeString(const wchar_t* str) {
+    return MakeUnicodeString(str, t_strlen(str) + 1);
+}
+
+// Constexpr reimplementation of RtlInitUnicodeString
+static inline constexpr void RtlInitUnicodeString(UNICODE_STRING* out, const wchar_t* str) {
+    *out = MakeUnicodeString(str);
+}
+
+// %wZ is a printf format for UNICODE_STRING
+static inline constexpr UNICODE_STRING operator""_wZ(const wchar_t* str, size_t length) {
+    return MakeUnicodeString(str, length);
+}
+
+struct ScopedPebLock {
+    ScopedPebLock() {
+        RtlAcquirePebLock();
+    }
+    ~ScopedPebLock() {
+        RtlReleasePebLock();
+    }
+};
 #pragma endregion
