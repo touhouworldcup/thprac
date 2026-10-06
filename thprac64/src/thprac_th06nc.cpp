@@ -645,8 +645,10 @@ namespace TH06NC {
             // spell history + Yellow Bonus & SCB (if in prac)
             if (lastSpellTimer) { // note: we keep spell info on screen for a lil after cap (so history can be updated post-cap)
                 const bool isBooks = lastSpellID == BOOKS_ID;
+                const uint32_t difficulty = GAME_MANAGER->difficulty;
+                const bool isEasySt6 = (difficulty == EASY && GAME_MANAGER->stage == 6); // no allocated spell data
 
-                if (options.showHistory) { // total history
+                if (options.showHistory && !isEasySt6) { // total history
                     ImGui::TableNextRow();
 
                     ImGui::TableNextColumn();
@@ -655,7 +657,6 @@ namespace TH06NC {
 
                     uint32_t captureCnt, attemptCnt;
                     const uint8_t shotID = GAME_MANAGER->GetShotID();
-                    const uint32_t difficulty = GAME_MANAGER->difficulty;
 
                     if (isBooks) {
                         uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty, shotID);
@@ -2086,7 +2087,7 @@ namespace TH06NC {
     HOOKSET_ENDDEF()
 
 
-    HOOKSET_DEFINE(THPatchHooks)// On Prac (Re)Start
+    HOOKSET_DEFINE(THPatchHooks) // On Prac (Re)Start
     EHOOK_DY(th06nc_patch_main, GAME_MANAGER_REGISTERED, 1, { // end of GameManager::on_registration
         OG_INS(pCtx->Rip = PopHelper(pCtx));
         if (thPracParam.mode != 1) return;
