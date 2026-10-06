@@ -2446,7 +2446,7 @@ namespace TH06NC {
             return;
         }
 
-        OG_INS(RUN_ALL_ON_TICK(pCtx->Rcx));
+        OG_INS(pCtx->Rax = RUN_ALL_ON_TICK(pCtx->Rcx));
     })
 
     EHOOK_DY(th06nc_pre_render, POST_DRAW_POWER_TEXT, 7, { // draw our text in a context where AsciiManager vars (& stack?) are as they should be
