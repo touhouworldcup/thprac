@@ -525,6 +525,7 @@ namespace TH06NC {
 
     // In-Game Tracker
     class THTracker : public Gui::GameGuiWnd {
+        uint8_t shotID;
         char shotNameBuf[32];
         ImVec2 shotNameSize;
         uint32_t blockedHits = 0;
@@ -614,6 +615,8 @@ namespace TH06NC {
         }
 
         virtual void OnContentUpdate() override {
+            snprintf(shotNameBuf, sizeof(shotNameBuf), "%s", S(shotNames[shotID]));
+            shotNameSize = ImGui::CalcTextSize(shotNameBuf);
             ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - shotNameSize.x * 0.5f);
             ImGui::TextUnformatted(shotNameBuf);
 
@@ -764,8 +767,7 @@ namespace TH06NC {
             inBooksCapAttempt = false;
 
             const uint8_t shotID = GAME_MANAGER->GetShotID();
-            snprintf(shotNameBuf, sizeof(shotNameBuf), "%s", S(shotNames[shotID]));
-            shotNameSize = ImGui::CalcTextSize(shotNameBuf);
+            this->shotID = shotID;
 
             if (SUPERVISOR->curState == IN_RUN && !GAME_MANAGER->inReplay) { // refresh session start attempt counts
                 const uint32_t difficulty = GAME_MANAGER->difficulty;
