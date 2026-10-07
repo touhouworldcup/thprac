@@ -73,6 +73,7 @@
     <ClCompile>
       <PreprocessorDefinitions>THPRAC_DLL;THPRAC64_EXPORTS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)lib\d3d8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
