@@ -117,4 +117,7 @@
       <UniqueIdentifier>{cf9cf077-4943-4948-a8f6-b02b92651f65}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="thprac64.def" />
+  </ItemGroup>
 </Project>

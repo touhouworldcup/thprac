@@ -187,7 +187,7 @@ void log_init(bool launcher, bool console) {
         // Log config directory now. The config directory had to be known before log_init
         // so we never got to log it until now
         char dir_u8[MAX_PATH * 2 + 1];
-        int wrote = WideCharToMultiByte(CP_UTF8, 0, g_ConfigDir.data(), g_ConfigDir.length(), dir_u8, MAX_PATH * 2, nullptr, nullptr);
+        int wrote = WideCharToMultiByte(CP_UTF8, 0, g_ConfigDir.data(), (int)g_ConfigDir.length(), dir_u8, MAX_PATH * 2, nullptr, nullptr);
         log_print(dir_u8, wrote);
         log_print("\r\n");
     } else {

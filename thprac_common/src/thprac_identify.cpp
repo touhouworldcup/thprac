@@ -6,7 +6,10 @@
 
 #include <metrohash128.h>
 
-void DummyInit() {
+void DummyInit32() {
+    __debugbreak();
+}
+void DummyInit64() {
     __debugbreak();
 }
 

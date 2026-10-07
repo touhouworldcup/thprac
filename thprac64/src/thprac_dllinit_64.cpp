@@ -8,41 +8,43 @@
 
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 
-// temp but probably not temp workaround for linking
-constinit wchar_t thprac_dll_path[MAX_PATH + 1] = {};
-
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
     if (fdwReason == DLL_PROCESS_ATTACH) {
-        GetModuleFileNameW((HMODULE)&__ImageBase, thprac_dll_path, MAX_PATH);
-        if (const auto* ver = IdentifyExe((uint8_t*)CurrentPeb()->ImageBaseAddress, 0, nullptr)) {
-            wchar_t mod_fn[MAX_PATH + 1] = {};
-            auto cch = GetModuleFileNameW(hinstDLL, mod_fn, MAX_PATH);
-            InitPaths({ mod_fn, cch });
+        wchar_t mod_fn[MAX_PATH + 1] = {};
+        auto cch = GetModuleFileNameW(hinstDLL, mod_fn, MAX_PATH);
+        InitPaths({ mod_fn, cch });
+    }
+    return TRUE;
+}
+
+DWORD RunRemoteThread_Impl(HANDLE hProcess, uintptr_t addr);
+void CALLBACK thprac_rundll_inject_helper_internalW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow) {   
+    wchar_t* next = nullptr;
+    HANDLE hProcess = (HANDLE)_wcstoui64(lpszCmdLine, &next, 16);
+    uint32_t addr = wcstoul(next + 1, nullptr, 16);
+
+    RunRemoteThread_Impl(hProcess, addr);
+}
+
+[[noreturn]] void __fastcall thprac_init(RemoteParam64* param) {
+    if (const auto* ver = IdentifyExe((uint8_t*)CurrentPeb()->ImageBaseAddress, 0, nullptr)) {
+        auto flags = param->flags;
+    
+        // NOTE: none of thprac's known wrapper patches support any x64 game
+        // If one pops up, functionality to load it is to be added here
+
+
+        if (flags & RUN_FLAG_THPRAC) {
+            wchar_t buf[32] = {};
+            _snwprintf(buf, 31, L"Global\\thprac pid %d", GetCurrentProcessId());
+            CreateEventW(nullptr, TRUE, FALSE, buf);
 
             LoadSettings();
             log_init(false, gSettings.console);
             VEHHookInit();
             ver->initFunc();
+            ExitThread(0);
         }
     }
-    return TRUE;
-}
-
-extern "C" {
-    __declspec(dllexport) void CALLBACK thprac_rundll_inject_exeW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow) {
-        STARTUPINFOW si = { .cb = sizeof(si) };
-        PROCESS_INFORMATION pi = {};
-
-        CreateProcessW(nullptr, lpszCmdLine, nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, nullptr, &si, &pi);
-        LoadSelf(pi.hProcess);
-
-        ResumeThread(pi.hThread);
-        CloseHandle(pi.hThread);
-        CloseHandle(pi.hProcess);
-    }
-
-    __declspec(dllexport) void CALLBACK thprac_rundll_inject_pidW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow) {
-        auto pid = _wtoi(lpszCmdLine);
-        ApplyToProcById(pid);
-    }
+    FreeLibraryAndExitThread((HMODULE)&__ImageBase, 0x20000000);
 }

@@ -64,7 +64,7 @@
     <ClInclude Include="..\thprac_common\src\thprac_utils.h" />
     <ClInclude Include="..\thprac_common\src\thprac_version.h" />
     <ClInclude Include="..\thprac_common\src\wininternal.h" />
-    <ClInclude Include="..\thprac_common\thprac_inject.h" />
+    <ClInclude Include="..\thprac_common\src\thprac_inject.h" />
     <ClInclude Include="src\thprac_launcher.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

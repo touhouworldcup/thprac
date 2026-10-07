@@ -365,8 +365,8 @@ static bool LauncherRunWithThcrap(std::wstring_view dir, std::wstring_view runcf
     return false;
 }
 
-static bool LauncherRunGame(LauncherState* state, THGameID game, LauncherInstance* inst) {
-    if (state->reflectiveLaunchID == game) {
+static bool LauncherRunGame(LauncherState* state, LauncherGame* game, LauncherInstance* inst) {
+    if (state->reflectiveLaunchID == game->id) {
         ImGui::OpenPopup(S(THPRAC_GAMES_CANNOT_LAUNCH_MODAL));
         return false;
     }
@@ -394,20 +394,22 @@ static bool LauncherRunGame(LauncherState* state, THGameID game, LauncherInstanc
             if (inst->apply_thprac) {
                 flags |= RUN_FLAG_THPRAC;
             }
-            return RunGame(utf8_to_utf16(inst->path).c_str(), nullptr, flags);
+
+            auto* ver = game->versions + inst->ver;
+            return RunGame(utf8_to_utf16(inst->path).c_str(), nullptr, flags, ver->get_bits());
         }
         else {
             if (inst->apply_thprac) {
-                state->reflectiveLaunchID = game;
+                state->reflectiveLaunchID = game->id;
             }
             ShellExecuteW(ImGui_ImplWin32_GetHwnd(), L"open", utf8_to_utf16(inst->path).c_str(), nullptr, nullptr, SW_SHOW);
             return true;
         }
     } else {
         if (inst->apply_thprac) {
-            state->reflectiveLaunchID = game;
+            state->reflectiveLaunchID = game->id;
         }
-        return LauncherRunWithThcrap(state->settings.thcrap_dir, utf8_to_utf16(inst->path), game);
+        return LauncherRunWithThcrap(state->settings.thcrap_dir, utf8_to_utf16(inst->path), game->id);
     }
 }
 
@@ -830,7 +832,7 @@ static bool DetailsPage(LauncherState* state) {
         }
     } else {
         if (LargeBottomButton(S(THPRAC_GAMES_LAUNCH_GAME), 64.0f)) {
-            LauncherRunGame(state, game->id, inst);
+            LauncherRunGame(state, game, inst);
         }
     }
 
@@ -1435,9 +1437,9 @@ static inline void GamesList(LauncherState* state, LauncherGame* games_param, si
         }
         if (ImGui::Selectable(S(game.title))) {
             if (game.default_launch != -1) {
-                LauncherRunGame(state, game.id, game.instances + game.default_launch);
+                LauncherRunGame(state, &game, game.instances + game.default_launch);
             } else if (state->settings.auto_default_launch) {
-                LauncherRunGame(state, game.id, game.instances);
+                LauncherRunGame(state, &game, game.instances);
             } else {
                 state->selectedGame = &game;
             }

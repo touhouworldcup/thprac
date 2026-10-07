@@ -1,8 +1,3 @@
-#ifdef __INTELLISENSE__
-#define TH_X86
-#define TH_X64
-#endif
-
 #include "wininternal.h"
 
 #include "thprac_games.h"
@@ -1235,3 +1230,18 @@ bool ValidateConfigCode(const char* input, size_t length)
 }
 
 #pragma endregion
+
+bool TryLoadVpatch() {
+    WIN32_FIND_DATAW find;
+    HANDLE hFind = FindFirstFileW(L"vpatch*.dll", &find);
+    if (!hFind) {
+        return false;
+    }
+    defer(FindClose(hFind));
+    do {
+        if (CheckDLLFunction(find.cFileName, "_Initialize@4") && LoadLibraryW(find.cFileName)) {
+            return true;
+        }
+    } while (FindNextFileW(hFind, &find));
+    return false;
+}

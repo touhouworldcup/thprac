@@ -102,7 +102,7 @@ RUN_GAME_STATUS TryRunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flag
         break;
     }
 
-    if (RunGame(exeFn, cmdLine, flags)) {
+    if (RunGame(exeFn, cmdLine, flags, knownGame.ver->get_bits())) {
         return RUN_GAME_SUCCESS;
     }
     else {

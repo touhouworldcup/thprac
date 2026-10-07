@@ -101,3 +101,12 @@ void GuiSettings();
 void SetTheme(int theme);
 
 void InitPaths(std::wstring_view exe_path);
+static inline std::wstring_view GetThpracDllForArch(uintptr_t arch) {
+    if (arch == 32) {
+        return g_Dll32Path;
+    }
+    if (arch == 64) {
+        return g_Dll64Path;
+    }
+    return {};
+}

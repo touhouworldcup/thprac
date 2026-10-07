@@ -9,13 +9,206 @@
 #include "utils.h"
 
 #include <wchar.h>
+#include <inttypes.h>
 
 #include <algorithm>
 #include <string>
 
-UINT_PTR gRemoteParamAddr = 0;
+DWORD RunRemoteThread_Impl(HANDLE hProcess, uintptr_t addr) {
+    SIZE_T byteRet;
 
-uintptr_t GetProcessModuleBase(HANDLE hProc) {
+    void* funcs[] = { (void*)&LoadLibraryW, (void*)&GetProcAddress, (void*)&FreeLibraryAndExitThread };
+    WriteProcessMemory(hProcess, (LPVOID)(addr + offsetof(RemoteParamNative, LoadLibraryW_addr)), funcs, sizeof(funcs), &byteRet);
+
+    DWORD rResult = 0x20000001;
+    if (auto tInit = CreateRemoteThread(hProcess, nullptr, 0, (LPTHREAD_START_ROUTINE)addr, (LPVOID)addr, 0, nullptr)) {
+        WaitForSingleObject(tInit, INFINITE);
+        GetExitCodeThread(tInit, &rResult);
+    }
+    return rResult;
+}
+
+DWORD RunRemoteThread_CallDLL(HANDLE hProcess, uintptr_t addr, uintptr_t bits) {
+    auto dllPath = GetThpracDllForArch(bits);
+
+    // It doesn't really matter if the rundll32.exe matches the architecture of the DLL.
+    // If the architectures mismatch, rundll32 will start another rundll32 that does have
+    // the right architecture. However, handles inherited by rundll32 the first will not
+    // be inherited by rundll32 the second, that's why we should get it right the first time.
+
+    std::wstring_view rundllDir;
+
+#if TH_X86
+    BOOL isWow64Proc = FALSE;
+    IsWow64Process(CurrentProcessHandle, &isWow64Proc);
+    if (isWow64Proc) {
+        if (bits == 64) {
+            rundllDir = L"Sysnative";
+        }
+        else if (bits == 32) {
+            rundllDir = L"System32";            
+        }
+    }
+    else if(bits == 32) {
+        rundllDir = L"System32";
+    }
+#elif TH_X64
+    if (bits == 64) {
+        rundllDir = L"System32";
+    }
+    else if (bits == 32) {
+        rundllDir = L"SysWOW64";
+    }
+#endif
+    
+    int wrote = 0;
+
+    std::wstring_view rundllPath_format = L"%s\\%s\\rundll32.exe";
+    auto rundllPath_format_len = rundllPath_format.length() + rundllDir.length() + t_strlen(Kuser_Shared_Data->NtSystemRoot);
+    VLA(wchar_t, rundllPath, rundllPath_format_len);
+    wrote = _snwprintf(rundllPath, rundllPath_format_len, rundllPath_format.data(), Kuser_Shared_Data->NtSystemRoot, rundllDir);
+    rundllPath[wrote] = 0;
+
+    auto cmdFormat = L"%s %s,thprac_rundll_inject_helper_internal %" PRIXPTR " %" PRIXPTR;
+
+    auto cmdLen = t_strlen(cmdFormat) + g_Dll32Path.length() + 64;
+    VLA(wchar_t, cmd, cmdLen);
+    wrote = _snwprintf(cmd, cmdLen - 1, cmdFormat, rundllPath, dllPath.data(), hProcess, addr);
+    cmd[wrote] = 0;
+
+    STARTUPINFOW si = { .cb = sizeof(si) };
+    PROCESS_INFORMATION pi = {};
+
+    CreateProcessW(rundllPath, cmd, nullptr, nullptr, TRUE, 0, nullptr, nullptr, &si, &pi);
+    WaitForSingleObject(pi.hProcess, INFINITE);
+
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+
+    VLA_FREE(cmd);
+
+    return 0;
+}
+
+DWORD RunRemoteThread(HANDLE hProcess, uintptr_t addr, uintptr_t bits) {
+    switch (bits) {
+#if TH_X64
+    case 32:
+        return RunRemoteThread_CallDLL(hProcess, addr, 32);
+    case 64:
+        return RunRemoteThread_Impl(hProcess, addr);
+#elif TH_X86
+    case 64:
+        return RunRemoteThread_CallDLL(hProcess, addr, 64);
+    case 32:
+        return RunRemoteThread_Impl(hProcess, addr);
+#endif
+    DEFAULT_UNREACHABLE;
+    }
+}
+
+static uint8_t inject_shellcode_32[] = {
+    0x8B, 0x74, 0x24, 0x04,              // mov esi,dword ptr ss:[esp+4]
+    0x83, 0xE4, 0xF0,                    // and esp, -0x10
+    0x8D, 0x46,                          // lea eax,dword ptr ds:[esi->dllPath]
+    offsetof(RemoteParam32, dllPath),
+    0x50,                                // push eax                     
+    0xFF, 0x56,                          // call dword ptr ds:[esi->LoadLibraryW_addr]   
+    offsetof(RemoteParam32, LoadLibraryW_addr),
+    0x89, 0xC7,                          // mov edi,eax                  
+    0x85, 0xFF,                          // test edi,edi                 
+    0x74, 0x0E,                          // je +0xE   
+    0x6A, 0x01,                          // push 1                       
+    0x57,                                // push edi                     
+    0xFF, 0x56,                          // call dword ptr ds:[esi->GetProcAddress_addr]   
+    offsetof(RemoteParam32, GetProcAddress_addr),
+    0x85, 0xC0,                          // test eax,eax                 
+    0x74, 0x04,                          // je +0x4
+    0x89, 0xF1,                          // mov ecx, esi
+    0xFF, 0xE0,                          // jmp eax                      
+    0x64, 0xA1, 0x18, 0x00, 0x00, 0x00,  // mov eax,dword ptr fs:[18]    
+    0xFF, 0x70, 0x34,                    // push dword ptr ds:[eax+34]  
+    0x57,                                // push edi                     
+    0xFF, 0x56,                          // call dword ptr ds:[esi->FreeLibraryAndExitThread_addr]
+    offsetof(RemoteParam32, FreeLibraryAndExitThread_addr),
+    0xCC
+};
+static uint8_t inject_shellcode_64[] = {
+    0x48, 0x83, 0xE4, 0xF0,                               // and rsp, -0x10
+    0x48, 0x83, 0xEC, 0x20,                               // sub rsp, 0x20
+    0x48, 0x89, 0xCE,                                     // mov rsi,rcx                   
+    0x48, 0x83, 0xC1,                                     // add rcx, offsetof(RemoteParam64, dllPath)                     
+    offsetof(RemoteParam64, dllPath),                     
+    0xFF, 0x56,                                           // call qword ptr ds:[rsi->LoadLibraryW_addr]    
+    offsetof(RemoteParam64, LoadLibraryW_addr),           
+    0x48, 0x89, 0xC7,                                     // mov rdi,rax                   
+    0x48, 0x85, 0xFF,                                     // test rdi,rdi                  
+    0x74, 0x17,                                           // je +0x17      
+    0x48, 0x89, 0xF9,                                     // mov rcx,rdi                   
+    0x48, 0xC7, 0xC2, 0x01, 0x00, 0x00, 0x00,             // mov rdx,1                     
+    0xFF, 0x56,                                           // call qword ptr ds:[rsi->GetProcAddress_addr]    
+    offsetof(RemoteParam64, GetProcAddress_addr),         
+    0x48, 0x85, 0xC0,                                     // test rax,rax                  
+    0x74, 0x05,                                           // je +0x5    
+    0x48, 0x89, 0xF1,                                     // mov rcx,rsi                   
+    0xFF, 0xE0,                                           // jmp rax                       
+    0x48, 0x89, 0xF9,                                     // mov rcx,rdi                   
+    0x65, 0x48, 0x8B, 0x04, 0x25, 0x30, 0x00, 0x00, 0x00, // mov rax,qword ptr gs:[30]     
+    0x8B, 0x50, 0x68,                                     // mov edx,dword ptr ds:[rax+68] 
+    0xFF, 0x56,                                           // call qword ptr ds:[rsi->GetProcAddress_addr]   
+    offsetof(RemoteParam64, FreeLibraryAndExitThread_addr),                                          
+    0xCC
+};
+
+static_assert(sizeof(inject_shellcode_32) == sizeof(RemoteParam32::shellcode));
+static_assert(sizeof(inject_shellcode_64) == sizeof(RemoteParam64::shellcode));
+
+static bool LoadThpracDll(HANDLE hProcess, uint32_t flags, size_t bits) {
+    SIZE_T byteRet;
+
+    uintptr_t rBufAddr = 0;
+    SIZE_T rBufSize;
+
+    auto dllPath = GetThpracDllForArch(bits);
+
+    if (bits == 32) {
+        rBufSize = RoundUp(sizeof(RemoteParam32) + dllPath.length() * sizeof(wchar_t), 16);
+    }
+    if (bits == 64) {
+        rBufSize = RoundUp(sizeof(RemoteParam64) + dllPath.length() * sizeof(wchar_t), 16);
+    }
+
+    NtAllocateVirtualMemory(hProcess, (LPVOID*)&rBufAddr, 0x7FFFFFFF, &rBufSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+
+    if (bits == 32) {
+        RemoteParam32 buf;
+        memcpy(&buf.shellcode, inject_shellcode_32, sizeof(buf.shellcode));
+        buf.flags = flags;
+
+        WriteProcessMemory(hProcess, (LPVOID)rBufAddr, &buf, offsetof(RemoteParam32, dllPath), &byteRet);
+        WriteProcessMemory(hProcess, (LPVOID)(rBufAddr + offsetof(RemoteParam32, dllPath)), dllPath.data(), dllPath.length() * sizeof(wchar_t), &byteRet);
+
+        RunRemoteThread(hProcess, rBufAddr, 32);
+    }
+
+    if (bits == 64) {
+        RemoteParam64 buf;
+        memcpy(buf.shellcode, inject_shellcode_64, sizeof(buf.shellcode));
+        buf.flags = flags;
+
+        WriteProcessMemory(hProcess, (LPVOID)rBufAddr, &buf, offsetof(RemoteParam64, dllPath), &byteRet);
+        WriteProcessMemory(hProcess, (LPVOID)(rBufAddr + offsetof(RemoteParam64, dllPath)), dllPath.data(), dllPath.length() * sizeof(wchar_t), &byteRet);
+
+        RunRemoteThread(hProcess, rBufAddr, 64);
+    }
+
+    rBufSize = 0;
+    NtFreeVirtualMemory(hProcess, (LPVOID*)&rBufAddr, &rBufSize, MEM_RELEASE);
+
+    return true;
+}
+
+static uintptr_t GetProcessModuleBase(HANDLE hProc) {
     PROCESS_BASIC_INFORMATION pbi;
     if (NTSTATUS err = NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi, sizeof(pbi), nullptr)) {
         SetLastError(RtlNtStatusToDosError(err));
@@ -33,51 +226,49 @@ uintptr_t GetProcessModuleBase(HANDLE hProc) {
     return ret;
 }
 
-constexpr DWORD thpracSig = 'CARP'; // 🐟
-
-bool WriteTHPracSig(HANDLE hProc, uintptr_t base) {
-    UINT_PTR sigAddr = 0;
-    SIZE_T bytesReadRPM;
-    ReadProcessMemory(hProc, (void*)(base + 0x3c), &sigAddr, 4, &bytesReadRPM);
-    if (bytesReadRPM != 4 || !sigAddr)
-        return false;
-    sigAddr += base;
-    sigAddr -= 4;
-
-    SIZE_T bytesWrote;
-    DWORD oldProtect;
-    if (!VirtualProtectEx(hProc, (void*)sigAddr, 4, PAGE_EXECUTE_READWRITE, &oldProtect)) {
-        return false;
+static bool CheckThpracAttached(DWORD pid) {
+    wchar_t buf[32] = {};
+    _snwprintf(buf, 31, L"Global\\thprac pid %d", pid);
+    if (HANDLE hEvent = OpenEventW(SYNCHRONIZE, FALSE, buf)) {
+        CloseHandle(hEvent);
+        return true;
     }
-    if (!WriteProcessMemory(hProc, (void*)sigAddr, &thpracSig, 4, &bytesWrote)) {
-        return false;
-    }
-    if (!VirtualProtectEx(hProc, (void*)sigAddr, 4, oldProtect, &oldProtect)) {
-        return false;
-    }
-    return true;
+    return false;
 }
 
-bool CheckTHPracSig(HANDLE hProc, uintptr_t base) {
-    UINT_PTR sigAddr;
-    SIZE_T bytesReadRPM;
-    if (!ReadProcessMemory(hProc, (void*)(base + 0x3c), &sigAddr, 4, &bytesReadRPM)) {
-        return false;
-    }
-    sigAddr += base;
-    sigAddr -= 4;
+static bool CheckIfAnyGame() {
+    constexpr const wchar_t* allMutexNames[] = {
+        L"Touhou Koumakyou App",
+        L"Touhou YouYouMu App",
+        L"Touhou 08 App",
+        L"Touhou 10 App",
+        L"Touhou 11 App",
+        L"Touhou 12 App",
+        L"th17 App",
+        L"th18 App",
+        L"th185 App",
+        L"th19 App",
+        L"th20 App",
+    };
 
-    DWORD sig;
-    if (!ReadProcessMemory(hProc, (void*)sigAddr, &sig, 4, &bytesReadRPM)) {
-        return false;
+    for (const wchar_t* mutexName : allMutexNames) {
+        HANDLE hMutex = OpenMutexW(SYNCHRONIZE, FALSE, mutexName);
+        if (hMutex) {
+            CloseHandle(hMutex);
+            return true;
+        }
     }
-    return sig == thpracSig;
+    return false;
 }
 
 const THGameVersion* CheckOngoingGameByPID(DWORD pid, uintptr_t* pOutBase, HANDLE* pOutHandle) {
+    if (CheckThpracAttached(pid)) {
+        return nullptr;
+    }
+
     auto hProc = OpenProcess(
         PROCESS_QUERY_INFORMATION | PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE,
-        FALSE, pid);
+        TRUE, pid);
     if (!hProc)
         return nullptr;
 
@@ -97,12 +288,6 @@ const THGameVersion* CheckOngoingGameByPID(DWORD pid, uintptr_t* pOutBase, HANDL
         *pOutBase = base;
     }
 
-    // Check THPrac signature
-    // If an error happens here, return early
-    if (CheckTHPracSig(hProc, base)) {
-        return nullptr;
-    }
-
     auto exeSig = GetRemoteExeInfo(hProc, base);
     for (size_t i = 0; i < gGameVersionsCount; i++) {
         if (exeSig == gGameVersions[i].exeInfo) {
@@ -112,40 +297,14 @@ const THGameVersion* CheckOngoingGameByPID(DWORD pid, uintptr_t* pOutBase, HANDL
     return nullptr;
 }
 
-const wchar_t* allMutexNames[] = {
-    L"Touhou Koumakyou App",
-    L"Touhou YouYouMu App",
-    L"Touhou 08 App",
-    L"Touhou 10 App",
-    L"Touhou 11 App",
-    L"Touhou 12 App",
-    L"th17 App",
-    L"th18 App",
-    L"th185 App",
-    L"th19 App",
-    L"th20 App",
-};
-
-bool CheckIfAnyGame() {
-    for (const wchar_t* mutexName : allMutexNames) {
-        HANDLE hMutex = OpenMutexW(SYNCHRONIZE, FALSE, mutexName);
-        if (hMutex) {
-            CloseHandle(hMutex);
-            return true;
-        }
-    }
-    return false;
-}
-
 bool ApplyToProcById(DWORD pid) {
     uintptr_t base;
     HANDLE hProc;
     auto* sig = CheckOngoingGameByPID(pid, &base, &hProc);
     if (sig) {
-        if (!WriteTHPracSig(hProc, base) || !LoadSelf(hProc)) {
-            return false;
-        }
-    } else {
+        LoadThpracDll(hProc, sig->get_bits(), RUN_FLAG_THPRAC);
+    }
+    else {
         return false;
     }
 
@@ -173,7 +332,7 @@ bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game, THGameID gam
                 return false;
             }
         }
-        if (WriteTHPracSig(hProc, base) && LoadSelf(hProc)) {
+        if (LoadThpracDll(hProc, RUN_FLAG_THPRAC, gameSig->get_bits())) {
             if (prompt_if_yes_game) {
                 hasPrompted = true;
                 log_mbox(0, MB_ICONASTERISK | MB_OK, S(THPRAC_PR_COMPLETE), S(THPRAC_PR_INFO_ATTACHED));
@@ -236,64 +395,7 @@ no_game:
     return false;
 }
 
-bool LoadRemoteLibrary(HANDLE hProcess, const wchar_t* libName) {
-    size_t l_Len = t_strlen(libName) * sizeof(wchar_t);
-
-    LPVOID rBuf = VirtualAllocEx(hProcess, nullptr, l_Len, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-    if (!rBuf) {
-        return 0;
-    }
-    defer(VirtualFreeEx(hProcess, rBuf, 0, MEM_RELEASE));
-
-    SIZE_T byteRet;
-    WriteProcessMemory(hProcess, rBuf, libName, l_Len, &byteRet);
-
-    HANDLE hrThread = CreateRemoteThread(hProcess, nullptr, 0, (LPTHREAD_START_ROUTINE)(UINT_PTR)LoadLibraryW, rBuf, 0, nullptr);
-    if (!hrThread) {
-        return 0;
-    }
-    defer(CloseHandle(hrThread));
-
-    WaitForSingleObject(hrThread, INFINITE);
-
-    DWORD ret = 0;
-    GetExitCodeThread(hrThread, &ret);
-
-    return ret;
-}
-
-extern wchar_t thprac_dll_path[];
-
-bool LoadSelf(HANDLE hProcess) {
-    return LoadRemoteLibrary(hProcess, thprac_dll_path);
-}
-
-bool TryLoadVpatch(HANDLE hProcess, const wchar_t* exeDir) {
-    auto& c = CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
-    std::wstring curdir_bak(c.Buffer, c.Length / sizeof(wchar_t));
-
-    SetCurrentDirectoryW(exeDir);
-
-    WIN32_FIND_DATAW find;
-    HANDLE hFind = FindFirstFileW(L"vpatch*.dll", &find);
-    if (!hFind) {
-        return false;
-    }
-
-    do {
-        if (CheckDLLFunction(find.cFileName, "_Initialize@4") && LoadRemoteLibrary(hProcess, find.cFileName)) {
-            FindClose(hFind);
-            SetCurrentDirectoryW(curdir_bak.c_str());
-            return true;
-        }
-    } while (FindNextFileW(hFind, &find));
-
-    FindClose(hFind);
-    SetCurrentDirectoryW(curdir_bak.c_str());
-    return false;
-}
-
-bool RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags) {
+bool RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags, uintptr_t bits) {
     STARTUPINFOW si = {
         .cb = sizeof(si),
     };
@@ -303,11 +405,14 @@ bool RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags) {
     BOOL ret;
 
     std::wstring exeDir;
+    
+    SECURITY_ATTRIBUTES secAttrs = { .nLength = sizeof(secAttrs), .bInheritHandle = TRUE };
     if (file_spec) {
         exeDir = std::wstring(exeFn, file_spec);
-        ret = CreateProcessW(exeFn, cmdLine, nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, exeDir.c_str(), &si, &pi);
-    } else {
-        ret = CreateProcessW(exeFn, cmdLine, nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, nullptr, &si, &pi);
+        ret = CreateProcessW(exeFn, cmdLine, &secAttrs, nullptr, FALSE, CREATE_SUSPENDED, nullptr, exeDir.c_str(), &si, &pi);
+    }
+    else {
+        ret = CreateProcessW(exeFn, cmdLine, &secAttrs, nullptr, FALSE, CREATE_SUSPENDED, nullptr, nullptr, &si, &pi);
     }
 
     if (!ret) {
@@ -315,21 +420,7 @@ bool RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags) {
     }
 
     bool res = false;
-    if (flags & RUN_FLAG_OILP) {
-        size_t pos = exeDir.length();
-        exeDir.append(L"\\openinputlagpatch.dll");
-        res = LoadRemoteLibrary(pi.hProcess, exeDir.c_str());
-        exeDir.resize(pos);
-    }
-    if (!res && (flags & RUN_FLAG_VPATCH)) {
-        TryLoadVpatch(pi.hProcess, exeDir.c_str());
-    }
-
-    if (flags & RUN_FLAG_THPRAC) {
-        if (WriteTHPracSig(pi.hProcess, GetProcessModuleBase(pi.hProcess))) {
-            LoadSelf(pi.hProcess);
-        }
-    }
+    LoadThpracDll(pi.hProcess, flags, bits);
 
     ResumeThread(pi.hThread);
 

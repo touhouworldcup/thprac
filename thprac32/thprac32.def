@@ -1,2 +1,3 @@
 ﻿EXPORTS
-	thprac_init
+	thprac_init @1
+	thprac_rundll_inject_helper_internalW @2

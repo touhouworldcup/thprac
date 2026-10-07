@@ -672,6 +672,20 @@ extern "C" {
         PUNICODE_STRING        FileName,
         BOOLEAN                RestartScan
     );
+    NTSYSAPI NTSTATUS NTAPI NtAllocateVirtualMemory(
+        HANDLE    ProcessHandle,
+        PVOID* BaseAddress,
+        ULONG_PTR ZeroBits,
+        PSIZE_T   RegionSize,
+        ULONG     AllocationType,
+        ULONG     Protect
+    );
+    NTSYSAPI NTSTATUS NTAPI NtFreeVirtualMemory(
+        HANDLE  ProcessHandle,
+        PVOID* BaseAddress,
+        PSIZE_T RegionSize,
+        ULONG   FreeType
+    );
 }
 #pragma endregion
 

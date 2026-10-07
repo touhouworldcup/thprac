@@ -13,16 +13,17 @@ struct THInitFunc {
     __forceinline explicit operator bool() const;
 };
 
-extern void DummyInit();
+extern void DummyInit32();
+extern void DummyInit64();
 
 #ifdef THPRAC_DLL
 __forceinline THInitFunc::operator bool() const {
-    return this->func && this->func != DummyInit;
+    return this->func && this->func != DummyInit32 && this->func != DummyInit64;
 }
 
 #if defined(TH_X64)
 
-#define TH_INIT_FUNC_32(func) THInitFunc(DummyInit)
+#define TH_INIT_FUNC_32(func) THInitFunc(DummyInit32)
 #define TH_INIT_FUNC_64(func) THInitFunc(func##Real)
 
 #define TH_INIT_FUNC_32_DECL(func) 
@@ -31,7 +32,7 @@ __forceinline THInitFunc::operator bool() const {
 #elif defined(TH_X86)
 
 #define TH_INIT_FUNC_32(func) THInitFunc(func##Real)
-#define TH_INIT_FUNC_64(func) THInitFunc(DummyInit)
+#define TH_INIT_FUNC_64(func) THInitFunc(DummyInit64)
 
 #define TH_INIT_FUNC_32_DECL(func) void func##Real();
 #define TH_INIT_FUNC_64_DECL(func) 
@@ -45,8 +46,8 @@ __forceinline THInitFunc::operator bool() const {
 #define TH_INIT_FUNC_32_DECL(func)
 #define TH_INIT_FUNC_64_DECL(func)
 
-#define TH_INIT_FUNC_32(func) THInitFunc(DummyInit)
-#define TH_INIT_FUNC_64(func) THInitFunc(DummyInit)
+#define TH_INIT_FUNC_32(func) THInitFunc(DummyInit32)
+#define TH_INIT_FUNC_64(func) THInitFunc(DummyInit64)
 
 #endif // THPRAC_DLL
 #define TH_INIT_FUNC_NULL THInitFunc{}
@@ -127,6 +128,39 @@ struct THGameVersion {
     bool has_oilp;
     ExeInfo exeInfo;
     uint16_t oepCode[10];
+
+    inline uintptr_t get_bits() const {
+        if (!initFunc.func) {
+            return 0;
+        }
+#if THPRAC_DLL
+#if TH_X86
+        if (initFunc.func == DummyInit64) {
+            return 64;
+        }
+        else {
+            return 32;
+        }
+#endif
+#if TH_X64
+        if (initFunc.func == DummyInit32) {
+            return 32;
+        }
+        else {
+            return 64;
+        }
+#endif
+#else
+        if (initFunc.func == DummyInit32) {
+            return 32;
+        }
+        if (initFunc.func == DummyInit64) {
+            return 64;
+        }
+#endif
+        __assume(false);
+        __debugbreak();
+    }
 };
 
 struct THKnownGame {
