@@ -621,8 +621,6 @@ namespace TH06NC {
     // In-Game Tracker
     class THTracker : public Gui::GameGuiWnd {
         uint8_t shotID;
-        char shotNameBuf[32];
-        ImVec2 shotNameSize;
         uint32_t blockedHits = 0;
         uint32_t misses = 0;
         uint32_t bombs = 0;
@@ -710,9 +708,9 @@ namespace TH06NC {
         }
 
         virtual void OnContentUpdate() override {
+            char shotNameBuf[32];
             snprintf(shotNameBuf, sizeof(shotNameBuf), "%s", S(shotNames[shotID]));
-            shotNameSize = ImGui::CalcTextSize(shotNameBuf);
-            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - shotNameSize.x * 0.5f);
+            ImGui::SetCursorPosX(ImGui::GetWindowSize().x * 0.5f - ImGui::CalcTextSize(shotNameBuf).x * 0.5f);
             ImGui::TextUnformatted(shotNameBuf);
 
             uint32_t tableLineCnt = 0;
