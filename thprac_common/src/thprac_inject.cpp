@@ -302,7 +302,7 @@ bool ApplyToProcById(DWORD pid) {
     HANDLE hProc;
     auto* sig = CheckOngoingGameByPID(pid, &base, &hProc);
     if (sig) {
-        LoadThpracDll(hProc, sig->get_bits(), RUN_FLAG_THPRAC);
+        LoadThpracDll(hProc, RUN_FLAG_THPRAC, sig->get_bits());
     }
     else {
         return false;
