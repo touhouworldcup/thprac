@@ -543,7 +543,7 @@ namespace TH17 {
         Gui::GuiCheckBox mDlg { TH_DLG };
         Gui::GuiCheckBox mKeepSpellDrops { TH_DROP_ITEMS };
 
-        Gui::GuiCheckBox mShowKeikiFinalOpt { TH17_SHOW_ID_OPT };
+        Gui::GuiCheckBox mShowKeikiFinalOpt { TH_SHOW_ADV_PARAMS };
         Gui::GuiSlider<int, ImGuiDataType_S32> mKeikiFinalP2Offset { TH17_ID_P2_OPT, 0, 7080, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mKeikiFinalP3Offset { TH17_ID_P3_OPT, 0, 7080, 1, 1000 };
         Gui::GuiSlider<int, ImGuiDataType_S32> mKeikiFinalP4Offset { TH17_ID_P4_OPT, 0, 7080, 1, 1000 };

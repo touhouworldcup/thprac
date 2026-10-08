@@ -719,6 +719,7 @@
       "TH_EL_BGM": [ "永续BGM", "Everlasting BGM", "永遠に続くBGM" ],
       "TH_ON": [ "开启", "On", "有効" ],
       "TH_OFF": [ "关闭", "Off", "無効" ],
+      "TH_RESET": [ "重置", "Reset", "リセット" ],
       "TH_NORMAL": [ "正常", "Normal", "普通" ],
       "TH_FULL": [ "完全", "Full", "完全" ],
       "TH_RAGE": [ "发狂", "Rage", "発狂" ],
@@ -744,6 +745,11 @@
       "TH_DLG": [ "对话", "Dialog", "会話" ],
       "TH_DROP_ITEMS": [ "掉落道具", "Drop items", "アイテムを落とす" ],
       "TH_SELECTED_SHOTTYPE": [ "已选的机体", "Selected Shottype", "選択した機体" ],
+      "TH_SHOW_ADV_PARAMS": [ "显示高级练习参数", "Show advanced practice params", "高度な練習パラメータを表示" ],
+      "TH_ADV_PARAMS": [ "高级练习参数", "Advanced Practice Params", "高度な練習パラメータ" ],
+      "TH_BOSS_MOVE_FREE": [ "取消Boss移动限制", "Disable boss movement limits", "ボス移動制限を解除" ],
+      "TH_BOSS_X": [ "Boss生成X", "Boss X", "ボス生成X" ],
+      "TH_BOSS_Y": [ "Boss生成Y", "Boss Y", "ボス生成Y" ],
 
       "TH_LEFT": [ "左", "Left", "左" ],
       "TH_RIGHT": [ "右", "Right", "右" ],
@@ -8581,7 +8587,6 @@
         "Try to enable this option if you have any bugged replay.\nDo not enable this option when playbacking a normal replay.",
         "バグの発生するリプレイを再生する際はこのオプションを有効にしてみてください。\n正常なリプレイを再生する際はこのオプションを有効にしないでください。"
       ],
-      "TH17_SHOW_ID_OPT": [ "显示高级参数", "Show advanced params", "高度なパラメータを表示" ],
       "TH17_ID_P2_OPT": [ "P2 偏移量", "P2 Offset", "P2移行フレーム" ],
       "TH17_ID_P3_OPT": [ "P3 偏移量", "P3 Offset", "P3移行フレーム" ],
       "TH17_ID_P4_OPT": [ "P4 偏移量", "P4 Offset", "P4移行フレーム" ],

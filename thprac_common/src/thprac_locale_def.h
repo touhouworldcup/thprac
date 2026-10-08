@@ -330,7 +330,6 @@ enum th_glossary_t
     TH17_KEIKI_FINAL_PHASETRACK_NONE_HINT,
     TH17_NO_GOAST,
     TH17_RANDOM_ANGLE,
-    TH17_SHOW_ID_OPT,
     TH17_SPAWN_A_GOAST,
     TH17_TITLE,
     TH185_ADDITIONAL_CARDS,
@@ -966,6 +965,7 @@ enum th_glossary_t
     TH_ABOUT_WEBSITE,
     TH_ADV_OPT,
     TH_ADV_OPT_APPLY,
+    TH_ADV_PARAMS,
     TH_APPLY,
     TH_ATTACK,
     TH_AUTOBOMB,
@@ -974,6 +974,9 @@ enum th_glossary_t
     TH_BOMB,
     TH_BOMB_FRAGMENT,
     TH_BOSS,
+    TH_BOSS_MOVE_FREE,
+    TH_BOSS_X,
+    TH_BOSS_Y,
     TH_BOTH_NORMAL,
     TH_BOTH_RAGE,
     TH_BUGFIX,
@@ -1115,11 +1118,13 @@ enum th_glossary_t
     TH_REPFIX_SELECTED_ALREADY_FIXED,
     TH_REPFIX_SELECTED_NONE,
     TH_REPLAY_FIX,
+    TH_RESET,
     TH_RESTART,
     TH_RESUME,
     TH_RIGHT,
     TH_SCORE,
     TH_SELECTED_SHOTTYPE,
+    TH_SHOW_ADV_PARAMS,
     TH_SPELL,
     TH_SPELL_FINAL,
     TH_SPELL_PRAC,
@@ -1230,7 +1235,7 @@ enum th_glossary_t
     TH_YES,
 };
 
-extern const char* th_glossary_str[3][1220];
+extern const char* th_glossary_str[3][1225];
 
 extern const th_glossary_t TH_TYPE_SELECT[13];
 

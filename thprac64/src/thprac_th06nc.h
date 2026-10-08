@@ -633,6 +633,11 @@ namespace TH06NC {
         bool guaranteeTLB;
         bool dlg;
 
+        bool bossMoveFree;
+        bool bossSpawnAdjust;
+        int32_t bossSpawnX;
+        int32_t bossSpawnY;
+
         void Reset() {
             mode = 0;
             stage = 0;
@@ -651,6 +656,10 @@ namespace TH06NC {
             th06nc_end_rpy_on_last_frame.Disable();
             guaranteeTLB = false;
             dlg = false;
+            bossMoveFree = false;
+            bossSpawnAdjust = false;
+            bossSpawnX = 0;
+            bossSpawnY = 0;
         }
 
         bool ReadJson(std::string& json) {
@@ -673,6 +682,10 @@ namespace TH06NC {
             GetJsonValue(lastFrame);
             GetJsonValue(guaranteeTLB);
             GetJsonValue(dlg);
+            GetJsonValue(bossMoveFree);
+            GetJsonValue(bossSpawnAdjust);
+            GetJsonValue(bossSpawnX);
+            GetJsonValue(bossSpawnY);
 
             return true;
         }
@@ -700,6 +713,12 @@ namespace TH06NC {
                 AddJsonValue(rank);
                 AddJsonValue(fakeType);
 
+                if (bossMoveFree) AddJsonValue(bossMoveFree);
+                if (bossSpawnAdjust) {
+                    AddJsonValue(bossSpawnAdjust);
+                    AddJsonValue(bossSpawnX);
+                    AddJsonValue(bossSpawnY);
+                }
                 if (guaranteeTLB) AddJsonValue(guaranteeTLB);
                 if (dlg) AddJsonValue(dlg);
             }
@@ -707,3 +726,120 @@ namespace TH06NC {
         }
     };
 }
+
+
+//-------------------------------------------------------------------------
+// Boss Control Data ------------------------------------------------------
+
+struct BossSpawnPos {
+    int32_t x; int32_t y;
+};
+
+struct BossMoveBounds {
+    int32_t left; int32_t top;
+    int32_t right; int32_t bottom;
+};
+
+struct BossSectionData {
+    TH06::th_sections_t sectionID;
+    BossSpawnPos spawnPos;
+    BossMoveBounds moveBounds;
+};
+
+const BossSpawnPos defaultPos1 = { 192, 96 };
+const BossSpawnPos defaultPos2 = { 192, 144 };
+const BossSpawnPos defaultPos3 = { 192, 128 };
+const BossSpawnPos defaultSpellPos1 = { 192, 80 };
+const BossSpawnPos defaultSpellPos2 = { 192, 112 };
+const BossSpawnPos defaultSpellPos3 = { 192, 120 };
+
+const BossMoveBounds unsetBounds = { 0, 0, 384, 448 };
+const BossMoveBounds defaultBounds1 = { 32, 48, 352, 144 };
+const BossMoveBounds defaultBounds2 = { 32, 48, 352, 120 };
+const BossMoveBounds defaultMidBounds = { 32, 48, 352, 176 };
+
+const BossSpawnPos st3MainSpellPos = { 192, 64 };
+const BossMoveBounds st2BossBounds = { 32, 48, 352, 134 };
+const BossMoveBounds st5BossBounds = { 32, 48, 352, 132 };
+const BossMoveBounds st6MidbossBounds = { 32, 48, 352, 128 };
+
+const BossSectionData bossSections[] = {
+    { TH06::TH06_ST1_MID1,     { 320, 128 },      unsetBounds          },
+    { TH06::TH06_ST1_MID2,     defaultPos1,       defaultBounds1       },
+    { TH06::TH06_ST1_BOSS1,    defaultPos1,       defaultBounds1       },
+    { TH06::TH06_ST1_BOSS2,    defaultPos1,       defaultBounds1       },
+    { TH06::TH06_ST1_BOSS3,    defaultPos1,       defaultBounds1       },
+    { TH06::TH06_ST1_BOSS4,    defaultPos1,       defaultBounds1       },
+
+    { TH06::TH06_ST2_MID1,     defaultPos1,       unsetBounds          },
+    { TH06::TH06_ST2_BOSS1,    defaultPos1,       st2BossBounds        },
+    { TH06::TH06_ST2_BOSS2,    defaultPos1,       st2BossBounds        },
+    { TH06::TH06_ST2_BOSS3,    defaultPos1,       st2BossBounds        },
+    { TH06::TH06_ST2_BOSS4,    defaultPos1,       st2BossBounds        },
+    { TH06::TH06_ST2_BOSS5,    defaultPos1,       st2BossBounds        },
+
+    { TH06::TH06_ST3_MID1,     defaultPos2,       defaultBounds1       },
+    { TH06::TH06_ST3_MID2,     defaultPos2,       defaultBounds1       },
+    { TH06::TH06_ST3_BOSS1,    defaultPos2,       defaultBounds1       },
+    { TH06::TH06_ST3_BOSS2,    st3MainSpellPos,   defaultBounds1       },
+    { TH06::TH06_ST3_BOSS3,    defaultPos2,       defaultBounds1       },
+    { TH06::TH06_ST3_BOSS4,    st3MainSpellPos,   defaultBounds1       },
+    { TH06::TH06_ST3_BOSS5,    defaultPos2,       defaultBounds1       },
+    { TH06::TH06_ST3_BOSS6,    st3MainSpellPos,   defaultBounds1       },
+    { TH06::TH06_ST3_BOSS7,    defaultPos3,       defaultBounds1       },
+
+    { TH06::TH06_ST4_MID1,     defaultPos3,       defaultMidBounds     },
+    { TH06::TH06_ST4_BOSS1,    defaultPos3,       defaultBounds1       },
+    { TH06::TH06_ST4_BOSS2,    defaultSpellPos1,  defaultBounds1       },
+    { TH06::TH06_ST4_BOSS3,    defaultPos3,       defaultBounds1       },
+    { TH06::TH06_ST4_BOSS4,    defaultSpellPos1,  defaultBounds1       },
+    { TH06::TH06_ST4_BOSS5,    defaultSpellPos1,  defaultBounds1       },
+    { TH06::TH06_ST4_BOSS6,    defaultSpellPos1,  defaultBounds1       },
+    { TH06::TH06_ST4_BOSS7,    defaultSpellPos1,  defaultBounds1       },
+
+    { TH06::TH06_ST5_MID1,     defaultPos3,       defaultMidBounds     },
+    { TH06::TH06_ST5_MID2,     defaultPos2,       defaultMidBounds     },
+    { TH06::TH06_ST5_BOSS1,    defaultPos3,       st5BossBounds        },
+    { TH06::TH06_ST5_BOSS2,    defaultSpellPos2,  st5BossBounds        },
+    { TH06::TH06_ST5_BOSS3,    defaultPos3,       st5BossBounds        },
+    { TH06::TH06_ST5_BOSS4,    defaultSpellPos2,  st5BossBounds        },
+    { TH06::TH06_ST5_BOSS5,    defaultPos3,       st5BossBounds        },
+    { TH06::TH06_ST5_BOSS6,    { 192, 132 },      st5BossBounds        },
+
+    { TH06::TH06_ST6_MID1,     defaultPos3,       st6MidbossBounds     },
+    { TH06::TH06_ST6_MID2,     defaultPos3,       st6MidbossBounds     },
+    { TH06::TH06_ST6_BOSS1,    defaultPos1,       defaultBounds2       },
+    { TH06::TH06_ST6_BOSS2,    defaultSpellPos2,  defaultBounds2       },
+    { TH06::TH06_ST6_BOSS3,    defaultPos1,       defaultBounds2       },
+    { TH06::TH06_ST6_BOSS4,    defaultSpellPos3,  defaultBounds2       },
+    { TH06::TH06_ST6_BOSS5,    defaultPos1,       defaultBounds2       },
+    { TH06::TH06_ST6_BOSS6,    { 192, 108 },      defaultBounds2       },
+    { TH06::TH06_ST6_BOSS7,    defaultPos1,       defaultBounds2       },
+    { TH06::TH06_ST6_BOSS8,    defaultSpellPos2,  defaultBounds2       },
+    { TH06::TH06_ST6_BOSS9,    defaultSpellPos3,  defaultBounds2       },
+
+    { TH06::TH06_ST7_MID1,     defaultSpellPos1,  defaultBounds2       },
+    { TH06::TH06_ST7_MID2,     defaultSpellPos1,  defaultBounds2       },
+    { TH06::TH06_ST7_MID3,     defaultSpellPos1,  defaultBounds2       },
+    { TH06::TH06_ST7_END_NS1,  defaultPos1,       defaultBounds2       },
+    { TH06::TH06_ST7_END_S1,   defaultSpellPos1,  defaultBounds2       },
+    { TH06::TH06_ST7_END_NS2,  defaultPos1,       defaultBounds2       },
+    { TH06::TH06_ST7_END_S2,   defaultSpellPos1,  defaultBounds2       },
+    { TH06::TH06_ST7_END_NS3,  defaultPos1,       defaultBounds2       },
+    { TH06::TH06_ST7_END_S3,   defaultSpellPos1,  defaultBounds2       },
+    { TH06::TH06_ST7_END_NS4,  defaultPos1,       defaultBounds2       },
+    { TH06::TH06_ST7_END_S4,   defaultSpellPos1,  defaultBounds2       },
+    { TH06::TH06_ST7_END_NS5,  defaultPos1,       defaultBounds2       },
+    { TH06::TH06_ST7_END_S5,   defaultSpellPos1,  defaultBounds2       },
+    { TH06::TH06_ST7_END_NS6,  defaultPos1,       defaultBounds2       },
+    { TH06::TH06_ST7_END_S6,   defaultSpellPos1,  defaultBounds2       },
+    { TH06::TH06_ST7_END_NS7,  defaultPos1,       defaultBounds2       },
+    { TH06::TH06_ST7_END_S7,   defaultSpellPos1,  defaultBounds2       },
+    { TH06::TH06_ST7_END_NS8,  defaultPos1,       defaultBounds2       },
+    { TH06::TH06_ST7_END_S8,   defaultSpellPos1,  defaultBounds2       },
+    { TH06::TH06_ST7_END_S9,   defaultSpellPos1,  defaultBounds2       },
+    { TH06::TH06_ST7_END_S10,  defaultSpellPos1,  defaultBounds2       },
+    { TH06::TH06NC_TLB1,       defaultSpellPos3, { 128, 80, 256, 144 } },
+    { TH06::TH06NC_TLB2,       { 192, 192 }, { 32, 48, 352, 192 }      },
+    { TH06::TH06NC_TLB3,       { 192, 170 }, { 32, 48, 352, 224 }      },
+};
