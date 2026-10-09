@@ -174,10 +174,10 @@ static bool LoadThpracDll(HANDLE hProcess, uint32_t flags, size_t bits) {
     auto dllPath = GetThpracDllForArch(bits);
 
     if (bits == 32) {
-        rBufSize = RoundUp(sizeof(RemoteParam32) + dllPath.length() * sizeof(wchar_t), 16);
+        rBufSize = RoundUp(sizeof(RemoteParam32) + (SIZE_T)dllPath.length() * sizeof(wchar_t), 16);
     }
     if (bits == 64) {
-        rBufSize = RoundUp(sizeof(RemoteParam64) + dllPath.length() * sizeof(wchar_t), 16);
+        rBufSize = RoundUp(sizeof(RemoteParam64) + (SIZE_T)dllPath.length() * sizeof(wchar_t), 16);
     }
 
     NtAllocateVirtualMemory(hProcess, (LPVOID*)&rBufAddr, 0x7FFFFFFF, &rBufSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
