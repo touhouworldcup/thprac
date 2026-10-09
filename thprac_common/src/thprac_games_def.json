@@ -747,9 +747,9 @@
       "TH_SELECTED_SHOTTYPE": [ "已选的机体", "Selected Shottype", "選択した機体" ],
       "TH_SHOW_ADV_PARAMS": [ "显示高级练习参数", "Show advanced practice params", "高度な練習パラメータを表示" ],
       "TH_ADV_PARAMS": [ "高级练习参数", "Advanced Practice Params", "高度な練習パラメータ" ],
-      "TH_BOSS_MOVE_FREE": [ "取消Boss移动限制", "Disable boss movement limits", "ボス移動制限を解除" ],
-      "TH_BOSS_X": [ "Boss生成X", "Boss X", "ボス生成X" ],
-      "TH_BOSS_Y": [ "Boss生成Y", "Boss Y", "ボス生成Y" ],
+      "TH_BOSS_MOVE_FREE": [ "解除Boss移动限制", "Disable boss movement limits", "ボス移動制限を解除" ],
+      "TH_BOSS_X": [ "Boss X坐标", "Boss X", "ボス生成X" ],
+      "TH_BOSS_Y": [ "Boss Y坐标", "Boss Y", "ボス生成Y" ],
 
       "TH_LEFT": [ "左", "Left", "左" ],
       "TH_RIGHT": [ "右", "Right", "右" ],

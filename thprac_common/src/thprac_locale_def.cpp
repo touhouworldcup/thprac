@@ -974,9 +974,9 @@ const char* th_glossary_str[3][1225]
         "Bomb",
         "Bomb碎片",
         "Boss",
-        "取消Boss移动限制",
-        "Boss生成X",
-        "Boss生成Y",
+        "解除Boss移动限制",
+        "Boss X坐标",
+        "Boss Y坐标",
         "都正常",
         "都发狂",
         "可选的Bug修复",
@@ -23196,7 +23196,7 @@ const th_glossary_t TH20_EXPIRED_PYRAMID_FIX_OPT[6]
 
 }
 
-const wchar_t __thprac_loc_range_zh[3383] {
+const wchar_t __thprac_loc_range_zh[3385] {
     0x0020, 0x00FF,
     0x2014, 0x2014,
     0x201c, 0x201c,
@@ -23560,6 +23560,7 @@ const wchar_t __thprac_loc_range_zh[3383] {
     0x5747, 0x5747,
     0x574d, 0x574d,
     0x574f, 0x574f,
+    0x5750, 0x5750,
     0x5764, 0x5764,
     0x578b, 0x578b,
     0x5792, 0x5792,
