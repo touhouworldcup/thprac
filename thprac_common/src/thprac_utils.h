@@ -7,9 +7,6 @@
 
 #include "thprac_version.h"
 #include "thprac_gui_components.h"
-
-
-
 #include "thprac_locale_def.h"
 #include "thprac_gui_locale.h"
 
@@ -25,8 +22,6 @@
 #include <vector>
 
 #include "yyjson.h"
-
-
 
 struct MappedFile {
     HANDLE fileMap = nullptr;
@@ -267,6 +262,8 @@ bool SelectFolder(std::wstring& out, HWND hwnd = NULL);
 #define VLA_FREE(name) \
     w32u8_freea(name)
 #endif
+
+void init_optional_nt_funcs();
 
 extern inline char* strdup_size(const char* src, size_t size) {
     char* ret = (char*)malloc(size + 1);

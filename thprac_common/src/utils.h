@@ -80,6 +80,8 @@ privDefer<F> defer_func(F f)
 #define _MACRO_CAT(arg1, arg2) arg1##arg2
 #define MACRO_CAT(arg1, arg2) _MACRO_CAT(arg1, arg2)
 
+#define FUNC_T(f) decltype(f)* f##_ptr
+
 void memswap(void* buf1_, void* buf2_, unsigned int len);
 
 template <typename T>

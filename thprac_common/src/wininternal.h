@@ -533,20 +533,20 @@ struct SYSTEM_PROCESS_INFORMATION {
     LARGE_INTEGER Reserved7[6];
 };
 
-struct PROCESS_BASIC_INFORMATION {
+// TODO: if needing the version of one specific architecture
+// regardless of architectures happens more often, make all
+// structs in here similar to this
+template<typename PTR_T>
+struct alignas(8) PROCESS_BASIC_INFORMATIONX {
     NTSTATUS ExitStatus;
-#ifdef TH_X64
-    UCHAR Padding0[4];
-#endif
-    PEB* PebBaseAddress;
-    ULONG_PTR AffinityMask;
+    PTR_T PebBaseAddress;
+    PTR_T AffinityMask;
     KPRIORITY BasePriority;
-#ifdef TH_X64
-    UCHAR Padding1[4];
-#endif
-    ULONG_PTR UniqueProcessId;
-    ULONG_PTR InheritedFromUniqueProcessId;
+    PTR_T UniqueProcessId;
+    PTR_T InheritedFromUniqueProcessId;
 };
+
+using PROCESS_BASIC_INFORMATION = PROCESS_BASIC_INFORMATIONX<uintptr_t>;
 
 struct FILE_DIRECTORY_INFORMATION {
     ULONG NextEntryOffset;
@@ -686,6 +686,27 @@ extern "C" {
         PSIZE_T RegionSize,
         ULONG   FreeType
     );
+
+    // WOW64 specific
+    NTSYSAPI NTSTATUS NTAPI NtWow64ReadVirtualMemory64(
+        HANDLE ProcessHandle,
+        PVOID64 BaseAddress,
+        PVOID BufferData,
+        ULONG64 BufferLength,
+        PULONG64 ReturnLength
+    );
+    NTSYSAPI NTSTATUS NTAPI NtWow64QueryInformationProcess64(
+        HANDLE ProcessHandle,
+        PROCESSINFOCLASS ProcessInformationClass,
+        PVOID ProcessInformation,
+        ULONG ProcessInformationLength,
+        PULONG ReturnLength
+    );
+    // ---
+    
+    // Wine specific
+    NTSYSAPI LPCSTR NTAPI wine_get_version();
+    // ---
 }
 #pragma endregion
 

@@ -42,7 +42,7 @@ struct alignas(16) RemoteParam32 {
 #define RemoteParamNative RemoteParam64
 #endif
 
-const THGameVersion* CheckOngoingGameByPID(DWORD pid, uintptr_t* pOutBase, HANDLE* pOutHandle);
+const THGameVersion* CheckOngoingGameByPID(DWORD pid, uint64_t* pOutBase, HANDLE* pOutHandle);
 bool ApplyToProcById(DWORD pid);
 bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game, THGameID gameID = ID_UNKNOWN);
 bool RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags, uintptr_t bits);

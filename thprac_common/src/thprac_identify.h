@@ -214,10 +214,10 @@ enum ThVersionArrOffset {
     VER_MAX,
 };
 
-ExeInfo GetExeInfo(const uint8_t* mod, size_t len);
-ExeInfo GetRemoteExeInfo(void* hProc, uintptr_t mod);
+ExeInfo GetExeInfo(const void* mod, size_t len);
+ExeInfo GetRemoteExeInfo(void* hProc, uint64_t mod);
 
-const THGameVersion* IdentifyExe(const uint8_t* buf, size_t len, ExeInfo* outInfo);
+const THGameVersion* IdentifyExe(const void* buf, size_t len, ExeInfo* outInfo);
 const THGameVersion* IdentifyExe(const wchar_t* path, ExeInfo* outInfo);
 const THGameVersion* IdentifyRemoteExe(void* hProc, uintptr_t mod, ExeInfo* outInfo);
 

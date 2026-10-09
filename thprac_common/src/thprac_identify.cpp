@@ -1,4 +1,4 @@
-
+#include "wininternal.h"
 
 #include "thprac_identify.h"
 #include "thprac_utils.h"
@@ -819,22 +819,22 @@ const char* gThGameStrs[] = {
     "th20",
 };
 
-static_assert(offsetof(IMAGE_NT_HEADERS32, OptionalHeader) == offsetof(IMAGE_NT_HEADERS64, OptionalHeader),
-    "PE32/PE32+ prefix layout differs");
-static_assert(offsetof(IMAGE_NT_HEADERS32, FileHeader) == offsetof(IMAGE_NT_HEADERS64, FileHeader),
-    "PE32/PE32+ prefix layout differs");
+extern FUNC_T(NtWow64ReadVirtualMemory64);
 
 template<typename F>
-    requires std::invocable<F&, void*, uintptr_t, uintptr_t, uintptr_t, void*, size_t>
-__forceinline ExeInfo GetExeInfo_Base(F&& Read, void* hProc, uintptr_t mod, uintptr_t size) {
+    requires std::invocable<F&, void*, uintptr_t, uintptr_t, uint64_t, void*, size_t>
+__forceinline ExeInfo GetExeInfo_Base(F&& Read, void* hProc, uint64_t mod, uintptr_t size) {
 #define MYREAD(...) Read(hProc, mod, size, __VA_ARGS__)
+    // Read function takes the address as uint64_t specifically, because 32 bit processes
+    // need to be able to read memory from 64 bit processes as well.
+
     ExeInfo out = {};
 
     LONG lfanew;
     if (!MYREAD(mod + offsetof(IMAGE_DOS_HEADER, e_lfanew), &lfanew, sizeof(lfanew))
         || lfanew <= 0) return out;
 
-    const uintptr_t ntHeader = mod + (uintptr_t)lfanew;
+    const auto ntHeader = mod + lfanew;
 
     struct {
         DWORD Signature;
@@ -844,7 +844,7 @@ __forceinline ExeInfo GetExeInfo_Base(F&& Read, void* hProc, uintptr_t mod, uint
     if (!MYREAD(ntHeader, &ntCommon, sizeof(ntCommon))) return out;
     if (ntCommon.Signature != IMAGE_NT_SIGNATURE) return out;
 
-    uintptr_t sections = ntHeader + sizeof(ntCommon) + ntCommon.FileHeader.SizeOfOptionalHeader;
+    auto sections = ntHeader + sizeof(ntCommon) + ntCommon.FileHeader.SizeOfOptionalHeader;
 
     for (size_t i = 0; i < ntCommon.FileHeader.NumberOfSections; i++) {
         IMAGE_SECTION_HEADER section;
@@ -864,7 +864,7 @@ __forceinline ExeInfo GetExeInfo_Base(F&& Read, void* hProc, uintptr_t mod, uint
 #undef MYREAD
 }
 
-ExeInfo GetRemoteExeInfo(void* hProc, uintptr_t mod) {
+ExeInfo GetRemoteExeInfo(void* hProc, uint64_t mod) {
     // The compiler needs full visibility into the functor being passed
     // so that it can inline this code. It could also inline a lambda,
     // but there doesn't seem to be a way to guarantee that.
@@ -872,20 +872,24 @@ ExeInfo GetRemoteExeInfo(void* hProc, uintptr_t mod) {
     // Making a struct to be able to add __forceinline. Technically,
     // the thing that makes lambdas callable is implementing operator().
     struct Reader {
-        __forceinline bool operator()(void* hProc, uintptr_t buf_base, uintptr_t buf_size, uintptr_t buf_addr, void* dst_out, size_t read_len) {
-            (void)buf_base;
-           
-            SIZE_T byteRet;
-            return ReadProcessMemory(hProc, (LPCVOID)buf_addr, dst_out, read_len, &byteRet) && byteRet == read_len;
+        __forceinline bool operator()(void* hProc, uint64_t buf_base, uintptr_t buf_size, uint64_t buf_addr, void* dst_out, size_t read_len) {
+            if (NtWow64ReadVirtualMemory64_ptr) {
+                ULONG64 byteRet;
+                return NtWow64ReadVirtualMemory64_ptr(hProc, (PVOID64)buf_addr, dst_out, read_len, &byteRet) == 0 && byteRet && read_len;
+            }
+            else {
+                SIZE_T byteRet;
+                return ReadProcessMemory(hProc, (LPCVOID)buf_addr, dst_out, read_len, &byteRet) && byteRet == read_len;
+            }
         }
     };
-    return GetExeInfo_Base(Reader(), hProc, (uintptr_t)mod, 0);
+    return GetExeInfo_Base(Reader(), hProc, mod, 0);
 }
 
-ExeInfo GetExeInfo(const uint8_t* mod, size_t len) {
+ExeInfo GetExeInfo(const void* mod, size_t len) {
     // Pretend the comment from GetRemoteExeInfo is also here.
     struct Reader {
-        __forceinline bool operator()(void* hProc, uintptr_t buf_base, uintptr_t buf_size, uintptr_t buf_addr, void* dst_out, size_t read_len) {
+        __forceinline bool operator()(void* hProc, uint64_t buf_base, uintptr_t buf_size, uint64_t buf_addr, void* dst_out, size_t read_len) {
             if (buf_size && buf_addr >= (buf_base + buf_size)) {
                 return false;
             }
@@ -893,11 +897,10 @@ ExeInfo GetExeInfo(const uint8_t* mod, size_t len) {
             return true;
         }
     };
-    return GetExeInfo_Base(Reader(), NULL, (uintptr_t)mod, len);
+    return GetExeInfo_Base(Reader(), NULL, (uint64_t)mod, len);
 }
 
-
-const THGameVersion* IdentifyExe(const uint8_t* buf, size_t len, ExeInfo* outInfo) {
+const THGameVersion* IdentifyExe(const void* buf, size_t len, ExeInfo* outInfo) {
     ExeInfo exe_info = GetExeInfo(buf, len);
 
     if (outInfo) {

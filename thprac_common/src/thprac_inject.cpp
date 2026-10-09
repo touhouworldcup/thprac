@@ -210,24 +210,6 @@ static bool LoadThpracDll(HANDLE hProcess, uint32_t flags, size_t bits) {
     return true;
 }
 
-static uintptr_t GetProcessModuleBase(HANDLE hProc) {
-    PROCESS_BASIC_INFORMATION pbi;
-    if (NTSTATUS err = NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi, sizeof(pbi), nullptr)) {
-        SetLastError(RtlNtStatusToDosError(err));
-        return 0;
-    }
-
-    LPVOID based = (LPVOID)((uintptr_t)pbi.PebBaseAddress + offsetof(PEB, ImageBaseAddress));
-
-    uintptr_t ret = 0;
-    SIZE_T byteRet;
-
-    // If this fails, it'll return 0 and GetLastError will already be set.
-    ReadProcessMemory(hProc, based, &ret, sizeof(ret), &byteRet);
-
-    return ret;
-}
-
 static bool CheckThpracAttached(DWORD pid) {
     wchar_t buf[32] = {};
     _snwprintf(buf, 31, L"Global\\thprac pid %d", pid);
@@ -263,7 +245,63 @@ static bool CheckIfAnyGame() {
     return false;
 }
 
-const THGameVersion* CheckOngoingGameByPID(DWORD pid, uintptr_t* pOutBase, HANDLE* pOutHandle) {
+extern FUNC_T(NtWow64QueryInformationProcess64);
+extern FUNC_T(NtWow64ReadVirtualMemory64);
+
+static uint64_t GetProcessModuleBase(HANDLE hProc) {
+    constexpr const int PEB32_ImageBaseAddress_offset = 0x8;
+    constexpr const int PEB64_ImageBaseAddress_offset = 0x10;
+
+    uint64_t base_ret = 0;
+    union {
+        SIZE_T byteRet;
+        ULONG byteRet32;
+        ULONG64 byteRet64;
+    };
+
+    NTSTATUS status;
+
+#if TH_X86
+    if (NtWow64QueryInformationProcess64_ptr && NtWow64ReadVirtualMemory64_ptr) {
+        PROCESS_BASIC_INFORMATIONX<uint64_t> pbi64;
+
+        if (status = NtWow64QueryInformationProcess64_ptr(hProc, ProcessBasicInformation, &pbi64, sizeof(pbi64), &byteRet32)) {
+            SetLastError(RtlNtStatusToDosError(status));
+            return 0;
+        }
+        if (status = NtWow64ReadVirtualMemory64_ptr(hProc, (PVOID64)(pbi64.PebBaseAddress + PEB64_ImageBaseAddress_offset), &base_ret, 8, &byteRet64)) {
+            SetLastError(RtlNtStatusToDosError(status));
+            return 0;
+        }
+        return base_ret;
+    }
+    else {
+        PROCESS_BASIC_INFORMATIONX<uint32_t> pbi32;
+        if (status = NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi32, sizeof(pbi32), &byteRet32)) {
+            SetLastError(RtlNtStatusToDosError(status));
+            return 0;
+        }
+        ReadProcessMemory(hProc, (LPVOID)(pbi32.PebBaseAddress + PEB32_ImageBaseAddress_offset), &base_ret, 4, &byteRet);
+        return base_ret;
+    }
+#elif TH_X64
+    PROCESS_BASIC_INFORMATION pbi;
+    if (status = NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi, sizeof(pbi), nullptr)) {
+        SetLastError(RtlNtStatusToDosError(status));
+        return 0;
+    }
+
+    LPVOID based = (LPVOID)((uintptr_t)pbi.PebBaseAddress + PEB32_ImageBaseAddress_offset);
+    uintptr_t ret = 0;
+
+    // If this fails, it'll return 0 and GetLastError will already be set.
+    ReadProcessMemory(hProc, based, &ret, sizeof(ret), &byteRet);
+
+    return ret;
+#endif
+}
+
+const THGameVersion* CheckOngoingGameByPID(DWORD pid, uint64_t* pOutBase, HANDLE* pOutHandle) {
     if (CheckThpracAttached(pid)) {
         return nullptr;
     }
@@ -282,7 +320,7 @@ const THGameVersion* CheckOngoingGameByPID(DWORD pid, uintptr_t* pOutBase, HANDL
         }
     });
 
-    uintptr_t base = GetProcessModuleBase(hProc);
+    uint64_t base = GetProcessModuleBase(hProc);
     if (!base) {
         return nullptr;
     }
@@ -300,7 +338,7 @@ const THGameVersion* CheckOngoingGameByPID(DWORD pid, uintptr_t* pOutBase, HANDL
 }
 
 bool ApplyToProcById(DWORD pid) {
-    uintptr_t base;
+    uint64_t base;
     HANDLE hProc;
     auto* sig = CheckOngoingGameByPID(pid, &base, &hProc);
     if (sig) {
@@ -319,7 +357,7 @@ bool ApplyToProcById(DWORD pid) {
 bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game, THGameID gameID) {
     bool hasPrompted = false;
     auto TryProcess = [&](SYSTEM_PROCESS_INFORMATION* proc, THGameID requiredGameID) -> bool {
-        uintptr_t base;
+        uint64_t base;
         HANDLE hProc = NULL;
         const THGameVersion* gameSig = CheckOngoingGameByPID((DWORD)proc->UniqueProcessId, &base, &hProc);
         defer(if (hProc) CloseHandle(hProc));

@@ -169,6 +169,7 @@ wchar_t* NextCommandLineParam(wchar_t* cmdline, wchar_t* out) {
 
 int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
     InitPaths(CurrentPeb()->ProcessParameters->ImagePathName);
+    init_optional_nt_funcs();
     LoadSettings();
 
     srand(Kuser_Shared_Data->SystemTime.LowPart);

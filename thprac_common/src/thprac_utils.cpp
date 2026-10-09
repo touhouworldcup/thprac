@@ -5,22 +5,26 @@
 #include <metrohash128.h>
 #include <shlobj.h>
 
+FUNC_T(NtWow64QueryInformationProcess64);
+FUNC_T(NtWow64ReadVirtualMemory64);
+FUNC_T(wine_get_version);
+
 #pragma region Windows Version
 wchar_t* windows_version_str() {
+    // TODO: should this be larger? The buffer returned by wine_get_version is 256 bytes
     static constinit wchar_t version[64] = {};
     if (version[0] != 0) {
         return version;
     }
-
-    auto* wine_get_version = (const char*(*)())GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "wine_get_version");
-    if (wine_get_version) {
+    if (wine_get_version_ptr) {
         // wine_get_version never returns a null pointer
         // https://gitlab.winehq.org/wine/wine/-/blob/wine-11.0/dlls/ntdll/version.c?ref_type=tags#L221
-        const char* p = wine_get_version();
+        const char* p = wine_get_version_ptr();
 
         std::wstring_view sv = L"Wine ";
         memcpy(version, sv.data(), sv.length() * sizeof(wchar_t));
 
+        // Perfectly safe conversion
         for (size_t i = sv.length(); *p; i++, p++) {
             version[i] = *p;
         }
@@ -288,6 +292,16 @@ bool SelectFolder(std::wstring& out, HWND hwnd) {
 #pragma endregion
 
 #pragma region They have to go somewhere
+
+void init_optional_nt_funcs() {
+    HMODULE hNtdll = GetModuleHandleW(L"ntdll.dll");
+
+#define PROC(f) f##_ptr = (decltype(f)*)GetProcAddress(hNtdll, #f)
+    PROC(NtWow64QueryInformationProcess64);
+    PROC(NtWow64ReadVirtualMemory64);
+    PROC(wine_get_version);
+#undef PROC
+}
 
 unsigned rand_range(unsigned max) {
     unsigned max_mask = max;
