@@ -125,7 +125,7 @@ static uint8_t inject_shellcode_32[] = {
     0x85, 0xC0,                          // test eax,eax                 
     0x74, 0x04,                          // je +0x4
     0x89, 0xF1,                          // mov ecx, esi
-    0xFF, 0xE0,                          // jmp eax                      
+    0xFF, 0xD0,                          // call eax                      
     0x64, 0xA1, 0x18, 0x00, 0x00, 0x00,  // mov eax,dword ptr fs:[18]    
     0xFF, 0x70, 0x34,                    // push dword ptr ds:[eax+34]  
     0x57,                                // push edi                     
@@ -150,8 +150,10 @@ static uint8_t inject_shellcode_64[] = {
     offsetof(RemoteParam64, GetProcAddress_addr),         
     0x48, 0x85, 0xC0,                                     // test rax,rax                  
     0x74, 0x05,                                           // je +0x5    
-    0x48, 0x89, 0xF1,                                     // mov rcx,rsi                   
-    0xFF, 0xE0,                                           // jmp rax                       
+    0x48, 0x89, 0xF1,                                     // mov rcx,rsi
+    // has to be a call because x64 functions assume that the stack pointer
+    // will be aligned to an 8 byte boundary and NOT aligned to a 16 byte boundary
+    0xFF, 0xD0,                                           // call rax
     0x48, 0x89, 0xF9,                                     // mov rcx,rdi                   
     0x65, 0x48, 0x8B, 0x04, 0x25, 0x30, 0x00, 0x00, 0x00, // mov rax,qword ptr gs:[30]     
     0x8B, 0x50, 0x68,                                     // mov edx,dword ptr ds:[rax+68] 
