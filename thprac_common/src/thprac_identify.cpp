@@ -1006,7 +1006,9 @@ THGameID ParseExeName(const wchar_t* name, size_t name_len) {
     if (t_str_compare_nocase(name, name_len, COUNTED(L"東方紅魔郷.exe"))) {
         return ID_TH06;
     }
-
+    if (t_str_compare_nocase(name, name_len, COUNTED(L"th06nc.exe"))) {
+        return ID_TH06NC;
+    }
     if (t_str_compare_nocase(name, name_len, COUNTED(L"algostg.exe"))) {
         return ID_ALCOSTG;
     }

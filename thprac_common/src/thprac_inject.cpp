@@ -235,6 +235,16 @@ static bool CheckIfAnyGame() {
         L"th20 App",
     };
 
+    constexpr const wchar_t* allClassNames[] = {
+        L"Touhou Koumakyou: New Classic - the Embodiment of Scarlet Devil",
+    };
+
+    for (const wchar_t* className : allClassNames) {
+        if (FindWindowW(className, nullptr)) {
+            return true;
+        }
+    }    
+
     for (const wchar_t* mutexName : allMutexNames) {
         HANDLE hMutex = OpenMutexW(SYNCHRONIZE, FALSE, mutexName);
         if (hMutex) {
