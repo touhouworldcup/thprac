@@ -12,9 +12,6 @@ const wchar_t* UPDATE_JSON_URL = L"https://raw.githubusercontent.com/touhouworld
 #include "thprac_utils.h"
 #include "thprac_update.h"
 
-
-extern wchar_t old_working_dir[];
-
 #define WININET_FUNCS \
     WININET_FUNC(InternetOpenW) \
     WININET_FUNC(InternetOpenUrlW) \
@@ -256,7 +253,7 @@ bool CompleteUpdate(unsigned char* buf, size_t len, const wchar_t* pCmdLine, int
     memcpy(new_cmd_line + new_exe_path_len + 3, pCmdLine, cmd_line_len * sizeof(wchar_t));
     new_cmd_line[new_exe_path_len + cmd_line_len + 3] = 0;
 
-    ShellExecuteW(NULL, L"open", new_exe_path, new_cmd_line, old_working_dir, nCmdShow);
+    ShellExecuteW(NULL, L"open", new_exe_path, new_cmd_line, g_OldWorkingDir.data(), nCmdShow);
     // ---
 
     return true;
@@ -465,6 +462,7 @@ bool PreLaunchUpdate(HINSTANCE hInstance, wchar_t* pCmdLine, int nCmdShow, bool 
     return false;
 }
 
+// Function was carried over from the old updater
 static inline bool DeleteFileLoop(const wchar_t* fileName, size_t timeout) {
     auto attr = GetFileAttributesW(fileName);
     if (attr == INVALID_FILE_ATTRIBUTES || attr & FILE_ATTRIBUTE_DIRECTORY || attr & FILE_ATTRIBUTE_READONLY) {
@@ -513,15 +511,9 @@ bool LegacyPostUpdate(LPCWSTR lpCmdLine, int nCmdShow) {
         auto self_name = L"thprac.exe"_wZ;
         if (gSettings.filename_after_update == FN_UPDATE_KEEP_DOWNLOADED) {
             self_name = self;
-            for (USHORT i = self_name.Length / 2; i > 0; i--) {
-                if (self_name.Buffer[i] == L'\\') {
-                    i++;
-                    self_name.Buffer = self_name.Buffer + i;
-                    self_name.Length = self_name.Length - i * 2;
-                    self_name.MaximumLength = self_name.Length;
-                    break;
-                }
-            }
+            self_name.Buffer        += g_SelfDir.length() * sizeof(wchar_t);
+            self_name.Length        -= g_SelfDir.length() * sizeof(wchar_t);
+            self_name.MaximumLength -= g_SelfDir.length() * sizeof(wchar_t);
         }
         memset(finalPath + substr_len, 0, MAX_PATH - substr_len);
         memcpy(finalPath + substr_len, self_name.Buffer, self_name.Length);

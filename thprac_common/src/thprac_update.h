@@ -37,7 +37,7 @@ struct BackgroundUpdateCheck {
     // hThread determines state
     //  -> hThread == 0: not checking at all
     //  -> WaitForSingleObject(hThread, 0) == WAIT_TIMEOUT: checking
-    //  -> WaitForSingleObject(hThread, 0) == WAIT_OBJECT_0: check succeeded
+    //  -> WaitForSingleObject(hThread, 0) == WAIT_OBJECT_0: check thread exited properly
     // Thread exit code encodes additional state.
     HANDLE hThread = NULL;
     UpdateJson updateJson;

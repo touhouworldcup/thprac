@@ -9,9 +9,6 @@
 
 #include "thprac_inject.h"
 
-constinit wchar_t old_working_dir[MAX_PATH + 1] = {};
-constinit wchar_t thprac_dll_path[MAX_PATH + 1] = {};
-
 extern int Launcher(HINSTANCE hInstance, int nCmdShow);
 
 bool PrivilegeCheck() {
@@ -90,7 +87,7 @@ RUN_GAME_STATUS TryRunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flag
         }
         break;
     case TYPE_STEAM:
-        ShellExecuteW(NULL, L"open", exeFn, cmdLine, old_working_dir, SW_SHOW);
+        ShellExecuteW(NULL, L"open", exeFn, cmdLine, g_OldWorkingDir.data(), SW_SHOW);
         for (;;) {
             Sleep(100);
             if (FindAndAttach(false, false, knownGame.ver->gameId)) {
@@ -182,25 +179,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     }
 
     if (gSettings.thprac_admin_rights && !PrivilegeCheck()) {
-        ShellExecuteW(NULL, L"runas", CurrentPeb()->ProcessParameters->ImagePathName.Buffer, pCmdLine, old_working_dir, nCmdShow);
+        ShellExecuteW(NULL, L"runas", CurrentPeb()->ProcessParameters->ImagePathName.Buffer, pCmdLine, g_OldWorkingDir.data(), nCmdShow);
     }
 
-    GetCurrentDirectoryW(MAX_PATH, old_working_dir);
-    {
-        UNICODE_STRING exeDir = CurrentPeb()->ProcessParameters->ImagePathName;
-        for (USHORT i = exeDir.Length / sizeof(wchar_t); i > 0; i--) {
-            if (exeDir.Buffer[i] == '\\') {
-                exeDir.Length = i * sizeof(wchar_t);
-                exeDir.MaximumLength = i * sizeof(wchar_t);
-                break;
-            }
-        }
-        RtlSetCurrentDirectory_U(&exeDir);
-
-        memcpy(thprac_dll_path, exeDir.Buffer, exeDir.Length);
-        memcpy((char*)thprac_dll_path + exeDir.Length, SIZED(L"\\thprac32.dll"));
-    }
-
+    SetCurrentDirectoryW(g_SelfDir.data());
     UpdaterInit();
     if (gSettings.check_update == CHECK_UPDATE_ALWAYS) {
         const char* message =
