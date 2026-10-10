@@ -92,7 +92,6 @@ static void ImGui_ImplDX8_SetupRenderState(ImDrawData* draw_data)
         float R = draw_data->DisplayPos.x + draw_data->DisplaySize.x + 0.5f;
         float T = draw_data->DisplayPos.y + 0.5f;
         float B = draw_data->DisplayPos.y + draw_data->DisplaySize.y + 0.5f;
-        D3DMATRIX mat_identity = { { { 1.0f, 0.0f, 0.0f, 0.0f,  0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f, 1.0f } } };
         D3DMATRIX mat_projection =
         { { {
             2.0f/(R-L),   0.0f,         0.0f,  0.0f,
@@ -202,7 +201,6 @@ void ImGui_ImplDX8_RenderDrawData(ImDrawData* draw_data)
     // (Because we merged all buffers into a single one, we maintain our own offset into them)
     int global_vtx_offset = 0;
     int global_idx_offset = 0;
-    ImVec2 clip_off = draw_data->DisplayPos;
     for (int n = 0; n < draw_data->CmdListsCount; n++)
     {
         const ImDrawList* cmd_list = draw_data->CmdLists[n];
@@ -233,13 +231,13 @@ void ImGui_ImplDX8_RenderDrawData(ImDrawData* draw_data)
     			// Setup projection matrix
     			const float L = 0.5f + viewport.X, R = viewport.Width + 0.5f + viewport.X;
     			const float T = 0.5f + viewport.Y, B = viewport.Height + 0.5f + viewport.Y;
-    			D3DMATRIX matProjection =
-    			{
-    				2.0f / (R - L)		, 0.0f				, 0.0f, 0.0f,
-    				0.0f				, 2.0f / (T - B)	, 0.0f, 0.0f,
-    				0.0f				, 0.0f				, 0.5f, 0.0f,
-    				(L + R) / (L - R)	, (T + B) / (B - T)	, 0.5f, 1.0f,
-    			};
+                D3DMATRIX matProjection = 
+                {
+                    2.0f / (R - L)		, 0.0f				, 0.0f, 0.0f,
+                    0.0f				, 2.0f / (T - B)	, 0.0f, 0.0f,
+                    0.0f				, 0.0f				, 0.5f, 0.0f,
+                    (L + R) / (L - R)	, (T + B) / (B - T)	, 0.5f, 1.0f,
+                };
 
 
                 IDirect3DDevice8_SetTexture(g_pd3dDevice, 0, (IDirect3DBaseTexture8*)pcmd->TextureId);

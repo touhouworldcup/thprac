@@ -613,9 +613,9 @@ namespace TH07 {
     private:
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll"))) {
                 OILPInit(mOptCtx);
-            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th07.dll")) {
+            } else if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th07.dll"))) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th07.dll", hash);
                 if (hash[0] != 9678734212472211387ull || hash[1] != 9671871756369193188ull)

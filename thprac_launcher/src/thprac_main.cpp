@@ -199,8 +199,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
 
         memcpy(thprac_dll_path, exeDir.Buffer, exeDir.Length);
         memcpy((char*)thprac_dll_path + exeDir.Length, SIZED(L"\\thprac32.dll"));
-
-        CurrentPeb()->ProcessParameters->CurrentDirectory.DosPath;
     }
 
     UpdaterInit();

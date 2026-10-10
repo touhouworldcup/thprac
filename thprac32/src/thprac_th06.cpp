@@ -838,9 +838,9 @@ namespace TH06 {
     private:
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll"))) {
                 OILPInit(mOptCtx);
-            } else if (mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06.dll")) {
+            } else if ((mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th06.dll"))) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th06.dll", hash);
                 if (hash[0] != 3665784961181135876ull || hash[1] != 9283021252209177490ull)
@@ -849,7 +849,7 @@ namespace TH06 {
                     mOptCtx.fps_status = 2;
                     mOptCtx.fps = *(int32_t*)(mOptCtx.vpatch_base + 0x17034);
                 }
-            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th06_unicode.dll")) {
+            } else if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th06_unicode.dll"))) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th06_unicode.dll", hash);
                 if (hash[0] != 5021620919341617817ull || hash[1] != 10919509441391235291ull)
@@ -2094,7 +2094,7 @@ namespace TH06 {
         self->Disable();
         ResultScreen* resultScreen = (ResultScreen*)(*(uint32_t*)(pCtx->Ebp - 0x10));
         resultScreen->resultScreenState = RESULT_SCREEN_STATE_SAVE_REPLAY_QUESTION;
-        for (int i = 0; i < sizeof(resultScreen->replayName); ++i) {
+        for (unsigned i = 0; i < sizeof(resultScreen->replayName); ++i) {
             resultScreen->replayName[i] = ' ';
         }
         pCtx->Eip = 0x42d839;

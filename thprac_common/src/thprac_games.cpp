@@ -324,6 +324,8 @@ void GameGuiInit(game_gui_impl impl, uintptr_t device, uintptr_t hwnd_addr,
         ImGui_ImplWin32_Init(*g_gameGuiHwnd);
         ImGui_ImplWin32_HookWndProc();
         break;
+#else
+        (void)d3d11_device_context;
 #endif
     default:
         break;
@@ -392,6 +394,7 @@ void GameGuiBegin(game_gui_impl impl, bool game_nav)
         ::ImGui::NewFrame();
         break;
 #endif
+        DEFAULT_UNREACHABLE;
     }
     GameGuiProgress = 1;
        

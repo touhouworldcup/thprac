@@ -88,7 +88,7 @@ namespace TH165 {
     private:
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll"))) {
                 OILPInit(mOptCtx);
             } else if (*(uint8_t*)0x4b3d09 == 3) {
                 mOptCtx.fps_status = 1;

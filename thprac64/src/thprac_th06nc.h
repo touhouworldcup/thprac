@@ -359,7 +359,7 @@ namespace TH06NC {
     constexpr uint32_t bossDlgTime[] = { 5092, 5893, 6254, 10510, 7604, 3096, 8493 };
     constexpr uint32_t st4BooksTime = 3378;
 
-    int mChapterSetup[7][2]{
+    unsigned int mChapterSetup[7][2]{
         { 4, 2 },
         { 2, 2 },
         { 4, 3 },
@@ -623,7 +623,7 @@ namespace TH06NC {
         int16_t power;
         int64_t score;
         int32_t graze;
-        int32_t point;
+        uint16_t point;
         int8_t life;
         int8_t bomb;
 

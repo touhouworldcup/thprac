@@ -11,7 +11,7 @@ namespace Gui
 			INGAGME_INPUT_GEN2,
 	};
 	bool InGameInputInit(ingame_input_gen_t gen, uintptr_t reg1, uintptr_t reg2, uintptr_t reg3 = 0);
-	bool InGameInputGet(int key);
+	bool InGameInputGet(int16_t key);
 
 	// Keyboard Input
 	int  KeyboardInputUpdate(int v_key);

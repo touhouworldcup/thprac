@@ -881,6 +881,9 @@ ExeInfo GetRemoteExeInfo(void* hProc, uint64_t mod) {
     // the thing that makes lambdas callable is implementing operator().
     struct Reader {
         __forceinline bool operator()(void* hProc, uint64_t buf_base, uintptr_t buf_size, uint64_t buf_addr, void* dst_out, size_t read_len) {
+            (void)buf_base;
+            (void)buf_size;
+
             if (NtWow64ReadVirtualMemory64_ptr) {
                 ULONG64 byteRet;
                 return NtWow64ReadVirtualMemory64_ptr(hProc, (PVOID64)buf_addr, dst_out, read_len, &byteRet) == 0 && byteRet && read_len;
@@ -898,6 +901,8 @@ ExeInfo GetExeInfo(const void* mod, size_t len) {
     // Pretend the comment from GetRemoteExeInfo is also here.
     struct Reader {
         __forceinline bool operator()(void* hProc, uint64_t buf_base, uintptr_t buf_size, uint64_t buf_addr, void* dst_out, size_t read_len) {
+            (void)hProc;
+
             if (buf_size && buf_addr >= (buf_base + buf_size)) {
                 return false;
             }

@@ -579,9 +579,9 @@ namespace TH10 {
     private:
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll"))) {
                 OILPInit(mOptCtx);
-            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th10.dll")) {
+            } else if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th10.dll"))) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th10.dll", hash);
                 if (hash[0] != 9704945468076323108ull || hash[1] != 99312983382598050ull)

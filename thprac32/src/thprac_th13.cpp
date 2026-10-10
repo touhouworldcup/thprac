@@ -568,6 +568,9 @@ namespace TH13 {
             if (*(int32_t*)(mOptCtx.vpatch_base + 0x16a8c) != FPS) {
                 LARGE_INTEGER PerformanceCount;
                 auto flag = *(uint32_t*)(mOptCtx.vpatch_base + 0x16A88);
+                
+                // TODO: figure out what this expression is supposed to mean
+                // and fix the warning clang emits here.
                 if (flag > 0x101 || flag < 0x100 && flag - 1 > 2) {
                     *(uint32_t*)(mOptCtx.vpatch_base + 0x18f18) = 0;
                     *(uint32_t*)(mOptCtx.vpatch_base + 0x18f1c) = 0;
@@ -582,9 +585,9 @@ namespace TH13 {
         {
             mOptCtx.fps_replay_fast = 10;
 
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll"))) {
                 OILPInit(mOptCtx);
-            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th13.dll")) {
+            } else if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th13.dll"))) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th13.dll", hash);
                 if (hash[0] != 6450385832836080372ll || hash[1] != 579365625616419970ll)

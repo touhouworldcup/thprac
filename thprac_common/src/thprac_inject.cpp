@@ -174,10 +174,10 @@ static bool LoadThpracDll(HANDLE hProcess, uint32_t flags, size_t bits) {
     auto dllPath = GetThpracDllForArch(bits);
 
     if (bits == 32) {
-        rBufSize = RoundUp(sizeof(RemoteParam32) + (SIZE_T)dllPath.length() * sizeof(wchar_t), 16);
+        rBufSize = RoundUp<SIZE_T>(sizeof(RemoteParam32) + dllPath.length() * sizeof(wchar_t), 16);
     }
     if (bits == 64) {
-        rBufSize = RoundUp(sizeof(RemoteParam64) + (SIZE_T)dllPath.length() * sizeof(wchar_t), 16);
+        rBufSize = RoundUp<SIZE_T>(sizeof(RemoteParam64) + dllPath.length() * sizeof(wchar_t), 16);
     }
 
     NtAllocateVirtualMemory(hProcess, (LPVOID*)&rBufAddr, 0x7FFFFFFF, &rBufSize, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
@@ -187,7 +187,7 @@ static bool LoadThpracDll(HANDLE hProcess, uint32_t flags, size_t bits) {
         memcpy(&buf.shellcode, inject_shellcode_32, sizeof(buf.shellcode));
         buf.flags = flags;
 
-        WriteProcessMemory(hProcess, (LPVOID)rBufAddr, &buf, offsetof(RemoteParam32, dllPath), &byteRet);
+        WriteProcessMemory(hProcess, (LPVOID)rBufAddr, &buf, sizeof(RemoteParam32), &byteRet);
         WriteProcessMemory(hProcess, (LPVOID)(rBufAddr + offsetof(RemoteParam32, dllPath)), dllPath.data(), dllPath.length() * sizeof(wchar_t), &byteRet);
 
         RunRemoteThread(hProcess, rBufAddr, 32);
@@ -198,7 +198,7 @@ static bool LoadThpracDll(HANDLE hProcess, uint32_t flags, size_t bits) {
         memcpy(buf.shellcode, inject_shellcode_64, sizeof(buf.shellcode));
         buf.flags = flags;
 
-        WriteProcessMemory(hProcess, (LPVOID)rBufAddr, &buf, offsetof(RemoteParam64, dllPath), &byteRet);
+        WriteProcessMemory(hProcess, (LPVOID)rBufAddr, &buf, sizeof(RemoteParam64), &byteRet);
         WriteProcessMemory(hProcess, (LPVOID)(rBufAddr + offsetof(RemoteParam64, dllPath)), dllPath.data(), dllPath.length() * sizeof(wchar_t), &byteRet);
 
         RunRemoteThread(hProcess, rBufAddr, 64);
@@ -259,10 +259,6 @@ extern FUNC_T(NtWow64QueryInformationProcess64);
 extern FUNC_T(NtWow64ReadVirtualMemory64);
 
 static uint64_t GetProcessModuleBase(HANDLE hProc) {
-    constexpr const int PEB32_ImageBaseAddress_offset = 0x8;
-    constexpr const int PEB64_ImageBaseAddress_offset = 0x10;
-
-    uint64_t base_ret = 0;
     union {
         SIZE_T byteRet;
         ULONG byteRet32;
@@ -272,14 +268,19 @@ static uint64_t GetProcessModuleBase(HANDLE hProc) {
     NTSTATUS status;
 
 #if TH_X86
+    constexpr const int PEB32_ImageBaseAddress_offset = 0x8;
+    constexpr const int PEB64_ImageBaseAddress_offset = 0x10;
+
+    uint64_t base_ret = 0;
+
     if (NtWow64QueryInformationProcess64_ptr && NtWow64ReadVirtualMemory64_ptr) {
         PROCESS_BASIC_INFORMATIONX<uint64_t> pbi64;
 
-        if (status = NtWow64QueryInformationProcess64_ptr(hProc, ProcessBasicInformation, &pbi64, sizeof(pbi64), &byteRet32)) {
+        if ((status = NtWow64QueryInformationProcess64_ptr(hProc, ProcessBasicInformation, &pbi64, sizeof(pbi64), &byteRet32))) {
             SetLastError(RtlNtStatusToDosError(status));
             return 0;
         }
-        if (status = NtWow64ReadVirtualMemory64_ptr(hProc, (PVOID64)(pbi64.PebBaseAddress + PEB64_ImageBaseAddress_offset), &base_ret, 8, &byteRet64)) {
+        if ((status = NtWow64ReadVirtualMemory64_ptr(hProc, (PVOID64)(pbi64.PebBaseAddress + PEB64_ImageBaseAddress_offset), &base_ret, 8, &byteRet64))) {
             SetLastError(RtlNtStatusToDosError(status));
             return 0;
         }
@@ -287,7 +288,7 @@ static uint64_t GetProcessModuleBase(HANDLE hProc) {
     }
     else {
         PROCESS_BASIC_INFORMATIONX<uint32_t> pbi32;
-        if (status = NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi32, sizeof(pbi32), &byteRet32)) {
+        if ((status = NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi32, sizeof(pbi32), &byteRet32))) {
             SetLastError(RtlNtStatusToDosError(status));
             return 0;
         }
@@ -295,19 +296,20 @@ static uint64_t GetProcessModuleBase(HANDLE hProc) {
         return base_ret;
     }
 #elif TH_X64
+    uint64_t base_ret = 0;
+    
     PROCESS_BASIC_INFORMATION pbi;
-    if (status = NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi, sizeof(pbi), nullptr)) {
+    if ((status = NtQueryInformationProcess(hProc, ProcessBasicInformation, &pbi, sizeof(pbi), nullptr))) {
         SetLastError(RtlNtStatusToDosError(status));
         return 0;
     }
 
-    LPVOID based = (LPVOID)((uintptr_t)pbi.PebBaseAddress + PEB32_ImageBaseAddress_offset);
-    uintptr_t ret = 0;
+    LPVOID based = (LPVOID)((uintptr_t)pbi.PebBaseAddress + offsetof(PEB, ImageBaseAddress));
 
     // If this fails, it'll return 0 and GetLastError will already be set.
-    ReadProcessMemory(hProc, based, &ret, sizeof(ret), &byteRet);
+    ReadProcessMemory(hProc, based, &base_ret, sizeof(base_ret), &byteRet);
 
-    return ret;
+    return base_ret;
 #endif
 }
 
@@ -398,7 +400,7 @@ bool FindAndAttach(bool prompt_if_no_game, bool prompt_if_yes_game, THGameID gam
 
     if (CheckIfAnyGame()) {
         ULONG bufLen = 0;
-        auto err = NtQuerySystemInformation(SystemProcessInformation, nullptr, 0, &bufLen);
+        NtQuerySystemInformation(SystemProcessInformation, nullptr, 0, &bufLen);
         LPVOID buf = VirtualAlloc(nullptr, bufLen, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
         if (!buf) {
             goto no_game;
@@ -469,14 +471,12 @@ bool RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags, uintptr_t b
         return false;
     }
 
-    bool res = false;
-    LoadThpracDll(pi.hProcess, flags, bits);
-
+    bool res = LoadThpracDll(pi.hProcess, flags, bits);
     ResumeThread(pi.hThread);
 
     // TODO: determine if these should be returned
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
 
-    return true;
+    return res;
 }

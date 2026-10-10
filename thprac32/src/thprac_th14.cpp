@@ -759,6 +759,8 @@ namespace TH14 {
                 }
                 return false;
             }
+
+            // TODO: figure out what -Wdeprecated-copy-with-user-provided-copy is
             record_t& operator=(record_t& b)
             {
                 stage = b.stage;
@@ -925,7 +927,7 @@ namespace TH14 {
         // Option Related Functions
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll"))) {
                 OILPInit(mOptCtx);
             } else {
                 mOptCtx.vpatch_base = (int32_t)GetModuleHandleW(L"vpatch_th14.dll");

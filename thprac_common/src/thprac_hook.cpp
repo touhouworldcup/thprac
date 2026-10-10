@@ -89,7 +89,7 @@ static void* MakeCodecave32(uint8_t* code, uintptr_t addr, size_t insLen) {
     }
     /// ------------------
 
-    hook_page_offset += RoundUp(insLen + 5, 16);
+    hook_page_offset += RoundUp(insLen + 5, 16u);
     return sourcecave;
 }
 #endif

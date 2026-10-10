@@ -95,9 +95,9 @@ namespace TH125 {
     private:
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll"))) {
                 OILPInit(mOptCtx);
-            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th125.dll")) {
+            } else if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th125.dll"))) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th125.dll", hash);
                 if (hash[0] != 10688862875744720998ull || hash[1] != 16306494719441951827ull)

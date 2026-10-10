@@ -3231,7 +3231,7 @@ namespace TH20 {
             thPracParam.nextDmgID[stage] = GetMemContent(dmgSrcManager + 0xc410);
             PlayerDamageSource* node = GetMemAddr<PlayerDamageSource*>(dmgSrcManager + 0xc414);
 
-            while (node = node->list_next) { // (erroneously) active damage source
+            while ((node = node->list_next)) { // (erroneously) active damage source
                 if (enable_offset && timer_offset)
                     asm_call_rel<ADD_TIMER_FUNC, Thiscall>(&node->duration, -timer_offset);
                 thPracParam.rogueDmgSrcs[stage].push_back(*node);

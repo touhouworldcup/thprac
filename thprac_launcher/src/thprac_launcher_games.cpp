@@ -1101,7 +1101,7 @@ static DWORD WINAPI ScanThreadSteam(LPVOID lpParam) {
     InitializeObjectAttributes(&keyPath, &keyPath_str, 0, NULL, nullptr);
 
     HANDLE hKey;
-    if (err = NtOpenKey(&hKey, KEY_READ, &keyPath)) {
+    if ((err = NtOpenKey(&hKey, KEY_READ, &keyPath))) {
         return 1;
     }
     // CloseHandle is just a thin wrapper around NtClose
@@ -1111,7 +1111,7 @@ static DWORD WINAPI ScanThreadSteam(LPVOID lpParam) {
     KEY_VALUE_PARTIAL_INFORMATION_ALIGN64<wchar_t[MAX_PATH]> val;
     ULONG outLen;
     UNICODE_STRING InstallPath_str = L"InstallPath"_wZ;
-    if (err = NtQueryValueKey(hKey, &InstallPath_str, KeyValuePartialInformationAlign64, &val, sizeof(val), &outLen)) {
+    if ((err = NtQueryValueKey(hKey, &InstallPath_str, KeyValuePartialInformationAlign64, &val, sizeof(val), &outLen))) {
         return 2;
     }
 

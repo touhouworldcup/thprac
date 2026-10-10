@@ -8,7 +8,7 @@
 
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, [[maybe_unused]] LPVOID lpvReserved) {
     if (fdwReason == DLL_PROCESS_ATTACH) {
         wchar_t mod_fn[MAX_PATH + 1] = {};
         auto cch = GetModuleFileNameW(hinstDLL, mod_fn, MAX_PATH);
@@ -18,7 +18,11 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
 }
 
 DWORD RunRemoteThread_Impl(HANDLE hProcess, uintptr_t addr);
-void CALLBACK thprac_rundll_inject_helper_internalW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow) {   
+void CALLBACK thprac_rundll_inject_helper_internalW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow) {
+    (void)hwnd;
+    (void)hinst;
+    (void)nCmdShow;
+
     wchar_t* next = nullptr;
     HANDLE hProcess = (HANDLE)_wcstoui64(lpszCmdLine, &next, 16);
     uint32_t addr = wcstoul(next + 1, nullptr, 16);

@@ -8,7 +8,7 @@
 
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, [[maybe_unused]] LPVOID lpvReserved) {
     if (fdwReason == DLL_PROCESS_ATTACH) {
         wchar_t mod_fn[MAX_PATH + 1] = {};
         auto cch = GetModuleFileNameW(hinstDLL, mod_fn, MAX_PATH);
@@ -19,6 +19,10 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
 
 //DWORD RunRemoteThread_Impl(HANDLE hProcess, uintptr_t addr);
 void CALLBACK thprac_rundll_inject_helper_internalW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow) {
+    (void)hinst;
+    (void)lpszCmdLine;
+    (void)nCmdShow;
+
     MessageBoxW(hwnd, L"Not implemented (thprac_rundll_inject_helper_internalW)", g_Dll32Path.data(), MB_ICONERROR);
     abort();
 }

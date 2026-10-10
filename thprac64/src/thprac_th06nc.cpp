@@ -32,19 +32,19 @@ namespace TH06NC {
         Gui::GuiCombo mPhase{ TH_PHASE };
         Gui::GuiCheckBox mDlg{ TH_DLG };
 
-        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mChapter{ TH_CHAPTER, 0, 0 };
-        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mFrame{ TH_FRAME, 0, frameMax[0], 1, 1000};
-        Gui::GuiSlider<int8_t, ImGuiDataType_S8> mLife{ TH_LIFE, 0, 8 };
-        Gui::GuiSlider<int8_t, ImGuiDataType_S8> mBomb{ TH_BOMB, 0, 8 };
-        Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore{ TH_SCORE, 0, 9999999990, 10, 100000000 };
-        Gui::GuiSlider<int16_t, ImGuiDataType_S16> mPower{ TH_POWER, 0, 128 };
-        Gui::GuiDrag<int32_t, ImGuiDataType_S32> mGraze{ TH_GRAZE, 0, 99999, 1, 10000 };
-        Gui::GuiDrag<int32_t, ImGuiDataType_S32> mPoint{ TH_POINT, 0, 9999, 1, 1000 };
+        Gui::GuiSlider<uint32_t, ImGuiDataType_S32> mChapter{ TH_CHAPTER, 0, 0 };
+        Gui::GuiSlider<uint32_t, ImGuiDataType_S32> mFrame{ TH_FRAME, 0, frameMax[0], 1, 1000};
+        Gui::GuiSlider<uint8_t, ImGuiDataType_S8> mLife{ TH_LIFE, 0, 8 };
+        Gui::GuiSlider<uint8_t, ImGuiDataType_S8> mBomb{ TH_BOMB, 0, 8 };
+        Gui::GuiDrag<uint64_t, ImGuiDataType_S64> mScore{ TH_SCORE, 0, 9999999990, 10, 100000000 };
+        Gui::GuiSlider<uint16_t, ImGuiDataType_S16> mPower{ TH_POWER, 0, 128 };
+        Gui::GuiDrag<uint32_t, ImGuiDataType_S32> mGraze{ TH_GRAZE, 0, 99999, 1, 10000 };
+        Gui::GuiDrag<uint16_t, ImGuiDataType_U16> mPoint{ TH_POINT, 0, 9999, 1, 1000 };
 
         Gui::GuiCheckBox mBossMoveFree { TH_BOSS_MOVE_FREE };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mBossSpawnX{ TH_BOSS_X, 0, 384, 1, 100 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mBossSpawnY{ TH_BOSS_Y, 0, 448, 1, 100 };
-        Gui::GuiDrag<int32_t, ImGuiDataType_S32> mRank{ TH06_RANK, 0, 999, 1, 100 };
+        Gui::GuiDrag<uint32_t, ImGuiDataType_S32> mRank{ TH06_RANK, 0, 999, 1, 100 };
         Gui::GuiCombo mFakeShot{ TH06_FS, TH06_TYPE_SELECT };
         Gui::GuiCheckBox mGuaranteeTLB { TH06NC_TLB_LOCK };
 
@@ -53,8 +53,7 @@ namespace TH06NC {
             TH_LIFE, TH_BOMB, TH_SCORE, TH_POWER, TH_GRAZE, TH_POINT,
             TH06_RANK, TH06_FS };
 
-        float mStep = 10.0;
-        int32_t mDifficulty = -1;
+        uint32_t mDifficulty = UINT32_MAX;
         uint8_t mShotType = 0;
 
         THGuiPrac() noexcept {
@@ -269,6 +268,7 @@ namespace TH06NC {
                     ImGui::PopItemFlag();
                 }
 
+                // TODO(Guy): uninitialized variable warning
                 if (stage == 6 && warpType > MIDBOSS && warpType != FRAME && section < TH06NC_TLB1)
                     mGuaranteeTLB();
 
@@ -454,7 +454,7 @@ namespace TH06NC {
         }
 
         __declspec(noinline) void ClosePracticeScreen() {
-            mDifficulty = -1;
+            mDifficulty = UINT32_MAX;
         }
 
         __declspec(noinline) void RestoreDifficulty() {
@@ -665,7 +665,7 @@ namespace TH06NC {
             UpdateSize(2);
         }
 
-        uint64_t& GetBooksHistory(uint32_t diff = GAME_MANAGER->difficulty, uint32_t shotID = GAME_MANAGER->GetShotID()) {
+        uint64_t& GetBooksHistory() {
             SavefileSpellData& spellData = GAME_MANAGER->spellData[118]; // silent selene unused registers (easy-luna diffs)
             return spellData.spellPracHighScores[GAME_MANAGER->difficulty][GAME_MANAGER->GetShotID()];
         }
@@ -752,10 +752,10 @@ namespace TH06NC {
                     ImGui::TableNextColumn();
 
                     uint32_t captureCnt, attemptCnt;
-                    const uint8_t shotID = GAME_MANAGER->GetShotID();
+                    const uint8_t shotID_ = GAME_MANAGER->GetShotID();
 
                     if (isBooks) {
-                        uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty, shotID);
+                        uint32_t* booksHistory = (uint32_t*)&GetBooksHistory();
                         attemptCnt = booksHistory[0];
                         captureCnt = booksHistory[1];
 
@@ -763,13 +763,13 @@ namespace TH06NC {
                         SavefileSpellData& spellData = GAME_MANAGER->spellData[lastSpellID];
 
                         if (GAME_MANAGER->inSpellPrac) {
-                            captureCnt = spellData.spellPracCaptures[difficulty][shotID];
-                            attemptCnt = spellData.spellPracAttempts[difficulty][shotID];
+                            captureCnt = spellData.spellPracCaptures[difficulty][shotID_];
+                            attemptCnt = spellData.spellPracAttempts[difficulty][shotID_];
 
                         } else if (GAME_MANAGER->inPracticeMode && options.splitPracHistory) {
                             uint32_t unusedDifficulty = difficulty == EXTRA ? EASY : EXTRA;
-                            captureCnt = spellData.spellPracCaptures[unusedDifficulty][shotID];
-                            attemptCnt = spellData.spellPracAttempts[unusedDifficulty][shotID];
+                            captureCnt = spellData.spellPracCaptures[unusedDifficulty][shotID_];
+                            attemptCnt = spellData.spellPracAttempts[unusedDifficulty][shotID_];
 
                         } else {
                             captureCnt = spellData.captureCount;
@@ -859,8 +859,7 @@ namespace TH06NC {
             blockedHits = 0;
             inBooksCapAttempt = false;
 
-            const uint8_t shotID = GAME_MANAGER->GetShotID();
-            this->shotID = shotID;
+            this->shotID = GAME_MANAGER->GetShotID();
 
             if (SUPERVISOR->curState == IN_RUN && !GAME_MANAGER->inReplay) { // refresh session start attempt counts
                 const uint32_t difficulty = GAME_MANAGER->difficulty;
@@ -868,7 +867,7 @@ namespace TH06NC {
                 if (GAME_MANAGER->inPracticeMode) {
                     uint32_t unusedDifficulty = (thPracParam.stage == 6) ? EASY : EXTRA; // note: extra difficulty not set yet
 
-                    for (int i = 0; i < BOOKS_ID; i++) {
+                    for (uint32_t i = 0; i < BOOKS_ID; i++) {
                         SavefileSpellData& spellData = GAME_MANAGER->spellData[i];
                         seshStartMainHistory[i] = { spellData.attemptCount, spellData.captureCount };
 
@@ -878,11 +877,11 @@ namespace TH06NC {
                         };
                     }
 
-                    uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty, shotID);
+                    uint32_t* booksHistory = (uint32_t*)&GetBooksHistory();
                     seshStartSpellHistory[BOOKS_ID] = { booksHistory[0], booksHistory[1] };
 
                 } else if (GAME_MANAGER->inSpellPrac) {
-                    for (int i = 0; i < BOOKS_ID; i++) {
+                    for (uint32_t i = 0; i < BOOKS_ID; i++) {
                         SavefileSpellData& spellData = GAME_MANAGER->spellData[i];
                         seshStartSpellHistory[i] = {
                             spellData.spellPracAttempts[difficulty][shotID],
@@ -1033,7 +1032,7 @@ namespace TH06NC {
                 int32_t curBGM = *(int32_t*)BGM_ADDR;
                 BGM_RESUME(curBGM, 3); // resume bgm if it was paused (i.e. toggle on ElBgm after pausing)
                 storedBGM = curBGM;
-                pCtx->Rcx = -1;
+                pCtx->Rcx = (uint64_t)-1;
 
             } else OG_INS(pCtx->Rcx = *(int32_t*)BGM_ADDR); // do stop
         }),
@@ -2364,14 +2363,14 @@ namespace TH06NC {
 
         if (mainMenu->inPractice) {
             mainMenu->curState = 0x18; // start prompt state
-            pCtx->Rdx = -1; // prevent triggering unwanted interrupts (ty to zero318 for insight)
+            pCtx->Rdx = (uintptr_t)-1; // prevent triggering unwanted interrupts (ty to zero318 for insight)
             THGuiPrac::singleton().OpenMenu();
         }
         else OG_INS(mainMenu->curState = (uint32_t)pCtx->Rdx);
     })
 
     EHOOK_DY(th06nc_skip_prac_mode_2, MENU_SET_PRAC_STATE_2, 5, { // after setting -1 interrupts
-        if (pCtx->Rdx == -1) pCtx->Rdx = 0x18;
+        if (pCtx->Rdx == (uintptr_t)-1) pCtx->Rdx = 0x18;
     })
 
     EHOOK_DY(th06nc_cancel_prac, MENU_CANCEL_CONFIRM_STATE, 6, { // start prompt back input, writing next state
@@ -2389,8 +2388,8 @@ namespace TH06NC {
 
         if (mainMenu->inPractice) {
             THGuiPrac::singleton().ConfirmMenu();
-            GAME_MANAGER->stage = thPracParam.stage;
-            SUPERVISOR->curMode = thPracParam.gameMode;
+            GAME_MANAGER->stage = (uint32_t)thPracParam.stage;
+            SUPERVISOR->curMode = (uint8_t)thPracParam.gameMode;
         }
         OG_INS(mainMenu->curState = 0x19);
     })
@@ -2506,7 +2505,7 @@ namespace TH06NC {
     })
 
     EHOOK_DY(th06nc_bg_fastforward, GAME_MGR_REG_BG_FF_CHECK, 2, { // spell prac check for fast-forwarding stage background
-        constexpr int32_t safeSpellNums[7] = { 2, 9, 24, 37, 84, 103, 121 }; // not fully sure how fast-forwarding works but giving it a spell# it expects makes it use the boss pseudo-interrupt
+        constexpr int8_t safeSpellNums[7] = { 2, 9, 24, 37, 84, 103, 121 }; // not fully sure how fast-forwarding works but giving it a spell# it expects makes it use the boss pseudo-interrupt
         int32_t stage = thPracParam.stage;
         int32_t section = thPracParam.section;
         uint32_t frame = (uint32_t)thPracParam.frame;

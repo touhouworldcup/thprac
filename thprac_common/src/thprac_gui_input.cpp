@@ -121,7 +121,7 @@ namespace Gui
 			return false;
 		}
 	}
-	bool InGameInputGet(int key)
+	bool InGameInputGet(int16_t key)
 	{
 		switch (__gi_gen)
 		{

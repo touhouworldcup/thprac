@@ -120,12 +120,14 @@ bool t_str_compare_nocase(const T* a, size_t a_len, const T* b, size_t b_len) {
 #define RANGED(a) a, a + t_strlen(a)
 
 /** round n down to nearest multiple of m */
-inline long RoundDown(long n, long m) {
+template<typename T>
+inline constexpr T RoundDown(T n, T m) {
     return n >= 0 ? (n / m) * m : ((n - m + 1) / m) * m;
 }
 
 /** round n up to nearest multiple of m */
-inline long RoundUp(long n, long m) {
+template<typename T>
+inline constexpr T RoundUp(T n, T m) {
     return n >= 0 ? ((n + m - 1) / m) * m : (n / m) * m;
 }
 

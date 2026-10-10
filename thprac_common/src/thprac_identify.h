@@ -120,6 +120,9 @@ struct alignas(8) ExeInfo {
     }
 };
 
+// TODO: rearrange struct for better packing on x64
+#pragma warning(push)
+#pragma warning(disable: 4324)
 struct THGameVersion {
     THGameID gameId;
     // No need to have a "has_thprac" bool, initFunc already indicates this.
@@ -153,15 +156,16 @@ struct THGameVersion {
 #else
         if (initFunc.func == DummyInit32) {
             return 32;
-        }
-        if (initFunc.func == DummyInit64) {
+        } else if (initFunc.func == DummyInit64) {
             return 64;
+        } else {
+            __debugbreak();
+            __assume(false);
         }
 #endif
-        __assume(false);
-        __debugbreak();
     }
 };
+#pragma warning(pop)
 
 struct THKnownGame {
     const THGameVersion* ver;

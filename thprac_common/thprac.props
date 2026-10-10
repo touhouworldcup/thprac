@@ -30,12 +30,15 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings Condition="'$(ToolsetType)'=='MSVC'">4200;4201;4815;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions Condition="'$(ToolsetType)'=='ClangCL'">-Wno-nontrivial-memcall -Wno-missing-designated-field-initializers %(AdditionalOptions)</AdditionalOptions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile></PrecompiledHeaderFile>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ForcedIncludeFiles>$(SolutionDir)thprac_common\src\compiler.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <AdditionalIncludeDirectories>$(SolutionDir)lib\freetype\include;$(SolutionDir)lib\ImGui\misc\freetype;$(SolutionDir)lib\ImGui;$(SolutionDir)lib\ImGui\backends;$(SolutionDir)lib\MetroHash;$(SolutionDir)lib\yyjson;$(SolutionDir)thprac_common\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

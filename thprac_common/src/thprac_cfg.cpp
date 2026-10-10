@@ -116,7 +116,7 @@ void InitPaths(std::wstring_view exe_path) {
     }
     else if (t_str_compare_nocase(self_exe_name_temp.data() + self_exe_name_temp.size() - 4, 4, L".dll", 4)) {
         if (auto* s = &exe_path[first_dot_pos - 2];
-            s[0] == L'3' && s[1] == L'2' || s[0] == L'6' && s[1] == L'4') {
+            (s[0] == L'3' && s[1] == L'2') || (s[0] == L'6' && s[1] == L'4')) {
             _gPathBuf.insert(_gPathBuf.end(), exe_path.begin(), exe_path.end());
             _gPathBuf.push_back(0);
 

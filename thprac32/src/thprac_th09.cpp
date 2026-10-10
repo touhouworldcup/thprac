@@ -126,13 +126,11 @@ namespace TH09 {
                 ImGui::SliderFloat("", gauge, 0, 400, _p);
                 ImGui::SameLine(0, style.ItemInnerSpacing.x);
                 if (ImGui::Button("-", ImVec2(bsize, bsize)) && *gauge > 0) {
-                    *gauge -= 1.0f;
-                    *gauge = static_cast<float>(RoundDown(static_cast<long>(*gauge), 100));
+                    *gauge = (float)RoundDown((int)*gauge, 100);
                 }
                 ImGui::SameLine(0, style.ItemInnerSpacing.x);
                 if (ImGui::Button("+", ImVec2(bsize, bsize)) && *gauge < 400) {
-                    *gauge += 1.0f;
-                    *gauge = static_cast<float>(RoundUp(static_cast<long>(*gauge), 100));
+                    *gauge = (float)RoundUp((int)*gauge + 1, 100);
                 }
                 style.FramePadding = backup_frame_padding;
                 ImGui::SameLine();
@@ -419,9 +417,9 @@ namespace TH09 {
     private:
         void FpsInit()
         {
-            if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll")) {
+            if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"openinputlagpatch.dll"))) {
                 OILPInit(mOptCtx);
-            } else if (mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th09.dll")) {
+            } else if ((mOptCtx.vpatch_base = (uintptr_t)GetModuleHandleW(L"vpatch_th09.dll"))) {
                 uint64_t hash[2];
                 CalcFileHash(L"vpatch_th09.dll", hash);
                 if (hash[0] != 8777309807944811310ull || hash[1] != 16244273824227920047ull)
