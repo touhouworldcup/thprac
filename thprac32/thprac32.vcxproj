@@ -94,6 +94,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="thprac32.def" />
+    <ProjectReference Include="$(SolutionDir)\thprac_common\thprac_loc_json.vcxproj">
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{f478e0c3-1989-4dc1-ad81-1c6a7869bc81}</ProjectGuid>

@@ -1,8 +1,11 @@
-// To build this file, this command is recommended
-// cl /Ilib\yyjson /nologo /EHsc /O2 /std:c++20 loc_json.cpp .\lib\yyjson\yyjson.c /Fe:loc_json.exe
+// To build this file, batch files were placed that compile an
+// optimized release build of this script.
 
-// However, compiling loc_json.exe itself is not part of the rest of
+// However, since compiling loc_json.exe itself is not part of the rest of
 // the build system, so you can compile it however you want.
+
+// If you need to do development on this script and debug it, making an entirely
+// separate project is recommended.
 
 #define THPRAC_LOC_HEADER_NAME "thprac_locale_def.h"
 #define THPRAC_LOC_SOURCE_NAME "thprac_locale_def.cpp"
@@ -29,7 +32,8 @@ privDefer<F> defer_func(F f)
 #define DEFER_3(x) DEFER_2(x, __COUNTER__)
 #define defer(code) auto DEFER_3(_defer_) = defer_func([&]() { code; })
 
-#include "yyjson.h"
+#include <yyjson.h>
+#include <yyjson.c>
 
 #include <cstdarg>
 #include <cstdint>

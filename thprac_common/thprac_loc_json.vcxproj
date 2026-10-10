@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugLLVM|Win32">
+      <Configuration>DebugLLVM</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseLLVM|Win32">
+      <Configuration>ReleaseLLVM</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Include="src\thprac_games_def.json" />
+    <UpToDateCheckOutput Include="src\thprac_locale_def.cpp" />
+    <UpToDateCheckOutput Include="src\thprac_locale_def.h" />
+    <None Include="src\thprac_games_def.json" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0EEE81AF-1E39-4592-B2A5-86040EDA132E}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\thprac_common\thprac.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Target Name="GenerateSources" BeforeTargets="Build">
+    <Exec Command="loc_json.exe src\" WorkingDirectory="$(ProjectDirectory)" />
+  </Target>
+</Project>

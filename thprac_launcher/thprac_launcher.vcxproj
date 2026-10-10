@@ -69,6 +69,11 @@
     <ClInclude Include="..\thprac_common\src\thprac_inject.h" />
     <ClInclude Include="src\thprac_launcher.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\thprac_common\thprac_loc_json.vcxproj">
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{40684828-18f0-4f01-adc1-f86199e6b9c9}</ProjectGuid>
     <RootNamespace>thprac_launcher</RootNamespace>
