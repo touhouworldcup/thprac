@@ -229,7 +229,7 @@ namespace TH06NC {
             if (mode >= 2) {
                 bool dlgSection = false;
                 int stage = *mStage;
-                int section;
+                int section = 0;
 
                 if (mWarp(TH_WARP, stage == 6 ? TH06NC_WARP_SELECT_EX : TH_WARP_SELECT_FRAME)) {
                     *mSection = *mChapter = *mPhase = *mFrame = 0;
@@ -268,7 +268,6 @@ namespace TH06NC {
                     ImGui::PopItemFlag();
                 }
 
-                // TODO(Guy): uninitialized variable warning
                 if (stage == 6 && warpType > MIDBOSS && warpType != FRAME && section < TH06NC_TLB1)
                     mGuaranteeTLB();
 
@@ -2506,9 +2505,9 @@ namespace TH06NC {
 
     EHOOK_DY(th06nc_bg_fastforward, GAME_MGR_REG_BG_FF_CHECK, 2, { // spell prac check for fast-forwarding stage background
         constexpr int8_t safeSpellNums[7] = { 2, 9, 24, 37, 84, 103, 121 }; // not fully sure how fast-forwarding works but giving it a spell# it expects makes it use the boss pseudo-interrupt
-        int32_t stage = thPracParam.stage;
-        int32_t section = thPracParam.section;
-        uint32_t frame = (uint32_t)thPracParam.frame;
+        auto stage = thPracParam.stage;
+        auto section = (uint32_t)thPracParam.section;
+        auto frame = (uint32_t)thPracParam.frame;
 
         if (thPracParam.mode && (section || frame)) {
             int32_t interrupt = 0;
@@ -2521,8 +2520,8 @@ namespace TH06NC {
                     interrupt += 1;
 
             } else {
-                if (frame > midbossTime[stage] - 10 * 60) interrupt += 1;
-                if (frame > bossDlgTime[stage] - 10 * 60) interrupt += 1;
+                if (frame > midbossTime[stage] - 10u * 60u) interrupt += 1;
+                if (frame > bossDlgTime[stage] - 10u * 60u) interrupt += 1;
             }
 
             if (interrupt) {

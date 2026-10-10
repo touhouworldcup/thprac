@@ -38,7 +38,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile></PrecompiledHeaderFile>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Platform)'=='Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ForcedIncludeFiles>$(SolutionDir)thprac_common\src\compiler.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <AdditionalIncludeDirectories>$(SolutionDir)lib\freetype\include;$(SolutionDir)lib\ImGui\misc\freetype;$(SolutionDir)lib\ImGui;$(SolutionDir)lib\ImGui\backends;$(SolutionDir)lib\MetroHash;$(SolutionDir)lib\yyjson;$(SolutionDir)thprac_common\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
