@@ -6,10 +6,18 @@
 
 #include <metrohash128.h>
 
-void DummyInit32() {
+// Small functions that identify whether a game is 32 bit or 64 bit in
+// a context where that game's real init function might not exist.
+//
+// Both function need to have a small amount of unique code in them, to
+// prevent both of them from being folded into the same function, and
+// therefore having the same address.
+__declspec(noinline) void DummyInit32() {
+    MessageBoxW(NULL, L"DummyInit32 called!", L"Fatal error", MB_ICONERROR);
     __debugbreak();
 }
-void DummyInit64() {
+__declspec(noinline) void DummyInit64() {
+    MessageBoxW(NULL, L"DummyInit64 called!", L"Fatal error", MB_ICONERROR);
     __debugbreak();
 }
 

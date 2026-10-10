@@ -5,19 +5,28 @@
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
-  <PropertyGroup Label="Configuration">
-    <PlatformToolset>v145</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)'=='Debug'">
-    <UseDebugLibraries>true</UseDebugLibraries>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)'=='Release'">
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-  </PropertyGroup>
   <PropertyGroup>
     <OutDir>$(SolutionDir)\$(Configuration)\</OutDir>
+    <BuildType Condition="'$(Configuration)'=='Debug'">Debug</BuildType>
+    <BuildType Condition="'$(Configuration)'=='Release'">Release</BuildType>
+    <BuildType Condition="'$(Configuration)'=='DebugLLVM'">Debug</BuildType>
+    <BuildType Condition="'$(Configuration)'=='ReleaseLLVM'">Release</BuildType>
+    <ToolsetType Condition="'$(Configuration)'=='Debug'">MSVC</ToolsetType>
+    <ToolsetType Condition="'$(Configuration)'=='Release'">MSVC</ToolsetType>
+    <ToolsetType Condition="'$(Configuration)'=='DebugLLVM'">ClangCL</ToolsetType>
+    <ToolsetType Condition="'$(Configuration)'=='ReleaseLLVM'">ClangCL</ToolsetType>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <PlatformToolset Condition="'$(ToolsetType)'=='MSVC'">v145</PlatformToolset>
+    <PlatformToolset Condition="'$(ToolsetType)'=='ClangCL'">ClangCL</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(BuildType)'=='Debug'">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(BuildType)'=='Release'">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -26,11 +35,11 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
+      <PrecompiledHeaderFile></PrecompiledHeaderFile>
       <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ForcedIncludeFiles>$(SolutionDir)thprac_common\src\compiler.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <AdditionalIncludeDirectories>$(SolutionDir)lib\freetype\include;$(SolutionDir)lib\ImGui\misc\freetype;$(SolutionDir)lib\ImGui;$(SolutionDir)lib\ImGui\backends;$(SolutionDir)lib\MetroHash;$(SolutionDir)lib\yyjson;$(SolutionDir)thprac_common\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -41,16 +50,18 @@
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemDefinitionGroup Condition="'$(BuildType)'=='Debug'">
     <ClCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+  <ItemDefinitionGroup Condition="'$(BuildType)'=='Release'">
     <ClCompile>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
