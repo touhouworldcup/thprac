@@ -123,6 +123,8 @@
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>thprac32.def</ModuleDefinitionFile>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)\src\blobs\th19_fast_msvc.obj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='ReleaseLLVM|Win32'">$(ProjectDir)\src\blobs\th19_fast_llvm.obj</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

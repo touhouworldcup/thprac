@@ -41,7 +41,6 @@
 
 #ifdef NDEBUG
 #define TH19_ENABLE_FAST
-#undef TH19_ENABLE_FAST
 #endif
 
 #ifdef TH19_ENABLE_FAST
