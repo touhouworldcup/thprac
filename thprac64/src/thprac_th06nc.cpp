@@ -32,21 +32,21 @@ namespace TH06NC {
         Gui::GuiCombo mPhase{ TH_PHASE };
         Gui::GuiCheckBox mDlg{ TH_DLG };
 
-        Gui::GuiSlider<uint32_t, ImGuiDataType_S32> mChapter{ TH_CHAPTER, 0, 0 };
-        Gui::GuiSlider<uint32_t, ImGuiDataType_S32> mFrame{ TH_FRAME, 0, frameMax[0], 1, 1000};
-        Gui::GuiSlider<uint8_t, ImGuiDataType_S8> mLife{ TH_LIFE, 0, 8 };
-        Gui::GuiSlider<uint8_t, ImGuiDataType_S8> mBomb{ TH_BOMB, 0, 8 };
-        Gui::GuiDrag<uint64_t, ImGuiDataType_S64> mScore{ TH_SCORE, 0, 9999999990, 10, 100000000 };
-        Gui::GuiSlider<uint16_t, ImGuiDataType_S16> mPower{ TH_POWER, 0, 128 };
-        Gui::GuiDrag<uint32_t, ImGuiDataType_S32> mGraze{ TH_GRAZE, 0, 99999, 1, 10000 };
-        Gui::GuiDrag<uint16_t, ImGuiDataType_U16> mPoint{ TH_POINT, 0, 9999, 1, 1000 };
+        Gui::GuiSlider<uint32_t, ImGuiDataType_U32> mChapter{ TH_CHAPTER, 0, 0 };
+        Gui::GuiSlider<int32_t, ImGuiDataType_S32> mFrame{ TH_FRAME, 0, frameMax[0], 1, 1000 };
+        Gui::GuiSlider<int8_t, ImGuiDataType_S8> mLife{ TH_LIFE, 0, 8 };
+        Gui::GuiSlider<int8_t, ImGuiDataType_S8> mBomb{ TH_BOMB, 0, 8 };
+        Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore{ TH_SCORE, 0, 9999999990, 10, 100000000 };
+        Gui::GuiSlider<int16_t, ImGuiDataType_S16> mPower{ TH_POWER, 0, 128 };
+        Gui::GuiDrag<int32_t, ImGuiDataType_S32> mGraze{ TH_GRAZE, 0, 99999, 1, 10000 };
+        Gui::GuiDrag<int32_t, ImGuiDataType_S32> mPoint{ TH_POINT, 0, 9999, 1, 1000 };
 
-        Gui::GuiCheckBox mBossMoveFree { TH_BOSS_MOVE_FREE };
+        Gui::GuiCheckBox mBossMoveFree{ TH_BOSS_MOVE_FREE };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mBossSpawnX{ TH_BOSS_X, 0, 384, 1, 100 };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mBossSpawnY{ TH_BOSS_Y, 0, 448, 1, 100 };
-        Gui::GuiDrag<uint32_t, ImGuiDataType_S32> mRank{ TH06_RANK, 0, 999, 1, 100 };
+        Gui::GuiDrag<int32_t, ImGuiDataType_S32> mRank{ TH06_RANK, 0, 999, 1, 100 };
         Gui::GuiCombo mFakeShot{ TH06_FS, TH06_TYPE_SELECT };
-        Gui::GuiCheckBox mGuaranteeTLB { TH06NC_TLB_LOCK };
+        Gui::GuiCheckBox mGuaranteeTLB{ TH06NC_TLB_LOCK };
 
         Gui::GuiNavFocus mNavFocus{ TH_STAGE, TH_MODE, TH_WARP, TH_FRAME,
             TH_MID_STAGE, TH_END_STAGE, TH_NONSPELL, TH_SPELL, TH_PHASE, TH_CHAPTER,
@@ -257,7 +257,7 @@ namespace TH06NC {
                 mPoint();
 
                 mRank();
-                uint32_t defaultRank = (stage == 6) ? EX_RANK : (mDifficulty == EASY ? EASY_RANK : NHL_RANK);
+                int32_t defaultRank = (stage == 6) ? EX_RANK : (mDifficulty == EASY ? EASY_RANK : NHL_RANK);
                 if (*mRank != defaultRank) {
                     ImGui::SameLine();
                     float size = ImGui::GetFrameHeight();
@@ -664,9 +664,9 @@ namespace TH06NC {
             UpdateSize(2);
         }
 
-        uint64_t& GetBooksHistory() {
+        uint64_t& GetBooksHistory(uint32_t diff = GAME_MANAGER->difficulty, uint8_t shotID = GAME_MANAGER->GetShotID()) {
             SavefileSpellData& spellData = GAME_MANAGER->spellData[118]; // silent selene unused registers (easy-luna diffs)
-            return spellData.spellPracHighScores[GAME_MANAGER->difficulty][GAME_MANAGER->GetShotID()];
+            return spellData.spellPracHighScores[diff][shotID];
         }
 
         virtual void OnPreUpdate() override {
@@ -751,10 +751,9 @@ namespace TH06NC {
                     ImGui::TableNextColumn();
 
                     uint32_t captureCnt, attemptCnt;
-                    const uint8_t shotID_ = GAME_MANAGER->GetShotID();
 
                     if (isBooks) {
-                        uint32_t* booksHistory = (uint32_t*)&GetBooksHistory();
+                        uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty, shotID);
                         attemptCnt = booksHistory[0];
                         captureCnt = booksHistory[1];
 
@@ -762,13 +761,13 @@ namespace TH06NC {
                         SavefileSpellData& spellData = GAME_MANAGER->spellData[lastSpellID];
 
                         if (GAME_MANAGER->inSpellPrac) {
-                            captureCnt = spellData.spellPracCaptures[difficulty][shotID_];
-                            attemptCnt = spellData.spellPracAttempts[difficulty][shotID_];
+                            captureCnt = spellData.spellPracCaptures[difficulty][shotID];
+                            attemptCnt = spellData.spellPracAttempts[difficulty][shotID];
 
                         } else if (GAME_MANAGER->inPracticeMode && options.splitPracHistory) {
                             uint32_t unusedDifficulty = difficulty == EXTRA ? EASY : EXTRA;
-                            captureCnt = spellData.spellPracCaptures[unusedDifficulty][shotID_];
-                            attemptCnt = spellData.spellPracAttempts[unusedDifficulty][shotID_];
+                            captureCnt = spellData.spellPracCaptures[unusedDifficulty][shotID];
+                            attemptCnt = spellData.spellPracAttempts[unusedDifficulty][shotID];
 
                         } else {
                             captureCnt = spellData.captureCount;
@@ -876,7 +875,7 @@ namespace TH06NC {
                         };
                     }
 
-                    uint32_t* booksHistory = (uint32_t*)&GetBooksHistory();
+                    uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty, shotID);
                     seshStartSpellHistory[BOOKS_ID] = { booksHistory[0], booksHistory[1] };
 
                 } else if (GAME_MANAGER->inSpellPrac) {
