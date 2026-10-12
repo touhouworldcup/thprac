@@ -1,10 +1,10 @@
 #include <wininternal.h>
 
-#include <thprac_cfg.h>
-#include <thprac_hook.h>
-#include <thprac_identify.h>
-#include <thprac_inject.h>
-#include <thprac_log.h>
+#include "thprac_cfg.h"
+#include "thprac_hook.h"
+#include "thprac_identify.h"
+#include "thprac_inject.h"
+#include "thprac_log.h"
 
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 

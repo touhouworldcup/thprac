@@ -1,11 +1,11 @@
 #include <wininternal.h>
 
-#include <thprac_update.h>
-#include <thprac_utils.h>
-#include <thprac_identify.h>
-#include <thprac_cfg.h>
-#include <thprac_log.h>
-#include <thprac_gui_locale.h>
+#include "thprac_update.h"
+#include "thprac_utils.h"
+#include "thprac_identify.h"
+#include "thprac_cfg.h"
+#include "thprac_log.h"
+#include "thprac_gui_locale.h"
 
 #include "thprac_inject.h"
 

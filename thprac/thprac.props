@@ -43,7 +43,7 @@
       <EnableEnhancedInstructionSet Condition="'$(Platform)'=='Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ForcedIncludeFiles>$(ProjectDir)\src\compiler.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>$(ProjectDir)lib\freetype\include;$(ProjectDir)lib\ImGui\misc\freetype;$(ProjectDir)lib\ImGui;$(ProjectDir)lib\ImGui\backends;$(ProjectDir)lib\MetroHash;$(ProjectDir)lib\yyjson;$(ProjectDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)lib\freetype\include;$(ProjectDir)lib\ImGui\misc\freetype;$(ProjectDir)lib\ImGui;$(ProjectDir)lib\ImGui\backends;$(ProjectDir)lib\MetroHash;$(ProjectDir)lib\yyjson;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
