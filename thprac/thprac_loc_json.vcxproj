@@ -27,7 +27,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0EEE81AF-1E39-4592-B2A5-86040EDA132E}</ProjectGuid>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\thprac_common\thprac.props" />
+  <Import Project="thprac.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Utility</ConfigurationType>

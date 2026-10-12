@@ -7,6 +7,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <OutDir>$(SolutionDir)\$(Configuration)\</OutDir>
+    <!--For some reason the ProjectDir and MSBuildProjectDir macros don't work here-->
+    <IntDir>$(SolutionDir)\thprac\obj\$(MSBuildProjectName)\$(Configuration)\</IntDir>
     <BuildType Condition="'$(Configuration)'=='Debug'">Debug</BuildType>
     <BuildType Condition="'$(Configuration)'=='Release'">Release</BuildType>
     <BuildType Condition="'$(Configuration)'=='DebugLLVM'">Debug</BuildType>
@@ -40,8 +42,8 @@
       <PrecompiledHeaderFile></PrecompiledHeaderFile>
       <EnableEnhancedInstructionSet Condition="'$(Platform)'=='Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ForcedIncludeFiles>$(SolutionDir)thprac_common\src\compiler.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
-      <AdditionalIncludeDirectories>$(SolutionDir)lib\freetype\include;$(SolutionDir)lib\ImGui\misc\freetype;$(SolutionDir)lib\ImGui;$(SolutionDir)lib\ImGui\backends;$(SolutionDir)lib\MetroHash;$(SolutionDir)lib\yyjson;$(SolutionDir)thprac_common\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(ProjectDir)\src\compiler.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>$(ProjectDir)lib\freetype\include;$(ProjectDir)lib\ImGui\misc\freetype;$(ProjectDir)lib\ImGui;$(ProjectDir)lib\ImGui\backends;$(ProjectDir)lib\MetroHash;$(ProjectDir)lib\yyjson;$(ProjectDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -72,7 +74,7 @@
       <PreprocessorDefinitions>TH_X86;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib\FreeType\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)lib\FreeType\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='x64'">
@@ -80,7 +82,7 @@
       <PreprocessorDefinitions>TH_X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib\FreeType\win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)lib\FreeType\win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
 </Project>
