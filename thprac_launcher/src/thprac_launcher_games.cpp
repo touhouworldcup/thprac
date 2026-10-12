@@ -59,9 +59,7 @@ LauncherGame gamesAll[ID_TH_MAX - 1] = {
     },
     {
         .id = ID_TH06NC,
-        // Can't be arsed to add something to thprac_locale_def
-        // while automatic rebuilding of that isn't implemented
-        .title = THPRAC_LINKS_EDIT_ERR_REPEATED,
+        .title = TH06NC_TITLE,
         .versions = gGameVersions + VER_TH06NC_V1_03A,
         .ver_count = 2,
         .steamId = 4659620,
