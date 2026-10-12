@@ -1,4 +1,4 @@
-#include <wininternal.h>
+#include "wininternal.h"
 
 #include "thprac_cfg.h"
 #include "thprac_hook.h"

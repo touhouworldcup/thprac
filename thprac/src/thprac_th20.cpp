@@ -1,4 +1,4 @@
-#include <wininternal.h>
+#include "wininternal.h"
 
 #include "thprac_games.h"
 #include "thprac_utils.h"

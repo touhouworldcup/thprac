@@ -1,4 +1,4 @@
-#include <wininternal.h>
+#include "wininternal.h"
 
 #include "thprac_inject.h"
 #include "thprac_identify.h"

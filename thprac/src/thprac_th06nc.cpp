@@ -1,6 +1,6 @@
 #include "thprac_th06nc.h"
 #include "imgui_internal.h"
-#include <wininternal.h>
+#include "wininternal.h"
 
 using namespace TH06;
 using std::pair;

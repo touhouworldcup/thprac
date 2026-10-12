@@ -1,5 +1,5 @@
 #pragma once
-#include <wininternal.h>
+#include "wininternal.h"
 
 #include "utils.h"
 #include <d3d9.h>
