@@ -7,7 +7,7 @@
     <ClCompile Include="src\thprac_alcostg.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\thprac_dll32_init.cpp">
+    <ClCompile Include="src\thprac_dllinit_32.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="src\thprac_th06.cpp">

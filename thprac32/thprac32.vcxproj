@@ -45,7 +45,7 @@
     <ClCompile Include="..\thprac_common\src\thprac_utils.cpp" />
     <ClCompile Include="..\thprac_common\src\thprac_version.cpp" />
     <ClCompile Include="src\thprac_alcostg.cpp" />
-    <ClCompile Include="src\thprac_dll32_init.cpp" />
+    <ClCompile Include="src\thprac_dllinit_32.cpp" />
     <ClCompile Include="src\thprac_games_d3d8.cpp" />
     <ClCompile Include="src\thprac_th06.cpp" />
     <ClCompile Include="src\thprac_th07.cpp" />
