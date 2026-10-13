@@ -17,12 +17,15 @@ namespace TH07 {
     EnemyManager* ENEMY_MANAGER = (EnemyManager*)0x9a9b00;
     EclManager* ECL_MANAGER = (EclManager*)0x1347938;
     Background* BACKGROUND = (Background*)0x1347b00;
+    void* SOUND_PLAYER = (void*)0x4BA0D8;
 
 #define globals (GAME_MANAGER->globals)
 
+#define Gui_CopyEnemyNameTexture(spriteIdx) asm_call<0x427d92, Fastcall>(spriteIdx)
+#define Supervisor_LoadAudio(idx, path) asm_call<0x439dd0, Thiscall>(SUPERVISOR, idx, path)
+#define SoundPlayer_PlaySoundByIdx(idx) asm_call<0x44C930, Thiscall>(SOUND_PLAYER, idx, UNUSED_DWORD)
+
     enum ADDRS {
-        COPY_ENEMY_NAME_TEXTURE_ADDR = 0x427d92,
-        SUPERVISOR_LOADMUSIC_ADDR = 0x439dd0,
         STR_TH07_13B_MID_ADDR = 0x4986b4,  // string "bgm/th07_13b.mid"
         INPUT_ADDR = 0x4b9e4c,
         LAST_FRAME_INPUT_ADDR = 0x4b9e54,
@@ -822,22 +825,22 @@ namespace TH07 {
     void ECLNameFix()
     {
         if (thPracParam.stage == 0) {
-            asm_call<COPY_ENEMY_NAME_TEXTURE_ADDR, Fastcall>(0x60f);
+            Gui_CopyEnemyNameTexture(0x60f);
         } else if (thPracParam.stage == 3) {
-            asm_call<COPY_ENEMY_NAME_TEXTURE_ADDR, Fastcall>(0x615);
+            Gui_CopyEnemyNameTexture(0x615);
         } else if (thPracParam.stage == 5) {
             BACKGROUND->baseSpellcardBackgroundScriptIndex = 2;
             BULLET_MANAGER->bonusItemType = 9;
-            asm_call<COPY_ENEMY_NAME_TEXTURE_ADDR, Fastcall>(0x619);
+            Gui_CopyEnemyNameTexture(0x619);
         } else if (thPracParam.stage == 6) {
             BACKGROUND->baseSpellcardBackgroundScriptIndex = 1;
             BACKGROUND->numSpellcardBackgroundVMs = 2;
             BULLET_MANAGER->bonusItemType = 9;
-            asm_call<COPY_ENEMY_NAME_TEXTURE_ADDR, Fastcall>(0x61b);
+            Gui_CopyEnemyNameTexture(0x61b);
         } else if (thPracParam.stage == 7) {
             BACKGROUND->baseSpellcardBackgroundScriptIndex = 2;
             BULLET_MANAGER->bonusItemType = 9;
-            asm_call<COPY_ENEMY_NAME_TEXTURE_ADDR, Fastcall>(0x61d);
+            Gui_CopyEnemyNameTexture(0x61d);
         }
     }
     __declspec(noinline) void THStageWarp(ECLHelper& ecl, int stage, int portion)
@@ -1954,7 +1957,7 @@ namespace TH07 {
     EHOOK_DY(th07_bgm, 0x42f206, 7, {
         if (thPracParam.mode == 1 && thPracParam.section) {
             if (thPracParam.stage == 5) {
-                asm_call<SUPERVISOR_LOADMUSIC_ADDR, Thiscall>(SUPERVISOR, 2, STR_TH07_13B_MID_ADDR);
+                Supervisor_LoadAudio(2, STR_TH07_13B_MID_ADDR);
             }
 
             if (THBGMTest()) {
