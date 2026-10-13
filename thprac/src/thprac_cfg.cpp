@@ -58,8 +58,6 @@ void InitPaths(std::wstring_view exe_path) {
     size_t self_dir_idx = 0;
     size_t self_dir_len = 0;
 
-    std::wstring_view self_dir_temp;
-    std::wstring_view self_exe_name_temp;
 
     // Program directory 
     if (auto last_slash = exe_path.find_last_of(L"\\/");
@@ -67,9 +65,6 @@ void InitPaths(std::wstring_view exe_path) {
 
         self_dir_idx = _gPathBuf.size();
         self_dir_len = last_slash + 1;
-
-        self_dir_temp = { exe_path.data(), self_dir_len };
-        self_exe_name_temp = { exe_path.data() + self_dir_len, exe_path.length() - self_dir_len };
 
         _gPathBuf.insert(_gPathBuf.end(), exe_path.data(), exe_path.data() + last_slash + 1);
         _gPathBuf.push_back(0);
@@ -81,10 +76,10 @@ void InitPaths(std::wstring_view exe_path) {
 
     size_t dll64_path_idx = 0;
     size_t dll64_path_len = 0;
+    
+    auto first_dot_pos = exe_path.find(L'.', self_dir_len);
 
-    auto first_dot_pos = self_exe_name_temp.find(L'.') + self_dir_len;
-
-    if (t_str_compare_nocase(self_exe_name_temp.data() + self_exe_name_temp.size() - 4, 4, L".exe", 4)) {
+    if (t_str_compare_nocase(exe_path.data() + exe_path.size() - 4, 4, L".exe", 4)) {
         {
             _gPathBuf.insert(_gPathBuf.end(), exe_path.data(), exe_path.data() + first_dot_pos);
             _gPathBuf.push_back(L'3');
@@ -114,7 +109,7 @@ void InitPaths(std::wstring_view exe_path) {
         }
         dll32_path_len = dll64_path_len = exe_path.length() + 2;
     }
-    else if (t_str_compare_nocase(self_exe_name_temp.data() + self_exe_name_temp.size() - 4, 4, L".dll", 4)) {
+    else if (t_str_compare_nocase(exe_path.data() + exe_path.size() - 4, 4, L".dll", 4)) {
         if (auto* s = &exe_path[first_dot_pos - 2];
             (s[0] == L'3' && s[1] == L'2') || (s[0] == L'6' && s[1] == L'4')) {
             _gPathBuf.insert(_gPathBuf.end(), exe_path.begin(), exe_path.end());
