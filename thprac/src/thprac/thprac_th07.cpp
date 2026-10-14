@@ -553,7 +553,23 @@ namespace TH07 {
         Gui::GuiHotKeyChord mMenu { "ModMenuToggle", "BACKSPACE", hotkeys.backspace_menu };
 
         HOTKEY_DEFINE(mMuteki, TH_MUTEKI, "F1", VK_F1)
-        PATCH_HK(0x43Ee14, "03")
+        PATCH_HK(0x43Ee14, "03"),
+        EHOOK_HK(0x43EE46, 5, { // fail spell bonus when invincible
+            if (ENEMY_MANAGER->bosses[0]) {
+                ENEMY_MANAGER->spellcardInfo.isActive = FALSE;
+                ENEMY_MANAGER->spellcardInfo.captureScore = 0;
+            }
+        }),
+        EHOOK_HK(0x43E366, 5, {
+            SoundPlayer_PlaySoundByIdx(SOUND_PICHUN);
+            if (ENEMY_MANAGER->bosses[0]) {
+                ENEMY_MANAGER->spellcardInfo.isActive = FALSE;
+                ENEMY_MANAGER->spellcardInfo.captureScore = 0;
+            }
+
+            // Skip this instruction
+            pCtx->Eip += self->data.hook.instr_len;
+        })
         HOTKEY_ENDDEF();
         
         HOTKEY_DEFINE(mInfLives, TH_INFLIVES, "F2", VK_F2)
