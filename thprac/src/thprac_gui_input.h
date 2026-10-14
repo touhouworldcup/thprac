@@ -1,0 +1,35 @@
+#pragma once
+#include <string>
+
+namespace Gui
+{
+	// In-Game Input
+	enum ingame_input_gen_t
+	{
+		INGAGME_INPUT_NONE,
+			INGAGME_INPUT_GEN1,
+			INGAGME_INPUT_GEN2,
+	};
+	bool InGameInputInit(ingame_input_gen_t gen, uintptr_t reg1, uintptr_t reg2, uintptr_t reg3 = 0);
+	bool InGameInputGet(int16_t key);
+
+	// Keyboard Input
+	int  KeyboardInputUpdate(int v_key);
+	void KeyboardInputUpdate();
+	template<class... Args>
+	int  KeyboardInputUpdate(int key, Args... rest);
+	int  KeyboardInputGet(int v_key);
+	bool KeyboardInputGetSingle(int v_key);
+	bool KeyboardInputGetRaw(int v_key);
+
+	bool InGameInputGetConfirm();
+
+	void MenuChordInitArrays();
+    bool MenuChordInitFromCfg();
+    int GetChordPressedDuration(int chord);
+    bool GetChordPressed(int chord);
+
+	unsigned int HotkeyChordToLabel(int chord, char* chord_name);
+    void ChordEditDropdown(const char* label, int& chord);
+    int HotkeyChordToVK(int chord);
+}

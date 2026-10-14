@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugLLVM|Win32">
+      <Configuration>DebugLLVM</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseLLVM|Win32">
+      <Configuration>ReleaseLLVM</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="lib\ImGui\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="lib\ImGui\backends\imgui_impl_dx8.cpp" />
+    <ClCompile Include="lib\ImGui\backends\imgui_impl_dx9.cpp" />
+    <ClCompile Include="lib\ImGui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="lib\ImGui\imgui.cpp" />
+    <ClCompile Include="lib\ImGui\imgui_demo.cpp" />
+    <ClCompile Include="lib\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="lib\ImGui\imgui_tables.cpp" />
+    <ClCompile Include="lib\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="lib\ImGui\misc\freetype\imgui_freetype.cpp" />
+    <ClCompile Include="lib\MetroHash\metrohash128.cpp" />
+    <ClCompile Include="lib\yyjson\yyjson.c" />
+    <ClCompile Include="src\thprac_cfg.cpp" />
+    <ClCompile Include="src\thprac_games.cpp" />
+    <ClCompile Include="src\thprac_gui_components.cpp" />
+    <ClCompile Include="src\thprac_gui_input.cpp" />
+    <ClCompile Include="src\thprac_gui_locale.cpp" />
+    <ClCompile Include="src\thprac_hook.cpp" />
+    <ClCompile Include="src\thprac_identify.cpp" />
+    <ClCompile Include="src\thprac_licence.cpp" />
+    <ClCompile Include="src\thprac_locale_def.cpp" />
+    <ClCompile Include="src\thprac_log.cpp" />
+    <ClCompile Include="src\thprac_pe.cpp" />
+    <ClCompile Include="src\thprac_utils.cpp" />
+    <ClCompile Include="src\thprac_version.cpp" />
+    <ClCompile Include="src\thprac_alcostg.cpp" />
+    <ClCompile Include="src\thprac_dllinit_32.cpp" />
+    <ClCompile Include="src\thprac_games_d3d8.cpp" />
+    <ClCompile Include="src\thprac_th06.cpp" />
+    <ClCompile Include="src\thprac_th07.cpp" />
+    <ClCompile Include="src\thprac_th08.cpp" />
+    <ClCompile Include="src\thprac_th09.cpp" />
+    <ClCompile Include="src\thprac_th095.cpp" />
+    <ClCompile Include="src\thprac_th10.cpp" />
+    <ClCompile Include="src\thprac_th11.cpp" />
+    <ClCompile Include="src\thprac_th12.cpp" />
+    <ClCompile Include="src\thprac_th125.cpp" />
+    <ClCompile Include="src\thprac_th128.cpp" />
+    <ClCompile Include="src\thprac_th13.cpp" />
+    <ClCompile Include="src\thprac_th14.cpp" />
+    <ClCompile Include="src\thprac_th143.cpp" />
+    <ClCompile Include="src\thprac_th15.cpp" />
+    <ClCompile Include="src\thprac_th16.cpp" />
+    <ClCompile Include="src\thprac_th165.cpp" />
+    <ClCompile Include="src\thprac_th17.cpp" />
+    <ClCompile Include="src\thprac_th18.cpp" />
+    <ClCompile Include="src\thprac_th185.cpp" />
+    <ClCompile Include="src\thprac_th185_warps0.cpp" />
+    <ClCompile Include="src\thprac_th185_warps1.cpp" />
+    <ClCompile Include="src\thprac_th185_warps2.cpp" />
+    <ClCompile Include="src\thprac_th185_warps3.cpp" />
+    <ClCompile Include="src\thprac_th185_warps4.cpp" />
+    <ClCompile Include="src\thprac_th185_warps5.cpp" />
+    <ClCompile Include="src\thprac_th185_warps6.cpp" />
+    <ClCompile Include="src\thprac_th185_warps7.cpp" />
+    <ClCompile Include="src\thprac_th185_warps8.cpp" />
+    <ClCompile Include="src\thprac_th19.cpp" />
+    <ClCompile Include="src\thprac_th19.v1.00a.cpp" />
+    <ClCompile Include="src\thprac_th19.v1.10c.cpp" />
+    <ClCompile Include="src\thprac_th20.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\thprac_cfg.h" />
+    <ClInclude Include="src\thprac_games.h" />
+    <ClInclude Include="src\thprac_hook.h" />
+    <ClInclude Include="src\thprac_pe.h" />
+    <ClInclude Include="src\utils.h" />
+    <ClInclude Include="src\thprac_games_d3d8.h" />
+    <ClInclude Include="src\thprac_th06.h" />
+    <ClInclude Include="src\thprac_th07.h" />
+    <ClInclude Include="src\thprac_th095.h" />
+    <ClInclude Include="src\thprac_th19.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="thprac32.def" />
+    <ProjectReference Include="thprac_loc_json.vcxproj">
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{f478e0c3-1989-4dc1-ad81-1c6a7869bc81}</ProjectGuid>
+    <RootNamespace>thprac32</RootNamespace>
+  </PropertyGroup>
+  <Import Project="thprac.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup>
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>THPRAC_DLL;THPRAC32_EXPORTS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)lib\d3d8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <ModuleDefinitionFile>thprac32.def</ModuleDefinitionFile>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)\src\blobs\th19_fast_msvc.obj</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='ReleaseLLVM|Win32'">$(ProjectDir)\src\blobs\th19_fast_llvm.obj</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
