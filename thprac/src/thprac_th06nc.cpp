@@ -2548,7 +2548,7 @@ namespace TH06NC {
                     return;
                 }
 
-            } else if ((uint32_t)thPracParam.frame >= bossDlgTime[thPracParam.stage]) {
+            } else if ((uint32_t)thPracParam.frame > bossDlgTime[thPracParam.stage]) {
                 pCtx->Rdx += 0x80;
                 return;
             }
