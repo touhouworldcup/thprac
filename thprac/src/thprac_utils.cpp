@@ -243,7 +243,7 @@ static SelectFolderVista_Status SelectFolderVista(std::wstring& out, HWND hwnd) 
     defer(pfd->Release());
 
     pfd->SetOptions(FOS_NOCHANGEDIR | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST | FOS_DONTADDTORECENT);
-    pfd->SetTitle(L"Deez");
+    pfd->SetTitle(L"Select Folder");
 
     HRESULT hr = pfd->Show(hwnd);
     if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED)) {

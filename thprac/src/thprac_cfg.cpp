@@ -136,9 +136,9 @@ void InitPaths(std::wstring_view exe_path) {
     size_t config_dir_idx = _gPathBuf.size();
     size_t config_dir_len = 0;
 
-    constexpr const wchar_t* deez = L".thprac_data\\";
+    constexpr const wchar_t* dataDir = L".thprac_data\\";
     _gPathBuf.insert(_gPathBuf.end(), _gPathBuf.begin() + self_dir_idx, _gPathBuf.begin() + self_dir_idx + self_dir_len);
-    _gPathBuf.insert(_gPathBuf.end(), RANGED(deez));
+    _gPathBuf.insert(_gPathBuf.end(), RANGED(dataDir));
     _gPathBuf.push_back(0);
 
     wchar_t* config_dir = _gPathBuf.data() + config_dir_idx;
