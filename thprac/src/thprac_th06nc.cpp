@@ -459,7 +459,7 @@ namespace TH06NC {
         __declspec(noinline) void RestoreDifficulty() {
             // ensure the game menu's difficulty is restored to what it was
             // when practice started (extra stage sets it to 4)
-            if (mDifficulty > -1) GAME_MANAGER->difficulty = mDifficulty;
+            if (mDifficulty != UINT32_MAX) GAME_MANAGER->difficulty = mDifficulty;
         }
 
         inline void BossCtrlsReset(const BossSectionData* sectionData = nullptr) {
