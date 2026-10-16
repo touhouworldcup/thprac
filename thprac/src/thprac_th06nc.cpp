@@ -2627,6 +2627,11 @@ namespace TH06NC {
 
         OG_INS(pCtx->Rax = spellData->captureCount);
     })
+
+    EHOOK_DY(th06nc_fix_boss_interrupt_crash, BOSS_INTERRUPT_SET, 6, { // fix crash when setting boss interrupt with no boss present (possible with Frame warping)
+        if (pCtx->Rcx)
+            OG_INS(*(uint32_t*)(pCtx->Rcx + 0xf70) = (uint32_t)pCtx->Rax);
+    })
     HOOKSET_ENDDEF()
 
 
