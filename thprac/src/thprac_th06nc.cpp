@@ -664,7 +664,7 @@ namespace TH06NC {
             UpdateSize(2);
         }
 
-        uint64_t& GetBooksHistory(uint32_t diff = GAME_MANAGER->difficulty, uint8_t shotID = GAME_MANAGER->GetShotID()) {
+        uint64_t& GetBooksHistory(uint32_t diff = GAME_MANAGER->difficulty) {
             SavefileSpellData& spellData = GAME_MANAGER->spellData[118]; // silent selene unused registers (easy-luna diffs)
             return spellData.spellPracHighScores[diff][shotID];
         }
@@ -753,7 +753,7 @@ namespace TH06NC {
                     uint32_t captureCnt, attemptCnt;
 
                     if (isBooks) {
-                        uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty, shotID);
+                        uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty);
                         attemptCnt = booksHistory[0];
                         captureCnt = booksHistory[1];
 
@@ -875,7 +875,7 @@ namespace TH06NC {
                         };
                     }
 
-                    uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty, shotID);
+                    uint32_t* booksHistory = (uint32_t*)&GetBooksHistory(difficulty);
                     seshStartSpellHistory[BOOKS_ID] = { booksHistory[0], booksHistory[1] };
 
                 } else if (GAME_MANAGER->inSpellPrac) {
@@ -2632,8 +2632,11 @@ namespace TH06NC {
         if (!*THOverlay::singleton().mElBgm) BGM_PAUSE(*(int32_t*)BGM_ADDR, 0); // consistency's sake
     })
     EHOOK_DY(th06nc_practice_end, SET_RETURN_TO_MENU_STATE, 10, { // idem but for prac end (stage end)
-        GAME_MANAGER->spellPracEndFlag = true;
-        ASCII_MANAGER->spellPracEndWin = true;
+        if (GAME_MANAGER->inPracticeMode) { // note: this hook also triggers on Extra stage end
+            GAME_MANAGER->spellPracEndFlag = true;
+            ASCII_MANAGER->spellPracEndWin = true;
+        }
+        else OG_INS(SUPERVISOR->curState = RUN_END_NO_ENDING);
     })
 
     EHOOK_DY(th06nc_replay_practice_stage_end, SET_STG_TRANSITION_STATE, 10, {  // practice mode replay end leads to title screen/spell prac instead of replay menu on stages 1-5
