@@ -2559,13 +2559,17 @@ namespace TH06NC {
 
     EHOOK_DY(th06nc_bgm_title, BGM_NAME_GET_TRANSLATIONS, 7, { // after setting BGM name translation key
         OG_INS(pCtx->R13 = *(uintptr_t*)((uintptr_t)ZUN_GUI + 0x58));
+        if (!thPracParam.mode) return;
         int32_t section = thPracParam.section;
 
-        if (thPracParam.mode && section && section < 10000 && !thPracParam.dlg) {
+        if (section && section < 10000 && !thPracParam.dlg) {
             if (section >= TH06NC_TLB1)
                 pCtx->Rax = 0x100;
             else if (th_sections_bgm[section])
                 pCtx->Rax = 0x80;
+
+        } else if ((uint32_t)thPracParam.frame > bossDlgTime[thPracParam.stage]) {
+            pCtx->Rax = 0x80;
         }
     })
 
