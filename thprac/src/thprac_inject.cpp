@@ -69,7 +69,7 @@ DWORD RunRemoteThread_CallDLL(HANDLE hProcess, uintptr_t addr, uintptr_t bits) {
     wrote = _snwprintf(rundllPath, rundllPath_format_len, rundllPath_format.data(), Kuser_Shared_Data->NtSystemRoot, rundllDir);
     rundllPath[wrote] = 0;
 
-    auto cmdFormat = L"%s %s,thprac_rundll_inject_helper_internal %" PRIXPTR " %" PRIXPTR;
+    auto cmdFormat = L"\"%s\" \"%s\",thprac_rundll_inject_helper_internal %" PRIXPTR " %" PRIXPTR;
 
     auto cmdLen = t_strlen(cmdFormat) + g_Dll32Path.length() + 64;
     VLA(wchar_t, cmd, cmdLen);
