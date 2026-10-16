@@ -39,7 +39,7 @@ namespace TH06NC {
         Gui::GuiDrag<int64_t, ImGuiDataType_S64> mScore{ TH_SCORE, 0, 9999999990, 10, 100000000 };
         Gui::GuiSlider<int16_t, ImGuiDataType_S16> mPower{ TH_POWER, 0, 128 };
         Gui::GuiDrag<int32_t, ImGuiDataType_S32> mGraze{ TH_GRAZE, 0, 99999, 1, 10000 };
-        Gui::GuiDrag<int32_t, ImGuiDataType_S32> mPoint{ TH_POINT, 0, 9999, 1, 1000 };
+        Gui::GuiDrag<uint16_t, ImGuiDataType_U16> mPoint{ TH_POINT, 0, 9999, 1, 1000 };
 
         Gui::GuiCheckBox mBossMoveFree{ TH_BOSS_MOVE_FREE };
         Gui::GuiSlider<int32_t, ImGuiDataType_S32> mBossSpawnX{ TH_BOSS_X, 0, 384, 1, 100 };
