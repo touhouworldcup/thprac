@@ -979,7 +979,7 @@ namespace TH06NC {
             constexpr int32_t midExtraWait[5] = { 4 * 60, 15 * 60, 0, 10 * 60, 5 * 60 };
 
             const uint32_t st = GAME_MANAGER->stage - 1;
-            if (st < 6 && st != 2) {
+            if (st < 5 && st != 2) {
                 const bool bossExists = ZUN_GUI->isBossPresent;
                 const int32_t midStart = midbossTime[st] + (st == 4 ? 2 : 0);
                 const int32_t curTime = (int32_t)pCtx->Rcx;
