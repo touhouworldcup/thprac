@@ -1382,6 +1382,49 @@ struct MainMenu {
 };
 static_assert(sizeof(MainMenu) == 0x10f34);
 
+struct StageCameraSky {
+    float nearPlane;
+    float farPlane;
+    D3DCOLOR color;
+};
+
+struct Stage {
+    AnmVm* quadVms;
+    void* stdData;
+    int32_t quadCount;
+    int32_t objectsCount;
+    void** objects;
+    void* objectInstances;
+    void* beginningOfScript;
+    ZunTimer scriptTime;
+    int32_t instructionIndex;
+    ZunTimer timer;
+    uint32_t stage;
+    Float3 position;
+    StageCameraSky skyFog;
+    StageCameraSky skyFogInterpInitial;
+    StageCameraSky skyFogInterpFinal;
+    int32_t skyForInterpDuration;
+    ZunTimer skyFogInterpTimer;
+    int8_t skyFogNeedsSetup;
+    char __padding[0x3];
+    int32_t spellcardState;
+    int32_t ticksSinceSpellcardStarted;
+    AnmVm spellcardBackground;
+    AnmVm __unused;
+    uint8_t unpauseFlag;
+    char __padding2[0x3];
+    Float3 facingDirInterpInitial;
+    Float3 facingDirInterpFinal;
+    int32_t facingDirInterpDuration;
+    ZunTimer facingDirInterpTimer;
+    Float3 positionInterpFinal;
+    int32_t positionInterpEndTime;
+    Float3 positionInterpInitial;
+    int32_t positionInterpStartTime;
+};
+static_assert(sizeof(Stage) == 0x2f4);
+
 struct EclRawHeader {
     int16_t subCount;
     int16_t mainCount;

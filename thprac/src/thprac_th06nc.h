@@ -27,10 +27,11 @@ namespace TH06NC {
     X(ECL_RETRIEVE_SHOT_ID,      0x23a1d,    0x238cd)  \
     X(SPELL_ATTEMPT_CNT_INCR,    0x27b7a,    0x27a2a)  \
     X(SPELL_CAPTURE_CNT_INCR,    0x27cdd,    0x27b8d)  \
+    X(ECL_MODULO_GET_BOSS_TIME,  0x31ed7,    0x337f7)  \
     X(FUNCSET_PATCHY_GET_LAST3,  0x333d0,    0x34cf0)  \
     X(FUNCSET_QED_GET_HEALTH,    0x35864,    0x37184)  \
     X(FUNCSET_DH_GET_HEALTH,     0x35a4a,    0x3736a)  \
-    X(BOSS_INTERRUPT_SET,        0x36e5a,    0x3877a) \
+    X(BOSS_INTERRUPT_SET,        0x36e5a,    0x3877a)  \
     X(ECL_TIMELINE_RET,          0x36f12,    0x38832)  \
     X(ENEMY_MGR_TICK_BOSS_TIME,  0x3816f,    0x39a8f)  \
     X(ENEMY_MGR_TICK_TIMELINE,   0x381f9,    0x39b19)  \

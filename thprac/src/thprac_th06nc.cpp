@@ -993,8 +993,11 @@ namespace TH06NC {
             }
 
             OG_INS(pCtx->Rcx += 1);
+        }),
+        EHOOK_HK(ECL_MODULO_GET_BOSS_TIME, 4, { // boss time ECL access by Meiling midspell (and literally nothing else, I checked)
+            pCtx->Rsi = (uintptr_t)&STAGE_BACKGROUND->timelineTime.current; // frozen boss time makes the pattern act strange; anything that *does* tick works fine
         })
-        // tofix: - Rumia mid leaving, Daiyousei stops shooting, Meiling midspell becomes strange (OG eosd carryover, issue #339)
+        // tofix: - Rumia mid leaving, Daiyousei stops shooting (OG eosd carryovers, issue #339)
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE_RT(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)

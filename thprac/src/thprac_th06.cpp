@@ -7,6 +7,7 @@ namespace TH06 {
     };
     
     static PatchouliShottypeVars(*const PATCHOULI_SHOTTYPE_VARS)[2] = (PatchouliShottypeVars(*const)[2])0x476264;
+    static Stage* const STAGE = (Stage* const)0x487b10;
     static int32_t* const PLAYER_SHOT = (int32_t* const)0x487e44;
     static EclManager* const ECL_MANAGER = (EclManager* const)0x487e50;
     static EnemyManager* const ENEMY_MANAGER = (EnemyManager* const)0x4b79c8;
@@ -215,7 +216,7 @@ namespace TH06 {
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE(mTimeLock, TH_TIMELOCK, "F5", VK_F5)
-        PATCH_HK(0x412DD1, "eb"),
+        PATCH_HK(0x412dd1, "eb"),
         EHOOK_HK(0x412e31, 5, { // freeze timeline progress during st1/2/4/5 mid (missing boss_wait)
             const uint32_t st = GAME_MANAGER->currentStage - 1;
             if (st >= 5 || st == 2) return;
@@ -233,6 +234,10 @@ namespace TH06 {
                 if (curTime < midStart[st] + midExtraWait[st]) // remove unnecessary wait
                     ENEMY_MANAGER->timelineTime.current = midStart[st] + midExtraWait[st];
             }
+        }),
+        EHOOK_HK(0x40b756, 1, { // retrieving ECL var for modulo instruction
+            if (pCtx->Ecx == (uintptr_t)&ENEMY_MANAGER->enemies[0].bossTimer.current) // Meiling midspell uses this w/ the boss timer (nothing else does)
+                pCtx->Eax = STAGE->spellcardBackground.currentTimeInScript.current; // frozen boss time makes the pattern act strange; anything that *does* tick works fine
         })
         HOTKEY_ENDDEF();
 
@@ -2394,9 +2399,7 @@ namespace TH06 {
     HOOKSET_ENDDEF()
 
     static __declspec(noinline) void THGuiCreate() {
-        if (ImGui::GetCurrentContext()) {
-            return;
-        }
+        if (ImGui::GetCurrentContext()) return;
 
         // Init
         GameGuiInit(IMPL_WIN32_DX8, (int)(&SUPERVISOR->d3dDevice), (int)(&(GAME_WINDOW->window)),
