@@ -235,9 +235,25 @@ namespace TH06 {
                     ENEMY_MANAGER->timelineTime.current = midStart[st] + midExtraWait[st];
             }
         }),
-        EHOOK_HK(0x40b756, 1, { // retrieving ECL var for modulo instruction
+
+        // Fixing minor ECL issues caused by Time Lock
+        EHOOK_HK(0x40b756, 1, { // after retrieving ECL var for modulo instruction
             if (pCtx->Ecx == (uintptr_t)&ENEMY_MANAGER->enemies[0].bossTimer.current) // Meiling midspell uses this w/ the boss timer (nothing else does)
                 pCtx->Eax = STAGE->spellcardBackground.currentTimeInScript.current; // frozen boss time makes the pattern act strange; anything that *does* tick works fine
+        }),
+        EHOOK_HK(0x40b400, 2, { // setting ECL vars
+            const int32_t stage = GAME_MANAGER->currentStage;
+            if (stage > 2) return;
+
+            const EnemyEclContext& bossContext = ENEMY_MANAGER->enemies[0].currentContext;
+            const uintptr_t bossIC0Addr = (uintptr_t)&bossContext.var4;
+            const uintptr_t bossIC1Addr = (uintptr_t)&bossContext.var5;
+
+            if (pCtx->Edx == bossIC1Addr && stage == 2) // (only Daiyousei uses IC1 in Stage 2)
+                pCtx->Ecx = 8; // Daiyousei loops 8 times by default and then stops
+
+            else if (pCtx->Edx == bossIC0Addr && stage == 1 && ENEMY_MANAGER->timelineTime.current < 5278 && !STAGE->spellcardState)
+                pCtx->Ecx = 2; // Rumia midnon does 2 full loops by default and then she leaves
         })
         HOTKEY_ENDDEF();
 

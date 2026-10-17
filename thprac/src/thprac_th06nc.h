@@ -27,6 +27,8 @@ namespace TH06NC {
     X(ECL_RETRIEVE_SHOT_ID,      0x23a1d,    0x238cd)  \
     X(SPELL_ATTEMPT_CNT_INCR,    0x27b7a,    0x27a2a)  \
     X(SPELL_CAPTURE_CNT_INCR,    0x27cdd,    0x27b8d)  \
+    X(ECL_SET_IC0,               0x2e968,    0x30288)  \
+    X(ECL_SET_IC1,               0x2e976,    0x30296)  \
     X(ECL_MODULO_GET_BOSS_TIME,  0x31ed7,    0x337f7)  \
     X(FUNCSET_PATCHY_GET_LAST3,  0x333d0,    0x34cf0)  \
     X(FUNCSET_QED_GET_HEALTH,    0x35864,    0x37184)  \

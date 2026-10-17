@@ -993,11 +993,25 @@ namespace TH06NC {
             }
 
             OG_INS(pCtx->Rcx += 1);
+            // minor bug: if someone enables Time Lock then disables it then re-enables it in the last midExtraWait frames
+            // of the midboss, this fails. not a big deal, obviously
         }),
+
+        // Fixing minor ECL issues caused by Time Lock
         EHOOK_HK(ECL_MODULO_GET_BOSS_TIME, 4, { // boss time ECL access by Meiling midspell (and literally nothing else, I checked)
             pCtx->Rsi = (uintptr_t)&STAGE_BACKGROUND->timelineTime.current; // frozen boss time makes the pattern act strange; anything that *does* tick works fine
+        }),
+        EHOOK_HK(ECL_SET_IC1, 2, { // Daiyousei loops 8 times by default and then stops (only thing that sets IC1 in Stage 2)
+            const bool inDaiyousei = (GAME_MANAGER->stage == 2);
+            *(uint32_t*)pCtx->Rdi = inDaiyousei ? 8 : OG_INS((uint32_t)pCtx->Rax); // don't advance loop
+        }),
+        EHOOK_HK(ECL_SET_IC0, 2 , { // Rumia midnon leaves after 2 full loops by default
+            const bool inRumiaMidnon = (GAME_MANAGER->stage == 1
+                                     && ENEMY_MANAGER->timelineTime.current < (int32_t)bossDlgTime[0]
+                                     && !*(uint32_t*)SPELLCARD_IS_ACTIVE);
+
+            *(uint32_t*)pCtx->Rdi = inRumiaMidnon ? 2 : OG_INS((uint32_t)pCtx->Rax); // don't advance loop
         })
-        // tofix: - Rumia mid leaving, Daiyousei stops shooting (OG eosd carryovers, issue #339)
         HOTKEY_ENDDEF();
 
         HOTKEY_DEFINE_RT(mAutoBomb, TH_AUTOBOMB, "F6", VK_F6)
