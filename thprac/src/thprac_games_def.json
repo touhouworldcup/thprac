@@ -221,8 +221,8 @@
       "THPRAC_GAMES_OPEN_FOLDER": [ "打开文件夹", "Open folder", "フォルダを開く" ],
       "THPRAC_GAMES_OPEN_APPDATA": [ "打开游戏数据文件夹", "Open game data folder", "ゲームデータフォルダを開く" ],
       "THPRAC_GAMES_LAUNCH_CUSTOM": [ "启动custom.exe", "Launch custom.exe", "custom.exeを起動します" ],
-      "THPRAC_GAMES_USE_VPATCH": [ "使用VsyncPatch（如果可用）", "Use VsyncPatch (if avaliable)", "VsyncPatch を使用する (利用可能な場合)" ],
-      "THPRAC_GAMES_USE_OILP": [ "使用OpenInputLagPatch（如果可用）", "Use OpenInputLagPatch (if avaliable)", "OpenInputLagPatch を使用する (利用可能な場合)" ],
+      "THPRAC_GAMES_USE_VPATCH": [ "使用VsyncPatch（如果可用）", "Use VsyncPatch (if available)", "VsyncPatch を使用する (利用可能な場合)" ],
+      "THPRAC_GAMES_USE_OILP": [ "使用OpenInputLagPatch（如果可用）", "Use OpenInputLagPatch (if available)", "OpenInputLagPatch を使用する (利用可能な場合)" ],
       "THPRAC_GAMES_VPATCH_OILP_PRIORITY": [
         "如果同时打开两个选项，启动器会优先调用OpenInputLagPatch",
         "If both boxes are ticked and both Vpatch and OpenInputLagPatch are present, OpenInputLagPatch takes priority",
