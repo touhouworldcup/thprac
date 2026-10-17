@@ -236,7 +236,18 @@ static bool CheckIfAnyGame() {
     };
 
     constexpr const wchar_t* allClassNames[] = {
+        L"Touhou Koumakyou: Um Novo Clássico - a Encarnação do Demônio Escarlate",
         L"Touhou Koumakyou: New Classic - the Embodiment of Scarlet Devil",
+        L"Touhou Koumakyou : un classique modernisé - the Embodiment of Scarlet Devil",
+        L"Touhou Koumakyou: Im neuen Gewand - the Embodiment of Scarlet Devil",
+        L"Touhou Koumakyou: un Classico Modernizzato - the Embodiment of Scarlet Devil",
+        L"東方紅魔郷：New Classic　～ the Embodiment of Scarlet Devil.",
+        L"동방홍마향：New Classic　～ the Embodiment of Scarlet Devil.",
+        L"Touhou Koumakyou: Nuevo Clásico - the Embodiment of Scarlet Devil",
+        L"Touhou Koumakyou: New Classic - the Embodiment of Scarlet Devil",  // in Russian
+        L"东方红魔乡：新典　～ the Embodiment of Scarlet Devil.",
+        L"Touhou Koumakyou: New Classic - the Embodiment of Scarlet Devil",  // in Spanish of Spain 
+        L"東方紅魔鄉：新典　～ the Embodiment of Scarlet Devil."
     };
 
     for (const wchar_t* className : allClassNames) {
