@@ -466,6 +466,7 @@ static ImWchar baseUnicodeRanges[] =
     bool LocaleCreateFont(float font_size)
     {
         auto& io = ImGui::GetIO();
+        io.Fonts->Clear();
         for (unsigned int locale = 0; locale < 3; locale++) {
             // Var Definition
             void* fontData = nullptr;

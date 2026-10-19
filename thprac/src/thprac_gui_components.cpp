@@ -520,6 +520,24 @@ namespace Gui
         }
     }
 
+    bool Rescale(float font_size, float scale, bool merge_font) {
+        // Setup Dear ImGui style
+        ImGuiStyle& style = ImGui::GetStyle();
+        ImGuiStyle styleold = style; // Backup colors
+        style = ImGuiStyle(); // IMPORTANT: ScaleAllSizes will change the original size, so we should reset all style config
+        ImGui::GetStyle().ScaleAllSizes(scale);
+        style.WindowBorderSize = 0;
+        memcpy(style.Colors, styleold.Colors, sizeof(style.Colors)); // Restore colors
+
+        g_Scale = scale;
+        if (merge_font) {
+            return Gui::LocaleCreateMergeFont(font_size * scale);
+        }
+        else {
+            return Gui::LocaleCreateFont(font_size * scale);
+        }
+    }
+
     void ComboSelect(size_t& out, const char* const* choices, const size_t choices_count, const char* label)
     {
         if (ImGui::BeginCombo(label, choices[out])) {

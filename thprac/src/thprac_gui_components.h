@@ -649,6 +649,8 @@ private:
     int mForceFocusId = 0;
 };
 
+bool Rescale(float font_size, float scale, bool merge_font = false);
+
 template <class... Args>
 inline bool CheckPopups(int id, Args... rest)
 {

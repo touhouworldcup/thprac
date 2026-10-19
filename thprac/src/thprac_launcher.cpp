@@ -857,17 +857,7 @@ void ResetDevice() {
 
 bool UpdateUIScaling(float scale) {
     ImGui_ImplDX9_InvalidateDeviceObjects();
-
-    // Setup Dear ImGui style
-    ImGuiStyle& style = ImGui::GetStyle();
-    ImGuiStyle styleold = style; // Backup colors
-    style = ImGuiStyle(); // IMPORTANT: ScaleAllSizes will change the original size, so we should reset all style config
-    ImGui::GetStyle().ScaleAllSizes(scale);
-    style.WindowBorderSize = 0;
-    memcpy(style.Colors, styleold.Colors, sizeof(style.Colors)); // Restore colors
-
-    Gui::LocaleCreateMergeFont(20.0f * scale);
-    g_Scale = scale;
-
-    return ImGui_ImplDX9_CreateDeviceObjects();
+    // We don't want to short circuit here
+    bool res = Gui::Rescale(20.0f, scale, true);
+    return ImGui_ImplDX9_CreateDeviceObjects() && res;
 }
