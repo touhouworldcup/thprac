@@ -3,6 +3,8 @@
 #include <imgui_impl_dx11.h>
 #include "wininternal.h"
 
+#include <inttypes.h>
+
 using namespace TH06;
 using std::pair;
 
@@ -2367,10 +2369,6 @@ namespace TH06NC {
         return 1.15f * GetWindowSize().x / 1280.f;
     }
 
-
-
-
-
     HOOKSET_DEFINE(THMainHooks)
 
     // Prac Menu UX
@@ -2885,7 +2883,46 @@ namespace TH06NC {
         thPracParam.Reset();
     }
 
+    auto Fake_SteamInternal_InitContext(uintptr_t o) {
+        static uintptr_t(*fake_funcs[])() = {
+            []() -> uintptr_t { return 1; }, []() -> uintptr_t { return 1; },
+            []() -> uintptr_t { return 1; }, []() -> uintptr_t { return 1; },
+            []() -> uintptr_t { return 1; }, []() -> uintptr_t { return 1; },
+            []() -> uintptr_t { return 1; }, []() -> uintptr_t { return 1; },
+            []() -> uintptr_t { return 1; }, []() -> uintptr_t { return 1; },
+        };
+
+        log_printf("Fake_SteamIntenal_InitContext call: 0x%" PRIxPTR "\r\n", o);
+
+        static auto* fake_vtable = &fake_funcs;
+        static auto* fake_class = &fake_vtable;
+        return &fake_class;
+    }
+
+    static constinit auto th06nc_fake_steam_patchbuf = &Fake_SteamInternal_InitContext;
+
+    // Could be hooks, but they're good enough as patches, so patches it is
+    HOOKSET_DEFINE(THFakeSteamHook)
+    {
+        .addr = STEAM_CONTEXTINIT_IAT,
+        .data = PatchBufferImpl(&th06nc_fake_steam_patchbuf, sizeof(th06nc_fake_steam_patchbuf))
+    },
+    PATCH_DY(, GET_CONTROLLERTYPE_STEAM, "B801000000C3")
+    HOOKSET_ENDDEF()
+
     HOOKSET_DEFINE(THInitHook)
+    EHOOK_DY(th06nc_steam_init_failed, STEAM_INIT_FAILED, 6, {
+        // TODO: find a good way to not have to hardcode this
+        memcpy(((std_string*)LANG_CODE_ADDR)->_Bx._Buf, SIZED("en"));
+
+        // Needs to be an allocation because the game will try to free it
+        *(uintptr_t*)STEAM_CALLBACK_ADDR = OPERATOR_NEW(0x28);
+
+        EnableAllHooksVersion(THFakeSteamHook);
+
+        pCtx->Rax = 0;
+        pCtx->Rip = STEAM_INIT_FAILED_RET;
+    })
     EHOOK_DY(th06nc_gui_init_main, GUI_INIT_MAIN, 1, { // main menu ontick (TODO: TEST THIS)
         THGuiCreate();
         self->Disable();
@@ -2901,6 +2938,12 @@ namespace TH06NC {
 
 
 void TH06NC_Init(TH06NC::VERSION ver) {
+    // TODO: the launcher already has to associate a Steam AppId with every game,
+    // and SteamAppId is only part of the LauncherGame struct. Should SteamAppId
+    // be moved into the GameVersion struct, or is doing this in every game init
+    // function fine?
+    SetEnvironmentVariableW(L"SteamAppId", L"4659620");
+
     ingame_image_base = (uintptr_t)CurrentPeb()->ImageBaseAddress;
     SetupGameVersion(ver);
     TH06NC::EnableAllHooksVersion(THInitHook);

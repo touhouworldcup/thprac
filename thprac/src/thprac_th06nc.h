@@ -85,6 +85,9 @@ namespace TH06NC {
     X(VSYNC_FLAG_SET,            0x982a7,    0x9a017)  \
     X(POST_RENDER_FINISH,        0x259b9a,   0x25baaa) \
     X(GUI_INIT_LAUNCH,           0x270725,   0x2724d5) \
+    X(STEAM_INIT_FAILED,         0x678CB,    0x68FDB)  \
+    X(STEAM_CONTEXTINIT_IAT,     0x2C0630,   0x2F5428) \
+    X(GET_CONTROLLERTYPE_STEAM,  0x67BC0,    0x692D0)  \
 
 #define HK_ENUM(name, ...) name,
     enum HOOKS { HOOK_LIST(HK_ENUM) };
@@ -125,6 +128,7 @@ namespace TH06NC {
     X(MENU_SET_SUBSHOT_SEL_STATE,    0x4be03,   0x4d563)  \
     X(BOMB_INPUT_CHECK_PASS,         0x68a11,   0x6a121)  \
     X(BOMB_INPUT_CHECK_FAIL,         0x68ad2,   0x6a1e2)  \
+    X(STEAM_INIT_FAILED_RET,         0x678EC,   0x68FFB)  \
 
 #define IS_VAR(name, ...) uintptr_t name;
     INST_LIST(IS_VAR)
@@ -209,6 +213,8 @@ namespace TH06NC {
     X(IS_SHIFT_HELD,               0xc21f9a,  0xc6e1ba) \
     X(FPS_LIMITER_CONSTANT,        0xc22100,  0xc6e320) \
     X(SAVE_REPLAY_MENU_PTR_ADDR,   0xc22158,  0xc6e378) \
+    X(STEAM_CALLBACK_ADDR,         0xC22140,  0xC6E360) \
+    X(LANG_CODE_ADDR,              0x4FF380,  0x549FD0) \
 
 #define AD_VAR(name, ...) uintptr_t name;
     ADDR_LIST(AD_VAR)
@@ -242,6 +248,7 @@ namespace TH06NC {
     X(void,     BGM_RESUME,                0xc8110,   0xc9df0)  \
     X(void,     BGM_PAUSE,                 0xcce50,   0xceb30)  \
     X(bool,     RUN_ALL_ON_TICK,           0x3be80,   0x3d700)  \
+    X(uintptr_t,OPERATOR_NEW,              0x2BCF40,  0x2C01C0) \
 
     template <typename R = void>
     struct Function {
@@ -375,7 +382,15 @@ namespace TH06NC {
 
 
 //-------------------------------------------------------------------------
-// Structs ----------------------------------------------------------------
+// Structs ---------------------------------------------------------------- 
+    struct std_string {
+        union _String_val {
+            char _Buf[0x10];
+            char* _Ptr;
+        } _Bx;
+        size_t _Mylen;
+        size_t _Myres;
+    };
 
     constexpr uint8_t DIFFS = 0x5;
     constexpr uint8_t SHOTS = 0x4;

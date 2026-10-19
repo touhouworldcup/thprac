@@ -375,6 +375,11 @@ struct PatchBufferImpl {
         : ptr(str.str)
         , size(str.size)
     {}
+
+    inline constexpr PatchBufferImpl(void* ptr_, size_t size_)
+        : ptr(ptr_)
+        , size(size_)
+    {}
 };
 
 struct PatchHookImpl {
