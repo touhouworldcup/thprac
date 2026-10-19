@@ -1,5 +1,6 @@
 #include "thprac_th06nc.h"
-#include "imgui_internal.h"
+#include <imgui_internal.h>
+#include <imgui_impl_dx11.h>
 #include "wininternal.h"
 
 using namespace TH06;
@@ -2435,14 +2436,11 @@ namespace TH06NC {
 
 
     EHOOK_DY(th06nc_resolution_change, POST_DIMENSION_CHANGE, 1, { // window dimensions have changed
-        ImVec2 size = GetWindowSize();
-        float scale = GetWindowScale();
-
-        ImGui::GetStyle() = ImGuiStyle();
-        ImGui::GetStyle().ScaleAllSizes(scale);
-        ImGui::GetStyle().MouseCursorScale = 1.0f;
-        //Gui::LocaleCreateFont(16.f * scale);  // <- seems needed, but makes the prac window disappear...
-        ImGui::GetIO().DisplaySize = size;
+        ImGui_ImplDX11_InvalidateDeviceObjects();
+        Gui::Rescale(16.0f, GetWindowScale());
+        ImGui_ImplDX11_CreateDeviceObjects();
+        
+        ImGui::GetIO().DisplaySize = GetWindowSize();
         THGuiPrac::singleton().RefreshLocale();
         THOverlay::singleton().RefreshLocale();
         THTracker::singleton().RefreshLocale();
