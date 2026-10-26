@@ -893,7 +893,7 @@
       "TH_TRACKER_MISS": [ "Miss", "Misses", "ミス" ],
       "TH_TRACKER_BOMB": [ "Bomb", "Bombs", "ボム" ],
       "TH_TRACKER_BORDER_BREAK": [ "爆结界", "Border Breaks", "霊撃" ],
-      "TH_TRACKER_SPELLS_CAPTURED": [ "收符卡数", "Spells Captured", "霊撃" ],
+      "TH_TRACKER_SPELLS_CAPTURED": [ "收符卡数", "Spells Captured", "スペル取得" ],
       "TH_TRACKER_LAST_SPELLS": [ "LSC数", "Last Spells", "ラストスペル" ],
       "TH_TRACKER_UFO_COLLECTED": [ "飞碟收集", "UFO Collected", "取得したベントラー" ],
       "TH_TRACKER_UFO_DROPPED": [ "飞碟掉落", "UFO Dropped", "生成したベントラー" ],
