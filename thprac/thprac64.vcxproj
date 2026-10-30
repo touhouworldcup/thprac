@@ -61,6 +61,7 @@
     <ProjectReference Include="thprac_loc_json.vcxproj">
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
+    <ResourceCompile Include="thprac.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{064229ed-2ab8-4a37-a0dd-93e68b6d2cca}</ProjectGuid>
