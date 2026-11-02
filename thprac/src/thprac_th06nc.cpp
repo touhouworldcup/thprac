@@ -630,7 +630,6 @@ namespace TH06NC {
         struct History { uint32_t attempts; uint32_t captures; };
         History seshStartSpellHistory[BOOKS_ID + 1];
         History seshStartMainHistory[BOOKS_ID];
-        bool inBooksCapAttempt;
 
         const th_glossary_t shotNames[4] = {
             TH_TRACKER_REIMU_A, TH_TRACKER_REIMU_B,
@@ -678,14 +677,11 @@ namespace TH06NC {
                 if (timelineTime == st4BooksTime) { // attempt start
                     uint32_t& attemptCnt = ((uint32_t*)&GetBooksHistory())[0];
                     if (attemptCnt < UINT32_MAX) attemptCnt++;
+                    *(uint8_t*)SPELLCARD_CAPTURE_FLAG = 1;
 
-                    inBooksCapAttempt = true;
-
-                } else if (inBooksCapAttempt && timelineTime >= midbossTime[3]) { // cap (miss/bomb/reset ends attempt)
+                } else if (timelineTime == midbossTime[3] && *(uint8_t*)SPELLCARD_CAPTURE_FLAG) { // cap
                     uint32_t& captureCnt = ((uint32_t*)&GetBooksHistory())[1];
                     if (captureCnt < UINT32_MAX) captureCnt++;
-
-                    inBooksCapAttempt = false;
                 }
             }
 
@@ -856,7 +852,6 @@ namespace TH06NC {
             misses = bombs = 0;
             lastSpellTimer = 0;
             blockedHits = 0;
-            inBooksCapAttempt = false;
 
             this->shotID = GAME_MANAGER->GetShotID();
 
@@ -891,9 +886,9 @@ namespace TH06NC {
             }
         }
 
-        void CountMiss() { inBooksCapAttempt = false; misses++; }
-        void CountBomb() { inBooksCapAttempt = false; bombs++; }
-        void CountBlockedHit() { inBooksCapAttempt = false; blockedHits++; }
+        void CountMiss() { misses++; }
+        void CountBomb() { bombs++; }
+        void CountBlockedHit() { blockedHits++; }
     };
 
 
