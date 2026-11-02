@@ -579,12 +579,8 @@ namespace TH06NC {
                 ImGui::SameLine();
                 Gui::HelpMarker(S(TH06NC_TRACKER_SHOW_YELLOW_DESC));
 
-                if (ImGui::Checkbox(S(TH06NC_TRACKER_SHOW_HISTORY), &showHistory) && !showHistory)
-                    showSessionHistory = false;
-
-                ImGui::BeginDisabled(!showHistory);
+                ImGui::Checkbox(S(TH06NC_TRACKER_SHOW_HISTORY), &showHistory);
                 ImGui::Checkbox(S(TH06NC_TRACKER_SHOW_SESSION), &showSessionHistory);
-                ImGui::EndDisabled(!showHistory);
 
                 THGuiPrac& pracGui = THGuiPrac::singleton();
                 if (ImGui::Checkbox(S(TH_SHOW_ADV_PARAMS), &pracGui.showAdvPracParams)) {
@@ -746,13 +742,7 @@ namespace TH06NC {
                 const uint32_t difficulty = GAME_MANAGER->difficulty;
                 const bool isEasySt6 = (difficulty == EASY && GAME_MANAGER->stage == 6); // no allocated spell data
 
-                if (options.showHistory && !isEasySt6) { // total history
-                    ImGui::TableNextRow();
-
-                    ImGui::TableNextColumn();
-                    ImGui::TextUnformatted(S(TH_TRACKER_HISTORY));
-                    ImGui::TableNextColumn();
-
+                if (!isEasySt6) { // total history
                     uint32_t captureCnt, attemptCnt;
 
                     if (isBooks) {
@@ -778,10 +768,18 @@ namespace TH06NC {
                         }
                     }
 
-                    if (attemptCnt)
-                        ImGui::Text("%d / %d (%d%%)", captureCnt, attemptCnt, captureCnt * 100 / attemptCnt);
-                    else ImGui::Text("%d / %d", captureCnt, attemptCnt);
-                    tableLineCnt++;
+                    if (options.showHistory) {
+                        ImGui::TableNextRow();
+
+                        ImGui::TableNextColumn();
+                        ImGui::TextUnformatted(S(TH_TRACKER_HISTORY));
+                        ImGui::TableNextColumn();
+
+                        if (attemptCnt)
+                            ImGui::Text("%d / %d (%d%%)", captureCnt, attemptCnt, captureCnt * 100 / attemptCnt);
+                        else ImGui::Text("%d / %d", captureCnt, attemptCnt);
+                        tableLineCnt++;
+                    }
 
                     // session history
                     if (options.showSessionHistory && !GAME_MANAGER->inReplay && (GAME_MANAGER->inPracticeMode || GAME_MANAGER->inSpellPrac)) {
