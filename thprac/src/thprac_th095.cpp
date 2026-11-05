@@ -98,12 +98,21 @@ namespace TH095 {
     };
 
     AnmVm photoScoreSeventhDigitVms[10];
+    AnmVm extraBonusVms[50];
+    int extraBonusVmsSize = 0;
+    struct BonusInfo {
+        int basePoint, resultScore;
+        float baseFactor;
+    } bonusInfo;
+
+    // Clean the VMs each time the constructor of PhotoManager is called
+    EHOOK_ST(th095_vm_init, 0x42A931, 3, {
+        memset(photoScoreSeventhDigitVms, 0x00, sizeof(photoScoreSeventhDigitVms));
+        memset(extraBonusVms, 0x00, sizeof(extraBonusVms));
+        extraBonusVmsSize = 0;
+    });
 
     HOOKSET_DEFINE(PhotoScoreDisplayFix)
-    // Clean the VMs each time the constructor of PhotoManager is called
-    EHOOK_DY(th095_photo_score_display_fix0, 0x42A931, 3, {
-        memset(photoScoreSeventhDigitVms, 0x00, sizeof(photoScoreSeventhDigitVms));
-    })
     // Correctly compute the sixth and seventh least significant decimal digit, and set the AnmVM of it
     EHOOK_DY(th095_photo_score_display_fix1, 0x42C655, 4, {
         int photo_score = *(int*)(pCtx->Ebp + 0x8);
@@ -137,10 +146,6 @@ namespace TH095 {
         
         pCtx->Eip = 0x42C6A5;
     })
-    // Clean photoScoreSeventhDigitVms in the constructor of PhotoManager
-    EHOOK_DY(th095_photo_score_display_fix2, 0x42A921, 6, {
-        memset(photoScoreSeventhDigitVms, 0x00, sizeof(photoScoreSeventhDigitVms));
-    })
     // Display the AnmVM that is set above
     EHOOK_DY(th095_photo_score_display_fix3, 0x42C3C8, 5, {
         struct PhotoManager* this_ = *(struct PhotoManager**)(pCtx->Ebp - 0x1C);
@@ -161,13 +166,6 @@ namespace TH095 {
         }
     })
     HOOKSET_ENDDEF()
-
-    AnmVm extraBonusVms[50];
-    int extraBonusVmsSize = 0;
-    struct BonusInfo {
-        int basePoint, resultScore;
-        float baseFactor;
-    } bonusInfo;
 
     void SetExtraBonusVmColor(uint8_t blue_goal) {
         for (int i = 0; i < extraBonusVmsSize; ++i) {
@@ -209,11 +207,6 @@ namespace TH095 {
     }
 
     HOOKSET_DEFINE(DsStyledBonusDisplay)
-    // Clean our VMs before using them
-    EHOOK_DY(th095_ds_styled_bonus_display0, 0x42C5D1, 3, {
-        memset(extraBonusVms, 0x00, sizeof(extraBonusVms));
-        extraBonusVmsSize = 0;
-    })
     // Set the extra info to be displayed
     EHOOK_DY(th095_ds_styled_bonus_display1, 0x4339E3, 2, {
         ScoreResType* score_res = *(ScoreResType**)(pCtx->Ebp + 0xC);
@@ -430,6 +423,7 @@ namespace TH095 {
                         DisableAllHooks(DsStyledBonusDisplay);
                     }
                 }
+                TH095::th095_vm_init.Toggle(mFixPhotoScoreDisplay || mDsStyleBonusDisplay);
                 ImGui::SameLine();
                 Gui::HelpMarker(S(TH095_DS_STYLE_BONUS_DISPLAY_DESC));
 
@@ -508,6 +502,7 @@ namespace TH095 {
 
         // Hooks
         EnableAllHooks(THMainHook);
+        TH095::th095_vm_init.Setup();
     }
     HOOKSET_DEFINE(THInitHook)
     EHOOK_DY(th095_gui_init_1, 0x4470a1, 7, {
@@ -525,7 +520,5 @@ void TH095InitReal()
 {
     EnableAllHooks(TH095::THInitHook);
     DisableAllHooks(TH095::PhotoScoreDisplayFix);
-    // TH095::th095_photo_score_display_fix_toggle_on.Setup();
-    // TH095::th095_photo_score_display_fix_toggle_off.Setup();
     DisableAllHooks(TH095::DsStyledBonusDisplay);
 }
