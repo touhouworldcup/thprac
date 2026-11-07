@@ -231,9 +231,8 @@ __forceinline bool _RxD1E00_fast_impl (
     __m128 sincos_a10_2 = sincos(a10);
 
     for (int i = 0; i < a1 * 2; ++i) {
-        float v13 = a8;
-        if (i & 1)
-            v13 = a9;
+        float r_start = (i & 1) ? a9 : a8;
+        float r_end   = (i & 1) ? a8 : a9;
 
         __m128 sincos_a10_1 = sincos_a10_2;
 
@@ -242,11 +241,11 @@ __forceinline bool _RxD1E00_fast_impl (
         sincos_a10_2 = sincos(a10);
 
         if (line_segments_intersect_2d(
-            (A(sincos_a10_1)[1] * v13) + a6,
-            (A(sincos_a10_1)[0] * v13) + a7,
+            (A(sincos_a10_1)[1] * r_start) + a6,
+            (A(sincos_a10_1)[0] * r_start) + a7,
 
-            (A(sincos_a10_2)[1] * v13) + a6,
-            (A(sincos_a10_2)[0] * v13) + a7,
+            (A(sincos_a10_2)[1] * r_end) + a6,
+            (A(sincos_a10_2)[0] * r_end) + a7,
             a2, a3, a4, a5)) {
                 return true;
             }
