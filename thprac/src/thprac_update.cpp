@@ -511,9 +511,9 @@ bool LegacyPostUpdate(LPCWSTR lpCmdLine, int nCmdShow) {
         auto self_name = L"thprac.exe"_wZ;
         if (gSettings.filename_after_update == FN_UPDATE_KEEP_DOWNLOADED) {
             self_name = self;
-            self_name.Buffer        += g_SelfDir.length() * sizeof(wchar_t);
-            self_name.Length        -= g_SelfDir.length() * sizeof(wchar_t);
-            self_name.MaximumLength -= g_SelfDir.length() * sizeof(wchar_t);
+            self_name.Buffer        += (USHORT)g_SelfDir.length() * sizeof(wchar_t);
+            self_name.Length        -= (USHORT)g_SelfDir.length() * sizeof(wchar_t);
+            self_name.MaximumLength -= (USHORT)g_SelfDir.length() * sizeof(wchar_t);
         }
         memset(finalPath + substr_len, 0, MAX_PATH - substr_len);
         memcpy(finalPath + substr_len, self_name.Buffer, self_name.Length);
