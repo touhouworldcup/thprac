@@ -317,10 +317,6 @@ bool LoadSettings() {
             yyjson_eval_numeric(val, &gSettings.render_only_used_glyphs);
             continue;
         }
-        if (unsafe_yyjson_equals_str(key, "resizable_window")) {
-            yyjson_eval_numeric(val, &gSettings.resizable_window);
-            continue;
-        }
         if (unsafe_yyjson_equals_str(key, "console")) {
             yyjson_eval_numeric(val, &gSettings.console);
             continue;
@@ -419,7 +415,6 @@ bool SaveSettings() {
         gSettings.filename_after_update,
         gSettings.check_update,
         gSettings.render_only_used_glyphs ? "true" : "false",
-        gSettings.resizable_window ? "true" : "false",
         gSettings.console ? "true" : "false",
         gSettings.update_without_confirmation ? "true" : "false",
         gSettings.dont_search_ongoing_game ? "true" : "false",
@@ -450,7 +445,6 @@ void GuiSettings() {
     ImGui::Checkbox(S(THPRAC_RENDER_ONLY_USED_GLYPHS), &gSettings.render_only_used_glyphs);
     ImGui::SameLine();
     Gui::HelpMarker(S(THPRAC_RENDER_ONLY_USED_GLYPHS_DESC));
-    ImGui::Checkbox(S(THPRAC_RESIZABLE_WINDOW), &gSettings.resizable_window);
 
     if (ImGui::Checkbox(S(THPRAC_CONSOLE), &gSettings.console) && gSettings.console && !console_open) { 
         if (!AttachConsole(GetCurrentProcessId()) && !AttachConsole(ATTACH_PARENT_PROCESS)) {

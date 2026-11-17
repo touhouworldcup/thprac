@@ -72,7 +72,6 @@ struct THPracSettings {
     bool dont_search_ongoing_game = false;
     bool thprac_admin_rights = false;   
     bool render_only_used_glyphs = false;
-    bool resizable_window = false;
     bool console = false;
 };
 
