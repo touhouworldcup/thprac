@@ -17,6 +17,10 @@
     <ToolsetType Condition="'$(Configuration)'=='Release'">MSVC</ToolsetType>
     <ToolsetType Condition="'$(Configuration)'=='DebugLLVM'">ClangCL</ToolsetType>
     <ToolsetType Condition="'$(Configuration)'=='ReleaseLLVM'">ClangCL</ToolsetType>
+	
+    <SigningCertPath>$(SolutionDir)cert.pfx</SigningCertPath>
+    <ProjectTitle>Touhou Practice Tool</ProjectTitle>
+    <ProjectURL>https://github.com/touhouworldcup/thprac</ProjectURL>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <PlatformToolset Condition="'$(ToolsetType)'=='MSVC'">v145</PlatformToolset>
@@ -68,6 +72,9 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
+    <PostBuildEvent Condition="Exists('$(SigningCertPath)') And '$(ConfigurationType)'!='Utility'">
+      <Command>signtool sign /fd certHash /v /f "$(SigningCertPath)" /d "$(ProjectTitle)" /du "$(ProjectURL)" "$(TargetPath)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
     <ClCompile>
