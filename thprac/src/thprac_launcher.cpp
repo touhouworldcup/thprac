@@ -609,7 +609,7 @@ int Launcher(HINSTANCE hInstance, int nCmdShow) {
 
     // Setup Dear ImGui flags
     ImGuiIO& io = ImGui::GetIO();
-    //io.IniFilename = nullptr;
+    io.IniFilename = nullptr;
     //io.KeyMap[ImGuiKey_Tab] = VK_TAB;
     //io.KeyMap[ImGuiKey_LeftArrow] = VK_LEFT;
     //io.KeyMap[ImGuiKey_RightArrow] = VK_RIGHT;
