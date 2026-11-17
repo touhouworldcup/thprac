@@ -7,14 +7,13 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-#include "thprac_sfx_lzma_config.h"
+#include "build/thprac_sfx_lzma_config.h"
 #define DECOMP_BUF_SIZE EXE_SIZE + DLL32_SIZE + DLL64_SIZE
 
 static const Byte PAYLOAD[] = {
-    #embed "payload.bin"
+    #embed "build/payload.bin"
 };
 
-#pragma function(memcpy)
 void* memcpy(void* dst, const void* src, size_t n) {
     Byte* dst_real = (Byte*)dst;
     const Byte* src_real = (Byte*)src;
