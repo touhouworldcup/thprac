@@ -180,6 +180,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
 
     if (gSettings.thprac_admin_rights && !PrivilegeCheck()) {
         ShellExecuteW(NULL, L"runas", CurrentPeb()->ProcessParameters->ImagePathName.Buffer, pCmdLine, g_OldWorkingDir.data(), nCmdShow);
+        return 0;
     }
 
     SetCurrentDirectoryW(g_SelfDir.data());
