@@ -428,8 +428,8 @@ namespace TH06NC {
         int8_t inPracticeMode;             // 0x954
         int8_t inSpellPrac;                // 0x955
         int8_t spellPracEndFlag;           // 0x956
-        char __unknown_958[0x1];           // 0x958
-        int8_t spellPracSpellNum;          // 0x958
+        char __unknown_957[0x1];           // 0x957
+        uint8_t spellPracSpellNum;         // 0x958
         uint16_t stagePointItems;          // 0x95a
         uint16_t totalPointItems;          // 0x95c
         uint32_t difficulty;               // 0x960
