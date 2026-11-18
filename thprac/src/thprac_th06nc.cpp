@@ -2497,14 +2497,14 @@ namespace TH06NC {
     EHOOK_DY(th06nc_qed_phase_warp, FUNCSET_QED_GET_HEALTH, 7, { // QED retrieving boss health (or 0 if timer is under 2min)
         const Enemy* flandre = (Enemy*)pCtx->Rcx;
 
-        if (thPracParam.mode && thPracParam.phase == 2) pCtx->Rax = 0;
+        if (thPracParam.mode && thPracParam.section == TH06_ST7_END_S10 && thPracParam.phase == 2) pCtx->Rax = 0;
         else OG_INS(pCtx->Rax = flandre->bossTimer.current < 7200 ? flandre->curHealth : 0);
     })
 
     EHOOK_DY(th06nc_danmaku_heart_phase_warp, FUNCSET_DH_GET_HEALTH, 8, { // DH retrieving boss health (or 0 if timer is under 2min) (yes these 2 spells work the exact same way)
         const Enemy* flandre = (Enemy*)pCtx->Rcx;
 
-        if (thPracParam.mode && thPracParam.phase) pCtx->Rax = 0;
+        if (thPracParam.mode && thPracParam.section == TH06NC_TLB3 && thPracParam.phase) pCtx->Rax = 0;
         else OG_INS(pCtx->R8 = flandre->bossTimer.current < 7200 ? flandre->curHealth : 0);
     })
 
