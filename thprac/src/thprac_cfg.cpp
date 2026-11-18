@@ -385,7 +385,6 @@ static const char settingsTemplate[] =
     "\t" R"("filename_after_update": %d,)" "\n"
     "\t" R"("check_update": %d,)" "\n"
     "\t" R"("render_only_used_glyphs": %s,)" "\n"
-    "\t" R"("resizable_window": %s,)" "\n"
     "\t" R"("console": %s,)" "\n"
     "\t" R"("update_without_confirmation": %s,)" "\n"
     "\t" R"("dont_search_ongoing_game": %s,)" "\n"
