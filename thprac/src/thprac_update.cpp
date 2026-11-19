@@ -305,9 +305,7 @@ unsigned int WINAPI DownloadFile(DownloadParams* params) {
     return callback(DLCB_COMPLETE, params);
 }
 
-struct DownloadPopupContext {
-    DownloadParams dl;
-    uintptr_t filesize;
+struct DownloadPopupContext : DownloadParams {
     HWND hwnd;
     HBRUSH hBlack;
     HBRUSH hBlue;
@@ -334,7 +332,7 @@ static LRESULT CALLBACK DownloadPopupWndProc(HWND hwnd, UINT msg, WPARAM wParam,
         FillRect(hdc, &wndRect, ctx->hBlack);
         RECT pbRect = { 7, 10, 7, 45 };
         if (ctx->filesize) {
-            pbRect.right += (ctx->dl.out.size() * 338) / ctx->filesize;
+            pbRect.right += (ctx->out.size() * 338) / ctx->filesize;
             FillRect(hdc, &pbRect, ctx->hBlue);
         }
         EndPaint(hwnd, &ps);
@@ -355,14 +353,11 @@ static bool DownloadPopup(HINSTANCE hInstance, const wchar_t* title, const wchar
     AdjustWindowRect(&wndRect, style, FALSE);
     int width = wndRect.right - wndRect.left, height = wndRect.bottom - wndRect.top;
 
-    DownloadPopupContext dl = {
-        .dl = {
-            .url = url,
-            .callback = DownloadPopupCallback,
-        },
-        .hBlack = CreateSolidBrush(RGB(13, 13, 13)),
-        .hBlue = CreateSolidBrush(RGB(51, 153, 255)),
-    };
+    DownloadPopupContext dl;
+    dl.url = url;
+    dl.callback = DownloadPopupCallback;
+    dl.hBlack = CreateSolidBrush(RGB(13, 13, 13));
+    dl.hBlue = CreateSolidBrush(RGB(51, 153, 255));
 
     HWND hwnd = CreateWindowExW(WS_EX_DLGMODALFRAME,
         L"thprac update", title,
@@ -401,9 +396,9 @@ static bool DownloadPopup(HINSTANCE hInstance, const wchar_t* title, const wchar
     DeleteObject(dl.hBlack);
     DeleteObject(dl.hBlue);
 
-    out = std::move(dl.dl.out);
+    out = std::move(dl.out);
 
-    return !dl.dl.abort_signal;
+    return !dl.abort_signal;
 }
 
 static const wchar_t* UPDATE_DIALOG_CHECKING[] = { L"检查更新中", L"Checking for update", L"更新を確認しています" };
