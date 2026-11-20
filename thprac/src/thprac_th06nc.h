@@ -128,7 +128,7 @@ namespace TH06NC {
     X(MENU_SET_SUBSHOT_SEL_STATE,    0x4be03,   0x4d563)  \
     X(BOMB_INPUT_CHECK_PASS,         0x68a11,   0x6a121)  \
     X(BOMB_INPUT_CHECK_FAIL,         0x68ad2,   0x6a1e2)  \
-    X(STEAM_INIT_FAILED_RET,         0x678EC,   0x68FFB)  \
+    X(STEAM_INIT_SET_LANGUAGE,       0x679C4,   0x690D3)  \
 
 #define IS_VAR(name, ...) uintptr_t name;
     INST_LIST(IS_VAR)

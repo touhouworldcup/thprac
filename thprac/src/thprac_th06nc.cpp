@@ -2903,18 +2903,42 @@ namespace TH06NC {
     PATCH_DY(, GET_CONTROLLERTYPE_STEAM, "B801000000C3")
     HOOKSET_ENDDEF()
 
+
+    static std::string_view steam_lang_get(std::string_view acf) {
+        for (std::string_view key : {"\"MountedConfig\"", "\"language\""}) {
+            auto pos = acf.find(key);
+            if (pos == acf.npos) return {};
+            acf.remove_prefix(pos + key.size());
+        }
+        auto open = acf.find('"');
+        if (open == acf.npos) return {};
+        acf.remove_prefix(open + 1);
+        return acf.substr(0, acf.find('"'));
+    }
+
     HOOKSET_DEFINE(THInitHook)
     EHOOK_DY(th06nc_steam_init_failed, STEAM_INIT_FAILED, 6, {
-        // TODO: find a good way to not have to hardcode this
-        memcpy(((std_string*)LANG_CODE_ADDR)->_Bx._Buf, SIZED("en"));
+        MappedFile f(L"..\\..\\appmanifest_4659620.acf");
+
+        auto lang = steam_lang_get({ (char*)f.fileMapView, f.fileSize });
+        log_printf("lang.length() = 0%d\r\n", lang.length());
+
+        if (lang.length() < 16) {
+            // Copy into some buffer that we know will live long enough that the game
+            // will be able to perform it's strcmp checks on. The buffer into which the
+            // real language code will later be stored in just so happens to be perfect.
+            // if the language code is more than 16 chars long, it's not valid anyways,
+            // and the original game will fall back on English if it gets an empty string.
+            memcpy(((std_string*)LANG_CODE_ADDR)->_Bx._Buf, lang.data(), lang.length());
+        }
 
         // Needs to be an allocation because the game will try to free it
         *(uintptr_t*)STEAM_CALLBACK_ADDR = OPERATOR_NEW(0x28);
 
         EnableAllHooksVersion(THFakeSteamHook);
 
-        pCtx->Rax = 0;
-        pCtx->Rip = STEAM_INIT_FAILED_RET;
+        pCtx->Rax = LANG_CODE_ADDR;
+        pCtx->Rip = STEAM_INIT_SET_LANGUAGE;
     })
     EHOOK_DY(th06nc_gui_init_main, GUI_INIT_MAIN, 1, { // main menu ontick (TODO: TEST THIS)
         THGuiCreate();
