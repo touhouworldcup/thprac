@@ -46,10 +46,10 @@ DWORD RunRemoteThread_CallDLL(HANDLE hProcess, uintptr_t addr, uintptr_t bits) {
             rundllDir = L"Sysnative";
         }
         else if (bits == 32) {
-            rundllDir = L"System32";            
+            rundllDir = L"System32";
         }
     }
-    else if(bits == 32) {
+    else if (bits == 32) {
         rundllDir = L"System32";
     }
 #elif TH_X64
@@ -60,7 +60,12 @@ DWORD RunRemoteThread_CallDLL(HANDLE hProcess, uintptr_t addr, uintptr_t bits) {
         rundllDir = L"SysWOW64";
     }
 #endif
-    
+
+    // Create an inheritable duplicate of the game process handle.
+    HANDLE hChildProcess = nullptr;
+    if (!DuplicateHandle(GetCurrentProcess(), hProcess, GetCurrentProcess(), &hChildProcess, 0, TRUE, DUPLICATE_SAME_ACCESS))
+        return GetLastError();
+
     int wrote = 0;
 
     std::wstring_view rundllPath_format = L"%s\\%s\\rundll32.exe";
@@ -73,13 +78,22 @@ DWORD RunRemoteThread_CallDLL(HANDLE hProcess, uintptr_t addr, uintptr_t bits) {
 
     auto cmdLen = t_strlen(cmdFormat) + g_Dll32Path.length() + 64;
     VLA(wchar_t, cmd, cmdLen);
-    wrote = _snwprintf(cmd, cmdLen - 1, cmdFormat, rundllPath, dllPath.data(), hProcess, addr);
+    wrote = _snwprintf(cmd, cmdLen - 1, cmdFormat, rundllPath, dllPath.data(), (uintptr_t)hChildProcess, addr);
     cmd[wrote] = 0;
 
     STARTUPINFOW si = { .cb = sizeof(si) };
     PROCESS_INFORMATION pi = {};
 
-    CreateProcessW(rundllPath, cmd, nullptr, nullptr, TRUE, 0, nullptr, nullptr, &si, &pi);
+    BOOL createOk = CreateProcessW(rundllPath, cmd, nullptr, nullptr, TRUE, 0, nullptr, nullptr, &si, &pi);
+    DWORD createError = createOk ? 0 : GetLastError();
+
+    CloseHandle(hChildProcess);
+
+    if (!createOk) {
+        VLA_FREE(cmd);
+        return createError;
+    }
+
     WaitForSingleObject(pi.hProcess, INFINITE);
 
     CloseHandle(pi.hThread);
@@ -468,7 +482,7 @@ bool RunGame(const wchar_t* exeFn, wchar_t* cmdLine, uint32_t flags, uintptr_t b
     BOOL ret;
 
     std::wstring exeDir;
-    
+
     SECURITY_ATTRIBUTES secAttrs = { .nLength = sizeof(secAttrs), .bInheritHandle = TRUE };
     if (file_spec) {
         exeDir = std::wstring(exeFn, file_spec);
