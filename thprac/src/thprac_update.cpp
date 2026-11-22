@@ -67,7 +67,7 @@ unsigned int UpdaterInit() {
     wchar_t user_agent[128] = {};
     _snwprintf(user_agent, 128, L"thprac %u.%u.%u.%u on %s", VER_PARAMS_CUR, windows_version_str());
 
-    hInternet = Imp_InternetOpenW(user_agent, INTERNET_OPEN_TYPE_PRECONFIG, nullptr, nullptr, 0);
+    hInternet = Imp_InternetOpenW(user_agent, INTERNET_OPEN_TYPE_PRECONFIG_WITH_NO_AUTOPROXY, nullptr, nullptr, 0);
     if (!hInternet) {
         log_printf("Update: failed to initialize WinInet, updates will not be checked.\r\n");
         return GetLastError();
